@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/locker_row/s3-A.pxg",
+ "set": "school",
+ "id": "locker_row",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "note": "v5 결: 회청색 쇠 사물함 2단 4열, 세로 통풍 줄, 놋쇠 손잡이 점·흰 번호표 점, 체육복 끝과 가방 끈이 삐져나옴, 좌우 이어 붙는 8px 단위",
+ "ok": true
+}

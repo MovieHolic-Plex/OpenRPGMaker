@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/music_box/h4-C.pxg",
+ "set": "horror",
+ "id": "music_box",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  3,
+  0,
+  14,
+  15
+ ],
+ "note": "뚜껑 없이 무용수만 위로 길게 늘어나 몸이 꺾이고 머리가 뒤로 젖혀 얼굴이 검다 — 팔 하나는 위로, 하나는 아래로 늘어짐",
+ "ok": true
+}

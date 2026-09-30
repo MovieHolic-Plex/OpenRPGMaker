@@ -1,0 +1,19 @@
+{
+ "id": "neon_karaoke",
+ "slug": "neon_karaoke",
+ "name": "「カラオケ」 네온 간판",
+ "scene": "역 앞 번화가",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "벽에 거는 가로 네온 간판: 가나 「カラオケ」 다섯 자(획 2px, 3칸 폭에 들어가게 좁게), 청록 네온 테 + 분홍 글자. 빛 번짐 한 줄.",
+ "palette_hint": "neon 글자, neonc 테, lacq 바탕",
+ "worker": "j3"
+}

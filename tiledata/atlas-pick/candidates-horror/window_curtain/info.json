@@ -1,0 +1,54 @@
+{
+ "id": "window_curtain",
+ "slug": "window_curtain",
+ "name": "커튼 닫힌 창",
+ "scene": "공통 뼈대",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "window_night 와 같은 틀, 짙은 벨벳 커튼 두 폭이 닫혀 가운데 1px 틈으로만 달빛. 커튼 주름 세로 줄 두세 개, 위 커튼 봉.",
+ "palette_hint": "velv 커튼, moon 틈, tarn 봉",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "창(커튼)",
+ "worker": "hf3",
+ "set_with": [
+  "door_wood",
+  "door_locked",
+  "door_double",
+  "window_night"
+ ],
+ "v5_ref": [
+  {
+   "id": "curtained window",
+   "name_ko": "커튼 창",
+   "atlas": {
+    "x": 416,
+    "y": 256,
+    "w": 16,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/curtained_window",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

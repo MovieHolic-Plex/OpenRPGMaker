@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sofa/w2-A.pxg",
+ "id": "sofa",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "note": "v5 초록 2인 소파 유지, 등받이 위 굴곡 밝은 줄·쿠션 두 짝 이음선·팔걸이 안팎 명암·앉는 면/앞면 분리·나무 발",
+ "ok": true
+}

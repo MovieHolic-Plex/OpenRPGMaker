@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/komainu_un/j1-A.pxg",
+ "set": "jp",
+ "id": "komainu_un",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.156
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.058
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "아형의 짝: 왼쪽을 보는 입 다문 음형, 이마 뿔, 갈기가 뒤로 늘어지고 꼬리 큰 술 — 거울이 아닌 별도 격자",
+ "ok": true
+}

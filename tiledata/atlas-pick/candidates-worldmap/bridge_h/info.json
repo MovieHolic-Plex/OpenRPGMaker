@@ -1,0 +1,24 @@
+{
+ "id": "bridge_h",
+ "slug": "bridge_h",
+ "name": "다리(가로)",
+ "scene": "들·길",
+ "kind": "piece",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "river",
+ "under_ko": "강물(river 몸통 고른 판)",
+ "passage": "walk",
+ "description": "세로로 흐르는 강을 동서로 건너는 다리 한 칸. World.png 다리는 **돌** 상판에 양쪽 난간 테가 굵게(2px) 서고 상판 가운데가 한 단 밝다 — 월드맵 축척에서는 난간이 다리를 대표한다. 나무·돌 중 하나로, 남쪽 물 위 그림자 한 줄. 좌우 끝이 같은 높이라 여러 칸 이어 붙는다.",
+ "palette_hint": "wstone 또는 mwood, 그림자 ~",
+ "worker": "wv2",
+ "joins": "x"
+}

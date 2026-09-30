@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/music_stand/s2-B.pxg",
+ "set": "school",
+ "id": "music_stand",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  1,
+  15,
+  15
+ ],
+ "note": "명암 강조: 판 면 1단·왼쪽 위 5단 광택, 기둥 위에 판 그림자 2칸, 발치 ~ - 그림자. 피아노 B와 같은 눌린 명암.",
+ "ok": true
+}

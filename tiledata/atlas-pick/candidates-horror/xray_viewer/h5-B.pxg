@@ -1,0 +1,67 @@
+// xray_viewer h5-B
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a blood 0
+@mat b dust 0
+@mat c flame 0
+@mat d moon 0
+@mat e murk 0
+@mat f rot 0
+@mat g rust 0
+@mat h sheet 0
+@mat i tin 0
+@mat j void 0
+@mblock 0 0
+....iiiiiiii....
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiddddddddddii.
+.iidjjjbbjjjdii.
+.iidjbbbbbbjdii.
+.iidbbjbbjbbdii.
+.iidbbjbbjbbdii.
+.iidjbbbbbbjdii.
+.iidjjjbbbjjdii.
+.iidjjjjbjjjdii.
+.iiddddddddddii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+................
+................
+@tblock 0 0
+....44444444....
+.56666666666666.
+.52222222222222.
+.52555555555522.
+.52511124222522.
+.52512224331522.
+.52322124133522.
+.52522124133522.
+.52512224331522.
+.52522224311522.
+.52522204000522.
+.52555555555322.
+.52222222222222.
+.11111111111112.
+................
+................
+@layer shadow
+@block 0 0
+................
+................
+................
+%..............%
+%..............%
+%..............%
+%..............%
+%..............%
+%..............%
+%..............%
+%..............%
+...............%
+...............%
+...............%
+..%%%%%%%%%%%%.%
+...%%%%%%%%%%...

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/armchair_sheet/h4-B.pxg",
+ "set": "horror",
+ "id": "armchair_sheet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  1,
+  15,
+  14
+ ],
+ "note": "소파 B 와 같은 빛: 왼쪽 위 밝음·오른쪽 아래 어둠, ~ 그림자 2~3줄, 다리 끝 그림자 속",
+ "ok": true
+}

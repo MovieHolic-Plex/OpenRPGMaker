@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/power_lines/j3-C.pxg",
+ "set": "jp",
+ "id": "power_lines",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  2,
+  31,
+  14
+ ],
+ "note": "굵은 2px 주 케이블 한 가닥과 가는 보조선 한 가닥으로 줄이고 가운데서 아래로 내려가는 인입선을 넣어 실루엣을 다르게 해석",
+ "ok": true
+}

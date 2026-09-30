@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/display_potion/w7-A.pxg",
+ "id": "display potion",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.069
+ },
+ "lint": {
+  "failed": [
+   "pillow",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 19,
+ "bbox": [
+  1,
+  2,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "병 셋을 코르크 마개·좁은 목·왼쪽 밝고 오른쪽 어두운 몸통으로 각각 읽히게 다시 찍고, 진열대는 윗면(밝음 3줄) 앞면(두 단 어둡게) 발 아래 어두운 테로 나눠 병이 윗면에 서 있게 함",
+ "ok": true
+}

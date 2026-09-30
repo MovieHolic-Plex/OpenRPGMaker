@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wheelchair/h4-C.pxg",
+ "set": "horror",
+ "id": "wheelchair",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  0,
+  15,
+  14
+ ],
+ "note": "옆모습 실루엣: 큰 바퀴 하나, 뒤로 길게 젖힌 등받이와 손잡이, 앞으로 튀어나온 발판, 앉는 천에 핏빛 손자국",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_gallery/hf3-C.pxg",
+ "set": "horror",
+ "id": "door_gallery",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "미술관 문 C — 대리석 문틀(결 잔금 가닥, 왼 6단 오른 3단)과 청록 회색 문짝 + 놋쇠 마름모 상감·놋 손잡이. 검은 윤곽 0단.",
+ "ok": true
+}

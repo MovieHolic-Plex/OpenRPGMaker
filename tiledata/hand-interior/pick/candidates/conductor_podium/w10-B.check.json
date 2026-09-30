@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/conductor_podium/w10-B.pxg",
+ "id": "conductor podium",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  0,
+  12,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  14
+ ],
+ "note": "왼쪽 위 빛: 윗면 밝고 앞면 좌밝·우어둡게, 바닥 접지 그림자 추가",
+ "ok": true
+}

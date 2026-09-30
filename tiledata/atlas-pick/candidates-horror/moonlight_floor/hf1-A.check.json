@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/moonlight_floor/hf1-A.pxg",
+ "set": "horror",
+ "id": "moonlight_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "error": "index -1 is out of bounds for axis 0 with size 0"
+ },
+ "colors": 1,
+ "bbox": [
+  1,
+  1,
+  15,
+  30
+ ],
+ "note": "A(v5 식구): 창 십자 창살 — 폭 4+4 두 판 사이 세로 1px 그림자 줄을 비우고, 가로 창살 그림자(14째 줄)도 비움. 5줄마다 오른쪽으로 1px 밀림(위 x=1 → 아래 x=7, 32줄에 1px씩이면 캔버스 밖이라 여러 줄에 1px). 위·아래 첫 줄은 한 픽셀 걸러 옅게. ? 만",
+ "ok": true
+}

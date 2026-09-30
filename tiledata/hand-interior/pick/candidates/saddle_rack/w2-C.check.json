@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/saddle_rack/w2-C.pxg",
+ "id": "saddle rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  10,
+  13,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  31
+ ],
+ "note": "재해석: 안장 양옆에 늘어진 등자 끈(wood:1/red:4)과 넓힌 안장 뒷턱, 가로대는 그대로",
+ "ok": true
+}

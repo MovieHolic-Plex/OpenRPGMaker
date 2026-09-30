@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/piano/w4-C.pxg",
+ "id": "piano",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "note": "실루엣/비율 다시: 처마 튀어나온 뚜껑, 몸통 안쪽으로 들이고 건반 턱이 튀어나옴, 놋쇠 격자 장식판, 안쪽으로 모은 선반 다리",
+ "ok": true
+}

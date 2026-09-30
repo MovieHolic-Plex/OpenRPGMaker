@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/blood_pool/h3-A.pxg",
+ "set": "horror",
+ "id": "blood_pool",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  1,
+  2,
+  15,
+  15
+ ],
+ "note": "고인 피: 왼위→오른아래로 흘러 기운 웅덩이(가운데 blood 3 단, 테 2 단), 윗테 반짝임 두 점, 오른아래 혀처럼 뻗은 자리, 튄 방울 셋, 바깥 $ 번짐",
+ "ok": true
+}

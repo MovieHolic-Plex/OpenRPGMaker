@@ -1,0 +1,71 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood
+@mat b brass
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabaabaabaabaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabaabaabaabaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabaabaabaabaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabaabaabaabaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabaabaabaabaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+.aaaaaaaaaaaaaa.
+@tblock 0 0
+1333333333333331
+1655555555555551
+1655555555555551
+1655555555555551
+1777777777777771
+1333333333333331
+1111111111111111
+0455555555555520
+0466266266266220
+0465265265265220
+0411111111111120
+0466266266266220
+0411111111111120
+0466266266266220
+0465265265265220
+0411111111111120
+0466266266266220
+0465265265265220
+0411111111111120
+0466266266266220
+0465265265265220
+0411111111111120
+0466266266266220
+0465265265265220
+0411111111111120
+0455555555555520
+0466666266666220
+0466666266666220
+0466666266666220
+0455555555555520
+0422222222222220
+.00000000000000.

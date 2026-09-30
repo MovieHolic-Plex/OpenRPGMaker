@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/elven_harp/w90-A.pxg",
+ "id": "elven harp",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  3,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  14,
+  31
+ ],
+ "note": "엘프 하프: 받침을 어두운 뒤 가장자리→밝은 앞 모서리 윗면 3행+앞면 2행으로 다시 찍고 몸통은 두 행 줄임",
+ "ok": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "konbini_front",
+ "slug": "konbini_front",
+ "name": "편의점 외관(콘비니)",
+ "scene": "역 앞 번화가",
+ "cells": [
+  4,
+  3
+ ],
+ "canvas": [
+  64,
+  48
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "편의점 1층 앞면. 맨 위 줄 = 초록·주황·파랑 가로 띠 간판(브랜드 로고 금지, 줄무늬만), 가운데 = 큰 유리창(안에 선반·잡지 칸 줄), 아래 = 가운데 유리 자동문(두 짝) + 문 앞 발깔개. 흰 벽 테두리. 폭 4칸 중 문은 가운데 2칸.",
+ "palette_hint": "kgreen·korange·kblue 띠, mwhite 벽, mglass 유리, mmetal 문틀",
+ "worker": "j3"
+}

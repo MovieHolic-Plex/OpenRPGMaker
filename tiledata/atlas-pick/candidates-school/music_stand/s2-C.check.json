@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/music_stand/s2-C.pxg",
+ "set": "school",
+ "id": "music_stand",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "실루엣: 폭 넓은 사다리꼴 판과 A자 다리로 세 발이 뚜렷하게 갈라짐. 피아노 C처럼 굵은 덩어리 위주.",
+ "ok": true
+}

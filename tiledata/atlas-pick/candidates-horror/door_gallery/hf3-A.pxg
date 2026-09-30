@@ -1,0 +1,74 @@
+// door_gallery hf3-A (hf3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a dust 0
+@mat b grave 0
+@mat c viron 0
+@mblock 0 0
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbcbaaaa
+aaaabbbbbccbaaaa
+aaaabbbbbccbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+0000000000000000
+0666666666666650
+0555555555555540
+0653333333333540
+0653222222223540
+0653211111423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653244444423540
+0653222222223540
+0653211111423540
+0653213333423540
+0653213333423540
+0653213333523540
+0653213335423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653213333423540
+0653244444423540
+0653222222223540
+1111111111111111

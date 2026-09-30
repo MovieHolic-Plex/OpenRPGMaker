@@ -1,0 +1,16 @@
+// 2단계 평면: 판 높이 8px 넷(REFMAP 12/48 = 칸의 1/4), 판 사이 틈 c.
+// 타일이 반복되므로 이음을 모든 판에 두면 31px 짜리 벽돌이 된다(시험 1차에서 실제로 벽돌로 읽혔다).
+// 이음은 판 둘(y0 판 x20, y16 판 x9)에만 — 나머지 두 판은 끝없이 긴 판으로 읽힌다. 판 색 f e e f(번갈아 놓으면 줄무늬).
+@size 32 32
+@cell 32
+@palette ../../palettes/interior.pal
+@tile
+@block 0 0
+ffffffffffffffffffffcfffffffffff *7
+cccccccccccccccccccccccccccccccc
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee *7
+cccccccccccccccccccccccccccccccc
+eeeeeeeeeceeeeeeeeeeeeeeeeeeeeee *7
+cccccccccccccccccccccccccccccccc
+ffffffffffffffffffffffffffffffff *7
+cccccccccccccccccccccccccccccccc

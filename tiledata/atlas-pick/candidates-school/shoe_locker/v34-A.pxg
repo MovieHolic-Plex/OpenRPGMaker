@@ -1,0 +1,52 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a hinoki 2
+@mat b hinoki 5
+@mat c hinoki 6
+@mat d hinoki 1
+@mat e hinoki 4
+@mat f hinoki 3
+@mat g vdwood 0
+@mat h hinoki 0
+@mat i vwhite 4
+@mat j vblue 3
+@mat k vred 3
+@mat l vwhite 5
+@mat m vblue 4
+@mat n vred 4
+@mat o vgreen 3
+@mat p vgreen 4
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.cccccccccccccccccccccccccccccc.
+.dddddddddddddddddddddddddddddd.
+.dddddddddddddddddddddddddddddd.
+.effffffffffffffffffffffffffffa.
+.eeggggggfggggggfggggggfgggggaa.
+.eehdddddfhdddddfhdddddfhddddaa.
+.eehiihhhfhjjhhhfhiihhhfhkkhhaa.
+.eehllllhfhmmmmhfhllllhfhnnnnaa.
+.eehiiiihfhjjjjhfhiiiihfhkkkkaa.
+.eehhhhhhfhhhhhhfhhhhhhfhhhhhaa.
+.eeeeeeeefeeeeeefeeeeeefeeeeeaa.
+.eeggggggfggggggfggggggfgggggaa.
+.eehdddddfhdddddfhdddddfhddddaa.
+.eehoohhhfhiihhhfhkkhhhfhjjhhaa.
+.eehpppphfhllllhfhnnnnhfhmmmmaa.
+.eehoooohfhiiiihfhkkkkhfhjjjjaa.
+.eehhhhhhfhhhhhhfhhhhhhfhhhhhaa.
+.eeeeeeeefeeeeeefeeeeeefeeeeeaa.
+.eeggggggfggggggfggggggfgggggaa.
+.eehdddddfhdddddfhdddddfhddddaa.
+.eehkkhhhfhjjhhhfhoohhhfhiihhaa.
+.eehnnnnhfhmmmmhfhpppphfhllllaa.
+.eehkkkkhfhjjjjhfhoooohfhiiiiaa.
+.eehhhhhhfhhhhhhfhhhhhhfhhhhhaa.
+.effffffffffffffffffffffffffffa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+..------------------------------

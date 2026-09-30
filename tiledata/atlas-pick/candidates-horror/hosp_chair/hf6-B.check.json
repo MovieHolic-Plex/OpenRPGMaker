@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/hosp_chair/hf6-B.pxg",
+ "set": "horror",
+ "id": "hosp_chair",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.136
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "note": "어둠에서 읽히게: 판 ward5~6 한 단 위, 테두리 ward0·앞 두께 ward1, 쇠 기둥·다리 tin5로 밝게 — 명도 차 최대, 무늬 없음",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/note_paper/h4-B.pxg",
+ "set": "horror",
+ "id": "note_paper",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  2,
+  2,
+  14,
+  12
+ ],
+ "note": "왼쪽 위 빛으로 종이 윗변·왼변 밝게, 접힌 모서리와 아래쪽 어둡게, 오른쪽 아래로 ~ - 그림자, 왼쪽 위 ? 달빛",
+ "ok": true
+}

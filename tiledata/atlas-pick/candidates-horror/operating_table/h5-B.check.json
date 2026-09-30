@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/operating_table/h5-B.pxg",
+ "set": "horror",
+ "id": "operating_table",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.103
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  0,
+  31,
+  31
+ ],
+ "note": "무영등이 다시 켜진 순간: 등 밑 반투명 따뜻한 빛 원뿔이 머리 쪽 판을 비추고 발치 쪽은 어두움, 전구 노란 점, 받침 밑 반투명 그림자",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/railway_crossing/j2-B.pxg",
+ "set": "jp",
+ "id": "railway_crossing",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.108
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 22,
+ "bbox": [
+  0,
+  1,
+  31,
+  47
+ ],
+ "note": "입체 강화: 기둥 왼쪽 밝고 오른쪽 어둡게, 표지 진한 줄무늬, 점등 등 주변 % 번짐, 차단봉 아래 ~ 그늘 + 바닥 그림자.",
+ "ok": true
+}

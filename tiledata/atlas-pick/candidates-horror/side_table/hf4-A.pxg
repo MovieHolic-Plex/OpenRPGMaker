@@ -1,0 +1,43 @@
+// side_table hf4-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mat t tarn 0
+@mat f flame 0
+@mat w wax 0
+@mblock 0 0
+................
+................
+................
+................
+................
+..mmmmmmmmmmmm..
+.mmmmmmmmmmmmmm.
+.mmmmmmmmmmmmmm.
+.mmmmmmmmmmmmmm.
+.mmmmmmmmmmmmmm.
+.mmmmmmttmmmmmm.
+.mmmmmmmmmmmmmm.
+..mmmmmmmmmmmm..
+..mmm......mmm..
+..mmm......mmm..
+..mmm......mmm..
+@tblock 0 0
+................
+................
+................
+................
+................
+..111111111111..
+.16666666666661.
+.15555555555551.
+.14444444444441.
+.13444444444421.
+.13333344333331.
+.12222222222221.
+..111111111111..
+..131......131..
+..131......131..
+..111......111..

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w10-A.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "v5 유지, 번호판 띠를 등받이 폭 안(A 테 안쪽)으로 넣어 팔걸이와 겹치지 않게 함",
+ "ok": true
+}

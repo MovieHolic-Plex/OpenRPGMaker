@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/potted_plants/j2-A.pxg",
+ "set": "jp",
+ "id": "potted_plants",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 35,
+ "bbox": [
+  1,
+  2,
+  31,
+  15
+ ],
+ "note": "강남 결: 토분·흰 화분·파란 플라스틱 5개가 키·모양 달리 줄지음, 잎 3단 명암, 꽃 한 송이, 오른쪽 아래 ~ 그림자.",
+ "ok": true
+}

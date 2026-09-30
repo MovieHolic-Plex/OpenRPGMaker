@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_marble/w1-C.pxg",
+ "id": "column marble",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  8,
+  14,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "윤곽 재설계: 몸을 6px 로 가늘게, 머리는 넓은 판 + 깔때기 목, 밑동은 넓은 이중 받침으로 키 큰 정면 실루엣",
+ "ok": true
+}

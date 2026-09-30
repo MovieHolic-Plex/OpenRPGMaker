@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/station_entrance/j4-B.pxg",
+ "set": "jp",
+ "id": "station_entrance",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.316
+ },
+ "refmap": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 27,
+ "bbox": [
+  0,
+  0,
+  79,
+  47
+ ],
+ "note": "빛 구조: 간판을 밝혀 흰빛 강하게, 입구 속은 어둡게 대비, 발치에 안쪽 불빛이 새는 부채꼴 번짐",
+ "ok": true
+}

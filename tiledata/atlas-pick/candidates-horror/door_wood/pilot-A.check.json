@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_wood/pilot-A.pxg",
+ "set": "horror",
+ "id": "door_wood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "파일럿 A: 벽면 두 줄 문 — 위 2px 벽 보임, 문틀 3px(왼 테 밝게·오른 어둡게) + 인방, 문짝 들어간 패널 둘, 놋쇠 손잡이 2×2, 문 밑 틈 짙게. 벽지보다 두 단 어두워 문이 먼저 읽힘",
+ "ok": true
+}

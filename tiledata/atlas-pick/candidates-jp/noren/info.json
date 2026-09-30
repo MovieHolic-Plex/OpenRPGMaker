@@ -1,0 +1,19 @@
+{
+ "id": "noren",
+ "slug": "noren",
+ "name": "노렌(남색)",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "가게 문 위에 거는 남색 천 노렌 세 폭(폭 사이 틈 1px), 위 가로 장대, 아래 끝이 살짝 흔들린 선. 가운데 폭에 흰 원 속 문양(가문 같은 단순 원·마름모).",
+ "palette_hint": "ai 천, mwhite 문양, hinoki 장대",
+ "worker": "j5"
+}

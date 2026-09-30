@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_hall_floor/h3-B.pxg",
+ "set": "horror",
+ "id": "broken_hall_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.281
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "빛 대비 강화: 널 윗줄 밝게 아랫줄 어둡게, 금 위쪽 테는 밝고 아래쪽에 그림자를 길게, 종이는 더 희게",
+ "ok": true
+}

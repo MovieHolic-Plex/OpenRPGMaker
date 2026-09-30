@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_steel/w5-C.pxg",
+ "id": "column steel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "lint": {
+  "failed": [
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  8,
+  14,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "모양을 바꿈: 둥근 기둥 대신 H형 강재 기둥(밝은 왼쪽 날개·움푹한 웹·어두운 오른쪽 날개), 이음 판마다 리벳, 위·아래 넓은 볼트 플레이트. 정면 중심 부피",
+ "ok": true
+}

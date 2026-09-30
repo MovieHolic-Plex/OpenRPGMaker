@@ -1,0 +1,37 @@
+{
+ "id": "star chart",
+ "slug": "star_chart",
+ "name_ko": "별자리표",
+ "category": "마법사의 탑",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "남색 바탕에 별자리를 그린 액자. 탑 서재·엘프 필사실 벽면 윗줄에 1개. 망원경·책상 위.",
+ "where": "탑 서재·엘프 필사실 벽면 윗줄에 1개. 망원경·책상 위.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  13
+ ],
+ "v5_colors": 4,
+ "material": "wood",
+ "related": []
+}

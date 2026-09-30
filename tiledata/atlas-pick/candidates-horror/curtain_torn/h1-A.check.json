@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/curtain_torn/h1-A.pxg",
+ "set": "horror",
+ "id": "curtain_torn",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "noise"
+  ]
+ },
+ "colors": 27,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "A: v5 커튼 창을 1x2 로 키운 낡은 판 — 밤 유리(달 하나, 십자 창살), 왼쪽 벨벳은 온전, 오른쪽은 위쪽만 걸리고 찢겨 아래 절반이 바닥에 뭉쳐 떨어졌다. 창 아래 빈 벽에 창살 모양 달빛 번짐(?).",
+ "ok": true
+}

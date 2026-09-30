@@ -1,0 +1,22 @@
+{
+ "id": "broken_glass",
+ "slug": "broken_glass",
+ "name": "깨진 유리 조각",
+ "scene": "연출",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "바닥에 흩어진 유리 조각: 뾰족한 삼각 조각 네다섯(가장자리 밝은 1px + 속 탁한 청회), 크기 다르게, 한쪽으로 몰림, 한 조각 끝에 피 한 점(선택).",
+ "palette_hint": "murk 조각, moon 반짝임, blood 한 점",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5"
+}

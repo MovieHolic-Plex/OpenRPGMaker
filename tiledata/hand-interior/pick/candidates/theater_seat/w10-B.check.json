@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w10-B.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "왼쪽 위 밝게(B 두 칸), 등받이 오른쪽 아래를 E 로 깊게, 앞 다리 밑 접지 그림자 한 줄",
+ "ok": true
+}

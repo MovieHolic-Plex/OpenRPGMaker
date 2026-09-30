@@ -1,0 +1,130 @@
+// 3단계 빛(왼쪽 위). 통널: 밝은 덩이(w)가 가운데보다 왼쪽, 띠 폭 1·2·3·4·5 섞음, 오른쪽 끝 한 칸은 반사광(r).
+// 테 바로 밑 줄(y13)·바닥 쪽(y43~45)은 한두 단 어둡게. 쇠테: 윗줄(위를 향함) 밝고 가운데·아랫줄 어둡다, 오른쪽은 그늘.
+// 뚜껑은 테 안으로 들어가 있어 뒤·왼 테 밑이 그늘(B·C)이고 앞쪽이 밝다(E·F). 32px 판처럼 누렇고 평평하지 않게 회갈 + 판 이음 두 줄.
+@base 2-flat.pxg
+@layer main
+// 몸통
+@block 7 13
+rstuuuvvvvuuuttttssssrrrrrqqqqpppq
+@block 7 14
+stuvvvwwwwvvvuuuuttttsssssrrrrqqqr *2
+@block 6 16
+stuuvvvwwwwvvvuuuutttttsssssrrrrqqqr *18
+@block 7 34
+stuvvvwwwwvvvuuuuttttsssssrrrrqqqr *6
+@block 8 40
+stuvvwwwwvvvuuuuttttssssrrrrqqqr *3
+@block 10 43
+rstuuvvvuutttssssrrrrqqqpppq *2
+@block 13 45
+rsttuuttssrrqqqppppppp
+// 가운데 윗테: 가운데가 2px 아래로 휜다 — 계단 길이 3·5·20·5·3(선 계단 규칙)
+@block 6 17
+klm
+jkl
+ijj
+@block 9 18
+mmlll
+lllkk
+jjjjj
+@block 14 19
+llkkkkkkkkkkkjjjjjjj
+kkjjjjjjjjjjjiiiiiii
+jjjjjjjiiiiiiiiiiiii
+@block 34 18
+jjjjj
+iiiii
+iiiii
+@block 39 17
+jji
+iii
+iii
+// 가운데 아랫테: 가운데가 2px 아래로 휜다 — 계단 길이 3·5·20·5·3(선 계단 규칙)
+@block 6 31
+klm
+jkl
+ijj
+@block 9 32
+mmlll
+lllkk
+jjjjj
+@block 14 33
+llkkkkkkkkkkkjjjjjjj
+kkjjjjjjjjjjjiiiiiii
+jjjjjjjiiiiiiiiiiiii
+@block 34 32
+jjjjj
+iiiii
+iiiii
+@block 39 31
+jji
+iii
+iii
+// 아랫테(2줄): 계단 4·24·4
+@block 8 40
+mmml
+lllk
+@block 12 41
+= 4l 11k 9j
+= 4k 11j 9i
+@block 36 40
+jjjj
+iiii
+// 윗테(뚜껑 테 앞)
+@block 7 10
+kllllkk
+@block 34 10
+jjjjjji
+@block 7 11
+= k 2m 6l 11k 14j
+= k 4l 4k 11j 14i
+// 뚜껑 테 윗면
+@block 17 1
+= 3k 6l 5k
+@block 13 2
+klll
+@block 31 2
+jjji
+@block 11 3
+kll
+@block 34 3
+jji
+@block 10 4
+kl
+@block 36 4
+ji
+@block 9 5
+kl
+@block 37 5
+ji
+@block 8 6
+kl *2
+@block 38 6
+ji *2
+@block 8 8
+kll
+@block 37 8
+jji
+@block 8 9
+klll
+@block 36 9
+jjji
+// 뚜껑
+@block 17 2
+= 9B 5C
+@block 14 3
+= B 4C 14D C
+@block 12 4
+= B C 2D 16D 3D C
+@block 11 5
+= B C 23D C
+@block 10 6
+= B C D 5E 7E 11E D C
+@block 10 7
+= B C D 4E 6E 12E 2D C
+@block 11 8
+= B C 22D 2C
+@block 12 9
+= C D 20E D C
+@block 14 10
+= D 17E 2D

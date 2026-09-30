@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/swamp/wv6-C.pxg",
+ "set": "worldmap",
+ "id": "swamp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "banding",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "다른 해석 — 웅덩이 대신 가로로 구불구불 이어진 얕은 물길 둘과 이끼 둔덕, 갈대는 짧게",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.008
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.052
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.61
+ }
+}

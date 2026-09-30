@@ -1,0 +1,47 @@
+{
+ "id": "wall_gallery_grey",
+ "slug": "wall_gallery_grey",
+ "name": "미술관 벽면(짙은 회청)",
+ "scene": "미술관",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "wall_gallery_white 와 같은 몰딩·걸레받이 높이, 넓은 면만 짙은 회청(또는 짙은 붉은) 칠 — 구역을 색으로 나누는 미술관(한 구역 한 색). 바닥보다는 밝게.",
+ "palette_hint": "grave/ward 벽, void 걸레받이",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "gallery",
+ "role": "벽면(구역 색)",
+ "worker": "hf5",
+ "set_with": [
+  "wall_gallery_white",
+  "floor_gallery_wood",
+  "floor_gallery_stone",
+  "frame_landscape",
+  "frame_small",
+  "plaque",
+  "pedestal",
+  "rope_barrier",
+  "bench_gallery"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:grey",
+   "name_ko": "grey",
+   "atlas": {
+    "x": 64,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

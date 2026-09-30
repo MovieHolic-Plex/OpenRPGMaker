@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/cliff_plateau/wv3-C.pxg",
+ "set": "worldmap",
+ "id": "cliff_plateau",
+ "hard": [],
+ "warn": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_n 4≠1, inner_nw↔edge_w 4≠1, inner_ne↔edge_n 4≠1, inner_ne↔edge_e 4≠1, inner_sw↔edge_s 3≠0, inner_sw↔edge_w 4≠1 …"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "돌 벽돌 결 절벽 앞면 8px, 윗면에 돌멩이 점",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.039
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.109
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "s": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "w": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "e": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "strait": 14,
+   "steps": {
+    "n": 0,
+    "s": 0,
+    "w": 0,
+    "e": 0
+   },
+   "amp": {
+    "n": 0,
+    "s": 0,
+    "w": 0,
+    "e": 0
+   },
+   "joinWorst": 3
+  },
+  "seam": 1.23
+ }
+}

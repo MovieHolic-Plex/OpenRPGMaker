@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/roof_stairhouse/s5-A.pxg",
+ "set": "school",
+ "id": "roof_stairhouse",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.402
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.144
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "콘크리트 벽에 쇠(locker) 문 한 짝, 작은 유리창·손잡이, 위 처마 턱과 작은 노란 등, 맨 아래는 걸레받이 줄",
+ "ok": true
+}

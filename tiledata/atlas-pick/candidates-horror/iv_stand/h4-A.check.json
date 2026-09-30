@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/iv_stand/h4-A.pxg",
+ "set": "horror",
+ "id": "iv_stand",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  4,
+  14,
+  31
+ ],
+ "note": "16x32 v5 기물 크기: 다섯 발 바퀴 받침, 2px 쇠 기둥, 가로대에 걸린 링거 봉지(테 밝게·속 검붉은 피, 윗 두 줄은 비어 있음), 관이 아래로 늘어져 끝에 핏방울, 기둥·받침에 녹",
+ "ok": true
+}

@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/deer_trophy/w23-E.pxg",
+ "id": "deer trophy",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 2x2 사이즈로 키움."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  0,
+  27,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  11
+ ],
+ "note": "어깨까지 박제한 사슴: 목·가슴이 벽에 붙고 아래는 받침 널로 마감, 6뿔, 짚끈 두 가닥으로 못에 걸림 — 판 없는 선술집풍",
+ "ok": true
+}

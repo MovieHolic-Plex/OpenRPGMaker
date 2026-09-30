@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ramen_front/j5-C.pxg",
+ "set": "jp",
+ "id": "ramen_front",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 42,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "재해석: 처마 끝이 위로 휜 기와 실루엣(양끝 투명)과 간판을 가로지르는 커다란 붉은 등롱",
+ "ok": true
+}

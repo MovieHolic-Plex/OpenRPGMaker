@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/chair_wood/hf4-C.pxg",
+ "set": "horror",
+ "id": "chair_wood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "note": "C: 마녀의 집 결 — 왕관 머리 등받이, 새긴 홈과 살의 밝은 등, 앉는 판 널 이음, 앞 두께 조각 점, 깎은 다리 마디",
+ "ok": true
+}

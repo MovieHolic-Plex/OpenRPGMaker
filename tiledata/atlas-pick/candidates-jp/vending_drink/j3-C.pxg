@@ -1,0 +1,78 @@
+// vending_drink j3-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b kblue 3
+@mat c kgreen 3
+@mat d lacq 3
+@mat e mmetal 3
+@mat f mwhite 3
+@mat g washi 3
+@mblock 0 0
+................
+..ffffffffffff..
+.fbbbbbbbbbbbbe.
+.fgggggggggggge.
+.faaaaaaaaaaaae.
+.feeeeeeeeeeeee.
+.eeeeeeeeeeeeee.
+.fffffffffffffe.
+.feeeeeeeeeeffe.
+.febbaaggcceffe.
+.febbaaggcceffe.
+.febbaaggcceffe.
+.feeeeeeeeeeffe.
+.feaaggccbbeffe.
+.feaaggccbbeffe.
+.feaaggccbbeffe.
+.feeeeeeeeeeffe.
+.fffffffffffffe.
+.fffbbfaafcfffe.
+.fffbbfaafdfffe.
+.fffffffffffffe.
+.fffeeeeeeffffe.
+.fffddddddffffe.
+.fffddddddffffe.
+.fffddddddffffe.
+.fffffffffffffe.
+.fffffffffffffe.
+.fffffffffffffe.
+.feeeeeeeeeeeee.
+.feeeeeeeeeeeee.
+...~~~~~~~~~~~~.
+......---------.
+@tblock 0 0
+................
+..000000000000..
+.04444444444441.
+.04444444444441.
+.04444444444441.
+.02222222222221.
+.11111111111111.
+.03222222222101.
+.04444444444101.
+.02545454542101.
+.02444444442101.
+.02333333332101.
+.02333333332101.
+.02545454542101.
+.02444444442101.
+.02333333332101.
+.01111111111101.
+.03222222222101.
+.03253253242101.
+.03233233222101.
+.03222222222101.
+.03255555522101.
+.03222222222101.
+.03200000022101.
+.03200000022101.
+.03222222222101.
+.03222222222101.
+.03222222222101.
+.01111111111111.
+.02222222222221.
+................
+................

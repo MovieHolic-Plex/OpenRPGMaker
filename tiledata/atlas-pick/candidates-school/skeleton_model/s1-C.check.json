@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/skeleton_model/s1-C.pxg",
+ "set": "school",
+ "id": "skeleton_model",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "C: 두개골을 더 크게 과장, 팔을 몸에서 떼어 벌림",
+ "ok": true
+}

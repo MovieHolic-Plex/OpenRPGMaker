@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pipe_rack/w3-A.pxg",
+ "id": "pipe rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  3,
+  14,
+  12
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  10
+ ],
+ "note": "A: v5 담뱃대 걸이 유지 - 가로대 윗면을 밝게, 담뱃대 셋을 대롱+대통 모양으로 그려 알아보게(대통에 검은 구멍·놋쇠 띠·클레이 명암), 대통 방향과 높이를 달리해 단조로움을 깸",
+ "ok": true
+}

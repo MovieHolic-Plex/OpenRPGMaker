@@ -1,0 +1,34 @@
+{
+ "id": "pedestal",
+ "slug": "pedestal",
+ "name": "전시 받침대",
+ "scene": "미술관",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "흰 사각 받침대(윗면 보임 — 위에 조각·화병을 얹는 자리), 앞면 한 단 어둡게, 오른쪽 옆면 얇게. 칸 폭의 2/3.",
+ "palette_hint": "vmarble/dust",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "gallery",
+ "role": "받침대",
+ "worker": "hf5",
+ "set_with": [
+  "wall_gallery_white",
+  "wall_gallery_grey",
+  "floor_gallery_wood",
+  "floor_gallery_stone",
+  "frame_landscape",
+  "frame_small",
+  "plaque",
+  "rope_barrier",
+  "bench_gallery"
+ ]
+}

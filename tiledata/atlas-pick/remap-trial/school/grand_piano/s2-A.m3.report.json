@@ -1,0 +1,32 @@
+{
+ "src": "tiledata/atlas-pick/candidates-school/grand_piano/s2-A.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/school/grand_piano/s2-A.m3.pxg",
+ "size": [
+  48,
+  32
+ ],
+ "stat": {
+  "ramp": 10
+ },
+ "weak": [],
+ "ambiguous": {},
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 67,
+ "droppedBy": {
+  "-": 32,
+  "~": 35
+ },
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 9,
+ "ramps": [
+  "conc",
+  "shiro",
+  "sumi",
+  "tekko",
+  "yoru"
+ ]
+}

@@ -1,0 +1,87 @@
+// izakaya_front B — 빛 구조: 판벽을 더 어둡게, 제등 속을 밝게 하고 벽에 불빛 테, 격자 유리 속 밝은 흰빛, 발치에 부채꼴 불빛 번짐과 접지 그림자
+@size 64 48
+@cell 16
+@palette palette.pal
+@mat e kawara 1
+@mat b kawara 2
+@mat a kawara 3
+@mat A kawara 5
+@mat j sumi 0
+@mat l sumi 1
+@mat k sumi 2
+@mat K sumi 3
+@mat L sumi 4
+@mat G hinoki 1
+@mat g hinoki 2
+@mat h hinoki 3
+@mat H hinoki 4
+@mat I hinoki 5
+@mat V washi 2
+@mat v washi 3
+@mat w washi 4
+@mat W washi 5
+@mat z akachin 0
+@mat Q akachin 1
+@mat q akachin 2
+@mat r akachin 3
+@mat R akachin 4
+@mat y akachin 5
+@mat m ai 0
+@mat M ai 1
+@mat n ai 2
+@mat N ai 3
+@mat d mconc 1
+@mat c mconc 2
+@mat C mconc 3
+@mat D mconc 4
+@mat t lacq 1
+@mat T lacq 3
+@mblock 0 0
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+eaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaa
+eaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaa
+aaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaaeaaaaae
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+jkllljljjjjjjkljlhggggggggggggggggggggggggggggGllljjjjjjjklljlll
+jlllljkkzzzzkkkjlhgjjjjjjjjjjjjjjjjjjjjjjjjjjgGllkjkzzzzkkkkjlll
+jlllkjkzRRRRzkkjkhgjjjjjjjjjjjjjjjjjjjjjjjjjjgGlkkjzRRRRzkkkjlll
+jllkkjzyRRRRrzkjkhggWnMMMMMmnMMWMMmnMMMMMmMGggGkkkzyRRRRrzkkjkll
+jlkkkjzyRRRRrzKjkhggWnMMMMMmnMWWWMmnMMMMMmMGggGkkkzyRRRRrzKkjkkl
+jkkkkzqqqqqqqqzlkhggWnMMMMMmnWWWWWmnMMMMMmMGggGkkzqqqqqqqqzKjkkk
+jkkkkzyyRyyRrrzlkhggWnMMMMMmnMWWWMmnMMMMMmMGggGkkzyyRyyRrrzKjkkk
+jkkkkzyyRyyRrrzlkhggWnMMMMMmmMMWMMmmMMMMMmMGggGkkzyyRyyRrrzKjkkk
+jkkkkzqqqqqqqqzlkhggWnMMMMMmmMMMMMmmMMMMMmMGggGkkzqqqqqqqqzKjkkk
+jkkkkzyyRyyRrrzlkhggWnMMMMMmmMMMMMmmMMMMMmMGggGkkzyyRyyRrrzKjkkk
+jkkkkzqqqqqqqqzlkhggWnMMMMMmmMMMMMmmMMMMMmMGggGkkzqqqqqqqqzKjkkk
+jkkkklzRRRRRrzKlkhggImmmmmmmmmmmmmmmmmmmmmmIggGkkKzRRRRRrzKKjkkk
+jlkkkjzrrrrrrzKjkhggGGGGGGGGGGGGGGGGGGGGGGGGggGkkkzrrrrrrzKkjkkl
+jllkkjkzrrrrzkkjkhggWWWWIGWWWWIGWWWWIGWWWWIGggGkkkjzrrrrzkkkjkll
+jlllkjkkzzzzkkkjkhggWWWWIGWWWWIGWWWWIGWWWWIGggGlkkjkzzzzkkkkjlll
+jlllljkjjjjjjkkjlhggWWWWIGWWWWIGWWWWIGWWWWIGggGllkjjjjjjjkkkjlll
+jlllljljjjjjjkljlhggWWWWIGWWWWIGWWWWIGWWWWIGggGllljjjjjjjklljlll
+jkllljlllRRlllljlhggWWWWIGWWWWIGWWWWIGWWWWIGggGllljllRRjlllljkll
+jkllljlllRRlllljkhggWWWWIGWWWWIGWWWWIGWWWWIGggGllljllRRjlllljkll
+jkllljkllRRkllljkhggWWWWIGWWWWIGWWWWIGWWWWIGggGllljklRRjkllljkll
+jkllljkllljkllljkhggIIIIIIIIIIIIIIIIIIIIIIIIggGllljkllljkllljkll
+jklllhhhhhhhhhhjkhggGGGGGGGGGGGGGGGGGGGGGGGGggGllhhhhhhhhhGljkll
+jklllhWWWIGWWWgjkhggWWWWIGWWWWIGWWWWIGWWWWIGggGllhTTTTTTTTGljkll
+jllllhWWWIGWWWgjlhggWWWWIGWWWWIGWWWWIGWWWWIGggGllhttttttttGljlll
+jllllhWWWIGWWWgjlhggwwwwIGwwwwIGwwwwIGwwwwIGggGllhtrrtvvvvGljlll
+jllllhWWWIGWWWgjlhggwwwwIGwwwwIGwwwwIGwwwwIGggGllhtrrtttttGljlll
+jklllhIIIIIIIIgjkhggwwwwIGwwwwIGwwwwIGwwwwIGggGllhttttttttGljkll
+jklllhGGGGGGGGgjkhggwwwwIGwwwwIGwwwwIGwwwwIGggGllhtvvtvvttGljkll
+jklllhWWWIGWWWgjkhggwwwwIGwwwwIGwwwwIGwwwwIGggGllhttttttttGljkll
+jklllhwwwwwwwwgjkhggwwwwIGwwwwIGwwwwIGwwwwIGggGllhttttttttGljkll
+jklllhwwwwwwwwgjkhhhhhhhhhhhhhhhhhhhhhhhhhhhhhGllhtvvtvvvvGljkll
+jklllhgggggggggjkhggggggggggggggggggggggggggggGllGGGGGGGGGGljkll
+jlllGGGGGGGGGGGGlhggggggggggggggggggggggggggggGllljlllljlllljlll
+CCCCCCCCCCCCCCCCCC%%%%%%%%%%%%%%%%%%%%%%%%%%%%CCCCCCCCCCCCCCCCCC
+dcccccccdcccccc%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%cccccccdccccccc
+cccccccccccc%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%cccccccccccc
+~~~~~~~~~%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%~~~~~~~~~
+------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%------

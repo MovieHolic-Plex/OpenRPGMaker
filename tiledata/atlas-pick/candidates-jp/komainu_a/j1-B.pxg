@@ -1,0 +1,71 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a ishi 3
+@mat b moss 3
+@mblock 0 0
+................
+....aaaaaa......
+..aaaaaaaaaa....
+.aaaaaaaaaaaa...
+.aaaaaaaaaaaaa..
+aaaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaa.
+aaaaaaaaaaaaaa..
+aaaaaaaaaaaaaa..
+a.aaaaaaaaaaaa..
+a.aaaaaaaaaaaa..
+.aaaaaaaaaaaaa..
+.aaaaaaaaaaaaa..
+aaaaaaaaaaaaaa..
+aaaaaaaaaaaaaa..
+aaaaaaaaaaaaaa..
+aaaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabaaaaaaaabaaa
+aabbbaaaaaabbaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+....321131......
+..1165556511....
+.366145444662...
+.1632241224351..
+144122422222222.
+464454122333331.
+3512432333023331
+3422422333233330
+1651445233333330
+.16322423000000.
+.16122422626221.
+464454445200000.
+34224322432221..
+31254433221111..
+2.455444221221..
+1.655443211231..
+.1554433211231..
+.5544332211231..
+45443322111231..
+44433221111231..
+34332211111231..
+323221111112331.
+222221111110000.
+6666666663333333
+3333333332222222
+2222222222222222
+2222222222222222
+4433333333333321
+4432333333332321
+4423222222221221
+1111111111111111

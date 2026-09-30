@@ -1,0 +1,94 @@
+// castle_keep v6-A (6판: 목표 월드맵 실측 — 그린 형태(사선 붓질·층진 침엽수·자갈 해안))
+@size 64 64
+@cell 16
+@palette ../../palette/worldmap6.pal
+@layer main
+@mat a wink 0
+@mat b wgold 2
+@mat c wgold 3
+@mat d wroofb 3
+@mat e wroofb 2
+@mat f wroofb 1
+@mat g wroofb 4
+@mat h wstone 5
+@mat i wstone 4
+@mat j wstone 2
+@mat k wstone 3
+@mat l wstone 6
+@mat m wroofb 5
+@mat n wroofb 0
+@mat o wplast 3
+@mat p wplast 2
+@mat q wplast 1
+@mat r wplast 0
+@mat s wplast 4
+@mat t wplast 5
+@mat u wbark 1
+@mat v wbark 0
+@mat w wbark 2
+@mat x wdirt 3
+@mblock 0 0
+......aba..............................................aba......
+......aca..............................................aca......
+......ada..............................................ada......
+.....addea............................................addea.....
+....adeeffa..........................................adeeffa....
+...aggdddeea........................................aggdddeea...
+..aggddddeeea......................................aggddddeeea..
+.adddeeeeffffa....................................adddeeeeffffa.
+..ahiijiikkaa......................................ahijiiikkaa..
+..ahiiiiikka.......................................ahiiiiikka...
+..ahiiiiikka.......................................ahiiiiikka...
+..ajjjjjjjja..aa..aa..aa..aa..aa..aa..aa..aa..aa..aajjjjjjjja...
+..ajiiiiijklaallaallaallaallaallaaiiaaiiaaiiaaiiaaiihiiiijkka...
+..ahiiiiikkhaahhaahhaahhaahhaahhaakkaakkaakkaakkaakkhiiiiikka...
+..ahiiiiikkijiiiiijiiiiijiiiiijiiiiijiiiiijiiiiijiiihiiiiikka...
+..ajjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjja...
+..ahiijiikkiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiihijiiikka...
+..ahiiiiikkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjhiiiiikka...
+..ahiiiiikkiiiijiiiiijiiiiijiiiiijiiiiijiiiiijiiiiijhiiiiikka...
+..ajjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjja...
+...aagddeeiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiigddeea....
+...addeeeffkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkddeeeffa...
+...aggdddeekkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkggdddeea...
+..aggddddeeejkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkggddddeeea..
+..addeeeefffkkmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmggkjddeeeefffa..
+.agggddddeeeekmgggggggggggggggggggggggggggggggggddjgggddddeeeea.
+aggggdddddeeeedeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffggggdddddeeeea
+.ahhaahkhhkkkjmddddgddddgddddgddddgddddgddddgdddedkhhjkhkkakkaa.
+.ahiiijiiikkjkgddgddddgddddgddddgddddgddddgddddgeekhiijiiiikja..
+.ahiiiiiiikkkkefffffffffffffffffffffffffffffffffnnkhiiiiiiikka..
+.ahiiiiiiikkkknnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnjhiiiiiiikka..
+.ajjjjjjjjjjkkjopppppppppppppppppppppppppppppppqrjkjjjjjjjjjja..
+.ahjiiiiijkkkjksottttoottttoottttoottttoottttoopqkkjiiiiijikka..
+.ahiiiiiiikkjkktssdfssssdfssssdfssssdfssssdfsssopkkhiiiiiiikka..
+.ahiiiiiiikkkkktssefssssefsssseuusssefssssefsssopkkhiiiiiiikka..
+.ajjjjjjjjjjkkktssffssssffssssuuuvssffssssffsssopkjjjjjjjjjjja..
+.ahiiijiiikkkkjtssssssssssssssuuuvsssssssssssssopjkhiijiiiikja..
+.ahiiiiiiikkkjktssssssssssssssuucvsssssssssssssopkkhiiiiiiikka..
+.ahiiiiiiikkjkktssssssssssssssuuuvsssssssssssssopkkhiiiiiiikka..
+.ajjjjjjjjjjkkktssssssssssssssuuuvsssssssssssssopkkjjjjjjjjjja..
+.ahjiiiiijkkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjkkkkjjiiiiijikka..
+.ahiiiiiiikkmgggggggggggddkkkjkkkkjkkkkjmgggggggggghiiiiiiikka..
+.ahiiiiiiikkgdddddddddddeekkjkkkkjkkkkjkgddddddddddhiiiiiiikka..
+.ajjjjjjjjjjefffffffffffnnkjkkkkjkkkkjkkeffffffffffjjjjjjjjjja..
+.ahiiijiiikkefllffllffllfnllkkllkkiijkiiefiiefiifeihiijiiiikja..
+.ahiiiiiiikknnhhnnhhnnhhnnhhkkhhkkkkkkkknnkknnkknnkhiiiiiiikka..
+.ahiiiiiiikkjiiiiijiiiiijiiiiijiiiiijiiiiijiiiiijiihiiiiiiikka..
+.ajjjjjjjjjjiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiijjjjjjjjjja..
+.ahjiiiiijkkiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiijiiiiijikka..
+.ahiiiiiiikkjjjjjjjjjjjjjjjaaaaaaaaaajjjjjjjjjjjjjjhiiiiiiikka..
+.ahiiiiiiikkiiijiiiiijiiiiawwwwwwwwwwaijiiiiijiiiiihiiiiiiikka..
+.ajjjjjjjjjjiiiiiiiiiiiiiiaaaaaaaaaaaaiiiiiiiiiiiiijjjjjjjjjja..
+.ahiiijiiikkiiiiiiiiiiiiiiaaaaaaaaaaaaiiiiiiiiiiiiihiijiiiikja..
+.ahiiiiiiikkjjjjjjjjjjjjjjaaaaaaaaaaaajjjjjjjjjjjjjhiiiiiiikka..
+.ahiiiiiiikkjiiiiijiiiiijiaaaaaaaaaaaaiiiijiiiiijiihiiiiiiikka..
+.ajjjjjjjjjjiiiiiiiiiiiiiiaaaaaaaaaaaaiiiiiiiiiiiiijjjjjjjjjja..
+.ahjiiiiijkkiiiiiiiiiiiiiiaaaaaaaaaaaaiiiiiiiiiiiiijiiiiijikka..
+.ahiiiiiiikkjjjjjjjjjjjjjjxxxxxxxxxxxxjjjjjjjjjjjjjhiiiiiiikka..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...
+................................................................
+................................................................
+.--------------------------------------------------------------.
+...-----------------------------------------------------------..
+................................................................

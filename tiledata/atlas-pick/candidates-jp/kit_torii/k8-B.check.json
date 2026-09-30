@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_torii/k8-B.pxg",
+ "set": "jp",
+ "id": "kit_torii",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding",
+   "saturation",
+   "light"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  0,
+  0,
+  127,
+  31
+ ],
+ "note": "B 명암 강화: 굵은 기둥, 가사기 윗면 밝고 아랫면·오른쪽 깊게 눌러 입체를 세우고 가메바라 밑동에 긴 접지 그림자.",
+ "ok": true
+}

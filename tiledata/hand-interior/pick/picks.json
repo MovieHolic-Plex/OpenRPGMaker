@@ -1,0 +1,912 @@
+{
+ "aisle runner": {
+  "at": "2026-09-30T05:28:04+09:00",
+  "choice": "w5-B",
+  "note": ""
+ },
+ "alembic": {
+  "at": "2026-09-30T06:25:02+09:00",
+  "choice": "w7-C",
+  "note": ""
+ },
+ "altar": {
+  "at": "2026-09-30T06:26:43+09:00",
+  "choice": "w10-B",
+  "note": ""
+ },
+ "altar E": {
+  "at": "2026-09-30T06:15:41+09:00",
+  "choice": "w21-G",
+  "note": ""
+ },
+ "anvil": {
+  "at": "2026-09-30T05:38:08+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "apothecary drawers": {
+  "at": "2026-09-30T05:02:41+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "armchair": {
+  "at": "2026-09-30T05:04:30+09:00",
+  "choice": "w9-B",
+  "note": ""
+ },
+ "armor stand": {
+  "at": "2026-09-30T04:58:26+09:00",
+  "choice": "w3-A",
+  "note": ""
+ },
+ "balance scale": {
+  "at": "2026-09-30T06:22:22+09:00",
+  "choice": "w6-C",
+  "note": ""
+ },
+ "banner green": {
+  "at": "2026-09-30T06:05:53+09:00",
+  "choice": "w8-C",
+  "note": ""
+ },
+ "bar stool": {
+  "at": "2026-09-30T05:01:38+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "barrel": {
+  "at": "2026-09-30T04:57:22+09:00",
+  "choice": "w2-A",
+  "note": ""
+ },
+ "barrel:apple": {
+  "at": "2026-09-30T06:05:22+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "basket:herb": {
+  "at": "2026-09-30T05:39:09+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "basket:mushroom": {
+  "at": "2026-09-30T06:06:05+09:00",
+  "choice": "w9-B",
+  "note": ""
+ },
+ "bathtub": {
+  "at": "2026-09-30T06:17:03+09:00",
+  "choice": "w22-F",
+  "note": ""
+ },
+ "bed blue": {
+  "at": "2026-09-30T05:54:28+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "bed green": {
+  "at": "2026-09-30T04:56:42+09:00",
+  "choice": "pilot-A",
+  "note": ""
+ },
+ "bell rope": {
+  "at": "2026-09-30T06:06:09+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "bench 2": {
+  "at": "2026-09-30T05:03:01+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "bench 3": {
+  "at": "2026-09-30T06:25:11+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "bookshelf 1w": {
+  "at": "2026-09-30T04:57:35+09:00",
+  "choice": "w2-C",
+  "note": ""
+ },
+ "bookshelf 2w": {
+  "at": "2026-09-30T06:20:36+09:00",
+  "choice": "w4-C",
+  "note": ""
+ },
+ "bottles": {
+  "at": "2026-09-30T05:03:27+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "bread shelf": {
+  "at": "2026-09-30T05:38:40+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "bread shelf baguette": {
+  "at": "2026-09-30T06:05:45+09:00",
+  "choice": "w8-A",
+  "note": ""
+ },
+ "broom and bucket": {
+  "at": "2026-09-30T05:40:14+09:00",
+  "choice": "w9-C",
+  "note": ""
+ },
+ "cabinet:bottle+bottler+bottley": {
+  "at": "2026-09-30T05:14:45+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "cabinet:candle": {
+  "at": "2026-09-30T06:05:34+09:00",
+  "choice": "w8-C",
+  "note": ""
+ },
+ "cake display case": {
+  "at": "2026-09-30T05:39:49+09:00",
+  "choice": "w8-C",
+  "note": ""
+ },
+ "canopy bed": {
+  "at": "2026-09-30T05:25:44+09:00",
+  "choice": "w4-C",
+  "note": ""
+ },
+ "chair N": {
+  "at": "2026-09-30T04:58:51+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "chair W": {
+  "at": "2026-09-30T05:53:40+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "cheese wheels": {
+  "at": "2026-09-30T06:08:06+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "chest": {
+  "at": "2026-09-30T04:58:14+09:00",
+  "choice": "w3-C",
+  "note": ""
+ },
+ "choir stall": {
+  "at": "2026-09-30T05:37:15+09:00",
+  "choice": "w6-B",
+  "note": ""
+ },
+ "chopping block": {
+  "at": "2026-09-30T05:41:20+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "clock": {
+  "at": "2026-09-30T05:41:24+09:00",
+  "choice": "w10-B",
+  "note": ""
+ },
+ "coal bin": {
+  "at": "2026-09-30T05:05:45+09:00",
+  "choice": "w10-B",
+  "note": ""
+ },
+ "coat rack": {
+  "at": "2026-09-30T05:04:11+09:00",
+  "choice": "w8-C",
+  "note": ""
+ },
+ "column dwarf": {
+  "at": "2026-09-30T05:27:34+09:00",
+  "choice": "w5-B",
+  "note": ""
+ },
+ "column live": {
+  "at": "2026-09-30T05:40:58+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "column marble": {
+  "at": "2026-09-30T05:14:26+09:00",
+  "choice": "w1-B",
+  "note": ""
+ },
+ "column steel": {
+  "at": "2026-09-30T06:21:13+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "column stone": {
+  "at": "2026-09-30T05:59:25+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "column wood": {
+  "at": "2026-09-30T05:14:56+09:00",
+  "choice": "w1-B",
+  "note": ""
+ },
+ "conductor podium": {
+  "at": "2026-09-30T06:26:38+09:00",
+  "choice": null,
+  "note": "지휘대를 2x2 사이즈로",
+  "noteAt": "2026-09-30T06:26:38+09:00"
+ },
+ "confessional": {
+  "at": "2026-09-30T06:16:51+09:00",
+  "choice": "w22-G",
+  "note": ""
+ },
+ "cradle": {
+  "at": "2026-09-30T06:36:19+09:00",
+  "choice": "w29-F",
+  "note": "아기가 없어야지 ㅆㅂ",
+  "noteAt": "2026-09-30T06:07:30+09:00"
+ },
+ "crate": {
+  "at": "2026-09-30T05:03:13+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "crate:potato": {
+  "at": "2026-09-30T06:05:57+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "crystal ball": {
+  "at": "2026-09-30T05:56:02+09:00",
+  "choice": "w3-B",
+  "note": ""
+ },
+ "cupboard": {
+  "at": "2026-09-30T05:55:39+09:00",
+  "choice": "w2-A",
+  "note": ""
+ },
+ "curtain wing": {
+  "at": "2026-09-30T05:41:50+09:00",
+  "choice": "w10-B",
+  "note": ""
+ },
+ "curtained window": {
+  "at": "2026-09-30T05:03:05+09:00",
+  "choice": "w6-B",
+  "note": ""
+ },
+ "dart board": {
+  "at": "2026-09-30T06:18:28+09:00",
+  "choice": "w23-F",
+  "note": ""
+ },
+ "deer trophy": {
+  "at": "2026-09-30T06:17:27+09:00",
+  "choice": "w23-D",
+  "note": ""
+ },
+ "dining 2x1": {
+  "at": "2026-09-30T04:56:20+09:00",
+  "choice": "pilot-B",
+  "note": ""
+ },
+ "dish rack": {
+  "at": "2026-09-30T05:39:55+09:00",
+  "choice": "w9-B",
+  "note": ""
+ },
+ "display potion": {
+  "at": "2026-09-30T06:05:28+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "doormat": {
+  "at": "2026-09-30T06:13:15+09:00",
+  "choice": "w25-F",
+  "note": "발깔개를 2x1 로 만들고.. 3번이 좀 괜찮은듯.",
+  "noteAt": "2026-09-30T05:14:18+09:00"
+ },
+ "double bed blue": {
+  "at": "2026-09-30T06:20:54+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "double bed red": {
+  "at": "2026-09-30T05:37:03+09:00",
+  "choice": "w6-B",
+  "note": ""
+ },
+ "drain grate": {
+  "at": "2026-09-30T05:15:13+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "elven bed": {
+  "at": "2026-09-30T06:00:22+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "elven harp": {
+  "at": "2026-09-30T05:24:58+09:00",
+  "choice": "w4-C",
+  "note": ""
+ },
+ "fabric bolt rack": {
+  "at": "2026-09-30T05:28:24+09:00",
+  "choice": "w6-C",
+  "note": ""
+ },
+ "feed trough": {
+  "at": "2026-09-30T05:26:00+09:00",
+  "choice": "w4-B",
+  "note": ""
+ },
+ "firewood bundle": {
+  "at": "2026-09-30T05:40:10+09:00",
+  "choice": "w9-B",
+  "note": ""
+ },
+ "firewood rack": {
+  "at": "2026-09-30T06:14:05+09:00",
+  "choice": "w12-D",
+  "note": ""
+ },
+ "firewood rack 2w": {
+  "at": "2026-09-30T06:36:53+09:00",
+  "choice": null,
+  "note": "4번에서 나무가 좀 정갈하게 쌓인 느낌으로 ..",
+  "noteAt": "2026-09-30T06:36:53+09:00"
+ },
+ "fish ice chest": {
+  "at": "2026-09-30T06:07:47+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "fishing net": {
+  "at": "2026-09-30T06:25:37+09:00",
+  "choice": "v5",
+  "note": "좀 더 큰 3x2 사이즈로",
+  "noteAt": "2026-09-30T06:25:37+09:00"
+ },
+ "fur rug": {
+  "at": "2026-09-30T05:03:33+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "green rug": {
+  "at": "2026-09-30T05:59:56+09:00",
+  "choice": "w5-A",
+  "note": ""
+ },
+ "grindstone": {
+  "at": "2026-09-30T05:39:19+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "hang:ham": {
+  "at": "2026-09-30T05:22:56+09:00",
+  "choice": "w4-A",
+  "note": ""
+ },
+ "hang:onion": {
+  "at": "2026-09-30T05:59:47+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "hanging pans": {
+  "at": "2026-09-30T05:05:22+09:00",
+  "choice": "w10-C",
+  "note": ""
+ },
+ "hay bale": {
+  "at": "2026-09-30T05:38:25+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "herb drying rack": {
+  "at": "2026-09-30T05:38:17+09:00",
+  "choice": "w7-A",
+  "note": ""
+ },
+ "holy water font": {
+  "at": "2026-09-30T06:25:06+09:00",
+  "choice": "w7-A",
+  "note": ""
+ },
+ "hymn board": {
+  "at": "2026-09-30T06:22:10+09:00",
+  "choice": "w6-A",
+  "note": ""
+ },
+ "ice chest:fish+fishg+fishr": {
+  "at": "2026-09-30T06:20:59+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "keg rack": {
+  "at": "2026-09-30T05:22:46+09:00",
+  "choice": "w4-A",
+  "note": ""
+ },
+ "kitchen sink": {
+  "at": "2026-09-30T05:05:37+09:00",
+  "choice": "w10-A",
+  "note": ""
+ },
+ "lectern": {
+  "at": "2026-09-30T06:21:07+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "loom": {
+  "at": "2026-09-30T06:20:50+09:00",
+  "choice": "w4-B",
+  "note": ""
+ },
+ "lute": {
+  "at": "2026-09-30T05:36:54+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "magic circle": {
+  "at": "2026-09-30T05:39:24+09:00",
+  "choice": "w8-C",
+  "note": ""
+ },
+ "magitek armor": {
+  "at": "2026-09-30T06:37:16+09:00",
+  "choice": "w31-F",
+  "note": "사람은 타고잇지 않는 w26-F 버전으로",
+  "noteAt": "2026-09-30T06:17:44+09:00"
+ },
+ "mannequin": {
+  "at": "2026-09-30T05:37:40+09:00",
+  "choice": "w7-C",
+  "note": ""
+ },
+ "meat hooks": {
+  "at": "2026-09-30T06:20:02+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "mine cart": {
+  "at": "2026-09-30T05:19:25+09:00",
+  "choice": "w2-C",
+  "note": ""
+ },
+ "mortar and pestle": {
+  "at": "2026-09-30T06:19:29+09:00",
+  "choice": "w1-B",
+  "note": ""
+ },
+ "music stand": {
+  "at": "2026-09-30T05:39:00+09:00",
+  "choice": "w8-B",
+  "note": ""
+ },
+ "nightstand": {
+  "at": "2026-09-30T05:04:01+09:00",
+  "choice": "w8-C",
+  "note": ""
+ },
+ "notice board": {
+  "at": "2026-09-30T05:39:58+09:00",
+  "choice": "w9-C",
+  "note": ""
+ },
+ "ore pile": {
+  "at": "2026-09-30T06:15:02+09:00",
+  "choice": "w27-D",
+  "note": ""
+ },
+ "ore vein": {
+  "at": "2026-09-30T06:15:48+09:00",
+  "choice": "w27-H",
+  "note": ""
+ },
+ "peel rack": {
+  "at": "2026-09-30T05:56:14+09:00",
+  "choice": "w4-C",
+  "note": ""
+ },
+ "pew": {
+  "at": "2026-09-30T05:19:49+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "pew E2": {
+  "at": "2026-09-30T06:15:58+09:00",
+  "choice": "w13-D",
+  "note": ""
+ },
+ "pew E3": {
+  "at": "2026-09-30T06:25:47+09:00",
+  "choice": "w8-B",
+  "note": ""
+ },
+ "piano": {
+  "at": "2026-09-30T05:25:11+09:00",
+  "choice": "w4-B",
+  "note": ""
+ },
+ "pick rack": {
+  "at": "2026-09-30T05:38:56+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "picture": {
+  "at": "2026-09-30T04:58:57+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "pipe organ": {
+  "at": "2026-09-30T06:19:56+09:00",
+  "choice": "w2-A",
+  "note": ""
+ },
+ "pipe rack": {
+  "at": "2026-09-30T05:55:56+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "pitchfork": {
+  "at": "2026-09-30T05:53:49+09:00",
+  "choice": "w1-C",
+  "note": ""
+ },
+ "plant": {
+  "at": "2026-09-30T06:19:32+09:00",
+  "choice": "w1-C",
+  "note": ""
+ },
+ "pot": {
+  "at": "2026-09-30T05:55:44+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "potted fern": {
+  "at": "2026-09-30T05:03:21+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "potted flowering": {
+  "at": "2026-09-30T05:55:51+09:00",
+  "choice": "w3-B",
+  "note": ""
+ },
+ "powder kegs": {
+  "at": "2026-09-30T05:40:04+09:00",
+  "choice": "w9-B",
+  "note": ""
+ },
+ "proofing rack": {
+  "at": "2026-09-30T05:54:07+09:00",
+  "choice": "w1-C",
+  "note": ""
+ },
+ "pulpit": {
+  "at": "2026-09-30T06:19:07+09:00",
+  "choice": null,
+  "note": "공간감이 별로.. 오른쪽에서 올라가는 방식으로 해야할듯. 대략 4x3 사이즈로.",
+  "noteAt": "2026-09-30T06:19:07+09:00"
+ },
+ "purple rug": {
+  "at": "2026-09-30T06:22:17+09:00",
+  "choice": "w6-C",
+  "note": ""
+ },
+ "quench barrel": {
+  "at": "2026-09-30T05:27:26+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "reredos": {
+  "at": "2026-09-30T05:15:55+09:00",
+  "choice": "w1-C",
+  "note": ""
+ },
+ "round arch": {
+  "at": "2026-09-30T06:16:10+09:00",
+  "choice": "w28-D",
+  "note": ""
+ },
+ "round door": {
+  "at": "2026-09-30T06:26:00+09:00",
+  "choice": null,
+  "note": "질감이 다 별론데",
+  "noteAt": "2026-09-30T06:26:00+09:00"
+ },
+ "round rug": {
+  "at": "2026-09-30T05:41:45+09:00",
+  "choice": "w10-B",
+  "note": ""
+ },
+ "round window": {
+  "at": "2026-09-30T05:16:07+09:00",
+  "choice": "w1-C",
+  "note": ""
+ },
+ "roundtable": {
+  "at": "2026-09-30T06:20:28+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "royal banner": {
+  "at": "2026-09-30T05:22:51+09:00",
+  "choice": "w4-C",
+  "note": ""
+ },
+ "royal chest": {
+  "at": "2026-09-30T05:28:10+09:00",
+  "choice": "w6-C",
+  "note": ""
+ },
+ "rug red": {
+  "at": "2026-09-30T05:20:35+09:00",
+  "choice": "w3-C",
+  "note": ""
+ },
+ "runner": {
+  "at": "2026-09-30T06:07:38+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "sack:flour": {
+  "at": "2026-09-30T06:00:19+09:00",
+  "choice": "w6-B",
+  "note": ""
+ },
+ "sack:grain": {
+  "at": "2026-09-30T05:05:00+09:00",
+  "choice": "w10-C",
+  "note": ""
+ },
+ "saddle rack": {
+  "at": "2026-09-30T06:14:33+09:00",
+  "choice": "w26-D",
+  "note": ""
+ },
+ "scenery flat": {
+  "at": "2026-09-30T06:32:21+09:00",
+  "choice": "w9-C",
+  "note": "C 부터 H 까지 전부 쓸거임. 괜찮음.",
+  "noteAt": "2026-09-30T06:18:11+09:00",
+  "variants": [
+   "w28-D",
+   "w28-E",
+   "w28-F",
+   "w28-G",
+   "w28-H"
+  ]
+ },
+ "scroll rack": {
+  "at": "2026-09-30T04:58:06+09:00",
+  "choice": "w2-C",
+  "note": ""
+ },
+ "shackles": {
+  "at": "2026-09-30T05:39:34+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "shelf pots": {
+  "at": "2026-09-30T05:59:40+09:00",
+  "choice": "w4-B",
+  "note": ""
+ },
+ "shelf:cheese": {
+  "at": "2026-09-30T05:25:21+09:00",
+  "choice": "w4-C",
+  "note": ""
+ },
+ "shelf:coins": {
+  "at": "2026-09-30T06:26:11+09:00",
+  "choice": "w10-C",
+  "note": ""
+ },
+ "shield": {
+  "at": "2026-09-30T05:20:23+09:00",
+  "choice": "w3-B",
+  "note": ""
+ },
+ "slop bucket": {
+  "at": "2026-09-30T05:20:59+09:00",
+  "choice": "w3-C",
+  "note": ""
+ },
+ "sofa": {
+  "at": "2026-09-30T05:55:15+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "spellbook stand": {
+  "at": "2026-09-30T06:35:36+09:00",
+  "choice": "w2-C",
+  "note": "흠... 2x1 사이즈가 나을듯..",
+  "noteAt": "2026-09-30T06:35:36+09:00"
+ },
+ "spinning wheel": {
+  "at": "2026-09-30T05:54:17+09:00",
+  "choice": "w1-B",
+  "note": ""
+ },
+ "spiral stair": {
+  "at": "2026-09-30T05:28:39+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "stage curtain": {
+  "at": "2026-09-30T06:20:10+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "stained glass": {
+  "at": "2026-09-30T05:56:08+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "stairs down": {
+  "at": "2026-09-30T06:35:58+09:00",
+  "choice": "w29-F",
+  "note": "2x2 로",
+  "noteAt": "2026-09-30T06:00:12+09:00"
+ },
+ "stairs up stone": {
+  "at": "2026-09-30T05:22:33+09:00",
+  "choice": "w3-C",
+  "note": ""
+ },
+ "stairs up wood": {
+  "at": "2026-09-30T06:26:27+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "stairwell down": {
+  "at": "2026-09-30T05:28:46+09:00",
+  "choice": "w6-C",
+  "note": ""
+ },
+ "star chart": {
+  "at": "2026-09-30T06:15:13+09:00",
+  "choice": "w24-D",
+  "note": ""
+ },
+ "stone throne": {
+  "at": "2026-09-30T06:22:26+09:00",
+  "choice": "w6-C",
+  "note": ""
+ },
+ "stool": {
+  "at": "2026-09-30T05:01:50+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "straw bed": {
+  "at": "2026-09-30T06:14:20+09:00",
+  "choice": "w25-F",
+  "note": ""
+ },
+ "table:bolt+yarn": {
+  "at": "2026-09-30T06:25:17+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "tailor mirror": {
+  "at": "2026-09-30T05:54:23+09:00",
+  "choice": "w1-B",
+  "note": ""
+ },
+ "tall stained window": {
+  "at": "2026-09-30T05:16:40+09:00",
+  "choice": "w2-A",
+  "note": ""
+ },
+ "tall vase blue": {
+  "at": "2026-09-30T05:55:34+09:00",
+  "choice": "w2-B",
+  "note": ""
+ },
+ "tall vase red": {
+  "at": "2026-09-30T05:19:33+09:00",
+  "choice": "w2-B",
+  "note": ""
+ },
+ "tapestry": {
+  "at": "2026-09-30T05:14:36+09:00",
+  "choice": "w1-B",
+  "note": ""
+ },
+ "telescope": {
+  "at": "2026-09-30T05:37:53+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "theater seat": {
+  "at": "2026-09-30T06:37:23+09:00",
+  "choice": "v5",
+  "note": "극장 좌석이 위를 보는 느낌이어야함",
+  "noteAt": "2026-09-30T05:41:11+09:00"
+ },
+ "throne": {
+  "at": "2026-09-30T06:13:46+09:00",
+  "choice": null,
+  "note": "실제 왕좌를 .. 다른 게임에서 찾아보고 연구한 다음 해라 ..",
+  "noteAt": "2026-09-30T06:13:46+09:00"
+ },
+ "timber prop": {
+  "at": "2026-09-30T05:38:33+09:00",
+  "choice": "w7-B",
+  "note": ""
+ },
+ "tool wall": {
+  "at": "2026-09-30T05:02:02+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "towel rail": {
+  "at": "2026-09-30T06:20:13+09:00",
+  "choice": "w3-C",
+  "note": ""
+ },
+ "treasure pile": {
+  "at": "2026-09-30T06:21:03+09:00",
+  "choice": "w5-C",
+  "note": ""
+ },
+ "vanity mirror": {
+  "at": "2026-09-30T05:15:39+09:00",
+  "choice": "w1-B",
+  "note": ""
+ },
+ "wall clock": {
+  "at": "2026-09-30T05:19:42+09:00",
+  "choice": "w2-B",
+  "note": ""
+ },
+ "wall map": {
+  "at": "2026-09-30T06:17:15+09:00",
+  "choice": "w23-D",
+  "note": ""
+ },
+ "wardrobe": {
+  "at": "2026-09-30T05:04:46+09:00",
+  "choice": "w9-A",
+  "note": ""
+ },
+ "washbasin": {
+  "at": "2026-09-30T05:20:46+09:00",
+  "choice": "w3-C",
+  "note": ""
+ },
+ "water jar": {
+  "at": "2026-09-30T05:03:49+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "water trough": {
+  "at": "2026-09-30T05:26:06+09:00",
+  "choice": "w4-A",
+  "note": ""
+ },
+ "weapon barrel": {
+  "at": "2026-09-30T05:24:51+09:00",
+  "choice": "w4-A",
+  "note": ""
+ },
+ "weapon rack": {
+  "at": "2026-09-30T05:28:20+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "white tree": {
+  "at": "2026-09-30T06:21:56+09:00",
+  "choice": "v5",
+  "note": ""
+ },
+ "window": {
+  "at": "2026-09-30T04:57:03+09:00",
+  "choice": "w1-C",
+  "note": ""
+ }
+}

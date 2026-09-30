@@ -1,0 +1,5 @@
+*.ctx.png
+.cache/
+*.tmp*
+picks.sqlite-wal
+picks.sqlite-shm

@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pitchfork/w1-A.pxg",
+ "id": "pitchfork",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 8,
+ "v5_colors": 3,
+ "bbox": [
+  6,
+  1,
+  12,
+  15
+ ],
+ "v5_bbox": [
+  7,
+  1,
+  11,
+  15
+ ],
+ "note": "v5 그대로 세 갈래: 갈래를 쇠 밝은 단(끝)→중간→목으로 3단, 갈래 뿌리 가로대를 어두운 쇠로 굵게, 자루 2px 를 밝은 왼줄+어두운 오른줄로 나눔.",
+ "ok": true
+}

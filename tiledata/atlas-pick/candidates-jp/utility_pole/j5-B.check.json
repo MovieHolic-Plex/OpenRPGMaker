@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/utility_pole/j5-B.pxg",
+ "set": "jp",
+ "id": "utility_pole",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.101
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 27,
+ "bbox": [
+  1,
+  1,
+  15,
+  63
+ ],
+ "note": "빛·그림자 강화: 기둥 왼쪽 2칸 밝은 띠, 오른쪽 끝 가장 어둡게, 가로대 3줄 두께(윗면 밝음)+아래 반투명 그림자, 변압기 왼쪽 밝고 오른쪽 검게, 밑동 오른쪽으로 접지 그림자",
+ "ok": true
+}

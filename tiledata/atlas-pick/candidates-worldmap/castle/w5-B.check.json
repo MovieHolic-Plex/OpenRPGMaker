@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/castle/w5-B.pxg",
+ "set": "worldmap",
+ "id": "castle",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.067
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "빛·부피 — 왼쪽 밝고 오른쪽 어두운 원통 탑, 푸른 원뿔 지붕, 성벽 톱니, 발치 반투명 그림자",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.023
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.07
+  }
+ }
+}

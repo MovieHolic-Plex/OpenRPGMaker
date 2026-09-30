@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/house_roof/j1-C.pxg",
+ "set": "jp",
+ "id": "house_roof",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.091
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  63,
+  31
+ ],
+ "note": "실루엣 재해석: 박공이 아닌 모임지붕(寄棟) — 용마루 짧고 양끝 치미, 좌우 옆 지붕면이 삼각으로 보임(왼쪽 밝고 오른쪽 어둡게).",
+ "ok": true
+}

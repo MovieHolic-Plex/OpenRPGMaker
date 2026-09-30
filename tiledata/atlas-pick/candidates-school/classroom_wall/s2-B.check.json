@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/classroom_wall/s2-B.pxg",
+ "set": "school",
+ "id": "classroom_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.164
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "징두리 위 몰딩 그늘 4줄, 널마다 안쪽 볼록(오른쪽 어둡게), 크림 아래쪽 그늘",
+ "ok": true
+}

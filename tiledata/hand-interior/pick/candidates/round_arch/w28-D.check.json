@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_arch/w28-D.pxg",
+ "id": "round arch",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 4,
+ "bbox": [
+  11,
+  0,
+  36,
+  29
+ ],
+ "v5_bbox": [
+  12,
+  0,
+  35,
+  29
+ ],
+ "note": "w5-C 모양 그대로, 벽 크림색 위에 얹히도록 밝은 꿀빛(pine 4-6) 회벽 아치: 밝은 쪽은 벽 크림과 같은 단, 그늘과 바깥선만 징두리 나무 갈색 단.",
+ "ok": true
+}

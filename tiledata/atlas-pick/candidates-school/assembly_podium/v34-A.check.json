@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/assembly_podium/v34-A.pxg",
+ "set": "school",
+ "id": "assembly_podium",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.344
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 12,
+ "bbox": [
+  1,
+  0,
+  46,
+  31
+ ],
+ "note": "조회대 3/4 — 콘크리트 단의 윗면이 넓고 밝게 보이고 앞 모서리 하이라이트, 앞면과 계단 두 단, 뒤쪽에 쇠 난간과 마이크 스탠드",
+ "ok": true
+}

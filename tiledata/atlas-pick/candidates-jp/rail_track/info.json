@@ -1,0 +1,19 @@
+{
+ "id": "rail_track",
+ "slug": "rail_track",
+ "name": "선로(세로 이어 붙이기)",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "남북으로 가는 선로 한 토막: 자갈 바탕(회갈 점) 위에 가로 침목(콘크리트 회색) + 세로 레일 두 줄(은색 윗면 한 줄 밝게). 위아래로 이어 붙인다.",
+ "palette_hint": "ishi 자갈, pole 침목, mmetal 레일",
+ "worker": "j5"
+}

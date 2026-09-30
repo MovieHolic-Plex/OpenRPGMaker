@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/garbage_station/v35-A.pxg",
+ "set": "jp",
+ "id": "garbage_station",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "std": {
+  "cells": [
+   2,
+   2
+  ],
+  "canvas": [
+   32,
+   32
+  ]
+ },
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  8,
+  30,
+  31
+ ],
+ "note": "",
+ "ok": true
+}

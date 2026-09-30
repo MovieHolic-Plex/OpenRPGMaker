@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack/w2-B.pxg",
+ "id": "firewood rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  2,
+  15,
+  30
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "명암 강화: 통나무 단면을 왼쪽은 밝게 오른쪽은 어둡게 3단으로, 바닥선에 반투명 접지 그림자",
+ "ok": true
+}

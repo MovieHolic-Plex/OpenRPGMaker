@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/desert_scatter/wv6-A.pxg",
+ "set": "worldmap",
+ "id": "desert_scatter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.087
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "dither"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  1,
+  2,
+  47,
+  14
+ ],
+ "note": "두 팔 선인장(왼쪽 밝고 오른쪽 어두움) · 바위 셋 무더기(북서 빛) · 뿔 달린 소 해골, 윤곽 1px 발치 그림자",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.04
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.095
+  }
+ }
+}

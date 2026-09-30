@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/garbage_station/j3-C.pxg",
+ "set": "jp",
+ "id": "garbage_station",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.091
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  2,
+  0,
+  30,
+  15
+ ],
+ "note": "봉투 더미를 좁고 높게 쌓고 그물 자락이 옆으로 늘어지며, 철망 상자를 키가 큰 우리로 바꿔 높이가 큰 두 덩이로 재해석 (이동 우리 가림)",
+ "ok": true
+}

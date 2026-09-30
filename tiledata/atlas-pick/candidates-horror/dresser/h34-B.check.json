@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/dresser/h34-B.pxg",
+ "set": "horror",
+ "id": "dresser",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   1,
+   2
+  ],
+  "canvas": [
+   16,
+   32
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  11,
+  15,
+  30
+ ],
+ "note": "서랍장 H 방법 — Tibo 3/4 생성 → C(horror 팔레트 10색) → Sonnet 손질 — 실제 비율 표준 크기(§12)",
+ "ok": true
+}

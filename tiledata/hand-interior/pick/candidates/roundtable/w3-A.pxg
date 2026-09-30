@@ -1,0 +1,45 @@
+// w3-A roundtable
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a wood 0
+@mat b wood 1
+@mat c wood 2
+@mat d wood 3
+@mat e wood 4
+@mat f wood 5
+@mat g wood 6
+@mat h linen 6
+@mat i linen 5
+@mat j linen 3
+@mat k white 6
+@mat l white 4
+@mat m brass 4
+@mat n brass 2
+@mat o blue 5
+@mat p blue 4
+@mat q blue 3
+@mat r blue 2
+@mat s blue 1
+@mat t iron 3
+@mat u iron 5
+@mat v red 4
+@mat w red 2
+@layer main
+@mblock 0 0
+......aaa.......
+..adeeeefffda...
+.deehhhhhffffd..
+aeeehijihfkkkka.
+deffhhhhhfkllld.
+dfffihjhimkllld.
+adffhhhhidmllla.
+acadfddddddnnba.
+.acccadddabbba..
+...acccccbba....
+......edcb......
+......edcb......
+......edcb......
+......edcb......
+....dddccbbb....
+...aaaaaaaaaa...

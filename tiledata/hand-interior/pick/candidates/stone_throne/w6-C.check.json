@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stone_throne/w6-C.pxg",
+ "id": "stone throne",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "failed": [
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "뾰족 첨탑 등받이와 금 아치, 붉은 방석, 이단 단상으로 재해석",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/height_scale/s4-B.pxg",
+ "set": "school",
+ "id": "height_scale",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "명암 강화: 기둥 왼쪽 하이라이트·오른쪽 짙게, 압판 밑 그림자 2줄, 발판 앞 짙게, 바닥 그림자",
+ "ok": true
+}

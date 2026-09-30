@@ -1,0 +1,107 @@
+// bed_manor hf4-A
+@size 16 48
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mat s sheet 0
+@mat v velv 0
+@mat t tarn 0
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.mmmmmmmmmmmmmm.
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmmmmmmmmmmmmmmm
+.mmmmmmmmmmmmmm.
+@tblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.11111111111111.
+1666666666666541
+1555555555555431
+1542222222222321
+1542333333332321
+1542455555542321
+1542455555542321
+1542455555542321
+1542455555542321
+1542444444442321
+1542222222222321
+1654444444444321
+1533333333333331
+1533111111113331
+1531665555541331
+1531555544431331
+1531444333321331
+1533111111113331
+1522222222222231
+1555555555555531
+1544444444444431
+1522222222222231
+1511111111111131
+1543333333333231
+1543333333333231
+1543333333333231
+1543343334333231
+1543333333333231
+1543333333333231
+1543333333333231
+1543343334333231
+1543333333333231
+1543333333333231
+1544444444444431
+1522222222222231
+1411111111111121
+1666666666666661
+.12222222222221.

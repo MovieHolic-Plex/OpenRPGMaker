@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_up_wood/w10-C.pxg",
+ "id": "stairs up wood",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "failed": [
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "C: 원근 계단 — 위로 갈수록 좁아지는 사다리꼴 단과 양옆 돌벽 그늘, 올라가는 방향이 한눈에 읽힘",
+ "ok": true
+}

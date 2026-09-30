@@ -1,0 +1,181 @@
+// altar_E 후보 C (w3)
+@size 32 48
+@cell 16
+@palette palette.pal
+@block 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+@px 0 8 marble:2 1 8 marble:2 2 8 marble:2 3 8 marble:2 4 8 marble:2 5 8 marble:2 6 8 marble:2 7 8 marble:2 8 8 marble:2 9 8 marble:2
+@px 10 8 marble:2 11 8 marble:2 12 8 marble:2 13 8 marble:2 14 8 marble:2 15 8 marble:2 16 8 marble:2 17 8 marble:2 18 8 marble:2 19 8 marble:2
+@px 20 8 marble:2 21 8 marble:2 22 8 marble:2 23 8 marble:2 24 8 marble:2 25 8 marble:2 26 8 marble:2 27 8 marble:2 28 8 marble:2 29 8 marble:2
+@px 30 8 marble:2 31 8 marble:1 0 9 marble:2 1 9 marble:6 2 9 marble:6 3 9 marble:6 4 9 marble:6 5 9 marble:6 6 9 marble:6 7 9 marble:6
+@px 8 9 marble:6 9 9 marble:6 10 9 marble:6 11 9 marble:6 12 9 marble:6 13 9 marble:6 14 9 marble:6 15 9 marble:6 16 9 marble:6 17 9 marble:6
+@px 18 9 marble:6 19 9 marble:6 20 9 marble:6 21 9 marble:6 22 9 marble:6 23 9 marble:6 24 9 marble:6 25 9 marble:6 26 9 marble:6 27 9 marble:6
+@px 28 9 marble:6 29 9 marble:6 30 9 marble:3 31 9 marble:1 0 10 marble:2 1 10 marble:6 2 10 marble:5 3 10 marble:5 4 10 marble:5 5 10 marble:5
+@px 6 10 marble:5 7 10 marble:5 8 10 marble:5 9 10 marble:5 10 10 marble:5 11 10 marble:5 12 10 purple:5 13 10 purple:5 14 10 purple:4 15 10 purple:4
+@px 16 10 purple:4 17 10 purple:4 18 10 purple:3 19 10 purple:2 20 10 marble:5 21 10 marble:5 22 10 marble:5 23 10 marble:5 24 10 marble:5 25 10 marble:5
+@px 26 10 marble:5 27 10 marble:5 28 10 marble:5 29 10 marble:5 30 10 marble:3 31 10 marble:1 0 11 marble:2 1 11 marble:6 2 11 marble:5 3 11 gold:5
+@px 4 11 gold:5 5 11 gold:5 6 11 gold:5 7 11 gold:5 8 11 gold:5 9 11 gold:5 10 11 gold:5 11 11 gold:5 12 11 purple:5 13 11 purple:5
+@px 14 11 purple:4 15 11 purple:4 16 11 purple:4 17 11 purple:4 18 11 purple:3 19 11 purple:2 20 11 gold:5 21 11 gold:5 22 11 gold:5 23 11 gold:5
+@px 24 11 gold:5 25 11 gold:5 26 11 gold:5 27 11 gold:5 28 11 gold:3 29 11 marble:5 30 11 marble:3 31 11 marble:1 0 12 marble:2 1 12 marble:6
+@px 2 12 marble:5 3 12 gold:5 4 12 marble:5 5 12 marble:4 6 12 marble:5 7 12 marble:5 8 12 marble:5 9 12 marble:5 10 12 marble:5 11 12 marble:5
+@px 12 12 purple:5 13 12 purple:5 14 12 purple:4 15 12 purple:4 16 12 purple:4 17 12 purple:4 18 12 purple:3 19 12 purple:2 20 12 marble:5 21 12 marble:5
+@px 22 12 marble:5 23 12 marble:4 24 12 marble:5 25 12 marble:5 26 12 marble:5 27 12 marble:5 28 12 gold:3 29 12 marble:5 30 12 marble:3 31 12 marble:1
+@px 0 13 marble:2 1 13 marble:6 2 13 marble:5 3 13 gold:5 4 13 marble:4 5 13 gold:4 6 13 marble:5 7 13 marble:5 8 13 marble:5 9 13 marble:5
+@px 10 13 marble:5 11 13 marble:5 12 13 purple:5 13 13 purple:5 14 13 purple:4 15 13 purple:4 16 13 purple:4 17 13 purple:4 18 13 purple:3 19 13 purple:2
+@px 20 13 marble:5 21 13 marble:5 22 13 marble:4 23 13 marble:5 24 13 marble:5 25 13 marble:5 26 13 gold:4 27 13 marble:5 28 13 gold:3 29 13 marble:5
+@px 30 13 marble:3 31 13 marble:1 0 14 marble:2 1 14 marble:6 2 14 marble:5 3 14 gold:5 4 14 marble:5 5 14 marble:5 6 14 marble:5 7 14 marble:5
+@px 8 14 marble:5 9 14 marble:5 10 14 marble:5 11 14 marble:5 12 14 purple:5 13 14 purple:5 14 14 purple:4 15 14 purple:4 16 14 purple:4 17 14 purple:4
+@px 18 14 purple:3 19 14 purple:2 20 14 marble:5 21 14 marble:4 22 14 marble:5 23 14 marble:5 24 14 marble:5 25 14 marble:5 26 14 marble:5 27 14 marble:5
+@px 28 14 gold:3 29 14 marble:5 30 14 marble:3 31 14 marble:1 0 15 marble:2 1 15 marble:6 2 15 marble:5 3 15 gold:5 4 15 marble:5 5 15 marble:5
+@px 6 15 marble:5 7 15 marble:5 8 15 marble:5 9 15 marble:5 10 15 marble:5 11 15 marble:4 12 15 purple:5 13 15 purple:5 14 15 purple:4 15 15 purple:4
+@px 16 15 purple:4 17 15 purple:4 18 15 purple:3 19 15 purple:2 20 15 marble:4 21 15 marble:5 22 15 marble:5 23 15 marble:5 24 15 marble:5 25 15 marble:5
+@px 26 15 marble:5 27 15 marble:5 28 15 gold:3 29 15 marble:5 30 15 marble:3 31 15 marble:1 0 16 marble:2 1 16 marble:6 2 16 marble:5 3 16 gold:5
+@px 4 16 marble:5 5 16 marble:5 6 16 marble:5 7 16 marble:5 8 16 marble:5 9 16 marble:5 10 16 marble:4 11 16 marble:5 12 16 purple:5 13 16 purple:5
+@px 14 16 purple:4 15 16 purple:4 16 16 purple:4 17 16 purple:4 18 16 purple:3 19 16 purple:2 20 16 marble:5 21 16 marble:5 22 16 marble:5 23 16 marble:5
+@px 24 16 marble:5 25 16 marble:5 26 16 marble:5 27 16 marble:5 28 16 gold:3 29 16 marble:5 30 16 marble:3 31 16 marble:1 0 17 marble:2 1 17 marble:6
+@px 2 17 marble:5 3 17 gold:5 4 17 marble:5 5 17 marble:5 6 17 marble:5 7 17 marble:5 8 17 marble:5 9 17 marble:4 10 17 marble:5 11 17 marble:5
+@px 12 17 purple:5 13 17 purple:5 14 17 purple:4 15 17 purple:4 16 17 purple:4 17 17 purple:4 18 17 purple:3 19 17 purple:2 20 17 marble:5 21 17 marble:5
+@px 22 17 marble:5 23 17 marble:5 24 17 marble:5 25 17 marble:5 26 17 marble:5 27 17 marble:4 28 17 gold:3 29 17 marble:5 30 17 marble:3 31 17 marble:1
+@px 0 18 marble:2 1 18 marble:6 2 18 marble:5 3 18 gold:5 4 18 marble:5 5 18 marble:5 6 18 marble:5 7 18 marble:5 8 18 marble:4 9 18 marble:5
+@px 10 18 marble:5 11 18 marble:5 12 18 purple:5 13 18 purple:5 14 18 purple:4 15 18 purple:4 16 18 purple:4 17 18 purple:4 18 18 purple:3 19 18 purple:2
+@px 20 18 marble:5 21 18 marble:5 22 18 marble:5 23 18 marble:5 24 18 marble:5 25 18 marble:5 26 18 marble:4 27 18 marble:5 28 18 gold:3 29 18 marble:5
+@px 30 18 marble:3 31 18 marble:1 0 19 marble:2 1 19 marble:6 2 19 marble:5 3 19 gold:5 4 19 marble:5 5 19 marble:5 6 19 marble:5 7 19 marble:4
+@px 8 19 marble:5 9 19 marble:5 10 19 marble:5 11 19 marble:5 12 19 purple:5 13 19 purple:5 14 19 purple:4 15 19 purple:4 16 19 purple:4 17 19 purple:4
+@px 18 19 purple:3 19 19 purple:2 20 19 marble:5 21 19 marble:5 22 19 marble:5 23 19 marble:5 24 19 marble:5 25 19 marble:4 26 19 marble:5 27 19 marble:5
+@px 28 19 gold:3 29 19 marble:5 30 19 marble:3 31 19 marble:1 0 20 marble:2 1 20 marble:6 2 20 marble:5 3 20 gold:5 4 20 marble:5 5 20 marble:5
+@px 6 20 marble:4 7 20 marble:5 8 20 marble:5 9 20 marble:5 10 20 marble:5 11 20 marble:5 12 20 purple:5 13 20 purple:5 14 20 purple:4 15 20 purple:4
+@px 16 20 purple:4 17 20 purple:4 18 20 purple:3 19 20 purple:2 20 20 marble:5 21 20 marble:5 22 20 marble:5 23 20 marble:5 24 20 marble:4 25 20 marble:5
+@px 26 20 marble:5 27 20 marble:5 28 20 gold:3 29 20 marble:5 30 20 marble:3 31 20 marble:1 0 21 marble:2 1 21 marble:6 2 21 marble:5 3 21 gold:5
+@px 4 21 marble:5 5 21 marble:4 6 21 marble:5 7 21 marble:5 8 21 marble:5 9 21 marble:5 10 21 marble:5 11 21 marble:5 12 21 purple:5 13 21 purple:5
+@px 14 21 purple:4 15 21 purple:4 16 21 purple:4 17 21 purple:4 18 21 purple:3 19 21 purple:2 20 21 marble:5 21 21 marble:5 22 21 marble:5 23 21 marble:4
+@px 24 21 marble:5 25 21 marble:5 26 21 marble:5 27 21 marble:5 28 21 gold:3 29 21 marble:5 30 21 marble:3 31 21 marble:1 0 22 marble:2 1 22 marble:6
+@px 2 22 marble:5 3 22 gold:5 4 22 marble:4 5 22 marble:5 6 22 marble:5 7 22 marble:5 8 22 marble:5 9 22 marble:5 10 22 marble:5 11 22 marble:5
+@px 12 22 purple:5 13 22 purple:5 14 22 purple:4 15 22 purple:4 16 22 purple:4 17 22 purple:4 18 22 purple:3 19 22 purple:2 20 22 marble:5 21 22 marble:5
+@px 22 22 marble:4 23 22 marble:5 24 22 marble:5 25 22 marble:5 26 22 marble:5 27 22 marble:5 28 22 gold:3 29 22 marble:5 30 22 marble:3 31 22 marble:1
+@px 0 23 marble:2 1 23 marble:6 2 23 marble:5 3 23 gold:5 4 23 marble:5 5 23 marble:5 6 23 marble:5 7 23 marble:5 8 23 marble:5 9 23 marble:5
+@px 10 23 marble:5 11 23 marble:5 12 23 purple:5 13 23 purple:5 14 23 purple:4 15 23 purple:4 16 23 purple:4 17 23 purple:4 18 23 purple:3 19 23 purple:2
+@px 20 23 marble:5 21 23 marble:4 22 23 marble:5 23 23 marble:5 24 23 marble:5 25 23 marble:5 26 23 marble:5 27 23 marble:5 28 23 gold:3 29 23 marble:5
+@px 30 23 marble:3 31 23 marble:1 0 24 marble:2 1 24 marble:6 2 24 marble:5 3 24 gold:5 4 24 marble:5 5 24 marble:5 6 24 marble:5 7 24 marble:5
+@px 8 24 marble:5 9 24 marble:5 10 24 marble:5 11 24 marble:4 12 24 purple:5 13 24 purple:5 14 24 purple:4 15 24 purple:4 16 24 purple:4 17 24 purple:4
+@px 18 24 purple:3 19 24 purple:2 20 24 marble:4 21 24 marble:5 22 24 marble:5 23 24 marble:5 24 24 marble:5 25 24 marble:5 26 24 marble:5 27 24 marble:5
+@px 28 24 gold:3 29 24 marble:5 30 24 marble:3 31 24 marble:1 0 25 marble:2 1 25 marble:6 2 25 marble:5 3 25 gold:5 4 25 marble:5 5 25 marble:5
+@px 6 25 marble:5 7 25 marble:5 8 25 marble:5 9 25 marble:5 10 25 marble:4 11 25 marble:5 12 25 purple:5 13 25 purple:5 14 25 purple:4 15 25 purple:4
+@px 16 25 purple:4 17 25 purple:4 18 25 purple:3 19 25 purple:2 20 25 marble:5 21 25 marble:5 22 25 marble:5 23 25 marble:5 24 25 marble:5 25 25 marble:5
+@px 26 25 marble:5 27 25 marble:5 28 25 gold:3 29 25 marble:5 30 25 marble:3 31 25 marble:1 0 26 marble:2 1 26 marble:6 2 26 marble:5 3 26 gold:5
+@px 4 26 marble:5 5 26 gold:4 6 26 marble:5 7 26 marble:5 8 26 marble:5 9 26 marble:4 10 26 marble:5 11 26 marble:5 12 26 purple:5 13 26 purple:5
+@px 14 26 purple:4 15 26 purple:4 16 26 purple:4 17 26 purple:4 18 26 purple:3 19 26 purple:2 20 26 marble:5 21 26 marble:5 22 26 marble:5 23 26 marble:5
+@px 24 26 marble:5 25 26 marble:5 26 26 gold:4 27 26 marble:4 28 26 gold:3 29 26 marble:5 30 26 marble:3 31 26 marble:1 0 27 marble:2 1 27 marble:6
+@px 2 27 marble:5 3 27 gold:5 4 27 marble:5 5 27 marble:5 6 27 marble:5 7 27 marble:5 8 27 marble:4 9 27 marble:5 10 27 marble:5 11 27 marble:5
+@px 12 27 purple:5 13 27 purple:5 14 27 purple:4 15 27 purple:4 16 27 purple:4 17 27 purple:4 18 27 purple:3 19 27 purple:2 20 27 marble:5 21 27 marble:5
+@px 22 27 marble:5 23 27 marble:5 24 27 marble:5 25 27 marble:5 26 27 marble:4 27 27 marble:5 28 27 gold:3 29 27 marble:5 30 27 marble:3 31 27 marble:1
+@px 0 28 marble:2 1 28 marble:6 2 28 marble:5 3 28 gold:5 4 28 gold:3 5 28 gold:3 6 28 gold:3 7 28 gold:3 8 28 gold:3 9 28 gold:3
+@px 10 28 gold:3 11 28 gold:3 12 28 purple:5 13 28 purple:5 14 28 purple:4 15 28 purple:4 16 28 purple:4 17 28 purple:4 18 28 purple:3 19 28 purple:2
+@px 20 28 gold:3 21 28 gold:3 22 28 gold:3 23 28 gold:3 24 28 gold:3 25 28 gold:3 26 28 gold:3 27 28 gold:3 28 28 gold:3 29 28 marble:5
+@px 30 28 marble:3 31 28 marble:1 0 29 marble:2 1 29 marble:6 2 29 marble:5 3 29 marble:5 4 29 marble:5 5 29 marble:5 6 29 marble:5 7 29 marble:5
+@px 8 29 marble:5 9 29 marble:5 10 29 marble:5 11 29 marble:5 12 29 purple:5 13 29 purple:5 14 29 purple:4 15 29 purple:4 16 29 purple:4 17 29 purple:4
+@px 18 29 purple:3 19 29 purple:2 20 29 marble:5 21 29 marble:5 22 29 marble:5 23 29 marble:5 24 29 marble:5 25 29 marble:5 26 29 marble:5 27 29 marble:5
+@px 28 29 marble:5 29 29 marble:5 30 29 marble:3 31 29 marble:1 0 30 marble:2 1 30 marble:6 2 30 marble:5 3 30 marble:5 4 30 marble:5 5 30 marble:5
+@px 6 30 marble:5 7 30 marble:5 8 30 marble:5 9 30 marble:5 10 30 marble:5 11 30 marble:5 12 30 purple:5 13 30 purple:5 14 30 purple:4 15 30 purple:4
+@px 16 30 purple:4 17 30 purple:4 18 30 purple:3 19 30 purple:2 20 30 marble:5 21 30 marble:5 22 30 marble:5 23 30 marble:5 24 30 marble:5 25 30 marble:5
+@px 26 30 marble:5 27 30 marble:5 28 30 marble:5 29 30 marble:5 30 30 marble:3 31 30 marble:1 0 31 marble:4 1 31 marble:4 2 31 marble:4 3 31 marble:4
+@px 4 31 marble:4 5 31 marble:4 6 31 marble:4 7 31 marble:4 8 31 marble:4 9 31 marble:4 10 31 marble:4 11 31 purple:5 12 31 purple:5 13 31 purple:5
+@px 14 31 purple:5 15 31 purple:5 16 31 purple:5 17 31 purple:5 18 31 purple:5 19 31 purple:5 20 31 purple:5 21 31 marble:4 22 31 marble:4 23 31 marble:4
+@px 24 31 marble:4 25 31 marble:4 26 31 marble:4 27 31 marble:4 28 31 marble:4 29 31 marble:4 30 31 marble:4 31 31 marble:2 0 32 marble:2 1 32 marble:2
+@px 2 32 marble:2 3 32 marble:2 4 32 marble:2 5 32 marble:2 6 32 marble:2 7 32 marble:2 8 32 marble:2 9 32 marble:2 10 32 marble:2 11 32 purple:1
+@px 12 32 purple:1 13 32 purple:1 14 32 purple:1 15 32 purple:1 16 32 purple:1 17 32 purple:1 18 32 purple:1 19 32 purple:1 20 32 purple:1 21 32 marble:2
+@px 22 32 marble:2 23 32 marble:2 24 32 marble:2 25 32 marble:2 26 32 marble:2 27 32 marble:2 28 32 marble:2 29 32 marble:2 30 32 marble:2 31 32 marble:2
+@px 0 33 marble:1 1 33 marble:4 2 33 marble:2 3 33 marble:2 4 33 marble:2 5 33 marble:2 6 33 marble:2 7 33 marble:2 8 33 marble:2 9 33 marble:2
+@px 10 33 marble:2 11 33 purple:5 12 33 purple:5 13 33 purple:4 14 33 purple:4 15 33 purple:4 16 33 purple:4 17 33 purple:4 18 33 purple:4 19 33 purple:3
+@px 20 33 purple:2 21 33 marble:2 22 33 marble:2 23 33 marble:2 24 33 marble:2 25 33 marble:2 26 33 marble:2 27 33 marble:2 28 33 marble:2 29 33 marble:2
+@px 30 33 marble:1 31 33 marble:0 0 34 marble:1 1 34 marble:4 2 34 marble:2 3 34 marble:2 4 34 marble:2 5 34 marble:2 6 34 marble:2 7 34 marble:2
+@px 8 34 marble:2 9 34 marble:2 10 34 marble:2 11 34 purple:5 12 34 purple:5 13 34 purple:4 14 34 purple:4 15 34 purple:4 16 34 purple:4 17 34 purple:4
+@px 18 34 purple:4 19 34 purple:3 20 34 purple:2 21 34 marble:2 22 34 marble:2 23 34 marble:2 24 34 marble:2 25 34 marble:2 26 34 marble:2 27 34 marble:2
+@px 28 34 marble:2 29 34 marble:2 30 34 marble:1 31 34 marble:0 0 35 marble:1 1 35 marble:4 2 35 marble:2 3 35 marble:2 4 35 marble:4 5 35 marble:4
+@px 6 35 marble:4 7 35 marble:4 8 35 marble:4 9 35 marble:2 10 35 marble:2 11 35 purple:5 12 35 purple:5 13 35 purple:4 14 35 purple:4 15 35 purple:4
+@px 16 35 purple:4 17 35 purple:4 18 35 purple:4 19 35 purple:3 20 35 purple:2 21 35 marble:2 22 35 marble:2 23 35 marble:4 24 35 marble:4 25 35 marble:4
+@px 26 35 marble:4 27 35 marble:4 28 35 marble:2 29 35 marble:2 30 35 marble:1 31 35 marble:0 0 36 marble:1 1 36 marble:4 2 36 marble:2 3 36 marble:2
+@px 4 36 marble:1 5 36 marble:1 6 36 marble:1 7 36 marble:1 8 36 marble:1 9 36 marble:0 10 36 marble:2 11 36 purple:5 12 36 purple:5 13 36 purple:4
+@px 14 36 purple:4 15 36 purple:4 16 36 purple:4 17 36 purple:4 18 36 purple:4 19 36 purple:3 20 36 purple:2 21 36 marble:2 22 36 marble:2 23 36 marble:1
+@px 24 36 marble:1 25 36 marble:1 26 36 marble:1 27 36 marble:1 28 36 marble:0 29 36 marble:2 30 36 marble:1 31 36 marble:0 0 37 marble:1 1 37 marble:4
+@px 2 37 marble:2 3 37 marble:2 4 37 marble:1 5 37 marble:1 6 37 marble:1 7 37 marble:1 8 37 marble:1 9 37 marble:0 10 37 marble:2 11 37 purple:5
+@px 12 37 purple:5 13 37 purple:4 14 37 purple:4 15 37 gold:6 16 37 purple:4 17 37 purple:4 18 37 purple:4 19 37 purple:3 20 37 purple:2 21 37 marble:2
+@px 22 37 marble:2 23 37 marble:1 24 37 marble:1 25 37 marble:1 26 37 marble:1 27 37 marble:1 28 37 marble:0 29 37 marble:2 30 37 marble:1 31 37 marble:0
+@px 0 38 marble:1 1 38 marble:4 2 38 marble:2 3 38 marble:2 4 38 marble:1 5 38 marble:1 6 38 marble:1 7 38 marble:1 8 38 marble:1 9 38 marble:0
+@px 10 38 marble:2 11 38 purple:5 12 38 purple:5 13 38 purple:4 14 38 purple:4 15 38 gold:6 16 38 gold:4 17 38 purple:4 18 38 purple:4 19 38 purple:3
+@px 20 38 purple:2 21 38 marble:2 22 38 marble:2 23 38 marble:1 24 38 marble:1 25 38 marble:1 26 38 marble:1 27 38 marble:1 28 38 marble:0 29 38 marble:2
+@px 30 38 marble:1 31 38 marble:0 0 39 marble:1 1 39 marble:4 2 39 marble:2 3 39 marble:2 4 39 marble:1 5 39 marble:1 6 39 marble:1 7 39 marble:1
+@px 8 39 marble:1 9 39 marble:0 10 39 marble:2 11 39 purple:5 12 39 purple:5 13 39 gold:6 14 39 gold:6 15 39 gold:6 16 39 gold:4 17 39 gold:6
+@px 18 39 purple:4 19 39 purple:3 20 39 purple:2 21 39 marble:2 22 39 marble:2 23 39 marble:1 24 39 marble:1 25 39 marble:1 26 39 marble:1 27 39 marble:1
+@px 28 39 marble:0 29 39 marble:2 30 39 marble:1 31 39 marble:0 0 40 marble:1 1 40 marble:4 2 40 marble:2 3 40 marble:2 4 40 marble:1 5 40 marble:1
+@px 6 40 marble:1 7 40 marble:1 8 40 marble:1 9 40 marble:0 10 40 marble:2 11 40 purple:5 12 40 purple:5 13 40 purple:4 14 40 purple:4 15 40 gold:6
+@px 16 40 gold:4 17 40 purple:4 18 40 purple:4 19 40 purple:3 20 40 purple:2 21 40 marble:2 22 40 marble:2 23 40 marble:1 24 40 marble:1 25 40 marble:1
+@px 26 40 marble:1 27 40 marble:1 28 40 marble:0 29 40 marble:2 30 40 marble:1 31 40 marble:0 0 41 marble:1 1 41 marble:4 2 41 marble:2 3 41 marble:2
+@px 4 41 marble:1 5 41 marble:1 6 41 marble:1 7 41 marble:1 8 41 marble:1 9 41 marble:0 10 41 marble:2 11 41 purple:5 12 41 purple:5 13 41 purple:4
+@px 14 41 purple:4 15 41 gold:6 16 41 gold:4 17 41 purple:4 18 41 purple:4 19 41 purple:3 20 41 purple:2 21 41 marble:2 22 41 marble:2 23 41 marble:1
+@px 24 41 marble:1 25 41 marble:1 26 41 marble:1 27 41 marble:1 28 41 marble:0 29 41 marble:2 30 41 marble:1 31 41 marble:0 0 42 marble:1 1 42 marble:4
+@px 2 42 marble:2 3 42 marble:2 4 42 marble:1 5 42 marble:1 6 42 orange:5 7 42 marble:1 8 42 marble:1 9 42 marble:0 10 42 marble:2 11 42 purple:5
+@px 12 42 purple:5 13 42 purple:4 14 42 purple:4 15 42 gold:6 16 42 gold:4 17 42 purple:4 18 42 purple:4 19 42 purple:3 20 42 purple:2 21 42 marble:2
+@px 22 42 marble:2 23 42 marble:1 24 42 marble:1 25 42 orange:5 26 42 marble:1 27 42 marble:1 28 42 marble:0 29 42 marble:2 30 42 marble:1 31 42 marble:0
+@px 0 43 marble:1 1 43 marble:4 2 43 marble:2 3 43 marble:2 4 43 marble:1 5 43 marble:1 6 43 gold:5 7 43 marble:1 8 43 marble:1 9 43 marble:0
+@px 10 43 marble:2 11 43 purple:5 12 43 purple:5 13 43 purple:4 14 43 purple:4 15 43 purple:4 16 43 purple:4 17 43 purple:4 18 43 purple:4 19 43 purple:3
+@px 20 43 purple:2 21 43 marble:2 22 43 marble:2 23 43 marble:1 24 43 marble:1 25 43 gold:5 26 43 marble:1 27 43 marble:1 28 43 marble:0 29 43 marble:2
+@px 30 43 marble:1 31 43 marble:0 0 44 marble:1 1 44 marble:4 2 44 marble:2 3 44 marble:2 4 44 marble:1 5 44 marble:1 6 44 linen:4 7 44 marble:1
+@px 8 44 marble:1 9 44 marble:0 10 44 marble:2 11 44 purple:5 12 44 purple:5 13 44 purple:4 14 44 purple:4 15 44 purple:4 16 44 purple:4 17 44 purple:4
+@px 18 44 purple:4 19 44 purple:3 20 44 purple:2 21 44 marble:2 22 44 marble:2 23 44 marble:1 24 44 marble:1 25 44 linen:4 26 44 marble:1 27 44 marble:1
+@px 28 44 marble:0 29 44 marble:2 30 44 marble:1 31 44 marble:0 0 45 marble:1 1 45 marble:4 2 45 marble:2 3 45 marble:2 4 45 marble:1 5 45 marble:1
+@px 6 45 linen:3 7 45 marble:1 8 45 marble:1 9 45 marble:0 10 45 marble:2 11 45 purple:2 12 45 purple:2 13 45 purple:2 14 45 purple:2 15 45 purple:2
+@px 16 45 purple:2 17 45 purple:2 18 45 purple:2 19 45 purple:2 20 45 purple:2 21 45 marble:2 22 45 marble:2 23 45 marble:1 24 45 marble:1 25 45 linen:3
+@px 26 45 marble:1 27 45 marble:1 28 45 marble:0 29 45 marble:2 30 45 marble:1 31 45 marble:0 0 46 marble:1 1 46 marble:4 2 46 marble:2 3 46 marble:3
+@px 4 46 marble:3 5 46 marble:3 6 46 marble:3 7 46 marble:3 8 46 marble:3 9 46 marble:3 10 46 marble:2 11 46 gold:3 12 46 gold:5 13 46 gold:3
+@px 14 46 gold:5 15 46 gold:3 16 46 gold:5 17 46 gold:3 18 46 gold:5 19 46 gold:3 20 46 gold:5 21 46 marble:2 22 46 marble:3 23 46 marble:3
+@px 24 46 marble:3 25 46 marble:3 26 46 marble:3 27 46 marble:3 28 46 marble:3 29 46 marble:2 30 46 marble:1 31 46 marble:0 0 47 marble:0 1 47 marble:0
+@px 2 47 marble:0 3 47 marble:0 4 47 marble:0 5 47 marble:0 6 47 marble:0 7 47 marble:0 8 47 marble:0 9 47 marble:0 10 47 marble:0 11 47 marble:0
+@px 12 47 marble:0 13 47 marble:0 14 47 marble:0 15 47 marble:0 16 47 marble:0 17 47 marble:0 18 47 marble:0 19 47 marble:0 20 47 marble:0 21 47 marble:0
+@px 22 47 marble:0 23 47 marble:0 24 47 marble:0 25 47 marble:0 26 47 marble:0 27 47 marble:0 28 47 marble:0 29 47 marble:0 30 47 marble:0 31 47 marble:0

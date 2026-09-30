@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/ash/w3-A.pxg",
+ "set": "worldmap",
+ "id": "ash",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.183
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.382
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  47,
+  60
+ ],
+ "note": "화산재 몸통 — 낮은 대비 어두운 재바위와 금, 테는 wsand 를 태운 흙색과 풀색으로 이음, 주기 16.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.059
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.676
+  },
+  "seam": 0.62
+ }
+}

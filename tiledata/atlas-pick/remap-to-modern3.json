@@ -1,0 +1,4432 @@
+{
+ "about": "옛 팔레트 → modern3 색 대응. flat[hex] 로 png 를 재채색한다. 반투명(unmapped)은 합성 후 굽기 필요. 근거 tiledata/atlas-pick/modern-style-bible.md",
+ "sources": [
+  "jp.pal",
+  "modern.pal",
+  "school.pal"
+ ],
+ "target": "modern3.pal",
+ "weakDist": 22.0,
+ "stats": {
+  "oldRamps": 71,
+  "oldColors": 423,
+  "newColorsUsed": 125,
+  "newColorsTotal": 154,
+  "meanDist": 11.7,
+  "weakCount": 36,
+  "ambiguousHex": 16,
+  "nonMonotoneRamps": [],
+  "unusedNewColors": [
+   "#1a1226",
+   "#2c2538",
+   "#331620",
+   "#472027",
+   "#521e21",
+   "#52351e",
+   "#575666",
+   "#593e39",
+   "#5e2d2f",
+   "#62326b",
+   "#6352a8",
+   "#6b302a",
+   "#7b7b8f",
+   "#7d8ebf",
+   "#854a38",
+   "#856437",
+   "#8a4a94",
+   "#8d7cd1",
+   "#915b51",
+   "#9e644d",
+   "#ab7869",
+   "#aba4b8",
+   "#b88165",
+   "#b89d53",
+   "#bd6eb5",
+   "#c49884",
+   "#e0c57a",
+   "#e69ad2",
+   "#fae29f"
+  ]
+ },
+ "ambiguous": [
+  {
+   "from": "#111310",
+   "chosen": "#100a1a",
+   "others": {
+    "#28272e": [
+     "mmetal",
+     "mmetal",
+     "mmetal"
+    ]
+   }
+  },
+  {
+   "from": "#071528",
+   "chosen": "#100a1a",
+   "others": {
+    "#1b2138": [
+     "mglass",
+     "mdglass",
+     "mglass",
+     "mdglass",
+     "mglass",
+     "mdglass"
+    ],
+    "#0e1f1a": [
+     "mgreen",
+     "mgreen",
+     "mgreen"
+    ],
+    "#0a2847": [
+     "mblue",
+     "mblue",
+     "mblue"
+    ],
+    "#282a3d": [
+     "mnavy",
+     "mnavy",
+     "mnavy"
+    ]
+   }
+  },
+  {
+   "from": "#3c3e41",
+   "chosen": "#393742",
+   "others": {
+    "#464552": [
+     "mconc",
+     "mgran",
+     "mconc",
+     "mgran",
+     "mconc",
+     "mgran"
+    ]
+   }
+  },
+  {
+   "from": "#4e5053",
+   "chosen": "#504f5c",
+   "others": {
+    "#5b5463": [
+     "masph",
+     "masph",
+     "masph"
+    ]
+   }
+  },
+  {
+   "from": "#56585a",
+   "chosen": "#504f5c",
+   "others": {
+    "#5b5463": [
+     "masph",
+     "masph",
+     "masph"
+    ]
+   }
+  },
+  {
+   "from": "#b6b6b0",
+   "chosen": "#bbb4c4",
+   "others": {
+    "#c0b9cc": [
+     "mconc",
+     "mconc",
+     "mconc"
+    ]
+   }
+  },
+  {
+   "from": "#dee0dd",
+   "chosen": "#e6e2f0",
+   "others": {
+    "#e3dff2": [
+     "mconc",
+     "mgran",
+     "mmetal",
+     "mconc",
+     "mgran",
+     "mmetal",
+     "mconc",
+     "mgran",
+     "mmetal"
+    ]
+   }
+  },
+  {
+   "from": "#c2ccc7",
+   "chosen": "#cdc9de",
+   "others": {
+    "#a0a2c7": [
+     "mblue",
+     "mblue",
+     "mblue"
+    ]
+   }
+  },
+  {
+   "from": "#b9bbb8",
+   "chosen": "#cac7d6",
+   "others": {
+    "#c0b9cc": [
+     "mgran",
+     "mgran",
+     "mgran"
+    ]
+   }
+  },
+  {
+   "from": "#2b1407",
+   "chosen": "#331a18",
+   "others": {
+    "#331f21": [
+     "mbrick",
+     "mbrick",
+     "mbrick"
+    ],
+    "#331620": [
+     "mred",
+     "mred",
+     "mred"
+    ]
+   }
+  },
+  {
+   "from": "#431d00",
+   "chosen": "#571108",
+   "others": {
+    "#5e2d2f": [
+     "mbrick",
+     "mbrick",
+     "mbrick"
+    ],
+    "#4c3027": [
+     "msoil",
+     "msoil",
+     "msoil"
+    ]
+   }
+  },
+  {
+   "from": "#9e8d83",
+   "chosen": "#a18d76",
+   "others": {
+    "#948771": [
+     "mtile",
+     "mtile",
+     "mtile"
+    ]
+   }
+  },
+  {
+   "from": "#bcaaa0",
+   "chosen": "#baa990",
+   "others": {
+    "#c49884": [
+     "mtile",
+     "mtile",
+     "mtile"
+    ]
+   }
+  },
+  {
+   "from": "#0d1b2e",
+   "chosen": "#1b2138",
+   "others": {
+    "#282a3d": [
+     "mnavy",
+     "mnavy",
+     "mnavy"
+    ]
+   }
+  },
+  {
+   "from": "#ec9900",
+   "chosen": "#c7a51c",
+   "others": {
+    "#eb8e4f": [
+     "morange",
+     "morange",
+     "morange"
+    ]
+   }
+  },
+  {
+   "from": "#e1975a",
+   "chosen": "#eb8e4f",
+   "others": {
+    "#f78175": [
+     "mred",
+     "mred",
+     "mred"
+    ]
+   }
+  }
+ ],
+ "flat": {
+  "#000000": "#331f21",
+  "#061a3a": "#12173d",
+  "#062a34": "#20919e",
+  "#07070a": "#100a1a",
+  "#071528": "#100a1a",
+  "#08080a": "#100a1a",
+  "#0a1a3a": "#12173d",
+  "#0c1224": "#12173d",
+  "#0c1e34": "#0a2847",
+  "#0c240e": "#183327",
+  "#0c2a10": "#0c3d35",
+  "#0c2a16": "#0c3d35",
+  "#0c3066": "#1f295c",
+  "#0c4e5e": "#20919e",
+  "#0d1b2e": "#1b2138",
+  "#0e1216": "#28272e",
+  "#0e1a16": "#162324",
+  "#0e2418": "#0e1f1a",
+  "#10141e": "#282a3d",
+  "#10200f": "#0e1f1a",
+  "#10283a": "#1b2138",
+  "#111310": "#100a1a",
+  "#113461": "#1f295c",
+  "#121218": "#100a1a",
+  "#12788a": "#20919e",
+  "#131317": "#100a1a",
+  "#143054": "#0a2847",
+  "#143a27": "#183327",
+  "#14462a": "#0c3d35",
+  "#15224a": "#12173d",
+  "#15489a": "#304080",
+  "#16191f": "#28272e",
+  "#16291f": "#162324",
+  "#163822": "#183327",
+  "#174617": "#254a32",
+  "#184e88": "#304080",
+  "#1a0e06": "#331a18",
+  "#1a120e": "#100a1a",
+  "#1a2030": "#282a3d",
+  "#1a3418": "#183327",
+  "#1b4a1a": "#1b6b50",
+  "#1c2626": "#211f26",
+  "#1c2a30": "#282a3d",
+  "#1d2228": "#464552",
+  "#1d2c33": "#282a3d",
+  "#1e1e24": "#211f26",
+  "#1e1e28": "#211f26",
+  "#1e3a2c": "#243835",
+  "#1e4674": "#164d75",
+  "#1e6a3e": "#1b6b50",
+  "#1f2636": "#282a3d",
+  "#1f336c": "#1f295c",
+  "#1f68b0": "#4f80d6",
+  "#202737": "#282a3d",
+  "#205030": "#254a32",
+  "#20a8b8": "#20919e",
+  "#212d42": "#293952",
+  "#22282e": "#28272e",
+  "#22502e": "#254a32",
+  "#226820": "#49804c",
+  "#234a66": "#39536b",
+  "#241924": "#211f26",
+  "#24262a": "#464552",
+  "#243028": "#3f5250",
+  "#2466c4": "#4f80d6",
+  "#262b35": "#28272e",
+  "#262e44": "#282a3d",
+  "#284c22": "#254a32",
+  "#284c3a": "#344f46",
+  "#2a0c2a": "#3b1d42",
+  "#2a180b": "#331a18",
+  "#2a2a32": "#2b2a33",
+  "#2a3018": "#183327",
+  "#2a3038": "#28272e",
+  "#2a6a25": "#1b6b50",
+  "#2b1407": "#331a18",
+  "#2b203f": "#3b1d42",
+  "#2b3243": "#282a3d",
+  "#2c2018": "#331f21",
+  "#2c4450": "#373d52",
+  "#2c5e94": "#164d75",
+  "#2c8e52": "#2e9963",
+  "#2d4a8c": "#304080",
+  "#2e080a": "#3d151f",
+  "#2e2e3c": "#2b2a33",
+  "#2e8a2a": "#49804c",
+  "#312210": "#331a18",
+  "#315a6b": "#39536b",
+  "#333942": "#464552",
+  "#343e58": "#373d52",
+  "#34443a": "#3f5250",
+  "#346a3e": "#34633c",
+  "#363e47": "#3a3942",
+  "#363e5a": "#373d52",
+  "#36604a": "#4b6958",
+  "#366476": "#4a7387",
+  "#366d93": "#4a7387",
+  "#373e4b": "#3a3942",
+  "#3a0508": "#4c0717",
+  "#3a0a2e": "#9e2070",
+  "#3a0c0a": "#3d151f",
+  "#3a2210": "#4c3027",
+  "#3a2410": "#331f21",
+  "#3a2414": "#331f21",
+  "#3a2600": "#572c02",
+  "#3a2a00": "#572c02",
+  "#3a3530": "#504f5c",
+  "#3a3d42": "#464552",
+  "#3a4044": "#464552",
+  "#3a8a30": "#2e9963",
+  "#3c3a34": "#3a3942",
+  "#3c3e41": "#393742",
+  "#3c6630": "#34633c",
+  "#3e2412": "#452b2d",
+  "#3e403d": "#3a3942",
+  "#3e4652": "#4e4d59",
+  "#3fa2ae": "#4a7387",
+  "#406270": "#57697d",
+  "#411e05": "#4c3027",
+  "#41414c": "#464452",
+  "#423024": "#4c3027",
+  "#424a24": "#254a32",
+  "#431d00": "#571108",
+  "#444c5e": "#465166",
+  "#452a17": "#4c3027",
+  "#464656": "#464452",
+  "#48584c": "#3f5250",
+  "#49505d": "#504f5c",
+  "#4a1640": "#521e41",
+  "#4a1a00": "#571108",
+  "#4a2c14": "#5c302a",
+  "#4a2c16": "#4c3027",
+  "#4a3200": "#572c02",
+  "#4a5460": "#4e4d59",
+  "#4a5670": "#465166",
+  "#4a7eb2": "#287ea8",
+  "#4a90c0": "#627ca3",
+  "#4b5361": "#4e4d59",
+  "#4b8232": "#49804c",
+  "#4c5a64": "#504f5c",
+  "#4c765e": "#4b6958",
+  "#4e3c28": "#4c3027",
+  "#4e5053": "#504f5c",
+  "#4e8656": "#49804c",
+  "#4eae6e": "#2e9963",
+  "#4f4352": "#521e41",
+  "#52565c": "#504f5c",
+  "#5270a8": "#6d7494",
+  "#5491ca": "#4f80d6",
+  "#56585a": "#504f5c",
+  "#56606e": "#646473",
+  "#5690dc": "#4f80d6",
+  "#575f7d": "#57697d",
+  "#583b01": "#572c02",
+  "#585866": "#5b5463",
+  "#5a0e10": "#4c0717",
+  "#5a3011": "#4c3027",
+  "#5a3410": "#572c02",
+  "#5a4432": "#694d38",
+  "#5a5850": "#4e4d59",
+  "#5a5a66": "#504f5c",
+  "#5a6266": "#666775",
+  "#5a8446": "#49804c",
+  "#5a8494": "#4a7387",
+  "#5b6667": "#666775",
+  "#5c3c20": "#5c302a",
+  "#5c3e22": "#5c302a",
+  "#5c4108": "#572c02",
+  "#5c6630": "#34633c",
+  "#5cac46": "#689e63",
+  "#5cd4dc": "#43d1e0",
+  "#5e2a40": "#521e41",
+  "#5e3a1c": "#5c302a",
+  "#5e5644": "#6b5b50",
+  "#5e6063": "#5b5463",
+  "#5e7062": "#546b64",
+  "#5f3d21": "#694d38",
+  "#606878": "#666775",
+  "#62a04b": "#689e63",
+  "#63310b": "#5c302a",
+  "#633712": "#694d38",
+  "#645c54": "#6b5b50",
+  "#646478": "#6f6675",
+  "#646d7c": "#69687a",
+  "#66728c": "#6d7494",
+  "#6693a0": "#4a7387",
+  "#67030c": "#801223",
+  "#686a6c": "#6f6675",
+  "#69ac53": "#53c776",
+  "#6a1a10": "#801223",
+  "#6a2458": "#803360",
+  "#6a8e78": "#678570",
+  "#6c4835": "#78423c",
+  "#6c5408": "#8f610b",
+  "#6c5438": "#694d38",
+  "#6c6252": "#6b5b50",
+  "#6c7076": "#666775",
+  "#6c7c86": "#777580",
+  "#6d3b15": "#80543e",
+  "#6e1456": "#9e2070",
+  "#6e4422": "#80543e",
+  "#6f7173": "#666775",
+  "#703f57": "#803360",
+  "#707080": "#6f6675",
+  "#707c8a": "#7f8191",
+  "#72a474": "#689e63",
+  "#744c2a": "#694d38",
+  "#744e2c": "#694d38",
+  "#747b8f": "#6d7494",
+  "#765a44": "#705c4a",
+  "#76808a": "#817c8c",
+  "#76887a": "#6c8779",
+  "#76a2cc": "#a0a2c7",
+  "#777579": "#817c8c",
+  "#7a5600": "#8f610b",
+  "#7a776c": "#817c8c",
+  "#7a8442": "#49804c",
+  "#7c4114": "#8a3014",
+  "#7c8290": "#7f8191",
+  "#7cb85c": "#53c776",
+  "#7e3406": "#8a3014",
+  "#7e5430": "#80543e",
+  "#7e5935": "#80543e",
+  "#7e5c10": "#8f610b",
+  "#7e7e8a": "#7f8191",
+  "#7e7f7f": "#7f8191",
+  "#7e8688": "#7f8191",
+  "#80501c": "#8f610b",
+  "#81b5d5": "#9eb0e0",
+  "#82603a": "#80543e",
+  "#828a95": "#7f8191",
+  "#82a664": "#689e63",
+  "#838c99": "#948fa3",
+  "#84795e": "#948771",
+  "#8498c4": "#8588ad",
+  "#84aab6": "#a0a2c7",
+  "#858582": "#7f8191",
+  "#868887": "#7f8191",
+  "#885a26": "#80543e",
+  "#895261": "#803360",
+  "#8a3670": "#803360",
+  "#8a6038": "#876d54",
+  "#8a6e4c": "#876d54",
+  "#8a8aa0": "#817887",
+  "#8a8e92": "#7f8191",
+  "#8abae4": "#7b9cf7",
+  "#8ace63": "#91bf83",
+  "#8ad0a0": "#53c776",
+  "#8c6c5b": "#87735e",
+  "#8c9ca6": "#999dad",
+  "#8ca9a3": "#a0a2c7",
+  "#8e1616": "#801223",
+  "#8e8378": "#948771",
+  "#8e9aa6": "#999dad",
+  "#8f918e": "#999dad",
+  "#90928f": "#999dad",
+  "#92603a": "#80543e",
+  "#92928d": "#999dad",
+  "#94486a": "#803360",
+  "#94765c": "#876d54",
+  "#94a496": "#88a38e",
+  "#950110": "#b22430",
+  "#959dbe": "#a0a2c7",
+  "#98ce76": "#53c776",
+  "#9a5435": "#80543e",
+  "#9a968a": "#9f97a8",
+  "#9c2c16": "#b22430",
+  "#9c907a": "#948771",
+  "#9ca45c": "#91bf83",
+  "#9cc6cc": "#9eb0e0",
+  "#9e2514": "#b22430",
+  "#9e6574": "#b24f81",
+  "#9e684b": "#a17d54",
+  "#9e7046": "#a17d54",
+  "#9e7e10": "#8f610b",
+  "#9e8d83": "#a18d76",
+  "#9ea4b0": "#a3a0ad",
+  "#9f9f99": "#999dad",
+  "#a07448": "#a17d54",
+  "#a07818": "#8f610b",
+  "#a0c4f0": "#7b9cf7",
+  "#a2a29f": "#999dad",
+  "#a2a8aa": "#999dad",
+  "#a3a3af": "#a3a0ad",
+  "#a3acb5": "#bbb4c4",
+  "#a40100": "#b22430",
+  "#a48a64": "#a68e73",
+  "#a5adb2": "#999dad",
+  "#a6825a": "#a17d54",
+  "#a7a7a0": "#999dad",
+  "#a7d4db": "#9eb0e0",
+  "#a81e82": "#9e2070",
+  "#a8568c": "#b24f81",
+  "#a8702c": "#8f610b",
+  "#a89c7c": "#948771",
+  "#a8b0ba": "#bbb4c4",
+  "#aa7a08": "#a17d54",
+  "#aa8a7e": "#948771",
+  "#aaaeb0": "#999dad",
+  "#aabac2": "#b4b2c7",
+  "#acaca5": "#999dad",
+  "#ad8604": "#c7a51c",
+  "#ae7a87": "#db7598",
+  "#aeb8c2": "#bbb4c4",
+  "#b07e52": "#a17d54",
+  "#b08400": "#c7a51c",
+  "#b0f2f2": "#89f3ff",
+  "#b4c0b2": "#a6bfa8",
+  "#b6b6b0": "#bbb4c4",
+  "#b77246": "#a17d54",
+  "#b7b7b0": "#c0b9cc",
+  "#b8540e": "#c26027",
+  "#b8b4a6": "#bbb4c4",
+  "#b8daea": "#9eb0e0",
+  "#b8f080": "#91bf83",
+  "#b9ab9d": "#bdb793",
+  "#b9bbb8": "#cac7d6",
+  "#ba8e60": "#c2a175",
+  "#ba9262": "#c2a175",
+  "#ba9d71": "#c2a175",
+  "#bca47e": "#c2a175",
+  "#bcaaa0": "#baa990",
+  "#bcc6de": "#a0a2c7",
+  "#beb8b7": "#bbb4c4",
+  "#bfa045": "#c7a51c",
+  "#bfc4cc": "#cac7d6",
+  "#c02018": "#b22430",
+  "#c0e4ff": "#7b9cf7",
+  "#c2c6c6": "#c0b9cc",
+  "#c2ccc7": "#cdc9de",
+  "#c30014": "#b22430",
+  "#c47492": "#db7598",
+  "#c47eaa": "#db7598",
+  "#c4c6c3": "#c0b9cc",
+  "#c6a47c": "#c2a175",
+  "#c6d2d8": "#cac7d6",
+  "#c8401c": "#db4d4a",
+  "#c89042": "#c2a175",
+  "#c89c70": "#c2a175",
+  "#c8bc9a": "#bdb793",
+  "#c8bc9e": "#bdb793",
+  "#c8c8d4": "#cac7d6",
+  "#c8d0d0": "#cdc9de",
+  "#c8f09a": "#81f093",
+  "#caccca": "#cdc9de",
+  "#cd7121": "#c26027",
+  "#cdd4da": "#cdc9de",
+  "#d0a818": "#c7a51c",
+  "#d0c4b6": "#bdb793",
+  "#d0d8e0": "#bbb4c4",
+  "#d4ac80": "#c2a175",
+  "#d4c09c": "#e0c599",
+  "#d59147": "#c2a175",
+  "#d5b17d": "#c2a175",
+  "#d6d2c4": "#c0b9cc",
+  "#d6d8d5": "#9eb0e0",
+  "#d73a42": "#db4d4a",
+  "#d9d2be": "#e0dbb7",
+  "#dadae2": "#e6e2f0",
+  "#dadde2": "#e6e2f0",
+  "#dc4028": "#db4d4a",
+  "#dcbc94": "#e0c599",
+  "#dd2912": "#db4d4a",
+  "#deae5e": "#c2a175",
+  "#ded4b6": "#e0dbb7",
+  "#dee0dd": "#e6e2f0",
+  "#dee0de": "#e3dff2",
+  "#dee8ec": "#e6e2f0",
+  "#dfc24a": "#f0cd45",
+  "#dfc872": "#ffe26e",
+  "#e038aa": "#e043a7",
+  "#e0482a": "#db4d4a",
+  "#e05e30": "#db4d4a",
+  "#e09cb4": "#fa9eb4",
+  "#e0b010": "#c7a51c",
+  "#e0c6a0": "#e0c599",
+  "#e1975a": "#eb8e4f",
+  "#e2d8bc": "#e0dbb7",
+  "#e7ded0": "#e0dbb7",
+  "#e8761a": "#eb8e4f",
+  "#e8cca2": "#e0c599",
+  "#e8dcc0": "#e0c599",
+  "#eaf8f8": "#f6f1fc",
+  "#eb7571": "#f78175",
+  "#ec7048": "#f78175",
+  "#ec9900": "#c7a51c",
+  "#ecd6c6": "#e0dbb7",
+  "#ececf0": "#f6f1fc",
+  "#eceef0": "#f6f1fc",
+  "#ee8656": "#f78175",
+  "#eeca84": "#e0c599",
+  "#eee8d2": "#f7f2d3",
+  "#efdd7d": "#ffe26e",
+  "#f0c2d2": "#fa9eb4",
+  "#f0c6a8": "#ffb278",
+  "#f0d098": "#e0c599",
+  "#f0ffff": "#9eb0e0",
+  "#f2cc3a": "#f0cd45",
+  "#f2e2c6": "#e0c599",
+  "#f2f8fa": "#f6f1fc",
+  "#f478cc": "#ff89d4",
+  "#f49a48": "#eb8e4f",
+  "#f4eedc": "#f7f2d3",
+  "#f4ef5d": "#f0cd45",
+  "#f6a882": "#d1a181",
+  "#f6b48c": "#d1a181",
+  "#f7fdff": "#f6f1fc",
+  "#f8e2b0": "#e0c599",
+  "#fac690": "#ffb278",
+  "#fae47a": "#ffe26e",
+  "#fafbfc": "#f6f1fc",
+  "#fbc10d": "#f0cd45",
+  "#fbe2ea": "#fa9eb4",
+  "#fcbce8": "#ff89d4",
+  "#fefffc": "#f6f1fc",
+  "#ffb0a0": "#f78175",
+  "#ffebd7": "#e0c599",
+  "#fff0a0": "#ffe26e",
+  "#fff8b0": "#ffe26e",
+  "#fff8ea": "#f7f2d3",
+  "#fffaf0": "#f6f1fc",
+  "#ffff01": "#f0cd45",
+  "#ffffff": "#f6f1fc"
+ },
+ "byRamp": {
+  "mout": {
+   "from": "jp.pal",
+   "targets": [
+    "sumi",
+    "yoru"
+   ],
+   "map": [
+    {
+     "from": "#111310",
+     "to": "#100a1a",
+     "step": "sumi-1",
+     "dist": 12.1
+    },
+    {
+     "from": "#071528",
+     "to": "#100a1a",
+     "step": "sumi-1",
+     "dist": 8.2
+    },
+    {
+     "from": "#1c2626",
+     "to": "#211f26",
+     "step": "yoru-3",
+     "dist": 8.1
+    }
+   ]
+  },
+  "masph": {
+   "from": "jp.pal",
+   "targets": [
+    "yoru"
+   ],
+   "map": [
+    {
+     "from": "#241924",
+     "to": "#211f26",
+     "step": "yoru-3",
+     "dist": 5.8
+    },
+    {
+     "from": "#3c3e41",
+     "to": "#393742",
+     "step": "yoru-1",
+     "dist": 6.5
+    },
+    {
+     "from": "#4e5053",
+     "to": "#5b5463",
+     "step": "yoru+1",
+     "dist": 9.2
+    },
+    {
+     "from": "#56585a",
+     "to": "#5b5463",
+     "step": "yoru+1",
+     "dist": 9.0
+    },
+    {
+     "from": "#5e6063",
+     "to": "#5b5463",
+     "step": "yoru+1",
+     "dist": 9.7
+    },
+    {
+     "from": "#686a6c",
+     "to": "#6f6675",
+     "step": "yoru+2",
+     "dist": 9.0
+    }
+   ]
+  },
+  "mconc": {
+   "from": "jp.pal",
+   "targets": [
+    "conc",
+    "hodo"
+   ],
+   "map": [
+    {
+     "from": "#3c3e41",
+     "to": "#464552",
+     "step": "hodo-3",
+     "dist": 8.1
+    },
+    {
+     "from": "#56585a",
+     "to": "#504f5c",
+     "step": "conc-3",
+     "dist": 8.2
+    },
+    {
+     "from": "#6f7173",
+     "to": "#666775",
+     "step": "conc-2",
+     "dist": 8.6
+    },
+    {
+     "from": "#868887",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 10.2
+    },
+    {
+     "from": "#a2a29f",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 10.8
+    },
+    {
+     "from": "#b6b6b0",
+     "to": "#c0b9cc",
+     "step": "hodo+3",
+     "dist": 14.1
+    },
+    {
+     "from": "#dee0dd",
+     "to": "#e3dff2",
+     "step": "conc+3",
+     "dist": 11.7
+    }
+   ]
+  },
+  "mpave": {
+   "from": "jp.pal",
+   "targets": [
+    "hodo",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#6f7173",
+     "to": "#666775",
+     "step": "conc-2",
+     "dist": 8.6
+    },
+    {
+     "from": "#858582",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 11.0
+    },
+    {
+     "from": "#92928d",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 13.1
+    },
+    {
+     "from": "#9f9f99",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 12.3
+    },
+    {
+     "from": "#a7a7a0",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 13.5
+    },
+    {
+     "from": "#acaca5",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 14.5
+    },
+    {
+     "from": "#b7b7b0",
+     "to": "#c0b9cc",
+     "step": "hodo+3",
+     "dist": 14.5
+    },
+    {
+     "from": "#c2ccc7",
+     "to": "#cdc9de",
+     "step": "conc+2",
+     "dist": 14.8
+    }
+   ]
+  },
+  "mgran": {
+   "from": "jp.pal",
+   "targets": [
+    "conc",
+    "hodo"
+   ],
+   "map": [
+    {
+     "from": "#3c3e41",
+     "to": "#464552",
+     "step": "hodo-3",
+     "dist": 8.1
+    },
+    {
+     "from": "#4e5053",
+     "to": "#504f5c",
+     "step": "conc-3",
+     "dist": 6.4
+    },
+    {
+     "from": "#7e7f7f",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 9.3
+    },
+    {
+     "from": "#a2a29f",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 10.8
+    },
+    {
+     "from": "#b9bbb8",
+     "to": "#c0b9cc",
+     "step": "hodo+3",
+     "dist": 12.4
+    },
+    {
+     "from": "#c4c6c3",
+     "to": "#c0b9cc",
+     "step": "hodo+3",
+     "dist": 13.1
+    },
+    {
+     "from": "#dee0dd",
+     "to": "#e3dff2",
+     "step": "conc+3",
+     "dist": 11.7
+    }
+   ]
+  },
+  "mbrick": {
+   "from": "jp.pal",
+   "targets": [
+    "renga",
+    "ita"
+   ],
+   "map": [
+    {
+     "from": "#2b1407",
+     "to": "#331f21",
+     "step": "ita-3",
+     "dist": 10.8
+    },
+    {
+     "from": "#431d00",
+     "to": "#5e2d2f",
+     "step": "renga-1",
+     "dist": 20.0
+    },
+    {
+     "from": "#6c4835",
+     "to": "#78423c",
+     "step": "renga+0",
+     "dist": 10.4
+    },
+    {
+     "from": "#8c6c5b",
+     "to": "#87735e",
+     "step": "ita+1",
+     "dist": 6.1
+    },
+    {
+     "from": "#9e8d83",
+     "to": "#a18d76",
+     "step": "ita+2",
+     "dist": 7.4
+    },
+    {
+     "from": "#bcaaa0",
+     "to": "#baa990",
+     "step": "ita+3",
+     "dist": 8.2
+    }
+   ]
+  },
+  "mtile": {
+   "from": "jp.pal",
+   "targets": [
+    "renga",
+    "kinari",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#6c4835",
+     "to": "#78423c",
+     "step": "renga+0",
+     "dist": 10.4
+    },
+    {
+     "from": "#9e8d83",
+     "to": "#948771",
+     "step": "kinari-1",
+     "dist": 7.9
+    },
+    {
+     "from": "#aa8a7e",
+     "to": "#948771",
+     "step": "kinari-1",
+     "dist": 10.3
+    },
+    {
+     "from": "#bcaaa0",
+     "to": "#c49884",
+     "step": "renga+3",
+     "dist": 14.1
+    },
+    {
+     "from": "#d9d2be",
+     "to": "#e0dbb7",
+     "step": "kinari+1",
+     "dist": 8.9
+    },
+    {
+     "from": "#ecd6c6",
+     "to": "#e0dbb7",
+     "step": "kinari+1",
+     "dist": 12.0
+    }
+   ]
+  },
+  "mglass": {
+   "from": "jp.pal",
+   "targets": [
+    "garasu"
+   ],
+   "map": [
+    {
+     "from": "#071528",
+     "to": "#1b2138",
+     "step": "garasu-3",
+     "dist": 9.3
+    },
+    {
+     "from": "#212d42",
+     "to": "#293952",
+     "step": "garasu-2",
+     "dist": 7.4
+    },
+    {
+     "from": "#315a6b",
+     "to": "#39536b",
+     "step": "garasu-1",
+     "dist": 7.4
+    },
+    {
+     "from": "#366476",
+     "to": "#4a7387",
+     "step": "garasu+0",
+     "dist": 8.4
+    },
+    {
+     "from": "#6693a0",
+     "to": "#4a7387",
+     "step": "garasu+0",
+     "dist": 16.3
+    },
+    {
+     "from": "#9cc6cc",
+     "to": "#9eb0e0",
+     "step": "garasu+3",
+     "dist": 26.1
+    },
+    {
+     "from": "#a7d4db",
+     "to": "#9eb0e0",
+     "step": "garasu+3",
+     "dist": 28.3
+    },
+    {
+     "from": "#d6d8d5",
+     "to": "#9eb0e0",
+     "step": "garasu+3",
+     "dist": 33.5
+    }
+   ]
+  },
+  "mdglass": {
+   "from": "jp.pal",
+   "targets": [
+    "garasu",
+    "tairu",
+    "kon"
+   ],
+   "map": [
+    {
+     "from": "#071528",
+     "to": "#1b2138",
+     "step": "garasu-3",
+     "dist": 9.3
+    },
+    {
+     "from": "#0d1b2e",
+     "to": "#1b2138",
+     "step": "garasu-3",
+     "dist": 6.1
+    },
+    {
+     "from": "#1f2636",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 4.3
+    },
+    {
+     "from": "#2b3243",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 4.9
+    },
+    {
+     "from": "#363e5a",
+     "to": "#373d52",
+     "step": "tairu-2",
+     "dist": 4.6
+    },
+    {
+     "from": "#575f7d",
+     "to": "#57697d",
+     "step": "tairu+0",
+     "dist": 8.5
+    },
+    {
+     "from": "#747b8f",
+     "to": "#6d7494",
+     "step": "tairu+1",
+     "dist": 7.8
+    },
+    {
+     "from": "#959dbe",
+     "to": "#a0a2c7",
+     "step": "tairu+3",
+     "dist": 4.4
+    }
+   ]
+  },
+  "mmetal": {
+   "from": "jp.pal",
+   "targets": [
+    "tekko",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#111310",
+     "to": "#28272e",
+     "step": "tekko-3",
+     "dist": 15.1
+    },
+    {
+     "from": "#3e403d",
+     "to": "#3a3942",
+     "step": "tekko-2",
+     "dist": 8.7
+    },
+    {
+     "from": "#5b6667",
+     "to": "#666775",
+     "step": "conc-2",
+     "dist": 9.2
+    },
+    {
+     "from": "#777579",
+     "to": "#817c8c",
+     "step": "tekko+1",
+     "dist": 8.3
+    },
+    {
+     "from": "#90928f",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 12.2
+    },
+    {
+     "from": "#b6b6b0",
+     "to": "#bbb4c4",
+     "step": "tekko+3",
+     "dist": 12.2
+    },
+    {
+     "from": "#beb8b7",
+     "to": "#bbb4c4",
+     "step": "tekko+3",
+     "dist": 9.3
+    },
+    {
+     "from": "#dee0dd",
+     "to": "#e3dff2",
+     "step": "conc+3",
+     "dist": 11.7
+    }
+   ]
+  },
+  "mwhite": {
+   "from": "jp.pal",
+   "targets": [
+    "shiro",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#8f918e",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 12.4
+    },
+    {
+     "from": "#b9bbb8",
+     "to": "#cac7d6",
+     "step": "shiro+0",
+     "dist": 11.9
+    },
+    {
+     "from": "#dee0dd",
+     "to": "#e6e2f0",
+     "step": "shiro+1",
+     "dist": 9.3
+    },
+    {
+     "from": "#eaf8f8",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 8.8
+    },
+    {
+     "from": "#f7fdff",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 7.3
+    },
+    {
+     "from": "#fefffc",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 9.2
+    }
+   ]
+  },
+  "myellow": {
+   "from": "jp.pal",
+   "targets": [
+    "kii"
+   ],
+   "map": [
+    {
+     "from": "#583b01",
+     "to": "#572c02",
+     "step": "kii-2",
+     "dist": 11.4
+    },
+    {
+     "from": "#ad8604",
+     "to": "#c7a51c",
+     "step": "kii+0",
+     "dist": 15.7
+    },
+    {
+     "from": "#ec9900",
+     "to": "#c7a51c",
+     "step": "kii+0",
+     "dist": 23.3
+    },
+    {
+     "from": "#fbc10d",
+     "to": "#f0cd45",
+     "step": "kii+1",
+     "dist": 16.2
+    },
+    {
+     "from": "#f4ef5d",
+     "to": "#f0cd45",
+     "step": "kii+1",
+     "dist": 18.5
+    },
+    {
+     "from": "#ffff01",
+     "to": "#f0cd45",
+     "step": "kii+1",
+     "dist": 37.2
+    }
+   ]
+  },
+  "mred": {
+   "from": "jp.pal",
+   "targets": [
+    "aka",
+    "renga"
+   ],
+   "map": [
+    {
+     "from": "#2b1407",
+     "to": "#331620",
+     "step": "renga-3",
+     "dist": 13.2
+    },
+    {
+     "from": "#a40100",
+     "to": "#b22430",
+     "step": "aka+0",
+     "dist": 19.6
+    },
+    {
+     "from": "#9e2514",
+     "to": "#b22430",
+     "step": "aka+0",
+     "dist": 13.7
+    },
+    {
+     "from": "#dd2912",
+     "to": "#db4d4a",
+     "step": "aka+1",
+     "dist": 26.8
+    },
+    {
+     "from": "#e0482a",
+     "to": "#db4d4a",
+     "step": "aka+1",
+     "dist": 17.4
+    },
+    {
+     "from": "#e1975a",
+     "to": "#f78175",
+     "step": "aka+2",
+     "dist": 27.3
+    }
+   ]
+  },
+  "mgreen": {
+   "from": "jp.pal",
+   "targets": [
+    "midori",
+    "ki"
+   ],
+   "map": [
+    {
+     "from": "#071528",
+     "to": "#0e1f1a",
+     "step": "ki-3",
+     "dist": 19.5
+    },
+    {
+     "from": "#143a27",
+     "to": "#183327",
+     "step": "ki-2",
+     "dist": 6.9
+    },
+    {
+     "from": "#205030",
+     "to": "#254a32",
+     "step": "ki-1",
+     "dist": 6.7
+    },
+    {
+     "from": "#4b8232",
+     "to": "#49804c",
+     "step": "ki+1",
+     "dist": 14.8
+    },
+    {
+     "from": "#62a04b",
+     "to": "#689e63",
+     "step": "ki+2",
+     "dist": 14.0
+    },
+    {
+     "from": "#7cb85c",
+     "to": "#53c776",
+     "step": "midori+1",
+     "dist": 17.7
+    }
+   ]
+  },
+  "mblue": {
+   "from": "jp.pal",
+   "targets": [
+    "kon",
+    "tairu",
+    "sora"
+   ],
+   "map": [
+    {
+     "from": "#071528",
+     "to": "#0a2847",
+     "step": "sora-2",
+     "dist": 14.1
+    },
+    {
+     "from": "#202737",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 3.9
+    },
+    {
+     "from": "#363e5a",
+     "to": "#373d52",
+     "step": "tairu-2",
+     "dist": 4.6
+    },
+    {
+     "from": "#575f7d",
+     "to": "#57697d",
+     "step": "tairu+0",
+     "dist": 8.5
+    },
+    {
+     "from": "#959dbe",
+     "to": "#a0a2c7",
+     "step": "tairu+3",
+     "dist": 4.4
+    },
+    {
+     "from": "#c2ccc7",
+     "to": "#a0a2c7",
+     "step": "tairu+3",
+     "dist": 29.3
+    }
+   ]
+  },
+  "mteal": {
+   "from": "jp.pal",
+   "targets": [
+    "garasu",
+    "midori",
+    "tairu"
+   ],
+   "map": [
+    {
+     "from": "#1d2c33",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 10.4
+    },
+    {
+     "from": "#315a6b",
+     "to": "#39536b",
+     "step": "garasu-1",
+     "dist": 7.4
+    },
+    {
+     "from": "#3fa2ae",
+     "to": "#4a7387",
+     "step": "garasu+0",
+     "dist": 25.7
+    },
+    {
+     "from": "#8ca9a3",
+     "to": "#a0a2c7",
+     "step": "tairu+3",
+     "dist": 26.3
+    },
+    {
+     "from": "#a7d4db",
+     "to": "#9eb0e0",
+     "step": "garasu+3",
+     "dist": 28.3
+    }
+   ]
+  },
+  "mwood": {
+   "from": "jp.pal",
+   "targets": [
+    "ita",
+    "yuka",
+    "soil"
+   ],
+   "map": [
+    {
+     "from": "#312210",
+     "to": "#331a18",
+     "step": "soil-2",
+     "dist": 11.1
+    },
+    {
+     "from": "#452a17",
+     "to": "#4c3027",
+     "step": "soil-1",
+     "dist": 7.7
+    },
+    {
+     "from": "#633712",
+     "to": "#694d38",
+     "step": "soil+0",
+     "dist": 18.0
+    },
+    {
+     "from": "#885a26",
+     "to": "#80543e",
+     "step": "yuka-1",
+     "dist": 16.7
+    },
+    {
+     "from": "#aa7a08",
+     "to": "#a17d54",
+     "step": "yuka+0",
+     "dist": 31.5
+    },
+    {
+     "from": "#ba9d71",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 2.9
+    }
+   ]
+  },
+  "morange": {
+   "from": "jp.pal",
+   "targets": [
+    "daidai"
+   ],
+   "map": [
+    {
+     "from": "#431d00",
+     "to": "#571108",
+     "step": "daidai-2",
+     "dist": 15.2
+    },
+    {
+     "from": "#7c4114",
+     "to": "#8a3014",
+     "step": "daidai-1",
+     "dist": 14.9
+    },
+    {
+     "from": "#cd7121",
+     "to": "#c26027",
+     "step": "daidai+0",
+     "dist": 11.2
+    },
+    {
+     "from": "#ec9900",
+     "to": "#eb8e4f",
+     "step": "daidai+1",
+     "dist": 28.0
+    },
+    {
+     "from": "#e1975a",
+     "to": "#eb8e4f",
+     "step": "daidai+1",
+     "dist": 9.5
+    },
+    {
+     "from": "#f0c6a8",
+     "to": "#ffb278",
+     "step": "daidai+2",
+     "dist": 23.6
+    }
+   ]
+  },
+  "mpurple": {
+   "from": "jp.pal",
+   "targets": [
+    "murasaki",
+    "pinku"
+   ],
+   "map": [
+    {
+     "from": "#2b203f",
+     "to": "#3b1d42",
+     "step": "murasaki-2",
+     "dist": 8.7
+    },
+    {
+     "from": "#4f4352",
+     "to": "#521e41",
+     "step": "pinku-2",
+     "dist": 24.4
+    },
+    {
+     "from": "#703f57",
+     "to": "#803360",
+     "step": "pinku-1",
+     "dist": 14.6
+    },
+    {
+     "from": "#895261",
+     "to": "#803360",
+     "step": "pinku-1",
+     "dist": 20.5
+    },
+    {
+     "from": "#9e6574",
+     "to": "#b24f81",
+     "step": "pinku+0",
+     "dist": 23.0
+    },
+    {
+     "from": "#ae7a87",
+     "to": "#db7598",
+     "step": "pinku+1",
+     "dist": 22.4
+    }
+   ]
+  },
+  "mnavy": {
+   "from": "jp.pal",
+   "targets": [
+    "kon",
+    "tairu"
+   ],
+   "map": [
+    {
+     "from": "#071528",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 14.8
+    },
+    {
+     "from": "#0d1b2e",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 11.2
+    },
+    {
+     "from": "#202737",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 3.9
+    },
+    {
+     "from": "#2b3243",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 4.9
+    },
+    {
+     "from": "#444c5e",
+     "to": "#465166",
+     "step": "tairu-1",
+     "dist": 3.3
+    },
+    {
+     "from": "#747b8f",
+     "to": "#6d7494",
+     "step": "tairu+1",
+     "dist": 7.8
+    }
+   ]
+  },
+  "msoil": {
+   "from": "jp.pal",
+   "targets": [
+    "soil"
+   ],
+   "map": [
+    {
+     "from": "#2b1407",
+     "to": "#331a18",
+     "step": "soil-2",
+     "dist": 6.5
+    },
+    {
+     "from": "#431d00",
+     "to": "#4c3027",
+     "step": "soil-1",
+     "dist": 16.4
+    },
+    {
+     "from": "#5a3011",
+     "to": "#4c3027",
+     "step": "soil-1",
+     "dist": 17.1
+    },
+    {
+     "from": "#744c2a",
+     "to": "#694d38",
+     "step": "soil+0",
+     "dist": 10.7
+    }
+   ]
+  },
+  "shu": {
+   "from": "jp.pal",
+   "targets": [
+    "aka",
+    "renga",
+    "kawara"
+   ],
+   "map": [
+    {
+     "from": "#3a0c0a",
+     "to": "#3d151f",
+     "step": "kawara-3",
+     "dist": 10.1
+    },
+    {
+     "from": "#6a1a10",
+     "to": "#801223",
+     "step": "aka-1",
+     "dist": 13.4
+    },
+    {
+     "from": "#9c2c16",
+     "to": "#b22430",
+     "step": "aka+0",
+     "dist": 15.0
+    },
+    {
+     "from": "#c8401c",
+     "to": "#db4d4a",
+     "step": "aka+1",
+     "dist": 18.9
+    },
+    {
+     "from": "#e05e30",
+     "to": "#db4d4a",
+     "step": "aka+1",
+     "dist": 19.6
+    },
+    {
+     "from": "#ee8656",
+     "to": "#f78175",
+     "step": "aka+2",
+     "dist": 17.7
+    },
+    {
+     "from": "#f6b48c",
+     "to": "#d1a181",
+     "step": "kawara+3",
+     "dist": 14.1
+    }
+   ]
+  },
+  "akachin": {
+   "from": "jp.pal",
+   "targets": [
+    "aka",
+    "renga",
+    "kawara"
+   ],
+   "map": [
+    {
+     "from": "#2e080a",
+     "to": "#3d151f",
+     "step": "kawara-3",
+     "dist": 9.3
+    },
+    {
+     "from": "#5a0e10",
+     "to": "#4c0717",
+     "step": "aka-2",
+     "dist": 11.5
+    },
+    {
+     "from": "#8e1616",
+     "to": "#801223",
+     "step": "aka-1",
+     "dist": 13.4
+    },
+    {
+     "from": "#c02018",
+     "to": "#b22430",
+     "step": "aka+0",
+     "dist": 17.2
+    },
+    {
+     "from": "#dc4028",
+     "to": "#db4d4a",
+     "step": "aka+1",
+     "dist": 16.9
+    },
+    {
+     "from": "#ec7048",
+     "to": "#f78175",
+     "step": "aka+2",
+     "dist": 18.7
+    },
+    {
+     "from": "#f6a882",
+     "to": "#d1a181",
+     "step": "kawara+3",
+     "dist": 15.3
+    }
+   ]
+  },
+  "ai": {
+   "from": "jp.pal",
+   "targets": [
+    "kon",
+    "tairu"
+   ],
+   "map": [
+    {
+     "from": "#0c1224",
+     "to": "#12173d",
+     "step": "kon-2",
+     "dist": 15.9
+    },
+    {
+     "from": "#15224a",
+     "to": "#12173d",
+     "step": "kon-2",
+     "dist": 6.8
+    },
+    {
+     "from": "#1f336c",
+     "to": "#1f295c",
+     "step": "kon-1",
+     "dist": 6.6
+    },
+    {
+     "from": "#2d4a8c",
+     "to": "#304080",
+     "step": "kon+0",
+     "dist": 5.7
+    },
+    {
+     "from": "#5270a8",
+     "to": "#6d7494",
+     "step": "tairu+1",
+     "dist": 15.4
+    },
+    {
+     "from": "#8498c4",
+     "to": "#8588ad",
+     "step": "tairu+2",
+     "dist": 9.2
+    },
+    {
+     "from": "#bcc6de",
+     "to": "#a0a2c7",
+     "step": "tairu+3",
+     "dist": 17.9
+    }
+   ]
+  },
+  "kawara": {
+   "from": "jp.pal",
+   "targets": [
+    "tekko",
+    "tairu",
+    "hodo"
+   ],
+   "map": [
+    {
+     "from": "#16191f",
+     "to": "#28272e",
+     "step": "tekko-3",
+     "dist": 9.7
+    },
+    {
+     "from": "#262b35",
+     "to": "#28272e",
+     "step": "tekko-3",
+     "dist": 3.7
+    },
+    {
+     "from": "#373e4b",
+     "to": "#3a3942",
+     "step": "tekko-2",
+     "dist": 4.6
+    },
+    {
+     "from": "#4b5361",
+     "to": "#4e4d59",
+     "step": "tekko-1",
+     "dist": 4.4
+    },
+    {
+     "from": "#646d7c",
+     "to": "#69687a",
+     "step": "hodo-1",
+     "dist": 4.5
+    },
+    {
+     "from": "#838c99",
+     "to": "#948fa3",
+     "step": "hodo+1",
+     "dist": 7.4
+    },
+    {
+     "from": "#a8b0ba",
+     "to": "#bbb4c4",
+     "step": "tekko+3",
+     "dist": 7.4
+    }
+   ]
+  },
+  "hinoki": {
+   "from": "jp.pal",
+   "targets": [
+    "ita",
+    "yuka"
+   ],
+   "map": [
+    {
+     "from": "#3a2414",
+     "to": "#331f21",
+     "step": "ita-3",
+     "dist": 12.7
+    },
+    {
+     "from": "#5c3c20",
+     "to": "#5c302a",
+     "step": "yuka-2",
+     "dist": 13.7
+    },
+    {
+     "from": "#82603a",
+     "to": "#80543e",
+     "step": "yuka-1",
+     "dist": 10.3
+    },
+    {
+     "from": "#a6825a",
+     "to": "#a17d54",
+     "step": "yuka+0",
+     "dist": 2.6
+    },
+    {
+     "from": "#c6a47c",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 2.7
+    },
+    {
+     "from": "#e0c6a0",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 3.2
+    },
+    {
+     "from": "#f2e2c6",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 16.2
+    }
+   ]
+  },
+  "sumi": {
+   "from": "jp.pal",
+   "targets": [
+    "sumi",
+    "soil",
+    "ita"
+   ],
+   "map": [
+    {
+     "from": "#1a120e",
+     "to": "#100a1a",
+     "step": "sumi-1",
+     "dist": 12.5
+    },
+    {
+     "from": "#2c2018",
+     "to": "#331f21",
+     "step": "ita-3",
+     "dist": 7.7
+    },
+    {
+     "from": "#423024",
+     "to": "#4c3027",
+     "step": "soil-1",
+     "dist": 5.6
+    },
+    {
+     "from": "#5a4432",
+     "to": "#694d38",
+     "step": "soil+0",
+     "dist": 6.7
+    },
+    {
+     "from": "#765a44",
+     "to": "#705c4a",
+     "step": "ita+0",
+     "dist": 4.8
+    },
+    {
+     "from": "#94765c",
+     "to": "#876d54",
+     "step": "soil+1",
+     "dist": 5.4
+    }
+   ]
+  },
+  "washi": {
+   "from": "jp.pal",
+   "targets": [
+    "kinari",
+    "shiro"
+   ],
+   "map": [
+    {
+     "from": "#6c6252",
+     "to": "#6b5b50",
+     "step": "kinari-2",
+     "dist": 4.8
+    },
+    {
+     "from": "#9c907a",
+     "to": "#948771",
+     "step": "kinari-1",
+     "dist": 4.4
+    },
+    {
+     "from": "#c8bc9e",
+     "to": "#bdb793",
+     "step": "kinari+0",
+     "dist": 5.1
+    },
+    {
+     "from": "#e2d8bc",
+     "to": "#e0dbb7",
+     "step": "kinari+1",
+     "dist": 4.5
+    },
+    {
+     "from": "#f4eedc",
+     "to": "#f7f2d3",
+     "step": "kinari+2",
+     "dist": 6.7
+    },
+    {
+     "from": "#fffaf0",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 11.2
+    }
+   ]
+  },
+  "sakura": {
+   "from": "jp.pal",
+   "targets": [
+    "pinku"
+   ],
+   "map": [
+    {
+     "from": "#5e2a40",
+     "to": "#521e41",
+     "step": "pinku-2",
+     "dist": 10.0
+    },
+    {
+     "from": "#94486a",
+     "to": "#803360",
+     "step": "pinku-1",
+     "dist": 11.6
+    },
+    {
+     "from": "#c47492",
+     "to": "#db7598",
+     "step": "pinku+1",
+     "dist": 9.6
+    },
+    {
+     "from": "#e09cb4",
+     "to": "#fa9eb4",
+     "step": "pinku+2",
+     "dist": 10.7
+    },
+    {
+     "from": "#f0c2d2",
+     "to": "#fa9eb4",
+     "step": "pinku+2",
+     "dist": 21.4
+    },
+    {
+     "from": "#fbe2ea",
+     "to": "#fa9eb4",
+     "step": "pinku+2",
+     "dist": 35.3
+    }
+   ]
+  },
+  "matsu": {
+   "from": "jp.pal",
+   "targets": [
+    "ki",
+    "midori"
+   ],
+   "map": [
+    {
+     "from": "#10200f",
+     "to": "#0e1f1a",
+     "step": "ki-3",
+     "dist": 8.1
+    },
+    {
+     "from": "#1a3418",
+     "to": "#183327",
+     "step": "ki-2",
+     "dist": 10.7
+    },
+    {
+     "from": "#284c22",
+     "to": "#254a32",
+     "step": "ki-1",
+     "dist": 11.0
+    },
+    {
+     "from": "#3c6630",
+     "to": "#34633c",
+     "step": "ki+0",
+     "dist": 8.7
+    },
+    {
+     "from": "#5a8446",
+     "to": "#49804c",
+     "step": "ki+1",
+     "dist": 7.4
+    },
+    {
+     "from": "#82a664",
+     "to": "#689e63",
+     "step": "ki+2",
+     "dist": 9.1
+    }
+   ]
+  },
+  "moss": {
+   "from": "jp.pal",
+   "targets": [
+    "ki",
+    "midori",
+    "soil"
+   ],
+   "map": [
+    {
+     "from": "#2a3018",
+     "to": "#183327",
+     "step": "ki-2",
+     "dist": 11.9
+    },
+    {
+     "from": "#424a24",
+     "to": "#254a32",
+     "step": "ki-1",
+     "dist": 14.8
+    },
+    {
+     "from": "#5c6630",
+     "to": "#34633c",
+     "step": "ki+0",
+     "dist": 17.7
+    },
+    {
+     "from": "#7a8442",
+     "to": "#49804c",
+     "step": "ki+1",
+     "dist": 20.1
+    },
+    {
+     "from": "#9ca45c",
+     "to": "#91bf83",
+     "step": "ki+3",
+     "dist": 19.3
+    }
+   ]
+  },
+  "ishi": {
+   "from": "jp.pal",
+   "targets": [
+    "hodo",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#24262a",
+     "to": "#464552",
+     "step": "hodo-3",
+     "dist": 20.0
+    },
+    {
+     "from": "#3a3d42",
+     "to": "#464552",
+     "step": "hodo-3",
+     "dist": 7.7
+    },
+    {
+     "from": "#52565c",
+     "to": "#504f5c",
+     "step": "conc-3",
+     "dist": 5.8
+    },
+    {
+     "from": "#6c7076",
+     "to": "#666775",
+     "step": "conc-2",
+     "dist": 6.5
+    },
+    {
+     "from": "#8a8e92",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 9.2
+    },
+    {
+     "from": "#aaaeb0",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 11.0
+    },
+    {
+     "from": "#caccca",
+     "to": "#cdc9de",
+     "step": "conc+2",
+     "dist": 12.4
+    }
+   ]
+  },
+  "lacq": {
+   "from": "jp.pal",
+   "targets": [
+    "sumi",
+    "yoru"
+   ],
+   "map": [
+    {
+     "from": "#07070a",
+     "to": "#100a1a",
+     "step": "sumi-1",
+     "dist": 9.0
+    },
+    {
+     "from": "#121218",
+     "to": "#100a1a",
+     "step": "sumi-1",
+     "dist": 6.5
+    },
+    {
+     "from": "#1e1e28",
+     "to": "#211f26",
+     "step": "yoru-3",
+     "dist": 2.5
+    },
+    {
+     "from": "#2e2e3c",
+     "to": "#2b2a33",
+     "step": "yoru-2",
+     "dist": 4.2
+    },
+    {
+     "from": "#464656",
+     "to": "#464452",
+     "step": "yoru+0",
+     "dist": 1.8
+    },
+    {
+     "from": "#646478",
+     "to": "#6f6675",
+     "step": "yoru+2",
+     "dist": 5.0
+    },
+    {
+     "from": "#8a8aa0",
+     "to": "#817887",
+     "step": "yoru+3",
+     "dist": 9.8
+    }
+   ]
+  },
+  "taxi": {
+   "from": "jp.pal",
+   "targets": [
+    "kii"
+   ],
+   "map": [
+    {
+     "from": "#4a3200",
+     "to": "#572c02",
+     "step": "kii-2",
+     "dist": 10.6
+    },
+    {
+     "from": "#7a5600",
+     "to": "#8f610b",
+     "step": "kii-1",
+     "dist": 8.5
+    },
+    {
+     "from": "#b08400",
+     "to": "#c7a51c",
+     "step": "kii+0",
+     "dist": 16.6
+    },
+    {
+     "from": "#e0b010",
+     "to": "#c7a51c",
+     "step": "kii+0",
+     "dist": 11.3
+    },
+    {
+     "from": "#f2cc3a",
+     "to": "#f0cd45",
+     "step": "kii+1",
+     "dist": 4.0
+    },
+    {
+     "from": "#fae47a",
+     "to": "#ffe26e",
+     "step": "kii+2",
+     "dist": 5.8
+    }
+   ]
+  },
+  "neon": {
+   "from": "jp.pal",
+   "targets": [
+    "neonP"
+   ],
+   "map": [
+    {
+     "from": "#3a0a2e",
+     "to": "#9e2070",
+     "step": "neonP-1",
+     "dist": 44.3
+    },
+    {
+     "from": "#6e1456",
+     "to": "#9e2070",
+     "step": "neonP-1",
+     "dist": 19.5
+    },
+    {
+     "from": "#a81e82",
+     "to": "#9e2070",
+     "step": "neonP-1",
+     "dist": 9.5
+    },
+    {
+     "from": "#e038aa",
+     "to": "#e043a7",
+     "step": "neonP+0",
+     "dist": 5.5
+    },
+    {
+     "from": "#f478cc",
+     "to": "#ff89d4",
+     "step": "neonP+1",
+     "dist": 7.9
+    },
+    {
+     "from": "#fcbce8",
+     "to": "#ff89d4",
+     "step": "neonP+1",
+     "dist": 28.5
+    }
+   ]
+  },
+  "neonc": {
+   "from": "jp.pal",
+   "targets": [
+    "neonC"
+   ],
+   "map": [
+    {
+     "from": "#062a34",
+     "to": "#20919e",
+     "step": "neonC-1",
+     "dist": 54.9
+    },
+    {
+     "from": "#0c4e5e",
+     "to": "#20919e",
+     "step": "neonC-1",
+     "dist": 34.5
+    },
+    {
+     "from": "#12788a",
+     "to": "#20919e",
+     "step": "neonC-1",
+     "dist": 12.8
+    },
+    {
+     "from": "#20a8b8",
+     "to": "#20919e",
+     "step": "neonC-1",
+     "dist": 11.2
+    },
+    {
+     "from": "#5cd4dc",
+     "to": "#43d1e0",
+     "step": "neonC+0",
+     "dist": 4.8
+    },
+    {
+     "from": "#b0f2f2",
+     "to": "#89f3ff",
+     "step": "neonC+1",
+     "dist": 11.4
+    }
+   ]
+  },
+  "kgreen": {
+   "from": "jp.pal",
+   "targets": [
+    "midori"
+   ],
+   "map": [
+    {
+     "from": "#0c2a16",
+     "to": "#0c3d35",
+     "step": "midori-2",
+     "dist": 14.4
+    },
+    {
+     "from": "#14462a",
+     "to": "#0c3d35",
+     "step": "midori-2",
+     "dist": 13.9
+    },
+    {
+     "from": "#1e6a3e",
+     "to": "#1b6b50",
+     "step": "midori-1",
+     "dist": 10.4
+    },
+    {
+     "from": "#2c8e52",
+     "to": "#2e9963",
+     "step": "midori+0",
+     "dist": 6.6
+    },
+    {
+     "from": "#4eae6e",
+     "to": "#2e9963",
+     "step": "midori+0",
+     "dist": 11.2
+    },
+    {
+     "from": "#8ad0a0",
+     "to": "#53c776",
+     "step": "midori+1",
+     "dist": 24.4
+    }
+   ]
+  },
+  "korange": {
+   "from": "jp.pal",
+   "targets": [
+    "daidai"
+   ],
+   "map": [
+    {
+     "from": "#4a1a00",
+     "to": "#571108",
+     "step": "daidai-2",
+     "dist": 10.1
+    },
+    {
+     "from": "#7e3406",
+     "to": "#8a3014",
+     "step": "daidai-1",
+     "dist": 8.3
+    },
+    {
+     "from": "#b8540e",
+     "to": "#c26027",
+     "step": "daidai+0",
+     "dist": 7.7
+    },
+    {
+     "from": "#e8761a",
+     "to": "#eb8e4f",
+     "step": "daidai+1",
+     "dist": 20.2
+    },
+    {
+     "from": "#f49a48",
+     "to": "#eb8e4f",
+     "step": "daidai+1",
+     "dist": 9.6
+    },
+    {
+     "from": "#fac690",
+     "to": "#ffb278",
+     "step": "daidai+2",
+     "dist": 13.5
+    }
+   ]
+  },
+  "kblue": {
+   "from": "jp.pal",
+   "targets": [
+    "sora",
+    "kon"
+   ],
+   "map": [
+    {
+     "from": "#061a3a",
+     "to": "#12173d",
+     "step": "kon-2",
+     "dist": 6.4
+    },
+    {
+     "from": "#0c3066",
+     "to": "#1f295c",
+     "step": "kon-1",
+     "dist": 5.7
+    },
+    {
+     "from": "#15489a",
+     "to": "#304080",
+     "step": "kon+0",
+     "dist": 11.8
+    },
+    {
+     "from": "#2466c4",
+     "to": "#4f80d6",
+     "step": "sora+1",
+     "dist": 14.6
+    },
+    {
+     "from": "#5690dc",
+     "to": "#4f80d6",
+     "step": "sora+1",
+     "dist": 10.2
+    },
+    {
+     "from": "#a0c4f0",
+     "to": "#7b9cf7",
+     "step": "sora+2",
+     "dist": 32.2
+    }
+   ]
+  },
+  "pole": {
+   "from": "jp.pal",
+   "targets": [
+    "tekko",
+    "hodo"
+   ],
+   "map": [
+    {
+     "from": "#3c3a34",
+     "to": "#3a3942",
+     "step": "tekko-2",
+     "dist": 9.9
+    },
+    {
+     "from": "#5a5850",
+     "to": "#4e4d59",
+     "step": "tekko-1",
+     "dist": 13.6
+    },
+    {
+     "from": "#7a776c",
+     "to": "#817c8c",
+     "step": "tekko+1",
+     "dist": 16.1
+    },
+    {
+     "from": "#9a968a",
+     "to": "#9f97a8",
+     "step": "tekko+2",
+     "dist": 16.4
+    },
+    {
+     "from": "#b8b4a6",
+     "to": "#bbb4c4",
+     "step": "tekko+3",
+     "dist": 16.3
+    },
+    {
+     "from": "#d6d2c4",
+     "to": "#c0b9cc",
+     "step": "hodo+3",
+     "dist": 20.4
+    }
+   ]
+  },
+  "kasa": {
+   "from": "jp.pal",
+   "targets": [
+    "garasu",
+    "tairu"
+   ],
+   "map": [
+    {
+     "from": "#1c2a30",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 11.0
+    },
+    {
+     "from": "#2c4450",
+     "to": "#373d52",
+     "step": "tairu-2",
+     "dist": 9.6
+    },
+    {
+     "from": "#406270",
+     "to": "#57697d",
+     "step": "tairu+0",
+     "dist": 8.6
+    },
+    {
+     "from": "#5a8494",
+     "to": "#4a7387",
+     "step": "garasu+0",
+     "dist": 8.9
+    },
+    {
+     "from": "#84aab6",
+     "to": "#a0a2c7",
+     "step": "tairu+3",
+     "dist": 19.2
+    }
+   ]
+  },
+  "vwood": {
+   "from": "school.pal",
+   "targets": [
+    "ita",
+    "yuka",
+    "soil"
+   ],
+   "map": [
+    {
+     "from": "#000000",
+     "to": "#331f21",
+     "step": "ita-3",
+     "dist": 21.4
+    },
+    {
+     "from": "#411e05",
+     "to": "#4c3027",
+     "step": "soil-1",
+     "dist": 14.5
+    },
+    {
+     "from": "#63310b",
+     "to": "#5c302a",
+     "step": "yuka-2",
+     "dist": 19.6
+    },
+    {
+     "from": "#6d3b15",
+     "to": "#80543e",
+     "step": "yuka-1",
+     "dist": 17.3
+    },
+    {
+     "from": "#9a5435",
+     "to": "#80543e",
+     "step": "yuka-1",
+     "dist": 15.4
+    },
+    {
+     "from": "#9e684b",
+     "to": "#a17d54",
+     "step": "yuka+0",
+     "dist": 12.6
+    },
+    {
+     "from": "#b77246",
+     "to": "#a17d54",
+     "step": "yuka+0",
+     "dist": 16.4
+    },
+    {
+     "from": "#d59147",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 24.9
+    },
+    {
+     "from": "#ffebd7",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 22.0
+    }
+   ]
+  },
+  "vdwood": {
+   "from": "school.pal",
+   "targets": [
+    "ita",
+    "soil"
+   ],
+   "map": [
+    {
+     "from": "#1a0e06",
+     "to": "#331a18",
+     "step": "soil-2",
+     "dist": 13.1
+    },
+    {
+     "from": "#2a180b",
+     "to": "#331a18",
+     "step": "soil-2",
+     "dist": 7.1
+    },
+    {
+     "from": "#3a2210",
+     "to": "#4c3027",
+     "step": "soil-1",
+     "dist": 10.9
+    },
+    {
+     "from": "#4a2c16",
+     "to": "#4c3027",
+     "step": "soil-1",
+     "dist": 9.1
+    },
+    {
+     "from": "#5f3d21",
+     "to": "#694d38",
+     "step": "soil+0",
+     "dist": 10.4
+    },
+    {
+     "from": "#744e2c",
+     "to": "#694d38",
+     "step": "soil+0",
+     "dist": 10.0
+    },
+    {
+     "from": "#8a6038",
+     "to": "#876d54",
+     "step": "soil+1",
+     "dist": 13.8
+    }
+   ]
+  },
+  "vpine": {
+   "from": "school.pal",
+   "targets": [
+    "yuka",
+    "ita"
+   ],
+   "map": [
+    {
+     "from": "#3a2410",
+     "to": "#331f21",
+     "step": "ita-3",
+     "dist": 15.0
+    },
+    {
+     "from": "#5c3e22",
+     "to": "#5c302a",
+     "step": "yuka-2",
+     "dist": 14.3
+    },
+    {
+     "from": "#7e5935",
+     "to": "#80543e",
+     "step": "yuka-1",
+     "dist": 8.0
+    },
+    {
+     "from": "#a07448",
+     "to": "#a17d54",
+     "step": "yuka+0",
+     "dist": 5.9
+    },
+    {
+     "from": "#ba9262",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 7.9
+    },
+    {
+     "from": "#d5b17d",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 8.8
+    },
+    {
+     "from": "#f0d098",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 8.4
+    }
+   ]
+  },
+  "viron": {
+   "from": "school.pal",
+   "targets": [
+    "tekko"
+   ],
+   "map": [
+    {
+     "from": "#0e1216",
+     "to": "#28272e",
+     "step": "tekko-3",
+     "dist": 14.3
+    },
+    {
+     "from": "#22282e",
+     "to": "#28272e",
+     "step": "tekko-3",
+     "dist": 3.2
+    },
+    {
+     "from": "#363e47",
+     "to": "#3a3942",
+     "step": "tekko-2",
+     "dist": 4.2
+    },
+    {
+     "from": "#4a5460",
+     "to": "#4e4d59",
+     "step": "tekko-1",
+     "dist": 5.1
+    },
+    {
+     "from": "#76808a",
+     "to": "#817c8c",
+     "step": "tekko+1",
+     "dist": 6.8
+    },
+    {
+     "from": "#a3acb5",
+     "to": "#bbb4c4",
+     "step": "tekko+3",
+     "dist": 9.0
+    },
+    {
+     "from": "#d0d8e0",
+     "to": "#bbb4c4",
+     "step": "tekko+3",
+     "dist": 16.7
+    }
+   ]
+  },
+  "vbrass": {
+   "from": "school.pal",
+   "targets": [
+    "kii",
+    "yuka",
+    "ita"
+   ],
+   "map": [
+    {
+     "from": "#3a2600",
+     "to": "#572c02",
+     "step": "kii-2",
+     "dist": 15.7
+    },
+    {
+     "from": "#5c4108",
+     "to": "#572c02",
+     "step": "kii-2",
+     "dist": 13.9
+    },
+    {
+     "from": "#7e5c10",
+     "to": "#8f610b",
+     "step": "kii-1",
+     "dist": 8.4
+    },
+    {
+     "from": "#a07818",
+     "to": "#8f610b",
+     "step": "kii-1",
+     "dist": 12.2
+    },
+    {
+     "from": "#bfa045",
+     "to": "#c7a51c",
+     "step": "kii+0",
+     "dist": 17.2
+    },
+    {
+     "from": "#dfc872",
+     "to": "#ffe26e",
+     "step": "kii+2",
+     "dist": 18.3
+    },
+    {
+     "from": "#fff0a0",
+     "to": "#ffe26e",
+     "step": "kii+2",
+     "dist": 19.8
+    }
+   ]
+  },
+  "vstone": {
+   "from": "school.pal",
+   "targets": [
+    "hodo",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#1d2228",
+     "to": "#464552",
+     "step": "hodo-3",
+     "dist": 22.5
+    },
+    {
+     "from": "#333942",
+     "to": "#464552",
+     "step": "hodo-3",
+     "dist": 8.8
+    },
+    {
+     "from": "#49505d",
+     "to": "#504f5c",
+     "step": "conc-3",
+     "dist": 3.2
+    },
+    {
+     "from": "#606878",
+     "to": "#666775",
+     "step": "conc-2",
+     "dist": 2.9
+    },
+    {
+     "from": "#828a95",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 5.3
+    },
+    {
+     "from": "#a5adb2",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 9.5
+    },
+    {
+     "from": "#c8d0d0",
+     "to": "#cdc9de",
+     "step": "conc+2",
+     "dist": 12.1
+    }
+   ]
+  },
+  "vlinen": {
+   "from": "school.pal",
+   "targets": [
+    "kinari",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#3a3530",
+     "to": "#504f5c",
+     "step": "conc-3",
+     "dist": 19.0
+    },
+    {
+     "from": "#645c54",
+     "to": "#6b5b50",
+     "step": "kinari-2",
+     "dist": 4.2
+    },
+    {
+     "from": "#8e8378",
+     "to": "#948771",
+     "step": "kinari-1",
+     "dist": 6.5
+    },
+    {
+     "from": "#b9ab9d",
+     "to": "#bdb793",
+     "step": "kinari+0",
+     "dist": 12.7
+    },
+    {
+     "from": "#d0c4b6",
+     "to": "#bdb793",
+     "step": "kinari+0",
+     "dist": 14.1
+    },
+    {
+     "from": "#e7ded0",
+     "to": "#e0dbb7",
+     "step": "kinari+1",
+     "dist": 11.7
+    },
+    {
+     "from": "#fff8ea",
+     "to": "#f7f2d3",
+     "step": "kinari+2",
+     "dist": 9.3
+    }
+   ]
+  },
+  "vred": {
+   "from": "school.pal",
+   "targets": [
+    "aka",
+    "renga"
+   ],
+   "map": [
+    {
+     "from": "#3a0508",
+     "to": "#4c0717",
+     "step": "aka-2",
+     "dist": 8.9
+    },
+    {
+     "from": "#67030c",
+     "to": "#801223",
+     "step": "aka-1",
+     "dist": 11.5
+    },
+    {
+     "from": "#950110",
+     "to": "#b22430",
+     "step": "aka+0",
+     "dist": 14.0
+    },
+    {
+     "from": "#c30014",
+     "to": "#b22430",
+     "step": "aka+0",
+     "dist": 20.3
+    },
+    {
+     "from": "#d73a42",
+     "to": "#db4d4a",
+     "step": "aka+1",
+     "dist": 7.1
+    },
+    {
+     "from": "#eb7571",
+     "to": "#f78175",
+     "step": "aka+2",
+     "dist": 6.5
+    },
+    {
+     "from": "#ffb0a0",
+     "to": "#f78175",
+     "step": "aka+2",
+     "dist": 24.0
+    }
+   ]
+  },
+  "vblue": {
+   "from": "school.pal",
+   "targets": [
+    "sora",
+    "kon"
+   ],
+   "map": [
+    {
+     "from": "#0a1a3a",
+     "to": "#12173d",
+     "step": "kon-2",
+     "dist": 5.8
+    },
+    {
+     "from": "#113461",
+     "to": "#1f295c",
+     "step": "kon-1",
+     "dist": 9.4
+    },
+    {
+     "from": "#184e88",
+     "to": "#304080",
+     "step": "kon+0",
+     "dist": 11.3
+    },
+    {
+     "from": "#1f68b0",
+     "to": "#4f80d6",
+     "step": "sora+1",
+     "dist": 15.8
+    },
+    {
+     "from": "#5491ca",
+     "to": "#4f80d6",
+     "step": "sora+1",
+     "dist": 19.9
+    },
+    {
+     "from": "#8abae4",
+     "to": "#7b9cf7",
+     "step": "sora+2",
+     "dist": 31.4
+    },
+    {
+     "from": "#c0e4ff",
+     "to": "#7b9cf7",
+     "step": "sora+2",
+     "dist": 48.1
+    }
+   ]
+  },
+  "vgreen": {
+   "from": "school.pal",
+   "targets": [
+    "midori"
+   ],
+   "map": [
+    {
+     "from": "#0c2a10",
+     "to": "#0c3d35",
+     "step": "midori-2",
+     "dist": 17.0
+    },
+    {
+     "from": "#1b4a1a",
+     "to": "#1b6b50",
+     "step": "midori-1",
+     "dist": 22.8
+    },
+    {
+     "from": "#2a6a25",
+     "to": "#1b6b50",
+     "step": "midori-1",
+     "dist": 24.0
+    },
+    {
+     "from": "#3a8a30",
+     "to": "#2e9963",
+     "step": "midori+0",
+     "dist": 21.1
+    },
+    {
+     "from": "#69ac53",
+     "to": "#53c776",
+     "step": "midori+1",
+     "dist": 17.8
+    },
+    {
+     "from": "#98ce76",
+     "to": "#53c776",
+     "step": "midori+1",
+     "dist": 20.0
+    },
+    {
+     "from": "#c8f09a",
+     "to": "#81f093",
+     "step": "midori+2",
+     "dist": 24.2
+    }
+   ]
+  },
+  "vyellow": {
+   "from": "school.pal",
+   "targets": [
+    "kii"
+   ],
+   "map": [
+    {
+     "from": "#3a2a00",
+     "to": "#572c02",
+     "step": "kii-2",
+     "dist": 16.4
+    },
+    {
+     "from": "#6c5408",
+     "to": "#8f610b",
+     "step": "kii-1",
+     "dist": 15.5
+    },
+    {
+     "from": "#9e7e10",
+     "to": "#8f610b",
+     "step": "kii-1",
+     "dist": 17.0
+    },
+    {
+     "from": "#d0a818",
+     "to": "#c7a51c",
+     "step": "kii+0",
+     "dist": 4.1
+    },
+    {
+     "from": "#dfc24a",
+     "to": "#f0cd45",
+     "step": "kii+1",
+     "dist": 9.0
+    },
+    {
+     "from": "#efdd7d",
+     "to": "#ffe26e",
+     "step": "kii+2",
+     "dist": 11.1
+    },
+    {
+     "from": "#fff8b0",
+     "to": "#ffe26e",
+     "step": "kii+2",
+     "dist": 25.7
+    }
+   ]
+  },
+  "vglass": {
+   "from": "school.pal",
+   "targets": [
+    "garasu"
+   ],
+   "map": [
+    {
+     "from": "#10283a",
+     "to": "#1b2138",
+     "step": "garasu-3",
+     "dist": 7.9
+    },
+    {
+     "from": "#234a66",
+     "to": "#39536b",
+     "step": "garasu-1",
+     "dist": 6.8
+    },
+    {
+     "from": "#366d93",
+     "to": "#4a7387",
+     "step": "garasu+0",
+     "dist": 11.5
+    },
+    {
+     "from": "#4a90c0",
+     "to": "#627ca3",
+     "step": "garasu+1",
+     "dist": 13.6
+    },
+    {
+     "from": "#81b5d5",
+     "to": "#9eb0e0",
+     "step": "garasu+3",
+     "dist": 14.4
+    },
+    {
+     "from": "#b8daea",
+     "to": "#9eb0e0",
+     "step": "garasu+3",
+     "dist": 25.6
+    },
+    {
+     "from": "#f0ffff",
+     "to": "#9eb0e0",
+     "step": "garasu+3",
+     "dist": 43.7
+    }
+   ]
+  },
+  "vblack": {
+   "from": "school.pal",
+   "targets": [
+    "sumi",
+    "yoru"
+   ],
+   "map": [
+    {
+     "from": "#08080a",
+     "to": "#100a1a",
+     "step": "sumi-1",
+     "dist": 9.3
+    },
+    {
+     "from": "#131317",
+     "to": "#100a1a",
+     "step": "sumi-1",
+     "dist": 7.9
+    },
+    {
+     "from": "#1e1e24",
+     "to": "#211f26",
+     "step": "yoru-3",
+     "dist": 1.5
+    },
+    {
+     "from": "#2a2a32",
+     "to": "#2b2a33",
+     "step": "yoru-2",
+     "dist": 0.9
+    },
+    {
+     "from": "#41414c",
+     "to": "#464452",
+     "step": "yoru+0",
+     "dist": 2.9
+    },
+    {
+     "from": "#585866",
+     "to": "#5b5463",
+     "step": "yoru+1",
+     "dist": 3.2
+    },
+    {
+     "from": "#707080",
+     "to": "#6f6675",
+     "step": "yoru+2",
+     "dist": 5.6
+    }
+   ]
+  },
+  "vwhite": {
+   "from": "school.pal",
+   "targets": [
+    "shiro",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#5a5a66",
+     "to": "#504f5c",
+     "step": "conc-3",
+     "dist": 5.9
+    },
+    {
+     "from": "#7e7e8a",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 2.8
+    },
+    {
+     "from": "#a3a3af",
+     "to": "#a3a0ad",
+     "step": "shiro-1",
+     "dist": 1.7
+    },
+    {
+     "from": "#c8c8d4",
+     "to": "#cac7d6",
+     "step": "shiro+0",
+     "dist": 1.9
+    },
+    {
+     "from": "#dadae2",
+     "to": "#e6e2f0",
+     "step": "shiro+1",
+     "dist": 5.5
+    },
+    {
+     "from": "#ececf0",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 5.0
+    },
+    {
+     "from": "#ffffff",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 8.1
+    }
+   ]
+  },
+  "vleaf": {
+   "from": "school.pal",
+   "targets": [
+    "ki"
+   ],
+   "map": [
+    {
+     "from": "#0c240e",
+     "to": "#183327",
+     "step": "ki-2",
+     "dist": 11.5
+    },
+    {
+     "from": "#174617",
+     "to": "#254a32",
+     "step": "ki-1",
+     "dist": 15.2
+    },
+    {
+     "from": "#226820",
+     "to": "#49804c",
+     "step": "ki+1",
+     "dist": 18.5
+    },
+    {
+     "from": "#2e8a2a",
+     "to": "#49804c",
+     "step": "ki+1",
+     "dist": 25.3
+    },
+    {
+     "from": "#5cac46",
+     "to": "#689e63",
+     "step": "ki+2",
+     "dist": 23.9
+    },
+    {
+     "from": "#8ace63",
+     "to": "#91bf83",
+     "step": "ki+3",
+     "dist": 25.2
+    },
+    {
+     "from": "#b8f080",
+     "to": "#91bf83",
+     "step": "ki+3",
+     "dist": 32.4
+    }
+   ]
+  },
+  "kokuban": {
+   "from": "school.pal",
+   "targets": [
+    "kokuban"
+   ],
+   "map": [
+    {
+     "from": "#0e1a16",
+     "to": "#162324",
+     "step": "kokuban-2",
+     "dist": 7.0
+    },
+    {
+     "from": "#16291f",
+     "to": "#162324",
+     "step": "kokuban-2",
+     "dist": 9.0
+    },
+    {
+     "from": "#1e3a2c",
+     "to": "#243835",
+     "step": "kokuban-1",
+     "dist": 8.4
+    },
+    {
+     "from": "#284c3a",
+     "to": "#344f46",
+     "step": "kokuban+0",
+     "dist": 7.6
+    },
+    {
+     "from": "#36604a",
+     "to": "#4b6958",
+     "step": "kokuban+1",
+     "dist": 8.2
+    },
+    {
+     "from": "#4c765e",
+     "to": "#4b6958",
+     "step": "kokuban+1",
+     "dist": 8.2
+    },
+    {
+     "from": "#6a8e78",
+     "to": "#678570",
+     "step": "kokuban+2",
+     "dist": 4.6
+    }
+   ]
+  },
+  "wboard": {
+   "from": "school.pal",
+   "targets": [
+    "shiro",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#7c8290",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 1.9
+    },
+    {
+     "from": "#9ea4b0",
+     "to": "#a3a0ad",
+     "step": "shiro-1",
+     "dist": 3.5
+    },
+    {
+     "from": "#bfc4cc",
+     "to": "#cac7d6",
+     "step": "shiro+0",
+     "dist": 5.3
+    },
+    {
+     "from": "#dadde2",
+     "to": "#e6e2f0",
+     "step": "shiro+1",
+     "dist": 6.3
+    },
+    {
+     "from": "#eceef0",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 5.8
+    },
+    {
+     "from": "#fafbfc",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 6.6
+    }
+   ]
+  },
+  "cork": {
+   "from": "school.pal",
+   "targets": [
+    "yuka",
+    "ita"
+   ],
+   "map": [
+    {
+     "from": "#4a2c14",
+     "to": "#5c302a",
+     "step": "yuka-2",
+     "dist": 12.8
+    },
+    {
+     "from": "#6e4422",
+     "to": "#80543e",
+     "step": "yuka-1",
+     "dist": 11.7
+    },
+    {
+     "from": "#92603a",
+     "to": "#80543e",
+     "step": "yuka-1",
+     "dist": 11.7
+    },
+    {
+     "from": "#b07e52",
+     "to": "#a17d54",
+     "step": "yuka+0",
+     "dist": 7.3
+    },
+    {
+     "from": "#c89c70",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 5.1
+    },
+    {
+     "from": "#dcbc94",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 4.5
+    }
+   ]
+  },
+  "locker": {
+   "from": "school.pal",
+   "targets": [
+    "tekko",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#2a3038",
+     "to": "#28272e",
+     "step": "tekko-3",
+     "dist": 5.6
+    },
+    {
+     "from": "#3e4652",
+     "to": "#4e4d59",
+     "step": "tekko-1",
+     "dist": 6.1
+    },
+    {
+     "from": "#56606e",
+     "to": "#646473",
+     "step": "tekko+0",
+     "dist": 5.1
+    },
+    {
+     "from": "#707c8a",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 5.4
+    },
+    {
+     "from": "#8e9aa6",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 4.4
+    },
+    {
+     "from": "#aeb8c2",
+     "to": "#bbb4c4",
+     "step": "tekko+3",
+     "dist": 7.0
+    },
+    {
+     "from": "#cdd4da",
+     "to": "#cdc9de",
+     "step": "conc+2",
+     "dist": 9.6
+    }
+   ]
+  },
+  "cream": {
+   "from": "school.pal",
+   "targets": [
+    "kinari",
+    "conc"
+   ],
+   "map": [
+    {
+     "from": "#5e5644",
+     "to": "#6b5b50",
+     "step": "kinari-2",
+     "dist": 6.7
+    },
+    {
+     "from": "#84795e",
+     "to": "#948771",
+     "step": "kinari-1",
+     "dist": 8.1
+    },
+    {
+     "from": "#a89c7c",
+     "to": "#948771",
+     "step": "kinari-1",
+     "dist": 11.3
+    },
+    {
+     "from": "#c8bc9a",
+     "to": "#bdb793",
+     "step": "kinari+0",
+     "dist": 4.0
+    },
+    {
+     "from": "#ded4b6",
+     "to": "#e0dbb7",
+     "step": "kinari+1",
+     "dist": 4.4
+    },
+    {
+     "from": "#eee8d2",
+     "to": "#f7f2d3",
+     "step": "kinari+2",
+     "dist": 6.2
+    }
+   ]
+  },
+  "cfloor": {
+   "from": "school.pal",
+   "targets": [
+    "yuka",
+    "ita"
+   ],
+   "map": [
+    {
+     "from": "#3e2412",
+     "to": "#452b2d",
+     "step": "ita-2",
+     "dist": 14.3
+    },
+    {
+     "from": "#5e3a1c",
+     "to": "#5c302a",
+     "step": "yuka-2",
+     "dist": 14.2
+    },
+    {
+     "from": "#7e5430",
+     "to": "#80543e",
+     "step": "yuka-1",
+     "dist": 7.9
+    },
+    {
+     "from": "#9e7046",
+     "to": "#a17d54",
+     "step": "yuka+0",
+     "dist": 7.5
+    },
+    {
+     "from": "#ba8e60",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 9.8
+    },
+    {
+     "from": "#d4ac80",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 6.7
+    },
+    {
+     "from": "#e8cca2",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 3.6
+    }
+   ]
+  },
+  "lino": {
+   "from": "school.pal",
+   "targets": [
+    "lino"
+   ],
+   "map": [
+    {
+     "from": "#243028",
+     "to": "#3f5250",
+     "step": "lino-2",
+     "dist": 19.7
+    },
+    {
+     "from": "#34443a",
+     "to": "#3f5250",
+     "step": "lino-2",
+     "dist": 9.5
+    },
+    {
+     "from": "#48584c",
+     "to": "#3f5250",
+     "step": "lino-2",
+     "dist": 7.0
+    },
+    {
+     "from": "#5e7062",
+     "to": "#546b64",
+     "step": "lino-1",
+     "dist": 5.3
+    },
+    {
+     "from": "#76887a",
+     "to": "#6c8779",
+     "step": "lino+0",
+     "dist": 3.6
+    },
+    {
+     "from": "#94a496",
+     "to": "#88a38e",
+     "step": "lino+1",
+     "dist": 6.0
+    },
+    {
+     "from": "#b4c0b2",
+     "to": "#a6bfa8",
+     "step": "lino+2",
+     "dist": 7.2
+    }
+   ]
+  },
+  "gym": {
+   "from": "school.pal",
+   "targets": [
+    "yuka",
+    "kii"
+   ],
+   "map": [
+    {
+     "from": "#5a3410",
+     "to": "#572c02",
+     "step": "kii-2",
+     "dist": 5.6
+    },
+    {
+     "from": "#80501c",
+     "to": "#8f610b",
+     "step": "kii-1",
+     "dist": 15.2
+    },
+    {
+     "from": "#a8702c",
+     "to": "#8f610b",
+     "step": "kii-1",
+     "dist": 11.1
+    },
+    {
+     "from": "#c89042",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 23.1
+    },
+    {
+     "from": "#deae5e",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 21.2
+    },
+    {
+     "from": "#eeca84",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 14.3
+    },
+    {
+     "from": "#f8e2b0",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 13.1
+    }
+   ]
+  },
+  "gmat": {
+   "from": "school.pal",
+   "targets": [
+    "kon",
+    "sora",
+    "tairu"
+   ],
+   "map": [
+    {
+     "from": "#0c1e34",
+     "to": "#0a2847",
+     "step": "sora-2",
+     "dist": 8.5
+    },
+    {
+     "from": "#143054",
+     "to": "#0a2847",
+     "step": "sora-2",
+     "dist": 5.9
+    },
+    {
+     "from": "#1e4674",
+     "to": "#164d75",
+     "step": "sora-1",
+     "dist": 6.5
+    },
+    {
+     "from": "#2c5e94",
+     "to": "#164d75",
+     "step": "sora-1",
+     "dist": 12.9
+    },
+    {
+     "from": "#4a7eb2",
+     "to": "#287ea8",
+     "step": "sora+0",
+     "dist": 9.9
+    },
+    {
+     "from": "#76a2cc",
+     "to": "#a0a2c7",
+     "step": "tairu+3",
+     "dist": 13.5
+    }
+   ]
+  },
+  "jersey": {
+   "from": "school.pal",
+   "targets": [
+    "murasaki",
+    "pinku"
+   ],
+   "map": [
+    {
+     "from": "#2a0c2a",
+     "to": "#3b1d42",
+     "step": "murasaki-2",
+     "dist": 11.5
+    },
+    {
+     "from": "#4a1640",
+     "to": "#521e41",
+     "step": "pinku-2",
+     "dist": 5.8
+    },
+    {
+     "from": "#6a2458",
+     "to": "#803360",
+     "step": "pinku-1",
+     "dist": 10.4
+    },
+    {
+     "from": "#8a3670",
+     "to": "#803360",
+     "step": "pinku-1",
+     "dist": 8.0
+    },
+    {
+     "from": "#a8568c",
+     "to": "#b24f81",
+     "step": "pinku+0",
+     "dist": 8.2
+    },
+    {
+     "from": "#c47eaa",
+     "to": "#db7598",
+     "step": "pinku+1",
+     "dist": 15.1
+    }
+   ]
+  },
+  "fence": {
+   "from": "school.pal",
+   "targets": [
+    "midori",
+    "ki"
+   ],
+   "map": [
+    {
+     "from": "#0e2418",
+     "to": "#0e1f1a",
+     "step": "ki-3",
+     "dist": 6.1
+    },
+    {
+     "from": "#163822",
+     "to": "#183327",
+     "step": "ki-2",
+     "dist": 7.6
+    },
+    {
+     "from": "#22502e",
+     "to": "#254a32",
+     "step": "ki-1",
+     "dist": 7.4
+    },
+    {
+     "from": "#346a3e",
+     "to": "#34633c",
+     "step": "ki+0",
+     "dist": 4.8
+    },
+    {
+     "from": "#4e8656",
+     "to": "#49804c",
+     "step": "ki+1",
+     "dist": 4.0
+    },
+    {
+     "from": "#72a474",
+     "to": "#689e63",
+     "step": "ki+2",
+     "dist": 7.4
+    }
+   ]
+  },
+  "undo": {
+   "from": "school.pal",
+   "targets": [
+    "soil",
+    "yuka"
+   ],
+   "map": [
+    {
+     "from": "#4e3c28",
+     "to": "#4c3027",
+     "step": "soil-1",
+     "dist": 9.4
+    },
+    {
+     "from": "#6c5438",
+     "to": "#694d38",
+     "step": "soil+0",
+     "dist": 5.2
+    },
+    {
+     "from": "#8a6e4c",
+     "to": "#876d54",
+     "step": "soil+1",
+     "dist": 5.3
+    },
+    {
+     "from": "#a48a64",
+     "to": "#a68e73",
+     "step": "soil+2",
+     "dist": 6.6
+    },
+    {
+     "from": "#bca47e",
+     "to": "#c2a175",
+     "step": "yuka+1",
+     "dist": 5.4
+    },
+    {
+     "from": "#d4c09c",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 5.9
+    },
+    {
+     "from": "#e8dcc0",
+     "to": "#e0c599",
+     "step": "yuka+2",
+     "dist": 14.5
+    }
+   ]
+  },
+  "stile": {
+   "from": "school.pal",
+   "targets": [
+    "conc",
+    "shiro",
+    "garasu"
+   ],
+   "map": [
+    {
+     "from": "#4c5a64",
+     "to": "#504f5c",
+     "step": "conc-3",
+     "dist": 7.6
+    },
+    {
+     "from": "#6c7c86",
+     "to": "#777580",
+     "step": "shiro-2",
+     "dist": 7.0
+    },
+    {
+     "from": "#8c9ca6",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 5.9
+    },
+    {
+     "from": "#aabac2",
+     "to": "#b4b2c7",
+     "step": "conc+1",
+     "dist": 9.9
+    },
+    {
+     "from": "#c6d2d8",
+     "to": "#cac7d6",
+     "step": "shiro+0",
+     "dist": 8.0
+    },
+    {
+     "from": "#dee8ec",
+     "to": "#e6e2f0",
+     "step": "shiro+1",
+     "dist": 7.3
+    },
+    {
+     "from": "#f2f8fa",
+     "to": "#f6f1fc",
+     "step": "shiro+2",
+     "dist": 6.3
+    }
+   ]
+  },
+  "tray": {
+   "from": "school.pal",
+   "targets": [
+    "conc",
+    "hodo"
+   ],
+   "map": [
+    {
+     "from": "#3a4044",
+     "to": "#464552",
+     "step": "hodo-3",
+     "dist": 7.8
+    },
+    {
+     "from": "#5a6266",
+     "to": "#666775",
+     "step": "conc-2",
+     "dist": 7.7
+    },
+    {
+     "from": "#7e8688",
+     "to": "#7f8191",
+     "step": "conc-1",
+     "dist": 8.6
+    },
+    {
+     "from": "#a2a8aa",
+     "to": "#999dad",
+     "step": "conc+0",
+     "dist": 9.1
+    },
+    {
+     "from": "#c2c6c6",
+     "to": "#c0b9cc",
+     "step": "hodo+3",
+     "dist": 11.9
+    },
+    {
+     "from": "#dee0de",
+     "to": "#e3dff2",
+     "step": "conc+3",
+     "dist": 11.2
+    }
+   ]
+  },
+  "uniform": {
+   "from": "school.pal",
+   "targets": [
+    "kon",
+    "tairu"
+   ],
+   "map": [
+    {
+     "from": "#10141e",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 15.8
+    },
+    {
+     "from": "#1a2030",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 7.2
+    },
+    {
+     "from": "#262e44",
+     "to": "#282a3d",
+     "step": "tairu-3",
+     "dist": 3.4
+    },
+    {
+     "from": "#343e58",
+     "to": "#373d52",
+     "step": "tairu-2",
+     "dist": 3.4
+    },
+    {
+     "from": "#4a5670",
+     "to": "#465166",
+     "step": "tairu-1",
+     "dist": 4.2
+    },
+    {
+     "from": "#66728c",
+     "to": "#6d7494",
+     "step": "tairu+1",
+     "dist": 4.4
+    }
+   ]
+  }
+ },
+ "weak": [
+  {
+   "from": "#062a34",
+   "to": "#20919e",
+   "step": "neonC-1",
+   "dist": 54.9,
+   "ramps": [
+    "neonc"
+   ]
+  },
+  {
+   "from": "#c0e4ff",
+   "to": "#7b9cf7",
+   "step": "sora+2",
+   "dist": 48.1,
+   "ramps": [
+    "vblue"
+   ]
+  },
+  {
+   "from": "#3a0a2e",
+   "to": "#9e2070",
+   "step": "neonP-1",
+   "dist": 44.3,
+   "ramps": [
+    "neon"
+   ]
+  },
+  {
+   "from": "#f0ffff",
+   "to": "#9eb0e0",
+   "step": "garasu+3",
+   "dist": 43.7,
+   "ramps": [
+    "vglass"
+   ]
+  },
+  {
+   "from": "#ffff01",
+   "to": "#f0cd45",
+   "step": "kii+1",
+   "dist": 37.2,
+   "ramps": [
+    "myellow"
+   ]
+  },
+  {
+   "from": "#fbe2ea",
+   "to": "#fa9eb4",
+   "step": "pinku+2",
+   "dist": 35.3,
+   "ramps": [
+    "sakura"
+   ]
+  },
+  {
+   "from": "#0c4e5e",
+   "to": "#20919e",
+   "step": "neonC-1",
+   "dist": 34.5,
+   "ramps": [
+    "neonc"
+   ]
+  },
+  {
+   "from": "#d6d8d5",
+   "to": "#9eb0e0",
+   "step": "garasu+3",
+   "dist": 33.5,
+   "ramps": [
+    "mglass"
+   ]
+  },
+  {
+   "from": "#b8f080",
+   "to": "#91bf83",
+   "step": "ki+3",
+   "dist": 32.4,
+   "ramps": [
+    "vleaf"
+   ]
+  },
+  {
+   "from": "#a0c4f0",
+   "to": "#7b9cf7",
+   "step": "sora+2",
+   "dist": 32.2,
+   "ramps": [
+    "kblue"
+   ]
+  },
+  {
+   "from": "#aa7a08",
+   "to": "#a17d54",
+   "step": "yuka+0",
+   "dist": 31.5,
+   "ramps": [
+    "mwood"
+   ]
+  },
+  {
+   "from": "#8abae4",
+   "to": "#7b9cf7",
+   "step": "sora+2",
+   "dist": 31.4,
+   "ramps": [
+    "vblue"
+   ]
+  },
+  {
+   "from": "#fcbce8",
+   "to": "#ff89d4",
+   "step": "neonP+1",
+   "dist": 28.5,
+   "ramps": [
+    "neon"
+   ]
+  },
+  {
+   "from": "#a7d4db",
+   "to": "#9eb0e0",
+   "step": "garasu+3",
+   "dist": 28.3,
+   "ramps": [
+    "mglass",
+    "mteal"
+   ]
+  },
+  {
+   "from": "#dd2912",
+   "to": "#db4d4a",
+   "step": "aka+1",
+   "dist": 26.8,
+   "ramps": [
+    "mred"
+   ]
+  },
+  {
+   "from": "#8ca9a3",
+   "to": "#a0a2c7",
+   "step": "tairu+3",
+   "dist": 26.3,
+   "ramps": [
+    "mteal"
+   ]
+  },
+  {
+   "from": "#9cc6cc",
+   "to": "#9eb0e0",
+   "step": "garasu+3",
+   "dist": 26.1,
+   "ramps": [
+    "mglass"
+   ]
+  },
+  {
+   "from": "#3fa2ae",
+   "to": "#4a7387",
+   "step": "garasu+0",
+   "dist": 25.7,
+   "ramps": [
+    "mteal"
+   ]
+  },
+  {
+   "from": "#fff8b0",
+   "to": "#ffe26e",
+   "step": "kii+2",
+   "dist": 25.7,
+   "ramps": [
+    "vyellow"
+   ]
+  },
+  {
+   "from": "#b8daea",
+   "to": "#9eb0e0",
+   "step": "garasu+3",
+   "dist": 25.6,
+   "ramps": [
+    "vglass"
+   ]
+  },
+  {
+   "from": "#2e8a2a",
+   "to": "#49804c",
+   "step": "ki+1",
+   "dist": 25.3,
+   "ramps": [
+    "vleaf"
+   ]
+  },
+  {
+   "from": "#8ace63",
+   "to": "#91bf83",
+   "step": "ki+3",
+   "dist": 25.2,
+   "ramps": [
+    "vleaf"
+   ]
+  },
+  {
+   "from": "#d59147",
+   "to": "#c2a175",
+   "step": "yuka+1",
+   "dist": 24.9,
+   "ramps": [
+    "vwood"
+   ]
+  },
+  {
+   "from": "#4f4352",
+   "to": "#521e41",
+   "step": "pinku-2",
+   "dist": 24.4,
+   "ramps": [
+    "mpurple"
+   ]
+  },
+  {
+   "from": "#8ad0a0",
+   "to": "#53c776",
+   "step": "midori+1",
+   "dist": 24.4,
+   "ramps": [
+    "kgreen"
+   ]
+  },
+  {
+   "from": "#c8f09a",
+   "to": "#81f093",
+   "step": "midori+2",
+   "dist": 24.2,
+   "ramps": [
+    "vgreen"
+   ]
+  },
+  {
+   "from": "#ffb0a0",
+   "to": "#f78175",
+   "step": "aka+2",
+   "dist": 24.0,
+   "ramps": [
+    "vred"
+   ]
+  },
+  {
+   "from": "#2a6a25",
+   "to": "#1b6b50",
+   "step": "midori-1",
+   "dist": 24.0,
+   "ramps": [
+    "vgreen"
+   ]
+  },
+  {
+   "from": "#5cac46",
+   "to": "#689e63",
+   "step": "ki+2",
+   "dist": 23.9,
+   "ramps": [
+    "vleaf"
+   ]
+  },
+  {
+   "from": "#f0c6a8",
+   "to": "#ffb278",
+   "step": "daidai+2",
+   "dist": 23.6,
+   "ramps": [
+    "morange"
+   ]
+  },
+  {
+   "from": "#ec9900",
+   "to": "#c7a51c",
+   "step": "kii+0",
+   "dist": 23.3,
+   "ramps": [
+    "morange",
+    "myellow"
+   ]
+  },
+  {
+   "from": "#c89042",
+   "to": "#c2a175",
+   "step": "yuka+1",
+   "dist": 23.1,
+   "ramps": [
+    "gym"
+   ]
+  },
+  {
+   "from": "#9e6574",
+   "to": "#b24f81",
+   "step": "pinku+0",
+   "dist": 23.0,
+   "ramps": [
+    "mpurple"
+   ]
+  },
+  {
+   "from": "#1b4a1a",
+   "to": "#1b6b50",
+   "step": "midori-1",
+   "dist": 22.8,
+   "ramps": [
+    "vgreen"
+   ]
+  },
+  {
+   "from": "#1d2228",
+   "to": "#464552",
+   "step": "hodo-3",
+   "dist": 22.5,
+   "ramps": [
+    "vstone"
+   ]
+  },
+  {
+   "from": "#ae7a87",
+   "to": "#db7598",
+   "step": "pinku+1",
+   "dist": 22.4,
+   "ramps": [
+    "mpurple"
+   ]
+  }
+ ],
+ "unmapped": [
+  {
+   "entry": "~ #141218 110",
+   "why": "반투명 그림자(-) — modern3 는 반투명 없음. 바닥·벽 위 화소는 합성한 뒤 아래 램프를 2단 내려 굽는다(자동 아님)"
+  },
+  {
+   "entry": "- #141218 58",
+   "why": "반투명 그림자 번짐 — 같은 방식, 1단 내려 굽는다"
+  },
+  {
+   "entry": "% #fff8d0 120",
+   "why": "반투명 불빛 번짐 — 아래 램프를 +1~2단 올려 굽는다"
+  },
+  {
+   "entry": "& #cfe8f0 96",
+   "why": "(학원) 반투명 유리 반사 — garasu +1~2 로 굽는다"
+  },
+  {
+   "entry": "# #e040c0",
+   "why": "실루엣 표시 마커 — 최종본에 남으면 안 된다(대응 없음)"
+  }
+ ]
+}

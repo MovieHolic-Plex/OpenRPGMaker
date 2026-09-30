@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/holy_water_font/w7-B.pxg",
+ "id": "holy water font",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 15,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  14,
+  13
+ ],
+ "note": "A 를 한 칸 올려 발 밑에 반투명 접지 그림자를 깔고, 그릇 몸에 세로 결(밝은 줄·어두운 줄)을 넣어 둥근 입체를 강조, 수면 반짝임 세 점, 받침 윗모서리 밝게",
+ "ok": true
+}

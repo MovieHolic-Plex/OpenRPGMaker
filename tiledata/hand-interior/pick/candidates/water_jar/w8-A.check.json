@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/water_jar/w8-A.pxg",
+ "id": "water jar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "pillow",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  1,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "v5 실루엣 그대로, 튀는 B 한 점을 없애고 빛 단계를 왼쪽 밝음→오른쪽 어두움으로 매끈하게",
+ "ok": true
+}

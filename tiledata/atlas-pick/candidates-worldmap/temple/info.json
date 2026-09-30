@@ -1,0 +1,23 @@
+{
+ "id": "temple",
+ "slug": "temple",
+ "name": "신전",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "흰 돌 신전: 세모 박공 지붕 + 앞 기둥 열(기둥 넷, 기둥 사이 어두운 그늘) + 계단 받침 두세 단. 성·도시와 다르게 — 돌이 밝고 지붕이 낮은 세모.",
+ "palette_hint": "wstone 밝은 단, 박공 wgold 한 줄",
+ "worker": "wv8"
+}

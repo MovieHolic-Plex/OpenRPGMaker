@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/telescope/w7-B.pxg",
+ "id": "telescope",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 5,
+ "bbox": [
+  3,
+  3,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  13,
+  15
+ ],
+ "note": "렌즈에 흰 반짝임 한 점, 바닥에 옅은 그림자를 깔았다",
+ "ok": true
+}

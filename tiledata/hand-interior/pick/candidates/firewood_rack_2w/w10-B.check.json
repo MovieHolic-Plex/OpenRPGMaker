@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack_2w/w10-B.pxg",
+ "id": "firewood rack 2w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "왼쪽 위 빛: 왼쪽 장작은 밝고 오른쪽·윗줄 장작은 그늘, 기둥 좌밝 우어둡게",
+ "ok": true
+}

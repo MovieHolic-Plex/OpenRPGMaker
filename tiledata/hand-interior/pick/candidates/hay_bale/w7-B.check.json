@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hay_bale/w7-B.pxg",
+ "id": "hay bale",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  14
+ ],
+ "note": "윗면에 삐져나온 짚 몇 가닥과 바닥 그림자를 더해 푸석한 느낌을 냄",
+ "ok": true
+}

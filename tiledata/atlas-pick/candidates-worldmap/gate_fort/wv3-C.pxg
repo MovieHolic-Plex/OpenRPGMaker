@@ -1,0 +1,41 @@
+// gate_fort wv3-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mout 0
+@mat b wstone 0
+@mblock 0 0
+..bb..bbbb..bb..
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+bbbbbbbbbbbbbbbb
+bbbbabbbbbbabbbb
+bbbbabbbbbbabbbb
+bbbbbbbbbbbbbbbb
+bbbbbbaaaabbbbbb
+bbbbbaaaaaabbbbb
+bbbbbaaaaaabbbbb
+bbbbbaaaaaabbbbb
+bbbbbaaaaaabbbbb
+bbbbbaaaaaabbbbb
+bbbbbaaaaaabbbbb
+@tblock 0 0
+..11..1111..11..
+.15511554411441.
+.15522554422441.
+.15555555554441.
+.15555555554441.
+1144433333322211
+5144133333312214
+5544133333312244
+4422232222322222
+4444430000322222
+4444400000022222
+4422200000022222
+4444200000012222
+4444200000012222
+4422200000022222
+4444200000012222

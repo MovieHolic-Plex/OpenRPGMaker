@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ped_signal/j5-C.pxg",
+ "set": "jp",
+ "id": "ped_signal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.449
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "실루엣 재해석: 함을 칸 폭 가득 넓히고 사람을 크게(6×8) 과장, 굵은 폴 4px — 멀리서도 빨강 서기/파랑 걷기가 바로 읽힘",
+ "ok": true
+}

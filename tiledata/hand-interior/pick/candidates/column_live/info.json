@@ -1,0 +1,38 @@
+{
+ "id": "column live",
+ "slug": "column_live",
+ "name_ko": "살아 있는 나무 기둥(잎 머리)",
+ "category": "장식",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  48
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 40
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 24,
+ "surface": null,
+ "description": "꼭대기에 잎이 돋은 살아 있는 나무 기둥(24px 솟음). 엘프 전당 달빛 못 양옆에 2개씩, 3~4칸 간격.",
+ "where": "엘프 전당 달빛 못 양옆에 2개씩, 3~4칸 간격.",
+ "placement": [
+  "그림이 발밑 칸 위로 24px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "v5_colors": 11,
+ "material": "wood",
+ "related": []
+}

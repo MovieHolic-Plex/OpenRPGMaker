@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairwell_down/w6-A.pxg",
+ "id": "stairwell down",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "바깥 순검정 테두리를 짙은 갈색으로 바꿔 주변 나무와 결을 맞춘 v5 정리 (모양·계단 단 그대로)",
+ "ok": true
+}

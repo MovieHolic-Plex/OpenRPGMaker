@@ -1,0 +1,78 @@
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a vdwood 3
+@mat b vpine 3
+@mat c washi 3
+@mat d vred 3
+@mat e vwood 3
+@mat f mdglass 3
+@mat g vgreen 3
+@mat h mglass 3
+@mat i vblue 3
+@mblock 0 0
+................................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbaaaaaaaaaabbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbaccccdcccabbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbaccccdcccabbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbaaaaaaaaaabbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+................................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbeebbbbbbbbbbbbbbbbbbbbbbbbbfffffffffffbbbba
+abbbbeebbbbbgggggggbbbbbbbbbbbbbfhhhhhhhhhfbbbba
+abbbddddbbbbgggggggbbbbbbbbbbbbbfhhhhhhhhhfbbbba
+abbbddddbbbiiiiiiiiibbbbbbbbbbbbfhhhhhhhhhfbbbba
+abbbddddbbbiiiiiiiiibbbbbbbbbbbbfhhhhhhhhhfbbbba
+abbbbbbbbbbcccccccccbbbbbbbbbbbbfffffffffffbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbffffffffbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+@tblock 0 0
+................................................
+222222222222222222222222222222222222222222222222
+256666666666666666666666666666666666666666666661
+255555555555555555555555555555555555555555555521
+253333333333333333322222222223333333333333333321
+253333333333333333324442324423333333333333333321
+253333333333333333324442324423333333333333333321
+253333333333333333322222222223333333333333333321
+253333333333333333333333333333333333333333333321
+222222222222222222222222222222222222222222222221
+................................................
+211111111111111111111111111111111111111111111111
+266666666666666666666666666666666666666666666661
+265554455555555555555555555555551111111111155541
+265554455555444444455555555555551666666666155541
+265544444455333333355555555444441555555555155541
+265533335554444444445555555555551554444455155541
+265533335553333333335555555555551555555555155541
+265555555554444444445555555555551111111111155541
+265555555555444445555555555555555511111111455541
+265555555555555555555555555555555555555555555541
+265555555555555555555555555555555555555555555541
+233333333333333333333333333333333333333333333331
+233333333333333333333333333333333333333333333331
+254444444444244444444444244444444444244444444421
+254444444444244444444444244444444444244444444421
+254444444444244444444444244444444444244444444421
+254444444444244444444444244444444444244444444421
+254444444444244444444444244444444444244444444421
+222222222222222222222222222222222222222222222221
+211111111111111111111111111111111111111111111111
+................................................

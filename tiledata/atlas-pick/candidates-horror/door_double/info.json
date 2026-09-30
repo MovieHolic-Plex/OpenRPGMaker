@@ -1,0 +1,29 @@
+{
+ "id": "door_double",
+ "slug": "door_double",
+ "name": "저택 양문",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "door_wood 식구의 두 짝 문(현관·홀): 가운데 맞닿는 선, 짝마다 패널 둘, 손잡이 둘, 위 반원 채광창(짙은 유리) 선택. 벽면 두 줄 높이.",
+ "palette_hint": "mahog, tarn, murk 채광창",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "문(양문)",
+ "worker": "hf3",
+ "set_with": [
+  "door_wood",
+  "door_locked",
+  "window_night",
+  "window_curtain"
+ ]
+}

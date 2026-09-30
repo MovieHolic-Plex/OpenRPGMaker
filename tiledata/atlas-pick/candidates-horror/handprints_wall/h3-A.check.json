@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/handprints_wall/h3-A.pxg",
+ "set": "horror",
+ "id": "handprints_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "벽에 찍힌 손자국 둘: 아래는 깨끗한 손바닥 5x5+손가락 4줄+엄지, 위는 손가락이 아래로 끌려 내려가며 옅어짐, 왼쪽 위 밝고 오른쪽 아래 어둡게, $ 번짐",
+ "ok": true
+}

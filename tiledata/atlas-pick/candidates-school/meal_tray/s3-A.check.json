@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/meal_tray/s3-A.pxg",
+ "set": "school",
+ "id": "meal_tray",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 21,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "v5 결: 스테인리스 식판 다섯 칸, 흰 밥·주황 국·초록 나물·노란 계란·붉은 김치 점, 아래에 숟가락",
+ "ok": true
+}

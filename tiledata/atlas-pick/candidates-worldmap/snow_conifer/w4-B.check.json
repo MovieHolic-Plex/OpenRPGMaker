@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow_conifer/w4-B.pxg",
+ "set": "worldmap",
+ "id": "snow_conifer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.099
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  0,
+  47,
+  63
+ ],
+ "note": "빛·볼륨 — 왼쪽 위 눈 밝게·오른쪽 눈 푸른 그늘 2px, 단 밝은 면/짙은 면 대비",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.355
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.068
+  },
+  "seam": 1.1
+ }
+}

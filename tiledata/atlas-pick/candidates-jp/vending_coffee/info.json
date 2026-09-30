@@ -1,0 +1,20 @@
+{
+ "id": "vending_coffee",
+ "slug": "vending_coffee",
+ "name": "커피 자판기(붉은 몸통)",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "2×2 붉은 몸통 캔커피·따뜻한 음료 자판기. 견본 줄 중 아래 줄은 빨간 「あったか」 띠(따뜻함) 한 줄, 위는 파란 「つめた」 띠 느낌(글자 없이 색 띠만). 음료 자판기와 같은 틀, 색만 다른 식구.",
+ "palette_hint": "mred/akachin 몸통, mwhite 견본칸, kblue·akachin 띠, lacq 입구",
+ "worker": "r1",
+ "added": "2026-09-30 자판기 여러 종류(사용자 메모)"
+}

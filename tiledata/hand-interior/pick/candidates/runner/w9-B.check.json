@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/runner/w9-B.pxg",
+ "id": "runner",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  14,
+  46
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  46
+ ],
+ "note": "강한 광원: 위쪽·왼쪽 끝으로 갈수록 밝게, 아래로 갈수록 어둡게, 오른쪽·아래 가장자리에 얇은 접지 그림자",
+ "ok": true
+}

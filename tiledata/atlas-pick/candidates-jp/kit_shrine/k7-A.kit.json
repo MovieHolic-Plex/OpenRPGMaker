@@ -1,0 +1,170 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_shrine/k7-A.pxg",
+ "kit": "kit_shrine",
+ "cand": "k7-A",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "hall5",
+   "name": "배전 5칸",
+   "cells": [
+    5,
+    7
+   ],
+   "ctxSize": [
+    112,
+    144
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "hall7",
+   "name": "배전 7칸(계단 세 칸)",
+   "cells": [
+    7,
+    8
+   ],
+   "ctxSize": [
+    144,
+    160
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 3
+  },
+  {
+   "id": "hokora3",
+   "name": "작은 사당 3칸",
+   "cells": [
+    3,
+    5
+   ],
+   "ctxSize": [
+    80,
+    112
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "temizuya4",
+   "name": "데미즈야 4칸(같은 지붕 + 기둥 넷 + 물통)",
+   "cells": [
+    4,
+    4
+   ],
+   "ctxSize": [
+    96,
+    96
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "sr_tm",
+   "axis": "x",
+   "score": 1.0,
+   "d": 56.3,
+   "bad": false
+  },
+  {
+   "slug": "sr_sl",
+   "axis": "y",
+   "score": 1.0,
+   "d": 19.7,
+   "bad": false
+  },
+  {
+   "slug": "sr_sm",
+   "axis": "x",
+   "score": 1.0,
+   "d": 76.2,
+   "bad": false
+  },
+  {
+   "slug": "sr_sm",
+   "axis": "y",
+   "score": 1.0,
+   "d": 25.0,
+   "bad": false
+  },
+  {
+   "slug": "sr_sr",
+   "axis": "y",
+   "score": 1.0,
+   "d": 20.9,
+   "bad": false
+  },
+  {
+   "slug": "sr_em",
+   "axis": "x",
+   "score": 1.0,
+   "d": 55.4,
+   "bad": false
+  },
+  {
+   "slug": "nuki_m",
+   "axis": "x",
+   "score": 0.14,
+   "d": 2.8,
+   "bad": false
+  },
+  {
+   "slug": "hashira",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "koshi",
+   "axis": "x",
+   "score": 1.0,
+   "d": 105.0,
+   "bad": false
+  },
+  {
+   "slug": "kiza",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "kidan_m",
+   "axis": "x",
+   "score": 0.69,
+   "d": 12.1,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": false,
+   "failed": [
+    "banding"
+   ]
+  },
+  "easyMax": 0.449,
+  "refmapMax": 0.141
+ },
+ "ok": true
+}

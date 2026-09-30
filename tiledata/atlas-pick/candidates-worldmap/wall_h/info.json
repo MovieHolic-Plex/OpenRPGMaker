@@ -1,0 +1,24 @@
+{
+ "id": "wall_h",
+ "slug": "wall_h",
+ "name": "성벽 가로 조각",
+ "scene": "들·길",
+ "kind": "piece",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 목표 월드맵의 얇은 돌 성곽선 — 가로로 이어 붙는 정면 돌담 한 칸(두께 5px). 윗면 밝게, 벽돌 줄눈, 아래 그림자.",
+ "palette_hint": "wstone",
+ "worker": "v6",
+ "joins": "x"
+}

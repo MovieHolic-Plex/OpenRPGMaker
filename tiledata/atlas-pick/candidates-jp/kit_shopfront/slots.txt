@@ -1,0 +1,26 @@
+// kit_shopfront 부품 시트 128x96px (8×6칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+pil_l               0    0  16  32  facade  -   X     왼 끝 기둥
+pil_r              16    0  16  32  facade  -   X     오른 끝 기둥
+win_glass          32    0  16  32  facade  x   X     유리창(빈 가게)
+win_shelf          48    0  16  32  facade  x   X     유리창(선반 보이는 콘비니)
+win_koshi          64    0  16  32  facade  x   X     나무 격자창(이자카야)
+wall_plain         80    0  16  32  facade  x   X     민벽 판
+door_auto_l        96    0  16  32  facade  -   X/F   자동문 왼 짝
+door_auto_r       112    0  16  32  facade  -   X/F   자동문 오른 짝
+door_slide          0   32  16  32  facade  -   X/F   미닫이 나무문
+door_noren         16   32  16  32  facade  -   X/F   노렌 걸린 문
+shutter            32   32  16  32  facade  x   X     셔터(문 닫은 가게)
+band_l             48   32  16  16  facade  -   X     간판 띠 왼 끝
+band_r             64   32  16  16  facade  -   X     간판 띠 오른 끝
+band_cvs           80   32  16  16  facade  x   X     간판 띠: 콘비니 세 줄
+band_izakaya       96   32  16  16  facade  x   X     간판 띠: 이자카야 나무
+band_ramen        112   32  16  16  facade  x   X     간판 띠: 라멘 붉은 판
+band_plain          0   64  16  16  facade  x   X     간판 띠: 흰 민판
+text_ramen         16   64  32  16  facade  -   X     글자 「ラーメン」
+text_sake          48   64  16  16  facade  -   X     글자 「酒」
+awn_l              64   64  16  16  over    -   C     차양 왼 끝
+awn_m              80   64  16  16  over    x   C     차양 가운데
+awn_r              96   64  16  16  over    -   C     차양 오른 끝
+lantern           112   64  16  16  over    -   C     붉은 등롱
+entry_mat           0   80  16  16  ground  x   F     문 앞 발깔개

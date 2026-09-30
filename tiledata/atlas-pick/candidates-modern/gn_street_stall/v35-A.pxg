@@ -1,0 +1,111 @@
+// gn_street_stall v35-A 3/4 (1칸=16px=1m)
+@size 32 48
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a aka 0
+@mat b daidai 0
+@mat c ita 0
+@mat d kinari 0
+@mat e mado 0
+@mat f shiro 0
+@mat g sumi 0
+@mat h tekko 0
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+gggggggggggggggggggggggggggggggg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbg
+gggggggggggggggggggggggggggggggg
+aaaaffffaaaaffffaaaaffffaaaaffff
+aaaaffffaaaaffffaaaaffffaaaaffff
+aaaaffffaaaaffffaaaaffffaaaaffff
+gaaggffggaaggffggaaggffggaaggffg
+.cccccccccccccccccccccccccccccc.
+.cccccccccccccccccccccccccccccc.
+ghheeeeeeeeeeeeeeeeeeeeeeeeeehhg
+ghheeeefdefdefdefdefdefdeeeeehhg
+ghheeeeddeddeddeddeddeddeeeeehhg
+ghheeeeddeddeddeddeddeddeeeeehhg
+ghheeeeddeddeddeddeddeddeeeeehhg
+ghheeehhhhhhhhhhhhhhhhhhhheeehhg
+ghheeehhhhhhhhhhhhhhhhhhhheeehhg
+ghheeehhhhhhhhhhhhhhhhhhhheeehhg
+ghheeehhhhhhhhhhhhhhhhhhhheeehhg
+gccccccccccccccccccccccccccccccg
+gccccccccccccccccccccccccccccccg
+gccccccccccccccccccccccccccccccg
+gccccccccccccccccccccccccccccccg
+gccccccccccaaaaaaaaaaccccccccccg
+gccccccccccaafffaffaaccccccccccg
+gccccccccccaaffffffaaccccccccccg
+gccccccccccaaaaaaaaaaccccccccccg
+.cccccccccccccccccccccccccccccc.
+gccccccccccccccccccccccccccccccg
+gccccggggccggggggggggccggggccccg
+gcccggggggcggggggggggcggggggcccg
+...gghhhhggghhhhhhhhggghhhhgg...
+...gghhhhgggggggggggggghhhhgg...
+...gghhhhgg..........gghhhhgg...
+....gggggg............gggggg....
+.....gggg..............gggg.....
+@tblock 0 0
+................................
+................................
+................................
+................................
+................................
+00000000000000000000000000000000
+02222222222222222222222222222220
+04444444444444444444444444444440
+04333333233333332333333323333330
+04333333233333332333333323333330
+04333333233333332333333323333330
+04333333233333332333333323333330
+04333333233333332333333323333330
+03333333333333333333333333333330
+04444444444444444444444444444440
+00000000000000000000000000000000
+32223222322232223222322232223222
+32223222322232223222322232223222
+11111111111111111111111111111111
+12211221122112211221122112211221
+.111111111111111111111111111111.
+.111111111111111111111111111111.
+04311111111111111111111111111320
+04311113313313313313313311111320
+04333334334334334334334333333320
+04334444344344344344334333333320
+04334444344344344344334333333320
+04334455555555555555555555333320
+04333353333333333333333334333320
+04333354444444444444444444333320
+04322252222222222222222222222320
+05555555555555555555555555555550
+04444444444444444444444444444440
+02222222222222222222222222222220
+04333333323333333233333332333330
+04333333323333333333333332333330
+04333333323223332332233332333330
+04333333323222222222233332333330
+04333333323111111111133332333330
+.433333332333333323333333233333.
+00000000000000000000000000000000
+01111000011111111111111000011110
+01110111101111111111110111101110
+...01244210122222222101244210...
+...01245210111111111101245210...
+...01244210..........01244210...
+....011110............011110....
+.....0000..............0000.....

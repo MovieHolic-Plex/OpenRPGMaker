@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/desk_set/s4-C.pxg",
+ "set": "school",
+ "id": "desk_set",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.067
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  1,
+  14,
+  29
+ ],
+ "note": "재해석: 앞이 넓어지는 경사 상판 밑에 책 서랍 상자가 튀어나온 책상, 둥근 등받이 의자",
+ "ok": true
+}

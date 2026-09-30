@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/plaque/hf5-A.pxg",
+ "set": "horror",
+ "id": "plaque",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 5,
+ "bbox": [
+  3,
+  4,
+  12,
+  10
+ ],
+ "note": "A: v5 식구 — 10×7 sheet 판(윤곽 1, 면 5, 윗줄 6·아랫줄 4), 글씨 줄 두 개(긴 획 6px / 짧은 획 4px, 한 줄 띄움, void1). 가짜 글자 없음.",
+ "ok": true
+}

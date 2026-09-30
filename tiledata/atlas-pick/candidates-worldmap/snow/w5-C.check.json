@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow/w5-C.pxg",
+ "set": "worldmap",
+ "id": "snow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  47,
+  62
+ ],
+ "note": "실루엣 재해석 — 사선 물결 눈 능선 결, 둑이 크게 굽이쳐 들쭉날쭉(1~5px), 외딴 칸은 물방울꼴, 몸통 16px 주기",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.121
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.828
+  },
+  "seam": 0.58
+ }
+}

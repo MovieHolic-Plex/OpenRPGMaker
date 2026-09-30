@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spellbook_stand/w2-C.pxg",
+ "id": "spellbook stand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  0,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "note": "책 독서대(렉턴) 형태로 재해석: 비스듬한 넓은 받침판과 리본 책갈피, 좁은 기둥, 넓은 발",
+ "ok": true
+}

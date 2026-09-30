@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/broom_and_bucket/w9-C.pxg",
+ "id": "broom and bucket",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  0,
+  14,
+  12
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  14,
+  12
+ ],
+ "note": "빗자루를 비스듬히 기대 세우고 양동이는 물 윗면이 넓게 보이도록 키운 재해석",
+ "ok": true
+}

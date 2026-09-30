@@ -1,0 +1,20 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/star_chart/w3-A.pxg",
+ "id": "star chart",
+ "hard": [
+  "size: 16x16 ≠ resize.json 캔버스 16x32"
+ ],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   16,
+   32
+  ],
+  "footprint": {
+   "w": 1,
+   "h": 0
+  },
+  "why": "사용자 메모: 1x2 로 만들것"
+ },
+ "ok": false
+}

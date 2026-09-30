@@ -1,0 +1,37 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/roundtable/w3-B.pxg",
+ "id": "roundtable",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "B: 강한 명암 - 윗면 밝은 하이라이트 띠(맨 밝은 단), 옆면과 기둥은 어둡게 눌러 대비, 오른쪽 바닥에 그림자, 상판 밑 그림자 띠로 떠 있는 두께감",
+ "ok": true
+}

@@ -1,0 +1,78 @@
+// s5 후보 — s5-C.pxg
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a mmetal
+@mat b vbrass
+@mat c vblack
+@mat d mwhite
+@mat e mglass
+@mat f mblue
+@mat g mgreen
+@mat h cream
+@mblock 0 0
+....................aaaaa.......................
+....................a..aa.......................
+.....bb.............a..aa................bb.....
+cccccbbccccccccccccccccaaccccccccccccccccbbccccc
+cccccbbccccccccccccccccaaccccccccccccccccbbccccc
+cccccbbccccccccccccccccaaccccccccccdeccccbbccccc
+cccccbbcccccccccaaaaaaaaaaaaaaaaccceeccccbbccccc
+ccccccccedeeecccaaaaaaaaaaaaaaaaccceeccccccccccc
+cccccccceeeeecccaaaaaaaaaaaaaaaacceeeecccccccccc
+ccccccccefffecccaaaaaaaaaaaaaaaaceeeeeeccccccccc
+ccccccccefffecccaaaaaaaaaaaaaaaaceggggeccccccccc
+ccccccccefffecccaaaaaaaaaaaaaaaaceggggeccccccccc
+ccccccccefffecccaaaaaaaaaaaaaaaaceggggeccccccccc
+cccccccceeeeecccaaaaaaaaaaaaaaaaceeeeeeccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+..hhh.........hhhhhhhhhhhhhhhhhhhh.........hhh..
+..hhh.........hhhhhhhhhhhhhhhhhhhh.........hhh..
+..hhh.........hhhhhhhhhaahhhhhhhhh.........hhh..
+..hhh.........hhhhhhhhhhhhhhhhhhhh.........hhh..
+..hhh.........hhhhhhhhhhhhhhhhhhhh.........hhh..
+..hhh.........hhhhhhhhhhhhhhhhhhhh.........hhh..
+..hhh.........hhhhhhhhhaahhhhhhhhh.........hhh..
+..hhh.........hhhhhhhhhhhhhhhhhhhh.........hhh..
+..hhh......................................h~~~~
+..hhh.--------....................---------h~~~~
+.~~~~.......................................~~~~
+..--------------------------------------------..
+@tblock 0 0
+....................55555.......................
+....................4..55.......................
+.....66.............4..55................66.....
+111116611111111111111115511111111111111116611110
+144444444444444444444445544444444443333334433330
+145534433333333333333335533333333335533334433330
+145334433333333366666666666666663335533334433330
+143333333555333323333336233333323335533333333330
+143333333555333323333336233333323355553333333330
+143333333444333323333336233333323555555333333330
+143333333444333323331336233313323544445333433330
+143333333444333323333336233333323544445334333330
+143333333444333323333336233333323544445343333330
+133333333333333322222226222222223333333333333330
+133333333333333333333333333333333333333333333330
+133333333333333333333333333333333333333333333330
+133333333333333333333333333333333333333333333330
+000000000000000000000000000000000000000000000000
+444444444444444444444444444444444444444444444444
+111111111111111111111111111111111111111111111111
+..542.........55555555555555555555.........542..
+..542.........34444444444444444442.........542..
+..542.........34444444411444444442.........542..
+..542.........34444444444444444442.........542..
+..542.........32222222222222222222.........542..
+..542.........35555555555555555552.........542..
+..542.........34444444411444444442.........542..
+..542.........11111111111111111111.........542..
+..542......................................5....
+..111......................................1....
+................................................
+................................................

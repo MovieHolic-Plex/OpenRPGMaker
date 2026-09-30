@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/lute/w6-C.pxg",
+ "id": "lute",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  0,
+  12,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  1,
+  10,
+  11
+ ],
+ "note": "기울어진 작은 그림을 정면으로 세워 배 모양 몸통을 키우고 목을 곧고 가늘게, 머리를 뒤로 꺾어 벽에 걸린 류트 윤곽으로 다시 그림",
+ "ok": true
+}

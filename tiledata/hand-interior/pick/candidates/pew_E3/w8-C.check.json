@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew_E3/w8-C.pxg",
+ "id": "pew E3",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  8,
+  14,
+  63
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  63
+ ],
+ "note": "십자 새김 패널 세 칸 등판과 끝기둥 첨탑, 금 술 달린 붉은 방석이 이어진 예배당 회중석",
+ "ok": true
+}

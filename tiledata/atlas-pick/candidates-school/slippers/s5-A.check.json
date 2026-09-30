@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/slippers/s5-A.pxg",
+ "set": "school",
+ "id": "slippers",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  3,
+  3,
+  13,
+  13
+ ],
+ "note": "바닥에 나란히 놓인 실내화 한 켤레 — 흰 몸통·초록 고무 코·회색 뒤꿈치 줄, 발치 그림자 1줄",
+ "ok": true
+}

@@ -1,0 +1,24 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dust 4
+@mat b dust 6
+@mat c dust 5
+@mat d dust 2
+@mblock 0 0
+aaaa............
+abb-aabaaaaa....
+abbaab-----baaab
+a-a--b-....b---b
+.aa-b.aa..b.-.b.
+.a-b.-.-a.b-..b-
+.bb.a....ab-..b-
+.a--a-...b-aab.-
+.a-..a..b.-.-c-.
+.a-...ab.-..bc-.
+.a-..bb--..b.-c.
+.abbb.-a..b.-.c-
+..a---.a-b.-..c-
+..a-....b.-...d-
+..a-.....-.....-
+..a-............

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/dresser/hf4-A.pxg",
+ "set": "horror",
+ "id": "dresser",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "outline_black"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "A: v5 계열 깨끗하게 — 윗면 6·5 두 줄과 앞 모서리 4, 서랍 셋(윗줄 4 · 면 3 · 아랫 홈 2) 각 가운데 줄에 tarn 손잡이 점 둘, 짧은 다리 둘. 칸을 가로로 꽉 채움",
+ "ok": true
+}

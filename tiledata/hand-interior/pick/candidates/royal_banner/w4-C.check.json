@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/royal_banner/w4-C.pxg",
+ "id": "royal banner",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  2,
+  13,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  29
+ ],
+ "note": "다시 그리기: 제비꼬리 대신 끝이 뾰족한 삼각 기(페넌트)+사방 금 테두리, 왕관 아래 십자 문장, 봉에 밧줄 고리",
+ "ok": true
+}

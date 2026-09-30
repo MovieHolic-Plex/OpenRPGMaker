@@ -1,0 +1,25 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+// A: 조용한 리놀륨 시트 — 4단 바탕, 아랫줄 용접 이음 + 윗줄 한 단 밝게, 광 얼룩 두어 점
+@mat m lino 4
+@mat d lino 3
+@mat l lino 5
+@mat s lino 2
+@mblock 0 0
+llllllllllllllll
+mmmmmmdmmmmmmmmm
+mmmmmmmmmmllmmmm
+mdmmmmmmmmmmmmdm
+mmmmmmmmmmmmmmmm
+mmmmllmmmmmmdmmm
+mmmmmmmmmmmmmmmm
+mmdmmmmmmmlmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmdmmmmmmmlm
+mlmmmmmmmmmmmmmm
+mmmmmmmmmdmmmmmm
+mmmmmmmmmmmmmmdm
+mmmdmmmmmmmmmmmm
+mmmmmmmmmmlmmmmm
+ssssssssssssssss

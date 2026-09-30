@@ -1,0 +1,72 @@
+// town_3x3 v5-A (5판: FF6 실측 톤(어둡고 채도 낮음), 외곽선 없음)
+@size 48 48
+@cell 16
+@palette ../../palette/worldmap5.pal
+@layer main
+@mat a wgrass 0
+@mat b wgold 3
+@mat c wroofb 1
+@mat d wroofb 2
+@mat e wroofb 0
+@mat f wstone 2
+@mat g wstone 3
+@mat h wstone 1
+@mat i wroofr 1
+@mat j wink 0
+@mat k wroofr 2
+@mat l wroofr 0
+@mat m wgold 2
+@mat n wplast 2
+@mat o wplast 1
+@mat p wplast 0
+@mat q wbark 2
+@mat r wbark 1
+@mblock 0 0
+.......................aba......................
+.......................aca......................
+......................adcea.....................
+.....................addceea....................
+....................adddceeea...................
+..................aaddddceeeeaa.................
+.................addddddceeeeeea................
+..................aaffaaffaaaaa.................
+...................aggfffffha...................
+...................agffffffha...................
+...................agffffffha...................
+...................aghhhhhhha...................
+.....a.............aghfffffha..............a....
+....aba............agffffffha.............aba...
+....aia..aaaaaa....agffjfffha.............aia...
+...akilaakkkkkla...aghhmhhhha....aaaaaa..akila..
+...akilakkkkkkkla..agfffhffha...adddddea.akila..
+..akkilliiiiiiila..agffffffha..adddddddeakkilla.
+..akkiliiiiiiiiila.agffffffha..accccccceakkilla.
+.akkkillllllllllla.aghhhhhhha.acccccccccekkillla
+akkkkillnoooooopa..aghfffffha.aeeeeeeeeeekkillll
+.aagffhanoooooopa..agffffffha..anoooooopagffhaaa
+..agffhanoooooopa..agffffffha..anoooooopagffha..
+..aghhhanooqqoopa..aghhhhhhha..anooqqoopaghhha..
+..agffhanoorroopaa.agfffhffhaa.anoorroopagffha..
+..agffhanoorroopffaagffffffhffaanoorroopfgffha..
+..agffhfggffggffgghfgffffffhffhffffffffffgffha..
+..aghhhfffffffffffffghhhhhhhfffffffffffffghhha..
+..agffhfffffffffffffghfffffhfffffffffffffghfha..
+..agffhhhhhhhhhhhhhhgffffffhhhhhhhhhhhhhhgffha..
+..agffhffhfffffhfffffhfffffhfffffhfffffhfgffha..
+..aghhhfffffffffffffffqqqqfffffffffffffffghhha..
+..agffhffffffffffffffrrrrrrffffffffffffffgffha..
+..agffhhhhhhhhhhhhhhhrrrrrrhhhhhhhhhhhhhhgffha..
+..agffhfffffhfffffhffrrrrrrfffhfffffhffffgffha..
+..aghhhffffffffffffffrrrrrrffffffffffffffghhha..
+..agffhffffffffffffffrrrrrrffffffffffffffghfha..
+..agffhhhhhhhhhhhhhhhrrrrrrhhhhhhhhhhhhhhgffha..
+..agffhffhfffffhfffffrrrrrrhfffffhfffffhfgffha..
+..aghhhffffffffffffffrrrrrrffffffffffffffghhha..
+...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...
+................................................
+................................................
+................................................
+.----------------------------------------------.
+...-------------------------------------------..
+................................................
+................................................

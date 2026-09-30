@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bathtub/w6-B.pxg",
+ "id": "bathtub",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 11,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "왼쪽 물과 테두리를 밝히고 오른쪽 물·앞면을 눌러 볼륨을 주고 발 사이 바닥 한 줄에 오른쪽으로 짙어지는 반투명 그림자",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/pillar_stone/hf1-C.pxg",
+ "set": "horror",
+ "id": "pillar_stone",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  1,
+  0,
+  14,
+  46
+ ],
+ "note": "C(재질·무늬): 세로 홈 한 줄 + 균열 세 곳 · 오래된 돌 · 마녀의 집풍",
+ "ok": true
+}

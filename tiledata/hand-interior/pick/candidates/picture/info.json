@@ -1,0 +1,37 @@
+{
+ "id": "picture",
+ "slug": "picture",
+ "name_ko": "그림",
+ "category": "가구·살림",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "금테 액자에 든 초록 들판 풍경화. 거실·가게·복도 벽면 윗줄에 1~2개. 소파·식탁 위 가운데.",
+ "where": "거실·가게·복도 벽면 윗줄에 1~2개. 소파·식탁 위 가운데.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  12
+ ],
+ "v5_colors": 11,
+ "material": "wood",
+ "related": []
+}

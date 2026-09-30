@@ -1,0 +1,19 @@
+{
+ "id": "crosswalk_jp",
+ "slug": "crosswalk_jp",
+ "name": "일본식 횡단보도",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "일본식 횡단보도: 가장자리 세로선 없이 굵은 흰 띠만 나란히(띠 폭 3px·틈 3px 정도). 세로로 이어 붙이면 끊김 없이 이어지게(위아래 가장자리가 맞게). 아스팔트 바탕 포함.",
+ "palette_hint": "masph 바탕, mwhite 띠",
+ "worker": "j3"
+}

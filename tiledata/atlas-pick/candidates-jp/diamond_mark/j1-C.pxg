@@ -1,0 +1,39 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a masph 3
+@mat b mwhite 3
+@mblock 0 0
+aaaaaaabbaaaaaaa
+aaaaaabbbbaaaaaa
+aaaaabbaabbaaaaa
+aaaabbaaaabbaaaa
+aaabaaaaaaaabaaa
+aabaaaaaaaaaabaa
+abbaaaaaaaaaabba
+bbaaaaaaaaaaaabb
+bbaaaaaaaaaaaabb
+abbaaaaaaaaaabba
+aabaaaaaaaaaabaa
+aaabaaaaaaaabaaa
+aaaabbaaaabbaaaa
+aaaaabbaabbaaaaa
+aaaaaabbbbaaaaaa
+aaaaaaabbaaaaaaa
+@tblock 0 0
+4335214443333432
+2343331554333234
+4323345225445332
+2343452221543333
+3324322212243333
+3343222122212343
+1452221222122313
+4522212221222133
+4522122212221233
+3151222122212333
+3244221222123333
+3134212221233433
+3333332212333234
+4333233123333432
+2343333331333214
+4323333332343335

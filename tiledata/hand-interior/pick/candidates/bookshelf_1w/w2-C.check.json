@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_1w/w2-C.pxg",
+ "id": "bookshelf 1w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 24,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "구성 재해석: 3칸 서가(세로 책 / 화분+눕힌 책 / 단지 둘), 얇은 처마, 두꺼운 밑동",
+ "ok": true
+}

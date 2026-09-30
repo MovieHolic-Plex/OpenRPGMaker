@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/star_chart/w24-F.pxg",
+ "id": "star chart",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   16,
+   32
+  ],
+  "footprint": {
+   "w": 1,
+   "h": 0
+  },
+  "why": "사용자 메모: 1x2 로 만들것"
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 4,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  13
+ ],
+ "note": "F: 놋쇠 천체 고리 + 긴 성도판. 위에 십자 살 놋쇠 아스트롤라베 고리, 사슬로 매단 세로 나무판에 별자리.",
+ "ok": true
+}

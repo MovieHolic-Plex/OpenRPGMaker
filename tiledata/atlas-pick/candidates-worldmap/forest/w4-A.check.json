@@ -1,0 +1,138 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/forest/w4-A.pxg",
+ "set": "worldmap",
+ "id": "forest",
+ "hard": [],
+ "warn": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_n 5≠1, inner_ne↔edge_n 5≠1, inner_sw↔edge_s 5≠0, inner_sw↔edge_w 5≠1, inner_se↔edge_s 5≠0, inner_se↔edge_e 5≠1"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.087
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "강남 결 — 둥근 수관 덩이(지름 9px) 엇갈림 4~5단 저대비, 줄기는 남쪽 변에만 살짝",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.041
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.086
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    "s": [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ],
+    "w": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     3,
+     3,
+     4,
+     3,
+     3,
+     3,
+     4,
+     3
+    ],
+    "e": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     4,
+     3
+    ]
+   },
+   "strait": 8,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 2,
+    "e": 2
+   },
+   "amp": {
+    "n": 1,
+    "s": 1,
+    "w": 4,
+    "e": 4
+   },
+   "joinWorst": 5
+  },
+  "seam": 1.44
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "id": "tower_blue",
+ "slug": "tower_blue",
+ "name": "푸른 원뿔 돌탑",
+ "scene": "성·마을",
+ "kind": "icon",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "위층 단품(그림자 포함)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 1×2 돌탑, 푸른 원뿔 지붕, 금 꼭대기.",
+ "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+ "worker": "v6"
+}

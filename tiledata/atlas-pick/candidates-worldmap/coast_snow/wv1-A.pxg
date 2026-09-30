@@ -1,0 +1,76 @@
+// coast_snow wv1-A — 2판 (work/wv1_gen.py 가 만든다; 손으로 고칠 땐 이 격자를 직접 고친다)
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wice 2
+@mat b wice 3
+@mat c wice 4
+@mat d wsea 1
+@mat e wsea 2
+@mat f wsea 3
+@mblock 0 0
+................dddddddddeeedddd.cbfeeddddeefbc.
+.......bb.......ddddddddddddedddbbafeeddddeefabb
+.....bbaabb.....ddddddddddddddddaafeededdddeefaa
+....baaffaab....ddeeddddddddddddffeeddddddddeeff
+...caffeeffac...ddddedddddddddddeeeddddddddddeee
+..cbfeeeeeefbc..ddddddddddddddddeeeeddddddddddee
+..cafeeddeefac..ddddddddddfdddddddddeddddddddddd
+.cbfeeddddeefbc.dddddddddddddddddddddddddddddddd
+.cbfeeddddeefbc.dddddddddddddeeeddddddddddeedddd
+..cbfeeddeefbc..edddddddddddddddddddddddddddeddd
+..cbfeeeeeefbc..ddddddddddddddddeeddddddddddddee
+...cbffeeffbc...ddddddddddddddddeeeddddddddddeee
+....cbbffbbc....ddddddddddddeeddffeeddddddddeeff
+.....ccbbcc.....ddddddddddddddedbbfeeeeedddeefbb
+.......cc.......ddddddddddddddddccbfeeddedeefbcc
+................dddddfdddddddddd.cbfeeddddeefbc.
+..........bbb.............bbb...................
+.......bbbaaabbbb...bbbbbbaaabbbb...bbbbb.......
+.....bbaaafffaaaabbbaaaaaafffaaaabbbaaaaabb.....
+....baafffeeeffffaaaffffffeeeffffaaafffffaab....
+...caffeeeeeeeeeefffeeeeeeeeeeeeefffeeeeeffac...
+..cbfeeeeedddeeeeeeeeeeeeedddeeeeeeeeeeeeeefbc..
+..cafeeddddddddddeeeeddddddddddddeeeeddddeefac..
+.cbfeeddddddddddddddddddddddddddddddddddddeefbc.
+.cbfeeddddeeddddddddddddddeeddddddddddddddeefbc.
+.cbfeeddddddedddddddddddddddedddddddddddddeefbc.
+.cbfeedddddddddddddddddddddddddddddddddddeefbc..
+.cafeeddddddddddddfdddddddddddddddfddddddeefbc..
+cbfeeddddddddddddddddddddddddddddddddddddeefac..
+cbfeeeeedddddddddddddeeedddddddddddddeeeddeefbc.
+.cbfeeddedddddddddddddddedddddddddddddddedeefbc.
+.cbfeeddddddddddddddddddddddddddddddddddddeefbc.
+.cbfeeddddddddddddddddddddddddddddddddddddeefac.
+.cbfeeddddddddddddddeeddddddddddddddeedddddeefbc
+..cbfeedddddddddddddddedddddddddddddddeddddeefbc
+..cbfeedddddddddddddddddddddddddddddddddddeefbc.
+..cbfeeddddddfdddddddddddddddfddddddddddddeefbc.
+..cafeeddddddddddeeedddddddddddddeeeddddddeefbc.
+.cbfeeddddddddddddddedddddddddddddddedddddeefbc.
+.cbfeeddddddddddddddddddddddddddddddddddddeefbc.
+.cbfeeddddeeddddddddddddddeeddddddddddddddeefbc.
+.cbfeeddddddedddddddddddddddedddddddddddddeefbc.
+.cbfeedddddddddddddddddddddddddddddddddddeefbc..
+.cafeeddddddddddddfdddddddddddddddfddddddeefbc..
+cbfeeddddddddddddddddddddddddddddddddddddeefac..
+cbfeeeeedddddddddddddeeedddddddddddddeeeddeefbc.
+.cbfeeddedddddddddddddddedddddddddddddddedeefbc.
+.cbfeeddddddddddddddddddddddddddddddddddddeefbc.
+.cbfeeddddddddddddddddddddddddddddddddddddeefac.
+.cbfeeddddddddddddddeeddddddddddddddeedddddeefbc
+..cbfeedddddddddddddddedddddddddddddddeddddeefbc
+..cbfeedddddddddddddddddddddddddddddddddddeefbc.
+..cbfeeddddddfdddddddddddddddfddddddddddddeefbc.
+..cafeeddddddddddeeedddddddddddddeeeddddddeefbc.
+.cbfeeddddddddddddddedddddddddddddddedddddeefbc.
+.cbfeeddddddddddddddddddddddddddddddddddddeefbc.
+.cbfeeddddeeddddddddddddddeeddddddddddddddeefbc.
+..cbfeeddeeeeddddddddddddeeeeddddddddddddeefbc..
+..cbfeeeeeeeeeeeeeeddeeeeeeeeeeeeeeddeeeeeefbc..
+...cbffeefffeeeeeeeeeeeeefffeeeeeeeeeeeeeffbc...
+....cbbffbbbfffffffeeffffbbbfffffffeeffffbbc....
+.....ccbbcccbbbbbbbffbbbbcccbbbbbbbffbbbbcc.....
+.......cc...cccccccbbcccc...cccccccbbcccc.......
+...................cc..............cc...........

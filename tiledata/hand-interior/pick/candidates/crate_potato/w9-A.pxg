@@ -1,0 +1,40 @@
+// w9 A — v5 모양 유지: 감자 알마다 밝은 위-왼/짙은 아래-오른 4단, 궤짝 테두리 어두운 외곽선·앞판 줄무늬 정리
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a bread 3
+@mat b pine 3
+@mblock 0 0
+................
+...aa.aaa..aa...
+..aaaaaaaaaaaa..
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+@tblock 0 0
+................
+...54.554..54...
+..544354435443..
+.04432432344320.
+.01554125415540.
+.01544354435440.
+.01432344324320.
+.01122113311220.
+.01111111111110.
+.06666666666660.
+.02222222222220.
+.05444444444420.
+.05333333333320.
+.05444444444420.
+.05333333333320.
+.00000000000000.

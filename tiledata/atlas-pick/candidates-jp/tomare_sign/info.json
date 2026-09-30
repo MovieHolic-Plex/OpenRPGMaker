@@ -1,0 +1,19 @@
+{
+ "id": "tomare_sign",
+ "slug": "tomare_sign",
+ "name": "「止まれ」 표지판",
+ "scene": "주택가 골목",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "일본 멈춤 표지: 빨간 역삼각형 판에 흰 글자 「止まれ」(판 폭 12~14px, 글자는 작게라도 두 줄 획이 읽히게), 가는 회색 기둥.",
+ "palette_hint": "akachin 판, mwhite 글자·테, pole 기둥",
+ "worker": "j5"
+}

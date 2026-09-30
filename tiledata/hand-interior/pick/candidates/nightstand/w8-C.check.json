@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/nightstand/w8-C.pxg",
+ "id": "nightstand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  16,
+  14,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  16,
+  13,
+  29
+ ],
+ "note": "서랍 하나에 굵은 네 다리를 단 낮은 협탁으로 재해석, 윗판을 옆으로 내밀어 3/4 윗면을 넓게",
+ "ok": true
+}

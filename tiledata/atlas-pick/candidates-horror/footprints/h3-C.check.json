@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/footprints/h3-C.pxg",
+ "set": "horror",
+ "id": "footprints",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "발가락이 길고 뾰족한 발톱 발자국: 발가락마다 세로 2~3px, 끝에 창백한 발톱 점(짐승 같다)",
+ "ok": true
+}

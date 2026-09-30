@@ -1,0 +1,23 @@
+{
+ "id": "gate_fort",
+ "slug": "gate_fort",
+ "name": "관문 요새",
+ "scene": "산·화산",
+ "kind": "icon",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "산맥 관문 틈을 막는 작은 요새(outdoor-guide-world 「산맥 줄기 + 관문 틈」). 흉벽 두른 돌 문루 하나 + 가운데 어두운 문 아치, 양옆 벽 토막. 칸 폭 80% 이상. 성보다 작고 낮게, 탑·지붕 없음.",
+ "palette_hint": "wstone 벽, 문 mout",
+ "worker": "wv3"
+}

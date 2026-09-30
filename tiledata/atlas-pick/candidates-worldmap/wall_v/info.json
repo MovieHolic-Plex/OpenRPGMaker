@@ -1,0 +1,24 @@
+{
+ "id": "wall_v",
+ "slug": "wall_v",
+ "name": "성벽 세로 조각",
+ "scene": "들·길",
+ "kind": "piece",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 세로로 이어 붙는 얇은 돌담(폭 4px, 위에서 본 시점). 왼쪽 밝게·오른쪽 어둡게, 오른쪽에 그림자 한 줄.",
+ "palette_hint": "wstone",
+ "worker": "v6",
+ "joins": "y"
+}

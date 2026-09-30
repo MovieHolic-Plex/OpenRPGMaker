@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/sofa_sheet/h4-A.pxg",
+ "set": "horror",
+ "id": "sofa_sheet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.23
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  2,
+  31,
+  15
+ ],
+ "note": "흰 천 소파 v5 자리(32×16, 바닥선 같은 y): 등받이·팔걸이 둥근 덩이, 주름 세로 3줄, 아래 끝이 물결로 늘어지고 오른쪽 밑에 rot 다리 끝 하나",
+ "ok": true
+}

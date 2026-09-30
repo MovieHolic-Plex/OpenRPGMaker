@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/lab_cabinet/v34-A.pxg",
+ "set": "school",
+ "id": "lab_cabinet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  0,
+  31,
+  31
+ ],
+ "note": "약품장 3/4 — 크림색 장, 밝은 윗면, 들어간 유리 상단 두 칸에 병, 아래 두 짝 문",
+ "ok": true
+}

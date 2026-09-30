@@ -1,0 +1,107 @@
+// hosp_bed v34-A
+@size 16 48
+@cell 16
+@palette palette.pal
+@layer main
+@mat a tin 0
+@mat r rust 0
+@mat s sheet 0
+@mat b blood 0
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.aa..........aa.
+.aa..........aa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaarraaaa.
+.aaaaaaaaaaaaaa.
+.aa.aa.aa.aa.aa.
+.aa.aa.aa.aa.aa.
+.aa.aa.aa.aa.aa.
+.aa.aa.aa.aa.aa.
+.aaaaaaaaaaaaaa.
+.aaraaaaaaaraaa.
+.aassssssssssaa.
+.aassssssssssaa.
+.aassssssssssaa.
+.aassssssssssaa.
+.aassssssssssaa.
+.aassssssssssaa.
+.aassssssssssaa.
+.aassssssssssaa.
+.aassssssssssaa.
+.aassssbbssssaa.
+.aassssbbbsssaa.
+.aassssssssssaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaarraaaaaaaaa.
+.aa.aa.aa.aa.aa.
+.aa.aa.aa.aa.aa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aa..........aa.
+.aa..........aa.
+.aa..........aa.
+@tblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.11..........11.
+.11..........11.
+.14111111111141.
+.16666666666651.
+.16666666666651.
+.11111111111111.
+.14333333333321.
+.14033033033021.
+.11.11.11.11.11.
+.11.11.11.11.11.
+.11.11.11.11.11.
+.11.11.11.11.11.
+.15155155155151.
+.12322222224221.
+.15333333333331.
+.15644444444331.
+.15665555564331.
+.15666666664331.
+.15633333334331.
+.15666666666631.
+.15544444444331.
+.15543344443331.
+.15544443344331.
+.15544321434331.
+.15544411244331.
+.15222222222231.
+.16666666666651.
+.16666666666651.
+.11111111111111.
+.14444444444441.
+.13034033033031.
+.11.11.11.11.11.
+.11.11.11.11.11.
+.14144144144141.
+.13000000000021.
+.11..........11.
+.11..........11.
+.00..........00.

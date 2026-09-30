@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/elven_harp/w4-A.pxg",
+ "id": "elven harp",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  3,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  14,
+  31
+ ],
+ "note": "v5 정리: 통짜 금 프레임(3px 폭 음영)+휜 목+흰 줄 1px, 줄 끝 한 픽셀 어둡게, 받침 3단 목재, 목 끝에 붉은 보석",
+ "ok": true
+}

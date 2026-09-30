@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scenery_flat/w28-H.pxg",
+ "id": "scenery flat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "사막: 낮은 해와 하늘, 멀리 피라미드 둘, 모래 언덕 층과 야자수와 작은 오아시스.",
+ "ok": true
+}

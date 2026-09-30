@@ -1,0 +1,41 @@
+// iron_fence v34-A 3/4 재작도
+@size 32 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a rust 0
+@mat b tin 0
+@mblock 0 0
+.b..b..b..b..b..b..b..b..b..b...
+.bb.bb.bb.bb.bb.bb.bb.bb.bb.bb..
+.bb.bb.bb.bb.bb.bb.bb.bb.bb.bb..
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbabbbbbbbbbbbbbb
+bbbbbbabbbbbbbbbbbbbbbbbbabbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+.bb.bb.bb.bb.bb.bb.bb.ba.bb.bb..
+.bb.bb.ab.bb.bb.bb.bb.bb.bb.ab..
+.bb.bb.bb.bb.bb.bb.ab.bb.bb.bb..
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+.bb.bb.bb.ba.bb.bb.bb.bb.bb.bb..
+.bb.bb.bb.bb.bb.bb.bb.bb.bb.bb..
+.bb.bb.bb.bb.bb.bb.bb.bb.bb.bb..
+@tblock 0 0
+.4..4..4..4..4..4..4..4..4..4...
+.42.42.42.42.42.42.42.42.42.42..
+.42.42.42.42.42.42.42.42.42.42..
+14224224224224224224224224224221
+13253253253253253353253253253251
+15555535555555555555555553555551
+16666666666666666666666666666661
+00000000000000000000000000000000
+.52.52.52.52.52.52.52.53.52.52..
+.52.52.32.52.52.52.52.52.52.32..
+.52.52.52.52.52.52.32.52.52.52..
+44444444444444444444444444444444
+22222222222222222222222222222222
+.52.52.52.53.52.52.52.52.52.52..
+.52.52.52.52.52.52.52.52.52.52..
+.22.22.22.22.22.22.22.22.22.22..

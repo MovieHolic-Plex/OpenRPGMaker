@@ -1,0 +1,23 @@
+{
+ "id": "library_shelf",
+ "slug": "library_shelf",
+ "name": "도서실 책장",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "키 큰 도서실 책장(3단) — 단마다 색 다른 책등(빨·파·초·노 낮은 채도, 높이 들쭉날쭉, 기울어진 책 하나), 번호 라벨 흰 점 줄. 앞면이 주인공, 윗판 1px. 좌우 이어 붙게.",
+ "palette_hint": "vpine/vwood 장, vred vblue vgreen vyellow 책등",
+ "pair": [
+  "library_counter"
+ ],
+ "worker": "s4"
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dining_2x1/pilot-B.pxg",
+ "id": "dining 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "빛을 왼쪽 위에 모으고 오른쪽·앞은 한 단씩 어둡게, 다리 사이 반투명 접지 그림자",
+ "ok": true
+}

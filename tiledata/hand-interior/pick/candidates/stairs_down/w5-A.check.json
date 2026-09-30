@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_down/w5-A.pxg",
+ "id": "stairs down",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 7,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "v5 의 가로 줄 무늬를 진짜 내려가는 계단으로: 먼 단일수록 어둡고 좁고, 단마다 밝은 코와 아래 그림자 줄, 가까운 단은 밝은 돌",
+ "ok": true
+}

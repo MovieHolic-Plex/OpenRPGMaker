@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/mountain_peaks/v4-A.pxg",
+ "set": "worldmap",
+ "id": "mountain_peaks",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.244
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  4,
+  95,
+  31
+ ],
+ "note": "4판 겹판 2x2 봉우리(장식층). 두 칸 격자에서 흔들려 놓는다.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 9,
+   "atLeast95": 0,
+   "max": 0.035
+  },
+  "refmapWorld": {
+   "cells": 9,
+   "atLeast95": 0,
+   "max": 0.289
+  }
+ }
+}

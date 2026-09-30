@@ -1,0 +1,35 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a tin 5
+@mat b tin 1
+@mat c tin 6
+@mat d tin 3
+@mat e tin 2
+@mat f murk 3
+@mat g murk 6
+@mat h night 0
+@mat i void 2
+@mat j night 1
+@mat k murk 4
+@mat l murk 5
+@mat m night 2
+@mat n murk 2
+@mat o void 1
+@mblock 0 0
+................................
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaab.
+.acccccccccccccdecccccccccccccb.
+.acfgfhihhhgfgcdejjjjjjjgjjjjeb.
+.acgfkffifkhgfcdejjjjljgjjjjjeb.
+.acfhihkhihhhgcdejjjljjgjjjjjeb.
+.acfhhihhgihhfcdejjljjljkjjjjeb.
+.acihhhihhhihhcdemlmmmglmlgmmeb.
+.ackihhhihhhihcdemmmmgkmmmmlmeb.
+.acnfihhhkhhhncdemmmgmmmmmmmmeb.
+.acknkfonlfknkcdemmgmmmmmmmmmeb.
+.aceeeeeeeeeeecdeeeeeeeeeeeeeeb.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+..-????????????---------------..
+....??.??.??.?????????..........

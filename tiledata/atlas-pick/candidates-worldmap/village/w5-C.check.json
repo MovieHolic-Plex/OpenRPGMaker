@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/village/w5-C.pxg",
+ "set": "worldmap",
+ "id": "village",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  1,
+  31,
+  15
+ ],
+ "note": "실루엣 재해석 — 벽은 낮고 지붕은 높고 가파른 삼각(가운데 푸른 큰 집, 굴뚝), 멀리서도 지붕 세 삼각으로 읽힘",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.043
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.013
+  }
+ }
+}

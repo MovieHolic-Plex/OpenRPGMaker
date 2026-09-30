@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_gacha/r2-B.pxg",
+ "set": "jp",
+ "id": "vending_gacha",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 43,
+ "bbox": [
+  2,
+  0,
+  31,
+  31
+ ],
+ "note": "명암 강화: 앞면 3단·윗면 5단·옆면 0단, 유리 한 단 밝게, 왼쪽 바닥에 유리 빛 %와 접지 그림자 3줄, 배출구 안에 캡슐 하나 || 식구 공통(r1 치수 그대로): A 와 같은 치수, 그림자만 3줄(y=29..31)+왼쪽 불빛 번짐 %; 톤은 윗면 5단",
+ "ok": true
+}

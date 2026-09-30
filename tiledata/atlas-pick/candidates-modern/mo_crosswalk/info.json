@@ -1,0 +1,40 @@
+{
+ "id": "mo-crosswalk",
+ "slug": "mo_crosswalk",
+ "name": "횡단보도",
+ "scene": "도로·보도 표시",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "횡단보도(남북 도로) · 서쪽 연석 줄 1×1. 횡단보도: 교차로 바로 바깥(교차하는 길의 인도 줄과 같은 줄)에 폭 2칸으로, 인도에서 인도까지 끊김 없이 — 차도 첫·끝 줄은 연석을 남기는 -n/-s(-w/-e) 칸. 양끝 인도에 보행 신호와 횡단보도 표지. 차선·중앙선은 횡단보도에서 한 칸 떨어져 멈추고, 멈춤선을 둔다.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "mo-crosswalk-ew-w",
+  "mo-crosswalk-ew-e",
+  "mo-crosswalk-ew"
+ ],
+ "tiles": [
+  3777,
+  3778,
+  3779
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   34,
+   12
+  ]
+ }
+}

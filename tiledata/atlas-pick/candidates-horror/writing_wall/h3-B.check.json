@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/writing_wall/h3-B.pxg",
+ "set": "horror",
+ "id": "writing_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  30,
+  15
+ ],
+ "note": "대비 강화: 윗획 blood 5 단, 속 2, 아랫테 0, 오른쪽 접지 반투명 그늘 한 줄",
+ "ok": true
+}

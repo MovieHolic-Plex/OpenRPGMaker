@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ticket_machine/r2-B.pxg",
+ "set": "jp",
+ "id": "ticket_machine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.266
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.111
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 33,
+ "bbox": [
+  0,
+  0,
+  46,
+  31
+ ],
+ "note": "명암 강화: 몸체를 한 단 눌러 청록 화면이 밝게 뜨고 두 기계 사이 틈으로 청록 빛이 새며 바닥에 %가 번진다. 운임표는 더 어둡게 물러남, 접지 그림자 2줄+옅은 줄. 밤 역 매표소.",
+ "ok": true
+}

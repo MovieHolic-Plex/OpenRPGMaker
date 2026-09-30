@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/choir_stall/w90-A.pxg",
+ "id": "choir stall",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "note": "성가대석: 금 장식 처마를 뒤 가장자리→중간 톤 윗면→앞 모서리 하이라이트→처마 그림자로 다시 찍음(윗면 5행), 칸막이 판은 줄여 높이 유지",
+ "ok": true
+}

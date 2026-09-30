@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/port/v3-A.pxg",
+ "set": "worldmap",
+ "id": "port",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "light"
+  ]
+ },
+ "colors": 25,
+ "bbox": [
+  1,
+  6,
+  31,
+  30
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.133
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.028
+  }
+ }
+}

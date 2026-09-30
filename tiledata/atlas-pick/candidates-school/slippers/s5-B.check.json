@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/slippers/s5-B.pxg",
+ "set": "school",
+ "id": "slippers",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  3,
+  3,
+  14,
+  14
+ ],
+ "note": "같은 켤레(파랑 코)에 왼쪽 밝은 테·오른쪽 어두운 단, 발치 반투명 그림자 2줄",
+ "ok": true
+}

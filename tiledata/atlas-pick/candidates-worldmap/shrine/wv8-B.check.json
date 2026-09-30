@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/shrine/wv8-B.pxg",
+ "set": "worldmap",
+ "id": "shrine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "note": "명암 강화 — 돔 위 금빛 꼭지, 입구 안 불빛, 명암 단을 늘림",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.039
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.095
+  }
+ }
+}

@@ -1,0 +1,36 @@
+{
+ "id": "gn-hatch",
+ "slug": "gn_hatch",
+ "name": "안전지대 빗금",
+ "scene": "도로·보도 표시",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "안전지대 빗금 1×1. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-hatch"
+ ],
+ "tiles": [
+  4897
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   44,
+   4
+  ]
+ }
+}

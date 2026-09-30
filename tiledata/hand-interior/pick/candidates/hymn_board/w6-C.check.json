@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hymn_board/w6-C.pxg",
+ "id": "hymn board",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 17,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  0,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "note": "박공 지붕과 황동 장식을 얹은 작은 집 모양 번호판, 숫자 25",
+ "ok": true
+}

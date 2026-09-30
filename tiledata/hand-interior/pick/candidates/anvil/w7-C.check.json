@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/anvil/w7-C.pxg",
+ "id": "anvil",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  3,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  13,
+  13
+ ],
+ "note": "실루엣을 바꿈: 바닥에 놓인 모루 대신 나무 그루터기 위에 얹은 뿔 오른쪽 모루",
+ "ok": true
+}

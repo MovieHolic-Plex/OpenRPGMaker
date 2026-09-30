@@ -1,0 +1,34 @@
+// ore_pile 후보 C (w27, 2x2)
+@size 32 32
+@cell 16
+@palette palette.pal
+@px 25 16 teal:6 24 17 teal:6 25 17 teal:2 24 18 teal:4 25 18 teal:5 26 18 teal:2 23 19 teal:4 24 19 teal:5 25 19 teal:3 26 19 teal:2
+@px 11 20 gold:5 12 20 gold:3 13 20 stone:3 14 20 stone:3 15 20 stone:3 16 20 stone:3 17 20 stone:3 18 20 stone:1 23 20 teal:4 24 20 teal:5
+@px 25 20 teal:3 26 20 teal:2 8 21 stone:3 9 21 stone:3 10 21 stone:3 11 21 stone:5 12 21 stone:5 13 21 stone:5 14 21 stone:5 15 21 gold:6
+@px 16 21 gold:5 17 21 stone:4 18 21 stone:4 19 21 stone:3 20 21 stone:3 21 21 stone:1 22 21 teal:4 23 21 teal:6 24 21 teal:5 25 21 teal:3
+@px 26 21 teal:2 6 22 stone:3 7 22 stone:3 8 22 stone:5 9 22 gold:6 10 22 gold:5 11 22 stone:5 12 22 stone:5 13 22 stone:5 14 22 stone:4
+@px 15 22 gold:4 16 22 gold:3 17 22 stone:4 18 22 stone:4 19 22 stone:4 20 22 gold:5 21 22 gold:3 22 22 teal:4 23 22 teal:5 24 22 teal:5
+@px 25 22 teal:3 26 22 teal:2 28 22 teal:6 4 23 stone:3 5 23 stone:3 6 23 stone:5 7 23 stone:5 8 23 stone:5 9 23 gold:4 10 23 gold:3
+@px 11 23 stone:4 12 23 stone:5 13 23 stone:5 14 23 stone:4 15 23 stone:4 16 23 stone:4 17 23 stone:4 18 23 stone:4 19 23 stone:4 20 23 stone:5
+@px 21 23 stone:5 22 23 teal:4 23 23 teal:5 24 23 teal:5 25 23 teal:3 26 23 teal:2 27 23 teal:6 28 23 teal:6 29 23 teal:2 3 24 stone:3
+@px 4 24 stone:5 5 24 stone:5 6 24 stone:5 7 24 stone:5 8 24 stone:5 9 24 stone:5 10 24 stone:5 11 24 stone:5 12 24 stone:5 13 24 gold:5
+@px 14 24 gold:3 15 24 stone:4 16 24 stone:4 17 24 stone:4 18 24 stone:4 19 24 stone:4 20 24 stone:4 21 24 stone:3 22 24 teal:4 23 24 teal:5
+@px 24 24 teal:5 25 24 teal:3 26 24 teal:2 27 24 teal:4 28 24 teal:5 29 24 teal:2 2 25 stone:3 3 25 stone:5 4 25 stone:5 5 25 stone:5
+@px 6 25 gold:6 7 25 gold:5 8 25 stone:5 9 25 stone:5 10 25 stone:5 11 25 stone:5 12 25 stone:4 13 25 stone:5 14 25 stone:4 15 25 stone:3
+@px 16 25 stone:4 17 25 stone:4 18 25 gold:6 19 25 gold:5 20 25 stone:3 21 25 stone:4 22 25 stone:4 23 25 stone:3 24 25 stone:4 25 25 stone:3
+@px 26 25 stone:3 27 25 teal:4 28 25 teal:5 29 25 teal:2 2 26 stone:3 3 26 stone:5 4 26 stone:5 5 26 stone:5 6 26 gold:4 7 26 gold:3
+@px 8 26 stone:5 9 26 stone:5 10 26 stone:5 11 26 stone:5 12 26 gold:6 13 26 gold:5 14 26 stone:4 15 26 stone:3 16 26 stone:3 17 26 stone:4
+@px 18 26 gold:4 19 26 gold:3 20 26 stone:3 21 26 stone:4 22 26 stone:3 23 26 stone:3 24 26 stone:2 25 26 stone:2 26 26 stone:2 27 26 teal:4
+@px 28 26 teal:5 29 26 teal:2 30 26 stone:1 1 27 stone:3 2 27 stone:5 3 27 stone:5 4 27 gold:5 5 27 gold:3 6 27 stone:5 7 27 stone:5
+@px 8 27 gold:5 9 27 gold:3 10 27 stone:4 11 27 stone:5 12 27 gold:4 13 27 gold:3 14 27 stone:3 15 27 stone:3 16 27 stone:4 17 27 stone:3
+@px 18 27 stone:3 19 27 stone:3 20 27 stone:4 21 27 stone:3 22 27 stone:3 23 27 stone:3 24 27 stone:2 25 27 stone:2 26 27 stone:2 27 27 stone:2
+@px 28 27 stone:2 29 27 stone:3 30 27 stone:1 1 28 stone:3 2 28 stone:5 3 28 stone:5 4 28 stone:4 5 28 stone:4 6 28 stone:4 7 28 stone:4
+@px 8 28 stone:4 9 28 stone:3 10 28 stone:4 11 28 stone:4 12 28 stone:3 13 28 stone:3 14 28 stone:4 15 28 stone:4 16 28 stone:2 17 28 stone:2
+@px 18 28 stone:3 19 28 stone:3 20 28 stone:3 21 28 stone:4 22 28 stone:3 23 28 stone:2 24 28 stone:3 25 28 stone:3 26 28 stone:2 27 28 stone:2
+@px 28 28 stone:2 29 28 stone:2 30 28 stone:2 31 28 stone:1 1 29 stone:1 2 29 stone:1 3 29 stone:1 4 29 stone:1 5 29 stone:1 6 29 stone:1
+@px 7 29 stone:1 8 29 stone:1 9 29 stone:1 10 29 stone:1 11 29 stone:1 12 29 stone:1 13 29 stone:1 14 29 stone:1 15 29 stone:1 16 29 stone:1
+@px 17 29 stone:1 18 29 stone:1 19 29 stone:1 20 29 stone:1 21 29 stone:1 22 29 stone:1 23 29 stone:1 24 29 stone:1 25 29 stone:1 26 29 stone:1
+@px 27 29 stone:1 28 29 stone:1 29 29 stone:1 30 29 stone:1 31 29 stone:1 1 30 stone:1 2 30 stone:1 3 30 stone:1 4 30 stone:1 5 30 stone:1
+@px 6 30 stone:1 7 30 stone:1 8 30 stone:1 9 30 stone:1 10 30 stone:1 11 30 stone:1 12 30 stone:1 13 30 stone:1 14 30 stone:1 15 30 stone:1
+@px 16 30 stone:1 17 30 stone:1 18 30 stone:1 19 30 stone:1 20 30 stone:1 21 30 stone:1 22 30 stone:1 23 30 stone:1 24 30 stone:1 25 30 stone:1
+@px 26 30 stone:1 27 30 stone:1 28 30 stone:1 29 30 stone:1 30 30 stone:1 31 30 stone:1

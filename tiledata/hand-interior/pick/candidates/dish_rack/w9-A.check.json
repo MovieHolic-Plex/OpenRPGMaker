@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dish_rack/w9-A.pxg",
+ "id": "dish rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "v5 정리: 컵 세 개를 접시 줄 중심에 맞춰 오른쪽 1px 이동, 컵 3단 명암(BAB/CCD/DDE)",
+ "ok": true
+}

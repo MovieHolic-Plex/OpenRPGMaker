@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/dark_edge/h4-A.pxg",
+ "set": "horror",
+ "id": "dark_edge",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.13
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  15,
+  12
+ ],
+ "note": "위 &→아래로 * \" ^ 부드러운 그라데이션, 경계는 2px 체크 디더, 맨 아랫줄 투명",
+ "ok": true
+}

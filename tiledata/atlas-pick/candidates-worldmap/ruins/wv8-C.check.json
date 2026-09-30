@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/ruins/wv8-C.pxg",
+ "set": "worldmap",
+ "id": "ruins",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.147
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "다른 해석 — 상인방이 반쯤 남은 돌문 아치와 무너진 기둥",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.203
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.221
+  }
+ }
+}

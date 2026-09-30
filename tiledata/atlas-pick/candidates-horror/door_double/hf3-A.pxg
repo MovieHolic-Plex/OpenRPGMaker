@@ -1,0 +1,73 @@
+// door_double hf3-A (hf3)
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mahog 0
+@mat b tarn 0
+@mblock 0 0
+................................
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaabbaabbaaaaaaaaaaaaa
+aaaaaaaaaaaaabbaabbaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+@tblock 0 0
+................................
+................................
+11111111111111111111111111111111
+15555555555555555555555555555541
+14444444444444444444444444444431
+15322222222222222222222222222431
+15343333333333314333333333334431
+15343322222222314322222222334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343334444444314334444444334431
+15343333333333314333333333334431
+15343333333333314333333333334431
+15343322222222314322222222334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333335414543333334334431
+15343323333333214323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343323333334314323333334334431
+15343334444444314334444444334431
+15343333333333314333333333334431
+15342222222222211222222222224431
+11111111111111111111111111111111

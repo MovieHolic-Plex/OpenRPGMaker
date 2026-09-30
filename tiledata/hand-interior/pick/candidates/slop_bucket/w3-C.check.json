@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/slop_bucket/w3-C.pxg",
+ "id": "slop bucket",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "failed": [
+   "orphans"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 5,
+ "bbox": [
+  3,
+  4,
+  12,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  6,
+  11,
+  13
+ ],
+ "note": "실루엣 재해석 — 아가리가 넓은 통에 쇠 손잡이를 위로 세우고, 오물이 림 밖으로 흘러 앞 통널에 줄을 남김(누가 방금 쓴 통). 몸통은 아래로 좁아지는 뿔통.",
+ "ok": true
+}

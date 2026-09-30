@@ -1,0 +1,50 @@
+// w10 w10-C
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat 1 wood 1
+@mat 3 wood 3
+@mat 4 wood 4
+@mat 5 wood 5
+@mat 6 wood 6
+@mat 7 wood 7
+@mat B wood 2
+@mat m pine 4
+@mat n pine 2
+@mat p pine 6
+@mat q pine 5
+@mat r pine 3
+@mat x dwood 1
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+..............BBBB..............
+.............BpppqB.............
+.6...........BpmrqB...........3.
+164..........BqrmrB..........531
+164..........BqrrnB..........531
+164.....xxxBBBBBBBBBBxxxxxxxx531
+164....xxxBpppqBBpppqBxxxxxxx531
+164....xxxBpmrqBBpmrqBxxxxxxx531
+164....xxxBqrmrBBqrmrBxxxxxxx531
+164....xxxBqrrnBBqrrnBxxxxxxx531
+164..xxxBBBBBBBBBBBBBBBBxxxxx531
+164.xxxBpppqBBpppqBBmmrrBxxxx531
+164.xxxBpmrqBBpmrqBBmrrnBxxxx531
+164.xxxBqrmrBBqrmrBBrnrnBxxxx531
+164.xxxBqrrnBBqrrnBBrnnnBxxxx531
+164xxBBBBBBBBBBBBBBBBBBBBBBxx531
+164xBpppqBBpppqBBmmrrBBmmrrBx531
+164xBpmrqBBpmrqBBmrrnBBmrrnBx531
+164xBqrmrBBqrmrBBrnrnBBrnrnBx531
+164xBqrrnBBqrrnBBrnnnBBrnnnBx531
+164xxBBBBxxBBBBxxBBBBxxBBBBxx531
+67776666666666666666666666665556
+44444444444444444444444444444444
+11111111111111111111111111111111

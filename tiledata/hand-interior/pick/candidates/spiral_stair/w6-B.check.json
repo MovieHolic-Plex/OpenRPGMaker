@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spiral_stair/w6-B.pxg",
+ "id": "spiral stair",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 7,
+  "atLeast95": 0,
+  "max": 0.06
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 10,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  9,
+  30,
+  63
+ ],
+ "v5_bbox": [
+  1,
+  9,
+  30,
+  63
+ ],
+ "note": "디딤판 위는 왼쪽일수록 밝고 옆면은 어둡게, 기둥을 왼쪽에서 비추고 밑동 오른쪽 아래에 반투명 그림자 세 줄",
+ "ok": true
+}

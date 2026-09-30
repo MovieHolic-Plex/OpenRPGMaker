@@ -1,0 +1,57 @@
+// tailor_mirror w1-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat j wood 2
+@mat k wood 3
+@mat d wood 4
+@mat s wood 5
+@mat m wood 6
+@mat h wood 7
+@mat 1 gold 1
+@mat 2 gold 2
+@mat 3 gold 3
+@mat 4 gold 4
+@mat 5 gold 5
+@mat 6 gold 6
+@mat p glass 2
+@mat q glass 3
+@mat r glass 4
+@mat u glass 5
+@mat v glass 6
+@mat w ice 6
+@mat y ice 5
+@mblock 0 0
+..5..........5..
+.643........643.
+.432........432.
+.hdk..6666..hdk.
+.mdk.5vrrr5.mdk.
+.mdk5vrrrrr3mdk.
+.mdkvuuuuuurmdk.
+.mdkvwuuuuurmdk.
+.mdkvuyuuuurmdk.
+.hdkvuuyuuurhdk.
+.mdkvuuuyuurmdk.
+.mdkvuuuuyurmdk.
+.mdkvuuuuuyrmdk.
+.mdkvuuuuuurmdk.
+.md66uuuuuu55dk.
+.hd4vuuuuuur3dk.
+.mdkvwuuuuurmdk.
+.mdkvuwuuuurmdk.
+.mdkvuuwuuurmdk.
+.mdkvuuuwuurmdk.
+.mdkvuuuuuurmdk.
+.hdkvuuuuuurhdk.
+.mdkvuuuuuurmdk.
+.mdkvuuuuuurmdk.
+.mdk4vrrrrr2mdk.
+.mdk.3qqqq2.mdk.
+.mdk..3333..mdk.
+.hdkddddddddhdk.
+hhhhhhhhhhhhhhhm
+mmmmmmmmmddddddd
+jdddddddkkkkkkkk
+................

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/morgue_drawer/h4-C.pxg",
+ "set": "horror",
+ "id": "morgue_drawer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.234
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "네 칸이 얼굴: 이름표=눈 구멍 둘, 손잡이=입, 열린 칸은 벌어진 입에서 흰 천 혀와 발가락이 삐져나옴",
+ "ok": true
+}

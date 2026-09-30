@@ -1,0 +1,21 @@
+// w6-A weapon rack — 창 자루를 다른 자루와 같은 갈색으로
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+...A....B.......
+...BC..CBD......
+...BC..CBDBCEF..
+...BC..CEDACEF..
+...BC...E.ACEF..
+...BC...E.ACEF..
+...BC...E.HHEF..
+...BC...E...EF..
+...BC...E...EF..
+..IEFJ..E...EF..
+...EF...E...EF..
+...EF...E...EF..
+KKKKKKKKKKKKKKKK
+LLLLLLLLLLLLLLLL
+MMMMMMMMMMMMMMMM
+................

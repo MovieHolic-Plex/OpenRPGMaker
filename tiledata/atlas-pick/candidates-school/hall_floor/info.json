@@ -1,0 +1,24 @@
+{
+ "id": "hall_floor",
+ "slug": "hall_floor",
+ "name": "복도 리놀륨",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "복도 바닥 리놀륨 한 칸 — 회녹색 면에 옅은 반사 얼룩, 이음 선 한 줄(가로). 사방 이음 맞춤. 광택은 작게, 두세 단만.",
+ "palette_hint": "lino",
+ "pair": [
+  "hall_wall",
+  "hall_door"
+ ],
+ "worker": "s1"
+}

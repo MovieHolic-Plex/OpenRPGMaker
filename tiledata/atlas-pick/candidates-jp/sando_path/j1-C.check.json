@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/sando_path/j1-C.pxg",
+ "set": "jp",
+ "id": "sando_path",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "재해석: 크기 다른 손다듬은 돌 세 장씩 + 갈퀴 자국 세로 줄 자갈, 틈마다 이끼 띠",
+ "ok": true
+}

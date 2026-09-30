@@ -1,0 +1,23 @@
+{
+ "id": "village",
+ "slug": "village",
+ "name": "마을",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "마을: 박공지붕 집 두세 채(지붕이 벽보다 크고 밝게), 문 한 점, 집 사이 나무 한 그루. 집 모양·지붕 색을 섞되 한 식구. 성벽 없음.",
+ "palette_hint": "wroofr·wroofb 지붕, mwhite·mbrick 벽, mwood 문",
+ "worker": "wv7"
+}

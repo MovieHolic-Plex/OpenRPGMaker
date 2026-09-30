@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/town_3x3/v4-A.pxg",
+ "set": "worldmap",
+ "id": "town_3x3",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.144
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  0,
+  47,
+  45
+ ],
+ "note": "4판 3x3 성벽 마을: 성벽+종탑+지붕 둘.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 8,
+   "atLeast95": 0,
+   "max": 0.186
+  },
+  "refmapWorld": {
+   "cells": 8,
+   "atLeast95": 0,
+   "max": 0.051
+  }
+ }
+}

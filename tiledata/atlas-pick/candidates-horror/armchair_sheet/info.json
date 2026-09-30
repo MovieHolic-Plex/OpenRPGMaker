@@ -1,0 +1,50 @@
+{
+ "id": "armchair_sheet",
+ "slug": "armchair_sheet",
+ "name": "천 덮인 안락의자",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "sofa_sheet 와 한 식구: v5 안락의자 자리(1×1)에 흰 천을 씌운 판. 등받이가 높은 덩이, 주름 한두 줄. 소파와 같은 천 명암 방식.",
+ "palette_hint": "dust 천, rot 다리",
+ "worker_v1": "h4",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h4",
+ "set_with": [
+  "sofa_sheet"
+ ],
+ "v5_ref": [
+  {
+   "id": "armchair",
+   "name_ko": "안락의자",
+   "atlas": {
+    "x": 304,
+    "y": 208,
+    "w": 16,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/armchair",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

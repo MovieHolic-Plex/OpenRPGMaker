@@ -1,0 +1,23 @@
+{
+ "id": "library_counter",
+ "slug": "library_counter",
+ "name": "대출 데스크",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "도서실 대출 카운터 — 긴 나무 카운터(윗면에 도장·반납 책 더미·작은 모니터), 앞면 판자와 「반납」 대신 책 아이콘 표지. 윗면 ¾.",
+ "palette_hint": "vpine 카운터, mdglass 모니터, washi 책",
+ "pair": [
+  "library_shelf"
+ ],
+ "worker": "s4"
+}

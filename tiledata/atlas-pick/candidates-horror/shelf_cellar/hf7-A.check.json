@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/shelf_cellar/hf7-A.pxg",
+ "set": "horror",
+ "id": "shelf_cellar",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "A(v5 식구·깨끗): 썩은 3칸 선반. 앞면이 주인공(왼 기둥 밝게·오른 기둥 어둡게), 윗판 1~2줄 + 먼지 줄. 칙칙한 병·항아리·상자, 둘째 칸에 빈 자리 하나, 오른쪽 판 처짐. vdwood",
+ "ok": true
+}

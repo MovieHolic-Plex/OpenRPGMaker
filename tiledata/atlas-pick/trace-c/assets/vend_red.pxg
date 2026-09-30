@@ -1,0 +1,143 @@
+@size 32 64
+@cell 32
+@palette palette.pal
+@layer main
+@mat a tekko 0
+@mat b mado 0
+@mat c shiro 0
+@mat d aka 0
+@mat e daidai 0
+@mat f kii 0
+@mat g midori 0
+@mat h sora 0
+@mat i sumi 0
+@mblock 0 0
+................................
+................................
+..iiiiiiiiiiiiiiiiiiiiiiiiiiii..
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddaaaaaaaaaaaaaaaaaaadddddddi.
+.iddacccccccccccccccccadddddddi.
+.iddacccccccccccccccccadaaadddi.
+.iddachhcggcffcddceeccadabadddi.
+.iddachhcggcffcddceeccadaaadddi.
+.iddachhcggcffcddceeccadddddddi.
+.iddachhcggcffcddceeccadddddddi.
+.iddachhcggcffcddceeccadaaadddi.
+.iddacccccccccccccccccadafadddi.
+.iddaaaaaaaaaaaaaaaaaaadaaadddi.
+.iddacccccccccccccccccadadadddi.
+.iddacffcddceechhcggccadaaadddi.
+.iddacffcddceechhcggccadaaadddi.
+.iddacffcddceechhcggccadddddddi.
+.iddacffcddceechhcggccadddddddi.
+.iddacffcddceechhcggccadcccdddi.
+.iddacccccccccccccccccadcccdddi.
+.iddaaaaaaaaaaaaaaaaaaadcccdddi.
+.iddacccccccccccccccccadcccdddi.
+.iddaceechhcggcffcddccadddddddi.
+.iddaceechhcggcffcddccadddddddi.
+.iddaceechhcggcffcddccadddddddi.
+.iddaceechhcggcffcddccadddddddi.
+.iddaceechhcggcffcddccadddddddi.
+.iddacccccccccccccccccadddddddi.
+.iddaaaaaaaaaaaaaaaaaaadddddddi.
+.iddaaaaaaaaaaaaaaaaaaadddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.idddaaaaaaaaaaaaaaaaaadddddddi.
+.idddaaaaaaaaaaaaaaaaaadddddddi.
+.idddaaaaaaaaaaaaaaaaaadddddddi.
+.idddaaiiiiiiiiiiiiiiaadddddddi.
+.idddaaiiiiiiiiiiiiiiaadddddddi.
+.idddaaiiiiiiiiiiiiiiaadddddddi.
+.idddaaiiiiiiiiiiiiiiaadddddddi.
+.idddaaiiiiiiiiiiiiiiaadddddddi.
+.idddaaaaaaaaaaaaaaaaaadddddddi.
+.idddaaaaaaaaaaaaaaaaaadddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+.iddddddddddddddddddddddddddddi.
+..iiaaaaaaiiiiiiiiiiaaaaaaiiii..
+...iaaaaaai........iaaaaaai.....
+...iaaaaaai........iaaaaaai.....
+....iiiiii..........iiiiii......
+................................
+@tblock 0 0
+................................
+................................
+..1111111111111111111111111111..
+.133333333333333333333333331111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.132111111111111111111122221111.
+.132133333333333333333122221111.
+.132131331331331331333121111111.
+.132134334334334334333121311111.
+.132133333333333333333121111111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122321111.
+.132144444444444444444122221111.
+.132131331331331331333122321111.
+.132134334334334334333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132144444444444444444122221111.
+.132131331331331331333122221111.
+.132134334334334334333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132133333333333333333122221111.
+.132144444444444444444122221111.
+.132111111111111111111122221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.133333333333333333333332221111.
+.131111111111111111111112221111.
+.131111111111111111111112221111.
+.131111111111111111111112221111.
+.131111111111111111111112221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.132200000000000000000022221111.
+.132200000000000000000022221111.
+.132200111111111111110022221111.
+.132200111111111111110022221111.
+.132200111111111111110022221111.
+.132200111111111111110022221111.
+.132200111111111111110022221111.
+.132200000000000000000022221111.
+.132200000000000000000022221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+.132222222222222222222222221111.
+..1111111111111111111111111111..
+...11111111........11111111.....
+...11111111........11111111.....
+....111111..........111111......
+................................

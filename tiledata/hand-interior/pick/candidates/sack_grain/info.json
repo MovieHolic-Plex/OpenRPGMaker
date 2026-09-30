@@ -1,0 +1,37 @@
+{
+ "id": "sack:grain",
+ "slug": "sack_grain",
+ "name_ko": "곡식 자루",
+ "category": "빵집",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "곡식 자루 — 삼베 자루, 담긴 상품만 다른 변형. 빵집 창고·부엌·곳간의 바닥 구석에 1~3개.",
+ "where": "빵집 창고·부엌·곳간의 바닥 구석에 1~3개.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  12,
+  13
+ ],
+ "v5_colors": 10,
+ "material": "cloth",
+ "related": []
+}

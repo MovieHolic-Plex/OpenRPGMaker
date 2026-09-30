@@ -1,0 +1,73 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood
+@mat b yellow
+@mat c orange
+@mat d linen
+@mblock 0 0
+......aaaa......
+....aaabaaaa....
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaacaaaaaaaa
+aaacaaabaaaaaaaa
+aaabaaaddaacaaaa
+aaaddaaddaabaaaa
+aaaddaaddaaddaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaacaacaaaa
+aaaacaaabaabaaaa
+aaaabaaaddaddaaa
+aaaaddaaddaddaaa
+aaaaddaaddaddaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaacaaaaacaaaaaa
+aaabaacaabaacaaa
+aaaddabaaddabaaa
+aaaddaddaddaddaa
+aaaddaddaddaddaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+......1111......
+....16667631....
+1333333333333331
+1655555555555551
+1655555555555551
+1655555555555551
+1777777777777771
+1333333333333331
+1111111111111111
+1611111111111131
+1622222422222231
+1624222622222231
+1626222642242231
+1626422532262231
+1625322532253231
+1766666666666641
+1333333333333331
+1611111141141131
+1622422262262231
+1622622264264231
+1622642253253231
+1622532253253231
+1766666666666641
+1333333333333331
+1614111114111131
+1626224226224231
+1626426226426231
+1625326425326431
+1625325325325331
+1111111111111111
+1555555555555441
+1111111111111111

@@ -1,0 +1,19 @@
+{
+ "id": "house_roof",
+ "slug": "house_roof",
+ "name": "기와 지붕(2층 주택)",
+ "scene": "주택가 골목",
+ "cells": [
+  4,
+  2
+ ],
+ "canvas": [
+  64,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "일본 2층 주택의 은회색 기와 박공 지붕(용마루 가로, 기와 줄이 가로 골로 보이게, 처마 끝 둥근 기와 줄). 아래 가장자리는 외벽 블록 위에 얹힌다. 좌우 끝 박공 삼각 벽 조금.",
+ "palette_hint": "kawara 기와, hinoki/sumi 박공, mconc 처마 밑",
+ "worker": "j1"
+}

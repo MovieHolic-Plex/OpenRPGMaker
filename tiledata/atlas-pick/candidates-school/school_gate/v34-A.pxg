@@ -1,0 +1,69 @@
+@size 64 48
+@cell 16
+@palette palette.pal
+@mat a vbrass 6
+@mat b vbrass 4
+@mat c vyellow 6
+@mat d mgran 2
+@mat e vbrass 2
+@mat f mgran 6
+@mat g mgran 1
+@mat h mgran 5
+@mat i mgran 4
+@mat j mgran 3
+@mat k mmetal 5
+@mat l mmetal 3
+@mat m mmetal 1
+@mat n mmetal 6
+@mat o mmetal 7
+@mat p mmetal 2
+@mat q vbrass 1
+@mblock 0 0
+....aaaa................................................aaaa....
+....bbbb................................................bbbb....
+....bcbb................................................bcbb....
+....bbbb................................................bbbb....
+.dddeeeeddd..........................................dddeeeeddd.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.ffffffffff..........................................ffffffffff.
+.gggggggggg..........................................gggggggggg.
+..hiiiiiij............................................hiiiiiij..
+..hiiiiiij............................................hiiiiiij..
+..hiiiiiij............................................hiiiiiij..
+..hiiiiiij..k..k..k..k..k..k..k..k..k..k..k..k..k..k..hiiiiiij..
+..hiiiiiij.llllllllllllllllllllmnllllllllllllllllllll.hiiiiiij..
+..hiiiiiij.oooooooooooooooooooomnoooooooooooooooooooo.hiiiiiij..
+..hiiiiiij.nnnnnnnnnnnnnnnnnnnnmnnnnnnnnnnnnnnnnnnnnn.hiiiiiij..
+..hiiiiiij.ppppppppppppppppppppmnpppppppppppppppppppp.hiiiiiij..
+..jjjjjjjj..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.jjjjjjjj..
+..hiiiiiij..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..haaaaaaj..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hbbbbbbj..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hbeeeebj..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hbeeeebj..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hqqqqqqj..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..jjjjjjjj..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.jjjjjjjj..
+..hiiiiiij..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hiiiiiij..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hiiiiiij..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hiiiiiij..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hiiiiiij..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+..hiiiiiij..kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.kl.hiiiiiij..
+.hhhhhhhhhh.kl.kl.kl.kl.kl.kl.kmnkl.kl.kl.kl.kl.kl.klhhhhhhhhhh.
+.ijjjjjjjjdnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnijjjjjjjjd.
+.ijjjjjjjjdllllllllllllllllllllllllllllllllllllllllllijjjjjjjjd.
+.ijjjjjjjjdmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmijjjjjjjjd.
+.ijjjjjjjjdddddddddddddddddddddddddddddddddddddddddddijjjjjjjjd.
+.gggggggggg..........................................gggggggggg.
+................................................................
+................................................................
+.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..
+.-------------------------------------------------------------..

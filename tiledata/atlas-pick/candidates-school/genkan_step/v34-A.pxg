@@ -1,0 +1,27 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a hinoki 1
+@mat b hinoki 5
+@mat c hinoki 4
+@mat d hinoki 6
+@mat e hinoki 0
+@mat f hinoki 2
+@mat g hinoki 3
+@mblock 0 0
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+bbbbbbbbbcbbbbbbbbbbcbbbbbbbbbbb
+bbbbbbbbbcbbbbbbbbbbcbbbbbbbbbbb
+cccccccccccccccccccccccccccccccc
+bbbbbbbbbbbbbbbbbcbbbbbbbbbbcbbb
+bbbbbbbbbbbbbbbbbcbbbbbbbbbbcbbb
+cccccccccccccccccccccccccccccccc
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+dddddddddddddddddddddddddddddddd
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+cccccccccccccccccccccccccccccccf
+cggggggggggggggggggggggggggggggf
+cggggggggggggggggggggggggggggggf
+caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaf
+.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+.------------------------------.

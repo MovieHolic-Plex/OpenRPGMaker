@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/fox_statue/j2-C.pxg",
+ "set": "jp",
+ "id": "fox_statue",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.128
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  3,
+  0,
+  15,
+  31
+ ],
+ "note": "실루엣 재해석: 홀쭉한 몸·긴 목·아주 큰 뾰족귀·크게 솟은 꼬리로 고마이누와 확실히 다른 여우 실루엣.",
+ "ok": true
+}

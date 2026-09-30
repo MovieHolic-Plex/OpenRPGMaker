@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/deer_trophy/w23-D.pxg",
+ "id": "deer trophy",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 2x2 사이즈로 키움."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.081
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 22,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  1,
+  27,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  11
+ ],
+ "note": "방패꼴 참나무 판(16x21)에 정면 사슴 머리 + 12갈래 뿔(2x2 크기), 짚끈 V 로 못에 걸고 그림자 한 줄. v5 는 뿔·머리만 떠 있어 판 없이 벽 위 얼룩 같았음",
+ "ok": true
+}

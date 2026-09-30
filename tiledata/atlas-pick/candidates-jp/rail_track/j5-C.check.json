@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/rail_track/j5-C.pxg",
+ "set": "jp",
+ "id": "rail_track",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "재해석: 나무 침목(갈색, 굵은 5줄)+덩어리 자갈+더 굵은 은색 레일 4px 로 멀리서도 선로로 읽히게. 침목 밑 그림자. 위아래 이어 붙음(주기 8)",
+ "ok": true
+}

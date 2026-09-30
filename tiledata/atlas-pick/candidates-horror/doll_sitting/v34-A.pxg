@@ -1,0 +1,45 @@
+// doll_sitting v34-A 3/4 재작도
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a bisque 0
+@mat b blood 0
+@mat c hmoss 0
+@mat d mahog 0
+@mat e paper 0
+@mat f void 0
+@mblock 0 0
+................
+....dddddddd....
+...dddddddddd...
+..dddddddddddd..
+..dddddddddddd..
+..dddddddddddd..
+..dddddddddddd..
+..ddaaaaaaaadd..
+..ddfaaaaaffdd..
+..ddfaaaaaffdd..
+..ddaaaaaaaadd..
+..ddaaabbaaadd..
+...deeeeeeeed...
+..deeeeeeeeeed..
+..deeeceeeeeed..
+..daad....daad..
+@tblock 0 0
+................
+....00000000....
+...0455544330...
+..045544443330..
+..044411444330..
+..034444443330..
+..011111111110..
+..035555555530..
+..030555550030..
+..030555550030..
+..035555555530..
+..035554455530..
+...0222222220...
+..055555555550..
+..053535555530..
+..0220....0220..

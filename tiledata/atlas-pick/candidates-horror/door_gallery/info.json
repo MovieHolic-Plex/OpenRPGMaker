@@ -1,0 +1,23 @@
+{
+ "id": "door_gallery",
+ "slug": "door_gallery",
+ "name": "미술관 문",
+ "scene": "미술관",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "door_wood 와 같은 칸·틀 폭, 흰 벽에 붙는 밝은 회백 문틀 + 짙은 회청 문짝, 손잡이 쇠. 흰 벽 위에서 문이 먼저 보이게 문짝을 짙게.",
+ "palette_hint": "vmarble/dust 틀, grave/ward 문",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "gallery",
+ "role": "문(미술관)",
+ "worker": "hf3"
+}

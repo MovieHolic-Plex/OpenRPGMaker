@@ -1,0 +1,37 @@
+{
+ "id": "bottles",
+ "slug": "bottles",
+ "name_ko": "병 선반",
+ "category": "가구·살림",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "빨강·초록·노랑 술병을 줄지어 얹은 벽 선반. 선술집·카지노 바 뒤 벽면 윗줄에 1개. 술통 선반·진열장 옆.",
+ "where": "선술집·카지노 바 뒤 벽면 윗줄에 1개. 술통 선반·진열장 옆.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  13
+ ],
+ "v5_colors": 16,
+ "material": "glass",
+ "related": []
+}

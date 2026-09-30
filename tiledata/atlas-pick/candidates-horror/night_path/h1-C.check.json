@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/night_path/h1-C.pxg",
+ "set": "horror",
+ "id": "night_path",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.523
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.118
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C: 길 한가운데 어두운 끌린 자국 두 줄(끊긴 점선)이 길게 이어지고, 돌 하나에 검은 점이 박혀 눈처럼 보인다. 어긋난 곳은 끌린 자국과 눈 돌. 위아래 32칸 주기라 이어 붙는다.",
+ "ok": true
+}

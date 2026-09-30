@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/basket_herb/w8-B.pxg",
+ "id": "basket:herb",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  3,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  4,
+  13,
+  14
+ ],
+ "note": "왼쪽 위 빛을 강하게: 왼쪽 밝은 짚·오른쪽 어두운 짚, 잎 하이라이트 추가, 오른쪽 아래 반투명 그림자.",
+ "ok": true
+}

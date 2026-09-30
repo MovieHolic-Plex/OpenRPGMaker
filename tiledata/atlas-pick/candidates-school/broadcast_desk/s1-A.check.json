@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/broadcast_desk/s1-A.pxg",
+ "set": "school",
+ "id": "broadcast_desk",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 21,
+ "bbox": [
+  1,
+  1,
+  46,
+  31
+ ],
+ "note": "A: 잠금 회색 책상 윗면 ¾, 가운데 믹서(슬라이더 1px 줄·노브·불 빨강/초록), 뒤 모니터 둘, 휜 마이크, 헤드폰",
+ "ok": true
+}

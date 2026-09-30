@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bench_3/w7-B.pxg",
+ "id": "bench 3",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.061
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  2,
+  47,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  47,
+  15
+ ],
+ "note": "윗면 밝은 모서리(최밝은 단)와 오른쪽 어둔 모서리를 대비시키고 다리 사이에 가로대를 더해 짜임새를 보이게, 바닥에 반투명 접지 그림자 한 줄",
+ "ok": true
+}

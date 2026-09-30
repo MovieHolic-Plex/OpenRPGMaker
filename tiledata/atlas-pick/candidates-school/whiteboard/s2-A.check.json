@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/whiteboard/s2-A.pxg",
+ "set": "school",
+ "id": "whiteboard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.295
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 15,
+ "bbox": [
+  1,
+  1,
+  46,
+  29
+ ],
+ "note": "알루미늄 틀·받침 위치는 칠판 A 와 같다. 흰판 위 검정·파랑·빨강 마커 줄, 자석 하나, 받침에 펜 셋",
+ "ok": true
+}

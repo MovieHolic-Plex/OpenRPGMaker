@@ -1,0 +1,76 @@
+// river v3-A (baseline: wv2-A 재색)
+@size 48 64
+@cell 16
+@palette ../../palette/worldmap3.pal
+@layer main
+@mat a wdirt 1
+@mat b wdirt 2
+@mat c wsea 1
+@mat d wsea 2
+@mat e wsea 5
+@mat f wsea 3
+@mblock 0 0
+................eeedddddddcdeeee.bfdddddddcdefb.
+.....b.bb.......dddddddcddddddddbbfddddcdddddfaa
+....bbbffabb....dddddcddddddddddffdddcddddddddff
+...bbffdcffab...cdddcdddcdddddddcdddcdddcddddddd
+..bbfddddddfbb..dddddddddddddddddddddddddddddddd
+.bbfdddcddddfbb.cddddddcddddddddcddddddcdddddddd
+..bfddddcdddfb..dddcddddcdddcddddddcddddcdddcddd
+.bfddddddddeefb.dcdddddddddeeedddcdddddddddeeedd
+.bfdcdddcddcdfb.eeedcdddcddcddddeeedcdddcddcdddd
+..afddddcdddfa..cdddddddcdddddddcdddddddcddddddd
+..bfddddddddfb..ddddddddddddcdddddddddddddddcddd
+..bafddcdddfab..dddddddcdddddddddddddddcdddddddd
+...bbffddffab...eedddddddddddddeeeddddddddddddde
+....bbbffabb....dddddcdddddcddddffdddcdddddcddff
+.....b.bb.......dcdddcddcdddddddbbfddcddcddddfaa
+................dcdcdddddddddddd.afcdddddddddfa.
+...........ab..............ab...................
+.....b.bbabffbaabb.bbbbbbabffbaabb.bbbbbb.......
+....bbbffffddfffffaabbfffffddfffffaabbfffabb....
+...bbffdcdddddddcdffffddcdddddddcdffffddcffab...
+..bbfddddddddddddddddddddddddddddddddddddddfbb..
+.bbfdddcddddddddcddddddcddddddddcddddddcddddfbb.
+..bfddddcdddcddddddcddddcdddcddddddcddddcdddfb..
+.bfddddddddeeedddcdddddddddeeedddcdddddddddeefb.
+.bfdcdddcddcddddeeedcdddcddcddddeeedcdddcddcdfb.
+afddddddcdddddddcdddddddcdddddddcdddddddcddddfa.
+bfddddddddddcdddddddddddddddcdddddddddddddddcfb.
+.afddddcdddddddddddddddcdddddddddddddddcddddfab.
+.bfddddddddddddeeedddddddddddddeeeddddddddddfbb.
+.bfddcdddddcdddddddddcdddddcdddddddddcdddddcfb..
+.afddcddcddddddddcdddcddcddddddddcdddcddcddddfa.
+.afcdddddddddddddcdcdddddddddddddcdcdddddddddfa.
+.bfdddddddcdeeeeeeedddddddcdeeeeeeedddddddcdefb.
+.bfddddcdddddddddddddddcdddddddddddddddcdddddfb.
+.afddcdddddddddddddddcdddddddddddddddcddddddddfa
+.bafcdddcdddddddcdddcdddcdddddddcdddcdddcdddddfa
+.bbfdddddddddddddddddddddddddddddddddddddddddfb.
+.bbfdddcddddddddcddddddcddddddddcddddddcdddddfb.
+.bfcddddcdddcddddddcddddcdddcddddddcddddcdddcfb.
+.bfddddddddeeedddcdddddddddeeedddcdddddddddeefb.
+.bfdcdddcddcddddeeedcdddcddcddddeeedcdddcddcdfb.
+afddddddcdddddddcdddddddcdddddddcdddddddcddddfa.
+bfddddddddddcdddddddddddddddcdddddddddddddddcfb.
+.afddddcdddddddddddddddcdddddddddddddddcddddfab.
+.bfddddddddddddeeedddddddddddddeeeddddddddddfbb.
+.bfddcdddddcdddddddddcdddddcdddddddddcdddddcfb..
+.afddcddcddddddddcdddcddcddddddddcdddcddcddddfa.
+.afcdddddddddddddcdcdddddddddddddcdcdddddddddfa.
+.bfdddddddcdeeeeeeedddddddcdeeeeeeedddddddcdefb.
+.bfddddcdddddddddddddddcdddddddddddddddcdddddfb.
+.afddcdddddddddddddddcdddddddddddddddcddddddddfa
+.bafcdddcdddddddcdddcdddcdddddddcdddcdddcdddddfa
+.bbfdddddddddddddddddddddddddddddddddddddddddfb.
+.bbfdddcddddddddcddddddcddddddddcddddddcdddddfb.
+.bfcddddcdddcddddddcddddcdddcddddddcddddcdddcfb.
+.bfddddddddeeedddcdddddddddeeedddcdddddddddeefb.
+.bfdcdddcddcddddeeedcdddcddcddddeeedcdddcddcdfb.
+..afddddcdddddddcdddddddcdddddddcdddddddcdddfa..
+..bfddddddddcdddddddddddddddcdddddddddddddddfb..
+..bafddcdddddddddddddddcdddddddddddddddcdddfab..
+...bbffdddfffddeeeddddddddfffddeeedddddddffab...
+....bbbfffbabffffffddfffffbabffffffddffffabb....
+.....b.bba.bbbaabbaffbbbba.bbbaabbaffbbbb.......
+...................ab..............ab...........

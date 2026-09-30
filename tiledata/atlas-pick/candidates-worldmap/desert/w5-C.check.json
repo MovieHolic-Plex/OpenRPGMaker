@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/desert/w5-C.pxg",
+ "set": "worldmap",
+ "id": "desert",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.367
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  47,
+  62
+ ],
+ "note": "실루엣 재해석 — 큰 사선 바르한 초승달 결, 테는 크게 굽이친 톱니(1~5px)에 마른 풀 점, 외딴 칸은 물방울꼴",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.032
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.019
+  },
+  "seam": 0.52
+ }
+}

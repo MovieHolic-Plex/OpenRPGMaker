@@ -1,0 +1,64 @@
+@size 48 48
+@cell 16
+@palette palette.pal
+@mat a stile 5
+@mat b stile 6
+@mat c stile 3
+@mat d stile 4
+@mat e locker 3
+@mat f locker 5
+@mat g locker 1
+@mat h locker 2
+@mat i locker 4
+@mat j stile 2
+@mat k stile 1
+@mat l locker 0
+@mblock 0 0
+................................................
+................................................
+................................................
+................................................
+...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbd.......
+...baaaaaaaaaaadaaaaaaaaaaadaaaaaaaaaaaad.......
+...baaaaaaaaaaadaaaeffffffffeaaaaaaaaaaad.......
+...baaaaaaaaaaadaaafeeeeeeeehaaaaaaaaaaad.......
+...baaaaaaaaaaadaaaeeiiiiiiehaaaaaaaaaaad.......
+...bdddddddddddddddeehhffhhehdddddddddddd.......
+...baaaaaaaaaaadaaaeeeeeeeeehaaaaaaaaaaad.......
+...baaaaaaaaaaadaaaeggggggggeaaaaaaaaaaad.......
+...baaaaaaaaaaadaaaaaaaaaaadaaaaaaaaaaaad.......
+...baaaaaaaaaaadaaaaaaaaaaadaaaaaaaaaaaad.......
+...cccccccccccccccccccccccccccccccccccccd.......
+...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbiiih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ifeih
+...adbdddddddddcabdddddddddcabddddddddbcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ifeih
+...accccccccccccccccccccccccccccccccccccj..ih.ih
+...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacj..ih.ih
+...adbdddddddddcabdddddddddcabddddddddbcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ifeih
+...adddddddddddcaddddddddddcaddddddddddcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ih.ih
+...accccccccccccccccccccccccccccccccccccj..ifeih
+...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacj..ih.ih
+...adbdddddddddcabdddddddddcabddddddddbcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ifeih
+...adbdddddddddcabdddddddddcabddddddddbcj..ih.ih
+...adddddddddddcaddddddddddcaddddddddddcj..ih.ih
+...kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk..ih.ih
+.....feg..........feg..........feg...feg...ifeih
+.....feg..........feg..........feg...feg...ih.ih
+.....fegeeeeeeee..feg..........feg...feg...ih.ih
+.....feg........eeeeeeee.......fhhhhhfeg...ih.ih
+.....feg..........feg...hhhhhhhheg...feg...ifeih
+.....feg........hhhhhhhh.......feeeeefeg...ih.ih
+.....feghhhhhhhh..feg..........feg...feg...ih.ih
+.....feg..........feg..........feg...feg...ih.ih
+....hhhhh........hhhhh........hhhhh.hhhhh.......
+...~lllll~~~~~~~~lllll~~~~~~~~lllll~lllll~~~~~~.
+...--------------------------------------------.

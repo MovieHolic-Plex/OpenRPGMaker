@@ -1,0 +1,21 @@
+{
+ "id": "tile_floor",
+ "slug": "tile_floor",
+ "name": "타일 바닥",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "화장실·과학실·급식실 흰 타일 바닥 한 칸 — 8px 네모 넷, 줄눈 회색 1px, 한 장만 살짝 어둡게(단조로움 깨기). 사방 이음 맞춤.",
+ "palette_hint": "stile",
+ "pair": [],
+ "worker": "s2"
+}

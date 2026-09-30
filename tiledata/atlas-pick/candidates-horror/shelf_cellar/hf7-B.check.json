@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/shelf_cellar/hf7-B.pxg",
+ "set": "horror",
+ "id": "shelf_cellar",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.201
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.1
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 17,
+ "bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "B(어둠에서 읽힘): 나무를 vwood 밝은 쪽(6~7)으로 올려 어두운 바닥·벽 앞에서 윤곽이 서고 칸이 큼직하게 나뉨. 물건 톤 3~6",
+ "ok": true
+}

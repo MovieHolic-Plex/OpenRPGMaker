@@ -1,0 +1,19 @@
+{
+ "id": "stone_lantern",
+ "slug": "stone_lantern",
+ "name": "석등",
+ "scene": "신사 한 켠",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "화강암 석등(카스가형): 맨 위 보주, 지붕돌(육각 처마가 넓게), 불 켜는 칸(네모 창 둘, 속 어둡거나 불빛), 가운데 받침, 기둥, 바닥 받침돌. 돌 결·이끼 조금.",
+ "palette_hint": "ishi 돌, moss 이끼, washi 불빛",
+ "worker": "j4"
+}

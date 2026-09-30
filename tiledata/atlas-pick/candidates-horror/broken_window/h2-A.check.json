@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_window/h2-A.pxg",
+ "set": "horror",
+ "id": "broken_window",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.195
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "note": "A: 주석 틀은 tin 회청색 쇠 창틀, 밖은 night 밤 청. 왼쪽 유리는 가장자리에 뾰족한 이빨만 남고 구멍으로 어둠이 보이며, 오른쪽 유리엔 금 한 줄과 대각 번쩍임. 창 아래 벽에 ? 달빛이 두 줄.",
+ "ok": true
+}

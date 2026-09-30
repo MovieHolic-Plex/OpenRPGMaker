@@ -1,0 +1,33 @@
+{
+ "id": "moonlight_floor",
+ "slug": "moonlight_floor",
+ "name": "창 아래 달빛",
+ "scene": "공통 뼈대",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "창(벽면 윗줄) 아래 바닥에 비스듬히 떨어진 달빛: ? 만으로(반투명 60), 창살 십자 그림자 한 줄은 비운다, 아래로 갈수록 오른쪽으로 1px 씩 밀림(v5 창 빛처럼). 바닥 첫 줄부터 두 줄.",
+ "palette_hint": "? 만",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "frame",
+ "role": "달빛(창 빛)",
+ "worker": "hf1",
+ "set_with": [
+  "ceil_black",
+  "ceil_plaster",
+  "exit_dark",
+  "stairs_up_wood",
+  "stairs_up_stone",
+  "stairs_down",
+  "pillar_stone",
+  "pillar_marble"
+ ]
+}

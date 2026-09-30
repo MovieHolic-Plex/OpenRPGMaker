@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/clock/w90-A.pxg",
+ "id": "clock",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.071
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 13,
+ "bbox": [
+  3,
+  3,
+  12,
+  30
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  12,
+  30
+ ],
+ "note": "시계: 머리 윗면 T5+처마 그림자, 시계판·추 몸통 앞면.",
+ "ok": true
+}

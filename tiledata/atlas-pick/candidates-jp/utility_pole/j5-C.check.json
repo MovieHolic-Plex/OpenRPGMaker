@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/utility_pole/j5-C.pxg",
+ "set": "jp",
+ "id": "utility_pole",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.083
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 28,
+ "bbox": [
+  0,
+  0,
+  15,
+  63
+ ],
+ "note": "실루엣 재해석: 가는 기둥+양끝까지 뻗은 긴 가로대, 아래에 원통 변압기 3통 나란히, 양쪽으로 늘어진 전선 — 멀리서도 '전신주'로 읽히는 윤곽",
+ "ok": true
+}

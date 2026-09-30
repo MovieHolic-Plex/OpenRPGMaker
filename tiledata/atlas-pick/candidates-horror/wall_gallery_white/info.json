@@ -1,0 +1,47 @@
+{
+ "id": "wall_gallery_white",
+ "slug": "wall_gallery_white",
+ "name": "미술관 벽면(흰 벽)",
+ "scene": "미술관",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "벽면 2×2(32×32) 칸 전부 불투명, 가로로 32px 마다 이어진다(무늬·징두리 이음이 맞게). 위에서 아래로: y0~2 몰딩(천장 테 밑 그늘은 조립기가 1~2px 더한다) → 넓은 면(방에서 가장 밝은 넓은 면, 바닥보다 두 단 밝게) → 징두리(y22~28 쯤) → y29~31 걸레받이(가장 어두운 단 + 윗줄 밝은 1px). 벽면 두 줄이 한 벽이다. 넓은 면 = 조금 바랜 흰 칠(무늬 없음, 32px 마다 아주 옅은 이음 한 줄), 위 몰딩 얇게, 징두리 없이 걸레받이만 짙은 회(4px). 가장 조용한 벽 — 액자가 주인공.",
+ "palette_hint": "dust/vmarble 벽, grave 걸레받이",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "gallery",
+ "role": "벽면(흰)",
+ "worker": "hf5",
+ "set_with": [
+  "wall_gallery_grey",
+  "floor_gallery_wood",
+  "floor_gallery_stone",
+  "frame_landscape",
+  "frame_small",
+  "plaque",
+  "pedestal",
+  "rope_barrier",
+  "bench_gallery"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:marblewall",
+   "name_ko": "대리석 벽+붉은 띠",
+   "atlas": {
+    "x": 256,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

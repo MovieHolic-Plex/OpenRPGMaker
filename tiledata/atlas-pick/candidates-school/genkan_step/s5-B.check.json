@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/genkan_step/s5-B.pxg",
+ "set": "school",
+ "id": "genkan_step",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "같은 모양에 윗면 널 밝기 대비 키우고 앞 턱 아래 접지 그림자 2줄",
+ "ok": true
+}

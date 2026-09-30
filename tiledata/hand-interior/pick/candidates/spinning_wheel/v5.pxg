@@ -1,0 +1,21 @@
+// v5 현재판 spinning wheel (16x16, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+......AAAAAA....
+.....A...B..A...
+....A.B..B.B.A..
+....A..B.BB..A..
+....A...BB...A..
+....CBBBBDBBBBC.
+..EFC..B.BB..C..
+.EFEG.B..B.B.C..
+.FEGFC...B..C...
+..GH..CCCBCC....
+................
+.CACCCCCCCCCCAC.
+.IAIIIIIIIIIIAI.
+..A..........A..
+..A..........A..

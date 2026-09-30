@@ -1,0 +1,36 @@
+{
+ "id": "blk-sws-ne",
+ "slug": "blk_sws_ne",
+ "name": "건물 그늘 인도 (sws.ne)",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "건물 그늘 인도 · sws.ne 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "mob-sws-ne"
+ ],
+ "tiles": [
+  4125
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   13,
+   6
+  ]
+ }
+}

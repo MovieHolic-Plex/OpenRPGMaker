@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/roof_fence/s4-B.pxg",
+ "set": "school",
+ "id": "roof_fence",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "같은 울타리 명암 강화: 기둥 하이라이트, 어두운 망, 밝은 레일, 바닥 반투명 그림자 한 줄",
+ "ok": true
+}

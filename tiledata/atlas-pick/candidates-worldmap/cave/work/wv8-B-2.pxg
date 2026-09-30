@@ -1,0 +1,25 @@
+// cave wv8-B
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wrock 0
+@mat b mout 0
+@mat c wlava 0
+@mblock 0 0
+................
+.....aaaaaa.....
+...aaaaaaaaaa...
+..aaaaaaaaaaaa..
+.aaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaaa
+aaaaabbbbbbaaaaa
+aaaabbbbbbbbaaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbcbbcbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaaaaaaaaaaaaaaa

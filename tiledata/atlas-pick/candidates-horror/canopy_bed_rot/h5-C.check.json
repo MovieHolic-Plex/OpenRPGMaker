@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/canopy_bed_rot/h5-C.pxg",
+ "set": "horror",
+ "id": "canopy_bed_rot",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "실루엣: 이불 밑에 사람이 누운 볼록한 윤곽(머리·발끝 두 봉우리), 베개 밖으로 검은 머리채, 오른쪽으로 창백한 손이 늘어짐",
+ "ok": true
+}

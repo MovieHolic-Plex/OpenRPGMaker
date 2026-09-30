@@ -1,0 +1,22 @@
+{
+ "id": "broken_blackboard",
+ "slug": "broken_blackboard",
+ "name": "핏글씨 칠판",
+ "scene": "폐교 복도",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "교실 벽 칠판(짙은 녹 판, 나무 테, 아래 분필 받침): 판 위 분필 낙서가 지워지다 만 흰 번짐 + 붉은 글씨 「나가」 두 자(획 2px, blood 밝은 쪽, 끝이 아래로 흘러내림). 칠판 한 귀퉁이 금. 글자 외 가짜 글자 금지.",
+ "palette_hint": "board 판, rot 테, dust 분필, blood 글씨",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5"
+}

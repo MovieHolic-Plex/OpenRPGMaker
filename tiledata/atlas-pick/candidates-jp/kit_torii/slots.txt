@@ -1,0 +1,12 @@
+// kit_torii 부품 시트 128x32px (8×2칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+kasagi_l            0    0  16  16  object  -   C     가사기 왼 끝(휨)
+kasagi_m           16    0  16  16  object  x   C     가사기
+kasagi_r           32    0  16  16  object  -   C     가사기 오른 끝(휨)
+gaku               48    0  16  16  object  -   C     편액
+hashira            64    0  16  16  object  y   C     기둥
+nuki_l             80    0  16  16  object  -   C     누키 왼 끝
+nuki_p             96    0  16  16  object  -   C     누키 × 기둥
+nuki_m            112    0  16  16  object  x   C     누키
+nuki_r              0   16  16  16  object  -   C     누키 오른 끝
+hashira_base       16   16  16  16  object  -   X     기둥 밑동

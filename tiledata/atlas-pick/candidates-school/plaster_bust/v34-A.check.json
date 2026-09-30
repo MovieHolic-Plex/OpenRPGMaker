@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/plaster_bust/v34-A.pxg",
+ "set": "school",
+ "id": "plaster_bust",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.087
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  1,
+  14,
+  31
+ ],
+ "note": "석고 흉상 3/4 — 흰 흉상이 회색 받침 윗면 위에 서 있고, 앞 모서리 밑에 받침 앞면",
+ "ok": true
+}

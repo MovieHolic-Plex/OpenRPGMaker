@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/tomare_sign/v35-A.pxg",
+ "set": "jp",
+ "id": "tomare_sign",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "std": {
+  "cells": [
+   1,
+   3
+  ],
+  "canvas": [
+   16,
+   48
+  ]
+ },
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.151
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  3,
+  6,
+  12,
+  47
+ ],
+ "note": "",
+ "ok": true
+}

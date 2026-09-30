@@ -1,0 +1,31 @@
+// w10 w10-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat 3 dwood 3
+@mat 4 dwood 4
+@mat 5 dwood 5
+@mat 6 dwood 6
+@mat a linen 5
+@mat b linen 4
+@mat c linen 3
+@mat k linen 1
+@mat o dwood 1
+@mat z dwood 0
+@mblock 0 0
+.....kkkkkk.....
+.....kacack.....
+.....kcbcbk.....
+.....kkkkkk.....
+.......33.......
+..oooooooooooo..
+..o6666666666o..
+..o6555555554o..
+..obaaaaak554o..
+..ooo3333ooooo..
+..o6555555555o..
+..o5443444343o..
+..o5443444343o..
+..o5443444343o..
+..zzzzzzzzzzzz..
+................

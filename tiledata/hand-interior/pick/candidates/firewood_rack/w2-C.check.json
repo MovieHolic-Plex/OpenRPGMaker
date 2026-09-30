@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack/w2-C.pxg",
+ "id": "firewood rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "재해석: 6px 둥근 통나무를 반 칸씩 어긋나게 4줄(벌집 쌓기), 얇은 기둥",
+ "ok": true
+}

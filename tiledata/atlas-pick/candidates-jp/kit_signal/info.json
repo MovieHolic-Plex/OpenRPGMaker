@@ -1,0 +1,353 @@
+{
+ "id": "kit_signal",
+ "slug": "kit_signal",
+ "kind": "kit",
+ "name": "킷: 신호등(가로형 차량등·보행등·기둥·팔)",
+ "scene": "역 앞 번화가",
+ "cells": [
+  8,
+  3
+ ],
+ "canvas": [
+  128,
+  48
+ ],
+ "layer": "kit",
+ "layer_ko": "조립 킷 부품 시트(부품마다 층이 다르다 — kits-<세트>.json)",
+ "description": "기둥(밑동 막힘 + 윗부분 지나감, 세로 반복) + 이음쇠 + 팔(가로 반복) + 등 머리(초록·노랑·빨강 켜짐 세 벌) + 보행등(빨강·초록) + 누름단추·이름판. 팔 길이·기둥 높이·양쪽 팔 자유. (부품 15 · 조립 예 4)",
+ "palette_hint": "pole·mmetal 기둥·팔, lacq 등 상자, kgreen·taxi·akachin 켜진 등, kblue 이름판",
+ "worker": "k5",
+ "replaces": [
+  "jp_signal",
+  "ped_signal"
+ ],
+ "aliases": {},
+ "contract": [
+  "기둥은 칸 가운데 4~5px 폭(x=6~10), 모든 기둥 부품이 같은 x·같은 명암 — 세로로 이어도 한 줄 기둥.",
+  "팔은 한 칸 위쪽 y=3~6 높이 한 줄(4px), 모든 팔·이음쇠·등 머리가 같은 높이에서 만난다.",
+  "등 머리(head_*)는 2×1, 가로 상자 속 등 셋(파랑빛 초록·노랑·빨강 순, 켜진 등만 밝게 + % 번짐). 세 벌은 켜진 등만 다르다.",
+  "기둥 밑동(pole_base)만 막힘. 나머지는 사람 위(C)."
+ ],
+ "parts": [
+  {
+   "slug": "pole_base",
+   "name": "기둥 밑동",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "기둥 밑동(받침판·오른 아래 그림자).",
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "slug": "pole",
+   "name": "기둥",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": "y",
+   "walk": "C",
+   "desc": "기둥 한 칸(세로 반복).",
+   "at": [
+    1,
+    0
+   ]
+  },
+  {
+   "slug": "pole_btn",
+   "name": "기둥 + 누름단추 상자",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "허리 높이 노란 누름단추 상자가 붙은 기둥.",
+   "at": [
+    2,
+    0
+   ]
+  },
+  {
+   "slug": "joint_r",
+   "name": "이음쇠(오른쪽 팔)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "기둥 꼭대기 + 오른쪽으로 나가는 팔 시작.",
+   "at": [
+    3,
+    0
+   ]
+  },
+  {
+   "slug": "joint_l",
+   "name": "이음쇠(왼쪽 팔)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "기둥 꼭대기 + 왼쪽으로 나가는 팔 시작.",
+   "at": [
+    4,
+    0
+   ]
+  },
+  {
+   "slug": "joint_lr",
+   "name": "이음쇠(양쪽 팔)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "기둥 꼭대기 + 양쪽 팔.",
+   "at": [
+    5,
+    0
+   ]
+  },
+  {
+   "slug": "arm",
+   "name": "팔",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "가로 팔(가로 반복).",
+   "at": [
+    6,
+    0
+   ]
+  },
+  {
+   "slug": "arm_end_r",
+   "name": "팔 오른 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "팔 오른 끝 마개.",
+   "at": [
+    7,
+    0
+   ]
+  },
+  {
+   "slug": "arm_end_l",
+   "name": "팔 왼 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "팔 왼 끝 마개.",
+   "at": [
+    0,
+    1
+   ]
+  },
+  {
+   "slug": "head_g",
+   "name": "차량등(초록 켜짐)",
+   "cells": [
+    2,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "가로 등 상자, 왼 등(초록빛 청록) 켜짐 + 햇빛 가리개 차양.",
+   "at": [
+    1,
+    1
+   ]
+  },
+  {
+   "slug": "head_y",
+   "name": "차량등(노랑 켜짐)",
+   "cells": [
+    2,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "가운데 노랑 켜짐.",
+   "at": [
+    3,
+    1
+   ]
+  },
+  {
+   "slug": "head_r",
+   "name": "차량등(빨강 켜짐)",
+   "cells": [
+    2,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "오른 빨강 켜짐.",
+   "at": [
+    5,
+    1
+   ]
+  },
+  {
+   "slug": "ped_r",
+   "name": "보행등(빨간 사람)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "기둥에 붙은 보행등 상자, 위 칸 빨간 서 있는 사람 켜짐.",
+   "at": [
+    7,
+    1
+   ]
+  },
+  {
+   "slug": "ped_g",
+   "name": "보행등(초록 사람)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "아래 칸 초록 걷는 사람 켜짐.",
+   "at": [
+    0,
+    2
+   ]
+  },
+  {
+   "slug": "plate",
+   "name": "팔 밑 이름판",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "팔 밑에 매단 파란 교차로 이름판(흰 점 글자 무늬).",
+   "at": [
+    1,
+    2
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "corner",
+   "name": "팔 둘·초록",
+   "ctx": "street",
+   "layers": {
+    "ground": [
+     "=pave =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph"
+    ],
+    "main": [
+     "joint_r arm arm head_g + arm_end_r",
+     "ped_g . plate . . .",
+     "pole . . . . .",
+     "pole_btn . . . . .",
+     "pole_base . . . . ."
+    ]
+   }
+  },
+  {
+   "id": "long_red",
+   "name": "긴 팔·빨강·보행 빨강",
+   "ctx": "street",
+   "layers": {
+    "ground": [
+     "=pave =asph =asph =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph =asph =asph",
+     "=pave =asph =asph =asph =asph =asph =asph =asph"
+    ],
+    "main": [
+     "joint_r arm arm arm arm head_r + arm_end_r",
+     "pole . . . plate . . .",
+     "ped_r . . . . . . .",
+     "pole . . . . . . .",
+     "pole_btn . . . . . . .",
+     "pole_base . . . . . . ."
+    ]
+   }
+  },
+  {
+   "id": "ped_only",
+   "name": "보행등만(좁은 길)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "ped_g",
+     "pole",
+     "pole_btn",
+     "pole_base"
+    ]
+   }
+  },
+  {
+   "id": "both",
+   "name": "양쪽 팔(중앙 분리대)",
+   "ctx": "street",
+   "layers": {
+    "ground": [
+     "=asph =asph =asph =asph =pave =asph =asph =asph =asph",
+     "=asph =asph =asph =asph =pave =asph =asph =asph =asph",
+     "=asph =asph =asph =asph =pave =asph =asph =asph =asph",
+     "=asph =asph =asph =asph =pave =asph =asph =asph =asph",
+     "=asph =asph =asph =asph =pave =asph =asph =asph =asph"
+    ],
+    "main": [
+     "arm_end_l head_y + arm joint_lr arm head_r + arm_end_r",
+     ". . . . pole . . . .",
+     ". . . . ped_r . . . .",
+     ". . . . pole . . . .",
+     ". . . . pole_base . . . ."
+    ]
+   }
+  }
+ ]
+}

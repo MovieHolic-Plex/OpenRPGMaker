@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/phone_booth/j2-A.pxg",
+ "set": "jp",
+ "id": "phone_booth",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.032
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  2,
+  3,
+  15,
+  31
+ ],
+ "note": "강남 결: 은색 틀·녹색 전화기·유리 대각 하이라이트, 위 2px 지붕 띠, 오른쪽 아래 ~/- 그림자.",
+ "ok": true
+}

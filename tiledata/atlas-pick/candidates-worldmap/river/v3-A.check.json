@@ -1,0 +1,139 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/river/v3-A.pxg",
+ "set": "worldmap",
+ "id": "river",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄",
+  "inner-round: 안쪽 모서리 홈이 네모다(대각선 깊이 ≥ 이음 깊이) — nw ne sw se"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "jaggies"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.012
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.016
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     1,
+     2,
+     2,
+     2
+    ],
+    "s": [
+     2,
+     2,
+     2,
+     1,
+     1,
+     2,
+     2,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2
+    ],
+    "w": [
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     1,
+     1,
+     2,
+     2,
+     2,
+     2,
+     2
+    ],
+    "e": [
+     2,
+     2,
+     1,
+     1,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     2,
+     2
+    ]
+   },
+   "strait": 11,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 1.37
+ }
+}

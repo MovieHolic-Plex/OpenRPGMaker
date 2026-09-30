@@ -1,0 +1,19 @@
+{
+ "id": "sakura_petals",
+ "slug": "sakura_petals",
+ "name": "벚꽃잎 흩날린 바닥",
+ "scene": "신사 한 켠",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "바닥 위에 떨어진 벚꽃잎(1~2px 분홍 점 여섯~열, 한쪽으로 몰리게, 고른 점박이 금지). 투명 배경 — 인도·자갈 위에 덧칠. 여러 칸을 섞어 깔 수 있게 가장자리에 걸리지 않게.",
+ "palette_hint": "sakura",
+ "worker": "j4"
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/grindstone/w8-C.pxg",
+ "id": "grindstone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "failed": [
+   "orphans"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 12,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "재해석: 손잡이 대신 큰 숫돌 바퀴를 물통 받침대 위에 올린 정면형, 물 자국 반투명",
+ "ok": true
+}

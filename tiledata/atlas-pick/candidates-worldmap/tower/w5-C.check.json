@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/tower/w5-C.pxg",
+ "set": "worldmap",
+ "id": "tower",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  2,
+  0,
+  15,
+  31
+ ],
+ "note": "실루엣 재해석 — 지붕 대신 위가 굵은 톱니 망루와 붉은 깃발, 가는 몸통, 멀리서 못처럼 보임",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.027
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.054
+  }
+ }
+}

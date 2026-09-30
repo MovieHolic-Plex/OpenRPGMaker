@@ -1,0 +1,44 @@
+// w9 C — 다시 그림: 머리 쪽에 둥근 덮개가 달린 요람, 덮개 아래로 아기 얼굴이 보이고 몸통엔 파란 담요, 앞판에 세로 살
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a black 3
+@mat b blue 3
+@mat c ice 3
+@mat d pine 3
+@mat e pink 3
+@mat f wood 3
+@mblock 0 0
+................
+....ddddddd.....
+...ddddddddd....
+..ddddddddddd...
+..dddddddddddd..
+..dddddccccddd..
+..dddceaeaecdd..
+..dddceeeeecdd..
+..dddcccccccdd..
+.dddbbbbbbbbbdd.
+.dddbbbbbbbbbbdd
+.ddddddddddddddd
+.ddddddddddddddd
+.ddddddddddddddd
+.dddddddddddddd.
+..ffffffffffff..
+@tblock 0 0
+................
+....0000000.....
+...016555530....
+..01611111130...
+..015111111330..
+..015116666130..
+..015651515630..
+..015655555630..
+..015666666630..
+.01566666666530.
+.015555555554420
+.066666666666642
+.035555555555320
+.023333333333220
+.00000000000000.
+..444444444444..

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/vanity_mirror/w1-C.pxg",
+ "id": "vanity mirror",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.061
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 18,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "실루엣 다시: 거울을 위로 볼록한 아치형 금테로 키우고 병을 양옆에 내림, 상판 아래 서랍 3단(작은 서랍 셋)으로 늘림, 아랫부분을 통짜 몸통이 아니라 앞다리 둘로 세워 밑 공간이 보이게 함(높이 5줄)",
+ "ok": true
+}

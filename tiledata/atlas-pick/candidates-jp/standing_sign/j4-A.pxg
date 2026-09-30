@@ -1,0 +1,30 @@
+// standing_sign A — 강남 결: 테 2단 + 안쪽 윤곽, 윗면 한 줄, 발치 그림자 한 줄
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat T hinoki 5
+@mat H hinoki 4
+@mat h hinoki 3
+@mat D hinoki 2
+@mat d hinoki 1
+@mat g matsu 1
+@mat G matsu 2
+@mat w mwhite 3
+@mat y myellow 3
+@mblock 0 0
+................
+..dddddddddddd..
+..dTTTTTTTTTTd..
+..dHHHHHHHHHhd..
+..dHGGGGGGGGhd..
+..dHgwwwwwwghd..
+..dHgggggggghd..
+.dHHgwwwgwwghhd.
+.dHHgggggggghhd.
+.dHHgwwwwgyghhd.
+.dHHgggggggghhd.
+.dHHHHHHHHhhhhd.
+.dHhd......dhDd.
+.dHhd......dhDd.
+.dddd......dddd.
+..-~~~~~~~~~~~--

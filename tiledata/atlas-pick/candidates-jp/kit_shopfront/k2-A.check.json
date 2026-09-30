@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_shopfront/k2-A.pxg",
+ "set": "jp",
+ "id": "kit_shopfront",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 36,
+  "atLeast95": 0,
+  "max": 0.398
+ },
+ "refmap": {
+  "cells": 36,
+  "atLeast95": 0,
+  "max": 0.461
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "colors"
+  ]
+ },
+ "colors": 85,
+ "bbox": [
+  0,
+  0,
+  127,
+  95
+ ],
+ "note": "A 강남풍: 회색 화강 기둥·금속 틀·짙은 유리와 흰 진열, 붉은/흰 차양, 띠 아래 그림자 2px 통일",
+ "ok": true
+}

@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wardrobe/w9-C.pxg",
+ "id": "wardrobe",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "재해석: 오른쪽 문을 거울문으로, 몸통을 1px 좁히고 처마 돌출, 짧은 다리 2개",
+ "ok": true
+}

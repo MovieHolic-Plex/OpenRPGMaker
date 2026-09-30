@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/instrument_tray/h5-B.pxg",
+ "set": "horror",
+ "id": "instrument_tray",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "윗판 왼쪽 위 가장자리와 도구 선이 거의 흰색으로 튀고 안쪽 쟁반·아래는 어둡게, 바퀴 밑 반투명 그림자",
+ "ok": true
+}

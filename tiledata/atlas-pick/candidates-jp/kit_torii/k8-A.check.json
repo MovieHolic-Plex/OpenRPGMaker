@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_torii/k8-A.pxg",
+ "set": "jp",
+ "id": "kit_torii",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.083
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding",
+   "saturation",
+   "light"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  0,
+  127,
+  31
+ ],
+ "note": "A 강남 결: 묘진형 표준 — 검은 옻칠 가사기 끝이 살짝 들리고 주홍 기둥·누키, 중간 대비, 한지 편액.",
+ "ok": true
+}

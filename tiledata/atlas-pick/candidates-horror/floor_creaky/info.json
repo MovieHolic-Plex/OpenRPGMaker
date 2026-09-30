@@ -1,0 +1,51 @@
+{
+ "id": "floor_creaky",
+ "slug": "floor_creaky",
+ "name": "삐걱 마루(낡은 판)",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "v5 짙은 마루의 낡은 판: 가로 널 줄(널 폭 4px), 널 사이 틈 한 단 어둡게, 군데군데 들뜬 널 끝(한 줄 밝은 모서리), 옹이·물 얼룩 한두 점, 먼지 낀 틈. 2×2 가 사방으로 이어 붙는다(가장자리 널 줄이 맞게). 무늬가 고르게 반복되면 실패 — 한 칸 안에 들뜬 널은 하나만.",
+ "palette_hint": "rot 널, void 틈, dust 먼지",
+ "worker_v1": "h3",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "manor",
+ "role": "마루 변형(낡은 널)",
+ "worker": "h3",
+ "set_with": [
+  "floor_creaky_broken"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:dplank",
+   "name_ko": "짙은 마루",
+   "atlas": {
+    "x": 160,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  },
+  {
+   "id": "floor:boards",
+   "name_ko": "널마루",
+   "atlas": {
+    "x": 0,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-2.png"
+  }
+ ]
+}

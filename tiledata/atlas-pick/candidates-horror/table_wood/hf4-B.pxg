@@ -1,0 +1,40 @@
+// table_wood hf4-B
+@size 32 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mblock 0 0
+.mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm.
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+.mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm.
+.mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm.
+..mmmmmmmmmmmmmmmmmmmmmmmmmmmm..
+..mmmm....................mmmm..
+..mmmm....................mmmm..
+@tblock 0 0
+.111111111111111111111111111111.
+16666666666666666666666666666661
+16666666666666666666666666666661
+15555555555555555555555555555551
+15555544444444444444444444555551
+15555545555555555555555554555551
+15555545555555555555555554555551
+15555545555555555555555554555551
+15555544444444444444444444555551
+15555555555555555555555555555551
+14444444444444444444444444444441
+.122222222222222222222222222221.
+.111111111111111111111111111111.
+..1531111111111111111111111531..
+..1531....................1531..
+..1111....................1111..

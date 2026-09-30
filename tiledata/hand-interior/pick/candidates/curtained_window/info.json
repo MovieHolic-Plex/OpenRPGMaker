@@ -1,0 +1,37 @@
+{
+ "id": "curtained window",
+ "slug": "curtained_window",
+ "name_ko": "커튼 창",
+ "category": "장식",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "붉은 커튼을 양옆에 묶은 나무 창. 저택 방·여관 응접실·침실 벽면 윗줄에 1~2개, 방 가운데 대칭으로.",
+ "where": "저택 방·여관 응접실·침실 벽면 윗줄에 1~2개, 방 가운데 대칭으로.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  13
+ ],
+ "v5_colors": 15,
+ "material": "cloth",
+ "related": []
+}

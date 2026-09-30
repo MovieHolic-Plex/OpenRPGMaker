@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/skeleton_model/s1-A.pxg",
+ "set": "school",
+ "id": "skeleton_model",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  2,
+  1,
+  14,
+  31
+ ],
+ "note": "A: 교과서 골격 — 큰 두개골, 갈비 4줄, 골반, 팔다리 1px 뼈, 쇠 기둥·바퀴 받침",
+ "ok": true
+}

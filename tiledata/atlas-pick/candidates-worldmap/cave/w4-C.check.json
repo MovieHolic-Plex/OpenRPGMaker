@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/cave/w4-C.pxg",
+ "set": "worldmap",
+ "id": "cave",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding",
+   "outline_black"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "실루엣 재해석: 뾰족한 산자락 언덕에 넓고 낮은 벼랑 아래 입구, 왼쪽에서 오른쪽으로 흐르는 사선 면.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.203
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.134
+  }
+ }
+}

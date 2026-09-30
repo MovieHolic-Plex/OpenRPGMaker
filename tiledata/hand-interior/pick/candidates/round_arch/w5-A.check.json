@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_arch/w5-A.pxg",
+ "id": "round arch",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 4,
+ "v5_colors": 4,
+ "bbox": [
+  12,
+  1,
+  35,
+  29
+ ],
+ "v5_bbox": [
+  12,
+  0,
+  35,
+  29
+ ],
+ "note": "v5 다듬기: 삐뚤빼뚤한 계단 곡선을 반지름 12·두께 3 정확한 반원으로 다시 그림, 왼쪽 밝고 오른쪽 어둡게, 다리 3px 일정",
+ "ok": true
+}

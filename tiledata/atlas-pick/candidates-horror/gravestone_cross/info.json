@@ -1,0 +1,25 @@
+{
+ "id": "gravestone_cross",
+ "slug": "gravestone_cross",
+ "name": "십자 비석",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "돌 십자 비석: 위 십자(가로 팔이 양끝이 살짝 넓어짐), 아래 두꺼운 받침, 윗면·왼면 한 단 밝게, 금 한 줄, 이끼 점, 발치 풀 한 포기. 살짝 기울어도 좋다(B·C).",
+ "palette_hint": "grave 돌, hmoss 이끼, night 풀, ~ 그림자",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5",
+ "set_with": [
+  "gravestone_round"
+ ]
+}

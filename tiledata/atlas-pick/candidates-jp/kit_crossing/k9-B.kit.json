@@ -1,0 +1,126 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_crossing/k9-B.pxg",
+ "kit": "kit_crossing",
+ "cand": "k9-B",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "down4",
+   "name": "4칸 길·차단기 내림",
+   "cells": [
+    8,
+    9
+   ],
+   "ctxSize": [
+    160,
+    208
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "up4",
+   "name": "4칸 길·차단기 올림",
+   "cells": [
+    8,
+    9
+   ],
+   "ctxSize": [
+    160,
+    208
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "alley2",
+   "name": "좁은 골목 건널목(차단기 없음)",
+   "cells": [
+    4,
+    6
+   ],
+   "ctxSize": [
+    96,
+    160
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "double",
+   "name": "복선(선로 두 줄)",
+   "cells": [
+    5,
+    6
+   ],
+   "ctxSize": [
+    112,
+    160
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "rail",
+   "axis": "x",
+   "score": 0.37,
+   "d": 16.8,
+   "bad": false
+  },
+  {
+   "slug": "deck",
+   "axis": "x",
+   "score": 0.74,
+   "d": 82.6,
+   "bad": false
+  },
+  {
+   "slug": "cr_pole",
+   "axis": "y",
+   "score": 1.0,
+   "d": 48.5,
+   "bad": false
+  },
+  {
+   "slug": "arm_m",
+   "axis": "x",
+   "score": 1.0,
+   "d": 27.7,
+   "bad": false
+  },
+  {
+   "slug": "arm_up",
+   "axis": "y",
+   "score": 1.0,
+   "d": 38.8,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": true,
+   "failed": []
+  },
+  "easyMax": 0.207,
+  "refmapMax": 0.152
+ },
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wall_clock/w2-A.pxg",
+ "id": "wall clock",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 7,
+ "bbox": [
+  3,
+  2,
+  12,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  14
+ ],
+ "note": "v5 정리: 검은 시침을 나무 어두운 단(A)으로, 원형 테두리 매끈, 12시·3시 방향 바늘 하나로 정돈",
+ "ok": true
+}

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/apothecary_drawers/w90-A.pxg",
+ "id": "apothecary drawers",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "약장: 윗면 T5(뒤 어두움→앞 가장자리 밝음)+처마 그림자 뒤 서랍 앞면, 아래 문 칸 압축",
+ "ok": true
+}

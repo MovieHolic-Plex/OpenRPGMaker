@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/double_bed_blue/w4-C.pxg",
+ "id": "double bed blue",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 22,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "머리판을 둥근 아치와 놋 마개, 가운데 장식 메달리온으로 바꾸고 이불을 파란 줄무늬로, 발치에 노란 접이 담요를 얹어 손님방 대신 주인 침실 침대로 읽히게 했다.",
+ "ok": true
+}

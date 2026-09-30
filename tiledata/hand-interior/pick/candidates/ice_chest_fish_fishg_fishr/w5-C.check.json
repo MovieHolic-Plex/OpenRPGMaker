@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ice_chest_fish_fishg_fishr/w5-C.pxg",
+ "id": "ice chest:fish+fishg+fishr",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 30,
+ "v5_colors": 31,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "note": "모양을 바꿈: 쇠띠 두른 나무 상자 위로 얼음 덩어리가 봉긋 쌓이고 생선이 얼음 사이로 삐져나온 진열. 얼음 덩어리마다 윗면·왼쪽 밝게 오른쪽·아래 어둡게, 상자 앞판이 크게 보임",
+ "ok": true
+}

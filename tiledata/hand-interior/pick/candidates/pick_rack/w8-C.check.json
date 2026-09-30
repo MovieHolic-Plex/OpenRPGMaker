@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pick_rack/w8-C.pxg",
+ "id": "pick rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "note": "재해석: 가로대 대신 세로 널판 옆에 곡괭이 두 자루를 가로로 눕혀 건 형태(놋쇠 고리 받침).",
+ "ok": true
+}

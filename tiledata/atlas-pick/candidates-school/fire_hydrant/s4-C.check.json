@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/fire_hydrant/s4-C.pxg",
+ "set": "school",
+ "id": "fire_hydrant",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  2,
+  1,
+  13,
+  30
+ ],
+ "note": "재해석: 문 위쪽 둥근 유리창(호스 코일이 보임) + 아래 점검판",
+ "ok": true
+}

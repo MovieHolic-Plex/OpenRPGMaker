@@ -1,0 +1,26 @@
+{
+ "id": "window_barred",
+ "slug": "window_barred",
+ "name": "쇠창살 창",
+ "scene": "공통 뼈대",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "window_night 와 같은 크기, 창 앞 세로 쇠창살 셋(유리 위에 2px 쇠), 틀은 흰 칠 쇠 또는 돌. 병원·지하.",
+ "palette_hint": "tin/viron 창살, murk/moon 유리, grave 틀",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "ward",
+ "role": "창(쇠창살)",
+ "worker": "hf3",
+ "set_with": [
+  "door_hosp"
+ ]
+}

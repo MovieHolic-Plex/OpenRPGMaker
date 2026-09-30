@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/ash/w3-C.pxg",
+ "set": "worldmap",
+ "id": "ash",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.293
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.246
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "화산재 몸통 — 바람이 쓸고 간 가로 물결 능선, 테는 풀색부터 이음.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.367
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.695
+  },
+  "seam": 0.86
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/bike_rack/v34-A.pxg",
+ "set": "school",
+ "id": "bike_rack",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  1,
+  47,
+  31
+ ],
+ "note": "자전거 거치대 3/4 — 밝은 쇠 지붕 윗면(뒤 가장자리 선·앞 하이라이트) 아래 파란·빨간 자전거 두 대, 쇠 거치대 윗면과 앞면",
+ "ok": true
+}

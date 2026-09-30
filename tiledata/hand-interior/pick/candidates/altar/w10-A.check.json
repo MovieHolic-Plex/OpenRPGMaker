@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar/w10-A.pxg",
+ "id": "altar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 14,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "note": "대리석 윗판/앞면 명암 분리, 천이 윗판에서 앞으로 늘어져 접힘과 금 아랫단, 십자가는 앞천에",
+ "ok": true
+}

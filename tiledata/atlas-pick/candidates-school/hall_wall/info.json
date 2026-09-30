@@ -1,0 +1,24 @@
+{
+ "id": "hall_wall",
+ "slug": "hall_wall",
+ "name": "복도 벽면",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "복도 쪽 벽 한 칸(윗칸 크림 벽, 아랫칸 허리 높이까지 연녹색 또는 회색 페인트 징두리 + 걸레받이). classroom_wall 과 높이 규칙 같게(이어 붙여 교실 벽→복도 벽). 좌우 이어 붙는다.",
+ "palette_hint": "cream 윗벽, lino/locker 징두리",
+ "pair": [
+  "hall_floor",
+  "hall_door"
+ ],
+ "worker": "s1"
+}

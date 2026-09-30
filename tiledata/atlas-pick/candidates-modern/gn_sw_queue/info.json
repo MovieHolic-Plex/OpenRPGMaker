@@ -1,0 +1,36 @@
+{
+ "id": "gn-sw-queue",
+ "slug": "gn_sw_queue",
+ "name": "인도 줄 서는 곳",
+ "scene": "도로·보도 표시",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "인도 줄 서는 곳 1×1. 인도 표시(아래층 F, 인도 속 칸): 점자블록은 출구·횡단보도로 이어지는 줄, 자전거 표시는 넓은 인도 안쪽, 줄 서는 곳 표시는 정류장 섬 가운데 줄.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-sw-queue"
+ ],
+ "tiles": [
+  4839
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   45,
+   15
+  ]
+ }
+}

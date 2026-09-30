@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/holy_water_font/w7-C.pxg",
+ "id": "holy water font",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "light",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  3,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  14,
+  13
+ ],
+ "note": "실루엣 재해석: 가늘고 긴 잔 대신 넓고 낮은 돌 물통 — 수면이 위쪽 ¾ 을 차지하고 앞면에 황동 십자를 새겨 예배당 성수반임이 한눈에 읽힌다. 회색 돌(stone)이라 바닥과 값이 갈린다",
+ "ok": true
+}

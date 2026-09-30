@@ -1,0 +1,574 @@
+{
+ "id": "kit_bldg",
+ "slug": "kit_bldg",
+ "kind": "kit",
+ "name": "킷: 건물 뼈대(잡거빌딩·상가빌딩)",
+ "scene": "역 앞 번화가",
+ "cells": [
+  8,
+  7
+ ],
+ "canvas": [
+  128,
+  112
+ ],
+ "layer": "kit",
+ "layer_ko": "조립 킷 부품 시트(부품마다 층이 다르다 — kits-<세트>.json)",
+ "description": "평지붕 옥상(뒤 난간·바닥·앞 난간 × 왼·가운데·오른) + 층(벽 1×2: 끝·민벽·창 세 종) + 층 간판 띠·세로 돌출 간판(덧칠) + 계단 입구. 폭·층수 자유. 1층은 kit_shopfront 를 얹어 가게를 넣거나 계단 입구만 둔다. (부품 25 · 조립 예 5)",
+ "palette_hint": "mconc·mtile·mpave 벽, mglass·mdglass 창, mmetal 난간·물탱크, neon·neonc·taxi·akachin 간판",
+ "worker": "k1",
+ "replaces": [
+  "zakkyo_building"
+ ],
+ "aliases": {
+  "S": "kit_shopfront"
+ },
+ "contract": [
+  "한 층 = 벽 부품 1×2. 모든 벽·창 부품의 위 1px = 층 이음 줄(창틀 위 slab 선, mconc 2), 아래 1px = 같은 줄 — 층을 쌓으면 층마다 가는 띠가 보인다.",
+  "wall_l 왼 2px 밝게, wall_r 오른 2px 한 단 어둡게(빛 왼쪽 위). 창 부품 좌우 가장자리 2px 는 wall_m 과 같은 벽 재질 — 창을 몇 개 이어도 벽이 이어진다.",
+  "벽 부품 맨 아래 1px = kit_shopfront 간판 띠 맨 위 1px 와 같은 단(mconc 2).",
+  "옥상: roof_n* 뒤 난간(윗면 밝게) → roof_m* 옥상 바닥(y 반복) → roof_s* 앞 난간(두께 보이게). 설비(rt_*)는 옥상 바닥 줄에만, 양 끝 열 금지."
+ ],
+ "parts": [
+  {
+   "slug": "roof_nl",
+   "name": "옥상 뒤 난간 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "옥상 뒤쪽 난간 왼 모서리.",
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "slug": "roof_nm",
+   "name": "옥상 뒤 난간 가운데",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "뒤 난간(윗면 밝은 두께 2~3px).",
+   "at": [
+    1,
+    0
+   ]
+  },
+  {
+   "slug": "roof_nr",
+   "name": "옥상 뒤 난간 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "뒤 난간 오른 모서리.",
+   "at": [
+    2,
+    0
+   ]
+  },
+  {
+   "slug": "roof_ml",
+   "name": "옥상 바닥 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "옥상 바닥 왼 가장자리(옆 난간 두께).",
+   "at": [
+    3,
+    0
+   ]
+  },
+  {
+   "slug": "roof_mm",
+   "name": "옥상 바닥",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "xy",
+   "walk": "X",
+   "desc": "옥상 바닥(콘크리트·방수 도료, 조용하게).",
+   "at": [
+    4,
+    0
+   ]
+  },
+  {
+   "slug": "roof_mr",
+   "name": "옥상 바닥 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "옥상 바닥 오른 가장자리.",
+   "at": [
+    5,
+    0
+   ]
+  },
+  {
+   "slug": "roof_sl",
+   "name": "옥상 앞 난간 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "앞 난간 왼 모서리(두께 + 윗면).",
+   "at": [
+    6,
+    0
+   ]
+  },
+  {
+   "slug": "roof_sm",
+   "name": "옥상 앞 난간 가운데",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "앞 난간(윗면 밝은 줄, 앞 두께 한 단 어둡게, 아래 처마 그늘).",
+   "at": [
+    7,
+    0
+   ]
+  },
+  {
+   "slug": "roof_sr",
+   "name": "옥상 앞 난간 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "앞 난간 오른 모서리.",
+   "at": [
+    0,
+    1
+   ]
+  },
+  {
+   "slug": "rt_tank",
+   "name": "옥상 물탱크",
+   "cells": [
+    2,
+    2
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "옥상 위 네모 물탱크(철 받침 다리, 윗면 보이게).",
+   "at": [
+    1,
+    1
+   ]
+  },
+  {
+   "slug": "rt_ac",
+   "name": "옥상 실외기",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "옥상 실외기 하나(팬 원).",
+   "at": [
+    3,
+    1
+   ]
+  },
+  {
+   "slug": "wall_l",
+   "name": "벽 왼 끝(한 층)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "층 왼 끝 벽(모서리 밝게, 빗물 홈통 한 줄 있어도 좋다).",
+   "at": [
+    4,
+    1
+   ]
+  },
+  {
+   "slug": "wall_m",
+   "name": "민벽(한 층)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "xy",
+   "walk": "X",
+   "desc": "창 없는 벽(타일 줄눈·얼룩 조금).",
+   "at": [
+    5,
+    1
+   ]
+  },
+  {
+   "slug": "wall_r",
+   "name": "벽 오른 끝(한 층)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "층 오른 끝 벽(한 단 어둡게).",
+   "at": [
+    6,
+    1
+   ]
+  },
+  {
+   "slug": "win_plain",
+   "name": "창: 알루미늄 창",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "xy",
+   "walk": "X",
+   "desc": "가로 긴 알루미늄 창(두 짝), 창턱 그늘.",
+   "at": [
+    7,
+    1
+   ]
+  },
+  {
+   "slug": "win_lit",
+   "name": "창: 불 켜진 창·블라인드",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "xy",
+   "walk": "X",
+   "desc": "블라인드 줄 사이 불빛(washi·taxi 밝은 단).",
+   "at": [
+    0,
+    3
+   ]
+  },
+  {
+   "slug": "win_sign",
+   "name": "창: 글자 붙은 창",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "xy",
+   "walk": "X",
+   "desc": "잡거빌딩 창에 붙인 커다란 색 글자판(가짜 글자 금지 — 색 네모·점 무늬 또는 가나 한 자).",
+   "at": [
+    1,
+    3
+   ]
+  },
+  {
+   "slug": "fsign_l",
+   "name": "층 간판 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "wall",
+   "repeat": null,
+   "walk": "C",
+   "desc": "층 윗칸에 덧붙이는 가로 간판 판 왼 끝(투명 배경, 판 높이 8~10px).",
+   "at": [
+    2,
+    3
+   ]
+  },
+  {
+   "slug": "fsign_m",
+   "name": "층 간판 가운데 A",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "wall",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "가로 간판 가운데(한 색).",
+   "at": [
+    3,
+    3
+   ]
+  },
+  {
+   "slug": "fsign_m2",
+   "name": "층 간판 가운데 B",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "wall",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "다른 색·글자 무늬 변형(층마다 색이 다르게).",
+   "at": [
+    4,
+    3
+   ]
+  },
+  {
+   "slug": "fsign_r",
+   "name": "층 간판 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "wall",
+   "repeat": null,
+   "walk": "C",
+   "desc": "가로 간판 오른 끝.",
+   "at": [
+    5,
+    3
+   ]
+  },
+  {
+   "slug": "vsign_t",
+   "name": "세로 간판 위",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "wall",
+   "repeat": null,
+   "walk": "C",
+   "desc": "벽에서 튀어나온 세로 간판 윗 끝(쇠 받침 + 판 윗테).",
+   "at": [
+    6,
+    3
+   ]
+  },
+  {
+   "slug": "vsign_m",
+   "name": "세로 간판 가운데",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "wall",
+   "repeat": "y",
+   "walk": "C",
+   "desc": "세로 간판 칸(색 네모 한 칸 = 가게 하나, 세로로 이어 붙이면 칸마다 판이 나뉜다).",
+   "at": [
+    7,
+    3
+   ]
+  },
+  {
+   "slug": "vsign_b",
+   "name": "세로 간판 아래",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "wall",
+   "repeat": null,
+   "walk": "C",
+   "desc": "세로 간판 아래 끝(받침·전선).",
+   "at": [
+    0,
+    5
+   ]
+  },
+  {
+   "slug": "stair_door",
+   "name": "계단 입구(위층 가는 좁은 문)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": [
+    "X",
+    "F"
+   ],
+   "door": true,
+   "desc": "1층 좁은 입구: 어두운 계단이 안쪽으로 올라가는 게 보이는 문틀, 층 안내판 작은 줄.",
+   "at": [
+    1,
+    5
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "b3f3",
+   "name": "3칸 3층(1층 셔터·세로 간판)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "roof_nl roof_nm roof_nr",
+     "roof_sl roof_sm roof_sr",
+     "wall_l win_plain wall_r",
+     "+ + +",
+     "wall_l win_lit wall_r",
+     "+ + +",
+     "S:band_l S:band_plain S:band_r",
+     "S:pil_l S:shutter S:pil_r",
+     "+ + +"
+    ],
+    "upper": [
+     ". . .",
+     ". . .",
+     ". . vsign_t",
+     ". . vsign_m",
+     ". . vsign_m",
+     ". . vsign_b"
+    ]
+   }
+  },
+  {
+   "id": "b5f5",
+   "name": "5칸 5층(물탱크·층 간판·1층 이자카야)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "roof_nl roof_nm roof_nm roof_nm roof_nr",
+     "roof_ml roof_mm roof_mm roof_mm roof_mr",
+     "roof_ml roof_mm roof_mm roof_mm roof_mr",
+     "roof_sl roof_sm roof_sm roof_sm roof_sr",
+     "wall_l win_plain wall_m win_plain wall_r",
+     "+ + + + +",
+     "wall_l win_lit wall_m win_lit wall_r",
+     "+ + + + +",
+     "wall_l win_sign wall_m win_sign wall_r",
+     "+ + + + +",
+     "wall_l win_lit wall_m win_plain wall_r",
+     "+ + + + +",
+     "S:band_l S:band_izakaya S:text_sake S:band_izakaya S:band_r",
+     "S:pil_l S:win_koshi S:door_noren S:win_koshi S:pil_r",
+     "+ + + + +"
+    ],
+    "upper": [
+     ". . . . .",
+     ". rt_tank + rt_ac .",
+     ". + + . .",
+     ". . . . .",
+     ". . . . .",
+     ". . . . .",
+     "fsign_l fsign_m fsign_m fsign_m fsign_r",
+     ". . . . .",
+     ". . . . .",
+     ". . . . .",
+     "fsign_l fsign_m2 fsign_m2 fsign_m2 fsign_r",
+     ". . . . .",
+     ". . . . .",
+     ". S:lantern . S:lantern ."
+    ]
+   }
+  },
+  {
+   "id": "b4f2",
+   "name": "4칸 2층(킷 혼자 — 계단 입구)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "roof_nl roof_nm roof_nm roof_nr",
+     "roof_sl roof_sm roof_sm roof_sr",
+     "wall_l win_plain win_plain wall_r",
+     "+ + + +",
+     "wall_l stair_door win_lit wall_r",
+     "+ + + +"
+    ]
+   }
+  },
+  {
+   "id": "b8f4",
+   "name": "8칸 4층(1층 콘비니+라멘)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "roof_nl roof_nm roof_nm roof_nm roof_nm roof_nm roof_nm roof_nr",
+     "roof_ml roof_mm roof_mm roof_mm roof_mm roof_mm roof_mm roof_mr",
+     "roof_sl roof_sm roof_sm roof_sm roof_sm roof_sm roof_sm roof_sr",
+     "wall_l win_plain wall_m win_plain win_plain wall_m win_plain wall_r",
+     "+ + + + + + + +",
+     "wall_l win_sign wall_m win_lit win_lit wall_m win_sign wall_r",
+     "+ + + + + + + +",
+     "wall_l win_lit wall_m win_plain win_plain wall_m win_lit wall_r",
+     "+ + + + + + + +",
+     "S:band_l S:band_cvs S:band_cvs S:band_r S:band_l S:text_ramen + S:band_r",
+     "S:pil_l S:door_auto_l S:door_auto_r S:pil_r S:pil_l S:door_slide S:win_glass S:pil_r",
+     "+ + + + + + + +"
+    ],
+    "upper": [
+     ". . . . . . . .",
+     ". . . rt_ac . rt_ac . .",
+     ". . . . . . . .",
+     ". . . . . . . vsign_t",
+     ". . . . . . . vsign_m",
+     ". . . . . . . vsign_m",
+     ". . . . . . . vsign_m",
+     ". . . . . . . vsign_b",
+     ". . . . . . . .",
+     ". . . . . . . .",
+     ". . . . . S:awn_l S:awn_m S:awn_r"
+    ]
+   }
+  },
+  {
+   "id": "pair",
+   "name": "높이 다른 두 채 붙이기(3칸 4층 + 4칸 2층)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "roof_nl roof_nm roof_nr . . . .",
+     "roof_sl roof_sm roof_sr . . . .",
+     "wall_l win_lit wall_r . . . .",
+     "+ + + . . . .",
+     "wall_l win_sign wall_r roof_nl roof_nm roof_nm roof_nr",
+     "+ + + roof_sl roof_sm roof_sm roof_sr",
+     "wall_l win_plain wall_r wall_l win_plain win_lit wall_r",
+     "+ + + + + + +",
+     "wall_l stair_door wall_r wall_l win_plain stair_door wall_r",
+     "+ + + + + + +"
+    ]
+   }
+  }
+ ]
+}

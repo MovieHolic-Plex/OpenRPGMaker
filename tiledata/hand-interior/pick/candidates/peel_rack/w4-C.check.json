@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/peel_rack/w4-C.pxg",
+ "id": "peel rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  1,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "같은 삽 두 자루가 아니라 둥근 삽·네모 짧은 삽·쇠 재 긁개 세 가지 도구를 길이를 달리해 걸어 화덕 도구걸이로 읽히게 다시 짰다.",
+ "ok": true
+}

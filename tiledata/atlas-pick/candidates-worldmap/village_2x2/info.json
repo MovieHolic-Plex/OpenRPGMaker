@@ -1,0 +1,23 @@
+{
+ "id": "village_2x2",
+ "slug": "village_2x2",
+ "name": "마을(2×2)",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "4판 크기 등급: 작은 마을. 집 셋과 나무 한 그루, 앞길 꼬리. 한 장 그림(칸 경계 없음).",
+ "palette_hint": "wroofr·wroofb 지붕, wplast 벽",
+ "worker": "v4"
+}

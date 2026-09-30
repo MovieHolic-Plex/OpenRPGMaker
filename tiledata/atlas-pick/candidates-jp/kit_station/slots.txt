@@ -1,0 +1,21 @@
+// kit_station 부품 시트 128x80px (8×5칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+can_l               0    0  16  16  facade  -   X     지붕판 왼
+can_m              16    0  16  16  facade  x   X     지붕판 가운데
+can_r              32    0  16  16  facade  -   X     지붕판 오른
+sign_l             48    0  16  16  facade  -   X     간판 띠 왼
+sign_m             64    0  16  16  facade  x   X     간판 띠 가운데
+sign_r             80    0  16  16  facade  -   X     간판 띠 오른
+sign_eki           96    0  16  16  facade  -   X     간판 「駅」
+sign_exit         112    0  16  16  facade  -   X     간판 출구 번호
+pil                 0   16  16  32  facade  x   X     기둥
+side_l             16   16  16  32  facade  -   X     옆벽 왼
+side_r             32   16  16  32  facade  -   X     옆벽 오른
+open_back          48   16  16  16  facade  x   X     입구 안쪽(어두운 굴 입)
+stairs             64   16  16  16  ground  xy  F     내려가는 계단
+stairs_lip         80   16  16  16  ground  x   F     계단 턱(보도와 만나는 곳)
+rail_l             96   16  16  32  facade  y   X     계단 옆 낮은 벽 왼
+rail_r            112   16  16  32  facade  y   X     계단 옆 낮은 벽 오른
+glass_wall          0   48  16  32  facade  x   X     유리벽(역 건물)
+door_l             16   48  16  32  facade  -   X/F   자동문 왼 짝(역 건물)
+door_r             32   48  16  32  facade  -   X/F   자동문 오른 짝(역 건물)

@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/hamlet/wv7-C.pxg",
+ "set": "worldmap",
+ "id": "hamlet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  2,
+  4,
+  15,
+  15
+ ],
+ "note": "붉은 뾰족 지붕 작은 집 + 오른쪽에 붙은 회색 돌탑(빨간 뾰족 모자). 지붕 꼭대기 삼각형이 마을 표식, 세로로 솟은 윤곽",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.035
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.06
+  }
+ }
+}

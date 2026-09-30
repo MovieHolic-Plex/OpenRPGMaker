@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stool/w5-C.pxg",
+ "id": "stool",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  14
+ ],
+ "note": "실루엣 재해석: 다리 셋 중 앞 둘만 보이는 벌어진 삼발이, 윗면은 더 넓은 원판(폭 12), 다리는 바깥으로 기울어 안정감",
+ "ok": true
+}

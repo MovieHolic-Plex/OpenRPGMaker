@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew/w2-B.pxg",
+ "id": "pew",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "note": "명암 강화: 등받이 윗변·좌석 윗면 더 밝게(wood:7), 오른쪽 끝판과 앞판 아래를 어둡게, 바닥에 반투명 접지 그림자 한 줄",
+ "ok": true
+}

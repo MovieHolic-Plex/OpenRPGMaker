@@ -1,0 +1,138 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_grass/v6-A.pxg",
+ "set": "worldmap",
+ "id": "coast_grass",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄",
+  "inner-notch: 안쪽 모서리 칸 네 귀가 차 있다 — 네 귀에 바깥(투명)이 파고들어야 오목 모서리가 된다"
+ ],
+ "easyrpg": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "refmap": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.02
+  },
+  "refmapWorld": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.023
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     3,
+     4,
+     4,
+     4,
+     4,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     4,
+     3
+    ],
+    "w": [
+     3,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     3,
+     4,
+     4,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     2,
+     3,
+     4,
+     3
+    ]
+   },
+   "strait": 8,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.78
+ }
+}

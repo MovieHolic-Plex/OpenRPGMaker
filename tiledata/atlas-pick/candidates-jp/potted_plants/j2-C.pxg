@@ -1,0 +1,48 @@
+// j2 후보 — j2-C.pxg
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a moss
+@mat b mgreen
+@mat c shu
+@mat d myellow
+@mat e mblue
+@mat f matsu
+@mat g sakura
+@mat h mtile
+@mat i mconc
+@mat j mbrick
+@mblock 0 0
+.............aa...bbbbbbbbbb....
+...........aaaaaa.bbbbcbbbbb....
+..........aaaaaaaabbbcdcbdbb....
+..........aaaaaaaabbbbcbdddb....
+........b.aaaaaaaa..bbbbbd......
+........b.aaaaaaaa.eeeeeeee.....
+......b.bbbaaaaaa..eeeeeeee...f.
+.......bbb...aa....eeeeeeee...f.
+.fg....bbbbhhhhhhh.eiiiiiie..fff
+fgdg...bbbbhhhhhhhfeiiiiiie..fff
+ffgf.iiiii.hhhhhhhfeeeeeeee..fff
+.ff..iiiii.hhhhhhhfeeeeeeee.jjjj
+jjjj.iiiii.hhhhhhhfeeeeeeee.jjjj
+jjjj..iii...hhhhh...eeeeee..jjjj
+jjjj~.iii~..hhhhh~..eeeeee~.jjjj
+.~~~~~~~~~~.~~~~~~~.~~~~~~~~~~~~
+@tblock 0 0
+.............11...1111111111....
+...........114411.1553533331....
+..........144433315533433531....
+..........144333331133233431....
+........1.14333331..133332......
+........1.13333321.15555551.....
+......1.111113311..14444441...1.
+.......141...11....13333331...1.
+.15....14211155111.16566661..141
+1343...14214444443146666661..141
+1421.11551.1333332343333331..141
+.11..14441.1333332343333331.1441
+1331.13331.1333331113333331.1331
+1331..131...13331...133331..1221
+1111..111...11111...111111..1111
+................................

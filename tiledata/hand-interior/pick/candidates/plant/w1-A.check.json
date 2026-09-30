@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/plant/w1-A.pxg",
+ "id": "plant",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  0,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  14,
+  13
+ ],
+ "note": "잎을 덩어리 대신 하나하나 보이는 잎사귀(밝은 왼위·어두운 오른아래)로 나누고 화분에 윗테두리 빛·둥근 몸통 명암을 넣음.",
+ "ok": true
+}

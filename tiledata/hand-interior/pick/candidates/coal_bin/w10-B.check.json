@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/coal_bin/w10-B.pxg",
+ "id": "coal bin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.156
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "명암 강화: 숯더미 왼쪽 위에 윤 낸 큰 덩이, 오른쪽은 어둡게; 통 앞판 왼쪽 밝고 오른쪽 어두운 3단 명암",
+ "ok": true
+}

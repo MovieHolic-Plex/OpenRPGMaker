@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bookshelf_manor/hf4-B.pxg",
+ "set": "horror",
+ "id": "bookshelf_manor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "B: 어두운 방용 — 책 폭 2~3px 로 굵게 네 권씩, 책 3단(빨·파·초)이 뒤판 0단 검정 위에 뜸, 널 윗면·기둥 밝은 면 6단, 앞 두께 3 → 밑 0 으로 크게 벌림",
+ "ok": true
+}

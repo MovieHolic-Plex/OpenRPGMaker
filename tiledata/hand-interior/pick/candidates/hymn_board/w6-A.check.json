@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hymn_board/w6-A.pxg",
+ "id": "hymn board",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 15,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "note": "석판에 큰 숫자 17 을 새기고 황동 제목띠와 못머리를 단 나무틀로 알아보기 쉽게 함",
+ "ok": true
+}

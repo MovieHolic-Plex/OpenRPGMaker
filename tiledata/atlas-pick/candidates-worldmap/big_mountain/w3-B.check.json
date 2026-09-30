@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/big_mountain/w3-B.pxg",
+ "set": "worldmap",
+ "id": "big_mountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.284
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "jaggies",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "2x2 큰 산 — 폭 12 주봉, 밝은 면·그늘면 대비 세게, 눈 하이라이트, ~ - 그림자를 발치 오른쪽 아래에.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.145
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.406
+  }
+ }
+}

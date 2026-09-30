@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_hall_floor/h3-A.pxg",
+ "set": "horror",
+ "id": "broken_hall_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.207
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "낡은 복도 바닥: v5 널마루를 묵힌 것 - 니스 벗겨진 밝은 자리와 어두운 얼룩, 왼위에서 오른아래로 널 여러 장을 가로지르는 금, 종이 쪼가리 한 점, 틈에 먼지",
+ "ok": true
+}

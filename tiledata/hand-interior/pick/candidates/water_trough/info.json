@@ -1,0 +1,37 @@
+{
+ "id": "water trough",
+ "slug": "water_trough",
+ "name_ko": "물통(2칸)",
+ "category": "마구간",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 16
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "파란 물이 담긴 2칸 나무 물통. 마구간 우리 벽 쪽에 1개씩. 먹이통 옆.",
+ "where": "마구간 우리 벽 쪽에 1개씩. 먹이통 옆.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  4,
+  31,
+  14
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": []
+}

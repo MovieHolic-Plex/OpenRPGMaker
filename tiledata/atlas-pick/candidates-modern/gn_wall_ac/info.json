@@ -1,0 +1,36 @@
+{
+ "id": "gn-wall-ac",
+ "slug": "gn_wall_ac",
+ "name": "벽걸이 실외기",
+ "scene": "거리 소품",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "벽걸이 실외기 1×1. 벽걸이 기물(위층 C): 건물 외벽 칸(fa·gb.al·gb.kb·gb.bg) 위에만, 지붕·문 칸 위 금지. 세로 간판은 층마다 한 줄, 같은 색 둘 나란히 금지.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-wall-ac"
+ ],
+ "tiles": [
+  4721
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   79,
+   11
+  ]
+ }
+}

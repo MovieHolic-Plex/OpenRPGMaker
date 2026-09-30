@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sack_flour/w6-B.pxg",
+ "id": "sack:flour",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 17,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  12,
+  13
+ ],
+ "note": "빛 강화: 왼쪽 위 가장 밝은 띠, 오른쪽·아래 깊은 어둠, 바닥 접지 그림자(~/-) 로 볼록한 자루. 끈 목 유지",
+ "ok": true
+}

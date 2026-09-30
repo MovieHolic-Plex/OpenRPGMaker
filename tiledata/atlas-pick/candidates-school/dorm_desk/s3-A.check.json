@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/dorm_desk/s3-A.pxg",
+ "set": "school",
+ "id": "dorm_desk",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 34,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "v5 결: 소나무 책상+선반, 책 5권(파랑·빨강·초록·노랑), 초록 스탠드, 공책, 파란 방석 의자",
+ "ok": true
+}

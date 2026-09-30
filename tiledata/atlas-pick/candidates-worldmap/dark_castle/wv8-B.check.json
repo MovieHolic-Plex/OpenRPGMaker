@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/dark_castle/wv8-B.pxg",
+ "set": "worldmap",
+ "id": "dark_castle",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.223
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "명암 강화 — 왼쪽 밝고 오른쪽 아주 어두운 원통, 처마 띠, 용암빛 창과 성문 불빛, 발치 오른쪽 아래 반투명 그림자",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.09
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.026
+  }
+ }
+}

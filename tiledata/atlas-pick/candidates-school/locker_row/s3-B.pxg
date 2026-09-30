@@ -1,0 +1,48 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a locker 4
+@mat b locker 6
+@mat c locker 2
+@mat d locker 1
+@mat e locker 5
+@mat f locker 0
+@mat g vred 5
+@mat h vwhite 6
+@mat i vred 3
+@mat j vred 1
+@mat k jersey 4
+@mat l jersey 2
+@mblock 0 0
+................................
+................................
+................................
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+deeeeeeddeeeeeeddeeeeeeddeeeeeed
+deccccfddeccccfddeccccfddeccccfd
+defffffddefffffddefffffddefffffd
+deccccfddeccccfddeccccfddeccccfd
+defffffddefffffddefffffddefffffd
+deccccfddeccccfddeccccfddeccccfd
+defffgfddefffgfddefffgfddefffgfd
+dechhcfddechhcfddechhcfddechhcfd
+deccccfddeccccfddeccccfddeccccfd
+decgiifddeccccfddeccccfddeccccfd
+dffiiifddffffffddffffffddffffffd
+dddjjjdddddddddddddddddddddddddd
+deeeeeeddeeeeeeddeeeeeeddeeeeeed
+deccccfddeccccfddeccccfddeccccfd
+defffffddefffffddefffffddefffffd
+deccccfddeccccfddeccccfddeccccfd
+defffffddefffffddefffffddefffffd
+deccccfddeccccfddeccccfddeccccfd
+defffgfddefffgfddefffgfddefffgfd
+dechhcfddechhcfddechhcfddechhcfd
+deccccfddeccccfddeccccfddeccccfd
+deccccfddeccccfddeccccfddeckkkfd
+dffffffddffffffddffffffddffkkkfd
+ffffffffffffffffffffffffffflllff
+dddddddddddddddddddddddddddddddd
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------

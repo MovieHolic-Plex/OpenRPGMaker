@@ -1,0 +1,43 @@
+// window_curtain hf3-C (hf3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a rot 0
+@mat b tarn 0
+@mat c velv 0
+@mat d moon 0
+@mblock 0 0
+................
+................
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..abbbbbbbbbba..
+..aacccdccccaa..
+..aacccdccccaa..
+..aacccdccccaa..
+..aabccdccccaa..
+..aabccdccccaa..
+..aacccdccccaa..
+..aacccdccccaa..
+..aaaaaaaaaaaa..
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+................
+@tblock 0 0
+................
+................
+..000000000000..
+..055555555550..
+..044444333310..
+..051322231020..
+..051323231020..
+..051322231020..
+..053323231020..
+..052322231020..
+..051423241020..
+..050312131020..
+..044444444420..
+.55555555555552.
+.22222222222222.
+................

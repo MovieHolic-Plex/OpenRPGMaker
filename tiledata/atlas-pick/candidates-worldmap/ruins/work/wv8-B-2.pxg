@@ -1,0 +1,25 @@
+// ruins wv8-B
+@size 32 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wstone 0
+@mat b wgrass 0
+@mat c mout 0
+@mblock 0 0
+................................
+................................
+..........aa....................
+..........aaa...b...............
+..........aaaaaa...............a
+a.........aabaaaa.............aa
+aaabb.....aaaaaaaaa.........aaaa
+aaaaa.....aaaaaaaaa........aaaaa
+aaaaaa....aaaaaaaaa.......bbaaaa
+aaaaaa....aaaaaaaaa.bb...aaaaaaa
+aaaaaa....aaacccaaa......aaaaaaa
+aaaaaa....aaacccaaa......aaaaaaa
+aaaaaa....aaacccaaa......aaaaaaa
+aaaaaa....aaacccaaaaa....aaaaaaa
+aaaaaaaa..aaacccaaa....aaaaaaaaa
+aaaaaa..aaaaacccaaa..aaa.aaaaaaa

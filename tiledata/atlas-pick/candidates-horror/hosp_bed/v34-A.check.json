@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/hosp_bed/v34-A.pxg",
+ "set": "horror",
+ "id": "hosp_bed",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.238
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.092
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "light"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  10,
+  14,
+  47
+ ],
+ "note": "v34-A: 3/4 시점 — 머리판 위 가로대 윗면(가장 밝음)+뒤 모서리·앞 모서리 그늘, 매트리스 윗면(시트·베개·담요·작은 핏자국)이 크게, 옆 난간 윗면 띠, 발판 윗면+앞면+창살. 같은 tin/rust/sheet/blood 램프",
+ "ok": true
+}

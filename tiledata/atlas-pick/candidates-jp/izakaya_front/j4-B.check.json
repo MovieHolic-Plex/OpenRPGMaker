@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/izakaya_front/j4-B.pxg",
+ "set": "jp",
+ "id": "izakaya_front",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.207
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 31,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "B 강한 빛: 판벽을 더 어둡게, 제등 속을 밝게 하고 벽에 불빛 테, 유리 속 흰빛, 발치 부채꼴 불빛 번짐+접지 그림자",
+ "ok": true
+}

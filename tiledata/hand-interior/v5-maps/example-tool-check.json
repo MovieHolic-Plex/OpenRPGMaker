@@ -1,0 +1,158 @@
+[
+ {
+  "map": "bakery",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 72
+ },
+ {
+  "map": "pharmacy",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 67
+ },
+ {
+  "map": "fish",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 60
+ },
+ {
+  "map": "butcher",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 49
+ },
+ {
+  "map": "smithy",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 55
+ },
+ {
+  "map": "chapel",
+  "errors": 0,
+  "warnings": 1,
+  "reachable": 248
+ },
+ {
+  "map": "scholar",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 64
+ },
+ {
+  "map": "tailor",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 76
+ },
+ {
+  "map": "tavern",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 92
+ },
+ {
+  "map": "manor_1f",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 178
+ },
+ {
+  "map": "manor_2f",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 163
+ },
+ {
+  "map": "hobbit",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 85
+ },
+ {
+  "map": "inn",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 144
+ },
+ {
+  "map": "dwarf",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 172
+ },
+ {
+  "map": "elf",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 138
+ },
+ {
+  "map": "mead",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 187
+ },
+ {
+  "map": "throne",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 183
+ },
+ {
+  "map": "tower",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 86
+ },
+ {
+  "map": "dungeon",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 78
+ },
+ {
+  "map": "mine",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 129
+ },
+ {
+  "map": "magitek",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 104
+ },
+ {
+  "map": "opera",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 169
+ },
+ {
+  "map": "casino",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 133
+ },
+ {
+  "map": "stable",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 83
+ },
+ {
+  "map": "narshe",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 65
+ },
+ {
+  "map": "zozo",
+  "errors": 0,
+  "warnings": 0,
+  "reachable": 72
+ }
+]

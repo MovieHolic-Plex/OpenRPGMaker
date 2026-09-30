@@ -1,0 +1,23 @@
+{
+ "id": "castle_3x3",
+ "slug": "castle_3x3",
+ "name": "성(3×3)",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  3,
+  3
+ ],
+ "canvas": [
+  48,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "4판 크기 등급: 성. 앞 모서리 탑 둘 + 본성 + 성문. 한 장 그림.",
+ "palette_hint": "wstone, wroofr·wroofb",
+ "worker": "v4"
+}

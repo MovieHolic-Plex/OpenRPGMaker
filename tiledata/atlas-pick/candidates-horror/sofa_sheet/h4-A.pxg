@@ -1,0 +1,41 @@
+// sofa_sheet h4-A
+@size 32 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a dust 0
+@mat b rot 0
+@mblock 0 0
+................................
+................................
+......aaaaaaaaaaaaaaaaaaaa......
+....aaaaaaaaaaaaaaaaaaaaaaaa....
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaa.aaaaaa.aaaaaa.aaaaaa.aaaaaa.
+.aa...aa...aa...aa...aa...bb....
+@tblock 0 0
+................................
+................................
+......22222222222222222221......
+....222555555555554444444221....
+...22555555555554444444444421...
+..2255555555555444444444444421..
+.225555555555444444444444443321.
+.255552555544444444444444233331.
+.255552333333333333333333233331.
+.255552444524445244452333233331.
+.255542444524445244352333233331.
+.254442444524445233352333233331.
+.243442444524445233352333233321.
+22212344321243332123523212322221
+121.112211.221111.111221.122111.
+.11...11...11...11...11...21....

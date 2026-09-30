@@ -1,0 +1,37 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a meat 6
+@mat b meat 5
+@mat c meat 4
+@mat d meat 3
+@mat e meat 2
+@mat f meat 1
+@mat g linen 6
+@mat h linen 4
+@mat i linen 2
+@mat r wood 6
+@mat s wood 4
+@mat t wood 2
+@mat o wood 1
+@mat q wood 7
+@mat x straw 3
+@mat y straw 2
+@mat z straw 4
+@mblock 0 0
+................
+qqqqqqqqqqqqqqqq
+oooooooooooooooo
+..y-...y-....y-.
+..y-...y-....y-.
+.aab-..ab-..aab-
+aabcd-abcd-aabcd
+abcdd~.ce~.abcdd
+.cde~..gi~..cde~
+.gi~........gi~.
+................
+................
+................
+................
+................
+................

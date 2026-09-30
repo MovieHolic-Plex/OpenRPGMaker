@@ -1,0 +1,51 @@
+// iron_fence h5-C
+@size 32 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a blood 0
+@mat b board 0
+@mat c dust 0
+@mat d grave 0
+@mat e hmoss 0
+@mat f moon 0
+@mat g murk 0
+@mat h night 0
+@mat i rot 0
+@mat j rust 0
+@mat k tarn 0
+@mat l tin 0
+@mblock 0 0
+.ll......ll..ll..ll......ll..ll.
+.ll......ll..ll..ll......ll..ll.
+lllll..llllllllllllll..lllllllll
+.ll.....lll.jll..ll.....lll..ll.
+.ll.....lll..ll..ll.....lll..ll.
+llllllllllllllllllllllllllllllll
+llllllllllllllllllllllllllllllll
+.ll....l.ll...llall....a.ll..ll.
+.ll....l.ll...llall....a.ll.jll.
+.ll....l.ll...laall....a.ll..ll.
+.ll...l..ll...llall...la.ll..ll.
+lllll.llllllllllljllj.llllllllll
+lljll.lllllllllllllll.lllljlllll
+.ll...l..ll..ll..ll...l..ll..ll.
+.ll...l..ll..ll..ll...l..ll..ll.
+................................
+@tblock 0 0
+.63......63..63..63......63..63.
+.64......64..64..64......64..64.
+25212..12521252125212..125212521
+.52.....652.252..52.....652..52.
+.52.....552..52..52.....552..52.
+66666666666666666666666666666666
+22222222222222222222222222222222
+.52....3.52...52152....1.52..52.
+.52....3.52...52252....2.52.252.
+.52....3.52...51152....1.52..52.
+.52...3..52...52352...32.52..52.
+66666.366666666663663.3666666666
+22122.322222222222222.3222122222
+.52...3..52..52..52...3..52..52.
+.31...3..31..31..31...3..31..31.
+................................

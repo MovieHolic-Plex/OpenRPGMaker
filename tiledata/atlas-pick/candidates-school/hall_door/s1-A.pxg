@@ -1,0 +1,60 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat f vdwood 3
+@mat F vdwood 5
+@mat D vdwood 1
+@mat p vpine 3
+@mat P vpine 4
+@mat q vpine 5
+@mat e vpine 2
+@mat g mglass 4
+@mat G mglass 5
+@mat i mglass 2
+@mat j mglass 6
+@mat y vbrass 4
+@mat z vbrass 2
+@mat k locker 4
+@mat c cream 2
+@mat C cream 4
+@mat L cream 5
+@mat H lino 6
+@mat r lino 5
+@mat d lino 2
+@mat m lino 4
+@mat l lino 5
+@mat K locker 3
+@mat B locker 1
+@mblock 0 0
+cccCCCCCCCCCCCCCCCCCCCCCCCCCCccc
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+CCCFFFFFFFFFFFFFFFFFFFFFFFFFFCCC
+CCCffffffffffffffffffffffffffCCD
+LCCDDDDDDDDDDDDDDDDDDDDDDDDDDCLC
+CCCFfPPPPPPPPPPPPPPPPPPPPPefPPPP
+CCCFfPpeeeeeeeeqppppppppppefDCCC
+CCCFfPpeiiiiiiiqppppppppppefDCCC
+CCCFfPpeigggjjgqppppppppppefDCCC
+LCCFfPpeiGGggggqppppppppppefDCCC
+CCCFfPpeiGgggggqppppppppppefDCCC
+CCCFfPpeiggggggqppppppppppefDCCC
+CCCFfPpeiggggggqppppppppppefDCCC
+cccFfPpeiggggggqppppppppppefDccc
+HHHFfPpeiggggggqppppppppppefDHHH
+rrrFfPpeiggggggqpppppeypppefDrrr
+dddFfPpeiggggggqpppppeypppefDddd
+mmmFfPpeiggggggqpppppeypppefDmmd
+mmmFfPpeiggggggqpppppeypppefDmmd
+mmmFfPpeiggggggqpppppeypppefDmmd
+mmmFfPpeiggggggqpppppeypppefDmmd
+mmmFfPpeqqqqqqqqppppppzpppefDmmd
+mmmFfPppppppppppppppppppppefDmmd
+mmmFfPppppppppppppppppppppefDmmd
+mmmFfPppppppppppppppppppppefDmmd
+mmmFfPppppppppppppppppppppefDmmd
+mmmFfPppppppppppppppppppppefDmmd
+mmmFfPppppppppppppppppppppefDmmd
+mmmFfPppppppppppppppppppppefDmmd
+kkkFfPppppppppppppppppppppefDkkk
+KKKFfPppppppppppppppppppppefDKKK
+BBBFf......................fDBBB

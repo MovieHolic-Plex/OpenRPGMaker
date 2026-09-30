@@ -1,0 +1,40 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/staff_desks/v35-A.pxg",
+ "set": "school",
+ "id": "staff_desks",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   3,
+   2
+  ],
+  "canvas": [
+   48,
+   32
+  ]
+ },
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 21,
+ "bbox": [
+  1,
+  6,
+  47,
+  31
+ ],
+ "note": "교무실 책상 섬 3/4 — 강철 상판 T13(모니터 셋·서류)·앞 F12 서랍 셋 (폭 45px)",
+ "ok": true
+}

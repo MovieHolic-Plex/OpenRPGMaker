@@ -1,0 +1,19 @@
+{
+ "id": "ac_unit",
+ "slug": "ac_unit",
+ "name": "실외기",
+ "scene": "주택가 골목",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "벽 밑에 선 흰 에어컨 실외기(오른쪽에 둥근 팬 창살, 왼쪽 판), 위에서 보아 윗면 한 줄 밝게. 뒤쪽 벽으로 가는 관.",
+ "palette_hint": "mwhite 몸통, lacq 팬, mmetal 관",
+ "worker": "j5"
+}

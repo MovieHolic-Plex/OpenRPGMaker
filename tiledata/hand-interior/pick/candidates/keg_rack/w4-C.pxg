@@ -1,0 +1,52 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat n wood 0
+@mat f wood 2
+@mat e wood 3
+@mat d wood 4
+@mat c wood 5
+@mat b wood 6
+@mat h wood 7
+@mat l iron 5
+@mat i iron 4
+@mat k iron 3
+@mat j iron 2
+@mat q iron 1
+@mat g brass 5
+@mat p brass 3
+@mat m brass 2
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+o..ooooooooooo....ooooooooooo..o
+o.ohlihhhhhhlio..ohlihhhhhhlio.o
+oobblibbbbbbliboobblibbbbbbliboo
+ooccliccgpcclicooccliccgpcclicoo
+ooccliccpmcclicooccliccpmcclicoo
+ooddliddddddlidooddliddddddlidoo
+ooeelieeeeeelieooeelieeeeeelieoo
+o.nflifffffflin..nflifffffflin.o
+o..nnnnnnnnnnn....nnnnnnnnnnn..o
+o..ooooooooooo....ooooooooooo..o
+o.ohlihhhhhhlio..ohlihhhhhhlio.o
+oobblibbbbbbliboobblibbbbbbliboo
+ooccliccgpcclicooccliccgpcclicoo
+ooccliccpmcclicooccliccpmcclicoo
+ooddliddddddlidooddliddddddlidoo
+ooeelieeeeeelieooeelieeeeeelieoo
+o.nflifffffflin..nflifffffflin.o
+o..nnnnnnnnnnn....nnnnnnnnnnn..o
+obbbbjjbbbbbbbbjjbbbbbbbbjjbbbbo
+oddddddddddddddddddddddddddddddo
+oeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeo
+offffffffffffffffffffffffffffffo
+onnnnnnnnnnnnnnnnnnnnnnnnnnnnnno

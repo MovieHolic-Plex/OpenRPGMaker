@@ -1,0 +1,22 @@
+{
+ "id": "old_well",
+ "slug": "old_well",
+ "name": "낡은 우물",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "돌을 쌓은 둥근 우물: 위에서 약간 내려다봐서 우물 입이 가로 타원(속 void 로 새까맣게), 돌 둘레 이끼, 썩은 나무 뚜껑 판 하나가 옆에 비스듬히 기대어 있음, 두레박 줄 끊어짐. 둥근 돌 윗면 한 줄 밝게.",
+ "palette_hint": "grave 돌, hmoss 이끼, void 속, rot 뚜껑",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1"
+}

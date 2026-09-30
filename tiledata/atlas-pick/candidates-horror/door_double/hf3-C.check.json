@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_double/hf3-C.pxg",
+ "set": "horror",
+ "id": "door_double",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.164
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.238
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "재질 양문 C — rot 세로 판자 열둘·결, 쇠 띠 둘이 두 짝을 가로지르고 가운데 선은 0단 틈, 놋 고리 손잡이 둘.",
+ "ok": true
+}

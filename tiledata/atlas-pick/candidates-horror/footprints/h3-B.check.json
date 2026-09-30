@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/footprints/h3-B.pxg",
+ "set": "horror",
+ "id": "footprints",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline_black"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "대비 강화: 발 윗테 blood 5, 속 2, 아랫테 0, 위 발은 발끝 두어 점만 아직 붉고 뒤꿈치 흔적",
+ "ok": true
+}

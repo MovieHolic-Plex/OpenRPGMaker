@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/library_shelf/v34-A.pxg",
+ "set": "school",
+ "id": "library_shelf",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.091
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 28,
+ "bbox": [
+  1,
+  0,
+  31,
+  31
+ ],
+ "note": "서가 3/4 — 밤색 책장, 밝은 나무 윗면과 처마 그림자, 어두운 안쪽에 세 단 책",
+ "ok": true
+}

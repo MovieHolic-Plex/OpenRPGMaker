@@ -1,0 +1,39 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a pole 3
+@mat b moss 3
+@mblock 0 0
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaabaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaabbaaaaaaaaaaaaaaabbaaaaabaaaa
+aaabaaaaaaaaaaaaaaaabaaaaaaaaaaa
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@tblock 0 0
+................................
+55555555555555555555555555555555
+44444444444444434444444444444443
+33333333333333333333333333333333
+11111111111111111111111111111111
+44444421444444444444442144444444
+33333321430033003300332143333333
+33333321430233023302332143333333
+22222221422222222222222142222222
+11111111111111111111111111111111
+44444444444444214444444444444421
+43333333333333214333333333333321
+43332333333333214333333333333321
+42222222222222214222222222222221
+00010000000000000000100000000000
+................................

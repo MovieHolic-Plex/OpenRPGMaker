@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/cobweb_hang/h2-B.pxg",
+ "set": "horror",
+ "id": "cobweb_hang",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  15,
+  13
+ ],
+ "note": "B: 줄을 dust 5~6 으로 밝히고 오른쪽 아래 - 그림자, 거미는 다리에 grave 로 옅은 빛을 받아 어두운 방에서도 보인다.",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bedside_cabinet/hf6-A.pxg",
+ "set": "horror",
+ "id": "bedside_cabinet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  2,
+  13,
+  15
+ ],
+ "note": "v5 결 기본: sheet3 흰 칠 몸통·윗판 4·앞 턱 5, 서랍 하나+아래 문, 쇠 손잡이(tin4), 바퀴 둘, 벗겨진 칠 두 점",
+ "ok": true
+}

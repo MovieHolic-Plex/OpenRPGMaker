@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magic_circle/w8-C.pxg",
+ "id": "magic circle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 3,
+ "bbox": [
+  2,
+  2,
+  29,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  29,
+  29
+ ],
+ "note": "재해석: 금 상감 이중 고리 육망성, 가운데 보라 오각형과 꼭짓점 보석",
+ "ok": true
+}

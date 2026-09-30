@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/night_grass/h1-B.pxg",
+ "set": "horror",
+ "id": "night_grass",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.898
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "B: 왼쪽 위 빛 — 풀 포기마다 왼 잎이 가장 밝고 오른쪽·아래에 짙은 그늘 한 단. 흙 자리는 윗줄이 밝다. 풀 몰림은 A 와 다른 자리. 32칸 모듈러 이음.",
+ "ok": true
+}

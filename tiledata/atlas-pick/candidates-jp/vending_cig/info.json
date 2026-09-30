@@ -1,0 +1,26 @@
+{
+ "id": "vending_cig",
+ "slug": "vending_cig",
+ "name": "담배 자판기",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "2×2 짙은 담배 자판기(갈색·검정 몸통). 담배갑 견본 네모 칸이 촘촘히 두세 줄, 가운데 은색 동전·카드 판, 아래 꺼내는 입구. 윗면·옆면은 음료 자판기와 같은 방식(식구).",
+ "palette_hint": "sumi/lacq 몸통, mmetal 판, washi·kblue·akachin 담배갑",
+ "worker": "r1",
+ "resized": {
+  "from": [
+   1,
+   2
+  ],
+  "why": "사용자 메모 「2x2 사이즈로. 자판기를 여러 종류를 할거임.」"
+ }
+}

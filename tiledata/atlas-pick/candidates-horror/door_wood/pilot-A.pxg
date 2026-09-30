@@ -1,0 +1,73 @@
+// door_wood pilot-A (감독자 파일럿, 2판 기본 한 벌)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mat t tarn 0
+@mblock 0 0
+................
+................
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmttmmmm
+mmmmmmmmmmttmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+@tblock 0 0
+................
+................
+1111111111111111
+1555555555555551
+1544444444444431
+1532222222222431
+1534333333332431
+1534333333332431
+1534322222332431
+1534323334332431
+1534323334332431
+1534323434332431
+1534323434332431
+1534323334332431
+1534323334332431
+1534324444332431
+1534333333332431
+1534333333332431
+1534322222332431
+1534323334332431
+1534323334542431
+1534323334322431
+1534323234332431
+1534323234332431
+1534323234332431
+1534323334332431
+1534323334332431
+1534324444332431
+1534333333332431
+1534333333332431
+1532222222222431
+1531111111111431

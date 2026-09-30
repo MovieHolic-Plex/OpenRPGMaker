@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/cave/wv8-A.pxg",
+ "set": "worldmap",
+ "id": "cave",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.136
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  2,
+  15,
+  15
+ ],
+ "note": "World.png 구조를 우리 팔레트로 — 바위 언덕에 칸의 60% 넘는 검은 아치 입구",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.328
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.263
+  }
+ }
+}

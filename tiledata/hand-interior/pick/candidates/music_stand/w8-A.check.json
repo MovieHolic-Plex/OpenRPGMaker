@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/music_stand/w8-A.pxg",
+ "id": "music stand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  10,
+  13,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  30
+ ],
+ "note": "v5 실루엣 유지하되 악보대와 기둥이 떨어져 있던 틈(3줄)을 목으로 이어 붙이고, 악보 오선 무늬·검은 쇠 3단 명암으로 정리.",
+ "ok": true
+}

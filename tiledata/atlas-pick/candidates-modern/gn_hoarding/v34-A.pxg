@@ -1,0 +1,76 @@
+// gn_hoarding v34-A 3/4
+@size 16 32
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a conc 0
+@mat b kii 0
+@mat c midori 0
+@mat d sora 0
+@mat e sumi 0
+@mblock 0 0
+eeeeeeeeeeeeeeee
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+adddddddddddddda
+adddddddddddddda
+adddddddddddddda
+adddddddddddddda
+addddddcccddddda
+addddcccccccddda
+addcccccccccccda
+adccccccccccccca
+acccccccccccccca
+acccccccccccccca
+acccccccccccccca
+acccccccccccccca
+acccccccccccccca
+acccccccccccccca
+acccccccccccccca
+acccccccccccccca
+aebbeebbeebbeeba
+abbeebbeebbeebba
+abeebbeebbeebbea
+aeebbeebbeebbeea
+aaaaaaaaaaaaaaaa
+eeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeee
+................
+@tblock 0 0
+0000000000000000
+3333333333333333
+3333333333333333
+3333333333333333
+3333333333333333
+3333333333333333
+3333333333333333
+4444444444444444
+4444444444444442
+4333333333333332
+4333333333333332
+4222222222222222
+4222222333222222
+4222233222332222
+4223322111223322
+4232211111112232
+4321111111111122
+4211111111111112
+4111111111111112
+4111111111111112
+4111111111111112
+4111111111111112
+4111111111111112
+4111111111111112
+4133113311331132
+4331133113311332
+4311331133113312
+4113311331133112
+1111111111111111
+1111111111111111
+0000000000000000
+................

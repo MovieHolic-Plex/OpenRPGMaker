@@ -1,0 +1,40 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/operating_table/v35-B.pxg",
+ "set": "horror",
+ "id": "operating_table",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   2,
+   1
+  ],
+  "canvas": [
+   32,
+   16
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.076
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "표 2x1 가로형 수술대: 시트·얼룩·결박띠 긴 판 + 옆 판 + 다리 둘·가로대",
+ "ok": true
+}

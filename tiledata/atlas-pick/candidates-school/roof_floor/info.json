@@ -1,0 +1,23 @@
+{
+ "id": "roof_floor",
+ "slug": "roof_floor",
+ "name": "옥상 바닥",
+ "scene": "옥상·운동장·교문",
+ "place": "out",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "옥상 녹색 방수 페인트 콘크리트 바닥 한 칸 — 칠 벗겨진 회색 얼룩 한두 점, 배수 줄눈. 사방 이음 맞춤.",
+ "palette_hint": "fence/lino 녹색 면, mconc 벗겨진 곳",
+ "pair": [
+  "roof_fence"
+ ],
+ "worker": "s4"
+}

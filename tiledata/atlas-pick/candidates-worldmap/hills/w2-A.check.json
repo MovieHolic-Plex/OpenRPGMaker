@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/hills/w2-A.pxg",
+ "set": "worldmap",
+ "id": "hills",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  1,
+  0,
+  47,
+  63
+ ],
+ "note": "강남 공원 언덕: 낮은 대비 작은 봉우리 무늬, 발치 그림자 옅게",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.096
+  },
+  "seam": 0.76
+ }
+}

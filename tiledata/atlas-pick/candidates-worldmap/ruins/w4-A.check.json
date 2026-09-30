@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/ruins/w4-A.pxg",
+ "set": "worldmap",
+ "id": "ruins",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.058
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  1,
+  31,
+  15
+ ],
+ "note": "강남 결 낮은 대비 4~5단 돌 — 부러진 기둥 셋(높이 제각각·들쭉날쭉 윗면)과 쓰러진 기둥 토막, 이끼 돌바닥",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.055
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.047
+  }
+ }
+}

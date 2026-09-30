@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_shrine/k7-C.pxg",
+ "set": "jp",
+ "id": "kit_shrine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 29,
+  "atLeast95": 0,
+  "max": 0.203
+ },
+ "refmap": {
+  "cells": 29,
+  "atLeast95": 0,
+  "max": 0.238
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 36,
+ "bbox": [
+  0,
+  0,
+  127,
+  94
+ ],
+ "note": "C: 실루엣 재해석 — 녹청 동판 지붕(깊은 처마 끝·두꺼운 용마루), 흰 회벽 누키, 가는 5px 기둥, 같은 칸·슬롯",
+ "ok": true
+}

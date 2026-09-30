@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/composer_frames/s5-A.pxg",
+ "set": "school",
+ "id": "composer_frames",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 17,
+ "bbox": [
+  1,
+  1,
+  46,
+  14
+ ],
+ "note": "작곡가 초상 액자 셋 — 금·나무·금 틀, 흰 가발 덩이에 살구빛 얼굴, 어두운 옷과 흰 목수건, 머리 모양이 서로 다름(둥근 곱슬·길쭉 긴머리·좁은 묶음머리)",
+ "ok": true
+}

@@ -1,0 +1,73 @@
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a viron 1
+@mat b viron 5
+@mat c viron 4
+@mat d viron 6
+@mat e viron 2
+@mat f vlinen 5
+@mat g vlinen 6
+@mat h vlinen 4
+@mat i ai 3
+@mat j ai 4
+@mat k ai 2
+@mat l vlinen 2
+@mat m ai 1
+@mat n jersey 3
+@mat o jersey 4
+@mat p jersey 2
+@mat q jersey 1
+@mat r viron 3
+@mat s washi 3
+@mat t washi 4
+@mat u washi 5
+@mblock 0 0
+.dabbbbbbbbbbbbbbbbbbbb.da......
+abcrrrrrrrrrrrrrrrrrrrrabe......
+abcbcbbcbbcbbcbbcbbcbbcabe......
+abcccccccccccccccccccccabe......
+abceceeceeceeceeceeceecabe......
+abcggggggggjjjjjjjjjjjjabe......
+abcfggggggfiiiiiiiiiiiiabe......
+abcfggggggfiiiiiiiiiiiiabe......
+abcfhhhhhhfiiiiiiiiiiiiabe......
+abcffffffffkkkkkkkkkkkkabe......
+abcffffffffiiiiiiiiiiiiabe......
+abchhhhhhhhikkkkkkkkkkkabe......
+abchhhhhhhhikkkkkkkkkkkabebe..be
+abchhhhhhhhikkkkkkkkkkkabebe..be
+abchhhhhhhhikkkkkkkkkkkabebe..be
+abchhhhhhhhikkkkkkkkkkkabebeccbe
+abcllllllllmmmmmmmmmmmmabebeeebe
+abcbbbbbbbbbbbbbbbbbbbbabebe..be
+abcccccccccccccccccccccabebe..be
+abcccccccccccccccccccccabebe..be
+abceeeeeeeeeeeeeeeeeeeeabebeccbe
+abc~~~~~~~~~~~~~~~~~~~~abebeeebe
+abc~~~~~~~~~~~~~~~~~~~~abebe..be
+abcbbbbbbbbbbbbbbbbbbbbabebe..be
+abcccccccccccccccccccccabebe..be
+abceeeeeeeeeeeeeeeeeeeeabebeccbe
+abcggggggggoooooooouuuuabebeeebe
+abcfggggggfnnnnnnnnststabebe..be
+abcfggggggfnnnnnnnnststabebe..be
+abcfhhhhhhfnnnnnnnnststabebe..be
+abcffffffffppppppppststabebeccbe
+abcffffffffnnnnnnnnststabebeeebe
+abchhhhhhhhnpppppppststabebe..be
+abchhhhhhhhnpppppppststabebe..be
+abchhhhhhhhnpppppppststabebe..be
+abchhhhhhhhnpppppppststabebeccbe
+abchhhhhhhhnpppppppststabebeeebe
+abcllllllllqqqqqqqqqqqqabebe..be
+abcbbbbbbbbbbbbbbbbbbbbabebe..be
+abcccccccccccccccccccccabebe..be
+abcccccccccccccccccccccabebeccbe
+abc~~~~~~~~~~~~~~~~~~~~abebeeebe
+abc~~~~~~~~~~~~~~~~~~~~abebe..be
+abc~~~~~~~~~~~~~~~~~~~~abebe..be
+abc~~~~~~~~~~~~~~~~~~~~abebe..be
+abc....................abebeccbe
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~ee..
+------------------------------..

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew_E2/w13-E.pxg",
+ "id": "pew E2",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "note": "양끝 마구리 판이 보이는 구조(북쪽 윗면·남쪽 앞면)에 어두운 갈색 테두리와 중간 소나무 좌판, 긴 방석 하나로 공간감을 강조.",
+ "ok": true
+}
