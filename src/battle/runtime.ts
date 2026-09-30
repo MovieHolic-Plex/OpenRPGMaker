@@ -398,8 +398,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // Compatibility action log plus the canonical ordered append-only timeline.
   const actionLog: BattleActionResultSnapshot[] = [];
   const timeline: BattleTimelineEntrySnapshot[] = [];
+  // 지금 실행 중인 명령의 번호. 명령이 시작될 때 올리고, 그동안 기록되는 엔트리에 찍는다(연출 묶음의 열쇠).
+  let actionCounter = 0;
+  let currentActionId: number | undefined;
+  function beginTimelineAction(): void {
+    actionCounter += 1;
+    currentActionId = actionCounter;
+  }
   function recordTimeline(entry: Omit<BattleTimelineEntrySnapshot, "sequence">): void {
-    timeline.push({ ...entry, sequence: timeline.length });
+    const stamped = currentActionId !== undefined && entry.actionId === undefined ? { ...entry, actionId: currentActionId } : entry;
+    timeline.push({ ...stamped, sequence: timeline.length });
   }
   /** 방금 기록된 타임라인 엔트리에 애니메이션을 붙인다. 스킬/아이템 실행부가
    *  recordAction 직후 lastAnimation 을 세팅하므로, 그 시점에 호출해 엔트리와 짝을 맞춘다. */
@@ -1207,6 +1215,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // (defend 명령이면 아래 switch 에서 곧바로 다시 true 가 된다.)
     actor.defending = false;
     weakness.beginAction(actor.recordId);
+    beginTimelineAction();
     switch (command.kind) {
       case "attack":
         if (!prepareGen1CombatAction(actor)) break;
@@ -1973,6 +1982,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function executeEnemyAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
     weakness.standUp(enemy.id);
+    beginTimelineAction();
     if (action?.moveTo && enemy.hp > 0) moveEnemyBattler(enemy, action.moveTo.x, action.moveTo.y, ENEMY_MOVE_DEFAULT_MS);
     const skillId = action?.skillId;
     if (skillId) {
@@ -2470,6 +2480,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       critical: false,
       skillName: skill.name,
       skillId: skill.id,
+      aside: "hpCost",
     });
   }
 
@@ -2496,6 +2507,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       skillName: skill.name,
       skillId: skill.id,
       resource: affects,
+      aside: "drain",
     });
   }
 

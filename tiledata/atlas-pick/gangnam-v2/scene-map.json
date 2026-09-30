@@ -1,0 +1,71 @@
+{
+ "size": [
+  480,
+  368
+ ],
+ "tile": 16,
+ "ground_line": 240,
+ "buildings": [
+  {
+   "kit": "tower",
+   "x": 0,
+   "y": 16
+  },
+  {
+   "kit": "cafe",
+   "x": 144,
+   "y": 112
+  },
+  {
+   "kit": "conbini",
+   "x": 288,
+   "y": 160
+  }
+ ],
+ "props": [
+  {
+   "name": "vend_a",
+   "x": 272,
+   "y": 206
+  },
+  {
+   "name": "hero_a",
+   "x": 72,
+   "y": 236
+  },
+  {
+   "name": "lamp",
+   "x": 8,
+   "y": 220
+  },
+  {
+   "name": "lamp",
+   "x": 244,
+   "y": 220
+  },
+  {
+   "name": "tree",
+   "x": 136,
+   "y": 222
+  },
+  {
+   "name": "busstop",
+   "x": 432,
+   "y": 222
+  },
+  {
+   "name": "taxi_l",
+   "x": 304,
+   "y": 290
+  },
+  {
+   "name": "taxi_r",
+   "x": 60,
+   "y": 328
+  }
+ ],
+ "hidden_hero": {
+  "x": 352,
+  "feet_y": 176
+ }
+}

@@ -501,10 +501,10 @@ export function createBattleSequencer(
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
           feedback,
           hitStopMs: BATTLE_HITSTOP_MS,
-          impactMs: Math.max(
-            hooks.enemyRecoverMs?.(entry) ?? 0,
-            recoverMsForAnimation(entry.animation?.durationMs, hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
-          ),
+          // 연출 재생기(retro2003)가 시각을 정한 엔트리는 그 값을 그대로 쓴다 — 다단·광역의 타 사이를 최소 비트(400ms)로
+          // 벌리면 연출이 끝난 뒤에야 숫자가 하나씩 떴다(2026-10-01 실측, 플레슈 5타).
+          impactMs: hooks.enemyRecoverMs?.(entry)
+            ?? recoverMsForAnimation(entry.animation?.durationMs, hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
           windupMs: hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS,
         })
@@ -515,10 +515,8 @@ export function createBattleSequencer(
           actingMs: Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs),
           hitStopMs: BATTLE_HITSTOP_MS,
           // 후속 애니메이션(연기·잔광)이 비트보다 길면 recover 를 늘려 잘리지 않게 한다.
-          impactMs: Math.max(
-            hooks.actorRecoverMs?.(entry) ?? 0,
-            recoverMsForAnimation(entry.animation?.durationMs, Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
-          ),
+          impactMs: hooks.actorRecoverMs?.(entry)
+            ?? recoverMsForAnimation(entry.animation?.durationMs, Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
         });
     // 이펙트 마운트 시점: 착탄 프레임이 임팩트 비트와 같은 순간에 오도록 approach 길이에서

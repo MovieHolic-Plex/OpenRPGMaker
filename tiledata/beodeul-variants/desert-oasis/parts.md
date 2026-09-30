@@ -1,0 +1,44 @@
+# 새로 찍은 조각 — desert-oasis
+
+- `parts/ground-sand.png` (48x48 px) — 모래 바닥 (새 재료, 버들항 잔디와 같은 결·6단) / 3x3칸 표본
+- `parts/ground-dune.png` (48x48 px) — 모래 언덕 자락 (명암 한 단 어두움) / 3x3칸 표본
+- `parts/ground-road.png` (48x48 px) — 다져진 모래길 / 3x3칸 표본
+- `parts/ground-camp.png` (48x48 px) — 밟혀 굳은 캠프 바닥 / 3x3칸 표본
+- `parts/ground-plaza.png` (48x48 px) — 사암 판석 광장 (버들항 자갈 광장의 엇갈림 결) / 3x3칸 표본
+- `parts/ground-lawn.png` (48x48 px) — 오아시스 풀밭 / 3x3칸 표본
+- `parts/ground-water.png` (48x48 px) — 오아시스 물 (청록, 물가가 밝은 띠) / 3x3칸 표본
+- `parts/ground-cliff.png` (48x48 px) — 사암 메사 절벽 (층리 줄) / 3x3칸 표본
+- `parts/temple.png` (114x64 px) — 돔 사원 (사암 평지붕 집 위에 청록 돔·금 첨탑) / 8x4칸
+- `parts/n1.png` (82x48 px) — n1 / 6x3칸
+- `parts/n2.png` (66x48 px) — n2 / 5x3칸
+- `parts/n3.png` (82x48 px) — n3 / 6x3칸
+- `parts/n4.png` (82x48 px) — n4 / 6x3칸
+- `parts/n5.png` (66x48 px) — n5 / 5x3칸
+- `parts/n6.png` (82x48 px) — n6 / 6x3칸
+- `parts/khan.png` (114x62 px) — 대상 숙소(옥상 계단실) / 8x4칸
+- `parts/e2.png` (82x48 px) — e2 / 6x3칸
+- `parts/w1.png` (82x48 px) — w1 / 6x3칸
+- `parts/w2.png` (82x48 px) — w2 / 6x3칸
+- `parts/w3.png` (66x48 px) — w3 / 5x3칸
+- `parts/w4.png` (50x48 px) — w4 / 4x3칸
+- `parts/s1.png` (82x48 px) — s1 / 6x3칸
+- `parts/s2.png` (82x48 px) — s2 / 6x3칸
+- `parts/s3.png` (50x48 px) — s3 / 4x3칸
+- `parts/well.png` (40x44 px) — 우물 / 3x3칸
+- `parts/stall.png` (48x49 px) — 천막 노점 / 3x4칸
+- `parts/rug.png` (32x20 px) — 카펫 깔개 / 2x2칸
+- `parts/palm.png` (44x62 px) — 야자수 / 3x4칸
+- `parts/reed.png` (18x26 px) — 갈대 무더기 / 2x2칸
+- `parts/lily.png` (14x8 px) — 수련 잎 / 1x1칸
+- `parts/tent.png` (48x38 px) — 유목민 줄무늬 천막 / 3x3칸
+- `parts/camel.png` (52x42 px) — 낙타 / 4x3칸
+- `parts/hitch.png` (48x22 px) — 낙타 말뚝 / 3x2칸
+- `parts/bales.png` (32x24 px) — 짐 꾸러미 / 2x2칸
+- `parts/oven.png` (28x28 px) — 흙 화덕 / 2x2칸
+- `parts/jars.png` (24x22 px) — 항아리 / 2x2칸
+- `parts/cactus.png` (18x18 px) — 선인장 / 2x2칸
+- `parts/rock.png` (28x20 px) — 사암 바위 / 2x2칸
+- `parts/scrub.png` (24x16 px) — 마른 덤불 / 2x1칸
+- `parts/pillar.png` (30x56 px) — 메사 기둥 / 2x4칸
+
+합계: 40 조각

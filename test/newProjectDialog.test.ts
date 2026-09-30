@@ -16,7 +16,7 @@ import {
 } from "@/editor/ui/newProjectDialog";
 import { WELCOME_GENRE_PRESETS } from "@/editor/welcomeGenrePresets";
 import { createBlankProject } from "@/project/defaults";
-import { completeInterviewChoices } from "./helpers/gameDesignBrief";
+
 
 afterEach(() => {
   document.body.replaceChildren();
@@ -100,68 +100,39 @@ describe("새 프로젝트 선택 정본", () => {
 });
 
 describe("새 프로젝트 다이얼로그", () => {
-  it("빈 프로젝트와 지원하는 세 장르가 보인다", async () => {
-    const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
-    const host = document.querySelector("[data-testid='new-project-dialog']");
-    expect(host).not.toBeNull();
-    expect(document.querySelector("[data-testid='new-project-name-input']")).not.toBeNull();
-    const radios = Array.from(
-      document.querySelectorAll(`[data-testid^='new-project-genre-option-']`),
-    );
-    expect(radios).toHaveLength(NEW_PROJECT_DIALOG_CHOICE_ORDER.length + 1);
-    expect(newProjectGenreOptionTestId(null)).toBe("new-project-genre-option-blank");
-    expect(document.querySelector("[data-testid='new-project-genre-option-horror-gallery']")).toBeNull();
-    expect(document.querySelector("[data-testid='new-project-genre-option-action-rpg']")).toBeNull();
-    document.querySelector<HTMLButtonElement>("[data-testid='new-project-cancel']")?.click();
-    await expect(pending).resolves.toBeNull();
+  const click = (id: string) => document.querySelector<HTMLButtonElement>(`[data-testid="${id}"]`)!.click();
+  it("offers three examples and a separate empty project", async () => {
+    const pending = showNewProjectDialog();
+    expect(document.querySelectorAll(".project-start-example")).toHaveLength(3);
+    expect(document.querySelector(`[data-testid="${newProjectGenreOptionTestId(null)}"]`)).not.toBeNull();
+    click("new-project-cancel"); expect(await pending).toBeNull();
   });
-
-  it("빈 프로젝트가 기본 선택이고 확인하면 이름·선택지 id 가 돌아온다", async () => {
+  it("creates an empty project after its explicit choice", async () => {
     const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
-    const blank = document.querySelector<HTMLInputElement>(
-      `[data-testid='${newProjectGenreOptionTestId(null)}']`,
-    );
-    expect(blank?.checked).toBe(true);
-    document.querySelector<HTMLButtonElement>("[data-testid='new-project-confirm']")?.click();
-    // 2026-09-21 인터뷰 다이얼로그 — 결과에 게임 화면 크기가 추가됐다(기본값 classic).
-    await expect(pending).resolves.toEqual({ title: "달빛 항구", choiceId: null, screenSize: "classic" });
+    click(newProjectGenreOptionTestId(null)); click("new-project-confirm");
+    expect(await pending).toEqual({ title: "달빛 항구", choiceId: null, screenSize: "classic", startMode: "blank" });
   });
-
-  it("선택지를 고르면 그 선택지 id 가 돌아온다", async () => {
-    const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
-    const monster = document.querySelector<HTMLInputElement>(
-      `[data-testid='${newProjectGenreOptionTestId("monster-collect")}']`,
-    );
-    expect(monster).not.toBeNull();
-    monster!.checked = true;
-    monster!.dispatchEvent(new Event("change", { bubbles: true }));
-    document.querySelector<HTMLButtonElement>("[data-testid='new-project-confirm']")?.click();
-    await completeInterviewChoices();
-    await expect(pending).resolves.toMatchObject({ title: "달빛 항구", choiceId: "monster-collect", screenSize: "classic", gameDesignBrief: { presetId: "monster-collect" } });
+  it("the example path needs no AI connection or interview", async () => {
+    let gateCalls = 0;
+    const pending = showNewProjectDialog({ ensureAiConnected: async () => { gateCalls++; return false; } });
+    click(newProjectGenreOptionTestId("monster-collect")); click("new-project-confirm");
+    expect(await pending).toMatchObject({ choiceId: "monster-collect", startMode: "example", screenSize: "classic" });
+    expect(gateCalls).toBe(0); expect(document.querySelector('[data-testid="project-interview"]')).toBeNull();
   });
-
-  it("선택지는 첫 화면 포스터와 같은 그림을 실어 보여 준다", async () => {
-    const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
-    for (const option of NEW_PROJECT_GENRE_OPTIONS) {
-      if (option.id === null) continue;
-      const radio = document.querySelector(`[data-testid='${newProjectGenreOptionTestId(option.id)}']`);
-      const image = radio?.parentElement?.querySelector("img");
-      expect(image?.getAttribute("src"), `${option.id} row image`).toBe(option.thumb);
-      expect(image?.getAttribute("alt")).toBe("");
-    }
-    const blankRow = document
-      .querySelector(`[data-testid='${newProjectGenreOptionTestId(null)}']`)?.parentElement;
-    expect(blankRow?.querySelector("img")).toBeNull();
-    expect(blankRow?.querySelector(".new-project-genre-placeholder")?.textContent).toBe("+");
-    document.querySelector<HTMLButtonElement>("[data-testid='new-project-cancel']")?.click();
-    await expect(pending).resolves.toBeNull();
+  it("an AI gate decline keeps the dialog and draft intact", async () => {
+    const pending = showNewProjectDialog({ ensureAiConnected: async () => false });
+    click("new-project-ai");
+    const input = document.querySelector<HTMLInputElement>('[data-testid="new-project-name-input"]')!;
+    input.value = "내 게임"; input.dispatchEvent(new Event("input"));
+    click("new-project-confirm"); await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
+    expect(document.querySelector('[data-testid="project-interview"]')).toBeNull();
+    click("new-project-cancel"); expect(await pending).toBeNull();
   });
-
-  it("빈 이름은 기본값으로 대체된다", async () => {
+  it("empty names use the supplied default without an extra wizard", async () => {
     const pending = showNewProjectDialog({ defaultValue: "새 프로젝트" });
-    const input = document.querySelector<HTMLInputElement>("[data-testid='new-project-name-input']");
-    input!.value = "   ";
-    document.querySelector<HTMLButtonElement>("[data-testid='new-project-confirm']")?.click();
-    await expect(pending).resolves.toEqual({ title: "새 프로젝트", choiceId: null, screenSize: "classic" });
+    click(newProjectGenreOptionTestId(null));
+    const input = document.querySelector<HTMLInputElement>('[data-testid="new-project-name-input"]')!;
+    input.value = " "; input.dispatchEvent(new Event("input")); click("new-project-confirm");
+    expect(await pending).toMatchObject({ title: "새 프로젝트", startMode: "blank" });
   });
 });

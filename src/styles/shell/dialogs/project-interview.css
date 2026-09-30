@@ -50,6 +50,27 @@
   .project-interview-answers > div { padding: 12px 0; border-bottom: 1px solid var(--border-default); }
   .project-interview-answers dt { font-size: 11px; color: var(--text-2); }
   .project-interview-answers dd { margin: 5px 0 0; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; white-space: pre-wrap; }
+  .project-interview-progress { display: flex; gap: 8px; list-style: none; padding: 15px 28px; margin: 0; border-bottom: 1px solid var(--border-default); flex-wrap: wrap; }
+  .project-interview-progress li { border-radius: var(--radius-s); padding: 5px 10px; background: var(--bg-inset); color: var(--text-2); font-size: 12px; }
+  .project-interview-progress .is-current { color: var(--on-accent); background: var(--accent); }
+  .project-interview-progress .is-complete::before { content: "✓ "; }
+  .project-interview-outline-title { padding: 9px 22px 0; font-size: 13px; }
+  .project-interview-answers .is-answered dt { color: var(--accent); }
+  .project-interview-receipt { padding: 23px; border: 1px solid var(--border-default); border-radius: var(--radius-m); background: var(--bg-surface); margin: 22px 0; min-height: 220px; }
+  .project-interview-receipt-label { color: var(--text-2); font-size: 12px; }
+  .project-interview-receipt blockquote { white-space: pre-wrap; overflow-wrap: anywhere; margin: 13px 0 24px; padding: 15px; border-left: 3px solid var(--accent); background: var(--accent-muted); color: var(--text-1); font-size: 15px; line-height: 1.7; }
+  .project-interview-receipt strong { font-size: 14px; color: var(--accent); }
+  .project-interview-phases { display: grid; gap: 12px; list-style: none; padding: 0; margin: 19px 0 0; }
+  .project-interview-phases li { font-size: 12px; color: var(--text-2); }
+  .project-interview-phases li::before { content: "○"; margin-right: 9px; }
+  .project-interview-phases .is-current { color: var(--accent); }
+  .project-interview-phases .is-current::before { content: "●"; animation: project-interview-pulse 1.2s ease-in-out infinite; }
+  .project-interview-phases .is-complete::before { content: "✓"; }
+  .project-interview-last-receipt { padding: 13px 16px; border-radius: var(--radius-s); background: var(--accent-muted); font-size: 12px; margin-bottom: 20px; }
+  .project-interview-last-receipt strong { color: var(--accent); font-weight: 500; }
+  .project-interview-last-receipt p { margin: 7px 0 0; color: var(--text-1); line-height: 1.65; overflow-wrap: anywhere; }
+  @keyframes project-interview-pulse { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) { .project-interview-phases .is-current::before { animation: none; } }
   @media (max-width: 700px) {
     .project-interview-backdrop { padding: 12px; }
     .project-interview-window { max-height: calc(100dvh - 24px); }

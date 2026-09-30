@@ -145,3 +145,23 @@ satisfy two separate sets.
 - `test/e2e/director-first-briefing.spec.ts`: Chromium boots the production editor welcome and gates the three start posters. The extra-worlds toggle is absent.
 
 When extending packs, add capability requirements that the shared runtime already understands. Add a shared runtime capability first if none exists; never add a genre branch to player code.
+# 예제로 시작하기와 인터뷰 반영 과정 (2026-10-01)
+
+시작 화면과 메뉴의 새 프로젝트는 같은 `src/start/projectStart.ts` 정본을 읽는다.
+처음에는 세 장르의 **플레이 가능한 예제**, 빈 프로젝트, AI 기획 중에서 고른다.
+예제는 이름을 확인하고 화면 크기를 필요할 때 펼친 뒤 만든다. AI 연결과 인터뷰는 AI 기획 경로에서만 요구한다.
+
+- 씨앗: `editor/projectStartSeed.ts`. 기존 `createStarterMap`과 `withVerifiedPlayableSegment`를 재사용한다.
+  새 타일 조립법을 만들지 않는다. 판정을 통과하지 못하면 생성 오류를 보여 준다.
+  예제는 작은 마을 → 장르별 길 → 구간 끝이며 새 SQLite 폴더에 저장한다.
+- 첫 편집: `panels/firstRunGuide.ts`가 기존 오른쪽 조수 도크를 사용한다. 대사 수정 → 테스트 플레이를 안내한다.
+  안내 중 조수·팀 레일을 접고, 조수 열기를 누르면 기존 도크를 돌려준다. 기존 사용자 프로젝트에는 안내 플래그를 추가하지 않는다.
+  `flags.firstRunGuide`, `starterExample`, `firstRunDialogueEdited`, `firstRunTested`는 기존 boolean flags 계약으로 저장된다.
+  대사는 store의 맵 변이 API와 감사 descriptor를 통과한다. 테스트 완료는 같은 문서 fingerprint의 실제 boot 성공에서만 기록한다.
+- 인터뷰: `projectInterviewDialog.ts`가 답변 영수증, 다섯 기획 항목의 진행, 누적 답변을 표시한다.
+  기본 1200ms의 읽기 시간과 450ms의 다음 질문 인계를 사용한다. 실제 자유 답변 추출과 읽기 시간은 함께 진행한다.
+  로컬 선택 확인은 AI가 생성한 해석으로 표시하지 않는다. 추출 실패는 기존 답변을 보존하고 나머지를 직접 묻는다.
+  취소/닫기는 추출 요청과 표시 타이머를 함께 중단하며 늦은 완료가 모달을 다시 열지 않는다.
+  `presentationDelayMs: 0`은 결정적 호출자용이며 제품 기본값은 아니다.
+
+화면·저장 증거: `verify-shots/project-first-run/`. 이 세션에서는 AGENTS의 제한에 따라 gates/vitest를 실행하지 않았다.

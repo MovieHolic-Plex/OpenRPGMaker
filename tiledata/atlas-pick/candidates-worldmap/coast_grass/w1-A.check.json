@@ -2,8 +2,15 @@
  "file": "tiledata/atlas-pick/candidates-worldmap/coast_grass/w1-A.pxg",
  "set": "worldmap",
  "id": "coast_grass",
- "hard": [],
- "warn": [],
+ "hard": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_n 8≠5, inner_nw↔edge_w 8≠5, inner_ne↔edge_n 8≠5, inner_ne↔edge_e 8≠4, inner_sw↔edge_s 8≠0, inner_sw↔edge_w 8≠5 …",
+  "shore-step: 변 칸 기슭선이 이웃 열에서 3px 이상 튄다(톱니) — s 4"
+ ],
+ "warn": [
+  "shore-strait: 1칸 폭 줄 속 6px — 8 이상이면 해협·길이 또렷하다",
+  "shore-step: 변 칸 기슭선 진폭이 크다(16px 마다 같은 혹이 되풀이된다, ±1 권장) — s 4",
+  "corner-round: 바깥 모서리가 네모다(대각선 깊이 = 이음 깊이) — ne"
+ ],
  "easyrpg": {
   "cells": 12,
   "atLeast95": 0,
@@ -29,7 +36,7 @@
   63
  ],
  "note": "생성 계열 결: 얕은 바다 밑색 한 단(tone3) 위에 3~4획 물결+밑획 한 단 어둡게, 풀 둑 흙 2px+거품 한 줄, 기슭선 0~2px 완만한 물결, 몸통 16px 주기",
- "ok": true,
+ "ok": false,
  "worldmap": {
   "worldEasyrpg": {
    "cells": 12,
@@ -41,6 +48,96 @@
    "atLeast95": 0,
    "max": 0.024
   },
-  "seam": 0.99
+  "shore": {
+   "profile": {
+    "n": [
+     5,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     5,
+     5,
+     4,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5
+    ],
+    "s": [
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     3,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "w": [
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     4,
+     4,
+     4,
+     4,
+     4,
+     5,
+     5,
+     5,
+     5,
+     5
+    ],
+    "e": [
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4
+    ]
+   },
+   "strait": 6,
+   "steps": {
+    "n": 1,
+    "s": 4,
+    "w": 1,
+    "e": 0
+   },
+   "amp": {
+    "n": 2,
+    "s": 4,
+    "w": 1,
+    "e": 0
+   },
+   "joinWorst": 8
+  },
+  "seam": 0.96
  }
 }

@@ -10,8 +10,6 @@ export interface ReliefData {
   width: number;
   height: number;
   levels: number[];
-  /** 절벽을 하위 층 타일로 구웠다(editor/tools/village/reliefBake.ts) — 편집기는 덧그림을 그리지 않는다. */
-  baked?: boolean;
 }
 
 /** 편집·연산 단위: heights[y][x] */

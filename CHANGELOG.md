@@ -5,6 +5,27 @@
 
 <!-- releases -->
 
+## 0.44.0 — 2026-10-01
+
+### 기능
+
+- **content** — 현대·강남 v2·월드맵 3~5단계·버들항 변형 20곳·고르기 화면 모음 (`2f35432`)
+- simplify project starts and show interview progress (`1831ddd`)
+
+### 수정
+
+- **editor** — 첫 실행 안내 저장에 scope를 붙여 main 빌드를 되살린다 (`e1f09ce`)
+
+### 문서
+
+- **atlas-pick** — 현대·강남·일본 작업 인수인계 문서 (`65eedaf`)
+
+## 0.43.3 — 2026-10-01
+
+### 수정
+
+- **battle** — resolve 14 adversarial review findings (`568a461`)
+
 ## 0.43.2 — 2026-10-01
 
 ### 수정

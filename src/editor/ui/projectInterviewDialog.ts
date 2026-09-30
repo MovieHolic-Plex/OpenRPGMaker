@@ -15,6 +15,17 @@ export interface ProjectInterviewOptions {
   confirmLabel?: string;
   /** 첫 질문 입력칸에 미리 담을 사용자 문장(시작 화면의 한 문장). 사용자가 「다음」을 눌러야 답이 된다. */
   initialAnswer?: string;
+  /** Bounded reading time for the answer receipt. Zero is useful for deterministic callers. */
+  presentationDelayMs?: number;
+}
+
+function presentationPause(ms: number, signal: AbortSignal): Promise<void> {
+  if (signal.aborted || ms <= 0) return Promise.resolve();
+  return new Promise(resolve => {
+    const finish = () => { clearTimeout(timer); signal.removeEventListener("abort", finish); resolve(); };
+    const timer = setTimeout(finish, ms);
+    signal.addEventListener("abort", finish, { once: true });
+  });
 }
 
 /** Draft-only modal: neither selecting, cancelling, nor extracting answers mutates the project. */
@@ -33,6 +44,8 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
     let busy = false;
     let request: AbortController | undefined;
     let notice = "";
+    let lastReceipt: { label: string; text: string; next: string } | null = null;
+    const presentationMs = Math.min(2400, Math.max(0, options.presentationDelayMs ?? 1200));
     const overlay = el("div", { class: "project-interview-backdrop", dataset: { testid: "project-interview" } });
     const panel = el("section", { class: "project-interview-window", attrs: {
       role: "dialog", "aria-modal": "true", "aria-labelledby": "project-interview-title",
@@ -66,15 +79,19 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
         el("img", { attrs: { src: choice.thumb, alt: `${choice.label} 참고 이미지` } }),
         el("p", { class: "project-interview-caption", text: "프리셋은 출발점이에요. 답변에 맞춰 분위기와 진행을 바꿀 수 있어요." }),
       ] });
+      const progress = el("ol", { class: "project-interview-progress", attrs: { "aria-label": "게임 기획 진행" }, children: questions.map(q => el("li", {
+        class: answers[q.slot] ? "is-complete" : q.slot === slot ? "is-current" : "", text: q.label,
+        attrs: { ...(q.slot === slot ? { "aria-current": "step" } : {}) },
+      })) });
       const answersList = el("dl", { class: "project-interview-answers" });
       questions.forEach(q => {
         const answer = answers[q.slot];
-        answersList.append(el("div", { children: [
+        answersList.append(el("div", { class: answer ? "is-answered" : "", children: [
           el("dt", { text: q.label }),
-          el("dd", { text: answer ? `${answer.text}${answer.source === "recommended" ? " · 추천안" : ""}` : "아직 정하지 않았어요" }),
+          el("dd", { text: answer ? `${answer.text}${answer.source === "recommended" ? " · 추천안" : ""}` : "아직 정하지 않았어요", attrs: answer ? { translate: "no" } : {} }),
         ] }));
       });
-      aside.append(answersList);
+      aside.append(el("h3", { class: "project-interview-outline-title", text: "쌓여 가는 게임 기획" }), answersList);
       const status = el("p", { class: "project-interview-status", text: notice, attrs: { role: "status" } });
       if (current && slot) {
         const activeSlot = slot;
@@ -108,6 +125,9 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
         };
         const submit = async (): Promise<void> => {
           if (busy || !selected.trim()) return;
+          setBusy(true);
+          request = new AbortController();
+          const signal = request.signal;
           const text = selected.trim();
           const before = projectInterviewQuestions(presetId, answers)[3]?.title;
           answers[activeSlot] = { question: current.title, label: current.label, text, source };
@@ -115,14 +135,39 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
           if (activeSlot === "experience" && before !== projectInterviewQuestions(presetId, answers)[3]?.title) delete answers.detail;
           notice = "";
           const remaining = projectInterviewQuestions(presetId, answers).filter(q => !answers[q.slot]);
+          const phaseTitle = el("strong", { text: "답변을 확인하고 있어요", attrs: { role: "status" }, dataset: { testid: "project-interview-phase" } });
+          const phases = ["답변 확인", "기획에 반영", remaining.length ? "다음 질문 준비" : "게임 기획 요약"];
+          const phaseNodes = phases.map((label, index) => el("li", { text: label, class: index === 0 ? "is-current" : "" }));
+          const receipt = el("section", { class: "project-interview-receipt", attrs: { "aria-label": "답변 반영 과정" }, dataset: { testid: "project-interview-receipt" }, children: [
+            el("span", { class: "project-interview-receipt-label", text: "이번 답변 · " + current.label }),
+            el("blockquote", { text, attrs: { translate: "no" } }),
+            phaseTitle,
+            el("ol", { class: "project-interview-phases", children: phaseNodes }),
+          ] });
+          const phase = (index: number, label: string) => {
+            if (closed || signal.aborted) return;
+            phaseTitle.textContent = label;
+            phaseNodes.forEach((node, i) => { node.className = i < index ? "is-complete" : i === index ? "is-current" : ""; });
+          };
+          const present = async () => {
+            if (presentationMs <= 0) return;
+            main.replaceChildren(count, receipt, status);
+            panel.setAttribute("aria-busy", "true");
+            await presentationPause(presentationMs / 2, signal);
+            phase(1, "선택한 방향을 기획에 담고 있어요");
+            await presentationPause(presentationMs / 2, signal);
+          };
+          const presentation = present();
           if (source === "user" && !current.choices.includes(text) && remaining.length > 0) {
-            request = new AbortController();
-            const timer = setTimeout(() => request?.abort(), 12000);
-            setBusy(true);
+            const extractionRequest = new AbortController();
+            const cancelExtraction = () => extractionRequest.abort();
+            signal.addEventListener("abort", cancelExtraction, { once: true });
+            const timer = setTimeout(() => extractionRequest.abort(), 12000);
             status.textContent = "함께 적어 준 내용 중 이미 답한 항목을 정리하고 있어요…";
             try {
               const { extractAdditionalInterviewAnswers } = await import("@/ai/projectInterviewAnswers");
-              const extra = await extractAdditionalInterviewAnswers(text, remaining, request.signal);
+              if (closed || signal.aborted) return;
+              const extra = await extractAdditionalInterviewAnswers(text, remaining, extractionRequest.signal);
               if (closed) return;
               for (const q of remaining) {
                 const value = extra[q.slot];
@@ -131,9 +176,19 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
               if (Object.keys(extra).length) notice = "함께 적어 준 답은 반영했어요. 마지막 요약에서 모두 수정할 수 있어요.";
             } catch {
               notice = "답변은 유지했어요. 나머지는 한 가지씩 정할게요.";
-            } finally { clearTimeout(timer); busy = false; }
+            } finally { clearTimeout(timer); signal.removeEventListener("abort", cancelExtraction); }
           }
+          if (presentationMs > 0) await presentation;
+          if (closed || signal.aborted) return;
           slot = GAME_BRIEF_SLOTS.find(key => !answers[key]) ?? null;
+          const nextQuestion = projectInterviewQuestions(presetId, answers).find(q => q.slot === slot);
+          lastReceipt = { label: current.label, text, next: nextQuestion?.title ?? "답변을 모아 게임 기획을 확인해요." };
+          phase(2, slot ? "다음 질문을 준비했어요" : "게임 기획을 정리했어요");
+          // The third state is a readable handoff, rather than a flash between two questions.
+          if (presentationMs > 0) await presentationPause(450, signal);
+          if (closed || signal.aborted) return;
+          busy = false;
+          panel.removeAttribute("aria-busy");
           render();
         };
         const recommend = button("아직 모르겠어요 · 추천받기", "project-interview-recommend", () => {
@@ -146,6 +201,10 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
           slot = GAME_BRIEF_SLOTS[index - 1] ?? GAME_BRIEF_SLOTS[0]; render();
         });
         previous.disabled = activeSlot === GAME_BRIEF_SLOTS[0];
+        if (lastReceipt) main.append(el("section", { class: "project-interview-last-receipt", children: [
+          el("strong", { text: lastReceipt.label + " · 기획에 반영했어요" }),
+          el("p", { text: lastReceipt.text, attrs: { translate: "no" } }),
+        ] }));
         main.append(count, question, el("p", { class: "project-interview-hint", text: current.hint }), choices,
           el("label", { text: "내 말로 답하기", attrs: { for: "project-interview-answer" } }), input,
           el("div", { class: "project-interview-actions", children: [recommend, previous, advance] }), status);
@@ -166,7 +225,7 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
             button("답변으로 요약 갱신", "project-interview-refresh-summary", () => { summaryOverride = undefined; render(); }), confirm,
           ] }), status);
       }
-      content.append(main, aside); panel.append(header, content);
+      content.append(main, aside); panel.append(header, progress, content);
       // Focus a real control after each transition; Tab stays in this modal.
       panel.querySelector<HTMLElement>(slot ? ".project-interview-options button" : "textarea")?.focus();
     };

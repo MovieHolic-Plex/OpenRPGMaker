@@ -94,14 +94,14 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 
 ## 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
 
-`GameMap.relief?: ReliefData` — `{ width, height, levels: number[], baked?: boolean }`(행 우선, 칸마다 0~14단). `baked` 는 절벽을 하위 층 타일로 구웠다는 표시(2026-09-27, `editor/tools/village/reliefBake.ts`) — 편집기가 덧그림을 그리지 않는다. `normalizeRelief`·`remapExtraLayers` 가 보존한다. **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
+`GameMap.relief?: ReliefData` — `{ width, height, levels: number[] }`(행 우선, 칸마다 0~14단). (2026-09-27~10-01 사이의 `baked` 표시는 없앴다 — 불러올 때 버려진다. 저장된 맵 중 relief 를 가진 것은 당시 0개였다.) **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
 권위 코드는 `src/project/relief/`(`types`·`edit`·`ops`·`check`·`render`).
 
 - 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. 전부 0 이거나 모양이 틀리면 필드를 **지운다**.
 - 쓰기 규칙: 결과가 전부 0 이면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다.
 - 크기 바꾸기·밀기·자르기: `mapLayers.ts` 의 `ExtraLayerFields` 에 `relief` 가 들어가 `cloneExtraLayers`/`remapExtraLayers` 가 같은 칸 번호로 옮긴다.
 - 렌더: 편집기 `EditScene` 이 `renderRelief(effectiveHeights(h), {transparentGround:true})` 로 절벽 벽면·45° 대각선을 그려 1층과 3층 사이에 깐다.
-- **한계(아직):** 덧그림 칩셋에서 높이는 그림만 바꾼다(구운 칩셋은 절벽 타일이 1층에 있어 통행·런타임에 그대로 나온다). 윗단 위 타일·이벤트·통행·런타임 플레이어 높이는 relief 를 모른다. 런타임(`player.html`) 렌더도 아직 없다.
+- **한계(아직):** 높이는 그림만 바꾼다(칩셋과 무관). 윗단 위 타일·이벤트·통행·런타임 플레이어 높이는 relief 를 모른다. 런타임(`player.html`) 렌더도 아직 없다.
 
 ## 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
 
@@ -1382,3 +1382,13 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 그 뒤 에디터 AI로 실제 포획 과제를 저작하고 SQLite 저장·재로드를 확인한다.
 공통 판정만으로 에디터의 종 보유 조건이 지원된다고 보고하지 않는다.
 회귀 사례는 `test/monsterOwnership.test.ts`에 작성했으며 이번 작업에서 실행하지 않았다.
+# 새 프로젝트 시작 방식과 첫 편집 진행 (2026-10-01)
+
+`StartScreenIntent`(sessionStorage, version 1)의 선택 필드 `startMode?: "example" | "ai" | "blank"`,
+`screenSize?: "classic" | "wide"`가 런처 선택을 같은 새 SQLite 폴더로 전달한다.
+필드가 없는 옛 인계는 장르가 있으면 AI, 없으면 빈 프로젝트로 해석한다. 알 수 없는 값은 거절한다.
+예제 경로는 장르별 플레이 가능한 첫 구간을 저장하고 AI 인터뷰/자동 생성을 시작하지 않는다.
+AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 → 팀 첫 생성 계약을 유지한다.
+
+첫 편집 진행은 기존 `Project.flags`의 boolean 키로만 저장한다. 프로젝트 스키마 버전은 바꾸지 않는다.
+키·동작·오른쪽 도크 소유자는 [장르 프리셋](editor-genre-packs.md)의 2026-10-01 절을 따른다.

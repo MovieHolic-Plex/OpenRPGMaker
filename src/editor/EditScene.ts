@@ -2364,11 +2364,11 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapId = this.mapId();
     const relief = mapId ? store.getCurrent().maps[mapId]?.relief : undefined;
     const tileSize = this.activeTileSize();
-    const key = relief ? `${mapId}|${tileSize}|${relief.width}x${relief.height}|${relief.baked ? "baked" : relief.levels.join(",")}` : "";
+    const key = relief ? `${mapId}|${tileSize}|${relief.width}x${relief.height}|${relief.levels.join(",")}` : "";
     if (key === this.reliefRenderKey) return;
     this.reliefRenderKey = key;
     layer.removeAll(true);
-    if (!relief || reliefIsFlat(relief) || relief.baked) {
+    if (!relief || reliefIsFlat(relief)) {
       if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
       return;
     }

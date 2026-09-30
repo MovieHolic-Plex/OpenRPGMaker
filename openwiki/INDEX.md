@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 4034KB / 약 1,161,964 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 4038KB / 약 1,163,016 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -26,7 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 513 | ~20,302 |
 | `openwiki/runtime-battle.md` | 255KB | 31KB | 1339 | ~74,102 |
 | `openwiki/runtime-pre-edit-routing.md` | 105KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 752 | ~31,531 |
-| `openwiki/runtime-project-schema.md` | 192KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1385 | ~53,470 |
+| `openwiki/runtime-project-schema.md` | 193KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1395 | ~53,744 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
 | `openwiki/testing.md` | 206KB | 48KB | 1923 | ~56,967 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
@@ -122,7 +122,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 14KB · 158줄 · ~3,616 토큰
+### `openwiki/PROJECT_WIKI.md` — 14KB · 163줄 · ~3,723 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
@@ -132,8 +132,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L112` How an AI should use this wiki
 - `L123` 프로젝트 정본 저장 (see root `AGENTS.md`)
 - `L131` Desktop UI integration truth (2026-08-11)
-- `L139` Per-project wiki structure
-- `L155` Staleness rule
+- `L144` Per-project wiki structure
+- `L160` Staleness rule
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -731,7 +731,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L257` Recovered native emote command (2026-09-05)
 - `L261` 패배·엔딩 저작 (2026-09-22)
 
-### `openwiki/editor-genre-packs.md` — 19KB · 148줄 · ~4,995 토큰
+### `openwiki/editor-genre-packs.md` — 22KB · 168줄 · ~5,666 토큰
 
 - `L5` Ownership
 - `L16` Safe blank-project system-preset flow
@@ -1307,7 +1307,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L675` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
 - `L720` 8차 맵 진입 (2026-09-28)
 
-### `openwiki/runtime-project-schema.md` — 192KB · 1385줄 · ~53,470 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 193KB · 1395줄 · ~53,744 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 번들·공용 참고문서 소유 분리 — 저장 문서에서 빼고 로드에서 되돌림 (2026-09-30, 편집기 렉 F)
 - `L20` 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)

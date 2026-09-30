@@ -1,0 +1,46 @@
+# 새로 찍은 조각 — snowfield
+
+- `parts/ground-snow.png` (48x48 px) — 눈 바닥 (새 재료, 버들항 잔디와 같은 결·6단) / 3x3칸 표본
+- `parts/ground-ice.png` (48x48 px) — 얼음 (얼어붙은 항구 연못) / 3x3칸 표본
+- `parts/ground-hot.png` (48x48 px) — 온천 물 / 3x3칸 표본
+- `parts/ground-road.png` (48x48 px) — 다져진 눈길 / 3x3칸 표본
+- `parts/ground-cliff.png` (48x48 px) — 돌 절벽 (앞면) / 3x3칸 표본
+- `parts/ground-plat.png` (48x48 px) — 고원 눈 / 3x3칸 표본
+- `parts/ground-deck.png` (32x32 px) — 부두 널 / 2x2칸 표본
+- `parts/ground-plaza.png` (48x48 px) — 광장 포석 / 3x3칸 표본
+- `parts/hall.png` (114x99 px) — hall / 8x7칸
+- `parts/w1.png` (82x83 px) — w1 / 6x6칸
+- `parts/w2.png` (82x83 px) — w2 / 6x6칸
+- `parts/e1.png` (82x83 px) — e1 / 6x6칸
+- `parts/hut.png` (50x67 px) — hut / 4x5칸
+- `parts/e2.png` (82x83 px) — e2 / 6x6칸
+- `parts/s1.png` (82x83 px) — s1 / 6x6칸
+- `parts/s2.png` (50x67 px) — s2 / 4x5칸
+- `parts/shed.png` (82x83 px) — shed / 6x6칸
+- `parts/bath.png` (66x83 px) — bath / 5x6칸
+- `parts/w3.png` (50x67 px) — w3 / 4x5칸
+- `parts/n2.png` (66x83 px) — n2 / 5x6칸
+- `parts/bonfire.png` (28x28 px) — bonfire / 2x2칸
+- `parts/board.png` (32x32 px) — board / 2x2칸
+- `parts/well.png` (32x32 px) — well / 2x2칸
+- `parts/lamp.png` (16x48 px) — lamp / 1x3칸
+- `parts/bench.png` (32x16 px) — bench / 2x1칸
+- `parts/bollard.png` (16x16 px) — bollard / 1x1칸
+- `parts/crates.png` (32x32 px) — crates / 2x2칸
+- `parts/netrack.png` (32x32 px) — netrack / 2x2칸
+- `parts/fishcrates.png` (32x16 px) — fishcrates / 2x1칸
+- `parts/ice_boat.png` (48x48 px) — ice_boat / 3x3칸
+- `parts/ice_row.png` (32x16 px) — ice_row / 2x1칸
+- `parts/ice_hole.png` (24x16 px) — ice_hole / 2x1칸
+- `parts/stool.png` (16x20 px) — stool / 1x2칸
+- `parts/rock.png` (24x18 px) — rock / 2x2칸
+- `parts/firewood.png` (32x16 px) — firewood / 2x1칸
+- `parts/sled.png` (30x14 px) — sled / 2x1칸
+- `parts/pile.png` (32x16 px) — pile / 2x1칸
+- `parts/snowman.png` (20x26 px) — snowman / 2x2칸
+- `parts/fence.png` (48x16 px) — fence / 3x1칸
+- `parts/barrel.png` (16x16 px) — barrel / 1x1칸
+- `parts/pine.png` (30x49 px) — pine / 2x4칸
+- `parts/mound.png` (14x8 px) — mound / 1x1칸
+
+합계: 42 조각
