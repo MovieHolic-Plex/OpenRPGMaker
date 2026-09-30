@@ -10,6 +10,7 @@ import {
   retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroPartyPixelCellForPose, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
   type RetroSkillTimeline, type RetroStagePlace, type RetroTimelineEvent, type RetroTimelineSide,
 } from "@/battle/retroSkillTimeline";
+import { applyChoreographyHandles } from "@/battle/retroChoreographyHandles";
 import { store } from "@/project/store";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
@@ -267,6 +268,8 @@ interface ClassPlan {
   readonly sequences: readonly number[];
   /** 엔트리별 계획 착탄 시각(ms, 타임라인 시계). */
   readonly hits: readonly number[];
+  /** 연출 레코드의 무게 손잡이(light/normal/heavy). 계약 연출·손잡이 없음 = undefined(기존 무게 그대로). */
+  readonly weight?: keyof typeof APPROACH_SCALE;
 }
 
 const plans = new WeakMap<HTMLElement, Map<number, ClassPlan>>();
@@ -355,12 +358,15 @@ function buildPlan(skill: PlayableSkill, record: SkillRecord, sequences: readonl
   const side = retroSideForScope(record.scope) ?? (contract ? retroMonsterSide(contract) : "enemies");
   // 타수(hitSequence 수)는 onHit:"each" 층이 몇 번 다시 깔릴지 정한다. 층 옵션이 없는 계약은 이 값이 타임라인에 영향을 주지 않는다.
   const hits = Math.max(1, sequences.length);
-  const timeline = contract ? retroMonsterSkillTimeline(contract, { hits }) : retroClassSkillTimeline(skill as RetroClassSkill, { side, hits });
+  const base = contract ? retroMonsterSkillTimeline(contract, { hits }) : retroClassSkillTimeline(skill as RetroClassSkill, { side, hits });
+  // 프로젝트 연출 레코드의 손잡이(speed·tint·screen·weight). 계약 연출이나 손잡이 없는 레코드는 같은 객체를 돌려받는다.
+  const handles = resolveSkillChoreography(record, choreographyRecords())?.record;
+  const timeline = applyChoreographyHandles(base, handles);
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;
   const hitTimes = sequences.map((_, index) => Math.max(1, Math.round(firstHit + index * HIT_STAGGER_MS)));
-  return { skill, record, timeline, side, monster, sequences, hits: hitTimes };
+  return { skill, record, timeline, side, monster, sequences, hits: hitTimes, ...(handles?.weight ? { weight: handles.weight } : {}) };
 }
 
 /** 엔트리가 속한 행동(같은 사용자·같은 스킬의 연속 엔트리, 대상은 겹치지 않음)의 계획. */
@@ -402,9 +408,21 @@ function planFor(field: HTMLElement, entry: BattleTimelineEntrySnapshot, timelin
   return plan;
 }
 
-function entryWeight(entry: BattleTimelineEntrySnapshot): keyof typeof APPROACH_SCALE {
+function entryWeight(entry: BattleTimelineEntrySnapshot, plan?: ClassPlan): keyof typeof APPROACH_SCALE {
   if (entry.kind === "miss" || entry.hit === false || entry.kind === "healing" || (entry.amount ?? 0) <= 0) return "light";
-  return entry.critical ? "heavy" : "normal";
+  return plan?.weight ?? (entry.critical ? "heavy" : "normal");
+}
+
+/**
+ * 시퀀서 훅(battleDom actionWeight). 연출 레코드가 무게를 정했으면 그것이 기본 무게(급소·막타 포함)를 덮는다.
+ * 빗나감·0 피해·회복(light)은 손잡이와 무관하게 가볍게 유지한다 — 헛방에 길게 눌러 잡으면 어색하다.
+ */
+export function retroClassSkillWeight(
+  field: HTMLElement, entry: BattleTimelineEntrySnapshot, base: keyof typeof APPROACH_SCALE, timeline: readonly BattleTimelineEntrySnapshot[],
+): keyof typeof APPROACH_SCALE | undefined {
+  if (base === "light") return undefined;
+  const plan = planFor(field, entry, timeline);
+  return plan?.weight && plan.weight !== base ? plan.weight : undefined;
 }
 
 /**
@@ -415,7 +433,7 @@ export function retroClassSkillBeatMs(field: HTMLElement, entry: BattleTimelineE
   const plan = planFor(field, entry, timeline);
   if (!plan) return undefined;
   const index = Math.max(0, plan.sequences.indexOf(entry.sequence));
-  const weight = entryWeight(entry);
+  const weight = entryWeight(entry, plan);
   if (kind === "approach") return index === 0 ? Math.round(plan.hits[0]! / APPROACH_SCALE[weight]) : 0;
   const hitstop = weight === "light" ? 0 : HITSTOP_MS * HITSTOP_SCALE[weight];
   const next = index < plan.hits.length - 1 ? plan.hits[index + 1]! : plan.timeline.durationMs;
@@ -624,7 +642,7 @@ function monsterBodyBox(size: number, host: HTMLElement | undefined): number | u
   return pixelCellOf(battlerImage(host)) >= 96 ? size * 4 : undefined;
 }
 
-function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: number, frames: number, anchor: string, host?: HTMLElement, scale = 1): HTMLElement {
+function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: number, frames: number, anchor: string, host?: HTMLElement, scale = 1, filter?: string): HTMLElement {
   const node = document.createElement("span");
   node.className = "retro-skill-fx retro-class-fx";
   node.dataset.retroSkillFx = key;
@@ -639,6 +657,8 @@ function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: numb
   node.style.height = `${box}px`;
   node.style.backgroundImage = `url("${classSheets[key] ?? classSheetUrl(key)}")`;
   node.style.backgroundSize = `${box * frames}px ${box}px`;
+  // 색 손잡이: "none" 은 원색(전체 색이 있어도 이 층만 원색), 값이 있으면 CSS filter 조합. 없으면 스타일을 건드리지 않는다.
+  if (filter !== undefined) node.style.filter = filter;
   field.append(node);
   player.nodes.add(node);
   return node;
@@ -663,7 +683,7 @@ function playFx(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTim
   const frameMs = Math.max(16, event.frameMs * player.clock);
   const layer = player.plan.skill.layers[event.layer];
   for (const host of hosts) {
-    const node = fxNode(player, field, event.key, event.frame, layer?.frames ?? event.cells.length, event.anchor, player.plan.monster ? host : undefined, event.scale ?? 1);
+    const node = fxNode(player, field, event.key, event.frame, layer?.frames ?? event.cells.length, event.anchor, player.plan.monster ? host : undefined, event.scale ?? 1, event.filter);
     const place = () => {
       if (!host) {
         const center = stageCenter(field);
@@ -698,7 +718,7 @@ function playProjectile(field: HTMLElement, player: ClassPlayer, event: Extract<
   const start = event.path === "fall" ? { x: end.x + (player.plan.monster ? -34 : 34), y: end.y - 170 }
     : event.path === "trail" ? bodyCenter(field, player.user)
       : player.plan.monster ? monsterMouth(field, player.user) : handPoint(field, player.user);
-  const node = fxNode(player, field, event.key, event.frame, event.frames, "projectile");
+  const node = fxNode(player, field, event.key, event.frame, event.frames, "projectile", undefined, 1, event.filter);
   node.classList.add("retro-class-fx-projectile");
   node.style.left = `${end.x}px`;
   node.style.top = `${end.y}px`;
@@ -720,9 +740,12 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
   const duration = Math.max(40, event.durationMs * player.clock);
   if (event.effect === "shake") {
     const steps = Math.max(2, Math.round(duration / 40));
+    // intensity 는 연출 레코드 손잡이(화면 흔들림 세기 px). 없으면 기존 6px/2px 그대로.
+    const ampX = event.intensity ?? 6;
+    const ampY = event.intensity === undefined ? 2 : Math.max(1, ampX / 3);
     const keys = Array.from({ length: steps + 1 }, (_, i) => {
       const decay = 1 - i / steps;
-      return { translate: i === steps ? "0px 0px" : `${Math.round((i % 2 ? -6 : 6) * decay)}px ${Math.round((i % 3 ? -2 : 2) * decay)}px` };
+      return { translate: i === steps ? "0px 0px" : `${Math.round((i % 2 ? -ampX : ampX) * decay)}px ${Math.round((i % 3 ? -ampY : ampY) * decay)}px` };
     });
     if (typeof field.animate === "function") player.animations.push(field.animate(keys, { duration, easing: "steps(1, end)" }));
     return;
@@ -767,6 +790,7 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
     ], { duration, fill: "forwards", easing: "steps(12, end)" }));
   } else {
     veil.className = `retro-class-veil retro-class-veil-${event.effect}`;
+    if (event.color && event.effect === "flash") veil.style.background = event.color;
     const keys = event.effect === "dim"
       ? [{ opacity: 0 }, { opacity: 0.62, offset: Math.min(0.2, 180 / duration) }, { opacity: 0.62, offset: Math.max(0.8, 1 - 180 / duration) }, { opacity: 0 }]
       : [{ opacity: 0.85 }, { opacity: 0 }];

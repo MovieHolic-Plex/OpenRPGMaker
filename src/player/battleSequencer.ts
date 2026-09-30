@@ -7,6 +7,7 @@ import {
   planEnemyActionBeats,
   weightForFeedback,
   type BattleActionBeat,
+  type BattleActionWeight,
   recoverMsForAnimation,
 } from "@/player/battleActionBeats";
 import { store } from "@/project/store";
@@ -111,6 +112,8 @@ export interface BattleSequencerHooks {
   readonly enemyApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
   /** 적 행동의 회복(recover) 비트 최소 길이(제자리로 돌아가는 시간). */
   readonly enemyRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  /** 표시 계층이 행동의 무게를 바꾼다(도트 연출 레코드의 weight 손잡이). undefined 면 피드백에서 정한 무게 그대로. */
+  readonly actionWeight?: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => BattleActionWeight | undefined;
 }
 
 export interface BattleSequencer {
@@ -490,7 +493,8 @@ export function createBattleSequencer(
     // 막타에서도 연출이 끝까지 재생된 뒤에야 다음(결과 공개)으로 넘어간다.
     const killLine = killLineFor(entries, entryOffset, snapshot);
     // 행동의 무게 — 급소·막타는 heavy(길게 눌러 잡고), 빗나감·0 피해·회복은 light.
-    const weight = weightForFeedback(feedback, Boolean(killLine));
+    const baseWeight = weightForFeedback(feedback, Boolean(killLine));
+    const weight = hooks.actionWeight?.(entry, baseWeight) ?? baseWeight;
     const beats = entry.side === "enemy"
       ? planEnemyActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "enemy",

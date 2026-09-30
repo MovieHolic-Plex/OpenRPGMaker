@@ -1,6 +1,7 @@
 // 스킬 연출 레코드(database.skillChoreographies) 정규화. 설계: docs/superpowers/specs/2026-09-30-skill-choreography-records-design.md
 // 모르는 시트 키·잘못된 anchor/motion 층은 **버리고**, 숫자는 범위로 자른다. 저장·불러오기·조수 도구가 모두 이 한 함수를 지난다.
 import { retroFxSheetMeta } from "@/assets/retroSkillCatalog";
+import { isRetroTintValue, RETRO_TINT_ORIGINAL } from "@/assets/retroChoreographyTints";
 import type { SkillChoreographyLayer, SkillChoreographyRecord } from "@/project/types/database";
 
 export const SKILL_CHOREOGRAPHY_ID_PREFIX = "chor_";
@@ -36,6 +37,13 @@ function color(value: unknown): string | undefined {
   return typeof value === "string" && HEX_COLOR.test(value.trim()) ? value.trim().toLowerCase() : undefined;
 }
 
+/** 색조 값: 프리셋 id(fire…)·"original"·#rrggbb. 층은 "original" 을 그대로 둔다(레코드 전체 색을 이 층만 원본으로 되돌린다). */
+function tintValue(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const v = value.trim().toLowerCase();
+  return isRetroTintValue(v) ? v : undefined;
+}
+
 /** 층 하나. 시트 키가 시트 메타에 없거나 anchor 가 잘못이면 undefined(그 층을 버린다). */
 export function normalizeSkillChoreographyLayer(raw: unknown): SkillChoreographyLayer | undefined {
   if (!isRecord(raw)) return undefined;
@@ -45,7 +53,7 @@ export function normalizeSkillChoreographyLayer(raw: unknown): SkillChoreography
   const startMs = clamp(raw.startMs, SKILL_CHOREOGRAPHY_RANGES.startMs);
   const scale = clamp(raw.scale, SKILL_CHOREOGRAPHY_RANGES.scale);
   const repeatRaw = clamp(raw.repeat, SKILL_CHOREOGRAPHY_RANGES.repeat);
-  const tint = color(raw.tint);
+  const tint = tintValue(raw.tint);
   const se = text(raw.se, 96);
   return {
     sheet,
@@ -72,7 +80,8 @@ export function normalizeSkillChoreographyRecord(raw: unknown): SkillChoreograph
   if (layers.length === 0) return undefined;
   const description = text(raw.description, 400);
   const speed = clamp(raw.speed, SKILL_CHOREOGRAPHY_RANGES.speed);
-  const tint = color(raw.tint);
+  const tintRaw = tintValue(raw.tint);
+  const tint = tintRaw === RETRO_TINT_ORIGINAL ? undefined : tintRaw;
   const sourceId = text(raw.sourceId, 96);
   const screen = normalizeScreen(raw.screen);
   const tags = normalizeTags(raw.tags);
