@@ -295,6 +295,12 @@ export interface SkillRecord {
    * 타임라인에 시전자 자신을 대상으로 한 healing 엔트리(resource hp|mp)를 남긴다. 생략 = 흡수 없음.
    */
   drainPercent?: number;
+  /**
+   * retro2003 도트 연출 빌리기: 이 스킬 id 가 연출 계약(retroClassSkills·retroRosterSkills·retroMonsterSkills)에 없을 때,
+   * 재생할 계약 스킬 id. 새 스킬·복제 스킬이 850여 개 계약 연출을 그대로 쓴다. 조회 순서는 「자기 id → 이 필드」.
+   * 위력·비용·상태는 이 레코드 값을 쓰고 그림·움직임·소리·타수 간격만 빌린다. 생략 = 빌리지 않음.
+   */
+  retroChoreographyId?: string;
 }
 
 export interface SkillArea {

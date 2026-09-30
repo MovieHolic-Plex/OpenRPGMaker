@@ -2,9 +2,10 @@ import type { CastType, ExtendedBattlerPose } from "@/battle/battlePose";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { SkillRecord } from "@/project/types";
 import type { RetroClassSkill } from "@/assets/retroClassSkills";
-import { RETRO_ALL_CLASS_SKILLS, RETRO_ALL_FX_SHEETS, retroClassSkill } from "@/assets/retroSkillCatalog";
-import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS, retroMonsterSkill } from "@/assets/retroMonsterSkills";
+import { RETRO_ALL_CLASS_SKILLS, RETRO_ALL_FX_SHEETS, resolveRetroClassChoreography, resolveRetroMonsterChoreography, retroClassSkill } from "@/assets/retroSkillCatalog";
+import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS } from "@/assets/retroMonsterSkills";
 import type { RetroFxLayer } from "@/assets/retroClassSkills";
+import type { RetroMonsterSkill } from "@/assets/retroMonsterSkills";
 import {
   retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroPartyPixelCellForPose, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
   type RetroSkillTimeline, type RetroStagePlace, type RetroTimelineEvent, type RetroTimelineSide,
@@ -87,10 +88,10 @@ const WORDS: readonly [RegExp, string][] = [
 ];
 
 /** Known id wins; custom records use element → words → effect, never animation filename. */
-export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "elementId" | "effect"> | undefined): RetroSkillRecipe | undefined {
+export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "elementId" | "effect" | "retroChoreographyId"> | undefined): RetroSkillRecipe | undefined {
   if (!skill) return undefined;
   // 계약 직업 스킬은 자기 타임라인으로 재생한다(아래 driveRetroClassSkill). 속성·낱말 추정으로 옛 레시피를 붙이지 않는다.
-  if (retroClassSkill(skill.id)) return undefined;
+  if (resolveRetroClassChoreography(skill)) return undefined;
   const exact = RETRO_SKILL_RECIPES[skill.id];
   if (exact) return exact;
   const inferred = ELEMENTS[skill.elementId ?? ""] ?? WORDS.find(([word]) => word.test(skill.name))?.[1];
@@ -271,8 +272,8 @@ interface ClassPlan {
 const plans = new WeakMap<HTMLElement, Map<number, ClassPlan>>();
 
 /** 이 레코드가 계약 직업 스킬이면 그 계약. */
-export function retroClassSkillRecord(skill: Pick<SkillRecord, "id"> | undefined): RetroClassSkill | undefined {
-  return skill ? retroClassSkill(skill.id) : undefined;
+export function retroClassSkillRecord(skill: Pick<SkillRecord, "id" | "retroChoreographyId"> | undefined): RetroClassSkill | undefined {
+  return resolveRetroClassChoreography(skill);
 }
 
 interface SkillOwner {
@@ -302,7 +303,7 @@ function ownedSkillIds(userRecordId: string | undefined): ReadonlySet<string> {
 
 function skillByName(name: string | undefined, monster = false, userRecordId?: string): SkillRecord | undefined {
   // 이름이 겹치는 몬스터 스킬(독침·연막탄)이 있어 편별로 후보를 나눈다.
-  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === name && Boolean(retroMonsterSkill(skill.id)) === monster);
+  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === name && Boolean(resolveRetroMonsterChoreography(skill)) === monster);
   if (matches.length <= 1) return matches[0];
   // 같은 편 안에서도 이름이 겹친다(2차 로스터: 정찰병·도적의 「연막탄」, 레인저·총사의 「저격」 등 31쌍).
   // 시전자가 가진 쪽, 없으면 계약 배우가 시전자인 쪽.
@@ -324,7 +325,7 @@ function classEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: Re
 function monsterEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: PlayableSkill; record: SkillRecord } | undefined {
   if (!entry || entry.side !== "enemy" || entry.commandKind !== "enemySkill" || !VISUAL_KINDS.has(entry.kind)) return undefined;
   const record = skillByName(entry.skillName, true, entry.userRecordId);
-  const skill = record ? retroMonsterSkill(record.id) : undefined;
+  const skill = resolveRetroMonsterChoreography(record);
   return skill && record ? { skill, record } : undefined;
 }
 
@@ -338,7 +339,7 @@ function sameAction(a: BattleTimelineEntrySnapshot, b: BattleTimelineEntrySnapsh
 }
 
 function buildPlan(skill: PlayableSkill, record: SkillRecord, sequences: readonly number[], monster = false): ClassPlan {
-  const contract = monster ? retroMonsterSkill(skill.id) : undefined;
+  const contract = monster ? (skill as RetroMonsterSkill) : undefined;
   const side = retroSideForScope(record.scope) ?? (contract ? retroMonsterSide(contract) : "enemies");
   const timeline = contract ? retroMonsterSkillTimeline(contract) : retroClassSkillTimeline(skill as RetroClassSkill, { side });
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
@@ -741,7 +742,8 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
     if (name) {
       const label = document.createElement("span");
       label.className = "retro-class-cutin-name";
-      label.textContent = player.plan.skill.name ? `${name} · ${player.plan.skill.name}` : name;
+      const skillLabel = player.plan.record.name || player.plan.skill.name;
+      label.textContent = skillLabel ? `${name} · ${skillLabel}` : name;
       veil.append(label);
     }
     if (typeof veil.animate === "function") player.animations.push(veil.animate([

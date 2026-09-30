@@ -3,6 +3,7 @@ import { actionSkillClearProperties, authoredSkillProperties, combatConditionSch
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
 import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
+import { retroChoreographyIdForClone } from "@/assets/retroSkillCatalog";
 // editor/tools/dbTools.ts
 // DB 쓰기 툴: upsert_item / upsert_enemy / upsert_troop / upsert_actor / upsert_skill
 //            / upsert_equipment / upsert_class / define_promotion / upsert_state / upsert_common_event
@@ -165,7 +166,13 @@ function duplicateFromCollection(draft: Project, collection: DatabaseRecordColle
   switch (collection) {
     case "actors": return duplicateRecord(draft.database.actors, id, newId, name);
     case "classes": return duplicateRecord(draft.database.classes, id, newId, name);
-    case "skills": return duplicateRecord(draft.database.skills, id, newId, name);
+    case "skills": {
+      const source = draft.database.skills.find((record) => record.id === id);
+      const borrowed = source ? retroChoreographyIdForClone(source) : undefined;
+      const copy = duplicateRecord(draft.database.skills, id, newId, name);
+      if (borrowed) copy.retroChoreographyId = borrowed;
+      return copy;
+    }
     case "items": return duplicateRecord(draft.database.items, id, newId, name);
     case "equipment": return duplicateRecord(draft.database.equipment, id, newId, name);
     case "enemies": return duplicateRecord(draft.database.enemies, id, newId, name);

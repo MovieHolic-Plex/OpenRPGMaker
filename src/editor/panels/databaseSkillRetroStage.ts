@@ -19,7 +19,7 @@ import { partyPixelFrame, partyPixelSheet, partyPixelSheetUrl, PARTY_PIXEL_SHEET
 import { RETRO_ROSTER, retroRosterClass, type RetroRosterClass } from "@/assets/retroRoster";
 import { PIXEL_ENEMY_FRAME, pixelEnemyCell, pixelEnemySheet, pixelEnemySheetUrl, type PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { RETRO_CLASS_SKILLS, type RetroClassSkill, type RetroFxAnchor, type RetroSkillMotion } from "@/assets/retroClassSkills";
-import { retroClassSkill } from "@/assets/retroSkillCatalog";
+import { resolveRetroClassChoreography, resolveRetroMonsterChoreography, retroClassSkill } from "@/assets/retroSkillCatalog";
 import { EXTENDED_POSE_FRAME, castFrame, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import {
   retroClassSkillTimeline,
@@ -36,7 +36,6 @@ import {
 } from "@/battle/retroSkillTimeline";
 import { RETRO_SKILL_RECIPES, retroSkillRecipe, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { loadBattleSample, playBattleSample } from "@/player/battleSeSamples";
-import { retroMonsterSkill } from "@/assets/retroMonsterSkills";
 import {
   isMonsterSkillId,
   monsterFxUrl,
@@ -174,7 +173,7 @@ function fxUrl(key: string): string {
 
 function stageSource(record: SkillRecord, project: Project): StageSource | undefined {
   const side: RetroTimelineSide | undefined = retroSideForScope(record.scope);
-  const contract = retroClassSkill(record.id);
+  const contract = resolveRetroClassChoreography(record);
   if (contract) {
     // 계약 연출은 계약의 편을 쓴다(레코드 scope 가 계약과 어긋나도 그림은 계약대로 — 어긋남은 스킬 설정의 문제다).
     const timeline = retroClassSkillTimeline(contract);
@@ -203,13 +202,13 @@ function learnerActorId(record: SkillRecord, project: Project): string | undefin
 }
 
 /** 목록 배지·필터용: 전용 도트 연출(계약 또는 런타임 고정 레시피)이 있는가. */
-export function retroSkillBadgeSheet(record: Pick<SkillRecord, "id">): { readonly url: string; readonly frame: number; readonly frames: number; readonly cell: number } | undefined {
-  const monster = retroMonsterSkill(record.id);
+export function retroSkillBadgeSheet(record: Pick<SkillRecord, "id" | "retroChoreographyId">): { readonly url: string; readonly frame: number; readonly frames: number; readonly cell: number } | undefined {
+  const monster = resolveRetroMonsterChoreography(record);
   if (monster) {
     const layer = monster.layers.find((entry) => entry.anchor !== "projectile" && entry.anchor !== "user") ?? monster.layers[0]!;
     return { url: monsterFxUrl(layer.key), frame: layer.frame, frames: layer.frames, cell: Math.floor(layer.frames * 0.4) };
   }
-  const contract = retroClassSkill(record.id);
+  const contract = resolveRetroClassChoreography(record);
   if (contract) {
     // 첫 칸은 대부분 거의 빈 도입 칸이라, 첫 착탄 레이어의 40% 지점 칸을 쓴다(목록에서 알아볼 수 있게).
     const layer = contract.layers.find((entry) => entry.anchor !== "projectile" && entry.anchor !== "user") ?? contract.layers[0]!;
@@ -415,7 +414,7 @@ export type SkillRetroStage = { readonly element: HTMLElement; readonly stop: ()
 /** 이 스킬의 도트 전투 미리보기. 연출이 없으면 null. */
 export function renderSkillRetroStage(record: SkillRecord, project: Project): SkillRetroStage | null {
   // 몬스터 스킬은 무대 방향이 반대다(몬스터 왼쪽 시전 → 아군 오른쪽 대상). 레코드가 없어도 계약만으로 돈다.
-  const monster = retroMonsterSkill(record.id);
+  const monster = resolveRetroMonsterChoreography(record);
   if (monster) return renderMonsterSkillStage(monster, record.name);
   const source = stageSource(record, project);
   if (!source) return null;
@@ -914,8 +913,9 @@ export function resumeRetroSkillStagesIn(scope: ParentNode): void {
 
 /** 스킬 설정이 바뀌어 스테이지를 다시 그려야 하는지 가르는 서명. */
 export function retroStageSignature(record: SkillRecord): string {
-  if (retroMonsterSkill(record.id)) return ["mon", record.id, record.name].join("|");
-  const recipe = retroClassSkill(record.id) ? record.id : retroSkillRecipe(record);
+  if (resolveRetroMonsterChoreography(record)) return ["mon", record.id, record.retroChoreographyId ?? "", record.name].join("|");
+  const borrowed = resolveRetroClassChoreography(record);
+  const recipe = borrowed ? borrowed.id : retroSkillRecipe(record);
   const key = typeof recipe === "string" ? recipe : recipe ? recipe.fx + ":" + recipe.approach : "";
   return [key, record.scope, record.name, record.effect.kind].join("|");
 }
