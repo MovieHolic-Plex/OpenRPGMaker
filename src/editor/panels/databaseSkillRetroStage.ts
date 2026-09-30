@@ -148,7 +148,7 @@ export const MOTION_LABELS: Readonly<Record<RetroSkillMotion, string>> = {
   "dash-strike": "파고들어 베기", "leap-strike": "뛰어올라 내려찍기", "blink-strike": "순간이동 베기", flurry: "연속 베기",
   spin: "회전 베기", cast: "제자리 시전", shoot: "제자리 사격", buff: "제자리 강화", finisher: "필살기",
 };
-const ANCHOR_LABELS: Readonly<Record<RetroFxAnchor, string>> = {
+export const ANCHOR_LABELS: Readonly<Record<RetroFxAnchor, string>> = {
   user: "시전자", target: "대상", allTargets: "대상 전원", allAllies: "아군 전원", screen: "화면", projectile: "투사체",
 };
 

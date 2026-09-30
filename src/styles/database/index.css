@@ -68,6 +68,7 @@
 @import "./system-font-section.css" layer(database);
 @import "./system-studio.css" layer(database);
 @import "./world-gen.css" layer(database);
+@import "./retro-gallery.css" layer(database);
 @import "./scratch-concept.css" layer(database);
 @import "./studio-theme.css" layer(database);
 /* 15- 인 이유(2026-09-17 실측): 이 시트는 record-list-modern.css 뒤에 실려야 한다.

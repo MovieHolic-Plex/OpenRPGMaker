@@ -59,6 +59,7 @@ import { spatialAllSourceDesignCount } from "@/editor/panels/spatialCatalog";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
+import { renderRetroChoreographyTab, resetRetroChoreographyViewState } from "@/editor/panels/databaseRetroChoreographyView";
 import { renderWorldGenTab, resetWorldGenTabViewState } from "@/editor/panels/databaseWorldGenView";
 import { worldCanonHasContent } from "@/project/world/canon";
 import {} from "@/editor/uiCopy";
@@ -74,6 +75,7 @@ export type DatabaseTab =
   | "overview"
   | DatabaseCollection
   | "animations"
+  | "retroChoreographies"
   | "battleCommands"
   | "battleScreen"
   | "commonEvents"
@@ -140,6 +142,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "factions", label: "진영", testid: "db-tab-factions" },
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
+  { id: "retroChoreographies", label: "도트 연출", testid: "db-tab-retro-choreographies" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
   { id: "tilesetAutotile", label: "오토타일 설정", testid: "db-tab-tileset-autotile" },
   { id: "tilesetUnlabeled", label: "미분류 모아보기", testid: "db-tab-tileset-unlabeled" },
@@ -187,7 +190,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   {
     label: "전투 규칙",
     slug: "battle",
-    tabs: ["elements", "states", "animations", "battleScreen", "battleCommands"],
+    tabs: ["elements", "states", "animations", "retroChoreographies", "battleScreen", "battleCommands"],
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   { label: "맵", slug: "world", tabs: ["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"] },
@@ -477,6 +480,7 @@ export function databaseTabGroupLabel(tab: DatabaseTab): string | undefined {
 }
 export function switchDatabaseActiveTab(tab: DatabaseTab, panelRoot: HTMLElement): void {
   if (tab === "worldGen" && activeTab !== tab) resetWorldGenTabViewState();
+  if (tab === "retroChoreographies" && activeTab !== tab) resetRetroChoreographyViewState();
   setDatabaseActiveTab(tab);
   const header = panelRoot.querySelector(".db-tabs");
   if (header instanceof HTMLElement) updateTabButtons(header);
@@ -500,6 +504,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
   tabRenderCaches.delete(container);
   resetWorldGenTabViewState();
+  resetRetroChoreographyViewState();
   applyTilesetFolderFacet(activeTab);
   const header = el("div", { class: "db-tabs" });
   const body = el("div", {
@@ -598,6 +603,9 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return database.items.length + database.equipment.length;
     case "animations":
       return database.battleAnimations.length;
+    // 기본 연출(번들 계약)이 늘 있으므로 0 이 될 일이 없고, 빈 탭으로 접히면 안 된다.
+    case "retroChoreographies":
+      return null;
     case "monsterSpecies":
       return database.monsterSpecies?.length ?? 0;
     case "crops":
@@ -716,6 +724,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   structureKits: "구조물",
   tilesetSpaces: "공간 종류",
   worldGen: "생성 규칙",
+  retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies",
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
   spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",
@@ -846,6 +855,7 @@ function appendTabButton(
         click: () => {
           const already = activeTab === tab.id;
           if (tab.id === "worldGen" && !already) resetWorldGenTabViewState();
+          if (tab.id === "retroChoreographies" && !already) resetRetroChoreographyViewState();
           setDatabaseActiveTab(tab.id);
           // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
           updateTabButtons(header);
@@ -1181,6 +1191,9 @@ function renderActiveTabUnguarded(
       break;
     case "animations":
       renderRecordTab(body, "battleAnimations", rerender);
+      break;
+    case "retroChoreographies":
+      renderRetroChoreographyTab(content, rerender);
       break;
     case "elements":
       renderElementsTab(body);
