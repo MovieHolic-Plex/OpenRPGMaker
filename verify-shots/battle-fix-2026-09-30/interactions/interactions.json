@@ -1,0 +1,2131 @@
+[
+  {
+    "id": "input-auto",
+    "errors": [],
+    "before": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": true,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전대기 1"
+        },
+        {
+          "id": "actor_guardian",
+          "text": "수호자Lv 22HP 9999/9999MP 999/999수대기 2"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_audit_input",
+          "text": "skill_audit_inputMP 0"
+        },
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "battleAuto": "true",
+        "battleSpeed": "1.8"
+      },
+      "prompt": true,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전대기 1"
+        },
+        {
+          "id": "actor_guardian",
+          "text": "수호자Lv 22HP 9999/9999MP 999/999수대기 2"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_audit_input",
+          "text": "skill_audit_inputMP 0"
+        },
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "fixed": true,
+    "completed": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "battleAuto": "false",
+        "battleSpeed": "1.8"
+      },
+      "prompt": false,
+      "active": "actor_guardian",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전입력 완료"
+        },
+        {
+          "id": "actor_guardian",
+          "text": "수호자Lv 22HP 9999/9999MP 999/999수대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    }
+  },
+  {
+    "id": "combo-menu",
+    "errors": [],
+    "before": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "active",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "gauge",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전ATB100%",
+          "atb": ""
+        },
+        {
+          "id": "actor_guardian",
+          "text": "수호자Lv 22HP 9999/9999MP 999/999수ATB100%",
+          "atb": ""
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-skill-skill_audit_combo",
+          "text": "skill_audit_comboMP 0 · 수호자와 연계"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "ready": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "active",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "gauge",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전ATB100%",
+          "atb": ""
+        },
+        {
+          "id": "actor_guardian",
+          "text": "수호자Lv 22HP 9999/9999MP 999/999수ATB100%",
+          "atb": ""
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-skill-skill_audit_combo",
+          "text": "skill_audit_comboMP 0 · 수호자와 연계"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "reopened": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "active",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "gauge",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전ATB100%",
+          "atb": ""
+        },
+        {
+          "id": "actor_guardian",
+          "text": "수호자Lv 22HP 9999/9999MP 999/999수ATB100%",
+          "atb": ""
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-skill-skill_audit_combo",
+          "text": "skill_audit_comboMP 0 · 수호자와 연계"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "fixed": true
+  },
+  {
+    "id": "crosskind",
+    "errors": [],
+    "menu": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_audit_mon_borrow",
+          "text": "감사 산성 연출MP 0"
+        },
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "true",
+        "battleDirectorStep": "impact",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "hitIntensity": "graze"
+      },
+      "prompt": false,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9996/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "skill_mon_acid_spit"
+    ],
+    "observedFx": [
+      "mon_acid_blob",
+      "mon_acid_splash"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "same-name",
+    "errors": [],
+    "menu": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "active": "actor_ranger",
+      "actors": [
+        {
+          "id": "actor_ranger",
+          "text": "궁수Lv 22HP 9999/9999MP 999/999궁대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_poison_sting",
+          "text": "독침MP 0"
+        },
+        {
+          "id": "actor-skill-skill_ranger_power_shot",
+          "text": "강사BowMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_weaken",
+          "text": "약화MP 3"
+        },
+        {
+          "id": "actor-skill-skill_ranger_multi_shot",
+          "text": "연사BowMP 5"
+        },
+        {
+          "id": "actor-skill-skill_ranger_fire_arrow",
+          "text": "화염 화살FireMP 6"
+        },
+        {
+          "id": "actor-skill-skill_ranger_frost_arrow",
+          "text": "빙결 화살IceMP 6"
+        },
+        {
+          "id": "actor-skill-skill_ranger_arrow_rain",
+          "text": "화살비BowMP 12"
+        },
+        {
+          "id": "actor-skill-skill_ranger_snipe",
+          "text": "저격BowMP 12"
+        },
+        {
+          "id": "actor-skill-skill_ranger_nature_call",
+          "text": "자연의 부름MP 14"
+        },
+        {
+          "id": "actor-skill-skill_ranger_storm_arrow",
+          "text": "폭풍의 화살ThunderMP 32"
+        },
+        {
+          "id": "actor-skill-skill_gunner_snipe",
+          "text": "저격SpearMP 6"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "true",
+        "battleDirectorStep": "acting",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "hitIntensity": "graze"
+      },
+      "prompt": false,
+      "active": "actor_ranger",
+      "actors": [
+        {
+          "id": "actor_ranger",
+          "text": "궁수Lv 22HP 9997/9999MP 993/999궁대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "skill_gunner_snipe"
+    ],
+    "observedFx": [
+      "gunner_scope"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "capture-cancel",
+    "errors": [],
+    "before": {
+      "farmPlots": {},
+      "makerInstances": {},
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_pkmn_town",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 1
+      },
+      "eventLocations": {},
+      "currentMapId": "map_pkmn_town",
+      "x": 13,
+      "y": 12,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_gen2_sun_relay": false,
+        "sw_gen2_moon_relay": false,
+        "sw_gen2_bridge_relay": false,
+        "sw_gen2_seal_relay": false,
+        "sw_catalog_gate_open": false,
+        "sw_catalog_lighthouse_lit": false,
+        "sw_catalog_mine_lift": false,
+        "sw_catalog_fountain_flow": false,
+        "sw_catalog_archive_unlock": false,
+        "sw_catalog_beacon_lit": false,
+        "sw_catalog_aqueduct_route": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {
+        "item_capture_orb": 8
+      },
+      "monsterInstances": {
+        "monster_1": {
+          "instanceId": "monster_1",
+          "speciesId": "species_scarloxy_mossling",
+          "level": 11,
+          "exp": 106,
+          "ivs": {
+            "hp": 6,
+            "atk": 8,
+            "def": 1,
+            "spd": 10
+          },
+          "friendship": 70,
+          "caughtAt": {
+            "mapId": "map_pkmn_town",
+            "x": 13,
+            "y": 12
+          },
+          "currentHp": 25,
+          "skillIds": [
+            "skill_attack",
+            "skill_scarloxy_leaf",
+            "skill_scarloxy_bug"
+          ],
+          "skillPp": {
+            "skill_attack": 35,
+            "skill_scarloxy_leaf": 25,
+            "skill_scarloxy_bug": 35
+          }
+        }
+      },
+      "monsterParty": [
+        "monster_1"
+      ],
+      "monsterBox": [],
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 2278313249,
+        "streams": {
+          "encounter": {
+            "seed": 3942858771,
+            "state": 3942858771
+          },
+          "battle": {
+            "seed": 1292891212,
+            "state": 1292891212
+          },
+          "movement": {
+            "seed": 1397003607,
+            "state": 1397003607
+          },
+          "fishing": {
+            "seed": 3306222856,
+            "state": 3306222856
+          },
+          "misc": {
+            "seed": 3458228038,
+            "state": 3458228038
+          }
+        }
+      }
+    },
+    "captured": {
+      "farmPlots": {},
+      "makerInstances": {},
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_pkmn_town",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 1
+      },
+      "eventLocations": {},
+      "currentMapId": "map_pkmn_town",
+      "x": 13,
+      "y": 12,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_gen2_sun_relay": false,
+        "sw_gen2_moon_relay": false,
+        "sw_gen2_bridge_relay": false,
+        "sw_gen2_seal_relay": false,
+        "sw_catalog_gate_open": false,
+        "sw_catalog_lighthouse_lit": false,
+        "sw_catalog_mine_lift": false,
+        "sw_catalog_fountain_flow": false,
+        "sw_catalog_archive_unlock": false,
+        "sw_catalog_beacon_lit": false,
+        "sw_catalog_aqueduct_route": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {
+        "item_capture_orb": 8
+      },
+      "monsterInstances": {
+        "monster_1": {
+          "instanceId": "monster_1",
+          "speciesId": "species_scarloxy_mossling",
+          "level": 11,
+          "exp": 106,
+          "ivs": {
+            "hp": 6,
+            "atk": 8,
+            "def": 1,
+            "spd": 10
+          },
+          "friendship": 70,
+          "caughtAt": {
+            "mapId": "map_pkmn_town",
+            "x": 13,
+            "y": 12
+          },
+          "currentHp": 25,
+          "skillIds": [
+            "skill_attack",
+            "skill_scarloxy_leaf",
+            "skill_scarloxy_bug"
+          ],
+          "skillPp": {
+            "skill_attack": 35,
+            "skill_scarloxy_leaf": 25,
+            "skill_scarloxy_bug": 35
+          }
+        }
+      },
+      "monsterParty": [
+        "monster_1"
+      ],
+      "monsterBox": [],
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 2278313249,
+        "streams": {
+          "encounter": {
+            "seed": 3942858771,
+            "state": 3942858771
+          },
+          "battle": {
+            "seed": 1292891212,
+            "state": 1860785685
+          },
+          "movement": {
+            "seed": 1397003607,
+            "state": 1397003607
+          },
+          "fishing": {
+            "seed": 3306222856,
+            "state": 3306222856
+          },
+          "misc": {
+            "seed": 3458228038,
+            "state": 3458228038
+          }
+        }
+      }
+    },
+    "abort": true,
+    "after": {
+      "farmPlots": {},
+      "makerInstances": {},
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_pkmn_town",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 1
+      },
+      "eventLocations": {},
+      "currentMapId": "map_pkmn_town",
+      "x": 13,
+      "y": 12,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_gen2_sun_relay": false,
+        "sw_gen2_moon_relay": false,
+        "sw_gen2_bridge_relay": false,
+        "sw_gen2_seal_relay": false,
+        "sw_catalog_gate_open": false,
+        "sw_catalog_lighthouse_lit": false,
+        "sw_catalog_mine_lift": false,
+        "sw_catalog_fountain_flow": false,
+        "sw_catalog_archive_unlock": false,
+        "sw_catalog_beacon_lit": false,
+        "sw_catalog_aqueduct_route": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {
+        "item_capture_orb": 8
+      },
+      "monsterInstances": {
+        "monster_1": {
+          "instanceId": "monster_1",
+          "speciesId": "species_scarloxy_mossling",
+          "level": 11,
+          "exp": 106,
+          "ivs": {
+            "hp": 6,
+            "atk": 8,
+            "def": 1,
+            "spd": 10
+          },
+          "friendship": 70,
+          "caughtAt": {
+            "mapId": "map_pkmn_town",
+            "x": 13,
+            "y": 12
+          },
+          "currentHp": 25,
+          "skillIds": [
+            "skill_attack",
+            "skill_scarloxy_leaf",
+            "skill_scarloxy_bug"
+          ],
+          "skillPp": {
+            "skill_attack": 35,
+            "skill_scarloxy_leaf": 25,
+            "skill_scarloxy_bug": 35
+          }
+        }
+      },
+      "monsterParty": [
+        "monster_1"
+      ],
+      "monsterBox": [],
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 2278313249,
+        "streams": {
+          "encounter": {
+            "seed": 3942858771,
+            "state": 3942858771
+          },
+          "battle": {
+            "seed": 1292891212,
+            "state": 1860785685
+          },
+          "movement": {
+            "seed": 1397003607,
+            "state": 1397003607
+          },
+          "fishing": {
+            "seed": 3306222856,
+            "state": 3306222856
+          },
+          "misc": {
+            "seed": 3458228038,
+            "state": 3458228038
+          }
+        }
+      }
+    },
+    "fixed": true
+  },
+  {
+    "id": "capture-accept",
+    "errors": [],
+    "before": {
+      "farmPlots": {},
+      "makerInstances": {},
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_pkmn_town",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 1
+      },
+      "eventLocations": {},
+      "currentMapId": "map_pkmn_town",
+      "x": 13,
+      "y": 12,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_gen2_sun_relay": false,
+        "sw_gen2_moon_relay": false,
+        "sw_gen2_bridge_relay": false,
+        "sw_gen2_seal_relay": false,
+        "sw_catalog_gate_open": false,
+        "sw_catalog_lighthouse_lit": false,
+        "sw_catalog_mine_lift": false,
+        "sw_catalog_fountain_flow": false,
+        "sw_catalog_archive_unlock": false,
+        "sw_catalog_beacon_lit": false,
+        "sw_catalog_aqueduct_route": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {
+        "item_capture_orb": 8
+      },
+      "monsterInstances": {
+        "monster_1": {
+          "instanceId": "monster_1",
+          "speciesId": "species_scarloxy_mossling",
+          "level": 11,
+          "exp": 106,
+          "ivs": {
+            "hp": 8,
+            "atk": 15,
+            "def": 15,
+            "spd": 13
+          },
+          "friendship": 70,
+          "caughtAt": {
+            "mapId": "map_pkmn_town",
+            "x": 13,
+            "y": 12
+          },
+          "currentHp": 26,
+          "skillIds": [
+            "skill_attack",
+            "skill_scarloxy_leaf",
+            "skill_scarloxy_bug"
+          ],
+          "skillPp": {
+            "skill_attack": 35,
+            "skill_scarloxy_leaf": 25,
+            "skill_scarloxy_bug": 35
+          }
+        }
+      },
+      "monsterParty": [
+        "monster_1"
+      ],
+      "monsterBox": [],
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 4261501200,
+        "streams": {
+          "encounter": {
+            "seed": 3203484059,
+            "state": 3203484059
+          },
+          "battle": {
+            "seed": 388361700,
+            "state": 388361700
+          },
+          "movement": {
+            "seed": 1547904351,
+            "state": 1547904351
+          },
+          "fishing": {
+            "seed": 3755209568,
+            "state": 3755209568
+          },
+          "misc": {
+            "seed": 1161889550,
+            "state": 1161889550
+          }
+        }
+      }
+    },
+    "captured": {
+      "farmPlots": {},
+      "makerInstances": {},
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_pkmn_town",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 1
+      },
+      "eventLocations": {},
+      "currentMapId": "map_pkmn_town",
+      "x": 13,
+      "y": 12,
+      "gold": 0,
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_gen2_sun_relay": false,
+        "sw_gen2_moon_relay": false,
+        "sw_gen2_bridge_relay": false,
+        "sw_gen2_seal_relay": false,
+        "sw_catalog_gate_open": false,
+        "sw_catalog_lighthouse_lit": false,
+        "sw_catalog_mine_lift": false,
+        "sw_catalog_fountain_flow": false,
+        "sw_catalog_archive_unlock": false,
+        "sw_catalog_beacon_lit": false,
+        "sw_catalog_aqueduct_route": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {
+        "item_capture_orb": 8
+      },
+      "monsterInstances": {
+        "monster_1": {
+          "instanceId": "monster_1",
+          "speciesId": "species_scarloxy_mossling",
+          "level": 11,
+          "exp": 106,
+          "ivs": {
+            "hp": 8,
+            "atk": 15,
+            "def": 15,
+            "spd": 13
+          },
+          "friendship": 70,
+          "caughtAt": {
+            "mapId": "map_pkmn_town",
+            "x": 13,
+            "y": 12
+          },
+          "currentHp": 26,
+          "skillIds": [
+            "skill_attack",
+            "skill_scarloxy_leaf",
+            "skill_scarloxy_bug"
+          ],
+          "skillPp": {
+            "skill_attack": 35,
+            "skill_scarloxy_leaf": 25,
+            "skill_scarloxy_bug": 35
+          }
+        }
+      },
+      "monsterParty": [
+        "monster_1"
+      ],
+      "monsterBox": [],
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 4261501200,
+        "streams": {
+          "encounter": {
+            "seed": 3203484059,
+            "state": 3203484059
+          },
+          "battle": {
+            "seed": 388361700,
+            "state": 956256173
+          },
+          "movement": {
+            "seed": 1547904351,
+            "state": 1547904351
+          },
+          "fishing": {
+            "seed": 3755209568,
+            "state": 3755209568
+          },
+          "misc": {
+            "seed": 1161889550,
+            "state": 1161889550
+          }
+        }
+      }
+    },
+    "after": {
+      "farmPlots": {},
+      "makerInstances": {},
+      "actionReceipt": {
+        "kind": "action",
+        "mapId": "map_pkmn_town",
+        "handled": true,
+        "farmAttempts": [],
+        "sequence": 1
+      },
+      "eventLocations": {},
+      "currentMapId": "map_pkmn_town",
+      "x": 13,
+      "y": 12,
+      "gold": 0,
+      "battleResult": "victory",
+      "switches": {
+        "sw_0001": false,
+        "sw_0002": false,
+        "sw_0003": false,
+        "sw_0004": false,
+        "sw_0005": false,
+        "sw_0006": false,
+        "sw_0007": false,
+        "sw_0008": false,
+        "sw_0009": false,
+        "sw_0010": false,
+        "sw_0011": false,
+        "sw_0012": false,
+        "sw_0013": false,
+        "sw_0014": false,
+        "sw_0015": false,
+        "sw_0016": false,
+        "sw_0017": false,
+        "sw_0018": false,
+        "sw_0019": false,
+        "sw_0020": false,
+        "sw_gen2_sun_relay": false,
+        "sw_gen2_moon_relay": false,
+        "sw_gen2_bridge_relay": false,
+        "sw_gen2_seal_relay": false,
+        "sw_catalog_gate_open": false,
+        "sw_catalog_lighthouse_lit": false,
+        "sw_catalog_mine_lift": false,
+        "sw_catalog_fountain_flow": false,
+        "sw_catalog_archive_unlock": false,
+        "sw_catalog_beacon_lit": false,
+        "sw_catalog_aqueduct_route": false
+      },
+      "variables": {
+        "var_0001": 0,
+        "var_0002": 0,
+        "var_0003": 0,
+        "var_0004": 0,
+        "var_0005": 0,
+        "var_0006": 0,
+        "var_0007": 0,
+        "var_0008": 0,
+        "var_0009": 0,
+        "var_0010": 0,
+        "var_0011": 0,
+        "var_0012": 0,
+        "var_0013": 0,
+        "var_0014": 0,
+        "var_0015": 0,
+        "var_0016": 0,
+        "var_0017": 0,
+        "var_0018": 0,
+        "var_0019": 0,
+        "var_0020": 0
+      },
+      "selfSwitches": {},
+      "timers": {},
+      "inventory": {
+        "item_capture_orb": 7
+      },
+      "monsterInstances": {
+        "monster_1": {
+          "instanceId": "monster_1",
+          "speciesId": "species_scarloxy_mossling",
+          "level": 11,
+          "exp": 106,
+          "ivs": {
+            "hp": 8,
+            "atk": 15,
+            "def": 15,
+            "spd": 13
+          },
+          "friendship": 70,
+          "caughtAt": {
+            "mapId": "map_pkmn_town",
+            "x": 13,
+            "y": 12
+          },
+          "currentHp": 26,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_attack",
+            "skill_scarloxy_leaf",
+            "skill_scarloxy_bug"
+          ],
+          "skillPp": {
+            "skill_attack": 35,
+            "skill_scarloxy_leaf": 25,
+            "skill_scarloxy_bug": 35
+          }
+        },
+        "monster_2": {
+          "instanceId": "monster_2",
+          "speciesId": "species_scarloxy_larvea",
+          "level": 3,
+          "exp": 7,
+          "ivs": {
+            "hp": 11,
+            "atk": 3,
+            "def": 4,
+            "spd": 11
+          },
+          "friendship": 70,
+          "caughtAt": {
+            "mapId": "map_pkmn_town",
+            "x": 13,
+            "y": 12
+          },
+          "currentHp": 14,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_attack",
+            "skill_scarloxy_scratch"
+          ],
+          "skillPp": {
+            "skill_attack": 35,
+            "skill_scarloxy_scratch": 35
+          }
+        }
+      },
+      "monsterParty": [
+        "monster_1",
+        "monster_2"
+      ],
+      "monsterBox": [],
+      "partyActorIds": [
+        "actor_hero"
+      ],
+      "npcActivities": {},
+      "friendship": {},
+      "rng": {
+        "seed": 4261501200,
+        "streams": {
+          "encounter": {
+            "seed": 3203484059,
+            "state": 3203484059
+          },
+          "battle": {
+            "seed": 388361700,
+            "state": 956256173
+          },
+          "movement": {
+            "seed": 1547904351,
+            "state": 1547904351
+          },
+          "fishing": {
+            "seed": 3755209568,
+            "state": 3755209568
+          },
+          "misc": {
+            "seed": 1161889550,
+            "state": 1161889550
+          }
+        }
+      }
+    },
+    "fixed": true
+  },
+  {
+    "id": "enemy-crosskind",
+    "errors": [],
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "hitIntensity": "graze"
+      },
+      "prompt": false,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9969/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "skill_gunner_snipe"
+    ],
+    "observedFx": [
+      "gunner_scope"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "enemy-special",
+    "errors": [],
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "skill_gunner_snipe"
+    ],
+    "observedFx": [
+      "gunner_scope"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "input-active",
+    "errors": [],
+    "before": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "active",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "gauge",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": true,
+      "enemyGauges": [
+        "9%",
+        "9%",
+        "9%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전ATB100%",
+          "atb": ""
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_audit_input",
+          "text": "skill_audit_inputMP 0"
+        },
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "active",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "gauge",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "battleAuto": "true",
+        "battleSpeed": "1.8"
+      },
+      "prompt": true,
+      "enemyGauges": [
+        "9%",
+        "9%",
+        "9%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전ATB100%",
+          "atb": ""
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_audit_input",
+          "text": "skill_audit_inputMP 0"
+        },
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "fixed": true,
+    "completed": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "active",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "true",
+        "battleDirectorStep": "acting",
+        "battlePhase": "charging",
+        "battleFlow": "gauge",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "battleAuto": "false",
+        "battleSpeed": "1.8"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "9%",
+        "9%",
+        "9%"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전ATB0%",
+          "atb": ""
+        }
+      ],
+      "buttons": []
+    }
+  }
+]

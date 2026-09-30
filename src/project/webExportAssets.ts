@@ -54,6 +54,14 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   }
   for (const id of ids) {
+    const charset = charsetBattler(id);
+    if (charset) {
+      // The caster's element-specific pose sheet is selected at runtime, never stored in the actor row.
+      assets.set(charset.castPath, {
+        kind: "public", sourcePath: charset.castPath, zipPath: charset.castPath,
+        resourceId: `${charset.resourceId}-cast`,
+      });
+    }
     const idle = battlerIdleAnimation(id);
     if (idle) assets.set(idle.path, { kind: "public", sourcePath: idle.path, zipPath: idle.path });
     // 도트 측면 전투의 적 도트 시트도 경로로만 참조된다(pixelEnemySheets.ts) — 같은 id 면 함께 싣는다.

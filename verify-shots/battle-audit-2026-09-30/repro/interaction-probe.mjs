@@ -1,0 +1,60 @@
+import { chromium } from '@playwright/test';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { resolve, join } from 'node:path';
+import { startPlayerQaServer, runRuntimeQa } from '../../scripts/lib/runtimeQaRun.mjs';
+import retroScenario from '../../scripts/qa/runtime/retro2003.scenario.mjs';
+const out=resolve('verify-shots/battle-audit-2026-09-30/interactions');await mkdir(out,{recursive:true});
+const report=[];const server=await startPlayerQaServer();const browser=await chromium.launch({args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu']});
+async function press(page,id){await page.getByTestId(id).focus();await page.keyboard.press('z');}
+async function dom(page){return page.evaluate(()=>({scene:{...document.querySelector('.battle-scene')?.dataset},prompt:!!document.querySelector('.battle-input-prompt'),active:document.querySelector('.battle-actor-status.is-active-actor')?.dataset.recordId,actors:[...document.querySelectorAll('.battle-actor-status')].map(n=>({id:n.dataset.recordId,text:n.textContent,atb:n.querySelector('.battle-atb-bar')?.style.width})),buttons:[...document.querySelectorAll('.battle-command')].map(n=>({id:n.dataset.testid,text:n.textContent,inert:n.dataset.battleCommandInert,reason:n.dataset.battleCommandInertReason}))}));}
+async function shot(page,id,name){await page.screenshot({path:join(out,id+'-'+name+'.png')});}
+try {
+ for(const id of (process.env.AUDIT_CASES?.split(',')??['input-auto','combo-menu','crosskind','same-name','capture-cancel'])){
+  const r={id,errors:[]};report.push(r);const context=await browser.newContext({viewport:{width:1024,height:768}});const page=await context.newPage();page.on('pageerror',e=>r.errors.push(String(e)));
+  try{
+   const fixture=resolve('.omo/battle-audit-3852/'+id+'.json');
+   if(id==='capture-cancel'){
+    const project=JSON.parse(await readFile(fixture,'utf8'));
+    await page.addInitScript(()=>{window.__OPENRPG_BOOT__={projectUrl:'/__audit/project.json',saveNamespace:'audit-capture',qaInstrumentation:true};});
+    await page.route('**/__audit/project.json',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(project)}));
+    await page.goto(server.url+'/player.html',{waitUntil:'domcontentloaded'});await page.getByTestId('title-screen').waitFor({timeout:60000});await page.keyboard.press('Enter');
+    await page.waitForFunction(()=>window.__oprnDebug?.readState().currentMapId,undefined,{timeout:60000});
+    await page.evaluate(()=>{window.__oprnInput.face('down');window.__oprnInput.action();});
+    await page.getByTestId('actor-command-fight').waitFor({timeout:30000});await page.waitForFunction(()=>document.querySelector('.battle-scene')?.dataset.battleSequenceBusy==='false');
+    r.before=await page.evaluate(()=>window.__oprnDebug.readState());await shot(page,id,'root');
+    await press(page,'actor-command-item');await page.getByTestId('actor-capture-item_capture_orb').waitFor({timeout:5000});await shot(page,id,'bag');await press(page,'actor-capture-item_capture_orb');
+    if(await page.locator('.battle-scene[data-battle-phase="targetSelect"]').count()) await page.keyboard.press('z');
+    await page.waitForFunction(before=>Object.keys(window.__oprnDebug.readState().monsterInstances).length>before,Object.keys(r.before.monsterInstances).length,{timeout:20000});
+    r.captured=await page.evaluate(()=>window.__oprnDebug.readState());await shot(page,id,'captured');
+    r.abort=await page.evaluate(()=>{const s=window.__oprnHooksScene;const found=!!s.battleAbortController;s.battleAbortController?.abort();return found;});
+    await page.waitForSelector('[data-testid="battle-scene"]',{state:'detached',timeout:20000});r.after=await page.evaluate(()=>window.__oprnDebug.readState());
+    r.reproduced=Object.keys(r.after.monsterInstances).length>Object.keys(r.before.monsterInstances).length&&r.after.inventory.item_capture_orb===r.before.inventory.item_capture_orb;
+   }else{
+    const beats=structuredClone(retroScenario.beats.slice(0,5));
+    beats[3].expect={testidPresent:['battle-scene']};beats[4].ops=beats[4].ops.filter(o=>!(o.kind==='waitForAttr'&&o.attr==='data-battle-flow'));delete beats[4].expect.battlerGeometry;
+    await runRuntimeQa(page,{...retroScenario,id:'interaction-'+id,projectFixture:fixture,beats},{serverUrl:server.url,outDir:join(out,id)});
+    if(id==='input-auto'){
+     await press(page,'actor-command-skill');await press(page,'actor-skill-skill_audit_input');await page.getByTestId('battle-input-prompt').waitFor();r.before=await dom(page);await shot(page,id,'prompt');
+     await page.keyboard.press('f');await page.waitForTimeout(100);r.after=await dom(page);await shot(page,id,'auto');r.reproduced=r.after.prompt&&r.before.scene.battleSequenceBusy==='false'&&r.after.scene.battleSequenceBusy==='true';
+    }else if(id==='combo-menu'){
+     await press(page,'actor-command-skill');await page.getByTestId('actor-skill-skill_audit_combo').focus();r.before=await dom(page);await shot(page,id,'before');
+     await page.waitForFunction(()=>[...document.querySelectorAll('.battle-actor-status')].find(n=>n.dataset.recordId==='actor_guardian')?.textContent.includes('ATB100%'),undefined,{timeout:45000});
+     r.ready=await dom(page);await shot(page,id,'ready');await page.keyboard.press('x');await press(page,'actor-command-skill');await page.getByTestId('actor-skill-skill_audit_combo').focus();r.reopened=await dom(page);await shot(page,id,'reopened');
+     const find=x=>x.buttons.find(n=>n.id==='actor-skill-skill_audit_combo');r.reproduced=find(r.ready)?.inert==='true'&&find(r.reopened)?.inert!=='true';
+    }else{
+     await page.evaluate(()=>{window.__auditFx=[];const sample=()=>{const f=document.querySelector('.battle-field');const x={skill:f?.dataset.retroClassSkill,fx:[...document.querySelectorAll('.retro-class-fx[data-retro-skill-fx]')].map(n=>n.dataset.retroSkillFx)};if(x.skill||x.fx.length)window.__auditFx.push(x);};window.__auditObserver=new MutationObserver(sample);window.__auditObserver.observe(document.body,{subtree:true,childList:true,attributes:true});});
+     await press(page,'actor-command-skill');r.menu=await dom(page);await press(page,id==='crosskind'?'actor-skill-skill_audit_mon_borrow':'actor-skill-skill_gunner_snipe');
+     await page.waitForTimeout(80);if(await page.locator('.battle-scene[data-battle-phase="targetSelect"]').count())await page.keyboard.press('z');
+     await page.waitForTimeout(6500);r.observed=await page.evaluate(()=>{window.__auditObserver.disconnect();return window.__auditFx;});r.after=await dom(page);await shot(page,id,'after');
+     r.observedSkillIds=[...new Set(r.observed.map(x=>x.skill).filter(Boolean))];r.observedFx=[...new Set(r.observed.flatMap(x=>x.fx))];
+     r.reproduced=id==='crosskind'?!r.observedSkillIds.includes('skill_mon_acid_spit'):r.observedSkillIds.includes('skill_ranger_snipe')&&!r.observedSkillIds.includes('skill_gunner_snipe');delete r.observed;
+    }
+   }
+  }catch(e){r.errors.push(String(e.stack??e));r.lastDom=await dom(page).catch(()=>null);await shot(page,id,'failure').catch(()=>{});}
+  finally{await context.close();console.log(JSON.stringify(r));}
+ }
+}finally{
+ await browser.close();await server.close();let previous=[];try{previous=JSON.parse(await readFile(join(out,'interactions.json'),'utf8'));}catch{}
+ const merged=[...previous.filter(r=>!report.some(n=>n.id===r.id)),...report];await writeFile(join(out,'interactions.json'),JSON.stringify(merged,null,2));
+ await writeFile(join(out,'SUMMARY.md'),'# Interaction probes\n\nShipping player.html, transient fixtures.\n\n'+merged.map(r=>`- ${r.id}: reproduced=${r.reproduced}; errors=${r.errors.length}. 즉시 확인: ${r.id}-`+(r.errors.length?'failure.png':r.id==='input-auto'?'prompt.png, '+r.id+'-auto.png':r.id==='combo-menu'?'ready.png, '+r.id+'-reopened.png':r.id==='capture-cancel'?'root.png, '+r.id+'-captured.png':'after.png')).join('\n'));
+}

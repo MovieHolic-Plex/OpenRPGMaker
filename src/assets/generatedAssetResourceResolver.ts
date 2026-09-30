@@ -25,7 +25,10 @@ import type { Project } from "@/project/types";
 // 구 id 를 지우면 사용자가 만든 기존 프로젝트의 타이틀 화면이 빈 화면이 된다.
 // 파일 경로(*.png) 자체는 안 옮겼다 — 에셋 파일 개명은 별도 라운드(Phase 5).
 const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
-  ...Object.fromEntries(CHARSET_BATTLERS.map((entry) => [entry.resourceId, `/${entry.path}`])),
+  ...Object.fromEntries(CHARSET_BATTLERS.flatMap((entry) => [
+    [entry.resourceId, `/${entry.path}`],
+    [`${entry.resourceId}-cast`, `/${entry.castPath}`],
+  ])),
   // 파티원 몬스터 9칸 시트(2차 로스터). 배우 battleCharacterResourceId 로 참조한다.
   ...Object.fromEntries(PARTY_PIXEL_SHEETS.map((entry) => [entry.resourceId, `/${entry.path}`])),
   // 미설치 팩도 id 는 유지한다. 파일 실패는 전투 배경의 네 장 로드 가드가 처리한다.

@@ -1,0 +1,679 @@
+{
+  "scenarioId": "rm2000-control",
+  "projectPath": ".omo/battle-fix-3852/rm2000-control.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "타이틀 화면이 뜬다",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "field-start",
+      "note": "새 게임 → 등대 마을 시작 지점",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 1
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "face-battle-event",
+      "note": "달빛우물 숲 봉인(14,2) 남쪽 칸으로 이동해 위를 본다",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_moonwell_forest",
+          "x": 14,
+          "y": 3
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_moonwell_forest",
+          "x": 14,
+          "y": 3
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "battle-intro",
+      "note": "대사를 넘겨 전투 진입 — 아군 4명 시트와 적 배틀러가 한 화면에 선다",
+      "shot": "04-battle-intro.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "battle-scene",
+          "state": "present",
+          "maxPresses": 24
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-actor-sprites",
+          "state": "present"
+        }
+      ],
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "intro",
+        "field": {
+          "top": 24,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 96,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 130,
+              "bottom": 400,
+              "left": 68,
+              "right": 308,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 130,
+              "bottom": 400,
+              "left": 68,
+              "right": 308,
+              "width": 240,
+              "height": 270
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 154,
+              "bottom": 424,
+              "left": 278,
+              "right": 518,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 157,
+              "bottom": 424,
+              "left": 277,
+              "right": 519,
+              "width": 242,
+              "height": 267
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-3",
+            "node": {
+              "top": 130,
+              "bottom": 400,
+              "left": 488,
+              "right": 728,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 135,
+              "bottom": 400,
+              "left": 487,
+              "right": 729,
+              "width": 243,
+              "height": 265
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": []
+      }
+    },
+    {
+      "index": 4,
+      "id": "battle-command",
+      "note": "측면 레트로 스킨의 시간 게이지와 명령 대기",
+      "shot": "05-battle-command.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitFor",
+          "testid": "actor-command-attack",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-sequence-busy",
+          "value": "false"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-skin",
+          "value": "rm2000"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-flow",
+          "value": "gauge"
+        }
+      ],
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "command",
+        "field": {
+          "top": 24,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 96,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 130,
+              "bottom": 400,
+              "left": 308,
+              "right": 548,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 132,
+              "bottom": 400,
+              "left": 307,
+              "right": 549,
+              "width": 241,
+              "height": 268
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 154,
+              "bottom": 424,
+              "left": 518,
+              "right": 758,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 154,
+              "bottom": 424,
+              "left": 518,
+              "right": 758,
+              "width": 240,
+              "height": 270
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-3",
+            "node": {
+              "top": 130,
+              "bottom": 400,
+              "left": 728,
+              "right": 968,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 134,
+              "bottom": 400,
+              "left": 727,
+              "right": 969,
+              "width": 242,
+              "height": 266
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": []
+      }
+    },
+    {
+      "index": 5,
+      "id": "battle-attack",
+      "note": "공격 대상 선택 후 확정 — 연속 동작은 별도 프레임 프로브에서 기록",
+      "shot": "06-battle-attack.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "z"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-target-prompt",
+          "state": "present"
+        },
+        {
+          "kind": "key",
+          "key": "z"
+        }
+      ],
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "acting",
+        "field": {
+          "top": 24,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 540
+        },
+        "enemyGroup": {
+          "top": 96,
+          "bottom": 564,
+          "left": 32,
+          "right": 992,
+          "width": 960,
+          "height": 468
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 130,
+              "bottom": 400,
+              "left": 308,
+              "right": 548,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 130,
+              "bottom": 400,
+              "left": 308,
+              "right": 548,
+              "width": 240,
+              "height": 270
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 154,
+              "bottom": 424,
+              "left": 518,
+              "right": 758,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 156,
+              "bottom": 424,
+              "left": 517,
+              "right": 759,
+              "width": 241,
+              "height": 268
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-3",
+            "node": {
+              "top": 130,
+              "bottom": 400,
+              "left": 728,
+              "right": 968,
+              "width": 240,
+              "height": 270
+            },
+            "image": {
+              "top": 135,
+              "bottom": 400,
+              "left": 727,
+              "right": 969,
+              "width": 243,
+              "height": 265
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": []
+      }
+    },
+    {
+      "index": 6,
+      "id": "battle-result",
+      "note": "현재 키 계약 F로 자동 전투 → 결과와 승리 포즈",
+      "shot": "07-battle-result.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-sequence-busy",
+          "value": "false"
+        },
+        {
+          "kind": "key",
+          "key": "f"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-result-panel",
+          "state": "present",
+          "timeoutMs": 120000
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-result-panel",
+          "attr": "data-battle-result",
+          "value": "victory"
+        }
+      ],
+      "battlers": {
+        "skin": "rm2000",
+        "directorStep": "result",
+        "field": {
+          "top": 8,
+          "bottom": 753,
+          "left": 4,
+          "right": 997,
+          "width": 993,
+          "height": 745
+        },
+        "enemyGroup": {
+          "top": 82,
+          "bottom": 753,
+          "left": 4,
+          "right": 997,
+          "width": 993,
+          "height": 670
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 239,
+              "bottom": 518,
+              "left": 289,
+              "right": 538,
+              "width": 248,
+              "height": 279
+            },
+            "image": {
+              "top": 237,
+              "bottom": 478,
+              "left": 277,
+              "right": 550,
+              "width": 273,
+              "height": 240
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 272,
+              "bottom": 552,
+              "left": 507,
+              "right": 755,
+              "width": 248,
+              "height": 279
+            },
+            "image": {
+              "top": 271,
+              "bottom": 511,
+              "left": 494,
+              "right": 767,
+              "width": 273,
+              "height": 240
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-3",
+            "node": {
+              "top": 239,
+              "bottom": 518,
+              "left": 724,
+              "right": 972,
+              "width": 248,
+              "height": 279
+            },
+            "image": {
+              "top": 237,
+              "bottom": 478,
+              "left": 711,
+              "right": 985,
+              "width": 273,
+              "height": 240
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": []
+      }
+    }
+  ]
+}

@@ -10,17 +10,33 @@
 
 # Runtime Battle Behavior
 
+## 전투 적대 리뷰 후속 수정 (2026-09-30)
+
+원본 14건과 수정 후 근거는 `docs/2026-09-30-battle-adversarial-review.md`와 `docs/2026-09-30-battle-fixes.md`.
+
+- strict는 행동을 모은 뒤 **양쪽 실행 직전** 행동불가 상태를 다시 검사한다. 무효가 된 행동은 HP·MP를 쓰지 않는다.
+- gauge의 모든 생존자가 `freezesGauge`인 경우에만 `1000 / skinHasteMultiplier` ms 시뮬레이션 시계를 사용한다. 사이클마다 상태 upkeep·쿨다운·turn·트룹 이벤트를 진행한다. 유한 스톱은 회복하고 영구 스톱은 기존 200사이클 교착 종료에 도달한다. 일반 게이지 진행과 Gen1은 이 시계를 쓰지 않는다.
+- `randomSkillFrom`은 대상별로 다시 뽑지 않고 **시전 한 번에 하나**를 선택한다. 선택 기술의 scope·area·부활 대상 조건을 적용하며 원래 기술의 자원 소비와 입력 배율을 유지한다.
+- HP 비용/매 타격 흡수는 `battleSkillVitals.ts`, 상태 속성/장비 방어/타입 배율은 `battleElementModifiers.ts`를 런타임과 예측이 공유한다. 예측 클론에서 비용을 한 번 소비하고 매 타격 뒤 활력·상태·감정 전이를 반영한다. 확률 효과·분산·빗나감·크리티컬은 기존 예측 정책을 따른다.
+- 포획은 battle snapshot에 쌓고 `playSceneBattle`의 취소 가능한 퇴장 연출이 모두 끝난 뒤 볼 소비와 함께 세션에 커밋한다. 중단은 둘 다 반영하지 않는다. 터미널 패배에는 포획을 지급하지 않는다.
+- 입력 프롬프트 동안 AUTO·명령 실행·Active ATB tick을 멈춘다. 완료 콜백은 열 때의 배우·turn·phase 소유권이 그대로인 경우에만 실행한다.
+- 열린 기술 메뉴는 연계 배우의 ready 경계와 HP·MP·상태·기술·PP·쿨다운·게이지 자원·장비 변경에 따라 갱신한다. 매 ATB 소수점 변화마다 DOM을 재생성하지 않는다.
+- 결과 단계의 retro2003 메시지창은 숨겨 승리 요약과 겹치지 않는다.
+- 타임라인/행동 결과는 정확한 `skillId`를 전달한다. 이름 조회는 ID 없는 과거 엔트리에만 사용한다. 배우/적 위치·시트는 실제 시전자 편, 타임라인/레이어는 선택 계약, 대상 편은 저작 scope가 결정한다. 양쪽은 직업/몬스터 계약을 서로 빌릴 수 있고 적의 scan 등 special 엔트리도 ID로 연출을 시작한다.
+- charset `-cast` 동반 자산은 공용 resolver와 웹 내보내기 수집에 들어간다. 하위 경로·inline 내보내기도 같은 resolver를 사용한다.
+- 반복 타격이 명시된 기본 로스터 38개는 `mechanic.hits`를 저작했다. 삼연격/삼단 찌르기 각 `[0.4,0.4,0.4]`, 2연타 `[0.6,0.6]`, 러시는 `[0.25,0.25,0.25,0.5]`. 단순 flurry 모션만으로 타수를 추론하지 않는다. 기존 프로젝트의 동일 ID 저작 레코드를 덮어쓰지 않는다.
+
 ## 레트로 기믹 편집 가능화 (2026-09-30)
 
 스킬 `area`·`comboActorIds`, 상태 `freezesGauge`·`forcedAction`·`physicalDefenseMultiplier`·`magicDefenseMultiplier`·`elementRates` 는 이제 자료집 스킬/상태 탭에서 고친다(칸 목록·저장 경로: [editor-database.md](editor-database.md) 같은 날짜 절). 런타임 의미는 아래 「스킬 기믹 명시화」·「연계기 · 위치 범위기」 그대로다. 기본 DB 상태 8종·확장 직업 6종은 기존 프로젝트에도 `ensureRetroRosterRecords` 가 빠진 것만 심는다([runtime-project-schema.md](runtime-project-schema.md)).
 
 ## 스킬이 계약 도트 연출을 빌린다 — retroChoreographyId (2026-09-30)
 
-새 스킬은 자기 id 가 계약(`retroClassSkills`·`retroRosterSkills`·`retroMonsterSkills`)에 없어도 `SkillRecord.retroChoreographyId` 가 가리키는 계약의 연출(모션·층·소리·타격 간격)을 그대로 재생한다. 위력·비용·상태·범위는 레코드 값을 쓴다. 조회는 `src/assets/retroSkillCatalog.ts` 의 `resolveRetroClassChoreography(record) = retroClassSkill(record.id) ?? retroClassSkill(record.retroChoreographyId)`(몬스터판 `resolveRetroMonsterChoreography`) 하나이고, 런타임(`skillByName`·battleEntry·특수기)과 편집기 무대·배지·서명이 같이 쓴다 — 런타임은 스킬을 **이름**으로 찾으므로 이름이 계약과 다르면 이 필드가 유일한 연결이다. 자기 id 가 계약이면 그쪽이 우선이라 빌린 값은 무시된다. 스킬 복제(편집기·조수)는 사본에 원본 계약 id 를 채운다. 내보내기 플레이어는 `pixel-fx` 폴더 전량을 번들하므로 자산 배선이 더 필요 없다. 증거: `verify-shots/retro-assistant/SUMMARY.md`(새 직업 「화염 검투사」 스킬 8개가 모두 빌린 연출을 재생).
+새 스킬은 자기 id 가 계약(`retroClassSkills`·`retroRosterSkills`·`retroMonsterSkills`)에 없어도 `SkillRecord.retroChoreographyId` 가 가리키는 계약의 연출(모션·층·소리·타격 간격)을 그대로 재생한다. 위력·비용·상태·범위는 레코드 값을 쓴다. 조회는 `src/assets/retroSkillCatalog.ts`의 직업/몬스터 resolver를 런타임과 편집기 무대·배지·서명이 같이 쓴다. 모든 계약 종류에 대해 자기 id를 먼저 선택하고 없을 때만 `retroChoreographyId`를 조회하므로 레이어와 타임라인이 같은 계약을 쓴다. 런타임은 타임라인의 정확한 **skillId**로 레코드를 찾으며 ID 없는 과거 엔트리만 이름으로 조회한다. 자기 id 가 계약이면 그쪽이 우선이라 빌린 값은 무시된다. 스킬 복제(편집기·조수)는 사본에 원본 계약 id 를 채운다. 내보내기 플레이어는 `pixel-fx` 폴더 전량을 번들하므로 자산 배선이 더 필요 없다. 증거: `verify-shots/retro-assistant/SUMMARY.md`(새 직업 「화염 검투사」 스킬 8개가 모두 빌린 연출을 재생).
 
 ## 프로젝트 연출 레코드 — skillChoreographies (2026-09-30, A1)
 
-계약 카탈로그는 읽기 전용 **기본 연출**이고, 프로젝트가 자기 연출을 `database.skillChoreographies`(id `chor_<slug>`)로 갖는다. 조회는 `resolveSkillChoreography(ref, records?, want?)`(`src/project/skillChoreographyRecords.ts`) 하나: ① 스킬 id 가 계약이면 계약 → ② `retroChoreographyId` 가 가리키는 프로젝트 레코드 → ③ 그 id 가 계약이면 계약. 런타임(`skillByName`)·편집기 무대·배지가 같이 쓴다. 기본 연출은 프로젝트에 복사하지 않는다. 시트 프레임 폭·칸 수는 `retroFxSheetMeta(key)`(`retroSkillCatalog.ts`) 하나.
+계약 카탈로그는 읽기 전용 **기본 연출**이고, 프로젝트가 자기 연출을 `database.skillChoreographies`(id `chor_<slug>`)로 갖는다. 조회는 `resolveSkillChoreography(ref, records?, want?)`(`src/assets/retroSkillCatalog.ts`) 하나: ① 스킬 id 가 계약이면 계약 → ② `retroChoreographyId` 가 가리키는 프로젝트 레코드 → ③ 그 id 가 계약이면 계약. 런타임은 행동의 `skillId`로 저작 스킬을 찾고(옛 ID 없는 기록만 이름 폴백), 편집기 무대·배지와 같은 조회를 쓴다. 자체 계약이 있으면 종류가 다른 조회에서도 빌린 계약으로 대체하지 않는다. 프로젝트 연출은 실제 시전자 종류에 맞춰 합성하고, 빌린 기본 계약은 원래 연출 종류와 실제 시전자 배치를 분리한다. 기본 연출은 프로젝트에 복사하지 않는다. 시트 프레임 폭·칸 수는 `retroFxSheetMeta(key)`(`retroSkillCatalog.ts`) 하나.
 - 레코드 `motion` 은 클래스 모션(dash-strike·leap-strike·blink-strike·flurry·spin·cast·shoot·buff·finisher)과 몬스터 모션(lunge·shoot·cast·breath·stomp·buff·finisher)의 **합집합**이다. 층은 최대 8, 레코드는 최대 500.
 - 층 옵션 `startMs`(0~5000)·`scale`(0.5~3)·`repeat`(1~6)·`onHit:"each"`(타수만큼 90ms 간격 복제). 옵션이 없는 계약 층의 타임라인은 바이트 그대로다(번들 4436개 타임라인이 기준 커밋과 동일).
 - 함정: 단일 대상 다단 스킬은 플레이어가 타수마다 **행동 전체를 다시 재생**한다(계획 hits=1 이 N번). `onHit:"each"` 복제는 여러 대상이 한 계획으로 묶이는 전체 범위기에서 보인다.
