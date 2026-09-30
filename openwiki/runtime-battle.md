@@ -25,6 +25,7 @@
 - 층 옵션 `startMs`(0~5000)·`scale`(0.5~3)·`repeat`(1~6)·`onHit:"each"`(타수만큼 90ms 간격 복제). 옵션이 없는 계약 층의 타임라인은 바이트 그대로다(번들 4436개 타임라인이 기준 커밋과 동일).
 - 함정: 단일 대상 다단 스킬은 플레이어가 타수마다 **행동 전체를 다시 재생**한다(계획 hits=1 이 N번). `onHit:"each"` 복제는 여러 대상이 한 계획으로 묶이는 전체 범위기에서 보인다.
 - 증거: `verify-shots/retro-choreo-a1/SUMMARY.md`.
+- 편집기·조수(A2): 탭 「도트 연출」·갤러리·타임라인 편집기는 `openwiki/editor-database.md` 「도트 연출 탭」, 조수 도구(`upsert_choreography`·`duplicate_choreography`·`list_fx_sheets`·`preview_choreography`)는 `openwiki/editor-ai-tools.md`. 속도·무게·색조·화면·소리 손잡이(B단계)는 편집기에 칸이 없다.
 
 ## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
 

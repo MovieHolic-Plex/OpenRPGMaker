@@ -301,6 +301,7 @@
 | `list_fx_sheets` | `query?: string`, `frame?: 32\|64\|128`, `limit?: integer`, `offset?: integer` | upsert_choreography 의 layers[].sheet 로 쓸 도트 이펙트 시트 키를 찾는다. 시트마다 frame·frames·usedBy(쓰는 기본 연출 수)를 준다. query 없이 부르면 개수만. 기본 15건, 최대 60. |
 | `upsert_choreography` | `id?: string`, `name?: string`, `description?: string`, `motion?: string`, `layers?: object[]`, `speed?: number`, `weight?: string`, `tint?: string`, `tags?: object` | 도트 연출을 이펙트 시트 조합으로 조립·수정해 프로젝트 레코드 chor_<slug> 로 저장한다. layers[]={sheet,anchor,startMs?,scale?,repeat?,onHit?("first"\|"each"),tint?,se?}. 없는 시트 키는 비슷한 후보와 함께 거부. 기본 연출(skill_*)은 고칠 수 없다. |
 | `duplicate_choreography` | `sourceId: string`, `id?: string`, `name?: string` | 기본 연출(skill_*) 또는 프로젝트 연출(chor_*)을 새 프로젝트 레코드 chor_<slug> 로 복제한다(sourceId 기록). 이후 upsert_choreography 로 층을 고친다. |
+| `preview_choreography` | `id: string` | 도트 연출(기본 skill_* 또는 프로젝트 chor_*)의 층별 프레임 그림을 한 장으로 이어 붙여 돌려준다(가로 스트립 첫 프레임 몇 장씩, 층마다 한 줄). upsert_choreography 로 조립한 뒤 시트가 맞는지 눈으로 확인하는 용도. 읽기 전용. |
 | `read_retro_skill_guide` | (없음) | retro2003 스킬 설계 지침(기믹 어휘와 upsert_skill 필드 대응·기본 상태 id·직업 설계 규칙·retroChoreographyId 빌리기 절차·예시)을 읽는다. 정본은 src/assets/retroSkillMechanics.ts 의 RETRO_SKILL_DESIGN_GUIDE. |
 | `get_tile_info` | `tileIds: array`, `tilesetId?: string` | 타일들의 의미(라벨/설명/태그)·시맨틱 그룹·배치 규칙(placementRules)·통행성·레이어를 조회한다. 타일을 깔기 전에 확인하는 용도. |
 | `list_unclassified_tiles` | `tilesetId: string`, `limit?: integer`, `offset?: integer` | 타일셋에서 라벨이 없고 어떤 타일 그룹에도 속하지 않은 미분류 타일 인덱스를 페이지로 조회한다. 미분류 분석을 다음 배치로 이어갈 때 사용. |
