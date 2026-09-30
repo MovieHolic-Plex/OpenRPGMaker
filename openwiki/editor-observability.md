@@ -614,3 +614,27 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 새 경로를 추가할 때: 전체 프로젝트를 `JSON.stringify`/`acceptanceFingerprint`/`structuredClone` 하는 비교·복제를 스토어 통지나 체크포인트마다 부르지 마라.
 내용 비교는 `sameAcceptanceContent` 또는 `jsonContentDigest`, 읽기 전용 사본은 `cloneProjectSharingSharedDictionaries` 를 쓴다.
 
+
+## store.update copy-on-write 와 자동저장 요약 (2026-09-30)
+
+큰 프로젝트(타일셋 385개·279MB)에서 편집 한 번이 `store.update` 복제 약 120ms, 자동저장 diff 약 1.1s 였다.
+둘 다 «바뀐 곳만 만지고 나머지는 같은 객체로 넘긴다» 로 바꿨다. 문서 내용·직렬화 바이트는 그대로다.
+
+- **`store.update`**(`projectClone.cloneProjectForUpdate` → 변경기 → `finishProjectUpdate` → 정규화 → `removeLegacySpriteReferences(summary.cleanupTarget)` → `applyCleanedProjection`):
+  `maps`·`database`·`spatialAuthoring`·`resourceProfiles` 는 lazy 접근자다. 변경기가 읽은 가지만 그 자리에서 복제하고, 안 읽은 맵·DB 가지는 원본 참조를 유지한다.
+  타일셋·업로드 사전은 예전부터 공유다. 옛 스프라이트 정리는 «읽어서 복제된 가지» 만 훑는다(`cleanupTarget` 은 그 투영).
+  실측(`scripts/bench/editor-store-lag.mts`): 1셀 121→3.6ms, 20셀 125→3.0ms, DB 필드 127→2.0ms, 맵 이름 117→2.7ms.
+- **이벤트 초안 보관함**(`eventDraftVault`): `vaultEntrySources` WeakMap 이 안 바뀐 이벤트의 `structuredClone` 을 건너뛴다. 이벤트는 제자리에서 고치지 않는다는 전제다.
+- **자동저장 diff 의 타일셋 대조**(`projectPatch.sameTilesetValue`): `contentDigest.sharedEntryDigest` 가 항목을 한 번 검증하고 `trustedShared` 에 표시한다. 이후는 O(1).
+  `baselineFrom` 의 한가한 예열이 검증을 미리 한다(첫 저장 diff 1.59s 가 저장 경로에 얹히지 않게). 자동저장 diff 1.07~1.25s → 약 55~69ms.
+  `normalizeCurrentProject` 는 제자리 수정을 하므로 앞뒤로 `forgetTrustedSharedEntries()` 를 부른다.
+- **`persistCurrent`**: `audioDescriptions`·`monsterMetadata` 비교는 참조가 같으면 `JSON.stringify` 를 건너뛴다(`sameJson`).
+- 검증: `scripts/bench/cow-equivalence.mts`(옛 경로와 새 경로를 같은 변경기 12종으로 돌려 직렬화·원본 불변·참조 보존·정리 결과 대조), `digest-autosave.mts`, `store-update-breakdown.mts`. 결과는 `verify-shots/editor-lag-fix/B/`.
+
+깨질 수 있는 계약(어기면 «저장이 조용히 빠진다»):
+- 스토어가 든 객체(타일셋 항목·이벤트·맵)를 제자리에서 고치지 마라. 고쳐야 하면 `update` 안에서 하거나, 제자리 수정 뒤 `forgetTrustedSharedEntries()` 를 불러라
+  (조수 변경 적용·팀 병합·`ensureBundledTilesets` 새로고침은 아직 부르지 않는다).
+- 변경기가 `draft.maps` 를 통째로 새 객체로 바꾸면 전부 복제되는 예전 비용 경로로 떨어진다(내용은 같다).
+- 뿌리 키 삭제는 `applyCleanedProjection` 이 전파하지 않는다.
+- 남은 비용: 전체 흉내에서 diff 약 55ms 는 `sameValue`(맵 ~13ms·DB ~17ms·공간 저작 ~40ms 의 JSON.stringify 대조). 한가할 때 예열은 한 덩이 동기 작업(약 9s, 큰 프로젝트)이라 쪼갤 여지가 있다.
+  `electronRepository` 의 `jsonContentDigest(previous.tileset)` 두 곳은 여전히 전체 순회다.
