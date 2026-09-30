@@ -21,6 +21,8 @@ import {
   applyPaletteSheetImage,
   makeCustomPalette,
   setCustomPaletteFilter,
+  setVirtualPaletteActive,
+  revealVirtualPaletteTile,
   makeGridPalette,
   gridPaletteDisplayTile,
   gridPaletteVisibleCount,
@@ -543,7 +545,7 @@ function makePaletteFilterBar(
         if (tileSearchRenderTimer !== null) clearTimeout(tileSearchRenderTimer);
         tileSearchRenderTimer = setTimeout(() => {
           tileSearchRenderTimer = null;
-          renderPalettePreservingViewport();
+          refreshPaletteFilter();
         }, TILE_SEARCH_RENDER_DELAY_MS);
       },
     },
@@ -572,7 +574,7 @@ function makePaletteFilterBar(
       const value = event.currentTarget.value;
       const category = TILE_CATEGORIES.find(item => item.id === value);
       if (category) activeTileCategory = category.id;
-      renderPalettePreservingViewport();
+      refreshPaletteFilter();
     } },
   });
   for (const category of TILE_CATEGORIES) {
@@ -584,35 +586,45 @@ function makePaletteFilterBar(
   categorySelect.value = activeTileCategory;
   bar.append(el("div", { class: "palette-filter-search-row", children: [search, categorySelect, numberToggle] }));
 
-  if (isFilterActive()) {
-    // 개수는 **팔레트가 실제로 그리는 칸**을 센다(아래 paletteMatchCount 참고). 예전에는
-    // 타일셋 인덱스 일치 수를 세서 표기가 화면과 갈라졌다.
-    const matched = paletteMatchCount(tileset, tileLayer, selectedTile, filteredTileIdSet(tileset));
-    bar.append(
-      el("div", {
-        class: "palette-filter-status",
-        dataset: { testid: "palette-filter-status" },
-        children: [
-          el("span", { text: `${matched}칸 표시` }),
-          el("button", {
-            class: "btn btn-mini palette-filter-clear",
-            text: "필터 해제",
-            attrs: { type: "button", title: "검색어와 분류 필터를 지운다" },
-            dataset: { testid: "palette-filter-clear" },
-            on: {
-              click: () => {
-                tileSearchQuery = "";
-                activeTileCategory = "all";
-                renderPalettePreservingViewport();
-                document.querySelector<HTMLElement>('[data-testid="tile-search-input"]')?.focus();
-              },
-            },
-          }),
-        ],
-      })
-    );
-  }
+  const status = makePaletteFilterStatus(tileset, tileLayer, selectedTile);
+  if (status) bar.append(status);
   return bar;
+}
+
+/** 필터 결과 줄(「N칸 표시」+ 해제 버튼). 필터가 없으면 null. 분류 수를 다시 세지 않으려고 바와 따로 만든다. */
+function makePaletteFilterStatus(
+  tileset: TilesetDef,
+  tileLayer: Exclude<Layer, "event">,
+  selectedTile: number,
+  visibleTiles: ReadonlySet<number> | null = filteredTileIdSet(tileset),
+): HTMLElement | null {
+  if (!isFilterActive()) return null;
+  // 개수는 **팔레트가 실제로 그리는 칸**을 센다(아래 paletteMatchCount 참고). 예전에는
+  // 타일셋 인덱스 일치 수를 세서 표기가 화면과 갈라졌다.
+  const matched = paletteMatchCount(tileset, tileLayer, selectedTile, visibleTiles);
+  return (
+    el("div", {
+      class: "palette-filter-status",
+      dataset: { testid: "palette-filter-status" },
+      children: [
+        el("span", { text: `${matched}칸 표시` }),
+        el("button", {
+          class: "btn btn-mini palette-filter-clear",
+          text: "필터 해제",
+          attrs: { type: "button", title: "검색어와 분류 필터를 지운다" },
+          dataset: { testid: "palette-filter-clear" },
+          on: {
+            click: () => {
+              tileSearchQuery = "";
+              activeTileCategory = "all";
+              refreshPaletteFilter();
+              document.querySelector<HTMLElement>('[data-testid="tile-search-input"]')?.focus();
+            },
+          },
+        }),
+      ],
+    })
+  );
 }
 
 /**
@@ -649,6 +661,40 @@ function makeBrushAssistSection(
 function renderCurrentPalette(): void {
   const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
   if (root) renderTilePalette(root);
+}
+
+/**
+ * 검색어·분류만 바뀐 경우 — 도구줄·붓 보조·구조 킷 선반을 다시 짓지 않고 시트의 흐림과 「N칸 표시」 줄만 맞춘다.
+ * 실측(버들항 23,936칸): 전체 다시 그리기 600~770ms 중 선반·보조 패널 재구성이 350ms 였다.
+ * 커스텀 아틀라스가 제자리에 살아 있을 때만 쓰고, 아니면 전체 경로로 돌아간다.
+ */
+function refreshPaletteFilter(): void {
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  const pane = root?.querySelector<HTMLElement>('[data-testid="palette-work-pane-paint"]');
+  const sheet = pane?.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  const bar = pane?.querySelector<HTMLElement>('[data-testid="palette-filter-bar"]');
+  const state = editorState.get();
+  const project = store.getCurrent();
+  const map = project.maps[currentMapId()];
+  const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+  if (!root || !pane || !sheet || !bar || !tileset || state.layer === "event"
+    || root.querySelector("[data-sidebar-surface]") || !isCustomTileset(tileset)
+    || sheet.dataset.retainKey !== paintSheetRetainKey(tileset, state.layer)) {
+    renderPalettePreservingViewport();
+    return;
+  }
+  const visibleTiles = filteredTileIdSet(tileset);
+  if (!setCustomPaletteFilter(sheet, visibleTiles, state.selectedTile)) {
+    renderPalettePreservingViewport();
+    return;
+  }
+  const searchInput = bar.querySelector<HTMLInputElement>('[data-testid="tile-search-input"]');
+  if (searchInput && searchInput.value !== tileSearchQuery) searchInput.value = tileSearchQuery;
+  const select = bar.querySelector<HTMLSelectElement>('[data-testid="tile-category-select"]');
+  if (select) select.value = activeTileCategory;
+  bar.querySelector('[data-testid="palette-filter-status"]')?.remove();
+  const status = makePaletteFilterStatus(tileset, state.layer, state.selectedTile, visibleTiles);
+  if (status) bar.append(status);
 }
 
 function renderPalettePreservingViewport(): void {
@@ -853,6 +899,8 @@ export function syncMountedPaletteToolPick(): boolean {
 }
 
 function movePaletteActiveCell(sheet: HTMLElement, displayTile: number): boolean {
+  // 가상화된 큰 아틀라스: 칸이 그려져 있지 않아도 상태만 옮기면 되므로 다시 그릴 필요가 없다.
+  if (setVirtualPaletteActive(sheet, displayTile)) return true;
   const nextActive = sheet.querySelector<HTMLElement>(`[data-tile-index="${displayTile}"]`);
   if (!nextActive) return false;
   const oldActive = sheet.querySelector<HTMLElement>(".chipset-tile.active");
@@ -923,7 +971,9 @@ function revealChipsetTileInPalette(tile: number): void {
   // Custom atlases expose exact source cells; RM2K chipsets collapse authored autotile variants.
   const tileset = currentTilesetForPalette();
   const displayTile = tileset && !isCustomTileset(tileset) ? gridPaletteDisplayTile(tileset, tile) : tile;
+  const virtualSheet = root.querySelector<HTMLElement>('[data-testid="tile-palette"]');
   const cell =
+    (virtualSheet ? revealVirtualPaletteTile(virtualSheet, displayTile) : null) ??
     root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + displayTile + '"]') ??
     root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + tile + '"]') ??
     root.querySelector<HTMLElement>('[data-testid="quick-tile-' + tile + '"]');

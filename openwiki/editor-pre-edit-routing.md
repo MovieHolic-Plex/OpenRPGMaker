@@ -271,8 +271,12 @@ NPC·캐릭터 Sprite와 런타임 렌더 경로는 이 변경의 대상이 아�
   auto-fill 열과 줄바꿈 이름표라 행 높이가 균일하지 않아 가상화하지 않는다.
 - **타일 팔레트 칸 입력은 판(grid) 하나가 받는다**(`tilePaletteGrid.ts` `installCellActivation`). 칸마다 리스너 셋을
   달던 비용이 커스텀 아틀라스 2,000칸에서 컸다. 스탬프 제스처가 grid 의 pointerdown 에서 전파를 멈추므로
-  **제스처보다 먼저** 설치한다. 칸 가상화는 하지 않았다 — 스탬프 미리보기·스포이트 노출(`tilePalette.ts` 의
-  `chipset-tile-N` 조회)·roving 이 모든 칸이 DOM 에 있다고 가정한다.
+  **제스처보다 먼저** 설치한다. 커스텀 팔레트는 칸 수가 512 를 넘으면 **2D 가상화**한다(`tilePaletteVirtual.ts`,
+  `makeCustomPalette` 가 설치; 보이는 창 ± 18행·1열만 DOM, 칸은 `--vr`/`--vc` 절대 배치). 필터는 DOM 을 만들지
+  않고 목록만 바꾼다(`refreshPaletteFilter` → `setCustomPaletteFilter` → `VirtualPalette.refreshFilter`). 이 경로에서는
+  **`chipset-tile-N` 이 DOM 에 있다고 가정하지 마라** — 선택·스포이트 노출은 `setVirtualPaletteActive` /
+  `revealVirtualPaletteTile`, 화살표·Home/End 는 가상 팔레트 자체 keydown 이 맡는다. 스탬프 미리보기는 렌더된
+  칸만 돈다(스크롤하면 드래그 취소). 512 이하·rAF 없는 환경(vitest fake DOM)은 예전 전체 렌더.
 - **이벤트 편집기는 줌·격자·선택 사각형·붓 고르기 같은 editorState 변화에 본문을 다시 짓지 않는다**
   (`editorStateNeedsEventEditorRefresh`). 본문이 실제로 읽는 필드(맵·이벤트·페이지·도구·레이어·좌표 대기)는 그대로 갱신한다.
   명령 행에 `content-visibility` 는 걸지 않았다 — 깊이 레일 `::before` 가 행 밖(음수 left)에 그려져 페인트 격리에 잘린다.

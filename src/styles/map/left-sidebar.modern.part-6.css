@@ -90,3 +90,18 @@
   top: 2px;
   width: 14px;
 }
+
+/* 가상화 팔레트: 트랙 수천 개짜리 CSS 그리드는 레이아웃마다 트랙 크기 계산이 비싸다(버들항 128열×187행).
+   칸을 절대 위치로 두고 그리드 자체는 전체 크기만 가진 상자로 만든다. */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid.custom-palette-grid--virtual {
+  display: block !important;
+  position: relative;
+  width: calc(var(--custom-cols) * var(--chipset-cell)) !important;
+  height: calc(var(--custom-rows) * var(--chipset-cell));
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid--virtual > .chipset-tile {
+  position: absolute;
+  left: calc(var(--vc) * var(--chipset-cell));
+  top: calc(var(--vr) * var(--chipset-cell));
+}

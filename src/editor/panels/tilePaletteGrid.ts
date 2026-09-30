@@ -1,3 +1,4 @@
+import { installVirtualPalette, type VirtualPalette } from "@/editor/panels/tilePaletteVirtual";
 import type { Layer } from "@/editor/editorState";
 import { isDefaultTilesetTexture, tilesetCssImageValue, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
@@ -22,8 +23,6 @@ export const GRID_PALETTE_COLUMNS = 6;
 export const CUSTOM_PALETTE_MIN_CELL_SIZE = 16;
 /** Large uploaded atlases should not block the first editor paint with thousands of buttons. */
 const DEFERRED_CUSTOM_PALETTE_THRESHOLD = 512;
-const INITIAL_CUSTOM_PALETTE_CELLS = 96;
-const DEFERRED_CUSTOM_PALETTE_BATCH = 128;
 
 
 export type GridAutotileEntry = {
@@ -288,6 +287,23 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
 const PALETTE_IMAGE_VAR = "--custom-palette-image";
 const paletteSheetImages = new WeakMap<HTMLElement, string>();
 const customPaletteViews = new WeakMap<HTMLElement, { visibleTiles: ReadonlySet<number> | null; selectedTile: number }>();
+/** 가상화된 커스텀 판(큰 아틀라스)만 들어 있다. 작은 판은 칸을 전부 그리므로 없다. */
+const virtualPalettes = new WeakMap<HTMLElement, VirtualPalette>();
+
+/** 가상화 판이면 활성 칸만 옮기고 true(그려지지 않은 칸이어도 기억한다). 아니면 null. */
+export function setVirtualPaletteActive(sheet: HTMLElement, tile: number): boolean {
+  const virtual = virtualPalettes.get(sheet);
+  if (!virtual) return false;
+  const view = customPaletteViews.get(sheet);
+  if (view) view.selectedTile = tile;
+  virtual.setActive(tile);
+  return true;
+}
+
+/** 가상화 판이면 그 칸을 만들어 가운데로 스크롤하고 칸을 돌려준다. */
+export function revealVirtualPaletteTile(sheet: HTMLElement, tile: number): HTMLElement | null {
+  return virtualPalettes.get(sheet)?.reveal(tile) ?? null;
+}
 
 /**
  * 붙어 있는 팔레트 판의 그림만 바꾼다. 타일 이식 베이크가 끝나면 같은 타일셋의 그림 주소가 바뀌는데,
@@ -317,6 +333,12 @@ export function setCustomPaletteFilter(sheet: HTMLElement, visibleTiles: Readonl
   if (unchanged) return true;
   const grid = sheet.querySelector<HTMLElement>(".chipset-grid");
   if (!grid) return false;
+  const virtual = virtualPalettes.get(sheet);
+  if (virtual) {
+    virtual.refreshFilter();
+    virtual.setActive(selectedTile);
+    return true;
+  }
   for (const cell of Array.from(grid.children)) {
     const tile = Number((cell as HTMLElement).dataset.tileIndex);
     cell.classList.toggle("is-filtered-out", !passesFilter(view, tile));
@@ -357,30 +379,44 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   const view = { visibleTiles: args.visibleTiles ?? null, selectedTile: args.selectedTile };
   customPaletteViews.set(sheet, view);
   // Custom cells keep source coordinates, including empty cells between objects.
-  // Large uploaded atlases routinely contain 2,000+ cells. Keep the first
-  // viewport synchronous, then append the rest in short batches so button
-  // creation cannot block the first canvas frame.
-  const initialCount = displayTiles.length > DEFERRED_CUSTOM_PALETTE_THRESHOLD
-    ? Math.min(INITIAL_CUSTOM_PALETTE_CELLS, displayTiles.length)
-    : displayTiles.length;
-  const appendCells = (from: number, to: number): void => {
+  // 512칸을 넘는 아틀라스(버들항 23,936칸)는 행·열 창만 DOM 에 둔다(tilePaletteVirtual.ts).
+  // 작은 판·레이아웃 없는 환경(가짜 DOM)은 칸 전부를 동기로 그린다.
+  const virtualized = displayTiles.length > DEFERRED_CUSTOM_PALETTE_THRESHOLD
+    && typeof window !== "undefined" && typeof window.requestAnimationFrame === "function";
+  const buildCell = (tileId: number): HTMLButtonElement => makePaletteCell(
+    { ...args, selectedTile: view.selectedTile },
+    tileId,
+    undefined,
+    { backgroundImageUrl, backgroundImageVar: PALETTE_IMAGE_VAR },
+  );
+  if (virtualized) {
+    grid.classList.add("custom-palette-grid--virtual");
+  } else {
     const cells: HTMLButtonElement[] = [];
-    for (let index = from; index < to; index += 1) {
+    for (let index = 0; index < displayTiles.length; index += 1) {
       const tileId = displayTiles[index];
       if (tileId === undefined) continue;
-      const cell = makePaletteCell({ ...args, selectedTile: view.selectedTile }, tileId, undefined, {
-        backgroundImageUrl,
-        backgroundImageVar: PALETTE_IMAGE_VAR,
-      });
+      const cell = buildCell(tileId);
       if (!passesFilter(view, tileId)) cell.classList.add("is-filtered-out");
-      if (from > 0) cell.tabIndex = -1;
+      if (index > 0) cell.tabIndex = -1;
       cells.push(cell);
     }
     grid.append(...cells);
-  };
-  appendCells(0, initialCount);
+  }
   installCellActivation(grid, args.onSelectTile);
-  installGridRoving(grid, columns);
+  if (virtualized) {
+    virtualPalettes.set(sheet, installVirtualPalette({
+      sheet,
+      grid,
+      columns,
+      count: displayTiles.length,
+      view,
+      makeCell: buildCell,
+      passesFilter: (tile) => passesFilter(view, tile),
+    }));
+  } else {
+    installGridRoving(grid, columns);
+  }
   if (args.onCreatePaletteStamp) {
     installPaletteStampGesture(
       sheet,
@@ -391,19 +427,6 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     );
   }
   sheet.append(grid);
-  if (initialCount < displayTiles.length) {
-    let nextIndex = initialCount;
-    const appendBatch = (): void => {
-      if (!sheet.isConnected) return;
-      const end = Math.min(displayTiles.length, nextIndex + DEFERRED_CUSTOM_PALETTE_BATCH);
-      appendCells(nextIndex, end);
-      nextIndex = end;
-      if (nextIndex < displayTiles.length) window.setTimeout(appendBatch, 0);
-    };
-    if (typeof window === "undefined") appendCells(nextIndex, displayTiles.length);
-    else if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(() => window.setTimeout(appendBatch, 0));
-    else window.setTimeout(appendBatch, 0);
-  }
   return sheet;
 }
 
