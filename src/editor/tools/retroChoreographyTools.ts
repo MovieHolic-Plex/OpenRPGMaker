@@ -8,7 +8,7 @@
 
 import {
   RETRO_CHOREOGRAPHY_FAMILIES, RETRO_ELEMENT_IDS, filterRetroChoreographies, nearbyRetroChoreographies, nearbyRetroFxSheets,
-  projectRetroChoreographyEntries, retroChoreographyEntries, retroClassSkill, retroFxSheetEntries, retroFxSheetMeta, searchRetroFxSheets,
+  projectRetroChoreographyEntries, resolveSkillChoreography, retroChoreographyEntries, retroClassSkill, retroFxSheetEntries, retroFxSheetMeta, searchRetroFxSheets,
 } from "@/assets/retroSkillCatalog";
 import { RETRO_SKILL_DESIGN_GUIDE } from "@/assets/retroSkillMechanics";
 import { retroMonsterSkill } from "@/assets/retroMonsterSkills";
@@ -316,7 +316,7 @@ const duplicateChoreography: ToolDefinition = {
       if (records.some((record) => record.id === rawId)) fail(`id '${rawId}' 는 이미 있습니다. 고치려면 upsert_choreography 를 쓰세요.`, "choreography-exists");
     }
     const name = text(args.name) ?? `${sourceName} 사본`;
-    const record = normalizeSkillChoreographyRecord({ ...base, id: rawId ?? freshChoreographyId(records, project ? name : sourceId), name });
+    const record = normalizeSkillChoreographyRecord({ ...base, id: rawId ?? freshChoreographyId(records, fromProject ? name : sourceId), name });
     if (!record) fail("복제한 연출이 유효하지 않습니다(층의 시트가 사라졌을 수 있음).", "invalid-choreography");
     records.push(record);
     return {
@@ -372,4 +372,37 @@ const listFxSheets: ToolDefinition = {
   },
 };
 
-export const RETRO_CHOREOGRAPHY_TOOLS: readonly ToolDefinition[] = [listRetroChoreographies, listFxSheets, upsertChoreography, duplicateChoreography, readRetroSkillGuide];
+const previewChoreography: ToolDefinition = {
+  name: "preview_choreography",
+  description:
+    "도트 연출 하나(기본 연출 id 또는 프로젝트 연출 chor_*)의 모습을 그림 한 장으로 본다. 층마다 한 줄, 그 시트의 프레임을 왼쪽에서 오른쪽(재생 순)으로 늘어놓고, " +
+    "글로는 층 목록(시트·자리·시작 ms·배율·반복·프레임 수)을 준다. 시트를 골라 upsert_choreography 로 만든 뒤 결과를 확인하거나, 빌려 쓸 기본 연출이 정말 어울리는지 볼 때 쓴다. " +
+    "그림은 실제 이미지 입력으로 전달된다(긴 변 768px 이하). id 는 list_retro_choreographies 가 준다.",
+  mode: "read",
+  parameters: {
+    type: "object",
+    properties: { id: { type: "string", description: "연출 id(기본 연출 id 또는 chor_*)" } },
+    required: ["id"],
+  },
+  invalidArgsExample: { id: "chor_thunder_chain" },
+  run(draft, args): ToolExecResult {
+    const id = text(args.id);
+    if (!id) throw new ToolError("id 가 필요합니다 — list_retro_choreographies 로 찾으세요.");
+    const records = draft.database.skillChoreographies ?? [];
+    const resolved = resolveSkillChoreography({ id: `preview_${id}`, retroChoreographyId: id }, records);
+    if (!resolved) throw new ToolError(`연출 '${id}' 를 찾을 수 없습니다 — list_retro_choreographies 로 id 를 확인하세요.`);
+    const layers = resolved.skill.layers.map((layer, index) => ({
+      index: index + 1, sheet: layer.key, anchor: layer.anchor, frame: layer.frame, frames: layer.frames,
+      ...(layer.startMs !== undefined ? { startMs: layer.startMs } : {}),
+      ...(layer.scale !== undefined ? { scale: layer.scale } : {}),
+      ...(layer.repeat !== undefined ? { repeat: layer.repeat } : {}),
+      ...(layer.onHit ? { onHit: true } : {}),
+    }));
+    return {
+      summary: `연출 「${resolved.skill.name}」(${resolved.origin === "project" ? "프로젝트" : "기본"}, ${resolved.motion}) 층 ${layers.length}개 — 층별 프레임 그림을 확인하세요.`,
+      data: { id: resolved.id, name: resolved.skill.name, origin: resolved.origin, kind: resolved.kind, motion: resolved.motion, layers },
+    };
+  },
+};
+
+export const RETRO_CHOREOGRAPHY_TOOLS: readonly ToolDefinition[] = [listRetroChoreographies, listFxSheets, upsertChoreography, duplicateChoreography, previewChoreography, readRetroSkillGuide];

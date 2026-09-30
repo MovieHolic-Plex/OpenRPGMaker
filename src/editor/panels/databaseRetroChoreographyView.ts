@@ -111,7 +111,7 @@ export function renderRetroChoreographyTab(content: HTMLElement, rerender: () =>
   }
 
   const addRecord = (): void => {
-    if (projectRecords.length >= SKILL_CHOREOGRAPHY_LIMIT) { toast(`프로젝트 연출은 ${SKILL_CHOREOGRAPHY_LIMIT}개까지입니다.`, "warn"); return; }
+    if (projectRecords.length >= SKILL_CHOREOGRAPHY_LIMIT) { toast(`프로젝트 연출은 ${SKILL_CHOREOGRAPHY_LIMIT}개까지입니다.`, "error"); return; }
     const sheet = retroFxSheetKeys()[0];
     if (!sheet) return;
     const fresh = normalizeSkillChoreographyRecord({
@@ -127,9 +127,9 @@ export function renderRetroChoreographyTab(content: HTMLElement, rerender: () =>
   };
   const cloneSelected = (): void => {
     if (!selectedId) return;
-    if (projectRecords.length >= SKILL_CHOREOGRAPHY_LIMIT) { toast(`프로젝트 연출은 ${SKILL_CHOREOGRAPHY_LIMIT}개까지입니다.`, "warn"); return; }
+    if (projectRecords.length >= SKILL_CHOREOGRAPHY_LIMIT) { toast(`프로젝트 연출은 ${SKILL_CHOREOGRAPHY_LIMIT}개까지입니다.`, "error"); return; }
     const copy = cloneChoreographyRecord(projectRecords, selectedId);
-    if (!copy) { toast("복제할 수 없는 연출입니다.", "warn"); return; }
+    if (!copy) { toast("복제할 수 없는 연출입니다.", "error"); return; }
     recordProjectSnapshot("도트 연출 복제");
     store.update((draft) => { (draft.database.skillChoreographies ??= []).push(copy); });
     selectedId = copy.id;
@@ -288,7 +288,7 @@ function renderDetail(entry: RetroChoreographyEntry, project: SkillChoreographyR
           btn("위로", "up", () => move(-1), index === 0),
           btn("아래로", "down", () => move(1), index === editable.layers.length - 1),
           btn("삭제", "remove", () => structural("도트 연출 층 삭제", (record) => {
-            if (record.layers.length <= 1) { toast("층은 최소 1개가 필요합니다.", "warn"); return; }
+            if (record.layers.length <= 1) { toast("층은 최소 1개가 필요합니다.", "error"); return; }
             record.layers.splice(index, 1);
             pickerLayer = undefined;
           }), editable.layers.length <= 1),

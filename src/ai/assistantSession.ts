@@ -311,6 +311,7 @@ import { batchRecordTarget, failedRecordReference, type BatchRecordTarget } from
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
+import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { ASSISTANT_TURN_RETRY_ATTEMPTS, appendTransientRetryGuidance, sleep } from "./session/transientRetry";
 import { completedWorkItemIdFromResult, findWorkItemById } from "./session/workItemLookup";
 import type {
@@ -5490,6 +5491,9 @@ export class AssistantSession {
           }
           if (name === "get_concept_facility" && toolResult.ok) {
             roundImages.push(...await operation.wait(interiorPresetImages(toolResult.data)));
+          }
+          if (name === "preview_choreography" && toolResult.ok) {
+            roundImages.push(...await operation.wait(retroChoreographyPreviewImages(toolResult.data)));
           }
           if (name === "author_village" && toolResult.ok) {
             roundImages.push(...await operation.wait(villageReferenceImages(toolResult.data)));
