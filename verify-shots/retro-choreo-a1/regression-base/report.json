@@ -1,0 +1,468 @@
+{
+  "set": "class",
+  "reduced": false,
+  "clips": [
+    {
+      "skill": "skill_hero_meteor_drop",
+      "start": 12,
+      "duration": 2.68,
+      "group": 0,
+      "file": "/home/main/z-project/rpg-zzu-retro-default/verify-shots/retro-choreo-a1/regression-base/skill-skill_hero_meteor_drop.gif",
+      "bytes": 774532
+    },
+    {
+      "skill": "skill_hero_flame_sword",
+      "start": 17.52,
+      "duration": 1.84,
+      "group": 0,
+      "file": "/home/main/z-project/rpg-zzu-retro-default/verify-shots/retro-choreo-a1/regression-base/skill-skill_hero_flame_sword.gif",
+      "bytes": 552122
+    },
+    {
+      "skill": "skill_samurai_twin_moon",
+      "start": 10.48,
+      "duration": 1.84,
+      "group": 1,
+      "file": "/home/main/z-project/rpg-zzu-retro-default/verify-shots/retro-choreo-a1/regression-base/skill-skill_samurai_twin_moon.gif",
+      "bytes": 594015
+    }
+  ],
+  "errors": [],
+  "evidence": [
+    {
+      "skill": "skill_hero_meteor_drop",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "fx": "hero_meteor_trail",
+          "anchor": "projectile",
+          "size": "32",
+          "box": "64",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "-64px 0px"
+          ],
+          "width": "64px",
+          "rendering": "pixelated"
+        },
+        {
+          "fx": "hero_meteor_impact",
+          "anchor": "target",
+          "size": "128",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "poses": [
+        {
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "defend",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "evade",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "target": "enemy-1",
+          "text": "-176",
+          "heal": false
+        }
+      ],
+      "lines": [
+        ">주인공은 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">주인공이 낙하참을 사용했다!",
+        ">주인공이 낙하참을 사용했다!슬라임 1에게 176 피해!",
+        ">수호자는 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 3,
+      "remainingFx": 0,
+      "layerKeys": [
+        "hero_meteor_trail",
+        "hero_meteor_impact"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_hero_flame_sword",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "fx": "hero_flame_aura",
+          "anchor": "user",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "fx": "hero_flame_slash",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "poses": [
+        {
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "attack_follow",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "target": "enemy-1",
+          "text": "-128",
+          "heal": false
+        }
+      ],
+      "lines": [
+        ">주인공은 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">주인공이 화염검을 사용했다!",
+        ">주인공이 화염검을 사용했다!슬라임 1에게 128 피해!",
+        ">수호자는 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 3,
+      "remainingFx": 0,
+      "layerKeys": [
+        "hero_flame_aura",
+        "hero_flame_slash"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_samurai_twin_moon",
+      "group": 1,
+      "completed": true,
+      "effects": [
+        {
+          "fx": "samurai_moon",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "poses": [
+        {
+          "actor": "actor_samurai",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_windup",
+          "flip": true
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_strike",
+          "flip": true
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack",
+          "flip": true
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_windup",
+          "flip": true
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_strike",
+          "flip": true
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack",
+          "flip": true
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "attack_follow",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "actor": "actor_samurai",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "target": "enemy-1",
+          "text": "-117",
+          "heal": false
+        }
+      ],
+      "lines": [
+        ">사무라이는 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">사무라이가 쌍월참을 사용했다!",
+        ">사무라이가 쌍월참을 사용했다!슬라임 1에게 117 피해!",
+        ">무도가는 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 6,
+      "remainingFx": 0,
+      "layerKeys": [
+        "samurai_moon"
+      ],
+      "problems": []
+    }
+  ],
+  "passed": true
+}

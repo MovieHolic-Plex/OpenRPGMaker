@@ -34,6 +34,7 @@ const run = promisify(execFile);
 const LEGACY = ['sword_slash','focus','arcane_bolt','heal','sleep_mist','weaken','poison_sting','fire','ice','thunder','earth','wind','dark','holy','water','leaf','throwing_knife'].map((name) => 'skill_' + name);
 const report = { set: values.set, reduced: values.reduced, clips: [], errors: [], evidence: [] };
 let server, browser, topLevel = 22;
+let customChoreographies = []; // --set custom 스펙의 프로젝트 연출 레코드(database.skillChoreographies)
 const selector = (id) => '[data-testid="' + id + '"]';
 
 try {
@@ -65,6 +66,7 @@ try {
   const customSpec = values.set === 'custom' ? JSON.parse(await readFile(resolve(values.custom), 'utf8')) : undefined;
   if (customSpec) {
     for (const key of ['skills', 'states', 'classes', 'actors', 'equipment']) defaults[key] = [...defaults[key].filter((row) => !customSpec[key].some((r) => r.id === row.id)), ...customSpec[key]];
+    customChoreographies = customSpec.choreographies ?? [];
     report.custom = { file: values.custom, contract: customSpec.contract, log: customSpec.log };
   }
   const rosterRows = defaults.roster.filter((row) => !values.batch || row.batch === values.batch);
@@ -180,6 +182,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       enemy.actions = [{ skillId: 'skill_attack', priority: 5, condition: { kind: 'always' } }];
       enemy.stealItems = [{ itemId: 'item_potion', rate: 100 }];
     }
+    if (customChoreographies.length) project.database.skillChoreographies = structuredClone(customChoreographies);
     for (const skill of project.database.skills.filter((s) => group.skills.includes(s.id))) { skill.hitRate = 100; skill.successRate = 100; }
     project.system.startActorIds = [...group.party];
     if (project.session) project.session.partyActorIds = [...group.party];
@@ -215,7 +218,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         for (const node of document.querySelectorAll('.retro-skill-fx')) {
           if (seen.has(node)) continue; seen.add(node);
           const frames = [], positions = [];
-          const row = { fx: node.dataset.retroSkillFx, anchor: node.dataset.retroFxAnchor, size: node.dataset.fxSize, box: node.dataset.fxBox, frames, positions,
+          const row = { at: Math.round(performance.now()), fx: node.dataset.retroSkillFx, anchor: node.dataset.retroFxAnchor, size: node.dataset.fxSize, box: node.dataset.fxBox, frames, positions,
             width: getComputedStyle(node).width, rendering: getComputedStyle(node).imageRendering };
           window.__skillEvidence.push(row);
           const capture = () => { const n = Number(node.dataset.fxFrame); if (frames.at(-1) !== n) { frames.push(n); positions.push(node.style.backgroundPosition); } };
@@ -320,7 +323,10 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         if (!detail.sounds && !values.reduced) row.problems.push('no sound event');
         for (const e of detail.effects) {
           // 화면 상자 = 칸 × 2, 단 128px 대상 층(target·allTargets)은 칸 × 1(retroClassFxBox).
-          const size = Number(e.size) >= 128 && (e.anchor === 'target' || e.anchor === 'allTargets') ? Number(e.size) : Number(e.size) * 2;
+          const base = Number(e.size) >= 128 && (e.anchor === 'target' || e.anchor === 'allTargets') ? Number(e.size) : Number(e.size) * 2;
+          // 프로젝트 연출 레코드의 층 scale(연출 계약 scales) — 화면 상자는 round(기본 × scale).
+          const scale = contract.get(skill)?.scales?.[e.fx] ?? 1;
+          const size = scale === 1 ? base : Math.max(1, Math.round(base * scale));
           if (e.box && Number(e.box) !== size) row.problems.push('box ' + e.fx + ' ' + e.box + ' != ' + size);
           if (e.width !== size + 'px' || e.rendering !== 'pixelated') row.problems.push('scale ' + e.fx + ' ' + e.width);
           e.positions.forEach((p, i) => { const want = e.frames[i] === 0 ? '0px 0px' : '-' + size * e.frames[i] + 'px 0px'; if (p !== want) row.problems.push('frame step ' + e.fx + ' ' + p + ' != ' + want); });
