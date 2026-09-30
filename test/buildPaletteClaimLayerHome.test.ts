@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { BUILD_PALETTE_GROUP_CLAIMS } from "@/editor/panels/buildPaletteCore";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { roleCapabilities } from "@/project/tileRoles";
 
 /**

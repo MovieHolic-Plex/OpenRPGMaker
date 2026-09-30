@@ -3,7 +3,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
-import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
+import { COMBINED_TOWN_TILESET_ID, DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
 import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import { defaultClassRecords } from "./defaultDatabaseClassRecords";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
@@ -255,7 +255,7 @@ function paintFarmableGround(map: GameMap): void {
 }
 
 export function createFarmingDemoProject(): Project {
-  const map = createBlankMap("봄 밭", 20, 20);
+  const map = createBlankMap("봄 밭", 20, 20, COMBINED_TOWN_TILESET_ID);
   map.id = "map_farming_demo";
   map.farmableArea = [{ x: 4, y: 5, w: 6, h: 4 }];
   paintFarmableGround(map);

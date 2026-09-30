@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { cloneGameMap } from "@/project/mapClone";
 import { createBlankMap } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 
 describe("cloneGameMap", () => {
   it("copies authored map fields, not only tiles and events", () => {
-    const source = createBlankMap("던전", 12, 10, DEFAULT_TILESET_ID);
+    const source = createBlankMap("던전", 12, 10, COMBINED_TOWN_TILESET_ID);
     source.encounterRate = 8;
     source.troopIds = ["troop_slime"];
     source.bgm = { mode: "custom", resourceId: "bgm_cave" };

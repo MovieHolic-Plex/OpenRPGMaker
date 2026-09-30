@@ -7,14 +7,14 @@ import { getTool } from "@/editor/tools/toolRegistry";
 import { runTool, runToolDefinition } from "@/editor/tools/toolRunner";
 import type { ToolDefinition } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 
 const MAP_ID = "map_blank_start";
 
 function withUploadedPack(project: Project): Project {
-  const bundled = project.tilesets[DEFAULT_TILESET_ID]!;
+  const bundled = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
   project.tilesets.pack = { ...structuredClone(bundled), id: "pack", name: "올린 팩", image: { type: "uploaded", id: "asset_pack" } };
   return project;
 }
@@ -32,7 +32,7 @@ const swapTool: ToolDefinition = {
   parameters: { type: "object", properties: { mapId: { type: "string" }, tilesetId: { type: "string" } }, required: ["mapId"] },
   run(draft, args) {
     const map = draft.maps[args.mapId as string]!;
-    const tileset = draft.tilesets[typeof args.tilesetId === "string" ? args.tilesetId : DEFAULT_TILESET_ID]!;
+    const tileset = draft.tilesets[typeof args.tilesetId === "string" ? args.tilesetId : COMBINED_TOWN_TILESET_ID]!;
     map.tilesetId = tileset.id;
     map.tileSize = tileset.tileSize;
     return { summary: "칩셋 바꿈" };
@@ -61,10 +61,10 @@ describe("업로드 타일셋 칩셋 바꿔치기 거부", () => {
   it("새 tilesetId 를 인자로 명시하면 통과하고 실제로 바뀐다", () => {
     const project = projectWithUploadedTileset();
     const ctx = { project };
-    const result = runToolDefinition(ctx, swapTool, { mapId: MAP_ID, tilesetId: DEFAULT_TILESET_ID }, { dryRun: false });
+    const result = runToolDefinition(ctx, swapTool, { mapId: MAP_ID, tilesetId: COMBINED_TOWN_TILESET_ID }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     expect(hasSwapIssue(result.issues)).toBe(false);
-    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
   });
 
   it("번들 타일셋 맵은 전처럼 바뀐다", () => {

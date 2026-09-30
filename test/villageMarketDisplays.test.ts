@@ -4,14 +4,14 @@ import { paintMarketDeck, placeMarketDeckProps } from "@/editor/tools/village/pl
 import { marketAisleCells, placeMarketDisplays, planMarketDisplays } from "@/editor/tools/village/market";
 import { protectedHouseCells } from "@/editor/tools/houseProtection";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { canMove } from "@/project/collision";
 import type { GameMap, Project, Rect } from "@/project/types";
 
 function fixture(width=24,height=20) {
   const project=createEmptyToolProject("Market placement contract");
-  const map=createBlankMap("Market fixture",width,height,DEFAULT_TILESET_ID,16);
+  const map=createBlankMap("Market fixture",width,height,COMBINED_TOWN_TILESET_ID,16);
   project.maps[map.id]=map;
   return {project,map};
 }

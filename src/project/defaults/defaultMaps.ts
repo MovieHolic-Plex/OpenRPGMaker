@@ -3,6 +3,7 @@ import type { GameMap, MapId, MapTreeNode } from "../types";
 import { dirtLikeTiles } from "./chipsetMapping";
 import {
   DEFAULT_TILE_SIZE,
+  COMBINED_TOWN_TILESET_ID,
   DEFAULT_TILESET_ID,
   TILE,
 } from "./constants";
@@ -90,6 +91,16 @@ const STARTER_VILLAGE_ROADS = [
   { x: 7, y: 22, width: 9, height: 3 },
 ] as const satisfies readonly RoadRect[];
 
+/**
+ * 새 맵 바닥 채움 칸. `TILE.GRASS`(240)는 합본 마을 시트의 칸 번호라 버들항에서는 벽이다.
+ * 버들항의 민무늬 풀 칸은 737 (openwiki/beodeul-city.md).
+ */
+const BEODEUL_PLAIN_GRASS_TILE = 737;
+
+function blankFillTileFor(tilesetId: string): number {
+  return tilesetId === "beodeul_city" ? BEODEUL_PLAIN_GRASS_TILE : TILE.GRASS;
+}
+
 export function createBlankMap(
   name: string,
   width: number,
@@ -105,20 +116,20 @@ export function createBlankMap(
     height,
     tilesetId,
     tileSize,
-    lowerTiles: new Array<number>(n).fill(TILE.GRASS),
+    lowerTiles: new Array<number>(n).fill(blankFillTileFor(tilesetId)),
     upperTiles: new Array<number>(n).fill(TILE.EMPTY),
     events: [],
   };
 }
 
 export function createStarterMap(): GameMap {
-  const map = createBlankMap("마을", STARTER_MAP_SIZE, STARTER_MAP_SIZE);
+  const map = createBlankMap("마을", STARTER_MAP_SIZE, STARTER_MAP_SIZE, COMBINED_TOWN_TILESET_ID);
   decorateStarterVillage(map);
   return map;
 }
 
 export function createLogCabinShowcaseMap(): GameMap {
-  const map = createBlankMap("통나무집 시험장", LOG_CABIN_SHOWCASE_SIZE, LOG_CABIN_SHOWCASE_SIZE);
+  const map = createBlankMap("통나무집 시험장", LOG_CABIN_SHOWCASE_SIZE, LOG_CABIN_SHOWCASE_SIZE, COMBINED_TOWN_TILESET_ID);
   paintRoadNetwork(map, [
     { x: 2, y: 10, width: 28, height: 3 },
     { x: 20, y: 9, width: 3, height: 8 },

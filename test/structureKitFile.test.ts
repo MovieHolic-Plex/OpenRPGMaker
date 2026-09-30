@@ -9,13 +9,13 @@ import {
   STRUCTURE_KIT_FILE_VERSION,
 } from "@/editor/harnessSuggestion/structureKitFile";
 import { store } from "@/project/store";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
 
 const AT = "2026-08-28T09:12:00.000Z";
 
 function tileset() {
-  return store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+  return store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
 }
 
 function well(): SectionStructureKitDef {
@@ -39,7 +39,7 @@ describe("serializeStructureKitFile", () => {
     expect(STRUCTURE_KIT_FILE_FORMAT).toBe("oprn-structure-kits");
     expect(json.version).toBe(STRUCTURE_KIT_FILE_VERSION);
     expect(json.exportedAt).toBe(AT);
-    expect(json.tileset.id).toBe(DEFAULT_TILESET_ID);
+    expect(json.tileset.id).toBe(COMBINED_TOWN_TILESET_ID);
     expect(json.tileset.name).toBe(tileset().name);
     expect(json.kits).toHaveLength(1);
     expect(json.kits[0].name).toBe("우물");
@@ -66,7 +66,7 @@ describe("parseStructureKitFile", () => {
   it("왕복한다", () => {
     const { file, diagnostics } = parseStructureKitFile(serializeStructureKitFile(tileset(), [well()], AT));
     expect(diagnostics).toHaveLength(0);
-    expect(file.tileset.id).toBe(DEFAULT_TILESET_ID);
+    expect(file.tileset.id).toBe(COMBINED_TOWN_TILESET_ID);
     expect(file.kits[0]!.name).toBe("우물");
     expect(file.kits[0]!.rows[1]!.upperTiles).toEqual([-1, 208]);
   });
@@ -86,7 +86,7 @@ describe("parseStructureKitFile", () => {
     const text = JSON.stringify({
       format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
-      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      tileset: { id: COMBINED_TOWN_TILESET_ID, name: "합본 마을" },
       kits: [{ ...well(), ai: { description: "d", placementRules: "p", origin: "system" } }],
     });
     const { file } = parseStructureKitFile(text);
@@ -97,7 +97,7 @@ describe("parseStructureKitFile", () => {
     const text = JSON.stringify({
       format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
-      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      tileset: { id: COMBINED_TOWN_TILESET_ID, name: "합본 마을" },
       kits: [
         { ...well(), id: "k_bad", ai: { description: "d", placementRules: "p", role: "garbage" } },
         { ...well(), id: "k_good", ai: { description: "d", placementRules: "p", role: "fence" } },
@@ -139,7 +139,7 @@ describe("parseStructureKitFile", () => {
       format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
       exportedAt: AT,
-      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      tileset: { id: COMBINED_TOWN_TILESET_ID, name: "합본 마을" },
       kits,
     });
 
@@ -156,7 +156,7 @@ describe("parseStructureKitFile", () => {
     const text = JSON.stringify({
       format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,
-      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      tileset: { id: COMBINED_TOWN_TILESET_ID, name: "합본 마을" },
       kits: [{ id: "h", kind: "house", name: "집", houseKitId: "log", wings: [], learnedFrom: "user-paint" }],
     });
     const { file, diagnostics } = parseStructureKitFile(text);
@@ -183,7 +183,7 @@ describe("옛 판별자 호환", () => {
     const text = JSON.stringify({
       format: "rpgzzu-structure-kits",
       version: STRUCTURE_KIT_FILE_VERSION,
-      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      tileset: { id: COMBINED_TOWN_TILESET_ID, name: "합본 마을" },
       kits: [well()],
     });
     const { file, diagnostics } = parseStructureKitFile(text);
@@ -196,7 +196,7 @@ describe("옛 판별자 호환", () => {
     const text = JSON.stringify({
       format: "someone-elses-kits",
       version: STRUCTURE_KIT_FILE_VERSION,
-      tileset: { id: DEFAULT_TILESET_ID, name: "합본 마을" },
+      tileset: { id: COMBINED_TOWN_TILESET_ID, name: "합본 마을" },
       kits: [well()],
     });
     expect(() => parseStructureKitFile(text)).toThrow(StructureKitFileError);
@@ -204,7 +204,7 @@ describe("옛 판별자 호환", () => {
 });
 
 describe("planImport", () => {
-  function fileWith(kits: SectionStructureKitDef[], tilesetId = DEFAULT_TILESET_ID) {
+  function fileWith(kits: SectionStructureKitDef[], tilesetId = COMBINED_TOWN_TILESET_ID) {
     return parseStructureKitFile(JSON.stringify({
       format: STRUCTURE_KIT_FILE_FORMAT,
       version: STRUCTURE_KIT_FILE_VERSION,

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { eraseTile, fillTile, paintTilesBulk } from "@/editor/tileActions";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { applyToolToStore } from "@/editor/tools/applyChangesetToStore";
-import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { createBlankProject, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 import { repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { store } from "@/project/store";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
@@ -34,7 +34,7 @@ function fixture(namespace: Namespace) {
   if (namespace === "interior") {
     map.tilesetId = "easyrpg_chipset_interior";
   } else {
-    const id = namespace === "id-collision" ? DEFAULT_TILESET_ID : `qa-${namespace}`;
+    const id = namespace === "id-collision" ? COMBINED_TOWN_TILESET_ID : `qa-${namespace}`;
     const tileset: TilesetDef = {
       id, name: "Foreign namespace", image: { ...project.tilesets.easyrpg_chipset_interior.image },
       kind: namespace === "custom" ? "custom" : "rpg2k", tileSize: 16, tilesPerRow: 30, count: 480,
@@ -111,7 +111,7 @@ describe("public tool/store tree-number namespaces", () => {
 
   it("repairs town maps but leaves every foreign layer intact during an unrelated store tool edit", () => {
     const { project, map } = fixture("custom");
-    const town = { ...structuredClone(map), id: "town-control", tilesetId: DEFAULT_TILESET_ID, lowerTiles: Array(64).fill(TILE.GRASS), upperTiles: Array(64).fill(TILE.EMPTY) };
+    const town = { ...structuredClone(map), id: "town-control", tilesetId: COMBINED_TOWN_TILESET_ID, lowerTiles: Array(64).fill(TILE.GRASS), upperTiles: Array(64).fill(TILE.EMPTY) };
     town.lowerTiles[45] = 290;
     project.maps[town.id] = town;
     project.mapTree.children.push({ mapId: town.id, children: [] });

@@ -10,7 +10,7 @@ import * as commits from "@/project/projectCommitLog";
 import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
 import { resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { approvedReviewResponse } from "./independentReviewFixture";
 import { isWikiExtraction } from "./wikiTransportFixture";
 import { fixedDeclarer } from "./intentFixture";
@@ -99,7 +99,7 @@ it.each(["ordinary", "direct"] as const)("rejects %s proposal host apply after a
 
 it("rejects the real cluster acceptance button after a reviewed draft's base changes", async () => {
   const sending = vi.spyOn(AssistantSession.prototype, "sendUserMessage");
-  openClusterAiModal({ kind: "range-classify", tilesetId: DEFAULT_TILESET_ID, rect: { x: 0, y: 0, w: 1, h: 1 }, tileIds: [322] });
+  openClusterAiModal({ kind: "range-classify", tilesetId: COMBINED_TOWN_TILESET_ID, rect: { x: 0, y: 0, w: 1, h: 1 }, tileIds: [322] });
   expect(sending, document.body.textContent ?? "").toHaveBeenCalledTimes(1);
   const result = await sending.mock.results[0]?.value;
   expect(result).toMatchObject({ review: { status: "approved" } });

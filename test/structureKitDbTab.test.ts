@@ -5,7 +5,7 @@ import { seedInteriorTilesetCatalog } from "@/editor/interiorRoomVocab";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef } from "@/project/types";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { FakeElement, installFakeDom } from "./fakeDom";
@@ -162,7 +162,7 @@ describe("structureKitDbTab 등록 킷 노출", () => {
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
 
-    expect(current.maps[mapId]!.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(current.maps[mapId]!.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
     expect(host.querySelector("[data-testid='structure-kit-db-kit_house_blue-stone']")).toBeNull();
   });
 
@@ -174,7 +174,7 @@ describe("structureKitDbTab 등록 킷 노출", () => {
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
 
-    const railItem = host.querySelector(`[data-testid='structure-kit-tileset-${DEFAULT_TILESET_ID}']`);
+    const railItem = host.querySelector(`[data-testid='structure-kit-tileset-${COMBINED_TOWN_TILESET_ID}']`);
     expect(railItem).not.toBeNull();
     const count = Number.parseInt(railItem!.textContent.match(/(\d+)\s*$/)![1]!, 10);
     expect(count).toBe(0);
@@ -185,7 +185,7 @@ describe("structureKitDbTab 등록 킷 노출", () => {
     const tilesetIds = Object.keys(current.tilesets);
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    const emptyTilesetId = tilesetIds.find((id) => id !== DEFAULT_TILESET_ID)!;
+    const emptyTilesetId = tilesetIds.find((id) => id !== COMBINED_TOWN_TILESET_ID)!;
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
@@ -204,7 +204,7 @@ describe("structureKitDbTab 등록 킷 노출", () => {
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
 
-    registerStructureKit(DEFAULT_TILESET_ID, {
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, {
       id: "kit_malformed",
       kind: "section",
       name: "깨진 킷",
@@ -223,7 +223,7 @@ describe("structureKitDbTab 등록 킷 노출", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_registered", "등록 킷"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_registered", "등록 킷"));
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
@@ -244,7 +244,7 @@ describe("structureKitDbTab 등록 킷 노출", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_registered_estimate", "등록 킷2"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_registered_estimate", "등록 킷2"));
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
@@ -261,7 +261,7 @@ describe("structureKitDbTab 등록 킷 노출", () => {
     editorState.set({ currentMapId: mapId });
 
     // 구 내장 집을 내보낸 파일을 가져온 상황 — 프로젝트 데이터이므로 편집 가능하다.
-    registerStructureKit(DEFAULT_TILESET_ID, {
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, {
       ...createTestSectionKit("kit_imported", "가져온 통나무집"),
       learnedFrom: "db-authored",
     });
@@ -321,7 +321,7 @@ describe("structureKitDbTab 2원본 앨범(실내 오브젝트·내가 저장한
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    expect(current.maps[mapId]!.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(current.maps[mapId]!.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
@@ -353,12 +353,12 @@ describe("structureKitDbTab 2원본 앨범(실내 오브젝트·내가 저장한
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내가 저장한 킷"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_mine", "내가 저장한 킷"));
 
     const townHost = new FakeElement("div");
     renderStructureKitsTab(townHost as unknown as HTMLElement, () => {});
     // 앨범 선택은 세션에 남으므로(실내 앨범) 마을 앨범을 명시적으로 고른다.
-    townHost.querySelector(`[data-testid='structure-kit-tileset-${DEFAULT_TILESET_ID}']`)!.click();
+    townHost.querySelector(`[data-testid='structure-kit-tileset-${COMBINED_TOWN_TILESET_ID}']`)!.click();
     for (const source of sources) {
       clickSource(townHost, source);
       const chip = townHost.querySelector(`[data-testid='structure-kit-source-${source}']`)!;
@@ -441,7 +441,7 @@ describe("structureKitDbTab 신규·복제", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
@@ -451,7 +451,7 @@ describe("structureKitDbTab 신규·복제", () => {
     expect(dup).not.toBeNull();
     dup!.click();
 
-    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
+    const kits = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits ?? [];
     expect(kits).toHaveLength(2);
     expect(kits[1]!.kind).toBe("section");
     expect(kits[1]!.learnedFrom).toBe("db-authored");
@@ -480,10 +480,10 @@ describe("structureKitDbTab 신규·복제", () => {
   it("combined_town 앨범에서 [+ 새 구조물]은 바로 빈 칸으로 시작한다", () => {
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
-    host.querySelector(`[data-testid='structure-kit-tileset-${DEFAULT_TILESET_ID}']`)!.click();
+    host.querySelector(`[data-testid='structure-kit-tileset-${COMBINED_TOWN_TILESET_ID}']`)!.click();
     host.querySelector("[data-testid='structure-kit-new']")!.click();
 
-    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
+    const kits = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits ?? [];
     expect(kits).toHaveLength(1);
     expect(kits[0]!.kind).toBe("section");
     expect(kits[0]!.learnedFrom).toBe("db-authored");
@@ -495,7 +495,7 @@ describe("structureKitDbTab 내보내기", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
@@ -507,7 +507,7 @@ describe("structureKitDbTab 내보내기", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
@@ -532,7 +532,7 @@ describe("structureKitDbTab 내보내기", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});
@@ -561,13 +561,13 @@ describe("structureKitDbTab 복제 → 편집 연결", () => {
   }
 
   function onlyUserKitId(): string {
-    const kits = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits ?? [];
+    const kits = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits ?? [];
     expect(kits.length).toBeGreaterThanOrEqual(1);
     return kits[kits.length - 1]!.id;
   }
 
   it("등록 킷 복제는 선택을 사본으로 옮기고 편집기를 연다", () => {
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
     const host = renderTownAlbum();
     host.querySelector("[data-testid='structure-kit-db-kit_mine']")!.click();
     host.querySelector("[data-testid='structure-kit-duplicate-kit_mine']")!.click();
@@ -578,7 +578,7 @@ describe("structureKitDbTab 복제 → 편집 연결", () => {
   });
 
   it("복제 뒤에는 사본 행이 목록에 보인다", () => {
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
     const host = renderTownAlbum();
     host.querySelector("[data-testid='structure-kit-db-kit_mine']")!.click();
     host.querySelector("[data-testid='structure-kit-duplicate-kit_mine']")!.click();
@@ -588,7 +588,7 @@ describe("structureKitDbTab 복제 → 편집 연결", () => {
   });
 
   it("등록 행의 복제 아이콘도 사본의 편집기까지 이어진다", () => {
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_mine", "내 우물"));
     const host = renderTownAlbum();
     const dup = host.querySelector("[data-testid='structure-kit-row-duplicate-kit_mine']");
     expect(dup).not.toBeNull();
@@ -600,7 +600,7 @@ describe("structureKitDbTab 복제 → 편집 연결", () => {
   });
 
   it("내 구조물 행의 ✎ 아이콘으로 편집기가 열린다", () => {
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_row_edit", "행에서 편집"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_row_edit", "행에서 편집"));
     const host = renderTownAlbum();
 
     const editIcon = host.querySelector("[data-testid='structure-kit-row-edit-kit_row_edit']");
@@ -612,14 +612,14 @@ describe("structureKitDbTab 복제 → 편집 연결", () => {
   });
 
   it("편집 중 킷이 사라지면 칠하기가 무음 실패하지 않고 편집기가 닫힌다", () => {
-    registerStructureKit(DEFAULT_TILESET_ID, createTestSectionKit("kit_vanish", "사라질 킷"));
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, createTestSectionKit("kit_vanish", "사라질 킷"));
     const host = renderTownAlbum();
     host.querySelector("[data-testid='structure-kit-row-edit-kit_vanish']")!.click();
     expect(document.querySelector("[data-testid='structure-kit-editor']")).not.toBeNull();
 
     // Ctrl+Z / DB 모달 취소로 store 가 교체된 상황 — 편집기가 보던 킷이 없어진다.
     store.update((project) => {
-      project.tilesets[DEFAULT_TILESET_ID]!.structureKits = [];
+      project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits = [];
     });
 
     const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']") as unknown as FakeElement;
@@ -639,7 +639,7 @@ describe("structureKitDbTab AI 메타 요약(§5.3)", () => {
     const current = store.getCurrent();
     const mapId = Object.keys(current.maps)[0]!;
     editorState.set({ currentMapId: mapId });
-    registerStructureKit(DEFAULT_TILESET_ID, kit);
+    registerStructureKit(COMBINED_TOWN_TILESET_ID, kit);
 
     const host = new FakeElement("div");
     renderStructureKitsTab(host as unknown as HTMLElement, () => {});

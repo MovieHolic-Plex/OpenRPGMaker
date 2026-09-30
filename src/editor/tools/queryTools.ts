@@ -13,7 +13,7 @@ import { isPassable } from "@/project/collision";
 import { cellLayerTiles } from "@/project/mapLayers";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
@@ -48,7 +48,7 @@ export function isMapWaterTile(tile: number): boolean {
 /** Numeric chipset constants only describe the compatible bundled atlas. */
 function isWaterInTileset(map: GameMap, tileset: TilesetDef | undefined, tile: number): boolean {
   if (tile < 0) return false;
-  if (!tileset) return (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID && isMapWaterTile(tile);
+  if (!tileset) return (map.tilesetId ?? COMBINED_TOWN_TILESET_ID) === COMBINED_TOWN_TILESET_ID && isMapWaterTile(tile);
   return tileCategoriesForTile(tileset, tile).includes("water")
     || tileset.tileMeta?.[tile]?.tags?.includes("water") === true
     || (isCombinedTownCompatibleTileset(tileset) && isMapWaterTile(tile));
@@ -121,9 +121,9 @@ function semanticChar(project: Project, map: GameMap, x: number, y: number, hasE
   const i = y * map.width + x;
   const layers = cellLayerTiles(map, i);
   // 호수 오토타일·타일 그림판 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
-  const tileset = project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID];
+  const tileset = project.tilesets[map.tilesetId ?? COMBINED_TOWN_TILESET_ID];
   if (layers.some((tile) => isWaterInTileset(map, tileset, tile))) return "~";
-  const compatible = tileset ? isCombinedTownCompatibleTileset(tileset) : (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID;
+  const compatible = tileset ? isCombinedTownCompatibleTileset(tileset) : (map.tilesetId ?? COMBINED_TOWN_TILESET_ID) === COMBINED_TOWN_TILESET_ID;
   if ((compatible && layers.some((tile) => tile === TILE.TREE))
     || (tileset && layers.some((tile) => tile >= 0 && tileCategoriesForTile(tileset, tile).includes("tree")))) return "T";
   if (compatible && layers[0] === TILE.WALL) return "#";
@@ -207,7 +207,7 @@ const getMapRegion: ToolDefinition = {
           ...(catalog.characterId ? { characterId: catalog.characterId } : {}),
         };
       });
-    const water = waterBoundsInMap(map, x0, y0, x1, y1, project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID]);
+    const water = waterBoundsInMap(map, x0, y0, x1, y1, project.tilesets[map.tilesetId ?? COMBINED_TOWN_TILESET_ID]);
     const area = Math.max(1, (x1 - x0) * (y1 - y0));
     const large = area > 24 * 24;
     const warnings: string[] = [];

@@ -9,12 +9,12 @@ import {
   missingPreviewClarification,
   selectHighConfidenceCharsetCandidate,
 } from "@/project/aiPreviewContracts";
-import { defaultTileset, defaultTilesets } from "@/project/defaults/defaultAssets";
-import { DEFAULT_TILESET_ID, DEFAULT_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
+import { combinedTownTileset as defaultTileset, defaultTilesets } from "@/project/defaults/defaultAssets";
+import { COMBINED_TOWN_TILESET_ID, COMBINED_TOWN_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 
 function firstNonDefaultTileset() {
   const tilesets = defaultTilesets();
-  const tileset = Object.values(tilesets).find((candidate) => candidate.id !== DEFAULT_TILESET_ID);
+  const tileset = Object.values(tilesets).find((candidate) => candidate.id !== COMBINED_TOWN_TILESET_ID);
   if (!tileset) throw new Error("expected bundled non-default EasyRPG tileset fixture");
   return tileset;
 }
@@ -30,7 +30,7 @@ describe("AI preview contracts", () => {
     expect(result.eligible).toBe(true);
     if (!result.eligible) throw new Error("expected eligible default tileset");
     expect(result.candidate.confidence).toBe("high");
-    expect(result.candidate.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(result.candidate.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
     expect(result.candidate.semanticGroups.map((group) => group.role)).toEqual(
       expect.arrayContaining(["terrain", "water", "wall", "building"])
     );
@@ -289,7 +289,7 @@ describe("AI preview theme contracts", () => {
 
   it("rejects uploaded images even when their id collides with a bundled pack texture id", () => {
     const tileset = defaultTileset();
-    tileset.image = { type: "uploaded", id: DEFAULT_TILESET_TEXTURE_KEY };
+    tileset.image = { type: "uploaded", id: COMBINED_TOWN_TILESET_TEXTURE_KEY };
 
     const result = evaluateThemeEligibility(tileset, "combined-town");
 

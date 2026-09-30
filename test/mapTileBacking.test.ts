@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { drawMapTileLayers } from "@/editor/mapTileDraw";
 import { DEFAULT_TRUNK_BACKING_TILE } from "@/editor/tileLayerPolicy";
 import { setTileBackingOverride } from "@/editor/runtimeTileMetadata";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import type { GameMap, TilesetDef } from "@/project/types";
 
 // 캔버스 공유 렌더러가 **투명 칩의 받침**을 깔아야 한다.

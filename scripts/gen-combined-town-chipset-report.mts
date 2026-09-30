@@ -16,7 +16,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { RESOURCE_SLICING } from "../src/assets/resourceSlicing.ts";
-import { defaultTileset } from "../src/project/defaults/defaultAssets.ts";
+import { combinedTownTileset as combinedTownTileset as defaultTileset } from "../src/project/defaults/defaultAssets.ts";
 import {
   COMBINED_TOWN_HARNESS_GROUPS,
   COMBINED_TOWN_ROOF_OVERLAY_TILES,

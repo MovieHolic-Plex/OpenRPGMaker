@@ -10,7 +10,7 @@ import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/edito
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
@@ -157,7 +157,7 @@ beforeEach(() => {
     },
   });
   const project = createBlankProject();
-  const tileset = project.tilesets[DEFAULT_TILESET_ID];
+  const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   tileset.tileGroups = [makeFenceGroup()];
   store.replace(project);
   editorState.set({ currentMapId: project.startMapId, selection: null });
@@ -181,7 +181,7 @@ afterEach(() => {
 
 describe("cluster AI modal", () => {
   it("opens a focused cluster dialog and sends the cluster-edit kickoff", async () => {
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     await finishTurn();
 
     const modal = requireTestId(document, "cluster-ai-modal");
@@ -212,7 +212,7 @@ describe("cluster AI modal", () => {
     });
     try {
       await refreshAiConnectionStatus();
-      openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+      openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
 
       expect(mocks.instances).toHaveLength(0);
       expect(requireTestId(document, "cluster-ai-status").textContent).toBe("설정 필요");
@@ -239,7 +239,7 @@ describe("cluster AI modal", () => {
     };
     replaceSpy = vi.spyOn(store, "replace");
 
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     await finishTurn();
     const rebased = new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error("Cluster session did not rebase")), 5000);
@@ -259,21 +259,21 @@ describe("cluster AI modal", () => {
   });
 
   it("closes from Escape, backdrop, and close button", async () => {
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     dispatchDocumentKey("Escape");
     expect(document.querySelector("[data-testid='cluster-ai-modal']")).toBeNull();
 
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     requireTestId(document, "cluster-ai-modal").click();
     expect(document.querySelector("[data-testid='cluster-ai-modal']")).toBeNull();
 
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     requireTestId(document, "cluster-ai-modal-close").click();
     expect(document.querySelector("[data-testid='cluster-ai-modal']")).toBeNull();
   });
 
   it("opens unclassified analysis mode and sends that kickoff", async () => {
-    openClusterAiModal({ kind: "unclassified-analysis", tilesetId: DEFAULT_TILESET_ID, sampleTiles: [4, 5, 6], total: 14 });
+    openClusterAiModal({ kind: "unclassified-analysis", tilesetId: COMBINED_TOWN_TILESET_ID, sampleTiles: [4, 5, 6], total: 14 });
     await finishTurn();
 
     const modal = requireTestId(document, "cluster-ai-modal");

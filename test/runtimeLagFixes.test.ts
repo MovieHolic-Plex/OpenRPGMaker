@@ -21,7 +21,7 @@ import { lightingMaskSignature } from "@/player/lighting";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 import { isPassable, isPassableLanding } from "@/project/collision";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { defaultTilesets } from "@/project/defaults/defaultAssets";
 
 function page(id: string, overrides: Partial<EventPage> = {}): EventPage {
@@ -117,8 +117,8 @@ describe("사각 질의의 앵커 사전 거르기", () => {
 });
 
 describe("nearestPassableTile — 고리 훑기가 예전 전체 훑기와 같은 칸을 고른다", () => {
-  const tileset = defaultTilesets()[DEFAULT_TILESET_ID]!;
-  const project = { tilesets: { [DEFAULT_TILESET_ID]: tileset } } as unknown as Project;
+  const tileset = defaultTilesets()[COMBINED_TOWN_TILESET_ID]!;
+  const project = { tilesets: { [COMBINED_TOWN_TILESET_ID]: tileset } } as unknown as Project;
 
   function legacy(map: GameMap, x: number, y: number): { x: number; y: number } {
     const fx = Math.max(0, Math.min(map.width - 1, x));
@@ -144,7 +144,7 @@ describe("nearestPassableTile — 고리 훑기가 예전 전체 훑기와 같�
       const height = 5 + Math.floor(random() * 9);
       const density = random();
       const lowerTiles = Array.from({ length: width * height }, () => (random() < density ? 306 : random() < 0.2 ? 230 : 240));
-      const map = { id: "m", name: "m", width, height, tilesetId: DEFAULT_TILESET_ID, tileSize: 16, lowerTiles,
+      const map = { id: "m", name: "m", width, height, tilesetId: COMBINED_TOWN_TILESET_ID, tileSize: 16, lowerTiles,
         upperTiles: new Array<number>(width * height).fill(-1), events: [] } as unknown as GameMap;
       const x = Math.floor(random() * width);
       const y = Math.floor(random() * height);

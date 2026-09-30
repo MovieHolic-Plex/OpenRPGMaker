@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { commitChangeset, createDraft } from "@/editor/tools/changeset";
 import { runTool } from "@/editor/tools/toolRunner";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
 
@@ -36,7 +36,7 @@ function twoMapProject(): { readonly project: Project; readonly left: GameMap; r
   project.mapTree = { mapId: left.id, children: [{ mapId: right.id, children: [] }] };
   project.startMapId = left.id;
   project.startPos = { x: 0, y: 0 };
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [adjacencyGroup()];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [adjacencyGroup()];
   return { project, left, right };
 }
 

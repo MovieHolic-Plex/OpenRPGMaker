@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { decorateVillageSpaces } from "@/editor/tools/village/spaceDecoration";
 import { registerVillageDecorationCatalog } from "../scripts/lib/villageDecorationCatalog.mts";
 import { emptySpatialDocument } from "./support/spatialSchemaFixture";
@@ -13,7 +13,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 function fixture() {
   const project=createBlankProject();project.spatialAuthoring=emptySpatialDocument();
   const rules=registerVillageDecorationCatalog(project);
-  const map=createBlankMap("Dressing",24,24,DEFAULT_TILESET_ID,16);project.maps[map.id]=map;
+  const map=createBlankMap("Dressing",24,24,COMBINED_TOWN_TILESET_ID,16);project.maps[map.id]=map;
   map.layoutPlan={version:1,kind:"village",regions:[{id:"commons",role:"plaza",x:6,y:6,w:12,h:12}]};
   project.startMapId=map.id;project.startPos={x:12,y:12};
   return {project,map,rules};

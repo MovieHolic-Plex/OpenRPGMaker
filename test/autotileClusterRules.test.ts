@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { buildClusterEditKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
 import { commitChangeset } from "@/editor/tools/changeset";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { isAutotileGroup, validateClusterRules } from "@/project/lint/clusterRuleValidators";
 import { store } from "@/project/store";
@@ -126,7 +126,7 @@ function blankMap(): GameMap {
     lowerTiles: new Array<number>(width * height).fill(TILE.GRASS),
     name: "오토타일 규칙 테스트",
     tileSize: 16,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
     width,
   };
@@ -177,7 +177,7 @@ function projectWithGroup(tileGroup: TileGroupMetadata): { readonly map: GameMap
   project.startPos = { x: 0, y: 0 };
   project.testPresets = [];
   project.villageInfoDocuments = [];
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [tileGroup];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [tileGroup];
   return { map, project };
 }
 
@@ -199,8 +199,8 @@ function groupSnapshot(tilesetId: string, groupId: string): ClusterGroupSnapshot
 
 function clusterEditPrompt(groupId: string): string {
   return buildClusterEditKickoff({
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     groupId,
-    group: groupSnapshot(DEFAULT_TILESET_ID, groupId),
+    group: groupSnapshot(COMBINED_TOWN_TILESET_ID, groupId),
   });
 }

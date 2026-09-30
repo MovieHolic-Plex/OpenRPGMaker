@@ -5,6 +5,32 @@
 2026-09-29 라운드 2(v7): 오토타일·새 키트·원본과 다른 예시 배치 둘·배치 자를 더하고 조수를 「원본 복제 금지」 과제로 다시 시험했다(아래 「라운드 2」).
 같은 날 라운드 3(v8): 「만들다 만」 결과를 고치려고 블록 키트 41종·길 위계·작업 순서·빈 바닥 자를 더했다(아래 「라운드 3」).
 
+## 기본 타일셋 (2026-09-30)
+
+버들항이 **새 프로젝트의 기본 타일셋**이다. `DEFAULT_TILESET_ID = "beodeul_city"`(`src/project/defaults/constants.ts`, 문자열 리터럴 —
+7MB `beodeulCityTileset.json` 을 constants 가 import 하지 않게 하려는 것이라 `DEFAULT_TILESET_NAME` 은 `bundled.ts` 항목 이름과 같아야 한다).
+
+- 새 프로젝트: `createBlankProject` 의 시작 맵 `createBlankMap(..., DEFAULT_TILESET_ID)`, 타일셋 목록 맨 앞이 버들항(`defaultTilesets`, `defaultResourceProfiles` 도 기본 프로필을 앞으로).
+- 빈 맵 채움: `createBlankMap` 은 버들항이면 잔디 737(`BEODEUL_PLAIN_GRASS_TILE`), 아니면 `TILE.GRASS`. **`TILE.*` 상수는 합본 마을 칸 번호다.** 버들항에서 240 은 벽이다 — 버들항 맵에 `TILE.*` 를 쓰지 마라.
+- 합본 마을은 번들에 그대로 남는다. 합본 마을 칸 번호에 의존하는 코드·테스트(`createStarterMap`, `createLogCabinShowcaseMap`, `createFarmingDemoProject`, `scripts/natural-village/build.ts`, 테스트 약 540곳)는 `COMBINED_TOWN_TILESET_ID/NAME/TEXTURE_KEY`(같은 파일)와 `combinedTownTileset()` 를 명시한다. "기본"을 뜻하는 곳만 `DEFAULT_TILESET_*`.
+- 기존 프로젝트는 이관하지 않는다. 합본 마을 맵은 그대로 합본 마을 팔레트로 그려진다(`verify-shots/beodeul-default/bd-existing-combined-town.png`).
+- 조수: `defaultToolTilesetId` 는 시작 맵 타일셋 → `defaultOutdoorTilesetId`(`forest_harmony` 가 있으면 그것, 없으면 `DEFAULT_TILESET_ID`) 순이다. 새 프로젝트에는 `forest_harmony` 도 들어 있어 **바깥 새 맵의 조수 기본은 아직 숲마을**이다(의도적으로 유지, 바꾸려면 `forestHarmony.ts`).
+- 계열 규칙(`isCombinedTownCompatibleTileset`)은 합본 마을 계열 기준 그대로다.
+
+### 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
+
+| | 버들항(빈 새 프로젝트) | 합본 마을 |
+|---|---|---|
+| 팔레트 첫 타일 (페이지 부팅 포함, 콜드 dev) | 약 19~20초, 992칸으로 시작 | 약 18~22초, 195칸 |
+| 팔레트 DOM `.chipset-tile` | 23,936 (패널 24,036 노드, #app 24,754) | 195 (패널 308, #app 약 1,020) |
+| 필터(분류) 전환 | 0.74~2.3초 | 65~126ms |
+| 타일 클릭 | 171~525ms | 약 72ms |
+| 전체 채움 | 배치 128칸×`setTimeout(0)` 로 약 60초 | 즉시 |
+
+부팅 시간은 dev 서버가 지배해 차이가 작다. **DOM 2만 노드 초과·필터 1초 안팎 → 「팔레트 가상화 필요」.** `tilePaletteGrid.ts` 는 칸마다 `button.chipset-tile` 을 만들고 걸러진 칸도 DOM 에 남긴다. 미해결 위험이다.
+
+앞쪽 배치: 잔디 737 은 5행, 광장 8~22행. 그러나 길·물·모래 **오토타일 본체는 맨 끝**(길 23015~, 물 23025~23152, 모래 23160~, 179~181행)이고, `지형` 필터는 0칸, `물` 필터는 10,719칸(과대 분류)이다. 구조물 키트 286종은 팔레트 칸이 아니라 `stamp_object`/구조 보조로 찍는다. 후속: 자주 쓰는 칸 고정 구역, 지형 분류 수정, 가상화.
+
 ## 무엇이 어디에 있나
 
 | 무엇 | 위치 |
@@ -35,7 +61,7 @@
   윗층 칸은 그 칸이 걸음이면 ★(사람 위에 그려짐, 처마·굴뚝·나무 윗부분), 막힘이면 y 정렬되는 막힌 물체.
 - 시트는 오토타일이 없다(원본 자리에서 잘린 칸). 그래서 조수용 재료는 **키트**다: 구역 8(왕성·저택·포룸·성당 언덕·풍차 들·강/다리·서쪽 항구·항구, 두 층 채움), 건물 70(이름 있는 건물 12 포함)·소품 34·나무 8 조각(물체의 투명 그림을 원래 칸 오프셋 그대로 잘라 새 칸으로, 아래층 -1).
   `stamp_object({objectId:'kit:beodeul_city/<id>'})` 로 찍힌다(`sharedDesignCatalog.ts` `kitObjects`). 땅 재료 네 가지(`버들항 풀밭`·`길 포석`·`광장 판석`·`물`)는 오토타일 아닌 면 채우기 그룹이다.
-- tileMeta 는 칸 22,784개가 모든 프로젝트에 실리므로 짧게(이름표·한 줄 설명·층·통행) 했다. 번들 JSON 6.5MB.
+- tileMeta 는 칸 23,936개가 모든 프로젝트에 실리므로 짧게(이름표·한 줄 설명·층·통행) 했다. 번들 JSON 6.5MB.
 
 ## 정본 저장·재로드 (2026-09-28)
 

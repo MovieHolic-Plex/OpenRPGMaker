@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import type { LintIssue } from "@/project/lint/projectLint";
@@ -14,7 +14,7 @@ const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
   const ctx: ToolContext = { project: createBlankProject() };
-  return { ctx, tileset: () => ctx.project.tilesets[DEFAULT_TILESET_ID] };
+  return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
 function approve(tileset: TilesetDef, groupId: string): TileGroupMetadata {

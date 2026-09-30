@@ -1,6 +1,6 @@
 import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 import type { PassFlag, Project, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
-import { CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
+import { CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
 import {
   DIRT_ROAD_TILE,
   TERRAIN_TAG,
@@ -30,7 +30,7 @@ type RuntimeHarnessGroup = {
 };
 
 export function isCombinedTownTileset(tileset: Pick<TilesetDef, "image">): boolean {
-  return tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY;
+  return tileset.image.type === "bundled" && tileset.image.id === COMBINED_TOWN_TILESET_TEXTURE_KEY;
 }
 
 /**

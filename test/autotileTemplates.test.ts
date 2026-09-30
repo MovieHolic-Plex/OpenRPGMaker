@@ -9,7 +9,7 @@ import { createBlankProject } from "@/project/defaults";
 import { AUTOTILE_DIR } from "@/project/defaults/autotileEngine";
 import { DEFAULT_AUTOTILE_GROUPS, DEFAULT_COBBLE_AUTOTILE_GROUP, autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { COBBLE_TILE } from "@/project/defaults/chipsetMapping";
-import { DEFAULT_TILESET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
 
@@ -109,9 +109,9 @@ describe("addAutotileGroupFromTemplate", () => {
   });
 
   it("(e) 첫 커스텀 그룹 추가 시 내장 그룹(흙길/모래/포석/경작지)이 승계되어 살아남는다", () => {
-    const outcome = addAutotileGroupFromTemplate(DEFAULT_TILESET_ID, "grid-3x3", 33);
+    const outcome = addAutotileGroupFromTemplate(COMBINED_TOWN_TILESET_ID, "grid-3x3", 33);
     expect(outcome.ok).toBe(true);
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     const ids = (tileset.autotileGroups ?? []).map((group) => group.id);
     expect(ids).toContain("builtin_dirt_road");
     expect(ids).toContain("builtin_sand");
@@ -126,21 +126,21 @@ describe("addAutotileGroupFromTemplate", () => {
   });
 
   it("(e-2) 검증 실패 시 프로젝트를 변경하지 않는다", () => {
-    const outcome = addAutotileGroupFromTemplate(DEFAULT_TILESET_ID, "oprn-3x4", 450);
+    const outcome = addAutotileGroupFromTemplate(COMBINED_TOWN_TILESET_ID, "oprn-3x4", 450);
     expect(outcome.ok).toBe(false);
-    expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID].autotileGroups).toBeUndefined();
+    expect(store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID].autotileGroups).toBeUndefined();
   });
 
   it("(f) animated-water 는 그룹 대신 animationStrips 를 추가하고 직렬화 왕복이 보존된다", () => {
-    const outcome = addAutotileGroupFromTemplate(DEFAULT_TILESET_ID, "animated-water", 120);
+    const outcome = addAutotileGroupFromTemplate(COMBINED_TOWN_TILESET_ID, "animated-water", 120);
     expect(outcome.ok).toBe(true);
     expect(outcome.ok && outcome.groupId).toBeUndefined();
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     expect(tileset.animationStrips).toEqual([{ baseTile: 120, frames: 3, fps: 3 }]);
     expect(tileset.autotileGroups).toBeUndefined();
 
     const restored = deserialize(serialize(store.getCurrent()));
-    expect(restored.tilesets[DEFAULT_TILESET_ID].animationStrips).toEqual([{ baseTile: 120, frames: 3, fps: 3 }]);
+    expect(restored.tilesets[COMBINED_TOWN_TILESET_ID].animationStrips).toEqual([{ baseTile: 120, frames: 3, fps: 3 }]);
 
     // 순수 함수 계약: 행 넘침 검증 공유.
     const invalid = buildAnimatedWaterStrip(29, R, COUNT);

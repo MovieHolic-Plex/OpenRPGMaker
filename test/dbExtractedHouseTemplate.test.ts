@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 import { createDbExtractedHouseTemplateMap } from "@/editor/content/townShowcaseMaps";
 
 describe("DB-extracted user house template", () => {
@@ -11,7 +11,7 @@ describe("DB-extracted user house template", () => {
     expect(map.name).toBe("DB 추출 사용자 집 템플릿");
     expect(map.width).toBe(16);
     expect(map.height).toBe(15);
-    expect(map.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(map.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
     expect(upperCount).toBe(58);
 
     expect(map.lowerTiles[at(0, 0)]).toBe(TILE.GRASS);

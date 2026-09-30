@@ -13,7 +13,7 @@
 //     starterHouseTransfer 가 실내 300칸을 그걸로 채웠다 — 밟을 수 있는 칸이 2칸뿐이었다.
 import { describe, expect, it } from "vitest";
 import { canMove, isPassable } from "@/project/collision";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { defaultTilesets } from "@/project/defaults/defaultAssets";
 import {
   createStarterHouseInteriorMap,
@@ -23,8 +23,8 @@ import {
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
 import type { GameMap, Project } from "@/project/types";
 
-const tileset = defaultTilesets()[DEFAULT_TILESET_ID]!;
-const project = { tilesets: { [DEFAULT_TILESET_ID]: tileset } } as unknown as Project;
+const tileset = defaultTilesets()[COMBINED_TOWN_TILESET_ID]!;
+const project = { tilesets: { [COMBINED_TOWN_TILESET_ID]: tileset } } as unknown as Project;
 
 function reachableFrom(map: GameMap, sx: number, sy: number): Set<number> {
   const key = (x: number, y: number): number => y * map.width + x;
@@ -97,7 +97,7 @@ describe("transfer 착지는 나갈 수 있는 칸을 고른다", () => {
       name: "함정",
       width,
       height,
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       tileSize: 16,
       lowerTiles,
       upperTiles: new Array<number>(width * height).fill(-1),

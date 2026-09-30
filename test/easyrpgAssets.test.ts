@@ -12,7 +12,7 @@ import { EASYRPG_CHIPSET_ASSETS } from "@/assets/easyrpgRtp";
 import { inspectPngBytes } from "@/assets/pngInspection";
 import { createBlankProject } from "@/project/defaults";
 import { ensureBundledResourceProfiles } from "@/project/defaults/defaultAssets";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 
 type BinaryFsReader = {
   readonly existsSync: (path: URL) => boolean;
@@ -56,7 +56,7 @@ describe("bundled EasyRPG RTP assets", () => {
       // 테마 팩(interior/dungeon/scarloxy)이 있는 칩셋은 팩이 덮는 타일만 bundled-default,
       // 그 외 vendored 칩셋 타일은 AI 분류 대기 상태(unknown)이다.
       const source = tileset.tileMeta?.[0]?.source;
-      if (id === DEFAULT_TILESET_ID) {
+      if (id === COMBINED_TOWN_TILESET_ID) {
         expect(source).toBe("bundled-default");
       } else {
         expect(["bundled-default", "unknown"]).toContain(source);

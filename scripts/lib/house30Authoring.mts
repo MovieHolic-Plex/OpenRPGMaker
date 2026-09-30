@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 import { createBlankMap } from "../../src/project/defaults/defaultMaps";
-import { DEFAULT_TILESET_ID } from "../../src/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "../../src/project/defaults/constants";
 import { runTool } from "../../src/editor/tools/toolRunner";
 import { houseObjectForGraphic } from "./houseSpatialCatalog.mts";
 import { HOUSE30_EXCLUDED_TILES, HOUSE30_TAG, type House30Entry } from "./house30Contract.mts";
@@ -90,7 +90,7 @@ export function authorHouse30(input: Project, entries: readonly House30Entry[]) 
   const checks = inspectHouse30(entries);
   assert.ok(input.spatialAuthoring, "Canonical authoring is required");
   const context = { project: structuredClone(input) };
-  const tileset = context.project.tilesets[DEFAULT_TILESET_ID]!;
+  const tileset = context.project.tilesets[COMBINED_TOWN_TILESET_ID]!;
   const changedGraphics = new Set<string>();
   const placements: { number:number; name:string; description:string; family:string; floors:number; id:string; objectId:string; mapId:string; x:number; y:number; width:number; height:number }[] = [];
   for (const entry of entries) {

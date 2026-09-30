@@ -7,7 +7,7 @@ import {
   type ProposedCall,
 } from "@/ai/assistantSession";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
 import type { Project, TileGroupMetadata } from "@/project/types";
 
@@ -34,7 +34,7 @@ function finalMsg(text: string): ChatResult {
 
 function projectWithGroup(): Project {
   const project = createBlankProject();
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [ruleGroup()];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [ruleGroup()];
   return project;
 }
 
@@ -54,7 +54,7 @@ function setClusterRuleArgs(strength: "hard" | "medium" | "soft") {
   return {
     groupId: "approval-main",
     rule: { id: `count-${strength}`, kind: "count", params: { max: 999, perMap: true }, strength },
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
   };
 }
 
@@ -88,12 +88,12 @@ describe("rule proposal metadata", () => {
     const junction = await proposedCall("set_group_junction", () => ({
       groupId: "approval-main",
       junction: { action: "omit", side: "below", withRole: "wall" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     }));
     const overlay = await proposedCall("set_group_overlay", () => ({
       groupId: "approval-main",
       overlay: { tileIds: [1], when: "eaveEnd" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     }));
 
     expect([medium, soft, junction, overlay].map((call) => call.requiresApproval)).toEqual([true, true, true, true]);

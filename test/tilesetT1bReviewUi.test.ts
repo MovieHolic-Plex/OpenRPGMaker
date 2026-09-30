@@ -20,7 +20,7 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { PalettePreset, Project, TileAiMetadata, TilesetDef } from "@/project/types";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
@@ -29,7 +29,7 @@ let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
   store.replace(createBlankProject());
-  store.getCurrent().tilesets[DEFAULT_TILESET_ID].tileMeta = [];
+  store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID].tileMeta = [];
   resetMapEditHistory();
   restoreDom = installFakeDom();
 });
@@ -154,17 +154,17 @@ describe("locked tile metadata guards", () => {
 
     expect(result.ok).toBe(true);
     expect(result.diff?.warnings).toContain("잠긴 항목 1개 보존됨");
-    expect(context.project.tilesets[DEFAULT_TILESET_ID].tileMeta?.[1].label).toBe("잠금 라벨");
+    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileMeta?.[1].label).toBe("잠금 라벨");
   });
 
   it("set_tile_rules는 locked tileMeta의 통행/지형 변경도 보존한다", () => {
     const context: ToolContext = { project: projectWithLockedTile(1) };
-    const before = context.project.tilesets[DEFAULT_TILESET_ID].terrain[1];
+    const before = context.project.tilesets[COMBINED_TOWN_TILESET_ID].terrain[1];
     const result = runTool(context, "set_tile_rules", { entries: [{ tile: 1, passable: false, terrainTag: before + 1 }] });
 
     expect(result.ok).toBe(true);
     expect(result.diff?.warnings).toContain("잠긴 항목 1개 보존됨");
-    expect(context.project.tilesets[DEFAULT_TILESET_ID].terrain[1]).toBe(before);
+    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID].terrain[1]).toBe(before);
   });
 
   it("confirmedByUser=true는 잠긴 tileMeta를 사용자 확정으로 수정할 수 있다", () => {
@@ -172,7 +172,7 @@ describe("locked tile metadata guards", () => {
     const result = runTool(context, "set_tile_metadata", { entries: [{ tile: 1, label: "사람 수정" }], confirmedByUser: true });
 
     expect(result.ok).toBe(true);
-    expect(context.project.tilesets[DEFAULT_TILESET_ID].tileMeta?.[1]).toMatchObject({
+    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileMeta?.[1]).toMatchObject({
       confidence: 1,
       label: "사람 수정",
       locked: true,
@@ -194,7 +194,7 @@ describe("tileset reaudit pipeline", () => {
       },
     };
 
-    const result = await reauditTileset(DEFAULT_TILESET_ID, client, {
+    const result = await reauditTileset(COMBINED_TOWN_TILESET_ID, client, {
       confidenceThreshold: 0.5,
       project,
       tileIds: [1],
@@ -206,7 +206,7 @@ describe("tileset reaudit pipeline", () => {
 
   it("mock vision client 호출에서 locked 타일을 제외하고 보존 카운트를 반환한다", async () => {
     const project = createBlankProject();
-    const tileset = project.tilesets[DEFAULT_TILESET_ID];
+    const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
     setMeta(tileset, 1, { confidence: 0.2, locked: true });
     setMeta(tileset, 2, { confidence: 0.3 });
     const seen: number[][] = [];
@@ -217,7 +217,7 @@ describe("tileset reaudit pipeline", () => {
       },
     };
 
-    const result = await reauditTileset(DEFAULT_TILESET_ID, client, { project, tileIds: [1, 2] });
+    const result = await reauditTileset(COMBINED_TOWN_TILESET_ID, client, { project, tileIds: [1, 2] });
 
     expect(seen).toEqual([[2]]);
     expect(result.preservedLockedCount).toBe(1);
@@ -305,7 +305,7 @@ describe("palette preset editor", () => {
 
   it("프리셋 upsert diff 요약에는 잠긴 항목 보존 문구가 포함된다", () => {
     const context: ToolContext = { project: createBlankProject() };
-    context.project.tilesets[DEFAULT_TILESET_ID].palettePresets = [preset("pp_locked", { locked: true })];
+    context.project.tilesets[COMBINED_TOWN_TILESET_ID].palettePresets = [preset("pp_locked", { locked: true })];
     const result = runTool(context, "upsert_palette_preset", {
       preset: { name: "새 AI 프리셋", slots: [{ role: "ground", tileIds: [1] }] },
     });
@@ -317,7 +317,7 @@ describe("palette preset editor", () => {
 });
 
 function testTileset(): TilesetDef {
-  return store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+  return store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
 }
 
 function setMeta(tileset: TilesetDef, tile: number, patch: Partial<TileAiMetadata>): void {
@@ -329,7 +329,7 @@ function setMeta(tileset: TilesetDef, tile: number, patch: Partial<TileAiMetadat
 
 function projectWithLockedTile(tile: number): Project {
   const project = createBlankProject();
-  setMeta(project.tilesets[DEFAULT_TILESET_ID], tile, {
+  setMeta(project.tilesets[COMBINED_TOWN_TILESET_ID], tile, {
     confidence: 1,
     label: "잠금 라벨",
     locked: true,

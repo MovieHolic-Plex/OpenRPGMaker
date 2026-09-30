@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { deserialize, serialize } from "@/project/io";
@@ -112,7 +112,7 @@ describe("house template gallery project", () => {
 
   it("does not store terrain templates and drops legacy fields on round trip", () => {
     const project = createHouseTemplateGalleryProject();
-    const tileset = project.tilesets[DEFAULT_TILESET_ID] as unknown as Record<string, unknown>;
+    const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID] as unknown as Record<string, unknown>;
 
     expect("terrainTemplates" in tileset).toBe(false);
     const raw = JSON.parse(serialize(project)) as Record<string, unknown>;
@@ -120,9 +120,9 @@ describe("house template gallery project", () => {
 
     const legacy = JSON.parse(serialize(project)) as Record<string, unknown>;
     const legacyTilesets = legacy.tilesets as Record<string, Record<string, unknown>>;
-    legacyTilesets[DEFAULT_TILESET_ID].terrainTemplates = [{ id: "legacy_house", name: "legacy" }];
+    legacyTilesets[COMBINED_TOWN_TILESET_ID].terrainTemplates = [{ id: "legacy_house", name: "legacy" }];
     const loaded = deserialize(JSON.stringify(legacy));
-    expect("terrainTemplates" in (loaded.tilesets[DEFAULT_TILESET_ID] as unknown as Record<string, unknown>)).toBe(false);
+    expect("terrainTemplates" in (loaded.tilesets[COMBINED_TOWN_TILESET_ID] as unknown as Record<string, unknown>)).toBe(false);
     expect(serialize(loaded)).not.toContain("terrainTemplates");
   });
 });

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderWorldGenTab, resetWorldGenTabViewState } from "@/editor/panels/databaseWorldGenView";
 import { getMapEditHistoryEntries, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { BUILTIN_WORLD_GEN_KEYWORD_RULES } from "@/project/worldGenRules";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -26,7 +26,7 @@ function input(id: string, value: string): void {
 beforeEach(() => {
   restoreDom = installFakeDom();
   const project = createBlankProject();
-  delete project.tilesets[DEFAULT_TILESET_ID]; // Unit fixture exercises the no-tileset preview fallback.
+  delete project.tilesets[COMBINED_TOWN_TILESET_ID]; // Unit fixture exercises the no-tileset preview fallback.
   store.replace(project);
   resetMapEditHistory();
   resetWorldGenTabViewState();

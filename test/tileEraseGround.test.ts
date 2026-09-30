@@ -3,7 +3,7 @@ import { getTool, runTool, type ToolContext } from "@/editor/tools";
 import { setTileLayerOverride, markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { blockedFlag, passableFlag, setPassageMark } from "@/project/tilesetPassage";
 import { confirmUserTileMetadata } from "@/project/tilesetPalette";
 import { completedHouseProject, HOUSE_RECT } from "./fixtures/completedHouse";
@@ -52,8 +52,8 @@ describe("tile_erase compatible observed ground", () => {
   });
 
   it.each([
-    { tilesetId: DEFAULT_TILESET_ID, floor: 222, crate: 237 },
-    { tilesetId: DEFAULT_TILESET_ID, floor: 240, crate: 237 },
+    { tilesetId: COMBINED_TOWN_TILESET_ID, floor: 222, crate: 237 },
+    { tilesetId: COMBINED_TOWN_TILESET_ID, floor: 240, crate: 237 },
     { tilesetId: "easyrpg_chipset_interior", floor: 72, crate: 295 },
   ])("preserves $tilesetId floor$floor after real 2/2 crate placement", ({ tilesetId, floor, crate }) => {
     const ctx = context();
