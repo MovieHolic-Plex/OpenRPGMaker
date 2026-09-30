@@ -186,6 +186,8 @@ export function retroClassFamilyOf(classId: string): Exclude<RetroChoreographyFa
 }
 
 export interface RetroChoreographyEntry {
+  /** default = 번들 계약(읽기 전용), project = database.skillChoreographies 레코드. */
+  readonly origin: "default" | "project";
   readonly id: string;
   readonly name: string;
   readonly kind: "class" | "monster";
@@ -232,7 +234,7 @@ export function retroChoreographyEntries(): readonly RetroChoreographyEntry[] {
   const classEntries = RETRO_ALL_CLASS_SKILLS.map((skill): RetroChoreographyEntry => {
     const layerKeys = skill.layers.map((layer) => layer.key);
     return {
-      id: skill.id, name: skill.name, kind: "class", family: retroClassFamilyOf(skill.classId) ?? "base", classId: skill.classId,
+      origin: "default", id: skill.id, name: skill.name, kind: "class", family: retroClassFamilyOf(skill.classId) ?? "base", classId: skill.classId,
       className: retroRosterClass(skill.classId)?.name ?? skill.classId.replace(/^class_/, ""), motion: skill.motion, description: skill.description,
       element: inferElement(skill.mechanic?.element, `${layerKeys.join(" ")} ${skill.name} ${skill.description}`),
       anchors: [...new Set(skill.layers.map((layer) => layer.anchor))], layerSummary: summarizeLayers(skill.layers), layerKeys,
@@ -241,7 +243,7 @@ export function retroChoreographyEntries(): readonly RetroChoreographyEntry[] {
   const monsterEntries = RETRO_MONSTER_SKILLS.map((skill): RetroChoreographyEntry => {
     const layerKeys = skill.layers.map((layer) => layer.key);
     return {
-      id: skill.id, name: skill.name, kind: "monster", family: "monster", motion: skill.motion, description: skill.description,
+      origin: "default", id: skill.id, name: skill.name, kind: "monster", family: "monster", motion: skill.motion, description: skill.description,
       element: inferElement(skill.element, `${layerKeys.join(" ")} ${skill.name} ${skill.description}`),
       anchors: [...new Set(skill.layers.map((layer) => layer.anchor))], layerSummary: summarizeLayers(skill.layers), layerKeys,
     };
@@ -257,11 +259,31 @@ export interface RetroChoreographyFilter {
   readonly classId?: string;
   /** id·이름·설명·레이어 키·직업 이름에서 찾는 낱말(공백 = AND). */
   readonly query?: string;
+  /** default(번들 계약) / project(프로젝트 레코드). */
+  readonly origin?: string;
 }
 
-export function filterRetroChoreographies(filter: RetroChoreographyFilter): RetroChoreographyEntry[] {
+/** 프로젝트 연출 레코드를 기본 연출과 같은 색인 모양으로 편다(도구 목록·오류 후보용). */
+export function projectRetroChoreographyEntries(records: RetroChoreographyRecords): RetroChoreographyEntry[] {
+  return (records ?? []).map((record): RetroChoreographyEntry => {
+    const layers = recordLayers(record.layers);
+    const layerKeys = layers.map((layer) => layer.key);
+    const source = record.sourceId ? retroChoreographyEntries().find((entry) => entry.id === record.sourceId) : undefined;
+    return {
+      origin: "project", id: record.id, name: record.name, kind: skillChoreographyRecordKind(record), family: source?.family ?? "base",
+      ...(source?.classId ? { classId: source.classId, className: source.className } : {}),
+      motion: record.motion, description: record.description ?? "",
+      element: inferElement(record.tags?.element, `${layerKeys.join(" ")} ${record.name} ${record.description ?? ""}`),
+      anchors: [...new Set(layers.map((layer) => layer.anchor))], layerSummary: summarizeLayers(layers), layerKeys,
+    };
+  });
+}
+
+export function filterRetroChoreographies(filter: RetroChoreographyFilter, records?: RetroChoreographyRecords): RetroChoreographyEntry[] {
   const words = (filter.query ?? "").toLowerCase().split(/\s+/).filter(Boolean);
-  return retroChoreographyEntries().filter((entry) => {
+  const pool = records && records.length > 0 ? [...projectRetroChoreographyEntries(records), ...retroChoreographyEntries()] : retroChoreographyEntries();
+  return pool.filter((entry) => {
+    if (filter.origin && entry.origin !== filter.origin) return false;
     if (filter.motion && entry.motion !== filter.motion) return false;
     if (filter.element && entry.element !== filter.element) return false;
     if (filter.anchor && !entry.anchors.includes(filter.anchor as RetroFxAnchor)) return false;
@@ -274,14 +296,59 @@ export function filterRetroChoreographies(filter: RetroChoreographyFilter): Retr
 }
 
 /** 잘못된 연출 id 에 가까운 후보(부분 문자열 → 낱말 겹침 순). 조수 도구의 오류 안내용. */
-export function nearbyRetroChoreographies(badId: string, limit = 5): RetroChoreographyEntry[] {
+export function nearbyRetroChoreographies(badId: string, limit = 5, records?: RetroChoreographyRecords): RetroChoreographyEntry[] {
   const needle = badId.toLowerCase().replace(/^skill_/, "");
   const tokens = needle.split(/[^a-z0-9가-힣]+/).filter((token) => token.length >= 2);
-  const scored = retroChoreographyEntries().map((entry) => {
+  const scored = [...projectRetroChoreographyEntries(records), ...retroChoreographyEntries()].map((entry) => {
     const hay = `${entry.id} ${entry.name}`.toLowerCase();
     let score = hay.includes(needle) ? 10 : 0;
     for (const token of tokens) if (hay.includes(token)) score += 2;
     return { entry, score };
   }).filter((item) => item.score > 0);
   return scored.sort((a, b) => b.score - a.score).slice(0, limit).map((item) => item.entry);
+}
+
+// ---- 이펙트 시트 색인(조수 list_fx_sheets / upsert_choreography 오류 후보) ----
+
+export interface RetroFxSheetEntry {
+  readonly key: string;
+  readonly frame: 32 | 64 | 128;
+  readonly frames: number;
+  /** 이 시트를 층으로 쓰는 기본 연출(직업+몬스터 계약) 개수. */
+  readonly usedBy: number;
+}
+
+let sheetCache: readonly RetroFxSheetEntry[] | undefined;
+
+/** 시트 전부(키 순). 처음 부를 때 한 번 만든다. */
+export function retroFxSheetEntries(): readonly RetroFxSheetEntry[] {
+  if (sheetCache) return sheetCache;
+  const used = new Map<string, number>();
+  for (const entry of retroChoreographyEntries()) for (const key of new Set(entry.layerKeys)) used.set(key, (used.get(key) ?? 0) + 1);
+  return sheetCache = [...FX_SHEET_META.values()]
+    .map((layer): RetroFxSheetEntry => ({ key: layer.key, frame: layer.frame, frames: layer.frames, usedBy: used.get(layer.key) ?? 0 }))
+    .sort((a, b) => a.key.localeCompare(b.key));
+}
+
+/** 시트 키 검색(공백=AND, 부분 문자열). */
+export function searchRetroFxSheets(query: string | undefined): RetroFxSheetEntry[] {
+  const words = (query ?? "").toLowerCase().split(/\s+/).filter(Boolean);
+  return retroFxSheetEntries().filter((entry) => words.every((word) => entry.key.toLowerCase().includes(word)));
+}
+
+/** 모르는 시트 키에 가까운 후보(부분 문자열 → 낱말 겹침 → 많이 쓰이는 순). */
+export function nearbyRetroFxSheets(badKey: string, limit = 5): RetroFxSheetEntry[] {
+  const needle = badKey.toLowerCase();
+  const tokens = needle.split(/[^a-z0-9]+/).filter((token) => token.length >= 2);
+  return retroFxSheetEntries()
+    .map((entry) => {
+      const key = entry.key.toLowerCase();
+      let score = key.includes(needle) || needle.includes(key) ? 10 : 0;
+      for (const token of tokens) if (key.includes(token)) score += 2;
+      return { entry, score };
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || b.entry.usedBy - a.entry.usedBy)
+    .slice(0, limit)
+    .map((item) => item.entry);
 }

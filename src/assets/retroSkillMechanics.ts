@@ -59,6 +59,17 @@ export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 �
   kind/stat/affects=effect{kind,statistic,affects} · scope=scope · power=power · revive=stateEffects 에 state_death remove.
   상태를 새로 만들어야 하면(스톱·버서크·프로텍트·실드·속성 배율은 upsert_state 로 이미 저작 가능) 기본 상태 id 를 먼저 재사용한다.
 
+── 연출 조립(빌릴 연출이 딱 맞지 않을 때) ─────────────────────────────────────────────────────
+  기본 연출은 읽기 전용이다. 고르는 순서: (a) list_retro_choreographies 로 그대로 쓸 만한 것이 있으면 retroChoreographyId 로 빌린다.
+  (b) 거의 맞으면 duplicate_choreography(sourceId)로 프로젝트 사본 chor_* 을 만들고 upsert_choreography(id, layers)로 층만 고친다.
+  (c) 아예 새로 짜려면 list_fx_sheets(query)로 시트를 고르고 upsert_choreography(name, motion, layers)로 조립한다. 그 뒤 upsert_skill 의
+  retroChoreographyId 에 chor_ id 를 넣는다.
+  층 = {sheet, anchor} + 선택 옵션. startMs=늦게 시작(임팩트를 동작 뒤에) · scale=크게(광역·필살) · repeat=연달아 · onHit:"each"=다단 스킬에서
+  타마다 이 층이 터짐(기본은 첫 타에 한 번). 동작(motion) 하나에 층 2~4개가 알맞다: 본 타격 1 + 속성 임팩트 1 + 잔상·화면 1.
+  motion 은 직업 동작(dash-strike leap-strike blink-strike flurry spin cast shoot buff finisher)과 몬스터 동작(lunge breath stomp)을 쓴다.
+  anchor 는 기믹의 대상과 맞춘다(allTargets 층 = scope allEnemies). 없는 시트 키는 거부되고 비슷한 후보가 나온다. 데미지·타수는 스킬의
+  hitSequence 가 정하고 연출은 그림만 정한다 — 3타 스킬은 hits 3개 + 층 onHit:"each".
+
 ── 설계 예시(크로노 트리거·FF 풍) ─────────────────────────────────────────────────────────────
   화염 검투사(정체성: 불꽃을 두르고 대가를 치르며 싸운다)
     불꽃 베기      순수 1타(fire)                    연출 dash-strike 계열, fire

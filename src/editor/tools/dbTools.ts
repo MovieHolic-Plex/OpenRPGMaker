@@ -1144,7 +1144,7 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
  * retroChoreographyId 검사. 존재하지 않는 id 는 정규화가 그대로 두어 전투에서 조용히 기본 연출이 되므로,
  * 여기서 거부하고 비슷한 계약 후보를 돌려준다. 빈 문자열은 해제.
  */
-function validateSkillRetroPatch(patch: unknown): void {
+function validateSkillRetroPatch(draft: Project, patch: unknown): void {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
   const value = (patch as Record<string, unknown>).retroChoreographyId;
   if (value === undefined || value === null) return;
@@ -1153,9 +1153,11 @@ function validateSkillRetroPatch(patch: unknown): void {
   }
   const id = value.trim();
   if (!id || retroChoreographyKind(id)) return;
-  const near = nearbyRetroChoreographies(id).map((entry) => `${entry.id}(${entry.name}, ${entry.motion})`);
+  const records = draft.database.skillChoreographies ?? [];
+  if (records.some((record) => record.id === id)) return;
+  const near = nearbyRetroChoreographies(id, 5, records).map((entry) => `${entry.id}(${entry.name}, ${entry.motion})`);
   throw new ToolError(
-    `존재하지 않는 retroChoreographyId: ${id}${near.length ? ` — 비슷한 후보: ${near.join(", ")}` : ""}. list_retro_choreographies 로 motion/element/query 를 좁혀 정확한 id 를 고르세요.`,
+    `존재하지 않는 retroChoreographyId: ${id}${near.length ? ` — 비슷한 후보: ${near.join(", ")}` : ""}. list_retro_choreographies 로 motion/element/query 를 좁혀 정확한 id 를 고르거나, 새 연출은 upsert_choreography·duplicate_choreography 로 chor_ 레코드를 먼저 만드세요.`,
     { code: "retro-choreography-not-found" },
   );
 }
@@ -1603,7 +1605,7 @@ const upsertSkill: ToolDefinition = {
   run(draft, args): ToolExecResult {
     validateSkillCombatPatch(args.skill);
     validateSkillTechPatch(draft, args.skill);
-    validateSkillRetroPatch(args.skill);
+    validateSkillRetroPatch(draft, args.skill);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
