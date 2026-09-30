@@ -1068,3 +1068,21 @@ Ctrl+K: `workspace-density-*`·`workspace-preset-*` 명령 삭제, `editor-ui-mo
   프레임·긴 태스크 합은 소프트웨어 렌더·다른 에이전트 부하 잡음 안에서 변화 없음(store 복제·저장 표시·팔레트가 남은 몫).
 - `EditScene.update()` 는 이미 무변화 프레임 게이트(nav 키·뷰포트 서명·청크 키)가 있어 손대지 않았다.
 - `paintRelief` 의 전체 배열 비교는 `bakeReliefTiles`(reliefBake.ts) 가 두 번 전 맵 계획을 도는 비용에 묻힌다. 범위를 좁히려면 reliefBake 가 쓴 인덱스를 돌려줘야 한다.
+
+## 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
+
+- **DOM 변이 한 번 = 스타일 재계산 한 번이다. 같은 값을 다시 쓰는 것도 변이다.** 맵 전환마다 불리는 UI 갱신은 마지막으로 바른 값을 기억해
+  같으면 손대지 않는다(속성·style·자식 목록 모두). 선례: `editor.ts` 저장 배너 메모·여정 띠 `fullKey`(store 버전 토큰 + 범위 키),
+  `aiChatResizeChrome.ts` `appliedWidthVar`·`setAttrIfChanged`·`mountHandle`(이미 마지막 자식이면 remove/append 안 함),
+  `aiChatPanel.ts` `refreshContextChips` 원소 비교·`syncRailContext` 맵 이름 메모. 가짜 DOM 테스트는 `lastChild` 가 없다 — `undefined !== handle` 이라 옛 경로로 떨어져 안전하다.
+- **`aiChatPanel` 구독자는 `applyAssistantViewPolicy()` 를 `currentMapId` 가 바뀔 때만 부른다.** 이 함수가 `syncCommandBarClearance` 의 강제 레이아웃 읽기를 부른다.
+- **레이어 전환은 탑바를 다시 짓지 않는다.** `menu.ts` 레이어 스위처 구독자는 `paintedKey` 로 `is-active`·`aria-current`·`tabIndex` 만 제자리에서 바꾼다.
+  `app/mode.ts` 의 editorState 구독자는 편집 모드가 아니거나 좌측 레이어 스위처가 있으면 `renderTopbar()` 를 부르지 않는다.
+- **`:has(.is-active)` 조상 규칙 금지.** 맵 목록 필터의 `:not(:has(.is-active))` 를 정적 클래스 `has-active-facet` 로 바꿨다(`mapList.ts`, `map-panel.modern.css`).
+  자손의 클래스 토글이 조상 전체 스타일 무효화를 부르기 때문이다.
+- **숨겨 둔 자료집 창은 `content-visibility: hidden`** (`02-chat-dock.css`, `.database-modal-backdrop.is-parked`). 이 창은 자손 3796개로 문서에 남아 있고,
+  `:has` 규칙 318개(자료집·이벤트 편집기)가 걸려 있어 어떤 DOM 변이든 스타일 재계산을 33ms 까지 키웠다(→ 8ms). 이 창을 펼치는 코드는 `is-parked` 를 떼므로 화면은 같다.
+- 실측(신규 프로젝트, 같은 타일셋 맵 왕복, 부하 7~12 잡음): 맵 전환 ≈220ms → 중앙 107ms, 레이어 전환 155ms → 90~95ms(72~121).
+  레이어 전환의 남은 몫은 Phaser 다시 그리기·래스터다(스타일 재계산 0.4ms/회, JS ≈15ms/회). 증거: `verify-shots/editor-lag-fix/I/`.
+- 남은 후보: 빈 자료집 창 자체를 지연 생성(자손 3796개 제거), 318개 `:has` 규칙의 범위 좁히기.
+  `warmApplyCaches`/`warmRoundtripCheck` 는 이미 `requestIdleCallback` 뒤라 맵 전환 경로에 없다. `tileSimilarityContext` 는 팔레트 미리보기 패널(선택 시)에서만 불려 맵 전환 경로가 아니다.

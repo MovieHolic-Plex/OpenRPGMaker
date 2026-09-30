@@ -1,0 +1,21 @@
+import { chromium } from "playwright";
+const b = await chromium.launch({ headless: true, args: ["--disable-dev-shm-usage"] });
+const page = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => { localStorage.setItem("oprn:standard-welcome-seen", "1"); localStorage.setItem("oprn:ai-panel-collapsed", "1"); });
+await page.goto((process.env.QA_BASE_URL ?? "http://127.0.0.1:9850") + "/?freshProject=1", { waitUntil: "domcontentloaded" });
+await page.getByTestId("edit-canvas").waitFor({ timeout: 90000 });
+await page.waitForTimeout(3000);
+console.log(await page.evaluate(async () => {
+  const btn = document.querySelector("[data-testid='layer-upper']");
+  const t = (name, fn) => { const runs = []; for (let i = 0; i < 5; i++) { document.body.offsetHeight; fn(); const t0 = performance.now(); document.body.offsetHeight; getComputedStyle(btn).color; runs.push(performance.now() - t0); document.body.offsetHeight; } return `${name}: ${runs.map((x) => x.toFixed(1)).join(",")}`; };
+  const res = [];
+  res.push(t("class is-active", () => btn.classList.toggle("is-active")));
+  res.push(t("aria-current", () => btn.hasAttribute("aria-current") ? btn.removeAttribute("aria-current") : btn.setAttribute("aria-current", "true")));
+  res.push(t("tabIndex", () => { btn.tabIndex = btn.tabIndex === 0 ? -1 : 0; }));
+  res.push(t("class foo", () => btn.classList.toggle("foo")));
+  res.push(t("data-x", () => btn.dataset.x = String(Math.random())));
+  const other = document.querySelector("[data-testid='edit-canvas']");
+  res.push(t("canvas class foo", () => other.classList.toggle("foo")));
+  return res.join("\n");
+}));
+await b.close();

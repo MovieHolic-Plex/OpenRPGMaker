@@ -145,8 +145,12 @@ export function renderTopbar(topbar: HTMLElement): void {
     const resources = lead.querySelector<HTMLElement>('[data-testid="toolbar-resource-manager"]');
     const layers = makeLeftLayerSwitcher(layerSwitcherKey(editorState.get()));
     layers.classList.add("header-layer-switcher");
+    let paintedKey = layerSwitcherKey(editorState.get());
     disposeLayerSwitcher = editorState.subscribe((state) => {
       const key = layerSwitcherKey(state);
+      // 켜진 칸이 그대로면(맵 전환·타일 선택 등) 단추를 훑지 않는다.
+      if (key === paintedKey) return;
+      paintedKey = key;
       const keepFocus = layers.contains(document.activeElement);
       for (const button of layers.querySelectorAll<HTMLButtonElement>("button")) {
         const active = button.dataset.sidebarLayer === key;
