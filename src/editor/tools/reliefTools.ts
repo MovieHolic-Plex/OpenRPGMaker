@@ -4,7 +4,7 @@
 // 왜 따로 있는가: 절벽을 타일 번호로 깔면 벽 윗단·몸통·대각선 모서리를 칸마다 골라야 해서 AI 가 거의 항상 틀렸다.
 // 높이 칸 하나만 정하면 렌더러(@/project/relief/render)가 벽·대각선·가림을 그리므로, AI 는 「어디가 몇 단인가」만 말한다.
 // 빚기는 ops DSL(@/project/relief/ops, RELIEF_OPS_SPEC)을 그대로 받는다 — 산·능선·골짜기·계단식 단을 한 번에 쓴다.
-// 한계: 절벽 어휘가 있는 칩셋(숲마을·합본 마을+레트로 월드맵)은 절벽을 하위 층 타일로 굽는다(reliefBake). 그 밖 칩셋은 그림만 바뀐다.
+// 한계: 높이는 그림(절벽 벽면)만 바꾼다. 칩셋과 무관하게 같은 렌더러가 그리고, 윗단 위 타일·이벤트·통행은 그대로다.
 
 import { checkRelief, reliefMatrixText } from "@/project/relief/check";
 import { emptyRelief, reliefIsFlat } from "@/project/relief/edit";
@@ -12,7 +12,6 @@ import { buildReliefOps, RELIEF_OPS_SPEC, type ReliefOpsSpec } from "@/project/r
 import { gridFromRelief, reliefFromGrid, RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import type { GameMap } from "@/project/types";
 import { requireMap } from "./mapHelpers";
-import { bakeReliefTiles } from "./village/reliefBake";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const SCULPT_EXAMPLE = {
@@ -49,7 +48,7 @@ const sculptRelief: ToolDefinition = {
   name: "sculpt_relief",
   description:
     "맵의 절벽 높이를 ops 로 빚는다 — 지금 높이 위에 차례로 덧칠한다(reset:true 면 0단에서 시작). "
-    + "절벽 벽면·45° 대각선은 자동으로 만든다 — 숲마을·합본 마을+레트로 월드맵 칩셋은 남향 절벽 타일을 하위 층에 깔고(하위 붓으로 고칠 수 있다), 그 밖의 칩셋은 렌더러가 그림으로만 그린다. "
+    + "절벽 벽면·45° 대각선은 렌더러가 그림으로 자동으로 그린다(타일 층은 바뀌지 않는다). "
     + "쓰고 나면 검사 글을 돌려준다 — 가려진 칸·일직선 벽이 있으면 ops 를 고쳐 다시 불러라. "
     + `ops 문법(size 는 맵 크기를 따르므로 무시된다):\n${RELIEF_OPS_SPEC}`,
   mode: "write",
@@ -78,17 +77,12 @@ const sculptRelief: ToolDefinition = {
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 1;
     const base = args.reset === true ? gridFromRelief(emptyRelief(map.width, map.height)) : reliefGrid(map);
     const { h, log } = buildReliefOps({ seed, ops: ops as ReliefOpsSpec["ops"] }, base);
-    const next = reliefFromGrid(h);
-    const previous = map.relief;
-    if (previous?.baked) next.baked = true;
-    map.relief = next;
-    const baked = bakeReliefTiles(map, draft.tilesets[map.tilesetId], previous);
+    map.relief = reliefFromGrid(h);
     if (reliefIsFlat(map.relief)) delete map.relief;
     const check = checkRelief(h);
     const warnings = log.length ? log : undefined;
     return {
-      summary: `${map.name} 높이 ${ops.length}개 op 적용 — 가려진 칸 ${check.hidden}, 규칙에 깎인 칸 ${check.cut}`
-        + (baked ? ` · 절벽 타일 하위 층 ${baked.painted}칸 깔고 ${baked.restored}칸 되돌림${baked.kept ? `, 막힌 칸 ${baked.kept} 남김` : ""}` : ""),
+      summary: `${map.name} 높이 ${ops.length}개 op 적용 — 가려진 칸 ${check.hidden}, 규칙에 깎인 칸 ${check.cut}`,
       ...(warnings ? { warnings } : {}),
       data: { check: check.text, maxLevel: RELIEF_MAX_LEVEL },
     };
