@@ -1,4 +1,5 @@
 import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
+import { bootNormalizationMatches, currentBootNormalizationMarker, stampBootNormalization } from "./bootNormalization";
 import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
 import { canWriteTeamProject } from './teamAccess';
 import { mergeTeamProject } from "./persistence/core/teamMerge";
@@ -1630,13 +1631,17 @@ class ProjectStore {
     // (예전 `normalizationFingerprint` 와 같은 판정, 타일 격자는 손실 없는 SHA 로). 요약은 노드마다 기억되고
     // 로드는 이 직전에 커밋 기준본 요약을 이미 만든다. 실측(2026-09-27, 82MB): 지문 두 번 3.4s → 기억 대조 약 0.6s.
     // 정규화기는 타일셋 항목을 제자리에서 고칠 수 있다 — 믿은 공유 항목 기록을 버려 앞뒤 요약이 끝까지 대조하게 한다.
-    forgetTrustedSharedEntries();
-    const before = jsonContentDigest(this.current);
+    // 같은 빌드·같은 공용 판본이 이미 정규화한 문서면 정규화기도, 전후 요약도 건너뛴다(bootNormalization.ts 머리말).
+    // 표식이 없거나 짝이 다르면(옛 파일·미마이그 사본·새 빌드) 예전처럼 전부 돌리고, 끝난 뒤 표식을 새긴다.
+    const bootMarker = currentBootNormalizationMarker();
+    const skipNormalizers = bootNormalizationMatches(this.current, bootMarker);
+    if (!skipNormalizers) forgetTrustedSharedEntries();
+    const before = skipNormalizers ? null : jsonContentDigest(this.current);
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
     // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
     // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
     // "내가 안 건드렸는데 값이 달라졌다" 를 추적할 수 없었다.
-    const normalizers: readonly (readonly [string, boolean])[] = [
+    const normalizers: readonly (readonly [string, boolean])[] = skipNormalizers ? [] : [
       ["legacyDialogue", rewriteLegacyAdvancedDialogueInProject(this.current)],
       ["mapConnections", ensureProjectMapConnections(this.current)],
       // 실내 보강은 mapTree 고아 복구보다 먼저 — 새로 넣은 실내 맵이 같은 패스에서 트리에 편입된다.
@@ -1660,14 +1665,17 @@ class ProjectStore {
       ["faceMatches", faceMatchesRepaired(repairFaceMatches(this.current))],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
-    const changed = before !== jsonContentDigest(this.current);
-    forgetTrustedSharedEntries();
-    if (changed) {
+    const changed = !skipNormalizers && before !== jsonContentDigest(this.current);
+    if (!skipNormalizers) forgetTrustedSharedEntries();
+    // 표식은 변경 판정(요약 대조) 뒤에 새긴다 — 표식 때문에 «정규화기가 손댔다»고 오판하지 않는다.
+    const stamped = !skipNormalizers && bootMarker !== null;
+    if (stamped) stampBootNormalization(this.current, bootMarker);
+    if (changed || stamped) {
       this.markLocalMutation({
         scope: "system",
-        label: `프로젝트 정규화 (${appliedNormalizers.length}종)`,
+        label: changed ? `프로젝트 정규화 (${appliedNormalizers.length}종)` : "프로젝트 정규화 표식",
         origin: "system",
-        fields: appliedNormalizers.map((name) => ({ path: name, after: true })),
+        fields: changed ? appliedNormalizers.map((name) => ({ path: name, after: true })) : [{ path: "meta.bootNormalization", after: true }],
       });
     }
     // 업로드 시트의 진짜 절단은 canvas 가 필수라 동기 보정 배열 밖에서 돌린다.
@@ -1698,7 +1706,7 @@ class ProjectStore {
     }
     // Boot load must not block the editor on a full remote rewrite (~2MB+).
     // Schedule deferred auto-save so the shell can paint first.
-    if ((changed || facesRepaired || media) && this.remotePersistenceEnabled) {
+    if ((changed || stamped || facesRepaired || media) && this.remotePersistenceEnabled) {
       this.dirtySinceLastPersist = true;
       if (persistIfChanged && this.writeAuthority?.mode !== "canonical") await this.persistCurrent();
       else if (persistIfChanged && !this.persistInFlight) await this.saveCurrentWithAutoSaveState();
