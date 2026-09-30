@@ -345,6 +345,19 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   캠버스 밖으로 나가도 유지). 사이드바 클릭·스크롤바 드래그와 `INPUT`/`TEXTAREA`/`SELECT`/contenteditable 안의 키는
   깨우지 않는다 — 예전에는 사이드바 클릭마다 맵 전체를 500ms 매 프레임 다시 그렸다. 그 클릭이 상태를 바꾸면
   EditScene 의 store/editorState 구독이 깨운다. 검증: `test/editRenderGate.test.ts` 「window input wake」.
+  **평범한 pointermove 는 500ms 창이 아니라 2프레임 예산만 예약한다 (2026-09-30).** `pendingFrames = 2`(입력 반영 1 +
+  여유 1). 누르기·떼기·휠·키만 창을 연다. 칠하기가 바꾼 타일은 store 구독의 `requestEditRenderFrame` 이 따로 그린다.
+  드래그 41번 이동에서 렌더 126 -> 48회. **느린 GL 적응 스로틀:** 렌더 직후 프레임 간격의 이동평균이 30ms 를 넘으면
+  (소프트웨어 GL) 렌더 사이 최소 100ms 를 둔다. 보류된 렌더는 플래그·예산이 남아 나중에 반드시 그린다. 실 GPU 는 문턱 아래라 무영향.
+  캔버스 픽셀·장면 객체·편집 감사 로그 해시가 수정 전과 동일함을 확인했다. **주의:** 이 동작 변경에 맞춰
+  `test/editRenderGate.test.ts` 의 pointermove 케이스(194~218행 부근)는 갱신이 필요할 수 있다(이번 작업에서 미실행).
+  **소프트웨어 GL 에서 프레임 비용의 정체:** `scene.render` JS 는 프레임당 약 3ms 뿐이다. 나머지는 GPU 프로세스 flush 와
+  Commit 의 동기 `ReadPixels`(픽셀 면적 x 제출 프레임 수)로 렌더 1회당 약 30ms — 그래서 「렌더 횟수」가 곧 비용이다.
+- **pointermove 마다 `:has()` 전체 무효화를 만들지 마라 (2026-09-30).** 텍스트 노드가 아니라 `span.textContent =` 는
+  childList 변경이라 `:has()` 앵커를 무효화해 문서 전체(약 5,500 노드) 스타일 재계산(약 32ms)을 일으킨다.
+  `EditScene.setTileToolStatus` 는 노드를 캐시하고 `Text.data`(characterData)로 갱신한다. 같은 이유로 칠하기 경로의
+  `store.updateMapTiles` 는 이미 pending 인 자동저장 상태를 다시 방송하지 않는다(`scheduleAutoSave(false)`) —
+  방송마다 상단 상태 글자·DB 하단 상태 구독자가 텍스트를 다시 쓴다.
 - **지연 창 문턱 2_048칸 (2026-09-25).** `LAZY_EDIT_MAP_CELL_THRESHOLD` 가 8_192 였을 때는 90×90 까지 모든 칸을
   만들었다. 창이 맵 전체를 덮으면(축소·카메라 없는 테스트) lazy 경로도 전부 그리므로 작은 맵 결과는 같다.
 - **격자는 카메라 근처 청크만 긋는다 (2026-09-25).** `repaintEditGrid(…, bounds)` + `editGridTileWindow` 가 카메라 창을

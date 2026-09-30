@@ -981,7 +981,7 @@ class ProjectStore {
     const descriptor: ProjectChangeDescriptor = { scope: "map", mapId, ...change };
     this.markLocalMutation(descriptor);
     this.emit(descriptor);
-    this.scheduleAutoSave();
+    this.scheduleAutoSave(false);
   }
 
   /**
@@ -1233,7 +1233,7 @@ class ProjectStore {
     this.emitAutoSave();
   }
 
-  private scheduleAutoSave(): void {
+  private scheduleAutoSave(republishPending = true): void {
     if (!this.loaded) return;
     if (!this.remotePersistenceEnabled) {
       if (this.remotePersistenceDisabledReason === "dev-showcase" && isSaveSkippedLocation()) {
@@ -1254,7 +1254,9 @@ class ProjectStore {
     }, this.autoSaveDelayMs);
     this.autoSaveTimer = timer;
     // Publish after registration: a synchronous subscriber may schedule its own save.
-    this.setAutoSaveState({ kind: "pending" });
+    // 이미 pending 이면 같은 상태를 다시 알려도 구독자가 볼 새 정보가 없다. 붓 드래그는 표본마다 여기로 오고,
+    // 구독자(상단바 저장 표시·자료집 발밑 상태)가 매번 글자를 다시 써 문서 전체 스타일 재계산을 일으킨다.
+    if (republishPending || this.autoSaveState.kind !== "pending") this.setAutoSaveState({ kind: "pending" });
   }
 
   private clearAutoSaveRetry(): void {
