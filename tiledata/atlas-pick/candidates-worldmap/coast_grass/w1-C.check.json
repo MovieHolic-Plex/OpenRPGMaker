@@ -2,8 +2,14 @@
  "file": "tiledata/atlas-pick/candidates-worldmap/coast_grass/w1-C.pxg",
  "set": "worldmap",
  "id": "coast_grass",
- "hard": [],
- "warn": [],
+ "hard": [
+  "shore-strait: 1칸 폭 줄 속이 4px — 기슭 깊이를 칸 바깥 2~4px 로(6 이상, 권장 8)",
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_ne↔edge_e 7≠4, inner_sw↔edge_s 8≠4, inner_se↔edge_s 8≠5"
+ ],
+ "warn": [
+  "shore-join: 이음에서 2px 어긋남(1 이하 권장) — inner_nw↔edge_n 8≠6, inner_nw↔edge_w 7≠5, inner_sw↔edge_w 7≠5, inner_se↔edge_e 7≠5",
+  "corner-round: 바깥 모서리가 네모다(대각선 깊이 = 이음 깊이) — nw ne se"
+ ],
  "easyrpg": {
   "cells": 12,
   "atLeast95": 0,
@@ -29,7 +35,7 @@
   63
  ],
  "note": "바위 해안: 기슭선 0~3px 들쭉날쭉, 둑 흙 대신 바위(wrock) 2px+흰 거품, 몸통은 호(‿) 모양 물결, 모서리도 불규칙 곡선",
- "ok": true,
+ "ok": false,
  "worldmap": {
   "worldEasyrpg": {
    "cells": 12,
@@ -41,6 +47,96 @@
    "atLeast95": 0,
    "max": 0.059
   },
-  "seam": 0.98
+  "shore": {
+   "profile": {
+    "n": [
+     7,
+     7,
+     7,
+     7,
+     7,
+     6,
+     6,
+     6,
+     5,
+     6,
+     7,
+     7,
+     7,
+     7,
+     7,
+     6
+    ],
+    "s": [
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     4,
+     4,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     4
+    ],
+    "w": [
+     5,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     4,
+     4,
+     5,
+     6,
+     6,
+     6,
+     6,
+     6,
+     5
+    ],
+    "e": [
+     5,
+     5,
+     5,
+     5,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     6,
+     4
+    ]
+   },
+   "strait": 4,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 2,
+    "e": 2
+   },
+   "amp": {
+    "n": 2,
+    "s": 1,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 4
+  },
+  "seam": 0.94
  }
 }

@@ -1,0 +1,134 @@
+{
+ "id": "gv2-conbini",
+ "name": "강남 편의점",
+ "w": 10,
+ "h": 5,
+ "walk": [
+  "CCCCCCCCCC",
+  "CCCCCCCCCC",
+  "CCCCCCCCCC",
+  "SSSSSSSSSS",
+  "SSSSFFSSSS"
+ ],
+ "role": "building",
+ "description": "편의점 160×80. 튀어나온 간판판 + 들어간 유리벽 + 자동문.",
+ "doors": [
+  {
+   "dx": 4,
+   "dy": 4,
+   "note": "문 앞 칸(포장 바닥)"
+  },
+  {
+   "dx": 5,
+   "dy": 4,
+   "note": "문 앞 칸(포장 바닥)"
+  }
+ ],
+ "tags": [
+  "gangnam",
+  "modern3",
+  "view34"
+ ],
+ "assembly": [
+  {
+   "kit": "conbini.roof.0",
+   "x": 0,
+   "y": 0
+  },
+  {
+   "kit": "conbini.roof.1",
+   "x": 1,
+   "y": 0
+  },
+  {
+   "kit": "conbini.roof.1",
+   "x": 2,
+   "y": 0
+  },
+  {
+   "kit": "conbini.roof.3",
+   "x": 3,
+   "y": 0
+  },
+  {
+   "kit": "tower.roof.2",
+   "x": 4,
+   "y": 0
+  },
+  {
+   "kit": "tower.roof.2",
+   "x": 5,
+   "y": 0
+  },
+  {
+   "kit": "conbini.roof.6",
+   "x": 6,
+   "y": 0
+  },
+  {
+   "kit": "conbini.roof.7",
+   "x": 7,
+   "y": 0
+  },
+  {
+   "kit": "tower.roof.2",
+   "x": 8,
+   "y": 0
+  },
+  {
+   "kit": "tower.roof.8",
+   "x": 9,
+   "y": 0
+  },
+  {
+   "kit": "conbini.f1.0",
+   "x": 0,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.1",
+   "x": 1,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.2",
+   "x": 2,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.3",
+   "x": 3,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.4",
+   "x": 4,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.5",
+   "x": 5,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.6",
+   "x": 6,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.7",
+   "x": 7,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.8",
+   "x": 8,
+   "y": 2
+  },
+  {
+   "kit": "conbini.f1.9",
+   "x": 9,
+   "y": 2
+  }
+ ]
+}
