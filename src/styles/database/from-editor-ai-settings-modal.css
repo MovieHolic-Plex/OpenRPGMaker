@@ -60,3 +60,17 @@
   overflow: hidden;
   padding: 0;
 }
+
+/* [레이어 보존] 연결 후 계속 버튼도 database의 범용 버튼 배경을 이겨야 한다. */
+
+.ai-settings-window .ai-config-actions .ai-assistant-action.is-primary:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-settings-window .ai-config-actions .ai-assistant-action:disabled {
+  cursor: default;
+  opacity: .55;
+}

@@ -2640,6 +2640,8 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
   보지 않는다. 이미지 생성은 선택 기능이므로 텍스트 작업을 잠그지 않는다.
   모델 지원 확인과 필요한 자격 확인이 끝나면 헤더가 「사용 준비됨」이고 「연결하고 계속」이 활성화된다.
   계속 버튼은 기존 설정 닫힘 이벤트를 통해 프리셋 생성 게이트의 보류 작업을 이어간다.
+  버튼 강조는 `styles/database/from-editor-ai-settings-modal.css`에 둔다. shell 레이어에서는
+  database의 범용 버튼 배경이 이겨 흰 버튼으로 남는다.
 - `saveAiConfig`의 `oprn:ai-config-changed`, 공유 인증 상태 이벤트, 전송 건강 이벤트를 톱바 칩이
   구독한다. 칩과 모달은 dispose 때 구독을 제거한다. 인증 상태와 작업 준비 상태가 서로 다르면
   연결 패널에는 계정의 인증 상태를, 헤더와 칩에는 실제 작업에 필요한 연결을 표시한다.

@@ -8,6 +8,7 @@ OAuth 응답과 팝업은 모의 응답으로 격리했고 `/v1/*`는 차단했�
 - `mixed-account-required.png`: 직접 지정한 Google Vision을 보존하고 필요한 추가 계정을 표시한다. 계속 버튼은 잠기며 일괄 맞춤 후 열린다.
 - `remote-login.png`, `resumed-login-1024.png`: 기존 인가 URL을 복원한다. 재열기에 로그인 요청을 추가하지 않고 자동 팝업을 띄우지 않는다.
 - `login-denied.png`: 승인 거부를 다음 3초 폴링에 표시하고 대기 블록을 걷는다.
+- `continue-button.png`: 활성/비활성 계속 버튼은 실제 CSS 진입점 두 장(index/database)을 불러온 격리 DOM에서 추가 확인했다. 활성 배경은 `rgb(74, 87, 214)`, 글자는 흰색이다. 재현은 `continue-style.mjs`다.
 - `service-unavailable.png`: 연결 확인·앱 재열기·관리자 연락 안내를 표시한다.
 - 명시적 취소에 `POST /auth/login-cancel` 요청 1건을 확인했다.
 - 환경 변수 탐색은 ChatGPT의 고급 링크를 누른 뒤에만 동의를 묻는다.
