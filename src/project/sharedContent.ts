@@ -113,6 +113,20 @@ export async function loadSharedContent(options: { required?: boolean; scope?: S
     console.warn('공용 SQLite 자료를 불러오지 못했습니다.',error);
   }
 }
+/**
+ * 공용 구조 킷의 저장 형태. 참고문서 갱신(`applySharedTileReferenceEntries`)은 `shared_` 킷을 앞에 두고 나머지를 뒤에 잇는다.
+ * 라이브러리 원본 순서와 다르므로, 여기서 원본과 바이트가 다르다고 되돌리면 다음 갱신이 다시 합쳐 저장하는 일이 로드마다 반복된다
+ * (실측 2026-09-30: shared_paw_modern_interiors·refmap_crayon·snow·town_outside, 같은 길이의 문서가 로드마다 새 해시로 저장).
+ * 킷이 라이브러리 킷과 내용이 같고 순서만 그 합친 형태이면 이미 수렴한 것으로 본다.
+ */
+function isMergedKitForm(current: TilesetDef|undefined, lib: TilesetDef): boolean {
+  const libKits=lib.structureKits, kits=current?.structureKits;
+  if(!current||!libKits||!kits||kits.length!==libKits.length) return false;
+  const merged=[...libKits.filter(k=>k.id.startsWith('shared_')),...libKits.filter(k=>!k.id.startsWith('shared_'))];
+  if(!merged.every((k,i)=>jsonEqual(kits[i],k))) return false;
+  const {structureKits:_a,...rest}=current, {structureKits:_b,...libRest}=lib;
+  return jsonEqual(rest,libRest);
+}
 /** Reserved shared IDs are projections. User copies use independent IDs and are never replaced. */
 export function ensureSharedContent(project: Project): boolean {
   let changed=false;
@@ -120,7 +134,7 @@ export function ensureSharedContent(project: Project): boolean {
     if(!lib.projectDefaults) continue;
     for(const[id,t]of Object.entries(lib.tilesets)) {
       if(!id.startsWith('shared_')) continue;
-      if(!jsonEqual(project.tilesets[id],t)){project.tilesets[id]=structuredClone(t);changed=true;}
+      if(!jsonEqual(project.tilesets[id],t)&&!isMergedKitForm(project.tilesets[id],t)){project.tilesets[id]=structuredClone(t);changed=true;}
     }
     for(const[id,a]of Object.entries(lib.assets)) {
       if(!id.startsWith('shared_')) continue;

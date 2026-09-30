@@ -25,7 +25,7 @@ const ready = async (i) => {
 
 console.log("시작 상태:", state());
 const out = [];
-for (let round = 0; round < 3; round += 1) {
+for (let round = 0; round < Number(process.env.ROUNDS ?? 3); round += 1) {
   const ms = await ready(round);
   const at = state();
   // 저장이 revision 을 올릴 때까지 기다린다(지연 자동저장).
