@@ -179,6 +179,7 @@ import { createAiTurnRunner } from "./aiTurnRunner";
 import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
 import { getAiConnectionStatus } from "./aiConnectionStatus";
+import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { createAiLockScrim } from "./aiLockScrim";
 import {
   backupProjectSnapshot,
@@ -2566,17 +2567,31 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       studioShell.refreshMonitor();
     }
   });
-  const unsubscribeContextStore = store.subscribe((_project, change) => {
-    // 무거운 키(타일셋·DB·자산)가 새 객체로 바뀌었으면 다음 턴 전송 전에 한가할 때 글·해시를 다시 만든다(heavyWire.warmHeavyWire).
-    if (!disposed && (change?.scope !== "map")) scheduleHeavyWireWarmup();
-    if (change?.projectSwitch) panelRoot?.querySelector(".ai-activity-toolbar")?.dispatchEvent(new Event("ai-project-switch"));
-    // 항목 편집·은퇴·삭제가 저장소에서 오면 재사용 선택도 그 사실을 따른다(조용한 부활 금지).
+  const refreshContextUi = (): void => {
     planningReuseControl?.refresh();
     refreshContextChips();
     refreshComposerPlaceholder();
     if (studioShell?.attached()) {
       studioShell.refreshScenes();
       studioShell.refreshMonitor();
+    }
+  };
+  // runWhenPointerReleased 는 함수 참조로 중복을 합친다 — 스트로크 내내 한 번만 돈다. 패널이 이미 닫혔으면(disposed) 건너뛴다.
+  const refreshContextUiAfterPaint = (): void => {
+    if (disposed) return;
+    refreshContextUi();
+  };
+  const unsubscribeContextStore = store.subscribe((_project, change) => {
+    // 무거운 키(타일셋·DB·자산)가 새 객체로 바뀌었으면 다음 턴 전송 전에 한가할 때 글·해시를 다시 만든다(heavyWire.warmHeavyWire).
+    if (!disposed && (change?.scope !== "map")) scheduleHeavyWireWarmup();
+    if (change?.projectSwitch) panelRoot?.querySelector(".ai-activity-toolbar")?.dispatchEvent(new Event("ai-project-switch"));
+    // 항목 편집·은퇴·삭제가 저장소에서 오면 재사용 선택도 그 사실을 따른다(조용한 부활 금지).
+    // 타일 칠하기·높이 붓 통지(cells/relief)는 칩·자리표시·장면 목록·모니터를 «칸 내용»으로만 흔든다(브리핑의 길·입구 결핍 문구 정도) —
+    // 스트로크 중엔 걸음마다 여기서 DOM 을 다시 만들지 말고 손을 뗄 때 한 번만 맞춘다(2026-09-30 실측: 22통지 = 이 블록 변이 약 400건).
+    if (change?.scope === "map" && (change.cells?.length || change.relief) && !change.projectSwitch) {
+      runWhenPointerReleased(refreshContextUiAfterPaint);
+    } else {
+      refreshContextUi();
     }
     // 프로젝트가 바뀌었으면(새 프로젝트 생성·다른 작업 열기·로엄 복원) 대화를 새로 시작한다 —
     // 이전 프로젝트의 계획·제안·맵 좌표는 새 프로젝트에서 전부 무의미하거나 해롭다.

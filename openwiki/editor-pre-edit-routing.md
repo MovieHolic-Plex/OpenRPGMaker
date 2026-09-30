@@ -1030,3 +1030,20 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 Ctrl+K: `workspace-density-*`·`workspace-preset-*` 명령 삭제, `editor-ui-mode-*`(옛 밀도 낱말은 keywords)·`open-audio`·`open-map-event-search`·`save-project` 추가.
 
 회귀 단정: `test/studioBarActions.test.ts`(집 하나·중복 testid 0·모드별 도구 자리·저장 점·프로젝트 이름), `test/editorMenuSidebarIa.test.ts`(게임 메뉴 부재·전문가 인라인·초보 도구 메뉴), `test/editorHeaderTerminology.test.ts`(모드별 집에서 정본 이름), `test/authoringTasks.test.ts`(프리셋 결합 해제), `test/commandRegistry.test.ts`. e2e 는 `toolbar-database`·`mode-play` 계약을 유지하고 삭제 표면을 쓰던 스펙 18개를 새 집으로 고쳤다. 보고서 `docs/2026-09-03-studio-bar.md`.
+
+## 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
+
+타일 붓·높이 붓은 표본마다 `{scope:"map", cells}`/`{relief:true}` 를 emit 한다. 구독자는 이 통지를 **거르거나 붓을 뗄 때까지 미룬다**.
+
+- 도구줄(`renderCanvasToolbar`)·저작 여정 띠·맵 잠금 배너: 상태 요약 키가 같고 DOM 자식이 그대로면 다시 만들지 않는다
+  (`editorZoomToolbar.ts` 컨테이너별 WeakMap 메모, `editor.ts` `journeyRenderKey`·배너 메모). 여정 띠는 cells/relief 통지에서
+  `runWhenPointerReleased` 로 붓을 뗀 뒤 한 번만 그린다(칸이 바뀌면 길·입구 판정이 달라지므로 버리지 않고 미룬다).
+- `aiChatPanel.ts` 컨텍스트 store 구독: cells/relief 통지의 UI 갱신(제안 칩·스튜디오 셸 감시)을 붓을 뗀 뒤로 미룬다. 그 외 통지는 즉시.
+- `mapHistoryPanel.ts`: 자동 마운트 store 구독이 cells/relief 를 거른다. 작업 기록 창의 `MAP_EDIT_HISTORY_EVENT` 리스너는
+  접혀 있으면(`details.open===false`) 목록을 안 만들고 펼칠 때 한 번 맞추며, 한 번 문서에 붙었다가 떨어진 창은 첫 이벤트에서 스스로 뗀다
+  (가짜 DOM 테스트는 `isConnected`/`open` 이 undefined 라 `=== true/false` 로만 판정한다).
+- `aiActivityMedia.ts`: 전역 `document.body` MutationObserver 는 추적 이미지가 있을 때만 켜고 비면 끊는다(`disposeActivityImageObserver`).
+- 실측(100×100 신규 프로젝트, 60표본 드래그, `verify-shots/editor-lag-fix/D/probe.mjs`): DOM 변이 1095 → 269, 도구줄 594 → 0, 배너 22 → 0, 여정 44 → 2.
+  프레임·긴 태스크 합은 소프트웨어 렌더·다른 에이전트 부하 잡음 안에서 변화 없음(store 복제·저장 표시·팔레트가 남은 몫).
+- `EditScene.update()` 는 이미 무변화 프레임 게이트(nav 키·뷰포트 서명·청크 키)가 있어 손대지 않았다.
+- `paintRelief` 의 전체 배열 비교는 `bakeReliefTiles`(reliefBake.ts) 가 두 번 전 맵 계획을 도는 비용에 묻힌다. 범위를 좁히려면 reliefBake 가 쓴 인덱스를 돌려줘야 한다.
