@@ -644,6 +644,12 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   줄인다(원래 크기 아래 금지). 왼쪽·위는 내용을 밀고 카메라를 같은 칸만큼 옮긴다.
 - 드래그 한 번 = 되돌리기 한 단계. 히스토리 키에 드래그 일련번호를 넣는다 — 같은 키면 바로 앞 드래그와 묶인다.
 - 상한(`MAX_TOOL_MAP_DIMENSION`)은 깎고 토스트는 드래그당 한 번, 잠긴 맵은 누를 때 `mapEditLockNotice` 토스트 후 누름을 삼킨다.
+- **새로 생기는 칸은 바탕을 이어 채운다(검은 빈칸 금지, 2026-09-30).** `src/project/mapGroundFill.ts` 의 `extendedLowerTiles` 가
+  아래층만 가장 가까운 가장자리 칸(모서리는 모서리 칸)을 복제한다. 그 칸이 `TILE.EMPTY`·호수 물·길이면 물·길이 맵 밖으로
+  번지지 않도록 **맵의 바탕 타일**(EMPTY·물·길을 뺀 아래층 최빈값, 없으면 `TILE.GRASS`)로 채운다. 위층·확장 레이어·그림자·이벤트·통행은
+  복사하지 않는다. 타일 번호는 칩셋 원시 인덱스이고 오토타일 모양은 렌더 때 이웃으로 정해지므로 복제에 재계산은 필요 없다.
+  같은 함수를 세 경로가 쓴다: `resizeMap`(테두리 드래그·맵 속성 창), `applyMapShift`(왼쪽·위 늘리기), 조수 `resize_map`(`resizeMapTool`).
+  새 크기 변경 경로를 만들면 `TILE.EMPTY` 로 채우지 말고 이 함수를 쓰고 `cropExtraLayers`/`remapExtraLayers` 도 함께 맞춘다.
 
 #### 로케이션과 이벤트가 같은 칸에서 만날 때 (클릭 소유권)
 

@@ -36,6 +36,7 @@ import {
 import { applyMapDeletions, planMapDeletion, planMapDeletions, type MapDeletionBatchOptions, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { remapExtraLayers } from "@/project/mapLayers";
+import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundFill";
 export {
   eraseTile,
   eraseTilesBulk,
@@ -214,23 +215,18 @@ export function resizeMap(mapId: MapId, width: number, height: number): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;
-    const oldLower = m.lowerTiles;
     const oldUpper = m.upperTiles;
     const oldLowerStacks = m.lowerTileStacks;
     const oldUpperStacks = m.upperTileStacks;
     const oldW = m.width;
     const oldH = m.height;
-    const newLower = new Array<number>(width * height).fill(TILE.EMPTY);
+    // 새로 생기는 아래층 칸은 가장자리 바탕 타일을 이어 채운다(검은 빈칸 금지). 위층·확장 레이어는 비운다.
+    const newLower = extendedLowerTiles(m, width, height, groundFeaturePredicate(m, p.tilesets));
     const newUpper = new Array<number>(width * height).fill(TILE.EMPTY);
-    // 빈 맵은 잔디로 채움(관례).
-    if (oldLower.every((t) => t === TILE.GRASS)) {
-      newLower.fill(TILE.GRASS);
-    }
     const minW = Math.min(oldW, width);
     const minH = Math.min(m.height, height);
     for (let y = 0; y < minH; y++) {
       for (let x = 0; x < minW; x++) {
-        newLower[y * width + x] = oldLower[y * oldW + x];
         newUpper[y * width + x] = oldUpper[y * oldW + x];
       }
     }
