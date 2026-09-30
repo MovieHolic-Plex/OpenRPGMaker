@@ -174,7 +174,7 @@ function stageSource(record: SkillRecord, project: Project): StageSource | undef
   const contract = resolved && resolved.kind === "class" ? (resolved.skill as RetroClassSkill) : undefined;
   if (contract) {
     // 계약 연출은 계약의 편을 쓴다(레코드 scope 가 계약과 어긋나도 그림은 계약대로 — 어긋남은 스킬 설정의 문제다).
-    const timeline = retroClassSkillTimeline(contract, { hits: record.mechanic?.hits?.length });
+    const timeline = retroClassSkillTimeline(contract, { hits: record.hitSequence?.length });
     return {
       name: record.name || contract.name, timeline, actorId: contract.actorId || learnerActorId(record, project), contract, recipe: undefined,
       sheets: contract.layers.map((layer) => ({ key: layer.key, url: fxUrl(layer.key), frame: layer.frame, frames: layer.frames, anchor: layer.anchor })),
