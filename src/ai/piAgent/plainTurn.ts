@@ -5,6 +5,7 @@
 // 브라우저 결과를 대표하지 못한다 — 여기 하나만 고치면 두 경로가 같이 바뀐다.
 
 import { packTownTargetFor } from "./packTownRoute";
+import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { formatIntentAudit, type IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
@@ -103,9 +104,13 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
     // 선언이 숲마을 도구를 고른 «마을» 요청일 때만 — 팩 맵에서 가로등 하나 고치는 요청에 마을 노트를 붙이지 않는다.
     const packTown = declared.intent.tools.includes("author_village") ? packTownTargetFor(project, text, noteTargetMapId) : null;
+    // 팩 마을이 아니고 대상 계열이 버들항이면 author_beodeul_town — 숲마을 생성기·마을 계약을 건너뛴다(beodeulTownRoute).
+    const beodeulTown = packTown ? null
+      : beodeulTownTargetFor(project, declared.intent, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     intentNote = buildPiIntentNote({
       project,
       packTown,
+      beodeulTown,
       requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
@@ -122,10 +127,10 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // 팀을 끈다) 「마을 만들어」 한 마디가 설정과 무관하게 조용히 혼자 실행이 됐다 — 2026-09-18 이후 일반 채팅
     // 67회 실행 중 팀 실행 0회. 팀은 팀장 배정·검수 팀원이 마을 품질을 맡는다.
     const modernMap = requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
-    const skipVillageContract = input.piTeam || modernMap;
+    const skipVillageContract = input.piTeam || modernMap || !!beodeulTown;
     plan = { ...plan, villageContract: skipVillageContract ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
     // 계약이 없으면 왜 없는지까지 적는다 — 「마을 계약 없음」만으로는 팀 설정 때문인지 판정 때문인지 모른다.
-    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : "판정";
+    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : beodeulTown ? "버들항 마을" : "판정";
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
       + ` → ${plan.villageContract ? villageContractAudit(plan.villageContract) : `마을 계약 없음(${noContractReason})`}`;
     if (declared.intent.mode === "question") {
