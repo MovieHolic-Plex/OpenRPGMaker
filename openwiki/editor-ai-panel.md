@@ -2628,13 +2628,46 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 ## 제공자 · OAuth · 동반 서비스
 
+### 첫 연결과 실제 작업 계정 (2026-10-01)
+
+- 계정 카드 선택은 `providerSelection.configForProviderSelection`으로 아직 직접 지정하지 않은
+  Ultrabrain·Vision·Writer·Deep와 이미지 기본 모델을 함께 맞춘다. 품질(fast/strong)은 유지한다.
+  `AiConfig.modelSelectionOverrides`는 직접 편집한 슬롯만 기록한다. 구형 저장값은 의도를 구분할 수
+  없어 저장된 슬롯을 보존한다. 「이 계정으로 작업 모델 맞추기」를 눌렀을 때만 텍스트 작업 슬롯을
+  일괄 교체하며, 직접 지정한 이미지 모델은 유지한다. 역할 직접 지정 표는 기본적으로 접힌다.
+- `aiConnectionStatus` 캐시·진행 중 조회의 키는 선택 계정과 실제 작업 계정 집합이다.
+  선택 계정이 연결되어도 Ultrabrain·Vision·Writer·Deep가 요구하는 다른 계정이 없으면 준비됨으로
+  보지 않는다. 이미지 생성은 선택 기능이므로 텍스트 작업을 잠그지 않는다.
+  모델 지원 확인과 필요한 자격 확인이 끝나면 헤더가 「사용 준비됨」이고 「연결하고 계속」이 활성화된다.
+  계속 버튼은 기존 설정 닫힘 이벤트를 통해 프리셋 생성 게이트의 보류 작업을 이어간다.
+- `saveAiConfig`의 `oprn:ai-config-changed`, 공유 인증 상태 이벤트, 전송 건강 이벤트를 톱바 칩이
+  구독한다. 칩과 모달은 dispose 때 구독을 제거한다. 인증 상태와 작업 준비 상태가 서로 다르면
+  연결 패널에는 계정의 인증 상태를, 헤더와 칩에는 실제 작업에 필요한 연결을 표시한다.
+- `/auth/status`는 실패한 시도의 `lastLoginError`와 진행 중인 시도의 `pendingLogin`
+  (인가 URL·코드·시작/만료 시각)을 반환한다. 이 정보는 서버 메모리에만 있고 브라우저에 영속 저장하지 않는다.
+  원격 상태 조회도 `/auth/login`과 같은 `publishLoopbackLaunch` 변환을 적용한다.
+  설정을 다시 열면 기존 시도를 복원하고 폴링만 재개한다. 새 로그인이나 팝업을 자동 생성하지 않는다.
+- 명시적 취소는 보호된 `POST /auth/login-cancel` → `cancelProviderLogin`이다. 시작 중인 요청과
+  승인 대기를 모두 abort하며 저장된 자격을 로그아웃하지 않는다. 취소되거나 다른 시도로 대체된
+  로그인에서 늦게 오는 토큰·오류는 저장하지 않는다. 모달 닫기는 서버 시도를 취소하지 않는다.
+- 승인 거부는 다음 폴링에서 즉시 실패 안내로 전환하고 폴링을 멈춘다. 전송 실패도 복구 동작을
+  표시한다. 환경 변수 탐색은 지원하는 계정에서만 고급 링크 → 동의 버튼 순으로 실행한다.
+  Google에는 지원 환경 변수가 없으므로 이 질문을 표시하지 않는다.
+- 원격 Google 로그인은 등록된 데스크톱 클라이언트의 localhost 리다이렉트 제약이 있다.
+  마지막 탭이 열리지 않으면 주소 전체를 가져와 연결을 마치도록 안내한다. 코드 전달 전에는
+  인증 완료라고 표시하지 않는다. 실제 OAuth 교환·외부 계정 승인은 브라우저 모의 확인으로 증명하지 않는다.
+- 화면 증거: `verify-shots/ai-connection-flow/`. 새 회귀 스펙은 계정 선택/저장 후 재로드,
+  혼합 계정의 준비 판정, 서버 실패·복원·취소와 원격 HTTP 상태 계약을 다룬다.
+  이번 세션은 AGENTS의 실행 제한에 따라 로컬 테스트·게이트를 실행하지 않았다.
+
+
 - **Antigravity tool-result replay (2026-08-24):** `scripts/lib/ohMyPiPiAiRuntime.ts` must parse OpenAI-compatible `assistant.tool_calls[].function.arguments` JSON strings back into object values before handing the conversation to pi-ai. Gemini Cloud Code Assist requires `functionCall.args` to be a protobuf `Struct`; replaying the JSON string verbatim makes the second request fail with HTTP 400 after the first tool call succeeds. `test/ohMyPiComplete.bun.test.ts` covers the serialized follow-up request, and live verification must include both the structured tool-call round and the post-tool final-answer round.
 
 - **Same-origin companion (2026-08-27):** 브라우저 LLM 엔드포인트는 항상 페이지 오리진의 `/v1` 이다. `127.0.0.1:17832` 은 oh-my-pi 단독 동반 서비스(`npm run ai:oauth`)가 **그 머신 루프백**에서 듣는 주소이지, 원격 preview 탭이 치면 안 된다. `vite.config.ts` `codexOAuthPlugin` 이 `configureServer` 와 `configurePreviewServer` 둘 다에 `/auth`·`/v1` 을 붙인다. `npm start`(mdc-server:9888 Tailscale) 는 같은 오리진으로 Gemini 완결을 보낸다.
 
 - **원격 OAuth launch (2026-08-27):** Google Antigravity 는 데스크톱 클라라 `redirect_uri` 가 `http://127.0.0.1:PORT/oauth-callback` 만 통과한다. mdc-server 호스트를 callback 으로 넣으면 Google 이 `invalid_request` 로 거절한다. 그래서 `OPRN_PUBLIC_ORIGIN`(없으면 `Origin`/`Host`) 으로 **로그인 시작 URL만** `http://mdc-server:9888/oauth/launch?port=` 로 바꾸고, 돌아온 localhost 콜백 URL 은 `POST /auth/oauth-paste` 로 서버가 대신 GET 한다. Antigravity·Codex 브라우저 로그인은 `/launch` 가 아니라 Google/OpenAI 인가 URL을 바로 연다. 그 URL의 `redirect_uri`가 루프백 콜백이면 원격 origin에서 `pasteCallback`을 켠다. 편집기는 이 화면으로 돌아오면 클립보드의 localhost 주소를 읽어 버튼 없이 연결하고, 붙여넣기만 해도 바로 넘긴다. env 키는 `.env.local` 의 `OPRN_PUBLIC_ORIGIN`. `npm start` 는 값이 없으면 `http://mdc-server:9888` 로 고정한다.
 
-- **AI 설정 모달은 레일+페인 구조다 (2026-09-16 리디자인):** 단일 스크롤 덤프를 `연결 | 모델 | 동작 | 표시` 좌측 레일(`ai-settings-rail` / `ai-settings-tab-*` / `ai-settings-pane-*`)과 우측 페인으로 나눴고, `extraSections`(대기 화면 등)은 레일의 자체 탭(`ai-settings-tab-extra-<id>`)으로 뜬다. 헤더 아래 `ai-settings-connection-summary` 한 줄이 현재 제공자·연결 상태를 말하고 `ai-settings-connection-check` 가 재조회다. **제공자 카드가 곧 선택+상태다** — 죽은 「연결 방식」(apiKey 카드)와 「빠른 선택+제공자 드롭다운」 3중 중복을 걷고, 카드 안에 브랜드 SVG(`src/editor/panels/aiProviderIcons.ts`, Google·OpenAI 마크 — `deckIcon` 선형 아이콘과 다른 fill 마크라 별도 모듈)·상태 필·로그인/연결 해제를 넣는다. `ai-oh-my-pi-provider` select 는 `hidden` 으로 남아 저장·change 소스 구실만 한다(fakeDom 은 `.hidden` 프로퍼티를 attribute 와 동기화하지 않으므로 테스트는 `getAttribute("hidden")` 로 본다). **모델 절**은 품질 프리셋 3장(`src/ai/modelPresets.ts`, `ai-model-preset-fast|balanced|quality`)이 역할 모델·추론을 한 번에 맞추고, 「역할별 모델 직접 지정」(`ai-settings-advanced`) disclosure 안 4행 표(`ai-settings-role-ultrabrain|vision|writer|deep`)가 개별 지정이다 — 모델 칸은 프리셋 셀렉트와 직접 입력을 **세로로 쌓는다**(나란히 두면 180px 칸에서 잘린다 — 실측 스크린샷 회귀). **동작 절**의 자율성 셀렉트는 파생값(`→ 추론 보통 · 자율 모드`)을 아래에 보여 덮어쓰기 관계를 노출하고, 역할 추론 옵션은 `끔/낮음/보통/높음` 한국어 라벨이다. **저장은 자동뿐이다** — `지금 저장`(`ai-config-save`)는 없고 푸터는 `ai-config-saved-hint`(`자동 저장됨 · HH:MM`)만 띄운다. 닫기 버튼은 **DOM 순서상 첫 포커스 대상**이어야 한다(헤더 상태 줄이 앞서면 첫 탭 정지가 틀어진다 — 시각 배치는 flex `order` 로 맞춘다). e2e 는 페인 안 컨트롤을 만지기 전에 해당 레일 탭을 먼저 눌러야 한다(표시→`ai-settings-tab-display`, 대기 화면→`ai-settings-tab-extra-temperature`, 동작→`ai-settings-tab-behavior`). Tests: `test/aiSettingsModalLayout.test.ts`, `test/aiSettingsModalNoBrowserKey.test.ts`, `test/aiAuthSettingsSeparation.test.ts`, `test/aiSettingsHistoryFocus.test.ts`, 갱신된 `test/e2e/ai-ui-audit-fixes.spec.ts`·`assistant-single-dock.spec.ts`·`assistant-clean-glass.spec.ts`·`assistant-glass-settings.spec.ts`. 증거: `verify-shots/ai-settings-redesign/real-*.png`.
+- **AI 설정 모달은 레일+페인 구조다 (2026-09-16 리디자인):** 단일 스크롤 덤프를 `연결 | 모델 | 동작 | 표시` 좌측 레일(`ai-settings-rail` / `ai-settings-tab-*` / `ai-settings-pane-*`)과 우측 페인으로 나눴고, `extraSections`(대기 화면 등)은 레일의 자체 탭(`ai-settings-tab-extra-<id>`)으로 뜬다. 헤더 아래 `ai-settings-connection-summary` 한 줄이 현재 제공자·연결 상태를 말하고 `ai-settings-connection-check` 가 재조회다. **제공자 카드가 곧 선택+상태다** — 죽은 「연결 방식」(apiKey 카드)와 「빠른 선택+제공자 드롭다운」 3중 중복을 걷고, 카드 안에 브랜드 SVG(`src/editor/panels/aiProviderIcons.ts`, Google·OpenAI 마크 — `deckIcon` 선형 아이콘과 다른 fill 마크라 별도 모듈)·상태 필·로그인/연결 해제를 넣는다. `ai-oh-my-pi-provider` select 는 `hidden` 으로 남아 저장·change 소스 구실만 한다(fakeDom 은 `.hidden` 프로퍼티를 attribute 와 동기화하지 않으므로 테스트는 `getAttribute("hidden")` 로 본다). **모델 절**은 품질 프리셋 3장(`src/ai/modelPresets.ts`, `ai-model-preset-fast|balanced|quality`)이 역할 모델·추론을 한 번에 맞추고, 「역할별 모델 직접 지정」(`ai-settings-advanced`) disclosure 안 4행 표(`ai-settings-role-ultrabrain|vision|writer|deep`)가 개별 지정이다 — 모델 칸은 프리셋 셀렉트와 직접 입력을 **세로로 쌓는다**(나란히 두면 180px 칸에서 잘린다 — 실측 스크린샷 회귀). **동작 절**의 자율성 셀렉트는 파생값(`→ 추론 보통 · 자율 모드`)을 아래에 보여 덮어쓰기 관계를 노출하고, 역할 추론 옵션은 `끔/낮음/보통/높음` 한국어 라벨이다. **저장은 자동뿐이다** — `지금 저장`(`ai-config-save`)는 없고 푸터는 `ai-config-saved-hint`(`자동 저장됨 · HH:MM`)와 작업 준비 후 활성화되는 `ai-settings-continue`(`연결하고 계속`)를 띄운다. 닫기 버튼은 **DOM 순서상 첫 포커스 대상**이어야 한다(헤더 상태 줄이 앞서면 첫 탭 정지가 틀어진다 — 시각 배치는 flex `order` 로 맞춘다). e2e 는 페인 안 컨트롤을 만지기 전에 해당 레일 탭을 먼저 눌러야 한다(표시→`ai-settings-tab-display`, 대기 화면→`ai-settings-tab-extra-temperature`, 동작→`ai-settings-tab-behavior`). Tests: `test/aiSettingsModalLayout.test.ts`, `test/aiSettingsModalNoBrowserKey.test.ts`, `test/aiAuthSettingsSeparation.test.ts`, `test/aiSettingsHistoryFocus.test.ts`, 갱신된 `test/e2e/ai-ui-audit-fixes.spec.ts`·`assistant-single-dock.spec.ts`·`assistant-clean-glass.spec.ts`·`assistant-glass-settings.spec.ts`. 증거: `verify-shots/ai-settings-redesign/real-*.png`.
 
 - **OAuth 빠른 선택 (2026-08-24 / 기본 2026-08-25):** `aiAuthSettings.ts` 는 OAuth 모드에서 **ChatGPT(`openai-codex`) ↔ Google Gemini(`google-antigravity`) 두 카드**를 `role="radiogroup"` 퀵 선택으로 노출한다(테스트 `test/aiAuthSettingsSeparation.test.ts`). 공장 기본 제공자는 **`google-antigravity` + `gemini-3.7-flash`** 다(`DEFAULT_OH_MY_PI_PROVIDER`, `DEFAULT_MODEL`). 저장된 providerId·모델은 덮어쓰지 않는다. providerId 가 없는 옛 blob 은 Codex 시절 암시 기본이므로 `openai-codex` 로 남긴다. Gemini 퀵 카드는 Antigravity 로그인으로 라우팅한다(`google-gemini-cli` 는 레지스트리에서 사라졌다). 모델 목록에는 제공자와 무관한 GPT/Claude 항목을 섞지 않고 `gemini-3.7-flash`(빠른 기본)와 `gemini-3.1-pro`(품질 우선)만 먼저 보여준다. 이미 저장된 제공자·모델은 설정을 다시 열 때 덮어쓰지 않는다. 선택하면 providerId·select 값·aria 체크·onChange·상태 조회·기존 로그인 라우팅(`startChatGptLogin`) 을 전부 동기화한다. Gemini 카드는 구독·CLI를 암시하지 않고 `Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.`라고 안내한다. 드롭다운으로 다른 OAuth 제공자를 고르면 어느 카드도 체크되지 않되 첫 카드는 `tabindex=0` 을 유지해 키보드 사용자가 돌아올 수 있다. 제공자/종류 변경·취소는 내부 인증 연산 세대 카운터를 올려, 늦게 도착한 버전·상태·로그인 결과가 새 선택의 화면(연결 해제 크롬 포함)을 덮어쓰지 못하게 한다. API 키 제공자, 키 저장·연결 해제·폴링 최대 시도·오류(A/B) 의미는 그대로다. OAuth 는 언제나 로컬 oh-my-pi pi-ai 워커(`startChatGptLogin`)가 처리한다 — 비밀은 브라우저에 남지 않는다.
 

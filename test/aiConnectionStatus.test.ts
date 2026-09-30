@@ -145,6 +145,41 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     expect(status.label).toBe("Google 연결됨 · PLUS");
   });
 
+  it("진행 중인 로그인을 확인 중으로 표시하고 다음 오류 응답을 반영한다", async () => {
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false, pendingLogin: {
+      verificationUrl: "https://example.invalid/login", userCode: "", expiresAt: Date.now() + 10000,
+    } });
+    const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
+    await refreshAiConnectionStatus();
+    expect(getAiConnectionStatus().kind).toBe("checking");
+    expect(getAiConnectionStatus().label).toContain("로그인 진행 중");
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false, lastLoginError: "Denied" });
+    await refreshAiConnectionStatus();
+    expect(getAiConnectionStatus().label).toContain("로그인 실패");
+  });
+
+  it("선택 계정이 연결돼도 실제 작업 모델의 다른 계정이 없으면 ready 를 반환하지 않는다", async () => {
+    const storage = installLocalStorage();
+    saveConfig(storage, {
+      authMode: "chatgpt", providerId: "openai-codex", model: "gpt-6-luna",
+      ultrabrainProviderId: "openai-codex", ultrabrainModel: "gpt-6-luna",
+      roleModelsPolicyVersion: 1,
+      roleModels: {
+        writer: { provider: "openai-codex", model: "gpt-6-luna", thinkingLevel: "off" },
+        deep: { provider: "openai-codex", model: "gpt-6-luna", thinkingLevel: "off" },
+        vision: { provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high" },
+      },
+    });
+    fetchChatGptAuthStatus.mockImplementation(async (provider: string) => ({ connected: provider === "openai-codex" }));
+    const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
+    await refreshAiConnectionStatus();
+    expect(getAiConnectionStatus().kind).toBe("disconnected");
+    expect(getAiConnectionStatus().label).toBe("Google 연결 필요 · 작업 모델");
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true });
+    await refreshAiConnectionStatus();
+    expect(getAiConnectionStatus().kind).toBe("ready");
+  });
+
   it("제공자를 바꾼 새 설정은 이전 제공자의 ready 캐시를 재사용하지 않는다", async () => {
     // 제공자가 둘이므로 "전환"이 다시 생겼다. 칩이 이전 제공자의 연결 상태를 새 제공자의
     // 상태로 보여 주면 로그인하지 않은 제공자가 "연결됨"이라 불리는 거짓이 된다.
@@ -265,7 +300,7 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
 });
 
 describe("연결 중 일시적 지연", () => {
-  it("연결돼 있던 칩은 시간 초과 두 번까지 꺼짐으로 바꾸지 않고, 세 번째에 바꾼다", async () => {
+  it("연결돼 있던 칩은 시간 초과 두 번까지 유지하고, 세 번째에 연결 확인을 안내한다", async () => {
     const store = installLocalStorage();
     saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
     const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
@@ -294,7 +329,8 @@ describe("다섯 상태를 서로 다르게 말한다", () => {
     await refreshAiConnectionStatus(() => undefined);
     const unreachable = getAiConnectionStatus();
     expect(unreachable.kind).toBe("offline");
-    expect(unreachable.label).toContain("꺼짐");
+    expect(unreachable.label).toContain("연결 확인 필요");
+    expect(unreachable.title).not.toMatch(/터미널|npm run|개발 서버/);
 
     // (B) 응답했지만 실패 — serverMessage 를 담아 error 로 간다.
     resetAiConnectionStatusCache();

@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * 톱바 AI 연결 칩의 계약.
@@ -8,9 +8,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
  * 하단 상태바 폐지로 호스트를 잃었고, 편집기 첫 화면 어디에도 "연결됨"·"확인 중"·"ChatGPT"
  * 문자열이 0건이었다. 사용자는 첫 문장을 보내고 나서야 — "의도 읽는 중…" 에서 멈춘 뒤에야 — 알았다.
  */
+const disposals: (() => void)[] = [];
 const refreshMock = vi.fn(async () => undefined);
 
 vi.mock("@/editor/panels/aiConnectionStatus", () => ({
+  AI_CONNECTION_STATUS_CHANGED_EVENT: "oprn:ai-connection-status-changed",
+  resetAiConnectionStatusCache: vi.fn(),
   getAiConnectionStatus: () => currentStatus,
   refreshAiConnectionStatus: (onChange?: () => void) => refreshMock(onChange),
 }));
@@ -29,6 +32,7 @@ const { renderAiConnectionChip, AI_CONNECTION_CHIP_TESTIDS } = await import("@/e
 function mount(openSettings = () => undefined) {
   const chip = renderAiConnectionChip(openSettings);
   document.body.append(chip.element);
+  disposals.push(chip.dispose);
   return chip;
 }
 
@@ -36,6 +40,8 @@ beforeEach(() => {
   document.body.innerHTML = "";
   refreshMock.mockClear();
 });
+
+afterEach(() => { for (const dispose of disposals.splice(0)) dispose(); });
 
 describe("AI 연결 칩", () => {
   it("마운트되면 즉시 상태를 칠한다", () => {
@@ -63,6 +69,18 @@ describe("AI 연결 칩", () => {
     (chip.element as HTMLButtonElement).click();
     expect(opened).toEqual([]);
     currentStatus = { ...currentStatus, kind: "disconnected", label: "Google 로그인 필요" };
+  });
+
+  it("공유 상태 변경을 반영하고 dispose 뒤에는 구독을 해제한다", () => {
+    const chip = mount();
+    currentStatus = { ...currentStatus, kind: "ready", label: "ChatGPT 연결됨" };
+    window.dispatchEvent(new Event("oprn:ai-connection-status-changed"));
+    expect(chip.element.dataset.kind).toBe("ready");
+    expect(chip.element.textContent).toContain("ChatGPT 연결됨");
+    chip.dispose();
+    currentStatus = { ...currentStatus, kind: "disconnected", label: "Google 로그인 필요" };
+    window.dispatchEvent(new Event("oprn:ai-connection-status-changed"));
+    expect(chip.element.dataset.kind).toBe("ready");
   });
 
   it("상태별로 다음 행동을 title 에 담는다", () => {

@@ -1,0 +1,68 @@
+import {chromium} from 'playwright';
+import {writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const out = new URL('.', import.meta.url).pathname;
+console.log('starting browser');const browser=await chromium.launch({headless:true});
+process.on('uncaughtException',async e=>{console.error(e);await browser.close();process.exit(1);});
+const ctx=await browser.newContext({viewport:{width:1280,height:900}});
+let codexReady=false, pending=null, denied=false, offline=false;
+const calls=[], errors=[], observations={};
+await ctx.route('**/auth/**',async route=>{
+ const u=new URL(route.request().url()), provider=u.searchParams.get('provider');
+ calls.push({path:u.pathname,provider,method:route.request().method()});
+ if(offline) return route.abort('connectionrefused');
+ if(u.pathname==='/auth/login') {denied=false; pending={verificationUrl:'https://accounts.google.com/review-only',userCode:'',pasteCallback:true,startedAt:Date.now(),expiresAt:Date.now()+600000};return route.fulfill({json:{connected:false,...pending}});}
+ if(u.pathname==='/auth/login-cancel') {pending=null;denied=false;return route.fulfill({json:{connected:false}});}
+ return route.fulfill({json:{connected:codexReady&&provider==='openai-codex',env:false,envScan:'ask',expired:false,...(codexReady&&provider==='openai-codex'?{planType:'plus'}:{}),...(pending&&provider==='google-antigravity'?{pendingLogin:pending}:{}),...(denied&&provider==='google-antigravity'?{lastLoginError:'User denied authorization'}:{})}});
+});
+await ctx.route('**/v1/**',r=>r.fulfill({status:503,json:{error:'Manual UI inspection: model calls disabled'}}));
+await ctx.route('https://accounts.google.com/**',r=>r.fulfill({body:'Mock authorization'}));
+const page=await ctx.newPage();ctx.on('page',p=>{if(p!==page) p.close().catch(()=>{});});
+page.on('pageerror',e=>errors.push(String(e)));
+await page.goto(`${process.env.AI_CONNECTION_REVIEW_ORIGIN ?? 'http://127.0.0.1:9860'}/?freshProject=1`,{waitUntil:'domcontentloaded',timeout:60000});
+await page.getByTestId('topbar-ai-settings').waitFor({timeout:120000}).catch(async e=>{console.log('BOOT',JSON.stringify(errors),await page.locator('body').innerText());throw e;});
+const open=async()=>{await page.getByTestId('topbar-ai-settings').click();await page.getByTestId('ai-settings-modal').waitFor();};
+const screenshot=async name=>{console.log('snapshot',name);observations[name]=await page.getByTestId('ai-settings-modal').innerText();await page.screenshot({path:out+'/'+name+'.png'});};
+const config=async()=>page.evaluate(async()=>{const{loadAiConfig}=await import('/src/ai/llmClient.ts');const{resolveSurfaceAiConfig}=await import('/src/ai/assistantEndpoint.ts');const c=loadAiConfig();return{...c,chatProvider:resolveSurfaceAiConfig('chat').providerId,eventProvider:resolveSurfaceAiConfig('event-command').providerId};});
+await open();await page.waitForTimeout(400);
+assert.equal(await page.getByTestId('ai-env-scan').isVisible(),false);
+assert.equal(await page.getByTestId('ai-env-scan-again').isVisible(),false);
+await screenshot('google-first-connection');
+await page.getByTestId('ai-auth-quick-openai-codex').click();await page.waitForTimeout(400);
+const selected=await config();observations.selected={providerId:selected.providerId,roles:selected.roleModels,brain:selected.ultrabrainProviderId,image:selected.imageProviderId,chat:selected.chatProvider,event:selected.eventProvider};
+assert.equal(selected.chatProvider,'openai-codex');assert.equal(selected.eventProvider,'openai-codex');assert.equal(selected.ultrabrainProviderId,'openai-codex');
+assert.equal(await page.getByTestId('ai-env-scan').isVisible(),false);
+await page.getByTestId('ai-env-scan-again').click();assert.equal(await page.getByTestId('ai-env-scan').isVisible(),true);
+codexReady=true;await page.getByTestId('ai-settings-connection-check').click();
+await page.waitForFunction(()=>document.querySelector('[data-testid="ai-settings-continue"]')?.disabled===false);
+assert.match(await page.getByTestId('ai-settings-connection-summary').innerText(),/사용 준비됨/);
+assert.equal(await page.getByTestId('ai-connection-chip').getAttribute('data-kind'),'ready');
+await screenshot('chatgpt-ready');
+await page.getByTestId('ai-settings-continue').click();assert.equal(await page.getByTestId('ai-settings-modal').count(),0);
+// Explicit mixed role remains unchanged and blocks readiness until aligned.
+await page.evaluate(async()=>{const m=await import('/src/ai/llmClient.ts');const c=m.loadAiConfig();c.roleModels.vision={provider:'google-antigravity',model:'gemini-3.8-flash',thinkingLevel:'high'};c.modelSelectionOverrides={vision:true};m.saveAiConfig(c);});
+await open();await page.waitForFunction(()=>document.querySelector('[data-testid="ai-settings-connection-summary"]')?.textContent.includes('작업 모델'));
+assert.equal(await page.getByTestId('ai-settings-continue').isDisabled(),true);
+assert.equal((await config()).roleModels.vision.provider,'google-antigravity');
+await screenshot('mixed-account-required');
+await page.getByTestId('ai-settings-align-account').click();await page.waitForFunction(()=>document.querySelector('[data-testid="ai-settings-continue"]')?.disabled===false);
+assert.equal((await config()).roleModels.vision.provider,'openai-codex');
+// Pending login can resume after modal closes without a second auth request.
+await page.getByTestId('ai-auth-quick-google-antigravity').click();await page.waitForTimeout(250);await page.getByTestId('ai-oauth-login').click();
+await page.getByTestId('ai-oauth-device-cancel').waitFor();
+await page.waitForFunction(()=>document.querySelector('[data-testid="ai-connection-label"]')?.textContent.includes('로그인 진행 중'));
+await screenshot('remote-login');
+await page.getByTestId('ai-settings-close').click();await open();await page.getByTestId('ai-oauth-device-cancel').waitFor();
+assert.equal(calls.filter(c=>c.path==='/auth/login').length,1);
+assert.equal(await page.getByTestId('ai-oauth-device-code-row').isVisible(),false);
+assert.equal(await page.getByTestId('ai-oauth-device-url').getAttribute('href'),pending.verificationUrl);
+await page.setViewportSize({width:1024,height:768});await screenshot('resumed-login-1024');
+await page.getByTestId('ai-oauth-device-cancel').click();await page.waitForFunction(()=>document.querySelector('[data-testid="ai-oauth-status"]')?.textContent.includes('취소했습니다'));
+assert.equal(calls.filter(c=>c.path==='/auth/login-cancel').length,1);
+await page.getByTestId('ai-oauth-login').click();await page.getByTestId('ai-oauth-device-cancel').waitFor();denied=true;pending=null;
+await page.waitForFunction(()=>document.querySelector('[data-testid="ai-oauth-status"]')?.textContent.includes('로그인 실패'),{},{timeout:6000});
+assert.equal(await page.getByTestId('ai-oauth-device-cancel').isVisible(),false);await screenshot('login-denied');
+offline=true;await page.getByTestId('ai-settings-connection-check').click();await page.getByTestId('ai-auth-hint').waitFor();await screenshot('service-unavailable');
+assert.equal(errors.length,0,errors.join('\n'));
+await writeFile(out+'/observations.json',JSON.stringify({environment:'Chromium, local worktree, isolated mocked OAuth endpoints; no real accounts or model calls',calls,errors,observations},null,2));
+console.log(JSON.stringify({completed:Object.keys(observations),errors,calls: calls.length}));await browser.close();

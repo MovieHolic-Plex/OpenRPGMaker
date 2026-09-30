@@ -14,6 +14,7 @@ import {
   isAutonomyLevel,
   loadAiConfig,
   saveAiConfig,
+  AI_CONFIG_CHANGED_EVENT,
   type AiConfig,
 } from "@/ai/llmClient";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
@@ -22,6 +23,8 @@ import { isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCata
 import { OH_MY_PI_PROVIDERS, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
 import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { configForProviderSelection, workProviderIds } from "@/ai/providerSelection";
+import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus, refreshAiConnectionStatus } from "./aiConnectionStatus";
 import {
   AI_BACKGROUND_OPACITY_LIMITS,
   applyAiBackgroundOpacity,
@@ -109,6 +112,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
   const panelOptions = panelSettings?.();
   const extraSections = options.extraSections ?? panelOptions?.extraSections;
   const form = renderAiSettingsForm({
+    onContinue: () => closeAiSettingsModal(),
     onSaved: (config) => {
       panelOptions?.onSaved?.(config);
       options.onSaved?.(config);
@@ -202,6 +206,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
 }
 
 export function renderAiSettingsForm(options: {
+  readonly onContinue?: () => void;
   readonly onSaved?: (config: AiConfig) => void;
   readonly onBackgroundOpacityChange?: (value: number) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
@@ -220,6 +225,8 @@ export function renderAiSettingsForm(options: {
   const config = loadAiConfig();
   let authMode = config.authMode;
   let providerId = parseOhMyPiProvider(config.providerId);
+  let modelSelectionOverrides = { ...config.modelSelectionOverrides };
+  let applyAccountSelection = (_force = false): void => undefined;
   const imageProvider = el("select", {
     class: "ai-config-select",
     attrs: { "aria-label": "이미지 생성 제공자" },
@@ -352,6 +359,7 @@ export function renderAiSettingsForm(options: {
   let pendingAuthStatus: ((next: AiAuthStatusSnapshot) => void) | null = null;
   const authSettings = renderAiAuthSettings(config, ({ providerId: next }) => {
     providerId = next;
+    applyAccountSelection();
     persistAuthMode();
   }, (next) => {
     lastAuthStatus = next;
@@ -541,6 +549,7 @@ export function renderAiSettingsForm(options: {
   const collect = (): AiConfig => ({
     authMode,
     providerId,
+    modelSelectionOverrides,
     roleModels: Object.fromEntries(specialistControls.map(({ role, provider, field, effort }) => [role, {
       provider: provider.value, model: field.input.value.trim() || modelForRole(config, role).model,
       thinkingLevel: effort.value as RoleModel["thinkingLevel"],
@@ -588,7 +597,28 @@ export function renderAiSettingsForm(options: {
     }
   };
   persistAuthMode = () => persist(false);
+  applyAccountSelection = (force = false) => {
+    const next = configForProviderSelection(collect(), providerId, force);
+    modelSelectionOverrides = { ...next.modelSelectionOverrides };
+    for (const c of specialistControls) {
+      const selected = modelForRole(next, c.role);
+      c.provider.value = selected.provider;
+      c.field.refresh(authMode, selected.provider);
+      c.field.setValue(selected.model, authMode, selected.provider);
+      c.provider.dispatchEvent(new Event("input", { bubbles: true }));
+      c.field.preset.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    brainProvider.value = next.ultrabrainProviderId!;
+    brainModel.refresh(authMode, brainProvider.value);
+    brainModel.setValue(next.ultrabrainModel!, authMode, brainProvider.value);
+    brainProvider.dispatchEvent(new Event("input", { bubbles: true }));
+    brainModel.preset.dispatchEvent(new Event("input", { bubbles: true }));
+    imageProvider.value = next.imageProviderId!;
+    imageProvider.dispatchEvent(new Event("input", { bubbles: true }));
+    refreshImageModels(next.imageModel!);
+  };
   imageProvider.addEventListener("change", () => {
+    modelSelectionOverrides.image = true;
     const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
     const chosen = entries.find((entry) => entry.supported) ?? entries[0];
     if (!chosen) {
@@ -599,11 +629,13 @@ export function renderAiSettingsForm(options: {
     persist(false);
   });
   imageModel.addEventListener("change", () => {
+    modelSelectionOverrides.image = true;
     refreshImageStatus();
     persist(false);
   });
   useRecommendedImage.addEventListener("click", () => {
     if (!recommendedImage) return;
+    modelSelectionOverrides.image = true;
     imageProvider.value = recommendedImage.providerId;
     refreshImageModels(recommendedImage.model);
     persist(false);
@@ -619,6 +651,10 @@ export function renderAiSettingsForm(options: {
       persist(false);
     }, 350);
   };
+  for (const { role, field } of specialistControls) {
+    for (const event of ["input", "change"]) field.input.addEventListener(event, () => { modelSelectionOverrides[role] = true; });
+  }
+  for (const event of ["input", "change"]) brainModel.input.addEventListener(event, () => { modelSelectionOverrides.ultrabrain = true; });
   for (const field of [...specialistControls.map(c => c.field), brainModel, maxTokens]) {
     field.input.addEventListener("input", scheduleAutoSave);
     field.input.addEventListener("change", () => persist(false));
@@ -633,28 +669,32 @@ export function renderAiSettingsForm(options: {
     const next = tierModelFor(providerId, tier);
     if (next) field.setValue(next, authMode, providerId);
   };
-  for (const { provider, field, effort } of specialistControls) {
+  for (const { role, provider, field, effort } of specialistControls) {
     provider.addEventListener("change", () => {
+      modelSelectionOverrides[role] = true;
       alignModelToProvider(field, provider.value, "fast");
       persist(false);
     });
     field.input.addEventListener("input", () => field.validate(authMode, provider.value));
     field.preset.addEventListener("change", () => {
+      modelSelectionOverrides[role] = true;
       if (field.preset.value) field.setValue(field.preset.value, authMode, provider.value);
       persist(false);
     });
-    effort.addEventListener("change", () => persist(false));
+    effort.addEventListener("change", () => { modelSelectionOverrides[role] = true; persist(false); });
   }
   brainProvider.addEventListener("change", () => {
+    modelSelectionOverrides.ultrabrain = true;
     alignModelToProvider(brainModel, brainProvider.value, "strong");
     persist(false);
   });
   brainModel.input.addEventListener("input", () => brainModel.validate(authMode, brainProvider.value));
   brainModel.preset.addEventListener("change", () => {
+    modelSelectionOverrides.ultrabrain = true;
     if (brainModel.preset.value) brainModel.setValue(brainModel.preset.value, authMode, brainProvider.value);
     persist(false);
   });
-  brainEffort.addEventListener("change", () => persist(false));
+  brainEffort.addEventListener("change", () => { modelSelectionOverrides.ultrabrain = true; persist(false); });
   reasoningSelect.addEventListener("change", () => persist(false));
   autonomySelect.addEventListener("change", () => {
     const level: AutonomyLevel = isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced";
@@ -680,9 +720,60 @@ export function renderAiSettingsForm(options: {
     ],
   });
   const connectionSummaryCopy = connectionSummary.querySelector(".ai-settings-status-copy") as HTMLElement;
-  // 헤더 요약은 따로 조회하지 않는다 — 연결 패널이 쓰는 상태를 그대로 받아 적는다. 옛 헤더는 열 때
-  // 한 번만 따로 조회해서 패널이 「로그인 대기 중」·「연결됨」으로 바뀌어도 「로그인이 필요합니다」에
-  // 머물렀다(패널과 헤더가 서로 다른 말을 했다).
+  const continueButton = el("button", {
+    class: "ai-assistant-action is-primary",
+    text: "연결하고 계속",
+    attrs: { type: "button", disabled: "" },
+    dataset: { testid: "ai-settings-continue" },
+  }) as HTMLButtonElement;
+  const modelConnectionHint = el("p", {
+    class: "ai-config-help",
+    dataset: { testid: "ai-settings-work-accounts" },
+  });
+  const alignAccountButton = el("button", {
+    class: "ai-assistant-action",
+    text: "이 계정으로 작업 모델 맞추기",
+    attrs: { type: "button", hidden: "" },
+    dataset: { testid: "ai-settings-align-account" },
+  }) as HTMLButtonElement;
+  const updateReadiness = (): void => {
+    const next = lastAuthStatus;
+    if (!next) return;
+    const current = collect();
+    const workAccounts = workProviderIds(current);
+    const mixed = workAccounts.some(id => id !== providerId);
+    alignAccountButton.hidden = !mixed;
+    modelConnectionHint.textContent = mixed
+      ? "직접 지정한 작업 모델은 유지됩니다. 다른 계정을 쓰는 모델이 있으면 그 계정도 연결하세요."
+      : "작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.";
+    const status = getAiConnectionStatus(current);
+    const valid = specialistControls.map(c => c.field.validate(authMode, c.provider.value)).every(Boolean)
+      && brainModel.validate(authMode, brainProvider.value);
+    continueButton.disabled = next.tone !== "connected" || status.kind !== "ready" || !valid;
+    connectionSummary.dataset.tone = SUMMARY_TONE[next.tone];
+    connectionSummaryCopy.textContent = `${next.providerLabel} · ${next.text}`;
+    if (next.tone === "connected") {
+      connectionSummary.dataset.tone = continueButton.disabled ? "warning" : "ready";
+      connectionSummaryCopy.textContent = !valid ? "작업 모델을 확인하세요. 모델 탭에서 지원되는 모델을 선택하세요."
+        : status.kind === "ready" ? `${next.providerLabel} · 사용 준비됨` : status.label;
+    }
+  };
+  continueButton.addEventListener("click", () => {
+    updateReadiness();
+    if (!continueButton.disabled) options.onContinue?.();
+  });
+  alignAccountButton.addEventListener("click", () => {
+    applyAccountSelection(true);
+    persist(false);
+    authSettings.recheck();
+  });
+  const onConfigChanged = (): void => {
+    updateReadiness();
+    void refreshAiConnectionStatus(updateReadiness);
+  };
+  const win = typeof window === "undefined" ? undefined : window;
+  win?.addEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, updateReadiness);
+  win?.addEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
   const SUMMARY_TONE = {
     connected: "ready",
     disconnected: "warning",
@@ -690,10 +781,8 @@ export function renderAiSettingsForm(options: {
     checking: "checking",
   } as const;
   pendingAuthStatus = (next) => {
-    connectionSummary.dataset.tone = SUMMARY_TONE[next.tone];
-    connectionSummaryCopy.textContent = next.tone === "checking" && next.text === "연결 확인 중…"
-      ? "연결 상태를 확인하고 있습니다…"
-      : `${next.providerLabel} · ${next.text}`;
+    lastAuthStatus = next;
+    updateReadiness();
   };
   if (lastAuthStatus) pendingAuthStatus(lastAuthStatus);
   const connectionCheckButton = el("button", {
@@ -823,7 +912,6 @@ export function renderAiSettingsForm(options: {
   };
   const rolesDetails = el("details", {
     class: "ai-settings-roles",
-    attrs: { open: "" },
     dataset: { testid: "ai-settings-advanced" },
     children: [
       el("summary", { children: [
@@ -917,13 +1005,13 @@ export function renderAiSettingsForm(options: {
     class: "ai-settings-content",
     children: [
       pane("connection", [
-        settingsSection("connection", "연결", "AI 제공자와 로그인 상태를 관리합니다.", [authSettings.element]),
+        settingsSection("connection", "연결", "AI 제공자와 로그인 상태를 관리합니다.", [authSettings.element, modelConnectionHint, alignAccountButton]),
       ]),
       pane("models", [
         settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
         rolesDetails,
         settingsSection("image", "이미지 생성", "그림을 생성하는 모델입니다. 이미지를 읽는 Vision과 별도로 선택합니다.", [
-          settingsRow("이미지 생성 제공자", "대화 제공자를 바꿔도 이 선택은 유지됩니다.", imageProvider),
+          settingsRow("이미지 생성 제공자", "직접 지정한 이미지 모델은 계정을 바꿔도 유지됩니다.", imageProvider),
           settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
           imageRecommendation,
           imageStatus,
@@ -956,7 +1044,7 @@ export function renderAiSettingsForm(options: {
     children: [
       rail,
       content,
-      el("div", { class: "ai-config-actions", children: [savedHint] }),
+      el("div", { class: "ai-config-actions", children: [savedHint, ...(options.onContinue ? [continueButton] : [])] }),
     ],
   });
 
@@ -968,6 +1056,8 @@ export function renderAiSettingsForm(options: {
     connectionSummary,
     connectionCheckButton,
     dispose: () => {
+      win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, updateReadiness);
+      win?.removeEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
       if (autoSaveTimer !== null) {
         if (typeof window !== "undefined") window.clearTimeout(autoSaveTimer);
         autoSaveTimer = null;

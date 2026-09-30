@@ -17,6 +17,7 @@ const saveCompanionApiKey = vi.fn();
 const refreshCompanionAuth = vi.fn();
 const disconnectCompanionAuth = vi.fn();
 const completeOAuthPaste = vi.fn();
+const cancelCompanionLogin = vi.fn();
 
 // 이 파일은 인증 패널 자체의 경합을 단위 검증한다. 공유 게이트 캐시 배선은
 // aiAuthConnectionCache.test.ts 에서 실제 모듈끼리 통합 검증한다.
@@ -29,6 +30,7 @@ vi.mock("@/ai/chatgptOAuthClient", async () => {
   const actual = await import("@/ai/chatgptOAuthClient");
   return {
     ...actual,
+    cancelCompanionLogin: (...args: unknown[]) => cancelCompanionLogin(...args),
     fetchChatGptAuthStatus: (...args: unknown[]) => fetchChatGptAuthStatus(...args),
     startChatGptLogin: (...args: unknown[]) => startChatGptLogin(...args),
     saveCompanionApiKey: (...args: unknown[]) => saveCompanionApiKey(...args),
@@ -56,6 +58,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   restoreDom = installFakeDom();
   fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+  cancelCompanionLogin.mockResolvedValue({ connected: false });
 });
 
 afterEach(() => {
@@ -213,12 +216,14 @@ describe("환경 변수 키", () => {
     dispose();
   });
 
-  it("동의 전에는 찾아볼지 묻는다", async () => {
+  it("환경 변수 탐색은 지원되는 계정의 고급 동작에서만 동의를 묻는다", async () => {
     fetchChatGptAuthStatus.mockResolvedValue({ connected: false, envScan: "ask" });
-    const { root, dispose } = await render();
+    const { root, dispose } = await render("openai-codex");
     await Promise.resolve();
     await Promise.resolve();
 
+    expect(findByTestId(root, "ai-env-scan")?.hidden).toBe(true);
+    findByTestId(root, "ai-env-scan-again")?.click();
     expect(findByTestId(root, "ai-env-scan")?.hidden).toBe(false);
     expect(findByTestId(root, "ai-env-scan-allow")?.textContent).toContain("찾아보기");
     dispose();
@@ -277,6 +282,9 @@ describe("기기 로그인", () => {
     // 대기 중에는 「로그인」 버튼 줄이 숨는다 — 다음 단계는 대기 블록의 링크·취소 둘뿐이다.
     expect(findByTestId(root, "ai-auth-actions")?.hidden).toBe(true);
     findByTestId(root, "ai-oauth-device-cancel")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(cancelCompanionLogin).toHaveBeenCalledWith("google-antigravity");
     expect(findByTestId(root, "ai-auth-actions")?.hidden).toBe(false);
     expect(block?.hidden).toBe(true);
     dispose();
@@ -312,11 +320,11 @@ describe("기기 로그인", () => {
 
     expect(completeOAuthPaste).toHaveBeenCalledWith("http://127.0.0.1:34031/oauth-callback?code=ok");
     expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("연결됨");
-    expect(findByTestId(root, "ai-oauth-device-step3")?.textContent ?? "").toContain("알아서");
+    expect(findByTestId(root, "ai-oauth-device-step3")?.textContent ?? "").toContain("붙여 넣으세요");
     dispose();
   });
 
-  it("원격 로그인 안내는 세 단계이고 ‘연결할 수 없음’ 페이지가 정상이라고 먼저 말한다", async () => {
+  it("원격 로그인 안내는 마지막 탭을 열지 못해도 주소 전달로 연결을 마치도록 안내한다", async () => {
     startChatGptLogin.mockResolvedValue({
       verificationUrl: "http://mdc-server:9888/oauth/launch?port=34031",
       userCode: "",
@@ -334,11 +342,11 @@ describe("기기 로그인", () => {
     expect(step1).toMatch(/^1\. /u);
     expect(step1).toContain("Google 계정으로 로그인");
     expect(step2).toMatch(/^2\. /u);
-    expect(step2).toContain("‘연결할 수 없음’ 페이지가 뜨는 게 정상");
-    expect(step2).toContain("주소 전체");
+    expect(step2).toContain("마지막 탭이 열리지 않으면");
+    expect(step2).toContain("주소창 전체");
     expect(step3?.hidden).toBe(false);
     expect(step3?.textContent ?? "").toMatch(/^3\. /u);
-    expect(step3?.textContent ?? "").toContain("서버마다 한 번만");
+    expect(step3?.textContent ?? "").toContain("로그인 정보는 이 서버에 보관");
     // 개발자 용어를 사용자 문구에 흘리지 않는다.
     const block = findByTestId(root, "ai-oauth-device-code")?.textContent ?? "";
     expect(block).not.toMatch(/OAuth|콜백|companion|동반 서비스/iu);
@@ -473,10 +481,51 @@ describe("기기 로그인", () => {
     await Promise.resolve();
 
     findByTestId(root, "ai-oauth-device-cancel")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(cancelCompanionLogin).toHaveBeenCalledWith("google-antigravity");
 
     expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(true);
     expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("취소");
     dispose();
+  });
+
+  it("서버의 진행 중인 로그인을 새 시도 없이 복원하고 실제 취소를 요청한다", async () => {
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false, pendingLogin: {
+      verificationUrl: "https://example.invalid/existing", userCode: "RESUME",
+      expiresAt: Date.now() + 600000,
+    } });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(findByTestId(root, "ai-oauth-device-usercode")?.textContent).toBe("RESUME");
+    expect(startChatGptLogin).not.toHaveBeenCalled();
+    findByTestId(root, "ai-oauth-device-cancel")?.click();
+    await Promise.resolve();
+    expect(cancelCompanionLogin).toHaveBeenCalledWith("google-antigravity");
+    expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(true);
+    dispose();
+  });
+
+  it("승인 거부를 다음 폴링에서 즉시 알리고 대기를 끝낸다", async () => {
+    vi.useFakeTimers();
+    try {
+      const { root, dispose } = await render();
+      await Promise.resolve();
+      startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/login", userCode: "CODE" });
+      findByTestId(root, "ai-oauth-login")?.click();
+      await Promise.resolve();
+      await Promise.resolve();
+      fetchChatGptAuthStatus.mockResolvedValue({ connected: false, lastLoginError: "User denied authorization" });
+      await vi.advanceTimersByTimeAsync(3000);
+      expect(findByTestId(root, "ai-oauth-status")?.textContent).toContain("로그인 실패");
+      expect(findByTestId(root, "ai-oauth-server-error")?.textContent).toContain("User denied authorization");
+      expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(true);
+      const count = fetchChatGptAuthStatus.mock.calls.length;
+      await vi.advanceTimersByTimeAsync(6000);
+      expect(fetchChatGptAuthStatus).toHaveBeenCalledTimes(count);
+      dispose();
+    } finally { vi.useRealTimers(); }
   });
 
   it("둘째 로그인 시작은 진행 중인 기기 흐름을 즉시 멈추고 그 취소가 재시도를 무효화하지 않게 한다", async () => {

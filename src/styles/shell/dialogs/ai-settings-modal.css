@@ -574,6 +574,18 @@
   margin-right: auto;
 }
 
+.ai-settings-window .ai-config-actions .ai-assistant-action.is-primary:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-settings-window .ai-config-actions .ai-assistant-action:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
 /* [hidden] 이 항상 이긴다.
  *
  * 실측(2026-08-21 브라우저 프로브): .ai-oauth-device 에 display:grid 를 주는 순간 UA 기본 규칙

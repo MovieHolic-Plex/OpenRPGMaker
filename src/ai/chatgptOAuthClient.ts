@@ -47,6 +47,8 @@ export interface ChatGptAuthStatus {
   readonly env?: boolean;
   /** 환경 변수 스캔 동의. ask 이면 아직 고르지 않았다. */
   readonly envScan?: "ask" | "allow" | "deny";
+  readonly lastLoginError?: string;
+  readonly pendingLogin?: CompanionLoginStart;
 }
 
 /**
@@ -185,6 +187,8 @@ function readAuthStatus(payload: Record<string, unknown> | null): ChatGptAuthSta
     envScan: payload?.envScan === "allow" || payload?.envScan === "deny" || payload?.envScan === "ask"
       ? payload.envScan
       : undefined,
+    lastLoginError: typeof payload?.lastLoginError === "string" ? payload.lastLoginError : undefined,
+    pendingLogin: readLoginStart(objectValue(payload?.pendingLogin)),
   };
 }
 
@@ -216,6 +220,28 @@ export interface CompanionLoginStart extends ChatGptLoginStart {
   readonly connected?: boolean;
   /** 루프백 OAuth 를 원격 origin 으로 연 경우, 돌아온 localhost 콜백 URL 을 붙여넣어야 한다. */
   readonly pasteCallback?: boolean;
+  readonly startedAt?: number;
+  readonly expiresAt?: number;
+}
+
+function readLoginStart(payload: Record<string, unknown> | null): CompanionLoginStart | undefined {
+  if (!payload || typeof payload.verificationUrl !== "string" || !payload.verificationUrl) return undefined;
+  return {
+    verificationUrl: payload.verificationUrl,
+    userCode: typeof payload.userCode === "string" ? payload.userCode : "",
+    instructions: typeof payload.instructions === "string" ? payload.instructions : undefined,
+    needsApiKey: payload.needsApiKey === true,
+    connected: payload.connected === true,
+    pasteCallback: payload.pasteCallback === true,
+    startedAt: typeof payload.startedAt === "number" ? payload.startedAt : undefined,
+    expiresAt: typeof payload.expiresAt === "number" ? payload.expiresAt : undefined,
+  };
+}
+
+export async function cancelCompanionLogin(providerId: string): Promise<ChatGptAuthStatus> {
+  const response = await companionFetch(companionAuthUrl("/auth/login-cancel", providerId), { method: "POST" });
+  if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  return readAuthStatus(await readJsonBody(response));
 }
 
 /** 동반 서비스가 실제로 아는 제공자 한 줄. `/auth/providers` 응답 모양이다. */
@@ -287,6 +313,8 @@ export async function startChatGptLogin(providerId?: string, apiKey?: string): P
     instructions: typeof payload?.instructions === "string" ? payload.instructions : undefined,
     connected: payload?.connected === true,
     pasteCallback: payload?.pasteCallback === true,
+    startedAt: typeof payload?.startedAt === "number" ? payload.startedAt : undefined,
+    expiresAt: typeof payload?.expiresAt === "number" ? payload.expiresAt : undefined,
   };
 }
 

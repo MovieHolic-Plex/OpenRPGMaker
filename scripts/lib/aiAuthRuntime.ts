@@ -278,8 +278,13 @@ export function publicProviderStatus(provider: string) {
   const hasRequiredMetadata = !PROJECT_SCOPED_PROVIDERS.has(provider)
     || row?.kind !== "oauth"
     || Boolean(row.projectId);
-  const pending = pendingLogins.get(provider);
-  const extra = pending?.error ? { lastLoginError: pending.error } : {};
+  let pending = pendingLogins.get(provider);
+  if (pending?.login && !pending.error && pending.login.expiresAt <= Date.now()) {
+    cancelProviderLogin(provider);
+    pending = undefined;
+  }
+  const extra = pending?.error ? { lastLoginError: pending.error }
+    : pending?.login ? { pendingLogin: pending.login } : {};
   if (disk.connected && !hasRequiredMetadata) {
     return { ...disk, ...extra, connected: false, provider, env: false, envScan };
   }
@@ -294,17 +299,28 @@ export function publicProviderStatus(provider: string) {
  * 승인 대기는 백그라운드에서 계속되므로, 실패는 다음 `/auth/status` 의 `lastLoginError` 로만
  * 관측된다.
  */
-const pendingLogins = new Map<string, { promise: Promise<void>; error?: string; abort: AbortController }>();
+type PendingLogin = {
+  verificationUrl: string;
+  userCode: string;
+  instructions?: string;
+  startedAt: number;
+  expiresAt: number;
+};
+const pendingLogins = new Map<string, { promise: Promise<void>; error?: string; abort: AbortController; login: PendingLogin }>();
+const startingLogins = new Map<string, AbortController>();
 
-function trackLogin(provider: string, abort: AbortController, work: Promise<PortedOAuthCredentials>) {
-  const entry: { promise: Promise<void>; error?: string; abort: AbortController } = {
+function trackLogin(provider: string, abort: AbortController, work: Promise<PortedOAuthCredentials>, login: PendingLogin) {
+  const entry: { promise: Promise<void>; error?: string; abort: AbortController; login: PendingLogin } = {
     abort,
+    login,
     promise: work
       .then((credentials) => {
+        if (abort.signal.aborted || pendingLogins.get(provider) !== entry) return;
         store.setOAuth(provider, credentials);
         pendingLogins.delete(provider);
       })
       .catch((error: unknown) => {
+        if (abort.signal.aborted || pendingLogins.get(provider) !== entry) return;
         entry.error = error instanceof Error ? error.message : String(error);
       }),
   };
@@ -317,8 +333,11 @@ function trackLogin(provider: string, abort: AbortController, work: Promise<Port
  */
 export function cancelProviderLogin(provider: string): boolean {
   const pending = pendingLogins.get(provider);
-  if (!pending) return false;
-  pending.abort.abort(new Error("login superseded"));
+  const starting = startingLogins.get(provider);
+  if (!pending && !starting) return false;
+  starting?.abort(new Error("login canceled"));
+  pending?.abort.abort(new Error("login canceled"));
+  startingLogins.delete(provider);
   pendingLogins.delete(provider);
   return true;
 }
@@ -334,6 +353,16 @@ export async function startProviderLogin(
 ) {
   const id = requireKnown(provider);
   cancelProviderLogin(id);
+  const abort = new AbortController();
+  startingLogins.set(id, abort);
+  try {
+    return await launchProviderLogin(id, options, abort);
+  } finally {
+    if (startingLogins.get(id) === abort) startingLogins.delete(id);
+  }
+}
+
+async function launchProviderLogin(id: string, options: { remote?: boolean }, abort: AbortController) {
   if (testStub()) {
     return {
       connected: false,
@@ -343,14 +372,28 @@ export async function startProviderLogin(
     };
   }
 
-  const abort = new AbortController();
+  const startedAt = Date.now();
+  const expiresAt = startedAt + 10 * 60 * 1000;
+  const loginFetch = (input: string | URL | Request, init?: RequestInit): Promise<Response> =>
+    globalThis.fetch(input, {
+      ...init,
+      signal: init?.signal ? AbortSignal.any([abort.signal, init.signal]) : abort.signal,
+    });
   if (id === CODEX_PROVIDER_ID) {
     const started = await beginCodexLogin({
       openCallbackServer: (options) => startOAuthCallbackServer(options),
-      startDeviceAuthorization: () => startCodexDeviceAuthorization({}),
+      startDeviceAuthorization: () => startCodexDeviceAuthorization({ fetch: loginFetch }),
       remote: options.remote === true,
       signal: abort.signal,
     });
+    if (abort.signal.aborted) {
+      if (started.mode === "browser") void started.waitForCode.catch(() => undefined);
+      throw abort.signal.reason;
+    }
+    const login = {
+      verificationUrl: started.verificationUrl, userCode: started.userCode,
+      instructions: started.instructions, startedAt, expiresAt,
+    };
     if (started.mode === "browser") {
       trackLogin(id, abort, (async () => {
         const { code } = await started.waitForCode;
@@ -358,10 +401,11 @@ export async function startProviderLogin(
           code,
           codeVerifier: started.codeVerifier,
           redirectUri: started.redirectUri,
+          fetch: loginFetch,
         });
-      })());
+      })(), login);
     } else {
-      trackLogin(id, abort, pollCodexDeviceAuthorization({ ...started.device, signal: abort.signal }));
+      trackLogin(id, abort, pollCodexDeviceAuthorization({ ...started.device, signal: abort.signal, fetch: loginFetch }), login);
     }
     return {
       connected: false,
@@ -369,6 +413,8 @@ export async function startProviderLogin(
       verificationUrl: started.verificationUrl,
       userCode: started.userCode,
       instructions: started.instructions,
+      startedAt,
+      expiresAt,
     };
   }
 
@@ -382,18 +428,25 @@ export async function startProviderLogin(
     expectedState: state,
     signal: abort.signal,
   });
+  if (abort.signal.aborted) {
+    void handle.waitForCode.catch(() => undefined);
+    throw abort.signal.reason;
+  }
+  const login = {
+    verificationUrl: buildAntigravityAuthorizationUrl({ state, redirectUri: handle.redirectUri }),
+    userCode: "", instructions: "브라우저에서 Google 계정으로 로그인하세요.", startedAt, expiresAt,
+  };
   trackLogin(id, abort, (async () => {
     const { code } = await handle.waitForCode;
-    const exchanged = await exchangeAntigravityCode({ code, redirectUri: handle.redirectUri });
-    const projectId = await discoverAntigravityProject({ accessToken: exchanged.access });
+    const exchanged = await exchangeAntigravityCode({ code, redirectUri: handle.redirectUri, fetch: loginFetch });
+    abort.signal.throwIfAborted();
+    const projectId = await discoverAntigravityProject({ accessToken: exchanged.access, fetch: loginFetch });
     return { ...exchanged, projectId };
-  })());
+  })(), login);
   return {
     connected: false,
     provider: id,
-    verificationUrl: buildAntigravityAuthorizationUrl({ state, redirectUri: handle.redirectUri }),
-    userCode: "",
-    instructions: "브라우저에서 Google 계정으로 로그인하세요.",
+    ...login,
   };
 }
 

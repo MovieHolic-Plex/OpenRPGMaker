@@ -16,6 +16,8 @@
 
 import {
   completeOAuthPaste,
+  cancelCompanionLogin,
+  type CompanionLoginStart,
   disconnectCompanionAuth,
   fetchChatGptAuthStatus,
   hasStoredCompanionCredential,
@@ -128,6 +130,7 @@ export function renderAiAuthSettings(
   let pollTimer: ReturnType<typeof setTimeout> | undefined;
   let pollAttempt = 0;
   let disposed = false;
+  let loginExpiresAt = 0;
   /**
    * 인증 연산 세대 카운터. 제공자/종류 변경과 명시적 취소가 이 값을 올린다 — 진행 중(나 비동기 대기)인
    * 연산은 시작 시점의 세대·제공자를 붙들고, 그게 현재와 다르면 UI 를 건드리지 않는다.
@@ -231,6 +234,11 @@ export function renderAiAuthSettings(
       } else if (auth.expired === true) {
         text = "자격 만료";
         tone = "offline";
+      } else if (auth.lastLoginError) {
+        text = "로그인 실패";
+        tone = "offline";
+      } else if (auth.pendingLogin) {
+        text = "로그인 진행 중";
       } else {
         text = "로그인 필요";
         tone = "idle";
@@ -328,7 +336,7 @@ export function renderAiAuthSettings(
   // 구독 로그인 사용자가 키를 찾아야 하나 헷갈렸다(2026-09-26 스샷). 조용한 글자 버튼으로 둔다.
   const envScanAgain = el("button", {
     class: "ai-auth-link-action",
-    text: "서버 환경 변수의 키 쓰기",
+    text: "고급: 서버에 저장된 연결 정보 찾아보기",
     attrs: { type: "button", hidden: "" },
     dataset: { testid: "ai-env-scan-again" },
   }) as HTMLButtonElement;
@@ -452,8 +460,7 @@ export function renderAiAuthSettings(
   });
 
   // ── 안내(A) / 오류(B) ─────────────────────────────────────────────────────
-  // 두 상자를 나누는 이유: (A) 는 "동반 서비스가 안 켜졌다"라서 npm run ai:oauth 가 해결책이고,
-  // (B) 는 서비스가 응답했지만 내부에서 깨진 것이라 그 안내가 시간만 버리게 한다.
+  // 서비스에 닿지 못한 경우와, 응답했지만 오류를 반환한 경우를 구분한다.
   const hint = el("div", {
     class: "ai-auth-hint",
     attrs: { hidden: "" },
@@ -563,10 +570,10 @@ export function renderAiAuthSettings(
     const reason = (error as ChatGptCompanionUnreachableError | undefined)?.reason;
     setStatus(reason === "timeout" ? "연결 서비스 응답 없음" : "연결 서비스 필요", "offline");
     hint.textContent = reason === "timeout"
-      ? "연결 서비스가 응답하지 않습니다. 개발 서버를 껐다 켜 보세요."
+      ? "AI 연결 서비스의 응답이 늦어요. ‘연결 확인’을 눌러 다시 확인하세요."
       : reason === "not-mounted"
-        ? "연결 서비스 경로가 등록되지 않았습니다. 개발 서버를 껐다 켜 보세요."
-        : "로컬 연결 서비스가 필요합니다. 터미널에서 npm run ai:oauth 를 한 번 실행하세요.";
+        ? "이 앱의 AI 연결 서비스를 찾지 못했어요. 앱을 다시 열거나 서버 관리자에게 알려주세요."
+        : "AI 연결 서비스에 닿지 못했어요. ‘연결 확인’을 눌러 다시 확인하세요. 계속 안 되면 앱을 다시 열거나 서버 관리자에게 알려주세요.";
     hint.hidden = false;
     serverError.hidden = true;
     cardAuth.set(providerId, "error");
@@ -591,10 +598,7 @@ export function renderAiAuthSettings(
       renderCardPill(providerId);
       return;
     }
-    const guidance = /codex/iu.test(detail)
-      ? "codex 프로그램 쪽 문제일 수 있어요. 개발 서버를 껐다 켜 보세요."
-      : "개발 서버를 껐다 켜 보세요. 그래도 안 되면 이 화면을 복사해 개발자에게 알려주세요.";
-    serverError.textContent = `연결 서비스가 응답했지만 오류가 났어요. ${guidance} 오류 내용: ${detail}`;
+    serverError.textContent = `연결 서비스가 응답했지만 오류가 났어요. ‘연결 확인’을 눌러 다시 확인하세요. 계속 안 되면 서버 관리자에게 아래 오류 내용을 알려주세요. 오류 내용: ${detail}`;
     cardAuth.set(providerId, "error");
     renderCardPill(providerId);
   };
@@ -608,8 +612,21 @@ export function renderAiAuthSettings(
     void refreshAiConnectionStatus();
     stored = hasStoredCompanionCredential(auth);
     const usable = hasUsableCompanionCredential(auth);
-    envScanBox.hidden = auth.envScan !== "ask" || usable;
-    envScanAgain.hidden = auth.envScan !== "deny" || usable;
+    cardAuth.set(providerId, auth);
+    renderCardPill(providerId);
+    // Environment credential discovery is an explicit advanced action, never a first-login question.
+    envScanBox.hidden = true;
+    envScanAgain.hidden = usable || !(getOhMyPiProvider(providerId)?.envVars.length);
+    if (!usable && auth.lastLoginError) {
+      showLoginFailure(auth.lastLoginError);
+      return;
+    }
+    if (!usable && auth.pendingLogin) {
+      if (deviceBlock.hidden) restoreLoginFlow(auth.pendingLogin);
+      applyChrome();
+      return;
+    }
+    if (usable) stopPolling();
     if (usable && auth.env === true) {
       setStatus("연결됨 · 환경 변수", "connected");
     } else if (stored) {
@@ -772,12 +789,12 @@ export function renderAiAuthSettings(
       void fetchChatGptAuthStatus(provider)
         .then((auth) => {
           if (disposed || gen !== opGeneration || provider !== providerId) return;
-          if (hasStoredCompanionCredential(auth)) {
+          if (hasUsableCompanionCredential(auth) || auth.lastLoginError) {
             stopPolling();
             applyStatus(auth);
             return;
           }
-          if (pollAttempt >= DEVICE_POLL_MAX_ATTEMPTS) {
+          if (pollAttempt >= DEVICE_POLL_MAX_ATTEMPTS || Date.now() >= loginExpiresAt) {
             showLoginTimeout();
             return;
           }
@@ -785,16 +802,87 @@ export function renderAiAuthSettings(
           // 방금 한 조작의 응답이 3초 만에 지워진다.
           pollForLogin();
         })
-        .catch(() => {
-          // 폴링 중 일시적 실패는 흐름을 끊지 않는다 — 다음 시도에서 회복될 수 있다.
+        .catch((error: unknown) => {
           if (disposed || gen !== opGeneration || provider !== providerId) return;
-          if (pollAttempt >= DEVICE_POLL_MAX_ATTEMPTS) {
-            showLoginTimeout();
-            return;
-          }
-          pollForLogin();
+          stopPolling();
+          if (isChatGptCompanionResponseError(error)) showServerError(error);
+          else showUnreachable(error);
         });
     }, DEVICE_POLL_INTERVAL_MS);
+  }
+
+  /** Reopening settings restores the server's pending attempt without starting another login. */
+  function restoreLoginFlow(login: CompanionLoginStart, openWindow = false): void {
+    if (login.expiresAt !== undefined && login.expiresAt <= Date.now()) {
+      showLoginTimeout();
+      return;
+    }
+    setDeviceFlowVisible(true);
+    hint.hidden = true;
+    serverError.hidden = true;
+    envScanBox.hidden = true;
+    loginUrl = login.verificationUrl || "";
+    // 주소는 href 에만 둔다(본문 글자 금지 — 위 기기 로그인 블록 주석).
+    // setAttribute 로 쓴다 — 속성으로 남아야 테스트·접근성 도구가 같은 값을 읽는다.
+    if (loginUrl) deviceUrl.setAttribute("href", loginUrl);
+    else deviceUrl.removeAttribute("href");
+    deviceLinkRow.hidden = !loginUrl;
+    deviceUserCode.textContent = login.userCode || "";
+    copyCodeButton.hidden = !login.userCode;
+    // 코드가 없는 로그인(브라우저 루프백 완료: Antigravity, 1455 를 잡은 Codex)에서는
+    // 빈 코드 줄과 "이 코드를 입력하세요" 가 남으면 사용자가 없는 코드를 찾게 된다.
+    deviceCodeRow.hidden = !login.userCode;
+    pasteRow.hidden = login.pasteCallback !== true;
+    pasteInput.value = "";
+    const name = accountName(providerId);
+    if (login.pasteCallback) {
+      // 원격 접속(다른 PC 의 서버를 여는 중): Google 은 로그인 뒤 **이 PC 의** localhost 로
+      // 돌려보내므로 그 탭은 브라우저의 「연결할 수 없음」 오류 페이지가 된다. 초보자는 그걸
+      // 실패로 읽는다 — 그 페이지가 정상이라는 것과, 무엇을(주소창 전체) 복사할지 먼저 말한다.
+      // redirect_uri 는 데스크톱 클라이언트 제약상 localhost 여야 하므로 흐름 자체는 바꾸지 않는다.
+      deviceStep1.textContent = `1. 새로 열린 탭에서 ${name} 계정으로 로그인하세요.`;
+      deviceStep2.textContent = "2. 마지막 탭이 열리지 않으면 주소창 전체(http://localhost로 시작)를 복사하세요. 그 주소를 전달해 연결을 마칠 수 있어요.";
+      deviceStep3.textContent = "3. 이 화면으로 돌아와 복사한 주소를 아래 칸에 붙여 넣으세요. 연결을 확인하고 로그인 정보는 이 서버에 보관합니다.";
+      deviceStep3.hidden = false;
+      devicePoll.textContent = WAITING_COPY;
+      watchPastedLogin();
+    } else {
+      deviceStep1.textContent = login.userCode
+        ? `${name} 로그인 창을 열었어요. 창에 아래 코드를 입력하세요.`
+        : `${name} 로그인 창을 열었어요. 창에서 로그인을 마치면 자동으로 연결됩니다.`;
+      deviceStep2.textContent = login.userCode
+        ? "코드를 넣고 로그인을 마치면 자동으로 연결됩니다. 창이 안 보이면 ‘로그인 창 다시 열기’를 누르세요."
+        : "창이 안 보이면 ‘로그인 창 다시 열기’를 누르세요.";
+      deviceStep3.textContent = "";
+      deviceStep3.hidden = true;
+      devicePoll.textContent = WAITING_COPY;
+    }
+    setStatus("브라우저에서 로그인 대기 중", "checking");
+    cardAuth.set(providerId, { connected: false, pendingLogin: login });
+    renderCardPill(providerId);
+    if (openWindow) {
+      resetAiConnectionStatusCache();
+      void refreshAiConnectionStatus();
+    }
+    // 링크를 눌러 열 수도 있게 남겨 둔 채 자동 실행도 시도한다(팝업 차단 시 링크가 대안).
+    if (openWindow && login.verificationUrl && typeof window !== "undefined" && typeof window.open === "function") {
+      window.open(login.verificationUrl, "_blank", "noopener,noreferrer");
+    }
+    loginExpiresAt = login.expiresAt ?? Date.now() + DEVICE_LOGIN_WINDOW_MS;
+    pollAttempt = 0;
+    pollForLogin();
+  }
+
+  function showLoginFailure(detail: string): void {
+    stopPolling();
+    setStatus("로그인 실패 — 다시 시도하세요", "disconnected");
+    hint.hidden = true;
+    serverError.hidden = false;
+    serverError.textContent = `로그인을 완료하지 못했어요. 다시 로그인하거나 다른 계정을 선택하세요. 오류 내용: ${detail}`;
+    stored = false;
+    cardAuth.set(providerId, { connected: false, lastLoginError: detail });
+    renderCardPill(providerId);
+    applyChrome();
   }
 
   /** 대기 시간이 다 됐다 — 폴링을 멈추고, 멈춘 이유와 재시도 버튼을 보여 준다. */
@@ -811,8 +899,23 @@ export function renderAiAuthSettings(
 
   cancelButton.addEventListener("click", () => {
     opGeneration += 1;
+    const gen = opGeneration;
+    const provider = providerId;
     stopPolling();
-    setStatus("로그인을 취소했습니다", "disconnected");
+    loginButton.disabled = true;
+    setStatus("로그인 취소 중…", "checking");
+    void cancelCompanionLogin(provider)
+      .then((auth) => {
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        applyStatus(auth);
+        if (!hasUsableCompanionCredential(auth)) setStatus("로그인을 취소했습니다", "disconnected");
+      })
+      .catch((error: unknown) => {
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        if (isChatGptCompanionResponseError(error)) showServerError(error);
+        else showUnreachable(error);
+      })
+      .finally(() => { if (!disposed && gen === opGeneration) loginButton.disabled = false; });
   });
 
   copyUrlButton.addEventListener("click", () => {
@@ -908,50 +1011,7 @@ export function renderAiAuthSettings(
           hint.hidden = false;
           return;
         }
-        setDeviceFlowVisible(true);
-        loginUrl = login.verificationUrl || "";
-        // 주소는 href 에만 둔다(본문 글자 금지 — 위 기기 로그인 블록 주석).
-        // setAttribute 로 쓴다 — 속성으로 남아야 테스트·접근성 도구가 같은 값을 읽는다.
-        if (loginUrl) deviceUrl.setAttribute("href", loginUrl);
-        else deviceUrl.removeAttribute("href");
-        deviceLinkRow.hidden = !loginUrl;
-        deviceUserCode.textContent = login.userCode || "";
-        copyCodeButton.hidden = !login.userCode;
-        // 코드가 없는 로그인(브라우저 루프백 완료: Antigravity, 1455 를 잡은 Codex)에서는
-        // 빈 코드 줄과 "이 코드를 입력하세요" 가 남으면 사용자가 없는 코드를 찾게 된다.
-        deviceCodeRow.hidden = !login.userCode;
-        pasteRow.hidden = login.pasteCallback !== true;
-        pasteInput.value = "";
-        const name = accountName(provider);
-        if (login.pasteCallback) {
-          // 원격 접속(다른 PC 의 서버를 여는 중): Google 은 로그인 뒤 **이 PC 의** localhost 로
-          // 돌려보내므로 그 탭은 브라우저의 「연결할 수 없음」 오류 페이지가 된다. 초보자는 그걸
-          // 실패로 읽는다 — 그 페이지가 정상이라는 것과, 무엇을(주소창 전체) 복사할지 먼저 말한다.
-          // redirect_uri 는 데스크톱 클라이언트 제약상 localhost 여야 하므로 흐름 자체는 바꾸지 않는다.
-          deviceStep1.textContent = `1. 새로 열린 탭에서 ${name} 계정으로 로그인하세요.`;
-          deviceStep2.textContent = "2. 로그인 후 ‘연결할 수 없음’ 페이지가 뜨는 게 정상이에요. 그 탭의 주소창에 있는 주소 전체(http://localhost 로 시작)를 복사하세요.";
-          deviceStep3.textContent = "3. 이 화면으로 돌아오면 알아서 연결해요. 안 되면 아래 칸에 붙여 넣고 ‘연결하기’를 누르세요. 로그인은 이 서버에 남으니 서버마다 한 번만 하면 돼요.";
-          deviceStep3.hidden = false;
-          devicePoll.textContent = WAITING_COPY;
-          watchPastedLogin();
-        } else {
-          deviceStep1.textContent = login.userCode
-            ? `${name} 로그인 창을 열었어요. 창에 아래 코드를 입력하세요.`
-            : `${name} 로그인 창을 열었어요. 창에서 로그인을 마치면 자동으로 연결됩니다.`;
-          deviceStep2.textContent = login.userCode
-            ? "코드를 넣고 로그인을 마치면 자동으로 연결됩니다. 창이 안 보이면 ‘로그인 창 다시 열기’를 누르세요."
-            : "창이 안 보이면 ‘로그인 창 다시 열기’를 누르세요.";
-          deviceStep3.textContent = "";
-          deviceStep3.hidden = true;
-          devicePoll.textContent = WAITING_COPY;
-        }
-        setStatus("브라우저에서 로그인 대기 중", "checking");
-        // 링크를 눌러 열 수도 있게 남겨 둔 채 자동 실행도 시도한다(팝업 차단 시 링크가 대안).
-        if (login.verificationUrl && typeof window !== "undefined" && typeof window.open === "function") {
-          window.open(login.verificationUrl, "_blank", "noopener,noreferrer");
-        }
-        pollAttempt = 0;
-        pollForLogin();
+        restoreLoginFlow(login, true);
         return undefined;
       })
       .catch((error: unknown) => {
@@ -978,7 +1038,7 @@ export function renderAiAuthSettings(
   };
   envScanAllow.addEventListener("click", () => chooseEnvScan("allow"));
   envScanDeny.addEventListener("click", () => chooseEnvScan("deny"));
-  envScanAgain.addEventListener("click", () => chooseEnvScan("allow"));
+  envScanAgain.addEventListener("click", () => { envScanBox.hidden = false; });
 
   disconnectButton.addEventListener("click", () => {
     // 실 브라우저는 비활성 버튼의 click 을 발화하지 않는다 — fakeDom 이 발화할 수 있으므로
@@ -1070,12 +1130,17 @@ export function renderAiAuthSettings(
         void fetchChatGptAuthStatus(provider)
           .then((auth) => {
             if (disposed || gen !== opGeneration || provider !== providerId) return;
-            if (hasStoredCompanionCredential(auth)) {
+            if (hasUsableCompanionCredential(auth) || auth.lastLoginError) {
               stopPolling();
               applyStatus(auth);
             }
           })
-          .catch(() => undefined);
+          .catch((error: unknown) => {
+            if (disposed || gen !== opGeneration || provider !== providerId) return;
+            stopPolling();
+            if (isChatGptCompanionResponseError(error)) showServerError(error);
+            else showUnreachable(error);
+          });
         return;
       }
       opGeneration += 1;
