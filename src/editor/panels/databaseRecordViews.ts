@@ -627,7 +627,7 @@ function recordListRow(
   const thumb = recordListThumbnail(collection, record, store.getCurrent());
   const sub = recordCategoryLabel(collection, record);
   // retro2003 도트 연출이 있는 스킬은 이펙트 시트 한 칸을, 손도트 시트가 있는 몬스터는 대기 칸을 썸네일 모서리 배지로 단다(행 그리드 열은 그대로).
-  const badge = collection === "skills" ? retroSkillListBadge(record, 16)
+  const badge = collection === "skills" ? retroSkillListBadge(record, 16, store.getCurrent().database.skillChoreographies)
     : collection === "enemies" ? enemyPixelListBadge((record as { monsterResourceId?: string }).monsterResourceId, 16) : null;
   if (badge && thumb) { thumb.classList.add("db-list-thumb-has-retro"); thumb.append(badge); }
   return el("button", {
@@ -663,7 +663,7 @@ function recordGalleryCard(
   const isSelected = selectedRecordIdForSession(collection) === record.id;
   const thumb = recordListThumbnail(collection, record, store.getCurrent(), GALLERY_THUMB_SIZE);
   const tag = galleryCategoryTag(collection, record);
-  const badge = collection === "skills" ? retroSkillListBadge(record, 24)
+  const badge = collection === "skills" ? retroSkillListBadge(record, 24, store.getCurrent().database.skillChoreographies)
     : collection === "enemies" ? enemyPixelListBadge((record as { monsterResourceId?: string }).monsterResourceId, 24) : null;
   if (badge && thumb) thumb.classList.add("db-list-thumb-has-retro");
   return el("button", {

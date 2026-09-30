@@ -91,7 +91,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   let retroSignature = "";
   const renderRetroPanel = (force = false): void => {
     const skill = currentSkill(record);
-    const signature = retroStageSignature(skill);
+    const signature = retroStageSignature(skill, store.getCurrent().database.skillChoreographies);
     if (!force && signature === retroSignature) return;
     retroSignature = signature;
     retroStage?.stop();

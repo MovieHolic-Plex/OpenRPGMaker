@@ -2,7 +2,7 @@ import type { CastType, ExtendedBattlerPose } from "@/battle/battlePose";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { SkillRecord } from "@/project/types";
 import type { RetroClassSkill } from "@/assets/retroClassSkills";
-import { RETRO_ALL_CLASS_SKILLS, RETRO_ALL_FX_SHEETS, resolveRetroClassChoreography, resolveRetroMonsterChoreography, retroClassSkill } from "@/assets/retroSkillCatalog";
+import { RETRO_ALL_CLASS_SKILLS, RETRO_ALL_FX_SHEETS, resolveRetroClassChoreography, resolveRetroMonsterChoreography, resolveSkillChoreography, retroClassSkill } from "@/assets/retroSkillCatalog";
 import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS } from "@/assets/retroMonsterSkills";
 import type { RetroFxLayer } from "@/assets/retroClassSkills";
 import type { RetroMonsterSkill } from "@/assets/retroMonsterSkills";
@@ -91,7 +91,7 @@ const WORDS: readonly [RegExp, string][] = [
 export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "elementId" | "effect" | "retroChoreographyId"> | undefined): RetroSkillRecipe | undefined {
   if (!skill) return undefined;
   // 계약 직업 스킬은 자기 타임라인으로 재생한다(아래 driveRetroClassSkill). 속성·낱말 추정으로 옛 레시피를 붙이지 않는다.
-  if (resolveRetroClassChoreography(skill)) return undefined;
+  if (resolveSkillChoreography(skill, choreographyRecords())) return undefined;
   const exact = RETRO_SKILL_RECIPES[skill.id];
   if (exact) return exact;
   const inferred = ELEMENTS[skill.elementId ?? ""] ?? WORDS.find(([word]) => word.test(skill.name))?.[1];
@@ -271,9 +271,14 @@ interface ClassPlan {
 
 const plans = new WeakMap<HTMLElement, Map<number, ClassPlan>>();
 
-/** 이 레코드가 계약 직업 스킬이면 그 계약. */
+/** 지금 프로젝트의 연출 레코드(database.skillChoreographies). 연출 조회는 전부 resolveSkillChoreography 를 거친다. */
+function choreographyRecords() {
+  return store.getCurrent().database.skillChoreographies;
+}
+
+/** 이 레코드가 계약 직업 스킬이면 그 계약(또는 프로젝트 연출 레코드로 합성한 같은 모양). */
 export function retroClassSkillRecord(skill: Pick<SkillRecord, "id" | "retroChoreographyId"> | undefined): RetroClassSkill | undefined {
-  return resolveRetroClassChoreography(skill);
+  return resolveRetroClassChoreography(skill, choreographyRecords());
 }
 
 interface SkillOwner {
@@ -301,9 +306,16 @@ function ownedSkillIds(userRecordId: string | undefined): ReadonlySet<string> {
   return ids;
 }
 
+/** 이름이 겹치는 후보를 편별로 가른다. 계약은 자기 편만, 프로젝트 연출 레코드를 빌린 스킬은 양쪽 다, 연출이 없으면 직업 쪽. */
+function inPartition(skill: SkillRecord, monster: boolean): boolean {
+  const resolved = resolveSkillChoreography(skill, choreographyRecords());
+  if (!resolved) return !monster;
+  return resolved.origin === "project" || (resolved.kind === "monster") === monster;
+}
+
 function skillByName(name: string | undefined, monster = false, userRecordId?: string): SkillRecord | undefined {
   // 이름이 겹치는 몬스터 스킬(독침·연막탄)이 있어 편별로 후보를 나눈다.
-  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === name && Boolean(resolveRetroMonsterChoreography(skill)) === monster);
+  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === name && inPartition(skill, monster));
   if (matches.length <= 1) return matches[0];
   // 같은 편 안에서도 이름이 겹친다(2차 로스터: 정찰병·도적의 「연막탄」, 레인저·총사의 「저격」 등 31쌍).
   // 시전자가 가진 쪽, 없으면 계약 배우가 시전자인 쪽.
@@ -325,7 +337,7 @@ function classEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: Re
 function monsterEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: PlayableSkill; record: SkillRecord } | undefined {
   if (!entry || entry.side !== "enemy" || entry.commandKind !== "enemySkill" || !VISUAL_KINDS.has(entry.kind)) return undefined;
   const record = skillByName(entry.skillName, true, entry.userRecordId);
-  const skill = resolveRetroMonsterChoreography(record);
+  const skill = resolveRetroMonsterChoreography(record, choreographyRecords());
   return skill && record ? { skill, record } : undefined;
 }
 

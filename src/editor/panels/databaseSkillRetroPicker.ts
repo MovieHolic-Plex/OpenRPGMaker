@@ -6,14 +6,14 @@ import {
   RETRO_CHOREOGRAPHY_FAMILIES,
   RETRO_ELEMENT_IDS,
   filterRetroChoreographies,
-  resolveRetroClassChoreography,
-  resolveRetroMonsterChoreography,
+  resolveSkillChoreography,
   retroChoreographyEntries,
   retroClassSkill,
   type RetroChoreographyFilter,
 } from "@/assets/retroSkillCatalog";
 import { retroMonsterSkill } from "@/assets/retroMonsterSkills";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { store } from "@/project/store";
 import type { SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -40,7 +40,7 @@ function optionList(select: HTMLSelectElement, first: string, values: readonly s
 export function retroChoreographyPicker(record: SkillRecord, onPicked: () => void): HTMLElement {
   const own = retroClassSkill(record.id) ?? retroMonsterSkill(record.id);
   const borrowed = record.retroChoreographyId;
-  const current = resolveRetroClassChoreography(record) ?? resolveRetroMonsterChoreography(record);
+  const current = resolveSkillChoreography(record, store.getCurrent().database.skillChoreographies)?.skill;
   const root = el("div", { class: "db-skill-retro-picker", dataset: { testid: "db-skill-retro-picker" } });
 
   const status = el("div", { class: "db-skill-retro-picker-status", dataset: { testid: "db-skill-retro-picker-status" } });

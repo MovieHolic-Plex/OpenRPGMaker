@@ -24,6 +24,18 @@ export interface RetroFxLayer {
   readonly anchor: RetroFxAnchor;
   readonly frame: 32 | 64 | 128;
   readonly frames: number;
+  // 아래는 프로젝트 연출 레코드(SkillChoreographyRecord)에서만 온다. 기본 계약 데이터에는 없다(없음 = 기존 타임라인 그대로).
+  /** 층 시작 시각(ms). 없으면 타임라인이 정하는 시각. */
+  readonly startMs?: number;
+  /** 그림 배율(기본 1). */
+  readonly scale?: number;
+  /** 같은 층을 이어서 재생하는 횟수(기본 1). */
+  readonly repeat?: number;
+  /** each: 다단 스킬이면 타수마다 이 착탄 층을 다시 깐다. */
+  readonly onHit?: "first" | "each";
+  readonly tint?: string;
+  /** 층이 시작될 때 울리는 효과음 id. */
+  readonly se?: string;
 }
 
 export interface RetroClassSkill {

@@ -1,9 +1,10 @@
 // retro2003 직업 스킬 **공용 조회 한 곳** — 기존 12직업 계약(retroClassSkills.ts)과 2차 로스터 묶음(retroRosterSkills/*)을 합친다.
 // 런타임 재생기·편집기 스킬 탭·기본 DB 생성기가 모두 여기서 읽는다. 계약 파일은 읽기 전용이라 합치는 자리를 따로 둔다.
-import { RETRO_CLASS_SKILLS, retroClassSkill as baseClassSkill, type RetroClassSkill, type RetroFxAnchor, type RetroFxLayer } from "@/assets/retroClassSkills";
+import { RETRO_CLASS_SKILLS, retroClassSkill as baseClassSkill, type RetroClassSkill, type RetroFxAnchor, type RetroFxLayer, type RetroSkillMotion } from "@/assets/retroClassSkills";
 import { retroRosterClass } from "@/assets/retroRoster";
 import { RETRO_ROSTER_SKILLS } from "@/assets/retroRosterSkills";
-import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS, retroMonsterSkill, type RetroMonsterSkill } from "@/assets/retroMonsterSkills";
+import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS, retroMonsterSkill, type RetroMonsterSkill, type RetroMonsterSkillMotion } from "@/assets/retroMonsterSkills";
+import type { SkillChoreographyLayer, SkillChoreographyRecord } from "@/project/types/database";
 
 /** 기존 96개 + 로스터 묶음 스킬 전부. */
 export const RETRO_ALL_CLASS_SKILLS: readonly RetroClassSkill[] = [...RETRO_CLASS_SKILLS, ...RETRO_ROSTER_SKILLS];
@@ -38,19 +39,113 @@ export interface RetroChoreographyRef {
   readonly retroChoreographyId?: string;
 }
 
-/**
- * 스킬 레코드의 직업 연출 계약. 조회 순서: ① 레코드 id 가 계약이면 그것 ② 아니면 retroChoreographyId 가 가리키는 직업 계약.
- * 새 스킬·복제 스킬이 계약 약 850개 연출을 그대로 빌려 쓰는 유일한 길이다(런타임 재생기·편집기 무대·조수 도구가 모두 여기서 읽는다).
- */
-export function resolveRetroClassChoreography(record: RetroChoreographyRef | undefined): RetroClassSkill | undefined {
-  if (!record) return undefined;
-  return retroClassSkill(record.id) ?? retroClassSkill(record.retroChoreographyId);
+/** 프로젝트 연출 레코드 목록(database.skillChoreographies). 없으면 기본 연출만 본다. */
+export type RetroChoreographyRecords = readonly SkillChoreographyRecord[] | undefined;
+
+/** 연출 한 벌을 런타임이 읽는 **한 가지 모양**. 기본 연출(계약)과 프로젝트 레코드가 같은 모양으로 나온다. */
+export interface ResolvedSkillChoreography {
+  /** default = 번들 계약(읽기 전용), project = database.skillChoreographies 레코드. */
+  readonly origin: "default" | "project";
+  readonly id: string;
+  readonly kind: "class" | "monster";
+  /** kind 에 맞는 동작(프로젝트 레코드는 반대편 동작을 짝 동작으로 바꿔 둔 값). */
+  readonly motion: RetroSkillMotion | RetroMonsterSkillMotion;
+  /** 런타임·편집기 무대가 그대로 먹는 계약 모양. 프로젝트 레코드는 이 모양으로 합성한다(frame/frames 는 시트 메타에서). */
+  readonly skill: RetroClassSkill | RetroMonsterSkill;
+  readonly record?: SkillChoreographyRecord;
 }
 
-/** 위와 같으나 몬스터 계약(skill_mon_*) 쪽. 적 스킬이 다른 몬스터 스킬의 연출을 빌릴 때 쓴다. */
-export function resolveRetroMonsterChoreography(record: RetroChoreographyRef | undefined): RetroMonsterSkill | undefined {
-  if (!record) return undefined;
-  return retroMonsterSkill(record.id) ?? retroMonsterSkill(record.retroChoreographyId);
+const CLASS_TO_MONSTER: Readonly<Record<RetroSkillMotion, RetroMonsterSkillMotion>> = {
+  "dash-strike": "lunge", "blink-strike": "lunge", flurry: "lunge", "leap-strike": "stomp", spin: "stomp",
+  cast: "cast", shoot: "shoot", buff: "buff", finisher: "finisher",
+};
+const MONSTER_TO_CLASS: Readonly<Record<RetroMonsterSkillMotion, RetroSkillMotion>> = {
+  lunge: "dash-strike", stomp: "leap-strike", breath: "cast", cast: "cast", shoot: "shoot", buff: "buff", finisher: "finisher",
+};
+const MONSTER_ONLY_MOTIONS: ReadonlySet<string> = new Set(["lunge", "breath", "stomp"]);
+
+/** 프로젝트 레코드의 기본 편: 복제 원본이 몬스터 계약이면 몬스터, 몬스터 전용 동작이면 몬스터, 아니면 직업. */
+export function skillChoreographyRecordKind(record: SkillChoreographyRecord): "class" | "monster" {
+  const source = record.sourceId ? retroChoreographyKind(record.sourceId) : undefined;
+  if (source) return source;
+  return MONSTER_ONLY_MOTIONS.has(record.motion) ? "monster" : "class";
+}
+
+type MutableLayer = { -readonly [K in keyof RetroFxLayer]: RetroFxLayer[K] };
+
+function recordLayers(layers: readonly SkillChoreographyLayer[]): RetroFxLayer[] {
+  return layers.flatMap((layer) => {
+    const meta = retroFxSheetMeta(layer.sheet);
+    if (!meta) return [];
+    const out: MutableLayer = { key: layer.sheet, anchor: layer.anchor, frame: meta.frame, frames: meta.frames };
+    if (layer.startMs !== undefined) out.startMs = layer.startMs;
+    if (layer.scale !== undefined) out.scale = layer.scale;
+    if (layer.repeat !== undefined) out.repeat = layer.repeat;
+    if (layer.onHit !== undefined) out.onHit = layer.onHit;
+    if (layer.tint !== undefined) out.tint = layer.tint;
+    if (layer.se !== undefined) out.se = layer.se;
+    return [out];
+  });
+}
+
+const synthesized = new WeakMap<SkillChoreographyRecord, { class?: RetroClassSkill; monster?: RetroMonsterSkill }>();
+
+function synthesizeRecord(record: SkillChoreographyRecord, kind: "class" | "monster"): RetroClassSkill | RetroMonsterSkill {
+  const cache = synthesized.get(record) ?? {};
+  synthesized.set(record, cache);
+  if (kind === "class") {
+    return cache.class ??= {
+      id: record.id, classId: "", actorId: "", name: record.name, level: 1,
+      motion: (MONSTER_TO_CLASS as Record<string, RetroSkillMotion | undefined>)[record.motion] ?? (record.motion as RetroSkillMotion),
+      description: record.description ?? "", layers: recordLayers(record.layers),
+    };
+  }
+  const layers = recordLayers(record.layers);
+  const motion = (CLASS_TO_MONSTER as Record<string, RetroMonsterSkillMotion | undefined>)[record.motion] ?? (record.motion as RetroMonsterSkillMotion);
+  const effect: RetroMonsterSkill["effect"] = motion === "buff"
+    ? (layers.some((layer) => layer.anchor === "allAllies") ? "buffAllies" : "buffSelf")
+    : (layers.some((layer) => layer.anchor === "allTargets" || layer.anchor === "screen") ? "damageAll" : "damage");
+  return cache.monster ??= { id: record.id, name: record.name, motion, description: record.description ?? "", effect, layers };
+}
+
+/**
+ * 스킬 레코드의 연출 **한 곳 조회**. 조회 순서:
+ * ① 스킬 id 가 계약(기본 연출) id 이면 그 계약 ② retroChoreographyId 가 프로젝트 연출 레코드(chor_*) 면 그 레코드
+ * ③ retroChoreographyId 가 기본 연출 id 이면 그 계약. 없으면 undefined.
+ * `want` 를 주면 그 편의 모양으로 돌려준다. 기본 연출은 자기 편만(다른 편이면 undefined), 프로젝트 레코드는 동작을 짝 동작으로 바꿔 어느 편에서든 나온다.
+ */
+export function resolveSkillChoreography(
+  ref: RetroChoreographyRef | undefined,
+  records?: RetroChoreographyRecords,
+  want?: "class" | "monster",
+): ResolvedSkillChoreography | undefined {
+  if (!ref) return undefined;
+  const contract = (id: string | undefined): ResolvedSkillChoreography | undefined => {
+    const classSkill = retroClassSkill(id);
+    if (classSkill) return want === "monster" ? undefined : { origin: "default", id: classSkill.id, kind: "class", motion: classSkill.motion, skill: classSkill };
+    const monsterSkill = retroMonsterSkill(id);
+    if (monsterSkill) return want === "class" ? undefined : { origin: "default", id: monsterSkill.id, kind: "monster", motion: monsterSkill.motion, skill: monsterSkill };
+    return undefined;
+  };
+  const own = contract(ref.id);
+  if (own) return own;
+  const record = ref.retroChoreographyId && records ? records.find((row) => row.id === ref.retroChoreographyId) : undefined;
+  if (record) {
+    const kind = want ?? skillChoreographyRecordKind(record);
+    const skill = synthesizeRecord(record, kind);
+    return { origin: "project", id: record.id, kind, motion: skill.motion, skill, record };
+  }
+  return contract(ref.retroChoreographyId);
+}
+
+/** 직업 모양의 연출(계약 또는 프로젝트 레코드). `records` 를 주지 않으면 기본 연출만 본다. */
+export function resolveRetroClassChoreography(record: RetroChoreographyRef | undefined, records?: RetroChoreographyRecords): RetroClassSkill | undefined {
+  return resolveSkillChoreography(record, records, "class")?.skill as RetroClassSkill | undefined;
+}
+
+/** 위와 같으나 몬스터 모양(skill_mon_*). 적 스킬이 다른 몬스터 스킬의 연출을 빌리거나 프로젝트 레코드를 쓸 때. */
+export function resolveRetroMonsterChoreography(record: RetroChoreographyRef | undefined, records?: RetroChoreographyRecords): RetroMonsterSkill | undefined {
+  return resolveSkillChoreography(record, records, "monster")?.skill as RetroMonsterSkill | undefined;
 }
 
 /** 계약 id 하나가 직업 계약인가 몬스터 계약인가(도구 검증용). */
@@ -64,6 +159,8 @@ export function retroChoreographyKind(id: string | undefined): "class" | "monste
  * 사본은 새 id 라 계약 조회에서 빠지므로, 이 값을 retroChoreographyId 에 넣어 원본과 같은 도트 연출을 이어받게 한다.
  */
 export function retroChoreographyIdForClone(source: RetroChoreographyRef): string | undefined {
+  // 계약 id 가 자기 id 면 계약이 이긴다. 아니고 프로젝트 연출 레코드(chor_*)를 빌려 쓰고 있으면 그 id 를 이어받는다.
+  if (!retroChoreographyKind(source.id) && source.retroChoreographyId?.startsWith("chor_")) return source.retroChoreographyId;
   return resolveRetroClassChoreography(source)?.id ?? resolveRetroMonsterChoreography(source)?.id;
 }
 
