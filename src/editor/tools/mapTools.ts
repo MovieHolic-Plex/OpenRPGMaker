@@ -36,6 +36,7 @@ import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { stampRectHouseKit } from "@/editor/houseKit";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { EXTRA_LAYER_KEYS, compactMapLayers, cropExtraLayers, layerTileAt, setLayerTileAt, setShadowAt, shadowAt, type TileLayerNo } from "@/project/mapLayers";
+import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundFill";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
@@ -2275,10 +2276,10 @@ const createFarmPlot: ToolDefinition = {
   },
 };
 
-// 맵 크기 변경(좌상단 기준 유지, 확장부는 잔디/빈 칸). 이벤트가 잘려 나가는 축소는 거부한다.
+// 맵 크기 변경(좌상단 기준 유지, 확장부 아래층은 가장자리 바탕 타일 연장). 이벤트가 잘려 나가는 축소는 거부한다.
 const resizeMapTool: ToolDefinition = {
   name: "resize_map",
-  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.`,
+  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 가장자리 바탕 타일을 이어 채움, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -2307,11 +2308,11 @@ const resizeMapTool: ToolDefinition = {
     }
     const oldW = map.width;
     const oldH = map.height;
-    const newLower = new Array<number>(width * height).fill(TILE.GRASS);
+    // 확장부 아래층은 가장자리 바탕 타일을 이어 채운다(에디터 테두리 드래그·크기 대화상자와 같은 규칙).
+    const newLower = extendedLowerTiles(map, width, height, groundFeaturePredicate(map, draft.tilesets));
     const newUpper = new Array<number>(width * height).fill(TILE.EMPTY);
     for (let y = 0; y < Math.min(oldH, height); y += 1) {
       for (let x = 0; x < Math.min(oldW, width); x += 1) {
-        newLower[y * width + x] = map.lowerTiles[y * oldW + x];
         newUpper[y * width + x] = map.upperTiles[y * oldW + x];
       }
     }
