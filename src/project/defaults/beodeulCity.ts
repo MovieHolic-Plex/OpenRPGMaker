@@ -13,6 +13,11 @@ export const BEODEUL_CITY_TEXTURE = "tex_beodeul_city";
 export const BEODEUL_CITY_ID = "beodeul_city";
 export const BEODEUL_CITY_TILE_COUNT: number = data.count;
 export const BEODEUL_CITY_TILES_PER_ROW: number = data.tilesPerRow;
+/**
+ * 버들항은 처음부터 코드로 그린 생성 칩셋이다(2026-09-29 EasyRPG 계열 폐기 결정). 시트 JSON 은 "easyrpg" 로 적혀 있어
+ * 숲마을과 같은 계열로 묶였고, 계열 검사가 버들항 맵에서 숲마을 새 맵으로 가는 것을 막지 못했다.
+ */
+export const BEODEUL_CITY_FAMILY = "oprn-atlas";
 const REFERENCES = references as unknown as TilesetReferenceCategory[];
 
 /** Independent copy of the shipped tileset, born with its reference documents. */
@@ -22,7 +27,7 @@ export function createBeodeulCityTileset(): TilesetDef {
     name: data.name,
     image: { type: "bundled", id: BEODEUL_CITY_TEXTURE },
     kind: "custom",
-    family: data.family,
+    family: BEODEUL_CITY_FAMILY,
     tileSize: data.tileSize,
     tilesPerRow: data.tilesPerRow,
     count: data.count,
@@ -72,11 +77,14 @@ export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
  */
 export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== BEODEUL_CITY_ID || tileset.image.type !== "bundled" || tileset.image.id !== BEODEUL_CITY_TEXTURE) return false;
+  // 옛 사본은 계열이 "easyrpg" 로 들어 있다 — 생성 칩셋 계열로 고친다.
+  const familyFixed = tileset.family !== BEODEUL_CITY_FAMILY;
+  if (familyFixed) tileset.family = BEODEUL_CITY_FAMILY;
   if (tileset.count === data.count && tileset.autotileGroups?.some(group => group.id === "beodeul_road_autotile")) {
     // same sheet: only add shipped kits the copy does not have yet (round 3 block kits bd-block-*); authored and existing kits stay
     const have = new Set((tileset.structureKits ?? []).map(kit => kit.id));
     const missing = (data.structureKits as unknown as StructureKitDef[]).filter(kit => !have.has(kit.id));
-    if (!missing.length) return false;
+    if (!missing.length) return familyFixed;
     tileset.structureKits = [...(tileset.structureKits ?? []), ...structuredClone(missing)];
     return true;
   }
