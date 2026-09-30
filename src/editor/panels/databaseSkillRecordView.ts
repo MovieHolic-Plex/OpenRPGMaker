@@ -203,7 +203,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   });
 
   stack.append(skillCombatRuleCard(currentSkill(record), {
-    collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1"),
+    collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1" || Boolean(record.hpCostPercent || record.drainPercent || record.area || record.comboActorIds?.length)),
   }));
   stack.append(skillInputSequenceFields(currentSkill(record)));
   stack.append(usedByCard(form, currentSkill(record)));
