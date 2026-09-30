@@ -1,0 +1,34 @@
+== invalidations (count total) ==
+    40 StyleInvalidator | Invalidation set invalidates self |  | sel= | cls= | node=BUTTON class='left-layer-btn is-active'
+    40 StyleRecalc | Related style rule |  | sel= | cls= | node=BUTTON class='left-layer-btn is-active'
+    40 StyleInvalidator | Invalidation set invalidates self |  | sel= | cls= | node=BUTTON class='left-layer-btn'
+    40 StyleRecalc | Related style rule |  | sel= | cls= | node=BUTTON class='left-layer-btn'
+     8 ScheduleStyle |  |  | sel= | cls=data-layer | node=SPAN class='sidebar-brush-state'
+     8 StyleInvalidator | Invalidation set invalidates self |  | sel= | cls= | node=SPAN class='sidebar-brush-state'
+     8 StyleRecalc | Related style rule |  | sel= | cls= | node=SPAN class='sidebar-brush-state'
+     8 ScheduleStyle |  |  | sel= | cls=class | node=BUTTON class='left-layer-btn is-active'
+     8 ScheduleStyle |  |  | sel= | cls=is-active | node=BUTTON class='left-layer-btn'
+     8 ScheduleStyle |  |  | sel= | cls=aria-current | node=BUTTON class='left-layer-btn'
+     8 ScheduleStyle |  |  | sel= | cls=tabindex | node=BUTTON class='left-layer-btn'
+     8 ScheduleStyle |  |  | sel= | cls=class | node=BUTTON class='left-layer-btn'
+     8 ScheduleStyle |  |  | sel= | cls=is-active | node=BUTTON class='left-layer-btn is-active'
+     8 ScheduleStyle |  |  | sel= | cls=aria-current | node=BUTTON class='left-layer-btn is-active'
+     8 ScheduleStyle |  |  | sel= | cls=tabindex | node=BUTTON class='left-layer-btn is-active'
+     8 StyleRecalc | Attribute | hidden | sel= | cls= | node=SECTION class='map-sidebar-section'
+     8 StyleRecalc | Attribute | hidden | sel= | cls= | node=SECTION class='left-favorites-pane'
+     8 StyleRecalc | Attribute | hidden | sel= | cls= | node=SECTION class='left-progress-pane'
+     8 StyleRecalc | Attribute | hidden | sel= | cls= | node=SECTION class='left-links-pane'
+     8 StyleInvalidator | Element has pending invalidation list |  | sel= | cls= | node=BUTTON class='left-layer-btn'
+     8 StyleInvalidator | Element has pending invalidation list |  | sel= | cls= | node=BUTTON class='left-layer-btn is-active'
+== main-thread self time by bucket ==
+   281.7ms/op task-other
+   112.0ms/op js
+    53.1ms/op paint/raster
+     0.5ms/op gc
+     0.4ms/op style
+     0.2ms/op other:IntersectionObserverController::computeIntersections
+     0.0ms/op other:Parallel scavenge started
+     0.0ms/op other:ComputeWeaknessProcessor start
+     0.0ms/op other:ClearWeaknessProcessor start
+long tasks(>20ms): 40,25,35,25,111,27,90,78,30,110,94,27,91,25,68,95,24,29,21,29,427,24,30
+UpdateLayoutTree>3ms: 

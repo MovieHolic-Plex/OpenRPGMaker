@@ -1,0 +1,21 @@
+import { chromium } from "playwright";
+const b = await chromium.launch({ headless: true, args: ["--disable-dev-shm-usage"] });
+const page = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => { localStorage.setItem("oprn:standard-welcome-seen", "1"); localStorage.setItem("oprn:ai-panel-collapsed", "1"); });
+await page.goto((process.env.QA_BASE_URL ?? "http://127.0.0.1:9850") + "/?freshProject=1", { waitUntil: "domcontentloaded" });
+await page.getByTestId("edit-canvas").waitFor({ timeout: 90000 });
+await page.waitForTimeout(3000);
+console.log(await page.evaluate(() => {
+  const t = (fn) => { const r = []; for (let i = 0; i < 5; i++) { document.body.offsetHeight; fn(i); const t0 = performance.now(); document.body.offsetHeight; r.push(performance.now() - t0); } return Math.min(...r).toFixed(1); };
+  const ctx = document.querySelector(".ai-deck-rail-ctx");
+  const res = {};
+  res.textContent = t((i) => { ctx.textContent = "a" + i; });
+  ctx.textContent = "seed";
+  res.dataInPlace = t((i) => { ctx.firstChild.data = "b" + i; });
+  res.appendChildText = t((i) => { const n = document.createTextNode("c" + i); ctx.appendChild(n); n.remove(); });
+  const div = document.createElement("div"); document.querySelector(".editor-layout")?.append(div);
+  res.divAppendRemove = t(() => { const s = document.createElement("span"); div.append(s); s.remove(); });
+  res.divText = t((i) => { div.textContent = "q" + i; });
+  return JSON.stringify(res);
+}));
+await b.close();
