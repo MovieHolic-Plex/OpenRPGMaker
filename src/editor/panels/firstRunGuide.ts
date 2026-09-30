@@ -3,6 +3,7 @@ import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { focusProjectStartMap } from "@/editor/mapSelection";
 import { SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { AUTHORING_TEST_BOOT_SUCCESS_EVENT, authoringProjectFingerprint } from "@/editor/authoringJourney";
 import type { Command, GameMap } from "@/project/types";
 import "@/styles/shell/first-run-guide.css";
@@ -82,10 +83,14 @@ export function mountFirstRunGuide(dock: HTMLElement, layout: HTMLElement): () =
       if (addingMap) return;
       addingMap = true;
       const scope = projectScope;
-      void import("@/project/defaults/defaultMaps").then(({ createStarterMap, singleNodeTree }) => {
+      void Promise.all([import("@/project/defaults/defaultMaps"), import("@/editor/content/beodeulStarterMap")]).then(([{ createStarterMap, singleNodeTree }, { createBeodeulStarterMap }]) => {
         if (JSON.stringify(store.getProjectIdentity()) !== scope || !store.getCurrent().flags.firstRunGuide) return;
-        const added = createStarterMap();
-        store.update(p => { p.maps[added.id] = added; p.mapTree.children.push(singleNodeTree(added.id)); p.startMapId = added.id; p.startPos = { x: 15, y: 16 }; }, { scope: "project", label: "첫 마을 예제 추가", origin: "human" });
+        // 시작 맵이 버들항인 프로젝트(새 프로젝트 기본)는 버들항 마을. 옛 칩셋으로 시작한 프로젝트는 계열을 섞지 않게 합본 마을 예제.
+        const current = store.getCurrent();
+        const onBeodeul = current.maps[current.startMapId]?.tilesetId === DEFAULT_TILESET_ID;
+        const starter = (onBeodeul ? createBeodeulStarterMap(current) : undefined) ?? { map: createStarterMap(), startPos: { x: 15, y: 16 } };
+        const added = starter.map;
+        store.update(p => { p.maps[added.id] = added; p.mapTree.children.push(singleNodeTree(added.id)); p.startMapId = added.id; p.startPos = { ...starter.startPos }; }, { scope: "project", label: "첫 마을 예제 추가", origin: "human" });
         focusProjectStartMap();
       }).finally(() => { addingMap = false; });
     }, true)));

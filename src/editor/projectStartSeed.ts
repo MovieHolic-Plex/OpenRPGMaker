@@ -12,12 +12,15 @@ export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null
   if (startMode === "example") {
     if (!choiceId || !START_EXAMPLE_DETAILS[choiceId]) throw new Error("이 장르에는 시작 예제가 없습니다.");
     const { createStarterMap, singleNodeTree } = await import("@/project/defaults/defaultMaps");
-    const map = createStarterMap();
+    const { createBeodeulStarterMap } = await import("@/editor/content/beodeulStarterMap");
+    // 새 프로젝트 기본(버들항) 마을. 버들항이 없는 옛 번들이면 합본 마을 예제로 물러난다.
+    const starter = createBeodeulStarterMap(project, choice?.label) ?? { map: createStarterMap(), startPos: { x: 15, y: 16 } };
+    const map = starter.map;
     map.name = choice?.label ?? map.name;
     project.maps = { [map.id]: map };
     project.mapTree = singleNodeTree(map.id);
     project.startMapId = map.id;
-    project.startPos = { x: 15, y: 16 };
+    project.startPos = { ...starter.startPos };
     const { withVerifiedPlayableSegment } = await import("@/project/playableSegment");
     const playable = withVerifiedPlayableSegment(project);
     if (!playable) throw new Error("시작 예제를 준비하지 못했습니다. 다시 시도해 주세요.");

@@ -17,6 +17,8 @@
 - 조수(2026-10-01 변경): `defaultOutdoorTilesetId`(`forestHarmony.ts`)는 **프로젝트에 버들항이 있고 모든 맵이 버들항이면(= 새 프로젝트) 버들항**, 그 밖(합본 마을·숲마을 맵이 섞인 기존 프로젝트)은 예전처럼 `forest_harmony` 가 있으면 그것이다. 보는 맵의 계열은 `toolRunner.ts` 60~100행의 계열 규칙이 지킨다. 「마을 만들어 줘」는 버들항 프로젝트에서 `author_beodeul_town` 으로 간다 — 아래 「조수 마을 경로」.
 - 계열(2026-10-01): 버들항의 `family` 는 **`"oprn-atlas"`(생성 칩셋)** 이다. 시트 JSON 은 `"easyrpg"` 라 숲마을과 같은 계열로 묶였고, 계열 검사(`toolRunner.rejectTilesetFamilyChange`)가 버들항 맵에서 숲마을 새 맵으로 가는 것을 막지 못했다. `createBeodeulCityTileset` 이 덮어쓰고 `ensureBeodeulCityTileset` 이 옛 사본을 고친다.
 - `create_map`(2026-10-01): 버들항이면 잔디 737 로 채운다(`plainGrassTileFor`, `defaultMaps.ts`). 예전엔 `isCombinedTownCompatibleTileset` 이 거짓이라 빈칸(-1)이었다.
+- 시작 마을(2026-10-01): 「예제로 시작」(`projectStartSeed.ts`)과 첫 실행 안내 「작은 마을 추가하기」(`firstRunGuide.ts`)는 `createBeodeulStarterMap`(`src/editor/content/beodeulStarterMap.ts`) — `author_beodeul_town` 40×30 seed 7(주택가·시장 둘·저택) 뒤 오른쪽 남는 띠를 비우고 첫 띠 아래 길(2줄)을 동쪽 끝까지 잇는다. 첫 구간 뼈대가 (가로-1, 시작 y)에 다음 맵 문을 달기 때문이다. 시작 칸 (3, 13). 첫 실행 안내는 시작 맵이 버들항일 때만 쓰고, 옛 칩셋으로 시작한 프로젝트는 합본 마을 `createStarterMap` 그대로(계열을 섞지 않게). `createStarterMap` 자체와 샘플 모험(`createDefaultProject`)은 합본 마을 칸 번호로 꾸민 것이라 그대로다.
+- 몬스터 수집 도로(2026-10-01): `author_wild_route` 가 버들항 맵도 깐다(`wildRouteBeodeul.ts`) — 합본 마을 경로와 같은 길 계획(`planRouteCorridor`)을 포석·짙은 잎 풀(11628)·버들항 나무 키트로. **버들항엔 키큰 풀이 없어 풀숲은 짙은 잎 풀 대용이다** — 손 도트 키큰 풀을 시트에 더하는 일은 남았다. 이것이 없던 동안(#1789~) 새 프로젝트의 몬스터 수집 첫 구간 뼈대(AI 인터뷰 시작·예제로 시작)는 이 도구에서 멈췄다.
 - 계열 규칙(`isCombinedTownCompatibleTileset`)은 합본 마을 계열 기준 그대로다.
 
 ### 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)

@@ -320,7 +320,7 @@ const authorWildRoute: ToolDefinition = {
     } else if (beodeul) {
       // 버들항: 같은 길 계획을 포석·짙은 잎 풀·버들항 나무 키트로 칠한다(wildRouteBeodeul.ts).
       ({ path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings));
-      const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, reserved: routeReserve(map, road, grass, exits), rng });
+      const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, rng });
       roadCellCount = laid.roadCells;
       treeCells = laid.treeCells;
       fillNote = ", 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)";
