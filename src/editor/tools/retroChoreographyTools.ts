@@ -12,6 +12,7 @@ import {
 } from "@/assets/retroSkillCatalog";
 import { RETRO_SKILL_DESIGN_GUIDE } from "@/assets/retroSkillMechanics";
 import { retroMonsterSkill } from "@/assets/retroMonsterSkills";
+import { choreographyCloneBase, freshChoreographyId } from "@/assets/retroChoreographyClone";
 import {
   SKILL_CHOREOGRAPHY_ANCHORS, SKILL_CHOREOGRAPHY_ID_PREFIX, SKILL_CHOREOGRAPHY_LAYER_LIMIT, SKILL_CHOREOGRAPHY_LIMIT,
   SKILL_CHOREOGRAPHY_MOTIONS, SKILL_CHOREOGRAPHY_RANGES, SKILL_CHOREOGRAPHY_WEIGHTS, normalizeSkillChoreographyRecord,
@@ -175,18 +176,6 @@ function defaultChoreographyExists(id: string): boolean {
   return Boolean(retroClassSkill(id) || retroMonsterSkill(id));
 }
 
-function slugify(value: string): string {
-  return value.toLowerCase().replace(/^skill_/, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 40);
-}
-
-/** 이름·원본에서 chor_<slug> 를 만들고 겹치면 _2, _3… 을 붙인다. 한글 이름처럼 slug 가 비면 chor_custom. */
-function freshId(records: readonly SkillChoreographyRecord[], hint: string): string {
-  const base = `${SKILL_CHOREOGRAPHY_ID_PREFIX}${slugify(hint) || "custom"}`;
-  let id = base;
-  for (let n = 2; records.some((record) => record.id === id); n += 1) id = `${base}_${n}`;
-  return id;
-}
-
 function requireChorId(label: string, raw: string): void {
   if (!raw.startsWith(SKILL_CHOREOGRAPHY_ID_PREFIX) || raw.length === SKILL_CHOREOGRAPHY_ID_PREFIX.length || !/^[A-Za-z0-9_\-]+$/.test(raw)) {
     fail(`${label} '${raw}' 은(는) chor_ 로 시작하는 영문·숫자·밑줄 id 여야 합니다. 예: chor_leap_thunder`, "invalid-choreography-id");
@@ -274,7 +263,7 @@ const upsertChoreography: ToolDefinition = {
     const tags = isObject(args.tags) ? { ...existing?.tags, ...(text(args.tags.family) ? { family: text(args.tags.family) } : {}), ...(text(args.tags.element) ? { element: text(args.tags.element) } : {}) } : existing?.tags;
     const draftRecord = {
       ...existing,
-      id: existing?.id ?? freshId(records, name),
+      id: existing?.id ?? freshChoreographyId(records, name),
       name, motion, layers,
       ...(text(args.description) ? { description: text(args.description) } : {}),
       ...(speed !== undefined ? { speed } : {}),
@@ -315,46 +304,19 @@ const duplicateChoreography: ToolDefinition = {
     const sourceId = text(args.sourceId);
     if (!sourceId) fail("sourceId(복제할 연출 id)가 필요합니다. list_retro_choreographies 로 찾으세요.", "invalid-choreography");
     if (records.length >= SKILL_CHOREOGRAPHY_LIMIT) fail(`연출 레코드는 최대 ${SKILL_CHOREOGRAPHY_LIMIT}개입니다.`, "choreography-limit");
-    const project = records.find((record) => record.id === sourceId);
-    const classSkill = project ? undefined : retroClassSkill(sourceId);
-    const monsterSkill = project || classSkill ? undefined : retroMonsterSkill(sourceId);
-    const entry = retroChoreographyEntries().find((row) => row.id === sourceId);
-    let base: Omit<SkillChoreographyRecord, "id" | "name">;
-    let sourceName: string;
-    if (project) {
-      const { id: _id, name: _name, ...rest } = structuredClone(project);
-      // 원본이 이미 기본 연출을 복제한 것이면 그 계보(직업/몬스터 편)를 지키고, 아니면 이 프로젝트 원본을 가리킨다.
-      base = { ...rest, sourceId: project.sourceId ?? project.id };
-      sourceName = project.name;
-    } else if (classSkill || monsterSkill) {
-      const skill = (classSkill ?? monsterSkill)!;
-      base = {
-        motion: skill.motion,
-        ...(skill.description ? { description: skill.description } : {}),
-        layers: skill.layers.map((layer): SkillChoreographyLayer => ({
-          sheet: layer.key, anchor: layer.anchor,
-          ...(layer.startMs !== undefined ? { startMs: layer.startMs } : {}),
-          ...(layer.scale !== undefined ? { scale: layer.scale } : {}),
-          ...(layer.repeat !== undefined ? { repeat: layer.repeat } : {}),
-          ...(layer.onHit !== undefined ? { onHit: layer.onHit } : {}),
-          ...(layer.tint !== undefined ? { tint: layer.tint } : {}),
-          ...(layer.se !== undefined ? { se: layer.se } : {}),
-        })),
-        ...(entry?.element ? { tags: { family: entry.family, element: entry.element } } : entry ? { tags: { family: entry.family } } : {}),
-        sourceId,
-      };
-      sourceName = skill.name;
-    } else {
+    const source = choreographyCloneBase(records, sourceId);
+    if (!source) {
       const near = nearbyRetroChoreographies(sourceId, 5, records).map((row) => `${row.id}(${row.name}, ${row.motion})`);
       fail(`복제 원본 '${sourceId}' 을(를) 찾을 수 없습니다${near.length ? ` — 비슷한 후보: ${near.join(", ")}` : ""}. list_retro_choreographies 로 정확한 id 를 고르세요.`, "retro-choreography-not-found");
     }
+    const { base, sourceName, fromProject } = source;
     const rawId = text(args.id);
     if (rawId) {
       requireChorId("id", rawId);
       if (records.some((record) => record.id === rawId)) fail(`id '${rawId}' 는 이미 있습니다. 고치려면 upsert_choreography 를 쓰세요.`, "choreography-exists");
     }
     const name = text(args.name) ?? `${sourceName} 사본`;
-    const record = normalizeSkillChoreographyRecord({ ...base, id: rawId ?? freshId(records, project ? name : sourceId), name });
+    const record = normalizeSkillChoreographyRecord({ ...base, id: rawId ?? freshChoreographyId(records, project ? name : sourceId), name });
     if (!record) fail("복제한 연출이 유효하지 않습니다(층의 시트가 사라졌을 수 있음).", "invalid-choreography");
     records.push(record);
     return {
