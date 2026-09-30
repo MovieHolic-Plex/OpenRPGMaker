@@ -194,14 +194,17 @@ async function recordGroup(groupIndex, group, defaults, contract) {
     await page.addInitScript(() => {
       window.__OPENRPG_BOOT__ = { projectUrl: '/__skills-qa/project.json', saveNamespace: 'retro-skills-qa', qaInstrumentation: true };
       window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0;
-      window.__skillPopups = []; window.__skillLines = [];
+      window.__skillPopups = []; window.__skillLines = []; window.__hitStops = []; window.__hitStopOn = false;
       const seen = new WeakSet();
       const observe = () => {
         // 전투 기록 증거: 숫자 팝업(대가·흡수·다단 타수)과 메시지 창 문장(상태 부여 등).
         for (const node of document.querySelectorAll('.battle-damage-popup')) {
           if (seen.has(node)) continue; seen.add(node);
-          window.__skillPopups.push({ target: node.dataset.targetId, text: node.textContent, heal: node.classList.contains('battle-damage-popup-heal') });
+          window.__skillPopups.push({ at: Math.round(performance.now()), target: node.dataset.targetId, text: node.textContent, heal: node.classList.contains('battle-damage-popup-heal') });
         }
+        // 히트스톱(battle-hit-stop 클래스) 켜짐·꺼짐 시각 — 무게 손잡이의 정지 시간을 잰다.
+        const stopNow = Boolean(document.querySelector('.battle-hit-stop'));
+        if (stopNow !== window.__hitStopOn) { window.__hitStopOn = stopNow; window.__hitStops.push({ at: Math.round(performance.now()), on: stopNow }); }
         const line = document.querySelector('[data-testid="battle-message-window"]')?.textContent?.trim();
         if (line && window.__skillLines.at(-1) !== line) window.__skillLines.push(line);
         // 몬스터 9칸 시트 파티원: 스프라이트가 그린 칸(data-pixel-cell)의 변화를 순서대로 남긴다.
@@ -212,14 +215,14 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         const users = document.querySelectorAll('.battle-actor[data-retro-class-skill], .battle-actor[data-retro-skill]');
         for (const user of users) {
           const pose = user.dataset.retroFrame;
-          if (pose && window.__skillPoses.at(-1)?.pose !== pose) window.__skillPoses.push({ actor: user.dataset.recordId, pose, flip: user.classList.contains('retro-skill-flip') });
+          if (pose && window.__skillPoses.at(-1)?.pose !== pose) window.__skillPoses.push({ at: Math.round(performance.now()), actor: user.dataset.recordId, pose, flip: user.classList.contains('retro-skill-flip') });
         }
         if (users.length && document.querySelector('.battle-animation-layer')?.childElementCount) window.__legacySkillLayers++;
         for (const node of document.querySelectorAll('.retro-skill-fx')) {
           if (seen.has(node)) continue; seen.add(node);
           const frames = [], positions = [];
           const row = { at: Math.round(performance.now()), fx: node.dataset.retroSkillFx, anchor: node.dataset.retroFxAnchor, size: node.dataset.fxSize, box: node.dataset.fxBox, frames, positions,
-            width: getComputedStyle(node).width, rendering: getComputedStyle(node).imageRendering };
+            filter: getComputedStyle(node).filter, width: getComputedStyle(node).width, rendering: getComputedStyle(node).imageRendering };
           window.__skillEvidence.push(row);
           const capture = () => { const n = Number(node.dataset.fxFrame); if (frames.at(-1) !== n) { frames.push(n); positions.push(node.style.backgroundPosition); } };
           capture(); new MutationObserver(capture).observe(node, { attributes: true, attributeFilter: ['data-fx-frame'] });
@@ -277,7 +280,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         await choose('actor-command-skill');
         await page.waitForSelector(selector('actor-skill-' + skill));
       }
-      await page.evaluate(() => { window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0; window.__skillPopups = []; window.__skillLines = []; const f = document.querySelector('.battle-field'); if (f) delete f.dataset.retroClassSkillSounds; });
+      await page.evaluate(() => { window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0; window.__skillPopups = []; window.__skillLines = []; window.__hitStops = []; const f = document.querySelector('.battle-field'); if (f) delete f.dataset.retroClassSkillSounds; });
       const from = elapsed();
       // 표식 색을 스킬마다 마젠타·청록으로 번갈아 켠다 — 이어지는 두 스킬 사이의 꺼짐이 짧아도 경계가 남는다.
       await page.evaluate((odd) => { document.getElementById('skill-video-marker').style.background = odd ? 'rgb(0, 255, 255)' : 'rgb(255, 0, 255)'; }, segments.length % 2 === 1);
@@ -302,7 +305,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       const detail = await page.evaluate(() => {
         document.getElementById('skill-video-marker').style.background = '#000';
         return { effects: window.__skillEvidence, poses: window.__skillPoses, cells: window.__partyCells ?? [], legacyLayers: window.__legacySkillLayers,
-          popups: window.__skillPopups ?? [], lines: window.__skillLines ?? [],
+          popups: window.__skillPopups ?? [], hitStops: window.__hitStops ?? [], lines: window.__skillLines ?? [],
           statuses: [...document.querySelectorAll('[data-testid^="battle-status-"]')].map((n) => n.dataset.testid.replace(/^battle-status-/, '') + ':' + (n.dataset.statusName ?? '')),
           sounds: Number(document.querySelector('.battle-field')?.dataset.retroClassSkillSounds ?? 0),
           remainingFx: document.querySelectorAll('.retro-skill-fx, .retro-class-veil, .retro-class-cutin').length };
