@@ -4,20 +4,31 @@ import { addParentChildTransfers, bestTestStartCell, firstFreeCell } from "@/edi
 import { INTERIOR_FLOOR_TILE, resolveMapCreateDefaults } from "@/project/mapCreateSpec";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
 import { createBlankProject } from "@/project/defaults";
-import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { tilesetFamily } from "@/project/tilesetFamily";
+import { runTool } from "@/editor/tools/toolRunner";
 import { FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 
 describe("resolveMapCreateDefaults", () => {
-  it("starts a new project and a new blank map on forest harmony", () => {
+  it("starts a new project and a new blank map on the generated default (beodeul_city)", () => {
     const project = createBlankProject();
-    expect(project.maps[project.startMapId]?.tilesetId).toBe(FOREST_HARMONY_ID);
-    expect(project.tilesets[FOREST_HARMONY_ID]?.name).toBe("숲마을 · 거리별 잔디");
+    expect(project.maps[project.startMapId]?.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(tilesetFamily(project, DEFAULT_TILESET_ID)).toBe("oprn-atlas");
+    expect(tilesetFamily(project, DEFAULT_TILESET_ID)).not.toBe(tilesetFamily(project, FOREST_HARMONY_ID));
     const spec = resolveMapCreateDefaults(project, { parentId: project.startMapId });
     expect(spec.preset).toBe("blank");
-    expect(spec.tilesetId).toBe(FOREST_HARMONY_ID);
+    expect(spec.tilesetId).toBe(DEFAULT_TILESET_ID);
     expect(spec.parentId).toBe(project.startMapId);
+  });
+
+  it("create_map fills beodeul_city with its plain grass, not the combined-town number", () => {
+    const ctx = { project: createBlankProject() };
+    expect(runTool(ctx, "create_map", { id: "fresh", name: "새 들판", width: 6, height: 5 }).ok).toBe(true);
+    const map = ctx.project.maps.fresh!;
+    expect(map.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(map.lowerTiles.every((tile) => tile === 737)).toBe(true);
   });
 
   it("inherits parent size and tileset", () => {

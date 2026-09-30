@@ -97,8 +97,13 @@ const STARTER_VILLAGE_ROADS = [
  */
 const BEODEUL_PLAIN_GRASS_TILE = 737;
 
+/** 합본 마을 번호(`TILE.GRASS`)를 쓰면 안 되는 칩셋의 민무늬 풀 칸. 그 밖의 칩셋은 undefined. */
+export function plainGrassTileFor(tilesetId: string): number | undefined {
+  return tilesetId === DEFAULT_TILESET_ID ? BEODEUL_PLAIN_GRASS_TILE : undefined;
+}
+
 function blankFillTileFor(tilesetId: string): number {
-  return tilesetId === "beodeul_city" ? BEODEUL_PLAIN_GRASS_TILE : TILE.GRASS;
+  return plainGrassTileFor(tilesetId) ?? TILE.GRASS;
 }
 
 export function createBlankMap(

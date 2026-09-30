@@ -15,6 +15,8 @@
 - 합본 마을은 번들에 그대로 남는다. 합본 마을 칸 번호에 의존하는 코드·테스트(`createStarterMap`, `createLogCabinShowcaseMap`, `createFarmingDemoProject`, `scripts/natural-village/build.ts`, 테스트 약 540곳)는 `COMBINED_TOWN_TILESET_ID/NAME/TEXTURE_KEY`(같은 파일)와 `combinedTownTileset()` 를 명시한다. "기본"을 뜻하는 곳만 `DEFAULT_TILESET_*`.
 - 기존 프로젝트는 이관하지 않는다. 합본 마을 맵은 그대로 합본 마을 팔레트로 그려진다(`verify-shots/beodeul-default/bd-existing-combined-town.png`).
 - 조수(2026-10-01 변경): `defaultOutdoorTilesetId`(`forestHarmony.ts`)는 **프로젝트에 버들항이 있고 모든 맵이 버들항이면(= 새 프로젝트) 버들항**, 그 밖(합본 마을·숲마을 맵이 섞인 기존 프로젝트)은 예전처럼 `forest_harmony` 가 있으면 그것이다. 보는 맵의 계열은 `toolRunner.ts` 60~100행의 계열 규칙이 지킨다. 「마을 만들어 줘」는 버들항 프로젝트에서 `author_beodeul_town` 으로 간다 — 아래 「조수 마을 경로」.
+- 계열(2026-10-01): 버들항의 `family` 는 **`"oprn-atlas"`(생성 칩셋)** 이다. 시트 JSON 은 `"easyrpg"` 라 숲마을과 같은 계열로 묶였고, 계열 검사(`toolRunner.rejectTilesetFamilyChange`)가 버들항 맵에서 숲마을 새 맵으로 가는 것을 막지 못했다. `createBeodeulCityTileset` 이 덮어쓰고 `ensureBeodeulCityTileset` 이 옛 사본을 고친다.
+- `create_map`(2026-10-01): 버들항이면 잔디 737 로 채운다(`plainGrassTileFor`, `defaultMaps.ts`). 예전엔 `isCombinedTownCompatibleTileset` 이 거짓이라 빈칸(-1)이었다.
 - 계열 규칙(`isCombinedTownCompatibleTileset`)은 합본 마을 계열 기준 그대로다.
 
 ### 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)

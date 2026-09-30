@@ -16,7 +16,7 @@
 // 입력 그리드와 픽스처가 어긋나지 않도록 파생으로 정합시킨다(stale-state 방어).
 // 마스크(d6a) 형상은 계획 todo 8(expectedAutotileGrid)과 정합: L = 행0..4 열0 + 행4 열0..3.
 import { DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
-import { combinedTownTileset as combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { renderTempMapImage, renderTilesetAtlasImage } from "@/editor/panels/tilesetAiTempMapImage";
 import type { GameMap } from "@/project/types";
 import { FLOOR_TILES } from "./groundTruth";
