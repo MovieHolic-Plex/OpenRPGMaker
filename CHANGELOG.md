@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.43.3 — 2026-10-01
+
+### 수정
+
+- **battle** — resolve 14 adversarial review findings (`568a461`)
+
 ## 0.43.2 — 2026-10-01
 
 ### 수정
