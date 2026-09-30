@@ -3,7 +3,9 @@ import { actionSkillClearProperties, authoredSkillProperties, combatConditionSch
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
 import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
-import { nearbyRetroChoreographies, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
+import { nearbyRetroChoreographies, resolveSkillChoreography, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
+import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
+import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
 // editor/tools/dbTools.ts
 // DB 쓰기 툴: upsert_item / upsert_enemy / upsert_troop / upsert_actor / upsert_skill
 //            / upsert_equipment / upsert_class / define_promotion / upsert_state / upsert_common_event
@@ -1612,9 +1614,17 @@ const upsertSkill: ToolDefinition = {
     const warnings: string[] = [];
     dropUnknownAnimationId(draft, record, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
-    return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
+    const auto = autoChoreographyNote(draft, record);
+    return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
+
+/** 계약·연출 레코드·고정 레시피가 없는 스킬은 기전·속성·범위로 자동 배정된 연출을 쓴다. 그 결과를 알려 준다(바꾸려면 retroChoreographyId). */
+function autoChoreographyNote(draft: Project, record: SkillRecord): string | undefined {
+  if (record.retroChoreographyId || resolveSkillChoreography(record, draft.database.skillChoreographies) || RETRO_SKILL_RECIPES[record.id]) return undefined;
+  const auto = recommendRetroChoreography(record);
+  return auto ? `연출 자동 배정: ${auto.label} — 바꾸려면 retroChoreographyId` : undefined;
+}
 
 const upsertEquipment: ToolDefinition = {
   name: "upsert_equipment",

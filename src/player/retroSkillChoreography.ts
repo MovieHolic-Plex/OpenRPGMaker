@@ -10,6 +10,7 @@ import {
   retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroPartyPixelCellForPose, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
   type RetroSkillTimeline, type RetroStagePlace, type RetroTimelineEvent, type RetroTimelineSide,
 } from "@/battle/retroSkillTimeline";
+import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
 import { applyChoreographyHandles } from "@/battle/retroChoreographyHandles";
 import { store } from "@/project/store";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
@@ -89,12 +90,14 @@ const WORDS: readonly [RegExp, string][] = [
 ];
 
 /** Known id wins; custom records use element → words → effect, never animation filename. */
-export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "elementId" | "effect" | "retroChoreographyId"> | undefined): RetroSkillRecipe | undefined {
+export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "elementId" | "effect" | "retroChoreographyId"> & Partial<SkillRecord> | undefined): RetroSkillRecipe | undefined {
   if (!skill) return undefined;
   // 계약 직업 스킬은 자기 타임라인으로 재생한다(아래 driveRetroClassSkill). 속성·낱말 추정으로 옛 레시피를 붙이지 않는다.
   if (resolveSkillChoreography(skill, choreographyRecords())) return undefined;
   const exact = RETRO_SKILL_RECIPES[skill.id];
   if (exact) return exact;
+  // 계약도 레시피도 없는 스킬은 기전·속성·범위로 고른 직업 연출(자동 추천)이 재생한다 — 옛 속성/낱말 추정은 그 기전이 없는 종류만.
+  if (recommendRetroChoreography(skill as Parameters<typeof recommendRetroChoreography>[0])) return undefined;
   const inferred = ELEMENTS[skill.elementId ?? ""] ?? WORDS.find(([word]) => word.test(skill.name))?.[1];
   if (inferred) return RETRO_SKILL_RECIPES[`skill_${inferred}`];
   return skill.effect.kind === "healing" ? RETRO_SKILL_RECIPES.skill_heal
@@ -280,8 +283,10 @@ function choreographyRecords() {
 }
 
 /** 이 레코드가 계약 직업 스킬이면 그 계약(또는 프로젝트 연출 레코드로 합성한 같은 모양). */
-export function retroClassSkillRecord(skill: Pick<SkillRecord, "id" | "retroChoreographyId"> | undefined): RetroClassSkill | undefined {
-  return resolveRetroClassChoreography(skill, choreographyRecords());
+export function retroClassSkillRecord(skill: Pick<SkillRecord, "id" | "retroChoreographyId"> & Partial<SkillRecord> | undefined): RetroClassSkill | undefined {
+  const resolved = resolveRetroClassChoreography(skill, choreographyRecords());
+  if (resolved || !skill || RETRO_SKILL_RECIPES[skill.id] || !skill.effect || !skill.name || !skill.scope) return resolved;
+  return recommendRetroChoreography(skill as Parameters<typeof recommendRetroChoreography>[0])?.skill;
 }
 
 interface SkillOwner {

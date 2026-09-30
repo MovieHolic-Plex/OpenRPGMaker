@@ -3,6 +3,8 @@
 // 스킬 id 자체가 계약이면 그 연출이 우선이라 고르기는 안내만 보인다(빌린 값은 지우거나 바꿔도 무시된다).
 import { retroChoreographyGallery, RETRO_CHOREOGRAPHY_MOTION_LABELS } from "@/editor/panels/databaseRetroGallery";
 import { resolveSkillChoreography, retroClassSkill } from "@/assets/retroSkillCatalog";
+import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
+import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
 import { retroMonsterSkill } from "@/assets/retroMonsterSkills";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { store } from "@/project/store";
@@ -16,6 +18,7 @@ export function retroChoreographyPicker(record: SkillRecord, onPicked: () => voi
   const own = retroClassSkill(record.id) ?? retroMonsterSkill(record.id);
   const borrowed = record.retroChoreographyId;
   const current = resolveSkillChoreography(record, store.getCurrent().database.skillChoreographies)?.skill;
+  const auto = !own && !current && !borrowed && !RETRO_SKILL_RECIPES[record.id] ? recommendRetroChoreography(record) : undefined;
   const root = el("div", { class: "db-skill-retro-picker", dataset: { testid: "db-skill-retro-picker" } });
 
   const status = el("div", { class: "db-skill-retro-picker-status", dataset: { testid: "db-skill-retro-picker-status" } });
@@ -25,7 +28,11 @@ export function retroChoreographyPicker(record: SkillRecord, onPicked: () => voi
       ? `빌려 온 연출: ${current.name} (${current.id})`
       : borrowed
         ? `연출 계약 ${borrowed} 을(를) 찾지 못했습니다 - 다시 고르세요.`
-        : "고르지 않으면 기본 베기·탄 연출로 재생됩니다.";
+        : auto
+          ? `자동: ${auto.label}`
+          : "고르지 않으면 기본 베기·탄 연출로 재생됩니다.";
+  if (auto) status.title = `${auto.reason} — 바꾸려면 아래에서 연출을 고르세요.`;
+  if (auto) status.dataset.autoChoreography = auto.baseId;
   root.append(el("div", { class: "db-skill-retro-picker-title", text: "도트 연출" }), status);
   if (own) return root;
 

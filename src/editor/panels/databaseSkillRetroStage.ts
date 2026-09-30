@@ -36,6 +36,7 @@ import {
   type RetroStageState,
   type RetroTimelineSide,
 } from "@/battle/retroSkillTimeline";
+import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
 import { RETRO_SKILL_RECIPES, retroSkillRecipe, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { loadBattleSample, playBattleSample } from "@/player/battleSeSamples";
 import {
@@ -172,7 +173,8 @@ function fxUrl(key: string): string {
 function stageSource(record: SkillRecord, project: Project): StageSource | undefined {
   const side: RetroTimelineSide | undefined = retroSideForScope(record.scope);
   const resolved = resolveSkillChoreography(record, project.database.skillChoreographies);
-  const contract = resolved && resolved.kind === "class" ? (resolved.skill as RetroClassSkill) : undefined;
+  const auto = !resolved && !RETRO_SKILL_RECIPES[record.id] ? recommendRetroChoreography(record) : undefined;
+  const contract = resolved && resolved.kind === "class" ? (resolved.skill as RetroClassSkill) : auto?.skill;
   if (contract) {
     // 계약 연출은 계약의 편을 쓴다(레코드 scope 가 계약과 어긋나도 그림은 계약대로 — 어긋남은 스킬 설정의 문제다).
     // 프로젝트 연출 레코드의 손잡이(speed·tint·screen)는 런타임과 같은 함수로 얹는다 — 손잡이가 없으면 같은 객체.
@@ -920,7 +922,8 @@ export function retroStageSignature(record: SkillRecord, records?: RetroChoreogr
   // 프로젝트 연출 레코드는 층·동작이 편집으로 바뀌므로 레코드 내용 전체가 서명에 든다.
   const body = resolved?.record ? JSON.stringify(resolved.record) : "";
   if (resolved?.kind === "monster") return ["mon", record.id, record.retroChoreographyId ?? "", record.name, body].join("|");
-  const recipe = resolved ? resolved.id : retroSkillRecipe(record);
+  const auto = !resolved && !RETRO_SKILL_RECIPES[record.id] ? recommendRetroChoreography(record) : undefined;
+  const recipe = resolved ? resolved.id : auto ? `auto:${auto.baseId}:${auto.tint ?? ""}:${auto.each ? 1 : 0}:${record.hitSequence?.length ?? 0}` : retroSkillRecipe(record);
   const key = typeof recipe === "string" ? recipe : recipe ? recipe.fx + ":" + recipe.approach : "";
   return [key, record.scope, record.name, record.effect.kind, body].join("|");
 }
