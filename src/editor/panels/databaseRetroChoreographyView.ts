@@ -3,17 +3,22 @@
 // 목록: 프로젝트 연출(chor_*) 먼저, 그 뒤 기본 연출(번들 계약 약 1,130개, 읽기 전용, 「기본」 배지).
 // 기본 연출을 고르면 「복제해서 고치기」가 프로젝트 연출을 만든다. 프로젝트 연출은 층 표로 고친다.
 // 어떤 편집이든 오른쪽 무대가 곧바로 다시 돈다(기존 스킬 탭 무대 + resolveSkillChoreography 경로 재사용).
-// 손대는 손잡이는 이름·설명·모션·층(시트·자리·시작 ms·크기·반복·타마다)뿐이다. 속도·무게·색조·화면·효과음은 이 탭에 없다.
+// 손잡이: 이름·설명·모션·층(시트·자리·시작 ms·크기·반복·타마다·색·효과음)과 연출 전체의 속도·무게·색조·화면 효과
+// (흔들림·번쩍임·어둡게·컷인). 손잡이를 안 건드리면 A1 과 똑같이 돈다(값 없음 = 기본).
 //
 // DOM 계약(테스트·캡처가 의존):
 //   db-retro-choreo-workspace, -list, -row-<id>, -badge-default(기본 행), -search
 //   db-retro-choreo-add / -clone / -delete, -used-by(쓰는 곳), -stage(무대 자리)
 //   db-retro-choreo-layer-<n>, -layer-<n>-sheet(썸네일 버튼)·-anchor·-start·-scale·-repeat·-each·-up·-down·-remove
+//   db-retro-choreo-layer-<n>-tint(칩 행, 칩은 button[data-tint]), -layer-<n>-se
+//   db-retro-choreo-handles(카드), -speed(슬라이더), -weight(칩 3개, button[data-weight]), -tint(칩 행),
+//   -shake(슬라이더 0~12), -flash-on / -flash(색), -dim, -cutin
 //   db-retro-choreo-add-layer, -axis(시간 축), -sheet-picker(시트 갤러리 자리)
 import { freshChoreographyId, cloneChoreographyRecord } from "@/assets/retroChoreographyClone";
 import { filterRetroChoreographies, retroChoreographyEntries, retroFxSheetKeys, retroFxSheetMeta, type RetroChoreographyEntry } from "@/assets/retroSkillCatalog";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { numberField, selectField, textControl, toggleSwitch } from "@/editor/panels/databaseControls";
+import { RETRO_TINT_INHERIT, colorToggleField, seField, sliderField, tintChipRow, weightField } from "@/editor/panels/databaseRetroHandleFields";
 import {
   RETRO_CHOREOGRAPHY_MOTION_LABELS, renderChoreographyPreview, retroSheetGallery, sheetThumb,
 } from "@/editor/panels/databaseRetroGallery";
@@ -284,6 +289,13 @@ function renderDetail(entry: RetroChoreographyEntry, project: SkillChoreographyR
           { min: SKILL_CHOREOGRAPHY_RANGES.repeat[0], max: SKILL_CHOREOGRAPHY_RANGES.repeat[1], step: 1 }),
         toggleSwitch("타마다", `db-retro-choreo-layer-${index}-each`, layer.onHit === "each",
           (checked) => commitLayer(index, "each", (row) => { if (checked) row.onHit = "each"; else delete row.onHit; })),
+        tintChipRow("색", `db-retro-choreo-layer-${index}-tint`, layer.tint, (value) => {
+          commitLayer(index, "tint", (row) => { if (value === RETRO_TINT_INHERIT) delete row.tint; else row.tint = value; });
+          ctx.rerender();
+        }, { inheritLabel: "연출 따름", compact: true }),
+        seField(`db-retro-choreo-layer-${index}-se`, layer.se, (value) => {
+          commitLayer(index, "se", (row) => { if (value) row.se = value; else delete row.se; });
+        }),
         el("div", { class: "db-retro-choreo-layer-actions", children: [
           btn("위로", "up", () => move(-1), index === 0),
           btn("아래로", "down", () => move(1), index === editable.layers.length - 1),
@@ -330,6 +342,12 @@ function renderDetail(entry: RetroChoreographyEntry, project: SkillChoreographyR
     ],
     testid: "db-retro-choreo-basic",
   }));
+  cards.push(sectionCard({
+    title: "손잡이 — 속도·무게·색·화면",
+    hint: "안 건드리면 기본 박자·원래 색·화면 효과 없음입니다. 바꾸면 미리보기가 바로 다시 돕니다.",
+    children: handleFields(editable, id, refreshLive, ctx.rerender),
+    testid: "db-retro-choreo-handles",
+  }));
   cards.push(layerCard);
   if (pickerLayer !== undefined && editable.layers[pickerLayer]) {
     const target = pickerLayer;
@@ -358,6 +376,46 @@ function renderDetail(entry: RetroChoreographyEntry, project: SkillChoreographyR
   });
   refreshLive();
   return detailPane({ hero, body: cards, testid: "db-retro-choreo-detail" });
+}
+
+/** 연출 전체 손잡이(속도·무게·색조·화면 효과). 값이 기본으로 돌아오면 필드를 지워 A1 과 같은 저장 모양을 지킨다. */
+function handleFields(record: SkillChoreographyRecord, id: string, refreshLive: () => void, rerender: () => void): HTMLElement[] {
+  const edit = (key: string, label: string, mutate: (row: SkillChoreographyRecord) => void, redraw = false): void => {
+    recordCoalescedSnapshot(`retro-choreo:${id}:${key}`, label);
+    editRecord(id, mutate);
+    if (redraw) rerender(); else refreshLive();
+  };
+  const screen = (row: SkillChoreographyRecord): NonNullable<SkillChoreographyRecord["screen"]> => (row.screen ??= {});
+  const tidy = (row: SkillChoreographyRecord): void => {
+    const value = row.screen;
+    if (value && !value.shake && !value.flash && !value.dim && !value.cutIn) delete row.screen;
+  };
+  const [speedMin, speedMax] = SKILL_CHOREOGRAPHY_RANGES.speed;
+  const [shakeMin, shakeMax] = SKILL_CHOREOGRAPHY_RANGES.shake;
+  const current = record.screen ?? {};
+  return [
+    sliderField("속도", "db-retro-choreo-speed", record.speed ?? 1, { min: speedMin, max: speedMax, step: 0.05 }, (value) => `${value.toFixed(2)}배`, (value) => {
+      edit("speed", "도트 연출 속도", (row) => { const next = Math.round(clampTo(value, [speedMin, speedMax]) * 100) / 100; if (next === 1) delete row.speed; else row.speed = next; });
+    }),
+    weightField(record.weight, (value) => {
+      edit("weight", "도트 연출 무게", (row) => { if (value === "normal") delete row.weight; else row.weight = value; }, true);
+    }),
+    tintChipRow("색조", "db-retro-choreo-tint", record.tint, (value) => {
+      edit("tint", "도트 연출 색조", (row) => { if (value === "original") delete row.tint; else row.tint = value; }, true);
+    }),
+    sliderField("화면 흔들림", "db-retro-choreo-shake", current.shake ?? 0, { min: shakeMin, max: shakeMax, step: 1 }, (value) => (value ? `세기 ${value}` : "없음"), (value) => {
+      edit("shake", "도트 연출 화면 흔들림", (row) => { const next = Math.round(clampTo(value, [shakeMin, shakeMax])); if (next) screen(row).shake = next; else delete row.screen?.shake; tidy(row); });
+    }),
+    colorToggleField("번쩍임 색", "db-retro-choreo-flash", current.flash, (value) => {
+      edit("flash", "도트 연출 번쩍임", (row) => { if (value) screen(row).flash = value; else delete row.screen?.flash; tidy(row); });
+    }),
+    toggleSwitch("화면 어둡게", "db-retro-choreo-dim", current.dim === true, (checked) => {
+      edit("dim", "도트 연출 화면 어둡게", (row) => { if (checked) screen(row).dim = true; else delete row.screen?.dim; tidy(row); });
+    }),
+    toggleSwitch("컷인", "db-retro-choreo-cutin", current.cutIn === true, (checked) => {
+      edit("cutin", "도트 연출 컷인", (row) => { if (checked) screen(row).cutIn = true; else delete row.screen?.cutIn; tidy(row); });
+    }),
+  ];
 }
 
 /** 층들을 시작 시각 순서대로 가로 막대로 놓는다. */

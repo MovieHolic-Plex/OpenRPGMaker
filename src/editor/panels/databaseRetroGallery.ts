@@ -65,6 +65,27 @@ export function representativeSheet(keys: readonly string[]): string | undefined
   return best;
 }
 
+let sheetNameCache: ReadonlyMap<string, RetroChoreographyEntry> | undefined;
+
+/**
+ * 시트 → 그 시트를 쓰는 기본 연출 중 대표 하나. 층이 적을수록(그 시트가 주인공일수록), 첫 층일수록 앞선다.
+ * 시트 카드에 한글 이름을 크게 보이려는 용도(영어 키만으로는 무슨 그림인지 모른다).
+ */
+export function representativeChoreographyForSheet(key: string): RetroChoreographyEntry | undefined {
+  if (!sheetNameCache) {
+    const best = new Map<string, { entry: RetroChoreographyEntry; score: number }>();
+    for (const entry of retroChoreographyEntries()) {
+      entry.layerKeys.forEach((layerKey, index) => {
+        const score = entry.layerKeys.length * 10 + index;
+        const prev = best.get(layerKey);
+        if (!prev || score < prev.score) best.set(layerKey, { entry, score });
+      });
+    }
+    sheetNameCache = new Map([...best].map(([layerKey, value]) => [layerKey, value.entry]));
+  }
+  return sheetNameCache.get(key);
+}
+
 /** 연출 하나를 무대에 올리기 위한 임시 스킬(저장하지 않는다). 프로젝트 레코드·기본 연출 모두 retroChoreographyId 로 푼다. */
 export function choreographyPreviewSkill(entryId: string, name: string, scope: SkillRecord["scope"] = "enemy"): SkillRecord {
   return {
@@ -135,13 +156,15 @@ export interface RetroSheetGalleryOptions {
 export function retroSheetGallery(options: RetroSheetGalleryOptions): HTMLElement {
   let selected = options.selected;
   const drawCard = (sheet: RetroFxSheetEntry): HTMLElement => {
+    const korean = representativeChoreographyForSheet(sheet.key);
     const card = el("button", {
       class: "db-retro-card" + (sheet.key === selected ? " active" : ""),
-      attrs: { type: "button", title: `${sheet.key} · ${sheet.frame}px × ${sheet.frames}프레임 · 연출 ${sheet.usedBy}곳` },
+      attrs: { type: "button", title: `${korean ? korean.name + " — " : ""}${sheet.key} · ${sheet.frame}px × ${sheet.frames}프레임 · 연출 ${sheet.usedBy}곳` },
       dataset: { testid: "db-retro-sheet-" + sheet.key },
       children: [
         sheetThumb(sheet.key),
-        el("span", { class: "db-retro-card-name", text: sheet.key }),
+        ...(korean ? [el("span", { class: "db-retro-card-name", text: korean.name, attrs: { title: korean.name } })] : []),
+        el("span", { class: korean ? "db-retro-card-key" : "db-retro-card-name", text: sheet.key }),
         el("span", { class: "db-retro-card-sub", text: `${sheet.frame}px · ${sheet.frames}f` }),
       ],
     });

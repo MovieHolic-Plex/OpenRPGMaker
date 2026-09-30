@@ -19,6 +19,7 @@ import { partyPixelFrame, partyPixelSheet, partyPixelSheetUrl, PARTY_PIXEL_SHEET
 import { RETRO_ROSTER, type RetroRosterClass } from "@/assets/retroRoster";
 import { PIXEL_ENEMY_FRAME, pixelEnemyCell, pixelEnemySheet, pixelEnemySheetUrl, type PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { RETRO_CLASS_SKILLS, type RetroClassSkill, type RetroFxAnchor, type RetroSkillMotion } from "@/assets/retroClassSkills";
+import { applyChoreographyHandles } from "@/battle/retroChoreographyHandles";
 import { resolveSkillChoreography, retroClassFamilyOf, retroClassSkill, type RetroChoreographyRecords } from "@/assets/retroSkillCatalog";
 import type { RetroMonsterSkill } from "@/assets/retroMonsterSkills";
 import { EXTENDED_POSE_FRAME, castFrame, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
@@ -174,7 +175,8 @@ function stageSource(record: SkillRecord, project: Project): StageSource | undef
   const contract = resolved && resolved.kind === "class" ? (resolved.skill as RetroClassSkill) : undefined;
   if (contract) {
     // 계약 연출은 계약의 편을 쓴다(레코드 scope 가 계약과 어긋나도 그림은 계약대로 — 어긋남은 스킬 설정의 문제다).
-    const timeline = retroClassSkillTimeline(contract, { hits: record.hitSequence?.length });
+    // 프로젝트 연출 레코드의 손잡이(speed·tint·screen)는 런타임과 같은 함수로 얹는다 — 손잡이가 없으면 같은 객체.
+    const timeline = applyChoreographyHandles(retroClassSkillTimeline(contract, { hits: record.hitSequence?.length }), resolved?.record);
     return {
       name: record.name || contract.name, timeline, actorId: contract.actorId || learnerActorId(record, project), contract, recipe: undefined,
       sheets: contract.layers.map((layer) => ({ key: layer.key, url: fxUrl(layer.key), frame: layer.frame, frames: layer.frames, anchor: layer.anchor })),
@@ -560,7 +562,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     return node;
   };
   const sheetFor = (layer: number) => source.sheets[layer] ?? source.sheets[0]!;
-  const drawFx = (id: number, layer: number, cell: number, center: Point, bottom: boolean, used: Set<number>, scale = 1): void => {
+  const drawFx = (id: number, layer: number, cell: number, center: Point, bottom: boolean, used: Set<number>, scale = 1, filter?: string): void => {
     const sheet = sheetFor(layer);
     if (missing.has(sheet.key)) return;
     const node = fxNode(id);
@@ -577,6 +579,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     node.dataset.key = sheet.key;
     node.dataset.cell = String(cell);
     node.dataset.anchor = sheet.anchor;
+    node.style.filter = filter ?? "";
   };
 
   function draw(): void {
@@ -586,6 +589,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     world.style.setProperty("--retro-shake-y", shakeY + "px");
     dimVeil.style.opacity = String(Math.round(state.dim * 72) / 100);
     flashVeil.style.opacity = String(Math.round(state.flash * 80) / 100);
+    flashVeil.style.background = state.flashColor ?? "";
     drawCutin(state);
     drawCaster(state);
     drawOthers(state);
@@ -596,12 +600,12 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       // 바닥에 닿는 시트(대상·아군)는 발 아래 6px 에 바닥을 맞춘다. 128px 대상 시트(파산장·용권 멸살 착탄)는
       // 칸 대부분을 채우므로 발 아래 24px 까지 내려 대상 몸 가운데에 폭심이 오게 한다(10px 이면 무대 위로 잘렸다).
       const footPad = size >= 128 ? (fx.anchor === "target" ? 24 : 10) : 6;
-      if (fx.anchor === "screen") drawFx(fx.event * 10, fx.layer, fx.cell, { x: STAGE_W / 2, y: STAGE_H / 2 }, false, used, SCREEN_FX_SCALE);
-      else if (fx.anchor === "user") drawFx(fx.event * 10, fx.layer, fx.cell, feet(casterPoint(state), footPad), true, used);
-      else if (fx.anchor === "target") drawFx(fx.event * 10, fx.layer, fx.cell, feet(singleTarget(), footPad), true, used);
+      if (fx.anchor === "screen") drawFx(fx.event * 10, fx.layer, fx.cell, { x: STAGE_W / 2, y: STAGE_H / 2 }, false, used, SCREEN_FX_SCALE, fx.filter);
+      else if (fx.anchor === "user") drawFx(fx.event * 10, fx.layer, fx.cell, feet(casterPoint(state), footPad), true, used, 1, fx.filter);
+      else if (fx.anchor === "target") drawFx(fx.event * 10, fx.layer, fx.cell, feet(singleTarget(), footPad), true, used, 1, fx.filter);
       else {
         const group = fx.anchor === "allAllies" ? party.map((entry) => entry.home) : targets;
-        group.forEach((point, index) => drawFx(fx.event * 10 + index + 1, fx.layer, fx.cell, feet(point, footPad), true, used));
+        group.forEach((point, index) => drawFx(fx.event * 10 + index + 1, fx.layer, fx.cell, feet(point, footPad), true, used, 1, fx.filter));
       }
     }
     for (const shot of state.projectiles) {
@@ -612,7 +616,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       if (shot.path === "trail") point = { x: casterPoint(state).x, y: casterPoint(state).y - 24 };
       else if (shot.path === "fall") point = { x: lerp(to.x + 46, to.x, shot.progress), y: lerp(-20, to.y, shot.progress) };
       else point = { x: lerp(from!.x, to.x, shot.progress), y: lerp(from!.y, to.y, shot.progress) - 14 * 4 * shot.progress * (1 - shot.progress) };
-      drawFx(shot.event * 10 + 9, shot.layer, shot.cell, point, false, used);
+      drawFx(shot.event * 10 + 9, shot.layer, shot.cell, point, false, used, 1, shot.filter);
     }
     for (const [id, node] of fxNodes) node.hidden = !used.has(id);
     drawPops(state);
