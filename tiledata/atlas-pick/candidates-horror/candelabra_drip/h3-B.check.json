@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/candelabra_drip/h3-B.pxg",
+ "set": "horror",
+ "id": "candelabra_drip",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  1,
+  14,
+  31
+ ],
+ "note": "빛 대비 강화: 불꽃 빛으로 놋 왼쪽·위가 한 단 밝고 뒷면·받침은 두 단 어둡게, 빛무리 반경을 키우고 바닥 오른쪽 접촉 그림자",
+ "ok": true
+}

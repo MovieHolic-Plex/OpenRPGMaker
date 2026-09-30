@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/aisle_runner/w5-A.pxg",
+ "id": "aisle runner",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "v5 다듬기: 테두리 안쪽 들쭉날쭉(E 낱 픽셀이 줄마다 엇갈림)을 지우고 한 줄로 곧게, 마름모 무늬는 v5 모양 유지·세로 16줄 타일 반복",
+ "ok": true
+}

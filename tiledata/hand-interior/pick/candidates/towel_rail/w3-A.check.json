@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/towel_rail/w3-A.pxg",
+ "id": "towel rail",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  13,
+  10
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  13,
+  9
+ ],
+ "note": "A: v5 수건걸이 유지 - 놋쇠 봉 양끝에 둥근 마개(왼쪽 밝게), 흰 수건은 주름 세 줄과 파란 줄무늬 띠, 파란 수건은 짧게 걸어 길이를 달리하고 밑단은 술로 마감. 봉 밑에 드리운 그림자",
+ "ok": true
+}

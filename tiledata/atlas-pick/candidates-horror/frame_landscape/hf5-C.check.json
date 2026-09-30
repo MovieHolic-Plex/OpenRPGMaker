@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/frame_landscape/hf5-C.pxg",
+ "set": "horror",
+ "id": "frame_landscape",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  2,
+  30,
+  14
+ ],
+ "note": "C: 재료·무늬 — 구슬 몰딩을 돋운 tarn 테 + 두껍게 바른 유화 붓 자국(하늘·언덕·들판이 한 단씩 섞여 결이 보인다). 세월 탄 금박.",
+ "ok": true
+}

@@ -1,0 +1,71 @@
+// castle_3x3 v5-A (5판: FF6 실측 톤(어둡고 채도 낮음), 외곽선 없음)
+@size 48 48
+@cell 16
+@palette ../../palette/worldmap5.pal
+@layer main
+@mat a wgrass 0
+@mat b wgold 3
+@mat c wroofb 1
+@mat d wroofb 2
+@mat e wroofb 0
+@mat f wbark 1
+@mat g wroofr 3
+@mat h wroofr 2
+@mat i wstone 2
+@mat j wstone 3
+@mat k wstone 1
+@mat l wroofr 1
+@mat m wroofr 0
+@mat n wink 0
+@mat o wgold 2
+@mat p wstone 0
+@mat q wbark 2
+@mblock 0 0
+........................a.......................
+.......................aba......................
+.......................aca......................
+......................adcea.....................
+.....aaaa.............adcea................aaaa.
+....afggga...........addceea..............afggga
+....afhhha..........adddceeea.............afhhha
+....afaaa..........addddceeeea............afaaa.
+....afa........aa.adddddceeeeeaaa.........afa...
+....afa.......aiiaddddddceeeeeeiia........afa...
+....aba.......ajjikjjiijiiiiiikiia........aba...
+....ala.......ajiiiiiiiiiiiiiiiika........ala...
+...ahlma......ajiiiiiiiiiiiiiiiika.......ahlma..
+...ahlma......ajkkkkkkkkkkkkkkkkka.......ahlma..
+..ahhlmma.....ajiiiiikiiiiikiiiika......ahhlmma.
+..ahhlmma.....ajiiniiiiiiiiiiniika......ahhlmma.
+.ahhhlmmma....ajiioiiiiiiiiiioiika.....ahhhlmmma
+ahhhhlmmmma...ajkkkkkkkkkkkkkkkkka....ahhhhlmmmm
+hhhhhlmmmmma..ajiikijiiipiikiikika...ahhhhhlmmmm
+aajiiiikaaa...ajiiiijiiiiiikiiiika....aajiiiikaa
+.ajiiiika.....ajiiiijiiniiikiiiika.....ajiiiika.
+.ajkkkkka.....ajkkkkjppopppkkkkkka.....ajkkkkka.
+.ajkiiika.....ajiiiijpiiiiikiiiika.....ajiiiika.
+.ajiiiika.....ajiiiijiiiiiikiiiika.....ajiiiika.
+.ajiiiika.aa..ajiiiijiiiiiikiiiikaaa..aajiiiika.
+.ajkkkkkaaiiaaijkkkkjppppppkkkkkkaiiaaiijkkkkka.
+.ajiiikkiijjkijjiikijiiipiikiikikiiikiiijikiika.
+.ajiiiikiiiiiiijiiiijiiiiiikiiiikiiiiiiijiiiika.
+.ajiiiikiiiiiiijiiiijiiiiiikiiiikiiiiiiijiiiika.
+.ajkkkkkkkkkkkkjkkkkjppppppkkkkkkkkkkkkkjkkkkka.
+.ajkiiikikiiiiikiiiiikiiiiikiiiiikiiiiikjiiiika.
+.ajiiiikiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiijiiiika.
+.ajiiiikiiiiiiiiiiiiiiqqqqiiiiiiiiiiiiiijiiiika.
+.ajkkkkkkkkkkkkkkkkkkffffffkkkkkkkkkkkkkjkkkkka.
+.ajiiikkiiiikiiiiikiiffffffiiikiiiiikiiijikiika.
+.ajiiiikiiiiiiiiiiiiiffffffiiiiiiiiiiiiijiiiika.
+.ajiiiikiiiiiiiiiiiiiffffffiiiiiiiiiiiiijiiiika.
+.ajkkkkkkkkkkkkkkkkkkffffffkkkkkkkkkkkkkjkkkkka.
+.ajkiiikikiiiiikiiiiiffffffkiiiiikiiiiikjiiiika.
+.ajiiiikiiiiiiiiiiiiiffffffiiiiiiiiiiiiijiiiika.
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+................................................
+................................................
+................................................
+.----------------------------------------------.
+...-------------------------------------------..
+................................................
+................................................

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_iron/hf3-C.pxg",
+ "set": "horror",
+ "id": "door_iron",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "철문 C — 가로 이음 둘로 나눈 세 판(viron 2단, 이음 어두운 0단·밝은 4단), 판마다 대갈못, 대갈못 밑 녹 흘림 줄기와 녹 덩이, 작은 창살 창.",
+ "ok": true
+}

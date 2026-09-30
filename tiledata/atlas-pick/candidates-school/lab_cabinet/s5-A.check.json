@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/lab_cabinet/s5-A.pxg",
+ "set": "school",
+ "id": "lab_cabinet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  2,
+  1,
+  29,
+  31
+ ],
+ "note": "키 큰 크림 약품장 — 위 유리문 두 짝에 갈색·투명·색 병이 두 선반, 아래 크림 서랍문 둘. 실험대와 같은 크림 몸통·놋 병뚜껑",
+ "ok": true
+}

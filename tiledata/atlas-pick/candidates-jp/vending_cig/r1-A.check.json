@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_cig/r1-A.pxg",
+ "set": "jp",
+ "id": "vending_cig",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.112
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.163
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 38,
+ "bbox": [
+  2,
+  0,
+  31,
+  30
+ ],
+ "note": "강남 자판기 결: 갈색 몸통 앞면 2단·윗면 판 3단·옆면 1단, 노란 간판 띠, 어두운 유리에 담뱃갑 3줄, 초록 표시창, 흰 버튼 4개 || 식구 공통(r2 는 이대로): 32×32, 윗면 판 3px(y=1..3)·앞면 x=3..24·오른 옆면 4px(x=25..28)·간판 띠 3줄(y=4..6)·견본 창 x=4..17·조작열 x=19..23·배출구 y=20..25·발판 2줄·접지 그림자 2줄",
+ "ok": true
+}

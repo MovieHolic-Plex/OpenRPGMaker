@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/library_counter/s4-B.pxg",
+ "set": "school",
+ "id": "library_counter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 37,
+ "bbox": [
+  0,
+  3,
+  47,
+  31
+ ],
+ "note": "명암 강화 카운터: 빛은 왼쪽 위 — 윗면 왼쪽·윗줄 밝게, 오른쪽·앞판 아래 어둡게, 앞턱 밑 짙은 띠, 접지 그림자 2줄, 모니터 화면 빛 번짐(%)",
+ "ok": true
+}

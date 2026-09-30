@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fishing_net/w8-A.pxg",
+ "id": "fishing net",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 6,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "note": "빗금 두 방향이 만나는 마름모 그물코, 가장자리 밧줄과 부표를 단 그물",
+ "ok": true
+}

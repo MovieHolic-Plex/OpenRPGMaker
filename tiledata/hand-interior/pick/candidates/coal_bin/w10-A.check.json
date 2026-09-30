@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/coal_bin/w10-A.pxg",
+ "id": "coal bin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.161
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "v5 다듬기: 숯더미를 둥글게 봉긋(윗줄 좁힘), 통 앞판에 판자 이음선 두 줄 추가",
+ "ok": true
+}

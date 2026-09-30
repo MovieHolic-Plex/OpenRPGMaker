@@ -1,0 +1,73 @@
+// door_wood hf3-A (hf3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mahog 0
+@mat b tarn 0
+@mblock 0 0
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaabbaaaaa
+aaaaaaaaabbaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+1111111111111111
+1555555555555541
+1444444444444431
+1542222222222431
+1542333333334431
+1542322222234431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323333434431
+1542334444434431
+1542333333334431
+1542333333334431
+1542322222234431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323335434431
+1542323333234431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323333434431
+1542334444434431
+1542333333334431
+1542222222224431
+1111111111111111

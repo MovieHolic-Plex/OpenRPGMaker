@@ -1,0 +1,60 @@
+{
+ "id": "coast_sand",
+ "slug": "coast_sand",
+ "name": "바다·해안(모래 해변)",
+ "scene": "물가",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "sand",
+ "under_ko": "사막 모래(desert 몸통 고른 판)",
+ "passage": "block",
+ "description": "coast_grass 와 같은 바다·같은 기슭선(깊이 표를 그대로)에 밑바탕이 모래인 판. 물가 = 젖은 모래 한 줄(한 단 어둡게) + 밝은 테. 바다 몸통 화소는 coast_grass 와 같게.",
+ "palette_hint": "wsea 물, 젖은 모래 wsand 어두운 단",
+ "worker": "wv1",
+ "style": "line",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

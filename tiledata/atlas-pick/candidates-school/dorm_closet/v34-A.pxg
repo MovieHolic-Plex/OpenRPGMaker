@@ -1,0 +1,45 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a vwood 2
+@mat b vwood 6
+@mat c vwood 7
+@mat d vwood 1
+@mat e vwood 5
+@mat f vwood 4
+@mat g vwood 3
+@mat h vbrass 5
+@mat i vbrass 3
+@mblock 0 0
+................
+..aaaaaaaaaaaa..
+.abbbbbbbbbbbba.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.cccccccccccccc.
+.dddddddddddddd.
+.dddddddddddddd.
+.efffffaefffffg.
+.efffffaefffffg.
+.efaaaaaeaaaafg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.effffhaehffffg.
+.effffiaeiffffg.
+.efaaaaaeaaaafg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efagggaeagggfg.
+.efffffaefffffg.
+.aaaaaaaaaaaaaa.
+.gggggggggggggg.
+..~~~~~~~~~~~~~~
+..--------------

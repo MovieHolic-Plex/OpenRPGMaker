@@ -1,0 +1,42 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat A lacq 2
+@mat B mgreen 2
+@mat C mmetal 2
+@mat D mred 2
+@mat E mwhite 2
+@mblock 0 0
+.........................B..B...
+...................CCCC..BB.BB..
+...................A....EEEEEEE.
+....AAAAAAAAAA.........CCCCCCCCC
+CCCCCAAAAAAAA........CAC.C.C.C.C
+.AAACCCCCADD........ADCCCCCCCCCC
+.AAC.CC.DDAAD......DDDCC.C.C.C.C
+AAC.C.CDC.CAD.....DADC.CCCCCCCCC
+AAC..CDC..CAAD...DDDAC..CCC..CAA
+AACCCCDDCCCAAD.DDD.AACCCCCCCCCAA
+AAC..CCCDDDDA.D.D..AAC..CCC..CAA
+AAC.C.C.C.CADDDD...AAC.C.C.C.CAA
+.AAC..C..CAA.DCD....AAC..C..CAA.
+.AAACCCCCAAA........AAACCCCCAAA.
+..AAAAAAACA..........AAAAAAAAA..
+....AAAAA.CC...........AAAAA....
+@tblock 0 0
+.........................4..4...
+...................6666..32.32..
+...................2....3333333.
+....4444433333.........577777772
+5555544421111........645.5.5.5.2
+.44435355234........436522222222
+.443.33.33224......33135.5.5.5.2
+445.3.333.524.....3415.522222222
+445..333..5224...31145..633..522
+44333333333224.331.4433336333322
+445..33333332.3.1..445..333..522
+425.3.3.3.523111...425.3.3.3.522
+.223..3..322.161....223..3..322.
+.22255355222........22255355222.
+..222222222..........222222222..
+....22222.22...........22222....

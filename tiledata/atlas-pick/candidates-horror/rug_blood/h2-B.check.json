@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/rug_blood/h2-B.pxg",
+ "set": "horror",
+ "id": "rug_blood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 21,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "B: 대비를 세게. 바탕을 한 단 어둡게, 테를 가장 어둡게 깔아 메달리온 마름모가 또렷이 뜬다. 핏덩이는 더 진하게(blood 1~2단이 넓고 $ 가장자리가 눈에 띈다) 세 갈래 흘러내림. 접힌 모서리 밑에 ~ 그림자, 양탄자 아래 가장자리에 - 그림자.",
+ "ok": true
+}

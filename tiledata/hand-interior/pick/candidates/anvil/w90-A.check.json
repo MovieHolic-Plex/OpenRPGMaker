@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/anvil/w90-A.pxg",
+ "id": "anvil",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  13,
+  13
+ ],
+ "note": "모루: 작업면 T 4행(뒤 어두움→앞 가장자리 밝음)·허리 앞면·받침 윗면, 뿔은 왼쪽",
+ "ok": true
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/loom/w4-C.pxg",
+ "id": "loom",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  30,
+  31
+ ],
+ "note": "서랍 상자 대신 다리 벌린 서 있는 베틀로 재해석: 굵은 기둥·위 날실 통·쇠 종광·직물·가슴 보, 아래 두 발판(페달)이 훤히 보이게 했다.",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_gallery/hf3-B.pxg",
+ "set": "horror",
+ "id": "door_gallery",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "미술관 문 B — 틀은 가장 밝은 먼지 6단, 문짝은 거의 검은 grave 0단(6단 차). 큰 패널 테두리만 3단, 손잡이 6단. 흰 벽 앞에서도 검은 문이 어둠 속에서도 틀선이 보인다.",
+ "ok": true
+}

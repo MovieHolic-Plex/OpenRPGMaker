@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chopping_block/w10-B.pxg",
+ "id": "chopping block",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "명암 강화: 윗면은 왼쪽 위 D 밝게→오른쪽 아래 G 어둡게 대각, 옆면 왼쪽 두 줄 H 밝고 오른쪽 I 어두운 3단, 오른쪽 바닥에 반투명 그림자",
+ "ok": true
+}

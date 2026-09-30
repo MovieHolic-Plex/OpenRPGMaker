@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/lectern/w5-A.pxg",
+ "id": "lectern",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 11,
+ "bbox": [
+  2,
+  8,
+  13,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  31
+ ],
+ "note": "v5 를 다듬음: 펼친 책(쪽 결·가운데 접힘), 판 앞 두께선, 기둥 왼쪽 밝고 오른쪽 어둡게, 중간 고리 장식, 발 받침 두 단으로 벌어짐",
+ "ok": true
+}

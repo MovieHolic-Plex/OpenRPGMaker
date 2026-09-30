@@ -1,0 +1,38 @@
+{
+ "id": "curtain wing",
+ "slug": "curtain_wing",
+ "name_ko": "무대 날개 막",
+ "category": "극장",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  48
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 40
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 24,
+ "surface": null,
+ "description": "비스듬히 드리운 붉은 무대 날개 막(바닥, 24px 솟음). 극장 무대 앞 양끝 바닥에 1개씩(좌우 짝).",
+ "where": "극장 무대 앞 양끝 바닥에 1개씩(좌우 짝).",
+ "placement": [
+  "그림이 발밑 칸 위로 24px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "v5_colors": 7,
+ "material": "cloth",
+ "related": []
+}

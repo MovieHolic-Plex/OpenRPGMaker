@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pick_rack/w8-B.pxg",
+ "id": "pick rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 5,
+ "bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "note": "가로대를 4줄 두꺼운 목재로 강하게 명암, 쇠 머리에 하이라이트 흰 점, 자루 오른쪽 반투명 그림자.",
+ "ok": true
+}

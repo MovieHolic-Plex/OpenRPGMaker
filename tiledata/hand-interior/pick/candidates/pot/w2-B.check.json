@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pot/w2-B.pxg",
+ "id": "pot",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "대비를 세게(F 하이라이트·오른쪽 C 그늘 넓게), 배에 어두운 테 한 줄, 오른쪽 아래 반투명 접지 그림자",
+ "ok": true
+}

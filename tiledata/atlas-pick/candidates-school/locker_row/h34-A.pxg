@@ -1,0 +1,80 @@
+// locker_row h34-A (H 방법: Tibo 3/4 → C → E)
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a ai 0
+@mat b locker 0
+@mat c mglass 0
+@mat d mout 0
+@mat e stile 0
+@mat f vglass 0
+@mat g viron 0
+@mat h vstone 0
+@mat i vwood 0
+@mblock 0 0
+................................
+................................
+.ffaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaab.
+.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhb.
+.ehhhhhhehhhhhhehhhhhhehhhhhhhb.
+.ehhhhhhehhhhhheeeebiiehhhhhhhb.
+.ehbbbhhehbbbhhebbbbiiehbbbhhhb.
+.ehhhhhhehhhhhheeeebiiehhhhhhhb.
+.ehbbbhhehbbbhhebbbbiiehbbbhhhb.
+.ehhhhhhehhhhhheeeebccehhhhhhhb.
+.edaaahhedaaahhedaabccedaaahhhb.
+.edagghhedagghhedgabfcedagghhhb.
+.edhhhhhedhhhhhedeebccedhhhhhhb.
+.ehhhhhhehhhhhheeeebiiehhhhhhhb.
+.ehbbbhhehbbbhhebbbbiiehbbbhhhb.
+.ehhhhhhehhhhhheeeebiiehhhhhhhb.
+.ehhhhhhehhhhhhehhhhhhehhhhhhhb.
+.ehhhhhhehhhhhhehhhhhhehhhhhhhb.
+.ehbbbhhehbbbhhehbbbhhehbbbhhhb.
+.ehhhhhhehhhhhhehhhhhhehhhhhhhb.
+.ehbbbhhehbbbhhehbbbhhehbbbhhhb.
+.edaaahhedaaahhedaaahhedaaahhhb.
+.edagghhedagghhedagghhedagghhhb.
+.edhhhhhedhhhhhedhhhhhedhhhhhhb.
+.ehhhhhhehhhhhhehhhhhhehhhhhhhb.
+.ehbbbhhehbbbhhehbbbhhehbbbhhhb.
+.ehhhhhhehhhhhhehhhhhhehhhhhhhb.
+.ehhhhhhehhhhhhehhhhhhehhhhhhhb.
+@tblock 0 0
+................................
+................................
+.666666666666666666666666666666.
+.666666666666666666666666666666.
+.666666666666666666666666666666.
+.666666666666666666666666666666.
+.666666666666666666666666666661.
+.444444444444444444444444444431.
+.233333323333332333333233333331.
+.244444324444432222100244444331.
+.241114324111432111100241114331.
+.244444324444432222100244444331.
+.241114324111432111100241114331.
+.244444324444432222144244444331.
+.226664322666432266144226664331.
+.226554322655432256164226554331.
+.224444322444432222144224444331.
+.244444324444432222100244444331.
+.241114324111432111100241114331.
+.244444324444432222100244444331.
+.233333323333332333333233333331.
+.244444324444432444443244444331.
+.241114324111432411143241114331.
+.244444324444432444443244444331.
+.241114324111432411143241114331.
+.226664322666432266643226664331.
+.226554322655432265543226554331.
+.224444322444432244443224444331.
+.244444324444432444443244444331.
+.241114324111432411143241114331.
+.244444324444432444443244444331.
+.233333323333332333333233333331.

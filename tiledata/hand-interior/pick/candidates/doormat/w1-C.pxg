@@ -1,0 +1,24 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+................
+................
+..AAAAAAAAAAAA..
+.CABBBBBBBBBBAD.
+.DAB........BAC.
+.CABCCDDCCDDBAD.
+.DABDDCCDDCCBAC.
+.CABCCDDCCDDBAD.
+.DAB........BAC.
+.CABBBBBBBBBBAD.
+..AAAAAAAAAAAA..
+................
+................
+................
+@tblock 4 6 red
+34343434
+@tblock 4 10 red
+34343434

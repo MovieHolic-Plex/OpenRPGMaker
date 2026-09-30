@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/mailbox_red/v34-A.pxg",
+ "set": "jp",
+ "id": "mailbox_red",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.147
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  2,
+  1,
+  14,
+  30
+ ],
+ "note": "",
+ "ok": true
+}

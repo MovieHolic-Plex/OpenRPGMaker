@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_paper_torn/h4-B.pxg",
+ "set": "horror",
+ "id": "wall_paper_torn",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.215
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 23,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "왼쪽 위 빛: 왼쪽 위 종이·벽널은 한 단 밝게, 오른쪽 아래는 어둡게, 찢긴 자락이 크고 오른쪽 아래로 짙은 그림자(3줄)를 드리움",
+ "ok": true
+}

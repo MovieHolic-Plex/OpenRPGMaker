@@ -1,0 +1,23 @@
+{
+ "id": "house_blue_b",
+ "slug": "house_blue_b",
+ "name": "푸른 지붕 회벽집(높은 변)",
+ "scene": "성·마을",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "위층 단품(그림자 포함)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 2×2 높은 지붕 집. 앞 맞배 하나.",
+ "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+ "worker": "v6"
+}

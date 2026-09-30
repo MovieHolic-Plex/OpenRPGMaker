@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fabric_bolt_rack/w6-B.pxg",
+ "id": "fabric bolt rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "colors",
+   "saturation",
+   "noise"
+  ],
+  "pass": false
+ },
+ "colors": 45,
+ "v5_colors": 39,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "왼쪽·위를 밝히고 오른쪽 기둥과 하단 받침을 눌러 입체를 세우고 받침 밑 두 줄 오른쪽을 오른쪽으로 갈수록 반투명 그림자로",
+ "ok": true
+}

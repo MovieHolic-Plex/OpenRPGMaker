@@ -1,0 +1,33 @@
+{
+ "src": "tiledata/atlas-pick/candidates-school/locker_row/s3-A.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/school/locker_row/s3-A.m3.pxg",
+ "size": [
+  32,
+  32
+ ],
+ "stat": {
+  "ramp": 14
+ },
+ "weak": [],
+ "ambiguous": {},
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 64,
+ "droppedBy": {
+  "~": 32,
+  "-": 32
+ },
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 14,
+ "ramps": [
+  "conc",
+  "kii",
+  "pinku",
+  "shiro",
+  "tairu",
+  "tekko"
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "src": "tiledata/atlas-pick/candidates-modern/gn_bench/v0.png",
+ "out": "tiledata/atlas-pick/remap-trial/modern/gn_bench/v0.m3.pxg",
+ "size": [
+  16,
+  32
+ ],
+ "stat": {
+  "flat": 5
+ },
+ "weak": [],
+ "ambiguous": {},
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 0,
+ "droppedBy": {},
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 5,
+ "ramps": [
+  "soil",
+  "tekko",
+  "yuka"
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/desk_pair/s4-B.pxg",
+ "set": "school",
+ "id": "desk_pair",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 21,
+ "bbox": [
+  0,
+  1,
+  30,
+  31
+ ],
+ "note": "desk_set B와 같은 명암: 사람마다 왼쪽 밝게·오른쪽 어둡게, 앞 턱 짙게, 의자 둘 접지 그림자 3줄",
+ "ok": true
+}

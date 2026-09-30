@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/house_wall/j1-A.pxg",
+ "set": "jp",
+ "id": "house_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.207
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 30,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "강남 결: 베이지 모르타르 벽, 알루미늄 난간 베란다+미닫이 유리창, 1층 격자창·나무 격자유리 현관문·문패·우편함, 콘크리트 단.",
+ "ok": true
+}

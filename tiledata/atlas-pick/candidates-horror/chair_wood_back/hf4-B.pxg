@@ -1,0 +1,40 @@
+// chair_wood_back hf4-B
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mblock 0 0
+................
+...mmmmmmmmmm...
+...mmmmmmmmmm...
+...mmmmmmmmmm...
+..mmmmmmmmmmmm..
+..mmmmmmmmmmmm..
+..mmmmmmmmmmmm..
+..mmmmmmmmmmmm..
+..mmmmmmmmmmmm..
+..mmmmmmmmmmmm..
+..mmmmmmmmmmmm..
+..mmmmmmmmmmmm..
+...mmmmmmmmmmm..
+...mmmm...mmmm..
+...mmmm...mmmm..
+...mmmm...mmmm..
+@tblock 0 0
+................
+...1111111111...
+...1666666661...
+...1555555551...
+..111111111111..
+..166666666661..
+..155515515551..
+..155515515551..
+..155515515551..
+..155515515551..
+..155515515551..
+..122222222221..
+...15111111531..
+...1531...1531..
+...1531...1531..
+...1111...1111..

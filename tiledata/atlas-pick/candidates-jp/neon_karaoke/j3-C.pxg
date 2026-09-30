@@ -1,0 +1,41 @@
+// neon_karaoke j3-C
+@size 48 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a lacq 3
+@mat b neon 3
+@mblock 0 0
+................................................
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+bbbbbbbaabbbbbbbaaaaabbbbbbbaabbbbbbbbaabbbbbbbb
+bbbaaaaaaaaabbbbaaaaabbbbaaaaaaaaabbbaaaaaaaabbb
+bbbaaaaaaaaabbbbbbbbbbbbbbbbaabaabbbaabbbbbbbbbb
+bbbbbbaabaabbbaaaaaaaaabbbbaaababbbbaaaaaaaaabbb
+bbbbbbaabaabbbaaaaaaaaabbbbaaaaabbbbaaaaaaaaabbb
+bbbbbaabbaabbbbbbbbbaabbbbaabaabbbbbbbbbaabbbbbb
+bbbbbaabbaabbbbbbbbaabbbbaabbaabbbbbbbbaabbbbbbb
+bbbbaabbbaabbbbbbaaabbbbbbbbbaabbbbbbbaabbbbbbbb
+bbbaabbbbaabbbbbaabbbbbbbbbbbaabbbbbbaabbbbbbbbb
+bbbaabbaaaabbbaaabbbbbbbbaaaaaabbbbbaabbbbbbbbbb
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..
+@tblock 0 0
+................................................
+..44444444444444444444444444444444444444444444..
+.4444444444444444444444444444444444444444444444.
+433333311333333311111333333311333333331133333332
+433111111111333311111333311111111133311111111332
+433111111111333333333333333311311333113333333332
+433333113113331111111113333111313333111111111332
+433333113113331111111113333111113333111111111332
+433331133113333333331133331131133333333311333332
+433331133113333333311333311331133333333113333332
+433311333113333331113333333331133333331133333332
+433113333113333311333333333331133333311333333332
+433113311113331113333333311111133333113333333332
+.2222222222222222222222222222222222222222222222.
+..11111111111111111111111111111111111111111111..
+................................................

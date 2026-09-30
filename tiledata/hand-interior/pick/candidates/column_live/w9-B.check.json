@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_live/w9-B.pxg",
+ "id": "column live",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "note": "B 빛·그림자: 왼쪽 위 빛으로 줄기 왼쪽 밝고 오른쪽 어둡게, 잎 윗면 하이라이트, 잎 그림자가 줄기 위에 드리움, 오른쪽 아래 바닥 그림자",
+ "ok": true
+}

@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/big_tree/wv5-B.pxg",
+ "set": "worldmap",
+ "id": "big_tree",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.116
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.076
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "dither"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  1,
+  1,
+  31,
+  31
+ ],
+ "note": "B: 깊이 강조 — 덩이 여덟이 겹치고 덩이 사이 어두운 틈, 잎 점무늬, 드러난 뿌리.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.242
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.048
+  }
+ }
+}

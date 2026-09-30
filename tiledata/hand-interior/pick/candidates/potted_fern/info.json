@@ -1,0 +1,37 @@
+{
+ "id": "potted fern",
+ "slug": "potted_fern",
+ "name_ko": "화분 고사리",
+ "category": "장식",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "테라코타 화분에 심은 고사리 덤불. 거실·복도·카지노 구석에 1~2개. 창 밑이나 문 양옆, 통로는 막지 않는다.",
+ "where": "거실·복도·카지노 구석에 1~2개. 창 밑이나 문 양옆, 통로는 막지 않는다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  14
+ ],
+ "v5_colors": 9,
+ "material": "ceramic",
+ "related": []
+}

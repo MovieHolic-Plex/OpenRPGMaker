@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_door/w8-A.pxg",
+ "id": "round door",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  29,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  29,
+  30
+ ],
+ "note": "둥근 나무 테두리에 초록 널문·철 경첩 두 줄·놋 손잡이를 또렷이 다듬은 굴 문",
+ "ok": true
+}

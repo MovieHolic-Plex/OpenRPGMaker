@@ -1,0 +1,28 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a vblack 2
+@mat b washi 3
+@mat c washi 5
+@mat d vblack 1
+@mat e washi 4
+@mat f vblack 0
+@mat g vblack 4
+@mat h vblack 3
+@mblock 0 0
+..aaaaaaaaaaaa..
+.bccccccccccccb.
+.bccdcccccdcccb.
+.bcccccdccccccb.
+.bcccdccccccdcb.
+.beeeeeeeeeeeeb.
+.ffffffffffffff.
+.gggggggggggggg.
+.aaaaaaaaaaaaaa.
+.......ha.......
+.......ha.......
+.......ha.......
+......gggg......
+..hhhhh..aaaaa..
+.~~~~~~~~~~~~~~.
+.--------------.

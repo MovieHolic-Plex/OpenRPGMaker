@@ -1,0 +1,21 @@
+{
+ "id": "composer_frames",
+ "slug": "composer_frames",
+ "name": "음악가 초상 액자 줄",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "음악실 벽 위 초상 액자 세 개(금·나무 틀). 얼굴은 알아볼 수 없어도 된다 — 흰 가발 머리 덩이·어두운 옷 덩이 두 단. 세 액자 머리 모양을 다르게.",
+ "palette_hint": "vbrass/vwood 틀, vlinen 얼굴, vwhite 머리",
+ "pair": [],
+ "worker": "s5"
+}

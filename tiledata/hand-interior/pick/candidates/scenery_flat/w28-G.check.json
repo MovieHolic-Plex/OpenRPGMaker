@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scenery_flat/w28-G.pxg",
+ "id": "scenery flat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.107
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 22,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "마을: 낮의 작은 마을 풍경. 붉은/푸른 지붕의 회벽 집 넷, 나무 한 그루, 굴뚝 연기, 흙길과 꽃.",
+ "ok": true
+}

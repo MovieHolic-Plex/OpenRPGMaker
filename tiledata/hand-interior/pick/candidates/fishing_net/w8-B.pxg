@@ -1,0 +1,59 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat h straw 1
+@mat i straw 2
+@mat j straw 3
+@mat k straw 4
+@mat l straw 5
+@mat m straw 6
+@mat q orange 2
+@mat n orange 3
+@mat o orange 4
+@mat p orange 5
+@mat r fish 2
+@mat s fish 3
+@mat t fish 4
+@mat u fish 5
+@mat v fish 6
+@block 0 0
+................
+................
+................
+................
+..--.---.---.-..
+..-.-.-.-.-.-...
+...---.---.---..
+..-.-.-.-.-.-...
+..--.---.---.-..
+..-.-.-.-.-.-...
+...---.---.---..
+..-.-.-.-.-.-...
+..--.---.---.-..
+................
+................
+................
+@mblock 0 0
+................
+ggggggggggggffff
+eeaeeeeeeeeedadd
+bbbbbbbbbbbbbbbb
+.l..m...m...m.i.
+.l.j.k.j.k.j.ki.
+.lm...m...m...i.
+.l.k.j.k.j.k.ji.
+.l..m...m...m.i.
+.l.j.k.j.k.j.ki.
+.lm...m...m...i.
+.l.k.j.k.j.k.ji.
+.l..m...m...m.i.
+.iiioniiionioni.
+....pn...pn.pn..
+................

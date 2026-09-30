@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/water_jar/w8-C.pxg",
+ "id": "water jar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "pillow",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "항아리형으로 재해석: 넓은 입술띠+잘록한 목+불룩한 배+어깨 띠(H)로 16px에서도 독 모양이 읽히게",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/window/w1-B.pxg",
+ "id": "window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "failed": [
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 11,
+ "bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "v5 창과 같은 4칸 구도에서 명암만 강화: 유리 윗줄 안쪽 그림자(F)·왼쪽 위 빛(D)·아래로 갈수록 어두운 파랑, 창턱 아래 벽에 드리운 그림자(~ -)",
+ "ok": true
+}

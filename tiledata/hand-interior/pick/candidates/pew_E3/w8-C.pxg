@@ -1,0 +1,86 @@
+@size 16 64
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat h wood 8
+@mat i dwood 1
+@mat j dwood 3
+@mat k dwood 5
+@mat r red 2
+@mat s red 3
+@mat t red 4
+@mat u red 5
+@mat v gold 3
+@mat w gold 5
+@mat x gold 6
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+..a.x.b.........
+..afwdb.........
+..afedb.........
+..ggggg.........
+..afedbceeedddb.
+..afedbcuuuuuub.
+..afedbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acgcbcuttssrb.
+..aghgbcuttssrb.
+..acgcbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..afffbcrrrrrvb.
+..afecbcuutsswb.
+..afecbcuttssrb.
+..aaaabcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acgcbcuttssrb.
+..aghgbcuttssrb.
+..acgcbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..afffbcrrrrrvb.
+..afecbcuutsswb.
+..afecbcuttssrb.
+..aaaabcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acccbcuttssrb.
+..acgcbcuttssrb.
+..aghgbcuttssrb.
+..acgcbcuttssrb.
+..acccbcrrrrrrb.
+..afedbceeedddb.
+..afedbcccccccc.
+..afedbbbbbbbbb.
+..gggggaaaaaaaa.
+..afedbdddddddd.
+..afedbbbbbbbbb.
+..afedb.aaaaaa..
+..aaaaa.aaaaaa..

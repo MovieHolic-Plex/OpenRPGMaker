@@ -1,0 +1,69 @@
+// h1-C.pxg — h1 작업자(손으로 놓은 픽셀). 램프:단 열쇠 / 반투명은 팔레트 글자
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer b
+@px 1 0 mahog:4 2 0 dust:4 3 0 mahog:4 4 0 dust:4 5 0 mahog:4 6 0 dust:4 7 0 mahog:4 8 0 dust:4
+@px 9 0 mahog:4 10 0 dust:4 11 0 mahog:4 12 0 dust:4 13 0 mahog:4 14 0 dust:4
+@px 0 1 mahog:3 1 1 mahog:3 2 1 mahog:3 3 1 mahog:3 4 1 mahog:3 5 1 mahog:3 6 1 mahog:3 7 1 mahog:3
+@px 8 1 mahog:3 9 1 mahog:3 10 1 mahog:3 11 1 mahog:3 12 1 mahog:3 13 1 mahog:3 14 1 mahog:3 15 1 mahog:3
+@px 0 2 mahog:2 1 2 mahog:1 2 2 mahog:1 3 2 mahog:1 4 2 mahog:1 5 2 mahog:1 6 2 mahog:1 7 2 mahog:1
+@px 8 2 mahog:1 9 2 mahog:1 10 2 mahog:1 11 2 mahog:1 12 2 mahog:1 13 2 mahog:1 14 2 mahog:1 15 2 mahog:2
+@px 0 3 mahog:3 1 3 mahog:1 2 3 night:1 3 3 night:1 4 3 night:1 5 3 moon:2 6 3 night:1 7 3 night:1
+@px 8 3 night:1 9 3 night:1 10 3 night:1 11 3 night:1 12 3 night:1 13 3 night:1 14 3 mahog:1 15 3 mahog:3
+@px 0 4 mahog:3 1 4 mahog:1 2 4 night:1 3 4 night:1 4 4 night:1 5 4 night:1 6 4 night:1 7 4 night:1
+@px 8 4 night:1 9 4 night:1 10 4 night:1 11 4 night:1 12 4 night:1 13 4 night:1 14 4 mahog:1 15 4 mahog:3
+@px 0 5 mahog:3 1 5 mahog:1 2 5 night:1 3 5 mahog:2 4 5 mahog:2 5 5 mahog:2 6 5 night:1 7 5 mahog:2
+@px 8 5 mahog:2 9 5 mahog:2 10 5 night:1 11 5 mahog:2 12 5 mahog:2 13 5 mahog:2 14 5 mahog:1 15 5 mahog:3
+@px 0 6 mahog:3 1 6 mahog:1 2 6 night:1 3 6 void:0 4 6 bisque:4 5 6 void:0 6 6 night:1 7 6 void:0
+@px 8 6 bisque:4 9 6 void:0 10 6 night:1 11 6 void:0 12 6 bisque:4 13 6 void:0 14 6 mahog:1 15 6 mahog:3
+@px 0 7 mahog:3 1 7 mahog:1 2 7 night:1 3 7 bisque:4 4 7 blood:2 5 7 bisque:4 6 7 night:1 7 7 bisque:4
+@px 8 7 blood:2 9 7 bisque:4 10 7 night:1 11 7 bisque:4 12 7 blood:2 13 7 bisque:4 14 7 mahog:1 15 7 mahog:3
+@px 0 8 mahog:3 1 8 mahog:1 2 8 night:1 3 8 bisque:2 4 8 bisque:3 5 8 bisque:3 6 8 night:1 7 8 bisque:2
+@px 8 8 bisque:3 9 8 bisque:3 10 8 night:1 11 8 bisque:2 12 8 bisque:3 13 8 bisque:3 14 8 mahog:1 15 8 mahog:3
+@px 0 9 mahog:3 1 9 mahog:1 2 9 mahog:4 3 9 mahog:4 4 9 mahog:4 5 9 mahog:4 6 9 mahog:4 7 9 mahog:4
+@px 8 9 mahog:4 9 9 mahog:4 10 9 mahog:4 11 9 mahog:4 12 9 mahog:4 13 9 mahog:4 14 9 mahog:1 15 9 mahog:3
+@px 0 10 mahog:3 1 10 mahog:1 2 10 moon:4 3 10 mahog:2 4 10 mahog:2 5 10 mahog:2 6 10 mahog:2 7 10 mahog:2
+@px 8 10 mahog:2 9 10 mahog:2 10 10 mahog:2 11 10 mahog:2 12 10 mahog:2 13 10 moon:4 14 10 mahog:1 15 10 mahog:3
+@px 0 11 mahog:3 1 11 mahog:1 2 11 night:1 3 11 moon:4 4 11 night:1 5 11 mahog:2 6 11 mahog:2 7 11 mahog:2
+@px 8 11 mahog:2 9 11 mahog:2 10 11 night:1 11 11 night:1 12 11 moon:4 13 11 night:1 14 11 mahog:1 15 11 mahog:3
+@px 0 12 mahog:3 1 12 mahog:1 2 12 night:1 3 12 night:1 4 12 mahog:2 5 12 mahog:2 6 12 mahog:2 7 12 mahog:2
+@px 8 12 mahog:2 9 12 mahog:2 10 12 mahog:2 11 12 night:1 12 12 night:1 13 12 night:1 14 12 mahog:1 15 12 mahog:3
+@px 0 13 mahog:3 1 13 mahog:1 2 13 night:1 3 13 night:1 4 13 bisque:4 5 13 bisque:4 6 13 bisque:4 7 13 bisque:4
+@px 8 13 bisque:4 9 13 bisque:4 10 13 bisque:4 11 13 night:1 12 13 night:1 13 13 night:1 14 13 mahog:1 15 13 mahog:3
+@px 0 14 mahog:3 1 14 mahog:1 2 14 night:1 3 14 night:1 4 14 bisque:4 5 14 dust:6 6 14 void:0 7 14 bisque:4
+@px 8 14 dust:6 9 14 void:0 10 14 bisque:4 11 14 night:1 12 14 night:1 13 14 night:1 14 14 mahog:1 15 14 mahog:3
+@px 0 15 mahog:3 1 15 mahog:1 2 15 night:1 3 15 night:1 4 15 bisque:4 5 15 void:0 6 15 void:0 7 15 bisque:4
+@px 8 15 void:0 9 15 void:0 10 15 bisque:4 11 15 night:1 12 15 night:1 13 15 night:1 14 15 mahog:1 15 15 mahog:3
+@px 0 16 mahog:3 1 16 mahog:1 2 16 night:1 3 16 night:1 4 16 bisque:4 5 16 void:0 6 16 void:0 7 16 bisque:4
+@px 8 16 void:0 9 16 void:0 10 16 bisque:4 11 16 night:1 12 16 night:1 13 16 night:1 14 16 mahog:1 15 16 mahog:3
+@px 0 17 mahog:3 1 17 mahog:1 2 17 mahog:4 3 17 mahog:4 4 17 bisque:4 5 17 bisque:4 6 17 bisque:4 7 17 bisque:4
+@px 8 17 bisque:4 9 17 bisque:4 10 17 bisque:4 11 17 mahog:4 12 17 mahog:4 13 17 mahog:4 14 17 mahog:1 15 17 mahog:3
+@px 0 18 mahog:3 1 18 mahog:1 2 18 mahog:2 3 18 mahog:2 4 18 bisque:4 5 18 bisque:4 6 18 bisque:4 7 18 bisque:4
+@px 8 18 bisque:4 9 18 bisque:4 10 18 bisque:4 11 18 mahog:2 12 18 mahog:2 13 18 mahog:2 14 18 mahog:1 15 18 mahog:3
+@px 0 19 mahog:3 1 19 mahog:1 2 19 night:1 3 19 night:1 4 19 bisque:4 5 19 bisque:4 6 19 bisque:4 7 19 bisque:4
+@px 8 19 bisque:4 9 19 bisque:4 10 19 bisque:4 11 19 night:1 12 19 night:1 13 19 night:1 14 19 mahog:1 15 19 mahog:3
+@px 0 20 mahog:3 1 20 mahog:1 2 20 night:1 3 20 night:1 4 20 bisque:4 5 20 blood:2 6 20 blood:2 7 20 blood:2
+@px 8 20 blood:2 9 20 blood:2 10 20 bisque:4 11 20 night:1 12 20 night:1 13 20 night:1 14 20 mahog:1 15 20 mahog:3
+@px 0 21 mahog:3 1 21 mahog:1 2 21 night:1 3 21 night:1 4 21 bisque:4 5 21 void:0 6 21 mahog:2 7 21 mahog:2
+@px 8 21 mahog:2 9 21 void:0 10 21 bisque:4 11 21 night:1 12 21 night:1 13 21 night:1 14 21 mahog:1 15 21 mahog:3
+@px 0 22 mahog:3 1 22 mahog:1 2 22 night:1 3 22 night:1 4 22 bisque:2 5 22 bisque:2 6 22 void:0 7 22 bisque:4
+@px 8 22 void:0 9 22 bisque:2 10 22 bisque:2 11 22 night:1 12 22 night:1 13 22 night:1 14 22 mahog:1 15 22 mahog:3
+@px 0 23 mahog:3 1 23 mahog:1 2 23 night:1 3 23 moon:4 4 23 night:1 5 23 night:1 6 23 bisque:4 7 23 blood:2
+@px 8 23 bisque:4 9 23 night:1 10 23 night:1 11 23 night:1 12 23 moon:4 13 23 night:1 14 23 mahog:1 15 23 mahog:3
+@px 0 24 mahog:3 1 24 mahog:1 2 24 moon:4 3 24 night:1 4 24 night:1 5 24 night:1 6 24 bisque:2 7 24 bisque:3
+@px 8 24 bisque:3 9 24 night:1 10 24 night:1 11 24 night:1 12 24 night:1 13 24 moon:4 14 24 mahog:1 15 24 mahog:3
+@px 0 25 mahog:3 1 25 mahog:1 2 25 mahog:4 3 25 mahog:4 4 25 mahog:4 5 25 mahog:4 6 25 mahog:4 7 25 mahog:4
+@px 8 25 mahog:4 9 25 mahog:4 10 25 mahog:4 11 25 mahog:4 12 25 mahog:4 13 25 mahog:4 14 25 mahog:1 15 25 mahog:3
+@px 0 26 mahog:3 1 26 mahog:1 2 26 mahog:2 3 26 mahog:2 4 26 mahog:2 5 26 mahog:2 6 26 mahog:2 7 26 mahog:2
+@px 8 26 mahog:2 9 26 mahog:2 10 26 mahog:2 11 26 mahog:2 12 26 mahog:2 13 26 mahog:2 14 26 mahog:1 15 26 mahog:3
+@px 0 27 mahog:3 1 27 mahog:1 2 27 night:1 3 27 night:1 4 27 night:1 5 27 night:1 6 27 night:1 7 27 night:1
+@px 8 27 night:1 9 27 night:1 10 27 night:1 11 27 night:1 12 27 night:1 13 27 night:1 14 27 mahog:1 15 27 mahog:3
+@px 0 28 mahog:4 1 28 mahog:4 2 28 mahog:4 3 28 mahog:4 4 28 mahog:4 5 28 mahog:4 6 28 mahog:4 7 28 mahog:4
+@px 8 28 mahog:4 9 28 mahog:4 10 28 mahog:4 11 28 mahog:4 12 28 mahog:4 13 28 mahog:4 14 28 mahog:4 15 28 mahog:4
+@px 0 29 mahog:2 1 29 mahog:2 2 29 mahog:2 3 29 mahog:2 4 29 mahog:2 5 29 mahog:2 6 29 mahog:2 7 29 mahog:2
+@px 8 29 mahog:2 9 29 mahog:2 10 29 mahog:2 11 29 mahog:2 12 29 mahog:2 13 29 mahog:2 14 29 mahog:2 15 29 mahog:2
+@px 0 30 mahog:2 1 30 mahog:1 2 30 mahog:1 3 30 mahog:2 4 30 mahog:2 5 30 mahog:2 6 30 mahog:2 7 30 mahog:2
+@px 8 30 mahog:2 9 30 mahog:2 10 30 mahog:2 11 30 mahog:2 12 30 mahog:2 13 30 mahog:1 14 30 mahog:1 15 30 mahog:2
+@px 0 31 mahog:0 1 31 mahog:1 2 31 mahog:1 3 31 mahog:0 4 31 mahog:0 5 31 mahog:0 6 31 mahog:0 7 31 mahog:0
+@px 8 31 mahog:0 9 31 mahog:0 10 31 mahog:0 11 31 mahog:0 12 31 mahog:0 13 31 mahog:1 14 31 mahog:1 15 31 mahog:0

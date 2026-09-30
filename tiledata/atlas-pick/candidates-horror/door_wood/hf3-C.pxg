@@ -1,0 +1,74 @@
+// door_wood hf3-C (hf3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a rot 0
+@mat b viron 0
+@mat c tarn 0
+@mblock 0 0
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaacaaaaa
+aaaaaaaaacacaaaa
+aaaaaaaaaacaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+0000000000000000
+0555555555555540
+0444444444444430
+0541111111111430
+0541423242324430
+0541423242324430
+0541423232324430
+0541222222224430
+0541353333534430
+0541111111114430
+0541423242224430
+0541423242324430
+0541422242324430
+0541422242324430
+0541422242424430
+0541422244324430
+0541423242224430
+0541423242224430
+0541423242224430
+0541423232224430
+0541222222224430
+0541353333534430
+0541111111114430
+0541422242324430
+0541422242324430
+0541423242324430
+0541423242324430
+0541423242324430
+0541423242324430
+0000000000000000

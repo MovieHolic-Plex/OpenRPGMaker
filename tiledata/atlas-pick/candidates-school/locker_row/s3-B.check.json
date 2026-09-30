@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/locker_row/s3-B.pxg",
+ "set": "school",
+ "id": "locker_row",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "note": "센 명암: 짙은 남회색 문에 왼쪽 밝은 모서리와 깊은 통풍 줄, 밝은 윗띠, 빨간 손잡이, 빨간 티·체육복 끝이 삐져나옴",
+ "ok": true
+}

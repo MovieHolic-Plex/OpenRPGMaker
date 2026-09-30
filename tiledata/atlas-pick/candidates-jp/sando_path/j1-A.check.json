@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/sando_path/j1-A.pxg",
+ "set": "jp",
+ "id": "sando_path",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.168
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "강남식: 돌 5~6단 톤, 반듯한 판석 두 줄 + 틈 어둡게·이끼 점, 흰 자갈 양옆",
+ "ok": true
+}

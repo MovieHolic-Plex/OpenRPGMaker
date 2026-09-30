@@ -1,0 +1,91 @@
+// station_entrance B — 빛 구조: 간판을 안에서 밝혀 흰빛 강하게, 입구 속은 더 어둡게 대비, 간판 밑 그늘, 발치에 안쪽 불빛이 새는 부채꼴 번짐
+@size 80 48
+@cell 16
+@palette palette.pal
+@mat o lacq 1
+@mat O lacq 2
+@mat L lacq 4
+@mat e kgreen 0
+@mat f kgreen 1
+@mat G kgreen 2
+@mat g kgreen 3
+@mat F kgreen 4
+@mat w mwhite 3
+@mat W mwhite 4
+@mat V mwhite 2
+@mat U mwhite 1
+@mat X mwhite 5
+@mat d mconc 1
+@mat c mconc 2
+@mat C mconc 3
+@mat D mconc 4
+@mat E mconc 5
+@mat t mtile 3
+@mat T mtile 4
+@mat s mtile 2
+@mat S mtile 5
+@mat u mtile 1
+@mat a mdglass 0
+@mat b mdglass 1
+@mat h mdglass 2
+@mat i mdglass 3
+@mat j mdglass 4
+@mat k mdglass 5
+@mat p mpave 0
+@mat q mpave 2
+@mat r mpave 4
+@mat P mpave 6
+@mat m mmetal 3
+@mat M mmetal 5
+@mat n mmetal 1
+@mat y taxi 4
+@mat Y taxi 3
+@mblock 0 0
+DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+ddCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCdd
+ddcFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFcdd
+ddcggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggcdd
+ddcggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggcdd
+ddcXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXWcdd
+ddcXXXXXXXXggggggXXXXXXXXXXXXXXXXooooooXoooooooXXXXXXXXXXXXXXXXggggggXXXXXXXWcdd
+ddcXXXXXXXgFFFFFFgXXXXXXXXXXXXXXXoXXXXoXoXXXXXoXXXXXXXXXXXXXXXgFFFFFFgXXXXXXWcdd
+ddcXXXXXXXggggggggXXXXXXXXXXXXXXXooooooXoXXXXXoXXXXXXXXXXXXXXXggggggggXXXXXXWcdd
+ddcXXXXXXXgggXXgggXXXXXXXXXXXXXXXoXXXXoXoooooooXXXXXXXXXXXXXXXgggXXgggXXXXXXWcdd
+ddcXXXXXXXgggXXgggXXXXggggggggXXXooooooXXXXoXXXXXXggggggggXXXXgggXXgggXXXXXXWcdd
+ddcXXXXXXXgggXXgggXXXXggggggggXXXXXoXXXXXXoXoXXXXXggggggggXXXXgggXXgggXXXXXXWcdd
+ddcXXXXXXXgggXXgggXXXXXXXXXXXXXXXooooooXXXoXoXXXXXXXXXXXXXXXXXgggXXgggXXXXXXWcdd
+ddcXXXXXXXggggggggXXXXXXXXXXXXXXXoXoXXoXXoXXXoXXXXXXXXXXXXXXXXggggggggXXXXXXWcdd
+ddcXXXXXXXggggggggXXXXXXXXXXXXXXXoXoXXoXXoXXXoXXXXXXXXXXXXXXXXggggggggXXXXXXWcdd
+ddcXXXXXXXXggggggXXXXXXXXXXXXXXXXXXoXXXXoXXXXXoXXXXXXXXXXXXXXXXggggggXXXXXXXWcdd
+ddcXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXoXoXoXXoXXXXXoXXXXXXXXXXXXXXXXXXXXXXXXXXXXXWcdd
+ddcXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXWcdd
+ddcGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGcdd
+ddcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcdd
+ddccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+ssssssssssssssDccdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaDccdssssssssssssss
+ssssssssssssssDccdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaDccdssssssssssssss
+ssssssssssssssDccdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaDccdssssssssssssss
+TttsttttttsttsDccdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaDccdTttsttttttstts
+TttsttttttsttsDccdbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbDccdTttsttttttstts
+TttsttttttsttsDccdkkkkkkkkMMMMMMkkkkkkkkMMMMMMkkkkkkkkMMMMMMkkDccdTttsttttttstts
+TsssssssssssssDccdhhhhhhhhiiiiiihhhhhhhhiiiiiihhhhhhhhiiiiiihhDccdTsssssssssssss
+TttsttttttsttsDccdhhhhhhhhiMMMMihhhhhhhhiMMMMihhhhhhhhiMMMMihhDccdTttsttttttstts
+TttsttttttsttsDccdhhhhhhhhiMMMMijjjjjjjhiMMMMijjjjjjjhiMMMMihhDccdTttsttttttstts
+TttsttttttsttsDccdhhhhhhhhiiiiiihhhhhhhhiiiiiihhhhhhhhiiiiiihhDccdTttsttttttstts
+TttsttttttsttsDccdhhhhhhhhiiiiiihhhhhhhhiiiiiihhhhhhhhiiiiiihhDccdTttsttttttstts
+TttsttttttsttsDccdhhhhhhhhiiiiiihhhhhhhhiiiiiihhhhhhhhiiiiiihhDccdTttsttttttstts
+TsssssssssssssDccdbbbbbbbbiiiiiibbbbbbbbiiiiiibbbbbbbbiiiiiibbDccdTsssssssssssss
+TttsttttttsttsDccdPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPDccdTttsttttttstts
+TttsttttttsttsDccdrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrDccdTttsttttttstts
+TttsttttttsttsDccdrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrDccdTttsttttttstts
+TttsttttttsttsDccdrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrDccdTttsttttttstts
+TttsttttttsttsDccdrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrDccdTttsttttttstts
+TsssssssssssssDccdrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrDccdTsssssssssssss
+rrrrrrrrrrrrrrrrrr%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%rrrrrrrrrrrrrrrrrr
+pqqqqqqqqqpqqq%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%qqqqpqqqqqqqqq
+----------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%----------
+~-~-~-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%~-~-~-
+pp%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%pp

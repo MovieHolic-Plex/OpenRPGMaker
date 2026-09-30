@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/locker_row/h34-A.pxg",
+ "set": "school",
+ "id": "locker_row",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  2,
+  30,
+  31
+ ],
+ "note": "교실 사물함 H 방법 — Tibo 3/4 생성 → C(school 팔레트 10색) → Sonnet 손질",
+ "ok": true
+}

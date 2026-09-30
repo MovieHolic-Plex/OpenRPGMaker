@@ -1,0 +1,53 @@
+{
+ "id": "altar E",
+ "slug": "altar_E",
+ "name_ko": "독립 제단(2×2, 옆에서 본 것)",
+ "category": "예배당",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  48
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 32,
+  "h": 40
+ },
+ "footprint": {
+  "w": 2,
+  "h": 2
+ },
+ "overhang_px": 8,
+ "surface": {
+  "rect_px": [
+   8,
+   2,
+   29,
+   24
+  ],
+  "capacity": 3,
+  "note": "탁상 물건의 밑변을 윗면 안에 둔다"
+ },
+ "description": "독립 제단(2×2). 성단소 가운데, 사방으로 돌 수 있게 둔다. 위에 촛대·성경·성작.",
+ "where": "성단소 가운데, 사방으로 돌 수 있게 둔다. 위에 촛대·성경·성작.",
+ "placement": [
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다",
+  "윗면에 탁상 물건(goods:*)을 올린다. 비워 두지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "v5_colors": 15,
+ "material": "stone",
+ "related": [
+  "altar rail",
+  "reredos",
+  "paschal candle",
+  "choir stall"
+ ]
+}

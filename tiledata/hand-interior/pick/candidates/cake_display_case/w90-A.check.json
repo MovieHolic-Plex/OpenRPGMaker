@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cake_display_case/w90-A.pxg",
+ "id": "cake display case",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "note": "케이크 진열장: 카운터를 밝은 윗면 4행(뒤 가장자리→앞 모서리 하이라이트)+처마 그림자+앞면 5행으로 다시 찍고 유리 돔을 두 행 줄임",
+ "ok": true
+}

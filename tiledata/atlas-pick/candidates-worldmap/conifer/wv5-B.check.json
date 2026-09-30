@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/conifer/wv5-B.pxg",
+ "set": "worldmap",
+ "id": "conifer",
+ "hard": [],
+ "warn": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_w 6≠3, inner_ne↔edge_e 6≠2, inner_sw↔edge_w 6≠3, inner_se↔edge_e 6≠1"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.216
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "B: 4층 키 큰 세모, 정수리 5·오른아래 1로 대비를 키우고 바탕을 더 어둡게, 발치 그림자.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.355
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.048
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     6,
+     7,
+     3,
+     0,
+     0,
+     0,
+     0,
+     7,
+     6,
+     7,
+     3,
+     0,
+     0,
+     0,
+     0,
+     7
+    ],
+    "s": [
+     8,
+     7,
+     7,
+     7,
+     5,
+     6,
+     7,
+     7,
+     8,
+     7,
+     7,
+     7,
+     5,
+     6,
+     7,
+     7
+    ],
+    "w": [
+     3,
+     2,
+     3,
+     2,
+     2,
+     1,
+     2,
+     1,
+     1,
+     4,
+     7,
+     6,
+     6,
+     5,
+     6,
+     3
+    ],
+    "e": [
+     1,
+     1,
+     2,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0,
+     2,
+     6,
+     4,
+     5,
+     4,
+     5,
+     2
+    ]
+   },
+   "strait": 2,
+   "steps": {
+    "n": 7,
+    "s": 2,
+    "w": 3,
+    "e": 4
+   },
+   "amp": {
+    "n": 7,
+    "s": 3,
+    "w": 6,
+    "e": 6
+   },
+   "joinWorst": 5
+  },
+  "seam": 1.08
+ }
+}

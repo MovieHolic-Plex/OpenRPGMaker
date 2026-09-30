@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/blood_trail/h3-B.pxg",
+ "set": "horror",
+ "id": "blood_trail",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  2,
+  31,
+  14
+ ],
+ "note": "빛 대비 강화: 줄 윗선 blood 5 단으로 번쩍, 속은 2, 아랫선은 0 으로 검게, 접지 그림자 반투명 한 줄",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_creaky_broken/h3-A.pxg",
+ "set": "horror",
+ "id": "floor_creaky_broken",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.195
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "뚫린 바닥(A): 바닥 A 그대로 가운데만 무너졌다 — 위 가장자리에 판 두께 선, 매달린 부러진 판, 아래는 어둠",
+ "ok": true
+}

@@ -1,0 +1,39 @@
+{
+ "id": "meat hooks",
+ "slug": "meat_hooks",
+ "name_ko": "고기 걸이대",
+ "category": "정육점",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "고기를 매단 걸이대(2칸). 정육점 북쪽 벽 앞에 세운다.",
+ "where": "정육점 북쪽 벽 앞에 세운다.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "v5_colors": 14,
+ "material": "wood",
+ "related": []
+}

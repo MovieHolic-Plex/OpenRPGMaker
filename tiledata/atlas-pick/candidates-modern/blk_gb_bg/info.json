@@ -1,0 +1,70 @@
+{
+ "id": "blk-gb-bg",
+ "slug": "blk_gb_bg",
+ "name": "푸른 커튼월",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "푸른 커튼월 · gb.bg.d.l.0 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gnb-bg-d-l-0",
+  "gnb-bg-d-l-1",
+  "gnb-bg-d-l-2",
+  "gnb-bg-d-m-0",
+  "gnb-bg-d-m-1",
+  "gnb-bg-d-m-2",
+  "gnb-bg-d-r-0",
+  "gnb-bg-d-r-1",
+  "gnb-bg-d-r-2",
+  "gnb-bg-u-l-0",
+  "gnb-bg-u-l-1",
+  "gnb-bg-u-l-2",
+  "gnb-bg-u-m-0",
+  "gnb-bg-u-m-1",
+  "gnb-bg-u-m-2",
+  "gnb-bg-u-r-0",
+  "gnb-bg-u-r-1",
+  "gnb-bg-u-r-2"
+ ],
+ "tiles": [
+  5646,
+  5647,
+  5648,
+  5649,
+  5650,
+  5651,
+  5652,
+  5653,
+  5654,
+  5655,
+  5656,
+  5657,
+  5658,
+  5659,
+  5660,
+  5661,
+  5662,
+  5663
+ ],
+ "ctx": {
+  "at": [
+   16,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   1,
+   68
+  ]
+ }
+}

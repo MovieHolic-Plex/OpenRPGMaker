@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_shelf/w7-C.pxg",
+ "id": "bread shelf",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "실루엣을 바꿈: 위 모서리를 둥글린 틀, 윗단 세운 바게트 바구니·가운데 쌓은 둥근빵·아래 롤빵 쟁반으로 단마다 다른 빵, 줄무늬 차양",
+ "ok": true
+}

@@ -1,0 +1,107 @@
+// bed_manor hf4-B
+@size 16 48
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mat s sheet 0
+@mat v velv 0
+@mat t tarn 0
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.mmmmmmmmmmmmmm.
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmmmmmmmmmmmmmmm
+.mmmmmmmmmmmmmm.
+@tblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.00000000000000.
+0666666666666650
+0666666666666540
+0651111111111430
+0651666666661430
+0651666666661430
+0651666666661430
+0651666666661430
+0651666666661430
+0651666666661430
+0651111111111430
+0653333333333320
+0622222222222230
+0622000000002230
+0620666666660230
+0620666666550230
+0620555544440230
+0622000000002230
+0611111111111130
+0666666666666630
+0655555555555530
+0622222222222230
+0600000000000030
+0654444444444230
+0654444444444230
+0653333333333230
+0654444444444230
+0654444444444230
+0653333333333230
+0654444444444230
+0654444444444230
+0653333333333230
+0654444444444230
+0655555555555530
+0622222222222230
+0500000000000020
+0666666666666660
+.03333333333330.

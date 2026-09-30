@@ -1,0 +1,41 @@
+// tower wv8-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wroofb 0
+@mat b wstone 0
+@mat c mout 0
+@mblock 0 0
+.......a........
+......aaa.......
+.....aaaaa......
+....aaaaaaa.....
+...aaaaaaaaa....
+..aaaaaaaaaaa...
+.aaaaaaaaaaaaa..
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbcbbcbbbb..
+..bbbbcbbcbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbcbbbbbb..
+..bbbbbcbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbcccbbbbb..
+..bbbcccccbbbb..
+..bbbcccccbbbb..
+..bbbcccccbbbb..
+..bbbcccccbbbb..
+..bbbcccccbbbb..

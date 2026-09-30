@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/standing_sign/j4-B.pxg",
+ "set": "jp",
+ "id": "standing_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.088
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  0,
+  15,
+  15
+ ],
+ "note": "B 방향: 밝은 윗면 띠와 아래쪽 어두운 그림자 두 줄로 빛 구조를 강하게. 칠판 오른쪽 아래가 어두워지고 노란 분필 점이 빛 포인트.",
+ "ok": true
+}

@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow_conifer/w4-C.pxg",
+ "set": "worldmap",
+ "id": "snow_conifer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  2,
+  0,
+  47,
+  63
+ ],
+ "note": "실루엣 재해석 — 폭 5px 4단 첨탑 전나무에 꼭대기·단 어깨 눈, 성기게",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.129
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.242
+  },
+  "seam": 0.7
+ }
+}

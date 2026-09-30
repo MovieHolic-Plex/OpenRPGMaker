@@ -1,0 +1,8 @@
+{"round": "r1", "i": 1, "ok": true, "sec": 52, "model": "sunburst", "err": null, "t": "2026-09-30 14:23:42"}
+{"round": "r1", "i": 2, "ok": true, "sec": 59, "model": "sunburst", "err": null, "t": "2026-09-30 14:23:49"}
+{"round": "r1", "i": 3, "ok": true, "sec": 121, "model": "sunburst", "err": null, "t": "2026-09-30 14:24:52"}
+{"round": "r2", "i": 1, "ok": true, "sec": 56, "model": "sunburst", "err": null, "t": "2026-09-30 14:26:46"}
+{"round": "r2", "i": 3, "ok": true, "sec": 115, "model": "sunburst", "err": null, "t": "2026-09-30 14:27:44"}
+{"round": "r2", "i": 2, "ok": true, "sec": 116, "model": "sunburst", "err": null, "t": "2026-09-30 14:27:46"}
+{"round": "r3", "i": 2, "ok": true, "sec": 46, "model": "sunburst", "err": null, "t": "2026-09-30 14:28:41"}
+{"round": "r3", "i": 1, "ok": true, "sec": 67, "model": "sunburst", "err": null, "t": "2026-09-30 14:29:02"}

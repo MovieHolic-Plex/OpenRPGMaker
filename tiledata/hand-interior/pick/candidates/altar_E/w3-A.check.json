@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar_E/w3-A.pxg",
+ "id": "altar E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.227
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 21,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "note": "v5 다듬기 — 천 윗면을 위 밝은 흰색(white:6)→오른쪽 그늘(white:2~3)로 세우고 윗변 윤곽 marble:2, 밑단에 금 술(gold:3/5 교대), 보라 띠는 왼쪽 밝은 면·오른쪽 그늘 + 금 십자에 그림자 한 줄. 밑돌은 왼쪽 marble:5 하이라이트·오른쪽 marble:0~1 그늘, 돌 이음 두 줄, 가운데 금 십자 문양판에 어두운 테.",
+ "ok": true
+}

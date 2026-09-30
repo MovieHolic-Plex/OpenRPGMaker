@@ -1,0 +1,33 @@
+// star_chart 후보 B (w3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+.............A..
+...............-
+...BDBBBBBBBB..~
+...BBCBBBBBDB..~
+...BBBDCCBCBB..~
+...BBBBBBDBBB..~
+...BBBBBBBBBB..~
+....BBBBBBBD...~
+....DCCDBBBB...~
+...............~
+..A............~
+...............~
+...~~~~~~~~~~~~-
+................
+@px 1 1 wood:1 2 1 wood:1 3 1 wood:1 4 1 wood:1 5 1 wood:1 6 1 wood:1 7 1 wood:1 8 1 wood:1 9 1 wood:1 10 1 wood:1
+@px 11 1 wood:1 12 1 wood:1 13 1 wood:1 14 1 wood:1 1 2 wood:1 2 2 wood:7 3 2 wood:7 4 2 wood:7 5 2 wood:7 6 2 wood:7
+@px 7 2 wood:7 8 2 wood:7 9 2 wood:7 10 2 wood:7 11 2 wood:7 12 2 wood:7 14 2 wood:1 1 3 wood:1 2 3 wood:7 3 3 blue:0
+@px 4 3 blue:0 5 3 blue:0 6 3 blue:0 7 3 blue:0 8 3 blue:0 9 3 blue:0 10 3 blue:0 11 3 blue:0 12 3 blue:0 13 3 wood:3
+@px 14 3 wood:1 1 4 wood:1 2 4 wood:7 13 4 wood:3 14 4 wood:1 1 5 wood:1 2 5 wood:7 13 5 wood:3 14 5 wood:1 1 6 wood:1
+@px 2 6 wood:7 13 6 wood:3 14 6 wood:1 1 7 wood:1 2 7 wood:7 13 7 wood:3 14 7 wood:1 1 8 wood:1 2 8 wood:7 13 8 wood:3
+@px 14 8 wood:1 1 9 wood:1 2 9 wood:7 3 9 blue:1 12 9 blue:1 13 9 wood:3 14 9 wood:1 1 10 wood:1 2 10 wood:7 3 10 blue:1
+@px 12 10 blue:1 13 10 wood:3 14 10 wood:1 1 11 wood:1 2 11 wood:7 3 11 blue:1 4 11 blue:1 5 11 blue:1 6 11 blue:1 7 11 blue:1
+@px 8 11 blue:1 9 11 blue:1 10 11 blue:1 11 11 blue:1 12 11 blue:1 13 11 wood:3 14 11 wood:1 1 12 wood:1 3 12 wood:3 4 12 wood:3
+@px 5 12 wood:3 6 12 wood:3 7 12 wood:3 8 12 wood:3 9 12 wood:3 10 12 wood:3 11 12 wood:3 12 12 wood:3 13 12 wood:2 14 12 wood:1
+@px 1 13 wood:1 2 13 wood:1 3 13 wood:1 4 13 wood:1 5 13 wood:1 6 13 wood:1 7 13 wood:1 8 13 wood:1 9 13 wood:1 10 13 wood:1
+@px 11 13 wood:1 12 13 wood:1 13 13 wood:1 14 13 wood:1

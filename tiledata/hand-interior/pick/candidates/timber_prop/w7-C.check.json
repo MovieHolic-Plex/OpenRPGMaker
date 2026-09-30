@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/timber_prop/w7-C.pxg",
+ "id": "timber prop",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 4,
+ "bbox": [
+  0,
+  9,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  9,
+  15,
+  47
+ ],
+ "note": "실루엣을 바꿈: 맨 기둥 대신 들보 밑 빗받침 두 개와 아래 넓은 밑돌을 단 지지 기둥",
+ "ok": true
+}

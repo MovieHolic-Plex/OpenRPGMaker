@@ -1,0 +1,23 @@
+{
+ "id": "lab_bench",
+ "slug": "lab_bench",
+ "name": "과학실 실험대",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "검은 상판 실험대 — 가운데 작은 개수대·수도꼭지, 가스 꼭지 두 개, 비커·플라스크 한두 점(유리 반사 1px). 몸통은 흰 나무 서랍장, 윗면이 높이의 ¾.",
+ "palette_hint": "vblack 상판, vwhite/cream 몸통, mglass 비커",
+ "pair": [
+  "lab_cabinet"
+ ],
+ "worker": "s5"
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/gravestone_cross/h5-C.pxg",
+ "set": "horror",
+ "id": "gravestone_cross",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 15,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "왼쪽 팔이 부러져 떨어져 나가고 위가 오른쪽으로 기운 십자, 발치에 파편 조각과 흙무더기",
+ "ok": true
+}

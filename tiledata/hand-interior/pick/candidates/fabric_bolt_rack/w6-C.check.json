@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fabric_bolt_rack/w6-C.pxg",
+ "id": "fabric bolt rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "colors",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 47,
+ "v5_colors": 39,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "눕힌 촘촘한 5단 대신 천 말이를 세운 3단 진열대로 바꾸고 말이마다 윗면 원과 좌·중·우 세 톤으로 둥글게, 선반 기둥을 굵게",
+ "ok": true
+}

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_bundle/w9-A.pxg",
+ "id": "firewood bundle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.072
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  3,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  14,
+  14
+ ],
+ "note": "v5 그대로, 왼쪽 단면 테두리를 어두운 톤으로 통일하고 바닥 아래 흘러내린 조각 제거",
+ "ok": true
+}

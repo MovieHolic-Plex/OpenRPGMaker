@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shield/w3-B.pxg",
+ "id": "shield",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "note": "강한 명암 — 좌상단 빛: 테두리 iron:5 하이라이트, 붉은 면 red:5 번쩍임, 오른쪽·아래로 red:2·red:1 로 깊게, 십자 교차점 F. 벽에 오른쪽 아래 반투명 그림자.",
+ "ok": true
+}

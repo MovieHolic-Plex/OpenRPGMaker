@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/peel_rack/w4-B.pxg",
+ "id": "peel rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "횡목 윗면을 가장 밝게, 삽은 왼쪽 밝고 오른쪽 어둡게 한 단씩 더 벌리고, 횡목 밑과 삽 오른쪽·아래에 벽에 진 그림자를 깔아 벽에서 떠 있는 느낌.",
+ "ok": true
+}

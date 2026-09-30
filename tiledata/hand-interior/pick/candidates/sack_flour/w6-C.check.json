@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sack_flour/w6-C.pxg",
+ "id": "sack:flour",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 11,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  2,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  12,
+  13
+ ],
+ "note": "다시 생각: 입 벌린 자루 위로 가루가 수북, 겉에 붉은 도장 라벨(밀가루 표시) — 알아보기 우선",
+ "ok": true
+}

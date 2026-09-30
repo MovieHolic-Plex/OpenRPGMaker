@@ -1,0 +1,41 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a brass
+@mat b gold
+@mat c iron
+@mat d wood
+@mblock 0 0
+................
+.......aa.aaaa..
+......aaaaaaaa..
+..aaaaaaaa.a.a..
+..aaaa.aa..a.a..
+..a.a..aa.abbba.
+.accca.aaaaaaaaa
+aaaaaaaaa..aaa..
+.aaaaaaaaa......
+..aaaaaaaaa.....
+...dddddddddd...
+..dddddddddddd..
+..dddddddddddd..
+..dddddddddddd..
+..dddddddddddd..
+...dddddddddd...
+@tblock 0 0
+................
+.......64.5552..
+......66552221..
+..46663422.3.2..
+..2333.52..3.2..
+..3.2..52.36432.
+.35552.526666664
+666666452..321..
+.544424333......
+..321544442.....
+...4444444444...
+..555555555553..
+..666666666664..
+..333333333333..
+..222222222222..
+...1111111111...

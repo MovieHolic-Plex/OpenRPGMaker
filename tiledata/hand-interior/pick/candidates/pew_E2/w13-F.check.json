@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew_E2/w13-F.pxg",
+ "id": "pew E2",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "note": "어두운 갈색 나무에 방석 3개로 잘게 나눠 좌판 길이감을 살림. 앞 턱과 옆 판을 확실히 두고 바닥 접지 그림자를 길게 넣음.",
+ "ok": true
+}

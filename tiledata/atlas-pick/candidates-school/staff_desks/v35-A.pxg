@@ -1,0 +1,57 @@
+// staff_desks v35-A: 교무실 책상 섬 3/4 — 강철 상판 T13(모니터 셋·서류)·앞 F12 서랍 셋 (폭 45px)
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat o viron 1
+@mat O viron 2
+@mat t stile 3
+@mat u stile 4
+@mat a stile 5
+@mat s stile 2
+@mat f stile 1
+@mat q viron 3
+@mat p viron 4
+@mat m vblack 1
+@mat n vblack 2
+@mat g vglass 3
+@mat h vglass 5
+@mat j vglass 4
+@mat r vred 3
+@mat y vyellow 3
+@mat l vlinen 5
+@mat L vlinen 3
+@mat c vbrass 5
+@mat w vwhite 5
+@mblock 0 0
+................................................
+................................................
+................................................
+................................................
+................................................
+................................................
+.OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO..
+.OaaaammmmmmaaaaaaaammmmmmaaaaaaaaammmmmmaaaaO..
+.OttttmhjggmttllllttmhjggmttwwwttttmhjggmtyrtO..
+.OttttmggggmttllllttmggggmttwwwttttmggggmtrrtO..
+.OttttttnnttttLLLLttttnntttttttttttttnntttrrtO..
+.OtttttttttttttttttttttttttttttttttttttttttttO..
+.OsssssssssssssssssssssssssssssssssssssssssssO..
+.OuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuO..
+.OtttttttttttttttttttttttttttttttttttttttttttO..
+.OtttttttttttttttttttttttttttttttttttttttttttO..
+.OtttttttttttttttttttttttttttttttttttttttttttO..
+.OtttttttttttttttttttttttttttttttttttttttttttO..
+.OtttttttttttttttttttttttttttttttttttttttttttO..
+.OOpppppppppppppppppppppppppppppppppppppppppOO..
+.OOsssssssssssssssssssssssssssssssssssssssssOO..
+.OOppppppppppppfffpppppppppppfffppppppppppppOO..
+.OOqqqqcccqqqqffffqqqqcccqqqffffqqqqcccqqqqfOO..
+.OOqqqqqqqqqqqffffqqqqqqqqqqffffqqqqqqqqqqqfOO..
+.OOqOOOOOOOOOOffffqOOOOOOOOOffffqOOOOOOOOOOfOO..
+.OOqqqqqqqqqqqffffqqqqqqqqqqffffqqqqqqqqqqqfOO..
+.OOqqqqcccqqqqffffqqqqcccqqqffffqqqqcccqqqqfOO..
+.OOqqqqqqqqqqqffffqqqqqqqqqqffffqqqqqqqqqqqfOO..
+.OOqqqqqqqqqqqffffqqqqqqqqqqffffqqqqqqqqqqqfOO..
+.OOfffffffffffffffffffffffffffffffffffffffffOO..
+.ooooooooooooooooooooooooooooooooooooooooooooo..
+....~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

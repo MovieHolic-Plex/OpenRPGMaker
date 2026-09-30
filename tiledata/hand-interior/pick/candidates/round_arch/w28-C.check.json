@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_arch/w28-C.pxg",
+ "id": "round arch",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 5,
+ "v5_colors": 4,
+ "bbox": [
+  11,
+  0,
+  36,
+  29
+ ],
+ "v5_bbox": [
+  12,
+  0,
+  35,
+  29
+ ],
+ "note": "w5-C 모양 그대로, 회색 돌(stone) 결로 다시 칠함: 벽·바닥의 돌 단과 이어지는 차가운 회색, 이음 줄 강조.",
+ "ok": true
+}

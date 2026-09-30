@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/nurse_bed/v34-A.pxg",
+ "set": "school",
+ "id": "nurse_bed",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.211
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "보건실 침대 3/4 — 흰 시트·베개 윗면이 길게 보이고 발치는 보라 담요, 앞에 매트리스 옆면과 쇠 다리",
+ "ok": true
+}

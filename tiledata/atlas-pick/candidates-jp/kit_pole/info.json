@@ -1,0 +1,283 @@
+{
+ "id": "kit_pole",
+ "slug": "kit_pole",
+ "kind": "kit",
+ "name": "킷: 전봇대·전선",
+ "scene": "주택가 골목",
+ "cells": [
+  8,
+  4
+ ],
+ "canvas": [
+  128,
+  64
+ ],
+ "layer": "kit",
+ "layer_ko": "조립 킷 부품 시트(부품마다 층이 다르다 — kits-<세트>.json)",
+ "description": "기둥 꼭대기(완목·애자) + 완목 좌우 끝(전선이 매이는 자리) + 기둥(세로 반복)·변압기·표지판 붙은 기둥·가로등 붙은 기둥 + 밑동(막힘) + 버팀줄 + 전선(가로 반복·처짐). 기둥 높이·간격 자유, 전선이 기둥 사이를 잇는다. (부품 11 · 조립 예 4)",
+ "palette_hint": "pole 콘크리트 기둥, mmetal 완목·변압기, washi 애자, lacq 전선, taxi 표지 띠",
+ "worker": "k10",
+ "replaces": [
+  "utility_pole",
+  "power_lines"
+ ],
+ "aliases": {},
+ "contract": [
+  "기둥은 칸 가운데 4~5px(x=6~10), 모든 기둥 부품이 같은 x·명암. 세로로 이어도 한 줄.",
+  "전선 세 가닥 높이: 완목 끝(arm_l·arm_r)에서 y=4·7·10, wire_m 도 같은 높이(좌우 끝 높이가 같아 가로로 이어 붙는다). wire_dip 은 가운데가 1~2px 처지고 양 끝은 같은 높이.",
+  "기둥 밑동(pole_base)·버팀줄 발(stay 아랫칸)만 막힘. 나머지는 사람 위(C)."
+ ],
+ "parts": [
+  {
+   "slug": "pole_top",
+   "name": "기둥 꼭대기 + 완목",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "기둥 끝 + 가로 완목 가운데 + 애자 몇 개.",
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "slug": "arm_l",
+   "name": "완목 왼 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "C",
+   "desc": "완목 왼 끝 애자 + 왼쪽으로 나가는 전선 세 가닥 시작.",
+   "at": [
+    1,
+    0
+   ]
+  },
+  {
+   "slug": "arm_r",
+   "name": "완목 오른 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "C",
+   "desc": "완목 오른 끝 + 오른쪽 전선 시작.",
+   "at": [
+    2,
+    0
+   ]
+  },
+  {
+   "slug": "pole",
+   "name": "기둥",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": "y",
+   "walk": "C",
+   "desc": "콘크리트 기둥(발판 볼트 점 드문드문).",
+   "at": [
+    3,
+    0
+   ]
+  },
+  {
+   "slug": "trans",
+   "name": "기둥 + 변압기",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "회색 원통 변압기가 붙은 기둥.",
+   "at": [
+    4,
+    0
+   ]
+  },
+  {
+   "slug": "pole_tag",
+   "name": "기둥 + 표지판",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "노랑·검정 띠 또는 동네 이름 판이 감긴 기둥.",
+   "at": [
+    5,
+    0
+   ]
+  },
+  {
+   "slug": "pole_lamp",
+   "name": "기둥 + 가로등",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "오른쪽으로 나온 작은 가로등 팔 + 등(% 번짐).",
+   "at": [
+    6,
+    0
+   ]
+  },
+  {
+   "slug": "pole_base",
+   "name": "기둥 밑동",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "밑동 + 오른 아래 그림자.",
+   "at": [
+    7,
+    0
+   ]
+  },
+  {
+   "slug": "stay",
+   "name": "버팀줄(3칸)",
+   "cells": [
+    1,
+    3
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": [
+    "C",
+    "C",
+    "X"
+   ],
+   "desc": "기둥 오른쪽 옆 칸: 위에서 아래로 비스듬한 버팀줄 + 발(노란 덮개).",
+   "at": [
+    0,
+    1
+   ]
+  },
+  {
+   "slug": "wire_m",
+   "name": "전선",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "전선 세 가닥(가로 반복).",
+   "at": [
+    1,
+    1
+   ]
+  },
+  {
+   "slug": "wire_dip",
+   "name": "전선(처짐)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "가운데가 조금 처진 전선(기둥 사이 가운데 칸들).",
+   "at": [
+    2,
+    1
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "single",
+   "name": "전봇대 하나(변압기·표지)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     ". pole_top .",
+     ". trans .",
+     ". pole .",
+     ". pole_tag .",
+     ". pole_base ."
+    ],
+    "upper": [
+     "arm_l . arm_r"
+    ]
+   }
+  },
+  {
+   "id": "span",
+   "name": "두 기둥 사이 전선",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     ". pole_top . . . . . . pole_top .",
+     ". pole . . . . . . trans .",
+     ". pole_lamp . . . . . . pole .",
+     ". pole . . . . . . pole_tag .",
+     ". pole_base . . . . . . pole_base ."
+    ],
+    "upper": [
+     "arm_l . arm_r wire_m wire_dip wire_dip wire_m arm_l . arm_r"
+    ]
+   }
+  },
+  {
+   "id": "stay",
+   "name": "버팀줄 달린 전봇대",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     ". pole_top . .",
+     ". pole . .",
+     ". pole stay .",
+     ". pole + .",
+     ". pole_base + ."
+    ],
+    "upper": [
+     "arm_l . arm_r ."
+    ]
+   }
+  },
+  {
+   "id": "street3",
+   "name": "세 기둥 골목(높이 다름)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     ". pole_top . . . . pole_top . . . . pole_top .",
+     ". trans . . . . pole . . . . pole .",
+     ". pole . . . . pole_lamp . . . . trans .",
+     ". pole . . . . pole . . . . pole .",
+     ". pole_tag . . . . pole . . . . pole_tag .",
+     ". pole_base . . . . pole_base . . . . pole_base ."
+    ],
+    "upper": [
+     "arm_l . arm_r wire_dip wire_dip arm_l . arm_r wire_m wire_dip arm_l . arm_r"
+    ]
+   }
+  }
+ ]
+}

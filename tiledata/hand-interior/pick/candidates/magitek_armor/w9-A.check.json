@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magitek_armor/w9-A.pxg",
+ "id": "magitek armor",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  4,
+  4,
+  27,
+  47
+ ],
+ "v5_bbox": [
+  3,
+  4,
+  28,
+  47
+ ],
+ "note": "A 다듬기: 지그재그 다리를 곧게, 몸통 가장자리 한 줄을 일관된 어두운 외곽선으로, 14행 튀어나온 한 줄 제거",
+ "ok": true
+}

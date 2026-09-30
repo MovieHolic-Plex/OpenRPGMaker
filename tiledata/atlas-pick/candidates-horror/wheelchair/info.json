@@ -1,0 +1,22 @@
+{
+ "id": "wheelchair",
+ "slug": "wheelchair",
+ "name": "휠체어",
+ "scene": "폐병원",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "빈 휠체어(남쪽을 향해 살짝 비스듬히): 큰 바퀴 두 개가 세로 타원, 앉는 천(바랜 남색 또는 회녹), 등받이 손잡이 두 개, 발판. 한쪽 바퀴가 기울어 녹슮. 1×1 에서 휠체어로 읽혀야 한다 — 안 되면 1×2 로 키우자고 보고.",
+ "palette_hint": "tin/rust 틀, ward/vblue 천, void 바퀴 속",
+ "worker_v1": "h4",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h4"
+}

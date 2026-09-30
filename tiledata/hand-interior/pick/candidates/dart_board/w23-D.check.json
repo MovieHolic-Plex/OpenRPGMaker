@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dart_board/w23-D.pxg",
+ "id": "dart board",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 다트판은 2x2 로 하되, 66% 정도만 차지하는 큰 버전으로."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 7,
+ "bbox": [
+  5,
+  1,
+  26,
+  26
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "정석 20쐐기 22px. 지난 w11-D/E/F 미선택 진단: 쐐기 8~12개로 굵어 꽃·가면처럼 읽히고 갈색 벽 위 원색 빨강·초록이 튀며 걸이 끈·그림자 단서가 약함 -> 20쐐기 무광 빨강·초록, 못+짚끈+그림자 한 줄",
+ "ok": true
+}

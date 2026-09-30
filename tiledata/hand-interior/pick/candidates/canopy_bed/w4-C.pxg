@@ -1,0 +1,66 @@
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 6
+@mat c wood 3
+@mat i wood 7
+@mat j wood 5
+@mat k wood 4
+@mat l wood 0
+@mat m wood 2
+@mat u purple 2
+@mat v purple 6
+@mat w gold 5
+@mat x gold 3
+@mat y gold 4
+@mat z gold 6
+@mblock 0 0
+.wx.........DDDDDDDD.........zw.
+wyx......DEEEEEHHEEEEED......wyx
+.x....DEEEEEEEEHHEEEEEEEED....x.
+aicDFFFFFFFFFFFFFFFFFFFFFFFFDbca
+abcFFFFFFFFFFFFFFFFFFFFFFFFFFbca
+abcGGGGGGGGGGGGGGGGGGGGGGGGGGbca
+abcGGHGGGGGHGGGGGHGGGGGHGGGGGbca
+abcGFFFG....D.....D.....GFFFGbca
+abcGFFFG................GFFFGbca
+abcGEFFG................GFFEGbca
+abcGFFG....aiiiiiiiia....GFFGbca
+abcGFFG..aiiiiiiiiiiiia..GFFGbca
+abcGEFGaiiiiiiiiiiiiiiiiaGFEGbca
+abcHHaiiiiiiiiiiiiiiiiiiiiaHHbca
+abcGbbbbbbbbbbbbbbbbbbbbbbbbGbca
+abcGjjjccccccccccccccccccjjjGbca
+abcGjjjckkkkkkkyykkkkkkkkjjjGbca
+abcGjjjckkkkkkkxxkkkkkkkkjjjGbca
+abcGjjjckkkkkkkkkkkkkkkkkjjjGbca
+abcGccccccccccccccccccccccccGbca
+abcGaaaaaaaaaaaaaaaaaaaaaaaaGbca
+abcllllllllllllllllllllllllllbca
+abc.NNNNNNNNNNN..NNNNNNNNNNN.bca
+abcNOPPPPPPPPPONNOPPPPPPPPPONbca
+abcOPPPPPPPPPPPOOPPPPPPPPPPPObca
+abcQOPPPPPPPPPOQQOPPPPPPPPPOQbca
+abcRQOOOOOOOOOQRRQOOOOOOOOOQRbca
+abc.NRRRRRRRRRN..NRRRRRRRRRN.bca
+abcSSSSSSSSSSSSSSSSSSSSSSSSSSbca
+abcSSMSSSSSMSSSSSMSSSSSMSSSSSbca
+abcMMMMMMMMMMMMMMMMMMMMMMMMMMbca
+abcTTTTTTTTTTTTTTTTTTTTTTTTTTbca
+abcUUUUUUUUUUUUUUUUUUUUUUUUUUbca
+abcWUVVVVVVVVVVVVVVVVVVVVVVWWbca
+abcWWVVVVVVVVVVVVVVVVVVVVVVUWbca
+abcWUVUVVVUVVVUVVVUVVVUVVVVWWbca
+abcWWVVVVVVVVVVVVVVVVVVVVVVUWbca
+abcWUVVVVVVVVVVVVVVVVVVVVVVWWbca
+abcWWVVVVVVVVVVVVVVVVVVVVVVUWbca
+abcWUVUVVVUVVVUVVVUVVVUVVVVWWbca
+abcWWVVVVVVVVVVVVVVVVVVVVVVUWbca
+abcWUVVVVVVVVVVVVVVVVVVVVVVWWbca
+abcWWVVVVVVVVVVVVVVVVVVVVVVUWbca
+abcWWWWWWWWWWWWWWWWWWWWWWWWWWbca
+bbbZXZZZZXZZZZXZZZZXZZZZXZZZZbbb
+bbbZYZXZZYZXZZYZXZZYZXZZYZXZZbbb
+biiiiiiiiiiiiiiiiiiiiiiiiiiiiiib
+.lccccccccccccccccccccccccccccl.

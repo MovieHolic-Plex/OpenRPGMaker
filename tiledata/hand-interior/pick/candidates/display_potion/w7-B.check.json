@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/display_potion/w7-B.pxg",
+ "id": "display potion",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "failed": [
+   "pillow",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 23,
+ "v5_colors": 19,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "같은 세 병·진열대에 빛 구조를 세게: 병 왼쪽에 흰 유리 반짝임, 진열대 윗면 두 줄 최고 밝기·앞면 두 단 어둡게·오른쪽 끝 검게, 진열대 오른쪽 아래로 반투명 접지 그림자",
+ "ok": true
+}

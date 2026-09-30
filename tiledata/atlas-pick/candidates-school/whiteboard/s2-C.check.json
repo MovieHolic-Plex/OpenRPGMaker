@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/whiteboard/s2-C.pxg",
+ "set": "school",
+ "id": "whiteboard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.295
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  0,
+  47,
+  29
+ ],
+ "note": "칠판 C 와 같은 나무 틀·위 레일·굵은 받침, 판에 시간표 종이를 붙여 실루엣에 튀어나온 덩이를 만든다",
+ "ok": true
+}

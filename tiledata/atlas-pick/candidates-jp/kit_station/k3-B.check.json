@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_station/k3-B.pxg",
+ "set": "jp",
+ "id": "kit_station",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.367
+ },
+ "refmap": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.336
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 44,
+ "bbox": [
+  0,
+  0,
+  127,
+  79
+ ],
+ "note": "짙은 화강암 처마·남색 간판판(흰 글자)·강한 명암 계단과 낮은 벽 — 그림자 깊은 결(mgran·mnavy·mconc)",
+ "ok": true
+}

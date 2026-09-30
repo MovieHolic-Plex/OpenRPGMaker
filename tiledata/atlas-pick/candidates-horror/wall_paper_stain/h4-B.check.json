@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_paper_stain/h4-B.pxg",
+ "set": "horror",
+ "id": "wall_paper_stain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.156
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "torn B 와 같은 빛 방식: 왼쪽 위 밝게·오른쪽 아래 어둡게, 굵고 짙은 물때 두 줄과 곰팡이가 오른쪽에 몰림",
+ "ok": true
+}

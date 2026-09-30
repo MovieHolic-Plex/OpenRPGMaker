@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/easel/s1-A.pxg",
+ "set": "school",
+ "id": "easel",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  2,
+  15,
+  30
+ ],
+ "note": "A: 소나무 이젤 A자 다리(2px)+캔버스 풍경(하늘·초록·해)+받침 턱 붓 하나",
+ "ok": true
+}

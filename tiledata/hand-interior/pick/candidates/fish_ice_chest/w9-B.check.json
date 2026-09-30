@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fish_ice_chest/w9-B.pxg",
+ "id": "fish ice chest",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 30,
+ "v5_colors": 31,
+ "bbox": [
+  0,
+  3,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "note": "강한 광원: 얼음면 왼쪽 위 밝고 오른쪽 아래 어둡게, 뒤판 안쪽 그림자, 상자 앞판 아래 접지 그림자",
+ "ok": true
+}

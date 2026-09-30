@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_arch/w5-C.pxg",
+ "id": "round arch",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 4,
+ "v5_colors": 4,
+ "bbox": [
+  11,
+  0,
+  36,
+  29
+ ],
+ "v5_bbox": [
+  12,
+  0,
+  35,
+  29
+ ],
+ "note": "재해석: 두께 4의 고리에 쐐기돌(맨 위 4px 밝은 돌)과 다리 머리 받침돌(임포스트)을 달아 석조 문틀처럼 읽히게 함",
+ "ok": true
+}

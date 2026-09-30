@@ -1,0 +1,48 @@
+// mailbox_red C — 실루엣 재해석: 네모 상자형 우체통(넓은 몸통·평평한 뚜껑·돌 다리 둘), 구멍 두 줄, 흰 〒
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o akachin 0
+@mat q akachin 1
+@mat r akachin 2
+@mat R akachin 3
+@mat L akachin 4
+@mat l akachin 5
+@mat k lacq 1
+@mat K lacq 3
+@mat w mwhite 3
+@mat d ishi 1
+@mat f ishi 4
+@mblock 0 0
+................
+................
+................
+................
+.oooooooooooooo.
+.olllLLLLRRRRro.
+.olLLLRRRRRRrqo.
+.oooooooooooooo.
+.oqqqqqqqqqqqqo.
+.olLLRRRRRRrrqo.
+.olLLRRRRRRrrqo.
+.olkkkkkkkkrrqo.
+.olKKKKKKKKrrqo.
+.olLLRRRRRRrrqo.
+.olkkkkkkkkrrqo.
+.olKKKKKKKKrrqo.
+.olLLRRRRRRrrqo.
+.olLLRRRRRRrrqo.
+.olLRRwwwwRRrqo.
+.olLRwwwwwwRrqo.
+.olLRRRwwRRRrqo.
+.olLRRRwwRRRrqo.
+.olLRRRwwRRRrqo.
+.olLLRRRRRRrrqo.
+.olLLRRRRRRrrqo.
+.oooooooooooooo.
+.odfo......odfo.
+.odfo......odfo.
+.oooo......oooo.
+.-~~~~~~~~~~~~-.
+................
+................

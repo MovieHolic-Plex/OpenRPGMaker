@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/window_curtain/hf3-A.pxg",
+ "set": "horror",
+ "id": "window_curtain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "커튼 창 A — window_night A 와 같은 틀, 벨벳 두 폭이 닫혀 가운데 1px 틈으로만 달빛(moon), 세로 주름(밝음 3·중간 2·그늘 1), 위 놋 커튼 봉. 벨벳은 옅은 붉은 기 없이 4단 이하.",
+ "ok": true
+}

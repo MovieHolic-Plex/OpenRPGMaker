@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_down/w29-D.pxg",
+ "id": "stairs down",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "why": "사용자 메모: 2x2 로"
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "lint": {
+  "failed": [
+   "banding"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "돌 턱 둘레 + 계단 여섯 단이 안쪽(위)으로 갈수록 어둡고 좁아져 검은 구멍으로 사라짐, 단마다 밝은 코·아래 그림자 줄, 난간 없음(2x2 통짜)",
+ "ok": true
+}

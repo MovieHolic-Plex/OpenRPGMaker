@@ -1,0 +1,60 @@
+{
+ "id": "lava",
+ "slug": "lava",
+ "name": "용암",
+ "scene": "산·화산",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "ash",
+ "under_ko": "화산재(ash 몸통 고른 판)",
+ "passage": "block",
+ "description": "재 벌판 속 용암 강·호수. 1칸 폭 용암 줄기로도 이어진다 → 기슭 깊이 3~4px, 속 폭 8px 이상. 경계 = 검붉은 굳은 테 1~2px(바로 안쪽이 가장 밝다), 속 = 밝은 주황에 검붉은 껍질 조각. World.png 물가처럼 테가 혹 진 한 줄.",
+ "palette_hint": "wlava 용암, 테 wash",
+ "worker": "wv4",
+ "style": "line",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

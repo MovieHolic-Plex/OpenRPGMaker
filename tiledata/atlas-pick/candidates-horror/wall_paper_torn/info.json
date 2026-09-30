@@ -1,0 +1,40 @@
+{
+ "id": "wall_paper_torn",
+ "slug": "wall_paper_torn",
+ "name": "찢긴 벽지 벽",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "v5 회벽 벽면(2줄 벽)의 저택 판: 위 1줄 반 = 빛바랜 벽지(세로 줄무늬 또는 다마스크 꽃 무늬, 무늬 반복 8px), 아래 반 줄 = 썩은 나무 징두리 판(가로 테 한 줄 밝게). 벽지 한 곳이 찢겨 너덜한 조각이 아래로 말려 있고 속 회벽(dust)이 드러난다. 칸 전부 불투명. 좌우로 이어 붙는다(무늬·징두리가 맞게).",
+ "palette_hint": "paper 벽지, damask 무늬, rot 징두리, dust 속 회벽",
+ "worker_v1": "h4",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "manor",
+ "role": "벽지 벽면 변형(찢김)",
+ "worker": "h4",
+ "set_with": [
+  "wall_paper_stain"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:plaster",
+   "name_ko": "회벽+판자 징두리",
+   "atlas": {
+    "x": 320,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

@@ -1,0 +1,51 @@
+// w10 w10-C
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat G gold 5
+@mat H gold 4
+@mat I gold 3
+@mat a marble 6
+@mat b marble 5
+@mat c marble 4
+@mat d marble 3
+@mat e marble 2
+@mat f marble 1
+@mat g marble 0
+@mat p purple 5
+@mat q purple 4
+@mat r purple 3
+@mat s purple 2
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+.ffffffffffffffffffffffffffffff.
+faaaaaaaaaaaspqqqqrsaaaaaaaaaaaf
+fbbbbbbbbbbbspqqqqrsbbbbbbbbbbbf
+fbbbbbbbbbbbspqqqqrsbbbbbbbbbbbf
+fcccccccccdcspqqqqrscdcccccccccf
+fcccccccccdcspqqqqrscdcccccccccf
+fcccccccccdcspqqqqrscdcccccccccf
+fcccccccccdcspqqqqrscdcccccccccf
+fdddddddddddspqqqqrsdddddddddddf
+faaaaaaaaaaaspqqqqrsaaaaaaaaaaaf
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+ffffffffffffffffffffffffffffffff
+.gggggggggggspqqqqrsggggggggggg.
+...fccddddddspqGHqrsddddddeef...
+...fccddddddspGGGGrsddddddeef...
+...fccddddddspqGHqrsddddddeef...
+...fccddddddspqGHqrsddddddeef...
+...fccddddddHHHHHHHHddddddeef...
+faaaabbbbbbbIIIIIIIIbbbbbbbbbbbf
+fccccccccccccccccccccccccccccccf
+feeeeeeeeeeeeeeeeeeeeeeeeeeeeeef
+gggggggggggggggggggggggggggggggg

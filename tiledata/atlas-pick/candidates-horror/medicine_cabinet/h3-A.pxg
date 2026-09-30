@@ -1,0 +1,78 @@
+// medicine_cabinet h3-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a blood 0
+@mat b dust 0
+@mat c murk 0
+@mat d vgreen 0
+@mat e void 0
+@mat f vwood 0
+@mat g ward 0
+@mblock 0 0
+.gbgbgbagbgbbg..
+.ggbggaaagbggg..
+.ggggggagggggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.gcffccgcccecg..
+.gcffddgceceeg..
+.gcffddgceeeeg..
+.ggggddggeeeeg..
+.gcffddgceeeeg..
+.gcffddgceeecg..
+.gcffddgcddffg..
+.ggggggggggggg..
+.gcddffgcffddg..
+.gcddffgcdfddg..
+.gcddffgcddddg..
+.ggggggggggggg..
+.ggccggggccggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.gggggbbbbgggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.gggggbbbbgggg..
+.ggggggggggggg..
+.ggggggggggggg..
+.ggggggggggggg..
+@tblock 0 0
+.4444443444434..
+.4333333333332..
+.4333333333332..
+.4222222222222..
+.2222222222222..
+.4241223242042..
+.4231413414112..
+.4231313211112..
+.4222313211112..
+.4241413211112..
+.4231313211142..
+.4231313231312..
+.4222223222222..
+.4241413241412..
+.4231313251312..
+.4231313233312..
+.4222223222222..
+.4254222255222..
+.4222222222222..
+.4444444444422..
+.4333333333322..
+.4333333333322..
+.4333344423322..
+.4333333333322..
+.4222222222222..
+.4111111111112..
+.4444444444422..
+.4333333333322..
+.4333344423322..
+.4222222222222..
+.4111111111112..
+.1111111111111..

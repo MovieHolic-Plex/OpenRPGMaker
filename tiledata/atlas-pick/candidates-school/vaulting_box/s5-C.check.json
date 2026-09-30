@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/vaulting_box/s5-C.pxg",
+ "set": "school",
+ "id": "vaulting_box",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.132
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  5,
+  30,
+  31
+ ],
+ "note": "실루엣 재해석: 단이 위로 갈수록 좁아지는 3단 계단식 뜀틀, 쿠션이 작다",
+ "ok": true
+}

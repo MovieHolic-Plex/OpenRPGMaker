@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_bundle/w9-C.pxg",
+ "id": "firewood bundle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.072
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  4,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  14,
+  14
+ ],
+ "note": "눕힌 통나무 대신 단면이 정면으로 보이는 원형 장작 5개를 3단 피라미드로 쌓음",
+ "ok": true
+}

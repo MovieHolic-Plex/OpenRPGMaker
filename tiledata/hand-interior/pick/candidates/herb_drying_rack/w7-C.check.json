@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/herb_drying_rack/w7-C.pxg",
+ "id": "herb drying rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 16,
+ "bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  31
+ ],
+ "note": "실루엣을 바꿈: 양옆 틀 선반 대신 가운데 기둥에 가로대 세 개를 단 나무 모양 말림대, 허브 묶음이 거꾸로 매달림",
+ "ok": true
+}

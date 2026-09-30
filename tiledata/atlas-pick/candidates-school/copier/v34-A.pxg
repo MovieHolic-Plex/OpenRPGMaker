@@ -1,0 +1,51 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a mwhite 0
+@mat b mwhite 3
+@mat c mwhite 5
+@mat d mwhite 2
+@mat e mwhite 1
+@mat f mdglass 0
+@mat g mdglass 1
+@mat h mdglass 5
+@mat i mgreen 5
+@mat j mred 3
+@mat k myellow 4
+@mat l mmetal 3
+@mat m mmetal 6
+@mat n mmetal 5
+@mat o mmetal 2
+@mblock 0 0
+................
+................
+................
+................
+..aaaaaaaaaaaa..
+.abbbbbbbbbbbba.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.cccccccccccccc.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.bdddddddddddde.
+.bdffffffffffde.
+.bdghggggggggde.
+.bdgghggggijkde.
+.bdggggggggggde.
+.bdggggggggggde.
+.bdddddddddddde.
+.blllllllllllle.
+.bdmmmmmmmmmmde.
+.bdnnnoooonnnde.
+.bdnnnnnnnnnnde.
+.bdllllllllllde.
+.blllllllllllle.
+.bdmmmmmmmmmmde.
+.bdnnnoooonnnde.
+.bdnnnnnnnnnnde.
+.bdllllllllllde.
+.booooooooooooe.
+.eeeeeeeeeeeeee.
+..~~~~~~~~~~~~~~
+..--------------

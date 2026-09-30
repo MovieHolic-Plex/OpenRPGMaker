@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_2w/w4-C.pxg",
+ "id": "bookshelf 2w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 44,
+ "v5_colors": 32,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "장식 처마(톱니 장식)를 얹고 위 두 칸은 책·눕힌 책 더미, 아래는 놋 손잡이 달린 여닫이 장으로 바꿔 서고 장식장으로 읽히게 다시 짰다.",
+ "ok": true
+}

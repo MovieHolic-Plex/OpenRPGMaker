@@ -1,0 +1,204 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_shopfront/k2-B.pxg",
+ "kit": "kit_shopfront",
+ "cand": "k2-B",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "konbini6",
+   "name": "콘비니 6칸",
+   "cells": [
+    6,
+    4
+   ],
+   "ctxSize": [
+    128,
+    128
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 2
+  },
+  {
+   "id": "konbini9",
+   "name": "넓은 콘비니 9칸(창을 더 잇기)",
+   "cells": [
+    9,
+    3
+   ],
+   "ctxSize": [
+    176,
+    112
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 2
+  },
+  {
+   "id": "izakaya5",
+   "name": "이자카야 5칸(노렌·등롱)",
+   "cells": [
+    5,
+    3
+   ],
+   "ctxSize": [
+    112,
+    112
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "ramen4",
+   "name": "라멘집 4칸(차양)",
+   "cells": [
+    4,
+    3
+   ],
+   "ctxSize": [
+    96,
+    112
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "closed3",
+   "name": "문 닫은 좁은 가게 3칸",
+   "cells": [
+    3,
+    3
+   ],
+   "ctxSize": [
+    80,
+    112
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "row15",
+   "name": "가게 줄 15칸(콘비니·이자카야·라멘 한 뼈대)",
+   "cells": [
+    15,
+    3
+   ],
+   "ctxSize": [
+    272,
+    112
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 4
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "win_glass",
+   "axis": "x",
+   "score": 0.98,
+   "d": 91.9,
+   "bad": false
+  },
+  {
+   "slug": "win_shelf",
+   "axis": "x",
+   "score": 0.39,
+   "d": 47.1,
+   "bad": false
+  },
+  {
+   "slug": "win_koshi",
+   "axis": "x",
+   "score": 0.7,
+   "d": 69.0,
+   "bad": false
+  },
+  {
+   "slug": "wall_plain",
+   "axis": "x",
+   "score": 0.63,
+   "d": 21.0,
+   "bad": false
+  },
+  {
+   "slug": "shutter",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "band_cvs",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "band_izakaya",
+   "axis": "x",
+   "score": 0.66,
+   "d": 13.2,
+   "bad": false
+  },
+  {
+   "slug": "band_ramen",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "band_plain",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "awn_m",
+   "axis": "x",
+   "score": 0.94,
+   "d": 137.6,
+   "bad": false
+  },
+  {
+   "slug": "entry_mat",
+   "axis": "x",
+   "score": 0.19,
+   "d": 9.8,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": false,
+   "failed": [
+    "colors"
+   ]
+  },
+  "easyMax": 0.328,
+  "refmapMax": 0.273
+ },
+ "ok": true
+}

@@ -1,0 +1,65 @@
+@size 48 48
+@cell 16
+@palette palette.pal
+@mat a cream 5
+@mat b cream 6
+@mat c cream 2
+@mat d cream 3
+@mat e cream 4
+@mat f locker 3
+@mat g locker 5
+@mat h locker 1
+@mat i locker 2
+@mat j locker 4
+@mat k cream 1
+@mat l cream 0
+@mat m locker 0
+@mblock 0 0
+................................................
+................................................
+................................................
+................................................
+...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbd.......
+...baaaaaaaaaaaeaaaaaaaaaaaeaaaaaaaaaaaad.......
+...baaaaaaaaaaaeaaafggggggggfaaaaaaaaaaad.......
+...baaaaaaaaaaaeaaagffffffffiaaaaaaaaaaad.......
+...baaaaaaaaaaaeaaaffjjjjjjfiaaaaaaaaaaad.......
+...beeeeeeeeeeeeeeeffiiggiifieeeeeeeeeeed.......
+...baaaaaaaaaaaeaaafffffffffiaaaaaaaaaaad.......
+...baaaaaaaaaaaeaaafhhhhhhhhfaaaaaaaaaaad.......
+...baaaaaaaaaaaeaaaaaaaaaaaeaaaaaaaaaaaad.......
+...baaaaaaaaaaaeaaaaaaaaaaaeaaaaaaaaaaaad.......
+...cccccccccccccccccccccccccccccccccccccd.......
+...bbbbbbbbbbbbbbbbbbbbbbbeeeeeeeedddddddjjji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..jgfji
+...aebeeeeeeeeecabeeeeeeeecldecccckkkkdll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..jgfji
+...acccccccccccccccccccccclllllllllllllll..ji.ji
+...aaaaaaaaaaaaaaaaaaaaaaaddddddddcccccll..ji.ji
+...aebeeeeeeeeecabeeeeeeeecldecccckkkkdll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..jgfji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..ji.ji
+...acccccccccccccccccccccclllllllllllllll..jgfji
+...aaaaaaaaaaaaaaaaaaaaaaaddddddddcccccll..ji.ji
+...aebeeeeeeeeecabeeeeeeeecldecccckkkkdll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..jgfji
+...aebeeeeeeeeecabeeeeeeeecldecccckkkkdll..ji.ji
+...aeeeeeeeeeeecaeeeeeeeeecldccccckkkkkll..ji.ji
+...llllllllllllllllllllllllllllllllllllll..ji.ji
+.....gfh..........gfh..........gfh...gfh...jgfji
+.....gfh..........gfh..........gfh...gfh...ji.ji
+.....gfhffffffff..gfh..........gfh...gfh...ji.ji
+.....gfh........ffffffff.......giiiiigfh...ji.ji
+.....gfh..........gfh...iiiiiiiifh...gfh...jgfji
+.....gfh........iiiiiiii.......gfffffgfh...ji.ji
+.....gfhiiiiiiii..gfh..........gfh...gfh...ji.ji
+.....gfh..........gfh..........gfh...gfh...ji.ji
+....iiiii........iiiii........iiiii.iiiii.......
+...~mmmmm~~~~~~~~mmmmm~~~~~~~~mmmmm~mmmmm~~~~~~.
+...--------------------------------------------.

@@ -1,0 +1,21 @@
+{
+ "id": "bike_rack",
+ "slug": "bike_rack",
+ "name": "자전거 거치대",
+ "scene": "옥상·운동장·교문",
+ "place": "out",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "지붕 없는 쇠 거치대에 세운 자전거 두 대(바퀴 원 두 개·안장·핸들, 등교용 바구니). 바퀴는 1px 원이 찌그러지지 않게, 거치대 쇠틀 줄.",
+ "palette_hint": "mmetal 거치대, vblack 바퀴, vblue·vred 몸통",
+ "pair": [],
+ "worker": "s2"
+}

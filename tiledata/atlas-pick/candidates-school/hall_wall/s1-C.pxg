@@ -1,0 +1,46 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat c cream 3
+@mat C cream 4
+@mat L cream 5
+@mat p vpine 4
+@mat q vpine 2
+@mat d vdwood 1
+@mat o locker 3
+@mat u locker 2
+@mat O locker 4
+@mat B vdwood 0
+@mblock 0 0
+cccccccccccccccc
+CCCCCCCCCCCCCCCC
+LCCCLCCCLCCCLCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+cccccccccccccccc
+pppppppppppppppp
+qqqqqqqqqqqqqqqq
+dddddddddddddddd
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+uOoouOoouOoouOoo
+pppppppppppppppp
+qqqqqqqqqqqqqqqq
+BBBBBBBBBBBBBBBB

@@ -1,0 +1,19 @@
+{
+ "id": "station_entrance",
+ "slug": "station_entrance",
+ "name": "역 입구 외관",
+ "scene": "역 앞 번화가",
+ "cells": [
+  5,
+  3
+ ],
+ "canvas": [
+  80,
+  48
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "역 건물 입구 앞면. 위 = 긴 차양·띠 간판(초록 줄 + 흰 판에 「駅」), 가운데 = 넓은 열린 입구(안이 어둡게, 안쪽 개찰구가 살짝 보임), 양옆 = 타일 벽·기둥. 한국 지하철 입구와 다르게 지상 역 건물 1층.",
+ "palette_hint": "mconc·mtile 벽, kgreen 띠, mwhite 판, lacq 글자, mdglass 안쪽",
+ "worker": "j4"
+}

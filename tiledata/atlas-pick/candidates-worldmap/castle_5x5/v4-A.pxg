@@ -1,0 +1,103 @@
+// castle_5x5 v4-A (4판: 3판 색·물 그대로, 모양 다시)
+@size 80 80
+@cell 16
+@palette ../../palette/worldmap3.pal
+@layer main
+@mat a wink 0
+@mat b wgold 3
+@mat c wroofb 3
+@mat d wroofb 4
+@mat e wroofb 2
+@mat f wstone 5
+@mat g wstone 4
+@mat h wstone 3
+@mat i wbark 1
+@mat j wroofr 3
+@mat k wroofr 2
+@mat l wgold 2
+@mat m wroofr 4
+@mat n wstone 2
+@mat o wbark 2
+@mat p wdirt 2
+@mat q wdirt 3
+@mblock 0 0
+................................................................................
+................................................................................
+........................................a.......................................
+.......................................aba......................................
+.......................................aca......................................
+......................................adcea.....................................
+.....................................addceea....................................
+....................................adddceeea...................................
+..................................aaddddceeeeaa.................................
+.................................addddddceeeeeea................................
+................................adddddddceeeeeeea...............................
+...............................addddddddceeeeeeeea..............................
+...................a.........aadddddddddceeeeeeeeeaa.........a..................
+..................aba.......adddddddddddceeeeeeeeeeea.......aba.................
+..................aca........affggffhgffgggggggghhaa........aca.................
+.....aaaa........adcea.......afggggggggggggggggggha........adcea...........aaaa.
+....aijjja.......adcea.......afggggggggggggggggggha........adcea..........aijjja
+....aikkka......addceea......afhhhhhhhhhhhhhhhhhhha.......addceea.........aikkka
+....aiaaa.......addceea......afgghggggghggggghgggha.......addceea.........aiaaa.
+....aia........adddceeea.....afggggggggggggggggggha......adddceeea........aia...
+....aia.......addddceeeea....afggggggggggggggggggha.....addddceeeea.......aia...
+....aia......adddddceeeeea...afhhhhhhhhhhhhhhhhhhha....adddddceeeeea......aia...
+....aia.......aaffhgggaaa....afgggaghggggghgaggghha.....aaffhgggaaa.......aia...
+....aia........afggggha......afggglggggggggglggggha......afggggha.........aia...
+....aja........afggggha......afggggggggggggggggggha......afggggha.........aja...
+...amjka.......afhhhhha......afhhhhhhhhhhhhhhhhhhha......afhhhhha........amjka..
+...amjka.......afggggha......afgghggggghggggghgggha......afggggha........amjka..
+..ammjkka......afggggha......afggggggggggggggggggha......afggggha.......ammjkka.
+..ammjkka......afggggha......afggggggggggggggggggha......afggggha.......ammjkka.
+.ammmjkkka.....afhhhhha......afhhhhhhhhhhhhhhhhhhha......afhhhhha......ammmjkkka
+ammmmjkkkka....afghggha.aa..aafggggghggggghggggghha.aa..aafghggha.....ammmmjkkkk
+ammmmjkkkka....afgggghaaggaaggfgggggggggggggggggghaaggaaggfggggha.....ammmmjkkkk
+mmmmmjkkkkka...afgggghggffggfffgggagggggggggagggghgggghgggfggggha....ammmmmjkkkk
+mmmmmjkkkkkka..afhhhhhggggggggfhhhlhhhhhhhhhlhhhhhggggggggfhhhhha...ammmmmmjkkkk
+mmmmmjkkkkkkka.afgggghggggggggfgghggggghggggghggghggggggggfggggha..ammmmmmmjkkkk
+afgggggghaaaa..afgggghhhhhhhhhfgggggggggggggggggghhhhhhhhhfggggha...aaafggggggha
+afggggggha.....afgggghggggghggfgggggggggggggggggghghggggghfggggha.....afggggggha
+afhhhhhhha.....afhhhhhggggggggfhhhhhhhhhhhhhhhhhhhggggggggfhhhhha.....afhhhhhhha
+afghggggha.....afghgghggggggggfggggghggggghggggghhggggggggfghggha.....afggghggha
+afggggggha.....afgggghhhhhhhhhfgggggggggggggggggghhhhhhhhhfggggha.....afggggggha
+afggggggha.....afgggghgghgggggfggggggggaggggggggghgggghgggfggggha.....afggggggha
+afhhhhhhha.....afhhhhhggggggggfhhhhhhhhlhhhhhhhhhhggggggggfhhhhha.....afhhhhhhha
+afgggghgha.....afgggghggggggggfgghggggghggggghggghggggggggfggggha.....afhgggggha
+afggggggha.....afgggghhhhhhhhhfgggggggggggggggggghhhhhhhhhfggggha.....afggggggha
+afggggggha.....afgggghggggghggfgggggggggggggggggghghggggghfggggha.....afggggggha
+afhhhhhhha.....afhhhhhggggggggfhhhhhhhhhhhhhhhhhhhggggggggfhhhhha.....afhhhhhhha
+afghgggghaaa..aafghgghggggggggfggggghggggghggggghhggggggggfghggha.aa..afggghggha
+afgggggghaggaaggfgggghhhhhhhhhfgggggggggggggggggghhhhhhhhhfgggghaaggaagfggggggha
+afgggggghgffhgfffgggghgghgggggfgggggggggggggggggghgggghgggfgggghgggggggfggggggha
+afhhhhhhhgggggggfhhhhhggggggggfhhhhhhhhhhhhhhhhhhhggggggggfhhhhhgggggggfhhhhhhha
+afgggghghgggggggggggfgggggggggfgghggggghggggghggghggggggggghgggggggggggfhgggggha
+afgggggghhhhhhhhhhhhfhhhhhgghhggggggggggggggggggghgghhhhhhhhhhhhhhhhhhhfggggggha
+afgggggghhggggghggggghggggffggffggffngffggggggggngggghggghggggghggggghgfggggggha
+afhhhhhhhgggggggggggggggggfgggggggggggggggggggggggggghgggggggggggggggggfhhhhhhha
+afghgggghgggggggggggggggggfgggggggggggggggggggggggggghgggggggggggggggggfggghggha
+afgggggghhhhhhhhhhhhhhhhhhfnnnnnnnnnnnnnnnnnnnnnnnnnnhhhhhhhhhhhhhhhhhhfggggggha
+afgggggghggghggggghggggghgfngggggnggoooooooogngggggnghhggggghggggghggggfggggggha
+afhhhhhhhgggggggggggggggggfggggggggaaaaaaaaaagggggggghgggggggggggggggggfhhhhhhha
+afgggghghgggggggggggggggggfggggggggiiiiiiiiiigggggggghgggggggggggggggggfhgggggha
+afgggggghhhhhhhhhhhhhhhhhhfnnnnnnnniiiiiiiiiinnnnnnnnhhhhhhhhhhhhhhhhhhfggggggha
+afgggggghhggggghggggghggggfgggnggggiiiiiiiiiigggngggghggghggggghggggghgfggggggha
+afhhhhhhhgggggggggggggggggfggggggggiiiiiiiiiigggggggghgggggggggggggggggfhhhhhhha
+afghgggghgggggggggggggggggfggggggggiiiiiiiiiigggggggghgggggggggggggggggfggghggha
+afgggggghhhhhhhhhhhhhhhhhhfnnnnnnnniiiiiiiiiinnnnnnnnhhhhhhhhhhhhhhhhhhfggggggha
+afgggggghggghggggghggggghgfngggggngiiiiiiiiiingggggnghhggggghggggghggggfggggggha
+afhhhhhhhgggggggggggggggggfggggggggiiiiiiiiiigggggggghgggggggggggggggggfhhhhhhha
+afgggghghgggggggggggggggggfggggggggiiiiiiiiiigggggggghgggggggggggggggggfhgggggha
+afgggggghhhhhhhhhhhhhhhhhhfnnnnnnnniiiiiiiiiinnnnnnnnhhhhhhhhhhhhhhhhhhfggggggha
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaappppppaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+....................................aqqqqqqa....................................
+....................................appppppa....................................
+....................................aqqqqqqa....................................
+....................................appppppa....................................
+.....................................aaaaaa.....................................
+................................................................................
+................................................................................
+.------------------------------------------------------------------------------.
+...---------------------------------------------------------------------------..
+................................................................................
+................................................................................

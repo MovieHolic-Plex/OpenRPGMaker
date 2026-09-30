@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_shelf/w7-A.pxg",
+ "id": "bread shelf",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "v5 배치 그대로, 칸 윗쪽에 선반 그림자·아래쪽 받침 명암을 넣고 빵을 bread 램프로 다시 칠함",
+ "ok": true
+}

@@ -1,0 +1,22 @@
+{
+ "id": "door_boarded",
+ "slug": "door_boarded",
+ "name": "판자로 못질한 문",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "벽에 붙은 나무 문 위를 판자 두세 장이 X 자·가로로 가로막고 못(1px 밝은 점)이 박힘. 문 틈 아래로 빛이 새지 않고 새까맣다. 벽면(2줄) 앞에 붙는 걸이 — 벽 칸 높이 2줄에 맞춘다.",
+ "palette_hint": "mahog 문, rot 판자, tin 못, void 틈",
+ "worker_v1": "h2",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h2"
+}

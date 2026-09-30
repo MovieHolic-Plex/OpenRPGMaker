@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/bridge_h/wv2-A.pxg",
+ "set": "worldmap",
+ "id": "bridge_h",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.067
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.095
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  3,
+  15,
+  13
+ ],
+ "note": "World.png 식 돌 상판. 굵은 난간 2px에 위쪽 줄이 밝고, 상판 가운데 두 줄이 한 단 밝다. 8px마다 이음 줄, 남쪽(동쪽) 물 위 그림자 한 줄",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.012
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.095
+  },
+  "seam": 1.27
+ }
+}

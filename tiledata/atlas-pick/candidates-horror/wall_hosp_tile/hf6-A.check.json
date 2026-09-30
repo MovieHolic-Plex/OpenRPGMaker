@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_hosp_tile/hf6-A.pxg",
+ "set": "horror",
+ "id": "wall_hosp_tile",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.215
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.164
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "v5 결 기본: 칠(ward4)+흰 타일 7px+줄눈 grave3, 위=칠 아래=타일 2단, 타일마다 왼위 한 단 밝고 오른아래 한 단 어둡게; 낡음은 타일 두 장·칠 얼룩 한 단만",
+ "ok": true
+}

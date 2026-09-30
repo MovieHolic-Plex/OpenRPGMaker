@@ -1,0 +1,39 @@
+{
+ "id": "double bed red",
+ "slug": "double_bed_red",
+ "name_ko": "2인 침대 빨강",
+ "category": "가구·살림",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  32,
+  48
+ ],
+ "padTop": 10,
+ "image": {
+  "w": 32,
+  "h": 38
+ },
+ "footprint": {
+  "w": 2,
+  "h": 2
+ },
+ "overhang_px": 6,
+ "surface": null,
+ "description": "붉은 이불 2인 침대(2×2, 베개 둘). 왕의 방·안방 북쪽 벽 가운데에 1개. 곁에 왕실 상자·옷장.",
+ "where": "왕의 방·안방 북쪽 벽 가운데에 1개. 곁에 왕실 상자·옷장.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 6px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_colors": 22,
+ "material": "cloth",
+ "related": []
+}

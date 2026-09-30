@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shelf_coins/w10-C.pxg",
+ "id": "shelf:coins",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "재해석: 위칸은 세로 동전 두루마리 4줄(높이 다름), 아래칸은 돈자루+흩어진 동전",
+ "ok": true
+}

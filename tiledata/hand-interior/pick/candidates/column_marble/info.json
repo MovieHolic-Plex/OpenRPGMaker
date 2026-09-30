@@ -1,0 +1,41 @@
+{
+ "id": "column marble",
+ "slug": "column_marble",
+ "name_ko": "대리석 기둥",
+ "category": "장식",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  48
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 40
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 24,
+ "surface": null,
+ "description": "흰 대리석 기둥(1칸, 24px 솟음). 예배당·알현실 홀을 나누는 두 줄, 3~4칸 간격(예배당 12개·알현실 6개). 베이마다 북쪽 벽에 창.",
+ "where": "예배당·알현실 홀을 나누는 두 줄, 3~4칸 간격(예배당 12개·알현실 6개). 베이마다 북쪽 벽에 창.",
+ "placement": [
+  "그림이 발밑 칸 위로 24px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_colors": 8,
+ "material": "stone",
+ "related": [
+  "tall stained window",
+  "pew E2"
+ ]
+}

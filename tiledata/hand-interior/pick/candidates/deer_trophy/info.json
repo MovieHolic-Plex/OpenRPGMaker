@@ -1,0 +1,37 @@
+{
+ "id": "deer trophy",
+ "slug": "deer_trophy",
+ "name_ko": "사슴 박제",
+ "category": "장식",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "사슴 머리 박제(벽면 윗줄). 선술집·여관 홀 벽난로 위 벽면에 1개.",
+ "where": "선술집·여관 홀 벽난로 위 벽면에 1개.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  11
+ ],
+ "v5_colors": 6,
+ "material": "wood",
+ "related": []
+}

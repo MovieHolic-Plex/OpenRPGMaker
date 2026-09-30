@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crystal_ball/w3-A.pxg",
+ "id": "crystal ball",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  12,
+  14
+ ],
+ "note": "A: v5 수정구 유지 - 구 윤곽을 진보라로 또렷이, 왼쪽 위 흰 반사와 오른쪽 아래 어두운 보라, 금 받침 왼쪽 밝고 오른쪽 어둡게, 나무 발 정리",
+ "ok": true
+}

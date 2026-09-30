@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hang_ham/w4-A.pxg",
+ "id": "hang:ham",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.002
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  9
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  9
+ ],
+ "note": "v5 정리: 큰 햄 둘+작은 햄 하나를 굵은 덩이 5단 살색으로, 뼈 마디 리넨 2px, 줄 straw, 대들보 wood6/2",
+ "ok": true
+}

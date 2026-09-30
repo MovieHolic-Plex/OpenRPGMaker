@@ -1,0 +1,135 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/jungle/wv5-B.pxg",
+ "set": "worldmap",
+ "id": "jungle",
+ "hard": [],
+ "warn": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — corner_nw↔edge_w 8≠5, inner_nw↔edge_n 5≠1, inner_nw↔edge_w 5≠8, inner_ne↔edge_n 5≠0, inner_ne↔edge_e 5≠8, inner_se↔edge_s 5≠8 …"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.195
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.238
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  47,
+  62
+ ],
+ "note": "B: 별꼴 잎을 두 줄 두께로 겹쳐 빽빽하게, 잎 밑은 가장 어두운 초록. 볼륨은 정수리만 밝게.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.27
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.248
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     0,
+     1,
+     1,
+     2,
+     0,
+     0,
+     0,
+     1,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    "s": [
+     8,
+     8,
+     8,
+     8,
+     5,
+     8,
+     8,
+     8,
+     8,
+     7,
+     6,
+     6,
+     5,
+     6,
+     6,
+     7
+    ],
+    "w": [
+     4,
+     0,
+     0,
+     0,
+     0,
+     0,
+     3,
+     8,
+     5,
+     4,
+     4,
+     3,
+     3,
+     7,
+     7,
+     8
+    ],
+    "e": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     2,
+     2,
+     3,
+     2,
+     2,
+     8
+    ]
+   },
+   "strait": 0,
+   "steps": {
+    "n": 2,
+    "s": 3,
+    "w": 5,
+    "e": 7
+   },
+   "amp": {
+    "n": 2,
+    "s": 3,
+    "w": 8,
+    "e": 8
+   },
+   "joinWorst": 5
+  },
+  "seam": 1.13
+ }
+}

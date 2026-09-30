@@ -1,0 +1,67 @@
+// 월드맵 6판 팔레트 — 바탕은 현대 칩셋 pal.RAMPS(m…), 그 뒤에 월드맵 6판 색(w…).
+// 이 파일은 scripts/content/atlas-pick/make_worldmap6_palette.py 가 만든다. 손으로 색을 더하지 마라.
+// 값은 목표 그림을 칸 단위로 재어 새로 정한 것이다(tiledata/atlas-pick/worldmap-v6-target.md). 0 = 가장 어두움.
+
+// ── 현대 칩셋 바탕 ──
+@rampc mout     #111310 #071528 #1c2626
+@rampc masph    #241924 #3c3e41 #4e5053 #56585a #5e6063 #686a6c
+@rampc mconc    #3c3e41 #56585a #6f7173 #868887 #a2a29f #b6b6b0 #dee0dd
+@rampc mpave    #6f7173 #858582 #92928d #9f9f99 #a7a7a0 #acaca5 #b7b7b0 #c2ccc7
+@rampc mgran    #3c3e41 #4e5053 #7e7f7f #a2a29f #b9bbb8 #c4c6c3 #dee0dd
+@rampc mbrick   #2b1407 #431d00 #6c4835 #8c6c5b #9e8d83 #bcaaa0
+@rampc mtile    #6c4835 #9e8d83 #aa8a7e #bcaaa0 #d9d2be #ecd6c6
+@rampc mglass   #071528 #212d42 #315a6b #366476 #6693a0 #9cc6cc #a7d4db #d6d8d5
+@rampc mdglass  #071528 #0d1b2e #1f2636 #2b3243 #363e5a #575f7d #747b8f #959dbe
+@rampc mmetal   #111310 #3e403d #5b6667 #777579 #90928f #b6b6b0 #beb8b7 #dee0dd
+@rampc mwhite   #8f918e #b9bbb8 #dee0dd #eaf8f8 #f7fdff #fefffc
+@rampc myellow  #583b01 #ad8604 #ec9900 #fbc10d #f4ef5d #ffff01
+@rampc mred     #2b1407 #a40100 #9e2514 #dd2912 #e0482a #e1975a
+@rampc mgreen   #071528 #143a27 #205030 #4b8232 #62a04b #7cb85c
+@rampc mblue    #071528 #202737 #363e5a #575f7d #959dbe #c2ccc7
+@rampc mteal    #1d2c33 #315a6b #3fa2ae #8ca9a3 #a7d4db
+@rampc mwood    #312210 #452a17 #633712 #885a26 #aa7a08 #ba9d71
+@rampc morange  #431d00 #7c4114 #cd7121 #ec9900 #e1975a #f0c6a8
+@rampc mpurple  #2b203f #4f4352 #703f57 #895261 #9e6574 #ae7a87
+@rampc mnavy    #071528 #0d1b2e #202737 #2b3243 #444c5e #747b8f
+@rampc msoil    #2b1407 #431d00 #5a3011 #744c2a
+
+// ── 월드맵 6판 지형·물·건물 색 ──
+@rampc wgrass   #1c2106 #2a3a05 #384c06 #465c0a #55700f #688418
+@rampc wmead    #4e5c16 #5f7024 #728238 #86965a #9aa96c #b0bc88
+@rampc whill    #465c0a #55700f #688418 #7c9430 #90a44c #a8b872
+@rampc wleaf    #12160a #1e2a06 #2b3a0c #384c0f #486014 #5f781f
+@rampc wpine    #0e1408 #182208 #233214 #2f4519 #3e5a20 #507028
+@rampc wbark    #1c1208 #30200f #4a3018 #6a4a29
+@rampc wrock    #24130a #3b2210 #52341c #6a4a29 #7e613b #937d5f #b4a082
+@rampc wsand    #78643a #94804a #b09850 #c0a860 #d0b870 #e0c888
+@rampc wdune    #685838 #887848 #a89858 #c8b878
+@rampc wsnow    #5a6c86 #86a0b8 #aec4d6 #cfe0ea #eaf3f7 #ffffff
+@rampc wice     #284068 #405888 #6888a8 #a0c0d0 #d0e4ec
+@rampc wswamp   #1c2c1c #2c3c24 #3c4c2c #506038 #687444 #808c58
+@rampc wbog     #142420 #203830 #305048 #486c60 #688c80
+@rampc wash     #181414 #2c2422 #403630 #54483c #6c5c4c #847460
+@rampc wlava    #3c1008 #681c0c #983c10 #c85c18 #e89430 #f8c868
+@rampc wdirt    #211d08 #39340f #55501c #706f36 #8c8a52 #a7a274
+@rampc wpoison  #201430 #382048 #503060 #684478 #805890 #a080a8
+@rampc wsea     #1a3040 #24405a #2c4e65 #377799 #427d9d #5c8ba2
+@rampc wdeep    #122430 #1a3040 #24405a #2c4e65 #377799 #427d9d
+@rampc wriver   #24405a #2c4e65 #377799 #427d9d #5c8ba2 #86b0c4
+@rampc wfoam    #5c8ba2 #86b0c4 #b4d0dc
+@rampc wstone   #1e1a10 #332a1a #4a3c26 #6b664b #86795a #a09385 #c4bcac
+@rampc wroofr   #2c1c14 #443120 #694930 #886b5a #a58472
+@rampc wroofb   #1a2530 #2a3a48 #344149 #516374 #6d829a #8fa5b8
+@rampc wgold    #605020 #806c30 #a08840 #c0a458 #d8c078
+@rampc wplast   #3e3430 #5e5048 #8a7a76 #b7a3a0 #d6cbc8 #ece6e4
+@rampc wink     #0f0d08
+@rampc wcliff   #14090a #24130a #3b2210 #4d2d16
+@rampc wfield   #5c4a1c #675521 #786232 #84693b #93794a #a48a5b #b49a6b
+@rampc wcrop    #46521a #536121 #617031 #697839 #798849 #8a995a #98a868
+@rampc wledge   #2a1e12 #4a3a24 #6e5a38 #8e784c #a89060 #c4ac7c
+@rampc wpebble  #1c2630 #38444f #586674 #7c8a98 #a0acb8
+@rampc wwoodh   #1e140c #35251a #55402c #755b3f #95795c
+
+// 반투명(빛은 왼쪽 위 → 그림자는 오른쪽 아래).
+~ #141218 110   // 그림자 속
+- #141218 58    // 그림자 번짐
+% #fff8d0 120   // 불빛 번짐
+# #e040c0       // 실루엣 단계 표시색(최종본에 남으면 불합격)

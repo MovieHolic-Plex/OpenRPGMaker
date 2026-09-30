@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/basketball_hoop/v34-A.pxg",
+ "set": "school",
+ "id": "basketball_hoop",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.124
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 27,
+ "bbox": [
+  1,
+  0,
+  29,
+  47
+ ],
+ "note": "농구대 3/4 — 흰 뒤판(윗면 밝게, 붉은 테두리·조준 네모), 주황 림과 그물, 굵은 쇠기둥, 윗면이 보이는 파란 물탱크 받침",
+ "ok": true
+}

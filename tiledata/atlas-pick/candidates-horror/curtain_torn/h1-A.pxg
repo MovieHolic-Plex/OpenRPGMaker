@@ -1,0 +1,66 @@
+// h1-A.pxg — h1 작업자(손으로 놓은 픽셀). 램프:단 열쇠 / 반투명은 팔레트 글자
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer b
+@px 2 0 vbrass:4 6 0 vbrass:4 13 0 vbrass:4
+@px 0 1 vbrass:5 1 1 vbrass:5 2 1 vbrass:5 3 1 vbrass:5 4 1 vbrass:5 5 1 vbrass:5 6 1 vbrass:5 7 1 vbrass:5
+@px 8 1 vbrass:3 9 1 vbrass:3 10 1 vbrass:3 11 1 vbrass:3 12 1 vbrass:3 13 1 vbrass:3 14 1 vbrass:3 15 1 vbrass:3
+@px 0 2 vbrass:2 1 2 vbrass:2 2 2 vbrass:2 3 2 vbrass:2 4 2 vbrass:2 5 2 vbrass:2 6 2 vbrass:2 7 2 vbrass:2
+@px 8 2 vbrass:2 9 2 vbrass:2 10 2 vbrass:2 11 2 vbrass:2 12 2 vbrass:2 13 2 vbrass:2 14 2 vbrass:2 15 2 vbrass:2
+@px 0 3 velv:3 1 3 velv:5 2 3 velv:5 3 3 velv:1 4 3 velv:2 5 3 rot:4 6 3 rot:4 7 3 rot:4
+@px 8 3 rot:4 9 3 rot:4 10 3 rot:4 11 3 velv:2 12 3 velv:4 13 3 velv:5 14 3 velv:5 15 3 velv:3
+@px 0 4 velv:3 1 4 velv:5 2 4 velv:5 3 4 velv:4 4 4 velv:2 5 4 vglass:0 6 4 vglass:0 7 4 rot:4
+@px 8 4 rot:2 9 4 vglass:0 10 4 vglass:0 11 4 velv:2 12 4 velv:4 13 4 velv:5 14 4 velv:5 15 4 velv:3
+@px 0 5 velv:3 1 5 velv:5 2 5 velv:5 3 5 velv:4 4 5 velv:2 5 5 vglass:0 6 5 vglass:0 7 5 rot:4
+@px 8 5 rot:2 9 5 vglass:0 10 5 vglass:0 11 5 velv:2 12 5 velv:4 13 5 velv:5 14 5 velv:1 15 5 velv:0
+@px 0 6 velv:3 1 6 velv:5 2 6 velv:5 3 6 velv:4 4 6 velv:2 5 6 vglass:0 6 6 vglass:0 7 6 rot:4
+@px 8 6 rot:2 9 6 moon:3 10 6 vglass:0 11 6 velv:2 12 6 velv:4 13 6 velv:5 14 6 velv:0
+@px 0 7 velv:3 1 7 velv:5 2 7 velv:5 3 7 velv:1 4 7 velv:2 5 7 vglass:0 6 7 moon:3 7 7 rot:4
+@px 8 7 rot:2 9 7 vglass:0 10 7 vglass:0 11 7 velv:2 12 7 velv:4 13 7 velv:1
+@px 0 8 velv:2 1 8 velv:4 2 8 velv:5 3 8 velv:3 4 8 velv:1 5 8 moon:3 6 8 moon:5 7 8 rot:4
+@px 8 8 rot:2 9 8 vglass:0 10 8 vglass:0 11 8 velv:1 12 8 velv:3 13 8 velv:0
+@px 0 9 velv:2 1 9 velv:4 2 9 velv:5 3 9 velv:3 4 9 velv:1 5 9 moon:3 6 9 moon:4 7 9 rot:4
+@px 8 9 rot:2 9 9 vglass:1 10 9 vglass:1 11 9 velv:1 12 9 velv:1
+@px 0 10 velv:2 1 10 velv:4 2 10 velv:5 3 10 velv:3 4 10 velv:5 5 10 vglass:1 6 10 moon:3 7 10 rot:4
+@px 8 10 rot:2 9 10 vglass:1 10 10 vglass:1 11 10 velv:1 12 10 velv:0
+@px 0 11 velv:2 1 11 velv:4 2 11 velv:5 3 11 velv:1 4 11 velv:1 5 11 vglass:1 6 11 vglass:1 7 11 rot:4
+@px 8 11 rot:2 9 11 vglass:1 10 11 vglass:3 11 11 velv:0
+@px 0 12 velv:2 1 12 velv:4 2 12 velv:5 3 12 velv:3 4 12 velv:1 5 12 vglass:1 6 12 vglass:1 7 12 rot:4
+@px 8 12 rot:2 9 12 vglass:1 10 12 vglass:1 11 12 rot:1 14 12 velv:3 15 12 velv:2
+@px 0 13 velv:2 1 13 velv:4 2 13 velv:5 3 13 velv:3 4 13 velv:1 5 13 vglass:1 6 13 vglass:1 7 13 rot:4
+@px 8 13 rot:2 9 13 vglass:1 10 13 vglass:1 11 13 rot:1 13 13 velv:3 14 13 velv:2
+@px 0 14 velv:2 1 14 velv:4 2 14 velv:5 3 14 velv:3 4 14 velv:1 5 14 rot:4 6 14 rot:4 7 14 rot:4
+@px 8 14 rot:4 9 14 rot:4 10 14 rot:4 11 14 rot:1 12 14 velv:3 13 14 velv:2
+@px 0 15 velv:2 1 15 velv:4 2 15 velv:5 3 15 velv:1 4 15 velv:1 5 15 rot:2 6 15 rot:2 7 15 rot:2
+@px 8 15 rot:2 9 15 rot:2 10 15 rot:2 11 15 rot:1 12 15 velv:3 13 15 velv:2
+@px 0 16 velv:2 1 16 velv:4 2 16 velv:5 3 16 velv:3 4 16 velv:1 5 16 vglass:1 6 16 vglass:1 7 16 rot:4
+@px 8 16 rot:2 9 16 vglass:1 10 16 vglass:1 11 16 rot:1 12 16 velv:3 13 16 velv:2
+@px 0 17 velv:2 1 17 velv:4 2 17 velv:5 3 17 velv:3 4 17 velv:1 5 17 vglass:2 6 17 vglass:2 7 17 rot:4
+@px 8 17 rot:2 9 17 vglass:5 10 17 vglass:2 11 17 rot:1 12 17 velv:3 13 17 velv:2
+@px 0 18 velv:2 1 18 velv:4 2 18 velv:5 3 18 velv:3 4 18 velv:1 5 18 vglass:2 6 18 vglass:2 7 18 rot:4
+@px 8 18 rot:2 9 18 vglass:2 10 18 vglass:4 11 18 rot:1 12 18 velv:3 13 18 velv:0
+@px 0 19 velv:2 1 19 velv:4 2 19 velv:5 3 19 dust:2 4 19 velv:1 5 19 vglass:2 6 19 vglass:2 7 19 rot:4
+@px 8 19 rot:2 9 19 vglass:2 10 19 vglass:2 11 19 rot:1 15 19 velv:0
+@px 0 20 velv:2 1 20 dust:2 2 20 velv:5 3 20 velv:3 4 20 velv:1 5 20 vglass:2 6 20 vglass:2 7 20 rot:4
+@px 8 20 rot:2 9 20 vglass:3 10 20 vglass:2 11 20 rot:1
+@px 0 21 velv:2 1 21 velv:4 2 21 dust:2 3 21 velv:3 4 21 velv:1 5 21 vglass:2 6 21 vglass:2 7 21 rot:4
+@px 8 21 rot:2 9 21 vglass:2 10 21 vglass:2 11 21 rot:1
+@px 0 22 velv:2 1 22 velv:4 2 22 velv:5 3 22 velv:3 4 22 velv:1 5 22 vglass:2 6 22 vglass:2 7 22 rot:4
+@px 8 22 rot:2 9 22 vglass:2 10 22 vglass:2 11 22 rot:1
+@px 0 23 velv:1 1 23 velv:4 2 23 velv:5 3 23 velv:1 4 23 velv:1 5 23 vglass:2 6 23 vglass:2 7 23 rot:4
+@px 8 23 rot:2 9 23 vglass:2 10 23 vglass:2 11 23 rot:1
+@px 0 24 velv:2 1 24 velv:4 2 24 velv:5 3 24 velv:3 4 24 velv:1 5 24 vglass:2 6 24 vglass:2 7 24 rot:4
+@px 8 24 rot:2 9 24 vglass:2 10 24 vglass:2 11 24 rot:1
+@px 0 25 velv:1 1 25 velv:3 2 25 velv:3 3 25 velv:2 4 25 velv:0 5 25 dust:3 6 25 rot:3 7 25 rot:3
+@px 8 25 rot:3 9 25 dust:3 10 25 dust:3 11 25 rot:3
+@px 0 26 velv:1 1 26 velv:1 2 26 velv:4 3 26 velv:2 4 26 velv:0 5 26 rot:4 6 26 rot:4 7 26 rot:4
+@px 8 26 rot:2 9 26 rot:2 10 26 rot:2 11 26 rot:2 12 26 rot:2
+@px 0 27 velv:0 1 27 velv:0 2 27 velv:0 3 27 velv:0 4 27 velv:0 5 27 rot:1 6 27 rot:1 7 27 rot:1
+@px 8 27 rot:1 9 27 rot:1 10 27 rot:1 11 27 rot:1 12 27 rot:0
+@px 1 28 ? 2 28 ? 3 28 ? 5 28 ? 6 28 ? 7 28 ? 12 28 velv:1 13 28 velv:5
+@px 1 29 ? 2 29 ? 3 29 ? 5 29 ? 6 29 ? 7 29 ? 10 29 velv:0 11 29 velv:5
+@px 12 29 velv:5 13 29 velv:3 14 29 velv:1
+@px 2 30 ? 3 30 ? 4 30 ? 6 30 ? 7 30 ? 8 30 velv:1 9 30 velv:5 10 30 velv:4
+@px 11 30 velv:5 12 30 velv:5 13 30 velv:3 14 30 velv:0 15 30 velv:1
+@px 8 31 velv:0 9 31 velv:0 10 31 velv:0 11 31 velv:0 12 31 velv:0 13 31 velv:0 14 31 velv:0 15 31 velv:0

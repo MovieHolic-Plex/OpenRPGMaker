@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/meadow/wv2-A.pxg",
+ "set": "worldmap",
+ "id": "meadow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.101
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  1,
+  0,
+  47,
+  63
+ ],
+ "note": "World.png 「짙은 풀」 블록: wmead 두 단 바탕 + 짧은 세로 풀 획, 가장자리에 wgrass 풀잎 끝이 1~2px 삐져나옴",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.004
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.025
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 1.11
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/exit_sign/s3-C.pxg",
+ "set": "school",
+ "id": "exit_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  14,
+  12
+ ],
+ "note": "실루엣 다르게: 천장 쇠 막대에서 두 사슬로 매단 초록 유도등, 흰 사람과 문",
+ "ok": true
+}

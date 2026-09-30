@@ -1,0 +1,37 @@
+{
+ "id": "window",
+ "slug": "window",
+ "name_ko": "창",
+ "category": "가구·살림",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "격자 나무 창(파란 유리 넷). 거의 모든 방 벽면 윗줄에 1~3개. 방 가운데나 2~4칸 간격, 걸이·키 큰 가구와 겹치지 않게.",
+ "where": "거의 모든 방 벽면 윗줄에 1~3개. 방 가운데나 2~4칸 간격, 걸이·키 큰 가구와 겹치지 않게.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "v5_colors": 11,
+ "material": "glass",
+ "related": []
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/curtain_wing/w10-C.pxg",
+ "id": "curtain wing",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "note": "끈으로 묶은 커튼: 윗부분 넓고 매듭띠에서 잘록, 아래로 다시 퍼지는 실루엣",
+ "ok": true
+}

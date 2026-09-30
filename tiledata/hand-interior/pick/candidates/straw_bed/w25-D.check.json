@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/straw_bed/w25-D.pxg",
+ "id": "straw bed",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  5,
+  15,
+  28
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  29
+ ],
+ "note": "짚 더미를 틀 없이 깔고(가는 결 세 방향·어두운 틈·삐친 가닥), 머리에 거친 삼베 베개, 아래 절반에 헐거운 삼베 이불을 덮었다. 변형: 틀 삭제.",
+ "ok": true
+}

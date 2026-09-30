@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/basketball_hoop/s3-A.pxg",
+ "set": "school",
+ "id": "basketball_hoop",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.072
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.189
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  3,
+  1,
+  30,
+  47
+ ],
+ "note": "v5 결: 흰 백보드에 붉은 테·조준 사각형, 주황 링과 흰 그물, 굵은 철 기둥, 파란 물통 받침에 바퀴 둘",
+ "ok": true
+}

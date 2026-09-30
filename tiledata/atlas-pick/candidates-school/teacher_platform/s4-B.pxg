@@ -1,0 +1,39 @@
+@size 48 16
+@cell 16
+@palette palette.pal
+@mat a vdwood 3
+@mat b cfloor 3
+@mblock 0 0
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+..--------------------------------------------..
+@tblock 0 0
+444444444444444444444444444444444444444444444444
+666666666666666666666666666666666666666666666630
+664446666644466666444666664446666644466666444630
+666666666666666666666666666666666666666666666630
+662222222222222222222222222222222222222222222230
+665555333555533355555533355553335555553335555330
+663355555333555553335555533355555333555553335530
+662222222222222222222222222222222222222222222230
+666644466666444666664446666644466666444666664430
+666666633366666333666663336666633366666333666630
+444444444444444444444444444444444444444444444440
+222222224222222222222222422222222222222242222220
+000000000000000000000000000000000000000000000000
+................................................
+................................................
+................................................

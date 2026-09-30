@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/crossing_deck/j5-B.pxg",
+ "set": "jp",
+ "id": "crossing_deck",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.328
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "고무판에 윗줄 밝은 모서리·아랫줄 그늘로 두께감, 볼트 밝은 점+그림자, 레일 오른쪽에 그늘 줄 — 선로 B 와 같은 레일 위치·같은 4단 명암",
+ "ok": true
+}

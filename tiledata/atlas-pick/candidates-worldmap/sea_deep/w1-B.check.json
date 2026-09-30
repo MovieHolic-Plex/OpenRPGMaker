@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/sea_deep/w1-B.pxg",
+ "set": "worldmap",
+ "id": "sea_deep",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "명암 강화: 밑색 한 단 어둡게(wdeep2)+어두운 결 끊김, 경계에 얕은 바다색 한 줄→깊은 밝은 단→중간 단으로 3px 완만 전이",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "seam": 1.08
+ }
+}

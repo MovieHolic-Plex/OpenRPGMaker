@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/bridge_v/wv2-B.pxg",
+ "set": "worldmap",
+ "id": "bridge_v",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.093
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.067
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  3,
+  0,
+  15,
+  15
+ ],
+ "note": "bridge_v 는 같은 돌 전치, 그림자 동쪽",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.09
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.067
+  },
+  "seam": 0.7
+ }
+}

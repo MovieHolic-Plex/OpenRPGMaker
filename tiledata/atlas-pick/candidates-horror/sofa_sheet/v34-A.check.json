@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/sofa_sheet/v34-A.pxg",
+ "set": "horror",
+ "id": "sofa_sheet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.117
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.154
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "v34-A: 3/4 시점 — 천을 씌운 소파: 등받이 윗면, 등받이 앞면, 앉는 면 윗면(밝음), 앞 가림천 주름, 둥근 팔걸이 윗면. 같은 dust/rot 램프",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tapestry/w1-B.pxg",
+ "id": "tapestry",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  2,
+  14,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  30
+ ],
+ "note": "명암 강화: 막대 밑 천 윗부분을 짙게(그림자), 주름 능선을 red 5단까지 밝혀 골과 대비를 키움, 오른쪽 벽에 천 그림자(~ -)",
+ "ok": true
+}

@@ -1,0 +1,37 @@
+{
+ "id": "mo-sculpture",
+ "slug": "mo_sculpture",
+ "name": "광장 조형물",
+ "scene": "거리 소품",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "광장 조형물 1×2. 공원 기물: 잔디·광장 판석 위에. 놀이터(미끄럼틀·그네)는 모래가 아닌 잔디 한 덩이에 함께, 분수는 광장 가운데, 정자는 공원 가장자리. 둘레 한 칸을 비운다.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "mo-sculpture"
+ ],
+ "tiles": [
+  3444,
+  3474
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   24,
+   63
+  ]
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/medicine_cabinet/v34-A.pxg",
+ "set": "horror",
+ "id": "medicine_cabinet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 22,
+ "bbox": [
+  1,
+  0,
+  13,
+  31
+ ],
+ "note": "3/4 재작도: 윗면 7행, 원본의 핏빛 십자는 윗면 가운데 얼룩으로 유지",
+ "ok": true
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/peel_rack/w4-A.pxg",
+ "id": "peel rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "v5 와 같은 삽 두 자루 모양 그대로, 삽을 소나무결(밝은 쪽 왼쪽)로 다시 칠하고 날 아래를 둥글리고 나뭇결·손잡이 구멍·쇠 걸이 못을 추가, 횡목도 윗면이 밝은 3단으로.",
+ "ok": true
+}

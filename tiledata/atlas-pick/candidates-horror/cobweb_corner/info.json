@@ -1,0 +1,25 @@
+{
+ "id": "cobweb_corner",
+ "slug": "cobweb_corner",
+ "name": "거미줄(모서리)",
+ "scene": "연출",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "over",
+ "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+ "description": "방 왼쪽 위 모서리에 친 거미줄: 모서리에서 부채꼴로 뻗은 방사 줄 넷, 그 사이 늘어진 호 줄 두세 겹(1px, dust 밝은 단), 한 줄 끊어져 늘어짐. 투명 배경. 오른쪽 모서리용은 거울로 찍지 말고 따로 그린다(빛 방향 유지) — 여유 있으면 D 로.",
+ "palette_hint": "dust 거미줄",
+ "worker_v1": "h2",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h2",
+ "set_with": [
+  "cobweb_hang"
+ ]
+}

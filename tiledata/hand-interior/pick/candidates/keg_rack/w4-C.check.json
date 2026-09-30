@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/keg_rack/w4-C.pxg",
+ "id": "keg rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  9,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  9,
+  31,
+  31
+ ],
+ "note": "다시 그리기: 세워 둔 통 대신 눕혀 쌓은 통 4통 옆면 - 철테 두 줄+놋 마개, 틀 좌우 기둥",
+ "ok": true
+}

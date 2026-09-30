@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_drink/pilot-A.pxg",
+ "set": "jp",
+ "id": "vending_drink",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 22,
+ "bbox": [
+  1,
+  4,
+  15,
+  30
+ ],
+ "note": "강남 조각 결: 흰 몸통·쇠 윤곽, 윗면 두 줄, 오른 옆 한 단 어둡게, 캔 견본 세 줄(색 2px), 버튼 줄·동전판·꺼내는 입구",
+ "ok": true
+}

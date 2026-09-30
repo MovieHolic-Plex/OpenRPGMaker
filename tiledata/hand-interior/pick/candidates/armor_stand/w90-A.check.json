@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/armor_stand/w90-A.pxg",
+ "id": "armor stand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 14,
+ "v5_colors": 13,
+ "bbox": [
+  3,
+  2,
+  12,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  31
+ ],
+ "note": "갑옷걸이: 받침을 밝은 윗면 4행(앞 모서리 하이라이트)+앞면 2행으로 다시 찍고 기둥이 윗면 위에 서게 함",
+ "ok": true
+}

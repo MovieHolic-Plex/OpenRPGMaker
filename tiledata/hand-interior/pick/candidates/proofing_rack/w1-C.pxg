@@ -1,0 +1,54 @@
+// proofing_rack w1-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat m wood 6
+@mat h wood 7
+@mat d wood 4
+@mat k wood 3
+@mat j wood 2
+@mat o wood 1
+@mat s wood 5
+@mat e linen 5
+@mat f linen 6
+@mat y linen 3
+@mat g linen 4
+@mat z linen 2
+@mat b bread 4
+@mat c bread 3
+@mat a bread 2
+@mat q bread 5
+@mat r bread 6
+@mblock 0 0
+................
+................
+.dhhhhhhhhhhhhk.
+.dmddddddddddkk.
+.dmffffffffffdk.
+.dmfefffefffedk.
+.dmeefeeefeeedk.
+.dmgeeeggeeegdk.
+.dmygeegyygeedk.
+.dmyyeeyzyyygdk.
+.dmzygyyzzgyydk.
+.dmzzyzzzzyzzdk.
+.dmoooooooooodk.
+.dmorrqoorrqodk.
+.dmrqqbcrqqbcdk.
+.dmbbbcaabbcadk.
+.dmcccaaaccaadk.
+.dmmmmmmmmmmmdk.
+.dmdddddddddddk.
+.dmkkkkkkkkkkdk.
+.dmoooooooooodk.
+.dmorrqoorrqodk.
+.dmrqqbcrqqbcdk.
+.dmbbbcaabbcadk.
+.dmcccaaaccaadk.
+.dmmmmmmmmmmmdk.
+.dmdddddddddddk.
+.dmkkkkkkkkkkdk.
+.dmmmmmmmmmmmdk.
+.ddddddddddddkk.
+.kkkkkkkkkkkkkk.
+.oooooooooooooo.

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/bike_rack/s2-C.pxg",
+ "set": "school",
+ "id": "bike_rack",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.087
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  13,
+  47,
+  30
+ ],
+ "note": "실루엣 재해석: 뒷레일 대신 바닥의 물결 홈 거치대에 바퀴를 세우고 프레임을 굵게, 바구니를 크게 — 한 색 실루엣이 자전거 둘로 갈라져 보임.",
+ "ok": true
+}

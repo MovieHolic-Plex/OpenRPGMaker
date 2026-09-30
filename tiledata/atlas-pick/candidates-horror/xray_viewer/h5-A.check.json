@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/xray_viewer/h5-A.pxg",
+ "set": "horror",
+ "id": "xray_viewer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  0,
+  14,
+  13
+ ],
+ "note": "벽 판독 상자: 쇠 테 안 창백한 빛판(얼룩진 밝기)에 검은 흉부 필름, 척추 한 줄과 갈비뼈 곡선 양쪽 네 줄",
+ "ok": true
+}

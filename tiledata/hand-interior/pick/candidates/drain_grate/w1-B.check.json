@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/drain_grate/w1-B.pxg",
+ "id": "drain grate",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "lint": {
+  "failed": [
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 5,
+ "bbox": [
+  3,
+  3,
+  12,
+  12
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  12,
+  12
+ ],
+ "note": "철 램프로 명암 강화: 위 테두리 가장 밝게(6)·오른쪽 아래 어둡게, 살 위쪽 한 줄 하이라이트, 홈 속은 거의 검정, 오른쪽·아래 바닥에 접지 그림자(~ -)",
+ "ok": true
+}

@@ -1,0 +1,77 @@
+// bookshelf_manor hf4-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mat r vred 0
+@mat b vblue 0
+@mat g vgreen 0
+@mat t tarn 0
+@mat s sheet 0
+@mblock 0 0
+...mmmmmmmmmm...
+..mmmmmmmmmmmm..
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmrrmggmmmrrmmm
+mmmttbggmbbrrmmm
+mmmrrbttrttttmmm
+mmmrrbggrbbrrmmm
+mmmrrbggrbbrrmmm
+mmmrrbggrbbrrmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmbbmmmmggmmmm
+mmmgttrrmmggmmmm
+mmmgbbttmmttbmmm
+mmmgbbrrmmggbmmm
+mmmgbbrrmmggbmmm
+mmmgbbrrmmggbmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmrrmrrmmm
+mmmmtgggttgttmmm
+mmmmggggrrgrrmmm
+mmmtbbbbrrgrrmmm
+mmmtbbbbrrgrrmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+.mmmmmmmmmmmmmm.
+..mmmmmmmmmmmm..
+@tblock 0 0
+...1111111111...
+..155555555551..
+1666666666666661
+1323232323232321
+1542222222222321
+1534423322233121
+1543333124431321
+1444223333333321
+1544223124231321
+1534223124231121
+1544223124231321
+1545555555555321
+1443323323323321
+1532222222222121
+1542332222442321
+1543334422422321
+1542313322333321
+1432314222422121
+1542314222422321
+1542314222422321
+1545555555555321
+1533323323323121
+1442222222222321
+1542222233222321
+1542322233333321
+1532000031220121
+1543333331220321
+1442222231220321
+1555655556556551
+1444444344444441
+.12222222222221.
+..111111111111..

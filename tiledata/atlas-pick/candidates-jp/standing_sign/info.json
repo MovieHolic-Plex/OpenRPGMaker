@@ -1,0 +1,19 @@
+{
+ "id": "standing_sign",
+ "slug": "standing_sign",
+ "name": "A형 입간판(메뉴 칠판)",
+ "scene": "주택가 골목",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "가게 앞 A자 나무 입간판에 칠판(짙은 초록 판에 흰 분필 글씨 줄 두세 줄, 색분필 점 하나). 나무 테.",
+ "palette_hint": "hinoki 테, matsu/lacq 칠판, mwhite 분필",
+ "worker": "j4"
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/blood_trail/h3-A.pxg",
+ "set": "horror",
+ "id": "blood_trail",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  2,
+  31,
+  14
+ ],
+ "note": "끌고 간 자국: 주 줄이 좌우 끝까지 이어지고(두께 2~3 출렁임) 가운데서 마른 붓으로 끊겼다 이어짐, 아래 줄과 위 마른 붓 점선, 튄 점 셋, $ 번짐. 좌우 열이 같아 가로로 이어 붙음",
+ "ok": true
+}

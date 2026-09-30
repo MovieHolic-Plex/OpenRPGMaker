@@ -1,0 +1,6 @@
+// 나무 마루 타일 48×48(이어 붙임). 1단계 실루엣은 칸 전체. 변형 셋(A = 5-clean, B = var-b, C = var-c)을 섞어 깐다.
+@size 48 48
+@palette ../../palettes/interior48.pal
+@tile
+@block 0 0
+= 48# *48

@@ -1,0 +1,38 @@
+{
+ "id": "lectern",
+ "slug": "lectern",
+ "name_ko": "성경대",
+ "category": "예배당",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 24
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": null,
+ "description": "펼친 성경을 올린 나무 설교대. 예배당 제단 앞 한쪽에 1개. 설교단 맞은편.",
+ "where": "예배당 제단 앞 한쪽에 1개. 설교단 맞은편.",
+ "placement": [
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  31
+ ],
+ "v5_colors": 11,
+ "material": "wood",
+ "related": []
+}

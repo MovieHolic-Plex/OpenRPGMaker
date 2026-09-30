@@ -1,0 +1,40 @@
+{
+ "id": "hosp_wall",
+ "slug": "hosp_wall",
+ "name": "병원 벽(벗겨진 페인트)",
+ "scene": "폐병원",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "폐병원 벽면(2줄): 위 = 바랜 회녹 페인트 벽(벗겨져 속 회색이 드러난 얼룩 두세 곳), 아래 1/3 = 짙은 녹 징두리 페인트 + 경계 가로 줄, 발치 걸레받이. 녹물 흐른 자국 한 줄. 칸 전부 불투명, 좌우로 이어 붙는다.",
+ "palette_hint": "ward 페인트, grave 속, rust 녹물",
+ "worker_v1": "h5",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "ward",
+ "role": "페인트 벽면",
+ "worker": "h5",
+ "set_with": [
+  "hosp_floor"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:plaster",
+   "name_ko": "회벽+판자 징두리",
+   "atlas": {
+    "x": 320,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

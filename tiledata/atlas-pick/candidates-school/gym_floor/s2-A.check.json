@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/gym_floor/s2-A.pxg",
+ "set": "school",
+ "id": "gym_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "밝은 단풍 가로 널, 가는 이음, 널마다 바니시 광 점선. 교실 마루보다 밝고 노랗다",
+ "ok": true
+}

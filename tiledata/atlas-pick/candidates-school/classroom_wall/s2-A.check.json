@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/classroom_wall/s2-A.pxg",
+ "set": "school",
+ "id": "classroom_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "위 크림 회벽 + 나무 징두리(세로 널 8px 둘), 위 걸레받이 얇은 몰딩. 아래 3줄 = 걸레받이",
+ "ok": true
+}

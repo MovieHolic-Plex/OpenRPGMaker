@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/shoe_locker/s5-A.pxg",
+ "set": "school",
+ "id": "shoe_locker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 19,
+ "bbox": [
+  0,
+  1,
+  31,
+  30
+ ],
+ "note": "현관 신발장 — 히노키 나무, 3단×4열 칸, 칸마다 흰 실내화(초록·파랑·빨강 코)와 운동화 앞코, 빈 칸 한 개, 윗면 띠. 좌우 이어 붙는 폭",
+ "ok": true
+}

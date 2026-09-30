@@ -1,0 +1,74 @@
+// classroom_wall s2-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a cream 0
+@mat b vdwood 0
+@mat c vpine 0
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+@tblock 0 0
+4444444444444444
+4444444444444444
+4444444444443444
+4445444444444444
+4444444444444444
+4444444444444444
+4444444444454444
+4444444444444444
+4444434444444444
+4544444444444444
+4444444444444444
+4444444544444444
+4444444444444444
+4444444444444454
+4444444443444444
+4444444444444444
+4444444444444444
+6666666666666666
+5555555555555555
+3333333333333333
+3544444335444443
+3544444335443443
+3544344335444443
+3544444335444443
+3544444335444443
+3544344335444443
+3544444335443443
+3544444335444443
+2222222222222222
+5555555555555555
+4444444444444444
+2222222222222222

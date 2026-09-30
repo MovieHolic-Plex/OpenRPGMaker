@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cabinet_candle/w8-C.pxg",
+ "id": "cabinet:candle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "위가 뾰족한 고딕 아치 진열장 — 실루엣을 바꾸고 아치 꼭대기에 큰 초 하나",
+ "ok": true
+}

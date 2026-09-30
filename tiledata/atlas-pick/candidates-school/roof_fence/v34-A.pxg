@@ -1,0 +1,42 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a fence 1
+@mat b fence 4
+@mat c fence 5
+@mat d fence 0
+@mat e fence 3
+@mat f fence 2
+@mblock 0 0
+..aaaaaaaaaaaa..
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.cccccccccccccc.
+.dddddddddddddd.
+.eeeeeeeeeeeeee.
+.beffbfffbffffa.
+.befbfafbfafbfa.
+.bebfffbfffbffa.
+.befafbfafbfafa.
+.beffbfffbffffa.
+.befbfafbfafbfa.
+.bebfffbfffbffa.
+.befafbfafbfafa.
+.beffbfffbffffa.
+.befbfafbfafbfa.
+.bebfffbfffbffa.
+.befafbfafbfafa.
+.beffbfffbffffa.
+.befbfafbfafbfa.
+.bebfffbfffbffa.
+.befafbfafbfafa.
+.beffbfffbffffa.
+.befbfafbfafbfa.
+.bebfffbfffbffa.
+.befafbfafbfafa.
+.beffbfffbffffa.
+.eeeeeeeeeeeeee.
+.aaaaaaaaaaaaaa.
+.~~~~~~~~~~~~~~.
+.--------------.

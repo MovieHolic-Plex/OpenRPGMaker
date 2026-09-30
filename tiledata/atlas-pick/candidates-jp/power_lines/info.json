@@ -1,0 +1,19 @@
+{
+ "id": "power_lines",
+ "slug": "power_lines",
+ "name": "전선(이어 붙이기)",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "over",
+ "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+ "description": "골목 위를 가로지르는 전선 서너 가닥(살짝 처진 곡선, 1px 선, 검정이 아닌 짙은 회색). 좌우 끝이 같은 높이라 가로로 이어 붙인다. 투명 배경, 맨 위층.",
+ "palette_hint": "lacq·masph 선",
+ "worker": "j3"
+}

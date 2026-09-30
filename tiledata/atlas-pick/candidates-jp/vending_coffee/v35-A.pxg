@@ -1,0 +1,80 @@
+// vending_coffee v35-A 3/4 (1칸=16px=1m)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 0
+@mat b kblue 0
+@mat c lacq 0
+@mat d mglass 0
+@mat e mmetal 0
+@mat f mred 0
+@mat g neonc 0
+@mat h taxi 0
+@mat i washi 0
+@mblock 0 0
+.ffffffffffffff.
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+fiiiiiiiiiiiiiif
+fibbbiiiiibbbiif
+fiiiiiiiiiiiiiif
+feeeeeeeeeeeeeef
+feeeeeeeeeeeffff
+feiidbbdhhdeccff
+feiidbbdhhdeggff
+feeeeeeeeeeeffff
+fehhdiidbbdeaaff
+fehhdiidbbdeffff
+feeeeeeeeeeebbff
+febbdhhdiideffff
+febbdhhdiidehhff
+feeeeeeeeeeeffff
+feeeeeeeeeeeccff
+feeeeeeeeeeeeeef
+feeeeeeeeeeeeeef
+ffccccccccccccff
+ffccccccccccccff
+ffccccccccccffff
+ffccccccccccccff
+ffcccccccccceeff
+ffccccccccccffff
+feeeeeeeeeeeeeef
+ffffffffffffffff
+eeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeee
+@tblock 0 0
+.11111111111111.
+1555555555555551
+1555555555555551
+4444444444444441
+4444444444444441
+4433344334333441
+4222222222222221
+4111111111111111
+4333333333333321
+4355355355331121
+4333333333334421
+4311111111133321
+4355355355334421
+4333333333333321
+4311111111134421
+4355355355333321
+4333333333333321
+4311111111133321
+4333333333331121
+4111111111111111
+4333333333333331
+4322222222221121
+4311111111111121
+4311111111113321
+4311111111111121
+4311111111115521
+4311111111113321
+4333333333333331
+4222222222222221
+1111111111111111
+1111111111111111
+0000000000000000

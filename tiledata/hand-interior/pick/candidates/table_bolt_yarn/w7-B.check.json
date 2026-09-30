@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_bolt_yarn/w7-B.pxg",
+ "id": "table:bolt+yarn",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 28,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "A 에 빛 구조·바닥 그림자 추가: 상판을 한 칸 내리고 윗면 하이라이트, 물건을 높여 실루엣이 분명하게, 다리 밑 y15 에 반투명 그림자",
+ "ok": true
+}

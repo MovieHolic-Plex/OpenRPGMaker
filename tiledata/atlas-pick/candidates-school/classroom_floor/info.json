@@ -1,0 +1,23 @@
+{
+ "id": "classroom_floor",
+ "slug": "classroom_floor",
+ "name": "교실 마루",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "교실 바닥 널마루 한 칸 — 세로 또는 가로 널 결, 널 이음 어두운 선, 사방으로 이어 붙여도 무늬가 튀지 않게(가장자리 이음 맞춤). v5 밝은 널마루보다 조금 노란 꿀빛, 명도는 가구와 분리되게 한 단 낮게.",
+ "palette_hint": "cfloor",
+ "pair": [
+  "classroom_wall"
+ ],
+ "worker": "s2"
+}

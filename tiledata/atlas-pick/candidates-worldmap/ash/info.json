@@ -1,0 +1,60 @@
+{
+ "id": "ash",
+ "slug": "ash",
+ "name": "화산재 벌판",
+ "scene": "산·화산",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "화산 둘레의 검은 재 땅. 속 = 어두운 회갈 재 + 굳은 용암 돌 덩이 몇 개 + 가는 금 두어 줄, 대비 낮게. 경계 = 기슭 깊이 2~4px, 풀이 타서 누렇게 사라지며 재로 넘어간다(혹 진 선, 모서리 둥글게).",
+ "palette_hint": "wash 재, 테 wgrass·wsand 어두운 단",
+ "worker": "wv4",
+ "style": "flat",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cabinet_candle/w8-B.pxg",
+ "id": "cabinet:candle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "어두운 속 칸에 초가 도드라지고, 처마·받침대·좌우 명암으로 입체를 키운 진열장",
+ "ok": true
+}

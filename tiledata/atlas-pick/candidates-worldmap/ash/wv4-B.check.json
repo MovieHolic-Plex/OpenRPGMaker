@@ -1,0 +1,133 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/ash/wv4-B.pxg",
+ "set": "worldmap",
+ "id": "ash",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.144
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.337
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "A 구조에 위·왼 볕받이 테와 아래·오른 그늘 반투명 그림자(3/4 시점)",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.184
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.664
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.62
+ }
+}

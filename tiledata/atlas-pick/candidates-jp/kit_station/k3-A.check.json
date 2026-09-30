@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_station/k3-A.pxg",
+ "set": "jp",
+ "id": "kit_station",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.348
+ },
+ "refmap": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.355
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 41,
+ "bbox": [
+  0,
+  0,
+  127,
+  79
+ ],
+ "note": "흰 콘크리트 처마·초록 띠 간판·화강암 계단·회색 낮은 벽 — 강남 조각 결(mconc·mwhite·mmetal)",
+ "ok": true
+}

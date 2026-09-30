@@ -1,0 +1,40 @@
+{
+ "id": "pew",
+ "slug": "pew",
+ "name_ko": "교회 긴의자",
+ "category": "예배당",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 16
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "등받이 긴의자(2칸). 예배당 중앙 통로 양쪽에 줄지어 둔다.",
+ "where": "예배당 중앙 통로 양쪽에 줄지어 둔다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_colors": 8,
+ "material": "wood",
+ "related": [
+  "runner",
+  "altar"
+ ]
+}

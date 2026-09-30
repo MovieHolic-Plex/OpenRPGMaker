@@ -1,0 +1,74 @@
+// mo_sculpture v34-A 3/4
+@size 16 32
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a conc 0
+@mat b sumi 0
+@mat c tekko 0
+@mblock 0 0
+.....bbbb.......
+....bccccb......
+...bccbbccb.....
+...bccbbccb.....
+....bb.bccb.....
+.......bccb.....
+.......bccb.....
+..bbbbbbccbbbb..
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+.baaaaaaaaaaaab.
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+@tblock 0 0
+.....0000.......
+....043320......
+...04100310.....
+...03100310.....
+....00.0310.....
+.......0310.....
+.......0310.....
+..000000310000..
+.04444444444440.
+.04444444444440.
+.04444444444440.
+.04444444444440.
+.03333333333330.
+.03222222222210.
+.03222222222210.
+.03222222222210.
+.03222222222210.
+.03200000000210.
+.03211111111210.
+.03211111111210.
+.03211111111210.
+.03233333333210.
+.03222222222210.
+.03222222222210.
+.03222222222210.
+.03222222222210.
+.03222222222210.
+.03222222222210.
+.01111111111110.
+.00000000000000.
+0111111111111110
+0111111111111110

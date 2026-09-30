@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mannequin/w7-C.pxg",
+ "id": "mannequin",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +4px"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  31
+ ],
+ "note": "실루엣을 바꿈: 머리 있는 마네킹 대신 머리 없는 재단용 인체 모형, 붉은 옷자락이 아래로 퍼지고 나무 꼭지가 위에 달림",
+ "ok": true
+}

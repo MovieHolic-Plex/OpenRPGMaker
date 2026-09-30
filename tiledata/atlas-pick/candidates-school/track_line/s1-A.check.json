@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/track_line/s1-A.pxg",
+ "set": "school",
+ "id": "track_line",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 3,
+ "bbox": [
+  0,
+  5,
+  15,
+  10
+ ],
+ "note": "A: 석회 흰 선 2px 가로, 위·아래 가루 점, 좌우 끝 그대로 이어짐, 투명 배경",
+ "ok": true
+}

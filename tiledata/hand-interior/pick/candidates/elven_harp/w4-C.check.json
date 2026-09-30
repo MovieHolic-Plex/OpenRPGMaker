@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/elven_harp/w4-C.pxg",
+ "id": "elven harp",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  3,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  14,
+  31
+ ],
+ "note": "실루엣 다시: 굽은 목+비스듬한 울림통+세로 줄 3가닥으로 서양식 하프 형태, 줄이 오른쪽으로 갈수록 길어짐",
+ "ok": true
+}

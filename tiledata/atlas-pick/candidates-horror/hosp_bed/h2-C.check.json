@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/hosp_bed/h2-C.pxg",
+ "set": "horror",
+ "id": "hosp_bed",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.052
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  1,
+  10,
+  15,
+  47
+ ],
+ "note": "C: 시트 밑에 사람 모양 볼륨(가슴 융기·두 발끝)을 만들고 가슴에 blood 얼룩과 번짐을 얹었다. 시트 자락이 오른쪽 레일 밖으로 흘러내리고 그 밑으로 창백한 bisque 손이 늘어진다. 실루엣이 빈 침대에서 벗어난다.",
+ "ok": true
+}

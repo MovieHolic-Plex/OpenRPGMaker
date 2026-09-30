@@ -1,0 +1,79 @@
+// vending_drink h34-B (H 방법: Tibo 3/4 → C → E)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a ai 0
+@mat b kblue 0
+@mat c korange 0
+@mat d mdglass 0
+@mat e mgreen 0
+@mat f myellow 0
+@mat g neon 0
+@mat h washi 0
+@mblock 0 0
+hhhhhhhhhhhhhhhh
+hhhhhhhhhhhhhhhh
+hhhhhhhhhhhhhhhh
+hhhhhhhhhhhhhhhh
+hhhhhhhhhhhhhhhh
+hhaabbbbbbbbbaah
+hbbbbbbbbbbbbbbh
+hbbbbbbbbabfbeah
+hbebbbbcbbbfbeah
+haeebbccbbbfbeah
+hhdbbbbdbdbdbdhh
+hhdddddddddddddh
+hbbbbbbbbbbbbbbh
+hbcbbbbbbebbbfbh
+hbbbbbcbbebabfah
+hbccccbbbdbdbfah
+hhdddddddddddddh
+hddbbbbbbdbdbdah
+hbdbfbbabebbbcbh
+haddfcbabebbbcah
+hhdbbbbbbebbbcah
+hddddddddddddddh
+hhhhhhhhhhhhhhhh
+hhhhhhhhhhhahddh
+hhdddddddhaahddh
+hhhhhhhhhhaahhhh
+hhhhhhhhhhhhhddh
+hhhhhhhhhhhhhhhh
+hhdddddddddddhhh
+hhdddddddddddhhh
+hhhhddddddhhhhhh
+dddddddddddddddd
+@tblock 0 0
+4444444444444444
+4444444444444444
+4444444444444444
+4444444444444444
+4444444444444444
+4455555555555554
+4555555555555554
+4555555555535454
+4545555253535454
+4544552253535454
+4465555656565644
+4444444444444464
+4555555555555554
+4525555554555354
+4555552554555354
+4522225554565354
+4444444444444464
+4645555554545454
+4545355554555254
+4544325554555254
+4445555554555254
+4644444444444464
+4444444444444444
+4444444444454444
+4444444444554444
+4444444444554444
+4444444444444664
+4444444444444444
+4444444444444444
+4444466666444444
+4444666666444444
+4446666666666444

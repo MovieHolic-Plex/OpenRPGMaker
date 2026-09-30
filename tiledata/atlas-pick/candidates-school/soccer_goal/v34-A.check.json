@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/soccer_goal/v34-A.pxg",
+ "set": "school",
+ "id": "soccer_goal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 12,
+ "bbox": [
+  0,
+  0,
+  63,
+  31
+ ],
+ "note": "축구 골대 3/4 — 흰 가로대 밑으로 뒤로 처진 그물 윗면(밝은 격자), 앞에 흰 기둥 둘과 성긴 뒷그물, 바닥 받침",
+ "ok": true
+}

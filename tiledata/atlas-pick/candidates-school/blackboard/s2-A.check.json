@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/blackboard/s2-A.pxg",
+ "set": "school",
+ "id": "blackboard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  1,
+  62,
+  29
+ ],
+ "note": "알루미늄 틀 2px(위·왼 밝게, 아래·오른 어둡게) + 잔잔한 판 두 단 + 흐린 분필 줄·숫자 123 + 분필·지우개 얹은 받침 (v5 결)",
+ "ok": true
+}

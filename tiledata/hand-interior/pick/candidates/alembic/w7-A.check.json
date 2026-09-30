@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/alembic/w7-A.pxg",
+ "id": "alembic",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 23,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  15,
+  15
+ ],
+ "note": "v5 를 그대로 키워 다듬음: 유리 플라스크 → 황동 관 → 받이 병으로 이어지는 증류 흐름이 보이게, 아래 화덕은 윗면 2줄+앞면 5줄로 입체, 화구에 불꽃. 왼위 빛, 오른쪽·아래 한 단 어둡게",
+ "ok": true
+}

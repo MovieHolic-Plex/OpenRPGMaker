@@ -1,0 +1,23 @@
+{
+ "id": "timber_a",
+ "slug": "timber_a",
+ "name": "목조 2층집 A",
+ "scene": "성·마을",
+ "kind": "icon",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "위층 단품(그림자 포함)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 2×3 붉은 지붕, 회벽 위 보·기둥, 위층 오버행.",
+ "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+ "worker": "v6"
+}

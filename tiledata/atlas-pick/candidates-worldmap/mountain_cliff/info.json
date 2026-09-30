@@ -1,0 +1,23 @@
+{
+ "id": "mountain_cliff",
+ "slug": "mountain_cliff",
+ "name": "산 절벽면 남·동",
+ "scene": "들·길",
+ "kind": "base",
+ "cells": [
+  6,
+  1
+ ],
+ "canvas": [
+  96,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(산 위에 통째로 얹는 절벽 칸)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 산 덩이 남쪽·동쪽 가장자리와 안쪽 지층 턱에 통째로 얹는 어두운 세로 절벽면(남면 3·동면 3). 목표 그림의 절벽 약 17%.",
+ "palette_hint": "wrock 윗입술 + wcliff 4단",
+ "worker": "v6"
+}

@@ -1,0 +1,69 @@
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a vblack 3
+@mat b vblack 4
+@mat c vblack 1
+@mat d vblack 2
+@mat e vglass 3
+@mat f vglass 6
+@mat g vglass 0
+@mat h vred 5
+@mat i vred 2
+@mat j morange 4
+@mat k morange 3
+@mat l morange 0
+@mat m vwhite 6
+@mat n vwhite 3
+@mat o vred 3
+@mat p vred 1
+@mat q vred 4
+@mblock 0 0
+................................
+...fffffffffffffffffffffg.......
+...fhhhhhhhhhhhhhhhhhhhig.......
+...fheeeefeeeeeeeeeeeeeig.......
+...fheeefeeeeeeeeeeeeeeig.......
+...fheefeeeeeeeeeeeeeeeig.......
+...fhefeeeeeeeeeeeeeeeeig.......
+...fheeeehhhhhhhhhheeeeig.......
+...fheeeeheeeeeeeeheeeeig.......
+...fheeeeheeeeeeeeheeeeigbbbac..
+...fheeeeheeeeeeeeheeeeigddbac..
+...fheeeeheeeeeeeeheeeeigddbac..
+...fheeeehhhhhhhhhheeeeig.bbac..
+...fhiiiiiiiiiiiiiiiiiiig.bbac..
+...gggggggggggggggggggggg.bbac..
+........jjjjjjjjjjj.......bbac..
+.......lkkkkkkkkkkkl......bbac..
+........lllllllllll.......bbac..
+.........m.m.m.m.m........bbac..
+..........m.m.m.m.........bbac..
+..........n.m.n.m.........bbac..
+..........m.m.m.m.........bbac..
+..........m.n.m.n.........bbac..
+............m.m...........bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+..........................bbac..
+.......hhhhhhhhhhhhhhhhhhhhhhhp.
+......hooqqqqqqooooooooooooooop.
+......hooooooooooooooooooooooop.
+......pppppppppppppppppppppppp..
+.........badd.............badd..
+.........dddd.............dddd..
+......~~~~~~~~~~~~~~~~~~~~~~~~~.
+......-------------------------.

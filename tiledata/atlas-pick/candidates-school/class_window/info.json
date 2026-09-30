@@ -1,0 +1,23 @@
+{
+ "id": "class_window",
+ "slug": "class_window",
+ "name": "교실 창(커튼)",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "교실 바깥벽 창 한 칸. 알루미늄 미닫이 두 짝(가운데 세로 겹침 틀), 유리에 하늘·반사 사선, 한쪽에 묶은 크림색 커튼, 아래 창턱. 좌우로 여러 칸 이어 붙게(양 끝 틀 반쪽씩). 창가 자리 분위기.",
+ "palette_hint": "mglass 유리, mmetal 틀, cream/vlinen 커튼, & 유리 반사",
+ "pair": [
+  "hall_window"
+ ],
+ "worker": "s1"
+}

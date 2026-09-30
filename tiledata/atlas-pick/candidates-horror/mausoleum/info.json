@@ -1,0 +1,22 @@
+{
+ "id": "mausoleum",
+ "slug": "mausoleum",
+ "name": "납골당 외관",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  4,
+  4
+ ],
+ "canvas": [
+  64,
+  64
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "작은 돌 납골당 앞면: 삼각 박공 지붕(돌 처마), 기둥 둘, 가운데 녹슨 쇠문(반쯤 열려 속 어둠), 문 위 새긴 판(글자 없는 줄), 계단 두 단, 벽 금·이끼·담쟁이 줄기. 칸 맨 아래 줄 = 풀밭과 만나는 발치.",
+ "palette_hint": "grave 돌, tin/rust 문, void 속, hmoss 이끼, night 담쟁이",
+ "worker_v1": "h2",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h2"
+}

@@ -1,0 +1,74 @@
+// door_gallery hf3-B (hf3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a dust 0
+@mat b grave 0
+@mat c viron 0
+@mblock 0 0
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbcbaaaa
+aaaabbbbbccbaaaa
+aaaabbbbbccbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+0000000000000000
+0666666666666650
+0666666666666650
+0664444444444650
+0664000000004650
+0664033333204650
+0664030000204650
+0664030000204650
+0664030000204650
+0664030000204650
+0664030000204650
+0664030000204650
+0664030000204650
+0664022222204650
+0664000000004650
+0664033333204650
+0664030000204650
+0664030000204650
+0664030000604650
+0664030006604650
+0664030004604650
+0664030000204650
+0664030000204650
+0664030000204650
+0664030000204650
+0664030000204650
+0664030000204650
+0664022222204650
+0664000000004650
+2222222222222222

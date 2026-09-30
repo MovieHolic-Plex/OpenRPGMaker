@@ -1,0 +1,3682 @@
+{
+ "version": 1,
+ "set": "modern",
+ "map": "modern-gangnam-station",
+ "note": "강남역 맵에 쓰인 현대 조각을 기물(변형 묶음) 단위로. v0 = 지금 시트 판. make_modern_set.py 가 만든다.",
+ "items": [
+  {
+   "id": "gn-bus",
+   "slug": "gn_bus",
+   "name": "시내버스(간선·지선·광역)",
+   "scene": "차",
+   "cells": [
+    2,
+    5
+   ],
+   "canvas": [
+    32,
+    80
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "간선(파랑) 시내버스(남향) 2×5. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도. 그림자 구운 차·버스: 아스팔트 위에만(그림자가 아스팔트 색). 우측통행 — 남북 도로 서쪽 차로 남향(-s), 동쪽 북향(-n), 동서 도로 북쪽 서향(-w), 남쪽 동향(-e).",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-bus-blue-s",
+    "gn-bus-blue-n",
+    "gn-bus-green-s",
+    "gn-bus-green-n",
+    "gn-bus-red-s",
+    "gn-bus-red-n"
+   ],
+   "tiles": [
+    4140,
+    4141,
+    4142,
+    4143,
+    4144,
+    4145,
+    4146,
+    4147,
+    4148,
+    4149,
+    4150,
+    4151,
+    4170,
+    4171,
+    4172,
+    4173,
+    4174,
+    4175,
+    4176,
+    4177,
+    4178,
+    4179,
+    4180,
+    4181,
+    4200,
+    4201,
+    4202,
+    4203,
+    4204,
+    4205,
+    4206,
+    4207,
+    4208,
+    4209,
+    4210,
+    4211,
+    4230,
+    4231,
+    4232,
+    4233,
+    4234,
+    4235,
+    4236,
+    4237,
+    4238,
+    4239,
+    4240,
+    4241,
+    4260,
+    4261,
+    4262,
+    4263,
+    4264,
+    4265,
+    4266,
+    4267,
+    4268,
+    4269,
+    4270,
+    4271
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     42,
+     15
+    ]
+   }
+  },
+  {
+   "id": "gn-bus-lane",
+   "slug": "gn_bus_lane",
+   "name": "버스전용차로 표시(글자·파란 선)",
+   "scene": "차",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "버스전용 글자 버(북향 운전자용) 1×1. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-bus-w0-n",
+    "gn-bus-w0-s",
+    "gn-bus-w1-n",
+    "gn-bus-w1-s",
+    "gn-bus-w2-n",
+    "gn-bus-w2-s",
+    "gn-bus-w3-n",
+    "gn-bus-w3-s",
+    "gn-bus-line-a",
+    "gn-bus-line-b"
+   ],
+   "tiles": [
+    4904,
+    4905,
+    4906,
+    4907,
+    4908,
+    4909,
+    4910,
+    4911,
+    4912,
+    4913
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     48,
+     20
+    ]
+   }
+  },
+  {
+   "id": "gn-bus-led",
+   "slug": "gn_bus_led",
+   "name": "버스 도착 안내 전광판",
+   "scene": "차",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "버스 도착 안내 전광판 1×2. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-bus-led"
+   ],
+   "tiles": [
+    4537,
+    4567
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     44,
+     21
+    ]
+   }
+  },
+  {
+   "id": "gn-car-h",
+   "slug": "gn_car_h",
+   "name": "승용차·택시(가로)",
+   "scene": "차",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "승용차 white(동향, 그림자) 3×2. 그림자 구운 차·버스: 아스팔트 위에만(그림자가 아스팔트 색). 우측통행 — 남북 도로 서쪽 차로 남향(-s), 동쪽 북향(-n), 동서 도로 북쪽 서향(-w), 남쪽 동향(-e).",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-car-h-white-e",
+    "gn-car-h-white-w",
+    "gn-car-h-black-e",
+    "gn-car-h-black-w",
+    "gn-car-h-silver-e",
+    "gn-car-h-silver-w",
+    "gn-car-h-blue-e",
+    "gn-car-h-otaxi-e",
+    "gn-car-h-otaxi-w",
+    "gn-car-h-wtaxi-e"
+   ],
+   "tiles": [
+    4156,
+    4157,
+    4158,
+    4159,
+    4160,
+    4161,
+    4166,
+    4167,
+    4168,
+    4186,
+    4187,
+    4188,
+    4189,
+    4190,
+    4191,
+    4196,
+    4197,
+    4198,
+    4290,
+    4291,
+    4292,
+    4297,
+    4298,
+    4299,
+    4300,
+    4301,
+    4302,
+    4307,
+    4308,
+    4309,
+    4320,
+    4321,
+    4322,
+    4327,
+    4328,
+    4329,
+    4330,
+    4331,
+    4332,
+    4337,
+    4338,
+    4339,
+    4387,
+    4388,
+    4389,
+    4390,
+    4391,
+    4392,
+    4397,
+    4398,
+    4399,
+    4417,
+    4418,
+    4419,
+    4420,
+    4421,
+    4422,
+    4427,
+    4428,
+    4429
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     38,
+     54
+    ]
+   }
+  },
+  {
+   "id": "gn-car-v",
+   "slug": "gn_car_v",
+   "name": "승용차·택시(세로)",
+   "scene": "차",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "승용차 white(남향, 그림자) 2×3. 그림자 구운 차·버스: 아스팔트 위에만(그림자가 아스팔트 색). 우측통행 — 남북 도로 서쪽 차로 남향(-s), 동쪽 북향(-n), 동서 도로 북쪽 서향(-w), 남쪽 동향(-e).",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-car-v-white-s",
+    "gn-car-v-white-n",
+    "gn-car-v-black-s",
+    "gn-car-v-black-n",
+    "gn-car-v-silver-s",
+    "gn-car-v-silver-n",
+    "gn-car-v-blue-n",
+    "gn-car-v-red-n",
+    "gn-car-v-otaxi-s",
+    "gn-car-v-otaxi-n",
+    "gn-car-v-wtaxi-s"
+   ],
+   "tiles": [
+    4152,
+    4153,
+    4154,
+    4155,
+    4162,
+    4163,
+    4164,
+    4165,
+    4182,
+    4183,
+    4184,
+    4185,
+    4192,
+    4193,
+    4194,
+    4195,
+    4212,
+    4213,
+    4214,
+    4215,
+    4222,
+    4223,
+    4224,
+    4225,
+    4293,
+    4294,
+    4295,
+    4296,
+    4305,
+    4306,
+    4315,
+    4316,
+    4323,
+    4324,
+    4325,
+    4326,
+    4335,
+    4336,
+    4345,
+    4346,
+    4353,
+    4354,
+    4355,
+    4356,
+    4365,
+    4366,
+    4375,
+    4376,
+    4383,
+    4384,
+    4385,
+    4386,
+    4393,
+    4394,
+    4413,
+    4414,
+    4415,
+    4416,
+    4423,
+    4424,
+    4443,
+    4444,
+    4445,
+    4446,
+    4453,
+    4454
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     36,
+     17
+    ]
+   }
+  },
+  {
+   "id": "gn-delivery-scooter",
+   "slug": "gn_delivery_scooter",
+   "name": "배달 오토바이",
+   "scene": "차",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "배달 오토바이 1×1. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-delivery-scooter"
+   ],
+   "tiles": [
+    4831
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     74,
+     13
+    ]
+   }
+  },
+  {
+   "id": "gn-arrow",
+   "slug": "gn_arrow",
+   "name": "노면 화살표",
+   "scene": "도로·보도 표시",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "노면 화살표 직진(북) 1×2. 차로 화살표: 교차로 멈춤선 3~6칸 앞, 차로 안쪽 칸(점선이 없는 칸)에. 연석 옆 차로와 중앙선 칸은 피한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-arrow-ns-n",
+    "gn-arrow-ns-s",
+    "gn-arrow-ew-w",
+    "gn-arrow-ew-e",
+    "gn-arrow-lt-w"
+   ],
+   "tiles": [
+    4843,
+    4844,
+    4845,
+    4846,
+    4847,
+    4848,
+    4849,
+    4850,
+    4873,
+    4874
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     51,
+     62
+    ]
+   }
+  },
+  {
+   "id": "gn-hatch",
+   "slug": "gn_hatch",
+   "name": "안전지대 빗금",
+   "scene": "도로·보도 표시",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "안전지대 빗금 1×1. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-hatch"
+   ],
+   "tiles": [
+    4897
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     44,
+     4
+    ]
+   }
+  },
+  {
+   "id": "gn-sw-queue",
+   "slug": "gn_sw_queue",
+   "name": "인도 줄 서는 곳",
+   "scene": "도로·보도 표시",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "인도 줄 서는 곳 1×1. 인도 표시(아래층 F, 인도 속 칸): 점자블록은 출구·횡단보도로 이어지는 줄, 자전거 표시는 넓은 인도 안쪽, 줄 서는 곳 표시는 정류장 섬 가운데 줄.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-sw-queue"
+   ],
+   "tiles": [
+    4839
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     45,
+     15
+    ]
+   }
+  },
+  {
+   "id": "gn-sw-tac",
+   "slug": "gn_sw_tac",
+   "name": "점자블록",
+   "scene": "도로·보도 표시",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "인도 점자블록(남북) 1×1. 인도 표시(아래층 F, 인도 속 칸): 점자블록은 출구·횡단보도로 이어지는 줄, 자전거 표시는 넓은 인도 안쪽, 줄 서는 곳 표시는 정류장 섬 가운데 줄.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-sw-tac-ns",
+    "gn-sw-tac-ew",
+    "gn-sw-tac-dot"
+   ],
+   "tiles": [
+    4840,
+    4841,
+    4842
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     31,
+     5
+    ]
+   }
+  },
+  {
+   "id": "mo-crosswalk",
+   "slug": "mo_crosswalk",
+   "name": "횡단보도",
+   "scene": "도로·보도 표시",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "횡단보도(남북 도로) · 서쪽 연석 줄 1×1. 횡단보도: 교차로 바로 바깥(교차하는 길의 인도 줄과 같은 줄)에 폭 2칸으로, 인도에서 인도까지 끊김 없이 — 차도 첫·끝 줄은 연석을 남기는 -n/-s(-w/-e) 칸. 양끝 인도에 보행 신호와 횡단보도 표지. 차선·중앙선은 횡단보도에서 한 칸 떨어져 멈추고, 멈춤선을 둔다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-crosswalk-ew-w",
+    "mo-crosswalk-ew-e",
+    "mo-crosswalk-ew"
+   ],
+   "tiles": [
+    3777,
+    3778,
+    3779
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     34,
+     12
+    ]
+   }
+  },
+  {
+   "id": "mo-lane",
+   "slug": "mo_lane",
+   "name": "차선(노란 중앙선·흰 점선)",
+   "scene": "도로·보도 표시",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "노란 중앙선 · 동서 · 위쪽 1×1. 도로 표시(아래층 불투명 칸): 아스팔트 속 칸(8방향이 모두 아스팔트)에만 찍는다 — 연석 가장자리 칸에 찍으면 연석이 끊긴다. 위층에 찍지 않는다(사람 위에 그려진다).",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-lane-ew-a-solid",
+    "mo-lane-ew-b-dash",
+    "mo-lane-ew-b-solid",
+    "mo-lane-ns-m-solid",
+    "mo-lane-ns-b-dash"
+   ],
+   "tiles": [
+    3763,
+    3766,
+    3767,
+    3771,
+    3772
+   ],
+   "ctx": {
+    "at": [
+     0,
+     32
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     0,
+     2
+    ]
+   }
+  },
+  {
+   "id": "mo-stop",
+   "slug": "mo_stop",
+   "name": "멈춤선",
+   "scene": "도로·보도 표시",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "멈춤선 · 세로 · 앞쪽 가장자리 1×1. 횡단보도: 교차로 바로 바깥(교차하는 길의 인도 줄과 같은 줄)에 폭 2칸으로, 인도에서 인도까지 끊김 없이 — 차도 첫·끝 줄은 연석을 남기는 -n/-s(-w/-e) 칸. 양끝 인도에 보행 신호와 횡단보도 표지. 차선·중앙선은 횡단보도에서 한 칸 떨어져 멈추고, 멈춤선을 둔다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-stop-v-a",
+    "mo-stop-v-b",
+    "mo-stop-h-a",
+    "mo-stop-h-b",
+    "mo-stop-v-a-n",
+    "mo-stop-v-b-s",
+    "mo-stop-h-a-w",
+    "mo-stop-h-a-e",
+    "mo-stop-h-b-w",
+    "mo-stop-h-b-e"
+   ],
+   "tiles": [
+    3840,
+    3841,
+    3842,
+    3843,
+    3844,
+    3847,
+    3848,
+    3849,
+    3850,
+    3851
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     57,
+     45
+    ]
+   }
+  },
+  {
+   "id": "gn-media-pole",
+   "slug": "gn_media_pole",
+   "name": "미디어폴",
+   "scene": "신호·가로 시설",
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "미디어폴 a 1×3. 미디어폴: 대로 동쪽 인도 연석 한 줄 안쪽을 따라 3~4칸 간격으로 한 줄(강남역 11번 출구 → 신논현 방향). 가로등을 겸하므로 그 구간엔 가로등을 두지 않는다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-media-pole-a",
+    "gn-media-pole-b",
+    "gn-media-pole-c"
+   ],
+   "tiles": [
+    4538,
+    4539,
+    4540,
+    4568,
+    4569,
+    4570,
+    4598,
+    4599,
+    4600
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     58,
+     6
+    ]
+   }
+  },
+  {
+   "id": "gn-route-board",
+   "slug": "gn_route_board",
+   "name": "노선 안내판",
+   "scene": "신호·가로 시설",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "노선 안내판 1×2. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-route-board"
+   ],
+   "tiles": [
+    4536,
+    4566
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     46,
+     20
+    ]
+   }
+  },
+  {
+   "id": "gn-signal-arm",
+   "slug": "gn_signal_arm",
+   "name": "가로형 신호등",
+   "scene": "신호·가로 시설",
+   "cells": [
+    5,
+    1
+   ],
+   "canvas": [
+    80,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "가로형 신호등(e 쪽으로 뻗음) 5×1. 대로 교차로 차량 신호: 모퉁이 인도 연석 칸에 기둥(S), 팔(C)은 그 모퉁이로 들어오는 차로 위로 멈춤선 줄에. 보행 신호(mo-traffic-light)와 같은 모퉁이에 두지 않는다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-signal-arm-e",
+    "gn-signal-arm-w",
+    "gn-signal-arm-s",
+    "gn-signal-arm-n"
+   ],
+   "tiles": [
+    4853,
+    4854,
+    4855,
+    4856,
+    4857,
+    4890,
+    4891,
+    4892,
+    4893,
+    4894,
+    4895,
+    4896,
+    4925,
+    4926,
+    4955,
+    4956,
+    4985,
+    4986,
+    5015,
+    5016
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     33,
+     60
+    ]
+   }
+  },
+  {
+   "id": "mo-ped-signal",
+   "slug": "mo_ped_signal",
+   "name": "보행 신호등",
+   "scene": "신호·가로 시설",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "보행 신호등 1×2. 신호등: 교차로 모퉁이 인도 칸에, 횡단보도 끝과 마주 보게 한 쌍(차량 신호 + 보행 신호). 교차로가 아닌 곳에는 두지 않는다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-ped-signal"
+   ],
+   "tiles": [
+    3333,
+    3363
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     32,
+     10
+    ]
+   }
+  },
+  {
+   "id": "blk-al-brk",
+   "slug": "blk_al_brk",
+   "name": "골목 간판 층 · 벽돌",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "골목 간판 층 · gb.al.brk.u.l.ch.9 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-al-brk-u-l-ch-9",
+    "gnb-al-brk-u-l-gc-0",
+    "gnb-al-brk-u-l-gc-9",
+    "gnb-al-brk-u-l-gg-9",
+    "gnb-al-brk-u-l-hf-0",
+    "gnb-al-brk-u-l-hf-9",
+    "gnb-al-brk-u-l-hp-0",
+    "gnb-al-brk-u-l-hp-9",
+    "gnb-al-brk-u-l-nb-0",
+    "gnb-al-brk-u-l-nb-9",
+    "gnb-al-brk-u-l-pc-0",
+    "gnb-al-brk-u-l-pc-9",
+    "gnb-al-brk-u-l-pj-0",
+    "gnb-al-brk-u-l-pj-9",
+    "gnb-al-brk-u-m-ch-0",
+    "gnb-al-brk-u-m-ch-1",
+    "gnb-al-brk-u-m-ch-9",
+    "gnb-al-brk-u-m-gc-0",
+    "gnb-al-brk-u-m-gc-1",
+    "gnb-al-brk-u-m-gc-9",
+    "gnb-al-brk-u-m-gg-0",
+    "gnb-al-brk-u-m-gg-1",
+    "gnb-al-brk-u-m-gg-9",
+    "gnb-al-brk-u-m-hf-0",
+    "gnb-al-brk-u-m-hf-1",
+    "gnb-al-brk-u-m-hf-9",
+    "gnb-al-brk-u-m-hp-0",
+    "gnb-al-brk-u-m-hp-1",
+    "gnb-al-brk-u-m-hp-9",
+    "gnb-al-brk-u-m-nb-0",
+    "gnb-al-brk-u-m-nb-1",
+    "gnb-al-brk-u-m-nb-2",
+    "gnb-al-brk-u-m-nb-9",
+    "gnb-al-brk-u-m-pc-0",
+    "gnb-al-brk-u-m-pc-1",
+    "gnb-al-brk-u-m-pc-2",
+    "gnb-al-brk-u-m-pc-9",
+    "gnb-al-brk-u-m-pj-0",
+    "gnb-al-brk-u-m-pj-1",
+    "gnb-al-brk-u-m-pj-9",
+    "gnb-al-brk-u-r-ch-9",
+    "gnb-al-brk-u-r-gc-9",
+    "gnb-al-brk-u-r-gg-9",
+    "gnb-al-brk-u-r-hf-9",
+    "gnb-al-brk-u-r-hp-9",
+    "gnb-al-brk-u-r-nb-9",
+    "gnb-al-brk-u-r-pc-2",
+    "gnb-al-brk-u-r-pc-9",
+    "gnb-al-brk-u-r-pj-9"
+   ],
+   "tiles": [
+    5045,
+    5066,
+    5068,
+    5071,
+    5072,
+    5074,
+    5075,
+    5077,
+    5078,
+    5081,
+    5082,
+    5085,
+    5090,
+    5092,
+    5111,
+    5112,
+    5113,
+    5134,
+    5135,
+    5136,
+    5137,
+    5138,
+    5139,
+    5140,
+    5141,
+    5142,
+    5143,
+    5144,
+    5145,
+    5146,
+    5147,
+    5148,
+    5149,
+    5150,
+    5151,
+    5152,
+    5153,
+    5158,
+    5159,
+    5160,
+    5181,
+    5204,
+    5207,
+    5210,
+    5213,
+    5217,
+    5220,
+    5221,
+    5228
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     84,
+     31
+    ]
+   }
+  },
+  {
+   "id": "blk-al-con",
+   "slug": "blk_al_con",
+   "name": "골목 간판 층 · 콘크리트",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "골목 간판 층 · gb.al.con.u.l.cf.9 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-al-con-u-l-cf-9",
+    "gnb-al-con-u-l-ch-9",
+    "gnb-al-con-u-l-dn-9",
+    "gnb-al-con-u-l-el-9",
+    "gnb-al-con-u-l-ey-9",
+    "gnb-al-con-u-l-gg-0",
+    "gnb-al-con-u-l-gg-9",
+    "gnb-al-con-u-l-hp-0",
+    "gnb-al-con-u-l-hp-9",
+    "gnb-al-con-u-l-nb-0",
+    "gnb-al-con-u-l-pc-9",
+    "gnb-al-con-u-l-ps-0",
+    "gnb-al-con-u-l-ps-9",
+    "gnb-al-con-u-m-cf-0",
+    "gnb-al-con-u-m-cf-1",
+    "gnb-al-con-u-m-cf-9",
+    "gnb-al-con-u-m-ch-0",
+    "gnb-al-con-u-m-ch-1",
+    "gnb-al-con-u-m-ch-9",
+    "gnb-al-con-u-m-dn-0",
+    "gnb-al-con-u-m-dn-1",
+    "gnb-al-con-u-m-dn-9",
+    "gnb-al-con-u-m-el-0",
+    "gnb-al-con-u-m-el-1",
+    "gnb-al-con-u-m-el-2",
+    "gnb-al-con-u-m-el-9",
+    "gnb-al-con-u-m-ey-0",
+    "gnb-al-con-u-m-ey-1",
+    "gnb-al-con-u-m-ey-9",
+    "gnb-al-con-u-m-gg-0",
+    "gnb-al-con-u-m-gg-1",
+    "gnb-al-con-u-m-gg-9",
+    "gnb-al-con-u-m-hp-0",
+    "gnb-al-con-u-m-hp-1",
+    "gnb-al-con-u-m-hp-9",
+    "gnb-al-con-u-m-nb-1",
+    "gnb-al-con-u-m-nb-2",
+    "gnb-al-con-u-m-pc-0",
+    "gnb-al-con-u-m-pc-1",
+    "gnb-al-con-u-m-pc-2",
+    "gnb-al-con-u-m-pc-9",
+    "gnb-al-con-u-m-ps-0",
+    "gnb-al-con-u-m-ps-1",
+    "gnb-al-con-u-m-ps-2",
+    "gnb-al-con-u-m-ps-3",
+    "gnb-al-con-u-m-ps-9",
+    "gnb-al-con-u-r-cf-9",
+    "gnb-al-con-u-r-ch-9",
+    "gnb-al-con-u-r-dn-9",
+    "gnb-al-con-u-r-el-9",
+    "gnb-al-con-u-r-ey-9",
+    "gnb-al-con-u-r-gg-9",
+    "gnb-al-con-u-r-hp-9",
+    "gnb-al-con-u-r-nb-2",
+    "gnb-al-con-u-r-pc-9",
+    "gnb-al-con-u-r-ps-3",
+    "gnb-al-con-u-r-ps-9"
+   ],
+   "tiles": [
+    5246,
+    5249,
+    5259,
+    5266,
+    5269,
+    5273,
+    5275,
+    5279,
+    5281,
+    5282,
+    5289,
+    5297,
+    5301,
+    5312,
+    5313,
+    5314,
+    5315,
+    5316,
+    5317,
+    5325,
+    5326,
+    5327,
+    5331,
+    5332,
+    5333,
+    5334,
+    5335,
+    5336,
+    5337,
+    5341,
+    5342,
+    5343,
+    5347,
+    5348,
+    5349,
+    5351,
+    5352,
+    5354,
+    5355,
+    5356,
+    5357,
+    5365,
+    5366,
+    5367,
+    5368,
+    5369,
+    5382,
+    5385,
+    5395,
+    5402,
+    5405,
+    5411,
+    5417,
+    5420,
+    5425,
+    5436,
+    5437
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     61,
+     26
+    ]
+   }
+  },
+  {
+   "id": "blk-al-til",
+   "slug": "blk_al_til",
+   "name": "골목 간판 층 · 타일",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "골목 간판 층 · gb.al.til.u.l.cs.9 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-al-til-u-l-cs-9",
+    "gnb-al-til-u-l-el-0",
+    "gnb-al-til-u-l-el-9",
+    "gnb-al-til-u-l-ey-9",
+    "gnb-al-til-u-l-gc-0",
+    "gnb-al-til-u-l-gc-9",
+    "gnb-al-til-u-l-gg-0",
+    "gnb-al-til-u-l-gg-9",
+    "gnb-al-til-u-l-hf-9",
+    "gnb-al-til-u-l-hp-0",
+    "gnb-al-til-u-l-hp-9",
+    "gnb-al-til-u-l-nb-0",
+    "gnb-al-til-u-l-nb-9",
+    "gnb-al-til-u-l-ph-0",
+    "gnb-al-til-u-l-pj-9",
+    "gnb-al-til-u-l-ps-0",
+    "gnb-al-til-u-l-sk-0",
+    "gnb-al-til-u-l-sk-9",
+    "gnb-al-til-u-m-cs-0",
+    "gnb-al-til-u-m-cs-1",
+    "gnb-al-til-u-m-cs-2",
+    "gnb-al-til-u-m-cs-9",
+    "gnb-al-til-u-m-el-0",
+    "gnb-al-til-u-m-el-1",
+    "gnb-al-til-u-m-el-2",
+    "gnb-al-til-u-m-el-9",
+    "gnb-al-til-u-m-ey-0",
+    "gnb-al-til-u-m-ey-1",
+    "gnb-al-til-u-m-ey-9",
+    "gnb-al-til-u-m-gc-0",
+    "gnb-al-til-u-m-gc-1",
+    "gnb-al-til-u-m-gc-9",
+    "gnb-al-til-u-m-gg-0",
+    "gnb-al-til-u-m-gg-1",
+    "gnb-al-til-u-m-gg-9",
+    "gnb-al-til-u-m-hf-0",
+    "gnb-al-til-u-m-hf-1",
+    "gnb-al-til-u-m-hf-9",
+    "gnb-al-til-u-m-hp-0",
+    "gnb-al-til-u-m-hp-1",
+    "gnb-al-til-u-m-hp-9",
+    "gnb-al-til-u-m-nb-0",
+    "gnb-al-til-u-m-nb-1",
+    "gnb-al-til-u-m-nb-2",
+    "gnb-al-til-u-m-nb-9",
+    "gnb-al-til-u-m-ph-1",
+    "gnb-al-til-u-m-ph-2",
+    "gnb-al-til-u-m-pj-0",
+    "gnb-al-til-u-m-pj-1",
+    "gnb-al-til-u-m-pj-9",
+    "gnb-al-til-u-m-ps-1",
+    "gnb-al-til-u-m-ps-2",
+    "gnb-al-til-u-m-ps-3",
+    "gnb-al-til-u-m-ps-9",
+    "gnb-al-til-u-m-sk-0",
+    "gnb-al-til-u-m-sk-1",
+    "gnb-al-til-u-m-sk-2",
+    "gnb-al-til-u-m-sk-9",
+    "gnb-al-til-u-r-cs-9",
+    "gnb-al-til-u-r-el-2",
+    "gnb-al-til-u-r-el-9",
+    "gnb-al-til-u-r-ey-9",
+    "gnb-al-til-u-r-gc-9",
+    "gnb-al-til-u-r-gg-9",
+    "gnb-al-til-u-r-hf-9",
+    "gnb-al-til-u-r-hp-9",
+    "gnb-al-til-u-r-nb-2",
+    "gnb-al-til-u-r-nb-9",
+    "gnb-al-til-u-r-pj-9",
+    "gnb-al-til-u-r-ps-9",
+    "gnb-al-til-u-r-sk-2",
+    "gnb-al-til-u-r-sk-9"
+   ],
+   "tiles": [
+    5457,
+    5467,
+    5470,
+    5473,
+    5474,
+    5476,
+    5477,
+    5479,
+    5482,
+    5483,
+    5485,
+    5486,
+    5489,
+    5494,
+    5500,
+    5501,
+    5506,
+    5509,
+    5522,
+    5523,
+    5524,
+    5525,
+    5535,
+    5536,
+    5537,
+    5538,
+    5539,
+    5540,
+    5541,
+    5542,
+    5543,
+    5544,
+    5545,
+    5546,
+    5547,
+    5548,
+    5549,
+    5550,
+    5551,
+    5552,
+    5553,
+    5554,
+    5555,
+    5556,
+    5557,
+    5563,
+    5564,
+    5566,
+    5567,
+    5568,
+    5570,
+    5571,
+    5572,
+    5573,
+    5574,
+    5575,
+    5576,
+    5577,
+    5593,
+    5605,
+    5606,
+    5609,
+    5612,
+    5615,
+    5618,
+    5621,
+    5624,
+    5625,
+    5636,
+    5641,
+    5644,
+    5645
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     24,
+     25
+    ]
+   }
+  },
+  {
+   "id": "blk-en-d",
+   "slug": "blk_en_d",
+   "name": "현관 (en.d)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "현관 · en.d.con 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-en-d-con",
+    "mob-en-d-gls",
+    "mob-en-d-til"
+   ],
+   "tiles": [
+    3893,
+    3894,
+    3895
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     19,
+     28
+    ]
+   }
+  },
+  {
+   "id": "blk-en-u",
+   "slug": "blk_en_u",
+   "name": "현관 (en.u)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "현관 · en.u.con 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-en-u-con",
+    "mob-en-u-gls",
+    "mob-en-u-til"
+   ],
+   "tiles": [
+    3898,
+    3899,
+    3900
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     19,
+     27
+    ]
+   }
+  },
+  {
+   "id": "blk-fa-brk",
+   "slug": "blk_fa_brk",
+   "name": "외벽 (fa.brk)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "외벽 · fa.brk.d.l.win 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-fa-brk-d-l-win",
+    "mob-fa-brk-d-m-win",
+    "mob-fa-brk-d-r-win"
+   ],
+   "tiles": [
+    3927,
+    3930,
+    3933
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     61,
+     9
+    ]
+   }
+  },
+  {
+   "id": "blk-fa-con",
+   "slug": "blk_fa_con",
+   "name": "외벽 (fa.con)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "외벽 · fa.con.d.l.blank 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-fa-con-d-l-blank",
+    "mob-fa-con-d-l-win",
+    "mob-fa-con-d-m-blank",
+    "mob-fa-con-d-m-pil",
+    "mob-fa-con-d-m-win",
+    "mob-fa-con-d-r-blank",
+    "mob-fa-con-d-r-win",
+    "mob-fa-con-u-l-blank",
+    "mob-fa-con-u-m-blank",
+    "mob-fa-con-u-m-pil",
+    "mob-fa-con-u-m-win",
+    "mob-fa-con-u-r-blank"
+   ],
+   "tiles": [
+    3943,
+    3945,
+    3946,
+    3947,
+    3948,
+    3949,
+    3951,
+    3952,
+    3955,
+    3956,
+    3957,
+    3958
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     15,
+     10
+    ]
+   }
+  },
+  {
+   "id": "blk-fa-til",
+   "slug": "blk_fa_til",
+   "name": "외벽 (fa.til)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "외벽 · fa.til.d.l.blank 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-fa-til-d-l-blank",
+    "mob-fa-til-d-l-win",
+    "mob-fa-til-d-m-blank",
+    "mob-fa-til-d-m-pil",
+    "mob-fa-til-d-m-win",
+    "mob-fa-til-d-r-blank",
+    "mob-fa-til-d-r-win",
+    "mob-fa-til-u-l-blank",
+    "mob-fa-til-u-m-blank",
+    "mob-fa-til-u-m-pil",
+    "mob-fa-til-u-m-win",
+    "mob-fa-til-u-r-blank"
+   ],
+   "tiles": [
+    3973,
+    3975,
+    3976,
+    3977,
+    3978,
+    3979,
+    3981,
+    3982,
+    3985,
+    3986,
+    3987,
+    3988
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     75,
+     68
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-bg",
+   "slug": "blk_gb_bg",
+   "name": "푸른 커튼월",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "푸른 커튼월 · gb.bg.d.l.0 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-bg-d-l-0",
+    "gnb-bg-d-l-1",
+    "gnb-bg-d-l-2",
+    "gnb-bg-d-m-0",
+    "gnb-bg-d-m-1",
+    "gnb-bg-d-m-2",
+    "gnb-bg-d-r-0",
+    "gnb-bg-d-r-1",
+    "gnb-bg-d-r-2",
+    "gnb-bg-u-l-0",
+    "gnb-bg-u-l-1",
+    "gnb-bg-u-l-2",
+    "gnb-bg-u-m-0",
+    "gnb-bg-u-m-1",
+    "gnb-bg-u-m-2",
+    "gnb-bg-u-r-0",
+    "gnb-bg-u-r-1",
+    "gnb-bg-u-r-2"
+   ],
+   "tiles": [
+    5646,
+    5647,
+    5648,
+    5649,
+    5650,
+    5651,
+    5652,
+    5653,
+    5654,
+    5655,
+    5656,
+    5657,
+    5658,
+    5659,
+    5660,
+    5661,
+    5662,
+    5663
+   ],
+   "ctx": {
+    "at": [
+     16,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     1,
+     68
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-bks",
+   "slug": "blk_gb_bks",
+   "name": "서점 글자 띠",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "서점 글자 띠 · gb.bks.0 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-bks-0",
+    "gnb-bks-1",
+    "gnb-bks-2",
+    "gnb-bks-3",
+    "gnb-bks-4"
+   ],
+   "tiles": [
+    5664,
+    5665,
+    5666,
+    5667,
+    5668
+   ],
+   "ctx": {
+    "at": [
+     16,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     1,
+     27
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-gs",
+   "slug": "blk_gb_gs",
+   "name": "골목 1층 간판",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "골목 1층 간판 · gb.gs.l.cf.0 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-gs-l-cf-0",
+    "gnb-gs-l-cf-9",
+    "gnb-gs-l-ch-0",
+    "gnb-gs-l-ch-9",
+    "gnb-gs-l-cs-0",
+    "gnb-gs-l-cs-9",
+    "gnb-gs-l-cv-0",
+    "gnb-gs-l-cv-9",
+    "gnb-gs-l-dr-0",
+    "gnb-gs-l-gg-0",
+    "gnb-gs-l-gg-9",
+    "gnb-gs-l-hf-0",
+    "gnb-gs-l-hf-9",
+    "gnb-gs-l-ph-0",
+    "gnb-gs-m-cf-0",
+    "gnb-gs-m-cf-1",
+    "gnb-gs-m-cf-9",
+    "gnb-gs-m-ch-0",
+    "gnb-gs-m-ch-1",
+    "gnb-gs-m-cs-0",
+    "gnb-gs-m-cs-1",
+    "gnb-gs-m-cs-2",
+    "gnb-gs-m-cs-9",
+    "gnb-gs-m-cv-0",
+    "gnb-gs-m-cv-1",
+    "gnb-gs-m-cv-9",
+    "gnb-gs-m-dr-1",
+    "gnb-gs-m-gg-0",
+    "gnb-gs-m-gg-1",
+    "gnb-gs-m-gg-9",
+    "gnb-gs-m-hf-0",
+    "gnb-gs-m-hf-1",
+    "gnb-gs-m-hf-9",
+    "gnb-gs-m-ph-1",
+    "gnb-gs-m-ph-2",
+    "gnb-gs-r-cf-9",
+    "gnb-gs-r-ch-9",
+    "gnb-gs-r-cs-2",
+    "gnb-gs-r-cs-9",
+    "gnb-gs-r-cv-9",
+    "gnb-gs-r-dr-9",
+    "gnb-gs-r-gg-9",
+    "gnb-gs-r-hf-9",
+    "gnb-gs-r-ph-2",
+    "gnb-gs-r-ph-9"
+   ],
+   "tiles": [
+    5675,
+    5677,
+    5678,
+    5680,
+    5681,
+    5684,
+    5685,
+    5687,
+    5691,
+    5704,
+    5706,
+    5707,
+    5709,
+    5721,
+    5743,
+    5744,
+    5745,
+    5746,
+    5747,
+    5749,
+    5750,
+    5751,
+    5752,
+    5753,
+    5754,
+    5755,
+    5760,
+    5772,
+    5773,
+    5774,
+    5775,
+    5776,
+    5777,
+    5790,
+    5791,
+    5813,
+    5816,
+    5819,
+    5820,
+    5823,
+    5829,
+    5842,
+    5845,
+    5859,
+    5860
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     65,
+     18
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-heli",
+   "slug": "blk_gb_heli",
+   "name": "헬리패드",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "헬리패드 · gb.heli.bl.w 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-heli-bl-w",
+    "gnb-heli-br-w",
+    "gnb-heli-tl-w",
+    "gnb-heli-tr-w"
+   ],
+   "tiles": [
+    5876,
+    5880,
+    5884,
+    5888
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     4,
+     65
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-kb",
+   "slug": "blk_gb_kb",
+   "name": "벽돌 쌍둥이 탑",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "벽돌 쌍둥이 탑 · gb.kb.d.l 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-kb-d-l",
+    "gnb-kb-d-m",
+    "gnb-kb-d-r",
+    "gnb-kb-u-l",
+    "gnb-kb-u-m",
+    "gnb-kb-u-r"
+   ],
+   "tiles": [
+    5889,
+    5890,
+    5891,
+    5892,
+    5893,
+    5894
+   ],
+   "ctx": {
+    "at": [
+     16,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     1,
+     10
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-kbb",
+   "slug": "blk_gb_kbb",
+   "name": "탑 1층 띠",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "탑 1층 띠 · gb.kbb.l 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-kbb-l",
+    "gnb-kbb-m",
+    "gnb-kbb-m-0",
+    "gnb-kbb-m-1",
+    "gnb-kbb-r"
+   ],
+   "tiles": [
+    5895,
+    5896,
+    5897,
+    5898,
+    5899
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     8,
+     27
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-ks",
+   "slug": "blk_gb_ks",
+   "name": "유리 틈",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "유리 틈 · gb.ks.d.l 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-ks-d-l",
+    "gnb-ks-d-r",
+    "gnb-ks-door-l",
+    "gnb-ks-door-r",
+    "gnb-ks-u-l",
+    "gnb-ks-u-r"
+   ],
+   "tiles": [
+    5900,
+    5901,
+    5902,
+    5903,
+    5904,
+    5905
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     6,
+     10
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-rf",
+   "slug": "blk_gb_rf",
+   "name": "지붕(새 칠)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "지붕(새 칠) · gb.rf.m.l.b 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-rf-m-l-b",
+    "gnb-rf-m-l-d",
+    "gnb-rf-m-l-t",
+    "gnb-rf-m-l-w",
+    "gnb-rf-m-m-b",
+    "gnb-rf-m-m-d",
+    "gnb-rf-m-m-t",
+    "gnb-rf-m-m-w",
+    "gnb-rf-m-r-b",
+    "gnb-rf-m-r-d",
+    "gnb-rf-m-r-t",
+    "gnb-rf-m-r-w",
+    "gnb-rf-n-l-b",
+    "gnb-rf-n-l-d",
+    "gnb-rf-n-l-t",
+    "gnb-rf-n-l-w",
+    "gnb-rf-n-m-b",
+    "gnb-rf-n-m-d",
+    "gnb-rf-n-m-t",
+    "gnb-rf-n-m-w",
+    "gnb-rf-n-r-b",
+    "gnb-rf-n-r-d",
+    "gnb-rf-n-r-t",
+    "gnb-rf-n-r-w",
+    "gnb-rf-s-l-b",
+    "gnb-rf-s-l-d",
+    "gnb-rf-s-l-t",
+    "gnb-rf-s-l-w",
+    "gnb-rf-s-m-b",
+    "gnb-rf-s-m-d",
+    "gnb-rf-s-m-t",
+    "gnb-rf-s-m-w",
+    "gnb-rf-s-r-b",
+    "gnb-rf-s-r-d",
+    "gnb-rf-s-r-t",
+    "gnb-rf-s-r-w"
+   ],
+   "tiles": [
+    5906,
+    5907,
+    5908,
+    5909,
+    5910,
+    5911,
+    5912,
+    5913,
+    5914,
+    5915,
+    5916,
+    5917,
+    5918,
+    5919,
+    5920,
+    5921,
+    5922,
+    5923,
+    5924,
+    5925,
+    5926,
+    5927,
+    5928,
+    5929,
+    5930,
+    5931,
+    5932,
+    5933,
+    5934,
+    5935,
+    5936,
+    5937,
+    5938,
+    5939,
+    5940,
+    5941
+   ],
+   "ctx": {
+    "at": [
+     16,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     1,
+     7
+    ]
+   }
+  },
+  {
+   "id": "blk-gb-rt",
+   "slug": "blk_gb_rt",
+   "name": "옥상 설비(새 칠)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "옥상 설비(새 칠) · gb.rt.ac.b 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gnb-rt-ac-b",
+    "gnb-rt-ac-d",
+    "gnb-rt-ac-w",
+    "gnb-rt-antenna-t",
+    "gnb-rt-antenna-w",
+    "gnb-rt-solar-w",
+    "gnb-rt-stair-bl-w",
+    "gnb-rt-stair-br-w",
+    "gnb-rt-stair-tl-w",
+    "gnb-rt-stair-tr-w",
+    "gnb-rt-tank-bl-b",
+    "gnb-rt-tank-br-b",
+    "gnb-rt-tank-tl-b",
+    "gnb-rt-tank-tr-b"
+   ],
+   "tiles": [
+    5942,
+    5943,
+    5945,
+    5948,
+    5949,
+    5953,
+    5957,
+    5961,
+    5965,
+    5969,
+    5970,
+    5974,
+    5978,
+    5982
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     3,
+     7
+    ]
+   }
+  },
+  {
+   "id": "blk-rf-m",
+   "slug": "blk_rf_m",
+   "name": "평지붕 (rf.m)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "평지붕 · rf.m.l.c 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-rf-m-l-c",
+    "mob-rf-m-m-c",
+    "mob-rf-m-r-c"
+   ],
+   "tiles": [
+    4015,
+    4017,
+    4019
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     15,
+     7
+    ]
+   }
+  },
+  {
+   "id": "blk-rf-n",
+   "slug": "blk_rf_n",
+   "name": "평지붕 (rf.n)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "평지붕 · rf.n.l.c 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-rf-n-l-c",
+    "mob-rf-n-m-c",
+    "mob-rf-n-r-c"
+   ],
+   "tiles": [
+    4021,
+    4023,
+    4025
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     15,
+     6
+    ]
+   }
+  },
+  {
+   "id": "blk-rf-s",
+   "slug": "blk_rf_s",
+   "name": "평지붕 (rf.s)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "평지붕 · rf.s.l.c 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-rf-s-l-c",
+    "mob-rf-s-m-c",
+    "mob-rf-s-r-c"
+   ],
+   "tiles": [
+    4027,
+    4029,
+    4031
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     15,
+     8
+    ]
+   }
+  },
+  {
+   "id": "blk-rt-ac",
+   "slug": "blk_rt_ac",
+   "name": "옥상 설비 (rt.ac)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "옥상 설비 · rt.ac.c 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-rt-ac-c"
+   ],
+   "tiles": [
+    4033
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     17,
+     7
+    ]
+   }
+  },
+  {
+   "id": "blk-rt-stair",
+   "slug": "blk_rt_stair",
+   "name": "옥상 설비 (rt.stair)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "옥상 설비 · rt.stair.bl.c 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-rt-stair-bl-c",
+    "mob-rt-stair-br-c",
+    "mob-rt-stair-tl-c",
+    "mob-rt-stair-tr-c"
+   ],
+   "tiles": [
+    4039,
+    4041,
+    4043,
+    4045
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     69,
+     65
+    ]
+   }
+  },
+  {
+   "id": "blk-sh-d",
+   "slug": "blk_sh_d",
+   "name": "1층 가게",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "1층 가게 · sh.d.l.glass 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-sh-d-l-glass",
+    "mob-sh-d-m-door",
+    "mob-sh-d-m-glass",
+    "mob-sh-d-r-glass"
+   ],
+   "tiles": [
+    4056,
+    4057,
+    4058,
+    4060
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     61,
+     19
+    ]
+   }
+  },
+  {
+   "id": "blk-sws-e",
+   "slug": "blk_sws_e",
+   "name": "건물 그늘 인도 (sws.e)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "건물 그늘 인도 · sws.e 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-sws-e"
+   ],
+   "tiles": [
+    4124
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     13,
+     7
+    ]
+   }
+  },
+  {
+   "id": "blk-sws-ne",
+   "slug": "blk_sws_ne",
+   "name": "건물 그늘 인도 (sws.ne)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "건물 그늘 인도 · sws.ne 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-sws-ne"
+   ],
+   "tiles": [
+    4125
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     13,
+     6
+    ]
+   }
+  },
+  {
+   "id": "blk-sws-se",
+   "slug": "blk_sws_se",
+   "name": "건물 그늘 인도 (sws.se)",
+   "scene": "건물 블록",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "건물 그늘 인도 · sws.se 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mob-sws-se"
+   ],
+   "tiles": [
+    4126
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     13,
+     29
+    ]
+   }
+  },
+  {
+   "id": "gn-exit",
+   "slug": "gn_exit",
+   "name": "지하철 출구(번호판)",
+   "scene": "역·정류장",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "지하철 1번 출구 3×2. 지하철 출구: 넓은 인도(4칸) 가장자리에 차도와 나란히, 계단(가운데 아랫칸, F)의 남쪽 한 칸은 비운다. 번호판 색 = 노선(초록 2호선, 빨강 신분당선). 출구 번호는 사거리 네 모퉁이를 돌아가며.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-exit-1",
+    "gn-exit-2",
+    "gn-exit-3",
+    "gn-exit-4",
+    "gn-exit-5",
+    "gn-exit-6",
+    "gn-exit-7",
+    "gn-exit-8",
+    "gn-exit-9",
+    "gn-exit-10",
+    "gn-exit-11",
+    "gn-exit-12"
+   ],
+   "tiles": [
+    4403,
+    4404,
+    4405,
+    4406,
+    4407,
+    4408,
+    4433,
+    4434,
+    4435,
+    4436,
+    4437,
+    4438,
+    4470,
+    4471,
+    4472,
+    4473,
+    4474,
+    4475,
+    4476,
+    4477,
+    4478,
+    4479,
+    4480,
+    4481,
+    4482,
+    4483,
+    4484,
+    4485,
+    4486,
+    4487,
+    4488,
+    4489,
+    4490,
+    4491,
+    4492,
+    4493,
+    4494,
+    4495,
+    4496,
+    4497,
+    4498,
+    4499,
+    4500,
+    4501,
+    4502,
+    4503,
+    4504,
+    4505,
+    4506,
+    4507,
+    4508,
+    4509,
+    4510,
+    4511,
+    4512,
+    4513,
+    4514,
+    4515,
+    4516,
+    4517,
+    4518,
+    4519,
+    4520,
+    4521,
+    4522,
+    4523,
+    4524,
+    4525,
+    4526,
+    4527,
+    4528,
+    4529
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     63,
+     60
+    ]
+   }
+  },
+  {
+   "id": "gn-island-roof",
+   "slug": "gn_island_roof",
+   "name": "버스 정류장 섬 지붕",
+   "scene": "역·정류장",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "정류장 섬 유리 지붕 · w 1×1. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-island-roof-w",
+    "gn-island-roof-m",
+    "gn-island-roof-e"
+   ],
+   "tiles": [
+    4533,
+    4534,
+    4535
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     44,
+     15
+    ]
+   }
+  },
+  {
+   "id": "gn-mall-entrance",
+   "slug": "gn_mall_entrance",
+   "name": "지하상가 입구",
+   "scene": "역·정류장",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "지하상가 입구 3×2. 지하철 출구: 넓은 인도(4칸) 가장자리에 차도와 나란히, 계단(가운데 아랫칸, F)의 남쪽 한 칸은 비운다. 번호판 색 = 노선(초록 2호선, 빨강 신분당선). 출구 번호는 사거리 네 모퉁이를 돌아가며.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-mall-entrance"
+   ],
+   "tiles": [
+    4530,
+    4531,
+    4532,
+    4560,
+    4561,
+    4562
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     63,
+     32
+    ]
+   }
+  },
+  {
+   "id": "gn-vent",
+   "slug": "gn_vent",
+   "name": "지하철 환기구",
+   "scene": "역·정류장",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "지하철 환기구 2×1. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-vent"
+   ],
+   "tiles": [
+    4832,
+    4833
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     30,
+     15
+    ]
+   }
+  },
+  {
+   "id": "gn-air-sign",
+   "slug": "gn_air_sign",
+   "name": "에어 간판",
+   "scene": "간판·전광판",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "에어 간판 1×2. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-air-sign"
+   ],
+   "tiles": [
+    4830,
+    4860
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     65,
+     30
+    ]
+   }
+  },
+  {
+   "id": "gn-led",
+   "slug": "gn_led",
+   "name": "LED 전광판",
+   "scene": "간판·전광판",
+   "cells": [
+    6,
+    4
+   ],
+   "canvas": [
+    96,
+    64
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "LED 전광판 6×4 6×4. LED 전광판(아래층 X): 건물 외벽 칸을 덮어씌운다(City.overlay) — 문·지붕 칸 금지, 대로 쪽 모서리 건물에.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-led-6x4",
+    "gn-led-10x6",
+    "gn-led-5x4"
+   ],
+   "tiles": [
+    4541,
+    4542,
+    4543,
+    4544,
+    4545,
+    4546,
+    4547,
+    4548,
+    4549,
+    4550,
+    4551,
+    4552,
+    4553,
+    4554,
+    4555,
+    4556,
+    4571,
+    4572,
+    4573,
+    4574,
+    4575,
+    4576,
+    4577,
+    4578,
+    4579,
+    4580,
+    4581,
+    4582,
+    4583,
+    4584,
+    4585,
+    4586,
+    4601,
+    4602,
+    4603,
+    4604,
+    4605,
+    4606,
+    4607,
+    4608,
+    4609,
+    4610,
+    4611,
+    4612,
+    4613,
+    4614,
+    4615,
+    4616,
+    4631,
+    4632,
+    4633,
+    4634,
+    4635,
+    4636,
+    4637,
+    4638,
+    4639,
+    4640,
+    4641,
+    4642,
+    4643,
+    4644,
+    4645,
+    4646,
+    4667,
+    4668,
+    4669,
+    4670,
+    4671,
+    4672,
+    4673,
+    4674,
+    4675,
+    4676,
+    4697,
+    4698,
+    4699,
+    4700,
+    4701,
+    4702,
+    4703,
+    4704,
+    4705,
+    4706,
+    4710,
+    4711,
+    4712,
+    4713,
+    4714,
+    4740,
+    4741,
+    4742,
+    4743,
+    4744,
+    4770,
+    4771,
+    4772,
+    4773,
+    4774,
+    4800,
+    4801,
+    4802,
+    4803,
+    4804
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     24,
+     13
+    ]
+   }
+  },
+  {
+   "id": "gn-vsign",
+   "slug": "gn_vsign",
+   "name": "세로 돌출 간판",
+   "scene": "간판·전광판",
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "세로 돌출 간판 · purple 1×3. 벽걸이 기물(위층 C): 건물 외벽 칸(fa·gb.al·gb.kb·gb.bg) 위에만, 지붕·문 칸 위 금지. 세로 간판은 층마다 한 줄, 같은 색 둘 나란히 금지.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-vsign-purple",
+    "gn-vsign-red",
+    "gn-vsign-green",
+    "gn-vsign-orange"
+   ],
+   "tiles": [
+    4715,
+    4716,
+    4718,
+    4719,
+    4745,
+    4746,
+    4748,
+    4749,
+    4775,
+    4776,
+    4778,
+    4779
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     61,
+     11
+    ]
+   }
+  },
+  {
+   "id": "gn-bench",
+   "slug": "gn_bench",
+   "name": "벤치(강남)",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "벤치(서쪽 봄) 1×2. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-bench-w",
+    "gn-bench-n"
+   ],
+   "tiles": [
+    4835,
+    4836,
+    4837,
+    4865
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     46,
+     22
+    ]
+   }
+  },
+  {
+   "id": "gn-bike-share",
+   "slug": "gn_bike_share",
+   "name": "공공자전거 거치대",
+   "scene": "거리 소품",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "공공자전거 거치대 3×1. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-bike-share"
+   ],
+   "tiles": [
+    4726,
+    4727,
+    4728
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     30,
+     19
+    ]
+   }
+  },
+  {
+   "id": "gn-fishbun-cart",
+   "slug": "gn_fishbun_cart",
+   "name": "붕어빵 노점",
+   "scene": "거리 소품",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "붕어빵 노점 2×2. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-fishbun-cart"
+   ],
+   "tiles": [
+    4729,
+    4730,
+    4759,
+    4760
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     30,
+     25
+    ]
+   }
+  },
+  {
+   "id": "gn-ginkgo",
+   "slug": "gn_ginkgo",
+   "name": "은행나무 가로수(그림자)",
+   "scene": "거리 소품",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "은행나무 가로수(그림자) 2×3. 가로수(그림자 포함): 연석 줄을 따라 6~8칸 간격, 플라타너스와 은행나무를 섞어. 그림자가 오른쪽 아래 인도에 구워져 있어 인도 위에만.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-ginkgo"
+   ],
+   "tiles": [
+    4724,
+    4725,
+    4754,
+    4755,
+    4784,
+    4785
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     32,
+     15
+    ]
+   }
+  },
+  {
+   "id": "gn-hoarding",
+   "slug": "gn_hoarding",
+   "name": "공사 가림막",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "공사 가림막 · l 1×2. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-hoarding-l",
+    "gn-hoarding-m",
+    "gn-hoarding-r",
+    "gn-hoarding-t0",
+    "gn-hoarding-t1",
+    "gn-hoarding-t2"
+   ],
+   "tiles": [
+    4733,
+    4734,
+    4735,
+    4736,
+    4737,
+    4738,
+    4763,
+    4764,
+    4765,
+    4766,
+    4767,
+    4768
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     78,
+     4
+    ]
+   }
+  },
+  {
+   "id": "gn-people",
+   "slug": "gn_people",
+   "name": "행인 무리",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "행인 무리 0 1×1. 행인: 출구 앞·정류장 섬·골목 입구에 2~4칸씩 무리로(한 칸 = 1~3명). 문 앞 칸·출구 계단 앞 칸·좁은 길 한가운데는 비운다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-people-0",
+    "gn-people-1",
+    "gn-people-2",
+    "gn-people-3",
+    "gn-people-4",
+    "gn-people-5"
+   ],
+   "tiles": [
+    4898,
+    4899,
+    4900,
+    4901,
+    4902,
+    4903
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     45,
+     11
+    ]
+   }
+  },
+  {
+   "id": "gn-plane-tree",
+   "slug": "gn_plane_tree",
+   "name": "플라타너스 가로수(그림자)",
+   "scene": "거리 소품",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "플라타너스 가로수(그림자) 2×3. 가로수(그림자 포함): 연석 줄을 따라 6~8칸 간격, 플라타너스와 은행나무를 섞어. 그림자가 오른쪽 아래 인도에 구워져 있어 인도 위에만.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-plane-tree"
+   ],
+   "tiles": [
+    4722,
+    4723,
+    4752,
+    4753,
+    4782,
+    4783
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     32,
+     6
+    ]
+   }
+  },
+  {
+   "id": "gn-street-stall",
+   "slug": "gn_street_stall",
+   "name": "포장마차",
+   "scene": "거리 소품",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "포장마차 2×2. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-street-stall"
+   ],
+   "tiles": [
+    4731,
+    4732,
+    4761,
+    4762
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     65,
+     36
+    ]
+   }
+  },
+  {
+   "id": "gn-trash-bags",
+   "slug": "gn_trash_bags",
+   "name": "종량제 봉투 더미",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "종량제 봉투 더미 1×1. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-trash-bags"
+   ],
+   "tiles": [
+    4739
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     73,
+     22
+    ]
+   }
+  },
+  {
+   "id": "gn-wall-ac",
+   "slug": "gn_wall_ac",
+   "name": "벽걸이 실외기",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "벽걸이 실외기 1×1. 벽걸이 기물(위층 C): 건물 외벽 칸(fa·gb.al·gb.kb·gb.bg) 위에만, 지붕·문 칸 위 금지. 세로 간판은 층마다 한 줄, 같은 색 둘 나란히 금지.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "gn-wall-ac"
+   ],
+   "tiles": [
+    4721
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     79,
+     11
+    ]
+   }
+  },
+  {
+   "id": "mo-bench",
+   "slug": "mo_bench",
+   "name": "벤치",
+   "scene": "거리 소품",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "벤치 2×1. 거리 가구: 가게·정류장·공원 입구 둘레 두 칸 안 무리로. 문 앞 칸·횡단보도 끝 칸·지하철 입구 앞은 비운다. 같은 것 셋을 일렬로 두지 않는다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-bench"
+   ],
+   "tiles": [
+    3337,
+    3338
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     15,
+     63
+    ]
+   }
+  },
+  {
+   "id": "mo-bush",
+   "slug": "mo_bush",
+   "name": "둥근 덤불",
+   "scene": "거리 소품",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "둥근 덤불 2×2. 덤불: 공원 나무 발치·산책로 가장자리에 1~2개.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-bush"
+   ],
+   "tiles": [
+    3545,
+    3546,
+    3575,
+    3576
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     21,
+     63
+    ]
+   }
+  },
+  {
+   "id": "mo-cone",
+   "slug": "mo_cone",
+   "name": "라바콘",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "라바콘 1×1. 공사 표시: 라바콘 2~3개 + 차단기 하나를 한 곳에. 맵에 한 곳까지.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-cone"
+   ],
+   "tiles": [
+    3350
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     77,
+     5
+    ]
+   }
+  },
+  {
+   "id": "mo-hydrant",
+   "slug": "mo_hydrant",
+   "name": "소화전",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "소화전 1×1. 생활 시설: 소화전은 교차로 모퉁이나 긴 인도 20칸마다 하나, 우체통은 가게 앞, 쓰레기통은 벤치·정류장 곁 하나.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-hydrant"
+   ],
+   "tiles": [
+    3343
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     33,
+     30
+    ]
+   }
+  },
+  {
+   "id": "mo-planter",
+   "slug": "mo_planter",
+   "name": "화분 상자",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "화분 상자 1×1. 거리 가구: 가게·정류장·공원 입구 둘레 두 칸 안 무리로. 문 앞 칸·횡단보도 끝 칸·지하철 입구 앞은 비운다. 같은 것 셋을 일렬로 두지 않는다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-planter"
+   ],
+   "tiles": [
+    3346
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     5,
+     30
+    ]
+   }
+  },
+  {
+   "id": "mo-sculpture",
+   "slug": "mo_sculpture",
+   "name": "광장 조형물",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "광장 조형물 1×2. 공원 기물: 잔디·광장 판석 위에. 놀이터(미끄럼틀·그네)는 모래가 아닌 잔디 한 덩이에 함께, 분수는 광장 가운데, 정자는 공원 가장자리. 둘레 한 칸을 비운다.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-sculpture"
+   ],
+   "tiles": [
+    3444,
+    3474
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     24,
+     63
+    ]
+   }
+  },
+  {
+   "id": "mo-trash",
+   "slug": "mo_trash",
+   "name": "쓰레기통",
+   "scene": "거리 소품",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "쓰레기통 1×1. 생활 시설: 소화전은 교차로 모퉁이나 긴 인도 20칸마다 하나, 우체통은 가게 앞, 쓰레기통은 벤치·정류장 곁 하나.",
+   "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+   "worker": "-",
+   "members": [
+    "mo-trash"
+   ],
+   "tiles": [
+    3340
+   ],
+   "ctx": {
+    "at": [
+     48,
+     48
+    ],
+    "map": "modern-gangnam-station",
+    "cell": [
+     18,
+     62
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew_E2/w5-B.pxg",
+ "id": "pew E2",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "note": "명암 강화: 좌석 윗면 앞 모서리 한 단 밝게(A→C→F), 방석 밑단 어둡게, 오른쪽 옆면과 바닥에 반투명 그림자(-,~)",
+ "ok": true
+}

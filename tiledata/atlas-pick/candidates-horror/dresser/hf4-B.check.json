@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/dresser/hf4-B.pxg",
+ "set": "horror",
+ "id": "dresser",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.032
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "B: 어두운 방용 — 윗면 6 두 줄을 가장 밝게 띄우고 서랍 면 4~5 를 넓게, 서랍 사이는 0 홈으로 값 차를 최대로, 손잡이는 tarn 밝은 단(5)+그림자 점 2px",
+ "ok": true
+}

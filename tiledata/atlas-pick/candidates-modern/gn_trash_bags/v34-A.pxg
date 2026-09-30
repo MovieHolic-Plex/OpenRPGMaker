@@ -1,0 +1,42 @@
+// gn_trash_bags v34-A 3/4
+@size 16 16
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a daidai 0
+@mat b shiro 0
+@mat c sumi 0
+@mblock 0 0
+................
+................
+................
+....c......c....
+..ccbcc..ccbcc..
+.cbbbbbccbbbbbc.
+.cbbbbbccbbbbbc.
+.cbbbbbccbbbbbc.
+.cbbbbbccbbbbbc.
+cbbbbbbbbbbbbbbc
+cbbbbbbbbbbbbbbc
+cbaaaaabbaaaaabc
+cbaaaaabbaaaaabc
+cbbbbbbbbbbbbbbc
+cccccccccccccccc
+.cccccccccccccc.
+@tblock 0 0
+................
+................
+................
+....0......0....
+..00300..00300..
+.04444400444440.
+.04444400444440.
+.04444400444440.
+.04444400444440.
+0333333133333310
+0322222132222210
+0333333133333310
+0322222132222210
+0111111111111110
+0111111111111110
+.00000000000000.

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ticket_machine/j4-C.pxg",
+ "set": "jp",
+ "id": "ticket_machine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.175
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 22,
+ "bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "note": "다시 생각: 넓고 낮은 노선도 판이 지붕처럼 얹히고 기계 둘은 작고 곧은 몸체(버튼 한 줄·화면 작게). 실루엣이 A/B 보다 가볍다.",
+ "ok": true
+}

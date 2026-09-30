@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/candelabra_drip/h3-C.pxg",
+ "set": "horror",
+ "id": "candelabra_drip",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  2,
+  5,
+  15,
+  31
+ ],
+ "note": "실루엣 다시 해석: 오른쪽 가지가 부러져 사라지고, 그 초는 바닥에 누운 채 여전히 탄다 — 촛대 위는 모두 꺼져 재 한 점",
+ "ok": true
+}

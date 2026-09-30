@@ -1,0 +1,21 @@
+// v5 현재판 bench 3 (48x16, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 48 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................................................
+................................................
+................................................
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA
+ACCDDDCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDCCCCCCCCCCCA
+ADDCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDCCCCCCCCCCCA
+ACCCCCCCCCCCCCCDDDCCCCCCCCCCCCCCCCCCCCCCCCDDDCCA
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA
+AEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEA
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+.FCGF......................................FCGF.
+.FCGF......................................FCGF.
+.FCGF......................................FCGF.
+.FCGF......................................FCGF.
+.FEEF......................................FEEF.

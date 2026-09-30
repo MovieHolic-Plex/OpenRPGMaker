@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/block_wall/j1-A.pxg",
+ "set": "jp",
+ "id": "block_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.156
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "강남식: 블록 두 줄 반 칸 엇갈림, 갓돌 밝게, 가운데 구멍 세 개 블록, 발치 이끼 점",
+ "ok": true
+}

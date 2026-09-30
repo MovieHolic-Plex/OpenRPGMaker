@@ -1,0 +1,1998 @@
+{
+ "basis": {
+  "hero_px": [
+   16,
+   24
+  ],
+  "hero_m_by_scale": 1.5,
+  "hero_m_real": 1.7,
+  "px_per_m": 16,
+  "cell_px": 16,
+  "cell_m": 1.0,
+  "contradiction": "히어로 24px 는 1칸=1m 축척으로 1.5m — 실사 170cm 와 어긋난다. 히어로는 축약 캐릭터로 그대로 두고 표는 1칸=1m 에 묶는다.",
+  "kinds": {
+   "wall": {
+    "c": 0.6,
+    "tmin": 4,
+    "tmax": 6,
+    "bd_one": true
+   },
+   "free": {
+    "c": 0.6,
+    "tmin": 4,
+    "tmax": null
+   },
+   "thin": {
+    "c": 0.5,
+    "tmin": 2,
+    "tmax": null,
+    "bd_one": true
+   },
+   "flat": {
+    "c": 0.0,
+    "tmin": 0,
+    "tmax": 0,
+    "bd_one": true
+   },
+   "veh_h": {
+    "c": 0.3,
+    "tmin": 6,
+    "tmax": null
+   },
+   "veh_v": {
+    "c": 0.65,
+    "tmin": 6,
+    "tmax": null
+   }
+  },
+  "rules": [
+   "폭 칸 = ceil(W m), 폭px = W*16 (1px 넘으면 1px 깎음)",
+   "F = H*16",
+   "T0(원본) = D*16, T = T0*c (하한·상한은 kinds)",
+   "높이 칸 N: N0=ceil(F/16) 부터 F+T<=16N 이 되는 첫 N",
+   "넘침 o<=6px 이면 T 를 tmin 까지 → 남으면 F 를 (<=4px, <=15%) 깎아 N 유지, 아니면 N+1",
+   "막힘 = 폭 칸 x 깊이 칸(max(1,round(D)), wall·thin 은 1), 나머지는 walk-behind"
+  ]
+ },
+ "rows": [
+  {
+   "id": "wardrobe_1",
+   "name": "옷장(1인)",
+   "group": "실내",
+   "W": 1.0,
+   "D": 0.6,
+   "H": 2.0,
+   "kind": "wall",
+   "note": "기준 예시(감독자). 호러 wardrobe_ajar 도 이 규격",
+   "scale_exempt": false,
+   "wpx": 16,
+   "F_raw": 32,
+   "T_raw": 10,
+   "T_c": 6.0,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 6px 초과 → T -2, F -4"
+   ]
+  },
+  {
+   "id": "wardrobe_2",
+   "name": "옷장(2문 큰 것)",
+   "group": "실내",
+   "W": 1.6,
+   "D": 0.6,
+   "H": 2.0,
+   "kind": "wall",
+   "note": "폭 1.6m",
+   "scale_exempt": false,
+   "wpx": 26,
+   "F_raw": 32,
+   "T_raw": 10,
+   "T_c": 6.0,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 6px 초과 → T -2, F -4"
+   ]
+  },
+  {
+   "id": "chest_dresser",
+   "name": "서랍장(3단 높은 것)",
+   "group": "실내",
+   "W": 1.0,
+   "D": 0.5,
+   "H": 1.0,
+   "kind": "free",
+   "note": "호러 dresser: 1x2 (옛 1x1 은 너무 납작)",
+   "scale_exempt": false,
+   "wpx": 16,
+   "F_raw": 16,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 16,
+   "T": 5,
+   "total": 21,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "low_dresser",
+   "name": "서랍장(낮은 것)",
+   "group": "실내",
+   "W": 1.1,
+   "D": 0.45,
+   "H": 0.8,
+   "kind": "free",
+   "note": "폭 15px → 1칸",
+   "scale_exempt": false,
+   "wpx": 18,
+   "F_raw": 13,
+   "T_raw": 7,
+   "T_c": 4.2,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 1px 초과 → F -1"
+   ]
+  },
+  {
+   "id": "bookshelf",
+   "name": "책장(보통)",
+   "group": "실내",
+   "W": 0.9,
+   "D": 0.3,
+   "H": 1.8,
+   "kind": "wall",
+   "note": "깊이가 얕아 T 는 하한 4",
+   "scale_exempt": false,
+   "wpx": 14,
+   "F_raw": 29,
+   "T_raw": 5,
+   "T_c": 3.0,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 1px 초과 → F -1"
+   ]
+  },
+  {
+   "id": "bookshelf_tall",
+   "name": "책장(천장 닿는 것)",
+   "group": "실내",
+   "W": 0.9,
+   "D": 0.35,
+   "H": 2.2,
+   "kind": "wall",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 14,
+   "F_raw": 35,
+   "T_raw": 6,
+   "T_c": 3.6,
+   "F": 35,
+   "T": 4,
+   "total": 39,
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 2,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "locker_2door",
+   "name": "사물함(2칸 문)",
+   "group": "실내",
+   "W": 0.6,
+   "D": 0.5,
+   "H": 1.8,
+   "kind": "wall",
+   "note": "학교 사물함 낱개. 폭 1칸",
+   "scale_exempt": false,
+   "wpx": 10,
+   "F_raw": 29,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 2px 초과 → T -1, F -1"
+   ]
+  },
+  {
+   "id": "locker_row6",
+   "name": "사물함 줄(6문)",
+   "group": "실내",
+   "W": 1.8,
+   "D": 0.5,
+   "H": 1.8,
+   "kind": "wall",
+   "note": "문 수에 따라 폭이 변한다: 문 0.3m x 6",
+   "scale_exempt": false,
+   "wpx": 29,
+   "F_raw": 29,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 2px 초과 → T -1, F -1"
+   ]
+  },
+  {
+   "id": "lab_cabinet",
+   "name": "약품장(4문)",
+   "group": "실내",
+   "W": 1.5,
+   "D": 0.45,
+   "H": 1.8,
+   "kind": "wall",
+   "note": "위 유리문 2 + 아래 문 2",
+   "scale_exempt": false,
+   "wpx": 24,
+   "F_raw": 29,
+   "T_raw": 7,
+   "T_c": 4.2,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 1px 초과 → F -1"
+   ]
+  },
+  {
+   "id": "fridge",
+   "name": "냉장고(소형)",
+   "group": "실내",
+   "W": 0.7,
+   "D": 0.7,
+   "H": 1.7,
+   "kind": "wall",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 11,
+   "F_raw": 27,
+   "T_raw": 11,
+   "T_c": 6.6,
+   "F": 27,
+   "T": 5,
+   "total": 32,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 1px 초과 → T -1"
+   ]
+  },
+  {
+   "id": "fridge_big",
+   "name": "냉장고(대형)",
+   "group": "실내",
+   "W": 0.9,
+   "D": 0.75,
+   "H": 1.8,
+   "kind": "wall",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 14,
+   "F_raw": 29,
+   "T_raw": 12,
+   "T_c": 7.2,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 3px 초과 → T -2, F -1"
+   ]
+  },
+  {
+   "id": "bed_single",
+   "name": "침대(1인)",
+   "group": "실내",
+   "W": 1.0,
+   "D": 2.0,
+   "H": 0.5,
+   "kind": "free",
+   "note": "머리판 높이는 별도 조각으로. 깊이 2m 가 T 를 만든다",
+   "scale_exempt": false,
+   "wpx": 16,
+   "F_raw": 8,
+   "T_raw": 32,
+   "T_c": 16.0,
+   "F": 8,
+   "T": 16,
+   "total": 24,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    2
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "bed_double",
+   "name": "침대(2인)",
+   "group": "실내",
+   "W": 1.5,
+   "D": 2.0,
+   "H": 0.55,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 24,
+   "F_raw": 9,
+   "T_raw": 32,
+   "T_c": 16.0,
+   "F": 9,
+   "T": 16,
+   "total": 25,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    2
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "table_dining",
+   "name": "식탁",
+   "group": "실내",
+   "W": 1.5,
+   "D": 0.9,
+   "H": 0.72,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 24,
+   "F_raw": 12,
+   "T_raw": 14,
+   "T_c": 8.4,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 4px 초과 → T -4"
+   ]
+  },
+  {
+   "id": "table_small",
+   "name": "작은 탁자",
+   "group": "실내",
+   "W": 0.8,
+   "D": 0.8,
+   "H": 0.7,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 13,
+   "F_raw": 11,
+   "T_raw": 13,
+   "T_c": 7.8,
+   "F": 11,
+   "T": 5,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 3px 초과 → T -3"
+   ]
+  },
+  {
+   "id": "school_desk",
+   "name": "학생 책상",
+   "group": "실내",
+   "W": 0.6,
+   "D": 0.45,
+   "H": 0.75,
+   "kind": "free",
+   "note": "의자는 별도",
+   "scale_exempt": false,
+   "wpx": 10,
+   "F_raw": 12,
+   "T_raw": 7,
+   "T_c": 4.2,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "office_desk",
+   "name": "사무 책상",
+   "group": "실내",
+   "W": 1.4,
+   "D": 0.7,
+   "H": 0.75,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 22,
+   "F_raw": 12,
+   "T_raw": 11,
+   "T_c": 6.6,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 3px 초과 → T -3"
+   ]
+  },
+  {
+   "id": "chair",
+   "name": "의자(등받이)",
+   "group": "실내",
+   "W": 0.45,
+   "D": 0.45,
+   "H": 0.9,
+   "kind": "free",
+   "note": "좌판 T + 다리·등받이 F",
+   "scale_exempt": false,
+   "wpx": 7,
+   "F_raw": 14,
+   "T_raw": 7,
+   "T_c": 3.5,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": [
+    "높이 2px 초과 → F -2"
+   ]
+  },
+  {
+   "id": "sofa",
+   "name": "소파(2인)",
+   "group": "실내",
+   "W": 1.6,
+   "D": 0.9,
+   "H": 0.85,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 26,
+   "F_raw": 14,
+   "T_raw": 14,
+   "T_c": 8.4,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 6px 초과 → T -4, F -2"
+   ]
+  },
+  {
+   "id": "counter",
+   "name": "카운터·판매대",
+   "group": "실내",
+   "W": 2.0,
+   "D": 0.6,
+   "H": 1.0,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 32,
+   "F_raw": 16,
+   "T_raw": 10,
+   "T_c": 6.0,
+   "F": 16,
+   "T": 6,
+   "total": 22,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "kitchen_counter",
+   "name": "주방 조리대",
+   "group": "실내",
+   "W": 1.8,
+   "D": 0.6,
+   "H": 0.9,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 29,
+   "F_raw": 14,
+   "T_raw": 10,
+   "T_c": 6.0,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 4px 초과 → T -2, F -2"
+   ]
+  },
+  {
+   "id": "piano_upright",
+   "name": "업라이트 피아노",
+   "group": "실내",
+   "W": 1.5,
+   "D": 0.6,
+   "H": 1.25,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 24,
+   "F_raw": 20,
+   "T_raw": 10,
+   "T_c": 6.0,
+   "F": 20,
+   "T": 6,
+   "total": 26,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "grandfather_clock",
+   "name": "괘종시계",
+   "group": "실내",
+   "W": 0.5,
+   "D": 0.35,
+   "H": 2.0,
+   "kind": "wall",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 8,
+   "F_raw": 32,
+   "T_raw": 6,
+   "T_c": 3.6,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 4px 초과 → F -4"
+   ]
+  },
+  {
+   "id": "fireplace",
+   "name": "벽난로",
+   "group": "실내",
+   "W": 1.6,
+   "D": 0.5,
+   "H": 1.2,
+   "kind": "wall",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 26,
+   "F_raw": 19,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 19,
+   "T": 5,
+   "total": 24,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "potted_plant",
+   "name": "화분(중형)",
+   "group": "실내",
+   "W": 0.4,
+   "D": 0.4,
+   "H": 0.8,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 6,
+   "F_raw": 13,
+   "T_raw": 6,
+   "T_c": 3.0,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": [
+    "높이 1px 초과 → F -1"
+   ]
+  },
+  {
+   "id": "trash_can",
+   "name": "쓰레기통(실내)",
+   "group": "실내",
+   "W": 0.4,
+   "D": 0.4,
+   "H": 0.6,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 6,
+   "F_raw": 10,
+   "T_raw": 6,
+   "T_c": 3.6,
+   "F": 10,
+   "T": 4,
+   "total": 14,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "bathtub",
+   "name": "욕조",
+   "group": "실내",
+   "W": 1.6,
+   "D": 0.75,
+   "H": 0.55,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 26,
+   "F_raw": 9,
+   "T_raw": 12,
+   "T_c": 6.0,
+   "F": 9,
+   "T": 6,
+   "total": 15,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "toilet",
+   "name": "변기",
+   "group": "실내",
+   "W": 0.4,
+   "D": 0.7,
+   "H": 0.8,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 6,
+   "F_raw": 13,
+   "T_raw": 11,
+   "T_c": 5.5,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": [
+    "높이 3px 초과 → T -2, F -1"
+   ]
+  },
+  {
+   "id": "washing_machine",
+   "name": "세탁기",
+   "group": "실내",
+   "W": 0.6,
+   "D": 0.6,
+   "H": 0.85,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 10,
+   "F_raw": 14,
+   "T_raw": 10,
+   "T_c": 6.0,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 4px 초과 → T -2, F -2"
+   ]
+  },
+  {
+   "id": "coffin",
+   "name": "관(호러)",
+   "group": "실내",
+   "W": 0.7,
+   "D": 2.0,
+   "H": 0.6,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 11,
+   "F_raw": 10,
+   "T_raw": 32,
+   "T_c": 16.0,
+   "F": 10,
+   "T": 16,
+   "total": 26,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    2
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "crate",
+   "name": "상자(작은 것)",
+   "group": "실내",
+   "W": 0.5,
+   "D": 0.5,
+   "H": 0.5,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 8,
+   "F_raw": 8,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 8,
+   "T": 5,
+   "total": 13,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "barrel",
+   "name": "통·항아리",
+   "group": "실내",
+   "W": 0.6,
+   "D": 0.6,
+   "H": 0.9,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 10,
+   "F_raw": 14,
+   "T_raw": 10,
+   "T_c": 6.0,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 4px 초과 → T -2, F -2"
+   ]
+  },
+  {
+   "id": "canopy_bed_rot",
+   "name": "캐노피 침대(썩은 천개)",
+   "group": "실내",
+   "W": 1.5,
+   "D": 2.0,
+   "H": 2.2,
+   "kind": "free",
+   "note": "호러 v35-B: 기둥 높이 2.2m 라 F35 → 2x3(32x48). 위 천 지붕이 T, 늘어진 천·기둥·발판이 F",
+   "scale_exempt": false,
+   "wpx": 24,
+   "F_raw": 35,
+   "T_raw": 32,
+   "T_c": 16.0,
+   "F": 35,
+   "T": 13,
+   "total": 48,
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "blocked": [
+    2,
+    2
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.5,
+   "trims": [
+    "높이 3px 초과 → T -3"
+   ]
+  },
+  {
+   "id": "wheelchair",
+   "name": "휠체어",
+   "group": "실내",
+   "W": 0.85,
+   "D": 1.0,
+   "H": 0.9,
+   "kind": "free",
+   "note": "호러 v35-B: 1x1. 실물 전폭 0.65 이나 10px 로는 바퀴·좌면이 안 읽혀 0.85(14px)로 축약, 깊이 1.0 은 발판까지지만 앉는 판은 열린 틀이라 c=.25 (T4)",
+   "scale_exempt": false,
+   "wpx": 14,
+   "F_raw": 14,
+   "T_raw": 16,
+   "T_c": 4.0,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.25,
+   "trims": [
+    "높이 2px 초과 → F -2"
+   ]
+  },
+  {
+   "id": "operating_table",
+   "name": "수술대",
+   "group": "실내",
+   "W": 2.0,
+   "D": 0.6,
+   "H": 0.9,
+   "kind": "free",
+   "note": "호러 v35-B: 2x1 가로형. 긴 판 T4 + 앞면 F12 (T4 는 tmin)",
+   "scale_exempt": false,
+   "wpx": 32,
+   "F_raw": 14,
+   "T_raw": 10,
+   "T_c": 6.0,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 4px 초과 → T -2, F -2"
+   ]
+  },
+  {
+   "id": "door",
+   "name": "문(벽 부착)",
+   "group": "실내",
+   "W": 1.0,
+   "D": 0.1,
+   "H": 2.0,
+   "kind": "flat",
+   "note": "벽면에 붙은 평면. 1x2",
+   "scale_exempt": false,
+   "wpx": 16,
+   "F_raw": 32,
+   "T_raw": 2,
+   "T_c": 0,
+   "F": 32,
+   "T": 0,
+   "total": 32,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.0,
+   "trims": []
+  },
+  {
+   "id": "blackboard",
+   "name": "칠판(벽 부착)",
+   "group": "실내",
+   "W": 3.6,
+   "D": 0.05,
+   "H": 1.2,
+   "kind": "flat",
+   "note": "평면 부착. T 없음",
+   "scale_exempt": false,
+   "wpx": 58,
+   "F_raw": 19,
+   "T_raw": 1,
+   "T_c": 0,
+   "F": 19,
+   "T": 0,
+   "total": 19,
+   "cells": [
+    4,
+    2
+   ],
+   "canvas": [
+    64,
+    32
+   ],
+   "blocked": [
+    4,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.0,
+   "trims": []
+  },
+  {
+   "id": "vending_1",
+   "name": "자판기(1대)",
+   "group": "실외",
+   "W": 1.0,
+   "D": 0.8,
+   "H": 1.8,
+   "kind": "free",
+   "note": "일본 자판기 표준 W1.0 D0.8 H1.8. 1x2 (충돌 기록: §12-6)",
+   "scale_exempt": false,
+   "wpx": 16,
+   "F_raw": 29,
+   "T_raw": 13,
+   "T_c": 7.8,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 5px 초과 → T -4, F -1"
+   ]
+  },
+  {
+   "id": "vending_pair",
+   "name": "자판기 2대 나란히",
+   "group": "실외",
+   "W": 2.0,
+   "D": 0.8,
+   "H": 1.8,
+   "kind": "free",
+   "note": "사용자 「일본 자판기는 2x2」 는 이렇게 읽는다: 두 대 한 벌",
+   "scale_exempt": false,
+   "wpx": 32,
+   "F_raw": 29,
+   "T_raw": 13,
+   "T_c": 7.8,
+   "F": 28,
+   "T": 4,
+   "total": 32,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": [
+    "높이 5px 초과 → T -4, F -1"
+   ]
+  },
+  {
+   "id": "mailbox",
+   "name": "우체통(원통)",
+   "group": "실외",
+   "W": 0.5,
+   "D": 0.5,
+   "H": 1.1,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 8,
+   "F_raw": 18,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 18,
+   "T": 5,
+   "total": 23,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "bench",
+   "name": "벤치(2인)",
+   "group": "실외",
+   "W": 1.5,
+   "D": 0.5,
+   "H": 0.85,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 24,
+   "F_raw": 14,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 3px 초과 → T -1, F -2"
+   ]
+  },
+  {
+   "id": "street_trash",
+   "name": "가로 쓰레기통",
+   "group": "실외",
+   "W": 0.5,
+   "D": 0.5,
+   "H": 0.9,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 8,
+   "F_raw": 14,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 12,
+   "T": 4,
+   "total": 16,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.6,
+   "trims": [
+    "높이 3px 초과 → T -1, F -2"
+   ]
+  },
+  {
+   "id": "a_frame_sign",
+   "name": "A형 입간판",
+   "group": "실외",
+   "W": 0.6,
+   "D": 0.5,
+   "H": 1.0,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 10,
+   "F_raw": 16,
+   "T_raw": 8,
+   "T_c": 4.8,
+   "F": 16,
+   "T": 5,
+   "total": 21,
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "phone_booth",
+   "name": "공중전화 부스",
+   "group": "실외",
+   "W": 1.0,
+   "D": 1.0,
+   "H": 2.3,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 16,
+   "F_raw": 37,
+   "T_raw": 16,
+   "T_c": 9.6,
+   "F": 37,
+   "T": 10,
+   "total": 47,
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 2,
+   "c": 0.6,
+   "trims": []
+  },
+  {
+   "id": "hydrant",
+   "name": "소화전",
+   "group": "실외",
+   "W": 0.3,
+   "D": 0.3,
+   "H": 0.7,
+   "kind": "thin",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 5,
+   "F_raw": 11,
+   "T_raw": 5,
+   "T_c": 2.5,
+   "F": 11,
+   "T": 3,
+   "total": 14,
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "bicycle",
+   "name": "자전거",
+   "group": "실외",
+   "W": 1.8,
+   "D": 0.55,
+   "H": 1.0,
+   "kind": "free",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 29,
+   "F_raw": 16,
+   "T_raw": 9,
+   "T_c": 4.5,
+   "F": 16,
+   "T": 5,
+   "total": 21,
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "guardrail",
+   "name": "가드레일 한 마디",
+   "group": "실외",
+   "W": 2.0,
+   "D": 0.1,
+   "H": 0.8,
+   "kind": "thin",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 32,
+   "F_raw": 13,
+   "T_raw": 2,
+   "T_c": 1.0,
+   "F": 13,
+   "T": 2,
+   "total": 15,
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "blocked": [
+    2,
+    1
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "road_sign",
+   "name": "도로 표지(기둥+판)",
+   "group": "실외",
+   "W": 0.6,
+   "D": 0.1,
+   "H": 2.5,
+   "kind": "thin",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 10,
+   "F_raw": 40,
+   "T_raw": 2,
+   "T_c": 1.0,
+   "F": 40,
+   "T": 2,
+   "total": 42,
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 2,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "ped_signal",
+   "name": "보행 신호기",
+   "group": "실외",
+   "W": 0.4,
+   "D": 0.3,
+   "H": 2.5,
+   "kind": "thin",
+   "note": "",
+   "scale_exempt": false,
+   "wpx": 6,
+   "F_raw": 40,
+   "T_raw": 5,
+   "T_c": 2.5,
+   "F": 40,
+   "T": 3,
+   "total": 43,
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 2,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "street_lamp",
+   "name": "가로등",
+   "group": "실외",
+   "W": 0.3,
+   "D": 0.3,
+   "H": 4.5,
+   "kind": "thin",
+   "note": "실측 64px+. 4칸 이상은 화면 관례상 위를 화면 밖으로",
+   "scale_exempt": true,
+   "wpx": 5,
+   "F_raw": 72,
+   "T_raw": 5,
+   "T_c": 2.5,
+   "F": 72,
+   "T": 3,
+   "total": 75,
+   "cells": [
+    1,
+    5
+   ],
+   "canvas": [
+    16,
+    80
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 4,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "traffic_light",
+   "name": "차량 신호등(기둥)",
+   "group": "실외",
+   "W": 0.4,
+   "D": 0.4,
+   "H": 5.5,
+   "kind": "thin",
+   "note": "",
+   "scale_exempt": true,
+   "wpx": 6,
+   "F_raw": 88,
+   "T_raw": 6,
+   "T_c": 3.0,
+   "F": 88,
+   "T": 3,
+   "total": 91,
+   "cells": [
+    1,
+    6
+   ],
+   "canvas": [
+    16,
+    96
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 5,
+   "c": 0.5,
+   "trims": []
+  },
+  {
+   "id": "utility_pole",
+   "name": "전봇대",
+   "group": "실외",
+   "W": 0.3,
+   "D": 0.3,
+   "H": 10.0,
+   "kind": "thin",
+   "note": "실측 140px(9칸). 타일 게임은 위를 자른다",
+   "scale_exempt": true,
+   "wpx": 5,
+   "F_raw": 160,
+   "T_raw": 5,
+   "T_c": 2.5,
+   "F": 158,
+   "T": 2,
+   "total": 160,
+   "cells": [
+    1,
+    10
+   ],
+   "canvas": [
+    16,
+    160
+   ],
+   "blocked": [
+    1,
+    1
+   ],
+   "walkbehind_rows": 9,
+   "c": 0.5,
+   "trims": [
+    "높이 3px 초과 → T -1, F -2"
+   ]
+  },
+  {
+   "id": "car_h",
+   "name": "승용차·택시(가로)",
+   "group": "실외",
+   "W": 4.4,
+   "D": 1.8,
+   "H": 1.45,
+   "kind": "veh_h",
+   "note": "§10-3 64x36 (T7 F29) 와 거의 일치: 표는 64x32",
+   "scale_exempt": true,
+   "wpx": 70,
+   "F_raw": 23,
+   "T_raw": 29,
+   "T_c": 8.7,
+   "F": 23,
+   "T": 9,
+   "total": 32,
+   "cells": [
+    5,
+    2
+   ],
+   "canvas": [
+    80,
+    32
+   ],
+   "blocked": [
+    5,
+    2
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.3,
+   "trims": []
+  },
+  {
+   "id": "car_v",
+   "name": "승용차·택시(세로)",
+   "group": "실외",
+   "W": 1.8,
+   "D": 4.4,
+   "H": 1.45,
+   "kind": "veh_v",
+   "note": "§10-3 28x56 (T41 F14) 와 비슷: 표는 32x64",
+   "scale_exempt": true,
+   "wpx": 29,
+   "F_raw": 23,
+   "T_raw": 70,
+   "T_c": 45.5,
+   "F": 23,
+   "T": 41,
+   "total": 64,
+   "cells": [
+    2,
+    4
+   ],
+   "canvas": [
+    32,
+    64
+   ],
+   "blocked": [
+    2,
+    4
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.65,
+   "trims": [
+    "높이 5px 초과 → T -5"
+   ]
+  },
+  {
+   "id": "bus_h",
+   "name": "시내버스(가로)",
+   "group": "실외",
+   "W": 10.5,
+   "D": 2.5,
+   "H": 3.1,
+   "kind": "veh_h",
+   "note": "",
+   "scale_exempt": true,
+   "wpx": 168,
+   "F_raw": 50,
+   "T_raw": 40,
+   "T_c": 12.0,
+   "F": 50,
+   "T": 12,
+   "total": 62,
+   "cells": [
+    11,
+    4
+   ],
+   "canvas": [
+    176,
+    64
+   ],
+   "blocked": [
+    11,
+    3
+   ],
+   "walkbehind_rows": 1,
+   "c": 0.3,
+   "trims": []
+  },
+  {
+   "id": "bus_v",
+   "name": "시내버스(세로)",
+   "group": "실외",
+   "W": 2.5,
+   "D": 10.5,
+   "H": 3.1,
+   "kind": "veh_v",
+   "note": "",
+   "scale_exempt": true,
+   "wpx": 40,
+   "F_raw": 50,
+   "T_raw": 168,
+   "T_c": 109.2,
+   "F": 50,
+   "T": 109,
+   "total": 159,
+   "cells": [
+    3,
+    10
+   ],
+   "canvas": [
+    48,
+    160
+   ],
+   "blocked": [
+    3,
+    10
+   ],
+   "walkbehind_rows": 0,
+   "c": 0.65,
+   "trims": []
+  },
+  {
+   "id": "tree_street",
+   "name": "가로수",
+   "group": "실외",
+   "W": 3.0,
+   "D": 3.0,
+   "H": 6.0,
+   "kind": "flat",
+   "note": "수관이 곧 덩이(T 없음). 실측 42x84. §10-3 의 32x48 은 축약 관례",
+   "scale_exempt": true,
+   "wpx": 48,
+   "F_raw": 96,
+   "T_raw": 48,
+   "T_c": 0,
+   "F": 96,
+   "T": 0,
+   "total": 96,
+   "cells": [
+    3,
+    6
+   ],
+   "canvas": [
+    48,
+    96
+   ],
+   "blocked": [
+    3,
+    1
+   ],
+   "walkbehind_rows": 5,
+   "c": 0.0,
+   "trims": []
+  }
+ ]
+}

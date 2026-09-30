@@ -1,0 +1,39 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a mpave 3
+@mat b mmetal 3
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaabbbbaaaaaa
+aaaabbbbbbbbaaaa
+aaabbbbbbbbbbaaa
+aabbbbbbbbbbbbaa
+aabbbbbbbbbbbbaa
+abbbbbbbbbbbbbba
+abbbbbbbbbbbbbba
+abbbbbbbbbbbbbba
+abbbbbbbbbbbbbba
+aabbbbbbbbbbbbaa
+aabbbbbbbbbbbbaa
+aaabbbbbbbbbbaaa
+aaaabbbbbbbbaaaa
+aaaaaabbbbaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+6666666666666666
+6445441111444451
+6344115555113441
+6341552662551441
+6515226446222121
+6415622622262121
+6152262622622212
+6156626226266212
+6156226226226212
+6152264664622212
+6415622226262121
+6415226226222121
+6441222222221251
+6344112222112241
+6344221111223441
+6111112222111110

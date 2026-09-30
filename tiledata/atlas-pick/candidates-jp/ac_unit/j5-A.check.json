@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ac_unit/j5-A.pxg",
+ "set": "jp",
+ "id": "ac_unit",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.131
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  0,
+  15,
+  15
+ ],
+ "note": "강남 결: 왼쪽 판(가로 홈 둘)+오른쪽 둥근 팬 격자, 윗면 한 줄 밝게, 위 배관이 벽으로",
+ "ok": true
+}

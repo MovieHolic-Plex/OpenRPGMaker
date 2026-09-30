@@ -1,0 +1,39 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a mpave 3
+@mat b mmetal 3
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaabbbbaaaaaa
+aaaabbbbbbbbaaaa
+aaabbbbbbbbbbaaa
+aabbbbbbbbbbbbaa
+aabbbbbbbbbbbbaa
+abbbbbbbbbbbbbba
+abbbbbbbbbbbbbba
+abbbbbbbbbbbbbba
+abbbbbbbbbbbbbba
+aabbbbbbbbbbbbaa
+aabbbbbbbbbbbbaa
+aaabbbbbbbbbbaaa
+aaaabbbbbbbbaaaa
+aaaaaabbbbaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+5555555555555555
+5334330000333341
+5233006666002331
+5230661771660011
+5406117447111001
+5306711721171001
+5061171721711101
+5067727127277100
+5067117227117100
+5061174774711101
+5306722117271001
+5306117117111001
+5330111111110011
+5230001111000131
+5231000000001331
+5111111001111110

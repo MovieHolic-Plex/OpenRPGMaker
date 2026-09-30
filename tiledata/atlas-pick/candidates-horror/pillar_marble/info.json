@@ -1,0 +1,58 @@
+{
+ "id": "pillar_marble",
+ "slug": "pillar_marble",
+ "name": "대리석 기둥(미술관)",
+ "scene": "미술관",
+ "cells": [
+  1,
+  3
+ ],
+ "canvas": [
+  16,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "pillar_stone 과 같은 칸·같은 꼴, 흰 대리석 + 얇은 금(tarn) 띠. 미술관 입구·홀.",
+ "palette_hint": "vmarble, tarn 띠",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "frame",
+ "role": "기둥(대리석)",
+ "worker": "hf1",
+ "set_with": [
+  "ceil_black",
+  "ceil_plaster",
+  "exit_dark",
+  "stairs_up_wood",
+  "stairs_up_stone",
+  "stairs_down",
+  "pillar_stone",
+  "moonlight_floor"
+ ],
+ "v5_ref": [
+  {
+   "id": "column marble",
+   "name_ko": "대리석 기둥",
+   "atlas": {
+    "x": 384,
+    "y": 576,
+    "w": 16,
+    "h": 48,
+    "frames": 1,
+    "padTop": 8
+   },
+   "image": {
+    "w": 16,
+    "h": 40
+   },
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/column_marble",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

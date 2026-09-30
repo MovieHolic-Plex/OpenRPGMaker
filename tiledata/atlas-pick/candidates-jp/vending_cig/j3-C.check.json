@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_cig/j3-C.pxg",
+ "set": "jp",
+ "id": "vending_cig",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 31,
+ "bbox": [
+  1,
+  1,
+  14,
+  31
+ ],
+ "note": "노란 띠 머리 간판이 몸통보다 넓은 실루엣, 갑 두 줄의 굵은 창",
+ "ok": true
+}

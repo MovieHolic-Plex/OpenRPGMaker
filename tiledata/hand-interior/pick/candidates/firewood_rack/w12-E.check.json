@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack/w12-E.pxg",
+ "id": "firewood rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.076
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  4,
+  15,
+  30
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "진단: 기존 A·B·C·v5 는 창틀에 같은 원반을 격자로 끼운 납작한 액자라 쌓임·윗면·접지가 없다. 새 해석: 지붕널+두 기둥의 간결한 틀 안에 6px 큰 마구리를 벌집(어긋) 쌓기, 발 달린 판 위에 놓고 바닥 그림자",
+ "ok": true
+}

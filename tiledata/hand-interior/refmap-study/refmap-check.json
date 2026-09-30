@@ -1,0 +1,264 @@
+{
+ "ourCells": 199,
+ "refCells48": 2348,
+ "refFiles": 27,
+ "threshold": 0.95,
+ "tolerance": 8,
+ "modes": {
+  "ref48to32_LANCZOS": {
+   "exactMatches": 0,
+   "atLeast95": 0,
+   "atLeast90": 0,
+   "atLeast80": 4,
+   "atLeast50": 43,
+   "maxSimilarity": 0.8643,
+   "maxSimilarityContent50": 0.3965,
+   "contentCells50": 143,
+   "meanSimilarity": 0.1666,
+   "mostSimilar": [
+    {
+     "ours": [
+      "room",
+      0
+     ],
+     "ref": [
+      "refmap_inn_1f.png",
+      19
+     ],
+     "similarity": 0.8643,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      13
+     ],
+     "ref": [
+      "refmap_inn_1f.png",
+      27
+     ],
+     "similarity": 0.8643,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      153
+     ],
+     "ref": [
+      "refmap_castle_jail.png",
+      582
+     ],
+     "similarity": 0.8643,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      140
+     ],
+     "ref": [
+      "refmap_inn_1f.png",
+      477
+     ],
+     "similarity": 0.8643,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      56
+     ],
+     "ref": [
+      "refmap_blacksmith_home.png",
+      60
+     ],
+     "similarity": 0.6406,
+     "content": 0.38
+    },
+    {
+     "ours": [
+      "room",
+      42
+     ],
+     "ref": [
+      "refmap_blacksmith_home.png",
+      60
+     ],
+     "similarity": 0.6406,
+     "content": 0.38
+    }
+   ]
+  },
+  "ref48to32_NEAREST": {
+   "exactMatches": 0,
+   "atLeast95": 0,
+   "atLeast90": 0,
+   "atLeast80": 4,
+   "atLeast50": 43,
+   "maxSimilarity": 0.8643,
+   "maxSimilarityContent50": 0.4658,
+   "contentCells50": 143,
+   "meanSimilarity": 0.1694,
+   "mostSimilar": [
+    {
+     "ours": [
+      "room",
+      0
+     ],
+     "ref": [
+      "refmap_inn_1f.png",
+      19
+     ],
+     "similarity": 0.8643,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      13
+     ],
+     "ref": [
+      "refmap_inn_1f.png",
+      27
+     ],
+     "similarity": 0.8643,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      153
+     ],
+     "ref": [
+      "refmap_castle_jail.png",
+      582
+     ],
+     "similarity": 0.8643,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      140
+     ],
+     "ref": [
+      "refmap_castle_jail.png",
+      577
+     ],
+     "similarity": 0.8643,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      4
+     ],
+     "ref": [
+      "refmap_bakery_home.png",
+      1
+     ],
+     "similarity": 0.6562,
+     "content": 0.38
+    },
+    {
+     "ours": [
+      "room",
+      5
+     ],
+     "ref": [
+      "refmap_bakery_home.png",
+      1
+     ],
+     "similarity": 0.6562,
+     "content": 0.38
+    }
+   ]
+  },
+  "ours32to48_NEAREST": {
+   "exactMatches": 0,
+   "atLeast95": 0,
+   "atLeast90": 0,
+   "atLeast80": 4,
+   "atLeast50": 43,
+   "maxSimilarity": 0.8633,
+   "maxSimilarityContent50": 0.4809,
+   "contentCells50": 143,
+   "meanSimilarity": 0.1693,
+   "mostSimilar": [
+    {
+     "ours": [
+      "room",
+      153
+     ],
+     "ref": [
+      "refmap_inn_1f.png",
+      575
+     ],
+     "similarity": 0.8633,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      13
+     ],
+     "ref": [
+      "refmap_witch_house.png",
+      23
+     ],
+     "similarity": 0.8615,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      140
+     ],
+     "ref": [
+      "refmap_witch_house.png",
+      257
+     ],
+     "similarity": 0.8615,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      0
+     ],
+     "ref": [
+      "refmap_witch_house.png",
+      16
+     ],
+     "similarity": 0.8602,
+     "content": 0.11
+    },
+    {
+     "ours": [
+      "room",
+      142
+     ],
+     "ref": [
+      "refmap_bakery_home.png",
+      121
+     ],
+     "similarity": 0.6667,
+     "content": 0.38
+    },
+    {
+     "ours": [
+      "room",
+      150
+     ],
+     "ref": [
+      "refmap_bakery_home.png",
+      121
+     ],
+     "similarity": 0.6667,
+     "content": 0.38
+    }
+   ]
+  }
+ }
+}

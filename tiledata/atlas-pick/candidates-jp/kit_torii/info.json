@@ -1,0 +1,242 @@
+{
+ "id": "kit_torii",
+ "slug": "kit_torii",
+ "kind": "kit",
+ "name": "킷: 도리이(폭·높이 자유, 밑으로 지나감)",
+ "scene": "신사 한 켠",
+ "cells": [
+  8,
+  2
+ ],
+ "canvas": [
+  128,
+  32
+ ],
+ "layer": "kit",
+ "layer_ko": "조립 킷 부품 시트(부품마다 층이 다르다 — kits-<세트>.json)",
+ "description": "가사기(맨 위 휜 들보: 양 끝·가운데 반복) + 편액 + 누키(아래 들보: 끝·기둥 관통·가운데) + 기둥(세로 반복) + 기둥 밑동(검은 받침, 막힘). 기둥 사이 칸은 걸어서 지나간다(THROUGH). (부품 10 · 조립 예 3)",
+ "palette_hint": "shu 기둥·누키, lacq 가사기 윗단·밑동, washi·sumi 편액",
+ "worker": "k8",
+ "replaces": [
+  "torii"
+ ],
+ "aliases": {},
+ "contract": [
+  "가사기 윗면 높이·두께가 kasagi_m 에서 같고, 양 끝(kasagi_l·kasagi_r)만 위로 휜다(바깥 칸 절반까지).",
+  "기둥은 칸 가운데 6~8px 폭, 모든 hashira·nuki_p·hashira_base 가 같은 x. 세로로 이어 한 줄.",
+  "누키는 가사기보다 가늘게(3~4px), nuki_p 에서 기둥이 누키 앞을 지난다.",
+  "기둥 밑동만 막힘. 가사기·누키·기둥 윗부분은 사람 위(C)."
+ ],
+ "parts": [
+  {
+   "slug": "kasagi_l",
+   "name": "가사기 왼 끝(휨)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "맨 위 들보 왼 끝, 위로 휜 끝.",
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "slug": "kasagi_m",
+   "name": "가사기",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "맨 위 들보(검은 윗단 + 주홍 아랫단).",
+   "at": [
+    1,
+    0
+   ]
+  },
+  {
+   "slug": "kasagi_r",
+   "name": "가사기 오른 끝(휨)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "오른 끝 휨.",
+   "at": [
+    2,
+    0
+   ]
+  },
+  {
+   "slug": "gaku",
+   "name": "편액",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "가사기와 누키 사이 가운데 작은 현판(검은 테·흰 바탕 세로 글자 점).",
+   "at": [
+    3,
+    0
+   ]
+  },
+  {
+   "slug": "hashira",
+   "name": "기둥",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": "y",
+   "walk": "C",
+   "desc": "주홍 기둥 한 칸(세로 반복, 왼 빛·오른 그늘).",
+   "at": [
+    4,
+    0
+   ]
+  },
+  {
+   "slug": "nuki_l",
+   "name": "누키 왼 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "기둥 밖으로 조금 나온 누키 끝.",
+   "at": [
+    5,
+    0
+   ]
+  },
+  {
+   "slug": "nuki_p",
+   "name": "누키 × 기둥",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "기둥이 누키를 꿰는 칸.",
+   "at": [
+    6,
+    0
+   ]
+  },
+  {
+   "slug": "nuki_m",
+   "name": "누키",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "아래 들보.",
+   "at": [
+    7,
+    0
+   ]
+  },
+  {
+   "slug": "nuki_r",
+   "name": "누키 오른 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "C",
+   "desc": "누키 오른 끝.",
+   "at": [
+    0,
+    1
+   ]
+  },
+  {
+   "slug": "hashira_base",
+   "name": "기둥 밑동",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "검은 받침(가메바라) + 오른 아래 그림자.",
+   "at": [
+    1,
+    1
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "t5",
+   "name": "작은 도리이 5칸(통로 1칸)",
+   "ctx": "floor",
+   "through": "ns",
+   "layers": {
+    "main": [
+     "kasagi_l kasagi_m kasagi_m kasagi_m kasagi_r",
+     ". hashira gaku hashira .",
+     "nuki_l nuki_p nuki_m nuki_p nuki_r",
+     ". hashira . hashira .",
+     ". hashira_base . hashira_base ."
+    ]
+   }
+  },
+  {
+   "id": "t7",
+   "name": "도리이 7칸(통로 3칸)",
+   "ctx": "floor",
+   "through": "ns",
+   "layers": {
+    "main": [
+     "kasagi_l kasagi_m kasagi_m kasagi_m kasagi_m kasagi_m kasagi_r",
+     ". hashira . gaku . hashira .",
+     "nuki_l nuki_p nuki_m nuki_m nuki_m nuki_p nuki_r",
+     ". hashira . . . hashira .",
+     ". hashira . . . hashira .",
+     ". hashira_base . . . hashira_base ."
+    ]
+   }
+  },
+  {
+   "id": "t9tall",
+   "name": "큰 도리이 9칸(통로 5칸·높게)",
+   "ctx": "floor",
+   "through": "ns",
+   "layers": {
+    "main": [
+     "kasagi_l kasagi_m kasagi_m kasagi_m kasagi_m kasagi_m kasagi_m kasagi_m kasagi_r",
+     ". hashira . . gaku . . hashira .",
+     "nuki_l nuki_p nuki_m nuki_m nuki_m nuki_m nuki_m nuki_p nuki_r",
+     ". hashira . . . . . hashira .",
+     ". hashira . . . . . hashira .",
+     ". hashira . . . . . hashira .",
+     ". hashira_base . . . . . hashira_base ."
+    ]
+   }
+  }
+ ]
+}

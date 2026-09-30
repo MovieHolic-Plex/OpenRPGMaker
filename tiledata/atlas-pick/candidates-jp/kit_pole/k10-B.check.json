@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_pole/k10-B.pxg",
+ "set": "jp",
+ "id": "kit_pole",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 13,
+  "atLeast95": 0,
+  "max": 0.101
+ },
+ "refmap": {
+  "cells": 13,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 36,
+ "bbox": [
+  0,
+  0,
+  127,
+  63
+ ],
+ "note": "빛·그림자 강화 — 기둥 좌우 명암 대비 크게, 변압기·기둥 밑 그림자(~ -), 등 아래 % 빛번짐, 볼트 하이라이트",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/xray_viewer/h5-B.pxg",
+ "set": "horror",
+ "id": "xray_viewer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "빛판이 가장 밝게 켜져 판 둘레 벽에 반투명 청백 빛이 번지고, 필름 모서리는 어둡게 눌림. 어둠 속에서 이것 하나만 빛남",
+ "ok": true
+}

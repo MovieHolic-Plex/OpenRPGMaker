@@ -1,0 +1,61 @@
+// ticket_machine B — 빛 구조: 어두운 금속 몸체 + 화면 청록 후광 + 두 기계 틈으로 %번짐
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o mmetal 0
+@mat a mmetal 2
+@mat m mmetal 3
+@mat l mmetal 4
+@mat h mmetal 5
+@mat K mmetal 1
+@mat k mout 0
+@mat d mdglass 0
+@mat S neonc 4
+@mat T neonc 5
+@mat U neonc 3
+@mat H neonc 2
+@mat r akachin 4
+@mat b kblue 4
+@mat g kgreen 4
+@mat y taxi 4
+@mat w mwhite 3
+@mat W mwhite 4
+@mat V mwhite 3
+@mat B kblue 3
+@mat R akachin 3
+@mat G kgreen 3
+@mat x mconc 0
+@mat z mconc 2
+@mblock 0 0
+................................
+.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
+.xVVVVVVVVVVVVVVVVVVVVVVVVVVVVx.
+.xWBBBwBBBBBwBBBBBwBBBBBwBWWWWx.
+.xWWWWWWWWWWWWWWWWWWWWWWWWWWWWx.
+.xWWWWWRRRwRRRRRwRRRRRwRRRRwRWx.
+.xWWWWWWWWWWWWWWWWWWWWWWWWWWWWx.
+.xWWGGGwGGGGGwGGGGGwGGGWWWWWWWx.
+.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
+..oooooooooooo....oooooooooooo..
+.ohhhhhhhhhhllo..ohhhhhhhhhhllo.
+.ollllllllllmmo..ollllllllllmmo.
+.oldHHHHHHHHdmo%%oldHHHHHHHHdmo.
+.oldHTTTTTTHdmo%%oldHTTTTTTHdmo.
+.oldHSSSSSSHdmo%%oldHSSSSSSHdmo.
+.oldHSSSSSSHdmo%%oldHSSSSSSHdmo.
+.oldHHHHHHHHdmo%%oldHHHHHHHHdmo.
+.olmmmmmmmmmmao%%olmmmmmmmmmmao.
+.olmrmbmgmymmao..olmrmbmgmymmao.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olmwmrmbmgmmao..olmwmrmbmgmmao.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olmmkkkmmmmmao..olmmkkkmmmmmao.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olmKKKKKKKKmao..olmKKKKKKKKmao.
+.olmkkkkkkkkmao..olmkkkkkkkkmao.
+.olmKKKKKKKKmao..olmKKKKKKKKmao.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olkkkkkkkkkkao..olkkkkkkkkkkao.
+.oooooooooooooo..oooooooooooooo.
+.-~~~~~~~~~~~~~~~~~~~~~~~~~~~~-.
+................................

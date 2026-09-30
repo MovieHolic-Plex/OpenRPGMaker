@@ -1,0 +1,73 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat m green
+@mat n gold
+@mat o straw
+@mat p red
+@mblock 0 0
+................................
+.mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm.
+.mnnnnnnnnnnnnnnnnnnnnnnnnnnnnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnmmmmmmmmmmmmmmmmmmmmmmmmmmnm.
+.mnnnnnnnnnnnnnnnnnnnnnnnnnnnnm.
+.mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm.
+................................
+@tblock 0 0
+................................
+.122222222222222222222222222222.
+.144444444444444444444444444441.
+.142222222222222222222222222241.
+.142433223334332233343322333241.
+.142332432343324323433243234241.
+.142324333233243332332433323241.
+.142243554322435543224355432241.
+.142233553322335533223355332241.
+.142323433243234332432343324241.
+.142332332433323324333233243241.
+.142343224333432243334322433241.
+.142433223334332233343322333241.
+.142332432343324323433243234241.
+.142324333233243332332433323241.
+.142243554322435543224355432241.
+.142233553322335533223355332241.
+.142323433243234332432343324241.
+.142332332433323324333233243241.
+.142343224333432243334322433241.
+.142433223334332233343322333241.
+.142332432343324323433243234241.
+.142324333233243332332433323241.
+.142243554322435543224355432241.
+.142233553322335533223355332241.
+.142323433243234332432343324241.
+.142332332433323324333233243241.
+.142343224333432243334322433241.
+.142222222222222222222222222241.
+.144444444444444444444444444441.
+.111111111111111111111111111111.
+................................

@@ -1,0 +1,19 @@
+{
+ "id": "shimenawa",
+ "slug": "shimenawa",
+ "name": "시메나와(새끼줄·시데)",
+ "scene": "신사 한 켠",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "굵게 꼰 새끼줄이 가운데가 살짝 처지게 가로로(꼰 결 사선 줄), 줄에 매단 흰 번개 모양 종이 시데 서너 장. 도리이·배전·신목에 거는 걸이.",
+ "palette_hint": "hinoki 밝은 단 새끼줄, washi 시데",
+ "worker": "j2"
+}

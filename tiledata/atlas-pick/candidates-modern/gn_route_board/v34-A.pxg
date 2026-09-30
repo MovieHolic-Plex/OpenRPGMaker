@@ -1,0 +1,77 @@
+// gn_route_board v34-A 3/4
+@size 16 32
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a aka 0
+@mat b midori 0
+@mat c shiro 0
+@mat d sora 0
+@mat e sumi 0
+@mat f tekko 0
+@mblock 0 0
+..eeeeeeeeeeee..
+.ecccccccccccce.
+.ecccccccccccce.
+.ecccccccccccce.
+.ecccccccccccce.
+.ecccccccccccce.
+.ecccccccccccce.
+.ecccccccccccce.
+.ecccccccccccce.
+.eccddddedddcce.
+.eccddddedddcce.
+.ecccccccccccce.
+.eccbbebbbbbcce.
+.eccbbebbbbbcce.
+.ecccccccccccce.
+.ecceaaaaaaacce.
+.ecceaaaaaaacce.
+.ecccccccccccce.
+.eccdddeddddcce.
+.eccdddeddddcce.
+.ecccccccccccce.
+.ecccccccccccce.
+.ecccccccccccce.
+..eeeeeffeeeee..
+......effe......
+......effe......
+......effe......
+......effe......
+......effe......
+.....eeffee.....
+....eeeeeeee....
+.....eeeeee.....
+@tblock 0 0
+..000000000000..
+.03333333333330.
+.03333333333330.
+.03333333333330.
+.03333333333330.
+.03333333333330.
+.04444444444440.
+.03222222222210.
+.03222222222210.
+.03222221222210.
+.03222221222210.
+.03222222222210.
+.03222122222210.
+.03222122222210.
+.03222222222210.
+.03212222222210.
+.03212222222210.
+.03222222222210.
+.03222212222210.
+.03222212222210.
+.03222222222210.
+.03222222222210.
+.00000000000000.
+..000003100000..
+......0310......
+......0310......
+......0310......
+......0310......
+......0310......
+.....003100.....
+....01111110....
+.....000000.....

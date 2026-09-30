@@ -1,0 +1,24 @@
+{
+ "id": "hall_door",
+ "slug": "hall_door",
+ "name": "교실 미닫이 문",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "복도에서 교실로 드는 나무 미닫이 문 한 짝 + 문틀. 위쪽에 작은 유리창(세로 긴 네모), 손잡이 홈. hall_wall 과 같은 높이·걸레받이 줄로 이어진다.",
+ "palette_hint": "vpine/hinoki 문, mglass 창, cream 틀벽",
+ "pair": [
+  "hall_floor",
+  "hall_wall"
+ ],
+ "worker": "s1"
+}

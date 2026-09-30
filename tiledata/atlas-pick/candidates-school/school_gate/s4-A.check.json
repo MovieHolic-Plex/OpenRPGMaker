@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/school_gate/s4-A.pxg",
+ "set": "school",
+ "id": "school_gate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.309
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.17
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 25,
+ "bbox": [
+  0,
+  1,
+  63,
+  46
+ ],
+ "note": "교문: 화강암 기둥 2개(줄눈·받침·갓돌)에 노란 등, 왼쪽 기둥 명패(글자 없음), 가운데 철 창살 미닫이 문, 레일 홈, 바퀴",
+ "ok": true
+}

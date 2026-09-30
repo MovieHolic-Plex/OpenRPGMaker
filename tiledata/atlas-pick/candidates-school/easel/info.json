@@ -1,0 +1,23 @@
+{
+ "id": "easel",
+ "slug": "easel",
+ "name": "미술실 이젤",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "나무 이젤(세 다리 A자) 위 캔버스 — 캔버스에 풍경 붓 자국(하늘색·초록 덩이 두세 개), 받침 턱에 붓 하나. 다리 2px.",
+ "palette_hint": "vpine 이젤, vwhite 캔버스, vblue·vgreen·vyellow 물감",
+ "pair": [
+  "plaster_bust"
+ ],
+ "worker": "s1"
+}

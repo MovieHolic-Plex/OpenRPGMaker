@@ -1,0 +1,21 @@
+{
+ "id": "dorm_rug",
+ "slug": "dorm_rug",
+ "name": "기숙사 깔개",
+ "scene": "기숙사",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "침대 사이 바닥 깔개 — 연한 줄무늬 면 깔개, 가장자리 술 1px. 투명 배경(마루 위 덧칠). 채도 낮게.",
+ "palette_hint": "vlinen, sakura, vblue",
+ "pair": [],
+ "worker": "s4"
+}

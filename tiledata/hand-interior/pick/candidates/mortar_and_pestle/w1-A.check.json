@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mortar_and_pestle/w1-A.pxg",
+ "id": "mortar and pestle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 12,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  4,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  6,
+  12,
+  13
+ ],
+ "note": "막자를 굵은 나무 봉(윗면 밝게·오른쪽 어둡게)으로 그릴 만큼 키우고 사발 안쪽에 그림자를 넣어 속이 파인 것이 보이게, 몸통은 왼쪽 밝고 오른쪽 아래 어둡게.",
+ "ok": true
+}

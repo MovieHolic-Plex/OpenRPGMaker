@@ -1,0 +1,37 @@
+{
+ "id": "stool",
+ "slug": "stool",
+ "name_ko": "스툴",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "등받이 없는 둥근 나무 스툴. 피아노 앞·간수실 탁자 곁·분장실 화장대 앞에 1~2개.",
+ "where": "피아노 앞·간수실 탁자 곁·분장실 화장대 앞에 1~2개.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  14
+ ],
+ "v5_colors": 6,
+ "material": "wood",
+ "related": []
+}

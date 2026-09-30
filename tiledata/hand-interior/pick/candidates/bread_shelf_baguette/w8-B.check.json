@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_shelf_baguette/w8-B.pxg",
+ "id": "bread shelf baguette",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "어두운 칸 안에 세운 바게트·눕힌 바게트·롤빵이 또렷하게 떠 보이는 처마·받침 진열장",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/desk_pair/s4-A.pxg",
+ "set": "school",
+ "id": "desk_pair",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  1,
+  30,
+  29
+ ],
+ "note": "두 사람 책상: 긴 상판에 이음선 1줄, 가운데 다리, 같은 높이 의자 2개 — desk_set A와 같은 재료·명암",
+ "ok": true
+}

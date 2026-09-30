@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/crosswalk_jp/j3-A.pxg",
+ "set": "jp",
+ "id": "crosswalk_jp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.176
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "강남 조각 결로 3px 흰 줄 다섯 개(사이 3px, 옆줄 없음)를 세로로 이어 붙게 하고 줄의 왼쪽 가장자리만 밝게, 오른쪽은 한 단 어둡게, 페인트가 드문드문 벗겨짐",
+ "ok": true
+}

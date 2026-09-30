@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/laundry/j4-C.pxg",
+ "set": "jp",
+ "id": "laundry",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.166
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  1,
+  31,
+  12
+ ],
+ "note": "C 실루엣 다시: 바람에 한쪽 소매가 나온 셔츠와 접힌 수건, 크기 다른 양말",
+ "ok": true
+}

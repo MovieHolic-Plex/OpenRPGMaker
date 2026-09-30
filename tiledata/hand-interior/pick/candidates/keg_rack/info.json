@@ -1,0 +1,39 @@
+{
+ "id": "keg rack",
+ "slug": "keg_rack",
+ "name_ko": "술통 선반",
+ "category": "선술집",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 32,
+  "h": 24
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": null,
+ "description": "눕힌 술통 다섯 개를 쌓은 선반(2칸). 선술집 바 뒤 벽.",
+ "where": "선술집 바 뒤 벽.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  9,
+  31,
+  31
+ ],
+ "v5_colors": 11,
+ "material": "wood",
+ "related": []
+}

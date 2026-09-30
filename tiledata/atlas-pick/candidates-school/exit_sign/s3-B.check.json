@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/exit_sign/s3-B.pxg",
+ "set": "school",
+ "id": "exit_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  1,
+  3,
+  14,
+  13
+ ],
+ "note": "센 명암: 밝은 흰 테와 안쪽 위 연초록 띠, 아래 짙은 초록 띠로 강한 대비, 판 위아래로 초록 빛 번짐 한 줄",
+ "ok": true
+}

@@ -1,0 +1,60 @@
+{
+ "id": "coast_snow",
+ "slug": "coast_snow",
+ "name": "바다·해안(얼음 해안)",
+ "scene": "물가",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "snow",
+ "under_ko": "설원(snow 몸통 고른 판)",
+ "passage": "block",
+ "description": "coast_grass 와 같은 바다·같은 기슭선에 밑바탕이 설원인 판. 물가 = 얼음 테(푸른 흰 판 2px, 윗면 밝게) — World.png 눈 해안처럼 테가 굵고 밝다. 바다 몸통 화소는 coast_grass 와 같게.",
+ "palette_hint": "wsea 물, wice 얼음 테, wsnow",
+ "worker": "wv1",
+ "style": "line",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

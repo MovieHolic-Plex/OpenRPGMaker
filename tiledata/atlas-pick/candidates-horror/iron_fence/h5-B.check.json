@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/iron_fence/h5-B.pxg",
+ "set": "horror",
+ "id": "iron_fence",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "왼쪽 위 달빛에 살 왼쪽 한 줄이 환하고 오른쪽·가로띠 아래는 깊게 눌림, 바닥에 살 그림자 반투명",
+ "ok": true
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/class_clock/s5-B.pxg",
+ "set": "school",
+ "id": "class_clock",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "같은 시계에 유리 반사(&)를 왼쪽 위 호에 얹음",
+ "ok": true
+}

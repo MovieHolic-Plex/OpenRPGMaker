@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar_E/w21-G.pxg",
+ "id": "altar E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.284
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 27,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  10,
+  31,
+  46
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "note": "돌 단 위에 놓인 흰 윗면+보라 제단포 제단: 왼쪽 회색 옆면, 금테 앞천 십자, 두 단 받침과 접지 그림자",
+ "ok": true
+}

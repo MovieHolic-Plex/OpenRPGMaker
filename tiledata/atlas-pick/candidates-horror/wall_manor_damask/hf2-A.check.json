@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_manor_damask/hf2-A.pxg",
+ "set": "horror",
+ "id": "wall_manor_damask",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "A(v5 식구): 몰딩 1·5·3 → 크림 벽지(paper 5) + 자주 다마스크(위 줄 큰 꽃 · 아래 줄 작은 마름모, 반 칸 엇갈림) → 단 → 들어간 패널 징두리 → 걸레받이. 벽면이 방에서 가장 밝은 큰 면",
+ "ok": true
+}

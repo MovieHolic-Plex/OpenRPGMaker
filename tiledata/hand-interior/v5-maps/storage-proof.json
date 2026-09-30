@@ -1,0 +1,87 @@
+{
+  "projectId": "826c7046-a984-4044-81f5-1a95fc56de03",
+  "projectDir": ".oprn-projects/hand-interior-v5-20260929",
+  "revision": 5,
+  "sha256": "16c544a87837c4b2954bda008de75f9c4541d81634d17501cf7a1ab70247fc12",
+  "saved": true,
+  "reopened": true,
+  "deepEqual": true,
+  "tileset": "atlas_biome_interior",
+  "maps": 26,
+  "engineReach": {
+    "hand-bakery": 72,
+    "hand-pharmacy": 67,
+    "hand-fish": 60,
+    "hand-butcher": 49,
+    "hand-smithy": 55,
+    "hand-chapel": 248,
+    "hand-scholar": 64,
+    "hand-tailor": 76,
+    "hand-tavern": 92,
+    "hand-manor-1f": 178,
+    "hand-manor-2f": 163,
+    "hand-hobbit": 85,
+    "hand-inn": 144,
+    "hand-dwarf": 172,
+    "hand-elf": 138,
+    "hand-mead": 187,
+    "hand-throne": 183,
+    "hand-tower": 86,
+    "hand-dungeon": 78,
+    "hand-mine": 129,
+    "hand-magitek": 104,
+    "hand-opera": 169,
+    "hand-casino": 133,
+    "hand-stable": 83,
+    "hand-narshe": 65,
+    "hand-zozo": 72
+  },
+  "bundle": {
+    "newProject": {
+      "tilesetId": "atlas_biome_interior",
+      "family": "oprn-atlas",
+      "count": 6076,
+      "categories": [
+        "hand-interior-v5"
+      ],
+      "dungeon": 1140
+    },
+    "olderSave": {
+      "replaced": true,
+      "kept": [
+        "hand-interior-v5",
+        "my-notes"
+      ],
+      "oldMapUntouched": true,
+      "warning": "atlas_biome_interior 가 손 도트 v5 정의로 바뀌었다 — 옛 정의(Tibo 번호)로 깐 맵 1개는 그대로 두었다: old-room. 칸 번호가 새 시트의 다른 그림을 가리키므로 다시 지어야 한다(build_hand_interior_room)."
+    }
+  },
+  "mapIds": [
+    "hand-bakery",
+    "hand-pharmacy",
+    "hand-fish",
+    "hand-butcher",
+    "hand-smithy",
+    "hand-chapel",
+    "hand-scholar",
+    "hand-tailor",
+    "hand-tavern",
+    "hand-manor-1f",
+    "hand-manor-2f",
+    "hand-hobbit",
+    "hand-inn",
+    "hand-dwarf",
+    "hand-elf",
+    "hand-mead",
+    "hand-throne",
+    "hand-tower",
+    "hand-dungeon",
+    "hand-mine",
+    "hand-magitek",
+    "hand-opera",
+    "hand-casino",
+    "hand-stable",
+    "hand-narshe",
+    "hand-zozo"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ore_vein/w3-C.pxg",
+ "id": "ore vein",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  1,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "note": "실루엣 재해석 — 점이 아니라 벽에 박힌 바위 덩이(stone 5~2, 윤곽 stone:0)로 크게 잡고, 대각 금맥이 바위를 가로지르며 위 끝에서 청록 결정 둘이 솟아 나옴. 세로로 조금 더 큰 실루엣.",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/bunk_bed/s3-B.pxg",
+ "set": "school",
+ "id": "bunk_bed",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.117
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "센 명암: 왼쪽 기둥 밝은 소나무·오른쪽 기둥 어둡게, 빨강/초록 이불, 칸 밑 짙은 그늘, 사다리는 왼쪽",
+ "ok": true
+}

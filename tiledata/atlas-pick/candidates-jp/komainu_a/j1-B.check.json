@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/komainu_a/j1-B.pxg",
+ "set": "jp",
+ "id": "komainu_a",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.23
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "같은 짜임에 명암 대비를 세게: 윗 가장자리 하이라이트 2단, 받침 윗면 밝게 + 몸 그림자가 오른쪽 받침에 떨어짐",
+ "ok": true
+}

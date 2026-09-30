@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/aisle_runner/w5-C.pxg",
+ "id": "aisle runner",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "재해석: 마름모 대신 큰 메달리온(폭 12·높이 12줄, 금 테두리·붉은 속·가운데 금 점), 테두리 금줄은 두 줄 굵기 점선 무늬로 바꿈",
+ "ok": true
+}

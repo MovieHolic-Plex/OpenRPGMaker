@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/school_gate/s4-B.pxg",
+ "set": "school",
+ "id": "school_gate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.25
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 25,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "명암 강화: 돌 밝은 쪽·짙은 그늘, 등에 % 빛무리, 긴 바닥 그림자",
+ "ok": true
+}

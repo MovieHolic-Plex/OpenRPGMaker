@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hang_onion/w5-A.pxg",
+ "id": "hang:onion",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  11
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  9
+ ],
+ "note": "선반 봉에 윗면 빛·밑면 그늘을 넣고, 노끈을 꼬임(두 톤)으로, 양파를 둥글게 윤곽·하이라이트 잡고 가운데 다발을 더 길게 늘어뜨림",
+ "ok": true
+}

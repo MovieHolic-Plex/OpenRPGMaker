@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/schoolyard/s1-B.pxg",
+ "set": "school",
+ "id": "schoolyard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "B: 명암 강화 — 알갱이 대비 큼(가장 밝은 알·가장 어두운 알 섞음), 사방 이음 유지",
+ "ok": true
+}

@@ -1,0 +1,77 @@
+// coast_grass pilot-A — 2판 규칙 파일럿(work/pilot_coast.py 가 만든다; 손으로 고칠 땐 이 격자를 직접 고친다)
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wdirt 0
+@mat b wdirt 1
+@mat c wdirt 2
+@mat d wgrass 1
+@mat e wsea 1
+@mat f wsea 2
+@mat g wsea 3
+@mblock 0 0
+................eeeeeeeeeefffeee..bgffeeeeffgb..
+.......cc.......eeeeeeeeeeeeefeeccagffffeeffgacc
+.....ccaacc.....eeeeeeeeeeeeeeeeaagffeeefeeffgaa
+....caaggaac....eeeffeeeeeeeeeeeggffeeeeeeeeffgg
+....aggffgga....eeeeefeeeeeeeeeefffeeeeeeeeeefff
+...bgffffffgb...eeeeeeeeeeeeeeeefffffeeeeeeeeeff
+...agffeeffga...eeeeeeeeegeeeeeeeeeeefeeeeeeeeee
+..bgffeeeeffgb..eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+..bgffeeeeffgb..feeeeeeeeeeeeeffeeeeeeeeeeeffeee
+...dgffeeffgd...efeeeeeeeeeeeeeeeeeeeeeeeeeeefee
+...bgffffffgb...eeeeeeeeeeeeeeeeffeeeeeeeeeeeeff
+....dggffggd....eeeeeeeeeeeeeeeefffeeeeeeeeeefff
+.....ddggdd.....eeeeeeeeeeeeeeffggffeeeeeeeeffgg
+.......dd.......feeeeeeeeeeeeeeeddgffefffeeffgdd
+................eeeeeeeeeeeeeeee..dgffeeefffgd..
+................eeeeeegeeeeeeeee..bgffeeeeffgb..
+...........cc..............cc...................
+.......ccccaaccccc....cccccaaccccc....ccc.......
+.....ccaaaaggaaaaaccccaaaaaggaaaaaccccaaacc.....
+....caaggggffgggggaaaagggggffgggggaaaagggaac....
+....aggfffffffffffggggffffffffffffggggfffgga....
+...bgffffffeeffffffffffffffeeffffffffffffffgb...
+...agffeeeeeeeeeeeffffeeeeeeeeeeeeffffeeeffga...
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..agffeeeeeffeeeeeeeeeeeeeeffeeeeeeeeeeeeeffgb..
+.bgffeeeeeeeefeeeeeeeeeeeeeeefeeeeeeeeeeeeffgb..
+.bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..dgffeeeeeeeeeeegeeeeeeeeeeeeeeegeeeeeeeffgd...
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb...
+..bgfffffeeeeeeeeeeeeefffeeeeeeeeeeeeefffffga...
+..bgffeeefeeeeeeeeeeeeeeefeeeeeeeeeeeeeeefffgb..
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..bgffffeeeeeeeeeeeeeeffeeeeeeeeeeeeeeffeeffga..
+..bgffeefeeeeeeeeeeeeeeefeeeeeeeeeeeeeeefeeffgb.
+...dgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb.
+...bgffeeeeeeegeeeeeeeeeeeeeeegeeeeeeeeeeeffgd..
+...agffeeeeeeeeeeefffeeeeeeeeeeeeefffeeeeeffgb..
+..bgffeeeeeeeeeeeeeeefeeeeeeeeeeeeeeefeeeeffgb..
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..agffeeeeeffeeeeeeeeeeeeeeffeeeeeeeeeeeeeffgb..
+.bgffeeeeeeeefeeeeeeeeeeeeeeefeeeeeeeeeeeeffgb..
+.bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..dgffeeeeeeeeeeegeeeeeeeeeeeeeeegeeeeeeeffgd...
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb...
+..bgfffffeeeeeeeeeeeeefffeeeeeeeeeeeeefffffga...
+..bgffeeefeeeeeeeeeeeeeeefeeeeeeeeeeeeeeefffgb..
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..bgffffeeeeeeeeeeeeeeffeeeeeeeeeeeeeeffeeffga..
+..bgffeefeeeeeeeeeeeeeeefeeeeeeeeeeeeeeefeeffgb.
+...dgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb.
+...bgffeeeeeeegeeeeeeeeeeeeeeegeeeeeeeeeeeffgd..
+...agffeeeeeeeeeeefffeeeeeeeeeeeeefffeeeeeffgb..
+..bgffeeeeeeeeeeeeeeefeeeeeeeeeeeeeeefeeeeffgb..
+..bgffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffgb..
+..bgffeeeeeffeeeeeeeeeeeeeeffeeeeeeeeeeeeeffgb..
+...dgffeeeffffeeeeeeeeeeeeffffeeeeeeeeeeeffgd...
+...bgffffffffffffffeeffffffffffffffeeffffffgb...
+....dggfffgggfffffffffffffgggffffffffffffggd....
+.....ddgggdddggggggffgggggdddggggggffggggdd.....
+.......ddd...ddddddggddddd...ddddddggdddd.......
+...................dd..............dd...........
+................................................

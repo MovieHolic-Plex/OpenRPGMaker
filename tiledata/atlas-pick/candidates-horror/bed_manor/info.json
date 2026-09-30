@@ -1,0 +1,56 @@
+{
+ "id": "bed_manor",
+ "slug": "bed_manor",
+ "name": "저택 침대",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  3
+ ],
+ "canvas": [
+  16,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 침대와 같은 칸(1×3 캔버스, 위 10px 여백 = 발 칸 1×2)·같은 시점: 머리판(나무) + 베개 + 이불(바랜 벨벳/누런 시트, 접힌 윗단) + 발판. 누운 사람 없이.",
+ "palette_hint": "mahog 틀, sheet/velv 침구",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "침대",
+ "worker": "hf4",
+ "set_with": [
+  "table_wood",
+  "chair_wood",
+  "chair_wood_back",
+  "bookshelf_manor",
+  "dresser",
+  "side_table",
+  "candle_table"
+ ],
+ "v5_ref": [
+  {
+   "id": "bed red",
+   "name_ko": "침대 빨강",
+   "atlas": {
+    "x": 240,
+    "y": 304,
+    "w": 16,
+    "h": 48,
+    "frames": 1,
+    "padTop": 10
+   },
+   "image": {
+    "w": 16,
+    "h": 38
+   },
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

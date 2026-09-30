@@ -1,0 +1,24 @@
+// 5단계 정리: 판 윗모서리 밝은 줄과 틈 앞 어두운 줄을 군데군데 끊어 자를 대고 그은 줄처럼 보이지 않게 한다.
+@base 4-texture.pxg
+@block 8 0
+ffff
+@block 29 0
+fff
+@block 0 8
+eee
+@block 17 8
+eee
+@block 12 16
+eee
+@block 27 16
+eee
+@block 3 24
+ffff
+@block 24 24
+fff
+@block 14 6
+fff
+@block 4 22
+eee
+@block 25 30
+ff

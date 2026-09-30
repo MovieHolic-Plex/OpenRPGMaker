@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/doll_sitting/v34-A.pxg",
+ "set": "horror",
+ "id": "doll_sitting",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "note": "",
+ "ok": true
+}

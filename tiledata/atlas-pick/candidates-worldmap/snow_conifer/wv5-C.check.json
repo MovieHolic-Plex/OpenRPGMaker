@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow_conifer/wv5-C.pxg",
+ "set": "worldmap",
+ "id": "snow_conifer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.231
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.06
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "C: conifer C 의 2층 작은 전나무에 눈모자, 바닥은 밝은 눈.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.492
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.06
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     8,
+     6,
+     2,
+     1,
+     1,
+     2,
+     3,
+     6,
+     8,
+     6,
+     2,
+     1,
+     1,
+     2,
+     3,
+     6
+    ],
+    "s": [
+     8,
+     8,
+     7,
+     7,
+     5,
+     6,
+     7,
+     8,
+     8,
+     8,
+     7,
+     7,
+     5,
+     6,
+     7,
+     8
+    ],
+    "w": [
+     6,
+     3,
+     2,
+     2,
+     1,
+     2,
+     1,
+     1,
+     2,
+     4,
+     6,
+     6,
+     5,
+     6,
+     5,
+     5
+    ],
+    "e": [
+     5,
+     3,
+     2,
+     1,
+     0,
+     1,
+     0,
+     0,
+     1,
+     2,
+     6,
+     5,
+     4,
+     5,
+     4,
+     4
+    ]
+   },
+   "strait": 0,
+   "steps": {
+    "n": 4,
+    "s": 2,
+    "w": 3,
+    "e": 4
+   },
+   "amp": {
+    "n": 7,
+    "s": 3,
+    "w": 5,
+    "e": 6
+   },
+   "joinWorst": 2
+  },
+  "seam": 1.35
+ }
+}

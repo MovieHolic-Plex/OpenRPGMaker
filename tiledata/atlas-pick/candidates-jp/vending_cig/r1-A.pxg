@@ -1,0 +1,80 @@
+// vending_cig r1-A
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b kblue 3
+@mat c kgreen 3
+@mat d lacq 3
+@mat e mdglass 3
+@mat f mmetal 3
+@mat g sumi 3
+@mat h taxi 3
+@mat i washi 3
+@mblock 0 0
+...gggggggggggggggggggggggggg...
+..gggggggggggggggggggggggggggg..
+..gggggggggggggggggggggggggggg..
+..gggggggggggggggggggggggggggg..
+..ghhhhhhhhhhhhhhhhhhhhhhhhhhg..
+..ghhhgggggghhggggghaahhhhhhhg..
+..ghhhhhhhhhhhhhhhhhhhhhhhhhhg..
+..ggffffffffffffffgggggggggggg..
+..ggfeaaeiiebbehhfggcccggggggg..
+..ggfeaaeiiebbehhfggddcggggggg..
+..ggfeaaeiiebbehhfgggggggggggg..
+..ggfeiiebbehheccfggiiiigggggg..
+..ggfeiiebbehheccfggiiiigggggg..
+..ggfeiiebbehheccfgggggggggggg..
+..ggfebbehhecceaafggiiiigggggg..
+..ggfebbehhecceaafggiiiigggggg..
+..ggfebbehhecceaafgggggggggggg..
+..ggffffffffffffffggffffgggggg..
+..gggigigigigigiggggfddfgggggg..
+..gggggggggggggggggggggggggggg..
+..ggffffffffffffffggffffgggggg..
+..ggfddddddddddddfggddddgggggg..
+..ggfddddddddddddfgggggggggggg..
+..ggfddddddddddddfggffffgggggg..
+..ggfddddddddddddfggddddgggggg..
+..ggfddddddddddddfggddddgggggg..
+..gggggggggggggggggggggggggggg..
+..gffffffffffffffffffffffffffg..
+..gffffffffffffffffffffffffffg..
+....~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+......--------------------------
+................................
+@tblock 0 0
+...11111111111111111111111111...
+..1444444444444444444444444430..
+..1333333333333333333333333320..
+..1333333333333333333333333320..
+..1444444444444444444444411110..
+..1333111111331111133333311110..
+..1222222222222222222222200000..
+..1344444444444441201111121100..
+..1323443553443441204441121100..
+..1323333423333311201121121100..
+..1323223333223221201111121100..
+..1323553443443441205454121100..
+..1323423333313331203333121100..
+..1323333223223221201111121100..
+..1323443443443441205454121100..
+..1323333313333311203333121100..
+..1323223223223221201111121100..
+..1311111111111111206666121100..
+..1323131313131312203003121100..
+..1322222222222222201111121100..
+..1344444444444444205555121100..
+..1333333333333330200000121100..
+..1332222222222220201111121100..
+..1330000000000000205555121100..
+..1330000000000000202222121100..
+..1330000000000000200000121100..
+..1111111111111111111111100000..
+..1333333333333333333333322220..
+..0111111111111111111111100000..
+................................
+................................
+................................

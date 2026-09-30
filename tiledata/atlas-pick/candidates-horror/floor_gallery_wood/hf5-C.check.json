@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_gallery_wood/hf5-C.pxg",
+ "set": "horror",
+ "id": "floor_gallery_wood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C: 재료·무늬 — 바구니 짜기 쪽모이. 8px 블록마다 2px 살 4개, 가로 블록(단3)·세로 블록(단2)이 체크로 교대. 살은 윗줄/왼줄 밝게, 블록 끝에 갭.",
+ "ok": true
+}

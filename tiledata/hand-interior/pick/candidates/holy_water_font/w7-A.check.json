@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/holy_water_font/w7-A.pxg",
+ "id": "holy water font",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 12,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  14,
+  13
+ ],
+ "note": "v5 를 다듬음: 위에서 본 타원 수면(물 3단+반짝임)을 키우고 밝은 돌 테두리에 앞·오른쪽 한 단 어둡게, 그릇 몸-줄기-받침 3덩이로 나눠 입체를 살림",
+ "ok": true
+}

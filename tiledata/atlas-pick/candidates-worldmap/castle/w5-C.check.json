@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/castle/w5-C.pxg",
+ "set": "worldmap",
+ "id": "castle",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  1,
+  0,
+  31,
+  31
+ ],
+ "note": "실루엣 재해석 — 가늘고 아주 높은 주탑 + 낮은 붉은 곁탑, 멀리서 세로로 솟은 실루엣",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.047
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.105
+  }
+ }
+}

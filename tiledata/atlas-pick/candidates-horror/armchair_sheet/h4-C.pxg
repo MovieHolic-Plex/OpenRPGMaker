@@ -1,0 +1,42 @@
+// armchair_sheet h4-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a dust 0
+@mat b rot 0
+@mat c void 0
+@mblock 0 0
+................
+......aaaa......
+.....aaaaaa.....
+.....acaaca.....
+....aacaacaa....
+...aaaaaaaaaa...
+..aaaaaaaaaaaa..
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+.aaa...aaa...aaa
+..bb....a.....a.
+@tblock 0 0
+................
+......2221......
+.....225521.....
+.....205401.....
+....22044021....
+...2255444421...
+..225540044421..
+.22554441444321.
+.24244444444231.
+.24244444434231.
+.24244444334231.
+.24244443334231.
+2242333333342321
+1242111232111221
+.121...121...121
+..31....1.....1.

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/broom_and_bucket/w9-B.pxg",
+ "id": "broom and bucket",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  0,
+  14,
+  12
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  14,
+  12
+ ],
+ "note": "손잡이·널·빗자루 끝에 밝은 왼쪽 면과 어두운 오른쪽 면, 물 하이라이트, 아래 오른쪽 반투명 그림자",
+ "ok": true
+}

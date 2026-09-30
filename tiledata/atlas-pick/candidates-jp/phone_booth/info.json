@@ -1,0 +1,19 @@
+{
+ "id": "phone_booth",
+ "slug": "phone_booth",
+ "name": "공중전화",
+ "scene": "주택가 골목",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "초록 공중전화기가 든 작은 유리 부스(또는 담배가게 앞 초록 전화기 받침대). 유리 너머 초록 전화기, 부스 테는 은색·지붕 한 줄.",
+ "palette_hint": "kgreen 전화기, mglass 유리, mmetal 테",
+ "worker": "j2"
+}

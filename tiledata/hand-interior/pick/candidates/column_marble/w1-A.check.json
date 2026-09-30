@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_marble/w1-A.pxg",
+ "id": "column marble",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.061
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "v5 를 다듬음: 기둥몸에 세로 홈(밝은 줄·어두운 줄)을 넣고 머리 아랫줄·밑동 윗줄에 짙은 음영 한 줄씩",
+ "ok": true
+}

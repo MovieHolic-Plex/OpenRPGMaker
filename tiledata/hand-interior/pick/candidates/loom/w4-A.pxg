@@ -1,0 +1,76 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 4
+@mat b straw 4
+@mat c iron 4
+@mat d blue 4
+@mat e red 4
+@mat f yellow 4
+@mat g brass 4
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+.aaabbbbbbbbbbbbbbbbbbbbbbbbaaa.
+.aaabbbbbbbbbbbbbbbbbbbbbbbbaaa.
+.aaabbbbbbbbbbbbbbbbbbbbbbbbaaa.
+.aaaccccccccccccccccccccccccaaa.
+.aaabbbbbbbbbbbbbbbbbbbbbbbbaaa.
+.aaabbbbbbbbbbbbbbbbbbbbbbbbaaa.
+.aaabbbbbbbbbbbbbbbbbbbbbbbbaaa.
+.aaaddddddddddddddddddddddddaaa.
+.aaaefeeefefeeefefeeefefeeefaaa.
+.aaaeefefeeefefeeefaaaaaaafeaaa.
+.aaaeeefeeeeefeeeeefeeeeefeeaaa.
+.aaaddddddddddddddddddddddddaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaagaagaaaaaaaaaaaaa.
+.aaaaaaaaaaaaagaagaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+@tblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+77777777777777777777777777777775
+66666666666666666666666666666664
+33333333333333333333333333333333
+.654111111111111111111111111654.
+.654333333333333333333333333654.
+.654543543543543543543543543654.
+.654445444544454445444544454654.
+.654543543543543543543543543654.
+.654543543543543543543543543654.
+.654543543543543543543543543654.
+.654333333333333333333333333654.
+.654343334343334343334343334654.
+.654334343334343334577777443654.
+.654333433333433333433333433654.
+.654222222222222222222222222654.
+.654777777777777777777777777654.
+.654444444444444444444444444654.
+.777777777777777777777777777777.
+.666666666666666666666666666666.
+.544444444444444444444444444442.
+.544666666666666666666666663442.
+.544633333333353353333333333442.
+.544444444444434434444444444442.
+.111111111111111111111111111111.

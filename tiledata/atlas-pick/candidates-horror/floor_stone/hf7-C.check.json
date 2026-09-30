@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_stone/hf7-C.pxg",
+ "set": "horror",
+ "id": "floor_stone",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.383
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.275
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C(재질·무늬): 제각각 크기 판석 + 금 두 개 + 줄눈 이끼 셋 + 얽은 자국. grave/hmoss",
+ "ok": true
+}

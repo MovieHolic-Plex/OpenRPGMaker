@@ -1,0 +1,60 @@
+{
+ "id": "coast_grass",
+ "slug": "coast_grass",
+ "name": "바다·해안(풀 해안)",
+ "scene": "물가",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "대륙을 두른 바다. 덩이 안 = 얕은 바다, 바깥(투명) = 풀 땅. **기슭 깊이 = 칸 바깥 2~4px(이음 열 0·7·8·15 은 모두 같은 값 J=3 권장)**, 해협(1칸 폭 물) 속 8px 이상. 물가 = 땅 쪽 어두운 흙 둑 한 줄(북쪽 물가는 3/4 시점 둑 앞면 2px) + 물 쪽 밝은 테 1px + 여울 2px, **흰 거품 금지**. 바깥 모서리 큰 원, 안쪽 모서리 홈 반지름 3. 몸통 = 드문 물결 획(무늬 벽지 금지). 기준: candidates-worldmap/coast_grass/pilot-A.",
+ "palette_hint": "wsea 물, 둑 wdirt·wgrass 어두운 단",
+ "worker": "wv1",
+ "style": "line",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cabinet_bottle_bottler_bottley/w1-A.pxg",
+ "id": "cabinet:bottle+bottler+bottley",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 18,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "v5 를 정리(칸 위쪽 그림자 줄은 뺌): 병 10개의 위치·색은 그대로, 병마다 코르크(나무 밝은색)·목 어둡게·왼쪽 위 밝은 몸통·오른쪽 어둡게·바닥 한 줄 어둡게, 선반 앞 모서리는 밝은 나무 윗선, 왼쪽 기둥 밝게",
+ "ok": true
+}

@@ -1,0 +1,68 @@
+// bunk_bed v35-A: 이층 침대 3/4 — 위 침대 윗면 T19(베개·파란 담요)·앞 F27 기둥·옆판·아래 침대·사다리 (폭 16px)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat o vdwood 1
+@mat O vdwood 2
+@mat a vpine 6
+@mat u vpine 5
+@mat t vpine 4
+@mat s vpine 3
+@mat f vpine 2
+@mat b vblue 4
+@mat B vblue 3
+@mat c vblue 5
+@mat d vblue 2
+@mat w vlinen 6
+@mat x vlinen 5
+@mat P vred 3
+@mat q vred 2
+@mblock 0 0
+................
+oooooooooooooooo
+OttttttttttttttO
+OttwwwwwwwwwwttO
+OttwwwwwwwwwwttO
+OttwwwwwwwwwwttO
+OttxxxxxxxxxxttO
+OccccccccccccccO
+OBBBBBBBBBBBBBBO
+OBBBBBBBBBBBBBBO
+ObbbbbbbbbbbbbbO
+OBBBBBBBBBBBBBBO
+OBBBBBBBBBBBBBBO
+ObbbbbbbbbbbbbbO
+OBBBBBBBBBBBBBBO
+OBBBBBBBBBBBBBBO
+ObbbbbbbbbbbbbbO
+OBBBBBBBBBBBBBBO
+OddddddddddddddO
+oooooooooooooooo
+osaaaaaaaaaaaafo
+osttttttttttttfo
+osssssssssssssfo
+osOOOOOOOOOOfOfo
+os..........f.fo
+os........uuu.fo
+osPPPPPPPP..f.fo
+osqqqqqqqq..f.fo
+osqqqqqqqq..f.fo
+osqqqqqqqquuu.fo
+osqqqqqqqq..f.fo
+oswwwwwwww..f.fo
+osxxxxxxxx..f.fo
+osxxxxxxxxuuu.fo
+osaaaaaaaaaaaafo
+osttttttttttttfo
+osssssssssssssfo
+osOOOOOOOOOOOOfo
+os~~~~~~~~~~~~fo
+os~~~~~~~~~~~~fo
+os~~~~~~~~~~~~fo
+os............fo
+os............fo
+os............fo
+os............fo
+os............fo
+oo............oo
+..~~~~~~~~~~~~~~

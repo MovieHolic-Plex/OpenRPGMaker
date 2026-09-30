@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/blackboard/s2-B.pxg",
+ "set": "school",
+ "id": "blackboard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.16
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  1,
+  63,
+  30
+ ],
+ "note": "틀 3단 모따기·판 위/왼 안쪽 그늘 두 줄·받침 윗면 밝고 앞면 어둡게 + 벽에 지는 그림자(~ -) 로 떠 보이는 입체",
+ "ok": true
+}

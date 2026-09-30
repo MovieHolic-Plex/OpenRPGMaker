@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_W/w1-C.pxg",
+ "id": "chair W",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "재해석: 등받이를 뒤로 기울여(위가 동쪽으로 1px씩) 앉는 각이 보이게, 붉은 방석을 얹어 의자로 바로 읽히게, 앉음판 앞 두께+밑면 그늘. 다리는 앞다리 굵게.",
+ "ok": true
+}

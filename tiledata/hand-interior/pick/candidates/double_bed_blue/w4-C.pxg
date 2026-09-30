@@ -1,0 +1,106 @@
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a brass 4
+@mat b wood 4
+@mat c linen 4
+@mat d blue 4
+@mat e yellow 4
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+aaab........................baaa
+aaab........................baaa
+bbbb......bbbbbbbbbbbb......bbbb
+bbbb...bbbbbbbbbbbbbbbbbb...bbbb
+bbbb.bbbbbbbbbbbbbbbbbbbbbb.bbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbabbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbabbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbccccccccccccccccccccccccbbbb
+bbbb.cccccccccc..cccccccccc.bbbb
+bbbb.cccccccccc..cccccccccc.bbbb
+bbbb.cccccccccc..cccccccccc.bbbb
+bbbb.cccccccccc..cccccccccc.bbbb
+bbbb.cccccccccc..cccccccccc.bbbb
+bbbb.cccccccccc..cccccccccc.bbbb
+bbbbccccccccccccccccccccccccbbbb
+bbbbccccccccccccccccccccccccbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbddddddddddddddddddddddddbbbb
+bbbbeeeeeeeeeeeeeeeeeeeeeeeebbbb
+bbbbeeeeeeeeeeeeeeeeeeeeeeeebbbb
+bbbbeeeeeeeeeeeeeeeeeeeeeeeebbbb
+bbbbeeeeeeeeeeeeeeeeeeeeeeeebbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+@tblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+5537........................7553
+5533........................7553
+7553......444444444444......7553
+7553...444444444444444444...7553
+7553.4444444444444444444444.7553
+75534444444447777774444444447553
+75534466666667555576666666447553
+75534466666667553576666666447553
+75534466666667777776666666447553
+75534466666666666666666666447553
+75532222222222222222222222227553
+75534444444444444444444444447553
+7553.4666666664..4666666664.7553
+7553.6666666664..6666666664.7553
+7553.6666666664..6666666664.7553
+7553.6665555664..6665555664.7553
+7553.6666666664..6666666664.7553
+7553.2333333332..2333333332.7553
+75536666666666666666666666667553
+75533333333333333333333333337553
+75535555555555555555555555527553
+75535333333333333333333333327553
+75535333333333333333333333327553
+75535222222222222222222222227553
+75535444444444444444444444427553
+75535444444444444444444444427553
+75535222222222222222222222227553
+75535333333333333333333333327553
+75535333333333333333333333327553
+75535222222222222222222222227553
+75535555555555555555555555537553
+75535434434434434434434434437553
+75535434434434434434434434437553
+75535222222222222222222222237553
+75537777777777777777777777777553
+75535555555555555555555555557553
+75533333333333333333333333337553
+75531111111111111111111111117553

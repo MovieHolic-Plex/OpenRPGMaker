@@ -1,0 +1,37 @@
+{
+ "id": "pot",
+ "slug": "pot",
+ "name_ko": "항아리",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "구리빛 둥근 항아리(주둥이 좁음). 부엌·식료품 방·창고 구석에 1~2개. 물독 옆.",
+ "where": "부엌·식료품 방·창고 구석에 1~2개. 물독 옆.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_colors": 6,
+ "material": "ceramic",
+ "related": []
+}

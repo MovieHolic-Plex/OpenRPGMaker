@@ -1,0 +1,73 @@
+// s5 후보 — s5-B.pxg
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a vpine
+@mat b locker
+@mat c mmetal
+@mblock 0 0
+..........aa....
+..........aa....
+..........aa....
+..........aa....
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.b%bbbbbbbbbbbb.
+.b%bbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbccbb.
+.bbbbbbbbbbccbb.
+.bbbbbbbbbbccbb.
+.bbbbbbbbbbccbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+..bb........bb~~
+....~~~~~~~~~~~~
+@tblock 0 0
+..........66....
+..........42....
+..........42....
+..........42....
+.56666666666662.
+.55555555555522.
+.5.622222222522.
+.5.244444444522.
+.53244444444522.
+.53240000004522.
+.53245555554522.
+.53244444444522.
+.53240000004522.
+.53245555554522.
+.53244444444522.
+.53240000004522.
+.53245555554522.
+.53244444447222.
+.53240000006222.
+.53245555556222.
+.53244444446222.
+.53244444444522.
+.53244444444522.
+.53244444444522.
+.53244444444522.
+.53244444444522.
+.53244444444522.
+.53666666666622.
+.11111111111121.
+.00000000000020.
+..00........00..
+................

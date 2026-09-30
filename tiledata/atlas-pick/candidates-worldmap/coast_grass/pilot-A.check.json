@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_grass/pilot-A.pxg",
+ "set": "worldmap",
+ "id": "coast_grass",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "기슭선 깊이 3(이음 열 고정)±1, 둥근 바깥 모서리(r²=52)·안쪽 홈 반지름 3, 북쪽 물가 흙 둑 앞면 2px(3/4 시점)·남쪽 풀 입술·동서 흙 1px, 물 테 1px→여울 2px→몸통 드문 물결 — 해협 물 9px, 이음 어긋남 0 (work/pilot_coast.py)",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.009
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.026
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.21
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/quench_barrel/w5-A.pxg",
+ "id": "quench barrel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 15,
+ "bbox": [
+  2,
+  3,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  14,
+  15
+ ],
+ "note": "v5 다듬기: 물 반짝임 낱 픽셀 2px 한 덩이로, 위 쇠테를 아래 쇠테와 같은 줄로 통일, 나머지 v5 유지",
+ "ok": true
+}

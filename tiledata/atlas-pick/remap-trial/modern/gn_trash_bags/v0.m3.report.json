@@ -1,0 +1,31 @@
+{
+ "src": "tiledata/atlas-pick/candidates-modern/gn_trash_bags/v0.png",
+ "out": "tiledata/atlas-pick/remap-trial/modern/gn_trash_bags/v0.m3.pxg",
+ "size": [
+  16,
+  16
+ ],
+ "stat": {
+  "flat": 4
+ },
+ "weak": [],
+ "ambiguous": {
+  "#071528": 1,
+  "#dee0dd": 1,
+  "#ec9900": 1
+ },
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 0,
+ "droppedBy": {},
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 4,
+ "ramps": [
+  "kii",
+  "shiro",
+  "sumi"
+ ]
+}

@@ -1,0 +1,22 @@
+{
+ "id": "broken_locker",
+ "slug": "broken_locker",
+ "name": "찌그러진 사물함",
+ "scene": "폐교 복도",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "복도 쇠 사물함(세로 두 칸 문, 문마다 통풍 가로 줄 세 개), 윗칸 문이 찌그러져 반쯤 열리고 안이 새까맣다, 녹·긁힌 자국. 키 큰 가구 — 앞면 주인공, 윗판 1~2px.",
+ "palette_hint": "tin 문, rust 녹, void 속",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5"
+}

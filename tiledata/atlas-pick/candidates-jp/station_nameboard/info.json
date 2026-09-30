@@ -1,0 +1,19 @@
+{
+ "id": "station_nameboard",
+ "slug": "station_nameboard",
+ "name": "역명판",
+ "scene": "역 앞 번화가",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "흰 판에 가운데 큰 역 이름 「えき」 가나 세 자(도트로 읽히게, 2px 획), 아래 가는 초록 띠, 양 끝에 앞뒤 역 방향 작은 화살표 ◀ ▶. 한자 한 자 「駅」 을 위 작은 줄에 넣어도 좋다. 벽이나 두 기둥 위에 건다.",
+ "palette_hint": "mwhite 판, lacq 글자, kgreen 띠",
+ "worker": "j5"
+}

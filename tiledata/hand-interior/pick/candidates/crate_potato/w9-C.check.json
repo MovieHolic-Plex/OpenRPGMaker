@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crate_potato/w9-C.pxg",
+ "id": "crate:potato",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 11,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "다시 그림: 봉긋한 감자 무더기 + 두 널판 사이 어두운 틈과 손잡이 구멍이 있는 궤짝 앞판",
+ "ok": true
+}

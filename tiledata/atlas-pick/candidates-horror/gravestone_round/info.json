@@ -1,0 +1,25 @@
+{
+ "id": "gravestone_round",
+ "slug": "gravestone_round",
+ "name": "둥근 비석(금 간)",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "gravestone_cross 와 한 식구: 위가 둥근 판 비석, 새긴 글씨 자국 가로 줄 두세 개(읽히는 글자 없이), 대각선으로 갈라진 금, 윗면 이끼. 같은 돌 명암 방식.",
+ "palette_hint": "grave 돌, hmoss 이끼",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5",
+ "set_with": [
+  "gravestone_cross"
+ ]
+}

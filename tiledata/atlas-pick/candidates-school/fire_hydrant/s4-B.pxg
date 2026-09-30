@@ -1,0 +1,73 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a vred 3
+@mat b vwhite 3
+@mat c vblack 3
+@mat d vbrass 3
+@mblock 0 0
+................
+..aaaaaaaaaaaa..
+..aaaaa%%aaaaa..
+..aaaaaaaaaaaa..
+..aa%abaaaa%aa..
+..aa%aaaaaa%aa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaabbbbbbaaa..
+..aaabbbbbbaaa..
+..aaabbbbbbaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaacaaaa..
+..aaaaaaaadaaa..
+..aaaaaaaadaaa..
+..aaaaaaaadaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+...-----------..
+...~~~~~~~~~~~~.
+@tblock 0 0
+................
+..666666666666..
+..53333..33331..
+..533346533331..
+..53.466543.31..
+..53.455432.31..
+..533333223331..
+..533333333331..
+..531111111131..
+..541222222401..
+..541222222401..
+..541222222401..
+..541222222401..
+..541222222401..
+..541222222401..
+..541666666401..
+..541444444401..
+..541222222401..
+..541222222401..
+..541222222401..
+..541222212401..
+..541222226401..
+..541222225401..
+..541222222401..
+..541222222401..
+..541222222401..
+..541222222401..
+..534444444431..
+..533333333331..
+..511111111111..
+................
+................

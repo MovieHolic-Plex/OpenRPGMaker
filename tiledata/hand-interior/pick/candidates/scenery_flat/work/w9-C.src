@@ -1,0 +1,54 @@
+@mat a purple 3
+@mat b purple 4
+@mat c pink 3
+@mat d pink 4
+@mat e orange 4
+@mat f orange 5
+@mat g yellow 5
+@mat h yellow 6
+@mat i water 2
+@mat j orange 3
+@mat k stone 1
+@mat l stone 3
+@mat m stone 4
+@mat n stone 2
+@mat o yellow 3
+@mat p red 3
+@mat q wood 2
+@mat r green 1
+@mat s green 3
+@mat t green 4
+@mat u purple 2
+@mat v purple 1
+..uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu..
+.uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuukppuuuuuuuuuu.
+AaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaakpaaaaaaaaaaaC
+AaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaakaaaaaaaaaaaaC
+AbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbkbbbbbbbbbbbbC
+AbbbbbbbbbbbbbbbbbbbbbbbbbbpvbllblnkbkkbpvbbbbbC
+AcccccccccccccccccccccccccppvvllclnkckkppvvccccC
+AccccccccggggccccccccccccpppvvvlnnnnnkpppvvvcccC
+AddddddggggggggddddddddddpppvvvlnnnnnkpppvvvdddC
+AddddddgghhhhggdddddddddddlnnkllnnnnnkklnnkddddC
+AeeeeegghhhhhhggeeeeeeeeeelnnkllonnnokklnnkeeeeC
+AfffffgghhhhhhggfffffffffflnnkllnnnnnkklnnkffffC
+AiiiiiieeeeeeeeeiiiiiiiiiilonkllnnnnnkklonkiiiiC
+AiiiiiiiijjjjjiiiiiiiiiiiilonkllonnnokklonkiiiiC
+AiiiiiiieeeeeeeiiiiiiiiiiilnnkllnnqnnkklnnkiiiiC
+AiiiiiiiijjjjjiiiiiiiiiiiilnnkllnnqnnkklnnkiiiiC
+AiiiiiiiieeeeeiiiiiiiiiiiilnnkllnqqqnkklnnkiiiiC
+AiiiiiiiiijjjiiiiiiiiiiiiilnnklsssssssklnnkiiiiC
+AiiitttiiieeeiiiiiiiiiiiiilssssrrrrrrrsssskiiiiC
+AtttssstttttiiiiiiiiiittttsrrrrrrrrrrrrrrrsssssC
+AsssrrrsssssttttttttttrrrrrrrrrrrrrrrrrrrrrrrrrC
+AsssssssssssssssssssssssrrrrrrrrrrrrrrrrrrrrrrrC
+AsssssssssssssssssssssssrrrrrrrrrrrrrrrrrrrrrrrC
+ArrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrC
+ArrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrC
+ArrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrC
+AIIeIIIIIeIIIIIeIIIIIeIIIIIeIIIIIeIIIIIeIIIIIeIC
+AIIqIIIIIqIIIIIqIIIIIqIIIIIqIIIIIqIIIIIqIIIIIqIC
+AIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIC
+AIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIC
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC
+.CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.

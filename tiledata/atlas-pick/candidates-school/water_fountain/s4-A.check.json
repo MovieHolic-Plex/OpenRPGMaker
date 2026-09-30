@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/water_fountain/s4-A.pxg",
+ "set": "school",
+ "id": "water_fountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.083
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 22,
+ "bbox": [
+  1,
+  1,
+  30,
+  31
+ ],
+ "note": "복도 수도대: 4x4 타일 뒷벽, 은색 T자 수전 3개, 긴 스테인리스 싱크(윗면 넓게)·짙은 물칸·반사, 캐비닛 앞면, 얇은 철 다리",
+ "ok": true
+}

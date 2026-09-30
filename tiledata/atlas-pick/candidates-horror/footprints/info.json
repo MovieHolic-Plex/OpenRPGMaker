@@ -1,0 +1,28 @@
+{
+ "id": "footprints",
+ "slug": "footprints",
+ "name": "핏빛 발자국",
+ "scene": "연출",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "맨발 발자국 두 개(왼발·오른발 엇갈려 위로 걸어감, 발가락 점 다섯), 점점 옅어지게 하나는 $ 만으로. 이어 깔면 발자국 길이 되도록 칸 안에서 끝난다.",
+ "palette_hint": "blood, $",
+ "worker_v1": "h3",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h3",
+ "set_with": [
+  "blood_pool",
+  "blood_trail",
+  "handprints_wall",
+  "writing_wall"
+ ]
+}

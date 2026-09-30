@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_grass/w1-B.pxg",
+ "set": "worldmap",
+ "id": "coast_grass",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "light"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "명암 강화: 밑색 한 단 어둡게(tone2)+밝은 물결 머리(tone4)+밑획 그늘(tone1), 북·서 둑 아래 물에 둑 그림자 두 단, 남·동 둑은 밝은 흙+흰 거품",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.014
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.025
+  },
+  "seam": 1.01
+ }
+}

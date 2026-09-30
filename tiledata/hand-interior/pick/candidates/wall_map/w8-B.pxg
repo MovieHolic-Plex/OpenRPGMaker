@@ -1,0 +1,36 @@
+// w8-B x
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat x wood 5
+@mat w wood 3
+@mat W wood 2
+@mat y wood 1
+@mat q linen 6
+@mat p linen 5
+@mat o linen 4
+@mat s blue 5
+@mat t blue 4
+@mat u blue 3
+@mat g green 5
+@mat h green 4
+@mat k green 3
+@mat R red 5
+@mat S red 3
+@mblock 0 0
+................
+................
+.xxxxxxxxxxxxxy.
+.xwwwwwwwwwwwWy.
+.xwoooooooooopW~
+.xwpqqqqqqqqqpWy
+.xwpqqqqqRSqqpWy
+.xwpqqqtsstqqpWy
+.xwpqggtsssusqWy
+.xwpqghktstuqqWy
+.xwpqqkkqqqqqqWy
+.xwpppppppppppWy
+.xWWWWWWWWWWWWWy
+.yyyyyyyyyyyyyy.
+..~~~~~~~~~~~~~~
+................

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tall_stained_window/w2-A.pxg",
+ "id": "tall stained window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.069
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 18,
+ "bbox": [
+  2,
+  11,
+  29,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  11,
+  29,
+  31
+ ],
+ "note": "v5 정리: 순검정 납선 B 를 돌 프레임 색 A(stone:1)로 바꿔 검은 윤곽 제거, 돌 프레임·유리 배치는 그대로",
+ "ok": true
+}

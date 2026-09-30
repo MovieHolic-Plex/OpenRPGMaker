@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/potted_plants/j2-C.pxg",
+ "set": "jp",
+ "id": "potted_plants",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 40,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "실루엣 재해석: 왼쪽 작은 것에서 오른쪽 키 큰 화분으로 계단식, 큰 화분에 이름표 띠·늘어진 덩굴.",
+ "ok": true
+}

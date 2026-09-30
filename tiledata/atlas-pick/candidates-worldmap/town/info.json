@@ -1,0 +1,23 @@
+{
+ "id": "town",
+ "slug": "town",
+ "name": "성벽 도시",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "낮은 성벽이 두른 도시: 성벽 테(윗면 한 줄 밝게, 흉벽 톱니) 안에 지붕 여럿이 빽빽이, 남쪽 가운데 성문(어두운 아치). 마을보다 크고 단단해 보이게, 성보다 낮게.",
+ "palette_hint": "wstone 성벽, wroofr·wroofb 지붕",
+ "worker": "wv7"
+}

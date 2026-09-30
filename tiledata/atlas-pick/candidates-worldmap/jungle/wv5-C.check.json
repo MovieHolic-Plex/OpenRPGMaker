@@ -1,0 +1,135 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/jungle/wv5-C.pxg",
+ "set": "worldmap",
+ "id": "jungle",
+ "hard": [],
+ "warn": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_n 5≠1, inner_nw↔edge_w 5≠8, inner_ne↔edge_n 5≠0, inner_ne↔edge_e 5≠8, inner_sw↔edge_s 5≠8, corner_se↔edge_e 8≠5 …"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.28
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  47,
+  62
+ ],
+ "note": "C: 둥근 수관 없이 넓은 잎 4장이 위로 뻗었다 처지는 부채꼴만 겹쳐 깐다.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.332
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.043
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     0,
+     0,
+     1,
+     1,
+     1,
+     0,
+     0,
+     0,
+     2,
+     2,
+     2,
+     0,
+     0,
+     0,
+     1,
+     1
+    ],
+    "s": [
+     8,
+     7,
+     8,
+     8,
+     5,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     5,
+     8,
+     8,
+     8
+    ],
+    "w": [
+     5,
+     1,
+     0,
+     0,
+     0,
+     0,
+     3,
+     8,
+     8,
+     4,
+     4,
+     3,
+     3,
+     3,
+     7,
+     8
+    ],
+    "e": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     4,
+     3,
+     3,
+     2,
+     2,
+     2,
+     5,
+     8
+    ]
+   },
+   "strait": 0,
+   "steps": {
+    "n": 2,
+    "s": 3,
+    "w": 5,
+    "e": 6
+   },
+   "amp": {
+    "n": 2,
+    "s": 3,
+    "w": 8,
+    "e": 8
+   },
+   "joinWorst": 5
+  },
+  "seam": 1.18
+ }
+}

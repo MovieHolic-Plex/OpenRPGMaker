@@ -1,0 +1,49 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat h bread 1
+@mat i bread 2
+@mat j bread 3
+@mat k bread 4
+@mat l bread 5
+@mat m bread 6
+@mblock 0 0
+................
+.aaaaaaaaaaaaaa.
+agggggggggggggfa
+afffffffffffffda
+acccccccccccccca
+.afaaaaaaaaaaca.
+.afmkbbbbmkbbca.
+.afljbmkbljbbca.
+.afkibljbkibbca.
+.afljbkibljmkca.
+.afkibljbkiljca.
+.afkibkibkiljca.
+.agffffffffffea.
+.acccccccccccba.
+.afaaaaaaaaaaca.
+.afbbbbbbbbbbca.
+.afbmmkmmkllbca.
+.afijjijjijjica.
+.afbmmkmmkllbca.
+.afijjijjijjica.
+.afbbbbbbbbbbca.
+.agffffffffffea.
+.acccccccccccba.
+.afaaaaaaaaaaca.
+.afbmmbbbmmbbca.
+.aflmljblmljbca.
+.afkjjibkjjibca.
+.afbiibbbiibbca.
+.agffffffffffea.
+aaaaaaaaaaaaaaaa
+afeeeeeeeeeeddda
+aaaaaaaaaaaaaaaa

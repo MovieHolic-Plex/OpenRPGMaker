@@ -1,0 +1,26 @@
+{
+ "src": "tiledata/atlas-pick/candidates-school/schoolyard/s1-A.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/school/schoolyard/s1-A.m3.pxg",
+ "size": [
+  16,
+  16
+ ],
+ "stat": {
+  "ramp": 3
+ },
+ "weak": [],
+ "ambiguous": {},
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 0,
+ "droppedBy": {},
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 3,
+ "ramps": [
+  "soil",
+  "yuka"
+ ]
+}

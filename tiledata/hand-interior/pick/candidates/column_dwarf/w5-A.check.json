@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_dwarf/w5-A.pxg",
+ "id": "column dwarf",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.12
+ },
+ "lint": {
+  "failed": [
+   "outline_black",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "v5 다듬기: 낱 픽셀 룬 7개(흩어진 점)를 다이아 룬 3개(3x3 덩이)로 정리, 줄기 나머지·기둥머리·받침은 v5 그대로",
+ "ok": true
+}

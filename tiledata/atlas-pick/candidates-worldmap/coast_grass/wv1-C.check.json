@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_grass/wv1-C.pxg",
+ "set": "worldmap",
+ "id": "coast_grass",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "다른 해석: 가는 흙 테 1~2px, 대각 결 물무늬, 자갈알·풀끝 점. 해안 깊이 2~4px. 해협 8·어긋남 0·seam 0.34.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.022
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.006
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     2,
+     2,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     4,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     2,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     3,
+     4,
+     3,
+     3,
+     2,
+     3,
+     3,
+     2,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     4,
+     4,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3
+    ]
+   },
+   "strait": 8,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.34
+ }
+}

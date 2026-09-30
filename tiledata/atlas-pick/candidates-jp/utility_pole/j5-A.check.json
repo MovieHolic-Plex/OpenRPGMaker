@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/utility_pole/j5-A.pxg",
+ "set": "jp",
+ "id": "utility_pole",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 28,
+ "bbox": [
+  1,
+  2,
+  14,
+  63
+ ],
+ "note": "강남 정면 시점: 회색 4→6→8칸 테이퍼 기둥(왼쪽 밝고 오른쪽 어둡게), 가로대 2단+흰 애자 6개, 오른쪽 원통 변압기, 파란 주소판, 노랑·검정 사선 반사띠",
+ "ok": true
+}

@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/deer_trophy/w23-F.pxg",
+ "id": "deer trophy",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 2x2 사이즈로 키움."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.058
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  0,
+  28,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  11
+ ],
+ "note": "유럽식 두개골 마운트: 표백 두개골 + 굵은 뿔을 둥근 참나무 판에 얹고 쇠고리+짚끈으로 걸음 — 어둡고 사냥꾼 오두막풍",
+ "ok": true
+}

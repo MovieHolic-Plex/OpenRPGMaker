@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pulpit/w91-A.pxg",
+ "id": "pulpit",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   64,
+   48
+  ],
+  "footprint": {
+   "w": 4,
+   "h": 3
+  },
+  "why": "사용자 메모: 설교단은 공간감이 별로 → 오른쪽에서 올라가는 계단, 대략 4x3 사이즈."
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 27,
+ "v5_colors": 16,
+ "bbox": [
+  2,
+  2,
+  61,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "note": "v5 을 64x48 캔버스로 새로 그림: 독서대 윗면(가장 밝은 8단 띠+앞모서리 하이라이트+처마 그림자)·붉은 천 십자 앞면·오른쪽 4단 계단(디딤판 윗면 밝음)",
+ "ok": true
+}

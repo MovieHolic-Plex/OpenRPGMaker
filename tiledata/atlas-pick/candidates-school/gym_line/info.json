@@ -1,0 +1,23 @@
+{
+ "id": "gym_line",
+ "slug": "gym_line",
+ "name": "코트 선",
+ "scene": "체육관",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "체육관 마루 위 코트 선 덧칠 — 가로 2px 흰 선(또는 초록·빨강 선) 한 칸. 좌우로 이어 붙게 선 높이 가운데 고정. 투명 배경.",
+ "palette_hint": "vwhite, vgreen, vred",
+ "pair": [
+  "gym_floor"
+ ],
+ "worker": "s2"
+}

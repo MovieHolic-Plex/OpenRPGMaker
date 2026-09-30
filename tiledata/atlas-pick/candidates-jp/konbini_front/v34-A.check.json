@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/konbini_front/v34-A.pxg",
+ "set": "jp",
+ "id": "konbini_front",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.918
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.625
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 33,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "",
+ "ok": true
+}

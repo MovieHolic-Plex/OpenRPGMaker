@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/rope_barrier/hf5-C.pxg",
+ "set": "horror",
+ "id": "rope_barrier",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.032
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  2,
+  31,
+  14
+ ],
+ "note": "C: 재료·무늬 — 놋 기둥에 마디 띠 하나, 줄은 두 칸씩 밝고 어두움이 엇갈리는 꼬임(velv 5/3/1). 기둥 x=7,23 이어붙임 16px.",
+ "ok": true
+}

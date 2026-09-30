@@ -1,0 +1,37 @@
+{
+ "id": "gn-bus-led",
+ "slug": "gn_bus_led",
+ "name": "버스 도착 안내 전광판",
+ "scene": "차",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "버스 도착 안내 전광판 1×2. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-bus-led"
+ ],
+ "tiles": [
+  4537,
+  4567
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   44,
+   21
+  ]
+ }
+}

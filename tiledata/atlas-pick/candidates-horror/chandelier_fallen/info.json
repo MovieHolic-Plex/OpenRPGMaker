@@ -1,0 +1,22 @@
+{
+ "id": "chandelier_fallen",
+ "slug": "chandelier_fallen",
+ "name": "떨어진 샹들리에",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "천장에서 떨어져 바닥에 박힌 샹들리에: 휘어진 놋쇠 고리(원이 찌그러진 타원), 흩어진 유리 방울(밝은 점 여럿), 끊어진 사슬 한 줄이 위로 뻗음, 바닥 널이 둘레에 갈라짐(선택). 바닥 기물 — 윗면이 보이는 각.",
+ "palette_hint": "tarn 고리·사슬, moon/murk 유리 방울, void 갈라진 틈",
+ "worker_v1": "h2",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h2"
+}

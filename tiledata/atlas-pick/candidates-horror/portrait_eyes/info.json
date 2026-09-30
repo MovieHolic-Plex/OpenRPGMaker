@@ -1,0 +1,50 @@
+{
+ "id": "portrait_eyes",
+ "slug": "portrait_eyes",
+ "name": "초상화(눈이 따라오는)",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "금테(녹청 낀 놋쇠) 세로 액자 속 여인 초상: 어두운 배경, 창백한 얼굴 타원, 검은 머리, 두 눈만 또렷한 점(흰자 1px). 액자 테 윗변·왼변 한 단 밝게. v5 그림(1×1)을 1×2 로 키운 판 — 사용자는 큰 것을 원했다.",
+ "palette_hint": "tarn 테, bisque 얼굴, velv/damask 배경, void 머리",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1",
+ "set_with": [
+  "portrait_slashed"
+ ],
+ "v5_ref": [
+  {
+   "id": "picture",
+   "name_ko": "그림",
+   "atlas": {
+    "x": 592,
+    "y": 352,
+    "w": 16,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/picture",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

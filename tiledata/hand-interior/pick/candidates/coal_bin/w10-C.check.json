@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/coal_bin/w10-C.pxg",
+ "id": "coal bin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.115
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  2,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "재해석: 숯을 통 위로 높이 쌓은 산 모양(뾰족), 통은 가로 널 두 단으로 얕고 넓게",
+ "ok": true
+}

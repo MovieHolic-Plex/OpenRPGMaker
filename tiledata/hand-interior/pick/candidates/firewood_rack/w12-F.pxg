@@ -1,0 +1,37 @@
+// w12 firewood rack — 새로 그린 후보
+@size 16 32
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+..........HGGGHI
+..........GJKLNN
+..........GKPLNI
+..........GLLPNN
+..........HNNNHI
+..........HGGGHN
+..........GJKLNI
+......C.C.GKPLNN
+.....OCOECGLLPNI
+..........HNNNHN
+.....HGGGHHGGGHI
+.....GJKLNGJKLNN
+.E.C.GKPLNGKPLNI
+OEOCEGLLPNGLLPNN
+.....HNNNHHNNNHI
+.GGG.HGGGHHGGGHN
+GJKLNGJKLNGJKLNI
+GKPLNGKPLNGKPLNN
+GLLPNGLLPNGLLPNI
+.NNN.HNNNHHNNNHN
+.GGG.HGGGHHGGGHI
+GJKLNGJKLNGJKLNN
+GKPLNGKPLNGKPLNI
+GLLPNGLLPNGLLPNN
+.NNN.HNNNHHNNNHI
+BEEEEEEEEEEEEEEO
+IIIIIIIIIIIIIIIN
+.QQI~~~~~~~~QQI.
+.IIN~~~~~~~~IIN.
+.---~~~~~~~~~~~-

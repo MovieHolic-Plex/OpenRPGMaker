@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/throne/w24-F.pxg",
+ "id": "throne",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 2
+  },
+  "why": "사용자 메모: 좀 더 화려하게. 3x2 사이즈로."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 22,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  0,
+  46,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  18
+ ],
+ "note": "F: 천개 옥좌. 뾰족한 금 첨탑과 술 달린 붉은 가리개 캐노피, 금 세로띠 어두운 붉은 등판, 청옥 문양, 붉은 방석·금 팔걸이.",
+ "ok": true
+}

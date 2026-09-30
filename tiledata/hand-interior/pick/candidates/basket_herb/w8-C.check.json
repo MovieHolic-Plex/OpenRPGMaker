@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/basket_herb/w8-C.pxg",
+ "id": "basket:herb",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  2,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  2,
+  4,
+  13,
+  14
+ ],
+ "note": "재해석: 바구니를 위로 좁아지는 종 모양으로 바꾸고 나무 손잡이 아치와 붉은 열매 묶음, 양옆으로 넘치는 약초.",
+ "ok": true
+}

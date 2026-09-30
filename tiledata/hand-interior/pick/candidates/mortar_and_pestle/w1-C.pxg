@@ -1,0 +1,38 @@
+// mortar_and_pestle w1-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat 1 stone 1
+@mat a stone 2
+@mat b stone 3
+@mat c stone 4
+@mat d stone 5
+@mat e stone 6
+@mat f stone 7
+@mat o wood 2
+@mat n wood 3
+@mat m wood 4
+@mat k wood 5
+@mat l wood 6
+@mat h wood 7
+@mat g leaf 4
+@mat G leaf 6
+@mat H leaf 3
+@mat I leaf 2
+@mblock 0 0
+................
+................
+................
+................
+............ohho
+...........olkn.
+..........olkn..
+..1eeeeeeeeeee1.
+..1dgGHgGgHbb1..
+..1dbbaaaabbb1..
+...1dcccccbbb1..
+....1dccccbb1...
+.....1bbbbbb1...
+....1aaaaaaaa1..
+................
+................

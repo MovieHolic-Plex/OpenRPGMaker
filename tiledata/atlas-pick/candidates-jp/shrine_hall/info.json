@@ -1,0 +1,19 @@
+{
+ "id": "shrine_hall",
+ "slug": "shrine_hall",
+ "name": "배전 앞면",
+ "scene": "신사 한 켠",
+ "cells": [
+  5,
+  4
+ ],
+ "canvas": [
+  80,
+  64
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "작은 신사 배전(拝殿) 앞면: 큰 박공 지붕(동판 녹청 또는 짙은 기와, 가운데 곡선 처마 가라하후), 처마 밑 굵은 시메나와 + 흰 시데, 앞 계단 세 단, 격자 문(흰 나무), 양옆 주홍 또는 흰 나무 기둥. 새전함은 따로(saisen_box) — 앞 계단 앞 한 칸을 비워 둔다.",
+ "palette_hint": "kasa/kawara 지붕, hinoki 기둥·격자, shu 난간, washi 시데, hinoki 밝은 단 새끼줄",
+ "worker": "j2"
+}

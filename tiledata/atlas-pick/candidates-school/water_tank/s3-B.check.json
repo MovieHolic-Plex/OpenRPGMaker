@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/water_tank/s3-B.pxg",
+ "set": "school",
+ "id": "water_tank",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  3,
+  4,
+  47,
+  47
+ ],
+ "note": "센 명암: 크림색 판 탱크, 왼쪽 밝고 오른쪽 세 번째 패널부터 깊은 그늘, 윗면 넓은 띠, 다리 짙음",
+ "ok": true
+}

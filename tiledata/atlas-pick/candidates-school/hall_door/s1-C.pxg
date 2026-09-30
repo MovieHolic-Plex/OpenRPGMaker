@@ -1,0 +1,58 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat f hinoki 2
+@mat F hinoki 4
+@mat D hinoki 0
+@mat p vpine 4
+@mat P hinoki 5
+@mat q vpine 2
+@mat e hinoki 1
+@mat g mglass 4
+@mat G mglass 5
+@mat i mglass 2
+@mat j mglass 6
+@mat y vbrass 4
+@mat z vbrass 2
+@mat k mmetal 1
+@mat c cream 3
+@mat C cream 4
+@mat L cream 5
+@mat d vdwood 1
+@mat o locker 3
+@mat u locker 2
+@mat O locker 4
+@mat B vdwood 0
+@mblock 0 0
+cccCCCCCCCCCCCCCCCCCCCCCCCCCCccc
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+LCCFFFFFFFFFFFFFFFFFFFFFFFFFFCCC
+CCCffffffffffffffffffffffffffCCD
+CCCDDDDDDDDDDDDDDDDDDDDDDDDDDCCC
+CCCFfPPPPPPPPPPPPPPPPPPPPPefPPPP
+CCCFfPpqqqqqqqqeppppppppppefDCCC
+CCCFfPpqiiiiiiieppppppppppefDCCC
+CCCFfPpqiggggggeppppppppppefDCCC
+CCCFfPpqigggjjgeppppppppppefDCCC
+CCCFfPpqiggggjgeppppppppppefDCCC
+CCCFfPpqiggggggeppppppppppefDCCC
+CCCFfPpqiggggggeppppppppppefDCCC
+cccFfPpqiggggggeppppppppppefDccc
+pppFfPpqieeeeeeeppppppppppefDppp
+qqqFfPpqiggggggepppppeypppefDqqq
+dddFfPpqiggggggepppppeypppefDddd
+uOoFfPpqiggggggepppppeypppefDOoo
+uOoFfPpqiggggggepppppeypppefDOoo
+uOoFfPpqiggggggepppppeypppefDOoo
+uOoFfPpqiggggggepppppeypppefDOoo
+uOoFfPpqeeeeeeeeppppppzpppefDOoo
+uOoFfPppppppppppppppppppppefDOoo
+uOoFfPppppppppppppppppppppefDOoo
+uOoFfPPPPPPPPPPPPPPPPPPPPPefDOoo
+uOoFfPppppppppppppppppppppefDOoo
+uOoFfPPPPPPPPPPPPPPPPPPPPPefDOoo
+uOoFfPppppppppppppppppppppefDOoo
+uOoFfPppppppppppppppppppppefDOoo
+pppFfPppppppppppppppppppppefDppp
+qqqFfPppppppppppppppppppppefDqqq
+BBBFf......................fDBBB

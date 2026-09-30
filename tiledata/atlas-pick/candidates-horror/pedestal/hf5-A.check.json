@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/pedestal/hf5-A.pxg",
+ "set": "horror",
+ "id": "pedestal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  3,
+  3,
+  12,
+  14
+ ],
+ "note": "A: v5 식구 — 흰 대리석 사각 받침(폭 10px = 칸의 2/3). 윗면 5/6(위 얼굴이 보인다), 앞 입술 6, 앞면 4(왼줄 5), 오른쪽 옆면 2(얇게), 밑단 3, 윤곽 vmarble1.",
+ "ok": true
+}

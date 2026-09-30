@@ -1,0 +1,39 @@
+{
+ "id": "herb drying rack",
+ "slug": "herb_drying_rack",
+ "name_ko": "약초 건조대",
+ "category": "약국",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 32
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "약초 다발을 매단 선반형 건조대. 약국 벽을 따라 세운다.",
+ "where": "약국 벽을 따라 세운다.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  31
+ ],
+ "v5_colors": 16,
+ "material": "plant",
+ "related": []
+}

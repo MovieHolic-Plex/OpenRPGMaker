@@ -1,0 +1,37 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 2
+@mat c dwood 6
+@mat d dwood 3
+@mat e dwood 4
+@mat f dwood 5
+@mat g dwood 0
+@mat h dwood 5
+@mat w water 4
+@mat s water 6
+@mat t water 5
+@mat u water 3
+@mat x water 2
+@mat k iron 3
+@mat i iron 5
+@mat j iron 1
+@mat n wood 7
+@mblock 0 0
+................................
+................................
+................................
+................................
+....cccccccccccccccccccccccc....
+..cccccccccccccccccccccccccccc..
+.gttsstttttttsttttttttttttttttg.
+.gwwwwwwwwwwwwwwwwwwwwwwwwwwwwg.
+.guuuuuuuuuuuuuuuuuuuuuuuuuuuug.
+gccccccccccccccccccccccccccccccg
+gffffffffffffffffffffffffffffffg
+.bbbikbbbbbbbbbbbbbbbbbbbbikbbb.
+.geekkeeeeeeeeeeeeeeeeeeeekkeeg.
+..ggffd------------------gffdg..
+...gggg~~~~~~~~~~~~~~~~~~gggg...
+................................

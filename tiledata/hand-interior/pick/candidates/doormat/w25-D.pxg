@@ -1,0 +1,32 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................................
+................................
+................................
+................................
+..AAAAAAAAAAAAAAAAAAAAAAAAAAAA..
+CDACCCCCCCCCCCCCCCCCCCCCCCCCCACB
+.CACCCCCCCCCCCCCCCCCCCCCCCCCBAB.
+CDACCCDDCCDDDDDBBDDDCCDDCCDDBACB
+.CACDDCCDDCCDDBCCBDDDDCCDDCCBAB.
+CDACCCDDCCDDDDDBBDDDCCDDCCDDBACB
+.CACCCCCCCCCCCCCCCCCCCCCCCCCBAB.
+CDACBBBBBBBBBBBBBBBBBBBBBBBBBACB
+..AAAAAAAAAAAAAAAAAAAAAAAAAAAA..
+................................
+................................
+................................
+@tblock 4 6 red
+343434343434343434343434
+@tblock 4 10 red
+434343434343434343434343
+@tblock 11 7 red
+3
+3
+3
+@tblock 20 7 red
+3
+3
+3

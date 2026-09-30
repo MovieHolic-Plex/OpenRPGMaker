@@ -1,0 +1,37 @@
+{
+ "id": "broken_hall_floor",
+ "slug": "broken_hall_floor",
+ "name": "폐교 복도 바닥(갈라진)",
+ "scene": "폐교 복도",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "폐교 복도 나무 바닥(가로 긴 널, 니스 벗겨진 얼룩), 한가운데로 금 간 널 하나와 먼지·종이 쪼가리 한 점. 학원 세트 복도 바닥의 망가진 판으로 쓰일 것 — 널 폭 4px, 사방 이어 붙기.",
+ "palette_hint": "rot 널, dust 먼지, sheet 종이",
+ "worker_v1": "h3",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "school",
+ "role": "폐교 복도 바닥(학원 세트 몫)",
+ "worker": "h3",
+ "v5_ref": [
+  {
+   "id": "floor:plank",
+   "name_ko": "밝은 널마루",
+   "atlas": {
+    "x": 576,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

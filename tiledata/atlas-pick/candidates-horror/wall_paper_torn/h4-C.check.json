@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_paper_torn/h4-C.pxg",
+ "set": "horror",
+ "id": "wall_paper_torn",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 17,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "무늬를 눈(눈동자 void)으로 재해석하고 벽지가 세 줄 길게 벗겨져 살갗처럼 늘어짐 — 드러난 회반죽에 검은 균열",
+ "ok": true
+}

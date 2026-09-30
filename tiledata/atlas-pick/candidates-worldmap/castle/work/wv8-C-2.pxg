@@ -1,0 +1,43 @@
+// castle wv8-C
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wroofb 0
+@mat b wgold 0
+@mat c wroofr 0
+@mat d wstone 0
+@mat e mout 0
+@mblock 0 0
+..........a....b.....a..........
+..........a...bbb....a..........
+.........aaa.bbbbb..aaa.........
+.........aaa.bbbbb..aaa.........
+........aaaabbbbbbbaaaaa........
+..c.....aaabbbbbbbbbaaaa....c...
+..c....aaaaaaddddddaaaaaa...c...
+.ccc...aaaaaaddddddaaaaaa..ccc..
+.ccc....dddddddddddddddd...ccc..
+ccccc...dddddddeeddddddd..ccccc.
+ccccc...dddddddddddddddd..ccccc.
+ccccc...ddeddddddddddedd..ccccc.
+cccccc..ddeddddddddddedd.ccccccc
+cccccc..dddddddddddddddd.ccccccc
+dddddd..dddddddddddddddd..dddddd
+dddddd..dddddddddddddddd..dddddd
+dddddd..dddddddddddddddd..dddddd
+ddeddd..dddddddddddddddd..ddeddd
+ddeddd..dddddddddddddddd..ddeddd
+dddddd..dddddddddddddddd..dddddd
+dddddddddddddddddddddddd..dddddd
+dddddddddddddddddddddddd..dddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddeeddddddddddddddd
+ddddddddddddddeeeedddddddddddddd
+ddddddddddddddeeeedddddddddddddd
+ddddddddddddddeeeedddddddddddddd
+ddddddddddddddeeeedddddddddddddd
+ddddddddddddddeeeedddddddddddddd
+................................
+................................

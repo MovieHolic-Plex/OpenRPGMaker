@@ -1,0 +1,25 @@
+{
+ "id": "cobweb_hang",
+ "slug": "cobweb_hang",
+ "name": "늘어진 거미줄",
+ "scene": "연출",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "over",
+ "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+ "description": "cobweb_corner 와 한 식구: 천장·가구 사이에 늘어진 거미줄 한 덩이(가로로 처진 줄 두세 겹 + 매달린 작은 거미 한 점). 가구 윗모서리에 겹쳐 쓴다.",
+ "palette_hint": "dust, void 거미",
+ "worker_v1": "h2",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h2",
+ "set_with": [
+  "cobweb_corner"
+ ]
+}

@@ -1,0 +1,73 @@
+@size 64 32
+@cell 16
+@palette palette.pal
+@mat a kawara 3
+@mat b sumi 3
+@mat c washi 3
+@mat d mconc 3
+@mblock 0 0
+................................................................
+......aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa......
+.....aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.....
+....baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab....
+....baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab....
+....caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaac....
+....caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaac....
+...bcaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacb...
+...bcaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacb...
+...ccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacc...
+...ccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacc...
+..bccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccb..
+..bccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccb..
+..cccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccc..
+..cccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccc..
+.bcccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccb.
+.bcccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccb.
+.ccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccc.
+.ccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccc.
+bccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccb
+bccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccb
+cccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccc
+cccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccc
+cccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccc
+cccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccc
+cccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccc
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+baabbaabbaabbaabbaabbaabbaabbaabbaabbaabbaabbaabbaabbaabbaabbaab
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+@tblock 0 0
+................................................................
+......5552555555525555555255555552555555525555555255555552......
+.....444424444444244444442444444424444444244444442444444424.....
+....33333233333332333333323333333233333332333333323333333233....
+....31111111111111111111111111111111111111111111111111111113....
+....34444444444444444444444444444444444444444444444444444441....
+....33332333332333332333332333332333332333332333332333332331....
+...3333323333323333323333323333323333323333323333323333323313...
+...3311111111111111111111111111111111111111111111111111111113...
+...3344444444444444444444444444444444444444444444444444444411...
+...3333333323333323333323333323333323333323333323333323333311...
+..333333333233333233333233333233333233333233333233333233333113..
+..333111111111111111111111111111111111111111111111111111111113..
+..333444444444444444444444444444444444444444444444444444444111..
+..333333233333233333233333233333233333233333233333233333233111..
+.33333332333332333332333332333332333332333332333332333332331113.
+.33331111111111111111111111111111111111111111111111111111111113.
+.33334444444444444444444444444444444444444444444444444444441111.
+.33333333332333332333332333332333332333332333332333332333331111.
+3333333333323333323333323333323333323333323333323333323333311113
+3333311111111111111111111111111111111111111111111111111111111113
+3333344444444444444444444444444444444444444444444444444444411111
+3333333323333323333323333323333323333323333323333323333323311111
+3333333323333323333323333323333323333323333323333323333323311111
+3333311111111111111111111111111111111111111111111111111111111111
+3333300000000000000000000000000000000000000000000000000000011111
+5442544254425442544254425442544254425442544254425442544254425442
+4442444244424442444244424442444244424442444244424442444244424442
+1421142114211421142114211421142114211421142114211421142114211421
+3333333333333333333333333333333333333333333333333333333333333333
+1111111111111111111111111111111111111111111111111111111111111111
+0000000000000000000000000000000000000000000000000000000000000000

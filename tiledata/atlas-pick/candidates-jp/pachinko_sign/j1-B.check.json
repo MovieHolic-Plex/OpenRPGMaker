@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/pachinko_sign/j1-B.pxg",
+ "set": "jp",
+ "id": "pachinko_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "light"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  15,
+  63
+ ],
+ "note": "센 빛: 가장 어두운 바탕에 노랑 네온관 글자(밝은 가장자리·주황 그늘), 켜진 전구와 안팎 빛 번짐",
+ "ok": true
+}

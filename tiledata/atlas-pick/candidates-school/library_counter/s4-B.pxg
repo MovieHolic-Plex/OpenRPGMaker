@@ -1,0 +1,78 @@
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a vdwood 3
+@mat b vpine 3
+@mat c mdglass 3
+@mat d mglass 3
+@mat e vwood 3
+@mat f vred 3
+@mat g vgreen 3
+@mat h washi 3
+@mat i vblue 3
+@mblock 0 0
+................................................
+................................................
+................................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcdddddddddcbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcdddddddddcbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcdddddddddcbbba
+abbbbbbeebbbbbbbbffffffffbbbbbbbbcdddddddddcbbba
+abbbbbbeebbbbbbbbffffffffbbbbbbbbcdddddddddcbbba
+abbbbbffffbbbbbbghhhhhhhhbbbbbbbbcdddddddddcbbba
+abbbbbffffbbbbbbgggggggggbbbbbbbbcccccccccccbbba
+abbbbbffffbbbbbiiiiiiiiiiibbbbbbbbbbbcccbbbbbbba
+abbbbaaaaaabbbbiiiiiiiiiiibbbbbbbbbbbcccbbbbbbba
+abbbbbbbbbbbbbbbhhhhhhhhhhbbbbbbbbbcccccccbbbbba
+abbbbbbbbbbbbbbaaaaaaaaaaaabbbbbbbaaaaaaaaabbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb%%%%%%%%%bbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbaaaaaaaaaabbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbahhhhfhhhabbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbahhhhfhhhabbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbaaaaaaaaaabbbbbbbbbbbbbbbbbba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+...------------------------------------------...
+@tblock 0 0
+................................................
+................................................
+................................................
+555555555533333333333333333332222222222211111111
+566666666666666666666666666666666666666655555550
+566666666666666666666666666666666111111100005530
+466666666666666666666666666665555055555544404420
+466666666666666666666666666665555044444433304420
+466666666666666666666666666554445044664433304420
+466666676666666664444444466665555044444433304420
+466666666666666663333333366665555044333323304420
+466666666666666643333333366665555044444433304420
+466666555566555533333333366665555000000000004420
+466666555566666444444444446665555555511144444420
+466663333316666333333333336665555555511144444420
+466666666666666644444444446665555550000000444420
+466666666666666111111111111665555500000000044420
+4666666666666666666655555666655554.........44420
+466666666666666666666666666665555555555544444420
+466666666666666666666666666665555555555544444420
+455555555533333333333333333332222222222211111110
+455555555533333333333333333332222222222211111110
+333333333311111111111111111110000000000000000000
+364444444422122222222222122221111111011100000000
+364444444422122222211111111111111111011100000000
+364444444422122222213331213311111111011100000000
+364444444422122222213331213311111111011100000000
+364444444422122222211111111111111111011100000000
+333333333311111111111111111110000000000000000000
+322222222200000000000000000000000000000000000000
+................................................
+................................................

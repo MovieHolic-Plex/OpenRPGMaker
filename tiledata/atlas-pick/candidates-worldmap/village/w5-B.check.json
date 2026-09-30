@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/village/w5-B.pxg",
+ "set": "worldmap",
+ "id": "village",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "light"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  4,
+  31,
+  15
+ ],
+ "note": "빛·부피 — 왼쪽 위 빛: 지붕 마루 밝은 줄+오른쪽 짙은 면, 벽 오른쪽 두 줄 그늘, 발치 반투명 그림자와 흙마당",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.02
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.018
+  }
+ }
+}

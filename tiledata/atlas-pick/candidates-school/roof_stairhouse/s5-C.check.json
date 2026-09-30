@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/roof_stairhouse/s5-C.pxg",
+ "set": "school",
+ "id": "roof_stairhouse",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.277
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.137
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "실루엣 재해석: 두꺼운 캐노피 지붕이 문 위로 나오고 양옆 기둥 벽이 안으로 들어간 계단실 입구",
+ "ok": true
+}

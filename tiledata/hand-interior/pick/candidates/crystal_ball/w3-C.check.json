@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crystal_ball/w3-C.pxg",
+ "id": "crystal ball",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  12,
+  14
+ ],
+ "note": "C: 재해석 - 구를 더 크게, 삼발이 금 받침 위에 올려 다리 사이가 비치게, 구 속에 별빛 점이 흩어진 밤하늘 느낌",
+ "ok": true
+}

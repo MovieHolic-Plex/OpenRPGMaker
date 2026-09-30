@@ -1,0 +1,17 @@
+// w91-A.pxg 평탄화 격자 16x16
+................
+......AAAAAA....
+.....A...B..A...
+....A.B..B.B.A..
+....A..B.BB..A..
+....A...BB...A..
+....CBBBBDBBBBC.
+..EFC..B.BB..C..
+.EFEG.B..B.B.C..
+.FEGFC...B..C...
+..GH..CCCBCC....
+.IIIIIIIIIIIIII.
+.I777777777777I.
+.I888888888888I.
+.IBBBBBBBBBBBBI.
+.II..........II.

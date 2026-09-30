@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/shrine_hall/j2-A.pxg",
+ "set": "jp",
+ "id": "shrine_hall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 18,
+  "atLeast95": 0,
+  "max": 0.191
+ },
+ "refmap": {
+  "cells": 18,
+  "atLeast95": 0,
+  "max": 0.093
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 39,
+ "bbox": [
+  3,
+  7,
+  78,
+  62
+ ],
+ "note": "강남 결: 녹청 동판 지붕에 타일 줄, 가운데 가라하후 곡선 박공, 주홍 기둥·난간, 처마 밑 시메나와와 흰 시데, 흰 격자문, 회색 돌 계단 세 단.",
+ "ok": true
+}

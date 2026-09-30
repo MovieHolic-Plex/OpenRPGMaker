@@ -1,0 +1,81 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@tblock 2 5 straw
+4
+@tblock 5 5 straw
+6664451
+@tblock 0 6 straw
+2333
+@tblock 12 6 straw
+324
+@tblock 1 7 straw
+452
+@tblock 12 7 straw
+3
+@tblock 1 8 straw
+435
+@tblock 12 8 straw
+2
+@tblock 1 9 straw
+455
+@tblock 12 9 straw
+512
+@tblock 1 10 straw
+432
+@tblock 12 10 straw
+332
+@tblock 1 11 straw
+43352622233551
+@tblock 0 12 straw
+452336362264332
+@tblock 0 13 straw
+4326326363361
+@tblock 1 14 straw
+335662655336512
+@tblock 3 15 straw
+326666255521
+@tblock 1 16 straw
+443625566255614
+@tblock 1 17 straw
+12626666652653
+@tblock 2 18 straw
+2335266626553
+@tblock 1 19 straw
+5366666666353
+@tblock 1 20 straw
+65553434465553
+@tblock 0 21 straw
+33334443425653
+@tblock 1 22 straw
+543336662224233
+@tblock 0 23 straw
+2433355226666
+@tblock 14 23 straw
+2
+@tblock 0 24 straw
+243555422225563
+@tblock 1 25 straw
+42254225555553
+@tblock 1 26 straw
+14542255525441
+@tblock 2 27 straw
+321255435233
+@tblock 5 28 straw
+33111133
+@tblock 7 29 straw
+42
+@tblock 10 29 straw
+2
+@tblock 4 6 linen
+44444444
+@tblock 4 7 linen
+42222222
+@tblock 4 8 linen
+43434343
+@tblock 4 9 linen
+42222222
+@tblock 4 10 linen
+43333333
+@block 0 29
+..--~~~~~~~~~~--

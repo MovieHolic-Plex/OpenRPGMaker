@@ -1,0 +1,74 @@
+// bed_manor v35-A 3/4 손 도트 (표 치수 16x32 F8 T19)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mat s sheet 0
+@mat v velv 0
+@mblock 0 0
+................
+................
+................
+................
+.mmmmmmmmmmmmmm.
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmssssssssssssmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmvvvvvvvvvvvvmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+.mm..........mm.
+@tblock 0 0
+................
+................
+................
+................
+.11111111111111.
+1666666666666661
+1454444444444221
+1453333333333221
+1411111111111121
+1566666666666631
+1565555555555431
+1565555555555431
+1553333333333331
+1544444444444431
+1533333333333331
+1555555555555531
+1544444444444431
+1544444444444431
+1522222222222231
+1544444444444431
+1544444444444431
+1533333333333331
+1544444444444431
+1555555555555531
+1666666666666661
+1454444444444321
+1453333333333321
+1453333333333321
+1452222222222221
+1453333333333321
+1300000000000021
+.10..........01.

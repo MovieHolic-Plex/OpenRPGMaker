@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_shrine/v34-A.pxg",
+ "set": "jp",
+ "id": "kit_shrine",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 29,
+  "atLeast95": 0,
+  "max": 0.449
+ },
+ "refmap": {
+  "cells": 29,
+  "atLeast95": 0,
+  "max": 0.145
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 37,
+ "bbox": [
+  0,
+  0,
+  127,
+  94
+ ],
+ "note": "",
+ "ok": true
+}

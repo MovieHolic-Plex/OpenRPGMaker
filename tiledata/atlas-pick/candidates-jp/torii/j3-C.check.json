@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/torii/j3-C.pxg",
+ "set": "jp",
+ "id": "torii",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "refmap": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  6,
+  5,
+  57,
+  61
+ ],
+ "note": "신메이(神明)형으로 다시 해석: 곧은 가사기, 누키를 기둥 안쪽에만 걸고 폭을 좁게, 액자를 크게, 기둥은 가늘고 바닥이 좁다",
+ "ok": true
+}

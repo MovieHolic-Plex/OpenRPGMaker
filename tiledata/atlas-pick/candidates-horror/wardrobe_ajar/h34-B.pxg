@@ -1,0 +1,77 @@
+// wardrobe_ajar h34-B (H 방법: Tibo 3/4 → C → E)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a bisque 0
+@mat b mahog 0
+@mat c rot 0
+@mat d vpurple 0
+@mat e vwood 0
+@mat f wax 0
+@mblock 0 0
+accbbbbbbbbbbbbb
+cccbbbbbbbbbbbbb
+ccbbbbbbbbbbbbbb
+acccbbbbbbbbbbbb
+bbbbbbbbbeeeebbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbcbbebcbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbebbbbbb
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+bb.............b
+@tblock 0 0
+4665555555655555
+6666555555555655
+6666666665555555
+4666444444444433
+1433333330000131
+1411111310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414336310163331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1414331310143331
+1411111310143331
+1433333330143331
+1444444440444441
+1333333330333331
+1333333333333331
+1111111111111111
+13.............1

@@ -1,0 +1,27 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+....AAAAAAAA....
+...ABBBBBBBBA...
+..ABBCCCCCCCEA..
+..ABCCCCCCCDEA..
+..ACCCCCCCCDEA..
+FFACCCCHICCDEAGG
+FFACCCCCCCCDEAGG
+FFACCCCCCCCDEAGG
+FFACDDDDDDDDEAGG
+FGAEEEEEEEEEEAGG
+GGAAAAAAAAAAAAGG
+.G............G.
+.G-~~~~~~~~~~-G.
+................
+@mat w wood 6
+@mblock 0 5
+ww
+ww
+@mblock 14 5
+ww
+ww

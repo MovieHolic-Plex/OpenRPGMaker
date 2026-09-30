@@ -1,0 +1,46 @@
+@size 64 32
+@cell 16
+@palette palette.pal
+@mat a vwhite 3
+@mat b vlinen 6
+@mat c vwhite 6
+@mat d vwhite 5
+@mat e vlinen 5
+@mat f vwhite 4
+@mat g vwhite 2
+@mat h vlinen 4
+@mat i vlinen 3
+@mat j vblack 3
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+...b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b.b..
+cde.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.fg
+cdhehehehehehehehehehehehehehehehehehehehehehehehehehehehehehefg
+cde.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.fg
+cd.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.efg
+cdehehehehehehehehehehehehehehehehehehehehehehehehehehehehehehfg
+cd.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.efg
+cde.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.e.fg
+cdccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccfg
+cdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddfg
+cdggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggfg
+cdiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cdiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cdiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cdiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifg
+cd..i...i...i...i...i...i...i...i...i...i...i...i...i...i...i.fg
+cdhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhfg
+jjjggggggggggggggggggggggggggggggggggggggggggggggggggggggggggjjj
+jjj..........................................................jjj
+................................................................
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..
+..------------------------------------------------------------..

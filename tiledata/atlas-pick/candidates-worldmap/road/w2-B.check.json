@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/road/w2-B.pxg",
+ "set": "worldmap",
+ "id": "road",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.073
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.092
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  3,
+  0,
+  47,
+  59
+ ],
+ "note": "빛 세게: 위·왼 테 밝게, 아래·오른 테 짙게, 흙 알갱이 밝은 점",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.461
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.012
+  },
+  "seam": 0.6
+ }
+}

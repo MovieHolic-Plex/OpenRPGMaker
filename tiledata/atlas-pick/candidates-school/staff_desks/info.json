@@ -1,0 +1,23 @@
+{
+ "id": "staff_desks",
+ "slug": "staff_desks",
+ "name": "교무실 책상 섬",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "교무실 쇠 책상 두 개를 마주 붙인 섬 — 윗면에 서류 더미·머그컵·모니터 뒷면, 사이 칸막이 낮은 판. 윗면 ¾, 회색 쇠 몸통.",
+ "palette_hint": "locker 책상, cream 칸막이, washi 서류, mdglass 모니터",
+ "pair": [
+  "copier"
+ ],
+ "worker": "s2"
+}

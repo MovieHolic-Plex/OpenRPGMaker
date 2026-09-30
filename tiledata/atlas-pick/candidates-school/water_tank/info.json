@@ -1,0 +1,21 @@
+{
+ "id": "water_tank",
+ "slug": "water_tank",
+ "name": "옥상 물탱크",
+ "scene": "옥상·운동장·교문",
+ "place": "out",
+ "cells": [
+  3,
+  3
+ ],
+ "canvas": [
+  48,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "옥상 물탱크 — 쇠 받침 다리 위 원통 또는 네모 FRP 탱크(패널 이음 줄), 윗면 맨홀 뚜껑, 옆 사다리. 3×3 안에 크게, 위에서 약간 내려다본 각(윗면 띠 넓게).",
+ "palette_hint": "stile/cream 탱크, locker 다리·사다리",
+ "pair": [],
+ "worker": "s3"
+}

@@ -1,0 +1,19 @@
+{
+ "id": "manhole_jp",
+ "slug": "manhole_jp",
+ "name": "그림 맨홀",
+ "scene": "역 앞 번화가",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "지자체 그림 맨홀 뚜껑: 둥근 쇠 뚜껑 속에 꽃(벚꽃 다섯 잎) 무늬를 부조로. 색은 쇠 한 계열 명암으로만(칠하지 않은 판). 인도 보도블록 바탕 포함.",
+ "palette_hint": "mpave 바탕, mmetal/ishi 뚜껑",
+ "worker": "j1"
+}

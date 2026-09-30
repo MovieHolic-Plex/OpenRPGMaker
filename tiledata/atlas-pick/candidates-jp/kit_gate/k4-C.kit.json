@@ -1,0 +1,116 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_gate/k4-C.pxg",
+ "kit": "kit_gate",
+ "cand": "k4-C",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "g3",
+   "name": "통로 셋(기계 넷)",
+   "cells": [
+    9,
+    4
+   ],
+   "ctxSize": [
+    176,
+    96
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "g5long",
+   "name": "통로 다섯·긴 기계·넓은 통로 하나",
+   "cells": [
+    14,
+    5
+   ],
+   "ctxSize": [
+    256,
+    112
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "g2fence",
+   "name": "통로 둘 + 칸막이로 벽까지",
+   "cells": [
+    8,
+    4
+   ],
+   "ctxSize": [
+    160,
+    96
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "floor",
+   "axis": "x",
+   "score": 1.0,
+   "d": 26.7,
+   "bad": false
+  },
+  {
+   "slug": "floor",
+   "axis": "y",
+   "score": 1.0,
+   "d": 26.7,
+   "bad": false
+  },
+  {
+   "slug": "gm_m",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "lane_m",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "fence",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "disp_m",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": true,
+   "failed": []
+  },
+  "easyMax": 0.398,
+  "refmapMax": 0.406
+ },
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_drink/j3-B.pxg",
+ "set": "jp",
+ "id": "vending_drink",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.08
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 30,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "윗면 5단·앞면 3단·옆면 0단으로 명암 대비를 크게, 유리 불빛 %가 왼쪽 바닥에 번지고 오른쪽 아래에 접지 그림자",
+ "ok": true
+}

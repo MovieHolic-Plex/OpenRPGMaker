@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/zakkyo_building/j5-B.pxg",
+ "set": "jp",
+ "id": "zakkyo_building",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "refmap": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.107
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 49,
+ "bbox": [
+  0,
+  0,
+  47,
+  79
+ ],
+ "note": "빛 강화: 층 슬래브 아래 반투명 그림자, 간판·차양 아래 그림자, 켜진 창 옆 %빛 번짐, 간판 윗변 밝은 면",
+ "ok": true
+}

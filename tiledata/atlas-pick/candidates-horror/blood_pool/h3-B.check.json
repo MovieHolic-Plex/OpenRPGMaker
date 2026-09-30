@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/blood_pool/h3-B.pxg",
+ "set": "horror",
+ "id": "blood_pool",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline_black"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  1,
+  2,
+  15,
+  15
+ ],
+ "note": "빛 대비 강화: 왼위 테 5 단으로 번쩍, 오른아래는 0~1 단으로 검붉게 가라앉고 바깥에 접지 그림자 반투명",
+ "ok": true
+}

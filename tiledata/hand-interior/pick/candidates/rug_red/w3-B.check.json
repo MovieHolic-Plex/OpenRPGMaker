@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/rug_red/w3-B.pxg",
+ "id": "rug red",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  2,
+  45,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  45,
+  29
+ ],
+ "note": "강한 명암 — 윗·왼 가장자리는 밝은 술(red:4), 아래·오른쪽은 red:1 로 두껍게, 금띠 gold:6→gold:2 로 큰 대비, 마름모 좌상 모서리에 밝은 붉은 결, 접지 그림자(가장자리 아래·오른쪽 1px 반투명).",
+ "ok": true
+}

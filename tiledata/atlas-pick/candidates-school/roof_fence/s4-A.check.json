@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/roof_fence/s4-A.pxg",
+ "set": "school",
+ "id": "roof_fence",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "옥상 철망 울타리: 왼쪽 기둥 2px, 위·아래 레일, 마름모 망(절대 x 주기 4로 좌우 이음), 초록 fence 램프",
+ "ok": true
+}

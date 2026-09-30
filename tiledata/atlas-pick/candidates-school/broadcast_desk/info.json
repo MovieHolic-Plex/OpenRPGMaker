@@ -1,0 +1,21 @@
+{
+ "id": "broadcast_desk",
+ "slug": "broadcast_desk",
+ "name": "방송실 조정대",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "방송실 조정 책상 — 믹서(슬라이더 줄 1px·노브 점), 목이 휜 마이크 하나, 작은 모니터 둘, 헤드폰. 윗면 ¾, 불빛 점은 작고 한두 색만.",
+ "palette_hint": "vblack/locker 믹서, mmetal 마이크, mdglass 모니터, vred·vgreen 불",
+ "pair": [],
+ "worker": "s1"
+}

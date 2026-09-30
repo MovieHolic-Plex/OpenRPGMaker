@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_shelf_baguette/w8-C.pxg",
+ "id": "bread shelf baguette",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "윗부분 유리 진열창(따뜻한 빛)+아래 여닫이 수납장 — 빵집 유리 진열장으로 재해석, 아치 지붕",
+ "ok": true
+}

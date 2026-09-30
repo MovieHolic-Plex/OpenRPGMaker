@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/class_plate/s3-B.pxg",
+ "set": "school",
+ "id": "class_plate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  1,
+  3,
+  14,
+  13
+ ],
+ "note": "센 명암: 짙은 남색 판에 흰 「2-1」, 윗·왼 모서리 밝은 띠와 아래·오른 어두운 띠 대비, 밝은 회색 받침",
+ "ok": true
+}

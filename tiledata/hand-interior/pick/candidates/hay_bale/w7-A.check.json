@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hay_bale/w7-A.pxg",
+ "id": "hay bale",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  3,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  14
+ ],
+ "note": "v5 형태 그대로, 짚 램프로 다시 칠하고 윗면 밝은 점·결을 손으로 어긋나게 찍음",
+ "ok": true
+}

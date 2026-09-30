@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/castle/wv8-B.pxg",
+ "set": "worldmap",
+ "id": "castle",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "명암 강화 — 곁탑도 붉은 뾰족 지붕, 왼쪽 밝고 오른쪽 어두운 원통, 창 불빛, 발치 오른쪽 아래 반투명 그림자",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.133
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.17
+  }
+ }
+}

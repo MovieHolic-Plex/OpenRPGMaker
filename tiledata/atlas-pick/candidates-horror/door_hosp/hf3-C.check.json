@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_hosp/hf3-C.pxg",
+ "set": "horror",
+ "id": "door_hosp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.137
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "병실 문 C — 회녹 칠 문짝(ward 3단)의 벗겨진 칠 덩이 셋(밑 쇠·녹 rust 1~3단), 유리창은 짙게, 가로 밀대. 핏자국 없음.",
+ "ok": true
+}

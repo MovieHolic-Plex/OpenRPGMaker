@@ -1,0 +1,40 @@
+{
+ "id": "blk-fa-brk",
+ "slug": "blk_fa_brk",
+ "name": "외벽 (fa.brk)",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "외벽 · fa.brk.d.l.win 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "mob-fa-brk-d-l-win",
+  "mob-fa-brk-d-m-win",
+  "mob-fa-brk-d-r-win"
+ ],
+ "tiles": [
+  3927,
+  3930,
+  3933
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   61,
+   9
+  ]
+ }
+}

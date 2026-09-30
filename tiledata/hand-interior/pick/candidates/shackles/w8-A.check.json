@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shackles/w8-A.pxg",
+ "id": "shackles",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 4,
+ "bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "v5 실루엣 유지, 사슬 링을 밝음/어둠 교대로, 족쇄 고리는 좌상 밝게 우하 어둡게 3단, 벽 못 하이라이트",
+ "ok": true
+}

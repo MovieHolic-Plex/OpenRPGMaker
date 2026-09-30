@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/genkan_step/v34-A.pxg",
+ "set": "school",
+ "id": "genkan_step",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "현관 단 3/4 — 삼나무 판 윗면이 넓게 밝고 널 이음 선, 앞 모서리 하이라이트 밑에 낮은 앞면",
+ "ok": true
+}
