@@ -1,0 +1,201 @@
+{
+  "result": [
+    {
+      "width": 704,
+      "selected": "R1",
+      "title": "R1 · 예약 행동의 스톱 무시",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "R2",
+      "title": "R2 · 전원 스톱 교착",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "R3",
+      "title": "R3 · 무작위 전체기 중복",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "R4",
+      "title": "R4 · HP 비용/흡수 예측",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "R5",
+      "title": "R5 · 상태 피해 예측",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "F1",
+      "title": "F1 · 포획과 볼의 커밋",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "F2",
+      "title": "F2 · 입력 중 AUTO 실행",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "F3",
+      "title": "F3 · 승리 요약 가림",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "F4",
+      "title": "F4 · 연계기 목록 갱신",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "D1",
+      "title": "D1 · 시전 시트 내보내기",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "D2",
+      "title": "D2 · 다른 종류의 연출 빌리기",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "D3",
+      "title": "D3 · 장비 동명 기술 연출",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "D4",
+      "title": "D4 · 삼연타가 단타",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 704,
+      "selected": "D5",
+      "title": "D5 · 로스터 보충 참조 오류",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "R1",
+      "title": "R1 · 예약 행동의 스톱 무시",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "R2",
+      "title": "R2 · 전원 스톱 교착",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "R3",
+      "title": "R3 · 무작위 전체기 중복",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "R4",
+      "title": "R4 · HP 비용/흡수 예측",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "R5",
+      "title": "R5 · 상태 피해 예측",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "F1",
+      "title": "F1 · 포획과 볼의 커밋",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "F2",
+      "title": "F2 · 입력 중 AUTO 실행",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "F3",
+      "title": "F3 · 승리 요약 가림",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "F4",
+      "title": "F4 · 연계기 목록 갱신",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "D1",
+      "title": "D1 · 시전 시트 내보내기",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "D2",
+      "title": "D2 · 다른 종류의 연출 빌리기",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "D3",
+      "title": "D3 · 장비 동명 기술 연출",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "D4",
+      "title": "D4 · 삼연타가 단타",
+      "overflow": false,
+      "images": true
+    },
+    {
+      "width": 288,
+      "selected": "D5",
+      "title": "D5 · 로스터 보충 참조 오류",
+      "overflow": false,
+      "images": true
+    }
+  ],
+  "errors": []
+}

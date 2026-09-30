@@ -1,0 +1,391 @@
+{
+  "strictStop": {
+    "actor": "actor_hero",
+    "addedIndex": 1,
+    "attackIndex": -1,
+    "reproduced": false,
+    "actorStateIds": [
+      "state_audit_stop"
+    ],
+    "timeline": [
+      {
+        "kind": "action",
+        "side": "enemy",
+        "userRecordId": "enemy_slime",
+        "targetId": "actor_hero",
+        "commandKind": "enemySkill",
+        "hit": true,
+        "amount": 0,
+        "critical": false,
+        "skillName": "감사 스톱",
+        "skillId": "skill_audit_stop",
+        "sequence": 0
+      },
+      {
+        "kind": "stateAdded",
+        "side": "enemy",
+        "userRecordId": "enemy_slime",
+        "targetId": "actor_hero",
+        "stateId": "state_audit_stop",
+        "reason": "effect",
+        "sequence": 1
+      },
+      {
+        "kind": "incapacitated",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "actor_hero",
+        "sequence": 2
+      },
+      {
+        "kind": "incapacitated",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "actor_hero",
+        "sequence": 3
+      },
+      {
+        "kind": "action",
+        "side": "enemy",
+        "userRecordId": "enemy_slime",
+        "targetId": "actor_hero",
+        "commandKind": "enemySkill",
+        "hit": true,
+        "amount": 0,
+        "critical": false,
+        "skillName": "감사 스톱",
+        "skillId": "skill_audit_stop",
+        "sequence": 4
+      },
+      {
+        "kind": "incapacitated",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "actor_hero",
+        "sequence": 5
+      },
+      {
+        "kind": "action",
+        "side": "enemy",
+        "userRecordId": "enemy_slime",
+        "targetId": "actor_hero",
+        "commandKind": "enemySkill",
+        "hit": true,
+        "amount": 0,
+        "critical": false,
+        "skillName": "감사 스톱",
+        "skillId": "skill_audit_stop",
+        "sequence": 6
+      },
+      {
+        "kind": "incapacitated",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "actor_hero",
+        "sequence": 7
+      }
+    ],
+    "totalTimelineEntries": 402
+  },
+  "freezeDeadlock": {
+    "simulatedMs": 2100000,
+    "naturalRecovery": {
+      "fromTurn": 2,
+      "chance": 100
+    },
+    "first": {
+      "phase": "charging",
+      "turn": 1,
+      "actors": [
+        {
+          "states": [
+            "state_audit_stop"
+          ],
+          "turns": {
+            "state_audit_stop": 1
+          },
+          "gauge": 0
+        }
+      ],
+      "enemies": [
+        {
+          "states": [
+            "state_audit_stop"
+          ],
+          "turns": {
+            "state_audit_stop": 1
+          },
+          "gauge": 0
+        }
+      ]
+    },
+    "last": {
+      "phase": "actorCommand",
+      "turn": 2,
+      "actors": [
+        {
+          "states": [],
+          "turns": {},
+          "gauge": 100
+        }
+      ],
+      "enemies": [
+        {
+          "states": [
+            "state_audit_stop"
+          ],
+          "turns": {
+            "state_audit_stop": 0
+          },
+          "gauge": 0
+        }
+      ]
+    },
+    "reproduced": false
+  },
+  "randomAoe": {
+    "enemies": [
+      {
+        "id": "enemy-1",
+        "hp": 9989,
+        "hpLoss": 10
+      },
+      {
+        "id": "enemy-2",
+        "hp": 9989,
+        "hpLoss": 10
+      }
+    ],
+    "hits": [
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 10,
+        "critical": false,
+        "skillName": "감사 전체 피해 10",
+        "skillId": "skill_audit_picked",
+        "resource": "hp",
+        "sequence": 1
+      },
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-2",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 10,
+        "critical": false,
+        "skillName": "감사 전체 피해 10",
+        "skillId": "skill_audit_picked",
+        "resource": "hp",
+        "sequence": 2
+      }
+    ],
+    "reproduced": false
+  },
+  "hpCostPrediction": {
+    "predicted": 250,
+    "actual": 250,
+    "hits": [
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 250,
+        "critical": false,
+        "skillName": "감사 hpCost",
+        "skillId": "skill_audit_hpCost",
+        "resource": "hp",
+        "sequence": 1
+      }
+    ],
+    "actorHpAfter": 249,
+    "reproduced": false
+  },
+  "drainPrediction": {
+    "predicted": 250,
+    "actual": 250,
+    "hits": [
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 100,
+        "critical": false,
+        "skillName": "감사 drain",
+        "skillId": "skill_audit_drain",
+        "resource": "hp",
+        "sequence": 0
+      },
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 150,
+        "critical": false,
+        "skillName": "감사 drain",
+        "skillId": "skill_audit_drain",
+        "resource": "hp",
+        "sequence": 2
+      }
+    ],
+    "actorHpAfter": 224,
+    "reproduced": false
+  },
+  "stateElementPrediction": {
+    "predicted": 300,
+    "actual": 300,
+    "amounts": [
+      100,
+      200
+    ],
+    "targetStates": [
+      "state_audit_wet"
+    ],
+    "reproduced": false
+  },
+  "customBackfill": {
+    "beforeIssueCount": 0,
+    "beforeIssues": [],
+    "beforeReload": "ok",
+    "changed": true,
+    "afterIssueCount": 0,
+    "afterIssues": [],
+    "afterReload": "ok",
+    "idempotent": true,
+    "reproduced": false
+  },
+  "rosterTriple": [
+    {
+      "id": "skill_squire_triple_cut",
+      "name": "삼연격",
+      "hitSequence": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "scope": "enemy",
+      "description": "연습한 대로 세 번 빠르게 벤다.",
+      "actualHitCount": 3,
+      "amounts": [
+        38,
+        38,
+        38
+      ]
+    },
+    {
+      "id": "skill_noble_triple_thrust",
+      "name": "삼단 찌르기",
+      "hitSequence": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "scope": "enemy",
+      "description": "레이피어로 눈 깜짝할 새 세 번 찌른다.",
+      "actualHitCount": 3,
+      "amounts": [
+        34,
+        34,
+        34
+      ]
+    }
+  ],
+  "castExport": {
+    "actor": "actor_mage",
+    "resource": "charset-battler-actor1-5",
+    "basePath": "assets/generated/charset-battlers/actor1-5.png",
+    "castPath": "assets/generated/charset-battlers/cast/actor1-5.png",
+    "baseIncluded": true,
+    "castIncluded": true,
+    "collectedCastPaths": [
+      "assets/generated/charset-battlers/cast/actor1-0.png",
+      "assets/generated/charset-battlers/cast/actor1-1.png",
+      "assets/generated/charset-battlers/cast/actor1-2.png",
+      "assets/generated/charset-battlers/cast/actor1-3.png",
+      "assets/generated/charset-battlers/cast/actor1-4.png",
+      "assets/generated/charset-battlers/cast/actor1-5.png",
+      "assets/generated/charset-battlers/cast/actor1-6.png",
+      "assets/generated/charset-battlers/cast/actor1-7.png",
+      "assets/generated/charset-battlers/cast/actor2-0.png",
+      "assets/generated/charset-battlers/cast/actor2-1.png",
+      "assets/generated/charset-battlers/cast/actor2-2.png",
+      "assets/generated/charset-battlers/cast/actor2-3.png",
+      "assets/generated/charset-battlers/cast/actor2-4.png",
+      "assets/generated/charset-battlers/cast/actor2-5.png",
+      "assets/generated/charset-battlers/cast/actor2-6.png",
+      "assets/generated/charset-battlers/cast/actor2-7.png",
+      "assets/generated/charset-battlers/cast/actor3-0-samurai.png",
+      "assets/generated/charset-battlers/cast/actor3-1.png",
+      "assets/generated/charset-battlers/cast/actor3-2.png",
+      "assets/generated/charset-battlers/cast/actor3-3.png",
+      "assets/generated/charset-battlers/cast/actor3-4.png",
+      "assets/generated/charset-battlers/cast/actor3-5.png",
+      "assets/generated/charset-battlers/cast/actor3-6.png",
+      "assets/generated/charset-battlers/cast/actor3-7.png",
+      "assets/generated/charset-battlers/cast/actor4-0.png",
+      "assets/generated/charset-battlers/cast/actor4-1.png",
+      "assets/generated/charset-battlers/cast/actor4-2.png",
+      "assets/generated/charset-battlers/cast/actor4-3.png",
+      "assets/generated/charset-battlers/cast/actor4-4.png",
+      "assets/generated/charset-battlers/cast/actor4-5.png",
+      "assets/generated/charset-battlers/cast/actor4-6.png",
+      "assets/generated/charset-battlers/cast/actor4-7.png",
+      "assets/generated/charset-battlers/cast/people1-0.png",
+      "assets/generated/charset-battlers/cast/people1-1.png",
+      "assets/generated/charset-battlers/cast/people1-2.png",
+      "assets/generated/charset-battlers/cast/people1-3.png",
+      "assets/generated/charset-battlers/cast/people1-4.png",
+      "assets/generated/charset-battlers/cast/people1-5.png",
+      "assets/generated/charset-battlers/cast/people1-6.png",
+      "assets/generated/charset-battlers/cast/people1-7.png",
+      "assets/generated/charset-battlers/cast/people2-0.png",
+      "assets/generated/charset-battlers/cast/people2-1.png",
+      "assets/generated/charset-battlers/cast/people2-2.png",
+      "assets/generated/charset-battlers/cast/people2-3.png",
+      "assets/generated/charset-battlers/cast/people2-4.png",
+      "assets/generated/charset-battlers/cast/people2-5.png",
+      "assets/generated/charset-battlers/cast/people2-6.png",
+      "assets/generated/charset-battlers/cast/people2-7.png",
+      "assets/generated/charset-battlers/cast/people3-0.png",
+      "assets/generated/charset-battlers/cast/people3-1.png",
+      "assets/generated/charset-battlers/cast/people3-2.png",
+      "assets/generated/charset-battlers/cast/people3-3.png",
+      "assets/generated/charset-battlers/cast/people3-4.png",
+      "assets/generated/charset-battlers/cast/people3-5.png",
+      "assets/generated/charset-battlers/cast/people3-6.png",
+      "assets/generated/charset-battlers/cast/people3-7.png",
+      "assets/generated/charset-battlers/cast/people4-0.png",
+      "assets/generated/charset-battlers/cast/people4-1.png",
+      "assets/generated/charset-battlers/cast/people4-2.png",
+      "assets/generated/charset-battlers/cast/people4-3.png",
+      "assets/generated/charset-battlers/cast/people4-4.png",
+      "assets/generated/charset-battlers/cast/people4-5.png",
+      "assets/generated/charset-battlers/cast/people4-6.png",
+      "assets/generated/charset-battlers/cast/people4-7.png",
+      "assets/generated/charset-battlers/cast/people5-0.png",
+      "assets/generated/charset-battlers/cast/people5-1.png",
+      "assets/generated/charset-battlers/cast/people5-2.png",
+      "assets/generated/charset-battlers/cast/people5-3.png",
+      "assets/generated/charset-battlers/cast/people5-4.png",
+      "assets/generated/charset-battlers/cast/people5-5.png",
+      "assets/generated/charset-battlers/cast/people5-6.png",
+      "assets/generated/charset-battlers/cast/people5-7.png"
+    ],
+    "collectedBaseCount": 72
+  }
+}

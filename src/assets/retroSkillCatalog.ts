@@ -31,13 +31,18 @@ export interface RetroChoreographyRef {
  */
 export function resolveRetroClassChoreography(record: RetroChoreographyRef | undefined): RetroClassSkill | undefined {
   if (!record) return undefined;
-  return retroClassSkill(record.id) ?? retroClassSkill(record.retroChoreographyId);
+  return retroClassSkill(choreographyContractId(record));
 }
 
 /** 위와 같으나 몬스터 계약(skill_mon_*) 쪽. 적 스킬이 다른 몬스터 스킬의 연출을 빌릴 때 쓴다. */
 export function resolveRetroMonsterChoreography(record: RetroChoreographyRef | undefined): RetroMonsterSkill | undefined {
   if (!record) return undefined;
-  return retroMonsterSkill(record.id) ?? retroMonsterSkill(record.retroChoreographyId);
+  return retroMonsterSkill(choreographyContractId(record));
+}
+
+/** Own contracts take precedence across both kinds, so layers and timeline agree. */
+function choreographyContractId(record: RetroChoreographyRef): string | undefined {
+  return retroClassSkill(record.id) || retroMonsterSkill(record.id) ? record.id : record.retroChoreographyId;
 }
 
 /** 계약 id 하나가 직업 계약인가 몬스터 계약인가(도구 검증용). */

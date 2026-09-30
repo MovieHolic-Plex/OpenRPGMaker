@@ -1,0 +1,632 @@
+[
+  {
+    "at": 12010.800000011921,
+    "id": "actor_hero",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 12010.800000011921,
+    "id": "actor_guardian",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 12010.800000011921,
+    "id": "actor_mage",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 12010.800000011921,
+    "id": "actor_scout",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 12110.100000023842,
+    "id": "actor_scout",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 12255.300000011921,
+    "id": "actor_scout",
+    "frame": "walk_c",
+    "beat": "approach"
+  },
+  {
+    "at": 12314.5,
+    "id": "actor_scout",
+    "frame": "attack_strike",
+    "beat": "approach"
+  },
+  {
+    "at": 12518.600000023842,
+    "id": "actor_hero",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 12518.600000023842,
+    "id": "actor_guardian",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 12518.600000023842,
+    "id": "actor_mage",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 12518.600000023842,
+    "id": "actor_scout",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 12730.199999988079,
+    "id": "actor_scout",
+    "frame": "attack_follow",
+    "beat": "recover"
+  },
+  {
+    "at": 12853.899999976158,
+    "id": "actor_scout",
+    "frame": "evade",
+    "beat": "recover"
+  },
+  {
+    "at": 13335.5,
+    "id": "actor_scout",
+    "frame": "idle",
+    "beat": "recover"
+  },
+  {
+    "at": 14736.899999976158,
+    "id": "actor_hero",
+    "frame": "defend",
+    "beat": "approach"
+  },
+  {
+    "at": 15627.199999988079,
+    "id": "actor_guardian",
+    "frame": "defend",
+    "beat": "approach"
+  },
+  {
+    "at": 16518.5,
+    "id": "actor_mage",
+    "frame": "defend",
+    "beat": "approach"
+  },
+  {
+    "at": 17414.69999998808,
+    "id": "actor_scout",
+    "frame": "defend",
+    "beat": "approach"
+  },
+  {
+    "at": 21416,
+    "id": "actor_hero",
+    "frame": "guard_hit",
+    "beat": null
+  },
+  {
+    "at": 21626.100000023842,
+    "id": "actor_hero",
+    "frame": "defend",
+    "beat": null
+  },
+  {
+    "at": 21887.399999976158,
+    "id": "actor_scout",
+    "frame": "idle",
+    "beat": null
+  },
+  {
+    "at": 22923.69999998808,
+    "id": "actor_scout",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 22982.30000001192,
+    "id": "actor_scout",
+    "frame": "walk_c",
+    "beat": "approach"
+  },
+  {
+    "at": 23144.5,
+    "id": "actor_scout",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 23179.30000001192,
+    "id": "actor_scout",
+    "frame": "attack_strike",
+    "beat": "approach"
+  },
+  {
+    "at": 23231.399999976158,
+    "id": "actor_scout",
+    "frame": "attack",
+    "beat": "approach"
+  },
+  {
+    "at": 23278.30000001192,
+    "id": "actor_scout",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 23328,
+    "id": "actor_scout",
+    "frame": "attack_strike",
+    "beat": "approach"
+  },
+  {
+    "at": 23368.5,
+    "id": "actor_scout",
+    "frame": "attack",
+    "beat": "approach"
+  },
+  {
+    "at": 23446.100000023842,
+    "id": "actor_scout",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 23494.600000023842,
+    "id": "actor_scout",
+    "frame": "attack_strike",
+    "beat": "approach"
+  },
+  {
+    "at": 23545.30000001192,
+    "id": "actor_scout",
+    "frame": "attack",
+    "beat": "approach"
+  },
+  {
+    "at": 23853.100000023842,
+    "id": "actor_scout",
+    "frame": "idle",
+    "beat": "recover"
+  },
+  {
+    "at": 24939.5,
+    "id": "actor_hero",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 24939.5,
+    "id": "actor_scout",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 24998.19999998808,
+    "id": "actor_hero",
+    "frame": "walk_c",
+    "beat": "approach"
+  },
+  {
+    "at": 25163.5,
+    "id": "actor_hero",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 25197.600000023842,
+    "id": "actor_hero",
+    "frame": "attack_strike",
+    "beat": "approach"
+  },
+  {
+    "at": 25248.80000001192,
+    "id": "actor_hero",
+    "frame": "attack",
+    "beat": "approach"
+  },
+  {
+    "at": 25294.600000023842,
+    "id": "actor_hero",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 25346.5,
+    "id": "actor_hero",
+    "frame": "attack_strike",
+    "beat": "approach"
+  },
+  {
+    "at": 25384.399999976158,
+    "id": "actor_hero",
+    "frame": "attack",
+    "beat": "approach"
+  },
+  {
+    "at": 25465.19999998808,
+    "id": "actor_hero",
+    "frame": "attack_windup",
+    "beat": "approach"
+  },
+  {
+    "at": 25514.19999998808,
+    "id": "actor_hero",
+    "frame": "attack_strike",
+    "beat": "approach"
+  },
+  {
+    "at": 25562.399999976158,
+    "id": "actor_hero",
+    "frame": "attack",
+    "beat": "approach"
+  },
+  {
+    "at": 25867.399999976158,
+    "id": "actor_hero",
+    "frame": "idle",
+    "beat": "recover"
+  },
+  {
+    "at": 26426,
+    "id": "actor_hero",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 26426,
+    "id": "actor_guardian",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 26426,
+    "id": "actor_mage",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 26678.899999976158,
+    "id": "actor_hero",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 26678.899999976158,
+    "id": "actor_guardian",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 26679.100000023842,
+    "id": "actor_mage",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 26679.19999998808,
+    "id": "actor_scout",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 26945.899999976158,
+    "id": "actor_hero",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 26945.899999976158,
+    "id": "actor_guardian",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 26946,
+    "id": "actor_mage",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 26946.100000023842,
+    "id": "actor_scout",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 27206.399999976158,
+    "id": "actor_hero",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 27206.600000023842,
+    "id": "actor_guardian",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 27206.69999998808,
+    "id": "actor_mage",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 27206.80000001192,
+    "id": "actor_scout",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 27476.899999976158,
+    "id": "actor_hero",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 27477,
+    "id": "actor_guardian",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 27477.100000023842,
+    "id": "actor_mage",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 27477.19999998808,
+    "id": "actor_scout",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 27747.80000001192,
+    "id": "actor_hero",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 27747.899999976158,
+    "id": "actor_guardian",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 27747.899999976158,
+    "id": "actor_mage",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 27748.100000023842,
+    "id": "actor_scout",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 28008.19999998808,
+    "id": "actor_hero",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 28008.399999976158,
+    "id": "actor_guardian",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 28008.399999976158,
+    "id": "actor_mage",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 28008.5,
+    "id": "actor_scout",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 28268.80000001192,
+    "id": "actor_hero",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 28268.80000001192,
+    "id": "actor_guardian",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 28268.899999976158,
+    "id": "actor_mage",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 28268.899999976158,
+    "id": "actor_scout",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 28529.19999998808,
+    "id": "actor_hero",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 28529.30000001192,
+    "id": "actor_guardian",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 28529.399999976158,
+    "id": "actor_mage",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 28529.399999976158,
+    "id": "actor_scout",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 28789.69999998808,
+    "id": "actor_hero",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 28789.80000001192,
+    "id": "actor_guardian",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 28789.899999976158,
+    "id": "actor_mage",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 28789.899999976158,
+    "id": "actor_scout",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 29050.100000023842,
+    "id": "actor_hero",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 29050.100000023842,
+    "id": "actor_guardian",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 29050.19999998808,
+    "id": "actor_mage",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 29050.19999998808,
+    "id": "actor_scout",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 29310.399999976158,
+    "id": "actor_hero",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 29310.5,
+    "id": "actor_guardian",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 29310.600000023842,
+    "id": "actor_mage",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 29310.600000023842,
+    "id": "actor_scout",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 29570.80000001192,
+    "id": "actor_hero",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 29570.899999976158,
+    "id": "actor_guardian",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 29570.899999976158,
+    "id": "actor_mage",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 29571,
+    "id": "actor_scout",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 29831.19999998808,
+    "id": "actor_hero",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 29831.399999976158,
+    "id": "actor_guardian",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 29831.399999976158,
+    "id": "actor_mage",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 29831.399999976158,
+    "id": "actor_scout",
+    "frame": "victory_b",
+    "beat": null
+  },
+  {
+    "at": 30091.80000001192,
+    "id": "actor_hero",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 30091.899999976158,
+    "id": "actor_guardian",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 30092.100000023842,
+    "id": "actor_mage",
+    "frame": "victory",
+    "beat": null
+  },
+  {
+    "at": 30092.19999998808,
+    "id": "actor_scout",
+    "frame": "victory",
+    "beat": null
+  }
+]

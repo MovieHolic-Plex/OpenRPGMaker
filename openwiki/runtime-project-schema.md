@@ -8,6 +8,7 @@
 
 `src/project/defaults/defaultDatabase.ts` `ensureRetroRosterRecords(project): boolean`. 로스터(발키리·암흑기사 등 확장 직업 6종 `RETRO_EXTENSION_CLASS_IDS`의 클래스·배우·스킬)와 기믹 상태 8종(`RETRO_GIMMICK_STATE_IDS`: blind·stop·protect·shell·berserk·petrify·wet·oiled)을 **id 로 없는 것만** 덧붙인다. 저자가 이미 가진 레코드는 건드리지 않고, 바뀐 게 있으면 true. 선례 관용구는 `ensureBundledBattleAnimations`.
 
+- 의존성 폐쇄: `retroRosterDependencies.ts`는 **새로 추가한 행만** 큐로 따라가며 배우·직업·기술·장비·상태·배틀 애니메이션·속성의 참조를 함께 채운다. 같은 ID의 저자 행은 그대로 둔다. `state_death`는 DB 행을 요구하지 않는 엔진 sentinel이다. 비어 있던 커스텀 DB에서도 보충 후 serialize/deserialize 두 번과 참조 0건을 확인했다(`verify-shots/battle-fix-2026-09-30/rules-probe.json`).
 - 호출 위치: `store.ts` `normalizeCurrentProject` 의 정규화 목록 `["retroRoster", ...]`(팀 프로젝트 쓰기 권한이 있을 때만), 헤드리스 `headless/index.ts` `normalizeHeadlessProject` 의 `ensureBundledBattleAnimations` 바로 뒤.
 - 증거: `verify-shots/retro-editable/d-old-project-classes-*` (로스터를 뺀 프로젝트 → 로드 후 「발키리 #134」·「암흑기사 #135」 가 클래스 목록에 나타남).
 

@@ -1798,7 +1798,8 @@ const castSheetState = new Map<string, "loading" | "ready" | "missing">();
 function castSheetUrl(sprite: HTMLElement): string | undefined {
   const entry = charsetBattler(sprite.dataset.battlerResourceId);
   if (!entry) return undefined;
-  const url = resolveAssetResourceUrl(`${entry.resourceId}-cast`, { project: store.getCurrent() }) ?? `/${entry.castPath}`;
+  const url = resolveAssetResourceUrl(`${entry.resourceId}-cast`, { project: store.getCurrent() });
+  if (!url) return undefined;
   const state = castSheetState.get(url);
   if (state === "ready") return url;
   if (state === undefined && typeof Image !== "undefined") {
