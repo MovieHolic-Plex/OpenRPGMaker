@@ -18,6 +18,22 @@
 
 새 스킬은 자기 id 가 계약(`retroClassSkills`·`retroRosterSkills`·`retroMonsterSkills`)에 없어도 `SkillRecord.retroChoreographyId` 가 가리키는 계약의 연출(모션·층·소리·타격 간격)을 그대로 재생한다. 위력·비용·상태·범위는 레코드 값을 쓴다. 조회는 `src/assets/retroSkillCatalog.ts` 의 `resolveRetroClassChoreography(record) = retroClassSkill(record.id) ?? retroClassSkill(record.retroChoreographyId)`(몬스터판 `resolveRetroMonsterChoreography`) 하나이고, 런타임(`skillByName`·battleEntry·특수기)과 편집기 무대·배지·서명이 같이 쓴다 — 런타임은 스킬을 **이름**으로 찾으므로 이름이 계약과 다르면 이 필드가 유일한 연결이다. 자기 id 가 계약이면 그쪽이 우선이라 빌린 값은 무시된다. 스킬 복제(편집기·조수)는 사본에 원본 계약 id 를 채운다. 내보내기 플레이어는 `pixel-fx` 폴더 전량을 번들하므로 자산 배선이 더 필요 없다. 증거: `verify-shots/retro-assistant/SUMMARY.md`(새 직업 「화염 검투사」 스킬 8개가 모두 빌린 연출을 재생).
 
+## 프로젝트 연출 레코드 — skillChoreographies (2026-09-30, A1)
+
+계약 카탈로그는 읽기 전용 **기본 연출**이고, 프로젝트가 자기 연출을 `database.skillChoreographies`(id `chor_<slug>`)로 갖는다. 조회는 `resolveSkillChoreography(ref, records?, want?)`(`src/project/skillChoreographyRecords.ts`) 하나: ① 스킬 id 가 계약이면 계약 → ② `retroChoreographyId` 가 가리키는 프로젝트 레코드 → ③ 그 id 가 계약이면 계약. 런타임(`skillByName`)·편집기 무대·배지가 같이 쓴다. 기본 연출은 프로젝트에 복사하지 않는다. 시트 프레임 폭·칸 수는 `retroFxSheetMeta(key)`(`retroSkillCatalog.ts`) 하나.
+- 레코드 `motion` 은 클래스 모션(dash-strike·leap-strike·blink-strike·flurry·spin·cast·shoot·buff·finisher)과 몬스터 모션(lunge·shoot·cast·breath·stomp·buff·finisher)의 **합집합**이다. 층은 최대 8, 레코드는 최대 500.
+- 층 옵션 `startMs`(0~5000)·`scale`(0.5~3)·`repeat`(1~6)·`onHit:"each"`(타수만큼 90ms 간격 복제). 옵션이 없는 계약 층의 타임라인은 바이트 그대로다(번들 4436개 타임라인이 기준 커밋과 동일).
+- 함정: 단일 대상 다단 스킬은 플레이어가 타수마다 **행동 전체를 다시 재생**한다(계획 hits=1 이 N번). `onHit:"each"` 복제는 여러 대상이 한 계획으로 묶이는 전체 범위기에서 보인다.
+- 증거: `verify-shots/retro-choreo-a1/SUMMARY.md`.
+- 편집기·조수(A2): 탭 「도트 연출」·갤러리·타임라인 편집기는 `openwiki/editor-database.md` 「도트 연출 탭」, 조수 도구(`upsert_choreography`·`duplicate_choreography`·`list_fx_sheets`·`preview_choreography`)는 `openwiki/editor-ai-tools.md`. 속도·무게·색조·화면·소리 손잡이(B단계)는 편집기에 칸이 없다.
+
+## 연출 손잡이 · 자동 추천 · 상태 오라 (2026-09-30, B)
+
+- **손잡이(`src/player/retroSkillChoreography.ts`)**: `speed` 는 타임라인 시각 전체를 나눈다(실측 approach 216/131/82ms · 첫 hitstop 720/438/281ms, 배율 0.6/1/1.6). `weight` 는 접근·복귀 속도와 hitstop 을 바꾼다(APPROACH .72/1/1.28, HITSTOP_SCALE 0/1/1.9, RECOVER_SCALE .68/1/1.45 — 접근·복귀는 미리 나눠 전체 시간은 같다). 관측되는 것은 `battle-hit-stop` 시간: light 없음 · normal ≈112ms · heavy ≈211ms. 빗나감·0 피해·회복은 항상 light. `tint` 는 `src/assets/retroChoreographyTints.ts` 9종(fire·ice·thunder·water·wind·earth·holy·dark·poison)의 `grayscale(1) sepia(1) hue-rotate saturate brightness contrast` 필터, 층 tint 가 우선. `screen` 은 shake·flash·dim·cutIn 을 전투 무대에 덧씌운다. 손잡이가 없으면 A1 과 동일(A1 덤프 sha256 `aa31514d…6f0`, 4436개 동일).
+- **자동 추천** `src/assets/retroChoreographyRecommend.ts` `recommendRetroChoreography`: 계약·레코드·정확 레시피·`retroChoreographyId` 가 **모두 없는** 스킬의 폴백일 뿐이다(옛 레시피·적 스킬 불변). 속성·타수·범위·계열로 계약 연출과 tint 를 고르고, 런타임·스킬 탭·`upsert_skill` 결과 노트가 같은 함수를 쓴다.
+- **상태 오라 `StateRecord.battleAura`** (`src/assets/battleStateAuras.ts`, CSS 전용): `freeze-grey`·`berserk-pulse`·`shield-shimmer`·`wet-drip`·`poison-bubble`·`dark-fog`·`petrify-still`·`regen-sparkle`. 기본 id 맵(state_poison→poison-bubble 등)이 있고 `resolveBattlerAuras` 가 중복을 합쳐 **최대 3개**만 남긴다. `battleFieldDom.syncBattleAura` 가 `data-battle-aura` 와 `.battle-aura-layer > .battle-aura[data-aura]` 를 만든다. CSS `styles/runtime/battle/28-retro-state-aura.css`(피격 깜빡임 중 양보, reduced-motion 존중).
+- 증거: `verify-shots/retro-choreo-b/SUMMARY.md`.
+
 ## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
 
 - **도트 결과(기본 메뉴 스킨 pixel, 포켓몬 제외)** 는 첫 화면이 세 창이다: 머리 창(승리 · EXP · 돈 · 전리품 이름, `battle-result-summary`) / 파티 창(걷는 그림 · Lv 전후 · EXP 막대 · LEVEL UP 또는 다음 Lv까지, `battle-result-party-<actorId>`) / 전리품 창(`battle-result-cards`: 소지금 「a → b」, 아이템 「보유 a → b」).

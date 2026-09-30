@@ -1,0 +1,62 @@
+{
+  "tabLabel": "도트 연출",
+  "defaultBadgeCount": 150,
+  "cloneButton": 1,
+  "afterClone": [
+    {
+      "id": "chor_hero_cross_slash",
+      "name": "십자베기 사본",
+      "layers": 1
+    }
+  ],
+  "thunderSheetCards": 20,
+  "thunderCount": "20개",
+  "newLayerIndex": 1,
+  "pickedSheet": "db-retro-sheet-airship_storm",
+  "layersBefore": [
+    {
+      "sheet": "hero_cross",
+      "anchor": "target"
+    },
+    {
+      "sheet": "airship_storm",
+      "anchor": "target"
+    }
+  ],
+  "layersAfter": [
+    {
+      "sheet": "hero_cross",
+      "anchor": "target"
+    },
+    {
+      "sheet": "airship_storm",
+      "anchor": "target",
+      "startMs": 400,
+      "scale": 2
+    }
+  ],
+  "stageHtmlLen": 6113,
+  "skillPickerCards": 1,
+  "skillAfterPick": "chor_hero_cross_slash",
+  "pickerStatus": "빌려 온 연출: 십자베기 사본 (chor_hero_cross_slash)",
+  "previewSummary": "연출 「십자베기 사본」(프로젝트, dash-strike) 층 2개 — 층별 프레임 그림을 확인하세요.",
+  "previewLayers": [
+    {
+      "index": 1,
+      "sheet": "hero_cross",
+      "anchor": "target",
+      "frame": 64,
+      "frames": 10
+    },
+    {
+      "index": 2,
+      "sheet": "airship_storm",
+      "anchor": "target",
+      "frame": 64,
+      "frames": 10,
+      "startMs": 400,
+      "scale": 2
+    }
+  ],
+  "previewImage0": "연출 「십자베기 사본」 층별 프레임(줄=층 번호, 왼쪽에서 오른쪽으로 재생 순)"
+}

@@ -121,6 +121,7 @@ export const DATABASE_AREA_LABELS: Readonly<Record<string, string>> = {
   farmAnimalSpecies: "가축",
   fishSpecies: "물고기",
   farmBuildingTypes: "농장 건물",
+  skillChoreographies: "스킬 연출",
 };
 
 /**

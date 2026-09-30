@@ -129,7 +129,7 @@ export function defaultSkillRecords(): SkillRecord[] {
 export function defaultStateRecords(): StateRecord[] {
   return [
     // 독: 매 턴 지속 피해, 전투 종료 후에도 유지(해독 필요). 3턴째부터 자연 회복 시도.
-    { id: DEFAULT_STATE_ID, name: "독", restriction: "없음", removalCondition: "전투 종료 후 유지", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 20 },
+    { id: DEFAULT_STATE_ID, name: "독", battleAura: "poison-bubble", restriction: "없음", removalCondition: "전투 종료 후 유지", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 20 },
     // 수면: 행동 불가, 피격 시 50% 해제, 전투 종료 시 해제.
     { id: "state_sleep", name: "수면", restriction: "행동 불가", removalCondition: "피격 또는 전투 종료", recoverWhenHitChance: 50, recoverNaturallyFromTurn: 2, recoverNaturallyChance: 35 },
     // 공격 상승: 공격 2배 강화, 전투 종료 시 해제.
@@ -154,26 +154,26 @@ export function defaultStateRecords(): StateRecord[] {
     // 마비: 행동을 막지만 2턴부터 35% 확률로 자연 회복한다.
     { id: "state_paralysis", name: "마비", restriction: "행동 불가", removalCondition: "턴 경과", recoverNaturallyFromTurn: 2, recoverNaturallyChance: 35, runtimeEffects: { restrictsAction: true, removeOnBattleEnd: true } },
     // 맹독: 독보다 강한 턴당 최대 HP 12% 피해, 치료 전까지 유지한다.
-    { id: "state_deep_poison", name: "맹독", restriction: "없음", removalCondition: "전투 종료 후 유지", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 10, runtimeEffects: { hpDamagePercentPerTurn: 12, removeOnBattleEnd: false } },
+    { id: "state_deep_poison", name: "맹독", battleAura: "poison-bubble", restriction: "없음", removalCondition: "전투 종료 후 유지", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 10, runtimeEffects: { hpDamagePercentPerTurn: 12, removeOnBattleEnd: false } },
     // 재생: 턴당 최대 HP 8%를 회복하고 전투 종료 시 해제한다.
-    { id: "state_regen", name: "재생", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 5, recoverNaturallyChance: 25, runtimeEffects: { hpHealPercentPerTurn: 8, removeOnBattleEnd: true } },
+    { id: "state_regen", name: "재생", battleAura: "regen-sparkle", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 5, recoverNaturallyChance: 25, runtimeEffects: { hpHealPercentPerTurn: 8, removeOnBattleEnd: true } },
     // 침묵: 스킬만 막고 기본 공격과 아이템은 허용한다.
     { id: "state_silence", name: "침묵", restriction: "스킬 사용 불가", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { blocksSkillUse: true, removeOnBattleEnd: true } },
     // ── 기믹 상태(2차 로스터 기믹 명시화, 2026-09-29). 크로노 트리거·FF6·FFT 의 시간·방어막·약점 만들기 ──
     // 암흑: 통상 공격 명중 절반(연막·먹물).
-    { id: "state_blind", name: "암흑", restriction: "없음", removalCondition: "전투 종료", accuracyModifier: 50, recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { removeOnBattleEnd: true } },
+    { id: "state_blind", name: "암흑", battleAura: "dark-fog", restriction: "없음", removalCondition: "전투 종료", accuracyModifier: 50, recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { removeOnBattleEnd: true } },
     // 스톱: 게이지가 멈추고 행동 불가. 짧게(2턴부터 50%) 풀린다.
-    { id: "state_stop", name: "스톱", restriction: "행동 불가", removalCondition: "턴 경과", recoverNaturallyFromTurn: 2, recoverNaturallyChance: 50, runtimeEffects: { freezesGauge: true, restrictsAction: true, removeOnBattleEnd: true } },
+    { id: "state_stop", name: "스톱", battleAura: "freeze-grey", restriction: "행동 불가", removalCondition: "턴 경과", recoverNaturallyFromTurn: 2, recoverNaturallyChance: 50, runtimeEffects: { freezesGauge: true, restrictsAction: true, removeOnBattleEnd: true } },
     // 프로텍트: 공격력 계열 피해를 ⅔ 로(방어 배율 1.5).
-    { id: "state_protect", name: "프로텍트", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 5, recoverNaturallyChance: 20, runtimeEffects: { physicalDefenseMultiplier: 1.5, removeOnBattleEnd: true } },
+    { id: "state_protect", name: "프로텍트", battleAura: "shield-shimmer", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 5, recoverNaturallyChance: 20, runtimeEffects: { physicalDefenseMultiplier: 1.5, removeOnBattleEnd: true } },
     // 실드: 정신력 계열 피해를 ⅔ 로.
-    { id: "state_shell", name: "실드", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 5, recoverNaturallyChance: 20, runtimeEffects: { magicDefenseMultiplier: 1.5, removeOnBattleEnd: true } },
+    { id: "state_shell", name: "실드", battleAura: "shield-shimmer", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 5, recoverNaturallyChance: 20, runtimeEffects: { magicDefenseMultiplier: 1.5, removeOnBattleEnd: true } },
     // 버서크(도발 겸): 명령 없이 무작위 상대를 통상 공격한다. 공격은 1.5배.
-    { id: "state_berserk", name: "버서크", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { forcedAction: "attackRandom", attackMultiplier: 1.5, removeOnBattleEnd: true } },
+    { id: "state_berserk", name: "버서크", battleAura: "berserk-pulse", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { forcedAction: "attackRandom", attackMultiplier: 1.5, removeOnBattleEnd: true } },
     // 석화: 전투 불능으로 치고 행동 불가. 저절로 풀리지 않는다(치료·전투 종료).
-    { id: "state_petrify", name: "석화", restriction: "행동 불가", removalCondition: "전투 종료", runtimeEffects: { incapacitates: true, restrictsAction: true, removeOnBattleEnd: true } },
+    { id: "state_petrify", name: "석화", battleAura: "petrify-still", restriction: "행동 불가", removalCondition: "전투 종료", runtimeEffects: { incapacitates: true, restrictsAction: true, removeOnBattleEnd: true } },
     // 젖음: 번개 약점(A). 불은 반감(D).
-    { id: "state_wet", name: "젖음", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 35, runtimeEffects: { elementRates: { thunder: "A", fire: "D" }, removeOnBattleEnd: true } },
+    { id: "state_wet", name: "젖음", battleAura: "wet-drip", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 35, runtimeEffects: { elementRates: { thunder: "A", fire: "D" }, removeOnBattleEnd: true } },
     // 기름: 불 약점(A).
     { id: "state_oiled", name: "기름", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 35, runtimeEffects: { elementRates: { fire: "A" }, removeOnBattleEnd: true } },
   ];

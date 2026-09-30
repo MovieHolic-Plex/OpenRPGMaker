@@ -11,6 +11,7 @@
 import { castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { RetroFxAnchor, RetroFxLayer, RetroSkillMotion } from "@/assets/retroClassSkills";
 import type { PartyPixelCell, PixelEnemyCell } from "@/assets/pixelEnemySheets";
+import { retroTintFilter } from "@/assets/retroChoreographyTints";
 
 /** 시전자가 서는 자리. 좌표는 무대가 정한다. */
 export type RetroStagePlace = "home" | "front" | "center" | "above";
@@ -26,14 +27,25 @@ export type RetroTimelineEvent =
   | {
     readonly kind: "fx"; readonly at: number; readonly layer: number; readonly key: string; readonly anchor: Exclude<RetroFxAnchor, "projectile">;
     readonly frame: number; readonly cells: readonly number[]; readonly frameMs: number;
+    /** 그림 배율(프로젝트 연출 레코드의 층 옵션). 없으면 1 — 기본 계약 타임라인에는 붙지 않는다. */
+    readonly scale?: number;
+    /** CSS filter(층 색 손잡이). 없으면 원본색 — 기본 계약 타임라인에는 붙지 않는다. "none" 은 레코드 전체 색을 이 층만 원본으로 되돌린다. */
+    readonly filter?: string;
   }
   | {
     readonly kind: "projectile"; readonly at: number; readonly durationMs: number; readonly layer: number; readonly key: string;
     readonly frame: number; readonly frames: number; readonly frameMs: number; readonly path: RetroProjectilePath;
     /** 겨누는 대상 번호(대상 편 목록 기준). -1 = 대상 편 가운데. */
     readonly aim: number;
+    readonly filter?: string;
   }
-  | { readonly kind: "screen"; readonly at: number; readonly durationMs: number; readonly effect: RetroScreenEffect }
+  | {
+    readonly kind: "screen"; readonly at: number; readonly durationMs: number; readonly effect: RetroScreenEffect;
+    /** 흔들림 세기(px, 기본 6) — 연출 레코드 screen.shake. */
+    readonly intensity?: number;
+    /** 번쩍임 색(#rrggbb) — 연출 레코드 screen.flash. */
+    readonly color?: string;
+  }
   | { readonly kind: "hit"; readonly at: number; readonly durationMs: number; readonly who: "target" | "allTargets" }
   | { readonly kind: "sound"; readonly at: number; readonly id: string };
 
@@ -71,6 +83,9 @@ export const RETRO_FX_FRAME_MS: Readonly<Record<number, number>> = { 32: 60, 64:
 const TAIL_MS = 520;
 const QUICK_TAIL_MS = 260;
 const OVERLAP = 0.55;
+
+/** 연출 손잡이(screen.cutIn)가 필러 컷인과 함께 울리는 번쩍임 소리. */
+export const RETRO_SOUND_FLASH = "easyrpg-sound-flash1";
 
 const SOUND = {
   dash: "easyrpg-sound-wind8", leap: "easyrpg-sound-move", land: "easyrpg-sound-earth2", blink: "easyrpg-sound-teleport2",
@@ -172,10 +187,21 @@ export function retroSideForScope(scope: string | undefined): RetroTimelineSide 
   return undefined;
 }
 
+/** 다단 스킬에서 onHit:"each" 층이 타수마다 다시 깔리는 간격(ms). 런타임 HIT_STAGGER_MS 와 같다. */
+export const RETRO_LAYER_HIT_STAGGER_MS = 90;
+
+/** 층의 색 손잡이 → filter. 원본색 지정은 "none"(레코드 전체 색을 덮는다), 지정 없음은 undefined. */
+function layerFilter(layer: RetroFxLayer): string | undefined {
+  if (!layer.tint) return undefined;
+  return retroTintFilter(layer.tint) ?? "none";
+}
+
 class TimelineBuilder {
   readonly events: RetroTimelineEvent[] = [];
   end = 0;
   firstImpactMid = -1;
+  /** 이번 행동의 타수(hitSequence 수). onHit:"each" 층이 이만큼 반복한다. 기본 1. */
+  hitCount = 1;
   private touch(at: number): void { this.end = Math.max(this.end, at); }
   pose(at: number, pose: ExtendedBattlerPose, flip?: boolean): void { this.events.push(flip === undefined ? { kind: "pose", at, pose } : { kind: "pose", at, pose, flip }); this.touch(at); }
   move(at: number, durationMs: number, to: RetroStagePlace, arc = 0): void { this.events.push({ kind: "move", at, durationMs, to, arc }); this.touch(at + durationMs); }
@@ -187,13 +213,36 @@ class TimelineBuilder {
     const anchor = layer.anchor === "projectile" ? "target" : layer.anchor;
     const list = cells ?? Array.from({ length: Math.max(1, layer.frames) }, (_, cell) => cell);
     const ms = frameMs ?? RETRO_FX_FRAME_MS[layer.frame] ?? 60;
-    this.events.push({ kind: "fx", at, layer: index, key: layer.key, anchor, frame: layer.frame, cells: list, frameMs: ms });
+    const scale = layer.scale !== undefined && layer.scale !== 1 ? { scale: layer.scale } : {};
+    const filter = layerFilter(layer);
+    this.events.push({ kind: "fx", at, layer: index, key: layer.key, anchor, frame: layer.frame, cells: list, frameMs: ms, ...scale, ...(filter ? { filter } : {}) });
     const end = at + list.length * ms;
     this.touch(end);
     return end;
   }
+  /**
+   * 층 옵션(startMs·repeat·onHit)을 얹어 한 층을 깐다. 옵션이 없으면 fx() 한 번과 같다.
+   * startMs 가 있으면 그 시각에서 시작(없으면 타임라인이 정한 at), repeat 는 같은 층을 끝나는 자리에서 이어 붙이고,
+   * onHit:"each" 는 타수만큼 90ms 간격으로 같은 층을 겹쳐 다시 깐다. 반환: 층의 실제 시작·끝과 반복 시작 시각들.
+   */
+  layerFx(at: number, index: number, layer: RetroFxLayer, allowEach = true): { start: number; end: number; starts: number[] } {
+    const start = layer.startMs !== undefined ? Math.round(layer.startMs) : at;
+    const copies = allowEach && layer.onHit === "each" ? Math.max(1, this.hitCount) : 1;
+    const repeat = Math.max(1, Math.round(layer.repeat ?? 1));
+    const starts: number[] = [];
+    let end = start;
+    for (let copy = 0; copy < copies; copy += 1) {
+      let cursor = start + copy * RETRO_LAYER_HIT_STAGGER_MS;
+      for (let turn = 0; turn < repeat; turn += 1) {
+        starts.push(cursor);
+        cursor = this.fx(cursor, index, layer);
+      }
+      end = Math.max(end, cursor);
+    }
+    return { start, end, starts };
+  }
   projectile(at: number, durationMs: number, index: number, layer: RetroFxLayer, path: RetroProjectilePath, aim: number): void {
-    this.events.push({ kind: "projectile", at, durationMs, layer: index, key: layer.key, frame: layer.frame, frames: Math.max(1, layer.frames), frameMs: RETRO_FX_FRAME_MS[layer.frame] ?? 60, path, aim });
+    this.events.push({ kind: "projectile", at, durationMs, layer: index, key: layer.key, frame: layer.frame, frames: Math.max(1, layer.frames), frameMs: RETRO_FX_FRAME_MS[layer.frame] ?? 60, path, aim, ...(layerFilter(layer) ? { filter: layerFilter(layer)! } : {}) });
     this.touch(at + durationMs);
   }
   build(castType: CastType, side: RetroTimelineSide, tailMs = TAIL_MS): RetroSkillTimeline {
@@ -213,12 +262,15 @@ function playImpact(b: TimelineBuilder, start: number, layers: readonly IndexedL
   let at = start;
   let end = start;
   for (const { index, layer } of layers) {
-    const layerEnd = b.fx(at, index, layer);
-    const length = layerEnd - at;
-    if (b.firstImpactMid < 0) b.firstImpactMid = Math.round(at + length * 0.45);
+    // 층 옵션이 없으면 layerFx 는 fx 한 번과 같아 기존 타임라인과 동일하다. startMs 는 이 층만 옮기고 뒤 층의 유도 시각(at)은 건드리지 않는다.
+    const placed = b.layerFx(at, index, layer);
+    const layerAt = placed.start;
+    const layerEnd = placed.end;
+    const length = layerEnd - layerAt;
+    if (b.firstImpactMid < 0) b.firstImpactMid = Math.round(layerAt + length * 0.45);
     const who = layer.anchor === "target" ? "target" : "allTargets";
-    for (let i = 0; i < hitsPerLayer; i += 1) b.hit(Math.round(at + length * (0.25 + (0.5 * i) / Math.max(1, hitsPerLayer))), who);
-    b.sound(at, retroSoundForLayer(layer.key));
+    for (let i = 0; i < hitsPerLayer; i += 1) b.hit(Math.round(layerAt + length * (0.25 + (0.5 * i) / Math.max(1, hitsPerLayer))), who);
+    for (const [turn, turnAt] of placed.starts.entries()) if (turn === 0 || layer.onHit === "each") b.sound(turnAt, layer.se ?? retroSoundForLayer(layer.key));
     end = Math.max(end, layerEnd);
     at = Math.round(at + length * OVERLAP);
   }
@@ -261,7 +313,7 @@ function launch(b: TimelineBuilder, at: number, layers: readonly IndexedLayer[],
       b.projectile(start, shape.durationMs, index, layer, shape.path, spread ? i % 3 : shape.path === "fall" && count > 1 ? i % 3 : 0);
       arrive = Math.max(arrive, start + shape.durationMs);
     }
-    b.sound(at, /arrow|knife|shuriken|kunai|needle/.test(layer.key) ? SOUND.shot : EXTENSION_SOUND[layer.key] ?? "easyrpg-sound-magic1");
+    b.sound(at, layer.se ?? (/arrow|knife|shuriken|kunai|needle/.test(layer.key) ? SOUND.shot : EXTENSION_SOUND[layer.key] ?? "easyrpg-sound-magic1"));
   }
   // 첫 발이 닿는 순간부터 착탄 레이어가 시작된다(여러 발이면 첫 발 기준으로 겹쳐 보이게).
   const first = layers.length > 0 ? at + projectileShape(layers[0]!.layer.key).durationMs : at;
@@ -284,12 +336,13 @@ function returnHome(b: TimelineBuilder, at: number, blink = false): void {
 }
 
 /** 계약 스킬(RETRO_CLASS_SKILLS 한 항목) → 타임라인. */
-export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { readonly side?: RetroTimelineSide } = {}): RetroSkillTimeline {
+export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { readonly side?: RetroTimelineSide; readonly hits?: number } = {}): RetroSkillTimeline {
   const b = new TimelineBuilder();
+  b.hitCount = Math.max(1, Math.round(options.hits ?? 1));
   const castType = retroCastTypeFor(skill);
   const side = options.side ?? retroDefaultSide(skill);
   const { user, projectile, aim, impact } = partition(skill.layers);
-  const playUser = (at: number): void => { for (const { index, layer } of user) b.fx(at, index, layer); };
+  const playUser = (at: number): void => { for (const { index, layer } of user) b.layerFx(at, index, layer, false); };
   const multiShot = /multi/.test(skill.layers.map((layer) => layer.key).join(" ")) || /연사/.test(skill.name ?? "");
 
   switch (skill.motion) {
@@ -378,7 +431,7 @@ export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { re
     case "buff": {
       b.pose(0, "idle"); b.pose(60, "defend"); b.pose(260, "skill");
       playUser(260);
-      b.sound(260, retroSoundForLayer(skill.layers[0]?.key ?? "buff"));
+      b.sound(260, skill.layers[0]?.se ?? retroSoundForLayer(skill.layers[0]?.key ?? "buff"));
       const end = playImpact(b, 300, impact);
       if (b.firstImpactMid < 0 && user[0]) b.firstImpactMid = 260 + Math.round(user[0].layer.frames * (RETRO_FX_FRAME_MS[user[0].layer.frame] ?? 60) * 0.45);
       b.pose(Math.max(620, end - 120), "idle");
@@ -552,12 +605,13 @@ function launchMonster(b: TimelineBuilder, at: number, layers: readonly IndexedL
  * 계약 몬스터 스킬 → 타임라인. 모든 시각은 시퀀서의 적 비트(windup → impact → recover)에 대응하도록 첫 착탄이
  * approach 끝이 된다(retroMonsterSkillBeatMs). lunge 는 아군 파고들기(질주 130ms)와 같은 속도감이다.
  */
-export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill): RetroSkillTimeline {
+export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill, options: { readonly hits?: number } = {}): RetroSkillTimeline {
   const b = new TimelineBuilder();
+  b.hitCount = Math.max(1, Math.round(options.hits ?? 1));
   const castType = ELEMENT_CAST[skill.element ?? ""] ?? (skill.motion === "buff" ? "support" : "arcane");
   const side = retroMonsterSide(skill);
   const { user, projectile, aim, impact } = partition(skill.layers);
-  const playUser = (at: number): void => { for (const { index, layer } of user) b.fx(at, index, layer); };
+  const playUser = (at: number): void => { for (const { index, layer } of user) b.layerFx(at, index, layer, false); };
   let tail = MONSTER_TAIL_MS;
   switch (skill.motion) {
     case "lunge": {
@@ -646,8 +700,8 @@ export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill): Ret
 
 // ---- 시각 t 의 무대 상태 ----
 
-export interface RetroFxState { readonly event: number; readonly layer: number; readonly key: string; readonly anchor: Exclude<RetroFxAnchor, "projectile">; readonly frame: number; readonly cell: number }
-export interface RetroProjectileState { readonly event: number; readonly layer: number; readonly key: string; readonly frame: number; readonly cell: number; readonly progress: number; readonly path: RetroProjectilePath; readonly aim: number }
+export interface RetroFxState { readonly event: number; readonly layer: number; readonly key: string; readonly anchor: Exclude<RetroFxAnchor, "projectile">; readonly frame: number; readonly cell: number; readonly filter?: string }
+export interface RetroProjectileState { readonly event: number; readonly layer: number; readonly key: string; readonly frame: number; readonly cell: number; readonly progress: number; readonly path: RetroProjectilePath; readonly aim: number; readonly filter?: string }
 export interface RetroStageState {
   readonly pose: ExtendedBattlerPose;
   readonly flip: boolean;
@@ -659,6 +713,8 @@ export interface RetroStageState {
   /** 0~1 세기. */
   readonly dim: number;
   readonly flash: number;
+  /** 번쩍임 색(#rrggbb) — 연출 레코드가 색을 정했을 때만 붙는다. 없으면 흰색. */
+  readonly flashColor?: string;
   readonly shake: { readonly x: number; readonly y: number };
   /** 컷인 진행 0~1, 없으면 -1. */
   readonly cutin: number;
@@ -682,6 +738,7 @@ export function retroTimelineStateAt(timeline: RetroSkillTimeline, t: number): R
   let hidden = false;
   let dim = 0, flash = 0, cutin = -1, hitTarget = 0, hitAll = 0;
   let shake = { x: 0, y: 0 };
+  let flashColor: string | undefined;
   const fx: RetroFxState[] = [];
   const projectiles: RetroProjectileState[] = [];
   timeline.events.forEach((event, index) => {
@@ -697,7 +754,7 @@ export function retroTimelineStateAt(timeline: RetroSkillTimeline, t: number): R
       case "hide": if (t < event.at + event.durationMs) hidden = true; break;
       case "fx": {
         const step = Math.floor((t - event.at) / Math.max(1, event.frameMs));
-        if (step < event.cells.length) fx.push({ event: index, layer: event.layer, key: event.key, anchor: event.anchor, frame: event.frame, cell: event.cells[step]! });
+        if (step < event.cells.length) fx.push({ event: index, layer: event.layer, key: event.key, anchor: event.anchor, frame: event.frame, cell: event.cells[step]!, ...(event.filter && event.filter !== "none" ? { filter: event.filter } : {}) });
         break;
       }
       case "projectile": {
@@ -705,18 +762,25 @@ export function retroTimelineStateAt(timeline: RetroSkillTimeline, t: number): R
         if (elapsed < event.durationMs) projectiles.push({
           event: index, layer: event.layer, key: event.key, frame: event.frame,
           cell: Math.floor(elapsed / Math.max(1, event.frameMs)) % event.frames, progress: elapsed / event.durationMs, path: event.path, aim: event.aim,
+          ...(event.filter && event.filter !== "none" ? { filter: event.filter } : {}),
         });
         break;
       }
       case "screen": {
         const strength = envelope(t, event.at, event.durationMs, event.effect === "dim" ? 180 : 40);
         if (event.effect === "dim") dim = Math.max(dim, strength);
-        if (event.effect === "flash") flash = Math.max(flash, t < event.at + event.durationMs ? 1 - (t - event.at) / event.durationMs : 0);
+        if (event.effect === "flash") {
+          const value = t < event.at + event.durationMs ? 1 - (t - event.at) / event.durationMs : 0;
+          if (value > 0 && event.color) flashColor = event.color;
+          flash = Math.max(flash, value);
+        }
         if (event.effect === "cutin" && t < event.at + event.durationMs) cutin = (t - event.at) / event.durationMs;
         if (event.effect === "shake" && t < event.at + event.durationMs) {
           const decay = 1 - (t - event.at) / event.durationMs;
           const phase = Math.floor((t - event.at) / 40);
-          shake = { x: Math.round((phase % 2 === 0 ? 6 : -6) * decay), y: Math.round((phase % 3 === 0 ? 2 : -2) * decay) };
+          const amp = event.intensity ?? 6;
+          const ampY = event.intensity === undefined ? 2 : amp / 3;
+          shake = { x: Math.round((phase % 2 === 0 ? amp : -amp) * decay), y: Math.round((phase % 3 === 0 ? ampY : -ampY) * decay) };
         }
         break;
       }
@@ -729,7 +793,7 @@ export function retroTimelineStateAt(timeline: RetroSkillTimeline, t: number): R
       case "sound": break;
     }
   });
-  return { pose, flip, move, hidden, fx, projectiles, dim, flash, shake, cutin, hitTarget, hitAll };
+  return { pose, flip, move, hidden, fx, projectiles, dim, flash, ...(flashColor ? { flashColor } : {}), shake, cutin, hitTarget, hitAll };
 }
 
 /** (from, to] 구간에 울릴 효과음. 재생기가 프레임마다 부른다. */

@@ -1,3 +1,4 @@
+import { BATTLE_AURA_IDS, BATTLE_AURA_LABELS, normalizeBattleAura, resolveStateAura } from "@/assets/battleStateAuras";
 import { numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { stateBehavior } from "@/battle/battleStates";
@@ -115,6 +116,14 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
             ["", ...equipmentSlots(store.getCurrent()).map((slot) => slot.id)], (slot) => update({ disablesEquipSlot: slot || undefined })),
           el("p", { class: "db-skill-card-note", text: "이 상태인 동안 그 슬롯 장비의 능력치를 잃습니다(팔 부상 → 무기 등)." }),
         ], "db-state-panel-part-loss"),
+        panel("전투 오라", [
+          selectField("걸려 있는 동안 몸에 남는 표시", "db-state-battle-aura", normalizeBattleAura(state.battleAura) ?? "", [
+            { id: "", name: resolveStateAura(state.id) ? `자동 — ${BATTLE_AURA_LABELS[resolveStateAura(state.id)!]}` : "자동 (없음)" },
+            { id: "none", name: "끔" },
+            ...BATTLE_AURA_IDS.map((id) => ({ id, name: BATTLE_AURA_LABELS[id] })),
+          ], (aura) => update({ battleAura: aura || undefined })),
+          el("p", { class: "db-skill-card-note", text: "retro2003 전투에서 이 상태가 걸린 동안 그 배틀러 몸에 계속 남는 색·입자 표시입니다(그림 시트 없음)." }),
+        ], "db-state-panel-battle-aura"),
         el("div", { class: "db-state-summary", dataset: { testid: "db-state-ontology-summary" }, text: ontology.summary }),
       ],
     }),
