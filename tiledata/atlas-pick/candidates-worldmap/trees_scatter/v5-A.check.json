@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/trees_scatter/v5-A.pxg",
+ "set": "worldmap",
+ "id": "trees_scatter",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  3,
+  2,
+  42,
+  15
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.049
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.011
+  }
+ }
+}

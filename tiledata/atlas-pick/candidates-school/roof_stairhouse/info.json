@@ -1,0 +1,21 @@
+{
+ "id": "roof_stairhouse",
+ "slug": "roof_stairhouse",
+ "name": "옥상 계단실 문",
+ "scene": "옥상·운동장·교문",
+ "place": "out",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "옥상으로 나오는 계단실 벽 — 콘크리트 벽에 쇠 문 한 짝(작은 유리창·손잡이), 위 처마 턱, 문 위 작은 등. 맨 아래 줄 = 옥상 바닥과 만나는 줄.",
+ "palette_hint": "mconc 벽, locker 문, mglass 창",
+ "pair": [],
+ "worker": "s5"
+}

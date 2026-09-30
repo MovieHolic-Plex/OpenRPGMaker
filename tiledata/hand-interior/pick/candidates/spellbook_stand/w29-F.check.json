@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spellbook_stand/w29-F.pxg",
+ "id": "spellbook stand",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   16,
+   32
+  ],
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "why": "사용자 메모: 1x2 사이즈로 (세로로 키 큰 독서대)"
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "note": "마법서 받침 — 세로 1x2 대리석 기둥형: 청록 룬이 새겨진 흰 돌 기둥 위에 마법서가 떠 있고 마법 불꽃이 피어오름(차갑고 마법사 탑에 어울림)",
+ "ok": true
+}

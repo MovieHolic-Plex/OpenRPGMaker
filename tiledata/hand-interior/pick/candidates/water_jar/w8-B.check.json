@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/water_jar/w8-B.pxg",
+ "id": "water jar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "pillow",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  1,
+  15,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "윗줄 하이라이트(A)·왼쪽 어깨 밝게, 오른쪽 아래 두 단 어둡게, 발 오른쪽 아래 반투명 접지 그림자 3줄",
+ "ok": true
+}

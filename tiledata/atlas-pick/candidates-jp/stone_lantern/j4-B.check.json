@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/stone_lantern/j4-B.pxg",
+ "set": "jp",
+ "id": "stone_lantern",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.099
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.101
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "B 방향: 불이 켜진 밤 석등. 창 하나에 washi 불빛, 중대 옆으로 번지는 빛, 기둥은 한 단 어둡게 해서 빛 대비를 키움.",
+ "ok": true
+}

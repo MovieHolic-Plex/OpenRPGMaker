@@ -1,4 +1,5 @@
-import { hasRetroChoreography, hasRetroSkillContract, retroClassSkillBeatMs, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
@@ -554,6 +555,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         ?? retroEnemyReach(field, entry)?.approachMs,
       enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
         ?? retroEnemyReach(field, entry)?.recoverMs,
+      // 연출 레코드의 무게 손잡이(light/normal/heavy) — 접근·멈춤·회복 배율이 같이 바뀐다.
+      actionWeight: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => retroClassSkillWeight(field, entry, base, options.runtime.snapshot().timeline),
     } : {}),
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.

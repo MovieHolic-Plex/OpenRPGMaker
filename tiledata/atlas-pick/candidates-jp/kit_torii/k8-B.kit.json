@@ -1,0 +1,99 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_torii/k8-B.pxg",
+ "kit": "kit_torii",
+ "cand": "k8-B",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "t5",
+   "name": "작은 도리이 5칸(통로 1칸)",
+   "cells": [
+    5,
+    5
+   ],
+   "ctxSize": [
+    112,
+    112
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "t7",
+   "name": "도리이 7칸(통로 3칸)",
+   "cells": [
+    7,
+    6
+   ],
+   "ctxSize": [
+    144,
+    128
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "t9tall",
+   "name": "큰 도리이 9칸(통로 5칸·높게)",
+   "cells": [
+    9,
+    7
+   ],
+   "ctxSize": [
+    176,
+    144
+   ],
+   "through": "ns",
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "kasagi_m",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "hashira",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "nuki_m",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": false,
+   "failed": [
+    "banding",
+    "saturation",
+    "light"
+   ]
+  },
+  "easyMax": 0.054,
+  "refmapMax": 0.048
+ },
+ "ok": true
+}

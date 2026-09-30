@@ -1,0 +1,16 @@
+# 가구 사전 — 대장간 (8종)
+
+cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구(막힘) · wall 북쪽 벽 앞(막힘) · hang 벽면 윗줄 걸이(★) · flat 밟는 바닥 무늬(2층).
+
+- `anvil` 모루 — 검은 쇠모루(1칸). 대장간 작업장 용광로 앞 1~2칸에 1개. 옆에 담금질 통. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장 · 짝: forge, quench barrel, coal bin
+- `forge` 용광로 — 돌 후드가 달린 용광로, 숯불이 일렁인다(애니메이션). 대장간 북쪽 벽에 붙인다. 발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다 / 그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층 / 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장 · 짝: anvil, quench barrel, coal bin
+- `grindstone` 숫돌 — 나무 틀에 건 숫돌 바퀴. 대장간 작업장 바닥. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장·무기고 · 짝: weapon barrel
+- `quench barrel` 담금질 통 — 물이 찬 쇠테 담금질 통. 대장간 작업장 모루 바로 옆에 1개. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장 · 짝: forge, anvil, coal bin
+- `armor stand` 갑옷 거치대 — 갑옷을 입힌 거치대(키가 크다). 대장간 가게·성 무기고 바닥. 그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층 / 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·무기 가게·현관·입구 홀 · 짝: royal banner, throne, weapon rack
+- `weapon barrel` 무기 통 — 칼·창이 꽂힌 통. 대장간·무기점 바닥. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장·큰 홀·연회장 · 짝: shield, grindstone, weapon rack
+- `tool wall` 공구 걸이 — 망치·편자·집게를 건 벽 판. 대장간 벽면. 벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장·정비소 · 짝: quench barrel, forge, anvil
+- `coal bin` 숯 통 — 숯이 담긴 나무 통. 대장간 화로 바로 옆. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장·현관·입구 홀 · 짝: quench barrel, forge, anvil
+
+```json
+[{"id":"anvil","ko":"모루","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3544,3]]},{"id":"forge","ko":"용광로","kind":"wall","w":2,"h":1,"overhangPx":16,"animated":true,"cells":[[0,-1,3552,3],[1,-1,3564,3],[0,0,3576,3],[1,0,3588,3]]},{"id":"grindstone","ko":"숫돌","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3600,3]]},{"id":"quench barrel","ko":"담금질 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3601,3]]},{"id":"armor stand","ko":"갑옷 거치대","kind":"floor","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,3602,3],[0,0,3603,3]]},{"id":"weapon barrel","ko":"무기 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3604,3]]},{"id":"tool wall","ko":"공구 걸이","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,3605,3],[0,1,3606,3]]},{"id":"coal bin","ko":"숯 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4058,3]]}]
+```

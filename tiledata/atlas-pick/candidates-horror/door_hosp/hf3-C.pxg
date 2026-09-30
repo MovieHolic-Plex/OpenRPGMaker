@@ -1,0 +1,75 @@
+// door_hosp hf3-C (hf3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a tin 0
+@mat b ward 0
+@mat c murk 0
+@mat d rust 0
+@mblock 0 0
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbaaaabbaaaa
+aaaabbaccabbaaaa
+aaaabbaccabbaaaa
+aaaabbaccabbaaaa
+aaaabbaccabbaaaa
+aaaabbaccabbaaaa
+aaaabbaccabbaaaa
+aaaabbaccabbaaaa
+aaaabbaaaabbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaddbbbbbbaaaa
+aaaaddaaaaaaaaaa
+aaaaddaaaaaaaaaa
+aaaadbaaaaaaaaaa
+aaaadbbbbbbbaaaa
+aaaabbbbbdddaaaa
+aaaabbbbbdddaaaa
+aaaabbbbbdddaaaa
+aaaadddbbbbbaaaa
+aaaadddbbbbbaaaa
+aaaadddbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+0000000000000000
+0555555555555540
+0444444444444430
+0542222222222320
+0542433333323320
+0542433333323320
+0542434444323320
+0542434111323320
+0542434311323320
+0542434311323320
+0542434111323320
+0542434111323320
+0542434111323320
+0542434111323320
+0542434111323320
+0542433333323320
+0542433333323320
+0542334333323320
+0542225555553320
+0542115444423320
+0542132222223320
+0542133333323320
+0542433333333320
+0542433332223320
+0542433331113320
+0542333333323320
+0542222333323320
+0542111333323320
+0542433333323320
+1111111111111111

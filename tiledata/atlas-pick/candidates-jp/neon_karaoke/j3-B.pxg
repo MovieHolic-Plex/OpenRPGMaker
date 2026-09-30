@@ -1,0 +1,42 @@
+// neon_karaoke j3-B
+@size 48 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a lacq 3
+@mat b neon 3
+@mat c neonc 3
+@mblock 0 0
+....%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%....
+acccccccccccccccccccccccccccccccccccccccccccccca
+caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaac
+caaaaaabbaaaaaaabbbbbaaaaaaabbaaaaaaaabbaaaaaaac
+caabbbbbbbbbaaaabbbbbaaaabbbbbbbbbaaabbbbbbbbaac
+caabbbbbbbbbaaaaaaaaaaaaaaaabbabbaaabbaaaaaaaaac
+caaaaabbabbaaabbbbbbbbbaaaabbbabaaaabbbbbbbbbaac
+caaaaabbabbaaabbbbbbbbbaaaabbbbbaaaabbbbbbbbbaac
+caaaabbaabbaaaaaaaaabbaaaabbabbaaaaaaaaabbaaaaac
+caaaabbaabbaaaaaaaabbaaaabbaabbaaaaaaaabbaaaaaac
+caaabbaaabbaaaaaabbbaaaaaaaaabbaaaaaaabbaaaaaaac
+caabbaaaabbaaaaabbaaaaaaaaaaabbaaaaaabbaaaaaaaac
+caabbaabbbbaaabbbaaaaaaaabbbbbbaaaaabbaaaaaaaaac
+caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaac
+acccccccccccccccccccccccccccccccccccccccccccccca
+.%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%.
+@tblock 0 0
+................................................
+055555555555555555555555555555555555555555555550
+500000022000000022222000000022000000002200000003
+500222255222000255555200022255222200025522222003
+502555555555200253333200255555555520253355555203
+502533553553202222222220022253253202532222222003
+500222532532025555555552002553252002555555555203
+500002532532025333335532002535532002533355333203
+500025322532002222225320025325320000222253222003
+500025322532000002253200253225320000002532000003
+500253202532000025532000022025320000025320000003
+502532022532002253220000022225320000253200000003
+502532255332025532000000255553320002532000000003
+500220022220002220000000022222200000220000000003
+033333333333333333333333333333333333333333333330
+................................................

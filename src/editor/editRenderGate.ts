@@ -16,6 +16,16 @@
 
 export const EDIT_RENDER_IDLE_MS = 500;
 export const EDIT_RENDER_IDLE_HEARTBEAT_MS = 1000;
+const PENDING_MOVE_FRAMES = 2;
+// 렌더가 프레임을 이 값보다 오래 붙잡는 환경(소프트웨어 GL·저사양)에서는 렌더 사이 최소 간격을 둔다.
+// 보류된 렌더는 플래그·창이 남아 있어 반드시 나중에 그려진다 — 늦을 뿐 건너뛰지 않는다.
+export const EDIT_RENDER_SLOW_FRAME_MS = 30;
+export const EDIT_RENDER_SLOW_MIN_INTERVAL_MS = 100;
+// 느린 GL 에서는 루프를 rAF 대신 setTimeout 으로 돌린다. 실측(소프트웨어 GL, 마우스 이동 40회): rAF 콜백이
+// 하나라도 상시 돌면 Chromium 이 마우스 이동 디스패치를 프레임에 맞춰 늦춰 이동당 중앙값이 ~22ms 로 붙는다
+// (Phaser 루프를 재우면 ~11ms, 빈 rAF 루프만 돌려도 ~21ms, setTimeout 루프는 ~10ms). 게이트가 렌더를 스로틀하므로
+// 프레임 맞춤은 이미 의미가 없다. 프레임 간격이 이 값 밑으로 돌아오면(빠른 GPU) rAF 로 되돌린다.
+export const EDIT_RENDER_TIMER_RESUME_FRAME_MS = 20;
 
 export type EditRenderGateEvents = {
   readonly PRE_STEP: string;
@@ -42,7 +52,18 @@ export type EditRenderGateGame = {
   readonly events: GateEmitter;
   readonly scene: { update(time: number, delta: number): void; render(renderer: unknown): void };
   readonly renderer: { preRender(): void; postRender(): void } | null;
-  readonly loop: { readonly started: boolean; callback: (time: number, delta: number) => void };
+  readonly loop: {
+    readonly started: boolean;
+    callback: (time: number, delta: number) => void;
+    readonly raf?: {
+      readonly isRunning: boolean;
+      readonly isSetTimeOut: boolean;
+      readonly callback: (time: number) => void;
+      readonly delay: number;
+      start(callback: (time: number) => void, forceSetTimeOut: boolean, delay: number): void;
+      stop(): void;
+    } | null;
+  };
   readonly canvas?: HTMLCanvasElement | null;
 };
 
@@ -50,6 +71,15 @@ type GateState = {
   lastActiveAt: number;
   lastRenderAt: number;
   frameRequested: boolean;
+  /** 평범한 pointermove 가 예약한 남은 렌더 횟수. 500ms 창 대신 몇 프레임만 그린다. */
+  pendingFrames: number;
+  /** 직전 step 이 렌더했는가 — 다음 step 과의 간격이 렌더(플러시) 비용을 담는다. */
+  prevStepRendered: boolean;
+  lastStepAt: number;
+  /** 렌더 직후 프레임 간격의 이동평균(ms). 느린 GL 에서만 커진다. */
+  slowFrameEma: number;
+  /** 누르기·떼기 직후 첫 렌더는 스로틀을 건너뛴다 — 마지막 칸이 100ms 늦게 보이면 안 된다. */
+  flushNext: boolean;
   renderedFrames: number;
   skippedFrames: number;
 };
@@ -85,8 +115,25 @@ export function editRenderGateStats(game: object | null | undefined): { readonly
 export function installEditRenderGate(game: EditRenderGateGame, events: EditRenderGateEvents): void {
   if (gates.has(game) || typeof game.step !== "function" || !game.loop) return;
   const now = performance.now();
-  const gate: GateState = { lastActiveAt: now, lastRenderAt: -Infinity, frameRequested: false, renderedFrames: 0, skippedFrames: 0 };
+  const gate: GateState = { lastActiveAt: now, lastRenderAt: -Infinity, frameRequested: false, pendingFrames: 0, prevStepRendered: false, lastStepAt: now, slowFrameEma: 0, flushNext: false, renderedFrames: 0, skippedFrames: 0 };
   gates.set(game, gate);
+
+  // true: setTimeout 로 전환, false: rAF 로 복귀, null: 유지(히스테리시스). 루프가 자고 있거나 raf 가 없으면 무시.
+  // 전환은 마이크로태스크로 미룬다 — 루프 콜백 안에서 stop/start 하면 콜백이 끝난 뒤 옛 step 이 다음 rAF 를 또 걸어 루프가 둘이 된다.
+  let pacingSwitchQueued = false;
+  const setTimerPacing = (timer: boolean | null): void => {
+    const raf = game.loop.raf;
+    if (timer === null || pacingSwitchQueued || !raf || !raf.isRunning || raf.isSetTimeOut === timer) return;
+    pacingSwitchQueued = true;
+    queueMicrotask(() => {
+      pacingSwitchQueued = false;
+      const current = game.loop.raf;
+      if (!current || !current.isRunning || current.isSetTimeOut === timer) return;
+      const callback = current.callback;
+      current.stop();
+      current.start(callback, timer, current.delay);
+    });
+  };
 
   const gatedStep = (time: number, delta: number): void => {
     if (game.pendingDestroy) {
@@ -101,11 +148,17 @@ export function installEditRenderGate(game: EditRenderGateGame, events: EditRend
     emitter.emit(events.POST_STEP, time, delta);
     const renderer = game.renderer;
     const at = performance.now();
-    const render = renderer !== null && (
+    if (gate.prevStepRendered) gate.slowFrameEma = gate.slowFrameEma * 0.7 + (at - gate.lastStepAt) * 0.3;
+    gate.lastStepAt = at;
+    setTimerPacing(gate.slowFrameEma > EDIT_RENDER_SLOW_FRAME_MS ? true : gate.slowFrameEma < EDIT_RENDER_TIMER_RESUME_FRAME_MS ? false : null);
+    const throttled = !gate.flushNext && gate.slowFrameEma > EDIT_RENDER_SLOW_FRAME_MS && at - gate.lastRenderAt < EDIT_RENDER_SLOW_MIN_INTERVAL_MS;
+    const render = renderer !== null && !throttled && (
       gate.frameRequested
+      || gate.pendingFrames > 0
       || at - gate.lastActiveAt < EDIT_RENDER_IDLE_MS
       || at - gate.lastRenderAt >= EDIT_RENDER_IDLE_HEARTBEAT_MS
     );
+    gate.prevStepRendered = render;
     if (!render) {
       // InputManager 의 포인터 over/out 폴링이 PRE_RENDER 에 걸려 있다 — 그리지 않아도 보낸다.
       emitter.emit(events.PRE_RENDER, renderer, time, delta);
@@ -113,7 +166,9 @@ export function installEditRenderGate(game: EditRenderGateGame, events: EditRend
       return;
     }
     gate.lastRenderAt = at;
+    gate.flushNext = false;
     gate.frameRequested = false;
+    if (gate.pendingFrames > 0) gate.pendingFrames -= 1;
     gate.renderedFrames += 1;
     renderer.preRender();
     emitter.emit(events.PRE_RENDER, renderer, time, delta);
@@ -137,7 +192,15 @@ export function installEditRenderGate(game: EditRenderGateGame, events: EditRend
     const inside = Boolean(host && target && host.contains(target));
     if (event.type === "pointerdown") strokeFromCanvas = inside;
     const pressed = "buttons" in event && typeof event.buttons === "number" && event.buttons !== 0;
-    if (inside || (pressed && strokeFromCanvas) || (strokeFromCanvas && (event.type === "pointerup" || event.type === "pointercancel"))) wake();
+    if (inside || (pressed && strokeFromCanvas) || (strokeFromCanvas && (event.type === "pointerup" || event.type === "pointercancel"))) {
+      // 움직임만으로는 짧은 프레임 예산만 예약한다(입력 반영 1프레임 + 여유 1프레임). 칠하기가 바꾼 타일은
+      // store 구독이 requestEditRenderFrame 으로 따로 그린다. 500ms 매 프레임 창은 누르기·떼기·휠에만 연다.
+      if (event.type === "pointermove") gate.pendingFrames = PENDING_MOVE_FRAMES;
+      else {
+        wake();
+        if (event.type !== "wheel") gate.flushNext = true;
+      }
+    }
     if (event.type === "pointerup" || event.type === "pointercancel") strokeFromCanvas = false;
   };
   // 글자 입력칸(타일 검색·조수 입력창)의 타이핑은 캠버스를 깨우지 않는다. 단축키는 본문이 받고,

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/armchair_sheet/h4-A.pxg",
+ "set": "horror",
+ "id": "armchair_sheet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.071
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.073
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "천 덮인 안락의자(16×16): 높은 등받이 덩이, 주름 두 줄, 아래 끝 늘어짐, 오른쪽 다리 끝 하나 — 소파 A 와 같은 천 처리",
+ "ok": true
+}

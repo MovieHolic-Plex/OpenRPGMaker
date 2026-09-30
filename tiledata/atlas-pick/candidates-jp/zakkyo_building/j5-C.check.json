@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/zakkyo_building/j5-C.pxg",
+ "set": "jp",
+ "id": "zakkyo_building",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "refmap": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.164
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 42,
+ "bbox": [
+  0,
+  0,
+  47,
+  79
+ ],
+ "note": "재해석: 건물 몸통을 좁히고 층마다 폭이 다른 세로 간판이 왼쪽 밖으로 튀어나온 들쭉날쭉한 실루엣(번화가 간판 숲), 창은 층당 하나로 크게",
+ "ok": true
+}

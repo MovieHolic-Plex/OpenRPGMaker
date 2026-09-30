@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/plains_scatter/wv2-A.pxg",
+ "set": "worldmap",
+ "id": "plains_scatter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  3,
+  4,
+  44,
+  11
+ ],
+ "note": "World.png 식 조용한 소품: 바위 둘 / 꽃 넷 달린 작은 덤불 / 부드러운 풀 둔덕. 그림자 없이",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.079
+  }
+ }
+}

@@ -1,0 +1,24 @@
+{
+ "id": "field_crop",
+ "slug": "field_crop",
+ "name": "푸른 작물밭 덩이",
+ "scene": "들·길",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "6판: 목표 월드맵의 초록 작물밭 — 밀밭과 같은 세로 줄무늬 무늬, 올리브 초록 6단, 어두운 가장자리.",
+ "palette_hint": "wcrop 6단",
+ "worker": "v6",
+ "style": "mass"
+}

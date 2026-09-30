@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_rug/w10-A.pxg",
+ "id": "round rug",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 4,
+ "v5_colors": 4,
+ "bbox": [
+  1,
+  2,
+  30,
+  29
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  29
+ ],
+ "note": "대칭 체크 짜임 + 금 점선 띠 + 중앙 금 알, v5 다듬기",
+ "ok": true
+}

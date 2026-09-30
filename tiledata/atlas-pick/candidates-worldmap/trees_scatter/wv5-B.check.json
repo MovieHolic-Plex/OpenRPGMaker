@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/trees_scatter/wv5-B.pxg",
+ "set": "worldmap",
+ "id": "trees_scatter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.106
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  2,
+  0,
+  47,
+  15
+ ],
+ "note": "B: 깊이·명암 강조 — 활엽수는 윗면 밝고 밑면 아주 어둡게 + 잎 점무늬, 고목은 재빛 회색 가지 갈래에 금이 간 줄기, 야자는 굵은 잎 일곱 갈래가 우산처럼 처지고 왼쪽으로 기운 줄기.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.285
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.066
+  }
+ }
+}

@@ -1,0 +1,78 @@
+// s5 후보 — s5-C.pxg
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a vdwood
+@mat b vwood
+@mat c mglass
+@mat d mwhite
+@mat e vbrass
+@mat f vgreen
+@mat g vblue
+@mat h vred
+@mblock 0 0
+................................
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaab.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abccccccccccccccccccccccbbb..
+...abccccccccccccccccccccccbbb..
+...abcccccdcccccceffcccccccbbb..
+...abccggcccchhccfffccbbcccbbb..
+...abccggcccchhccfffccbbcccbbb..
+...abccggcccchhccfffccbbcccbbb..
+...abcaaaaaaaaaaaaaaaaaaaacbbb..
+...abcaaaaaaaaaaaaaaaaaaaacbbb..
+...abcccccchhcccccccffcccccbbb..
+...abcccccchhccgggccffcccccbbb..
+...abcccccchhccgggccffcccccbbb..
+...abcccccchhccgggccffcccccbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbeebbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbeebbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+...abbbbbbbbbbbbbbbbbbbbbbbbbb..
+..bbbb....................bbbb..
+..bbbb....................bbbb..
+@tblock 0 0
+................................
+.666666666666666666666666666663.
+.444444444444444444444444444443.
+.222222222222222222222222222223.
+...644444444444444444444444432..
+...644444444444444444444444432..
+...642222222222222222222222432..
+...642555555555555555555552432..
+...642555555555556445555552432..
+...642544555533554445544552432..
+...642544555533554445544552432..
+...642544555533554445544552432..
+...642555555555555555555552432..
+...642222222222222222222222432..
+...642555553355555554455552432..
+...642555553355444554455552432..
+...642555553355444554455552432..
+...642555553355444554455552432..
+...642222222222222222222222432..
+...644444444444444444444444432..
+...622222222222222222222222232..
+...644444444444444444444444432..
+...643333333333333333333333432..
+...643333333333443333333333432..
+...642222222222222222222222432..
+...644444444444444444444444432..
+...644444444444444444444444432..
+...643333333333443333333333432..
+...642222222222222222222222432..
+...644444444444444444444444432..
+..2222....................2222..
+..2222....................2222..

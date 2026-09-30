@@ -3,7 +3,10 @@ import { actionSkillClearProperties, authoredSkillProperties, combatConditionSch
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
 import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
-import { nearbyRetroChoreographies, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
+import { nearbyRetroChoreographies, resolveSkillChoreography, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
+import { BATTLE_AURA_IDS, normalizeBattleAura } from "@/assets/battleStateAuras";
+import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
+import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
 // editor/tools/dbTools.ts
 // DB 쓰기 툴: upsert_item / upsert_enemy / upsert_troop / upsert_actor / upsert_skill
 //            / upsert_equipment / upsert_class / define_promotion / upsert_state / upsert_common_event
@@ -777,6 +780,7 @@ const stateRecordSchema = objectSchema({
   lockedParameters: stringArraySchema(),
   runtimeEffects: stateRuntimeEffectsSchema,
   disablesEquipSlot: stringSchema("부위 손실: 이 상태인 동안 이 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다"),
+  battleAura: stringSchema("전투 지속 오라(retro2003): 상태가 걸려 있는 동안 몸 위에 남는 표시. freeze-grey|berserk-pulse|shield-shimmer|wet-drip|poison-bubble|dark-fog|petrify-still|regen-sparkle, none=끔. 비우면 기본 상태(독·스톱·버서크·프로텍트·실드·젖음·암흑·석화·재생)만 자동"),
 }) as RecordSchema;
 
 function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {
@@ -1144,7 +1148,7 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
  * retroChoreographyId 검사. 존재하지 않는 id 는 정규화가 그대로 두어 전투에서 조용히 기본 연출이 되므로,
  * 여기서 거부하고 비슷한 계약 후보를 돌려준다. 빈 문자열은 해제.
  */
-function validateSkillRetroPatch(patch: unknown): void {
+function validateSkillRetroPatch(draft: Project, patch: unknown): void {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
   const value = (patch as Record<string, unknown>).retroChoreographyId;
   if (value === undefined || value === null) return;
@@ -1153,9 +1157,11 @@ function validateSkillRetroPatch(patch: unknown): void {
   }
   const id = value.trim();
   if (!id || retroChoreographyKind(id)) return;
-  const near = nearbyRetroChoreographies(id).map((entry) => `${entry.id}(${entry.name}, ${entry.motion})`);
+  const records = draft.database.skillChoreographies ?? [];
+  if (records.some((record) => record.id === id)) return;
+  const near = nearbyRetroChoreographies(id, 5, records).map((entry) => `${entry.id}(${entry.name}, ${entry.motion})`);
   throw new ToolError(
-    `존재하지 않는 retroChoreographyId: ${id}${near.length ? ` — 비슷한 후보: ${near.join(", ")}` : ""}. list_retro_choreographies 로 motion/element/query 를 좁혀 정확한 id 를 고르세요.`,
+    `존재하지 않는 retroChoreographyId: ${id}${near.length ? ` — 비슷한 후보: ${near.join(", ")}` : ""}. list_retro_choreographies 로 motion/element/query 를 좁혀 정확한 id 를 고르거나, 새 연출은 upsert_choreography·duplicate_choreography 로 chor_ 레코드를 먼저 만드세요.`,
     { code: "retro-choreography-not-found" },
   );
 }
@@ -1603,16 +1609,24 @@ const upsertSkill: ToolDefinition = {
   run(draft, args): ToolExecResult {
     validateSkillCombatPatch(args.skill);
     validateSkillTechPatch(draft, args.skill);
-    validateSkillRetroPatch(args.skill);
+    validateSkillRetroPatch(draft, args.skill);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
     const warnings: string[] = [];
     dropUnknownAnimationId(draft, record, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
-    return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
+    const auto = autoChoreographyNote(draft, record);
+    return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
+
+/** 계약·연출 레코드·고정 레시피가 없는 스킬은 기전·속성·범위로 자동 배정된 연출을 쓴다. 그 결과를 알려 준다(바꾸려면 retroChoreographyId). */
+function autoChoreographyNote(draft: Project, record: SkillRecord): string | undefined {
+  if (record.retroChoreographyId || resolveSkillChoreography(record, draft.database.skillChoreographies) || RETRO_SKILL_RECIPES[record.id]) return undefined;
+  const auto = recommendRetroChoreography(record);
+  return auto ? `연출 자동 배정: ${auto.label} — 바꾸려면 retroChoreographyId` : undefined;
+}
 
 const upsertEquipment: ToolDefinition = {
   name: "upsert_equipment",
@@ -1715,6 +1729,10 @@ const upsertState: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("state", stateRecordSchema, { id: "state_poison", name: "독", runtimeEffects: { hpDamagePercentPerTurn: 5 } }),
   run(draft, args): ToolExecResult {
+    const rawAura = (args.state as { battleAura?: unknown } | undefined)?.battleAura;
+    if (rawAura !== undefined && rawAura !== "" && !normalizeBattleAura(rawAura)) {
+      throw new ToolError(`state.battleAura '${String(rawAura)}' 는 없는 오라입니다. 가능: ${BATTLE_AURA_IDS.join(", ")}, none`);
+    }
     const record = normalizeStateRecord(mergeRecord(draft.database.states, args.state, "state", stateRecordSchema, { id: "state_poison", name: "독" }) as Partial<StateRecord> & Pick<StateRecord, "id" | "name">);
     const outcome = upsertById(draft.database.states, record);
     return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };

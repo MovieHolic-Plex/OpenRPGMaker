@@ -1,0 +1,42 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat m stone
+@mat n black
+@mat o wood
+@mat p iron
+@mat q dwood
+@mblock 0 0
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmnnnnnnnnnnnnmm
+mmnnnmmmmmnnnnmm
+mmnnmmmmmmmmnnmm
+mmnnmmmmmmmmnnmm
+mmnnnnnnnnnnnnmm
+mmnnmmmmmmmmmmmm
+mmnnmmmmmmmmmmmm
+mmnnmmmmmmmmmmmm
+mmnnnnnnnnnnnnmm
+mmnnmmmmmmmmmmmm
+mmnnmmmmmmmmmmmm
+mmnnmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+@tblock 0 0
+6656666566665661
+6444444444444421
+6400000000000021
+6400011111000021
+6400222222220021
+6400333333330021
+6401111111111021
+6422444444445521
+6422333333334421
+6422333333334421
+6411111111111121
+6422555555555521
+6422444444444421
+6422444444443321
+5222222222222221
+0000000000000000

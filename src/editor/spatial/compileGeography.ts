@@ -1,4 +1,4 @@
-import { deserialize } from "@/project/io";
+import { isolateProject } from "./compileIsolation";
 import { appendToTree, containsMap } from "@/project/mapTree";
 import { isOwnedSpatialBinding } from "@/project/spatial/bindings";
 import { own, requireOccurrenceAssociations } from "@/project/spatial/domain";
@@ -139,5 +139,5 @@ export function compileGeography(context: SpatialCompileContext, compileChild: (
   const start = selected ? pointFor(selected) : extent.ports[0] ?? compiled.entries[0];
   if (!start) throw new SpatialCompileError("entry", occurrence.id);
   validateOverviewAccess(project, occurrence.id, { mapId: id, x: start.x, y: start.y });
-  return deserialize(JSON.stringify(project));
+  return isolateProject(project);
 }

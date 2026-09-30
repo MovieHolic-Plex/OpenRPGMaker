@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dart_board/w11-F.pxg",
+ "id": "dart board",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 다트판은 2x2 로 하되, 66% 정도만 차지하는 큰 버전으로."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 16,
+ "v5_colors": 7,
+ "bbox": [
+  5,
+  5,
+  25,
+  25
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "동심 과녁 + 나무 테 + 오른쪽 아래 그림자, 다트 두 자루(빨강·노랑 깃)가 꽂힌 놀이방 분위기",
+ "ok": true
+}

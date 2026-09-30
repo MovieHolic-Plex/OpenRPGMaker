@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/conifer/v4-A.pxg",
+ "set": "worldmap",
+ "id": "conifer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.118
+ },
+ "refmap": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "banding"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  2,
+  0,
+  47,
+  60
+ ],
+ "note": "4판 침엽수 몸통: 짙은 바닥. 뾰족 수관은 conifer_crowns 겹판.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.199
+  },
+  "refmapWorld": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.152
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     4,
+     5,
+     5,
+     5,
+     5,
+     5,
+     4,
+     5,
+     5,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4
+    ],
+    "s": [
+     4,
+     3,
+     3,
+     5,
+     5,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     5,
+     6,
+     5,
+     5,
+     4
+    ],
+    "w": [
+     5,
+     5,
+     5,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     5,
+     5,
+     5,
+     4
+    ],
+    "e": [
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4
+    ]
+   },
+   "strait": 6,
+   "steps": {
+    "n": 1,
+    "s": 2,
+    "w": 2,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 3,
+    "w": 2,
+    "e": 1
+   },
+   "joinWorst": 2
+  },
+  "seam": 0.71
+ }
+}

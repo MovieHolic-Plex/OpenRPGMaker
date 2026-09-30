@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/plains_scatter/wv2-B.pxg",
+ "set": "worldmap",
+ "id": "plains_scatter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  2,
+  5,
+  46,
+  13
+ ],
+ "note": "그림자 강조: 세 바위를 쌓고 SE 로 ~ 그림자, 덤불 밑동 어둡게, 둔덕에도 SE 그림자",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.062
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.09
+  }
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "id": "floor_checker",
+ "slug": "floor_checker",
+ "name": "흑백 체크 바닥",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 8px 체크(회백·짙은 회 두 색, 체크끼리 명도 차는 바닥 규칙보다 크게 허용하되 가장 밝은 단은 벽면보다 어둡게), 줄눈 1px 한 단 어둡게, 금 한 곳. 현관·욕실·마녀의 집 결.",
+ "palette_hint": "dust/grave 두 색",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "바닥(체크)",
+ "worker": "hf2",
+ "set_with": [
+  "wall_manor_damask",
+  "wall_manor_stripe",
+  "wall_wood_panel",
+  "floor_manor_plank",
+  "floor_manor_carpet",
+  "carpet_runner"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:check",
+   "name_ko": "대리석 체크",
+   "atlas": {
+    "x": 96,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

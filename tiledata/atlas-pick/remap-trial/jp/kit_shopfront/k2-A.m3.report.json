@@ -1,0 +1,86 @@
+{
+ "src": "tiledata/atlas-pick/candidates-jp/kit_shopfront/k2-A.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/jp/kit_shopfront/k2-A.m3.pxg",
+ "size": [
+  128,
+  96
+ ],
+ "stat": {
+  "ramp": 82,
+  "weak": 5
+ },
+ "weak": [
+  {
+   "frm": "#a7d4db",
+   "nearest": "#9eb0e0",
+   "position": "garasu5",
+   "px": 1
+  },
+  {
+   "frm": "#9cc6cc",
+   "nearest": "#9eb0e0",
+   "position": "garasu4",
+   "px": 1
+  },
+  {
+   "frm": "#d6d8d5",
+   "nearest": "#9eb0e0",
+   "position": "garasu6",
+   "px": 1
+  },
+  {
+   "frm": "#a0c4f0",
+   "nearest": "#7b9cf7",
+   "position": "kon4",
+   "px": 1
+  },
+  {
+   "frm": "#8ad0a0",
+   "nearest": "#53c776",
+   "position": "midori4",
+   "px": 1
+  }
+ ],
+ "ambiguous": {
+  "#56585a": 1,
+  "#dee0dd": 2,
+  "#b9bbb8": 2,
+  "#4e5053": 1,
+  "#3c3e41": 1,
+  "#b6b6b0": 2,
+  "#0d1b2e": 1
+ },
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 76,
+ "droppedBy": {
+  "%": 10,
+  "-": 66
+ },
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 61,
+ "ramps": [
+  "aka",
+  "conc",
+  "daidai",
+  "garasu",
+  "hodo",
+  "ita",
+  "kawara",
+  "kii",
+  "kinari",
+  "kon",
+  "midori",
+  "shiro",
+  "soil",
+  "sora",
+  "sumi",
+  "tairu",
+  "tekko",
+  "yoru",
+  "yuka"
+ ]
+}

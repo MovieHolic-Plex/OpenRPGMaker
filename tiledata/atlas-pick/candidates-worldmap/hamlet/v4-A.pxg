@@ -1,0 +1,32 @@
+// hamlet v4-A (4판: 3판 색·물 그대로, 모양 다시)
+@size 16 16
+@cell 16
+@palette ../../palette/worldmap3.pal
+@layer main
+@mat a wink 0
+@mat b wroofb 4
+@mat c wroofb 2
+@mat d wroofr 4
+@mat e wroofr 2
+@mat f wplast 5
+@mat g wplast 4
+@mat h wplast 3
+@mat i wbark 2
+@mat j wbark 1
+@mblock 0 0
+................
+................
+.........aaaaa..
+........abbbbca.
+..aaaaaabbbbbbca
+.addddeaccccccca
+addddddeafgggha.
+aeeeeeeeafgggha.
+.afggghaafiigha.
+.afiighaafjjgha.
+.afjjghaafjjgha.
+.afjjgha.aaaaa..
+..aaaaa.........
+................
+.--------------.
+...-----------..

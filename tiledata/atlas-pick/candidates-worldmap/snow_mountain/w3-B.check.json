@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow_mountain/w3-B.pxg",
+ "set": "worldmap",
+ "id": "snow_mountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "light",
+   "dither"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "mountain B와 같은 결 — 눈 면을 밝게, 그늘면은 푸른 회색으로 대비 키움, 남동 발치 ~ - 그림자.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.121
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.191
+  },
+  "seam": 0.85
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "class_clock",
+ "slug": "class_clock",
+ "name": "교실 둥근 시계",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "칠판 위 둥근 벽시계. 흰 판·검은 테, 굵은 시침·분침(2px, 10시 10분쯤), 12·3·6·9 자리 점. 16px 안에서 원이 찌그러지지 않게.",
+ "palette_hint": "vwhite 판, vblack 테·바늘",
+ "pair": [],
+ "worker": "s5"
+}

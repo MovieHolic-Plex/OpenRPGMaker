@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hang_ham/w4-C.pxg",
+ "id": "hang:ham",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  10
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  9
+ ],
+ "note": "다시 그리기: 세 개 모두 같은 물방울 다리햄(4x5)+짚끈 가로 감김, 보 양끝 마감, 간격 2px 로 또렷하게",
+ "ok": true
+}

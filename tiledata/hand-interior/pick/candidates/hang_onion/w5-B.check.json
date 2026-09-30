@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hang_onion/w5-B.pxg",
+ "id": "hang:onion",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  11
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  9
+ ],
+ "note": "A 형태에 벽에 드리운 오른쪽 아래 그림자(~/-)를 넣어 양파 다발이 벽에서 떠 보이게 함",
+ "ok": true
+}

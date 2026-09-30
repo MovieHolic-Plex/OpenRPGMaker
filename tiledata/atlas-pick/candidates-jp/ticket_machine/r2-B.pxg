@@ -1,0 +1,81 @@
+// ticket_machine r2-B
+@size 48 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b kblue 3
+@mat c kgreen 3
+@mat d korange 3
+@mat e lacq 3
+@mat f mconc 3
+@mat g mmetal 3
+@mat h neonc 3
+@mat i taxi 3
+@mat j washi 3
+@mblock 0 0
+.ggggggggggggggggggggggggggggggggggggggggggggg..
+.gfffffffffffffffffffffffffffffffffffffffffffg..
+.gffbbbfjjfaaafjjfcccfjjfdddfjjfiiifjjfbbbfjjg..
+.gffffffjffffffjffffffjffffffjffffffjffffffjfg..
+.gfffffffffffffffffffffffffffffffffffffffffffg..
+.gffcccfjjfdddfjjfiiifjjfbbbfjjfaaafjjfcccfjjg..
+.gffffffjffffffjffffffjffffffjffffffjffffffjfg..
+.gfffffffffffffffffffffffffffffffffffffffffffg..
+.gfffffffffffffffffffffffffffffffffffffffffffg..
+.ggggggggggggggggggggggggggggggggggggggggggggg..
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+gghhhgbgagcgdghghhhgbgagcgdghghhhgbgagcgdgggggg.
+ggeehgbgagcgdghgeehgbgagcgdghgeehgbgagcgdgggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+ggeeeeeeeeeeeghgeeeeeeeeeeeghgeeeeeeeeeeegggggg.
+ggehhhhhhhhheghgehhhhhhhhheghgehhhhhhhhhegggggg.
+ggehddhhehhheghgehcchhehhheghgehaahhehhhegggggg.
+ggehhhhhhhhheghgehhhhhhhhheghgehhhhhhhhhegggggg.
+ggehcchhhehheghgehaahhhehheghgehbbhhhehhegggggg.
+ggehhhhhhhhheghgehhhhhhhhheghgehhhhhhhhhegggggg.
+ggeeeeeeeeeeeghgeeeeeeeeeeeghgeeeeeeeeeeegggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+gggeeeeeegeegghggeeeeeegeegghggeeeeeegeeggggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+gggggggggggggghggggggggggggghgggggggggggggggggg.
+..~~~%%%%%%~~~~~~%%%%%%%%~~~~~~%%%%%%%%~~~~~~~..
+...-%%%%%%--------%%%%%%--------%%%%%%-------...
+@tblock 0 0
+.222222222222222222222222222222222222222222220..
+.200000000000000000000000000000000000000000000..
+.200111010011101001110100111010011101001110100..
+.200000000000000000000000000000000000000000000..
+.200000000000000000000000000000000000000000000..
+.200111010011101001110100111010011101001110100..
+.200000000000000000000000000000000000000000000..
+.200000000000000000000000000000000000000000000..
+.200000000000000000000000000000000000000000000..
+.200000000000000000000000000000000000000000000..
+11111111111111011111111111110111111111111111110.
+16666666666666066666666666660666666666666644440.
+15444545454545054445454545450544454545454533330.
+14112424242424041124242424240411242424242422220.
+12222222222222022222222222220222222222222211110.
+14111111111112241111111111122411111111111221100.
+14144444444412241444444444122414444444441221100.
+14154455155512241544551555122415445515551221100.
+14155555555512241555555555122415555555551221100.
+14154455515512241544555155122415445551551221100.
+14133333333312241333333333122413333333331221100.
+14111111111112241111111111122411111111111221100.
+14333333333332243333333333322433333333333221100.
+14366666635532243666666355322436666663553221100.
+14300000030032243000000300322430000003003221100.
+14333333333332243333333333322433333333333221100.
+14333333333332243333333333322433333333333221100.
+12222222222222222222222222222222222222222200000.
+13333333333333033333333333330333333333333322220.
+11111111111111011111111111110111111111111100000.
+................................................
+................................................

@@ -89,7 +89,7 @@ export type PaletteFilterView = {
 };
 
 /** 선택 타일은 필터에 안 걸려도 항상 보여야 한다 — 안 그러면 "선택 중"인 칸이 사라진다. */
-function passesFilter(args: PaletteFilterView, tileId: number): boolean {
+function passesFilter(args: Pick<PaletteFilterView, "visibleTiles" | "selectedTile">, tileId: number): boolean {
   if (!args.visibleTiles) return true;
   return args.visibleTiles.has(tileId) || args.selectedTile === tileId;
 }
@@ -239,18 +239,24 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
       style: `grid-template-columns:repeat(${GRID_PALETTE_COLUMNS}, var(--chipset-cell))`,
     },
   });
+  // 그림 주소는 칸마다 박지 않고 판 하나의 변수로 둔다 — 칸마다 tilesetImageUrl(이식 조회)을 다시 부르지
+  // 않고, 타일 이식 베이크가 끝났을 때 칸을 다시 짓지 않고 변수만 바꾼다(applyPaletteSheetImage).
+  const backgroundImageUrl = tilesetImageUrl(args.tileset);
+  grid.style.setProperty(PALETTE_IMAGE_VAR, tilesetCssImageValue(backgroundImageUrl));
+  paletteSheetImages.set(sheet, backgroundImageUrl);
+  const imageDecor = { backgroundImageUrl, backgroundImageVar: PALETTE_IMAGE_VAR };
   // 6열 리플로우 팔레트라 필터는 **숨김**이 맞다 — 위치가 정보가 아니고, 결과가
   // 위로 몰려 스크롤 없이 보인다. 커스텀 아틀라스도 같은 세로 리플로우를 쓰되
   // 원본 타일 ID와 전체 셀은 유지한다.
   let shown = 0;
   for (const entry of model.autotiles) {
     if (!passesFilter(args, entry.representativeTile)) continue;
-    grid.append(makeGridCell(args, entry.representativeTile, entry.name));
+    grid.append(makeGridCell(args, entry.representativeTile, entry.name, imageDecor));
     shown += 1;
   }
   for (const tileId of model.tileIds) {
     if (!passesFilter(args, tileId)) continue;
-    grid.append(makeGridCell(args, tileId));
+    grid.append(makeGridCell(args, tileId, undefined, imageDecor));
     shown += 1;
   }
   installCellActivation(grid, args.onSelectTile);
@@ -279,6 +285,45 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
   return sheet;
 }
 
+const PALETTE_IMAGE_VAR = "--custom-palette-image";
+const paletteSheetImages = new WeakMap<HTMLElement, string>();
+const customPaletteViews = new WeakMap<HTMLElement, { visibleTiles: ReadonlySet<number> | null; selectedTile: number }>();
+
+/**
+ * 붙어 있는 팔레트 판의 그림만 바꾼다. 타일 이식 베이크가 끝나면 같은 타일셋의 그림 주소가 바뀌는데,
+ * 칸 1140개를 다시 짓지 않고 판의 CSS 변수 하나만 갈아 끼운다. 바꿨으면 true.
+ */
+export function applyPaletteSheetImage(sheet: HTMLElement, imageUrl: string): boolean {
+  if (paletteSheetImages.get(sheet) === imageUrl) return false;
+  const grid = sheet.querySelector<HTMLElement>(".chipset-grid");
+  if (!grid) return false;
+  grid.style.setProperty(PALETTE_IMAGE_VAR, tilesetCssImageValue(imageUrl));
+  paletteSheetImages.set(sheet, imageUrl);
+  return true;
+}
+
+/**
+ * 커스텀 아틀라스 판의 필터·선택을 제자리에서 바꾼다 — 칸을 하나도 다시 짓지 않고 `is-filtered-out` 만 맞춘다.
+ * 커스텀 팔레트는 안 맞는 칸을 숨기지 않고 흐리게만 하므로 칸 집합이 필터와 무관하다.
+ * 커스텀 판이 아니면 false(호출부가 다시 그린다).
+ */
+export function setCustomPaletteFilter(sheet: HTMLElement, visibleTiles: ReadonlySet<number> | null, selectedTile: number): boolean {
+  const view = customPaletteViews.get(sheet);
+  if (!view) return false;
+  const unchanged = view.selectedTile === selectedTile
+    && (view.visibleTiles === visibleTiles || (view.visibleTiles === null && visibleTiles === null));
+  view.visibleTiles = visibleTiles;
+  view.selectedTile = selectedTile;
+  if (unchanged) return true;
+  const grid = sheet.querySelector<HTMLElement>(".chipset-grid");
+  if (!grid) return false;
+  for (const cell of Array.from(grid.children)) {
+    const tile = Number((cell as HTMLElement).dataset.tileIndex);
+    cell.classList.toggle("is-filtered-out", !passesFilter(view, tile));
+  }
+  return true;
+}
+
 export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
   const sourceColumns = Math.max(1, args.tileset.tilesPerRow);
   const sourceRows = Math.max(1, Math.ceil(args.tileset.count / sourceColumns));
@@ -305,7 +350,12 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
   });
   const backgroundImageUrl = tilesetImageUrl(args.tileset);
-  grid.style.setProperty("--custom-palette-image", tilesetCssImageValue(backgroundImageUrl));
+  grid.style.setProperty(PALETTE_IMAGE_VAR, tilesetCssImageValue(backgroundImageUrl));
+  paletteSheetImages.set(sheet, backgroundImageUrl);
+  // 지연 로드되는 뒤쪽 칸은 만들어지는 **그때의** 필터·선택을 읽어야 한다. 시트를 다시 짓지 않고
+  // 필터·선택을 제자리에서 바꾸므로(setCustomPaletteFilter) 인자를 닫아 두면 옛 값으로 칠해진다.
+  const view = { visibleTiles: args.visibleTiles ?? null, selectedTile: args.selectedTile };
+  customPaletteViews.set(sheet, view);
   // Custom cells keep source coordinates, including empty cells between objects.
   // Large uploaded atlases routinely contain 2,000+ cells. Keep the first
   // viewport synchronous, then append the rest in short batches so button
@@ -318,11 +368,11 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     for (let index = from; index < to; index += 1) {
       const tileId = displayTiles[index];
       if (tileId === undefined) continue;
-      const cell = makePaletteCell(args, tileId, undefined, {
+      const cell = makePaletteCell({ ...args, selectedTile: view.selectedTile }, tileId, undefined, {
         backgroundImageUrl,
-        backgroundImageVar: "--custom-palette-image",
+        backgroundImageVar: PALETTE_IMAGE_VAR,
       });
-      if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
+      if (!passesFilter(view, tileId)) cell.classList.add("is-filtered-out");
       if (from > 0) cell.tabIndex = -1;
       cells.push(cell);
     }
@@ -471,7 +521,12 @@ export function installGridRoving(grid: HTMLElement, columns: number): void {
   });
 }
 
-function makeGridCell(args: MakeGridPaletteArgs, tileId: number, autotileName?: string): HTMLButtonElement {
+function makeGridCell(
+  args: MakeGridPaletteArgs,
+  tileId: number,
+  autotileName: string | undefined,
+  image: { readonly backgroundImageUrl: string; readonly backgroundImageVar: string },
+): HTMLButtonElement {
   const bannedReason = bannedTileReason(tileId);
   const waterKind = waterTileKind(tileId);
   const titleBase = autotileName !== undefined
@@ -479,6 +534,7 @@ function makeGridCell(args: MakeGridPaletteArgs, tileId: number, autotileName?: 
     : gridTileTitle(args.tileset, tileId);
   const title = bannedReason ? `${titleBase} [사용 금지: ${bannedReason}]` : waterKind ? `${titleBase} [${waterKind}]` : titleBase;
   return makePaletteCell(args, tileId, title, {
+    ...image,
     className: (autotileName !== undefined ? " oprn-autotile" : "") + (bannedReason ? " banned" : ""),
     badge: autotileName !== undefined ? "◆" : undefined,
   });

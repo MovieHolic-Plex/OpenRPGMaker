@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/dorm_closet/v34-A.pxg",
+ "set": "school",
+ "id": "dorm_closet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.161
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  1,
+  15,
+  31
+ ],
+ "note": "기숙사 옷장 3/4 — 밤색 나무 옷장, 밝은 윗면과 처마 그림자, 두 짝 문에 놋 손잡이",
+ "ok": true
+}

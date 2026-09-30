@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/kiosk_counter/s5-C.pxg",
+ "set": "school",
+ "id": "kiosk_counter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 31,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "실루엣 재해석: 줄무늬 차양이 씌워진 매점 창구 — 가운데 작은 유리장, 양옆 기둥, 과자 상자·계산기는 뒤 선반",
+ "ok": true
+}

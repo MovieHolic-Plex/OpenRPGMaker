@@ -1,0 +1,78 @@
+// s2-A.pxg → modern3 자동 재채색(remap_modern3.py)
+@size 64 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a conc 0
+@mat b hodo 0
+@mat c kii 0
+@mat d kinari 0
+@mat e kokuban 0
+@mat f shiro 0
+@mat g yoru 0
+@mblock 0 0
+................................................................
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeefeeefffeefffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeffeeeeefeeeefeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeefeeefffeeeffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeefeeefeeeeeefeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeefffeefffeefffeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadddddddddaaaaaaaa.
+..abbbfffffbbcccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbgggggggggbbbbbbb..
+..bbbbdddddbbdddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbgggggggggbbbbbbb..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+................................................................
+................................................................
+................................................................
+@tblock 0 0
+................................................................
+.66666666666666666666666666666666666666666666666666666666666661.
+.66666666666666666666666666666666666666666666666666666666666621.
+.66111111111111111111111111111111111111111111111111111111111121.
+.66222222222222222222222222222222222222222222222222222222222121.
+.66222222222222222222222222222222222222222222222222222222222121.
+.66222242224442244422222222222222233332333323333222222222222121.
+.66222442222242222422222222222222222222222222222222222222222121.
+.66222242224442224422222222222222233332333322222222222222222121.
+.66222242224222222422222222222222222222222222222222222222222121.
+.66222444224442244422222222222222233332333323322222222222222121.
+.66222222222222222222222222222222222222222333333333222222222121.
+.66222222222222222222222222222222222222222223333332222222222121.
+.66222222222222222222222222222222222222222222222222222222222121.
+.66222333233323332222222222222222222222222222222222222222222121.
+.66222222222222222223333333333333322222222222222222222222222121.
+.66222333233322222222222333333333322222222222222222222222222121.
+.66222222222222222222222222222222222222222222222222222222222121.
+.66222333233323322222222222222222222222222222222222222222222121.
+.66222222222222222222222222222222222222222223333333333332222121.
+.66222222222222222222222222222222222222222222222222222222222121.
+.66222222222222222222222222222222222222222222222222222222222121.
+.66222222222222222222222222222222222222222222222222222222222121.
+.62222222222222222222222222222222222222222222222222222222222221.
+.11111111111111111111111111111111111111111111122222222211111111.
+..666644444664446666666666666666666666666666660000000006666666..
+..666622222662226666666666666666666666666666660000000006666666..
+..333333333333333333333333333333333333333333333333333333333333..
+.11111111111111111111111111111111111111111111111111111111111111.
+................................................................
+................................................................
+................................................................

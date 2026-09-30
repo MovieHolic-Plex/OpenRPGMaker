@@ -1,0 +1,60 @@
+// 변형 C: 이음은 y24 판 x38 과 y0 판 x21(y0 판은 A·B 에 이음이 없어 끝없이 이어지므로). 옹이 없음. 결 위치를 A·B 와 다르게.
+@base 3-light.pxg
+@block 37 24
+.c.
+dcf *9
+.c.
+@px 41 27 c  41 31 c
+@block 20 0
+.c.
+ecg *9
+.c.
+// 판 0 (f)
+@block 24 2
+= 17e
+@block 3 6
+= 11e
+@block 28 8
+= 17e
+@block 5 4
+= 8g
+// 판 1 (e)
+@block 10 16
+= 21d
+@block 31 19
+= 15d
+@block 33 14
+= 8f
+// 판 2 (e)
+@block 3 27
+= 18d
+@block 21 28
+= 16d
+@block 40 31
+= 6d
+@block 6 30
+= 9f
+// 판 3 (f)
+@block 8 38
+= 21e
+@block 29 43
+= 16e
+@block 2 41
+= 9g
+// 끊기
+@block 36 0
+= 5f
+@block 4 12
+= 5e
+@block 22 24
+= 5e
+@block 10 36
+= 4f
+@block 40 10
+= 4f
+@block 12 22
+= 4e
+@block 20 34
+= 4e
+@block 36 46
+= 5f

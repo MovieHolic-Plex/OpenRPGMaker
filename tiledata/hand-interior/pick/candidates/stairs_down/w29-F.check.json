@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_down/w29-F.pxg",
+ "id": "stairs down",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "why": "사용자 메모: 2x2 로"
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "위로 젖힌 나무 뚜껑(경첩·놋 손잡이) 아래 나무틀 지하실 계단, 단 색이 안쪽으로 어두워짐, 집·가게 바닥에 어울리는 따뜻한 나무판",
+ "ok": true
+}

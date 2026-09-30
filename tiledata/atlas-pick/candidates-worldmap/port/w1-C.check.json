@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/port/w1-C.pxg",
+ "set": "worldmap",
+ "id": "port",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 21,
+ "bbox": [
+  0,
+  1,
+  31,
+  30
+ ],
+ "note": "실루엣 재해석: 큰 창고 하나+문 둘, 크레인, 긴 부두 기둥 4개, 배를 아래쪽 넓게 키운 큰 돛배(2x2 안에서 부두-배 비중 늘림)",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.043
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.028
+  }
+ }
+}

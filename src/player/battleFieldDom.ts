@@ -1,4 +1,5 @@
 import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
 import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
@@ -16,6 +17,7 @@ import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { CAST_SHEET_ROWS, EXTENDED_POSE_FRAME, castFrame, type ExtendedBattlerPose, POSE_FRAME, VICTORY_POSE_FRAME } from "@/battle/battlePose";
 import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import { resolveSceneryBiome } from "@/assets/battleSceneryCatalog";
 import type { BattleSkin } from "@/battle/skins/types";
 import {
   BATTLER_PLACEMENTS,
@@ -452,7 +454,7 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
   if (effectiveId && backdrop.dataset.backdropResourceId !== effectiveId) {
     backdrop.dataset.backdropResourceId = effectiveId;
     const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
-    backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
+    paintBackdropImage(backdrop, effectiveId, url);
     syncSceneBackdropVar(field);
     if (activeSkin().scenery === "layered") {
       const project = store.getCurrent();
@@ -584,6 +586,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     applyBattlerPose(node, presented.pose);
     // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.
     syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
+    syncBattleAura(node, presented.defeated ? [] : presentedStateIds(actor, presentation));
   }
 }
 
@@ -635,6 +638,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다
   // (실측: 불꽃이 닿기 전 「KO 74/144」 가 떴다).
   syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation) });
+  syncBattleAura(node, presented.defeated ? [] : presentedStateIds(enemy, presentation));
 }
 
 /**
@@ -875,6 +879,28 @@ function battleBackdropImage(url: string): string {
   return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
 }
 
+/** 겹 배경(retro2003 layered)이 이 전투 배경을 맡는가. 맡으면 단일 그림은 칠하지 않는다 — 전투 배경은 하나다.
+ *  단일 그림은 겹 배경을 못 읽었을 때의 대체로만 쓴다(battleScenery.ts, data-backdrop-fallback-url).
+ *  저작자가 고른 임의 그림(지형 판정 불가)은 겹 배경을 쓰지 않으므로 그대로 칠한다. */
+function layeredSceneryOwnsBackdrop(effectiveId: string | undefined): boolean {
+  const project = store.getCurrent();
+  return activeSkin().scenery === "layered"
+    && project.system.battleBackdrop !== "field" && project.system.battlePresentation !== "onField"
+    && resolveSceneryBiome(project, { backdropResourceId: effectiveId }) !== undefined;
+}
+
+/** 단일 그림을 칠하거나, 겹 배경이 맡으면 비워 두고 대체 url 만 적어 둔다. */
+function paintBackdropImage(backdrop: HTMLElement, effectiveId: string | undefined, url: string | null | undefined): void {
+  if (layeredSceneryOwnsBackdrop(effectiveId)) {
+    backdrop.style.backgroundImage = "";
+    if (url) backdrop.dataset.backdropFallbackUrl = url;
+    else delete backdrop.dataset.backdropFallbackUrl;
+    return;
+  }
+  delete backdrop.dataset.backdropFallbackUrl;
+  backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
+}
+
 function battleBackdrop(resourceId: string | undefined): HTMLElement {
   const backdrop = document.createElement("div");
   backdrop.className = "battle-backdrop";
@@ -889,7 +915,7 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
   if (effectiveId) backdrop.dataset.backdropResourceId = effectiveId;
   else backdrop.dataset.backdropFallback = "forest";
   backdrop.setAttribute("aria-label", "전투 배경");
-  if (url) backdrop.style.backgroundImage = battleBackdropImage(url);
+  paintBackdropImage(backdrop, effectiveId, url);
   return backdrop;
 }
 
@@ -1694,6 +1720,30 @@ function buffIconToken(stateId: string): string | null {
 
 function stateName(stateId: string): string {
   return store.getCurrent().database.states.find((state) => state.id === stateId)?.name ?? stateId;
+}
+
+/**
+ * 상태 지속 오라: 걸려 있는 상태의 battleAura 를 노드에 `data-battle-aura`(공백 구분)로 싣고,
+ * 입자용 겹침 span 을 하나 둔다. 필터·입자 그림은 retro2003 CSS(28-retro-state-aura.css)가 소유한다.
+ */
+function syncBattleAura(node: HTMLElement, stateIds: readonly string[]): void {
+  const auras = resolveBattlerAuras(stateIds, store.getCurrent().database.states);
+  const key = auras.join(" ");
+  if ((node.dataset.battleAura ?? "") === key) return;
+  if (key) node.dataset.battleAura = key;
+  else delete node.dataset.battleAura;
+  node.querySelector(":scope > .battle-aura-layer")?.remove();
+  if (!auras.length) return;
+  const layer = document.createElement("span");
+  layer.className = "battle-aura-layer";
+  layer.setAttribute("aria-hidden", "true");
+  for (const aura of auras) {
+    const part = document.createElement("span");
+    part.className = "battle-aura";
+    part.dataset.aura = aura;
+    layer.append(part);
+  }
+  node.append(layer);
 }
 
 function syncStatusIcons(node: HTMLElement, battler: BattleBattlerSnapshot): void {

@@ -43,3 +43,15 @@ D2 추가 리뷰에서 자체 class 계약과 borrowed monster 계약이 동시�
 - transient fixture로 실제 출하 `player.html`/exportProjectStoreShim을 통과했다. 정본 SQLite/원격 프로젝트에 쓰지 않았다. 사용자 프로젝트의 실제 저장/재로드나 전체 몬스터·직업 조합의 완료를 주장하지 않는다.
 - 회귀 테스트 파일 3개를 작성했으나 AGENTS.md의 실행 제한에 따라 **vitest/gates/전체 typecheck는 실행하지 않았다**. 현재 직접 확인 결과를 전체 게이트 통과로 해석하지 않는다.
 - 원본 motion 프로브의 party-left/전체 walk-frame 기대는 현재 아군 오른쪽 배치·기술 모션과 다른 낡은 기대여서 원본 리뷰에서도 제품 실패에서 제외했다. 이 수정에서는 해당 하네스를 바꾸거나 통과했다고 보고하지 않는다.
+
+## 최신 main 통합 — 2026-10-01
+
+`1a221eae6`(v0.43.2)과 충돌한 카탈로그·타임라인·전투 DOM·연출 플레이어 4개를 통합했다. 프로젝트 연출 레코드/자동 추천/손잡이(speed, tint, scale, screen, weight)를 보존하면서 정확한 스킬 ID·종류 간 기본 계약·자체 계약 우선순위를 유지한다. 프로젝트 레코드는 실제 시전자 종류로 합성한다. 관련 조회 설명과 OpenWiki 색인도 갱신했다.
+
+추가 직접 재현 근거는 `verify-shots/battle-merge-2026-10-01/`에 저장한다. `rules-probe.json`의 기존 재현 조건은 모두 false, `extra-rules.json`의 방어·감정·영구 스톱·cast 라우팅 조건은 모두 fixed=true다. 기존 저자 이름/타수와 자체 계약 우선순위도 유지된다.
+
+읽기 전용 추가 리뷰에서 main의 기존 한계도 확인했다: `onHit:each`는 묶인 대상 수와 타수를 혼동하고, speed 적용 후 FX 간격은 `90/speed`인데 반복 착탄 간격은 `90`으로 남는다. 위키의 기존 단일 대상 다단 재생 제한과 함께 별도 후속 대상으로 남기며, 이번 14건 수정으로 해결했다고 주장하지 않는다.
+
+기준 main CI [36742290145](https://github.com/MovieHolic-Plex/rpg-zzu/actions/runs/36742290145)는 self-hosted runner 통신 끊김 annotation으로 실패했다. 코드 타입 오류 출력이나 전체 게이트 통과 근거는 아니다. 로컬 vitest/gates/전체 typecheck는 이번 통합에서도 실행하지 않았다.
+
+통합 후 출하 화면 6개(양방향 기본 계약·동명이인·적 특수기·배우/적 프로젝트 연출)는 모두 fixed=true/page errors=0. 프로젝트 연출의 정확한 ID `chor_merge_probe`와 `gunner_scope` FX를 양쪽에서 관측했다. 배우/적 프로젝트 연출 종료 화면도 직접 열어 측면 필드와 창 배치를 확인했다.

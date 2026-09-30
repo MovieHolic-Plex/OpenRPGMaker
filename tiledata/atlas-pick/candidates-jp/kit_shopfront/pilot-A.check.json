@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_shopfront/pilot-A.pxg",
+ "set": "jp",
+ "id": "kit_shopfront",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 36,
+  "atLeast95": 0,
+  "max": 0.391
+ },
+ "refmap": {
+  "cells": 36,
+  "atLeast95": 0,
+  "max": 0.203
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 63,
+ "bbox": [
+  0,
+  0,
+  127,
+  95
+ ],
+ "note": "감독자 파일럿(거친 판) — 조립기·화면 증명용. 흰 타일 기둥·공통 띠 그늘/문턱 줄, 간판 띠 넷, 차양 주기 8px. 고를 거리 아님.",
+ "ok": true
+}

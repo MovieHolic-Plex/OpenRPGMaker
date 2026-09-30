@@ -1,0 +1,19 @@
+{
+ "id": "omikuji_rack",
+ "slug": "omikuji_rack",
+ "name": "오미쿠지 묶는 곳",
+ "scene": "신사 한 켠",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "나무 틀에 가로 줄(새끼줄 또는 철사) 두세 줄, 줄마다 흰 종이 오미쿠지 매듭이 촘촘히(흰 점 덩이 줄). 틀은 흰 나무, 작은 지붕 없이.",
+ "palette_hint": "hinoki 틀, washi·mwhite 종이 매듭",
+ "worker": "j3"
+}

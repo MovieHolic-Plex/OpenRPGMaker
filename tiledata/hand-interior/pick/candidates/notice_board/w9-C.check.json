@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/notice_board/w9-C.pxg",
+ "id": "notice board",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "noise"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  13
+ ],
+ "note": "위 널빤지가 튀어나온 게시판, 코르크 면을 크게 비우고 큰 쪽지 두 덩이만 붙여 덩어리 수를 줄임",
+ "ok": true
+}

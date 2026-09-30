@@ -34,6 +34,22 @@
 
 새 스킬은 자기 id 가 계약(`retroClassSkills`·`retroRosterSkills`·`retroMonsterSkills`)에 없어도 `SkillRecord.retroChoreographyId` 가 가리키는 계약의 연출(모션·층·소리·타격 간격)을 그대로 재생한다. 위력·비용·상태·범위는 레코드 값을 쓴다. 조회는 `src/assets/retroSkillCatalog.ts`의 직업/몬스터 resolver를 런타임과 편집기 무대·배지·서명이 같이 쓴다. 모든 계약 종류에 대해 자기 id를 먼저 선택하고 없을 때만 `retroChoreographyId`를 조회하므로 레이어와 타임라인이 같은 계약을 쓴다. 런타임은 타임라인의 정확한 **skillId**로 레코드를 찾으며 ID 없는 과거 엔트리만 이름으로 조회한다. 자기 id 가 계약이면 그쪽이 우선이라 빌린 값은 무시된다. 스킬 복제(편집기·조수)는 사본에 원본 계약 id 를 채운다. 내보내기 플레이어는 `pixel-fx` 폴더 전량을 번들하므로 자산 배선이 더 필요 없다. 증거: `verify-shots/retro-assistant/SUMMARY.md`(새 직업 「화염 검투사」 스킬 8개가 모두 빌린 연출을 재생).
 
+## 프로젝트 연출 레코드 — skillChoreographies (2026-09-30, A1)
+
+계약 카탈로그는 읽기 전용 **기본 연출**이고, 프로젝트가 자기 연출을 `database.skillChoreographies`(id `chor_<slug>`)로 갖는다. 조회는 `resolveSkillChoreography(ref, records?, want?)`(`src/assets/retroSkillCatalog.ts`) 하나: ① 스킬 id 가 계약이면 계약 → ② `retroChoreographyId` 가 가리키는 프로젝트 레코드 → ③ 그 id 가 계약이면 계약. 런타임은 행동의 `skillId`로 저작 스킬을 찾고(옛 ID 없는 기록만 이름 폴백), 편집기 무대·배지와 같은 조회를 쓴다. 자체 계약이 있으면 종류가 다른 조회에서도 빌린 계약으로 대체하지 않는다. 프로젝트 연출은 실제 시전자 종류에 맞춰 합성하고, 빌린 기본 계약은 원래 연출 종류와 실제 시전자 배치를 분리한다. 기본 연출은 프로젝트에 복사하지 않는다. 시트 프레임 폭·칸 수는 `retroFxSheetMeta(key)`(`retroSkillCatalog.ts`) 하나.
+- 레코드 `motion` 은 클래스 모션(dash-strike·leap-strike·blink-strike·flurry·spin·cast·shoot·buff·finisher)과 몬스터 모션(lunge·shoot·cast·breath·stomp·buff·finisher)의 **합집합**이다. 층은 최대 8, 레코드는 최대 500.
+- 층 옵션 `startMs`(0~5000)·`scale`(0.5~3)·`repeat`(1~6)·`onHit:"each"`(타수만큼 90ms 간격 복제). 옵션이 없는 계약 층의 타임라인은 바이트 그대로다(번들 4436개 타임라인이 기준 커밋과 동일).
+- 함정: 단일 대상 다단 스킬은 플레이어가 타수마다 **행동 전체를 다시 재생**한다(계획 hits=1 이 N번). `onHit:"each"` 복제는 여러 대상이 한 계획으로 묶이는 전체 범위기에서 보인다.
+- 증거: `verify-shots/retro-choreo-a1/SUMMARY.md`.
+- 편집기·조수(A2): 탭 「도트 연출」·갤러리·타임라인 편집기는 `openwiki/editor-database.md` 「도트 연출 탭」, 조수 도구(`upsert_choreography`·`duplicate_choreography`·`list_fx_sheets`·`preview_choreography`)는 `openwiki/editor-ai-tools.md`. 속도·무게·색조·화면·소리 손잡이(B단계)는 편집기에 칸이 없다.
+
+## 연출 손잡이 · 자동 추천 · 상태 오라 (2026-09-30, B)
+
+- **손잡이(`src/player/retroSkillChoreography.ts`)**: `speed` 는 타임라인 시각 전체를 나눈다(실측 approach 216/131/82ms · 첫 hitstop 720/438/281ms, 배율 0.6/1/1.6). `weight` 는 접근·복귀 속도와 hitstop 을 바꾼다(APPROACH .72/1/1.28, HITSTOP_SCALE 0/1/1.9, RECOVER_SCALE .68/1/1.45 — 접근·복귀는 미리 나눠 전체 시간은 같다). 관측되는 것은 `battle-hit-stop` 시간: light 없음 · normal ≈112ms · heavy ≈211ms. 빗나감·0 피해·회복은 항상 light. `tint` 는 `src/assets/retroChoreographyTints.ts` 9종(fire·ice·thunder·water·wind·earth·holy·dark·poison)의 `grayscale(1) sepia(1) hue-rotate saturate brightness contrast` 필터, 층 tint 가 우선. `screen` 은 shake·flash·dim·cutIn 을 전투 무대에 덧씌운다. 손잡이가 없으면 A1 과 동일(A1 덤프 sha256 `aa31514d…6f0`, 4436개 동일).
+- **자동 추천** `src/assets/retroChoreographyRecommend.ts` `recommendRetroChoreography`: 계약·레코드·정확 레시피·`retroChoreographyId` 가 **모두 없는** 스킬의 폴백일 뿐이다(옛 레시피·적 스킬 불변). 속성·타수·범위·계열로 계약 연출과 tint 를 고르고, 런타임·스킬 탭·`upsert_skill` 결과 노트가 같은 함수를 쓴다.
+- **상태 오라 `StateRecord.battleAura`** (`src/assets/battleStateAuras.ts`, CSS 전용): `freeze-grey`·`berserk-pulse`·`shield-shimmer`·`wet-drip`·`poison-bubble`·`dark-fog`·`petrify-still`·`regen-sparkle`. 기본 id 맵(state_poison→poison-bubble 등)이 있고 `resolveBattlerAuras` 가 중복을 합쳐 **최대 3개**만 남긴다. `battleFieldDom.syncBattleAura` 가 `data-battle-aura` 와 `.battle-aura-layer > .battle-aura[data-aura]` 를 만든다. CSS `styles/runtime/battle/28-retro-state-aura.css`(피격 깜빡임 중 양보, reduced-motion 존중).
+- 증거: `verify-shots/retro-choreo-b/SUMMARY.md`.
+
 ## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
 
 - **도트 결과(기본 메뉴 스킨 pixel, 포켓몬 제외)** 는 첫 화면이 세 창이다: 머리 창(승리 · EXP · 돈 · 전리품 이름, `battle-result-summary`) / 파티 창(걷는 그림 · Lv 전후 · EXP 막대 · LEVEL UP 또는 다음 Lv까지, `battle-result-party-<actorId>`) / 전리품 창(`battle-result-cards`: 소지금 「a → b」, 아이템 「보유 a → b」).
@@ -69,6 +85,7 @@
   - `data-battler-extended="true"`인 노드는 고해상도 짝·idle 스트립을 쓰지 않는다. pixelated + 정수 배율이며 대기는 CSS 1px 숨쉬기만 한다.
 - **진입** 전환 `shatter-2003`(흰 번쩍임 두 번 → 가로 줄무늬가 번갈아 좌우로 미끄러지며 닫힘), `_transitions.css`.
 - **겹 배경** `src/assets/battleSceneryCatalog.ts` + `src/player/battleScenery.ts` + `battle/26-battle-scenery.css`.
+  - **전투 배경은 하나다**(2026-09-30): 겹 배경이 맡는 전투(`layeredSceneryOwnsBackdrop`, battleFieldDom.ts)에서는 단일 그림을 칠하지 않는다 — 배경 노드 인라인 그림도, 장면 뒤판 `--battle-backdrop-url`(glass 계열 `::before`)도 비운다. 단일 그림 url 은 `data-backdrop-fallback-url` 에만 적고, 네 층을 못 읽었을 때만 깐다. 네 층은 진입 커버 동안 `preloadBattleScenery`(playSceneBattle.ts)로 미리 읽고, 준비돼 있으면 첫 프레임부터 깐다(늦으면 빈 배경에서 페이드인). 옛 결함: 단일 그림(어두운 숲)이 1~2초 보이다 겹 배경(낮 숲)으로 바뀌어 「전투 도중 배경이 바뀐다」 — 녹화 배경 밝기 35→119.
   그림: `public/assets/generated/battle-scenery/<plains|forest|cave|snow|desert>/{sky,far,mid,ground}.png`(640×360, sky 만 불투명, 도트 2배 nearest, ≤48색, 알파 0/255).
   재생성: `scripts/asset-gen/gen-battle-scenery.mjs`(원화 source.png·prompts 는 같은 폴더). 리소스 id `battle-scenery-<biome>` 은 배경 피커(`resourceOptions.matchesGeneratedKind` backdrop)에 뜬다.
   - 지형 결정 `resolveSceneryBiome`: 명시 `battle-scenery-*` → 알려진 배경 id 매핑(숲 레퍼런스→forest, 얼음→snow, 모래→desert, 하늘 파노라마·스킨 기본 배경→plains) → 지형 이름 낱말 → 기후 snow → 던전/동굴/실내 타일셋 → plains.

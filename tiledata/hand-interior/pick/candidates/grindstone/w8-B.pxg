@@ -1,0 +1,39 @@
+// w8-B x
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 6
+@mat B stone 5
+@mat C stone 4
+@mat D stone 3
+@mat a stone 2
+@mat A stone 1
+@mat h iron 5
+@mat i iron 2
+@mat k iron 3
+@mat w wood 6
+@mat v wood 4
+@mat e wood 1
+@mat f wood 2
+@mat p wood 6
+@mat m wood 5
+@mat n wood 4
+@mat g wood 3
+@mat q wood 5
+@mblock 0 0
+................
+.....aBsBCCa....
+....asssBBCCa...
+....ssBBBBDCCk..
+...assBBBBDDCkk.
+...sBBBBhiDDCCk.
+...CBBDDDDDDCCa.
+...aCCDDDDDCCa..
+....aCCDDDDCa...
+.eeeeeeeeeeeeee-
+.fpppppppppppmf-
+.fpmmmnnnmmmnne-
+.fppppppppppppe-
+.egggggggggggge-
+.eqnnnnnnnnnnge-
+.eeqgeeeeeeeqge-

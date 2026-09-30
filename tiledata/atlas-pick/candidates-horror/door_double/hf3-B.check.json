@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_double/hf3-B.pxg",
+ "set": "horror",
+ "id": "door_double",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "양문 B — 밝은 틀(6·5단)과 아주 짙은 문짝(1단), 밝은 패널 테두리 넷, 가운데 선은 0단 틈으로 또렷, 손잡이 밝은 놋쇠.",
+ "ok": true
+}

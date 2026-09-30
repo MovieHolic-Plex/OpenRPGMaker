@@ -1,0 +1,94 @@
+{
+  "label": "before",
+  "strokeMs": 6329,
+  "during": {
+    "toolbarKept": true,
+    "bannerKept": true,
+    "journeyChildKept": false,
+    "muts": {
+      "total": 1068,
+      "toolbar": 594,
+      "banner": 22,
+      "journey": 44,
+      "other": 408
+    },
+    "changes": 22
+  },
+  "after": {
+    "frames": 260,
+    "p50": 16.7,
+    "p95": 66.7,
+    "max": 116.7,
+    "over50": 40,
+    "longTasks": 45,
+    "longTaskMax": 107,
+    "longTaskSum": 2973,
+    "mutsTotal": {
+      "total": 1095,
+      "toolbar": 594,
+      "banner": 22,
+      "journey": 44,
+      "other": 435
+    },
+    "otherTop": [
+      [
+        "ai-panel > ASIDE.ai-chat-panel is-left-sidebar is-assista",
+        44
+      ],
+      [
+        "topbar-save-status > DIV.topbar-save-status",
+        44
+      ],
+      [
+        "db-footer-status > DIV.database-footer-status",
+        44
+      ],
+      [
+        "cursor-lower > SPAN.",
+        39
+      ],
+      [
+        "toolbar-save > BUTTON.studio-icon-button studio-save-button",
+        24
+      ],
+      [
+        "- > BODY.ai-chat-dock-float ai-command-bar-active",
+        22
+      ],
+      [
+        "ai-planning-reuse-scope > P.ai-planning-reuse-scope",
+        22
+      ],
+      [
+        "ai-planning-reuse > DIV.ai-planning-reuse-modes",
+        22
+      ],
+      [
+        "ai-planning-reuse-items > DIV.ai-planning-reuse-items",
+        22
+      ],
+      [
+        "ai-planning-reuse-preview > PRE.ai-planning-reuse-preview",
+        22
+      ],
+      [
+        "ai-planning-reuse-effect > P.ai-planning-reuse-effect",
+        22
+      ],
+      [
+        "ai-deck-rail-ctx > SPAN.ai-deck-rail-ctx",
+        22
+      ]
+    ],
+    "changes": 22,
+    "afterKept": {
+      "toolbar": true,
+      "banner": true,
+      "journeyChild": false
+    },
+    "toolbarText": "−2x+0.25x0.5x1x2x3x4x6x8x만들기다듬기검사AI 요청⋯",
+    "journeyText": "프로젝트✓ 이슬 장터 — 30분 · 맵 16개맵✓ 맵 변경 감지확인이벤트✓ 커밋 43개확인데이터참조 정상확인테스트플레이어 시작 전",
+    "bannerClass": "map-lock-banner is-hidden",
+    "toolbarChildren": 7
+  }
+}

@@ -1,0 +1,22 @@
+{
+ "id": "broken_window",
+ "slug": "broken_window",
+ "name": "깨진 복도 창",
+ "scene": "폐교 복도",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "복도 벽의 가로 긴 창(창틀 두 짝, 가운데 세로 틀): 왼쪽 유리 한 장이 깨져 뾰족한 구멍 가장자리만 남음, 밖은 밤(짙은 청), 오른쪽 유리엔 금 한 줄. 창 아래 벽에 달빛 번짐(?) 한 줄.",
+ "palette_hint": "tin/rot 창틀, murk 유리, night/void 밖, ? 달빛",
+ "worker_v1": "h2",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h2"
+}

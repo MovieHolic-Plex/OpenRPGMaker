@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stained_glass/w4-A.pxg",
+ "id": "stained glass",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 20,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  12,
+  14
+ ],
+ "note": "검정 틀을 돌 틀(왼쪽 위 밝게·오른쪽 아래 어둡게)로, 색유리마다 위 왼쪽 반짝임·아래 어둡게 2단, 납선은 어두운 검정 램프, 아래에 돌 턱 추가.",
+ "ok": true
+}

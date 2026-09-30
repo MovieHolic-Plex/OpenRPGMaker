@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ice_chest_fish_fishg_fishr/w5-B.pxg",
+ "id": "ice chest:fish+fishg+fishr",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 28,
+ "v5_colors": 31,
+ "bbox": [
+  0,
+  3,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "note": "A 위에 빛: 생선 아래 얼음에 그림자 한 줄(들뜬 느낌), 안벽 그늘, 서리 반짝임, 앞판 왼쪽 밝게 오른쪽 어둡게 + 바닥 반투명 그림자",
+ "ok": true
+}

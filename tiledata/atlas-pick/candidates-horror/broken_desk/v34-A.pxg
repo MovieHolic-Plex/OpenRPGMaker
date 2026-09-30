@@ -1,0 +1,43 @@
+// broken_desk v34-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat r rot 0
+@mat t tin 0
+@mat v void 0
+@mat w vdwood 0
+@mblock 0 0
+................
+................
+................
+................
+rrrrrrrrrr.w...w
+rrrrrrrrrr.w...w
+rrrrrrrrrr.w...w
+rrrrrrrrrr.w...w
+rrrrrrrrrrwwwwww
+rrrrrrrrrrwwwwww
+rrrrrrrrttwwwwww
+tt......ttwwwwww
+tt......ttwwwwww
+tt.t....ttwwwwww
+ttt.....ttwwwwww
+..vvvvvvttwwwwww
+@tblock 0 0
+................
+................
+................
+................
+1111111111.1...1
+1554444551.1...1
+1555554551.1...1
+1555444551.1...1
+1666666666121111
+1111111111644441
+1300000053644441
+11......13666661
+11......13111111
+11.0....13555551
+001.....13444441
+..00000000000000

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/grand_piano/s2-C.pxg",
+ "set": "school",
+ "id": "grand_piano",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.176
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  2,
+  1,
+  47,
+  31
+ ],
+ "note": "실루엣 재해석: 뚜껑을 높이 솟은 삼각 날개로 세우고 받침대를 대각선으로, 몸통은 큰 D자, 건반 띠를 굵게, 의자는 오른쪽 옆의 둥근 스툴. 한 색 실루엣만 봐도 열린 그랜드 피아노로 읽힘.",
+ "ok": true
+}

@@ -1,0 +1,41 @@
+{
+ "id": "gn-mall-entrance",
+ "slug": "gn_mall_entrance",
+ "name": "지하상가 입구",
+ "scene": "역·정류장",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "지하상가 입구 3×2. 지하철 출구: 넓은 인도(4칸) 가장자리에 차도와 나란히, 계단(가운데 아랫칸, F)의 남쪽 한 칸은 비운다. 번호판 색 = 노선(초록 2호선, 빨강 신분당선). 출구 번호는 사거리 네 모퉁이를 돌아가며.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-mall-entrance"
+ ],
+ "tiles": [
+  4530,
+  4531,
+  4532,
+  4560,
+  4561,
+  4562
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   63,
+   32
+  ]
+ }
+}

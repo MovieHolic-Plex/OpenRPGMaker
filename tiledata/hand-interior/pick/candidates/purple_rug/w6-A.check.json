@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/purple_rug/w6-A.pxg",
+ "id": "purple rug",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "noise",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "note": "위아래 흰 술과 금띠, 마름모 무늬띠, 금 마름모 메달리온으로 짠 양탄자답게 만듦",
+ "ok": true
+}

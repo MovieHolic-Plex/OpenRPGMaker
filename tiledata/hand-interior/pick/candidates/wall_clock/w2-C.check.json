@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wall_clock/w2-C.pxg",
+ "id": "wall clock",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.128
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 7,
+ "bbox": [
+  3,
+  2,
+  12,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  14
+ ],
+ "note": "재해석: 둥근 시계를 뾰족 지붕 뻐꾸기집 모양(각진 문자판)으로, 진자는 그대로",
+ "ok": true
+}

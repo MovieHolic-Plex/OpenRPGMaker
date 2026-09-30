@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/confessional/w22-G.pxg",
+ "id": "confessional",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 15,
+ "bbox": [
+  1,
+  8,
+  46,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "note": "방향 A: 금 띠 상자 — 처마에 금 띠·지붕 위 금 십자, 왼쪽 옆면 어둡게, 보라 커튼 두 칸과 창살 사제 문, 두 단 받침대가 몸통보다 넓게 나옴",
+ "ok": true
+}

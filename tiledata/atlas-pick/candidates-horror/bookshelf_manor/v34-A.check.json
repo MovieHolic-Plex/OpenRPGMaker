@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bookshelf_manor/v34-A.pxg",
+ "set": "horror",
+ "id": "bookshelf_manor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 21,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "3/4 재작도: 윗면 7행(뒤 모서리선·밝은 면·앞 모서리 하이라이트)+처마 그림자, 칸 3개는 행을 줄여 높이 유지",
+ "ok": true
+}

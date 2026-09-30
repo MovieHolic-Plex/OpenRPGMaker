@@ -1,0 +1,78 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 4
+@mat b straw 4
+@mat c iron 4
+@mat d blue 4
+@mat e red 4
+@mat f yellow 4
+@mat g linen 4
+@mat h dwood 4
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaa..bbbbbbbbbbbbbbbbbb..aaaa.
+.aaaa..bbbbbbbbbbbbbbbbbb..aaaa.
+.aaaa.cccccccccccccccccccc.aaaa.
+.aaaa.cccccccccccccccccccc.aaaa.
+.aaaa..bbbbbbbbbbbbbbbbbb..aaaa.
+.aaaa..bbbbbbbbbbbbbbbbbb..aaaa.
+.aaaa..bbbbbbbbbbbbbbbbbb..aaaa.
+.aaaa..dddddddddddddddddd..aaaa.
+.aaaa..efeeefefeeefefeeef..aaaa.
+.aaaa..eefefeeefefeeefefe..aaaa.
+.aaaa..dddddddddddddddddd..aaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaagaaaaaaaaagaaaaaaaaaa.
+.aaaa..aaaaaaa...aaaaaaa...aaaa.
+.aaaa..aaaaaaa...aaaaaaa...aaaa.
+.aaaa.hhhhhhhhhhhhhhhhhhhh.aaaa.
+@tblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+77777777777777777777777777777777
+66666666666666666666666666666666
+33333333333333333333333333333333
+.655477777777777777777777776554.
+.655455555555555555555555556554.
+.655433333333333333333333336554.
+.6554..222222222222222222..6554.
+.6554..543543543543543543..6554.
+.6554.44544454445444544454.6554.
+.6554.22222222222222222222.6554.
+.6554..543543543543543543..6554.
+.6554..543543543543543543..6554.
+.6554..543543543543543543..6554.
+.6554..333333333333333333..6554.
+.6554..343334343334343334..6554.
+.6554..334343334343334343..6554.
+.6554..222222222222222222..6554.
+.655477777777777777777777776554.
+.655444444444444444444444446554.
+.666666666666666666666666666666.
+.333333333433333333343333333333.
+.6442..7777777...7777777...6442.
+.6442..4444444...3333333...6442.
+.6442.11111111111111111111.6442.
+@px 6 31 - 7 31 - 8 31 - 9 31 - 10 31 - 11 31 - 12 31 - 13 31 - 14 31 - 15 31 - 16 31 - 17 31 - 18 31 - 19 31 - 20 31 - 21 31 - 22 31 - 23 31 - 24 31 - 25 31 -

@@ -1,0 +1,43 @@
+// castle wv8-B
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wstone 0
+@mat b wroofr 0
+@mat c wroofb 0
+@mat d myellow 0
+@mat e mout 0
+@mblock 0 0
+...............abbbbb...........
+...............abbbb............
+...............a................
+..............ccc...............
+.............ccccc..............
+............ccccccc.............
+...........ccccccccc............
+..........ccccccccccc...........
+...b.....ccccccccccccc.....b....
+..bbb...ccccccccccccccc...bbb...
+.bbbbb.....aaaaaaaaaa....bbbbb..
+.bbbbb.....aaaaaaaaaa....bbbbb..
+bbbbbbb....aaaaddaaaa...bbbbbbb.
+bbbbbbbb...aaaaddaaaa..bbbbbbbbb
+bbbbbbbbb..aaaaaaaaaa.bbbbbbbbbb
+aaaaaaaa...aaaaaaaaaa...aaaaaaaa
+aaaaaaaa...aaaaaaaaaa...aaaaaaaa
+aaaaaaaa...aaaaaaaaaa...aaaaaaaa
+aaaaaaaa...aaaaaaaaaa...aaaaaaaa
+aaaeaaaa.aaaaaaaaaaaaaa.aaaeaaaa
+aaaeaaaa.aaaaaaaaaaaaaa.aaaeaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaeeeeaaaaaaaaaaaaaa
+aaaaaaaaaaaaaeeeeeeaaaaaaaaaaaaa
+aaaaaaaaaaaaaeeeeeeaaaaaaaaaaaaa
+aaaaaaaaaaaaaeeeeeeaaaaaaaaaaaaa
+aaaaaaaaaaaaaeeeeeeaaaaaaaaaaaaa
+aaaaaaaaaaaaaeeeeeeaaaaaaaaaaaaa
+................................
+................................
+................................

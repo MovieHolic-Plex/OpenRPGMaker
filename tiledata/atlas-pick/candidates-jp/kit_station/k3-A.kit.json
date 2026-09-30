@@ -1,0 +1,161 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_station/k3-A.pxg",
+ "kit": "kit_station",
+ "cand": "k3-A",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "exit4",
+   "name": "지하철 출구 4칸(계단 두 줄)",
+   "cells": [
+    4,
+    6
+   ],
+   "ctxSize": [
+    96,
+    160
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 4
+  },
+  {
+   "id": "exit5long",
+   "name": "넓고 긴 출구 5칸(계단 세 줄·네 칸 길이)",
+   "cells": [
+    5,
+    8
+   ],
+   "ctxSize": [
+    112,
+    192
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 12
+  },
+  {
+   "id": "eki8",
+   "name": "역 건물 정면 8칸(기둥·유리·자동문)",
+   "cells": [
+    8,
+    4
+   ],
+   "ctxSize": [
+    160,
+    128
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 2
+  },
+  {
+   "id": "eki5",
+   "name": "작은 역 건물 5칸",
+   "cells": [
+    5,
+    4
+   ],
+   "ctxSize": [
+    112,
+    128
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 2
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "can_m",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "sign_m",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "pil",
+   "axis": "x",
+   "score": 0.54,
+   "d": 30.1,
+   "bad": false
+  },
+  {
+   "slug": "open_back",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "stairs",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "stairs",
+   "axis": "y",
+   "score": 0.31,
+   "d": 36.0,
+   "bad": false
+  },
+  {
+   "slug": "stairs_lip",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "rail_l",
+   "axis": "y",
+   "score": 0.55,
+   "d": 20.0,
+   "bad": false
+  },
+  {
+   "slug": "rail_r",
+   "axis": "y",
+   "score": 1.0,
+   "d": 32.0,
+   "bad": false
+  },
+  {
+   "slug": "glass_wall",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": true,
+   "failed": []
+  },
+  "easyMax": 0.348,
+  "refmapMax": 0.355
+ },
+ "ok": true
+}

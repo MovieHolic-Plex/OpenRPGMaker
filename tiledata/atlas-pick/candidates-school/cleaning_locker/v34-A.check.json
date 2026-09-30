@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/cleaning_locker/v34-A.pxg",
+ "set": "school",
+ "id": "cleaning_locker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  1,
+  15,
+  31
+ ],
+ "note": "청소도구함 3/4 — 회청색 키 큰 함 윗면 밝게, 처마 그림자 아래로 들어간 문, 통풍 살 넷·손잡이",
+ "ok": true
+}

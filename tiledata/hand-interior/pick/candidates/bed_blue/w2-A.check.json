@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bed_blue/w2-A.pxg",
+ "id": "bed blue",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 21,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "v5 그대로(머리판·베개·시트·파란 이불·발판) 머리판 틀과 안쪽 판 입체, 베개 옆면 명암, 이불 접힘·누빔선·양옆 처짐",
+ "ok": true
+}

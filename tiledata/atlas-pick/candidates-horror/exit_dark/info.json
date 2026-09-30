@@ -1,0 +1,33 @@
+{
+ "id": "exit_dark",
+ "slug": "exit_dark",
+ "name": "출구 어둠(남쪽 틈)",
+ "scene": "공통 뼈대",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "over",
+ "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+ "description": "방 남쪽 벽 틈(출구·복도 끝)에 까는 어둠: 위 줄은 투명 → 아래로 ^ \" * & 순으로 짙어져 맨 아래 줄은 &, 좌우 가장자리 2~3px 도 한 단 짙게. 2칸 폭 틈에 딱, 3칸 틈은 dark_edge 한 장 곁들임. 반투명 어둠 4단만.",
+ "palette_hint": "^ \" * & 만",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "frame",
+ "role": "출구 어둠",
+ "worker": "hf1",
+ "set_with": [
+  "ceil_black",
+  "ceil_plaster",
+  "stairs_up_wood",
+  "stairs_up_stone",
+  "stairs_down",
+  "pillar_stone",
+  "pillar_marble",
+  "moonlight_floor"
+ ]
+}

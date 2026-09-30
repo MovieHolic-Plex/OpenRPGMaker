@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/cobweb_hang/h2-A.pxg",
+ "set": "horror",
+ "id": "cobweb_hang",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  15,
+  12
+ ],
+ "note": "A: 가로로 처진 줄 세 겹을 세로 줄이 잇고 가운데 줄에 검은 거미 한 마리가 매달림.",
+ "ok": true
+}

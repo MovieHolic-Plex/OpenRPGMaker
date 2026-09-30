@@ -1,0 +1,60 @@
+{
+ "id": "snow_mountain",
+ "slug": "snow_mountain",
+ "name": "설산",
+ "scene": "산·화산",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "snow",
+ "under_ko": "설원(snow 몸통 고른 판)",
+ "passage": "block",
+ "description": "mountain 과 같은 봉우리·격자에 꼭대기 1/3 이 눈(눈 경계는 비탈 골을 따라 들쭉날쭉, 왼쪽 비탈 눈이 더 밝다). 밑바탕은 설원. mountain 과 같은 글자끼리 한 식구.",
+ "palette_hint": "wrock 바위, wsnow 눈",
+ "worker": "wv3",
+ "style": "mass",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

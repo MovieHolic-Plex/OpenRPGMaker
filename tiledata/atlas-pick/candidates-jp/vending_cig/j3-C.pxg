@@ -1,0 +1,79 @@
+// vending_cig j3-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b kblue 3
+@mat c kgreen 3
+@mat d lacq 3
+@mat e mmetal 3
+@mat f sumi 3
+@mat g taxi 3
+@mat h washi 3
+@mblock 0 0
+................
+..ffffffffffff..
+.fggggggggggggf.
+.ffffffffffffff.
+.fggggggggggggf.
+.ffffffffffffff.
+.ffffffffffffff.
+.ffffffffffffff.
+.feeeeeeeeeefff.
+.feaabbcchhefff.
+.feaabbcchhefff.
+.feaabbcchhefff.
+.feeeeeeeeeefff.
+.fehhggaabbefff.
+.fehhggaabbefff.
+.fehhggaabbefff.
+.feeeeeeeeeefff.
+.ffffffffffffff.
+.fffbbfaafgffff.
+.fffbbfaafdffff.
+.ffffffffffffff.
+.fffeeeeeefffff.
+.fffddddddfffff.
+.fffddddddfffff.
+.fffddddddfffff.
+.ffffffffffffff.
+.ffffffffffffff.
+.ffffffffffffff.
+.feeeeeeeeeeeef.
+.feeeeeeeeeeeef.
+...~~~~~~~~~~~~.
+......---------.
+@tblock 0 0
+................
+..111111111111..
+.13333333333330.
+.11111111111110.
+.14444444444440.
+.13333333333330.
+.00000000000000.
+.14333333333210.
+.13333333333210.
+.11434343541210.
+.11333133421210.
+.11111111221210.
+.11111111111210.
+.11544343431210.
+.11423331331210.
+.11221111111210.
+.10000000000210.
+.14333333333210.
+.14353353343210.
+.14333333323210.
+.14333333333210.
+.14355555533210.
+.14322222233210.
+.14300000033210.
+.14300000033210.
+.14333333333210.
+.14333333333210.
+.14333333333210.
+.11111111111110.
+.12222222222220.
+................
+................

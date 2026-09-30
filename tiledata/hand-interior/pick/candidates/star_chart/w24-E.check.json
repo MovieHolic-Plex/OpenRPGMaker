@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/star_chart/w24-E.pxg",
+ "id": "star chart",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   16,
+   32
+  ],
+  "footprint": {
+   "w": 1,
+   "h": 0
+  },
+  "why": "사용자 메모: 1x2 로 만들것"
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 4,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  13
+ ],
+ "note": "E: 걸개 두루마리 성도. 위아래 나무 봉과 놋쇠 마구리, 금 테 둘린 남색 천에 궤도 원·별자리, 아래 금술.",
+ "ok": true
+}

@@ -1,0 +1,17 @@
+// kit_gate 부품 시트 128x48px (8×3칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+floor               0    0  16  16  ground  xy  F     역 바닥
+gm_t               16    0  16  16  object  -   X     기계 뒤 끝
+gm_m               32    0  16  16  object  y   X     기계 가운데
+gm_b_in            48    0  16  16  object  -   X     기계 앞 끝: 진입(초록 화살표)
+gm_b_out           64    0  16  16  object  -   X     기계 앞 끝: 진입 금지(빨강)
+gm_b_ic            80    0  16  16  object  -   X     기계 앞 끝: IC 전용(파랑)
+lane_t             96    0  16  16  decal   -   F     통로 뒤
+lane_m            112    0  16  16  decal   y   F     통로 가운데
+lane_b              0   16  16  16  decal   -   F     통로 앞
+end_l              16   16  16  32  object  -   X     끝 막음 왼
+end_r              32   16  16  32  object  -   X     끝 막음 오른
+fence              48   16  16  32  object  x   X     낮은 칸막이
+disp_l             64   16  16  16  over    -   C     머리 위 안내판 왼
+disp_m             80   16  16  16  over    x   C     머리 위 안내판 가운데
+disp_r             96   16  16  16  over    -   C     머리 위 안내판 오른

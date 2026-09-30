@@ -50,7 +50,7 @@ export function withContentDigestEpoch<T>(run: () => T): T {
  * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 · 타일셋 노드 62만 개): 기억이 있어도 대조가 타일셋 노드를 전부 훑어 요약 한 번에 약 0.3s,
  * 조수 체크포인트 하나가 구간 여러 개(적용 권위·적용·체크리스트·커밋 기준)에서 이를 되풀이해 1s 이상이었다.
  */
-const trustedShared = new WeakSet<object>();
+let trustedShared = new WeakSet<object>();
 /**
  * 믿음은 적용 권위 요약(projectIdentityDigest) 안에서만 쓴다. 로드 정규화(store.normalizeCurrentProject)처럼 공유 항목을
  * 제자리에서 고치고 전후 요약으로 변경을 알아내는 곳은 믿음 없이 끝까지 대조한다.
@@ -74,6 +74,29 @@ export function trustSharedProjectEntries(project: unknown): void {
       if (isObject(entry) && memos.has(entry)) trustedShared.add(entry);
     }
   }
+}
+
+/**
+ * 저장 diff 용: 공유 항목(타일셋 한 칸) 하나의 요약. 이미 믿은 항목이면 아래 가지를 대조하지 않고 기억된 토큰을 돌려준다.
+ * 아직 안 믿은 항목은 이 호출이 **끝까지 대조**해 요약을 만든 뒤에야 믿는다 — 믿음은 언제나 실제 대조 뒤에만 생긴다.
+ *
+ * 왜(2026-09-30 실측, 타일셋 385칸 · 279MB): 저장 diff 가 매번 양쪽 타일셋 전 노드를 isFresh 로 다시 훑어 1셀 칠하기 자동저장 하나에 약 1.1s
+ * (기억이 있어도 대조가 노드 수에 비례). 기준본·현재 항목은 저장 사이에 그대로 이어지므로(applyProjectDocumentPatch 는 안 바뀐 항목을
+ * 기준본 것 그대로 둔다) 한 번 대조한 뒤에는 O(1). 항목을 제자리에서 고치면 안 된다는 계약은 projectClone 머리말·trustedShared 와 같다.
+ * 제자리 수정이 있을 수 있는 정규화(store.normalizeCurrentProject)는 앞뒤로 `forgetTrustedSharedEntries` 를 부른다.
+ */
+export function sharedEntryDigest(entry: unknown, key = ""): string | undefined {
+  const wasTrusting = trustingShared;
+  trustingShared = true;
+  let digest: string | undefined;
+  try { digest = jsonContentDigest(entry, key); } finally { trustingShared = wasTrusting; }
+  if (isObject(entry) && memos.has(entry)) trustedShared.add(entry);
+  return digest;
+}
+
+/** 믿은 공유 항목 기록을 모두 버린다 — 항목을 제자리에서 고칠 수 있는 구간(로드 정규화 등) 앞뒤에서 부른다. 이후 첫 요약은 끝까지 대조한다. */
+export function forgetTrustedSharedEntries(): void {
+  trustedShared = new WeakSet<object>();
 }
 
 /** JSON 값의 토큰. 원시값·짧은 노드는 글 그대로, 긴 객체·배열은 `#` + 글의 요약. JSON 값이 없으면 undefined. */

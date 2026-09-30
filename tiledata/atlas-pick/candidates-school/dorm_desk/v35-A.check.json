@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/dorm_desk/v35-A.pxg",
+ "set": "school",
+ "id": "dorm_desk",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   2,
+   1
+  ],
+  "canvas": [
+   32,
+   16
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.1
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  5,
+  0,
+  29,
+  15
+ ],
+ "note": "기숙사 책상 3/4 — 소나무 윗판 T4(책·필통)·앞 F12 왼쪽 다리판·무릎 공간·오른쪽 서랍장 (폭 22px)",
+ "ok": true
+}

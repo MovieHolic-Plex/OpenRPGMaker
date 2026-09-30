@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ticket_machine/r2-A.pxg",
+ "set": "jp",
+ "id": "ticket_machine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.293
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 27,
+ "bbox": [
+  0,
+  0,
+  46,
+  31
+ ],
+ "note": "강남 결: 뒷벽 어두운 운임표(노선 색 띠) 앞에 회색 기계 셋이 붙어 선다. 각 기계 윗면은 비스듬한 조작판(밝은 4단, 표시창·색 버튼 점), 청록 화면·지폐/동전 구멍·승차권 접시, 기계 사이 1px 틈 그림자, 오른 끝 옆면 4px 한 단 어둡게, 발치 그림자 2줄",
+ "ok": true
+}

@@ -1,0 +1,31 @@
+{
+ "id": "torch_wall",
+ "slug": "torch_wall",
+ "name": "벽 등잔",
+ "scene": "지하·돌방",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "벽면 윗줄에 거는 쇠 받침 등잔(작은 불꽃 + 둘레 % 번짐, 벽에 비친 빛). 켜진 판 하나.",
+ "palette_hint": "viron 받침, flame, %",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "cellar",
+ "role": "벽 등잔",
+ "worker": "hf7",
+ "set_with": [
+  "wall_stone_block",
+  "wall_cellar_brick",
+  "floor_stone",
+  "floor_dirt",
+  "door_cell",
+  "shelf_cellar"
+ ]
+}

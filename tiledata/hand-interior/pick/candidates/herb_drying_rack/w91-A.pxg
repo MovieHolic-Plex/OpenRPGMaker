@@ -1,0 +1,70 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood
+@mblock 0 0
+................
+................
+.CCCCCCCCCCCCCC.
+.CaaaaaaaaaaaaC.
+.CaaaaaaaaaaaaC.
+.CaaaaaaaaaaaaC.
+.CaaaaaaaaaaaaC.
+.CaAAAAAAAAAAAC.
+.CBBBBBBBBBBBBC.
+.CCCCCCCCCCCCCC.
+.CDaAAAAAAAAaaC.
+.CDaaaaaaaaaaaC.
+.CDaBKBBBKBBaaC.
+.CDaLELBGHGBaaC.
+.CDaEFEBJGHBaaC.
+.CDaMFMBBEFBaaC.
+.CDaLEOBLELBaaC.
+.CDaBOBBBOBBaaC.
+.CaaaaaaaaaaaaC.
+.CDDDDDDDDDDDDC.
+.CDaCCCCCCCCaaC.
+.CDaAAAAAAAAaaC.
+.CDaBKBBBKBBaaC.
+.CDaPIPBLELBaaC.
+.CDaIPIBEFEBaaC.
+.CDaBPBBMFMBaaC.
+.CDaOLOBLEOBaaC.
+.CDaBLBBBOBBaaC.
+.CAAAAAAAAAAAAC.
+.CDDDDDDDDDDDDC.
+.CaaaaaaaaaaaaC.
+.CCCCCCCCCCCCCC.
+@tblock 0 0
+................
+................
+................
+..444444444444..
+..777777777777..
+..777777777777..
+..888888888888..
+..7.............
+................
+................
+...4........43..
+...43333333343..
+...4........43..
+...4........43..
+...4........43..
+...4........43..
+...4........43..
+...4........43..
+..877777777777..
+................
+...4........43..
+...4........43..
+...4........43..
+...4........43..
+...4........43..
+...4........43..
+...4........43..
+...4........43..
+................
+................
+..333333333333..
+................

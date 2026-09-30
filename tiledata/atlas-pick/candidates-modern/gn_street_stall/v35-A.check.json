@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/atlas-pick/candidates-modern/gn_street_stall/v35-A.pxg",
+ "set": "modern",
+ "id": "gn-street-stall",
+ "hard": [
+  "palette: 팔레트 밖 색 27개 #cac7d6/255, #4e4d59/255, #100a1a/255, #801223/255, #e6e2f0/255, #331f21/255"
+ ],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "std": {
+  "cells": [
+   2,
+   3
+  ],
+  "canvas": [
+   32,
+   48
+  ]
+ },
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.067
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.191
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 27,
+ "bbox": [
+  0,
+  5,
+  31,
+  47
+ ],
+ "note": "",
+ "ok": false
+}

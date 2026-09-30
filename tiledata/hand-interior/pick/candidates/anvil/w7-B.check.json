@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/anvil/w7-B.pxg",
+ "id": "anvil",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 10,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  2,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  13,
+  13
+ ],
+ "note": "윗면에 달군 쇠막대(주황·노랑)와 불똥 두 점을 얹어 대장간 분위기를 냄",
+ "ok": true
+}

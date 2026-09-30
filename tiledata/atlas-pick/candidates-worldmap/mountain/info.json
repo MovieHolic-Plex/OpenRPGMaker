@@ -1,0 +1,60 @@
+{
+ "id": "mountain",
+ "slug": "mountain",
+ "name": "산맥",
+ "scene": "산·화산",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "World.png 산맥 블록의 형태: **봉우리 하나 = 폭 14~15px·높이 11~13px 세모(꼭대기 1~2px 뾰족), 16px 격자에 놓고 줄마다 8px 엇갈려** 앞 봉우리가 뒤 봉우리 아랫도리를 가린다 → 겹친 줄기(능선)로 읽힌다. 왼쪽 비탈 밝게(2단), 오른쪽 비탈 어둡게(2단), 가운데 능선 한 줄 가장 어둡게, 비탈에 짧은 골 1~2줄. 가장자리 = 봉우리 발치가 칸 바깥쪽 8px 안에서 풀밭에 앉는다. 외딴 칸 = 봉우리 하나(칸 꽉). 언덕과 확실히 다르게 — 바위·뾰족.",
+ "palette_hint": "wrock 4~5단, 기슭 whill·wgrass 어두운 단",
+ "worker": "wv3",
+ "style": "mass",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/fireplace_cold/v34-A.pxg",
+ "set": "horror",
+ "id": "fireplace_cold",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.089
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.137
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 30,
+ "bbox": [
+  1,
+  0,
+  30,
+  31
+ ],
+ "note": "3/4 재작도: 벽난로 선반 윗면 6행을 빈 윗줄에 추가, 몸통 1행 줄임",
+ "ok": true
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wardrobe_ajar/h5-B.pxg",
+ "set": "horror",
+ "id": "wardrobe_ajar",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "같은 모양, 왼쪽 위 달빛: 왼 테 6단·오른 문짝 1~2단으로 명도 폭 확대, 윗면 회백 강조, 발치 오른쪽 반투명 그림자 2줄",
+ "ok": true
+}

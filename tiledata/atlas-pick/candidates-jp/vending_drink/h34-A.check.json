@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_drink/h34-A.pxg",
+ "set": "jp",
+ "id": "vending_drink",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  5,
+  2,
+  26,
+  30
+ ],
+ "note": "음료 자판기 H 방법 — Tibo 3/4 생성 → C(jp 팔레트 10색) → Sonnet 손질",
+ "ok": true
+}

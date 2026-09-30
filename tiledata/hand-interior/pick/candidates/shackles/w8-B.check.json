@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shackles/w8-B.pxg",
+ "id": "shackles",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 7,
+ "v5_colors": 4,
+ "bbox": [
+  1,
+  1,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "벽 고정판과 굵은 고리, 강한 하이라이트, 사슬 오른쪽에 반투명 벽 그림자",
+ "ok": true
+}

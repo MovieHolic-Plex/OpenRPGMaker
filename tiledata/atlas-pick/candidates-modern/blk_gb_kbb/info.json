@@ -1,0 +1,44 @@
+{
+ "id": "blk-gb-kbb",
+ "slug": "blk_gb_kbb",
+ "name": "탑 1층 띠",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "탑 1층 띠 · gb.kbb.l 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gnb-kbb-l",
+  "gnb-kbb-m",
+  "gnb-kbb-m-0",
+  "gnb-kbb-m-1",
+  "gnb-kbb-r"
+ ],
+ "tiles": [
+  5895,
+  5896,
+  5897,
+  5898,
+  5899
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   8,
+   27
+  ]
+ }
+}

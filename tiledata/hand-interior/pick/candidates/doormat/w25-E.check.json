@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/doormat/w25-E.pxg",
+ "id": "doormat",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   16
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "why": "사용자 메모: 발깔개를 2x1 로 만들고, 3번(w1-C) 방향이 괜찮다."
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.081
+ },
+ "lint": {
+  "failed": [
+   "pillow",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 4,
+ "bbox": [
+  0,
+  4,
+  31,
+  12
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  12
+ ],
+ "note": "큰 체크(3×2칸 블록 엇갈림) 안쪽 + 양끝 붉은 세로 줄, 술은 2px. 가로 띠 대신 세로 줄로 직물 짜임이 더 굵게 읽히게",
+ "ok": true
+}

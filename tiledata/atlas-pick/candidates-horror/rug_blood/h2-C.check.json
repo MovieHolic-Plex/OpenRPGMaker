@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/rug_blood/h2-C.pxg",
+ "set": "horror",
+ "id": "rug_blood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 21,
+ "bbox": [
+  0,
+  0,
+  47,
+  30
+ ],
+ "note": "C: 메달리온 마름모를 눈(아몬드)으로 다시 읽게 했다. 눈동자 자리가 마른 핏덩이, 거기서 왼쪽 아래 술 쪽으로 손 폭의 끌린 자국이 이어지고 끝에 손자국. 접힌 우상단 모서리는 그대로.",
+ "ok": true
+}

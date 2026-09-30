@@ -1,0 +1,19 @@
+{
+ "id": "sakura_tree",
+ "slug": "sakura_tree",
+ "name": "벚나무(만개)",
+ "scene": "신사 한 켠",
+ "cells": [
+  3,
+  3
+ ],
+ "canvas": [
+  48,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "꽃이 만개한 벚나무: 분홍 꽃 덩이 수관(연분홍·분홍 두세 덩이, 빛 쪽 위 왼쪽이 가장 밝게, 속은 한 단 어둡게, 가장자리 꽃잎 점), 짙은 갈색 줄기가 아래 가운데 칸에, 발치에 떨어진 꽃잎 몇 점. 숲 나무처럼 수관 아래 줄기 폭 = 받침 폭.",
+ "palette_hint": "sakura 꽃, sumi 줄기, matsu 잎 조금",
+ "worker": "j4"
+}

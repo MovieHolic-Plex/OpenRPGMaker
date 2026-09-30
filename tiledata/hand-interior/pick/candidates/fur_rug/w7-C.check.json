@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fur_rug/w7-C.pxg",
+ "id": "fur rug",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  4,
+  30,
+  27
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  29,
+  27
+ ],
+ "note": "실루엣을 바꿈: 별 모양 짐승 가죽 대신 물결 가장자리의 둥근 양털 깔개, 색은 linen 램프로 밝게",
+ "ok": true
+}

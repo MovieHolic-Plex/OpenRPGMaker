@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar_E/w3-C.pxg",
+ "id": "altar E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.101
+ },
+ "lint": {
+  "failed": [
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "note": "실루엣·비례 재해석 — 흰 천 덮개 대신 금 상감 테를 두른 대리석 제단판(윗면을 넓게, 앞면에 아치 벽감 둘과 초 불빛)으로, 보라색은 왼쪽 띠가 아니라 가운데 러너로 윗면에서 앞면까지 흘러내려 금 십자와 금 술로 끝남. 위쪽 2/3는 윗면, 아래 1/3은 앞면 비례.",
+ "ok": true
+}

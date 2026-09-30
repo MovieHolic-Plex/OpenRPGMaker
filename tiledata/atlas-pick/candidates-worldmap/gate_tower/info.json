@@ -1,0 +1,23 @@
+{
+ "id": "gate_tower",
+ "slug": "gate_tower",
+ "name": "도시 성문",
+ "scene": "성·마을",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "위층 단품(그림자 포함)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 2×2 두 돌탑 사이 어두운 문. 성곽선 한복판.",
+ "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+ "worker": "v6"
+}

@@ -1,0 +1,37 @@
+{
+ "id": "stairs down",
+ "slug": "stairs_down",
+ "name_ko": "내려가는 계단",
+ "category": "가구·살림",
+ "kind": "flat",
+ "kind_ko": "바닥 무늬(밟을 수 있음)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "바닥에 뚫린 1칸 내려가는 계단(밟음). 집·가게 구석 바닥에 1개 → 지하로 이동 이벤트(links). 둘레 칸은 비운다.",
+ "where": "집·가게 구석 바닥에 1개 → 지하로 이동 이벤트(links). 둘레 칸은 비운다.",
+ "placement": [
+  "밟을 수 있다. 다른 기물 밑에 먼저 깐다"
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": []
+}

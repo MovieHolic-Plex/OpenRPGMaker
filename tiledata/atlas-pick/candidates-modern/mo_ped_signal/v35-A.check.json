@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/atlas-pick/candidates-modern/mo_ped_signal/v35-A.pxg",
+ "set": "modern",
+ "id": "mo-ped-signal",
+ "hard": [
+  "palette: 팔레트 밖 색 14개 #db4d4a/255, #8f610b/255, #9f97a8/255, #f78175/255, #817c8c/255, #4e4d59/255"
+ ],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "std": {
+  "cells": [
+   1,
+   3
+  ],
+  "canvas": [
+   16,
+   48
+  ]
+ },
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.096
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  5,
+  5,
+  10,
+  47
+ ],
+ "note": "",
+ "ok": false
+}

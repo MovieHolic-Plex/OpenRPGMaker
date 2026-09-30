@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_house/k6-B.pxg",
+ "set": "jp",
+ "id": "kit_house",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.164
+ },
+ "refmap": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.139
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 41,
+ "bbox": [
+  0,
+  0,
+  127,
+  63
+ ],
+ "note": "A와 같은 형태에 명암 폭을 넓힘: 깊은 처마 그늘·어두운 창틀·짙은 기초",
+ "ok": true
+}

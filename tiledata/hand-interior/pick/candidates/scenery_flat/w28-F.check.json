@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scenery_flat/w28-F.pxg",
+ "id": "scenery flat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "밤하늘: 초승달과 별, 반짝이는 큰 별, 어두운 산등성이 위 불 켜진 오두막과 탑. 보라~남색 밤하늘.",
+ "ok": true
+}

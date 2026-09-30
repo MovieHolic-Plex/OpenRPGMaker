@@ -1,0 +1,37 @@
+{
+ "id": "spellbook stand",
+ "slug": "spellbook_stand",
+ "name_ko": "마법서 받침",
+ "category": "마법",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "펼친 마법서를 올린 키 큰 나무 받침. 마법사의 탑 서재 마법진 곁 바닥에 1개. 수정구·천체 모형과 같은 방.",
+ "where": "마법사의 탑 서재 마법진 곁 바닥에 1개. 수정구·천체 모형과 같은 방.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

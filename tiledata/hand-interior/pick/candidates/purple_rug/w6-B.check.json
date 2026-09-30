@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/purple_rug/w6-B.pxg",
+ "id": "purple rug",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "failed": [
+   "noise",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "note": "A 에 위-왼 밝은 테두리, 아래-오른 짙은 테두리와 접지 그림자를 더해 두께가 느껴지게 함",
+ "ok": true
+}

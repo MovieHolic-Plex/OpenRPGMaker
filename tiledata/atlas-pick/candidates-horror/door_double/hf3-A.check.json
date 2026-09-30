@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_double/hf3-A.pxg",
+ "set": "horror",
+ "id": "door_double",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "기본 양문 A — door_wood A 와 같은 틀 폭 4px·문짝 3단·패널 둘씩, 가운데 맞닿는 선(왼 짝 어둡게·오른 짝 밝게), 놋쇠 손잡이 둘이 선 양쪽에.",
+ "ok": true
+}

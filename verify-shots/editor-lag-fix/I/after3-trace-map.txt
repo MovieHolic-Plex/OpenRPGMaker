@@ -1,0 +1,45 @@
+   17 Layout|Removed from layout|#text||
+   17 Layout|Removed from layout|path||
+   12 StyleRecalc|Affected by :has()|DIV class='left-panel ai-chat-sidebar-tools'||
+   12 ScheduleStyle||BODY class='ai-chat-dock-float ai-command-bar-active'||
+   10 Layout|Removed from layout|svg||
+   6 Layout|Removed from layout|BUTTON class='btn sidebar-surface-button'||
+   6 Layout|Removed from layout|BUTTON class='oprn-tile-tool'||
+   4 Layout|Removed from layout|DIV||
+  BODYINV ScheduleStyle  tick@panels/aiProjectSuggestions.ts:113
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule tick@panels/aiProjectSuggestions.ts:113
+  BODYINV ScheduleStyle  tick@panels/aiProjectSuggestions.ts:116
+ULE 54ms 3726el parents=RunTask>FireAnimationFrame>v8.callFunction>FunctionCall
+   17 Layout|Added to layout|#text||
+   17 Layout|Added to layout|path||
+   10 Layout|Added to layout|svg||
+   6 Layout|Added to layout|BUTTON class='btn sidebar-surface-button'||
+   6 Layout|Added to layout|BUTTON class='oprn-tile-tool'||
+   4 Layout|Added to layout|DIV||
+   3 Layout|Added to layout|circle||
+   2 Layout|Added to layout|DIV class='sidebar-surface-trigger'||
+  BODYINV ScheduleStyle  render@panels/aiPlanningReuse.ts:78 < refresh@panels/aiPlanningReuse.ts:143 < ?@panels/aiChatPanel.ts?t=1790773902453:2108 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule render@panels/aiPlanningReuse.ts:78 < refresh@panels/aiPlanningReuse.ts:143 < ?@panels/aiChatPanel.ts?t=1790773902453:2108 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV ScheduleStyle  render@panels/aiPlanningReuse.ts:79 < refresh@panels/aiPlanningReuse.ts:143 < ?@panels/aiChatPanel.ts?t=1790773902453:2108 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV ScheduleStyle  render@panels/aiPlanningReuse.ts:79 < refresh@panels/aiPlanningReuse.ts:143 < ?@panels/aiChatPanel.ts?t=1790773902453:2108 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV ScheduleStyle  render@panels/aiPlanningReuse.ts:79 < refresh@panels/aiPlanningReuse.ts:143 < ?@panels/aiChatPanel.ts?t=1790773902453:2108 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV ScheduleStyle  render@panels/aiPlanningReuse.ts:79 < refresh@panels/aiPlanningReuse.ts:143 < ?@panels/aiChatPanel.ts?t=1790773902453:2108 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV ScheduleStyle  renderPreview@panels/aiPlanningReuse.ts:70 < render@panels/aiPlanningReuse.ts:116 < refresh@panels/aiPlanningReuse.ts:143 < ?@panels/aiChatPanel.ts?t=1790773902453:2108 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV ScheduleStyle  setContext@panels/aiDeckRail.ts:44 < syncRailContext@panels/aiChatPanel.ts?t=1790773902453:2837 < refreshContextChips@panels/aiChatPanel.ts?t=1790773902453:2092 < onChange@panels/aiChatPanel.ts?t=1790773902453:2535 < refresh@panels/aiPlanningReuse.ts:144 < ?@panels/aiChatPanel.ts?t=1790773902453:2108
+  BODYINV ScheduleStyle  setContext@panels/aiDeckRail.ts:44 < syncRailContext@panels/aiChatPanel.ts?t=1790773902453:2837 < refreshContextChips@panels/aiChatPanel.ts?t=1790773902453:2092 < onChange@panels/aiChatPanel.ts?t=1790773902453:2535 < refresh@panels/aiPlanningReuse.ts:144 < ?@panels/aiChatPanel.ts?t=1790773902453:2108
+  BODYINV ScheduleStyle  setContext@panels/aiDeckRail.ts:44 < syncRailContext@panels/aiChatPanel.ts?t=1790773902453:2837 < refreshContextChips@panels/aiChatPanel.ts?t=1790773902453:2092 < onChange@panels/aiChatPanel.ts?t=1790773902453:2535 < refresh@panels/aiPlanningReuse.ts:144 < ?@panels/aiChatPanel.ts?t=1790773902453:2108
+  BODYINV ScheduleStyle  setContext@panels/aiDeckRail.ts:44 < syncRailContext@panels/aiChatPanel.ts?t=1790773902453:2837 < refreshContextChips@panels/aiChatPanel.ts?t=1790773902453:2092 < ?@panels/aiChatPanel.ts?t=1790773902453:2109 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV ScheduleStyle  setContext@panels/aiDeckRail.ts:44 < syncRailContext@panels/aiChatPanel.ts?t=1790773902453:2837 < refreshContextChips@panels/aiChatPanel.ts?t=1790773902453:2092 < ?@panels/aiChatPanel.ts?t=1790773902453:2109 < set@editor/editorState.ts:46 < eval@:3
+  BODYINV ScheduleStyle  setContext@panels/aiDeckRail.ts:44 < syncRailContext@panels/aiChatPanel.ts?t=1790773902453:2837 < refreshContextChips@panels/aiChatPanel.ts?t=1790773902453:2092 < ?@panels/aiChatPanel.ts?t=1790773902453:2109 < set@editor/editorState.ts:46 < eval@:3
+ULE 61ms 3726el parents=RunTask>TimerFire>v8.callFunction
+   12 ScheduleStyle||BODY class='ai-chat-dock-float ai-command-bar-active'||
+   4 ScheduleStyle||SPAN class='ai-deck-rail-ctx'||
+   4 StyleInvalidator|Invalidation set invalidates self|SPAN class='ai-deck-rail-ctx'||
+   4 StyleRecalc|Related style rule|SPAN class='ai-deck-rail-ctx'||
+   2 StyleRecalc|Node was inserted into tree|#text||
+   1 StyleInvalidator|Invalidation set invalidates subtree|BODY class='ai-chat-dock-float ai-command-bar-active'||
+   1 StyleRecalc|Related style rule|BODY class='ai-chat-dock-float ai-command-bar-active'||
+   1 Layout|Removed from layout|#text||
+UpdateLayoutTree>3ms: 60ms/3726el 51ms/3726el 41ms/2435el 54ms/3726el 61ms/3726el 59ms/3726el 34ms/2435el 57ms/3726el 52ms/3726el 50ms/3726el 41ms/2435el 53ms/3726el 53ms/3726el 56ms/3726el 33ms/2435el 52ms/3726el 55ms/3726el 41ms/2435el 53ms/3726el 56ms/3726el

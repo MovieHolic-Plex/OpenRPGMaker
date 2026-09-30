@@ -1,0 +1,56 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a gold 5
+@mat c gold 4
+@mat d gold 3
+@mat e gold 2
+@mat z gold 1
+@mat f gold 6
+@mat y white 5
+@mat x white 3
+@mat w white 6
+@mat k white 1
+@mat p wood 7
+@mat q wood 6
+@mat r wood 5
+@mat s wood 4
+@mat t wood 3
+@mat u wood 2
+@mat v wood 1
+@mat o wood 0
+@mat g red 4
+@mat h red 2
+@mblock 0 0
+................
+................
+................
+....aaaaaa..a...
+....acdccaa.gh..
+....acd..ccacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+....acdyyyxacd..
+....acd....acd..
+...cacd....acd..
+...cdddd..ccccd.
+...srrrrrrrrrrs.
+...uuuuuuuuuuuu.
+...oooooooooooo.

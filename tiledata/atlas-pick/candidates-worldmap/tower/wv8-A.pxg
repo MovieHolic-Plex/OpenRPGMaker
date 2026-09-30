@@ -1,0 +1,74 @@
+// tower wv8-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wroofb 0
+@mat b wstone 0
+@mat c mout 0
+@mblock 0 0
+.......a........
+......aaa.......
+.....aaaaa......
+....aaaaaaa.....
+...aaaaaaaaa....
+..aaaaaaaaaaa...
+.aaaaaaaaaaaaa..
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbcbbcbbbb..
+..bbbbcbbcbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbcbbbbbb..
+..bbbbbcbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbcccbbbbb..
+..bbbcccccbbbb..
+..bbbcccccbbbb..
+..bbbcccccbbbb..
+..bbbcccccbbbb..
+..bbbcccccbbbb..
+@tblock 0 0
+.......0........
+......120.......
+.....13210......
+....1332110.....
+...133321110....
+..13333211110...
+.0000000000000..
+.55555555555551.
+.55555555555551.
+.00000000000000.
+..155343331220..
+..144332221110..
+..155443332220..
+..155403302220..
+..145403202220..
+..144332221110..
+..111111111110..
+..155443332220..
+..155433332120..
+..144330221110..
+..155440332220..
+..155443332220..
+..154443322220..
+..111111111110..
+..155443332220..
+..155443332220..
+..155400032210..
+..144000001110..
+..155000002220..
+..155000002220..
+..155000001220..
+..000000000000..

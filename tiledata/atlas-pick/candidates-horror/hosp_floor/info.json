@@ -1,0 +1,40 @@
+{
+ "id": "hosp_floor",
+ "slug": "hosp_floor",
+ "name": "병원 바닥 타일(얼룩)",
+ "scene": "폐병원",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "폐병원 바닥: 가로세로 8px 격자 타일(바랜 회녹·누런 회색 두 색이 체크 아닌 한 색 + 줄눈), 군데군데 깨진 타일 하나·물 얼룩·검은 발자국 번짐. 사방으로 이어 붙는다(줄눈 격자가 맞게). 깨진 곳은 한 칸에 하나.",
+ "palette_hint": "ward/sheet 타일, grave 줄눈, void 깨진 틈",
+ "worker_v1": "h5",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "ward",
+ "role": "타일 바닥",
+ "worker": "h5",
+ "set_with": [
+  "hosp_wall"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:grey",
+   "name_ko": "회색 판석",
+   "atlas": {
+    "x": 384,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

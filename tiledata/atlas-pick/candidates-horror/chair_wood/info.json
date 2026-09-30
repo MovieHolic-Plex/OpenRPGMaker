@@ -1,0 +1,56 @@
+{
+ "id": "chair_wood",
+ "slug": "chair_wood",
+ "name": "나무 의자(앞)",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 chair S 자리: 남쪽을 보는 의자 — 등받이(위 1/3, 세로 살 둘) + 앉는 판(윗면 보임) + 앞다리 둘. chair_wood_back 과 한 식구(같은 나무·같은 크기).",
+ "palette_hint": "mahog",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "의자(남향)",
+ "worker": "hf4",
+ "set_with": [
+  "table_wood",
+  "chair_wood_back",
+  "bookshelf_manor",
+  "bed_manor",
+  "dresser",
+  "side_table",
+  "candle_table"
+ ],
+ "v5_ref": [
+  {
+   "id": "chair S",
+   "name_ko": "의자 S",
+   "atlas": {
+    "x": 112,
+    "y": 304,
+    "w": 16,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

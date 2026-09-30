@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_gate/k4-B.pxg",
+ "set": "jp",
+ "id": "kit_gate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 17,
+  "atLeast95": 0,
+  "max": 0.426
+ },
+ "refmap": {
+  "cells": 17,
+  "atLeast95": 0,
+  "max": 0.281
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 36,
+ "bbox": [
+  0,
+  0,
+  127,
+  47
+ ],
+ "note": "어둡고 무거운 금속 몸통 12px, 그림자 2줄 + 앞 발치 그림자",
+ "ok": true
+}

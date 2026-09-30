@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/weapon_rack/w6-A.pxg",
+ "id": "weapon rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  0,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  14
+ ],
+ "note": "창 자루 색을 검·도끼 자루와 같은 갈색으로 맞춘 v5 정리 (모양 그대로)",
+ "ok": true
+}

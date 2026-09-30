@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bell_rope/w9-C.pxg",
+ "id": "bell rope",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 9,
+ "bbox": [
+  4,
+  2,
+  11,
+  31
+ ],
+ "v5_bbox": [
+  5,
+  2,
+  10,
+  31
+ ],
+ "note": "다시 그림: 밧줄 끝에 매듭·금구슬·붉은 술(타셀)이 부채꼴로 퍼지는 실루엣, 손잡이 블록 대신 알아보기 쉬운 종끈 술",
+ "ok": true
+}

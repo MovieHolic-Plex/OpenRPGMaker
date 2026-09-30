@@ -1,0 +1,28 @@
+{
+ "id": "dark_corner",
+ "slug": "dark_corner",
+ "name": "어둠 덮개(바깥 모서리)",
+ "scene": "연출",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "over",
+ "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+ "description": "dark_edge 와 한 식구: 왼쪽 위 모서리가 가장 짙고(&) 오른쪽 아래로 부채꼴(1/4 원)로 옅어진다. dark_edge 두 장과 모서리에서 이어지게(위 줄은 dark_edge 위 줄과, 왼 줄은 dark_edge 를 90° 돌린 것과 같은 단).",
+ "palette_hint": "^ \" * & 어둠",
+ "worker_v1": "h4",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "frame",
+ "role": "어둠 모서리",
+ "worker": "h4",
+ "set_with": [
+  "dark_edge",
+  "dark_light_hole"
+ ]
+}

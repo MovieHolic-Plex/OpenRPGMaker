@@ -1,0 +1,40 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_drink/v35-A.pxg",
+ "set": "jp",
+ "id": "vending_drink",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   1,
+   2
+  ],
+  "canvas": [
+   16,
+   32
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "16x32 · 폭1칸 높이2칸. 윗면 4줄(압축 c=0.6)+앞면 28줄. 음료 자판기, 손 도트. view34 FRONT 는 압축 윗면 오탐 — 눈으로 판정.",
+ "ok": true
+}

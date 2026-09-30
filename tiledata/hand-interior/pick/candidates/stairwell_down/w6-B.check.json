@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairwell_down/w6-B.pxg",
+ "id": "stairwell down",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "왼쪽을 밝히고 위 난간이 구멍에 드리우는 그림자와 오른쪽을 눌러 깊이를 주고 오른쪽 아래 두 줄을 반투명 그림자로",
+ "ok": true
+}

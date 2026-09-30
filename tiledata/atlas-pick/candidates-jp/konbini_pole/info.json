@@ -1,0 +1,19 @@
+{
+ "id": "konbini_pole",
+ "slug": "konbini_pole",
+ "name": "콘비니 기둥 간판",
+ "scene": "역 앞 번화가",
+ "cells": [
+  1,
+  3
+ ],
+ "canvas": [
+  16,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "편의점 주차장 앞 높은 기둥 간판. 맨 위에 네모 판(초록·주황·파랑 줄무늬, 글자 없음), 가는 쇠 기둥, 바닥 받침. 밤에도 읽히게 판 가장자리 밝게.",
+ "palette_hint": "kgreen·korange·kblue, mmetal 기둥",
+ "worker": "j3"
+}

@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/sea_deep/w1-A.pxg",
+ "set": "worldmap",
+ "id": "sea_deep",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "생성 계열 결: 깊은 바다 밑색(wdeep3)+드문 물결 2줄(16px 주기), 경계는 얕은 바다에서 밝은 두 단으로 0~2px 물결치며 풀어짐",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "seam": 0.71
+ }
+}

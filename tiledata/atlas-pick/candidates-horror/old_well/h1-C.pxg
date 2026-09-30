@@ -1,0 +1,79 @@
+// h1-C.pxg — h1 작업자(손으로 놓은 픽셀). 램프:단 열쇠 / 반투명은 팔레트 글자
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer b
+@px 12 5 vstone:1
+@px 7 6 vstone:2 8 6 vstone:3 9 6 vstone:3 10 6 vstone:3 11 6 vstone:3 12 6 vstone:5 13 6 vstone:3 14 6 vstone:3
+@px 15 6 vstone:3 16 6 vstone:3 17 6 vstone:1
+@px 6 7 vstone:0 7 7 vstone:3 8 7 vstone:3 9 7 vstone:3 10 7 vstone:3 11 7 void:2 12 7 void:2 13 7 void:2
+@px 14 7 vstone:3 15 7 vstone:3 16 7 vstone:2 17 7 vstone:2 18 7 vstone:0
+@px 4 8 vstone:0 5 8 vstone:1 6 8 vstone:3 7 8 vstone:3 8 8 vstone:3 9 8 vstone:3 10 8 vstone:5 11 8 void:2
+@px 12 8 void:2 13 8 void:2 14 8 vstone:5 15 8 vstone:3 16 8 vstone:2 17 8 vstone:2 18 8 vstone:2 19 8 vstone:0
+@px 20 8 vstone:0
+@px 4 9 vstone:1 5 9 vstone:3 6 9 vstone:3 7 9 vstone:3 8 9 vstone:3 9 9 void:2 10 9 vstone:4 11 9 void:2
+@px 12 9 void:2 13 9 void:2 14 9 vstone:4 15 9 void:2 16 9 vstone:2 17 9 vstone:2 18 9 vstone:2 19 9 vstone:2
+@px 20 9 vstone:0
+@px 3 10 vstone:0 4 10 vstone:3 5 10 vstone:3 6 10 hmoss:2 7 10 vstone:3 8 10 hmoss:2 9 10 void:1 10 10 void:1
+@px 11 10 void:1 12 10 void:1 13 10 void:1 14 10 void:1 15 10 void:1 16 10 vstone:2 17 10 vstone:2 18 10 vstone:2
+@px 19 10 vstone:2 20 10 vstone:2 21 10 vstone:0
+@px 3 11 vstone:0 4 11 vstone:3 5 11 vstone:3 6 11 hmoss:1 7 11 hmoss:3 8 11 hmoss:1 9 11 void:0 10 11 void:0
+@px 11 11 void:0 12 11 void:0 13 11 void:0 14 11 void:0 15 11 void:0 16 11 vstone:2 17 11 vstone:2 18 11 vstone:2
+@px 19 11 vstone:2 20 11 vstone:2 21 11 vstone:0
+@px 3 12 vstone:0 4 12 vstone:3 5 12 tarn:4 6 12 vstone:3 7 12 vstone:3 8 12 vstone:3 9 12 void:0 10 12 void:0
+@px 11 12 void:0 12 12 void:0 13 12 void:0 14 12 void:0 15 12 void:0 16 12 vstone:2 17 12 vstone:2 18 12 vstone:2
+@px 19 12 vstone:2 20 12 vstone:2 21 12 vstone:0
+@px 3 13 vstone:0 4 13 vstone:3 5 13 tarn:3 6 13 vstone:3 7 13 vstone:3 8 13 vstone:3 9 13 void:0 10 13 void:0
+@px 11 13 void:0 12 13 void:0 13 13 void:0 14 13 void:0 15 13 void:0 16 13 vstone:2 17 13 vstone:2 18 13 vstone:2
+@px 19 13 vstone:2 20 13 vstone:2 21 13 vstone:0
+@px 3 14 vstone:1 4 14 vstone:3 5 14 tarn:4 6 14 vstone:3 7 14 vstone:3 8 14 vstone:3 9 14 void:0 10 14 void:0
+@px 11 14 void:0 12 14 void:0 13 14 void:0 14 14 void:0 15 14 void:0 16 14 vstone:2 17 14 vstone:2 18 14 vstone:2
+@px 19 14 vstone:2 20 14 vstone:2 21 14 vstone:0
+@px 3 15 vstone:1 4 15 vstone:2 5 15 vstone:3 6 15 tarn:3 7 15 vstone:3 8 15 vstone:3 9 15 vstone:3 10 15 vstone:4
+@px 11 15 void:0 12 15 void:0 13 15 void:0 14 15 void:0 15 15 vstone:4 16 15 vstone:2 17 15 vstone:2 18 15 vstone:2
+@px 19 15 vstone:2 20 15 vstone:1 21 15 vstone:0
+@px 3 16 vstone:0 4 16 hmoss:2 5 16 hmoss:3 6 16 tarn:4 7 16 vstone:3 8 16 vstone:3 9 16 vstone:3 10 16 vstone:5
+@px 11 16 void:0 12 16 vstone:4 13 16 void:0 14 16 vstone:3 15 16 vstone:5 16 16 vstone:2 17 16 vstone:2 18 16 vstone:1
+@px 19 16 vstone:0 20 16 vstone:0 21 16 vstone:0
+@px 3 17 hmoss:1 4 17 hmoss:1 5 17 tarn:3 6 17 vstone:3 7 17 vstone:2 8 17 vstone:2 9 17 vstone:3 10 17 vstone:3
+@px 11 17 vstone:3 12 17 vstone:5 13 17 vstone:3 14 17 vstone:3 15 17 vstone:3 16 17 vstone:1 17 17 vstone:1 18 17 vstone:0
+@px 19 17 vstone:1 20 17 vstone:1 21 17 vstone:0
+@px 3 18 vstone:0 4 18 vstone:3 5 18 tarn:4 6 18 vstone:3 7 18 vstone:3 8 18 vstone:2 9 18 vstone:2 10 18 vstone:2
+@px 11 18 vstone:2 12 18 vstone:2 13 18 vstone:1 14 18 vstone:2 15 18 vstone:1 16 18 vstone:1 17 18 vstone:1 18 18 vstone:0
+@px 19 18 vstone:1 20 18 vstone:1 21 18 vstone:0
+@px 3 19 hmoss:1 4 19 vstone:3 5 19 tarn:4 6 19 tarn:2 7 19 tarn:3 8 19 vstone:2 9 19 vstone:2 10 19 vstone:2
+@px 11 19 vstone:2 12 19 vstone:2 13 19 vstone:1 14 19 vstone:2 15 19 vstone:1 16 19 vstone:1 17 19 vstone:1 18 19 vstone:0
+@px 19 19 vstone:1 20 19 vstone:1 21 19 vstone:0
+@px 3 20 hmoss:0 4 20 hmoss:2 5 20 hmoss:1 6 20 vstone:2 7 20 vstone:2 8 20 vstone:2 9 20 vstone:1 10 20 vstone:0
+@px 11 20 vstone:1 12 20 vstone:1 13 20 vstone:1 14 20 vstone:1 15 20 vstone:0 16 20 vstone:0 17 20 vstone:0 18 20 vstone:0
+@px 19 20 vstone:0 20 20 vstone:0 21 20 vstone:0
+@px 3 21 vstone:1 4 21 vstone:3 5 21 vstone:2 6 21 vstone:3 7 21 vstone:3 8 21 vstone:3 9 21 vstone:2 10 21 vstone:1
+@px 11 21 vstone:2 12 21 vstone:2 13 21 vstone:2 14 21 vstone:2 15 21 vstone:0 16 21 vstone:1 17 21 vstone:1 18 21 vstone:1
+@px 19 21 vstone:1 20 21 vstone:0 21 21 hmoss:0
+@px 3 22 vstone:1 4 22 vstone:3 5 22 vstone:2 6 22 vstone:3 7 22 vstone:3 8 22 vstone:3 9 22 vstone:2 10 22 vstone:1
+@px 11 22 vstone:2 12 22 vstone:2 13 22 vstone:2 14 22 vstone:2 15 22 vstone:0 16 22 vstone:1 17 22 vstone:1 18 22 vstone:1
+@px 19 22 vstone:1 20 22 vstone:0 21 22 hmoss:0
+@px 3 23 vstone:1 4 23 vstone:3 5 23 vstone:2 6 23 vstone:3 7 23 vstone:3 8 23 vstone:3 9 23 vstone:2 10 23 vstone:1
+@px 11 23 vstone:2 12 23 vstone:2 13 23 vstone:2 14 23 vstone:2 15 23 vstone:0 16 23 vstone:1 17 23 vstone:1 18 23 vstone:1
+@px 19 23 vstone:1 20 23 vstone:0 21 23 vstone:0
+@px 3 24 vstone:0 4 24 vstone:2 5 24 hmoss:2 6 24 vstone:2 7 24 hmoss:2 8 24 hmoss:3 9 24 vstone:1 10 24 vstone:1
+@px 11 24 vstone:1 12 24 vstone:1 13 24 vstone:0 14 24 vstone:1 15 24 vstone:0 16 24 vstone:0 17 24 vstone:0 18 24 vstone:0
+@px 19 24 vstone:0 20 24 vstone:0 21 24 vstone:0
+@px 3 25 vstone:0 4 25 vstone:2 5 25 hmoss:1 6 25 hmoss:3 7 25 hmoss:1 8 25 vstone:2 9 25 hmoss:2 10 25 vstone:2
+@px 11 25 vstone:2 12 25 vstone:2 13 25 vstone:1 14 25 vstone:2 15 25 vstone:1 16 25 vstone:1 17 25 vstone:1 18 25 hmoss:3
+@px 19 25 vstone:1 20 25 hmoss:3 21 25 hmoss:0
+@px 4 26 vstone:0 5 26 vstone:2 6 26 vstone:3 7 26 vstone:3 8 26 vstone:2 9 26 hmoss:1 10 26 vstone:2 11 26 hmoss:2
+@px 12 26 hmoss:3 13 26 vstone:1 14 26 vstone:2 15 26 vstone:1 16 26 vstone:1 17 26 vstone:1 18 26 hmoss:1 19 26 hmoss:2
+@px 20 26 hmoss:0
+@px 5 27 vstone:0 6 27 vstone:2 7 27 vstone:2 8 27 vstone:1 9 27 vstone:2 10 27 hmoss:3 11 27 hmoss:1 12 27 vstone:2
+@px 13 27 vstone:1 14 27 vstone:2 15 27 vstone:1 16 27 vstone:0 17 27 vstone:0 18 27 vstone:0 19 27 vstone:0 27 27 rot:2
+@px 28 27 rot:2 29 27 rot:2 30 27 rot:1
+@px 6 28 vstone:0 7 28 vstone:0 8 28 vstone:0 9 28 vstone:0 10 28 vstone:0 11 28 vstone:0 12 28 vstone:0 13 28 vstone:0
+@px 14 28 rot:4 15 28 rot:4 16 28 rot:4 17 28 rot:4 18 28 rot:4 19 28 rot:4 20 28 rot:2 21 28 rot:2
+@px 22 28 rot:2 23 28 rot:0 24 28 rot:2 25 28 rot:2 26 28 rot:2 27 28 rot:3 28 28 rot:3 29 28 rot:3
+@px 30 28 rot:0
+@px 9 29 vstone:0 10 29 vstone:0 11 29 vstone:0 12 29 vstone:0 13 29 vstone:0 14 29 rot:3 15 29 rot:3 16 29 rot:3
+@px 17 29 rot:3 18 29 rot:3 19 29 rot:3 20 29 rot:1 21 29 rot:3 22 29 rot:3 23 29 rot:3 24 29 rot:3
+@px 25 29 rot:3 26 29 rot:3 27 29 rot:0 28 29 rot:0 29 29 rot:0 30 29 rot:0
+@px 14 30 rot:0 15 30 rot:0 16 30 rot:0 17 30 rot:0 18 30 rot:0 19 30 rot:0 20 30 rot:0 21 30 rot:0
+@px 22 30 rot:0 23 30 rot:0 24 30 rot:0 25 30 rot:0 26 30 rot:0

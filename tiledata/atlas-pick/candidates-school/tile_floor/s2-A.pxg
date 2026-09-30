@@ -1,0 +1,40 @@
+// tile_floor s2-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a stile 0
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+6666666355555553
+6555555354444443
+6555555354444443
+6555555354444443
+6555555354444443
+6555555354444443
+6555555354444443
+3333333333333333
+6666666366666663
+6555555365555553
+6555555365555553
+6555555365555553
+6555555365555553
+6555555365555553
+6555555365555553
+3333333333333333

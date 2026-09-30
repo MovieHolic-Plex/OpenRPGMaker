@@ -1,0 +1,91 @@
+== invalidations (count total) ==
+   400 Layout | Removed from layout |  | sel= | cls= | node=path
+   400 Layout | Added to layout |  | sel= | cls= | node=path
+   325 StyleRecalc | Control |  | sel= | cls= | node=DIV
+   288 Layout | Removed from layout |  | sel= | cls= | node=#text
+   288 Layout | Added to layout |  | sel= | cls= | node=#text
+   234 ScheduleStyle |  |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+   192 Layout | Removed from layout |  | sel= | cls= | node=svg
+   192 Layout | Added to layout |  | sel= | cls= | node=svg
+    96 StyleRecalc | Affected by :has() |  | sel= | cls= | node=DIV class='left-panel ai-chat-sidebar-tools'
+    96 Layout | Removed from layout |  | sel= | cls= | node=circle
+    96 Layout | Added to layout |  | sel= | cls= | node=circle
+    74 Layout | Removed from layout |  | sel= | cls= | node=SLOT id='details-content'
+    74 Layout | Added to layout |  | sel= | cls= | node=SLOT id='details-content'
+    48 Layout | Removed from layout |  | sel= | cls= | node=BUTTON class='btn sidebar-surface-button'
+    48 Layout | Removed from layout |  | sel= | cls= | node=BUTTON class='oprn-tile-tool'
+    48 Layout | Added to layout |  | sel= | cls= | node=BUTTON class='btn sidebar-surface-button'
+    48 Layout | Added to layout |  | sel= | cls= | node=BUTTON class='oprn-tile-tool'
+    37 StyleInvalidator | Invalidation set invalidates subtree |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+    37 StyleRecalc | Related style rule |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+    37 Layout | Child anonymous block changed |  | sel= | cls= | node=DETAILS class='ai-activity-setting'
+    37 Layout | Added to layout |  | sel= | cls= | node=SUMMARY class='ai-activity-setting-summary'
+    37 Layout | Added to layout |  | sel= | cls= | node=DETAILS class='ai-activity-setting'
+    32 ScheduleStyle |  |  | sel= | cls= | node=SPAN class='ai-deck-rail-ctx'
+    32 StyleInvalidator | Invalidation set invalidates self |  | sel= | cls= | node=SPAN class='ai-deck-rail-ctx'
+    32 StyleRecalc | Related style rule |  | sel= | cls= | node=SPAN class='ai-deck-rail-ctx'
+== main-thread self time by bucket ==
+   274.3ms/op style
+   247.6ms/op task-other
+   129.1ms/op js
+    64.2ms/op gc
+    41.7ms/op paint/raster
+    29.8ms/op layout
+     0.2ms/op other:IntersectionObserverController::computeIntersections
+     0.2ms/op other:Major concurrent marking rescheduled
+     0.1ms/op other:PaintImage
+     0.0ms/op other:ClearWeaknessProcessor start
+     0.0ms/op other:ComputeWeaknessProcessor start
+     0.0ms/op other:Parallel scavenge started
+     0.0ms/op other:ClearStringTableJob started
+     0.0ms/op other:PointersUpdatingJob started
+long tasks(>20ms): 144,114,65,425,68,199,161,76,60,129,102,72,226,137,74,159,137,35,70,75,163,113,81,56,131,115,60,63,148,161,59,151
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:67 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:67 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:67 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:67 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:67 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:67 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:67 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:79 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:79 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:79 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:79 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:80 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts?t=1790772683584:80 < renderTilePalette@panels/tilePalette.ts?t=1790772683584:192 < refreshTilePalette@panels/tilePalette.ts?t=1790772683584:119 < render@workspace/panelRegistry.ts?t=1790772683584:9 < renderDockPanels@workspace/dockHost.ts?t=1790772683584:53 < renderLeftDockPanels@panels/editor.ts?t=1790772683584:308
+ULE 34ms 2435el parents=RunTask
+   17 Layout|Removed from layout|#text||
+   17 Layout|Removed from layout|path||
+   12 StyleRecalc|Affected by :has()|DIV class='left-panel ai-chat-sidebar-tools'||
+   12 ScheduleStyle||BODY class='ai-chat-dock-float ai-command-bar-active'||
+   10 Layout|Removed from layout|svg||
+   6 Layout|Removed from layout|BUTTON class='btn sidebar-surface-button'||
+   6 Layout|Removed from layout|BUTTON class='oprn-tile-tool'||
+   4 Layout|Removed from layout|DIV||
+  BODYINV ScheduleStyle  renderTopbar@panels/menu.ts?t=1790772683584:86 < renderTopbar@app/mode.ts?t=1790772683584:581
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule renderTopbar@panels/menu.ts?t=1790772683584:86 < renderTopbar@app/mode.ts?t=1790772683584:581
+  BODYINV ScheduleStyle  renderTopbar@panels/menu.ts?t=1790772683584:151 < renderTopbar@app/mode.ts?t=1790772683584:581
+ULE 56ms 3726el parents=RunTask
+   33 Layout|Removed from layout|path||
+   18 Layout|Removed from layout|#text||
+   17 Layout|Added to layout|#text||
+   17 Layout|Added to layout|path||
+   14 Layout|Removed from layout|svg||
+   10 Layout|Added to layout|svg||
+   9 Layout|Removed from layout|circle||
+   6 Layout|Added to layout|BUTTON class='btn sidebar-surface-button'||
+  BODYINV ScheduleStyle  tick@panels/aiProjectSuggestions.ts:113
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule tick@panels/aiProjectSuggestions.ts:113
+  BODYINV ScheduleStyle  tick@panels/aiProjectSuggestions.ts:116
+ULE 61ms 3726el parents=RunTask
+   2 ScheduleStyle||DIV class='canvas-area'||
+   2 ScheduleStyle||BODY class='ai-chat-dock-float ai-command-bar-active'||
+   1 StyleInvalidator|Invalidation set invalidates subtree|DIV class='canvas-area'||
+   1 StyleRecalc|Related style rule|DIV class='canvas-area'||
+   1 StyleInvalidator|Invalidation set invalidates subtree|BODY class='ai-chat-dock-float ai-command-bar-active'||
+   1 StyleRecalc|Related style rule|BODY class='ai-chat-dock-float ai-command-bar-active'||
+   1 StyleRecalc|Attribute|SPAN class='ai-suggestion-peek-badge'||
+UpdateLayoutTree>3ms: 51ms/3726el 51ms/3726el 34ms/2435el 56ms/3726el 61ms/3726el 89ms/3726el 79ms/3726el 57ms/2435el 67ms/3726el 54ms/3726el 54ms/3726el 51ms/3726el 32ms/2435el 61ms/3726el 96ms/3726el 96ms/3726el 45ms/2435el 63ms/3726el 75ms/3726el 56ms/3726el

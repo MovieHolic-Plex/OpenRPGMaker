@@ -1,0 +1,48 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/mountain/w3-A.pxg",
+ "set": "worldmap",
+ "id": "mountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.052
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.184
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "banding",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  47,
+  60
+ ],
+ "note": "oprn-atlas 결의 낮은 대비 — 어두운 바위 바탕에 큰 봉우리 둘이 겹친 산줄기, 주기 16 세로 결, 테는 바깥 8px 안에서 흙 언덕색으로 이음.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.051
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.402
+  },
+  "seam": 0.78
+ }
+}

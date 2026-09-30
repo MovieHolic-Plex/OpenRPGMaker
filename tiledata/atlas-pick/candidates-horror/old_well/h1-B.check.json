@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/old_well/h1-B.pxg",
+ "set": "horror",
+ "id": "old_well",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.229
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.279
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 22,
+ "bbox": [
+  1,
+  5,
+  31,
+  31
+ ],
+ "note": "B: 왼쪽 위 빛 — 돌 테 왼쪽 윗면이 가장 밝고 오른쪽 벽은 깊게 어둡다. 입 안쪽은 윗벽 한 줄만 빛을 받고 나머지 새까맣다. 우물 오른쪽·아래에 반투명 접촉 그림자, 뚜껑 판도 그늘에 잠긴다.",
+ "ok": true
+}

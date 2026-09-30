@@ -1,0 +1,1611 @@
+{
+ "version": 1,
+ "set": "school",
+ "note": "학원(한국·일본 학원물 공용) 16px 조각 배정표. 작업자별 기물 slug 목록(겹침 없음, 짝은 한 사람). 절차 WORKER-SCHOOL.md. 팔레트 palette/school.pal. 호러 세트의 broken_<slug> 는 이 목록 밖(candidates-horror).",
+ "directions": {
+  "A": "v5 실내·강남 조각 결을 따른 판",
+  "B": "명암·그림자 강화",
+  "C": "실루엣 재해석"
+ },
+ "workers": {
+  "s1": [
+   "hall_floor",
+   "hall_wall",
+   "hall_door",
+   "class_window",
+   "hall_window",
+   "assembly_podium",
+   "broadcast_desk",
+   "serving_counter",
+   "easel",
+   "plaster_bust",
+   "schoolyard",
+   "track_line",
+   "skeleton_model",
+   "ball_basket"
+  ],
+  "s2": [
+   "blackboard",
+   "whiteboard",
+   "classroom_floor",
+   "classroom_wall",
+   "grand_piano",
+   "music_stand",
+   "bike_rack",
+   "staff_desks",
+   "copier",
+   "gym_floor",
+   "gym_line",
+   "tile_floor",
+   "vending_school",
+   "milk_crate"
+  ],
+  "s3": [
+   "bunk_bed",
+   "dorm_desk",
+   "dorm_closet",
+   "water_tank",
+   "cafeteria_table",
+   "meal_tray",
+   "basketball_hoop",
+   "nurse_bed",
+   "privacy_screen",
+   "gym_mat",
+   "locker_row",
+   "class_plate",
+   "exit_sign",
+   "class_speaker"
+  ],
+  "s4": [
+   "school_gate",
+   "library_shelf",
+   "library_counter",
+   "lectern",
+   "teacher_platform",
+   "desk_set",
+   "desk_pair",
+   "roof_fence",
+   "roof_floor",
+   "dorm_rug",
+   "water_fountain",
+   "fire_hydrant",
+   "height_scale"
+  ],
+  "s5": [
+   "lab_bench",
+   "lab_cabinet",
+   "roof_stairhouse",
+   "soccer_goal",
+   "shoe_locker",
+   "slippers",
+   "genkan_step",
+   "kiosk_counter",
+   "bulletin_board",
+   "vaulting_box",
+   "composer_frames",
+   "cleaning_locker",
+   "class_clock"
+  ]
+ },
+ "items": [
+  {
+   "id": "desk_set",
+   "slug": "desk_set",
+   "name": "학생 책상·의자",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "1인용 학생 책상(윗칸)과 그 앞 의자(아랫칸)를 한 벌로. 책상 = 밝은 합판 상판(윗면이 높이의 ¾ 가까이 보이게) + 가는 쇠 다리 넷 + 상판 밑 서랍칸 어두운 틈. 의자 = 등받이가 책상 쪽(위)을 향해 학생이 칠판(위)을 보고 앉는 방향 — 합판 좌판·등판, 쇠 다리. 교실에 5×6 으로 줄지어 깐다: 좌우로 붙여 놓아도 옆 책상과 겹치지 않게 좌우 1px 여백.",
+   "palette_hint": "vpine/cfloor 상판·좌판, locker/mmetal 다리, 그림자 ~ -",
+   "pair": [
+    "desk_pair"
+   ],
+   "worker": "s4"
+  },
+  {
+   "id": "desk_pair",
+   "slug": "desk_pair",
+   "name": "두 사람 책상(짝꿍)",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "둘이 나란히 앉는 긴 책상 하나 + 의자 둘(한국 옛 교실·일본 특별실). 상판 가운데 이음 선 한 줄, 의자 둘은 같은 높이. desk_set 과 같은 재료·명암 방식.",
+   "palette_hint": "vpine 상판, locker 다리",
+   "pair": [
+    "desk_set"
+   ],
+   "worker": "s4"
+  },
+  {
+   "id": "lectern",
+   "slug": "lectern",
+   "name": "교탁",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "칠판 앞 교사용 교탁. 허리 높이 나무 상자 — 윗면(경사진 판 + 출석부·분필 상자 한 점)과 학생 쪽 앞면(판자 두 칸, 가운데 세로 이음)이 명도로 확실히 나뉜다. 상자형이니 윗면 띠가 반드시 보여야 한다.",
+   "palette_hint": "vwood/vdwood 몸통, washi 출석부, vwhite 분필",
+   "pair": [
+    "teacher_platform"
+   ],
+   "worker": "s4"
+  },
+  {
+   "id": "teacher_platform",
+   "slug": "teacher_platform",
+   "name": "교단",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "칠판 앞 한 뼘 높이 나무 단(교단). 윗면 = 널 세 장 가로 결, 앞 턱 = 2~3px 어두운 띠. 좌우로 이어 붙일 수 있게 양 끝 모양 같게(가운데 칸 반복 가능).",
+   "palette_hint": "cfloor 윗면, vdwood 앞 턱",
+   "pair": [
+    "lectern"
+   ],
+   "worker": "s4"
+  },
+  {
+   "id": "blackboard",
+   "slug": "blackboard",
+   "name": "녹색 칠판",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    4,
+    2
+   ],
+   "canvas": [
+    64,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽에 붙는 녹색 칠판. 알루미늄 틀(윗줄·양옆 1~2px), 아래에 분필 받침 턱(분필 두세 토막·지우개 하나). 판 면에 분필로 쓴 흐린 줄 두세 개·숫자 「1 2 3」 정도 — 판 명도는 두 단 이내로 잔잔하게, 지운 자국 옅게.",
+   "palette_hint": "kokuban 판, mmetal/tray 틀, vwhite·washi·vyellow 분필",
+   "pair": [
+    "whiteboard"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "whiteboard",
+   "slug": "whiteboard",
+   "name": "화이트보드",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽걸이 화이트보드. 은색 틀, 아래 펜 받침(검정·빨강·파랑 펜 점), 판 면에 마커 선 한두 줄과 붙은 자석 하나. blackboard 와 같은 높이 규칙(틀 두께·받침 위치 같게) — 짝.",
+   "palette_hint": "wboard 판, mmetal 틀, vblack·vred·vblue 펜",
+   "pair": [
+    "blackboard"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "bulletin_board",
+   "slug": "bulletin_board",
+   "name": "게시판",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "교실 뒤 코르크 게시판. 나무 틀, 코르크 면에 종이 네다섯 장(흰색·연노랑·연분홍, 크기 다르게, 살짝 기울게)과 빨강·파랑 압정 점. 종이 위 글줄은 1px 흐린 줄.",
+   "palette_hint": "cork 면, vdwood 틀, washi·vyellow·sakura 종이",
+   "pair": [],
+   "worker": "s5"
+  },
+  {
+   "id": "locker_row",
+   "slug": "locker_row",
+   "name": "교실 뒤 사물함",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "교실 뒤 벽에 붙은 칸 사물함 2단×4열(한 칸 = 8px 폭). 칸마다 문 손잡이 점·번호표 흰 점, 한두 칸은 가방·체육복 끝이 삐져나옴. 윗면 띠 1~2px, 앞면이 주인공. 좌우로 이어 붙게 양 끝 같게.",
+   "palette_hint": "locker 쇠 또는 vpine 나무, uniform 가방, jersey 체육복",
+   "pair": [],
+   "worker": "s3"
+  },
+  {
+   "id": "class_clock",
+   "slug": "class_clock",
+   "name": "교실 둥근 시계",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "칠판 위 둥근 벽시계. 흰 판·검은 테, 굵은 시침·분침(2px, 10시 10분쯤), 12·3·6·9 자리 점. 16px 안에서 원이 찌그러지지 않게.",
+   "palette_hint": "vwhite 판, vblack 테·바늘",
+   "pair": [],
+   "worker": "s5"
+  },
+  {
+   "id": "class_speaker",
+   "slug": "class_speaker",
+   "name": "교실 스피커·TV",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "칠판 옆 위 벽에 달린 벽걸이 TV(짙은 화면 + 은색 테) 와 옆 작은 방송 스피커(격자 구멍). 화면에 창 빛 반사 사선 한 줄.",
+   "palette_hint": "mdglass 화면, mmetal 테, cream 스피커",
+   "pair": [],
+   "worker": "s3"
+  },
+  {
+   "id": "class_window",
+   "slug": "class_window",
+   "name": "교실 창(커튼)",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "교실 바깥벽 창 한 칸. 알루미늄 미닫이 두 짝(가운데 세로 겹침 틀), 유리에 하늘·반사 사선, 한쪽에 묶은 크림색 커튼, 아래 창턱. 좌우로 여러 칸 이어 붙게(양 끝 틀 반쪽씩). 창가 자리 분위기.",
+   "palette_hint": "mglass 유리, mmetal 틀, cream/vlinen 커튼, & 유리 반사",
+   "pair": [
+    "hall_window"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "cleaning_locker",
+   "slug": "cleaning_locker",
+   "name": "청소도구함",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "교실 구석 쇠 청소도구함. 키 큰 좁은 상자 — 앞면 문 하나(환기 가로 틈 서너 줄·손잡이), 윗면 띠 1px, 문 위에 빗자루 끝이 삐죽 보여도 좋다. 옆에 둘 양동이 없이 상자만.",
+   "palette_hint": "locker 몸통, mmetal 손잡이",
+   "pair": [],
+   "worker": "s5"
+  },
+  {
+   "id": "classroom_floor",
+   "slug": "classroom_floor",
+   "name": "교실 마루",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "교실 바닥 널마루 한 칸 — 세로 또는 가로 널 결, 널 이음 어두운 선, 사방으로 이어 붙여도 무늬가 튀지 않게(가장자리 이음 맞춤). v5 밝은 널마루보다 조금 노란 꿀빛, 명도는 가구와 분리되게 한 단 낮게.",
+   "palette_hint": "cfloor",
+   "pair": [
+    "classroom_wall"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "classroom_wall",
+   "slug": "classroom_wall",
+   "name": "교실 벽면",
+   "scene": "교실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "교실 안쪽 벽 한 칸(윗칸 크림 회벽 + 아랫칸 나무 징두리판·걸레받이). 좌우로 이어 붙는다. 맨 아래 줄 = 바닥과 만나는 걸레받이 어두운 줄. 칠판·게시판·창이 이 위에 걸린다.",
+   "palette_hint": "cream 벽, vpine/vdwood 징두리",
+   "pair": [
+    "classroom_floor"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "shoe_locker",
+   "slug": "shoe_locker",
+   "name": "신발장(실내화장)",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "현관 신발장 — 작은 칸 3단×4열, 칸마다 실내화(흰 몸통·색 코 부분 점) 또는 운동화가 앞코만 보이게, 빈 칸 한두 개. 나무 또는 쇠, 윗면 띠 1~2px. 좌우로 이어 붙게.",
+   "palette_hint": "hinoki/vpine 또는 locker, vwhite 실내화, vgreen·vblue·vred 코",
+   "pair": [
+    "slippers",
+    "genkan_step"
+   ],
+   "worker": "s5"
+  },
+  {
+   "id": "slippers",
+   "slug": "slippers",
+   "name": "실내화 한 켤레",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "바닥에 놓인 실내화 한 켤레(흰 몸통·학년색 고무 코·뒤꿈치). 16px 안 가운데 아래, 발치 그림자 1줄.",
+   "palette_hint": "vwhite, vgreen/vblue/vred 코",
+   "pair": [
+    "shoe_locker",
+    "genkan_step"
+   ],
+   "worker": "s5"
+  },
+  {
+   "id": "genkan_step",
+   "slug": "genkan_step",
+   "name": "현관 발판(스노코)",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "현관 신발 벗는 자리의 나무 발판(가로 널 네 장, 틈 사이 어두운 줄, 낮은 다리). 윗면이 거의 전부, 앞 턱 1~2px. 좌우 이어 붙게.",
+   "palette_hint": "hinoki 널, vdwood 틈",
+   "pair": [
+    "shoe_locker",
+    "slippers"
+   ],
+   "worker": "s5"
+  },
+  {
+   "id": "hall_floor",
+   "slug": "hall_floor",
+   "name": "복도 리놀륨",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "복도 바닥 리놀륨 한 칸 — 회녹색 면에 옅은 반사 얼룩, 이음 선 한 줄(가로). 사방 이음 맞춤. 광택은 작게, 두세 단만.",
+   "palette_hint": "lino",
+   "pair": [
+    "hall_wall",
+    "hall_door"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "hall_wall",
+   "slug": "hall_wall",
+   "name": "복도 벽면",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "복도 쪽 벽 한 칸(윗칸 크림 벽, 아랫칸 허리 높이까지 연녹색 또는 회색 페인트 징두리 + 걸레받이). classroom_wall 과 높이 규칙 같게(이어 붙여 교실 벽→복도 벽). 좌우 이어 붙는다.",
+   "palette_hint": "cream 윗벽, lino/locker 징두리",
+   "pair": [
+    "hall_floor",
+    "hall_door"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "hall_window",
+   "slug": "hall_window",
+   "name": "복도 창",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "복도 쪽 교실 벽의 가로로 긴 창(허리 위). 미닫이 유리 두 짝, 안쪽 교실이 흐리게 비친다(책상 윗면 줄 흐릿). class_window 보다 창턱이 낮고 커튼 없음.",
+   "palette_hint": "mglass/mdglass, mmetal 틀, & 반사",
+   "pair": [
+    "class_window"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "hall_door",
+   "slug": "hall_door",
+   "name": "교실 미닫이 문",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "복도에서 교실로 드는 나무 미닫이 문 한 짝 + 문틀. 위쪽에 작은 유리창(세로 긴 네모), 손잡이 홈. hall_wall 과 같은 높이·걸레받이 줄로 이어진다.",
+   "palette_hint": "vpine/hinoki 문, mglass 창, cream 틀벽",
+   "pair": [
+    "hall_floor",
+    "hall_wall"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "class_plate",
+   "slug": "class_plate",
+   "name": "학급 표찰",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "교실 문 위 복도로 튀어나온 반 이름 표찰 — 흰 판 옆모습이 아니라 앞에서 본 가로판에 「2-1」(숫자 2px 획). 받침 쇠 1px.",
+   "palette_hint": "vwhite 판, vblack 글자, mmetal 받침",
+   "pair": [
+    "exit_sign"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "exit_sign",
+   "slug": "exit_sign",
+   "name": "비상구 표지",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "초록 비상구 유도등 — 초록 판에 흰 달리는 사람과 문 모양(실루엣으로 읽히게 과장), 테두리 밝게(불 켜진 느낌).",
+   "palette_hint": "vgreen 또는 mgreen 판, vwhite 사람",
+   "pair": [
+    "class_plate"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "fire_hydrant",
+   "slug": "fire_hydrant",
+   "name": "소화전함",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "복도 벽에 박힌 빨간 옥내 소화전함 — 윗칸 빨간 표시등(둥근 점) + 아랫칸 빨간 문(손잡이, 가운데 흰 가로 띠). 벽에 붙은 그늘 한 줄.",
+   "palette_hint": "mred/vred 몸통, vwhite 띠, vyellow 표시등 빛",
+   "pair": [],
+   "worker": "s4"
+  },
+  {
+   "id": "water_fountain",
+   "slug": "water_fountain",
+   "name": "복도 세면대",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "복도 끝 긴 세면대 — 스테인리스 개수대에 수도꼭지 세 개(작은 은색 T), 뒤 벽 타일 한 줄, 개수대 안 어두운 물 고임. 윗면이 넓게 보이는 각.",
+   "palette_hint": "tray 개수대, stile 타일, mglass 물",
+   "pair": [],
+   "worker": "s4"
+  },
+  {
+   "id": "tile_floor",
+   "slug": "tile_floor",
+   "name": "타일 바닥",
+   "scene": "복도·현관",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "화장실·과학실·급식실 흰 타일 바닥 한 칸 — 8px 네모 넷, 줄눈 회색 1px, 한 장만 살짝 어둡게(단조로움 깨기). 사방 이음 맞춤.",
+   "palette_hint": "stile",
+   "pair": [],
+   "worker": "s2"
+  },
+  {
+   "id": "lab_bench",
+   "slug": "lab_bench",
+   "name": "과학실 실험대",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "검은 상판 실험대 — 가운데 작은 개수대·수도꼭지, 가스 꼭지 두 개, 비커·플라스크 한두 점(유리 반사 1px). 몸통은 흰 나무 서랍장, 윗면이 높이의 ¾.",
+   "palette_hint": "vblack 상판, vwhite/cream 몸통, mglass 비커",
+   "pair": [
+    "lab_cabinet"
+   ],
+   "worker": "s5"
+  },
+  {
+   "id": "lab_cabinet",
+   "slug": "lab_cabinet",
+   "name": "약품장",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "과학실 유리문 약품장(키 큰 장) — 유리 두 짝 뒤에 갈색·투명 병이 두 선반, 아래 나무 문 서랍. 앞면이 주인공, 윗판 1~2px.",
+   "palette_hint": "vwood 틀, mglass 유리, & 반사, vbrass 병",
+   "pair": [
+    "lab_bench"
+   ],
+   "worker": "s5"
+  },
+  {
+   "id": "skeleton_model",
+   "slug": "skeleton_model",
+   "name": "인체 골격 모형",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "받침대 위에 매달린 골격 모형. 실루엣으로 읽혀야 한다 — 큰 두개골(과장), 갈비 3~4줄, 골반, 팔다리 뼈 1px. 쇠 받침대·바퀴 다리. 섬뜩하지 않게 교과서 모형처럼 흰 뼈 + 연한 그늘.",
+   "palette_hint": "vlinen/vwhite 뼈, mmetal 받침",
+   "pair": [],
+   "worker": "s1"
+  },
+  {
+   "id": "grand_piano",
+   "slug": "grand_piano",
+   "name": "음악실 그랜드 피아노",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "뚜껑을 연 검정 그랜드 피아노(위에서 약간 내려다본 각) — 날개 모양 몸통, 열린 뚜껑 받침대, 앞쪽 흰 건반 줄(검은 건반 점), 의자 하나. 광택은 빛 쪽 가장자리 한 줄로만.",
+   "palette_hint": "vblack 몸통, vwhite 건반",
+   "pair": [
+    "music_stand"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "music_stand",
+   "slug": "music_stand",
+   "name": "보면대",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "가는 쇠 보면대 — 기울어진 검은 받침판(악보 흰 종이 한 장), 가는 기둥, 세 발. 16px 안에서 판이 읽히게.",
+   "palette_hint": "vblack/mmetal, washi 악보",
+   "pair": [
+    "grand_piano"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "composer_frames",
+   "slug": "composer_frames",
+   "name": "음악가 초상 액자 줄",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "음악실 벽 위 초상 액자 세 개(금·나무 틀). 얼굴은 알아볼 수 없어도 된다 — 흰 가발 머리 덩이·어두운 옷 덩이 두 단. 세 액자 머리 모양을 다르게.",
+   "palette_hint": "vbrass/vwood 틀, vlinen 얼굴, vwhite 머리",
+   "pair": [],
+   "worker": "s5"
+  },
+  {
+   "id": "easel",
+   "slug": "easel",
+   "name": "미술실 이젤",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "나무 이젤(세 다리 A자) 위 캔버스 — 캔버스에 풍경 붓 자국(하늘색·초록 덩이 두세 개), 받침 턱에 붓 하나. 다리 2px.",
+   "palette_hint": "vpine 이젤, vwhite 캔버스, vblue·vgreen·vyellow 물감",
+   "pair": [
+    "plaster_bust"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "plaster_bust",
+   "slug": "plaster_bust",
+   "name": "석고상",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "미술실 받침대 위 흰 석고 흉상 — 곱슬머리 덩이, 코·턱 그늘 한 단, 어깨 끝 잘린 면. 받침대 = 네모 기둥(윗면 띠). 흰색 3~4단으로 입체감.",
+   "palette_hint": "vwhite/vlinen 석고, vstone 받침 또는 vpine",
+   "pair": [
+    "easel"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "library_shelf",
+   "slug": "library_shelf",
+   "name": "도서실 책장",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "키 큰 도서실 책장(3단) — 단마다 색 다른 책등(빨·파·초·노 낮은 채도, 높이 들쭉날쭉, 기울어진 책 하나), 번호 라벨 흰 점 줄. 앞면이 주인공, 윗판 1px. 좌우 이어 붙게.",
+   "palette_hint": "vpine/vwood 장, vred vblue vgreen vyellow 책등",
+   "pair": [
+    "library_counter"
+   ],
+   "worker": "s4"
+  },
+  {
+   "id": "library_counter",
+   "slug": "library_counter",
+   "name": "대출 데스크",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "도서실 대출 카운터 — 긴 나무 카운터(윗면에 도장·반납 책 더미·작은 모니터), 앞면 판자와 「반납」 대신 책 아이콘 표지. 윗면 ¾.",
+   "palette_hint": "vpine 카운터, mdglass 모니터, washi 책",
+   "pair": [
+    "library_shelf"
+   ],
+   "worker": "s4"
+  },
+  {
+   "id": "nurse_bed",
+   "slug": "nurse_bed",
+   "name": "보건실 침대",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "보건실 쇠 침대 — 흰 시트, 베개(윗칸), 발치 쇠 난간, 접힌 담요 한 장. 높이 낮은 가구라 윗면(시트)이 높이의 ¾.",
+   "palette_hint": "vwhite/vlinen 시트, locker/mmetal 틀, jersey 담요",
+   "pair": [
+    "privacy_screen"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "privacy_screen",
+   "slug": "privacy_screen",
+   "name": "보건실 칸막이 커튼",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "침대 옆 바퀴 달린 칸막이(쇠 틀에 연한 커튼 천) — 천 주름 세로 결 3~4줄, 아래 바퀴 발 넷. nurse_bed 옆에 세운다(짝, 같은 흰 색 계열).",
+   "palette_hint": "vlinen/cream 천, mmetal 틀",
+   "pair": [
+    "nurse_bed"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "height_scale",
+   "slug": "height_scale",
+   "name": "신장계",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "보건실 신장계 — 세로 눈금 기둥(1px 눈금 줄), 위 가로 누름판, 아래 발판(윗면 보이게). 기둥이 캔버스 위까지 길게.",
+   "palette_hint": "vwhite 기둥, vblack 눈금, mmetal 판",
+   "pair": [],
+   "worker": "s4"
+  },
+  {
+   "id": "staff_desks",
+   "slug": "staff_desks",
+   "name": "교무실 책상 섬",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "교무실 쇠 책상 두 개를 마주 붙인 섬 — 윗면에 서류 더미·머그컵·모니터 뒷면, 사이 칸막이 낮은 판. 윗면 ¾, 회색 쇠 몸통.",
+   "palette_hint": "locker 책상, cream 칸막이, washi 서류, mdglass 모니터",
+   "pair": [
+    "copier"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "copier",
+   "slug": "copier",
+   "name": "복사기",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "교무실 복사기 — 윗면 유리판 뚜껑·조작판(작은 초록 불 점), 몸통 앞 종이 서랍 두 칸, 옆 배출 받침에 종이 한 장. 상자형이니 윗면이 보여야 한다.",
+   "palette_hint": "mwhite/cream 몸통, locker 서랍, vgreen 불",
+   "pair": [
+    "staff_desks"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "broadcast_desk",
+   "slug": "broadcast_desk",
+   "name": "방송실 조정대",
+   "scene": "특별실",
+   "place": "in",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "방송실 조정 책상 — 믹서(슬라이더 줄 1px·노브 점), 목이 휜 마이크 하나, 작은 모니터 둘, 헤드폰. 윗면 ¾, 불빛 점은 작고 한두 색만.",
+   "palette_hint": "vblack/locker 믹서, mmetal 마이크, mdglass 모니터, vred·vgreen 불",
+   "pair": [],
+   "worker": "s1"
+  },
+  {
+   "id": "basketball_hoop",
+   "slug": "basketball_hoop",
+   "name": "농구 골대",
+   "scene": "체육관",
+   "place": "in",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "체육관 이동식 농구 골대 — 흰 백보드(빨간 네모 테), 주황 링·흰 그물(1px 엇갈림), 굵은 받침 기둥과 뒤로 뻗은 바닥 받침(바퀴). 실루엣으로 링·보드가 또렷해야 한다.",
+   "palette_hint": "vwhite 보드, vred 테, vred·vyellow 링, locker 기둥",
+   "pair": [],
+   "worker": "s3"
+  },
+  {
+   "id": "gym_mat",
+   "slug": "gym_mat",
+   "name": "체육 매트",
+   "scene": "체육관",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "바닥에 깐 두툼한 체육 매트 — 파랑 비닐, 가장자리 두께 2~3px(앞면 어둡게), 윗면에 누빔 선 두세 줄, 손잡이 끈. 겹쳐 쌓은 두 장이어도 좋다.",
+   "palette_hint": "gmat",
+   "pair": [],
+   "worker": "s3"
+  },
+  {
+   "id": "vaulting_box",
+   "slug": "vaulting_box",
+   "name": "뜀틀",
+   "scene": "체육관",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "뜀틀 — 나무 단 네다섯 층(층마다 이음 어두운 줄, 옆 손잡이 구멍), 맨 위 흰 가죽 쿠션. 위에서 약간 내려다본 각으로 윗면 쿠션이 보이게.",
+   "palette_hint": "hinoki/vpine 단, vwhite/vlinen 쿠션",
+   "pair": [],
+   "worker": "s5"
+  },
+  {
+   "id": "ball_basket",
+   "slug": "ball_basket",
+   "name": "공 바구니",
+   "scene": "체육관",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "쇠 바구니 수레에 담긴 공(농구공 주황 점·배구공 흰 점) — 바구니 격자 1px, 바퀴 점.",
+   "palette_hint": "mmetal 바구니, vred·vyellow·vwhite 공",
+   "pair": [],
+   "worker": "s1"
+  },
+  {
+   "id": "gym_floor",
+   "slug": "gym_floor",
+   "name": "체육관 마루",
+   "scene": "체육관",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "체육관 바닥 한 칸 — 밝은 단풍나무 널(가로 결, 가는 이음), 바니시 광 한 줄. 사방 이음 맞춤. classroom_floor 보다 밝고 노랗다.",
+   "palette_hint": "gym",
+   "pair": [
+    "gym_line"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "gym_line",
+   "slug": "gym_line",
+   "name": "코트 선",
+   "scene": "체육관",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "체육관 마루 위 코트 선 덧칠 — 가로 2px 흰 선(또는 초록·빨강 선) 한 칸. 좌우로 이어 붙게 선 높이 가운데 고정. 투명 배경.",
+   "palette_hint": "vwhite, vgreen, vred",
+   "pair": [
+    "gym_floor"
+   ],
+   "worker": "s2"
+  },
+  {
+   "id": "roof_fence",
+   "slug": "roof_fence",
+   "name": "옥상 펜스",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "옥상 가장자리 녹색 철망 펜스 한 칸 — 기둥(왼쪽 2px), 위·아래 가로대, 사이 마름모 철망(1px 사선 엇갈림, 뒤가 비친다 — 철망 사이는 투명). 좌우로 이어 붙는다(오른쪽은 다음 칸 기둥이 닫는다).",
+   "palette_hint": "fence",
+   "pair": [
+    "roof_floor"
+   ],
+   "worker": "s4"
+  },
+  {
+   "id": "roof_floor",
+   "slug": "roof_floor",
+   "name": "옥상 바닥",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "옥상 녹색 방수 페인트 콘크리트 바닥 한 칸 — 칠 벗겨진 회색 얼룩 한두 점, 배수 줄눈. 사방 이음 맞춤.",
+   "palette_hint": "fence/lino 녹색 면, mconc 벗겨진 곳",
+   "pair": [
+    "roof_fence"
+   ],
+   "worker": "s4"
+  },
+  {
+   "id": "water_tank",
+   "slug": "water_tank",
+   "name": "옥상 물탱크",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "옥상 물탱크 — 쇠 받침 다리 위 원통 또는 네모 FRP 탱크(패널 이음 줄), 윗면 맨홀 뚜껑, 옆 사다리. 3×3 안에 크게, 위에서 약간 내려다본 각(윗면 띠 넓게).",
+   "palette_hint": "stile/cream 탱크, locker 다리·사다리",
+   "pair": [],
+   "worker": "s3"
+  },
+  {
+   "id": "roof_stairhouse",
+   "slug": "roof_stairhouse",
+   "name": "옥상 계단실 문",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "옥상으로 나오는 계단실 벽 — 콘크리트 벽에 쇠 문 한 짝(작은 유리창·손잡이), 위 처마 턱, 문 위 작은 등. 맨 아래 줄 = 옥상 바닥과 만나는 줄.",
+   "palette_hint": "mconc 벽, locker 문, mglass 창",
+   "pair": [],
+   "worker": "s5"
+  },
+  {
+   "id": "school_gate",
+   "slug": "school_gate",
+   "name": "교문",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    4,
+    3
+   ],
+   "canvas": [
+    64,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "학교 정문 — 양쪽 돌/콘크리트 문기둥(왼쪽 기둥에 교명판 = 글자 대신 가로 줄 두 개의 판), 사이에 낮은 쇠 미닫이 문(세로 살), 기둥 머리 등. 4칸 폭 중 가운데 2칸이 문.",
+   "palette_hint": "mgran/mconc 기둥, mmetal 문, vbrass 교명판",
+   "pair": [],
+   "worker": "s4"
+  },
+  {
+   "id": "bike_rack",
+   "slug": "bike_rack",
+   "name": "자전거 거치대",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "지붕 없는 쇠 거치대에 세운 자전거 두 대(바퀴 원 두 개·안장·핸들, 등교용 바구니). 바퀴는 1px 원이 찌그러지지 않게, 거치대 쇠틀 줄.",
+   "palette_hint": "mmetal 거치대, vblack 바퀴, vblue·vred 몸통",
+   "pair": [],
+   "worker": "s2"
+  },
+  {
+   "id": "schoolyard",
+   "slug": "schoolyard",
+   "name": "운동장 흙",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "운동장 마사토 한 칸 — 옅은 흙에 모래알 점 두세 단, 발자국 흔적 하나. 사방 이음 맞춤. 보도·아스팔트와 명도 분리.",
+   "palette_hint": "undo",
+   "pair": [
+    "track_line"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "track_line",
+   "slug": "track_line",
+   "name": "트랙 흰 선",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "운동장 흙 위 석회 흰 선 — 2px 가로 선, 가장자리 가루 번짐 점. 좌우 이어 붙게, 투명 배경.",
+   "palette_hint": "vwhite, washi",
+   "pair": [
+    "schoolyard"
+   ],
+   "worker": "s1"
+  },
+  {
+   "id": "soccer_goal",
+   "slug": "soccer_goal",
+   "name": "축구 골대",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    4,
+    2
+   ],
+   "canvas": [
+    64,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "운동장 축구 골대 — 흰 쇠 기둥·가로대(2px), 뒤로 처진 그물(1px 격자, 사이 투명), 바닥 뒤 받침대. 폭 4칸 전부.",
+   "palette_hint": "vwhite 기둥, vlinen 그물",
+   "pair": [],
+   "worker": "s5"
+  },
+  {
+   "id": "assembly_podium",
+   "slug": "assembly_podium",
+   "name": "조회대",
+   "scene": "옥상·운동장·교문",
+   "place": "out",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "운동장 앞 조회대(구령대) — 콘크리트 단(앞 계단 두 줄), 위 작은 쇠 난간, 가운데 마이크 스탠드. 윗면이 보이는 각.",
+   "palette_hint": "mconc 단, mmetal 난간",
+   "pair": [],
+   "worker": "s1"
+  },
+  {
+   "id": "cafeteria_table",
+   "slug": "cafeteria_table",
+   "name": "급식 식탁",
+   "scene": "급식실·매점",
+   "place": "in",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "급식실 긴 식탁 + 양옆 긴 의자(또는 둥근 의자 넷) — 흰 상판(윗면 ¾), 쇠 다리. 식판을 올려놓을 자리를 비워 둔다.",
+   "palette_hint": "vwhite/cream 상판, locker 다리",
+   "pair": [
+    "meal_tray"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "meal_tray",
+   "slug": "meal_tray",
+   "name": "식판",
+   "scene": "급식실·매점",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "스테인리스 식판 한 개 — 칸 다섯(밥 흰색·국 주황·반찬 초록·빨강 점), 옆 숟가락. 탁상 물건이라 16px 안에 작게(발치 그림자 없이 받침 그늘 1px).",
+   "palette_hint": "tray 식판, vwhite 밥, vred·vgreen·vyellow 반찬",
+   "pair": [
+    "cafeteria_table"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "serving_counter",
+   "slug": "serving_counter",
+   "name": "배식대",
+   "scene": "급식실·매점",
+   "place": "in",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "급식 배식대 — 스테인리스 긴 대에 뚜껑 연 배식통 셋(밥·국·반찬, 김 1px 흰 점 약간), 국자 하나, 앞 유리 가림막. 윗면 ¾.",
+   "palette_hint": "tray 대·통, & 가림막 유리, vwhite 밥",
+   "pair": [],
+   "worker": "s1"
+  },
+  {
+   "id": "kiosk_counter",
+   "slug": "kiosk_counter",
+   "name": "매점 판매대",
+   "scene": "급식실·매점",
+   "place": "in",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "매점 판매대 — 유리 진열장 안 빵 봉지·삼각김밥 흰 삼각 점, 위에 과자 상자, 옆 작은 계산대. 봉지 색은 작고 낮은 채도.",
+   "palette_hint": "vpine/cream 대, mglass 진열, vyellow·vred 봉지",
+   "pair": [],
+   "worker": "s5"
+  },
+  {
+   "id": "milk_crate",
+   "slug": "milk_crate",
+   "name": "우유 상자",
+   "scene": "급식실·매점",
+   "place": "in",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "플라스틱 우유 상자(파랑 또는 빨강 격자 옆면)에 흰 우유갑 줄 윗면. 윗면이 보이는 각, 모서리 둥글게.",
+   "palette_hint": "vblue/vred 상자, vwhite 우유갑",
+   "pair": [],
+   "worker": "s2"
+  },
+  {
+   "id": "vending_school",
+   "slug": "vending_school",
+   "name": "급식실 음료 자판기",
+   "scene": "급식실·매점",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "매점 옆 작은 음료 자판기(학교형: 우유·주스 견본 두 줄) — 흰 몸통, 윗면 띠, 견본창 밝게, 꺼내는 입구 어둡게. 일본 세트 음료 자판기와 같은 높이 규칙.",
+   "palette_hint": "mwhite 몸통, mglass 창, vblue·vyellow 견본",
+   "pair": [],
+   "worker": "s2"
+  },
+  {
+   "id": "bunk_bed",
+   "slug": "bunk_bed",
+   "name": "이층 침대",
+   "scene": "기숙사",
+   "place": "in",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "나무 또는 쇠 이층 침대 — 위 칸·아래 칸 매트리스·베개·이불(색 다르게), 옆 사다리, 기둥 2px. 키 큰 가구라 앞면이 주인공, 위 칸 이불 윗면 띠.",
+   "palette_hint": "vpine/locker 틀, vlinen 매트리스, vblue·sakura 이불",
+   "pair": [
+    "dorm_desk",
+    "dorm_closet"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "dorm_desk",
+   "slug": "dorm_desk",
+   "name": "기숙사 책상",
+   "scene": "기숙사",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "기숙사 책상 + 위 책꽂이 선반 — 선반에 책 네다섯, 상판에 스탠드(휜 목·불빛 점)·노트, 의자 등받이가 앞에 보인다. 윗면 ¾.",
+   "palette_hint": "vpine 책상, vred vblue 책, vyellow 불빛, % 번짐 금지(탁상)",
+   "pair": [
+    "bunk_bed",
+    "dorm_closet"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "dorm_closet",
+   "slug": "dorm_closet",
+   "name": "기숙사 옷장",
+   "scene": "기숙사",
+   "place": "in",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "좁은 붙박이 옷장 — 두 짝 문(가운데 틈·손잡이 둘), 위 선반 문, 문 한쪽에 교복 걸이가 비친다면 틈으로 감색 한 줄. 앞면 주인공, 윗판 1px.",
+   "palette_hint": "vpine/cream 문, uniform 교복",
+   "pair": [
+    "bunk_bed",
+    "dorm_desk"
+   ],
+   "worker": "s3"
+  },
+  {
+   "id": "dorm_rug",
+   "slug": "dorm_rug",
+   "name": "기숙사 깔개",
+   "scene": "기숙사",
+   "place": "in",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "침대 사이 바닥 깔개 — 연한 줄무늬 면 깔개, 가장자리 술 1px. 투명 배경(마루 위 덧칠). 채도 낮게.",
+   "palette_hint": "vlinen, sakura, vblue",
+   "pair": [],
+   "worker": "s4"
+  }
+ ]
+}

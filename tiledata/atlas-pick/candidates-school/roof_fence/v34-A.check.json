@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/roof_fence/v34-A.pxg",
+ "set": "school",
+ "id": "roof_fence",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.06
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "noise",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "옥상 철망 3/4 — 초록 철망 틀 윗면이 밝게 보이고, 마름모 그물 앞면, 양옆 기둥과 아래 틀",
+ "ok": true
+}

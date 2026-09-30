@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/kitchen_sink/w10-A.pxg",
+ "id": "kitchen sink",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  31
+ ],
+ "note": "v5 개수대 다듬음: 펌프 자루를 한 단씩 굵게 정리, 장 아래 두 문짝 이음선(D)과 손잡이 점(F) 추가",
+ "ok": true
+}

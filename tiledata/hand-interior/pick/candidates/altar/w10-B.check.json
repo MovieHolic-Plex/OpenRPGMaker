@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar/w10-B.pxg",
+ "id": "altar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.13
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "note": "왼쪽 위 빛: 윗판 밝고 오른쪽 그늘, 앞면 좌밝 우어둡게, 천 양옆 그림자로 깊이",
+ "ok": true
+}

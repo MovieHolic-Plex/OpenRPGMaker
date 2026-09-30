@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/village/w5-A.pxg",
+ "set": "worldmap",
+ "id": "village",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "light"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  4,
+  30,
+  15
+ ],
+ "note": "oprn 아틀라스 결 — 붉은·푸른 박공 지붕 세 채를 낮은 대비 평평한 면으로, 흙마당 한 줄, 그림자 없음",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.016
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.023
+  }
+ }
+}

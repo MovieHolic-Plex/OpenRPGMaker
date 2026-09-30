@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/armchair_sheet/h4-C.pxg",
+ "set": "horror",
+ "id": "armchair_sheet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "소파 C 와 같이 앉은 사람 형상: 머리 덩이·눈구멍 둘·늘어진 입, 양옆 주름이 팔",
+ "ok": true
+}

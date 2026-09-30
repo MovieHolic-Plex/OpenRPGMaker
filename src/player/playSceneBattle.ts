@@ -210,6 +210,11 @@ export async function playBattle(
       // 마운트에서 치르면 커버가 걷히는 순간 한 프레임이 30~50ms 멈춘다(SwiftShader 실측, 준비 뒤 9ms).
       preloadBattleJuiceSamples();
       warmBattleStyles(host, runtime.snapshot());
+      // 겹 배경 네 장도 커버 동안 읽는다. 안 그러면 첫 1~2초 단일 배경이 보이다 바뀐다(「전투 도중 배경이 바뀐다」).
+      if (entrySkin.scenery === "layered") {
+        const backdropResourceId = runtime.snapshot().backdropResourceId;
+        void import("@/player/battleScenery").then(({ preloadBattleScenery }) => preloadBattleScenery(project, backdropResourceId));
+      }
       const cleanup = (): void => {
         signal?.removeEventListener("abort", abort);
         scene.events?.off("shutdown", onShutdown);

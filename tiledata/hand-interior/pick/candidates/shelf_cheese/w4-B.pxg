@@ -1,0 +1,31 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a cheese 6
+@mat b cheese 5
+@mat c cheese 4
+@mat d cheese 3
+@mat e wood 6
+@mat f wood 3
+@mat g wood 1
+@mat h wood 2
+@mat q wood 7
+@mat r wood 5
+@mat o cheese 2
+@mblock 0 0
+................
+................
+................
+..aa...aa...aa..
+.abbc.abbc.abbc.
+.bcdd.bcdd.bcdd.
+.qqqqqqqqqqqqqq.
+.eeeeeeeeeeeeee.
+.gggggggggggggg.
+.-ha---aa---ah-.
+.abbc.abbc.abbc.
+.bcdd.bcdd.bcdd.
+.qqqqqqqqqqqqqq.
+.eeeeeeeeeeeeee.
+.gggggggggggggg.
+.~~~~~~~~~~~~~~.

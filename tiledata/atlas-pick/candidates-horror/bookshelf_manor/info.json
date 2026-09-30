@@ -1,0 +1,57 @@
+{
+ "id": "bookshelf_manor",
+ "slug": "bookshelf_manor",
+ "name": "책장",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "키 큰 벽 가구(북쪽 벽면 앞): 앞면이 주인공, 윗판 1~2px, 선반 세 단에 책(색 두세 가지, 한 단 탁하게, 높이 섞음, 빈 칸 하나). v5 책장 1칸 크기.",
+ "palette_hint": "mahog 틀, vred/vblue/vgreen 책(탁하게)",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "책장",
+ "worker": "hf4",
+ "set_with": [
+  "table_wood",
+  "chair_wood",
+  "chair_wood_back",
+  "bed_manor",
+  "dresser",
+  "side_table",
+  "candle_table"
+ ],
+ "v5_ref": [
+  {
+   "id": "bookshelf 1w",
+   "name_ko": "책장 1w",
+   "atlas": {
+    "x": 336,
+    "y": 304,
+    "w": 16,
+    "h": 48,
+    "frames": 1,
+    "padTop": 10
+   },
+   "image": {
+    "w": 16,
+    "h": 38
+   },
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/bookshelf_1w",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

@@ -1,0 +1,66 @@
+// w3-A meat_hooks
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 7
+@mat b wood 6
+@mat c wood 5
+@mat d wood 4
+@mat e wood 3
+@mat f wood 2
+@mat g wood 1
+@mat h iron 5
+@mat i iron 4
+@mat j iron 3
+@mat k iron 2
+@mat l meat 6
+@mat m meat 5
+@mat n meat 4
+@mat o meat 3
+@mat p meat 2
+@mat q meat 1
+@mat r linen 6
+@mat s linen 5
+@mat t linen 4
+@mat u linen 3
+@mat w bread 5
+@mat y bread 4
+@mat z bread 3
+@mat Z bread 2
+@mat A iron 6
+@mat B iron 5
+@mat C black 3
+@layer main
+@mblock 0 0
+................................
+................................
+................................
+cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbe
+eccccccccccccccccccccccccccccccf
+feeeeeeeeeeeeeeeeeeeeeeeeeeeeeef
+.bdf....h.......h......h....bdf.
+.bdf....i.......i......i....bdf.
+.bdf....rs.....ppp..ppppppp.bdf.
+.bdf...pnnp...pnmop.nnmnnmn.bdf.
+.bdf..pnmmnp..pnlop.sssrsss.bdf.
+.bdf.pnmlmmnp..pqp..nmmnmmn.bdf.
+.bdf.pnmmmnnp...g...tttstts.bdf.
+.bdf.pnnmnnop..ppp..onnmnno.bdf.
+.bdf.ponnnoop.pnmop.ttstttt.bdf.
+.bdf..poooqp..pnlop.ooqoqoo.bdf.
+.bdf...pqqp....pqp...pqqqp..bdf.
+.bdf............g...........bdf.
+.bdf...........ppp..........bdf.
+.bdf..........pnmop.........bdf.
+.bdf..........pnlop.........bdf.
+.bdf...........pqp..........bdf.
+.bdf........................bdf.
+.bdf........................bdf.
+.bdf........................bdf.
+.bdf........................bdf.
+.bdf........................bdf.
+.bdf........................bdf.
+.bdf........................bdf.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.dddddddddddddddddddddddddddddd.
+.gggggggggggggggggggggggggggggg.

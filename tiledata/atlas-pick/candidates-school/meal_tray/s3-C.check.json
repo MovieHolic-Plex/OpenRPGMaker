@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/meal_tray/s3-C.pxg",
+ "set": "school",
+ "id": "meal_tray",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.069
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  1,
+  1,
+  12,
+  15
+ ],
+ "note": "실루엣 다르게: 세로로 세운 식판(위 큰 칸 둘·아래 작은 칸 셋), 왼쪽에 나란한 젓가락 두 개",
+ "ok": true
+}

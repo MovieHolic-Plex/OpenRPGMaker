@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/chair_wood_back/hf4-C.pxg",
+ "set": "horror",
+ "id": "chair_wood_back",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "outline_black"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "note": "C: 마녀의 집 결 — 뒷면 살의 밝은 등과 새긴 홈, 이음 띠, 기둥에 깎은 마디",
+ "ok": true
+}

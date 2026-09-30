@@ -1,0 +1,29 @@
+{
+ "id": "door_locked",
+ "slug": "door_locked",
+ "name": "잠긴 나무 문",
+ "scene": "공통 뼈대",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "door_wood 와 같은 문(칸·틀·패널 같게) + 손잡이 둘레 쇠 자물쇠·가로 사슬 한 줄. 「잠김」이 한눈에 — 어두운 방에서도 사슬이 읽히게 밝은 단을 쓴다.",
+ "palette_hint": "mahog, tin/viron 사슬·자물쇠",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "문(잠김)",
+ "worker": "hf3",
+ "set_with": [
+  "door_wood",
+  "door_double",
+  "window_night",
+  "window_curtain"
+ ]
+}

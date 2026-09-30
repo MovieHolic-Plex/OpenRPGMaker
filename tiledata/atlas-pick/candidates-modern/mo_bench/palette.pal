@@ -1,0 +1,28 @@
+// 현대 세트 팔레트 — scripts/content/lib/modern/pal.py RAMPS(현대 시트 자기 칸에서 뽑은 색). make_modern_set.py 가 만든다.
+
+@rampc mout     #111310 #071528 #1c2626
+@rampc masph    #241924 #3c3e41 #4e5053 #56585a #5e6063 #686a6c
+@rampc mconc    #3c3e41 #56585a #6f7173 #868887 #a2a29f #b6b6b0 #dee0dd
+@rampc mpave    #6f7173 #858582 #92928d #9f9f99 #a7a7a0 #acaca5 #b7b7b0 #c2ccc7
+@rampc mgran    #3c3e41 #4e5053 #7e7f7f #a2a29f #b9bbb8 #c4c6c3 #dee0dd
+@rampc mbrick   #2b1407 #431d00 #6c4835 #8c6c5b #9e8d83 #bcaaa0
+@rampc mtile    #6c4835 #9e8d83 #aa8a7e #bcaaa0 #d9d2be #ecd6c6
+@rampc mglass   #071528 #212d42 #315a6b #366476 #6693a0 #9cc6cc #a7d4db #d6d8d5
+@rampc mdglass  #071528 #0d1b2e #1f2636 #2b3243 #363e5a #575f7d #747b8f #959dbe
+@rampc mmetal   #111310 #3e403d #5b6667 #777579 #90928f #b6b6b0 #beb8b7 #dee0dd
+@rampc mwhite   #8f918e #b9bbb8 #dee0dd #eaf8f8 #f7fdff #fefffc
+@rampc myellow  #583b01 #ad8604 #ec9900 #fbc10d #f4ef5d #ffff01
+@rampc mred     #2b1407 #a40100 #9e2514 #dd2912 #e0482a #e1975a
+@rampc mgreen   #071528 #143a27 #205030 #4b8232 #62a04b #7cb85c
+@rampc mblue    #071528 #202737 #363e5a #575f7d #959dbe #c2ccc7
+@rampc mteal    #1d2c33 #315a6b #3fa2ae #8ca9a3 #a7d4db
+@rampc mwood    #312210 #452a17 #633712 #885a26 #aa7a08 #ba9d71
+@rampc morange  #431d00 #7c4114 #cd7121 #ec9900 #e1975a #f0c6a8
+@rampc mpurple  #2b203f #4f4352 #703f57 #895261 #9e6574 #ae7a87
+@rampc mnavy    #071528 #0d1b2e #202737 #2b3243 #444c5e #747b8f
+@rampc msoil    #2b1407 #431d00 #5a3011 #744c2a
+
+~ #141218 110
+- #141218 58
+% #fff8d0 120
+# #e040c0

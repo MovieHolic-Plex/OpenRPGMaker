@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ore_vein/w3-B.pxg",
+ "id": "ore vein",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "note": "강한 명암 — 결정은 위 끝 teal:6 하이라이트와 아래 teal:1 그늘로 대비를 키우고 금 덩이도 gold:6/gold:1 로 눌러 반짝임이 살게 함. 각 덩이의 오른쪽 아래에 반투명 벽 그림자를 한 픽셀 떨어뜨려 벽에서 튀어나온 느낌.",
+ "ok": true
+}

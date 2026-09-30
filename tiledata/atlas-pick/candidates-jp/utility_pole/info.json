@@ -1,0 +1,19 @@
+{
+ "id": "utility_pole",
+ "slug": "utility_pole",
+ "name": "전봇대",
+ "scene": "주택가 골목",
+ "cells": [
+  1,
+  4
+ ],
+ "canvas": [
+  16,
+  64
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "콘크리트 전봇대: 회색 기둥(위로 조금 가늘게), 위쪽 가로 완목 두 줄에 흰 애자, 변압기 통(회색 원통) 하나, 기둥 중간 노랑·검정 반사띠, 번지 표찰(작은 파란 판). 발치에 작은 그림자.",
+ "palette_hint": "pole 기둥, mwhite 애자, mmetal 변압기, taxi·lacq 띠, kblue 표찰",
+ "worker": "j5"
+}

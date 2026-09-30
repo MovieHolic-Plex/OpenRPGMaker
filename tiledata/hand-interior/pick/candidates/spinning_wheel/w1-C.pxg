@@ -1,0 +1,38 @@
+// spinning_wheel w1-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat j wood 2
+@mat k wood 3
+@mat d wood 4
+@mat s wood 5
+@mat m wood 6
+@mat h wood 7
+@mat t brass 5
+@mat u brass 4
+@mat v brass 3
+@mat w brass 2
+@mat x brass 6
+@mat e red 5
+@mat f red 4
+@mat g red 3
+@mat i red 2
+@mat r red 6
+@mblock 0 0
+........hhhmm...
+.......hhs..mm..
+......h..s...sd.
+.....hh...s.s.dd
+....mhdddxtt...d
+mssssh...tuv...k
+.eefsm...vvvsssk
+.ffgsmm.d.d...kk
+.ggis.md...d..k.
+mmmmmmmdd..dkk..
+ddddddk.ddkkkdk.
+.mdkkk.sd..k.dk.
+.md....sd..k.dk.
+.md....sd..k.dk.
+.mdmmdddddddddk.
+.jjkkkkkkkkkkoo.

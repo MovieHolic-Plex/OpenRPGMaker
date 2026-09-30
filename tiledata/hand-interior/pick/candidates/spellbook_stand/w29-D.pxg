@@ -1,0 +1,56 @@
+// w29-D
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat h linen 1
+@mat i linen 2
+@mat j linen 3
+@mat k linen 4
+@mat l linen 5
+@mat m purple 2
+@mat n purple 3
+@mat o purple 4
+@mat p teal 4
+@mat q teal 5
+@mat r gold 3
+@mat s gold 5
+@mat t purple 5
+@mblock 0 0
+................
+................
+................
+................
+..mmmmmmmmmmmm..
+.mkkkkkjmmjkkkm.
+.mkiiikjmmjkkqm.
+.mkkkkkjmmjkqpm.
+.mkiiikjmmjkkqm.
+.mkkkkkjmmjkkkm.
+.mjjjjjjmmjjjjm.
+.mnnnnnnnnnnnnm.
+.aeeeeeeeeeeeea.
+.acdddddddddcba.
+..abbbbbbbbbba..
+...accccccccca..
+.....aedcba.....
+.....aedcba.....
+.....aedcba.....
+.....aedcba.....
+....aeerrdcba...
+.....aedcba.....
+.....aedcba.....
+.....aedcba.....
+.....aedcba.....
+....aedddcba....
+...aeeddddcba...
+..aeeddddddcba..
+.aeeeeeeeeeeeba.
+.adddddddddcba..
+.abbbbbbbbbbbba.
+..aaaaaaaaaaaa..

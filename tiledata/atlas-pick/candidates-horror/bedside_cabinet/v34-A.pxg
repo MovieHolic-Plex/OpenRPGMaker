@@ -1,0 +1,41 @@
+// bedside_cabinet v34-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat s sheet 0
+@mat t tin 0
+@mblock 0 0
+................
+................
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..sssssttsssss..
+..ssssssssssss..
+..ssssssssssss..
+..sssssttsssss..
+...tt......tt...
+...tt......tt...
+@tblock 0 0
+................
+................
+..111111111111..
+..155555555551..
+..155555555551..
+..155555555551..
+..155555555551..
+..166666666661..
+..100000000001..
+..133333333331..
+..122224422221..
+..100000000001..
+..133333333331..
+..022000000220..
+...11......11...
+...00......00...

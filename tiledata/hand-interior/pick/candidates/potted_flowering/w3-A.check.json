@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/potted_flowering/w3-A.pxg",
+ "id": "potted flowering",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 9,
+ "bbox": [
+  3,
+  1,
+  12,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  14
+ ],
+ "note": "A: v5 분홍 꽃 유지 - 뜬 꽃과 화분을 줄기와 잎으로 잇고 꽃은 노란 꽃술 한 점, 화분은 윤곽·림 밝기·오른쪽 그늘 정리",
+ "ok": true
+}

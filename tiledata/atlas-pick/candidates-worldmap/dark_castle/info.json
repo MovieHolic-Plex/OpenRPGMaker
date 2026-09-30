@@ -1,0 +1,23 @@
+{
+ "id": "dark_castle",
+ "slug": "dark_castle",
+ "name": "마왕성",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "ash",
+ "under_ko": "화산재(ash 몸통 고른 판)",
+ "passage": "walk",
+ "description": "마지막 던전: castle 과 같은 틀을 **검보라 돌 + 뾰족 첨탑 셋 이상**(가운데가 가장 높다)으로, 창에 붉은 불빛 두세 점(%). 성과 실루엣이 달라야 한다(첨탑 수·높이). 밑바탕 재.",
+ "palette_hint": "wstone 어두운 단·mpurple, 불빛 wlava·%",
+ "worker": "wv8"
+}

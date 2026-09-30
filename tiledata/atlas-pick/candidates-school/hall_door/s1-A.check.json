@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/hall_door/s1-A.pxg",
+ "set": "school",
+ "id": "hall_door",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.266
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "A: 소나무 미닫이 한 짝 + 어두운 나무 문틀, 위쪽 세로 유리창, 손잡이 홈, 옆 벽은 hall_wall A 와 같은 레일·징두리·걸레받이",
+ "ok": true
+}

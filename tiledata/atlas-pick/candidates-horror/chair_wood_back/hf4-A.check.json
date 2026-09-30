@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/chair_wood_back/hf4-A.pxg",
+ "set": "horror",
+ "id": "chair_wood_back",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "note": "A: 등받이 뒷면이 크게 — 윗 테, 살 둘 사이 홈, 등받이 밑 두께 3단, 기둥이 뒷다리로 이어짐. 앉는 판은 등받이 위로 두 줄만. chair_wood 와 같은 mahog",
+ "ok": true
+}

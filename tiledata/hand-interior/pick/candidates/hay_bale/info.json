@@ -1,0 +1,37 @@
+{
+ "id": "hay bale",
+ "slug": "hay_bale",
+ "name_ko": "건초 더미",
+ "category": "마구간",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "끈 두 줄로 묶은 네모 건초 더미. 마구간 우리마다 구석에 1개. 먹이통 곁.",
+ "where": "마구간 우리마다 구석에 1개. 먹이통 곁.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  14
+ ],
+ "v5_colors": 6,
+ "material": "wood",
+ "related": []
+}

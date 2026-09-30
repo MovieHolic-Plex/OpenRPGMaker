@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/coat_rack/w8-C.pxg",
+ "id": "coat rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  1,
+  14,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  13,
+  31
+ ],
+ "note": "받침판 대신 세 갈래로 벌어진 다리를 단 기둥형으로 재해석, 모자는 왼쪽·외투는 오른쪽 가지에 걸어 위치를 바꿈",
+ "ok": true
+}

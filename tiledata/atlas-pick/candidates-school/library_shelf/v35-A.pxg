@@ -1,0 +1,71 @@
+// library_shelf v35-A: 도서실 책장 3/4 — 소나무 윗면 T4·앞 F35 다섯 단(책 네 칸+아래 문칸) (폭 14px)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat O vdwood 2
+@mat t vpine 4
+@mat u vpine 5
+@mat a vpine 6
+@mat s vpine 3
+@mat f vpine 2
+@mat i vdwood 0
+@mat r vred 3
+@mat R vred 2
+@mat n vblue 3
+@mat N vblue 2
+@mat e vgreen 3
+@mat E vgreen 2
+@mat y vyellow 3
+@mat Y vyellow 2
+@mat l vlinen 4
+@mat L vlinen 2
+@mat p vpine 1
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+.OOOOOOOOOOOOOO.
+.OttttttttttttO.
+.OttttttttttttO.
+.OttttttttttttO.
+.OaaaaaaaaaaaaO.
+.OuppppppppppsO.
+.OurRnNeEyYlLsO.
+.OurRnNeEyYlLsO.
+.OurRnNeEyYlLsO.
+.OurRnNeEyYlLsO.
+.OurRnNeEyYlLsO.
+.OaaaaaaaaaaaaO.
+.OueEppppppppsO.
+.OueEyYpprRnNsO.
+.OueEyYlLrRnNsO.
+.OueEyYlLrRnNsO.
+.OueEyYlLrRnNsO.
+.OueEyYlLrRnNsO.
+.OaaaaaaaaaaaaO.
+.OuppppppppppsO.
+.OupprRppppppsO.
+.OulLrRnNrRnNsO.
+.OulLrRnNrRnNsO.
+.OulLrRnNrRnNsO.
+.OulLrRnNrRnNsO.
+.OaaaaaaaaaaaaO.
+.OuppppppppppsO.
+.OunNppppppppsO.
+.OunNrRnNppppsO.
+.OunNrRnNppppsO.
+.OunNrRnNppppsO.
+.OunNrRnNppppsO.
+.OaaaaaaaaaaaaO.
+.OuaaaaaaaaaasO.
+.OussssffsssssO.
+.OusssiffissssO.
+.OussssffsssssO.
+.OussssffsssssO.
+.OOOOOOOOOOOOOO.
+...~~~~~~~~~~~~~

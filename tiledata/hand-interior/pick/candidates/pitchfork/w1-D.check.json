@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pitchfork/w1-D.pxg",
+ "id": "pitchfork",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 10,
+ "v5_colors": 3,
+ "bbox": [
+  5,
+  1,
+  11,
+  15
+ ],
+ "v5_bbox": [
+  7,
+  1,
+  11,
+  15
+ ],
+ "note": "D: 갈래 셋을 아래로 모아 쥔 갈퀴형 머리에 자루 3px, 세로로 서 있는 모양이 아닌 벽 기댐 느낌 없이 단순 실루엣.",
+ "ok": true
+}

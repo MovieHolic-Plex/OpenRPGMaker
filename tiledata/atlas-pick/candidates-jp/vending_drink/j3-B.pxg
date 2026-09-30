@@ -1,0 +1,78 @@
+// vending_drink j3-B
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b kblue 3
+@mat c kgreen 3
+@mat d lacq 3
+@mat e mmetal 3
+@mat f mwhite 3
+@mat g washi 3
+@mblock 0 0
+................
+.eeeeeeeeeeeeee.
+effffffffffffffe
+effffffffffffffe
+effffffffffffffe
+efeeeeeeeeeefffe
+efebbaaggccefffe
+efebbaaggccefffe
+efebbaaggccefffe
+efeeeeeeeeeefffe
+efeaaggccbbefffe
+efeaaggccbbefffe
+efeaaggccbbefffe
+efeeeeeeeeeefffe
+efeggccbbaaefffe
+efeggccbbaaefffe
+efeggccbbaaefffe
+efeeeeeeeeeefffe
+effffffffffffffe
+effbbfaafdaafffe
+effbbfaafdddfffe
+effffffffffffffe
+effeeeeefeeefffe
+effedddefedefffe
+effffffffffffffe
+effeeeeeeeeefffe
+effdddddddddfffe
+effdddddddddfffe
+eeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeee
+.%%%%%%~~~~~~~~~
+..%%%%...-------
+@tblock 0 0
+................
+.22222222222222.
+2555555555555551
+2555555555555551
+2222222222222001
+2444444444443001
+2425454545423001
+2424444444423001
+2423333333323001
+2423333333323001
+2425454545423001
+2424444444423001
+2423333333323001
+2423333333323001
+2425454545423001
+2424444444423001
+2423333333323001
+2411111111113001
+2433333333333001
+2435335331453001
+2433333331113001
+2433333333333001
+2436666636663001
+2433000333033001
+2433333333333001
+2434555555553001
+2432222222223001
+2430000000003001
+2111111111111001
+2222222222222221
+................
+................

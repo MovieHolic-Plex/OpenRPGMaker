@@ -1,0 +1,19 @@
+{
+ "id": "jp_signal",
+ "slug": "jp_signal",
+ "name": "가로형 신호등",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "일본 차량 신호등: 가는 기둥 위에서 옆으로 뻗은 팔에 가로로 긴 신호 상자, 등 셋(파랑(청록)·노랑·빨강) 위에 작은 차양. 한 등만 켜진 판(청신호). 기둥은 왼쪽 칸 아래에 선다.",
+ "palette_hint": "mmetal/pole 기둥, lacq 상자, neonc·taxi·akachin 등",
+ "worker": "j5"
+}

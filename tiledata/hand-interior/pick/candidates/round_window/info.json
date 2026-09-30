@@ -1,0 +1,37 @@
+{
+ "id": "round window",
+ "slug": "round_window",
+ "name_ko": "둥근 창",
+ "category": "호빗 굴",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "나무 테 둥근 창(파란 유리 십자). 호빗 굴 방마다 벽면 윗줄에 1개. 방 가운데.",
+ "where": "호빗 굴 방마다 벽면 윗줄에 1개. 방 가운데.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_colors": 8,
+ "material": "glass",
+ "related": []
+}

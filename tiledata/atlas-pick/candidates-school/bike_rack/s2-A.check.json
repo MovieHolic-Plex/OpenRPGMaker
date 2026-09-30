@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/bike_rack/s2-A.pxg",
+ "set": "school",
+ "id": "bike_rack",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  13,
+  47,
+  30
+ ],
+ "note": "자전거 거치대 A: 지붕 없는 쇠(mmetal) 뒷레일과 기둥 사이에 학교 자전거 두 대(파랑·빨강, vblue/vred). 바퀴는 1px 원(지름 9, vblack)에 허브와 십자 살, 안장·핸들·앞 바구니(viron). 빛은 왼쪽 위.",
+ "ok": true
+}

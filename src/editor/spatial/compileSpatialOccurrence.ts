@@ -1,7 +1,7 @@
 import { compositionOf } from "@/project/spatial/composition";
 import { designNode } from "@/project/spatial/domain";
 import { compileMixedComposition } from "./compileMixedComposition";
-import { deserialize } from "@/project/io";
+import { isolateProject } from "./compileIsolation";
 import { appendToTree, containsMap } from "@/project/mapTree";
 import { isOwnedSpatialBinding } from "@/project/spatial/bindings";
 import { assertNever, checkedDocument, own, requireOccurrenceAssociations } from "@/project/spatial/domain";
@@ -23,7 +23,7 @@ export type { SpatialCompileRequest } from "./compilerTypes";
 /** Pure proposal boundary: no store, history, browser, remote writes, or live design expansion. */
 export function compileSpatialOccurrence(input: Project, value: unknown, previousOccurrence?: SpatialOccurrence): Project {
   const request = parseCompileRequest(value);
-  const project = deserialize(JSON.stringify(input));
+  const project = isolateProject(input);
   const document = checkedDocument(project.spatialAuthoring, project);
   const occurrence = requireOccurrenceAssociations(own(document.occurrences, request.occurrenceId));
   const context = { project, document, occurrence };
@@ -108,5 +108,5 @@ export function compileSpatialOccurrence(input: Project, value: unknown, previou
   if (!containsMap(project.mapTree, raster.map.id)) appendToTree(project.mapTree, raster.map.id);
   project.spatialAuthoring = { ...document, occurrences };
   // Full project IO validates map data and the real owned/projection/reference contracts together.
-  return deserialize(JSON.stringify(project));
+  return isolateProject(project);
 }

@@ -1,0 +1,73 @@
+// s5 후보 — s5-A.pxg
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a vwhite
+@mat b vlinen
+@mat c vpine
+@mblock 0 0
+................................
+................................
+................................
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaabaaaaaaaaaaaaa..
+..aaaaaabaaaaaaaaaaaaaabaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+...bbbbbbbbbbbbbbbbbbbbbbbbbb...
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+..cccccccccccccccccccccccccccc..
+...---------------------------..
+................................
+@tblock 0 0
+................................
+................................
+................................
+...55555555555555555555555555...
+..5666666666666666666666666663..
+..5666666666666636666666666663..
+..5666663666666666666663666663..
+..5666666666666666666666666663..
+..5444444444444444444444444443..
+...22222222222222222222222222...
+..4555555555555555555555555552..
+..4333333333333333333333333332..
+..4333333333333333333333333332..
+..4333333333333333333333333332..
+..4111111111111111111111111112..
+..4555555555555555555555555552..
+..4333333000003333333333333332..
+..4333333300033333333333333332..
+..4333333333333333333333333332..
+..4111111111111111111111111112..
+..4555555555555555555555555552..
+..4333333333333333330000033332..
+..4333333333333333330000033332..
+..4333333333333333333333333332..
+..4111111111111111111111111112..
+..4555555555555555555555555552..
+..4333333333333333333333333332..
+..4333333333333333333333333332..
+..4333333333333333333333333332..
+..0000000000000000000000000000..
+................................
+................................

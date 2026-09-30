@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/window/w1-C.pxg",
+ "id": "window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "failed": [
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "윤곽 재설계: 둥근 어깨(윗모서리 접기)와 가운데 세로 문설주·가로대가 있는 세로로 긴 창, 창틀 안쪽 그림자띠",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/saisen_box/j2-B.pxg",
+ "set": "jp",
+ "id": "saisen_box",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.095
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  2,
+  0,
+  31,
+  31
+ ],
+ "note": "입체 강화: 왼쪽 빛면과 오른쪽 그늘면 폭을 크게, 윗면 밝게, 금점 %, 바닥 그림자 ~ 두 줄 + 오른쪽 그늘.",
+ "ok": true
+}

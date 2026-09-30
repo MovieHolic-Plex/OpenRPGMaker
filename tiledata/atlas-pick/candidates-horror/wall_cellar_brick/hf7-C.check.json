@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_cellar_brick/hf7-C.pxg",
+ "set": "horror",
+ "id": "wall_cellar_brick",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.193
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C(재질·무늬): rot 램프 낡은 벽돌 + 빠져 들어간 벽돌 한 장·흰 곰팡이 점·이끼 한 곳·물얼룩",
+ "ok": true
+}

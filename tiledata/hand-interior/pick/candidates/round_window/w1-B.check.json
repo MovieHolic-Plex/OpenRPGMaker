@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_window/w1-B.pxg",
+ "id": "round window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "failed": [
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "모양은 v5 와 같게 두고 명암만 강화: 나무 테는 왼쪽 위 밝은 나무(wood:7)→오른쪽 아래 어두운 나무, 바깥선은 짙은 갈색, 유리는 위 칸 밝게+왼쪽 위 반짝임, 아래 칸 짙은 파랑, 창 아래 벽에 접지 그림자(~)",
+ "ok": true
+}

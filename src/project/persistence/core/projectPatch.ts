@@ -1,5 +1,5 @@
 import { canonicalJsonString } from "./canonicalJson";
-import { jsonContentDigest } from "./contentDigest";
+import { sharedEntryDigest } from "./contentDigest";
 
 /**
  * 맵 패치 전송 본문.
@@ -44,34 +44,24 @@ function sameValue(left: unknown, right: unknown): boolean {
 /**
  * 타일셋 한 칸의 변경 여부. 타일셋 만 이 바깥 문단을 쓴다.
  *
- * 왜 (2026-09-25 실측): `referenceDocuments`(AI 학습 문서)가 타일셋 한 칸에 수백 KB · 프로젝트 합계 42MB다.
- * `sameValue` 는 문서 본모까지 포함해 양쪽을 `JSON.stringify` 하므로 자동저장 한 번에 322칸 × 2 번의
- * 직렬화가 돈다(상위 diff 자체 1,535ms). 문서는 «통째로 교잴만 하고 원소를 고쳤지 않는다»는 계약을
- * 가지므로(`projectClone.cloneProjectSharingReferenceDocuments`), 문서 부분은 배열 실체가 같으면 그리면
- * 끝이고, 달라도 노드당 기억을 가진 요약(`jsonContentDigest`)으로 한 번만 본다.
- * 문서 밖 필드는 지금도 `sameValue` 가 보므로 변경 판정은 그대로다 — 요약의 동일성은
- * `canonicalJsonOf` 와 같다(`contentDigest.ts` 머리말).
+ * 왜 (2026-09-25·09-30 실측): 타일셋 한 칸이 수백 KB(문서·그림·타일 속성), 프로젝트 합계 수백 MB다.
+ * `sameValue` 는 양쪽을 `JSON.stringify` 하므로 자동저장 한 번에 수백 칸 × 2 번의 직렬화가 돌고,
+ * 요약(`jsonContentDigest`)도 신선도 검사(`isFresh`)가 하위 트리를 매번 다시 훑어 1s 이상 걸렸다.
+ * 그래서 항목 통째를 `sharedEntryDigest` 로 본다 — 한 번 대조를 마친 항목은 O(1) 이고,
+ * 요약의 동일성은 `canonicalJsonOf` 와 같다(`contentDigest.ts` 머리말).
  *
- * 어느 편이든 확실하지 않으면 «바눴다»로 기울인다: 거짓 «그대로»는 문서 소십이고, 거짓 «바눴다»는
- * 전송량만 늨다.
+ * 어느 편이든 확실하지 않으면 «바뀌었다»로 기울인다: 거짓 «그대로»는 데이터 손실이고,
+ * 거짓 «바뀌었다»는 전송량만 늘린다.
  */
 function sameTilesetValue(base: unknown, local: unknown): boolean {
   if (base === local) return true;
   if (!isRecord(base) || !isRecord(local)) return sameValue(base, local);
-  const baseDocuments = base.referenceDocuments;
-  const localDocuments = local.referenceDocuments;
-  if (baseDocuments !== localDocuments
-    && jsonContentDigest(baseDocuments, "referenceDocuments") !== jsonContentDigest(localDocuments, "referenceDocuments")) {
-    return false;
-  }
-  const { referenceDocuments: _baseDocuments, ...baseRest } = base;
-  const { referenceDocuments: _localDocuments, ...localRest } = local;
-  // 문서 밖 필드도 요약으로 본다. `projectWireView` 가 타일셋마다 버려진 키를 떼며 **새 객체**를
-  // 만들어 `base === local` 단축이 언제나 깨지므로(실측: 공유 기준본이어도 diff 1,571ms),
-  // 여기서 `sameValue` 를 쓰면 매번 두 번의 전체 `JSON.stringify` 가 돈다 — 타일셋 한 칸은
-  // passability/priority/terrain 배열만으로도 수백 칸이다. 요약은 같은 객체를 만나면 노드 기억을
-  // 재사용하므로(WeakMap) 공유 기준본에서는 두 번째 저장부터 거의 공짜다.
-  return jsonContentDigest(baseRest) === jsonContentDigest(localRest);
+  // 항목 통째를 요약으로 본다(문서·그림·타일 속성 모두 — 요약의 동일성은 `canonicalJsonOf` 와 같다).
+  // 예전에는 문서를 뗀 나머지를 스프레드로 새 객체 둘로 만들어 비교했다 — 새 객체는 기억이 없어 매 저장 전 필드를 글로 만들고 해시했다.
+  // `sharedEntryDigest` 는 이미 대조를 마친 항목은 아래 가지를 다시 훑지 않는다(2026-09-30 실측, 타일셋 385칸: 자동저장 diff 1.1s → 한 번 대조한 뒤 O(1)).
+  const baseDigest = sharedEntryDigest(base);
+  // 어느 한쪽이라도 확실하지 않으면 «바뀌었다»로 기운다(거짓 «바뀌었다»는 전송량만 늘린다).
+  return baseDigest !== undefined && baseDigest === sharedEntryDigest(local);
 }
 
 /**

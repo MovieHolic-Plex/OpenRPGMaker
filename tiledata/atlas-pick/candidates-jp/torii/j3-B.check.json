@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/torii/j3-B.pxg",
+ "set": "jp",
+ "id": "torii",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "refmap": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.077
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  3,
+  62,
+  62
+ ],
+ "note": "빛 구조 강화: 가사기·누키 윗면을 가장 밝게, 기둥 왼쪽 빛 두 줄과 오른쪽 그늘, 누키 밑 그늘이 기둥에 드리움, 돌 받침 이끼 점, 오른쪽 아래로 긴 접지 그림자",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/elven_harp/w4-B.pxg",
+ "id": "elven harp",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  3,
+  14,
+  30
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  14,
+  31
+ ],
+ "note": "강한 빛: 왼쪽 금 gold6 하이라이트+오른쪽 gold2 짙은 그늘, 줄 밝은 흰색+줄 아래 - 그림자, 받침 아래 ~ 접지 그림자",
+ "ok": true
+}

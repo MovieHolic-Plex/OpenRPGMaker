@@ -1,0 +1,22 @@
+// kit_house 부품 시트 128x64px (8×4칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+rf_tl               0    0  16  16  facade  -   X     용마루 왼
+rf_tm              16    0  16  16  facade  x   X     용마루
+rf_tr              32    0  16  16  facade  -   X     용마루 오른
+rf_sl              48    0  16  16  facade  y   X     비탈 왼
+rf_sm              64    0  16  16  facade  xy  X     비탈
+rf_sr              80    0  16  16  facade  y   X     비탈 오른
+rf_el              96    0  16  16  facade  -   X     처마 왼
+rf_em             112    0  16  16  facade  x   X     처마
+rf_er               0   16  16  16  facade  -   X     처마 오른
+wall_l             16   16  16  32  facade  y   X     외벽 왼 끝(한 층)
+wall_m             32   16  16  32  facade  xy  X     민벽(한 층)
+wall_r             48   16  16  32  facade  y   X     외벽 오른 끝(한 층)
+win_slide          64   16  16  32  facade  x   X     미닫이 유리창
+win_small          80   16  16  32  facade  -   X     작은 젖빛 창
+win_veranda        96   16  16  32  facade  x   X     베란다(2층)
+genkan            112   16  16  32  facade  -   X/F   현관 미닫이
+genkan_hisashi      0   48  16  16  over    -   C     현관 차양
+hisashi_l          16   48  16  16  facade  -   X     1층 차양 지붕 왼
+hisashi_m          32   48  16  16  facade  x   X     1층 차양 지붕
+hisashi_r          48   48  16  16  facade  -   X     1층 차양 지붕 오른

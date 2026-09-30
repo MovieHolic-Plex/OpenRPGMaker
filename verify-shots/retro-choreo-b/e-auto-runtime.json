@@ -1,0 +1,118 @@
+[
+ {
+  "skill": "skill_auto_fire3",
+  "fx": [
+   [
+    "mage_fire_burst",
+    "target"
+   ],
+   [
+    "mage_fireball_orb",
+    "projectile"
+   ]
+  ],
+  "filters": [
+   "none"
+  ],
+  "hitStops": 6
+ },
+ {
+  "skill": "skill_auto_massheal",
+  "fx": [
+   [
+    "cleric_halo",
+    "screen"
+   ],
+   [
+    "cleric_mass_heal",
+    "allAllies"
+   ]
+  ],
+  "filters": [
+   "none"
+  ],
+  "hitStops": 0
+ },
+ {
+  "skill": "skill_auto_heal",
+  "fx": [
+   [
+    "cleric_heal",
+    "target"
+   ]
+  ],
+  "filters": [
+   "none"
+  ],
+  "hitStops": 0
+ },
+ {
+  "skill": "skill_auto_thunderall",
+  "fx": [
+   [
+    "mage_chain_bolt",
+    "allTargets"
+   ]
+  ],
+  "filters": [
+   "none"
+  ],
+  "hitStops": 6
+ },
+ {
+  "skill": "skill_auto_ice",
+  "fx": [
+   [
+    "mage_fire_burst",
+    "target"
+   ],
+   [
+    "mage_fireball_orb",
+    "projectile"
+   ]
+  ],
+  "filters": [
+   "grayscale(1) sepia(1) hue-rotate(148deg) saturate(3.4) brightness(1.12) contrast(1.02)"
+  ],
+  "hitStops": 2
+ },
+ {
+  "skill": "skill_auto_sweep",
+  "fx": [
+   [
+    "hero_whirl",
+    "allTargets"
+   ]
+  ],
+  "filters": [
+   "none"
+  ],
+  "hitStops": 12
+ },
+ {
+  "skill": "skill_auto_fist5",
+  "fx": [
+   [
+    "monk_fist_flurry",
+    "target"
+   ]
+  ],
+  "filters": [
+   "none"
+  ],
+  "hitStops": 10
+ },
+ {
+  "skill": "skill_auto_poison",
+  "fx": [
+   [
+    "hero_cross",
+    "target"
+   ]
+  ],
+  "filters": [
+   "none"
+  ],
+  "hitStops": 2
+ }
+]

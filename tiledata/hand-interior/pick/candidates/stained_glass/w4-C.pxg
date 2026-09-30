@@ -1,0 +1,43 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a stone 4
+@mat b red 4
+@mat c yellow 4
+@mat d black 4
+@mat e blue 4
+@mat f purple 4
+@mblock 0 0
+.......aa.......
+......abba......
+.....abccba.....
+....adbccbda....
+..adddbbbbddda..
+..adeedbbdbbda..
+..aeeeeaabbbba..
+..aeeeeaabbbba..
+..aeeeeaabbbba..
+..addddaadddda..
+..affffaacccca..
+..affffaacccca..
+..affffaacccca..
+..adddddddddda..
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+@tblock 0 0
+.......53.......
+......5442......
+.....555442.....
+....52454422....
+..422233332221..
+..424423324421..
+..455445355441..
+..444445344441..
+..444445344441..
+..422225322221..
+..454445354441..
+..444445344441..
+..433335333331..
+..422222222221..
+.55555555555555.
+.22222222222222.

@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_stone/w4-B.pxg",
+ "id": "column stone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 9,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "명암을 세게: 머릿돌·밑돌 윗면 최고 밝기, 오른쪽 몸통·아래 테 두 단 어둡게, 머릿돌 밑 드리운 그림자, 발 칸 오른쪽 접지 그림자.",
+ "ok": true
+}

@@ -1,0 +1,74 @@
+// v0.png → modern3 자동 재채색(remap_modern3.py)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a soil 0
+@mat b tekko 0
+@mat c yuka 0
+@mblock 0 0
+................
+................
+...........aaa..
+....aaaaaaacaa..
+....acccccccaa..
+....acccccccaa..
+..aaccccccccaa..
+..abccccccccaa..
+..abccccccccaa..
+..aaccccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+....acccccccaa..
+..aaccccccccaa..
+..abccccccccaa..
+..abccccccccaa..
+..aacccccccaaa..
+....accccca.....
+....aaaaaaaaaa..
+................
+................
+@tblock 0 0
+................
+................
+...........000..
+....0000000120..
+....0222222120..
+....0222222120..
+..001111111120..
+..042222222120..
+..042222222120..
+..002222222120..
+....0111111120..
+....0222222120..
+....0222222120..
+....0222222120..
+....0111111120..
+....0222222120..
+....0222222120..
+....0222222120..
+....0111111120..
+....0222222120..
+....0222222120..
+....0222222120..
+....0111111120..
+....0222222120..
+..002222222120..
+..042222222120..
+..041111111120..
+..002222222000..
+....0222220.....
+....0000000000..
+................
+................

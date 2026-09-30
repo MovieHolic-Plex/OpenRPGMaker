@@ -1,0 +1,31 @@
+{
+ "src": "tiledata/atlas-pick/candidates-modern/blk_gb_bg/v0.png",
+ "out": "tiledata/atlas-pick/remap-trial/modern/blk_gb_bg/v0.m3.pxg",
+ "size": [
+  16,
+  16
+ ],
+ "stat": {
+  "flat": 7
+ },
+ "weak": [],
+ "ambiguous": {
+  "#111310": 1,
+  "#b6b6b0": 1
+ },
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 0,
+ "droppedBy": {},
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 6,
+ "ramps": [
+  "garasu",
+  "sumi",
+  "tairu",
+  "tekko"
+ ]
+}

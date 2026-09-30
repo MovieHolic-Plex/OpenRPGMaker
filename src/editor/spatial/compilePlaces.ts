@@ -1,4 +1,4 @@
-import { deserialize } from "@/project/io";
+import { isolateProject } from "./compileIsolation";
 import { appendToTree, containsMap } from "@/project/mapTree";
 import { computeReachableCells } from "@/project/lint/reachability";
 import { isOwnedSpatialBinding } from "@/project/spatial/bindings";
@@ -99,5 +99,5 @@ export function compilePlaces(context: SpatialCompileContext): Project {
   project.spatialAuthoring = { ...connected, occurrences: Object.fromEntries(Object.values(connected.occurrences).map(occurrence =>
     [occurrence.id, members.has(occurrence.id) ? { ...occurrence, bindings: occurrence.bindings.map(binding => isOwnedSpatialBinding(binding)
       ? { ...binding, contentDigest: spatialRasterDigest(own(project.maps, binding.mapId), binding) } : binding) } : occurrence])) };
-  return deserialize(JSON.stringify(project));
+  return isolateProject(project);
 }

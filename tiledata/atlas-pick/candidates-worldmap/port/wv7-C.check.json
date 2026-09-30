@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/port/wv7-C.pxg",
+ "set": "worldmap",
+ "id": "port",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.13
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.052
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  4,
+  28,
+  30
+ ],
+ "note": "큰 푸른 지붕 창고 + 큼직한 흰 돛 범선(과장 실루엣), 작은 부두",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.102
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.026
+  }
+ }
+}

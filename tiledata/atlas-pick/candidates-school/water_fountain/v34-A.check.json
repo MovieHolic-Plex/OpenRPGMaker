@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/water_fountain/v34-A.pxg",
+ "set": "school",
+ "id": "water_fountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  0,
+  30,
+  31
+ ],
+ "note": "복도 세면대 3/4 — 스테인리스 개수대 윗면이 넓고 밝게, 안쪽 물 고임과 수도꼭지 셋, 앞면에 문 둘 달린 캐비닛과 짧은 발",
+ "ok": true
+}

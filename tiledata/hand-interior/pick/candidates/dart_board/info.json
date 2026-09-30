@@ -1,0 +1,37 @@
+{
+ "id": "dart board",
+ "slug": "dart_board",
+ "name_ko": "다트판",
+ "category": "선술집",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "둥근 다트판(흑백 과녁, 가운데 붉은 원). 선술집·여관 홀 벽면 윗줄에 1개. 밑에 2인 식탁이나 벤치를 두고 걸이끼리 붙이지 않는다.",
+ "where": "선술집·여관 홀 벽면 윗줄에 1개. 밑에 2인 식탁이나 벤치를 두고 걸이끼리 붙이지 않는다.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

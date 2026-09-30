@@ -1,0 +1,31 @@
+// h1-C.pxg — h1 작업자(손으로 놓은 픽셀). 램프:단 열쇠 / 반투명은 팔레트 글자
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer b
+@px 3 1 mahog:0 4 1 mahog:0 5 1 mahog:0 6 1 mahog:0 7 1 mahog:0 8 1 mahog:0 9 1 mahog:0 10 1 mahog:0
+@px 11 1 mahog:0 12 1 mahog:0
+@px 2 2 mahog:0 3 2 mahog:2 4 2 mahog:2 5 2 mahog:2 6 2 mahog:2 7 2 mahog:2 8 2 mahog:2 9 2 mahog:2
+@px 10 2 mahog:2 11 2 mahog:2 12 2 mahog:2 13 2 mahog:0
+@px 2 3 mahog:0 3 3 bisque:5 4 3 bisque:5 5 3 bisque:5 6 3 bisque:5 7 3 bisque:5 8 3 bisque:5 9 3 bisque:5
+@px 10 3 bisque:5 11 3 bisque:5 12 3 bisque:5 13 3 mahog:0
+@px 2 4 mahog:0 3 4 bisque:5 4 4 void:0 5 4 void:0 6 4 void:0 7 4 bisque:5 8 4 bisque:5 9 4 void:0
+@px 10 4 void:0 11 4 void:0 12 4 bisque:5 13 4 mahog:0
+@px 2 5 mahog:0 3 5 bisque:5 4 5 void:0 5 5 dust:6 6 5 void:0 7 5 bisque:5 8 5 bisque:5 9 5 void:0
+@px 10 5 dust:6 11 5 void:0 12 5 bisque:5 13 5 mahog:0
+@px 2 6 mahog:0 3 6 bisque:5 4 6 void:0 5 6 void:0 6 6 void:0 7 6 bisque:5 8 6 bisque:5 9 6 void:0
+@px 10 6 void:0 11 6 void:0 12 6 bisque:5 13 6 mahog:0
+@px 2 7 mahog:0 3 7 bisque:5 4 7 void:0 5 7 void:0 6 7 void:0 7 7 bisque:5 8 7 bisque:5 9 7 void:0
+@px 10 7 void:0 11 7 void:0 12 7 bisque:5 13 7 mahog:0
+@px 2 8 mahog:0 3 8 bisque:5 4 8 bisque:5 5 8 bisque:5 6 8 bisque:5 7 8 bisque:5 8 8 bisque:5 9 8 bisque:5
+@px 10 8 bisque:5 11 8 bisque:5 12 8 bisque:5 13 8 mahog:0
+@px 2 9 mahog:0 3 9 blood:1 4 9 blood:3 5 9 blood:3 6 9 blood:3 7 9 blood:3 8 9 blood:3 9 9 blood:3
+@px 10 9 blood:3 11 9 blood:3 12 9 blood:1 13 9 mahog:0
+@px 3 10 bisque:1 4 10 bisque:1 5 10 bisque:5 6 10 bisque:5 7 10 bisque:5 8 10 bisque:5 9 10 bisque:5 10 10 bisque:5
+@px 11 10 bisque:1 12 10 bisque:1
+@px 5 11 paper:1 6 11 paper:4 7 11 paper:4 8 11 paper:4 9 11 paper:4 10 11 paper:1
+@px 4 12 bisque:1 5 12 paper:4 6 12 paper:4 7 12 paper:4 8 12 paper:3 9 12 paper:3 10 12 paper:4 11 12 bisque:1
+@px 3 13 paper:1 4 13 paper:6 5 13 paper:2 6 13 paper:2 7 13 paper:1 8 13 paper:2 9 13 paper:1 10 13 paper:6
+@px 11 13 paper:1
+@px 1 14 void:0 2 14 void:0 4 14 bisque:1 5 14 bisque:1 10 14 bisque:1 11 14 bisque:1 13 14 void:0 14 14 void:0
+@px 1 15 void:0 2 15 void:0 13 15 void:0 14 15 void:0

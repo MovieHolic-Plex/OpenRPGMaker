@@ -1,0 +1,23 @@
+{
+ "id": "privacy_screen",
+ "slug": "privacy_screen",
+ "name": "보건실 칸막이 커튼",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "침대 옆 바퀴 달린 칸막이(쇠 틀에 연한 커튼 천) — 천 주름 세로 결 3~4줄, 아래 바퀴 발 넷. nurse_bed 옆에 세운다(짝, 같은 흰 색 계열).",
+ "palette_hint": "vlinen/cream 천, mmetal 틀",
+ "pair": [
+  "nurse_bed"
+ ],
+ "worker": "s3"
+}

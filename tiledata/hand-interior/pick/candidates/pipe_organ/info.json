@@ -1,0 +1,39 @@
+{
+ "id": "pipe organ",
+ "slug": "pipe_organ",
+ "name_ko": "파이프 오르간",
+ "category": "예배당",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  32,
+  48
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 32,
+  "h": 40
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 24,
+ "surface": null,
+ "description": "금빛 파이프 오르간(2칸, 키가 크다). 예배당 제단부 벽.",
+ "where": "예배당 제단부 벽.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 24px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "v5_colors": 13,
+ "material": "wood",
+ "related": []
+}

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crystal_ball/w3-B.pxg",
+ "id": "crystal ball",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  12,
+  14
+ ],
+ "note": "B: 강한 조명 - 구 안쪽에 밝은 중심 빛과 아래쪽 보라 소용돌이, 왼쪽 위 흰 하이라이트 두 점, 받침에 밝은 금 림과 오른쪽 아래 어두운 그림자",
+ "ok": true
+}

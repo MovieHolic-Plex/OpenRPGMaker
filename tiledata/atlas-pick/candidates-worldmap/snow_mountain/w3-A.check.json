@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow_mountain/w3-A.pxg",
+ "set": "worldmap",
+ "id": "snow_mountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline_black",
+   "light"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  0,
+  47,
+  60
+ ],
+ "note": "mountain A와 같은 결에 봉우리 윗머리만 눈(wsnow) — 낮은 대비, 눈 경계 들쭉날쭉, 발치는 눈 섞인 흙 언덕색.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.141
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.203
+  },
+  "seam": 0.73
+ }
+}

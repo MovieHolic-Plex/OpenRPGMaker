@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/hall_blue/v6-A.pxg",
+ "set": "worldmap",
+ "id": "hall_blue",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  0,
+  46,
+  31
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 6,
+   "atLeast95": 0,
+   "max": 0.074
+  },
+  "refmapWorld": {
+   "cells": 6,
+   "atLeast95": 0,
+   "max": 0.102
+  }
+ }
+}

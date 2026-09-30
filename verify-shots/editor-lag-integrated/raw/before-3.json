@@ -1,0 +1,309 @@
+{
+ "side": "before",
+ "run": 3,
+ "load": "5.03 6.59 7.35",
+ "s1_cold": {
+  "readyMs": 41165,
+  "long": {
+   "count": 32,
+   "totalMs": 20704,
+   "top": [
+    {
+     "atMs": 20804,
+     "durMs": 9571
+    },
+    {
+     "atMs": 35752,
+     "durMs": 2026
+    },
+    {
+     "atMs": 30414,
+     "durMs": 1990
+    },
+    {
+     "atMs": 38722,
+     "durMs": 1414
+    },
+    {
+     "atMs": 2231,
+     "durMs": 1089
+    }
+   ]
+  },
+  "parse": {
+   "n": 496,
+   "ms": 1364,
+   "MB": 257.4
+  },
+  "netMB": 296.3,
+  "fetches": 17
+ },
+ "s1_warm": {
+  "readyMs": 17899,
+  "long": {
+   "count": 21,
+   "totalMs": 14381,
+   "top": [
+    {
+     "atMs": 3965,
+     "durMs": 9136
+    },
+    {
+     "atMs": 13658,
+     "durMs": 1897
+    },
+    {
+     "atMs": 1603,
+     "durMs": 853
+    },
+    {
+     "atMs": 15643,
+     "durMs": 429
+    },
+    {
+     "atMs": 2992,
+     "durMs": 417
+    }
+   ]
+  },
+  "parse": {
+   "n": 497,
+   "ms": 594,
+   "MB": 144.2
+  },
+  "netMB": 3.6,
+  "fetches": 12
+ },
+ "s1_warm2": {
+  "readyMs": 18099,
+  "long": {
+   "count": 21,
+   "totalMs": 14398,
+   "top": [
+    {
+     "atMs": 4434,
+     "durMs": 8999
+    },
+    {
+     "atMs": 13732,
+     "durMs": 2031
+    },
+    {
+     "atMs": 2517,
+     "durMs": 761
+    },
+    {
+     "atMs": 15907,
+     "durMs": 440
+    },
+    {
+     "atMs": 3418,
+     "durMs": 427
+    }
+   ]
+  },
+  "parse": {
+   "n": 497,
+   "ms": 630,
+   "MB": 144.2
+  },
+  "netMB": 3.6,
+  "fetches": 12
+ },
+ "canvas": {
+  "x": 346,
+  "y": 49,
+  "w": 676,
+  "h": 851
+ },
+ "tileId": "chipset-tile-126",
+ "s2_paintClickMs": 189,
+ "s2": {
+  "long": {
+   "count": 5,
+   "totalMs": 1340,
+   "top": [
+    {
+     "atMs": 45696,
+     "durMs": 925
+    },
+    {
+     "atMs": 48085,
+     "durMs": 217
+    },
+    {
+     "atMs": 42598,
+     "durMs": 78
+    },
+    {
+     "atMs": 42820,
+     "durMs": 62
+    },
+    {
+     "atMs": 46966,
+     "durMs": 58
+    }
+   ]
+  },
+  "saveFetches": [
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 163,
+    "respMs": 2633
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 4191,
+    "respMs": 52
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 319,
+    "atMs": 5696,
+    "respMs": null
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 7180,
+    "respMs": null
+   }
+  ],
+  "stringify": {
+   "n": 1021070,
+   "MB": 22.72,
+   "ms": 0
+  },
+  "parse": {
+   "n": 4,
+   "ms": 16
+  },
+  "hot": [],
+  "top": [
+   [
+    3811.5,
+    "(program) :0:0"
+   ],
+   [
+    1178.2,
+    "kFt /assets/main-B0N4CzqN.js:106:53716"
+   ],
+   [
+    563.2,
+    "xFt /assets/main-B0N4CzqN.js:106:54423"
+   ],
+   [
+    164.2,
+    "JSON.stringify :33:16"
+   ],
+   [
+    163.4,
+    "(garbage collector) :0:0"
+   ]
+  ],
+  "busyMs": 6593
+ },
+ "s3": {
+  "dragOnlyMs": 2740,
+  "perMoveMedianMs": 123.7,
+  "perMoveMaxMs": 278,
+  "moves": 20,
+  "longAfter": {
+   "count": 14,
+   "totalMs": 1259,
+   "top": [
+    {
+     "atMs": 56179,
+     "durMs": 261
+    },
+    {
+     "atMs": 53931,
+     "durMs": 180
+    },
+    {
+     "atMs": 54302,
+     "durMs": 95
+    },
+    {
+     "atMs": 55001,
+     "durMs": 72
+    },
+    {
+     "atMs": 55237,
+     "durMs": 72
+    }
+   ]
+  },
+  "saveFetches": 6
+ },
+ "s4": {
+  "medianMs": 407,
+  "all": [
+   382,
+   427,
+   405,
+   407,
+   411,
+   410,
+   377,
+   406
+  ],
+  "longSumMedian": 560
+ },
+ "s5": {
+  "medianMs": 194,
+  "all": [
+   204,
+   218,
+   191,
+   199,
+   188,
+   205,
+   186,
+   190,
+   194,
+   185
+  ],
+  "longSumMedian": 193
+ },
+ "s6": {
+  "medianMs": 33,
+  "all": [
+   25,
+   33,
+   33,
+   33,
+   33,
+   33,
+   33,
+   33,
+   32,
+   54,
+   29,
+   33
+  ],
+  "longSumMedian": 75
+ },
+ "s7": {
+  "rafMs": 1058,
+  "settleMs": 1214,
+  "longSumMs": 1491,
+  "cards": 5897,
+  "gallery": true
+ },
+ "heap": {
+  "jsHeapUsedMB": 2506,
+  "jsHeapTotalMB": 2580,
+  "nodes": 80007,
+  "taskDurationS": 0,
+  "scriptDurationS": 0,
+  "layoutDurationS": 0,
+  "recalcStyleS": 0
+ }
+}

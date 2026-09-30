@@ -1,0 +1,60 @@
+{
+ "id": "poison_marsh",
+ "slug": "poison_marsh",
+ "name": "독늪",
+ "scene": "숲·늪",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "World.png 독늪처럼 한눈에 「밟으면 다치는 땅」: 채도 낮춘 보라 물에 **둥근 돌·거품 덩이(지름 4~6px, 윗왼 밝은 테)** 가 자갈처럼 빽빽이, 드문 반짝임 한 점. 가장자리 = 짙은 테 1px(끊긴 선) + 풀이 파먹는 불규칙한 선, 기슭 깊이 2~4px, 모서리 둥글게. 늪(swamp)과 색·결 모두 달라야 한다.",
+ "palette_hint": "wpoison 물·거품, 테 wpoison:0·wdirt:0",
+ "worker": "wv4",
+ "style": "flat",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

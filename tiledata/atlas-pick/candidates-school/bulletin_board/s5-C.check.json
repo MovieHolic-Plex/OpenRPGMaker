@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/bulletin_board/s5-C.pxg",
+ "set": "school",
+ "id": "bulletin_board",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.18
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "실루엣 재해석: 종이 대여섯 장이 서로 겹치고 한 장은 모서리가 접힌 빽빽한 게시판",
+ "ok": true
+}

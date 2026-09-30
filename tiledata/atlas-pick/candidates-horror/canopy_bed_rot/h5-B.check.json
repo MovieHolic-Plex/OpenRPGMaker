@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/canopy_bed_rot/h5-B.pxg",
+ "set": "horror",
+ "id": "canopy_bed_rot",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 21,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "같은 판에 왼쪽 위 달빛: 왼 기둥·머릿널 위·시트 접힘이 밝고 머릿널 오른쪽 절반·이불 움푹이 한 단씩 어두움, 발치에 반투명 접지 그림자",
+ "ok": true
+}

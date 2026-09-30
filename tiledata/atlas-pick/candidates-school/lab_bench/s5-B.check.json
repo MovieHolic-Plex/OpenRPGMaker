@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/lab_bench/s5-B.pxg",
+ "set": "school",
+ "id": "lab_bench",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.31
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 28,
+ "bbox": [
+  1,
+  1,
+  47,
+  31
+ ],
+ "note": "같은 모양에 빛 구조 강화: 상판 왼위 두 단 밝은 광택 빗금, 오른아래 어둡게, 유리에 & 반사·발치 % 번짐, 상판 앞 테 밝게, 캐비닛 문 윗면·왼 테 밝고 아래 어두운 단, 접지 그림자 2줄",
+ "ok": true
+}

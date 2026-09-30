@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/vending_school/s2-C.pxg",
+ "set": "school",
+ "id": "vending_school",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  1,
+  0,
+  15,
+  31
+ ],
+ "note": "실루엣 재해석: 윗면 어깨를 둥글게 깎고 진열창을 큰 창으로 키워 견본이 한눈에 보임. 배출구는 넓은 문. 한 색 실루엣은 어깨 둥근 직사각.",
+ "ok": true
+}

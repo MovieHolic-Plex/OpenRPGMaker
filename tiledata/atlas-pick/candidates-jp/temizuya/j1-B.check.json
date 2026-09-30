@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/temizuya/j1-B.pxg",
+ "set": "jp",
+ "id": "temizuya",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 33,
+ "bbox": [
+  2,
+  3,
+  47,
+  47
+ ],
+ "note": "같은 모양에 명암을 세게: 처마 밑 어둠 띠, 오른쪽 기둥·물통 앞면 한두 단 어둡게, 물 반짝임 밝게, 오른쪽 아래로 뻗는 접지 그림자 3줄",
+ "ok": true
+}

@@ -1,0 +1,79 @@
+// poison_marsh wv4-A
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wdirt 0
+@mat b wdirt 1
+@mat c wgrass 1
+@mat d wpoison 0
+@mat e wpoison 1
+@mat f wpoison 2
+@mat g wpoison 3
+@mat h wpoison 4
+@mat i wpoison 5
+@mblock 0 0
+................eeeeeeeeeeeehhhe..addeeeeeeedab.
+.....c.b..c.....eeeehheeeeehgggf.badfeeeehhdda.b
+......baa.b.....eeehggfeeeehggffaadffeeehggfddaa
+.....aaddaab....eeegfffeeeeefffeddffeeeegfffeddd
+....addedddab...hhheffeeeeeeeeeedeeeeeeeeffeeede
+...addieededab..gggfeeeeehheeeeheeeeeeieeeeeeeie
+..badhheeedda...ggffeeeehggfeeeheeeehhheeeeeeeee
+cbadgggfeeedda.cfffeehhegfffeeeeeeehgggfeeeehhee
+c.addgffeeehdabceeeeegfeeeeeeeeeeeehggffeeehggfe
+...addfeeeedab..eeeeeeeeeeieeeeeeeeefffeeeegfffe
+..badedehhdda...eeeeeeeeehhheeeeeeeeeeeehhheffee
+...badddgdda....ehheeeeehgggfeeeedheeeehgggfeeed
+....baaddaa.....hggfeeeehggffeeedddfeeehggffeedd
+.....b.aab......gfffeeeeefffeeeeaaddeeeefffeedaa
+.....c..b.c.....effeeeeeeeeeeeeeb.addeeeeeeedab.
+................eeeeeeieeeeeeeie.badeeeeeeedda..
+..........c.b..cc.........c.b..cc...............
+.....c.b.b.aab.b.b...c.b.b.aab.b.b...c.b..c.....
+......baaaaddaaaaab.b.aaaaaddaaaaab.b.aaa.b.....
+.....aadddddedddddaaaaddddddedddddaaaadddaab....
+....addedfdeeedededddddedfdeeedededddddedddab...
+...addieeeeeeeieeeededieeeeeeeieeeededieededab..
+..badhheeeeeeeeeeeeehhheeeeeeeeeeeeehhheeedda...
+cbadgggfeeeehheeeeehgggfeeeehheeeeehgggfeeedda.c
+c.addgffeeehggfeeeehggffeeehggfeeeehggffeeehdabc
+.addfffeeeegfffeeeeefffeeeegfffeeeeefffeeeedda.c
+badeeeeehhheffeeeeeeeeeehhheffeeeeeeeeeehhhedabc
+cbadeeehgggfeeeeehheeeehgggfeeeeehheeeehgggdab..
+c.addeehggffeeeehggfeeehggffeeeehggfeeehggdda...
+cbadeeeefffeehhegfffeeeefffeehhegfffeeeefffdab..
+c.addeeeeeeeegfeeeeeeeeeeeeeegfeeeeeeeeeeeeedabc
+cbadeeeeeeeeeeeeeeieeeeeeeeeeeeeeeieeeeeeeedda.c
+c.addeeeeeeeeeeeehhheeeeeeeeeeeeehhheeeeeeeedabc
+cbadfeeeehheeeeehgggfeeeehheeeeehgggfeeeehhdda.c
+c.addeeehggfeeeehggffeeehggfeeeehggffeeehggfdda.
+...addeegfffeeeeefffeeeegfffeeeeefffeeeegfffedab
+..badeeeeffeeeeeeeeeeeeeeffeeeeeeeeeeeeeeffedabc
+...addieeeeeeeieeeeeeeieeeeeeeieeeeeeeieeeedda.c
+c.addhheeeeeeeeeeeeehhheeeeeeeeeeeeehhheeeeedabc
+cbadgggfeeeehheeeeehgggfeeeehheeeeehgggfeeedda.c
+c.addgffeeehggfeeeehggffeeehggfeeeehggffeeehdabc
+.addfffeeeegfffeeeeefffeeeegfffeeeeefffeeeedda.c
+badeeeeehhheffeeeeeeeeeehhheffeeeeeeeeeehhhedabc
+cbadeeehgggfeeeeehheeeehgggfeeeeehheeeehgggdab..
+c.addeehggffeeeehggfeeehggffeeeehggfeeehggdda...
+cbadeeeefffeehhegfffeeeefffeehhegfffeeeefffdab..
+c.addeeeeeeeegfeeeeeeeeeeeeeegfeeeeeeeeeeeeedabc
+cbadeeeeeeeeeeeeeeieeeeeeeeeeeeeeeieeeeeeeedda.c
+c.addeeeeeeeeeeeehhheeeeeeeeeeeeehhheeeeeeeedabc
+cbadfeeeehheeeeehgggfeeeehheeeeehgggfeeeehhdda.c
+c.addeeehggfeeeehggffeeehggfeeeehggffeeehggfdda.
+...addeegfffeeeeefffeeeegfffeeeeefffeeeegfffedab
+..badeeeeffeeeeeeeeeeeeeeffeeeeeeeeeeeeeeffedabc
+...addieeeeeeeieeeeeeeieeeeeeeieeeeeeeieeeedda.c
+c.addhheeeeeeeeeeeeehhheeeeeeeeeeeeehhheeeeedabc
+cbadgggfeeeehheeeeehgggfeeeehheeeeehgggfeeedda.c
+c.addgffeeehggfeeeehggffeeehggfeeeehggffeeehdabc
+...addfeeeegfffeeeeefffeeeegfffeeeeefffeeeedab..
+..badedehhdedfeeeeeeeeeehhdedfeeeeeeeeeehhdda...
+...badddgdddddededheededgdddddededheededgdda....
+....baadddaaaddddddfddddddaaaddddddfdddddaa.....
+.....b.aaa.b.aaaaaaddaaaaa.b.aaaaaaddaaaab......
+.....c..b.c...b.b.baa.b.b.c...b.b.baa.b.b.c.....
+...............cc..b.c.........cc..b.c..........

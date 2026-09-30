@@ -1,0 +1,24 @@
+{
+ "id": "forest_crowns",
+ "slug": "forest_crowns",
+ "name": "활엽 큰 수관 겹판(2×2 ×3)",
+ "scene": "숲",
+ "kind": "scatter",
+ "cells": [
+  6,
+  2
+ ],
+ "canvas": [
+  96,
+  32
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "4판: 활엽수 숲 몸통 위에 얹는 2×2 큰 수관 셋.",
+ "palette_hint": "wleaf",
+ "worker": "v4",
+ "variants": 3
+}

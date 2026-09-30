@@ -1,0 +1,24 @@
+{
+ "id": "slippers",
+ "slug": "slippers",
+ "name": "실내화 한 켤레",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "바닥에 놓인 실내화 한 켤레(흰 몸통·학년색 고무 코·뒤꿈치). 16px 안 가운데 아래, 발치 그림자 1줄.",
+ "palette_hint": "vwhite, vgreen/vblue/vred 코",
+ "pair": [
+  "shoe_locker",
+  "genkan_step"
+ ],
+ "worker": "s5"
+}

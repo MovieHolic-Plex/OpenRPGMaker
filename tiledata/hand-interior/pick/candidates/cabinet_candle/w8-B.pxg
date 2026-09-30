@@ -1,0 +1,51 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat l linen 6
+@mat m linen 5
+@mat n linen 4
+@mat o linen 3
+@mat p linen 2
+@mat y yellow 6
+@mat r orange 4
+@mat s orange 3
+@mblock 0 0
+.aaaaaaaaaaaaaa.
+agggggggggggggfa
+affffffffffffeda
+acccccccccccccca
+.afaaaaaaaaaaca.
+.afbbbbbbbrbbca.
+.afbrbbbbbybbca.
+.afbybbrbblnbca.
+.afblnbybbmobca.
+.afbmoblnbmobca.
+.afbmobmobmobca.
+.agffffffffffea.
+.acccccccccccba.
+.afaaaaaaaaaaca.
+.afbbbrbbbbbbca.
+.afrbbybbbbbbca.
+.afybblnbrbbbca.
+.aflnbmobybbbca.
+.afmobmoblnlnca.
+.afmobmobmomoca.
+.agffffffffffea.
+.acccccccccccba.
+.afaaaaaaaaaaca.
+.afbbbbrbbbbbca.
+.afbrbbybbrbbca.
+.afbybblnbybbca.
+.afblnbmoblnbca.
+.afbmobmobmobca.
+.agffffffffffea.
+aaaaaaaaaaaaaaaa
+afeeeeeeeeeeddda
+aaaaaaaaaaaaaaaa

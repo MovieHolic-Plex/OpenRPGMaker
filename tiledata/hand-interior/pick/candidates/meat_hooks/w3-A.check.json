@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/meat_hooks/w3-A.pxg",
+ "id": "meat hooks",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "note": "A: v5 정육점 고기걸이 유지 - 틀을 세 줄 두께로(윗면 밝게·밑면 어둡게, 기둥은 왼쪽이 밝은 3단) 입체를 주고, 고기는 쇠 갈고리에 통 넓적다리(뼈+지방 테두리)·소시지 사슬(끈 매듭)·베이컨 조각(살/기름 줄무늬)으로 바꿔 무엇인지 알아보게 하고 길게 늘어뜨림",
+ "ok": true
+}

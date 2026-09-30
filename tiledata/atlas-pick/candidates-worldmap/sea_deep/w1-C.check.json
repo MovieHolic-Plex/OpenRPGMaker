@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/sea_deep/w1-C.pxg",
+ "set": "worldmap",
+ "id": "sea_deep",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "들쭉날쭉 깊은 웅덩이: 경계 0~3px 크게 굴곡, 호 물결 두 줄뿐인 아주 드문 몸통, 밝은 테→어두운 해구 단",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "seam": 0.67
+ }
+}

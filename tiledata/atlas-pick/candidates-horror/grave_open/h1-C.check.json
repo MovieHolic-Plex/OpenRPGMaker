@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/grave_open/h1-C.pxg",
+ "set": "horror",
+ "id": "grave_open",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.316
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.395
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "C: 구덩이 바닥 쪽 가장자리를 창백한 손가락 다섯이 움켜쥔 모양(bisque) — 안에서 기어 나오는 손(작게 보면 이빨 줄로도 읽힘). 어긋난 곳은 그 손. 흙더미에 꽂힌 삽 자루는 없다(손이 주역).",
+ "ok": true
+}

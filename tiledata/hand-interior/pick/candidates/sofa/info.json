@@ -1,0 +1,37 @@
+{
+ "id": "sofa",
+ "slug": "sofa",
+ "name_ko": "소파",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 16
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "2인 소파(2칸). 거실·응접실, 앞에 찻상.",
+ "where": "거실·응접실, 앞에 찻상.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "v5_colors": 5,
+ "material": "cloth",
+ "related": []
+}

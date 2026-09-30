@@ -1,0 +1,48 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a tray 1
+@mat b tray 4
+@mat c tray 5
+@mat d mmetal 6
+@mat e tray 3
+@mat f mmetal 3
+@mat g mmetal 5
+@mat h tray 2
+@mat i mglass 2
+@mat j mglass 4
+@mat k mglass 1
+@mat l mmetal 2
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.bccccccdddccccdddccccdddccccce.
+.bccccccddfccccddfccccddfccccce.
+.bcccccccfgcccccfgcccccfgccccce.
+.bcccccccccccccccccccccccccccce.
+.bccaaaaaaaaaaaaaaaaaaaaaaaacce.
+.bcchhhhhhhhhhhhhhhhhhhhhhhhcce.
+.bcchiiiiiiiiiiiiiiiiiiiiiihcce.
+.bcchijjjjjjjjiiiiiiiiiiiiihcce.
+.bcchiiiiiiiiiiiiiiiiiiiiiihcce.
+.bcchkkkkkkkkkkkkkkkkkkkkkkhcce.
+.bcccccccccccccccccccccccccccce.
+.bcccccccccccccccccccccccccccce.
+.cccccccccccccccccccccccccccccc.
+.cccccccccccccccccccccccccccccc.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeeh.
+.beeaaaaaaaaaaaeeaaaaaaaaaaaeeh.
+.beeahhhhhhhhhheeahhhhhhhhhheeh.
+.beeahhhhhhhhhheeahhhhhhhhhheeh.
+.beeahhhhhhhhhgeeghhhhhhhhhheeh.
+.beeahhhhhhhhhheeahhhhhhhhhheeh.
+.beeahhhhhhhhhheeahhhhhhhhhheeh.
+.beeahhhhhhhhhheeahhhhhhhhhheeh.
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeeh.
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeeh.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+..lll......................lll..
+..lll......................lll..
+.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+.------------------------------.

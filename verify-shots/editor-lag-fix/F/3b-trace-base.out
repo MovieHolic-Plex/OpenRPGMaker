@@ -1,0 +1,8 @@
+시작 상태: 366|4341414|96aa4cc1923387f7feb1f2cc612ad6197ace00b264daa2e0be12bc842c9d3594 / 457 / 385
+{"round":0,"readyMs":34873,"stateAtReady":"367|4341414|7d56da67b4dd650199feb79ffd092f13fe11beefd1ad9df718671492b6404189 / 457 / 385","savedAfterReady":true,"waitedSec":18,"stateAfter":"368|4341414|c578ba0ad794b328963acd8b2756753ce13ecc115cb48da3238fedd64d1b04cc / 457 / 385"}
+{"round":1,"readyMs":23239,"stateAtReady":"368|4341414|c578ba0ad794b328963acd8b2756753ce13ecc115cb48da3238fedd64d1b04cc / 457 / 385","savedAfterReady":true,"waitedSec":2,"stateAfter":"369|4341414|7d56da67b4dd650199feb79ffd092f13fe11beefd1ad9df718671492b6404189 / 457 / 385"}
+{"round":2,"readyMs":22098,"stateAtReady":"369|4341414|7d56da67b4dd650199feb79ffd092f13fe11beefd1ad9df718671492b6404189 / 457 / 385","savedAfterReady":false,"waitedSec":20,"stateAfter":"369|4341414|7d56da67b4dd650199feb79ffd092f13fe11beefd1ad9df718671492b6404189 / 457 / 385"}
+{"round":3,"readyMs":25845,"stateAtReady":"370|4341414|c578ba0ad794b328963acd8b2756753ce13ecc115cb48da3238fedd64d1b04cc / 457 / 385","savedAfterReady":true,"waitedSec":2,"stateAfter":"371|4341414|7d56da67b4dd650199feb79ffd092f13fe11beefd1ad9df718671492b6404189 / 457 / 385"}
+{
+ "logs": []
+}

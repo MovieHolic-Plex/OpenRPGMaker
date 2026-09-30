@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_hosp_linoleum/hf6-C.pxg",
+ "set": "horror",
+ "id": "floor_hosp_linoleum",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.328
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "재료 결: 대리석 무늬 리놀륨(어두운 덩이·누런 덩이·광택 점을 손으로), 이음 옆 들뜬 밝은 줄, 눌은 녹물 자국 하나",
+ "ok": true
+}

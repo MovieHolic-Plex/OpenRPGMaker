@@ -1,0 +1,4943 @@
+{
+ "version": 2,
+ "edition": "2판(2026-09-30) — 1단계 기본 먼저, 연출은 2단계",
+ "set": "horror",
+ "note": "호러(쯔꾸르 인디 호러) 16px 조각 배정표 2판. 사용자 「우선은 기본이 되어야 할 타일들」 — 1단계 기본(벽면·천장 윗면·바닥·러너·문·창·계단·기둥·어둠 경계·기본 가구)을 한 벌(kit) 단위로 먼저 찍고, 1판의 연출 기물은 2단계로 미룬다. 절차 WORKER-HORROR.md(2판), 조사 horror-foundation-study.md, 한 벌 방 조립 horror_room_compose.py. 팔레트 palette/horror.pal. items 에는 1판 66개(stage 1 옮김 17 · stage 2 연출 49)와 2판 새 기본이 함께 든다 — 후보·고른 기록은 지우지 않는다.",
+ "directions": {
+  "A": "v5 식구 기본판 — v5 방(짙은 마루·회벽·검정 천장 띠)과 같은 명도 구조·단 수·윤곽, v 램프 위주. 깨끗하고 정돈된 판(낡음은 먼지·바램 한 단까지)",
+  "B": "어둠에서 읽히는 판(Ib 결) — 면을 크게 나누고 명도 폭 최대: 벽면 밝게·바닥 어둡게·천장 검정, 테·걸레받이·문틀 선명, 무늬 적게. 어둠 덮개를 씌워도 방 모양이 남는다",
+  "C": "재질·무늬 판(마녀의 집 결) — 호러 램프(paper·damask·rot·ward·grave…)로 무늬·결을 한 단 더(다마스크·줄무늬·널 결·줄눈), 동화처럼 짙은 색. 가까이 보면 재미있는 판"
+ },
+ "directions_v1": {
+  "A": "v5 실내 결을 따른 낡은 판",
+  "B": "명암·그림자 강화(어둠 속 한쪽 빛)",
+  "C": "실루엣 재해석(공포 과장)"
+ },
+ "stages": {
+  "1": "기본 — 방을 깔 수 있는 바탕(한 벌 단위로 고른다)",
+  "2": "연출 — 기본 위에 방마다 한두 개(1판 기물 대부분, 기본이 선 뒤)"
+ },
+ "kits": {
+  "frame": {
+   "name": "공통 뼈대",
+   "about": "천장 윗면(검정 덮개 + 방 쪽 테)·계단·기둥·어둠 경계 — 모든 방에 쓴다",
+   "items": [
+    "dark_edge",
+    "dark_corner",
+    "dark_light_hole",
+    "ceil_black",
+    "ceil_plaster",
+    "exit_dark",
+    "stairs_up_wood",
+    "stairs_up_stone",
+    "stairs_down",
+    "pillar_stone",
+    "pillar_marble",
+    "moonlight_floor"
+   ]
+  },
+  "manor": {
+   "name": "저택",
+   "about": "마녀의 집·아오오니 결 저택: 벽지 벽면·마루·카펫·러너·문·창·기본 가구",
+   "items": [
+    "floor_creaky",
+    "wall_paper_torn",
+    "wall_paper_stain",
+    "grandfather_clock",
+    "candelabra_drip",
+    "wall_manor_damask",
+    "wall_manor_stripe",
+    "wall_wood_panel",
+    "floor_manor_plank",
+    "floor_manor_carpet",
+    "floor_checker",
+    "carpet_runner",
+    "door_wood",
+    "door_locked",
+    "door_double",
+    "window_night",
+    "window_curtain",
+    "table_wood",
+    "chair_wood",
+    "chair_wood_back",
+    "bookshelf_manor",
+    "bed_manor",
+    "dresser",
+    "side_table",
+    "candle_table"
+   ]
+  },
+  "gallery": {
+   "name": "미술관",
+   "about": "Ib 결 미술관: 흰·회색 벽면·밝은 마루·돌판·러너·액자·받침대·줄 울타리",
+   "items": [
+    "door_gallery",
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "frame_small",
+    "plaque",
+    "pedestal",
+    "rope_barrier",
+    "bench_gallery"
+   ]
+  },
+  "ward": {
+   "name": "병원",
+   "about": "폐병원 병실: 페인트·타일 벽면·리놀륨·병실 문·쇠창살 창·병상 가구",
+   "items": [
+    "hosp_floor",
+    "hosp_wall",
+    "hosp_bed",
+    "hosp_screen",
+    "iv_stand",
+    "medicine_cabinet",
+    "door_hosp",
+    "window_barred",
+    "wall_hosp_tile",
+    "floor_hosp_linoleum",
+    "bedside_cabinet",
+    "hosp_chair",
+    "ward_sink"
+   ]
+  },
+  "cellar": {
+   "name": "지하",
+   "about": "지하실·감옥 결: 돌·벽돌 벽면·판석·흙·쇠창살 문·벽 등잔·선반",
+   "items": [
+    "door_iron",
+    "wall_stone_block",
+    "wall_cellar_brick",
+    "floor_stone",
+    "floor_dirt",
+    "door_cell",
+    "torch_wall",
+    "shelf_cellar"
+   ]
+  }
+ },
+ "workers": {
+  "hf1": [
+   "ceil_black",
+   "ceil_plaster",
+   "exit_dark",
+   "stairs_up_wood",
+   "stairs_up_stone",
+   "stairs_down",
+   "pillar_stone",
+   "pillar_marble",
+   "moonlight_floor"
+  ],
+  "hf2": [
+   "wall_manor_damask",
+   "wall_manor_stripe",
+   "wall_wood_panel",
+   "floor_manor_plank",
+   "floor_manor_carpet",
+   "floor_checker",
+   "carpet_runner"
+  ],
+  "hf3": [
+   "door_wood",
+   "door_locked",
+   "door_double",
+   "door_gallery",
+   "door_hosp",
+   "door_iron",
+   "window_night",
+   "window_curtain",
+   "window_barred"
+  ],
+  "hf4": [
+   "table_wood",
+   "chair_wood",
+   "chair_wood_back",
+   "bookshelf_manor",
+   "bed_manor",
+   "dresser",
+   "side_table",
+   "candle_table"
+  ],
+  "hf5": [
+   "wall_gallery_white",
+   "wall_gallery_grey",
+   "floor_gallery_wood",
+   "floor_gallery_stone",
+   "frame_landscape",
+   "frame_small",
+   "plaque",
+   "pedestal",
+   "rope_barrier",
+   "bench_gallery"
+  ],
+  "hf6": [
+   "wall_hosp_tile",
+   "floor_hosp_linoleum",
+   "bedside_cabinet",
+   "hosp_chair",
+   "ward_sink"
+  ],
+  "hf7": [
+   "wall_stone_block",
+   "wall_cellar_brick",
+   "floor_stone",
+   "floor_dirt",
+   "door_cell",
+   "torch_wall",
+   "shelf_cellar"
+  ]
+ },
+ "workers_v1": {
+  "h1": [
+   "portrait_eyes",
+   "portrait_slashed",
+   "doll_sitting",
+   "doll_shelf",
+   "piano_dusty",
+   "stairs_broken",
+   "curtain_torn",
+   "broken_desk",
+   "broken_anatomy",
+   "night_grass",
+   "night_path",
+   "grave_open",
+   "old_well"
+  ],
+  "h2": [
+   "chandelier_fallen",
+   "door_boarded",
+   "rug_blood",
+   "hosp_bed",
+   "hosp_screen",
+   "specimen_jar",
+   "broken_window",
+   "dead_tree",
+   "mausoleum",
+   "cobweb_corner",
+   "cobweb_hang"
+  ],
+  "h3": [
+   "floor_creaky",
+   "floor_creaky_broken",
+   "mirror_cracked",
+   "grandfather_clock",
+   "candelabra_drip",
+   "candle_floor",
+   "fireplace_cold",
+   "medicine_cabinet",
+   "broken_hall_floor",
+   "blood_pool",
+   "blood_trail",
+   "handprints_wall",
+   "writing_wall",
+   "footprints"
+  ],
+  "h4": [
+   "wall_paper_torn",
+   "wall_paper_stain",
+   "sofa_sheet",
+   "armchair_sheet",
+   "bookshelf_fallen",
+   "music_box",
+   "iv_stand",
+   "wheelchair",
+   "morgue_drawer",
+   "fog_patch",
+   "note_paper",
+   "dark_edge",
+   "dark_corner",
+   "dark_light_hole"
+  ],
+  "h5": [
+   "canopy_bed_rot",
+   "wardrobe_ajar",
+   "hosp_floor",
+   "hosp_wall",
+   "operating_table",
+   "instrument_tray",
+   "xray_viewer",
+   "broken_blackboard",
+   "broken_locker",
+   "gravestone_cross",
+   "gravestone_round",
+   "iron_fence",
+   "cemetery_gate",
+   "broken_glass"
+  ]
+ },
+ "sets": [
+  [
+   "floor_creaky",
+   "floor_creaky_broken"
+  ],
+  [
+   "wall_paper_torn",
+   "wall_paper_stain"
+  ],
+  [
+   "portrait_eyes",
+   "portrait_slashed"
+  ],
+  [
+   "doll_sitting",
+   "doll_shelf"
+  ],
+  [
+   "sofa_sheet",
+   "armchair_sheet"
+  ],
+  [
+   "candelabra_drip",
+   "candle_floor"
+  ],
+  [
+   "hosp_floor",
+   "hosp_wall"
+  ],
+  [
+   "hosp_bed",
+   "hosp_screen"
+  ],
+  [
+   "operating_table",
+   "instrument_tray"
+  ],
+  [
+   "night_grass",
+   "night_path",
+   "grave_open"
+  ],
+  [
+   "gravestone_cross",
+   "gravestone_round"
+  ],
+  [
+   "iron_fence",
+   "cemetery_gate"
+  ],
+  [
+   "blood_pool",
+   "blood_trail",
+   "handprints_wall",
+   "writing_wall",
+   "footprints"
+  ],
+  [
+   "cobweb_corner",
+   "cobweb_hang"
+  ],
+  [
+   "dark_edge",
+   "dark_corner",
+   "dark_light_hole"
+  ]
+ ],
+ "items": [
+  {
+   "id": "dark_edge",
+   "slug": "dark_edge",
+   "name": "어둠 덮개(가장자리)",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "over",
+   "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+   "description": "방 가장자리를 어둡게 덮는 반투명 한 칸: 위 줄 = 어둠 가장 짙음(&) → 아래로 * \" ^ 순으로 옅어져 맨 아래 줄은 투명. 단 경계는 곧은 가로선 말고 2px 디더(체크)로 부드럽게. 좌우로 이어 붙는다(좌우 끝 모양 같게). 네 방향은 회전해 쓴다. 불투명 색 금지.",
+   "palette_hint": "^ \" * & 어둠",
+   "worker_v1": "h4",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "frame",
+   "role": "어둠 가장자리",
+   "worker": "h4",
+   "set_with": [
+    "dark_corner",
+    "dark_light_hole"
+   ]
+  },
+  {
+   "id": "dark_corner",
+   "slug": "dark_corner",
+   "name": "어둠 덮개(바깥 모서리)",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "over",
+   "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+   "description": "dark_edge 와 한 식구: 왼쪽 위 모서리가 가장 짙고(&) 오른쪽 아래로 부채꼴(1/4 원)로 옅어진다. dark_edge 두 장과 모서리에서 이어지게(위 줄은 dark_edge 위 줄과, 왼 줄은 dark_edge 를 90° 돌린 것과 같은 단).",
+   "palette_hint": "^ \" * & 어둠",
+   "worker_v1": "h4",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "frame",
+   "role": "어둠 모서리",
+   "worker": "h4",
+   "set_with": [
+    "dark_edge",
+    "dark_light_hole"
+   ]
+  },
+  {
+   "id": "dark_light_hole",
+   "slug": "dark_light_hole",
+   "name": "촛불 빛 구멍(어둠 덮개)",
+   "scene": "연출",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "over",
+   "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+   "description": "dark_edge 식구의 3×3 덮개: 가운데가 투명한 둥근 빛 구멍(지름 약 2칸), 바깥으로 ^ \" * & 순으로 짙어져 네 모서리는 &. 촛불·손전등을 든 주인공 둘레에 씌운다. 원이 계단져 보이지 않게 단 경계 디더. 바깥 테두리 한 줄은 모두 & — 더 넓은 어둠(& 한 색 칸)과 이어진다.",
+   "palette_hint": "^ \" * & 어둠",
+   "worker_v1": "h4",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "frame",
+   "role": "빛 구멍 덮개",
+   "worker": "h4",
+   "set_with": [
+    "dark_edge",
+    "dark_corner"
+   ]
+  },
+  {
+   "id": "ceil_black",
+   "slug": "ceil_black",
+   "name": "천장 윗면(검정·짙은 나무 테)",
+   "scene": "공통 뼈대",
+   "cells": [
+    4,
+    3
+   ],
+   "canvas": [
+    64,
+    48
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "저택·지하 방의 천장/벽 윗면. 자동 타일 4×3(64×48): 왼쪽 3×3 칸 = 덩이 하나(왼위 모서리·위 변·오른위 모서리 / 왼 변·속·오른 변 / 아래 셋), (3,0) 칸 = 안쪽 모서리 네 조각(8px 사분면마다 그 방향 대각선만 비었을 때의 모양), 나머지 칸은 투명. 조립기가 칸마다 8px 사분면 넷을 이웃에 따라 골라 붙인다(RPG 쯔꾸르 A2 결). 변·모서리 칸의 바깥 테가 이어져 보이게, 속 칸은 사방으로 이어지게(가장자리 무늬가 맞게). 속 = 거의 검정 한두 단(vblack·void, 조용하게 — 무늬 금지), 방 쪽 테 3~4px: 아래 변(벽면 위 끝) = 밝은 입술 줄 + 어두운 밑줄(v5 천장 띠처럼 앞이 가장 또렷), 위·왼 변 = 한 단 밝은 테, 오른 변 = 한 단 어두운 테(빛은 왼쪽 위). 어둠 덮개를 씌워도 방 윤곽이 남아야 한다.",
+   "palette_hint": "vblack/void 속, mahog/rot 테",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "천장 윗면(저택·지하)",
+   "worker": "hf1",
+   "autotile": "quad3x3+inner",
+   "set_with": [
+    "ceil_plaster",
+    "exit_dark",
+    "stairs_up_wood",
+    "stairs_up_stone",
+    "stairs_down",
+    "pillar_stone",
+    "pillar_marble",
+    "moonlight_floor"
+   ]
+  },
+  {
+   "id": "ceil_plaster",
+   "slug": "ceil_plaster",
+   "name": "천장 윗면(검정·밝은 회 테)",
+   "scene": "공통 뼈대",
+   "cells": [
+    4,
+    3
+   ],
+   "canvas": [
+    64,
+    48
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "ceil_black 과 같은 꼴·같은 테 폭, 테만 밝은 회백(미술관·병원 — 흰 벽 위). 둘을 나란히 깔 수 있게 속 검정은 같게.",
+   "palette_hint": "vblack/void 속, vmarble/grave/dust 테",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "천장 윗면(미술관·병원)",
+   "worker": "hf1",
+   "autotile": "quad3x3+inner",
+   "set_with": [
+    "ceil_black",
+    "exit_dark",
+    "stairs_up_wood",
+    "stairs_up_stone",
+    "stairs_down",
+    "pillar_stone",
+    "pillar_marble",
+    "moonlight_floor"
+   ]
+  },
+  {
+   "id": "exit_dark",
+   "slug": "exit_dark",
+   "name": "출구 어둠(남쪽 틈)",
+   "scene": "공통 뼈대",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "over",
+   "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+   "description": "방 남쪽 벽 틈(출구·복도 끝)에 까는 어둠: 위 줄은 투명 → 아래로 ^ \" * & 순으로 짙어져 맨 아래 줄은 &, 좌우 가장자리 2~3px 도 한 단 짙게. 2칸 폭 틈에 딱, 3칸 틈은 dark_edge 한 장 곁들임. 반투명 어둠 4단만.",
+   "palette_hint": "^ \" * & 만",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "출구 어둠",
+   "worker": "hf1",
+   "set_with": [
+    "ceil_black",
+    "ceil_plaster",
+    "stairs_up_wood",
+    "stairs_up_stone",
+    "stairs_down",
+    "pillar_stone",
+    "pillar_marble",
+    "moonlight_floor"
+   ]
+  },
+  {
+   "id": "stairs_up_wood",
+   "slug": "stairs_up_wood",
+   "name": "오름 나무 계단",
+   "scene": "공통 뼈대",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 오름 계단 규칙 그대로: 북쪽 벽 앞, 3칸 폭, 캔버스 아래 1줄 = 첫 바닥 줄, 위 2줄 = 벽면 자리를 덮고 벽 속(검정)으로 오른다. 단 6~8개, 단 윗면 밝게·앞면 어둡게, 양옆 난간 기둥·손잡이. 가장 윗단은 검정으로 사라진다(위층은 어둠 속).",
+   "palette_hint": "rot/mahog 단, void 끝, dust 단 끝 먼지 한 줄",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "오름 계단(나무)",
+   "worker": "hf1",
+   "set_with": [
+    "ceil_black",
+    "ceil_plaster",
+    "exit_dark",
+    "stairs_up_stone",
+    "stairs_down",
+    "pillar_stone",
+    "pillar_marble",
+    "moonlight_floor"
+   ],
+   "v5_ref": [
+    {
+     "id": "stairs up wood",
+     "name_ko": "나무 계단",
+     "atlas": {
+      "x": 368,
+      "y": 384,
+      "w": 48,
+      "h": 48,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 48,
+      "h": 48
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 3,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/stairs_up_wood",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "stairs_up_stone",
+   "slug": "stairs_up_stone",
+   "name": "오름 돌계단",
+   "scene": "공통 뼈대",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "stairs_up_wood 와 같은 칸·같은 단 수, 돌 단(병원·지하·미술관). 난간 없이 양옆 돌 벽 턱.",
+   "palette_hint": "vstone/grave 단, void 끝",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "오름 계단(돌)",
+   "worker": "hf1",
+   "set_with": [
+    "ceil_black",
+    "ceil_plaster",
+    "exit_dark",
+    "stairs_up_wood",
+    "stairs_down",
+    "pillar_stone",
+    "pillar_marble",
+    "moonlight_floor"
+   ],
+   "v5_ref": [
+    {
+     "id": "stairs up stone",
+     "name_ko": "돌 계단",
+     "atlas": {
+      "x": 320,
+      "y": 384,
+      "w": 48,
+      "h": 48,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 48,
+      "h": 48
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 3,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/stairs_up_stone",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "stairs_down",
+   "slug": "stairs_down",
+   "name": "내림 계단(바닥 구멍)",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "v5 규칙: 바닥의 1×1 구멍. 위 가장자리 바닥 턱(밝은 1px) 아래로 단 3~4개가 점점 어두워져 검정(void)으로. 둘레 1px 투명(어느 바닥에도 얹힌다).",
+   "palette_hint": "grave/rot 단, void",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "내림 계단",
+   "worker": "hf1",
+   "set_with": [
+    "ceil_black",
+    "ceil_plaster",
+    "exit_dark",
+    "stairs_up_wood",
+    "stairs_up_stone",
+    "pillar_stone",
+    "pillar_marble",
+    "moonlight_floor"
+   ],
+   "v5_ref": [
+    {
+     "id": "stairwell down",
+     "name_ko": "내려가는 계단통(2층)",
+     "atlas": {
+      "x": 288,
+      "y": 528,
+      "w": 48,
+      "h": 32,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 48,
+      "h": 32
+     },
+     "kind": "flat",
+     "footprint": {
+      "w": 3,
+      "h": 2
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/stairwell_down",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "pillar_stone",
+   "slug": "pillar_stone",
+   "name": "돌기둥",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 돌기둥 자리(1×3): 발 칸 = 받침(윗면 보임), 몸통 2칸 위로 벽면 높이까지, 위 끝 머리 장식. 원통 명암(밝은 덩이 왼쪽). 방 가운데 줄로 세워 복도를 나눈다.",
+   "palette_hint": "vstone/grave",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "기둥(돌)",
+   "worker": "hf1",
+   "set_with": [
+    "ceil_black",
+    "ceil_plaster",
+    "exit_dark",
+    "stairs_up_wood",
+    "stairs_up_stone",
+    "stairs_down",
+    "pillar_marble",
+    "moonlight_floor"
+   ],
+   "v5_ref": [
+    {
+     "id": "column stone",
+     "name_ko": "돌 기둥",
+     "atlas": {
+      "x": 400,
+      "y": 576,
+      "w": 16,
+      "h": 48,
+      "frames": 1,
+      "padTop": 8
+     },
+     "image": {
+      "w": 16,
+      "h": 40
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/column_stone",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "pillar_marble",
+   "slug": "pillar_marble",
+   "name": "대리석 기둥(미술관)",
+   "scene": "미술관",
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "pillar_stone 과 같은 칸·같은 꼴, 흰 대리석 + 얇은 금(tarn) 띠. 미술관 입구·홀.",
+   "palette_hint": "vmarble, tarn 띠",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "기둥(대리석)",
+   "worker": "hf1",
+   "set_with": [
+    "ceil_black",
+    "ceil_plaster",
+    "exit_dark",
+    "stairs_up_wood",
+    "stairs_up_stone",
+    "stairs_down",
+    "pillar_stone",
+    "moonlight_floor"
+   ],
+   "v5_ref": [
+    {
+     "id": "column marble",
+     "name_ko": "대리석 기둥",
+     "atlas": {
+      "x": 384,
+      "y": 576,
+      "w": 16,
+      "h": 48,
+      "frames": 1,
+      "padTop": 8
+     },
+     "image": {
+      "w": 16,
+      "h": 40
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/column_marble",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "moonlight_floor",
+   "slug": "moonlight_floor",
+   "name": "창 아래 달빛",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "창(벽면 윗줄) 아래 바닥에 비스듬히 떨어진 달빛: ? 만으로(반투명 60), 창살 십자 그림자 한 줄은 비운다, 아래로 갈수록 오른쪽으로 1px 씩 밀림(v5 창 빛처럼). 바닥 첫 줄부터 두 줄.",
+   "palette_hint": "? 만",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "frame",
+   "role": "달빛(창 빛)",
+   "worker": "hf1",
+   "set_with": [
+    "ceil_black",
+    "ceil_plaster",
+    "exit_dark",
+    "stairs_up_wood",
+    "stairs_up_stone",
+    "stairs_down",
+    "pillar_stone",
+    "pillar_marble"
+   ]
+  },
+  {
+   "id": "floor_creaky",
+   "slug": "floor_creaky",
+   "name": "삐걱 마루(낡은 판)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "v5 짙은 마루의 낡은 판: 가로 널 줄(널 폭 4px), 널 사이 틈 한 단 어둡게, 군데군데 들뜬 널 끝(한 줄 밝은 모서리), 옹이·물 얼룩 한두 점, 먼지 낀 틈. 2×2 가 사방으로 이어 붙는다(가장자리 널 줄이 맞게). 무늬가 고르게 반복되면 실패 — 한 칸 안에 들뜬 널은 하나만.",
+   "palette_hint": "rot 널, void 틈, dust 먼지",
+   "worker_v1": "h3",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "manor",
+   "role": "마루 변형(낡은 널)",
+   "worker": "h3",
+   "set_with": [
+    "floor_creaky_broken"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:dplank",
+     "name_ko": "짙은 마루",
+     "atlas": {
+      "x": 160,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    },
+    {
+     "id": "floor:boards",
+     "name_ko": "널마루",
+     "atlas": {
+      "x": 0,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-2.png"
+    }
+   ]
+  },
+  {
+   "id": "wall_paper_torn",
+   "slug": "wall_paper_torn",
+   "name": "찢긴 벽지 벽",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "v5 회벽 벽면(2줄 벽)의 저택 판: 위 1줄 반 = 빛바랜 벽지(세로 줄무늬 또는 다마스크 꽃 무늬, 무늬 반복 8px), 아래 반 줄 = 썩은 나무 징두리 판(가로 테 한 줄 밝게). 벽지 한 곳이 찢겨 너덜한 조각이 아래로 말려 있고 속 회벽(dust)이 드러난다. 칸 전부 불투명. 좌우로 이어 붙는다(무늬·징두리가 맞게).",
+   "palette_hint": "paper 벽지, damask 무늬, rot 징두리, dust 속 회벽",
+   "worker_v1": "h4",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "manor",
+   "role": "벽지 벽면 변형(찢김)",
+   "worker": "h4",
+   "set_with": [
+    "wall_paper_stain"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:plaster",
+     "name_ko": "회벽+판자 징두리",
+     "atlas": {
+      "x": 320,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "wall_paper_stain",
+   "slug": "wall_paper_stain",
+   "name": "곰팡이·얼룩 벽지 벽",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "wall_paper_torn 과 같은 벽지·징두리에 찢김 대신 위에서 흘러내린 물 얼룩(세로 번짐 두 줄)과 구석 곰팡이 점 덩이(hmoss). 두 벽을 섞어 깔 수 있게 무늬·징두리 높이가 같아야 한다. 칸 전부 불투명.",
+   "palette_hint": "paper, damask, rot, hmoss 곰팡이",
+   "worker_v1": "h4",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "manor",
+   "role": "벽지 벽면 변형(얼룩)",
+   "worker": "h4",
+   "set_with": [
+    "wall_paper_torn"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:plaster",
+     "name_ko": "회벽+판자 징두리",
+     "atlas": {
+      "x": 320,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "grandfather_clock",
+   "slug": "grandfather_clock",
+   "name": "멈춘 괘종시계",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 괘종시계의 낡은 판(같은 크기): 마호가니 몸통, 윗머리 둥근 박공, 문자판(누런 바탕·바늘 두 개가 한 시각에 멈춤), 아래 유리창 속 멈춘 추(녹청 놋쇠), 유리 한쪽 금. 먼지 쌓인 윗면 한 줄(dust).",
+   "palette_hint": "mahog 몸통, sheet 문자판, tarn 추, murk 유리, dust 윗면",
+   "worker_v1": "h3",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "manor",
+   "role": "벽 가구(시계)",
+   "worker": "h3",
+   "v5_ref": [
+    {
+     "id": "clock",
+     "name_ko": "괘종시계",
+     "atlas": {
+      "x": 464,
+      "y": 304,
+      "w": 16,
+      "h": 32,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 32
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/clock",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "candelabra_drip",
+   "slug": "candelabra_drip",
+   "name": "촛농 흘린 촛대",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 큰 촛대의 낡은 판(같은 크기): 녹청 놋쇠 세 가지 촛대, 초 셋 중 하나만 켜짐(작은 불꽃 2~3px + 둘레 빛 번짐 %), 나머지는 녹아 짧아지고 촛농이 줄기를 따라 흘러내림. 받침 둘레 바닥에 촛농 점. 움직임은 없이 한 장.",
+   "palette_hint": "tarn 촛대, wax 초·촛농, flame 불꽃, % 빛 번짐",
+   "worker_v1": "h3",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "manor",
+   "role": "세움 촛대",
+   "worker": "h3",
+   "set_with": [
+    "candle_floor"
+   ],
+   "v5_ref": [
+    {
+     "id": "candelabra",
+     "name_ko": "촛대(큰)",
+     "atlas": {
+      "x": 64,
+      "y": 208,
+      "w": 16,
+      "h": 32,
+      "frames": 12,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 32
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "wall_manor_damask",
+   "slug": "wall_manor_damask",
+   "name": "저택 벽면(다마스크 벽지)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "벽면 2×2(32×32) 칸 전부 불투명, 가로로 32px 마다 이어진다(무늬·징두리 이음이 맞게). 위에서 아래로: y0~2 몰딩(천장 테 밑 그늘은 조립기가 1~2px 더한다) → 넓은 면(방에서 가장 밝은 넓은 면, 바닥보다 두 단 밝게) → 징두리(y22~28 쯤) → y29~31 걸레받이(가장 어두운 단 + 윗줄 밝은 1px). 벽면 두 줄이 한 벽이다. 넓은 면 = 빛바랜 벽지 + 다마스크 무늬(반복 16px, 반 칸 엇갈림), 징두리 = 짙은 나무 판(패널 16px), 걸레받이 짙은 나무. 기본판 — 찢김·얼룩 없이(변형은 wall_paper_torn·stain).",
+   "palette_hint": "paper 벽지, damask 무늬, mahog 징두리·걸레받이",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "벽면(기본)",
+   "worker": "hf2",
+   "set_with": [
+    "wall_manor_stripe",
+    "wall_wood_panel",
+    "floor_manor_plank",
+    "floor_manor_carpet",
+    "floor_checker",
+    "carpet_runner"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:plaster",
+     "name_ko": "회벽+판자 징두리",
+     "atlas": {
+      "x": 320,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "wall_manor_stripe",
+   "slug": "wall_manor_stripe",
+   "name": "저택 벽면(줄무늬 벽지)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "wall_manor_damask 와 같은 몰딩·징두리·걸레받이 높이(섞어 깔 수 있게), 넓은 면만 세로 줄무늬 벽지(줄 폭 섞음 2·3·5, 색 두 단). 침실·복도용.",
+   "palette_hint": "paper/velv 줄, mahog",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "벽면(줄무늬)",
+   "worker": "hf2",
+   "set_with": [
+    "wall_manor_damask",
+    "wall_wood_panel",
+    "floor_manor_plank",
+    "floor_manor_carpet",
+    "floor_checker",
+    "carpet_runner"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:plaster",
+     "name_ko": "회벽+판자 징두리",
+     "atlas": {
+      "x": 320,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "wall_wood_panel",
+   "slug": "wall_wood_panel",
+   "name": "저택 벽면(나무 판벽)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "벽면 2×2(32×32) 칸 전부 불투명, 가로로 32px 마다 이어진다(무늬·징두리 이음이 맞게). 위에서 아래로: y0~2 몰딩(천장 테 밑 그늘은 조립기가 1~2px 더한다) → 넓은 면(방에서 가장 밝은 넓은 면, 바닥보다 두 단 밝게) → 징두리(y22~28 쯤) → y29~31 걸레받이(가장 어두운 단 + 윗줄 밝은 1px). 벽면 두 줄이 한 벽이다. 넓은 면까지 짙은 나무 판(세로 판자 + 가로 띠 두 줄, 패널 16px). 서재·식당·지하 입구. 벽지 벽보다 한 단 어둡지만 바닥보다는 밝게.",
+   "palette_hint": "mahog/rot 판, tarn 못 한두 점",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "벽면(판벽)",
+   "worker": "hf2",
+   "set_with": [
+    "wall_manor_damask",
+    "wall_manor_stripe",
+    "floor_manor_plank",
+    "floor_manor_carpet",
+    "floor_checker",
+    "carpet_runner"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:logdark",
+     "name_ko": "짙은 통나무",
+     "atlas": {
+      "x": 224,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_manor_plank",
+   "slug": "floor_manor_plank",
+   "name": "저택 마루(기본)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. v5 짙은 마루(널 폭 4px 가로 널) 결, 깨끗한 기본판(들뜬 널·구멍 없이 — 그건 floor_creaky·floor_creaky_broken).",
+   "palette_hint": "rot/vdwood 널",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "바닥(마루)",
+   "worker": "hf2",
+   "set_with": [
+    "wall_manor_damask",
+    "wall_manor_stripe",
+    "wall_wood_panel",
+    "floor_manor_carpet",
+    "floor_checker",
+    "carpet_runner"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:dplank",
+     "name_ko": "짙은 마루",
+     "atlas": {
+      "x": 160,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_manor_carpet",
+   "slug": "floor_manor_carpet",
+   "name": "저택 카펫 바닥(방 전체)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 방 전체에 깐 짙은 카펫(벨벳 자주 또는 짙은 남청 바탕 + 작은 무늬 반복 16px, 무늬는 한 단만 밝게). 침실·응접실.",
+   "palette_hint": "velv/damask 바탕·무늬",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "바닥(카펫)",
+   "worker": "hf2",
+   "set_with": [
+    "wall_manor_damask",
+    "wall_manor_stripe",
+    "wall_wood_panel",
+    "floor_manor_plank",
+    "floor_checker",
+    "carpet_runner"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:casino",
+     "name_ko": "카지노 카펫",
+     "atlas": {
+      "x": 32,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_checker",
+   "slug": "floor_checker",
+   "name": "흑백 체크 바닥",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 8px 체크(회백·짙은 회 두 색, 체크끼리 명도 차는 바닥 규칙보다 크게 허용하되 가장 밝은 단은 벽면보다 어둡게), 줄눈 1px 한 단 어둡게, 금 한 곳. 현관·욕실·마녀의 집 결.",
+   "palette_hint": "dust/grave 두 색",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "바닥(체크)",
+   "worker": "hf2",
+   "set_with": [
+    "wall_manor_damask",
+    "wall_manor_stripe",
+    "wall_wood_panel",
+    "floor_manor_plank",
+    "floor_manor_carpet",
+    "carpet_runner"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:check",
+     "name_ko": "대리석 체크",
+     "atlas": {
+      "x": 96,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "carpet_runner",
+   "slug": "carpet_runner",
+   "name": "카펫 러너(자동 타일)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    4,
+    3
+   ],
+   "canvas": [
+    64,
+    48
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "복도·전시실을 가로지르는 긴 카펫. 자동 타일 4×3(64×48): 왼쪽 3×3 칸 = 덩이 하나(왼위 모서리·위 변·오른위 모서리 / 왼 변·속·오른 변 / 아래 셋), (3,0) 칸 = 안쪽 모서리 네 조각(8px 사분면마다 그 방향 대각선만 비었을 때의 모양), 나머지 칸은 투명. 조립기가 칸마다 8px 사분면 넷을 이웃에 따라 골라 붙인다(RPG 쯔꾸르 A2 결). 변·모서리 칸의 바깥 테가 이어져 보이게, 속 칸은 사방으로 이어지게(가장자리 무늬가 맞게). 바탕 = 짙은 붉은 벨벳, 테 = 2px 금(tarn) 줄 + 바깥 1px 어두운 술, 속 무늬 작게(16px 반복). 바깥 모서리 화소는 둥글게 투명(귀퉁이 투명 규칙). v5 붉은 깔개(line:rug red)와 같은 쓰임.",
+   "palette_hint": "velv/vred 바탕, tarn 테",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "러너(자동 타일)",
+   "worker": "hf2",
+   "autotile": "quad3x3+inner",
+   "set_with": [
+    "wall_manor_damask",
+    "wall_manor_stripe",
+    "wall_wood_panel",
+    "floor_manor_plank",
+    "floor_manor_carpet",
+    "floor_checker"
+   ]
+  },
+  {
+   "id": "door_wood",
+   "slug": "door_wood",
+   "name": "나무 문(기본)",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "북쪽 벽면 두 줄에 붙는 한 칸 문: 위 2px 는 벽면이 보이게 비우고, 문틀(위·양옆 2px) + 문짝(패널 두 개, 위 패널 작게) + 놋쇠 손잡이 한 점, 맨 아래 줄이 바닥에 닿는다. 벽지 벽·판벽 어디에 붙여도 문틀이 벽과 떨어져 보이게(문틀 밝은 테). 문 아래 틈 1px 는 짙게.",
+   "palette_hint": "mahog 문, rot 틀, tarn 손잡이",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "문(기본)",
+   "worker": "hf3",
+   "set_with": [
+    "door_locked",
+    "door_double",
+    "window_night",
+    "window_curtain"
+   ]
+  },
+  {
+   "id": "door_locked",
+   "slug": "door_locked",
+   "name": "잠긴 나무 문",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "door_wood 와 같은 문(칸·틀·패널 같게) + 손잡이 둘레 쇠 자물쇠·가로 사슬 한 줄. 「잠김」이 한눈에 — 어두운 방에서도 사슬이 읽히게 밝은 단을 쓴다.",
+   "palette_hint": "mahog, tin/viron 사슬·자물쇠",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "문(잠김)",
+   "worker": "hf3",
+   "set_with": [
+    "door_wood",
+    "door_double",
+    "window_night",
+    "window_curtain"
+   ]
+  },
+  {
+   "id": "door_double",
+   "slug": "door_double",
+   "name": "저택 양문",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "door_wood 식구의 두 짝 문(현관·홀): 가운데 맞닿는 선, 짝마다 패널 둘, 손잡이 둘, 위 반원 채광창(짙은 유리) 선택. 벽면 두 줄 높이.",
+   "palette_hint": "mahog, tarn, murk 채광창",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "문(양문)",
+   "worker": "hf3",
+   "set_with": [
+    "door_wood",
+    "door_locked",
+    "window_night",
+    "window_curtain"
+   ]
+  },
+  {
+   "id": "window_night",
+   "slug": "window_night",
+   "name": "밤 창(기본)",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽면 윗줄에 거는 작은 창: 위 2px 비움, 나무 창틀 + 십자 창살, 유리는 짙은 남청(바깥 밤) + 왼위 달빛 반사 1~2 점. v5 창(window)과 같은 크기.",
+   "palette_hint": "rot 틀, murk/moon 유리",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "창(밤)",
+   "worker": "hf3",
+   "set_with": [
+    "door_wood",
+    "door_locked",
+    "door_double",
+    "window_curtain"
+   ],
+   "v5_ref": [
+    {
+     "id": "window",
+     "name_ko": "창",
+     "atlas": {
+      "x": 576,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/window",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "window_curtain",
+   "slug": "window_curtain",
+   "name": "커튼 닫힌 창",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "window_night 와 같은 틀, 짙은 벨벳 커튼 두 폭이 닫혀 가운데 1px 틈으로만 달빛. 커튼 주름 세로 줄 두세 개, 위 커튼 봉.",
+   "palette_hint": "velv 커튼, moon 틈, tarn 봉",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "창(커튼)",
+   "worker": "hf3",
+   "set_with": [
+    "door_wood",
+    "door_locked",
+    "door_double",
+    "window_night"
+   ],
+   "v5_ref": [
+    {
+     "id": "curtained window",
+     "name_ko": "커튼 창",
+     "atlas": {
+      "x": 416,
+      "y": 256,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/curtained_window",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "table_wood",
+   "slug": "table_wood",
+   "name": "나무 탁자",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "낮은 가구 시점: 윗면이 높이의 ¾(윗면 밝게·굴린 테), 앞 두께 2px + 앞다리 둘. 윗면에 촛대·책을 얹을 수 있게 비운다. v5 식탁보다 한 단 탁하게.",
+   "palette_hint": "mahog 윗면·다리",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "탁자",
+   "worker": "hf4",
+   "set_with": [
+    "chair_wood",
+    "chair_wood_back",
+    "bookshelf_manor",
+    "bed_manor",
+    "dresser",
+    "side_table",
+    "candle_table"
+   ],
+   "v5_ref": [
+    {
+     "id": "roundtable",
+     "name_ko": "원탁",
+     "atlas": {
+      "x": 224,
+      "y": 384,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/roundtable",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "chair_wood",
+   "slug": "chair_wood",
+   "name": "나무 의자(앞)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 chair S 자리: 남쪽을 보는 의자 — 등받이(위 1/3, 세로 살 둘) + 앉는 판(윗면 보임) + 앞다리 둘. chair_wood_back 과 한 식구(같은 나무·같은 크기).",
+   "palette_hint": "mahog",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "의자(남향)",
+   "worker": "hf4",
+   "set_with": [
+    "table_wood",
+    "chair_wood_back",
+    "bookshelf_manor",
+    "bed_manor",
+    "dresser",
+    "side_table",
+    "candle_table"
+   ],
+   "v5_ref": [
+    {
+     "id": "chair S",
+     "name_ko": "의자 S",
+     "atlas": {
+      "x": 112,
+      "y": 304,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "chair_wood_back",
+   "slug": "chair_wood_back",
+   "name": "나무 의자(뒤)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 chair N 자리: 북쪽(탁자)을 보는 의자 — 등받이 뒷면이 앞에 크게, 앉는 판은 등받이 뒤로 조금만. chair_wood 와 같은 나무.",
+   "palette_hint": "mahog",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "의자(북향)",
+   "worker": "hf4",
+   "set_with": [
+    "table_wood",
+    "chair_wood",
+    "bookshelf_manor",
+    "bed_manor",
+    "dresser",
+    "side_table",
+    "candle_table"
+   ],
+   "v5_ref": [
+    {
+     "id": "chair N",
+     "name_ko": "의자 N",
+     "atlas": {
+      "x": 128,
+      "y": 304,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "bookshelf_manor",
+   "slug": "bookshelf_manor",
+   "name": "책장",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "키 큰 벽 가구(북쪽 벽면 앞): 앞면이 주인공, 윗판 1~2px, 선반 세 단에 책(색 두세 가지, 한 단 탁하게, 높이 섞음, 빈 칸 하나). v5 책장 1칸 크기.",
+   "palette_hint": "mahog 틀, vred/vblue/vgreen 책(탁하게)",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "책장",
+   "worker": "hf4",
+   "set_with": [
+    "table_wood",
+    "chair_wood",
+    "chair_wood_back",
+    "bed_manor",
+    "dresser",
+    "side_table",
+    "candle_table"
+   ],
+   "v5_ref": [
+    {
+     "id": "bookshelf 1w",
+     "name_ko": "책장 1w",
+     "atlas": {
+      "x": 336,
+      "y": 304,
+      "w": 16,
+      "h": 48,
+      "frames": 1,
+      "padTop": 10
+     },
+     "image": {
+      "w": 16,
+      "h": 38
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/bookshelf_1w",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "bed_manor",
+   "slug": "bed_manor",
+   "name": "저택 침대",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 침대와 같은 칸(1×3 캔버스, 위 10px 여백 = 발 칸 1×2)·같은 시점: 머리판(나무) + 베개 + 이불(바랜 벨벳/누런 시트, 접힌 윗단) + 발판. 누운 사람 없이.",
+   "palette_hint": "mahog 틀, sheet/velv 침구",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "침대",
+   "worker": "hf4",
+   "set_with": [
+    "table_wood",
+    "chair_wood",
+    "chair_wood_back",
+    "bookshelf_manor",
+    "dresser",
+    "side_table",
+    "candle_table"
+   ],
+   "v5_ref": [
+    {
+     "id": "bed red",
+     "name_ko": "침대 빨강",
+     "atlas": {
+      "x": 240,
+      "y": 304,
+      "w": 16,
+      "h": 48,
+      "frames": 1,
+      "padTop": 10
+     },
+     "image": {
+      "w": 16,
+      "h": 38
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 1,
+      "h": 2
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "dresser",
+   "slug": "dresser",
+   "name": "서랍장",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "낮은 벽 가구: 윗면 보임(윗면에 물건 얹는 자리), 앞면 서랍 셋(손잡이 점 둘씩), 짧은 다리. v5 협탁보다 넓게 칸을 채운다.",
+   "palette_hint": "mahog, tarn 손잡이",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "서랍장",
+   "worker": "hf4",
+   "set_with": [
+    "table_wood",
+    "chair_wood",
+    "chair_wood_back",
+    "bookshelf_manor",
+    "bed_manor",
+    "side_table",
+    "candle_table"
+   ]
+  },
+  {
+   "id": "side_table",
+   "slug": "side_table",
+   "name": "협탁",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "침대 옆 작은 탁자: 윗면 보임, 서랍 하나, 가는 다리. 칸 아래쪽 2/3 안에(작게) — dresser 와 같은 나무.",
+   "palette_hint": "mahog",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "협탁",
+   "worker": "hf4",
+   "set_with": [
+    "table_wood",
+    "chair_wood",
+    "chair_wood_back",
+    "bookshelf_manor",
+    "bed_manor",
+    "dresser",
+    "candle_table"
+   ]
+  },
+  {
+   "id": "candle_table",
+   "slug": "candle_table",
+   "name": "탁상 촛대",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "탁자·서랍장 윗면에 얹는 작은 놋쇠 촛대 하나(초 한 자루, 켜진 불꽃 2~3px + 둘레 % 번짐 작게). 칸 아래 가운데에 작게 — 얹힐 때 밑변이 가구 윗면 안에 들어오게. candelabra_drip 과 같은 불꽃·초 색.",
+   "palette_hint": "tarn 촛대, wax 초, flame 불꽃, %",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "manor",
+   "role": "탁상 촛대",
+   "worker": "hf4",
+   "set_with": [
+    "table_wood",
+    "chair_wood",
+    "chair_wood_back",
+    "bookshelf_manor",
+    "bed_manor",
+    "dresser",
+    "side_table"
+   ],
+   "v5_ref": [
+    {
+     "id": "candle",
+     "name_ko": "촛대",
+     "atlas": {
+      "x": 0,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "frames": 12,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "door_gallery",
+   "slug": "door_gallery",
+   "name": "미술관 문",
+   "scene": "미술관",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "door_wood 와 같은 칸·틀 폭, 흰 벽에 붙는 밝은 회백 문틀 + 짙은 회청 문짝, 손잡이 쇠. 흰 벽 위에서 문이 먼저 보이게 문짝을 짙게.",
+   "palette_hint": "vmarble/dust 틀, grave/ward 문",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "문(미술관)",
+   "worker": "hf3"
+  },
+  {
+   "id": "wall_gallery_white",
+   "slug": "wall_gallery_white",
+   "name": "미술관 벽면(흰 벽)",
+   "scene": "미술관",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "벽면 2×2(32×32) 칸 전부 불투명, 가로로 32px 마다 이어진다(무늬·징두리 이음이 맞게). 위에서 아래로: y0~2 몰딩(천장 테 밑 그늘은 조립기가 1~2px 더한다) → 넓은 면(방에서 가장 밝은 넓은 면, 바닥보다 두 단 밝게) → 징두리(y22~28 쯤) → y29~31 걸레받이(가장 어두운 단 + 윗줄 밝은 1px). 벽면 두 줄이 한 벽이다. 넓은 면 = 조금 바랜 흰 칠(무늬 없음, 32px 마다 아주 옅은 이음 한 줄), 위 몰딩 얇게, 징두리 없이 걸레받이만 짙은 회(4px). 가장 조용한 벽 — 액자가 주인공.",
+   "palette_hint": "dust/vmarble 벽, grave 걸레받이",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "벽면(흰)",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "frame_small",
+    "plaque",
+    "pedestal",
+    "rope_barrier",
+    "bench_gallery"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:marblewall",
+     "name_ko": "대리석 벽+붉은 띠",
+     "atlas": {
+      "x": 256,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "wall_gallery_grey",
+   "slug": "wall_gallery_grey",
+   "name": "미술관 벽면(짙은 회청)",
+   "scene": "미술관",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "wall_gallery_white 와 같은 몰딩·걸레받이 높이, 넓은 면만 짙은 회청(또는 짙은 붉은) 칠 — 구역을 색으로 나누는 미술관(한 구역 한 색). 바닥보다는 밝게.",
+   "palette_hint": "grave/ward 벽, void 걸레받이",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "벽면(구역 색)",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "frame_small",
+    "plaque",
+    "pedestal",
+    "rope_barrier",
+    "bench_gallery"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:grey",
+     "name_ko": "grey",
+     "atlas": {
+      "x": 64,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_gallery_wood",
+   "slug": "floor_gallery_wood",
+   "name": "미술관 마루(밝은)",
+   "scene": "미술관",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 밝은 참나무 긴 널(널 폭 4px, 이음 드물게), 저택 마루보다 두 단 밝지만 흰 벽보다 어둡게. 광택 한 줄(왼위 빛) 드물게.",
+   "palette_hint": "vpine/vwood 널",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "바닥(마루)",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "frame_small",
+    "plaque",
+    "pedestal",
+    "rope_barrier",
+    "bench_gallery"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:plank",
+     "name_ko": "밝은 널마루",
+     "atlas": {
+      "x": 576,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_gallery_stone",
+   "slug": "floor_gallery_stone",
+   "name": "미술관 돌판 바닥",
+   "scene": "미술관",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 회색 대리석 판(16px 판, 줄눈 1px, 판마다 한 단 차이), 결 한두 줄. 홀·조각 전시실.",
+   "palette_hint": "vmarble/grave 판",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "바닥(돌판)",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "frame_landscape",
+    "frame_small",
+    "plaque",
+    "pedestal",
+    "rope_barrier",
+    "bench_gallery"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:marble",
+     "name_ko": "대리석",
+     "atlas": {
+      "x": 480,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "frame_landscape",
+   "slug": "frame_landscape",
+   "name": "풍경화 액자(가로)",
+   "scene": "미술관",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽면 윗줄에 거는 가로 액자: 금테(tarn, 윗·왼 한 단 밝게) + 속 평범한 풍경(하늘·들판 두세 덩이, 탁한 색). 이상한 것 없이 — 연출판은 2단계. 위 2px 비움.",
+   "palette_hint": "tarn 테, vgreen/vblue/paper 그림(탁하게)",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "액자(가로)",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_small",
+    "plaque",
+    "pedestal",
+    "rope_barrier",
+    "bench_gallery"
+   ],
+   "v5_ref": [
+    {
+     "id": "picture",
+     "name_ko": "그림",
+     "atlas": {
+      "x": 592,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/picture",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "frame_small",
+   "slug": "frame_small",
+   "name": "작은 액자",
+   "scene": "미술관",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "frame_landscape 와 같은 금테, 1칸 세로 초상/정물(꽃병 하나). 위 2px 비움.",
+   "palette_hint": "tarn, velv/sheet",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "액자(작은)",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "plaque",
+    "pedestal",
+    "rope_barrier",
+    "bench_gallery"
+   ],
+   "v5_ref": [
+    {
+     "id": "picture",
+     "name_ko": "그림",
+     "atlas": {
+      "x": 592,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/picture",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "plaque",
+   "slug": "plaque",
+   "name": "작품 명패",
+   "scene": "미술관",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "액자 아래(벽면 아랫줄)에 붙는 작은 명패: 칸 가운데 8×4 쯤 밝은 판 + 글씨 줄 두 개(가짜 글자 말고 짧은 가로 획), 나머지 투명.",
+   "palette_hint": "sheet/vbrass 판, void 획",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "명패",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "frame_small",
+    "pedestal",
+    "rope_barrier",
+    "bench_gallery"
+   ]
+  },
+  {
+   "id": "pedestal",
+   "slug": "pedestal",
+   "name": "전시 받침대",
+   "scene": "미술관",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "흰 사각 받침대(윗면 보임 — 위에 조각·화병을 얹는 자리), 앞면 한 단 어둡게, 오른쪽 옆면 얇게. 칸 폭의 2/3.",
+   "palette_hint": "vmarble/dust",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "받침대",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "frame_small",
+    "plaque",
+    "rope_barrier",
+    "bench_gallery"
+   ]
+  },
+  {
+   "id": "rope_barrier",
+   "slug": "rope_barrier",
+   "name": "줄 울타리(이어 붙이기)",
+   "scene": "미술관",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "놋쇠 기둥 둘(왼 끝·가운데) + 늘어진 붉은 줄(가운데가 처짐). 가로로 이어 붙이면 기둥 간격이 16px 로 맞게(오른 끝은 다음 토막의 왼 기둥). 작품 앞 1칸.",
+   "palette_hint": "tarn 기둥, vred/velv 줄",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "줄 울타리",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "frame_small",
+    "plaque",
+    "pedestal",
+    "bench_gallery"
+   ]
+  },
+  {
+   "id": "bench_gallery",
+   "slug": "bench_gallery",
+   "name": "관람 의자",
+   "scene": "미술관",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "등받이 없는 긴 의자: 윗면(가죽 짙은 색) ¾ + 앞 두께 + 다리 넷 중 둘 보임. 전시실 가운데.",
+   "palette_hint": "velv/rot 가죽, tin 다리",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "gallery",
+   "role": "관람 의자",
+   "worker": "hf5",
+   "set_with": [
+    "wall_gallery_white",
+    "wall_gallery_grey",
+    "floor_gallery_wood",
+    "floor_gallery_stone",
+    "frame_landscape",
+    "frame_small",
+    "plaque",
+    "pedestal",
+    "rope_barrier"
+   ]
+  },
+  {
+   "id": "hosp_floor",
+   "slug": "hosp_floor",
+   "name": "병원 바닥 타일(얼룩)",
+   "scene": "폐병원",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "폐병원 바닥: 가로세로 8px 격자 타일(바랜 회녹·누런 회색 두 색이 체크 아닌 한 색 + 줄눈), 군데군데 깨진 타일 하나·물 얼룩·검은 발자국 번짐. 사방으로 이어 붙는다(줄눈 격자가 맞게). 깨진 곳은 한 칸에 하나.",
+   "palette_hint": "ward/sheet 타일, grave 줄눈, void 깨진 틈",
+   "worker_v1": "h5",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "ward",
+   "role": "타일 바닥",
+   "worker": "h5",
+   "set_with": [
+    "hosp_wall"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:grey",
+     "name_ko": "회색 판석",
+     "atlas": {
+      "x": 384,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "hosp_wall",
+   "slug": "hosp_wall",
+   "name": "병원 벽(벗겨진 페인트)",
+   "scene": "폐병원",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "폐병원 벽면(2줄): 위 = 바랜 회녹 페인트 벽(벗겨져 속 회색이 드러난 얼룩 두세 곳), 아래 1/3 = 짙은 녹 징두리 페인트 + 경계 가로 줄, 발치 걸레받이. 녹물 흐른 자국 한 줄. 칸 전부 불투명, 좌우로 이어 붙는다.",
+   "palette_hint": "ward 페인트, grave 속, rust 녹물",
+   "worker_v1": "h5",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "ward",
+   "role": "페인트 벽면",
+   "worker": "h5",
+   "set_with": [
+    "hosp_floor"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:plaster",
+     "name_ko": "회벽+판자 징두리",
+     "atlas": {
+      "x": 320,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "hosp_bed",
+   "slug": "hosp_bed",
+   "name": "녹슨 병원 침대",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "위에서 약간 내려다본 쇠 병원 침대(머리 북쪽): 머리판·발판 쇠 파이프 틀(녹 점), 누렇게 바랜 시트가 구겨지고 가운데 검붉은 얼룩 작게, 베개 하나, 다리 끝 바퀴. v5 침대와 같은 칸(1×3 캔버스, 위 10px 여백 = 발 칸 1×2)·같은 시점 — v5 방에 갈아 끼울 수 있게.",
+   "palette_hint": "tin/rust 틀, sheet 시트, blood 얼룩(작게)",
+   "worker_v1": "h2",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "ward",
+   "role": "병상",
+   "worker": "h2",
+   "set_with": [
+    "hosp_screen"
+   ],
+   "v5_ref": [
+    {
+     "id": "bed green",
+     "name_ko": "침대 초록",
+     "atlas": {
+      "x": 192,
+      "y": 304,
+      "w": 16,
+      "h": 48,
+      "frames": 1,
+      "padTop": 10
+     },
+     "image": {
+      "w": 16,
+      "h": 38
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 1,
+      "h": 2
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/bed_green",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "hosp_screen",
+   "slug": "hosp_screen",
+   "name": "병상 칸막이 커튼",
+   "scene": "폐병원",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "병상 사이 칸막이: 가는 쇠 틀(바퀴 달린 받침)에 늘어진 바랜 회녹 커튼 두 폭, 한 폭은 찢겨 아래가 너덜함, 커튼 너머 사람 그림자 실루엣 하나(선택, B·C). hosp_bed 와 한 식구 — 같은 쇠 색.",
+   "palette_hint": "tin 틀, ward/sheet 커튼, void 그림자",
+   "worker_v1": "h2",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "ward",
+   "role": "칸막이 커튼",
+   "worker": "h2",
+   "set_with": [
+    "hosp_bed"
+   ]
+  },
+  {
+   "id": "iv_stand",
+   "slug": "iv_stand",
+   "name": "링거 걸이",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "바퀴 다섯 발 받침 위 가는 쇠 기둥, 맨 위 고리에 매단 링거 봉지(반투명 느낌은 밝은 테 + 속 한 단 어둡게, 속 액체는 검붉게 — 수혈 팩), 관이 아래로 늘어짐. 1px 기둥이 먹히지 않게 2px.",
+   "palette_hint": "tin 기둥, murk/sheet 봉지, blood 액체, ~ 그림자",
+   "worker_v1": "h4",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "ward",
+   "role": "링거 걸이",
+   "worker": "h4"
+  },
+  {
+   "id": "medicine_cabinet",
+   "slug": "medicine_cabinet",
+   "name": "약장(깨진 유리)",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "벽 앞에 선 흰 쇠 약장: 윗단 유리문 두 짝(하나 깨져 조각 비었다), 안 선반 세 단에 갈색·초록 약병(작은 세로 네모), 쓰러진 병 하나, 아래단 서랍 둘. 붉은 십자 표시(작게). 키 큰 가구 — 앞면이 주인공, 윗판 1~2px.",
+   "palette_hint": "ward/dust 몸통, murk 유리, vbrown(vwood)/vgreen 약병, blood 십자",
+   "worker_v1": "h3",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "ward",
+   "role": "약장(벽 가구)",
+   "worker": "h3",
+   "v5_ref": [
+    {
+     "id": "cupboard",
+     "name_ko": "서랍장",
+     "atlas": {
+      "x": 432,
+      "y": 304,
+      "w": 16,
+      "h": 32,
+      "frames": 1,
+      "padTop": 8
+     },
+     "image": {
+      "w": 16,
+      "h": 24
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/cupboard",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "door_hosp",
+   "slug": "door_hosp",
+   "name": "병실 문",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "door_wood 와 같은 칸·틀 폭, 쇠 틀 + 바랜 회녹 문짝, 위쪽에 세로 긴 작은 유리창(속은 어둡게), 가로 밀대 손잡이. 병원 벽면에 붙는다.",
+   "palette_hint": "tin 틀, ward 문, murk 유리",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "ward",
+   "role": "문(병실)",
+   "worker": "hf3",
+   "set_with": [
+    "window_barred"
+   ]
+  },
+  {
+   "id": "window_barred",
+   "slug": "window_barred",
+   "name": "쇠창살 창",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "window_night 와 같은 크기, 창 앞 세로 쇠창살 셋(유리 위에 2px 쇠), 틀은 흰 칠 쇠 또는 돌. 병원·지하.",
+   "palette_hint": "tin/viron 창살, murk/moon 유리, grave 틀",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "ward",
+   "role": "창(쇠창살)",
+   "worker": "hf3",
+   "set_with": [
+    "door_hosp"
+   ]
+  },
+  {
+   "id": "wall_hosp_tile",
+   "slug": "wall_hosp_tile",
+   "name": "병원 벽면(흰 타일 반벽)",
+   "scene": "폐병원",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "벽면 2×2(32×32) 칸 전부 불투명, 가로로 32px 마다 이어진다(무늬·징두리 이음이 맞게). 위에서 아래로: y0~2 몰딩(천장 테 밑 그늘은 조립기가 1~2px 더한다) → 넓은 면(방에서 가장 밝은 넓은 면, 바닥보다 두 단 밝게) → 징두리(y22~28 쯤) → y29~31 걸레받이(가장 어두운 단 + 윗줄 밝은 1px). 벽면 두 줄이 한 벽이다. 위 절반 = 바랜 회녹 칠(hosp_wall 과 같은 색), 아래 절반 = 흰 사각 타일(8px, 줄눈 1px) + 걸레받이. 수술실·욕실·복도. hosp_wall 과 섞어 깔 수 있게 몰딩·걸레받이 높이 같게.",
+   "palette_hint": "ward 칠, sheet/dust 타일, grave 줄눈",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "ward",
+   "role": "벽면(타일 반벽)",
+   "worker": "hf6",
+   "set_with": [
+    "floor_hosp_linoleum",
+    "bedside_cabinet",
+    "hosp_chair",
+    "ward_sink"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:ktile",
+     "name_ko": "부엌 타일 벽",
+     "atlas": {
+      "x": 128,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_hosp_linoleum",
+   "slug": "floor_hosp_linoleum",
+   "name": "병원 리놀륨 바닥",
+   "scene": "폐병원",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 긴 리놀륨 판(가로 16px 판, 이음 드물게), 바랜 회녹·누런 회 한 색 + 광택 한 줄, 닳은 자리 한 곳. hosp_floor(타일)와 방 단위로 바꿔 깐다.",
+   "palette_hint": "ward/sheet",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "ward",
+   "role": "바닥(리놀륨)",
+   "worker": "hf6",
+   "set_with": [
+    "wall_hosp_tile",
+    "bedside_cabinet",
+    "hosp_chair",
+    "ward_sink"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:grey",
+     "name_ko": "회색 판석",
+     "atlas": {
+      "x": 384,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "bedside_cabinet",
+   "slug": "bedside_cabinet",
+   "name": "병상 협탁",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "쇠 협탁(흰 칠 벗겨짐): 윗면 보임, 앞 서랍 하나 + 아래 문, 바퀴 둘. hosp_bed 옆.",
+   "palette_hint": "ward/dust 몸통, tin",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "ward",
+   "role": "협탁",
+   "worker": "hf6",
+   "set_with": [
+    "wall_hosp_tile",
+    "floor_hosp_linoleum",
+    "hosp_chair",
+    "ward_sink"
+   ]
+  },
+  {
+   "id": "hosp_chair",
+   "slug": "hosp_chair",
+   "name": "병원 쇠 의자",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "가는 쇠 다리 + 바랜 회녹 앉는 판·등받이(남향). 1px 다리가 먹히지 않게 2px.",
+   "palette_hint": "tin 다리, ward 판",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "ward",
+   "role": "의자",
+   "worker": "hf6",
+   "set_with": [
+    "wall_hosp_tile",
+    "floor_hosp_linoleum",
+    "bedside_cabinet",
+    "ward_sink"
+   ],
+   "v5_ref": [
+    {
+     "id": "chair S",
+     "name_ko": "의자 S",
+     "atlas": {
+      "x": 112,
+      "y": 304,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "ward_sink",
+   "slug": "ward_sink",
+   "name": "세면대",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "북쪽 벽면 앞 벽 가구: 흰 세면대(윗면 우묵한 대야 — 속 한 단 어둡게) + 수도꼭지 쇠, 아래 받침 기둥, 위 작은 거울은 없이. 녹물 한 줄 선택.",
+   "palette_hint": "sheet/dust 세면대, tin 꼭지, rust",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "ward",
+   "role": "세면대",
+   "worker": "hf6",
+   "set_with": [
+    "wall_hosp_tile",
+    "floor_hosp_linoleum",
+    "bedside_cabinet",
+    "hosp_chair"
+   ]
+  },
+  {
+   "id": "door_iron",
+   "slug": "door_iron",
+   "name": "철문",
+   "scene": "공통 뼈대",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "door_wood 와 같은 칸, 두꺼운 쇠 문(리벳 줄 두 줄, 녹 점 덩이 한두 곳, 가운데 작은 들여다보는 창살 창). 영안실·지하·잠긴 곳.",
+   "palette_hint": "viron/tin 문, rust 녹, void 창 속",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "cellar",
+   "role": "문(철문)",
+   "worker": "hf3"
+  },
+  {
+   "id": "wall_stone_block",
+   "slug": "wall_stone_block",
+   "name": "돌벽 벽면",
+   "scene": "지하·돌방",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "벽면 2×2(32×32) 칸 전부 불투명, 가로로 32px 마다 이어진다(무늬·징두리 이음이 맞게). 위에서 아래로: y0~2 몰딩(천장 테 밑 그늘은 조립기가 1~2px 더한다) → 넓은 면(방에서 가장 밝은 넓은 면, 바닥보다 두 단 밝게) → 징두리(y22~28 쯤) → y29~31 걸레받이(가장 어두운 단 + 윗줄 밝은 1px). 벽면 두 줄이 한 벽이다. 넓은 면 = 큰 돌 블록(가로 16·8px 엇갈림, 블록마다 한 단 차이, 윗·왼 테 밝게), 걸레받이 대신 바닥 쪽 돌이 한 단 어둡게·이끼 점 한 곳.",
+   "palette_hint": "vstone/grave 돌, hmoss 이끼",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "cellar",
+   "role": "벽면(돌)",
+   "worker": "hf7",
+   "set_with": [
+    "wall_cellar_brick",
+    "floor_stone",
+    "floor_dirt",
+    "door_cell",
+    "torch_wall",
+    "shelf_cellar"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:stone",
+     "name_ko": "돌벽",
+     "atlas": {
+      "x": 544,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "wall_cellar_brick",
+   "slug": "wall_cellar_brick",
+   "name": "벽돌 벽면(젖은)",
+   "scene": "지하·돌방",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "wall_stone_block 과 같은 높이 규칙, 작은 붉은 갈색 벽돌(8×4 엇갈림), 위에서 흐른 물 얼룩 세로 한 줄. 지하 창고·보일러실.",
+   "palette_hint": "vclay/rust 벽돌, grave 줄눈",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "cellar",
+   "role": "벽면(벽돌)",
+   "worker": "hf7",
+   "set_with": [
+    "wall_stone_block",
+    "floor_stone",
+    "floor_dirt",
+    "door_cell",
+    "torch_wall",
+    "shelf_cellar"
+   ],
+   "v5_ref": [
+    {
+     "id": "wall:rubble",
+     "name_ko": "잡석",
+     "atlas": {
+      "x": 416,
+      "y": 1720,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_stone",
+   "slug": "floor_stone",
+   "name": "판석 바닥",
+   "scene": "지하·돌방",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 불규칙 판석(판 크기 섞음 8·12·16px, 줄눈 한 단 어둡게), 판마다 한 단 차이, 금 한 줄.",
+   "palette_hint": "vstone/grave",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "cellar",
+   "role": "바닥(판석)",
+   "worker": "hf7",
+   "set_with": [
+    "wall_stone_block",
+    "wall_cellar_brick",
+    "floor_dirt",
+    "door_cell",
+    "torch_wall",
+    "shelf_cellar"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:flag",
+     "name_ko": "돌 판석",
+     "atlas": {
+      "x": 320,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_dirt",
+   "slug": "floor_dirt",
+   "name": "흙바닥",
+   "scene": "지하·돌방",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 짙은 흙(soil) 바탕 + 작은 돌 두세 덩이, 밟혀 다져진 옅은 자리 하나. 지하 굴·창고 바닥.",
+   "palette_hint": "soil, grave 돌",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "cellar",
+   "role": "바닥(흙)",
+   "worker": "hf7",
+   "set_with": [
+    "wall_stone_block",
+    "wall_cellar_brick",
+    "floor_stone",
+    "door_cell",
+    "torch_wall",
+    "shelf_cellar"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:earth",
+     "name_ko": "흙바닥",
+     "atlas": {
+      "x": 256,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "door_cell",
+   "slug": "door_cell",
+   "name": "쇠창살 문(감옥)",
+   "scene": "지하·돌방",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "door_wood 와 같은 칸, 쇠창살 문(세로 창살 넷 + 가로 띠 둘, 창살 사이는 투명 — 뒤 벽면·어둠이 보인다), 자물쇠 한 점.",
+   "palette_hint": "viron/tin, rust",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "cellar",
+   "role": "문(창살)",
+   "worker": "hf7",
+   "set_with": [
+    "wall_stone_block",
+    "wall_cellar_brick",
+    "floor_stone",
+    "floor_dirt",
+    "torch_wall",
+    "shelf_cellar"
+   ]
+  },
+  {
+   "id": "torch_wall",
+   "slug": "torch_wall",
+   "name": "벽 등잔",
+   "scene": "지하·돌방",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽면 윗줄에 거는 쇠 받침 등잔(작은 불꽃 + 둘레 % 번짐, 벽에 비친 빛). 켜진 판 하나.",
+   "palette_hint": "viron 받침, flame, %",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "cellar",
+   "role": "벽 등잔",
+   "worker": "hf7",
+   "set_with": [
+    "wall_stone_block",
+    "wall_cellar_brick",
+    "floor_stone",
+    "floor_dirt",
+    "door_cell",
+    "shelf_cellar"
+   ]
+  },
+  {
+   "id": "shelf_cellar",
+   "slug": "shelf_cellar",
+   "name": "지하 선반",
+   "scene": "지하·돌방",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "북쪽 벽 앞 썩은 나무 선반(세 단): 병·단지·상자 몇 개(색 탁하게, 빈 칸 하나), 윗판 먼지 한 줄. 키 큰 가구 — 앞면이 주인공.",
+   "palette_hint": "rot 선반, vclay/murk/vstraw 물건, dust",
+   "stage": 1,
+   "stage_ko": "1단계 기본(2판 새로)",
+   "kit": "cellar",
+   "role": "선반",
+   "worker": "hf7",
+   "set_with": [
+    "wall_stone_block",
+    "wall_cellar_brick",
+    "floor_stone",
+    "floor_dirt",
+    "door_cell",
+    "torch_wall"
+   ],
+   "v5_ref": [
+    {
+     "id": "shelf pots",
+     "name_ko": "단지 선반",
+     "atlas": {
+      "x": 608,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/shelf_pots",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "broken_hall_floor",
+   "slug": "broken_hall_floor",
+   "name": "폐교 복도 바닥(갈라진)",
+   "scene": "폐교 복도",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "폐교 복도 나무 바닥(가로 긴 널, 니스 벗겨진 얼룩), 한가운데로 금 간 널 하나와 먼지·종이 쪼가리 한 점. 학원 세트 복도 바닥의 망가진 판으로 쓰일 것 — 널 폭 4px, 사방 이어 붙기.",
+   "palette_hint": "rot 널, dust 먼지, sheet 종이",
+   "worker_v1": "h3",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "school",
+   "role": "폐교 복도 바닥(학원 세트 몫)",
+   "worker": "h3",
+   "v5_ref": [
+    {
+     "id": "floor:plank",
+     "name_ko": "밝은 널마루",
+     "atlas": {
+      "x": 576,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "night_grass",
+   "slug": "night_grass",
+   "name": "밤 풀밭",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "밤 풀밭: 짙은 푸른 녹 바탕에 풀 포기 짧은 V 획(한 단 밝게) 덩이가 몰리게(고른 점박이 금지), 흙이 드러난 점 한두 곳. 사방 이어 붙기. 어두워도 바닥 명도가 비석·나무보다 한 단 낮게.",
+   "palette_hint": "night 풀, soil 흙",
+   "worker_v1": "h1",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "outdoor",
+   "role": "밤 풀밭(야외 바닥)",
+   "worker": "h1",
+   "set_with": [
+    "night_path",
+    "grave_open"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:earth",
+     "name_ko": "흙바닥",
+     "atlas": {
+      "x": 256,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "night_path",
+   "slug": "night_path",
+   "name": "밤 흙길",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "night_grass 와 한 식구: 가운데 세로로 지나는 흙길(폭 3/4 칸 정도), 양 가장자리는 풀이 흙을 파고드는 들쭉날쭉 선, 길 위 작은 돌 두세 점. 위아래로 이어 붙는다(길 폭·위치 같게), 좌우 끝 풀은 night_grass 와 맞게.",
+   "palette_hint": "soil 길, night 풀, grave 돌",
+   "worker_v1": "h1",
+   "stage": 1,
+   "stage_ko": "1단계 기본(1판에서 옮김)",
+   "kit": "outdoor",
+   "role": "밤 흙길(야외 바닥)",
+   "worker": "h1",
+   "set_with": [
+    "night_grass",
+    "grave_open"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:earth",
+     "name_ko": "흙바닥",
+     "atlas": {
+      "x": 256,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "floor_creaky_broken",
+   "slug": "floor_creaky_broken",
+   "name": "꺼진 마루(구멍)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "floor_creaky 와 같은 널 줄 위에 가운데가 부서져 내려앉은 구멍 하나(가장자리 널이 부러진 톱니 끝, 구멍 속은 void 로 깊게, 위쪽 가장자리 아래로 널 두께 한 줄 보임). 바깥 테두리는 floor_creaky 와 그대로 이어진다. 밟으면 떨어지는 함정 칸.",
+   "palette_hint": "rot 널, void 구멍, dust",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "set_with": [
+    "floor_creaky"
+   ],
+   "v5_ref": [
+    {
+     "id": "floor:dplank",
+     "name_ko": "짙은 마루",
+     "atlas": {
+      "x": 160,
+      "y": 1656,
+      "w": 32,
+      "h": 32
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "portrait_eyes",
+   "slug": "portrait_eyes",
+   "name": "초상화(눈이 따라오는)",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "금테(녹청 낀 놋쇠) 세로 액자 속 여인 초상: 어두운 배경, 창백한 얼굴 타원, 검은 머리, 두 눈만 또렷한 점(흰자 1px). 액자 테 윗변·왼변 한 단 밝게. v5 그림(1×1)을 1×2 로 키운 판 — 사용자는 큰 것을 원했다.",
+   "palette_hint": "tarn 테, bisque 얼굴, velv/damask 배경, void 머리",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1",
+   "set_with": [
+    "portrait_slashed"
+   ],
+   "v5_ref": [
+    {
+     "id": "picture",
+     "name_ko": "그림",
+     "atlas": {
+      "x": 592,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/picture",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "portrait_slashed",
+   "slug": "portrait_slashed",
+   "name": "찢긴 초상화",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "portrait_eyes 와 같은 액자·같은 크기, 캔버스가 칼로 X 자로 찢겨 속 어둠이 보이고 얼굴 부분이 떨어져 늘어짐. 두 초상을 벽에 나란히 걸면 한 식구로 보이게 액자는 같게.",
+   "palette_hint": "tarn 테, bisque, velv, void 찢긴 속",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1",
+   "set_with": [
+    "portrait_eyes"
+   ],
+   "v5_ref": [
+    {
+     "id": "picture",
+     "name_ko": "그림",
+     "atlas": {
+      "x": 592,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/picture",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "mirror_cracked",
+   "slug": "mirror_cracked",
+   "name": "금 간 거울",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 화장대 거울 자리의 낡은 판: 나무 틀 거울(윗부분 둥근 아치), 거울 속은 탁한 청회(murk) + 한가운데서 방사형으로 갈라진 금(1px 밝은 선 + 한 단 어두운 선 짝), 한 조각이 떨어져 비었다. 아래 작은 서랍 받침. 거울 속에 흐릿한 사람 그림자 하나(선택, B·C 에서).",
+   "palette_hint": "mahog 틀, murk 거울, moon 금 반짝임, void 빠진 조각",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "v5_ref": [
+    {
+     "id": "vanity mirror",
+     "name_ko": "화장대",
+     "atlas": {
+      "x": 368,
+      "y": 208,
+      "w": 16,
+      "h": 32,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 32
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/vanity_mirror",
+     "file": "ref-v5-1.png"
+    },
+    {
+     "id": "tailor mirror",
+     "name_ko": "전신 거울",
+     "atlas": {
+      "x": 96,
+      "y": 304,
+      "w": 16,
+      "h": 32,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 32
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/tailor_mirror",
+     "file": "ref-v5-2.png"
+    }
+   ]
+  },
+  {
+   "id": "doll_sitting",
+   "slug": "doll_sitting",
+   "name": "앉은 인형",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "바닥에 다리를 뻗고 앉은 도자기 인형(마녀의 집 결): 창백한 얼굴이 칸 윗부분 절반을 차지할 만큼 크게, 큰 검은 눈 두 점, 금발 또는 검은 머리 덩이, 빛바랜 드레스(velv 또는 바랜 파랑). 목이 살짝 기울어짐. 1×1 에서 「인형」 으로 읽히는 게 먼저 — 머리를 과장.",
+   "palette_hint": "bisque 얼굴, velv/vblue 드레스, vyellow/void 머리, void 눈",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1",
+   "set_with": [
+    "doll_shelf"
+   ],
+   "v5_ref": [
+    {
+     "id": "shelf:toy",
+     "name_ko": "인형 벽 선반",
+     "atlas": {
+      "x": 112,
+      "y": 48,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "doll_shelf",
+   "slug": "doll_shelf",
+   "name": "인형 진열장",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 인형 진열장의 낡은 판(같은 크기): 유리문 진열장 안 선반 세 단에 작은 인형 머리들(창백한 점 덩이 + 눈 점)이 줄지어 이쪽을 봄, 유리 한 장 깨짐, 틀 먼지.",
+   "palette_hint": "mahog 틀, murk 유리, bisque 인형, dust",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1",
+   "set_with": [
+    "doll_sitting"
+   ],
+   "v5_ref": [
+    {
+     "id": "cabinet:toy",
+     "name_ko": "인형 진열장",
+     "atlas": {
+      "x": 128,
+      "y": 48,
+      "w": 16,
+      "h": 32,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 32
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "piano_dusty",
+   "slug": "piano_dusty",
+   "name": "먼지 덮인 피아노",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 피아노의 낡은 판(같은 칸 2×2, 위 8px 여백): 업라이트 피아노, 뚜껑 열린 건반(흰 건반 줄 사이 검은 건반, 몇 개 빠짐), 윗면 먼지 층(밝은 회백 한 줄 + 손가락 자국), 악보대에 누런 악보 한 장, 촛대 하나. 몸통 앞면이 주인공.",
+   "palette_hint": "mahog 몸통, sheet/dust 건반·먼지, void 검은 건반, tarn 촛대",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1",
+   "v5_ref": [
+    {
+     "id": "piano",
+     "name_ko": "피아노",
+     "atlas": {
+      "x": 512,
+      "y": 176,
+      "w": 32,
+      "h": 32,
+      "frames": 1,
+      "padTop": 8
+     },
+     "image": {
+      "w": 32,
+      "h": 24
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 2,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/piano",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "sofa_sheet",
+   "slug": "sofa_sheet",
+   "name": "흰 천 덮인 소파",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 소파 자리(2×1)의 폐가 판: 소파 전체를 흰 천이 덮어 윤곽만 보인다(등받이·팔걸이 둥근 덩이), 천 주름 세로 줄 두세 개, 아래 끝이 바닥에 늘어짐, 천 밑으로 다리 끝 하나 보임. 천은 회백 먼지색 — 새하얗게 빛나지 않게.",
+   "palette_hint": "dust 천, rot 다리, ~ 그림자",
+   "worker_v1": "h4",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h4",
+   "set_with": [
+    "armchair_sheet"
+   ],
+   "v5_ref": [
+    {
+     "id": "sofa",
+     "name_ko": "소파",
+     "atlas": {
+      "x": 320,
+      "y": 208,
+      "w": 32,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 32,
+      "h": 16
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 2,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/sofa",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "armchair_sheet",
+   "slug": "armchair_sheet",
+   "name": "천 덮인 안락의자",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "sofa_sheet 와 한 식구: v5 안락의자 자리(1×1)에 흰 천을 씌운 판. 등받이가 높은 덩이, 주름 한두 줄. 소파와 같은 천 명암 방식.",
+   "palette_hint": "dust 천, rot 다리",
+   "worker_v1": "h4",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h4",
+   "set_with": [
+    "sofa_sheet"
+   ],
+   "v5_ref": [
+    {
+     "id": "armchair",
+     "name_ko": "안락의자",
+     "atlas": {
+      "x": 304,
+      "y": 208,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/armchair",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "canopy_bed_rot",
+   "slug": "canopy_bed_rot",
+   "name": "낡은 닫집 침대",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 닫집 침대의 낡은 판(같은 칸 2×3): 네 기둥, 윗 닫집 천이 찢겨 한쪽이 늘어짐(너덜한 끝), 침구는 누렇게 바래고 가운데 움푹 꺼짐, 베개 하나 바닥에 떨어짐(선택). 거미줄 한 귀퉁이.",
+   "palette_hint": "mahog 기둥, velv 닫집, sheet 침구, dust 거미줄",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5",
+   "v5_ref": [
+    {
+     "id": "canopy bed",
+     "name_ko": "닫집 침대",
+     "atlas": {
+      "x": 448,
+      "y": 208,
+      "w": 32,
+      "h": 48,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 32,
+      "h": 48
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 2,
+      "h": 2
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/canopy_bed",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "wardrobe_ajar",
+   "slug": "wardrobe_ajar",
+   "name": "반쯤 열린 옷장",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 옷장의 낡은 판(같은 크기): 두 짝 문 중 오른쪽이 살짝 열려 틈 속이 새까맣다(void 세로 줄 2~3px), 틈 속에 흰 눈 두 점(C 에서만, 선택). 윗면 먼지, 문고리 녹청 놋쇠.",
+   "palette_hint": "mahog 몸통, void 틈, tarn 문고리, dust",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5",
+   "v5_ref": [
+    {
+     "id": "wardrobe",
+     "name_ko": "옷장",
+     "atlas": {
+      "x": 448,
+      "y": 304,
+      "w": 16,
+      "h": 32,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 32
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/wardrobe",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "bookshelf_fallen",
+   "slug": "bookshelf_fallen",
+   "name": "쓰러진 책장·흩어진 책",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 책장 2칸이 앞으로 기울어 넘어진 판: 책장 옆면·윗판이 비스듬히 보이고, 바닥에 쏟아진 책 여러 권(색 다른 작은 네모, 펼쳐진 책 하나). 위에서 약간 내려다본 각을 지켜라 — 누운 책장은 윗판이 아니라 등판이 보인다.",
+   "palette_hint": "mahog 책장, vred/vblue/vgreen 책(한 단 어둡게), sheet 펼친 책장",
+   "worker_v1": "h4",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h4",
+   "v5_ref": [
+    {
+     "id": "bookshelf 2w",
+     "name_ko": "책장 2w",
+     "atlas": {
+      "x": 352,
+      "y": 304,
+      "w": 32,
+      "h": 48,
+      "frames": 1,
+      "padTop": 10
+     },
+     "image": {
+      "w": 32,
+      "h": 38
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 2,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/bookshelf_2w",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "candle_floor",
+   "slug": "candle_floor",
+   "name": "바닥 촛불 무리",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "바닥에 직접 세운 짧은 초 셋~넷(높이 다르게), 둘은 켜짐, 촛농이 바닥에 고임, 둘레 바닥에 빛 번짐(%). candelabra_drip 과 같은 불꽃 모양·같은 초 색.",
+   "palette_hint": "wax 초, flame 불꽃, % 빛 번짐",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "set_with": [
+    "candelabra_drip"
+   ],
+   "v5_ref": [
+    {
+     "id": "candle",
+     "name_ko": "촛대",
+     "atlas": {
+      "x": 0,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "frames": 12,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "floor",
+     "footprint": {
+      "w": 1,
+      "h": 1
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "fireplace_cold",
+   "slug": "fireplace_cold",
+   "name": "꺼진 벽난로",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 벽난로의 낡은 판(같은 칸 2×2): 돌 틀·나무 선반, 아궁이 속 새까만 재와 타다 남은 장작, 아궁이 입구 위 그을음 번짐, 선반 위 먼지와 쓰러진 액자 하나. 불이 없다 — 움직임 없음.",
+   "palette_hint": "vstone 틀, rot 선반, void 아궁이, dust 재·먼지",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "v5_ref": [
+    {
+     "id": "fireplace",
+     "name_ko": "벽난로",
+     "atlas": {
+      "x": 192,
+      "y": 352,
+      "w": 32,
+      "h": 32,
+      "frames": 12,
+      "padTop": 0
+     },
+     "image": {
+      "w": 32,
+      "h": 32
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 2,
+      "h": 1
+     },
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "chandelier_fallen",
+   "slug": "chandelier_fallen",
+   "name": "떨어진 샹들리에",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "천장에서 떨어져 바닥에 박힌 샹들리에: 휘어진 놋쇠 고리(원이 찌그러진 타원), 흩어진 유리 방울(밝은 점 여럿), 끊어진 사슬 한 줄이 위로 뻗음, 바닥 널이 둘레에 갈라짐(선택). 바닥 기물 — 윗면이 보이는 각.",
+   "palette_hint": "tarn 고리·사슬, moon/murk 유리 방울, void 갈라진 틈",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2"
+  },
+  {
+   "id": "stairs_broken",
+   "slug": "stairs_broken",
+   "name": "부서진 나무 계단",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "v5 나무 계단(3×3)의 낡은 판: 같은 폭·같은 단 수, 가운데 한두 단이 부러져 구멍(void), 난간 기둥 하나 빠짐, 단 끝 먼지. 올라가는 길이 한쪽으로만 남았다는 게 읽히게.",
+   "palette_hint": "rot 단, mahog 난간, void 구멍, dust",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1",
+   "v5_ref": [
+    {
+     "id": "stairs up wood",
+     "name_ko": "나무 계단",
+     "atlas": {
+      "x": 368,
+      "y": 384,
+      "w": 48,
+      "h": 48,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 48,
+      "h": 48
+     },
+     "kind": "wall",
+     "footprint": {
+      "w": 3,
+      "h": 1
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/stairs_up_wood",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "door_boarded",
+   "slug": "door_boarded",
+   "name": "판자로 못질한 문",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽에 붙은 나무 문 위를 판자 두세 장이 X 자·가로로 가로막고 못(1px 밝은 점)이 박힘. 문 틈 아래로 빛이 새지 않고 새까맣다. 벽면(2줄) 앞에 붙는 걸이 — 벽 칸 높이 2줄에 맞춘다.",
+   "palette_hint": "mahog 문, rot 판자, tin 못, void 틈",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2"
+  },
+  {
+   "id": "curtain_torn",
+   "slug": "curtain_torn",
+   "name": "찢긴 커튼 창",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "v5 커튼 창(1×1)을 1×2 로 키운 낡은 판: 밤 창(달빛 청회 유리, 창살 십자), 양쪽 벨벳 커튼 중 하나가 찢겨 반쯤 떨어짐, 창 아래 벽에 떨어지는 달빛 번짐(?) 한두 줄.",
+   "palette_hint": "velv 커튼, moon 창빛, rot 창틀, ? 달빛",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1",
+   "v5_ref": [
+    {
+     "id": "curtained window",
+     "name_ko": "커튼 창",
+     "atlas": {
+      "x": 416,
+      "y": 256,
+      "w": 16,
+      "h": 16,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 16,
+      "h": 16
+     },
+     "kind": "hang",
+     "footprint": {
+      "w": 1,
+      "h": 0
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/curtained_window",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "rug_blood",
+   "slug": "rug_blood",
+   "name": "핏자국 양탄자",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "v5 붉은 양탄자(3×2)의 낡은 판: 가장자리 술 장식, 빛바랜 무늬, 한가운데 오래 마른 검붉은 얼룩 한 덩이(blood 어두운 쪽 + 가장자리 $), 한쪽 모서리가 말려 올라감. 얼룩은 양탄자 면적의 1/6 정도로.",
+   "palette_hint": "velv 바탕, damask 무늬, blood/$ 얼룩",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2",
+   "v5_ref": [
+    {
+     "id": "rug red",
+     "name_ko": "붉은 양탄자",
+     "atlas": {
+      "x": 272,
+      "y": 384,
+      "w": 48,
+      "h": 32,
+      "frames": 1,
+      "padTop": 0
+     },
+     "image": {
+      "w": 48,
+      "h": 32
+     },
+     "kind": "flat",
+     "footprint": {
+      "w": 3,
+      "h": 2
+     },
+     "pick_dir": "tiledata/hand-interior/pick/candidates/rug_red",
+     "file": "ref-v5-1.png"
+    }
+   ]
+  },
+  {
+   "id": "music_box",
+   "slug": "music_box",
+   "name": "오르골",
+   "scene": "낡은 서양 저택",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "작은 나무 상자 오르골: 뚜껑이 열려 안쪽 거울·태엽 손잡이(옆), 뚜껑 위 작은 발레리나 인형(한 점 기둥 + 치마 점). 윗면이 보이는 각. 탁자 위에 올려도 되는 크기로 칸 아래쪽 2/3 안에.",
+   "palette_hint": "mahog 상자, murk 거울, tarn 태엽, bisque 인형",
+   "worker_v1": "h4",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h4"
+  },
+  {
+   "id": "wheelchair",
+   "slug": "wheelchair",
+   "name": "휠체어",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "빈 휠체어(남쪽을 향해 살짝 비스듬히): 큰 바퀴 두 개가 세로 타원, 앉는 천(바랜 남색 또는 회녹), 등받이 손잡이 두 개, 발판. 한쪽 바퀴가 기울어 녹슮. 1×1 에서 휠체어로 읽혀야 한다 — 안 되면 1×2 로 키우자고 보고.",
+   "palette_hint": "tin/rust 틀, ward/vblue 천, void 바퀴 속",
+   "worker_v1": "h4",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h4"
+  },
+  {
+   "id": "operating_table",
+   "slug": "operating_table",
+   "name": "수술대·무영등",
+   "scene": "폐병원",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "위에서 약간 내려다본 수술대: 가운데 기둥 받침 위 긴 판(윗면이 주인공), 위에 누런 천이 덮인 사람 윤곽(선택) 또는 검붉은 얼룩 판, 머리 쪽 위에 둥근 무영등(가는 팔로 매단 원판, 전구 점 여러 개 — 꺼짐). 수술 도구 수레(instrument_tray)와 한 식구.",
+   "palette_hint": "tin 대·등, sheet 천, blood 얼룩, murk 등 유리",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5",
+   "set_with": [
+    "instrument_tray"
+   ]
+  },
+  {
+   "id": "instrument_tray",
+   "slug": "instrument_tray",
+   "name": "수술 도구 수레",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "바퀴 달린 쇠 수레, 윗판에 쟁반 — 메스·가위·집게(1px 밝은 선 두세 개), 피 묻은 거즈 한 덩이. 윗면이 칸 높이의 절반 이상 보이게.",
+   "palette_hint": "tin 수레·도구, sheet 거즈, blood 얼룩",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5",
+   "set_with": [
+    "operating_table"
+   ]
+  },
+  {
+   "id": "morgue_drawer",
+   "slug": "morgue_drawer",
+   "name": "영안실 냉동 서랍",
+   "scene": "폐병원",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "벽에 박힌 쇠 냉동 서랍 2×2 칸(네 문, 문마다 손잡이·이름표 판), 그중 하나가 반쯤 열려 흰 천 덮인 발끝이 삐져나옴. 칸 전부 불투명(벽면 블록). 차가운 쇠 광택 = 윗테 한 줄 밝게.",
+   "palette_hint": "tin 문, grave 벽, sheet 천, bisque 발끝(작게)",
+   "worker_v1": "h4",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h4"
+  },
+  {
+   "id": "xray_viewer",
+   "slug": "xray_viewer",
+   "name": "엑스레이 판독기",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽에 붙은 판독 상자: 흰 빛 판(깜빡이다 멈춘 듯 얼룩진 밝기) 위에 흉부 엑스레이 필름 한 장(갈비뼈 곡선 3~4줄, 어두운 바탕에 밝은 선). 상자 테 쇠색.",
+   "palette_hint": "tin 테, moon/dust 빛판, void 필름 바탕",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5"
+  },
+  {
+   "id": "specimen_jar",
+   "slug": "specimen_jar",
+   "name": "표본 병",
+   "scene": "폐병원",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "탁한 초록 액체가 든 큰 유리 병(둥근 몸통, 쇠 뚜껑) 속에 흐릿한 무언가(눈 하나 또는 작은 손 실루엣), 병 옆 작은 병 하나. 유리 가장자리 밝은 테 한 줄, 속은 어둡게.",
+   "palette_hint": "murk 유리·액체, tin 뚜껑, bisque 속 표본",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2"
+  },
+  {
+   "id": "broken_desk",
+   "slug": "broken_desk",
+   "name": "부서진 책상·의자",
+   "scene": "폐교 복도",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "학생 책상 하나(쇠 다리 + 나무 윗판)가 한 다리가 부러져 기울고, 의자가 뒤집혀 옆에 쓰러짐. 윗판에 칼 낙서 줄. 윗면이 칸 높이의 ¾ 가량 보이는 낮은 가구 시점.",
+   "palette_hint": "rot 윗판, tin 다리, void 그늘",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1"
+  },
+  {
+   "id": "broken_blackboard",
+   "slug": "broken_blackboard",
+   "name": "핏글씨 칠판",
+   "scene": "폐교 복도",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "교실 벽 칠판(짙은 녹 판, 나무 테, 아래 분필 받침): 판 위 분필 낙서가 지워지다 만 흰 번짐 + 붉은 글씨 「나가」 두 자(획 2px, blood 밝은 쪽, 끝이 아래로 흘러내림). 칠판 한 귀퉁이 금. 글자 외 가짜 글자 금지.",
+   "palette_hint": "board 판, rot 테, dust 분필, blood 글씨",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5"
+  },
+  {
+   "id": "broken_locker",
+   "slug": "broken_locker",
+   "name": "찌그러진 사물함",
+   "scene": "폐교 복도",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "복도 쇠 사물함(세로 두 칸 문, 문마다 통풍 가로 줄 세 개), 윗칸 문이 찌그러져 반쯤 열리고 안이 새까맣다, 녹·긁힌 자국. 키 큰 가구 — 앞면 주인공, 윗판 1~2px.",
+   "palette_hint": "tin 문, rust 녹, void 속",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5"
+  },
+  {
+   "id": "broken_window",
+   "slug": "broken_window",
+   "name": "깨진 복도 창",
+   "scene": "폐교 복도",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "복도 벽의 가로 긴 창(창틀 두 짝, 가운데 세로 틀): 왼쪽 유리 한 장이 깨져 뾰족한 구멍 가장자리만 남음, 밖은 밤(짙은 청), 오른쪽 유리엔 금 한 줄. 창 아래 벽에 달빛 번짐(?) 한 줄.",
+   "palette_hint": "tin/rot 창틀, murk 유리, night/void 밖, ? 달빛",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2"
+  },
+  {
+   "id": "broken_anatomy",
+   "slug": "broken_anatomy",
+   "name": "반쯤 부서진 인체 모형",
+   "scene": "폐교 복도",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "과학실 인체 반신 모형(받침대 위 서 있는 몸): 왼쪽 반은 살결, 오른쪽 반은 근육·내장 색 덩이, 팔 하나 빠져 발치에 떨어짐, 한쪽 눈알 없음. 실루엣으로 사람 모형이 읽히게 머리·어깨 또렷하게.",
+   "palette_hint": "bisque 살결, blood/velv 근육, vgreen/vyellow 내장 점, tin 받침",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1"
+  },
+  {
+   "id": "grave_open",
+   "slug": "grave_open",
+   "name": "파헤친 무덤",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "description": "풀밭 위에 파헤쳐진 무덤 구덩이(세로 긴 네모, 속 void 로 깊게, 가장자리 흙 더미가 위쪽에 쌓임), 옆에 꽂힌 삽 하나(선택, C). 바깥은 night_grass 와 이어지는 풀 바탕 — 칸 전부 불투명.",
+   "palette_hint": "soil 흙, void 구덩이, night 풀, tin 삽",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1",
+   "set_with": [
+    "night_grass",
+    "night_path"
+   ]
+  },
+  {
+   "id": "gravestone_cross",
+   "slug": "gravestone_cross",
+   "name": "십자 비석",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "돌 십자 비석: 위 십자(가로 팔이 양끝이 살짝 넓어짐), 아래 두꺼운 받침, 윗면·왼면 한 단 밝게, 금 한 줄, 이끼 점, 발치 풀 한 포기. 살짝 기울어도 좋다(B·C).",
+   "palette_hint": "grave 돌, hmoss 이끼, night 풀, ~ 그림자",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5",
+   "set_with": [
+    "gravestone_round"
+   ]
+  },
+  {
+   "id": "gravestone_round",
+   "slug": "gravestone_round",
+   "name": "둥근 비석(금 간)",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "gravestone_cross 와 한 식구: 위가 둥근 판 비석, 새긴 글씨 자국 가로 줄 두세 개(읽히는 글자 없이), 대각선으로 갈라진 금, 윗면 이끼. 같은 돌 명암 방식.",
+   "palette_hint": "grave 돌, hmoss 이끼",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5",
+   "set_with": [
+    "gravestone_cross"
+   ]
+  },
+  {
+   "id": "dead_tree",
+   "slug": "dead_tree",
+   "name": "죽은 나무",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "잎 없는 고목: 굵은 줄기가 아래 가운데 칸에서 올라와 두세 갈래로 비틀려 갈라지고, 가지 끝이 손가락처럼 가늘게 뻗음(1px 끝은 2px 가지에서만), 줄기에 옹이 구멍 하나(void), 매달린 끊어진 밧줄(선택, C). 실루엣이 달빛 하늘 앞에서 읽히게 가지를 겹치지 않게 벌린다. 발치 뿌리 두세 갈래.",
+   "palette_hint": "rot/soil 줄기, void 옹이, ~ 그림자",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2"
+  },
+  {
+   "id": "iron_fence",
+   "slug": "iron_fence",
+   "name": "녹슨 쇠 울타리(이어 붙이기)",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "묘지 쇠 울타리 한 토막: 세로 창살(끝이 창촉 모양) 여섯~여덟 개, 위아래 가로 띠, 한 창살이 휘어짐, 녹 점. 좌우로 이어 붙는다(양 끝 가로 띠 높이 같게). 사람 가슴 높이.",
+   "palette_hint": "tin/rust 쇠, ~ 그림자",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5",
+   "set_with": [
+    "cemetery_gate"
+   ]
+  },
+  {
+   "id": "cemetery_gate",
+   "slug": "cemetery_gate",
+   "name": "묘지 쇠문",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "iron_fence 와 한 식구: 돌 기둥 둘(위에 둥근 머리 장식) 사이 두 짝 쇠문, 위 반원 아치에 소용돌이 장식, 한 짝이 안쪽으로 반쯤 열림, 문에 감긴 쇠사슬 끊어져 늘어짐. 가운데 칸이 지나갈 길.",
+   "palette_hint": "grave 기둥, tin/rust 문, tarn 사슬",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5",
+   "set_with": [
+    "iron_fence"
+   ]
+  },
+  {
+   "id": "old_well",
+   "slug": "old_well",
+   "name": "낡은 우물",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "description": "돌을 쌓은 둥근 우물: 위에서 약간 내려다봐서 우물 입이 가로 타원(속 void 로 새까맣게), 돌 둘레 이끼, 썩은 나무 뚜껑 판 하나가 옆에 비스듬히 기대어 있음, 두레박 줄 끊어짐. 둥근 돌 윗면 한 줄 밝게.",
+   "palette_hint": "grave 돌, hmoss 이끼, void 속, rot 뚜껑",
+   "worker_v1": "h1",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h1"
+  },
+  {
+   "id": "mausoleum",
+   "slug": "mausoleum",
+   "name": "납골당 외관",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    4,
+    4
+   ],
+   "canvas": [
+    64,
+    64
+   ],
+   "layer": "facade",
+   "layer_ko": "건물 외관 블록(불투명 허용)",
+   "description": "작은 돌 납골당 앞면: 삼각 박공 지붕(돌 처마), 기둥 둘, 가운데 녹슨 쇠문(반쯤 열려 속 어둠), 문 위 새긴 판(글자 없는 줄), 계단 두 단, 벽 금·이끼·담쟁이 줄기. 칸 맨 아래 줄 = 풀밭과 만나는 발치.",
+   "palette_hint": "grave 돌, tin/rust 문, void 속, hmoss 이끼, night 담쟁이",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2"
+  },
+  {
+   "id": "fog_patch",
+   "slug": "fog_patch",
+   "name": "안개 덮개",
+   "scene": "밤 숲·묘지",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "over",
+   "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+   "description": "바닥 위를 떠도는 안개 덩이: 반투명(+ 옅음 · ! 짙음 둘만) 가로로 긴 구름 덩이 둘셋, 가장자리는 + 로 성기게 흩어짐, 속은 ! 한 덩이. 칸 가장자리에 걸리지 않게 안쪽에서 끝나(여러 장 흩어 놓는다). 불투명 색 금지.",
+   "palette_hint": "+ ! 안개",
+   "worker_v1": "h4",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h4"
+  },
+  {
+   "id": "blood_pool",
+   "slug": "blood_pool",
+   "name": "핏자국 웅덩이",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "바닥에 고인 피: 가운데 짙은 덩이(blood 2~3단) + 가장자리 번짐($), 윗 가장자리 반짝임 1px 한두 점, 튄 방울 두세 점. 둥근 도장처럼 대칭이면 실패 — 한쪽으로 흘러 기운 모양.",
+   "palette_hint": "blood, $ 번짐",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "set_with": [
+    "blood_trail",
+    "handprints_wall",
+    "writing_wall",
+    "footprints"
+   ]
+  },
+  {
+   "id": "blood_trail",
+   "slug": "blood_trail",
+   "name": "끌린 핏자국(이어 붙이기)",
+   "scene": "연출",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "blood_pool 과 한 식구: 무언가를 끌고 간 핏자국 — 가로로 긴 붓 끌림 두세 줄(끊겼다 이어짐), 좌우 끝이 같은 높이라 가로로 이어 붙는다. 같은 피 색·같은 번짐.",
+   "palette_hint": "blood, $",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "set_with": [
+    "blood_pool",
+    "handprints_wall",
+    "writing_wall",
+    "footprints"
+   ]
+  },
+  {
+   "id": "handprints_wall",
+   "slug": "handprints_wall",
+   "name": "벽 핏빛 손자국",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽에 찍힌 핏빛 손바닥 자국 둘(다섯 손가락이 읽히게, 손바닥 5×5 + 손가락 1px 줄), 하나는 아래로 끌려 내려감. 벽 걸이 — 투명 배경.",
+   "palette_hint": "blood, $",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "set_with": [
+    "blood_pool",
+    "blood_trail",
+    "writing_wall",
+    "footprints"
+   ]
+  },
+  {
+   "id": "writing_wall",
+   "slug": "writing_wall",
+   "name": "벽 핏글씨",
+   "scene": "연출",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "wall",
+   "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+   "description": "벽에 핏빛 큰 글씨 「살려줘」 가 무리면 「도와」 두 자 또는 「돌아가」 — 2칸 폭에 들어가는 만큼만(획 2px), 획 끝이 아래로 흘러내린 줄. 투명 배경. broken_blackboard 글씨와 같은 피 색.",
+   "palette_hint": "blood, $",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "set_with": [
+    "blood_pool",
+    "blood_trail",
+    "handprints_wall",
+    "footprints"
+   ]
+  },
+  {
+   "id": "footprints",
+   "slug": "footprints",
+   "name": "핏빛 발자국",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "맨발 발자국 두 개(왼발·오른발 엇갈려 위로 걸어감, 발가락 점 다섯), 점점 옅어지게 하나는 $ 만으로. 이어 깔면 발자국 길이 되도록 칸 안에서 끝난다.",
+   "palette_hint": "blood, $",
+   "worker_v1": "h3",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h3",
+   "set_with": [
+    "blood_pool",
+    "blood_trail",
+    "handprints_wall",
+    "writing_wall"
+   ]
+  },
+  {
+   "id": "note_paper",
+   "slug": "note_paper",
+   "name": "떨어진 쪽지",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "바닥에 떨어진 누런 쪽지 한 장(살짝 접힌 모서리, 글씨 줄 두세 개는 가짜 글자 말고 짧은 가로 획), 조사할 수 있다는 표시로 한쪽 모서리 반짝임 1px. 쪽지 크기 8×7 정도로 또렷하게.",
+   "palette_hint": "sheet 종이, void 글씨 획, dust",
+   "worker_v1": "h4",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h4"
+  },
+  {
+   "id": "broken_glass",
+   "slug": "broken_glass",
+   "name": "깨진 유리 조각",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "description": "바닥에 흩어진 유리 조각: 뾰족한 삼각 조각 네다섯(가장자리 밝은 1px + 속 탁한 청회), 크기 다르게, 한쪽으로 몰림, 한 조각 끝에 피 한 점(선택).",
+   "palette_hint": "murk 조각, moon 반짝임, blood 한 점",
+   "worker_v1": "h5",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h5"
+  },
+  {
+   "id": "cobweb_corner",
+   "slug": "cobweb_corner",
+   "name": "거미줄(모서리)",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "over",
+   "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+   "description": "방 왼쪽 위 모서리에 친 거미줄: 모서리에서 부채꼴로 뻗은 방사 줄 넷, 그 사이 늘어진 호 줄 두세 겹(1px, dust 밝은 단), 한 줄 끊어져 늘어짐. 투명 배경. 오른쪽 모서리용은 거울로 찍지 말고 따로 그린다(빛 방향 유지) — 여유 있으면 D 로.",
+   "palette_hint": "dust 거미줄",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2",
+   "set_with": [
+    "cobweb_hang"
+   ]
+  },
+  {
+   "id": "cobweb_hang",
+   "slug": "cobweb_hang",
+   "name": "늘어진 거미줄",
+   "scene": "연출",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "over",
+   "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+   "description": "cobweb_corner 와 한 식구: 천장·가구 사이에 늘어진 거미줄 한 덩이(가로로 처진 줄 두세 겹 + 매달린 작은 거미 한 점). 가구 윗모서리에 겹쳐 쓴다.",
+   "palette_hint": "dust, void 거미",
+   "worker_v1": "h2",
+   "stage": 2,
+   "stage_ko": "2단계 연출(기본이 선 뒤)",
+   "worker": "h2",
+   "set_with": [
+    "cobweb_corner"
+   ]
+  }
+ ]
+}

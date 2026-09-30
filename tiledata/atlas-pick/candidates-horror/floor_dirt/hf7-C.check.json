@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_dirt/hf7-C.pxg",
+ "set": "horror",
+ "id": "floor_dirt",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.281
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.336
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C(재질·무늬): 흙 위로 굵은 뿌리 한 가닥, 검은 웅덩이 자국, 돌 셋, 이끼 점",
+ "ok": true
+}

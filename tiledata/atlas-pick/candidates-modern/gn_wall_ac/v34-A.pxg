@@ -1,0 +1,42 @@
+// gn_wall_ac v34-A 3/4
+@size 16 16
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a conc 0
+@mat b sumi 0
+@mat c tekko 0
+@mblock 0 0
+.bbbbbbbbbbbbbb.
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+baaaaaaaaaaaaaab
+.bbccbbbbbbccbb.
+..bccbbbbbbccb..
+.bbbbbbbbbbbbbb.
+@tblock 0 0
+.00000000000000.
+0655555555555540
+0655555555555540
+0655555555555540
+0655555555555540
+0666666666666640
+0222222222222220
+0433111333222220
+0431121133444420
+0431242133222220
+0431121133444420
+0433111333222220
+0111111111111120
+.00420000004200.
+..042000000420..
+.01111111111110.

@@ -1,0 +1,40 @@
+// w9 C — 다시 그림: 봉긋한 감자 무더기 + 두 널판 사이 어두운 틈과 손잡이 구멍이 있는 궤짝 앞판
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a bread 3
+@mat b pine 3
+@mblock 0 0
+..........aaa...
+.....aa.aaaaaa..
+....aaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+.baaaaaaaaaaaab.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+@tblock 0 0
+..........554...
+.....54.555443..
+....5443544323..
+..554435435221..
+..544354435443..
+..454355425423..
+..544354454431..
+.04432432443210.
+.01111111111110.
+.06666666666660.
+.06655255555550.
+.04444000044440.
+.00000000000000.
+.06444444444440.
+.04333333333330.
+.00000000000000.

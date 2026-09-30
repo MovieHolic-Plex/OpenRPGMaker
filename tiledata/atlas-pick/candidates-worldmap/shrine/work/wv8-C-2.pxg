@@ -1,0 +1,25 @@
+// shrine wv8-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wgold 0
+@mat b mwhite 0
+@mat c mout 0
+@mblock 0 0
+.......a........
+......bab.......
+.....bbbbb......
+...bbbbbbbbb....
+..bbbbbbbbbbb...
+.bbbbbbbbbbbbb..
+bbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+..bbbccccccbbb..
+..bbbccccccbbb..
+..bbbccccccbbb..
+..bbbccccccbbb..
+..bbbccccccbbb..
+..bbbccccccbbb..
+..bbbccccccbbb..
+.bbbbbbbbbbbbbb.

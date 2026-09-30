@@ -1,0 +1,76 @@
+// shelf_cellar hf7-B (작업자 hf7, 지하·돌방 한 벌)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat w vwood 0
+@mat g vgreen 0
+@mat c vclay 0
+@mat b vwood 0
+@mat k dust 0
+@mblock 0 0
+................
+................
+.wwwwwwwwwwwwww.
+.wwwwkkkwkwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwgwwwwwwwww.
+.wwwwgwwwwwgwww.
+.wwwgggwcccgwww.
+.wwwgggwccggwww.
+.wwwgggwccggwww.
+.wwwgggwccggwww.
+.wwwwwwkkkwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwbbbbwwwwwww.
+.wwwbbbbwwccwww.
+.wwwbbbbwwccwww.
+.wwwbbbbwwccwww.
+.wwwbbbbwwccwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwccwwwwwwww.
+.wwwccccwwgwwww.
+.wwwccccwwgwwww.
+.wwwccccwggbwww.
+.wwwccccwggbwww.
+.wwwccccwggbwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+@tblock 0 0
+................
+................
+.00000000000000.
+.07775557477770.
+.04444444444440.
+.06500000000430.
+.06512111111430.
+.06512111112430.
+.06554216662430.
+.06555415454430.
+.06555415554430.
+.06542214342430.
+.06666634511160.
+.03333333333330.
+.06500000033430.
+.06511111111430.
+.06565541111430.
+.06554431166430.
+.06554431154430.
+.06554431154430.
+.06543331143430.
+.06666666666660.
+.03333333333330.
+.06506600000430.
+.06555441121430.
+.06555431121430.
+.06554431545430.
+.06544331544430.
+.06533331423430.
+.04444444444440.
+.01111111111110.
+.00000000000000.

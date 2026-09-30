@@ -14,6 +14,8 @@ import type {
   StateId,
   TroopId,
 } from "./base";
+import type { RetroFxAnchor, RetroSkillMotion } from "@/assets/retroClassSkills";
+import type { RetroMonsterSkillMotion } from "@/assets/retroMonsterSkills";
 import type { Command, Condition, EventPageGraphic, WeatherKind } from "./events";
 import type { Season, TimePhase, TimeSystemConfig } from "../gameTime";
 import type { GenrePackId } from "../genrePackId";
@@ -820,6 +822,8 @@ export interface StateRecord {
   emotion?: StateEmotion;
   /** 부위 손실: 이 상태인 동안 해당 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다. */
   disablesEquipSlot?: string;
+  /** retro2003 전투에서 이 상태가 걸린 동안 몸 위에 남는 오라 프리셋 id(src/assets/battleStateAuras.ts). "none" = 끔, 없으면 기본 상태 id 표. */
+  battleAura?: string;
 }
 
 export interface StateEmotion {
@@ -1122,7 +1126,45 @@ export interface HomeDecorationTypeRecord {
   readonly allowedMapIds?: MapId[];
 }
 
+/** 스킬 연출 레코드의 층 하나. 시트 키(pixel-fx)만 저장하고 frame·frames 는 시트 메타(retroFxSheetMeta)에서 읽는다. */
+export interface SkillChoreographyLayer {
+  /** 이펙트 시트 키(public/assets/generated/pixel-fx/<key>.png). 모르는 키는 정규화가 버린다. */
+  sheet: string;
+  anchor: RetroFxAnchor;
+  /** 시작 시각(ms, 0~5000). 없으면 기존 타임라인이 정하는 시각. */
+  startMs?: number;
+  /** 0.5~3. 기본 1. */
+  scale?: number;
+  /** 같은 층을 이어서 반복 재생하는 횟수(1~6). 기본 1. */
+  repeat?: number;
+  /** each: 다단 스킬이면 타수마다 이 착탄 층을 다시 깐다. first(기본): 첫 타에 한 번. */
+  onHit?: "first" | "each";
+  tint?: string;
+  /** 층이 시작될 때 울리는 효과음 id. */
+  se?: string;
+}
+
+/** 프로젝트가 소유하는 스킬 도트 연출. 기본 연출(계약 카탈로그 약 1,130개)은 복사하지 않고 읽기 전용으로 남는다. id 는 chor_<slug>. */
+export interface SkillChoreographyRecord {
+  id: string;
+  name: string;
+  description?: string;
+  /** 직업 동작 9종 또는 몬스터 동작 7종(몬스터 기본 연출을 복제할 수 있게 합집합). */
+  motion: RetroSkillMotion | RetroMonsterSkillMotion;
+  layers: SkillChoreographyLayer[];
+  /** 0.5~2. */
+  speed?: number;
+  weight?: "light" | "normal" | "heavy";
+  tint?: string;
+  screen?: { shake?: number; flash?: string; dim?: boolean; cutIn?: boolean };
+  tags?: { family?: string; element?: string };
+  /** 복제 원본(기본 연출 id 또는 다른 프로젝트 레코드 id). */
+  sourceId?: string;
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
+  /** 스킬 연출 레코드. 없음 = 빈 배열(스키마 변경 없이 덧붙는 옵셔널 컬렉션). */
+  skillChoreographies?: SkillChoreographyRecord[];
   characterAppearances?: CharacterAppearanceRecord[];
   /** Optional additive catalog; built-in slots always remain available. */
   equipmentSlots?: EquipmentSlotRecord[];

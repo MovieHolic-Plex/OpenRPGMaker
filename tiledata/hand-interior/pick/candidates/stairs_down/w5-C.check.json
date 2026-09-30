@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_down/w5-C.pxg",
+ "id": "stairs down",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "새로 짬: 나무 뚜껑을 위로 젖힌 지하 출입구 — 위에 젖힌 뚜껑판, 나무 틀 안에 계단이 내려간다",
+ "ok": true
+}

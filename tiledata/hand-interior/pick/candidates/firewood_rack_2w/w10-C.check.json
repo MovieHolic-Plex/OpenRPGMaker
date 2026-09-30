@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack_2w/w10-C.pxg",
+ "id": "firewood rack 2w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "윗보를 없애고 양옆 말뚝 사이에 피라미드로 쌓은 장작 더미로 재해석",
+ "ok": true
+}

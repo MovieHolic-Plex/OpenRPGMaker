@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/manhole_jp/j1-C.pxg",
+ "set": "jp",
+ "id": "manhole_jp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.117
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.079
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "재해석: 음각 꽃(위·왼쪽 어둡고 아래·오른쪽 밝음) + 미끄럼방지 격자 홈띠 테두리 + 가운데 메달리온",
+ "ok": true
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/laundry/j4-B.pxg",
+ "set": "jp",
+ "id": "laundry",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.207
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  1,
+  31,
+  14
+ ],
+ "note": "B 강한 빛: 왼쪽 위 빛으로 흰 천 밝히고 아래 난간 그림자와 바닥 번짐 빛",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/alembic/w7-C.pxg",
+ "id": "alembic",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 21,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  15,
+  15
+ ],
+ "note": "실루엣 재해석: 납작한 화덕 대신 큼직한 둥근 플라스크(가로 10px)를 세발 화로 위에 올리고 불꽃이 플라스크 밑을 데우는 그림. 관은 위로 나와 오른쪽으로 꺾여 바닥 받이 병에 닿는다. 플라스크가 주인공이라 멀리서도 '증류기'로 읽힌다",
+ "ok": true
+}

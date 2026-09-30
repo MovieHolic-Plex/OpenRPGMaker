@@ -123,6 +123,12 @@
 body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel {
   display: none;
 }
+/* 숨겨 둔(부팅 때 미리 지은) 자료집 창은 약 3,800개 요소다. visibility:hidden 이라도 레이아웃·스타일 대상이라,
+   `:has()` 규칙이 300여 개인 문서에서 다른 곳의 DOM 변이 한 번마다 이 서브트리가 재계산됐다(맵 전환·레이어 전환 프레임마다 약 30ms).
+   content-visibility:hidden 은 자손의 스타일·레이아웃을 건너뛴다(변이 프레임 33ms -> 8ms 실측). 열리면(is-parked 제거) 그대로 낸다. */
+.database-modal-backdrop.is-parked {
+  content-visibility: hidden;
+}
 .ai-status-group {
   align-items: center;
   display: flex;

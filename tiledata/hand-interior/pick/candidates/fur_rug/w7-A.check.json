@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fur_rug/w7-A.pxg",
+ "id": "fur rug",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  3,
+  29,
+  27
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  29,
+  27
+ ],
+ "note": "v5 실루엣 그대로 털 결을 다시 칠함: 가장자리에서 안쪽으로 A→B→D→E 단계, 털 점을 해시로 흩고 가운데 이음선은 C",
+ "ok": true
+}

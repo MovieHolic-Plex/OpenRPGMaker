@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/banner_green/w8-B.pxg",
+ "id": "banner green",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "failed": [
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  0,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "note": "빛 쪽을 밝히고 봉 밑을 어둡게, 벽에 오른쪽 아래 그림자를 드리운 깃발",
+ "ok": true
+}

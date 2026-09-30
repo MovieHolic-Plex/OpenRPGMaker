@@ -1,0 +1,21 @@
+{
+ "id": "milk_crate",
+ "slug": "milk_crate",
+ "name": "우유 상자",
+ "scene": "급식실·매점",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "플라스틱 우유 상자(파랑 또는 빨강 격자 옆면)에 흰 우유갑 줄 윗면. 윗면이 보이는 각, 모서리 둥글게.",
+ "palette_hint": "vblue/vred 상자, vwhite 우유갑",
+ "pair": [],
+ "worker": "s2"
+}

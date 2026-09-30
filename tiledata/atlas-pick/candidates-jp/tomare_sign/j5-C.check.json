@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/tomare_sign/j5-C.pxg",
+ "set": "jp",
+ "id": "tomare_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.144
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.075
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "재해석: 공사장식 이동 표지 — 가는 기둥을 노랑·검정 사선 고무 받침 위에 세운 실루엣",
+ "ok": true
+}

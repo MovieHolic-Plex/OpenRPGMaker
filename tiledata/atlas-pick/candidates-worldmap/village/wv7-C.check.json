@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/village/wv7-C.pxg",
+ "set": "worldmap",
+ "id": "village",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "가운데 큰 집회소(뾰족 탑) + 양옆 작은 푸른 지붕 오두막, 솟은 실루엣",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.055
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.015
+  }
+ }
+}

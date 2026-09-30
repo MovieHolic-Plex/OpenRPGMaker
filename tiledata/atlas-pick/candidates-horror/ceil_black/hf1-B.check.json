@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/ceil_black/hf1-B.pxg",
+ "set": "horror",
+ "id": "ceil_black",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 10,
+  "atLeast95": 0,
+  "max": 0.234
+ },
+ "refmap": {
+  "cells": 10,
+  "atLeast95": 0,
+  "max": 0.217
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "B(어둠에서 읽힘·이브식): 속을 vblack 0(가장 어둠)으로 내리고 큰 덩이(3×2) 4개만 2로 — 무늬 적게. 테는 rot 로 끝 0 밑줄 + 바로 안쪽 6 밝은 1px 선(위·왼) / 아래는 [0·3·3·6] 굵은 입술. 값 폭이 넓어 어두운 방에서도 방 윤곽이 남는다",
+ "ok": true
+}

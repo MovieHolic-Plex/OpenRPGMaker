@@ -1,0 +1,43 @@
+// dark_castle wv8-C
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mgran 0
+@mat b mpurple 0
+@mat c wlava 0
+@mat d mred 0
+@mat e mout 0
+@mblock 0 0
+...............a................
+..............aaa...............
+..............aaa...............
+.......a.....aaaaa......a.......
+.......a.....aaaaa......a.......
+.......a....aaaaaaa.....a.......
+......a.....aaaaaaa......a......
+......a....aaaaaaaaa.....a......
+......a....aaaaaaaaa.....a......
+....aaa...aaaaaaaaaaa....aaa....
+....aaa...aaaaaaaaaaa....aaa....
+....aaa..aaaaaaaaaaaaa...aaa....
+..aaaaa.....bbbbbbbb.....aaaaa..
+..aaaaa.....bbbbbbbb.....aaaaa..
+..aaaaa.....bbbbbbbb.....aaaaa..
+.bbbbbbb....bbbbbbbb....bbbbbbb.
+.bbbbbbb....bbbccbbb....bbbbbbb.
+.bbbbbbb....bbbccbbb....bbbbbbb.
+.bbbbbbb....bbbbbbbb....bbbbbbb.
+.bbbdbbb....bbbbbbbb....bbbdbbb.
+.bbbdbbb....bbbbbbbb....bbbdbbb.
+.bbbbbbb.bb.bbbbbbbbbb.bbbbbbbb.
+.bbbbbbb.bb.bbbbbbbbbb.bbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbeeeebbbbbbbbbbbbb.
+.bbbbbbbbbbbbeeeeeebbbbbbbbbbbb.
+.bbbbbbbbbbbbeeeeeebbbbbbbbbbbb.
+.bbbbbbbbbbbbeeeeeebbbbbbbbbbbb.
+.bbbbbbbbbbbbeeeeeebbbbbbbbbbbb.
+.bbbbbbbbbbbbeeeeeebbbbbbbbbbbb.
+................................

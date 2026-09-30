@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chest/w3-C.pxg",
+ "id": "chest",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  14,
+  14
+ ],
+ "note": "실루엣 재해석 — 뚜껑을 둥근 볼트(3단 곡선)로, 쇠띠가 뚜껑에서 몸통까지 이어지고 큼직한 3×3 자물쇠 판을 가운데에",
+ "ok": true
+}

@@ -1,0 +1,71 @@
+// town_3x3 v4-A (4판: 3판 색·물 그대로, 모양 다시)
+@size 48 48
+@cell 16
+@palette ../../palette/worldmap3.pal
+@layer main
+@mat a wink 0
+@mat b wgold 3
+@mat c wroofb 3
+@mat d wroofb 4
+@mat e wroofb 2
+@mat f wstone 4
+@mat g wstone 5
+@mat h wstone 3
+@mat i wroofr 3
+@mat j wroofr 4
+@mat k wroofr 2
+@mat l wgold 2
+@mat m wplast 5
+@mat n wplast 4
+@mat o wplast 3
+@mat p wbark 2
+@mat q wbark 1
+@mblock 0 0
+.......................aba......................
+.......................aca......................
+......................adcea.....................
+.....................addceea....................
+....................adddceeea...................
+..................aaddddceeeeaa.................
+.................addddddceeeeeea................
+..................aaffaaffaaaaa.................
+...................aggfffffha...................
+...................agffffffha...................
+...................agffffffha...................
+...................aghhhhhhha...................
+.....a.............aghfffffha..............a....
+....aba............agffffffha.............aba...
+....aia..aaaaaa....agffafffha.............aia...
+...ajikaajjjjjka...aghhlhhhha....aaaaaa..ajika..
+...ajikajjjjjjjka..agfffhffha...adddddea.ajika..
+..ajjikkiiiiiiika..agffffffha..adddddddeajjikka.
+..ajjikiiiiiiiiika.agffffffha..accccccceajjikka.
+.ajjjikkkkkkkkkkka.aghhhhhhha.acccccccccejjikkka
+ajjjjikkmnnnnnnoa..aghfffffha.aeeeeeeeeeejjikkkk
+.aagffhamannnnnoa..agffffffha..amnnnnnnoagffhaaa
+..agffhamlnnnnnoa..agffffffha..amannnnnoagffha..
+..aghhhamnnppnnoa..aghhhhhhha..amlnppnnoaghhha..
+..agffhamnnqqnnoaa.agfffhffhaa.amnnqqnnoagffha..
+..agffhamnnqqnnoffaagffffffhffaamnnqqnnofgffha..
+..agffhfggffggffgghfgffffffhffhffffffffffgffha..
+..aghhhfffffffffffffghhhhhhhfffffffffffffghhha..
+..agffhfffffffffffffghfffffhfffffffffffffghfha..
+..agffhhhhhhhhhhhhhhgffffffhhhhhhhhhhhhhhgffha..
+..agffhffhfffffhfffffhfffffhfffffhfffffhfgffha..
+..aghhhfffffffffffffffppppfffffffffffffffghhha..
+..agffhffffffffffffffqqqqqqffffffffffffffgffha..
+..agffhhhhhhhhhhhhhhhqqqqqqhhhhhhhhhhhhhhgffha..
+..agffhfffffhfffffhffqqqqqqfffhfffffhffffgffha..
+..aghhhffffffffffffffqqqqqqffffffffffffffghhha..
+..agffhffffffffffffffqqqqqqffffffffffffffghfha..
+..agffhhhhhhhhhhhhhhhqqqqqqhhhhhhhhhhhhhhgffha..
+..agffhffhfffffhfffffqqqqqqhfffffhfffffhfgffha..
+..aghhhffffffffffffffqqqqqqffffffffffffffghhha..
+...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...
+................................................
+................................................
+................................................
+.----------------------------------------------.
+...-------------------------------------------..
+................................................
+................................................

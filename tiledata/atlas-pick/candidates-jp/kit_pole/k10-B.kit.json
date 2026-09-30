@@ -1,0 +1,112 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_pole/k10-B.pxg",
+ "kit": "kit_pole",
+ "cand": "k10-B",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "single",
+   "name": "전봇대 하나(변압기·표지)",
+   "cells": [
+    3,
+    5
+   ],
+   "ctxSize": [
+    80,
+    144
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "span",
+   "name": "두 기둥 사이 전선",
+   "cells": [
+    10,
+    5
+   ],
+   "ctxSize": [
+    192,
+    144
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "stay",
+   "name": "버팀줄 달린 전봇대",
+   "cells": [
+    4,
+    5
+   ],
+   "ctxSize": [
+    96,
+    144
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "street3",
+   "name": "세 기둥 골목(높이 다름)",
+   "cells": [
+    13,
+    6
+   ],
+   "ctxSize": [
+    240,
+    160
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "pole",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "wire_m",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "wire_dip",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": true,
+   "failed": []
+  },
+  "easyMax": 0.101,
+  "refmapMax": 0.084
+ },
+ "ok": true
+}

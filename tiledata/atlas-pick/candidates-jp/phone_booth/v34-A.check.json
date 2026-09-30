@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/phone_booth/v34-A.pxg",
+ "set": "jp",
+ "id": "phone_booth",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.219
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.159
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  2,
+  1,
+  14,
+  30
+ ],
+ "note": "",
+ "ok": true
+}

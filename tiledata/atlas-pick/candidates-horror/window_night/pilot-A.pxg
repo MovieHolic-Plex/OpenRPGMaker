@@ -1,0 +1,42 @@
+// window_night pilot-A (감독자 파일럿, 2판 기본 한 벌)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mat g murk 0
+@mat o moon 0
+@mblock 0 0
+................
+................
+..mmmmmmmmmmmm..
+..mmmmmmmmmmmm..
+..mmgggmggggmm..
+..mmgoomggggmm..
+..mmgogmggggmm..
+..mmmmmmmmmmmm..
+..mmgggmggggmm..
+..mmgggmgoogmm..
+..mmgggmggggmm..
+..mmgggmggggmm..
+..mmmmmmmmmmmm..
+.mmmmmmmmmmmmmm.
+.mmmmmmmmmmmmmm.
+................
+@tblock 0 0
+................
+................
+..111111111111..
+..155555555551..
+..153333333331..
+..152433222231..
+..152323222231..
+..153334333331..
+..151113111131..
+..151113132131..
+..151113111131..
+..151113111131..
+..133333333331..
+.55555555555555.
+.22222222222222.
+................

@@ -1,0 +1,105 @@
+// w9 C — 다시 그림: 체크 대신 금빛 마름모 메달리온이 이어지는 무늬, 양끝에 술(프린지) 달린 복도용 양탄자
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a gold 3
+@mat b linen 3
+@mat c red 3
+@mblock 0 0
+................
+.bbbbbbbbbbbbbb.
+.caaaaaaaaaaaac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccaaccccac.
+.caccccaaccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccaaccccac.
+.caccccaaccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccaaccccac.
+.caccccaaccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccaaccccac.
+.caccccaaccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caccccccccccac.
+.caaaaaaaaaaaac.
+.bbbbbbbbbbbbbb.
+................
+@tblock 0 0
+................
+.43434343434343.
+.15555555555540.
+.15222222222230.
+.15233333333130.
+.15233322333130.
+.15233244233130.
+.15232444423130.
+.15224444442130.
+.15224444442130.
+.15232444423130.
+.15233244233130.
+.15233322333130.
+.15233333333130.
+.15233333333130.
+.15233322333130.
+.15233244233130.
+.15232444423130.
+.15224444442130.
+.15224444442130.
+.15232444423130.
+.15233244233130.
+.15233322333130.
+.15233333333130.
+.15233333333130.
+.15233322333130.
+.15233244233130.
+.15232444423130.
+.15224444442130.
+.15224444442130.
+.15232444423130.
+.15233244233130.
+.15233322333130.
+.15233333333130.
+.15233333333130.
+.15233322333130.
+.15233244233130.
+.15232444423130.
+.15224444442130.
+.15224444442130.
+.15232444423130.
+.15233244233130.
+.15233322333130.
+.15233333333130.
+.15111111111130.
+.14333333333330.
+.43434343434343.
+................

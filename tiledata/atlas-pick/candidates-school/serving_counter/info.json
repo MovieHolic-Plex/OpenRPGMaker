@@ -1,0 +1,21 @@
+{
+ "id": "serving_counter",
+ "slug": "serving_counter",
+ "name": "배식대",
+ "scene": "급식실·매점",
+ "place": "in",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "급식 배식대 — 스테인리스 긴 대에 뚜껑 연 배식통 셋(밥·국·반찬, 김 1px 흰 점 약간), 국자 하나, 앞 유리 가림막. 윗면 ¾.",
+ "palette_hint": "tray 대·통, & 가림막 유리, vwhite 밥",
+ "pair": [],
+ "worker": "s1"
+}

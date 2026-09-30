@@ -1,0 +1,21 @@
+// chest 후보 A (w3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+................
+...AAAAAAAAAAA..
+..ABCCCCCCCCCBA.
+..ABBBBBBBBBBEA.
+..AFGGGGGGGGGFA.
+..AEEEEEEEEEEEA.
+..HCCCCCCCCCCCH.
+..HGDBBBBBBBGEH.
+..HGDBBIJIBBGEH.
+..HGDBBIAIBBGEH.
+..HGDDDDDDDDGEH.
+..HGEEEEEEEEGEH.
+..HHHHHHHHHHHHH.
+................

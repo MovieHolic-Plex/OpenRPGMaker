@@ -1,0 +1,43 @@
+// garbage_station j3-C
+@size 32 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a kgreen 3
+@mat b mmetal 3
+@mat c mwhite 3
+@mat d washi 3
+@mblock 0 0
+........dd......................
+.......dcad........bbbbbbbbbbb..
+......daadcd......bbbbbbbbbbbbb.
+.....dcaaddcd.....bbbbbbbbbbbbb.
+....dcaddadacd....bbbbbbbbbbbbb.
+...dcaddddaddcd...bbbbbbbbbbbbb.
+..dcadaddadaddad..bbbbbbbbbbbbb.
+..dadddaadddaadd..bbbbbbbbbbbbb.
+..dadddaadddaadd..bbbbbbbbbbbbb.
+..dcadaddadaddaa..bbbbbbbbbbbbb.
+..dcdaddddadddda..bbbbbbbbbbbbb.
+..dcadaddadaddada.bbbbbbbbbbbbb.
+..dadddaadddaadda.bbbbbbbbbbbbb.
+..dadddaadddaadd.abbbbbbbbbbbbb.
+...dddddddddddd..a.bbbbbbbbbbb..
+....~~~~~~~~~~~~....~~~~~~~~~~~.
+@tblock 0 0
+........11......................
+.......1550........11111111111..
+......155550......1555555555520.
+.....15555550.....1503030303020.
+....1552232350....1503030303020.
+...155524434250...1503030303020.
+..15553243432450..1503030303020.
+..15555334443320..1503030303020.
+..15222332223320..1533333333320.
+..15343243432533..1503030303020.
+..15434244342523..1503030303020.
+..153432434325303.1503030303020.
+..152223322233203.1503030303020.
+..15222332223320.31522222222220.
+...000000000000..3.00000000000..
+................................

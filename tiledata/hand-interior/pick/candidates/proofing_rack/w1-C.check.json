@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/proofing_rack/w1-C.pxg",
+ "id": "proofing rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "재해석: 맨 위 단은 발효 중 반죽 위로 큰 천이 주름지며 늘어진 모습(앞면 정면 큰 볼륨), 아래 두 단은 열려 있어 반죽 덩이가 보이게 해 '덮은 것/열린 것' 대비. 알아보기 쉬운 빵집 선반.",
+ "ok": true
+}

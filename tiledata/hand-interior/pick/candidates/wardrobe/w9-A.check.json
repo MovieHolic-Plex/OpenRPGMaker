@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wardrobe/w9-A.pxg",
+ "id": "wardrobe",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "v5 정리: 문 판목 세로줄무늬를 왼쪽 밝은 테·오른쪽 어두운 테로 바꾸고 손잡이를 안쪽으로, 위 모서리 투명",
+ "ok": true
+}

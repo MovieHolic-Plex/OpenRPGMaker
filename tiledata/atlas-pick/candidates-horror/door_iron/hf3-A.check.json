@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_iron/hf3-A.pxg",
+ "set": "horror",
+ "id": "door_iron",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "철문 A — 쇠 틀(tin 3~5단)과 청회 쇠 문짝(viron 2단), 가운데 위 작은 창살 창(속 void), 대갈못 줄 둘, 손잡이, 아래 왼쪽 녹 덩이 하나.",
+ "ok": true
+}

@@ -1,0 +1,39 @@
+{
+ "id": "bar stool",
+ "slug": "bar_stool",
+ "name_ko": "바 의자",
+ "category": "선술집",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "쇠다리 둥근 바 의자. 바 카운터 앞(남쪽) 줄로 둔다.",
+ "where": "바 카운터 앞(남쪽) 줄로 둔다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  12,
+  15
+ ],
+ "v5_colors": 8,
+ "material": "wood",
+ "related": [
+  "counter 6"
+ ]
+}

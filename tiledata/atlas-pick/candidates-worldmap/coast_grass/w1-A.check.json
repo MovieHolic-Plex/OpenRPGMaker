@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_grass/w1-A.pxg",
+ "set": "worldmap",
+ "id": "coast_grass",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.076
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "light"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "생성 계열 결: 얕은 바다 밑색 한 단(tone3) 위에 3~4획 물결+밑획 한 단 어둡게, 풀 둑 흙 2px+거품 한 줄, 기슭선 0~2px 완만한 물결, 몸통 16px 주기",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.023
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.024
+  },
+  "seam": 0.99
+ }
+}

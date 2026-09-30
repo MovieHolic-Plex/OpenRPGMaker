@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/cobweb_corner/h2-B.pxg",
+ "set": "horror",
+ "id": "cobweb_corner",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "B: 줄 밝기를 dust 4~6 으로 올리고 줄마다 오른쪽 아래에 - 그림자를 붙여 벽에서 뜬 느낌. 모서리 뭉침은 가장 밝게.",
+ "ok": true
+}

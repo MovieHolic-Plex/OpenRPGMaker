@@ -1,0 +1,74 @@
+// door_cell hf7-C (작업자 hf7, 지하·돌방 한 벌)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat i viron 0
+@mat b vbrass 0
+@mat r rust 0
+@mblock 0 0
+................
+................
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+ii.i..i..i..i.ii
+ii.i..i..i..i.ii
+ii.i..i..i..i.ii
+iiirriiiiriiiiii
+iiiiiiriiiiiriii
+ii.r..i..r..i.ii
+ii.r..i..r..i.ii
+ri.r..i..i..i.ii
+ir.i..iiii..i.ii
+ii.i..i..i..i.ii
+ii.i..bbbi..i.ii
+ii.i..bbbb..i.ii
+ii.i..ibbb..i.ii
+ii.i..i..i..i.ii
+ii.i..i..i..i.ii
+ii.i..i..i..i.ri
+iiiriiiiiiiiriir
+iiiiiiriiiiiiiii
+ii.i..i..i..r.ii
+ii.i..i..i..r.ii
+ii.i..i..i..r.ii
+rr.i..i..i..i.ii
+ii.i..i..i..i.ii
+ii.i..i..i..i.ii
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+@tblock 0 0
+................
+................
+5555555555555555
+3333333333333333
+1111111111111111
+42.5..5..5..5.31
+42.4..4..4..4.31
+42.4..4..4..4.31
+4444344444444444
+2222223222223222
+42.3..4..3..4.31
+42.2..4..2..4.31
+32.2..4..4..4.31
+43.4..4444..4.31
+42.4..3..3..4.31
+42.4..4442..4.31
+42.4..3133..4.31
+42.4..2332..4.31
+42.4..4..4..4.31
+42.4..4..4..4.31
+42.4..4..4..4.31
+4444444444444442
+2222223222222222
+42.4..4..4..3.31
+42.4..2..4..2.31
+42.2..4..4..2.31
+32.4..4..4..4.31
+42.4..4..4..4.31
+42.3..3..3..3.31
+4444444444444444
+2222222222222222
+1111111111111111

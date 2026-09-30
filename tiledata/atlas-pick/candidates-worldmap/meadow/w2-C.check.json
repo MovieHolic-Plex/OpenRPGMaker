@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/meadow/w2-C.pxg",
+ "set": "worldmap",
+ "id": "meadow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  2,
+  0,
+  47,
+  61
+ ],
+ "note": "규모 재해석: 2px 단위 큰 덩어리 윤곽에 굵은 두 톤 잎 무늬",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.015
+  },
+  "seam": 1.38
+ }
+}

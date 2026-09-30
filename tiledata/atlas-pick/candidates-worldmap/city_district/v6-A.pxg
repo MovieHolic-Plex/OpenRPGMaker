@@ -1,0 +1,71 @@
+// city_district v6-A (6판: 목표 월드맵 실측 — 그린 형태(사선 붓질·층진 침엽수·자갈 해안))
+@size 64 48
+@cell 16
+@palette ../../palette/worldmap6.pal
+@layer main
+@mat a wink 0
+@mat b wroofb 3
+@mat c wroofb 2
+@mat d wroofb 1
+@mat e wroofb 4
+@mat f wroofb 5
+@mat g wstone 2
+@mat h wstone 3
+@mat i wroofr 5
+@mat j wroofr 4
+@mat k wroofr 3
+@mat l wroofb 0
+@mat m wroofr 2
+@mat n wroofr 1
+@mat o wroofr 0
+@mat p wstone 5
+@mat q wstone 4
+@mblock 0 0
+...............................aba..............................
+..............................abbca.............................
+..............................accda.............................
+..............................abbca.............................
+......................aaaaaaaaebbccaaa..........................
+.aaaaaaaaaaaaaaaaaaaaafeeeeeeebccddebbaaaaaaaaaaaaaaaaaaaaaaaaa.
+agfeeeeeeeeeeeeeeebbghebbbbbbeebbbccccggggijjjjjjjjjjjjjjjjkkgga
+agebbbbbbbbbbbbbbbccggcddddddeebbbccllggghjkkkkkkkkkkkkkkkkmmgga
+agcdddddddddddddddllggbcbcccbbccccddddghggmnnnnnnnnnnnnnnnnoohga
+agbcbccccbccccbcccdcggeccccbpqgqqqhhdcggggkmkmmmmkmmmmkmmmmmngga
+agbddddcddddcddddcllggdlllllpqqqqqhhllggggknnnnmnnnnmnnnnmnoogga
+agllllllllllllllllllggllllllpqqqqqhhllggggooooooooooooooooooogga
+agpqqqgqqqqqgqqqqqghhgpqgqqqggggggggghgggggqqqqqgqqqqqgqqqqhggga
+agpqqqqqqqqqqqqqqqhhggpqqqqqpqqqqghhhhgghgpqqqqqqqqqqqqqqqqhhgha
+agpqaqqqaqqqaqqqaqhhggpqaqqqpqqqqqhhhhhgggpqaqqqaqqqaqqqaqqhhgga
+agggggggggggggggggggggggggggpqqqqqhhggggggggggggggggggggggggggga
+ahpgqqqqqgqqqqqgqqhhggpqqqqggggggggghhggggpqqgqqqqqgqqqqqgqhhgga
+agpqqqqqqqqqqqqqqqhhghpqqqqqpqgqqqhhhhggggpqqqqqqqqqqqqqqqqhhgga
+aggggggghgggggggggghggpqqqqqpqqqqqhhhhggghgggggggggghgggggggggga
+aggggghgggggggggghggggggggggpqqqqqhhggghgggggggggghgggggggggghga
+aggghgggggggggghgggggggggghgggggggggghgggggggggghgggggggggghggga
+aghgggggggggghgggggfeeeeeeeeeeeeeeebbggggggggghgggggggggghggggga
+aggijjjjjjjjjjjkkggebbbbbbbbbbbbbbbccggggfeeeeeeeeeeeeeeeeebbgga
+aggjkkkkkkkkkkkmmggcdddddddddddddddllggggebbbbbbbbbbbbbbbbbccgga
+aggmnnnnnnnnnnnoogheccccbccccbccccbddggghcdddddddddddddddddllgha
+aggkkmmmmkmmmmknnggcddcddddcddddcddllghggbccbccccbccccbcccccdgga
+aggmnnnmnnnnmnnooggllllllllllllllllllggggbbccccbccccbccccbcddgga
+ahgooooooooooooooggpqqqqgqqqqqgqqqqhgggggdlllllllllllllllllllgga
+aggpqqgqqqqqgqqhhggpqqqqqqqqqqqqqqqhhggggllllllllllllllllllllgga
+aggpqqqqqqqqqqqhhggpqaqqqaqqqaqqqaqhhggggpgqqqqqgqqqqqgqqqqhggga
+aggpqaqqqaqqqaqhhhggggggggggggggggggggghgpqqqqqqqqqqqqqqqqqhhhga
+aggggggggggggggggggpqgqqqqqgqqqqqgqhhhgggpqaqqqaqqqaqqqaqqqhhgga
+aghgqqqqqgqqqqqghggpqqqqqqqqqqqqqqqhhgggggggggggggggggggggggggga
+aggpqqqqqqqqqqqhhggpqqqqqqqqqqqqqqqhhggggpqqqgqqqqqgqqqqqgqhhgga
+agggggggghgggggggggghgggggggggghgggggggggpqqqqqqqqqqqqqqqqqhhgga
+agggggghgggggggggghgggggggggghgggggggggghgggggggggghggggggggggha
+aggggfeeeeeeeeeeeeeeeeeeebbhggijjjjjjjjjjjjjkkggfeeeeeeeeeebbgga
+agghgebbbbbbbbbbbbbbbbbbbccgggjkkkkkkkkkkkkkmmghebbbbbbbbbbccgga
+ahgggcdddddddddddddddddddllgggmnnnnnnnnnnnnnooggcddddddddddllgga
+aggggcdddcddddcddddcddddcllgggmnnnmnnnnmnnnnnoggccddddcdddddlgga
+aggggllllllllllllllllllllllgggoooooooooooooooogglllllllllllllgga
+aggggpgqqqqqgqqqqqgqqqqqghhghggqqqqqgqqqqqgqhhgggqqqqqgqqqqhghga
+aggghpqqqqqqqqqqqqqqqqqqqhhgggpqqqqqqqqqqqqqhhggpqqqqqqqqqqhhgga
+aghggpqaqqqaqqqaqqqaqqqaqhhgggpqaqqqaqqqaqqqhhhgpqaqqqaqqqahhgga
+.aaaaggggggggggggggggggggggaaaggggggggggggggggaagggggggggggggaa.
+.----aaaaaaaaaaaaaaaaaaaaaa---aaaaaaaaaaaaaaaa--aaaaaaaaaaaaa--.
+...-----------------------------------------------------------..
+................................................................

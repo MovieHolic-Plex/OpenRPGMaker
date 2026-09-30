@@ -1,0 +1,127 @@
+[
+  {
+    "title": "화염 3연타 (불+hitSequence 3)",
+    "id": "t_fire3",
+    "baseId": "skill_mage_fireball",
+    "label": "파이어볼",
+    "each": true,
+    "reason": "마법 단일 공격 · 3연타 · fire",
+    "layers": [
+      "mage_fireball_orb@projectile",
+      "mage_fire_burst@target/each"
+    ]
+  },
+  {
+    "title": "전체 회복 (heal+allAllies)",
+    "id": "t_massheal",
+    "baseId": "skill_cleric_mass_heal",
+    "label": "대치유",
+    "each": false,
+    "reason": "전체 회복 — 아군 전체에 회복 빛",
+    "layers": [
+      "cleric_mass_heal@allAllies",
+      "cleric_halo@screen"
+    ]
+  },
+  {
+    "title": "단일 회복",
+    "id": "t_heal",
+    "baseId": "skill_cleric_heal_light",
+    "label": "치유의 빛",
+    "each": false,
+    "reason": "단일 회복 — 대상에 회복 빛",
+    "layers": [
+      "cleric_heal@target"
+    ]
+  },
+  {
+    "title": "버프 (자신)",
+    "id": "t_buff",
+    "baseId": "skill_hero_war_cry",
+    "label": "함성",
+    "each": false,
+    "reason": "자기 강화 — 시전자 기합",
+    "layers": [
+      "hero_warcry@user"
+    ]
+  },
+  {
+    "title": "수면 부여 (전체 적)",
+    "id": "t_sleep",
+    "baseId": "skill_bard_lullaby",
+    "label": "자장가",
+    "each": false,
+    "reason": "적 수면 — 잠재우는 음표",
+    "layers": [
+      "bard_notes_blue@allTargets"
+    ]
+  },
+  {
+    "title": "번개 전체 마법",
+    "id": "t_thunder_all",
+    "baseId": "skill_mage_chain_lightning",
+    "label": "연쇄 번개",
+    "each": false,
+    "reason": "마법 전체 공격 · thunder",
+    "layers": [
+      "mage_chain_bolt@allTargets"
+    ]
+  },
+  {
+    "title": "얼음 단일 마법",
+    "id": "t_ice",
+    "baseId": "skill_mage_fireball",
+    "label": "파이어볼 (ice)",
+    "tint": "ice",
+    "each": false,
+    "reason": "마법 단일 공격 · ice",
+    "layers": [
+      "mage_fireball_orb@projectile/ice",
+      "mage_fire_burst@target/ice"
+    ]
+  },
+  {
+    "title": "물리 전체 (베기)",
+    "id": "t_sweep",
+    "baseId": "skill_hero_whirlwind",
+    "label": "회전베기",
+    "each": false,
+    "reason": "물리 전체 공격",
+    "layers": [
+      "hero_whirl@allTargets"
+    ]
+  },
+  {
+    "title": "물리 5연타",
+    "id": "t_fist",
+    "baseId": "skill_monk_hundred_fist",
+    "label": "백열권",
+    "each": true,
+    "reason": "5연타 — 난타 동작",
+    "layers": [
+      "monk_fist_flurry@target/each"
+    ]
+  },
+  {
+    "title": "독 단일 물리",
+    "id": "t_poison",
+    "baseId": "skill_scout_venom_blade",
+    "label": "맹독 칼날",
+    "each": false,
+    "reason": "독 속성 검격",
+    "layers": [
+      "scout_venom@target"
+    ]
+  },
+  {
+    "title": "훔치기",
+    "id": "t_steal",
+    "baseId": "skill_scout_steal",
+    "label": "훔치기",
+    "each": false,
+    "reason": "훔치기 — 기습 접근",
+    "layers": [
+      "scout_steal@target"
+    ]
+  }
+]

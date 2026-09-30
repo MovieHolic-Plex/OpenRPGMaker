@@ -1,0 +1,52 @@
+{
+ "id": "hosp_bed",
+ "slug": "hosp_bed",
+ "name": "녹슨 병원 침대",
+ "scene": "폐병원",
+ "cells": [
+  1,
+  3
+ ],
+ "canvas": [
+  16,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "위에서 약간 내려다본 쇠 병원 침대(머리 북쪽): 머리판·발판 쇠 파이프 틀(녹 점), 누렇게 바랜 시트가 구겨지고 가운데 검붉은 얼룩 작게, 베개 하나, 다리 끝 바퀴. v5 침대와 같은 칸(1×3 캔버스, 위 10px 여백 = 발 칸 1×2)·같은 시점 — v5 방에 갈아 끼울 수 있게.",
+ "palette_hint": "tin/rust 틀, sheet 시트, blood 얼룩(작게)",
+ "worker_v1": "h2",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "ward",
+ "role": "병상",
+ "worker": "h2",
+ "set_with": [
+  "hosp_screen"
+ ],
+ "v5_ref": [
+  {
+   "id": "bed green",
+   "name_ko": "침대 초록",
+   "atlas": {
+    "x": 192,
+    "y": 304,
+    "w": 16,
+    "h": 48,
+    "frames": 1,
+    "padTop": 10
+   },
+   "image": {
+    "w": 16,
+    "h": 38
+   },
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/bed_green",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

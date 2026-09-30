@@ -1,0 +1,50 @@
+{
+ "id": "sofa_sheet",
+ "slug": "sofa_sheet",
+ "name": "흰 천 덮인 소파",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 소파 자리(2×1)의 폐가 판: 소파 전체를 흰 천이 덮어 윤곽만 보인다(등받이·팔걸이 둥근 덩이), 천 주름 세로 줄 두세 개, 아래 끝이 바닥에 늘어짐, 천 밑으로 다리 끝 하나 보임. 천은 회백 먼지색 — 새하얗게 빛나지 않게.",
+ "palette_hint": "dust 천, rot 다리, ~ 그림자",
+ "worker_v1": "h4",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h4",
+ "set_with": [
+  "armchair_sheet"
+ ],
+ "v5_ref": [
+  {
+   "id": "sofa",
+   "name_ko": "소파",
+   "atlas": {
+    "x": 320,
+    "y": 208,
+    "w": 32,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 32,
+    "h": 16
+   },
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/sofa",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

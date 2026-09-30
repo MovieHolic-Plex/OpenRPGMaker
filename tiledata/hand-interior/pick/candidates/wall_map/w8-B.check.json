@@ -1,0 +1,20 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wall_map/w8-B.pxg",
+ "id": "wall map",
+ "hard": [
+  "size: 16x16 ≠ resize.json 캔버스 32x32"
+ ],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 2x2 사이즈로 키움."
+ },
+ "ok": false
+}

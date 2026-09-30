@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shelf_cheese/w4-C.pxg",
+ "id": "shelf:cheese",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "실루엣 재설계: 윗단은 큰 바퀴+잘라낸 쐐기, 아랫단은 삼각 쐐기 세 조각, 선반 끝 둥글게",
+ "ok": true
+}

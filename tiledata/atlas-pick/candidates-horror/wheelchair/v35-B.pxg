@@ -1,0 +1,42 @@
+// wheelchair v35-B 3/4 손 도트 (표 치수 16x16 F12 T4)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a rust 0
+@mat b tin 0
+@mat c ward 0
+@mblock 0 0
+....b......b....
+....bbbbbbbb....
+.bb.cccccccc.bb.
+bbbbccccccccbbbb
+b..bccccccccb..b
+b..bccccccccb..b
+b..bbccccccbb..b
+baabbccccccbbaab
+b..bbccccccbb..b
+b..bbccccccbb..b
+b..b.cccccc.b..b
+bbbb.b....b.bbbb
+.bb.bbb..bbb.bb.
+....bbb..bbb....
+.....b....b.....
+................
+@tblock 0 0
+....5......3....
+....55555555....
+.65.33342333.43.
+5113222312223001
+5..3222312223..1
+5..6111201116..1
+5..3666666643..1
+5433555555532431
+5..3444444423..1
+5..3322222213..1
+5..3.111111.3..1
+5113.3....2.3001
+.53.555..333.31.
+....333..111....
+.....2....1.....
+................

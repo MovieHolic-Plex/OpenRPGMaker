@@ -1,0 +1,24 @@
+// 5단계 정리 (변형 A): 판 윗모서리 밝은 줄·틈 앞 어두운 줄을 군데군데 끊는다(가장자리 두 칸은 세 변형 모두 그대로 — 이음매 방지).
+@base 4-texture.pxg
+@block 9 0
+= 5f
+@block 30 0
+= 4f
+@block 18 12
+= 5e
+@block 6 24
+= 4e
+@block 36 24
+= 5e
+@block 15 36
+= 5f
+@block 38 36
+= 4f
+@block 20 10
+= 5f
+@block 40 22
+= 4e
+@block 12 34
+= 4e
+@block 28 46
+= 4f

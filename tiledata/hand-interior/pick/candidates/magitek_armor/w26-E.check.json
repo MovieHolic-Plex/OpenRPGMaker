@@ -1,0 +1,37 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magitek_armor/w26-E.pxg",
+ "id": "magitek armor",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +5px"
+ ],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 29,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  4,
+  30,
+  46
+ ],
+ "v5_bbox": [
+  3,
+  4,
+  28,
+  47
+ ],
+ "note": "3/4 캐논 워커: 왼팔은 굵은 포신(주황 띠·포구), 오른쪽은 어깨 방패, 다리를 엇갈려 딛는 자세로 실루엣이 좌우 비대칭",
+ "ok": true
+}

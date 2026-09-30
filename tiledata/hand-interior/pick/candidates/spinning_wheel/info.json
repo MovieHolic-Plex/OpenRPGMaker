@@ -1,0 +1,37 @@
+{
+ "id": "spinning wheel",
+ "slug": "spinning_wheel",
+ "name_ko": "물레",
+ "category": "재단사",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "나무 물레 바퀴와 붉은 실뭉치가 달린 받침. 재단 작업실 베틀 옆 바닥에 1개. 양모 바구니와 같은 방.",
+ "where": "재단 작업실 베틀 옆 바닥에 1개. 양모 바구니와 같은 방.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": []
+}

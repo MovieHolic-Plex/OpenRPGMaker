@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/trees_scatter/wv5-C.pxg",
+ "set": "worldmap",
+ "id": "trees_scatter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.11
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.115
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 15,
+ "bbox": [
+  2,
+  0,
+  47,
+  15
+ ],
+ "note": "C: 다른 해석 — 활엽수는 옆에 곁가지 덩이가 붙은 12px 마디진 수관, 고목은 옹이 구멍이 난 뒤틀린 갈색 줄기, 야자는 짧고 굵은 마디 줄기 위에 위로 솟은 부채꼴 잎.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.258
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.034
+  }
+ }
+}

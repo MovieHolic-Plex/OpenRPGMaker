@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/balance_scale/w6-A.pxg",
+ "id": "balance scale",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  15,
+  15
+ ],
+ "note": "놋쇠 사슬 삼각과 접시에 쇠추·금화를 올려 저울로 바로 알아보게 하고 나무 받침 윗면을 살림",
+ "ok": true
+}

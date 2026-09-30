@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/kitchen_sink/w10-B.pxg",
+ "id": "kitchen sink",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  31
+ ],
+ "note": "명암 강화: 장 앞면을 왼쪽 위 K 밝게 → 오른쪽 아래 E 어둡게 대각으로 떨어뜨리고, 물 안쪽 위·왼 테를 어둡게 눌러 오목함을 냄",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stage_curtain/w3-C.pxg",
+ "id": "stage curtain",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "C: 재해석 - 봉 밑에 금테 물결 가리개(스캘럽)를 달고 가운데 금 끈으로 허리를 묶어 술이 늘어지게, 끈 위아래 주름은 더 깊게(red0~5) 해 무대 막 실루엣이 분명하게",
+ "ok": true
+}

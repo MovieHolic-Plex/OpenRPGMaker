@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/banner_green/w8-A.pxg",
+ "id": "banner green",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  0,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "note": "황동 봉에 공 마감·금 띠·주름 한 줄·금 마름모 문장으로 다듬은 초록 깃발",
+ "ok": true
+}

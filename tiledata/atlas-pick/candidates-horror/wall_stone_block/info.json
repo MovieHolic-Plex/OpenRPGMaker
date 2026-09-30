@@ -1,0 +1,44 @@
+{
+ "id": "wall_stone_block",
+ "slug": "wall_stone_block",
+ "name": "돌벽 벽면",
+ "scene": "지하·돌방",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "벽면 2×2(32×32) 칸 전부 불투명, 가로로 32px 마다 이어진다(무늬·징두리 이음이 맞게). 위에서 아래로: y0~2 몰딩(천장 테 밑 그늘은 조립기가 1~2px 더한다) → 넓은 면(방에서 가장 밝은 넓은 면, 바닥보다 두 단 밝게) → 징두리(y22~28 쯤) → y29~31 걸레받이(가장 어두운 단 + 윗줄 밝은 1px). 벽면 두 줄이 한 벽이다. 넓은 면 = 큰 돌 블록(가로 16·8px 엇갈림, 블록마다 한 단 차이, 윗·왼 테 밝게), 걸레받이 대신 바닥 쪽 돌이 한 단 어둡게·이끼 점 한 곳.",
+ "palette_hint": "vstone/grave 돌, hmoss 이끼",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "cellar",
+ "role": "벽면(돌)",
+ "worker": "hf7",
+ "set_with": [
+  "wall_cellar_brick",
+  "floor_stone",
+  "floor_dirt",
+  "door_cell",
+  "torch_wall",
+  "shelf_cellar"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:stone",
+   "name_ko": "돌벽",
+   "atlas": {
+    "x": 544,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

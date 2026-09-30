@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/library_counter/s4-C.pxg",
+ "set": "school",
+ "id": "library_counter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 21,
+ "bbox": [
+  0,
+  1,
+  47,
+  31
+ ],
+ "note": "재해석: 뒤가 한 단 높은 카운터(뒷판에 책 아이콘 간판) + 낮은 앞 상판 위에 물건 한 줄 — 윗선이 두 단인 실루엣",
+ "ok": true
+}

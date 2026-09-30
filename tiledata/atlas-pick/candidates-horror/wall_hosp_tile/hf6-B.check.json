@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_hosp_tile/hf6-B.pxg",
+ "set": "horror",
+ "id": "wall_hosp_tile",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.176
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "어둠에서 읽히게: 칠 ward5·타일 sheet5 큰 면 둘, 턱 sheet6 한 줄+밑 grave1, 줄눈 grave1 홑줄, 걸레받이 ward1/0 — 무늬는 줄눈뿐",
+ "ok": true
+}

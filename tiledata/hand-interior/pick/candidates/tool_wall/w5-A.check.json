@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tool_wall/w5-A.pxg",
+ "id": "tool wall",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "note": "v5 다듬기: 망치 자루 낱 픽셀 제거, 편자를 X자에서 U자로, 줄칼은 금빛 손잡이+날 한 줄로 정리",
+ "ok": true
+}

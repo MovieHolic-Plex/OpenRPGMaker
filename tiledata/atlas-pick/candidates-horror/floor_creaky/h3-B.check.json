@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_creaky/h3-B.pxg",
+ "set": "horror",
+ "id": "floor_creaky",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.289
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "빛 대비 강화: 판 윗줄 두 단 밝게·아랫줄 두 단 어둡게, 틈은 void 최암, 들린 판 밑 그림자를 길게",
+ "ok": true
+}

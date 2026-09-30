@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_bundle/w9-B.pxg",
+ "id": "firewood bundle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  3,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  14,
+  14
+ ],
+ "note": "껍질 윗줄을 밝게·아랫줄을 어둡게 나누고 아래 오른쪽에 반투명 바닥 그림자",
+ "ok": true
+}

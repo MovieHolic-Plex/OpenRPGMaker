@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/dark_light_hole/h4-C.pxg",
+ "set": "horror",
+ "id": "dark_light_hole",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.199
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.297
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "동그라미 말고 열쇠구멍 실루엣(둥근 머리+아래로 좁아지는 자루)으로 뚫음 — 어둠 속 문틈으로 새는 빛 느낌, 링 디더",
+ "ok": true
+}

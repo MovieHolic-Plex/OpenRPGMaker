@@ -1,0 +1,107 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_signal/k5-C.pxg",
+ "kit": "kit_signal",
+ "cand": "k5-C",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "corner",
+   "name": "팔 둘·초록",
+   "cells": [
+    6,
+    5
+   ],
+   "ctxSize": [
+    128,
+    144
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "long_red",
+   "name": "긴 팔·빨강·보행 빨강",
+   "cells": [
+    8,
+    6
+   ],
+   "ctxSize": [
+    160,
+    160
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "ped_only",
+   "name": "보행등만(좁은 길)",
+   "cells": [
+    1,
+    4
+   ],
+   "ctxSize": [
+    48,
+    128
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "both",
+   "name": "양쪽 팔(중앙 분리대)",
+   "cells": [
+    9,
+    5
+   ],
+   "ctxSize": [
+    176,
+    144
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "pole",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "arm",
+   "axis": "x",
+   "score": 1.0,
+   "d": 30.5,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": false,
+   "failed": [
+    "outline_black"
+   ]
+  },
+  "easyMax": 0.234,
+  "refmapMax": 0.129
+ },
+ "ok": true
+}

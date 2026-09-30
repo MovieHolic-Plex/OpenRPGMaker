@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_bldg/k1-C.pxg",
+ "set": "jp",
+ "id": "kit_bldg",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 35,
+  "atLeast95": 0,
+  "max": 0.406
+ },
+ "refmap": {
+  "cells": 35,
+  "atLeast95": 0,
+  "max": 0.27
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 61,
+ "bbox": [
+  0,
+  0,
+  127,
+  111
+ ],
+ "note": "실루엣 다시 읽기 — 벽돌 쇼와 건물, 아치 쌍창+발코니 난간, 원통 물탱크, 노랑 세로간판",
+ "ok": true
+}

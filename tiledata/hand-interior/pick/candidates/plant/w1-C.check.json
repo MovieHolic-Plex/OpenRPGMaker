@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/plant/w1-C.pxg",
+ "id": "plant",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  0,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  14,
+  13
+ ],
+ "note": "둥근 잎 덤불 대신 위로 뻗는 긴 칼잎 화분(스투키·백합처럼 세로 실루엣)으로 재해석 — 가운데 잎이 가장 높고 양옆 잎이 휘어 내려온다.",
+ "ok": true
+}

@@ -1,0 +1,60 @@
+{
+ "id": "hills",
+ "slug": "hills",
+ "name": "언덕",
+ "scene": "들·길",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "풀 덮인 낮은 언덕 무리. World.png 산맥 블록의 **배치 원리**(봉우리를 16px 격자에 두고 8px 엇갈려 겹친다)를 낮고 둥근 둔덕으로: 둔덕 하나 = 폭 12~14px·높이 6~8px 반원, 윗왼 비탈 밝게·오른아래 비탈 어둡게, 앞 둔덕이 뒤 둔덕 밑동을 가린다. 바위 없음. 산맥과 실루엣이 확실히 달라야 한다(뾰족 금지).",
+ "palette_hint": "whill 비탈, 그늘 wgrass 어두운 단",
+ "worker": "wv2",
+ "style": "mass",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

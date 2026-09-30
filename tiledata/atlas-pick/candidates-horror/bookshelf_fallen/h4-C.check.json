@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bookshelf_fallen/h4-C.pxg",
+ "set": "horror",
+ "id": "bookshelf_fallen",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.061
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 21,
+ "bbox": [
+  2,
+  2,
+  31,
+  31
+ ],
+ "note": "등판 널 틈에서 창백하지 않은 검은 손이 뻗어 나오는 재해석: 판이 더 세워지고, 틈은 void, 손가락 넷이 늘어짐, 책은 손 방향으로 길게 흩어짐",
+ "ok": true
+}

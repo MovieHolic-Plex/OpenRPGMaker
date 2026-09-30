@@ -1,0 +1,334 @@
+{
+ "side": "before",
+ "run": 2,
+ "load": "8.55 8.34 8.00",
+ "s1_cold": {
+  "readyMs": 40042,
+  "long": {
+   "count": 27,
+   "totalMs": 19423,
+   "top": [
+    {
+     "atMs": 20239,
+     "durMs": 9149
+    },
+    {
+     "atMs": 29419,
+     "durMs": 2074
+    },
+    {
+     "atMs": 34702,
+     "durMs": 2045
+    },
+    {
+     "atMs": 37823,
+     "durMs": 1209
+    },
+    {
+     "atMs": 14194,
+     "durMs": 1105
+    }
+   ]
+  },
+  "parse": {
+   "n": 496,
+   "ms": 1148,
+   "MB": 257.4
+  },
+  "netMB": 296.3,
+  "fetches": 17
+ },
+ "s1_warm": {
+  "readyMs": 17030,
+  "long": {
+   "count": 20,
+   "totalMs": 13705,
+   "top": [
+    {
+     "atMs": 3889,
+     "durMs": 8627
+    },
+    {
+     "atMs": 13152,
+     "durMs": 1762
+    },
+    {
+     "atMs": 1691,
+     "durMs": 758
+    },
+    {
+     "atMs": 15394,
+     "durMs": 460
+    },
+    {
+     "atMs": 2902,
+     "durMs": 442
+    }
+   ]
+  },
+  "parse": {
+   "n": 497,
+   "ms": 583,
+   "MB": 144.2
+  },
+  "netMB": 3.6,
+  "fetches": 12
+ },
+ "s1_warm2": {
+  "readyMs": 16859,
+  "long": {
+   "count": 22,
+   "totalMs": 13364,
+   "top": [
+    {
+     "atMs": 4237,
+     "durMs": 8300
+    },
+    {
+     "atMs": 13440,
+     "durMs": 1766
+    },
+    {
+     "atMs": 2399,
+     "durMs": 661
+    },
+    {
+     "atMs": 3192,
+     "durMs": 492
+    },
+    {
+     "atMs": 15352,
+     "durMs": 456
+    }
+   ]
+  },
+  "parse": {
+   "n": 497,
+   "ms": 561,
+   "MB": 144.2
+  },
+  "netMB": 3.6,
+  "fetches": 13
+ },
+ "canvas": {
+  "x": 346,
+  "y": 49,
+  "w": 676,
+  "h": 851
+ },
+ "tileId": "chipset-tile-126",
+ "s2_paintClickMs": 201,
+ "s2": {
+  "long": {
+   "count": 7,
+   "totalMs": 1682,
+   "top": [
+    {
+     "atMs": 43886,
+     "durMs": 912
+    },
+    {
+     "atMs": 51846,
+     "durMs": 281
+    },
+    {
+     "atMs": 46030,
+     "durMs": 206
+    },
+    {
+     "atMs": 43070,
+     "durMs": 78
+    },
+    {
+     "atMs": 52130,
+     "durMs": 78
+    },
+    {
+     "atMs": 43543,
+     "durMs": 72
+    }
+   ]
+  },
+  "saveFetches": [
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": -150,
+    "respMs": 475
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 319,
+    "atMs": 3130,
+    "respMs": 5389
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 3217,
+    "respMs": 5356
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 8518,
+    "respMs": 56
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 8574,
+    "respMs": 55
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 1,
+    "atMs": 8910,
+    "respMs": 87
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 9217,
+    "respMs": 14
+   }
+  ],
+  "stringify": {
+   "n": 1432054,
+   "MB": 29.4,
+   "ms": 0
+  },
+  "parse": {
+   "n": 4,
+   "ms": 17
+  },
+  "hot": [],
+  "top": [
+   [
+    4299.1,
+    "(program) :0:0"
+   ],
+   [
+    1253.4,
+    "kFt /assets/main-B0N4CzqN.js:106:53716"
+   ],
+   [
+    492.7,
+    "xFt /assets/main-B0N4CzqN.js:106:54423"
+   ],
+   [
+    187.3,
+    "JSON.stringify :33:16"
+   ],
+   [
+    144.5,
+    "(garbage collector) :0:0"
+   ]
+  ],
+  "busyMs": 7213
+ },
+ "s3": {
+  "dragOnlyMs": 3253,
+  "perMoveMedianMs": 141.5,
+  "perMoveMaxMs": 264.2,
+  "moves": 20,
+  "longAfter": {
+   "count": 26,
+   "totalMs": 1980,
+   "top": [
+    {
+     "atMs": 56098,
+     "durMs": 148
+    },
+    {
+     "atMs": 55627,
+     "durMs": 122
+    },
+    {
+     "atMs": 53432,
+     "durMs": 86
+    },
+    {
+     "atMs": 53727,
+     "durMs": 79
+    },
+    {
+     "atMs": 53581,
+     "durMs": 78
+    }
+   ]
+  },
+  "saveFetches": 7
+ },
+ "s4": {
+  "medianMs": 399,
+  "all": [
+   418,
+   485,
+   371,
+   382,
+   399,
+   423,
+   384,
+   354
+  ],
+  "longSumMedian": 486
+ },
+ "s5": {
+  "medianMs": 201,
+  "all": [
+   282,
+   221,
+   202,
+   175,
+   191,
+   352,
+   184,
+   182,
+   190,
+   201
+  ],
+  "longSumMedian": 199
+ },
+ "s6": {
+  "medianMs": 33,
+  "all": [
+   26,
+   33,
+   32,
+   33,
+   33,
+   39,
+   27,
+   14,
+   33,
+   33,
+   33,
+   33
+  ],
+  "longSumMedian": 72
+ },
+ "s7": {
+  "rafMs": 1149,
+  "settleMs": 864,
+  "longSumMs": 1419,
+  "cards": 5897,
+  "gallery": true
+ },
+ "heap": {
+  "jsHeapUsedMB": 2506,
+  "jsHeapTotalMB": 2582,
+  "nodes": 76790,
+  "taskDurationS": 0,
+  "scriptDurationS": 0,
+  "layoutDurationS": 0,
+  "recalcStyleS": 0
+ }
+}

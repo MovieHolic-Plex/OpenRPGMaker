@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_locker/h5-B.pxg",
+ "set": "horror",
+ "id": "broken_locker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.188
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.215
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  0,
+  15,
+  31
+ ],
+ "note": "윗판·왼쪽 모서리가 밝게 치켜 빛나고 아랫문 아래는 눌려 어둡다, 발치 오른쪽으로 반투명 그림자",
+ "ok": true
+}

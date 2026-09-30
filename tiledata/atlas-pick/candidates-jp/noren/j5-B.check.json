@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/noren/j5-B.pxg",
+ "set": "jp",
+ "id": "noren",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "note": "빛 강화: 봉 밑 어두운 그늘 2줄, 각 폭 왼쪽 밝게·오른쪽 어둡게, 가운데 접힘 골, 아랫단 검정에 가까운 남색 단",
+ "ok": true
+}

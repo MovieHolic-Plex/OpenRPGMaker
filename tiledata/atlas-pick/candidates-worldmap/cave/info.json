@@ -1,0 +1,23 @@
+{
+ "id": "cave",
+ "slug": "cave",
+ "name": "동굴 입구",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "바위 언덕에 뚫린 어두운 동굴 입구. **칸 폭의 60% 넘는 검은 아치**(속 가장 어두운 단, 아치 안쪽 테 한 단 밝게), 아치 위 바위 이마(윗면 밝게), 아래 흙 문턱. 실루엣 한 색으로도 아치가 읽혀야 한다.",
+ "palette_hint": "wrock 바위, 구멍 mout·wrock:0",
+ "worker": "wv8"
+}

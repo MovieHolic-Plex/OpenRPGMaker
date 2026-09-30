@@ -1,0 +1,41 @@
+{
+ "id": "night_path",
+ "slug": "night_path",
+ "name": "밤 흙길",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "night_grass 와 한 식구: 가운데 세로로 지나는 흙길(폭 3/4 칸 정도), 양 가장자리는 풀이 흙을 파고드는 들쭉날쭉 선, 길 위 작은 돌 두세 점. 위아래로 이어 붙는다(길 폭·위치 같게), 좌우 끝 풀은 night_grass 와 맞게.",
+ "palette_hint": "soil 길, night 풀, grave 돌",
+ "worker_v1": "h1",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "outdoor",
+ "role": "밤 흙길(야외 바닥)",
+ "worker": "h1",
+ "set_with": [
+  "night_grass",
+  "grave_open"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:earth",
+   "name_ko": "흙바닥",
+   "atlas": {
+    "x": 256,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_crossing/k9-A.pxg",
+ "set": "jp",
+ "id": "kit_crossing",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 17,
+  "atLeast95": 0,
+  "max": 0.211
+ },
+ "refmap": {
+  "cells": 17,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 34,
+ "bbox": [
+  0,
+  0,
+  127,
+  47
+ ],
+ "note": "강남 현대 시트 결: 택시노랑·옻칠 검정 줄무늬 4칸 폭 기둥, 자갈+갈색 침목, 회색 콘크리트 판, 접촉 그림자 얇게",
+ "ok": true
+}

@@ -1,0 +1,22 @@
+{
+ "id": "specimen_jar",
+ "slug": "specimen_jar",
+ "name": "표본 병",
+ "scene": "폐병원",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "탁한 초록 액체가 든 큰 유리 병(둥근 몸통, 쇠 뚜껑) 속에 흐릿한 무언가(눈 하나 또는 작은 손 실루엣), 병 옆 작은 병 하나. 유리 가장자리 밝은 테 한 줄, 속은 어둡게.",
+ "palette_hint": "murk 유리·액체, tin 뚜껑, bisque 속 표본",
+ "worker_v1": "h2",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h2"
+}

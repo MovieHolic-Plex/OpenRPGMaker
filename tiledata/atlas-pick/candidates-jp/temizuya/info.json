@@ -1,0 +1,19 @@
+{
+ "id": "temizuya",
+ "slug": "temizuya",
+ "name": "데미즈야(손 씻는 곳)",
+ "scene": "신사 한 켠",
+ "cells": [
+  3,
+  3
+ ],
+ "canvas": [
+  48,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "네 기둥 작은 지붕(동판 녹청 또는 기와) 아래 긴 돌 물통, 물(밝은 청록 한 줄 반짝임), 물통 위 가로 대나무 국자 서너 개, 한쪽 끝 용 모양 물 주둥이(작게). 지붕 윗면이 보이는 각.",
+ "palette_hint": "kasa 지붕, hinoki 기둥, ishi 물통, mglass 물, matsu 대나무",
+ "worker": "j1"
+}

@@ -1,0 +1,15 @@
+{
+  "base": "1a221eae6b65dbaa3e893001a127e453a91d9049",
+  "shippingPlayer": true,
+  "interactions": 6,
+  "fixed": 6,
+  "pageErrors": 0,
+  "visualReview": [
+    "record-actor-after.png",
+    "enemy-record-after.png"
+  ],
+  "localGatesRun": false,
+  "vitestRun": false,
+  "fullTypecheckRun": false,
+  "canonicalProjectWrites": false
+}

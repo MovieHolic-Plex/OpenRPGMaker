@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/gym_line/s2-B.pxg",
+ "set": "school",
+ "id": "gym_line",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  7,
+  15,
+  9
+ ],
+ "note": "흰선 아래에 반투명 접지 그림자 한 줄 -, 윗줄 광 강조",
+ "ok": true
+}

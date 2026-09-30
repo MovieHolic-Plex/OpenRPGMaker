@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/music_box/h4-A.pxg",
+ "set": "horror",
+ "id": "music_box",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 15,
+ "bbox": [
+  2,
+  5,
+  15,
+  15
+ ],
+ "note": "v5 상자 자리(아래 2/3): 뚜껑 열린 마호가니 상자, 거울에 금, 무용수 한 점 기둥과 치마, 옆 태엽, 귀퉁이 빠지고 발 한 짝 없음",
+ "ok": true
+}

@@ -1,0 +1,41 @@
+{
+ "src": "tiledata/atlas-pick/candidates-school/class_window/s1-A.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/school/class_window/s1-A.m3.pxg",
+ "size": [
+  32,
+  32
+ ],
+ "stat": {
+  "ramp": 11,
+  "weak": 1
+ },
+ "weak": [
+  {
+   "frm": "#9cc6cc",
+   "nearest": "#9eb0e0",
+   "position": "garasu4",
+   "px": 1
+  }
+ ],
+ "ambiguous": {
+  "#b6b6b0": 2
+ },
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 0,
+ "droppedBy": {},
+ "baked": {
+  "&": 53
+ },
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 12,
+ "ramps": [
+  "conc",
+  "garasu",
+  "hodo",
+  "kinari",
+  "tekko"
+ ]
+}

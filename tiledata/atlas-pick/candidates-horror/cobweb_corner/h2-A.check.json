@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/cobweb_corner/h2-A.pxg",
+ "set": "horror",
+ "id": "cobweb_corner",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "light"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "A: 왼쪽 위 모서리에서 방사 줄 넷 + 호 줄 세 겹(dust 3~5), 안쪽 호 하나가 끊겨 줄 끝이 늘어짐.",
+ "ok": true
+}

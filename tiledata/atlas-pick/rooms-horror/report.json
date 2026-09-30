@@ -1,0 +1,138 @@
+{
+ "manor_hall/pilot": {
+  "missing": [],
+  "fallback": [],
+  "used": {
+   "wall_wood_panel": "tiledata/atlas-pick/candidates-horror/wall_wood_panel/hf2-A.png",
+   "wall_manor_damask": "tiledata/atlas-pick/candidates-horror/wall_manor_damask/pilot-A.png",
+   "floor_manor_plank": "tiledata/atlas-pick/candidates-horror/floor_manor_plank/pilot-A.png",
+   "ceil_black": "tiledata/atlas-pick/candidates-horror/ceil_black/pilot-A.png",
+   "carpet_runner": "tiledata/atlas-pick/candidates-horror/carpet_runner/pilot-A.png",
+   "stairs_up_wood": "tiledata/atlas-pick/candidates-horror/stairs_up_wood/hf1-A.png",
+   "candelabra_drip": "tiledata/atlas-pick/candidates-horror/candelabra_drip/h3-A.png",
+   "door_wood": "tiledata/atlas-pick/candidates-horror/door_wood/pilot-A.png",
+   "window_night": "tiledata/atlas-pick/candidates-horror/window_night/pilot-A.png",
+   "window_curtain": "tiledata/atlas-pick/candidates-horror/window_curtain/hf3-A.png",
+   "door_locked": "tiledata/atlas-pick/candidates-horror/door_locked/hf3-A.png",
+   "moonlight_floor": "tiledata/atlas-pick/candidates-horror/moonlight_floor/hf1-A.png",
+   "grandfather_clock": "tiledata/atlas-pick/candidates-horror/grandfather_clock/h3-A.png",
+   "table_wood": "tiledata/atlas-pick/candidates-horror/table_wood/hf4-A.png",
+   "candle_table": "tiledata/atlas-pick/candidates-horror/candle_table/hf4-A.png",
+   "chair_wood": "tiledata/atlas-pick/candidates-horror/chair_wood/hf4-A.png",
+   "exit_dark": "tiledata/atlas-pick/candidates-horror/exit_dark/hf1-A.png",
+   "portrait_eyes": "tiledata/atlas-pick/candidates-horror/portrait_eyes/h1-A.png",
+   "doll_sitting": "tiledata/atlas-pick/candidates-horror/doll_sitting/h1-A.png"
+  }
+ },
+ "manor_hall/v34": {
+  "missing": [],
+  "fallback": [],
+  "used": {
+   "wall_wood_panel": "tiledata/atlas-pick/candidates-horror/wall_wood_panel/hf2-A.png",
+   "wall_manor_damask": "tiledata/atlas-pick/candidates-horror/wall_manor_damask/pilot-A.png",
+   "floor_manor_plank": "tiledata/atlas-pick/candidates-horror/floor_manor_plank/pilot-A.png",
+   "ceil_black": "tiledata/atlas-pick/candidates-horror/ceil_black/pilot-A.png",
+   "carpet_runner": "tiledata/atlas-pick/candidates-horror/carpet_runner/pilot-A.png",
+   "stairs_up_wood": "tiledata/atlas-pick/candidates-horror/stairs_up_wood/hf1-A.png",
+   "candelabra_drip": "tiledata/atlas-pick/candidates-horror/candelabra_drip/v34-A.png",
+   "door_wood": "tiledata/atlas-pick/candidates-horror/door_wood/pilot-A.png",
+   "window_night": "tiledata/atlas-pick/candidates-horror/window_night/pilot-A.png",
+   "window_curtain": "tiledata/atlas-pick/candidates-horror/window_curtain/hf3-A.png",
+   "door_locked": "tiledata/atlas-pick/candidates-horror/door_locked/hf3-A.png",
+   "moonlight_floor": "tiledata/atlas-pick/candidates-horror/moonlight_floor/hf1-A.png",
+   "grandfather_clock": "tiledata/atlas-pick/candidates-horror/grandfather_clock/v34-A.png",
+   "table_wood": "tiledata/atlas-pick/candidates-horror/table_wood/v34-A.png",
+   "candle_table": "tiledata/atlas-pick/candidates-horror/candle_table/hf4-A.png",
+   "chair_wood": "tiledata/atlas-pick/candidates-horror/chair_wood/v34-A.png",
+   "exit_dark": "tiledata/atlas-pick/candidates-horror/exit_dark/hf1-A.png",
+   "portrait_eyes": "tiledata/atlas-pick/candidates-horror/portrait_eyes/h1-A.png",
+   "doll_sitting": "tiledata/atlas-pick/candidates-horror/doll_sitting/v34-A.png"
+  }
+ },
+ "gallery_room/pilot": {
+  "missing": [],
+  "fallback": [],
+  "used": {
+   "wall_gallery_white": "tiledata/atlas-pick/candidates-horror/wall_gallery_white/hf5-A.png",
+   "floor_gallery_wood": "tiledata/atlas-pick/candidates-horror/floor_gallery_wood/hf5-A.png",
+   "wall_gallery_grey": "tiledata/atlas-pick/candidates-horror/wall_gallery_grey/hf5-A.png",
+   "ceil_plaster": "tiledata/atlas-pick/candidates-horror/ceil_plaster/hf1-A.png",
+   "carpet_runner": "tiledata/atlas-pick/candidates-horror/carpet_runner/pilot-A.png",
+   "frame_landscape": "tiledata/atlas-pick/candidates-horror/frame_landscape/hf5-A.png",
+   "plaque": "tiledata/atlas-pick/candidates-horror/plaque/hf5-A.png",
+   "frame_small": "tiledata/atlas-pick/candidates-horror/frame_small/hf5-A.png",
+   "door_gallery": "tiledata/atlas-pick/candidates-horror/door_gallery/hf3-A.png",
+   "rope_barrier": "tiledata/atlas-pick/candidates-horror/rope_barrier/hf5-A.png",
+   "pedestal": "tiledata/atlas-pick/candidates-horror/pedestal/hf5-A.png",
+   "bench_gallery": "tiledata/atlas-pick/candidates-horror/bench_gallery/hf5-A.png",
+   "pillar_marble": "tiledata/atlas-pick/candidates-horror/pillar_marble/hf1-A.png",
+   "exit_dark": "tiledata/atlas-pick/candidates-horror/exit_dark/hf1-A.png",
+   "portrait_eyes": "tiledata/atlas-pick/candidates-horror/portrait_eyes/h1-A.png"
+  }
+ },
+ "gallery_room/v34": {
+  "missing": [],
+  "fallback": [],
+  "used": {
+   "wall_gallery_white": "tiledata/atlas-pick/candidates-horror/wall_gallery_white/hf5-A.png",
+   "floor_gallery_wood": "tiledata/atlas-pick/candidates-horror/floor_gallery_wood/hf5-A.png",
+   "wall_gallery_grey": "tiledata/atlas-pick/candidates-horror/wall_gallery_grey/hf5-A.png",
+   "ceil_plaster": "tiledata/atlas-pick/candidates-horror/ceil_plaster/hf1-A.png",
+   "carpet_runner": "tiledata/atlas-pick/candidates-horror/carpet_runner/pilot-A.png",
+   "frame_landscape": "tiledata/atlas-pick/candidates-horror/frame_landscape/hf5-A.png",
+   "plaque": "tiledata/atlas-pick/candidates-horror/plaque/hf5-A.png",
+   "frame_small": "tiledata/atlas-pick/candidates-horror/frame_small/hf5-A.png",
+   "door_gallery": "tiledata/atlas-pick/candidates-horror/door_gallery/hf3-A.png",
+   "rope_barrier": "tiledata/atlas-pick/candidates-horror/rope_barrier/v34-A.png",
+   "pedestal": "tiledata/atlas-pick/candidates-horror/pedestal/v34-A.png",
+   "bench_gallery": "tiledata/atlas-pick/candidates-horror/bench_gallery/v34-A.png",
+   "pillar_marble": "tiledata/atlas-pick/candidates-horror/pillar_marble/v34-A.png",
+   "exit_dark": "tiledata/atlas-pick/candidates-horror/exit_dark/hf1-A.png",
+   "portrait_eyes": "tiledata/atlas-pick/candidates-horror/portrait_eyes/h1-A.png"
+  }
+ },
+ "ward_room/pilot": {
+  "missing": [],
+  "fallback": [],
+  "used": {
+   "hosp_wall": "tiledata/atlas-pick/candidates-horror/hosp_wall/h5-A.png",
+   "wall_hosp_tile": "tiledata/atlas-pick/candidates-horror/wall_hosp_tile/hf6-A.png",
+   "floor_hosp_linoleum": "tiledata/atlas-pick/candidates-horror/floor_hosp_linoleum/hf6-A.png",
+   "hosp_floor": "tiledata/atlas-pick/candidates-horror/hosp_floor/h5-A.png",
+   "ceil_plaster": "tiledata/atlas-pick/candidates-horror/ceil_plaster/hf1-A.png",
+   "window_barred": "tiledata/atlas-pick/candidates-horror/window_barred/hf3-A.png",
+   "door_hosp": "tiledata/atlas-pick/candidates-horror/door_hosp/hf3-A.png",
+   "iv_stand": "tiledata/atlas-pick/candidates-horror/iv_stand/h4-A.png",
+   "hosp_bed": "tiledata/atlas-pick/candidates-horror/hosp_bed/h2-A.png",
+   "bedside_cabinet": "tiledata/atlas-pick/candidates-horror/bedside_cabinet/hf6-A.png",
+   "hosp_screen": "tiledata/atlas-pick/candidates-horror/hosp_screen/h2-A.png",
+   "ward_sink": "tiledata/atlas-pick/candidates-horror/ward_sink/hf6-A.png",
+   "medicine_cabinet": "tiledata/atlas-pick/candidates-horror/medicine_cabinet/h3-A.png",
+   "hosp_chair": "tiledata/atlas-pick/candidates-horror/hosp_chair/hf6-A.png",
+   "exit_dark": "tiledata/atlas-pick/candidates-horror/exit_dark/hf1-A.png",
+   "wheelchair": "tiledata/atlas-pick/candidates-horror/wheelchair/h4-A.png"
+  }
+ },
+ "ward_room/v34": {
+  "missing": [],
+  "fallback": [],
+  "used": {
+   "hosp_wall": "tiledata/atlas-pick/candidates-horror/hosp_wall/h5-A.png",
+   "wall_hosp_tile": "tiledata/atlas-pick/candidates-horror/wall_hosp_tile/hf6-A.png",
+   "floor_hosp_linoleum": "tiledata/atlas-pick/candidates-horror/floor_hosp_linoleum/hf6-A.png",
+   "hosp_floor": "tiledata/atlas-pick/candidates-horror/hosp_floor/h5-A.png",
+   "ceil_plaster": "tiledata/atlas-pick/candidates-horror/ceil_plaster/hf1-A.png",
+   "window_barred": "tiledata/atlas-pick/candidates-horror/window_barred/hf3-A.png",
+   "door_hosp": "tiledata/atlas-pick/candidates-horror/door_hosp/hf3-A.png",
+   "iv_stand": "tiledata/atlas-pick/candidates-horror/iv_stand/v34-A.png",
+   "hosp_bed": "tiledata/atlas-pick/candidates-horror/hosp_bed/v34-A.png",
+   "bedside_cabinet": "tiledata/atlas-pick/candidates-horror/bedside_cabinet/v34-A.png",
+   "hosp_screen": "tiledata/atlas-pick/candidates-horror/hosp_screen/v34-A.png",
+   "ward_sink": "tiledata/atlas-pick/candidates-horror/ward_sink/v34-A.png",
+   "medicine_cabinet": "tiledata/atlas-pick/candidates-horror/medicine_cabinet/v34-A.png",
+   "hosp_chair": "tiledata/atlas-pick/candidates-horror/hosp_chair/hf6-A.png",
+   "exit_dark": "tiledata/atlas-pick/candidates-horror/exit_dark/hf1-A.png",
+   "wheelchair": "tiledata/atlas-pick/candidates-horror/wheelchair/v34-A.png"
+  }
+ }
+}

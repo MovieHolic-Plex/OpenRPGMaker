@@ -1,0 +1,23 @@
+{
+ "id": "wall_tower",
+ "slug": "wall_tower",
+ "name": "성벽 감시탑",
+ "scene": "들·길",
+ "kind": "icon",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "위층 단품(그림자 포함)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 성곽선 모서리·중간에 서는 정사각 감시탑 한 칸. 2단 총안, 어두운 문.",
+ "palette_hint": "wstone,wink",
+ "worker": "v6"
+}

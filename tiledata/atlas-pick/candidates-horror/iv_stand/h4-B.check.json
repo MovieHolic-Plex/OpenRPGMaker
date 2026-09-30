@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/iv_stand/h4-B.pxg",
+ "set": "horror",
+ "id": "iv_stand",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  1,
+  4,
+  15,
+  31
+ ],
+ "note": "왼쪽 위 빛: 기둥 왼쪽·봉지 왼쪽 테 밝고 오른쪽 어둡게, 봉지 액체 윗면 반짝, 받침 오른쪽 아래로 ~ - 그림자, 왼쪽 위에 ? 달빛",
+ "ok": true
+}

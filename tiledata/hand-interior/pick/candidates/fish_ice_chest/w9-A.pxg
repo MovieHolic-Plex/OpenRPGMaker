@@ -1,0 +1,45 @@
+// w9 A — v5 배치 유지: 생선마다 머리·눈·꼬리 분명하게, 얼음 알갱이 3톤, 나무상자 앞판 널빤지 이음을 톤으로 정리
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a black 3
+@mat b fish 3
+@mat c green 3
+@mat d ice 3
+@mat e pine 3
+@mat f red 3
+@mat g white 3
+@mblock 0 0
+................................
+................................
+................................
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeddbbbbbdbddfffffdfddcccccdcdee
+eedbabbbbbbdfaffffffdcaccccccdee
+eeddbbbbbdbddfffffdfddcccccdcdee
+eedddddcccccdcddbbbbbdbdfffffdfe
+eeddddcaccccccdbabbbbbbfaffffffe
+eedddddcccccdcddbbbbbdbdfffffdfe
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+@tblock 0 0
+................................
+................................
+................................
+05555555555555555555555555555440
+05646655462446655442646655442430
+05460554422460554422460554422430
+05565443152545443152565443142530
+05555656655452556655452566554420
+05456560554422560554422605544220
+05555565443142555443162454431520
+05555555555555555555555555555540
+04444444444444444444444444444440
+04333243332333323333233332333320
+04333233332333323333233332333320
+04222222222222222222222222222220
+00000000000000000000000000000000

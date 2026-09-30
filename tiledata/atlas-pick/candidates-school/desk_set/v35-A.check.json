@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/desk_set/v35-A.pxg",
+ "set": "school",
+ "id": "desk_set",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   1,
+   1
+  ],
+  "canvas": [
+   16,
+   16
+  ]
+ },
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  3,
+  0,
+  12,
+  15
+ ],
+ "note": "학생 책상 3/4 — 합판 상판 T4·앞 F12, 발 두 줄·아래 책칸에 파란 책 한 권 (폭 10px)",
+ "ok": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "ema_rack",
+ "slug": "ema_rack",
+ "name": "에마 걸이",
+ "scene": "신사 한 켠",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "작은 지붕(기와 또는 동판) 아래 가로 걸이 두 줄에 오각형 나무 에마 판이 여러 장 겹쳐 걸림(판마다 글씨 자국 점, 붉은 끈 점). 기둥 둘.",
+ "palette_hint": "hinoki 판, sumi 틀, kasa/kawara 지붕, akachin 끈",
+ "worker": "j4"
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/milk_crate/s2-C.pxg",
+ "set": "school",
+ "id": "milk_crate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  0,
+  15,
+  15
+ ],
+ "note": "실루엣 재해석: 빨강(vred) 상자, 모서리를 깎아 둥글게, 우유팩 머리를 위로 삐죽 솟게 해서 한 색 실루엣만으로도 팩 든 상자.",
+ "ok": true
+}

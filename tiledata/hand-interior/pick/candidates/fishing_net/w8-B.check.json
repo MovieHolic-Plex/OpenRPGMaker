@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fishing_net/w8-B.pxg",
+ "id": "fishing net",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 15,
+ "v5_colors": 6,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "note": "그물 구멍에 반투명 그림자를 깔고 레일에 두께를 줘 벽에서 떠 보이는 그물",
+ "ok": true
+}

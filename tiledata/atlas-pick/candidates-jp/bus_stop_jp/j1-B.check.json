@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/bus_stop_jp/j1-B.pxg",
+ "set": "jp",
+ "id": "bus_stop_jp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.091
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  2,
+  1,
+  15,
+  31
+ ],
+ "note": "센 빛: 판 왼쪽 위 하이라이트·오른쪽 아래 어둡게, 기둥 좌우 대비 크게, 받침 오른쪽 그림자와 바닥 그림자 3줄",
+ "ok": true
+}

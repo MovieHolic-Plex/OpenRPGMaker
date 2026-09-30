@@ -1,0 +1,31 @@
+{
+ "id": "door_cell",
+ "slug": "door_cell",
+ "name": "쇠창살 문(감옥)",
+ "scene": "지하·돌방",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "door_wood 와 같은 칸, 쇠창살 문(세로 창살 넷 + 가로 띠 둘, 창살 사이는 투명 — 뒤 벽면·어둠이 보인다), 자물쇠 한 점.",
+ "palette_hint": "viron/tin, rust",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "cellar",
+ "role": "문(창살)",
+ "worker": "hf7",
+ "set_with": [
+  "wall_stone_block",
+  "wall_cellar_brick",
+  "floor_stone",
+  "floor_dirt",
+  "torch_wall",
+  "shelf_cellar"
+ ]
+}

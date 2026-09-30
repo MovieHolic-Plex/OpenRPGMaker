@@ -1,0 +1,73 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood
+@mat b yellow
+@mat c green
+@mat d red
+@mblock 0 0
+.aaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabaacaadaabaaa
+aaabaacaadaabaaa
+aabbbcccdddbbbaa
+aabbbcccdddbbbaa
+aabbbcccdddbbbaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabaaacaaadaaaa
+aabbbacccadddaaa
+aabbbacccadddaaa
+aabbbacccadddaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaacaadaaabaaaaa
+aaacaadaaabaaaaa
+aacccdddabbbaaaa
+aacccdddabbbaaaa
+aacccdddabbbaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+.aaaaaaaaaaaaaa.
+@tblock 0 0
+.33333333333333.
+1655555555555551
+1655555555555551
+1655555555555551
+1777777777777771
+1333333333333331
+1111111111111111
+0411111111111120
+0411111111111120
+0411111111111120
+0411111111111120
+0413113113113120
+0435335335335320
+0435335335335320
+0423223223223220
+0666666666666660
+0222222222222220
+0411111111111120
+0413111311131120
+0435313531353120
+0435313531353120
+0423212321232120
+0666666666666660
+0222222222222220
+0411111111111120
+0413113111311120
+0435335313531120
+0435335313531120
+0423223212321120
+0666666666666660
+0222222222222220
+.40000000000002.

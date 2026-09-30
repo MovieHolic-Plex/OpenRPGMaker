@@ -1,0 +1,90 @@
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a blue 5
+@mat b marble 6
+@mat d blue 6
+@mat f marble 5
+@mat g red 4
+@mat h red 3
+@mat j green 3
+@mat k blue 3
+@mat l green 5
+@mat m green 4
+@mat n orange 4
+@mat o linen 5
+@mat p linen 3
+@mat r yellow 5
+@mat s wood 2
+@mat t red 5
+@mat u clay 5
+@mat v clay 6
+@mat w clay 4
+@mat e orange 4
+@mat q wood 2
+@block 0 0
+................................................
+................................................
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+A..............................................C
+AII.IIIII.IIIII.IIIII.IIIII.IIIII.IIIII.IIIII.IC
+AII.IIIII.IIIII.IIIII.IIIII.IIIII.IIIII.IIIII.IC
+AIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIC
+AIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIC
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC
+.CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC.
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.aaaaaaabbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaabbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.adadabbbbbbbbdadadadadadadadadadadabbbbdadadad.
+.ddddddffffffddddddddddddddddddddddbbbbbbbddddd.
+.dddddddddddddddddddddddddddddddddbbbbbbbbbdddd.
+.ddddddddddddddddddddddddddddddddddfffffffddddd.
+.dddddddddddddddddddddddddddddddddddddddddddddd.
+.dbdbdbfbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdb.
+.bbbbbbbfbbbbbbbbbbbbbbbbgggghhhhhbbbbbbbbbbbbb.
+.bbggggfhhhbbbbbbbbbbjjjjjggghhhhjjjbbbbbbbbbbb.
+.jjbggghhhbbbkkkkkkklmjjjjjgghhhjjjjjnnnnnnnnbb.
+.jjjjgghhjjjjjkkkkklllmmjhhhhhhhhhjjjjnnnnnnjjj.
+.jjhhhhhhhhmjjjkkklllllmmmoooooopjjjjjjnnnnmmmm.
+.jmmooooopmmmkkkkkmlllmmmmoooorrpmjjjnnnnnnnnmm.
+.mmmooorrpmmmmoooopmlmmmmmoooorrpmmmmmooooopmmm.
+.mmmooorrpmmmmoooopmmsmmmmoooooopmmmmmooorrpmmm.
+.mmmossoopmmmmossopmmsmmmmossooopmmmmmossrrpmmm.
+.mmmossoopmmmmossopmmsmmmmossooopmmmmmossoopmmm.
+.mmmmmmmmmmmmmmmmmmmmsmmmmmmmmmmmmmmmmmmmmmmmmm.
+.mtmrmmmmtmrmmmmmmmmmmmmmmmmmmmmmtmrmmmmmmmmtmr.
+.uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu.
+.uuvuuvuuvuuvuuvuuvuuvuuvuuvuuvuuvuuvuuvuuvuuvu.
+.uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+...e.....e.....e.....e.....e.....e.....e.....e..
+...q.....q.....q.....q.....q.....q.....q.....q..
+................................................
+................................................
+................................................
+................................................

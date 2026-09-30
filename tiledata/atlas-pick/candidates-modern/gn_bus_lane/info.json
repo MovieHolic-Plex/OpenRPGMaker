@@ -1,0 +1,54 @@
+{
+ "id": "gn-bus-lane",
+ "slug": "gn_bus_lane",
+ "name": "버스전용차로 표시(글자·파란 선)",
+ "scene": "차",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "버스전용 글자 버(북향 운전자용) 1×1. 중앙버스전용차로: 넓은 남북 대로 가운데, 섬식 정류장 양옆 한 차로씩. 버스는 우측통행 방향으로 서 있고(서쪽 차로 남향, 동쪽 차로 북향), 정류장 섬 앞뒤에 대로를 건너는 횡단보도.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-bus-w0-n",
+  "gn-bus-w0-s",
+  "gn-bus-w1-n",
+  "gn-bus-w1-s",
+  "gn-bus-w2-n",
+  "gn-bus-w2-s",
+  "gn-bus-w3-n",
+  "gn-bus-w3-s",
+  "gn-bus-line-a",
+  "gn-bus-line-b"
+ ],
+ "tiles": [
+  4904,
+  4905,
+  4906,
+  4907,
+  4908,
+  4909,
+  4910,
+  4911,
+  4912,
+  4913
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   48,
+   20
+  ]
+ }
+}

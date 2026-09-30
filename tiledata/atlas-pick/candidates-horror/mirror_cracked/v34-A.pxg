@@ -1,0 +1,76 @@
+// mirror_cracked v34-A 3/4 재작도
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mahog 0
+@mat b moon 0
+@mat c murk 0
+@mat d tarn 0
+@mat e void 0
+@mblock 0 0
+................
+..aaaaaaaaaaaa..
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaccccccbcaa..
+..aacccccbccaa..
+..aaccccbcbcaa..
+..aaccccbcccaa..
+..aaccbbebbcaa..
+..aaccbeccbcaa..
+..aacbeccccbaa..
+..aacbceccccaa..
+..aaccccecbcaa..
+..aacccbecccaa..
+..aaccccbcccaa..
+..aaccccccccaa..
+..aaccccccccaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+..aaaaaaaaaaaa..
+..aaaaaddaaaaa..
+..aaaaaaaaaaaa..
+...aa......aa...
+...aa......aa...
+@tblock 0 0
+................
+..000000000000..
+.03333333333330.
+.05555555555550.
+.05555555555550.
+.06666666666660.
+.00000000000000.
+..022222222220..
+..044444444440..
+..054422224220..
+..054222242220..
+..054222424220..
+..054222422220..
+..052244144220..
+..052241224220..
+..052412222420..
+..052421222220..
+..052222124220..
+..052224122220..
+..052222422220..
+..052222222220..
+..052222222220..
+..044444444440..
+..000000000000..
+.05555555555550.
+.06666666666660.
+.00000000000000.
+..022222222220..
+..044444444440..
+..011111111110..
+...02......20...
+...00......00...

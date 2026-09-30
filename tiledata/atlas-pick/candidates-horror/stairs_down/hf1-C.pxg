@@ -1,0 +1,41 @@
+// stairs_down hf1-C (hf1)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat r rot 0
+@mat v void 0
+@mblock 0 0
+................
+..rrrrrrrrrrrr..
+.rrrrrrrrrrrrrr.
+.rrrrrrrrrrrrrr.
+.rrrrrrrrrrrrrr.
+.rvrvrvrvrvrvrr.
+.rrrrrrrrrrrrrr.
+.rrrrrrrrrrrrrr.
+.rrrrrrrrrrrrrr.
+.rrvrvrvrvrvrrr.
+.rrrrrrrrrrrrrr.
+.vvvvvvvvvvvvvv.
+.vvvvvvvvvvvvvv.
+.vvvvvvvvvvvvvv.
+..vvvvvvvvvvvv..
+................
+@tblock 0 0
+................
+..555555555555..
+.05555555555550.
+.03313333333330.
+.04444444414440.
+.01212121212120.
+.03333333333330.
+.01111111111110.
+.01111111111110.
+.02121212121220.
+.00000000000000.
+.01111111111110.
+.01111111111110.
+.00000000000000.
+..000000000000..
+................

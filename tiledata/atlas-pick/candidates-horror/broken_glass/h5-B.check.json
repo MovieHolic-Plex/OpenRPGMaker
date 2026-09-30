@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_glass/h5-B.pxg",
+ "set": "horror",
+ "id": "broken_glass",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.073
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  2,
+  15,
+  15
+ ],
+ "note": "파편 모서리에 달빛 반짝임(%)이 튀고 아래에 옅은 그림자, 가장 큰 파편에 밝은 반사점",
+ "ok": true
+}

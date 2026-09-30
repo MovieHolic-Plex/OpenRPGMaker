@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/stairs_broken/h1-B.pxg",
+ "set": "horror",
+ "id": "stairs_broken",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.25
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.422
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "B: 왼쪽 위 빛 — 단 윗모서리는 밝고 챌판은 깊게 어둡다. 구멍 안쪽은 위 단의 그림자가 떨어져 더 깊고, 왼쪽 난간이 오른쪽보다 밝다. 빠진 기둥 자리에 반투명 그림자 한 줄.",
+ "ok": true
+}

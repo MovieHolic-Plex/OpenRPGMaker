@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/morgue_drawer/h4-A.pxg",
+ "set": "horror",
+ "id": "morgue_drawer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.309
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "네 칸 쇠 문(윗테 밝은 광택, 이름표 판에 짧은 획, 가로 손잡이), 오른쪽 아래 칸이 열려 흰 천 덮인 몸과 맨발 삐져나옴, 녹 얼룩",
+ "ok": true
+}

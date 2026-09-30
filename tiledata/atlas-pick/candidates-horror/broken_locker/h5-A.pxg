@@ -1,0 +1,83 @@
+// broken_locker h5-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a blood 0
+@mat b board 0
+@mat c dust 0
+@mat d grave 0
+@mat e hmoss 0
+@mat f moon 0
+@mat g murk 0
+@mat h night 0
+@mat i rot 0
+@mat j rust 0
+@mat k tarn 0
+@mat l tin 0
+@mblock 0 0
+..llllllllllll..
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllljll.
+.lljlllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.llljllllllllll.
+.llllllllljllll.
+.llllllllljllll.
+.llllllllllllll.
+.llllllllllllll.
+.llllllllllllll.
+.lllljlllllllll.
+.llllljlllljlll.
+.llllllllllllll.
+.llllllllllllll.
+..lll......lll..
+..lll......lll..
+@tblock 0 0
+..444444444444..
+.66666666666666.
+.55555555555555.
+.54444444444442.
+.54211111533342.
+.54200000533142.
+.54200000533342.
+.54200000053332.
+.54200000051332.
+.54200000053342.
+.54200000005332.
+.54200000001332.
+.54200000005332.
+.54200000000523.
+.54444444444442.
+.33333333333233.
+.22222222222222.
+.54444444444442.
+.54455555555542.
+.54433333333242.
+.54421111113242.
+.54433333323242.
+.54431111133242.
+.54433333335242.
+.54431111112242.
+.54433333333242.
+.54432333333242.
+.54111311112142.
+.54444444444442.
+.11111111111111.
+..111......111..
+..111......111..

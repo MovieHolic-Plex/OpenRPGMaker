@@ -1,0 +1,22 @@
+import { chromium } from "playwright";
+const b = await chromium.launch({ headless: true, args: ["--disable-dev-shm-usage"] });
+const page = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => { localStorage.setItem("oprn:standard-welcome-seen", "1"); localStorage.setItem("oprn:ai-panel-collapsed", "1"); });
+await page.goto((process.env.QA_BASE_URL ?? "http://127.0.0.1:9850") + "/?freshProject=1", { waitUntil: "domcontentloaded" });
+await page.getByTestId("edit-canvas").waitFor({ timeout: 90000 });
+await page.waitForTimeout(3000);
+console.log(await page.evaluate(() => {
+  const t = (fn) => { const r = []; for (let i = 0; i < 4; i++) { document.body.offsetHeight; fn(i); const t0 = performance.now(); document.body.offsetHeight; r.push(performance.now() - t0); } return Math.min(...r).toFixed(1); };
+  const res = {};
+  const ctx = document.querySelector(".ai-deck-rail-ctx");
+  res.ctxText = t((i) => { ctx.textContent = "x" + i; });
+  const modeRow = document.querySelector(".ai-planning-reuse-modes");
+  res.modeRowReplace = modeRow ? t(() => { modeRow.replaceChildren(...[...modeRow.children].map((c) => c.cloneNode(true))); }) : "none";
+  const pre = document.querySelector("[data-testid=ai-planning-reuse-preview]");
+  res.previewHidden = pre ? t((i) => { pre.hidden = i % 2 === 0; }) : "none";
+  const chip = document.querySelector("[data-testid=ai-planning-chip]");
+  res.chipTitle = chip ? t((i) => { chip.setAttribute("title", "t" + i); }) : "none";
+  res.bodyCls = t((i) => { document.body.classList.toggle("zz-probe", i % 2 === 0); });
+  return JSON.stringify(res);
+}));
+await b.close();

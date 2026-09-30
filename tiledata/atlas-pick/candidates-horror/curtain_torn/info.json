@@ -1,0 +1,47 @@
+{
+ "id": "curtain_torn",
+ "slug": "curtain_torn",
+ "name": "찢긴 커튼 창",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "v5 커튼 창(1×1)을 1×2 로 키운 낡은 판: 밤 창(달빛 청회 유리, 창살 십자), 양쪽 벨벳 커튼 중 하나가 찢겨 반쯤 떨어짐, 창 아래 벽에 떨어지는 달빛 번짐(?) 한두 줄.",
+ "palette_hint": "velv 커튼, moon 창빛, rot 창틀, ? 달빛",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1",
+ "v5_ref": [
+  {
+   "id": "curtained window",
+   "name_ko": "커튼 창",
+   "atlas": {
+    "x": 416,
+    "y": 256,
+    "w": 16,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/curtained_window",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_2w/w90-A.pxg",
+ "id": "bookshelf 2w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 41,
+ "v5_colors": 32,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "책장(폭2): 윗면 T5+처마 그림자, 책칸 앞면. 밝은 가운데 띠 제거.",
+ "ok": true
+}

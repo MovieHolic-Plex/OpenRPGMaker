@@ -1,0 +1,42 @@
+// bedside_cabinet hf6-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat r rust 0
+@mat s sheet 0
+@mat t tin 0
+@mblock 0 0
+................
+................
+..ssssssssssss..
+..ssttssssssss..
+..sstsssssssss..
+..sssssssstsss..
+..ssssssssssss..
+..sttssssssrss..
+..srsssttrsrss..
+..srssssssssss..
+..stttttttttts..
+..ssssrsssstss..
+..ssstrssssrrs..
+..ssssssssssss..
+...tt......tt...
+...tt......tt...
+@tblock 0 0
+................
+................
+..111111111111..
+..133333333321..
+..132333333321..
+..133333333321..
+..144444444441..
+..133333333221..
+..123333333321..
+..133333333321..
+..100000000001..
+..133323333321..
+..133323333231..
+..111111111111..
+...21......21...
+...11......11...

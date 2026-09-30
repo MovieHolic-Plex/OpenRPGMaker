@@ -1,0 +1,27 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+// B: 명암 강화 — 어두운 바탕 3단에 왼쪽 위→오른쪽 아래 광택 띠(5·6단), 이음 아래 어두운 줄, 그늘 얼룩
+@mat m lino 3
+@mat d lino 2
+@mat l lino 4
+@mat h lino 5
+@mat w lino 6
+@mat s lino 1
+@mblock 0 0
+hhhhhhhhhhhhhhhh
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmdmmm
+mmmmlllmmmmmmmmm
+mdmmllhhmmmmmmmm
+mmmmmlhwhmmmmmmm
+mmmmmmlhwhlmmmmm
+mmmmmmmlhhhlmmmm
+mmmmmmmmllhhmmmm
+mmmmmmmmmmlllmmm
+mmmmmmmmmmmmmmmm
+mmmmdddmmmmmmmmm
+mmdddmmmmmmmmdmm
+mmmmmmmmmmmmddmm
+ddddddddddddddmm
+ssssssssssssssss

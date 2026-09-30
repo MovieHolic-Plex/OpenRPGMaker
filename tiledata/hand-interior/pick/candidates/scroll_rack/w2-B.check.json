@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scroll_rack/w2-B.pxg",
+ "id": "scroll rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  30
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "명암 강화: 두루마리를 왼쪽은 밝게 오른쪽은 어둡게 한 단씩 밀고, 바닥선에 반투명 접지 그림자",
+ "ok": true
+}

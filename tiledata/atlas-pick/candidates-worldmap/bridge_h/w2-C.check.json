@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/bridge_h/w2-C.pxg",
+ "set": "worldmap",
+ "id": "bridge_h",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.117
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "상판을 넓히고 난간을 2px로 굵게 한 실루엣 재해석",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.035
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.012
+  },
+  "seam": 0.28
+ }
+}

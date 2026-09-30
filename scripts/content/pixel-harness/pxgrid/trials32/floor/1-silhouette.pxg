@@ -1,0 +1,7 @@
+// 나무 마루 타일 32×32(이어 붙이는 바닥). 1단계 실루엣은 칸 전체. 반복 점검은 `pxgrid.py tile`.
+@size 32 32
+@cell 32
+@palette ../../palettes/interior.pal
+@tile
+@block 0 0
+################################ *32

@@ -1,0 +1,19 @@
+{
+ "id": "block_wall",
+ "slug": "block_wall",
+ "name": "블록 담장(이어 붙이기)",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "회색 콘크리트 블록 담장 한 토막: 블록 줄눈 격자, 가운데 구멍 무늬 블록 한 장, 윗면 갓돌 한 줄 밝게. 좌우로 이어 붙인다(양 끝이 맞게). 높이는 사람 허리~가슴.",
+ "palette_hint": "pole/mconc 블록, moss 아래 이끼 조금",
+ "worker": "j1"
+}

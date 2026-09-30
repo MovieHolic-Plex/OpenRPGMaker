@@ -1,0 +1,19 @@
+{
+ "id": "tomare_mark",
+ "slug": "tomare_mark",
+ "name": "「止まれ」 도로 표시",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "아스팔트 위 흰 글자 「止まれ」(세로로 길쭉한 글자, 차가 읽는 방향 = 아래가 가까운 쪽). 두 칸 폭에 세 글자가 위→아래로. 칸을 꽉 채운 아스팔트 바탕 포함(아래층). 페인트는 약간 닳게.",
+ "palette_hint": "masph 바탕, mwhite 글자",
+ "worker": "j3"
+}

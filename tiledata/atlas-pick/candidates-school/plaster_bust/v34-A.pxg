@@ -1,0 +1,47 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a mwhite 3
+@mat b mwhite 4
+@mat c mwhite 1
+@mat d mwhite 2
+@mat e vstone 2
+@mat f vstone 5
+@mat g vstone 3
+@mat h vstone 6
+@mat i vstone 0
+@mat j vstone 4
+@mat k vstone 1
+@mblock 0 0
+................
+.....aaaaaa.....
+....bbbbbbbb....
+....abbbbbbc....
+....acaaacdc....
+....aaaaaadc....
+....aacacadc....
+....addddddc....
+......dddd......
+......cccc......
+...aaaaaaaaaa...
+..baaaaaaaaaaa..
+..bddddddddddd..
+..bccccccccccc..
+...ecccccccce...
+..ffggggggggff..
+..ffffffffffff..
+..ffffffffffff..
+..ffffffffffff..
+..ffffffffffff..
+..hhhhhhhhhhhh..
+..iiiiiiiiiiii..
+..jjjjjjjjjjjj..
+..jgggggggggge..
+..jgggggggggge..
+..jgkkkkkkkkge..
+..jgeeeeeeeege..
+..jgeeeeeeeege..
+..jgggggggggge..
+..kkkkkkkkkkkk..
+.~~~~~~~~~~~~~~.
+.--------------.

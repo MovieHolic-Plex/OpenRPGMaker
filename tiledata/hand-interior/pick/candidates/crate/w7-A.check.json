@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crate/w7-A.pxg",
+ "id": "crate",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "v5 그대로 두고 X 띠를 어지러운 점 대신 대각선 두 개로 정리, 검정 윤곽을 wood:1 로, 그늘 쪽 옆면 한 단 어둡게",
+ "ok": true
+}

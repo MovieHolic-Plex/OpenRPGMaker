@@ -1,0 +1,37 @@
+{
+ "id": "balance scale",
+ "slug": "balance_scale",
+ "name_ko": "천칭",
+ "category": "약국",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "놋쇠 천칭을 받침대에 올린 큰 저울. 약국·상점 카운터 옆 바닥에 둔다.",
+ "where": "약국·상점 카운터 옆 바닥에 둔다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  15,
+  15
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": []
+}

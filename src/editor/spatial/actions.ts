@@ -1,6 +1,6 @@
 import { applyProjectWithHistory, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { ToolError } from "@/editor/tools/types";
-import { deserialize } from "@/project/io";
+import { isolateProject } from "./compileIsolation";
 import { ProjectFormatError } from "@/project/io/errors";
 import { SpatialOperationError } from "@/project/spatial/domain";
 import { ProjectRoutingError } from "@/project/spatial/saveRouting";
@@ -98,7 +98,7 @@ export function createSpatialAuthoringController(): SpatialAuthoringController {
       if (applied.has(preview)) return { kind: "error", error: { code: "already-applied", message: "Preview has already been accepted" } };
       if (expected !== baseline()) return { kind: "error", error: { code: "stale", message: "Project changed since preview" } };
       return result(() => {
-        const project = deserialize(JSON.stringify(preview.project));
+        const project = isolateProject(preview.project);
         const before = store.getCurrent();
         let published = false;
         const release = store.subscribe(() => { published = true; });

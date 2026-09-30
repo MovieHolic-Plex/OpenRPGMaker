@@ -1,0 +1,76 @@
+// wardrobe_ajar h5-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a bisque 0
+@mat b dust 0
+@mat c mahog 0
+@mat d tarn 0
+@mat e void 0
+@mblock 0 0
+................
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccceeeeeeec
+ccccccccecccccec
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccceeeeeaac
+cccccccceeeeeeac
+cccccccceeeeeeec
+ccccccdceeeeeeec
+ccccccdceeeeeeec
+cccccccceeeeeeec
+cccccccceebebeec
+cccccccceebebeec
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccceeeeeeec
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+................
+................
+@tblock 0 0
+................
+0555555555555550
+0444444444444440
+0333333333333330
+0111111111111110
+0544444221111110
+0544444220000013
+0522222220000013
+0524445220000013
+0524445221111113
+0524445220200013
+0524445220200013
+0524445220200243
+0524445220200023
+0524445220200013
+0524443220200013
+0524445220000013
+0524445220000013
+0524445220606013
+0524445220303013
+0524445220000013
+0524445220000013
+0524445220000013
+0524445220000013
+0525555220000013
+0544444220000013
+0544444220000013
+0333333333333330
+0222222222222220
+0000000000000000
+................
+................

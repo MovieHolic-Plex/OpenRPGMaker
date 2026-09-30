@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_shopfront/v34-A.pxg",
+ "set": "jp",
+ "id": "kit_shopfront",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 36,
+  "atLeast95": 0,
+  "max": 0.871
+ },
+ "refmap": {
+  "cells": 36,
+  "atLeast95": 0,
+  "max": 0.621
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 76,
+ "bbox": [
+  0,
+  0,
+  127,
+  95
+ ],
+ "note": "3/4 재작도: 띠 = 위에서 본 밝은 판 T15(뒷선·앞모서리 점선), 그늘은 입면 윗2px",
+ "ok": true
+}

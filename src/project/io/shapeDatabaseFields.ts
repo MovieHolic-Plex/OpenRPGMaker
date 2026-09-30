@@ -82,6 +82,10 @@ export function validateDatabase(value: unknown): void {
   if (database.fishSpecies !== undefined) validateFishSpecies(database.fishSpecies);
   if (database.farmBuildingTypes !== undefined) validateFarmBuildingTypes(database.farmBuildingTypes);
   if (database.homeDecorationTypes !== undefined) validateHomeDecorationTypes(database.homeDecorationTypes);
+  // 연출 레코드는 정규화가 잘못된 층·시트를 버리므로 형태(배열·행이 객체)만 확인한다.
+  if (database.skillChoreographies !== undefined) {
+    for (const [index, raw] of requireArray("database.skillChoreographies", database.skillChoreographies).entries()) requireRecord(`database.skillChoreographies[${index}]`, raw);
+  }
 }
 
 export function validateSystem(value: unknown): void {

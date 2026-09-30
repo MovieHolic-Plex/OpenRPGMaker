@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, type Hash } from "node:crypto";
 
 /**
  * 저장 행의 타일셋 접기.
@@ -45,16 +45,33 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * 글은 `JSON.stringify(view)` 와 같은 규칙으로 조각마다 만든다: 키 순서 그대로, 값이 JSON 이 아니면(undefined 등) 키를 뺀다.
  * `tilesetBlob` 은 타일셋 값 하나의 본문을 준다 — 이미 아는 객체면 기억한 본문을, 아니면 `JSON.stringify` 한 것을.
  */
-export function foldDocument(view: Record<string, unknown>, tilesetBlob: (value: unknown) => TilesetBlob): FoldedDocument {
-  const hash = createHash("sha256");
+/**
+ * 펼친 글 해시의 앞부분 상태. 펼친 글의 99% 는 타일셋(약 109MB)이라 그 해시가 저장 시간의 큰 몫이었다(실측 ≈270ms).
+ * 타일셋 앞까지의 글 + 타일셋마다의 (접두 글, sha) 가 같으면 그 뒤로 이어 붙인 해시 상태를 그대로 복사해 쓴다 —
+ * SHA-256 은 이어서 먹여도 한 번에 먹인 것과 같으므로 값은 바이트 단위로 같다. 본문 자체는 다시 읽지 않는다.
+ */
+export type FoldHashCache = { key: string | null; state: Hash | null };
+
+export function createFoldHashCache(): FoldHashCache {
+  return { key: null, state: null };
+}
+
+export function foldDocument(
+  view: Record<string, unknown>,
+  tilesetBlob: (value: unknown) => TilesetBlob,
+  hashCache?: FoldHashCache,
+): FoldedDocument {
   const foldedPieces: string[] = [];
   const fullPieces: string[] = [];
   const tilesetShas = new Map<string, string>();
   const blobs = new Map<string, string>();
-  const emit = (fullPiece: string, foldedPiece: string): void => {
-    hash.update(fullPiece, "utf8");
+  // 해시는 끝에서 먹인다. 타일셋 칸이 끝나는 자리(prefixEnd)까지가 캐시 대상이고, 그 키는 본문이 아니라 sha 로 만든다.
+  const keyParts: string[] = [];
+  let prefixEnd = -1;
+  const emit = (fullPiece: string, foldedPiece: string, keyPart: string = fullPiece): void => {
     fullPieces.push(fullPiece);
     foldedPieces.push(foldedPiece);
+    if (prefixEnd < 0) keyParts.push(keyPart);
   };
   emit("{", "{");
   let separator = "";
@@ -71,10 +88,11 @@ export function foldDocument(view: Record<string, unknown>, tilesetBlob: (value:
         tilesetShas.set(id, blob.sha256);
         blobs.set(blob.sha256, blob.text);
         const prefix = `${inner}${JSON.stringify(id)}:`;
-        emit(prefix + blob.text, prefix + JSON.stringify({ [MARKER_KEY]: blob.sha256 }));
+        emit(prefix + blob.text, prefix + JSON.stringify({ [MARKER_KEY]: blob.sha256 }), `${prefix}#${blob.sha256}`);
         inner = ",";
       }
       emit("}", "}");
+      if (prefixEnd < 0) prefixEnd = fullPieces.length;
       separator = ",";
       continue;
     }
@@ -85,6 +103,23 @@ export function foldDocument(view: Record<string, unknown>, tilesetBlob: (value:
     separator = ",";
   }
   emit("}", "}");
+  let hash: Hash;
+  let from = 0;
+  if (hashCache && prefixEnd > 0) {
+    const key = keyParts.join("\u0001");
+    if (hashCache.key === key && hashCache.state) {
+      hash = hashCache.state.copy();
+    } else {
+      hash = createHash("sha256");
+      for (let i = 0; i < prefixEnd; i += 1) hash.update(fullPieces[i]!, "utf8");
+      hashCache.key = key;
+      hashCache.state = hash.copy();
+    }
+    from = prefixEnd;
+  } else {
+    hash = createHash("sha256");
+  }
+  for (let i = from; i < fullPieces.length; i += 1) hash.update(fullPieces[i]!, "utf8");
   let full: string | null = null;
   return {
     folded: foldedPieces.join(""),

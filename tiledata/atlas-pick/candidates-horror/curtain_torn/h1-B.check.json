@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/curtain_torn/h1-B.pxg",
+ "set": "horror",
+ "id": "curtain_torn",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 28,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "B: 왼쪽 위 달빛 — 창틀·주름의 왼쪽 면이 밝고 오른쪽이 깊게 어둡다. 유리에 달 빛줄기. 오른쪽으로 반투명 접촉 그림자(~ -), 달빛 번짐은 더 길고 비스듬하다.",
+ "ok": true
+}

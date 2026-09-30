@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_sand/w1-B.pxg",
+ "set": "worldmap",
+ "id": "coast_sand",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "light"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "명암 강화: 북·서 기슭 아래 물에 그늘 두 단, 남·동 기슭은 밝은 모래+흰 거품, 몸통은 풀 해안 B 와 동일",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.025
+  },
+  "seam": 1.08
+ }
+}
