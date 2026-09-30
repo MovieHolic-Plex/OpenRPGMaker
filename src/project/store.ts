@@ -15,7 +15,7 @@ import { separateInlineUploadedMedia } from "./persistence/inlineMediaRefs";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
-import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { ensureBundledBattleAnimations, ensureRetroRosterRecords } from "./defaults/defaultDatabase";
 import { repairFaceMatches } from "./faceMatchRepair";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import type { ProjectWriteAuthority } from "./spatial/saveRouting";
@@ -1639,6 +1639,8 @@ class ProjectStore {
       // 팩 이전 스냅샷은 anim_gen_* 이 없어 스타터 아이템·스킬 참조가 끊긴다 —
       // 그대로 두면 fail-closed 재생 게이트가 ▶테스트를 조용히 막는다.
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
+      // 로스터 직업·예비 배우·스킬·기믹 상태 8종 중 빠진 것만 심는다(저자 레코드·시작 파티는 그대로).
+      ["retroRoster", ensureRetroRosterRecords(this.current)],
       // 걷기 그림과 다른 인물의 얼굴을 짝으로 맞춘다(2026-09-28 전수 조사, faceMatchRepair.ts).
       ["faceMatches", faceMatchesRepaired(repairFaceMatches(this.current))],
     ];
