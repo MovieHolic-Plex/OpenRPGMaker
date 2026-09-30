@@ -3,13 +3,26 @@
 import { RETRO_CLASS_SKILLS, retroClassSkill as baseClassSkill, type RetroClassSkill, type RetroFxAnchor, type RetroFxLayer } from "@/assets/retroClassSkills";
 import { retroRosterClass } from "@/assets/retroRoster";
 import { RETRO_ROSTER_SKILLS } from "@/assets/retroRosterSkills";
-import { RETRO_MONSTER_SKILLS, retroMonsterSkill, type RetroMonsterSkill } from "@/assets/retroMonsterSkills";
+import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS, retroMonsterSkill, type RetroMonsterSkill } from "@/assets/retroMonsterSkills";
 
 /** 기존 96개 + 로스터 묶음 스킬 전부. */
 export const RETRO_ALL_CLASS_SKILLS: readonly RetroClassSkill[] = [...RETRO_CLASS_SKILLS, ...RETRO_ROSTER_SKILLS];
 
 /** 이펙트 시트(키 하나 = 시트 한 장) 목록. 같은 키는 첫 정의를 쓴다. */
 export const RETRO_ALL_FX_SHEETS: readonly RetroFxLayer[] = [...new Map(RETRO_ALL_CLASS_SKILLS.flatMap((skill) => skill.layers).map((layer) => [layer.key, layer])).values()];
+
+const FX_SHEET_META = new Map<string, RetroFxLayer>([...RETRO_ALL_FX_SHEETS, ...RETRO_MONSTER_FX_SHEETS].map((layer) => [layer.key, layer]));
+
+/** 시트 키 → {frame, frames}. 직업·몬스터 계약이 쓰는 모든 시트의 정본 한 곳. 모르는 키는 undefined. */
+export function retroFxSheetMeta(key: string | undefined): { readonly frame: 32 | 64 | 128; readonly frames: number } | undefined {
+  const layer = key ? FX_SHEET_META.get(key) : undefined;
+  return layer ? { frame: layer.frame, frames: layer.frames } : undefined;
+}
+
+/** 시트 키 전부(도구·정규화용). */
+export function retroFxSheetKeys(): string[] {
+  return [...FX_SHEET_META.keys()];
+}
 
 const rosterById = new Map(RETRO_ROSTER_SKILLS.map((skill) => [skill.id, skill]));
 

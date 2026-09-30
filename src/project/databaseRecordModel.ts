@@ -1,4 +1,5 @@
 import { normalizeGallerySettings } from "./gallery";
+import { normalizeSkillChoreographyRecords } from "./skillChoreographyRecords";
 import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
 import { normalizeVehicleConfigs } from "./vehicles";
 import { normalizeFieldHud } from "./fieldHud";
@@ -118,7 +119,7 @@ function normalizeStateEmotion(value: unknown): StateRecord["emotion"] {
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
   "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills"
-  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes"
+  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies"
 >>;
 
 /**
@@ -162,6 +163,9 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
       : {}),
     ...(database.homeDecorationTypes !== undefined
       ? { homeDecorationTypes: normalizeHomeDecorationTypes(database.homeDecorationTypes) ?? [] }
+      : {}),
+    ...(database.skillChoreographies !== undefined
+      ? { skillChoreographies: normalizeSkillChoreographyRecords(database.skillChoreographies) ?? [] }
       : {}),
   };
 }
