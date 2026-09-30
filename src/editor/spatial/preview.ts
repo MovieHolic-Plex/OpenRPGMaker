@@ -1,4 +1,4 @@
-import { deserialize } from "@/project/io";
+import { isolateProject } from "./compileIsolation";
 import { assertNever, checkedDocument, freezeSpatial, own, spatialId } from "@/project/spatial/domain";
 import { occurrenceSubtree } from "@/project/spatial/ownership";
 import { validateSpatialAuthoring } from "@/project/spatial/guards";
@@ -27,7 +27,7 @@ export function previewSpatialAuthoring(input: Project, request: SpatialAuthorin
     }
   }
   const prepared = prepareGeographyMotion({ ...input, spatialAuthoring: authored }, request, { project: checkpoint, document: protectedDocument });
-  const project = deserialize(JSON.stringify(prepared));
+  const project = isolateProject(prepared);
   const document = checkedDocument(project.spatialAuthoring, project);
   switch (request.operation.kind) {
     case "edit-connection": {
@@ -74,7 +74,7 @@ export function previewSpatialAuthoring(input: Project, request: SpatialAuthorin
     default: return assertNever(request.operation);
   }
   const proposed = request.compile ? compileSpatialOccurrence(project, request.compile,
-    protectedDocument.occurrences[request.compile.occurrenceId]) : deserialize(JSON.stringify(project));
+    protectedDocument.occurrences[request.compile.occurrenceId]) : isolateProject(project);
   const mapIds = [...new Set([...Object.keys(baseline.maps), ...Object.keys(proposed.maps)])]
     .filter(id => JSON.stringify(baseline.maps[id]) !== JSON.stringify(proposed.maps[id]));
   const original = checkedDocument(baseline.spatialAuthoring, baseline);

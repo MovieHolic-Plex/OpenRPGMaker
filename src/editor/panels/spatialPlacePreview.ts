@@ -190,6 +190,41 @@ export function savedPlacePreviewImage(id: string, fileFallback = false): HTMLEl
   return undefined;
 }
 
+/**
+ * 카드 하나의 컴파일 결과 캐시. 컴파일이 읽는 입력(spatialAuthoring·maps·mapTree·mapConnections·tilesets·
+ * villagePresets·시작 위치)과 장소 설계가 모두 같은 객체(참조)이면 이전 결과를 그대로 쓴다. 저장소는 바뀌지
+ * 않은 부분의 참조를 유지하므로, 다른 곳을 편집해도 이 입력들이 그대로면 카드를 다시 컴파일하지 않는다.
+ * 하나라도 다르면(=편집됨) 예전처럼 다시 컴파일한다. 항목은 spatialAuthoring 이 사라지면 함께 버려진다(WeakMap).
+ */
+type ThumbInputs = readonly unknown[];
+type ThumbEntry = { readonly inputs: ThumbInputs; readonly maps: readonly PlacePreviewMap[]; readonly tilesets: Project["tilesets"] };
+const thumbCache = new WeakMap<object, Map<string, ThumbEntry>>();
+
+function thumbInputs(project: Project, place: PlaceDesign): ThumbInputs {
+  return [place, project.maps, project.mapTree, project.mapConnections, project.tilesets, project.villagePresets, project.startMapId, project.startPos];
+}
+
+function sameInputs(a: ThumbInputs, b: ThumbInputs): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+/** 카드 캐시 조회(검증 스크립트가 적중·실패를 직접 확인한다). 화면 코드는 renderPlaceCardThumb 만 쓴다. */
+export function cachedPlaceMaps(project: Project, card: Pick<SpatialGalleryCard, "id">, place: PlaceDesign, occurrenceId: SpatialId | undefined): Pick<ThumbEntry, "maps" | "tilesets"> {
+  const document = project.spatialAuthoring;
+  const inputs = thumbInputs(project, place);
+  const key = `${card.id}\u0000${occurrenceId ?? ""}`;
+  const bucket = document ? thumbCache.get(document) : undefined;
+  const hit = bucket?.get(key);
+  if (hit && sameInputs(hit.inputs, inputs)) return hit;
+  const preview = previewPlaceMaps({ project, place, floor: null, ...(occurrenceId ? { occurrenceId } : {}) });
+  if (document) {
+    const target = bucket ?? new Map<string, ThumbEntry>();
+    target.set(key, { inputs, maps: preview.maps, tilesets: preview.project.tilesets });
+    if (!bucket) thumbCache.set(document, target);
+  }
+  return { maps: preview.maps, tilesets: preview.project.tilesets };
+}
+
 export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.reviewedPlaceId) return catalogListImage(sharedPlacePreview(card.reviewedPlaceId) ?? `/assets/reviewed-places/${card.reviewedPlaceId}.png`, "spatial-card-image");
   if (card.localId) {
@@ -202,11 +237,11 @@ export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
     const target = placeDraftTarget(card);
     const place = placeFromProject(project, target);
     const preview = place
-      ? previewPlaceMaps({ project, place, floor: null, ...(target.occurrenceId ? { occurrenceId: target.occurrenceId } : {}) })
-      : { project, maps: facilityMaps(project, card) };
+      ? cachedPlaceMaps(project, card, place, target.occurrenceId)
+      : { tilesets: project.tilesets, maps: facilityMaps(project, card) };
     // Separate maps/floors stay separate; a thumbnail must not drop all but the first stamp.
     return el("div", { class: "spatial-card-map", children: preview.maps.map(({ map }) => {
-      const canvas = mapCanvas(own(preview.project.tilesets, map.tilesetId), map, 2);
+      const canvas = mapCanvas(own(preview.tilesets, map.tilesetId), map, 2);
       canvas.classList.add("spatial-card-map");
       return canvas;
     }) });
