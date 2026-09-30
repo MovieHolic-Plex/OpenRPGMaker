@@ -4,6 +4,7 @@ import { RETRO_CLASS_SKILLS, retroClassSkill as baseClassSkill, type RetroClassS
 import { retroRosterClass } from "@/assets/retroRoster";
 import { RETRO_ROSTER_SKILLS } from "@/assets/retroRosterSkills";
 import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS, retroMonsterSkill, type RetroMonsterSkill, type RetroMonsterSkillMotion } from "@/assets/retroMonsterSkills";
+import { retroChoreographyHay, retroQueryMatches, expandQueryWord, koreanWordsOfKey } from "@/assets/retroSearchIndex";
 import type { SkillChoreographyLayer, SkillChoreographyRecord } from "@/project/types/database";
 
 /** 기존 96개 + 로스터 묶음 스킬 전부. */
@@ -280,7 +281,7 @@ export function projectRetroChoreographyEntries(records: RetroChoreographyRecord
 }
 
 export function filterRetroChoreographies(filter: RetroChoreographyFilter, records?: RetroChoreographyRecords): RetroChoreographyEntry[] {
-  const words = (filter.query ?? "").toLowerCase().split(/\s+/).filter(Boolean);
+  const query = filter.query;
   const pool = records && records.length > 0 ? [...projectRetroChoreographyEntries(records), ...retroChoreographyEntries()] : retroChoreographyEntries();
   return pool.filter((entry) => {
     if (filter.origin && entry.origin !== filter.origin) return false;
@@ -289,9 +290,7 @@ export function filterRetroChoreographies(filter: RetroChoreographyFilter, recor
     if (filter.anchor && !entry.anchors.includes(filter.anchor as RetroFxAnchor)) return false;
     if (filter.family && entry.family !== filter.family) return false;
     if (filter.classId && entry.classId !== filter.classId) return false;
-    if (words.length === 0) return true;
-    const hay = `${entry.id} ${entry.name} ${entry.description} ${entry.className ?? ""} ${entry.layerKeys.join(" ")}`.toLowerCase();
-    return words.every((word) => hay.includes(word));
+    return retroQueryMatches(query, retroChoreographyHay(entry));
   });
 }
 
@@ -330,16 +329,38 @@ export function retroFxSheetEntries(): readonly RetroFxSheetEntry[] {
     .sort((a, b) => a.key.localeCompare(b.key));
 }
 
-/** 시트 키 검색(공백=AND, 부분 문자열). */
+let sheetHayCache: Map<string, string> | undefined;
+
+/**
+ * 시트 검색 건초더미: 영어 키 + 키 조각의 한국어 + 이 시트를 쓰는 기본 연출의 이름·설명·직업.
+ * 「번개」로 찾으면 키에 bolt 가 든 시트와, 번개 스킬이 쓰는 시트가 함께 나온다.
+ */
+export function retroFxSheetHay(key: string): string {
+  if (!sheetHayCache) {
+    const names = new Map<string, Set<string>>();
+    for (const entry of retroChoreographyEntries()) {
+      const text = `${entry.name} ${entry.description} ${entry.className ?? ""}`;
+      for (const layerKey of new Set(entry.layerKeys)) {
+        let set = names.get(layerKey);
+        if (!set) names.set(layerKey, set = new Set());
+        set.add(text);
+      }
+    }
+    sheetHayCache = new Map();
+    for (const sheet of retroFxSheetEntries()) sheetHayCache.set(sheet.key, `${sheet.key} ${koreanWordsOfKey(sheet.key)} ${[...(names.get(sheet.key) ?? [])].slice(0, 6).join(" ")}`);
+  }
+  return sheetHayCache.get(key) ?? `${key} ${koreanWordsOfKey(key)}`;
+}
+
+/** 시트 검색(공백=AND). 영어 키·한국어 낱말·속성 동의어(번개↔thunder/bolt/…)·쓰는 스킬의 이름/설명을 본다. */
 export function searchRetroFxSheets(query: string | undefined): RetroFxSheetEntry[] {
-  const words = (query ?? "").toLowerCase().split(/\s+/).filter(Boolean);
-  return retroFxSheetEntries().filter((entry) => words.every((word) => entry.key.toLowerCase().includes(word)));
+  return retroFxSheetEntries().filter((entry) => retroQueryMatches(query, retroFxSheetHay(entry.key)));
 }
 
 /** 모르는 시트 키에 가까운 후보(부분 문자열 → 낱말 겹침 → 많이 쓰이는 순). */
 export function nearbyRetroFxSheets(badKey: string, limit = 5): RetroFxSheetEntry[] {
   const needle = badKey.toLowerCase();
-  const tokens = needle.split(/[^a-z0-9]+/).filter((token) => token.length >= 2);
+  const tokens = [...new Set(needle.split(/[^a-z0-9가-힣]+/).filter((token) => token.length >= 2).flatMap((token) => [...expandQueryWord(token)].filter((item) => item.length >= 2 && /^[a-z0-9]+$/.test(item))))];
   return retroFxSheetEntries()
     .map((entry) => {
       const key = entry.key.toLowerCase();

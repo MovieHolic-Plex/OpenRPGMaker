@@ -371,13 +371,13 @@ const listFxSheets: ToolDefinition = {
   name: "list_fx_sheets",
   description:
     "upsert_choreography 의 layers[].sheet 로 쓸 수 있는 도트 이펙트 시트 키를 찾는다. 시트마다 frame(한 칸 픽셀)·frames(프레임 수)와 " +
-    "usedBy(그 시트를 쓰는 기본 연출 수, 많을수록 검증된 모양)를 준다. query 는 키 낱말(공백=AND): 예 'slash', 'thunder', 'heal', 'fire'. " +
+    "usedBy(그 시트를 쓰는 기본 연출 수, 많을수록 검증된 모양)를 준다. query 는 한국어·영어 낱말(공백=AND): 예 '번개', '불꽃 폭발', 'slash', 'heal' — 속성 동의어(번개=thunder/bolt/lightning/chain)와 쓰는 스킬 이름까지 본다. " +
     `기본 ${FX_DEFAULT_LIMIT}건, limit 최대 ${FX_MAX_LIMIT}. 시트 키는 없는 것을 넣으면 upsert_choreography 가 거부한다. query 없이 부르면 개수만 돌려준다.`,
   mode: "read",
   parameters: {
     type: "object",
     properties: {
-      query: { type: "string", description: "시트 키 낱말 검색(공백=AND). 예: 'thunder', 'slash 2'" },
+      query: { type: "string", description: "시트 검색(공백=AND, 한국어 가능). 예: '번개', 'thunder', 'slash 2'" },
       frame: { type: "integer", enum: [32, 64, 128], description: "한 칸 크기로 좁히기(32=작은 타격, 64=중간, 128=큰 광역)" },
       limit: { type: "integer", description: `돌려줄 최대 건수(기본 ${FX_DEFAULT_LIMIT}, 최대 ${FX_MAX_LIMIT})` },
       offset: { type: "integer", description: "건너뛸 건수(다음 쪽 보기)" },
