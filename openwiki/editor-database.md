@@ -1,5 +1,13 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 레트로 전투 기믹 편집 칸 (2026-09-30)
+
+retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있게 했다. 증거·캡처 목록은 `verify-shots/retro-editable/SHOTS.md`.
+
+- **스킬** (`databaseCombatRuleFields.ts` `skillAreaAndComboFields`, 전투 규칙 카드 안): 범위(`skill-area-shape`: 없음|원|직선) · 반경(`skill-area-radius`, 1~640) · 연계 배우 1~3(`skill-combo-actor-1..3`). 저장은 `updateDatabaseRecord("skills", id, { area, comboActorIds })` (`updateSkillRecord` 화이트리스트). `normalizeSkillRecord` 가 `comboActorIds` 를 **2명 미만이면 지운다** — 한 명만 고르면 저장값이 비고 패널이 재렌더돼 선택이 사라지므로 `pendingComboSlots`(레코드 id 별 임시 슬롯)가 재렌더를 넘어 선택을 들고 있다가 2명이 되면 저장하고 비운다. `databaseSkillRecordView.ts` 는 `area`/`comboActorIds` 만 있는 스킬도 전투 규칙 카드를 연다.
+- **상태** (`databaseStateRecordView.ts` `retroGimmickControls`, `state.runtimeEffects` 부분 병합): 게이지 정지(`db-state-rt-freezes-gauge`) · 버서크(`db-state-rt-forced-attack`, `forcedAction:"attackRandom"`) · 물리/마법 방어 배율(`db-state-rt-physical-defense`·`-magic-defense`) · 속성 등급 덮어쓰기(`db-state-rt-element-<id>`, 「덮어쓰지 않음」·A~E).
+- 이미 화면에 있던 것(타격별 배율·피해 공식·상태 변화·우선도·속성·재사용 대기·급소·HP 대가·흡수·입력 커맨드·명중 보정·행동 불가·행동 제한)은 새로 만들지 않았다.
+
 ## 적 그룹 「전투 뒤」 구획 (2026-09-28)
 
 - 적 그룹 폼 구획 탭에 「전투 뒤」(`db-troop-section-after`)가 붙었다. `src/editor/panels/databaseTroopAfterBattlePanel.ts` — 결과 탭 셋(`db-troop-after-battle-tab-victory|defeat|escape`) + 명령 목록 하나(`db-troop-after-battle-command-list`, 피커 문맥 "map").

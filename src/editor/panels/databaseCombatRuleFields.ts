@@ -46,6 +46,7 @@ export function skillCombatRuleCard(record: SkillRecord, options: { readonly col
     numberField('재사용 대기 턴', 'feature16-cooldown', record.cooldownTurns ?? 0, value => updateDatabaseRecord('skills', record.id, { cooldownTurns: value }), { min: 0, max: 99 }),
     numberField('HP 대가 % (최대 HP)', 'feature16-hp-cost', record.hpCostPercent ?? 0, value => updateDatabaseRecord('skills', record.id, { hpCostPercent: value }), { min: 0, max: 100 }),
     numberField('흡수 % (준 피해)', 'feature16-drain', record.drainPercent ?? 0, value => updateDatabaseRecord('skills', record.id, { drainPercent: value }), { min: 0, max: 100 }),
+    ...skillAreaAndComboFields(record),
     el('p', { class: 'db-skill-card-note', text: 'HP 대가: 쓸 때마다 시전자가 최대 HP 의 N% 를 잃습니다(1 밑으로는 안 깎음). 흡수: 준 피해의 N% 만큼 시전자가 회복합니다(MP 피해 기술이면 MP).' }),
   ] });
 }
@@ -126,4 +127,44 @@ export function skillInputSequenceFields(record: SkillRecord): HTMLElement {
     numberField('성공 배율', 'mg-skill-input-success', sequence?.successMultiplier ?? 1.5, successMultiplier => save({ successMultiplier }), { min: 0, max: 10, step: 0.05 }),
     numberField('실패 배율', 'mg-skill-input-fail', sequence?.failMultiplier ?? 0.5, failMultiplier => save({ failMultiplier }), { min: 0, max: 10, step: 0.05 }),
   ] });
+}
+
+const AREA_SHAPE_OPTIONS = [{ id: '', name: '없음 (단일)' }, { id: 'circle', name: '원 (주 대상 둘레)' }, { id: 'line', name: '직선 (가로 띠)' }] as const;
+const AREA_DEFAULT_RADIUS = 48;
+/** 배우를 한 명만 골랐을 땐 아직 연계기가 아니라 레코드에 저장되지 않는다. 패널이 다시 그려져도 고른 칸이 사라지지 않게 임시로 들고 있는다. */
+const pendingComboSlots = new Map<string, string[]>();
+
+/** 위치 범위기(area)와 연계기(comboActorIds) — 로스터 스킬이 쓰지만 예전엔 조수 도구로만 고칠 수 있었다. */
+function skillAreaAndComboFields(record: SkillRecord): HTMLElement[] {
+  const current = (): SkillRecord => store.getCurrent().database.skills.find(skill => skill.id === record.id) ?? record;
+  const shape = current().area?.shape ?? '';
+  const radius = numberField('범위 반경 (px)', 'skill-area-radius', current().area?.radius ?? AREA_DEFAULT_RADIUS,
+    value => { const area = current().area; if (area) updateDatabaseRecord('skills', record.id, { area: { shape: area.shape, radius: Math.max(1, value) } }); },
+    { min: 1, max: 640 });
+  radius.hidden = !shape;
+  const shapeField = selectField('범위', 'skill-area-shape', shape, [...AREA_SHAPE_OPTIONS], value => {
+    if (value !== 'circle' && value !== 'line') { updateDatabaseRecord('skills', record.id, { area: undefined }); radius.hidden = true; return; }
+    updateDatabaseRecord('skills', record.id, { area: { shape: value, radius: current().area?.radius ?? AREA_DEFAULT_RADIUS } });
+    radius.hidden = false;
+  });
+  const actors = store.getCurrent().database.actors;
+  const options = [{ id: '', name: '(없음)' }, ...actors.map(actor => ({ id: actor.id, name: actor.name }))];
+  const saved = current().comboActorIds ?? [];
+  const pending = saved.length ? undefined : pendingComboSlots.get(record.id);
+  const slots = [0, 1, 2].map(index => (pending ?? saved)[index] ?? '');
+  const comboNote = el('p', { class: 'db-skill-card-note', dataset: { testid: 'skill-combo-note' } });
+  const refreshNote = (): void => {
+    const picked = new Set(slots.filter(Boolean));
+    comboNote.textContent = picked.size === 0 ? '연계기 아님. 배우를 2~3명 고르면 전원이 참전·생존·준비 상태일 때 메뉴에 열리고 각자 MP·턴을 씁니다.'
+      : picked.size === 1 ? '한 명 더 골라야 연계기가 됩니다(2~3명, 중복 불가).' : `연계기: ${picked.size}명 (${[...picked].map(id => actors.find(actor => actor.id === id)?.name ?? id).join(' · ')})`;
+  };
+  const save = (): void => {
+    const ids = [...new Set(slots.filter(Boolean))];
+    if (ids.length >= 2) pendingComboSlots.delete(record.id); else pendingComboSlots.set(record.id, [...slots]);
+    updateDatabaseRecord('skills', record.id, { comboActorIds: ids.length >= 2 ? ids : undefined });
+    refreshNote();
+  };
+  const slotFields = slots.map((value, index) => selectField(`연계 배우 ${index + 1}`, `skill-combo-actor-${index + 1}`, value, options, next => { slots[index] = next; save(); }));
+  refreshNote();
+  return [shapeField, radius, ...slotFields, comboNote];
 }

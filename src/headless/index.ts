@@ -9,7 +9,7 @@ import { createBlankProject, ensureSwitchVariableSlots } from "@/project/default
 import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset } from "@/project/defaults/defaultAssets";
 import { ensureSharedTileReferences } from "@/project/sharedTileReferences";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
-import { ensureBundledBattleAnimations } from "@/project/defaults/defaultDatabase";
+import { ensureBundledBattleAnimations, ensureRetroRosterRecords } from "@/project/defaults/defaultDatabase";
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { setRegionReferenceDownloadLoader } from "@/project/regionReferenceImport";
 import { readFile } from "node:fs/promises";
@@ -79,6 +79,7 @@ export function normalizeHeadlessProject(project: Project): Project {
   ensureBundledResourceProfiles(project);
   ensureDefaultDatabaseIconResources(project);
   ensureBundledBattleAnimations(project);
+  ensureRetroRosterRecords(project);
   repairFaceMatches(project);
   return project;
 }

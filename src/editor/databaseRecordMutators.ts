@@ -62,7 +62,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
-  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent"] as const) {
+  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "area", "comboActorIds"] as const) {
     if (key in patch) Object.assign(record, { [key]: patch[key] });
   }
   database.skills[index] = normalizeSkillRecord(record);

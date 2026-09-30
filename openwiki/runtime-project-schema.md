@@ -1,5 +1,12 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## ensureRetroRosterRecords — 기존 프로젝트에 레트로 로스터 심기 (2026-09-30)
+
+`src/project/defaults/defaultDatabase.ts` `ensureRetroRosterRecords(project): boolean`. 로스터(발키리·암흑기사 등 확장 직업 6종 `RETRO_EXTENSION_CLASS_IDS`의 클래스·배우·스킬)와 기믹 상태 8종(`RETRO_GIMMICK_STATE_IDS`: blind·stop·protect·shell·berserk·petrify·wet·oiled)을 **id 로 없는 것만** 덧붙인다. 저자가 이미 가진 레코드는 건드리지 않고, 바뀐 게 있으면 true. 선례 관용구는 `ensureBundledBattleAnimations`.
+
+- 호출 위치: `store.ts` `normalizeCurrentProject` 의 정규화 목록 `["retroRoster", ...]`(팀 프로젝트 쓰기 권한이 있을 때만), 헤드리스 `headless/index.ts` `normalizeHeadlessProject` 의 `ensureBundledBattleAnimations` 바로 뒤.
+- 증거: `verify-shots/retro-editable/d-old-project-classes-*` (로스터를 뺀 프로젝트 → 로드 후 「발키리 #134」·「암흑기사 #135」 가 클래스 목록에 나타남).
+
 ## 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
 
 `SkillRecord.hpCostPercent?`(0~100, 시전자 최대 HP 의 N% 를 잃는다, HP 1 밑으로는 안 깎음)와 `drainPercent?`(0~100, 준 피해의 N% 회복,
