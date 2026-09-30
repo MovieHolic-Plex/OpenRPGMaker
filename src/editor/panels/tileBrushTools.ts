@@ -1,6 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { tileStackAt } from "@/project/mapOverlayTiles";
-import type { GameMap, MapId, TilesetDef } from "@/project/types";
+import type { GameMap, MapId, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 
 export type UsedTileLocation = {
@@ -95,10 +95,19 @@ export function selectUsedLocation(input: SelectUsedLocationInput): void {
 }
 
 export function similarTilesForTile(input: SimilarTilesInput): readonly number[] {
-  const current = tileSimilarityContext(input.tileset, input.tile);
+  // 칸마다 tileGroups 를 훑으면(group.tileIds.includes) 버들항 23,936칸에서 제곱이 된다 — 칸→그룹 표를 한 번만 만든다.
+  const groupsByTile = new Map<number, TileGroupMetadata[]>();
+  for (const group of input.tileset.tileGroups ?? []) {
+    for (const id of group.tileIds) {
+      const list = groupsByTile.get(id);
+      if (list) list.push(group);
+      else groupsByTile.set(id, [group]);
+    }
+  }
+  const current = tileSimilarityContext(input.tileset, input.tile, groupsByTile);
   const currentTags = new Set(current.tags);
   const scored = Array.from({ length: input.tileset.count }, (_, tile) => {
-    const candidate = tileSimilarityContext(input.tileset, tile);
+    const candidate = tileSimilarityContext(input.tileset, tile, groupsByTile);
     const sharedTags = candidate.tags.filter((tag) => currentTags.has(tag)).length * 3;
     const sameUsage = candidate.usage === current.usage ? 2 : 0;
     const sameRepeatRole = candidate.repeatRole === current.repeatRole ? 1 : 0;
@@ -119,8 +128,8 @@ type TileSimilarityContext = {
   readonly usage: string;
 };
 
-function tileSimilarityContext(tileset: TilesetDef, tile: number): TileSimilarityContext {
-  const groups = (tileset.tileGroups ?? []).filter((group) => group.tileIds.includes(tile));
+function tileSimilarityContext(tileset: TilesetDef, tile: number, groupsByTile: ReadonlyMap<number, readonly TileGroupMetadata[]>): TileSimilarityContext {
+  const groups = groupsByTile.get(tile) ?? [];
   const meta = tileset.tileMeta?.[tile];
   if (meta || groups.length > 0) {
     const tags = new Set<string>();
