@@ -2,7 +2,9 @@
  "file": "tiledata/atlas-pick/candidates-worldmap/sea_deep/w1-A.pxg",
  "set": "worldmap",
  "id": "sea_deep",
- "hard": [],
+ "hard": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_n 5≠1, inner_nw↔edge_w 5≠1, inner_ne↔edge_n 5≠1, inner_ne↔edge_e 5≠0, inner_sw↔edge_s 5≠0, inner_sw↔edge_w 5≠1 …"
+ ],
  "warn": [],
  "easyrpg": {
   "cells": 12,
@@ -28,7 +30,7 @@
   63
  ],
  "note": "생성 계열 결: 깊은 바다 밑색(wdeep3)+드문 물결 2줄(16px 주기), 경계는 얕은 바다에서 밝은 두 단으로 0~2px 물결치며 풀어짐",
- "ok": true,
+ "ok": false,
  "worldmap": {
   "worldEasyrpg": {
    "cells": 12,
@@ -39,6 +41,96 @@
    "cells": 12,
    "atLeast95": 0,
    "max": 0.0
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     1,
+     1,
+     1,
+     2,
+     2,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     1,
+     1
+    ],
+    "s": [
+     0,
+     0,
+     1,
+     1,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "w": [
+     1,
+     1,
+     2,
+     2,
+     1,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     2,
+     1,
+     1
+    ],
+    "e": [
+     1,
+     1,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "strait": 13,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 1,
+    "w": 2,
+    "e": 1
+   },
+   "joinWorst": 5
   },
   "seam": 0.71
  }
