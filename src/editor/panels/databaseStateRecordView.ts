@@ -1,4 +1,4 @@
-import { numberField, selectLiteral } from "@/editor/panels/databaseControls";
+import { numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { stateBehavior } from "@/battle/battleStates";
 import { resolvedStateValues, stateOntologyFor } from "@/project/ontology/databaseStateOntology";
@@ -176,6 +176,7 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
     numberField("피해를 MP 로 (0~1)", "db-state-rt-damage-to-mp", state.runtimeEffects?.damageToMpRate ?? 0, (damageToMpRate) =>
       patchEffects({ damageToMpRate: damageToMpRate > 0 ? Math.min(1, damageToMpRate) : undefined }), { min: 0, max: 1, step: 0.05 }
     ),
+    ...retroGimmickControls(state, patchEffects),
     // 감정 계열·단계(battleEmotion). 같은 계열을 다시 걸면 단계가 오른다. 계열 상성은 시스템 → 전투 자원.
     emotionFamilyControl(state, update),
     numberField("감정 단계", "db-state-emotion-tier", state.emotion?.tier ?? 1, (tier) => {
@@ -304,4 +305,42 @@ function referencePanel(skills: readonly string[], items: readonly string[]): HT
 function referenceRows(values: readonly string[], emptyText: string): HTMLElement[] {
   const rows = values.length ? values : [emptyText];
   return rows.map((value) => el("div", { class: values.length ? "db-ref-row" : "empty-hint", text: value }));
+}
+
+/**
+ * 레트로 전투 기믹 — 스톱(게이지 정지)·버서크(무작위 강제 공격)·프로텍트/실드(물리·마법 방어 배율)·
+ * 속성 등급 덮어쓰기(젖음·기름 → 약점). 예전엔 조수 도구(dbTools stateRecordSchema)로만 저작할 수 있었다.
+ * 값은 state.runtimeEffects 에 저장되고 battleStates.stateBehavior 가 그대로 읽는다.
+ */
+function retroGimmickControls(
+  state: StateRecord,
+  patchEffects: (effects: Partial<NonNullable<StateRecord["runtimeEffects"]>>) => void
+): HTMLElement[] {
+  const fx = (): NonNullable<StateRecord["runtimeEffects"]> =>
+    store.getCurrent().database.states.find((entry) => entry.id === state.id)?.runtimeEffects ?? {};
+  const multiplier = (label: string, testid: string, key: "physicalDefenseMultiplier" | "magicDefenseMultiplier"): HTMLElement =>
+    numberField(label, testid, fx()[key] ?? 1, (value) => patchEffects({ [key]: value > 0 && value !== 1 ? value : undefined }), { min: 0, max: 10, step: 0.05 });
+  const elements = store.getCurrent().database.elements ?? [];
+  const elementRows = elements.map((element) => {
+    const options = [{ id: "", name: "덮어쓰지 않음" }, ...RATE_GRADES.map((grade) => ({ id: grade, name: `${grade} · ${RATE_GRADE_LABEL[grade]}` }))];
+    return selectField(`속성 ${element.name}`, `db-state-rt-element-${element.id}`, fx().elementRates?.[element.id] ?? "", options, (grade) => {
+      const next: Record<string, StateRateGrade> = { ...(fx().elementRates ?? {}) };
+      if (grade) next[element.id] = grade as StateRateGrade;
+      else delete next[element.id];
+      patchEffects({ elementRates: Object.keys(next).length ? next : undefined });
+    });
+  });
+  return [
+    checkControl("스톱 — ATB 게이지 정지·행동 불가", "db-state-rt-freezes-gauge", fx().freezesGauge === true, (freezesGauge) =>
+      patchEffects({ freezesGauge: freezesGauge ? true : undefined })
+    ),
+    checkControl("버서크 — 명령 없이 무작위 상대를 통상 공격", "db-state-rt-forced-attack", fx().forcedAction === "attackRandom", (on) =>
+      patchEffects({ forcedAction: on ? "attackRandom" : undefined })
+    ),
+    multiplier("물리 피해 방어 배율 (프로텍트)", "db-state-rt-physical-defense", "physicalDefenseMultiplier"),
+    multiplier("마법 피해 방어 배율 (실드)", "db-state-rt-magic-defense", "magicDefenseMultiplier"),
+    ...(elementRows.length
+      ? [el("p", { class: "db-skill-card-note", text: "이 상태인 동안 대상의 속성 등급을 덮어씁니다(젖음 → 번개 약점 등). A 가 가장 약합니다." }), ...elementRows]
+      : []),
+  ];
 }
