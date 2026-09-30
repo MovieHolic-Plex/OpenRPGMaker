@@ -108,7 +108,7 @@
 | 도구 | 인자 | 동작 |
 |---|---|---|
 | `read_relief` (읽기) | `mapId` | `data.matrix` 36진수 행렬(한 줄=한 행, 0~9·a=10…e=14) + `data.check` 검사 글. relief 없는 맵은 전부 0 |
-| `sculpt_relief` (쓰기) | `mapId`, `ops[]`, `seed?`, `reset?` | ops DSL(`src/project/relief/ops.ts` `RELIEF_OPS_SPEC` — fill·rect·plateau·mountain·ridge·canyon·terraces·rough·smooth)을 **지금 높이 위에** 차례로 적용(`reset:true` 면 0단에서). 모르는 op 은 `warnings`. 결과가 평지면 `relief` 삭제. 숲마을·합본 마을+레트로 월드맵 칩셋은 `bakeReliefTiles` 로 절벽을 하위 층 타일로 깔고 칠한/되돌린/막힌 칸 수를 요약에 붙인다. 검사 글을 `data.check` 로 돌려준다 |
+| `sculpt_relief` (쓰기) | `mapId`, `ops[]`, `seed?`, `reset?` | ops DSL(`src/project/relief/ops.ts` `RELIEF_OPS_SPEC` — fill·rect·plateau·mountain·ridge·canyon·terraces·rough·smooth)을 **지금 높이 위에** 차례로 적용(`reset:true` 면 0단에서). 모르는 op 은 `warnings`. 결과가 평지면 `relief` 삭제. 절벽은 칩셋과 무관하게 렌더러 그림이다(타일 층 불변). 검사 글을 `data.check` 로 돌려준다 |
 | `check_relief` (읽기) | `mapId` | 규칙에 깎인 칸·남쪽 땅에 가려진 구역·12칸 이상 일직선 벽 + 고칠 방향 |
 
 - `ops` 가 `{op:string}` 객체 배열이 아니면 `ToolError` `invalid-args`(예시 포함).

@@ -1,6 +1,5 @@
 import { store, type ProjectChangeCell } from "@/project/store";
 import { brushRelief, emptyRelief, reliefIsFlat, type ReliefBrushMode } from "@/project/relief/edit";
-import { bakeReliefTiles } from "@/editor/tools/village/reliefBake";
 import { TILE } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, autotileGroupLayer, autotileGroupLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
@@ -244,23 +243,11 @@ export function paintRelief(
   if (!map || !inMap(map, x, y)) return false;
   const next = map.relief ? { ...map.relief, levels: map.relief.levels.slice() } : emptyRelief(map.width, map.height);
   if (!brushRelief(next, x, y, mode, opts)) return false;
-  const tileset = store.getCurrent().tilesets[map.tilesetId];
-  // 절벽 어휘가 있는 칩셋이면 절벽을 하위 층 타일로 굽는다(reliefBake) — 하위·상위 붓으로 고칠 수 있다.
-  // 굽기가 바꾼 하위 칸은 cells 로 알려 장면이 그 칸만 다시 그린다.
-  const draftMap: GameMap = { ...map, lowerTiles: map.lowerTiles.slice(), relief: next };
-  bakeReliefTiles(draftMap, tileset, map.relief);
-  const cells: ProjectChangeCell[] = [];
-  for (let i = 0; i < draftMap.lowerTiles.length; i += 1) {
-    if (draftMap.lowerTiles[i] !== map.lowerTiles[i]) cells.push({ x: i % map.width, y: Math.floor(i / map.width), layer: "lower" });
-  }
+  // 절벽은 칩셋과 무관하게 렌더러(@/project/relief/render)가 그림으로만 그린다. 타일 층은 건드리지 않는다.
   store.updateMapTiles(mapId, (draft) => {
-    for (const cell of cells) {
-      const i = cell.y * map.width + cell.x;
-      draft.lowerTiles[i] = draftMap.lowerTiles[i]!;
-    }
     if (reliefIsFlat(next)) delete draft.relief;
     else draft.relief = next;
-  }, { label: "높이 붓", relief: true, ...(cells.length ? { cells } : {}) });
+  }, { label: "높이 붓", relief: true });
   return true;
 }
 
