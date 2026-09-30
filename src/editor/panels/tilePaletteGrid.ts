@@ -88,7 +88,7 @@ export type PaletteFilterView = {
 };
 
 /** 선택 타일은 필터에 안 걸려도 항상 보여야 한다 — 안 그러면 "선택 중"인 칸이 사라진다. */
-function passesFilter(args: PaletteFilterView, tileId: number): boolean {
+function passesFilter(args: Pick<PaletteFilterView, "visibleTiles" | "selectedTile">, tileId: number): boolean {
   if (!args.visibleTiles) return true;
   return args.visibleTiles.has(tileId) || args.selectedTile === tileId;
 }

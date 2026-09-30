@@ -3317,11 +3317,30 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 }
 
+const tileToolStatusNodes = new Map<string, Element>();
+
 function setTileToolStatus(testId: string, text: string): void {
-  const node = document.querySelector(`[data-testid="${testId}"]`);
+  let node = tileToolStatusNodes.get(testId);
+  if (!node || !node.isConnected) {
+    node = document.querySelector(`[data-testid="${testId}"]`) ?? undefined;
+    if (!node) {
+      tileToolStatusNodes.delete(testId);
+      return;
+    }
+    tileToolStatusNodes.set(testId, node);
+  }
   // Runs per pointermove; an equal write still replaces the text node and wakes every
   // body-subtree MutationObserver.
-  if (!node || node.textContent === text) return;
+  if (node.textContent === text) return;
+  // textContent= 는 자식 텍스트 노드를 통째로 갈아 끼우는 childList 변이다. 문서에 :has() 규칙이
+  // 있으면(body:has(.editor-layout), .canvas-area:has(.persistence-mode-banner)) 그 앵커의 스타일이
+  // 무효화되어 포인터 한 번마다 문서 전체 스타일 재계산(≈32ms, 소프트웨어 GL 측정)이 돈다.
+  // 텍스트 노드가 하나뿐이면 data 만 바꾸는 characterData 변이로 충분하다.
+  const only = node.firstChild;
+  if (only && only.nodeType === Node.TEXT_NODE && only === node.lastChild) {
+    (only as Text).data = text;
+    return;
+  }
   node.textContent = text;
 }
 
