@@ -22,6 +22,8 @@ import { repairForestTreeShadowPassage } from "./forestHarmonyTreeShadows";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
+import { ATLAS_BIOME_INTERIOR_TEXTURE, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "./atlasBiomeInterior";
+import { ATLAS_BIOME_DUNGEON_TEXTURE, createAtlasBiomeDungeonTileset } from "./atlasBiomeDungeon";
 import { createSlates32Tileset, SLATES_32_ID } from "./slates32";
 import { composeCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
@@ -194,6 +196,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
+      // 생성 칩셋 공용 실내(손 도트 v5): 옛 정의(Tibo 번호 기반)는 새 정의로 통째로 바꾼다. 옛 칩셋을 쓰던 맵은 그대로 두고 경고만.
+      if (asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE) changed = ensureAtlasBiomeInteriorCurrent(project, id) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurniture16Kits(project.tilesets[id]) || changed;
       continue;
@@ -359,6 +363,8 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   }
   if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) return createForestGrassJoinsTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
+  if (asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE) return createAtlasBiomeInteriorTileset();
+  if (asset.textureKey === ATLAS_BIOME_DUNGEON_TEXTURE) return createAtlasBiomeDungeonTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return createLpcWoodenFurnitureTileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return createLpcWoodenFurniture16Tileset();

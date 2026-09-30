@@ -11,6 +11,8 @@ import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import atlasBiomeSheets from "./atlasBiomeSheets.json";
 import beodeulCitySheet from "./beodeulCitySheet.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
+import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json";
+import atlasBiomeDungeon from "./atlasBiomeDungeonSheet.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { loadUploadedTilesets, registerUploadedTilesets } from "./uploadedTilesets";
 import type Phaser from "phaser";
@@ -188,6 +190,11 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 바이옴 월드맵 시트 — EasyRPG 월드 시트(0~479 그대로) + 새 바이옴 지형 블록 10개·아이콘. build-atlas-biome-world.py, defaults/atlasBiomeWorld.ts.
   {textureKey:"tex_atlas_biome_world",path:"assets/atlas-biomes/world-chipset.png",name:"월드맵 · 바이옴 확장 (OPRN)"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
+  // 생성 칩셋(oprn-atlas) 공용 실내 — 손 도트 실내 v5 전용 시트(tiledata/hand-interior/v5, 가구·바닥·벽·천장·자동 타일·예제 26맵).
+  // 그림·정의는 scripts/content/hand-interior/build_tileset.py, 정의 모듈은 project/defaults/atlasBiomeInterior.ts.
+  {textureKey:"tex_atlas_biome_interior",path:"assets/atlas-interior/interior-chipset.png",name:"실내 · 손 도트 v5 (아틀라스)"},
+  // 생성 칩셋 공용 배·던전 — 옛 atlas_biome_interior 의 배·던전 블록을 떼어 낸 것(scripts/content/atlas-dungeon/split-dungeon.mjs).
+  {textureKey:"tex_atlas_biome_dungeon",path:"assets/atlas-interior/dungeon-chipset.png",name:"배·던전 · 생성 칩셋 공용 (아틀라스)"},
   { textureKey: CASTLE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-tiles.png", name: CASTLE_TILESET_NAME },
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_interior", path: "assets/easyrpg-chipset-interior-transparent.png", name: "실내 · EasyRPG (CC0)" },
@@ -235,6 +242,8 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key in atlasBiomeSheets) return (atlasBiomeSheets as Record<string, number>)[key]!;
   if (key === "tex_beodeul_city") return beodeulCitySheet.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
+  if (key === "tex_atlas_biome_interior") return atlasBiomeInterior.count;
+  if (key === "tex_atlas_biome_dungeon") return atlasBiomeDungeon.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
   if (key === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return LPC_WOODEN_FURNITURE_TILE_COUNT;

@@ -473,7 +473,7 @@ describe("수정 요청 — 계획 단계에서 신축으로 새지 않는다", 
     const payload = buildOrchestratorUserPayload({ userText: "이 마을 담장 좀 고쳐줘", activePlan: null });
     expect(payload).toContain("Target selection");
     expect(payload).toContain("기존 산출물을 대상으로 삼는다");
-    expect(payload).toContain("create_map / duplicate_map / reset_project / start_interior_room_session");
+    expect(payload).toContain("create_map / duplicate_map / reset_project / build_hand_interior_room");
   });
 
   it("targetMapId 는 계획에 저장되고 오케스트레이션 뷰에 재주입된다", () => {

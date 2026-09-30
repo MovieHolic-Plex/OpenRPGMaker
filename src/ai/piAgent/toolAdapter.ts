@@ -192,7 +192,7 @@ function scopeViolation(before: Project, after: Project, scopeMapIds: readonly s
     summary: `${toolName} 호출을 되돌렸습니다: ${names} 은(는) 이번 작업 범위(${scopeMapIds.join(", ")}와 그 실내 맵) 밖이라 이 변경은 병합 때 버려집니다.`
       + (allowsSystem ? " DB·시스템(데이터베이스·설정·스위치 등)은 이번 작업에서도 편집할 수 있지만, 다른 맵은 바꿀 수 없습니다." : "")
       + ` 범위 밖 맵에 문·이벤트·타일을 달지 마세요. 게임 시작 지점이 범위 밖 맵이면 set_start_position 으로 시작 위치를 범위 안 맵(${scopeMapIds[0]})으로 옮기고,`
-      + " 맵 사이 연결은 범위 안 맵끼리(실내는 place_concept·start_interior_room_session 으로 범위 안에 만든다) 만드세요.",
+      + " 맵 사이 연결은 범위 안 맵끼리(실내는 build_hand_interior_room 으로 범위 안에 만든다) 만드세요.",
   };
 }
 

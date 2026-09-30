@@ -1,6 +1,6 @@
 import { defaultTilesets } from "../defaults/defaultAssets";
 import { interiorObjectById, type InteriorObjectDef } from "../defaults/interiorObjectCatalog";
-import { INTERIOR_TILESET_ID } from "../mapCreateSpec";
+import { EASYRPG_INTERIOR_TILESET_ID as INTERIOR_TILESET_ID } from "../mapCreateSpec";
 import type { StructureKitDef, TilesetDef } from "../types";
 import type { SpatialAssetContext, SpatialGraphic } from "./types";
 

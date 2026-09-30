@@ -149,7 +149,7 @@ export function textAsksForMystery(text: string): boolean {
  */
 export const MYSTERY_AUTHORING_GUIDE = [
   "추리 저작 요령 (조사·증거 제시·지목은 컷신이 아니다. 이 요령이 회상 컷신 지시보다 우선한다):",
-  "- 실행 계획의 첫 시공 항목은 place_concept 다. 저택·서재·거실·주방은 get_concept_facility 로 장소·물건을 읽고 place_concept({query, mapId, plan}) 으로 벽과 가구가 있는 새 맵에 짓는다. fill_region 으로 바닥 사각형을 깔아 방을 흉내 내지 않는다.",
+  "- 실행 계획의 첫 시공 항목은 build_hand_interior_room 이다. 저택·서재·거실·주방은 참고문서 「손 도트 실내 (v5)」와 list_hand_interior_parts 로 가구를 읽고 build_hand_interior_room({mapId, plan, objects, …}) 으로 벽과 가구가 있는 새 맵에 짓는다. fill_region 으로 바닥 사각형을 깔아 방을 흉내 내지 않는다.",
   "- 다음 항목은 author_mystery_case 다. 단서·용의자 대화·증거 제시·지목·오답 엔딩을 스위치·변수나 place_npc·define_ending 으로 조립하지 않는다. 좌표는 그 방 안의 통행 칸이다. 쓰기 전에 check_mystery_case 로 검사한다.",
   "- author_mystery_case 요약이 「지금은 run_scene_test 를 호출하지 마라」이면 그 말을 따른다. 방을 지은 뒤 같은 caseId 로 다시 author_mystery_case 를 부르고, 요약이 data.verificationScene 을 run_scene_test 에 넣으라고 할 때만 검증한다.",
   "- script_cutscene 은 오프닝과 엔딩 에필로그만 쓴다. 오프닝·지목 선택지에 범인 이름을 단정하지 않는다.",
@@ -199,7 +199,7 @@ export const HORROR_GALLERY_AUTHORING_GUIDE = [
   "- 튀어나오는 그림·검은 손·가시 바닥 이벤트에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_damage\"}, 꽃병에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_restore\"} 를 넣는다. 체력 변수를 setVariable 로 직접 깎지 않는다.",
   "- 열쇠·레버·순서 퍼즐은 compile_puzzle(item-gate·switch-sequence·password)로 만들고, 조건 분기는 {kind:\"fork\",condition:{kind:\"switch\",switchId,value:true},then:[…]} 모양이다.",
   "- 맵마다 set_scene_mood({mapId, applyMode:\"map\", lighting:{ambient:0.35, color:\"#1a1024\"}}) 로 어둡게 둔다. 기본 조명(ambient 1)은 전시실이 낮처럼 밝다.",
-  "- 전시실·화실 같은 실내는 place_concept({query, mapId, plan}) 로 벽까지 지은 다음 fill_region 로 바닥을 마감한다. 먼저 get_concept_facility 로 물건 어휘(vocabulary)를 읽고 장소·물건을 설계해 plan 으로 넘겨라(시설 템플릿은 비어 있다). fill_region·paint_tiles 로 바닥만 깔아 빈 판으로 끝내지 말 것 — 벽 재질은 거부되고 run_interior_room_pipeline 은 plan 없는 호출을 거부한다.",
+  "- 전시실·화실 같은 실내는 build_hand_interior_room({mapId, plan, floor, wall, objects}) 로 벽·천장·가구까지 한 번에 짓는다. 먼저 list_hand_interior_parts 로 가구 id(그림·조각상·진열장)를 찾아라. fill_region·paint_tiles 로 바닥만 깔아 빈 판으로 끝내지 말 것.",
   "- 문간·한 칸 통로에 인물을 세우지 마라. 대화를 마친 페이지는 priority:\"below\" 와 overlapForbidden:false 로 비켜 준다.",
 ].join("\n");
 
@@ -210,7 +210,7 @@ export const HORROR_GALLERY_AUTHORING_GUIDE = [
  */
 export const HORROR_CHASE_AUTHORING_GUIDE = [
   "추격 호러 저작 요령:",
-  "- 방(현관·복도·서재·침실·창고)은 place_concept(query, plan, 새 mapId)로 벽이 있는 실내를 만든다. fill_region·paint_tiles 로 벽돌 바닥만 깔아 빈 판을 만들지 말 것.",
+  "- 방(현관·복도·서재·침실·창고)은 build_hand_interior_room(plan, 새 mapId)로 벽이 있는 실내를 만든다. fill_region·paint_tiles 로 벽돌 바닥만 깔아 빈 판을 만들지 말 것.",
   "- 방 사이 문은 create_transfer_pair 를 벽·가장자리 통행 칸에 두고, 그 칸에 place_door 로 문 그림을 붙인다. 방 한가운데 투명 칸으로 두지 말 것.",
   "- 방을 잇는 유일한 통로(문간) 칸에는 playerTouch 컷신·즉사 함정을 얹지 말 것 — 밟는 이벤트가 유일한 길을 막아 자동 검사가 끝까지 못 간다(막힘). 조우 컷신은 통로 옆 조사(action) 이벤트로 두고, 통로 칸에는 create_transfer_pair 문만 두세요.",
   "- 추격자는 make_chase_scene. speed 6, killOnTouch true, checkpointOnEntry true. 여러 방이면 pursuit 에 scope:\"connected\" 만 주고 tracking 은 생략한다(스위치를 켜 깨우면 persistent 가 기본. lastSeen 을 직접 넣으면 벽 너머에서 안 움직인다). activateSwitch 를 켜는 트리거를 같은 흐름에 만든다.",

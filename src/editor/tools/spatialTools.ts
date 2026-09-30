@@ -1,9 +1,11 @@
+import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { publicSpatialValue, publicSpatialKind, storageSpatialSource, storageSpatialDesign } from "./spatialPlaceContract";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { preloadRegionReference, readRegionReference } from "@/project/regionReferenceSnapshots";
 import { sharedRegionReferences } from '@/project/sharedSpatialReferences';
 import { importReferenceScene, preloadRegionReferenceScene, preloadReviewedPlaceScenes, regionReferenceScene, reviewedPlaceScenes } from "@/project/regionReferenceImport";
 import { isSharedDesignId, matchesQuery, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
+import { reviewedPlaceIndex } from "@/project/defaults/spatial/reviewedPlaceIndex";
 import { prepareSharedObject, sharedDesignDetail } from "./sharedObjectTools";
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
@@ -70,10 +72,18 @@ function connectionCompileRoot(document: SpatialAuthoringDocument, link: Pick<Sp
 /** import_region_reference for reviewed:<id> places (the editor 장소 tab): every map of the place becomes a new map. */
 function importReviewedPlace(project: Project, args: Record<string, unknown>) {
   const placeId = String(args.id).slice("reviewed:".length);
+  // 폐기된 실내(조수 목록에서 숨긴 검토 장소)는 원본을 불러오기 전에 거부한다 — 원본이 아직 안 왔을 때
+  // 「잠시 뒤 다시」 대신 폐기 사유를 돌려주어야 모델이 다시 시도하지 않는다.
+  const indexed = reviewedPlaceIndex().find(place => `reviewed:${place.id}` === String(args.id));
+  if (indexed && !sharedPlaces().some(entry => entry.id === String(args.id))) {
+    throw new ToolError(retiredInteriorMessage(indexed.tilesetId ?? "tibo_interior_expanded"), { code: "retired-interior-tileset" });
+  }
   let scenes;
   try { scenes = reviewedPlaceScenes(placeId); }
   catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
   if (scenes.length === 0) throw new ToolError(`${placeId}: 이 장소에는 맵 원본이 없습니다`, { code: "invalid-args" });
+  const retired = scenes.find(scene => isRetiredInteriorTileset(scene.tileset.id, scene.tileset));
+  if (retired) throw new ToolError(retiredInteriorMessage(retired.tileset.id), { code: "retired-interior-tileset" });
   if (args.mapId !== undefined && scenes.length > 1) {
     throw new ToolError(`${placeId} 는 맵 ${scenes.length}장(층·방)으로 된 장소라 한 맵에 붙일 수 없다 — mapId 를 빼고 새 맵으로 가져오세요`, { code: "invalid-args" });
   }
@@ -120,6 +130,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       let scene;
       try { scene = regionReferenceScene(String(args.id)); }
       catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
+      if (isRetiredInteriorTileset(scene.tileset.id, scene.tileset)) throw new ToolError(retiredInteriorMessage(scene.tileset.id), { code: "retired-interior-tileset" });
       if (args.mapId !== undefined && (args.newMapId !== undefined || args.name !== undefined || args.includeEvents !== undefined)) {
         throw new ToolError("newMapId·name·includeEvents 는 새 맵으로 가져올 때만 쓴다 — mapId 와 함께 줄 수 없다", { code: "invalid-args" });
       }

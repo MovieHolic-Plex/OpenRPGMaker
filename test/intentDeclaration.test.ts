@@ -181,10 +181,11 @@ describe("모델에 주는 입력과 모델이 낸 것의 표현", () => {
 });
 
 describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 알린다", () => {
-  it("개념 시설 실내 선언은 place_concept 경로와 되묻기 금지를 말한다", () => {
-    const note = formatIntentNote(declaredIntent({ mode: "create", space: "interior", facility: "대장간", tools: ["place_concept"] }));
-    expect(note).toContain("get_concept_facility");
-    expect(note).toContain('place_concept(query:"대장간"');
+  it("시설 실내 선언은 손 도트 v5 build_hand_interior_room 경로와 되묻기 금지를 말한다", () => {
+    const note = formatIntentNote(declaredIntent({ mode: "create", space: "interior", facility: "대장간", tools: ["build_hand_interior_room"] }));
+    expect(note).toContain("손 도트 실내 (v5)");
+    expect(note).toContain("build_hand_interior_room");
+    expect(note).not.toContain("place_concept");
     expect(note).toContain("다시 묻지 말고");
     expect(note).toContain("author_house");
   });
@@ -215,8 +216,8 @@ describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 �
     expect(note).not.toContain("start_interior_room_session");
     expect(note).not.toContain("둘은 create_transfer_pair 로 잇는다");
     expect(note).not.toContain("create_transfer_pair 수동 연결은 불필요");
-    const facilityNote = formatIntentNote(declaredIntent({ mode: "create", space: "both", facility: "여관", tools: ["place_concept"] }));
-    expect(facilityNote).toContain("place_concept");
+    const facilityNote = formatIntentNote(declaredIntent({ mode: "create", space: "both", facility: "여관", tools: ["build_hand_interior_room"] }));
+    expect(facilityNote).toContain("build_hand_interior_room");
     expect(facilityNote).not.toContain("create_transfer_pair");
   });
 

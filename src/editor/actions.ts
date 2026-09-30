@@ -19,7 +19,8 @@ import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { cloneGameMap } from "@/project/mapClone";
 import { clampLocationsToMapSize } from "@/project/mapNamedLocations";
-import { clampMapSize, INTERIOR_FLOOR_TILE, INTERIOR_TILESET_ID, type MapCreateSpec } from "@/project/mapCreateSpec";
+import { clampMapSize, EASYRPG_INTERIOR_FLOOR_TILE, EASYRPG_INTERIOR_TILESET_ID, INTERIOR_SHELL_FLOOR, INTERIOR_SHELL_WALL, INTERIOR_TILESET_ID, type MapCreateSpec } from "@/project/mapCreateSpec";
+import { handInteriorStructure } from "@/editor/handInterior/builder";
 import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import {
   appendToTree,
@@ -65,12 +66,20 @@ function allowMapSize(width: number, height: number): boolean {
   return false;
 }
 
-export function addMap(name: string, width = 16, height = 16, tilesetId?: string, fillTile?: number): MapId {
+/** 한 칸 번호로 채우거나(옛 칩셋) 칸마다 번호를 준다(손 도트 실내 방 껍데기). */
+type MapFill = number | readonly number[];
+
+function applyFill(tiles: number[], fill: MapFill): void {
+  if (typeof fill === "number") tiles.fill(fill);
+  else for (let i = 0; i < tiles.length && i < fill.length; i++) tiles[i] = fill[i]!;
+}
+
+export function addMap(name: string, width = 16, height = 16, tilesetId?: string, fillTile?: MapFill): MapId {
   if (!allowMapSize(width, height)) return "";
   let newId: MapId = "";
   store.update((p) => {
     const m = createBlankMap(name || "새 맵", width, height, tilesetId ?? defaultOutdoorTilesetId(p));
-    if (fillTile !== undefined) m.lowerTiles.fill(fillTile);
+    if (fillTile !== undefined) applyFill(m.lowerTiles, fillTile);
     p.maps[m.id] = m;
     // mapTree에 루트 자식으로 추가.
     appendToTree(p.mapTree, m.id);
@@ -84,14 +93,14 @@ type AddChildMapSize = {
   readonly width: number;
 };
 
-export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize = { width: 16, height: 16 }, tilesetId?: string, fillTile?: number): MapId {
+export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize = { width: 16, height: 16 }, tilesetId?: string, fillTile?: MapFill): MapId {
   if (!allowMapSize(size.width, size.height)) return "";
   let newId: MapId = "";
   store.update((p) => {
     const parent = findTreeNode(p.mapTree, parentId);
     if (!p.maps[parentId] && !parent) return;
     const m = createBlankMap(name || "새 맵", size.width, size.height, tilesetId ?? defaultOutdoorTilesetId(p));
-    if (fillTile !== undefined) m.lowerTiles.fill(fillTile);
+    if (fillTile !== undefined) applyFill(m.lowerTiles, fillTile);
     p.maps[m.id] = m;
     appendToTree(p.mapTree, m.id, parentId);
     newId = m.id;
@@ -103,11 +112,23 @@ export function createMapFromSpec(spec: MapCreateSpec): MapId {
   const width = clampMapSize(spec.width, 20);
   const height = clampMapSize(spec.height, 15);
   const name = spec.name.trim() || "새 맵";
-  const fillTile = spec.preset === "interior" || spec.tilesetId === INTERIOR_TILESET_ID
-    ? INTERIOR_FLOOR_TILE
-    : undefined;
+  const fillTile = interiorFill(spec.tilesetId, width, height);
   if (spec.parentId) return addChildMap(spec.parentId, name, { width, height }, spec.tilesetId, fillTile);
   return addMap(name, width, height, spec.tilesetId, fillTile);
+}
+
+/**
+ * 실내 칩셋으로 만드는 새 맵의 1층. 손 도트 v5 는 바닥 한 칸으로 채우면 벽·천장이 없는 판이 되므로
+ * 사방 테두리를 벽으로 둔 방 평면을 build_hand_interior_room 과 같은 구조 규칙(handInteriorStructure)으로 깐다.
+ */
+function interiorFill(tilesetId: string, width: number, height: number): MapFill | undefined {
+  if (tilesetId === EASYRPG_INTERIOR_TILESET_ID) return EASYRPG_INTERIOR_FLOOR_TILE;
+  if (tilesetId !== INTERIOR_TILESET_ID || width < 3 || height < 5) return undefined;
+  // 맨 아래 줄 가운데 한 칸은 출입구 — build_hand_interior_room 과 같은 약속이라 문 이벤트를 바로 달 수 있다.
+  const wall = "#".repeat(width);
+  const door = Math.floor(width / 2);
+  const plan = [wall, ...Array.from({ length: height - 2 }, () => `#${".".repeat(width - 2)}#`), `${"#".repeat(door)}.${"#".repeat(width - door - 1)}`];
+  return handInteriorStructure({ plan, floor: INTERIOR_SHELL_FLOOR, wall: INTERIOR_SHELL_WALL }).lower;
 }
 
 export function addMapFolder(parentId: MapId | "", name = "새 분류"): MapId {

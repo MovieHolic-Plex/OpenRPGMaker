@@ -5,7 +5,7 @@ import { duplicateSpatialOccurrence } from "@/project/spatial/duplicate";
 import { deleteSpatialDesign, deleteSpatialOccurrence, detachSpatialOccurrence, inspectSpatialDesignReferences, inspectSpatialOccurrenceDeletion } from "@/project/spatial/ownership";
 import { emptySpatialLibrary, resolveSpatialDesign, resolveSpatialOccurrenceRefresh, SPATIAL_EXPANSION_LIMITS } from "@/project/spatial/resolve";
 import { INTERIOR_OBJECT_CATALOG } from "@/project/defaults/interiorObjectCatalog";
-import { INTERIOR_TILESET_ID } from "@/project/mapCreateSpec";
+import { EASYRPG_INTERIOR_TILESET_ID as INTERIOR_TILESET_ID } from "@/project/mapCreateSpec";
 import { instantiateSpatialDesign } from "@/project/spatial/instances";
 import * as snapshotRaster from "@/project/spatial/snapshotRaster";
 import { expansionFixture, first, instancesFixture, selectedCells } from "./support/spatialInstancesFixture";

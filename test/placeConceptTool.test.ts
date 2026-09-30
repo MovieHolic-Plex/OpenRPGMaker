@@ -33,10 +33,11 @@ describe("place_concept", () => {
     expect(getTool("place_concept")?.name).toBe("place_concept");
   });
 
-  it("여관 지어줘 요청에 승격된다", () => {
-    expect(capabilityEscalatedToolNames("여관 지어줘", new Set())).toContain("place_concept");
-    expect(capabilityEscalatedToolNames("여관 하나 지어줘", new Set())).toContain("place_concept");
-    expect(capabilityEscalatedToolNames("주막 만들어줘", new Set())).toContain("place_concept");
+  it("여관 지어줘 요청은 손 도트 v5 도구로 승격된다(place_concept 은 2026-09-29 폐기 — 실행 호환만)", () => {
+    for (const text of ["여관 지어줘", "여관 하나 지어줘", "주막 만들어줘"]) {
+      expect(capabilityEscalatedToolNames(text, new Set())).toContain("build_hand_interior_room");
+      expect(capabilityEscalatedToolNames(text, new Set())).not.toContain("place_concept");
+    }
   });
 
   it("툴 설명이 시설 요청의 경로(야외 집 금지·새 mapId·create_map 만 하고 멈추지 말 것)를 스스로 말한다", () => {
@@ -135,16 +136,16 @@ describe("place_concept", () => {
 });
 
 describe("개념 꾸러미 프롬프트", () => {
-  it("사용자가 고친 시설명이 시스템 프롬프트에 실린다", () => {
+  // 2026-09-29: 실내 = 손 도트 v5 하나. place_concept 은 폐기(실행 호환만)라 시스템 프롬프트에 꾸러미 절을 싣지 않는다.
+  it("폐기된 개념 꾸러미 절은 사용자가 고친 나무가 있어도 시스템 프롬프트에 실리지 않는다", () => {
     const project = createBlankProject();
     const edited = cloneConceptBundle(SCRATCH_INN_BUNDLE);
     edited.facilities[0] = { ...edited.facilities[0]!, label: "주막" };
     edited.label = "주막";
     project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = [edited];
     const prompt = buildSystemPrompt(project, { currentMapId: project.startMapId, budgetChars: 50_000 });
-    expect(prompt).toContain("개념 꾸러미");
-    expect(prompt).toContain("place_concept");
-    expect(prompt).toContain("주막");
+    expect(prompt).not.toContain("## 개념 꾸러미");
+    expect(prompt).toContain("build_hand_interior_room");
   });
 });
 

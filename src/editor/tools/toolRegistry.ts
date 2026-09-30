@@ -61,6 +61,7 @@ import { PACK_TOWN_TOOLS } from "./packTownTools";
 import { VILLAGE_TOOLS } from "./villageBuilder";
 import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
+import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -171,6 +172,11 @@ const NAME_DOMAIN_OVERRIDES: ReadonlyMap<string, readonly ToolDomain[]> = new Ma
   ["evaluate_game_quality", ["system"]],
 ]);
 
+/** 옛 실내 칩셋(EasyRPG 실내·Tibo 번호) 전용 도구 — 조수에게 보이지 않게 deprecated 로 돌리고 대체 도구를 적는다. */
+function retireOldInteriorTool(tool: ToolDefinition): ToolDefinition {
+  return { ...tool, deprecated: true, supersededBy: "build_hand_interior_room" };
+}
+
 function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): readonly ToolDefinition[] {
   return tools.map((tool) => ({
     ...tool,
@@ -201,7 +207,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
-  ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile"),
+  // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 칸 번호로 짓는 방 세션·개념 시설 시공은
+  // 조수 목록에서 뺀다(deprecated: 노출 제외, 실행 호환은 유지 — 옛 세션 재생·테스트).
+  ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
+  ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile").map(retireOldInteriorTool),
   ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile"),
   ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
