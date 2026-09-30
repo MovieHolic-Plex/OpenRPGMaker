@@ -384,9 +384,15 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 `syncMountedPaletteToolPick` 이 도구줄·붓 옵션 줄만 갈고 시트·필터 줄은 건드리지 않는다(2026-09-26 실측: 전체
 재생성은 클릭당 약 120ms, 그중 60% 가 붙이기 직후 focus 복원과 옛 트리 떼기). 도구줄 단추·모양 선택은
 `editorState` 만 바꾸고 스스로 `rerender()` 하지 않는다 — 부르면 클릭 한 번에 팔레트가 두 번 지어진다.
-타일 검색은 입력이 120ms 멈춘 뒤 한 번 다시 그린다. 도장만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
-같을 때 그대로 두고 크롬만 다시 그린다. 레이어·필터·검색·타일셋 그림이 바뀌거나 보조 창이 열려
-선택 동기화가 실패하면 시트를 다시 그린다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
+타일 검색은 입력이 120ms 멈춘 뒤 한 번 다시 그린다. 도장만 바뀌면 시트 노드는 `retainKey`가
+같을 때 그대로 두고 크롬만 다시 그린다. **키 구성 (2026-09-30):** 커스텀 아틀라스는 `[타일셋 id·칸 수·열 수]` 뿐이라
+레이어·분류·검색·타일셋 그림이 바뀌어도 시트를 유지하고 `setCustomPaletteFilter`(is-filtered-out 토글, 늦게 붙는 배치는
+같은 `view` 를 읽는다)로 제자리 동기화한다. 기본(RM2K 격자) 팔레트는 안 맞는 칸을 그리지 않으므로 `[…레이어·분류·검색]` 이
+키에 남고, 필터가 켜져 있으면 유지하지 않는다(`canRetainPalette`). 타일셋 그림(그래프트 굽기 후 dataURL/blob)은 키에서 빠졌다 —
+`.chipset-grid` 의 `--custom-palette-image` 변수 하나를 `applyPaletteSheetImage` 가 바꿔 그림만 교체한다(칸은 변수를 참조).
+보조 창이 열려 선택 동기화가 실패하면 시트를 다시 그린다. `mapTileDraw.loadTilesetImage` 는 색 키 변형이 URL 당 디코드 1회를 공유한다
+(`loadDecodedImage`). 실측(town 1140칸): 타일셋 교체 동기 71ms(전 246), 분류 전환 뒤 셀 1140 유지·시트 노드 유지,
+content-visibility 를 셀에 걸면 필터·분류가 오히려 느려져(분류 150→216ms) 채택하지 않았다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
 **스크롤 복원은 읽지 않고 쓴다 (2026-09-27).** `applyPaletteScroll` 은 0 이 아닌 축만 쓴다 — 막 붙인 시트의
 `scrollLeft/Top` 을 읽으면 레이아웃이 강제된다(레이어 전환 재생성 89ms 중 46ms). 결과: 89 → 67ms/전환, 스크롤 300·0 보존.
 **좌패널 최소 크기:** 글자 11px, 누르는 것 24px(`--space-5`). 되돌리기·다시실행 펼쳐보기 폭도 24px 이다
@@ -401,6 +407,15 @@ project·database 통지·이벤트 선택은 더 이상 팔레트를 재생성�
 한 번 다시 그린다 — 예전에는 무관한 재생성이 우연히 이 일을 했다.
 제자리 동기화(`syncMountedPalette*`)가 성공하면 입력 기록도 갱신한다 — 안 하면 타일·도구·붓을 바꾼 직후
 무관한 통지 하나가 전체 재생성을 1회 부른다.
+**살아 있는 판은 DOM 에서 떼지 않는다 (실측 2026-09-30, 1140칸).** 맵을 바꾸거나 층·분류를 바꿀 때 판(`retainKey` 일치)을
+떼었다 다시 붙이면 `.chipset-tile` 1140개의 스타일·레이아웃이 버려진다. `renderTilePalette` 는 마운트된 판 둘레(`swapPaneAroundSheet`)만
+바꾸고 판은 그 자리에 둔다. 이 페이지에서 **자식 목록을 바꾸는 연산**(insert/remove/replaceWith/append/`textContent=`)은 한 번에
+~45~50ms 의 전체 트리 스타일 재계산(BODY 「Invalidation set invalidates subtree」)을 부른다 — 속성·클래스·`Text.data` 변경은 ~0.3ms 다.
+그래서 동기화 경로는 자식 목록을 건드리지 않는다: 선택 타일 칩은 `updateSelectedTileStatus`(구조 키 `statusKey` 가 같으면 썸네일 style·
+`title`·라벨 `Text.data` 만 바꿈, 다르면 통째 교체), 붓 컨트롤은 `patchBrushControlsInPlace`(`data-layer` 외 `outerHTML` 이 같을 때만 속성 이동).
+칩 클릭 핸들러는 캡처 대신 `dataset.selectedTile` 을 읽는다(칩이 재사용되므로). 남은 비용은 팔레트 밖이다 — `panels/menu.ts` `renderTopbar`,
+`panels/editor.ts` `refreshAuthoringJourney`/`paintPersistenceBanner` 의 `clearChildren`, `aiChatPanel` 의 `syncCommandBarClearance`·
+`aiChatResizeChrome.effectiveWidth` 강제 레이아웃. 증거: `verify-shots/editor-lag-fix/E/profile-round2.md`.
 DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.
 같은 맵에서 도구·선택만 바뀌면 프로젝트 전체 참조 감사와 JSON 내보내기를 다시 하지 않는다.
 
