@@ -30,6 +30,13 @@
 
 스킬 `area`·`comboActorIds`, 상태 `freezesGauge`·`forcedAction`·`physicalDefenseMultiplier`·`magicDefenseMultiplier`·`elementRates` 는 이제 자료집 스킬/상태 탭에서 고친다(칸 목록·저장 경로: [editor-database.md](editor-database.md) 같은 날짜 절). 런타임 의미는 아래 「스킬 기믹 명시화」·「연계기 · 위치 범위기」 그대로다. 기본 DB 상태 8종·확장 직업 6종은 기존 프로젝트에도 `ensureRetroRosterRecords` 가 빠진 것만 심는다([runtime-project-schema.md](runtime-project-schema.md)).
 
+## 로스터 전 묶음 기믹 (2026-10-01)
+
+로스터 992 스킬 전부(16 묶음, 124 직업)에 `mechanic` 칸이 들어갔다. 예전엔 a1(7직업)만 있었고 나머지 936개 중 622개(66%)가 순수 1타 데미지였다.
+규칙 검사는 `node_modules/.bin/vite-node --script scripts/qa/retro-skill-mechanics-check.mts [--batch <묶음>]`(오류: 없는 상태 id · 직업의 순수 1타 3개 이상 · 기믹 4종 미만 · 필살기 순수 1타 · 전체 공격인데 연출이 한 대상에만 · `state_death` add). 경고는 이름·설명 낱말이 약속한 효과가 레코드에 없을 때(낱말 검사라 오탐 있음 — 「석화 피부」 같은 자기 강화).
+- `state_death` 는 **해제(부활)만** 엔진이 안다. add 로 거는 즉사는 `applyStateEffects` 가 레코드 없는 상태로 보고 조용히 건너뛴다.
+- 층 앵커만 바꾼 스킬 4개(`target`→`allTargets`: 가시 회전·버섯 고리 춤·바위 비·꼬리 휩쓸기) — 전체 공격인데 이펙트가 한 적에게만 떴다.
+
 ## 스킬이 계약 도트 연출을 빌린다 — retroChoreographyId (2026-09-30)
 
 새 스킬은 자기 id 가 계약(`retroClassSkills`·`retroRosterSkills`·`retroMonsterSkills`)에 없어도 `SkillRecord.retroChoreographyId` 가 가리키는 계약의 연출(모션·층·소리·타격 간격)을 그대로 재생한다. 위력·비용·상태·범위는 레코드 값을 쓴다. 조회는 `src/assets/retroSkillCatalog.ts`의 직업/몬스터 resolver를 런타임과 편집기 무대·배지·서명이 같이 쓴다. 모든 계약 종류에 대해 자기 id를 먼저 선택하고 없을 때만 `retroChoreographyId`를 조회하므로 레이어와 타임라인이 같은 계약을 쓴다. 런타임은 타임라인의 정확한 **skillId**로 레코드를 찾으며 ID 없는 과거 엔트리만 이름으로 조회한다. 자기 id 가 계약이면 그쪽이 우선이라 빌린 값은 무시된다. 스킬 복제(편집기·조수)는 사본에 원본 계약 id 를 채운다. 내보내기 플레이어는 `pixel-fx` 폴더 전량을 번들하므로 자산 배선이 더 필요 없다. 증거: `verify-shots/retro-assistant/SUMMARY.md`(새 직업 「화염 검투사」 스킬 8개가 모두 빌린 연출을 재생).
