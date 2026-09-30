@@ -47,7 +47,6 @@ const DEFAULT_TITLE = "새 게임";
 /** 격자 첫 칸은 「새 게임」이라 최근 프로젝트는 11장까지 — 넓은 창에서 네 칸 세 줄이 찬다. */
 const MAX_GRID = 11;
 /** 최근 작업이 하나도 없을 때(첫 방문) 히어로 판에 까는 키아트. */
-const WELCOME_ART = "/assets/generated/welcome/start-hero.jpg";
 
 type View = "home" | "new" | "join";
 
@@ -72,11 +71,6 @@ type State = {
 
 /** 첫 화면에 보이는 장르 — 새 프로젝트 다이얼로그·웰컴과 같은 정본(featured)만 쓴다. */
 const GENRES: readonly NewProjectChoice[] = NEW_PROJECT_CHOICES.filter((choice) => choice.featured);
-
-/** 새 게임 입력판 뒤에 까는 그림 — 고른 장르의 포스터, 없으면(빈 프로젝트) 키아트. */
-function composeArt(choiceId: NewProjectChoiceId | null): string {
-  return GENRES.find((choice) => choice.id === choiceId)?.thumb ?? WELCOME_ART;
-}
 
 export function formatRelativeTime(iso: string | null | undefined, now = Date.now()): string {
   if (!iso) return "";
