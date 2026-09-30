@@ -2536,7 +2536,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // idle 상태는 컨텍스트 칩을 숨기지만, 선택 스코프가 붙어 있으면 그 칩만은 보여야 한다 —
     // 안 보이면 사용자는 스코프가 붙는지 모르고 ×도 누를 수 없다(2026-09-03 실측 7건 전부 display:none).
     contextChips.classList.toggle("has-selection-scope", selection !== null);
-    contextChips.replaceChildren(...chips);
+    // 칩 구성이 그대로면(선택 없음 + 재사용 칩 없음 = 빈 목록이 대부분) 자식 목록을 다시 쓰지 않는다 —
+    // replaceChildren 은 같은 내용이어도 변이 통지를 내고, 맵 전환·레이어 전환마다 스타일 재계산을 부른다.
+    // 선택 칩은 매번 새로 만든 요소라 선택이 있으면 항상 바뀐 것으로 본다.
+    const sameChips = chips.length === contextChips.children.length
+      && chips.every((chip, index) => contextChips.children[index] === chip);
+    if (!sameChips) contextChips.replaceChildren(...chips);
     syncRailContext();
   };
   refreshContextChips();
@@ -2561,7 +2566,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     planningReuseControl?.refresh();
     refreshContextChips();
     refreshComposerPlaceholder();
-    applyAssistantViewPolicy();
+    // 패널 표면(폭·여백 변수·핸들 위치)은 편집기 상태를 읽지 않는다 — 데크 크기 변화는 ResizeObserver 가,
+    // 팝오버는 onPopoverChange 가 따로 맞춘다. 맵을 바꿀 때만 다시 맞추고 그 밖의 통지에서는 강제 레이아웃(rect 읽기)을 피한다.
+    if (previous.currentMapId !== state.currentMapId) applyAssistantViewPolicy();
     if (studioShell?.attached()) {
       studioShell.refreshScenes();
       studioShell.refreshMonitor();
@@ -3438,8 +3445,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     panel.dataset.aiState = state;
     setRestoreButtonState(collapsedRestore, state, sourceTextOf(status), pendingApproval ? 1 : 0);
   };
+  let lastRailContext: string | null = null;
   syncRailContext = (): void => {
-    rail.setContext(mapContext().mapName);
+    const mapName = mapContext().mapName;
+    if (mapName === lastRailContext) return;
+    lastRailContext = mapName;
+    rail.setContext(mapName);
   };
   syncRailContext();
   syncDeckState();
