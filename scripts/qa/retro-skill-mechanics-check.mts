@@ -85,6 +85,8 @@ for (const contract of RETRO_ROSTER_SKILLS) {
   entry.rows.push({ id: contract.id, name: contract.name, level: contract.level, record });
   byClass.set(contract.classId, entry);
   for (const effect of record.stateEffects ?? []) if (!states.has(effect.stateId)) errors.push(`${label}: 없는 상태 ${effect.stateId}`);
+  // state_death 는 부활(remove)만 엔진이 안다. add(즉사)는 조용히 무시된다(applyStateEffects 가 레코드 없는 상태를 건너뛴다).
+  if ((record.stateEffects ?? []).some((effect) => effect.stateId === "state_death" && (effect.operation ?? "add") === "add")) errors.push(`${label}: state_death add(즉사)는 엔진이 지원하지 않는다 — 비율 수식·석화 등으로`);
   const anchors = new Set(contract.layers.map((layer) => layer.anchor));
   // 피해 없는 전체 약화(support)는 상태 숫자가 적마다 뜨므로 시전자 층만 있어도 된다.
   if (record.scope === "allEnemies" && record.effect.kind === "damage" && !anchors.has("allTargets") && !anchors.has("screen")) {
