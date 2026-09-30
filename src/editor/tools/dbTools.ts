@@ -4,6 +4,7 @@ import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
 import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
 import { nearbyRetroChoreographies, resolveSkillChoreography, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
+import { BATTLE_AURA_IDS, normalizeBattleAura } from "@/assets/battleStateAuras";
 import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
 import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
 // editor/tools/dbTools.ts
@@ -779,6 +780,7 @@ const stateRecordSchema = objectSchema({
   lockedParameters: stringArraySchema(),
   runtimeEffects: stateRuntimeEffectsSchema,
   disablesEquipSlot: stringSchema("부위 손실: 이 상태인 동안 이 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다"),
+  battleAura: stringSchema("전투 지속 오라(retro2003): 상태가 걸려 있는 동안 몸 위에 남는 표시. freeze-grey|berserk-pulse|shield-shimmer|wet-drip|poison-bubble|dark-fog|petrify-still|regen-sparkle, none=끔. 비우면 기본 상태(독·스톱·버서크·프로텍트·실드·젖음·암흑·석화·재생)만 자동"),
 }) as RecordSchema;
 
 function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {
@@ -1727,6 +1729,10 @@ const upsertState: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("state", stateRecordSchema, { id: "state_poison", name: "독", runtimeEffects: { hpDamagePercentPerTurn: 5 } }),
   run(draft, args): ToolExecResult {
+    const rawAura = (args.state as { battleAura?: unknown } | undefined)?.battleAura;
+    if (rawAura !== undefined && rawAura !== "" && !normalizeBattleAura(rawAura)) {
+      throw new ToolError(`state.battleAura '${String(rawAura)}' 는 없는 오라입니다. 가능: ${BATTLE_AURA_IDS.join(", ")}, none`);
+    }
     const record = normalizeStateRecord(mergeRecord(draft.database.states, args.state, "state", stateRecordSchema, { id: "state_poison", name: "독" }) as Partial<StateRecord> & Pick<StateRecord, "id" | "name">);
     const outcome = upsertById(draft.database.states, record);
     return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };

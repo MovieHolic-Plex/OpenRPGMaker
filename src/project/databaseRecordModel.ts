@@ -1,4 +1,5 @@
 import { normalizeGallerySettings } from "./gallery";
+import { normalizeBattleAura } from "@/assets/battleStateAuras";
 import { normalizeSkillChoreographyRecords } from "./skillChoreographyRecords";
 import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
 import { normalizeVehicleConfigs } from "./vehicles";
@@ -107,6 +108,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
       return emotion ? { emotion } : {};
     })(),
     ...(typeof record.disablesEquipSlot === "string" && record.disablesEquipSlot ? { disablesEquipSlot: record.disablesEquipSlot } : {}),
+    ...(normalizeBattleAura(record.battleAura) ? { battleAura: normalizeBattleAura(record.battleAura) } : {}),
   };
 }
 

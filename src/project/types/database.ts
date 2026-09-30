@@ -822,6 +822,8 @@ export interface StateRecord {
   emotion?: StateEmotion;
   /** 부위 손실: 이 상태인 동안 해당 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다. */
   disablesEquipSlot?: string;
+  /** retro2003 전투에서 이 상태가 걸린 동안 몸 위에 남는 오라 프리셋 id(src/assets/battleStateAuras.ts). "none" = 끔, 없으면 기본 상태 id 표. */
+  battleAura?: string;
 }
 
 export interface StateEmotion {
