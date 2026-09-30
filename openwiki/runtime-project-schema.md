@@ -197,6 +197,19 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
   (들여쓴 JSON 등)으로 `saveSerialized` 하면 접지 않고 그 글을 그대로 둔다. 저장마다 현재 행이 가리키지 않는 본문은 지운다.
   호스트 맵 패치는 `hostDocument()`(타일셋은 얼린 공유 객체, 바깥 트리는 매번 새 것)를 기준으로 쓰고,
   저장은 객체 신원으로 본문을 재사용해 바뀐 타일셋만 직렬화한다. 실측(82MB 프로젝트): 행 81.6MB → 1.0MB.
+  **저장 SHA 는 접두 상태 캐시로 만든다 (2026-09-30)**: 펼친 글의 99% 가 타일셋이라 매 저장 109MB 를 다시 해시하던 것
+  (≈270ms)을, 타일셋 앞 글 + (타일셋 id, 본문 sha) 가 같으면 이어 붙인 SHA-256 상태(`Hash.copy()`)를 재사용해 뒤 조각만
+  먹인다(`FoldHashCache`, store 당 하나). 값은 바이트 단위로 같아 **sha 계약은 불변**이다. `unfoldRowText` 검증은 캐시를 안 쓴다.
+  **맵 미러는 바뀐 맵만 다시 쓴다 (2026-09-30)**: `replaceMapMirrors` 는 저장된 `map_json` 과 `JSON.stringify(map)` 이 같은 맵은
+  건드리지 않는다(바뀐 것만 upsert, 사라진 것만 삭제). 안 바뀐 맵 미러 행의 `updated_at` 은 더 이상 저장마다 갱신되지 않는다.
+  `writeProjectRow` 도 `tileset_blobs` 의 sha 목록을 한 번만 읽는다.
+  **미디어 분리 점검은 접힌 행만 본다 (2026-09-30)**: `separateInlineMediaOnOpen`(열기·저장 뒤 최대 3회)은 112MB 펼친 글
+  (`exportSerialized`) 대신 접힌 행(`exportFolded`)으로 어휘 검사를 하고, 참이면 `!ref && dataUrl` 자산이 실제로 있는지
+  접힌 행 파싱으로 확인한 뒤에야 `loadSnapshot` 을 부른다(`ref` 와 `dataUrl` 을 함께 든 자산은 옮길 것이 없다). 실측: 열기 5–6.7s → 63ms,
+  저장 1–3번째 ≈4.5s → ≈0.7s.
+  **살아 있는 타일셋 본문 목록은 행 sha 로 기억한다 (2026-09-30)**: `readRowConsistently` 가 읽기마다 접힌 행(1–3MB)을 다시 파싱해
+  `retainLiveBlobs` 용 목록을 만들던 것을, 같은 행을 이미 파싱한 경로(`hostDocumentTree`·`unfoldRowText`)나 방금 쓴 `wire.blobs` 가 남긴
+  목록(`liveMemo`, 키 = 행 sha)으로 대신한다. 저장 중앙값 ≈542 → ≈469ms.
   **`current_json` 을 SQL 로 직접 읽는 스크립트는 표식만 본다** — 문서는 `openLocalProjectStore().exportSerialized()`
   또는 `scripts/oprn-store.mjs export-json` 으로 읽는다.
 - **접힌 로드 (2026-09-27)**: 편집기(`electronRepository` 의 load·loadSnapshot·loadForProof)는 `oprn:project.loadFolded`
