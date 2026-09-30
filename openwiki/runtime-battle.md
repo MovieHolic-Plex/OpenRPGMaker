@@ -10,6 +10,10 @@
 
 # Runtime Battle Behavior
 
+## 레트로 기믹 편집 가능화 (2026-09-30)
+
+스킬 `area`·`comboActorIds`, 상태 `freezesGauge`·`forcedAction`·`physicalDefenseMultiplier`·`magicDefenseMultiplier`·`elementRates` 는 이제 자료집 스킬/상태 탭에서 고친다(칸 목록·저장 경로: [editor-database.md](editor-database.md) 같은 날짜 절). 런타임 의미는 아래 「스킬 기믹 명시화」·「연계기 · 위치 범위기」 그대로다. 기본 DB 상태 8종·확장 직업 6종은 기존 프로젝트에도 `ensureRetroRosterRecords` 가 빠진 것만 심는다([runtime-project-schema.md](runtime-project-schema.md)).
+
 ## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
 
 - **도트 결과(기본 메뉴 스킨 pixel, 포켓몬 제외)** 는 첫 화면이 세 창이다: 머리 창(승리 · EXP · 돈 · 전리품 이름, `battle-result-summary`) / 파티 창(걷는 그림 · Lv 전후 · EXP 막대 · LEVEL UP 또는 다음 Lv까지, `battle-result-party-<actorId>`) / 전리품 창(`battle-result-cards`: 소지금 「a → b」, 아이템 「보유 a → b」).
@@ -233,7 +237,7 @@
 - 기본 DB 상태 8종 추가: state_blind(accuracyModifier 50 — **통상 공격만** 본다) · state_stop(freezesGauge+restrictsAction, 2턴부터 50%) ·
   state_protect/shell(물리/마법 방어 1.5배) · state_berserk(attackRandom, 공 1.5배) · state_petrify(incapacitates) · state_wet(번개 A·불 D) · state_oiled(불 A).
   배지 토큰 STP·PRT·SHL·BSK·STN·WET·OIL(battleFieldDom `stateIconToken` + 03-vxace-status-nodes.css). 자동 부활은 엔진에 없어 뺐다.
-  **새 프로젝트만** 받는다 — 기존 프로젝트 DB 에 상태를 심는 ensure 경로는 없다.
+  새 프로젝트는 처음부터, 기존 프로젝트는 로드 때 `ensureRetroRosterRecords` 가 빠진 id 만 심는다(2026-09-30).
 - 함정: 다단(`hitSequence`)은 회마다 상태 판정 — 첫 타의 기름이 둘째 타 불을 약점으로 만든다(듀얼 카타스트로프). `formula` 는 방어 경감을 건너뛴다.
   `priority` 는 strict 턴제에서만 순서를 바꾼다(ATB 에선 무효). 자기 버서크는 녹화 큐를 멈춘다(배우가 명령을 안 받는다) — 쓰지 않았다.
 - a1.ts 의 mechanic 은 손으로 채웠다. 생성기(`lib_r2w1.py --emit a1`)로 다시 뽑으면 사라진다.
