@@ -1,0 +1,244 @@
+{
+  "environment": "Chromium, local worktree, isolated mocked OAuth endpoints; no real accounts or model calls",
+  "calls": [
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/login",
+      "provider": "google-antigravity",
+      "method": "POST"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "openai-codex",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/login-cancel",
+      "provider": "google-antigravity",
+      "method": "POST"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/login",
+      "provider": "google-antigravity",
+      "method": "POST"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    },
+    {
+      "path": "/auth/status",
+      "provider": "google-antigravity",
+      "method": "GET"
+    }
+  ],
+  "errors": [],
+  "observations": {
+    "google-first-connection": "AI 설정\nGoogle · 로그인 필요\n연결 확인\n연결\n모델\n동작\n표시\n사용량\n연결\n\nAI 제공자와 로그인 상태를 관리합니다.\n\nGoogle 계정\nGemini · Antigravity\nGoogle 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.\n로그인 필요\nChatGPT 계정\nCodex\nChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.\n로그인 필요\n로그인 필요\n로그인을 누르면 새 창이 열리고 Google 계정으로 로그인합니다. API 키는 필요 없어요.\n로그인\n\n작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.\n\n변경 사항은 자동으로 저장됩니다.\n연결하고 계속",
+    "selected": {
+      "providerId": "openai-codex",
+      "roles": {
+        "vision": {
+          "provider": "openai-codex",
+          "model": "gpt-6-luna",
+          "thinkingLevel": "medium"
+        },
+        "writer": {
+          "provider": "openai-codex",
+          "model": "gpt-6-luna",
+          "thinkingLevel": "medium"
+        },
+        "deep": {
+          "provider": "openai-codex",
+          "model": "gpt-6-luna",
+          "thinkingLevel": "low"
+        }
+      },
+      "brain": "openai-codex",
+      "image": "openai-codex",
+      "chat": "openai-codex",
+      "event": "openai-codex"
+    },
+    "chatgpt-ready": "AI 설정\nChatGPT · 사용 준비됨\n연결 확인\n연결\n모델\n동작\n표시\n사용량\n연결\n\nAI 제공자와 로그인 상태를 관리합니다.\n\nGoogle 계정\nGemini · Antigravity\nGoogle 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.\n로그인 필요\nChatGPT 계정\nCodex\nChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.\n연결됨 · PLUS\n연결됨 · PLUS\nChatGPT 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.\n다시 확인\n연결 해제\n\n작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.\n\n자동 저장됨 · 오전 07:38\n연결하고 계속",
+    "mixed-account-required": "AI 설정\nGoogle 연결 필요 · 작업 모델\n연결 확인\n연결\n모델\n동작\n표시\n사용량\n연결\n\nAI 제공자와 로그인 상태를 관리합니다.\n\nGoogle 계정\nGemini · Antigravity\nGoogle 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.\n로그인 필요\nChatGPT 계정\nCodex\nChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.\n연결됨 · PLUS\n연결됨 · PLUS\nChatGPT 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.\n다시 확인\n연결 해제\n\n직접 지정한 작업 모델은 유지됩니다. 다른 계정을 쓰는 모델이 있으면 그 계정도 연결하세요.\n\n이 계정으로 작업 모델 맞추기\n변경 사항은 자동으로 저장됩니다.\n연결하고 계속",
+    "remote-login": "AI 설정\nGoogle · 브라우저에서 로그인 대기 중\n연결 확인\n연결\n모델\n동작\n표시\n사용량\n연결\n\nAI 제공자와 로그인 상태를 관리합니다.\n\nGoogle 계정\nGemini · Antigravity\nGoogle 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.\n로그인 진행 중\nChatGPT 계정\nCodex\nChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.\n연결됨 · PLUS\n브라우저에서 로그인 대기 중\n로그인을 누르면 새 창이 열리고 Google 계정으로 로그인합니다. API 키는 필요 없어요.\n1. 새로 열린 탭에서 Google 계정으로 로그인하세요.\n2. 마지막 탭이 열리지 않으면 주소창 전체(http://localhost로 시작)를 복사하세요. 그 주소를 전달해 연결을 마칠 수 있어요.\n3. 이 화면으로 돌아와 복사한 주소를 아래 칸에 붙여 넣으세요. 연결을 확인하고 로그인 정보는 이 서버에 보관합니다.\n연결하기\n로그인 창 다시 열기\n주소 복사\n로그인을 기다리는 중…\n취소\n\n작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.\n\n자동 저장됨 · 오전 07:38\n연결하고 계속",
+    "resumed-login-1024": "AI 설정\nGoogle · 브라우저에서 로그인 대기 중\n연결 확인\n연결\n모델\n동작\n표시\n사용량\n연결\n\nAI 제공자와 로그인 상태를 관리합니다.\n\nGoogle 계정\nGemini · Antigravity\nGoogle 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.\n로그인 진행 중\nChatGPT 계정\nCodex\nChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.\n연결됨 · PLUS\n브라우저에서 로그인 대기 중\n로그인을 누르면 새 창이 열리고 Google 계정으로 로그인합니다. API 키는 필요 없어요.\n1. 새로 열린 탭에서 Google 계정으로 로그인하세요.\n2. 마지막 탭이 열리지 않으면 주소창 전체(http://localhost로 시작)를 복사하세요. 그 주소를 전달해 연결을 마칠 수 있어요.\n3. 이 화면으로 돌아와 복사한 주소를 아래 칸에 붙여 넣으세요. 연결을 확인하고 로그인 정보는 이 서버에 보관합니다.\n연결하기\n로그인 창 다시 열기\n주소 복사\n로그인을 기다리는 중…\n취소\n\n작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.\n\n변경 사항은 자동으로 저장됩니다.\n연결하고 계속",
+    "login-denied": "AI 설정\nGoogle · 로그인 실패 — 다시 시도하세요\n연결 확인\n연결\n모델\n동작\n표시\n사용량\n연결\n\nAI 제공자와 로그인 상태를 관리합니다.\n\nGoogle 계정\nGemini · Antigravity\nGoogle 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.\n로그인 실패\nChatGPT 계정\nCodex\nChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.\n연결됨 · PLUS\n로그인 실패 — 다시 시도하세요\n로그인을 누르면 새 창이 열리고 Google 계정으로 로그인합니다. API 키는 필요 없어요.\n로그인\n로그인을 완료하지 못했어요. 다시 로그인하거나 다른 계정을 선택하세요. 오류 내용: User denied authorization\n\n작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.\n\n변경 사항은 자동으로 저장됩니다.\n연결하고 계속",
+    "service-unavailable": "AI 설정\nGoogle · 연결 서비스 필요\n연결 확인\n연결\n모델\n동작\n표시\n사용량\n연결\n\nAI 제공자와 로그인 상태를 관리합니다.\n\nGoogle 계정\nGemini · Antigravity\nGoogle 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.\n확인 실패\nChatGPT 계정\nCodex\nChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.\n연결됨 · PLUS\n연결 서비스 필요\n로그인을 누르면 새 창이 열리고 Google 계정으로 로그인합니다. API 키는 필요 없어요.\n로그인\nAI 연결 서비스에 닿지 못했어요. ‘연결 확인’을 눌러 다시 확인하세요. 계속 안 되면 앱을 다시 열거나 서버 관리자에게 알려주세요.\n\n작업 모델은 선택한 계정을 사용합니다. 연결을 마치면 바로 시작할 수 있어요.\n\n변경 사항은 자동으로 저장됩니다.\n연결하고 계속"
+  }
+}

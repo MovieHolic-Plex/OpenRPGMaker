@@ -17,6 +17,7 @@ import {
   seedOAuthForTests,
   setEnvScanDecision,
   startProviderLogin,
+  cancelProviderLogin,
 } from "./aiAuthRuntime.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 
@@ -168,6 +169,10 @@ export async function createOhMyPiAdapters() {
     },
     async login(provider, body, options) {
       return startProviderLogin(provider, body ?? {}, options ?? {});
+    },
+    async cancelLogin(provider) {
+      cancelProviderLogin(provider);
+      return publicProviderStatus(provider);
     },
     async saveKey(provider) {
       // 지원 제공자 둘 다 구독 로그인이다. API 키를 받는 생기면 사용자가

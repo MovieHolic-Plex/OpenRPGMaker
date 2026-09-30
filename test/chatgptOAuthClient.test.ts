@@ -1,5 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
-import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cancelCompanionLogin, companionAuthUrl, fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
+
+afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 describe("companionAuthUrl", () => {
   it("선택한 oh-my-pi 제공자를 쿼리에 넣는다", () => {
@@ -11,5 +13,31 @@ describe("companionAuthUrl", () => {
     // 제공자를 물어보면 404 로 돌아오고, 화면은 그것을 "로그인 필요" 로 오해한다.
     expect(companionAuthUrl("/auth/login", "groq")).toContain("provider=google-antigravity");
     expect(companionAuthUrl("/auth/login", "not-a-provider")).toContain("provider=google-antigravity");
+  });
+});
+
+
+describe("login attempt status", () => {
+  it("preserves denial and resumable instructions returned by the companion", async () => {
+    const pendingLogin = {
+      verificationUrl: "https://example.invalid/login", userCode: "CODE",
+      startedAt: 100, expiresAt: 200, pasteCallback: true,
+    };
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({
+      connected: false, lastLoginError: "Authorization denied", pendingLogin,
+    })));
+    const status = await fetchChatGptAuthStatus("openai-codex");
+    expect(status.lastLoginError).toBe("Authorization denied");
+    expect(status.pendingLogin).toMatchObject(pendingLogin);
+  });
+
+  it("cancels a login through the companion without calling logout", async () => {
+    const fetch = vi.fn(async () => Response.json({ connected: false }));
+    vi.stubGlobal("fetch", fetch);
+    expect((await cancelCompanionLogin("openai-codex")).connected).toBe(false);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toContain("/auth/login-cancel?provider=openai-codex");
+    expect(init.method).toBe("POST");
   });
 });

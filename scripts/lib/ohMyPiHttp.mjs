@@ -28,6 +28,7 @@ export function isCompanionPath(url = "") {
     path === "/auth/status"
     || path === "/auth/env-scan"
     || path === "/auth/login"
+    || path === "/auth/login-cancel"
     || path === "/auth/providers"
     || path === "/auth/key"
     || path === "/auth/logout"
@@ -158,7 +159,16 @@ export async function handleCompanionRequest(req, adapters) {
   }
 
   if (method === "GET" && path === "/auth/status") {
-    return json(200, await adapters.status(provider));
+    const status = await adapters.status(provider);
+    return json(200, status.pendingLogin ? {
+      ...status,
+      pendingLogin: publishLoopbackLaunch(status.pendingLogin, companionPublicOrigin(req)),
+    } : status);
+  }
+
+  if (method === "POST" && path === "/auth/login-cancel") {
+    if (typeof adapters.cancelLogin !== "function") return json(501, { error: "Login cancellation is unavailable" });
+    return json(200, await adapters.cancelLogin(provider));
   }
 
   if (method === "POST" && path === "/auth/env-scan") {

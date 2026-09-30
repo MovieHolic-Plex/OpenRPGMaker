@@ -168,13 +168,13 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, authKind: "oauth" });
     findByTestId(modal, "ai-settings-connection-check")?.click();
     await vi.waitFor(() => {
-      expect(summary?.textContent).toBe("Google · 연결됨");
+      expect(summary?.textContent).toBe("Google · 사용 준비됨");
     });
     expect(summary?.dataset.tone).toBe("ready");
     expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("연결됨");
   });
 
-  it("자동 저장이 유일한 저장 모델이고 푸터는 상태만 보여 준다", async () => {
+  it("자동 저장과 연결 후 계속 동작을 푸터에서 제공한다", async () => {
     const modal = await openModal();
     const hint = findByTestId(modal, "ai-config-saved-hint");
 
