@@ -325,6 +325,16 @@ export default defineConfig(({ mode }) => {
         // 데스크톱 앱 첫 화면(app://oprn/start-screen.html). 편집기 번들을 싣지 않는 별도 엔트리다.
         startScreen: fileURLToPath(new URL("./start-screen.html", import.meta.url)),
       },
+      output: {
+        // 큰 정적 JSON(번들 타일셋·참고문서·장소 카탈로그·데모 픽스처 약 29MB)을 진입 청크에서 떼어
+        // (phaser 는 phaser.min.js 자산으로 이미 따로 실린다.) 앱 릴리스마다 바뀌는 코드 청크와 따로 캐시되게 한다. 동작은 그대로다 — 정적 import 라서 부팅 순서는 같다.
+        // 읽는 시점을 늦추는 지연 로드는 동기 소비자가 많고 JSON 해석이 합쳐 약 0.4초라 넣지 않았다(openwiki/runtime-project-schema.md 편집기 렉 F).
+        manualChunks(id) {
+          const file = id.split("?")[0]!.replace(/\\/g, "/");
+          if (file.endsWith(".json") && (file.includes("/src/assets/") || file.includes("/src/project/defaults/"))) return "bundled-data";
+          return undefined;
+        },
+      },
     },
     target: "es2022",
     sourcemap: false,

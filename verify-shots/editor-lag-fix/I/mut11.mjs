@@ -1,0 +1,23 @@
+import { chromium } from "playwright";
+const b = await chromium.launch({ headless: true, args: ["--disable-dev-shm-usage"] });
+const page = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => { localStorage.setItem("oprn:standard-welcome-seen", "1"); localStorage.setItem("oprn:ai-panel-collapsed", "1"); });
+await page.goto((process.env.QA_BASE_URL ?? "http://127.0.0.1:9850") + "/?freshProject=1", { waitUntil: "domcontentloaded" });
+await page.getByTestId("edit-canvas").waitFor({ timeout: 90000 });
+await page.waitForTimeout(3000);
+console.log(await page.evaluate(() => {
+  const out = {};
+  const ctx = document.querySelector(".ai-deck-rail-ctx");
+  const probe = () => { const r = []; for (let i = 0; i < 5; i++) { document.body.offsetHeight; ctx.firstChild.data = "b" + i + Math.random(); const t0 = performance.now(); document.body.offsetHeight; r.push(performance.now() - t0); } return +Math.min(...r).toFixed(1); };
+  out.base = probe();
+  out.total = document.querySelectorAll("*").length;
+  out.backdrops = [...document.querySelectorAll(".database-modal-backdrop")].map((e) => e.className + " parent=" + e.parentElement?.className + " n=" + e.querySelectorAll("*").length);
+  out.eventEditors = document.querySelectorAll(".event-editor, .event-editor-modal-window").length;
+  const bd = document.querySelectorAll(".database-modal-backdrop");
+  const holders = [...bd].map((e) => [e, e.parentNode, e.nextSibling]);
+  bd.forEach((e) => e.remove());
+  out.afterRemoveBackdrops = probe();
+  out.totalAfter = document.querySelectorAll("*").length;
+  return JSON.stringify(out, null, 1);
+}));
+await b.close();

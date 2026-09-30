@@ -345,6 +345,27 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   캠버스 밖으로 나가도 유지). 사이드바 클릭·스크롤바 드래그와 `INPUT`/`TEXTAREA`/`SELECT`/contenteditable 안의 키는
   깨우지 않는다 — 예전에는 사이드바 클릭마다 맵 전체를 500ms 매 프레임 다시 그렸다. 그 클릭이 상태를 바꾸면
   EditScene 의 store/editorState 구독이 깨운다. 검증: `test/editRenderGate.test.ts` 「window input wake」.
+  **평범한 pointermove 는 500ms 창이 아니라 2프레임 예산만 예약한다 (2026-09-30).** `pendingFrames = 2`(입력 반영 1 +
+  여유 1). 누르기·떼기·휠·키만 창을 연다. 칠하기가 바꾼 타일은 store 구독의 `requestEditRenderFrame` 이 따로 그린다.
+  드래그 41번 이동에서 렌더 126 -> 48회. **느린 GL 적응 스로틀:** 렌더 직후 프레임 간격의 이동평균이 30ms 를 넘으면
+  (소프트웨어 GL) 렌더 사이 최소 100ms 를 둔다. 보류된 렌더는 플래그·예산이 남아 나중에 반드시 그린다. 실 GPU 는 문턱 아래라 무영향.
+  **느린 GL 에서는 루프 구동을 rAF 에서 setTimeout 으로 바꾼다 (2026-09-30).** rAF 콜백이 하나라도 상시 돌면 Chromium 이 마우스
+  이동 디스패치를 프레임에 맞춰 늦춰 이동당 지연 중앙값이 ~22ms 밑으로 안 내려간다(Phaser 루프를 재우면 ~11ms, 빈 rAF 루프만 돌려도
+  ~21ms). 이동평균 > 30ms 면 `game.loop.raf` 를 `stop()`+`start(cb, true, delay)` 로 타이머 구동으로, < 20ms 면 rAF 로 되돌린다
+  (`EDIT_RENDER_TIMER_RESUME_FRAME_MS`). **콜백 안에서 바로 바꾸면 루프가 둘이 되므로 `queueMicrotask` 로 미룬다**
+  (`RequestAnimationFrame.step` 은 콜백 뒤에 rAF 를 재예약하고 `stepTimeout` 은 앞에 예약한다). 실 GPU(프레임 간격 ~16.7ms)에서는
+  이동평균이 문턱 아래라 스로틀도 타이머 구동도 켜지지 않는다. 누르기·떼기·취소는 `flushNext` 로 다음 렌더 1회의 스로틀을 건너뛰어
+  드래그 마지막 칸이 100ms 늦지 않는다. 실측(소프트웨어 GL, 40회 이동): 이동 지연 합 1326~1580 -> 775~920ms, 중앙값 29~37 -> 11~13ms.
+  캔버스 픽셀·장면 객체·편집 감사 로그 해시가 수정 전과 동일함을 확인했다(픽셀 해시는 물 애니메이션 때문에 실행마다 다를 수 있어
+  장면 객체·감사 로그 해시가 판정 기준). **주의:** 이 동작 변경에 맞춰
+  `test/editRenderGate.test.ts` 의 pointermove 케이스(194~218행 부근)는 갱신이 필요할 수 있다(이번 작업에서 미실행).
+  **소프트웨어 GL 에서 프레임 비용의 정체:** `scene.render` JS 는 프레임당 약 3ms 뿐이다. 나머지는 GPU 프로세스 flush 와
+  Commit 의 동기 `ReadPixels`(픽셀 면적 x 제출 프레임 수)로 렌더 1회당 약 30ms — 그래서 「렌더 횟수」가 곧 비용이다.
+- **pointermove 마다 `:has()` 전체 무효화를 만들지 마라 (2026-09-30).** 텍스트 노드가 아니라 `span.textContent =` 는
+  childList 변경이라 `:has()` 앵커를 무효화해 문서 전체(약 5,500 노드) 스타일 재계산(약 32ms)을 일으킨다.
+  `EditScene.setTileToolStatus` 는 노드를 캐시하고 `Text.data`(characterData)로 갱신한다. 같은 이유로 칠하기 경로의
+  `store.updateMapTiles` 는 이미 pending 인 자동저장 상태를 다시 방송하지 않는다(`scheduleAutoSave(false)`) —
+  방송마다 상단 상태 글자·DB 하단 상태 구독자가 텍스트를 다시 쓴다.
 - **지연 창 문턱 2_048칸 (2026-09-25).** `LAZY_EDIT_MAP_CELL_THRESHOLD` 가 8_192 였을 때는 90×90 까지 모든 칸을
   만들었다. 창이 맵 전체를 덮으면(축소·카메라 없는 테스트) lazy 경로도 전부 그리므로 작은 맵 결과는 같다.
 - **격자는 카메라 근처 청크만 긋는다 (2026-09-25).** `repaintEditGrid(…, bounds)` + `editGridTileWindow` 가 카메라 창을
@@ -384,9 +405,15 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 `syncMountedPaletteToolPick` 이 도구줄·붓 옵션 줄만 갈고 시트·필터 줄은 건드리지 않는다(2026-09-26 실측: 전체
 재생성은 클릭당 약 120ms, 그중 60% 가 붙이기 직후 focus 복원과 옛 트리 떼기). 도구줄 단추·모양 선택은
 `editorState` 만 바꾸고 스스로 `rerender()` 하지 않는다 — 부르면 클릭 한 번에 팔레트가 두 번 지어진다.
-타일 검색은 입력이 120ms 멈춘 뒤 한 번 다시 그린다. 도장만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
-같을 때 그대로 두고 크롬만 다시 그린다. 레이어·필터·검색·타일셋 그림이 바뀌거나 보조 창이 열려
-선택 동기화가 실패하면 시트를 다시 그린다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
+타일 검색은 입력이 120ms 멈춘 뒤 한 번 다시 그린다. 도장만 바뀌면 시트 노드는 `retainKey`가
+같을 때 그대로 두고 크롬만 다시 그린다. **키 구성 (2026-09-30):** 커스텀 아틀라스는 `[타일셋 id·칸 수·열 수]` 뿐이라
+레이어·분류·검색·타일셋 그림이 바뀌어도 시트를 유지하고 `setCustomPaletteFilter`(is-filtered-out 토글, 늦게 붙는 배치는
+같은 `view` 를 읽는다)로 제자리 동기화한다. 기본(RM2K 격자) 팔레트는 안 맞는 칸을 그리지 않으므로 `[…레이어·분류·검색]` 이
+키에 남고, 필터가 켜져 있으면 유지하지 않는다(`canRetainPalette`). 타일셋 그림(그래프트 굽기 후 dataURL/blob)은 키에서 빠졌다 —
+`.chipset-grid` 의 `--custom-palette-image` 변수 하나를 `applyPaletteSheetImage` 가 바꿔 그림만 교체한다(칸은 변수를 참조).
+보조 창이 열려 선택 동기화가 실패하면 시트를 다시 그린다. `mapTileDraw.loadTilesetImage` 는 색 키 변형이 URL 당 디코드 1회를 공유한다
+(`loadDecodedImage`). 실측(town 1140칸): 타일셋 교체 동기 71ms(전 246), 분류 전환 뒤 셀 1140 유지·시트 노드 유지,
+content-visibility 를 셀에 걸면 필터·분류가 오히려 느려져(분류 150→216ms) 채택하지 않았다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
 **스크롤 복원은 읽지 않고 쓴다 (2026-09-27).** `applyPaletteScroll` 은 0 이 아닌 축만 쓴다 — 막 붙인 시트의
 `scrollLeft/Top` 을 읽으면 레이아웃이 강제된다(레이어 전환 재생성 89ms 중 46ms). 결과: 89 → 67ms/전환, 스크롤 300·0 보존.
 **좌패널 최소 크기:** 글자 11px, 누르는 것 24px(`--space-5`). 되돌리기·다시실행 펼쳐보기 폭도 24px 이다
@@ -401,6 +428,15 @@ project·database 통지·이벤트 선택은 더 이상 팔레트를 재생성�
 한 번 다시 그린다 — 예전에는 무관한 재생성이 우연히 이 일을 했다.
 제자리 동기화(`syncMountedPalette*`)가 성공하면 입력 기록도 갱신한다 — 안 하면 타일·도구·붓을 바꾼 직후
 무관한 통지 하나가 전체 재생성을 1회 부른다.
+**살아 있는 판은 DOM 에서 떼지 않는다 (실측 2026-09-30, 1140칸).** 맵을 바꾸거나 층·분류를 바꿀 때 판(`retainKey` 일치)을
+떼었다 다시 붙이면 `.chipset-tile` 1140개의 스타일·레이아웃이 버려진다. `renderTilePalette` 는 마운트된 판 둘레(`swapPaneAroundSheet`)만
+바꾸고 판은 그 자리에 둔다. 이 페이지에서 **자식 목록을 바꾸는 연산**(insert/remove/replaceWith/append/`textContent=`)은 한 번에
+~45~50ms 의 전체 트리 스타일 재계산(BODY 「Invalidation set invalidates subtree」)을 부른다 — 속성·클래스·`Text.data` 변경은 ~0.3ms 다.
+그래서 동기화 경로는 자식 목록을 건드리지 않는다: 선택 타일 칩은 `updateSelectedTileStatus`(구조 키 `statusKey` 가 같으면 썸네일 style·
+`title`·라벨 `Text.data` 만 바꿈, 다르면 통째 교체), 붓 컨트롤은 `patchBrushControlsInPlace`(`data-layer` 외 `outerHTML` 이 같을 때만 속성 이동).
+칩 클릭 핸들러는 캡처 대신 `dataset.selectedTile` 을 읽는다(칩이 재사용되므로). 남은 비용은 팔레트 밖이다 — `panels/menu.ts` `renderTopbar`,
+`panels/editor.ts` `refreshAuthoringJourney`/`paintPersistenceBanner` 의 `clearChildren`, `aiChatPanel` 의 `syncCommandBarClearance`·
+`aiChatResizeChrome.effectiveWidth` 강제 레이아웃. 증거: `verify-shots/editor-lag-fix/E/profile-round2.md`.
 DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.
 같은 맵에서 도구·선택만 바뀌면 프로젝트 전체 참조 감사와 JSON 내보내기를 다시 하지 않는다.
 
@@ -644,6 +680,12 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   줄인다(원래 크기 아래 금지). 왼쪽·위는 내용을 밀고 카메라를 같은 칸만큼 옮긴다.
 - 드래그 한 번 = 되돌리기 한 단계. 히스토리 키에 드래그 일련번호를 넣는다 — 같은 키면 바로 앞 드래그와 묶인다.
 - 상한(`MAX_TOOL_MAP_DIMENSION`)은 깎고 토스트는 드래그당 한 번, 잠긴 맵은 누를 때 `mapEditLockNotice` 토스트 후 누름을 삼킨다.
+- **새로 생기는 칸은 바탕을 이어 채운다(검은 빈칸 금지, 2026-09-30).** `src/project/mapGroundFill.ts` 의 `extendedLowerTiles` 가
+  아래층만 가장 가까운 가장자리 칸(모서리는 모서리 칸)을 복제한다. 그 칸이 `TILE.EMPTY`·호수 물·길이면 물·길이 맵 밖으로
+  번지지 않도록 **맵의 바탕 타일**(EMPTY·물·길을 뺀 아래층 최빈값, 없으면 `TILE.GRASS`)로 채운다. 위층·확장 레이어·그림자·이벤트·통행은
+  복사하지 않는다. 타일 번호는 칩셋 원시 인덱스이고 오토타일 모양은 렌더 때 이웃으로 정해지므로 복제에 재계산은 필요 없다.
+  같은 함수를 세 경로가 쓴다: `resizeMap`(테두리 드래그·맵 속성 창), `applyMapShift`(왼쪽·위 늘리기), 조수 `resize_map`(`resizeMapTool`).
+  새 크기 변경 경로를 만들면 `TILE.EMPTY` 로 채우지 말고 이 함수를 쓰고 `cropExtraLayers`/`remapExtraLayers` 도 함께 맞춘다.
 
 #### 로케이션과 이벤트가 같은 칸에서 만날 때 (클릭 소유권)
 
@@ -899,7 +941,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 ## Agent cautions
 
 
-- **그림 워밍업 소유자 (2026-08-28):** 편집기 다이얼로그가 쓰는 그림 카탈로그 프리로드는 `src/assets/editorAssetWarmup.ts` 만 한다. `scheduleEditorAssetWarmup()` 은 `renderEditor` 끝에서 한 번 불리고 `requestIdleCallback` 로 미뤄지며(없으면 800ms 폴백), tier 순서는 `picker`(캐릭셋 21 + 낱장 얼굴 80 + 칩셋 13) → `library`(CC0 아이콘 234) 다. 이벤트 편집기 모달은 `warmEditorPickerAssets()` 로 `picker` tier 를 앞당긴다. 실제 요청은 공용 큐 `src/assets/imageWarmQueue.ts` 가 URL 단위 in-flight 공유 + 전체 동시 요청 상한 6(배경 호출 몫 4 / 요구 호출 몫 6)으로 낸다. 테스트 플레이 창이 열려 있는 동안은 `setImageWarmQueueSuspended(true)` 로 이 큐를 멈춘다. 색키 워밍이 플레이 프리로드의 HTTP 슬롯과 메인 스레드를 가져가지 않게 하고, 창을 닫으면 다시 흐른다. dev 서버가 HTTP/1.1 이라 상한 없이 수백 장을 걸면 사용자가 지금 보는 그림이 큐 뒤로 밀린다. 새 피커를 만들 때 `new Image()` 나 `<link rel=prefetch>` 를 손으로 뿌리지 말고 tier 목록에 경로를 추가하라. 몬스터/전투 스킨 아트(40MB+)와 업로드 `dataUrl` 은 의도적으로 제외다. `navigator.connection.saveData` 또는 2G 에서는 배경 워밍을 아예 걸지 않는다. 계약: `test/editorAssetWarmup.test.ts`.
+- **그림 워밍업 소유자 (2026-08-28):** 편집기 다이얼로그가 쓰는 그림 카탈로그 프리로드는 `src/assets/editorAssetWarmup.ts` 만 한다. `scheduleEditorAssetWarmup()` 은 `renderEditor` 끝에서 한 번 불리고 `requestIdleCallback` 로 미뤄지며(없으면 800ms 폴백), **부팅 배경 워밍은 캐릭셋 색키 21장뿐이다(2026-09-30, 렉 조사 G).** `picker` tier(캐릭셋 색키 + 낱장 얼굴 + 칩셋 13)와 `library`(CC0 아이콘)는 부팅에 걸지 않는다 — 실측(운영 빌드, 385 타일셋 프로젝트): 부팅 뒤 ~45초에 요청 1847건·18.9MB(얼굴 1216 / 7.3MB, 아이콘 282, 칩셋 ≈11MB)가 프로젝트 배경 작업(digest·clone·diff, ready 뒤 ~20초)과 겹쳐 네트워크·재검증(`/assets/*.png` 는 `no-cache`)·GC 를 경쟁했다. 이벤트 편집기 모달은 `warmEditorPickerAssets()` 로 `picker` tier 를 앞당긴다. 실제 요청은 공용 큐 `src/assets/imageWarmQueue.ts` 가 URL 단위 in-flight 공유 + 전체 동시 요청 상한 6(배경 호출 몫 4 / 요구 호출 몫 6)으로 낸다. 테스트 플레이 창이 열려 있는 동안은 `setImageWarmQueueSuspended(true)` 로 이 큐를 멈춘다. 색키 워밍이 플레이 프리로드의 HTTP 슬롯과 메인 스레드를 가져가지 않게 하고, 창을 닫으면 다시 흐른다. dev 서버가 HTTP/1.1 이라 상한 없이 수백 장을 걸면 사용자가 지금 보는 그림이 큐 뒤로 밀린다. 새 피커를 만들 때 `new Image()` 나 `<link rel=prefetch>` 를 손으로 뿌리지 말고 tier 목록에 경로를 추가하라. 몬스터/전투 스킨 아트(40MB+)와 업로드 `dataUrl` 은 의도적으로 제외다. `navigator.connection.saveData` 또는 2G 에서는 배경 워밍을 아예 걸지 않는다. 계약: `test/editorAssetWarmup.test.ts`.
 - **store 구독자는 칠하기 샘플을 거른다 (2026-09-25):** `store.subscribe` 알림은 동기이고 묶이지 않는다. 칠하기·채우기·지우기는 포인터 샘플마다 `scope: "map"` + `cells` 로 알린다. 이벤트·위치·대사·맵 이름처럼 타일 id 를 읽지 않는 표면은 `isTileCellChange(change)` 로 걸러라. 걸러 버리거나(`mapLocationLayer`, `aiAuthoring/dialogue`), 썸네일·경고처럼 결과가 필요하면 획이 멈춘 뒤 500ms 에 한 번 그린다(`mapSidebarSection`, 이벤트 편집기 모달). 되돌리기 중복 판정·변경 감지에는 `JSON.stringify(a) === JSON.stringify(b)` 대신 `jsonEqual` (`src/util/structuralJson.ts`)을 쓴다 — 프로젝트 전체를 문자열로 만들지 않고 첫 차이에서 멈춘다. 되돌리기 개수만 필요하면 `getMapEditHistoryDepth()` 를 쓴다(`getMapEditHistoryDebugEntries()` 는 스냅샷 전부를 직렬화한다). 손 팬은 카메라만 샘플마다 옮기고 오버레이 동기화(`onPanMove`)는 프레임당 한 번이다(`CameraPanController`).
 - **store 구독자는 칠하기 샘플을 거른다 (2026-09-25):** `store.subscribe` 알림은 동기이고 묶이지 않는다. 칠하기·채우기·지우기는 포인터 샘플마다 `scope: "map"` + `cells` 로 알린다. 이벤트·위치·대사·맵 이름처럼 타일 id 를 읽지 않는 표면은 `isTileCellChange(change)` 로 걸러라. 걸러 버리거나(`mapLocationLayer`, `aiAuthoring/dialogue`), 썸네일·경고처럼 결과가 필요하면 획이 멈춘 뒤 500ms 에 한 번 그린다(`mapSidebarSection`, 이벤트 편집기 모달). 되돌리기 중복 판정·변경 감지에는 `JSON.stringify(a) === JSON.stringify(b)` 대신 `jsonEqual` (`src/util/structuralJson.ts`)을 쓴다 — 프로젝트 전체를 문자열로 만들지 않고 첫 차이에서 멈춘다. 되돌리기 개수만 필요하면 `getMapEditHistoryDepth()` 를 쓴다(`getMapEditHistoryDebugEntries()` 는 스냅샷 전부를 직렬화한다). 손 팬은 카메라만 샘플마다 옮기고 오버레이 동기화(`onPanMove`)는 프레임당 한 번이다(`CameraPanController`).
 - Editor code should mutate authored project data, not live play-session state.
@@ -1030,3 +1072,38 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 Ctrl+K: `workspace-density-*`·`workspace-preset-*` 명령 삭제, `editor-ui-mode-*`(옛 밀도 낱말은 keywords)·`open-audio`·`open-map-event-search`·`save-project` 추가.
 
 회귀 단정: `test/studioBarActions.test.ts`(집 하나·중복 testid 0·모드별 도구 자리·저장 점·프로젝트 이름), `test/editorMenuSidebarIa.test.ts`(게임 메뉴 부재·전문가 인라인·초보 도구 메뉴), `test/editorHeaderTerminology.test.ts`(모드별 집에서 정본 이름), `test/authoringTasks.test.ts`(프리셋 결합 해제), `test/commandRegistry.test.ts`. e2e 는 `toolbar-database`·`mode-play` 계약을 유지하고 삭제 표면을 쓰던 스펙 18개를 새 집으로 고쳤다. 보고서 `docs/2026-09-03-studio-bar.md`.
+
+## 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
+
+타일 붓·높이 붓은 표본마다 `{scope:"map", cells}`/`{relief:true}` 를 emit 한다. 구독자는 이 통지를 **거르거나 붓을 뗄 때까지 미룬다**.
+
+- 도구줄(`renderCanvasToolbar`)·저작 여정 띠·맵 잠금 배너: 상태 요약 키가 같고 DOM 자식이 그대로면 다시 만들지 않는다
+  (`editorZoomToolbar.ts` 컨테이너별 WeakMap 메모, `editor.ts` `journeyRenderKey`·배너 메모). 여정 띠는 cells/relief 통지에서
+  `runWhenPointerReleased` 로 붓을 뗀 뒤 한 번만 그린다(칸이 바뀌면 길·입구 판정이 달라지므로 버리지 않고 미룬다).
+- `aiChatPanel.ts` 컨텍스트 store 구독: cells/relief 통지의 UI 갱신(제안 칩·스튜디오 셸 감시)을 붓을 뗀 뒤로 미룬다. 그 외 통지는 즉시.
+- `mapHistoryPanel.ts`: 자동 마운트 store 구독이 cells/relief 를 거른다. 작업 기록 창의 `MAP_EDIT_HISTORY_EVENT` 리스너는
+  접혀 있으면(`details.open===false`) 목록을 안 만들고 펼칠 때 한 번 맞추며, 한 번 문서에 붙었다가 떨어진 창은 첫 이벤트에서 스스로 뗀다
+  (가짜 DOM 테스트는 `isConnected`/`open` 이 undefined 라 `=== true/false` 로만 판정한다).
+- `aiActivityMedia.ts`: 전역 `document.body` MutationObserver 는 추적 이미지가 있을 때만 켜고 비면 끊는다(`disposeActivityImageObserver`).
+- 실측(100×100 신규 프로젝트, 60표본 드래그, `verify-shots/editor-lag-fix/D/probe.mjs`): DOM 변이 1095 → 269, 도구줄 594 → 0, 배너 22 → 0, 여정 44 → 2.
+  프레임·긴 태스크 합은 소프트웨어 렌더·다른 에이전트 부하 잡음 안에서 변화 없음(store 복제·저장 표시·팔레트가 남은 몫).
+- `EditScene.update()` 는 이미 무변화 프레임 게이트(nav 키·뷰포트 서명·청크 키)가 있어 손대지 않았다.
+- `paintRelief` 의 전체 배열 비교는 `bakeReliefTiles`(reliefBake.ts) 가 두 번 전 맵 계획을 도는 비용에 묻힌다. 범위를 좁히려면 reliefBake 가 쓴 인덱스를 돌려줘야 한다.
+
+## 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
+
+- **DOM 변이 한 번 = 스타일 재계산 한 번이다. 같은 값을 다시 쓰는 것도 변이다.** 맵 전환마다 불리는 UI 갱신은 마지막으로 바른 값을 기억해
+  같으면 손대지 않는다(속성·style·자식 목록 모두). 선례: `editor.ts` 저장 배너 메모·여정 띠 `fullKey`(store 버전 토큰 + 범위 키),
+  `aiChatResizeChrome.ts` `appliedWidthVar`·`setAttrIfChanged`·`mountHandle`(이미 마지막 자식이면 remove/append 안 함),
+  `aiChatPanel.ts` `refreshContextChips` 원소 비교·`syncRailContext` 맵 이름 메모. 가짜 DOM 테스트는 `lastChild` 가 없다 — `undefined !== handle` 이라 옛 경로로 떨어져 안전하다.
+- **`aiChatPanel` 구독자는 `applyAssistantViewPolicy()` 를 `currentMapId` 가 바뀔 때만 부른다.** 이 함수가 `syncCommandBarClearance` 의 강제 레이아웃 읽기를 부른다.
+- **레이어 전환은 탑바를 다시 짓지 않는다.** `menu.ts` 레이어 스위처 구독자는 `paintedKey` 로 `is-active`·`aria-current`·`tabIndex` 만 제자리에서 바꾼다.
+  `app/mode.ts` 의 editorState 구독자는 편집 모드가 아니거나 좌측 레이어 스위처가 있으면 `renderTopbar()` 를 부르지 않는다.
+- **`:has(.is-active)` 조상 규칙 금지.** 맵 목록 필터의 `:not(:has(.is-active))` 를 정적 클래스 `has-active-facet` 로 바꿨다(`mapList.ts`, `map-panel.modern.css`).
+  자손의 클래스 토글이 조상 전체 스타일 무효화를 부르기 때문이다.
+- **숨겨 둔 자료집 창은 `content-visibility: hidden`** (`02-chat-dock.css`, `.database-modal-backdrop.is-parked`). 이 창은 자손 3796개로 문서에 남아 있고,
+  `:has` 규칙 318개(자료집·이벤트 편집기)가 걸려 있어 어떤 DOM 변이든 스타일 재계산을 33ms 까지 키웠다(→ 8ms). 이 창을 펼치는 코드는 `is-parked` 를 떼므로 화면은 같다.
+- 실측(신규 프로젝트, 같은 타일셋 맵 왕복, 부하 7~12 잡음): 맵 전환 ≈220ms → 중앙 107ms, 레이어 전환 155ms → 90~95ms(72~121).
+  레이어 전환의 남은 몫은 Phaser 다시 그리기·래스터다(스타일 재계산 0.4ms/회, JS ≈15ms/회). 증거: `verify-shots/editor-lag-fix/I/`.
+- 남은 후보: 빈 자료집 창 자체를 지연 생성(자손 3796개 제거), 318개 `:has` 규칙의 범위 좁히기.
+  `warmApplyCaches`/`warmRoundtripCheck` 는 이미 `requestIdleCallback` 뒤라 맵 전환 경로에 없다. `tileSimilarityContext` 는 팔레트 미리보기 패널(선택 시)에서만 불려 맵 전환 경로가 아니다.

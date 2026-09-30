@@ -104,7 +104,17 @@ function releaseImage(image: HTMLImageElement, now = Date.now()): void {
   if (image.isConnected) { entry.mounted = true; return; }
   if (!image.complete) return;
   if (!entry.mounted && now - entry.createdAt < UNMOUNTED_IMAGE_GRACE_MS) return;
-  URL.revokeObjectURL(entry.url); imageUrls.delete(image);
+  URL.revokeObjectURL(entry.url); dropImageUrl(image);
+}
+/** 그림 하나를 목록에서 뺀다. 더 감시할 그림이 없으면 body 전역 관찰자도 끈다(다음 attachImage 가 다시 만든다). */
+function dropImageUrl(image: HTMLImageElement): void {
+  imageUrls.delete(image);
+  if (imageUrls.size === 0) disposeActivityImageObserver();
+}
+/** body 전역 MutationObserver 를 끊는다. 그림이 하나도 없을 때 자동 호출되고, 테스트·정리 경로도 부를 수 있다. */
+export function disposeActivityImageObserver(): void {
+  imageObserver?.disconnect();
+  imageObserver = undefined;
 }
 export function releaseDetachedActivityImages(now = Date.now()): void {
   for (const image of imageUrls.keys()) releaseImage(image, now);
@@ -144,7 +154,7 @@ export function attachImage(surface: HTMLElement, blob: Blob, title: string): vo
   const image = document.createElement("img"); image.alt = title; image.decoding = "async";
   imageUrls.set(image, { url, createdAt: Date.now(), mounted: false });
   image.addEventListener("load", () => { surface.dataset.ready = "true"; queueMicrotask(() => releaseImage(image)); }, { once: true });
-  image.addEventListener("error", () => { surface.textContent = "이미지를 불러오지 못했어요"; URL.revokeObjectURL(url); imageUrls.delete(image); }, { once: true });
+  image.addEventListener("error", () => { surface.textContent = "이미지를 불러오지 못했어요"; URL.revokeObjectURL(url); dropImageUrl(image); }, { once: true });
   image.src = url;
   surface.replaceChildren(image);
   // Revoking on load can leave offscreen/async decoded images blank when scrolled back.

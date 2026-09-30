@@ -29,14 +29,31 @@ function uploadedAssetsHaveInlineDataUrl(serialized: string): boolean {
   return slice.includes('"dataUrl"');
 }
 
+/** `separateInlineMedia` 가 실제로 옮기는 자산(ref 없이 dataUrl 만 든 것)이 있는가. 파싱 실패는 «있다»로 본다(옛 경로로). */
+function hasMigratableInlineMedia(folded: string): boolean {
+  try {
+    const uploaded = (JSON.parse(folded) as { assets?: { uploaded?: Record<string, { ref?: unknown; dataUrl?: unknown }> } }).assets?.uploaded;
+    if (!uploaded) return false;
+    return Object.values(uploaded).some((asset) => asset && !asset.ref && Boolean(asset.dataUrl));
+  } catch {
+    return true;
+  }
+}
+
 export async function separateInlineMediaOnOpen(store: LocalProjectStore): Promise<void> {
   // Normal hosted projects already store uploaded media as file refs. Avoid deserializing the
   // entire project just to discover that there is no inline data URL to migrate. This check is
   // intentionally lexical: a false positive only does the old repair work, while the common
   // project load avoids a second full deserialize before the renderer asks for the same
   // snapshot through project.load().
-  const serialized = store.exportSerialized();
+  // 접힌 행(약 1MB)에서 본다: `"uploaded":` ~ `"tilesets":` 사이는 전부 접히지 않은 채로 행 안에 있다.
+  // 펼친 글(~112MB)을 만드는 `exportSerialized()` 는 접히지 않은 옛 행일 때만 쓴다.
+  const folded = store.exportFolded();
+  const serialized = folded ? folded.folded : store.exportSerialized();
   if (!serialized || !uploadedAssetsHaveInlineDataUrl(serialized)) return;
+  // 어휘 검사가 참이어도 옮길 것이 없을 수 있다(ref 와 dataUrl 을 함께 든 자산). 옮기는 조건(`!ref && dataUrl`)을
+  // 접힌 행 파싱(수 ms)으로 정확히 확인하고, 옮길 것이 없으면 `loadSnapshot` 전체 파싱(수 초)을 건너뛴다.
+  if (folded && !hasMigratableInlineMedia(serialized)) return;
   const snapshot = store.loadSnapshot();
   if (!snapshot) return;
   try {

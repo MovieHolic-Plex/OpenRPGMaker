@@ -69,6 +69,7 @@ import {
   setManualJourneyStage,
 } from "@/editor/authoringJourney";
 import { renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
+import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
 
 const LEFT_PANEL_DEFAULT_WIDTH = 526;
@@ -491,6 +492,11 @@ export function teardownEditor(): void {
   persistenceBannerHost = null;
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
+  authoringJourneyIssuesDocumentKey = null;
+  lastJourneyFullKey = null;
+  lastJourneyFullRoot = null;
+  lastBannerKey = null;
+  lastBannerHost = null;
   projectExportMirror.clear();
   document.body.classList.remove("ai-chat-dock-float");
 }
@@ -518,11 +524,27 @@ function mountAssistantOverlay(): void {
 // 임시 세션 배너는 오류가 아니라 정보 — 인라인 '내보내기' + 닫기(세션 동안 유지)를 제공한다.
 let persistenceBannerDismissed = false;
 
+/** 배너 출력은 (상태 종류 · 사유 · 임시 세션 여부 · 닫힘) 의 함수다 — 같으면 clearChildren 으로 body 스타일을 흔들지 않는다. */
+let lastBannerKey: string | null = null;
+let lastBannerChild: Element | null = null;
+let lastBannerHost: HTMLElement | null = null;
+
 function paintPersistenceBanner(): void {
   if (!persistenceBannerHost) return;
+  const status = store.getDbPersistenceStatus();
+  const reason = "reason" in status ? String(status.reason) : "";
+  const key = `${status.kind}|${reason}|${status.kind === "disabled" && isSaveSkippedLocation() ? 1 : 0}|${persistenceBannerDismissed ? 1 : 0}`;
+  if (
+    key === lastBannerKey &&
+    lastBannerHost === persistenceBannerHost &&
+    persistenceBannerHost.firstElementChild === lastBannerChild
+  ) return;
   clearChildren(persistenceBannerHost);
   const banner = renderPersistenceModeBanner();
   if (banner) persistenceBannerHost.append(banner);
+  lastBannerKey = key;
+  lastBannerHost = persistenceBannerHost;
+  lastBannerChild = persistenceBannerHost.firstElementChild;
 }
 
 function renderPersistenceModeBanner(): HTMLElement | null {
@@ -941,19 +963,65 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
   const project = store.getCurrent();
   const scope = authoringJourneyScope();
   const progress = loadAuthoringJourneyProgress(scope);
+  // 프로젝트 문서가 그대로면(버전 토큰 동일) 참조 점검 결과도 그대로다 — 맵 전환·도크 재조립 같은
+  // editorState 발 새로고침이 프로젝트 전체 점검을 다시 돌리지 않는다.
+  const versionToken = store.getVersionToken();
+  const documentKey = `${versionToken.lineage}:${versionToken.generation}`;
   if (
     authoringJourneyReferenceIssues === null ||
-    !change ||
-    change.scope === "database" ||
-    change.scope === "system" ||
-    change.scope === "project" ||
-    (change.scope === "map" && !change.cells?.length && !change.relief)
+    documentKey !== authoringJourneyIssuesDocumentKey ||
+    change?.scope === "database" ||
+    change?.scope === "system" ||
+    change?.scope === "project" ||
+    (change?.scope === "map" && !change.cells?.length && !change.relief)
   ) {
     authoringJourneyReferenceIssues = collectEditorProjectReferenceIssues(project);
+    authoringJourneyIssuesDocumentKey = documentKey;
   }
+  // 칸을 칠하는 통지(cells/relief)는 여정 띠 출력을 «진행 기록»으로만 바꾼다(맵·이벤트 수·제목·참조 점검은 그대로 —
+  // 위에서도 이 경우엔 점검을 다시 안 돌린다). 진행 기록이 지난 렌더와 같으면 DOM 을 그대로 두고, 달라졌으면(첫 칠하기의
+  // 「맵 변경 감지」) 손을 뗄 때까지 미룬다 — 스트로크마다 띠를 통째로 다시 만들면 document 리스너·transient layer 도 같이 갈렸다.
+  if (change?.scope === "map" && (change.cells?.length || change.relief)) {
+    const key = journeyRenderKey(scope, progress);
+    if (key === lastJourneyRenderKey && authoringJourneyRoot.firstElementChild === lastJourneyRenderChild && lastJourneyRenderChild?.isConnected) return;
+    runWhenPointerReleased(flushAuthoringJourneyAfterStroke);
+    return;
+  }
+  renderAuthoringJourneyNow(project, scope, progress);
+}
+
+let lastJourneyRenderKey: string | null = null;
+let lastJourneyRenderChild: Element | null = null;
+/** 참조 점검 결과가 어느 문서 버전의 것인지. */
+let authoringJourneyIssuesDocumentKey: string | null = null;
+/** 여정 띠를 마지막으로 만든 입력(문서 버전·진행 기록·열림·점검 결과). 같으면 DOM 을 그대로 둔다. */
+let lastJourneyFullKey: string | null = null;
+let lastJourneyFullRoot: HTMLElement | null = null;
+
+function journeyRenderKey(scope: string, progress: unknown): string {
+  return `${scope}|${authoringJourneyOpen ? 1 : 0}|${JSON.stringify(progress)}`;
+}
+
+/** 스트로크 중 미뤄 둔 여정 띠 갱신. 참조 점검은 그대로(칠하기 통지라 다시 돌리지 않는다). */
+function flushAuthoringJourneyAfterStroke(): void {
+  if (!authoringJourneyRoot) return;
+  const scope = authoringJourneyScope();
+  renderAuthoringJourneyNow(store.getCurrent(), scope, loadAuthoringJourneyProgress(scope));
+}
+
+function renderAuthoringJourneyNow(project: ReturnType<typeof store.getCurrent>, scope: string, progress: ReturnType<typeof loadAuthoringJourneyProgress>): void {
+  if (!authoringJourneyRoot) return;
+  const versionToken = store.getVersionToken();
+  const fullKey = `${journeyRenderKey(scope, progress)}|${versionToken.lineage}:${versionToken.generation}|${authoringJourneyReferenceIssues?.join("\n") ?? "-"}`;
+  if (
+    fullKey === lastJourneyFullKey &&
+    lastJourneyFullRoot === authoringJourneyRoot &&
+    authoringJourneyRoot.firstElementChild === lastJourneyRenderChild &&
+    lastJourneyRenderChild?.isConnected
+  ) return;
   clearChildren(authoringJourneyRoot);
   authoringJourneyRoot.append(renderAuthoringJourney(project, progress, {
-    referenceIssues: authoringJourneyReferenceIssues,
+    referenceIssues: authoringJourneyReferenceIssues ?? undefined,
     open: authoringJourneyOpen,
     onOpenChange: (open) => {
       authoringJourneyOpen = open;
@@ -964,6 +1032,10 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
       refreshAuthoringJourney();
     },
   }));
+  lastJourneyRenderKey = journeyRenderKey(scope, progress);
+  lastJourneyRenderChild = authoringJourneyRoot.firstElementChild;
+  lastJourneyFullKey = fullKey;
+  lastJourneyFullRoot = authoringJourneyRoot;
 }
 
 function onAuthoringTestBootSuccess(event: Event): void {
@@ -974,6 +1046,8 @@ function onAuthoringTestBootSuccess(event: Event): void {
   if (typeof projectFingerprint !== "string" || projectFingerprint.length === 0) return;
   const project = store.getCurrent();
   authoringJourneyReferenceIssues = collectEditorProjectReferenceIssues(project);
+  const boot = store.getVersionToken();
+  authoringJourneyIssuesDocumentKey = `${boot.lineage}:${boot.generation}`;
   const scope = authoringJourneyScope();
   const progress = loadAuthoringJourneyProgress(scope);
   const next = recordSuccessfulTestBoot(
@@ -985,11 +1059,25 @@ function onAuthoringTestBootSuccess(event: Event): void {
   refreshAuthoringJourney();
 }
 
+/** 배너 출력은 (잠금 상태 · 현재 맵) 의 함수다 — 같으면 다시 안 만든다. 첫 자식이 우리가 만든 것이 아니면 다시 만든다. */
+const lockBannerMemo = new WeakMap<HTMLElement, { readonly key: string; readonly first: Element | null }>();
+
 function renderMapEditLockBanner(container: HTMLElement): void {
-  clearChildren(container);
   const status = getMapEditLockStatus();
   const project = store.getCurrent();
   const mapId = editorState.get().currentMapId ?? project.startMapId;
+  const bannerKey = status.kind === "locked" && status.mapId === mapId
+    ? `locked|${status.ownerLabel}|${status.canTakeover === false ? 0 : 1}|${status.mapId}|${status.expiresAt}|${status.updatedAt ?? ""}`
+    : "hidden";
+  const memo = lockBannerMemo.get(container);
+  if (memo && memo.key === bannerKey && container.firstElementChild === memo.first
+    && container.className === (bannerKey === "hidden" ? "map-lock-banner is-hidden" : "map-lock-banner locked")) return;
+  paintMapEditLockBanner(container, status, mapId);
+  lockBannerMemo.set(container, { key: bannerKey, first: container.firstElementChild });
+}
+
+function paintMapEditLockBanner(container: HTMLElement, status: MapEditLockStatus, mapId: string): void {
+  clearChildren(container);
   container.className = "map-lock-banner is-hidden";
   if (status.kind !== "locked" || status.mapId !== mapId) return;
   container.className = "map-lock-banner locked";

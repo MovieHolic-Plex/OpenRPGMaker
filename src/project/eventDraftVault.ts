@@ -60,6 +60,14 @@ export function rememberEventDraftVaultEntry(mapId: MapId, event: GameEvent): vo
   scheduleEventDraftVaultPersist();
 }
 
+/**
+ * 보관 항목이 어느 프로젝트 이벤트 객체에서 복제됐는지. 스토어 계약상 이벤트 객체는 제자리에서 고치지 않고
+ * 안 바뀐 맵은 update 마다 같은 객체를 유지하므로(projectClone.finishProjectUpdate), 같은 객체면 다시 복제하지 않는다.
+ * 항목 객체를 열쇠로 삼아, 다른 경로(rememberEventDraftVaultEntry 등)가 항목을 새로 쓰면 자동으로 무효가 된다.
+ * 실측(2026-09-30, 큰 프로젝트): update 한 번에 초안 이벤트 복제가 약 20ms.
+ */
+const vaultEntrySources = new WeakMap<EventDraftVaultEntry, GameEvent>();
+
 export function syncEventDraftVaultFromProject(project: Project): void {
   const liveKeys = new Set<string>();
   for (const [mapId, map] of Object.entries(project.maps)) {
@@ -67,11 +75,15 @@ export function syncEventDraftVaultFromProject(project: Project): void {
       if (!event.draft) continue;
       const key = eventDraftVaultKey(mapId, event.id);
       liveKeys.add(key);
-      vault.set(key, {
+      const existing = vault.get(key);
+      if (existing && existing.mapId === mapId && vaultEntrySources.get(existing) === event) continue;
+      const entry: EventDraftVaultEntry = {
         mapId,
         event: structuredClone(event),
         updatedAt: Date.now(),
-      });
+      };
+      vaultEntrySources.set(entry, event);
+      vault.set(key, entry);
     }
   }
   // Do not drop vault entries that are only temporarily missing from project —

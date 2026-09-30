@@ -1,0 +1,442 @@
+{
+ "generatedAt": "2026-09-30T15:21:48.761Z",
+ "loadavgPerRun": {
+  "before": [
+   "7.02 7.02 7.60",
+   "8.55 8.34 8.00",
+   "5.03 6.59 7.35"
+  ],
+  "after": [
+   "8.05 7.49 7.67",
+   "7.34 7.63 7.76",
+   "3.57 5.96 7.01"
+  ]
+ },
+ "metrics": {
+  "cold_ready_ms": {
+   "before": [
+    39790,
+    40042,
+    41165
+   ],
+   "after": [
+    39674,
+    39881,
+    40169
+   ],
+   "medBefore": 40042,
+   "medAfter": 39881
+  },
+  "cold_longtask_total_ms": {
+   "before": [
+    19651,
+    19423,
+    20704
+   ],
+   "after": [
+    19287,
+    19195,
+    19343
+   ],
+   "medBefore": 19651,
+   "medAfter": 19287
+  },
+  "cold_net_MB": {
+   "before": [
+    296.3,
+    296.3,
+    296.3
+   ],
+   "after": [
+    296.3,
+    296.3,
+    296.3
+   ],
+   "medBefore": 296.3,
+   "medAfter": 296.3
+  },
+  "warm_ready_ms": {
+   "before": [
+    18039,
+    16859,
+    17899
+   ],
+   "after": [
+    11653,
+    10678,
+    12358
+   ],
+   "medBefore": 17899,
+   "medAfter": 11653
+  },
+  "warm_longtask_total_ms": {
+   "before": [
+    14496,
+    13705,
+    14381
+   ],
+   "after": [
+    9250,
+    8583,
+    9977
+   ],
+   "medBefore": 14381,
+   "medAfter": 9250
+  },
+  "warm_longest_task_ms": {
+   "before": [
+    9113,
+    8627,
+    9136
+   ],
+   "after": [
+    6375,
+    5991,
+    6887
+   ],
+   "medBefore": 9113,
+   "medAfter": 6375
+  },
+  "paint_autosave_longtask_total_ms": {
+   "before": [
+    1655,
+    1682,
+    1340
+   ],
+   "after": [
+    66,
+    80,
+    77
+   ],
+   "medBefore": 1655,
+   "medAfter": 77
+  },
+  "paint_autosave_longest_ms": {
+   "before": [
+    910,
+    912,
+    925
+   ],
+   "after": [
+    66,
+    80,
+    77
+   ],
+   "medBefore": 912,
+   "medAfter": 77
+  },
+  "paint_save_max_req_KB": {
+   "before": [
+    319,
+    319,
+    319
+   ],
+   "after": [
+    46,
+    46,
+    46
+   ],
+   "medBefore": 319,
+   "medAfter": 46
+  },
+  "paint_save_max_resp_ms": {
+   "before": [
+    5352,
+    5389,
+    2633
+   ],
+   "after": [
+    728,
+    763,
+    734
+   ],
+   "medBefore": 5352,
+   "medAfter": 734
+  },
+  "drag20_only_ms": {
+   "before": [
+    3311,
+    3253,
+    2740
+   ],
+   "after": [
+    749,
+    691,
+    793
+   ],
+   "medBefore": 3253,
+   "medAfter": 749
+  },
+  "drag_per_move_median_ms": {
+   "before": [
+    141.9,
+    141.5,
+    123.7
+   ],
+   "after": [
+    33.5,
+    29.6,
+    32.3
+   ],
+   "medBefore": 141.5,
+   "medAfter": 32.3
+  },
+  "map_switch_median_ms": {
+   "before": [
+    396,
+    399,
+    407
+   ],
+   "after": [
+    186,
+    178,
+    163
+   ],
+   "medBefore": 399,
+   "medAfter": 178
+  },
+  "layer_switch_median_ms": {
+   "before": [
+    186,
+    201,
+    194
+   ],
+   "after": [
+    75,
+    85,
+    77
+   ],
+   "medBefore": 194,
+   "medAfter": 77
+  },
+  "palette_filter_median_ms": {
+   "before": [
+    33,
+    33,
+    33
+   ],
+   "after": [
+    16,
+    16,
+    13
+   ],
+   "medBefore": 33,
+   "medAfter": 16
+  },
+  "places_raf_ms": {
+   "before": [
+    1185,
+    1149,
+    1058
+   ],
+   "after": [
+    1929,
+    1117,
+    1788
+   ],
+   "medBefore": 1149,
+   "medAfter": 1788
+  },
+  "places_settle_ms": {
+   "before": [
+    1348,
+    864,
+    1214
+   ],
+   "after": [
+    2584,
+    862,
+    964
+   ],
+   "medBefore": 1214,
+   "medAfter": 964
+  },
+  "places_longtask_ms": {
+   "before": [
+    1604,
+    1419,
+    1491
+   ],
+   "after": [
+    3063,
+    1400,
+    1371
+   ],
+   "medBefore": 1491,
+   "medAfter": 1400
+  },
+  "heap_used_MB": {
+   "before": [
+    2484,
+    2506,
+    2506
+   ],
+   "after": [
+    1547,
+    1545,
+    1545
+   ],
+   "medBefore": 2506,
+   "medAfter": 1545
+  }
+ },
+ "summaryMarkdown": "| 지표 | before(main) 3회 | after(perf) 3회 | 중앙값 before | 중앙값 after | 비 |\n|---|---|---|---|---|---|\n| cold_ready_ms | 39790 / 40042 / 41165 | 39674 / 39881 / 40169 | 40042 | 39881 | 1.00x |\n| cold_longtask_total_ms | 19651 / 19423 / 20704 | 19287 / 19195 / 19343 | 19651 | 19287 | 0.98x |\n| cold_net_MB | 296.3 / 296.3 / 296.3 | 296.3 / 296.3 / 296.3 | 296.3 | 296.3 | 1.00x |\n| warm_ready_ms | 18039 / 16859 / 17899 | 11653 / 10678 / 12358 | 17899 | 11653 | 0.65x |\n| warm_longtask_total_ms | 14496 / 13705 / 14381 | 9250 / 8583 / 9977 | 14381 | 9250 | 0.64x |\n| warm_longest_task_ms | 9113 / 8627 / 9136 | 6375 / 5991 / 6887 | 9113 | 6375 | 0.70x |\n| paint_autosave_longtask_total_ms | 1655 / 1682 / 1340 | 66 / 80 / 77 | 1655 | 77 | 0.05x |\n| paint_autosave_longest_ms | 910 / 912 / 925 | 66 / 80 / 77 | 912 | 77 | 0.08x |\n| paint_save_max_req_KB | 319 / 319 / 319 | 46 / 46 / 46 | 319 | 46 | 0.14x |\n| paint_save_max_resp_ms | 5352 / 5389 / 2633 | 728 / 763 / 734 | 5352 | 734 | 0.14x |\n| drag20_only_ms | 3311 / 3253 / 2740 | 749 / 691 / 793 | 3253 | 749 | 0.23x |\n| drag_per_move_median_ms | 141.9 / 141.5 / 123.7 | 33.5 / 29.6 / 32.3 | 141.5 | 32.3 | 0.23x |\n| map_switch_median_ms | 396 / 399 / 407 | 186 / 178 / 163 | 399 | 178 | 0.45x |\n| layer_switch_median_ms | 186 / 201 / 194 | 75 / 85 / 77 | 194 | 77 | 0.40x |\n| palette_filter_median_ms | 33 / 33 / 33 | 16 / 16 / 13 | 33 | 16 | 0.48x |\n| places_raf_ms | 1185 / 1149 / 1058 | 1929 / 1117 / 1788 | 1149 | 1788 | 1.56x |\n| places_settle_ms | 1348 / 864 / 1214 | 2584 / 862 / 964 | 1214 | 964 | 0.79x |\n| places_longtask_ms | 1604 / 1419 / 1491 | 3063 / 1400 / 1371 | 1491 | 1400 | 0.94x |\n| heap_used_MB | 2484 / 2506 / 2506 | 1547 / 1545 / 1545 | 2506 | 1545 | 0.62x |\n",
+ "behaviour": {
+  "paint_save_reload_undo_redo": {
+   "paint_visible_pixels": 1623,
+   "paint_saved_changed_cells": 5,
+   "undo_equals_before_paint_diff": 0,
+   "redo_equals_painted_diff": 0,
+   "reload_db_cells_vs_saved": 0,
+   "reload_canvas_vs_painted_diff": 0,
+   "reload_canvas_vs_before_paint_diff": 1623
+  },
+  "edge_expand_db_refs_assistant": {
+   "edge_grew": true,
+   "edge_new_cells_not_empty": true,
+   "edge_undo_one_step_restores_width": true,
+   "db_modal_open": true,
+   "db_tab_renders": true,
+   "reference_panel_has_document": true,
+   "assistant_toggles": true
+  },
+  "edge": {
+   "before": {
+    "w": 9,
+    "h": 11
+   },
+   "geom": {
+    "x": 828,
+    "y": 475,
+    "tile": 32
+   },
+   "after": {
+    "w": 13,
+    "h": 11
+   },
+   "newCols": [
+    {
+     "col": 9,
+     "distinct": [
+      2006,
+      2022,
+      2014
+     ],
+     "empty": 0
+    },
+    {
+     "col": 10,
+     "distinct": [
+      2006,
+      2022,
+      2014
+     ],
+     "empty": 0
+    },
+    {
+     "col": 11,
+     "distinct": [
+      2006,
+      2022,
+      2014
+     ],
+     "empty": 0
+    },
+    {
+     "col": 12,
+     "distinct": [
+      2006,
+      2022,
+      2014
+     ],
+     "empty": 0
+    }
+   ],
+   "lastOldColDistinct": [
+    2006,
+    2022,
+    2014
+   ],
+   "afterUndo": {
+    "w": 9,
+    "h": 11
+   }
+  },
+  "refs": {
+   "chosen": "tileset-db-row-easyrpg_chipset_combined_town",
+   "sample": {
+    "id": "tileset-db-row-easyrpg_chipset_combined_town",
+    "present": true,
+    "textLen": 12739,
+    "items": 1,
+    "sample": "참고문서+ 용도문서 원본 설정원본 자료를 수정하면 이를 공유하는 타일셋에도 반영됩니다.참고문서 원본이 타일셋에 직접 작성숲마을 · 거리별 잔디EasyRPG 실내 통합본던전 · EasyRPG (CC0)실내 · Easy"
+   }
+  },
+  "assistant": {
+   "initial": {
+    "pressed": "false",
+    "sidebar": true,
+    "sw": 340,
+    "collapsed": false,
+    "canvas": 1,
+    "tid": [
+     "studio-bar-lead",
+     "studio-run-group",
+     "topbar-ai-studio",
+     "studio-icon-cluster",
+     "topbar-ai-settings",
+     "ai-connection-chip",
+     "ai-connection-label",
+     "editor-ai-sidebar",
+     "event-ai-pin-layer",
+     "canvas-ai-workbench",
+     "canvas-ai-create",
+     "canvas-ai-polish"
+    ]
+   },
+   "open": {
+    "pressed": "true",
+    "sidebar": true,
+    "sw": 340,
+    "collapsed": false,
+    "canvas": 109,
+    "tid": [
+     "studio-bar-lead",
+     "studio-run-group",
+     "topbar-ai-studio",
+     "studio-icon-cluster",
+     "topbar-ai-settings",
+     "ai-connection-chip",
+     "ai-connection-label",
+     "editor-ai-sidebar",
+     "ai-suggestion-peek-root",
+     "ai-suggestion-peek-popover",
+     "ai-suggestion-peek-body",
+     "ai-project-suggestions"
+    ]
+   },
+   "closed": {
+    "pressed": "false",
+    "sidebar": true,
+    "sw": 340,
+    "collapsed": false,
+    "canvas": 1,
+    "tid": [
+     "studio-bar-lead",
+     "studio-run-group",
+     "topbar-ai-studio",
+     "studio-icon-cluster",
+     "topbar-ai-settings",
+     "ai-connection-chip",
+     "ai-connection-label",
+     "editor-ai-sidebar",
+     "event-ai-pin-layer",
+     "canvas-ai-workbench",
+     "canvas-ai-create",
+     "canvas-ai-polish"
+    ]
+   },
+   "ok": true
+  }
+ }
+}

@@ -1,0 +1,18 @@
+{
+ "checks": {
+  "paint_visible_pixels": 1623,
+  "paint_saved_changed_cells": 5,
+  "undo_equals_before_paint_diff": 0,
+  "redo_equals_painted_diff": 0,
+  "reload_db_cells_vs_saved": 0,
+  "reload_canvas_vs_painted_diff": 0,
+  "reload_canvas_vs_before_paint_diff": 1623
+ },
+ "notes": [],
+ "map": {
+  "w": 64,
+  "h": 40,
+  "tileSize": 16
+ },
+ "tileId": "chipset-tile-126"
+}

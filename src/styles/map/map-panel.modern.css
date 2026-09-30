@@ -943,7 +943,7 @@
 .map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action { width: 26px; height: 26px; border-color: transparent; background: transparent; }
 .map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action.has-text { width: auto; padding: 0 8px; }
 .map-sidebar-section .map-tree-panel .map-tree-filter-input { height: 28px; border: 0; border-radius: 7px; background: var(--bg-well, var(--bg-inset)); font: 400 13px/1.2 var(--font-ui); padding: 0 8px; }
-.map-sidebar-section .map-tree-panel .map-tree-filter:not(:focus-within):not(:has(.map-tree-facet.is-active:not([data-testid="map-tree-facet-all"])))
+.map-sidebar-section .map-tree-panel .map-tree-filter:not(:focus-within):not(.has-active-facet)
   .map-tree-filter-facets { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action { transition: none; }

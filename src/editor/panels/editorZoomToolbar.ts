@@ -23,9 +23,20 @@ export function stepEditorZoom(delta: number, levels: readonly EditorZoom[], cur
   return levels[next] ?? current;
 }
 
+/**
+ * 도구막대 출력은 (배율 · 로케이션 켬 · 배경 미리보기 켬 · 펼침) 넷의 함수다. 타일 칠하기처럼 이 넷이 안 바뀌는
+ * store 통지가 초당 수십 번 와도 같은 DOM 을 그대로 둔다 — 예전엔 매 통지마다 버튼 20여 개 + 툴팁 설치를 통째로
+ * 다시 만들었다(2026-09-30 실측: 22칸 스트로크 = 툴바 변이 594건). 컨테이너의 첫 자식이 지난번 우리가 만든 것이
+ * 아니면(외부가 비웠거나 갈아끼움) 키가 같아도 다시 만든다.
+ */
+const toolbarRenderMemo = new WeakMap<HTMLElement, { readonly key: string; readonly first: Element | null }>();
+
 export function renderCanvasToolbar(container: HTMLElement): void {
-  clearChildren(container);
   const currentZoom = editorState.get().zoom;
+  const key = `${currentZoom}|${locationLayerState().enabled ? 1 : 0}|${mapBackgroundPreviewEnabled() ? 1 : 0}|${readCanvasToolbarExpanded() ? 1 : 0}`;
+  const memo = toolbarRenderMemo.get(container);
+  if (memo && memo.key === key && memo.first !== null && container.firstElementChild === memo.first && memo.first.isConnected) return;
+  clearChildren(container);
   container.dataset.uiDensity = "expert";
   container.classList.add("is-zoom-stepper", "is-icon-toolbar");
   container.setAttribute("role", "toolbar");
@@ -155,6 +166,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     });
   container.append(zoomGroup, aiWorkbench, expandButton, saveAction);
   installDelayedTooltips(container);
+  toolbarRenderMemo.set(container, { key, first: container.firstElementChild });
 }
 
 function readCanvasToolbarExpanded(): boolean {

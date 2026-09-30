@@ -115,7 +115,35 @@ export function renderMapHistoryPanel(): HTMLElement {
   refresh();
   select("undo");
   root.replaceChildren(el("summary", { text: "🕑 작업 기록" }), tabs, undoPane, activityPane);
-  if (typeof window !== "undefined") window.addEventListener(MAP_EDIT_HISTORY_EVENT, refresh);
+  if (typeof window !== "undefined") {
+    // 창은 팔레트가 다시 그려질 때마다 새로 만들어진다. 이벤트 리스너를 걸어 두기만 하고 떼지 않으면
+    // 버려진 창마다 히스토리 이벤트 한 번에 DOM 을 다시 만든다(누수). 창이 문서에서 떨어진 걸 처음 본 이벤트에서 스스로 뗀다.
+    // 접혀 있으면(details 닫힘) 목록을 만들지 않고 «밀림» 표시만 해 두었다가 펼칠 때 한 번 맞춘다.
+    // «한 번이라도 문서에 붙었다가 떨어진» 창만 버려진 것으로 본다 — 아직 안 붙은 창(조립 중·분리 렌더)은 그대로 갱신한다.
+    let stale = false;
+    let seenConnected = false;
+    const onHistoryEvent = (): void => {
+      if (root.isConnected === true) seenConnected = true;
+      else if (seenConnected && root.isConnected === false) {
+        window.removeEventListener(MAP_EDIT_HISTORY_EVENT, onHistoryEvent);
+        return;
+      }
+      if (root.open === false) {
+        stale = true;
+        return;
+      }
+      refresh();
+    };
+    window.addEventListener(MAP_EDIT_HISTORY_EVENT, onHistoryEvent);
+    // 만든 직후(동기 부착이 끝난 뒤) 붙어 있었는지 한 번 기록한다 — 이벤트가 오기 전에 버려진 창도 잡으려고.
+    if (typeof queueMicrotask === "function") queueMicrotask(() => { if (root.isConnected === true) seenConnected = true; });
+    root.addEventListener("toggle", () => {
+      if (root.open && stale) {
+        stale = false;
+        refresh();
+      }
+    });
+  }
   return root;
 }
 
@@ -143,7 +171,11 @@ export function installMapHistoryPanelAutoMount(): void {
   const schedule = (): void => scheduleMapHistoryPanelMount();
   if (typeof window !== "undefined") window.addEventListener(MAP_EDIT_HISTORY_EVENT, schedule);
   editorState.subscribe(schedule);
-  store.subscribe(schedule);
+  // 이 구독은 «팔레트 뿌리에 작업 기록 창이 있는가»만 확인한다. 타일 칠하기·높이 붓 통지(cells/relief)는 창의 유무를 바꾸지 못하므로 거른다.
+  store.subscribe((_project, change) => {
+    if (change?.scope === "map" && (change.cells?.length || change.relief) && !change.projectSwitch) return;
+    schedule();
+  });
   schedule();
 }
 

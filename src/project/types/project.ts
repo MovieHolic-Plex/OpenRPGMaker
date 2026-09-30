@@ -718,7 +718,14 @@ export interface Project {
   /** Independent skill graphs; promotion edges remain ClassRecord.promotions. */
   growth?: import("../growth/types").GrowthDefinition;
   version: number;
-  meta: { title: string; author: string; terms: Terms; publication?: import("../publication").Publication };
+  meta: {
+    title: string;
+    author: string;
+    terms: Terms;
+    publication?: import("../publication").Publication;
+    /** 부팅 정규화를 마친 «빌드·공용 판본» 짝. 짝이 맞으면 다음 로드가 정규화기를 건너뛴다(bootNormalization.ts). */
+    bootNormalization?: { v: number; lib: string };
+  };
   assets: AssetSet;
   resourceProfiles: ResourceProfile[];
   tilesets: Record<TilesetId, TilesetDef>;
