@@ -71,6 +71,7 @@ import {
 import { renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
 import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
+import { mountFirstRunGuide } from "./firstRunGuide";
 
 const LEFT_PANEL_DEFAULT_WIDTH = 526;
 const LEFT_PANEL_MIN_WIDTH = 184;
@@ -154,6 +155,7 @@ let unsubMapBackgroundPreview: (() => void) | null = null;
 /** 마지막으로 툴바·패널에 반영한 레이어 켜짐. 드래그 중 재렌더를 걸러내는 기준이다. */
 let lastRenderedLocationLayerEnabled: boolean | null = null;
 let unsubWorkspace: (() => void) | null = null;
+let disposeFirstRunGuide: (() => void) | null = null;
 // 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
 let leftDock: DockMount | null = null;
 
@@ -239,6 +241,8 @@ export function renderEditor(main: HTMLElement): void {
   const suggestionPeek = aiPanel.querySelector<HTMLElement>(".ai-suggestion-peek");
   if (suggestionPeek) canvasArea.append(suggestionPeek);
   main.append(layout, projectExportNodeElement());
+  disposeFirstRunGuide?.();
+  disposeFirstRunGuide = mountFirstRunGuide(aiDock, layout);
 
   leftRoot = left;
   phaserHost = phaserContainer;
@@ -431,6 +435,8 @@ function applyLeftDockLayout(): void {
 }
 
 export function teardownEditor(): void {
+  disposeFirstRunGuide?.();
+  disposeFirstRunGuide = null;
   panelRefreshEpoch += 1;
   pendingStoreChange = undefined;
   fullPanelRefreshQueued = false;

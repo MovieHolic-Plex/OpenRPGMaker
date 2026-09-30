@@ -4,8 +4,7 @@ import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
 import { showConfirm } from "@/editor/ui/modal";
-import { createNewProjectSeed } from "@/editor/genrePacks";
-import { newProjectChoiceById } from "@/editor/newProjectChoices";
+import { createProjectStartSeed } from "@/editor/projectStartSeed";
 import { newProjectChoiceLabel, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
@@ -895,7 +894,7 @@ async function createProjectFromDialog(): Promise<void> {
   // clearAll()은 열려 있던 원격 project id를 그대로 쓰며 공유 행을 덮어썼다.
   // 새 프로젝트는 이름과 시작 장르를 받고 별도 SQLite 폴더에 저장한다.
   // 장르가 있으면 genrePacks.ts 정본 경로로 시스템 프리셋을 씨앗에 적용한다 —
-  // 맵·이벤트·DB 레코드는 만들지 않고 system.* 토글만 설정된다.
+  // 예제는 마을과 플레이 구간을 준비하고, AI 기획은 시스템 프리셋에서 시작한다.
   const selection = await showNewProjectDialog({
     defaultValue: "새 프로젝트",
     ensureAiConnected: async (presetLabel) => {
@@ -906,9 +905,10 @@ async function createProjectFromDialog(): Promise<void> {
   if (selection === null) return;
   const title = selection.title.trim() || "새 프로젝트";
   const choiceId = selection.choiceId;
-  const packId = choiceId === null ? null : newProjectChoiceById(choiceId)?.packId ?? null;
-  const seed = createNewProjectSeed(packId, title);
-  // 인터뷰 3단계 응답 적용 — 게임 화면 크기는 논리 뷰포트다. 타이틀 그림·파티클·음악은
+  let seed: Project;
+  try { seed = await createProjectStartSeed(choiceId, title, selection.startMode, selection.screenSize); }
+  catch (error) { toast(`시작 프로젝트를 준비하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`, "error"); return; }
+  // 게임 화면 크기는 논리 뷰포트다. 타이틀 그림·파티클·음악은
   // 질문하지 않는다: AI 가 장르에 맞게 넣고 저작자는 DB 에서 고친다(2026-09-22 합의).
   if (selection.screenSize === "wide") {
     seed.system.playResolution = { width: 640, height: 360 };

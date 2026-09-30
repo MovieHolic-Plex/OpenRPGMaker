@@ -1381,3 +1381,13 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 그 뒤 에디터 AI로 실제 포획 과제를 저작하고 SQLite 저장·재로드를 확인한다.
 공통 판정만으로 에디터의 종 보유 조건이 지원된다고 보고하지 않는다.
 회귀 사례는 `test/monsterOwnership.test.ts`에 작성했으며 이번 작업에서 실행하지 않았다.
+# 새 프로젝트 시작 방식과 첫 편집 진행 (2026-10-01)
+
+`StartScreenIntent`(sessionStorage, version 1)의 선택 필드 `startMode?: "example" | "ai" | "blank"`,
+`screenSize?: "classic" | "wide"`가 런처 선택을 같은 새 SQLite 폴더로 전달한다.
+필드가 없는 옛 인계는 장르가 있으면 AI, 없으면 빈 프로젝트로 해석한다. 알 수 없는 값은 거절한다.
+예제 경로는 장르별 플레이 가능한 첫 구간을 저장하고 AI 인터뷰/자동 생성을 시작하지 않는다.
+AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 → 팀 첫 생성 계약을 유지한다.
+
+첫 편집 진행은 기존 `Project.flags`의 boolean 키로만 저장한다. 프로젝트 스키마 버전은 바꾸지 않는다.
+키·동작·오른쪽 도크 소유자는 [장르 프리셋](editor-genre-packs.md)의 2026-10-01 절을 따른다.

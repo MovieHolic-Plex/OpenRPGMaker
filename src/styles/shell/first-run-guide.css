@@ -1,0 +1,21 @@
+@layer shell {
+  .first-run-guide { height: 100%; overflow: auto; box-sizing: border-box; padding: 24px 20px; background: var(--bg-surface); color: var(--text-1); word-break: keep-all; }
+  .first-run-guide[hidden] { display: none; }
+  .has-first-run-guide .ai-chat-float-host, .has-first-run-guide .ai-team-sidebar, .has-first-run-guide .ai-suggestion-peek { display: none !important; }
+  .first-run-guide-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .first-run-guide h2 { margin: 0; font-size: 16px; }
+  .first-run-guide h3 { margin: 0; font-size: 13px; }
+  .first-run-guide p { margin: 7px 0 0; font-size: 12px; line-height: 1.7; color: var(--text-2); }
+  .first-run-guide-hint { margin-bottom: 22px !important; }
+  .first-run-guide-step { display: flex; gap: 11px; margin: 22px 0; }
+  .first-run-guide-number { display: grid; place-items: center; flex-shrink: 0; width: 23px; height: 23px; border-radius: 50%; background: var(--accent-muted); color: var(--accent); font-size: 12px; }
+  .first-run-guide-step.is-done .first-run-guide-number { background: var(--bg-inset); color: var(--text-2); }
+  .first-run-guide-button { border: 1px solid var(--border-default); border-radius: var(--radius-s); padding: 8px 11px; background: var(--bg-raised); color: var(--text-1); font: inherit; font-size: 12px; cursor: pointer; margin-top: 12px; }
+  .first-run-guide-header .first-run-guide-button { margin: 0; border-color: transparent; background: transparent; color: var(--text-2); }
+  .first-run-guide-button.is-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .first-run-guide-button:hover { filter: brightness(.97); }
+  .first-run-guide-button:focus-visible, .first-run-guide-input:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+  .first-run-guide-ai { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--border-default); }
+  .first-run-guide label { display: block; font-size: 13px; margin-top: 18px; }
+  .first-run-guide-input { width: 100%; box-sizing: border-box; margin-top: 8px; padding: 12px; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); font: inherit; font-size: 14px; line-height: 1.7; resize: vertical; }
+}

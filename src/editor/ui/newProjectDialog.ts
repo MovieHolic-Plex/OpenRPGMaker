@@ -1,18 +1,10 @@
-// editor/ui/newProjectDialog.ts
-// 「새 프로젝트」 인터뷰 다이얼로그 — 한 질문에 한 답.
-// 확인 → NewProjectDialogResult, 취소 → null. 헤드리스에서는 기본값으로 즉시 resolve.
-//
-// 2026-09-11 통합: 행 목록은 첫 화면 웰컴 브리핑 포스터와 같은 레코드에서 파생한다(이름 통일).
-// 2026-09-21 인터뷰화: 장르 격자 하나에 이름·선택지가 다 같이 보이던 것을 3단계 질문으로 나눈다.
-//   ① 이름 ② 무엇을 만들까요 ③ 게임 화면 크기 — 마지막에 요약을 확인하고 만든다.
-//   "해상도"라는 말은 값이 커질수록 캐릭터가 작아지는 반직관 효과 때문에 초보자에게 오해를 부른다.
-//   그래서 질문은 "게임 화면 크기"로 물어보고 프리셋은 느낌(클래식/와이드)으로 답하게 한다.
-//
-// DOM 계약: 모든 단계의 입력이 항상 DOM 에 있다(숨김은 hidden 토글). 기존 testid
-// (new-project-name-input, new-project-genre-option-*, new-project-confirm)가 그대로 통한다.
+// New project: choose an example, an empty project, or AI planning, then configure one screen.
+// AI planning alone opens the connection gate and the paced interview.
 
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
+import { START_EXAMPLE_DETAILS, type ProjectStartMode } from "@/start/projectStart";
+import "@/styles/shell/dialogs/project-start.css";
 import { showProjectInterview } from "./projectInterviewDialog";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import {
@@ -33,6 +25,7 @@ export type NewProjectDialogResult = {
   /** 게임 화면 크기. classic = 320×240(기본), wide = 640×360. */
   readonly screenSize: NewProjectScreenSize;
   readonly gameDesignBrief?: GameDesignBrief;
+  readonly startMode?: ProjectStartMode;
 };
 
 export type NewProjectDialogOptions = {
@@ -116,281 +109,103 @@ function domAvailable(): boolean {
   );
 }
 
-const STEP_COUNT = 3;
-
 export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promise<NewProjectDialogResult | null> {
   const fallbackTitle = opts.defaultValue ?? "새 프로젝트";
-  if (!domAvailable()) {
-    return Promise.resolve({ title: fallbackTitle, choiceId: opts.defaultChoiceId ?? null, screenSize: "classic" });
-  }
-  return new Promise((resolve) => {
-    const opener = typeof document !== "undefined" ? document.activeElement : null;
-    const overlay = el("div", {
-      class: "app-modal-overlay",
-      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.host },
-    });
+  if (!domAvailable()) return Promise.resolve({ title: fallbackTitle, choiceId: opts.defaultChoiceId ?? null, screenSize: "classic", startMode: opts.defaultChoiceId ? START_EXAMPLE_DETAILS[opts.defaultChoiceId] ? "example" : "ai" : "blank" });
+  return new Promise(resolve => {
+    const opener = document.activeElement;
+    const overlay = el("div", { class: "app-modal-overlay", dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.host } });
+    const card = el("section", { class: "app-modal-card project-start-window", attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "project-start-title" } });
+    let choiceId: NewProjectChoiceId | null = opts.defaultChoiceId ?? null;
+    let startMode: ProjectStartMode = choiceId && !START_EXAMPLE_DETAILS[choiceId] ? "ai" : "example";
+    let choosing = !choiceId;
+    let title = fallbackTitle;
+    let screenSize: NewProjectScreenSize = "classic";
+    let idea = "";
+    let busy = false;
     let settled = false;
-    let interviewing = false;
-    let step = 0;
-    let selectedChoiceId: NewProjectChoiceId | null = opts.defaultChoiceId ?? null;
-    let selectedSize: NewProjectScreenSize = "classic";
-    const done = (value: NewProjectDialogResult | null): void => {
+    const done = (result: NewProjectDialogResult | null) => {
       if (settled) return;
-      settled = true;
-      unregisterModal(overlay);
-      overlay.remove();
-      resolve(value);
+      settled = true; unregisterModal(overlay); overlay.remove(); resolve(result);
       if (opener instanceof HTMLElement && document.contains(opener)) opener.focus();
     };
-
-    const nameInput = el("input", {
-      class: "app-modal-input",
-      attrs: {
-        type: "text",
-        value: fallbackTitle,
-        placeholder: "예: 나의 첫 RPG",
-        "aria-label": "새 프로젝트 이름",
-      },
-      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.nameInput },
-    }) as HTMLInputElement;
-
-    const optionRows = NEW_PROJECT_GENRE_OPTIONS.map((option) => {
-      const radio = el("input", {
-        class: "new-project-genre-radio",
-        attrs: {
-          type: "radio",
-          name: "new-project-genre",
-          value: option.id ?? "",
-          "aria-label": option.label + " — " + option.blurb,
-        },
-        dataset: { testid: newProjectGenreOptionTestId(option.id) },
-      }) as HTMLInputElement;
-      radio.checked = option.id === selectedChoiceId;
-      radio.addEventListener("change", () => {
-        if (radio.checked) {
-          selectedChoiceId = option.id;
-          confirmButton.textContent = opts.confirmLabel ?? (option.id ? "다음 · 게임 기획" : "만들기");
-        }
-      });
-      // 장르 그림은 첫 화면 포스터와 같은 자산을 쓴다. 빈 프로젝트는 그림이 없으므로 +.
-      // 자산이 없으면 img 를 떼어 격자 배경만 남긴다 — 깨진 그림 아이콘을 보여 주지 않는다.
-      const art = el("span", {
-        class: "new-project-genre-art",
-        attrs: { "aria-hidden": "true" },
-        children: [el("span", { class: "new-project-genre-placeholder", text: option.id ? option.label : "+" })],
-      });
-      if (option.thumb) {
-        art.append(el("img", {
-          attrs: { src: option.thumb, alt: "", decoding: "async", draggable: "false" },
-          on: { error: (event) => (event.currentTarget as HTMLElement).remove() },
-        }));
-      }
-      return el("label", {
-        class: "new-project-genre-row",
-        children: [
-          radio,
-          art,
-          el("span", {
-            class: "new-project-genre-text",
-            children: [
-              el("span", { class: "new-project-genre-label", text: option.label }),
-              el("span", { class: "new-project-genre-blurb", text: option.blurb }),
-            ],
-          }),
-        ],
-      });
+    const button = (text: string, testid: string, action: () => void, primary = false) => el("button", {
+      class: `app-modal-button${primary ? " is-confirm" : ""}`, text, attrs: { type: "button" }, dataset: { testid }, on: { click: action },
     });
-
-    const sizeRows = NEW_PROJECT_SIZE_OPTIONS.map((option) => {
-      const radio = el("input", {
-        class: "new-project-choice-radio",
-        attrs: {
-          type: "radio",
-          name: "new-project-size",
-          value: option.id,
-          "aria-label": option.label + " — " + option.blurb,
-        },
-        dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.sizeOption + "-" + option.id },
-      }) as HTMLInputElement;
-      radio.checked = option.id === selectedSize;
-      radio.addEventListener("change", () => {
-        if (radio.checked) { selectedSize = option.id; refreshSummaryIfVisible(); }
-      });
-      return el("label", {
-        class: "new-project-choice-row",
-        children: [
-          radio,
-          el("span", {
-            class: "new-project-size-preview",
-            attrs: { "aria-hidden": "true" },
-            children: [el("span", {
-              class: "new-project-size-preview-box",
-              dataset: { sizePreset: option.id },
-            })],
-          }),
-          el("span", {
-            class: "new-project-choice-text",
-            children: [
-              el("span", { class: "new-project-choice-label", text: option.label }),
-              el("span", { class: "new-project-choice-blurb", text: option.blurb }),
-            ],
-          }),
-        ],
-      });
-    });
-
-    const stepQuestion = (text: string): HTMLElement =>
-      el("div", { class: "new-project-question", text });
-    const stepName = el("div", {
-      class: "new-project-step",
-      dataset: { testid: "new-project-step-name" },
-      children: [stepQuestion("게임 이름을 정하세요"), nameInput],
-    });
-    const stepGenre = el("div", {
-      class: "new-project-step",
-      dataset: { testid: "new-project-step-genre" },
-      children: [
-        stepQuestion("무엇을 만들고 싶나요?"),
-        el("div", {
-          class: "new-project-genre-list",
-          attrs: { role: "radiogroup", "aria-label": "시작 장르" },
-          children: optionRows,
-        }),
-      ],
-    });
-    const stepSize = el("div", {
-      class: "new-project-step",
-      dataset: { testid: "new-project-step-size" },
-      children: [
-        stepQuestion("게임 화면은 어느 쪽이 좋나요?"),
-        el("div", {
-          class: "new-project-choice-list",
-          attrs: { role: "radiogroup", "aria-label": "게임 화면 크기" },
-          children: sizeRows,
-        }),
-        el("div", {
-          class: "new-project-summary",
-          dataset: { testid: "new-project-summary" },
-          text: "",
-        }),
-      ],
-    });
-    const stepPanels = [stepName, stepGenre, stepSize];
-
-    const progress = el("span", {
-      class: "new-project-progress",
-      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.progress },
-      text: "",
-    });
-
-    const STEP_QUESTIONS = ["이름", "장르", "화면"];
-
-    const backButton = el("button", {
-      class: "app-modal-button",
-      text: "뒤로",
-      attrs: { type: "button" },
-      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.back },
-      on: { click: () => showStep(Math.max(0, step - 1)) },
-    });
-    const nextButton = el("button", {
-      class: "app-modal-button is-confirm",
-      text: "다음",
-      attrs: { type: "button" },
-      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.next },
-      on: { click: () => showStep(Math.min(STEP_COUNT - 1, step + 1)) },
-    });
-    const confirmButton = el("button", {
-      class: "app-modal-button is-confirm",
-      text: opts.confirmLabel ?? (selectedChoiceId ? "다음 · 게임 기획" : "만들기"),
-      attrs: { type: "button" },
-      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.confirm },
-      on: { click: () => void confirmSelection() },
-    });
-    const cancelButton = el("button", {
-      class: "app-modal-button",
-      text: opts.cancelLabel ?? "취소",
-      attrs: { type: "button" },
-      dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.cancel },
-      on: { click: () => done(null) },
-    });
-
-    function summaryText(): string {
-      const size = NEW_PROJECT_SIZE_OPTIONS.find((option) => option.id === selectedSize)?.label ?? "클래식";
-      return "이렇게 만듭니다 — " + (nameInput.value.trim() || fallbackTitle) + " · "
-        + newProjectChoiceLabel(selectedChoiceId) + " · " + size;
-    }
-
-    /** 마지막 단계에서라도 방금 고른 선택이 요약에 즉시 반영돼야 한다. */
-    function refreshSummaryIfVisible(): void {
-      if (step !== STEP_COUNT - 1) return;
-      const summary = stepSize.querySelector<HTMLElement>("[data-testid='new-project-summary']");
-      if (summary) summary.textContent = summaryText();
-    }
-
-    function showStep(next: number): void {
-      step = Math.max(0, Math.min(STEP_COUNT - 1, next));
-      for (const [index, panel] of stepPanels.entries()) {
-        panel.hidden = index !== step;
-      }
-      progress.textContent = "설정 " + String(step + 1) + "/" + String(STEP_COUNT) + " · " + STEP_QUESTIONS[step]!;
-      backButton.hidden = step === 0;
-      nextButton.hidden = step === STEP_COUNT - 1;
-      confirmButton.hidden = step !== STEP_COUNT - 1;
-      if (step === STEP_COUNT - 1) {
-        const summary = stepSize.querySelector<HTMLElement>("[data-testid='new-project-summary']");
-        if (summary) summary.textContent = summaryText();
-      }
-    }
-
-    async function confirmSelection(): Promise<void> {
-      if (interviewing || settled) return;
-      const selection = { title: nameInput.value.trim() || fallbackTitle, choiceId: selectedChoiceId, screenSize: selectedSize };
-      if (!selection.choiceId) { done(selection); return; }
-      interviewing = true;
-      confirmButton.disabled = true;
+    const choose = (id: NewProjectChoiceId | null, mode: ProjectStartMode) => {
+      choiceId = id; startMode = mode; choosing = false;
+      title = id ? START_EXAMPLE_DETAILS[id]?.title ?? fallbackTitle : fallbackTitle;
+      render();
+    };
+    const confirm = async () => {
+      if (busy || settled) return;
+      busy = true;
+      const selection = { title: title.trim() || fallbackTitle, choiceId, screenSize, startMode };
+      const confirmControl = card.querySelector<HTMLButtonElement>(`[data-testid="${NEW_PROJECT_DIALOG_TESTIDS.confirm}"]`);
+      if (confirmControl) confirmControl.disabled = true;
       try {
-        if (opts.ensureAiConnected) {
-          const connected = await opts.ensureAiConnected(newProjectChoiceLabel(selection.choiceId)).catch(() => false);
-          if (!connected || settled) return;
-        }
-        const gameDesignBrief = await showProjectInterview(selection.choiceId);
-        if (gameDesignBrief && !settled) done({ ...selection, gameDesignBrief });
-      } finally { interviewing = false; confirmButton.disabled = false; }
-    }
-
-    nameInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        showStep(1);
-      }
-    });
-
-    const card = el("div", {
-      class: "app-modal-card new-project-card",
-      attrs: { role: "dialog", "aria-modal": "true", "aria-label": "새 프로젝트" },
-      children: [
-        el("div", {
-          class: "new-project-header",
-          children: [
-            el("div", { class: "app-modal-title", text: "새 프로젝트" }),
-            progress,
+        if (startMode !== "ai" || !choiceId) { done(selection); return; }
+        if (opts.ensureAiConnected && !await opts.ensureAiConnected(newProjectChoiceLabel(choiceId)).catch(() => false)) return;
+        if (settled) return;
+        const brief = await showProjectInterview(choiceId, { initialAnswer: idea });
+        if (brief && !settled) done({ ...selection, gameDesignBrief: brief });
+      } finally { busy = false; if (!settled) render(); }
+    };
+    const render = () => {
+      if (settled) return;
+      card.replaceChildren(el("header", { class: "project-start-header", children: [
+        el("div", { children: [el("span", { class: "project-start-kicker", text: choosing ? "새 프로젝트" : "시작 방식 → 시작 준비 → 에디터" }), el("h2", { attrs: { id: "project-start-title" }, text: choosing ? "첫 게임, 작은 장면부터." : startMode === "ai" ? "AI와 게임 기획하기" : "이 장면으로 시작해 볼까요?" })] }),
+        button(opts.cancelLabel ?? "취소", NEW_PROJECT_DIALOG_TESTIDS.cancel, () => done(null)),
+      ] }));
+      if (choosing) {
+        card.append(el("p", { class: "project-start-hint", text: "플레이 가능한 예제로 시작하고, 하나씩 바꿔 보세요. 이미지는 장르 참고용입니다. 실제 예제는 작은 마을과 길에서 시작해요." }));
+        card.append(el("div", { class: "project-start-examples", children: orderedChoices().map(choice => el("button", {
+          class: "project-start-example", attrs: { type: "button" }, dataset: { testid: newProjectGenreOptionTestId(choice.id) }, on: { click: () => choose(choice.id, "example") }, children: [
+            el("img", { attrs: { src: choice.thumb, alt: choice.label + " 참고 이미지", decoding: "async" } }),
+            el("span", { class: "project-start-example-copy", children: [el("strong", { text: choice.label }), el("span", { text: START_EXAMPLE_DETAILS[choice.id]?.description ?? choice.blurb }), el("span", { class: "project-start-example-action", text: "예제로 시작하기 →" })] }),
           ],
-        }),
-        el("div", {
-          class: "app-modal-message",
-          text: "지금 열려 있는 작업은 그대로 보존됩니다.",
-        }),
-        ...stepPanels,
-        el("div", { class: "app-modal-actions", children: [cancelButton, backButton, nextButton, confirmButton] }),
-      ],
+        })) }));
+        card.append(el("div", { class: "project-start-other", children: [el("span", { text: "직접 만들고 싶다면" }), button("빈 프로젝트", newProjectGenreOptionTestId(null), () => choose(null, "blank"))] }),
+          el("div", { class: "project-start-other", children: [el("span", { text: "아이디어를 AI와 구체화하기" }), button("기획 시작하기", "new-project-ai", () => choose(orderedChoices()[0]?.id ?? null, "ai"))] }));
+      } else {
+        const choice = choiceId ? newProjectChoiceById(choiceId) : undefined;
+        const details = choiceId ? START_EXAMPLE_DETAILS[choiceId] : undefined;
+        const nameInput = el("input", { class: "app-modal-input", value: title, attrs: { type: "text", id: "project-start-name", maxlength: "80" }, dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.nameInput } }) as HTMLInputElement;
+        nameInput.addEventListener("input", () => { title = nameInput.value; });
+        const fields = el("div", { class: "project-start-fields", children: [
+          el("label", { attrs: { for: "project-start-name" }, text: "게임 이름" }), nameInput, el("p", { class: "project-start-hint", text: "나중에 바꿀 수 있어요." }),
+          el("p", { class: "project-start-hint", text: "새 폴더에 프로젝트와 작업 내용이 저장돼요." }),
+        ] });
+        if (startMode === "ai") {
+          const input = el("textarea", { class: "app-modal-input", value: idea, attrs: { rows: "3", maxlength: "600", "aria-label": "만들고 싶은 게임", placeholder: "예: 눈 내리는 마을에서 잃어버린 기억을 찾는 이야기" } }) as HTMLTextAreaElement;
+          input.addEventListener("input", () => { idea = input.value; });
+          fields.append(el("label", { text: "어떤 게임을 만들고 싶나요?" }), input);
+          const genres = el("select", { class: "app-modal-input", attrs: { "aria-label": "시작 장르" }, children: orderedChoices().map(c => el("option", { text: c.label, attrs: { value: c.id, ...(choiceId === c.id ? { selected: "" } : {}) } })) }) as HTMLSelectElement;
+          genres.addEventListener("change", () => { choiceId = genres.value as NewProjectChoiceId; });
+          fields.append(genres);
+        }
+        const sizes = el("div", { class: "project-start-size-options", children: NEW_PROJECT_SIZE_OPTIONS.map(size => {
+          const radio = el("input", { attrs: { type: "radio", name: "project-start-size", value: size.id, ...(screenSize === size.id ? { checked: "" } : {}) }, dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.sizeOption + "-" + size.id } }) as HTMLInputElement;
+          radio.addEventListener("change", () => { if (radio.checked) screenSize = size.id; });
+          return el("label", { children: [radio, el("span", { text: size.label + " · " + size.blurb })] });
+        }) });
+        fields.append(el("details", { children: [el("summary", { text: "화면 크기" }), sizes] }));
+        card.append(el("div", { class: "project-start-setup", children: [el("section", { class: "project-start-preview", children: [
+          ...(choice ? [el("img", { attrs: { src: choice.thumb, alt: choice.label + " 참고 이미지" } })] : []),
+          el("div", { children: [el("h3", { text: choice?.label ?? "빈 프로젝트" }), el("p", { text: details?.description ?? "빈 맵에서 나만의 장면을 만들어요." }), el("ul", { children: (startMode === "ai" ? ["아이디어를 담은 기획 인터뷰", "생성 전 게임 기획 확인", "AI 팀과 첫 장면 만들기"] : details?.includes ?? ["빈 맵 한 개", "기본 타일과 캐릭터", "첫 편집 안내"]).map(text => el("li", { text })) })] }),
+        ] }), fields] }));
+        card.append(el("footer", { class: "app-modal-actions", children: [button("시작 방식 다시 고르기", NEW_PROJECT_DIALOG_TESTIDS.back, () => { choosing = true; render(); }), button(opts.confirmLabel ?? (startMode === "ai" ? "다음 · 게임 기획" : choiceId ? "이 예제로 시작" : "프로젝트 만들기"), NEW_PROJECT_DIALOG_TESTIDS.confirm, () => void confirm(), true)] }));
+      }
+      card.querySelector<HTMLElement>(choosing ? ".project-start-example" : "input[type=text]")?.focus();
+    };
+    card.addEventListener("click", event => event.stopPropagation());
+    card.addEventListener("keydown", event => {
+      if (event.key !== "Tab") return;
+      const controls = [...card.querySelectorAll<HTMLElement>("button:not(:disabled), input, textarea, select, summary")].filter(control => !control.closest("details:not([open])") || control.tagName === "SUMMARY");
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     });
-    card.addEventListener("click", (event) => event.stopPropagation());
-    overlay.append(card);
-    overlay.addEventListener("click", () => done(null));
-    document.body.append(overlay);
-    registerModal(overlay, () => done(null));
-    showStep(0);
-    if (typeof nameInput.focus === "function") nameInput.focus();
-    if (typeof nameInput.select === "function") nameInput.select();
+    overlay.addEventListener("click", () => done(null)); overlay.append(card); document.body.append(overlay); registerModal(overlay, () => done(null)); render();
   });
 }
