@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { villageObjectHouseCatalog } from "@/editor/tools/village/objectHouses";
 import { chooseCompactHouses, compactHousePool, compactLandmark, LOG_WALL_TILES } from "@/editor/tools/village/compactComposition";
 import { fillMissingVillageDimensions } from "@/editor/tools/authorVillageToolDef";
@@ -16,11 +16,11 @@ import { countTreeCells, countWaterCells } from "@/editor/tools/villageEvaluate"
 
 function fixture() {
   const project = createBlankProject(), entries = [...buildHouse30BatchA(), ...buildHouse30BatchB(), ...buildHouse30BatchC()];
-  project.tilesets[DEFAULT_TILESET_ID]!.structureKits = entries.map(e => e.kit);
+  project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits = entries.map(e => e.kit);
   project.spatialAuthoring = emptySpatialDocument();
   project.spatialAuthoring.library.objects = Object.fromEntries(entries.map(e => [`house:${e.number}`, {
     id: `house:${e.number}`, name: e.name, revision: 1, tags: [], provenance: { origin: "user" },
-    graphic: { tilesetId: DEFAULT_TILESET_ID, kitId: e.kit.id }, chips: [],
+    graphic: { tilesetId: COMBINED_TOWN_TILESET_ID, kitId: e.kit.id }, chips: [],
     anchors: e.doors.map((door, i) => ({ id: `door:${i}`, name: "현관 앞", x: door.x, y: door.y + 1 })),
   }]));
   return { project, ids: Object.keys(project.spatialAuthoring.library.objects) };
@@ -29,11 +29,11 @@ function fixture() {
 describe("compact village composition contract", () => {
   it.each(["80×80", "automatic"])("builds 24 small masonry homes and two landmarks with lake, groves and 243-family patches (%s)", size => {
     const project = createBlankProject(), entries = buildCompactVillageHouses();
-    project.tilesets[DEFAULT_TILESET_ID]!.structureKits = entries.map(entry => entry.kit);
+    project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits = entries.map(entry => entry.kit);
     project.spatialAuthoring = emptySpatialDocument();
     project.spatialAuthoring.library.objects = Object.fromEntries(entries.map(entry => [entry.id, {
       id: entry.id, name: entry.name, revision: 1, tags: [], provenance: { origin: "user" }, chips: [],
-      graphic: { tilesetId: DEFAULT_TILESET_ID, kitId: entry.kit.id },
+      graphic: { tilesetId: COMBINED_TOWN_TILESET_ID, kitId: entry.kit.id },
       anchors: entry.doors.map((door, i) => ({ id: `door:${i}`, name: "현관 앞", x: door.x, y: door.y + 1 })),
     }]));
     const ctx = { project };
@@ -61,10 +61,10 @@ describe("compact village composition contract", () => {
   it("filters actual log-wall cells and oversized exteriors without modifying the source library", () => {
     const { project, ids } = fixture();
     // Invalid legacy samples are explicit; reviewed houses no longer contain these defects.
-    const logHouse = project.tilesets[DEFAULT_TILESET_ID]!.structureKits![2]!;
+    const logHouse = project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits![2]!;
     if (logHouse.kind !== "section") throw Error("section");
     logHouse.rows[4]!.tiles[1] = 133;
-    const oversized = project.tilesets[DEFAULT_TILESET_ID]!.structureKits![25]!;
+    const oversized = project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits![25]!;
     if (oversized.kind !== "section") throw Error("section");
     oversized.width = 16;
     for (const row of oversized.rows) { row.tiles.push(-1); row.upperTiles?.push(-1); }

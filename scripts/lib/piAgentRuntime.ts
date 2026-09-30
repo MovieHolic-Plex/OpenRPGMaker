@@ -76,6 +76,11 @@ export interface RunPiAgentOptions {
    */
   readonly codexApiKey?: string;
   readonly renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
+  /**
+   * Headless runners only: a model object resolved outside the bundled catalog (e.g. a provider from the user's local
+   * ~/.omp/agent/models.yml, scripts/qa/beodeul-assistant-run.mts). Absent = the exact catalog resolution below.
+   */
+  readonly model?: ReturnType<typeof resolveOhMyPiModel>;
   readonly toolNames?: readonly string[];
   readonly extraTools?: readonly PiToolShape[];
   /** 모델 스트림 대체 — 테스트가 네트워크 없이 진짜 Agent 루프를 돌릴 때 쓰는 시임. */
@@ -204,7 +209,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
   };
   const referenceGate = new PiTilesetReferenceGate();
-  const model = resolvePiModel(request.provider, request.model);
+  const model = options.model ?? resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
   const toolStartedAt = new Map<string, number>();

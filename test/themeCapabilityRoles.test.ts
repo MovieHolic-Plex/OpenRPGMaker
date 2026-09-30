@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { AiPreviewThemeEligibilityEvidence, AiPreviewThemeId } from "@/project/aiPreviewContracts";
 import { generateAiPreviewThemeMap } from "@/project/aiPreviewThemeGrammar";
 import { TILE } from "@/project/defaults/constants";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import {
   MODERN_EXTERIORS_GRAMMAR_PROFILE,
   registerGrammarProfile,

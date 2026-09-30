@@ -10,7 +10,7 @@ import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { isTransparentChipsetTile, isUpperChipsetTile } from "@/project/defaults/chipsetMapping";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { COMBINED_TOWN_TRANSPARENT_TILES } from "@/project/defaults/generatedChipsetTransparency";
 import { applyCombinedTownHarness, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import { store } from "@/project/store";

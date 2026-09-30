@@ -80,7 +80,7 @@ export function buildNaturalVillageReference(): Project {
 }
 
 function createStageMap(id: string, name: string): GameMap {
-  const map = createBlankMap(name, MAP_WIDTH, MAP_HEIGHT);
+  const map = createBlankMap(name, MAP_WIDTH, MAP_HEIGHT, "easyrpg_chipset_combined_town");
   map.id = id;
   return map;
 }

@@ -1,0 +1,243 @@
+{
+ "deadEnds": [
+  {
+   "at": [
+    31,
+    8
+   ],
+   "kind": "cell",
+   "width": 1
+  },
+  {
+   "at": [
+    31,
+    13
+   ],
+   "kind": "street",
+   "width": 2
+  },
+  {
+   "at": [
+    85,
+    49
+   ],
+   "kind": "street",
+   "width": 3
+  }
+ ],
+ "lines": {
+  "count": 54,
+  "longStraight": [
+   {
+    "orient": "h",
+    "from": [
+     0,
+     23
+    ],
+    "to": [
+     54,
+     23
+    ],
+    "len": 55
+   },
+   {
+    "orient": "h",
+    "from": [
+     0,
+     34
+    ],
+    "to": [
+     54,
+     34
+    ],
+    "len": 55
+   },
+   {
+    "orient": "h",
+    "from": [
+     0,
+     51
+    ],
+    "to": [
+     54,
+     51
+    ],
+    "len": 55
+   },
+   {
+    "orient": "h",
+    "from": [
+     0,
+     66
+    ],
+    "to": [
+     54,
+     66
+    ],
+    "len": 55
+   },
+   {
+    "orient": "v",
+    "from": [
+     21,
+     0
+    ],
+    "to": [
+     21,
+     84
+    ],
+    "len": 85
+   },
+   {
+    "orient": "v",
+    "from": [
+     53,
+     0
+    ],
+    "to": [
+     53,
+     84
+    ],
+    "len": 85
+   },
+   {
+    "orient": "v",
+    "from": [
+     60,
+     0
+    ],
+    "to": [
+     60,
+     85
+    ],
+    "len": 86
+   },
+   {
+    "orient": "v",
+    "from": [
+     83,
+     33
+    ],
+    "to": [
+     83,
+     84
+    ],
+    "len": 52
+   },
+   {
+    "orient": "v",
+    "from": [
+     99,
+     32
+    ],
+    "to": [
+     99,
+     84
+    ],
+    "len": 53
+   }
+  ],
+  "longestLen": 86
+ },
+ "graph": {
+  "meanDepth": 1.48,
+  "maxDepth": 3,
+  "components": 2,
+  "isolated": [
+   {
+    "from": [
+     60,
+     0
+    ],
+    "to": [
+     60,
+     85
+    ],
+    "len": 86
+   }
+  ]
+ },
+ "spacing": {
+  "vGaps": [
+   8,
+   16,
+   16,
+   7,
+   23,
+   16
+  ],
+  "hGaps": [
+   14,
+   12,
+   15,
+   17,
+   11,
+   6
+  ],
+  "cv": 0.348
+ },
+ "bentStreetCells": 24,
+ "canal": {
+  "cells": 1227,
+  "orient": "v",
+  "bends": 0,
+  "straightShare": 0.987,
+  "straight": true
+ },
+ "nodes": [
+  {
+   "at": [
+    71,
+    15
+   ],
+   "cells": 102
+  },
+  {
+   "at": [
+    41,
+    15
+   ],
+   "cells": 92
+  },
+  {
+   "at": [
+    90,
+    16
+   ],
+   "cells": 31
+  },
+  {
+   "at": [
+    26,
+    43
+   ],
+   "cells": 112
+  },
+  {
+   "at": [
+    44,
+    46
+   ],
+   "cells": 35
+  },
+  {
+   "at": [
+    91,
+    71
+   ],
+   "cells": 50
+  }
+ ],
+ "landmarks": [
+  "bd-estate",
+  "bd-castle",
+  "bd-forum",
+  "bd-windmill"
+ ],
+ "blocks": {
+  "count": 0,
+  "distinct": 0,
+  "neighbourRepeats": [],
+  "overused": []
+ }
+}

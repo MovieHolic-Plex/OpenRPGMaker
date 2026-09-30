@@ -155,6 +155,7 @@ const CORE_TOOL_NAMES: ReadonlySet<string> = new Set([
 const NAME_DOMAIN_OVERRIDES: ReadonlyMap<string, readonly ToolDomain[]> = new Map([
   ["get_map_region", ["map"]],
   ["check_reachability", ["map"]],
+  ["check_city_form", ["map"]],
   ["highlight_map_region", ["map"]],
   ["find_events", ["event"]],
   ["get_event", ["event"]],

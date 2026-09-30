@@ -9,6 +9,7 @@ import { ATLAS_BIOME_TEXTURES, createAtlasBiomeTileset, ensureAtlasBiomeReferenc
 import { ATLAS_BIOME_WORLD_TEXTURE, createAtlasBiomeWorldTileset } from "./atlasBiomeWorld";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
+import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset } from "./beodeulCity";
 import { ensureForestGroveInterior } from "./forestGrove";
 import { ensureForestTallGrass } from "./forestTallGrass";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
@@ -33,7 +34,7 @@ import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { refreshMvPackGuide } from "@/project/rpgmakerMv/refreshGuide";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses, RETRO_WORLD_TEXTURE_KEY } from "@/project/tilesetHarness";
-import { bundledAssetRef, CASTLE_TILESET_ID, CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TILESET_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
+import { bundledAssetRef, CASTLE_TILESET_ID, COMBINED_TOWN_TILESET_ID, COMBINED_TOWN_TILESET_NAME, COMBINED_TOWN_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TILESET_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
 import { EXTRA_LAYER_KEYS } from "@/project/mapLayers";
 
@@ -56,8 +57,20 @@ function isSolidTile(index: number): boolean {
   return isSolidChipsetTile(index);
 }
 
+/** 새 프로젝트의 기본 타일셋 = 버들항(2026-09-30~). 합본 마을은 `combinedTownTileset()`. */
 export function defaultTileset(): TilesetDef {
-  return makeBundledTileset(DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY);
+  return bundledEasyRpgTileset(bundledAssetForTextureKey(DEFAULT_TILESET_TEXTURE_KEY));
+}
+
+/** 합본 마을(EasyRPG CC0) — 예전 기본. 기존 프로젝트와 TILE.* 칸 번호가 이 타일셋을 가리킨다. */
+export function combinedTownTileset(): TilesetDef {
+  return makeBundledTileset(COMBINED_TOWN_TILESET_ID, COMBINED_TOWN_TILESET_NAME, COMBINED_TOWN_TILESET_TEXTURE_KEY);
+}
+
+function bundledAssetForTextureKey(textureKey: string): (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number] {
+  const asset = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((candidate) => candidate.textureKey === textureKey);
+  if (!asset) throw new Error(`번들 칩셋 목록에 ${textureKey} 가 없습니다.`);
+  return asset;
 }
 
 function makeBundledTileset(id: string, name: string, textureKey: string): TilesetDef {
@@ -65,7 +78,7 @@ function makeBundledTileset(id: string, name: string, textureKey: string): Tiles
   const passability: PassFlag[] = [];
   const priority: ("lower" | "upper")[] = [];
   const terrain: number[] = [];
-  const useBundledNumberDefaults = textureKey === DEFAULT_TILESET_TEXTURE_KEY;
+  const useBundledNumberDefaults = textureKey === COMBINED_TOWN_TILESET_TEXTURE_KEY;
   for (let index = 0; index < count; index++) {
     passability.push(useBundledNumberDefaults && isSolidTile(index) ? solid() : passable());
     priority.push(useBundledNumberDefaults && isUpperTile(index) ? "upper" : "lower");
@@ -93,6 +106,7 @@ function makeBundledTileset(id: string, name: string, textureKey: string): Tiles
 }
 
 export function defaultTilesets(): Record<string, TilesetDef> {
+  // 기본(버들항)이 맨 앞이고 합본 마을은 번들 목록에서 이어서 들어간다 — 기존 프로젝트가 계속 쓰는 타일셋이다.
   const tilesets: Record<string, TilesetDef> = {
     [DEFAULT_TILESET_ID]: defaultTileset(),
   };
@@ -173,6 +187,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       // Atlas biome sheets (tiledata/atlas-biomes): the shipped biome guidance.
       changed = ensureAtlasBiomeReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
+      // 버들항 v6 (tiledata/beodeul-city): the shipped city guidance for older copies.
+      if (asset.textureKey === BEODEUL_CITY_TEXTURE) {
+        changed = ensureBeodeulCityTileset(project.tilesets[id]) || changed;
+        changed = ensureBeodeulCityReferences(project.tilesets[id]) || changed;
+      }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
@@ -311,7 +330,7 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
   const label = `${map.id} ${map.name}`.toLowerCase();
   if (label.includes("dungeon") || label.includes("던전")) return DUNGEON_TILESET_ID;
   if (label.includes("interior") || label.includes("실내")) return INTERIOR_TILESET_ID;
-  return DEFAULT_TILESET_ID;
+  return COMBINED_TOWN_TILESET_ID;
 }
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
@@ -327,6 +346,7 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
 function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
+  if (asset.textureKey === BEODEUL_CITY_TEXTURE) return createBeodeulCityTileset();
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();
   // New projects start with the shared tail slots the place documents use (2550~2759).
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) {
@@ -381,12 +401,12 @@ export const bundledTilesetIdForAssetForTest = bundledTilesetIdForAsset;
 
 /**
  * 「합본 마을 + 레트로 월드맵」 — 두 원본 정의(하네스·시맨틱 적용 후)를 이어 붙인다.
- * 위 반쪽은 defaultTileset() 과 칸별로 같고, 아래 반쪽은 레트로 월드맵 정의를 +480 으로 옮긴 것이다.
+ * 위 반쪽은 combinedTownTileset() 과 칸별로 같고, 아래 반쪽은 레트로 월드맵 정의를 +480 으로 옮긴 것이다.
  */
 export function createCombinedTownRetroWorldTileset(): TilesetDef {
   const retroWorldAsset = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((asset) => asset.textureKey === RETRO_WORLD_TEXTURE_KEY);
   if (!retroWorldAsset) throw new Error(`번들 칩셋 목록에 ${RETRO_WORLD_TEXTURE_KEY} 가 없습니다.`);
-  const town = defaultTileset();
+  const town = combinedTownTileset();
   const retroWorld = bundledStandardChipsetTileset(retroWorldAsset);
   // 원본 둘을 **로드 후 상태**로 맞춘 뒤 잇는다. 생성 직후의 레트로 월드맵은 전부 하위 레이어인데,
   // 프로젝트를 열 때 하네스가 투명 칩을 상위로 올린다(applyCustomChipsetMinimalHarness). 그 규칙은
@@ -423,14 +443,14 @@ export function defaultResourceProfiles(): ResourceProfile[] {
   const profiles: ResourceProfile[] = [
     {
       kind: "chipset",
-      name: DEFAULT_TILESET_NAME,
+      name: COMBINED_TOWN_TILESET_NAME,
       tileWidth: tileWidthForEasyRpgKind("chipset"),
       tileHeight: tileHeightForEasyRpgKind("chipset"),
       imageWidth: 480,
       imageHeight: 256,
-      assetId: DEFAULT_TILESET_TEXTURE_KEY,
+      assetId: COMBINED_TOWN_TILESET_TEXTURE_KEY,
     },
-    ...BUNDLED_EASYRPG_CHIPSET_ASSETS.filter((asset) => asset.textureKey !== DEFAULT_TILESET_TEXTURE_KEY).map((asset) => ({
+    ...BUNDLED_EASYRPG_CHIPSET_ASSETS.filter((asset) => asset.textureKey !== COMBINED_TOWN_TILESET_TEXTURE_KEY).map((asset) => ({
       kind: "chipset" as const,
       name: asset.name,
       // 16px 규격이 아닌 시트(Slates 32px)는 자기 기하를 그대로 보고한다 — 16 으로 적으면
@@ -452,6 +472,9 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       assetId: asset.textureKey,
     })),
   ];
+  // 기본 타일셋(버들항)의 자료 프로필이 칩셋 목록 맨 앞에 오게 한다.
+  const defaultProfileIndex = profiles.findIndex((profile) => profile.assetId === DEFAULT_TILESET_TEXTURE_KEY);
+  if (defaultProfileIndex > 0) profiles.unshift(...profiles.splice(defaultProfileIndex, 1));
   for (const asset of CC0_ICON_ASSETS) {
     if (profiles.some((profile) => profile.assetId === asset.id)) continue;
     profiles.push({

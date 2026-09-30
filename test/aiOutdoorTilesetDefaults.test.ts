@@ -4,7 +4,7 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import { runAuthorVillage } from "@/editor/tools/authorVillageTool";
 import { treeKitForTileset, stampTree } from "@/editor/tools/village/treeKit";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import { deserialize, serialize } from "@/project/io";
 
@@ -14,7 +14,7 @@ const villageArgs = { houseCount: 2, countPolicy: "exact", interior: false, seed
 describe("AI outdoor chipset defaults", () => {
   it("creates grass on forest harmony, preserves explicit atlases and existing maps", () => {
     const ctx = { project: createEmptyToolProject() };
-    expect(runTool(ctx, "create_map", { id: "legacy", tilesetId: DEFAULT_TILESET_ID, width: 20, height: 15 }).ok).toBe(true);
+    expect(runTool(ctx, "create_map", { id: "legacy", tilesetId: COMBINED_TOWN_TILESET_ID, width: 20, height: 15 }).ok).toBe(true);
     const existing = structuredClone(ctx.project.maps.legacy);
     expect(runTool(ctx, "create_map", { id: "new", width: 20, height: 15 }).ok).toBe(true);
     expect(ctx.project.maps.new!.tilesetId).toBe(FOREST_HARMONY_ID);
@@ -32,7 +32,7 @@ describe("AI outdoor chipset defaults", () => {
     expect(ctx.project.maps.generated!.tilesetId).toBe(theme === "cave" ? "easyrpg_chipset_dungeon" : FOREST_HARMONY_ID);
   });
 
-  it.each([undefined, DEFAULT_TILESET_ID])("builds and reloads the selected new village (%s)", tilesetId => {
+  it.each([undefined, COMBINED_TOWN_TILESET_ID])("builds and reloads the selected new village (%s)", tilesetId => {
     const ctx = { project: createEmptyToolProject() };
     const result = runAuthorVillage(ctx, { ...villageArgs, target: { ...newTarget, ...(tilesetId ? { tilesetId } : {}) } });
     expect(result.ok, result.summary).toBe(true);

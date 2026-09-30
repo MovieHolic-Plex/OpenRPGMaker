@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { buildClusterEditKickoff } from "@/ai/clusterAssistPrompt";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
 
 describe("클러스터 규칙 저작", () => {
   it("킥오프가 kind와 강도 원탭 선택, 강도 안내, set_cluster_rule 저장 지시를 포함한다", () => {
-    const prompt = buildClusterEditKickoff({ tilesetId: DEFAULT_TILESET_ID, groupId: "roof_rule_group", group: null });
+    const prompt = buildClusterEditKickoff({ tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "roof_rule_group", group: null });
 
     expect(prompt).toContain("render_group_sample");
     expect(prompt).toContain("[선택지] 규칙 추가 | 기존 규칙 보기 | 취소");
@@ -20,7 +20,7 @@ describe("클러스터 규칙 저작", () => {
 
   it("컨텍스트가 soft/medium 규칙을 선호 힌트로 싣고 편집 후 run_lint를 권고한다", () => {
     const project = createBlankProject();
-    const tileset = project.tilesets[DEFAULT_TILESET_ID];
+    const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
     const group = Object.assign(baseGroup(), {
       rules: [
         {

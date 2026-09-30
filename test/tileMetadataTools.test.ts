@@ -7,7 +7,7 @@ import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 
 const WINDOW_TILE = 85; // 상위 레이어 소품(창문) — 클러스터 페인팅용.
 
@@ -29,7 +29,7 @@ describe("set_tile_metadata", () => {
       entries: [{ tile: WINDOW_TILE, label: "창문", description: "집 벽에 붙는 장식", tags: ["집", "장식"] }],
     });
     expect(result.ok, result.summary).toBe(true);
-    const meta = context.project.tilesets[DEFAULT_TILESET_ID].tileMeta?.[WINDOW_TILE];
+    const meta = context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileMeta?.[WINDOW_TILE];
     expect(meta?.label).toBe("창문");
     expect(meta?.description).toBe("집 벽에 붙는 장식");
     expect(meta?.tags).toEqual(["집", "장식"]);
@@ -40,7 +40,7 @@ describe("set_tile_metadata", () => {
   it("confirmedByUser=true sets canonical and compatibility confirmation fields", () => {
     const context = ctx();
     runTool(context, "set_tile_metadata", { entries: [{ tile: WINDOW_TILE, label: "창문" }], confirmedByUser: true });
-    const meta = context.project.tilesets[DEFAULT_TILESET_ID].tileMeta?.[WINDOW_TILE];
+    const meta = context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileMeta?.[WINDOW_TILE];
     expect(meta?.source).toBe("user");
     expect(meta?.userLocked).toBe(true);
     expect(meta?.origin).toBe("user");
@@ -54,10 +54,10 @@ describe("set_tile_metadata", () => {
     const overwrite = runTool(context, "set_tile_metadata", { entries: [{ tile: WINDOW_TILE, label: "AI 추측" }] });
     expect(overwrite.ok).toBe(true);
     expect(overwrite.summary).toContain("잠금 건너뜀");
-    expect(context.project.tilesets[DEFAULT_TILESET_ID].tileMeta?.[WINDOW_TILE].label).toBe("창문");
+    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileMeta?.[WINDOW_TILE].label).toBe("창문");
     // 사용자 확정으로는 수정 가능.
     runTool(context, "set_tile_metadata", { entries: [{ tile: WINDOW_TILE, label: "둥근 창문" }], confirmedByUser: true });
-    expect(context.project.tilesets[DEFAULT_TILESET_ID].tileMeta?.[WINDOW_TILE].label).toBe("둥근 창문");
+    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileMeta?.[WINDOW_TILE].label).toBe("둥근 창문");
   });
 
   it("LLM 별칭 키(tileId/index/name)도 수용한다 — 라이브 스모크 실패 패턴 회귀", () => {
@@ -70,7 +70,7 @@ describe("set_tile_metadata", () => {
       confirmedByUser: true,
     });
     expect(result.ok, result.summary).toBe(true);
-    const tileset = context.project.tilesets[DEFAULT_TILESET_ID];
+    const tileset = context.project.tilesets[COMBINED_TOWN_TILESET_ID];
     expect(tileset.tileMeta?.[WINDOW_TILE].label).toBe("창문");
     expect(tileset.tileMeta?.[86].label).toBe("창문 오른쪽");
   });
@@ -85,7 +85,7 @@ describe("set_tile_metadata", () => {
 describe("get_tile_info", () => {
   it("reports modern-only locks through the compatibility response field", () => {
     const context = ctx();
-    const tileset = context.project.tilesets[DEFAULT_TILESET_ID];
+    const tileset = context.project.tilesets[COMBINED_TOWN_TILESET_ID];
     const current = tileset.tileMeta?.[WINDOW_TILE] ?? { label: "", description: "" };
     if (!tileset.tileMeta) throw new Error("missing tile metadata");
     tileset.tileMeta[WINDOW_TILE] = { ...current, locked: true };
@@ -131,7 +131,7 @@ describe("upsert_tile_group", () => {
     expect(result.ok, result.summary).toBe(true);
     // 번들 타일셋에 같은 이름의 기본 그룹이 있으므로 반환된 groupId로 찾는다.
     const groupId = (result.data as { groupId: string }).groupId;
-    const group = context.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((entry) => entry.id === groupId);
+    const group = context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.find((entry) => entry.id === groupId);
     expect(group).toBeDefined();
     expect(group?.placementRules).toContain("반복");
     expect(group?.source).toBe("user");
@@ -143,7 +143,7 @@ describe("upsert_tile_group", () => {
     });
     expect(update.ok).toBe(true);
     expect((update.data as { created: boolean }).created).toBe(false);
-    expect(context.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((entry) => entry.id === groupId)?.name).toBe("나무 울타리");
+    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.find((entry) => entry.id === groupId)?.name).toBe("나무 울타리");
   });
 
   it("모르는 id/role은 거부한다", () => {
@@ -205,7 +205,7 @@ describe("show_tiles", () => {
     const context = ctx();
     const result = runTool(context, "show_tiles", { tileIds: [WINDOW_TILE, 86, 87] });
     expect(result.ok, result.summary).toBe(true);
-    expect(result.data).toEqual({ tilesetId: DEFAULT_TILESET_ID, tiles: [WINDOW_TILE, 86, 87] });
+    expect(result.data).toEqual({ tilesetId: COMBINED_TOWN_TILESET_ID, tiles: [WINDOW_TILE, 86, 87] });
     expect(runTool(context, "show_tiles", { tileIds: [99999] }).ok).toBe(false);
     expect(runTool(context, "show_tiles", { tileIds: [] }).ok).toBe(false);
   });

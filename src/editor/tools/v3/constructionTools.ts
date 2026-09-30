@@ -229,6 +229,25 @@ function coerceRect(value: unknown, field: string, example: Record<string, unkno
   return rect;
 }
 
+/**
+ * 중심선(점 2개 이상) + 폭 → 띠 칸. 세로 쪽 선분은 행마다 폭 칸(가로), 가로 쪽 선분은 열마다 폭 칸(세로)을 칠한다.
+ * 굽은 운하·강·대로를 fill_region 한 번에 — 행마다 사각형을 부르던 것(라운드 4 조수 시험: 운하 하나에 30~84번)을 줄인다.
+ */
+export function cellsAlongPath(map: GameMap, points: readonly Point[], width: number): Point[] {
+  const seen = new Set<number>(); const out: Point[] = [];
+  const lo = Math.floor((width - 1) / 2), hi = width - 1 - lo;
+  const add = (x: number, y: number) => { if (!inMapBounds(map, x, y)) return; const k = y * map.width + x; if (!seen.has(k)) { seen.add(k); out.push({ x, y }); } };
+  for (let i = 1; i < points.length; i += 1) {
+    const a = points[i - 1]!, b = points[i]!; const dx = b.x - a.x, dy = b.y - a.y; const steps = Math.max(Math.abs(dx), Math.abs(dy), 1);
+    const vertical = Math.abs(dy) >= Math.abs(dx);
+    for (let t = 0; t <= steps; t += 1) {
+      const cx = Math.round(a.x + (dx * t) / steps), cy = Math.round(a.y + (dy * t) / steps);
+      for (let o = -lo; o <= hi; o += 1) { if (vertical) add(cx + o, cy); else add(cx, cy + o); }
+    }
+  }
+  return out;
+}
+
 function requireRectInMap(map: GameMap, rect: Rect, field: string, example: Record<string, unknown>): void {
   if (rect.x < 0 || rect.y < 0 || rect.x + rect.w > map.width || rect.y + rect.h > map.height) {
     failWithExample(`${field}가 맵(${map.width}×${map.height}) 밖입니다: (${rect.x},${rect.y}) ${rect.w}×${rect.h}`, example);
@@ -1024,7 +1043,7 @@ function plainWaterMaterialGroup(tileset: TilesetDef, material: unknown): TileGr
 const fillRegion: ToolDefinition = {
   name: "fill_region",
   description:
-    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. 숲마을·기후 시트의 \"물\"·\"호수\"·\"연못\"도 움직이는 물 오토타일(0~212, 물가 자동 합성)로 깐다. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road. " + FOUR_LAYER_GUIDANCE_SHORT + " 1층을 칠하면 그 칸의 2층 장식을 비운다.",
+    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. 숲마을·기후 시트의 \"물\"·\"호수\"·\"연못\"도 움직이는 물 오토타일(0~212, 물가 자동 합성)로 깐다. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 굽은 강·운하·넓은 굽은 길은 rect 대신 path(중심선 점)+width 로 한 번에 칠한다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road. " + FOUR_LAYER_GUIDANCE_SHORT + " 1층을 칠하면 그 칸의 2층 장식을 비운다.",
   mode: "write",
   version: 3,
   invalidArgsExample: FILL_CIRCLE_EXAMPLE,
@@ -1039,6 +1058,11 @@ const fillRegion: ToolDefinition = {
         required: ["x", "y", "w", "h"],
       },
       material: { type: "string", description: "지형 재료: 타일 라벨/설명(예: \"물\", \"잔디\"). 그룹 id 금지" },
+      path: {
+        type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] },
+        description: "rect 대신: 굽은 강·운하·대로의 중심선 점(2개 이상). 점 사이를 width 칸 띠로 한 번에 칠한다(세로 쪽 선분은 행마다, 가로 쪽은 열마다). 굽이마다 점 하나",
+      },
+      width: { type: "integer", description: "path 띠 폭(1~8, 기본 4)" },
       layer: { type: "string", enum: [...TOOL_LAYER_ENUM], description: "기본 1(lower). 수역/바닥은 1층, 1층 위에 겹치는 풀·흙 장식은 2층. lower=1, upper=3" },
       shape: {
         type: "string",
@@ -1050,12 +1074,22 @@ const fillRegion: ToolDefinition = {
         description: "채운 칸의 상위 레이어(나무·소품)를 비울지. 기본: 물처럼 통행 불가 재료면 true(물 위에 소품을 둘 수 없다), 모래·잔디 같은 통행 가능 재료면 false(그대로 둔다). 사용자가 「나무는 그대로」라 했으면 false 를 명시",
       },
     },
-    required: ["mapId", "rect", "material"],
+    required: ["mapId", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const shapeExample = args.shape === "circle" || args.shape === "ellipse" ? FILL_CIRCLE_EXAMPLE : FILL_EXAMPLE;
     const { map, tileset } = requireMapContext(draft, args, shapeExample);
-    const rect = coerceRect(args.rect, "rect", shapeExample);
+    const pathPoints = Array.isArray(args.path) && args.path.length ? (args.path as unknown[]).map((p, i) => {
+      const r = (p ?? {}) as Record<string, unknown>; return { x: coerceInt(r.x, `path[${i}].x`, shapeExample), y: coerceInt(r.y, `path[${i}].y`, shapeExample) };
+    }) : null;
+    if (pathPoints && pathPoints.length < 2) failWithExample("path 는 점 2개 이상이어야 합니다", shapeExample);
+    const pathWidth = args.width === undefined ? 4 : coerceInt(args.width, "width", shapeExample);
+    if (pathPoints && (pathWidth < 1 || pathWidth > 8)) failWithExample("width 는 1~8 이어야 합니다", shapeExample);
+    const pathCells = pathPoints ? cellsAlongPath(map, pathPoints, pathWidth) : null;
+    if (pathCells && !pathCells.length) failWithExample("path 가 맵 밖입니다", shapeExample);
+    const rect = pathCells
+      ? (() => { const xs = pathCells.map(c => c.x), ys = pathCells.map(c => c.y); const x = Math.min(...xs), y = Math.min(...ys); return { x, y, w: Math.max(...xs) - x + 1, h: Math.max(...ys) - y + 1 }; })()
+      : coerceRect(args.rect, "rect", shapeExample);
     requireRectInMap(map, rect, "rect", shapeExample);
     const shape = coerceFillShape(args.shape, FILL_CIRCLE_EXAMPLE);
     const requestedLayer = args.layer === undefined ? "lower" : args.layer;
@@ -1080,7 +1114,7 @@ const fillRegion: ToolDefinition = {
     }
 
     const bboxCells = cellsInRect(map, rect);
-    const maskCells = cellsInFillShape(map, rect, shape);
+    const maskCells = pathCells ?? cellsInFillShape(map, rect, shape);
     // 벽과의 1칸 틈 메우기는 MV 팩에서 끈다 — 건물·울타리·물체가 모두 「벽」이라 옥상이 울타리 쪽으로 혹처럼 자라고
     // 이웃 건물과 붙어 버린다(2026-09-25 헤드리스 실측: 7×3 옥상이 30칸). 조수가 준 사각형 그대로 칠한다.
     const allCells = tileset.mvPack ? maskCells : expandCellsAgainstWalls(draft, map, maskCells);

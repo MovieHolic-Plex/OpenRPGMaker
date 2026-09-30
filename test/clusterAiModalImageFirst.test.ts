@@ -5,7 +5,7 @@ import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
@@ -119,7 +119,7 @@ beforeEach(() => {
     },
   });
   const project = createBlankProject();
-  const tileset = project.tilesets[DEFAULT_TILESET_ID];
+  const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   tileset.tileGroups = [makeFenceGroup()];
   store.replace(project);
   editorState.set({ currentMapId: project.startMapId, selection: null });
@@ -138,7 +138,7 @@ afterEach(() => {
 describe("cluster AI image-first modal", () => {
   it("renders two render_group_sample images as before-after stage cards", async () => {
     const data = {
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       samples: [
         { label: "수정 전", w: 1, h: 1, lower: [1], upper: [-1] },
         { label: "수정 후", w: 1, h: 1, lower: [2], upper: [-1] },
@@ -153,7 +153,7 @@ describe("cluster AI image-first modal", () => {
       return emptyTurn;
     });
 
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     await flushAsync();
 
     const stage = requireTestId(document, "cluster-ai-stage");
@@ -174,7 +174,7 @@ describe("cluster AI image-first modal", () => {
       return emptyTurn;
     });
 
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     await flushAsync();
 
     const stage = requireTestId(document, "cluster-ai-stage");
@@ -185,11 +185,11 @@ describe("cluster AI image-first modal", () => {
   it("renders one tool image as a single large stage image", async () => {
     mocks.renderToolImages.mockResolvedValue([{ dataUrl: "data:image/png;base64,one", label: "타일 보기" }]);
     mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "tool_call", name: "show_tiles", args: { tilesetId: DEFAULT_TILESET_ID, tiles: [1] }, result: { ok: true, summary: "타일 보기" } });
+      onEvent({ type: "tool_call", name: "show_tiles", args: { tilesetId: COMBINED_TOWN_TILESET_ID, tiles: [1] }, result: { ok: true, summary: "타일 보기" } });
       return emptyTurn;
     });
 
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     await flushAsync();
 
     const stage = requireTestId(document, "cluster-ai-stage");
@@ -205,7 +205,7 @@ describe("cluster AI image-first modal", () => {
     });
     mocks.turns.push(() => ({ ...emptyTurn, assistantText: "완료" }));
 
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     await flushAsync();
     const choices = testIdElements(document, "cluster-ai-choice");
     expect(choices).toHaveLength(2);
@@ -222,7 +222,7 @@ describe("cluster AI image-first modal", () => {
       return { ...emptyTurn, assistantText: longText };
     });
 
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "fence-main" });
+    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
     await flushAsync();
 
     const assistantBubble = assistantBubbles()[0];

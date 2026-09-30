@@ -13,7 +13,7 @@ import { isPassable } from "@/project/collision";
 import { cellLayerTiles } from "@/project/mapLayers";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
@@ -34,6 +34,7 @@ import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { verifyPlacedTiles } from "@/project/lint/postTileVerify";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
+import { analyzeCityForm, cityFormAdvice } from "./cityForm";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 import { validateArgs } from "./jsonSchema";
@@ -47,7 +48,7 @@ export function isMapWaterTile(tile: number): boolean {
 /** Numeric chipset constants only describe the compatible bundled atlas. */
 function isWaterInTileset(map: GameMap, tileset: TilesetDef | undefined, tile: number): boolean {
   if (tile < 0) return false;
-  if (!tileset) return (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID && isMapWaterTile(tile);
+  if (!tileset) return (map.tilesetId ?? COMBINED_TOWN_TILESET_ID) === COMBINED_TOWN_TILESET_ID && isMapWaterTile(tile);
   return tileCategoriesForTile(tileset, tile).includes("water")
     || tileset.tileMeta?.[tile]?.tags?.includes("water") === true
     || (isCombinedTownCompatibleTileset(tileset) && isMapWaterTile(tile));
@@ -120,9 +121,9 @@ function semanticChar(project: Project, map: GameMap, x: number, y: number, hasE
   const i = y * map.width + x;
   const layers = cellLayerTiles(map, i);
   // 호수 오토타일·타일 그림판 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
-  const tileset = project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID];
+  const tileset = project.tilesets[map.tilesetId ?? COMBINED_TOWN_TILESET_ID];
   if (layers.some((tile) => isWaterInTileset(map, tileset, tile))) return "~";
-  const compatible = tileset ? isCombinedTownCompatibleTileset(tileset) : (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID;
+  const compatible = tileset ? isCombinedTownCompatibleTileset(tileset) : (map.tilesetId ?? COMBINED_TOWN_TILESET_ID) === COMBINED_TOWN_TILESET_ID;
   if ((compatible && layers.some((tile) => tile === TILE.TREE))
     || (tileset && layers.some((tile) => tile >= 0 && tileCategoriesForTile(tileset, tile).includes("tree")))) return "T";
   if (compatible && layers[0] === TILE.WALL) return "#";
@@ -206,7 +207,7 @@ const getMapRegion: ToolDefinition = {
           ...(catalog.characterId ? { characterId: catalog.characterId } : {}),
         };
       });
-    const water = waterBoundsInMap(map, x0, y0, x1, y1, project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID]);
+    const water = waterBoundsInMap(map, x0, y0, x1, y1, project.tilesets[map.tilesetId ?? COMBINED_TOWN_TILESET_ID]);
     const area = Math.max(1, (x1 - x0) * (y1 - y0));
     const large = area > 24 * 24;
     const warnings: string[] = [];
@@ -697,6 +698,26 @@ const checkReachabilityTool: ToolDefinition = {
   },
 };
 
+const checkCityFormTool: ToolDefinition = {
+  name: "check_city_form",
+  description:
+    "도시 맵 마감 전 자기 점검. 막다른 길(좌표), 45칸 넘는 곧은 길, 곧은 운하, 같은 블록 이웃·3회 이상 반복(좌표), 길망에서 떨어진 길, 광장(결절점)·랜드마크 수를 한 번에 돌려준다. " +
+    "advice 의 좌표를 고친 뒤 다시 부르고, 비면 끝낸다. 마을·도시 맵에서 완료를 말하기 전에 반드시 한 번 부른다.",
+  mode: "read",
+  parameters: { type: "object", properties: { mapId: { type: "string" } }, required: ["mapId"] },
+  run(project, args): ToolExecResult {
+    const map = requireMap(project, args.mapId as string);
+    const r = analyzeCityForm(project, map);
+    const advice = cityFormAdvice(r);
+    const short = {
+      deadEnds: r.deadEnds.length, longStraight: r.lines.longStraight.length, canalStraight: r.canal.orient ? r.canal.straight : null,
+      neighbourRepeats: r.blocks.neighbourRepeats.length, overused: r.blocks.overused.length, isolatedLines: r.graph.isolated.length,
+      nodes: r.nodes.length, landmarks: r.landmarks.length, meanDepth: r.graph.meanDepth, bentStreetCells: r.bentStreetCells, spacingCv: r.spacing.cv,
+    };
+    return { summary: advice.length ? `도시 형태 고칠 곳 ${advice.length}건` : "도시 형태 이상 없음", data: { ok: advice.length === 0, counts: short, advice } };
+  },
+};
+
 const findLayoutRegionsTool: ToolDefinition = {
   name: "find_layout_regions",
   description:
@@ -843,6 +864,7 @@ export const QUERY_TOOLS: readonly ToolDefinition[] = [
   getDatabaseRecords,
   runLint,
   checkReachabilityTool,
+  checkCityFormTool,
   listProjectCommits,
   findLayoutRegionsTool,
 ];

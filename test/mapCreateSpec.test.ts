@@ -4,7 +4,7 @@ import { addParentChildTransfers, bestTestStartCell, firstFreeCell } from "@/edi
 import { INTERIOR_FLOOR_TILE, resolveMapCreateDefaults } from "@/project/mapCreateSpec";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -25,11 +25,11 @@ describe("resolveMapCreateDefaults", () => {
     const parentId = project.startMapId;
     project.maps[parentId]!.width = 40;
     project.maps[parentId]!.height = 30;
-    project.maps[parentId]!.tilesetId = DEFAULT_TILESET_ID;
+    project.maps[parentId]!.tilesetId = COMBINED_TOWN_TILESET_ID;
     const spec = resolveMapCreateDefaults(project, { parentId, preset: "inherit-parent" });
     expect(spec.width).toBe(40);
     expect(spec.height).toBe(30);
-    expect(spec.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(spec.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
     expect(spec.parentId).toBe(parentId);
   });
 
@@ -70,7 +70,7 @@ describe("parent-child transfer pair", () => {
       name: "방",
       width: 12,
       height: 10,
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       parentId,
       preset: "inherit-parent",
     });

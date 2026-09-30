@@ -1,0 +1,24 @@
+{
+ "id": "bd-out-sand-patch",
+ "name": "외곽 모래길 조각 6x4",
+ "w": 6,
+ "h": 4,
+ "walk": [
+  "FFFFF.",
+  "FFFFFF",
+  "FFFFFF",
+  "FFFFFF"
+ ],
+ "description": "성 밖 마을 길의 모래 바닥 표본: 6x4 불규칙 모래 조각, 가장자리 칸에는 잔디 가닥이 들쭉날쭉 섞인다(해시). 아래 그림만 있다(F).",
+ "rules": "가장자리 바깥 칸은 비어 있어 지도의 잔디가 보인다. 모래 타일 원본은 kits7_outskirts.sand_tile(seed).",
+ "tags": [
+  "외곽",
+  "모래길",
+  "바닥",
+  "표본"
+ ],
+ "role": "garden",
+ "doors": [],
+ "notes": "",
+ "assembly": []
+}

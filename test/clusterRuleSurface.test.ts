@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { runTool } from "@/editor/tools/toolRunner";
 import { mergeSurfaceRule } from "@/editor/panels/tilesetKnowledgeWorkspaceState";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { validateClusterRules } from "@/project/lint/clusterRuleValidators";
 import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
@@ -64,7 +64,7 @@ function projectWithStove(stoveOriginY: number): Project {
     lowerTiles: new Array<number>(width * height).fill(FLOOR),
     name: "주방",
     tileSize: 16,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
     width,
   };
@@ -75,7 +75,7 @@ function projectWithStove(stoveOriginY: number): Project {
   project.mapTree = { mapId: MAP_ID, children: [] };
   project.startMapId = MAP_ID;
   project.startPos = { x: 0, y: 0 };
-  const tileset = project.tilesets[DEFAULT_TILESET_ID]!;
+  const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
   tileset.passability[WALL] = blockedFlag();
   tileset.passability[FLOOR] = passableFlag();
   tileset.priority[WALL] = "lower";
@@ -121,7 +121,7 @@ describe("cluster-rule surface — 맵 감사", () => {
 
   it("params 가 망가진 규칙은 조용히 건너뛴다 — 거짓 위반을 만들지 않는다", () => {
     const project = projectWithStove(3);
-    project.tilesets[DEFAULT_TILESET_ID]!.tileGroups = [
+    project.tilesets[COMBINED_TOWN_TILESET_ID]!.tileGroups = [
       stoveGroup([{ ...NORTH_WALL_RULE, params: { zone: "없는존" } }]),
     ];
     expect(validateClusterRules(project, MAP_ID).filter((entry) => entry.rule.kind === "surface")).toHaveLength(0);
@@ -131,10 +131,10 @@ describe("cluster-rule surface — 맵 감사", () => {
 describe("set_cluster_rule — surface 규칙 편집", () => {
   it("zone·facing 을 받아 그룹에 저장한다", () => {
     const project = projectWithStove(1);
-    project.tilesets[DEFAULT_TILESET_ID]!.tileGroups = [stoveGroup([])];
+    project.tilesets[COMBINED_TOWN_TILESET_ID]!.tileGroups = [stoveGroup([])];
     const context = { project };
     const result = runTool(context, "set_cluster_rule", {
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       groupId: "kitchen-stove",
       rule: {
         id: "r_stove_surface",
@@ -144,7 +144,7 @@ describe("set_cluster_rule — surface 규칙 편집", () => {
       },
     });
     expect(result.ok).toBe(true);
-    const saved = context.project.tilesets[DEFAULT_TILESET_ID]!.tileGroups!
+    const saved = context.project.tilesets[COMBINED_TOWN_TILESET_ID]!.tileGroups!
       .find((group) => group.id === "kitchen-stove")!.rules!
       .find((rule) => rule.kind === "surface");
     expect(saved?.params).toEqual({ facing: "north", zone: "againstWall" });
@@ -152,9 +152,9 @@ describe("set_cluster_rule — surface 규칙 편집", () => {
 
   it("모르는 zone 은 거부한다 — 조용히 통과시키면 검사가 없는 것과 같아진다", () => {
     const project = projectWithStove(1);
-    project.tilesets[DEFAULT_TILESET_ID]!.tileGroups = [stoveGroup([])];
+    project.tilesets[COMBINED_TOWN_TILESET_ID]!.tileGroups = [stoveGroup([])];
     const result = runTool({ project }, "set_cluster_rule", {
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       groupId: "kitchen-stove",
       rule: { id: "r_bad", kind: "surface", strength: "hard", params: { zone: "북벽" } },
     });

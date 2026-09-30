@@ -6,7 +6,7 @@ import {
   templateBlockFromAnchor,
 } from "./autotileGroups";
 import { DIRT_ROAD_TILE, SAND_TILE } from "./chipsetMapping";
-import { DEFAULT_TILESET_TEXTURE_KEY } from "./constants";
+import { COMBINED_TOWN_TILESET_TEXTURE_KEY } from "./constants";
 import { dungeonTerrainQuarterKits } from "./dungeonTerrainQuarter";
 import { interiorWallFrameQuarterComposition } from "./interiorWallFrameQuarter";
 import { interiorCeilingQuarterKit } from "./interiorCeilingAutotile";
@@ -234,7 +234,7 @@ export function chipsetQuarterComposition(
     const dungeonSources = terrainQuarterSourcesForKit(map, dungeonKit, x, y);
     return dungeonSources ? { sources: dungeonSources } : null;
   }
-  const terrainSources = tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY
+  const terrainSources = tileset.image.type === "bundled" && tileset.image.id === COMBINED_TOWN_TILESET_TEXTURE_KEY
     ? terrainQuarterSources(map, x, y)
     : null;
   if (terrainSources) return { sources: terrainSources };

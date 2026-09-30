@@ -1,0 +1,75 @@
+{
+ "projectId": "6f86ae29-f2a4-4c06-a396-511f972cea52",
+ "projectDir": ".oprn-projects/beodeul-city-r2-20260929",
+ "revision": 2,
+ "sha256": "bf272f2a03e0086aef3d98d7b55fc3eb295bd8fd39ed3b2ef097ee0bae78cb35",
+ "saved": true,
+ "reopened": true,
+ "deepEqual": {
+  "project": true,
+  "map": true,
+  "tileset": true
+ },
+ "tileset": {
+  "id": "beodeul_city",
+  "count": 23936,
+  "image": {
+   "type": "bundled",
+   "id": "tex_beodeul_city"
+  },
+  "tilesPerRow": 128,
+  "animationStrips": 1683,
+  "structureKits": 245,
+  "tileGroups": 5,
+  "referenceDocuments": [
+   {
+    "id": "beodeul-city",
+    "docs": 4,
+    "images": 5
+   },
+   {
+    "id": "beodeul-city-kits",
+    "docs": 10,
+    "images": 8
+   },
+   {
+    "id": "beodeul-city-water",
+    "docs": 2,
+    "images": 13
+   },
+   {
+    "id": "beodeul-city-manor-outskirts",
+    "docs": 2,
+    "images": 4
+   },
+   {
+    "id": "beodeul-city-pieces",
+    "docs": 5,
+    "images": 5
+   },
+   {
+    "id": "beodeul-city-qa",
+    "docs": 1,
+    "images": 9
+   }
+  ]
+ },
+ "map": {
+  "id": "beodeul_v7",
+  "size": [
+   100,
+   100
+  ],
+  "lower": 10000,
+  "upper": 5255,
+  "animatedCells": 1683,
+  "npcs": 122
+ },
+ "walkability": {
+  "cells": 10000,
+  "same": 10000,
+  "mismatch": 0,
+  "samples": [],
+  "walkable": 2943
+ }
+}

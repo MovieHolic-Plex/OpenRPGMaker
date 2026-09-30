@@ -22,7 +22,7 @@ import {
   renderPlaceableOverlays,
   resolvePlaceableOverlayGraphic,
 } from "@/player/playScenePlaceables";
-import { DEFAULT_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import type { PlaceableObjectState } from "@/project/placeables";
 import { placeableKey } from "@/project/placeables";
@@ -146,7 +146,7 @@ describe("renderPlaceableOverlays", () => {
   });
 
   it("resolves the bundled combined-town TREE tile as the tree placeable graphic", () => {
-    expect(PLACEABLE_TREE_GRAPHIC.texture).toBe(DEFAULT_TILESET_TEXTURE_KEY);
+    expect(PLACEABLE_TREE_GRAPHIC.texture).toBe(COMBINED_TOWN_TILESET_TEXTURE_KEY);
     expect(PLACEABLE_TREE_GRAPHIC.frame).toBe(`tile_${TILE.TREE}`);
     expect(TILE.TREE).toBe(290);
     expect(findBundledImageAsset(PLACEABLE_TREE_GRAPHIC.texture)?.path).toBe(

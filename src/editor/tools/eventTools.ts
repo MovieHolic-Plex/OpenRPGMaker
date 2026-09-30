@@ -14,7 +14,7 @@ import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eve
 import { canMove, isPassable, tileAt } from "@/project/collision";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { roleCapabilities } from "@/project/tileRoles";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
@@ -2948,7 +2948,7 @@ function assertChestDrySurface(project: Project, map: GameMap, x: number, y: num
     if (role) return roleCapabilities(tileset, role).terrainTag === "water";
     if (tileset.tileGroups?.some((group) => roleCapabilities(tileset, group.role).terrainTag === "water" && group.tileIds.includes(tile))) return true;
     // 원시 칩 번호는 다른 타일셋에서 다른 그림이다. 메타 없는 기본 칩셋에만 폴백한다.
-    return tileset.id === DEFAULT_TILESET_ID && isWaterChipsetTile(tile);
+    return tileset.id === COMBINED_TOWN_TILESET_ID && isWaterChipsetTile(tile);
   };
   const { lower, upper } = tileAt(map, x, y);
   // O 상층(다리/발판)은 수면 위의 지지면이다. ★ 장식은 하층 물을 가리지 않는다.

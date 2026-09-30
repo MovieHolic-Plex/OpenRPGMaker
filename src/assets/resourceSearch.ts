@@ -20,7 +20,7 @@ import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetr
 import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
 import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
 import COMBINED_TOWN_SHARED_CELLS from "@/assets/combinedTownSharedCells.json";
-import { COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_TILESET_TEXTURE_KEY as COMBINED_TOWN_TEXTURE_KEY } from "@/project/defaults/constants";
+import { COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_TILESET_TEXTURE_KEY as COMBINED_TOWN_TEXTURE_KEY } from "@/project/defaults/constants";
 
 /** 파생 시트마다 합본 마을과 픽셀이 같은 칸 번호(2026-09-27 픽셀 동일 비교로 생성). 파생 시트를 다시 구우면 갱신한다. */
 const SHARED_CELLS_BY_TEXTURE: ReadonlyMap<string, ReadonlySet<number>> = new Map(

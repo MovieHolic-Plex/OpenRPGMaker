@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { RM_TYPE_GRAMMAR_PROFILE } from "@/editor/tools/v3/grammarProfiles";
 import { LEGACY_ROLE_CAPABILITIES, roleCapabilities } from "@/project/tileRoles";
 

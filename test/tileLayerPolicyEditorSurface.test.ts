@@ -7,7 +7,7 @@ import { setTileBackingOverride, userTileBackingOverride, userTileLayerOverride 
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -28,7 +28,7 @@ describe("타일 레이어·배경 정책 편집기 표면", () => {
   });
 
   function renderEditor(): FakeElement {
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     return renderTilesetEditor(tileset, () => {}) as unknown as FakeElement;
   }
 
@@ -51,7 +51,7 @@ describe("타일 레이어·배경 정책 편집기 표면", () => {
     expect(findByTestId(editor, "tileset-rule-backing")).toBeTruthy();
     (findByTestId(editor, "tileset-backing-none") as unknown as HTMLElement).click();
 
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     expect(userTileBackingOverride(tileset, CONIFER_TRUNK)).toBe("none");
     expect(tileBackingTile(tileset, CONIFER_TRUNK)).toBeNull();
 
@@ -64,7 +64,7 @@ describe("타일 레이어·배경 정책 편집기 표면", () => {
     (findByTestId(renderEditor(), "tileset-backing-none") as unknown as HTMLElement).click();
     (findByTestId(renderEditor(), "tileset-backing-tile") as unknown as HTMLElement).click();
 
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     expect(tileBackingTile(tileset, CONIFER_TRUNK)).toBe(TILE.GRASS);
   });
 
@@ -72,7 +72,7 @@ describe("타일 레이어·배경 정책 편집기 표면", () => {
     expect(findByTestId(selectTile(CONIFER_TRUNK), "tileset-rule-review")).toBeNull();
 
     store.update((project) => {
-      const tileset = project.tilesets[DEFAULT_TILESET_ID];
+      const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
       if (tileset) setTileBackingOverride(tileset, CONIFER_TRUNK, "none");
     });
 
@@ -83,13 +83,13 @@ describe("타일 레이어·배경 정책 편집기 표면", () => {
 
   it("검토 항목의 상위 오버레이 선택은 그 타일만 상위로 확정한다", () => {
     store.update((project) => {
-      const tileset = project.tilesets[DEFAULT_TILESET_ID];
+      const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
       if (tileset) setTileBackingOverride(tileset, CONIFER_TRUNK, "none");
     });
     const editor = selectTile(CONIFER_TRUNK);
     (findByTestId(editor, `tileset-review-${CONIFER_TRUNK}-overlay`) as unknown as HTMLElement).click();
 
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     expect(userTileLayerOverride(tileset, CONIFER_TRUNK)).toBe("upper");
     expect(tileLayerHome(tileset, CONIFER_TRUNK)).toBe("upper");
     expect(tileLayerHome(tileset, 291)).toBe("lower");
@@ -97,13 +97,13 @@ describe("타일 레이어·배경 정책 편집기 표면", () => {
 
   it("검토 항목의 자동 선택은 하네스 기본값으로 되돌린다", () => {
     store.update((project) => {
-      const tileset = project.tilesets[DEFAULT_TILESET_ID];
+      const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
       if (tileset) setTileBackingOverride(tileset, CONIFER_TRUNK, "none");
     });
     const editor = selectTile(CONIFER_TRUNK);
     (findByTestId(editor, `tileset-review-${CONIFER_TRUNK}-auto`) as unknown as HTMLElement).click();
 
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     expect(userTileLayerOverride(tileset, CONIFER_TRUNK)).toBeNull();
     expect(tileLayerHome(tileset, CONIFER_TRUNK)).toBe("lower");
     expect(tileBackingTile(tileset, CONIFER_TRUNK)).toBe(TILE.GRASS);

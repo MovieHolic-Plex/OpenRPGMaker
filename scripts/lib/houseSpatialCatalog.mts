@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { isDeepStrictEqual } from "node:util";
-import { DEFAULT_TILESET_ID } from "../../src/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "../../src/project/defaults/constants";
 import { spatialId, checkedDocument } from "../../src/project/spatial/domain";
 import type { ObjectDesign, PlaceDesign, SpaceDesign, SpatialDesignBase, SpatialLibrary } from "../../src/project/spatial/types";
 import type { Project } from "../../src/project/types";
@@ -81,13 +81,13 @@ export function registerHouseSpatialCatalog(input: Project) {
   const registered = [];
   for (const { study, floors } of HOUSE_CATALOG_STUDIES) {
     const kit = bakeHouseStudy(study);
-    const tileset = project.tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
     const existing = tileset.structureKits?.find(value => value.id === kit.id);
     if (existing) assert.deepEqual(existing, kit, `Reviewed exterior ${kit.id} has changed; inspect it before registering`);
     else tileset.structureKits = [...(tileset.structureKits ?? []), kit];
-    const current = houseObjectForGraphic(project, DEFAULT_TILESET_ID, kit.id) ?? {
+    const current = houseObjectForGraphic(project, COMBINED_TOWN_TILESET_ID, kit.id) ?? {
       ...base(`object:${study.id}`, study.name, ["건물 외형"]),
-      graphic: { tilesetId: DEFAULT_TILESET_ID, kitId: kit.id }, anchors: [], chips: [],
+      graphic: { tilesetId: COMBINED_TOWN_TILESET_ID, kitId: kit.id }, anchors: [], chips: [],
     };
     const door = study.doors[0];
     assert.ok(door);
@@ -99,7 +99,7 @@ export function registerHouseSpatialCatalog(input: Project) {
     const width = kit.width + 4, height = kit.height + 5;
     const yard: SpaceDesign = {
       ...base(`yard:${study.id}`, `${name} · 마당과 외형`, ["주택", "실외", "마당", `${floors}층`]),
-      environment: "outdoor", tilesetId: DEFAULT_TILESET_ID, shape: "rect", width, height, floor: "ground", wall: "none",
+      environment: "outdoor", tilesetId: COMBINED_TOWN_TILESET_ID, shape: "rect", width, height, floor: "ground", wall: "none",
       floorAreas: [{ kind: "rect", x: 2 + door.x, y: 3 + door.y, width: 1, height: height - (3 + door.y), material: "path" }],
       objectSlots: [{ id: id("exterior"), objectDesignId: object.id, quantity: 1, required: true, placement: { mode: "fixed", x: 2, y: 2 } }],
       ports: [port("street", "마당 진입", 2 + door.x, height - 1), port("door", "현관 앞", 2 + door.x, 3 + door.y)],

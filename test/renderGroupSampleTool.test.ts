@@ -3,7 +3,7 @@ import { renderToolImages } from "@/ai/toolImageRenderer";
 import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
 
@@ -29,7 +29,7 @@ let restoreCanvasDom: (() => void) | null = null;
 
 function context(): ToolContext {
   const project = createBlankProject();
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [wallGroup()];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [wallGroup()];
   return { project };
 }
 
@@ -87,12 +87,12 @@ describe("render_group_sample", () => {
 
   it("returns one current sample when called with groupId only", () => {
     const ctx = context();
-    const result = runTool(ctx, "render_group_sample", { tilesetId: DEFAULT_TILESET_ID, groupId: "wall-main" });
+    const result = runTool(ctx, "render_group_sample", { tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "wall-main" });
 
     expect(result.ok, result.summary).toBe(true);
     expect(result.summary).toContain("샘플 렌더: 담장");
     if (!isRenderGroupSampleData(result.data)) throw new Error("render_group_sample data shape mismatch");
-    expect(result.data.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(result.data.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
     expect(result.data.samples).toHaveLength(1);
     expect(result.data.samples[0]?.label).toBe("현재");
     expect(result.data.samples[0]?.lower).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -114,7 +114,7 @@ describe("render_group_sample", () => {
       patternGrammar: { kind: "vertical", parts: [] },
       role: "terrain",
       tileIds: [1],
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     expect(result.ok).toBe(false);
@@ -125,7 +125,7 @@ describe("render_group_sample", () => {
   it("returns before and after samples when proposed data changes the group", () => {
     const ctx = context();
     const result = runTool(ctx, "render_group_sample", {
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       groupId: "wall-main",
       proposed: { role: "fence", tileIds: [12, 13, 14] },
     });
@@ -146,7 +146,7 @@ describe("render_group_sample", () => {
         junctions: [{ action: "omit", atRoles: ["bottom"], side: "below", withRole: "wall" }],
         overlays: [{ tileIds: [16], when: "ridge" }],
       },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     expect(result.ok, result.summary).toBe(true);
@@ -157,7 +157,7 @@ describe("render_group_sample", () => {
 
   it("returns a single ad-hoc sample when tileIds are provided without a group", () => {
     const ctx = context();
-    const result = runTool(ctx, "render_group_sample", { tilesetId: DEFAULT_TILESET_ID, role: "terrain", tileIds: [30, 31] });
+    const result = runTool(ctx, "render_group_sample", { tilesetId: COMBINED_TOWN_TILESET_ID, role: "terrain", tileIds: [30, 31] });
 
     expect(result.ok, result.summary).toBe(true);
     if (!isRenderGroupSampleData(result.data)) throw new Error("render_group_sample data shape mismatch");
@@ -169,7 +169,7 @@ describe("render_group_sample", () => {
   it("lets renderToolImages accept render_group_sample data without mutating the project", async () => {
     const ctx = context();
     const before = JSON.stringify(ctx.project);
-    const result = runTool(ctx, "render_group_sample", { tilesetId: DEFAULT_TILESET_ID, groupId: "wall-main" });
+    const result = runTool(ctx, "render_group_sample", { tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "wall-main" });
     if (!isRenderGroupSampleData(result.data)) throw new Error("render_group_sample data shape mismatch");
 
     const images = await renderToolImages(ctx.project, "render_group_sample", result.data);
@@ -185,7 +185,7 @@ describe("render_group_sample", () => {
 
     await renderToolImages(ctx.project, "render_group_sample", {
       samples: [{ h: 1, label: "현재", lower: [-1], upper: [-1], w: 1 }],
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     expect(fillStyles).toContain("#2a2a2e");

@@ -1,4 +1,4 @@
-import { DEFAULT_TILESET_ID } from "./defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "./defaults/constants";
 import { autotileNeighborMask, autotileVariantForMask } from "./defaults/autotileEngine";
 import { autotileGroupsForTileset } from "./defaults/autotileGroups";
 import type { AutotileGroup, Project } from "./types";
@@ -46,7 +46,7 @@ export function auditCombinedTownAutotiles(project: Project, projectId: string):
   let memberCells = 0;
 
   for (const map of Object.values(project.maps)) {
-    if (map.tilesetId !== DEFAULT_TILESET_ID) continue;
+    if (map.tilesetId !== COMBINED_TOWN_TILESET_ID) continue;
     maps += 1;
     const groups = autotileGroupsForTileset(project.tilesets[map.tilesetId]);
     const membersByGroup = groups.map((group) => ({
@@ -95,7 +95,7 @@ export function repairCombinedTownAutotilesWithSummary(project: Project): Combin
   const changedMaps = new Set<string>();
   let changedCells = 0;
   for (const map of Object.values(repaired.maps)) {
-    if (map.tilesetId !== DEFAULT_TILESET_ID) continue;
+    if (map.tilesetId !== COMBINED_TOWN_TILESET_ID) continue;
     const groups = autotileGroupsForTileset(repaired.tilesets[map.tilesetId]);
     const source = project.maps[map.id]!;
     for (const group of groups) {

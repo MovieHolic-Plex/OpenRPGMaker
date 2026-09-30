@@ -14,7 +14,7 @@ import { captureHouseProtection, houseFootprintCells } from "@/editor/tools/hous
 import { canMove, isPassableLanding } from "@/project/collision";
 import { deserialize, serialize } from "@/project/io";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { projectLint } from "@/project/lint/projectLint";
 import type { MapId, Project } from "@/project/types";
 
@@ -132,7 +132,7 @@ describe("build palette deterministic stamps", () => {
       door: true, doorEvent: false, interior: false,
     });
     project.startPos = { x: 12, y: 12 };
-    ensureBuildPaletteTileGroups(project.tilesets[DEFAULT_TILESET_ID]);
+    ensureBuildPaletteTileGroups(project.tilesets[COMBINED_TOWN_TILESET_ID]);
     const before = serialize(project);
     const result = applyBuildPalettePrimitiveToProject(project, rect, "house");
     expect(result.ok).toBe(false);
@@ -332,19 +332,19 @@ describe("build palette deterministic stamps", () => {
     expect(pathed.ok, pathed.summary).toBe(true);
     expect(chat).not.toHaveBeenCalled();
     const pathMap = pathed.project.maps[MAP_ID];
-    const pathMembers = new Set(pathed.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_GROUP_IDS.path)?.tileIds ?? []);
+    const pathMembers = new Set(pathed.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_GROUP_IDS.path)?.tileIds ?? []);
     expect(pathMembers.has(pathMap.lowerTiles[11 * pathMap.width + 6])).toBe(true);
 
     const rivered = applyBuildPalettePrimitiveToProject(createBlankProject(), selection({ x: 2, y: 2, width: 4, height: 3 }), "river");
     expect(rivered.ok, rivered.summary).toBe(true);
     expect(chat).not.toHaveBeenCalled();
     const riverMap = rivered.project.maps[MAP_ID];
-    const waterMembers = new Set(rivered.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_GROUP_IDS.water)?.tileIds ?? []);
+    const waterMembers = new Set(rivered.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_GROUP_IDS.water)?.tileIds ?? []);
     expect(waterMembers.has(riverMap.lowerTiles[3 * riverMap.width + 3])).toBe(true);
   });
 
   it("모래 오토타일 하네스 그룹은 기존 프로젝트 팔레트에서 user 어휘로 승격된다", () => {
-    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
     const sand = tileset.tileGroups?.find((group) => group.id === "harness-combined-town-sand-autotile");
     expect(sand).toBeTruthy();
 
@@ -357,7 +357,7 @@ describe("build palette deterministic stamps", () => {
   });
 
   it("build palette group setup leaves palette presets untouched and is idempotent", () => {
-    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
     tileset.palettePresets = [{
       id: "pp_keep",
       name: "Keep",

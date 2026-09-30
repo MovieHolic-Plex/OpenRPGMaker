@@ -19,7 +19,7 @@ import {
   COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY,
   COMBINED_TOWN_RETRO_WORLD_TILE_COUNT,
   COMBINED_TOWN_RETRO_WORLD_TILESET_ID,
-  DEFAULT_TILESET_ID,
+  COMBINED_TOWN_TILESET_ID,
   FOREST_TREES_TILE_COUNT,
   FOREST_TREES_TILE_OFFSET,
   RETRO_WORLD_CLIFF_WALKABLE_TILES,
@@ -132,7 +132,7 @@ describe("혼합 칩셋 — 타일셋 정의", () => {
   // 스토어가 프로젝트를 열 때 하는 정규화와 같다 — 비교 대상(단독 레트로 월드맵)은 이 상태가 정본이다.
   ensureTilesetHarnesses(project);
   const mixed = project.tilesets[COMBINED_TOWN_RETRO_WORLD_TILESET_ID]!;
-  const town = project.tilesets[DEFAULT_TILESET_ID]!;
+  const town = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
   const retro = project.tilesets.easyrpg_chipset_retro_world!;
 
   it("새 프로젝트에 1140칸 custom 타일셋으로 들어 있다", () => {

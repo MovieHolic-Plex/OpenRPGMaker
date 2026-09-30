@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { createBlankProject, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 
 type ShowMapRegionData = {
   readonly h: number;
@@ -47,7 +47,7 @@ describe("show_map_region", () => {
     if (!map) throw new Error("start map missing");
     map.width = 4;
     map.height = 3;
-    map.tilesetId = DEFAULT_TILESET_ID;
+    map.tilesetId = COMBINED_TOWN_TILESET_ID;
     map.lowerTiles = [
       0, 1, 2, 3,
       10, 11, 12, 13,

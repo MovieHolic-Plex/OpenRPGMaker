@@ -11,7 +11,7 @@ import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { getGrammarProfile, tilesetGrammarProfile } from "@/editor/tools/v3";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import {
   approvedVocabulary,
@@ -25,7 +25,7 @@ import type { TileGroupMetadata, TilesetDef } from "@/project/types";
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
   const ctx: ToolContext = { project: createBlankProject() };
-  return { ctx, tileset: () => ctx.project.tilesets[DEFAULT_TILESET_ID] };
+  return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
 // 엔진 분류가 "upper"인 타일(투명 배경 칩 등) — 사실 배지 모순 테스트용.
@@ -271,7 +271,7 @@ describe("assistantSession 어휘 제안", () => {
     expect(VOCABULARY_PROPOSAL_TOOLS.has("propose_tile_vocabulary")).toBe(true);
     const project = createBlankProject();
     const groupId = "session-unapproved-wall";
-    project.tilesets[DEFAULT_TILESET_ID].tileGroups!.push({
+    project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups!.push({
       id: groupId,
       name: "미합의 벽",
       role: "wall",
@@ -282,7 +282,7 @@ describe("assistantSession 어휘 제안", () => {
       origin: "ai",
       source: "ai",
     });
-    expect(isApprovedGroup(project.tilesets[DEFAULT_TILESET_ID], groupId)).toBe(false);
+    expect(isApprovedGroup(project.tilesets[COMBINED_TOWN_TILESET_ID], groupId)).toBe(false);
 
     const context: ToolContext = { project };
     const result = runTool(context, "propose_tile_vocabulary", {
@@ -290,6 +290,6 @@ describe("assistantSession 어휘 제안", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(isApprovedGroup(context.project.tilesets[DEFAULT_TILESET_ID], groupId)).toBe(true);
+    expect(isApprovedGroup(context.project.tilesets[COMBINED_TOWN_TILESET_ID], groupId)).toBe(true);
   });
 });

@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { deserialize } from "../src/project/io";
-import { DEFAULT_TILESET_ID } from "../src/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "../src/project/defaults/constants";
 import { HOUSE_HEIGHT_STUDIES } from "./lib/houseHeightStudies.mts";
 import { bakeHouseStudy } from "./lib/houseStudyDesigns.mts";
 import { reviewHouseRoofDepth } from "./lib/houseHeightDepthReview.mts";
@@ -12,7 +12,7 @@ if(!fs.existsSync(oldPath))fs.copyFileSync(`${out}/reloaded-project.json`,oldPat
 const before=deserialize(fs.readFileSync(oldPath,"utf8"));
 const results=HOUSE_HEIGHT_STUDIES.filter(item=>item.floors>2).map(item=>{
   const current=bakeHouseStudy(item.study);
-  const old=before.tilesets[DEFAULT_TILESET_ID]!.structureKits!.find(kit=>kit.id===current.id)!;
+  const old=before.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits!.find(kit=>kit.id===current.id)!;
   const oldReview=reviewHouseRoofDepth(old),newReview=reviewHouseRoofDepth(current);
   assert.ok(oldReview.issues.length>0,"Negative control did not catch the rejected geometry");
   assert.equal(newReview.visibleFloors,item.floors);

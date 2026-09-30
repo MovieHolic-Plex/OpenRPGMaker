@@ -2,7 +2,7 @@ import { genId } from "@/util/id";
 import { stampFootprintHouseKit, stampRectHouseKit, type FootprintWing, type HouseKitId } from "@/editor/houseKit";
 import { appendTileToStack } from "@/project/mapOverlayTiles";
 import type { GameMap } from "@/project/types";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { paintRoadRect, shapeRoadEdges, type RoadRect } from "@/project/defaults/roadAutotile";
 import type { SmallHouseMaterial, SmallHouseVariantIndex, TilePoint } from "@/project/defaults/contentBuilderTypes";
 export type { SmallHouseMaterial, SmallHouseVariantIndex, TilePoint } from "@/project/defaults/contentBuilderTypes";
@@ -484,7 +484,7 @@ export function createDbExtractedHouseTemplateMap(): GameMap {
     lowerTiles: new Array<number>(tileCount).fill(TILE.GRASS),
     name: "DB 추출 사용자 집 템플릿",
     tileSize: DEFAULT_TILE_SIZE,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     upperTiles: new Array<number>(tileCount).fill(TILE.EMPTY),
     width: DB_EXTRACTED_HOUSE_TEMPLATE_SIZE.width,
   };
@@ -655,7 +655,7 @@ function createBlankHouseMap(input: BlankHouseMapInput): GameMap {
     lowerTiles: new Array<number>(tileCount).fill(TILE.GRASS),
     name: input.name,
     tileSize: DEFAULT_TILE_SIZE,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     upperTiles: new Array<number>(tileCount).fill(TILE.EMPTY),
     width: input.width,
   };

@@ -21,7 +21,7 @@ import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { Project, TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
 import { animationKeyForTile, animationStripForTile } from "@/project/defaults/chipsetAnimation";
-import { registerUploadedTilesetFrames, uploadedTilesetAnimationName, uploadedTilesetTextureKey } from "@/assets/uploadedTilesets";
+import { registerTilesetStripAnimations, registerUploadedTilesetFrames, tilesetStripAnimationName, uploadedTilesetAnimationName, uploadedTilesetTextureKey } from "@/assets/uploadedTilesets";
 
 const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
@@ -81,7 +81,10 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
 
   // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
   if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset, textureKey);
-  else registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count), tileset.tileSize, tileset.tilesPerRow);
+  else {
+    registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count), tileset.tileSize, tileset.tilesPerRow);
+    registerTilesetStripAnimations(scene, tileset, textureKey);
+  }
   return textureKey;
 }
 
@@ -108,6 +111,7 @@ function baseTilesetTextureKey(tileset: TilesetDef): string {
 /** The renderer and the preload registry must agree on project-authored animation names. */
 export function tilesetAnimationKeyForTile(tileset: TilesetDef, tile: number): string | null {
   return uploadedTilesetAnimationName(tileset, tile)
+    ?? (tileset.image.type === "bundled" ? tilesetStripAnimationName(tileset, tile) : null)
     ?? (supportsChipsetTileAnimation(tileset, tile) ? animationKeyForTile(tile) : null);
 }
 

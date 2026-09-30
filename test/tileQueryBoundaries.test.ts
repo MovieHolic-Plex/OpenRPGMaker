@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 
 function context(): ToolContext {
   const project = createBlankProject();
   const start = project.maps[project.startMapId];
-  const base = project.tilesets[DEFAULT_TILESET_ID];
+  const base = project.tilesets[COMBINED_TOWN_TILESET_ID];
   for (const [id, count] of [["tiles_start", 2], ["tiles_target", 3], ["tiles_explicit", 1]] as const) {
     project.tilesets[id] = {
       ...structuredClone(base), id, count, tilesPerRow: 1,

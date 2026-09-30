@@ -2,7 +2,7 @@ import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { cellsInFillShape } from "@/editor/tools/v3/constructionTools";
 import { buildTerrainConstraintMasks, type Rect } from "@/editor/tools/villageTerrainPass";
 import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { GameMap, TilesetDef } from "@/project/types";
@@ -66,7 +66,7 @@ export function renderWorldGenPreview(options: WorldGenPreviewOptions): {
   canvas.dataset.testid = `${options.testid}-canvas`;
   canvas.setAttribute("role", "img");
 
-  const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+  const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
   const plan = buildPreviewPlan(masks, options.rules, cols, rows);
   canvas.setAttribute(
     "aria-label",

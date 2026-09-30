@@ -5,7 +5,7 @@ import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { applyCombinedTownHarness, COMBINED_TOWN_HARNESS_GROUPS } from "@/project/tilesetHarness";
 import type { TileGroupMetadata } from "@/project/types";
@@ -162,9 +162,9 @@ afterEach(() => {
 describe("클러스터 AI 킥오프", () => {
   it("클러스터 수정/미분류 분석 킥오프에 그룹 JSON과 첫 배치가 들어간다", () => {
     const clusterPrompt = buildClusterEditKickoff({
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       groupId: "wall_group",
-      group: groupSnapshot(DEFAULT_TILESET_ID, "wall_group"),
+      group: groupSnapshot(COMBINED_TOWN_TILESET_ID, "wall_group"),
     });
     expect(clusterPrompt).toContain("render_group_sample");
     expect(clusterPrompt).toContain("delete_tile_group");
@@ -178,7 +178,7 @@ describe("클러스터 AI 킥오프", () => {
     expect(clusterPrompt).toContain("set_group_overlay");
 
     const analysisPrompt = buildUnclassifiedAnalysisKickoff({
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       sampleTiles: [3, 4, 5],
       total: 12,
     });
@@ -199,7 +199,7 @@ describe("AI 패널 브리지", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
     window.dispatchEvent(new CustomEvent("oprn:ai-assist", {
-      detail: { kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "wall_group" },
+      detail: { kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "wall_group" },
     }));
     await vi.waitFor(() => expect(piMock.calls).toHaveLength(1));
     expect(panel.classList.contains("is-collapsed")).toBe(false);
@@ -214,11 +214,11 @@ describe("AI 패널 브리지", () => {
 describe("list_unclassified_tiles", () => {
   it("라벨 있거나 그룹에 속한 타일을 제외하고 offset/limit 페이지와 total을 반환한다", () => {
     const context = unclassifiedCtx();
-    const result = runTool(context, "list_unclassified_tiles", { tilesetId: DEFAULT_TILESET_ID, offset: 1, limit: 2 });
+    const result = runTool(context, "list_unclassified_tiles", { tilesetId: COMBINED_TOWN_TILESET_ID, offset: 1, limit: 2 });
 
     expect(result.ok, result.summary).toBe(true);
     expect(result.data).toEqual({
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       limit: 2,
       offset: 1,
       total: 4,
@@ -230,11 +230,11 @@ describe("list_unclassified_tiles", () => {
 describe("delete_tile_group", () => {
   it("그룹을 삭제하고 없는 groupId는 에러로 돌려준다", () => {
     const context = ctx();
-    const deleted = runTool(context, "delete_tile_group", { tilesetId: DEFAULT_TILESET_ID, groupId: "wall_group" });
+    const deleted = runTool(context, "delete_tile_group", { tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "wall_group" });
     expect(deleted.ok, deleted.summary).toBe(true);
-    expect(context.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.some((group) => group.id === "wall_group")).toBe(false);
+    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.some((group) => group.id === "wall_group")).toBe(false);
 
-    const missing = runTool(context, "delete_tile_group", { tilesetId: DEFAULT_TILESET_ID, groupId: "wall_group" });
+    const missing = runTool(context, "delete_tile_group", { tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "wall_group" });
     expect(missing.ok).toBe(false);
     expect(missing.issues?.[0]?.code).toBe("group-not-found");
   });
@@ -244,10 +244,10 @@ describe("delete_tile_group", () => {
     const groupId = COMBINED_TOWN_HARNESS_GROUPS.find((group) => group.id.endsWith("conifer-tree"))?.id;
     if (!groupId) throw new Error("missing conifer harness group");
 
-    const deleted = runTool(context, "delete_tile_group", { tilesetId: DEFAULT_TILESET_ID, groupId });
+    const deleted = runTool(context, "delete_tile_group", { tilesetId: COMBINED_TOWN_TILESET_ID, groupId });
     expect(deleted.ok, deleted.summary).toBe(true);
 
-    const tileset = context.project.tilesets[DEFAULT_TILESET_ID];
+    const tileset = context.project.tilesets[COMBINED_TOWN_TILESET_ID];
     expect(tileset.suppressedHarnessGroupIds).toContain(groupId);
     applyCombinedTownHarness(tileset);
     expect(tileset.tileGroups?.some((group) => group.id === groupId)).toBe(false);
@@ -264,14 +264,14 @@ function unclassifiedCtx(): ToolContext {
 
 function projectWithGroup(): ReturnType<typeof createBlankProject> {
   const project = createBlankProject();
-  const tileset = project.tilesets[DEFAULT_TILESET_ID];
+  const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   tileset.tileGroups = [group()];
   return project;
 }
 
 function projectWithSmallTileset(): ReturnType<typeof createBlankProject> {
   const project = createBlankProject();
-  const tileset = project.tilesets[DEFAULT_TILESET_ID];
+  const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   tileset.count = 8;
   tileset.tileMeta = Array.from({ length: tileset.count }, () => ({ label: "", description: "" }));
   tileset.tileMeta[1].label = "창문";

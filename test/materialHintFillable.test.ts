@@ -3,14 +3,14 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
 
 const MAP_ID = "map_blank_start";
 
 describe("면 채우기 재료 힌트", () => {
   it("있는 라벨이지만 채울 수 없는 재료(돌바닥)는 이유와 채울 수 있는 재료를 준다", () => {
-    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
     const result = resolveMaterialByLabel(tileset, "돌바닥", { preferGroup: true, preferRoles: ["water", "terrain"], requireAutotileGroup: true });
     expect(result.status).toBe("missing");
     if (result.status !== "missing") return;
