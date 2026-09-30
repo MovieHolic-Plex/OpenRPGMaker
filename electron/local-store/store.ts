@@ -455,8 +455,9 @@ function blobObject(driver: Driver, sha256: string): unknown {
 }
 
 /** 저장 행 글 → 펼친 글. 접힌 행이면 본문을 끼워 예전과 같은 글을 만들고 행의 sha 로 대조한다. */
-function unfoldRowText(driver: Driver, raw: string, sha256: string): string {
+function unfoldRowText(driver: Driver, raw: string, sha256: string, onShas?: (shas: ReadonlyMap<string, string> | null) => void): string {
   const folded = foldedTilesetShas(raw);
+  onShas?.(folded?.shas ?? null);
   if (!folded) return raw;
   const wire = foldDocument(folded.document, (marker) => {
     const sha = (marker as { readonly $blob: string }).$blob;
@@ -470,8 +471,9 @@ function unfoldRowText(driver: Driver, raw: string, sha256: string): string {
  * 호스트 전용 문서 트리. 타일셋은 얼린 공유 객체라 본문을 다시 파싱·직렬화하지 않는다. 타일셋 밖은 부르는 때마다 새 트리다.
  * 실측(2026-09-27, 82MB): 펼친 글 파싱 + 검증이 패치마다 1–8s 였다. 이 트리로는 검증 약 0.6s, 타일셋 재직렬화 0칸.
  */
-function hostDocumentTree(driver: Driver, raw: string): unknown {
+function hostDocumentTree(driver: Driver, raw: string, onShas?: (shas: ReadonlyMap<string, string> | null) => void): unknown {
   const folded = foldedTilesetShas(raw);
+  onShas?.(folded?.shas ?? null);
   if (!folded) return JSON.parse(raw);
   const tilesets: Record<string, unknown> = {};
   for (const [id, sha] of folded.shas) tilesets[id] = blobObject(driver, sha);
@@ -489,7 +491,17 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
   };
   const cachedFor = (sha256: string | null | undefined) => (sha256 && cached?.sha256 === sha256 ? { serialized: cached.text() } : null);
   const storeToken = Symbol(options.projectDir);
-  const liveFrom = (raw: string): ReadonlySet<string> => new Set(foldedTilesetShas(raw)?.shas.values() ?? []);
+  // 행 sha(펼친 글의 해시)가 같으면 가리키는 타일셋 본문도 같다. 접힌 행(1–3MB)을 읽기마다 다시 파싱해 살아 있는 본문 목록을
+  // 만들던 것을, 같은 행을 이미 파싱한 경로(문서 트리·펼침)가 남긴 목록으로 대신한다.
+  let liveMemo: { readonly sha256: string; readonly live: ReadonlySet<string> } | null = null;
+  const memoLive = (sha256: string) => (shas: ReadonlyMap<string, string> | null): void => {
+    liveMemo = { sha256, live: new Set(shas?.values() ?? []) };
+  };
+  const liveFrom = (row: ProjectRow): ReadonlySet<string> => {
+    if (liveMemo?.sha256 === row.sha256) return liveMemo.live;
+    memoLive(row.sha256)(foldedTilesetShas(row.serialized)?.shas ?? null);
+    return liveMemo!.live;
+  };
   // 다른 프로세스가 행과 본문을 바꾼 사이에 읽으면 본문이 없거나 sha 가 어긋난다. 한 번 다시 읽는다.
   const readRowConsistently = <T>(read: (row: ProjectRow) => T): T | null => {
     for (let attempt = 0; ; attempt += 1) {
@@ -497,7 +509,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       if (!row) return null;
       try {
         const value = read(row);
-        retainLiveBlobs(storeToken, liveFrom(row.serialized));
+        retainLiveBlobs(storeToken, liveFrom(row));
         return value;
       } catch (error) {
         if (attempt > 0 || !(error instanceof LocalStoreError) || error.code !== "row") throw error;
@@ -510,18 +522,20 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     const hit = cachedFor(meta.sha256);
     if (hit) return hit.serialized;
     return readRowConsistently((row) => {
-      const full = unfoldRowText(driver, row.serialized, row.sha256);
+      const full = unfoldRowText(driver, row.serialized, row.sha256, memoLive(row.sha256));
       remember(row.sha256, full);
       return full;
     });
   };
-  const storedTree = (): unknown => readRowConsistently((row) => hostDocumentTree(driver, row.serialized));
+  const storedTree = (): unknown => readRowConsistently((row) => hostDocumentTree(driver, row.serialized, memoLive(row.sha256)));
   // 펼친 글 해시의 타일셋 앞부분 상태를 저장소마다 하나 둔다(tilesetFold.ts FoldHashCache). 읽기 검증(unfoldRowText)은 일부러 캐시를 쓰지 않는다.
   const foldHashCache = createFoldHashCache();
   const wireOf = (project: Project): HostWire => foldDocument(projectWireView(project), blobFor, foldHashCache);
   const written = (wire: HostWire): void => {
     remember(wire.sha256, wire.full);
-    retainLiveBlobs(storeToken, new Set(wire.blobs.keys()));
+    const live = new Set(wire.blobs.keys());
+    liveMemo = { sha256: wire.sha256, live };
+    retainLiveBlobs(storeToken, live);
   };
   return {
     projectDir: options.projectDir,
@@ -630,7 +644,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     },
     tilesetBlobs(sha256s: readonly string[]): Readonly<Record<string, string>> {
       const row = readProjectRow(driver);
-      const live = row ? liveFrom(row.serialized) : new Set<string>();
+      const live = row ? liveFrom(row) : new Set<string>();
       const out: Record<string, string> = {};
       for (const sha of sha256s) if (live.has(sha)) out[sha] = readBlobText(driver, sha);
       return out;

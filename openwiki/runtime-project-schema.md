@@ -207,6 +207,9 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
   (`exportSerialized`) 대신 접힌 행(`exportFolded`)으로 어휘 검사를 하고, 참이면 `!ref && dataUrl` 자산이 실제로 있는지
   접힌 행 파싱으로 확인한 뒤에야 `loadSnapshot` 을 부른다(`ref` 와 `dataUrl` 을 함께 든 자산은 옮길 것이 없다). 실측: 열기 5–6.7s → 63ms,
   저장 1–3번째 ≈4.5s → ≈0.7s.
+  **살아 있는 타일셋 본문 목록은 행 sha 로 기억한다 (2026-09-30)**: `readRowConsistently` 가 읽기마다 접힌 행(1–3MB)을 다시 파싱해
+  `retainLiveBlobs` 용 목록을 만들던 것을, 같은 행을 이미 파싱한 경로(`hostDocumentTree`·`unfoldRowText`)나 방금 쓴 `wire.blobs` 가 남긴
+  목록(`liveMemo`, 키 = 행 sha)으로 대신한다. 저장 중앙값 ≈542 → ≈469ms.
   **`current_json` 을 SQL 로 직접 읽는 스크립트는 표식만 본다** — 문서는 `openLocalProjectStore().exportSerialized()`
   또는 `scripts/oprn-store.mjs export-json` 으로 읽는다.
 - **접힌 로드 (2026-09-27)**: 편집기(`electronRepository` 의 load·loadSnapshot·loadForProof)는 `oprn:project.loadFolded`
