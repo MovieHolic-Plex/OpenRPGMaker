@@ -407,6 +407,15 @@ project·database 통지·이벤트 선택은 더 이상 팔레트를 재생성�
 한 번 다시 그린다 — 예전에는 무관한 재생성이 우연히 이 일을 했다.
 제자리 동기화(`syncMountedPalette*`)가 성공하면 입력 기록도 갱신한다 — 안 하면 타일·도구·붓을 바꾼 직후
 무관한 통지 하나가 전체 재생성을 1회 부른다.
+**살아 있는 판은 DOM 에서 떼지 않는다 (실측 2026-09-30, 1140칸).** 맵을 바꾸거나 층·분류를 바꿀 때 판(`retainKey` 일치)을
+떼었다 다시 붙이면 `.chipset-tile` 1140개의 스타일·레이아웃이 버려진다. `renderTilePalette` 는 마운트된 판 둘레(`swapPaneAroundSheet`)만
+바꾸고 판은 그 자리에 둔다. 이 페이지에서 **자식 목록을 바꾸는 연산**(insert/remove/replaceWith/append/`textContent=`)은 한 번에
+~45~50ms 의 전체 트리 스타일 재계산(BODY 「Invalidation set invalidates subtree」)을 부른다 — 속성·클래스·`Text.data` 변경은 ~0.3ms 다.
+그래서 동기화 경로는 자식 목록을 건드리지 않는다: 선택 타일 칩은 `updateSelectedTileStatus`(구조 키 `statusKey` 가 같으면 썸네일 style·
+`title`·라벨 `Text.data` 만 바꿈, 다르면 통째 교체), 붓 컨트롤은 `patchBrushControlsInPlace`(`data-layer` 외 `outerHTML` 이 같을 때만 속성 이동).
+칩 클릭 핸들러는 캡처 대신 `dataset.selectedTile` 을 읽는다(칩이 재사용되므로). 남은 비용은 팔레트 밖이다 — `panels/menu.ts` `renderTopbar`,
+`panels/editor.ts` `refreshAuthoringJourney`/`paintPersistenceBanner` 의 `clearChildren`, `aiChatPanel` 의 `syncCommandBarClearance`·
+`aiChatResizeChrome.effectiveWidth` 강제 레이아웃. 증거: `verify-shots/editor-lag-fix/E/profile-round2.md`.
 DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.
 같은 맵에서 도구·선택만 바뀌면 프로젝트 전체 참조 감사와 JSON 내보내기를 다시 하지 않는다.
 
