@@ -14,7 +14,7 @@
 - 빈 맵 채움: `createBlankMap` 은 버들항이면 잔디 737(`BEODEUL_PLAIN_GRASS_TILE`), 아니면 `TILE.GRASS`. **`TILE.*` 상수는 합본 마을 칸 번호다.** 버들항에서 240 은 벽이다 — 버들항 맵에 `TILE.*` 를 쓰지 마라.
 - 합본 마을은 번들에 그대로 남는다. 합본 마을 칸 번호에 의존하는 코드·테스트(`createStarterMap`, `createLogCabinShowcaseMap`, `createFarmingDemoProject`, `scripts/natural-village/build.ts`, 테스트 약 540곳)는 `COMBINED_TOWN_TILESET_ID/NAME/TEXTURE_KEY`(같은 파일)와 `combinedTownTileset()` 를 명시한다. "기본"을 뜻하는 곳만 `DEFAULT_TILESET_*`.
 - 기존 프로젝트는 이관하지 않는다. 합본 마을 맵은 그대로 합본 마을 팔레트로 그려진다(`verify-shots/beodeul-default/bd-existing-combined-town.png`).
-- 조수: `defaultToolTilesetId` 는 시작 맵 타일셋 → `defaultOutdoorTilesetId`(`forest_harmony` 가 있으면 그것, 없으면 `DEFAULT_TILESET_ID`) 순이다. 새 프로젝트에는 `forest_harmony` 도 들어 있어 **바깥 새 맵의 조수 기본은 아직 숲마을**이다(의도적으로 유지, 바꾸려면 `forestHarmony.ts`).
+- 조수(2026-10-01 변경): `defaultOutdoorTilesetId`(`forestHarmony.ts`)는 **프로젝트에 버들항이 있고 모든 맵이 버들항이면(= 새 프로젝트) 버들항**, 그 밖(합본 마을·숲마을 맵이 섞인 기존 프로젝트)은 예전처럼 `forest_harmony` 가 있으면 그것이다. 보는 맵의 계열은 `toolRunner.ts` 60~100행의 계열 규칙이 지킨다. 「마을 만들어 줘」는 버들항 프로젝트에서 `author_beodeul_town` 으로 간다 — 아래 「조수 마을 경로」.
 - 계열 규칙(`isCombinedTownCompatibleTileset`)은 합본 마을 계열 기준 그대로다.
 
 ### 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
@@ -61,7 +61,7 @@
 | 조수 시험 | `bun scripts/qa/beodeul-assistant-run.mts --project <폴더> --label fresh|existing --map <id> --new 100x100` → `verify-shots/beodeul-assistant-r2/<label>/`(라운드 1 결과는 `verify-shots/beodeul-assistant/`). 빈 폴더면 편집기 「새 프로젝트」와 같은 빈 프로젝트에서 시작 |
 | 증거 페이지 | 라운드 1 `~/claude-viz/beodeul-assistant-proof.html`, 라운드 2 `~/claude-viz/r2-beodeul.html`, 라운드 3 `~/claude-viz/r3-beodeul.html` (http://mdc-server:18301/r3-beodeul.html) |
 | 블록 키트 (v8) | `build-beodeul-city.py` 의 v8 절(`_Canvas`·`block_*`·`BLOCKS`) → 번들 키트 `bd-block-*` 41종 + 표 `tiledata/beodeul-city/blocks-v8.json`(문 앞 칸·가장자리 출구) |
-| 조수 스킬 | `assistant-skills/city-block-assembly/SKILL.md` — 이 브랜치에는 스킬 번들러(`bundle-assistant-skills.mjs`, agent/atlas-policy)가 없어 조수가 아직 못 읽는다 |
+| 조수 스킬 | `assistant-skills/city-block-assembly/SKILL.md` — 이 브랜치에는 스킬 번들러(`bundle-assistant-skills.mjs`, agent/atlas-policy)가 없어 스킬 본문은 아직 못 읽는다. 대신 **참고문서 `bd-work-order`(번들 소유)와 `author_beodeul_town` 도구 결과·노트가 같은 절차를 조수에게 준다** |
 
 ## 칸 자르기 규칙
 
@@ -254,3 +254,15 @@ revision 1. 재로드 deepEqual 프로젝트·맵·타일셋 true, 통행 불일
 - 23,936칸 tileMeta 가 프로젝트마다 실린다(타일셋 JSON 약 7MB).
 - (라운드 3) 호수 항구 키트 자체의 결함(짙은 녹색 사각형·안쪽 막다른 길·연꽃 넓은 수면)은 키트 안이라 조수가 고칠 수 없다. 구역 키트의 블록 맞춤판(성·포룸 가장자리를 판석으로 닫은 판)은 아직 없다.
 - (라운드 3) 참고문서 선행 읽기 게이트가 용도의 그림·문서를 전부 요구해 물·구역 키트 용도(그림 13·8장)를 건드리면 턴당 입력이 커진다 — 판 하나로 묶는 것이 다음 일.
+
+
+## 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
+
+원인 세 가지(수리 전): ① 바깥 새 맵 기본이 숲마을(`forestHarmony.ts::defaultOutdoorTilesetId`) ② `author_village` 는 버들항을 `village-tileset-mismatch` 로 거절 ③ 의도 노트·도구 노출·마을 계약(`villageContract.ts`, `plainTurn.ts`)·`formatPiVillageNote`(`executionRoute.ts`)가 전부 `author_village` 한 방 숲 경로로만 몰았고 블록 키트·`check_city_form`·참고문서는 안내하지 않았다.
+
+- 도구 `author_beodeul_town`(`src/editor/tools/authorBeodeulTown.ts`): 블록 키트 `bd-block-*`(+`bd-harbour-lake`)를 열·띠로 조립한다. `mapId`(기존 버들항 맵은 잔디로 지우고 통째 재조립)·`name`·`id`·`width`·`height`(기본 60×60)·`seed`·`harbour`(폭 83 이상). 원작 배치를 베끼지 않는다. 오프라인 검증 `scripts/qa/beodeul-town-offline.mts`: 빈 바닥 7.5~10.3%, 문 앞 전부 도달, 결함 0.
+- `author_village` 는 대상이 버들항이면 `author_beodeul_town` 으로 **되돌려 보낸다**(`authorVillageToolDef.ts::rerouteToBeodeulTown`).
+- 노트: `src/ai/piAgent/beodeulTownRoute.ts::beodeulTownTargetFor` 가 LLM 의도가 `author_village`/`author_beodeul_town` 를 고르고 대상 맵(없으면 프로젝트 바깥 기본)이 버들항일 때만 버들항 노트를 만든다. `executionRoute.ts` 는 이 노트를 `formatPiVillageNote` 보다 먼저 쓰고, `plainTurn.ts`·`villageContract.ts` 는 버들항 마을이면 **마을 계약을 건너뛴다**(12채·강변촌 굳히기 방지).
+- 노출: `sessionToolExposure.ts::schemasForIntent` 가 두 마을 도구에 `check_city_form`·`check_reachability` 를 짝지어 노출한다. `TILESET_REFERENCE_WRITERS`(`tilesetReferenceTools.ts`)에 `author_beodeul_town` 포함 → 참고문서 용도를 먼저 읽어야 한다.
+- 실모델 시험 `scripts/qa/beodeul-village-plain.mts`(증거 `verify-shots/assistant-beodeul-village/`): 새 프로젝트 「마을 만들어 줘」 → `author_beodeul_town` 1회 → `check_city_form`·`check_reachability` → 소품 `stamp_object`. 기존 합본 마을 프로젝트는 옛 경로 유지.
+- 함정: `list_tileset_references` 에 없는 `categoryId` 를 주면 「용도를 찾을 수 없습니다」만 돌려줘 모델이 14번 반복했다 → 가능한 용도 id 를 함께 돌려주도록 수리(`unknownIdMessage`).
