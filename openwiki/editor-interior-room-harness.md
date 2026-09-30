@@ -464,3 +464,5 @@ Tibo 실내 확장 시트에 69~71행(2070~2159)을 덧붙였다(0~68행 픽셀 
 - 성당·예배당의 긴 의자는 뒷모습만 쓴다. 앞모습 1814~1847(킷 `tibo-fantasy-pew`)은 신도가 제단을 등지므로 atlas·rpg-interiors 저작에서 거부한다(rpg-interiors 7곳 교체).
 - 나무 상판(terrain-deck)·흰 천(white-table) 오토타일에는 다리가 없다. `table()`은 섬의 맨 아래 줄을 앞면(198~200/228~230, 한 줄 탁자 2140~2145, 1칸 폭 201/231·2146/2147)으로 바꾼다. 곡물 창고 등 rpg-interiors의 table() 전부에 적용.
 - 100곳 저작은 `scripts/content/atlas-interiors/*.mjs` + 검사 `kit.mjs`(겹침·탁상 소품·벽걸이 줄·의자 방향·canMove 도달·밀폐 칸). 정본 `.oprn-projects/atlas-interiors-20260925`, 공용 DB 라이브러리 `oprn-atlas-interiors-20260925`(장소 100), 조각 54개 `tiledata/atlas-interiors/shared-objects.json`. 자세한 순서는 `tiledata/atlas-interiors/README.md`, 시각 QA는 `verify-shots/atlas-interiors/QA.md`.
+
+> **2026-09-29: 이 파이프라인(EasyRPG·Tibo 실내 번호)은 조수 경로에서 폐기됐다** — 방 세션·place_concept 도구는 deprecated, 옛 실내 칩셋으로 새 맵은 거부. 실내는 손 도트 v5(`atlas_biome_interior`, `build_hand_interior_room`) — `openwiki/atlas-biome-interior.md`. author_house 연결 실내는 아직 이 파이프라인을 쓴다.

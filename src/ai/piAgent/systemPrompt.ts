@@ -10,6 +10,7 @@ import { hasExtraLayers } from "@/project/mapLayers";
 import { referenceOwner } from "@/project/tilesetReferences";
 import { HOUSE_VARIETY_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
 import { MODERN_TILESET_POLICY_LINE } from '../modernTilesetPolicy';
+import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
 
 export function describeScopedMaps(project: Project, mapIds: readonly string[]): string[] {
   return mapIds.map((id) => {
@@ -45,6 +46,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     ...scope,
     MODERN_TILESET_POLICY_LINE,
     `새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 새 맵의 tilesetId 로 전달한다. 기존 맵의 칩셋은 유지한다(맵 계열이 다르면 섞지 않는다). 칩셋이 버들항(beodeul_city)이면 마을·항구·읍은 author_village(숲마을 생성기) 가 아니라 author_beodeul_town({mapId 또는 name, width?, height?, harbour?}) 한 호출로 짓고 check_city_form·check_reachability 로 확인한다 — 길·집을 손으로 깔지 않는다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·눈보라·설원이면 마을은 author_village groundTheme:"snow"(설원 칩셋·눈 날씨), 사막이면 groundTheme:"desert", 화산이면 "volcano", 가을이면 "autumn"(기후 칩셋·잎 없는 고목 덩이), 다른 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`,
+    HAND_INTERIOR_POLICY_LINE,
     "이미 만들어 둔 장소·오브젝트를 먼저 쓴다: list_spatial_designs 의 data.shared 에서 찾아 장소는 import_region_reference({id}) 한 번으로 맵째 가져오고, 오브젝트(고목·봉우리·기후 지형·항구 부품·성문루·집 외형·마을 소품)는 stamp_object({objectId,mapId,x,y}) 로 찍는다. 행마다 owner(어디 곁에 두나)를 따르고, 칸 번호를 하나씩 칠해 다시 그리지 않는다. 태그 「요청 시에만」(사막 메사·짐승 뼈)은 사용자가 그 물건을 말했을 때만 찍는다 — 사막 기본 꾸밈은 고목 덩이·선인장·사구·물가 야자.",
     ...genreMechanicLines(project),
     "절차: 먼저 읽기 도구(get_map_region 등)로 현재 상태를 확인하고, 쓰기 도구를 호출한다. 도구가 ok:false 를 돌려주면 issues 를 읽고 인자를 고쳐 재시도한다. 같은 실패를 세 번 반복하지 않는다.",
@@ -110,7 +112,7 @@ function genreMechanicLines(project: Project): string[] {
   }
   // 2026-09-24 추리 도그푸딩: 계획은 증거 스위치, 시공은 빈 맵 나무 바닥이었다. 낱말이 있을 때만.
   if (/추리|탐정|용의자|지목|독살|살인사건/u.test(text)) {
-    lines.push("추리 기획은 실내를 먼저 짓는다. 실행 순서: get_concept_facility → place_concept(plan, 새 mapId) 로 벽·가구가 있는 방, 그 좌표에 author_mystery_case. fill_region 바닥 사각형으로 저택을 흉내 내지 않는다. author_mystery_case 요약이 맨땅이면 run_scene_test 를 호출하지 말고 방을 지은 뒤 같은 caseId 로 다시 부른다.");
+    lines.push("추리 기획은 실내를 먼저 짓는다. 실행 순서: build_hand_interior_room(plan, 새 mapId) 로 벽·가구가 있는 방, 그 좌표에 author_mystery_case. fill_region 바닥 사각형으로 저택을 흉내 내지 않는다. author_mystery_case 요약이 맨땅이면 run_scene_test 를 호출하지 말고 방을 지은 뒤 같은 caseId 로 다시 부른다.");
   }
   return lines;
 }

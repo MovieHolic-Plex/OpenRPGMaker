@@ -168,6 +168,8 @@ function isBundledFurniturePackKit(tileset: Pick<TilesetDef, "id" | "image">, ki
     && tileset.image.id === CASTLE_TILESET_TEXTURE_KEY) {
     return kitId.startsWith("castle-measured-");
   }
+  // 손 도트 실내 v5(atlas_biome_interior): 가구 381종 킷은 번들 시드 — 공용 오브젝트.
+  if (tileset.id === "atlas_biome_interior") return kitId.startsWith("hand-interior:");
   if (tileset.id === SHARED_VILLAGE_OBJECT_ID
     && tileset.image.type === "bundled"
     && tileset.image.id === SHARED_VILLAGE_OBJECT_TEXTURE) {

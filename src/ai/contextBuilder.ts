@@ -132,11 +132,11 @@ const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   // 고칠 것인가"를 말하지 않아, "이 침실 좀 고쳐줘"가 신규 시공 경로를 탔다.
   "**대상 선택(라우팅보다 먼저):** 신규 표지(새/새로/추가/create)가 없으면 기존 산출물이 대상이다. '이/여기/지금'은 아래 현재 맵 요약의 mapId다. 수정 요청에 새 맵을 만들지 말고, '새로 만들지 마'면 create_map/duplicate_map/방 세션 시작을 쓰지 않는다.",
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(상태별 다중 페이지. 대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 기존 울타리·담장 보수=repair_fence(새로 짓지 않음), 타이틀 N단계 개선=improve_title_screen(stage), 수역=fill_region(circle+물 그룹), 야외 집=author_house(interior:\"linked-interior\" 기본, kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height}, countPolicy:\"exact\", bounds 16x16 이상·기존맵 전체 재시공은 fullMap:true). 나무=list_village_tree_assets로 재료 조회 후 find_tools로 배치 도구 탐색**, 성채=build_castle, **모든 신규 실내(시설·일반 방)=get_concept_facility → place_concept(query, plan). 타일셋 개념 꾸러미가 정본이며 사용자가 데이터베이스에서 고친 나무가 시공에 쓰인다. 방 종류 requiredRoles 로 여관을 합성하지 마라. 실내/방 맵 신규=place_concept(반드시 새 mapId·이름); 방 세션도 개념 꾸러미의 장소·물건을 읽는다. 기존 실내 맵 수정=그 mapId로 furnish_interior_space·fill_region·tile_erase·place_props(대상은 list_interior_room_sessions). 기존 맵 id로 세션 시작은 그 맵을 통째로 지우므로 map-exists로 거부된다. 실내 요청에는 author_house(exterior-only)/author_village 금지 — 다만 들어가서 걷는 집은 author_house(interior:\"linked-interior\")가 정답**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(상태별 다중 페이지. 대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 기존 울타리·담장 보수=repair_fence(새로 짓지 않음), 타이틀 N단계 개선=improve_title_screen(stage), 수역=fill_region(circle+물 그룹), 야외 집=author_house(interior:\"linked-interior\" 기본, kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height}, countPolicy:\"exact\", bounds 16x16 이상·기존맵 전체 재시공은 fullMap:true). 나무=list_village_tree_assets로 재료 조회 후 find_tools로 배치 도구 탐색**, 성채=build_castle, **모든 신규 실내(시설·일반 방)=build_hand_interior_room(plan 문자열 → 벽·천장 자동, 가구는 list_hand_interior_parts 의 v5 id) — 실내 칩셋은 atlas_biome_interior(손 도트 v5) 하나다. 옛 실내 칩셋(Tibo·EasyRPG 실내·LPC 가구)과 place_concept·방 세션은 폐기됐다. 기존 실내 맵 수정=같은 mapId 로 build_hand_interior_room(replace:true). 실내 요청에는 author_house(exterior-only)/author_village 금지 — 다만 들어가서 걷는 집은 author_house(interior:\"linked-interior\")가 정답**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "기존 이벤트 한 페이지의 명령 자연어 수정은 event_command_assist(mapId,eventId,pageId,prompt). 먼저 get_event로 페이지 ID를 확인한다.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
   "- 던전·광산·수정굴은 run_dungeon_room_pipeline 또는 start_dungeon_room_session의 connected 경로를 사용한다. 먼저 원래 장소, 지금 상태, 누가 있는지, 플레이어가 왜 들어가는지를 세계관과 이번 말로 정한다. 그 다음 path(straight|cave|winding), linkMapId(바깥으로 돌아가는 맵), landmark(altar|tower|gate|sound, 먼저 보이는 표지), pressure(patrol|tide|rising, 가만히 있지 않는 것)를 전달한다. patrol이면 존재하는 troopId도 전달한다. 코드가 형태를 대신 고르지 않는다. generate_map(cave)는 고정 entrance/pois 없이 호출하면 같은 생성기를 사용한다. 기존 맵은 명시적 교체 요청 없이 재생성하지 않는다. 생성 후 evaluate_dungeon_room(mapId)와 전체 show_map_region으로 구조와 미관을 각각 검토한다.",
-  "- 집 내부는 기존 place_concept/interiorPlan 경로를 사용한다. 방 역할·문·동선은 설계하되 동굴 윤곽·절벽 생성기를 실내에 적용하지 않는다. 민가 침상 구역은 바닥 6~12칸, 부엌은 12~24칸, 작은 공용 생활 영역은 15~18칸부터 필요한 가구와 접근 칸에 맞춰 설계한다. 가로·세로를 각각 반으로 줄이는 것이 아니라 면적을 줄이고 벽 두께와 문 앞 통행을 유지한다. 작은 방의 식탁·좌석 세트는 하나를 중심으로 두고, 같은 역할의 두 번째 탁자·난방·작업대를 빈 공간 채우기로 추가하지 않는다. 여러 좌석·작업대가 실제로 필요한 공용 시설만 용량을 명시해 설계한다.",
+  "- 집 내부는 build_hand_interior_room(손 도트 v5)으로 짓는다. 방 역할·문·동선은 설계하되 동굴 윤곽·절벽 생성기를 실내에 적용하지 않는다. 민가 침상 구역은 바닥 6~12칸, 부엌은 12~24칸, 작은 공용 생활 영역은 15~18칸부터 필요한 가구와 접근 칸에 맞춰 설계한다. 가로·세로를 각각 반으로 줄이는 것이 아니라 면적을 줄이고 벽 두께와 문 앞 통행을 유지한다. 작은 방의 식탁·좌석 세트는 하나를 중심으로 두고, 같은 역할의 두 번째 탁자·난방·작업대를 빈 공간 채우기로 추가하지 않는다. 여러 좌석·작업대가 실제로 필요한 공용 시설만 용량을 명시해 설계한다.",
     "실내 칩셋의 생활 영역은 벽으로 둘러싼 방과 다르다. 일반 집은 공용 탁자 1세트에 6×3칸 정도의 생활 영역부터 잡고, 빈 바닥을 남기려고 건물 전체 폭까지 늘리지 않는다. 필요한 가구·접근 통로의 크기가 외곽을 결정한다. 하나의 연속된 외곽 안에 주방·식사·침상·서재를 두고 바닥 재질·러그·가구로 구분한다. canonical은 space.zones와 objectSlots[].zoneId를 사용한다(영역 좌표는 공간 바닥 기준, 벽 생성 없음). legacy는 openPlan:true와 변을 맞댄 rooms로 개방한다(생략하면 기존 칸막이). 칸막이는 욕실·잠금방·독립 객실 등 필요한 곳만, 모든 용도에 복도와 문을 붙이지 말 것. 풀 모양 화분(plant/plant_small)은 실내에 추가하지 않는다. 냄비(cauldron)는 조리 화덕 상판(21)에만 얹고 바닥에는 놓지 않는다. 수납장(cabinet)은 상단 한 줄이 북쪽 벽면과 겹치도록 놓는다. 꽃병·병 묶음은 탁자·수납장·책장 상판의 빈 upper 칸에 둔다. 받침이 없으면 생략하고 바닥에 흩뿌리지 않는다. 욕실은 석재 바닥의 작은 영역과 남쪽 경계 bathroom_steps(141·111·171 한 줄), 양쪽 통행 가능한 착지부로 단차를 표현할 수 있다. 높이 차를 원할 때만 검증된 계단 조립을 쓰고 바닥 재질 차이를 단차로 간주하지 말 것.",
 ].join("\n");
 
@@ -170,8 +170,8 @@ const INTRO = [
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
   "    구조물 스탬프는 사람 팔레트 전용이다. 타일 시공에 쓰지 마세요.",
   "    **외장 없는 독립 실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house(exterior-only)를 올리지 말고",
-  "    들어가서 걷는 집(외장+실내)은 author_house(interior:\"linked-interior\") 한 번이 정답이다 — 이때도 **interiorPlan(장소 수·크기·구역·층·물건)을 함께 설계해 넘기세요**. 생략하면 저작된 꾸러미 도면이 서거나, 초안뿐이면 절차 도면(규모×용도)에 초안 씨앗을 묶어 짓고, 실내가 갈리지 않으면 결과의 interiorVariety 리포트와 경고로 되돌아옵니다. 시설(여관 등)은 get_concept_facility → plan 설계 → place_concept({query, mapId, plan})으로 **새 mapId**를 시공하세요 — **plan 은 필수입니다**(생략하거나 템플릿을 그대로 복사하면 거부됩니다). 등록되지 않은 실내도 get_concept_facility로 sources의 장소·물건을 읽고 조합한 plan을 place_concept에 넘기세요. 집·마을의 연결 실내도 같은 꾸러미를 읽습니다",
-  "    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). **실내는 매번 설계한다 — 같은 도면을 찍어내지 마세요.** create_map만 하고 멈추지 마세요.",
+  "    들어가서 걷는 집(외장+실내)은 author_house(interior:\"linked-interior\") 한 번이 정답이다 — 이때도 **interiorPlan(장소 수·크기·구역·층·물건)을 함께 설계해 넘기세요**. 독립 실내·시설(여관 등)은 참고문서 「손 도트 실내 (v5)」를 읽고 build_hand_interior_room({mapId, plan, floor, wall, objects, tables, lines, goods, links})으로 **새 mapId**를 짓는다. 벽·천장·그림자는 평면에서 자동이다.",
+  "    오류면 맵이 생기지 않으니 좌표를 고쳐 다시, 경고(닿지 못한 바닥·쓸 수 없는 가구)도 고친다. **실내는 매번 설계한다 — 같은 도면을 찍어내지 마세요.** create_map만 하고 멈추지 마세요.",
   "    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.",
   "12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.",
   "    읽지 않고 upsert_event로 덮으면 기존 대사/분기가 사라집니다.",
@@ -421,7 +421,8 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
 }
 
 function conceptBundleSection(project: Project): string {
-  if (project.spatialAuthoring !== undefined) return "";
+  // 2026-09-29: place_concept·방 세션은 폐기(실내 = 손 도트 v5 build_hand_interior_room) — 모델에게 알리지 않는다.
+  if (RETIRED_INTERIOR_SECTIONS || project.spatialAuthoring !== undefined) return "";
   const listed = listLiveConceptBundles(project);
   const lines = [
     "## 개념 꾸러미 (place_concept 이 읽음)",
@@ -487,8 +488,10 @@ function conceptBundleSection(project: Project): string {
   return lines.join("\n");
 }
 
+const RETIRED_INTERIOR_SECTIONS = true;
+
 function interiorCatalogSection(project: Project, mapId: string | undefined): string {
-  if (project.spatialAuthoring !== undefined) return "";
+  if (RETIRED_INTERIOR_SECTIONS || project.spatialAuthoring !== undefined) return "";
   const tilesetIds = new Set<string>(currentTilesetIds(project, mapId));
   tilesetIds.add(INTERIOR_ROOM_TILESET_ID);
   const lines: string[] = [

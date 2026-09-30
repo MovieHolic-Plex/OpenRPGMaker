@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **109쪽 / 4080KB / 약 1,175,865 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **110쪽 / 4095KB / 약 1,180,164 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,7 +20,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 380KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2268 | ~111,141 |
 | `openwiki/editor-event-authoring.md` | 165KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 960 | ~47,991 |
 | `openwiki/editor-event-commands.md` | 63KB | 32KB | 268 | ~17,227 |
-| `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 467 | ~28,297 |
+| `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
 | `openwiki/editor-pre-edit-routing.md` | 178KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1114 | ~52,214 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 513 | ~20,302 |
@@ -56,6 +56,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/PROJECT_WIKI.md` | 2 | `.part-N.css`, `src/styles/editor/core.part-1.css` |
 | `openwiki/ai-workflow.md` | 5 | `20260709000000_ai_activity_logs.sql`, `src/ai/plannerSkip.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
+| `openwiki/atlas-biome-interior.md` | 2 | `atlasBiomeInteriorSheet.json`, `parts.ts` |
 | `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/castle-map.md` | 12 | `.oprn.json`, `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json`, `scripts/build-castle-2.mts`, `scripts/build-castle-map.mts`, `scripts/build-second-castle.mts`, `scripts/observe-castle-keep.mts`, `scripts/remove-castle-reference-bridge.mjs` |
@@ -214,6 +215,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 ### `openwiki/architecture.md` — 10KB · 70줄 · ~2,684 토큰
 
 절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/atlas-biome-interior.md` — 14KB · 107줄 · ~4,190 토큰
+
+- `L8` 원본과 칸
+- `L37` 코드
+- `L51` 참고문서 「손 도트 실내 (v5)」
+- `L56` 가구 메모·방 표 (2026-09-29)
+- `L75` 예제 맵·정본
+- `L81` 검증
+- `L87` 배·던전 — atlas_biome_dungeon
+- `L92` 남은 것
+- `L99` 편집기 「새 맵 → 실내」 기본 (2026-10-01)
 
 ### `openwiki/autotiles.md` — 23KB · 217줄 · ~6,795 토큰
 
@@ -769,7 +782,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L106` Validation
 - `L108` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 98KB · 467줄 · ~28,297 토큰 · 통째읽기 잘림
+### `openwiki/editor-interior-room-harness.md` — 98KB · 469줄 · ~28,406 토큰 · 통째읽기 잘림
 
 - `L7` 던전 천장과 단차의 구분 — 사용자 정정 (2026-09-13)
 - `L26` 대형 광산 저작 접합 교정 (2026-09-13)

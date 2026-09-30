@@ -2,9 +2,15 @@ import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { MapId, Project } from "@/project/types";
 
-export const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
+/** 새 실내 맵의 기본 칩셋 — 손 도트 실내 v5(생성 칩셋 공용). 옛 실내 칩셋은 폐기됐다(retiredInteriorTilesets.ts). */
+export const INTERIOR_TILESET_ID = "atlas_biome_interior";
+/** 새 실내 맵의 방 껍데기(벽 2줄·천장 테두리) 재료 — handInteriorSpec.json 의 floors·walls 키. */
+export const INTERIOR_SHELL_FLOOR = "boards";
+export const INTERIOR_SHELL_WALL = "plaster";
+/** 옛 EasyRPG 실내 칩셋. 파라메트릭 실내·공간 카탈로그 이관 경로만 이 번호 체계를 쓴다. */
+export const EASYRPG_INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
 /** easyrpg interior 나무 바닥(통행 가능). 잔디 240은 이 타일 그림판에서 다른 그림이다. */
-export const INTERIOR_FLOOR_TILE = 72;
+export const EASYRPG_INTERIOR_FLOOR_TILE = 72;
 export const DEFAULT_BLANK_MAP_SIZE = { width: 20, height: 15 } as const;
 export const DEFAULT_INTERIOR_MAP_SIZE = { width: 20, height: 15 } as const;
 

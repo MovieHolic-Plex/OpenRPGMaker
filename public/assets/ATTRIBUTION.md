@@ -541,3 +541,20 @@ claim; existing forest-harmony component notices still apply.
 - Each cell is a single shade colour (#10261a) at stepped alpha, shaped only by the transparency mask of an existing
   `forest-harmony/chipset.png` trunk cell. No pixels are copied from any source; the chipset's own notice applies.
 - `generated/battle-scenery/{plains,forest,cave,snow,desert}/*.png`: OPRN Studio 자체 생성 이미지 (OpenAI image_gen, 2026-09-28); 원화 시트와 프롬프트 포함, `scripts/asset-gen/gen-battle-scenery.mjs`로 도트 양자화·레이어 분리·이음매 보정. 외부 게임 소재를 복사하지 않음.
+
+## 손 도트 실내 v5 `atlas-interior/interior-chipset.png` (2026-09-29)
+
+`tex_atlas_biome_interior` / `atlas_biome_interior` (family `oprn-atlas`). Every cell is cut by
+`scripts/content/hand-interior/build_tileset.py` from the hand-pixel interior kit in `tiledata/hand-interior/v5`
+(pixels drawn in code in this repository, 2026-09-28; no third-party image). Some floor/wall surface textures in that
+kit sample tile interiors of `atlas-biomes/jungle-chipset.png` (this repository's own generated sheet). Its conventions were
+measured from the EasyRPG RTP (CC BY 4.0) as a visual reference only; no RTP pixels are pasted.
+Reference renders in `hand-interior-references/` are renders of the bundled example maps from this sheet (nearest-neighbour only).
+
+## 배·던전 `atlas-interior/dungeon-chipset.png` (2026-09-29)
+
+`tex_atlas_biome_dungeon` / `atlas_biome_dungeon` (family `oprn-atlas`), cut by `scripts/content/atlas-dungeon/split-dungeon.mjs`
+from the retired atlas interior sheet (commit 8e02e8e4e, cells 2160–3299):
+- Cells 0–479: EasyRPG `ChipSet/Ship.png` (JasonPerry, CC0). 480–509 blank (former Tibo graft slots).
+- Cells 510–989: EasyRPG `ChipSet/Dungeon.png` (JasonPerry, CC0); 990–992 blank, 993–998 cells grafted from EasyRPG combined town (CC0).
+- Cells 1020–1025: trapdoors, wall breach and rubble drawn in this repository. 1080+: composed water/abyss looks baked from app renders of those CC0 cells.

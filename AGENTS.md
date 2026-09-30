@@ -35,6 +35,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
    - 편집기 다국어 (ko/en/ja/zh 언어 결정 순서·DOM 번역 계층·화면 글자 역참조 금지 계약·카탈로그 추가 절차): `openwiki/i18n.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
+   - **실내는 손 도트 v5 하나 (hard rule, 2026-09-29):** 공용 실내 `atlas_biome_interior` = 손 도트 실내 v5 전용 시트(옛 Tibo·EasyRPG 실내·LPC 가구 칩셋은 폐기, 조수에게 안 보이고 거부된다), 배·던전은 `atlas_biome_dungeon`. 도구 `build_hand_interior_room`, 스킬 원본 `assistant-skills/interior-room-authoring/SKILL.md`, 편집기 「새 맵 → 실내」 기본도 이 칩셋: `openwiki/atlas-biome-interior.md`
    - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
    - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
