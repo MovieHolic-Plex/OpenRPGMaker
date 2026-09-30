@@ -195,6 +195,10 @@
   text-align: center;
 }
 
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-director-step="result"] .battle-message-window {
+  display: none;
+}
+
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-cursor {
   display: none;
 }

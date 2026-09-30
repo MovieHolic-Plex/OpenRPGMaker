@@ -1,11 +1,11 @@
 import type { BattleResult } from "@/battle/runtime";
-import type { BattleBattlerSnapshot, BattleEventStateSnapshot, BattleRewardsSnapshot } from "@/battle/types";
+import type { BattleBattlerSnapshot, BattleCapturedMonsterSnapshot, BattleEventStateSnapshot, BattleRewardsSnapshot } from "@/battle/types";
 import { computeActorLevelUp, computeTechPointLearning, type BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
-import { applyMonsterExperienceAndEvolution } from "@/project/monsterCollection";
+import { applyMonsterExperienceAndEvolution, giveMonster } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
 
@@ -19,6 +19,8 @@ export type BattleRewardsOutcome = {
   // 전투 종료 시점 스위치/변수/인벤토리(전투 개시 때 세션에서 시드됨).
   // 전투 중 아이템 소모와 전투 이벤트의 스위치/변수 변경을 세션에 되돌려 쓴다.
   readonly eventState?: BattleEventStateSnapshot;
+  /** Captures and consumed balls commit together after cancellable presentation. */
+  readonly capturedMonsters?: readonly BattleCapturedMonsterSnapshot[];
   readonly participatingActorIds?: readonly string[];
   // 옵션 A 몬스터 전투 모드였는지. true면 액터 exp/레벨업 루프를 건너뛴다
   // (전투에 나간 건 몬스터라 영웅에게 exp 를 주면 안 됨). 몬스터 exp 는 아래 기존 경로 유지.
@@ -43,6 +45,13 @@ export function applyBattleRewardsToSession(
     applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
     applyBattleStatesToSession(session, outcome.actors ?? []);
     applyBattleEventStateToSession(session, outcome.eventState);
+    for (const capture of outcome.capturedMonsters ?? []) {
+      giveMonster(project, session, {
+        speciesId: capture.speciesId, level: capture.level, caughtAt: capture.caughtAt,
+        ivs: capture.ivs, currentHp: capture.currentHp, stateIds: capture.stateIds,
+        stateTurns: capture.stateTurns, skillIds: capture.skillIds, skillPp: capture.skillPp,
+      });
+    }
     // Derived maxima follow final levels/class/growth, never stale battler maxima.
     // Restore battle damage first, then clamp without healing (before reward level-ups).
     const growthActorIds = new Set([

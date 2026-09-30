@@ -1,0 +1,225 @@
+{
+  "id": "rm2000-control",
+  "settings": {
+    "id": "rm2000-control",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "skin": "rm2000",
+    "result": true
+  },
+  "extra": [
+    {
+      "name": "result-settled",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "phase": "resolved",
+        "step": "result",
+        "busy": "false",
+        "scene": {
+          "x": 32,
+          "y": 24,
+          "width": 960,
+          "height": 720,
+          "top": 24,
+          "right": 992,
+          "bottom": 744,
+          "left": 32
+        },
+        "message": {
+          "text": ">승리경험치 17 / 골드 14 / 아이템 0",
+          "display": "none",
+          "visibility": "visible",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          }
+        },
+        "summary": {
+          "text": "승리\nEXP +17\n+14 G",
+          "rect": {
+            "x": 56,
+            "y": 48,
+            "width": 912,
+            "height": 96,
+            "top": 48,
+            "right": 968,
+            "bottom": 144,
+            "left": 56
+          }
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [
+          {
+            "id": "enemy-1",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 289.1000061035156,
+              "y": 238.62716674804688,
+              "width": 248.39999389648438,
+              "height": 279.4499816894531,
+              "top": 238.62716674804688,
+              "right": 537.5,
+              "bottom": 518.0771484375,
+              "left": 289.1000061035156
+            }
+          },
+          {
+            "id": "enemy-2",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 506.45001220703125,
+              "y": 272.1514587402344,
+              "width": 248.39996337890625,
+              "height": 279.4499816894531,
+              "top": 272.1514587402344,
+              "right": 754.8499755859375,
+              "bottom": 551.6014404296875,
+              "left": 506.45001220703125
+            }
+          },
+          {
+            "id": "enemy-3",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 723.800048828125,
+              "y": 238.62716674804688,
+              "width": 248.39990234375,
+              "height": 279.4499816894531,
+              "top": 238.62716674804688,
+              "right": 972.199951171875,
+              "bottom": 518.0771484375,
+              "left": 723.800048828125
+            }
+          },
+          {
+            "id": "battle-result-confirm",
+            "text": "확인",
+            "disabled": false,
+            "rect": {
+              "x": 698,
+              "y": 657,
+              "width": 270,
+              "height": 60,
+              "top": 657,
+              "right": 968,
+              "bottom": 717,
+              "left": 698
+            }
+          }
+        ],
+        "images": [
+          {
+            "rect": {
+              "x": 276.6800231933594,
+              "y": 237.38516235351562,
+              "width": 273.2399597167969,
+              "height": 240.32699584960938,
+              "top": 237.38516235351562,
+              "right": 549.9199829101562,
+              "bottom": 477.712158203125,
+              "left": 276.6800231933594
+            },
+            "bg": "none",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 494.030029296875,
+              "y": 270.9094543457031,
+              "width": 273.239990234375,
+              "height": 240.32699584960938,
+              "top": 270.9094543457031,
+              "right": 767.27001953125,
+              "bottom": 511.2364501953125,
+              "left": 494.030029296875
+            },
+            "bg": "none",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 711.3800048828125,
+              "y": 237.38516235351562,
+              "width": 273.239990234375,
+              "height": 240.32699584960938,
+              "top": 237.38516235351562,
+              "right": 984.6199951171875,
+              "bottom": 477.712158203125,
+              "left": 711.3800048828125
+            },
+            "bg": "none",
+            "rendering": "pixelated"
+          }
+        ],
+        "scroll": []
+      }
+    },
+    {
+      "name": "result-revealed",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "scene": null,
+        "message": {
+          "display": null,
+          "visibility": null,
+          "rect": null
+        },
+        "summary": {
+          "rect": null
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [],
+        "images": [],
+        "scroll": []
+      }
+    }
+  ],
+  "errors": [],
+  "beats": [
+    {
+      "id": "title",
+      "failures": []
+    },
+    {
+      "id": "field-start",
+      "failures": []
+    },
+    {
+      "id": "face-battle-event",
+      "failures": []
+    },
+    {
+      "id": "battle-intro",
+      "failures": []
+    },
+    {
+      "id": "battle-command",
+      "failures": []
+    },
+    {
+      "id": "battle-attack",
+      "failures": []
+    },
+    {
+      "id": "battle-result",
+      "failures": []
+    }
+  ]
+}

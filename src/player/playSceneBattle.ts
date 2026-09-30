@@ -22,7 +22,6 @@ import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
-import { giveMonster } from "@/project/monsterCollection";
 import { nextSessionRandom } from "@/project/session";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
@@ -172,20 +171,6 @@ export async function playBattle(
       partyMonsters: monsterPartyMode ? partyMonsters : undefined,
       // Terrain at the player's tile feeds battle backdrop when troop has no preview.
       captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
-      onMonsterCaptured: (capture) => {
-        if (!current()) return;
-        giveMonster(project, session, {
-          speciesId: capture.speciesId,
-          level: capture.level,
-          caughtAt: capture.caughtAt,
-          ivs: capture.ivs,
-          currentHp: capture.currentHp,
-          stateIds: capture.stateIds,
-          stateTurns: capture.stateTurns,
-          skillIds: capture.skillIds,
-          skillPp: capture.skillPp,
-        });
-      },
       rng: () => current() ? nextSessionRandom(session, "battle") : 0.5,
       playAudio: (resourceId, loop) => {
         if (!current()) return;
@@ -330,7 +315,7 @@ export async function playBattle(
                   exitBattleAudio(project, session, savedAudio);
                 }
                 applyBattleRewardsToSession(session,
-                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
+                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
                 if (!terminalDefeat && scene.runtimeTimers) {
                   applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
                 }

@@ -1,5 +1,6 @@
 import type { MutableBattler } from '@/battle/battleBattlers';
-import { applyStateEffects, recoverStatesWhenHit } from '@/battle/battleStates';
+import { recoverStatesWhenHit } from '@/battle/battleStates';
+import { applyStateEffectsWithEmotion } from '@/battle/battleEmotion';
 import { applyGen1MajorStatus, gen1EffectChanceSucceeds, gen1MajorStatusBlockedByType, readGen1MajorStatus } from '@/battle/gen1/status';
 import { battlerTypes, gen1CanonicalTypeForId } from '@/battle/typeChart';
 import type { Project, SkillRecord } from '@/project/types';
@@ -12,7 +13,7 @@ export function advancePredictedHitStates(project: Project, target: MutableBattl
     const guaranteedCandidates = skill.stateEffects?.filter(effect => effect.operation === 'remove'
       || equipment?.stateDefenseMode !== 'resist' || equipment.stateResistanceChance <= 0
       || !equipment.stateDefenseIds.includes(effect.stateId));
-    applyStateEffects(project, target, guaranteedCandidates, () => 1);
+    applyStateEffectsWithEmotion(project, target, guaranteedCandidates, () => 1);
     return;
   }
   if (skill.effect.kind === 'damage' && amount <= 0) return;

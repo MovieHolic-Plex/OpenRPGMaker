@@ -605,11 +605,11 @@ function launchMonster(b: TimelineBuilder, at: number, layers: readonly IndexedL
  * 계약 몬스터 스킬 → 타임라인. 모든 시각은 시퀀서의 적 비트(windup → impact → recover)에 대응하도록 첫 착탄이
  * approach 끝이 된다(retroMonsterSkillBeatMs). lunge 는 아군 파고들기(질주 130ms)와 같은 속도감이다.
  */
-export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill, options: { readonly hits?: number } = {}): RetroSkillTimeline {
+export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill, options: { readonly hits?: number; readonly side?: RetroTimelineSide } = {}): RetroSkillTimeline {
   const b = new TimelineBuilder();
   b.hitCount = Math.max(1, Math.round(options.hits ?? 1));
   const castType = ELEMENT_CAST[skill.element ?? ""] ?? (skill.motion === "buff" ? "support" : "arcane");
-  const side = retroMonsterSide(skill);
+  const side = options?.side ?? retroMonsterSide(skill);
   const { user, projectile, aim, impact } = partition(skill.layers);
   const playUser = (at: number): void => { for (const { index, layer } of user) b.layerFx(at, index, layer, false); };
   let tail = MONSTER_TAIL_MS;

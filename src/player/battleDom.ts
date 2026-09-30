@@ -1,4 +1,4 @@
-import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, retroClassSkillRecord, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
@@ -409,10 +409,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (retroMotion) retroTimelineEntry(field, entry);
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
-      if (retroMotion && entry.kind === "special" && entry.side === "actor" && pendingRetroSkillId && entry.userRecordId === pendingRetroSkillUserId) {
-        const skillId = pendingRetroSkillId;
-        pendingRetroSkillId = undefined;
-        startRetroSpecialSkill(field, entry, skillId, sequencer.speedMultiplier, repaintRetroBattler);
+      if (retroMotion && entry.kind === "special") {
+        const pending = entry.side === "actor" && entry.userRecordId === pendingRetroSkillUserId ? pendingRetroSkillId : undefined;
+        const skillId = entry.skillId ?? pending;
+        if (pending) pendingRetroSkillId = undefined;
+        if (skillId) startRetroSpecialSkill(field, entry, skillId, sequencer.speedMultiplier, repaintRetroBattler);
       }
       // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.
       if (entry.kind === "counter") root.dataset.battleCounterSeen = "true";
@@ -1128,7 +1129,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function checkAutoBattleStep(snapshot: BattleSnapshot): void {
-    if (!autoBattle || sequenceBusy || snapshot.result) return;
+    if (!autoBattle || sequenceBusy || inputPrompt || snapshot.result) return;
     if (snapshot.phase === "actorCommand") {
       const command = options.runtime.chooseAutoCommand();
       if (command) runActorCommand(command);
@@ -1150,6 +1151,19 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       .filter(([, count]) => count > 0)
       .map(([id, count]) => `${id}:${count}`)
       .join(",");
+    // Gauge charging alone does not rebuild menus. Eligibility changes at the
+    // ready boundary, and when skills, resources or blocking states change.
+    const eligibilitySignature = JSON.stringify({
+      partyGauge: snapshot.partyGauge,
+      actors: snapshot.actors.map((member) => ({
+        id: member.recordId, ready: member.gauge >= 100, hp: member.hp,
+        maxHp: member.maxHp, mp: member.mp, maxMp: member.maxMp,
+        classId: member.classId, stateIds: member.stateIds, skillIds: member.skillIds,
+        skillPp: member.skillPp, skillCooldowns: member.skillCooldowns,
+        resource2: member.resource2, limitGauge: member.limitGauge,
+        equipmentEffects: member.equipmentEffects,
+      })),
+    });
     const signature = [
       snapshot.phase,
       snapshot.activeActorId ?? "",
@@ -1160,6 +1174,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       actor?.mp ?? "",
       actor?.maxMp ?? "",
       actor?.skillIds.join(",") ?? "",
+      eligibilitySignature,
       inventorySignature,
       snapshot.forcedSwitchActorId ?? "",
       snapshot.switchCandidateActorIds.join(","),
@@ -1310,7 +1325,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function runActorCommand(command: ActorCommand): void {
-    if (sequenceBusy) return;
+    if (sequenceBusy || inputPrompt) return;
     const before = options.runtime.snapshot();
     options.runtime.performActorCommand(command);
     const afterCommand = options.runtime.snapshot();
@@ -1331,9 +1346,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
     const skillRecord = command.kind === "skill" ? store.getCurrent().database.skills.find((skill) => skill.id === command.skillId) : undefined;
-    pendingRetroSkillId = retroMotion && retroClassSkillRecord(skillRecord) ? skillRecord?.id : undefined;
+    pendingRetroSkillId = retroMotion && hasRetroSkillContract(skillRecord) ? skillRecord?.id : undefined;
     pendingRetroSkillUserId = snapshot.activeActorId;
-    if (retroMotion && command.kind === "skill" && (retroSkillRecipe(skillRecord) || retroClassSkillRecord(skillRecord))) {
+    if (retroMotion && command.kind === "skill" && (retroSkillRecipe(skillRecord) || hasRetroSkillContract(skillRecord))) {
       swingArmed = false; // The recipe owns release SE; the old animation and generic swing are silent.
       return;
     }
@@ -1358,6 +1373,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
    * 틀린 키·시간 초과는 실패. 결과는 명령의 inputResult 로 런타임에 넘어가 위력 배율이 된다.
    */
   function openInputPrompt(sequence: SkillInputSequence, onDone: (result: SkillInputResult) => void): void {
+    const owner = options.runtime.snapshot();
     const tracker = createInputSequenceTracker(sequence, Date.now());
     const overlay = document.createElement("div");
     overlay.className = "battle-input-prompt";
@@ -1387,6 +1403,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       window.clearTimeout(timer);
       overlay.dataset.result = result;
       overlay.remove();
+      const snapshot = options.runtime.snapshot();
+      if (destroyed || snapshot.result || snapshot.activeActorId !== owner.activeActorId
+        || snapshot.turn !== owner.turn || snapshot.phase !== owner.phase) {
+        if (!destroyed) syncView();
+        return;
+      }
       onDone(result);
     };
     const timer = scheduleBattleTimer(() => finish(tracker.expire(Number.POSITIVE_INFINITY) === "success" ? "success" : "fail"), sequence.timeLimitMs);
@@ -1514,7 +1536,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   else syncView();
 
   const tickInterval = window.setInterval(() => {
-    if (sequenceBusy) return;
+    if (sequenceBusy || inputPrompt) return;
     const before = options.runtime.snapshot();
     if (before.result) return;
     // Active ATB: 명령·대상 메뉴가 열려 있어도 시간이 흐른다. 런타임이 적만 행동시키고 메뉴를 되돌려 준다.

@@ -268,6 +268,7 @@ export function createBattleSequencer(
       amount: entry.amount ?? 0,
       critical: Boolean(entry.critical),
       skillName: entry.skillName,
+      ...(entry.skillId ? { skillId: entry.skillId } : {}),
     };
   }
 
@@ -617,7 +618,7 @@ export function createBattleSequencer(
       if ((later.kind === "stateAdded" || later.kind === "stateRemoved" || later.kind === "special") && later.targetId === entry.targetId) changed = true;
     }
     if (changed) return {};
-    const skill = store.getCurrent().database.skills.find((record) => record.name === entry.skillName);
+    const skill = store.getCurrent().database.skills.find((record) => entry.skillId ? record.id === entry.skillId : record.name === entry.skillName);
     const adds = (skill?.stateEffects ?? []).filter((effect) => effect.operation !== "remove").map((effect) => effect.stateId);
     if (adds.length === 0) return undefined;
     const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;

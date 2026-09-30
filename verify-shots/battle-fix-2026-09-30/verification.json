@@ -1,0 +1,13 @@
+{
+  "findingsAddressed": 14,
+  "engineDataConditions": "confirmed",
+  "interactionCases": 9,
+  "interactionFailures": 0,
+  "pageErrors": 0,
+  "visualConfigurations": 7,
+  "scenarioBeatFailures": 0,
+  "resultOverlapPxAfter": 0,
+  "gatesExecuted": false,
+  "vitestExecuted": false,
+  "canonicalProjectWritten": false
+}
