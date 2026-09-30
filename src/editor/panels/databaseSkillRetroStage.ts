@@ -19,7 +19,7 @@ import { partyPixelFrame, partyPixelSheet, partyPixelSheetUrl, PARTY_PIXEL_SHEET
 import { RETRO_ROSTER, retroRosterClass, type RetroRosterClass } from "@/assets/retroRoster";
 import { PIXEL_ENEMY_FRAME, pixelEnemyCell, pixelEnemySheet, pixelEnemySheetUrl, type PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { RETRO_CLASS_SKILLS, type RetroClassSkill, type RetroFxAnchor, type RetroSkillMotion } from "@/assets/retroClassSkills";
-import { resolveRetroClassChoreography, resolveRetroMonsterChoreography, retroClassSkill } from "@/assets/retroSkillCatalog";
+import { resolveRetroClassChoreography, resolveRetroMonsterChoreography, retroClassFamilyOf, retroClassSkill } from "@/assets/retroSkillCatalog";
 import { EXTENDED_POSE_FRAME, castFrame, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import {
   retroClassSkillTimeline,
@@ -89,11 +89,7 @@ const BASE_CLASS_IDS: ReadonlySet<string> = new Set(RETRO_SKILL_CLASS_FILTERS.ma
 
 /** 직업이 속한 계열. 기본 12직업(마도사 포함)이 먼저고, 나머지는 걷기 칩 시트 이름으로 가른다. */
 export function retroSkillClassGroupOf(classId: string): string | undefined {
-  if (BASE_CLASS_IDS.has(classId)) return "base";
-  const row = retroRosterClass(classId);
-  if (!row) return undefined;
-  const sheet = /^([a-z]+)/.exec(row.chip)?.[1];
-  return sheet === "actor" ? "actor" : sheet === "people" ? "people" : sheet === "animal" ? "animal" : sheet === "vehicles" ? "vehicles" : "monster-party";
+  return retroClassFamilyOf(classId);
 }
 
 /** 직업 칩 옆 「몬스터」 칩 id. skill_mon_* 스킬(계약 retroMonsterSkills.ts)을 고른다. */
@@ -147,7 +143,7 @@ export function retroStageEnemyLineup(source: { readonly keys: string; readonly 
   return found;
 }
 
-const MOTION_LABELS: Readonly<Record<RetroSkillMotion, string>> = {
+export const MOTION_LABELS: Readonly<Record<RetroSkillMotion, string>> = {
   "dash-strike": "파고들어 베기", "leap-strike": "뛰어올라 내려찍기", "blink-strike": "순간이동 베기", flurry: "연속 베기",
   spin: "회전 베기", cast: "제자리 시전", shoot: "제자리 사격", buff: "제자리 강화", finisher: "필살기",
 };

@@ -825,3 +825,44 @@
   pointer-events: none;
   z-index: 5;
 }
+
+/* 「도트 연출」 고르기(databaseSkillRetroPicker.ts) — 필터 한 줄 + 후보 select 한 줄. */
+.db-skill-retro-picker {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.db-skill-retro-picker-title {
+  color: var(--db-studio-text-1);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.db-skill-retro-picker-status {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+}
+
+.db-skill-retro-picker-filters,
+.db-skill-retro-picker-pick {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.db-skill-retro-picker-query {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.db-skill-retro-picker-list {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.db-skill-retro-picker-count {
+  color: var(--db-studio-text-2);
+  font-size: 11px;
+}
