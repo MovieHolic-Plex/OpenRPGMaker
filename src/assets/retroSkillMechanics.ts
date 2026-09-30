@@ -1,48 +1,76 @@
 // retro2003 직업 스킬의 **기믹 칸** — RetroClassSkill.mechanic 의 어휘와 직업 설계 규칙.
-//
-// 이 파일만 읽고 묶음(src/assets/retroRosterSkills/<묶음>.ts)의 mechanic 을 채울 수 있게 쓴다.
-// mechanic 이 있으면 기본 DB 레코드(src/project/defaults/retroRosterRecords.ts)는 **이 칸이 우선**이고,
-// 적지 않은 필드만 설명 낱말 유도(deriveRosterSkillSeed: 위력·MP·속성·대상·연출)로 채운다. mechanic 이 없으면 유도만 쓴다.
-// 이펙트 레이어·motion·id·level 은 그림과 맞물려 있으니 기믹 때문에 바꾸지 않는다.
-//
-// ── 어휘 (전부 선택) ─────────────────────────────────────────────────────────────────────────────
-//   kind      damage(기본) · healing · support(피해 없이 상태만) · steal · scan. 유도와 다를 때만 적는다.
-//   stat      damage 의 능력치 attack(공격력·물리 방어로 경감) | mind(정신력·마법 방어로 경감). healing 은 언제나 mind.
-//   affects   hp(기본) | mp. damage+mp = MP 를 깎는다(drain 이면 MP 흡수), healing+mp = MP 회복.
-//   scope     enemy · allEnemies · ally · allAllies · self. 레이어 앵커(allTargets=전체)와 어긋나게 바꾸지 않는다.
-//   power     위력 덮어쓰기(생략 = 레벨 곡선). healing 으로 바꾸면 반드시 적는다.
-//   mp        MP 소모 덮어쓰기.
-//   hits      다단 배율 목록. [0.4, 0.4, 0.4] = 위력 40% 로 세 번. 합이 1.2~1.5 면 단타와 비슷한 총량이다.
-//             회마다 명중·치명·상태 판정을 따로 한다 — 첫 타에 건 약점(기름·젖음)이 다음 타에 먹는다.
-//   area      circle | line. 단일 대상 기술이 주 대상 둘레(원)나 같은 가로줄(직선)의 적도 맞힌다.
-//   formula   피해 수식(방어를 이미 포함한 값으로 본다 — 방어 경감 없음). 변수 power a.atk a.def a.mind a.agi a.hp a.mp a.level
-//             b.* (a=시전자, b=대상, hp 는 **현재** HP). 예: 그래비티 "b.hp / 2", 암흑검 "power / 2 + a.hp / 2".
-//   hpCost    시전 대가 — 시전자 최대 HP 의 N% 를 잃는다(1 밑으로는 안 깎음). 화면에 대가 숫자가 뜬다.
-//   drain     흡수 — 준 피해의 N% 를 시전자가 회복(affects mp 면 MP). 화면에 회복 숫자가 뜬다.
-//   states    상태 부여/해제 목록 { id, chance?(기본 100), op?("add" 기본 | "remove") }. 적으면 유도 상태를 **대체**한다([] = 없음).
-//   revive    true 면 전투불능 해제(state_death remove)를 붙인다 — 부활.
-//   element   속성 id(sword spear hit bow fire ice thunder water earth wind holy dark). null = 무속성으로 강제.
-//   crit      치명 확률 %.   hitRate  명중 %.   priority  기술 우선도 -7~7(strict 턴제에서만 순서를 바꾼다).
-//   cooldown  사용 뒤 못 쓰는 라운드 수.
-//
-// 기본 DB 상태(쓸 수 있는 id): state_poison 독 · state_deep_poison 맹독(출혈) ·
-//   state_sleep 수면 · state_paralysis 마비 · state_silence 침묵 · state_blind 암흑(통상 공격 명중 ½) ·
-//   state_stop 스톱(게이지 정지·행동 불가, 짧다) · state_petrify 석화(전투 불능 취급) · state_berserk 버서크(무작위 통상 공격, 공 1.5배) ·
-//   state_attack_up/down · state_defense_up/down · state_agility_up(헤이스트)/down(슬로우) · state_protect 프로텍트(물리 경감) ·
-//   state_shell 실드(마법 경감) · state_regen 재생 · state_wet 젖음(번개 약점) · state_oiled 기름(불 약점) · state_death 전투불능.
-//   자동 부활은 엔진에 없다. 화상·빙결(state_burn/freeze)은 포켓몬 데모 DB 에만 있다 — 기본 DB 에 없는 id 를 쓰면 프로젝트 검증이
-//   「stateId does not exist」로 player 부팅을 막는다.
-//
-// ── 직업 설계 규칙 ───────────────────────────────────────────────────────────────────────────────
-//   1. 직업당 8개 중 **순수 1타 데미지는 최대 2개**. 서로 다른 기믹 최소 4종(다단·범위 모양·비율 수식·대가·흡수·시간·
-//      방어막·상태·약점 만들기·해제·부활·훔치기 중).
-//   2. 필살기(level 22)는 다단, 또는 대가/특수 효과(정지·약점 연계·비율 피해)를 갖는다.
-//   3. **이름이 약속한 효과를 반드시 한다**: 슬로우→state_agility_down, 헤이스트→state_agility_up, 그래비티→비율 수식,
-//      스톱→state_stop, 연막→state_blind, 대가/피→hpCost, 흡수/이터→drain, N번 베기→hits N개, 꿰뚫기·직선→area line.
-//      효과와 설명이 어긋나면 설명 한 줄을 고친다.
-//   4. 직업 정체성: 암흑기사=HP 대가·흡수·현재 HP 비례 · 시공술사=헤이스트·슬로우·스톱·그래비티 · 도적=다단·훔치기·암흑·독 ·
-//      성기사=프로텍트·실드·부활·신성 · 적마도사=두 번 치기·해제·MP 전환·약점 만들기 · 발키리=직선·강하·다단 ·
-//      야수조련사=소환 다단·출혈(맹독)·위압. 새 직업도 이런 정체성 한 줄을 먼저 정하고 8개를 거기에 맞춘다.
+// 어휘·설계 규칙의 정본은 아래 RETRO_SKILL_DESIGN_GUIDE 하나다. 묶음(src/assets/retroRosterSkills/<묶음>.ts)을 쓰는 사람도,
+// 편집기 조수의 read_retro_skill_guide 도구도 같은 문자열을 읽는다(복사본 없음). 규칙을 고칠 땐 이 문자열만 고친다.
+
+export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 설계 규칙. 묶음 파일(src/assets/retroRosterSkills/<묶음>.ts)의 mechanic 칸을 채울 때도,
+편집기 조수가 upsert_skill 로 스킬을 만들 때도 같은 어휘를 쓴다.
+묶음에서는 mechanic 이 있으면 기본 DB 레코드(src/project/defaults/retroRosterRecords.ts)가 **이 칸을 우선**하고,
+적지 않은 필드만 설명 낱말 유도(deriveRosterSkillSeed: 위력·MP·속성·대상·연출)로 채운다. mechanic 이 없으면 유도만 쓴다.
+이펙트 레이어·motion·id·level 은 그림과 맞물려 있으니 기믹 때문에 바꾸지 않는다.
+
+── 어휘 (전부 선택) ─────────────────────────────────────────────────────────────────────────────
+  kind      damage(기본) · healing · support(피해 없이 상태만) · steal · scan. 유도와 다를 때만 적는다.
+  stat      damage 의 능력치 attack(공격력·물리 방어로 경감) | mind(정신력·마법 방어로 경감). healing 은 언제나 mind.
+  affects   hp(기본) | mp. damage+mp = MP 를 깎는다(drain 이면 MP 흡수), healing+mp = MP 회복.
+  scope     enemy · allEnemies · ally · allAllies · self. 레이어 앵커(allTargets=전체)와 어긋나게 바꾸지 않는다.
+  power     위력 덮어쓰기(생략 = 레벨 곡선). healing 으로 바꾸면 반드시 적는다.
+  mp        MP 소모 덮어쓰기.
+  hits      다단 배율 목록. [0.4, 0.4, 0.4] = 위력 40% 로 세 번. 합이 1.2~1.5 면 단타와 비슷한 총량이다.
+            회마다 명중·치명·상태 판정을 따로 한다 — 첫 타에 건 약점(기름·젖음)이 다음 타에 먹는다.
+  area      circle | line. 단일 대상 기술이 주 대상 둘레(원)나 같은 가로줄(직선)의 적도 맞힌다.
+  formula   피해 수식(방어를 이미 포함한 값으로 본다 — 방어 경감 없음). 변수 power a.atk a.def a.mind a.agi a.hp a.mp a.level
+            b.* (a=시전자, b=대상, hp 는 **현재** HP). 예: 그래비티 "b.hp / 2", 암흑검 "power / 2 + a.hp / 2".
+  hpCost    시전 대가 — 시전자 최대 HP 의 N% 를 잃는다(1 밑으로는 안 깎음). 화면에 대가 숫자가 뜬다.
+  drain     흡수 — 준 피해의 N% 를 시전자가 회복(affects mp 면 MP). 화면에 회복 숫자가 뜬다.
+  states    상태 부여/해제 목록 { id, chance?(기본 100), op?("add" 기본 | "remove") }. 적으면 유도 상태를 **대체**한다([] = 없음).
+  revive    true 면 전투불능 해제(state_death remove)를 붙인다 — 부활.
+  element   속성 id(sword spear hit bow fire ice thunder water earth wind holy dark). null = 무속성으로 강제.
+  crit      치명 확률 %.   hitRate  명중 %.   priority  기술 우선도 -7~7(strict 턴제에서만 순서를 바꾼다).
+  cooldown  사용 뒤 못 쓰는 라운드 수.
+
+기본 DB 상태(쓸 수 있는 id): state_poison 독 · state_deep_poison 맹독(출혈) ·
+  state_sleep 수면 · state_paralysis 마비 · state_silence 침묵 · state_blind 암흑(통상 공격 명중 ½) ·
+  state_stop 스톱(게이지 정지·행동 불가, 짧다) · state_petrify 석화(전투 불능 취급) · state_berserk 버서크(무작위 통상 공격, 공 1.5배) ·
+  state_attack_up/down · state_defense_up/down · state_agility_up(헤이스트)/down(슬로우) · state_protect 프로텍트(물리 경감) ·
+  state_shell 실드(마법 경감) · state_regen 재생 · state_wet 젖음(번개 약점) · state_oiled 기름(불 약점) · state_death 전투불능.
+  자동 부활은 엔진에 없다. 화상·빙결(state_burn/freeze)은 포켓몬 데모 DB 에만 있다 — 기본 DB 에 없는 id 를 쓰면 프로젝트 검증이
+  「stateId does not exist」로 player 부팅을 막는다.
+
+── 직업 설계 규칙 ───────────────────────────────────────────────────────────────────────────────
+  1. 직업당 8개 중 **순수 1타 데미지는 최대 2개**. 서로 다른 기믹 최소 4종(다단·범위 모양·비율 수식·대가·흡수·시간·
+     방어막·상태·약점 만들기·해제·부활·훔치기 중).
+  2. 필살기(level 22)는 다단, 또는 대가/특수 효과(정지·약점 연계·비율 피해)를 갖는다.
+  3. **이름이 약속한 효과를 반드시 한다**: 슬로우→state_agility_down, 헤이스트→state_agility_up, 그래비티→비율 수식,
+     스톱→state_stop, 연막→state_blind, 대가/피→hpCost, 흡수/이터→drain, N번 베기→hits N개, 꿰뚫기·직선→area line.
+     효과와 설명이 어긋나면 설명 한 줄을 고친다.
+  4. 직업 정체성: 암흑기사=HP 대가·흡수·현재 HP 비례 · 시공술사=헤이스트·슬로우·스톱·그래비티 · 도적=다단·훔치기·암흑·독 ·
+     성기사=프로텍트·실드·부활·신성 · 적마도사=두 번 치기·해제·MP 전환·약점 만들기 · 발키리=직선·강하·다단 ·
+     야수조련사=소환 다단·출혈(맹독)·위압. 새 직업도 이런 정체성 한 줄을 먼저 정하고 8개를 거기에 맞춘다.
+
+── 조수(편집기 AI)가 새 스킬을 만들 때 ─────────────────────────────────────────────────────────
+  순서: (1) 직업 정체성 한 줄을 정한다. (2) 8개의 기믹 배분표를 먼저 쓴다(위 규칙 1~2). (3) 스킬마다 list_retro_choreographies 로
+  어울리는 연출을 찾는다(motion·element·anchor·family·query 로 좁힌다). (4) upsert_skill 로 만든다.
+  **새 스킬은 retroChoreographyId 로 연출을 빌린다** — 자기 id 의 연출이 없으면 기본 베기/불꽃으로 보이므로, 빌릴 계약 id 를
+  넣는다. 연출의 앵커가 기믹의 대상과 맞아야 한다: allTargets 연출 = scope allEnemies, allAllies 연출 = scope allAllies,
+  user 만 있는 연출 = self 계열 buff. 다단 기술은 flurry/finisher 연출을 빌리고 hits 개수를 그림의 타수에 맞춘다.
+  upsert_skill 필드 ↔ 어휘: hits=hitSequence(배율 배열, 최대 16) · formula=damageFormula · hpCost=hpCostPercent · drain=drainPercent ·
+  states=stateEffects [{stateId, chance, operation:"add"|"remove"}] · area={shape,radius}(circle 120 / line 96 이 묶음 기본) ·
+  crit=criticalRate · priority=movePriority · cooldown=cooldownTurns · element=elementId · mp=mpCost{flat,percentMax} ·
+  kind/stat/affects=effect{kind,statistic,affects} · scope=scope · power=power · revive=stateEffects 에 state_death remove.
+  상태를 새로 만들어야 하면(스톱·버서크·프로텍트·실드·속성 배율은 upsert_state 로 이미 저작 가능) 기본 상태 id 를 먼저 재사용한다.
+
+── 설계 예시(크로노 트리거·FF 풍) ─────────────────────────────────────────────────────────────
+  화염 검투사(정체성: 불꽃을 두르고 대가를 치르며 싸운다)
+    불꽃 베기      순수 1타(fire)                    연출 dash-strike 계열, fire
+    화염 삼연격    hits [0.4,0.4,0.4], 기름 부여      flurry 계열  ── 다단 + state_oiled 로 다음 불 기술의 약점을 만든다
+    불사의 서약    scope self, hpCost 20, state_attack_up  buff 계열 ── 대가를 치르고 강화
+    피의 잔  drain 40, hpCost 10                      단일 흡수 + 대가
+    작열 파도      area line(직선) 또는 scope allEnemies, fire   광역
+    도발의 함성    support, state_berserk(적) / state_defense_up(자신)  이름이 약속한 효과
+    분노의 일격    formula "power / 2 + a.hp / 2"     암흑검식 현재 HP 비례
+    폭염 낙하(필살, level 22)  hits [0.5,0.5,0.5,0.5] + hpCost 15 + 기름 연계   finisher 연출
+  크로노 트리거식 연계: 젖음(state_wet)을 거는 물 기술 뒤에 번개 기술을 이어 약점을 찌른다. FF식: 슬로우/헤이스트/스톱은 시간 계열
+  직업의 정체성이고, 스톱은 짧게(강력하므로 낮은 chance), 그래비티는 formula "b.hp / 2" 처럼 비율 피해로 보스에게 통한다.`;
 
 export type RetroSkillMechanicKind = "damage" | "healing" | "support" | "steal" | "scan";
 export type RetroSkillMechanicScope = "self" | "ally" | "allAllies" | "enemy" | "allEnemies";

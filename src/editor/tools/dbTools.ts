@@ -1597,7 +1597,7 @@ function reconcileActorFace(record: ActorRecord, patch: Record<string, unknown>,
 
 const upsertSkill: ToolDefinition = {
   name: "upsert_skill",
-  description: "스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
+  description: "스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. retro2003 전투에서는 새·복제 스킬에 retroChoreographyId 로 도트 연출을 빌려야 기본 베기로 안 보인다(list_retro_choreographies). 기믹 어휘·직업 설계 규칙은 read_retro_skill_guide.",
   mode: "write",
   parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }, actionSkillClearProperties),
   run(draft, args): ToolExecResult {

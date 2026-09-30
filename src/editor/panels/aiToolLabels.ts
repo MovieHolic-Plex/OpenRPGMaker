@@ -309,6 +309,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   present_doc: system("설명 문서 쓰기", "book"),
   list_ai_docs: inspect("AI 문서 목록", "book"),
   list_retro_choreographies: inspect("도트 연출 찾기", "spark"),
+  read_retro_skill_guide: inspect("스킬 설계 지침 읽기", "book"),
   read_ai_doc: inspect("AI 문서 읽기", "book"),
   generate_character_appearance: build("캐릭터 그림 만들기", "user"),
 };
