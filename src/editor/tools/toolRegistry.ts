@@ -63,6 +63,7 @@ import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
+import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
@@ -226,6 +227,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
+  ...withDomain(RETRO_CHOREOGRAPHY_TOOLS, "database"),
   ...withDomain(LIFE_SYSTEM_TOOLS, "database"),
   ...withDomain(LIFE_ECONOMY_TOOLS, "database"),
   ...withDomain(LIFE_COLLECTION_TOOLS, "database"),

@@ -123,7 +123,7 @@
 | `set_type_chart` | `types: array`, `multipliers: object` | 포켓몬식 타입 상성표를 설정한다. types는 타입 id 배열이고 multipliers[공격][방어]는 데미지 배율이다. |
 | `give_starter_monsters` | `speciesIds: array`, `actorEvent?: object` | 스타팅 몬스터 3종 선택 이벤트를 생성한다. 각 선택지는 giveMonster를 실행하고 셀프스위치 A로 재지급을 막는다. |
 | `upsert_actor` | `actor: object` | 아군 액터 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
-| `upsert_skill` | `skill: object`, `clearActionSkill?: boolean`, `clearActionFieldStatus?: boolean`, `clearActionItemCost?: boolean` | 스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_skill` | `skill: object`, `clearActionSkill?: boolean`, `clearActionFieldStatus?: boolean`, `clearActionItemCost?: boolean` | 스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. skill.hpCostPercent(시전 HP 소모%)·drainPercent(흡수%)·retroChoreographyId(retro2003 도트 연출 빌리기, list_retro_choreographies 로 조회) 지원. |
 | `upsert_equipment` | `equipment: object` | 장비(무기/방어구) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
 | `upsert_class` | `class: object` | 직업(클래스) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
 | `define_promotion` | `classId: string`, `toClassId: string`, `requires: object` | 직업 승급 조건을 정의한다. 같은 toClassId 승급은 덮어쓰며 레벨/스위치/아이템 소모/변수 조건을 지원한다. |
@@ -297,6 +297,7 @@
 | `list_project_commits` | `limit?: integer` | 현재 저장소의 최근 변경 이력을 반환한다. 동기 조회를 제공하는 저장소(데스크톱 폴더·메모리)에서만 지원된다. |
 | `find_layout_regions` | `mapId: string`, `query: string` | 맵의 설계 bbox 영역(layoutPlan.regions)을 질의로 검색한다. 한국어/영문 부분일치(상점·시장·장터→market, 집→house, 파란→blue, 가운데/중앙→중심 영역).  상점/가게/집 철거·수정 전에 이 툴로 영역 rect 를 얻는다 — 비전으로 좌표를 추측하지 말 것.query에 '가운데'/'중앙'이 있으면 맵 중앙에 가까운 순으로 정렬한다. 영역 bbox를 특정하거나 시공 좌표를 추론할 때 쓴다. 주의: 이 도구는 마을 빌더의 설계 기록(layoutPlan.regions)만 본다 — 팔레트로 찍은 구조물 배치(map.structurePlacements)는 보이지 않는다. |
 | `list_ai_docs` | `query?: string` | 저장된 AI 문서 목록을 조회한다(제목/블록 수/생성 시각). query로 제목·마크다운 본문을 부분일치 검색할 수 있다(대소문자 무시). |
+| `list_retro_choreographies` | `motion?: string`, `element?: string`, `anchor?: string`, `family?: string`, `classId?: string`, `query?: string`, `limit?: integer`, `offset?: integer` | retro2003 측면 전투의 도트 연출(안무) 계약을 찾는다. 새 스킬은 여기서 고른 id 를 upsert_skill 의 retroChoreographyId 에 넣어 연출을 빌려 쓴다. 필터를 모두 생략하면 종류별 개수만 돌려준다. 기본 12건, limit 최대 40. |
 | `get_tile_info` | `tileIds: array`, `tilesetId?: string` | 타일들의 의미(라벨/설명/태그)·시맨틱 그룹·배치 규칙(placementRules)·통행성·레이어를 조회한다. 타일을 깔기 전에 확인하는 용도. |
 | `list_unclassified_tiles` | `tilesetId: string`, `limit?: integer`, `offset?: integer` | 타일셋에서 라벨이 없고 어떤 타일 그룹에도 속하지 않은 미분류 타일 인덱스를 페이지로 조회한다. 미분류 분석을 다음 배치로 이어갈 때 사용. |
 | `analyze_map_tile_usage` | `mapId: string`, `includeDescribed?: boolean` | 사람이 깐 맵에서 사용된 타일 종류·사용량·설명 유무·대표 영역(sampleRegion)·인접 통계(mostCommonBelow/Above)를 추출한다. 맵 인터뷰의 시작점 — 설명 없는(described=false) 타일부터 질문하라. tiles[].layers 는 lower(1층)·upper(3층)·layer2·layer4 — 2·4층·그림자가 있는 맵은 data.layerCells 에 층별 칸 수가 온다. |
