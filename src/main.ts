@@ -14,6 +14,7 @@ import "@/storageBoot";
 import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
 import { loadSharedTileReferences } from "@/project/sharedTileReferences";
 import { loadSharedContent } from "@/project/sharedContent";
+import { installReferenceDocumentOwners } from "@/project/installReferenceOwners";
 import { bootApp } from "@/app/mode";
 import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
 import { editorState } from "@/editor/editorState";
@@ -107,6 +108,8 @@ async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   const tileReferences = loadSharedTileReferences();
   reportBootStage("shared");
   await loadSharedContent({ scope: "defaults" });
+  // 공용 카탈로그가 설치된 뒤·프로젝트 로드 전에 켠다 — 로드가 표지를 되돌릴 소유자 판본을 알아야 한다.
+  installReferenceDocumentOwners();
   await bootApp(host);
   startTeamSession();
   void tileReferences.then(() => store.applySharedReferenceRefresh());

@@ -1,5 +1,21 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 번들·공용 참고문서 소유 분리 — 저장 문서에서 빼고 로드에서 되돌림 (2026-09-30, 편집기 렉 F)
+
+- 문제: `tilesets[id].referenceDocuments` 는 펼치면 42MB, 접어도 22MB 이고 그 대부분(shared_* 15.4MB + 번들 6.5MB)은 번들·공용 라이브러리 판본과 통째로 같은 사본이라 매 로드마다 읽고 해시한다.
+- 계약 (`src/project/referenceOwnership.ts`, `installReferenceOwners.ts`, `io/serialize.ts`):
+  - `projectWireView` 가 배열 전체가 소유자 판본과 JSON 동치인 타일셋에서만 `referenceDocuments`(과 폐기된 `terrainTemplates`)를 빼고 `referenceDocumentsOwner: "bundle" | "shared"` 표지를 남긴다. 저자가 한 글자라도 고쳤거나 범주를 더한 타일셋은 통째로 그대로 저장한다.
+  - 로드(`deserializeParsed`)가 표지를 보고 소유자 판본을 `structuredClone` 해 되돌리고 표지를 지운다. 되돌린 프로젝트는 저장 전과 JSON 동치이고, 정규화기의 「변경 감지」 다이제스트도 그대로다.
+  - 켜는 곳은 편집기 부팅뿐이다 — `main.ts` 가 `loadSharedContent({scope:"defaults"})` 뒤에 `installReferenceDocumentOwners()` 를 부른다. 해석기가 등록되지 않은 헤드리스 도구·테스트·플레이어·Electron main 은 예전 그대로 문서를 통째로 저장한다(바이트 동일).
+  - `.oprn` 내보내기(`serializePretty`)는 `keepReferenceDocuments` 로 문서를 그대로 담는다 — 파일이 자체완결이어야 한다.
+  - 공용 소유자는 `projectDefaults` 라이브러리만 본다(장소·지역 카탈로그는 부팅 때 없어 되돌릴 수 없다). 번들 소유자는 `defaultTilesets()+ensureBundledTilesets()` 판본(첫 사용 때 약 0.4초, 한 번).
+- 호환: 표지는 알 수 없는 키라 옛 앱은 무시하고, 번들 문서는 ensure*, 공용 문서는 `ensureSharedContent` 가 다시 채운다. 옛 파일(문서가 들어 있는 것)은 그대로 읽힌다. 호스트는 해석기가 없어 클라이언트가 보낸 텍스트를 그대로 저장한다.
+- 한계: 구조 키트 안의 `structureKits[].referenceDocuments` 는 아직 빼지 않는다. 메모리 상주량은 줄지 않는다(디스크·전송·파싱·wire 다이제스트만 준다). 헤드리스 sqlite 소비자(`export-tileset-references.mjs`)는 새로 저장된 프로젝트에서 표지만 있는 타일셋을 볼 수 있어 ensure* 로 채워야 한다.
+- 증거: `verify-shots/editor-lag-fix/F/ref-roundtrip-eq.mts`(옛 파일 로드→정규화→저장→재로드가 뺀 적 없는 프로젝트와 jsonEqual, 저자 수정 보존, 도구 매니페스트 동일, 멱등).
+- 빌드 청크(`vite.config.ts` `build.rollupOptions.output.manualChunks`): `src/assets/*.json`·`src/project/defaults/**.json` 은 `bundled-data` 청크(약 29MB)로 뗀다. 진입 청크 31.0MB → 8.9MB 가 되고 앱 코드 릴리스가 바뀌어도 데이터 청크 캐시가 남는다. 정적 import 라 부팅 순서·동작은 그대로다. 지연 로드(동적 import)로 부팅에서 빼는 것은 하지 않았다 — 실측 JSON 파싱·컴파일 합이 약 0.3~0.4초(장소 카탈로그 165ms, 데모 픽스처 51ms, 나머지 각 13~27ms)로 부팅의 1~2% 뿐인데 소비자는 대부분 동기다(`createSampleAdventureProject`, 장소 카탈로그 소비자 3곳, `bundled.ts` 의 forestHarmony·tiboRecovered). phaser 는 이미 `phaser.min.js` 자산으로 따로 실린다. 플레이어·독립 빌드는 별도 설정이라 영향이 없다.
+- 부팅 정규화기 비용 실측(`normalizeCurrentProject` 16종, `verify-shots/editor-lag-fix/F/normalizer-cost.mts`): 이미 정규화된 프로젝트에서 콜드 약 1.1초·웜 약 0.3초, 변경 감지용 `jsonContentDigest` 는 콜드 약 4.8초·웜 약 0.4초. 「버전 표지로 정규화기 건너뛰기」로 아끼는 것은 최대 1.1~1.5초이고 진짜 큰 비용은 콜드 다이제스트와 `/__oprn/shared-content?scope=defaults` 응답(디코드 146MB)이다.
+- 마이그 저장 지속성(`persist-trace.mjs`): 마이그·미디어 분리 결과는 저장돼 다음 로드가 빨라진다(대형 사본 첫 로드 31초 → 둘째 21초). 다만 `shared_paw_modern_interiors`·`shared_refmap_crayon|snow|town_outside` 의 저장된 `structureKits` 순서가 라이브러리 순서와 달라 `ensureSharedContent` 가 되돌리고 `applySharedReferenceRefresh` 가 다시 합치므로 로드마다 「프로젝트 정규화 (2종)」 + 저장이 반복된다(수렴 안 함). 수렴 패치는 `sharedContent.ts`/`sharedTileReferences.ts` 몫이다.
+
 ## 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)
 
 `SkillRecord.retroChoreographyId?: string` — 계약 연출 id(예: `skill_hero_flame_sword`). 정규화 화이트리스트와 편집 변이 키에 들어 있고, 비어 있으면 필드 자체가 없다. 없는 id 는 조수 도구가 거부하고(비슷한 후보를 돌려줌) 편집기는 계약 목록에서만 고르게 한다. 런타임 의미는 [runtime-battle.md](runtime-battle.md) 같은 날짜 절.
