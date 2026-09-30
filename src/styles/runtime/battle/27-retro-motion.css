@@ -183,6 +183,14 @@
   0% { opacity: 1; clip-path: inset(0); filter: sepia(1) saturate(5) hue-rotate(320deg); }
   100% { opacity: 0; clip-path: inset(100% 0 0); filter: sepia(1) saturate(5) hue-rotate(320deg); }
 }
+/* 다단 타격으로 같은 대상에 쌓인 숫자: 튀지 않고 제자리에서 사라진다(battleFieldDom showDamageFeedback). */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup[data-stacked] {
+  animation: retro-number-stacked 800ms linear both;
+}
+@keyframes retro-number-stacked {
+  0%, 82% { opacity: 1; }
+  100% { opacity: 0; }
+}
 @keyframes retro-number {
   0% { opacity: 1; translate: 0 0; }
   20% { translate: 0 -32px; }

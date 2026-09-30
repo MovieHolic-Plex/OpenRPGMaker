@@ -373,13 +373,38 @@ function sameAction(a: BattleTimelineEntrySnapshot, b: BattleTimelineEntrySnapsh
     && (a.skillId || b.skillId ? a.skillId === b.skillId : b.skillName === a.skillName) && VISUAL_KINDS.has(b.kind);
 }
 
-function buildPlan(skill: PlayableSkill, record: SkillRecord, sequences: readonly number[], monster = false): ClassPlan {
+/**
+ * 엔트리 묶음의 착탄 시각. 엔트리 순서는 대상별로 타수를 몰아 적는다(대상1 1·2·3타, 대상2 1·2·3타…).
+ * n 번째 타는 연출의 n 번째 hit 이벤트에 맞추고(없으면 첫 타 + n × 간격), 대상마다 간격만큼 늦춘다.
+ * 시퀀서는 엔트리를 순서대로 치므로 시각이 엔트리 순서대로 늘어나게 최소 간격을 지킨다.
+ */
+function plannedHitTimes(timeline: RetroSkillTimeline, firstHit: number, group: readonly BattleTimelineEntrySnapshot[]): number[] {
+  const hitEvents = [...new Set(timeline.events.filter((event) => event.kind === "hit").map((event) => event.at))].sort((a, b) => a - b);
+  const targetOrder: string[] = [];
+  const hitsSoFar = new Map<string, number>();
+  let previous = -Infinity;
+  return group.map((row) => {
+    const target = row.targetId ?? "";
+    if (!targetOrder.includes(target)) targetOrder.push(target);
+    const hit = hitsSoFar.get(target) ?? 0;
+    hitsSoFar.set(target, hit + 1);
+    const base = hitEvents[hit] ?? firstHit + hit * HIT_STAGGER_MS;
+    const at = Math.max(base + targetOrder.indexOf(target) * HIT_STAGGER_MS, previous + HIT_STAGGER_MS / 2);
+    previous = at;
+    return Math.max(1, Math.round(at));
+  });
+}
+
+function buildPlan(skill: PlayableSkill, record: SkillRecord, group: readonly BattleTimelineEntrySnapshot[], monster = false): ClassPlan {
   const resolved = resolveSkillChoreography(record, choreographyRecords());
   const kind = resolved?.origin === "project" ? (monster ? "monster" : "class") : resolved?.kind;
   const contract = kind === "monster" ? skill as RetroMonsterSkill : undefined;
   const side = retroSideForScope(record.scope) ?? (contract ? retroMonsterSide(contract) : "enemies");
-  // 타수(hitSequence 수)는 onHit:"each" 층이 몇 번 다시 깔릴지 정한다. 층 옵션이 없는 계약은 이 값이 타임라인에 영향을 주지 않는다.
-  const hits = Math.max(1, sequences.length);
+  // 타수 = 한 대상이 맞은 횟수(hitSequence 중 실제로 친 수). onHit:"each" 층이 이만큼 다시 깔린다 — 대상 수가 아니다.
+  // 층 옵션이 없는 계약은 이 값이 타임라인에 영향을 주지 않는다.
+  const perTarget = new Map<string, number>();
+  for (const row of group) perTarget.set(row.targetId ?? "", (perTarget.get(row.targetId ?? "") ?? 0) + 1);
+  const hits = Math.max(1, ...perTarget.values());
   const base = contract ? retroMonsterSkillTimeline(contract, { hits, side }) : retroClassSkillTimeline(skill as RetroClassSkill, { side, hits });
   // 프로젝트 연출 레코드의 손잡이(speed·tint·screen·weight). 계약 연출이나 손잡이 없는 레코드는 같은 객체를 돌려받는다.
   const handles = resolved?.record;
@@ -387,11 +412,39 @@ function buildPlan(skill: PlayableSkill, record: SkillRecord, sequences: readonl
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;
-  const hitTimes = sequences.map((_, index) => Math.max(1, Math.round(firstHit + index * HIT_STAGGER_MS)));
-  return { skill, record, timeline, side, monster, sequences, hits: hitTimes, ...(handles?.weight ? { weight: handles.weight } : {}) };
+  const sequences = group.map((row) => row.sequence);
+  return { skill, record, timeline, side, monster, sequences, hits: plannedHitTimes(timeline, firstHit, group), ...(handles?.weight ? { weight: handles.weight } : {}) };
 }
 
-/** 엔트리가 속한 행동(같은 사용자·같은 스킬의 연속 엔트리, 대상은 겹치지 않음)의 계획. */
+/** 대가·흡수 엔트리(aside)는 시전자 자신에게 붙는 부수 숫자다 — 연출의 대상·타수가 아니다. */
+function isAside(entry: BattleTimelineEntrySnapshot): boolean {
+  return entry.aside !== undefined;
+}
+
+/** 옛 스냅숏(actionId 없음): 같은 사용자·같은 스킬의 연속 엔트리를 대상이 겹치기 전까지 묶는다. */
+function legacyActionGroup(entry: BattleTimelineEntrySnapshot, timeline: readonly BattleTimelineEntrySnapshot[], at: number): BattleTimelineEntrySnapshot[] {
+  let start = at;
+  const targets = new Set<string>([entry.targetId ?? ""]);
+  for (let i = at - 1; i >= 0; i -= 1) {
+    const row = timeline[i]!;
+    if (!VISUAL_KINDS.has(row.kind) || isAside(row)) continue;
+    if (!sameAction(entry, row) || targets.has(row.targetId ?? "")) break;
+    targets.add(row.targetId ?? "");
+    start = i;
+  }
+  const group: BattleTimelineEntrySnapshot[] = [];
+  const seen = new Set<string>();
+  for (let i = Math.max(0, start); i < timeline.length; i += 1) {
+    const row = timeline[i]!;
+    if (!VISUAL_KINDS.has(row.kind) || isAside(row)) continue;
+    if (!sameAction(entry, row) || seen.has(row.targetId ?? "")) break;
+    seen.add(row.targetId ?? "");
+    group.push(row);
+  }
+  return group;
+}
+
+/** 엔트리가 속한 행동(같은 명령 번호·같은 사용자·같은 스킬)의 계획. 대가·흡수 엔트리는 계획에 딸리지만 타로 세지 않는다. */
 function planFor(field: HTMLElement, entry: BattleTimelineEntrySnapshot, timeline: readonly BattleTimelineEntrySnapshot[]): ClassPlan | undefined {
   let cache = plans.get(field);
   if (!cache) plans.set(field, cache = new Map());
@@ -401,32 +454,16 @@ function planFor(field: HTMLElement, entry: BattleTimelineEntrySnapshot, timelin
   const found = monster ? monsterEntry(entry) : classEntry(entry);
   if (!found) return undefined;
   const at = timeline.findIndex((row) => row.sequence === entry.sequence);
-  if (at < 0) {
-    const single = buildPlan(found.skill, found.record, [entry.sequence], monster);
-    cache.set(entry.sequence, single);
-    return single;
-  }
-  let start = at;
-  const targets = new Set<string>([entry.targetId ?? ""]);
-  for (let i = at - 1; i >= 0; i -= 1) {
-    const row = timeline[i]!;
-    if (!VISUAL_KINDS.has(row.kind)) continue;
-    if (!sameAction(entry, row) || targets.has(row.targetId ?? "")) break;
-    targets.add(row.targetId ?? "");
-    start = i;
-  }
-  const group: number[] = [];
-  const seen = new Set<string>();
-  for (let i = Math.max(0, start); i < timeline.length; i += 1) {
-    const row = timeline[i]!;
-    if (i !== start && !VISUAL_KINDS.has(row.kind)) continue;
-    if (!sameAction(entry, row) || seen.has(row.targetId ?? "")) break;
-    seen.add(row.targetId ?? "");
-    group.push(row.sequence);
-  }
-  if (!group.includes(entry.sequence)) group.splice(0, group.length, entry.sequence);
+  const members = at < 0 ? [entry]
+    : entry.actionId !== undefined
+      ? timeline.filter((row) => row.actionId === entry.actionId && VISUAL_KINDS.has(row.kind) && sameAction(entry, row))
+      : legacyActionGroup(entry, timeline, at);
+  const hitsOnly = members.filter((row) => !isAside(row));
+  // 대가만 있고 친 엔트리가 없으면(빗나감 없이 대상 0) 그 엔트리로라도 연출을 튼다.
+  const group = hitsOnly.length ? hitsOnly : [entry];
   const plan = buildPlan(found.skill, found.record, group, monster);
-  for (const sequence of group) cache.set(sequence, plan);
+  for (const row of members) cache.set(row.sequence, plan);
+  cache.set(entry.sequence, plan);
   return plan;
 }
 
@@ -444,6 +481,8 @@ export function retroClassSkillWeight(
 ): keyof typeof APPROACH_SCALE | undefined {
   if (base === "light") return undefined;
   const plan = planFor(field, entry, timeline);
+  // 대가·흡수 숫자는 시전자 몸에 뜨는 부수 숫자 — 히트스톱으로 잡지 않는다.
+  if (plan && !plan.sequences.includes(entry.sequence)) return "light";
   return plan?.weight && plan.weight !== base ? plan.weight : undefined;
 }
 
@@ -454,7 +493,9 @@ export function retroClassSkillWeight(
 export function retroClassSkillBeatMs(field: HTMLElement, entry: BattleTimelineEntrySnapshot, kind: "approach" | "recover", timeline: readonly BattleTimelineEntrySnapshot[]): number | undefined {
   const plan = planFor(field, entry, timeline);
   if (!plan) return undefined;
-  const index = Math.max(0, plan.sequences.indexOf(entry.sequence));
+  // 대가(행동 앞)·흡수(타격 뒤) 엔트리: 연출 시계를 쓰지 않고 곧바로 숫자만 띄운다.
+  if (!plan.sequences.includes(entry.sequence)) return 0;
+  const index = plan.sequences.indexOf(entry.sequence);
   const weight = entryWeight(entry, plan);
   if (kind === "approach") return index === 0 ? Math.round(plan.hits[0]! / APPROACH_SCALE[weight]) : 0;
   const hitstop = weight === "light" ? 0 : HITSTOP_MS * HITSTOP_SCALE[weight];
@@ -976,7 +1017,7 @@ export function startRetroSpecialSkill(field: HTMLElement, entry: BattleTimeline
   const skill = skillForCaster(record, entry.side === "enemy");
   const user = [...field.querySelectorAll<HTMLElement>(entry.side === "enemy" ? ".battle-enemy" : ".battle-actor")].find((node) => node.dataset.recordId === entry.userRecordId);
   if (!skill || !record || !user) return false;
-  startPlayer(field, user, buildPlan(skill, record, [entry.sequence], entry.side === "enemy"), entry.targetId, 1 / Math.max(0.2, speed), paint);
+  startPlayer(field, user, buildPlan(skill, record, [entry], entry.side === "enemy"), entry.targetId, 1 / Math.max(0.2, speed), paint);
   return true;
 }
 

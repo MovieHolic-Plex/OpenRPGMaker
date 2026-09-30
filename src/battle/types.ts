@@ -358,6 +358,10 @@ export interface BattleTimelineEntrySnapshot {
   readonly skillName?: string;
   /** Stable executed identity; skillName is presentation and legacy fallback only. */
   readonly skillId?: SkillId;
+  /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
+  readonly actionId?: number;
+  /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */
+  readonly aside?: "hpCost" | "drain";
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;

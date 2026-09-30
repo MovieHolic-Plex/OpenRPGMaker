@@ -829,6 +829,15 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     // 세기는 battleDom 이 이 동기화 직전에 노드에 심는다(applyHitIntensity).
     const popScale = POP_SCALE[anchor.dataset.hitIntensity ?? ""];
     if (popScale && !feedback.healing && !feedback.miss && !feedback.label) popup.style.setProperty("--pop-scale", String(popScale));
+    // 다단 타격은 같은 대상에 숫자가 0.1초 간격으로 겹쳐 뜬다 — 아직 떠 있는 숫자만큼 위로 한 줄씩 쌓는다.
+    // 쌓인 숫자는 튀지 않는다(dataset.stacked) — 튀는 32px 가 윗줄 숫자를 덮었다(2026-10-01 실측, 플레슈 5타).
+    const earlier = [...layer.querySelectorAll<HTMLElement>(".battle-damage-popup")]
+      .filter((node) => node.dataset.targetId === feedback.targetId && node.classList.contains("battle-damage-popup-status") === Boolean(feedback.label));
+    if (earlier.length > 0) {
+      popup.style.marginTop = `${-Math.min(4, earlier.length) * 26}px`;
+      popup.dataset.stacked = "true";
+      for (const node of earlier) node.dataset.stacked = "true";
+    }
     layer.append(popup);
   } else if (!showPartyRowDamage(field, feedback, popup)) {
     layer.append(popup);
