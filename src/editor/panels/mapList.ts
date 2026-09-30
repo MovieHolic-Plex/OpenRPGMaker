@@ -334,8 +334,11 @@ function makeFilterField(mapCount: number): HTMLElement {
       },
     }));
   }
+  // CSS 의 :has(.map-tree-facet.is-active) 는 is-active 를 토글하는 모든 곳(레이어 스위처
+  // 포함)에서 BODY 까지 스타일 무효화를 일으켜 3.7k 요소 재계산(~50ms)을 만든다.
+  // 필터는 렌더마다 새로 지어지므로 정적 클래스로 같은 판정을 한다.
   const wrap = el("div", {
-    class: "map-tree-filter",
+    class: "map-tree-filter" + (mapFilterFacet !== "all" ? " has-active-facet" : ""),
     children: [
       el("input", {
         class: "map-tree-filter-input",
