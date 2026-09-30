@@ -1,4 +1,4 @@
-import { BATTLE_SCENERY_CATALOG, BATTLE_SCENERY_LAYERS, resolveSceneryBiome, sceneryBiomeFromResourceId, type BattleSceneryBiome } from "@/assets/battleSceneryCatalog";
+import { BATTLE_SCENERY_CATALOG, BATTLE_SCENERY_LAYERS, resolveSceneryBiome, type BattleSceneryBiome } from "@/assets/battleSceneryCatalog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { clearBattleBackdropMotion } from "@/player/battleBackdropMotion";
@@ -7,15 +7,52 @@ import type { Project } from "@/project/types";
 type SceneryState = { key: string; dispose: () => void };
 const scenes = new WeakMap<HTMLElement, SceneryState>();
 
+// 지형별 네 층 로드 약속. 전투 진입 커버 동안 미리 부르고(preloadBattleScenery), 그리기는 같은 약속을 기다린다.
+// 예전에는 전투 DOM 이 생긴 뒤에야 부르기 시작해, 첫 1~2초 동안 런타임이 고른 단일 배경(다른 그림)이 보이다가
+// 겹 배경으로 바뀌었다 — 사용자 신고 「전투 도중에 배경이 바뀐다」.
+const layerLoads = new Map<BattleSceneryBiome, Promise<boolean>>();
+const readyBiomes = new Set<BattleSceneryBiome>();
+
+function loadSceneryLayers(biome: BattleSceneryBiome): Promise<boolean> {
+  const pending = layerLoads.get(biome);
+  if (pending) return pending;
+  const entry = BATTLE_SCENERY_CATALOG.find((item) => item.biome === biome)!;
+  const load = Promise.all(BATTLE_SCENERY_LAYERS.map((layer) => new Promise<boolean>((resolve) => {
+    const image = new Image();
+    image.onload = () => { void image.decode().catch(() => undefined).then(() => resolve(true)); };
+    image.onerror = () => resolve(false);
+    image.src = `/${entry.layers[layer]}`;
+  }))).then((results) => {
+    const ok = results.every(Boolean);
+    if (ok) readyBiomes.add(biome);
+    else layerLoads.delete(biome); // 실패는 다음 전투에서 다시 시도한다.
+    return ok;
+  });
+  layerLoads.set(biome, load);
+  return load;
+}
+
+function usesLayeredScenery(project: Project): boolean {
+  return getBattleSkin(resolveSkinId(project.system.battleUiStyle)).scenery === "layered"
+    && project.system.battleBackdrop !== "field" && project.system.battlePresentation !== "onField";
+}
+
+/** 전투 진입 커버 동안 이 전투의 겹 배경 네 장을 미리 읽어 둔다. 첫 화면부터 겹 배경이 깔리게 한다. */
+export function preloadBattleScenery(project: Project, resourceId?: string): void {
+  if (!usesLayeredScenery(project)) return;
+  // 전투 DOM 과 같은 id 로 지형을 고른다(battleFieldDom effectiveBackdropId: 트룹/시스템 배경 → 스킨 기본 배경).
+  const effectiveId = resourceId ?? getBattleSkin(resolveSkinId(project.system.battleUiStyle)).defaultBackdropResourceId;
+  const biome = resolveSceneryBiome(project, { backdropResourceId: effectiveId });
+  if (biome) void loadSceneryLayers(biome);
+}
+
 export function clearBattleScenery(backdrop: HTMLElement): void {
   scenes.get(backdrop)?.dispose();
 }
 
 /** 원래 단일 배경은 남겨 두고 네 장을 모두 읽은 뒤에만 그 위를 덮는다. */
 export function syncBattleScenery(backdrop: HTMLElement, project: Project, resourceId?: string): void {
-  if (getBattleSkin(resolveSkinId(project.system.battleUiStyle)).scenery !== "layered"
-    || project.system.battleBackdrop === "field" || project.system.battlePresentation === "onField"
-    || backdrop.dataset.backdropSource === "field") {
+  if (!usesLayeredScenery(project) || backdrop.dataset.backdropSource === "field") {
     clearBattleScenery(backdrop);
     return;
   }
@@ -25,11 +62,6 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
   clearBattleBackdropMotion(backdrop);
   const resolvedBiome = resolveSceneryBiome(project, { backdropResourceId: resourceId });
   const biome = resolvedBiome ?? "plains";
-  // 명시적 겹 배경 파일이 미설치여도 기존 숲 그림으로 돌아갈 수 있어야 한다.
-  if (sceneryBiomeFromResourceId(resourceId)) {
-    const fallback = resolveAssetResourceUrl("generated-battle-reference-forest", { project });
-    if (fallback) backdrop.style.backgroundImage = `url("${fallback}")`;
-  }
   const camera = document.createElement("div");
   camera.className = "battle-scenery-camera";
   camera.dataset.biome = biome;
@@ -43,7 +75,6 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
   backdrop.append(camera);
   const context = canvas.getContext("2d");
   const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const probes: HTMLImageElement[] = [];
   let raf = 0;
   let disposed = false;
   let connected = backdrop.isConnected;
@@ -61,7 +92,6 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
     observer.disconnect();
     document.removeEventListener("visibilitychange", reconcile);
     media.removeEventListener("change", reconcile);
-    for (const probe of probes) { probe.onload = null; probe.onerror = null; }
     camera.remove();
     scenes.delete(backdrop);
   };
@@ -96,23 +126,31 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
   reconcile();
   if (resolvedBiome) {
     const entry = BATTLE_SCENERY_CATALOG.find((item) => item.biome === biome)!;
-    let loaded = 0;
-    let failed = false;
-    for (const layer of BATTLE_SCENERY_LAYERS) {
-      const probe = new Image();
-      probes.push(probe);
-      probe.onload = () => {
-        if (disposed || failed || ++loaded !== BATTLE_SCENERY_LAYERS.length) return;
-        for (const name of BATTLE_SCENERY_LAYERS) {
-          const node = document.createElement("div");
-          node.className = `battle-scenery-layer battle-scenery-${name}`;
-          node.style.backgroundImage = `url("/${entry.layers[name]}")`;
-          camera.insertBefore(node, canvas);
-        }
-        camera.dataset.layers = "ready";
-      };
-      probe.onerror = () => { failed = true; camera.dataset.layers = "fallback"; };
-      probe.src = `/${entry.layers[layer]}`;
+    const mount = (): void => {
+      for (const name of BATTLE_SCENERY_LAYERS) {
+        const node = document.createElement("div");
+        node.className = `battle-scenery-layer battle-scenery-${name}`;
+        node.style.backgroundImage = `url("/${entry.layers[name]}")`;
+        camera.insertBefore(node, canvas);
+      }
+      camera.dataset.layers = "ready";
+    };
+    // 겹 배경을 못 읽었을 때만 단일 그림을 대신 깐다(battleFieldDom 이 적어 둔 url, 없으면 숲 레퍼런스).
+    const paintFallback = (): void => {
+      camera.dataset.layers = "fallback";
+      const url = backdrop.dataset.backdropFallbackUrl
+        ?? resolveAssetResourceUrl("generated-battle-reference-forest", { project });
+      if (url) backdrop.style.backgroundImage = `url("${url}")`;
+    };
+    if (readyBiomes.has(biome)) mount();
+    else {
+      // 아직 네 장이 안 왔으면 다른 그림(단일 배경)을 비추지 않고 기다렸다가 페이드인한다(CSS data-layers="loading").
+      camera.dataset.layers = "loading";
+      void loadSceneryLayers(biome).then((ok) => {
+        if (disposed) return;
+        if (ok) { camera.dataset.layersFade = "in"; mount(); }
+        else paintFallback();
+      });
     }
   } else camera.dataset.layers = "custom";
 }

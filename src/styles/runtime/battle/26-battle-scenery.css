@@ -14,6 +14,21 @@
   animation: retro-scenery-breathe 10s ease-in-out infinite alternate;
 }
 
+/* 겹 배경 네 장이 오기 전에는 아래 단일 배경(다른 그림)을 가린다 — 전투 도중 배경이 바뀌어 보이던 결함.
+   진입 커버 동안 미리 읽어 두므로(preloadBattleScenery) 보통은 이 상태를 거치지 않는다. */
+.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera:is([data-layers="loading"], [data-layers-fade="in"]) {
+  background: #0b0f1a;
+}
+
+/* 늦게 도착한 경우에만 페이드인. 미리 읽어 둔 경우는 첫 프레임부터 그대로 깐다. */
+.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera[data-layers-fade="in"] .battle-scenery-layer {
+  animation: retro-scenery-layer-in 180ms ease-out both;
+}
+
+@keyframes retro-scenery-layer-in {
+  from { opacity: 0; }
+}
+
 .battle-scene[data-battle-skin="retro2003"] .battle-scenery-layer,
 .battle-scene[data-battle-skin="retro2003"] .battle-scenery-ambient {
   position: absolute;

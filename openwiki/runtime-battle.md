@@ -69,6 +69,7 @@
   - `data-battler-extended="true"`인 노드는 고해상도 짝·idle 스트립을 쓰지 않는다. pixelated + 정수 배율이며 대기는 CSS 1px 숨쉬기만 한다.
 - **진입** 전환 `shatter-2003`(흰 번쩍임 두 번 → 가로 줄무늬가 번갈아 좌우로 미끄러지며 닫힘), `_transitions.css`.
 - **겹 배경** `src/assets/battleSceneryCatalog.ts` + `src/player/battleScenery.ts` + `battle/26-battle-scenery.css`.
+  - **전투 배경은 하나다**(2026-09-30): 겹 배경이 맡는 전투(`layeredSceneryOwnsBackdrop`, battleFieldDom.ts)에서는 단일 그림을 칠하지 않는다 — 배경 노드 인라인 그림도, 장면 뒤판 `--battle-backdrop-url`(glass 계열 `::before`)도 비운다. 단일 그림 url 은 `data-backdrop-fallback-url` 에만 적고, 네 층을 못 읽었을 때만 깐다. 네 층은 진입 커버 동안 `preloadBattleScenery`(playSceneBattle.ts)로 미리 읽고, 준비돼 있으면 첫 프레임부터 깐다(늦으면 빈 배경에서 페이드인). 옛 결함: 단일 그림(어두운 숲)이 1~2초 보이다 겹 배경(낮 숲)으로 바뀌어 「전투 도중 배경이 바뀐다」 — 녹화 배경 밝기 35→119.
   그림: `public/assets/generated/battle-scenery/<plains|forest|cave|snow|desert>/{sky,far,mid,ground}.png`(640×360, sky 만 불투명, 도트 2배 nearest, ≤48색, 알파 0/255).
   재생성: `scripts/asset-gen/gen-battle-scenery.mjs`(원화 source.png·prompts 는 같은 폴더). 리소스 id `battle-scenery-<biome>` 은 배경 피커(`resourceOptions.matchesGeneratedKind` backdrop)에 뜬다.
   - 지형 결정 `resolveSceneryBiome`: 명시 `battle-scenery-*` → 알려진 배경 id 매핑(숲 레퍼런스→forest, 얼음→snow, 모래→desert, 하늘 파노라마·스킨 기본 배경→plains) → 지형 이름 낱말 → 기후 snow → 던전/동굴/실내 타일셋 → plains.
