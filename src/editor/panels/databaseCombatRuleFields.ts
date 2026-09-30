@@ -131,6 +131,8 @@ export function skillInputSequenceFields(record: SkillRecord): HTMLElement {
 
 const AREA_SHAPE_OPTIONS = [{ id: '', name: '없음 (단일)' }, { id: 'circle', name: '원 (주 대상 둘레)' }, { id: 'line', name: '직선 (가로 띠)' }] as const;
 const AREA_DEFAULT_RADIUS = 48;
+/** 배우를 한 명만 골랐을 땐 아직 연계기가 아니라 레코드에 저장되지 않는다. 패널이 다시 그려져도 고른 칸이 사라지지 않게 임시로 들고 있는다. */
+const pendingComboSlots = new Map<string, string[]>();
 
 /** 위치 범위기(area)와 연계기(comboActorIds) — 로스터 스킬이 쓰지만 예전엔 조수 도구로만 고칠 수 있었다. */
 function skillAreaAndComboFields(record: SkillRecord): HTMLElement[] {
@@ -147,7 +149,9 @@ function skillAreaAndComboFields(record: SkillRecord): HTMLElement[] {
   });
   const actors = store.getCurrent().database.actors;
   const options = [{ id: '', name: '(없음)' }, ...actors.map(actor => ({ id: actor.id, name: actor.name }))];
-  const slots = [0, 1, 2].map(index => (current().comboActorIds ?? [])[index] ?? '');
+  const saved = current().comboActorIds ?? [];
+  const pending = saved.length ? undefined : pendingComboSlots.get(record.id);
+  const slots = [0, 1, 2].map(index => (pending ?? saved)[index] ?? '');
   const comboNote = el('p', { class: 'db-skill-card-note', dataset: { testid: 'skill-combo-note' } });
   const refreshNote = (): void => {
     const picked = new Set(slots.filter(Boolean));
@@ -156,6 +160,7 @@ function skillAreaAndComboFields(record: SkillRecord): HTMLElement[] {
   };
   const save = (): void => {
     const ids = [...new Set(slots.filter(Boolean))];
+    if (ids.length >= 2) pendingComboSlots.delete(record.id); else pendingComboSlots.set(record.id, [...slots]);
     updateDatabaseRecord('skills', record.id, { comboActorIds: ids.length >= 2 ? ids : undefined });
     refreshNote();
   };
