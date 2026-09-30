@@ -13,6 +13,8 @@
 - 한계: 구조 키트 안의 `structureKits[].referenceDocuments` 는 아직 빼지 않는다. 메모리 상주량은 줄지 않는다(디스크·전송·파싱·wire 다이제스트만 준다). 헤드리스 sqlite 소비자(`export-tileset-references.mjs`)는 새로 저장된 프로젝트에서 표지만 있는 타일셋을 볼 수 있어 ensure* 로 채워야 한다.
 - 증거: `verify-shots/editor-lag-fix/F/ref-roundtrip-eq.mts`(옛 파일 로드→정규화→저장→재로드가 뺀 적 없는 프로젝트와 jsonEqual, 저자 수정 보존, 도구 매니페스트 동일, 멱등).
 - 빌드 청크(`vite.config.ts` `build.rollupOptions.output.manualChunks`): `src/assets/*.json`·`src/project/defaults/**.json` 은 `bundled-data` 청크(약 29MB)로 뗀다. 진입 청크 31.0MB → 8.9MB 가 되고 앱 코드 릴리스가 바뀌어도 데이터 청크 캐시가 남는다. 정적 import 라 부팅 순서·동작은 그대로다. 지연 로드(동적 import)로 부팅에서 빼는 것은 하지 않았다 — 실측 JSON 파싱·컴파일 합이 약 0.3~0.4초(장소 카탈로그 165ms, 데모 픽스처 51ms, 나머지 각 13~27ms)로 부팅의 1~2% 뿐인데 소비자는 대부분 동기다(`createSampleAdventureProject`, 장소 카탈로그 소비자 3곳, `bundled.ts` 의 forestHarmony·tiboRecovered). phaser 는 이미 `phaser.min.js` 자산으로 따로 실린다. 플레이어·독립 빌드는 별도 설정이라 영향이 없다.
+- 부팅 정규화기 비용 실측(`normalizeCurrentProject` 16종, `verify-shots/editor-lag-fix/F/normalizer-cost.mts`): 이미 정규화된 프로젝트에서 콜드 약 1.1초·웜 약 0.3초, 변경 감지용 `jsonContentDigest` 는 콜드 약 4.8초·웜 약 0.4초. 「버전 표지로 정규화기 건너뛰기」로 아끼는 것은 최대 1.1~1.5초이고 진짜 큰 비용은 콜드 다이제스트와 `/__oprn/shared-content?scope=defaults` 응답(디코드 146MB)이다.
+- 마이그 저장 지속성(`persist-trace.mjs`): 마이그·미디어 분리 결과는 저장돼 다음 로드가 빨라진다(대형 사본 첫 로드 31초 → 둘째 21초). 다만 `shared_paw_modern_interiors`·`shared_refmap_crayon|snow|town_outside` 의 저장된 `structureKits` 순서가 라이브러리 순서와 달라 `ensureSharedContent` 가 되돌리고 `applySharedReferenceRefresh` 가 다시 합치므로 로드마다 「프로젝트 정규화 (2종)」 + 저장이 반복된다(수렴 안 함). 수렴 패치는 `sharedContent.ts`/`sharedTileReferences.ts` 몫이다.
 
 ## 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)
 
