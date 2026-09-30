@@ -218,10 +218,11 @@ type HostWire = FoldedDocument;
 
 function writeProjectRow(driver: Driver, project: Project, wire: HostWire, projectId: string, now: string): number {
   const revision = (readProjectMeta(driver)?.revision ?? 0) + 1;
-  // 이미 있는 본문은 다시 매기지 않는다 — 매 저장 80MB 를 SQLite 에 넘기게 된다.
-  const exists = driver.prepare("SELECT 1 AS present FROM tileset_blobs WHERE sha256 = ?");
+  // 이미 있는 본문은 다시 매기지 않는다 — 매 저장 80MB 를 SQLite 에 넘기게 된다. 있는 sha 는 한 번의 조회로 모은다.
+  const storedBlobShas = new Set<string>();
+  for (const row of driver.prepare("SELECT sha256 FROM tileset_blobs").all([])) storedBlobShas.add(String(row.sha256));
   const insertBlob = driver.prepare("INSERT INTO tileset_blobs (sha256, body, created_at) VALUES (?, ?, ?)");
-  for (const [sha, text] of wire.blobs) if (!exists.get([sha])) insertBlob.run([sha, text, now]);
+  for (const [sha, text] of wire.blobs) if (!storedBlobShas.has(sha)) insertBlob.run([sha, text, now]);
   if (wire.blobs.size > 0) writeMeta(driver, META_KEYS.formatVersion, String(LOCAL_STORE_FORMAT_VERSION));
   driver.prepare(
     `INSERT INTO project (id, project_id, title, document_version, current_json, current_sha256, revision, updated_at)
@@ -239,8 +240,8 @@ function writeProjectRow(driver: Driver, project: Project, wire: HostWire, proje
     now,
   ]);
   // 현재 행이 가리키지 않는 본문은 지운다. 커밋은 문서 sha 만 남기고 백업은 그 시점 표를 통째로 복사한다.
-  driver.prepare("DELETE FROM tileset_blobs WHERE sha256 NOT IN (SELECT value FROM json_each(?))")
-    .run([JSON.stringify([...wire.blobs.keys()])]);
+  const dropBlob = driver.prepare("DELETE FROM tileset_blobs WHERE sha256 = ?");
+  for (const sha of storedBlobShas) if (!wire.blobs.has(sha)) dropBlob.run([sha]);
   replaceMapMirrors(driver, projectId, project, now);
   return revision;
 }
@@ -314,16 +315,19 @@ function replaceMapMirrors(driver: Driver, projectId: string, project: Project, 
        name = excluded.name, width = excluded.width, height = excluded.height, tileset_id = excluded.tileset_id,
        map_json = excluded.map_json, sha256 = excluded.sha256, updated_at = excluded.updated_at`,
   );
+  // 바뀐 맵만 다시 쓴다. 거울 행의 map_json 과 글이 같으면 이름·크기·sha 도 같으므로 정본 JSON·해시를 건너뛴다.
+  const storedJson = new Map<string, string>();
+  for (const row of driver.prepare("SELECT map_id, map_json FROM maps WHERE project_id = ?").all([projectId])) {
+    storedJson.set(String(row.map_id), String(row.map_json));
+  }
   const present = new Set<string>();
   for (const [mapId, map] of Object.entries(project.maps)) {
-    upsert.run(mapRowValues(projectId, mapId, map, now));
     present.add(mapId);
+    if (storedJson.get(mapId) === JSON.stringify(map)) continue;
+    upsert.run(mapRowValues(projectId, mapId, map, now));
   }
   const removal = driver.prepare("DELETE FROM maps WHERE project_id = ? AND map_id = ?");
-  for (const row of driver.prepare("SELECT map_id FROM maps WHERE project_id = ?").all([projectId])) {
-    const mapId = String(row.map_id);
-    if (!present.has(mapId)) removal.run([projectId, mapId]);
-  }
+  for (const mapId of storedJson.keys()) if (!present.has(mapId)) removal.run([projectId, mapId]);
 }
 
 function jsonOrNull(value: unknown): string | null {
