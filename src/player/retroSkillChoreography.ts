@@ -353,12 +353,14 @@ function sameAction(a: BattleTimelineEntrySnapshot, b: BattleTimelineEntrySnapsh
 function buildPlan(skill: PlayableSkill, record: SkillRecord, sequences: readonly number[], monster = false): ClassPlan {
   const contract = monster ? (skill as RetroMonsterSkill) : undefined;
   const side = retroSideForScope(record.scope) ?? (contract ? retroMonsterSide(contract) : "enemies");
-  const timeline = contract ? retroMonsterSkillTimeline(contract) : retroClassSkillTimeline(skill as RetroClassSkill, { side });
+  // 타수(hitSequence 수)는 onHit:"each" 층이 몇 번 다시 깔릴지 정한다. 층 옵션이 없는 계약은 이 값이 타임라인에 영향을 주지 않는다.
+  const hits = Math.max(1, sequences.length);
+  const timeline = contract ? retroMonsterSkillTimeline(contract, { hits }) : retroClassSkillTimeline(skill as RetroClassSkill, { side, hits });
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;
-  const hits = sequences.map((_, index) => Math.max(1, Math.round(firstHit + index * HIT_STAGGER_MS)));
-  return { skill, record, timeline, side, monster, sequences, hits };
+  const hitTimes = sequences.map((_, index) => Math.max(1, Math.round(firstHit + index * HIT_STAGGER_MS)));
+  return { skill, record, timeline, side, monster, sequences, hits: hitTimes };
 }
 
 /** 엔트리가 속한 행동(같은 사용자·같은 스킬의 연속 엔트리, 대상은 겹치지 않음)의 계획. */
@@ -622,14 +624,16 @@ function monsterBodyBox(size: number, host: HTMLElement | undefined): number | u
   return pixelCellOf(battlerImage(host)) >= 96 ? size * 4 : undefined;
 }
 
-function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: number, frames: number, anchor: string, host?: HTMLElement): HTMLElement {
+function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: number, frames: number, anchor: string, host?: HTMLElement, scale = 1): HTMLElement {
   const node = document.createElement("span");
   node.className = "retro-skill-fx retro-class-fx";
   node.dataset.retroSkillFx = key;
   node.dataset.retroFxAnchor = anchor;
   node.dataset.fxSize = String(size);
   node.setAttribute("aria-hidden", "true");
-  const box = monsterBodyBox(size, host) ?? retroClassFxBox(size, anchor);
+  // 연출 레코드의 층 배율은 상자 한 변에 곱한다(칸 위치 계산이 dataset.fxBox 를 읽으므로 그림이 함께 커진다). 배율 없음 = 기존 상자.
+  const base = monsterBodyBox(size, host) ?? retroClassFxBox(size, anchor);
+  const box = scale === 1 ? base : Math.max(1, Math.round(base * scale));
   node.dataset.fxBox = String(box);
   node.style.width = `${box}px`;
   node.style.height = `${box}px`;
@@ -659,7 +663,7 @@ function playFx(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTim
   const frameMs = Math.max(16, event.frameMs * player.clock);
   const layer = player.plan.skill.layers[event.layer];
   for (const host of hosts) {
-    const node = fxNode(player, field, event.key, event.frame, layer?.frames ?? event.cells.length, event.anchor, player.plan.monster ? host : undefined);
+    const node = fxNode(player, field, event.key, event.frame, layer?.frames ?? event.cells.length, event.anchor, player.plan.monster ? host : undefined, event.scale ?? 1);
     const place = () => {
       if (!host) {
         const center = stageCenter(field);
