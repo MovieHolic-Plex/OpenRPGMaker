@@ -571,9 +571,19 @@ function updateFinalPicture(state: CompileState, pictureId: string, beat: Cutsce
   });
 }
 
+/**
+ * action 을 빼고 resourceId 만 준 music beat 는 효과음 채널의 비반복 재생이 됐다 — 조수가 고른 BGM(cc0-bgm-…)이
+ * 한 번 울리고 끝났다(2026-10-02 도그푸딩). 리소스 id 에 bgm/music 이 있으면 BGM 으로 본다.
+ */
+function musicActionOf(beat: CutsceneMusicBeat): CutsceneMusicBeat["action"] {
+  if (beat.action) return beat.action;
+  return /(^|[-_:])(bgm|music)([-_:]|$)/iu.test(beat.resourceId ?? "") ? "bgm" : "se";
+}
+
 function compileMusicBeat(beat: CutsceneMusicBeat): Command[] {
-  if (beat.action === "stop" || beat.action === "fade") return [{ kind: "stopAudio" }];
-  return [{ kind: "playAudio", resourceId: beat.resourceId ?? "", loop: beat.action === "bgm" ? true : beat.loop ?? false }];
+  const action = musicActionOf(beat);
+  if (action === "stop" || action === "fade") return [{ kind: "stopAudio" }];
+  return [{ kind: "playAudio", resourceId: beat.resourceId ?? "", loop: action === "bgm" ? true : beat.loop ?? false }];
 }
 
 function compileFadeBeat(beat: CutsceneFadeBeat, forceNonBlocking: boolean): Command[] {
@@ -727,6 +737,17 @@ function validateKnownBeat(beat: CutsceneBeat, path: string, errors: string[]): 
   }
   if (!KNOWN_BEAT_KINDS.has(beat.kind)) {
     errors.push(`${path}.kind: 알 수 없는 컷신 beat 종류 '${beat.kind}'입니다.`);
+  }
+  // beats 없는 parallel 은 검증을 통과한 뒤 compileBeats 에서 TypeError 로 죽었다(2026-10-02 도그푸딩: 조수의 첫 script_cutscene 호출).
+  if (beat.kind === "parallel" && (!Array.isArray(beat.beats) || beat.beats.length === 0)) {
+    errors.push(`${path}.beats: parallel 비트에는 함께 실행할 beat 배열이 필요합니다(예: {kind:'parallel',beats:[{kind:'picture',action:'move',…},{kind:'shake'}]}). 함께 할 일이 없으면 parallel 을 빼세요.`);
+  }
+  // fade 는 색을 못 고른다(검정뿐). 모델이 tint/fade/color 로 흰색을 요청하면 조용히 검정이 됐다.
+  if (beat.kind === "fade") {
+    const stray = (["color", "tint", "fade"] as const).filter((key) => (beat as Record<string, unknown>)[key] !== undefined);
+    if (stray.length > 0) {
+      errors.push(`${path}: fade 비트는 색을 지정할 수 없습니다(${stray.join("/")} 무시됨 — 항상 검정으로 어두워집니다). 흰 화면은 flash 비트나 script_cutscene_impact 를 쓰세요.`);
+    }
   }
 }
 
