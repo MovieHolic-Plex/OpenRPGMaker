@@ -193,8 +193,13 @@ def _latest_decisions(c):
     for r in c.execute('select * from decisions order by id'):
         if sha.get(r['item']) != r['sha']:
             continue
+        if r['decision'] == 'drop':          # 다시 그린 후보 하나를 버린 것 — 아이콘의 결정은 아니다
+            continue
         if r['decision'] == 'clear':
             out.pop(r['item'], None)
+        elif r['decision'] == 'pick':        # 다시 그린 후보를 고른 것. note = '<판>/<글자>|메모'
+            key, _, memo = (r['note'] or '').partition('|')
+            out[r['item']] = dict(decision='pick', cand=key, reasons=[], note=memo, at=r['at'])
         else:
             out[r['item']] = dict(decision=r['decision'], reasons=json.loads(r['reasons'] or '[]'), note=r['note'] or '', at=r['at'])
     return out
@@ -217,7 +222,7 @@ def export():
         v = rv.get(r['id'])
         items[r['id']] = dict(role=r['role'], cells=json.loads(r['cells']), sha=r['sha'],
                               decision=x['decision'] if x else None, reasons=x['reasons'] if x else [], note=x['note'] if x else '',
-                              decided_at=x['at'] if x else None,
+                              decided_at=x['at'] if x else None, picked=x.get('cand') if x else None,
                               review=(dict(verdict=v['verdict'], codes=v['codes'], reads_as=(v['body'] or {}).get('reads_as', ''))
                                       if v and v['status'] == 'done' else None))
     EXPORT.parent.mkdir(parents=True, exist_ok=True)
@@ -256,6 +261,16 @@ class H(BaseHTTPRequestHandler):
             return self._send(200, json.dumps(dict(items=items, reasons=REASONS, sets=list(SETS)), ensure_ascii=False))
         if p == '/ref.png':
             return self._send(200, REF.read_bytes(), 'image/png')
+        if p.startswith('/api/rounds/'):
+            import redraw
+            return self._send(200, json.dumps(redraw.rounds_of(db(), p[len('/api/rounds/'):]), ensure_ascii=False))
+        if p.startswith('/c/'):
+            parts = p[3:].split('/')
+            if len(parts) == 4 and all(x and '..' not in x for x in parts) and parts[3].endswith('.png'):
+                import redraw
+                f = redraw.ROUNDS / parts[0] / parts[1] / parts[2] / parts[3]
+                if f.is_file():
+                    return self._send(200, f.read_bytes(), 'image/png')
         if p.startswith('/f/'):
             parts = p[3:].split('/')
             if len(parts) == 3 and all(x and '..' not in x for x in parts) and parts[2].endswith('.png'):
@@ -265,12 +280,24 @@ class H(BaseHTTPRequestHandler):
         return self._send(404, '{"error":"not found"}')
 
     def do_POST(self):
+        if self.path == '/api/draw':
+            try:
+                import redraw
+                d = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))) or b'{}')
+                rid = redraw.open_round(str(d.get('id')), str(d.get('note') or ''), str(d.get('base') or ''), int(d.get('n') or 5))
+                return self._send(200, json.dumps({'ok': True, 'round': rid}))
+            except (ValueError, KeyError) as e:
+                return self._send(400, json.dumps({'error': str(e)}, ensure_ascii=False))
         if self.path != '/api/decide':
             return self._send(404, '{"error":"not found"}')
         try:
             d = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))) or b'{}')
-            if d.get('decision') not in ('accept', 'reject', 'clear'):
+            if d.get('decision') not in ('accept', 'reject', 'clear', 'pick', 'drop'):
                 raise ValueError('decision')
+            if d['decision'] in ('pick', 'drop'):   # 후보 표시는 note 앞에 '<판>/<글자>|'
+                if not str(d.get('cand') or '').startswith('r'):
+                    raise ValueError('cand')
+                d['note'] = f"{d['cand']}|{d.get('note') or ''}"
             c = db()
             it = c.execute('select sha from items where id=?', (d.get('id'),)).fetchone()
             if not it:
@@ -299,6 +326,10 @@ def main():
     a.add_argument('--only', nargs='*', help='아이템 id(세트/이름) 또는 이름')
     sub.add_parser('status')
     sub.add_parser('export')
+    a = sub.add_parser('draw', help='다시 그리기 판 열기'); a.add_argument('item'); a.add_argument('--note', default='')
+    a.add_argument('--base', default='', help="'r<판>/<글자>' = 그 후보에서 출발"); a.add_argument('-n', type=int, default=5)
+    sub.add_parser('pool', help='다시 그리기 일꾼(draw 가 알아서 띄운다)')
+    a = sub.add_parser('preview', help='작업자 자가 확인: <폴더>/cand.png → 8배·지도 자리·check.json'); a.add_argument('out'); a.add_argument('--item')
     a = sub.add_parser('serve'); a.add_argument('--port', type=int, default=18313); a.add_argument('--host', default='0.0.0.0')
     a = ap.parse_args()
     if a.cmd == 'intake':
@@ -309,6 +340,15 @@ def main():
         status()
     elif a.cmd == 'export':
         export()
+    elif a.cmd == 'draw':
+        import redraw
+        print('판', redraw.open_round(a.item, a.note, a.base, a.n))
+    elif a.cmd == 'pool':
+        import redraw
+        redraw.pool()
+    elif a.cmd == 'preview':
+        import redraw
+        redraw.preview(a.out, a.item)
     elif a.cmd == 'serve':
         serve(a.port, a.host)
 
