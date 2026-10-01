@@ -109,8 +109,20 @@ def setg(x, y, tid, kind):
         ground_kind[y][x] = kind
 
 
-# 시내(x=30..32) — 지도 가장자리는 이어진 것으로 본다
-water = {(x + (-1 if y <= 12 else (1 if y >= 31 else 0)), y) for y in range(MH) for x in (30, 31, 32)}
+# 시내: 큰 굽이(진폭 ±2~3칸). 다리 구간(y 22..29)은 곧게.
+import math
+
+
+def river_dx(y):
+    k = max(0.0, min(1.0, (abs(y - 25.5) - 3.5) / 4.0))
+    return int(round(3.2 * math.sin((y - 25.5) / 5.2) * k))
+
+
+water = {(x + river_dx(y), y) for y in range(MH) for x in (30, 31, 32)}
+# 연못: 돌 둑 이음(stream16)으로 곡선 윤곽
+pond = {(x, y) for y in range(26, 40) for x in range(0, 16)
+        if ((x - 7.5) / 7.2) ** 2 + ((y - 33) / 5.4) ** 2 + (rnd(x, y, 61) - 0.5) * 0.35 <= 1.0}
+water |= pond
 
 
 def mask_of(cells, x, y, wrap=True):
@@ -124,11 +136,11 @@ def mask_of(cells, x, y, wrap=True):
 
 
 for (x, y) in water:
-    setg(x, y, STREAM + mask_of(water, x, y), 'water')
+    setg(x, y, STREAM + mask_of(water, x, y, wrap=(x, y) not in pond), 'water')
 
 # 큰길 y=25..26 (다리 구간은 비움), 대문 진입로, 초가·이웃집 진입로
 RY = (25, 26)
-road = {(x, y) for y in RY for x in range(MW) if not 29 <= x <= 33}
+road = {(x, y) for y in RY for x in range(MW) if (x, y) not in water and not 29 <= x <= 33}
 road |= {(x, y) for y in (23, 24) for x in (11, 12)}
 road |= {(24, 24), (24, 23)}
 road |= {(24, 14), (24, 15), (24, 16)}
@@ -139,16 +151,19 @@ for (x, y) in road:
     if x == 34 and y in RY: m |= W
     setg(x, y, ROAD + m, 'road')
 
-# 마당(이음 있는 흙바닥): 양반집 · 이웃 기와집 · 초가
-yard = {(x, y) for y in range(5, 22) for x in range(6, 19)}
-yard |= {(x, y) for y in range(8, 25) for x in range(21, 29)}
-yard |= {(x, y) for y in range(17, 25) for x in range(20, 21)}
-yard |= {(x, y) for y in range(18, 25) for x in range(34, 40)}
+# 마당(이음 있는 흙바닥): 건물 앞 광장만 흙, 나머지는 풀·텃밭·나무
+yard = {(x, y) for y in range(11, 22) for x in range(7, 18)} - {(x, y) for y in range(14, 19) for x in range(15, 19)}
+yard -= {(x, y) for y in range(15, 22) for x in list(range(6, 9)) + list(range(15, 19))}
+yard |= {(x, y) for y in range(12, 17) for x in range(21, 28)}
+yard |= {(x, y) for y in range(22, 25) for x in range(20, 28)}
+yard |= {(x, y) for y in range(17, 22) for x in range(20, 21)}
+yard |= {(x, y) for y in range(22, 25) for x in range(34, 40)}
+yard -= water
 ysets = yard | road
 for (x, y) in yard:
     if (x, y) in road: continue
     setg(x, y, YARD16 + mask_of(ysets, x, y, wrap=False), 'yard')
-for y in range(11, 23):
+for y in range(11, 22):
     for x in (11, 12):
         setg(x, y, PAV + (x + y) % 2, 'paving')
 for x in range(9, 15):
@@ -156,13 +171,13 @@ for x in range(9, 15):
 for y in range(14, 19):
     for x in range(15, 19):
         setg(x, y, FIELD + hsh(x, y, 5) % 2, 'field')
-# 논과 밭
-paddy = {(x, y) for y in range(27, 39) for x in range(1, 15)} - {(1, 27), (2, 27), (13, 27), (14, 27), (1, 38), (14, 38), (14, 37), (1, 28)}
-paddy |= {(15, 32), (15, 33), (0, 33), (0, 34)}
-for (x, y) in paddy:
-    setg(x, y, PADDY + mask_of(paddy, x, y, wrap=False), 'paddy')
-for rect, sd in (((17, 27, 27, 36), 9), ((34, 27, 40, 36), 11), ((0, 6, 5, 14), 12), ((6, 22, 11, 25), 13), ((13, 22, 19, 25), 14),
-                 ((15, 27, 17, 36), 15), ((27, 27, 29, 36), 16), ((34, 5, 40, 8), 17)):
+# 논: 두렁으로 나뉜 작은 구획, 사이는 밭
+for (x0, y0, x1, y1) in ((17, 28, 22, 32), (23, 28, 28, 32), (17, 33, 22, 37), (23, 33, 28, 37)):
+    plot = {(x, y) for y in range(y0, y1) for x in range(x0, x1)}
+    for (x, y) in plot:
+        setg(x, y, PADDY + mask_of(plot, x, y, wrap=False), 'paddy')
+for rect, sd in (((16, 27, 29, 39), 9), ((34, 27, 40, 37), 11), ((0, 6, 5, 14), 12), ((6, 22, 11, 25), 13), ((13, 22, 19, 25), 14),
+                 ((34, 5, 40, 8), 17)):
     x0, y0, x1, y1 = rect
     for y in range(y0, y1):
         for x in range(x0, x1):
@@ -175,8 +190,17 @@ placed = []          # (이름, 칸x, 칸y, 폭칸, 높이칸) — 지도 게이
 items = []
 
 
+FREE = ('bridge', 'reeds', 'rocks', 'willow', 'wall', 'stone_bank', 'small', 'bush', 'fence')
+SKIPPED = []
+
+
 def put_obj(name, tx, ty):
     cv = objects[name]
+    foot = [(tx + i, ty + cv.h // T - 1) for i in range(cv.w // T)]
+    bad = {'water', 'paddy', 'road'} if not name.startswith(('bridge', 'reeds', 'rocks')) else set()
+    if name.startswith('willow'): bad = {'paddy', 'road'}
+    if any(0 <= x < MW and 0 <= y < MH and ground_kind[y][x] in bad for x, y in foot):
+        SKIPPED.append((name, tx, ty)); return
     placed.append((name, tx, ty, cv.w // T, cv.h // T))
     items.append((ty + cv.h // T, name, tx, ty, cv))      # y 정렬 키 = 아래쪽 칸
 
@@ -256,10 +280,20 @@ for nm, x, y in (('bush_b', 8, 23), ('bush_c', 9, 22), ('bush_a', 14, 23), ('bus
                  ('persimmon_b', 38, 5), ('bush_a', 34, 6), ('pine_b', 24, 5), ('bush_c', 31, 20), ('bush_a', 38, 26), ('bush_b', 19, 14)):
     put_obj(nm, x, y)
 
+for nm, x, y in (('small_p', 31, 14), ('bush_c', 34, 16), ('small_z_a', 30, 17), ('bush_a', 31, 12), ('small_z_b', 35, 11), ('bush_b', 32, 18), ('bush_c', 25, 5), ('bush_a', 23, 9), ('bush_b', 30, 9), ('small_p', 28, 14)):
+    put_obj(nm, x, y)
+# 3라운드 보강: 연못 둘레·남쪽 가장자리·후원 잔디를 크기 다른 나무·덤불로
+for nm, x, y in (('small_z_b', 1, 27), ('bush_a', 4, 27), ('reeds', 5, 28), ('rocks', 14, 29), ('small_p', 12, 28), ('bush_c', 2, 38), ('small_z_a', 5, 37), ('bush_b', 9, 38),
+                 ('small_z_a', 13, 37), ('pine_b', 29, 36), ('bush_c', 31, 38), ('small_p', 33, 37), ('bush_a', 36, 38), ('small_z_b', 38, 36), ('bush_b', 16, 38), ('bush_a', 20, 38), ('small_z_b', 24, 37),
+                 ('small_z_b', 6, 6), ('bush_c', 6, 10), ('bush_b', 16, 9), ('small_p', 16, 6), ('bush_a', 15, 10), ('small_z_a', 7, 16), ('bush_b', 17, 20), ('small_p', 16, 19),
+                 ('bush_a', 21, 6), ('small_z_b', 27, 8), ('bush_b', 20, 14), ('small_z_b', 28, 17), ('bush_c', 39, 10), ('small_z_a', 38, 20)):
+    put_obj(nm, x, y)
+
 items.sort(key=lambda i: (i[0], i[3], i[2]))
 for _, name, tx, ty, cv in items:
     OBJ.paste(cv, tx * T, ty * T)
 
+print('물·길·논 위라 빼낸 물체:', SKIPPED)
 # ---------- 직접 렌더 ----------
 def render_direct():
     cv = Cv(MW * T, MH * T)
