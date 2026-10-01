@@ -401,6 +401,64 @@ def bake():
         if r.returncode: raise SystemExit(r.returncode)
 
 
+NEW_BRIEF_MARK = ('재서 지킨다', '평평한 게 정상이다')   # 2026-10-02 작업지시서(시점 절 숫자화) 표시
+REDO_SKIP = {'hot spring': '오토타일 모드가 필요하다(낱개 기물로 다시 뽑아도 같은 실수)'}
+REDO_NOTE = '다시 뽑기(2026-10-02 새 지시서): 「시점 (3/4)」 절과 view34/ 를 먼저 보고, 꼭대기 윗면 3행 이상을 재서 지킨다.'
+
+
+def _ready_items():
+    """화면의 「고를 차례」 순서(위에서부터)."""
+    import api
+    return [i['id'] for i in api.state()['items'] if i['status'] == 'ready']
+
+
+def _drop_round(rd, keep):
+    """안 고른 판 하나를 지운다: 일꾼(pid 로) → 후보 파일(keep 제외) → 작업지시서 폴더 → DB 행."""
+    import brief
+    from common import slug
+    for r in store.runs(rd['id']):
+        if r['status'] == 'running' and r['pid'] and _alive(r['pid']):
+            try: os.killpg(r['pid'], signal.SIGTERM)
+            except OSError: pass
+    folder = os.path.join(ROOT, CANDS, slug(rd['item']))
+    gone = 0
+    for f in glob.glob(os.path.join(folder, f"h{rd['id']}-*")):
+        if os.path.basename(f).split('.')[0].split('-x')[0] in keep: continue
+        os.remove(f); gone += 1
+    if rd.get('brief') and os.path.isdir(rd['brief']) and os.path.basename(rd['brief']) == f"h{rd['id']}": shutil.rmtree(rd['brief'])
+    store.x('DELETE FROM runs WHERE round=?', (rd['id'],)); store.x('DELETE FROM rounds WHERE id=?', (rd['id'],))
+    return gone
+
+
+def redo(items, note=REDO_NOTE, dry=False):
+    """안 고른 판의 후보를 지우고 새 작업지시서로 다시 뽑는다(사용자 2026-10-02 「고를 차례 위에서부터, 후보는 다 지우고」).
+    지키는 것: 고른 판, 지금 고른 그림·다른 판의 출발 그림(base), 사용자가 버린 후보(새 판의 「이렇게 하지 말 것」).
+    건너뛰는 것: 이미 새 지시서로 뽑은 판, REDO_SKIP."""
+    import brief
+    items = items or _ready_items()
+    allr = store.rounds()
+    based = {b.split('@')[0] for b in (rd.get('base') or '' for rd in allr) if b}
+    out = []
+    for item in items:
+        if item in REDO_SKIP: print(f'{item}: 건너뜀 — {REDO_SKIP[item]}', flush=True); continue
+        rds = store.rounds(item); fb = store.feedback(item)
+        decided = {f['round'] for f in fb if f['verdict'] in ('pick', 'keep') and f['round']}
+        keep = {f['cand'] for f in fb if f['cand']} | based | {brief.current_choice(item)}
+        open_ = [rd for rd in rds if rd['id'] not in decided]
+        last = rds[-1] if rds else None
+        if last and last['id'] not in decided and last.get('brief') and os.path.exists(os.path.join(last['brief'], 'brief.md')) \
+                and any(m in open(os.path.join(last['brief'], 'brief.md'), encoding='utf-8').read() for m in NEW_BRIEF_MARK):
+            print(f'{item}: 건너뜀 — h{last["id"]} 가 이미 새 지시서', flush=True); continue
+        base = next((rd['base'] for rd in reversed(rds) if '@' in (rd.get('base') or '')), '')
+        if dry: print(f'{item}: 지울 판 {[rd["id"] for rd in open_]} · 출발 {base or "-"}', flush=True); continue
+        gone = sum(_drop_round(rd, keep) for rd in open_)
+        nb = note + (' 새 기물. 설명이 곧 명세다 — 적힌 높이·윗면 행 수를 지킨다.' if brief.is_new(item) else '')
+        out += draw([item], note=nb, base=base, start_pool=False)
+        print(f'  └ 지운 판 {[rd["id"] for rd in open_]} · 파일 {gone}개', flush=True)
+    if out: ensure_pool()
+    return out
+
+
 def engines():
     """엔진 칸이 비어 있는(2026-10-02 전) 실행을 로그 첫 줄로 채운다 — Codex 로그는 「OpenAI Codex」 머리로 시작한다."""
     n = collections.Counter()
@@ -422,6 +480,7 @@ def main():
     d.add_argument('--note', default=''); d.add_argument('--base', default='')
     rv = sp.add_parser('review'); rv.add_argument('rounds', nargs='+', type=int)
     sp.add_parser('pool'); sp.add_parser('status'); sp.add_parser('bake'); sp.add_parser('engines')
+    rd = sp.add_parser('redo'); rd.add_argument('items', nargs='*'); rd.add_argument('--dry', action='store_true')
     a = ap.parse_args()
     sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
     if a.cmd == 'draw': draw(a.items, a.n, a.note, a.base)
@@ -430,6 +489,7 @@ def main():
     elif a.cmd == 'status': status()
     elif a.cmd == 'bake': bake()
     elif a.cmd == 'engines': engines()
+    elif a.cmd == 'redo': redo(a.items, dry=a.dry)
 
 
 if __name__ == '__main__':

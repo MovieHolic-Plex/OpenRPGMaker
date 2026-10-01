@@ -1,0 +1,104 @@
+// 금장 몰딩과 중앙 마름모 문양, 물약·약초·밧줄·횃불 2단 진열; 꼭대기 윗면 4행(y=2~5)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 6
+@mat f wood 7
+@mat G brass 4
+@mat H brass 5
+@mat J brass 2
+@mat R red 3
+@mat r red 4
+@mat s red 1
+@mat B blue 3
+@mat C blue 4
+@mat D blue 1
+@mat L leaf 4
+@mat l leaf 2
+@mat k leaf 1
+@mat T straw 4
+@mat t straw 2
+@mat u straw 1
+@mat O orange 4
+@mat o orange 2
+@mat P pine 4
+@mat p pine 2
+@mat V teal 3
+@mat v teal 4
+@mat q teal 1
+@layer cabinet
+@mblock 1 2
+= 30e
+= 1f 28e 1d
+= 1f 6e 5d 17e 1d
+= 1f 28e 1d
+= 1H 28G 1J
+= 1e 12d 2G 14c 1b
+= 1c 1e 1d 24a 1c 1d 1b *8
+= 1f 28e 1d
+= 1e 28d 1c
+= 1H 28G 1J
+= 30c
+= 1c 1e 1d 24a 1c 1d 1b *7
+= 1f 28e 1d
+= 1e 28d 1c
+= 1H 28G 1J
+= 30c
+= 1c 1d 1c 24. 1d 1c 1b
+@layer goods
+// 물약: 마개 윗면, 목, 어깨와 왼쪽 빛 덩이
+@mblock 5 9
+.HG....HG
+.GJ....GJ
+srRs..DCBD
+rrRs..CCBD
+rRRs..CBBD
+rRRs..CBBD
+ssss..DDDD
+// 약초: 위에서 보이는 잎 덩이와 묶음
+@mblock 20 9
+..Ll...
+.LLLlk.
+LLllLlk
+.LLlLlk
+..lllk.
+..TTtt.
+..lkkl.
+// 밧줄 고리: 굵은 한 묶음
+@mblock 5 21
+.ttTTtt.
+tTTttTTu
+TTu..tTu
+TTu..tTu
+tTTttTTu
+.ttuutt.
+// 아래 물약과 포장된 횃불 머리
+@mblock 17 21
+.HG....TTt
+.GJ....TOo
+qvVq...Too
+vvVq....Pp
+vVVq....Pp
+qqqq....pp
+@layer ornament
+// 중앙 문양과 양쪽 기둥의 금장 연결띠
+@mblock 14 6
+.GG.
+GHHJ
+.JJ.
+@mblock 2 8
+HG
+GJ
+@mblock 28 8
+GG
+JJ
+@mblock 2 19
+HG
+GJ
+@mblock 28 19
+GG
+JJ

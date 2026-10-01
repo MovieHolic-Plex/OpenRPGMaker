@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/item_shop_shelf/h133-A.pxg",
+ "id": "item shop shelf",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 39,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  2,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "물약 병·약초 묶음·감긴 밧줄·횃불을 2단 나무 선반에 배치, 높이 30px·선반판 윗면 각 3행; 꼭대기 윗면 4행(y=3~6)",
+ "ok": true
+}

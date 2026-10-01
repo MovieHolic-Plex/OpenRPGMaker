@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/knight_armor/h134-B.pxg",
+ "id": "knight armor",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "방의 갑옷 거치대와 석상 결을 따라 청회색 판금·굵은 명암 덩이·세운 창을 새로 그리고 어깨 윗면과 돌받침 윗면 2행(y=42~43)을 확보; 꼭대기 윗면 3행(y=8~10).",
+ "ok": true
+}

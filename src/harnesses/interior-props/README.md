@@ -46,6 +46,7 @@
 python3 src/harnesses/interior-props/harness.py draw "chair E" "chair W" --note "…"   # 화면 대신 명령으로 판 열기
 python3 src/harnesses/interior-props/harness.py status                               # 판·작업자 상태
 python3 src/harnesses/interior-props/harness.py review 3 4                           # 이미 그린 판을 (다시) 검수에 — 떨어지면 다시 그린다
+python3 src/harnesses/interior-props/harness.py redo [기물…] [--dry]                # 안 고른 판을 지우고 새 작업지시서로 다시 뽑기(기물을 안 주면 화면 「고를 차례」 위에서부터)
 python3 src/harnesses/interior-props/harness.py bake                                 # 고른 것 굽기(build_tileset → prepare-references)
 ```
 굽고 나면: 방 전·후를 `~/claude-viz/` 에 올려 사용자에게 보이고, 사용자가 괜찮다고 할 때 커밋·PR.
@@ -91,3 +92,15 @@ v5 원본을 일부러 후보로 넣어 검수자를 시험했다(`PROP_HARNESS_
 - 작업자 프로세스를 끌 때 `pkill -f <경로>` 금지 — 명령 줄에 같은 글자가 든 자기 셸까지 죽는다. `harness.py status` 로 보고, pid 로 끈다.
 - 고르기 서버를 다시 띄우면(`systemctl --user restart hand-interior-pick`) 일꾼은 따로 돈다(`start_new_session`) — 그리던 판은 이어진다. 일꾼이 죽었으면 다음 `draw` 때 `running` 이 `queued` 로 돌아가 다시 돈다.
 - 후보 이름 `h<판>-<A..E>` 는 `common.WORKER_RE` 가 받는다(w·h·pilot).
+
+## 다시 뽑기 `redo` (2026-10-02)
+지시서를 고친 뒤 옛 후보를 치우고 다시 뽑는다. 지우는 것: 고르지 않은 판의 후보 파일·작업지시서 폴더·DB 행(돌던 일꾼은 pid 로 끈다).
+지키는 것: 고른 판, 지금 고른 그림, 다른 판의 출발 그림(base), **사용자가 버린 후보**(새 판의 「이렇게 하지 말 것」 그림).
+건너뛰는 것: 이미 새 지시서로 뽑은 판(brief.md 에 「재서 지킨다」), `REDO_SKIP`(온천탕 — 오토타일 모드가 필요). 둘째 상태 기물은 지난 판의 출발 그림(base)을 그대로 쓴다.
+돌리기 전에 `harness.sqlite` 를 `.backup` 해 둔다(2026-10-02: `harness.sqlite.bak-20261002-redo`).
+
+## 화면 편의(2026-10-02)
+- 바뀐 것이 있을 때만 다시 그린다 — 전에는 3초마다 판 전체를 다시 그려 그림이 다시 로드되며 깜빡이고 검게 보였다.
+- 카드에 단품과 방 안을 **같이**(보기: 둘 다·단품·방 안, `V`). 확대 기본 「맞춤」(카드 폭에 맞춘 정수 배율, `F`).
+- 카드 아래는 한 줄 요약: `꼭대기 N행`(3 미만 빨강) · 검수 통과/✗ 코드 · 다시 그린 횟수. 긴 글은 마우스를 올리면 보인다.
+- 고를 차례가 다 끝나면 기다림 화면 — 다음 기물이 다 되면 자동으로 연다. 머리에 진행 막대와 남은 시간(1명 5.7분/장 실측).

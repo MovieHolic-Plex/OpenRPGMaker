@@ -1,0 +1,65 @@
+// C: 넓은 투구·어깨·흉갑과 분리된 두 다리, 세운 창; 투구 윗면 3행(y=4~6), 돌판 윗면 2행.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat a stone 1
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat p pine 3
+@mat q pine 1
+@layer armor
+@mblock 0 0
+..............k.
+.............lki
+.............mki
+.............lki
+.....llllj...lki
+....lmmllj...kj.
+....mlllkj...pj.
+....kkkkjj...pj.
+....kiiiij...pj.
+....klkkjj...pj.
+.....kjji....pj.
+.....kjji....pj.
+...kkijjik...pj.
+..lmmkjjllki.pj.
+..mllkkklkji.pj.
+..lkklllljji.pj.
+..lkjmllkjjj.pj.
+..lkjmllkjkj.pj.
+..lkjmllkjkj.pj.
+..kjjmllkjkj.pj.
+..kjjlllkjkj.pj.
+..lkjlllkjkj.pj.
+..lkjkllkjklkpj.
+..lkjkkkkjklllji
+..kjjkkkkjjkkpji
+...ijkkkji...pj.
+....ikkji....pj.
+...kllkkji...pj.
+...klkkjji...pj.
+...kjjijji...pj.
+...kji.iji...pj.
+...lji.kji...pj.
+...mlj.klji..pj.
+...llj.kkji..pj.
+...kkj.jjji..pj.
+...kji.jji...pj.
+...lji.kji...pj.
+...mlj.klji..pj.
+...mlj.klji..pj.
+...llj.kkji..pj.
+...llj.kkji..pj.
+...kkj.jjji..pj.
+..kllji.jkkji.pj.
+..kkkji.jjjji.pj.
+..ddddcccccccb..
+.ddcccccccccbb..
+.bccccbbbbbbba..
+.aaaaaaaaaaaaa..

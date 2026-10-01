@@ -1,0 +1,101 @@
+// E: 폭이 다른 수납칸과 두꺼운 윗판의 잡화 선반; 꼭대기 윗면 4행(y=2~5).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 7
+@mat b wood 6
+@mat c wood 5
+@mat d wood 3
+@mat e wood 2
+@mat f dwood 2
+@mat g dwood 3
+@mat h wood 4
+@mat i red 2
+@mat j red 4
+@mat k red 5
+@mat l blue 2
+@mat m blue 4
+@mat n blue 5
+@mat o linen 4
+@mat p bread 3
+@mat q leaf 2
+@mat r leaf 4
+@mat s leaf 5
+@mat t straw 2
+@mat u straw 4
+@mat v straw 5
+@mat w linen 2
+@mat z linen 5
+@layer shelf
+@mblock 0 0
+................................
+................................
+..cccccccccccccccccccccccccccc..
+.cbbbbbbbbbbbbbbbbbbbbbbbbbbbbd.
+.cbcccbbbbbbbbbbbcbbcbbbbbbbbbcd.
+.cbbbbbbbbbbbbbbbbbbbbbbbbbbbbcd.
+.baaaaaaaaaaaaaaaaaaaaaaaaaaabd.
+.dhhhhhhhhhhhhhhhhhhhhhhhhhhhed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbccbbbbbbbbbbbbbbbbbbbbbbbbced.
+.dbbaaaaaaaaabbbbbbaaaaaabbbbced.
+.dhhhhhhhhhhhhhhhhhhhhhhhhhheed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbefggggggggggggggdeggggggggfed.
+.dbccbbbbbbbbbbbbbbbbbbbbbbbbced.
+.dbbaaaaaaaaabbbbbbaaaaaabbbbced.
+.dbbbbbbbbbbbbbbbbbbbbbbbbbbbced.
+.dhhhhhhhhhhhhhhhhhhhhhhhhhheed.
+.dde........................edd.
+@layer goods
+// 병 마개 윗면과 어깨.
+@mblock 5 8
+.zp....zp.
+.pp....pp.
+.ki....nl.
+kjji..nmml
+kjji..nmml
+kooi..mool
+jjji..mmml
+.ii....ll.
+// 약초 묶음 윗잎과 끈.
+@mblock 22 9
+.sr..sr.
+srqrssrq
+rrqsrrqq
+.rqrrqq.
+.uuvuuq.
+..qqqq..
+..q.q...
+// 겹쳐 놓은 밧줄 고리, 속은 그늘.
+@mblock 5 20
+..vuuuu..
+.vutttuu.
+vutffftut
+vutuvutuu
+utffftutu
+.uttttut.
+..uuuut..
+// 불을 붙이지 않은 횃불 묶음.
+@mblock 22 19
+..zz.zz
+.zwozwo
+.owwoww
+zwoowwp
+owwp.pp
+wwpp.pp
+.pp.pp.
+.pp.pp.
