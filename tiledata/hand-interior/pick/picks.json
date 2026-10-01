@@ -439,6 +439,11 @@
   "choice": "w103-A",
   "note": ""
  },
+ "coffin open": {
+  "at": "2026-10-01T22:04:47+09:00",
+  "choice": "h32-C",
+  "note": ""
+ },
  "coin pile": {
   "at": "2026-10-01T15:07:38+09:00",
   "choice": "w72-A",
@@ -509,6 +514,11 @@
  "crystal ball": {
   "at": "2026-09-30T05:56:02+09:00",
   "choice": "w3-B",
+  "note": ""
+ },
+ "crystal switch": {
+  "at": "2026-10-01T22:04:52+09:00",
+  "choice": "h34-E",
   "note": ""
  },
  "cupboard": {
@@ -794,6 +804,11 @@
   "choice": "h20-A",
   "note": ""
  },
+ "iron gate open": {
+  "at": "2026-10-01T22:04:28+09:00",
+  "choice": "h30-A",
+  "note": ""
+ },
  "keg rack": {
   "at": "2026-10-01T13:58:50+09:00",
   "choice": "w48-A",
@@ -827,6 +842,11 @@
  "library ladder": {
   "at": "2026-10-01T15:07:39+09:00",
   "choice": "w74-A",
+  "note": ""
+ },
+ "locked door": {
+  "at": "2026-10-01T22:05:01+09:00",
+  "choice": "h35-B",
   "note": ""
  },
  "loom": {
@@ -863,6 +883,11 @@
  "meat hooks": {
   "at": "2026-10-01T13:58:50+09:00",
   "choice": "w48-A",
+  "note": ""
+ },
+ "mimic": {
+  "at": "2026-10-01T22:05:10+09:00",
+  "choice": "h36-D",
   "note": ""
  },
  "mine cart": {
@@ -998,6 +1023,11 @@
  "pressure plate": {
   "at": "2026-10-01T21:22:30+09:00",
   "choice": "h18-B",
+  "note": ""
+ },
+ "pressure plate down": {
+  "at": "2026-10-01T22:04:17+09:00",
+  "choice": "h29-B",
   "note": ""
  },
  "prison cot": {
@@ -1309,6 +1339,11 @@
   "choice": "h21-B",
   "note": ""
  },
+ "spike trap down": {
+  "at": "2026-10-01T22:04:37+09:00",
+  "choice": "h31-C",
+  "note": ""
+ },
  "spinning wheel": {
   "at": "2026-09-30T05:54:17+09:00",
   "choice": "w1-B",
@@ -1526,6 +1561,16 @@
   "choice": "h24-D",
   "note": ""
  },
+ "treasure chest big open": {
+  "at": "2026-10-01T22:03:25+09:00",
+  "choice": "h27-C",
+  "note": ""
+ },
+ "treasure chest open": {
+  "at": "2026-10-01T22:03:12+09:00",
+  "choice": "h26-D",
+  "note": ""
+ },
  "treasure pile": {
   "at": "2026-09-30T06:21:03+09:00",
   "choice": "w5-C",
@@ -1549,6 +1594,11 @@
  "wall lever": {
   "at": "2026-10-01T21:22:23+09:00",
   "choice": "h17-A",
+  "note": ""
+ },
+ "wall lever on": {
+  "at": "2026-10-01T22:04:10+09:00",
+  "choice": "h28-B",
   "note": ""
  },
  "wall map": {
