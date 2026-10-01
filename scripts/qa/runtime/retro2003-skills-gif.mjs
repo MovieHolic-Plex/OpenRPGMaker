@@ -195,7 +195,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
     page.on('response', (r) => { if (r.status() >= 400 && /pixel-fx|easyrpg\/sound/.test(r.url())) report.errors.push('Asset ' + r.status() + ': ' + r.url()); });
     await page.addInitScript(() => {
       window.__OPENRPG_BOOT__ = { projectUrl: '/__skills-qa/project.json', saveNamespace: 'retro-skills-qa', qaInstrumentation: true };
-      window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0;
+      window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0; window.__summons = [];
       window.__skillPopups = []; window.__skillLines = []; window.__hitStops = []; window.__hitStopOn = false;
       const seen = new WeakSet();
       const observe = () => {
@@ -220,6 +220,14 @@ async function recordGroup(groupIndex, group, defaults, contract) {
           if (pose && window.__skillPoses.at(-1)?.pose !== pose) window.__skillPoses.push({ at: Math.round(performance.now()), actor: user.dataset.recordId, pose, flip: user.classList.contains('retro-skill-flip') });
         }
         if (users.length && document.querySelector('.battle-animation-layer')?.childElementCount) window.__legacySkillLayers++;
+        // 소환(summonResourceId): 나타난 도트 몬스터의 칸 순서(windup>move>attack>recover)와 시작·끝 위치.
+        for (const node of document.querySelectorAll('.retro-summon')) {
+          if (seen.has(node)) continue; seen.add(node);
+          const row = { at: Math.round(performance.now()), sheet: node.dataset.retroSummon, cells: [], left: node.style.left, top: node.style.top, transforms: [] };
+          window.__summons.push(row);
+          const capture = () => { const c = node.dataset.retroSummonCell; if (c && row.cells.at(-1) !== c) { row.cells.push(c); row.transforms.push(getComputedStyle(node).transform); } };
+          capture(); new MutationObserver(capture).observe(node, { attributes: true, attributeFilter: ['data-retro-summon-cell'] });
+        }
         for (const node of document.querySelectorAll('.retro-skill-fx')) {
           if (seen.has(node)) continue; seen.add(node);
           const frames = [], positions = [];
@@ -282,7 +290,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         await choose('actor-command-skill');
         await page.waitForSelector(selector('actor-skill-' + skill));
       }
-      await page.evaluate(() => { window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0; window.__skillPopups = []; window.__skillLines = []; window.__hitStops = []; const f = document.querySelector('.battle-field'); if (f) delete f.dataset.retroClassSkillSounds; });
+      await page.evaluate(() => { window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0; window.__summons = []; window.__skillPopups = []; window.__skillLines = []; window.__hitStops = []; const f = document.querySelector('.battle-field'); if (f) delete f.dataset.retroClassSkillSounds; });
       const from = elapsed();
       // 표식 색을 스킬마다 마젠타·청록으로 번갈아 켠다 — 이어지는 두 스킬 사이의 꺼짐이 짧아도 경계가 남는다.
       await page.evaluate((odd) => { document.getElementById('skill-video-marker').style.background = odd ? 'rgb(0, 255, 255)' : 'rgb(255, 0, 255)'; }, segments.length % 2 === 1);
@@ -306,11 +314,11 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       await sleep(120);
       const detail = await page.evaluate(() => {
         document.getElementById('skill-video-marker').style.background = '#000';
-        return { effects: window.__skillEvidence, poses: window.__skillPoses, cells: window.__partyCells ?? [], legacyLayers: window.__legacySkillLayers,
+        return { effects: window.__skillEvidence, summons: window.__summons ?? [], poses: window.__skillPoses, cells: window.__partyCells ?? [], legacyLayers: window.__legacySkillLayers,
           popups: window.__skillPopups ?? [], hitStops: window.__hitStops ?? [], lines: window.__skillLines ?? [],
           statuses: [...document.querySelectorAll('[data-testid^="battle-status-"]')].map((n) => n.dataset.testid.replace(/^battle-status-/, '') + ':' + (n.dataset.statusName ?? '')),
           sounds: Number(document.querySelector('.battle-field')?.dataset.retroClassSkillSounds ?? 0),
-          remainingFx: document.querySelectorAll('.retro-skill-fx, .retro-class-veil, .retro-class-cutin').length };
+          remainingFx: document.querySelectorAll('.retro-skill-fx, .retro-class-veil, .retro-class-cutin, .retro-summon').length };
       });
       const row = { skill, group: groupIndex, completed, ...detail, layerKeys: [...new Set(detail.effects.map((e) => e.fx))], problems: [] };
       if (!completed) row.problems.push('did not complete');

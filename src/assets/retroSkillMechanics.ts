@@ -32,6 +32,8 @@ export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 �
   charge    힘 모으기 1~3. 정한 차례엔 「…을 준비한다! (N턴 뒤)」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 몸이 금빛으로
             떨리고 머리 위에 「기술 · 남은 차례」 띠가 뜬다. 한 차례를 버리므로 위력을 1.6~1.8배로 올려 준다(「모아」「숨을 모아」 기술).
             적이 쓰면 보스 대기술 예고가 된다.
+  summon    소환 그림: 파티원 도트 시트 칩(예 "monster2-4" 흙 골렘, "monster3-6" 업화). 시전자 앞에 번쩍 나타나 대상에게 달려가
+            첫 타에 맞춰 친다. 그림만이다 — 위력·타수·상태는 이 칸들 그대로. 「불러내」「소환진」 기술에 쓰고 시전자 motion 은 cast.
 
 기본 DB 상태(쓸 수 있는 id): state_poison 독 · state_deep_poison 맹독(출혈) ·
   state_sleep 수면 · state_paralysis 마비 · state_silence 침묵 · state_blind 암흑(통상 공격 명중 ½) ·
@@ -128,6 +130,8 @@ export interface RetroSkillMechanic {
   readonly gauge?: number;
   /** 힘 모으기 1~3(SkillRecord.chargeTurns). */
   readonly charge?: number;
+  /** 소환 그림 칩(파티원 도트 시트, SkillRecord.summonResourceId = "party-pixel-<칩>"). */
+  readonly summon?: string;
 }
 
 /** area 모양별 반지름(전투장 논리 px). circle 은 주 대상 둘레, line 은 |dy| <= radius/2 인 가로 띠. */
@@ -150,6 +154,7 @@ export function describeRetroSkillMechanic(mechanic: RetroSkillMechanic | undefi
   if (mechanic.cooldown) parts.push(`대기 ${mechanic.cooldown}턴`);
   if (mechanic.gauge) parts.push(mechanic.gauge < 0 ? `게이지 ${mechanic.gauge}` : `게이지 +${mechanic.gauge}`);
   if (mechanic.charge) parts.push(`모으기 ${mechanic.charge}턴`);
+  if (mechanic.summon) parts.push(`소환 ${mechanic.summon}`);
   if (mechanic.element === null) parts.push("무속성");
   else if (mechanic.element) parts.push(`속성 ${mechanic.element}`);
   return parts.length > 0 ? parts.join(" · ") : "순수 데미지";

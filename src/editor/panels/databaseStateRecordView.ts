@@ -1,6 +1,5 @@
 import { BATTLE_AURA_IDS, BATTLE_AURA_LABELS, normalizeBattleAura, resolveStateAura } from "@/assets/battleStateAuras";
-import { PARTY_PIXEL_SHEETS } from "@/assets/partyPixelSheets";
-import { RETRO_ROSTER } from "@/assets/retroRoster";
+import { partyPixelChoices } from "@/assets/partyPixelSheets";
 import { numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { stateBehavior } from "@/battle/battleStates";
@@ -380,11 +379,5 @@ function retroGimmickControls(
 
 /** 변신 그림 고르기: 파티원 9칸 시트(짐승·몬스터 칩) 목록. 조수가 넣은 다른 id(적 몬스터 그림 등)도 그대로 보인다. */
 function transformControl(current: string | undefined, onChange: (resourceId: string) => void): HTMLElement {
-  const names = new Map(RETRO_ROSTER.map((entry) => [entry.chip, entry.name]));
-  const options = [
-    { id: "", name: "변신 안 함" },
-    ...PARTY_PIXEL_SHEETS.map((sheet) => ({ id: sheet.resourceId, name: `${names.get(sheet.chip) ?? sheet.chip} (${sheet.chip})` })),
-  ];
-  if (current && !options.some((option) => option.id === current)) options.push({ id: current, name: current });
-  return selectField("변신 — 이 상태인 동안 전투 그림", "db-state-rt-transform", current ?? "", options, onChange);
+  return selectField("변신 — 이 상태인 동안 전투 그림", "db-state-rt-transform", current ?? "", partyPixelChoices("변신 안 함", current), onChange);
 }

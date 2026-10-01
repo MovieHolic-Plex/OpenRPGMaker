@@ -455,6 +455,7 @@ export function applyRetroSkillMechanic(base: SkillRecord, mechanic: RetroSkillM
   if (mechanic.cooldown) next.cooldownTurns = mechanic.cooldown;
   if (mechanic.gauge) next.gaugeShift = mechanic.gauge;
   if (mechanic.charge) next.chargeTurns = mechanic.charge;
+  if (mechanic.summon) next.summonResourceId = partyPixelResourceId(mechanic.summon);
   let states: DatabaseStateEffect[] | undefined = mechanic.states
     ? mechanic.states.map((state) => ({ stateId: state.id, chance: state.chance ?? 100, operation: state.op ?? "add" }))
     : base.stateEffects ? [...base.stateEffects] : undefined;

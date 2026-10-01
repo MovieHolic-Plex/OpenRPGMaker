@@ -386,6 +386,15 @@
   transition: none;
 }
 .battle-scene[data-battle-skin="retro2003"] .retro-class-fx { background-repeat: no-repeat; }
+/* 소환(SkillRecord.summonResourceId): 파티원 도트 시트 몬스터. 칸은 인라인 background-position, 이동은 재생기의 transform. */
+.battle-scene[data-battle-skin="retro2003"] .retro-summon {
+  position: absolute;
+  translate: -50% -100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 34;
+}
 .battle-scene[data-battle-skin="retro2003"] .retro-class-fx-screen { translate: -50% -50%; z-index: 36; }
 .battle-scene[data-battle-skin="retro2003"] .retro-class-fx-projectile { translate: -50% -50%; z-index: 37; }
 .battle-scene[data-battle-skin="retro2003"] .retro-class-veil {

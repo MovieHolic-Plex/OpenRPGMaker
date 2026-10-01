@@ -16,6 +16,8 @@ import { store } from "@/project/store";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
+import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl } from "@/assets/partyPixelSheets";
+import type { PartyPixelCell } from "@/assets/pixelEnemySheets";
 
 /** Presentation only: the three sword cuts still resolve one authored damage event. */
 type PoseStep = readonly [fraction: number, pose: ExtendedBattlerPose];
@@ -940,6 +942,75 @@ function drawPose(player: ClassPlayer, pose: ExtendedBattlerPose, flip: boolean)
   player.paint(user);
 }
 
+/** 발 위치(필드 좌표). 도트 시트는 칸 아래 4행이 여백이라 그만큼 올린다(placeOnBody 와 같은 규격). */
+function footPoint(field: HTMLElement, host: HTMLElement): Point & { readonly width: number } {
+  const image = battlerImage(host);
+  const box = image.getBoundingClientRect();
+  const f = fieldScale(field);
+  const margin = image.dataset.pixelSheet !== undefined ? box.height * 4 / pixelCellOf(image) : 0;
+  return { x: Math.round((box.left + box.width / 2 - f.rect.left) / f.x), y: Math.round((box.bottom - margin - f.rect.top) / f.y), width: box.width / f.x };
+}
+
+/**
+ * 소환(SkillRecord.summonResourceId): 파티원 도트 시트의 몬스터가 시전자 앞에 번쩍 나타나(windup) 대상 앞까지 달려가(move)
+ * 첫 계획 착탄에 맞춰 친다(attack). 맞힌 뒤 recover 칸으로 물러나며 사라진다. 그림만 — 숫자·타수는 전투 결과 그대로다.
+ * 시트는 왼쪽을 보고 그려져 있다: 아군이 부르면 그대로(적은 왼쪽), 적이 부르면 좌우를 뒤집는다.
+ * 대상이 자기 편(버프·회복)이면 달리지 않고 시전자 곁에서 한 번 기운을 뿜고 사라진다.
+ */
+function playSummon(field: HTMLElement, player: ClassPlayer, still: boolean): void {
+  const sheet = partyPixelSheet(player.plan.record.summonResourceId);
+  if (!sheet) return;
+  const sign = player.plan.monster ? 1 : -1; // 시전자가 바라보는 쪽(화면 x 부호).
+  const caster = footPoint(field, player.user);
+  const target = player.plan.side === "enemies" ? targetNode(field, player.primaryId) : undefined;
+  const start = { x: Math.round(caster.x + sign * (caster.width * 0.45 + sheet.box * 0.35)), y: caster.y };
+  const end = target ? (() => {
+    const at = footPoint(field, target);
+    return { x: Math.round(at.x - sign * (at.width * 0.3 + sheet.box * 0.3)), y: at.y };
+  })() : start;
+  const node = document.createElement("span");
+  node.className = "retro-summon";
+  node.dataset.retroSummon = sheet.resourceId;
+  node.setAttribute("aria-hidden", "true");
+  node.style.width = `${sheet.box}px`;
+  node.style.height = `${sheet.box}px`;
+  node.style.left = `${start.x}px`;
+  node.style.top = `${Math.round(start.y + sheet.box * 4 / sheet.cell)}px`;
+  node.style.backgroundImage = `url("${partyPixelSheetUrl(sheet)}")`;
+  node.style.backgroundSize = `300% ${sheet.rows * 100}%`;
+  const flip = player.plan.monster ? " scaleX(-1)" : "";
+  const cell = (name: PartyPixelCell) => {
+    node.dataset.retroSummonCell = name;
+    node.style.backgroundPosition = partyPixelBackgroundPosition(sheet, name);
+  };
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const at = (x: number, y: number) => `translate(${Math.round(x)}px, ${Math.round(y)}px)${flip}`;
+  node.style.transform = at(still ? dx : 0, still ? dy : 0);
+  field.append(node);
+  player.nodes.add(node);
+  if (still) { cell("attack"); return; }
+  cell("windup");
+  const hit = Math.max(240, (player.plan.hits[0] ?? player.plan.timeline.representativeMs) * player.clock);
+  const animate = (frames: Keyframe[], options: KeyframeAnimationOptions) => {
+    if (typeof node.animate === "function") player.animations.push(node.animate(frames, options));
+  };
+  animate([{ opacity: 0, filter: "brightness(4)" }, { opacity: 1, filter: "brightness(2.2)", offset: 0.35 }, { opacity: 1, filter: "none" }], { duration: Math.min(320, hit * 0.3) });
+  const later = (ms: number, run: () => void) => scheduleBattleTimer(() => { if (alive(field, player)) run(); }, Math.round(ms));
+  const travel = target ? hit * 0.5 : 0;
+  const departAt = hit * 0.32;
+  if (target) {
+    later(departAt, () => {
+      cell("move");
+      animate([{ transform: at(0, 0) }, { transform: at(dx * 0.5, dy * 0.5 - 10), offset: 0.5 }, { transform: at(dx, dy) }], { duration: Math.max(1, travel), fill: "forwards", easing: "cubic-bezier(.45,.05,.55,1)" });
+    });
+  }
+  later(departAt + travel, () => cell("attack"));
+  later(hit + 150, () => cell("recover"));
+  later(hit + 260, () => animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, fill: "forwards" }));
+  later(hit + 520, () => { node.remove(); player.nodes.delete(node); });
+}
+
 function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, primaryId: string | undefined, clock: number, paint: (node: HTMLElement) => void): void {
   stopRetroClassSkill(field);
   const primary = targetNode(field, primaryId);
@@ -956,6 +1027,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
   field.dataset.retroClassSkill = plan.skill.id;
   if (reduced()) {
     // 감속 모드: 대표 순간 한 장만 보인다. 이동·흔들림·컷인 없음.
+    playSummon(field, player, true);
     const state = retroTimelineStateAt(plan.timeline, plan.timeline.representativeMs);
     drawPose(player, state.pose, false);
     for (const fx of state.fx) {
@@ -965,6 +1037,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
     scheduleBattleTimer(() => finishPlayer(field, player), Math.round(plan.timeline.durationMs * player.clock));
     return;
   }
+  playSummon(field, player, false);
   for (const event of plan.timeline.events) {
     const run = () => {
       if (!alive(field, player)) return;
