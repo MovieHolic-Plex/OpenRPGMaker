@@ -1,0 +1,22 @@
+// w32-B 극장 좌석 뒤태: 등판 위 나무 덧대 + 금 마개 팔걸이
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+..AAAAAAAAAAAA..
+..AFFFFFFFFFGA..
+..AGGGGGGGGGGA..
+..ABBBBBBBBBCA..
+..ABCCCCCCCCDA..
+..ABCCCCDCCCDA..
+IIABCCCCDCCCDAII
+HHACCCCCDCCDDAHH
+GGACCCCCDCCDEAGG
+.GACCCCCDCCDEAG.
+.GADDDDDDDDDEAG.
+.GAEEEEEEEEEEAG.
+...GG......GG...
+...AG......GA...
+................
+@px 2 15 ~ 3 15 ~ 4 15 ~ 5 15 ~ 6 15 ~ 7 15 ~ 8 15 ~ 9 15 ~ 10 15 ~ 11 15 ~ 12 15 ~ 13 15 ~

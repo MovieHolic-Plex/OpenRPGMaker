@@ -1,0 +1,22 @@
+// w32-C 극장 좌석 뒤태: 키 큰 통짜 등판 + 금 번호판, 금 마개 팔걸이 끝
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+..AAAAAAAAAAAA..
+..ABBBBBBBBBCA..
+..ABCCCCCCCCDA..
+..ABCCCHIHCCDA..
+..ABCCCCCCCCDA..
+IIABCCCCDCCCDAII
+HHACCCCCDCCCDAHH
+GGACCCCCDCCCDAGG
+.GACCCCCDCCDDAG.
+.GACCCCCDCCDEAG.
+.GADDDDDDDDDEAG.
+.GAEEEEEEEEEEAG.
+...GG......GG...
+...AG......GA...
+................
+@px 2 15 ~ 3 15 ~ 4 15 ~ 5 15 ~ 6 15 ~ 7 15 ~ 8 15 ~ 9 15 ~ 10 15 ~ 11 15 ~ 12 15 ~ 13 15 ~

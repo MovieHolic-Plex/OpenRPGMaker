@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w32-C.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "방향 C: 키 큰 통짜 등판 + 가운데 금 번호판(뒷면에 붙는 좌석 번호) + 금 마개 팔걸이 끝.",
+ "ok": true
+}

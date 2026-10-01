@@ -7,5 +7,5 @@ cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구
 - `drip puddle` 물방울 웅덩이(움직임) — 물방울이 떨어져 동심원이 퍼지는 웅덩이(밟음, 움직임). 감방·지하·뒷골목 젖은 바닥에 방마다 1~2개. 밟을 수 있다. 다른 기물 밑에 먼저 깐다 · 쓰는 방: 지하 감옥·감방·선술집 홀·바 · 짝: slop bucket, shackles, straw bed
 
 ```json
-[{"id":"shackles","ko":"족쇄","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,4512,3]]},{"id":"slop bucket","ko":"오물통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4513,3]]},{"id":"drip puddle","ko":"물방울 웅덩이(움직임)","kind":"flat","w":1,"h":1,"overhangPx":0,"animated":true,"cells":[[0,0,4524,2]]}]
+[{"id":"shackles","ko":"족쇄","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,4560,3]]},{"id":"slop bucket","ko":"오물통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4561,3]]},{"id":"drip puddle","ko":"물방울 웅덩이(움직임)","kind":"flat","w":1,"h":1,"overhangPx":0,"animated":true,"cells":[[0,0,4572,2]]}]
 ```

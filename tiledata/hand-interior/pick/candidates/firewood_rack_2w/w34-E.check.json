@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack_2w/w34-E.pxg",
+ "id": "firewood rack 2w",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 1
+  },
+  "why": "사용자 메모: 사이즈를 키워도 좋으니 장작을 대각선으로 눕힌 것처럼 (3x2 로 키움)."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  2,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "뒤는 \\ 앞은 / 로 엇갈려 기댄 X자 더미: 통나무가 서로 가로질러 얹히고 양쪽 대각선 끝마다 나이테 마구리가 보임",
+ "ok": true
+}

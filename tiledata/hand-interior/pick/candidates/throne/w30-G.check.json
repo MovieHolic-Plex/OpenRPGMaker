@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/throne/w30-G.pxg",
+ "id": "throne",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 2
+  },
+  "why": "사용자 메모: 좀 더 화려하게. 3x2 사이즈로."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  0,
+  46,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  18
+ ],
+ "note": "G: 부채 등판 옥좌. 참고한 문법: 금 테 두른 큰 원형/부채 등판 + 붉은 벨벳에 금 방사 살(누빔 대신 한 덩이 문양) + 사자머리 금 팔걸이 끝 + 크로노 트리거식 보라 카펫(금 줄) 단상.",
+ "ok": true
+}

@@ -12,7 +12,7 @@
   "unreached": [],
   "reachable": 72,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8812
+  "sameAsUnfoldedOriginal": 0.8827
  },
  {
   "map": "pharmacy",
@@ -27,7 +27,7 @@
   "unreached": [],
   "reachable": 67,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8727
+  "sameAsUnfoldedOriginal": 0.8741
  },
  {
   "map": "fish",
@@ -42,7 +42,7 @@
   "unreached": [],
   "reachable": 60,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8902
+  "sameAsUnfoldedOriginal": 0.8913
  },
  {
   "map": "butcher",
@@ -57,7 +57,7 @@
   "unreached": [],
   "reachable": 49,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8951
+  "sameAsUnfoldedOriginal": 0.8968
  },
  {
   "map": "smithy",
@@ -72,7 +72,7 @@
   "unreached": [],
   "reachable": 55,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8542
+  "sameAsUnfoldedOriginal": 0.8545
  },
  {
   "map": "chapel",
@@ -85,9 +85,9 @@
   "walkMismatch": 0,
   "walkMismatchCells": [],
   "unreached": [],
-  "reachable": 248,
+  "reachable": 241,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8629
+  "sameAsUnfoldedOriginal": 0.8601
  },
  {
   "map": "scholar",
@@ -102,7 +102,7 @@
   "unreached": [],
   "reachable": 64,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.9192
+  "sameAsUnfoldedOriginal": 0.9185
  },
  {
   "map": "tailor",
@@ -117,7 +117,7 @@
   "unreached": [],
   "reachable": 76,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8868
+  "sameAsUnfoldedOriginal": 0.8896
  },
  {
   "map": "tavern",
@@ -132,7 +132,7 @@
   "unreached": [],
   "reachable": 92,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.859
+  "sameAsUnfoldedOriginal": 0.8591
  },
  {
   "map": "manor_1f",
@@ -147,7 +147,7 @@
   "unreached": [],
   "reachable": 178,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.89
+  "sameAsUnfoldedOriginal": 0.8906
  },
  {
   "map": "manor_2f",
@@ -162,7 +162,7 @@
   "unreached": [],
   "reachable": 163,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.907
+  "sameAsUnfoldedOriginal": 0.9069
  },
  {
   "map": "hobbit",
@@ -177,7 +177,7 @@
   "unreached": [],
   "reachable": 85,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8694
+  "sameAsUnfoldedOriginal": 0.8727
  },
  {
   "map": "inn",
@@ -192,7 +192,7 @@
   "unreached": [],
   "reachable": 144,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8759
+  "sameAsUnfoldedOriginal": 0.8762
  },
  {
   "map": "dwarf",
@@ -205,9 +205,9 @@
   "walkMismatch": 0,
   "walkMismatchCells": [],
   "unreached": [],
-  "reachable": 172,
+  "reachable": 169,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8417
+  "sameAsUnfoldedOriginal": 0.8429
  },
  {
   "map": "elf",
@@ -222,7 +222,7 @@
   "unreached": [],
   "reachable": 138,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.7991
+  "sameAsUnfoldedOriginal": 0.8008
  },
  {
   "map": "mead",
@@ -235,9 +235,9 @@
   "walkMismatch": 0,
   "walkMismatchCells": [],
   "unreached": [],
-  "reachable": 187,
+  "reachable": 182,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.811
+  "sameAsUnfoldedOriginal": 0.8106
  },
  {
   "map": "throne",
@@ -250,7 +250,7 @@
   "walkMismatch": 0,
   "walkMismatchCells": [],
   "unreached": [],
-  "reachable": 183,
+  "reachable": 178,
   "cellsOver2": 0,
   "sameAsUnfoldedOriginal": 0.8807
  },
@@ -267,7 +267,7 @@
   "unreached": [],
   "reachable": 86,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8656
+  "sameAsUnfoldedOriginal": 0.867
  },
  {
   "map": "dungeon",
@@ -282,7 +282,7 @@
   "unreached": [],
   "reachable": 78,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.7555
+  "sameAsUnfoldedOriginal": 0.7526
  },
  {
   "map": "mine",
@@ -295,9 +295,9 @@
   "walkMismatch": 0,
   "walkMismatchCells": [],
   "unreached": [],
-  "reachable": 129,
+  "reachable": 123,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.693
+  "sameAsUnfoldedOriginal": 0.6956
  },
  {
   "map": "magitek",
@@ -325,9 +325,9 @@
   "walkMismatch": 0,
   "walkMismatchCells": [],
   "unreached": [],
-  "reachable": 169,
+  "reachable": 166,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8718
+  "sameAsUnfoldedOriginal": 0.873
  },
  {
   "map": "casino",
@@ -342,7 +342,7 @@
   "unreached": [],
   "reachable": 133,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.9655
+  "sameAsUnfoldedOriginal": 0.9659
  },
  {
   "map": "stable",
@@ -357,7 +357,7 @@
   "unreached": [],
   "reachable": 83,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.7944
+  "sameAsUnfoldedOriginal": 0.7971
  },
  {
   "map": "narshe",
@@ -372,7 +372,7 @@
   "unreached": [],
   "reachable": 65,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8458
+  "sameAsUnfoldedOriginal": 0.8459
  },
  {
   "map": "zozo",
@@ -387,6 +387,6 @@
   "unreached": [],
   "reachable": 72,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8175
+  "sameAsUnfoldedOriginal": 0.8211
  }
 ]

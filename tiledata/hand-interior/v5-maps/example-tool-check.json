@@ -33,7 +33,7 @@
   "map": "chapel",
   "errors": 0,
   "warnings": 1,
-  "reachable": 248
+  "reachable": 241
  },
  {
   "map": "scholar",
@@ -68,7 +68,7 @@
  {
   "map": "hobbit",
   "errors": 0,
-  "warnings": 0,
+  "warnings": 1,
   "reachable": 85
  },
  {
@@ -81,7 +81,7 @@
   "map": "dwarf",
   "errors": 0,
   "warnings": 0,
-  "reachable": 172
+  "reachable": 169
  },
  {
   "map": "elf",
@@ -93,13 +93,13 @@
   "map": "mead",
   "errors": 0,
   "warnings": 0,
-  "reachable": 187
+  "reachable": 182
  },
  {
   "map": "throne",
   "errors": 0,
   "warnings": 0,
-  "reachable": 183
+  "reachable": 178
  },
  {
   "map": "tower",
@@ -117,7 +117,7 @@
   "map": "mine",
   "errors": 0,
   "warnings": 0,
-  "reachable": 129
+  "reachable": 123
  },
  {
   "map": "magitek",
@@ -129,7 +129,7 @@
   "map": "opera",
   "errors": 0,
   "warnings": 0,
-  "reachable": 169
+  "reachable": 166
  },
  {
   "map": "casino",
