@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **110쪽 / 4105KB / 약 1,183,239 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **110쪽 / 4112KB / 약 1,185,144 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,10 +16,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 557KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3393 | ~161,513 |
-| `openwiki/editor-ai-tools.md` | 302KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2531 | ~86,887 |
+| `openwiki/editor-ai-tools.md` | 302KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2531 | ~86,962 |
 | `openwiki/editor-database.md` | 380KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2268 | ~111,141 |
 | `openwiki/editor-event-authoring.md` | 165KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 960 | ~47,991 |
-| `openwiki/editor-event-commands.md` | 63KB | 32KB | 268 | ~17,227 |
+| `openwiki/editor-event-commands.md` | 64KB | 32KB | 277 | ~17,626 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
 | `openwiki/editor-pre-edit-routing.md` | 178KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1114 | ~52,214 |
@@ -260,7 +260,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 43KB · 331줄 · ~12,999 토큰
+### `openwiki/beodeul-city.md` — 48KB · 355줄 · ~14,430 토큰
 
 - `L8` 기본 타일셋 (2026-09-30)
   - `L24` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
@@ -289,6 +289,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L316` 참고문서 (조수)
   - `L323` 화면 증거
   - `L327` 남은 것
+- `L332` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
 
 ### `openwiki/bgm-catalog.md` — 23KB · 338줄 · ~5,974 토큰
 
@@ -464,7 +465,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3363` AI 패널 렌더 비용 (2026-09-28)
   - `L3385` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
 
-### `openwiki/editor-ai-tools.md` — 302KB · 2531줄 · ~86,887 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 302KB · 2531줄 · ~86,962 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 - `L13` 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
@@ -758,7 +759,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Follower removal and graphic intent (2026-09-06, U06)
 - `L92` Stable resource selections and field labels (2026-09-06, U07)
 
-### `openwiki/editor-event-commands.md` — 63KB · 268줄 · ~17,227 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 64KB · 277줄 · ~17,626 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 장면 · 그림 갤러리 표시 · 줄 음성 (2026-09-25)
 - `L13` 게임 오버 선택 (2026-09-23)
@@ -770,11 +771,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L119` Roguelike run control (2026-08-24)
 - `L159` 런타임 규격 무대 — 대사·선택지 미리보기는 게임 창을 축소해 그린다 (2026-09-17)
 - `L196` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
-- `L230` Staged edit, history, and nested drag invariants (2026-07-30)
-- `L237` Command picker, validation, and preview trust (2026-07-30)
-- `L246` 회상 스틸과 AI 그림 (2026-09-03)
-- `L257` Recovered native emote command (2026-09-05)
-- `L261` 패배·엔딩 저작 (2026-09-22)
+- `L239` Staged edit, history, and nested drag invariants (2026-07-30)
+- `L246` Command picker, validation, and preview trust (2026-07-30)
+- `L255` 회상 스틸과 AI 그림 (2026-09-03)
+- `L266` Recovered native emote command (2026-09-05)
+- `L270` 패배·엔딩 저작 (2026-09-22)
 
 ### `openwiki/editor-genre-packs.md` — 22KB · 168줄 · ~5,666 토큰
 
