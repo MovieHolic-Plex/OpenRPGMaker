@@ -1,7 +1,7 @@
 # 손 도트 실내 (atlas_biome_interior) — 읽는 순서
 
 실내(집·가게·여관·저택·교회·성 방·지하)는 이 칩셋 하나로만 짓는다. 옛 실내 칩셋(easyrpg_chipset_interior · tibo_interior_expanded · LPC 가구)은 폐기됐다.
-칩셋: `atlas_biome_interior`, 계열 `oprn-atlas`, 16px, 시트 가로 48칸, 칸 6160개(그림 public/assets/atlas-interior/interior-chipset.png).
+칩셋: `atlas_biome_interior`, 계열 `oprn-atlas`, 16px, 시트 가로 48칸, 칸 6232개(그림 public/assets/atlas-interior/interior-chipset.png).
 원본: tiledata/hand-interior/v5(손 도트 Python, 건물 25동 26맵). 칸은 scripts/content/hand-interior/build_tileset.py 가 잘랐다.
 
 ## 읽는 순서
@@ -25,7 +25,7 @@
 `{room:"빵집"}`·`{room:"여관 객실"}`·`{room:"부엌"}` = 예제 26맵을 방 단위로 나눠 그 방에 쓰인 가구를 종류(floor·wall·hang·flat·table·line·dais)별로, 쓰인 방 수·개수와 함께.
 `{query:"여관 벽"}` = id·이름·분류·태그·설명을 모두 찾고 모든 낱말이 맞는 것만 준다. 12종 이하면 행마다 desc·tags·place·pair, 많으면 desc 한 줄.
 `{category}` = 한 분류의 가구 행.
-가구 분류(26): veg 채소 23 · fish 생선가게 26 · bake 빵집 24 · pharm 약국 26 · misc 잡화 22 · butcher 정육점 7 · home 가구·살림 94 · smith 대장간 8 · tavern 선술집 5 · church 예배당 22 · study 서재 5 · kitchen 부엌 12 · magic 마법 4 · decor 장식 33 · tailor 재단사 5 · shop 상점 8 · hobbit 호빗 굴 5 · mine 광산 8 · elf 엘프 궁정 5 · hall 연회장·알현실 6 · tower 마법사의 탑 4 · dungeon 지하 감옥 3 · magitek 마도 기관 6 · opera 극장 12 · casino 카지노 7 · stable 마구간 6.
+가구 분류(28): veg 채소 23 · fish 생선가게 26 · bake 빵집 24 · pharm 약국 28 · misc 잡화 22 · butcher 정육점 7 · home 가구·살림 98 · smith 대장간 12 · tavern 선술집 5 · church 예배당 22 · study 서재 9 · kitchen 부엌 12 · magic 마법 4 · decor 장식 35 · tailor 재단사 5 · shop 상점 10 · hobbit 호빗 굴 5 · mine 광산 8 · elf 엘프 궁정 5 · hall 연회장·알현실 6 · tower 마법사의 탑 4 · dungeon 지하 감옥 6 · magitek 마도 기관 6 · opera 극장 12 · casino 카지노 7 · stable 마구간 6 · ship 배 선실 4 · crypt 지하묘지 3.
 
 ## 층과 통행 (엔진 판정)
 - 1층 = 구조: 바닥(밟음 o) · 벽면(막힘 x) · 천장 띠·공허(막힘 x).

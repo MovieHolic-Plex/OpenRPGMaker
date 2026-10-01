@@ -2,6 +2,146 @@
  "picks": "tiledata/hand-interior/pick/picks.json",
  "applied": [
   {
+   "id": "anchor",
+   "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "birdcage",
+   "choice": "w73-A",
+   "new": true
+  },
+  {
+   "id": "blackboard",
+   "choice": "w71-A",
+   "new": true
+  },
+  {
+   "id": "bow rack",
+   "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "coffin",
+   "choice": "w73-A",
+   "new": true
+  },
+  {
+   "id": "coin pile",
+   "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "dresser",
+   "choice": "w71-A",
+   "new": true
+  },
+  {
+   "id": "folding screen",
+   "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "globe",
+   "choice": "w71-A",
+   "new": true
+  },
+  {
+   "id": "hammock",
+   "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "key ring hook",
+   "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "library ladder",
+   "choice": "w74-A",
+   "new": true
+  },
+  {
+   "id": "patient bed",
+   "choice": "w74-A",
+   "new": true
+  },
+  {
+   "id": "portrait large",
+   "choice": "w71-A",
+   "new": true
+  },
+  {
+   "id": "prison cot",
+   "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "rope coil",
+   "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "safe",
+   "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "sarcophagus",
+   "choice": "w73-A",
+   "new": true
+  },
+  {
+   "id": "school desk",
+   "choice": "w71-A",
+   "new": true
+  },
+  {
+   "id": "shield wall",
+   "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "ship wheel",
+   "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "skull pile",
+   "choice": "w73-A",
+   "new": true
+  },
+  {
+   "id": "sleeping cat",
+   "choice": "w74-A",
+   "new": true
+  },
+  {
+   "id": "spear rack",
+   "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "statue",
+   "choice": "w74-A",
+   "new": true
+  },
+  {
+   "id": "straw pile",
+   "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "sword rack",
+   "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "trapdoor",
+   "choice": "w73-A",
+   "new": true
+  },
+  {
    "id": "aisle runner",
    "choice": "w5-B"
   },
@@ -23,7 +163,7 @@
   },
   {
    "id": "apothecary drawers",
-   "choice": "w5-C"
+   "choice": "w42-A"
   },
   {
    "id": "armchair",
@@ -31,15 +171,23 @@
   },
   {
    "id": "armor stand",
-   "choice": "w3-A"
+   "choice": "w52-A"
   },
   {
    "id": "balance scale",
    "choice": "w6-C"
   },
   {
+   "id": "banner blue",
+   "choice": "w63-A"
+  },
+  {
    "id": "banner green",
    "choice": "w8-C"
+  },
+  {
+   "id": "banner red",
+   "choice": "w63-A"
   },
   {
    "id": "bar stool",
@@ -50,8 +198,108 @@
    "choice": "w2-A"
   },
   {
+   "id": "basket:apple",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:baguette",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:bun",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:cabbage",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:cake",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:carrot",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:egg",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:eggplant",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:fish",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:fish+ice",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:flower",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:grape",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:jar+jarb+jarg",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:lemon",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:loaf",
+   "choice": "w60-A"
+  },
+  {
    "id": "basket:mushroom",
    "choice": "w9-B"
+  },
+  {
+   "id": "basket:onion",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:pie",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:potato",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:potion+potionb+potiong",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:pumpkin",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:shell",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:tomato",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:vial+flask",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:wool",
+   "choice": "w60-A"
+  },
+  {
+   "id": "basket:yarn+yarnb+yarny",
+   "choice": "w60-A"
   },
   {
    "id": "bathtub",
@@ -63,11 +311,15 @@
   },
   {
    "id": "bookshelf 1w",
-   "choice": "w2-C"
+   "choice": "w41-A"
   },
   {
    "id": "bookshelf 2w",
-   "choice": "w4-C"
+   "choice": "w41-A"
+  },
+  {
+   "id": "bookshelf 3w",
+   "choice": "w41-A"
   },
   {
    "id": "bottles",
@@ -75,19 +327,71 @@
   },
   {
    "id": "bread shelf",
-   "choice": "w7-B"
+   "choice": "w41-A"
   },
   {
    "id": "bread shelf baguette",
-   "choice": "w8-A"
+   "choice": "w41-A"
+  },
+  {
+   "id": "bread shelf pie",
+   "choice": "w40-A"
   },
   {
    "id": "broom and bucket",
    "choice": "w9-C"
   },
   {
+   "id": "cabinet:bolt+boltg+boltr",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:book+bookb+bookg",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:bottle+bottler+bottley",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:bun",
+   "choice": "w40-A"
+  },
+  {
    "id": "cabinet:candle",
-   "choice": "w8-C"
+   "choice": "w47-A"
+  },
+  {
+   "id": "cabinet:cheese",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:gem+gemr",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:jar+jarb+jarg",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:loaf",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:pie",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:potion+potionb+potiong",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:toy",
+   "choice": "w40-A"
+  },
+  {
+   "id": "cabinet:vial+flask",
+   "choice": "w40-A"
   },
   {
    "id": "cake display case",
@@ -103,11 +407,11 @@
   },
   {
    "id": "choir stall",
-   "choice": "w6-B"
+   "choice": "w45-A"
   },
   {
    "id": "clock",
-   "choice": "w10-B"
+   "choice": "w42-A"
   },
   {
    "id": "coal bin",
@@ -119,27 +423,39 @@
   },
   {
    "id": "column dwarf",
-   "choice": "w5-B"
+   "choice": "w51-A"
+  },
+  {
+   "id": "column live",
+   "choice": "w51-A"
   },
   {
    "id": "column marble",
-   "choice": "w1-B"
+   "choice": "w51-A"
   },
   {
    "id": "column steel",
-   "choice": "w5-C"
+   "choice": "w51-A"
+  },
+  {
+   "id": "column stone",
+   "choice": "w51-A"
   },
   {
    "id": "column wood",
-   "choice": "w1-B"
+   "choice": "w51-A"
   },
   {
    "id": "confessional",
-   "choice": "w22-G"
+   "choice": "w45-A"
   },
   {
    "id": "cradle",
    "choice": "w29-F"
+  },
+  {
+   "id": "crate",
+   "choice": "w42-A"
   },
   {
    "id": "crystal ball",
@@ -158,12 +474,44 @@
    "choice": "w6-B"
   },
   {
+   "id": "dining 1x1",
+   "choice": "w62-A"
+  },
+  {
    "id": "dining 2x1",
    "choice": "pilot-B"
   },
   {
+   "id": "dining 2x2",
+   "choice": "w62-A"
+  },
+  {
+   "id": "dining 3x1",
+   "choice": "w62-A"
+  },
+  {
+   "id": "dining 3x2",
+   "choice": "w62-A"
+  },
+  {
+   "id": "dining 4x1",
+   "choice": "w62-A"
+  },
+  {
+   "id": "dining 4x2",
+   "choice": "w62-A"
+  },
+  {
    "id": "dish rack",
    "choice": "w9-B"
+  },
+  {
+   "id": "display apple",
+   "choice": "w61-A"
+  },
+  {
+   "id": "display bread",
+   "choice": "w61-A"
   },
   {
    "id": "display potion",
@@ -179,11 +527,15 @@
   },
   {
    "id": "fabric bolt rack",
-   "choice": "w6-C"
+   "choice": "w41-A"
   },
   {
    "id": "feed trough",
    "choice": "w4-B"
+  },
+  {
+   "id": "fireplace",
+   "choice": "w44-A"
   },
   {
    "id": "firewood bundle",
@@ -191,7 +543,15 @@
   },
   {
    "id": "firewood rack",
-   "choice": "w12-D"
+   "choice": "w49-A"
+  },
+  {
+   "id": "fish tank",
+   "choice": "w44-A"
+  },
+  {
+   "id": "forge",
+   "choice": "w44-A"
   },
   {
    "id": "fur rug",
@@ -202,12 +562,36 @@
    "choice": "w5-A"
   },
   {
+   "id": "hang:fish",
+   "choice": "w63-A"
+  },
+  {
+   "id": "hang:fishr",
+   "choice": "w63-A"
+  },
+  {
+   "id": "hang:flower",
+   "choice": "w63-A"
+  },
+  {
    "id": "hang:ham",
    "choice": "w4-A"
   },
   {
+   "id": "hang:herb",
+   "choice": "w63-A"
+  },
+  {
+   "id": "hang:mushroom",
+   "choice": "w63-A"
+  },
+  {
    "id": "hang:onion",
    "choice": "w5-C"
+  },
+  {
+   "id": "hang:sausage",
+   "choice": "w63-A"
   },
   {
    "id": "hanging pans",
@@ -215,11 +599,11 @@
   },
   {
    "id": "hay bale",
-   "choice": "w7-B"
+   "choice": "w44-A"
   },
   {
    "id": "herb drying rack",
-   "choice": "w7-A"
+   "choice": "w43-A"
   },
   {
    "id": "holy water font",
@@ -231,7 +615,7 @@
   },
   {
    "id": "keg rack",
-   "choice": "w4-A"
+   "choice": "w48-A"
   },
   {
    "id": "kitchen sink",
@@ -243,7 +627,7 @@
   },
   {
    "id": "loom",
-   "choice": "w4-B"
+   "choice": "w43-A"
   },
   {
    "id": "magic circle",
@@ -254,8 +638,16 @@
    "choice": "w31-F"
   },
   {
+   "id": "magitek engine",
+   "choice": "w46-A"
+  },
+  {
    "id": "mannequin",
    "choice": "w7-C"
+  },
+  {
+   "id": "meat hooks",
+   "choice": "w48-A"
   },
   {
    "id": "mine cart",
@@ -287,15 +679,15 @@
   },
   {
    "id": "pew E2",
-   "choice": "w13-D"
+   "choice": "w45-A"
   },
   {
    "id": "pew E3",
-   "choice": "w8-B"
+   "choice": "w45-A"
   },
   {
    "id": "piano",
-   "choice": "w4-B"
+   "choice": "w42-A"
   },
   {
    "id": "picture",
@@ -303,7 +695,7 @@
   },
   {
    "id": "pipe organ",
-   "choice": "w2-A"
+   "choice": "w50-A"
   },
   {
    "id": "pitchfork",
@@ -314,6 +706,10 @@
    "choice": "w1-C"
   },
   {
+   "id": "potted cactus",
+   "choice": "w63-A"
+  },
+  {
    "id": "potted fern",
    "choice": "w7-B"
   },
@@ -322,12 +718,16 @@
    "choice": "w3-B"
   },
   {
+   "id": "potted sapling",
+   "choice": "w63-A"
+  },
+  {
    "id": "powder kegs",
    "choice": "w9-B"
   },
   {
    "id": "proofing rack",
-   "choice": "w1-C"
+   "choice": "w43-A"
   },
   {
    "id": "purple rug",
@@ -363,11 +763,19 @@
   },
   {
    "id": "royal chest",
-   "choice": "w6-C"
+   "choice": "w42-A"
   },
   {
    "id": "rug red",
    "choice": "w3-C"
+  },
+  {
+   "id": "rune stone",
+   "choice": "w45-A"
+  },
+  {
+   "id": "sack",
+   "choice": "w60-A"
   },
   {
    "id": "sack:flour",
@@ -387,11 +795,27 @@
   },
   {
    "id": "scroll rack",
-   "choice": "w2-C"
+   "choice": "w48-A"
   },
   {
    "id": "shelf pots",
    "choice": "w4-B"
+  },
+  {
+   "id": "shelf:bolt+boltg+boltr",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:book+bookb+bookg",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:bottle+bottler+bottley",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:candle",
+   "choice": "w61-A"
   },
   {
    "id": "shelf:cheese",
@@ -402,12 +826,64 @@
    "choice": "w10-C"
   },
   {
+   "id": "shelf:flower",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:gem+gemr",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:herb",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:ingot+ingotg",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:jar+jarb+jarg",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:mushroom",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:potion+potionb+potiong",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:scroll",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:skull+crystal",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:toy",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:vial+flask",
+   "choice": "w61-A"
+  },
+  {
+   "id": "shelf:yarn+yarnb+yarny",
+   "choice": "w61-A"
+  },
+  {
    "id": "shield",
    "choice": "w3-B"
   },
   {
    "id": "slop bucket",
    "choice": "w3-C"
+  },
+  {
+   "id": "slot machine",
+   "choice": "w46-A"
   },
   {
    "id": "spinning wheel",
@@ -423,15 +899,55 @@
   },
   {
    "id": "stone throne",
-   "choice": "w6-C"
+   "choice": "w52-A"
+  },
+  {
+   "id": "stove",
+   "choice": "w44-A"
   },
   {
    "id": "straw bed",
-   "choice": "w25-F"
+   "choice": "w44-A"
   },
   {
    "id": "table:bolt+yarn",
-   "choice": "w7-B"
+   "choice": "w46-A"
+  },
+  {
+   "id": "table:book+scroll",
+   "choice": "w62-A"
+  },
+  {
+   "id": "table:cake+pie",
+   "choice": "w62-A"
+  },
+  {
+   "id": "table:fish+fishr",
+   "choice": "w62-A"
+  },
+  {
+   "id": "table:gem+coins",
+   "choice": "w62-A"
+  },
+  {
+   "id": "table:loaf+bun",
+   "choice": "w62-A"
+  },
+  {
+   "id": "table:mug+bottle",
+   "choice": "w62-A"
+  },
+  {
+   "id": "table:plate+cup",
+   "choice": "w62-A"
+  },
+  {
+   "id": "table:potion+flask",
+   "choice": "w62-A"
+  },
+  {
+   "id": "table:steak+ham",
+   "choice": "w62-A"
   },
   {
    "id": "tailor mirror",
@@ -450,6 +966,14 @@
    "choice": "w2-B"
   },
   {
+   "id": "tall vase teal",
+   "choice": "w63-A"
+  },
+  {
+   "id": "tall vase yellow",
+   "choice": "w63-A"
+  },
+  {
    "id": "tapestry",
    "choice": "w1-B"
   },
@@ -459,7 +983,7 @@
   },
   {
    "id": "timber prop",
-   "choice": "w7-B"
+   "choice": "w53-B"
   },
   {
    "id": "tool wall",
@@ -475,7 +999,7 @@
   },
   {
    "id": "vanity mirror",
-   "choice": "w1-B"
+   "choice": "w47-A"
   },
   {
    "id": "wall clock",
@@ -483,7 +1007,7 @@
   },
   {
    "id": "wardrobe",
-   "choice": "w9-A"
+   "choice": "w42-A"
   },
   {
    "id": "washbasin",
@@ -503,6 +1027,18 @@
   }
  ],
  "resized": [
+  {
+   "id": "bread oven",
+   "choice": "w56-A",
+   "footprint": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    48
+   ]
+  },
   {
    "id": "conductor podium",
    "choice": "w31-F",
@@ -552,6 +1088,18 @@
    ]
   },
   {
+   "id": "firewood rack 2w",
+   "choice": "w49-A",
+   "footprint": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    32
+   ]
+  },
+  {
    "id": "fishing net",
    "choice": "w33-B",
    "footprint": [
@@ -588,6 +1136,18 @@
    ]
   },
   {
+   "id": "spellbook stand",
+   "choice": "w55-A",
+   "footprint": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    32
+   ]
+  },
+  {
    "id": "stairs down",
    "choice": "w29-F",
    "footprint": [
@@ -613,7 +1173,7 @@
   },
   {
    "id": "throne",
-   "choice": "w30-E",
+   "choice": "w52-A",
    "footprint": [
     3,
     2
@@ -695,11 +1255,6 @@
    "why": "v5 유지"
   },
   {
-   "id": "cabinet:bottle+bottler+bottley",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
    "id": "chair N",
    "choice": "v5",
    "why": "v5 유지"
@@ -716,21 +1271,6 @@
   },
   {
    "id": "chopping block",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
-   "id": "column live",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
-   "id": "column stone",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
-   "id": "crate",
    "choice": "v5",
    "why": "v5 유지"
   },
@@ -755,11 +1295,6 @@
    "why": "v5 유지"
   },
   {
-   "id": "firewood rack 2w",
-   "choice": null,
-   "why": "선택 없음"
-  },
-  {
    "id": "fish ice chest",
    "choice": "v5",
    "why": "v5 유지"
@@ -776,11 +1311,6 @@
   },
   {
    "id": "lute",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
-   "id": "meat hooks",
    "choice": "v5",
    "why": "v5 유지"
   },
@@ -823,11 +1353,6 @@
    "id": "sofa",
    "choice": "v5",
    "why": "v5 유지"
-  },
-  {
-   "id": "spellbook stand",
-   "choice": "w2-C",
-   "why": "그림 16×16 이 resize.json 캔버스 16×32 와 다름"
   },
   {
    "id": "spiral stair",
@@ -875,7 +1400,273 @@
    "why": "v5 유지"
   }
  ],
+ "newItems": [
+  {
+   "id": "anchor",
+   "choice": "w72-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "birdcage",
+   "choice": "w73-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "blackboard",
+   "choice": "w71-A",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "bow rack",
+   "choice": "w70-A",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "coffin",
+   "choice": "w73-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "coin pile",
+   "choice": "w72-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "dresser",
+   "choice": "w71-A",
+   "kind": "wall",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "folding screen",
+   "choice": "w72-A",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "globe",
+   "choice": "w71-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "hammock",
+   "choice": "w72-A",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "key ring hook",
+   "choice": "w70-A",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "library ladder",
+   "choice": "w74-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "patient bed",
+   "choice": "w74-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "portrait large",
+   "choice": "w71-A",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "prison cot",
+   "choice": "w70-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "rope coil",
+   "choice": "w72-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "safe",
+   "choice": "w72-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "sarcophagus",
+   "choice": "w73-A",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "school desk",
+   "choice": "w71-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "shield wall",
+   "choice": "w70-A",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "ship wheel",
+   "choice": "w72-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "skull pile",
+   "choice": "w73-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "sleeping cat",
+   "choice": "w74-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "spear rack",
+   "choice": "w70-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "statue",
+   "choice": "w74-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "straw pile",
+   "choice": "w70-A",
+   "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "sword rack",
+   "choice": "w70-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "trapdoor",
+   "choice": "w73-A",
+   "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  }
+ ],
  "roomMoves": [
+  {
+   "room": "bakery",
+   "id": "bread oven",
+   "from": [
+    1,
+    3
+   ],
+   "to": [
+    1,
+    3
+   ]
+  },
   {
    "room": "bakery",
    "id": "doormat",
@@ -1114,6 +1905,18 @@
    "to": [
     9,
     1
+   ]
+  },
+  {
+   "room": "tower",
+   "id": "spellbook stand",
+   "from": [
+    15,
+    7
+   ],
+   "to": [
+    14,
+    7
    ]
   },
   {

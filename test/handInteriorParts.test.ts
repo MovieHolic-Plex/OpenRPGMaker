@@ -8,9 +8,9 @@ import { createBlankProject } from "@/project/defaults";
 const run = (args: Record<string, unknown>) => LIST_HAND_INTERIOR_PARTS_TOOL.run(createBlankProject() as never, args as never) as { summary: string; data: any };
 
 describe("handInteriorSpec 소품 메모", () => {
-  it("386종(v5 381 + 고른 「함께 쓰기」 변형 5) 모두 desc·tags 가 있고, desc 는 60자 이하·서로 다르다", () => {
+  it("414종(v5 381 + 고른 「함께 쓰기」 변형 5 + 새 기물 28) 모두 desc·tags 가 있고, desc 는 60자 이하·서로 다르다", () => {
     const objs = Object.entries(S.objects);
-    expect(objs.length).toBe(386);
+    expect(objs.length).toBe(414);
     for (const [id, o] of objs) {
       expect(o.desc, id).toBeTruthy();
       expect(o.desc!.length, id).toBeLessThanOrEqual(60);
