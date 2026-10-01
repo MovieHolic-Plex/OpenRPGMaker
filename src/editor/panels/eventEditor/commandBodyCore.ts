@@ -47,9 +47,15 @@ import { appearanceBindingControl } from "../appearanceBindingControl";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
-  SHARED_PORTRAIT_EXPRESSIONS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId,
+  SHARED_PORTRAIT_EXPRESSIONS, SHARED_PORTRAIT_EXPRESSION_LABELS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId,
   type SharedPortraitExpression, type SharedPortraitMode,
 } from "@/assets/sharedPortraitAssets";
+import {
+  DIALOGUE_FULL_PORTRAIT_LIMITS,
+  normalizeDialogueFullScale,
+  resolveDialogueFullPortraitLayout,
+} from "@/project/dialogueStyles";
+import { renderFullPortraitStage } from "@/editor/panels/fullPortraitStagePreview";
 
 const MESSAGE_WINDOW_FORMAT_OPTIONS = [
   { value: "normal", label: "일반" },
@@ -622,11 +628,7 @@ function wrapSelection(body: HTMLTextAreaElement, prefix: string, suffix: string
   }
 }
 
-const SHARED_PORTRAIT_EXPRESSION_LABELS: Readonly<Record<SharedPortraitExpression, string>> = {
-  base: "기본", happy: "기쁨", sad: "슬픔", angry: "분노", surprised: "놀람",
-};
-
-/** 공용 흉상·전신의 5표정 줄. 고르면 표정이 없는 대사에 쓸 기본 그림이 바뀐다. */
+/** 공용 흉상·전신의 16표정 줄. 고르면 표정이 없는 대사에 쓸 기본 그림이 바뀐다. */
 function sharedPortraitExpressionRow(
   setId: string,
   mode: SharedPortraitMode,
@@ -656,7 +658,7 @@ function sharedPortraitExpressionRow(
 function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
   let appearanceId = cmd.appearanceId;
   const presentation = selectWithOptions([
-    { value: "face", label: "얼굴" }, { value: "bust", label: "흉상 (없으면 얼굴)" },
+    { value: "face", label: "얼굴" }, { value: "bust", label: "흉상 (없으면 얼굴)" }, { value: "full", label: "전신 (없으면 흉상·얼굴)" },
   ] as const, cmd.presentation ?? "face", "event-command-face-presentation");
   const appearance = appearanceBindingControl(appearanceId, "event-command-face-appearance", (id) => {
     appearanceId = id;
@@ -699,11 +701,46 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   position.classList.add("event-command-face-position-select");
   const flip = checkboxControl(cmd.flipHorizontally, "event-command-face-flip-horizontal");
   flip.classList.add("event-command-face-flip-checkbox");
+  // 전신 장면 크기(%) — 자료집 「대화창 → 전신 초상」 크기에 곱한다. 100 은 저장하지 않는다.
+  const scaleLimits = DIALOGUE_FULL_PORTRAIT_LIMITS.scale;
+  const initialScale = String(normalizeDialogueFullScale(cmd.fullScale) ?? 100);
+  const fullScaleRange = el("input", {
+    class: "event-command-face-full-scale-range",
+    attrs: { type: "range", min: String(scaleLimits.min), max: String(scaleLimits.max), step: "5", "aria-label": "장면 크기 슬라이더" },
+    value: initialScale,
+    dataset: { testid: "event-command-face-full-scale-slider" },
+  }) as HTMLInputElement;
+  const fullScaleInput = el("input", {
+    class: "event-command-face-full-scale-input",
+    attrs: { type: "number", min: String(scaleLimits.min), max: String(scaleLimits.max), step: "1", "aria-label": "장면 크기 (%)" },
+    value: initialScale,
+    dataset: { testid: "event-command-face-full-scale" },
+  }) as HTMLInputElement;
+  const fullStageHost = el("div", {
+    class: "event-command-face-full-stage",
+    dataset: { testid: "event-command-face-full-stage" },
+  });
+  const fullScaleSection = el("div", {
+    class: "event-command-face-full-scale",
+    dataset: { testid: "event-command-face-full-scale-section" },
+    children: [
+      el("div", { class: "event-command-face-section-label", text: "전신 크기" }),
+      fieldControl("장면 크기 (%)", el("span", { class: "event-command-face-full-scale-pair", children: [fullScaleRange, fullScaleInput] })),
+      el("p", {
+        class: "event-command-face-hint",
+        text: "100% 는 자료집 → 시스템 → 대화창 「전신 초상」 크기 그대로입니다. 이 얼굴 표시 뒤의 대사에만 곱해집니다.",
+      }),
+      fullStageHost,
+    ],
+  });
 
+  const readFullScale = (): number | undefined =>
+    fullScaleInput.value.trim() === "" ? undefined : normalizeDialogueFullScale(Number(fullScaleInput.value));
   const readDraft = (): Extract<Command, { kind: "changeFace" }> => ({
     kind: "changeFace",
-    ...(appearanceId ? { appearanceId, presentation: presentation.value === "bust" ? "bust" : "face" } : {}),
+    ...(appearanceId ? { appearanceId, presentation: presentation.value === "bust" || presentation.value === "full" ? presentation.value : "face" } : {}),
     resourceId: resource.value.trim(),
+    ...(readFullScale() !== undefined ? { fullScale: readFullScale() } : {}),
     position: position.value === "right" ? "right" : "left",
     flipHorizontally: flip.checked,
   });
@@ -723,6 +760,23 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
         displaySize: 96,
       })
     );
+    refreshFullStage(draft.appearanceId ? resolved?.resourceId ?? "" : draft.resourceId);
+  };
+
+  // 전신일 때만 크기 칸과 무대 견본을 보인다. 견본은 런타임과 같은 배치 계산을 쓴다.
+  const refreshFullStage = (resourceId: string): void => {
+    const isFull = Boolean(resourceId) && faceDisplayModeOf(resourceId) === "full";
+    fullScaleSection.hidden = !isFull;
+    clearChildren(fullStageHost);
+    if (!isFull) return;
+    fullStageHost.append(renderFullPortraitStage({
+      resourceId,
+      layout: resolveDialogueFullPortraitLayout(store.getCurrent().system.dialogueFullPortrait, readFullScale()),
+      position: position.value === "right" ? "right" : "left",
+      flipHorizontally: flip.checked,
+      width: 280,
+      testid: "event-command-face-full-stage-preview",
+    }));
   };
 
   // 갤러리는 한 번만 짓고 이후엔 선택 강조만 갱신한다 — 낱장 수백 장을 매 입력마다 다시 만들지 않는다.
@@ -751,7 +805,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
             el("strong", { text: mode === "full" ? "전신 모드" : "흉상 모드" }),
             el("p", {
               text: shared
-                ? `대사 창 ${mode === "full" ? "뒤에 크게 세우는 전신" : "옆의 흉상"}입니다. 이어지는 대사에 표정(기쁨·슬픔·분노·놀람)을 고르면 같은 인물의 그 표정 그림으로 바뀝니다. 아래는 표정이 없을 때의 기본 그림입니다.`
+                ? `대사 창 ${mode === "full" ? "뒤에 크게 세우는 전신" : "옆의 흉상"}입니다. 이어지는 대사에 표정(기쁨·슬픔·분노·놀람)을 고르면 같은 인물의 그 표정 그림으로 바뀝니다. 아래 16표정 중 고른 것이 표정 없는 대사의 그림입니다.`
                 : mode === "full"
                   ? "전신 레이아웃으로 대사 창 위에 크게 세웁니다. 번들 프리셋(generated-face-actor1-full)은 아직 흉상 그림을 공유하므로 그림 자체는 흉상입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
                   : "이 리소스는 통짜 흉상 이미지입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요.",
@@ -797,6 +851,18 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   position.addEventListener("change", apply);
   presentation.addEventListener("change", apply);
   flip.addEventListener("change", apply);
+  // 슬라이더는 끄는 동안 견본만 따라오고, 놓을 때 저장한다.
+  fullScaleRange.addEventListener("input", () => {
+    fullScaleInput.value = fullScaleRange.value;
+    refreshPreview();
+  });
+  fullScaleRange.addEventListener("change", apply);
+  fullScaleInput.addEventListener("change", () => {
+    const value = readFullScale() ?? 100;
+    fullScaleInput.value = String(value);
+    fullScaleRange.value = String(value);
+    apply();
+  });
 
   const openPicker = (): void => {
     const draft = readDraft();
@@ -917,6 +983,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     appearance,
     fieldControl("공유 외형 표시", presentation),
     selectedCard,
+    fullScaleSection,
     el("div", {
       class: "event-command-face-grid-section",
       dataset: { testid: "event-command-face-grid-section" },

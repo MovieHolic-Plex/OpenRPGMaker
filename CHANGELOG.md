@@ -5,6 +5,71 @@
 
 <!-- releases -->
 
+## 0.64.0 — 2026-10-01
+
+### 기능
+
+- **content** — 월드맵 아이콘 세트 「현대·SF」 17역할 22장 (경사 투영 렌더러) (`c21f973`)
+- **content** — 월드맵 아이콘 세트 사막·동양풍 — 투영 렌더러로 22장(17역할), 새 색 0개 (`c33b51d`)
+- **content** — 월드맵 키트 — 지형·팔레트·아이콘 세트·여정 템플릿 4층 분리와 빌더 (`87e510f`)
+- **relief** — 편집기에 들린 타일·절벽 띠 컨테이너·부분 갱신을 붙인다 (`f1ec040`)
+- **relief** — 높이 지형 런타임 — 걷기·들림·화면 변환·줄 띠·양식·경사로 (`a7abcc1`)
+- **battle** — 전투 화면 꾸미기 — 프리셋 12종과 칸별 덮어쓰기 (`9b165f1`)
+
+### 수정
+
+- **relief** — rim 블록의 양식 null 가드 (`fd9f4a9`)
+- **relief** — 쓰지 않는 RELIEF_DEFAULT_RIM import 를 뺀다 (`ff63636`)
+- **relief** — 높이 지형 맵은 창 단위 타일 그리기를 건너뛰고 전체 경로로 그린다 (`25035cb`)
+
+### 문서
+
+- **content** — 월드맵 키트 — 아이콘 세트 둘 검증 결과와 제품 등록 보류 사유 (`818de10`)
+- **openwiki** — 색인 재생성 (`d006f2b`)
+- **relief** — 높이 지형 지도(relief-terrain)와 스키마·편집기·도구 문서를 갱신한다 (`e5e1c01`)
+
+### 테스트
+
+- **relief** — peat 양식 기대값과 벽 띠 측정을 실제 렌더에 맞춘다 (`ac4ba0b`)
+- **relief** — 높이 지형 단위 시험·구조 검사기·QA 시나리오·경사로 도트 원본 (`1b7e968`)
+
+## 0.63.0 — 2026-10-01
+
+### 기능
+
+- add composable quest presets and verified player workflows (`4e97a36`)
+
+### 수정
+
+- **editor** — 퀘스트 선택 아이콘 크기를 DeckIconSize에 맞춘다 (`e7464ca`)
+
+## 0.62.0 — 2026-10-01
+
+### 기능
+
+- support 1024 by 1024 maps and measure performance (`3499fd7`)
+- **dialogue** — 전신 초상 크기를 에디터에서 조절한다 (`f90ae70`)
+
+## 0.61.0 — 2026-10-01
+
+### 기능
+
+- support 512 by 512 maps across editor and tools (`bf02c1f`)
+
+### 수정
+
+- bound runtime map tile rendering to the camera (`1b54977`)
+
+### 테스트
+
+- repair parity consumer reference and record local CI checks (`a836907`)
+
+## 0.60.0 — 2026-10-01
+
+### 기능
+
+- **portraits** — 공용 초상 16표정 전부·외형 전신 칸·조수 자원 검색 (`632ef9c`)
+
 ## 0.59.0 — 2026-10-01
 
 ### 기능

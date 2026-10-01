@@ -28,6 +28,8 @@ export interface CharacterAppearanceRecord {
   charset?: { resourceId: string; characterIndex: number };
   face?: { resourceId: string };
   bust?: { resourceId: string };
+  /** 대사 창 뒤에 크게 서는 전신(선택). 없으면 흉상, 그것도 없으면 얼굴. */
+  full?: { resourceId: string };
 }
 
 export interface ActorRecord {
@@ -1561,6 +1563,8 @@ export interface SystemRecords {
   battleUiStyle?: BattleUiStyle;
   /** 전투 타격감 프리셋(project/battleHitFeel.ts). 생략 = impact(묵직하게). 스킨과 별개 축이다. */
   battleHitFeel?: import("@/project/battleHitFeel").BattleHitFeel;
+  /** 전투 화면 꾸미기(project/battleLook.ts) — 프리셋 + 바꾼 칸. 생략 = 「도트 창」 프리셋. 스킨(전투 방식)과 별개 축이다. */
+  battleLook?: import("@/project/battleLook").BattleLookSettings;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
   /** 대화창 스타일(project/dialogueStyles.ts). 생략 = glass(지금까지의 유리 창). */
@@ -1571,6 +1575,8 @@ export interface SystemRecords {
   dialogueSpeed?: number;
   /** false 면 구두점 뒤에 쉬지 않는다. 생략 = 쉰다. */
   dialoguePunctuationPause?: boolean;
+  /** 하단 대사창 뒤 전신 초상의 크기·내림(%). 생략 = 높이 125·내림 20. */
+  dialogueFullPortrait?: import("@/project/dialogueStyles").DialogueFullPortraitSettings;
   fieldHud?: import("../fieldHud").FieldHudConfig;
   /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
   battleCommandCss?: string;

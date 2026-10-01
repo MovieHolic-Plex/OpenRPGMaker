@@ -132,6 +132,7 @@ export function renderCharacterAppearancesTab(host: HTMLElement): void {
       appearanceSlotCard(record, "charset", refresh),
       appearanceSlotCard(record, "face", refresh),
       appearanceSlotCard(record, "bust", refresh),
+      appearanceSlotCard(record, "full", refresh),
     ] });
     refreshSpecimen();
     detailHost.append(detailPane({

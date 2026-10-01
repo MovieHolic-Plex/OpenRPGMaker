@@ -1,0 +1,5343 @@
+{
+  "toolResults": [
+    {
+      "preset": "errand",
+      "ok": true,
+      "summary": "퀘스트 '심부름' 컴파일 — 이벤트 2개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "opt-in:craft-recipes-no-call",
+          "message": "제작 레시피가 있으나 호출하는 이벤트 명령이 없습니다."
+        }
+      ]
+    },
+    {
+      "preset": "lost_item",
+      "ok": true,
+      "summary": "퀘스트 '분실물 찾기' 컴파일 — 이벤트 2개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "opt-in:craft-recipes-no-call",
+          "message": "제작 레시피가 있으나 호출하는 이벤트 명령이 없습니다."
+        }
+      ]
+    },
+    {
+      "preset": "hunt",
+      "ok": true,
+      "summary": "퀘스트 '위협 제거' 컴파일 — 이벤트 2개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "opt-in:craft-recipes-no-call",
+          "message": "제작 레시피가 있으나 호출하는 이벤트 명령이 없습니다."
+        }
+      ]
+    },
+    {
+      "preset": "delivery",
+      "ok": true,
+      "summary": "퀘스트 '물품 배달' 컴파일 — 이벤트 2개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "opt-in:craft-recipes-no-call",
+          "message": "제작 레시피가 있으나 호출하는 이벤트 명령이 없습니다."
+        }
+      ]
+    },
+    {
+      "preset": "gather",
+      "ok": true,
+      "summary": "퀘스트 '재료 모으기' 컴파일 — 이벤트 4개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "opt-in:craft-recipes-no-call",
+          "message": "제작 레시피가 있으나 호출하는 이벤트 명령이 없습니다."
+        }
+      ]
+    },
+    {
+      "preset": "trade_chain",
+      "ok": true,
+      "summary": "퀘스트 '교환 사슬' 컴파일 — 이벤트 3개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "opt-in:craft-recipes-no-call",
+          "message": "제작 레시피가 있으나 호출하는 이벤트 명령이 없습니다."
+        }
+      ]
+    },
+    {
+      "preset": "crafting",
+      "ok": true,
+      "summary": "퀘스트 '제작 의뢰' 컴파일 — 이벤트 3개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "investigate",
+      "ok": true,
+      "summary": "퀘스트 '사건 조사' 컴파일 — 이벤트 4개, 단계 3개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "witness_chain",
+      "ok": true,
+      "summary": "퀘스트 '증언 맞추기' 컴파일 — 이벤트 4개, 단계 3개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "treasure_hunt",
+      "ok": true,
+      "summary": "퀘스트 '보물 추적' 컴파일 — 이벤트 4개, 단계 3개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "exploration",
+      "ok": true,
+      "summary": "퀘스트 '유적 탐사' 컴파일 — 이벤트 3개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "patrol",
+      "ok": true,
+      "summary": "퀘스트 '순찰과 답사' 컴파일 — 이벤트 4개, 단계 3개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "escort",
+      "ok": true,
+      "summary": "퀘스트 '안전한 동행' 컴파일 — 이벤트 3개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "rescue",
+      "ok": true,
+      "summary": "퀘스트 '구출과 귀환' 컴파일 — 이벤트 4개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "boss_hunt",
+      "ok": true,
+      "summary": "퀘스트 '현상금 보스' 컴파일 — 이벤트 3개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "gauntlet",
+      "ok": true,
+      "summary": "퀘스트 '연속 전투' 컴파일 — 이벤트 4개, 단계 3개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "duel",
+      "ok": true,
+      "summary": "퀘스트 '도전과 결투' 컴파일 — 이벤트 2개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "puzzle_choice",
+      "ok": true,
+      "summary": "퀘스트 '단서와 수수께끼' 컴파일 — 이벤트 4개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "mechanism",
+      "ok": true,
+      "summary": "퀘스트 '장치 작동' 컴파일 — 이벤트 4개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "alternate_solution",
+      "ok": true,
+      "summary": "퀘스트 '여러 해결 방법' 컴파일 — 이벤트 3개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "moral_choice",
+      "ok": true,
+      "summary": "퀘스트 '선택과 결과' 컴파일 — 이벤트 2개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "recruitment",
+      "ok": true,
+      "summary": "퀘스트 '동료 영입' 컴파일 — 이벤트 3개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_recruitment",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (동료 영입 인물 1, 휴식, 전투). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "world_repair",
+      "ok": true,
+      "summary": "퀘스트 '마을의 변화' 컴파일 — 이벤트 6개, 단계 2개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_world_repair",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_world_repair_deliver1/ev_library_world_repair_deliver1_library_world_repair_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_recruitment",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (동료 영입 인물 1, 휴식, 전투). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "time_echo",
+      "ok": true,
+      "summary": "퀘스트 '과거와 미래' 컴파일 — 이벤트 4개, 단계 3개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_world_repair",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_world_repair_deliver1/ev_library_world_repair_deliver1_library_world_repair_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_recruitment",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (동료 영입 인물 1, 휴식, 전투). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "appointment",
+      "ok": true,
+      "summary": "퀘스트 '시간대 약속' 컴파일 — 이벤트 2개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_world_repair",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_world_repair_deliver1/ev_library_world_repair_deliver1_library_world_repair_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_recruitment",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (동료 영입 인물 1, 휴식, 전투). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "repeatable_contract",
+      "ok": true,
+      "summary": "퀘스트 '반복 의뢰' 컴파일 — 이벤트 4개, 단계 1개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_world_repair",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_world_repair_deliver1/ev_library_world_repair_deliver1_library_world_repair_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_repeatable_contract",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_repeatable_contract_giver/ev_library_repeatable_contract_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_recruitment",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (동료 영입 인물 1, 휴식, 전투). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "story_chain",
+      "ok": true,
+      "summary": "퀘스트 '연속 이야기' 컴파일 — 이벤트 6개, 단계 5개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_world_repair",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_world_repair_deliver1/ev_library_world_repair_deliver1_library_world_repair_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_repeatable_contract",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_repeatable_contract_giver/ev_library_repeatable_contract_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_story_chain",
+          "x": 14,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_story_chain_deliver3/ev_library_story_chain_deliver3_library_story_chain_3_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_recruitment",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (동료 영입 인물 1, 휴식, 전투). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_story_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (연속 이야기 인물 1, 연속 이야기 인물 4, 연속 이야기 인물 5). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    },
+    {
+      "preset": "custom",
+      "ok": true,
+      "summary": "퀘스트 '직접 조합' 컴파일 — 이벤트 4개, 단계 3개",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_lost_item",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_lost_item_giver/ev_library_lost_item_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_delivery",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_delivery_deliver0/ev_library_delivery_deliver0_library_delivery_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_gather",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_gather_giver/ev_library_gather_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver0/ev_library_trade_chain_deliver0_library_trade_chain_0_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_trade_chain",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_trade_chain_deliver1/ev_library_trade_chain_deliver1_library_trade_chain_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_crafting",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_crafting_deliver1/ev_library_crafting_deliver1_library_crafting_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 8,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_escort_escort0/ev_library_escort_escort0_library_escort_0_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_escort",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_escort_destination0/ev_library_escort_destination0_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:addFollower",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_rescue_escort1/ev_library_rescue_escort1_library_rescue_1_join에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:removeFollower",
+          "mapId": "map_library_rescue",
+          "x": 14,
+          "y": 9,
+          "message": "맵 이벤트 ev_library_rescue_destination1/ev_library_rescue_destination1_arrive에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): removeFollower"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_world_repair",
+          "x": 10,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_world_repair_deliver1/ev_library_world_repair_deliver1_library_world_repair_1_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_repeatable_contract",
+          "x": 5,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_repeatable_contract_giver/ev_library_repeatable_contract_giver_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_story_chain",
+          "x": 14,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_story_chain_deliver3/ev_library_story_chain_deliver3_library_story_chain_3_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "runtime-support:m2-217-data-query",
+          "mapId": "map_library_custom",
+          "x": 12,
+          "y": 5,
+          "message": "맵 이벤트 ev_library_custom_deliver2/ev_library_custom_deliver2_library_custom_2_active에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): 데이터 조회"
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_trade_chain",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (교환 사슬 인물 1, 교환 사슬 인물 2, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_investigate",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (사건 조사 인물 1, 사건 조사 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_witness_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (증언 맞추기 인물 1, 증언 맞추기 인물 2, 증언 맞추기 인물 3). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_rescue",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (휴식, 전투, 구출과 귀환 인물 2). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_boss_hunt",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_gauntlet",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (휴식, 전투, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_recruitment",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (동료 영입 인물 1, 휴식, 전투). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_story_chain",
+          "message": "서로 다른 조사물 4개가 같은 그림입니다 (연속 이야기 인물 1, 연속 이야기 인물 4, 연속 이야기 인물 5). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        },
+        {
+          "severity": "warning",
+          "code": "authoring:shared-object-graphic",
+          "mapId": "map_library_custom",
+          "message": "서로 다른 조사물 3개가 같은 그림입니다 (직접 조합 인물 1, 직접 조합 인물 3, 의뢰인). 임시 표식이면 실제 물체 그림으로 교체하세요."
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "preset": "errand",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "errand",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "errand",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "errand",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "errand",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "errand",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "errand",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "errand",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "errand",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "lost_item",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "hunt",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "missing quantity blocks delivery without consumption",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "delivery",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "gather",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "missing quantity blocks delivery without consumption",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "missing quantity blocks delivery without consumption",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "trade_chain",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "missing materials do not complete crafting",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "missing quantity blocks delivery without consumption",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "crafting",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "stage 3 completes",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "stage 3 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "investigate",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "wrong choice permits retry without completing",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "stage 3 completes",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "stage 3 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "witness_chain",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "stage 3 completes",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "stage 3 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "treasure_hunt",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "exploration",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "stage 3 completes",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "stage 3 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "patrol",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "cannot arrive before joining",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "full follower capacity does not mark joining",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "arrival without actual follower cannot complete",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "NPC becomes a native follower",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "arrival removes only quest follower",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "escort",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "cannot arrive before joining",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "full follower capacity does not mark joining",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "arrival without actual follower cannot complete",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "NPC becomes a native follower",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "arrival removes only quest follower",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "rescue",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "boss_hunt",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "stage 3 completes",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "stage 3 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "gauntlet",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "wrong choice permits retry without completing",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "escape never completes",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "defeat never completes",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "duel",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "wrong choice permits retry without completing",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "puzzle_choice",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "mechanism",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "insufficient gold neither completes nor charges",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "alternate_solution",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "chosen outcome recorded exclusively",
+      "ok": true
+    },
+    {
+      "preset": "moral_choice",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "real actor joins party",
+      "ok": true
+    },
+    {
+      "preset": "recruitment",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "missing quantity blocks delivery without consumption",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "world change persists on existing event",
+      "ok": true
+    },
+    {
+      "preset": "world_repair",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "stage 3 completes",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "stage 3 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "world change persists on existing event",
+      "ok": true
+    },
+    {
+      "preset": "time_echo",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "wrong time blocks appointment",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "appointment",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "new acceptance resets objectives",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "new acceptance cannot immediately pay",
+      "ok": true
+    },
+    {
+      "preset": "repeatable_contract",
+      "name": "new cycle sources work and reward once",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "prerequisite blocks acceptance",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 3 completes",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 3 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "missing quantity blocks delivery without consumption",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 4 completes",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 4 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "wrong choice permits retry without completing",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 5 completes",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "stage 5 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "story_chain",
+      "name": "completed report cannot pay again",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "blocked before acceptance",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "decline leaves quest inactive",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "accept starts quest",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "early report never rewards",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "cannot skip ordered stages",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "stage 1 completes",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "stage 1 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "stage 2 completes",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "stage 2 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "missing quantity blocks delivery without consumption",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "stage 3 completes",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "stage 3 does not count twice",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "report pays reward once",
+      "ok": true
+    },
+    {
+      "preset": "custom",
+      "name": "completed report cannot pay again",
+      "ok": true
+    }
+  ],
+  "rows": [
+    {
+      "id": "errand",
+      "title": "심부름",
+      "pattern": [
+        "talk"
+      ],
+      "checks": 9,
+      "passed": true
+    },
+    {
+      "id": "lost_item",
+      "title": "분실물 찾기",
+      "pattern": [
+        "collect"
+      ],
+      "checks": 9,
+      "passed": true
+    },
+    {
+      "id": "hunt",
+      "title": "위협 제거",
+      "pattern": [
+        "kill"
+      ],
+      "checks": 9,
+      "passed": true
+    },
+    {
+      "id": "delivery",
+      "title": "물품 배달",
+      "pattern": [
+        "deliver"
+      ],
+      "checks": 10,
+      "passed": true
+    },
+    {
+      "id": "gather",
+      "title": "재료 모으기",
+      "pattern": [
+        "collect"
+      ],
+      "checks": 9,
+      "passed": true
+    },
+    {
+      "id": "trade_chain",
+      "title": "교환 사슬",
+      "pattern": [
+        "deliver",
+        "deliver"
+      ],
+      "checks": 13,
+      "passed": true
+    },
+    {
+      "id": "crafting",
+      "title": "제작 의뢰",
+      "pattern": [
+        "craft",
+        "deliver"
+      ],
+      "checks": 13,
+      "passed": true
+    },
+    {
+      "id": "investigate",
+      "title": "사건 조사",
+      "pattern": [
+        "talk",
+        "inspect",
+        "talk"
+      ],
+      "checks": 13,
+      "passed": true
+    },
+    {
+      "id": "witness_chain",
+      "title": "증언 맞추기",
+      "pattern": [
+        "talk",
+        "talk",
+        "choice"
+      ],
+      "checks": 14,
+      "passed": true
+    },
+    {
+      "id": "treasure_hunt",
+      "title": "보물 추적",
+      "pattern": [
+        "inspect",
+        "reach",
+        "collect"
+      ],
+      "checks": 13,
+      "passed": true
+    },
+    {
+      "id": "exploration",
+      "title": "유적 탐사",
+      "pattern": [
+        "reach",
+        "inspect"
+      ],
+      "checks": 11,
+      "passed": true
+    },
+    {
+      "id": "patrol",
+      "title": "순찰과 답사",
+      "pattern": [
+        "reach",
+        "reach",
+        "reach"
+      ],
+      "checks": 13,
+      "passed": true
+    },
+    {
+      "id": "escort",
+      "title": "안전한 동행",
+      "pattern": [
+        "escort"
+      ],
+      "checks": 14,
+      "passed": true
+    },
+    {
+      "id": "rescue",
+      "title": "구출과 귀환",
+      "pattern": [
+        "kill",
+        "escort"
+      ],
+      "checks": 16,
+      "passed": true
+    },
+    {
+      "id": "boss_hunt",
+      "title": "현상금 보스",
+      "pattern": [
+        "reach",
+        "kill"
+      ],
+      "checks": 11,
+      "passed": true
+    },
+    {
+      "id": "gauntlet",
+      "title": "연속 전투",
+      "pattern": [
+        "kill",
+        "kill",
+        "kill"
+      ],
+      "checks": 13,
+      "passed": true
+    },
+    {
+      "id": "duel",
+      "title": "도전과 결투",
+      "pattern": [
+        "choice"
+      ],
+      "checks": 12,
+      "passed": true
+    },
+    {
+      "id": "puzzle_choice",
+      "title": "단서와 수수께끼",
+      "pattern": [
+        "inspect",
+        "choice"
+      ],
+      "checks": 12,
+      "passed": true
+    },
+    {
+      "id": "mechanism",
+      "title": "장치 작동",
+      "pattern": [
+        "inspect",
+        "inspect"
+      ],
+      "checks": 11,
+      "passed": true
+    },
+    {
+      "id": "alternate_solution",
+      "title": "여러 해결 방법",
+      "pattern": [
+        "choice"
+      ],
+      "checks": 10,
+      "passed": true
+    },
+    {
+      "id": "moral_choice",
+      "title": "선택과 결과",
+      "pattern": [
+        "choice"
+      ],
+      "checks": 10,
+      "passed": true
+    },
+    {
+      "id": "recruitment",
+      "title": "동료 영입",
+      "pattern": [
+        "talk",
+        "kill"
+      ],
+      "checks": 12,
+      "passed": true
+    },
+    {
+      "id": "world_repair",
+      "title": "마을의 변화",
+      "pattern": [
+        "collect",
+        "deliver"
+      ],
+      "checks": 13,
+      "passed": true
+    },
+    {
+      "id": "time_echo",
+      "title": "과거와 미래",
+      "pattern": [
+        "inspect",
+        "reach",
+        "talk"
+      ],
+      "checks": 14,
+      "passed": true
+    },
+    {
+      "id": "appointment",
+      "title": "시간대 약속",
+      "pattern": [
+        "talk"
+      ],
+      "checks": 10,
+      "passed": true
+    },
+    {
+      "id": "repeatable_contract",
+      "title": "반복 의뢰",
+      "pattern": [
+        "collect"
+      ],
+      "checks": 12,
+      "passed": true
+    },
+    {
+      "id": "story_chain",
+      "title": "연속 이야기",
+      "pattern": [
+        "talk",
+        "inspect",
+        "collect",
+        "deliver",
+        "choice"
+      ],
+      "checks": 20,
+      "passed": true
+    },
+    {
+      "id": "custom",
+      "title": "직접 조합",
+      "pattern": [
+        "talk",
+        "inspect",
+        "deliver"
+      ],
+      "checks": 14,
+      "passed": true
+    }
+  ],
+  "rejects": [
+    {
+      "name": "unknown preset",
+      "rejected": true,
+      "unchanged": true
+    },
+    {
+      "name": "wrong preset pattern",
+      "rejected": true,
+      "unchanged": true
+    },
+    {
+      "name": "missing item reference",
+      "rejected": true,
+      "unchanged": true
+    },
+    {
+      "name": "missing recipe",
+      "rejected": true,
+      "unchanged": true
+    },
+    {
+      "name": "stage sequence required",
+      "rejected": true,
+      "unchanged": true
+    },
+    {
+      "name": "sources cannot reach goal",
+      "rejected": true,
+      "unchanged": true
+    }
+  ],
+  "questCount": 28,
+  "limits": [
+    "Battles here use explicit interpreter outcomes; this is not 28 physical playthroughs.",
+    "No LLM response or end-to-end generation quality is asserted."
+  ],
+  "browserErrors": []
+}

@@ -482,11 +482,11 @@ explicit cell bounds exclude gutters in three older supplied sheets.
 Preserve the masters, manifest, runtime sheets, generated singles and both TS catalogs together in Git:
 registration in a temporary worktree alone does not preserve the import after that worktree is removed.
 
-Bust and full-body portraits (2026-10-01): each of the 76 sets also has `public/assets/shared/portraits/<stem>/{bust,full}-{base,happy,sad,angry,surprised}.png`
-(760 files, catalogued by `src/assets/sharedPortraitAssets.ts`, not by `slice-faceset-sheets.mjs`). They were generated from the set's face
+Bust and full-body portraits (2026-10-01): each of the 76 sets also has `public/assets/shared/portraits/<stem>/{bust,full}-<expression>.png`
+for all 16 face-cell expressions (2432 files, catalogued by `src/assets/sharedPortraitAssets.ts`, not by `slice-faceset-sheets.mjs`). They were generated from the set's face
 cells plus the paired walking sprite (face↔sprite pairing as in `src/assets/sharedCharacterGraphics.json`; People1 faces 8 and 12 have no sprite).
 Regenerate / review / finalize with `scripts/content/portraits/` (README there). Adding a new expression set means adding its folder too —
-`test/sharedPortraitAssets.test.ts` requires all 10 files per set.
+`test/sharedPortraitAssets.test.ts` requires all 32 files per set.
 
 ### 제작자 페이지에서 타일셋 받기 (2026-09-24)
 

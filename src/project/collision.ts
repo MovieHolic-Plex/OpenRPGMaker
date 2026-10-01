@@ -8,6 +8,7 @@ import { topTileInStack } from "./mapOverlayTiles";
 import { cellLayerTiles } from "./mapLayers";
 import { passageMarkForTile } from "./tilesetPassage";
 import { footprintBounds, passageBounds } from "./footprint";
+import { reliefAllowsStep } from "./relief/walk";
 
 // 주어진 타일 좌표가 맵 경계 안인가?
 export function inBounds(map: GameMap, x: number, y: number): boolean {
@@ -144,7 +145,8 @@ export function canMove(
   // from에서 해당 방향으로 나갈 수 있고, to에 해당 방향으로 들어올 수 있어야 함.
   // RM2K3 관례: from의 나가는 방향 + to의 들어오는 방향(반대) 체크.
   // 단순화: from과 to 양쪽의 해당 방향 비트가 열려있으면 통과.
-  return dirPassable(fromPass ?? BLOCKED, dir) && dirPassable(toPass ?? BLOCKED, oppositeDir(dir));
+  return dirPassable(fromPass ?? BLOCKED, dir) && dirPassable(toPass ?? BLOCKED, oppositeDir(dir))
+    && reliefAllowsStep(map.relief, fromX, fromY, toX, toY);
 }
 
 /**

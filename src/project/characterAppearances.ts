@@ -9,14 +9,17 @@ export function getCharacterAppearance(project: Pick<Project, "database">, appea
 export function resolveAppearancePortrait(
   project: Project,
   appearanceId: string | undefined,
-  presentation: "face" | "bust",
+  presentation: "face" | "bust" | "full",
 ): FaceGraphic | undefined {
   const appearance = getCharacterAppearance(project, appearanceId);
-  const slot = presentation === "bust" ? appearance?.bust ?? appearance?.face : appearance?.face;
+  // 전신 → 흉상 → 얼굴 순으로 내려간다. 표시 방식은 실제로 고른 칸을 따른다.
+  const full = presentation === "full" ? appearance?.full : undefined;
+  const bust = presentation !== "face" ? appearance?.bust : undefined;
+  const slot = full ?? bust ?? appearance?.face;
   if (!slot) return undefined;
   return {
     resourceId: slot.resourceId,
-    presentation: presentation === "bust" && appearance?.bust ? "bust" : "face",
+    presentation: full ? "full" : bust ? "bust" : "face",
     position: "left",
     flipHorizontally: false,
   };

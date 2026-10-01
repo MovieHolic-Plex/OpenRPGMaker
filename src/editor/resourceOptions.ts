@@ -182,9 +182,9 @@ export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceK
   }
   if (kind === "movie") return resourceKind === "movie";
   if (kind === "picture") {
-    // 공용 흉상은 기본 표정 한 장씩만 고르게 한다 — 대사의 표정이 나머지를 고른다(sharedPortraitAssets.ts).
+    // 공용 흉상·전신은 기본 표정 한 장씩만 고르게 한다 — 대사의 표정이 나머지를 고른다(sharedPortraitAssets.ts).
     return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full"
-      || (findSharedPortrait(id)?.mode === "bust" && findSharedPortrait(id)?.expression === "base");
+      || findSharedPortrait(id)?.expression === "base";
   }
   if (kind === "faceset") {
     // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.

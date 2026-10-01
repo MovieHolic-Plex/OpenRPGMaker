@@ -1,7 +1,7 @@
 import sys, numpy as np
 from pathlib import Path
 from PIL import Image, ImageDraw
-O=Path(__file__).resolve().parents[3]/'.omo/asset-gen-tmp/portraits/out3'; EM=['base','happy','sad','angry','surprised']
+O=Path(__file__).resolve().parents[3]/'.omo/asset-gen-tmp/portraits/out3'; EM=['base','smile','happy','content','surprised','embarrassed','doubtful','serious','annoyed','angry','sad','crying','worried','determined','shy','wink']
 def trim(im):
   a=np.array(im.convert('RGBA')); ys,xs=np.where(a[...,3]>20); return im.crop((xs.min(),ys.min(),xs.max()+1,ys.max()+1))
 def fit(im,h,w):

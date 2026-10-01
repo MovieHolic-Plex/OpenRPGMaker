@@ -12,6 +12,7 @@ import {
   tilesetTextureKey,
 } from "@/editor/tilesetImage";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
+import { passageMarkForTile } from "@/project/tilesetPassage";
 import {
   MAP_BACKGROUND_LAYER_DEPTH,
   OVERLAY_LAYER_DEPTH_OFFSET,
@@ -72,18 +73,44 @@ type RuntimeEventView, } from "@/project/runtimeEventState"
 import { buildLifeRuntimeSnapshot, type RuntimeEventSnapshot, type RuntimeStateSnapshot } from "@/player/runtimeDom";
 import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 import { bumpPerfCounter, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
+import { RuntimeTileWindow, runtimeCameraTileView } from './runtimeTileWindow';
+import type { CullViewport } from './playSceneTileCulling';
+import {
+  RELIEF_LIFTED_LOWER_DEPTH,
+  RELIEF_LIFTED_SHADOW_DEPTH,
+  RELIEF_LIFTED_UPPER_DEPTH,
+  reliefLiftPx,
+  reliefRowDepth,
+  renderReliefLayer,
+} from "@/player/playSceneRelief";
+import { reliefFieldOf, type ReliefTextureManager } from "@/player/reliefStrips";
+import { reliefPaintsCell, reliefSignature } from "@/project/relief/screen";
 
 interface RenderedTileImage {
+  /** 높이 지형 들림을 얹을 때 쓴다. 테스트 스텁은 생략한다. */
+  y?: number;
   setOrigin(x: number, y: number): void;
   setDepth(depth: number): void;
   destroy?(removeFromDisplayList?: boolean): void;
+  addToDisplayList?(): unknown;
   /** 화면 밖 컬링용. Phaser GameObject 는 모두 갖지만 테스트 스텁은 생략한다. */
   visible?: boolean;
   setVisible?(value: boolean): unknown;
 }
 
 /** root display list 에 올린 솔리드 upper 가구 — container removeAll 대상이 아니라 직접 destroy. */
-const rootYSortTiles = new WeakMap<object, RenderedTileImage[]>();
+const rootYSortTiles = new WeakMap<object, Set<RenderedTileImage>>();
+const tileWindows = new WeakMap<object, { sync(view: CullViewport): void }>();
+const tileCaptures = new WeakMap<object, RenderedTileImage[]>();
+interface TileAnimationState {
+  readonly currentAnim?: { readonly key: string };
+  getProgress?(): number;
+  setProgress?(value: number): unknown;
+  accumulator?: number;
+  nextTick?: number;
+  forward?: boolean;
+}
+const tileAnimationLeaders = new WeakMap<object, Map<string, TileAnimationState>>();
 
 /**
  * 마지막으로 타일 계층을 그린 입력의 서명. 같으면 renderTiles 는 타일을 다시 만들지 않고
@@ -103,6 +130,7 @@ interface TileLayerSignature {
   readonly tileset: object | undefined;
   readonly textureKey: string;
   readonly tilesHash: number;
+  readonly relief: number;
   readonly overlays: string;
   readonly crops: unknown;
 }
@@ -137,6 +165,7 @@ interface RenderTilesSceneContext<
   readonly session: PlaySceneContext["session"];
   readonly eventPositions: PlaySceneContext["eventPositions"];
   readonly tileLayer: {
+    readonly list?: unknown[];
     removeAll(removeChildren?: boolean): void;
     add(image: TImage | TSprite | unknown): unknown;
   };
@@ -145,11 +174,17 @@ interface RenderTilesSceneContext<
    * 없으면 tileLayer 로 폴백(레거시 테스트).
    */
   readonly upperTileLayer?: {
+    readonly list?: unknown[];
     removeAll(removeChildren?: boolean): void;
     add(image: TImage | TSprite | unknown): unknown;
   };
   /** optional host identity for WeakMap tracking of root y-sort tiles */
   readonly sceneHost?: object;
+  readonly cameras?: { readonly main: { readonly worldView: CullViewport } };
+  readonly make?: {
+    image(config: { x: number; y: number; key: string; frame?: string | number; add: boolean }): TImage;
+    sprite(config: { x: number; y: number; key: string; frame?: string | number; add: boolean }): TSprite;
+  };
   /** 재생성 계수기(선택). 최소 컨텍스트 테스트 스텁은 생략한다. */
   readonly perfCounters?: RuntimePerfCounters;
   /** 체공 그림자 풀. 이벤트 스프라이트를 파괴할 때 같이 비워야 고아 그림자가 남지 않는다. */
@@ -162,7 +197,11 @@ interface RenderTilesSceneContext<
     clear(): void;
     set(eventId: string, marker: TSprite): unknown;
   };
-  readonly textures?: { get?(key: string): unknown };
+  /**
+   * 텍스처 관리자(선택). `get` 은 이벤트 스프라이트 서명이 읽고, 나머지(`exists`·`remove`·`addCanvas`)는 높이 지형
+   * 절벽 띠가 쓴다 — 다 갖춘 관리자가 아니면 절벽 그림 없이 타일만 들린다.
+   */
+  readonly textures?: Partial<ReliefTextureManager>;
   readonly children?: { list: unknown[]; queueDepthSort(): void };
   readonly tweens?: { getTweens?(): readonly TweenTargetSource[] };
   readonly eventGraphicPatternOverrides?: Map<string, number>;
@@ -243,6 +282,7 @@ export function renderTiles<
   scene.tileLayer.removeAll(true);
   scene.upperTileLayer?.removeAll(true);
   clearRootYSortTiles(scene);
+  tileWindows.delete(host);
   resetCullableTiles(host);
   const map = scene.map;
   const tileset = store.getCurrent().tilesets[map.tilesetId];
@@ -256,25 +296,127 @@ export function renderTiles<
     quarters: supportsChipsetQuarterComposition(tileset),
     backing: new Map(), animations: new Map(), lakes: new Map(), above: new Map(),
   };
-  // 칸 판정(해안 그룹)의 내용 비교를 이 동기 그리기 동안 타일셋마다 한 번만 한다.
-  withWorldCoastRenderPass(() => {
-    for (let y = 0; y < map.height; y++) {
-      for (let x = 0; x < map.width; x++) {
-        const index = y * map.width + x;
-        renderEmptyCellCover(scene, x, y, index);
-        renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower", pass);
-        for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower", pass);
-        renderRawTile(scene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
-        renderShadow(scene, x, y, shadowAt(map, index));
-        renderTile(scene, tileset, x, y, map.upperTiles[index], "upper", pass);
-        for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper", pass);
-        renderRawTile(scene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET, pass);
-      }
-    }
+  // 높이 지형: 절벽 띠와 벽면 장식을 먼저 올린다(만든 GameObject 는 타일과 같이 파괴된다).
+  renderReliefLayer(scene, host, { tileSize: pass.size, wallDecor: { textureKey: pass.textureKey, frame: (tile) => `tile_${tile}` } }, (image) => {
+    bumpPerfCounter(scene, "tileObjectsCreated");
+    trackRootYSortTile(scene, image);
   });
+  const drawCell = (drawingScene: RenderTilesSceneContext<TImage, TSprite>, x: number, y: number): void => {
+    const index = y * map.width + x;
+    renderEmptyCellCover(drawingScene, x, y, index);
+    // 경사로 도트가 있는 바이옴의 경사로 칸은 relief 경사로 도트가 바닥을 칠한다 — 타일은 그리지 않는다.
+    if (!reliefPaintsCell(map.relief, x, y)) renderTile(drawingScene, tileset, x, y, map.lowerTiles[index], "lower", pass);
+    for (const tile of tileStackAt(map, "lower", index)) renderTile(drawingScene, tileset, x, y, tile, "lower", pass);
+    renderRawTile(drawingScene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
+    renderShadow(drawingScene, x, y, shadowAt(map, index));
+    renderTile(drawingScene, tileset, x, y, map.upperTiles[index], "upper", pass);
+    for (const tile of tileStackAt(map, "upper", index)) renderTile(drawingScene, tileset, x, y, tile, "upper", pass);
+    renderRawTile(drawingScene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET, pass);
+  };
+  // The real runtime has a camera and flat Phaser lists. Minimal render oracles
+  // without a camera keep the complete-map path.
+  // 높이 지형 맵도 전체 경로를 쓴다: 들린 칸은 화면에서 칸 위치보다 위에 그려지므로 창(보이는 칸만 그림)이
+  // 칸 좌표 기준이면 화면 아래쪽 들린 칸이 빠지거나 잘못 숨겨진다.
+  if (scene.cameras && scene.tileLayer.list && !reliefFieldOf(map.relief)) {
+    const resident = new RuntimeTileWindow<RenderedTileImage>(map.width, map.height, pass.size);
+    const beforeRootTiles = new WeakSet(scene.children?.list as object[] | undefined);
+    const lowerBatch: RenderedTileImage[] = [], upperBatch: RenderedTileImage[] = [];
+    const drawingScene: RenderTilesSceneContext<TImage, TSprite> = Object.create(scene);
+    Object.defineProperties(drawingScene, {
+      sceneHost: { value: host },
+      tileLayer: { value: { add: (image: RenderedTileImage) => lowerBatch.push(image) } },
+      upperTileLayer: { value: scene.upperTileLayer ? { add: (image: RenderedTileImage) => upperBatch.push(image) } : undefined },
+      add: { value: {
+        image: (x: number, y: number, key: string, frame?: string | number) => scene.make
+          ? scene.make.image({ x, y, key, frame, add: false }) : scene.add.image(x, y, key, frame),
+        sprite: (x: number, y: number, key: string, frame?: string | number) => scene.make
+          ? scene.make.sprite({ x, y, key, frame, add: false }) : scene.add.sprite(x, y, key, frame),
+        rectangle: scene.add.rectangle?.bind(scene.add),
+      } },
+    });
+    const sync = (view: CullViewport): void => {
+      let leaders: Map<string, TileAnimationState> | undefined;
+      const changed = withWorldCoastRenderPass(() => resident.sync(view, (x, y) => {
+        if (!leaders) {
+          leaders = new Map();
+          for (const images of resident.cells.values()) for (const image of images) {
+            const animation = (image as RenderedEventSprite).anims as TileAnimationState | undefined;
+            if (image.visible !== false && animation?.currentAnim) leaders.set(animation.currentAnim.key, animation);
+          }
+          tileAnimationLeaders.set(host, leaders);
+        }
+        const images: RenderedTileImage[] = [];
+        tileCaptures.set(host, images);
+        try { drawCell(drawingScene, x, y); } finally { tileCaptures.delete(host); }
+        return images;
+      }, image => {
+        rootYSortTiles.get(host)?.delete(image);
+        image.destroy?.(true);
+      }));
+      tileAnimationLeaders.delete(host);
+      if (!changed) return;
+      // Official batch add preserves parent links, destroy listeners and sprite
+      // UpdateList hooks without an indexOf for every growing-list insertion.
+      if (lowerBatch.length) scene.tileLayer.add(lowerBatch);
+      if (upperBatch.length) scene.upperTileLayer?.add(upperBatch);
+      lowerBatch.length = 0; upperBatch.length = 0;
+      resident.sort(scene.tileLayer.list!);
+      if (scene.upperTileLayer?.list) resident.sort(scene.upperTileLayer.list);
+      if (scene.children) {
+        resident.sortRoots(scene.children.list, beforeRootTiles);
+        scene.children.queueDepthSort();
+      }
+      resetCullableTiles(host);
+      for (const [index, images] of resident.cells) {
+        for (const image of images) trackCullableTile(host, image, index % map.width, Math.floor(index / map.width));
+      }
+    };
+    tileWindows.set(host, { sync });
+    sync(runtimeCameraTileView(scene.cameras.main));
+  } else {
+    withWorldCoastRenderPass(() => {
+      for (let y = 0; y < map.height; y++) {
+        for (let x = 0; x < map.width; x++) drawCell(scene, x, y);
+      }
+    });
+  }
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
   renderPlaceableOverlays(scene);
   renderEvents(scene);
+}
+
+/** Called before culling, including after camera jumps, zoom and resize. */
+export function syncRuntimeTileWindow(host: object, view: CullViewport): void {
+  tileWindows.get(host)?.sync(view);
+}
+
+export function releaseRuntimeTileWindow(host: object): void {
+  tileWindows.delete(host);
+  tileCaptures.delete(host);
+  tileAnimationLeaders.delete(host);
+  rootYSortTiles.delete(host);
+  tileLayerSignatures.delete(host);
+  resetCullableTiles(host);
+}
+
+function trackMapTile(host: object, image: RenderedTileImage, x: number, y: number): void {
+  const capture = tileCaptures.get(host);
+  if (capture) capture.push(image);
+  else trackCullableTile(host, image, x, y);
+}
+
+function playTileAnimation<T extends RenderedEventSprite>(host: object, sprite: T, key: string): T {
+  sprite.play(key);
+  const leaders = tileAnimationLeaders.get(host);
+  const animation = sprite.anims as TileAnimationState | undefined;
+  const leader = leaders?.get(key);
+  if (animation && leader?.getProgress && animation.setProgress) {
+    animation.forward = leader.forward;
+    animation.setProgress(leader.getProgress());
+    animation.accumulator = leader.accumulator;
+    animation.nextTick = leader.nextTick;
+  } else if (animation) leaders?.set(key, animation);
+  return sprite;
 }
 
 function tileLayerSignature<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
@@ -297,6 +439,7 @@ function tileLayerSignature<TImage extends RenderedTileImage, TSprite extends Re
       map.upperOverlayTiles ?? [],
       map.shadowBits ?? [],
     ),
+    relief: reliefSignature(map.relief),
     overlays: JSON.stringify([
       session.farmPlots?.[map.id] ?? null,
       session.placeables ?? null,
@@ -313,6 +456,7 @@ function sameTileLayerSignature(left: TileLayerSignature, right: TileLayerSignat
     && left.tileset === right.tileset
     && left.textureKey === right.textureKey
     && left.tilesHash === right.tilesHash
+    && left.relief === right.relief
     && left.overlays === right.overlays
     && left.crops === right.crops
   );
@@ -413,11 +557,12 @@ function clearRootYSortTiles<TImage extends RenderedTileImage, TSprite extends R
 
 function trackRootYSortTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
-  image: TImage,
+  image: RenderedTileImage,
 ): void {
   const host = rootYSortHost(scene);
-  const tiles = rootYSortTiles.get(host) ?? [];
-  tiles.push(image);
+  const tiles = rootYSortTiles.get(host) ?? new Set();
+  image.addToDisplayList?.();
+  tiles.add(image);
   rootYSortTiles.set(host, tiles);
 }
 
@@ -436,8 +581,21 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);
   applyTileDepth(pass.size, image, tileset, tile, y, layer, depthOffset);
-  // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고).
-  trackCullableTile(rootYSortHost(scene), image, x, y);
+  // 높이 지형: 들린 칸의 타일은 그 칸 윗면으로 올리고, 하층·○ 상층은 줄 depth 로 root 에서 캐릭터와 섞는다
+  // (playSceneRelief 머리말의 depth 규칙). ★ 수관은 컨테이너에 그대로, 솔리드 × 는 이미 줄 depth 다.
+  const liftPx = reliefLiftPx(scene.map, x, y, pass.size);
+  const liftRows = Math.floor(liftPx / pass.size);
+  // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고). 들린 타일은 보이는 줄로 추적한다.
+  trackMapTile(rootYSortHost(scene), image, x, y - liftRows);
+  if (liftPx > 0) {
+    if (typeof image.y === "number") image.y -= liftPx;
+    const solidUpper = layer === "upper" && !alwaysAbove && passageMarkForTile(tileset, tile) !== "o" && passageMarkForTile(tileset, tile) !== "star";
+    if (!alwaysAbove && !solidUpper) {
+      image.setDepth(reliefRowDepth(y, pass.size, (layer === "lower" ? RELIEF_LIFTED_LOWER_DEPTH : RELIEF_LIFTED_UPPER_DEPTH) + depthOffset));
+      trackRootYSortTile(scene, image);
+      return;
+    }
+  }
   if (layer === "upper" && !alwaysAbove) {
     // root display list — same-priority 캐릭터와 y-sort.
     trackRootYSortTile(scene, image);
@@ -481,7 +639,7 @@ function renderEmptyCellCover<TImage extends RenderedTileImage, TSprite extends 
   // 배경(-100k) 위, 하층 타일(0) 아래. 이 범위 안에서만 가린다.
   cover.setDepth(MAP_BACKGROUND_LAYER_DEPTH + 1);
   scene.tileLayer.add(cover);
-  trackCullableTile(rootYSortHost(scene), cover, x, y);
+  trackMapTile(rootYSortHost(scene), cover, x, y);
 }
 
 function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
@@ -540,7 +698,7 @@ function renderRawTile<TImage extends RenderedTileImage, TSprite extends Rendere
   });
   const size = pass.size;
   const image = animationKey
-    ? scene.add.sprite(x * size, y * size, textureKey, `tile_${tile}`).play(animationKey)
+    ? playTileAnimation(rootYSortHost(scene), scene.add.sprite(x * size, y * size, textureKey, `tile_${tile}`), animationKey)
     : scene.add.image(x * size, y * size, textureKey, `tile_${tile}`);
   placeMapTileImage(scene, image, tileset, tile, x, y, layer, depthOffset, pass);
 }
@@ -560,11 +718,17 @@ function renderShadow<TImage extends RenderedTileImage, TSprite extends Rendered
   const half = size / 2;
   for (let quarter = 0; quarter < 4; quarter += 1) {
     if (!(bits & (1 << quarter))) continue;
-    const rect = scene.add.rectangle(x * size + (quarter % 2) * half, y * size + Math.floor(quarter / 2) * half, half, half, 0x000000, 0.5);
+    const liftPx = reliefLiftPx(scene.map, x, y, size);
+    const rect = scene.add.rectangle(x * size + (quarter % 2) * half, y * size + Math.floor(quarter / 2) * half - liftPx, half, half, 0x000000, 0.5);
     rect.setOrigin(0, 0);
+    trackMapTile(rootYSortHost(scene), rect, x, y - Math.floor(liftPx / size));
+    if (liftPx > 0) {
+      rect.setDepth(reliefRowDepth(y, size, RELIEF_LIFTED_SHADOW_DEPTH));
+      trackRootYSortTile(scene, rect);
+      continue;
+    }
     rect.setDepth(y * 2 + SHADOW_LAYER_DEPTH_OFFSET);
     scene.tileLayer.add(rect);
-    trackCullableTile(rootYSortHost(scene), rect, x, y);
   }
 }
 
@@ -581,7 +745,7 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
     const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
     const frameName = quarterFrameName(part.tile, part.quarter);
     const image = animationKey
-      ? scene.add.sprite(x * pass.size + part.offsetX, y * pass.size + part.offsetY, textureKey, frameName).play(animationKey)
+      ? playTileAnimation(rootYSortHost(scene), scene.add.sprite(x * pass.size + part.offsetX, y * pass.size + part.offsetY, textureKey, frameName), animationKey)
       : scene.add.image(x * pass.size + part.offsetX, y * pass.size + part.offsetY, textureKey, frameName);
     // 쿼터 소스는 맵 셀 좌표 기준 depth 를 공유한다.
     placeMapTileImage(scene, image, tileset, part.tile, x, y, layer, 0, pass);

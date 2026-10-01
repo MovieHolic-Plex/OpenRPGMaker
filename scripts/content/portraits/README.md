@@ -1,7 +1,7 @@
 # 공용 표정 세트 흉상·전신 생성 (2026-10-01)
 
 `public/assets/shared/faceset/*-expressions` 76종마다 대화용 흉상(bust)과 전신(full)을
-5표정(base·happy·sad·angry·surprised)으로 만든 파이프라인이다. 결과는
+얼굴 16칸과 같은 16표정으로 만든 파이프라인이다(처음 5표정, 같은 날 나머지 11표정 추가). 결과는
 `public/assets/shared/portraits/<stem>/{bust,full}-<표정>.png`.
 
 ## 순서
@@ -30,6 +30,6 @@ python3 scripts/content/portraits/finalize.py
 - **등신 고정.** 성인 8, 아이 6, 노인 7–7.5, 땅딸막한 몸 6.5–7.5(`KIDS`·`ELDERS`·`STOCKY`).
   번호 띠 마네킹 패널과 "다리 = 전체 높이의 절반" 문구가 같이 있어야 대두가 안 나온다.
 - **동물·슬라임은 사람처럼 세우지 않는다**(`NATURAL`). 표정 편집에서도 몸짓 허용 문구를 빼야 슬라임에 다리가 안 생긴다.
-- 얼굴 칸 대응: happy=02, surprised=04, angry=09, sad=10.
+- 얼굴 칸 대응: `portraits.py` 의 `EMO_CELL`(happy=02, surprised=04, angry=09, sad=10 … wink=15). 표정 이름은 `src/assets/sharedPortraitAssets.ts` 와 같아야 한다.
 - 얼굴↔칩: Actor1 0–7→Actor1, 8–15→Actor2 / Actor2 0–7→Actor3, 8–15→Actor4 /
   People1 0–7→People1, **8–15→People2 0–7** / People2 사람→People3, 동물→Animal / Monster→Monster1·2 (`charset-map.json`, `portraits.py` `chip_map`).

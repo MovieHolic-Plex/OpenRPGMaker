@@ -17,7 +17,7 @@ export function validateCharacterAppearances(value: unknown): void {
     ids.add(id);
     requireString(`${label}.name`, record.name);
     requireString(`${label}.description`, record.description);
-    for (const key of ["charset", "face", "bust"] as const) {
+    for (const key of ["charset", "face", "bust", "full"] as const) {
       if (record[key] === undefined) continue;
       const slot = requireRecord(`${label}.${key}`, record[key]);
       assert(requireString(`${label}.${key}.resourceId`, slot.resourceId).trim().length > 0, `${label}.${key}.resourceId is blank`);
@@ -32,7 +32,7 @@ export function validateCharacterAppearances(value: unknown): void {
 export function characterAppearanceReferenceIssues(project: Project): string[] {
   const issues: string[] = [];
   for (const appearance of project.database.characterAppearances ?? []) {
-    for (const [slot, expectedKind] of [["charset", "charset"], ["face", "faceset"], ["bust", "picture"]] as const) {
+    for (const [slot, expectedKind] of [["charset", "charset"], ["face", "faceset"], ["bust", "picture"], ["full", "picture"]] as const) {
       const id = appearance[slot]?.resourceId;
       if (id === undefined) continue;
       const uploaded = project.assets.uploaded[id];

@@ -1,0 +1,49 @@
+{
+  "sheet": "sheet.png",
+  "world_chipset": "public/assets/easyrpg-chipset-world.png",
+  "world_colors": 225,
+  "used_colors": 51,
+  "from_world": 40,
+  "new_colors": [
+    "0d2147",
+    "2ae0d8",
+    "2c3440",
+    "3b6a9c",
+    "4a5668",
+    "6e7c90",
+    "8fc0e4",
+    "9aa8ba",
+    "c6d2de",
+    "f0a030",
+    "ffe28a"
+  ],
+  "new_count": 11,
+  "extra_declared": [
+    "2c3440",
+    "4a5668",
+    "6e7c90",
+    "9aa8ba",
+    "c6d2de",
+    "0d2147",
+    "3b6a9c",
+    "8fc0e4",
+    "2ae0d8",
+    "ffe28a",
+    "f0a030"
+  ],
+  "extra_used": [
+    "0d2147",
+    "2ae0d8",
+    "2c3440",
+    "3b6a9c",
+    "4a5668",
+    "6e7c90",
+    "8fc0e4",
+    "9aa8ba",
+    "c6d2de",
+    "f0a030",
+    "ffe28a"
+  ],
+  "undeclared_new": [],
+  "ok": true
+}

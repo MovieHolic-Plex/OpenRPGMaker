@@ -90,6 +90,8 @@ import {
   applyCameraView,
   shouldLazilyRenderEditMap,
   chunkCoord,
+  EDIT_RELIEF_ROW_DEPTH,
+  RELIEF_STRIP_NAME,
   type EditSceneRenderStats,
   type EditSceneTileIndex,
   syncSelectionOverlay,
@@ -157,12 +159,13 @@ import type { GameMap, MapId } from "@/project/types";
 import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { prefersReducedMotion } from "@/util/reducedMotion";
 import { toast } from "@/util/toast";
-import { effectiveHeights, renderRelief } from "@/project/relief/render";
-import { gridFromRelief, RELIEF_TILE } from "@/project/relief/types";
 import { reliefIsFlat } from "@/project/relief/edit";
+import { reliefSignature, reliefTileSlotChangedCells } from "@/project/relief/screen";
+import type { ReliefData } from "@/project/relief/types";
+import { buildReliefStripTextures, reliefCellLiftPx, removeReliefTextures } from "@/player/reliefStrips";
+import { tilesetTextureKey } from "@/editor/tilesetImage";
 
 const PhaserRuntime = getLoadedPhaser();
-const RELIEF_TEXTURE_KEY = "__oprn_edit_relief";
 
 type EventLayerClick = {
   readonly at: number;
@@ -250,6 +253,7 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 높이(relief) 절벽 그림 — 하층 타일 위, 상층 타일 아래. 맵에 relief 가 없으면 비어 있다. */
   private reliefLayer: Phaser.GameObjects.Container | null = null;
   private reliefRenderKey = "";
+  private reliefTextureKeys: readonly string[] = [];
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private selectionLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
@@ -670,7 +674,9 @@ export class EditScene extends PhaserRuntime.Scene {
     resetCullableTiles(this);
     // 씬을 다시 만들면 relief 도 다시 그려야 한다 — 키를 비워 둔다.
     this.reliefRenderKey = "";
-    if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
+    this.reliefTileRelief = undefined;
+    removeReliefTextures(this.textures, this.reliefTextureKeys);
+    this.reliefTextureKeys = [];
 
     this.mapEdgeBand?.destroy();
     this.mapEdgeBand = null;
@@ -836,6 +842,7 @@ export class EditScene extends PhaserRuntime.Scene {
           tileLayer: this.tileLayer,
           upperTileLayer: this.upperTileLayer,
           tileChunks: this.tileChunks,
+          reliefLayer: this.reliefLayer ?? undefined,
           overlayLayer: this.overlayLayer,
           gridGraphics: this.gridGraphics,
           mapId,
@@ -2215,6 +2222,7 @@ export class EditScene extends PhaserRuntime.Scene {
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
+      reliefLayer: this.reliefLayer ?? undefined,
       overlayLayer,
       gridGraphics,
       mapId: mid,
@@ -2230,6 +2238,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 배경 미리보기는 타일 렌더와 별개다 — 토글·맵·그림이 바뀔 때만 스프라이트를 다시 만든다.
     this.renderMapBackgroundPreview();
     this.renderReliefLayer();
+    this.reliefTileRelief = renderedMap?.relief;
     this.renderAgentGhostPreview();
     // 청사진도 고스트와 같이 다시 그린다 — 청사진 스토어 구독만으로는 부족하다. 맵 전환은
     // editorState/store 만 흔들므로, 다시 그리지 않으면 A 맵의 "2/7 집" 사각형이 B 맵의 같은
@@ -2345,6 +2354,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.reliefRenderQueued = false;
       if (!this.reliefLayer) return;
       const started = performance.now();
+      this.syncReliefLiftedTiles();
       this.renderReliefLayer();
       this.lastReliefRenderAt = performance.now();
       this.lastReliefRenderCost = this.lastReliefRenderAt - started;
@@ -2354,37 +2364,75 @@ export class EditScene extends PhaserRuntime.Scene {
     else requestAnimationFrame(run);
   }
 
-    /**
-   * 높이 절벽 그림. 16px 칸으로 그린 뒤 맵 칸 크기에 맞춰 늘린다. 윗면이 들리는 만큼(pad) 위로 올린다.
-   * 0단 칸은 투명이라 타일이 그대로 보인다. relief 가 같으면(키) 다시 그리지 않는다.
+  /**
+   * 높이 절벽 그림. 맵 줄마다 윗면·벽 띠로 잘라 reliefLayer 에 줄 depth 로 넣는다 — 들린 하층 타일이 같은
+   * 컨테이너에서 섞여(editSceneRender §addTileObject) 남쪽 절벽이 북쪽 고지대를 가린다. 벽면 장식도 여기서 그린다.
+   * relief(단·경사로·벽면 장식)가 같으면(키) 다시 그리지 않는다.
+   * 띠 페이지 텍스처는 크기가 같으면 이전 캔버스를 고쳐 쓴다(reuseKeys) — 드래그 중 GPU 업로드가 겹치지 않게.
    */
   private renderReliefLayer(): void {
     const layer = this.reliefLayer;
     if (!layer) return;
     const mapId = this.mapId();
-    const relief = mapId ? store.getCurrent().maps[mapId]?.relief : undefined;
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    const relief = map?.relief;
     const tileSize = this.activeTileSize();
-    const key = relief ? `${mapId}|${tileSize}|${relief.width}x${relief.height}|${relief.levels.join(",")}` : "";
+    const tileset = map ? store.getCurrent().tilesets[map.tilesetId] : undefined;
+    const key = relief ? `${mapId}|${tileSize}|${map?.tilesetId}|${reliefSignature(relief)}` : "";
     if (key === this.reliefRenderKey) return;
     this.reliefRenderKey = key;
-    layer.removeAll(true);
-    if (!relief || reliefIsFlat(relief)) {
-      if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
+    // 띠 이미지만 걷는다 — 들린 타일은 같은 컨테이너에 있고 renderEditScene 이 따로 관리한다. 텍스처는 아래에서 고쳐 쓰거나 지운다.
+    for (const child of [...layer.list]) if (child.name === RELIEF_STRIP_NAME) layer.remove(child, true);
+    if (!map || !relief || reliefIsFlat(relief)) {
+      removeReliefTextures(this.textures, this.reliefTextureKeys);
+      this.reliefTextureKeys = [];
       return;
     }
-    const r = renderRelief(effectiveHeights(gridFromRelief(relief)), { transparentGround: true });
-    // 같은 크기면 캔버스 텍스처를 고쳐 쓴다 — 드래그 중 텍스처를 매번 만들고 지우면 GPU 업로드가 겹친다.
-    const existing = this.textures.exists(RELIEF_TEXTURE_KEY) ? this.textures.get(RELIEF_TEXTURE_KEY) : null;
-    const reusable = existing instanceof PhaserRuntime.Textures.CanvasTexture
-      && existing.width === r.PW && existing.height === r.SH ? existing : null;
-    if (existing && !reusable) this.textures.remove(RELIEF_TEXTURE_KEY);
-    const texture = reusable ?? this.textures.createCanvas(RELIEF_TEXTURE_KEY, r.PW, r.SH);
-    if (!texture) return;
-    texture.context.putImageData(new ImageData(new Uint8ClampedArray(r.rgba), r.PW, r.SH), 0, 0);
-    texture.refresh();
-    texture.setFilter(PhaserRuntime.Textures.FilterMode.NEAREST);
-    const scale = tileSize / RELIEF_TILE;
-    layer.add(this.add.image(0, -r.pad * scale, RELIEF_TEXTURE_KEY).setOrigin(0, 0).setScale(scale));
+    const built = buildReliefStripTextures(this.textures, relief, tileSize, { reuseKeys: this.reliefTextureKeys });
+    this.reliefTextureKeys = built.textureKeys;
+    const addStrip = (image: Phaser.GameObjects.Image, depth: number): void => {
+      image.setName(RELIEF_STRIP_NAME).setDepth(depth);
+      layer.add(image);
+    };
+    for (const frame of built.frames) {
+      const image = this.add.image(frame.x, frame.y, frame.textureKey, frame.frame).setOrigin(0, 0).setScale(frame.scale);
+      addStrip(image, frame.row * EDIT_RELIEF_ROW_DEPTH + (frame.part === "under" ? 0 : 7));
+    }
+    const textureKey = tileset ? tilesetTextureKey(tileset) : null;
+    if (textureKey && this.textures.exists(textureKey)) {
+      for (const decor of relief.wallDecor ?? []) {
+        const top = decor.y * tileSize - reliefCellLiftPx(relief, decor.x, decor.y, tileSize);
+        const image = this.add.image(decor.x * tileSize, top + decor.row * tileSize, textureKey, `tile_${decor.tile}`).setOrigin(0, 0);
+        addStrip(image, decor.y * EDIT_RELIEF_ROW_DEPTH + 8);
+      }
+    }
+    layer.sort("depth");
+  }
+
+  /**
+   * 높이가 바뀌어 타일 자리(들림)가 달라진 칸의 타일만 다시 올린다. 들린 타일은 relief 에 따라 위치·컨테이너가
+   * 달라지므로 절벽 띠만 다시 굽는 것으로는 모자란다. 맵 전체를 다시 그리지 않고 바뀐 칸만 그린다 —
+   * 높이 붓 드래그의 비용이 붓 크기에 비례하게 남는다(scheduleReliefRender 의 굽기 간격 조절과 같은 틀 안에서 돈다).
+   */
+  private reliefTileRelief: ReliefData | undefined;
+  private syncReliefLiftedTiles(): void {
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!mapId || !map) return;
+    const before = this.reliefTileRelief, after = map.relief;
+    if (before === after) return;
+    const changed = reliefTileSlotChangedCells(before, after, map.width, map.height);
+    this.reliefTileRelief = after;
+    if (changed.length === 0) return;
+    if (!this.canIncrementallyRenderCells(mapId)) {
+      this.redraw();
+      return;
+    }
+    // lower 한 칸을 다시 그리면 같은 칸 upper 와 8방 이웃도 같이 다시 그려진다(editSceneRender §uniqueRenderableTileCells).
+    const cells: ProjectChangeCell[] = changed.map(({ x, y }) => ({ x, y, layer: "lower" as const }));
+    // 이벤트 레이어에서는 이벤트 그림도 칸 들림만큼 올라 있다 — 덧그림을 다시 만든다.
+    if (editorState.get().layer === "event") cells.push({ x: changed[0]!.x, y: changed[0]!.y, layer: "event" as const });
+    this.redrawCells(cells);
   }
 
   private layoutMapBackgroundPreview(): void {
@@ -2417,13 +2465,14 @@ export class EditScene extends PhaserRuntime.Scene {
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
+      reliefLayer: this.reliefLayer ?? undefined,
       overlayLayer,
       gridGraphics,
       mapId: mid,
       tileIndex: this.tileIndex,
     }, cells);
     if (cells.some((cell) => cell.layer === "event")) {
-      refreshEditSceneOverlay({ scene: this, tileLayer, upperTileLayer, tileChunks: this.tileChunks, overlayLayer, gridGraphics, mapId: mid });
+      refreshEditSceneOverlay({ scene: this, tileLayer, upperTileLayer, tileChunks: this.tileChunks, reliefLayer: this.reliefLayer ?? undefined, overlayLayer, gridGraphics, mapId: mid });
     }
     if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.syncSelectionOverlay();
@@ -2482,6 +2531,7 @@ export class EditScene extends PhaserRuntime.Scene {
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
+      reliefLayer: this.reliefLayer ?? undefined,
       overlayLayer,
       gridGraphics,
       mapId,

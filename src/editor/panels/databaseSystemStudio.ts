@@ -5,6 +5,7 @@ import { resolveFontSelection, FONT_ROLE_LABELS, FONT_ROLES, fontOptionsForRole 
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
 import { BATTLE_HIT_FEEL_LABELS, resolveBattleHitFeel } from "@/project/battleHitFeel";
+import { BATTLE_LOOK_PRESETS, resolveBattleLook } from "@/project/battleLook";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { galleryMenuLabel, isGalleryEnabled } from "@/project/gallery";
 import { resolvePlayResolution } from "@/project/playResolution";
@@ -331,6 +332,7 @@ function ruleCardGrid(project: Project): HTMLElement {
         { label: "참전 인원", value: activeSlots },
         { label: "전투 UI", value: battleSkin },
         { label: "타격감", value: BATTLE_HIT_FEEL_LABELS[resolveBattleHitFeel(project.system.battleHitFeel)] },
+        { label: "전투 화면", value: battleLookSummary(project.system.battleLook) },
         { label: "규칙 모델", value: battleModel },
       ],
     },
@@ -564,4 +566,9 @@ function filterStudio(studio: HTMLElement, rawQuery: string): void {
   }
   const empty = studio.querySelector<HTMLElement>('[data-testid="db-system-studio-no-results"]');
   if (empty) empty.hidden = matches > 0;
+}
+
+function battleLookSummary(value: unknown): string {
+  const look = resolveBattleLook(value);
+  return `${BATTLE_LOOK_PRESETS[look.preset].label}${look.customized ? " · 사용자 설정" : ""}`;
 }

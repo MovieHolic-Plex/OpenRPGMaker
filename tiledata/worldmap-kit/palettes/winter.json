@@ -1,0 +1,29 @@
+{
+ "schema": "worldmap-palette/1",
+ "id": "winter",
+ "name": "③ 한겨울",
+ "desc": "눈이 내려앉은 대륙. 지형 종류마다 자기 램프(어두움→밝음 3~4단)를 따로 가진다: 눈 덮인 평지·숲·산·사막이 서로 다른 색상과 명암으로 남는다.",
+ "light": { "lk": 1.0, "sh_a": -0.004, "sh_b": -0.02, "cs": 0.98 },
+ "roles": {
+  "sea": { "ramp": ["0a2448", "143e72", "2f6a9c", "5b95bf", "a6cde0", "eaf5fa"], "pos": [0, 0.3, 0.5, 0.7, 0.88, 1] },
+  "river": { "ramp": ["2f5f92", "5f92bf", "a2c8e4"] },
+  "snow": { "ramp": ["c4d6e6", "e2edf7", "ffffff"] },
+  "grass": { "ramp": ["587a6c", "7a9a8c", "9db8a8", "bfd2c2"] },
+  "farm": { "ramp": ["77705f", "9c957f", "c0b9a3"] },
+  "savanna": { "ramp": ["857a5e", "a99e80", "cfc5a6"] },
+  "dirt": { "ramp": ["74685f", "988b81", "bdb0a6"] },
+  "sand": { "ramp": ["a99c84", "c8bca3", "e6dcc6"] },
+  "tundra": { "ramp": ["4a6c78", "6a8c9a", "90aeba"] },
+  "swamp": { "ramp": ["3e5c58", "5d7e79", "88a8a3"] },
+  "forest": { "ramp": ["0b3331", "17524a", "2f7a62", "74b08f"], "pos": [0, 0.4, 0.7, 1] },
+  "deadwood": { "ramp": ["363f3a", "66726b", "a0aaa3"] },
+  "mount": { "ramp": ["5a5f76", "8088a2", "aab2ca", "d8dff2"] },
+  "rock": { "ramp": ["3f4452", "5f6678", "8a91a3"] },
+  "badlands": { "ramp": ["70483c", "9a6350", "c08a74"] },
+  "ash": { "ramp": ["262a32", "444a55", "737b87"] },
+  "volcano": { "ramp": ["201f28", "44404d", "7a7888"] },
+  "toxic": { "cs": 0.8, "lk": 0.92 },
+  "lava": { "lk": 0.96 },
+  "road": { "ramp": ["54463c", "7a6a5a", "a3937f"] }
+ }
+}

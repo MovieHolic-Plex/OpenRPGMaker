@@ -110,6 +110,7 @@ const DEBUG_LEVEL_OPTIONS: readonly M2CommandFieldOption[] = [
 const DATA_QUERY_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "gold", label: "소지금" },
   { value: "itemCount", label: "아이템 수" },
+  { value: 'followerPresent', label: '이름으로 동행자 확인' },
   { value: "playerX", label: "주인공 X" },
   { value: "playerY", label: "주인공 Y" },
   { value: "switch", label: "스위치" },

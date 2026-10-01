@@ -338,6 +338,9 @@ function recordDataQuery(session: PlaySessionLike, fields: M2CommandFields, cont
     case "itemCount":
       session.variables[variableId] = session.inventory[fieldString(fields, "target", "")] ?? 0;
       return;
+    case 'followerPresent':
+      session.variables[variableId] = session.followers?.some(follower => follower.name === fieldString(fields, 'target', '')) ? 1 : 0;
+      return;
     default:
       session.variables[variableId] = sessionQueryValue(session, fieldString(fields, "query", ""), fieldString(fields, "target", ""), {
         actorOrder: context?.project?.database.actors.map((actor) => actor.id),

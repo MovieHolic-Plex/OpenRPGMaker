@@ -1,0 +1,23 @@
+{
+  "projectId": "ac24cd87-c32d-42ac-adcc-afd5ed40fc59",
+  "projectDir": "/home/main/.codex/worktrees/39a3/rpg-zzu/output/evidence/quest-presets/sqlite-project",
+  "revision": 2,
+  "sha256": "95399463388dfaf2db3fd373a3a83aaead291b14499229fd32fe54eadf8170e4",
+  "reopened": true,
+  "quests": [
+    {
+      "key": "preset_errand",
+      "presetId": "errand"
+    },
+    {
+      "key": "preset_lost",
+      "presetId": "lost_item"
+    },
+    {
+      "key": "preset_hunt",
+      "presetId": "hunt"
+    }
+  ],
+  "eventsPreserved": true,
+  "userProjectModified": false
+}

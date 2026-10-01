@@ -13,6 +13,7 @@ import { BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/asset
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { blockedFlag } from "@/project/tilesetPassage";
 import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
+import { MAX_TOOL_MAP_DIMENSION } from '@/project/mapSizeLimits';
 
 const THEMES = ["village", "forest", "cave"] as const;
 const SEEDS = [1, 99] as const;
@@ -65,11 +66,11 @@ describe("generate_map", () => {
     expect(reach.reachable).toBe(true);
   });
 
-  it("256x256 초과 생성은 거부하고 분할 맵 대안을 안내한다", () => {
+  it("지원 상한 초과 생성은 거부하고 분할 맵 대안을 안내한다", () => {
     const ctx: ToolContext = { project: createEmptyToolProject() };
-    const result = runTool(ctx, "generate_map", { theme: "forest", width: 257, height: 32, id: "gen_huge" });
+    const result = runTool(ctx, "generate_map", { theme: "forest", tilesetId: 'easyrpg_chipset_combined_town', width: MAX_TOOL_MAP_DIMENSION + 1, height: 32, id: "gen_huge" });
     expect(result.ok).toBe(false);
-    expect(result.summary).toContain("최대 256×256");
+    expect(result.summary).toContain(`최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}`);
     expect(result.summary).toContain("여러 맵");
     expect(ctx.project.maps.gen_huge).toBeUndefined();
   });
