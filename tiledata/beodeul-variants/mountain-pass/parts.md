@@ -21,7 +21,7 @@
 - `cairn_s.png` — 16x16px (1x1칸). 돌탑(소)
 - `campfire.png` — 16x16px (1x1칸). 모닥불
 - `wayside_cross.png` — 16x32px (1x2칸). 길가 표지 십자(나무 지붕널)
-- `trough.png` — 32x16px (2x1칸). 말 물통(테두리 + 물 윗면 4행 + 나무 앞면)
+- `trough.png` — 32x16px (2x1칸). 말 물통(처음부터 다시 — 테두리 + 안쪽 뒷벽 + 물 윗면 + 앞 널판·쇠띠)
 - `stump.png` — 16x16px (1x1칸). 그루터기
 - `log_fallen.png` — 32x16px (2x1칸). 쓰러진 통나무(이끼 윗면 + 껍질 옆면 + 잘린 단면)
 - `heath_a.png` — 16x16px (1x1칸). 낮은 헤더 덤불 A(반투명 풀꽃)

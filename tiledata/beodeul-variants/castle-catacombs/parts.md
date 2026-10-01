@@ -26,7 +26,7 @@
 | `parts/bone_heap.png` | 2x2 | 뼈 더미 (2×1.5) |
 | `parts/altar_stone.png` | 2x2 | 돌 제단 (2×2) |
 | `parts/candles.png` | 1x1 | 촛불 세 자루 |
-| `parts/column_cata.png` | 1x2 | 카타콤 기둥 (1×2) |
+| `parts/column_cata.png` | 1x2 | 카타콤 기둥 — 네모 주춧돌·원통 몸통·머리판 윗면 (1×2) |
 | `parts/rubble.png` | 1x1 | 돌무더기 |
 | `parts/barrel.png` | 1x1 | 술통 |
 | `parts/crate.png` | 1x1 | 상자 |

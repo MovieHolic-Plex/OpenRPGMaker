@@ -8,21 +8,21 @@
 - `parts/ground-plat.png` (48x48 px) — 고원 눈 / 3x3칸 표본
 - `parts/ground-deck.png` (32x32 px) — 부두 널 / 2x2칸 표본
 - `parts/ground-plaza.png` (48x48 px) — 광장 포석 / 3x3칸 표본
-- `parts/hall.png` (114x99 px) — hall / 8x7칸
-- `parts/w1.png` (82x83 px) — w1 / 6x6칸
-- `parts/w2.png` (82x83 px) — w2 / 6x6칸
-- `parts/e1.png` (82x83 px) — e1 / 6x6칸
-- `parts/hut.png` (50x67 px) — hut / 4x5칸
-- `parts/e2.png` (82x83 px) — e2 / 6x6칸
-- `parts/s1.png` (82x83 px) — s1 / 6x6칸
-- `parts/s2.png` (50x67 px) — s2 / 4x5칸
-- `parts/shed.png` (82x83 px) — shed / 6x6칸
-- `parts/bath.png` (66x83 px) — bath / 5x6칸
-- `parts/w3.png` (50x67 px) — w3 / 4x5칸
-- `parts/n2.png` (66x83 px) — n2 / 5x6칸
+- `parts/hall.png` (118x99 px) — hall / 8x7칸
+- `parts/w1.png` (86x83 px) — w1 / 6x6칸
+- `parts/w2.png` (86x83 px) — w2 / 6x6칸
+- `parts/e1.png` (86x83 px) — e1 / 6x6칸
+- `parts/hut.png` (54x67 px) — hut / 4x5칸
+- `parts/e2.png` (86x83 px) — e2 / 6x6칸
+- `parts/s1.png` (86x83 px) — s1 / 6x6칸
+- `parts/s2.png` (54x67 px) — s2 / 4x5칸
+- `parts/shed.png` (86x83 px) — shed / 6x6칸
+- `parts/bath.png` (70x83 px) — bath / 5x6칸
+- `parts/w3.png` (54x67 px) — w3 / 4x5칸
+- `parts/n2.png` (70x83 px) — n2 / 5x6칸
 - `parts/bonfire.png` (28x28 px) — bonfire / 2x2칸
 - `parts/board.png` (32x32 px) — board / 2x2칸
-- `parts/well.png` (32x32 px) — well / 2x2칸
+- `parts/well.png` (38x50 px) — well / 3x4칸
 - `parts/lamp.png` (16x48 px) — lamp / 1x3칸
 - `parts/bench.png` (32x16 px) — bench / 2x1칸
 - `parts/bollard.png` (16x16 px) — bollard / 1x1칸

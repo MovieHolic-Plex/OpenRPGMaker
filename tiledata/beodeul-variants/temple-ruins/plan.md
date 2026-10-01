@@ -42,7 +42,21 @@
 
 ## 3/4 재작업 (2026-10-01)
 
-- **지붕은 없다.** 벽 윗면 띠는 기둥과 같은 TRV 돌 계열(`band_pal=temple`, 바닥보다 한 단 어둡게)이고 붉은 기와는 쓰지 않는다. 붉은색은 초 촛농뿐이다.
+- **지붕이 있는 건물 4채(ROOF-GUIDE 적용).** 돌 지붕은 기둥과 같은 TRV 돌 계열이다(붉은 기와 없음). 공통 문법은 `_lib3/droof.py`:
+  - `roof_naiskos_pediment` 5×5 맞배 + 삼각 박공(타임파논에 눈 구멍, 엔타블러처, 기둥 2) — 동쪽 성림 앞. 왼쪽 경사 밝음·오른쪽 2단 어두움, 능선 밝은 줄 위 어두운 줄, 4px 돌판 줄이 엇갈림, 처마 그림자 2~3px.
+  - `roof_hip_storehouse` 4×4 네모뿔(우진각) 이끼 낀 창고 — 서쪽 길 곁. 앞면 사다리꼴 가로 돌판, 왼쪽 끝면 밝음/오른쪽 어두움, 추녀마루.
+  - `roof_hip_shrine` 3×3 작은 사당 — AP 근처. 같은 우진각.
+  - `roof_baldachin` 4×4 열린 앞면 천개 — OG. 앞면이 어두운 오목.
+  - 모든 건물은 윗면 T와 앞면 F만 그리고 아래에 바닥 그림자를 둔다. 길(y=37 서쪽, x=52 통로)과 성림 경유점은 그대로 열려 있다.
+- 지붕 QA: 길찾기 경로 55, 도달 True, 연결 성분 1, 경유점 전부 True, 빈칸 max 0.38 / over40 0.
+- 기준 비교: `roof-vs-beodeul.png` (버들항 01 small-house 학습 그림과 4배 나란히).
+- 다른 세 맵(수로·해식 동굴·카타콤)은 지상 지붕 건물이 없어 지붕 작업 대상이 아니다.
 - 다시 그린 물체 10개: brazier, bucket, candles, column_temple, column_temple_broken, column_temple_tall, lantern_post, rubble_temple, ruined_wall_2, skulls. 나머지는 벽 부착물·바닥 무늬(면제)이거나 눈으로 확인한 OK. 조각별 판정은 `view34-audit.md`.
 - 조각은 같은 파일 이름으로 덮어썼고 지운 조각은 없다. 새 조각 없음.
 - **BEFORE 선택표**: `_lib3/dlib.py` 의 `BEFORE_PICKS['temple-ruins']` (정적 표, 현재 비어 있음)와 `~/.local/share/oprn/beodeul-pick/picks.sqlite` 의 `current` 에서 choice=before 인 조각은 맵 렌더에서 `before/var3/temple-ruins/parts/<이름>.png` 원본을 쓴다. `parts/` 폴더의 파일은 항상 AFTER 이다. 최종 확인 시 선택 기록 0건이었다.
+
+## QA — 2026-10-01 사용자 선택 2차 (redo)
+- roof_naiskos_pediment·roof_baldachin 을 `_lib3/dredo.py` 로 처음부터 다시: 박공이 앞을 보는 돌판 지붕 = 앞·뒤 박공 사선 사이 갈매기 띠, 용마루 앞→뒤, 왼 경사 밝음/오른 경사 두 단 그늘, 골은 사선과 나란히(위 빛·아래 그림자), 돌은 기둥과 같은 TRV.
+- 소신전은 두 기둥 현관(문 벽이 8px 물러나 그늘), 닫집은 지붕 밑 반투명 그늘 + 기단 윗면.
+- 소신전 앞 (38..44, 38..39) 을 채움 예약에 넣어 부서진 벽 조각이 건물 앞면을 가리던 겹침을 없앴다. 길찾기·도달·경유점 전부 True, 빈칸 max 0.38.
+- 약한 곳: 닫집 뒤 기둥은 정사영상 앞 기둥 뒤에 숨어 지붕 밑이 어두운 창처럼 읽힐 수 있다(제단이 채운다).

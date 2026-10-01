@@ -1,51 +1,44 @@
 # 새로 찍은 조각 — mining-valley
 
-- `parts/ground-soil.png` (48x48 px) — 광재 섞인 흙 (새 재료) / 3x3칸 표본
-- `parts/ground-road.png` (48x48 px) — 자갈길 / 3x3칸 표본
-- `parts/ground-yard.png` (48x48 px) — 재 섞인 마당 / 3x3칸 표본
-- `parts/ground-slagg.png` (48x48 px) — 광재 땅 (슬래그) / 3x3칸 표본
-- `parts/ground-terr.png` (48x48 px) — 깎은 단 윗면 / 3x3칸 표본
-- `parts/ground-rock.png` (48x48 px) — 산 바위 윗면 / 3x3칸 표본
-- `parts/ground-cliff.png` (48x48 px) — 지층 절벽 앞면 / 3x3칸 표본
-- `parts/ground-tcliff.png` (32x32 px) — 광재 돌 단 절벽 / 2x2칸 표본
-- `parts/ground-tail.png` (48x48 px) — 침전 연못 물(회청록) / 3x3칸 표본
-- `parts/ground-deck.png` (32x32 px) — 널 다리 / 2x2칸 표본
-- `parts/w1.png` (82x83 px) — w1 / 6x6칸
-- `parts/w2.png` (66x83 px) — w2 / 5x6칸
-- `parts/w3.png` (50x67 px) — w3 / 4x5칸
-- `parts/w4.png` (82x83 px) — w4 / 6x6칸
-- `parts/e1.png` (82x83 px) — e1 / 6x6칸
-- `parts/e2.png` (50x67 px) — e2 / 4x5칸
-- `parts/e3.png` (66x83 px) — e3 / 5x6칸
-- `parts/boss.png` (82x115 px) — boss / 6x8칸
-- `parts/smelt.png` (114x83 px) — smelt / 8x6칸
-- `parts/inn.png` (82x115 px) — inn / 6x8칸
-- `parts/smith.png` (82x83 px) — smith / 6x6칸
-- `parts/d1.png` (66x83 px) — d1 / 5x6칸
-- `parts/s1.png` (82x83 px) — s1 / 6x6칸
-- `parts/s2.png` (50x67 px) — s2 / 4x5칸
-- `parts/s3.png` (66x83 px) — s3 / 5x6칸
-- `parts/hall.png` (114x115 px) — hall / 8x8칸
-- `parts/d2.png` (66x83 px) — d2 / 5x6칸
+- `parts/ground-meadow.png` (48x48 px) — 골짜기 풀밭 / 3x3칸 표본
+- `parts/ground-meadow2.png` (48x48 px) — 윗단 풀밭 / 3x3칸 표본
+- `parts/ground-yard2.png` (48x48 px) — 윗단 갱구 앞마당(재 섞인 흙) / 3x3칸 표본
+- `parts/hall.png` (110x115 px) — 광부 회관(1층 다듬은 돌·큰 쌍문, 2층 판자, 판자 모임지붕+종탑) / 7x8칸
+- `parts/s2.png` (60x87 px) — 돌 기초 판자 창고(앞 박공, 미닫이 문) / 4x6칸
+- `parts/boss.png` (78x103 px) — 감독관 집(2층 돌, 점판암 지붕+지붕창, 퇴창) / 5x7칸
+- `parts/d1.png` (60x67 px) — 통나무 오두막(판자 모임지붕·쇠 연통) / 4x5칸
+- `parts/e2.png` (60x89 px) — 나무집(벽 이전 그대로, 지붕만 판자 앞 박공으로) / 4x6칸
+- `parts/w3.png` (60x76 px) — 나무집(벽 이전 그대로, 지붕만 판자 모임지붕으로) / 4x5칸
+- `parts/e1.png` (86x83 px) — e1 / 6x6칸
+- `parts/e3.png` (70x83 px) — e3 / 5x6칸
+- `parts/w1.png` (86x83 px) — w1 / 6x6칸
+- `parts/w2.png` (70x83 px) — w2 / 5x6칸
+- `parts/s1.png` (86x83 px) — s1 / 6x6칸
+- `parts/smelt.png` (118x83 px) — smelt / 8x6칸
+- `parts/smith.png` (86x83 px) — smith / 6x6칸
+- `parts/w4.png` (86x83 px) — w4 / 6x6칸
+- `parts/d2.png` (76x83 px) — 판자 광부집+옆 헛간(앞 박공 판자 지붕) / 5x6칸
+- `parts/s3.png` (70x83 px) — s3 / 5x6칸
+- `parts/inn.png` (94x132 px) — 여관(1층 막돌·처마 차양·간판, 2층 내민 판자층, 앞 박공 판자 지붕) / 6x9칸
 - `parts/adit.png` (48x50 px) — adit / 3x4칸
 - `parts/headframe.png` (48x64 px) — headframe / 3x4칸
 - `parts/cart.png` (16x20 px) — cart / 1x2칸
-- `parts/cart_h.png` (28x20 px) — cart_h / 2x2칸
-- `parts/buffer.png` (16x16 px) — buffer / 1x1칸
 - `parts/ore.png` (28x18 px) — ore / 2x2칸
 - `parts/rack.png` (32x28 px) — rack / 2x2칸
-- `parts/lamp.png` (16x36 px) — lamp / 1x3칸
+- `parts/lamp.png` (18x44 px) — 광산 등 기둥 / 2x3칸
 - `parts/slagrock.png` (24x18 px) — slagrock / 2x2칸
+- `parts/pile.png` (40x30 px) — 갱목 더미(끝면이 앞) / 3x2칸
+- `parts/buffer.png` (16x16 px) — buffer / 1x1칸
 - `parts/bin.png` (32x34 px) — bin / 2x3칸
+- `parts/cart_h.png` (28x20 px) — cart_h / 2x2칸
 - `parts/bench.png` (32x20 px) — bench / 2x2칸
 - `parts/crates.png` (32x32 px) — crates / 2x2칸
 - `parts/kiln.png` (40x40 px) — kiln / 3x3칸
 - `parts/chimney.png` (24x80 px) — chimney / 2x5칸
 - `parts/slagheap.png` (48x34 px) — slagheap / 3x3칸
-- `parts/pile.png` (32x16 px) — pile / 2x1칸
 - `parts/sluice.png` (48x32 px) — sluice / 3x2칸
 - `parts/barrel.png` (16x16 px) — barrel / 1x1칸
 - `parts/board.png` (32x32 px) — board / 2x2칸
 - `parts/fir.png` (24x38 px) — fir / 2x3칸
 
-합계: 47 조각
+합계: 40 조각
