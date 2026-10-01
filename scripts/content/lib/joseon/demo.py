@@ -110,6 +110,7 @@ def setg(x, y, tid, kind):
 
 
 import math
+import random as _rand
 
 
 def river_dx(y):
@@ -157,11 +158,11 @@ for (x, y) in road:
 # 건물 배치(이름, 칸x, 칸y, 앞마당 깊이). 앞마당 흙은 건물 폭만큼, 건물 밑에서 depth 칸.
 BUILDINGS = [
     ('giwa_house_6', 8, 5, 0), ('gate_4', 9, 16, 0), ('giwa_house_4', 13, 11, 0),
-    ('thatch_house_3', 0, 6, 1), ('thatch_house_3b', 0, 12, 1), ('thatch_house_3', 0, 18, 1),
+    ('thatch_house_3', 0, 6, 1), ('giwa_house_3', 1, 12, 1), ('thatch_house_3b', 0, 18, 1),
     ('giwa_house_5', 21, 8, 2), ('thatch_house_5', 21, 17, 3),
     ('pavilion_5', 34, 8, 0), ('thatch_house_4', 34, 18, 2), ('giwa_house_5', 41, 18, 2),
     ('giwa_house_6', 40, 3, 2), ('thatch_house_3', 43, 10, 2),
-    ('giwa_house_4', 36, 29, 2), ('thatch_house_3b', 43, 29, 2),
+    ('giwa_house_4', 36, 29, 2), ('giwa_house_3', 43, 31, 2),
 ]
 bsize = {n: (objects[n].w // T, objects[n].h // T) for n in {b[0] for b in BUILDINGS}}
 yard = set()
@@ -223,8 +224,21 @@ def put_obj(name, tx, ty, force=False):
     return True
 
 
+def put_any(names, x, y):
+    for nm in names:
+        if not any(p[0] == nm and abs(p[1] - x) <= 6 and abs(p[2] - y) <= 6 for p in placed):
+            return put_obj(nm, x, y)
+    return False
+
+
 for n, x, y, dep in BUILDINGS:
     put_obj(n, x, y, force=True)
+# 집마다 터: 앞마당 양옆 울타리와 독
+for n, x, y, dep in BUILDINGS[3:]:
+    if n.startswith('pavilion'): continue
+    w, h = bsize[n]
+    put_obj('fence_h', x, y + h); put_obj('fence_h', x + w - 1, y + h)
+    if (x + y) % 3 == 0: put_obj('jars', x + w, y + h - 1)
 # 양반댁: 토석담 + 석축 둑(후원은 한 단 높다)
 for x in (6, 7, 8): put_obj('wall_h', x, 21, True)
 for x in (15, 16, 17, 18): put_obj('wall_h', x, 21, True)
@@ -275,6 +289,21 @@ for nm, x, y in (('bush_b', 8, 23), ('bush_c', 9, 22), ('bush_a', 14, 23), ('bus
                  ('small_z_b', 30, 17), ('bush_a', 32, 12), ('small_p', 31, 14), ('bush_c', 34, 16), ('bush_b', 39, 15), ('small_z_a', 46, 6), ('bush_a', 39, 12), ('small_z_b', 42, 15), ('bush_c', 47, 12),
                  ('bush_b', 29, 20), ('bush_c', 29, 22), ('small_p', 34, 22), ('bush_a', 40, 24), ('bush_b', 31, 23), ('small_z_a', 46, 21), ('bush_c', 47, 25)):
     put_obj(nm, x, y)
+# 물가 따라 갈대·돌을 이어 놓는다(연못은 촘촘, 시내는 드문드문)
+_sr = _rand.Random(21)
+_used = set()
+for y in range(MH):
+    for x in range(MW):
+        if ground_kind[y][x] is not None: continue
+        near = [(x + dx, y + dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if (x + dx, y + dy) in water]
+        if not near: continue
+        in_pond = near[0] in pond
+        if _sr.random() > (0.5 if in_pond else 0.3): continue
+        if any((x + i, y + j) in _used for i in (-1, 0, 1) for j in (-1, 0, 1)): continue
+        if put_obj(_sr.choice(['reeds', 'reeds', 'rocks']) if in_pond else _sr.choice(['reeds', 'rocks', 'rocks']), x, y - (1 if False else 0)):
+            _used.add((x, y))
+for nm, x, y in (('bamboo_grove', 44, 33), ('bamboo_grove', 25, 3), ('willow', 27, 17), ('willow', 35, 29), ('willow', 27, 36), ('pine_d', 22, 3), ('pine_d', 29, 14), ('pine_c', 46, 14)):
+    put_any([nm, 'pine_a', 'pine_b', 'pine_c', 'pine_d'], x, y)
 print('빼낸 물체:', len(SKIPPED))
 
 items.sort(key=lambda i: (i[0], i[3], i[2]))
@@ -297,7 +326,7 @@ def tiles_by_id(i):
 
 # ---------- 빈 잔디 채우기: 맨 잔디 창이 가장 큰 곳에 덤불·어린 나무·화단을 놓는다(같은 그림 6칸 안 반복 금지) ----------
 import random as _rand
-_POOL = ['bush_a', 'bush_b', 'bush_c', 'small_z_a', 'small_z_b', 'small_p', 'flower_bed', 'bush_a', 'bush_b', 'bush_c', 'haystack', 'jars', 'persimmon_b', 'persimmon_c']
+_POOL = ['bush_l_a', 'bush_l_b', 'bush_s_a', 'bush_s_b', 'pine_c', 'pine_d', 'pine_a', 'bamboo_grove', 'bush_a', 'bush_b', 'bush_c', 'small_z_a', 'small_z_b', 'small_p', 'flower_bed', 'bush_a', 'bush_b', 'bush_c', 'haystack', 'jars', 'persimmon_b', 'persimmon_c']
 _rng = _rand.Random(7)
 
 

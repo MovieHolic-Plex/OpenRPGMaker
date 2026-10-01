@@ -422,5 +422,45 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
+ },
+ "bush_l_a": {
+  "hash": "035a1ad41783",
+  "status": "pass",
+  "line": "큰 덤불 무리, 같은 잎 결·윗왼쪽 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bush_l_b": {
+  "hash": "5c37c416df55",
+  "status": "pass",
+  "line": "큰 덤불 변형(어두운 쪽)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bush_s_a": {
+  "hash": "319bc051d04f",
+  "status": "pass",
+  "line": "작은 풀숲",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bush_s_b": {
+  "hash": "ad4d137b26d5",
+  "status": "pass",
+  "line": "작은 풀숲 변형",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bamboo_grove": {
+  "hash": "ec56a2265705",
+  "status": "note",
+  "line": "빽빽한 대숲 14대, 버들항에 대응 조각 없음(종 특성)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
  }
 }

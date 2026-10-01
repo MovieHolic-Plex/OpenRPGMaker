@@ -434,5 +434,46 @@
    "tree",
    "tree"
   ]
+ },
+ "bush_l_a": {
+  "cls": "bush",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bush_l_b": {
+  "cls": "bush",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bush_s_a": {
+  "cls": "tuft",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bush_s_b": {
+  "cls": "tuft",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bamboo_grove": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ],
+  "thin_ok": "대 줄기 폭 2~3px"
  }
 }

@@ -367,3 +367,56 @@ def small_tree(kind='z', seed=0):
     c.bake(cv)
     outline(cv)
     return cv
+
+
+def bush_size(size='l', seed=0):
+    """덤불 크기 변형: l=48×32 큰 덤불(무리), s=32×16 작은 풀숲."""
+    if size == 's':
+        W, H = 32, 16
+        cv = Cv(W, H)
+        c = Crown(W, H, seed, shift=1 if seed % 2 else 0)
+        scatter(c, 16, 8, 15, 6.5, 10, 4.2, 5.4, flat=0.1, seed=seed)
+        c.paint(); c.edge_dark(); c.bake(cv)
+        for x in range(4, 28): cv.put(x, 15, SHADOW, 80)
+        outline(cv)
+        return cv
+    W, H = 48, 32
+    cv = Cv(W, H)
+    ground_shadow(cv, 24, 28, 19, 2.5)
+    c = Crown(W, H, seed, shift=-1 if seed % 2 else 1)
+    scatter(c, 24, 15, 22, 12, 26, 4.2, 6.0, flat=0.12, seed=seed)
+    c.paint(); c.edge_dark(); c.bake(cv)
+    outline(cv)
+    return cv
+
+
+def bamboo_grove(seed=0):
+    """대숲 64×64: 마디 줄기 14대가 빽빽, 위로 댓잎 덩이가 겹친다."""
+    W, H = 64, 64
+    cv = Cv(W, H)
+    ground_shadow(cv, 32, 61, 26, 3)
+    culms = []
+    for i in range(14):
+        x = 4 + i * 4 + int(rnd(i, seed, 9) * 3)
+        top = 2 + int(rnd(i, seed, 10) * 18)
+        culms.append((x, top))
+    for i, (x, top) in enumerate(sorted(culms, key=lambda c: c[1], reverse=True)):
+        for y in range(top + 8, 62):
+            node = ((y + i * 5) % 9 == 0)
+            for dx, tn in ((0, 5), (1, 4), (2, 2)):
+                col = LEAF[tn]
+                if node:
+                    col = WOOD[3] if dx < 2 else WOOD[1]
+                cv.put(x + dx, y, col)
+    c = Crown(W, H, seed, shift=0)
+    for i, (x, top) in enumerate(culms):
+        for k in range(3):
+            c.clump(x + 1 + (k - 1) * 5 + (rnd(i, k, seed) - 0.5) * 3, top + 8 + k * 6, 5.5, 3.4, dark=k // 2)
+    c.paint(); c.edge_dark()
+    for y in range(H):
+        for x in range(W):
+            if c.t[y][x] is not None and rnd(x, y, seed + 3) < 0.16 and c.t[min(H - 1, y + 1)][x] is None:
+                c.t[y][x] = None
+    c.bake(cv)
+    outline(cv)
+    return cv
