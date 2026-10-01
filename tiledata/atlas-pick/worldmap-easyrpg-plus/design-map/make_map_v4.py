@@ -24,6 +24,7 @@ from terrain_lib import hh, rnd  # noqa: E402
 
 W, H = 96, 72
 BAD = []
+_DBG = None
 
 
 def dump(land, G, ic):
@@ -436,6 +437,8 @@ def build():
         for x in range(W):
             if vm[y, x] and not vm2[y, x] and land[y, x] and (G[y, x] >= 10) and rnd(x, y, 77) > .12:
                 O[y, x] = VOLC
+    global _DBG
+    _DBG = (land.copy(), G.copy(), Hh.copy(), O.copy())
     # 8. 장소 밑 정리
     for name, src, spec, x, y, ground, kind, why in SITES:
         w, h = icon_cells[name][2:]
