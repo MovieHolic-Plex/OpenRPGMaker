@@ -316,6 +316,39 @@ def library():
     return L
 
 
+def roof_baram(cv, R=3, style='giwa', wing=24):
+    """바람의나라 연구형 기와 지붕으로 위 R 행을 통째로 바꾼다(몸채 폭 전체 + 날개면 + 곡선 처마). roof3d.py."""
+    import roof3d
+    H = R * T
+    cv.a[:H, :, :] = 0
+    r = roof3d.roof(cv.w, H, style, wing=wing)
+    cv.paste(r, 0, 0)
+    dither_under(cv, H, 4)
+
+
+def thatch_baram(cv, R=3, over=0):
+    """바람의나라 연구형 초가 방석 지붕으로 위 R 행을 바꾼다. thatch3d.py."""
+    import thatch3d
+    H = R * T
+    cv.a[:H, :, :] = 0
+    cv.paste(thatch3d.dome(cv.w + over, H + 2, seed=cv.w), 0, 0)
+    dither_under(cv, H, 4)
+
+
+def dither_under(cv, y0, rows=4):
+    """처마 그림자: 지붕 바로 아래 벽 위쪽을 체크무늬로 어둡게(바람의나라 디더 그림자). 가까울수록 촘촘."""
+    from build import _snap_dark
+    for k in range(rows):
+        y = y0 + k
+        if y >= cv.h: break
+        for x in range(cv.w):
+            if cv.a[y, x, 3] != 255: continue
+            on = ((x + y) % 2 == 0) if k >= 1 else True
+            if k == rows - 1 and (x % 2 or y % 2): on = False
+            if on:
+                cv.a[y, x, :3] = _snap_dark(tuple(int(v * 0.72) for v in cv.a[y, x, :3]))
+
+
 def hip_cut(cv, y0, R, style, wg=32):
     """팔작지붕: 지붕 영역(y0 부터 R 행) 양끝을 사선으로 깎고, 깎고 남은 옆 추녀면을 밝게(왼쪽)/어둡게(오른쪽) 칠한다."""
     G = RGB[STYLE_ROOF[style]]
@@ -398,3 +431,41 @@ def upturn(cv, roof_h, reach=14, peak=5):
             col = cv.a[:roof_h, x].copy()
             cv.a[:roof_h, x] = 0
             cv.a[0:roof_h - lift, x] = col[lift:]
+
+
+def pavilion_open(cv, bays, wall_y0=48, wall_y1=80, x0=16):
+    """정자: 벽을 걷어내 뒤가 보이게 한다. 바람의나라 문루처럼 단청 기둥(청록 몸체에 붉은·금 무늬), 어두운 안쪽, 마루 윗면, 앞 난간."""
+    G, B, R, E, W = RGB['dgreen'], RGB['dblue'], RGB['red'], RGB['earth'], RGB['wood']
+    x1 = x0 + bays * T
+    for y in range(wall_y0, wall_y1):
+        for x in range(x0, x1):
+            t = (y - wall_y0) / (wall_y1 - wall_y0)
+            col = E[0] if t < 0.45 else (E[1] if t < 0.7 else W[2])
+            if t >= 0.7:                                       # 마루 윗면(앞 가장자리 밝은 선)
+                col = W[4] if (x // 4) % 2 else W[3]
+                if y == wall_y1 - 8: col = W[5]
+            cv.a[y, x] = (*col, 255)
+    # 뒷벽 그림자와 안쪽 기둥 그림자
+    for x in range(x0, x1):
+        for y in range(wall_y0, wall_y0 + 4):
+            cv.a[y, x] = (*E[0], 255)
+    cols = [x0 + i * T for i in range(bays + 1)]
+    for cxp in cols:
+        for y in range(wall_y0 - 1, wall_y1 - 7):
+            for dx in range(5):
+                xx = min(max(cxp - 2 + dx, x0 - 2), x1 + 1)
+                tone = G[5] if dx == 1 else (G[4] if dx < 3 else G[2])
+                if (y - wall_y0) % 8 in (2, 3) and dx in (1, 2, 3):
+                    tone = R[3] if dx == 2 else B[3]                # 단청 띠
+                cv.a[y, xx] = (*tone, 255)
+        for dx in range(7):                                         # 주춧돌
+            xx = cxp - 3 + dx
+            for y in range(wall_y1 - 7, wall_y1 - 4):
+                cv.a[y, xx] = (*RGB['stone'][5 if dx < 4 else 3], 255)
+    # 앞 난간: 가로대 + 짧은 살
+    for x in range(x0 + 4, x1 - 3):
+        if (x - x0) % T in (0, 1, 2, 3, 12, 13, 14, 15): pass
+        cv.a[wall_y1 - 12, x] = (*W[5], 255); cv.a[wall_y1 - 11, x] = (*W[3], 255)
+        if (x % 4) == 1:
+            for y in range(wall_y1 - 10, wall_y1 - 7):
+                cv.a[y, x] = (*W[4], 255)

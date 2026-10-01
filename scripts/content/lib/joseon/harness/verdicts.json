@@ -96,65 +96,65 @@
   "date": "2026-10-02"
  },
  "wall_h": {
-  "hash": "598d55fadeae",
+  "hash": "531249a22fe5",
   "status": "pass",
-  "line": "덮개+토석 몸통 3줄",
+  "line": "주황 갈색 덮개+어두운 막돌(바람의나라 담)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "wall_v": {
-  "hash": "893d5dcc91ac",
+  "hash": "9a198bd0cd65",
   "status": "pass",
-  "line": "세로 덮개 띠 윗면",
+  "line": "주황 갈색 덮개 띠(바람의나라 담)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "wall_corner_l": {
-  "hash": "0888e9d549ae",
+  "hash": "2307bbb01286",
   "status": "pass",
-  "line": "귀기둥 덮개",
+  "line": "주황 갈색 덮개+어두운 막돌(바람의나라 담)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "wall_corner_r": {
-  "hash": "2d456a08cd5d",
+  "hash": "9bd8a571210e",
   "status": "pass",
-  "line": "귀기둥 덮개",
+  "line": "주황 갈색 덮개+어두운 막돌(바람의나라 담)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_6": {
-  "hash": "cc030eff1232",
+  "hash": "2739d496cdaf",
   "status": "pass",
-  "line": "뒷사면 밝음+용마루 치미+어두운 앞사면, 벽 2행, 기단·댓돌. 기준 버들항 집과 같은 문법",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "thatch_house_5": {
-  "hash": "44d18ff91ffc",
+  "hash": "aa553ab5e0c6",
   "status": "pass",
-  "line": "짚 지붕 층층 번들+용마름, 황토벽·창호, 앞사면 어두움. 기준과 같은 문법",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gate_4": {
-  "hash": "27c6c4ee177a",
+  "hash": "54bf5cf83150",
   "status": "pass",
-  "line": "기와 지붕(무단청 사가 문)+판문 두 짝+돌 기단. 같은 문법",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "pavilion_5": {
-  "hash": "8aba98be4284",
-  "status": "note",
-  "line": "지붕/벽/기단 문법은 같으나 기둥 사이가 판벽처럼 막혀 정자의 개방감이 약함",
+  "hash": "155454261c7e",
+  "status": "pass",
+  "line": "단청 기둥 사이 개방, 어두운 안쪽·마루 윗면·난간, 청록 지붕",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -264,17 +264,17 @@
   "date": "2026-10-02"
  },
  "thatch_house_4": {
-  "hash": "93f7030fceed",
+  "hash": "d8b6d238161e",
   "status": "pass",
-  "line": "thatch_house_5 와 같은 블록 문법, 폭만 4칸",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_5": {
-  "hash": "db8a7a16178b",
+  "hash": "00c431b04c80",
   "status": "pass",
-  "line": "giwa_house_6 과 같은 블록 문법, 폭 5칸",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -328,33 +328,33 @@
   "date": "2026-10-02"
  },
  "thatch_house_3": {
-  "hash": "c14aa1a84bbc",
+  "hash": "1cdbad1366a9",
   "status": "pass",
-  "line": "같은 블록 조립 문법, 폭만 다름",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "thatch_house_3b": {
-  "hash": "ec0235318b47",
+  "hash": "b7a96a097257",
   "status": "pass",
-  "line": "같은 블록 조립 문법, 폭만 다름",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_4": {
-  "hash": "9a25f4747eca",
+  "hash": "8dea4fe9b41e",
   "status": "pass",
-  "line": "같은 블록 조립 문법, 폭만 다름",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_3": {
-  "hash": "34947a4a2237",
+  "hash": "5254fbc71657",
   "status": "pass",
-  "line": "같은 블록 조립 문법, 폭만 다름",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -459,6 +459,14 @@
   "hash": "ec56a2265705",
   "status": "note",
   "line": "빽빽한 대숲 14대, 버들항에 대응 조각 없음(종 특성)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_house_5b": {
+  "hash": "df22a1161898",
+  "status": "pass",
+  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

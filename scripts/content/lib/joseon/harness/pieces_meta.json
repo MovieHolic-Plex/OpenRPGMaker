@@ -475,5 +475,15 @@
    "tree"
   ],
   "thin_ok": "대 줄기 폭 2~3px"
+ },
+ "giwa_house_5b": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',6,…)"
  }
 }

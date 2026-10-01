@@ -159,3 +159,75 @@ def bank_stairs():
     for x in range(T):
         c.put(x, 30, E[2]); c.put(x, 31, SHADOW, 90)
     return c
+
+
+# ---- 바람의나라 연구형 담: 주황 갈색 기와·흙 덮개 + 어두운 막돌 ----
+_CAP = [(61, 34, 12), (113, 66, 16), (136, 90, 38), (162, 110, 54), (194, 117, 54), (198, 146, 80), (220, 170, 76)]
+
+
+def _rubble(c, x0, x1, y0, y1, seed):
+    S = RGB['stone']
+    rows = [(y0, y0 + 5), (y0 + 5, y1)]
+    for ri, (a, b) in enumerate(rows):
+        x = x0 - ((ri * 3 + seed) % 5)
+        k = 0
+        while x < x1:
+            w = 6 + int(rnd(k, ri, 71 + seed) * 5)
+            for yy in range(a, b):
+                for xx in range(max(x0, x), min(x1, x + w)):
+                    edge = xx == x or yy == b - 1
+                    tone = 1 if edge else (5 if (yy - a) == 1 and xx < x + w - 2 else (4 if xx < x + int(w * 0.6) else 3))
+                    if not edge and rnd(xx, yy, 73) < 0.15: tone = 3 if tone == 4 else 2
+                    c.put(xx, yy, S[tone])
+            x += w; k += 1
+
+
+def clay_cap(c, x0, x1, y0, h=6, round_l=False, round_r=False):
+    for y in range(y0, y0 + h):
+        for x in range(x0, x1):
+            t = y - y0
+            col = _CAP[0] if t == 0 else (_CAP[5] if t == 1 else (_CAP[4] if t < h - 2 else (_CAP[2] if t == h - 2 else _CAP[1])))
+            if (x - x0) % 4 == 3 and 0 < t < h - 1: col = _CAP[2]            # 기왓골 홈
+            if round_l and x - x0 < 2 and (t < 2 - (x - x0) or t >= h - 1 + (x - x0) - 1): continue
+            if round_r and x1 - 1 - x < 2 and (t < 2 - (x1 - 1 - x) or t >= h - 1 + (x1 - 1 - x) - 1): continue
+            c.put(x, y, col)
+
+
+def wall_h2(seed=0):
+    c = Cv(T, T)
+    _rubble(c, 0, T, 6, T, seed)
+    clay_cap(c, 0, T, 0, 6)
+    for x in range(T): c.put(x, 15, SHADOW, 70)
+    return c
+
+
+def wall_v2():
+    """세로 담: 위에서 본 주황 덮개 띠(폭 8px), 양옆 짧은 막돌 그림자."""
+    c = Cv(T, T)
+    for y in range(T):
+        for x in range(4, 12):
+            col = _CAP[5] if x < 6 else (_CAP[4] if x < 9 else (_CAP[2] if x < 11 else _CAP[1]))
+            if y % 4 == 3: col = _CAP[2] if x < 11 else _CAP[1]            # 가로 기와 마디
+            c.put(x, y, col)
+        c.put(3, y, _CAP[1]); c.put(12, y, _CAP[1])
+    for y in range(T):
+        c.put(13, y, SHADOW, 70); c.put(14, y, SHADOW, 40)
+    return c
+
+
+def wall_corner2(side):
+    """모서리: 세로 띠가 내려오다 가로 덮개로 꺾이며 바깥 모서리가 둥글다. side L=왼쪽 아래, R=오른쪽 아래."""
+    c = Cv(T, T)
+    for y in range(0, 6):
+        for x in range(4, 12):
+            col = _CAP[5] if x < 6 else (_CAP[4] if x < 9 else (_CAP[2] if x < 11 else _CAP[1]))
+            c.put(x, y, col)
+        c.put(3, y, _CAP[0]); c.put(12, y, _CAP[0])
+    if side == 'L':
+        _rubble(c, 4, T, 6, T, 1)
+        clay_cap(c, 3, T, 6 - 6 + 0, 6, round_l=True)
+    else:
+        _rubble(c, 0, 12, 6, T, 2)
+        clay_cap(c, 0, 13, 0, 6, round_r=True)
+    for x in range(T): c.put(x, 15, SHADOW, 70)
+    return c

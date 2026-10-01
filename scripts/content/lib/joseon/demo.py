@@ -160,7 +160,7 @@ BUILDINGS = [
     ('giwa_house_6', 8, 5, 0), ('gate_4', 9, 16, 0), ('giwa_house_4', 13, 11, 0),
     ('thatch_house_3', 0, 6, 1), ('giwa_house_3', 1, 12, 1), ('thatch_house_3b', 0, 18, 1),
     ('giwa_house_5', 21, 8, 2), ('thatch_house_5', 21, 17, 3),
-    ('pavilion_5', 34, 8, 0), ('thatch_house_4', 34, 18, 2), ('giwa_house_5', 41, 18, 2),
+    ('pavilion_5', 34, 8, 0), ('thatch_house_4', 34, 18, 2), ('giwa_house_5b', 41, 18, 2),
     ('giwa_house_6', 40, 3, 2), ('thatch_house_3', 43, 10, 2),
     ('giwa_house_4', 36, 29, 2), ('giwa_house_3', 43, 31, 2),
 ]
