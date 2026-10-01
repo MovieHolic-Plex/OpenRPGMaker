@@ -7,8 +7,12 @@ import type { Project } from "@/project/types";
 import { crop, decodeImage, encodePng, type RgbaImage } from "./imageProcess";
 
 export type CharsetFrameRole = "walkDown0" | "walkDown1" | "walkDown2" | "faceRight" | "faceLeft" | "faceUp";
+/** 연출 레이어용 전 방향 걷기 프레임(방향 × 0·1·2). 기본 목록(CHARSET_FRAME_ROLES)은 충돌 컷신 호환을 위해 그대로 둔다. */
+export type CharsetWalkRole = `walk${"Up" | "Down" | "Left" | "Right"}${0 | 1 | 2}`;
+export type CharsetAnyRole = CharsetFrameRole | CharsetWalkRole;
 
-const ROLE_FRAMES: Readonly<Record<CharsetFrameRole, Pick<CharsetFrameSelection, "direction" | "pattern">>> = {
+const ROLE_FRAMES: Readonly<Record<CharsetAnyRole, Pick<CharsetFrameSelection, "direction" | "pattern">>> = {
+  ...Object.fromEntries((["up", "down", "left", "right"] as const).flatMap((direction) => [0, 1, 2].map((pattern) => [`walk${direction[0]!.toUpperCase()}${direction.slice(1)}${pattern}`, { direction, pattern }]))) as Record<CharsetWalkRole, Pick<CharsetFrameSelection, "direction" | "pattern">>,
   walkDown0: { direction: "down", pattern: 0 },
   walkDown1: { direction: "down", pattern: 1 },
   walkDown2: { direction: "down", pattern: 2 },
@@ -16,7 +20,7 @@ const ROLE_FRAMES: Readonly<Record<CharsetFrameRole, Pick<CharsetFrameSelection,
   faceLeft: { direction: "left", pattern: 1 },
   faceUp: { direction: "up", pattern: 1 },
 };
-export const CHARSET_FRAME_ROLES = Object.keys(ROLE_FRAMES) as CharsetFrameRole[];
+export const CHARSET_FRAME_ROLES: readonly CharsetFrameRole[] = ["walkDown0", "walkDown1", "walkDown2", "faceRight", "faceLeft", "faceUp"];
 
 type AssetFetcher = (url: string) => Promise<string>;
 let fetcherOverride: AssetFetcher | undefined;
@@ -47,22 +51,22 @@ function keyOutCharset(image: RgbaImage): RgbaImage {
 }
 
 export interface CharsetFramePictures {
-  readonly frames: Readonly<Record<CharsetFrameRole, { readonly id: string; readonly dataUrl: string }>>;
+  readonly frames: Readonly<Record<string, { readonly id: string; readonly dataUrl: string }>>;
   readonly width: number;
   readonly height: number;
 }
 
-export function charsetPictureId(resourceId: string, characterIndex: number, role: CharsetFrameRole): string {
+export function charsetPictureId(resourceId: string, characterIndex: number, role: CharsetAnyRole): string {
   return `cutscene_char_${resourceId.replace(/[^a-z0-9]+/giu, "_")}_${characterIndex}_${role}`;
 }
 
-export async function cropCharsetFrames(project: Project | undefined, resourceId: string, characterIndex: number): Promise<CharsetFramePictures> {
+export async function cropCharsetFrames(project: Project | undefined, resourceId: string, characterIndex: number, roles: readonly CharsetAnyRole[] = CHARSET_FRAME_ROLES): Promise<CharsetFramePictures> {
   const url = resolveAssetResourceUrl(resourceId, project ? { project } : {});
   if (!url) throw new Error(`캐릭터셋 '${resourceId}' 의 그림을 찾을 수 없습니다.`);
   const sheet = keyOutCharset(await decodeImage(await fetchDataUrl(url)));
-  const frames = {} as Record<CharsetFrameRole, { id: string; dataUrl: string }>;
+  const frames: Record<string, { id: string; dataUrl: string }> = {};
   let width = 24, height = 32;
-  for (const role of CHARSET_FRAME_ROLES) {
+  for (const role of roles) {
     const source = charsetFrameSource({ characterIndex, ...ROLE_FRAMES[role] });
     if (source.x + source.width > sheet.width || source.y + source.height > sheet.height) {
       throw new Error(`캐릭터셋 '${resourceId}' 에 characterIndex ${characterIndex} 칸이 없습니다(시트 ${sheet.width}×${sheet.height}).`);
