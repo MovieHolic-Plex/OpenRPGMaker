@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_dwarf/w51-A.pxg",
+ "id": "column dwarf",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "머리·초석 3/4 짜임 공통(뒷가장자리 줄, 윗면 3줄 왼쪽 밝게, 앞가장자리 빛 줄, 머리 밑 그림자, 초석 윗면+빛 줄). 드워프: 금빛 룬 3개 유지, 윗면은 D 로 어둡게(재질 색). 관문 ok.",
+ "ok": true
+}

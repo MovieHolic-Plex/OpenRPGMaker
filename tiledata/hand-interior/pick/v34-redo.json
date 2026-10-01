@@ -1,5 +1,5 @@
 {
- "about": "3/4 시점 재작도(2026-10-01). 사용자가 고른 판(current)을 같은 화풍으로 3/4 계약에 맞게 다시 찍는다.",
+ "about": "3/4 시점 재작도(2026-10-01). 사용자가 고른 판(current)을 같은 화풍으로 3/4 계약에 맞게 다시 찍는다. 2판(w51~w53): 「애매」 11종 + 독서대 메모(2x1).",
  "workers": {
   "w40": [
    {
@@ -1182,6 +1182,313 @@
     "padTop": 0,
     "newFile": "w46-A.pxg",
     "gate": "--object"
+   }
+  ],
+  "w51": [
+   {
+    "id": "column marble",
+    "ko": "대리석 기둥",
+    "slug": "column_marble",
+    "folder": "tiledata/hand-interior/pick/candidates/column_marble",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w1-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   },
+   {
+    "id": "column stone",
+    "ko": "돌 기둥",
+    "slug": "column_stone",
+    "folder": "tiledata/hand-interior/pick/candidates/column_stone",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "v5.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   },
+   {
+    "id": "column dwarf",
+    "ko": "드워프 네모 기둥(룬 무늬)",
+    "slug": "column_dwarf",
+    "folder": "tiledata/hand-interior/pick/candidates/column_dwarf",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w5-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   },
+   {
+    "id": "column wood",
+    "ko": "나무 기둥(금 띠)",
+    "slug": "column_wood",
+    "folder": "tiledata/hand-interior/pick/candidates/column_wood",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w1-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   },
+   {
+    "id": "column live",
+    "ko": "살아 있는 나무 기둥(잎 머리)",
+    "slug": "column_live",
+    "folder": "tiledata/hand-interior/pick/candidates/column_live",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "v5.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다. 살아 있는 나무 기둥의 잎 머리는 위에서 본 잎 덩이(위가 밝은 둥근 수관)로."
+   },
+   {
+    "id": "column steel",
+    "ko": "강철 기둥(리벳)",
+    "slug": "column_steel",
+    "folder": "tiledata/hand-interior/pick/candidates/column_steel",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w5-C.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   }
+  ],
+  "w52": [
+   {
+    "id": "bread oven",
+    "ko": "빵 화덕",
+    "slug": "bread_oven",
+    "folder": "tiledata/hand-interior/pick/candidates/bread_oven",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w52-A.pxg",
+    "gate": "--wall-tall",
+    "hint": "둥근 돔 화덕(빵 화덕). 돔은 정면 반원이 아니라 위에서 약간 내려다본 둥근 지붕 — 꼭대기 쪽 곡면이 가장 밝고 아래로 어두워진다(윗면 역할). 화구 앞 받침단(벽돌 턱) 윗면 4~6px 이 보이게. 불 자리는 anim-mask 그대로(§2).",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png"
+    }
+   },
+   {
+    "id": "throne",
+    "ko": "왕좌",
+    "slug": "throne",
+    "folder": "tiledata/hand-interior/pick/candidates/throne",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w30-E.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 3,
+     "h": 2
+    },
+    "canvas": [
+     48,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w52-A.pxg",
+    "gate": "--object",
+    "hint": "왕좌: 좌판(붉은 방석) 윗면 4~6px 이 위에서 보이게 — 지금은 붉은 판으로만 서 있다. 등받이는 좌판 뒤에서 솟고, 팔걸이 윗면 2~3px, 받침단 윗면. 크기 48x32(resize.json) 그대로."
+   },
+   {
+    "id": "stone throne",
+    "ko": "돌 왕좌",
+    "slug": "stone_throne",
+    "folder": "tiledata/hand-interior/pick/candidates/stone_throne",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w6-C.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w52-A.pxg",
+    "gate": "--object",
+    "hint": "돌 왕좌: 좌판 윗면 4~6px(앉는 면이 보이게), 등받이는 뒤에서 솟음, 팔걸이 윗면, 받침단 윗면."
+   },
+   {
+    "id": "armor stand",
+    "ko": "갑옷 거치대",
+    "slug": "armor_stand",
+    "folder": "tiledata/hand-interior/pick/candidates/armor_stand",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w3-A.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w52-A.pxg",
+    "gate": "--object",
+    "hint": "갑옷 거치대: 서 있는 갑옷 인형. 받침대(나무 십자 받침 또는 원판) 윗면 3~4px 이 보이게, 어깨(견갑) 윗면 밝게, 투구 윗부분이 위에서 보이는 곡면. 정면 도면처럼 납작하지 않게."
+   }
+  ],
+  "w53": [
+   {
+    "id": "timber prop",
+    "ko": "갱도 버팀목",
+    "slug": "timber_prop",
+    "folder": "tiledata/hand-interior/pick/candidates/timber_prop",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w7-B.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w53-A.pxg",
+    "gate": "--object",
+    "hint": "갱도 버팀목: 양 기둥 + 가로보. 가로보(상인방) 윗면 3~4px(나무 결 밝은 면) + 앞 모서리 하이라이트 + 아래 그림자, 기둥은 각목 — 왼면 밝은 좁은 면과 앞면. 바닥에 닿는 기둥 밑동 그림자."
+   },
+   {
+    "id": "spellbook stand",
+    "ko": "마법서 받침",
+    "slug": "spellbook_stand",
+    "folder": "tiledata/hand-interior/pick/candidates/spellbook_stand",
+    "round": 2,
+    "violation": "사용자 메모 미반영(2x1)",
+    "current": "w2-C.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w53-A.pxg",
+    "gate": "--object",
+    "hint": "**사용자 메모: 「2x1 사이즈가 나을듯」.** resize.json 이 32x32(가로 2칸, 위로 16px 솟음)로 바뀌었다. current(w2-C, 16x16)의 디자인(나무 독서대 + 펼친 마법서 + 청록 빛)을 가로 2칸 독서대로 키운다: 넓은 경사 책받침 위에 펼친 책 한 권(양면) 또는 책 두 권, 받침 다리 둘. 3/4: 책받침·책 윗면이 보이고 앞판·다리. 다른 판 w29-D/E/F 는 1x2 세로판이라 이번 크기와 다르다(참고만)."
    }
   ]
  }
