@@ -5,9 +5,11 @@
 import type { GenrePackId } from "../../project/genrePackId";
 import { harnessAppliesTo, type HarnessManifest } from "./manifest";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../monster-collect-species/harness";
+import { MODERN_VEHICLES_HARNESS } from "../modern-vehicles/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
+  MODERN_VEHICLES_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

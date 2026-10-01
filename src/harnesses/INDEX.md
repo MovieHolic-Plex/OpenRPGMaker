@@ -6,6 +6,7 @@
 | id | 무엇 | 범위 | 시드 | 문서 |
 |---|---|---|---|---|
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
+| `modern-vehicles` | 현대 거리 탈것 도트 | 장르 무관 | `harness-data/modern-vehicles/seed.json` | `openwiki/harnesses/modern-vehicles.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -24,5 +25,25 @@
 - `import` — 가져오기: 이미 있는 생성 원본 PNG 하나를 도트화해 후보로 등록한다.
 - `build` — 번들 굽기: 골라 둔 격자 원본을 112 캔버스로 맞춰 public/assets/harnesses/ 아래에 쓰고 검사한다.
 - `check` — 검사: 번들 스프라이트의 색 수·마젠타 잔점·윤곽·앞뒤 색 일치를 검사한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## modern-vehicles — 현대 거리 탈것 도트
+
+승용차·밴·버스·열차 같은 거리 탈것을 3/4 시점(옆면 + 큰 윗면)으로 찍는다. 프로젝트 안에서 받아들여진 경찰차를 기준으로 삼아 Sonnet 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고, 기계 검사와 독립 검수를 거친 뒤 사람이 고른다.
+
+**이럴 때 쓴다:**
+- modern3 팔레트 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것 그림이 필요할 때
+- 기존 탈것 도트가 순수 옆모습이라 3/4(윗면이 면으로 보임)이 안 지켜진다는 지적이 있을 때
+- 건물·소품에는 쓰지 않는다 — 그쪽은 pixel-object-authoring 스킬과 실내 소품 하네스
+
+**단계** (`npm run harness -- modern-vehicles <단계>`):
+- `palette` — 팔레트: modern3 램프에서 탈것 전용 pxgrid 팔레트(vehicles.pal)를 다시 쓴다.
+- `draw` — 후보 그리기: 탈것·시점 하나에 후보 5장을 백그라운드로 그린다(작업자 → 기계 검사 → 독립 검수 → 최대 3번 다시 그림).
+- `status` — 현황: 판과 후보의 상태·검수 결과를 보여 준다.
+- `sheet` — 고르기 시트: 기준 경찰차·지금 것·후보를 나란히 놓은 자체완결 HTML 을 ~/claude-viz 에 쓴다.
+- `review` — 다시 검수: 이미 그린 판을 기준차 옆에서 다시 독립 검수한다.
+- `pick` — 고르기: 사용자가 고른 후보를 기록하고 picked/ 로 복사한다(다음 판의 화풍 기준이 된다).
+- `reject` — 버리기: 사용자가 버린 후보와 이유를 기록한다(다음 판의 '하지 말 것').
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
