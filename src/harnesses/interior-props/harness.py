@@ -28,6 +28,7 @@ N_DEFAULT = 5
 CANDS = 'tiledata/hand-interior/pick/candidates'
 POOL_LOCK = os.path.join(store.DATA, 'pool.lock')
 LOGS = os.path.join(store.DATA, 'logs')
+WORK = os.path.join(store.DATA, 'work')   # 작업자 세션의 작업 폴더(저장소 밖 — 저장소 문맥을 안 싣는다)
 
 
 def claude_bin():
@@ -73,10 +74,11 @@ def _out(r):
     return f"h{r['round']}-{r['letter']}"
 
 
-def _folder(r):
+def _folder(r, absolute=False):
     sys.path.insert(0, os.path.join(r['root'], 'scripts/content/hand-interior-pick'))
     from common import slug
-    return os.path.join(CANDS, slug(r['item']))
+    rel = os.path.join(CANDS, slug(r['item']))
+    return os.path.join(r['root'], rel) if absolute else rel
 
 
 def _hist(r):
@@ -108,7 +110,7 @@ def _redraw_section(r, folder):
 
 
 def _prompt(r):
-    folder = _folder(r)
+    folder = _folder(r, absolute=True)
     t = open(os.path.join(HERE, 'prompt.md'), encoding='utf-8').read()
     return (t.replace('{ROOT}', r['root']).replace('{ITEM}', r['item']).replace('{FOLDER}', folder)
              .replace('{BRIEF}', r['brief']).replace('{LETTER}', r['letter']).replace('{DIRECTION}', r['direction'])
@@ -156,7 +158,7 @@ def _review_prompt(r):
     if os.path.exists(os.path.join(r['brief'], 'base-x4.png')):
         prev += f"\n## 출발 그림\n`{r['brief']}/base-x4.png` — 이 후보의 출발점(다른 상태·고른 그림). 같은 물건으로 읽혀야 하고, 바뀌어야 할 부분만 달라야 한다. 출발 그림과 거의 같은데 상태가 안 바뀌었으면 `READ`.\n"
     rep = {'{ROOT}': r['root'], '{ITEM}': r['item'], '{DESC}': o['description'], '{KIND}': o['kind_ko'], '{CAT}': o['category_ko'],
-           '{CAND}': f"{_folder(r)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
+           '{CAND}': f"{_folder(r, absolute=True)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,
            '{FAMILY}': ', '.join(f'`{p}`' for p in fam) or '(없음)', '{ANCHORS}': ', '.join(f'`{p}`' for p in anc) or '(없음)',
            '{NEWMODE}': NEW_REVIEW if brief.is_new(r['item']) else ''}
@@ -184,10 +186,15 @@ def _start(r):
     else:
         prompt, _ = _prompt(r); effort = r['effort'] or EFFORT
     log = os.path.join(LOGS, f"{_out(r)}.a{att}{'.review' if phase == 'review' else ''}.log"); os.makedirs(LOGS, exist_ok=True)
-    env = dict(os.environ, PH_PROMPT=prompt, PH_CLAUDE=claude_bin(), PH_MODEL=r['model'] or MODEL, PH_EFFORT=effort)
+    env = dict(os.environ, PH_PROMPT=prompt, PH_CLAUDE=claude_bin(), PH_MODEL=r['model'] or MODEL, PH_EFFORT=effort, PH_ROOT=r['root'])
+    # 가벼운 세션: 작업 폴더를 저장소 밖에 두어 저장소 AGENTS.md·프로젝트 메모리·훅을 안 싣고(저장소는 --add-dir),
+    # 사용자 설정(플러그인·훅)·MCP·스킬 목록을 빼고 도구를 넷만 준다. 「ok」 한 마디 기준 문맥 54k → 5k 토큰(2026-10-01 실측).
+    os.makedirs(WORK, exist_ok=True)
     cmd = ['bash', '-lc', 'exec "$PH_CLAUDE" -p "$PH_PROMPT" --model "$PH_MODEL" --effort "$PH_EFFORT" '
-                          '--dangerously-skip-permissions --output-format text']
-    p = subprocess.Popen(cmd, cwd=r['root'], env=env, stdout=open(log, 'w'), stderr=subprocess.STDOUT,
+                          '--dangerously-skip-permissions --output-format text --add-dir "$PH_ROOT" '
+                          '--strict-mcp-config --mcp-config \'{"mcpServers":{}}\' --setting-sources project,local '
+                          '--disable-slash-commands --tools Read Write Edit Bash']
+    p = subprocess.Popen(cmd, cwd=WORK, env=env, stdout=open(log, 'w'), stderr=subprocess.STDOUT,
                          stdin=subprocess.DEVNULL, start_new_session=True)
     store.update_run(r['id'], status='running', pid=p.pid, started=store.now(), log=log)
     return p

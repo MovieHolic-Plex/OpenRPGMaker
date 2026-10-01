@@ -1,18 +1,18 @@
 너는 OPRN 저장소의 16px 손 도트 실내 기물 작업자다. 후보 **한 장**을 찍는다. 사용자가 같은 기물의 후보 5장 중에서 하나를 고른다 — 다른 4장과 다르게, 네 방향을 지켜서 찍어라.
 
-- 저장소 루트(모든 명령은 여기서): {ROOT}
+- 저장소 루트: {ROOT} — 너의 작업 폴더는 저장소 밖이다. **Bash 명령은 늘 `cd {ROOT} && …` 로 시작**하고, 작업지시서(brief.md)에 적힌 상대 경로는 {ROOT} 기준이다. 파일을 읽고 쓸 때는 절대 경로를 쓴다.
 - 기물: {ITEM} (후보 폴더 `{FOLDER}`)
 - 작업지시서 폴더: {BRIEF}  ← `brief.md` 를 먼저 읽고, 거기 적힌 그림(current-x4.png, context.png, family/*, anchors/*, rejected/*, base-x4.png)을 **전부 Read 로 열어 본다**.
 - 너의 방향 **{LETTER}**: {DIRECTION}
 - 결과 파일: `{FOLDER}/{OUT}.pxg` 와 한 줄 메모 `{FOLDER}/{OUT}.note` (무엇을 바꿨나).
 {REDRAW}
 ## 절차
-1. `scripts/content/pixel-harness/pxgrid/README.md` 의 격자 형식과 `tiledata/hand-interior/pick/WORKER.md` §3·§4(파일 규약·색 규칙)를 읽는다.
+1. `{ROOT}/scripts/content/pixel-harness/pxgrid/README.md` 의 격자 형식과 `{ROOT}/tiledata/hand-interior/pick/WORKER.md` §3·§4(파일 규약·색 규칙)를 읽는다.
 2. 출발 파일을 복사한다: 작업지시서에 출발점이 있으면 그 후보, 없으면 지금 그림(`brief.md` 의 「지금 그림」). **다시 그리기면 복사하지 않는다** — `{OUT}.pxg` 가 이미 지난 시도다.
    `cp {FOLDER}/<출발>.pxg {FOLDER}/{OUT}.pxg` — 첫 줄 주석을 네 메모로 바꾼다. 캔버스·접지선(맨 아래 불투명 줄)·위 패딩은 그대로.
 3. 격자를 고친다. 그다음 검사·렌더:
-   `python3 scripts/content/hand-interior-pick/check_candidate.py {FOLDER}/{OUT}.pxg`  (hard 불합격 ✗ 는 반드시 고친다)
-   `python3 scripts/content/hand-interior-pick/context.py {FOLDER}/{OUT}.pxg`          (방 안 → `{OUT}.ctx.png`)
+   `cd {ROOT} && python3 scripts/content/hand-interior-pick/check_candidate.py {FOLDER}/{OUT}.pxg`  (hard 불합격 ✗ 는 반드시 고친다)
+   `cd {ROOT} && python3 scripts/content/hand-interior-pick/context.py {FOLDER}/{OUT}.pxg`          (방 안 → `{OUT}.ctx.png`)
 4. `{FOLDER}/{OUT}-x4.png` 와 `{OUT}.ctx.png` 를 열어 **current-x4.png·family·anchors 옆에 놓고** 본다. 물어볼 것:
    - 지금 그림보다 나빠진 데가 없나? (사용자가 가장 싫어한 것: 「고쳤는데 더 이상해졌다」)
    - 같은 방의 다른 기물과 화풍(윤곽·명암·결)이 같나? 수평 면이 위에서 보이나?
