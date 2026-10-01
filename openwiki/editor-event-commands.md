@@ -218,7 +218,14 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
   (`generatedAssetResourceResolver` 의 기존 관례). 그림은 흉상, 다른 것은 레이아웃뿐이므로
   폼 문구가 "통짜 전신 이미지"라고 말하지 않게 고쳤다.
 - **하단 대사창의 전신(`-full`) 초상은 대사창 뒤 입상이다 (2026-10-01):** `player/dialogue.ts` 가 화면 높이로 크기를
-  정한다(`fullPortraitMetrics`: 높이 125% · 폭 9:16 · 아래 20% 는 화면 밖). 해상도가 달라도 존재감이 같다.
+  정한다(`fullPortraitMetrics`: 기본 높이 125% · 폭 9:16 · 아래 20% 는 화면 밖). 해상도가 달라도 존재감이 같다.
+  - **크기는 저자가 정한다.** 프로젝트 기본은 `system.dialogueFullPortrait {height, drop}`(%, 높이 40~200 · 내림 0~60,
+    기본값과 같은 칸은 저장하지 않음) — 자료집 → 시스템 → 대화창 「전신 초상」 슬라이더. 장면마다는 `changeFace.fullScale`
+    (%, 40~200, 100 은 저장 안 함)이 한 번 더 곱해진다 — 얼굴 표시 명령에서 전신 그림일 때만 「전신 크기」 칸이 보인다.
+    계산은 `project/dialogueStyles.ts` 의 `resolveDialogueFullPortraitLayout` 하나가 런타임·에디터 무대 견본
+    (`editor/panels/fullPortraitStagePreview.ts`, 게임 해상도 비율)에 같이 답한다. 조수는 `set_project_settings` 의
+    `dialogue.fullPortraitHeight/fullPortraitDrop`. 상단·중앙 위치의 92×164 전신은 이 설정을 받지 않는다.
+    QA: `npm run qa:runtime -- --scenario dialogue-full-size --project <픽스처>`, e2e `test/e2e/dialogue-full-portrait-size.spec.ts`.
   초상은 상자 안이 아니라 **오버레이의 상자 뒤 형제**(`.dialogue-face-behind`, z-index 0 / 상자 1)다 — 상자는
   `backdrop-filter` 로 자기 쌓임 맥락을 만들어 안의 자식은 상자 배경 뒤로 못 간다. 퇴장 연출은 `~` 선택자로 같이 걷힌다.
   글 여백은 0(왼쪽 끝부터). 상단·중앙 위치는 예전 92×164 상자 위 방식 그대로다. 그림은 9:16 세로여야 틀이 찬다

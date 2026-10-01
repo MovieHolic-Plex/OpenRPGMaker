@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **110쪽 / 4139KB / 약 1,193,301 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **110쪽 / 4140KB / 약 1,193,583 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -19,7 +19,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-tools.md` | 302KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2531 | ~86,962 |
 | `openwiki/editor-database.md` | 382KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2268 | ~111,485 |
 | `openwiki/editor-event-authoring.md` | 165KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 960 | ~47,991 |
-| `openwiki/editor-event-commands.md` | 67KB | 32KB | 294 | ~18,331 |
+| `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
 | `openwiki/editor-pre-edit-routing.md` | 179KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1126 | ~52,514 |
@@ -760,7 +760,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Follower removal and graphic intent (2026-09-06, U06)
 - `L92` Stable resource selections and field labels (2026-09-06, U07)
 
-### `openwiki/editor-event-commands.md` — 67KB · 294줄 · ~18,331 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 67KB · 301줄 · ~18,613 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 장면 · 그림 갤러리 표시 · 줄 음성 (2026-09-25)
 - `L13` 게임 오버 선택 (2026-09-23)
@@ -772,11 +772,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L119` Roguelike run control (2026-08-24)
 - `L159` 런타임 규격 무대 — 대사·선택지 미리보기는 게임 창을 축소해 그린다 (2026-09-17)
 - `L196` 얼굴 상자(faceset-crop-box) 페인트 계약 (2026-08-28)
-- `L256` Staged edit, history, and nested drag invariants (2026-07-30)
-- `L263` Command picker, validation, and preview trust (2026-07-30)
-- `L272` 회상 스틸과 AI 그림 (2026-09-03)
-- `L283` Recovered native emote command (2026-09-05)
-- `L287` 패배·엔딩 저작 (2026-09-22)
+- `L263` Staged edit, history, and nested drag invariants (2026-07-30)
+- `L270` Command picker, validation, and preview trust (2026-07-30)
+- `L279` 회상 스틸과 AI 그림 (2026-09-03)
+- `L290` Recovered native emote command (2026-09-05)
+- `L294` 패배·엔딩 저작 (2026-09-22)
 
 ### `openwiki/editor-genre-packs.md` — 22KB · 168줄 · ~5,666 토큰
 

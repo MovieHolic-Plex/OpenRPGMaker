@@ -9,6 +9,7 @@
 import { AMOUNT_OPS, num, operandText, str } from "./catalog";
 import { defineCommand } from "./defineCommand";
 import { f } from "./fieldTypes";
+import { DIALOGUE_FULL_PORTRAIT_LIMITS } from "@/project/dialogueStyles";
 
 // ── 대사 · 입력 ───────────────────────────────────────────────────
 
@@ -23,6 +24,7 @@ defineCommand({
       { value: "right", label: "오른쪽", key: "right" },
     ]),
     flipHorizontally: f.bool("좌우 반전", { optional: true }),
+    fullScale: f.number("전신 장면 크기", { optional: true, ...DIALOGUE_FULL_PORTRAIT_LIMITS.scale, unit: "%" }),
   },
   summary: (c, l) => `얼굴 ${l.recordName(str(c.resourceId))}`,
 });
