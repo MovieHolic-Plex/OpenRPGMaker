@@ -110,7 +110,7 @@ def setg(x, y, tid, kind):
 
 
 # 시내(x=30..32) — 지도 가장자리는 이어진 것으로 본다
-water = {(x, y) for y in range(MH) for x in (30, 31, 32)}
+water = {(x + (-1 if y <= 12 else (1 if y >= 31 else 0)), y) for y in range(MH) for x in (30, 31, 32)}
 
 
 def mask_of(cells, x, y, wrap=True):
@@ -148,11 +148,17 @@ ysets = yard | road
 for (x, y) in yard:
     if (x, y) in road: continue
     setg(x, y, YARD16 + mask_of(ysets, x, y, wrap=False), 'yard')
-for y in range(12, 23):
+for y in range(11, 23):
     for x in (11, 12):
         setg(x, y, PAV + (x + y) % 2, 'paving')
+for x in range(9, 15):
+    setg(x, 11, PAV + x % 2, 'paving')
+for y in range(14, 19):
+    for x in range(15, 19):
+        setg(x, y, FIELD + hsh(x, y, 5) % 2, 'field')
 # 논과 밭
-paddy = {(x, y) for y in range(27, 39) for x in range(1, 15)}
+paddy = {(x, y) for y in range(27, 39) for x in range(1, 15)} - {(1, 27), (2, 27), (13, 27), (14, 27), (1, 38), (14, 38), (14, 37), (1, 28)}
+paddy |= {(15, 32), (15, 33), (0, 33), (0, 34)}
 for (x, y) in paddy:
     setg(x, y, PADDY + mask_of(paddy, x, y, wrap=False), 'paddy')
 for rect, sd in (((17, 27, 27, 36), 9), ((34, 27, 40, 36), 11), ((0, 6, 5, 14), 12), ((6, 22, 11, 25), 13), ((13, 22, 19, 25), 14),
@@ -175,12 +181,14 @@ def put_obj(name, tx, ty):
     items.append((ty + cv.h // T, name, tx, ty, cv))      # y 정렬 키 = 아래쪽 칸
 
 
-# 뒷산: 북쪽 숲띠 — 높낮이가 다른 큰 나무를 겹쳐 세운다(버들항 수림처럼 빈틈 없이)
-for nm, x, y in (('zelkova_a', 0, 0), ('pine_a', 3, 1), ('zelkova_b', 7, 0), ('pine_b', 11, 1), ('zelkova_c', 15, 0),
-                 ('pine_a', 19, 1), ('zelkova_a', 23, 0), ('pine_b', 27, 1), ('zelkova_b', 34, 0), ('pine_a', 37, 2),
-                 ('persimmon_a', 5, 3), ('persimmon_b', 21, 3), ('bush_a', 9, 3), ('bush_b', 13, 4), ('bush_c', 25, 3),
-                 ('bush_a', 29, 3), ('bush_b', 1, 4), ('bush_c', 33, 4), ('bamboo', 17, 3), ('bamboo', 36, 4)):
+# 뒷산: 큰 나무·어린 나무·덤불을 크기 섞어 무리 짓는다(등간격 테두리 금지). 석축 둑 뒤가 후원의 높은 땅.
+for nm, x, y in (('zelkova_a', 0, 0), ('small_p', 3, 2), ('pine_a', 4, 0), ('persimmon_a', 8, 1), ('zelkova_b', 11, 0), ('persimmon_b', 13, 2),
+                 ('small_z_b', 16, 2), ('pine_b', 17, 0), ('bush_a', 19, 3), ('zelkova_c', 20, 0), ('small_z_a', 23, 2), ('zelkova_a', 24, 0),
+                 ('bush_c', 26, 3), ('small_p', 27, 1), ('bush_b', 1, 4), ('bush_c', 7, 3), ('bush_a', 15, 4),
+                 ('pine_a', 33, 0), ('small_z_b', 36, 2), ('zelkova_b', 36, 0), ('bush_b', 38, 4), ('persimmon_a', 38, 6), ('bush_c', 34, 4), ('bush_b', 17, 4), ('bamboo', 29, 1)):
     put_obj(nm, x, y)
+for x in range(5, 20):
+    put_obj('stone_bank', x, 3)
 
 # 양반집: 기와집(팔작) · 대문 · 토석담
 put_obj('giwa_house_6', 8, 5)
@@ -192,12 +200,13 @@ for y in range(5, 21):
     put_obj('wall_v', 5, y); put_obj('wall_v', 19, y)
 put_obj('jars', 6, 9)
 put_obj('well', 17, 6)
-put_obj('persimmon_a', 14, 15)
+put_obj('persimmon_a', 13, 15)
 put_obj('bench', 6, 14)
 put_obj('lantern', 9, 13)
-put_obj('bamboo', 17, 10)
+put_obj('bamboo', 17, 9)
 put_obj('bush_b', 14, 13); put_obj('bush_a', 6, 18); put_obj('bush_c', 17, 19)
-put_obj('fence_h', 15, 12); put_obj('fence_h', 16, 12)
+for x in range(15, 19): put_obj('fence_h', x, 13)
+put_obj('jars', 17, 10); put_obj('bush_a', 7, 12); put_obj('bush_b', 8, 19); put_obj('bush_c', 14, 19)
 # 이웃 기와집과 안마당
 put_obj('giwa_house_5', 21, 8)
 put_obj('haystack', 27, 12)
@@ -218,7 +227,7 @@ put_obj('bush_a', 3, 21); put_obj('bush_c', 0, 25)
 # 시내와 다리
 put_obj('bridge', 29, 24)
 put_obj('willow', 27, 5)
-put_obj('willow', 33, 28)
+put_obj('willow', 34, 28)
 put_obj('bush_b', 29, 20); put_obj('bush_c', 33, 21); put_obj('bush_a', 29, 14)
 # 시내 건너: 정자와 작은 초가
 put_obj('pavilion_5', 33, 8)
@@ -229,9 +238,9 @@ put_obj('persimmon_a', 35, 15)
 put_obj('zelkova_c', 36, 15)
 put_obj('bush_b', 39, 17)
 # 남쪽: 논밭 둘레
-for nm, x, y in (('zelkova_b', 15, 33), ('persimmon_b', 15, 30), ('bush_c', 16, 29),
+for nm, x, y in (('zelkova_b', 15, 33), ('persimmon_b', 15, 30), ('bush_c', 16, 29), ('reeds', 1, 29), ('reeds', 4, 26), ('reeds', 15, 31), ('rocks', 12, 26), ('rocks', 0, 36), ('reeds', 10, 39), ('rocks', 6, 26),
                  ('zelkova_a', 27, 31), ('pine_b', 22, 36), ('persimmon_a', 28, 28), ('bamboo', 38, 29),
-                 ('bush_c', 34, 31), ('haystack', 30, 36), ('haystack', 28, 34), ('bush_a', 17, 36),
+                 ('bush_c', 34, 31), ('haystack', 29, 36), ('haystack', 28, 34), ('bush_a', 17, 36),
                  ('bush_b', 24, 29), ('zelkova_c', 35, 34), ('pine_a', 38, 34), ('bush_a', 15, 37)):
     put_obj(nm, x, y)
 
@@ -243,8 +252,8 @@ for nm, x, y in (('persimmon_b', 1, 7), ('bamboo', 0, 10), ('bush_a', 2, 12), ('
     put_obj(nm, x, y)
 for nm, x, y in (('bush_b', 8, 23), ('bush_c', 9, 22), ('bush_a', 14, 23), ('bush_b', 17, 22), ('haystack', 15, 22), ('fence_h', 7, 24), ('fence_h', 8, 24),
                  ('bush_a', 2, 28), ('bush_b', 21, 27), ('pine_a', 18, 27), ('bush_c', 27, 27), ('zelkova_a', 15, 28), ('bush_a', 34, 27),
-                 ('bush_b', 29, 22), ('bush_c', 29, 18), ('bush_a', 29, 11), ('bush_b', 29, 16), ('bush_c', 33, 12), ('zelkova_a', 35, 4),
-                 ('persimmon_b', 38, 5), ('bush_a', 34, 6), ('zelkova_c', 24, 6), ('bush_c', 31, 20), ('bush_a', 38, 26), ('bush_b', 19, 14)):
+                 ('bush_b', 29, 22), ('bush_c', 29, 18), ('bush_b', 29, 16), ('reeds', 29, 12), ('reeds', 33, 33), ('rocks', 29, 27), ('rocks', 34, 30), ('reeds', 30, 28), ('bush_c', 33, 12), ('zelkova_a', 35, 4),
+                 ('persimmon_b', 38, 5), ('bush_a', 34, 6), ('pine_b', 24, 5), ('bush_c', 31, 20), ('bush_a', 38, 26), ('bush_b', 19, 14)):
     put_obj(nm, x, y)
 
 items.sort(key=lambda i: (i[0], i[3], i[2]))

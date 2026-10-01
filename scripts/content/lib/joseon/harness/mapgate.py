@@ -5,6 +5,7 @@
   M2 수관 피복: 나무(수관) 화소가 지도의 TREE_MIN 이상. 버들항 0.094. 마을은 0.08.
   M3 물체 피복: 물체 층이 지도의 OBJ_MIN 이상(버들항 0.38). 마을은 0.30.
   M4 나무 반복: 같은 나무 그림이 6칸 안에 둘 이상이면 FAIL (버들항 tree_pick 규칙).
+  M6 나무·건물 겹침 ≥8쌍, M7 나무 키 종류(3·4·5칸) ≥3.
   M5 층 깊이: 나무·큰 물체가 서로 겹치는 쌍(앞이 뒤를 가림)이 최소 DEPTH_MIN — 평면으로 흩어 놓지 말 것.
 """
 import json, os, sys
@@ -14,7 +15,9 @@ sys.path.insert(0, HERE)
 from spacemetrics import lawn_cells, window_stats
 
 LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 0.20, 0.08, 0.30, 6
-TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo')
+TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
+BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion')
+OVERLAP_MIN, HEIGHTS_MIN = 8, 3
 
 
 def check(placed, direct, objlayer, T=16):
@@ -39,6 +42,8 @@ def check(placed, direct, objlayer, T=16):
         fails.append(f"M2 수관 피복 {tc:.3f} < {TREE_MIN}")
     if oc < OBJ_MIN:
         fails.append(f"M3 물체 피복 {oc:.3f} < {OBJ_MIN}")
+    def ov(a, b):
+        return not (a[1] + a[3] <= b[1] or b[1] + b[3] <= a[1] or a[2] + a[4] <= b[2] or b[2] + b[4] <= a[2])
     tr = [p for p in placed if p[0].split('_')[0] in TREE_KINDS and not p[0].startswith('bush')]
     dup = [(a[0], a[1], a[2], b[1], b[2]) for i, a in enumerate(tr) for b in tr[i + 1:]
            if a[0] == b[0] and abs(a[1] - b[1]) <= 6 and abs(a[2] - b[2]) <= 6]
@@ -46,8 +51,16 @@ def check(placed, direct, objlayer, T=16):
     if dup:
         fails.append(f"M4 같은 나무가 6칸 안에 {len(dup)}쌍: {dup}")
 
-    def ov(a, b):
-        return not (a[1] + a[3] <= b[1] or b[1] + b[3] <= a[1] or a[2] + a[4] <= b[2] or b[2] + b[4] <= a[2])
+    isb = lambda p: p[0].split('_')[0] in BUILDINGS
+    istr = lambda p: p[0].split('_')[0] in TREE_KINDS
+    tb = sum(1 for a in placed if istr(a) for b in placed if isb(b) and ov(a, b))
+    rep['tree_over_building'] = tb
+    if tb < OVERLAP_MIN:
+        fails.append(f"M6 나무·건물 겹침 {tb} < {OVERLAP_MIN} — 나무가 건물 옆에 떨어져 서 있다(버들항은 51쌍)")
+    hs = len({p[4] for p in placed if istr(p) and not p[0].startswith('bush')})
+    rep['tree_heights'] = hs
+    if hs < HEIGHTS_MIN:
+        fails.append(f"M7 나무 키 종류 {hs} < {HEIGHTS_MIN}")
     big = [p for p in placed if p[3] * p[4] >= 8 or p[0].split('_')[0] in TREE_KINDS]
     depth = sum(1 for i, a in enumerate(big) for b in big[i + 1:] if ov(a, b))
     rep['depth_pairs'] = depth

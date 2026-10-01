@@ -348,3 +348,22 @@ def bush(kind='a', seed=0):
 
 
 VARIANTS = {'zelkova': zelkova, 'pine': pine, 'persimmon_tree': persimmon_tree, 'willow': willow, 'bamboo': bamboo}
+
+
+def small_tree(kind='z', seed=0):
+    """어린 나무 32×48: 수관 지름 약 24px, 짧은 줄기. kind z=활엽 / p=소나무형(위가 납작)."""
+    W, H = 32, 48
+    cv = Cv(W, H)
+    ground_shadow(cv, 16, 44, 11, 2.5)
+    trunk(cv, 16, 28, 45, 5, flare=3, lean=0.03, seed=seed, roots=True)
+    c = Crown(W, H, seed, shift=1 if kind == 'z' else 0)
+    if kind == 'z':
+        scatter(c, 16, 15, 15, 13, 22, 3.6, 5.4, flat=0.15, seed=seed, dark_below=22)
+    else:
+        scatter(c, 16, 14, 15, 8, 16, 3.6, 5.2, flat=0.2, seed=seed)
+        bark_line(cv, [(16, 30), (14, 24)], 3, 2, seed)
+    c.paint()
+    c.edge_dark()
+    c.bake(cv)
+    outline(cv)
+    return cv

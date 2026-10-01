@@ -276,5 +276,56 @@
    "door_pots",
    "planter_round"
   ]
+ },
+ "small_z_a": {
+  "cls": "sapling",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "small_z_b": {
+  "cls": "sapling",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "small_p": {
+  "cls": "sapling",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "stone_bank": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "풀·갈대·석축 틈"
+ },
+ "reeds": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "풀·갈대·석축 틈"
+ },
+ "rocks": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "풀·갈대·석축 틈"
  }
 }

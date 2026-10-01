@@ -85,10 +85,10 @@ def run(skip_a=False):
                 w.append(f"결 {m['grain']:.1f} < {CAL['grain']['p5']:.1f}")
             if meta.get('sym') and m['asym'] > 0.08:
                 w.append(f"비대칭 {m['asym']:.2f}")
-        if meta.get('cls') in ('tree', 'bush'):
+        if meta.get('cls') in ('tree', 'bush', 'sapling'):
             tmx = tree_metrics(cv.a)
             tb = SPACE['tree']
-            min_px = 900 if meta['cls'] == 'tree' else 300
+            min_px = {'tree': 900, 'sapling': 350, 'bush': 300}[meta['cls']]
             if tmx is None or tmx['px'] < min_px:
                 why.append(f"TR 수관이 작다/비었다 {tmx['px'] if tmx else 0}px < {min_px}")
             elif tmx['texture'] < 0.095:

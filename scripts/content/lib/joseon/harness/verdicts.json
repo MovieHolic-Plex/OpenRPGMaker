@@ -278,5 +278,53 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
+ },
+ "small_z_a": {
+  "hash": "990ea6ed0115",
+  "status": "pass",
+  "line": "어린 나무: 같은 잎 덩이 결·윗왼쪽 빛, 짧은 줄기·뿌리(버들항 작은 수관 대응)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "small_z_b": {
+  "hash": "9c86e3943cff",
+  "status": "pass",
+  "line": "어린 나무: 같은 잎 덩이 결·윗왼쪽 빛, 짧은 줄기·뿌리(버들항 작은 수관 대응)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "small_p": {
+  "hash": "29ed5f6b97ee",
+  "status": "pass",
+  "line": "어린 나무: 같은 잎 덩이 결·윗왼쪽 빛, 짧은 줄기·뿌리(버들항 작은 수관 대응)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "stone_bank": {
+  "hash": "ce42045ffea1",
+  "status": "pass",
+  "line": "석축 앞면 막돌 4단, 위 풀 가장자리, 왼쪽 밝음. 높은 땅의 앞면(버들항 석벽 대응)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "reeds": {
+  "hash": "4d379bfb63b3",
+  "status": "pass",
+  "line": "갈대 줄기 묶음+갈색 이삭, 수변 소품",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "rocks": {
+  "hash": "994ac21fabcd",
+  "status": "pass",
+  "line": "돌무더기 큰돌+작은돌 2, 윗왼쪽 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
  }
 }
