@@ -1,4 +1,5 @@
 import type { QuestDef } from "@/project/quest/questDef";
+import { QUEST_PRESET_IDS } from '@/project/quest/questPresetIds';
 import { validateArgs } from "./jsonSchema";
 import { ToolError, type JsonSchema } from "./types";
 
@@ -27,6 +28,7 @@ const eventRef: JsonSchema = {
   description: '기존 이벤트 {mapId,eventId} 또는 신규 NPC {create:{mapId,x,y,name,graphicQuery?}}. 두 방식 중 하나.',
   properties: { mapId: string, eventId: string, create: npc },
 };
+const existingEventRef: JsonSchema = { type: 'object', properties: { mapId: string, eventId: string }, required: ['mapId','eventId'], description: '이미 있는 이벤트만 참조. create 형식은 사용하지 않는다.' };
 const source: JsonSchema = {
   type: "object",
   properties: {
@@ -41,6 +43,15 @@ const blocker: JsonSchema = {
   properties: { ...position, graphicQuery: string, intro: lines, victory: lines },
   required: ["mapId", "x", "y"],
 };
+const itemList: JsonSchema = { type: 'array', items: { type: 'object', properties: { itemId: string, count: { type: 'integer', minimum: 1 } }, required: ['itemId','count'] } };
+const cost: JsonSchema = { type: 'object', properties: { gold: { type: 'integer', minimum: 0 }, items: itemList } };
+const effects: JsonSchema = { type: 'object', properties: {
+  switches: { type: 'array', items: { type: 'object', properties: { id: string, value: { type: 'boolean' } }, required: ['id','value'] } },
+  variables: { type: 'array', items: { type: 'object', properties: { id: string, value: { type: 'number' } }, required: ['id','value'] } },
+  actors: { type: 'array', items: string },
+} };
+const choiceOptions: JsonSchema = { type: 'array', items: { type: 'object', properties: { text: string, lines, completes: { type: 'boolean' }, cost, troopId: string, effects }, required: ['text'] } };
+const stepKinds = ['talk','collect','kill','reach','inspect','deliver','choice','escort','craft'];
 
 export const QUEST_DEF_HINT = 'giver={mapId,eventId} 또는 {create:{mapId,x,y,name}}; talk는 target, collect는 itemId/count/sources, kill은 troopId/at, reach는 mapId/x/y가 필요합니다. 예: {kind:"kill",troopId:"실제 부대 ID",at:{mapId:"실제 맵 ID",x:5,y:5}}.';
 export const QUEST_DEF_EXAMPLE = {
@@ -56,13 +67,22 @@ export const QUEST_DEF_SCHEMA: JsonSchema = {
   description: "이벤트와 진행 플래그를 컴파일하고 단계 정의를 저장한다. 각 kind의 중첩 필수 구조를 지킬 것.",
   properties: {
     key: { ...string, description: "영문/숫자/밑줄 퀘스트 ID" }, title: string, summary: { type: "string" },
+    presetId: { type: 'string', enum: [...QUEST_PRESET_IDS], description: '선택한 프리셋 ID와 목표 구조를 정확히 맞춘다. custom은 blueprint 배열 필요.' },
+    blueprint: { type: 'array', items: { type: 'string', enum: stepKinds } },
+    order: { type: 'string', enum: ['sequence','any'], description: 'sequence는 앞 단계를 완료해야 다음 목표를 수행할 수 있다. 여러 단계 프리셋은 sequence 필수.' },
+    repeatable: { type: 'boolean' }, requiresQuestKeys: { type: 'array', items: string }, onAcceptItems: itemList, effects,
+    worldChanges: { type: 'array', items: { type: 'object', properties: { target: existingEventRef, lines, passable: { type: 'boolean' } }, required: ['target','lines'] } },
+    dialogue: { type: 'object', description: '이야기와 인물에 맞춘 의뢰인 대사', properties: { accepted: string, declined: string, reminder: string, completed: string, afterComplete: string } },
     giver: eventRef,
     steps: {
       type: "array", description: "1개 이상. talk → target, collect → itemId/count/sources, kill → troopId/at, reach → mapId/x/y.",
       items: {
         type: "object",
         properties: {
-          kind: { type: "string", enum: ["talk", "collect", "kill", "reach"] },
+          kind: { type: "string", enum: stepKinds },
+          label: string, timePhase: { type: 'string', enum: ['morning','day','evening','night'] },
+          gives: itemList, prompt: string, options: choiceOptions, recipeId: string,
+          destination: blocker,
           target: eventRef, lines, itemId: string, count: { type: "integer", minimum: 1 },
           sources: { type: "array", items: source }, troopId: string, at: blocker, ...position,
         },
@@ -153,6 +173,9 @@ export function parseQuestDef(raw: unknown): QuestDef {
   if (def.steps.length === 0) invalid("def.steps", "최소 1개 단계가 필요합니다.");
   def.steps.forEach((step, index) => {
     const path = `def.steps[${index}]`;
+    const common = QUEST_DEF_SCHEMA.properties!.steps.items!;
+    assertShape(step, { ...common, properties: { kind: common.properties!.kind, label: string, timePhase: common.properties!.timePhase } }, path);
+    if (['talk','deliver','choice','escort'].includes(step.kind)) assertEventRef((step as { target: unknown }).target, `${path}.target`);
     if (step.kind === "talk") {
       assertEventRef(step.target, `${path}.target`);
       if (step.lines !== undefined) assertShape(step.lines, lines, `${path}.lines`);
@@ -171,6 +194,16 @@ export function parseQuestDef(raw: unknown): QuestDef {
       assertShape(step.at, blocker, `${path}.at`);
     }
     if (step.kind === "reach") assertShape(step, { type: "object", properties: position, required: ["mapId", "x", "y"] }, path);
+    if (step.kind === 'inspect') { assertShape(step.at, blocker, `${path}.at`); assertShape(step.lines, lines, `${path}.lines`); }
+    if (step.kind === 'craft') { assertShape(step.at, blocker, `${path}.at`); assertShape(step.recipeId, string, `${path}.recipeId`); }
+    if (step.kind === 'deliver') { assertShape(step.itemId, string, `${path}.itemId`); assertShape(step.count, { type: 'integer', minimum: 1 }, `${path}.count`); if (step.gives !== undefined) assertShape(step.gives, itemList, `${path}.gives`); }
+    if (step.kind === 'choice') { assertShape(step.prompt, string, `${path}.prompt`); assertShape(step.options, choiceOptions, `${path}.options`); }
+    if (step.kind === 'escort') assertShape(step.destination, blocker, `${path}.destination`);
+    if ('lines' in step && step.lines !== undefined) assertShape(step.lines, lines, `${path}.lines`);
   });
+  for (const [index, change] of (def.worldChanges ?? []).entries()) {
+    assertShape(change.target, existingEventRef, `def.worldChanges[${index}].target`);
+    assertEventRef(change.target, `def.worldChanges[${index}].target`);
+  }
   return def;
 }

@@ -1,0 +1,16 @@
+{
+  "03-delivery-hand-over.png": "6d7ce99616844b4994f4070342be4193f79c0048455b8242beb89de0496372ed",
+  "04-delivery-report.png": "3d9f8a3704c03317cee4d85b2c7324139ba8bc3e1b3015c477f4c4f59d15e553",
+  "05-delivery-repeat-report.png": "2416dd1db3bc1e17970f021ecd35fd6fa31de3f04cc39211bc52d34665fe3dcd",
+  "08-escort-join.png": "71c427ca6fdb7fc16c6001d330dea3afb68f431a1f44aaed9622e67b37899c67",
+  "09-escort-arrival.png": "fcdc0dacaf96c8b41a997bc8b12fe833451493a0d23ce10cb813a417fbffe9ec",
+  "10-escort-report.png": "f01423df1ea8a37321fd300167e6f3b5c9500e1e78013c6909e095025ee5ece2",
+  "13-puzzle-clue-dialogue.png": "1a7359ad46b034e6010cd8602512bf691f83d71b7e1752a017bb5969e690ac59",
+  "15-puzzle-wrong-answer.png": "7ee66d28f6c9eb60dcfa210b5378ca132beb14548f3d13424060a8ca903b56a8",
+  "16-puzzle-correct-answer-dialogue.png": "f303e1f23edae61197a2409a64d53a5250fb4854c03d685460aafd49f3fb057d",
+  "18-puzzle-report.png": "161693451b8716d77f0ebd4b1723d58eb633ec2c452e2e03e78d381b8d24aa8b",
+  "19-reward-total.png": "239f2dd1371ff6654b7dc7b5a53ded0ef251b3a905347d3edf2938199db9c038",
+  "20-delivery-quest-log.png": "9ca951b0cab2a1364aadc922165e035934cee591e873188e8c7f7c9a33bce002",
+  "21-escort-quest-log.png": "5399f85d7595437ed6791cd0319ec630aa40c197bb8b048b973d740999462d36",
+  "22-puzzle-quest-log.png": "b0a507819230afce5cad6e06aa758b2e8295ce0d3df7819f39b5f81336f407e4"
+}

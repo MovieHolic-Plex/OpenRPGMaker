@@ -1,5 +1,20 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 퀘스트 프리셋 메타 (2026-10-01)
+
+단계형 `QuestDef`의 선택 `presetId`는 `quest/questPresetIds.ts`의 28개 ID가 정본이다.
+`dialogue?: {accepted?, declined?, reminder?, completed?, afterComplete?}`(문자열),
+`blueprint?: QuestStepKind[]`, `order?: sequence|any`, `repeatable?`, `requiresQuestKeys?`,
+`onAcceptItems?`, `effects?`, `worldChanges?`를 보존한다. 목표 원형은 기존 4종과
+`inspect/deliver/choice/escort/craft` 5종. 모든 목표에 선택 `label/timePhase`가 있다.
+
+기존 퀘스트는 새 필드 없이 그대로 로드되고 order 생략은 기존 자유 순서다.
+`io/shape.validateQuests`는 선택 메타와 목표 종류를 검사하며 JSON/SQLite 왕복에서 보존한다.
+상세 도구 입력/실제 참조는 `questToolSchemas.parseQuestDef`와 `questValidation`이 검사한다.
+프리셋 카탈로그는 `quest/questPresets.ts`가 소유한다. 실제 진행 상태는 기존 switch/variable/event
+페이지 계약이며 동행·제작·선택도 출하되는 네이티브 명령을 사용한다. 스키마 버전을 손으로 올리지 않는다.
+구조와 한계는 [7개 게임 조사와 실행 계약](quest-preset-research.md)을 따른다.
+
 ## 공식 맵 크기와 저장 형태 (2026-10-01)
 
 공식 상한은 각 축 1024칸(`mapSizeLimits.ts`), 면적 1,048,576칸이다. `GameMap`의
