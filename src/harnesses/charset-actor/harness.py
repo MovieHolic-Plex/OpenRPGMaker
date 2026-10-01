@@ -95,6 +95,7 @@ def make_views(file, out, base_n=None):
     C.gif_walk(pal, frames, out / 'walk.gif', 4, LAWN)
     C.gif_turn(pal, frames, out / 'turn.gif', 4, LAWN)
     C.gif_stroll(pal, frames, out / 'stroll.gif', 3, LAWN)
+    C.context(pal, frames, ACTOR1, 3, LAWN).save(out / 'context.png')
     r = C.gate(pal, frames, base)
     (out / 'gate.json').write_text(json.dumps(r, ensure_ascii=False, indent=1), encoding='utf-8')
     return r
@@ -110,15 +111,10 @@ def run_dir(run):
     return DATA / 'runs' / run
 
 
-def cmd_draw(a):
-    b = briefs()[a.brief]
-    eng = ENGINES[a.engine]
-    run = a.run or datetime.now().strftime('%Y%m%d-%H%M')
-    src = Path(a.src).expanduser() if a.src else None
-    tag = a.engine + (f'-fix-{a.tag or src.name.split("__")[-1]}' if src else '')
-    w = run_dir(run) / f'{a.brief}__{tag}'
-    if w.exists() and any(w.iterdir()) and not a.force:
-        sys.exit(f'이미 있다: {w} (--force 로 덮기)')
+def start_draw(brief, engine, run, w, src=None, fix_text=None):
+    """작업자 하나를 백그라운드로 띄운다 → Popen. src 가 있으면 그 결과(out.chr.txt)에서 시작해 fix_text 를 고친다."""
+    b = briefs()[brief]
+    eng = ENGINES[engine]
     w.mkdir(parents=True, exist_ok=True)
     base_txt = w / 'base.chr.txt'
     pal, notes, frames = C.from_actor(ACTOR1, b['base'])
@@ -132,29 +128,143 @@ def cmd_draw(a):
     for k, v in rep.items():
         t = t.replace(k, v)
     if src:
-        # 수정 작업: 다른 작업자의 결과에서 시작한다. 지적은 감독이 쓴 파일(--fix-notes)을 그대로 붙인다.
+        # 수정 작업: 다른 작업자(또는 이전 판)의 결과에서 시작한다. 지적은 감독·검수자가 쓴 글을 그대로 붙인다.
         shutil.copy(src / 'out.chr.txt', w / 'start.chr.txt')
         make_views(w / 'start.chr.txt', w / 'start-views', b['base'])
-        fix = Path(a.fix_notes).read_text(encoding='utf-8') if a.fix_notes else '(지적 없음 — 스스로 찾아 고친다)'
-        t += (HERE / 'fixer.md').read_text(encoding='utf-8').replace('{FIX}', fix).replace('{SRC}', str(src))
+        t += (HERE / 'fixer.md').read_text(encoding='utf-8').replace('{FIX}', fix_text or '(지적 없음 — 스스로 찾아 고친다)') \
+            .replace('{SRC}', str(src))
     (w / 'prompt.md').write_text(t, encoding='utf-8')
-    log = open(w / 'worker.log', 'w')
-    if a.engine in CLAUDE_ENGINES:
+    p = _spawn(engine, w, w / 'prompt.md', w / 'worker.log')
+    meta = dict(run=run, brief=brief, engine=engine, label=eng['label'], model=eng['model'], effort=eng['effort'],
+                pid=p.pid, started=now(), dir=str(w), base=b['base'], src=str(src) if src else None)
+    if src:
+        meta['label'] += f' — {json.loads((src / "meta.json").read_text())["label"]} 결과를 수정'
+    (w / 'meta.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')
+    return p, meta
+
+
+def _spawn(engine, cwd, prompt, log):
+    eng = ENGINES[engine]
+    if engine in CLAUDE_ENGINES:
         cmd = [shutil.which('claude') or 'claude', '-p', '--model', eng['model'], '--effort', eng['effort'],
                '--dangerously-skip-permissions', '--add-dir', str(HERE), '--output-format', 'text']
     else:
         cmd = [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec', '-m', eng['model'],
                '-c', f'model_reasoning_effort="{eng["effort"]}"', '--skip-git-repo-check', '-s', 'workspace-write',
-               '--add-dir', str(HERE), '-C', str(w), '-']
-    env = dict(os.environ)
-    p = subprocess.Popen(['timeout', str(TIMEOUT_S)] + cmd, cwd=w, stdin=open(w / 'prompt.md', 'rb'), stdout=log,
-                         stderr=subprocess.STDOUT, start_new_session=True, env=env)
-    meta = dict(run=run, brief=a.brief, engine=a.engine, label=eng['label'], model=eng['model'], effort=eng['effort'],
-                pid=p.pid, started=now(), dir=str(w), base=b['base'], src=str(src) if src else None)
-    if src:
-        meta['label'] += f' — {json.loads((src / "meta.json").read_text())["label"]} 결과를 수정'
-    (w / 'meta.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')
+               '--add-dir', str(HERE), '-C', str(cwd), '-']
+    return subprocess.Popen(['timeout', str(TIMEOUT_S)] + cmd, cwd=cwd, stdin=open(prompt, 'rb'), stdout=open(log, 'w'),
+                            stderr=subprocess.STDOUT, start_new_session=True)
+
+
+def cmd_draw(a):
+    run = a.run or datetime.now().strftime('%Y%m%d-%H%M')
+    src = Path(a.src).expanduser() if a.src else None
+    tag = a.engine + (f'-fix-{a.tag or src.name.split("__")[-1]}' if src else '')
+    w = run_dir(run) / f'{a.brief}__{tag}'
+    if w.exists() and any(w.iterdir()) and not a.force:
+        sys.exit(f'이미 있다: {w} (--force 로 덮기)')
+    fix = Path(a.fix_notes).read_text(encoding='utf-8') if a.fix_notes else None
+    _, meta = start_draw(a.brief, a.engine, run, w, src, fix)
     print(json.dumps(meta, ensure_ascii=False))
+
+
+# ─────────────────────────────── 검수자 ───────────────────────────────
+def start_review(w, engine='sonnet'):
+    """독립 검수자 — 작업자의 메모는 주지 않고 그림·기계 검수·지시만 준다. 결과는 w/review/verdict.json."""
+    meta = json.loads((w / 'meta.json').read_text())
+    b = briefs()[meta['brief']]
+    rv = w / 'review'
+    if rv.exists():
+        shutil.rmtree(rv)
+    rv.mkdir()
+    v = w / 'views'
+    make_views(w / 'out.chr.txt', v, b['base'])
+    for n in ('strip.png', 'sheet_x8.png', 'context.png', 'gate.json'):
+        shutil.copy(v / n, rv / n)
+    shutil.copy(w / 'base-views' / 'strip.png', rv / 'base_strip.png')
+    t = (HERE / 'reviewer.md').read_text(encoding='utf-8')
+    for k, val in {'{NAME}': b['name'], '{BRIEF}': b['brief'], '{KEEP}': b.get('keep', ''), '{DIR}': str(rv),
+                   '{BASE_N}': str(b['base'])}.items():
+        t = t.replace(k, val)
+    (rv / 'prompt.md').write_text(t, encoding='utf-8')
+    return _spawn(engine, rv, rv / 'prompt.md', rv / 'review.log')
+
+
+def read_verdict(w):
+    f = w / 'review' / 'verdict.json'
+    try:
+        v = json.loads(f.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return None
+    gate = json.loads((w / 'views' / 'gate.json').read_text())
+    v['verdict'] = str(v.get('verdict', '')).upper()
+    if not gate['ok']:
+        # 기계 검수가 막으면 검수자 판정과 상관없이 불합격
+        v['verdict'] = 'FAIL'
+        v.setdefault('issues', []).insert(0, dict(severity='high', where='기계 검수', what='; '.join(gate['fails']),
+                                                   fix='기계 검수를 통과시켜라'))
+    return v
+
+
+def fix_text_from(v):
+    lines = []
+    for it in v.get('issues', []):
+        lines.append(f"- [{it.get('severity', '?')}] {it.get('where', '')}: {it.get('what', '')} → 고칠 것: {it.get('fix', '')}")
+    if v.get('good'):
+        lines.append('\n검수자가 잘 됐다고 본 것(살릴 것): ' + ' / '.join(v['good']))
+    return '\n'.join(lines) or '(검수자 지적 없음)'
+
+
+def _wait(p):
+    p.wait()
+
+
+def run_loop(brief, run, drawer, reviewer, rounds, log):
+    prev = None
+    for r in range(1, rounds + 1):
+        w = run_dir(run) / f'{brief}__{drawer}-r{r}'
+        if w.exists():
+            shutil.rmtree(w)
+        fix = fix_text_from(read_verdict(prev)) if prev else None
+        p, _ = start_draw(brief, drawer, run, w, prev, fix)
+        log(f'{brief} r{r}: {drawer} 그리기 시작 pid={p.pid}')
+        _wait(p)
+        if not (w / 'out.chr.txt').exists():
+            log(f'{brief} r{r}: 결과 없음 — 멈춤')
+            return
+        make_views(w / 'out.chr.txt', w / 'views', briefs()[brief]['base'])
+        rp = start_review(w, reviewer)
+        log(f'{brief} r{r}: {reviewer} 검수 시작 pid={rp.pid}')
+        _wait(rp)
+        v = read_verdict(w)
+        if v is None:
+            log(f'{brief} r{r}: 검수 결과 없음 — 멈춤')
+            return
+        log(f'{brief} r{r}: {v["verdict"]} 점수 {v.get("score")} 지적 {len(v.get("issues", []))}개')
+        if v['verdict'] == 'PASS':
+            return
+        prev = w
+
+
+def cmd_loop(a):
+    import threading
+    run = a.run or datetime.now().strftime('%Y%m%d-%H%M')
+    run_dir(run).mkdir(parents=True, exist_ok=True)
+    lf = open(run_dir(run) / 'loop.log', 'a')
+    lock = threading.Lock()
+
+    def log(msg):
+        with lock:
+            line = f'{datetime.now().strftime("%H:%M:%S")} {msg}'
+            print(line, flush=True)
+            lf.write(line + '\n')
+            lf.flush()
+    ts = [threading.Thread(target=run_loop, args=(b, run, a.drawer, a.reviewer, a.rounds, log)) for b in a.briefs]
+    for t in ts:
+        t.start()
+    for t in ts:
+        t.join()
+    log('끝')
 
 
 def _alive(pid):
@@ -193,12 +303,14 @@ def cmd_page(a):
             cards.append(dict(title=f'뼈대 — Actor1 {m["base"]}번 (원본)', views=bv, gate=None, notes='', base=True))
         out = w / 'out.chr.txt'
         if not out.exists():
-            cards.append(dict(title=m['label'], views=None, gate=None, notes='(아직 결과 없음)', base=False))
+            cards.append(dict(title=m['label'] + ' · ' + w.name.split('__')[-1], views=None, gate=None, notes='(아직 그리는 중)', base=False))
             continue
         v = w / 'views'
         r = make_views(out, v, m['base'])
         notes = (w / 'notes.md').read_text(encoding='utf-8') if (w / 'notes.md').exists() else ''
-        cards.append(dict(title=m['label'], views=v, gate=r, notes=notes, base=False))
+        rv = read_verdict(w)
+        title = m['label'] + (f' · {w.name.rsplit("-", 1)[-1]}' if w.name.split('__')[-1].count('-r') else '')
+        cards.append(dict(title=title, views=v, gate=r, notes=notes, base=False, review=rv))
     b = briefs()
     brief_txt = '<br>'.join(html.escape(f'{v["name"]}: {v["brief"]}') for v in b.values())
     parts = []
@@ -216,14 +328,24 @@ def cmd_page(a):
                          + ''.join(f'<div class=w>△ {html.escape(x)}</div>' for x in g['warns'])
                          + f'<div class=m>색 {mm.get("colors")} · 원본과 다른 픽셀 {mm.get("changed_vs_base", 0):.0%}'
                          + f' · 실루엣 바뀐 픽셀 {mm.get("silhouette_changed_px")} · 윤곽 어두움 최저 {mm.get("dark_edge_min", 0):.0%}</div></div>')
+        rv = c.get('review')
+        rv_html = ''
+        if rv:
+            rv_html = (f'<div class="gate {"ok" if rv["verdict"] == "PASS" else "bad"}">검수자(Sonnet 5.5 medium) '
+                       f'<b>{html.escape(rv["verdict"])}</b> · 점수 {html.escape(str(rv.get("score")))}'
+                       + ''.join(f'<div class={"f" if i.get("severity") in ("high", "mid") else "w"}>[{html.escape(str(i.get("severity")))}] '
+                                 f'{html.escape(str(i.get("where", "")))} — {html.escape(str(i.get("what", "")))}'
+                                 f'<div class=m>고칠 것: {html.escape(str(i.get("fix", "")))}</div></div>' for i in rv.get('issues', []))
+                       + (f'<div class=m>잘 된 점: {html.escape(" / ".join(map(str, rv.get("good", []))))}</div>' if rv.get('good') else '')
+                       + '</div>')
         parts.append(f'''<section class="card{' base' if c['base'] else ''}"><h2>{html.escape(c['title'])}</h2>
 <div class=row><figure><img src="{_data_uri(v / 'walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
 <figure><img src="{_data_uri(v / 'turn.gif')}"><figcaption>돌기 (4배)</figcaption></figure>
 <figure><img src="{_data_uri(v / 'stroll.gif')}"><figcaption>칸 위를 걷기 (3배)</figcaption></figure>
 <figure><img class=one src="{_data_uri(v / 'sheet.png')}"><figcaption>1배 (게임 크기)</figcaption></figure></div>
-<details><summary>8배 시트 · 필름 띠(검수자가 보는 그림)</summary><div class=row>
-<img src="{_data_uri(v / 'sheet_x8.png')}"><img src="{_data_uri(v / 'strip.png')}"></div></details>
-{gate_html}{'<details><summary>작업자 메모</summary><pre>' + html.escape(c['notes']) + '</pre></details>' if c['notes'] else ''}
+<details><summary>8배 시트 · 필름 띠 · Actor1 옆에 세운 그림(검수자가 보는 그림)</summary><div class=row>
+<img src="{_data_uri(v / 'sheet_x8.png')}"><img src="{_data_uri(v / 'strip.png')}"><img src="{_data_uri(v / 'context.png')}"></div></details>
+{gate_html}{rv_html}{'<details><summary>작업자 메모</summary><pre>' + html.escape(c['notes']) + '</pre></details>' if c['notes'] else ''}
 </section>''')
     page = f'''<!doctype html><meta charset=utf-8><title>캐릭터 칩 하네스 {a.run}</title>
 <style>body{{background:#1d1f24;color:#e6e6e6;font:14px/1.5 system-ui,sans-serif;margin:20px}}
@@ -274,6 +396,13 @@ def main():
     p = sp.add_parser('page')
     p.add_argument('--run', required=True)
     p.set_defaults(fn=cmd_page)
+    p = sp.add_parser('loop', help='그리기 → 검수 → 지적대로 고치기 반복(검수 PASS 또는 rounds 까지)')
+    p.add_argument('briefs', nargs='+')
+    p.add_argument('--run')
+    p.add_argument('--drawer', default='gpt', choices=list(ENGINES))
+    p.add_argument('--reviewer', default='sonnet', choices=list(ENGINES))
+    p.add_argument('--rounds', type=int, default=4)
+    p.set_defaults(fn=cmd_loop)
     a = ap.parse_args()
     a.fn(a)
 

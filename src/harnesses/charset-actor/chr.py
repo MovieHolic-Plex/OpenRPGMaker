@@ -395,3 +395,17 @@ def sheet_big(pal, frames, scale=8):
     for y in range(0, FH * 4 + 1, 4):
         dr.line([(0, y * scale), (im.width, y * scale)], fill=(0, 110, 110) if y % FH else (255, 255, 255), width=1)
     return im
+
+
+def context(pal, frames, actor_png, scale=3, lawn=None, others=(0, 1, 3, 6)):
+    """게임 속 크기 감각: 잔디 위에 Actor1 캐릭터 몇 명(서 있는 자세, 아래 방향)과 새 캐릭터 네 방향을 같은 배율로."""
+    n = len(others)
+    W, H = (n + 4) * (FW + 4) + 12, FH + 8
+    bg = _bg(W, H, lawn)
+    for i, k in enumerate(others):
+        p2, _, f2 = from_actor(actor_png, k)
+        bg.alpha_composite(frame_rgba(p2, f2[('down', 1)]), (4 + i * (FW + 4), 4))
+    x0 = 4 + n * (FW + 4) + 8
+    for i, d in enumerate(('down', 'left', 'up', 'right')):
+        bg.alpha_composite(frame_rgba(pal, frames[(d, 1)]), (x0 + i * (FW + 4), 4))
+    return up(bg.convert('RGB'), scale)
