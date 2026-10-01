@@ -37,6 +37,21 @@ def read_json(p, default):
     except (OSError, ValueError):
         return default
 
+SEEN = os.path.join(picks_db.DATA, 'seen.json')   # {"<slug>/<후보>": 처음 이 화면에 올라온 시각(초)} — 저장소 밖, 워크트리를 바꿔도 남는다
+SEEN_LOCK = threading.Lock(); _seen = None
+
+def first_seen(s, name):
+    """후보가 고르는 화면에 처음 보인 시각. 파일 mtime 은 체크아웃·재렌더로 흔들리므로 쓰지 않는다
+    (새 워크트리에서는 모든 후보가 「방금 생긴 것」이 된다)."""
+    global _seen
+    with SEEN_LOCK:
+        if _seen is None: _seen = read_json(SEEN, {})
+        k = f'{s}/{name}'
+        if k not in _seen:
+            _seen[k] = int(datetime.datetime.now().timestamp())
+            tmp = SEEN + '.tmp'; json.dump(_seen, open(tmp, 'w'), indent=0); os.replace(tmp, SEEN)
+        return _seen[k]
+
 def candidates(s):
     out = []
     for f in sorted(glob.glob(os.path.join(CAND, s, '*.pxg'))):
@@ -50,7 +65,7 @@ def candidates(s):
         if os.path.exists(base + '.note'):
             note = open(base + '.note', encoding='utf-8').read().strip().split('\n')[0]
         c = dict(name=name, worker=m.group(1), dir=m.group(2), note=note, stale=stale or ck is None,
-                 v=int(os.path.getmtime(png)) if os.path.exists(png) else 0, src=int(os.path.getmtime(f)))
+                 v=int(os.path.getmtime(png)) if os.path.exists(png) else 0, src=first_seen(s, name))
         if ck:
             lint = ck.get('lint', {})
             c.update(ok=ck.get('ok'), hard=ck.get('hard', []), warn=ck.get('warn', []), lintPass=lint.get('pass'),
@@ -94,8 +109,13 @@ def state():
         it['addressed'] = it['hasNote'] and newest > note_at + 1     # 메모 뒤에 새 후보 원본(.pxg — 재검사로 PNG 가 다시 구워져도 안 흔들린다) 또는 감독자 반영 기록이 생겼다
         it['review'] = it['addressed'] and ts(pk.get('at')) < newest  # 그 뒤로 사용자가 아직 안 봤다(고르기·메모 저장 안 함)
         it['addressedSummary'] = ad.get('summary', '')
+        seen_at = ts(pk.get('at'))   # 사용자가 이 기물에서 마지막으로 고르거나 메모를 저장한 때
+        for c in it['candidates']: c['fresh'] = c['src'] > seen_at + 1
+        it['fresh'] = any(c['fresh'] for c in it['candidates'])   # 마지막으로 본 뒤 새 후보가 들어왔다
     return dict(items=items, directions=jobs.get('directions', {}),
-                workers=sorted({it['worker'] for it in items}, key=lambda w: (w[0] != 'p', len(w), w)),
+                workers=sorted({it['worker'] for it in items} | {c['worker'] for it in items for c in it['candidates']},
+                               key=lambda w: (w[0] != 'p', len(w), w)),
+                fresh=sum(1 for it in items if it['fresh']),
                 categories=sorted({it['category'] for it in items}),
                 picked=sum(1 for it in items if it['pick'] and it['pick'].get('choice')),
                 out=sorted(os.path.relpath(p, OUT) for p in glob.glob(os.path.join(OUT, 'rooms', '*.png'))))
