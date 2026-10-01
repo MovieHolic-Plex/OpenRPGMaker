@@ -165,7 +165,9 @@ class Registry:
         """ims = 같은 자리의 장면들(1 이면 정지). 첫 장면 칸 번호를 돌려준다. 띠는 한 행 안에 둔다."""
         key = "|".join(cell_bytes(i) for i in ims) + f"|{slot}|{priority}|{int(passable)}"
         if key in self.index:
-            i = self.index[key]; self.used.update(range(i, i + len(ims))); return BASE + i
+            i = self.index[key]; self.used.update(range(i, i + len(ims)))
+            self.cells[i]["meta"] = meta   # 설명·태그는 열쇠가 아니다 — 다시 구우면 새 것으로
+            return BASE + i
         n = len(ims)
         while n > 1 and (len(self.cells) % 128) + n > 128:
             self.cells.append(None); self.png.append(Image.new("RGBA", (T, T)))
@@ -239,10 +241,12 @@ def main():
                     passable = y < hh - brows                                    # 위쪽 줄 = ★
                     slot, pri = "upper", "upper"
                 mark = "solid" if not passable else ("star" if pri == "upper" else "passable")
-                tag = {"liquid": "water", "wall": "wall", "floor": "floor", "walk": "bridge" if "bridge" in stem or "jetty" in stem or "gang" in stem else "stair" if "stair" in stem else "walk",
+                # 바닥 표본 중 길·광장 표본은 road/plaza 태그 — 도시 형태 자(cityForm)와 빈 바닥 지표가 길·광장으로 읽는다
+                floor_tag = "road" if re.search(r"ground-(road|path)$", stem) else "plaza" if re.search(r"ground-(plaza|deck)$", stem) else "floor"
+                tag = {"liquid": "water", "wall": "wall", "floor": floor_tag, "walk": "bridge" if "bridge" in stem or "jetty" in stem or "gang" in stem else "stair" if "stair" in stem else "walk",
                        "tree": "tree", "object": "prop", "decal": "decal"}[kind]
                 meta = dict(label=f"버들항 장소 · {ko}", description=f"버들항 {pko} {ko} ({'땅' if slot == 'lower' else '윗부분'}), {'막힘' if mark == 'solid' else '걸음'}",
-                            tags=["버들항", "버들항 장소", tag], defaultLayer=slot, passage=mark, source="bundled-default")
+                            tags=["버들항", "버들항 장소", tag, *(["floor"] if tag in ("road", "plaza") else [])], defaultLayer=slot, passage=mark, source="bundled-default")
                 t = reg.add_run(cells, slot, pri, passable, meta)
                 (lr if slot == "lower" else ur).append(t); (ur if slot == "lower" else lr).append(-1)
             lower.append(lr); upper.append(ur)

@@ -35,7 +35,9 @@ for k in TS["structureKits"]:
         if n < 80: continue
         s = diff / n / 255 + dark / n * 0.5
         if s > best[0]: best = (s, c)
-    if best[0] >= 0.12: res[k["id"]] = {"dx": best[1], "dy": k["height"] - 1, "score": round(best[0], 2)}
+    # 건물(이름으로 고름)은 모두 문을 갖는다 — 신호가 약하면(통나무 벽처럼 문과 벽 색이 같으면) 가운데 칸
+    col = best[1] if best[0] >= 0.12 and best[1] >= 0 else (k["width"] - 1) // 2
+    res[k["id"]] = {"dx": col, "dy": k["height"] - 1, "score": round(best[0], 2)}
 print(len(res), "doors"); [print(i, v) for i, v in list(res.items())]
 def door_part(v):
     return {"id": "door", "kind": "entrance", "dx": v["dx"], "dy": v["dy"], "w": 1, "h": 1, "note": "문 칸(윗부분 그림, 그림에서 찾음) — 문 칸 자체는 막힘, 그 아래 칸이 문 앞 길"}

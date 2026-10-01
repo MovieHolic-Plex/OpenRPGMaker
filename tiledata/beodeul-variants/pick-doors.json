@@ -63,6 +63,10 @@
 "dx": 1,
 "dy": 8
 },
+"bd-pick-headland-lighthouse-lighthouse": {
+"dx": 6,
+"dy": 18
+},
 "bd-pick-mining-valley-adit": {
 "dx": 2,
 "dy": 3
@@ -191,15 +195,47 @@
 "dx": 2,
 "dy": 5
 },
+"bd-pick-swamp-stilt-e2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-e2-reed": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-e3": {
+"dx": 1,
+"dy": 4
+},
 "bd-pick-swamp-stilt-hall": {
 "dx": 3,
 "dy": 7
+},
+"bd-pick-swamp-stilt-loom": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-n1": {
+"dx": 2,
+"dy": 5
 },
 "bd-pick-swamp-stilt-n2": {
 "dx": 2,
 "dy": 5
 },
+"bd-pick-swamp-stilt-pierhut": {
+"dx": 1,
+"dy": 4
+},
 "bd-pick-swamp-stilt-s1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-s2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-s2-shingle": {
 "dx": 2,
 "dy": 5
 },
@@ -210,6 +246,14 @@
 "bd-pick-swamp-stilt-w1": {
 "dx": 2,
 "dy": 5
+},
+"bd-pick-swamp-stilt-w2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-w3": {
+"dx": 1,
+"dy": 4
 },
 "bd-pick-vineyard-winery": {
 "dx": 4,
