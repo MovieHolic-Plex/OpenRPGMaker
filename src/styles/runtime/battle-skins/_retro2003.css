@@ -12,7 +12,9 @@
   --retro-frame: 0 0 0 2px #d8e8ff, inset 0 0 0 2px #080e40;
   --retro-pixel: calc(2px / 2);
   --runtime-ui-font: var(--runtime-pixel-font);
-  grid-template-columns: minmax(0, 56fr) minmax(0, 42fr);
+  /* RM2003 배치: 왼쪽 = 적 이름 창(내 차례엔 그 자리에 명령 창), 오른쪽 = 파티 상태 창.
+     유리 묶음은 연출 단계에 1열을 0 으로 접지만 이 스킨은 두 창을 늘 띄운다(접으면 빈 남색 판이 남았다). */
+  grid-template-columns: minmax(0, 38fr) minmax(0, 62fr);
   font-family: var(--runtime-pixel-font);
   color: #fff;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
@@ -36,8 +38,9 @@
 }
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-host {
-  grid-column: 2;
-  margin: 8px 8px 8px 4px;
+  grid-column: 1;
+  grid-row: 2;
+  margin: 8px 4px 8px 8px;
   clip-path: none;
   animation: none;
 }
@@ -106,10 +109,11 @@
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party,
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
   grid-auto-rows: var(--battle-command-row-height);
-  grid-column: 1;
-  margin: 8px 4px 8px 8px;
+  grid-column: 2;
+  margin: 8px 8px 8px 4px;
   padding: 4px;
-  align-content: center;
+  /* 원작처럼 위에서부터 채운다 — 가운데 정렬은 1~3인 파티에서 한 줄이 창 한가운데 떠 보였다. */
+  align-content: start;
 }
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status,
@@ -382,8 +386,8 @@
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status,
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
   grid-template-areas: "name state hpnum mpnum tp";
-  /* 수치 칸을 줄여 이름+배지 자리를 번다(「500/999」 실측 72px). */
-  grid-template-columns: minmax(64px, 1fr) auto 84px 54px 40px;
+  /* 상태 창이 오른쪽 넓은 칸(62fr)이 되어 수치·게이지 칸을 넓혔다. 이름은 남는 폭을 쓰고 넘치면 말줄임. */
+  grid-template-columns: minmax(0, 1fr) auto 92px 56px 56px;
 }
 /* 파티 창 배지는 작은 두 줄 격자 — 한 줄(행 높이 32px)에 두 개를 세로로 쌓아 이름 칸을 덜 민다. */
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status > .battle-status-icons,
@@ -437,3 +441,63 @@
 /* 대상 선택의 ▼ 커서와 겹치지 않게 한 칸 더 올린다. */
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.battle-target-selected > .battle-status-icons { bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 26px); }
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.defeated > .battle-status-icons { display: none; }
+
+/* ---- 적 이름 창 (2026-10-01) ----------------------------------------------
+   RM2003 처럼 아래 왼쪽 창에 살아 있는 적 이름을 늘 적는다. 내 차례에는 명령 창이 같은 칸 위(z 14)에 덮인다.
+   유리 묶음은 이 패널을 끈다(_rm2000.css) — 이 스킨만 다시 켠다. 이름만: HP·막대·타입 배지는 숨긴다. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-panel {
+  display: block;
+  grid-column: 1;
+  grid-row: 2;
+  margin: 8px 4px 8px 8px;
+  padding: 4px;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 8;
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-director-step="command"] .battle-enemy-list-panel { visibility: hidden; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list {
+  display: grid;
+  grid-auto-rows: var(--battle-command-row-height);
+  grid-template-columns: minmax(0, 1fr);
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list:has(> .battle-enemy-list-row:not(.defeated):nth-of-type(5)) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: var(--battle-command-row-height);
+  padding: 0 6px 0 14px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-row::before { content: none; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-row.defeated { display: none; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-row > :not(.battle-enemy-list-name) { display: none; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--runtime-pixel-font);
+  font-size: 20px;
+  line-height: 24px;
+  color: #fff;
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+}
+/* 이름이 길면 배지 앞에서 말줄임한다 — 예전엔 「꽃집 아가씨」 끝 글자가 REG 배지 밑으로 들어갔다. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 왼쪽 칸 2열 명령은 한 칸이 좁다 — 「아이템」이 「아이…」로 잘렸다(1024×768 실측). 첫 화면 명령만 상태 창 글자 크기(20px)로 맞추고 장갑 자리를 줄인다. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root .battle-command { padding: 0 2px 0 34px; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root .battle-command-text strong { font-size: 20px; }
+/* 게이지 칸이 창 오른쪽 테두리에 닿았다 — 행 오른쪽에 여백. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status { padding-right: 8px; }
