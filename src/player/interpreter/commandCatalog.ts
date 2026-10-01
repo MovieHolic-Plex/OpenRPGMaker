@@ -505,13 +505,21 @@ export function executeCommand(
     case "changeFace": {
       if (command.appearanceId !== undefined) {
         const face = state.project ? resolveAppearancePortrait(state.project, command.appearanceId, command.presentation ?? "face") : undefined;
-        state.currentFace = face ? { ...face, position: command.position, flipHorizontally: command.flipHorizontally } : undefined;
+        state.currentFace = face
+          ? {
+              ...face,
+              ...(command.fullScale !== undefined ? { fullScale: command.fullScale } : {}),
+              position: command.position,
+              flipHorizontally: command.flipHorizontally,
+            }
+          : undefined;
         return resumeNext(frame);
       }
       state.currentFace = command.resourceId
         ? {
             resourceId: command.resourceId,
             ...(command.presentation ? { presentation: command.presentation } : {}),
+            ...(command.fullScale !== undefined ? { fullScale: command.fullScale } : {}),
             position: command.position,
             flipHorizontally: command.flipHorizontally,
           }

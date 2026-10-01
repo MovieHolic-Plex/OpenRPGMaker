@@ -5,7 +5,7 @@ import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { BattleUiStyle, Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
-import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
+import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_FULL_PORTRAIT_DEFAULTS, DIALOGUE_FULL_PORTRAIT_LIMITS, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, normalizeDialogueFullPortraitSettings, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, isFontFamilyId } from "@/project/fontRegistry";
 import {
   CHAPTER_LABEL_MAX,
@@ -182,6 +182,18 @@ const setProjectSettings: ToolDefinition = {
           font: { type: "string", enum: FONT_REGISTRY.map((font) => font.id), description: "대사창 글꼴(편집기 글꼴과 별개). 보통 생략 — 스타일이 어울리는 글꼴을 이미 고른다." },
           speed: { type: "number", minimum: DIALOGUE_PROJECT_SPEED_LIMITS.min, maximum: DIALOGUE_PROJECT_SPEED_LIMITS.max, description: "모든 대사의 기본 말 빠르기 배율(1=기본). 느긋한 이야기 0.8, 경쾌한 액션 1.2." },
           punctuationPause: { type: "boolean", description: "쉼표·마침표에서 잠깐 쉬기(기본 true). 기계·로봇 톤이면 false." },
+          fullPortraitHeight: {
+            type: "integer",
+            minimum: DIALOGUE_FULL_PORTRAIT_LIMITS.height.min,
+            maximum: DIALOGUE_FULL_PORTRAIT_LIMITS.height.max,
+            description: `하단 대사창 뒤 전신 초상의 높이 = 화면 높이의 %(기본 ${DIALOGUE_FULL_PORTRAIT_DEFAULTS.height}). 장면마다는 changeFace.fullScale(%)로 더 곱한다.`,
+          },
+          fullPortraitDrop: {
+            type: "integer",
+            minimum: DIALOGUE_FULL_PORTRAIT_LIMITS.drop.min,
+            maximum: DIALOGUE_FULL_PORTRAIT_LIMITS.drop.max,
+            description: `전신 초상 아래쪽을 화면 밖으로 내려 자르는 비율 %(기본 ${DIALOGUE_FULL_PORTRAIT_DEFAULTS.drop}). 클수록 다리가 덜 보인다.`,
+          },
         },
         additionalProperties: false,
       },
@@ -341,7 +353,7 @@ const setProjectSettings: ToolDefinition = {
         else draft.system.dialogueStyle = style;
         changed.push(`대화창=${DIALOGUE_STYLES[style].label}`);
       }
-      const { font, speed, punctuationPause } = args.dialogue as Record<string, unknown>;
+      const { font, speed, punctuationPause, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
       if (font !== undefined) {
         if (font === null || font === "") delete draft.system.dialogueFont;
         else if (!isFontFamilyId(font)) throw new ToolError(`알 수 없는 글꼴입니다: ${String(font)}`, { code: "invalid-args" });
@@ -358,6 +370,19 @@ const setProjectSettings: ToolDefinition = {
         if (punctuationPause) delete draft.system.dialoguePunctuationPause;
         else draft.system.dialoguePunctuationPause = false;
         changed.push(`구두점 쉼=${punctuationPause ? "켬" : "끔"}`);
+      }
+      if (fullPortraitHeight !== undefined || fullPortraitDrop !== undefined) {
+        const current = draft.system.dialogueFullPortrait ?? {};
+        const next = normalizeDialogueFullPortraitSettings({
+          ...DIALOGUE_FULL_PORTRAIT_DEFAULTS,
+          ...current,
+          ...(typeof fullPortraitHeight === "number" ? { height: fullPortraitHeight } : {}),
+          ...(typeof fullPortraitDrop === "number" ? { drop: fullPortraitDrop } : {}),
+        });
+        if (next) draft.system.dialogueFullPortrait = next;
+        else delete draft.system.dialogueFullPortrait;
+        const layout = { ...DIALOGUE_FULL_PORTRAIT_DEFAULTS, ...next };
+        changed.push(`전신 초상=높이 ${layout.height}%·내림 ${layout.drop}%`);
       }
     }
     if (Array.isArray(args.startActorIds)) {

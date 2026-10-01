@@ -5,6 +5,33 @@
 
 <!-- releases -->
 
+## 0.62.0 — 2026-10-01
+
+### 기능
+
+- support 1024 by 1024 maps and measure performance (`3499fd7`)
+- **dialogue** — 전신 초상 크기를 에디터에서 조절한다 (`f90ae70`)
+
+## 0.61.0 — 2026-10-01
+
+### 기능
+
+- support 512 by 512 maps across editor and tools (`bf02c1f`)
+
+### 수정
+
+- bound runtime map tile rendering to the camera (`1b54977`)
+
+### 테스트
+
+- repair parity consumer reference and record local CI checks (`a836907`)
+
+## 0.60.0 — 2026-10-01
+
+### 기능
+
+- **portraits** — 공용 초상 16표정 전부·외형 전신 칸·조수 자원 검색 (`632ef9c`)
+
 ## 0.59.0 — 2026-10-01
 
 ### 기능

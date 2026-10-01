@@ -43,7 +43,9 @@ import {
   isNonBlockingContainer,
   parseDialogueEmotion,
   punctuationPauseMs,
+  resolveDialogueFullPortraitLayout,
   resolveDialogueLook,
+  type DialogueFullPortraitLayout,
   type DialogueLook,
 } from "@/project/dialogueStyles";
 import { resolveFontStack } from "@/project/fontRegistry";
@@ -164,30 +166,34 @@ const DIALOGUE_FULL_TEXT_RESERVE = 100;
 /** RPG 만들기식 대사창: 한 페이지에 보이는 줄은 최대 3줄. 상자가 더 커도 3줄에서 끊어 다음 장으로 넘긴다. */
 const DIALOGUE_VISIBLE_LINES = 3;
 /**
- * 전신 초상(하단 대사창): 9:16 세로 그림을 **화면 높이**의 125% 로 키우고 아래 20% 는 화면 밖으로 내린다.
+ * 전신 초상(하단 대사창): 9:16 세로 그림을 **화면 높이** 비율로 키우고 아래 일부는 화면 밖으로 내린다.
  * 고정 px 로 두면 해상도를 올릴수록(최대 1920×1080) 초상이 작아져, 비율로 정의한다.
+ * 비율은 프로젝트 기본(system.dialogueFullPortrait, 기본 높이 125%·내림 20%)에 장면 배율(face.fullScale)을 곱한 값 —
+ * resolveDialogueFullPortraitLayout 하나가 런타임과 에디터 미리보기에 같이 답한다.
  * 초상은 대사창 뒤에 서므로 글 여백이 없다. CSS(--runtime-dialogue-full-*)는 이 한 곳의 값만 쓴다.
  */
-const DIALOGUE_FULL_HEIGHT_RATIO = 1.25;
 const DIALOGUE_FULL_ASPECT = 9 / 16;
-const DIALOGUE_FULL_DROP_RATIO = 0.2;
 
 /** 상자 뒤에 서는 전신 초상의 크기·내림을 화면 높이로 심는다. 위치·층은 CSS(.dialogue-face-behind). */
-function styleBehindPortrait(node: HTMLElement, hostHeight: number): void {
-  const metrics = fullPortraitMetrics(hostHeight);
+function styleBehindPortrait(node: HTMLElement, hostHeight: number, face: FaceGraphic): void {
+  const layout = resolveDialogueFullPortraitLayout(store.getCurrent()?.system.dialogueFullPortrait, face.fullScale);
+  const metrics = fullPortraitMetrics(hostHeight, layout);
   node.classList.add("dialogue-face-behind");
   node.style.setProperty("--runtime-dialogue-full-height", `${metrics.height}px`);
   node.style.setProperty("--runtime-dialogue-full-width", `${metrics.width}px`);
   node.style.setProperty("--runtime-dialogue-full-drop", `${metrics.drop}px`);
 }
 
-function fullPortraitMetrics(hostHeight: number): { height: number; width: number; drop: number } {
-  const height = Math.round(hostHeight * DIALOGUE_FULL_HEIGHT_RATIO);
+function fullPortraitMetrics(
+  hostHeight: number,
+  layout: DialogueFullPortraitLayout,
+): { height: number; width: number; drop: number } {
+  const height = Math.round(hostHeight * layout.heightRatio);
   const width = Math.round(height * DIALOGUE_FULL_ASPECT);
   return {
     height,
     width,
-    drop: Math.round(height * DIALOGUE_FULL_DROP_RATIO),
+    drop: Math.round(height * layout.dropRatio),
   };
 }
 const DIALOGUE_FONT_FALLBACK =
@@ -539,7 +545,7 @@ export function createDialogueUI(
           overlay.classList.add("has-bust-face");
           faceEl = renderFace(face);
           if (tallFull) {
-            styleBehindPortrait(faceEl, logicalHostHeight(host));
+            styleBehindPortrait(faceEl, logicalHostHeight(host), face);
             behindPortraits.push(faceEl);
           } else box.append(faceEl);
           // 초상 무대: 방금 전 다른 화자의 초상을 반대편에 흐리게 남긴다(듣는 쪽).
@@ -553,7 +559,7 @@ export function createDialogueUI(
             other.dataset.testid = "dialogue-portrait-listener";
             box.classList.add("has-portrait-listener");
             if (tallFull) {
-              styleBehindPortrait(other, logicalHostHeight(host));
+              styleBehindPortrait(other, logicalHostHeight(host), listenerPortrait.face);
               behindPortraits.push(other);
             } else box.append(other);
           }

@@ -179,7 +179,7 @@ function parseNewTarget(target: BoundaryRecord): AuthorVillageTarget {
   rejectUnknownKeys(target, NEW_TARGET_KEYS, "authorVillage.target");
   const mapId = requiredString(target, "mapId", "authorVillage.target");
   // 2026-09-11: width/height는 선택 — 생략하면 파사드(fillMissingVillageDimensions)가
-  // 의도 선언과 같은 환산기(estimateVillageSize)로 채운다. 모델이 쓰면 범위(20~256)만 검사.
+  // 의도 선언과 같은 환산기(estimateVillageSize)로 채운다. 모델이 쓰면 범위(20~공통 맵 상한)만 검사.
   // 근거: 같은 수량이 의도→플래너→도구에서 세 번 발명되던 결함(「마을을 만들어」).
   const width = optionalInteger(target, "width", "authorVillage.target");
   const height = optionalInteger(target, "height", "authorVillage.target");

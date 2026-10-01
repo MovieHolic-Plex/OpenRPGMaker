@@ -123,6 +123,34 @@
   margin: 0;
 }
 
+/* 전신 장면 크기 — 슬라이더·숫자 쌍과 무대 견본. */
+.event-command-face-full-scale {
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+}
+
+.event-command-face-full-scale[hidden] {
+  display: none;
+}
+
+.event-command-face-full-scale-pair {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.event-command-face-full-scale-range {
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+
+.event-command-face-full-scale-pair .event-command-face-full-scale-input {
+  flex: 0 0 72px;
+  max-width: 72px;
+}
+
 /* 공용 흉상·전신의 5표정 줄 — 표정 없는 대사에 쓸 기본 그림을 고른다. */
 .event-command-face-portrait-expressions {
   display: flex;

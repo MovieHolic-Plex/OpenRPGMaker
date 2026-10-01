@@ -1,0 +1,77 @@
+# Vite asset-path warnings omitted; stage/run JSON and generated report retained.
+{"stage":"boot","size":512,"warmup":true}
+{"stage":"title","size":512}
+{"stage":"base-ready","size":512}
+{"stage":"entered","size":512,"syncMs":205.19999998807907}
+{"size":512,"warmup":true,"enterMs":205.19999998807907,"heapMiB":2.1956443786621094,"tiles":3000,"visible":2000,"idleCpuMedian":1.699999988079071,"movingCpuMedian":2.099999964237213,"movingFps":59.88862116176509,"errors":[]}
+{"stage":"boot","size":512,"repeat":1,"warmup":false}
+{"stage":"title","size":512}
+{"stage":"base-ready","size":512}
+{"stage":"entered","size":512,"syncMs":167.30000001192093}
+{"size":512,"repeat":1,"warmup":false,"enterMs":167.30000001192093,"heapMiB":2.1968612670898438,"tiles":3000,"visible":2000,"idleCpuMedian":1.800000011920929,"movingCpuMedian":2.100000023841858,"movingFps":60.022445789267,"errors":[]}
+{"stage":"boot","size":1024,"repeat":1,"warmup":false}
+{"stage":"title","size":1024}
+{"stage":"base-ready","size":1024}
+{"stage":"entered","size":1024,"syncMs":480.30000001192093}
+{"size":1024,"repeat":1,"warmup":false,"enterMs":480.30000001192093,"heapMiB":8.181385040283203,"tiles":3000,"visible":2000,"idleCpuMedian":1.800000011920929,"movingCpuMedian":2.099999964237213,"movingFps":60.013425373813426,"errors":[]}
+{"stage":"boot","size":1024,"repeat":2,"warmup":false}
+{"stage":"title","size":1024}
+{"stage":"base-ready","size":1024}
+{"stage":"entered","size":1024,"syncMs":505.10000002384186}
+{"size":1024,"repeat":2,"warmup":false,"enterMs":505.10000002384186,"heapMiB":8.202335357666016,"tiles":3000,"visible":2000,"idleCpuMedian":1.7000000476837158,"movingCpuMedian":2,"movingFps":60.01402665063621,"errors":[]}
+{"stage":"boot","size":512,"repeat":2,"warmup":false}
+{"stage":"title","size":512}
+{"stage":"base-ready","size":512}
+{"stage":"entered","size":512,"syncMs":147.30000001192093}
+{"size":512,"repeat":2,"warmup":false,"enterMs":147.30000001192093,"heapMiB":2.1903610229492188,"tiles":3000,"visible":2000,"idleCpuMedian":1.5999999642372131,"movingCpuMedian":2.299999952316284,"movingFps":59.68632296371874,"errors":[]}
+{"stage":"boot","size":512,"repeat":3,"warmup":false}
+{"stage":"title","size":512}
+{"stage":"base-ready","size":512}
+{"stage":"entered","size":512,"syncMs":147.20000004768372}
+{"size":512,"repeat":3,"warmup":false,"enterMs":147.20000004768372,"heapMiB":2.1952781677246094,"tiles":3000,"visible":2000,"idleCpuMedian":1.699999988079071,"movingCpuMedian":2,"movingFps":60.01162161634949,"errors":[]}
+{"stage":"boot","size":1024,"repeat":3,"warmup":false}
+{"stage":"title","size":1024}
+{"stage":"base-ready","size":1024}
+{"stage":"entered","size":1024,"syncMs":481.5}
+{"size":1024,"repeat":3,"warmup":false,"enterMs":481.5,"heapMiB":8.197948455810547,"tiles":3000,"visible":2000,"idleCpuMedian":1.699999988079071,"movingCpuMedian":2.099999964237213,"movingFps":59.809090182993145,"errors":[]}
+
+# Map size benchmark — 2026-10-01
+
+## Conditions
+
+- 149.0.7827.55, Linux, software WebGL (SwiftShader), viewport 640×480.
+- Actual export player path; QA hooks enabled. One discarded warmup then 3 repetitions per size, alternating order.
+- Static tile 360 everywhere, empty upper layer, no events. Same tile density, camera zoom, player and viewport.
+- Each idle/moving phase contains 600 real engine frames. Movement verified; no tile rebuild during movement.
+- Map entry measured inside the browser with performance.now around synchronous transfer (no fade). Texture already loaded on 32×32 base map. Includes base teardown and runtime initialization; excludes network/title boot and first GPU upload.
+- Heap delta: retained JS heap after forced GC, target minus base. Excludes native/GPU memory. CPU duration excludes GPU completion.
+- Supported authoring dimension in this run: 1024. Synthetic fixtures only; no canonical project writes.
+
+## Results
+
+Medians of 3 runs; each frame CPU value is the median within its run.
+
+| Metric | 512×512 | 1024×1024 | Ratio 1024/512 |
+|---|---:|---:|---:|
+| Map-entry synchronous CPU, ms | 147.30 | 481.50 | 3.27× |
+| Map-entry to first postrender, ms | 208.10 | 542.60 | 2.61× |
+| Additional retained JS heap, MiB | 2.20 | 8.20 | 3.73× |
+| Total retained JS heap, MiB | 109.82 | 127.81 | 1.16× |
+| Tile GameObjects | 3000.00 | 3000.00 | 1.00× |
+| Visible tile GameObjects | 2000.00 | 2000.00 | 1.00× |
+| Idle frame CPU median, ms | 1.70 | 1.70 | 1.00× |
+| Moving frame CPU median, ms | 2.10 | 2.10 | 1.00× |
+| Moving frame CPU p95, ms | 5.20 | 5.00 | 0.96× |
+| Moving frame CPU max, ms | 14.70 | 15.80 | 1.07× |
+| Moving frame interval p95, ms | 19.10 | 18.90 | 0.99× |
+| Moving FPS | 60.01 | 60.01 | 1.00× |
+
+## Evidence
+
+- raw-results.json: all runs, every sampled frame, movement coordinates, heap counters, tile counters, environment and source commit.
+- 512-field.png and 1024-field.png: immediate visual inspection.
+- Reproduce: node scripts/qa/map-size-benchmark.mjs --sizes 512,1024 --frames 600
+
+## Limits
+
+A controlled empty field measures size overhead, not the performance of every game. NPCs, layered art, animation, shadows, pathfinding and actual hardware can change the result. No memory-pressure threshold or general-purpose safe maximum was established.
