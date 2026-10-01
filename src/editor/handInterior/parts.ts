@@ -17,7 +17,16 @@ export interface PartRow {
   readonly id: string; readonly ko: string; readonly kind: string; readonly w: number; readonly h: number;
   readonly desc?: string; readonly overhangPx?: number; readonly tags?: readonly string[]; readonly place?: string; readonly pair?: readonly string[];
   readonly surface?: true; readonly stairs?: string; readonly animated?: true; readonly hit?: string;
+  readonly use?: readonly string[]; readonly facing?: string; readonly states?: Obj["states"];
 }
+
+/** 쓰임 id → 검색 낱말(「앉는」「상자」「스위치」로도 찾게). */
+const USE_WORDS: Record<string, string> = {
+  sit: "앉기 앉는 의자", sleep: "자기 잠 침대 휴식", open: "열기 여는 상자 보물", search: "조사 뒤지기", read: "읽기 글 게시판",
+  counter: "카운터 가게 주인", travel: "이동 계단 출입", light: "불빛 조명 빛", save: "저장 세이브", heal: "회복 샘",
+  switch: "장치 스위치 레버 켬 끔", push: "밀기 퍼즐 바위", trap: "함정 가시", key: "열쇠 받침 보물", gate: "문 철창 여닫이", seal: "봉인",
+  walk: "밟음 깔개", block: "막힘 장식",
+};
 
 function norm(s: string): string { return s.toLocaleLowerCase().normalize("NFC"); }
 
@@ -26,6 +35,7 @@ function fields(id: string, o: Obj): readonly (readonly [string, number])[] {
   return [
     [norm(id), 4], [norm(o.ko), 4], [norm(`${o.category} ${o.category_ko}`), 2], [norm((o.tags ?? []).join(" | ")), 2],
     [norm(KIND_WORDS[o.kind] ?? o.kind), 1], [norm(`${o.desc ?? ""} ${o.place ?? ""}`), 1],
+    [norm((o.use ?? []).map((u) => `${u} ${USE_WORDS[u] ?? ""}`).join(" ")), 2],
   ];
 }
 
@@ -33,10 +43,12 @@ export function fullRow(id: string, o: Obj, hit?: string): PartRow {
   return { id, ko: o.ko, kind: o.kind, w: o.w, h: o.h, ...(o.up ? { overhangPx: o.up } : {}), ...(o.desc ? { desc: o.desc } : {}),
     ...(o.tags?.length ? { tags: o.tags } : {}), ...(o.place ? { place: o.place } : {}), ...(o.pair?.length ? { pair: o.pair } : {}),
     ...(o.surface ? { surface: true as const } : {}), ...(o.stairs ? { stairs: o.stairs } : {}), ...(o.animated ? { animated: true as const } : {}),
+    ...(o.use?.length ? { use: o.use } : {}), ...(o.facing ? { facing: o.facing } : {}), ...(o.states ? { states: o.states } : {}),
     ...(hit ? { hit } : {}) };
 }
 export function shortRow(id: string, o: Obj, hit?: string): PartRow {
-  return { id, ko: o.ko, kind: o.kind, w: o.w, h: o.h, ...(o.desc ? { desc: o.desc } : {}), ...(hit ? { hit } : {}) };
+  return { id, ko: o.ko, kind: o.kind, w: o.w, h: o.h, ...(o.desc ? { desc: o.desc } : {}),
+    ...(o.use?.length && !(o.use.length === 1 && o.use[0] === "block") ? { use: o.use } : {}), ...(o.facing ? { facing: o.facing } : {}), ...(hit ? { hit } : {}) };
 }
 
 export interface SearchResult {

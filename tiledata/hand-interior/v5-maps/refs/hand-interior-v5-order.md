@@ -1,7 +1,7 @@
 # 손 도트 실내 (atlas_biome_interior) — 읽는 순서
 
 실내(집·가게·여관·저택·교회·성 방·지하)는 이 칩셋 하나로만 짓는다. 옛 실내 칩셋(easyrpg_chipset_interior · tibo_interior_expanded · LPC 가구)은 폐기됐다.
-칩셋: `atlas_biome_interior`, 계열 `oprn-atlas`, 16px, 시트 가로 48칸, 칸 6256개(그림 public/assets/atlas-interior/interior-chipset.png).
+칩셋: `atlas_biome_interior`, 계열 `oprn-atlas`, 16px, 시트 가로 48칸, 칸 6268개(그림 public/assets/atlas-interior/interior-chipset.png).
 원본: tiledata/hand-interior/v5(손 도트 Python, 건물 25동 26맵). 칸은 scripts/content/hand-interior/build_tileset.py 가 잘랐다.
 
 ## 읽는 순서

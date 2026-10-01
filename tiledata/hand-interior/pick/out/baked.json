@@ -402,6 +402,14 @@
    "choice": "w4-C"
   },
   {
+   "id": "chair E",
+   "choice": "h1-C"
+  },
+  {
+   "id": "chair W",
+   "choice": "h2-C"
+  },
+  {
    "id": "chest",
    "choice": "w3-C"
   },
@@ -462,6 +470,10 @@
    "choice": "w42-A"
   },
   {
+   "id": "crate:apple",
+   "choice": "h3-C"
+  },
+  {
    "id": "crystal ball",
    "choice": "w3-B"
   },
@@ -476,6 +488,10 @@
   {
    "id": "curtained window",
    "choice": "w6-B"
+  },
+  {
+   "id": "desk 2x1",
+   "choice": "h4-D"
   },
   {
    "id": "dining 1x1",
@@ -704,6 +720,10 @@
   {
    "id": "plant",
    "choice": "w1-C"
+  },
+  {
+   "id": "pot",
+   "choice": "h7-E"
   },
   {
    "id": "potted cactus",
@@ -978,6 +998,10 @@
    "choice": "w1-B"
   },
   {
+   "id": "tea 2x1",
+   "choice": "h5-A"
+  },
+  {
    "id": "theater seat",
    "choice": "w110-A"
   },
@@ -1018,6 +1042,10 @@
    "choice": "w3-C"
   },
   {
+   "id": "water jar",
+   "choice": "h8-A"
+  },
+  {
    "id": "water trough",
    "choice": "w4-A"
   },
@@ -1028,6 +1056,10 @@
   {
    "id": "window",
    "choice": "w1-C"
+  },
+  {
+   "id": "work 2x1",
+   "choice": "h6-B"
   }
  ],
  "resized": [
@@ -1295,22 +1327,12 @@
    "why": "v5 유지"
   },
   {
-   "id": "chair E",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
    "id": "chair N",
    "choice": "v5",
    "why": "v5 유지"
   },
   {
    "id": "chair S",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
-   "id": "chair W",
    "choice": "v5",
    "why": "v5 유지"
   },
@@ -1375,11 +1397,6 @@
    "why": "v5 유지"
   },
   {
-   "id": "pot",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
    "id": "roundtable",
    "choice": "v5",
    "why": "v5 유지"
@@ -1421,11 +1438,6 @@
   },
   {
    "id": "telescope",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
-   "id": "water jar",
    "choice": "v5",
    "why": "v5 유지"
   },

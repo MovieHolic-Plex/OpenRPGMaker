@@ -11,7 +11,7 @@
 고르는 화면: 고르기 서버(scripts/content/hand-interior-pick/pick_server.py) 의 /harness — http://mdc-server:18302/harness
 자세한 것: src/harnesses/interior-props/README.md
 """
-import argparse, fcntl, glob, json, os, shutil, signal, subprocess, sys, time
+import argparse, datetime, fcntl, glob, json, os, shutil, signal, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
@@ -40,7 +40,8 @@ def draw(items, n=N_DEFAULT, note='', base='', start_pool=True):
     by = objects_by_id(); out = []
     for item in items:
         if item not in by: raise SystemExit(f'모르는 기물: {item!r}')
-        rid = store.new_round(item, n, brief.DIRECTIONS, note=note, base=base, model=MODEL, effort=EFFORT, root=ROOT)
+        dirs = brief.directions(item) if not base else brief.DIRECTIONS
+        rid = store.new_round(item, n, dirs, note=note, base=base, model=MODEL, effort=EFFORT, root=ROOT)
         brief.make(rid, item, note=note, base=base)
         out.append(rid)
         print(f'h{rid}: {item} — 후보 {n}장 대기열에', flush=True)
@@ -142,6 +143,7 @@ def _review_pack(r):
 
 
 def _review_prompt(r):
+    import brief
     pack, o = _review_pack(r)
     t = open(os.path.join(HERE, 'review.md'), encoding='utf-8').read()
     fam = sorted(glob.glob(os.path.join(r['brief'], 'family', '*.png')))
@@ -154,9 +156,19 @@ def _review_prompt(r):
     rep = {'{ROOT}': r['root'], '{ITEM}': r['item'], '{DESC}': o['description'], '{KIND}': o['kind_ko'], '{CAT}': o['category_ko'],
            '{CAND}': f"{_folder(r)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,
-           '{FAMILY}': ', '.join(f'`{p}`' for p in fam) or '(없음)', '{ANCHORS}': ', '.join(f'`{p}`' for p in anc) or '(없음)'}
+           '{FAMILY}': ', '.join(f'`{p}`' for p in fam) or '(없음)', '{ANCHORS}': ', '.join(f'`{p}`' for p in anc) or '(없음)',
+           '{NEWMODE}': NEW_REVIEW if brief.is_new(r['item']) else ''}
     for k, v in rep.items(): t = t.replace(k, v)
     return t, pack
+
+
+NEW_REVIEW = '''
+## 새 기물이다 — (2) 「지금보다 나빠졌나」 대신 「설명대로 읽히나」
+지금 시트에는 이 물건이 없다(pair-x8 왼쪽·ctx-current 는 빈 자리). `WORSE` 는 쓰지 않고 대신 본다:
+- 설명 문장의 요소(재질·색·부품)가 보이나, 방 안에서 그 물건(쓰임)으로 읽히나 — 아니면 `READ`.
+- 같은 방 가구(anchors·ctx 의 다른 가구)와 윤곽·명암 단 수·크기감이 같나 — 다르면 `STYLE`(불합격 사유로 쓴다).
+- 3/4 시점 계약은 그대로 적용한다.
+'''
 
 
 def _start(r):
@@ -245,6 +257,23 @@ def review(rounds_):
     if n: ensure_pool()
 
 
+def _alive(pid):
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    try:   # 좀비(끝났는데 거둬지지 않은 것)는 죽은 것으로
+        return open(f'/proc/{pid}/stat').read().split(')')[-1].split()[0] != 'Z'
+    except OSError:
+        return True
+
+
+class _Adopted:
+    """앞선 일꾼이 띄운 작업자 — 종료 코드는 모르니 끝나면 0 으로 본다(결과는 _finish 가 파일로 판정)."""
+    def __init__(self, pid): self.pid = pid
+    def poll(self): return None if _alive(self.pid) else 0
+
+
 def pool():
     os.makedirs(store.DATA, exist_ok=True)
     fd = os.open(POOL_LOCK, os.O_RDWR | os.O_CREAT)
@@ -253,9 +282,15 @@ def pool():
     except OSError:
         print('이미 다른 일꾼이 돈다', flush=True); return
     sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
-    for r in store.runs(status=('running',)):   # 지난 일꾼이 죽으며 남긴 running → 다시 대기열로
-        store.update_run(r['id'], status='queued', pid=None)
     live = {}
+    for r in store.runs(status=('running',)):   # 지난 일꾼이 남긴 running: 작업자가 살아 있으면 이어 받고, 죽었으면 다시 대기열로
+        if r['pid'] and _alive(r['pid']):
+            t0 = time.time()
+            try: t0 = datetime.datetime.fromisoformat(r['started']).timestamp()
+            except (TypeError, ValueError): pass
+            live[r['id']] = (_Adopted(r['pid']), r, t0)
+        else:
+            store.update_run(r['id'], status='queued', pid=None)
     print(store.now(), '일꾼 시작', flush=True)
     while True:
         for rid_, (p, r, t0) in list(live.items()):

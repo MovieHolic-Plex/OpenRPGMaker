@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/washbasin/h11-C.pxg",
+ "id": "washbasin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  8,
+  13,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "note": "대야를 위에서 본 모양(뒤 림·물 3단·앞 림)과 어두운 아래·오른 윤곽, 기둥·받침 윗면을 anchors 결로 다시 찍음",
+ "ok": true
+}

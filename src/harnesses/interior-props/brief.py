@@ -24,6 +24,14 @@ DIRECTIONS = [
     ('D', '기준 맞추기 (C 와 다른 해석): anchors/ 의 결을 따르되 디자인을 한 단계 더 다듬는다(장식·비례). 물건은 같다.'),
     ('E', '자유: 같은 화풍(anchors/) 안에서 이 물건을 가장 잘 읽히게 새로 디자인한다. 칸 수·캔버스는 지킨다.'),
 ]
+# 새 기물(아직 고른 그림이 없는 new/items.json 항목) — 빈 캔버스에서 다섯 갈래 디자인.
+NEW_DIRECTIONS = [
+    ('A', '설명 충실: 설명 문장의 요소를 빠짐없이, 가장 전형적인 SFC 시절 JRPG 모양으로 그린다.'),
+    ('B', '같은 방 화풍: anchors/ 와 맥락 방(context.png)의 다른 가구 결을 그대로 따라, 원래 그 방에 있던 물건처럼 그린다.'),
+    ('C', '단순·또렷: 16px 칸에서 한눈에 읽히게 덩어리를 크게, 세부는 최소로.'),
+    ('D', '장식: 같은 물건을 한 단계 화려하게(금장·문양·빛). 잔점·노이즈는 금지.'),
+    ('E', '자유 해석: 같은 쓰임(use)의 물건을 다른 디자인으로 해석한다. 칸 수·캔버스는 지킨다.'),
+]
 REASONS = {'view': '시점 이상', 'size': '크기·비율 이상', 'style': '화풍이 다름', 'read': '무슨 물건인지 안 읽힘',
            'messy': '지저분함·잔점', 'worse': '원래 그림이 더 나음'}
 
@@ -31,6 +39,15 @@ REASONS = {'view': '시점 이상', 'size': '크기·비율 이상', 'style': '�
 def _bg(im, s, bg=(150, 120, 90, 255)):
     b = Image.new('RGBA', im.size, bg); b.alpha_composite(im.convert('RGBA'))
     return b.resize((im.size[0] * s, im.size[1] * s), Image.NEAREST)
+
+
+def is_new(item):
+    """새 기물이고 아직 고른 그림이 없다 = 지금 그림이 빈 캔버스."""
+    return bool(objects_by_id()[item].get('new')) and current_choice(item) == 'v5'
+
+
+def directions(item):
+    return NEW_DIRECTIONS if is_new(item) else DIRECTIONS
 
 
 def current_choice(item):
@@ -69,16 +86,21 @@ def user_picks():
 
 def family(item):
     """같은 물건의 다른 방향·크기(chair E ↔ chair N·S·W, pew ↔ pew E2 …) — 첫 낱말이 같은 기물. 「같은 물건으로 읽혀야」 하는 짝."""
-    head = item.split()[0].split(':')[0]
-    return [i for i in objects_by_id() if i != item and i.split()[0].split(':')[0] == head]
+    by = objects_by_id(); head = item.split()[0].split(':')[0]; cat = by[item]['category_ko']
+    return [i for i, m in by.items() if i != item and i.split()[0].split(':')[0] == head and m['category_ko'] == cat]
 
 
 def anchors(item, k=4):
     by = objects_by_id(); o = by[item]; up = user_picks()
+    out = []
+    for i in o.get("refs") or []:   # 새 기물 명세의 refs = 가장 닮은 기존 기물(보물상자 → 상자·왕실 상자)
+        ensure_folder(i); p = cand_png(i, current_choice(i))
+        if os.path.exists(p): out.append((i, p))
+    k = max(k, len(out) + 2)
     same_cat = [i for i in up if i != item and by.get(i) and by[i]['category_ko'] == o['category_ko']]
     same_kind = [i for i in up if i != item and by.get(i) and by[i]['kind'] == o['kind'] and i not in same_cat]
-    out = []
     for i in same_cat + same_kind:
+        if any(i == a for a, _ in out): continue
         p = cand_png(i, up[i])
         if os.path.exists(p): out.append((i, p))
         if len(out) >= k: break
@@ -90,6 +112,16 @@ def anchors(item, k=4):
             if ((cur.get(i) or {}).get('choice') or 'v5') != 'v5' or any(i == a for a, _ in out): continue
             p = os.path.join(CAND, slug(i), 'v5.png')
             if os.path.exists(p): out.append((i, p))
+    if len(out) < k:   # 새 분류라 같은 분류가 없으면: 사용자가 고른 같은 종류(kind) 기물 → 같은 종류 v5 원본
+        have = {a for a, _ in out}
+        pool = [(i, up[i], 0) for i in up if i != item and by.get(i) and by[i]['kind'] == o['kind']] + \
+               [(i, 'v5', 1) for i, m in by.items() if i != item and not m.get('new') and m['kind'] == o['kind']
+                and ((picks_db.current_all().get(i) or {}).get('choice') or 'v5') == 'v5']
+        for i, ch, _ in pool:
+            if len(out) >= k: break
+            if i in have: continue
+            p = cand_png(i, ch) if ch != 'v5' else os.path.join(CAND, slug(i), 'v5.png')
+            if os.path.exists(p): out.append((i, p)); have.add(i)
     return out
 
 
@@ -132,6 +164,12 @@ def make(rid, item, note='', base=''):
           + (' (크기 바뀜: resize.json)' if G['resized'] else ''),
           f'- 후보 폴더: `{os.path.relpath(d, ROOT)}` (팔레트 `palette.pal`, 지금 그림 `{"v5.pxg" if cur == "v5" else cur + ".pxg"}`)',
           f'- 방 안 맥락: `context.png` ({room})', '']
+    if is_new(item):
+        md += ['## 새 기물 — 지금 그림이 없다', '',
+               f'`v5.pxg` 는 빈 캔버스다({G["canvas"][0]}×{G["canvas"][1]}). **위 「물건」 설명대로 처음부터 그린다.** current-x4.png·context.png 에는 아직 이 물건이 없다(방 자리만 본다).',
+               f'- 쓰임: {", ".join(o.get("use") or [])} · 놓는 곳: {o.get("place", "")}',
+               '- 맨 아래 불투명 줄 = 발밑 칸의 바닥 접지선(캔버스 맨 아래). 솟는 부분은 캔버스 위쪽을 쓴다(위 패딩 없음).',
+               '- 같은 방에 놓을 기존 가구(anchors/)와 윤곽 굵기·명암 단 수·크기감이 같아야 한다.', '']
     if note: md += ['## 사용자 메모 (가장 먼저 따른다)', '', note, '']
     if notes: md += ['## 이 기물에 대한 사용자의 지난 말', ''] + [f'- {n}' for n in notes[-5:]] + ['']
     if base: md += [f'## 출발점', '', f'사용자가 이 후보(`{base}`, `base-x4.png`)를 출발점으로 골랐다. 지금 그림 대신 이걸 다듬는다.', '']
@@ -141,7 +179,8 @@ def make(rid, item, note='', base=''):
         md += [f'- `family/{slug(i)}-x4.png` — {objects_by_id()[i]["name_ko"]} ({current_choice(i)})' for i, _ in fam] + ['']
     md += ['## 화풍 기준 (anchors/)', '',
            '사용자가 직접 고른 같은 계열 기물이다. **규칙 문장보다 이 그림들을 따른다** — 윤곽 굵기, 명암 단 수, 윗면 두께, 결.', '']
-    md += [f'- `anchors/{slug(i)}-x4.png` — {objects_by_id()[i]["name_ko"]}' for i, _ in an] or ['- (아직 없음 — 지금 그림의 결을 따른다)']
+    md += [f'- `anchors/{slug(i)}-x4.png` — {objects_by_id()[i]["name_ko"]}' + (' **(가장 닮은 기존 기물 — 크기·결을 이것에 맞춘다)**' if i in (o.get('refs') or []) else '')
+           for i, _ in an] or ['- (아직 없음 — 지금 그림의 결을 따른다)']
     md += ['']
     if lines_rej: md += ['## 사용자가 버린 후보 (이렇게 하지 말 것)', ''] + lines_rej + ['']
     md += ['## 시점 (3/4) — 이것만', '',

@@ -1,0 +1,21 @@
+// h10-E: 바퀴를 정면 원판으로(가운데 쇠 축, 왼쪽 위 밝음) + 오른쪽 손잡이 막대; 받침은 h9 식 윗면/앞면 분리
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+......AAAA......
+....AABBBCAA....
+...ABBBBBCCCA...
+...ABBBBBCCDA...
+...ABBBFFCDDAEE.
+...ABBBFFCDDA.E.
+...ACBBCCDDDA.E.
+....ACCCDDDA....
+.EEEEEEEEEEEEEE.
+.GHHHHHHHHHHHHE.
+.GHHIHHHHIHHHHE.
+.EIIIIIIIIIIIIE.
+.KGGGGGGGGGGGGK.
+.KLJJJJJJJJJJGK.
+.KKJGKKKKKKKJGK.

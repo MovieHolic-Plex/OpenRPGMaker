@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/water_jar/h8-D.pxg",
+ "id": "water jar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "v5 결 그대로, 목 앞 윤곽을 앞 입술로 열고 어깨 아래에 어두운 점토 띠 한 줄(장식)을 둠",
+ "ok": true
+}

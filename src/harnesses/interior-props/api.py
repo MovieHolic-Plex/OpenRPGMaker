@@ -45,6 +45,7 @@ def state():
         s = slug(i)
         it = items.setdefault(i, dict(id=i, slug=s, name=o['name_ko'], desc=o['description'], category=o['category_ko'],
                                       kind=o['kind_ko'], canvas=geom(o)['canvas'], current=(cur.get(i) or {}).get('choice') or 'v5',
+                                      isNew=bool(o.get('new')), use=o.get('use') or [],
                                       rounds=[], last=rd['created']))
         runs = []
         for r in store.runs(rd['id']):
@@ -96,6 +97,11 @@ def objects():
         out.append(dict(id=i, slug=slug(i), name=o['ko'], category=o.get('category_ko', ''), kind=o['kind'],
                         desc=(m or {}).get('description', o.get('desc', '')), current=(cur.get(i) or {}).get('choice') or 'v5',
                         rounds=rounds.get(i, 0), known=bool(m)))
+    for i, m in by.items():   # 아직 시트에 안 구운 새 기물(new/items.json) — 고르면 빈 캔버스에서 다섯 갈래로 그린다
+        if i in spec or not m.get('new'): continue
+        out.append(dict(id=i, slug=slug(i), name=m['name_ko'], category=m['category_ko'], kind=m['kind'], desc=m['description'],
+                        current=(cur.get(i) or {}).get('choice') or 'v5', rounds=rounds.get(i, 0), known=True, isNew=True,
+                        use=m.get('use') or []))
     out.sort(key=lambda t: (t['category'], t['name']))
     return out
 
@@ -108,7 +114,12 @@ def thumb(s):
                       sheet=Image.open(SHEET).convert('RGBA'))
     if s in _thumb['cache']: return _thumb['cache'][s]
     o = next((v for k, v in _thumb['spec'].items() if slug(k) == s), None)
-    if not o: return None
+    if not o:   # 시트에 없는 새 기물: 고른 후보가 있으면 그 그림, 없으면 None
+        m = objects_by_slug().get(s)
+        ch = m and ((picks_db.current_all().get(m['id']) or {}).get('choice') or 'v5')
+        p = m and ch != 'v5' and os.path.join(CAND, s, ch + '.png')
+        if not (p and os.path.exists(p)): return None
+        return open(p, 'rb').read()
     CH = _thumb['sheet']; C = CH.size[0] // 16
     xs = [c[0] for c in o['cells']]; ys = [c[1] for c in o['cells']]; x0, y0 = min(xs), min(ys)
     im = Image.new('RGBA', ((max(xs) - x0 + 1) * 16, (max(ys) - y0 + 1) * 16))

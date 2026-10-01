@@ -1,5 +1,5 @@
 {
- "about": "v5 손 도트 실내에 새로 넣을 기물(2026-10-01). 사용자 지시: 「추가할 만한 것들 규칙에 맞게 추가」. 후보는 candidates/<slug>/wNN-X.pxg, 사용자가 18302 에서 고른 것만 굽는다.",
+ "about": "v5 손 도트 실내에 새로 넣을 기물(2026-10-01). 사용자 지시: 「추가할 만한 것들 규칙에 맞게 추가」. 후보는 candidates/<slug>/wNN-X.pxg, 사용자가 18302 에서 고른 것만 굽는다. 항목의 use(쓰임)·facing(방향)·states(상태 짝)·place·pair 는 조수용 메모로 handInteriorSpec 에 실린다(tiledata/hand-interior/v5/use6.py).",
  "items": [
   {
    "id": "sword rack",
@@ -623,6 +623,400 @@
     "지하 창고",
     "여관",
     "민가"
+   ]
+  },
+  {
+   "id": "treasure chest",
+   "name_ko": "보물상자",
+   "name_en": "treasure chest",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "contextRoom": "dungeon",
+   "description": "JRPG 보물상자(작은 것, 닫힘) — 둥글게 솟은 나무 뚜껑에 금빛 쇠테·가운데 자물쇠. 뚜껑 윗면이 위에서 보이고 앞면에 자물쇠. 던전 막다른 곳·방 구석·여관 창고.",
+   "tags": [
+    "던전",
+    "보물고",
+    "동굴",
+    "성"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "던전 막다른 길 끝·방 구석. 통로를 막지 않게 벽에 붙인다.",
+   "pair": [
+    "wall torch",
+    "skull pile"
+   ],
+   "refs": [
+    "chest",
+    "royal chest"
+   ]
+  },
+  {
+   "id": "treasure chest big",
+   "name_ko": "큰 보물상자",
+   "name_en": "treasure chest big",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "contextRoom": "throne",
+   "description": "JRPG 큰 보물상자(2칸, 닫힘) — 붉은 칠 나무에 금테·보석 박은 둥근 뚜껑, 앞에 큰 자물쇠. 뚜껑 윗면이 위에서 넓게 보인다(16px 솟음). 보스 방 뒤·왕실 보물고의 중요한 보물.",
+   "tags": [
+    "던전",
+    "보물고",
+    "보스 방",
+    "성"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "보스 방 북쪽 가운데·보물고 단 위. 앞(남쪽)에 한 칸 비운다.",
+   "pair": [
+    "treasure pile",
+    "royal banner"
+   ],
+   "refs": [
+    "royal chest",
+    "treasure pile"
+   ]
+  },
+  {
+   "id": "save crystal",
+   "name_ko": "세이브 수정",
+   "name_en": "save crystal",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "contextRoom": "tower",
+   "description": "세이브 지점 — 빛나는 원판 받침 위에 떠 있는 푸른 팔면체 수정(32px 솟음). 받침 윗면의 둥근 빛 고리가 위에서 보인다. 던전 입구·보스 방 앞·여관 2층.",
+   "tags": [
+    "던전",
+    "여관",
+    "마을",
+    "성"
+   ],
+   "use": [
+    "save"
+   ],
+   "place": "던전 입구 안쪽·보스 방 바로 앞 넓은 칸. 둘레 한 칸은 비운다.",
+   "pair": [
+    "healing spring",
+    "wall torch"
+   ],
+   "refs": [
+    "crystal ball",
+    "rune stone"
+   ]
+  },
+  {
+   "id": "healing spring",
+   "name_ko": "회복의 샘",
+   "name_en": "healing spring",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "contextRoom": "elf",
+   "description": "회복의 샘(2×2) — 둥근 돌 테두리 안에 빛나는 하늘색 물. 물 표면과 돌 테두리 윗면이 위에서 보이고 남쪽에 돌 앞면. 조사하면 HP·MP 회복. 신전·던전 쉼터·엘프 궁정.",
+   "tags": [
+    "신전",
+    "던전",
+    "엘프 궁정",
+    "쉼터"
+   ],
+   "use": [
+    "heal"
+   ],
+   "place": "방 가운데. 네 변 중 남쪽에 한 칸 비워 다가갈 자리.",
+   "pair": [
+    "save crystal",
+    "potted fern"
+   ],
+   "refs": [
+    "moon pool",
+    "holy water font"
+   ]
+  },
+  {
+   "id": "wall lever",
+   "name_ko": "벽 레버",
+   "name_en": "wall lever",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "contextRoom": "dungeon",
+   "description": "벽에 박힌 쇠 레버(끔 — 손잡이가 아래로 내려감). 네모 쇠판에 박힌 축과 둥근 손잡이. 던전 퍼즐 방 벽면 윗줄. 당기면 문·다리·함정이 바뀐다.",
+   "tags": [
+    "던전",
+    "퍼즐",
+    "지하",
+    "성"
+   ],
+   "use": [
+    "switch"
+   ],
+   "place": "벽면 윗줄, 바로 아래 바닥 칸에 서서 조사하게.",
+   "pair": [
+    "iron gate",
+    "pressure plate"
+   ],
+   "refs": [
+    "tool wall",
+    "wall torch"
+   ]
+  },
+  {
+   "id": "pressure plate",
+   "name_ko": "압력판",
+   "name_en": "pressure plate",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "contextRoom": "dungeon",
+   "description": "바닥 돌 압력판(올라온 상태) — 바닥보다 살짝 솟은 네모 돌판, 둘레에 홈. 밟으면 눌려 문이 열리거나 함정이 움직인다. 던전 퍼즐 바닥.",
+   "tags": [
+    "던전",
+    "퍼즐",
+    "지하"
+   ],
+   "use": [
+    "switch"
+   ],
+   "place": "퍼즐 방 바닥. 밀 수 있는 바위를 올려 두는 자리에도.",
+   "pair": [
+    "push boulder",
+    "iron gate"
+   ],
+   "refs": [
+    "drain grate",
+    "magic circle"
+   ]
+  },
+  {
+   "id": "push boulder",
+   "name_ko": "밀 수 있는 바위",
+   "name_en": "push boulder",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "contextRoom": "mine",
+   "description": "밀어서 옮기는 둥근 회색 바위(1칸, 16px 솟음) — 둥근 윗면이 위에서 보이고 바닥에 끌린 자국. 던전·동굴 퍼즐. 압력판 위로 밀어 올린다.",
+   "tags": [
+    "던전",
+    "동굴",
+    "퍼즐",
+    "광산"
+   ],
+   "use": [
+    "push"
+   ],
+   "place": "퍼즐 방 바닥. 밀 방향 앞뒤로 빈 칸이 있어야 한다.",
+   "pair": [
+    "pressure plate",
+    "ore pile"
+   ],
+   "refs": [
+    "ore pile",
+    "column stone"
+   ]
+  },
+  {
+   "id": "iron gate",
+   "name_ko": "쇠창살 문",
+   "name_en": "iron gate",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "contextRoom": "dungeon",
+   "description": "쇠창살 문(닫힘, 16px 솟음) — 굵은 쇠창살과 가로 띠, 위는 창살 끝이 뾰족. 창살 윗면(가로 띠)이 위에서 보인다. 레버·열쇠로 연다. 감옥·던전 통로를 막는 문.",
+   "tags": [
+    "던전",
+    "지하 감옥",
+    "성",
+    "지하"
+   ],
+   "use": [
+    "gate"
+   ],
+   "place": "1칸 통로·방 입구 칸. 여는 레버·열쇠와 한 쌍.",
+   "pair": [
+    "wall lever",
+    "key pedestal"
+   ],
+   "refs": [
+    "drain grate",
+    "shackles"
+   ]
+  },
+  {
+   "id": "spike trap",
+   "name_ko": "가시 함정",
+   "name_en": "spike trap",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "contextRoom": "dungeon",
+   "description": "바닥 가시 함정(가시가 솟은 상태) — 구멍 뚫린 쇠판에서 날카로운 쇠가시 여러 개가 솟았다. 밟으면 피해. 던전 통로 바닥.",
+   "tags": [
+    "던전",
+    "함정",
+    "지하"
+   ],
+   "use": [
+    "trap"
+   ],
+   "place": "던전 통로 바닥 1~3칸. 피할 길을 하나 남긴다.",
+   "pair": [
+    "pressure plate",
+    "skull pile"
+   ],
+   "refs": [
+    "drain grate",
+    "straw pile"
+   ]
+  },
+  {
+   "id": "key pedestal",
+   "name_ko": "열쇠 받침대",
+   "name_en": "key pedestal",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "contextRoom": "tower",
+   "description": "돌 받침대(16px 솟음) 위에 금 열쇠 — 받침 윗면에 놓인 열쇠가 위에서 보인다. 조사하면 열쇠를 얻는다. 던전 안쪽 방·탑 꼭대기.",
+   "tags": [
+    "던전",
+    "탑",
+    "신전",
+    "성"
+   ],
+   "use": [
+    "key"
+   ],
+   "place": "방 북쪽 가운데. 앞에 한 칸 비운다.",
+   "pair": [
+    "iron gate",
+    "wall torch"
+   ],
+   "refs": [
+    "spellbook stand",
+    "crystal ball"
+   ]
+  },
+  {
+   "id": "seal stone",
+   "name_ko": "봉인석",
+   "name_en": "seal stone",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "contextRoom": "dungeon",
+   "description": "봉인 문양이 새겨진 검은 비석(16px 솟음) — 앞면에 보랏빛 룬 문양, 둥근 머리 윗면이 위에서 보인다. 조건을 채우면 풀린다. 봉인된 문 앞·마왕성·고대 유적.",
+   "tags": [
+    "던전",
+    "마왕성",
+    "유적",
+    "신전"
+   ],
+   "use": [
+    "seal"
+   ],
+   "place": "봉인된 통로 앞 한가운데, 또는 문 양옆에 한 쌍.",
+   "pair": [
+    "rune stone",
+    "iron gate"
+   ],
+   "refs": [
+    "rune stone",
+    "column stone"
    ]
   }
  ]

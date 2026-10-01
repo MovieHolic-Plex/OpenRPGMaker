@@ -1,0 +1,60 @@
+// washbasin 후보 E (h11) — 위에서 내려다본 대야(흰 테두리+파란 물 4줄) + 나무 받침장 앞면 + 왼쪽 걸린 수건, 놋 수전
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 4
+@mat h white 5
+@mat a water 3
+@mat l linen 5
+@mat b brass 4
+@mat B blue 3
+@mblock 0 8
+.......bb.......
+.......bbbb.....
+.......b..b.....
+..hhhhhhhhhhhh..
+.hhaaaaaaaaaahh.
+.hhaaaaaaaaaahh.
+.hhaaaaaaaaaahh.
+.hhaaaaaaaaaahh.
+.hlllhhhhhhhhhh.
+.wlllwwwwwwwwww.
+.wlllwwwwwwwwww.
+.wlllwwwwwwwwww.
+.wBBBwwwwwwwwww.
+.wBBBwbwwbwwwww.
+.wlllwbwwbwwwww.
+.wlllwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+@tblock 0 8
+.......55.......
+.......5543.....
+.......4..3.....
+..355555555542..
+.25222222222232.
+.25333333333332.
+.25334553333332.
+.25444444444432.
+.25536666666662.
+.55536666666664.
+.25533333333331.
+.25534425444441.
+.23324425444441.
+.23324525444441.
+.25534325344441.
+.24434425444441.
+.24444425444441.
+.24444425444441.
+.24444425444441.
+.24444425444441.
+.23333323333331.
+.22222222222221.
+..333333333321..
+..222222222211..

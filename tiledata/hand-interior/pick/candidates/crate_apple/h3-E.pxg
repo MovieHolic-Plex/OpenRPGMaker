@@ -1,0 +1,21 @@
+// h3-E 자유: 사과를 봉긋하게 쌓고 앞 입구 테두리를 두껍게, 앞판 두 장+못으로 궤짝을 또렷하게
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....B..GCD.....
+...GCDFCDFGCD...
+..GCDFGCDFCDFC..
+.EDFCDFGCDFGCDE.
+.EFGCDFDFGCDFDE.
+.ECDFCDFCDFCDFE.
+.EDFFDFFDFFDFFE.
+.EHHHHHHHHHHHHE.
+.JIIIIIIIIIIIIJ.
+.JKLLLLLLLLLLIJ.
+.JKMMMMMMMMMMIJ.
+.JIIIIIIIIIIIIJ.
+.JKLLLLLLLLLLIJ.
+.JKMMMMMMMMMMIJ.
+.JJJJJJJJJJJJJJ.
