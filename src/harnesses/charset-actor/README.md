@@ -9,7 +9,8 @@ RPG Maker 2000 CharSet 캐릭터 한 명(72×128 = 24×32 프레임 3장 × 방�
 ```
 brief(harness-data/charset-actor/briefs.json) ── 뼈대 번호 + 만들 캐릭터 + 지킬 것
    │
-draw ── 작업자(엔진별 1명, 같은 지시) — Claude Sonnet 5.5 medium(`claude -p`) · GPT 6.1 sol medium(`codex exec`)
+draw ── 작업자(엔진별 1명, 같은 지시) — Claude Sonnet 5.5 medium · Opus 5.5 high(`claude -p`) · GPT 6.1 sol medium(`codex exec`)
+   │    수정 작업: `--src` 로 다른 작업자 결과에서 시작, `--fix-notes` 의 감독 지적을 고친다
    │    작업자는 check(기계 검수) · views(8배 시트·필름 띠) 를 스스로 돌리며 고친다
    ▼
 page ── 엔진별 결과를 뼈대 원본과 나란히: 걷기 GIF·돌기 GIF·칸 위를 걷는 GIF·1배·8배·필름 띠·기계 검수
@@ -44,6 +45,7 @@ python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0
 | `harness.py` | 명령들, 작업자 실행(`claude -p` / `codex exec`), 비교 화면 |
 | `chr.py` | `.chr.txt` 읽기·쓰기, Actor1 → 격자, 기계 검수, 시트·필름 띠·GIF 3종 |
 | `worker.md` | 작업자 지시문 틀(절대 규칙: 생성 이미지·외부 그림 금지, 모양은 격자를 직접 고쳐서) |
+| `fixer.md` | 수정 작업 덧붙임 — `draw --src <다른 작업 폴더> --fix-notes <감독 지적>` 이면 그 결과에서 시작해 지적을 고친다 |
 | `harness-data/charset-actor/briefs.json` | 만들 캐릭터 목록 |
 | `harness-data/charset-actor/lawn16.png` | GIF 바닥 잔디(정글 칩셋 잔디 칸) |
 

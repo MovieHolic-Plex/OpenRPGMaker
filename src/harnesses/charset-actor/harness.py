@@ -37,7 +37,9 @@ VIZ = Path(os.path.expanduser('~/claude-viz'))
 ENGINES = {
     'sonnet': dict(label='Claude Sonnet 5.5 · medium', model='claude-sonnet-5-5', effort='medium'),
     'gpt': dict(label='GPT 6.1 sol · medium', model='gpt-6.1-sol', effort='medium'),
+    'opus': dict(label='Claude Opus 5.5 · high', model='claude-opus-5-5', effort='high'),
 }
+CLAUDE_ENGINES = ('sonnet', 'opus')
 TIMEOUT_S = int(os.environ.get('CHR_HARNESS_TIMEOUT', str(60 * 60)))
 
 
@@ -112,7 +114,9 @@ def cmd_draw(a):
     b = briefs()[a.brief]
     eng = ENGINES[a.engine]
     run = a.run or datetime.now().strftime('%Y%m%d-%H%M')
-    w = run_dir(run) / f'{a.brief}__{a.engine}'
+    src = Path(a.src).expanduser() if a.src else None
+    tag = a.engine + (f'-fix-{a.tag or src.name.split("__")[-1]}' if src else '')
+    w = run_dir(run) / f'{a.brief}__{tag}'
     if w.exists() and any(w.iterdir()) and not a.force:
         sys.exit(f'이미 있다: {w} (--force 로 덮기)')
     w.mkdir(parents=True, exist_ok=True)
@@ -127,9 +131,15 @@ def cmd_draw(a):
            '{KEEP}': b.get('keep', ''), '{ACTOR1}': str(ACTOR1)}
     for k, v in rep.items():
         t = t.replace(k, v)
+    if src:
+        # 수정 작업: 다른 작업자의 결과에서 시작한다. 지적은 감독이 쓴 파일(--fix-notes)을 그대로 붙인다.
+        shutil.copy(src / 'out.chr.txt', w / 'start.chr.txt')
+        make_views(w / 'start.chr.txt', w / 'start-views', b['base'])
+        fix = Path(a.fix_notes).read_text(encoding='utf-8') if a.fix_notes else '(지적 없음 — 스스로 찾아 고친다)'
+        t += (HERE / 'fixer.md').read_text(encoding='utf-8').replace('{FIX}', fix).replace('{SRC}', str(src))
     (w / 'prompt.md').write_text(t, encoding='utf-8')
     log = open(w / 'worker.log', 'w')
-    if a.engine == 'sonnet':
+    if a.engine in CLAUDE_ENGINES:
         cmd = [shutil.which('claude') or 'claude', '-p', '--model', eng['model'], '--effort', eng['effort'],
                '--dangerously-skip-permissions', '--add-dir', str(HERE), '--output-format', 'text']
     else:
@@ -140,7 +150,9 @@ def cmd_draw(a):
     p = subprocess.Popen(['timeout', str(TIMEOUT_S)] + cmd, cwd=w, stdin=open(w / 'prompt.md', 'rb'), stdout=log,
                          stderr=subprocess.STDOUT, start_new_session=True, env=env)
     meta = dict(run=run, brief=a.brief, engine=a.engine, label=eng['label'], model=eng['model'], effort=eng['effort'],
-                pid=p.pid, started=now(), dir=str(w), base=b['base'])
+                pid=p.pid, started=now(), dir=str(w), base=b['base'], src=str(src) if src else None)
+    if src:
+        meta['label'] += f' — {json.loads((src / "meta.json").read_text())["label"]} 결과를 수정'
     (w / 'meta.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')
     print(json.dumps(meta, ensure_ascii=False))
 
@@ -172,7 +184,8 @@ def cmd_page(a):
     rd = run_dir(a.run)
     cards = []
     base_done = set()
-    for w in sorted(rd.glob('*__*')):
+    ws = sorted(rd.glob('*__*'), key=lambda w: ('-fix-' in w.name, w.name))  # 처음부터 그린 것 먼저, 수정본은 뒤에
+    for w in ws:
         m = json.loads((w / 'meta.json').read_text())
         if m['base'] not in base_done:
             base_done.add(m['base'])
@@ -251,6 +264,9 @@ def main():
     p.add_argument('--engine', choices=list(ENGINES), required=True)
     p.add_argument('--run')
     p.add_argument('--force', action='store_true')
+    p.add_argument('--src', help='수정 작업: 다른 작업자의 작업 폴더(out.chr.txt 가 있는 곳)')
+    p.add_argument('--tag', help='수정 작업 폴더 이름 꼬리(기본: 원본 엔진 이름)')
+    p.add_argument('--fix-notes', help='수정 작업: 감독의 지적 파일')
     p.set_defaults(fn=cmd_draw)
     p = sp.add_parser('status')
     p.add_argument('--run')
