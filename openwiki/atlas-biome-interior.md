@@ -117,3 +117,13 @@ v5 맵을 바닥 한 칸으로 채우지 않고 `handInteriorStructure` 로 **�
 - 건너뛰는 것: 선택 없음·v5 유지, 크기를 바꾸라는 메모 뒤 새 크기 후보를 아직 고르지 않은 것(마법서 독서대), 애니메이션 기물. 목록은 `tiledata/hand-interior/pick/out/baked.json`.
 - 3/4 재작도 후보(w90·w91, 54종)는 아직 고르지 않아 들어가지 않았다. 고른 뒤 `python3 scripts/content/hand-interior/build_tileset.py && bun scripts/content/hand-interior/prepare-references.mts` 를 다시 돌린다.
 
+
+## 새 기물 길 (2026-10-01)
+
+v5 381종 밖의 기물을 추가하는 길. 명세 `tiledata/hand-interior/new/items.json`(28종: 무기 진열대·관·지구본·배 선실 소품 등) → `make_jobs.py --prep "<id>"`(투명 캔버스 후보 폴더) →
+후보 `candidates/<slug>/wNN-X.pxg`(`check_candidate.py`, `context.py` 가 `contextRoom` 에 임시 한 번 놓아 확인) → 18302 에서 사용자가 고름 → `build_tileset.py` 가 굽는다.
+- 코드: `scripts/content/hand-interior-pick/new_items.py`(`register`·`meta_entry`), `common.py`(`load_new_items`·`new_item_object` — v5 메타 모양의 가짜 객체, `atlas.x=-1`), `install_picks.py`(`_NEWS` 분기: rooms4 import 전에 `kit4.OBJ` 등록, `variant_meta` 에서 메타 추가).
+- 고른 것만 시트에 들어가고 `handInteriorSpec.json` objects 에 kind·w·h·up·cells·desc·tags·place 가 실린다(예: 지구본·관 모의 굽기에서 386 → 388종(386 = v5 381 + 함께 쓰기 변형 5)). 고른 것이 없으면 산출물 바이트 동일, `HAND_INTERIOR_PICKS=0` 이면 제외.
+- 새 분류 ko 이름: `ship`=배 선실, `crypt`=지하묘지(`tiledata/hand-interior/v5/meta5.py` 의 `ko.CAT.update`).
+- 새 기물은 resize.json·변형·예제 방이 없다. `prepare-references.mts` 는 v5 메타가 없으면 명세의 desc·place 를 쓰고 「예제 방 없음」을 덧붙인다.
+- 한계: `apply_picks.py`(미리보기 아틀라스)는 새 기물을 넣지 않는다(아틀라스 자리 없음).

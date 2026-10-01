@@ -4,6 +4,7 @@ v5 예제 방 26곳에 없는 기물은 작은 견본 방(널마루·회벽)을 
 
   python3 scripts/content/hand-interior-pick/context.py candidates/<slug>/w1-A.pxg   → w1-A.ctx.png (4배)
   python3 scripts/content/hand-interior-pick/context.py --v5 <slug>                   → candidates/<slug>/v5.ctx.png
+새 기물(new/items.json)은 v5 그림이 없으므로 contextRoom 의 빈 자리에 임시로 한 번 놓는다(정본 방은 그대로).
 고르는 화면(pick_server.py)도 이 모듈의 context_image() 를 쓴다.
 """
 import copy, os, sys
@@ -57,6 +58,9 @@ def _synthetic(o):
 def context_image(o, slot=None, margin=(3, 3)):
     """1배 맥락 그림. slot=None 이면 v5 그대로. 반환 (그림, 방 이름)."""
     rooms4, room4 = v5_modules()
+    if o.get('new'):   # 새 기물: 예제 방에 없다 → contextRoom 에 임시로 한 번 놓는다(new_items.context)
+        import new_items
+        return new_items.context(o, slot if slot is not None else v5_slot(o), margin)
     idx = _index().get(o['id'])
     m, ks = idx if idx else _synthetic(o)
     items = list(m['items'])

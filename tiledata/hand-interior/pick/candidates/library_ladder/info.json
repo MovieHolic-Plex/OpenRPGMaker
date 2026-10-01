@@ -1,0 +1,36 @@
+{
+ "id": "library ladder",
+ "slug": "library_ladder",
+ "name_ko": "서고 사다리",
+ "category": "서재",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  16,
+  48
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 48
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 32,
+ "surface": null,
+ "description": "책장에 기대 세운 나무 사다리(32px 솟음). 서고 책장 사이.",
+ "where": "서고 책장 사이.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 32px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "scholar"
+}

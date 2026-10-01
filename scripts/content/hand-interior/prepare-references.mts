@@ -146,7 +146,7 @@ ${fence("json", JSON.stringify(dict))}`);
 for (const [k, ids] of [...byCat].sort()) {
   const [cat, ko] = k.split(" ");
   const body = ids.map((id) => { const o = S.objects[id]!; return { id, ko: o.ko, kind: o.kind, w: o.w, h: o.h, overhangPx: o.up, ...(o.surface ? { surface: o.surface } : {}), ...(o.stairs ? { stairs: o.stairs } : {}), ...(o.animated ? { animated: true } : {}), cells: o.cells }; });
-  const desc = ids.map((id) => { const m = meta.objects.find((x: { id: string }) => x.id === id); const o = S.objects[id]!; return `- \`${id}\` ${o.ko} — ${m?.description ?? ""} ${(m?.placement ?? []).join(" / ")}${o.tags?.length ? ` · 쓰는 방: ${o.tags.join("·")}` : ""}${o.pair?.length ? ` · 짝: ${o.pair.join(", ")}` : ""}`; }).join("\n");
+  const desc = ids.map((id) => { const m = meta.objects.find((x: { id: string }) => x.id === id); const o = S.objects[id]!; return `- \`${id}\` ${o.ko} — ${m ? (m.description ?? "") : `${o.desc ?? ""} ${o.place ?? ""} · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)`} ${(m?.placement ?? []).join(" / ")}${o.tags?.length ? ` · 쓰는 방: ${o.tags.join("·")}` : ""}${o.pair?.length ? ` · 짝: ${o.pair.join(", ")}` : ""}`; }).join("\n");
   doc(`hand-interior-v5-objects-${cat}`, `손 도트 실내 · 가구 사전 · ${ko}`, `# 가구 사전 — ${ko} (${ids.length}종)
 
 cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구(막힘) · wall 북쪽 벽 앞(막힘) · hang 벽면 윗줄 걸이(★) · flat 밟는 바닥 무늬(2층).

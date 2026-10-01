@@ -1,0 +1,35 @@
+{
+ "id": "statue",
+ "slug": "statue",
+ "name_ko": "석상",
+ "category": "장식",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  48
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 48
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 32,
+ "surface": null,
+ "description": "받침대 위 사람 석상(흰 돌, 32px 솟음). 홀·정원 현관·알현실 양옆.",
+ "where": "홀·정원 현관·알현실 양옆.",
+ "placement": [
+  "그림이 발밑 칸 위로 32px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "stone",
+ "related": [],
+ "new": true,
+ "contextRoom": "throne"
+}
