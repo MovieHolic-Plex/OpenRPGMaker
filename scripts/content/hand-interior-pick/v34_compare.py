@@ -46,10 +46,11 @@ def gif(frames, ms):
 
 def animate(v5f, body):
     A = np.stack([np.array(f) for f in v5f]); diff = (A != A[0]).any(axis=(0, 3)); B = np.array(body)
-    if B.shape != A[0].shape: return None
+    if B.shape[1] != A.shape[2] or B.shape[0] < A.shape[1]: return None
+    oy = B.shape[0] - A.shape[1]   # 위로 키운 그림은 아래 맞춤(install_picks._animated 와 같다)
     out = []
     for t in range(len(v5f)):
-        fr = B.copy(); fr[diff] = A[t][diff]; out.append(Image.fromarray(fr))
+        fr = B.copy(); sub = fr[oy:]; sub[diff] = A[t][diff]; out.append(Image.fromarray(fr))
     return out
 
 
