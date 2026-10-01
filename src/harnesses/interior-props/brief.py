@@ -6,7 +6,7 @@
   <DATA>/rounds/h<판>/anchors/*.png   사용자가 직접 고른 같은 계열 기물(4배) — 화풍 기준. 규칙 글보다 이걸 따른다
   <DATA>/rounds/h<판>/rejected/*.png  이 기물에서 사용자가 버린 후보(4배) — 이렇게 하지 말 것
 """
-import json, os, shutil, sqlite3, subprocess, sys
+import glob, json, os, shutil, sqlite3, subprocess, sys
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -107,17 +107,35 @@ def family(item):
     return [i for i, m in by.items() if i != item and i.split()[0].split(':')[0] == head and m['category_ko'] == cat]
 
 
+AUDIT = os.path.join(ROOT, 'tiledata/hand-interior/pick/audit/v34-audit-verdicts.json')
+FLATKINDS = ('hang', 'flat')   # 벽면 걸이·바닥 무늬 — 평평한 게 정상이라 가구의 기준 그림으로 주면 정면도를 배운다(투구 선반 h49)
+
+
+def _view_fail():
+    """2026-10-01 3/4 전수조사에서 위반으로 나온 v5 원본 — 기준 그림에서 뺀다."""
+    try: return {x['key'] for x in json.load(open(AUDIT, encoding='utf-8')) if x.get('rev') == 'FAIL'}
+    except (OSError, ValueError): return set()
+
+
+def _anchor_ok(item, i, choice, bad):
+    by = objects_by_id(); o, m = by[item], by.get(i)
+    if not m: return False
+    if o['kind'] in ('floor', 'wall') and m['kind'] in FLATKINDS: return False
+    return not (choice == 'v5' and i in bad)
+
+
 def anchors(item, k=4):
-    by = objects_by_id(); o = by[item]; up = user_picks()
+    by = objects_by_id(); o = by[item]; up = user_picks(); bad = _view_fail()
     out = []
     for i in o.get("refs") or []:   # 새 기물 명세의 refs = 가장 닮은 기존 기물(보물상자 → 상자·왕실 상자)
+        if not by.get(i) or not _anchor_ok(item, i, current_choice(i), bad): continue
         ensure_folder(i); p = cand_png(i, current_choice(i))
         if os.path.exists(p): out.append((i, p))
     k = max(k, len(out) + 2)
     same_cat = [i for i in up if i != item and by.get(i) and by[i]['category_ko'] == o['category_ko']]
     same_kind = [i for i in up if i != item and by.get(i) and by[i]['kind'] == o['kind'] and i not in same_cat]
     for i in same_cat + same_kind:
-        if any(i == a for a, _ in out): continue
+        if any(i == a for a, _ in out) or not _anchor_ok(item, i, up[i], bad): continue
         p = cand_png(i, up[i])
         if os.path.exists(p): out.append((i, p))
         if len(out) >= k: break
@@ -126,7 +144,7 @@ def anchors(item, k=4):
         for i, m in by.items():
             if len(out) >= k: break
             if i == item or i in fam or m['category_ko'] != o['category_ko'] or m.get('new'): continue
-            if ((cur.get(i) or {}).get('choice') or 'v5') != 'v5' or any(i == a for a, _ in out): continue
+            if ((cur.get(i) or {}).get('choice') or 'v5') != 'v5' or any(i == a for a, _ in out) or not _anchor_ok(item, i, 'v5', bad): continue
             p = os.path.join(CAND, slug(i), 'v5.png')
             if os.path.exists(p): out.append((i, p))
     if len(out) < k:   # 새 분류라 같은 분류가 없으면: 사용자가 고른 같은 종류(kind) 기물 → 같은 종류 v5 원본
@@ -136,7 +154,7 @@ def anchors(item, k=4):
                 and ((picks_db.current_all().get(i) or {}).get('choice') or 'v5') == 'v5']
         for i, ch, _ in pool:
             if len(out) >= k: break
-            if i in have: continue
+            if i in have or not _anchor_ok(item, i, ch, bad): continue
             p = cand_png(i, ch) if ch != 'v5' else os.path.join(CAND, slug(i), 'v5.png')
             if os.path.exists(p): out.append((i, p)); have.add(i)
     return out
@@ -167,6 +185,11 @@ def make(rid, item, note='', base=''):
     if an:
         os.makedirs(os.path.join(out, 'anchors'), exist_ok=True)
         for i, p in an: _bg(Image.open(p), 8).save(os.path.join(out, 'anchors', slug(i) + '-x8.png'))
+    flat = o['kind'] in FLATKINDS
+    if not flat:
+        os.makedirs(os.path.join(out, 'view34'), exist_ok=True)
+        for f in sorted(glob.glob(os.path.join(HERE, 'examples', '*.png'))):
+            _bg(Image.open(f), 8).save(os.path.join(out, 'view34', os.path.basename(f)[:-4] + '-x8.png'))
     rej = [f for f in store.feedback(item) if f['verdict'] == 'reject' and f['cand']]
     lines_rej = []
     if rej:
@@ -203,15 +226,26 @@ def make(rid, item, note='', base=''):
                '같은 디자인·나무색·굵기의 다른 방향(또는 크기)이다. 네 그림을 이 옆에 놓아도 한 벌로 보여야 한다.', '']
         md += [f'- `family/{slug(i)}-x8.png` — {objects_by_id()[i]["name_ko"]} ({current_choice(i)})' for i, _ in fam] + ['']
     md += ['## 화풍 기준 (anchors/)', '',
-           '사용자가 직접 고른 같은 계열 기물이다. **규칙 문장보다 이 그림들을 따른다** — 윤곽 굵기, 명암 단 수, 윗면 두께, 결.', '']
+           '같은 계열 기물(사용자가 고른 것 · 3/4 전수조사를 통과한 원본)이다. **윤곽 굵기·명암 단 수·결·크기감은 이 그림들을 따른다.** 시점(윗면 행 수)은 아래 「시점」 절이 우선한다 — 기준 그림이 그보다 납작하면 시점 절을 따른다.', '']
     md += [f'- `anchors/{slug(i)}-x8.png` — {objects_by_id()[i]["name_ko"]}' + (' **(가장 닮은 기존 기물 — 크기·결을 이것에 맞춘다)**' if i in (o.get('refs') or []) else '')
            for i, _ in an] or ['- (아직 없음 — 지금 그림의 결을 따른다)']
     md += ['']
     if lines_rej: md += ['## 사용자가 버린 후보 (이렇게 하지 말 것)', ''] + lines_rej + ['']
-    md += ['## 시점 (3/4) — 이것만', '',
-           '- 카메라는 남쪽 위에서 내려다본다. **수평 면(상판·좌판·뚜껑·입구·선반판)은 위에서 보이는 면으로 몇 줄 보인다.**',
-           '- 보이는 세운 면은 남쪽 면뿐이다. 옆을 보는 물건(동쪽을 보는 의자 등)의 남쪽 면은 그 물건의 옆모습이다 — 옆모습은 정상.',
-           '- 기하 도형(원통·상자)으로 통째로 다시 만들지 마라. 손 도트 화풍(anchors/·지금 그림)을 지킨다.', '']
+    if flat:
+        md += ['## 시점', '', f'- 이 물건은 {o["kind_ko"]}이다 — 평평한 게 정상이다. 칩셋의 같은 종류(anchors/)처럼 그린다.', '']
+    else:
+        md += ['## 시점 (3/4) — 재서 지킨다 (2026-10-02: 윗판 없는 정면도가 무더기로 나와 사용자가 지적)', '',
+               '**먼저 `view34/` 그림을 연다.** `good-*` 은 칩셋의 3/4 가구, `bad-*` 은 같은 물건의 틀린 그림이다. 둘의 차이(꼭대기 윗면 행 수)를 눈에 익힌 뒤 그린다.', '',
+               '- 카메라는 남쪽 위에서 내려다본다. 보이는 면 = **수평 면의 윗면 + 남쪽 면**. 순수 정면도(아이콘)는 틀린다.',
+               '- **꼭대기 면**: 가구의 가장 높은 수평 면(윗판·뚜껑·덮개·좌판·기둥 머리)의 윗면을 **3행 이상**(큰 가구 4~6행). 칩셋 책장 3~4행 · 옷장 4행 · 찬장 6행 · 벽난로 5행.',
+               '  위가 뚫린 틀(기둥만 솟고 윗판이 없다)은 안 된다(`bad-helmet-shelf`).',
+               '- **안쪽 판**(선반판·칸막이판)은 윗면 2~3행 + 앞 모서리 1~2행. 안쪽 판이 잘 보여도 꼭대기 판을 대신하지 못한다.',
+               '- **얹힌 물건**(투구·책·단지·병·빵·화분)도 정수리·입구·뚜껑의 윗면이 보인다. 납작한 정면 아이콘으로 찍지 않는다(`good-helmet-shelf` 의 투구).',
+               '- 「북쪽 벽 앞 기물」은 벽 **앞에 서 있는** 가구다(깊이가 있다). 평평해도 되는 것은 벽면 걸이·바닥 무늬뿐이다 — anchors/ 에 그런 그림이 섞여 보여도 따르지 않는다.',
+               '- 윗면 자리가 모자라면 남쪽 면(앞면)을 줄여서 만든다. 꼭대기 윗면을 깎지 않는다.',
+               '- 보이는 세운 면은 남쪽 면뿐이다. 옆을 보는 물건(동쪽을 보는 의자 등)의 남쪽 면은 그 물건의 옆모습이다 — 옆모습은 정상.',
+               '- 기하 도형(원통·상자)으로 통째로 다시 만들지 마라. 손 도트 화풍(anchors/·지금 그림)을 지킨다.',
+               '- **끝내기 전에 8배 그림에서 세어 메모에 적는다**: `꼭대기 윗면 N행(y=a~b)`. 3행 미만이면 고친 뒤 끝낸다 — 검수가 이 수를 다시 재고, 3행 미만이면 무조건 떨어진다.', '']
     open(os.path.join(out, 'brief.md'), 'w', encoding='utf-8').write('\n'.join(md))
     store.set_brief(rid, out)
     return out
