@@ -88,7 +88,8 @@ def _font(sz):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--rooms', type=int, default=8); a = ap.parse_args()
     picks = json.load(open(os.path.join(PICK, 'picks.json'), encoding='utf-8')) if os.path.exists(os.path.join(PICK, 'picks.json')) else {}
-    meta = load_meta(); by = {o['id']: o for o in meta['objects']}
+    meta = load_meta(include_new=False)   # 새 기물은 아틀라스 자리가 없어 미리보기 아틀라스에 넣지 않는다 (굽기는 install_picks)
+    by = {o['id']: o for o in meta['objects']}
     import copy; orig = {i: copy.deepcopy(o) for i, o in by.items()}   # 크기 바꾸기 전 메타 (방 항목 대조용)
     atlas = v5_atlas().copy(); applied, skipped, swaps = [], [], {}
     extra = []   # 크기를 바꾼 기물: (o, im) — 루프 뒤에 아틀라스 끝 줄로

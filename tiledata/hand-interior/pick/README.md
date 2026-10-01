@@ -63,3 +63,16 @@ python3 scripts/content/hand-interior-pick/picks_db.py backup                # �
 판정 `v34-redo2-verdicts.json`, 비교 `v34_compare.py <out> v34-redo2-verdicts.json w51,w52,w53`. 움직이는 기물 마스크는 `anim_mask.py`.
 극장 좌석 메모(「위를 보는 느낌」)는 2판·3판 후보가 이미 있었는데 사용자가 원래 판을 골라서 건너뛰었다.
 빵 화덕 4차(w56): 「실내인데 굴뚝」 — resize.json 32x48 로 굴뚝이 벽면(2줄)을 타고 천장선까지. 위로 키운 움직이는 기물은 install_picks 가 v5 프레임을 아래 맞춤으로 겹친다(폭이 같고 키만 늘린 경우만).
+
+## 새 기물 길 (2026-10-01)
+
+v5 381종 밖의 기물(검 진열대·관·지구본…, 28종)을 추가하는 길이다. v5 파일(`tiledata/hand-interior/v5`)은 건드리지 않는다.
+
+1. **명세**: `tiledata/hand-interior/new/items.json` — id·name_ko·category(_ko)·kind(floor/wall/hang/flat)·footprint{w,h}·canvas[w,h]·description·tags·contextRoom.
+   검증은 `common.load_new_items()` 가 한다(v5 id 와 겹침·폭≠칸수×16·높이 규칙 위반이면 멈춘다).
+2. **폴더 준비**: `python3 scripts/content/hand-interior-pick/make_jobs.py --prep "<id>"` (전부는 `--prep-new`). 출발 그림은 투명 캔버스다.
+3. **후보 찍기·검사**: `candidates/<slug>/wNN-X.pxg` → `check_candidate.py`. `context.py` 는 명세의 `contextRoom` 에 그 기물을 **한 번 임시로** 놓아 `*.ctx.png` 를 만든다(실제 맵은 바꾸지 않는다).
+4. **고르기**: 18302 화면에 「새 기물」 배지와 필터(`#fNew`)로 나온다. 선택은 v5 기물과 같은 `picks.sqlite` 에 들어간다.
+5. **굽기**: 선택이 `wNN-X` 일 때만 `build_tileset.py` → `install_picks.py` 가 `kit4.OBJ` 에 등록(`new_items.register`)하고 시트·`handInteriorSpec.json`·메타에 싣는다.
+   **고른 새 기물이 없으면 산출물은 바이트 그대로**이고, `HAND_INTERIOR_PICKS=0` 이면 새 기물은 들어가지 않는다.
+   새 기물에는 resize.json·변형(함께 쓰기)·예제 방이 없다. 이어서 `bun scripts/content/hand-interior/prepare-references.mts` 를 돌리면 참고문서에 「예제 방 없음」으로 나온다.

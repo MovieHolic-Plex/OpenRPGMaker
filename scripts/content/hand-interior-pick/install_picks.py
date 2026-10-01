@@ -6,7 +6,9 @@
                      예제 맵은 v5 크기 그대로 둔다(정답 통행 격자가 v5 칸 점유로 적혀 있다). 시트·조립 사양은 새 크기.
   variant_meta(META) 「함께 쓰기」 변형(<원 id>#2 …)의 메타 항목을 META['objects'] 에 덧붙이고,
                      크기를 바꾼 기물의 이름·설명 속 옛 칸 수(「(2×2, …)」「1칸」)를 새 칸 수로 고친다.
-  REPORT             넣은 것·건너뛴 것(이유) — build_tileset 이 pickedFrom 으로 남긴다.
+  새 기물(new/items.json) 선택이 있으면 install() 이 kit4.OBJ 에 새로 등록하고(new_items.register), variant_meta 가 meta 항목을 덧붙인다.
+                     선택이 없으면 시트·메타는 한 바이트도 바뀌지 않는다. 새 기물은 크기 변경(resize.json)·변형을 받지 않는다.
+  REPORT             넣은 것·건너뛴 것(이유) — build_tileset 이 pickedFrom 으로 남긴다. 새 기물이 들어가면 REPORT['newItems'] 가 생긴다.
 
 정본 v5(tiledata/hand-interior/v5)는 읽기만 한다. 끄려면 HAND_INTERIOR_PICKS=0.
 건너뛰는 것: 선택 없음·v5 유지, 후보 파일 없음, 그림 크기가 칸 자리(또는 resize.json 캔버스)와 다른 것(크기를 바꾸라는 메모 뒤
@@ -15,10 +17,12 @@
 import copy, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CAND, PICK, PXGRID, geom, objects_by_id, slug  # noqa: E402
+import new_items  # noqa: E402
 from PIL import Image  # noqa: E402
 
 REPORT = {'applied': [], 'resized': [], 'variants': [], 'skipped': []}
 _PLAN = None
+_NEWS = {}   # 새 기물 id → (후보 그림, 선택 글자, 가짜 객체). _plan 이 채운다
 
 
 def _png(s, choice):
@@ -38,6 +42,7 @@ def _plan():
     picks = json.load(open(path, encoding='utf-8')) if os.path.exists(path) else {}
     by = objects_by_id()
     same, resized, variants = {}, {}, []
+    _NEWS.clear()
     for i, p in sorted(picks.items()):
         ch = (p or {}).get('choice')
         skip = lambda why: REPORT['skipped'].append({'id': i, 'choice': ch, 'why': why})
@@ -46,6 +51,11 @@ def _plan():
         o, s = by[i], slug(i)
         if not os.path.exists(os.path.join(CAND, s, ch + '.pxg')): skip('후보 파일 없음'); continue
         im, G = _png(s, ch), geom(o)
+        if o.get('new'):   # 새 기물: 아틀라스 칸 자리가 없다 → 캔버스 크기 그대로만, 크기 변경·변형·애니메이션 없음
+            if G['resized']: skip('새 기물은 resize.json 을 받지 않는다 — new/items.json 의 canvas·footprint 를 고친다'); continue
+            if list(im.size) != G['canvas']: skip(f"그림 {im.size[0]}×{im.size[1]} 이 캔버스 {G['canvas'][0]}×{G['canvas'][1]} 와 다름"); continue
+            if (p or {}).get('variants'): REPORT['skipped'].append({'id': f'{i}#2', 'choice': ch, 'why': '새 기물은 「함께 쓰기」 변형을 받지 않는다'})
+            _NEWS[i] = (im, ch, o); continue
         if o['atlas']['frames'] > 1 and (not os.path.exists(os.path.join(CAND, s, 'anim-mask.png'))
                                          or G['canvas'][0] != o['atlas']['w'] or G['canvas'][1] < o['atlas']['h']):
             skip('애니메이션 기물(12프레임) — anim-mask.png 가 없거나, 폭을 바꿨거나 키를 줄였다(위로 키운 것만 된다)'); continue
@@ -124,6 +134,11 @@ def _wrap(kit4, i, make):
 def install():
     import kit4, kit5, anim4, props5, props6, chapel5, tiles5  # noqa: F401  (OBJ 등록을 모두 끝낸다)
     same, _, variants = _plan()
+    for i, (im, ch, o) in _NEWS.items():   # 새 기물: v5 표에 없던 이름을 새로 등록한다(고르지 않았으면 이 루프는 비어 있다)
+        if i in kit4.OBJ: REPORT['skipped'].append({'id': i, 'choice': ch, 'why': 'kit4.OBJ 에 이미 있는 이름'}); continue
+        new_items.register(kit4, o, im)
+        REPORT.setdefault('newItems', []).append({'id': i, 'choice': ch, 'kind': o['kind'], 'footprint': [o['footprint']['w'], o['footprint']['h']]})
+        REPORT['applied'].append({'id': i, 'choice': ch, 'new': True})
     for i, (im, ch) in same.items():
         if i not in kit4.OBJ: REPORT['skipped'].append({'id': i, 'choice': ch, 'why': 'kit4.OBJ 에 없음'}); continue
         _wrap(kit4, i, lambda f, im=im: _same_size(f, im))
@@ -243,6 +258,9 @@ def variant_meta(meta):
         w, h = r['footprint']
         for k in ('name_ko', 'summary', 'description'):
             if o.get(k): o[k] = _resize_text(o[k], w, h)
+    for n in REPORT.get('newItems', []):   # 새 기물 메타(v5 항목과 같은 모양). 그림이 아니라 items.json 이 정본
+        if n['id'] in by: continue
+        e = new_items.meta_entry(_NEWS[n['id']][2]); meta['objects'].append(e); by[e['id']] = e
     for v in REPORT['variants']:
         o = by.get(v['variantOf'])
         if not o or v['id'] in by: continue

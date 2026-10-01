@@ -5,7 +5,8 @@
   python3 scripts/content/hand-interior-pick/make_jobs.py                        # 1판: 작업자 10명 × 11개 + 파일럿 2개
   python3 scripts/content/hand-interior-pick/make_jobs.py --workers 5 --per 12   # 작업자 수·몫을 바꿔 1판을 다시 나눈다
   python3 scripts/content/hand-interior-pick/make_jobs.py --round 2              # 다음 판(앞 판 배정·선택된 것은 건너뜀)
-  python3 scripts/content/hand-interior-pick/make_jobs.py --prep "bed red"  # 기물 하나만 폴더 준비
+  python3 scripts/content/hand-interior-pick/make_jobs.py --prep "bed red"  # 기물 하나만 폴더 준비(새 기물 id 도 된다)
+  python3 scripts/content/hand-interior-pick/make_jobs.py --prep-new        # new/items.json 의 새 기물 전부 폴더 준비(새 기물 길)
 
 우선순위 점수 = 예제 방 26곳(v5 rooms4)에 놓인 횟수 + 3 × 나온 방 수 + 크기 보너스(칸 수).
 한 판에는 변형 묶음(variantGroup)당 하나만 넣는다(궤짝:양배추·궤짝:당근 … 은 몸통이 같다 — 고른 방향을 뒤에 변형에 옮긴다).
@@ -53,6 +54,7 @@ def prep(o):
     im = v5_slot(o); W, H = im.size
     im.save(os.path.join(d, 'v5.png'))
     im.resize((W * 4, H * 4), Image.NEAREST).save(os.path.join(d, 'v5-x4.png'))
+    new = bool(o.get('new'))   # 새 기물: v5 그림이 없다 → v5.png·v5.pxg 는 전부 투명한 캔버스(작업자의 출발점), v5 색 없음
     shared = open(SHARED_PAL, encoding='utf-8').read()
     ramp_of = {}
     for line in shared.split('\n'):
@@ -69,13 +71,16 @@ def prep(o):
                 key[c] = CHARS[len(cols)]; cols.append(c)
     lines = [f'// {o["id"]} — 공통 팔레트(palette/v5.pal) + 이 기물의 v5 색(한 글자씩). 이 파일은 make_jobs.py 가 만든다: 고치지 마라.',
              '// 새 색이 필요하면 공통 램프(@rampc 재료:단)를 쓴다. 검사는 v5 색 밖을 불합격시킨다.', shared.rstrip(), '', '// ---- 이 기물의 v5 색 ----']
+    if new: lines[0] = f'// {o["id"]} — 새 기물: 공통 팔레트(palette/v5.pal)만 쓴다(v5 현재판이 없다). 이 파일은 make_jobs.py 가 만든다: 고치지 마라.'
+    if new: lines[-1] = '// ---- 새 기물은 v5 색이 없다: 공통 램프만 ----'
     for c in cols:
         hx = '#%02x%02x%02x' % c[:3]
         lines.append(f'{key[c]} {hx}' + (f' {c[3]}' if c[3] < 255 else '') + (f'   // = {ramp_of[hx]}' if hx in ramp_of else ''))
     atomic_write(os.path.join(d, 'palette.pal'), '\n'.join(lines) + '\n')
     rows = [''.join(key[px[x, y]] if px[x, y][3] else '.' for x in range(W)) for y in range(H)]
     atomic_write(os.path.join(d, 'v5.pxg'), '\n'.join([
-        f'// v5 현재판 {o["id"]} ({W}x{H}, 패딩 위 {o["atlas"]["padTop"]}px 포함). 방향 A 는 이 파일을 복사해 다듬는다.',
+        (f'// 새 기물 {o["id"]} ({W}x{H}) — v5 에 없는 기물이라 전부 투명한 빈 캔버스다. 방향 A 는 이 파일을 복사해 처음부터 찍는다.' if new else
+         f'// v5 현재판 {o["id"]} ({W}x{H}, 패딩 위 {o["atlas"]["padTop"]}px 포함). 방향 A 는 이 파일을 복사해 다듬는다.'),
         f'@size {W} {H}', '@cell 16', '@palette palette.pal', '@block 0 0'] + rows) + '\n')
     a = __import__('numpy').array(im); op = a[..., 3] == 255
     ys, xs = op.nonzero()
@@ -85,17 +90,25 @@ def prep(o):
                 v5_bbox=[int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())] if len(xs) else None,
                 v5_colors=len(cols), material=material_hint(o),
                 related=[r['id'] for r in o.get('related', [])])
+    if new:   # 새 기물 표지: 검사기는 v5 비교를 건너뛰고, 문맥 그림은 contextRoom 에 임시로 놓는다
+        info.update(new=True, contextRoom=o.get('contextRoom'), v5_bbox=None)
     atomic_write(os.path.join(d, 'info.json'), json.dumps(info, ensure_ascii=False, indent=1) + '\n')
     return s
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument('--round', type=int, default=1); ap.add_argument('--prep')
+    ap = argparse.ArgumentParser(); ap.add_argument('--round', type=int, default=1); ap.add_argument('--prep'); ap.add_argument('--prep-new', action='store_true', help='새 기물(new/items.json) 전부 폴더 준비')
     ap.add_argument('--per', type=int, default=PER_WORKER)
     ap.add_argument('--workers', type=int, default=N_WORKERS, help='작업자 수(w1…wN)'); a = ap.parse_args()
     WORKERS = [f'w{k + 1}' for k in range(a.workers)]
-    meta = load_meta(); by = {o['id']: o for o in meta['objects']}
+    meta = load_meta(include_new=False); by = {o['id']: o for o in meta['objects']}   # 우선순위·판 배정은 v5 381개만
+    news = load_new_items({o['id'] for o in meta['objects']})
     if a.prep:
-        print(prep(by[a.prep])); return
+        allo = dict(by, **{o['id']: o for o in news})
+        if a.prep not in allo: raise SystemExit(f'모르는 기물: {a.prep}')
+        print(prep(allo[a.prep])); return
+    if a.prep_new:
+        for o in news: print(prep(o))
+        return
     n, rooms = usage()
     def score(o):
         return n[o['id']] + 3 * len(rooms[o['id']]) + min(6, o['footprint']['w'] * max(1, o['footprint']['h']))

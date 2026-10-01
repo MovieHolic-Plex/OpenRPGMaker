@@ -1,0 +1,629 @@
+{
+ "about": "v5 손 도트 실내에 새로 넣을 기물(2026-10-01). 사용자 지시: 「추가할 만한 것들 규칙에 맞게 추가」. 후보는 candidates/<slug>/wNN-X.pxg, 사용자가 18302 에서 고른 것만 굽는다.",
+ "items": [
+  {
+   "id": "sword rack",
+   "name_ko": "검 진열대",
+   "name_en": "sword rack",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "검 세 자루를 칼끝이 위로 가게 세운 나무 진열대. 무기점·대장간 가게 북쪽 벽 앞.",
+   "contextRoom": "smithy",
+   "tags": [
+    "무기점",
+    "대장간",
+    "무기고"
+   ]
+  },
+  {
+   "id": "spear rack",
+   "name_ko": "창꽂이",
+   "name_en": "spear rack",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "창 서너 자루를 꽂은 둥근 나무 통(창날이 32px 솟는다). 무기고·성문 초소 구석.",
+   "contextRoom": "smithy",
+   "tags": [
+    "무기점",
+    "무기고",
+    "병영"
+   ]
+  },
+  {
+   "id": "bow rack",
+   "name_ko": "활 걸이",
+   "name_en": "bow rack",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽면 윗줄에 거는 활 두 자루와 화살통. 사냥꾼 집·무기점.",
+   "contextRoom": "smithy",
+   "tags": [
+    "무기점",
+    "사냥꾼"
+   ]
+  },
+  {
+   "id": "shield wall",
+   "name_ko": "방패 진열",
+   "name_en": "shield wall",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽면 윗줄에 문장 방패 둘을 나란히. 무기점·성 홀.",
+   "contextRoom": "smithy",
+   "tags": [
+    "무기점",
+    "알현실"
+   ]
+  },
+  {
+   "id": "prison cot",
+   "name_ko": "감방 침상",
+   "name_en": "prison cot",
+   "category": "dungeon",
+   "category_ko": "지하 감옥",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "감방 벽에 붙인 판자 침상(얇은 짚 매트, 쇠사슬 고정). 1×2.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "감옥",
+    "감방"
+   ]
+  },
+  {
+   "id": "straw pile",
+   "name_ko": "짚 더미(바닥)",
+   "name_en": "straw pile",
+   "category": "dungeon",
+   "category_ko": "지하 감옥",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 흩어진 짚(밟을 수 있음). 감방·마구간 구석.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "감옥",
+    "마구간"
+   ]
+  },
+  {
+   "id": "key ring hook",
+   "name_ko": "열쇠 꾸러미 걸이",
+   "name_en": "key ring hook",
+   "category": "dungeon",
+   "category_ko": "지하 감옥",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽면 윗줄 못에 걸린 큰 쇠 열쇠 꾸러미. 간수실.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "감옥",
+    "간수실"
+   ]
+  },
+  {
+   "id": "dresser",
+   "name_ko": "서랍장",
+   "name_en": "dresser",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "낮고 넓은 서랍장(서랍 2단 2열, 위에 작은 거울·화장품). 침실 북쪽 벽.",
+   "contextRoom": "manor",
+   "tags": [
+    "침실",
+    "귀족 방"
+   ]
+  },
+  {
+   "id": "statue",
+   "name_ko": "석상",
+   "name_en": "statue",
+   "category": "decor",
+   "category_ko": "장식",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "받침대 위 사람 석상(흰 돌, 32px 솟음). 홀·정원 현관·알현실 양옆.",
+   "contextRoom": "throne",
+   "tags": [
+    "알현실",
+    "홀",
+    "신전"
+   ]
+  },
+  {
+   "id": "portrait large",
+   "name_ko": "큰 초상화",
+   "name_en": "portrait large",
+   "category": "decor",
+   "category_ko": "장식",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "금 액자 큰 초상화(벽면 두 줄을 덮는 tall 걸이). 귀족 저택 홀·알현실.",
+   "contextRoom": "manor",
+   "tags": [
+    "저택",
+    "알현실"
+   ]
+  },
+  {
+   "id": "blackboard",
+   "name_ko": "칠판",
+   "name_en": "blackboard",
+   "category": "study",
+   "category_ko": "서재",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "나무 틀 초록 칠판(분필 글씨 몇 줄, 아래 분필 받침). 교실·서재.",
+   "contextRoom": "scholar",
+   "tags": [
+    "교실",
+    "학교",
+    "서재"
+   ]
+  },
+  {
+   "id": "globe",
+   "name_ko": "지구본",
+   "name_en": "globe",
+   "category": "study",
+   "category_ko": "서재",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 받침 위 지구본(바다 파랑·땅 초록, 금속 자오환). 서재·선장실.",
+   "contextRoom": "scholar",
+   "tags": [
+    "서재",
+    "선장실"
+   ]
+  },
+  {
+   "id": "library ladder",
+   "name_ko": "서고 사다리",
+   "name_en": "library ladder",
+   "category": "study",
+   "category_ko": "서재",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "책장에 기대 세운 나무 사다리(32px 솟음). 서고 책장 사이.",
+   "contextRoom": "scholar",
+   "tags": [
+    "서고",
+    "도서관"
+   ]
+  },
+  {
+   "id": "school desk",
+   "name_ko": "학생 책상",
+   "name_en": "school desk",
+   "category": "study",
+   "category_ko": "서재",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "의자가 붙은 작은 학생 책상(책 한 권, 잉크병). 교실에 줄지어.",
+   "contextRoom": "scholar",
+   "tags": [
+    "교실",
+    "학교"
+   ]
+  },
+  {
+   "id": "patient bed",
+   "name_ko": "환자 침대",
+   "name_en": "patient bed",
+   "category": "pharm",
+   "category_ko": "약국",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "흰 시트·흰 베개의 쇠 침대(낮은 머리판). 치료소·수도원 병실.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "치료소",
+    "병실",
+    "수도원"
+   ]
+  },
+  {
+   "id": "folding screen",
+   "name_ko": "칸막이 병풍",
+   "name_en": "folding screen",
+   "category": "pharm",
+   "category_ko": "약국",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "천을 댄 접이식 나무 칸막이(3폭, 비스듬히 접힘). 치료소·탈의실.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "치료소",
+    "탈의실",
+    "침실"
+   ]
+  },
+  {
+   "id": "safe",
+   "name_ko": "금고",
+   "name_en": "safe",
+   "category": "shop",
+   "category_ko": "상점",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "쇠 금고(다이얼·손잡이, 리벳). 은행·상인 방·보물고.",
+   "contextRoom": "throne",
+   "tags": [
+    "은행",
+    "보물고",
+    "상점"
+   ]
+  },
+  {
+   "id": "coin pile",
+   "name_ko": "금화 더미",
+   "name_en": "coin pile",
+   "category": "shop",
+   "category_ko": "상점",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 쌓인 금화 더미(보석 몇 알). 보물고·용의 둥지.",
+   "contextRoom": "throne",
+   "tags": [
+    "보물고",
+    "은행"
+   ]
+  },
+  {
+   "id": "ship wheel",
+   "name_ko": "조타륜",
+   "name_en": "ship wheel",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "받침 기둥 위 나무 조타륜(손잡이 8개). 선교·선장실.",
+   "contextRoom": "fish",
+   "tags": [
+    "배",
+    "선장실"
+   ]
+  },
+  {
+   "id": "hammock",
+   "name_ko": "해먹",
+   "name_en": "hammock",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "두 기둥 사이에 건 천 해먹. 선원 선실.",
+   "contextRoom": "fish",
+   "tags": [
+    "배",
+    "선원실"
+   ]
+  },
+  {
+   "id": "anchor",
+   "name_ko": "닻",
+   "name_en": "anchor",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "벽에 기대 세운 쇠 닻(밧줄 감김). 항구 창고·선실.",
+   "contextRoom": "fish",
+   "tags": [
+    "배",
+    "항구"
+   ]
+  },
+  {
+   "id": "rope coil",
+   "name_ko": "밧줄 더미",
+   "name_en": "rope coil",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "둥글게 감아 둔 굵은 밧줄. 갑판·항구 창고.",
+   "contextRoom": "fish",
+   "tags": [
+    "배",
+    "항구"
+   ]
+  },
+  {
+   "id": "coffin",
+   "name_ko": "관",
+   "name_en": "coffin",
+   "category": "crypt",
+   "category_ko": "지하묘지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 관(뚜껑 위 십자, 남북으로 긴 1×2). 지하묘지·장의사.",
+   "contextRoom": "chapel",
+   "tags": [
+    "지하묘지",
+    "장의사"
+   ]
+  },
+  {
+   "id": "sarcophagus",
+   "name_ko": "석관",
+   "name_en": "sarcophagus",
+   "category": "crypt",
+   "category_ko": "지하묘지",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "뚜껑에 누운 조각이 새겨진 돌 석관(동서로 긴 2×1). 지하묘지·왕릉.",
+   "contextRoom": "chapel",
+   "tags": [
+    "지하묘지",
+    "왕릉"
+   ]
+  },
+  {
+   "id": "skull pile",
+   "name_ko": "해골 더미",
+   "name_en": "skull pile",
+   "category": "crypt",
+   "category_ko": "지하묘지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "해골과 뼈 더미. 지하묘지·던전 구석.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "지하묘지",
+    "던전"
+   ]
+  },
+  {
+   "id": "birdcage",
+   "name_ko": "새장",
+   "name_en": "birdcage",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "받침대에 매단 둥근 쇠 새장(노란 새 한 마리). 저택 거실·상점 창가.",
+   "contextRoom": "manor",
+   "tags": [
+    "거실",
+    "상점"
+   ]
+  },
+  {
+   "id": "sleeping cat",
+   "name_ko": "잠든 고양이",
+   "name_en": "sleeping cat",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "몸을 말고 잠든 고양이(얼룩 무늬). 여관 화덕 옆·민가.",
+   "contextRoom": "inn",
+   "tags": [
+    "여관",
+    "민가"
+   ]
+  },
+  {
+   "id": "trapdoor",
+   "name_ko": "뚜껑문",
+   "name_en": "trapdoor",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥 나무 뚜껑문(쇠 고리 손잡이, 밟을 수 있음). 지하 창고 입구.",
+   "contextRoom": "inn",
+   "tags": [
+    "지하 창고",
+    "여관",
+    "민가"
+   ]
+  }
+ ]
+}

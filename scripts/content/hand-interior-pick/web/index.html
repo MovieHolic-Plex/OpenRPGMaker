@@ -27,6 +27,7 @@ nav .q { flex:none; width:16px; height:16px; line-height:16px; text-align:center
 .addressed { background:#3a3320; border:1px solid #f59e0b; border-radius:6px; padding:6px 10px; margin:0 0 10px; }
 nav .it .n { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 nav .it .c { color:var(--dim); font-size:12px; }
+.nb { background:#2f6b3a; color:#d9f5d9; border-radius:4px; padding:0 5px; font-size:11px; font-weight:700; }
 main { flex:1; overflow:auto; padding:14px 18px 60px; }
 .head h2 { margin:0; font-size:18px; }
 .head .meta { color:var(--dim); margin:2px 0 10px; }
@@ -90,6 +91,7 @@ details.hist summary { cursor:pointer; color:var(--acc); }
   <label><input type="checkbox" id="fReview"> ? 확인할 것만</label>
   <label><input type="checkbox" id="fFresh"> ✱ 새 후보만</label>
   <label><input type="checkbox" id="fHas" checked> 후보 있는 것만</label>
+  <label><input type="checkbox" id="fNew"> 새 기물만</label>
   <button id="reload" title="후보 다시 읽기">다시 읽기</button>
 </header>
 <div id="alert"></div>
@@ -151,7 +153,7 @@ function alertFail(msg) {
 function filtered() {
   const w = $('#fWorker').value, c = $('#fCat').value, todo = $('#fTodo').checked, has = $('#fHas').checked;
   return S.items.filter(i => (!w || i.worker === w || i.candidates.some(x => x.worker === w)) && (!c || i.category === c)
-    && (!todo || !(i.pick && i.pick.choice)) && (!has || i.candidates.length)
+    && (!todo || !(i.pick && i.pick.choice)) && (!has || i.candidates.length || $('#fNew')?.checked) && (!$('#fNew')?.checked || i.new)
     && (!$('#fMemo')?.checked || i.hasNote) && (!$('#fReview')?.checked || i.review) && (!$('#fFresh')?.checked || i.fresh)
     && (!$('#fDone')?.checked || !isDone(i) || i.id === cur));
 }
@@ -172,11 +174,12 @@ function renderList() {
   const nv = S.items.filter(i => vars(i).length), tv = nv.reduce((a, i) => a + vars(i).length, 0);
   $('#prog').textContent = `고름 ${S.picked} / ${S.items.length} · 완료 ${S.items.filter(isDone).length} · 보이는 ${items.length}` + (S.fresh ? ` · ✱ 새 후보 ${S.fresh}` : '') + (tv ? ` · 함께 쓰기 ${nv.length}개 기물 +${tv}` : '');
   $('#list').innerHTML = items.map(i => `<div class="it ${i.id===cur?'cur':''}" data-id="${esc(i.id)}">
-      <span class="dot ${i.pick&&i.pick.choice?'done':''}"></span><span class="memo ${i.hasNote?'':'off'}" title="메모 있음"></span><span class="n">${esc(i.name)}</span>${vars(i).length?`<span class="vc" title="함께 쓰기 ${vars(i).join(', ')}">+${vars(i).length}</span>`:''}${i.review?'<span class="q" title="메모 반영됨 — 확인해 주세요">?</span>':''}${i.fresh?'<span class="q" title="마지막으로 본 뒤 새 후보가 들어왔다">✱</span>':''}
+      <span class="dot ${i.pick&&i.pick.choice?'done':''}"></span><span class="memo ${i.hasNote?'':'off'}" title="메모 있음"></span><span class="n">${i.new?'<span class="nb" title="새 기물 — v5 에 없다">새</span> ':''}${esc(i.name)}</span>${vars(i).length?`<span class="vc" title="함께 쓰기 ${vars(i).join(', ')}">+${vars(i).length}</span>`:''}${i.review?'<span class="q" title="메모 반영됨 — 확인해 주세요">?</span>':''}${i.fresh?'<span class="q" title="마지막으로 본 뒤 새 후보가 들어왔다">✱</span>':''}
       <span class="c">${i.candidates.length} · ${esc(i.worker)}</span></div>`).join('') || '<div class="empty">조건에 맞는 기물 없음</div>';
   $('#list').querySelectorAll('.it').forEach(e => e.onclick = () => { cur = e.dataset.id; view = 'item'; setView(); render(); });
 }
-function opts(it) { return [{name:'v5', label:'v5 현재판 (유지)', v:'v5'}].concat(it.candidates.map(c => ({...c, label:c.name}))); }
+function v5Label(it) { return it.new ? '넣지 않음' : 'v5 현재판 (유지)'; }   // 새 기물: v5 에 없으니 「v5」 카드 = 시트·메타에 안 넣기(저장값은 'v5')
+function opts(it) { return [{name:'v5', label:v5Label(it), v:'v5'}].concat(it.candidates.map(c => ({...c, label:c.name}))); }
 function imgs(it, o, big=4, ctx=2) {
   const [W, H] = it.canvas;
   const src = o.name === 'v5' ? `/c/${it.slug}/v5.png` : `/c/${it.slug}/${o.name}.png?v=${o.v}`;
@@ -187,8 +190,8 @@ function imgs(it, o, big=4, ctx=2) {
     ${ctx ? `<img class="ctx" src="${ctxsrc}" data-ctx="${ctx}" onload="this.width=this.naturalWidth*${ctx}" alt="방 안">` : ''}
   </div>`;
 }
-function status(o) {
-  if (o.name === 'v5') return '<div class="st">v5 정본 (벽·바닥과 함께 그대로 둔다)</div>';
+function status(o, it) {
+  if (o.name === 'v5') return it && it.new ? '<div class="st">이 기물은 v5 에 없다 — 고르면 시트·메타에 <b>들어가지 않는다</b> (빈 방만 보인다)</div>' : '<div class="st">v5 정본 (벽·바닥과 함께 그대로 둔다)</div>';
   if (o.stale) return '<div class="st bad">검사 전 — check_candidate.py 를 돌려야 한다</div>';
   const lint = o.lintPass ? '<span class="ok">pxlint16 합</span>' : `<span class="bad">pxlint16 불</span> ${esc((o.lintFailed||[]).join(', '))}`;
   return `<div class="st">${o.ok ? '<span class="ok">검사 합격</span>' : '<span class="bad">검사 불합격</span>'} · ${lint} · 색 ${o.colors ?? '?'} · REFMAP 최대 ${o.refmapMax ?? '-'}</div>`
@@ -198,17 +201,17 @@ function renderItem() {
   const it = S.items.find(i => i.id === cur);
   if (!it) { $('#main').innerHTML = '<div class="empty">기물을 고르세요</div>'; return; }
   const ch = it.pick && it.pick.choice;
-  $('#main').innerHTML = `<div class="head"><h2>${esc(it.name)} <span class="st">${esc(it.id)}</span></h2>
-    <div class="meta">${esc(it.category)} · ${esc(it.kind_ko)} · 칸 ${it.footprint.w}×${it.footprint.h} · 캔버스 ${it.canvas.join('×')}${it.resized?' <b style="color:#e8b04a">(크기 변경 — '+esc(it.resized.why)+')</b>':''} · 담당 ${esc(it.worker)}<br>${esc(it.description)}</div></div>
+  $('#main').innerHTML = `<div class="head"><h2>${esc(it.name)} ${it.new?'<span class="nb">새 기물</span> ':''}<span class="st">${esc(it.id)}</span></h2>
+    <div class="meta">${esc(it.category)} · ${esc(it.kind_ko)} · 칸 ${it.footprint.w}×${it.footprint.h} · 캔버스 ${it.canvas.join('×')}${it.resized?' <b style="color:#e8b04a">(크기 변경 — '+esc(it.resized.why)+')</b>':''} · 담당 ${esc(it.worker)}${it.new?' · <b style="color:#8fd88f">v5 381개 밖의 새 기물 — 고른 후보만 시트에 들어간다</b>':''}<br>${esc(it.description)}</div></div>
     ${it.hasNote?`<div class="addressed" style="${it.addressed?'':'background:#1e2a3d;border-color:#3b82f6'}">${it.addressed?'<b>? 메모 반영됨</b> — 새 후보가 들어왔습니다. 확인하고 고르거나 메모를 고쳐 주세요.':'<b>메모</b> — 아직 반영 전'}<br>「${esc(it.pick.note)}」${it.addressedSummary?'<br>반영 내용: '+esc(it.addressedSummary):''}</div>`:''}
     ${vars(it).length?`<div class="st" style="margin-bottom:6px">주 선택 <b style="color:var(--sel)">${esc(ch||'없음')}</b> + <b style="color:#8fb8ff">함께 쓰기 ${vars(it).length}</b>: ${esc(vars(it).join(', '))}</div>`:''}
     <div class="cards">${opts(it).map((o, k) => `<div class="card ${ch===o.name?'sel':''} ${vars(it).includes(o.name)?'var':''}" data-c="${esc(o.name)}">
        <span class="k">${k}</span><div class="lab">${vars(it).includes(o.name)?'<span class="vb">+함께</span> ':''}${o.fresh?'<b style="color:#e8b04a">✱새</b> ':''}${esc(o.label)} ${o.dir?`<span class="d">${o.dir} ${DIRS[o.dir]||''}</span>`:''} ${ch===o.name?'· <b style="color:var(--sel)">선택됨</b>':''}</div>
-       ${imgs(it, o)}${status(o)}${o.note?`<div class="note">「${esc(o.note)}」</div>`:''}</div>`).join('')}</div>
+       ${imgs(it, o)}${status(o, it)}${o.note?`<div class="note">「${esc(o.note)}」</div>`:''}</div>`).join('')}</div>
     <div class="memo"><div>메모 (치는 동안 자동 저장 · 칸 밖·Ctrl+Enter·다른 기물·창 닫기에도 바로 저장)</div><textarea id="memo">${esc(it.pick&&it.pick.note||'')}</textarea>
       <div class="saved" id="saved">${it.pick ? '저장됨 ' + esc(it.pick.at) + (ch ? ' · 선택 ' + esc(ch) : ' · 선택 없음') : '아직 저장 없음'}</div></div>
     <details class="hist" id="hist" ${histOpen?'open':''}><summary>이력</summary><div id="histBody" class="st">불러오는 중…</div></details>
-    <div class="keys">키: 0 = v5 유지 · 1~9 = 후보 · n / p = 다음·이전 · u = 다음 안 고른 것 · x = 선택 지우기</div>
+    <div class="keys">키: 0 = ${it.new ? '넣지 않음' : 'v5 유지'} · 1~9 = 후보 · n / p = 다음·이전 · u = 다음 안 고른 것 · x = 선택 지우기</div>
     <div class="keys">함께 쓰기: Shift+클릭 또는 Shift+1~9 = 그 후보를 주 선택과 <b style="color:#8fb8ff">함께 쓰기</b>로 켜고 끄기 (파란 테 · 변형으로 아틀라스에 추가)</div>`;
   $('#main').querySelectorAll('.card').forEach(e => e.onclick = ev => ev.shiftKey ? toggleVar(it.id, e.dataset.c) : pick(it.id, e.dataset.c));
   const m = $('#memo');
@@ -255,7 +258,7 @@ function renderDir() {
     <div class="meta sum">지금까지 고른 방향: ${Object.entries(cnt).map(([k,v]) => `<span><b>${k}</b> ${v}</span>`).join('')}</div></div>`
     + items.map(it => { const ch = it.pick && it.pick.choice; const cs = it.candidates.filter(c => c.dir === d);
       return `<div class="row" data-id="${esc(it.id)}"><div class="rn"><b>${esc(it.name)}</b><div class="st">${esc(it.id)}${ch?'<br>선택 '+esc(ch):''}</div></div>
-        <div class="card ${ch==='v5'?'sel':''}" data-c="v5"><div class="st">v5</div>${imgs(it, {name:'v5'}, 4, 0)}</div>
+        <div class="card ${ch==='v5'?'sel':''}" data-c="v5"><div class="st">${it.new ? '넣지 않음' : 'v5'}</div>${imgs(it, {name:'v5'}, 4, 0)}</div>
         ${cs.map(c => `<div class="card ${ch===c.name?'sel':''} ${vars(it).includes(c.name)?'var':''}" data-c="${esc(c.name)}"><div class="st">${esc(c.name)} ${c.ok===false?'<span class="bad">불합격</span>':''}</div>${imgs(it, c, 4, 0)}</div>`).join('') || '<span class="st">이 방향 후보 없음</span>'}</div>`; }).join('');
   $('#main').querySelectorAll('.row').forEach(r => r.querySelectorAll('.card').forEach(e => e.onclick = ev => ev.shiftKey ? toggleVar(r.dataset.id, e.dataset.c) : pick(r.dataset.id, e.dataset.c)));
 }
@@ -279,7 +282,7 @@ async function pick(id, c) {
   const it = S.items.find(i => i.id === id);
   const note = (view === 'item' && $('#memo')) ? $('#memo').value : undefined;
   const body = {id, choice:c}; if (note !== undefined) body.note = note;
-  if (await post(body)) { toast(`${it ? it.name : id} → ${c === 'v5' ? 'v5 유지' : c} 저장`); render(); }
+  if (await post(body)) { toast(`${it ? it.name : id} → ${c === 'v5' ? (it && it.new ? '넣지 않음' : 'v5 유지') : c} 저장`); render(); }
 }
 async function toggleVar(id, c) {
   const it = S.items.find(i => i.id === id); if (!it) return;
@@ -330,7 +333,7 @@ document.addEventListener('keydown', ev => {
 $('#vItem').onclick = () => { view = 'item'; setView(); render(); };
 $('#vOut').onclick = () => { view = 'out'; setView(); render(); };
 $('#vDir').onchange = () => { dirView = $('#vDir').value; view = dirView ? 'dir' : 'item'; render(); };
-['#fWorker', '#fCat', '#fTodo', '#fHas', '#fMemo', '#fReview', '#fFresh', '#fDone'].forEach(s => $(s).onchange = render);
+['#fWorker', '#fCat', '#fTodo', '#fHas', '#fNew', '#fMemo', '#fReview', '#fFresh', '#fDone'].forEach(s => $(s).onchange = render);
 $('#reload').onclick = load;
 load();
 </script>

@@ -6,6 +6,8 @@
 
 GET  /                      고르는 화면 (web/index.html)
 GET  /api/state             기물·후보·검사 요약·선택 (요청마다 candidates/ 를 다시 읽는다 → 새 후보는 새로고침만으로 보인다)
+                            새 기물(new/items.json, items[].new=true)도 후보가 없어도 목록에 오른다. 그 기물의 'v5' 카드는 「넣지 않음」
+                            (저장값은 'v5' 그대로 — 시트·메타에 안 넣는다는 뜻). 새 기물은 고른 후보가 있을 때만 구워진다(new_items.py).
 GET  /c/<slug>/<파일.png>    후보 폴더의 그림
 GET  /ctx/<slug>/<후보>.png  방 안 맥락 그림(1배). 후보 = v5 | w1-A …
 GET  /out/<경로>             apply_picks.py 산출물
@@ -88,6 +90,9 @@ def state():
         o = objects_by_slug().get(d)
         if o and o['id'] not in owner and candidates(d):
             order.append(o['id']); owner[o['id']] = dict(worker='?', round=0)
+    for o in by.values():   # 새 기물 길(new/items.json): 후보가 아직 없어도 목록에 둔다 — 다음 후보가 들어오면 바로 고를 수 있다
+        if o.get('new') and o['id'] not in owner:
+            order.append(o['id']); owner[o['id']] = dict(worker='새', round=0)
     addressed = picks_db.addressed_all()   # 감독자가 「메모 반영」을 적는 곳 {id: {at, summary}} — picks_db.py address
     def ts(x):
         try: return datetime.datetime.fromisoformat(x).timestamp()
@@ -99,7 +104,7 @@ def state():
         s = slug(i); G = geom(o)
         items.append(dict(id=i, slug=s, name=o['name_ko'], category=o['category_ko'], kind=o['kind'], kind_ko=o['kind_ko'],
                           description=o['description'], tags=o.get('tags', []), canvas=G['canvas'],
-                          padTop=G['padTop'], footprint=G['footprint'], resized=G['resized'], **owner[i],
+                          padTop=G['padTop'], footprint=G['footprint'], resized=G['resized'], new=bool(o.get('new')), **owner[i],
                           candidates=candidates(s), pick=picks.get(i)))
         it = items[-1]; pk = it['pick'] or {}
         it['hasNote'] = bool((pk.get('note') or '').strip())

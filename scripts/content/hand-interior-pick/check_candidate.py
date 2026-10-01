@@ -34,7 +34,7 @@ def allowed():
         pal, _ = pxgrid.load_palette(SHARED_PAL)
         s = {tuple(c) for k, c in pal.items() if k != '#'}
         a = np.array(v5_atlas())
-        for o in load_meta()['objects']:
+        for o in load_meta(include_new=False)['objects']:   # 새 기물은 아틀라스에 그림이 없다
             t = o['atlas']; c = a[t['y']:t['y'] + t['h'], t['x']:t['x'] + t['w'] * t['frames']].reshape(-1, 4)
             s |= set(map(tuple, c[c[:, 3] > 0].tolist()))
         _ALLOWED = s
@@ -86,10 +86,11 @@ def check(pxg, quiet=False):
     base = os.path.splitext(os.path.abspath(pxg))[0]
     o = objects_by_slug().get(s)
     res = dict(file=os.path.relpath(pxg, ROOT), id=o['id'] if o else None, hard=[], warn=[])
+    if o and o.get('new'): res['new'] = True; res['skipped'] = 'v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준'
     m = WORKER_RE.match(name)
     if not m: res['warn'].append(f'파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): {name}')
     if not o:
-        res['hard'].append(f'폴더 이름 {s} 이 v5 기물 slug 가 아니다'); return finish(res, base, quiet)
+        res['hard'].append(f'폴더 이름 {s} 이 v5 기물·새 기물(new/items.json) slug 가 아니다'); return finish(res, base, quiet)
     try:
         _, im = pxgrid.render(pxg, base + '.png')
     except SystemExit as e:
@@ -107,6 +108,9 @@ def check(pxg, quiet=False):
     b, b5 = bbox(a), bbox(v5)
     if b is None:
         res['hard'].append('anchor: 불투명 화소가 없다')
+    elif o.get('new'):
+        # v5 와 견줄 바닥선이 없다: 발이 놓이는 기물은 캔버스 맨 아래 줄 근처에서 끝나야 칸에 앉는다(참고 경고)
+        if o['kind'] in ('floor', 'wall') and b[3] < H - 3: res['warn'].append(f'접지: 맨 아래 불투명 줄 y={b[3]} — 캔버스 바닥 y={H - 1} 에서 {H - 1 - b[3]}px 떠 있다')
     elif b5 and rz:
         pass   # 크기를 바꾼 기물: v5 바닥선·폭은 더 이상 기준이 아니다
     elif b5:
@@ -146,7 +150,7 @@ def finish(res, base, quiet):
     atomic_write(base + '.check.json', json.dumps(res, ensure_ascii=False, indent=1) + '\n')
     if not quiet:
         lint = res.get('lint', {})
-        print(('합격 ' if res['ok'] else '불합격 ') + res['file'], '| pxlint16', ('합' if lint.get('pass') else '불 ' + ','.join(lint.get('failed', [])[:4])),
+        print(('합격 ' if res['ok'] else '불합격 ') + res['file'] + (' [새 기물: v5 비교 생략]' if res.get('new') else ''), '| pxlint16', ('합' if lint.get('pass') else '불 ' + ','.join(lint.get('failed', [])[:4])),
               '| refmap max', res.get('refmap', {}).get('max'))
         for h in res['hard']: print('   ✗', h)
         for w in res['warn']: print('   ·', w)
