@@ -1,0 +1,72 @@
+[
+ {
+  "i": 1,
+  "name": "read_project_wiki",
+  "ok": true,
+  "summary": "프로젝트 위키 0개 문서",
+  "args": "{\"query\":\"제작 규칙 강가 버들항\",\"mapId\":\"map_blank_start\",\"ids\":[],\"offset\":0,\"includeHistory\":false}"
+ },
+ {
+  "i": 2,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 0개, 물 0칸",
+  "args": "{\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0,\"w\":20,\"h\":15}"
+ },
+ {
+  "i": 3,
+  "name": "get_project_summary",
+  "ok": true,
+  "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 228, 트룹 7",
+  "args": "{}"
+ },
+ {
+  "i": 4,
+  "name": "web_search",
+  "ok": false,
+  "summary": "웹 검색에는 ChatGPT(Codex) 로그인이 필요합니다. AI 설정에서 Codex 연결을 확인해 주세요.",
+  "args": "{\"query\":\"\\\"버들항\\\" 게임\"}"
+ },
+ {
+  "i": 5,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 6,
+  "name": "get_database_records",
+  "ok": true,
+  "summary": "maps 1건 / 1건",
+  "args": "{\"collection\":\"maps\",\"include\":\"full\",\"ids\":[\"map_blank_start\"],\"limit\":1,\"offset\":0}"
+ },
+ {
+  "i": 7,
+  "name": "author_beodeul_town",
+  "ok": true,
+  "summary": "버들항 강가 마을 88×56 (맵 map_river_yeoul, seed 19): 큰길 하나(굽은 폭 2)·8개 갈래길, 광장(32,30), 집 20채(20종), 앵커 inn·h109_0, 일터 「방앗간」, 밭 5, 나무 77, 광장 소품 8. 문 앞 22/22 도달. 다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
+  "args": "{\"mapId\":\"\",\"name\":\"여울나루\",\"id\":\"map_river_yeoul\",\"width\":88,\"height\":56,\"seed\":19,\"theme\":\"river\",\"harbour\":false,\"referencePurpose\":\"버들항 전용 강가 마을 자동 시공\"}"
+ },
+ {
+  "i": 8,
+  "name": "check_city_form",
+  "ok": true,
+  "summary": "도시 형태 이상 없음",
+  "args": "{\"mapId\":\"map_river_yeoul\"}"
+ },
+ {
+  "i": 9,
+  "name": "check_reachability",
+  "ok": true,
+  "summary": "도달성: 전부 도달 가능",
+  "args": "{\"mapId\":\"map_river_yeoul\",\"from\":{\"x\":0,\"y\":25},\"targets\":[{\"x\":32,\"y\":25},{\"x\":62,\"y\":17},{\"x\":4,\"y\":25},{\"x\":11,\"y\":27},{\"x\":38,\"y\":26},{\"x\":43,\"y\":27},{\"x\":59,\"y\":27},{\"x\":68,\"y\":28},{\"x\":76,\"y\":29},{\"x\":84,\"y\":26},{\"x\":5,\"y\":15},{\"x\":11,\"y\":17},{\"x\":20,\"y\":16},{\"x\":27,\"y\":15},{\"x\":34,\"y\":14},{\"x\":41,\"y\":16},{\"x\":5,\"y\":37},{\"x\":14,\"y\":35},{\"x\":40,\"y\":37},{\"x\":62,\"y\":39},{\"x\":71,\"y\":42},{\"x\":79,\"y\":41}]}"
+ },
+ {
+  "i": 10,
+  "name": "focus_editor_view",
+  "ok": true,
+  "summary": "화면을 '여울나루' (0,0) 88×56 로 옮겼습니다.",
+  "args": "{\"query\":\"\",\"mapId\":\"map_river_yeoul\",\"x\":0,\"y\":0,\"w\":88,\"h\":56}"
+ }
+]
