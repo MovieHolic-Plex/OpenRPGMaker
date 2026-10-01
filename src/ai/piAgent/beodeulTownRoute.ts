@@ -31,20 +31,27 @@ export function beodeulTownTargetFor(
   return defaultOutdoorTilesetId(project) === DEFAULT_TILESET_ID ? {} : null;
 }
 
+/** 마을 문법(theme ≠ city)이 짓는 가장 작은 맵 — authorBeodeulTown.ts VILLAGE_MIN_W/H 와 같다. */
+const VILLAGE_MIN = { w: 36, h: 30 } as const;
+
 export function formatBeodeulTownNote(target: BeodeulTownTarget, targetMap: { id: string; width: number; height: number } | null): string {
-  const where = target.mapId && !target.lived
-    ? `지금 맵 '${target.mapId}'(${targetMap?.width ?? "?"}×${targetMap?.height ?? "?"})은 비어 있다 → author_beodeul_town({mapId:"${target.mapId}"}) 로 맵 전체에 짓는다(맵은 풀밭으로 다시 깔린다).`
-    : target.mapId
-      ? `지금 맵 '${target.mapId}' 에는 이미 내용이 있다 → mapId 를 주지 말고 author_beodeul_town({name, id?, width?, height?}) 로 새 버들항 맵을 만든다. 기존 맵을 지우지 않는다.`
-      : "author_beodeul_town({name, width?, height?}) 로 새 버들항 맵을 만든다.";
+  const small = !!targetMap && (targetMap.width < VILLAGE_MIN.w || targetMap.height < VILLAGE_MIN.h);
+  const where = target.mapId && !target.lived && !small
+    ? `지금 맵 '${target.mapId}'(${targetMap?.width ?? "?"}×${targetMap?.height ?? "?"})은 비어 있다 → author_beodeul_town({mapId:"${target.mapId}", theme}) 로 맵 전체에 짓는다(맵은 다시 깔린다).`
+    : target.mapId && small && !target.lived
+      ? `지금 맵 '${target.mapId}'(${targetMap!.width}×${targetMap!.height})은 마을이 들어가기에 작다(최소 ${VILLAGE_MIN.w}×${VILLAGE_MIN.h}) → mapId 를 주지 말고 author_beodeul_town({name, theme}) 로 새 버들항 맵을 만든다.`
+      : target.mapId
+        ? `지금 맵 '${target.mapId}' 에는 이미 내용이 있다 → mapId 를 주지 말고 author_beodeul_town({name, theme, width?, height?}) 로 새 버들항 맵을 만든다. 기존 맵을 지우지 않는다.`
+        : "author_beodeul_town({name, theme, width?, height?}) 로 새 버들항 맵을 만든다.";
   return [
     "[마을 시공 — 버들항] 이 요청의 마을은 버들항 타일셋이다. author_village·author_house 는 숲마을 생성기라 쓰지 않는다. "
-      + "author_beodeul_town 한 호출이 길 위계·블록 격자·건물 키트(주택·상점·시장·저택·교회)·풀밭·소품을 버들항 문법으로 조립한다 — "
+      + "author_beodeul_town 한 호출이 사용자가 고른 버들항 변형 마을의 문법(물 → 굽은 큰길 → 뒷길 고리 → 광장·앵커 건물 → 길을 보는 집 → 일터·밭·숲 덩이)으로 짓는다 — "
       + "paint_road·fill_region·place_props 로 길과 집을 손으로 깔지 말 것.",
     where,
-    "크기는 기본 60×60(작게는 16×10, 블록 격자에 맞게 조금 조정된다). 항구·바다·호수·부두 마을이면 harbour:true(가로 83 이상). "
+    "theme 은 말에서 고른다: 강·물레방아·시골 마을 = river(기본), 항구·포구·어촌·바닷가 = coast, 사막·오아시스 = desert, 눈·설원·겨울 = snow, 늪·습지 = swamp. "
+      + "「도시·로마풍·블록」을 말할 때만 city(블록 격자 도시, 기본 60×60, 항구 호수는 harbour:true·가로 83 이상). 마을 크기는 생략하면 56×44 안팎(36×30~96×80). "
       + "같은 seed 는 같은 마을이니 다른 배치를 원하면 seed 를 바꾼다.",
-    "시공 뒤 check_city_form 으로 길 위계를 보고, check_reachability({mapId, from, targets}) 로 문 앞 도달을 확인한다. "
-      + "NPC·출입구 이벤트가 필요하면 그 뒤에 얹는다(문 앞 칸은 결과 data 에 있다).",
+    "시공 뒤 check_city_form 으로 길 위계를 보고, check_reachability({mapId, from, targets}) 로 문 앞 도달을 확인한다(결과 data.doors·data.entrance). "
+      + "NPC·출입구 이벤트가 필요하면 그 뒤에 얹는다.",
   ].join("\n");
 }

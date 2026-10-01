@@ -264,8 +264,8 @@ revision 1. 재로드 deepEqual 프로젝트·맵·타일셋 true, 통행 불일
 
 원인 세 가지(수리 전): ① 바깥 새 맵 기본이 숲마을(`forestHarmony.ts::defaultOutdoorTilesetId`) ② `author_village` 는 버들항을 `village-tileset-mismatch` 로 거절 ③ 의도 노트·도구 노출·마을 계약(`villageContract.ts`, `plainTurn.ts`)·`formatPiVillageNote`(`executionRoute.ts`)가 전부 `author_village` 한 방 숲 경로로만 몰았고 블록 키트·`check_city_form`·참고문서는 안내하지 않았다.
 
-- 도구 `author_beodeul_town`(`src/editor/tools/authorBeodeulTown.ts`): 블록 키트 `bd-block-*`(+`bd-harbour-lake`)를 열·띠로 조립한다. `mapId`(기존 버들항 맵은 잔디로 지우고 통째 재조립)·`name`·`id`·`width`·`height`(기본 60×60)·`seed`·`harbour`(폭 83 이상). 원작 배치를 베끼지 않는다. 오프라인 검증 `scripts/qa/beodeul-town-offline.mts`: 빈 바닥 7.5~10.3%, 문 앞 전부 도달, 결함 0.
-- `author_village` 는 대상이 버들항이면 `author_beodeul_town` 으로 **되돌려 보낸다**(`authorVillageToolDef.ts::rerouteToBeodeulTown`).
+- 도구 `author_beodeul_town`(`src/editor/tools/authorBeodeulTown.ts`): **`theme:"city"` 일 때** 블록 키트 `bd-block-*`(+`bd-harbour-lake`)를 열·띠로 조립한다(2026-10-01 오후부터 기본 theme 은 마을 문법 `river` — 아래 「마을 문법」 절). `mapId`(기존 버들항 맵은 잔디로 지우고 통째 재조립)·`name`·`id`·`width`·`height`(기본 60×60)·`seed`·`harbour`(폭 83 이상). 원작 배치를 베끼지 않는다. 오프라인 검증 `scripts/qa/beodeul-town-offline.mts`: 빈 바닥 7.5~10.3%, 문 앞 전부 도달, 결함 0.
+- `author_village` 는 대상이 버들항이면 `author_beodeul_town` 으로 **되돌려 보낸다**(`authorVillageToolDef.ts::rerouteToBeodeulTown`). 넘길 때 인자 글(이름·groundTheme)에서 theme 을 고른다: 도시·로마·블록 → city, 사막·오아시스 → desert, 설원·겨울 → snow, 늪·습지 → swamp, 항구·포구·바다 → coast, 그 밖 river. 「city」 낱말은 tilesetId `beodeul_city` 에도 있어 보지 않는다.
 - 노트: `src/ai/piAgent/beodeulTownRoute.ts::beodeulTownTargetFor` 가 LLM 의도가 `author_village`/`author_beodeul_town` 를 고르고 대상 맵(없으면 프로젝트 바깥 기본)이 버들항일 때만 버들항 노트를 만든다. `executionRoute.ts` 는 이 노트를 `formatPiVillageNote` 보다 먼저 쓰고, `plainTurn.ts`·`villageContract.ts` 는 버들항 마을이면 **마을 계약을 건너뛴다**(12채·강변촌 굳히기 방지).
 - 노출: `sessionToolExposure.ts::schemasForIntent` 가 두 마을 도구에 `check_city_form`·`check_reachability` 를 짝지어 노출한다. `TILESET_REFERENCE_WRITERS`(`tilesetReferenceTools.ts`)에 `author_beodeul_town` 포함 → 참고문서 용도를 먼저 읽어야 한다.
 - 실모델 시험 `scripts/qa/beodeul-village-plain.mts`(증거 `verify-shots/assistant-beodeul-village/`): 새 프로젝트 「마을 만들어 줘」 → `author_beodeul_town` 1회 → `check_city_form`·`check_reachability` → 소품 `stamp_object`. 기존 합본 마을 프로젝트는 옛 경로 유지.
@@ -328,3 +328,27 @@ MD 사본 `tiledata/beodeul-city/references/bd-pick-doc-*.md`.
 - var2·var4(재선택 대기 11항목)·var6(재작업 중)이 끝나면 `install_picks.py` → `bake_picks.py` 를 다시 돌린다(칸 번호는 등록부가 지킨다).
 - 문 칸(입구) 부위·실내 연결, 큰 건물의 박공별 통행 세부는 키트에 없다. 막힘 줄 수는 크기 규칙으로 정했다(그림마다 손으로 맞춘 것이 아니다).
 - 땅 표본은 오토타일이 아니다(이어 찍는 2×2·3×3 표본). 조수가 이 키트로 장소를 까는 실모델 시험은 아직 없다.
+
+## 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
+
+r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 블록 격자 도시(60×59)를 깔았다. 사용자가 고른 변형 넷(포구·방앗간·포도원·장터)의 배치 문법을
+`author_beodeul_town` 이 직접 짓게 했다 — `src/editor/tools/beodeulVillage.ts::buildBeodeulVillage`, `theme`: `river`(기본)·`coast`·`desert`·`snow`·`swamp`, `city` = 종전 블록 격자.
+
+- 순서·수치 정본은 참고문서 `bd-pick-doc-village-grammar`(`tiledata/beodeul-city/references/bd-pick-doc-village-grammar.md`) — 물 앞섬 → 굽은 큰길(폭 2, 12~16칸마다 smoothstep 열쇠점, 이웃 높이 차 ≤ 거리/6, 다리 앞뒤 곧게 + `bd-bridge-arch`) → 뒷길·이음길 고리 → 큰길 남쪽 광장(판석 46칸 안팎)과 맞은편 앵커 → 길 북쪽 띠에 문이 길을 보는 집(물러앉음 0/1, 간격 1·2·마당) + 이음길 양옆 집 → 일터 덩이 → 집 옆 살림 → 밭·숲 덩이 → 큰 빈 덩이에만 덤불·풀꽃 → 한 칸 혹 정리(`analyzeCityForm` 같은 계산)·문 앞 BFS.
+- 계획 격자(`occ`)와 실제 덮임(`cover`, 키트 투명 귀퉁이 제외)을 따로 든다. 길·물·광장을 모두 정한 뒤 칠하고(길 → 광장 → 물 순서 — `fill_region` 이 「벽」과 1칸 틈을 메우므로 물이 먼저면 물가에 혹이 생긴다), 그다음 찍는다.
+- 집·앵커는 `appendStructurePlacement` 로 `map.structurePlacements` 에 남긴다 → `check_city_form` 이 키트 `parts.entrance` 로 문 앞을 알고 막다른 길로 세지 않는다. 고른 조각 건물 67종의 문 칸은 `scripts/content/beodeul-picks/find_pick_doors.py`(그림 맨 아래 띠에서 벽 색과 가장 다른 칸, 신호가 약한 통나무 벽은 가운데) → `tiledata/beodeul-variants/pick-doors.json` → 번들 키트 `parts`. `bake_picks.py` 가 다시 구울 때 붙인다.
+- 고른 조각 바닥 표본 중 `ground-road/path` 는 태그 `road`, `ground-plaza/deck` 는 `plaza`(floor 유지) — 기후 마을의 길·광장을 도시 형태 자와 빈 바닥 지표(`beodeul-metrics.ts::emptinessOf`, 태그로도 「지은 칸」)가 읽는다.
+- `cityForm.ts` 운하 판정: 축 길이 60% 미만만 걸치는 물(바닷가 띠·연못)은 운하로 보지 않는다(포구·사막에 「운하가 곧다」 거짓 경고가 났다).
+- 시작 맵(`beodeulStarterMap.ts`)은 블록 격자의 columns/bands 를 쓰므로 `theme:"city"` 를 명시한다.
+- 조수: 노트(`beodeulTownRoute.ts`)·시스템 프롬프트가 말에서 theme 을 고르게 하고, 36×30 보다 작은 빈 시작 맵(새 프로젝트 20×15)이면 mapId 대신 새 맵을 만들게 한다.
+- 참고문서 `read_tileset_reference`·`list_tileset_references` 는 빈 문자열 id 를 없는 것으로 본다(엄격 스키마 모델이 `imageId:""` 를 채워 보내 12번 실패하고 멈췄다).
+
+검증(LLM 없음): `bun scripts/qa/beodeul-village-offline.mts [--2x] [theme:seed[:WxH] …]` → `verify-shots/assistant-beodeul-village/offline-village/`.
+5 theme × seed 3·11·29 + 88×56: 문 앞 도달 전부, `check_city_form` 경고 0, 20×15 화면 빈 바닥 최대 river 0.33·coast 0.33·swamp 0.37·desert 0.46·snow 0.60(얼음 못이 걸음 바닥으로 세어짐).
+실모델(`scripts/qa/beodeul-village-plain.mts --round r2`, opencodex/gpt-6-astra, 「버들항 느낌으로 강가 마을 하나 만들어 줘」): `author_beodeul_town` theme river 88×56 1회 → `check_city_form` 이상 없음 → 도달 전부. 증거 `verify-shots/assistant-beodeul-village/r2/`(attempt1 = 빈 id 실패, attempt2 = 곧은 길 경고 2건 → 수리 전).
+
+남은 약점:
+- 집은 늘 길의 북쪽에만 선다(문이 남쪽). 큰 맵(88×56)은 남쪽 3분의 1이 밭·숲으로 남는다 — 뒷길을 한 줄 더 내는 일은 하지 않았다.
+- 늪 집은 기둥 위가 아니라 진흙 섬에 선다. 설원은 얼음 못 화면이 빈 바닥 40% 를 넘는다. 바닥 표본은 오토타일이 아니라 경계가 칸 단위로 각지다.
+- 조수는 문법 문서를 읽지 않고 도구를 바로 불렀다(도구가 문법을 지니므로 결과는 같다). 마을 이름·NPC·출입구 이벤트는 짓지 않는다.
+- 버들항 던전·필드 문법 도구는 없다(던전은 참고문서 beodeul-picks-dungeon 을 읽고 키트를 찍는다, 필드 길은 `author_wild_route` 의 버들항 시공).

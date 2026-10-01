@@ -1,0 +1,13 @@
+OK   read_project_wiki — 프로젝트 위키 0개 문서
+OK   get_map_region — 빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 0개, 물 0칸
+OK   get_project_summary — 프로젝트 '새 프로젝트' — 맵 1개, 아이템 228, 트룹 7
+FAIL web_search — 웹 검색에는 ChatGPT(Codex) 로그인이 필요합니다. AI 설정에서 Codex 연결을 확인해 주세요.
+OK   list_tileset_references — 타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.
+OK   get_database_records — maps 1건 / 1건
+assistant: 웹 검색은 연결 설정 문제로 확인하지 못했습니다. 대신 편집기에 있는 버들항 전용 마을 양식으로, 기존 맵은 보존하고 강과 다리·광장·굽은 골목이 있는 새 강가 마을을 만들겠습니다. 
+OK   set_build_spec — 
+OK   author_beodeul_town — 버들항 강가 마을 88×56 (맵 map_river_yeoul, seed 19): 큰길 하나(굽은 폭 2)·8개 갈래길, 광장(32,30), 집 20채(20종), 앵커 inn·h109_0, 일터 「방앗간」, 밭 5, 나무 77, 광장 소품 8. 문 앞 22/22 도달. 다음: check_city_form·check_reachability 로 점검하고, NP
+OK   check_city_form — 도시 형태 이상 없음
+OK   check_reachability — 도달성: 전부 도달 가능
+OK   focus_editor_view — 화면을 '여울나루' (0,0) 88×56 로 옮겼습니다.
+assistant: 기존 맵은 그대로 두고, 새 강가 마을 **‘여울나루’**를 만들었습니다. 강과 다리, 굽은 큰길과 골목, 광장·여관 외관·방앗간·다양한 주택·밭과 숲을 배치했고, 모든 건물 문 앞까지 이동 가능한지 확인했습니다.  현재는 야외 마을만 완성된 상태이며, 건물 실내 연결과 주민·대화는 추가하지 않았습니다.

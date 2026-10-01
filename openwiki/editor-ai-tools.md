@@ -259,7 +259,7 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
 ### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
 ## AI 새 야외·마을의 기본 칩셋 (2026-09-21, 2026-10-01 갱신)
 
-> 2026-10-01: 버들항만 있는 프로젝트(새 프로젝트)는 `defaultOutdoorTilesetId` 가 **버들항**을 돌려주고, 「마을 만들어 줘」는 `author_beodeul_town` 으로 간다(`author_village` 는 버들항 대상이면 이 도구로 되돌림, 마을 계약 생략). 자세한 경로는 `openwiki/beodeul-city.md` 「조수 마을 경로」. 아래 문단의 「forest_harmony 우선」은 합본·숲마을 맵이 섞인 기존 프로젝트에만 해당한다.
+> 2026-10-01: 버들항만 있는 프로젝트(새 프로젝트)는 `defaultOutdoorTilesetId` 가 **버들항**을 돌려주고, 「마을 만들어 줘」는 `author_beodeul_town` 으로 간다(`author_village` 는 버들항 대상이면 이 도구로 되돌림, 마을 계약 생략). 자세한 경로는 `openwiki/beodeul-city.md` 「조수 마을 경로」. 같은 날 오후부터 이 도구의 기본은 **마을 문법**(`theme` river·coast·desert·snow·swamp — 굽은 큰길·뒷길 고리·광장·길을 보는 집, `beodeulVillage.ts`)이고 블록 격자 도시는 `theme:"city"` 다(「마을 문법」 절). 아래 문단의 「forest_harmony 우선」은 합본·숲마을 맵이 섞인 기존 프로젝트에만 해당한다.
 
 - `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 새 프로젝트·새 맵·AI 새 야외의 기본값을 소유한다.
   기본 제공 `forest_harmony`(숲마을 · 거리별 잔디)를 우선하며, 번들이 없는 축소된 옛 프로젝트만

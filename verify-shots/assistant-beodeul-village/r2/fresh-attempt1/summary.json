@@ -1,0 +1,212 @@
+{
+ "label": "fresh",
+ "round": "r2",
+ "text": "버들항 느낌으로 강가 마을 하나 만들어 줘",
+ "model": "opencodex/gpt-6-astra",
+ "projectDir": "/tmp/oprn-village-r2",
+ "ms": 150369,
+ "before": {
+  "maps": {
+   "map_blank_start": "beodeul_city"
+  },
+  "currentMapId": "map_blank_start"
+ },
+ "afterMaps": {
+  "map_blank_start": "beodeul_city"
+ },
+ "target": {
+  "id": "map_blank_start",
+  "size": [
+   20,
+   15
+  ],
+  "tilesetId": "beodeul_city"
+ },
+ "blankCellRatioRaw": 0,
+ "exposedTools": 27,
+ "villageContract": false,
+ "toolCalls": 27,
+ "failed": 21,
+ "byTool": {
+  "read_project_wiki": 1,
+  "get_map_region": 1,
+  "web_search": 1,
+  "get_database_records": 1,
+  "list_tileset_references": 2,
+  "tile_query": 1,
+  "read_tileset_reference": 19,
+  "find_tools": 1
+ },
+ "stats": {
+  "ms": 143392,
+  "turns": 23,
+  "toolCalls": 27,
+  "toolErrors": 21,
+  "usage": {
+   "input": 534830,
+   "output": 1952,
+   "cacheRead": 81920,
+   "cacheWrite": 0,
+   "totalTokens": 618702,
+   "calls": 23
+  }
+ },
+ "metrics": {
+  "emptiness": {
+   "lawn": {
+    "share": 1,
+    "screens": 1,
+    "over40": 1,
+    "worst": 1,
+    "overAt": [
+     [
+      0,
+      0,
+      1
+     ]
+    ]
+   },
+   "open": {
+    "share": 1,
+    "screens": 1,
+    "over40": 1,
+    "worst": 1,
+    "overAt": [
+     [
+      0,
+      0,
+      1
+     ]
+    ]
+   }
+  },
+  "blockRepeats": {
+   "blocks": 0,
+   "distinct": 0,
+   "neighbourRepeats": [],
+   "overused": []
+  },
+  "cityForm": {
+   "deadEnds": [],
+   "lines": {
+    "count": 0,
+    "longStraight": [],
+    "longestLen": 0
+   },
+   "graph": {
+    "meanDepth": 0,
+    "maxDepth": 0,
+    "components": 0,
+    "isolated": []
+   },
+   "spacing": {
+    "vGaps": [],
+    "hGaps": [],
+    "cv": null
+   },
+   "bentStreetCells": 0,
+   "canal": {
+    "cells": 0,
+    "orient": null,
+    "bends": 0,
+    "straightShare": null,
+    "straight": false
+   },
+   "nodes": [],
+   "landmarks": [],
+   "blocks": {
+    "count": 0,
+    "distinct": 0,
+    "neighbourRepeats": [],
+    "overused": []
+   }
+  },
+  "originality": {
+   "sameCells": 0,
+   "ofCells": 300,
+   "sameShare": 0,
+   "sameShareOfObjectCells": 0
+  },
+  "districts": [
+   {
+    "id": "bd-castle",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-estate",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-forum",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-cathedral",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-windmill",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-harbour",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-harbour-west",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-river-bridge",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   }
+  ],
+  "districtsPresent": 0,
+  "districtsAtOriginalOrigin": 0,
+  "stampedKits": 0,
+  "doors": 0,
+  "landReach": {
+   "total": 0,
+   "reached": 0,
+   "unreached": []
+  },
+  "streetReach": {
+   "total": 0,
+   "reached": 0,
+   "unreached": []
+  },
+  "defects": {
+   "deadEndPavedCells": [],
+   "deadEndStreets": [],
+   "roadIntoWater": [],
+   "blockedDoorFronts": [],
+   "sameKitRepeats": []
+  },
+  "designedObjectCells": 0
+ },
+ "finalText": "assistant: 웹 검색은 로그인 연결 문제로 진행되지 않았습니다. 대신 설치된 버들항의 강가 마을 제작 자료를 기준으로, 기존 맵은 보존하고 새 강가 마을을 만들겠습니다. "
+}
