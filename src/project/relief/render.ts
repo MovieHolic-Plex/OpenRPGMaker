@@ -554,7 +554,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   // 이름 있는 모든 양식의 기본(RELIEF_DEFAULT_RIM, 양식이 rim:false 면 끔). 양식 없는 기본 그림(마을 언덕·check)은 그대로다.
   const rim = S?.rim ?? null;
   const rimPx = rim ? new Int8Array(N).fill(-1) : null;
-  if (rim && rimPx) {
+  if (rim && rimPx && S) {
     // 가장자리 화소(외곽선 OUT_G, edge) 하나마다: 그 화소 둘레 8칸 중 윗면이 아닌(더 낮은 땅) 쪽으로 옆면 띠를 편다.
     // 북·북동·북서는 아래로 내려다보는 뒤쪽 둑 — 윗면 안쪽에 밝은 풀 턱 lip 줄. 동·서·대각 옆은 바깥 낮은 땅 위로 side px
     // 옆면(서쪽을 향하면 빛을 받아 벽 4·3, 동쪽이면 그늘 2·1), 가장 바깥 1px 은 벽 외곽선 0. 한 칸 폭 경사로·벽 화소는 건드리지 않는다.
