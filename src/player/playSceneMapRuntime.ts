@@ -12,6 +12,7 @@ import {
   tilesetTextureKey,
 } from "@/editor/tilesetImage";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
+import { passageMarkForTile } from "@/project/tilesetPassage";
 import {
   MAP_BACKGROUND_LAYER_DEPTH,
   OVERLAY_LAYER_DEPTH_OFFSET,
@@ -74,8 +75,20 @@ import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCul
 import { bumpPerfCounter, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { RuntimeTileWindow, runtimeCameraTileView } from './runtimeTileWindow';
 import type { CullViewport } from './playSceneTileCulling';
+import {
+  RELIEF_LIFTED_LOWER_DEPTH,
+  RELIEF_LIFTED_SHADOW_DEPTH,
+  RELIEF_LIFTED_UPPER_DEPTH,
+  reliefLiftPx,
+  reliefRowDepth,
+  renderReliefLayer,
+} from "@/player/playSceneRelief";
+import type { ReliefTextureManager } from "@/player/reliefStrips";
+import { reliefPaintsCell, reliefSignature } from "@/project/relief/screen";
 
 interface RenderedTileImage {
+  /** 높이 지형 들림을 얹을 때 쓴다. 테스트 스텁은 생략한다. */
+  y?: number;
   setOrigin(x: number, y: number): void;
   setDepth(depth: number): void;
   destroy?(removeFromDisplayList?: boolean): void;
@@ -117,6 +130,7 @@ interface TileLayerSignature {
   readonly tileset: object | undefined;
   readonly textureKey: string;
   readonly tilesHash: number;
+  readonly relief: number;
   readonly overlays: string;
   readonly crops: unknown;
 }
@@ -183,7 +197,11 @@ interface RenderTilesSceneContext<
     clear(): void;
     set(eventId: string, marker: TSprite): unknown;
   };
-  readonly textures?: { get?(key: string): unknown };
+  /**
+   * 텍스처 관리자(선택). `get` 은 이벤트 스프라이트 서명이 읽고, 나머지(`exists`·`remove`·`addCanvas`)는 높이 지형
+   * 절벽 띠가 쓴다 — 다 갖춘 관리자가 아니면 절벽 그림 없이 타일만 들린다.
+   */
+  readonly textures?: Partial<ReliefTextureManager>;
   readonly children?: { list: unknown[]; queueDepthSort(): void };
   readonly tweens?: { getTweens?(): readonly TweenTargetSource[] };
   readonly eventGraphicPatternOverrides?: Map<string, number>;
@@ -278,10 +296,16 @@ export function renderTiles<
     quarters: supportsChipsetQuarterComposition(tileset),
     backing: new Map(), animations: new Map(), lakes: new Map(), above: new Map(),
   };
+  // 높이 지형: 절벽 띠와 벽면 장식을 먼저 올린다(만든 GameObject 는 타일과 같이 파괴된다).
+  renderReliefLayer(scene, host, { tileSize: pass.size, wallDecor: { textureKey: pass.textureKey, frame: (tile) => `tile_${tile}` } }, (image) => {
+    bumpPerfCounter(scene, "tileObjectsCreated");
+    trackRootYSortTile(scene, image);
+  });
   const drawCell = (drawingScene: RenderTilesSceneContext<TImage, TSprite>, x: number, y: number): void => {
     const index = y * map.width + x;
     renderEmptyCellCover(drawingScene, x, y, index);
-    renderTile(drawingScene, tileset, x, y, map.lowerTiles[index], "lower", pass);
+    // 경사로 도트가 있는 바이옴의 경사로 칸은 relief 경사로 도트가 바닥을 칠한다 — 타일은 그리지 않는다.
+    if (!reliefPaintsCell(map.relief, x, y)) renderTile(drawingScene, tileset, x, y, map.lowerTiles[index], "lower", pass);
     for (const tile of tileStackAt(map, "lower", index)) renderTile(drawingScene, tileset, x, y, tile, "lower", pass);
     renderRawTile(drawingScene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
     renderShadow(drawingScene, x, y, shadowAt(map, index));
@@ -413,6 +437,7 @@ function tileLayerSignature<TImage extends RenderedTileImage, TSprite extends Re
       map.upperOverlayTiles ?? [],
       map.shadowBits ?? [],
     ),
+    relief: reliefSignature(map.relief),
     overlays: JSON.stringify([
       session.farmPlots?.[map.id] ?? null,
       session.placeables ?? null,
@@ -429,6 +454,7 @@ function sameTileLayerSignature(left: TileLayerSignature, right: TileLayerSignat
     && left.tileset === right.tileset
     && left.textureKey === right.textureKey
     && left.tilesHash === right.tilesHash
+    && left.relief === right.relief
     && left.overlays === right.overlays
     && left.crops === right.crops
   );
@@ -529,7 +555,7 @@ function clearRootYSortTiles<TImage extends RenderedTileImage, TSprite extends R
 
 function trackRootYSortTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
-  image: TImage,
+  image: RenderedTileImage,
 ): void {
   const host = rootYSortHost(scene);
   const tiles = rootYSortTiles.get(host) ?? new Set();
@@ -553,8 +579,21 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);
   applyTileDepth(pass.size, image, tileset, tile, y, layer, depthOffset);
-  // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고).
-  trackMapTile(rootYSortHost(scene), image, x, y);
+  // 높이 지형: 들린 칸의 타일은 그 칸 윗면으로 올리고, 하층·○ 상층은 줄 depth 로 root 에서 캐릭터와 섞는다
+  // (playSceneRelief 머리말의 depth 규칙). ★ 수관은 컨테이너에 그대로, 솔리드 × 는 이미 줄 depth 다.
+  const liftPx = reliefLiftPx(scene.map, x, y, pass.size);
+  const liftRows = Math.floor(liftPx / pass.size);
+  // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고). 들린 타일은 보이는 줄로 추적한다.
+  trackMapTile(rootYSortHost(scene), image, x, y - liftRows);
+  if (liftPx > 0) {
+    if (typeof image.y === "number") image.y -= liftPx;
+    const solidUpper = layer === "upper" && !alwaysAbove && passageMarkForTile(tileset, tile) !== "o" && passageMarkForTile(tileset, tile) !== "star";
+    if (!alwaysAbove && !solidUpper) {
+      image.setDepth(reliefRowDepth(y, pass.size, (layer === "lower" ? RELIEF_LIFTED_LOWER_DEPTH : RELIEF_LIFTED_UPPER_DEPTH) + depthOffset));
+      trackRootYSortTile(scene, image);
+      return;
+    }
+  }
   if (layer === "upper" && !alwaysAbove) {
     // root display list — same-priority 캐릭터와 y-sort.
     trackRootYSortTile(scene, image);
@@ -677,11 +716,17 @@ function renderShadow<TImage extends RenderedTileImage, TSprite extends Rendered
   const half = size / 2;
   for (let quarter = 0; quarter < 4; quarter += 1) {
     if (!(bits & (1 << quarter))) continue;
-    const rect = scene.add.rectangle(x * size + (quarter % 2) * half, y * size + Math.floor(quarter / 2) * half, half, half, 0x000000, 0.5);
+    const liftPx = reliefLiftPx(scene.map, x, y, size);
+    const rect = scene.add.rectangle(x * size + (quarter % 2) * half, y * size + Math.floor(quarter / 2) * half - liftPx, half, half, 0x000000, 0.5);
     rect.setOrigin(0, 0);
+    trackMapTile(rootYSortHost(scene), rect, x, y - Math.floor(liftPx / size));
+    if (liftPx > 0) {
+      rect.setDepth(reliefRowDepth(y, size, RELIEF_LIFTED_SHADOW_DEPTH));
+      trackRootYSortTile(scene, rect);
+      continue;
+    }
     rect.setDepth(y * 2 + SHADOW_LAYER_DEPTH_OFFSET);
     scene.tileLayer.add(rect);
-    trackMapTile(rootYSortHost(scene), rect, x, y);
   }
 }
 

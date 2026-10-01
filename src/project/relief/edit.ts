@@ -20,7 +20,14 @@ export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: numbe
   if (!raw || typeof raw !== "object") return undefined;
   const r = raw as Partial<ReliefData>;
   if (!Array.isArray(r.levels) || !Number.isInteger(r.width) || !Number.isInteger(r.height)) return undefined;
-  const src: ReliefData = { width: r.width!, height: r.height!, levels: r.levels.map(clampLevel) };
+  const ramps = Array.isArray(r.ramps) && r.ramps.length === r.levels.length
+    ? r.ramps.map((v) => (Number.isInteger(v) && v >= 0 && v <= 9 ? v : 0))
+    : undefined;
+  const wallDecor = Array.isArray(r.wallDecor)
+    ? r.wallDecor.filter((d) => d && [d.x, d.y, d.row, d.tile].every(Number.isInteger) && d.row >= 1 && d.tile >= 0).map(({ x, y, row, tile }) => ({ x, y, row, tile }))
+    : undefined;
+  const style = typeof r.style === "string" && r.style ? r.style : undefined;
+  const src: ReliefData = { width: r.width!, height: r.height!, levels: r.levels.map(clampLevel), ...(ramps?.some((v) => v > 0) ? { ramps } : {}), ...(wallDecor?.length ? { wallDecor } : {}), ...(style ? { style } : {}) };
   const out = src.width === mapWidth && src.height === mapHeight && src.levels.length === mapWidth * mapHeight
     ? src
     : resizeRelief(src, mapWidth, mapHeight);
@@ -30,11 +37,17 @@ export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: numbe
 /** 맵 크기 변경: 왼쪽 위 기준으로 자르거나 0 으로 늘린다. */
 export function resizeRelief(r: ReliefData, width: number, height: number): ReliefData {
   const out = emptyRelief(width, height);
+  const ramps = r.ramps ? new Array<number>(width * height).fill(0) : undefined;
   for (let y = 0; y < Math.min(height, r.height); y++) {
     for (let x = 0; x < Math.min(width, r.width); x++) {
       out.levels[y * width + x] = clampLevel(r.levels[y * r.width + x]);
+      if (ramps) ramps[y * width + x] = r.ramps![y * r.width + x] ?? 0;
     }
   }
+  if (ramps?.some((v) => v > 0)) out.ramps = ramps;
+  const wall = r.wallDecor?.filter((d) => d.x < width && d.y < height);
+  if (wall?.length) out.wallDecor = wall.map((d) => ({ ...d }));
+  if (r.style) out.style = r.style;
   return out;
 }
 
@@ -128,3 +141,23 @@ function writeGrid(r: ReliefData, h: HeightGrid): boolean {
 export const reliefIsFlat = (r: ReliefData | undefined) => !r || !r.levels.some((v) => v > 0);
 
 export const gridMax = (h: HeightGrid) => h.reduce((m, row) => Math.max(m, ...row), 0);
+
+/**
+ * 높이 격자(levels)만 새로 만든 relief 에 이전 relief 의 경사로·벽면 장식·양식을 이어 붙인다.
+ * 격자에서 단이 바뀐 칸의 경사로 칸·벽면 장식은 더는 맞지 않으므로 버린다. 맵 크기가 다르면 양식만 잇는다.
+ * (조수 `sculpt_relief` 처럼 높이만 빚는 도구가 저작된 경사로·장식·양식을 지우지 않게 한다.)
+ */
+export function carryReliefExtras(prev: ReliefData | undefined, next: ReliefData): ReliefData {
+  if (!prev) return next;
+  const out: ReliefData = { ...next };
+  if (prev.style) out.style = prev.style;
+  if (prev.width !== next.width || prev.height !== next.height) return out;
+  const same = (i: number) => (prev.levels[i] ?? 0) === (next.levels[i] ?? 0);
+  if (prev.ramps) {
+    const ramps = prev.ramps.map((v, i) => (same(i) ? v : 0));
+    if (ramps.some((v) => v > 0)) out.ramps = ramps;
+  }
+  const wallDecor = prev.wallDecor?.filter((d) => same(d.y * prev.width + d.x));
+  if (wallDecor?.length) out.wallDecor = wallDecor.map((d) => ({ ...d }));
+  return out;
+}

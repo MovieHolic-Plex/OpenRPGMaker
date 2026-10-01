@@ -58,6 +58,7 @@ import {
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
 import { characterSpriteY, footprintSpriteX, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
+import { installReliefSpriteLift, spriteReliefLiftPx } from "@/player/playSceneRelief";
 import {
   registerAutonomousMover as registerSceneAutonomousMover,
   updateParallelEvents as updateSceneParallelEvents,
@@ -289,6 +290,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     );
     placeCharacterSprite(this.player, "same");
     syncPlayerCharacterScale(this);
+    installReliefSpriteLift(this);
     installWeatherLayer(this);
     installCloudShadowLayer(this);
     installTimeTintLayer(this);
@@ -424,7 +426,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       // 칩은 DOM(논리 px)에 놓인다. Phaser 는 화면 중심 기준으로 확대하므로 scroll 이 아니라
       // worldView 원점에서 재고, 캔버스 px 를 픽셀 밀도로 나눠 논리 px 로 되돌린다.
       playerX: this.player ? (this.player.x - this.cameras.main.worldView.x) * this.cameras.main.zoom / runtimePixelDensity(this) : undefined,
-      playerY: this.player ? (this.player.y - this.cameras.main.worldView.y) * this.cameras.main.zoom / runtimePixelDensity(this) : undefined,
+      playerY: this.player ? (this.player.y - spriteReliefLiftPx(this.map, this.player) - this.cameras.main.worldView.y) * this.cameras.main.zoom / runtimePixelDensity(this) : undefined,
     });
   }
 

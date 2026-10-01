@@ -105,7 +105,7 @@ export function cloneExtraLayers(map: GameMap): ExtraLayerFields {
     const values = map[key];
     if (values) out[key] = values.slice();
   }
-  if (map.relief) out.relief = { ...map.relief, levels: map.relief.levels.slice() };
+  if (map.relief) out.relief = { ...map.relief, levels: map.relief.levels.slice(), ...(map.relief.ramps ? { ramps: map.relief.ramps.slice() } : {}), ...(map.relief.wallDecor ? { wallDecor: map.relief.wallDecor.map((d) => ({ ...d })) } : {}) };
   return out;
 }
 
@@ -130,11 +130,19 @@ export function remapExtraLayers(map: ExtraLayerFields, width: number, height: n
   const relief = map.relief;
   if (relief) {
     const levels = new Array<number>(width * height).fill(0);
+    const ramps = relief.ramps ? new Array<number>(width * height).fill(0) : undefined;
     for (let target = 0; target < levels.length; target += 1) {
       const from = sourceIndex(target);
-      if (from >= 0) levels[target] = relief.levels[from] ?? 0;
+      if (from >= 0) { levels[target] = relief.levels[from] ?? 0; if (ramps) ramps[target] = relief.ramps![from] ?? 0; }
     }
-    if (levels.some((v) => v > 0)) map.relief = { width, height, levels };
+    // wall decor follows its cell: the target index whose source is that cell
+    let wallDecor: typeof relief.wallDecor;
+    if (relief.wallDecor?.length) {
+      const at = new Map<number, number>();
+      for (let target = 0; target < levels.length; target += 1) { const from = sourceIndex(target); if (from >= 0) at.set(from, target); }
+      wallDecor = relief.wallDecor.flatMap((d) => { const t = at.get(d.y * relief.width + d.x); return t === undefined ? [] : [{ ...d, x: t % width, y: Math.floor(t / width) }]; });
+    }
+    if (levels.some((v) => v > 0)) map.relief = { width, height, levels, ...(ramps?.some((v) => v > 0) ? { ramps } : {}), ...(wallDecor?.length ? { wallDecor } : {}), ...(relief.style ? { style: relief.style } : {}) };
     else delete map.relief;
   }
 }
