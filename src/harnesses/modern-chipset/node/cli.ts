@@ -1,5 +1,5 @@
 /**
- * npm run harness -- modern-vehicles <단계> [옵션]
+ * npm run harness -- modern-chipset <단계> [옵션]
  *
  *   palette                                      vehicles.pal 다시 쓰기
  *   draw car side [--n 5] [--note "…"]           후보 그리기(백그라운드, 판 id 출력)

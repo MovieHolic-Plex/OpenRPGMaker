@@ -14,7 +14,7 @@
 4. 실루엣부터(윗면·옆면 덩어리), 그다음 면 명암, 그다음 유리·바퀴·불빛·이음선. 한 글자씩 직접 놓는다 — 상자 채우기·그라데이션 스크립트·거울 복사로 만든 명암 금지(`@symx` 는 앞/뒤 시점의 **실루엣** 단계에만).
 5. 굽고 검사:
    `python3 scripts/content/pixel-harness/pxgrid/pxgrid.py render {FOLDER}/{OUT}.pxg`
-   `python3 src/harnesses/modern-vehicles/check.py {FOLDER}/{OUT}.pxg --w {W} --h {H} --view {VIEW}`   (hard ✗ 는 반드시 고친다)
+   `python3 src/harnesses/modern-chipset/check.py {FOLDER}/{OUT}.pxg --w {W} --h {H} --view {VIEW}`   (hard ✗ 는 반드시 고친다)
 6. `{FOLDER}/{OUT}-x4.png` 를 열어 **ref-x8.png 와 old-x8.png(지금 것) 옆에 놓고** 본다. 물어볼 것:
    - 윗면(지붕·보닛·트렁크)이 기준차처럼 **면**으로 읽히나, 아니면 얇은 띠인가?
    - 지금 것보다 나빠진 곳이 없나? 기준차보다 상자같이 각지지 않았나?

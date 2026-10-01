@@ -11,7 +11,7 @@
 1. `{PACK}/pair-x8.png` — 왼쪽 ref(기준차) | 가운데 old(지금 것) | 오른쪽 후보. 8배, 같은 배경.
 2. `{PACK}/cand-x8.png` — 후보만 크게.
 3. `{PACK}/street-x3.png` — 후보를 ref·old 와 같은 길 위(3배, 실제 게임 확대)에 놓은 것. **판정은 이 그림으로도 한다** — 8배에서만 좋은 그림은 불합격이다.
-4. 계약: `{ROOT}/harness-data/modern-vehicles/seed.json` 의 `contract`.
+4. 계약: `{ROOT}/harness-data/modern-chipset/seed.json` 의 `contract`.
 {ANCHORS}
 {PREV}
 ## 판정 순서 (각 항목을 8배 그림에서 **세어서** 적는다)

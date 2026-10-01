@@ -1,20 +1,21 @@
 import { defineHarness } from "../_core/manifest";
 
 /** 도쿄·현대 거리(modern3 팔레트) 탈것 도트 — 장르와 무관한 칩셋 제작 하네스. 생성 이미지가 아니라 손 도트(pxgrid)다. */
-export const MODERN_VEHICLES_HARNESS = defineHarness({
-  id: "modern-vehicles",
-  title: "현대 거리 탈것 도트",
+export const MODERN_CHIPSET_HARNESS = defineHarness({
+  id: "modern-chipset",
+  title: "현대 칩셋 도트 (modern3)",
   summary:
-    "승용차·밴·버스·열차 같은 거리 탈것을 3/4 시점(옆면 + 큰 윗면)으로 찍는다. 프로젝트 안에서 받아들여진 경찰차를 기준으로 삼아 "
-    + "Sonnet 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고, 기계 검사와 독립 검수를 거친 뒤 사람이 고른다.",
+    "modern3 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점으로 찍는다. 현재 지원 종류는 탈것(vehicle)이고 소품·건물·바닥 타일로 넓힌다. "
+    + "프로젝트 안에서 받아들여진 그림을 기준으로, 작업자 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. "
+    + "다른 타일셋(조선·포켓몬풍 야외 등)은 별도 하네스다.",
   scope: {},
   triggers: [
-    "modern3 팔레트 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것 그림이 필요할 때",
+    "modern3 팔레트 현대 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것(그리고 앞으로 소품·건물·바닥 타일)이 필요할 때",
     "기존 탈것 도트가 순수 옆모습이라 3/4(윗면이 면으로 보임)이 안 지켜진다는 지적이 있을 때",
-    "건물·소품에는 쓰지 않는다 — 그쪽은 pixel-object-authoring 스킬과 실내 소품 하네스",
+    "modern3 가 아닌 다른 타일셋(조선·포켓몬풍·버들항 판타지)에는 쓰지 않는다 — 타일셋마다 별도 하네스",
   ],
-  seed: "harness-data/modern-vehicles/seed.json",
-  doc: "openwiki/harnesses/modern-vehicles.md",
+  seed: "harness-data/modern-chipset/seed.json",
+  doc: "openwiki/harnesses/modern-chipset.md",
   stages: [
     { id: "palette", title: "팔레트", summary: "modern3 램프에서 탈것 전용 pxgrid 팔레트(vehicles.pal)를 다시 쓴다." },
     { id: "draw", title: "후보 그리기", summary: "탈것·시점 하나에 후보 5장을 백그라운드로 그린다(작업자 → 기계 검사 → 독립 검수 → 최대 3번 다시 그림)." },

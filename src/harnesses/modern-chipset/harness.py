@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """탈것 하네스 — Sonnet 5명이 같은 탈것을 다른 방향으로 찍고, 검사·독립 검수를 거친 뒤 사용자가 고른다.
 
-  harness.py palette                                   harness-data/modern-vehicles/vehicles.pal 다시 쓰기
+  harness.py palette                                   harness-data/modern-chipset/vehicles.pal 다시 쓰기
   harness.py draw car side [--n 5] [--note "…"]        판을 열고 백그라운드로 그린다(바로 돌아온다). 판 id 출력
   harness.py status [판]                               판·후보 상태
   harness.py sheet <판>                                고르는 시트를 ~/claude-viz/veh-<판>.html 에 쓴다(자체완결)
@@ -19,8 +19,8 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 import palette as PAL  # noqa: E402
 
-DATA = os.path.join(ROOT, 'harness-data/modern-vehicles')
-RUNS = os.path.join(ROOT, 'qa-runs/harnesses/modern-vehicles')
+DATA = os.path.join(ROOT, 'harness-data/modern-chipset')
+RUNS = os.path.join(ROOT, 'qa-runs/harnesses/modern-chipset')
 VIZ = os.path.expanduser('~/claude-viz')
 MODEL = os.environ.get('VEH_HARNESS_MODEL', 'claude-sonnet-5-5')
 EFFORT = os.environ.get('VEH_HARNESS_EFFORT', 'high')
@@ -106,11 +106,25 @@ def worker_prompt(st, letter, redraw=''):
     return t
 
 
-def run_claude(prompt, log, effort):
+def run_claude(prompt, log, effort, images=()):
+    """VEH_HARNESS_BACKEND=codex 이면 codex exec 로, 아니면 claude -p 로 작업자를 띄운다."""
+    if os.environ.get('VEH_HARNESS_BACKEND') == 'codex':
+        cmd = ['codex', 'exec', '--dangerously-bypass-approvals-and-sandbox', '--skip-git-repo-check', '-C', ROOT,
+               '-c', f'model_reasoning_effort="{os.environ.get("VEH_CODEX_EFFORT", "high")}"']
+        if os.environ.get('VEH_CODEX_MODEL'): cmd += ['-m', os.environ['VEH_CODEX_MODEL']]
+        for im in images: cmd += ['-i', im]
+        cmd += ['-']   # 프롬프트는 stdin
+        stdin_data = prompt
+    else:
+        env0 = dict(os.environ, PH_PROMPT=prompt, PH_CLAUDE=claude_bin(), PH_MODEL=MODEL, PH_EFFORT=effort)
+        cmd = ['bash', '-lc', 'exec "$PH_CLAUDE" -p "$PH_PROMPT" --model "$PH_MODEL" --effort "$PH_EFFORT" --dangerously-skip-permissions --output-format text']
+        stdin_data = None
     env = dict(os.environ, PH_PROMPT=prompt, PH_CLAUDE=claude_bin(), PH_MODEL=MODEL, PH_EFFORT=effort)
-    cmd = ['bash', '-lc', 'exec "$PH_CLAUDE" -p "$PH_PROMPT" --model "$PH_MODEL" --effort "$PH_EFFORT" --dangerously-skip-permissions --output-format text']
     with open(log, 'w') as f:
-        p = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=f, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, start_new_session=True)
+        p = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=f, stderr=subprocess.STDOUT,
+                             stdin=subprocess.PIPE if stdin_data else subprocess.DEVNULL, start_new_session=True, text=True)
+        if stdin_data:
+            p.stdin.write(stdin_data); p.stdin.close()
         try: return p.wait(timeout=TIMEOUT)
         except subprocess.TimeoutExpired:
             os.killpg(p.pid, 15); return 'timeout'
@@ -163,7 +177,8 @@ def do_candidate(rid, letter):
             for ext in ('.pxg', '.png', '-x4.png', '.note'):
                 if os.path.exists(out + ext): shutil.copyfile(out + ext, f'{out}.a{att-1}{ext}')
             redraw = (f'\n**다시 그리기 ({att}/{MAX_ATTEMPTS})**: `{os.path.relpath(out, ROOT)}.pxg` 가 지난 시도다. 복사하지 말고 그 파일을 고쳐 다시 굽는다. 지난 시도의 지적:\n{prev}\n')
-        code = run_claude(worker_prompt(st, letter, redraw), os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.log'), EFFORT)
+        bd = os.path.join(rdir(rid), 'brief'); imgs = [p for p in (os.path.join(bd, 'ref-x8.png'), os.path.join(bd, 'old-x8.png'), out + '-x4.png' if att > 1 else '') if p and os.path.exists(p)]
+        code = run_claude(worker_prompt(st, letter, redraw), os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.log'), EFFORT, imgs)
         if not os.path.exists(out + '.pxg'):
             upd(rid, letter, status='failed', error=f'후보 파일 없음({code})'); return
         ck = check(st, letter)
@@ -176,7 +191,7 @@ def do_candidate(rid, letter):
         rp, pack = review_prompt(st, letter, att, prev)
         vfile = os.path.join(pack, 'verdict.json')
         for _ in range(2):
-            run_claude(rp, os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.review.log'), EFFORT)
+            run_claude(rp, os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.review.log'), EFFORT, [os.path.join(pack, n) for n in ('pair-x8.png', 'street-x3.png')])
             if os.path.exists(vfile): break
         try: v = json.load(open(vfile, encoding='utf-8')); v['verdict'] = str(v.get('verdict', '')).upper()
         except Exception: v = dict(verdict='ERROR', reasons='검수자가 결과를 못 냈다')
@@ -189,12 +204,13 @@ def do_candidate(rid, letter):
 
 def cmd_draw(a):
     s = seed()
+    if a.backend: os.environ['VEH_HARNESS_BACKEND'] = a.backend
     if a.vehicle not in s['vehicles'] or a.view not in s['vehicles'][a.vehicle]['views']: sys.exit('모르는 탈것/시점: ' + a.vehicle + ' ' + a.view)
     rid = 'v' + datetime.datetime.now().strftime('%m%d-%H%M%S'); os.makedirs(os.path.join(rdir(rid), 'logs'), exist_ok=True)
     PAL.write_pal(os.path.join(DATA, 'vehicles.pal'))
     make_brief(rid, a.vehicle, a.view, a.note)
     letters = LETTERS[:a.n]
-    json.dump(dict(id=rid, vehicle=a.vehicle, view=a.view, note=a.note, created=now(), cands={l: dict(status='queued') for l in letters}), open(state_path(rid), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    json.dump(dict(id=rid, vehicle=a.vehicle, view=a.view, note=a.note, backend=os.environ.get('VEH_HARNESS_BACKEND', 'claude'), created=now(), cands={l: dict(status='queued') for l in letters}), open(state_path(rid), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     if a.fg: return run_round(rid)
     subprocess.Popen([sys.executable, os.path.abspath(__file__), '_run', rid], cwd=ROOT, start_new_session=True,
                      stdout=open(os.path.join(rdir(rid), 'logs', 'round.log'), 'w'), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
@@ -262,7 +278,7 @@ def cmd_pick(a):
     for ext in ('.pxg', '.png'):
         shutil.copyfile(os.path.join(rdir(a.round), a.letter + ext), os.path.join(DATA, 'picked', f'{st["vehicle"]}-{st["view"]}{ext}'))
     L = ledger(); L['picks'].append(dict(round=a.round, letter=a.letter, vehicle=st['vehicle'], view=st['view'], note=a.note, at=now(), by='user')); save_ledger(L)
-    print('기록: harness-data/modern-vehicles/picked/' + f'{st["vehicle"]}-{st["view"]}.pxg')
+    print('기록: harness-data/modern-chipset/picked/' + f'{st["vehicle"]}-{st["view"]}.pxg')
 
 
 def cmd_reject(a):
@@ -273,7 +289,7 @@ def cmd_reject(a):
 def main():
     ap = argparse.ArgumentParser(); sub = ap.add_subparsers(dest='cmd', required=True)
     sub.add_parser('palette')
-    d = sub.add_parser('draw'); d.add_argument('vehicle'); d.add_argument('view'); d.add_argument('--n', type=int, default=5); d.add_argument('--note', default=''); d.add_argument('--fg', action='store_true')
+    d = sub.add_parser('draw'); d.add_argument('vehicle'); d.add_argument('view'); d.add_argument('--n', type=int, default=5); d.add_argument('--note', default=''); d.add_argument('--fg', action='store_true'); d.add_argument('--backend', choices=['claude', 'codex'], default=None)
     r = sub.add_parser('_run'); r.add_argument('round')
     s = sub.add_parser('status'); s.add_argument('round', nargs='?')
     for n in ('sheet', 'review'): x = sub.add_parser(n); x.add_argument('round')

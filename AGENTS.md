@@ -23,9 +23,9 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
   → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
   → 후보는 사람이 고른다. JRPG 일반 적 그림에는 쓰지 않는다.
-- **modern3 거리 칩셋의 자동차·버스·트럭·열차 같은 탈것 도트를 그릴 때** (3/4 시점: 윗면이 면으로 보여야 한다)
-  → `modern-vehicles` · 시드 `harness-data/modern-vehicles/seed.json`
-  → `npm run harness -- modern-vehicles <단계>` · 문서 `openwiki/harnesses/modern-vehicles.md`
+- **modern3 현대 거리 칩셋의 기물 도트(현재 탈것: 자동차·버스·트럭·열차)를 그릴 때** (3/4 시점: 윗면이 면으로 보여야 한다)
+  → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
+  → `npm run harness -- modern-chipset <단계>` · 문서 `openwiki/harnesses/modern-chipset.md`
   → 기준 = 프로젝트의 modern-city-atlas 경찰차. 후보는 Sonnet 5명이 pxgrid 로 찍고 사람이 고른다. 직접 그리지 말 것.
 
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,

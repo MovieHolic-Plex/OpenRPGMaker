@@ -6,7 +6,7 @@
 | id | 무엇 | 범위 | 시드 | 문서 |
 |---|---|---|---|---|
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
-| `modern-vehicles` | 현대 거리 탈것 도트 | 장르 무관 | `harness-data/modern-vehicles/seed.json` | `openwiki/harnesses/modern-vehicles.md` |
+| `modern-chipset` | 현대 칩셋 도트 (modern3) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -28,16 +28,16 @@
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
-## modern-vehicles — 현대 거리 탈것 도트
+## modern-chipset — 현대 칩셋 도트 (modern3)
 
-승용차·밴·버스·열차 같은 거리 탈것을 3/4 시점(옆면 + 큰 윗면)으로 찍는다. 프로젝트 안에서 받아들여진 경찰차를 기준으로 삼아 Sonnet 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고, 기계 검사와 독립 검수를 거친 뒤 사람이 고른다.
+modern3 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점으로 찍는다. 현재 지원 종류는 탈것(vehicle)이고 소품·건물·바닥 타일로 넓힌다. 프로젝트 안에서 받아들여진 그림을 기준으로, 작업자 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. 다른 타일셋(조선·포켓몬풍 야외 등)은 별도 하네스다.
 
 **이럴 때 쓴다:**
-- modern3 팔레트 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것 그림이 필요할 때
+- modern3 팔레트 현대 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것(그리고 앞으로 소품·건물·바닥 타일)이 필요할 때
 - 기존 탈것 도트가 순수 옆모습이라 3/4(윗면이 면으로 보임)이 안 지켜진다는 지적이 있을 때
-- 건물·소품에는 쓰지 않는다 — 그쪽은 pixel-object-authoring 스킬과 실내 소품 하네스
+- modern3 가 아닌 다른 타일셋(조선·포켓몬풍·버들항 판타지)에는 쓰지 않는다 — 타일셋마다 별도 하네스
 
-**단계** (`npm run harness -- modern-vehicles <단계>`):
+**단계** (`npm run harness -- modern-chipset <단계>`):
 - `palette` — 팔레트: modern3 램프에서 탈것 전용 pxgrid 팔레트(vehicles.pal)를 다시 쓴다.
 - `draw` — 후보 그리기: 탈것·시점 하나에 후보 5장을 백그라운드로 그린다(작업자 → 기계 검사 → 독립 검수 → 최대 3번 다시 그림).
 - `status` — 현황: 판과 후보의 상태·검수 결과를 보여 준다.
