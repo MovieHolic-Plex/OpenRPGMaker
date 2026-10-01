@@ -37,16 +37,16 @@ NPC/길찾기 비용은 여전히 맵 내용에 따라 늘어난다. 성능 증�
 | 붓 수식 | `src/project/relief/edit.ts` `brushRelief` — 산·골짜기는 `ops.ts` 의 mountain(경사 2칸/단)·canyon(붓 폭) 을 지금 높이 위에 덧칠, 다듬기·거칠게는 붓 원 안에만 smooth/rough |
 | 액션 | `tileActions.ts` `paintRelief` → `store.updateMapTiles(..., {label:"높이 붓", relief: true})`. 타일 층은 건드리지 않는다. 바뀐 칸 없으면 store 를 안 건드린다 |
 | 옵션 UI | `tilePaletteStampStatus.ts` `makeReliefBrushControls` (`relief-brush-controls`, 칩 `relief-mode-*` 8개, 단 지정·산일 때 `relief-level-select`, 왼/오른 버튼 안내 `relief-brush-hint`) |
-| 렌더 | `EditScene.ts` — `relief: true` 변경은 `editSceneRenderPlan` 이 `kind:"relief"` 로 가른다. 타일 재렌더 없이 `scheduleReliefRender` 가 다음 프레임에 절벽 그림 한 번만 굽고(같은 크기면 캔버스 텍스처 재사용) |
+| 렌더 | `EditScene.ts` — `relief: true` 변경은 `editSceneRenderPlan` 이 `kind:"relief"` 로 가른다. 맵 전체 타일 재렌더 없이 `scheduleReliefRender`(굽기 비용 2배 간격 스로틀)가 ① `syncReliefLiftedTiles` 로 **들림이 바뀐 칸의 타일만** 다시 올리고 ② `renderReliefLayer` 로 절벽 띠를 굽는다(`buildReliefStripTextures` 의 `reuseKeys` 로 같은 크기 캔버스 텍스처 재사용). 들린 하층 타일은 절벽 컨테이너(`reliefLayer`)에서 띠와 줄 depth 로 섞인다 — 지도는 [relief-terrain.md](relief-terrain.md) |
 
 **드래그 렉 (2026-09-26 수정):** 예전 `paintRelief` 는 셀 정보 없는 `store.updateMap` 이라 포인터 표본마다 맵 전체 `structuredClone` →
 `EditScene.redraw()`(전 타일) + 절벽 전체 재굽기 + 새 텍스처, 그리고 `editor.ts refreshPanels` 가 좌측 팔레트를 통째로 다시 지었다
 (20×15 빈 맵, 표본 40개 드래그 9.9초 · long task 7.2초 실측). 이제 `relief: true` 는 `isTileCellChange` 가 참이라 패널·검사 캐시·이벤트 편집기가
-타일 붓과 같이 가볍게 넘기고, 씬은 절벽 그림만 프레임당 한 번 굽는다. **relief 만 바꾸는 새 쓰기 경로는 `relief: true` 를 달아라.**
+타일 붓과 같이 가볍게 넘기고, 씬은 절벽 그림 한 번과 들림이 바뀐 칸의 타일만 다시 그린다(통합 2026-10-01). **relief 만 바꾸는 새 쓰기 경로는 `relief: true` 를 달아라.**
 
 **타일 굽기는 없앴다 (2026-10-01, 사용자 결정):** 2026-09-27 에 숲마을·합본 마을+레트로 월드맵 칩셋에서만 높이를 하위 층 절벽 타일로 굽는 경로(`reliefBake.ts`, `relief.baked`)를 넣었으나 걷어냈다. 그 칩셋들은 2026-09-29 EasyRPG 계열 폐기로 쓰지 않고, 굽기 자체도 망가져 있었다 — 남향 벽만 서서 윗면·북·동·서 가장자리가 안 보였고, 벽이 붓 자리보다 1~2칸 남쪽에 섰고, 2단을 쌓으면 벽끼리 덮어써 조각났다. 이제 모든 칩셋이 같은 덧그림이다. 절벽을 하위·상위 붓으로 고칠 수 없다는 옛 한계는 다시 남는다.
 
-주의: 높이는 **그림만** 바꾼다. 윗단 위 타일·통행·이벤트는 들어 올리지 않는다(스키마 쪽 한계는 `runtime-project-schema.md` 「높이 지형」). 조수 도구는 `editor-ai-tools.md` 「절벽 높이 도구」.
+주의: 높이는 **타일 데이터를 바꾸지 않는다**(타일 층 불변). 대신 화면에서는 들린 칸의 하층·상층 타일과 이벤트 그림이 윗면으로 올라가 그려지고(편집기·게임 같은 `screen.ts` 들림 표), 게임에서는 `canMove` 가 단 차이를 막는다(2026-10-01 통합, `runtime-project-schema.md` 「높이 지형」·[relief-terrain.md](relief-terrain.md)). 높이 쓰기 경로를 새로 만들 때는 `relief: true` 를 달고, 들림이 바뀌는 칸은 `reliefTileSlotChangedCells` 로 부분 갱신한다. 조수 도구는 `editor-ai-tools.md` 「절벽 높이 도구」.
 
 ## 맵별 16/32/48px 좌표
 

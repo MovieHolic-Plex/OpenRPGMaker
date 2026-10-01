@@ -117,14 +117,26 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 
 ## 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
 
-`GameMap.relief?: ReliefData` — `{ width, height, levels: number[] }`(행 우선, 칸마다 0~14단). (2026-09-27~10-01 사이의 `baked` 표시는 없앴다 — 불러올 때 버려진다. 저장된 맵 중 relief 를 가진 것은 당시 0개였다.) **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
-권위 코드는 `src/project/relief/`(`types`·`edit`·`ops`·`check`·`render`).
+`GameMap.relief?: ReliefData` — `{ width, height, levels: number[], ramps?: number[], wallDecor?: {x,y,row,tile}[], style?: string }`(행 우선, 칸마다 0~14단). 뒤 세 필드는 **선택**이다 — 없으면 단만 있는 옛 모양 그대로다. (2026-09-27~10-01 사이의 `baked` 표시는 없앴다 — 불러올 때 버려진다. 저장된 맵 중 relief 를 가진 것은 당시 0개였다.) **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
+권위 코드는 `src/project/relief/`(`types`·`edit`·`ops`·`check`·`render`·`walk`·`screen`·`styles`, 경사로 도트 `rampArt.json`). 전체 지도·편집기/런타임 연결은 [relief-terrain.md](relief-terrain.md).
 
-- 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. 전부 0 이거나 모양이 틀리면 필드를 **지운다**.
-- 쓰기 규칙: 결과가 전부 0 이면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다.
-- 크기 바꾸기·밀기·자르기: `mapLayers.ts` 의 `ExtraLayerFields` 에 `relief` 가 들어가 `cloneExtraLayers`/`remapExtraLayers` 가 같은 칸 번호로 옮긴다.
-- 렌더: 편집기 `EditScene` 이 `renderRelief(effectiveHeights(h), {transparentGround:true})` 로 절벽 벽면·45° 대각선을 그려 1층과 3층 사이에 깐다.
-- **한계(아직):** 높이는 그림만 바꾼다(칩셋과 무관). 윗단 위 타일·이벤트·통행·런타임 플레이어 높이는 relief 를 모른다. 런타임(`player.html`) 렌더도 아직 없다.
+- `ramps[i]`: 0 없음 · 1~4 매끈한 경사로(오르막 n·s·e·w) · 5~8 계단(같은 방향 + 4) · 9 다리 판. 경사로 칸의 `levels` 는 **낮은 끝 단**이다. `wallDecor`: 칸 (x,y) 의 남쪽 벽 `row` 번째 줄(1 = 윗면 바로 밑)에 그리는 타일(덩굴·폭포·동굴 입구). `style`: `RELIEF_STYLES` 의 키(없으면 기본 흙벽).
+- 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. `ramps` 는 0~9 를 지키고 길이가 안 맞으면 버린다. 전부 0 이거나 모양이 틀리면 필드를 **지운다**.
+- 쓰기 규칙: 결과가 전부 0 이면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다. 붓(`paintRelief`)은 `...map.relief` 로 `ramps`·`wallDecor`·`style` 을 잇고, 조수 `sculpt_relief` 는 `carryReliefExtras`(`edit.ts`)로 **단이 안 바뀐 칸의** 경사로·장식과 양식을 잇는다(`reset:true` 면 양식만).
+- 크기 바꾸기·밀기·자르기: `mapLayers.ts` 의 `ExtraLayerFields` 에 `relief` 가 들어가 `cloneExtraLayers`/`remapExtraLayers` 가 같은 칸 번호로 옮긴다(`ramps`·`wallDecor`·`style` 포함).
+- 렌더: 편집기·플레이어가 같은 `renderRelief`(`reliefRenderOptions(relief)` 한 곳이 옵션을 만든다)로 절벽 벽면·45° 대각선·경사로·다리 판을 그리고, **맵 줄마다 윗면·벽 띠로 잘라** 줄 depth 로 놓는다(편집기 `EditScene.renderReliefLayer`, 플레이어 `playSceneRelief.renderReliefLayer`).
+- **걷기·들림 (통합 2026-10-01):** 높이는 그림만이 아니다. ① `collision.ts canMove` 가 `reliefAllowsStep`(`walk.ts`)을 마지막 조건으로 건다 — 단이 다른 이웃으로는 못 가고, 경사로 칸에서 오르막 축으로만 오르내린다(옆구리 진입 금지, 다리 판은 보통 칸). 도달성 검사·길찾기도 `canMove` 를 쓴다. ② 들린 칸(`cellLift`, 1단 = 맵 칸 1개)의 하층·○ 상층 타일·그림자·캐릭터·이벤트 그림은 그 칸 윗면으로 올려 그린다. ★ 수관과 솔리드 × 상층은 제자리. 캐릭터는 **그리는 프레임에만** 올린다(`sprite.y` 는 접지선 그대로라 depth·타일 역산·트윈이 안 바뀐다). ③ 게임 카메라는 맵 위로 `max(단 − 행)` 만큼 넓어진다(`reliefTopOverhangPx`). **주의: 클릭 이동(`pointerTile`)·전투 필드 배치(`battleOnField`)는 들림을 아직 반영하지 않는다.** **옛 `relief` 맵(경사로 없이 높이만 칠한 것)은 이제 단 차이를 못 건넌다 — 경사로(`ramps`)를 칠해야 오른다.**
+- **렌더러 r2 (2026-09-29, `render.ts`·`styles.ts`·`rampArt.json`):** 이름 있는 모든 절벽 양식은 윗단 북·동·서·대각 가장자리에 기본 옆면 턱 `RELIEF_DEFAULT_RIM`(`{side:4, lip:2, soft:true}` — 빛 쪽 밝고 반대쪽 그늘인 비탈, 바깥 열은 땅으로 디더링)을 그린다. 양식이 `rim:false` 를 적으면 끈다. 늪 양식(`rim:{side,lip}`)은 예전 틀 그대로. 양식 없는 기본 그림(마을 언덕·`check.ts`)은 그대로다. 그 밖에: 동서 경사로 옆벽은 한 단 밝게 그리고 비스듬한 그늘·발치 그늘을 받지 않으며, 계단 경사로의 높이 0 첫 단 화소는 불투명(칸 중심 들림 때문에 타일이 위로 올라 8px 빈 띠=검은 막대가 남던 것을 채움), 늪 경사로 도트(`swamp-peat`/`swamp-dead`)는 벽돌 대신 양식 윗면 램프 이끼 비탈(`build-relief-ramp-art.mjs` 가 `tiledata/relief-art/*.png` 원본에서 `rampArt.json` 을 다시 쓴다). 툰드라용 훅 `tundraTopShade:{band,alpha}`(윗면 가장자리 안쪽 그늘 띠, 기본 꺼짐)는 켜는 양식이 없다.
+- **렌더러 r3 (2026-09-29):**
+  - `RELIEF_DEFAULT_RIM` 에 `sides: "none"`. 기본 턱의 동·서·대각 옆면을 그리지 않는다(사용자: 「동쪽이랑 서쪽은 없는 게 나은 것 같다」). 북쪽 뒤 둑과 안쪽 턱은 남는다. `ReliefRim.sides` 는 `"all"`(생략 시, 늪의 명시 rim) · `"diag"` · `"none"` 중 하나다.
+  - 새 양식 키 `smoothStairs`(기본 꺼짐): 계단 경사로(5~8)를 계단 없이 주변 땅 비탈(rampArt)로 그린다. 들림도 비탈로 계산하며, 걷기 규칙은 그대로다. 켠 양식은 badlands·tundra-snow·dwarf·crystal·steampunk·gothic·holy 이다.
+  - 새 양식 키 `carvedStairs: { log?, tread? }`(기본 꺼짐): 벽면에 판 계단이다. 돌계단은 깊이 1줄이고 디딤 수 = 오름 단 수다. 최종 색 앞 단계에서 계단의 화면 폭을 고른 디딤(밝은 코·디딤판·그늘 줄·벽 지층 챌면)으로 다시 칠한다. `log` 가 켜진 양식에서는 가로 폭이 4 이상인 계단을 통나무 턱(디딤 오름+1)으로 그린다. `tread: "wall"` 은 디딤판을 윗면이 아니라 벽 밝은 돌로 칠한다. 판 계단과 다리 판 둘레 한 칸은 네모 모서리로 그린다. 켠 양식은 `desert-cut`·`dune-cut`·`grass-cliff`(log, tread wall) 이다.
+  - **`relief.ramps` 코드 9 = 다리 판**: 걷기는 보통 칸(그 칸의 단)과 같고 `reliefSlopes` 는 건너뛴다. 렌더러 새 옵션 `bridges` 는 `reliefBridgeMask` 가 준다(골짜기 바닥 단 + 1). 판 밑에는 벽 대신 골짜기 바닥과 2px 밑면을 그린다. `edit.ts normalizeRelief` 는 0~9 를 지킨다.
+  - `screen.ts reliefRenderOptions(relief)` 한 곳에서 편집기·플레이어(`reliefStrips.ts`) 렌더 옵션을 만든다.
+  - 구조 검사기 `scripts/content/lib/relief-check.mjs`(`checkRelief`)의 코드: 얇은 벽, 계단 양옆·층계참·0행 층계참, 판 단·코드, 판 뒤 벽이 (들림+1)줄 안쪽(`RELIEF_DECK_FACE`), 높은 덩이에 가려지는 길(`RELIEF_PATH_HIDDEN`), 판 위 막힘, 카메라 빈 띠, 도달.
+  - 게임 카메라는 맵 위로 `max(단 − 행)` 만큼 넓어진다(`reliefTopOverhangPx`). 0행이 그보다 낮은 열은 빈 띠로 보인다.
+  - 옛 맵 바이트는 그대로다.
+- **이 통합에 넣지 않은 것:** 바이옴 시트·시트 칸 수 확장·사막·툰드라·늪·초원 콘텐츠 맵·바이옴 참고문서와 그 저작 스크립트(`author-*-relief`·`save-*`·`render-relief-maps.mts` 등)는 EasyRPG 계열 폐기(2026-09-29) 방침에 따라 가져오지 않았다. 필요하면 로컬 브랜치 `agent/r3-relief-stairs` 에서 읽는다.
 
 ## 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
 
