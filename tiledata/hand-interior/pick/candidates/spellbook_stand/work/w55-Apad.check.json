@@ -1,0 +1,11 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spellbook_stand/work/w55-Apad.pxg",
+ "id": null,
+ "hard": [
+  "폴더 이름 work 이 v5 기물 slug 가 아니다"
+ ],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w55-Apad.pxg"
+ ],
+ "ok": false
+}

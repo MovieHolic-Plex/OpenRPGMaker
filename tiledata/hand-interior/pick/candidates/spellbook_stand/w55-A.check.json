@@ -1,0 +1,41 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spellbook_stand/w55-A.pxg",
+ "id": "spellbook stand",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "why": "사용자 메모(2026-09-30 「2x1 사이즈가 나을듯」) + 2026-10-01 「왜케 크냐」: 가로 2칸, 물건은 낮고 작게(높이 ≤21px, 위 칸은 비움). 캔버스는 검사기·아틀라스가 16px 배수만 받아 32x32"
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 22,
+ "v5_colors": 7,
+ "bbox": [
+  3,
+  11,
+  28,
+  30
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "note": "w55-A 32x24 (footprint 2x1) 3차. w53-A(32x32 책상) 불만 「왜케 크냐」 반영: 높이 20px 이하·폭 26~30px, 낮은 경사 받침 위 펼친 책 하나, 중앙 단일 기둥(책상 다리 아님). w2-C 팔레트(짙은 나무·보라 표지·청록 빛) 유지.",
+ "ok": true
+}
