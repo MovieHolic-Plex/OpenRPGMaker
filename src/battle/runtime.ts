@@ -20,6 +20,7 @@ import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
+import { withJosa } from "@/util/josa";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, moveBattler, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
@@ -46,6 +47,10 @@ import {
   defenseMultiplierForStates,
   defenseMultiplierForStatesByKind,
   forcedActionForStates,
+  counterChanceForStates,
+  evasionChanceForStates,
+  reraiseForStates,
+  stateFlag,
   gaugeFrozenByStates,
   recoverStatesWhenHit,
   runStateUpkeep,
@@ -595,6 +600,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function applyUpkeep(battler: MutableBattler): void {
     const upkeep = runStateUpkeep(options.project, battler, rng);
+    if (upkeep.doomedStateId) {
+      // 선고가 다 찼다: 남은 HP 를 지속 피해로 깎는 엔트리 하나(쓰러지는 연출이 따라온다). stateId·message 가 있으면
+      // 시퀀서는 「상태 이상으로 N 피해」 대신 이 문장을 읽고, 숫자 대신 상태 이름을 띄운다.
+      const name = options.project.database.states.find((state) => state.id === upkeep.doomedStateId)?.name ?? "선고";
+      recordTimeline({
+        kind: "stateUpkeep", side: battlerSide(battler), targetId: battler.id, amount: upkeep.doomedHp ?? 0,
+        stateId: upkeep.doomedStateId, message: `${name}의 시간이 다했다 — ${withJosa(battler.name, "이/가")} 쓰러졌다!`,
+      });
+      battler.gauge = 0;
+    }
     if (upkeep.hpDamage > 0) {
       recordTimeline({ kind: "stateUpkeep", side: battlerSide(battler), targetId: battler.id, amount: upkeep.hpDamage });
     }
@@ -1021,6 +1036,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         applyUpkeep(ready.battler);
         resolveOutcome();
         if (result) return;
+        // 선고로 방금 쓰러졌으면 차례만 소비한다.
+        if (ready.battler.hp <= 0) {
+          ready.battler.gauge = 0;
+          applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(ready.battler));
+          return;
+        }
         if (!canBattlerAct(options.project, ready.battler)) {
           recordIncapacitated(ready.battler);
           ready.battler.gauge = 0;
@@ -1284,11 +1305,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
-  function applySingleActorAttack(actor: MutableBattler, target: MutableBattler): void {
+  function applySingleActorAttack(actor: MutableBattler, aimed: MutableBattler): void {
     if (gen1) {
-      applyGen1Struggle(actor, target, "attack");
+      applyGen1Struggle(actor, aimed, "attack");
       return;
     }
+    const target = coverTarget(actor, aimed);
     const hpBefore = target.hp;
     const targetMaxHpBefore = target.maxHp;
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(actor, target, {
@@ -1296,7 +1318,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(actor),
-      hitRate: normalAttackHitRate(actor, target),
+      hitRate: withEvasion(normalAttackHitRate(actor, target), actor, target),
       // RM2K3 통상공격 분산(±20%) — 없으면 매 타격이 완전히 같은 숫자라 도박성이 0이다.
       variance: 20,
       elementMultiplier: normalAttackElementMultiplier(actor, target) * emotionDamageMultiplier(options.project, actor, target),
@@ -1319,6 +1341,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       attachAnimationToLatestTimeline(lastAnimation);
     }
     if (result.hit) queueCounter(actor, target, "attack", actor.equipmentEffects?.attackElementIds?.[0]);
+    if (result.hit) queueStateCounter(actor, target);
   }
 
   function normalAttackAnimationId(actor: MutableBattler): string | undefined {
@@ -1715,6 +1738,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
             ? chooseEnemyAction(action.enemy)
             : action.action;
           executeEnemyAction(action.enemy, planned);
+          drainCounters();
         }
         logStrictAction(queue.round, queue.index, action, beforeResult);
         if (escaped) { result = "escape"; continue; }
@@ -1967,6 +1991,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "resolved";
       return;
     }
+    // 선고로 방금 쓰러졌으면 차례만 소비한다.
+    if (enemy.hp <= 0) {
+      enemy.gauge = 0;
+      applyTroopEvents(finish, markGaugeActionCycle(enemy));
+      return;
+    }
     // 행동 불가(수면 등)면 적도 턴을 건너뛴다.
     if (!canBattlerAct(options.project, enemy)) {
       recordIncapacitated(enemy);
@@ -1976,6 +2006,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     }
     executeEnemyAction(enemy, chooseEnemyAction(enemy));
+    // 적의 물리 타격에 아군의 반격 상태가 걸려 있으면 행동이 끝난 뒤 되받아친다.
+    drainCounters();
     enemy.gauge = 0;
     // 방어(defending)는 여기서 해제하지 않는다 — RM 의미는 "다음 자기 행동까지"이며
     // 해제 지점은 액터가 새 명령을 실행하는 applyActorCommandEffect 다. 예전에는
@@ -2023,16 +2055,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     const refreshedTargetId = refreshedEnemyTargetId(enemy, action?.targetIds?.[0]);
-    const target = refreshedTargetId
+    const aimed = refreshedTargetId
       ? activeActors().find((actor) => actor.id === refreshedTargetId)
       : chooseBasicEnemyTarget(enemy);
-    if (!target) return;
+    if (!aimed) return;
     if (!prepareGen1CombatAction(enemy)) return;
     if (gen1) {
-      applyGen1Struggle(enemy, target, "enemyAttack");
+      applyGen1Struggle(enemy, aimed, "enemyAttack");
       applyGen1Residual(enemy);
       return;
     }
+    const target = coverTarget(enemy, aimed);
     const hpBefore = target.hp;
     const targetMaxHpBefore = target.maxHp;
     const emotionMultiplier = emotionDamageMultiplier(options.project, enemy, target);
@@ -2041,7 +2074,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(enemy),
-      hitRate: normalAttackHitRate(enemy, target),
+      hitRate: withEvasion(normalAttackHitRate(enemy, target), enemy, target),
       // 통상공격 분산 ±20% — 아군 공격(applySingleActorAttack)과 동일 규칙.
       variance: 20,
       ...(emotionMultiplier !== 1 ? { elementMultiplier: emotionMultiplier } : {}),
@@ -2057,6 +2090,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       result.hit ? "damage" : "miss",
       "enemyAttack",
     );
+    if (result.hit) queueStateCounter(enemy, target);
   }
 
   // ── 반격(EnemyRecord.reactions) ──
@@ -2066,8 +2100,72 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const pendingCounters: { enemy: MutableBattler; attacker: MutableBattler; skillId: SkillId; lastStand?: boolean }[] = [];
   const lastStandUsedIds = new Set<string>();
 
+  // ── 반격·감싸기·회피·리플렉 상태(StateRuntimeEffects, 2026-10-01) ──
+  // 반격 상태는 적의 reactions 와 따로 돈다: 물리 타격에 맞으면 행동이 끝난 뒤 통상 공격으로 되받아친다(타격당이 아니라 행동당 한 번).
+  const pendingStateCounters: { holder: MutableBattler; attacker: MutableBattler }[] = [];
+  let resolvingStateCounter = false;
+
+  function queueStateCounter(attacker: MutableBattler, holder: MutableBattler): void {
+    if (gen1 || resolvingStateCounter || battlerSide(attacker) === battlerSide(holder) || holder.hp <= 0) return;
+    if (pendingStateCounters.some((entry) => entry.holder === holder)) return;
+    const chance = counterChanceForStates(options.project, holder);
+    if (chance <= 0 || !rollChance(chance, rng)) return;
+    pendingStateCounters.push({ holder, attacker });
+  }
+
+  function drainStateCounters(): void {
+    while (pendingStateCounters.length > 0 && !result) {
+      const { holder, attacker } = pendingStateCounters.shift()!;
+      if (holder.hp <= 0 || attacker.hp <= 0 || holder.captured || !canBattlerAct(options.project, holder)) continue;
+      const side = battlerSide(holder);
+      recordTimeline({ kind: "counter", side, userRecordId: holder.recordId, userId: holder.id, targetId: attacker.id });
+      resolvingStateCounter = true;
+      try {
+        // 아군 반격은 명령 경로를 거치지 않으므로 행동 번호를 직접 새로 뗀다(적 반격은 executeEnemyAction 이 뗀다).
+        if (side === "actor") { beginTimelineAction(); applySingleActorAttack(holder, attacker); }
+        // 적의 통상 공격은 기본 공격 스킬(skill_attack)을 거친다 — 적 행동 전부와 같은 경로.
+        else executeEnemyAction(holder, { skillId: DEFAULT_SKILL_ID, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false }, targetIds: [attacker.id] });
+      } finally {
+        resolvingStateCounter = false;
+      }
+      resolveOutcome();
+    }
+    pendingStateCounters.length = 0;
+  }
+
+  /** 감싸기: 상대의 단일 물리 공격이 HP 1/4 이하인 동료를 노리면, 감싸기 상태의 다른 동료가 대신 맞는다. */
+  function coverTarget(user: MutableBattler, target: MutableBattler): MutableBattler {
+    if (gen1 || battlerSide(user) === battlerSide(target) || target.hp <= 0 || target.hp * 4 > target.maxHp) return target;
+    const allies = battlerSide(target) === "actor" ? activeActors() : visibleEnemies();
+    const guard = allies.find((ally) => ally !== target && ally.hp > 0 && canBattlerAct(options.project, ally) && stateFlag(options.project, ally, "cover"));
+    if (!guard) return target;
+    recordSpecial(guard, target, `${withJosa(guard.name, "이/가")} ${withJosa(target.name, "을/를")} 감쌌다!`);
+    return guard;
+  }
+
+  /** 회피: 상대의 물리 피해 타격 명중률을 대상의 회피 확률만큼 깎는다. */
+  function withEvasion(hitRate: number | undefined, user: MutableBattler, target: MutableBattler): number | undefined {
+    if (gen1 || battlerSide(user) === battlerSide(target)) return hitRate;
+    const evade = evasionChanceForStates(options.project, target);
+    return evade > 0 ? Math.round(((hitRate ?? 100) * (100 - evade)) / 100) : hitRate;
+  }
+
+  /**
+   * 리플렉: 리플렉 상태를 겨눈 단일 대상 마법(정신력 계열 피해·회복, 보조)은 시전자에게 튕긴다.
+   * 튕긴 마법은 시전자가 리플렉이어도 다시 튕기지 않는다(한 번만). 자기 자신·물리·전체 마법은 그대로.
+   */
+  function reflectedTarget(user: MutableBattler, target: MutableBattler, skill: ReturnType<typeof lookupSkill>): MutableBattler {
+    if (gen1 || !skill || user === target || (skill.scope !== "enemy" && skill.scope !== "ally") || skill.area) return target;
+    const effect = skill.effect;
+    const magical = effect.kind === "damage" || effect.kind === "healing" ? effect.statistic === "mind" : effect.kind === "support";
+    if (!magical || !stateFlag(options.project, target, "reflect")) return target;
+    recordSpecial(target, user, `${target.name}의 리플렉! ${withJosa(skill.name, "이/가")} 튕겨 나갔다!`);
+    return user;
+  }
+
   function queueCounter(attacker: MutableBattler, target: MutableBattler, statistic: "attack" | "mind", elementId: string | undefined): void {
-    if (gen1 || battlerSide(target) !== "enemy" || battlerSide(attacker) !== "actor") return;
+    // 반격 상태의 되받아치기에는 적 반응이 다시 붙지 않는다(반격의 반격 금지).
+    if (gen1 || resolvingStateCounter || battlerSide(target) !== "enemy" || battlerSide(attacker) !== "actor") return;
     const reactions = options.project.database.enemies.find((record) => record.id === target.recordId)?.reactions;
     if (!reactions?.length) return;
     if (target.hp <= 0) {
@@ -2113,6 +2211,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
     }
     pendingCounters.length = 0;
+    drainStateCounters();
   }
 
   // ── 피해 MP 전환(StateRuntimeEffects.damageToMpRate) ── HP 피해의 일부를 MP 에서 대신 깎는다.
@@ -2198,6 +2297,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function applyAutoRevives(): void {
     if (gen1) return;
+    // 리레이즈 상태(StateRuntimeEffects.reraisePercent): 장비 자동 부활보다 먼저, 상태를 소모하고 일어난다.
+    for (const actor of actors) {
+      if (actor.hp > 0) continue;
+      const reraise = reraiseForStates(options.project, actor);
+      if (!reraise) continue;
+      actor.stateIds = actor.stateIds.filter((stateId) => stateId !== reraise.stateId);
+      delete actor.stateTurns[reraise.stateId];
+      actor.hp = autoReviveHp(actor.maxHp, reraise.percent);
+      recordTimeline({ kind: "stateRemoved", side: "actor", targetId: actor.id, stateId: reraise.stateId, reason: "effect" });
+      recordTimeline({ kind: "revive", side: "actor", userRecordId: actor.recordId, targetId: actor.id, amount: actor.hp });
+    }
     for (const actor of actors) {
       const percent = actor.equipmentEffects?.autoRevive;
       if (actor.hp > 0 || !percent || autoRevivedIds.has(actor.id)) continue;
@@ -2587,7 +2697,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           const score = utility > 0 ? Math.max(1, action.priority) * 10 + utility : -1000 + Math.max(1, action.priority);
           return [{ action: { ...action, targetIds: resolution.targets.map(targetIdFor) }, score }];
         }
-        const target = pickBestByUtility(resolution.candidates, (candidate) => enemySkillUtility(enemy, candidate, skill));
+        const target = pickBestByUtility(tauntCandidates(enemy, resolution.candidates), (candidate) => enemySkillUtility(enemy, candidate, skill));
         if (!target) return [];
         const utility = areaTargets(target, resolution.candidates, skill.area).reduce((sum, hit) => sum + enemySkillUtility(enemy, hit, skill), 0);
         const score = utility > 0 ? Math.max(1, action.priority) * 10 + utility : -1000 + Math.max(1, action.priority);
@@ -2638,7 +2748,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function chooseBasicEnemyTarget(enemy: MutableBattler): MutableBattler | undefined {
-    return pickBestByUtility(activeActors().filter((actor) => actor.hp > 0), (target) => enemyDamageUtility(enemy, target));
+    return pickBestByUtility(tauntCandidates(enemy, activeActors().filter((actor) => actor.hp > 0)), (target) => enemyDamageUtility(enemy, target));
   }
 
   function enemyDamageUtility(
@@ -2660,6 +2770,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         ).amount
       : Math.max(0, power + Math.floor(source / 2) - Math.floor(target.defense / 2));
     return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
+  }
+
+  /**
+   * 도발: 후보 중 상대편의 도발 상태 배틀러가 있으면 그들로만 좁힌다(단일 대상 고르기 전용).
+   * 효용 점수에 가산하지 않는다 — 점수는 행동 고르기에도 쓰여, 가산하면 적이 피해 기술만 쓰게 된다.
+   */
+  function tauntCandidates<T extends MutableBattler>(user: MutableBattler, candidates: readonly T[]): readonly T[] {
+    if (gen1) return candidates;
+    const taunting = candidates.filter((candidate) => candidate.hp > 0 && battlerSide(candidate) !== battlerSide(user) && stateFlag(options.project, candidate, "taunt"));
+    return taunting.length > 0 ? taunting : candidates;
   }
 
   function enemySkillUtility(user: MutableBattler, target: MutableBattler, skill: NonNullable<ReturnType<typeof lookupSkill>>): number {
@@ -2727,14 +2847,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       return;
     }
-    for (const target of targets) {
+    // 감싸기: 단일 대상 물리 피해 기술도 통상 공격처럼 동료가 대신 맞는다.
+    const physical = skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
+    for (const aimed of targets) {
+      const target = physical && targets.length === 1 ? coverTarget(user, aimed) : aimed;
       applySkill(user, target, skillId, commandKind, powerMultiplier);
       afterTarget?.(target);
     }
   }
 
-  function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill", powerMultiplier = 1): void {
+  function applySkill(user: MutableBattler, aimed: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill", powerMultiplier = 1): void {
     const skill = lookupSkill(skillId);
+    const target = reflectedTarget(user, aimed, skill);
     if (skill && (skill.effect.kind === "steal" || skill.effect.kind === "scan" || skill.effect.kind === "learnEnemySkill")) {
       applySpecialSkill(user, target, skill, commandKind);
       return;
@@ -2859,7 +2983,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       affects,
       // RM2K3 스킬 성공률: hitRate(명중률)와 successRate(성공률)를 합성한 단일 판정.
       // 두 값 모두 100 이 기본이라 기존 데이터의 기대 명중률은 변하지 않는다.
-      hitRate: combinedSkillHitRate(skill),
+      // 회피 상태는 물리(공격력 계열) 피해 기술만 피한다.
+      hitRate: effectKind === "damage" && statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
       hitMultiplier,
       criticalMultiplier: skill?.criticalMultiplier,
@@ -2893,6 +3018,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     // MP 흡수는 상대가 실제로 잃은 MP 까지만(HP 흡수는 굴린 피해 그대로 — battleSkillVitals 정책).
     if (result.hit && effectKind === "damage") applySkillDrain(user, skill, affects === "mp" ? Math.min(result.amount, mpBefore - target.mp) : result.amount, affects, commandKind);
+    if (result.hit && effectKind === "damage" && statistic === "attack") queueStateCounter(user, target);
     // 피격에 의한 상태 해제(수면 등)를 먼저 처리한 뒤, 스킬의 상태 효과를 적용한다.
     // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.
     if (result.hit && effectKind === "damage" && result.amount > 0) {

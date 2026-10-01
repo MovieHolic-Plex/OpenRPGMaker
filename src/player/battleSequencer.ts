@@ -441,7 +441,9 @@ export function createBattleSequencer(
     // 사라지고 「효과가 충분하지 않았다」가 남았다 — 명령 줄 다음에 special 줄을 따로 읽힌다.
     const specialAfterCommand = rawDirector === firstDirector && entry.kind === "special" && entry.message ? entry.message : undefined;
     const directorBase = support || specialAfterCommand ? { ...rawDirector, lines: rawDirector.lines.slice(0, 1) } : rawDirector;
-    const feedback = feedbackFromTimeline(entry);
+    const raw = feedbackFromTimeline(entry);
+    // 선고(doomTurns)로 쓰러지는 upkeep: 남은 HP 숫자(-99999 같은) 대신 상태 이름을 띄운다. amount 는 원장용으로 둔다.
+    const feedback = raw && entry.kind === "stateUpkeep" && entry.message ? { ...raw, label: stateLabel(entry.stateId) } : raw;
     // 적 이동: 대사 없이 스냅샷의 새 좌표로 미끄러지는 동안만 기다린다(CSS 트랜지션이 그린다).
     if (entry.kind === "move") {
       hooks.onSyncView();
@@ -566,8 +568,12 @@ export function createBattleSequencer(
     snapshot: BattleSnapshot,
   ): BattleDirectorState | undefined {
     if (entry.kind === "counter") {
-      const user = snapshot.enemies.find((enemy) => enemy.id === entry.userId || enemy.recordId === entry.userRecordId);
-      const name = user ? disambiguatedBattlerName(user, snapshot.enemies) : "적";
+      // 상태 반격(state_counter)은 아군도 한다 — 엔트리 side 가 반격하는 쪽이다.
+      const actor = entry.side === "actor"
+        ? snapshot.actors.find((candidate) => candidate.id === entry.userId || candidate.recordId === entry.userRecordId)
+        : undefined;
+      const user = actor ? undefined : snapshot.enemies.find((enemy) => enemy.id === entry.userId || enemy.recordId === entry.userRecordId);
+      const name = actor ? actor.name : user ? disambiguatedBattlerName(user, snapshot.enemies) : "적";
       return { step: "acting", lines: [`${name}의 반격!${entry.skillName ? ` — ${entry.skillName}` : ""}`], targetId: entry.targetId };
     }
     if (entry.kind === "revive") {
@@ -663,7 +669,8 @@ export function createBattleSequencer(
     const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
     const target = peers.find((battler) => battler.id === entry.targetId);
     const isState = STATE_ENTRY_KINDS.has(entry.kind);
-    const line = (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && target
+    const line = entry.kind === "stateUpkeep" && entry.message ? entry.message
+      : (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && target
       ? stateChangeLine(entry.kind, entry.stateId, disambiguatedBattlerName(target, peers))
       : isState && target ? `${disambiguatedBattlerName(target, peers)}: ${detail}` : detail;
     return { step: "acting", lines: [line], targetId: entry.targetId };

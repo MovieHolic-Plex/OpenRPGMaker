@@ -33,7 +33,11 @@ export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 �
   state_stop 스톱(게이지 정지·행동 불가, 짧다) · state_petrify 석화(전투 불능 취급) · state_berserk 버서크(무작위 통상 공격, 공 1.5배) ·
   state_attack_up/down · state_defense_up/down · state_agility_up(헤이스트)/down(슬로우) · state_protect 프로텍트(물리 경감) ·
   state_shell 실드(마법 경감) · state_regen 재생 · state_wet 젖음(번개 약점) · state_oiled 기름(불 약점) · state_death 전투불능(**해제=부활만** — add 로 거는 즉사는 엔진이 무시한다).
-  자동 부활은 엔진에 없다. 화상·빙결(state_burn/freeze)은 포켓몬 데모 DB 에만 있다 — 기본 DB 에 없는 id 를 쓰면 프로젝트 검증이
+  반응·표적(자신·아군에 거는 것): state_counter 반격(물리에 맞으면 60% 통상 반격) · state_taunt 도발(적이 먼저 노린다, 방어 1.2배) ·
+  state_cover 감싸기(빈사 아군 대신 물리를 맞는다) · state_evade 회피(물리 명중 -40%, 잔상·분신) ·
+  state_reflect 리플렉(단일 마법을 시전자에게 튕긴다) · state_reraise 리레이즈(쓰러지면 HP 25% 로 한 번 부활, 아군만).
+  적에게 거는 것: state_doom 선고(자기 차례 3번 뒤 전투 불능 — **즉사는 이것**. 강하므로 chance 낮게, 정화로 풀린다).
+  화상·빙결(state_burn/freeze)은 포켓몬 데모 DB 에만 있다 — 기본 DB 에 없는 id 를 쓰면 프로젝트 검증이
   「stateId does not exist」로 player 부팅을 막는다.
 
 ── 직업 설계 규칙 ───────────────────────────────────────────────────────────────────────────────
@@ -41,7 +45,9 @@ export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 �
      방어막·상태·약점 만들기·해제·부활·훔치기 중).
   2. 필살기(level 22)는 다단, 또는 대가/특수 효과(정지·약점 연계·비율 피해)를 갖는다.
   3. **이름이 약속한 효과를 반드시 한다**: 슬로우→state_agility_down, 헤이스트→state_agility_up, 그래비티→비율 수식,
-     스톱→state_stop, 연막→state_blind, 대가/피→hpCost, 흡수/이터→drain, N번 베기→hits N개, 꿰뚫기·직선→area line.
+     스톱→state_stop, 연막→state_blind, 대가/피→hpCost, 흡수/이터→drain, N번 베기→hits N개, 꿰뚫기·직선→area line,
+     반격→state_counter, 도발→state_taunt(자신), 감싸기·수호→state_cover, 잔상·분신·회피→state_evade, 리플렉·반사→state_reflect,
+     불사·리레이즈→state_reraise, 선고·사형·즉사→state_doom.
      효과와 설명이 어긋나면 설명 한 줄을 고친다.
   4. 직업 정체성: 암흑기사=HP 대가·흡수·현재 HP 비례 · 시공술사=헤이스트·슬로우·스톱·그래비티 · 도적=다단·훔치기·암흑·독 ·
      성기사=프로텍트·실드·부활·신성 · 적마도사=두 번 치기·해제·MP 전환·약점 만들기 · 발키리=직선·강하·다단 ·
@@ -77,7 +83,7 @@ export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 �
     불사의 서약    scope self, hpCost 20, state_attack_up  buff 계열 ── 대가를 치르고 강화
     피의 잔  drain 40, hpCost 10                      단일 흡수 + 대가
     작열 파도      area line(직선) 또는 scope allEnemies, fire   광역
-    도발의 함성    support, state_berserk(적) / state_defense_up(자신)  이름이 약속한 효과
+    도발의 함성    scope self, state_taunt  이름이 약속한 효과(적이 이 검투사를 먼저 노린다)
     분노의 일격    formula "power / 2 + a.hp / 2"     암흑검식 현재 HP 비례
     폭염 낙하(필살, level 22)  hits [0.5,0.5,0.5,0.5] + hpCost 15 + 기름 연계   finisher 연출
   크로노 트리거식 연계: 젖음(state_wet)을 거는 물 기술 뒤에 번개 기술을 이어 약점을 찌른다. FF식: 슬로우/헤이스트/스톱은 시간 계열

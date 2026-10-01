@@ -40,6 +40,14 @@ const PROMISES: readonly [RegExp, (skill: SkillRecord) => boolean, string, ("nam
   [/(두|세|네|다섯|여섯|2|3|4|5|6)\s*(번|연|연속|연격|연사|연타|연참)|연타|연격|난타|난무/, (s) => (s.hitSequence?.length ?? 1) > 1, "연타 → hits 여러 개", "name"],
   [/꿰뚫|관통/, (s) => s.area?.shape === "line" || s.scope === "allEnemies", "관통 → area line", "name"],
   [/훔치|스틸|강탈|슬쩍/, (s) => s.effect.kind === "steal", "훔치기 → kind steal"],
+  [/반격|카운터/, (s) => has(s, "state_counter"), "반격 → state_counter", "name"],
+  [/도발/, (s) => has(s, "state_taunt") || has(s, "state_berserk"), "도발 → state_taunt(자신) / state_berserk(적)", "name"],
+  [/감싸기|대신 맞|대신 받/, (s) => has(s, "state_cover"), "감싸기 → state_cover", "name"],
+  // 잔상을 남기며 베는 공격 기술은 연출 낱말이다 — 피해 없는 자기 강화(support)일 때만 회피를 약속한다.
+  [/잔상|분신|회피/, (s) => has(s, "state_evade") || s.effect.kind !== "support", "잔상·회피 → state_evade", "name"],
+  [/리플렉|반사/, (s) => has(s, "state_reflect"), "리플렉 → state_reflect", "name"],
+  [/리레이즈|불사/, (s) => has(s, "state_reraise"), "리레이즈 → state_reraise", "name"],
+  [/선고|사형|즉사/, (s) => has(s, "state_doom") || /b\.hp/.test(s.damageFormula ?? ""), "선고·즉사 → state_doom (또는 HP 비례)", "name"],
   [/정화|해독|씻어|디스펠/, (s) => (s.stateEffects ?? []).some((e) => e.operation === "remove"), "정화 → states op remove"],
 ];
 
@@ -65,7 +73,8 @@ function mechanicKinds(skill: SkillRecord): string[] {
     if (effect.operation === "remove") kinds.push("해제");
     else if (/_up$|protect|shell|regen/.test(effect.stateId)) kinds.push("강화");
     else if (/wet|oiled/.test(effect.stateId)) kinds.push("약점 만들기");
-    else if (/stop|agility/.test(effect.stateId)) kinds.push("시간");
+    else if (/stop|agility|doom/.test(effect.stateId)) kinds.push("시간");
+    else if (/counter|taunt|cover|evade|reflect|reraise/.test(effect.stateId)) kinds.push("반응");
     else kinds.push("상태 이상");
   }
   return [...new Set(kinds)];

@@ -1690,7 +1690,15 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("stop")) return "stop";
   if (stateId.includes("protect")) return "protect";
   if (stateId.includes("shell")) return "shell";
-  if (stateId.includes("berserk") || stateId.includes("taunt")) return "berserk";
+  if (stateId.includes("taunt")) return "taunt";
+  if (stateId.includes("berserk")) return "berserk";
+  // 반응·표적 상태(2026-10-01) — 폴백(●)이면 반격·회피·리플렉·선고가 화면에서 구별되지 않는다.
+  if (stateId.includes("counter")) return "counter";
+  if (stateId.includes("cover")) return "cover";
+  if (stateId.includes("evade") || stateId.includes("evasion")) return "evade";
+  if (stateId.includes("reflect")) return "reflect";
+  if (stateId.includes("reraise")) return "reraise";
+  if (stateId.includes("doom")) return "doom";
   if (stateId.includes("petrify") || stateId.includes("stone")) return "petrify";
   if (stateId.includes("wet")) return "wet";
   if (stateId.includes("oil")) return "oiled";

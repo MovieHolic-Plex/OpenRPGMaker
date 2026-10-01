@@ -44,6 +44,14 @@ export interface StateBehavior {
   readonly magicDefenseMultiplier: number;
   readonly forcedAction?: "attackRandom";
   readonly elementRates?: Readonly<Record<string, string>>;
+  // 반격·도발·감싸기·회피·리플렉·리레이즈·선고(2026-10-01). 모두 runtimeEffects 에서만 온다.
+  readonly counterChance: number;
+  readonly taunt: boolean;
+  readonly cover: boolean;
+  readonly evasionChance: number;
+  readonly reflect: boolean;
+  readonly reraisePercent: number;
+  readonly doomTurns: number;
 }
 
 // hpTurn 문자열/숫자에서 매 턴 HP 변화 비율(부호 포함)을 추출.
@@ -94,7 +102,18 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     magicDefenseMultiplier: runtime?.magicDefenseMultiplier ?? 1,
     ...(runtime?.forcedAction === "attackRandom" ? { forcedAction: "attackRandom" as const } : {}),
     ...(runtime?.elementRates ? { elementRates: runtime.elementRates } : {}),
+    counterChance: clampPercent(runtime?.counterChance),
+    taunt: runtime?.taunt === true,
+    cover: runtime?.cover === true,
+    evasionChance: Math.min(95, clampPercent(runtime?.evasionChance)),
+    reflect: runtime?.reflect === true,
+    reraisePercent: clampPercent(runtime?.reraisePercent),
+    doomTurns: Math.max(0, Math.min(9, Math.round(Number(runtime?.doomTurns ?? 0) || 0))),
   };
+}
+
+function clampPercent(value: number | undefined): number {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0;
 }
 
 function restrictsActionFrom(stateId: string, value: string): boolean {
@@ -201,6 +220,9 @@ export interface UpkeepResult {
   readonly hpDamage: number;
   readonly hpHealing: number;
   readonly removedStateIds: readonly string[];
+  /** 선고(doomTurns)가 다 차서 쓰러뜨린 상태 id. 쓰러지기 직전 HP 는 doomedHp. */
+  readonly doomedStateId?: string;
+  readonly doomedHp?: number;
 }
 
 // 배틀러 턴 시작 시의 상태 처리: 지속 피해 + 자연 회복 판정.
@@ -226,6 +248,14 @@ export function runStateUpkeep(project: Project, battler: MutableBattler, rng: R
       hpHealing += applied;
     }
     const turns = battler.stateTurns[stateId] ?? 0;
+    // 선고: 자기 턴이 doomTurns 만큼 지나면 쓰러진다. 자연 회복보다 먼저 본다(회복 굴림으로 피하지 못한다).
+    if (behavior.doomTurns > 0 && turns >= behavior.doomTurns && battler.hp > 0) {
+      const doomedHp = battler.hp;
+      battler.hp = 0;
+      removeState(battler, stateId);
+      removedStateIds.push(stateId);
+      return { hpDamage, hpHealing, removedStateIds, doomedStateId: stateId, doomedHp };
+    }
     if (turns >= behavior.recoverNaturallyFromTurn && rollPercent(behavior.recoverNaturallyChance, rng)) {
       removeState(battler, stateId);
       removedStateIds.push(stateId);
@@ -316,6 +346,31 @@ export function gaugeFrozenByStates(project: Project, battler: { readonly stateI
 /** 버서크: 강제 행동 상태가 있으면 그 종류. */
 export function forcedActionForStates(project: Project, battler: { readonly stateIds: readonly string[] }): "attackRandom" | undefined {
   return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.forcedAction === "attackRandom") ? "attackRandom" : undefined;
+}
+
+/** 반격 확률(%): 걸린 상태 중 가장 큰 값. */
+export function counterChanceForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+  return battler.stateIds.reduce((best, stateId) => Math.max(best, behaviorFor(project, stateId)?.counterChance ?? 0), 0);
+}
+
+/** 회피 확률(%): 걸린 상태 중 가장 큰 값(최대 95). */
+export function evasionChanceForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+  return battler.stateIds.reduce((best, stateId) => Math.max(best, behaviorFor(project, stateId)?.evasionChance ?? 0), 0);
+}
+
+/** 도발·감싸기·리플렉: 걸린 상태 중 하나라도 켜져 있으면 true. */
+export function stateFlag(project: Project, battler: { readonly stateIds: readonly string[] }, flag: "taunt" | "cover" | "reflect"): boolean {
+  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.[flag] === true);
+}
+
+/** 리레이즈: 일어날 HP % 와 그 상태 id(가장 큰 것). 없으면 undefined. */
+export function reraiseForStates(project: Project, battler: { readonly stateIds: readonly string[] }): { readonly stateId: string; readonly percent: number } | undefined {
+  let best: { stateId: string; percent: number } | undefined;
+  for (const stateId of battler.stateIds) {
+    const percent = behaviorFor(project, stateId)?.reraisePercent ?? 0;
+    if (percent > 0 && (!best || percent > best.percent)) best = { stateId, percent };
+  }
+  return best;
 }
 
 /** 활성 상태가 덮어쓰는 속성 등급. 나중에 걸린 상태가 이긴다. 없으면 undefined. */

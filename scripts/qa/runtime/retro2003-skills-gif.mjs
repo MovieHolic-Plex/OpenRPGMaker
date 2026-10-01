@@ -1,4 +1,4 @@
-// node scripts/qa/runtime/retro2003-skills-gif.mjs [--set class|legacy|roster|party-pixel] [--batch a1] [--skills a,b] [--out DIR] [--reduced]
+// node scripts/qa/runtime/retro2003-skills-gif.mjs [--set class|legacy|roster|party-pixel] [--batch a1] [--skills a,b] [--out DIR] [--reduced] [--linger N]
 // roster(2026-09-28 2차 로스터): 계약 src/assets/retroRoster.ts + 묶음 파일(retroRosterSkills/<batch>.ts)의 스킬을 그 직업 배우가 쓴다.
 //   --batch a1 처럼 묶음 하나만. 세 명씩 조(부활 스킬이 있으면 쓰러진 주인공을 곁들임)로 찍는다. 스킬이 없는 빈 묶음은 건너뛴다.
 // party-pixel: 사람형이 아닌 파티원(짐승·탈것·몬스터 칩, 몬스터 9칸 시트)의 통상 공격 한 번 — party-<칩>.gif. --batch 로 묶음을 좁힌다.
@@ -19,7 +19,7 @@ const { values } = parseArgs({ options: {
   out: { type: 'string', default: '.omo/retro-skills/recording' },
   set: { type: 'string', default: 'class' },
   fps: { type: 'string', default: '15' }, width: { type: 'string', default: '640' },
-  skills: { type: 'string' }, batch: { type: 'string' }, custom: { type: 'string' }, reduced: { type: 'boolean', default: false },
+  skills: { type: 'string' }, batch: { type: 'string' }, custom: { type: 'string' }, reduced: { type: 'boolean', default: false }, linger: { type: 'string' },
 } });
 const fps = Number(values.fps), width = Number(values.width);
 if (!Number.isInteger(fps) || fps < 1 || fps > 30 || !Number.isInteger(width) || width < 320 || width > 1280) throw new Error('fps 1..30, width 320..1280');
@@ -339,6 +339,31 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       report.evidence.push(row);
       segments.push({ skill, start: from, duration: elapsed() - from });
       console.log('[skills] ' + skill + ': layers ' + row.layerKeys.length + ' nodes ' + detail.effects.length + ' sounds ' + detail.sounds + ' ' + row.problems.join('; '));
+    }
+    // --linger N: 스킬을 다 쓴 뒤 N 차례를 방어로 넘기며 적의 차례를 찍는다 — 건 상태가 적 행동에서 일하는가
+    // (도발로 노림이 바뀌고, 반격·감싸기·회피·리플렉·선고가 터지는가). 클립 이름은 skill-linger-<조>.gif.
+    const lingerTurns = Number(values.linger ?? 0);
+    if (lingerTurns > 0) {
+      const name = 'linger-' + groupIndex;
+      await page.evaluate(() => { window.__skillPopups = []; window.__skillLines = []; });
+      const from = elapsed();
+      await page.evaluate((odd) => { document.getElementById('skill-video-marker').style.background = odd ? 'rgb(0, 255, 255)' : 'rgb(255, 0, 255)'; }, segments.length % 2 === 1);
+      for (let turn = 0; turn < lingerTurns; turn++) {
+        await page.waitForFunction(() => { const r = document.querySelector('[data-testid="battle-scene"]'); return r?.dataset.battlePhase === 'actorCommand' && r.dataset.battleSequenceBusy === 'false'; }, null, { timeout: 60000 });
+        if ((await state()).result) break;
+        await choose('actor-command-defend');
+        await page.waitForFunction(() => document.querySelector('[data-testid="battle-scene"]')?.dataset.battleSequenceBusy === 'true', null, { timeout: 4000 }).catch(() => {});
+      }
+      await page.waitForFunction(() => document.querySelector('[data-testid="battle-scene"]')?.dataset.battleSequenceBusy === 'false', null, { timeout: 60000 }).catch(() => {});
+      await sleep(300);
+      const detail = await page.evaluate(() => {
+        document.getElementById('skill-video-marker').style.background = '#000';
+        return { popups: window.__skillPopups ?? [], lines: window.__skillLines ?? [],
+          statuses: [...document.querySelectorAll('[data-testid^="battle-status-"]')].map((n) => n.dataset.testid.replace(/^battle-status-/, '') + ':' + (n.dataset.statusName ?? '')) };
+      });
+      report.evidence.push({ skill: name, group: groupIndex, completed: true, effects: [], poses: [], cells: [], ...detail, layerKeys: [], problems: [] });
+      segments.push({ skill: name, start: from, duration: elapsed() - from });
+      console.log('[skills] ' + name + ': ' + detail.lines.length + ' lines, ' + detail.popups.length + ' popups');
     }
     await page.screenshot({ path: join(out, 'completed-' + groupIndex + '.png') });
   } catch (e) {

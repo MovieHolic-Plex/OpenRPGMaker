@@ -346,6 +346,27 @@ function retroGimmickControls(
     checkControl("버서크 — 명령 없이 무작위 상대를 통상 공격", "db-state-rt-forced-attack", fx().forcedAction === "attackRandom", (on) =>
       patchEffects({ forcedAction: on ? "attackRandom" : undefined })
     ),
+    numberField("반격 % (물리에 맞으면 통상 공격)", "db-state-rt-counter", fx().counterChance ?? 0, (value) =>
+      patchEffects({ counterChance: value > 0 ? Math.min(100, value) : undefined }), { min: 0, max: 100, step: 5 }
+    ),
+    numberField("회피 % (물리 명중 감소, 최대 95)", "db-state-rt-evasion", fx().evasionChance ?? 0, (value) =>
+      patchEffects({ evasionChance: value > 0 ? Math.min(95, value) : undefined }), { min: 0, max: 95, step: 5 }
+    ),
+    checkControl("도발 — 상대가 단일 대상으로 먼저 노린다", "db-state-rt-taunt", fx().taunt === true, (taunt) =>
+      patchEffects({ taunt: taunt ? true : undefined })
+    ),
+    checkControl("감싸기 — 빈사(HP ¼ 이하) 아군 대신 물리 공격을 맞는다", "db-state-rt-cover", fx().cover === true, (cover) =>
+      patchEffects({ cover: cover ? true : undefined })
+    ),
+    checkControl("리플렉 — 단일 마법을 시전자에게 튕긴다", "db-state-rt-reflect", fx().reflect === true, (reflect) =>
+      patchEffects({ reflect: reflect ? true : undefined })
+    ),
+    numberField("리레이즈 — 쓰러지면 HP % 로 한 번 부활 (0 = 끔)", "db-state-rt-reraise", fx().reraisePercent ?? 0, (value) =>
+      patchEffects({ reraisePercent: value > 0 ? Math.min(100, value) : undefined }), { min: 0, max: 100, step: 5 }
+    ),
+    numberField("선고 — 자기 차례 N 번 뒤 전투 불능 (0 = 끔)", "db-state-rt-doom", fx().doomTurns ?? 0, (value) =>
+      patchEffects({ doomTurns: value > 0 ? Math.min(9, Math.round(value)) : undefined }), { min: 0, max: 9, step: 1 }
+    ),
     multiplier("물리 피해 방어 배율 (프로텍트)", "db-state-rt-physical-defense", "physicalDefenseMultiplier"),
     multiplier("마법 피해 방어 배율 (실드)", "db-state-rt-magic-defense", "magicDefenseMultiplier"),
     ...(elementRows.length
