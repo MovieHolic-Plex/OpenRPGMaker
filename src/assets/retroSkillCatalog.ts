@@ -140,6 +140,14 @@ export function resolveSkillChoreography(
   return contract(ref.retroChoreographyId);
 }
 
+/** 어떤 적이 행동 패턴(actions[].skillId)으로 이 스킬을 쓰는가. 적이 쓰는 스킬은 런타임이 자동 추천을 끄고(기본 몬스터 연출) 연출 레코드·연출 id 만 반영한다. */
+export function isEnemyUsedSkill(
+  database: { enemies?: readonly { actions?: readonly { skillId?: string }[] }[] } | undefined,
+  skillId: string | undefined,
+): boolean {
+  return Boolean(skillId && database?.enemies?.some((enemy) => enemy.actions?.some((row) => row.skillId === skillId)));
+}
+
 /** 직업 모양의 연출(계약 또는 프로젝트 레코드). `records` 를 주지 않으면 기본 연출만 본다. */
 export function resolveRetroClassChoreography(record: RetroChoreographyRef | undefined, records?: RetroChoreographyRecords): RetroClassSkill | undefined {
   return resolveSkillChoreography(record, records, "class")?.skill as RetroClassSkill | undefined;

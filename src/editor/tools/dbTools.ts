@@ -3,7 +3,7 @@ import { actionSkillClearProperties, authoredSkillProperties, combatConditionSch
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
 import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
-import { nearbyRetroChoreographies, resolveSkillChoreography, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
+import { isEnemyUsedSkill, nearbyRetroChoreographies, resolveSkillChoreography, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
 import { BATTLE_AURA_IDS, normalizeBattleAura } from "@/assets/battleStateAuras";
 import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
 import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
@@ -1630,7 +1630,13 @@ const upsertSkill: ToolDefinition = {
 
 /** 계약·연출 레코드·고정 레시피가 없는 스킬은 기전·속성·범위로 자동 배정된 연출을 쓴다. 그 결과를 알려 준다(바꾸려면 retroChoreographyId). */
 function autoChoreographyNote(draft: Project, record: SkillRecord): string | undefined {
+  if (record.retroChoreographyId && !retroChoreographyKind(record.id) && isEnemyUsedSkill(draft.database, record.id)
+    && !resolveSkillChoreography(record, draft.database.skillChoreographies, "monster")) {
+    return `retroChoreographyId '${record.retroChoreographyId}' 는 적이 쓰는 이 스킬에서 재생되지 않는다(없는 id 이거나 직업 전용 기본 연출) — 몬스터 연출 id 나 연출 레코드(chor_*)를 쓴다`;
+  }
   if (record.retroChoreographyId || resolveSkillChoreography(record, draft.database.skillChoreographies) || RETRO_SKILL_RECIPES[record.id]) return undefined;
+  // 적이 쓰는 스킬은 런타임이 자동 추천을 끈다(기본 몬스터 연출) — 연출 레코드(chor_*)나 연출 id 를 붙여야 그 연출로 재생된다.
+  if (isEnemyUsedSkill(draft.database, record.id)) return "적이 쓰는 스킬이라 자동 추천은 적용되지 않고 기본 몬스터 연출로 재생 — 연출을 바꾸려면 retroChoreographyId(chor_* 또는 몬스터 연출 id)";
   const auto = recommendRetroChoreography(record);
   return auto ? `연출 자동 배정: ${auto.label} — 바꾸려면 retroChoreographyId` : undefined;
 }

@@ -1,7 +1,7 @@
 /** 적 스킬 연출 레코드 + 독 자동 추천 프로브. 실행: node_modules/.bin/vite-node --script verify-shots/retro-chor-mon/probe.mts */
 import { recommendRetroChoreography } from "../../src/assets/retroChoreographyRecommend";
 import { retroTintFilter } from "../../src/assets/retroChoreographyTints";
-import { resolveSkillChoreography, retroChoreographyKind, retroClassSkill } from "../../src/assets/retroSkillCatalog";
+import { isEnemyUsedSkill, resolveSkillChoreography, retroChoreographyKind, retroClassSkill } from "../../src/assets/retroSkillCatalog";
 import { retroMonsterSkillTimeline } from "../../src/battle/retroSkillTimeline";
 import { RETRO_MONSTER_SKILLS, retroMonsterSkill } from "../../src/assets/retroMonsterSkills";
 
@@ -23,6 +23,20 @@ const asMonster = resolveSkillChoreography(enemySkill, records, "monster");
 check("적 스킬 + 레코드 → 레코드로 해석(monster)", asMonster?.origin === "project" && asMonster.kind === "monster" && asMonster.record?.id === "chor_mon_claw");
 const noRecord = resolveSkillChoreography(enemySkill, [] as never, "monster");
 check("레코드 없으면 해석 안 됨(undefined)", noRecord === undefined);
+
+// ── (1b) 적이 쓰는 스킬 판정(편집기 안내문·도구 노트가 쓰는 분기)
+console.log("== (1b) isEnemyUsedSkill ==");
+const db = { enemies: [{ actions: [{ skillId: "skill_my_enemy_claw" }] }, { actions: [] }, {}] } as never;
+check("적 행동에 있는 스킬 → true", isEnemyUsedSkill(db, "skill_my_enemy_claw"));
+check("행동에 없는 스킬 → false", !isEnemyUsedSkill(db, "skill_hero_cross_slash"));
+check("database/skillId 없음 → false", !isEnemyUsedSkill(undefined, "x") && !isEnemyUsedSkill(db, undefined));
+// 아군 자동 추천은 그대로이고, 적이 쓰는 스킬은 monster 요청으로 레코드만 본다.
+const classRec = [{ id: "chor_cls", name: "베기", motion: "dash-strike", layers: [{ sheet: SHEET, anchor: "target", startMs: 0 }] }] as never;
+const clsSkill = { id: "skill_my_enemy_claw", name: "x", scope: "enemy", effect: dmg("attack"), retroChoreographyId: "chor_cls" } as never;
+const clsAsMon = resolveSkillChoreography(clsSkill, classRec, "monster");
+check("직업 동작 레코드도 monster 요청이면 monster 형태로 합성", clsAsMon?.origin === "project" && clsAsMon.kind === "monster", `motion=${(clsAsMon?.skill as { motion?: string } | undefined)?.motion}`);
+const unknownId = resolveSkillChoreography({ ...(clsSkill as object), retroChoreographyId: "chor_nope" } as never, classRec, "monster");
+check("없는 연출 id → undefined(런타임은 기본 몬스터 연출)", unknownId === undefined);
 
 // ── (2) 기존 몬스터 계약 스킬 불변
 console.log("== (2) 기존 몬스터 계약(skill_mon_*) 레코드·id 없을 때 ==");
