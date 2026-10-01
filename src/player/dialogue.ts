@@ -160,6 +160,35 @@ const DIALOGUE_FACE_COLUMN_WIDTH = 48;
 const DIALOGUE_FACE_COLUMN_GAP = 8;
 const DIALOGUE_BUST_TEXT_RESERVE = 96;
 const DIALOGUE_FULL_TEXT_RESERVE = 100;
+/** RPG 만들기식 대사창: 한 페이지에 보이는 줄은 최대 3줄. 상자가 더 커도 3줄에서 끊어 다음 장으로 넘긴다. */
+const DIALOGUE_VISIBLE_LINES = 3;
+/**
+ * 전신 초상(하단 대사창): 9:16 세로 그림을 **화면 높이**의 125% 로 키우고 아래 20% 는 화면 밖으로 내린다.
+ * 고정 px 로 두면 해상도를 올릴수록(최대 1920×1080) 초상이 작아져, 비율로 정의한다.
+ * 초상은 대사창 뒤에 서므로 글 여백이 없다. CSS(--runtime-dialogue-full-*)는 이 한 곳의 값만 쓴다.
+ */
+const DIALOGUE_FULL_HEIGHT_RATIO = 1.25;
+const DIALOGUE_FULL_ASPECT = 9 / 16;
+const DIALOGUE_FULL_DROP_RATIO = 0.2;
+
+/** 상자 뒤에 서는 전신 초상의 크기·내림을 화면 높이로 심는다. 위치·층은 CSS(.dialogue-face-behind). */
+function styleBehindPortrait(node: HTMLElement, hostHeight: number): void {
+  const metrics = fullPortraitMetrics(hostHeight);
+  node.classList.add("dialogue-face-behind");
+  node.style.setProperty("--runtime-dialogue-full-height", `${metrics.height}px`);
+  node.style.setProperty("--runtime-dialogue-full-width", `${metrics.width}px`);
+  node.style.setProperty("--runtime-dialogue-full-drop", `${metrics.drop}px`);
+}
+
+function fullPortraitMetrics(hostHeight: number): { height: number; width: number; drop: number } {
+  const height = Math.round(hostHeight * DIALOGUE_FULL_HEIGHT_RATIO);
+  const width = Math.round(height * DIALOGUE_FULL_ASPECT);
+  return {
+    height,
+    width,
+    drop: Math.round(height * DIALOGUE_FULL_DROP_RATIO),
+  };
+}
 const DIALOGUE_FONT_FALLBACK =
   '700 7px "DungGeunMo", "Galmuri11", "DotGothic16", "GulimChe", "DotumChe", "MS Gothic", sans-serif';
 
@@ -462,6 +491,7 @@ export function createDialogueUI(
       const segmentsAll = parseDialogueText(request.body, request.textContext);
 
       const mount = (balloon: boolean): void => {
+        const behindPortraits: HTMLElement[] = [];
         box = dialogueBox("", "dialogue-box");
         applyDialogueLook(overlay, box, look);
         position = applyTextSettings(overlay, box, request);
@@ -495,11 +525,20 @@ export function createDialogueUI(
         if (face && isPortrait) {
           // Attach to the message box so left/right tracks the window, not the full screen.
           box.classList.add("has-bust-face", `portrait-${portraitMode}`);
+          // 하단 전신: 초상이 대사창 **뒤**에 서도록 상자 밖(오버레이의 상자 앞 형제)에 둔다.
+          // 상자는 backdrop-filter 로 자기 쌓임 맥락을 만들어 안의 자식은 상자 배경 뒤로 갈 수 없다.
+          const tallFull = portraitMode === "full" && position === "bottom";
+          if (tallFull) {
+            box.classList.add("portrait-full-tall");
+          }
           if (face.position === "right") box.classList.add("bust-right");
           else box.classList.add("bust-left");
           overlay.classList.add("has-bust-face");
           faceEl = renderFace(face);
-          box.append(faceEl);
+          if (tallFull) {
+            styleBehindPortrait(faceEl, logicalHostHeight(host));
+            behindPortraits.push(faceEl);
+          } else box.append(faceEl);
           // 초상 무대: 방금 전 다른 화자의 초상을 반대편에 흐리게 남긴다(듣는 쪽).
           // 같은 화자가 이어 말하면 듣는 쪽은 그대로 남는다.
           if (wasOpen && lastPortrait && lastPortrait.key !== speakerKey) listenerPortrait = lastPortrait;
@@ -510,7 +549,10 @@ export function createDialogueUI(
             other.classList.add("dialogue-portrait-listener");
             other.dataset.testid = "dialogue-portrait-listener";
             box.classList.add("has-portrait-listener");
-            box.append(other);
+            if (tallFull) {
+              styleBehindPortrait(other, logicalHostHeight(host));
+              behindPortraits.push(other);
+            } else box.append(other);
           }
           lastPortrait = { key: speakerKey, face };
         }
@@ -554,6 +596,8 @@ export function createDialogueUI(
         });
         if (!balloon) box.append(logButton);
         overlay.append(box);
+        // 상자 뒤 초상은 상자 **다음** 형제여야 퇴장 연출 선택자(`~`)가 닿는다. 쌓임은 z-index 가 정한다.
+        overlay.append(...behindPortraits);
         // 이름표가 본문 첫 줄을 덮지 않게 여백을 재서 심는다. 오버레이에 붙인 **뒤**라야
         // offsetHeight 가 나오고, 줄 수를 세기 **전**이라야 그 줄 수가 실제 본문 칸을 본다.
         if (nameplate && !balloon) reserveSpeakerInset(box, nameplate);
@@ -1333,7 +1377,8 @@ function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindow
   const faceWidth = !request.face
     ? 0
     : portraitMode === "full"
-      ? DIALOGUE_FULL_TEXT_RESERVE
+      // 하단 전신은 대사창 뒤에 서므로 글이 왼쪽 끝부터 나온다(여백 0).
+      ? position === "bottom" ? 0 : DIALOGUE_FULL_TEXT_RESERVE
       : portraitMode === "bust"
         ? DIALOGUE_BUST_TEXT_RESERVE
         : DIALOGUE_FACE_COLUMN_WIDTH + DIALOGUE_FACE_COLUMN_GAP;
@@ -1365,6 +1410,10 @@ function logicalHostWidth(host: HTMLElement): number {
  * 그때만 상수로 되돌린다.
  */
 function dialogueMaxLines(bodyEl: HTMLElement): number {
+  return Math.min(DIALOGUE_VISIBLE_LINES, derivedDialogueMaxLines(bodyEl));
+}
+
+function derivedDialogueMaxLines(bodyEl: HTMLElement): number {
   const view = bodyEl.ownerDocument?.defaultView;
   if (!view) return DIALOGUE_LINES_PER_PAGE;
   const available = bodyEl.clientHeight;
