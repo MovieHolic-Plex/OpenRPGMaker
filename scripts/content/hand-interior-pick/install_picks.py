@@ -46,8 +46,9 @@ def _plan():
         o, s = by[i], slug(i)
         if not os.path.exists(os.path.join(CAND, s, ch + '.pxg')): skip('후보 파일 없음'); continue
         im, G = _png(s, ch), geom(o)
-        if o['atlas']['frames'] > 1 and (G['resized'] or not os.path.exists(os.path.join(CAND, s, 'anim-mask.png'))):
-            skip('애니메이션 기물(12프레임) — 크기를 바꿨거나 anim-mask.png 가 없다'); continue
+        if o['atlas']['frames'] > 1 and (not os.path.exists(os.path.join(CAND, s, 'anim-mask.png'))
+                                         or G['canvas'][0] != o['atlas']['w'] or G['canvas'][1] < o['atlas']['h']):
+            skip('애니메이션 기물(12프레임) — anim-mask.png 가 없거나, 폭을 바꿨거나 키를 줄였다(위로 키운 것만 된다)'); continue
         if list(im.size) != G['canvas']:
             skip(f"그림 {im.size[0]}×{im.size[1]} 이 " + ('resize.json 캔버스' if G['resized'] else '칸 자리') + f" {G['canvas'][0]}×{G['canvas'][1]} 와 다름"); continue
         if G['resized']:
@@ -67,14 +68,15 @@ def _plan():
 
 def _animated(f, body):
     """애니메이션 기물: 몸통은 고른 그림, 12프레임 동안 바뀌는 화소(v5 프레임끼리 다른 화소 = anim-mask.png)만 v5 프레임에서 가져온다.
-    작업자는 움직이는 자리를 v5 와 같은 좌표에 두고 그 바깥만 다시 그린다(WORKER-V34-REDO.md §2)."""
+    작업자는 움직이는 자리를 v5 와 같은 좌표에 두고 그 바깥만 다시 그린다(WORKER-V34-REDO.md §2).
+    위로 키운 그림(굴뚝 등, resize.json)이면 v5 프레임을 아래 맞춤으로 겹친다 — 폭은 같아야 한다."""
     import numpy as np
     A = np.stack([np.array(fr.convert('RGBA')) for fr in f.frames])
     diff = (A != A[0]).any(axis=(0, 3))
-    B = np.array(body)
+    B = np.array(body); oy = B.shape[0] - A.shape[1]
     out = []
     for t in range(len(f.frames)):
-        fr = B.copy(); fr[diff] = A[t][diff]
+        fr = B.copy(); sub = fr[oy:oy + A.shape[1], :A.shape[2]]; sub[diff] = A[t][diff]
         out.append(Image.fromarray(fr))
     return out
 
@@ -95,6 +97,8 @@ def _same_size(f, im):
 def _resize(f, im, fp):
     g = copy.copy(f)
     g.im = im; g.frames = None; g.cells = None
+    if getattr(f, 'frames', None) and len(f.frames) > 1:   # 위로 키운 애니메이션 기물(_plan 이 폭·키를 확인했다)
+        g.frames = _animated(f, im); g.im = g.frames[0]
     g.fw = int(fp['w']); g.fh = int(fp['h'])
     g.up = 0 if f.kind in ('hang', 'flat') else max(0, im.height - g.fh * 16)
     if f.kind in ('floor', 'wall') and g.fh:   # 발밑 칸 중 그림이 없는 칸(계단 귀퉁이 등)은 막지 않는다 — 엔진도 빈 칸은 걷는다

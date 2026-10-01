@@ -62,3 +62,4 @@ python3 scripts/content/hand-interior-pick/picks_db.py backup                # �
 2판(w51~w53, 같은 날): 「애매」 11종(기둥 6·빵 화덕·왕좌·돌 왕좌·갑옷 거치대·갱도 버팀목) + 마법서 독서대 메모(「2x1 이 나을듯」 → resize.json 32x32).
 판정 `v34-redo2-verdicts.json`, 비교 `v34_compare.py <out> v34-redo2-verdicts.json w51,w52,w53`. 움직이는 기물 마스크는 `anim_mask.py`.
 극장 좌석 메모(「위를 보는 느낌」)는 2판·3판 후보가 이미 있었는데 사용자가 원래 판을 골라서 건너뛰었다.
+빵 화덕 4차(w56): 「실내인데 굴뚝」 — resize.json 32x48 로 굴뚝이 벽면(2줄)을 타고 천장선까지. 위로 키운 움직이는 기물은 install_picks 가 v5 프레임을 아래 맞춤으로 겹친다(폭이 같고 키만 늘린 경우만).
