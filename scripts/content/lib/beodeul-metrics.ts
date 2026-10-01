@@ -147,6 +147,8 @@ export function emptinessOf(map: GameMap, ts: any, sw = 20, sh = 15, limit = 0.4
   for (const k of (ts.structureKits ?? []) as any[]) if (/^bd-ground-lawn-/.test(k.id)) for (const r of k.rows) for (const t of r.tiles) if (t >= 0) lawn.add(t);
   const walk = (v: unknown): void => { if (typeof v === "number") built.add(v); else if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === "object") Object.values(v).forEach(walk); };
   for (const a of (ts.autotileGroups ?? []) as any[]) { walk(a.memberTileIds); walk(a.variantMap); }
+  // 고른 조각 바닥 표본(설원·사막·늪의 길·광장)은 그룹이 아니라 태그로 길·광장이다
+  (ts.tileMeta ?? []).forEach((m: any, t: number) => { const tags: string[] = m?.tags ?? []; if (tags.some((x) => x === "road" || x === "plaza" || x === "sand" || x === "bridge")) built.add(t); });
   for (const t of lawn) built.delete(t);
   const W = map.width, H = map.height;
   const walkable = (t: number) => { const p = ts.passability?.[t]; return !p || p.up || p.down || p.left || p.right; };

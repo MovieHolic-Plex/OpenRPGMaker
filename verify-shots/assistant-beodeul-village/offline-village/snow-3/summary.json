@@ -1,0 +1,32 @@
+{
+ "spec": "snow:3",
+ "ms": 613,
+ "size": "56x44",
+ "summary": "버들항 설원 마을 56×44 (맵 map_beodeul_snow_3, seed 3): 큰길 하나(굽은 폭 2)·6개 갈래길, 광장(40,28), 집 14채(10종), 앵커 snowfield-hall, 일터 「얼음낚시터」, 밭 0, 나무 74, 광장 소품 7. 문 앞 15/15 도달. 다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
+ "houses": 14,
+ "distinct": 10,
+ "doors": "15/15",
+ "stampFailed": 0,
+ "open": {
+  "share": 0.4164,
+  "worst": 0.55,
+  "over40": 2
+ },
+ "cityForm": {
+  "ok": true,
+  "counts": {
+   "deadEnds": 0,
+   "longStraight": 0,
+   "canalStraight": null,
+   "neighbourRepeats": 0,
+   "overused": 0,
+   "isolatedLines": 0,
+   "nodes": 1,
+   "landmarks": 0,
+   "meanDepth": 2.61,
+   "bentStreetCells": 26,
+   "spacingCv": null
+  },
+  "advice": []
+ }
+}

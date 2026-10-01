@@ -390,11 +390,18 @@ function rerouteToBeodeulTown(draft: Project, args: Record<string, unknown>): To
   if (width !== undefined) forwarded.width = width;
   if (height !== undefined) forwarded.height = height;
   if (number(args.seed) !== undefined) forwarded.seed = number(args.seed);
-  if (/항구|harbou?r|port\b|부두|선착장/i.test(text)) forwarded.harbour = true;
+  // 마을 문법 테마: 말에서 고른다(도시·로마풍이라고 할 때만 블록 격자 도시)
+  const ground = typeof args.groundTheme === "string" ? args.groundTheme : "";
+  forwarded.theme = /도시|로마|블록/.test(text) ? "city" // "city" 낱말은 tilesetId(beodeul_city)에도 있으니 보지 않는다
+    : ground === "desert" || /사막|오아시스|desert/i.test(text) ? "desert"
+    : ground === "snow" || /설원|눈 ?마을|겨울|snow/i.test(text) ? "snow"
+    : /늪|습지|swamp|marsh/i.test(text) ? "swamp"
+    : /항구|포구|어촌|바다|해안|harbou?r|port\b|부두|선착장|coast/i.test(text) ? "coast" : "river";
+  if (forwarded.theme === "city" && /항구|harbou?r|port\b|부두|선착장/i.test(text)) forwarded.harbour = true;
   const result = AUTHOR_BEODEUL_TOWN_TOOL.run(draft, forwarded);
   return {
     ...result,
-    summary: "author_village 는 숲마을 생성기라 버들항 타일셋에서는 author_beodeul_town(블록 키트 조립)으로 대신 시공했다. " + result.summary,
+    summary: `author_village 는 숲마을 생성기라 버들항 타일셋에서는 author_beodeul_town(theme ${String(forwarded.theme)})으로 대신 시공했다. ` + result.summary,
   };
 }
 

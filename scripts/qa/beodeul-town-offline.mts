@@ -15,7 +15,7 @@ for (const spec of specs) {
   const p: any = createBlankProject(); ensureBundledTilesets(p);
   const ctx: any = { project: p };
   const t0 = Date.now();
-  const r: any = runTool(ctx, "author_beodeul_town", { width: w, height: hh, seed: seedS ? Number(seedS) : 7, harbour: h === "h" });
+  const r: any = runTool(ctx, "author_beodeul_town", { theme: "city", width: w, height: hh, seed: seedS ? Number(seedS) : 7, harbour: h === "h" });
   if (!r.ok) { console.log(spec, "FAIL", r.summary); continue; }
   const mapId = r.data.mapId; const map = ctx.project.maps[mapId];
   const stamps = [...r.data.blocks, ...(r.data.harbour ? [r.data.harbour] : [])].map((b: any) => ({ objectId: `kit:beodeul_city/${b.id}`, x: b.x, y: b.y }));

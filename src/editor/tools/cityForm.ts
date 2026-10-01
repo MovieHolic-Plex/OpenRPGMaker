@@ -231,7 +231,9 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
       return out;
     };
     const cv2 = centres("v"), ch = centres("h");
-    const orient: "h" | "v" | null = Math.max(cv2.length, ch.length) < 12 ? null : cv2.length >= ch.length ? "v" : "h";
+    // 운하 = 맵을 길게 가로지르는 좁은 물줄기. 축 길이의 60% 미만만 걸치는 물(바닷가 띠·연못)은 운하로 보지 않는다
+    const longV = cv2.length >= Math.max(12, 0.6 * H), longH = ch.length >= Math.max(12, 0.6 * W);
+    const orient: "h" | "v" | null = !longV && !longH ? null : longV && (!longH || cv2.length / H >= ch.length / W) ? "v" : "h";
     if (!orient) return { cells, orient, bends: 0, straightShare: null, straight: false };
     const c = orient === "v" ? cv2 : ch;
     const mode = [...c].sort((a, b) => a - b)[Math.floor(c.length / 2)]!;

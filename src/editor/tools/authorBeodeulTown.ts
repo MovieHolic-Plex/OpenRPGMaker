@@ -10,6 +10,7 @@ import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
 
 const BEODEUL_TILESET_ID = "beodeul_city";
 const PAVING = "버들항 길 포석";
@@ -34,14 +35,15 @@ interface Seg { start: number; size: number; gapAfter: number }
 export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
   name: "author_beodeul_town",
   description:
-    "버들항(beodeul_city) 타일셋으로 마을·도시·항구 마을을 한 번에 시공한다(버들항 기본 문법). " +
-    "순서: 가로 격자(대로 4칸·길 2칸·뒷골목 1칸)를 포석으로 먼저 깔고 → 블록 키트(bd-block-주택/상점/시장/저택/교회/외곽/항구)를 격자 칸마다 한 채가 아니라 한 블록씩 찍고 " +
-    "→ 골목 끝을 길과 잇고 → 공원(대각 산책로·나무·벤치)과 대로 가로수·가로등을 얹는다. 블록은 이웃에 같은 키트를 반복하지 않는다. " +
-    "mapId 없으면 버들항 새 맵을 만든다(width/height 는 블록 격자에 맞게 조금 조정된다, 기본 60×60, 작게는 16×10). " +
-    "mapId 가 있으면 그 버들항 맵 전체를 풀밭으로 비우고 다시 깐다(다른 계열 맵이면 거부 — 맵을 만들어 쓰거나 칩셋 변경을 먼저 물을 것). " +
-    "harbour:true 이고 가로 83 이상이면 맨 아래에 항구 호수(bd-harbour-lake)를 붙인다. 시공 뒤 check_city_form 으로 점검하되 「곧은 길」 경고는 격자 도시의 정상이라 고치려 들지 말 것(블록·골목·막다른 길 경고만 본다). " +
-    "결과가 마음에 안 들면 stamp_object(kit:beodeul_city/bd-block-…)·fill_region 으로 블록·길을 고친다. 집을 하나씩 author_house 로 놓지 말 것. " +
-    "로마풍 도시가 아닌 장소(사막·광산·설원·늪 마을, 포구·포도원, 던전, 필드)는 이 도구가 아니라 고른 조각 키트 bd-pick-<장소>-<이름>(참고문서 beodeul-picks-*)을 stamp_object 로 찍어 짓는다.",
+    "버들항(beodeul_city) 타일셋으로 마을·도시를 한 번에 시공한다. theme 으로 문법을 고른다. " +
+    "마을(기본 theme:\"river\" 강가 마을 · \"coast\" 포구 · \"desert\" 사막 오아시스 · \"snow\" 설원 · \"swamp\" 늪 수상 마을): " +
+    "사용자가 고른 버들항 변형 마을의 문법 — 물(강·바다·못·늪)을 먼저 깔고, 굽은 큰길(폭 2) 하나가 맵을 가로지르고(강은 아치 다리로 건넘), 뒷길·이음길이 고리를 만들고(막다른 길 없음), " +
+    "큰길 위 광장(우물·좌판·벤치·등)과 그 북쪽 앵커 건물(여관·회관·대상 숙소), 길을 바라보는 집(문 앞 칸 = 길, 이웃 키트 반복 없음, 간격 1~3칸), " +
+    "용도별 소품 덩이(방앗간·포구 그물터·대상 마당·얼음낚시터), 바깥 밭·숲 덩이까지 짓는다. 집·소품은 bd-house-*·고른 조각 bd-pick-* 키트다. " +
+    "theme:\"city\" 는 로마풍 블록 격자 도시(가로 격자 → bd-block-* 블록 → 공원·가로수, harbour:true 이고 가로 83 이상이면 항구 호수)다 — 사용자가 「도시·로마풍·대도시·블록」을 말할 때만. " +
+    "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부). " +
+    "같은 seed = 같은 마을, 다른 배치는 seed 를 바꾼다. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
+    "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 author_house 로 놓지 말 것. 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
   mode: "write",
   domains: ["map"],
   preservesAuthoredRaster: true,
@@ -54,6 +56,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       width: { type: "integer", description: `새 맵 가로(기본 ${DEFAULT_W}, ${MIN_W}~${MAX_TOOL_MAP_DIMENSION}). 블록 격자에 맞춰 줄어든다.` },
       height: { type: "integer", description: `새 맵 세로(기본 ${DEFAULT_H}, ${MIN_H}~${MAX_TOOL_MAP_DIMENSION}). 블록 띠에 맞춰 줄어든다.` },
       seed: { type: "integer", description: "배치 변주 시드(같은 값 = 같은 마을). 생략하면 7" },
+      theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
   },
@@ -132,6 +135,11 @@ function parseBlocks(tileset: any): BlockKit[] {
 }
 
 function buildTown(draft: Project, args: Record<string, unknown>): ToolExecResult {
+  const themeArg = typeof args.theme === "string" ? args.theme.trim() : "";
+  if (themeArg && themeArg !== "city" && !(BEODEUL_VILLAGE_THEMES as readonly string[]).includes(themeArg)) {
+    throw new ToolError(`theme 은 ${[...BEODEUL_VILLAGE_THEMES, "city"].join("|")} 중 하나다(받은 값: ${themeArg}).`, { code: "invalid-args" });
+  }
+  if (themeArg !== "city") return buildVillage(draft, args, (themeArg || (args.harbour === true ? "coast" : "river")) as BeodeulVillageTheme);
   const seed = intArg(args, "seed", 7, 0, 2 ** 31 - 1);
   const rand = rng(seed * 2654435761 + 12345);
   const warnings: string[] = [];
@@ -417,6 +425,39 @@ function buildTown(draft: Project, args: Record<string, unknown>): ToolExecResul
     },
     warnings: warnings.length ? warnings : undefined,
   };
+}
+
+const VILLAGE_MIN_W = 36, VILLAGE_MIN_H = 30, VILLAGE_MAX_W = 96, VILLAGE_MAX_H = 80;
+
+function buildVillage(draft: Project, args: Record<string, unknown>, theme: BeodeulVillageTheme): ToolExecResult {
+  const seed = intArg(args, "seed", 7, 0, 2 ** 31 - 1);
+  const tileset: any = draft.tilesets[BEODEUL_TILESET_ID];
+  if (!tileset) throw new ToolError("이 프로젝트에는 버들항 타일셋(beodeul_city)이 없다.", { code: "beodeul-tileset-missing" });
+  let mapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
+  const [dw, dh] = themeDefaultSize(theme);
+  if (!mapId) {
+    const W = intArg(args, "width", dw, VILLAGE_MIN_W, VILLAGE_MAX_W);
+    const H = intArg(args, "height", dh, VILLAGE_MIN_H, VILLAGE_MAX_H);
+    const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : "버들 마을";
+    mapId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : uniqueId(draft, "map_beodeul", `${theme}_${seed}`);
+    assertMapIdAvailable(draft, mapId);
+    createMapTool.run(draft, { id: mapId, name, width: W, height: H, tilesetId: BEODEUL_TILESET_ID, border: "none" });
+  } else {
+    const existing = draft.maps[mapId];
+    if (!existing) throw new ToolError(`맵이 없습니다: ${mapId}`, { code: "map-not-found", mapId });
+    if (existing.tilesetId !== BEODEUL_TILESET_ID) {
+      throw new ToolError(
+        `맵 ${mapId} 는 버들항 타일셋이 아니다(${existing.tilesetId}). author_beodeul_town 은 버들항 맵에서만 쓴다. 버들항으로 바꾸려면 사용자에게 칩셋 변경을 먼저 물어라.`,
+        { code: "beodeul-tileset-required", mapId },
+      );
+    }
+    if (existing.width < VILLAGE_MIN_W || existing.height < VILLAGE_MIN_H) {
+      throw new ToolError(`마을 문법은 ${VILLAGE_MIN_W}×${VILLAGE_MIN_H} 이상 맵에서 짓는다(지금 ${existing.width}×${existing.height}). mapId 없이 새 맵을 만들 것.`, { code: "town-too-small", mapId });
+    }
+    existing.structurePlacements = [];
+  }
+  const r = buildBeodeulVillage(draft, mapId, theme, seed);
+  return { summary: r.summary, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
 }
 
 function uniqueId(draft: Project, prefix: string, body: string): string {
