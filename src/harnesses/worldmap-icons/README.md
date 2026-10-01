@@ -45,12 +45,31 @@ systemd-run --user --unit=worldmap-icon-harness -p Restart=on-failure /usr/bin/p
 | `harness.py` | `intake`·`review`·`status`·`export`·`serve`. 저장소(sqlite, 추가만)와 화면 API(`/api/state`, `/api/decide`, `/f/<세트>/<이름>/<그림>`) |
 | `render.py` | 키트(`tiledata/worldmap-kit/kit`)로 지형을 한 번 그리고, 아이콘마다 그 자리에 붙여 둘레까지 잘라 낸다(`fantasy-5act` 여정 · `original` 팔레트) |
 | `review.md` | 검수자 지시문 틀 |
+| `redraw.py` | 다시 그리기 판: 판·후보 표, 작업자 일꾼(pool), 깨짐 검사, 미리보기, 화면 상태 |
+| `draw.md` | 작업자 지시문 틀 |
 | `web/index.html` | 받기/버리기 화면 |
 
 저장소 밖 데이터: `~/.local/share/oprn/worldmap-icon-harness/` — `harness.sqlite`(items·reviews·decisions), `items/<세트>/<이름>/`(그림·verdict.json),
 `logs/`(검수자 출력·지시문). 결정의 정본은 sqlite, 저장소의 `harness-data/worldmap-icons/decisions.json` 은 결정마다 다시 쓰는 사본이다.
 
+## 다시 그리기 판
+화면의 아이콘마다 「다시 그리기 — 정면 3/4 후보」 칸이 있다. 메모를 적고 「후보 N장 다시 그리기」(5·3·1)를 누르면 판이 열린다.
+```
+판 r<N> ── 작업자(Codex CLI gpt-6.1-sol medium · 동시 8) 방향별 1장씩: A 최소 수정 · B EasyRPG 기준 맞추기 · C 단순·또렷 · D 설명 충실 · E 자유
+   │        작업지시서(draw.md): 기준 그림 · 출발 그림 8배·지도 자리 · 사용자가 받은 같은 세트 아이콘 · 버린 이유·메모 · 검수자 fix · 허용 색표
+   │        작업자는 harness.py preview <폴더> 로 8배·지도 자리·check.json 을 스스로 본다(최대 3바퀴)
+   ▼
+깨짐 검사(크기·키색 바탕·허용 색표 밖 화소) ─ 불합격 ─┐
+   ▼ 통과                                        │
+검수자(review.md + 「출발 그림보다 덜 읽히면 READ」) ─ FAIL ─┤→ 같은 작업자가 이유를 들고 다시(최대 WMI_HARNESS_ATTEMPTS=2)
+   ▼                                               (둘 다 떨어져도 화면에 ✗ 와 이유를 달고 나온다)
+사용자: 후보 카드에서 「이걸로」(decision=pick) / 「✕ 버림」(이유 칩, 다음 판 지시서에 들어간다) / 「이걸로 다시 그리기」(그 후보에서 출발하는 새 판)
+```
+고른 후보는 `decisions.json` 의 `picked`(예: `r3/B`)로 남고, 그림은 `~/.local/share/oprn/worldmap-icon-harness/rounds/r3/B/a<시도>/cand.png` 다.
+**시트·번들에 굽는 건 아직 없다** — 사용자가 고른 것이 모이면 굽기 단계를 따로 연다.
+명령으로도 연다: `python3 src/harnesses/worldmap-icons/harness.py draw <세트/이름> --note "…" [--base r3/B] [-n 5]` (일꾼은 알아서 뜨고, 1분 놀면 내려간다).
+엔진을 Claude 로: `WMI_HARNESS_ENGINE=claude` (기본 모델 `claude-sonnet-5-5`).
+
 ## 아직 없는 것
-- **다시 그리기 판.** 버린 아이콘을 작업자 여럿이 정면 3/4 로 다시 그리고 사용자가 후보 중에 고르는 단계(소품 하네스의 `draw` 와 같은 모양)는
-  사용자 결정이 모인 뒤에 붙인다. 그때 버린 이유·메모·검수자의 `fix` 가 작업지시서에 들어간다.
+- **굽기.** 고른 후보를 세트 시트(`iconsets/<세트>/sheet.png`)의 그 칸에 넣고 manifest·키트 자체 시험을 다시 돌리는 단계.
 - 하네스 레지스트리(`src/harnesses/_core`, PR #1832) 등록 — 그 PR 이 main 에 들어오면 한 줄 등록한다.
