@@ -1,5 +1,5 @@
 """조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
-import ground as G, build as B, props as P, blocks as K, props2 as Q
+import ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3
 _L = None
 
 
@@ -30,9 +30,22 @@ def objects():
         'thatch_house_5': K.assemble(K.house('jc', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True, chimi=False), lib(), post=lambda cv: (K.hip_cut(cv, 0, 3, 'jc', wg=24), K.upturn(cv, 48, 8, 3))),
         'gate_4': K.assemble(K.house('jo', 4, 'lggr', 'lggr', rows=3, dan=False, steps=(1, 2), chimi=False, hip=True), lib(), post=lambda cv: (K.hip_cut(cv, 0, 3, 'jo', wg=20), K.upturn(cv, 48, 10, 3))),
         'pavilion_5': K.assemble(K.house('pv', 5, 'ooooo', 'kkkkk', rows=3, dan=False, steps=(2,), hip=True), lib(), post=lambda cv: (K.hip_cut(cv, 0, 3, 'pv'), K.upturn(cv, 48))),
-        'pine': Q.pine(),
-        'persimmon': Q.persimmon(),
-        'willow': Q.willow(),
+        'thatch_house_4': K.assemble(K.house('jc', 4, 'lwdr', 'lfdr', steps=(2,), hip=True, chimi=False), lib(), post=lambda cv: (K.hip_cut(cv, 0, 3, 'jc', wg=24), K.upturn(cv, 48, 8, 3))),
+        'giwa_house_5': K.assemble(K.house('jo', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True), lib(), post=lambda cv: (K.hip_cut(cv, 0, 3, 'jo'), K.upturn(cv, 48))),
+        'zelkova_a': TR.zelkova(0),
+        'zelkova_b': TR.zelkova(1, 1),
+        'zelkova_c': TR.zelkova(2, -1),
+        'pine_a': TR.pine(0),
+        'pine_b': TR.pine(1, 1),
+        'persimmon_a': TR.persimmon_tree(0),
+        'persimmon_b': TR.persimmon_tree(1, 0),
+        'willow': TR.willow(0),
+        'bamboo': TR.bamboo(0),
+        'bush_a': TR.bush('a', 0),
+        'bush_b': TR.bush('b', 1),
+        'bush_c': TR.bush('c', 2),
+        'fence_h': P3.fence_h(),
+        'haystack': P3.haystack(),
         'well': Q.well(),
         'bridge': Q.bridge(),
         'jars': Q.jars(),

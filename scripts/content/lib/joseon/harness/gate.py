@@ -8,6 +8,7 @@ FAIL(통과 못 하면 시트·지도 굽기 금지):
   S  그림자: 반투명 그림자 무게중심이 본체보다 위
   A  적대 리뷰: 독립 리뷰어 두 렌즈(culture 조선다움·view 3/4)가 현재 해시에 둘 다 keep 이어야 함(ADVERSARIAL.md)
   K  조립: built 조각은 blocks.house 블록 조립(pieces_meta 의 kit)이어야 함
+  TR 나무: 잎 결(이웃 밝기차)이 버들항 p5×0.88 미만이거나 수관 화소가 너무 적음
   V  판정: harness/verdicts.json 에 이 조각의 현재 그림에 대한 3/4 판정 줄이 없음(그림이 바뀌면 다시 써야 함)
 WARN: 결(grain) 부족, built 조각의 좌우 비대칭(0.08 초과, sym:true).
 """
@@ -20,6 +21,8 @@ import tk
 from metrics import metrics
 import catalog
 import adversarial
+from spacemetrics import tree_metrics
+SPACE = json.load(open(os.path.join(HERE, 'space_calibration.json')))
 
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..', '..'))
 CAL = json.load(open(os.path.join(HERE, 'calibration.json')))['band']
@@ -82,6 +85,14 @@ def run(skip_a=False):
                 w.append(f"결 {m['grain']:.1f} < {CAL['grain']['p5']:.1f}")
             if meta.get('sym') and m['asym'] > 0.08:
                 w.append(f"비대칭 {m['asym']:.2f}")
+        if meta.get('cls') in ('tree', 'bush'):
+            tmx = tree_metrics(cv.a)
+            tb = SPACE['tree']
+            min_px = 900 if meta['cls'] == 'tree' else 300
+            if tmx is None or tmx['px'] < min_px:
+                why.append(f"TR 수관이 작다/비었다 {tmx['px'] if tmx else 0}px < {min_px}")
+            elif tmx['texture'] < 0.095:
+                why.append(f"TR 잎 결 {tmx['texture']:.3f} < 0.095 (버들항 p5 {tb['texture']['p5']:.3f})")
         if not skip_a:
             _ok, _why = adversarial.check(name, cv)
             if not _ok: why.append(_why)

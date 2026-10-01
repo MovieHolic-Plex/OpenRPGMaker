@@ -1,30 +1,5 @@
 {
  "_doc": "조각별 분류와 기준 조각(버들항 객체 이름). cls: built(건물, 좌우 대칭 검사) / tree / prop / wall. thin_ok: 폭 1px 줄을 의도적으로 쓰는 조각(이유 필수).",
- "pine": {
-  "cls": "tree",
-  "refs": [
-   "tree",
-   "tree",
-   "tree"
-  ]
- },
- "persimmon": {
-  "cls": "tree",
-  "refs": [
-   "tree",
-   "tree",
-   "tree"
-  ]
- },
- "willow": {
-  "cls": "tree",
-  "refs": [
-   "tree",
-   "tree",
-   "tree"
-  ],
-  "thin_ok": "늘어진 가닥이 2px 폭 반쪽씩이라 한쪽이 가늘다"
- },
  "well": {
   "cls": "prop",
   "refs": [
@@ -167,5 +142,139 @@
    "forum.temple"
   ],
   "kit": "blocks.house('pv',5,…,dan)"
+ },
+ "zelkova_a": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "zelkova_b": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "zelkova_c": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "pine_a": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "pine_b": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "persimmon_a": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "persimmon_b": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "willow": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ],
+  "thin_ok": "늘어진 가닥이 2px 폭 리본이라 끝이 가늘다"
+ },
+ "bamboo": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bush_a": {
+  "cls": "bush",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bush_b": {
+  "cls": "bush",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bush_c": {
+  "cls": "bush",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "thatch_house_4": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "blocks.house('jc',5,…)"
+ },
+ "giwa_house_5": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',6,…)"
+ },
+ "fence_h": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "싸리 막대 사이 틈"
+ },
+ "haystack": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
  }
 }

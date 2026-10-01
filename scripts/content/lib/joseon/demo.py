@@ -16,7 +16,7 @@ if _fails:
 from PIL import Image
 
 OUT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'tiledata', 'joseon-demo'))
-MW, MH = 40, 34
+MW, MH = 40, 40
 N, E, S, W = G.N, G.E, G.S, G.W
 
 # ---------- 시트 ----------
@@ -126,73 +126,127 @@ def mask_of(cells, x, y, wrap=True):
 for (x, y) in water:
     setg(x, y, STREAM + mask_of(water, x, y), 'water')
 
-# 큰길 y=21..22 (다리 구간은 비움), 대문 진입로, 초가 진입로
-road = {(x, y) for y in (21, 22) for x in range(MW) if not 29 <= x <= 33}
-road |= {(x, y) for y in (19, 20) for x in (11, 12)}
-road |= {(24, 20)}
+# 큰길 y=25..26 (다리 구간은 비움), 대문 진입로, 초가·이웃집 진입로
+RY = (25, 26)
+road = {(x, y) for y in RY for x in range(MW) if not 29 <= x <= 33}
+road |= {(x, y) for y in (23, 24) for x in (11, 12)}
+road |= {(24, 24), (24, 23)}
+road |= {(24, 14), (24, 15), (24, 16)}
+road |= {(36, 24)}
 for (x, y) in road:
     m = mask_of(road, x, y)
-    if x == 28 and y in (21, 22): m |= E
-    if x == 34 and y in (21, 22): m |= W
+    if x == 28 and y in RY: m |= E
+    if x == 34 and y in RY: m |= W
     setg(x, y, ROAD + m, 'road')
 
-# 마당(이음 있는 흙바닥)
-yard = {(x, y) for y in range(1, 17) for x in range(6, 19)}
-yard |= {(x, y) for y in range(13, 21) for x in range(20, 29)}
+# 마당(이음 있는 흙바닥): 양반집 · 이웃 기와집 · 초가
+yard = {(x, y) for y in range(5, 22) for x in range(6, 19)}
+yard |= {(x, y) for y in range(8, 25) for x in range(21, 29)}
+yard |= {(x, y) for y in range(17, 25) for x in range(20, 21)}
+yard |= {(x, y) for y in range(18, 25) for x in range(34, 40)}
 ysets = yard | road
 for (x, y) in yard:
     if (x, y) in road: continue
     setg(x, y, YARD16 + mask_of(ysets, x, y, wrap=False), 'yard')
-for y in range(8, 19):
+for y in range(12, 23):
     for x in (11, 12):
         setg(x, y, PAV + (x + y) % 2, 'paving')
 # 논과 밭
-paddy = {(x, y) for y in range(25, 33) for x in range(2, 15)}
+paddy = {(x, y) for y in range(27, 39) for x in range(1, 15)}
 for (x, y) in paddy:
     setg(x, y, PADDY + mask_of(paddy, x, y, wrap=False), 'paddy')
-for y in range(25, 31):
-    for x in range(17, 26):
-        setg(x, y, FIELD + hsh(x, y, 9) % 2, 'field')
+for rect, sd in (((17, 27, 27, 36), 9), ((34, 27, 40, 36), 11), ((0, 6, 5, 14), 12), ((6, 22, 11, 25), 13), ((13, 22, 19, 25), 14),
+                 ((15, 27, 17, 36), 15), ((27, 27, 29, 36), 16), ((34, 5, 40, 8), 17)):
+    x0, y0, x1, y1 = rect
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if ground_kind[y][x] is None:
+                setg(x, y, FIELD + hsh(x, y, sd) % 2, 'field')
 
 # ---------- 물체 층 ----------
 OBJ = Cv(MW * T, MH * T)
-placed = []
+placed = []          # (이름, 칸x, 칸y, 폭칸, 높이칸) — 지도 게이트가 읽는다
+items = []
 
 
 def put_obj(name, tx, ty):
     cv = objects[name]
-    return (ty + cv.h // T, name, tx, ty, cv)      # y 정렬 키 = 아래쪽 칸
+    placed.append((name, tx, ty, cv.w // T, cv.h // T))
+    items.append((ty + cv.h // T, name, tx, ty, cv))      # y 정렬 키 = 아래쪽 칸
 
 
-items = []
-# 양반집: 기와집(팔작) · 솟을 아닌 맞배 대문 · 토석담
-items.append(put_obj('giwa_house_6', 8, 1))
-items.append(put_obj('gate_4', 9, 12))
-for x in (6, 7, 8): items.append(put_obj('wall_h', x, 17))
-for x in (15, 16, 17, 18): items.append(put_obj('wall_h', x, 17))
-items.append(put_obj('wall_corner_l', 5, 17)); items.append(put_obj('wall_corner_r', 19, 17))
-for y in range(1, 17):
-    items.append(put_obj('wall_v', 5, y)); items.append(put_obj('wall_v', 19, y))
-items.append(put_obj('jars', 6, 5))
-items.append(put_obj('well', 17, 2))
-items.append(put_obj('persimmon', 15, 12))
-items.append(put_obj('bench', 6, 10))
-items.append(put_obj('lantern', 9, 9))
+# 뒷산: 북쪽 숲띠 — 높낮이가 다른 큰 나무를 겹쳐 세운다(버들항 수림처럼 빈틈 없이)
+for nm, x, y in (('zelkova_a', 0, 0), ('pine_a', 3, 1), ('zelkova_b', 7, 0), ('pine_b', 11, 1), ('zelkova_c', 15, 0),
+                 ('pine_a', 19, 1), ('zelkova_a', 23, 0), ('pine_b', 27, 1), ('zelkova_b', 34, 0), ('pine_a', 37, 2),
+                 ('persimmon_a', 5, 3), ('persimmon_b', 21, 3), ('bush_a', 9, 3), ('bush_b', 13, 4), ('bush_c', 25, 3),
+                 ('bush_a', 29, 3), ('bush_b', 1, 4), ('bush_c', 33, 4), ('bamboo', 17, 3), ('bamboo', 36, 4)):
+    put_obj(nm, x, y)
+
+# 양반집: 기와집(팔작) · 대문 · 토석담
+put_obj('giwa_house_6', 8, 5)
+put_obj('gate_4', 9, 16)
+for x in (6, 7, 8): put_obj('wall_h', x, 21)
+for x in (15, 16, 17, 18): put_obj('wall_h', x, 21)
+put_obj('wall_corner_l', 5, 21); put_obj('wall_corner_r', 19, 21)
+for y in range(5, 21):
+    put_obj('wall_v', 5, y); put_obj('wall_v', 19, y)
+put_obj('jars', 6, 9)
+put_obj('well', 17, 6)
+put_obj('persimmon_a', 14, 15)
+put_obj('bench', 6, 14)
+put_obj('lantern', 9, 13)
+put_obj('bamboo', 17, 10)
+put_obj('bush_b', 14, 13); put_obj('bush_a', 6, 18); put_obj('bush_c', 17, 19)
+put_obj('fence_h', 15, 12); put_obj('fence_h', 16, 12)
+# 이웃 기와집과 안마당
+put_obj('giwa_house_5', 21, 8)
+put_obj('haystack', 27, 12)
+put_obj('persimmon_b', 26, 14)
+put_obj('jars', 22, 14)
 # 초가집과 살림살이
-items.append(put_obj('thatch_house_5', 21, 13))
-items.append(put_obj('mat_peppers', 22, 20))
-items.append(put_obj('jars', 26, 19))
+put_obj('thatch_house_5', 21, 17)
+put_obj('mat_peppers', 22, 24)
+put_obj('jars', 26, 23)
+put_obj('haystack', 27, 20)
+put_obj('bush_c', 28, 22)
+for x in range(20, 21): put_obj('fence_h', x, 20)
 # 마을 어귀
-items.append(put_obj('jangseung_m', 2, 19)); items.append(put_obj('jangseung_f', 2, 23))
-items.append(put_obj('sotdae', 4, 19))
-# 시내 둔덕
-items.append(put_obj('bridge', 29, 20))
-items.append(put_obj('willow', 26, 6))
-items.append(put_obj('pavilion_5', 33, 10))
-items.append(put_obj('lantern', 33, 17))
-items.append(put_obj('pine', 35, 1)); items.append(put_obj('pine', 0, 0)); items.append(put_obj('pine', 1, 7))
-items.append(put_obj('pine', 22, 0)); items.append(put_obj('persimmon', 18, 29))
-items.append(put_obj('willow', 33, 25))
+put_obj('jangseung_m', 2, 23); put_obj('jangseung_f', 6, 23)
+put_obj('sotdae', 4, 23)
+put_obj('zelkova_a', 0, 18); put_obj('pine_b', 1, 12); put_obj('bamboo', 3, 17)
+put_obj('bush_a', 3, 21); put_obj('bush_c', 0, 25)
+# 시내와 다리
+put_obj('bridge', 29, 24)
+put_obj('willow', 27, 5)
+put_obj('willow', 33, 28)
+put_obj('bush_b', 29, 20); put_obj('bush_c', 33, 21); put_obj('bush_a', 29, 14)
+# 시내 건너: 정자와 작은 초가
+put_obj('pavilion_5', 33, 8)
+put_obj('lantern', 33, 15)
+put_obj('thatch_house_4', 34, 18)
+put_obj('haystack', 37, 23)
+put_obj('persimmon_a', 35, 15)
+put_obj('zelkova_c', 36, 15)
+put_obj('bush_b', 39, 17)
+# 남쪽: 논밭 둘레
+for nm, x, y in (('zelkova_b', 15, 33), ('persimmon_b', 15, 30), ('bush_c', 16, 29),
+                 ('zelkova_a', 27, 31), ('pine_b', 22, 36), ('persimmon_a', 28, 28), ('bamboo', 38, 29),
+                 ('bush_c', 34, 31), ('haystack', 30, 36), ('haystack', 28, 34), ('bush_a', 17, 36),
+                 ('bush_b', 24, 29), ('zelkova_c', 35, 34), ('pine_a', 38, 34), ('bush_a', 15, 37)):
+    put_obj(nm, x, y)
+
+# 빈 곳 메우기: 텃밭 울타리·밭 가장자리 나무·길가 덤불
+for x in range(0, 5): put_obj('fence_h', x, 14)
+for y in range(6, 14):
+    if y % 3 == 0: put_obj('bush_c', 4, y)
+for nm, x, y in (('persimmon_b', 1, 7), ('bamboo', 0, 10), ('bush_a', 2, 12), ('zelkova_b', 0, 15)):
+    put_obj(nm, x, y)
+for nm, x, y in (('bush_b', 8, 23), ('bush_c', 9, 22), ('bush_a', 14, 23), ('bush_b', 17, 22), ('haystack', 15, 22), ('fence_h', 7, 24), ('fence_h', 8, 24),
+                 ('bush_a', 2, 28), ('bush_b', 21, 27), ('pine_a', 18, 27), ('bush_c', 27, 27), ('zelkova_a', 15, 28), ('bush_a', 34, 27),
+                 ('bush_b', 29, 22), ('bush_c', 29, 18), ('bush_a', 29, 11), ('bush_b', 29, 16), ('bush_c', 33, 12), ('zelkova_a', 35, 4),
+                 ('persimmon_b', 38, 5), ('bush_a', 34, 6), ('zelkova_c', 24, 6), ('bush_c', 31, 20), ('bush_a', 38, 26), ('bush_b', 19, 14)):
+    put_obj(nm, x, y)
+
 items.sort(key=lambda i: (i[0], i[3], i[2]))
 for _, name, tx, ty, cv in items:
     OBJ.paste(cv, tx * T, ty * T)
@@ -244,6 +298,13 @@ if extra:
         SHEET.paste(c, cx * T, cy * T)
 
 direct = render_direct()
+import mapgate as _mg
+_mf, _mrep = _mg.check(placed, direct, OBJ)
+print('지도 게이트', json.dumps(_mrep, ensure_ascii=False))
+if _mf:
+    print('지도 게이트 FAIL:\n  ' + '\n  '.join(_mf))
+    direct.img().save('/tmp/joseon-map-rejected.png')
+    sys.exit(1)
 re = Cv(MW * T, MH * T)
 for y in range(MH):
     for x in range(MW):

@@ -16,9 +16,9 @@
   "date": "2026-10-02"
  },
  "willow": {
-  "hash": "ccf43e4c3581",
+  "hash": "777be1aa7c98",
   "status": "note",
-  "line": "가는 늘어짐 줄기 3px 리본, 기준 나무보다 성긴 편",
+  "line": "수관은 버들항 결, 늘어진 가닥은 2px 리본이라 버들항에 없는 요소(종 특성)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -155,6 +155,126 @@
   "hash": "8aba98be4284",
   "status": "note",
   "line": "지붕/벽/기단 문법은 같으나 기둥 사이가 판벽처럼 막혀 정자의 개방감이 약함",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "zelkova_a": {
+  "hash": "a4f7ce5922f3",
+  "status": "pass",
+  "line": "수관이 몸집 3/4, 잎 덩이 윗왼쪽 밝음·아래 어두움, 짧고 굵은 줄기와 퍼진 뿌리, 가지 Y. 버들항 oak 과 같은 비율·결",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "zelkova_b": {
+  "hash": "335fbb15befc",
+  "status": "pass",
+  "line": "수관이 몸집 3/4, 잎 덩이 윗왼쪽 밝음·아래 어두움, 짧고 굵은 줄기와 퍼진 뿌리, 가지 Y. 버들항 oak 과 같은 비율·결",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "zelkova_c": {
+  "hash": "854c568d8926",
+  "status": "pass",
+  "line": "수관이 몸집 3/4, 잎 덩이 윗왼쪽 밝음·아래 어두움, 짧고 굵은 줄기와 퍼진 뿌리, 가지 Y. 버들항 oak 과 같은 비율·결",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pine_a": {
+  "hash": "a73ac5668183",
+  "status": "pass",
+  "line": "S자 붉은 줄기+납작한 잎 구름 셋, 덩이 결은 버들항 잎과 같음. 종 특유의 성김 외 이질감 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pine_b": {
+  "hash": "73dffc369a5f",
+  "status": "pass",
+  "line": "pine_a 와 같은 문법, 층 배치만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "persimmon_a": {
+  "hash": "d2b4effc3f9d",
+  "status": "pass",
+  "line": "꽉 찬 둥근 수관+주황 감, 짧은 굽은 줄기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "persimmon_b": {
+  "hash": "2bda507d456d",
+  "status": "pass",
+  "line": "persimmon_a 변형(시드)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bamboo": {
+  "hash": "f4d1172d33cc",
+  "status": "note",
+  "line": "마디 줄기 6대+머리 수관. 버들항에 대응 조각 없음, 3/4 윗면은 수관 덩이로 표현",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bush_a": {
+  "hash": "aee5083685f0",
+  "status": "pass",
+  "line": "작은 둥근 덤불, 같은 잎 결·윗왼쪽 빛(버들항 bushC/D/E 대응)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bush_b": {
+  "hash": "b26d6dbc5819",
+  "status": "pass",
+  "line": "작은 둥근 덤불, 같은 잎 결·윗왼쪽 빛(버들항 bushC/D/E 대응)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bush_c": {
+  "hash": "e1ca2ddee5fb",
+  "status": "pass",
+  "line": "작은 둥근 덤불, 같은 잎 결·윗왼쪽 빛(버들항 bushC/D/E 대응)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "fence_h": {
+  "hash": "093af854ca2e",
+  "status": "pass",
+  "line": "싸리울 막대 2px 폭+묶음 띠, 앞면 낮음. 소품 크기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "haystack": {
+  "hash": "bdb17d20e23b",
+  "status": "pass",
+  "line": "원뿔 짚더미+새끼줄 2줄, 왼쪽 밝음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_house_4": {
+  "hash": "93f7030fceed",
+  "status": "pass",
+  "line": "thatch_house_5 와 같은 블록 문법, 폭만 4칸",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_house_5": {
+  "hash": "db8a7a16178b",
+  "status": "pass",
+  "line": "giwa_house_6 과 같은 블록 문법, 폭 5칸",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
