@@ -102,7 +102,8 @@
     "build:standalone": "npm run build:standalone:bundle && npx tsx scripts/build-standalone-html.mts",
     "qa:standalone": "node scripts/qa-standalone-boot.mjs",
     "build:standalone:bundle": "vite build --config vite.standalone.config.ts --configLoader runner",
-    "serve:project": "node scripts/oprn-serve.mjs"
+    "serve:project": "node scripts/oprn-serve.mjs",
+    "harness": "vite-node --script scripts/harness.mts --"
   },
   "dependencies": {
     "@oh-my-pi/pi-agent-core": "^17.4.0",

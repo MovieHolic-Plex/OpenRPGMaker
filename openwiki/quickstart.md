@@ -132,6 +132,8 @@ Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 �
 
 | 요청 | 진입 파일 |
 |---|---|
+| 몬스터 수집(포켓몬류) 몬스터 그림·스타터·진화형 스프라이트 | **하네스** `npm run harness -- monster-collect-species status` → `openwiki/harnesses/monster-collect-species.md` (손으로 그리지 않는다) |
+| 새 하네스 만들기 / 하네스 목록 | `openwiki/harnesses/README.md`, `src/harnesses/INDEX.md`, `src/harnesses/_core/registry.ts` |
 | 맵에 타일이 잘못 찍힌다 / 브러시·도형·되돌리기 | `src/editor/EditScene.ts`, `src/editor/tileActions.ts`, `src/editor/TilePaintEngine.ts` |
 | 맵 렌더·빈 칸 체커·레이어 겹침 | `src/editor/editSceneRender.ts` |
 | Slates 32px 마을 저작 | `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (구조·오차·원본 ID·조립 규칙), `public/assets/slates/slates-study-catalog.json` |

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **110쪽 / 4126KB / 약 1,189,252 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **112쪽 / 4136KB / 약 1,192,475 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -980,6 +980,22 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L192` 연결 프리셋과 그래프 (2026-09-06)
 - `L226` 검증
 
+### `openwiki/harnesses/README.md` — 4KB · 45줄 · ~1,082 토큰
+
+- `L6` 위치 (저장소 루트 기준)
+- `L26` 규칙
+- `L36` 기존 것과의 관계 (2026-10-01 실측)
+- `L42` 하네스 목록
+
+### `openwiki/harnesses/monster-collect-species.md` — 7KB · 75줄 · ~2,034 토큰
+
+- `L7` 빠른 시작
+- `L23` 파일
+- `L41` 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
+- `L50` 검사 (`build` · `check`)
+- `L64` 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
+- `L70` 아직 없는 것
+
 ### `openwiki/horror-authoring.md` — 18KB · 186줄 · ~5,583 토큰
 
 - `L8` 저작 표면
@@ -1193,7 +1209,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L133` Combat acceptance slice
 - `L145` Verification
 
-### `openwiki/quickstart.md` — 19KB · 193줄 · ~5,548 토큰
+### `openwiki/quickstart.md` — 19KB · 195줄 · ~5,655 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
@@ -1203,8 +1219,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L93` 1c. 오프닝 이미지 팩
 - `L100` 2. 검증 — 무엇이 진짜 게이트인가
 - `L127` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L175` 4. 위키를 읽는 법
-- `L187` 5. 끝났다고 말할 수 있는 조건
+- `L177` 4. 위키를 읽는 법
+- `L189` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/refmap-town-outside.md` — 19KB · 156줄 · ~5,746 토큰
 
