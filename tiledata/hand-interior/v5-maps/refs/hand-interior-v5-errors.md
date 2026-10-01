@@ -5,7 +5,7 @@
 | 그림 | 바꾼 것 | 코드 | 메시지(좌표) |
 |---|---|---|---|
 | doorway-blocked | 굽는 방 문 틈 바로 아래를 통이 막음 | unreached-floor, unreachable-piece | 출입구에서 닿지 못하는 빈 바닥 15칸: (4,3) (5,3) (6,3) (1,4) (2,4) (3,4) (4,4) (5,4) (6,4) (7,4) — 가구가 길을 막았거나 방이 닫혔다 / 빵 화덕(bread oven) @(1,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 / 장작 선반(firewood rack) @(3,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 |
-| hang-on-floor | 그림(걸이)을 바닥 줄에 걺 | hang-not-on-face | 그림(picture) @(6,10) 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다 |
+| hang-on-floor | 그림(걸이)을 바닥 줄에 걺 | hang-not-on-face, goods-no-layer | 그림(picture) @(6,10) 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다 / 탁상 물건 breadbasket (6,11) — 4층이 이미 다른 조각으로 찼다 |
 | wall-piece-mid-floor | 벽 가구(빵 선반)를 방 가운데에 | wall-piece-needs-face | 빵 선반(bread shelf) @(12,10) 뒤(북쪽)에 벽면이 없다 — 벽 가구는 북쪽 벽면 바로 아래 첫 바닥 줄에 |
 | closed-doorway | 굽는 방으로 가는 칸막이 틈을 막음 — 방에 닿지 못함 | unreached-floor, unreachable-piece | 출입구에서 닿지 못하는 빈 바닥 14칸: (4,3) (5,3) (6,3) (1,4) (2,4) (3,4) (4,4) (5,4) (6,4) (7,4) — 가구가 길을 막았거나 방이 닫혔다 / 빵 화덕(bread oven) @(1,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 / 장작 선반(firewood rack) @(3,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 |
 | stairs-mid-floor | 위로 가는 계단을 방 가운데에 | stairs-not-at-wall | 나무 계단(stairs up wood) @(10,10) 위로 가는 계단은 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 방 가운데·옆벽 금지 |

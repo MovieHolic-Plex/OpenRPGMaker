@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/conductor_podium/w31-E.pxg",
+ "id": "conductor podium",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "why": "사용자 메모: 지휘대를 2x2 사이즈로. 둥근/팔각 단 + 악보대 + 지휘봉, 윗면이 보이게."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  1,
+  29,
+  30
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  14
+ ],
+ "note": "둥근 2단 나무 단 + 윗면 붉은 융단 원반 + 검은 철 악보대와 흰 지휘봉(융단 위에 또렷)",
+ "ok": true
+}

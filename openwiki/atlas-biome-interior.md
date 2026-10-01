@@ -10,7 +10,7 @@
 원본 손 도트: `tiledata/hand-interior/v5`(Python — `kit4.OBJ` 가구 381종, `room2.render` 구조, `rooms4.B` 건물 25동 26맵, `meta5.py` 메타·아틀라스).
 `python3 scripts/content/hand-interior/build_tileset.py` 가 그 모듈을 그대로 불러 칸으로 자른다.
 
-시트 `public/assets/atlas-interior/interior-chipset.png` — **48칸 폭**(12프레임 띠가 줄을 넘지 않게), 6064칸.
+시트 `public/assets/atlas-interior/interior-chipset.png` — **48칸 폭**(12프레임 띠가 줄을 넘지 않게), 6160칸(고른 후보 반영 후, 2026-10-01).
 
 | 블록 | 칸 | 규칙 |
 |---|---|---|
@@ -103,4 +103,17 @@ v5 맵을 바닥 한 칸으로 채우지 않고 `handInteriorStructure` 로 **�
 바닥 `INTERIOR_SHELL_FLOOR`(boards)·벽면 `INTERIOR_SHELL_WALL`(plaster)·기본 천장. 벽면 두 줄·천장 띠·그림자는 조립기와 같은 규칙이라 뒤에 build_hand_interior_room(replace) 로 다시 지어도 모양이 이어진다.
 옛 EasyRPG 실내 번호가 필요한 파라메트릭 실내·공간 카탈로그 이관은 `EASYRPG_INTERIOR_TILESET_ID`/`EASYRPG_INTERIOR_FLOOR_TILE`(72) 을 쓴다.
 회귀: `test/mapCreateSpec.test.ts`. 렌더 확인: `verify-shots/hand-interior-port/`.
+
+## 고른 후보 반영 (2026-10-01)
+
+사용자가 고르는 화면(`http://mdc-server:18302/`, 정본 `~/.local/share/oprn/hand-interior-pick/picks.sqlite`, 내보내기 `tiledata/hand-interior/pick/picks.json`)에서 고른 후보를
+`build_tileset.py` 가 **기본으로** 넣는다(`HAND_INTERIOR_PICKS=0` 이면 v5 원본 그대로 — 그때 산출물은 이전 main 과 바이트 같다). 넣는 코드는 `scripts/content/hand-interior-pick/install_picks.py`.
+- 크기가 같은 선택(125종): rooms4 import 전에 `kit4.OBJ` 를 바꿔 예제 맵·시트 모두 새 그림.
+- 크기를 바꾼 선택(11종, `candidates/<slug>/resize.json` — 왕좌 3×2·설교단 4×3·지휘대 2×2·발깔개 2×1·내려가는 계단 2×2·그물 3칸·벽 지도·다트판·사슴 박제 2칸 등): rooms4 import 뒤에 넣고,
+  예제 방의 그 기물을 새 크기로 **다시 놓는다**(원래 자리부터 가까운 순, `room4.check` 이슈가 늘지 않고 방 밖에 그림이 새지 않는 첫 자리). 자리가 없으면 그 방에서 뺀다(알현실 서재의 벽 지도 1건).
+  바뀐 방은 META 의 items·정답 격자(`room4.check` grid)를 다시 써서 `tiledata/hand-interior/v5-maps/buildings.json` 으로 내보낸다 — `prepare-references.mts` 가 이것으로 도구 인자를 만든다(예제 도구 오류 0).
+  발밑 칸 중 그림이 없는 칸(설교단 계단 귀퉁이)은 `cells` 로 빼서 걷게 둔다.
+- 「함께 쓰기」 변형: `<원 id>#2…` 로 가구 표에 더한다(무대 배경판 5개). 가구 381 → 386종.
+- 건너뛰는 것: 선택 없음·v5 유지, 크기를 바꾸라는 메모 뒤 새 크기 후보를 아직 고르지 않은 것(마법서 독서대), 애니메이션 기물. 목록은 `tiledata/hand-interior/pick/out/baked.json`.
+- 3/4 재작도 후보(w90·w91, 54종)는 아직 고르지 않아 들어가지 않았다. 고른 뒤 `python3 scripts/content/hand-interior/build_tileset.py && bun scripts/content/hand-interior/prepare-references.mts` 를 다시 돌린다.
 

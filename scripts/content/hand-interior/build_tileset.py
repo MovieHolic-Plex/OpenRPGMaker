@@ -22,6 +22,11 @@ import sys, os, json, math, hashlib
 sys.path.insert(0, 'tiledata/hand-interior/v5')
 if os.environ.get('HAND_INTERIOR_V6') == '1':   # v6 소품으로 교체 (tiledata/hand-interior/v6-objects/swap6.py). 기본은 v5 그대로
     sys.path.insert(0, 'tiledata/hand-interior/v6-objects'); import apply6; apply6.install()
+# 사용자가 고르는 화면(18302)에서 고른 후보(tiledata/hand-interior/pick/picks.json)를 넣는다. 기본 켜짐, HAND_INTERIOR_PICKS=0 이면 v5 그대로.
+# 크기가 같은 선택은 rooms4 import 전에(예제 맵도 새 그림), 크기를 바꾼 선택은 뒤에(예제 맵은 v5 칸 점유 그대로 — 정답 격자가 v5 기준).
+PICKS = None
+if os.environ.get('HAND_INTERIOR_PICKS', '1') != '0':
+    sys.path.insert(0, 'scripts/content/hand-interior-pick'); import install_picks as PICKS; PICKS.install()
 import meta5  # noqa: F401  (v5 전체 준비: 이름·설명 표 갱신)
 import notes6
 import room2, room4, rooms4, anim4, kit4, kit5, tiles5
@@ -30,6 +35,7 @@ from kit4 import OBJ, STY, PIECES
 from kit5 import LINEKITS, mask_at
 from mat import G
 from PIL import Image
+if PICKS: PICKS.install_resized()
 
 P = 64                 # 최소 접는 주기(px) — 16px 반복이 띠로 보이지 않게
 # 짜임 주기(px): 해시 잡음 H 를 상수로 바꿔 무늬의 구조만 남긴 뒤 잰 가장 짧은 16 배수 주기(2026-09-29 실측).
@@ -52,6 +58,7 @@ OUT_SHEET = 'src/assets/atlasBiomeInteriorSheet.json'
 OUT_SPEC = 'src/assets/handInteriorSpec.json'
 OUT_MAPS = 'tiledata/hand-interior/v5-maps'
 META = json.load(open('tiledata/hand-interior/v5/interior-meta.json'))
+if PICKS: PICKS.variant_meta(META)
 OBJ_META = {o['id']: o for o in META['objects']}
 FLOOR_KO = {f['id'][6:]: f['name_ko'] for f in META['floors']}
 WALL_KO = {w['id'][5:]: w['name_ko'] for w in META['walls']}
@@ -564,7 +571,13 @@ for n, e in OBJECTS.items():
 # 소품 설명·태그·놓는 곳·짝 소품, 방 종류·건물 → 자주 쓰는 가구(tiledata/hand-interior/v5/notes6.py). 조수 도구 list_hand_interior_parts 가 쓴다.
 NOTES, ROOM_TABLE = notes6.spec_notes(META, set(OBJECTS), set(TABLES), set(LINES), set(DAISES))
 for n, e in OBJECTS.items(): e.update(NOTES[n])
-spec = {'version': 1, 'source': 'tiledata/hand-interior/v5', 'tileSize': 16, 'blank': BLANK, 'void': VOID_TILE,
+PICKED = None
+if PICKS:
+    R = PICKS.REPORT
+    PICKED = {'picks': 'tiledata/hand-interior/pick/picks.json', 'applied': len(R['applied']), 'resized': len(R['resized']), 'variants': len(R['variants']), 'skipped': len(R['skipped'])}
+    os.makedirs('tiledata/hand-interior/pick/out', exist_ok=True)
+    json.dump(dict(PICKED, **R), open('tiledata/hand-interior/pick/out/baked.json', 'w'), ensure_ascii=False, indent=1)
+spec = {'version': 1, 'source': 'tiledata/hand-interior/v5', **({'picked': PICKED} if PICKED else {}), 'tileSize': 16, 'blank': BLANK, 'void': VOID_TILE,
         'floors': {n: {'ko': FLOOR_KO.get(n, n), 'cols': FCOLS[n], 'rows': FROWS[n], 'tiles': FLOOR[n]} for n in FLOORS},
         'walls': {w: {'ko': WALL_KO.get(w, w), 'cols': WCOLS[w], 'tiles': WALL[w]} for w in WALLS},
         'ceilings': {st: CEIL[st] for st in CEIL_STYLES},
@@ -607,8 +620,11 @@ for mp in MAPS:
 os.makedirs(OUT_MAPS, exist_ok=True)
 json.dump({'tilesetId': 'atlas_biome_interior', 'maps': out_maps, 'plans': plans}, open(f'{OUT_MAPS}/maps.json', 'w'), ensure_ascii=False, separators=(',', ':'))
 json.dump(report, open(f'{OUT_MAPS}/check.json', 'w'), ensure_ascii=False, indent=1)
+# 예제 맵의 가구 목록·정답 격자(META buildings). 고른 후보로 크기를 바꾼 가구는 새 자리·칸 수로 고쳐져 있다 — prepare-references 가 이것으로 도구 인자를 만든다.
+json.dump(META['buildings'], open(f'{OUT_MAPS}/buildings.json', 'w'), ensure_ascii=False, separators=(',', ':')); open(f'{OUT_MAPS}/buildings.json', 'a').write('\n')
 print('cells', count, 'library', LIBRARY_END, 'residual', count - LIBRARY_END, 'strips', len(SH.strips), 'sheet', sheet.size,
       'objects', len(OBJECTS), 'tables', len(TABLES), 'lines', len(LINES), 'goods', len(GOODS), 'kits', len(structureKits), 'maps', len(MAPS))
 bad = [r for r in report if r['structDiffPx'] or r['pixelDiffAllFrames'] or r['walkMismatch'] or r['unreached']]
 for r in report: print(r['map'], r['size'], 'struct', r['structDiffPx'], 'px', r['pixelDiffAllFrames'], 'walk', r['walkMismatch'], r['walkMismatchCells'][:4], 'unreached', r['unreached'][:4], 'over2', r['cellsOver2'])
 print('BAD', len(bad))
+if PICKS: print('picks: applied', PICKED['applied'], 'resized', PICKED['resized'], 'variants', PICKED['variants'], 'skipped', PICKED['skipped'], '→ tiledata/hand-interior/pick/out/baked.json')

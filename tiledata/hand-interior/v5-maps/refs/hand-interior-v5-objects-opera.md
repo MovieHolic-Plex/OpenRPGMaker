@@ -1,4 +1,4 @@
-# 가구 사전 — 극장 (7종)
+# 가구 사전 — 극장 (12종)
 
 cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구(막힘) · wall 북쪽 벽 앞(막힘) · hang 벽면 윗줄 걸이(★) · flat 밟는 바닥 무늬(2층).
 
@@ -9,7 +9,12 @@ cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구
 - `music stand` 보면대 — 흰 악보를 올린 검은 쇠 보면대. 극장 오케스트라 석에 5개 안팎 반원으로. 지휘대를 향해. 그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층 / 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 극장·큰 홀·연회장·극장 무대·객석 · 짝: potted sapling, elven harp
 - `scenery flat` 무대 배경판(3칸) — 성과 들판을 그린 무대 배경판(3칸, 북쪽 벽 앞). 극장 무대 뒤 북쪽 벽에 1~2개. 무대 막 사이. 발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다 / 그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층 / 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 극장·극장 무대·객석 · 짝: theater seat, stage curtain, footlights
 - `conductor podium` 지휘대 — 지휘봉을 얹은 작은 나무 지휘대. 오케스트라 석 가운데 1개. 보면대들이 둘러싼다. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 극장·극장 무대·객석 · 짝: theater seat, stage curtain, scenery flat
+- `scenery flat#2` 무대 배경판(3칸) 변형 2 —   · 쓰는 방: 극장·극장 무대·객석·variant
+- `scenery flat#3` 무대 배경판(3칸) 변형 3 —   · 쓰는 방: 극장·극장 무대·객석·variant
+- `scenery flat#4` 무대 배경판(3칸) 변형 4 —   · 쓰는 방: 극장·극장 무대·객석·variant
+- `scenery flat#5` 무대 배경판(3칸) 변형 5 —   · 쓰는 방: 극장·극장 무대·객석·variant
+- `scenery flat#6` 무대 배경판(3칸) 변형 6 —   · 쓰는 방: 극장·극장 무대·객석·variant
 
 ```json
-[{"id":"theater seat","ko":"극장 좌석","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4757,3]]},{"id":"stage curtain","ko":"무대 막(2줄)","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,4758,3],[0,1,4759,3]]},{"id":"curtain wing","ko":"무대 날개 막","kind":"floor","w":1,"h":1,"overhangPx":24,"cells":[[0,-2,4760,3],[0,-1,4761,3],[0,0,4762,3]]},{"id":"footlights","ko":"각광(움직임, 바닥)","kind":"flat","w":1,"h":1,"overhangPx":0,"animated":true,"cells":[[0,0,4764,2]]},{"id":"music stand","ko":"보면대","kind":"floor","w":1,"h":1,"overhangPx":8,"cells":[[0,-1,4776,3],[0,0,4777,3]]},{"id":"scenery flat","ko":"무대 배경판(3칸)","kind":"wall","w":3,"h":1,"overhangPx":16,"cells":[[0,-1,4778,3],[1,-1,4779,3],[2,-1,4780,3],[0,0,4781,3],[1,0,4782,3],[2,0,4783,3]]},{"id":"conductor podium","ko":"지휘대","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4784,3]]}]
+[{"id":"theater seat","ko":"극장 좌석","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4806,3]]},{"id":"stage curtain","ko":"무대 막(2줄)","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,4807,3],[0,1,4808,3]]},{"id":"curtain wing","ko":"무대 날개 막","kind":"floor","w":1,"h":1,"overhangPx":24,"cells":[[0,-2,4809,3],[0,-1,4810,3],[0,0,4811,3]]},{"id":"footlights","ko":"각광(움직임, 바닥)","kind":"flat","w":1,"h":1,"overhangPx":0,"animated":true,"cells":[[0,0,4812,2]]},{"id":"music stand","ko":"보면대","kind":"floor","w":1,"h":1,"overhangPx":8,"cells":[[0,-1,4824,3],[0,0,4825,3]]},{"id":"scenery flat","ko":"무대 배경판(3칸)","kind":"wall","w":3,"h":1,"overhangPx":16,"cells":[[0,-1,4826,3],[1,-1,4827,3],[2,-1,4828,3],[0,0,4829,3],[1,0,4830,3],[2,0,4831,3]]},{"id":"conductor podium","ko":"지휘대","kind":"floor","w":2,"h":2,"overhangPx":0,"cells":[[0,0,4832,3],[1,0,4833,3],[0,1,4834,3],[1,1,4835,3]]},{"id":"scenery flat#2","ko":"무대 배경판(3칸) 변형 2","kind":"wall","w":3,"h":1,"overhangPx":16,"cells":[[0,-1,5126,3],[1,-1,5127,3],[2,-1,5128,3],[0,0,5129,3],[1,0,5130,3],[2,0,5131,3]]},{"id":"scenery flat#3","ko":"무대 배경판(3칸) 변형 3","kind":"wall","w":3,"h":1,"overhangPx":16,"cells":[[0,-1,5132,3],[1,-1,5133,3],[2,-1,5134,3],[0,0,5135,3],[1,0,5136,3],[2,0,5137,3]]},{"id":"scenery flat#4","ko":"무대 배경판(3칸) 변형 4","kind":"wall","w":3,"h":1,"overhangPx":16,"cells":[[0,-1,5138,3],[1,-1,5139,3],[2,-1,5140,3],[0,0,5141,3],[1,0,5142,3],[2,0,5143,3]]},{"id":"scenery flat#5","ko":"무대 배경판(3칸) 변형 5","kind":"wall","w":3,"h":1,"overhangPx":16,"cells":[[0,-1,5144,3],[1,-1,5145,3],[2,-1,5146,3],[0,0,5147,3],[1,0,5148,3],[2,0,5149,3]]},{"id":"scenery flat#6","ko":"무대 배경판(3칸) 변형 6","kind":"wall","w":3,"h":1,"overhangPx":16,"cells":[[0,-1,5150,3],[1,-1,5151,3],[2,-1,5152,3],[0,0,5153,3],[1,0,5154,3],[2,0,5155,3]]}]
 ```

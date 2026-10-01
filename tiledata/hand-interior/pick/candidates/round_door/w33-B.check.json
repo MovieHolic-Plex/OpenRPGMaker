@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_door/w33-B.pxg",
+ "id": "round door",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 25,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  29,
+  30
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  29,
+  30
+ ],
+ "note": "이끼 낀 흙 문틀, 자연 나무 널판과 덧댄 띠, 놋 고리 손잡이",
+ "ok": true
+}

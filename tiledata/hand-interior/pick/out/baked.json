@@ -1,0 +1,1202 @@
+{
+ "picks": "tiledata/hand-interior/pick/picks.json",
+ "applied": [
+  {
+   "id": "aisle runner",
+   "choice": "w5-B"
+  },
+  {
+   "id": "alembic",
+   "choice": "w7-C"
+  },
+  {
+   "id": "altar",
+   "choice": "w10-B"
+  },
+  {
+   "id": "altar E",
+   "choice": "w21-G"
+  },
+  {
+   "id": "anvil",
+   "choice": "w7-B"
+  },
+  {
+   "id": "apothecary drawers",
+   "choice": "w5-C"
+  },
+  {
+   "id": "armchair",
+   "choice": "w9-B"
+  },
+  {
+   "id": "armor stand",
+   "choice": "w3-A"
+  },
+  {
+   "id": "balance scale",
+   "choice": "w6-C"
+  },
+  {
+   "id": "banner green",
+   "choice": "w8-C"
+  },
+  {
+   "id": "bar stool",
+   "choice": "w5-C"
+  },
+  {
+   "id": "barrel",
+   "choice": "w2-A"
+  },
+  {
+   "id": "basket:mushroom",
+   "choice": "w9-B"
+  },
+  {
+   "id": "bathtub",
+   "choice": "w22-F"
+  },
+  {
+   "id": "bed green",
+   "choice": "pilot-A"
+  },
+  {
+   "id": "bookshelf 1w",
+   "choice": "w2-C"
+  },
+  {
+   "id": "bookshelf 2w",
+   "choice": "w4-C"
+  },
+  {
+   "id": "bottles",
+   "choice": "w7-B"
+  },
+  {
+   "id": "bread shelf",
+   "choice": "w7-B"
+  },
+  {
+   "id": "bread shelf baguette",
+   "choice": "w8-A"
+  },
+  {
+   "id": "broom and bucket",
+   "choice": "w9-C"
+  },
+  {
+   "id": "cabinet:candle",
+   "choice": "w8-C"
+  },
+  {
+   "id": "cake display case",
+   "choice": "w8-C"
+  },
+  {
+   "id": "canopy bed",
+   "choice": "w4-C"
+  },
+  {
+   "id": "chest",
+   "choice": "w3-C"
+  },
+  {
+   "id": "choir stall",
+   "choice": "w6-B"
+  },
+  {
+   "id": "clock",
+   "choice": "w10-B"
+  },
+  {
+   "id": "coal bin",
+   "choice": "w10-B"
+  },
+  {
+   "id": "coat rack",
+   "choice": "w8-C"
+  },
+  {
+   "id": "column dwarf",
+   "choice": "w5-B"
+  },
+  {
+   "id": "column marble",
+   "choice": "w1-B"
+  },
+  {
+   "id": "column steel",
+   "choice": "w5-C"
+  },
+  {
+   "id": "column wood",
+   "choice": "w1-B"
+  },
+  {
+   "id": "confessional",
+   "choice": "w22-G"
+  },
+  {
+   "id": "cradle",
+   "choice": "w29-F"
+  },
+  {
+   "id": "crystal ball",
+   "choice": "w3-B"
+  },
+  {
+   "id": "cupboard",
+   "choice": "w2-A"
+  },
+  {
+   "id": "curtain wing",
+   "choice": "w10-B"
+  },
+  {
+   "id": "curtained window",
+   "choice": "w6-B"
+  },
+  {
+   "id": "dining 2x1",
+   "choice": "pilot-B"
+  },
+  {
+   "id": "dish rack",
+   "choice": "w9-B"
+  },
+  {
+   "id": "display potion",
+   "choice": "w7-B"
+  },
+  {
+   "id": "double bed red",
+   "choice": "w6-B"
+  },
+  {
+   "id": "elven harp",
+   "choice": "w4-C"
+  },
+  {
+   "id": "fabric bolt rack",
+   "choice": "w6-C"
+  },
+  {
+   "id": "feed trough",
+   "choice": "w4-B"
+  },
+  {
+   "id": "firewood bundle",
+   "choice": "w9-B"
+  },
+  {
+   "id": "firewood rack",
+   "choice": "w12-D"
+  },
+  {
+   "id": "fur rug",
+   "choice": "w7-B"
+  },
+  {
+   "id": "green rug",
+   "choice": "w5-A"
+  },
+  {
+   "id": "hang:ham",
+   "choice": "w4-A"
+  },
+  {
+   "id": "hang:onion",
+   "choice": "w5-C"
+  },
+  {
+   "id": "hanging pans",
+   "choice": "w10-C"
+  },
+  {
+   "id": "hay bale",
+   "choice": "w7-B"
+  },
+  {
+   "id": "herb drying rack",
+   "choice": "w7-A"
+  },
+  {
+   "id": "holy water font",
+   "choice": "w7-A"
+  },
+  {
+   "id": "hymn board",
+   "choice": "w6-A"
+  },
+  {
+   "id": "keg rack",
+   "choice": "w4-A"
+  },
+  {
+   "id": "kitchen sink",
+   "choice": "w10-A"
+  },
+  {
+   "id": "lectern",
+   "choice": "w5-C"
+  },
+  {
+   "id": "loom",
+   "choice": "w4-B"
+  },
+  {
+   "id": "magic circle",
+   "choice": "w8-C"
+  },
+  {
+   "id": "magitek armor",
+   "choice": "w31-F"
+  },
+  {
+   "id": "mannequin",
+   "choice": "w7-C"
+  },
+  {
+   "id": "mine cart",
+   "choice": "w2-C"
+  },
+  {
+   "id": "mortar and pestle",
+   "choice": "w1-B"
+  },
+  {
+   "id": "music stand",
+   "choice": "w8-B"
+  },
+  {
+   "id": "nightstand",
+   "choice": "w8-C"
+  },
+  {
+   "id": "notice board",
+   "choice": "w9-C"
+  },
+  {
+   "id": "ore vein",
+   "choice": "w27-H"
+  },
+  {
+   "id": "peel rack",
+   "choice": "w4-C"
+  },
+  {
+   "id": "pew E2",
+   "choice": "w13-D"
+  },
+  {
+   "id": "pew E3",
+   "choice": "w8-B"
+  },
+  {
+   "id": "piano",
+   "choice": "w4-B"
+  },
+  {
+   "id": "picture",
+   "choice": "w5-C"
+  },
+  {
+   "id": "pipe organ",
+   "choice": "w2-A"
+  },
+  {
+   "id": "pitchfork",
+   "choice": "w1-C"
+  },
+  {
+   "id": "plant",
+   "choice": "w1-C"
+  },
+  {
+   "id": "potted fern",
+   "choice": "w7-B"
+  },
+  {
+   "id": "potted flowering",
+   "choice": "w3-B"
+  },
+  {
+   "id": "powder kegs",
+   "choice": "w9-B"
+  },
+  {
+   "id": "proofing rack",
+   "choice": "w1-C"
+  },
+  {
+   "id": "purple rug",
+   "choice": "w6-C"
+  },
+  {
+   "id": "quench barrel",
+   "choice": "w5-C"
+  },
+  {
+   "id": "reredos",
+   "choice": "w1-C"
+  },
+  {
+   "id": "round arch",
+   "choice": "w28-D"
+  },
+  {
+   "id": "round door",
+   "choice": "w33-B"
+  },
+  {
+   "id": "round rug",
+   "choice": "w10-B"
+  },
+  {
+   "id": "round window",
+   "choice": "w1-C"
+  },
+  {
+   "id": "royal banner",
+   "choice": "w4-C"
+  },
+  {
+   "id": "royal chest",
+   "choice": "w6-C"
+  },
+  {
+   "id": "rug red",
+   "choice": "w3-C"
+  },
+  {
+   "id": "sack:flour",
+   "choice": "w6-B"
+  },
+  {
+   "id": "sack:grain",
+   "choice": "w10-C"
+  },
+  {
+   "id": "saddle rack",
+   "choice": "w26-D"
+  },
+  {
+   "id": "scenery flat",
+   "choice": "w9-C"
+  },
+  {
+   "id": "scroll rack",
+   "choice": "w2-C"
+  },
+  {
+   "id": "shelf pots",
+   "choice": "w4-B"
+  },
+  {
+   "id": "shelf:cheese",
+   "choice": "w4-C"
+  },
+  {
+   "id": "shelf:coins",
+   "choice": "w10-C"
+  },
+  {
+   "id": "shield",
+   "choice": "w3-B"
+  },
+  {
+   "id": "slop bucket",
+   "choice": "w3-C"
+  },
+  {
+   "id": "spinning wheel",
+   "choice": "w1-B"
+  },
+  {
+   "id": "stairs up stone",
+   "choice": "w3-C"
+  },
+  {
+   "id": "stairwell down",
+   "choice": "w6-C"
+  },
+  {
+   "id": "stone throne",
+   "choice": "w6-C"
+  },
+  {
+   "id": "straw bed",
+   "choice": "w25-F"
+  },
+  {
+   "id": "table:bolt+yarn",
+   "choice": "w7-B"
+  },
+  {
+   "id": "tailor mirror",
+   "choice": "w1-B"
+  },
+  {
+   "id": "tall stained window",
+   "choice": "w2-A"
+  },
+  {
+   "id": "tall vase blue",
+   "choice": "w2-B"
+  },
+  {
+   "id": "tall vase red",
+   "choice": "w2-B"
+  },
+  {
+   "id": "tapestry",
+   "choice": "w1-B"
+  },
+  {
+   "id": "theater seat",
+   "choice": "w10-C"
+  },
+  {
+   "id": "timber prop",
+   "choice": "w7-B"
+  },
+  {
+   "id": "tool wall",
+   "choice": "w5-C"
+  },
+  {
+   "id": "towel rail",
+   "choice": "w3-C"
+  },
+  {
+   "id": "treasure pile",
+   "choice": "w5-C"
+  },
+  {
+   "id": "vanity mirror",
+   "choice": "w1-B"
+  },
+  {
+   "id": "wall clock",
+   "choice": "w2-B"
+  },
+  {
+   "id": "wardrobe",
+   "choice": "w9-A"
+  },
+  {
+   "id": "washbasin",
+   "choice": "w3-C"
+  },
+  {
+   "id": "water trough",
+   "choice": "w4-A"
+  },
+  {
+   "id": "weapon barrel",
+   "choice": "w4-A"
+  },
+  {
+   "id": "window",
+   "choice": "w1-C"
+  }
+ ],
+ "resized": [
+  {
+   "id": "conductor podium",
+   "choice": "w31-F",
+   "footprint": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ]
+  },
+  {
+   "id": "dart board",
+   "choice": "w23-F",
+   "footprint": [
+    2,
+    0
+   ],
+   "canvas": [
+    32,
+    32
+   ]
+  },
+  {
+   "id": "deer trophy",
+   "choice": "w23-D",
+   "footprint": [
+    2,
+    0
+   ],
+   "canvas": [
+    32,
+    32
+   ]
+  },
+  {
+   "id": "doormat",
+   "choice": "w25-F",
+   "footprint": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ]
+  },
+  {
+   "id": "fishing net",
+   "choice": "w33-B",
+   "footprint": [
+    3,
+    0
+   ],
+   "canvas": [
+    48,
+    32
+   ]
+  },
+  {
+   "id": "ore pile",
+   "choice": "w27-D",
+   "footprint": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ]
+  },
+  {
+   "id": "pulpit",
+   "choice": "w32-A",
+   "footprint": [
+    4,
+    3
+   ],
+   "canvas": [
+    64,
+    48
+   ]
+  },
+  {
+   "id": "stairs down",
+   "choice": "w29-F",
+   "footprint": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ]
+  },
+  {
+   "id": "star chart",
+   "choice": "w24-D",
+   "footprint": [
+    1,
+    0
+   ],
+   "canvas": [
+    16,
+    32
+   ]
+  },
+  {
+   "id": "throne",
+   "choice": "w30-E",
+   "footprint": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ]
+  },
+  {
+   "id": "wall map",
+   "choice": "w23-D",
+   "footprint": [
+    2,
+    0
+   ],
+   "canvas": [
+    32,
+    32
+   ]
+  }
+ ],
+ "variants": [
+  {
+   "id": "scenery flat#2",
+   "variantOf": "scenery flat",
+   "choice": "w28-D"
+  },
+  {
+   "id": "scenery flat#3",
+   "variantOf": "scenery flat",
+   "choice": "w28-E"
+  },
+  {
+   "id": "scenery flat#4",
+   "variantOf": "scenery flat",
+   "choice": "w28-F"
+  },
+  {
+   "id": "scenery flat#5",
+   "variantOf": "scenery flat",
+   "choice": "w28-G"
+  },
+  {
+   "id": "scenery flat#6",
+   "variantOf": "scenery flat",
+   "choice": "w28-H"
+  }
+ ],
+ "skipped": [
+  {
+   "id": "barrel:apple",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "basket:herb",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "bed blue",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "bell rope",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "bench 2",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "bench 3",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "cabinet:bottle+bottler+bottley",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "chair N",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "chair W",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "cheese wheels",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "chopping block",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "column live",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "column stone",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "crate",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "crate:potato",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "double bed blue",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "drain grate",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "elven bed",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "firewood rack 2w",
+   "choice": null,
+   "why": "선택 없음"
+  },
+  {
+   "id": "fish ice chest",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "grindstone",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "ice chest:fish+fishg+fishr",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "lute",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "meat hooks",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "pew",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "pick rack",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "pipe rack",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "pot",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "roundtable",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "runner",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "shackles",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "sofa",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "spellbook stand",
+   "choice": "w2-C",
+   "why": "그림 16×16 이 resize.json 캔버스 16×32 와 다름"
+  },
+  {
+   "id": "spiral stair",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "stage curtain",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "stained glass",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "stairs up wood",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "stool",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "telescope",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "water jar",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "weapon rack",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "white tree",
+   "choice": "v5",
+   "why": "v5 유지"
+  }
+ ],
+ "roomMoves": [
+  {
+   "room": "bakery",
+   "id": "doormat",
+   "from": [
+    7,
+    12
+   ],
+   "to": [
+    6,
+    12
+   ]
+  },
+  {
+   "room": "pharmacy",
+   "id": "doormat",
+   "from": [
+    6,
+    12
+   ],
+   "to": [
+    5,
+    12
+   ]
+  },
+  {
+   "room": "fish",
+   "id": "fishing net",
+   "from": [
+    9,
+    1
+   ],
+   "to": [
+    9,
+    1
+   ]
+  },
+  {
+   "room": "fish",
+   "id": "doormat",
+   "from": [
+    6,
+    12
+   ],
+   "to": [
+    5,
+    12
+   ]
+  },
+  {
+   "room": "butcher",
+   "id": "doormat",
+   "from": [
+    5,
+    12
+   ],
+   "to": [
+    4,
+    12
+   ]
+  },
+  {
+   "room": "chapel",
+   "id": "pulpit",
+   "from": [
+    20,
+    6
+   ],
+   "to": [
+    25,
+    9
+   ]
+  },
+  {
+   "room": "scholar",
+   "id": "wall map",
+   "from": [
+    8,
+    7
+   ],
+   "to": [
+    7,
+    7
+   ]
+  },
+  {
+   "room": "tailor",
+   "id": "doormat",
+   "from": [
+    7,
+    12
+   ],
+   "to": [
+    6,
+    12
+   ]
+  },
+  {
+   "room": "tavern",
+   "id": "deer trophy",
+   "from": [
+    13,
+    1
+   ],
+   "to": [
+    9,
+    1
+   ]
+  },
+  {
+   "room": "tavern",
+   "id": "dart board",
+   "from": [
+    10,
+    7
+   ],
+   "to": [
+    10,
+    7
+   ]
+  },
+  {
+   "room": "hobbit",
+   "id": "wall map",
+   "from": [
+    5,
+    7
+   ],
+   "to": [
+    5,
+    7
+   ]
+  },
+  {
+   "room": "hobbit",
+   "id": "doormat",
+   "from": [
+    11,
+    10
+   ],
+   "to": [
+    10,
+    10
+   ]
+  },
+  {
+   "room": "hobbit",
+   "id": "doormat",
+   "from": [
+    12,
+    10
+   ],
+   "to": [
+    11,
+    10
+   ]
+  },
+  {
+   "room": "inn",
+   "id": "deer trophy",
+   "from": [
+    12,
+    7
+   ],
+   "to": [
+    11,
+    7
+   ]
+  },
+  {
+   "room": "inn",
+   "id": "dart board",
+   "from": [
+    17,
+    7
+   ],
+   "to": [
+    16,
+    7
+   ]
+  },
+  {
+   "room": "dwarf",
+   "id": "ore pile",
+   "from": [
+    6,
+    3
+   ],
+   "to": [
+    10,
+    3
+   ]
+  },
+  {
+   "room": "elf",
+   "id": "star chart",
+   "from": [
+    18,
+    1
+   ],
+   "to": [
+    18,
+    1
+   ]
+  },
+  {
+   "room": "mead",
+   "id": "throne",
+   "from": [
+    11,
+    3
+   ],
+   "to": [
+    10,
+    3
+   ]
+  },
+  {
+   "room": "throne",
+   "id": "throne",
+   "from": [
+    11,
+    4
+   ],
+   "to": [
+    10,
+    3
+   ]
+  },
+  {
+   "room": "tower",
+   "id": "star chart",
+   "from": [
+    9,
+    1
+   ],
+   "to": [
+    9,
+    1
+   ]
+  },
+  {
+   "room": "tower",
+   "id": "wall map",
+   "from": [
+    14,
+    10
+   ],
+   "to": [
+    14,
+    10
+   ]
+  },
+  {
+   "room": "mine",
+   "id": "ore pile",
+   "from": [
+    18,
+    3
+   ],
+   "to": [
+    17,
+    6
+   ]
+  },
+  {
+   "room": "mine",
+   "id": "ore pile",
+   "from": [
+    18,
+    5
+   ],
+   "to": [
+    18,
+    4
+   ]
+  },
+  {
+   "room": "magitek",
+   "id": "wall map",
+   "from": [
+    20,
+    1
+   ],
+   "to": [
+    19,
+    1
+   ]
+  },
+  {
+   "room": "opera",
+   "id": "conductor podium",
+   "from": [
+    11,
+    8
+   ],
+   "to": [
+    10,
+    7
+   ]
+  },
+  {
+   "room": "zozo",
+   "id": "dart board",
+   "from": [
+    8,
+    1
+   ],
+   "to": [
+    7,
+    1
+   ]
+  }
+ ],
+ "roomDrops": [
+  {
+   "room": "throne",
+   "id": "wall map",
+   "at": [
+    21,
+    1
+   ]
+  }
+ ]
+}

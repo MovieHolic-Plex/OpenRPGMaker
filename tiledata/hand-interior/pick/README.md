@@ -45,3 +45,9 @@ python3 scripts/content/hand-interior-pick/picks_db.py backup                # �
 
 빈 DB 로 서버가 처음 뜨면 그때의 `picks.json`·`addressed.json` 을 `kind='import'` 이벤트(시각 = 레코드의 `at`)로 넣고
 건수·내용·바이트를 대조해 로그에 찍는다. 이전 직전 사본: `~/backups/hand-interior-pick/<시각>/`.
+
+## 시트에 굽기
+
+고른 결과는 `scripts/content/hand-interior/build_tileset.py` 가 기본으로 넣는다(`install_picks.py`, 자세한 규칙은 `openwiki/atlas-biome-interior.md` 「고른 후보 반영」).
+`apply_picks.py` 는 전후 비교 그림용 사본이고 번들을 바꾸지 않는다. 새로 고른 뒤: `build_tileset.py` → `bun scripts/content/hand-interior/prepare-references.mts`.
+

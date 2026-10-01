@@ -12,6 +12,8 @@ const OUT = "src/assets/sharedHandInteriorReferences.json", PUB = "public/assets
 fs.mkdirSync(PUB, { recursive: true }); fs.mkdirSync(MD, { recursive: true });
 const maps = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5-maps/maps.json", "utf8"));
 const meta = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5/interior-meta.json", "utf8"));
+// 예제 맵 가구·격자는 build_tileset.py 가 쓴 것(고른 후보로 크기를 바꾼 가구가 새 자리에 있다). 없으면 v5 원본.
+if (fs.existsSync("tiledata/hand-interior/v5-maps/buildings.json")) meta.buildings = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5-maps/buildings.json", "utf8"));
 const check = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5-maps/check.json", "utf8"));
 const tileset = createAtlasBiomeInteriorTileset();
 const TID = "atlas_biome_interior", CAT = "hand-interior-v5";
