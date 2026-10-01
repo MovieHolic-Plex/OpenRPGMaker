@@ -4,6 +4,7 @@ import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
+import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
 //
@@ -254,6 +255,9 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'get_concept_facility') for (const image of await interiorPresetImages(result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
+      if (tool.name === 'generate_cutscene_art') for (const image of cutsceneArtImages(ctx.project, result.data)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'preview_cutscene') for (const image of await cutscenePreviewImages(ctx.project, args)) {

@@ -1,11 +1,12 @@
 // 충돌 컷신(트럭에 치임 등) — 「그림을 그린 다음 그 그림을 움직인다」의 둘째 절반.
-// 조수는 배경·탈것·피해자 그림 id 와 대사만 고른다. 어디서 출발해 어디서 닿고 어디로 튕겨 나가는지의
+// 조수는 배경·탈것 그림 id, 피해자 캐릭터(게임 캐릭터셋), 대사만 고른다. 어디서 출발해 어디서 닿고 어디로 튕겨 나가는지의
 // 좌표·타이밍은 여기서 계산해 script_cutscene 의 picture/flash/shake/music beat 로 컴파일한다.
-// (손으로 맞출 때 «트럭이 사람에게 닿지 않는» 결함이 났다 — 2026-10-02 조수 시험.)
+// 모든 그림은 게임 해상도(320×240, 16px 타일) 그대로 100% 배율로 놓는다 — 확대하면 도트 크기가 섞여 이질감이 난다.
+import { cropCharsetFrames, CHARSET_FRAME_ROLES, type CharsetFramePictures, type CharsetFrameRole } from "@/editor/cutsceneArt/charsetFrames";
+import { pictureSize } from "@/editor/cutsceneArt/pictureSize";
 import { DEFAULT_PLAY_RESOLUTION } from "@/project/playResolution";
 import { EVENT_TOOLS } from "./eventTools";
 import { requireMap } from "./mapHelpers";
-import { pictureSize } from "@/editor/cutsceneArt/pictureSize";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const IMPACT_CUTSCENE_TOOL = "script_cutscene_impact";
@@ -16,12 +17,12 @@ export const CUTSCENE_WHITE_RESOURCE_ID = "cutscene_white_screen";
 
 /** 기본 효과음(Kenney CC0 강한 타격). */
 const DEFAULT_IMPACT_SE = "cc0-se-kis-impactpunch-heavy-002";
+const DEFAULT_CHARSET = "tex_easyrpg_charset_actor1";
 
 type RecordValue = Record<string, unknown>;
 
-function requireResource(id: unknown, field: string, optional = false): string | undefined {
+function requireResource(id: unknown, field: string): string {
   if (id === undefined || id === null || id === "") {
-    if (optional) return undefined;
     throw new ToolError(`${field} 가 필요합니다 — generate_cutscene_art 가 돌려준 resourceId 를 넣으세요.`, { code: "invalid-args" });
   }
   if (typeof id !== "string") throw new ToolError(`${field} 는 문자열이어야 합니다.`, { code: "invalid-args" });
@@ -36,20 +37,22 @@ function ratio(value: unknown, fallback: number, min: number, max: number): numb
   return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, value)) : fallback;
 }
 
-export interface ImpactChoreography {
-  readonly beats: RecordValue[];
-  readonly layout: {
-    readonly victim: { readonly x: number; readonly yStart: number; readonly yEnd: number; readonly scale: number; readonly width: number; readonly height: number };
-    readonly vehicle: { readonly y: number; readonly scale: number; readonly width: number; readonly height: number; readonly contactX: number; readonly fromX: number; readonly exitX: number; readonly facing: "left" | "right" };
-    readonly backdropScale: number;
-  };
+export interface VictimFrames {
+  /** 걷기 프레임(아래 방향 0·1·2). 없으면 정지 그림 하나로 이동만 한다. */
+  readonly walk?: readonly [string, string, string];
+  /** 경적에 놀라 트럭 쪽을 보는 자세. */
+  readonly shock?: string;
+  /** 정지 그림(걷기 프레임이 없을 때). */
+  readonly still: string;
+  readonly width: number;
+  readonly height: number;
 }
 
 export interface ImpactChoreographyInput {
   readonly viewport: { readonly width: number; readonly height: number };
   readonly backdrop: { readonly id: string; readonly width: number; readonly height: number };
   readonly vehicle: { readonly id: string; readonly width: number; readonly height: number; readonly facing: "left" | "right" };
-  readonly victim: { readonly id: string; readonly shockId?: string; readonly width: number; readonly height: number };
+  readonly victim: VictimFrames;
   readonly speaker: string;
   readonly beforeLines: readonly string[];
   readonly honkText: string;
@@ -57,47 +60,64 @@ export interface ImpactChoreographyInput {
   readonly bgmResourceId?: string;
   readonly impactSeResourceId: string;
   readonly honkSeResourceId?: string;
-  /** 도로 아래 끝(화면 높이 비율). 피해자 발끝과 탈것 바퀴가 여기에 놓인다. */
+  /** 도로 띠의 위·아래 끝(화면 높이 비율). 보도에서 걸어 나와 도로 가운데에서 치인다. */
+  readonly roadTop: number;
   readonly roadBottom: number;
-  /** 횡단 위치(화면 너비 비율, 피해자 가운데). */
+  /** 횡단 위치(화면 너비 비율, 인물 가운데). */
   readonly crossingX: number;
 }
 
+export interface ImpactChoreography {
+  readonly beats: RecordValue[];
+  readonly layout: {
+    readonly victim: { readonly x: number; readonly yStart: number; readonly yEnd: number; readonly width: number; readonly height: number };
+    readonly vehicle: { readonly y: number; readonly width: number; readonly height: number; readonly contactX: number; readonly fromX: number; readonly exitX: number; readonly facing: "left" | "right" };
+    readonly backdropScale: number;
+  };
+}
+
+const WALK_CYCLE = [1, 0, 1, 2] as const;
+const WALK_STEPS = 8;
+const WALK_STEP_MS = 230;
+
 /** 순수 계산: 입력 → beat 목록과 배치. 테스트와 미리보기가 같은 함수를 쓴다. */
 export function buildImpactChoreography(input: ImpactChoreographyInput): ImpactChoreography {
-  const { viewport: { width: W, height: H } } = input;
+  const { viewport: { width: W, height: H }, victim, vehicle } = input;
   const backdropScale = Math.round((W / input.backdrop.width) * 100);
-  const victimScale = Math.max(20, Math.round(((0.27 * H) / input.victim.height) * 100));
-  const victimW = (input.victim.width * victimScale) / 100;
-  const victimH = (input.victim.height * victimScale) / 100;
-  // 탈것은 사람 키의 1.7배쯤 보여야 한다 — 너비 0.7W 와 높이 0.46H 중 작은 쪽에 맞춘다.
-  const vehicleScale = Math.max(20, Math.round(Math.min((0.7 * W) / input.vehicle.width, (0.46 * H) / input.vehicle.height) * 100));
-  const vehicleW = (input.vehicle.width * vehicleScale) / 100;
-  const vehicleH = (input.vehicle.height * vehicleScale) / 100;
-  const feetY = H * input.roadBottom - H * 0.06;
-  const yEnd = Math.round(feetY - victimH);
-  const yStart = Math.round(yEnd - H * 0.2);
-  const victimX = Math.round(W * input.crossingX - victimW / 2);
-  const vehicleY = Math.round(H * input.roadBottom - vehicleH);
-  const facingLeft = input.vehicle.facing === "left";
-  // 탈것이 바라보는 쪽의 반대편에서 들어와 피해자 몸통(가까운 쪽 35%)에 앞면이 닿는다.
-  const contactX = Math.round(facingLeft ? victimX + victimW * 0.65 : victimX + victimW * 0.35 - vehicleW);
-  const fromX = facingLeft ? Math.round(W + 12) : Math.round(-vehicleW - 12);
-  const exitX = facingLeft ? Math.round(-vehicleW - 24) : Math.round(W + 24);
-  const flyX = Math.round(victimX + (facingLeft ? -1 : 1) * W * 0.4);
-  const flyY = Math.round(-victimH * 0.4);
-  const steps = 6;
+  const roadTopY = H * input.roadTop;
+  const roadH = Math.max(16, H * input.roadBottom - roadTopY);
+  // 발 위치(그림 아래 끝). 보도 끝에서 출발해 도로 가운데 근처에서 멈춘다.
+  const feetStart = Math.round(roadTopY - 4);
+  const feetEnd = Math.round(roadTopY + roadH * 0.5);
+  const yStart = feetStart - victim.height;
+  const yEnd = feetEnd - victim.height;
+  const victimX = Math.round(W * input.crossingX - victim.width / 2);
+  // 탈것은 화면에 더 가까운 차선 — 바퀴 바닥이 인물 발보다 조금 아래.
+  const baseline = Math.min(Math.round(H * input.roadBottom) - 2, feetEnd + Math.round(roadH * 0.22));
+  const vehicleY = baseline - vehicle.height;
+  const facingLeft = vehicle.facing === "left";
+  // 탈것의 앞면이 인물 몸통 가운데까지 파고든다(가까운 쪽 35% 지점) — 겹침 진단이 이 값으로 통과한다.
+  const contactX = Math.round(facingLeft ? victimX + victim.width * 0.65 : victimX + victim.width * 0.35 - vehicle.width);
+  const fromX = facingLeft ? W + 8 : -vehicle.width - 8;
+  const exitX = facingLeft ? -vehicle.width - 16 : W + 16;
+  const flyX = Math.round(victimX + (facingLeft ? -1 : 1) * W * 0.35);
+  const flyY = Math.round(-victim.height * 2);
+
   const walk: RecordValue[] = [];
-  for (let i = 1; i <= steps; i += 1) {
-    walk.push({
-      kind: "picture", action: "move", pictureId: "pic2", x: victimX, y: Math.round(yStart + ((yEnd - yStart) * i) / steps),
-      scale: victimScale, rotation: i % 2 === 0 ? -4 : 4, durationMs: 280, wait: true,
-    });
+  const walkFrames = victim.walk;
+  for (let i = 1; i <= WALK_STEPS; i += 1) {
+    const yFrom = Math.round(yStart + ((yEnd - yStart) * (i - 1)) / WALK_STEPS);
+    const yTo = Math.round(yStart + ((yEnd - yStart) * i) / WALK_STEPS);
+    if (walkFrames) {
+      walk.push({ kind: "picture", action: "erase", pictureId: "pic2" });
+      walk.push({ kind: "picture", action: "show", pictureId: "pic2", resourceId: walkFrames[WALK_CYCLE[(i - 1) % WALK_CYCLE.length]!], x: victimX, y: yFrom });
+    }
+    walk.push({ kind: "picture", action: "move", pictureId: "pic2", x: victimX, y: yTo, durationMs: WALK_STEP_MS, wait: true });
   }
   const beats: RecordValue[] = [
     { kind: "fade", direction: "out", durationMs: 0 },
     { kind: "picture", action: "show", pictureId: "pic1", resourceId: input.backdrop.id, x: 0, y: 0, scale: backdropScale },
-    { kind: "picture", action: "show", pictureId: "pic2", resourceId: input.victim.id, x: victimX, y: yStart, scale: victimScale },
+    { kind: "picture", action: "show", pictureId: "pic2", resourceId: walkFrames ? walkFrames[1] : victim.still, x: victimX, y: yStart },
     ...(input.bgmResourceId ? [{ kind: "music", action: "bgm", resourceId: input.bgmResourceId }] : []),
     { kind: "fade", direction: "in", durationMs: 900, wait: true },
     ...input.beforeLines.flatMap((text): RecordValue[] => [
@@ -105,24 +125,25 @@ export function buildImpactChoreography(input: ImpactChoreographyInput): ImpactC
       { kind: "wait", ms: 250 },
     ]),
     ...walk,
-    ...(input.victim.shockId
+    ...(victim.shock
       ? [
         { kind: "picture", action: "erase", pictureId: "pic2" },
-        { kind: "picture", action: "show", pictureId: "pic2", resourceId: input.victim.shockId, x: victimX, y: yEnd, scale: victimScale },
+        { kind: "picture", action: "show", pictureId: "pic2", resourceId: victim.shock, x: victimX, y: yEnd },
       ]
       : []),
     { kind: "shake", intensity: 3, durationMs: 350 },
     ...(input.honkSeResourceId ? [{ kind: "music", action: "se", resourceId: input.honkSeResourceId }] : []),
     { kind: "say", context: "shout", autoAdvance: true, text: input.honkText },
     { kind: "wait", ms: 500 },
-    { kind: "picture", action: "show", pictureId: "pic3", resourceId: input.vehicle.id, x: fromX, y: vehicleY, scale: vehicleScale },
-    { kind: "picture", action: "move", pictureId: "pic3", x: contactX, y: vehicleY, scale: vehicleScale, durationMs: 520, wait: true },
+    { kind: "picture", action: "show", pictureId: "pic3", resourceId: vehicle.id, x: fromX, y: vehicleY },
+    { kind: "picture", action: "move", pictureId: "pic3", x: contactX, y: vehicleY, durationMs: 520, wait: true },
     { kind: "music", action: "se", resourceId: input.impactSeResourceId },
     { kind: "flash", color: "white", durationMs: 600 },
     { kind: "shake", intensity: 9, durationMs: 900 },
     { kind: "parallel", beats: [
-      { kind: "picture", action: "move", pictureId: "pic2", x: flyX, y: flyY, scale: Math.round(victimScale * 1.3), rotation: 720, opacity: 0, durationMs: 800 },
-      { kind: "picture", action: "move", pictureId: "pic3", x: exitX, y: vehicleY, scale: vehicleScale, durationMs: 700 },
+      // 날아가는 동안만 2배(정수 배율 — 도트가 뭉개지지 않는다).
+      { kind: "picture", action: "move", pictureId: "pic2", x: flyX, y: flyY, scale: 200, rotation: 720, opacity: 0, durationMs: 800 },
+      { kind: "picture", action: "move", pictureId: "pic3", x: exitX, y: vehicleY, durationMs: 700 },
     ] },
     { kind: "wait", ms: 900 },
     { kind: "picture", action: "show", pictureId: "pic5", resourceId: CUTSCENE_WHITE_RESOURCE_ID, x: 0, y: 0, scale: Math.max(W, H) * 50, opacity: 0 },
@@ -132,11 +153,25 @@ export function buildImpactChoreography(input: ImpactChoreographyInput): ImpactC
   return {
     beats,
     layout: {
-      victim: { x: victimX, yStart, yEnd, scale: victimScale, width: Math.round(victimW), height: Math.round(victimH) },
-      vehicle: { y: vehicleY, scale: vehicleScale, width: Math.round(vehicleW), height: Math.round(vehicleH), contactX, fromX, exitX, facing: input.vehicle.facing },
+      victim: { x: victimX, yStart, yEnd, width: victim.width, height: victim.height },
+      vehicle: { y: vehicleY, width: vehicle.width, height: vehicle.height, contactX, fromX, exitX, facing: vehicle.facing },
       backdropScale,
     },
   };
+}
+
+// ── 게임 캐릭터셋 프레임 준비(비동기 prepare → 동기 run) ─────────────────────────────────────────
+const preparedCharacters = new Map<string, CharsetFramePictures | { readonly error: string }>();
+const characterKey = (resourceId: string, index: number): string => `${resourceId}:${index}`;
+
+function characterArg(args: Record<string, unknown>): { resourceId: string; characterIndex: number } | undefined {
+  const raw = args.victimCharacter;
+  if (raw === undefined || raw === null) return undefined;
+  if (typeof raw !== "object" || Array.isArray(raw)) throw new ToolError("victimCharacter 는 {resourceId, characterIndex} 객체여야 합니다.", { code: "invalid-args" });
+  const record = raw as RecordValue;
+  const resourceId = typeof record.resourceId === "string" && record.resourceId.trim() ? record.resourceId.trim() : DEFAULT_CHARSET;
+  const index = typeof record.characterIndex === "number" && Number.isFinite(record.characterIndex) ? Math.trunc(record.characterIndex) : 0;
+  return { resourceId, characterIndex: Math.max(0, Math.min(7, index)) };
 }
 
 const SCRIPT_CUTSCENE = EVENT_TOOLS.find((tool) => tool.name === "script_cutscene");
@@ -144,24 +179,33 @@ const SCRIPT_CUTSCENE = EVENT_TOOLS.find((tool) => tool.name === "script_cutscen
 const scriptCutsceneImpact: ToolDefinition = {
   name: IMPACT_CUTSCENE_TOOL,
   description:
-    "탈것이 인물에게 돌진해 부딪히는 충돌 컷신(트럭 사고 등)을 한 번에 만든다. 그림이 움직이는 연출이므로 맵 타일·NPC 이동 없이 picture 로 처리한다. "
-    + "먼저 generate_cutscene_art 로 배경(role:backdrop)·탈것(role:sprite, 가로 시점)·인물(role:sprite)을 만들고 그 resourceId 를 넣는다. "
-    + "도구가 좌표·타이밍을 계산한다: 인물이 걸어 들어오고 → 경적 대사 → 탈것이 달려와 닿는 순간 효과음·플래시·화면 흔들림 → 인물이 회전하며 날아가고 → 화면이 하얗게 덮이며 afterLines 내레이션. "
-    + "vehicleFacing 은 탈것 그림이 바라보는 방향(left 면 오른쪽에서 들어온다). roadBottom 은 배경 그림에서 도로 아래 끝의 화면 높이 비율(0.4~0.95, 기본 0.7). "
+    "탈것이 인물에게 돌진해 부딪히는 충돌 컷신(트럭 사고 등)을 한 번에 만든다. 맵 타일·NPC 이동 없이 picture 로 처리하며 모든 그림은 게임 해상도 100% 배율이다. "
+    + "먼저 generate_cutscene_art 로 배경(role:backdrop)과 탈것(role:sprite, tiles 로 크기)을 만들고 그 resourceId 를 넣는다. "
+    + "피해자는 생성하지 않고 게임 캐릭터셋의 인물을 쓴다 — victimCharacter 에 주인공 배우의 characterResourceId·characterIndex(get_database_records actors)를 넣는다(생략하면 Actor1 0번). 걷기 프레임이 진짜로 교체된다. "
+    + "도구가 좌표·타이밍을 계산한다: 인물이 보도에서 걸어 나오고 → 경적 대사 → 탈것이 달려와 닿는 순간 효과음·플래시·화면 흔들림 → 인물이 회전하며 날아가고 → 화면이 하얗게 덮이며 afterLines 내레이션. "
+    + "roadTop·roadBottom 은 배경 그림에서 도로 띠의 위·아래 끝이 화면 높이의 몇 %인지(0~1)로, 생성 결과 그림을 보고 읽어 넣는다. vehicleFacing 은 탈것 그림이 바라보는 방향(left 면 오른쪽에서 들어온다). "
     + "끝난 뒤 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. 엔딩/이세계 이동 등 이후 연출은 같은 이벤트에 이어 붙이지 말고 별도 처리한다.",
   mode: "write",
   domains: ["event"],
   parameters: {
     type: "object",
     additionalProperties: false,
-    required: ["mapId", "backdropResourceId", "vehicleResourceId", "victimResourceId"],
+    required: ["mapId", "backdropResourceId", "vehicleResourceId"],
     properties: {
       mapId: { type: "string" },
       backdropResourceId: { type: "string", description: "빈 전체화면 배경 picture 리소스" },
-      vehicleResourceId: { type: "string", description: "탈것 sprite picture 리소스(옆모습)" },
+      vehicleResourceId: { type: "string", description: "탈것 sprite picture 리소스" },
       vehicleFacing: { type: "string", enum: ["left", "right"], description: "탈것 그림이 바라보는 방향(기본 left)" },
-      victimResourceId: { type: "string", description: "인물 sprite picture 리소스" },
-      victimShockResourceId: { type: "string", description: "경적에 놀란 자세(선택)" },
+      victimCharacter: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          resourceId: { type: "string", description: "캐릭터셋 리소스 id(기본 tex_easyrpg_charset_actor1)" },
+          characterIndex: { type: "integer", minimum: 0, maximum: 7, description: "캐릭터셋 안의 인물 번호 0~7" },
+        },
+        description: "피해자로 쓸 게임 캐릭터(주인공 배우의 캐릭터 그림)",
+      },
+      victimResourceId: { type: "string", description: "대안: 이미 등록된 정지 인물 picture(걷기 프레임 없이 이동만 한다)" },
       speaker: { type: "string", description: "속마음 화자 이름(기본 '나')" },
       beforeLines: { type: "array", items: { type: "string" }, description: "사고 전 속마음 대사" },
       honkText: { type: "string", description: "경적 대사(기본 '빠아아아앙——!!!')" },
@@ -169,8 +213,9 @@ const scriptCutsceneImpact: ToolDefinition = {
       bgmResourceId: { type: "string" },
       impactSeResourceId: { type: "string", description: "충돌 효과음(기본 강한 타격)" },
       honkSeResourceId: { type: "string" },
-      roadBottom: { type: "number", minimum: 0.4, maximum: 0.95 },
-      crossingX: { type: "number", minimum: 0.2, maximum: 0.8, description: "횡단 위치(화면 너비 비율, 기본 0.5)" },
+      roadTop: { type: "number", minimum: 0.2, maximum: 0.8, description: "도로 띠 위 끝(화면 높이 비율, 기본 0.45)" },
+      roadBottom: { type: "number", minimum: 0.4, maximum: 0.95, description: "도로 띠 아래 끝(화면 높이 비율, 기본 0.8)" },
+      crossingX: { type: "number", minimum: 0.2, maximum: 0.8, description: "횡단 위치(화면 너비 비율, 기본 0.5 — 횡단보도 중앙)" },
       eventId: { type: "string" },
       x: { type: "integer" },
       y: { type: "integer" },
@@ -179,26 +224,57 @@ const scriptCutsceneImpact: ToolDefinition = {
     },
   },
   invalidArgsExample: {
-    mapId: "map1", backdropResourceId: "cutscene_backdrop_x", vehicleResourceId: "cutscene_sprite_y", victimResourceId: "cutscene_sprite_z",
+    mapId: "map1", backdropResourceId: "cutscene_backdrop_x", vehicleResourceId: "cutscene_sprite_y",
+    victimCharacter: { resourceId: "tex_easyrpg_charset_actor1", characterIndex: 0 }, roadTop: 0.48, roadBottom: 0.82,
     beforeLines: ["오늘도 야근이었다."], afterLines: ["……쿵.", "눈을 떴을 때, 세상은 새하얗게 비어 있었다."],
+  },
+  async prepare(args): Promise<void> {
+    const character = characterArg(args);
+    if (!character) return;
+    const key = characterKey(character.resourceId, character.characterIndex);
+    if (preparedCharacters.get(key) && !("error" in preparedCharacters.get(key)!)) return;
+    try {
+      // prepare 는 프로젝트를 받지 못한다 — 번들 캐릭터셋(tex_easyrpg_*)은 프로젝트 없이 풀린다. 업로드 캐릭터셋은 지원하지 않는다.
+      preparedCharacters.set(key, await cropCharsetFrames(undefined, character.resourceId, character.characterIndex));
+    } catch (error) {
+      preparedCharacters.set(key, { error: error instanceof Error ? error.message : String(error) });
+    }
   },
   run(draft, args): ToolExecResult {
     if (!SCRIPT_CUTSCENE) throw new ToolError("script_cutscene 도구를 찾을 수 없습니다.", { code: "missing-inner-tool" });
     const map = requireMap(draft, args.mapId as string);
     const viewport = draft.system.playResolution ?? DEFAULT_PLAY_RESOLUTION;
-    const backdropId = requireResource(args.backdropResourceId, "backdropResourceId")!;
-    const vehicleId = requireResource(args.vehicleResourceId, "vehicleResourceId")!;
-    const victimId = requireResource(args.victimResourceId, "victimResourceId")!;
-    const shockId = requireResource(args.victimShockResourceId, "victimShockResourceId", true);
-    for (const [field, id] of [["backdropResourceId", backdropId], ["vehicleResourceId", vehicleId], ["victimResourceId", victimId]] as const) {
+    const backdropId = requireResource(args.backdropResourceId, "backdropResourceId");
+    const vehicleId = requireResource(args.vehicleResourceId, "vehicleResourceId");
+    for (const [field, id] of [["backdropResourceId", backdropId], ["vehicleResourceId", vehicleId]] as const) {
       if (!draft.assets.uploaded[id]) throw new ToolError(`${field} '${id}' 는 등록된 그림이 아닙니다 — generate_cutscene_art 의 결과 id 를 쓰세요.`, { code: "unknown-resource" });
     }
+    const character = characterArg(args);
+    let victim: VictimFrames;
+    if (character) {
+      const prepared = preparedCharacters.get(characterKey(character.resourceId, character.characterIndex));
+      if (!prepared) throw new ToolError("캐릭터 프레임이 준비되지 않았습니다 — 같은 인자로 다시 호출하세요.", { code: "character-not-prepared" });
+      if ("error" in prepared) throw new ToolError(`캐릭터 프레임을 만들지 못했습니다: ${prepared.error}`, { code: "character-frames-failed" });
+      for (const role of CHARSET_FRAME_ROLES) {
+        const frame = prepared.frames[role];
+        draft.assets.uploaded[frame.id] = { id: frame.id, name: `컷신 캐릭터 ${role}`, kind: "picture", dataUrl: frame.dataUrl, meta: { width: prepared.width, height: prepared.height } };
+      }
+      const id = (role: CharsetFrameRole): string => prepared.frames[role].id;
+      victim = { walk: [id("walkDown0"), id("walkDown1"), id("walkDown2")], shock: id("faceRight"), still: id("walkDown1"), width: prepared.width, height: prepared.height };
+    } else {
+      const victimId = requireResource(args.victimResourceId, "victimCharacter 또는 victimResourceId");
+      if (!draft.assets.uploaded[victimId]) throw new ToolError(`victimResourceId '${victimId}' 는 등록된 그림이 아닙니다.`, { code: "unknown-resource" });
+      const size = pictureSize(draft, victimId, { width: 24, height: 32 });
+      victim = { still: victimId, width: size.width, height: size.height };
+    }
     const facing = args.vehicleFacing === "right" ? "right" : "left";
+    const roadTop = ratio(args.roadTop, 0.45, 0.2, 0.8);
+    const roadBottom = Math.max(roadTop + 0.1, ratio(args.roadBottom, 0.8, 0.4, 0.95));
     const choreography = buildImpactChoreography({
       viewport,
       backdrop: { id: backdropId, ...pictureSize(draft, backdropId, viewport) },
-      vehicle: { id: vehicleId, facing, ...pictureSize(draft, vehicleId, { width: 192, height: 96 }) },
-      victim: { id: victimId, ...(shockId ? { shockId } : {}), ...pictureSize(draft, victimId, { width: 64, height: 128 }) },
+      vehicle: { id: vehicleId, facing, ...pictureSize(draft, vehicleId, { width: 96, height: 48 }) },
+      victim,
       speaker: typeof args.speaker === "string" && args.speaker.trim() ? args.speaker.trim() : "나",
       beforeLines: strings(args.beforeLines),
       honkText: typeof args.honkText === "string" && args.honkText.trim() ? args.honkText.trim() : "빠아아아앙——!!!",
@@ -206,7 +282,8 @@ const scriptCutsceneImpact: ToolDefinition = {
       ...(typeof args.bgmResourceId === "string" && args.bgmResourceId.trim() ? { bgmResourceId: args.bgmResourceId.trim() } : {}),
       impactSeResourceId: typeof args.impactSeResourceId === "string" && args.impactSeResourceId.trim() ? args.impactSeResourceId.trim() : DEFAULT_IMPACT_SE,
       ...(typeof args.honkSeResourceId === "string" && args.honkSeResourceId.trim() ? { honkSeResourceId: args.honkSeResourceId.trim() } : {}),
-      roadBottom: ratio(args.roadBottom, 0.7, 0.4, 0.95),
+      roadTop,
+      roadBottom,
       crossingX: ratio(args.crossingX, 0.5, 0.2, 0.8),
     });
     if (!draft.assets.uploaded[CUTSCENE_WHITE_RESOURCE_ID]) {

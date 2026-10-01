@@ -43,7 +43,8 @@ import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAg
 import type { Project } from "../../src/project/types.ts";
 import { renderToolRegionPngBase64 } from "./render.mts";
 import { setCutsceneArtGenerator } from "../../src/editor/tools/cutsceneArtTools.ts";
-import { headlessGenerateImage } from "./lib/headlessImage.mts";
+import { headlessFetchAsset, headlessGenerateImage } from "./lib/headlessImage.mts";
+import { setCutsceneAssetFetcher } from "../../src/editor/cutsceneArt/charsetFrames.ts";
 
 let ARGV: readonly string[] = process.argv.slice(2);
 const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${name}`); return i >= 0 ? ARGV[i + 1] : undefined; };
@@ -90,6 +91,7 @@ function logLine(prefix: string, event: PiAgentEvent): void {
 export async function genMain(argv: readonly string[] = process.argv.slice(2)): Promise<number> {
   // generate_cutscene_art 의 그림 생성은 편집기에서는 /v1/images/generations 로 가고, 헤드리스에서는 같은 동반 앱 경로를 프로세스 안에서 부른다.
   setCutsceneArtGenerator(headlessGenerateImage);
+  setCutsceneAssetFetcher(headlessFetchAsset);
   ARGV = argv;
   const briefFile = arg("brief");
   const out = arg("out");

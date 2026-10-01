@@ -276,20 +276,136 @@ export interface ProcessedArt {
   readonly height: number;
 }
 
-/** 움직일 소품·인물: 단색 배경 제거 → 여백 제거 → 긴 변 maxSide. */
-export async function processSpriteArt(sourceDataUrl: string, maxSide = 384): Promise<ProcessedArt> {
+// ── 도트화: 생성 그림 → 게임 해상도의 16비트풍 그림 ─────────────────────────────────────────
+
+/** 메디안 컷으로 만든 팔레트(불투명 픽셀만 센다). */
+export function medianCutPalette(image: RgbaImage, colors: number): [number, number, number][] {
+  const sample: [number, number, number][] = [];
+  const stride = Math.max(1, Math.floor((image.width * image.height) / 60000));
+  for (let p = 0; p < image.width * image.height; p += stride) {
+    const i = p * 4;
+    if (image.data[i + 3]! >= 128) sample.push([image.data[i]!, image.data[i + 1]!, image.data[i + 2]!]);
+  }
+  if (sample.length === 0) return [[0, 0, 0]];
+  let boxes: [number, number, number][][] = [sample];
+  while (boxes.length < colors) {
+    let pick = -1, best = 0, axis = 0;
+    boxes.forEach((box, index) => {
+      if (box.length < 2) return;
+      for (let a = 0; a < 3; a += 1) {
+        let lo = 255, hi = 0;
+        for (const px of box) { if (px[a]! < lo) lo = px[a]!; if (px[a]! > hi) hi = px[a]!; }
+        const range = (hi - lo) * Math.sqrt(box.length);
+        if (range > best) { best = range; pick = index; axis = a; }
+      }
+    });
+    if (pick < 0) break;
+    const box = boxes[pick]!.sort((x, y) => x[axis]! - y[axis]!);
+    const mid = Math.floor(box.length / 2);
+    boxes.splice(pick, 1, box.slice(0, mid), box.slice(mid));
+  }
+  return boxes.map((box) => {
+    const sum = [0, 0, 0];
+    for (const px of box) { sum[0]! += px[0]!; sum[1]! += px[1]!; sum[2]! += px[2]!; }
+    return [Math.round(sum[0]! / box.length), Math.round(sum[1]! / box.length), Math.round(sum[2]! / box.length)] as [number, number, number];
+  });
+}
+
+function nearestIndex(palette: readonly [number, number, number][], r: number, g: number, b: number): number {
+  let best = 0, bestD = Infinity;
+  for (let k = 0; k < palette.length; k += 1) {
+    const c = palette[k]!;
+    // 사람 눈에 가깝게 초록을 조금 더 무겁게.
+    const d = (c[0] - r) ** 2 * 0.9 + (c[1] - g) ** 2 * 1.2 + (c[2] - b) ** 2 * 0.8;
+    if (d < bestD) { bestD = d; best = k; }
+  }
+  return best;
+}
+
+/**
+ * 가짜 도트를 진짜 도트로: 먼저 colors 색 팔레트로 줄이고, 목표 해상도의 칸마다 원본 픽셀의 «팔레트 최빈 색»을 고른다.
+ * 평균(BOX 축소)은 윤곽과 면 사이에 없는 중간색을 만들어 뭉개 보인다 — 최빈 색은 팔레트 안의 색만 남긴다.
+ * 칸의 불투명 면적이 절반 미만이면 투명, 아니면 완전 불투명(16비트 스프라이트는 반투명이 없다).
+ */
+export function pixelate(image: RgbaImage, width: number, height: number, colors: number): RgbaImage {
+  const palette = medianCutPalette(image, colors);
+  const cache = new Map<number, number>();
+  const indexAt = (i: number): number => {
+    const key = ((image.data[i]! >> 3) << 10) | ((image.data[i + 1]! >> 3) << 5) | (image.data[i + 2]! >> 3);
+    let found = cache.get(key);
+    if (found === undefined) {
+      found = nearestIndex(palette, (image.data[i]! >> 3 << 3) + 4, (image.data[i + 1]! >> 3 << 3) + 4, (image.data[i + 2]! >> 3 << 3) + 4);
+      cache.set(key, found);
+    }
+    return found;
+  };
+  const out = new Uint8ClampedArray(width * height * 4);
+  const sx = image.width / width, sy = image.height / height;
+  const votes = new Float32Array(palette.length);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      votes.fill(0);
+      let opaque = 0, total = 0;
+      const x0 = Math.floor(x * sx), x1 = Math.max(x0 + 1, Math.min(image.width, Math.floor((x + 1) * sx)));
+      const y0 = Math.floor(y * sy), y1 = Math.max(y0 + 1, Math.min(image.height, Math.floor((y + 1) * sy)));
+      for (let yy = y0; yy < y1; yy += 1) {
+        for (let xx = x0; xx < x1; xx += 1) {
+          total += 1;
+          const i = (yy * image.width + xx) * 4;
+          if (image.data[i + 3]! < 128) continue;
+          opaque += 1;
+          votes[indexAt(i)]! += 1;
+        }
+      }
+      const o = (y * width + x) * 4;
+      if (opaque * 2 < total || opaque === 0) continue;
+      let best = 0;
+      for (let k = 1; k < palette.length; k += 1) if (votes[k]! > votes[best]!) best = k;
+      out[o] = palette[best]![0]; out[o + 1] = palette[best]![1]; out[o + 2] = palette[best]![2]; out[o + 3] = 255;
+    }
+  }
+  return { width, height, data: out };
+}
+
+/** 윤곽선 보강: 투명과 맞닿은 불투명 픽셀 중 너무 밝은 것은 같은 색조의 어두운 색으로 눌러 16비트 스프라이트 윤곽을 만든다. */
+export function darkenEdge(image: RgbaImage, factor = 0.45): RgbaImage {
+  const { width, height } = image;
+  const data = new Uint8ClampedArray(image.data);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const p = y * width + x, i = p * 4;
+      if (data[i + 3] === 0) continue;
+      const edge = x === 0 || y === 0 || x === width - 1 || y === height - 1
+        || image.data[(p - 1) * 4 + 3] === 0 || image.data[(p + 1) * 4 + 3] === 0 || image.data[(p - width) * 4 + 3] === 0 || image.data[(p + width) * 4 + 3] === 0;
+      if (!edge) continue;
+      const luma = 0.3 * data[i]! + 0.59 * data[i + 1]! + 0.11 * data[i + 2]!;
+      if (luma < 70) continue;
+      data[i] = data[i]! * factor; data[i + 1] = data[i + 1]! * factor; data[i + 2] = data[i + 2]! * factor;
+    }
+  }
+  return { width, height, data };
+}
+
+export interface SpriteArtOptions {
+  /** 긴 변의 픽셀 수(게임 해상도 기준). 16px 칸 × 칸 수. */
+  readonly longSidePx: number;
+  readonly colors?: number;
+}
+
+/** 움직일 소품: 단색 배경 제거 → 여백 제거 → 게임 해상도로 도트화 → 윤곽 보강. */
+export async function processSpriteArt(sourceDataUrl: string, options: SpriteArtOptions): Promise<ProcessedArt> {
   const keyed = chromaKeyFromBorder(await decodeImage(sourceDataUrl));
   const cropped = cropToOpaqueBounds(keyed);
   if (!cropped) throw new Error("배경을 지운 뒤 남은 그림이 없습니다 — 단색 배경이 아니거나 그림이 비었습니다.");
-  const fitted = fitWithin(cropped, maxSide);
-  return { dataUrl: await encodePng(fitted), width: fitted.width, height: fitted.height };
+  const k = options.longSidePx / Math.max(cropped.width, cropped.height);
+  const width = Math.max(4, Math.round(cropped.width * k)), height = Math.max(4, Math.round(cropped.height * k));
+  const dotted = darkenEdge(pixelate(cropped, width, height, options.colors ?? 24));
+  return { dataUrl: await encodePng(dotted), width, height };
 }
 
-/** 전체화면 배경: 뷰포트 비율로 가운데를 자르고 가로 targetWidth 로 맞춘다. */
-export async function processBackdropArt(sourceDataUrl: string, viewport: { readonly width: number; readonly height: number }, targetWidth = viewport.width * 2): Promise<ProcessedArt> {
+/** 전체화면 배경: 뷰포트 비율로 가운데를 자르고 뷰포트 해상도 그대로 도트화한다(16px 타일이 그림에서도 16px). */
+export async function processBackdropArt(sourceDataUrl: string, viewport: { readonly width: number; readonly height: number }, colors = 56): Promise<ProcessedArt> {
   const covered = coverCrop(await decodeImage(sourceDataUrl), viewport.width / viewport.height);
-  const width = Math.min(covered.width, Math.round(targetWidth));
-  const height = Math.round(width * (viewport.height / viewport.width));
-  const fitted = resize(covered, width, height);
-  return { dataUrl: await encodePng(fitted), width: fitted.width, height: fitted.height };
+  const dotted = pixelate(covered, viewport.width, viewport.height, colors);
+  return { dataUrl: await encodePng(dotted), width: dotted.width, height: dotted.height };
 }
