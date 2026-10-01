@@ -7,7 +7,7 @@
 프레임은 4단계 지도(design-1x-v5b.png) 위에 픽셀 단위로 얹는다. 반투명은 4x4 베이어 디더로
 표현해 도트 그림 결을 지킨다(진짜 알파 블렌딩을 쓰지 않는다).
 """
-import sys, json, math
+import sys, os, json, math
 from pathlib import Path
 import numpy as np
 from PIL import Image
@@ -15,7 +15,8 @@ from scipy import ndimage as ndi
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-N = 12                      # 전체 주기(프레임 수)
+N = 12                      # 전체 주기(프레임 수). 7단계: 한 칸 250ms, 연기는 6칸 주기, 물결·용암은 4칸 주기
+SMOKE_N = 6
 BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]], float) / 16 + 1 / 32
 
 
@@ -38,7 +39,7 @@ def hmap(H, W, s=0):
 def load():
     import make_map_v5 as M5
     M, ic, meta = M5.build_v5()
-    base = np.array(Image.open(HERE / 'design-1x-v5b.png').convert('RGB'), np.uint8)
+    base = np.array(Image.open(HERE / ('design-1x-v5b.png' if TAG == 'v5' else 'design-1x-%s.png' % TAG)).convert('RGB'), np.uint8)
     return M, ic, base
 
 
@@ -71,8 +72,22 @@ def water_masks(base, G):
     Gpx = np.kron(G, np.ones((16, 16), np.int16))
     r, g, b = [base[..., i].astype(int) for i in range(3)]
     wat = (b > r + 28) & (g > r - 2) & (b - g < 100) & (b > 90)
+    if TAG == 'v8':
+        # 8단계: 천공섬 그림자(어둡게 누른 바다)도 바다로 친다 — 안 그러면 그림자 둘레에 물결 거품이 생긴다.
+        # 섬 자체도 물결 거리 계산에서는 바다로 두고, 프레임을 다 그린 뒤 섬 픽셀만 원래대로 되돌린다(SKY_KEEP).
+        global SKY_KEEP
+        sx, sy, sw, sh_ = 58, 49, 5, 4
+        box = np.zeros_like(wat)
+        box[sy * 16:(sy + sh_) * 16, sx * 16:(sx + sw) * 16] = True
+        SKY_KEEP = box & ~wat
+        near = np.zeros_like(wat)
+        near[(sy - 2) * 16:(sy + sh_ + 4) * 16, (sx - 2) * 16:(sx + sw + 3) * 16] = True   # 섬과 그림자 둘레 바다만
+        wat = wat | ((Gpx == 0) & near)
     sea_near = ndi.binary_dilation(Gpx == 0, iterations=10)
     return Gpx, wat, sea_near
+
+
+SKY_KEEP = None
 
 
 def fx_waves(img, f, wat, sea_near, dist, hx):
@@ -220,12 +235,12 @@ def fx_volcano(img, f):
     ex, ey = VOLC
     out = []
     for k in range(6):
-        p = ((f - 2 * k) % N) / N
+        p = ((f % SMOKE_N) / SMOKE_N + k / 6) % 1      # 7단계: 6프레임 주기
         out.append((p, k))
     for p, k in sorted(out, reverse=True):
-        x = ex + p * 26 + 5 * math.sin(p * 5.5 + k * 1.7)
-        y = ey - p * 58
-        r = 3.6 + p * 12
+        x = ex + p * 14 + 3 * math.sin(p * 4.2 + k * 1.7)
+        y = ey - p * 34
+        r = 3.6 + p * 9
         a = min(1, p / .08) * (1 - max(0, p - .5) / .5) ** 1.4
         pal = pal_hot if p < .14 else pal_ash
         puff(img, x, y, r, pal, a * 1.02, seed=k * 1.3 + 1, tex=.1)
@@ -238,9 +253,9 @@ def fx_chimney(img, f, pts):
     pal = ((236, 236, 240), (188, 188, 202), (142, 142, 162))
     for (ex, ey, sc) in pts:
         for k in range(4):
-            p = ((f - 3 * k) % N) / N
-            x = ex + p * 6 * sc + 1.2 * sc * math.sin(p * 8 + k)
-            y = ey - p * 22 * sc
+            p = ((f % SMOKE_N) / SMOKE_N + k / 4) % 1      # 7단계: 6프레임 주기
+            x = ex + p * 5 * sc + 0.9 * sc * math.sin(p * 6 + k)
+            y = ey - p * 14 * sc
             r = (1.5 + p * 3.4) * sc
             a = min(1, p / .12) * (1 - max(0, p - .45) / .55) ** 1.3
             puff(img, x, y, max(r, 1.1), pal, a * 1.02, seed=k + ex * .01, tex=.05)
@@ -304,6 +319,7 @@ def make_clouds(W, H, seed=3):
 
 
 # ─── 프레임 조립 ───────────────────────────────────────────────────────
+TAG = os.environ.get('CITY_TAG', 'v5')
 CHIM_OFFS = {       # 이름 → [(x, y, 크기)] 굴뚝 원점(아이콘 왼쪽 위 기준 지도 픽셀). 지붕 오른쪽 어깨를 눈으로 잡았다.
     '강가 마을': [(41, 8, 1), (41, 24, 1)],
     '동쪽 항구': [(41, 8, 1), (41, 24, 1)],
@@ -314,6 +330,8 @@ CHIM_OFFS = {       # 이름 → [(x, y, 크기)] 굴뚝 원점(아이콘 왼쪽
     '남섬 마을': [(19, 8, 1)],
     '사바나 마을': [(17, 36, .55), (50, 37, .55), (23, 41, .55)],
 }
+if TAG != 'v5':      # v6 요새 읍: 붉은·갈색 집 지붕 오른쪽 어깨
+    CHIM_OFFS['사바나 마을'] = [(25, 34, .55), (49, 34, .55)]
 
 
 def chimneys(ic):
@@ -343,6 +361,8 @@ def build_frames():
         fx_waterfall(img, f)
         fx_chimney(img, f, chim)
         fx_volcano(img, f)
+        if SKY_KEEP is not None:
+            img[SKY_KEEP] = base[SKY_KEEP]
         frames.append(img)
     return base, frames, ic, chim
 
@@ -375,7 +395,7 @@ def save_gif(frames_rgb, path, scale=3, ms=160):
 
 
 if __name__ == '__main__':
-    out = HERE / 'anim-v5'
+    out = HERE / ('anim-v5' if TAG == 'v5' else 'anim-%s' % TAG)
     out.mkdir(exist_ok=True)
     base, frames, ic, chim = build_frames()
     Image.fromarray(base).save(out / 'base.png')
