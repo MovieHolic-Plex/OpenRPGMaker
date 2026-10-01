@@ -118,6 +118,15 @@ export interface BattleSequencerHooks {
   readonly enemyRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
   /** 표시 계층이 행동의 무게를 바꾼다(도트 연출 레코드의 weight 손잡이). undefined 면 피드백에서 정한 무게 그대로. */
   readonly actionWeight?: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => BattleActionWeight | undefined;
+  /** 스킨의 동작 템포. 행동 비트(예고·돌진·회복)와 이펙트 착탄 오프셋만 이 배율로 줄인다 — 히트스톱과
+   *  대사 읽기 시간은 그대로다. 배속(speedMultiplier)과 곱해진다. undefined·1 이면 옛 길이 그대로. */
+  readonly motionTempo?: () => number;
+}
+
+/** 히트스톱 비트를 뺀 행동 비트를 템포로 줄인다. 히트스톱을 같이 줄이면 타격이 가벼워진다. */
+export function tempoActionBeats(beats: readonly BattleActionBeat[], tempo: number): readonly BattleActionBeat[] {
+  if (!(tempo > 0) || tempo === 1) return beats;
+  return beats.map((beat) => (beat.hitStop || beat.durationMs <= 0 ? beat : { ...beat, durationMs: Math.max(10, Math.round(beat.durationMs / tempo)) }));
 }
 
 export interface BattleSequencer {
@@ -509,7 +518,8 @@ export function createBattleSequencer(
     // 행동의 무게 — 급소·막타는 heavy(길게 눌러 잡고), 빗나감·0 피해·회복은 light.
     const baseWeight = weightForFeedback(feedback, Boolean(killLine));
     const weight = hooks.actionWeight?.(entry, baseWeight) ?? baseWeight;
-    const beats = entry.side === "enemy"
+    const tempo = hooks.motionTempo?.() ?? 1;
+    const beats = tempoActionBeats(entry.side === "enemy"
       ? planEnemyActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
           feedback,
@@ -531,12 +541,13 @@ export function createBattleSequencer(
           impactMs: hooks.actorRecoverMs?.(entry)
             ?? recoverMsForAnimation(entry.animation?.durationMs, Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
-        });
+        }), tempo);
     // 이펙트 마운트 시점: 착탄 프레임이 임팩트 비트와 같은 순간에 오도록 approach 길이에서
     // 착탄까지의 ms 를 뺀 만큼 늦춘다. 예전엔 approach 시작에 바로 떠서 적이 하얗게 번쩍인
     // 뒤 0.3초 있다가 숫자가 뜨고 밀리는 "절정 두 번"이 됐다(2026-09-14 실측 250~300ms).
     const approachMs = beats.find((beat) => beat.kind === "approach")?.durationMs ?? 0;
-    const impactAtMs = entry.animation && hooks.animationImpactMs ? hooks.animationImpactMs(entry.animation) : 0;
+    // 이펙트 프레임도 같은 템포로 돈다(battleAnimationFrameMs 가 data-battle-motion-tempo 를 곱한다).
+    const impactAtMs = entry.animation && hooks.animationImpactMs ? hooks.animationImpactMs(entry.animation) / (tempo > 0 ? tempo : 1) : 0;
     // 착탄 정보가 없으면(타이밍 없는 레코드·훅 미구현) 예전처럼 approach 시작과 함께 뜬다.
     const animationOffsetMs = impactAtMs > 0 ? Math.max(0, approachMs - impactAtMs) : 0;
     if (entry.animation && animationOffsetMs > 0) {

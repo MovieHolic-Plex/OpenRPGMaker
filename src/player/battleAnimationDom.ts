@@ -315,8 +315,11 @@ export function battleAnimationFrameMs(
   record?: BattleAnimationRecord
 ): number {
   const raw = Number(sceneRoot?.dataset.battleSpeed);
+  // 스킨 동작 템포(data-battle-motion-tempo) — 시퀀서가 행동 비트를 같은 배율로 줄이므로 이펙트도 맞춰 돈다.
+  const tempoRaw = Number(sceneRoot?.dataset.battleMotionTempo);
+  const tempo = Number.isFinite(tempoRaw) && tempoRaw > 0 ? tempoRaw : 1;
   // 시퀀서와 같은 하한(0.2)을 쓴다 — 여기만 다르면 배속을 올릴수록 서로 어긋난다.
-  const speed = Number.isFinite(raw) && raw > 0 ? Math.max(0.2, raw) : 1;
+  const speed = (Number.isFinite(raw) && raw > 0 ? Math.max(0.2, raw) : 1) * tempo;
   return Math.max(10, Math.round(battleAnimationFrameDurationMs(record) / speed));
 }
 

@@ -442,6 +442,13 @@
   `data-battler-id`(= 런타임 id)를 찍고 마지막 폴백으로 찾는다. ③ 화면은 여전히 흔들지 않고, 맞은 몬스터 **그림만** `pkmn-hit-shake`
   (300ms, 6→2px 좌우)로 떤다 — 히트스톱 동안은 ① 정지 규칙에 붙들려 흰 실루엣, 풀리면서 떤다.
   QA 함정: 연출 중 Z 는 5배속 넘기기(`beginSkip`)라, 메시지를 Z 로 넘기는 녹화는 적 턴이 0.2초로 지나간다 — `data-battle-sequence-busy` 동안은 누르지 말 것.
+- **포켓몬 동작 템포 1.5배 (2026-10-02):** `battleDom` 의 `POKEMON_MOTION_TEMPO` → 시퀀서 훅 `motionTempo` 가 행동 비트(예고·돌진·회복)만
+  줄인다(`tempoActionBeats`). 히트스톱(110ms)과 대사 읽기 시간은 그대로 — 히트스톱까지 줄이면 타격이 가벼워진다. 이펙트 프레임은
+  `data-battle-motion-tempo` 를 `battleAnimationFrameMs` 가 배속과 곱하고, 착탄 오프셋도 같은 배율로 줄인다. CSS 전환 길이는 손으로 맞췄다:
+  돌진 `--motion-lunge-ms` 160ms(22-hit-feel ⑦, 기본 240), 포켓몬 lunge/return/knockback 95/120/80ms, `pkmn-hit-shake` 200ms.
+  실측(3대진 평균): 돌진→착탄 471→318ms, 적 공격 866→611ms, 한 차례 1.89→1.39초. 효과음은 원래 울리고 있었다(착탄 10ms 안에 타격 샘플 +
+  `thud`) — GIF 녹화에 소리가 없었을 뿐이다. 소리 포함 녹화는 실시간 MediaRecorder 가 headless 에서 ±0.15초 흔들리므로, 소리를 「악보」로
+  적어 OfflineAudioContext 로 다시 렌더한다(QA 스크래치 `qa-runs/battle-sfx/audio-score.js`).
 - **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
   `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
   AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중

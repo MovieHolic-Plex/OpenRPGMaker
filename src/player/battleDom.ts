@@ -62,6 +62,9 @@ import { bindBattleStageScale } from "@/player/battleStageScale";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 
+/** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
+export const POKEMON_MOTION_TEMPO = 1.5;
+
 export interface BattleDomOptions {
   readonly host: HTMLElement;
   readonly runtime: BattleRuntime;
@@ -132,6 +135,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const skin = getBattleSkin(skinId);
   root.dataset.battleSkin = skinId;
   const retroMotion = skin.motionStyle === "retro";
+  // 포켓몬 스킨의 동작 템포 — 돌진·넉백·이펙트를 1.5배 빠르게 돈다(사용자 요청 2026-10-02). 히트스톱·대사는 그대로.
+  const motionTempo = root.dataset.battleUiStyle === "pokemon" ? POKEMON_MOTION_TEMPO : 1;
+  if (motionTempo !== 1) root.dataset.battleMotionTempo = String(motionTempo);
   if (retroMotion) root.dataset.battleMotion = "retro";
   // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
   root.dataset.battleSkinFamily = battleSkinFamily(skinId);
@@ -565,6 +571,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       showFinaleStamp(result);
     },
     collapseHoldMs: () => remainingEnemyCollapseMs(field),
+    motionTempo: () => motionTempo,
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.
