@@ -51,3 +51,11 @@ python3 scripts/content/hand-interior-pick/picks_db.py backup                # �
 고른 결과는 `scripts/content/hand-interior/build_tileset.py` 가 기본으로 넣는다(`install_picks.py`, 자세한 규칙은 `openwiki/atlas-biome-interior.md` 「고른 후보 반영」).
 `apply_picks.py` 는 전후 비교 그림용 사본이고 번들을 바꾸지 않는다. 새로 고른 뒤: `build_tileset.py` → `bun scripts/content/hand-interior/prepare-references.mts`.
 
+
+## 3/4 시점 재작도 2판 (2026-10-01)
+
+#1796 으로 구운 뒤 3/4(윗면+앞면)를 안 지킨 50종을 다시 찍었다. 목록·배정은 `v34-redo.json`, 절차는 `WORKER-V34-REDO.md`,
+감독 눈 판정은 `v34-redo-verdicts.json`. 후보 파일은 `candidates/<slug>/w40-*`~`w50-*`(w47~w50 은 1차 불합격 8종의 2차).
+비교 페이지: `python3 scripts/content/hand-interior-pick/v34_compare.py <out.html> v34-redo-verdicts.json`.
+움직이는 기물 7종은 몸통만 새로 그리고 `anim-mask.png` 자리는 v5 프레임을 그대로 쓴다(`install_picks._animated`).
+아직 아무것도 시트에 들어가지 않았다 — 사용자가 고른 뒤 「시트에 굽기」 순서를 따른다.

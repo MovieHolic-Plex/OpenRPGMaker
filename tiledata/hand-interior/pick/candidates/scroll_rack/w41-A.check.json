@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scroll_rack/w41-A.pxg",
+ "id": "scroll rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 11,
+ "bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "1판 w91-A 재사용 (t5)",
+ "ok": true
+}

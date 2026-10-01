@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/meat_hooks/w43-A.pxg",
+ "id": "meat hooks",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "note": "3/4: 윗가로대·바닥 받침판 윗면+앞가장자리, 처마 그림자 아래 쇠 갈고리에 걸린 고기(윗면 밝게) 4덩이",
+ "ok": true
+}

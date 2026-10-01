@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cabinet_loaf/w40-A.pxg",
+ "id": "cabinet:loaf",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "3/4 몸통: 윗면 T5(C→E)+앞가장자리 B+처마그늘 D 2행, 선반 3단 유지(첫 칸 키 줄임)",
+ "ok": true
+}

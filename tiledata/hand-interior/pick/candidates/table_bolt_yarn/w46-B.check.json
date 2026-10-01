@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_bolt_yarn/w46-B.pxg",
+ "id": "table:bolt+yarn",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 30,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "B: 앞면을 리넨 천이 늘어진 모양(물결 밑단)으로 해석. 윗면 같음.",
+ "ok": true
+}
