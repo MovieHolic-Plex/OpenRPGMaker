@@ -1,0 +1,39 @@
+{
+  "baselineCommit": "c7de9b0b7",
+  "failedConsumer": "src/battle/runtime.ts#elementalDefenseIds",
+  "baselineConsumerResolves": false,
+  "fixedConsumer": "src/battle/battleElementModifiers.ts#elementalDefenseIds",
+  "fixedConsumerResolves": true,
+  "inputs": [
+    {
+      "path": "test/parity/parityMatrix.ts",
+      "baselineSha256": "aa3bedc14ac5965350aee8cbb611c53bb7ec85799c5971930dfde5db5d2c877a",
+      "currentSha256": "2f0f3b93e16a339fe418f14e457da4b1ee57f92fcef11237314bcb9d913e91fb",
+      "unchanged": false
+    },
+    {
+      "path": "test/parity/parityMatrix.test.ts",
+      "baselineSha256": "e76b676b1e787645afacb75de69e503e6626b868ecd995c00573f2af0aeca11c",
+      "currentSha256": "e76b676b1e787645afacb75de69e503e6626b868ecd995c00573f2af0aeca11c",
+      "unchanged": true
+    },
+    {
+      "path": "src/battle/runtime.ts",
+      "baselineSha256": "03e7607954b89e53644d7bd0034f4e3b36464262f4371a69444e058415a61399",
+      "currentSha256": "03e7607954b89e53644d7bd0034f4e3b36464262f4371a69444e058415a61399",
+      "unchanged": true
+    },
+    {
+      "path": "src/battle/battleElementModifiers.ts",
+      "baselineSha256": "ddb58fbafd73772607d7d0e219818daac61238c033669a68af4cad0b3b4a052d",
+      "currentSha256": "ddb58fbafd73772607d7d0e219818daac61238c033669a68af4cad0b3b4a052d",
+      "unchanged": true
+    },
+    {
+      "path": "src/battle/battleBattlers.ts",
+      "baselineSha256": "7bba4033f4df672356d69fe74ea21c0e8417f54121522b07b276d8eb1fbe98e0",
+      "currentSha256": "7bba4033f4df672356d69fe74ea21c0e8417f54121522b07b276d8eb1fbe98e0",
+      "unchanged": true
+    }
+  ]
+}

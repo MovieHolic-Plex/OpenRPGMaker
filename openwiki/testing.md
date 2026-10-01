@@ -1986,3 +1986,9 @@ test/eventLayerReuse.test.ts test/terrainQuarterAutotile.test.ts test/lakeAutoti
 기본 beodeul_city에 구 generate_map 프로필이 없고, 구 테스트의 잔디 번호/이벤트 오류 경로
 기대값이 현재 기본값과 다르다. 경계 테스트는 생성기 지원 칩셋을 명시해 크기 계약 자체를 검사한다.
 전체 게이트/전체 스위트는 이 변경에서 로컬 실행하지 않았다.
+
+CI의 기존 main 실행이 러너 연결 끊김으로 실패하고 PR 검사도 지연돼 빠른 레인 명령
+(`build:app`, `gates:barrel`, `gates:self-hosted`, `test:parity`)은 추가로 로컬에서 확인했다.
+parity 목록의 `equipment.elementalDefenseIds` 소비자 주소는 전투 코드 이동 뒤 남은
+`runtime.ts`에서 실제 계산 파일 `battleElementModifiers.ts`로 바로잡았다. 상태/래칫과
+전투 동작은 그대로다. 상세 결과/기준선 SHA는 같은 공식 상한 증거 폴더를 본다.
