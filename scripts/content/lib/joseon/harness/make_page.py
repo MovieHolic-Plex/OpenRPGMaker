@@ -41,19 +41,19 @@ pc = json.load(open(os.path.join(ROOT, 'tiledata/joseon-demo/pieces.json')))
 R = os.path.join(ROOT, 'tiledata/joseon-demo/review/')
 rev = ''.join('<img src="%s">' % uri(R + n + '.png') for n in ('giwa_house_6', 'thatch_house_5', 'pavilion_5', 'gate_4'))
 bdimg = '<img src="%s">' % uri('/tmp/j8city/h2.png') if os.path.exists('/tmp/j8city/h2.png') else ''
-html = f'''<!doctype html><meta charset=utf-8><title>조선 칩셋 데모 v3 — 블록 조립</title>
+html = f'''<!doctype html><meta charset=utf-8><title>조선 칩셋 데모 v4 — 나무·공간감</title>
 <style>body{{background:#1a1612;color:#e9dcc3;font:15px/1.6 system-ui,'Noto Sans KR',sans-serif;margin:0;padding:24px;max-width:1320px;margin:auto}}
 h1{{font-size:22px;margin:0 0 4px}}h2{{font-size:16px;margin:30px 0 8px;color:#e0b66a}}p{{margin:4px 0;color:#c9bca3}}
 img{{image-rendering:pixelated;display:block;border:1px solid #4a3d2c;background:#000;margin:6px 0}}table{{border-collapse:collapse;font-size:13px}}td,th{{border:1px solid #3b2f20;padding:2px 8px;text-align:left}}
 .ok{{color:#9ad06a}}.warn{{color:#e0b66a}}.bad{{color:#e0654a}}.tag{{display:inline-block;background:#3b2f20;border-radius:4px;padding:1px 8px;margin-right:6px;font-size:13px}}.row{{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}}</style>
-<h1>조선 칩셋 데모 v3 — 건물을 버들항 블록 조립 문법으로 다시</h1>
-<p>v2 까지의 집은 한 장짜리 정면 입면(사다리꼴 지붕+정면 벽)이라 3/4 가 아니었습니다. 이제 버들항(<code>pj.py</code>)과 같은 <b>지붕 행(ridge·front·eave) + 벽 두 행(u·b) + 기단 + 계단</b> 블록 조립입니다.</p>
+<h1>조선 칩셋 데모 v4 — 버들항 급 나무·공간감 시도 (후보, 확정 아님)</h1>
+<p><b>현재 상태:</b> 나무(잎 덩이 겹침)·밀도 높인 마을 지도(건물 15채)를 만들었고 지도 게이트는 통과했습니다. 그러나 독립 적대 리뷰어는 5라운드째 <b>나무 3/5 · 공간감 3/5</b>(버들항 급 = 둘 다 4 이상)로 revise 입니다. 아래 자동 게이트의 A·V 는 건물·소품이 아직 리뷰를 통과하지 못했다는 뜻이라 FAIL 로 남아 있습니다(후보 굽기).</p>
 <p><span class=tag>허용 {len(pal['allowed'])}색 잠금</span><span class=tag>게이트 {summ}</span><span class=tag>지도 = 시트 칸 재조립 0화소 차이</span></p>
 <h2>1. 같은 문법 비교 — 왼쪽 버들항(h2 격자) / 오른쪽 조선 한옥(16px 격자)</h2>
 <div class=row>{bdimg}<img src="{uri_im(gim)}"></div>
 <p>조선 조립표(위→아래): 치미 달린 ridge 행 → front → eave → 벽 위행 u → 벽 아래행 b → 석축 plinth → 계단 step. 지붕은 벽보다 좌우 한 칸씩 넓고(깊은 처마), 팔작 쐐기는 hip_cut.</p>
-<h2>2. 데모 마을 (시트 칸 번호만으로 조립)</h2>
-<img src="{uri(os.path.join(ROOT, 'tiledata/joseon-demo/joseon-demo-map.png'))}" style="width:1280px">
+<h2>2. 데모 마을 48×42 (시트 칸 번호만으로 조립)</h2>
+<img src="{uri(os.path.join(ROOT, 'tiledata/joseon-demo/joseon-demo-map.png'))}" style="width:1536px">
 <h2>3. 검수 시트 — 버들항 기준 조각 옆에서 같은 배율</h2>
 {rev}
 <h2>4. 조각별 판정</h2>
