@@ -1573,6 +1573,8 @@ export interface SystemRecords {
   dialogueSpeed?: number;
   /** false 면 구두점 뒤에 쉬지 않는다. 생략 = 쉰다. */
   dialoguePunctuationPause?: boolean;
+  /** 하단 대사창 뒤 전신 초상의 크기·내림(%). 생략 = 높이 125·내림 20. */
+  dialogueFullPortrait?: import("@/project/dialogueStyles").DialogueFullPortraitSettings;
   fieldHud?: import("../fieldHud").FieldHudConfig;
   /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
   battleCommandCss?: string;
