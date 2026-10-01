@@ -1,0 +1,286 @@
+{
+ "id": "desert-east",
+ "name": "사막·동양풍",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [],
+ "icons": [
+  {
+   "role": "capital",
+   "name": "궁성 도시",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "이중 성벽, 사방 문루(겹처마 기와), 안뜰의 큰 전각과 기와집"
+  },
+  {
+   "role": "fort_city",
+   "name": "읍성",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "성벽 둘러친 읍성, 문루 하나, 안에 관아"
+  },
+  {
+   "role": "harbor_city",
+   "name": "항구 읍성",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "바다 쪽이 열린 항구 읍성, 나무 부두와 삼각돛배"
+  },
+  {
+   "role": "castle",
+   "name": "산성 누각",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "흙 언덕 위 석축 성벽과 3층 누각"
+  },
+  {
+   "role": "castle",
+   "name": "산성 요새",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "석축 성벽·문루·양 망루·장대"
+  },
+  {
+   "role": "large_town",
+   "name": "기와집 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "기와집 여섯 채(일부 2층), 담장·장독"
+  },
+  {
+   "role": "large_town",
+   "name": "오아시스 마을",
+   "id": "large_town_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "평지붕 흙집·돔 사원·미나렛·야자"
+  },
+  {
+   "role": "village",
+   "name": "초가 촌락",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 6,
+   "desc": "흙벽 + 짚 우진각 지붕 세 채, 장독"
+  },
+  {
+   "role": "village",
+   "name": "사막 흙벽 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 6,
+   "desc": "평지붕 흙집·돔·야자"
+  },
+  {
+   "role": "camp",
+   "name": "게르 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 6,
+   "desc": "흰 펠트 게르 둘과 모닥불"
+  },
+  {
+   "role": "camp",
+   "name": "검은 천막 야영",
+   "id": "camp_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 6,
+   "desc": "짙은 갈색 원뿔 천막 셋과 깃대"
+  },
+  {
+   "role": "tower_small",
+   "name": "3층 전탑",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 31,
+   "row": 6,
+   "desc": "벽돌 3층 탑, 층마다 기와 처마"
+  },
+  {
+   "role": "tower_great",
+   "name": "9층 팔각탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "9층 팔각 전탑, 층마다 처마 윗면"
+  },
+  {
+   "role": "cave",
+   "name": "석굴 사원",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 23,
+   "row": 6,
+   "desc": "사암 절벽에 판 석굴, 입구 위 기와 처마"
+  },
+  {
+   "role": "ruin",
+   "name": "무너진 석탑",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 25,
+   "row": 6,
+   "desc": "층이 떨어져 나간 석탑 밑동과 흩어진 석재"
+  },
+  {
+   "role": "ruin_city",
+   "name": "모래에 묻힌 성채",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "부서진 성벽·문루 잔해를 모래 언덕이 덮음"
+  },
+  {
+   "role": "shrine",
+   "name": "대사원",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "높은 기단·계단·2층 전각(옥색 기와)"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "신목",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "붉은 금줄을 두른 거목"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "사막 바오바브",
+   "id": "landmark_baobab",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 12,
+   "row": 6,
+   "desc": "불룩한 줄기와 납작한 수관"
+  },
+  {
+   "role": "circle",
+   "name": "석등과 선돌",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 27,
+   "row": 6,
+   "desc": "선돌 셋과 석등"
+  },
+  {
+   "role": "volcano",
+   "name": "화산 제단",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 29,
+   "row": 6,
+   "desc": "잘린 화구의 붉은 용암 + 비탈 아래 작은 제단"
+  },
+  {
+   "role": "floating",
+   "name": "신선의 섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "구름 위에 뜬 섬, 옥색 기와 전각 하나"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색만 쓴다. 그림은 이 폴더의 build.py 가 투영 렌더러(lib/oblique.py)로 직접 만든 것이며 생성 이미지·트레이싱이 없다."
+ }
+}

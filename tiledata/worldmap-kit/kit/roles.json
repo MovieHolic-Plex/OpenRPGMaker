@@ -1,0 +1,694 @@
+{
+ "schema": "worldmap-roles/1",
+ "tile": 16,
+ "note": "아이콘 세트는 이 17개 역할을 이 칸 수대로 채운다. 지형은 장소 발자국(칸 수)에 맞춰 만들어지므로 칸 수가 다르면 지도가 어긋난다.",
+ "roles": [
+  {
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "name": "수도",
+   "desc": "이중 성벽 대도시. 한 세계에 하나."
+  },
+  {
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "name": "성곽 도시",
+   "desc": "성벽을 두른 큰 도시. 지역 거점."
+  },
+  {
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "name": "항구 도시",
+   "desc": "성곽 도시 + 부두(남쪽이 물가)."
+  },
+  {
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "name": "성·요새",
+   "desc": "관문 요새, 마왕성, 불꽃 요새 같은 3x3 성채."
+  },
+  {
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "name": "큰 마을",
+   "desc": "3x3 마을·농촌·항구 마을."
+  },
+  {
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "name": "촌락",
+   "desc": "2x2 작은 마을(기후·문화별 변형이 가장 많은 역할)."
+  },
+  {
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "name": "야영지",
+   "desc": "천막·오아시스 같은 임시 거처."
+  },
+  {
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "name": "작은 탑",
+   "desc": "등대·마법사 탑·감시탑. 1x2."
+  },
+  {
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "name": "거대한 탑",
+   "desc": "지평선에서도 보이는 2x4 탑."
+  },
+  {
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "name": "동굴",
+   "desc": "던전 입구."
+  },
+  {
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "name": "폐허",
+   "desc": "묻힌 신전·피라미드·묘당 같은 2x2 유적."
+  },
+  {
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "name": "폐허 도시",
+   "desc": "무너진 옛 도시."
+  },
+  {
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "name": "신전",
+   "desc": "3x3 성지·신전."
+  },
+  {
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "name": "자연 랜드마크",
+   "desc": "거목 같은 3x3 자연물."
+  },
+  {
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "name": "돌원",
+   "desc": "고대 돌 원·제단 원."
+  },
+  {
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "name": "화산",
+   "desc": "분화구와 용암 줄기."
+  },
+  {
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "name": "떠 있는 땅",
+   "desc": "천공섬. 바다 위에 뜨고 그림자가 바다에 진다."
+  }
+ ],
+ "legacy_fantasy": [
+  {
+   "icon": "castle_dark",
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "castle_dark_grand",
+   "role": "capital",
+   "cells": [
+    5,
+    5
+   ],
+   "role_cells": [
+    6,
+    6
+   ],
+   "fits": false,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "town_bell",
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "town_red",
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "town_snow",
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "village_wood",
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "village_snow",
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "city_capital",
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "role_cells": [
+    6,
+    6
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "city_fort",
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "role_cells": [
+    4,
+    4
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "city_harbor",
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "role_cells": [
+    5,
+    4
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "sky_island",
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "role_cells": [
+    5,
+    4
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "giant_tower",
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "role_cells": [
+    2,
+    4
+   ],
+   "fits": true,
+   "origin": "탑 손 도트"
+  },
+  {
+   "icon": "ruined_city",
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "role_cells": [
+    4,
+    3
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "giant_tree",
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "desert_temple",
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "유적(fix34_ruins/icons)"
+  },
+  {
+   "icon": "stone_circle",
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "lighthouse",
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "role_cells": [
+    1,
+    2
+   ],
+   "fits": true,
+   "origin": "탑 손 도트"
+  },
+  {
+   "icon": "witch_tower",
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "role_cells": [
+    1,
+    2
+   ],
+   "fits": true,
+   "origin": "탑 손 도트"
+  },
+  {
+   "icon": "mage_spire",
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "role_cells": [
+    1,
+    2
+   ],
+   "fits": true,
+   "origin": "탑 손 도트"
+  },
+  {
+   "icon": "cave_rock",
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "동굴 2x2"
+  },
+  {
+   "icon": "cave_vine",
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "동굴 2x2"
+  },
+  {
+   "icon": "igloo_camp",
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "mine_town",
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "tent_camp",
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "monastery",
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "수도원 2차"
+  },
+  {
+   "icon": "adobe_village",
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "treehouse_village",
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "oasis_camp",
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "stilt_village",
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "windmill_farm",
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "harbor_town",
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "log_village",
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "마을·야영 3/4"
+  },
+  {
+   "icon": "pass_fortress",
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "원래 v9 그림 유지"
+  },
+  {
+   "icon": "flame_fortress",
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "role_cells": [
+    3,
+    3
+   ],
+   "fits": true,
+   "origin": "화염 요새 투영본"
+  },
+  {
+   "icon": "desert_colonnade",
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "유적(fix34_ruins/icons)"
+  },
+  {
+   "icon": "stepped_pyramid",
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "유적(fix34_ruins/icons)"
+  },
+  {
+   "icon": "crypt",
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "유적(fix34_ruins/icons)"
+  },
+  {
+   "icon": "volcano_altar",
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "role_cells": [
+    2,
+    2
+   ],
+   "fits": true,
+   "origin": "유적(fix34_ruins/icons)"
+  }
+ ]
+}

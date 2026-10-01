@@ -1,0 +1,294 @@
+{
+  "id": "modern-sf",
+  "name": "현대·SF",
+  "tile": 16,
+  "key": [
+    255,
+    103,
+    139
+  ],
+  "shadow_key": [
+    254,
+    103,
+    139
+  ],
+  "sheet": "sheet.png",
+  "cols": 32,
+  "rows": 10,
+  "extra_colors": [
+    "0d2147",
+    "2ae0d8",
+    "2c3440",
+    "3b6a9c",
+    "4a5668",
+    "6e7c90",
+    "8fc0e4",
+    "9aa8ba",
+    "c6d2de",
+    "f0a030",
+    "ffe28a"
+  ],
+  "icons": [
+    {
+      "role": "capital",
+      "name": "capital",
+      "cells": [
+        6,
+        6
+      ],
+      "col": 0,
+      "row": 0,
+      "desc": "메가시티 — 높이가 다른 고층 빌딩 군(옥상 설비·헬리패드·창 격자)과 중앙 광장 첨탑, 순환 도로. 6x6"
+    },
+    {
+      "role": "fort_city",
+      "name": "fort_city",
+      "cells": [
+        4,
+        4
+      ],
+      "col": 6,
+      "row": 0,
+      "desc": "방벽 도시 — 콘크리트 방벽 고리·모서리 감시탑·앞 철문 문루 뒤로 고층. 4x4"
+    },
+    {
+      "role": "harbor_city",
+      "name": "harbor_city",
+      "cells": [
+        5,
+        4
+      ],
+      "col": 10,
+      "row": 0,
+      "desc": "항만 도시 — 문형 컨테이너 크레인·컨테이너 더미·컨테이너 실은 화물선·항만 고층. 5x4"
+    },
+    {
+      "role": "castle",
+      "name": "castle_a",
+      "cells": [
+        3,
+        3
+      ],
+      "col": 15,
+      "row": 0,
+      "desc": "군사 기지(격납고형) — 반원통 격납고·콘크리트 방벽·철문·레이더 타워. 3x3"
+    },
+    {
+      "role": "castle",
+      "name": "castle_b",
+      "cells": [
+        3,
+        3
+      ],
+      "col": 18,
+      "row": 0,
+      "desc": "군사 기지(포탑형) — 원통 포탑 넷·사령동·철문 문루. 3x3"
+    },
+    {
+      "role": "large_town",
+      "name": "large_town_a",
+      "cells": [
+        3,
+        3
+      ],
+      "col": 21,
+      "row": 0,
+      "desc": "교외 주택가(박공) — 박공 주택 여섯 동·마당 나무. 3x3"
+    },
+    {
+      "role": "large_town",
+      "name": "large_town_b",
+      "cells": [
+        3,
+        3
+      ],
+      "col": 24,
+      "row": 0,
+      "desc": "교외 주택가(신축) — 평지붕 주택 여섯 동·옥상 태양광. 3x3"
+    },
+    {
+      "role": "village",
+      "name": "village_a",
+      "cells": [
+        2,
+        2
+      ],
+      "col": 27,
+      "row": 0,
+      "desc": "컨테이너 촌락 — 쌓은 컨테이너 집·급수탑·옥상 태양광. 2x2"
+    },
+    {
+      "role": "village",
+      "name": "village_b",
+      "cells": [
+        2,
+        2
+      ],
+      "col": 29,
+      "row": 0,
+      "desc": "농가 — 붉은 헛간·사일로·살림집. 2x2"
+    },
+    {
+      "role": "camp",
+      "name": "camp_a",
+      "cells": [
+        2,
+        2
+      ],
+      "col": 0,
+      "row": 6,
+      "desc": "탐사 캠프 — 돔 텐트 셋·발전기·투광등. 2x2"
+    },
+    {
+      "role": "camp",
+      "name": "camp_b",
+      "cells": [
+        2,
+        2
+      ],
+      "col": 2,
+      "row": 6,
+      "desc": "피난민 캠프 — A자 천막 셋·급수 탱크·무전 마스트. 2x2"
+    },
+    {
+      "role": "tower_small",
+      "name": "tower_small_a",
+      "cells": [
+        1,
+        2
+      ],
+      "col": 4,
+      "row": 6,
+      "desc": "송신탑 — 적백 줄무늬 철탑·안테나 플랫폼. 1x2"
+    },
+    {
+      "role": "tower_small",
+      "name": "tower_small_b",
+      "cells": [
+        1,
+        2
+      ],
+      "col": 5,
+      "row": 6,
+      "desc": "풍력 터빈 — 흰 기둥·나셀·날개 셋. 1x2"
+    },
+    {
+      "role": "tower_great",
+      "name": "tower_great",
+      "cells": [
+        2,
+        4
+      ],
+      "col": 6,
+      "row": 6,
+      "desc": "궤도 엘리베이터 기단 — 층진 원통 탑·전망 고리·안테나. 2x4"
+    },
+    {
+      "role": "cave",
+      "name": "cave",
+      "cells": [
+        2,
+        2
+      ],
+      "col": 8,
+      "row": 6,
+      "desc": "지하 벙커 입구 — 흙 언덕·콘크리트 문틀·철문·환기구. 2x2"
+    },
+    {
+      "role": "ruin",
+      "name": "ruin",
+      "cells": [
+        2,
+        2
+      ],
+      "col": 10,
+      "row": 6,
+      "desc": "무너진 건물 — 앞이 뜯긴 몸체·기울어 박힌 슬래브·철근·잔해. 2x2"
+    },
+    {
+      "role": "ruin_city",
+      "name": "ruin_city",
+      "cells": [
+        4,
+        3
+      ],
+      "col": 12,
+      "row": 6,
+      "desc": "폐허 도시 — 무너진 고층 다섯 동과 잔해 더미. 4x3"
+    },
+    {
+      "role": "shrine",
+      "name": "shrine",
+      "cells": [
+        3,
+        3
+      ],
+      "col": 16,
+      "row": 6,
+      "desc": "연구 시설 — 원형 관측 돔·부속동·접시 안테나. 3x3"
+    },
+    {
+      "role": "landmark_nature",
+      "name": "landmark_nature",
+      "cells": [
+        3,
+        3
+      ],
+      "col": 19,
+      "row": 6,
+      "desc": "거대 태양광 패널 농장 — 기울어진 패널 열·관리동. 3x3"
+    },
+    {
+      "role": "circle",
+      "name": "circle",
+      "cells": [
+        2,
+        2
+      ],
+      "col": 22,
+      "row": 6,
+      "desc": "위성 안테나 어레이 — 접시 안테나 셋. 2x2"
+    },
+    {
+      "role": "volcano",
+      "name": "volcano",
+      "cells": [
+        2,
+        2
+      ],
+      "col": 24,
+      "row": 6,
+      "desc": "지열 발전소 — 냉각탑과 증기 기둥·터빈동. 2x2"
+    },
+    {
+      "role": "floating",
+      "name": "floating",
+      "cells": [
+        5,
+        4
+      ],
+      "col": 26,
+      "row": 6,
+      "desc": "부유 도시 — 공중에 뜬 암반 원판 위 고층·돔·밑 추진기, 땅에 그림자. 5x4"
+    }
+  ],
+  "projection": {
+    "kind": "oblique raycast",
+    "KX": 0.28,
+    "KY": 0.5,
+    "light": [
+      -0.5,
+      -0.35,
+      0.8
+    ],
+    "sun_for_ground_shadow": [
+      -0.32,
+      0.22,
+      1.0
+    ],
+    "note": "월드 x 오른쪽·y 안쪽·z 위, 1단위=1px. 윗면/앞면/오른쪽면만 보이는 투영이라 3/4 시점이 구조적으로 보장된다. 지면 그림자는 키색(254,103,139)."
+  },
+  "license": {
+    "note": "지형·재질 색은 EasyRPG World.png(CC BY 4.0) 팔레트 + 세트 전용 보조색. 도형·장면은 이 저장소의 lib/ 렌더러로 직접 만든 것 — 생성 이미지·트레이싱 없음."
+  }
+}
