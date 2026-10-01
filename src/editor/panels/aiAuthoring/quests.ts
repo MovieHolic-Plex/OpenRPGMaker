@@ -120,7 +120,7 @@ export function createQuestPresets(apply: (text: string) => void): FeaturePane {
     const control = button('', `quest-${preset.id}`, () => { if (selected !== preset.id) { selected = preset.id; update(); } });
     control.dataset.preset = preset.id;
     control.append(
-      el('span', { class: 'ai-quest-choice-icon', children: [deckIcon(preset.category === '전투와 구조' ? 'shield' : preset.category === '탐험과 퍼즐' ? 'search' : 'scroll', { size: 20 })] }),
+      el('span', { class: 'ai-quest-choice-icon', children: [deckIcon(preset.category === '전투와 구조' ? 'shield' : preset.category === '탐험과 퍼즐' ? 'search' : 'scroll', { size: 18 })] }),
       el('span', { class: 'ai-quest-choice-copy', children: [el('strong', { text: preset.title }), el('small', { text: preset.category })] }),
       deckIcon('check', { class: 'ai-quest-choice-check', size: 15 }),
     );
