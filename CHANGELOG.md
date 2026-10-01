@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.61.0 — 2026-10-01
+
+### 기능
+
+- support 512 by 512 maps across editor and tools (`bf02c1f`)
+
+### 수정
+
+- bound runtime map tile rendering to the camera (`1b54977`)
+
+### 테스트
+
+- repair parity consumer reference and record local CI checks (`a836907`)
+
 ## 0.60.0 — 2026-10-01
 
 ### 기능
