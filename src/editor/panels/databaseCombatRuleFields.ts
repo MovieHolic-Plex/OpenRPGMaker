@@ -6,6 +6,7 @@ import { sectionCard } from '@/editor/panels/databaseWorkspace';
 import { store } from '@/project/store';
 import type { EnemyRecord, SkillRecord } from '@/project/types';
 import { el } from '@/util/dom';
+import { partyPixelChoices } from '@/assets/partyPixelSheets';
 import { isSkillInputKey } from '@/battle/battleInputSequence';
 
 export function skillCombatRuleCard(record: SkillRecord, options: { readonly collapsed?: boolean } = {}): HTMLElement {
@@ -46,8 +47,11 @@ export function skillCombatRuleCard(record: SkillRecord, options: { readonly col
     numberField('재사용 대기 턴', 'feature16-cooldown', record.cooldownTurns ?? 0, value => updateDatabaseRecord('skills', record.id, { cooldownTurns: value }), { min: 0, max: 99 }),
     numberField('HP 대가 % (최대 HP)', 'feature16-hp-cost', record.hpCostPercent ?? 0, value => updateDatabaseRecord('skills', record.id, { hpCostPercent: value }), { min: 0, max: 100 }),
     numberField('흡수 % (준 피해)', 'feature16-drain', record.drainPercent ?? 0, value => updateDatabaseRecord('skills', record.id, { drainPercent: value }), { min: 0, max: 100 }),
+    numberField('게이지 밀기 (-100~100)', 'feature16-gauge-shift', record.gaugeShift ?? 0, value => updateDatabaseRecord('skills', record.id, { gaugeShift: value === 0 ? undefined : value }), { min: -100, max: 100, step: 5 }),
+    numberField('힘 모으기 턴 (0=바로)', 'feature16-charge-turns', record.chargeTurns ?? 0, value => updateDatabaseRecord('skills', record.id, { chargeTurns: value > 0 ? value : undefined }), { min: 0, max: 3 }),
+    selectField('소환 — 도트 연출에 나타날 몬스터', 'feature16-summon', record.summonResourceId ?? '', partyPixelChoices('소환 안 함', record.summonResourceId), value => updateDatabaseRecord('skills', record.id, { summonResourceId: value || undefined })),
     ...skillAreaAndComboFields(record),
-    el('p', { class: 'db-skill-card-note', text: 'HP 대가: 쓸 때마다 시전자가 최대 HP 의 N% 를 잃습니다(1 밑으로는 안 깎음). 흡수: 준 피해의 N% 만큼 시전자가 회복합니다(MP 피해 기술이면 MP).' }),
+    el('p', { class: 'db-skill-card-note', text: 'HP 대가: 쓸 때마다 시전자가 최대 HP 의 N% 를 잃습니다(1 밑으로는 안 깎음). 흡수: 준 피해의 N% 만큼 시전자가 회복합니다(MP 피해 기술이면 MP). 게이지 밀기: 맞은 대상의 행동 게이지를 옮깁니다(음수 = 늦추기, 양수 = 아군 앞당기기, ATB 전투만). 힘 모으기: 정한 차례엔 예고만 하고 자기 차례가 N 번 더 오면 발동합니다(보스 대기술 예고). 소환: 도트 측면 전투에서 고른 몬스터가 나타나 대상에게 달려가 첫 타에 맞춰 칩니다(그림만, 위력·타수는 이 스킬 값).' }),
   ] });
 }
 

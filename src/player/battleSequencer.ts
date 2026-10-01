@@ -439,6 +439,13 @@ export function createBattleSequencer(
     const support = supportOutcome(entries, entryOffset, snapshot);
     // 훔치기처럼 action 없이 special 한 줄만 남기는 명령은 명령 대사가 그 엔트리를 차지해 결과(「…을 훔쳤다!」)가
     // 사라지고 「효과가 충분하지 않았다」가 남았다 — 명령 줄 다음에 special 줄을 따로 읽힌다.
+    // 힘 모으기 예고는 명령 줄(「…을 사용했다!」) 없이 예고 문장만 — 아직 쓰지 않았다.
+    if (entry.kind === "special" && entry.charge && entry.message) {
+      hooks.onDirectorState({ step: "acting", lines: [entry.message], targetId: entry.targetId });
+      hooks.onSyncView();
+      delay(continueNext, BATTLE_LOG_MS);
+      return;
+    }
     const specialAfterCommand = rawDirector === firstDirector && entry.kind === "special" && entry.message ? entry.message : undefined;
     const directorBase = support || specialAfterCommand ? { ...rawDirector, lines: rawDirector.lines.slice(0, 1) } : rawDirector;
     const raw = feedbackFromTimeline(entry);

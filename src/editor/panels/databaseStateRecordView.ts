@@ -1,4 +1,5 @@
 import { BATTLE_AURA_IDS, BATTLE_AURA_LABELS, normalizeBattleAura, resolveStateAura } from "@/assets/battleStateAuras";
+import { partyPixelChoices } from "@/assets/partyPixelSheets";
 import { numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { stateBehavior } from "@/battle/battleStates";
@@ -367,10 +368,16 @@ function retroGimmickControls(
     numberField("선고 — 자기 차례 N 번 뒤 전투 불능 (0 = 끔)", "db-state-rt-doom", fx().doomTurns ?? 0, (value) =>
       patchEffects({ doomTurns: value > 0 ? Math.min(9, Math.round(value)) : undefined }), { min: 0, max: 9, step: 1 }
     ),
+    transformControl(fx().transformResourceId, (transformResourceId) => patchEffects({ transformResourceId: transformResourceId || undefined })),
     multiplier("물리 피해 방어 배율 (프로텍트)", "db-state-rt-physical-defense", "physicalDefenseMultiplier"),
     multiplier("마법 피해 방어 배율 (실드)", "db-state-rt-magic-defense", "magicDefenseMultiplier"),
     ...(elementRows.length
       ? [el("p", { class: "db-skill-card-note", text: "이 상태인 동안 대상의 속성 등급을 덮어씁니다(젖음 → 번개 약점 등). A 가 가장 약합니다." }), ...elementRows]
       : []),
   ];
+}
+
+/** 변신 그림 고르기: 파티원 9칸 시트(짐승·몬스터 칩) 목록. 조수가 넣은 다른 id(적 몬스터 그림 등)도 그대로 보인다. */
+function transformControl(current: string | undefined, onChange: (resourceId: string) => void): HTMLElement {
+  return selectField("변신 — 이 상태인 동안 전투 그림", "db-state-rt-transform", current ?? "", partyPixelChoices("변신 안 함", current), onChange);
 }

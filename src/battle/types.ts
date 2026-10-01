@@ -283,6 +283,10 @@ export interface BattleBattlerSnapshot {
   readonly resource2?: number;
   /** 라이브라로 탐색된 적 — HP 바를 피해 전에도 드러낸다. */
   readonly scanned?: boolean;
+  /** 힘 모으기(SkillRecord.chargeTurns) 중: 발동할 기술과 남은 자기 차례 수. 표시 계층이 예고 표식을 붙인다. */
+  readonly charging?: { readonly skillId: SkillId; readonly skillName: string; readonly turnsLeft: number };
+  /** 변신(StateRuntimeEffects.transformResourceId) 중인 그림 id. 표시 계층이 원래 그림 대신 쓴다(battleCharacterResourceId 는 원래 그림 그대로). */
+  readonly transformResourceId?: string;
 }
 
 export interface BattleHitFeelSnapshot {
@@ -362,6 +366,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly actionId?: number;
   /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */
   readonly aside?: "hpCost" | "drain";
+  /** 힘 모으기 예고(SkillRecord.chargeTurns)의 special 줄. 연출 없이 문장만 — 명령 줄(「…을 사용했다!」)도 띄우지 않는다. */
+  readonly charge?: true;
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;

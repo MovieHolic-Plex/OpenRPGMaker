@@ -292,6 +292,18 @@ function presentedStateIds(battler: BattleBattlerSnapshot, presentation: BattleF
   return presentation?.stateView ? presentation.stateView(battler.id, battler.stateIds) : battler.stateIds;
 }
 
+/** 지금 보여 줄 변신 그림. 상태 표시와 같은 장부(stateView)를 따라 「…에 걸렸다!」 줄에서 바뀌고 「풀렸다」 줄에서 돌아온다. */
+function presentedForm(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): string | undefined {
+  if (!presentation?.stateView) return battler.transformResourceId;
+  let form: string | undefined;
+  const states = store.getCurrent().database.states;
+  for (const stateId of presentedStateIds(battler, presentation)) {
+    const id = states.find((state) => state.id === stateId)?.runtimeEffects?.transformResourceId?.trim();
+    if (id) form = id;
+  }
+  return form;
+}
+
 /** 롤링 미터가 있으면 아군 HP 표시값과 「쓰러지는 중」 여부를 미터에서 얻는다. */
 function rollingVitals(
   actor: BattleBattlerSnapshot,
@@ -506,6 +518,14 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
   const positions = onFieldEnemyPositions(group as HTMLElement, snapshot, presentation?.onField) ?? resolveEnemyRowPositions(snapshot, snapshot.enemies);
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
+    const form = presentedForm(enemy, presentation);
+    if (node && (node.dataset.battleForm ?? "") !== (form ?? "")) {
+      // 변신: 그림이 바뀌면 이 적 노드만 새로 만든다.
+      const next = enemyButton({ ...enemy, transformResourceId: form }, snapshot, index, positions[index]);
+      next.classList.add("battle-enemy-transformed");
+      node.replaceWith(next);
+      node = next;
+    }
     if (!node) {
       group.append(enemyButton(enemy, snapshot, index, positions[index]));
       node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
@@ -550,9 +570,18 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     }
   }
   if (presentation?.onField) placeOnFieldActors(group, presentation.onField);
-  for (const actor of snapshot.actors) {
-    const node = group.querySelector<HTMLElement>(`[data-testid="battle-actor-${actor.recordId}"]`);
+  for (const [index, actor] of snapshot.actors.entries()) {
+    let node = group.querySelector<HTMLElement>(`[data-testid="battle-actor-${actor.recordId}"]`);
     if (!node) continue;
+    // 변신(transformResourceId)이 바뀌면 그 배우 노드만 새 그림으로 다시 만든다(연기 펑 클래스).
+    const form = presentedForm(actor, presentation);
+    if ((node.dataset.battleForm ?? "") !== (form ?? "")) {
+      const shownCount = group.querySelectorAll(".battle-actor").length;
+      const next = actorNode({ ...actor, transformResourceId: form }, index, shownCount);
+      next.classList.add("battle-actor-transformed");
+      node.replaceWith(next);
+      node = next;
+    }
     const targetable = snapshot.targetSelection?.side === "actor" && snapshot.targetSelection.targetIds.some((id) => id === actor.id || id === actor.recordId);
     const selected = snapshot.targetSelection?.side === "actor" && (snapshot.targetSelection.selectedTargetId === actor.id || snapshot.targetSelection.selectedTargetId === actor.recordId);
     node.classList.toggle("battle-target-candidate", targetable);
@@ -587,6 +616,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.
     syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
     syncBattleAura(node, presented.defeated ? [] : presentedStateIds(actor, presentation));
+    syncChargeMark(node, presented.defeated ? undefined : actor.charging);
   }
 }
 
@@ -639,6 +669,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   // (실측: 불꽃이 닿기 전 「KO 74/144」 가 떴다).
   syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation) });
   syncBattleAura(node, presented.defeated ? [] : presentedStateIds(enemy, presentation));
+  syncChargeMark(node, presented.defeated ? undefined : enemy.charging);
 }
 
 /**
@@ -1039,7 +1070,9 @@ function enemyButton(
   }
   // 각 적 레코드의 고유 몬스터 이미지를 우선 사용. 없으면 스킨 공용 스프라이트로 대체.
   const record = store.getCurrent().database.enemies.find((entry) => entry.id === enemy.recordId);
-  const resourceId = record?.monsterResourceId;
+  // 변신 상태면 그 그림이 레코드 그림보다 먼저다.
+  const resourceId = enemy.transformResourceId ?? record?.monsterResourceId;
+  if (enemy.transformResourceId) enemyNode.dataset.battleForm = enemy.transformResourceId;
   // 이미지 치수만 배율 적용: 노드의 이동/피격 transform과 이미지의 숨쉬기 scale은 그대로 둔다.
   enemyNode.style.setProperty("--battle-enemy-scale", String((record?.battleScalePercent ?? 100) / 100));
   const perEnemyUrl = resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : null;
@@ -1164,7 +1197,9 @@ function partyStatusGroup(actors: readonly BattleBattlerSnapshot[], battleFlow: 
   return group;
 }
 
-function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElement {
+function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLElement {
+  // 변신 중이면 전투 그림만 변신 그림으로 갈아 끼운다(이름·HP·상태는 그대로).
+  const actor = view.transformResourceId ? { ...view, battleCharacterResourceId: view.transformResourceId } : view;
   const node = document.createElement("div");
   node.className = "battle-actor";
   const place = BATTLER_PLACEMENTS[activeSkin().id];
@@ -1176,6 +1211,7 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   node.dataset.testid = `battle-actor-${actor.recordId}`;
   node.dataset.recordId = actor.recordId;
   node.dataset.facing = "left";
+  if (actor.transformResourceId) node.dataset.battleForm = actor.transformResourceId;
   node.dataset.battlerWeak = String(actor.hp > 0 && actor.hp <= actor.maxHp / 4);
   node.dataset.battlerDefending = String(actor.defending);
   node.setAttribute("aria-label", actor.name);
@@ -1690,6 +1726,8 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("stop")) return "stop";
   if (stateId.includes("protect")) return "protect";
   if (stateId.includes("shell")) return "shell";
+  // 변신(state_form_*) — 「바위 둔갑」 같은 id 의 stone 이 석화 배지로 떨어지지 않게 먼저 본다.
+  if (stateId.includes("form_") || stateId.includes("transform")) return "transform";
   if (stateId.includes("taunt")) return "taunt";
   if (stateId.includes("berserk")) return "berserk";
   // 반응·표적 상태(2026-10-01) — 폴백(●)이면 반격·회피·리플렉·선고가 화면에서 구별되지 않는다.
@@ -1761,6 +1799,23 @@ function syncBattleAura(node: HTMLElement, stateIds: readonly string[]): void {
     layer.append(part);
   }
   node.append(layer);
+}
+
+/** 힘 모으기(SkillRecord.chargeTurns) 예고 표식: 몸이 빛나고(CSS) 머리 위에 「기술 · 남은 차례」 띠가 뜬다. */
+function syncChargeMark(node: HTMLElement, charging: BattleBattlerSnapshot["charging"]): void {
+  const key = charging ? `${charging.skillName} · ${charging.turnsLeft}` : "";
+  if ((node.dataset.charging ?? "") === key) return;
+  node.querySelector(":scope > .battle-charge-mark")?.remove();
+  if (!charging) {
+    delete node.dataset.charging;
+    return;
+  }
+  node.dataset.charging = key;
+  const mark = document.createElement("span");
+  mark.className = "battle-charge-mark";
+  mark.dataset.testid = "battle-charge-mark";
+  mark.textContent = key;
+  node.append(mark);
 }
 
 function syncStatusIcons(node: HTMLElement, battler: BattleBattlerSnapshot): void {

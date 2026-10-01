@@ -358,6 +358,16 @@ export function evasionChanceForStates(project: Project, battler: { readonly sta
   return battler.stateIds.reduce((best, stateId) => Math.max(best, behaviorFor(project, stateId)?.evasionChance ?? 0), 0);
 }
 
+/** 변신 그림: 걸린 상태 중 transformResourceId 가 있는 마지막 상태의 값. 없으면 undefined. */
+export function transformResourceForStates(project: Project, battler: { readonly stateIds: readonly string[] }): string | undefined {
+  let form: string | undefined;
+  for (const stateId of battler.stateIds) {
+    const id = project.database.states.find((state) => state.id === stateId)?.runtimeEffects?.transformResourceId?.trim();
+    if (id) form = id;
+  }
+  return form;
+}
+
 /** 도발·감싸기·리플렉: 걸린 상태 중 하나라도 켜져 있으면 true. */
 export function stateFlag(project: Project, battler: { readonly stateIds: readonly string[] }, flag: "taunt" | "cover" | "reflect"): boolean {
   return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.[flag] === true);

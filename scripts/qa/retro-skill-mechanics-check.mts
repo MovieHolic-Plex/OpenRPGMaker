@@ -10,6 +10,7 @@ import { defaultSkillRecords, defaultStateRecords } from "@/project/defaults/def
 import { RETRO_ROSTER_SKILLS } from "@/assets/retroRosterSkills";
 import { retroRosterClass } from "@/assets/retroRoster";
 import type { SkillRecord } from "@/project/types";
+import { partyPixelSheet } from "@/assets/partyPixelSheets";
 
 const args = process.argv.slice(2);
 const batchArg = args.includes("--batch") ? args[args.indexOf("--batch") + 1] : undefined;
@@ -65,6 +66,9 @@ function mechanicKinds(skill: SkillRecord): string[] {
   if (skill.damageFormula) kinds.push("비율 수식");
   if (skill.hpCostPercent) kinds.push("대가");
   if (skill.drainPercent) kinds.push("흡수");
+  if (skill.gaugeShift) kinds.push("시간");
+  if (skill.chargeTurns) kinds.push("모으기");
+  if (skill.summonResourceId) kinds.push("소환");
   if (skill.effect.kind === "healing") kinds.push(has(skill, "state_death", "remove") ? "부활" : "회복");
   if (skill.effect.kind === "steal") kinds.push("훔치기");
   if (skill.effect.kind === "scan") kinds.push("탐지");
@@ -94,6 +98,7 @@ for (const contract of RETRO_ROSTER_SKILLS) {
   entry.rows.push({ id: contract.id, name: contract.name, level: contract.level, record });
   byClass.set(contract.classId, entry);
   for (const effect of record.stateEffects ?? []) if (!states.has(effect.stateId)) errors.push(`${label}: 없는 상태 ${effect.stateId}`);
+  if (record.summonResourceId && !partyPixelSheet(record.summonResourceId)) errors.push(`${label}: 없는 소환 그림 ${record.summonResourceId}`);
   // state_death 는 부활(remove)만 엔진이 안다. add(즉사)는 조용히 무시된다(applyStateEffects 가 레코드 없는 상태를 건너뛴다).
   if ((record.stateEffects ?? []).some((effect) => effect.stateId === "state_death" && (effect.operation ?? "add") === "add")) errors.push(`${label}: state_death add(즉사)는 엔진이 지원하지 않는다 — 비율 수식·석화 등으로`);
   const anchors = new Set(contract.layers.map((layer) => layer.anchor));

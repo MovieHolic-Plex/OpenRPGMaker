@@ -87,3 +87,11 @@ export function partyPixelSheetUrl(entry: PartyPixelSheet): string {
 export function partyPixelLabel(entry: PartyPixelSheet): string {
   return `파티원 몬스터 전투 · ${RETRO_ROSTER.find((row) => row.chip === entry.chip)?.name ?? entry.chip}`;
 }
+
+/** 편집기 고르기 목록(변신·소환): 「흙 골렘 (monster2-4)」. 목록에 없는 현재 값(조수가 넣은 다른 id)도 그대로 남긴다. */
+export function partyPixelChoices(emptyLabel: string, current?: string): { id: string; name: string }[] {
+  const names = new Map(RETRO_ROSTER.map((entry) => [entry.chip, entry.name]));
+  const options = [{ id: "", name: emptyLabel }, ...PARTY_PIXEL_SHEETS.map((sheet) => ({ id: sheet.resourceId, name: `${names.get(sheet.chip) ?? sheet.chip} (${sheet.chip})` }))];
+  if (current && !options.some((option) => option.id === current)) options.push({ id: current, name: current });
+  return options;
+}

@@ -354,6 +354,8 @@
 .battle-status-icon-oiled::before { content: "OIL"; }
 
 /* 반응·표적 상태(2026-10-01): 도발·반격·감싸기·회피·리플렉·리레이즈·선고 */
+.battle-status-icon-transform { --battle-status-icon-bg: #6a8a3a; }
+.battle-status-icon-transform::before { content: "FRM"; }
 .battle-status-icon-taunt { --battle-status-icon-bg: #c0602a; }
 .battle-status-icon-taunt::before { content: "TNT"; }
 .battle-status-icon-counter { --battle-status-icon-bg: #b0782a; }
