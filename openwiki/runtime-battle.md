@@ -887,6 +887,13 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   비치는 창에서 명령 창 밑 적 이름 창이 보이던 것 → 대상 고르기(`director-step="target"`)에도 숨기고, 명령이 코너 밖이면 늘 숨긴다.
   증거: `verify-shots/battle-look/sheet-*.jpg`(12종 × 명령·스킬 목록·대상·행동 4장면, `probe.mjs --skin retro2003 --system '{"battleLook":{"preset":"gold"}}' --out verify-shots/battle-look/gold`), 편집기 `verify-shots/battle-look/editor/`.
   썸네일 재생성: 프로브 `t1500.png` 를 (32,24)-(992,744) 로 잘라 256×192 JPEG. 회귀: `test/battleLook.test.ts`.
+  **조수가 스스로 고르게 하기 (2026-10-02):** 처음엔 도구 한 줄 설명·첫 제작 지시 어디에도 이 칸이 없어 조수가 어떤 게임이든 기본 「도트 창」으로 두었다.
+  ① 프리셋마다 `mood`(어울리는 분위기)를 두고 `battleLookMoodGuide()` 가 `id(라벨)=분위기` 한 줄을 만든다 — `battle.look.preset` 설명과 첫 제작 지시가 같은 글을 쓴다.
+  ② `set_project_settings` 한 줄 설명에 「전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI …)」를 넣어 자연어 승격(`capabilityEscalation`, 낱말 일치 20점)이
+  「전투 화면 바꿔줘」「전투창 디자인」「전투 화면을 화려하게」에 이 도구를 붙인다. ③ `welcomeBattleLookLine()`(editor/welcomeGenrePresets.ts)이 모험 JRPG 첫 제작
+  (기획 있음·없음)과 턴제 전투를 말하는 자유 문장에 「톤에 맞는 프리셋을 고르고, 정면 스킨이면 측면 스킨으로 바꾼 뒤 고르라」를 붙인다(측면 스킨 id 는 레지스트리에서 뽑는다).
+  몬스터 대치 장르(정면 `pokemon`)에는 붙이지 않는다. 회귀: `test/battleLookAssistant.test.ts`. 실측(qa:game gen, gemini-3.8-flash, 각 1회): 고치기 전 main 에서 영웅 광산 JRPG·어두운 복수극은 꾸미기를 안 건드렸고
+  동화풍은 「화려한 금테」(톤 불일치)를 골랐다. 고친 뒤 영웅 광산 → gold(+붉은 강조색), 어두운 복수극 → ink(+금색 강조색), 동화풍 → parch. 셋 다 측면 스킨 retro2003.
 
 - 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
 - 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.

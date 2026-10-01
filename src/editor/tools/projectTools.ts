@@ -13,10 +13,10 @@ import {
   BATTLE_LOOK_PARTY_IDS,
   BATTLE_LOOK_PARTY_LABELS,
   BATTLE_LOOK_PRESET_IDS,
-  BATTLE_LOOK_PRESETS,
   BATTLE_LOOK_WINDOW_IDS,
   BATTLE_LOOK_WINDOW_LABELS,
   battleLookForPreset,
+  battleLookMoodGuide,
   isBattleAccentColor,
   isBattleLookPresetId,
   patchBattleLook,
@@ -144,7 +144,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI 를 소박하게/화려하게: 창 모양·파티/명령 배치·빛 연출 프리셋 12종)·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -200,7 +200,7 @@ const setProjectSettings: ToolDefinition = {
               preset: {
                 type: "string",
                 enum: [...BATTLE_LOOK_PRESET_IDS],
-                description: BATTLE_LOOK_PRESET_IDS.map((id) => `${id}=${BATTLE_LOOK_PRESETS[id].label}(${BATTLE_LOOK_PRESETS[id].summary})`).join(" · "),
+                description: `게임 분위기에 맞춰 고른다. ${battleLookMoodGuide()}`,
               },
               party: { type: "string", enum: [...BATTLE_LOOK_PARTY_IDS], description: `파티 상태 배치. ${BATTLE_LOOK_PARTY_IDS.map((id) => `${id}=${BATTLE_LOOK_PARTY_LABELS[id]}`).join(" · ")}` },
               command: { type: "string", enum: [...BATTLE_LOOK_COMMAND_IDS], description: `명령 배치. ${BATTLE_LOOK_COMMAND_IDS.map((id) => `${id}=${BATTLE_LOOK_COMMAND_LABELS[id]}`).join(" · ")}` },
