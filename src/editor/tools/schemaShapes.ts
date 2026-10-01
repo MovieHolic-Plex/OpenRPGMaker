@@ -220,6 +220,11 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     },
     offsetX: { type: "integer" },
     offsetY: { type: "integer" },
+    easing: {
+      type: "string",
+      enum: ["linear", "easeIn", "easeOut", "easeInOut"],
+      description: "camera·picture 비트의 움직임 곡선. 생략=일정하게. 카메라가 인물로 다가가 멈출 때 easeOut, 무게 있는 팬은 easeInOut.",
+    },
     // 먼 배경(파노라마) 비트 — 회상·꿈에서 구름을 서서히 멈추기. 맵 배경 저작은 set_map_properties.background.
     flowPercent: {
       type: "number",

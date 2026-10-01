@@ -1,3 +1,4 @@
+import type { EasingName } from "@/project/easing";
 import { TILE_SIZE } from "@/assets/bundled";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import type { BattleResult } from "@/battle/runtime";
@@ -9,6 +10,7 @@ import type { RuntimeMoverSnapshot } from "@/player/runtimeMoverSnapshots";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import {
+  easedTweenProgress,
   interpolatePictureTransform,
   pictureCssOpacity,
   pictureCssTransform,
@@ -36,6 +38,7 @@ type PictureSlot = {
   to: PictureTransform;
   startedAt: number;
   durationMs: number;
+  easing?: EasingName;
 };
 
 function nowMs(): number {
@@ -574,6 +577,7 @@ export class RuntimeDomOverlay {
       slot.to = target;
       slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
+      slot.easing = picture.easing;
       slot.displayed = from;
       applyPictureTransform(slot.container, from);
     } else if (duration > 0 && transitionRequested && !pictureTransformsEqual(slot.to, target)) {
@@ -581,6 +585,7 @@ export class RuntimeDomOverlay {
       slot.to = target;
       slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
+      slot.easing = picture.easing;
     } else if (created || !pictureTransformsEqual(slot.to, target) || (duration <= 0 && slot.durationMs > 0)) {
       // 정지한 픽처는 목표가 같으면 스타일을 다시 쓰지 않는다(매 프레임 불리는 경로다).
       slot.from = target;
@@ -647,7 +652,7 @@ export class RuntimeDomOverlay {
     for (const slot of this.pictureSlots.values()) {
       if (slot.durationMs <= 0) continue;
       const progress = tweenProgress(now - slot.startedAt, slot.durationMs);
-      slot.displayed = interpolatePictureTransform(slot.from, slot.to, progress);
+      slot.displayed = interpolatePictureTransform(slot.from, slot.to, easedTweenProgress(progress, slot.easing));
       applyPictureTransform(slot.container, slot.displayed);
       if (progress >= 1) {
         slot.durationMs = 0;

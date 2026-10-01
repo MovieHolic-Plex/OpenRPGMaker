@@ -1,3 +1,4 @@
+import { normalizeEasing, type EasingName } from "@/project/easing";
 import { recordTeleportPoint } from "@/project/teleportPoints";
 import { formatActorGraphicOverride, parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
@@ -332,6 +333,8 @@ function upsertPicture(session: PlaySessionLike, fields: M2CommandFields): void 
       ? Math.max(0, Math.round(fieldNumber(fields, "durationMs", 0)))
       : toDurationMs(fieldNumber(fields, "duration", 0));
   }
+  const easing = normalizeEasing(fields.easing);
+  if (easing) (picture as { easing?: EasingName }).easing = easing;
   session.pictures ??= {};
   showPictureState(session as { pictures: Record<string, RuntimePictureState> }, picture);
 }

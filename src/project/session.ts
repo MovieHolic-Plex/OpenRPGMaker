@@ -1,3 +1,4 @@
+import type { EasingName } from "@/project/easing";
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { initialDifficultyId } from "@/project/difficulty";
 // project/session.ts
@@ -68,6 +69,8 @@ export type PictureState = {
   readonly opacity?: number;
   readonly rotation?: number;
   readonly durationMs?: number;
+  /** 전환 곡선(생략 = 일정하게). */
+  readonly easing?: EasingName;
 };
 
 const pendingPictureTransitions = new WeakSet<PictureState>();
