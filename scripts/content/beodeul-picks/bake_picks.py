@@ -452,6 +452,10 @@ def main():
     for c in new_cats:
         for d_ in c["documents"]: (MD_DIR / f"{d_['id']}.md").write_text(d_["markdown"].rstrip() + "\n", encoding="utf-8")
     REF_PATH.write_text(json.dumps(old + new_cats, ensure_ascii=False, indent=0) + "\n")
+    # 마을 배치 문법 문서(author_beodeul_town theme)를 다시 넣는다 — 위에서 고른 조각 용도를 새로 썼으므로
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("add_layout_grammar", pathlib.Path(__file__).with_name("add_layout_grammar.py"))
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()
     print(json.dumps(dict(count=count, newCells=[BASE, count - 1], registry=len(reg.cells), kits=len(kits),
                           categories=len(new_cats), documents=sum(len(c["documents"]) for c in new_cats), images=sum(len(c["images"]) for c in new_cats),
                           docChars=sum(len(d_["markdown"]) for c in new_cats for d_ in c["documents"]))))
