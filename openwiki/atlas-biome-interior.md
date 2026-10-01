@@ -115,6 +115,7 @@ v5 맵을 바닥 한 칸으로 채우지 않고 `handInteriorStructure` 로 **�
   발밑 칸 중 그림이 없는 칸(설교단 계단 귀퉁이)은 `cells` 로 빼서 걷게 둔다.
 - 「함께 쓰기」 변형: `<원 id>#2…` 로 가구 표에 더한다(무대 배경판 5개). 가구 381 → 386종.
 - 굽기 2판(2026-10-01): 3/4 재작도 64종(v34-redo.json) + 변형 몸통 맞추기 71종(variant-bodies.json) + 새 기물 28종. 사용자가 「3/4 만 지키고 알아서 골라라」로 위임해 감독이 고름(picks 이벤트 client=agent-v34). 386 → 414종, 예제 26곳 BAD 0·예제 도구 오류 0.
+- **굽기 3판 — 3/4 전수조사(2026-10-01).** 사용자 「3/4 뷰를 안 지키는 게 계속 생긴다」(기둥·석관·회중석). 시트 414종 전수조사: 명백한 위반(A) 44 · §11-1 수치 미달(B) 114 · 통과 256 — 판정 원본 `tiledata/hand-interior/pick/audit/`, 배정 `v34-audit.json`. 위반 다수는 2판에서 **관문을 통과해 골라진 그림**이었다(관문은 밝은 줄 행 번호만 잰다). A 44종을 다시 그려 구웠다: 작업자 21종 + 감독 직접 23종(`w110-A`, 원통·상자 기하로 찍고 그 기물 팔레트로 양자화). 판정 = 기준 그림(`style-demo-view34/interior-new-*`, `view34_interior_proof2.py`) 8배 대조 + 독립 적대 검수 — **관문은 근거로 안 쓴다**(`modern-style-bible.md` §11-4, 작업자 절차 `WORKER-V34-AUDIT.md`). 414종 유지, 예제 26곳 BAD 0. B 114종(탁자 앞면 3~4px·바구니/궤짝 입구 2~3px)은 몸통 단위로 다음 판.
 - 건너뛰는 것: 선택 없음·v5 유지, 크기를 바꾸라는 메모 뒤 새 크기 후보를 아직 고르지 않은 것(마법서 독서대), 애니메이션 기물. 목록은 `tiledata/hand-interior/pick/out/baked.json`.
 - 3/4 재작도 후보(w90·w91, 54종)는 아직 고르지 않아 들어가지 않았다. 고른 뒤 `python3 scripts/content/hand-interior/build_tileset.py && bun scripts/content/hand-interior/prepare-references.mts` 를 다시 돌린다.
 

@@ -23,7 +23,7 @@
   },
   {
    "id": "coffin",
-   "choice": "w73-A",
+   "choice": "w103-A",
    "new": true
   },
   {
@@ -48,7 +48,7 @@
   },
   {
    "id": "hammock",
-   "choice": "w72-A",
+   "choice": "w110-A",
    "new": true
   },
   {
@@ -63,7 +63,7 @@
   },
   {
    "id": "patient bed",
-   "choice": "w74-A",
+   "choice": "w104-A",
    "new": true
   },
   {
@@ -83,12 +83,12 @@
   },
   {
    "id": "safe",
-   "choice": "w72-A",
+   "choice": "w103-A",
    "new": true
   },
   {
    "id": "sarcophagus",
-   "choice": "w73-A",
+   "choice": "w103-A",
    "new": true
   },
   {
@@ -118,7 +118,7 @@
   },
   {
    "id": "spear rack",
-   "choice": "w70-A",
+   "choice": "w104-A",
    "new": true
   },
   {
@@ -155,7 +155,7 @@
   },
   {
    "id": "altar E",
-   "choice": "w21-G"
+   "choice": "w102-A"
   },
   {
    "id": "anvil",
@@ -167,7 +167,7 @@
   },
   {
    "id": "armchair",
-   "choice": "w9-B"
+   "choice": "w110-A"
   },
   {
    "id": "armor stand",
@@ -195,7 +195,7 @@
   },
   {
    "id": "barrel",
-   "choice": "w2-A"
+   "choice": "w110-A"
   },
   {
    "id": "basket:apple",
@@ -395,7 +395,7 @@
   },
   {
    "id": "cake display case",
-   "choice": "w8-C"
+   "choice": "w104-A"
   },
   {
    "id": "canopy bed",
@@ -407,7 +407,11 @@
   },
   {
    "id": "choir stall",
-   "choice": "w45-A"
+   "choice": "w110-A"
+  },
+  {
+   "id": "chopping block",
+   "choice": "w110-A"
   },
   {
    "id": "clock",
@@ -423,7 +427,7 @@
   },
   {
    "id": "column dwarf",
-   "choice": "w51-A"
+   "choice": "w110-A"
   },
   {
    "id": "column live",
@@ -431,19 +435,19 @@
   },
   {
    "id": "column marble",
-   "choice": "w51-A"
+   "choice": "w110-A"
   },
   {
    "id": "column steel",
-   "choice": "w51-A"
+   "choice": "w110-A"
   },
   {
    "id": "column stone",
-   "choice": "w51-A"
+   "choice": "w110-A"
   },
   {
    "id": "column wood",
-   "choice": "w51-A"
+   "choice": "w110-A"
   },
   {
    "id": "confessional",
@@ -451,7 +455,7 @@
   },
   {
    "id": "cradle",
-   "choice": "w29-F"
+   "choice": "w105-A"
   },
   {
    "id": "crate",
@@ -539,15 +543,11 @@
   },
   {
    "id": "firewood bundle",
-   "choice": "w9-B"
+   "choice": "w110-A"
   },
   {
    "id": "firewood rack",
    "choice": "w49-A"
-  },
-  {
-   "id": "fish tank",
-   "choice": "w44-A"
   },
   {
    "id": "forge",
@@ -599,7 +599,7 @@
   },
   {
    "id": "hay bale",
-   "choice": "w44-A"
+   "choice": "w110-A"
   },
   {
    "id": "herb drying rack",
@@ -623,7 +623,7 @@
   },
   {
    "id": "lectern",
-   "choice": "w5-C"
+   "choice": "w110-A"
   },
   {
    "id": "loom",
@@ -639,7 +639,7 @@
   },
   {
    "id": "magitek engine",
-   "choice": "w46-A"
+   "choice": "w104-A"
   },
   {
    "id": "mannequin",
@@ -651,7 +651,7 @@
   },
   {
    "id": "mine cart",
-   "choice": "w2-C"
+   "choice": "w103-A"
   },
   {
    "id": "mortar and pestle",
@@ -679,11 +679,11 @@
   },
   {
    "id": "pew E2",
-   "choice": "w45-A"
+   "choice": "w102-A"
   },
   {
    "id": "pew E3",
-   "choice": "w45-A"
+   "choice": "w102-A"
   },
   {
    "id": "piano",
@@ -723,7 +723,7 @@
   },
   {
    "id": "powder kegs",
-   "choice": "w9-B"
+   "choice": "w110-A"
   },
   {
    "id": "proofing rack",
@@ -771,7 +771,7 @@
   },
   {
    "id": "rune stone",
-   "choice": "w45-A"
+   "choice": "w100-A"
   },
   {
    "id": "sack",
@@ -882,8 +882,8 @@
    "choice": "w3-C"
   },
   {
-   "id": "slot machine",
-   "choice": "w46-A"
+   "id": "sofa",
+   "choice": "w110-A"
   },
   {
    "id": "spinning wheel",
@@ -899,7 +899,7 @@
   },
   {
    "id": "stone throne",
-   "choice": "w52-A"
+   "choice": "w110-A"
   },
   {
    "id": "stove",
@@ -979,7 +979,7 @@
   },
   {
    "id": "theater seat",
-   "choice": "w10-C"
+   "choice": "w110-A"
   },
   {
    "id": "timber prop",
@@ -1000,6 +1000,10 @@
   {
    "id": "vanity mirror",
    "choice": "w47-A"
+  },
+  {
+   "id": "votive stand",
+   "choice": "w106-A"
   },
   {
    "id": "wall clock",
@@ -1100,6 +1104,18 @@
    ]
   },
   {
+   "id": "fish tank",
+   "choice": "w104-A",
+   "footprint": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    48
+   ]
+  },
+  {
    "id": "fishing net",
    "choice": "w33-B",
    "footprint": [
@@ -1124,14 +1140,38 @@
    ]
   },
   {
+   "id": "pew",
+   "choice": "w110-A",
+   "footprint": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    32
+   ]
+  },
+  {
    "id": "pulpit",
-   "choice": "w32-A",
+   "choice": "w102-A",
    "footprint": [
     4,
     3
    ],
    "canvas": [
     64,
+    48
+   ]
+  },
+  {
+   "id": "slot machine",
+   "choice": "w104-A",
+   "footprint": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
     48
    ]
   },
@@ -1255,7 +1295,17 @@
    "why": "v5 유지"
   },
   {
+   "id": "chair E",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
    "id": "chair N",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "chair S",
    "choice": "v5",
    "why": "v5 유지"
   },
@@ -1266,11 +1316,6 @@
   },
   {
    "id": "cheese wheels",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
-   "id": "chopping block",
    "choice": "v5",
    "why": "v5 유지"
   },
@@ -1310,12 +1355,12 @@
    "why": "v5 유지"
   },
   {
-   "id": "lute",
+   "id": "kitchen range",
    "choice": "v5",
    "why": "v5 유지"
   },
   {
-   "id": "pew",
+   "id": "lute",
    "choice": "v5",
    "why": "v5 유지"
   },
@@ -1346,11 +1391,6 @@
   },
   {
    "id": "shackles",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
-   "id": "sofa",
    "choice": "v5",
    "why": "v5 유지"
   },
@@ -1439,7 +1479,7 @@
   },
   {
    "id": "coffin",
-   "choice": "w73-A",
+   "choice": "w103-A",
    "kind": "floor",
    "footprint": [
     1,
@@ -1484,7 +1524,7 @@
   },
   {
    "id": "hammock",
-   "choice": "w72-A",
+   "choice": "w110-A",
    "kind": "floor",
    "footprint": [
     2,
@@ -1511,7 +1551,7 @@
   },
   {
    "id": "patient bed",
-   "choice": "w74-A",
+   "choice": "w104-A",
    "kind": "wall",
    "footprint": [
     1,
@@ -1547,7 +1587,7 @@
   },
   {
    "id": "safe",
-   "choice": "w72-A",
+   "choice": "w103-A",
    "kind": "floor",
    "footprint": [
     1,
@@ -1556,7 +1596,7 @@
   },
   {
    "id": "sarcophagus",
-   "choice": "w73-A",
+   "choice": "w103-A",
    "kind": "floor",
    "footprint": [
     2,
@@ -1610,7 +1650,7 @@
   },
   {
    "id": "spear rack",
-   "choice": "w70-A",
+   "choice": "w104-A",
    "kind": "floor",
    "footprint": [
     1,
@@ -1693,6 +1733,18 @@
   },
   {
    "room": "fish",
+   "id": "fish tank",
+   "from": [
+    7,
+    3
+   ],
+   "to": [
+    7,
+    3
+   ]
+  },
+  {
+   "room": "fish",
    "id": "fishing net",
    "from": [
     9,
@@ -1737,6 +1789,30 @@
    "to": [
     25,
     9
+   ]
+  },
+  {
+   "room": "chapel",
+   "id": "pew",
+   "from": [
+    25,
+    12
+   ],
+   "to": [
+    24,
+    13
+   ]
+  },
+  {
+   "room": "chapel",
+   "id": "pew",
+   "from": [
+    27,
+    12
+   ],
+   "to": [
+    27,
+    13
    ]
   },
   {
@@ -1977,6 +2053,78 @@
    "to": [
     10,
     7
+   ]
+  },
+  {
+   "room": "casino",
+   "id": "slot machine",
+   "from": [
+    1,
+    3
+   ],
+   "to": [
+    1,
+    3
+   ]
+  },
+  {
+   "room": "casino",
+   "id": "slot machine",
+   "from": [
+    2,
+    3
+   ],
+   "to": [
+    2,
+    3
+   ]
+  },
+  {
+   "room": "casino",
+   "id": "slot machine",
+   "from": [
+    3,
+    3
+   ],
+   "to": [
+    3,
+    3
+   ]
+  },
+  {
+   "room": "casino",
+   "id": "slot machine",
+   "from": [
+    4,
+    3
+   ],
+   "to": [
+    4,
+    3
+   ]
+  },
+  {
+   "room": "casino",
+   "id": "slot machine",
+   "from": [
+    5,
+    3
+   ],
+   "to": [
+    5,
+    3
+   ]
+  },
+  {
+   "room": "casino",
+   "id": "slot machine",
+   "from": [
+    6,
+    3
+   ],
+   "to": [
+    6,
+    3
    ]
   },
   {

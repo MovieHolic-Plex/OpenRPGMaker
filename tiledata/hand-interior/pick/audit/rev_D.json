@@ -1,0 +1,1330 @@
+[
+ {
+  "n": 0,
+  "key": "aisle runner",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 1,
+  "key": "green rug",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 2,
+  "key": "purple rug",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 3,
+  "key": "round rug",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 4,
+  "key": "rug red",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 5,
+  "key": "runner",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 6,
+  "key": "drip puddle",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 7,
+  "key": "straw pile",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 8,
+  "key": "doormat",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 9,
+  "key": "fur rug",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 10,
+  "key": "stairs down",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 11,
+  "key": "stairwell down",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 12,
+  "key": "trapdoor",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 13,
+  "key": "magic circle",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 14,
+  "key": "footlights",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 15,
+  "key": "drain grate",
+  "verdict": "PASS",
+  "code": "",
+  "why": "바닥 깔개/판: 위에서 본 판이 정상",
+  "fix": ""
+ },
+ {
+  "n": 264,
+  "key": "peel rack",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 265,
+  "key": "hang:ham",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 266,
+  "key": "hang:sausage",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 267,
+  "key": "bell rope",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 268,
+  "key": "hymn board",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 269,
+  "key": "reredos",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 270,
+  "key": "sanctuary lamp",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 271,
+  "key": "stained glass",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 272,
+  "key": "tall stained window",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 273,
+  "key": "banner blue",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 274,
+  "key": "banner green",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 275,
+  "key": "banner red",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 276,
+  "key": "curtained window",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 277,
+  "key": "deer trophy",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 278,
+  "key": "hanging lantern",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 279,
+  "key": "notice board",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 280,
+  "key": "portrait large",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 281,
+  "key": "wall clock",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 282,
+  "key": "wall map",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 283,
+  "key": "wall sconce",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 284,
+  "key": "wall torch",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 285,
+  "key": "key ring hook",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 286,
+  "key": "shackles",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 287,
+  "key": "leaf lantern",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 288,
+  "key": "fishing net",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 289,
+  "key": "hang:fish",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 290,
+  "key": "hang:fishr",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 291,
+  "key": "royal banner",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 292,
+  "key": "tapestry",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 293,
+  "key": "pipe rack",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 294,
+  "key": "round arch",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 295,
+  "key": "round door",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 296,
+  "key": "round window",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 297,
+  "key": "bottles",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 298,
+  "key": "picture",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 299,
+  "key": "shelf pots",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 300,
+  "key": "shield",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 301,
+  "key": "towel rail",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 302,
+  "key": "weapon rack",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 303,
+  "key": "window",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 304,
+  "key": "dish rack",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 305,
+  "key": "hanging pans",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 306,
+  "key": "gauge panel",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 307,
+  "key": "gear wall",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 308,
+  "key": "ore vein",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 309,
+  "key": "pick rack",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 310,
+  "key": "shelf:bolt+boltg+boltr",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 311,
+  "key": "shelf:book+bookb+bookg",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 312,
+  "key": "shelf:bottle+bottler+bottley",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 313,
+  "key": "shelf:candle",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 314,
+  "key": "shelf:cheese",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 315,
+  "key": "shelf:coins",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 316,
+  "key": "shelf:gem+gemr",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 317,
+  "key": "shelf:ingot+ingotg",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 318,
+  "key": "shelf:scroll",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 319,
+  "key": "shelf:skull+crystal",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 320,
+  "key": "shelf:toy",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 321,
+  "key": "shelf:yarn+yarnb+yarny",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 322,
+  "key": "stage curtain",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 323,
+  "key": "hang:flower",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 324,
+  "key": "hang:herb",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 325,
+  "key": "hang:mushroom",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 326,
+  "key": "hang:onion",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 327,
+  "key": "shelf:flower",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 328,
+  "key": "shelf:herb",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 329,
+  "key": "shelf:jar+jarb+jarg",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 330,
+  "key": "shelf:mushroom",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 331,
+  "key": "shelf:potion+potionb+potiong",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 332,
+  "key": "shelf:vial+flask",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능 (선반판 윗면 1~2px 확인)",
+  "fix": ""
+ },
+ {
+  "n": 333,
+  "key": "bow rack",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 334,
+  "key": "shield wall",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 335,
+  "key": "tool wall",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 336,
+  "key": "pitchfork",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 337,
+  "key": "blackboard",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 338,
+  "key": "dart board",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 339,
+  "key": "lute",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 340,
+  "key": "star chart",
+  "verdict": "PASS",
+  "code": "",
+  "why": "벽 부착물: 평면 가능",
+  "fix": ""
+ },
+ {
+  "n": 341,
+  "key": "bread oven",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "빵 오븐: 정면 입면, 윗면 1~3px 띠뿐",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 342,
+  "key": "bread shelf",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "빵 선반: 가로 선반이 정면 입면, 윗면 없음/1행",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 343,
+  "key": "bread shelf baguette",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "빵 선반: 가로 선반이 정면 입면, 윗면 없음/1행",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 344,
+  "key": "bread shelf pie",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "빵 선반: 가로 선반이 정면 입면, 윗면 없음/1행",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 345,
+  "key": "cabinet:bun",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 346,
+  "key": "cabinet:loaf",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 347,
+  "key": "cabinet:pie",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 348,
+  "key": "proofing rack",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "발효 선반: 순수 정면 선반, 윗면 0",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 349,
+  "key": "meat hooks",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "고기 갈고리: 정면 입면, 윗면 없음",
+  "fix": "갈고리 걸이대에 윗면 2~3px 추가"
+ },
+ {
+  "n": 350,
+  "key": "slot machine",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "슬롯머신: 윗면 1px 캡, 몸통 정면뿐",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 351,
+  "key": "altar",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "제단: 상판 윗면이 얇고 앞면 위주",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 352,
+  "key": "choir stall",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "성가대석: 윗난간 2~3행, 정면 입면",
+  "fix": "윗난간 상판 4~6px 윗면 + 좌석 윗면 추가"
+ },
+ {
+  "n": 353,
+  "key": "confessional",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "고해실: 정면 입면, 윗면 얇음",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 354,
+  "key": "pipe organ",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "파이프오르간: 파이프 정면 위에 윗턱 1px뿐",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 355,
+  "key": "prison cot",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "침대: 위에서 본 판 중심, 앞판(발치 패널) 약함",
+  "fix": "발치 앞판 6~8px + 이불 윗면 8~14px"
+ },
+ {
+  "n": 356,
+  "key": "elven bed",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "침대: 위에서 본 판 중심, 앞판(발치 패널) 약함",
+  "fix": "발치 앞판 6~8px + 이불 윗면 8~14px"
+ },
+ {
+  "n": 357,
+  "key": "fish tank",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "어항: 정면 입면, 윗입술 약 2행 (4~6px 미달)",
+  "fix": "상단 수면/뚜껑 윗면 4~6px 로 확대"
+ },
+ {
+  "n": 358,
+  "key": "bed blue",
+  "verdict": "FAIL",
+  "code": "MIXED",
+  "why": "침대: 발치 3행·이불 11행이나 머리판은 정면 입면, 윗면 깊이 8px 미만",
+  "fix": "이불 윗면 깊이 늘리고 머리판도 같은 시점으로"
+ },
+ {
+  "n": 359,
+  "key": "bed green",
+  "verdict": "FAIL",
+  "code": "MIXED",
+  "why": "침대: 발치 3행·이불 11행이나 머리판은 정면 입면, 윗면 깊이 8px 미만",
+  "fix": "이불 윗면 깊이 늘리고 머리판도 같은 시점으로"
+ },
+ {
+  "n": 360,
+  "key": "bed red",
+  "verdict": "FAIL",
+  "code": "MIXED",
+  "why": "침대: 발치 3행·이불 11행이나 머리판은 정면 입면, 윗면 깊이 8px 미만",
+  "fix": "이불 윗면 깊이 늘리고 머리판도 같은 시점으로"
+ },
+ {
+  "n": 361,
+  "key": "canopy bed",
+  "verdict": "FAIL",
+  "code": "MIXED",
+  "why": "침대: 머리판/기둥은 정면, 이불은 위에서 본 판, 시점 혼재",
+  "fix": "이불 윗면+발치 앞판 규칙으로 통일"
+ },
+ {
+  "n": 362,
+  "key": "clock",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "괘종시계: 윗면 1행 캡, 정면 입면",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 363,
+  "key": "cupboard",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "찬장: 정면 입면, 윗면 얇음",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 364,
+  "key": "double bed blue",
+  "verdict": "FAIL",
+  "code": "MIXED",
+  "why": "침대: 머리판/기둥은 정면, 이불은 위에서 본 판, 시점 혼재",
+  "fix": "이불 윗면+발치 앞판 규칙으로 통일"
+ },
+ {
+  "n": 365,
+  "key": "double bed green",
+  "verdict": "FAIL",
+  "code": "MIXED",
+  "why": "침대: 머리판/기둥은 정면, 이불은 위에서 본 판, 시점 혼재",
+  "fix": "이불 윗면+발치 앞판 규칙으로 통일"
+ },
+ {
+  "n": 366,
+  "key": "double bed red",
+  "verdict": "FAIL",
+  "code": "MIXED",
+  "why": "침대: 머리판/기둥은 정면, 이불은 위에서 본 판, 시점 혼재",
+  "fix": "이불 윗면+발치 앞판 규칙으로 통일"
+ },
+ {
+  "n": 367,
+  "key": "dresser",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 368,
+  "key": "fireplace",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "벽난로: 정면 입면, 윗면(맨틀 상판) 부족",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 369,
+  "key": "sideboard 1x1",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 370,
+  "key": "sideboard 2x1",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 371,
+  "key": "sideboard 3x1",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 372,
+  "key": "sideboard 4x1",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 373,
+  "key": "stairs up stone",
+  "verdict": "FAIL",
+  "code": "SIDE",
+  "why": "석/목 계단: 정면 올라가는 계단 입면과 윗면 판 혼재",
+  "fix": "계단 디딤 윗면(T)+챌판(F) 반복으로 재작도"
+ },
+ {
+  "n": 374,
+  "key": "stairs up wood",
+  "verdict": "FAIL",
+  "code": "SIDE",
+  "why": "석/목 계단: 정면 올라가는 계단 입면과 윗면 판 혼재",
+  "fix": "계단 디딤 윗면(T)+챌판(F) 반복으로 재작도"
+ },
+ {
+  "n": 375,
+  "key": "stove",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 376,
+  "key": "vanity mirror",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "화장대 거울: 서랍 몸통 윗면 1~2px 뿐",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 377,
+  "key": "wardrobe",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 378,
+  "key": "washbasin",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "세면대: 정면 입면, 윗면 부족",
+  "fix": "대야 윗면 타원/판 4~6px 추가"
+ },
+ {
+  "n": 379,
+  "key": "firewood rack",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "장작 선반: 정면 입면, 윗면 없음/얇음",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 380,
+  "key": "firewood rack 2w",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "장작 선반: 정면 입면, 윗면 없음/얇음",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 381,
+  "key": "kitchen range",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "주방 화덕: 상단은 1행 띠, 아래 화덕판은 정면; 윗면 4~6px 미달",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 382,
+  "key": "kitchen sink",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "주방 싱크: 정면 입면, 상판 윗면 부족",
+  "fix": "상판 윗면 6px+ 및 싱크 구멍 추가"
+ },
+ {
+  "n": 383,
+  "key": "control console",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "제어 콘솔: 윗면 0, 정면만",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 384,
+  "key": "cabinet:bolt+boltg+boltr",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 385,
+  "key": "cabinet:book+bookb+bookg",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 386,
+  "key": "cabinet:bottle+bottler+bottley",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 387,
+  "key": "cabinet:candle",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 388,
+  "key": "cabinet:cheese",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 389,
+  "key": "cabinet:gem+gemr",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 390,
+  "key": "cabinet:toy",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 391,
+  "key": "scenery flat",
+  "verdict": "PASS",
+  "code": "",
+  "why": "풍경 평면 패널(벽 부착형)",
+  "fix": ""
+ },
+ {
+  "n": 392,
+  "key": "scenery flat#2",
+  "verdict": "PASS",
+  "code": "",
+  "why": "풍경 평면 패널(벽 부착형)",
+  "fix": ""
+ },
+ {
+  "n": 393,
+  "key": "scenery flat#3",
+  "verdict": "PASS",
+  "code": "",
+  "why": "풍경 평면 패널(벽 부착형)",
+  "fix": ""
+ },
+ {
+  "n": 394,
+  "key": "scenery flat#4",
+  "verdict": "PASS",
+  "code": "",
+  "why": "풍경 평면 패널(벽 부착형)",
+  "fix": ""
+ },
+ {
+  "n": 395,
+  "key": "scenery flat#5",
+  "verdict": "PASS",
+  "code": "",
+  "why": "풍경 평면 패널(벽 부착형)",
+  "fix": ""
+ },
+ {
+  "n": 396,
+  "key": "scenery flat#6",
+  "verdict": "PASS",
+  "code": "",
+  "why": "풍경 평면 패널(벽 부착형)",
+  "fix": ""
+ },
+ {
+  "n": 397,
+  "key": "apothecary drawers",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "약재 서랍장: 정면 입면, 윗면 얇음",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 398,
+  "key": "cabinet:jar+jarb+jarg",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 399,
+  "key": "cabinet:potion+potionb+potiong",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 400,
+  "key": "cabinet:vial+flask",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 401,
+  "key": "herb drying rack",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "약초 건조대: 1행 윗틀, 나머지 정면",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 402,
+  "key": "patient bed",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "환자 침대: 16x48 세로 평면, 옆난간만 보이는 위에서 본 판, 앞면 없음",
+  "fix": "발치 앞판 추가, 윗면 깊이 조정"
+ },
+ {
+  "n": 403,
+  "key": "anchor",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "닻: 조각형 오브젝트, 받침 없음",
+  "fix": ""
+ },
+ {
+  "n": 404,
+  "key": "forge",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 405,
+  "key": "sword rack",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "검 걸이: 날이 정면, 받침 윗면 2행뿐",
+  "fix": "받침 윗면 4px 이상 추가"
+ },
+ {
+  "n": 406,
+  "key": "bookshelf 1w",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 407,
+  "key": "bookshelf 2w",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 408,
+  "key": "bookshelf 3w",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 409,
+  "key": "library ladder",
+  "verdict": "FAIL",
+  "code": "SIDE",
+  "why": "서재 사다리: 옆/정면 입면, 윗면 없음",
+  "fix": "사다리 윗단 발판 윗면과 레일 윗면 표현"
+ },
+ {
+  "n": 410,
+  "key": "scroll rack",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "두루마리 선반: 정면 입면, 윗면 얇음",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 411,
+  "key": "fabric bolt rack",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "옷감 선반: 정면 입면, 윗면 얇음",
+  "fix": "앞면 위에 4~6px 윗면 + 앞 가장자리 하이라이트 1행 + 처마 그림자 2px 추가, 앞면은 안쪽으로 들이기"
+ },
+ {
+  "n": 412,
+  "key": "keg rack",
+  "verdict": "PASS",
+  "code": "",
+  "why": "새 시점: 윗면 4~6px + 처마/앞면 구분 확인",
+  "fix": ""
+ },
+ {
+  "n": 413,
+  "key": "piano",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "피아노: 윗면(뚜껑) 8행 이하 정면 위주, 건반 앞면과 뚜껑 비율 미달",
+  "fix": "뚜껑 윗면 8~10px 로 확대, 건반 앞면 분리"
+ }
+]

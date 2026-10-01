@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spiral_stair/w105-A.pxg",
+ "id": "spiral stair",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w105-A.pxg"
+ ],
+ "refmap": {
+  "cells": 7,
+  "atLeast95": 0,
+  "max": 0.093
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  8,
+  29,
+  62
+ ],
+ "v5_bbox": [
+  1,
+  9,
+  30,
+  63
+ ],
+ "note": "가운데 기둥 머리 타원 5행+몸통, 디딤판 9장 각각 윗면 부채꼴+앞면 4px 두께, 시계 방향 상승, 옆 입면 아님.",
+ "ok": true
+}

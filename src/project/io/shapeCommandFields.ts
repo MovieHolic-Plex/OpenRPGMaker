@@ -52,8 +52,8 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.appearanceId !== undefined && !requireString(`${label}.appearanceId`, command.appearanceId).trim()) {
         throw new ProjectFormatError(`${label}.appearanceId is blank`);
       }
-      if (command.presentation !== undefined && command.presentation !== "face" && command.presentation !== "bust") {
-        throw new ProjectFormatError(`${label}.presentation must be face or bust`);
+      if (command.presentation !== undefined && command.presentation !== "face" && command.presentation !== "bust" && command.presentation !== "full") {
+        throw new ProjectFormatError(`${label}.presentation must be face, bust or full`);
       }
       requireFacePosition(`${label}.position`, command.position);
       requireBoolean(`${label}.flipHorizontally`, command.flipHorizontally);

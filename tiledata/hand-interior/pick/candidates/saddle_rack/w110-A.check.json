@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/saddle_rack/w110-A.pxg",
+ "id": "saddle rack",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w110-A.pxg"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.176
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  31
+ ],
+ "note": "감독자 작도(2차): 수평 면(방석·뚜껑·상판·디딤판)을 위에서 보이는 판 4~6행으로",
+ "ok": true
+}

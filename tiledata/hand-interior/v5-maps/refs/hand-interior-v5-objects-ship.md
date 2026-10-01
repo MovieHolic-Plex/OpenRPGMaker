@@ -8,5 +8,5 @@ cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구
 - `ship wheel` 조타륜 — 받침 기둥 위 나무 조타륜(손잡이 8개). 선교·선장실.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 배·선장실
 
 ```json
-[{"id":"anchor","ko":"닻","kind":"wall","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,5114,3],[0,0,5115,3]]},{"id":"hammock","ko":"해먹","kind":"floor","w":2,"h":1,"overhangPx":16,"cells":[[0,-1,5139,3],[1,-1,5140,3],[0,0,5141,3],[1,0,5142,3]]},{"id":"rope coil","ko":"밧줄 더미","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,5158,3]]},{"id":"ship wheel","ko":"조타륜","kind":"floor","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,5169,3],[0,0,5170,3]]}]
+[{"id":"anchor","ko":"닻","kind":"wall","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,5138,3],[0,0,5139,3]]},{"id":"hammock","ko":"해먹","kind":"floor","w":2,"h":1,"overhangPx":16,"cells":[[0,-1,5163,3],[1,-1,5164,3],[0,0,5165,3],[1,0,5166,3]]},{"id":"rope coil","ko":"밧줄 더미","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,5182,3]]},{"id":"ship wheel","ko":"조타륜","kind":"floor","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,5193,3],[0,0,5194,3]]}]
 ```

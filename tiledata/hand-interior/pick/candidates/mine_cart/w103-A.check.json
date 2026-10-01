@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mine_cart/w103-A.pxg",
+ "id": "mine cart",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w103-A.pxg"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "광차: 적재함 입구 윗면 4줄(뒤 테+광석 안쪽 2줄+앞 테)+앞면 4줄, 광석 더미가 입구 위로 솟음, 바퀴 3줄",
+ "ok": true
+}

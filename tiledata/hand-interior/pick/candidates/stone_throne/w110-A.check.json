@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stone_throne/w110-A.pxg",
+ "id": "stone throne",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w110-A.pxg"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.067
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "감독자 작도: 좌판·방석 윗면이 위에서 보이게(4~5행), 등받이는 그 뒤에서 솟음",
+ "ok": true
+}

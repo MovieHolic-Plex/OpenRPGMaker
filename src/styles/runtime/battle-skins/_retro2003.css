@@ -2,28 +2,45 @@
    창 그림 폭 0은 _windowskin.css 계약이다. 추가 속성은 기존 묶음·소인원 규칙보다
    특정도를 높인다. 배틀러 모션은 27-retro-motion.css가 소유한다. */
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] {
   --battle-hud-height: 152px;
   --battle-command-row-height: 32px;
   --battle-stage-skin-inset-top: 56px;
   --battle-window-skin-slice: 24;
   --battle-window-skin-width: 0;
-  --retro-window: linear-gradient(180deg, #2838b0, #101860);
-  --retro-frame: 0 0 0 2px #d8e8ff, inset 0 0 0 2px #080e40;
+  /* 창 색 변수 — 기본은 청색 창. 같은 뼈대를 쓰는 다른 측면 스킨은 _retro-themes.css 가 이 값만 바꾼다. */
+  --retro-top: #2838b0;
+  --retro-bottom: #101860;
+  --retro-edge: #d8e8ff;
+  --retro-edge-inner: #080e40;
+  --retro-deep: #080e40;
+  --retro-shade: #000820;
+  --retro-accent: #ffe878;
+  --retro-mp: #8de4ff;
+  --retro-atb: #d8a840;
+  --retro-line: #8294d8;
+  --retro-select: #5468c833;
+  --retro-row: #8498ff22;
+  --retro-raised: #647cdc66;
+  --retro-raised-edge: #a8bcff;
+  --retro-window: linear-gradient(180deg, var(--retro-top), var(--retro-bottom));
+  --retro-frame: 0 0 0 2px var(--retro-edge), inset 0 0 0 2px var(--retro-edge-inner);
   --retro-pixel: calc(2px / 2);
   --runtime-ui-font: var(--runtime-pixel-font);
-  grid-template-columns: minmax(0, 56fr) minmax(0, 42fr);
+  /* RM2003 배치: 왼쪽 = 적 이름 창(내 차례엔 그 자리에 명령 창), 오른쪽 = 파티 상태 창.
+     유리 묶음은 연출 단계에 1열을 0 으로 접지만 이 스킨은 두 창을 늘 띄운다(접으면 빈 남색 판이 남았다). */
+  grid-template-columns: minmax(0, 38fr) minmax(0, 62fr);
   font-family: var(--runtime-pixel-font);
   color: #fff;
-  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
   transition: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-window,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-panel,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-panel {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-window,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-panel {
   background: var(--retro-window);
   box-sizing: border-box;
   border: 0;
@@ -32,88 +49,90 @@
   backdrop-filter: none;
   font-family: var(--runtime-pixel-font);
   color: #fff;
-  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-host {
-  grid-column: 2;
-  margin: 8px 8px 8px 4px;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-host {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 8px 4px 8px 8px;
   clip-path: none;
   animation: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel {
   min-width: 0;
   padding: 4px;
   grid-template-rows: calc(4 * var(--battle-command-row-height));
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel::before {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel::before {
   background: var(--retro-window);
   border-radius: 0;
   box-shadow: var(--retro-frame);
-  color: #ffe878;
+  color: var(--retro-accent);
   font-family: var(--runtime-pixel-font);
   font-size: 14px;
   font-weight: 400;
-  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
   top: -24px;
   left: 4px;
   padding: 0 8px;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-menu .battle-command {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-menu .battle-command {
   border-radius: 0;
   grid-template-columns: minmax(0, 1fr);
   color: #fff;
   padding: 0 6px 0 36px;
   font-family: var(--runtime-pixel-font);
   font-size: 20px;
-  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-icon,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-menu .battle-command-icon {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-icon,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-menu .battle-command-icon {
   display: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text strong,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text small,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-name,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-name {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text strong,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text small,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-name,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-name {
   font-family: var(--runtime-pixel-font);
   font-weight: 400;
-  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command::before {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command::before {
   content: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled):focus-visible,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled).battle-target-selected {
-  background: #5468c833;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled):focus-visible,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled).battle-target-selected {
+  background: var(--retro-select);
   box-shadow: none;
-  color: #ffd66a;
+  color: var(--retro-accent);
   animation: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
   grid-auto-rows: var(--battle-command-row-height);
-  grid-column: 1;
-  margin: 8px 4px 8px 8px;
+  grid-column: 2;
+  margin: 8px 8px 8px 4px;
   padding: 4px;
-  align-content: center;
+  /* 원작처럼 위에서부터 채운다 — 가운데 정렬은 1~3인 파티에서 한 줄이 창 한가운데 떠 보였다. */
+  align-content: start;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
   grid-template-areas: "name hpnum mpnum tp";
   grid-template-columns: minmax(64px, 1fr) 108px 54px 56px;
   grid-template-rows: var(--battle-command-row-height);
@@ -126,55 +145,55 @@
   border-radius: 0;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-face,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-level,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-stat-bar-hp,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-stat-bar-mp {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-face,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-level,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-stat-bar-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-stat-bar-mp {
   display: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-name,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-name,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp {
   font-size: 20px;
   line-height: 24px;
   color: #fff;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor .battle-actor-name {
-  color: #ffe878;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor .battle-actor-name {
+  color: var(--retro-accent);
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.battle-acting {
-  background: #8498ff22;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.battle-acting {
+  background: var(--retro-row);
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-atb-bar,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-atb-bar {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-atb-bar,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-atb-bar {
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
   height: 8px;
-  border: var(--retro-pixel) solid #060a30;
+  border: var(--retro-pixel) solid var(--retro-deep);
   border-radius: 0;
-  background: #080e40;
-  box-shadow: 0 var(--retro-pixel) 0 #8294d8;
+  background: var(--retro-deep);
+  box-shadow: 0 var(--retro-pixel) 0 var(--retro-line);
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-atb-bar::before {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-atb-bar::before {
   border-radius: 0;
-  background: #d8a840;
+  background: var(--retro-atb);
   box-shadow: none;
   transition: width 120ms linear;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-atb-bar[style*="--battle-atb: 100%"]::before {
-  background: #ffe878;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-atb-bar[style*="--battle-atb: 100%"]::before {
+  background: var(--retro-accent);
   animation: retro2003-ready 800ms steps(2, jump-none) infinite;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-window {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-window {
   left: 8px;
   right: 8px;
   top: 8px;
@@ -189,26 +208,26 @@
   animation: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line {
   font-size: 24px;
   line-height: 28px;
   text-align: center;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-director-step="result"] .battle-message-window {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-director-step="result"] .battle-message-window {
   display: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-cursor {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-cursor {
   display: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy .battle-enemy-chrome,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy .battle-enemy-hud {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy .battle-enemy-chrome,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy .battle-enemy-hud {
   display: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] :is(.battle-enemy.battle-target-selected) .battle-enemy-chrome {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] :is(.battle-enemy.battle-target-selected) .battle-enemy-chrome {
   background: var(--retro-window);
   box-shadow: var(--retro-frame);
   border-radius: 0;
@@ -217,13 +236,13 @@
   top: calc(100% - 12px);
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-phase="targetSelect"] .battle-enemy.battle-target-selected .battle-enemy-chrome { display: flex; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-phase="targetSelect"] .battle-enemy.battle-target-selected .battle-enemy-chrome { display: flex; }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy .battle-enemy-chrome > :not(.battle-enemy-name) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy .battle-enemy-chrome > :not(.battle-enemy-name) {
   display: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets {
   width: 24px;
   height: 24px;
   left: 50%;
@@ -232,7 +251,7 @@
   filter: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::before {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::before {
   content: "▼";
   color: #fff;
   font-family: var(--runtime-pixel-font);
@@ -241,25 +260,25 @@
   text-align: center;
   border-radius: 0;
   box-shadow: none;
-  text-shadow: 2px 2px 0 #080e40;
+  text-shadow: 2px 2px 0 var(--retro-deep);
   animation: retro2003-pointer 800ms steps(2, jump-none) infinite;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::after {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::after {
   content: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-platform {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-platform {
   width: 48px;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy .battle-enemy-image {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy .battle-enemy-image {
   --battle-enemy-base-width: 104px;
   --battle-enemy-base-height: 128px;
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]::before {
-  background: #080e30;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]::before {
+  background: var(--retro-deep);
   filter: none;
   left: 0;
   right: 0;
@@ -269,41 +288,41 @@
 
 
 /* 결과 창 안의 보상 행·확인 버튼도 같은 각진 창 문법을 쓴다. */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-reward-card {
-  background: #101860;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-reward-card {
+  background: var(--retro-bottom);
   border-radius: 0;
-  box-shadow: inset 0 0 0 2px #4458b8;
+  box-shadow: inset 0 0 0 2px var(--retro-line);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-confirm {
-  background: #647cdc66;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-confirm {
+  background: var(--retro-raised);
   color: #fff;
   border-radius: 0;
-  box-shadow: inset 0 0 0 2px #a8bcff;
-  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+  box-shadow: inset 0 0 0 2px var(--retro-raised-edge);
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-exp-bar,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-exp-fill {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-exp-bar,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-exp-fill {
   border-radius: 0;
   box-shadow: none;
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-title {
-  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-title {
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-playback-status {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-playback-status {
   /* 한 줄 메시지 창 아래에 재생 상태를 놓는다. */
   top: 56px;
   right: 8px;
   border-radius: 0;
-  background: #101860;
-  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
+  background: var(--retro-bottom);
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
 
 @keyframes retro2003-menu-pulse {
-  0%, 100% { background-color: #647cdc66; }
-  50% { background-color: #98b0ff88; }
+  0%, 100% { background-color: var(--retro-raised); }
+  50% { background-color: var(--retro-raised-edge); }
 }
 @keyframes retro2003-ready {
-  from { background-color: #ffe878; }
+  from { background-color: var(--retro-accent); }
   to { background-color: #fff; }
 }
 @keyframes retro2003-pointer {
@@ -312,31 +331,31 @@
 }
 @media (prefers-reduced-motion: reduce) {
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-atb-bar::before,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::before,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-atb-bar::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp {
   animation: none;
   transition: none;
 }
 }
 
 /* 루트만 2열이다. 하위 목록은 기존 4행 스크롤포트·커서 추적을 그대로 쓴다. */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu:has(> .battle-submenu-header) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu:has(> .battle-submenu-header) {
   grid-template-columns: minmax(0, 1fr);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-scroll-cue { grid-column: 1 / -1; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel::before { content: none; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text strong { font-size: 22px; line-height: 28px; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text small { font-size: 16px; line-height: 24px; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text { color: inherit; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-scroll-cue { grid-column: 1 / -1; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel::before { content: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text strong { font-size: 22px; line-height: 28px; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text small { font-size: 16px; line-height: 24px; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text { color: inherit; }
 
 /* 16×12 픽셀 장갑. 문자/이모지 없이 정수 배율로 찍는다. */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command[data-battle-command-cursor="true"]::before,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command.battle-target-selected::before {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command[data-battle-command-cursor="true"]::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command.battle-target-selected::before {
   content: "";
   position: absolute;
   left: 2px;
@@ -352,42 +371,42 @@
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' viewBox='0 0 16 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23080e30' d='M0 4h3V2h4V1h8v1h1v3h-5v5H9v2H3v-1H0z'/%3E%3Cpath fill='%23fff4dc' d='M3 4h2V3h3V2h7v2H8v1h2v5H8v1H3z'/%3E%3Cpath fill='%23a8b6cc' d='M5 6h1v3H5zm2-1h1v4H7zm2 1h1v3H9zM3 10h5v1H3z'/%3E%3Cpath fill='%23ffffff' d='M0 5h3v5H0z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   image-rendering: pixelated;
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status { position: relative; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor::before {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status { position: relative; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor::before {
   content: "";
   position: absolute;
   left: 0;
   top: 10px;
   width: 10px;
   height: 12px;
-  background: #ffdc62;
+  background: var(--retro-accent);
   clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp { color: #8de4ff; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp .battle-vital-label { display: none; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp .battle-vital-label { font-size: 12px; color: #8de4ff; margin-right: 0; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp .battle-vital-max { display: none; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp .battle-vital-max { font-size: 20px; color: #fff; font-weight: 400; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor .battle-actor-name { color: #ffd66a; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-lines { display: block; min-width: 0; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line ~ .battle-message-line { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp { color: var(--retro-mp); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp .battle-vital-label { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp .battle-vital-label { font-size: 12px; color: var(--retro-mp); margin-right: 0; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp .battle-vital-max { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp .battle-vital-max { font-size: 20px; color: #fff; font-weight: 400; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor .battle-actor-name { color: var(--retro-accent); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-lines { display: block; min-width: 0; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line ~ .battle-message-line { display: none; }
 /* 현재 메시지는 텍스트 노드라 기술명만 구분할 수 없다. 의미 노드가 생기면 강조한다. */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line :is(strong, em, [data-skill-id]) { color: #ff9cdd; font-style: normal; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line :is(strong, em, [data-skill-id]) { color: #ff9cdd; font-style: normal; }
 
 /* ---- 상태 배지 (2026-09-29) ----------------------------------------------
    예전에는 적 배지가 대상 선택 때만 펼치는 chrome 안에 있어 늘 숨었고, 아군 배지는 필드 노드
    머리 위(이웃 배우 사이)에만 떠 누구 것인지 읽히지 않았다. 아군은 파티 창 이름 옆 state 칸,
    적은 스프라이트 그림 머리 위(battleFieldDom 이 노드 직계로 달고 --battle-sprite-top-pad 를 잰다). */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
   grid-template-areas: "name state hpnum mpnum tp";
-  /* 수치 칸을 줄여 이름+배지 자리를 번다(「500/999」 실측 72px). */
-  grid-template-columns: minmax(64px, 1fr) auto 84px 54px 40px;
+  /* 상태 창이 오른쪽 넓은 칸(62fr)이 되어 수치·게이지 칸을 넓혔다. 이름은 남는 폭을 쓰고 넘치면 말줄임. */
+  grid-template-columns: minmax(0, 1fr) auto 92px 56px 56px;
 }
 /* 파티 창 배지는 작은 두 줄 격자 — 한 줄(행 높이 32px)에 두 개를 세로로 쌓아 이름 칸을 덜 민다. */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status > .battle-status-icons,
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status > .battle-status-icons {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status > .battle-status-icons,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status > .battle-status-icons {
   grid-area: state;
   align-self: center;
   justify-self: start;
@@ -396,11 +415,11 @@
   grid-template-rows: 20px;
   gap: 1px 2px;
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status > .battle-status-icons:has(> :nth-child(2)) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status > .battle-status-icons:has(> :nth-child(2)) {
   grid-template-rows: repeat(2, 14px);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-status-icon {
-  border: 2px solid #060a30;
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-status-icon {
+  border: 2px solid var(--retro-deep);
   border-radius: 0;
   box-shadow: none;
   box-sizing: border-box;
@@ -410,17 +429,17 @@
   height: 20px;
   min-width: 30px;
   padding: 0 1px;
-  text-shadow: 1px 1px 0 #060a30;
+  text-shadow: 1px 1px 0 var(--retro-deep);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-status-icons:has(> :nth-child(2)) > .battle-status-icon {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-status-icons:has(> :nth-child(2)) > .battle-status-icon {
   border-width: 1px;
   font-size: 12px;
   height: 14px;
   min-width: 24px;
   text-shadow: none;
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor > .battle-status-icons { display: none; }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy > .battle-status-icons {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor > .battle-status-icons { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy > .battle-status-icons {
   position: absolute;
   bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 2px);
   left: 50%;
@@ -435,5 +454,65 @@
   pointer-events: none;
 }
 /* 대상 선택의 ▼ 커서와 겹치지 않게 한 칸 더 올린다. */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.battle-target-selected > .battle-status-icons { bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 26px); }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.defeated > .battle-status-icons { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.battle-target-selected > .battle-status-icons { bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 26px); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.defeated > .battle-status-icons { display: none; }
+
+/* ---- 적 이름 창 (2026-10-01) ----------------------------------------------
+   RM2003 처럼 아래 왼쪽 창에 살아 있는 적 이름을 늘 적는다. 내 차례에는 명령 창이 같은 칸 위(z 14)에 덮인다.
+   유리 묶음은 이 패널을 끈다(_rm2000.css) — 이 스킨만 다시 켠다. 이름만: HP·막대·타입 배지는 숨긴다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-panel {
+  display: block;
+  grid-column: 1;
+  grid-row: 2;
+  margin: 8px 4px 8px 8px;
+  padding: 4px;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 8;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-director-step="command"] .battle-enemy-list-panel { visibility: hidden; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list {
+  display: grid;
+  grid-auto-rows: var(--battle-command-row-height);
+  grid-template-columns: minmax(0, 1fr);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list:has(> .battle-enemy-list-row:not(.defeated):nth-of-type(5)) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: var(--battle-command-row-height);
+  padding: 0 6px 0 14px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-row::before { content: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-row.defeated { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-row > :not(.battle-enemy-list-name) { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--runtime-pixel-font);
+  font-size: 20px;
+  line-height: 24px;
+  color: #fff;
+  text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
+}
+/* 이름이 길면 배지 앞에서 말줄임한다 — 예전엔 「꽃집 아가씨」 끝 글자가 REG 배지 밑으로 들어갔다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 왼쪽 칸 2열 명령은 한 칸이 좁다 — 「아이템」이 「아이…」로 잘렸다(1024×768 실측). 첫 화면 명령만 상태 창 글자 크기(20px)로 맞추고 장갑 자리를 줄인다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root .battle-command { padding: 0 2px 0 34px; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root .battle-command-text strong { font-size: 20px; }
+/* 게이지 칸이 창 오른쪽 테두리에 닿았다 — 행 오른쪽에 여백. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status { padding-right: 8px; }

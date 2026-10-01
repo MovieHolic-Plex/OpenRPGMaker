@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sarcophagus/w103-A.pxg",
+ "id": "sarcophagus",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w103-A.pxg"
+ ],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "v5_bbox": null,
+ "note": "석관: 뚜껑 윗면 12줄(누운 조각)+앞 가장자리 1줄+뚜껑 앞면 2줄+처마 그림자 1줄, 몸통 앞면 패널 둘+받침",
+ "ok": true
+}

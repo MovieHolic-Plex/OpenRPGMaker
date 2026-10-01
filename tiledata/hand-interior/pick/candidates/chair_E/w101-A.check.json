@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_E/w101-A.pxg",
+ "id": "chair E",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w101-A.pxg"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.087
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "E: 좌판 윗면 4px(밝은 윗날+중간 3행), 앞날 1px+앞면 2px, 등 쪽 세로 막대(남쪽 끝면 2px) — 네모 판+막대, L자 아님",
+ "ok": true
+}

@@ -1,0 +1,67 @@
+// w104-A patient bed 3/4: headboard front, mattress top, footboard front 6px
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat o iron 1
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@mat l iron 5
+@mat L iron 6
+@mat W white 6
+@mat V white 5
+@mat U white 4
+@mat T white 3
+@mat S white 2
+@mat c blue 5
+@mat d blue 6
+@mat e blue 4
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.l..oooooooo..j.
+oLlLLLLLLLLLLkjo
+oLlllllllllllkjo
+oLlkkkkkkkkkkkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLlkkkkkkkkkkkjo
+oLljjjjjjjjjjkjo
+oLlooooooooookjo
+oLlTTTTTTTTTTkjo
+oLlTSWWWWWWSTkjo
+oLlTVWWWWWWVTkjo
+oLlTVVWWWWVVTkjo
+oLlTUVVVVVVUTkjo
+oLlTTUUUUUUTTkjo
+oLlWWWWWWWWWWkjo
+oLlVVVVVVVVVVkjo
+oLlTTTTTTTTTTkjo
+oLlWWWWWWWWWWkjo
+oLlWVVVVVVVVUkjo
+oLlWddddddddUkjo
+oLlWcccccccdUkjo
+oLlWccccccccUkjo
+oLlWeeeeeeeeUkjo
+oLlVUUUUUUUUTkjo
+oLlVVVVVVUUTTkjo
+oLlUUUUUUTTTTkjo
+oLlooooooooookjo
+oLlLLLLLLLLLLkjo
+oLlllllllllllkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLlkkkkkkkkkkkjo
+oLliiiiiiiiiikjo
+oLl~~~~~~~~~~kjo

@@ -467,7 +467,7 @@ before Apply is enabled. The shared generation controller owns stale-target and
 project-switch checks. World/lore coupling, expression variants and automatic
 cutscene insertion are not part of v1.
 
-Shared-catalog read line (2026-09-19): charset/face slots show one read-only line from the shared catalog (`sharedCharsetRow`/`sharedFaceRow` in `src/project/sharedCharacterFaceResolver.ts`) — label · status · quality · attributes. Bust has no shared concept and is excluded; uploaded/generated pictures state "no shared classification". No value sync, no writes, no schema change.
+Shared-catalog read line (2026-09-19): charset/face slots show one read-only line from the shared catalog (`sharedCharsetRow`/`sharedFaceRow` in `src/project/sharedCharacterFaceResolver.ts`) — label · status · quality · attributes. Bust has no shared concept and is excluded; uploaded/generated pictures state "no shared classification". Since 2026-10-01 the bust slot offers 「이 얼굴의 공용 흉상 연결」 when the face is a common expression cell — it writes `shared-<stem>-expressions-bust-base`, and dialogue emotions then swap to the matching expression bust (`src/assets/sharedPortraitAssets.ts`). A fourth slot, **full** (`CharacterAppearanceRecord.full`, kind `picture`), was added the same day with the same shared-link button; `resolveAppearancePortrait(…, "full")` falls back full → bust → face and changeFace accepts `presentation: "full"`. AI candidate generation stays face/bust only. No value sync, no writes, no schema change.
 
 Tests: `characterAppearanceEditor`, `characterAppearanceLifecycle`,
 `databaseTabIcons` and `databaseSidebarNav`. The supported viewport matrix is

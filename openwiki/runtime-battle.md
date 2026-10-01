@@ -112,6 +112,7 @@
 
 - **레지스트리 필드 두 개**(`src/battle/skins/types.ts`): `motionStyle: "retro"` 가 연출을, `scenery: "layered"` 가 겹 배경을 켠다. 다른 스킨이 같은 연출을 원하면 이 값만 붙이면 된다(CSS 스코프는 스킨 id 라 그 CSS 도 넓혀야 한다).
 - **창·HUD** `battle-skins/_retro2003.css`: 청색 세로 그라데이션 창 + 2px 각진 베벨, 도트 글꼴(`--runtime-pixel-font`), 얼굴 없이 이름·HP·MP·ATB 줄, 텍스트 명령 목록과 맥동 막대 커서, 위쪽 한 줄 메시지, 대상 선택은 ▼ 손가락 커서. HUD 128px, 무대 상단 inset 48px.
+  - **아래 칸 배치 (2026-10-01):** RM2003 원작처럼 **왼쪽 38fr = 적 이름 창, 내 차례엔 같은 칸에 명령 창(z 14)이 덮인다 · 오른쪽 62fr = 파티 상태 창**. 유리 묶음은 연출 단계(intro·acting·impact·result)에 1열을 0 으로 접고 `.battle-enemy-list-panel` 을 끄지만, 이 스킨은 두 열을 고정하고 적 이름 창을 다시 켠다 — 접힌 1열 대신 빈 남색 판이 남던 결함이었다. 적 이름 창은 이름만(HP·막대·타입 배지 숨김), 쓰러진 적은 빠지고 5마리 이상이면 2열. 파티 행은 위에서부터(`align-content: start`), 이름은 배지 앞에서 말줄임. 실측 프로브 `verify-shots/battle-ui-default/probe.mjs --skin retro2003`(출하 player.html, 4인 파티).
   재생 상태 칩은 메시지 창(최대 두 줄) 아래 `top: 84px` 에 둔다 — 52px 에서는 둘째 줄 위에 얹혔다(프레임 실측).
 - **배치** `battlerPlacements.ts` `RETRO_SIDEVIEW` (2026-09-28 반전): 적은 **왼쪽**(x 40~136, 한 마리 88, 발 y 128/140, 스킨 분기에서 x 32~150 으로 접음), 아군은 **오른쪽** `(222+24i, 82+18i)` 사선 계단. 걷기 칩 전투 시트는 원래 왼쪽을 보도록 그렸으므로 뒤집지 않는다(옛 `scaleX(-1)` 제거). 확장 아군 시트는 48px 셀을 BATTLE_ASSET_PIXEL_SCALE(2)로 한 번 확대해 96px로 그린다.
   수동 트룹 좌표는 이 스킨에서만 접지 구간으로 접고(`resolveSkinEnemyPosition`), 접은 결과가 뭉치면 트룹 전체를 자동 진형으로 세운다. `battleEnemyFeetRatios.json` 의 retro2003 항목은 아직 rm2003 사본이다 — 감독 실측으로 갱신할 것.
@@ -853,6 +854,14 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 감소 모션에서는 눌림·먼지가 함께 빠지므로 이 경로 자체가 없다.
 
 ## 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
+
+- **측면 스킨 = 도트 측면 뼈대 위의 창 모양 (2026-10-01).** 측면 스킨 여섯(`rm2003` 유리 · `octopath` 먹빛 · `chrono` 청람 · `bravely` 세피아 · `ff` 코발트 · `goldensun` 금갈색)이
+  retro2003 과 같은 `motionStyle: "retro"` · `scenery: "layered"` · `hudTemplate: "rows"` · 배치 `RETRO_SIDEVIEW` 를 쓴다. 도트 연출·겹 배경·상태 오라·HUD 칸 CSS
+  (26~28·`_retro2003.css`)는 스킨 id 대신 루트 `data-battle-motion="retro"` 에 걸리고, TS 분기(`battleFieldDom` 배지·적 chrome·파티 시트, `webExportAssets`,
+  `battlerPlacements` 의 적 구역·수동 진형)도 `motionStyle === "retro"` 로 판정한다. 창 색은 `_retro2003.css` 루트의 `--retro-*` 변수(기본 청색)이고
+  `_retro-themes.css` 가 스킨 id 마다 그 변수만 바꾼다. 그래서 측면 스킨을 골라도 도트 연출이 빠지지 않는다. 링·얇은 줄 HUD(`_glass-variants.css`)는 이제
+  쓰는 스킨이 없다(정면은 줄·얼굴 카드). 옛 측면 배치 `SIDEVIEW` 와 측면 수동 배치의 「x>150 → 고전 진형」 규칙은 등록 스킨에서 더 타지 않는다.
+  새 창 모양을 더하려면 레지스트리에 측면 스킨을 넣고 `_retro-themes.css` 에 변수 블록 하나를 쓴다. 증거: `verify-shots/battle-ui-default/themes.sh`.
 
 - 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
 - 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.

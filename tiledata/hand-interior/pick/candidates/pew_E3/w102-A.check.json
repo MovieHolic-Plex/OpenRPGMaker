@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew_E3/w102-A.pxg",
+ "id": "pew E3",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w102-A.pxg"
+ ],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  8,
+  15,
+  63
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  63
+ ],
+ "note": "동향 회중석(E3): E2 와 같은 몸통(서쪽 등판 막대·북쪽 끝판 안쪽·남쪽 끝판 앞면)에 좌판 방석 칸을 한 칸 더 늘렸다(방석 3개, 레일 2개). 몸통 56행, 캔버스 그대로.",
+ "ok": true
+}
