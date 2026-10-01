@@ -97,7 +97,7 @@ function peaksOf(profile: number[]): number[] {
   return peaks;
 }
 
-function peakGaps(profile: number[]): number[] {
+export function peakGaps(profile: number[]): number[] {
   const peaks = peaksOf(profile);
   const gaps: number[] = [];
   for (let i = 1; i < peaks.length; i += 1) {
@@ -111,7 +111,7 @@ function peakGaps(profile: number[]): number[] {
  * 블록 크기 고르기: 크기 p 마다 「간격이 p 의 정수배에 가까운가」를 센다. 배수 k 일수록 가중치 1/k.
  * 반올림한 몫에 투표하면 13·14px 간격이 반 크기 7 에 몰려 칸을 둘로 쪼갠다 (2026-10-01 리프링 뒷모습).
  */
-function chooseBlock(gaps: number[]): number {
+export function chooseBlock(gaps: number[]): number {
   let best = 0;
   let bestScore = 0;
   for (let p = 5; p <= 40; p += 1) {
@@ -153,7 +153,8 @@ function gridLines(profile: number[], p: number): number[] {
   return out.map((v) => Math.max(0, Math.min(n, v)));
 }
 
-export function extractGrid(source: RgbaImage): GridResult {
+/** 배경 마스크와 가로·세로 색 경계 세기 (블록 크기·격자선 추정의 입력) */
+export function edgeProfiles(source: RgbaImage): { bg: Uint8Array; dx: number[]; dy: number[] } {
   const { width, height } = source;
   const bg = backgroundMask(source);
   const labs: Lab[] = new Array(width * height);
@@ -171,6 +172,12 @@ export function extractGrid(source: RgbaImage): GridResult {
   for (let y = 1; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) dy[y]! += step(labs[y * width + x]!, labs[(y - 1) * width + x]!);
   }
+  return { bg, dx, dy };
+}
+
+export function extractGrid(source: RgbaImage): GridResult {
+  const { width } = source;
+  const { bg, dx, dy } = edgeProfiles(source);
   const block = chooseBlock([...peakGaps(dx), ...peakGaps(dy)]);
   if (block === 0) throw new Error("픽셀 격자를 찾지 못했다 — 도트풍 그림이 아니다");
   const xs = gridLines(dx, block);

@@ -17,6 +17,9 @@ export type SpriteSide = "front" | "back";
 /** 몸집 목표. 뒷모습은 카메라에 가까운 몸이라 조금 크게 둔다. */
 export const BODY_SIZE: Record<SpriteSide, number> = { front: 80, back: 88 };
 
+/** 진화 단계가 오를수록 몸집을 키운다 (같은 캔버스 안에서). 3단계 목표는 긴 변 상한(108)에 먼저 걸리기 쉽다. */
+export const STAGE_SCALE: Record<1 | 2 | 3, number> = { 1: 1, 2: 1.12, 3: 1.25 };
+
 /** 정수 배율에 이만큼 가까우면 정수 배율로 줄인다 (비정수 축소보다 선이 덜 흔들린다). */
 const INTEGER_SNAP = 0.15;
 
@@ -30,8 +33,9 @@ export type FitResult = {
 
 export type ScalePlan = { kind: "keep" } | { kind: "integer"; factor: number } | { kind: "fraction"; width: number };
 
-export function chooseScale(width: number, height: number, side: SpriteSide): ScalePlan {
-  const scale = Math.min(1, MAX_INK_SIDE / Math.max(width, height), BODY_SIZE[side] / Math.sqrt(width * height));
+export function chooseScale(width: number, height: number, side: SpriteSide, stage: 1 | 2 | 3 = 1): ScalePlan {
+  const body = BODY_SIZE[side] * STAGE_SCALE[stage];
+  const scale = Math.min(1, MAX_INK_SIDE / Math.max(width, height), body / Math.sqrt(width * height));
   if (scale >= 1) return { kind: "keep" };
   const factor = 1 / scale;
   const snapped = Math.round(factor);
@@ -44,9 +48,9 @@ function applyScale(ink: RgbaImage, plan: ScalePlan): RgbaImage {
   return cropToInk(plan.kind === "integer" ? downscaleBy(ink, plan.factor) : downscaleTo(ink, plan.width));
 }
 
-export function fitSprite(gridCells: RgbaImage, side: SpriteSide): FitResult {
+export function fitSprite(gridCells: RgbaImage, side: SpriteSide, stage: 1 | 2 | 3 = 1): FitResult {
   const ink = cropToInk(gridCells);
-  const scaled = applyScale(ink, chooseScale(ink.width, ink.height, side));
+  const scaled = applyScale(ink, chooseScale(ink.width, ink.height, side, stage));
   const { image: clean, removed } = removeMagentaCasts(scaled);
   const body = cropToInk(clean);
   if (body.width > SPRITE_CANVAS || body.height > SPRITE_CANVAS) {

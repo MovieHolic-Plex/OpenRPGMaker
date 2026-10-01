@@ -1,3 +1,4 @@
+/// <reference path="./pngjs.d.ts" />
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { PNG } from "pngjs";

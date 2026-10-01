@@ -12,7 +12,7 @@
  */
 import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../harness";
 import { cleanReference, magentaCanvas, pixelize, toSprite } from "../pixel/pipeline";
 import type { SpriteSide } from "../pixel/fit";
@@ -105,7 +105,7 @@ function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, pr
     writeFileSync(raw, bytes);
     try {
       const { grid, block, colors } = pixelize(readPng(raw), seed.style.maxColors);
-      const sprite = toSprite(grid, which).sprite;
+      const sprite = toSprite(grid, which, species.stage).sprite;
       writePng(join(dir, `grid-${k}.png`), grid);
       writePng(join(dir, `sprite-${k}.png`), sprite);
       candidates.push({ k, raw: `raw-${k}.png`, grid: `grid-${k}.png`, sprite: `sprite-${k}.png`, sha256: sha256(bytes), block, colors, issues: checkSprite(sprite, seed.style.maxColors).issues });
@@ -190,7 +190,7 @@ function stagePick(args: Args): void {
   ledger.picks[species.id] = {
     ...ledger.picks[species.id],
     [which]: {
-      grid: relativeToRepo(target).replace(`harness-data/${MONSTER_COLLECT_SPECIES_HARNESS.id}/`, ""),
+      grid: relative(PATHS.data, target),
       sourceSha256: candidate.sha256,
       sourcePath: relativeToRepo(join(dir, candidate.raw)),
       prompt: record.prompt,
@@ -216,7 +216,7 @@ function stageBuild(): number {
     for (const which of ["front", "back"] as const) {
       const pick = ledger.picks[species.id]?.[which];
       if (!pick) continue;
-      const fit = toSprite(readPng(resolve(PATHS.data, pick.grid)), which);
+      const fit = toSprite(readPng(resolve(PATHS.data, pick.grid)), which, species.stage);
       writePng(bundlePath(species.id, which), fit.sprite);
       console.log(`${species.id} ${which}: 잉크 ${fit.ink.width}x${fit.ink.height} · 축소 ${fit.factor.toFixed(2)} · 마젠타 정리 ${fit.magentaRemoved}`);
     }

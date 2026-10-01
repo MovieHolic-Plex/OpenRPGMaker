@@ -17,8 +17,8 @@ export function pixelize(source: RgbaImage, maxColors = 20): PixelizeResult {
   return { grid: image, block, colors };
 }
 
-export function toSprite(grid: RgbaImage, side: SpriteSide): FitResult {
-  return fitSprite(grid, side);
+export function toSprite(grid: RgbaImage, side: SpriteSide, stage: 1 | 2 | 3 = 1): FitResult {
+  return fitSprite(grid, side, stage);
 }
 
 const MAGENTA = [255, 0, 255, 255] as const;
