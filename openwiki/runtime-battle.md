@@ -66,12 +66,15 @@
 - 층 옵션 `startMs`(0~5000)·`scale`(0.5~3)·`repeat`(1~6)·`onHit:"each"`(타수만큼 90ms 간격 복제). 옵션이 없는 계약 층의 타임라인은 바이트 그대로다(번들 4436개 타임라인이 기준 커밋과 동일).
 - 함정: 단일 대상 다단 스킬은 플레이어가 타수마다 **행동 전체를 다시 재생**한다(계획 hits=1 이 N번). `onHit:"each"` 복제는 여러 대상이 한 계획으로 묶이는 전체 범위기에서 보인다.
 - 증거: `verify-shots/retro-choreo-a1/SUMMARY.md`.
+- **적(몬스터)이 쓰는 스킬도 같은 길이다 (2026-10-01).** 런타임 `skillForCaster`(`retroSkillChoreography.ts`)가 적 시전자에게 `want="monster"` 로 `resolveSkillChoreography` 를 부르고 `database.skillChoreographies` 를 넘긴다 — 레코드를 안 넘기거나 `retroChoreographyId` 를 무시하는 곳은 없었다. 풀리면 `synthesizeRecord` 가 몬스터 모양으로 합성하고(클래스 모션 레코드도 `CLASS_TO_MONSTER`), 못 풀면 적은 `undefined`(= 기본 몬스터 재생, 아군은 `retroClassSkillRecord`). `data-retro-class-skill` 은 레코드일 때 스킬 id 가 아니라 **레코드 id(`chor_*`)** 다. 레코드 층의 fx 키는 `layer.sheet` 이고 `retroFxSheetMeta` 가 아는 시트여야 한다. 적에게 연출을 붙였는지 판정하는 `isEnemyUsedSkill(database, skillId)`(`retroSkillCatalog.ts`)는 어느 `enemies[].actions[].skillId` 에 있는가이다.
+- **접근(근접) 판정**: `battleRetroMotion.ts` `isMeleeEntry` 는 효과(피해+attack)만 봐서 레코드가 `shoot`·`breath`·`cast`·`buff` 여도 적이 파고들었다. 이제 비계약 `retroChoreographyId` 가 프로젝트 레코드로 풀리고 그 모션이 제자리형(`STATIONARY_RECORD_MOTIONS`)이면 근접이 아니다. 레코드·id 가 없거나 계약이면 옛 판정 그대로(기본 몬스터 재생 불변).
+- 증거: `verify-shots/retro-chor-mon/SUMMARY.md`(헤드리스 probe + 녹화).
 - 편집기·조수(A2): 탭 「도트 연출」·갤러리·타임라인 편집기는 `openwiki/editor-database.md` 「도트 연출 탭」, 조수 도구(`upsert_choreography`·`duplicate_choreography`·`list_fx_sheets`·`preview_choreography`)는 `openwiki/editor-ai-tools.md`. 속도·무게·색조·화면·소리 손잡이(B단계)는 편집기에 칸이 없다.
 
 ## 연출 손잡이 · 자동 추천 · 상태 오라 (2026-09-30, B)
 
 - **손잡이(`src/player/retroSkillChoreography.ts`)**: `speed` 는 타임라인 시각 전체를 나눈다(실측 approach 216/131/82ms · 첫 hitstop 720/438/281ms, 배율 0.6/1/1.6). `weight` 는 접근·복귀 속도와 hitstop 을 바꾼다(APPROACH .72/1/1.28, HITSTOP_SCALE 0/1/1.9, RECOVER_SCALE .68/1/1.45 — 접근·복귀는 미리 나눠 전체 시간은 같다). 관측되는 것은 `battle-hit-stop` 시간: light 없음 · normal ≈112ms · heavy ≈211ms. 빗나감·0 피해·회복은 항상 light. `tint` 는 `src/assets/retroChoreographyTints.ts` 9종(fire·ice·thunder·water·wind·earth·holy·dark·poison)의 `grayscale(1) sepia(1) hue-rotate saturate brightness contrast` 필터, 층 tint 가 우선. `screen` 은 shake·flash·dim·cutIn 을 전투 무대에 덧씌운다. 손잡이가 없으면 A1 과 동일(A1 덤프 sha256 `aa31514d…6f0`, 4436개 동일).
-- **자동 추천** `src/assets/retroChoreographyRecommend.ts` `recommendRetroChoreography`: 계약·레코드·정확 레시피·`retroChoreographyId` 가 **모두 없는** 스킬의 폴백일 뿐이다(옛 레시피·적 스킬 불변). 속성·타수·범위·계열로 계약 연출과 tint 를 고르고, 런타임·스킬 탭·`upsert_skill` 결과 노트가 같은 함수를 쓴다.
+- **자동 추천** `src/assets/retroChoreographyRecommend.ts` `recommendRetroChoreography`: 계약·레코드·정확 레시피·`retroChoreographyId` 가 **모두 없는** 스킬의 폴백일 뿐이다(옛 레시피 불변). **적이 쓰는 스킬에는 일부러 꺼 둔다** — 켜면 레코드·id 없는 기존 적 스킬이 기본 몬스터 재생 대신 추천 연출로 바뀌어 옛 재생이 달라진다(`skillForCaster` 가 적에게는 미해결이면 `undefined`). 적 스킬에 연출을 주려면 `retroChoreographyId` 를 명시한다. 추천은 독도 본다: `state_poison`/`state_deep_poison`(또는 이름에 독이 든 커스텀 상태)을 거는 스킬과 독 속성 스킬은 poison tint(초록)로 추천된다(회복 효과·불 속성 같은 다른 속성은 제외). 이전엔 파란 베기로 재생됐다. 속성·타수·범위·계열로 계약 연출과 tint 를 고르고, 런타임·스킬 탭·`upsert_skill` 결과 노트가 같은 함수를 쓴다.
 - **상태 오라 `StateRecord.battleAura`** (`src/assets/battleStateAuras.ts`, CSS 전용): `freeze-grey`·`berserk-pulse`·`shield-shimmer`·`wet-drip`·`poison-bubble`·`dark-fog`·`petrify-still`·`regen-sparkle`. 기본 id 맵(state_poison→poison-bubble 등)이 있고 `resolveBattlerAuras` 가 중복을 합쳐 **최대 3개**만 남긴다. `battleFieldDom.syncBattleAura` 가 `data-battle-aura` 와 `.battle-aura-layer > .battle-aura[data-aura]` 를 만든다. CSS `styles/runtime/battle/28-retro-state-aura.css`(피격 깜빡임 중 양보, reduced-motion 존중).
 - 증거: `verify-shots/retro-choreo-b/SUMMARY.md`.
 
@@ -268,6 +271,7 @@
   편 → 노드는 `casterSideNodes`(몬스터가 시전하면 allTargets = 아군 전원, allAllies = 살아 있는 적). 몬스터 자리 `measureMonsterPlaces` 는 `measureEnemyReach` 와 같은 몸 비율, 식충 식물은 제자리. 투사체는 몬스터 입(셀 앞 75%)에서 왼→오. user/allAllies 층은 96셀 거구에서 칸 × 4, 그 밖 × 2.
   비트: `battleDom` 의 `enemyApproachMs`/`enemyRecoverMs` 가 `retroClassSkillBeatMs` 를 먼저 본다(첫 착탄·대상별 간격·남은 연출). CSS 는 재생 중 적 노드의 비트 키프레임을 끄고, 편이 뒤집힌 피격/축복 필터를 더했다.
 - **녹화** `node scripts/qa/runtime/retro2003-monster-skills-gif.mjs [--skills acid_spit,dark_judgment] [--out DIR]` → `mskill-<id>.gif`·`SUMMARY.md`. 스킬마다 대표 몬스터(그 스킬을 가진 첫 slug) 한 마리 트룹, 녹화 사본에서 actions = 그 스킬 하나·MP 999, 아군 셋. 판정: 재생기 시작·windup/attack 칸·계약 레이어 전부 표시·기존 애니메이션 층 0·필살기 dim. PNG 가 없는 레이어는 missing 열에 적는다.
+  `--custom spec.json`(2026-10-01): 계약 스킬 대신 **적이 프로젝트 연출 레코드를 쓰는** 사례를 녹화한다. spec = `{monster, skills:[{id,name,base,retroChoreographyId|null}], choreographies:[레코드], cases:[{slug,skillId,expect:"record"|"none"}]}`(`base` 는 복제할 기본 DB 스킬 id). `expect:"record"` 는 `data-retro-class-skill` 이 레코드 id 이고 레코드 층이 보여야 통과, `"none"` 은 연출이 하나도 재생되지 않아야 통과(기본 몬스터 재생 대조군). 예: `verify-shots/retro-chor-mon/enemy-record-spec.json`.
 
 ### 2차 로스터 통합 — 걷기 칩 전부 직업·스킬, 몬스터도 파티원 (2026-09-29)
 

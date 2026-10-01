@@ -2,7 +2,7 @@
 
 ## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 
-- `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.
+- `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다. 스킬을 어느 적이 쓰면(`isEnemyUsedSkill`) 결과 노트가 달라진다: `retroChoreographyId` 가 몬스터 모양으로 풀리지 않으면 경고하고, 연출이 없으면 「적 스킬은 자동 추천이 꺼져 있어 기본 몬스터 연출로 재생된다 — `retroChoreographyId` 를 명시하라」고 알린다(편집기 스킬 탭 선택기와 같은 판정).
 - 읽기 도구 `list_retro_choreographies`(`tools/retroChoreographyTools.ts`): motion·속성·앵커·계열·낱말로 계약 연출을 찾는다(편집기 선택기와 같은 색인).
 - 연출 조립 도구(`tools/retroChoreographyTools.ts`, 2026-09-30): `upsert_choreography`(프로젝트 레코드 추가·수정, 층 배열은 자유 키 객체 금지 — Gemini 400)·`duplicate_choreography`(계약/레코드를 `chor_` 사본으로 복제, 반환 `data` 가 레코드 자체)·`list_fx_sheets`(이펙트 시트 이름·프레임 폭)·`list_retro_choreographies`(이제 프로젝트 레코드도 함께). 스킬에는 `upsert_skill.retroChoreographyId:"chor_..."` 로 붙인다. 지침 「연출 조립」 절은 `retroSkillMechanics.ts` 의 같은 가이드 문자열. 증거: `verify-shots/retro-choreo-a1/`.
 - B 손잡이: `upsert_choreography` 는 `speed`(0.5~2)·`weight`·`tint`(#rrggbb)·`screen`({shake,flash,dim,cutIn}, `{}` 면 제거)·`tags` 와 층 `tint`·`se` 를 받는다. `upsert_skill` 은 연출을 안 붙인 스킬에 자동 추천(`recommendRetroChoreography`) 결과를 노트로 돌려주고, `upsert_state` 는 `battleAura`(프리셋 8종 id)를 검증해 받는다.
