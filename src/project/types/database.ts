@@ -28,6 +28,8 @@ export interface CharacterAppearanceRecord {
   charset?: { resourceId: string; characterIndex: number };
   face?: { resourceId: string };
   bust?: { resourceId: string };
+  /** 대사 창 뒤에 크게 서는 전신(선택). 없으면 흉상, 그것도 없으면 얼굴. */
+  full?: { resourceId: string };
 }
 
 export interface ActorRecord {

@@ -2,7 +2,7 @@ import { FACE_EXPRESSION_SETS } from "./faceExpressionSets";
 
 /**
  * 공용 표정 세트 76종의 대화용 흉상·전신(2026-10-01, scripts/content/portraits/).
- * 세트마다 2모양 × 5표정 = 10장. 그림: public/assets/shared/portraits/<세트 줄기>/<모양>-<표정>.png
+ * 세트마다 2모양 × 16표정(얼굴 16칸과 같은 표정) = 32장. 그림: public/assets/shared/portraits/<세트 줄기>/<모양>-<표정>.png
  *
  * id 는 `${세트 id}-${모양}-${표정}` (예: shared-people1-boy-expressions-bust-happy).
  * id 안의 `-bust`/`-full` 이 대화창의 표시 방식을 정한다(dialogue.ts dialoguePortraitMode,
@@ -10,9 +10,17 @@ import { FACE_EXPRESSION_SETS } from "./faceExpressionSets";
  */
 export const SHARED_PORTRAIT_MODES = ["bust", "full"] as const;
 export type SharedPortraitMode = (typeof SHARED_PORTRAIT_MODES)[number];
-/** base 는 표정 없는 기본. 나머지는 대사 표정(DIALOGUE_EMOTION_IDS)과 같은 이름이다. */
-export const SHARED_PORTRAIT_EXPRESSIONS = ["base", "happy", "sad", "angry", "surprised"] as const;
+/**
+ * 얼굴 16칸과 같은 순서의 표정. base=00, happy=02, surprised=04, angry=09, sad=10 은 대사 표정
+ * (DIALOGUE_EMOTION_IDS)과 같은 이름이라 대사 emotion 이 자동으로 고른다. 나머지 11개는 직접 고른다.
+ */
+export const SHARED_PORTRAIT_EXPRESSIONS = [
+  "base", "smile", "happy", "content", "surprised", "embarrassed", "doubtful", "serious",
+  "annoyed", "angry", "sad", "crying", "worried", "determined", "shy", "wink",
+] as const;
 export type SharedPortraitExpression = (typeof SHARED_PORTRAIT_EXPRESSIONS)[number];
+/** 대사 emotion 으로 바뀌는 표정(나머지는 내보내기에 자동으로 실리지 않는다 — 직접 참조될 때만). */
+export const SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS = ["base", "happy", "sad", "angry", "surprised"] as const satisfies readonly SharedPortraitExpression[];
 
 export type SharedPortraitAsset = {
   readonly id: string;
@@ -26,8 +34,10 @@ export type SharedPortraitAsset = {
 };
 
 const MODE_LABELS: Readonly<Record<SharedPortraitMode, string>> = { bust: "흉상", full: "전신" };
-const EXPRESSION_LABELS: Readonly<Record<SharedPortraitExpression, string>> = {
-  base: "기본", happy: "기쁨", sad: "슬픔", angry: "분노", surprised: "놀람",
+export const SHARED_PORTRAIT_EXPRESSION_LABELS: Readonly<Record<SharedPortraitExpression, string>> = {
+  base: "기본", smile: "눈웃음", happy: "기쁨", content: "흐뭇함", surprised: "놀람", embarrassed: "당황",
+  doubtful: "의심", serious: "진지함", annoyed: "짜증", angry: "분노", sad: "슬픔", crying: "울음",
+  worried: "걱정", determined: "결의", shy: "수줍음", wink: "윙크",
 };
 
 export function sharedPortraitId(setId: string, mode: SharedPortraitMode, expression: SharedPortraitExpression): string {
@@ -38,7 +48,7 @@ export const SHARED_PORTRAIT_ASSETS: readonly SharedPortraitAsset[] = FACE_EXPRE
   const folder = set.id.replace(/^shared-/u, "").replace(/-expressions$/u, "");
   return SHARED_PORTRAIT_MODES.flatMap((mode) => SHARED_PORTRAIT_EXPRESSIONS.map((expression) => ({
     id: sharedPortraitId(set.id, mode, expression),
-    name: `${set.name} · ${MODE_LABELS[mode]} ${EXPRESSION_LABELS[expression]}`,
+    name: `${set.name} · ${MODE_LABELS[mode]} ${SHARED_PORTRAIT_EXPRESSION_LABELS[expression]}`,
     path: `assets/shared/portraits/${folder}/${mode}-${expression}.png`,
     setId: set.id,
     mode,
@@ -63,10 +73,10 @@ export function sharedPortraitWithExpression(resourceId: string | undefined, exp
   return asset ? sharedPortraitId(asset.setId, asset.mode, expression) : undefined;
 }
 
-/** 공용 초상 하나가 참조되면 런타임이 표정으로 바꿔 쓸 수 있는 같은 모양 5장(내보내기용). */
+/** 공용 초상 하나가 참조되면 런타임이 대사 표정으로 바꿔 쓸 수 있는 같은 모양 5장(내보내기용). */
 export function sharedPortraitExpressionSiblings(resourceId: string): readonly string[] {
   const asset = findSharedPortrait(resourceId);
-  return asset ? SHARED_PORTRAIT_EXPRESSIONS.map((expression) => sharedPortraitId(asset.setId, asset.mode, expression)) : [];
+  return asset ? SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS.map((expression) => sharedPortraitId(asset.setId, asset.mode, expression)) : [];
 }
 
 /** 표정 세트 id → 그 세트의 흉상·전신 10장. */
@@ -96,6 +106,6 @@ export function dialogueFaceForEmotion(
   const base = findSharedPortrait(baseResourceId);
   if (!base) return profileFace ?? baseResourceId;
   if (profileFace && /-(?:bust|full)\b|^generated-face-/u.test(profileFace)) return profileFace;
-  if (!emotion || !(SHARED_PORTRAIT_EXPRESSIONS as readonly string[]).includes(emotion)) return baseResourceId;
+  if (!emotion || !(SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS as readonly string[]).includes(emotion)) return baseResourceId;
   return sharedPortraitId(base.setId, base.mode, emotion as SharedPortraitExpression);
 }
