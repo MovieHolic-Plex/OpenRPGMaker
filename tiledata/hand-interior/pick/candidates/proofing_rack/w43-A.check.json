@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/proofing_rack/w43-A.pxg",
+ "id": "proofing rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "3/4: 윗가로대·선반판·바닥판 윗면+앞가장자리, 처마 그림자 아래 빵 두 단(위 둥근 빵 두 덩이, 아래 긴 빵)",
+ "ok": true
+}

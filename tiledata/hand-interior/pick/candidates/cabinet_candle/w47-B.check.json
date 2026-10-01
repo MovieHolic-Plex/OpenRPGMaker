@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cabinet_candle/w47-B.pxg",
+ "id": "cabinet:candle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "B: A 와 같되 뚜껑을 wood:7/5 로 한 단 밝게(증명 그림 쪽, 비교용)",
+ "ok": true
+}

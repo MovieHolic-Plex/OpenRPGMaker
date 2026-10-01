@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pipe_organ/w45-A.pxg",
+ "id": "pipe organ",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "note": "관 위에 파이프 상자 윗판(T5)을 얹고 앞면은 움푹 들어간 파이프·기둥 유지. 관문 ok t=5 f=32",
+ "ok": true
+}

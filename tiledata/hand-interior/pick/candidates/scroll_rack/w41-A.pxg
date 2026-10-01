@@ -1,0 +1,72 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat i linen
+@mat j red
+@mat a wood
+@mblock 0 0
+................
+................
+.AAAAAAAAAAAAAA.
+.AGGGGGGGGGGGGA.
+.ACCCCCCCCCCCCA.
+.ACCCCCCCCCCCCA.
+.AaaaaaaaaaaaaA.
+.ACDDDDDDDDDDDA.
+.ABBBBBBBBBBBBA.
+.AAAAAAAAAAAAAA.
+.AEGBBBBBBBBGaA.
+.AEGDjHDDjHDGaA.
+.AEGDjHDDjHDGaA.
+.ACCaJJaaJJaCCA.
+.AGGGGGGGGGGGGA.
+.AEGAAAAAAAAGaA.
+.AEGBBBBBBBBGaA.
+.AEGDIIjIIIDGaA.
+.AEGDHHjHHHDGaA.
+.ACCaJJjJJJaCCA.
+.AGGGGGGGGGGGGA.
+.AEGAAAAAAAAGaA.
+.AEGBIBBIBBIGaA.
+.AEGIKiIKiIKiaA.
+.AEGBJBBJBBJGaA.
+.ACCCCCCCCCCCCA.
+.AGGGGGGGGGGGGA.
+.AEGAAAAAAAAGaA.
+.ADDDDDDDDDDDDA.
+.AEEEEEEEEEEEEA.
+.AaaaaaaaaaaaaA.
+.AAAAAAAAAAAAAA.
+@tblock 0 0
+................
+................
+................
+................
+................
+................
+..888888888888..
+................
+................
+................
+.............3..
+.....4...4...3..
+.....3...3...3..
+....3..33..3....
+................
+.............3..
+.............3..
+.......4.....3..
+.......3.....3..
+....3..2...3....
+................
+.............3..
+.............3..
+......1..1..13..
+.............3..
+................
+................
+.............3..
+................
+................
+..333333333333..
+................

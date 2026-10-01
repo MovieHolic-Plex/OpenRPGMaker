@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/choir_stall/w45-A.pxg",
+ "id": "choir stall",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "note": "기존 w90-A 유지(윗판 T5 앞면 f35). 관문 ok",
+ "ok": true
+}

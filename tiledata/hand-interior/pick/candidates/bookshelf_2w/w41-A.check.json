@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_2w/w41-A.pxg",
+ "id": "bookshelf 2w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 41,
+ "v5_colors": 32,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "1판 w90-A 재사용, 1w·3w 와 윗면 두께 동일 (t5)",
+ "ok": true
+}

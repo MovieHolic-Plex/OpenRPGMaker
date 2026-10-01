@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/slot_machine/w46-B.pxg",
+ "id": "slot machine",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  2,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  15,
+  31
+ ],
+ "note": "B: 간판판을 어두운 유리창+밝은 글자띠로, 투입구 대신 큰 배출구, 하단 버튼 두 개. 마스크 불변.",
+ "ok": true
+}

@@ -10,7 +10,7 @@
 
 정본 v5(tiledata/hand-interior/v5)는 읽기만 한다. 끄려면 HAND_INTERIOR_PICKS=0.
 건너뛰는 것: 선택 없음·v5 유지, 후보 파일 없음, 그림 크기가 칸 자리(또는 resize.json 캔버스)와 다른 것(크기를 바꾸라는 메모 뒤
-아직 새 크기 후보를 고르지 않은 경우), 애니메이션(12프레임) 기물.
+아직 새 크기 후보를 고르지 않은 경우), 크기를 바꾼 애니메이션 기물. 애니메이션 기물은 몸통만 고른 그림이고 움직이는 화소는 v5 프레임(_animated).
 """
 import copy, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -45,8 +45,9 @@ def _plan():
         if not ch or ch == 'v5': skip('v5 유지' if ch == 'v5' else '선택 없음'); continue
         o, s = by[i], slug(i)
         if not os.path.exists(os.path.join(CAND, s, ch + '.pxg')): skip('후보 파일 없음'); continue
-        if o['atlas']['frames'] > 1: skip('애니메이션 기물(12프레임)'); continue
         im, G = _png(s, ch), geom(o)
+        if o['atlas']['frames'] > 1 and (G['resized'] or not os.path.exists(os.path.join(CAND, s, 'anim-mask.png'))):
+            skip('애니메이션 기물(12프레임) — 크기를 바꿨거나 anim-mask.png 가 없다'); continue
         if list(im.size) != G['canvas']:
             skip(f"그림 {im.size[0]}×{im.size[1]} 이 " + ('resize.json 캔버스' if G['resized'] else '칸 자리') + f" {G['canvas'][0]}×{G['canvas'][1]} 와 다름"); continue
         if G['resized']:
@@ -64,12 +65,29 @@ def _plan():
     return _PLAN
 
 
+def _animated(f, body):
+    """애니메이션 기물: 몸통은 고른 그림, 12프레임 동안 바뀌는 화소(v5 프레임끼리 다른 화소 = anim-mask.png)만 v5 프레임에서 가져온다.
+    작업자는 움직이는 자리를 v5 와 같은 좌표에 두고 그 바깥만 다시 그린다(WORKER-V34-REDO.md §2)."""
+    import numpy as np
+    A = np.stack([np.array(fr.convert('RGBA')) for fr in f.frames])
+    diff = (A != A[0]).any(axis=(0, 3))
+    B = np.array(body)
+    out = []
+    for t in range(len(f.frames)):
+        fr = B.copy(); fr[diff] = A[t][diff]
+        out.append(Image.fromarray(fr))
+    return out
+
+
 def _same_size(f, im):
     g = copy.copy(f)
     if im.size != f.im.size:   # 스크립트 그림과 아틀라스 칸 자리가 다른 드문 경우: 아래 맞춤
         c = Image.new('RGBA', f.im.size)
         c.alpha_composite(im.crop((0, max(0, im.height - f.im.height), min(im.width, f.im.width), im.height)), (0, max(0, f.im.height - im.height)))
         im = c
+    if getattr(f, 'frames', None) and len(f.frames) > 1:
+        g.frames = _animated(f, im); g.im = g.frames[0]
+        return g
     g.im = im; g.frames = None
     return g
 

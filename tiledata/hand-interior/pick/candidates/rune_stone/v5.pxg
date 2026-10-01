@@ -1,0 +1,37 @@
+// v5 현재판 rune stone (16x32, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 16 32
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+................
+................
+................
+................
+.....AAAAAA.....
+....AAAAAAAB....
+...CAAAAAAABB...
+..DCAAAAAAABBD..
+..DCAAAAAAABBD..
+..DCAAAEEAABBD..
+..DCAAAEAAABBD..
+..DCAAEAEAABBD..
+..DCAAAEAAABBD..
+..DCAAAAAAABBD..
+..DCAAAAAAABBD..
+..DCAAAEAAABBD..
+..DCAAEAEAABBD..
+..DCAAAEAAABBD..
+..DCAAAEAAABBD..
+..DCAAAAAAABBD..
+..DCAAAAAAABBD..
+..DCAAEEEAABBD..
+..DCAAAAEAABBD..
+..DCAAAEAAABBD..
+..DCAAAAAAABBD..
+..DCAAAAAAABBD..
+..DCAAAAAAABBD..
+..DCAAAAAAABBD..
+..DCAAAAAAABBD..
+..DCDDDDDDDDDD..

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_1w/w41-A.pxg",
+ "id": "bookshelf 1w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 24,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "1판 w90-A 의 윗면 5px·처마 2px 문법 그대로 재사용 (t5)",
+ "ok": true
+}

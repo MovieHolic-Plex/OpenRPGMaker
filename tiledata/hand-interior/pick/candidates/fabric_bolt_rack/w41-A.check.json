@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fabric_bolt_rack/w41-A.pxg",
+ "id": "fabric bolt rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.003
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 38,
+ "v5_colors": 39,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "윗면 5px+밝은 앞모서리+처마 2행, 천 말이 3단을 선반 안에 앉힘(앞면 정면)",
+ "ok": true
+}

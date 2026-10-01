@@ -1,0 +1,37 @@
+// v5 현재판 stove (16x32, 패딩 위 8px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 16 32
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+.ABBBBBBBBBBBBA.
+.ACCCCCCCCCCCCA.
+.ACAAAAAAAAAACA.
+.ACAAAAAAAAAACA.
+.ACAAAAAAAAAACA.
+.ACCCCCCCCCCCCA.
+.DDDDDDDDDDDDDD.
+.ECFFFFFFFFFFFE.
+.ECFFFFFFFFFFFE.
+.ECFFFFFFFFFFFE.
+.ECFEEEGEEEEFFE.
+.ECFEHHHHHHEFFE.
+.ECFEHHHHHHEFFE.
+.ECFEHHHGGHEFFE.
+.ECFEHHHIIHEFFE.
+.ECFEHHIJJIEFFE.
+.ECFEHIJJJIEFFE.
+.ECFEEEEEEEEFFE.
+.ECFFFFFFFFFFFE.
+.ECFFFFFFFFFFFE.
+.ECFFFFFFFFFFFE.
+.ECFFFFFFFFFFFE.
+.EEEEEEEEEEEEEE.
+.EEEEEEEEEEEEEE.
