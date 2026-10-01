@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.62.0 — 2026-10-01
+
+### 기능
+
+- support 1024 by 1024 maps and measure performance (`3499fd7`)
+- **dialogue** — 전신 초상 크기를 에디터에서 조절한다 (`f90ae70`)
+
 ## 0.61.0 — 2026-10-01
 
 ### 기능
