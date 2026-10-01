@@ -1,0 +1,496 @@
+{
+ "id": "fantasy",
+ "name": "판타지 (기본)",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "extra_colors": [
+  "1c5a78",
+  "1e62a8",
+  "2a2833",
+  "2a8ca8",
+  "2f86cc",
+  "373740",
+  "473f55",
+  "505362",
+  "5cb0e0",
+  "5cc8d8",
+  "625045",
+  "666484",
+  "675f75",
+  "716641",
+  "777394",
+  "778278",
+  "8d8aac",
+  "90a9a4",
+  "9a95bd",
+  "a4f0f0",
+  "aec3b7",
+  "b4e6f4",
+  "e8e4d8",
+  "f0ffff"
+ ],
+ "icons": [
+  {
+   "role": "castle",
+   "name": "castle_dark",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "어둠의 성 — 원본 어두운 성(2x2)의 둥근 탑·성벽 모듈을 키운 3x3"
+  },
+  {
+   "role": "capital",
+   "name": "castle_dark_grand",
+   "cells": [
+    5,
+    5
+   ],
+   "col": 3,
+   "row": 0,
+   "desc": "대성 — 바깥 성벽과 문·모서리 탑 둘 뒤로 안쪽 성이 솟는 5x5"
+  },
+  {
+   "role": "large_town",
+   "name": "town_bell",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 8,
+   "row": 0,
+   "desc": "마을 — 둥근 탑을 가운데 세우고 집 넷·덤불 (3x3)"
+  },
+  {
+   "role": "large_town",
+   "name": "town_red",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "큰 마을 — 원본 붉은 지붕·목조 집 여섯 채·덤불 (3x3)"
+  },
+  {
+   "role": "large_town",
+   "name": "town_snow",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 14,
+   "row": 0,
+   "desc": "설원 큰 마을 — 눈 덮인 집 여섯 채 (3x3)"
+  },
+  {
+   "role": "village",
+   "name": "village_wood",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 0,
+   "desc": "촌락 — 목조 집 세 채·덤불 (2x2)"
+  },
+  {
+   "role": "village",
+   "name": "village_snow",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 0,
+   "desc": "설원 촌락 — 눈 덮인 집 세 채 (2x2)"
+  },
+  {
+   "role": "capital",
+   "name": "city_capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 12,
+   "desc": "수도 — 6x6 이중 성벽 도시"
+  },
+  {
+   "role": "fort_city",
+   "name": "city_fort",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 6,
+   "row": 12,
+   "desc": "성곽 도시 — 4x4"
+  },
+  {
+   "role": "harbor_city",
+   "name": "city_harbor",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 10,
+   "row": 12,
+   "desc": "항구 성곽 도시 — 5x4, 남쪽이 부두"
+  },
+  {
+   "role": "floating",
+   "name": "sky_island",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 0,
+   "row": 18,
+   "desc": "천공섬 — 떠 있는 대륙"
+  },
+  {
+   "role": "tower_great",
+   "name": "giant_tower",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 5,
+   "row": 18,
+   "desc": "거대한 탑"
+  },
+  {
+   "role": "ruin_city",
+   "name": "ruined_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 7,
+   "row": 18,
+   "desc": "폐허 도시"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "giant_tree",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 11,
+   "row": 18,
+   "desc": "거목"
+  },
+  {
+   "role": "shrine",
+   "name": "desert_temple",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 17,
+   "row": 18,
+   "desc": "사막 신전"
+  },
+  {
+   "role": "circle",
+   "name": "stone_circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 20,
+   "row": 18,
+   "desc": "고대 돌원"
+  },
+  {
+   "role": "tower_small",
+   "name": "lighthouse",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 0,
+   "row": 22,
+   "desc": "등대 — 모래 섬 어귀의 등대 — 빨강·하양 띠, 금빛 등롱"
+  },
+  {
+   "role": "tower_small",
+   "name": "witch_tower",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 1,
+   "row": 22,
+   "desc": "마녀 탑 — 독늪의 말뚝 위 휜 탑 — 마녀 모자 지붕, 초록 불빛"
+  },
+  {
+   "role": "tower_small",
+   "name": "mage_spire",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 2,
+   "row": 22,
+   "desc": "마법사 첨탑 — 고원 가장자리의 하얀 감시 첨탑 — 푸른 지붕, 끝의 수정"
+  },
+  {
+   "role": "cave",
+   "name": "cave_rock",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 14,
+   "row": 24,
+   "desc": "바위 동굴 — 갈색 바위 더미 속 어두운 입"
+  },
+  {
+   "role": "cave",
+   "name": "cave_vine",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 16,
+   "row": 24,
+   "desc": "덩굴 유적 동굴 — 이끼 둔덕의 돌 틀 입구, 늘어진 덩굴"
+  },
+  {
+   "role": "village",
+   "name": "igloo_camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 5,
+   "row": 22,
+   "desc": "이글루 촌락 — 크기가 다른 눈 돔과 삼나무, 말린 생선 틀"
+  },
+  {
+   "role": "village",
+   "name": "mine_town",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 7,
+   "row": 22,
+   "desc": "광산 마을 — 바위 면의 갱도 입구, 감는 바퀴 탑, 광석 수레"
+  },
+  {
+   "role": "camp",
+   "name": "tent_camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 22,
+   "desc": "천막 야영지 — 가죽 천막 셋과 모닥불"
+  },
+  {
+   "role": "village",
+   "name": "monastery",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 22,
+   "desc": "고원 수도원 — 하얀 벽, 푸른 돔과 금빛 십자, 종탑, 담장"
+  },
+  {
+   "role": "village",
+   "name": "adobe_village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 22,
+   "desc": "흙벽 돔 마을 — 황토 평지붕 집과 돔, 줄무늬 차양, 우물"
+  },
+  {
+   "role": "village",
+   "name": "treehouse_village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 22,
+   "desc": "나무 위 마을 — 굵은 줄기 위 초가 오두막, 줄다리, 사다리"
+  },
+  {
+   "role": "camp",
+   "name": "oasis_camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 22,
+   "desc": "오아시스 천막 — 못과 갈대, 야자, 줄무늬 천막"
+  },
+  {
+   "role": "village",
+   "name": "stilt_village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 22,
+   "desc": "수상 마을 — 석호 위 말뚝집, 널다리, 카누"
+  },
+  {
+   "role": "large_town",
+   "name": "windmill_farm",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 21,
+   "row": 22,
+   "desc": "풍차 농촌 — 네 날개 풍차, 붉은 헛간, 짚더미, 밀밭"
+  },
+  {
+   "role": "large_town",
+   "name": "harbor_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 24,
+   "row": 22,
+   "desc": "항구 마을 — 물가 붉은 지붕 집, 두 부두, 돛단배"
+  },
+  {
+   "role": "large_town",
+   "name": "log_village",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 27,
+   "row": 22,
+   "desc": "통나무 설원 마을 — 눈 얹은 장작 대청, 모닥불, 눈 삼나무"
+  },
+  {
+   "role": "castle",
+   "name": "pass_fortress",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 25,
+   "desc": "관문 요새 — 사암 성벽, 붉은 기와 이층 문루, 망루"
+  },
+  {
+   "role": "castle",
+   "name": "flame_fortress",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 25,
+   "desc": "화염 요새 — 검은 현무암 첨탑 성채, 용암 도랑"
+  },
+  {
+   "role": "ruin",
+   "name": "desert_colonnade",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 6,
+   "row": 25,
+   "desc": "모래 묻힌 기둥 회랑 — 부러진 기둥과 상인방, 쓰러진 토막"
+  },
+  {
+   "role": "ruin",
+   "name": "stepped_pyramid",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 8,
+   "row": 25,
+   "desc": "계단 피라미드 — 네 단 사암 피라미드와 꼭대기 신전"
+  },
+  {
+   "role": "ruin",
+   "name": "crypt",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 10,
+   "row": 25,
+   "desc": "무덤(묘당) — 박공 묘당, 묘비, 죽은 나무, 혼불"
+  },
+  {
+   "role": "volcano",
+   "name": "volcano_altar",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 12,
+   "row": 25,
+   "desc": "화산 제단 — 끓는 분화구와 용암 줄기, 기슭의 돌 제단"
+  }
+ ],
+ "pins": {
+  "대성": "city_capital",
+  "강가 마을": "windmill_farm",
+  "내해 항구": "city_harbor",
+  "설원 마을": "log_village",
+  "눈 촌락": "igloo_camp",
+  "고원 마을": "monastery",
+  "산기슭 동굴": "cave_rock",
+  "사막 촌락": "adobe_village",
+  "사막 폐허": "desert_colonnade",
+  "정글 마을": "treehouse_village",
+  "고갯길 요새": "pass_fortress",
+  "해협 감시탑": "mage_spire",
+  "화산": "volcano_altar",
+  "화염 요새": "flame_fortress",
+  "사바나 마을": "city_fort",
+  "오아시스 촌락": "oasis_camp",
+  "협곡 폐허": "stepped_pyramid",
+  "북동 눈 촌락": "mine_town",
+  "동쪽 항구": "harbor_town",
+  "독늪 탑": "witch_tower",
+  "섬 동굴": "cave_vine",
+  "섬 탑": "lighthouse",
+  "남섬 마을": "stilt_village",
+  "섬 폐허": "crypt",
+  "북섬 촌락": "tent_camp",
+  "거대한 탑": "giant_tower",
+  "폐허 도시": "ruined_city",
+  "거목": "giant_tree",
+  "사막 신전": "desert_temple",
+  "고대 돌원": "stone_circle",
+  "천공섬": "sky_island"
+ },
+ "license": "CC BY 4.0 — EasyRPG RTP World(easyrpg-chipset-world.png) 파생 도트. tiledata/worldmap-kit/ATTRIBUTION.md 참조"
+}
