@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/egg_incubator/h95-E.pxg",
+ "id": "egg incubator",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 19,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "종 모양 유리 덮개에 둥근 녹색 점박이 알을 넣고, 윗면이 보이는 놋쇠 가열 받침과 앞 온도계를 붙였다.",
+ "ok": true
+}

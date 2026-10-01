@@ -1,0 +1,53 @@
+// A: 붉은·흰 포획 구슬과 잠금띠, 윗면이 보이는 흰 받침·단 받침을 손 도트로 구성.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a white 0
+@mat b white 1
+@mat c white 2
+@mat d white 3
+@mat e white 4
+@mat f white 5
+@mat g white 6
+@mat r red 1
+@mat s red 2
+@mat t red 3
+@mat u red 4
+@mat v red 5
+@mat z red 6
+@mat k iron 1
+@mat l iron 2
+@layer object
+@mblock 0 0
+......ssss......
+....ssuuuuss....
+...suvvuuutts...
+..suvzvuuutttr..
+..suvvuuuutttr..
+..suuuuuutttrr..
+..stttttttttrr..
+..kkllkkkkllkk..
+..kfffkggkccbk..
+..bffedkkdcbaa..
+...bffedddcba...
+...abfedddba....
+..bddbcccbaedb..
+.bfgeabbaaedddb.
+bfggfeeeeeddddcb
+bfgeeeeedddddccb
+.bddddddcccccb..
+..abbbbbbbbba...
+...bfeeddccb....
+...bfeeddccb....
+....beeddcb.....
+....beeddcb.....
+....beeddcb.....
+....beeddcb.....
+....beeddcb.....
+....beeddcb.....
+...beeeedccbb...
+..bfeeeeddddcb..
+.bfggfeeeedddcb.
+bfeeeeeeddddcccb
+bddddddcccccccba
+.abbbbbbbbbbbba.

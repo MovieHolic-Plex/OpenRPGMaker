@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/demon_statue/h81-A.pxg",
+ "id": "demon statue",
+ "hard": [],
+ "warn": [
+  "접지: 맨 아래 불투명 줄 y=31 — 캔버스 바닥 y=47 에서 16px 떠 있다"
+ ],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "뿔·접힌 날개·붉은 눈·회보라 돌 명암은 유지하고 반복 다리 7행·받침 앞면 9행을 삭제해 전체 y=0~31의 32px, 받침 윗면 2행으로 압축.",
+ "ok": true
+}

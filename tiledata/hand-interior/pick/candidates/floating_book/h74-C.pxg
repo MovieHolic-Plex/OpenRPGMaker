@@ -1,0 +1,31 @@
+// C: 큰 두 책장과 중앙 접힘, 얇은 보라 표지와 둥근 청록빛으로 단순하게 읽히는 부유 마법책.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o linen 1
+@mat e linen 2
+@mat s linen 3
+@mat p linen 4
+@mat h linen 5
+@mat c purple 2
+@mat v purple 3
+@mat a teal 2
+@mat b teal 3
+@mat g teal 4
+@layer book
+@mblock 0 9
+..oooo....oooo..
+.ohhhhooohppppo.
+.ohsshhophpsppo.
+.oehhhhophpppeo.
+..oehhhophppeo..
+..cceeeoeeeccc..
+...vcccecccvv...
+......ccvv......
+@layer light
+@mblock 0 27
+.....aaaaaa.....
+...aabbbbbaaa...
+..abgggbbbbbaa..
+...abbbbbbaaa...
+.....aaaaaa.....

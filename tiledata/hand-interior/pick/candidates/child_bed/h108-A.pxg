@@ -1,0 +1,53 @@
+// A: 작은 나무 침대에 별 머리판·밝은 베개·파란 이불 윗면과 남쪽 틀을 손 도트로 배치.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat O dwood 1
+@mat D wood 3
+@mat M wood 4
+@mat T wood 5
+@mat W wood 6
+@mat H wood 7
+@mat K yellow 5
+@mat J yellow 4
+@mat s linen 2
+@mat l linen 4
+@mat c linen 5
+@mat C linen 6
+@mat b blue 2
+@mat u blue 3
+@mat v blue 4
+@mat a blue 5
+@mblock 0 0
+....DDDDDDDD....
+...DHHHHHHHHD...
+.DDHWWWWWWWWMDD.
+.HWDWWWWWWWWDMO.
+.HWDWWWKWWWWDMO.
+.HWDWWWKWWWWDMO.
+.WWDWKKKKKWWDMO.
+.WWDWWKKJWWWDMO.
+.WWDWKKWJJWWDMO.
+.WWDWWWWWWTWDMO.
+.WWDWWTTWWWWDMO.
+.WWDDDDDDDDDDMO.
+.WWOOOOOOOOOOMO.
+.WWlcccccccclMO.
+.WWcCCCCCCCClMO.
+.WWcCCCCCCClsMO.
+.WWlccccccclsMO.
+.WWllcccccllsMO.
+.WWccccccccclMO.
+.WWCCCCCCCCClMO.
+.WWavvvvvvvvuMO.
+.WWavvaavvvvuMO.
+.WWavvaavvvvuMO.
+.WWavvvvvvvvuMO.
+.WWavvvvvvaauMO.
+.WWavvvvvvaauMO.
+.WWvvvvvvvvuuMO.
+.WWuuuuuuvvubMO.
+.WWbbbbbbbbbbMO.
+.WHHWWWWWWWWMMO.
+.DWMMMMMMMMMDDO.
+.DDO........ODO.

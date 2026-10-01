@@ -1,0 +1,59 @@
+// 금장 머리 장식과 밝은 액자 테, 사진 셋을 놓은 16px 협탁과 5행 윗면.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 3
+@mat C wood 4
+@mat D wood 5
+@mat E wood 6
+@mat F wood 7
+@mat h gold 0
+@mat i gold 2
+@mat j gold 3
+@mat k gold 4
+@mat l gold 5
+@mat m gold 6
+@mat n linen 1
+@mat o linen 3
+@mat p linen 5
+@mat q black 2
+@mat r black 4
+@mat s blue 1
+@mat t blue 2
+@mat u clay 4
+@mat v clay 5
+@layer furniture
+@mblock 0 0
+................
+................
+................
+........hh......
+.......hllh.....
+......hllllh....
+......lpppki....
+......lpqqki....
+......lpvvki....
+......lpvvki....
+.hhkh.lpooti....
+.lppjhltttki....
+.lpqqhltttkihhkh
+.lpvvhlpppkilppj
+.lptthikkki.lpqj
+.lttth..hh..lvuj
+.AlppjAAAAAAlstj
+.BjiiCEEEEEElppj
+.BEDBBEEEDBBijji
+.BFFFFEEEEEEDDBA
+.BEEEEEEEEEDCCBA
+.ACCCCCCCCCCCBAA
+..BDDDDDDCCCBA..
+..BEEDDDDDDCBA..
+..BDDDjkkDDCBA..
+..BCCCDDDCCBBA..
+..BBBAAAAAABBA..
+..BDB......BCA..
+..BDB......BCA..
+..BDB......BCA..
+..BCB......BBA..
+..AAA......AAA..

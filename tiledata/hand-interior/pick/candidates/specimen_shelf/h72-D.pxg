@@ -1,0 +1,55 @@
+// 기존 금장·유리·세 표본을 유지하고 남쪽 몸체를 16행으로 줄여 두 진열칸 재배치
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b wood 3
+@mat c wood 5
+@mat d wood 7
+@mat e gold 2
+@mat f gold 4
+@mat g gold 5
+@mat h glass 1
+@mat i glass 2
+@mat j glass 4
+@mat k glass 5
+@mat m linen 5
+@mat n red 2
+@mat o black 3
+@mat p linen 3
+@mat q purple 2
+@mat r purple 4
+@layer shelf
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+......effe......
+.....abccba.....
+.adddddddddddda.
+.cfffffffffffea.
+.c.efffe.effe.a.
+.c.hkkkh.hkkkha.
+.c.jmomi.jimpha.
+.c.jmnmi.jmppha.
+.c.hiiih.hiiiha.
+.cdddddddddddca.
+.cddddcccccccca.
+.cfffefggfefeea.
+.c...effffe..ba.
+.c..hjkrrrh..ba.
+.c..jkrrrrqi.ba.
+.c..jkimmiih.ba.
+.cdddddddddddca.
+.cdddccccccccca.
+.cfffefggfefeea.
+.aa..........aa.

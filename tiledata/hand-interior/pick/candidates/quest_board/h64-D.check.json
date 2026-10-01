@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/quest_board/h64-D.pxg",
+ "id": "quest board",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  30,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "D: 두 줄 윗면과 남쪽 두께를 살린 나무 의뢰판에 금장 모서리·길드 문양을 두르고, 쪽지 여섯 장에 붉은 핀과 글줄을 넣었다.",
+ "ok": true
+}

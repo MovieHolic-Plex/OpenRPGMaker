@@ -1,0 +1,50 @@
+// C: 큰 나무 지붕과 간결한 돌 덩어리, 넓은 어두운 입구 윗면으로 우물을 또렷하게.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f stone 1
+@mat g stone 2
+@mat h stone 3
+@mat i stone 4
+@mat j stone 5
+@mat k water 0
+@mat l water 1
+@mat r pine 3
+@mblock 0 0
+....bbbbbbbb....
+...bddeeeeecb...
+..bddddddddccb..
+.bdddddddddcccb.
+bddddddddddccccb
+bccccccccccccccb
+bccccccccccccccb
+abbbbbbbbbbbbbba
+.aaaaaaaaaaaaaa.
+..dc........cb..
+..dc........cb..
+..dc...bb...cb..
+..dccccddccccb..
+..dbbbbccbbbbb..
+..dc...rr...cb..
+..dc....r...cb..
+..dc....r...cb..
+..dc....r...cb..
+..dc....r...cb..
+..dc....r...cb..
+..dcffffrfffcb..
+..fijjjiiiihhf..
+.fijgkkkkkkghhf.
+.figkllllkkkghf.
+.fihgkkkkkkghhf.
+.fijiiihhhhhhgf.
+.fiiiighhhggggf.
+.fhiiighhhggggf.
+.fgggghffgggfff.
+.fhhhhhggggggff.
+..fhhhggggggff..
+...ffffffffff...

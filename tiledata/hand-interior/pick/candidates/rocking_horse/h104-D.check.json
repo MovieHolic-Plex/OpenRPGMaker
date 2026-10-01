@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/rocking_horse/h104-D.pxg",
+ "id": "rocking horse",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  16,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "흰 칠 목마를 새로 그리고 위에서 보이는 붉은 안장에 금테·금장 고삐를 더했으며, 16px 높이와 휜 나무 받침의 접지선을 맞췄다.",
+ "ok": true
+}

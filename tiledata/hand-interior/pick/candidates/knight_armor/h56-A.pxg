@@ -1,0 +1,69 @@
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a iron 1
+@mat b iron 2
+@mat c iron 3
+@mat d iron 4
+@mat e iron 5
+@mat f iron 6
+@mat o iron 0
+@mat p brass 3
+@mat m pine 2
+@mat l pine 4
+@mat q red 2
+@mat r red 4
+@mat g stone 1
+@mat i stone 2
+@mat h stone 3
+@mat j stone 4
+@mat k stone 5
+@mblock 0 0
+.............aa.
+............afea
+............afda
+............aopa
+.............ml.
+.............ml.
+......rq.....ml.
+......qr.....ml.
+.....afea....ml.
+....afeeda...ml.
+....aeddca...ml.
+....adaaca...ml.
+....aeddca...ml.
+.....acca....ml.
+..afeeddcca..ml.
+..aeeddcccba.ml.
+..aeeddccbba.ml.
+..abaeddcbaaaml.
+..abaeddcbafaml.
+..acaeddcbaaaml.
+..acaeddcba..ml.
+...aapppppba.ml.
+....aeddccba.ml.
+....aeddcbba.ml.
+...aeeddcccbaml.
+...aefdccccbaml.
+...aeeccccbbaml.
+....abbbbbba.ml.
+....aeddcbba.ml.
+....aeddcbba.ml.
+....aeddcbba.ml.
+....aefdcbba.ml.
+....acddcbba.ml.
+....aedaacba.ml.
+....aedaacba.ml.
+....aedaacba.ml.
+....aedaacba.ml.
+....aedaacba.ml.
+....aedaacba.ml.
+....aedaacba.ml.
+...aeedaacbbaml.
+...aaaaaaaaaaml.
+.gkkkkkkkkkkkkg.
+.gkjjjjjjjjjjkg.
+.ghhhhhhhhhhhig.
+.ghhhhhhhhhhhig.
+.gihhhhhhhhhhig.
+.gggggggggggggg.

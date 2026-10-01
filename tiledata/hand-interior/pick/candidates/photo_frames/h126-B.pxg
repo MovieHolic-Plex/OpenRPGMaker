@@ -1,0 +1,57 @@
+// B: 기준 협탁의 갈색 테와 큰 명암 덩이, 5행 상판 위 높이가 다른 초상·사진 액자 셋.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g brass 1
+@mat h brass 3
+@mat i brass 4
+@mat j linen 3
+@mat k linen 4
+@mat l dwood 1
+@mat m dwood 3
+@mat n clay 4
+@mat o clay 3
+@mat p pine 3
+@mat q pine 5
+@mat r glass 1
+@mat s glass 2
+@layer furniture
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+.......ghhg.....
+......giiig.....
+......hikjg.....
+......hklkg.....
+......hknkg.....
+.pqqm.hkong.....
+.pjkm.hkmmgcecb.
+.pnkm.hmmmgcrsb.
+.pomm.ghhggcssb.
+.ammffffffbckjb.
+.afbmffeeeebbbb.
+.affffffeeeeecb.
+.aeeeeeeeeeeccb.
+.aeeeeeeccccccb.
+.abbbbbbbbbbbba.
+.acddddccccccba.
+.acdcccddddccba.
+.acdddhhddddcca.
+.acbbbbbbbbbbba.
+.acddcccdddccba.
+.acccccccccccca.
+.acba......acba.
+.acba......acba.
+.aeba......acba.
+.aaaa......aaaa.

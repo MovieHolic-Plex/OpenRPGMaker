@@ -1,0 +1,69 @@
+// B: 방의 전신 거울 결을 따른 검은 테, 비스듬한 반사 덩이와 금, 붉은 눈 하나, 위가 보이는 받침.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A black 1
+@mat B black 2
+@mat C black 3
+@mat D black 4
+@mat E black 5
+@mat F glass 0
+@mat G glass 1
+@mat H glass 2
+@mat I glass 3
+@mat J glass 4
+@mat K red 0
+@mat L red 1
+@mat M red 2
+@mat N red 4
+@mat O red 5
+@layer mirror
+@mblock 0 0
+.......CC.......
+.......ED.......
+......CDDC......
+....ACDDDDCA....
+..ACEEEEEDDDCA..
+..ADDDDDCCCCBA..
+..ADFHHHHHHFCA..
+..ADFJJHHHHFCA..
+..ADFJIJHHHFCA..
+..ADFHIJHHGFCA..
+..ADFHHIJHGFCA..
+..ADFHGIJHGFCA..
+..ADFHGHIJGFCA..
+..ADFHGGHIGFCA..
+..ADFHHGGHFFCA..
+..ADFHHGGFGFCA..
+..ADFHHGGFGFCA..
+..ADFHHGFGGFCA..
+..ADFHFGFGGFCA..
+..ADFHHFFGGFCA..
+..ADFHHGFGGFCA..
+..ADFHHGFFGFCA..
+..ADFHGFKKFFCA..
+..ADFHKLALKFCA..
+..ADFKNOAMMKCA..
+..ADFHKLALKFCA..
+..ADFHGFKKFFCA..
+..ADFHGFGGGFCA..
+..ADFHGFGGGFCA..
+..ADFHHFGGGFCA..
+..ADFHHGFGGFCA..
+..ADFHHGFGGFCA..
+..ADFHHGGFGFCA..
+..ADFHHGGGFFCA..
+..ADFIHHGGFFCA..
+..ADFIIHHFGFCA..
+..ADFHIIFGGFCA..
+..ADFHHFGGGFCA..
+..ADFFFFFFFFCA..
+..ADDDCCCCCCBA..
+..ACCCCCBBBBAA..
+...ACBBBBBBAA...
+...ACDDDDCCA....
+..ACEEEEEDDCA...
+.ACDDDDDCCCCBA..
+.ACCCCCCBBBBAA..
+.ACBBBBBBBBBAA..
+..AAAAAAAAAA....

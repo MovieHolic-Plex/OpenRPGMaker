@@ -1,0 +1,50 @@
+// 방의 수정구 반사 덩이와 열쇠 받침대 돌 명암을 따른 검보라 구슬, 받침 윗면 3행.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a purple 0
+@mat b purple 1
+@mat c purple 2
+@mat d purple 3
+@mat f black 1
+@mat g black 2
+@mat h black 3
+@mat j stone 1
+@mat k stone 2
+@mat l stone 3
+@mat m stone 4
+@mat n stone 5
+@layer body
+@mblock 0 0
+......aaaa......
+....abccbbba....
+...bcdccggbba...
+..bcddcchggbba..
+..cddcchhggfba..
+.bcddchhhgggfba.
+.bccchhhggggfba.
+.bchhhhgggggfba.
+.bchhhggggfffba.
+.bcghggggffffba.
+.bbgggggfffffba.
+..bggggfffffba..
+..abggfffffbaa..
+...abfffffbaa...
+....abbbbaa.....
+......aaaa......
+..mmmmkkklllkk..
+.mnnmmllkklllkj.
+.mmmmllllllkkkj.
+.kllllllllkkkjj.
+..kkkkkkkkjjjj..
+.....kmllkj.....
+.....kmllkj.....
+.....kmlkkj.....
+.....kmlkkj.....
+.....kmlkkj.....
+.....kmllkj.....
+....kmmllkkj....
+...kmmllllkkj...
+..mmmmlllllkkj..
+..klllllllkkjj..
+..kkkkkkkkjjjj..

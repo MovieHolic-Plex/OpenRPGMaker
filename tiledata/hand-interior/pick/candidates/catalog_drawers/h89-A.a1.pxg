@@ -1,0 +1,46 @@
+// A: 약재함 크기의 목제 목록함 — 상판 3행, 서랍 3×3, 놋쇠 이름표 아홉 개.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 3
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f wood 2
+@mat g brass 5
+@mat h brass 3
+@layer cabinet
+@mblock 0 0
+.aaaaaaaaaaaaaa.
+adeeeeeeeeeddda
+addddddcddddcca
+acddddddddcccca
+addddddddddddba
+abbbbbbbbbbbbba
+adcccaccccacccba
+adcbcaccbcacbcba
+adggcacggcaggcba
+adhhbachhbahhbba
+adccbaccccaccbba
+abaaaaaaaaaaaaba
+adcccaccccacccba
+adccbacbccaccbba
+adggcacggcaggcba
+adhhbachhbahhbba
+adccbaccccacbcba
+abaaaaaaaaaaaaba
+adcccaccccacccba
+adcbcaccbcacbcba
+adggcacggcaggcba
+adhhbachhbahhbba
+adccbaccccaccbba
+abaaaaaaaaaaaaba
+adccccccccccccba
+acbbbbbbbbbbbbaa
+adcccccccccccbaa
+acccccbccccccbaa
+acbbbbaabbbbbbaa
+accccbaabccccbaa
+adcccccccccccbaa
+.ffffffffffffff.

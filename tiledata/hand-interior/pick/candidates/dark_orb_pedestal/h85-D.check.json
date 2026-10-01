@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dark_orb_pedestal/h85-D.pxg",
+ "id": "dark orb pedestal",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "검보라 구슬에 보랏빛 둘레와 왼쪽 위 빛 덩이, 금장 요람·테·앞면 봉인 문양을 더하고 돌 윗면을 3행으로 표현.",
+ "ok": true
+}

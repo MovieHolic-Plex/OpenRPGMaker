@@ -1,0 +1,33 @@
+// 씨앗 자루 셋: 위에서 보이는 묶은 입구와 새싹 그림 표, 곡식 자루 계열 황갈색 천.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat b straw 2
+@mat c straw 3
+@mat d straw 4
+@mat e straw 5
+@mat f bread 3
+@mat g bread 4
+@mat h bread 5
+@mat P linen 5
+@mat L linen 4
+@mat G leaf 2
+@mat J leaf 4
+@layer sacks
+@mblock 0 0
+......g..g......
+.....ghghgb.....
+......cbcb......
+.....cdddbb.....
+....cdJPJdbb....
+..g..gPGPdbb....
+.ghghgPGPd.g..g.
+..cbcbcdbbghghgb
+.cdddcbb...cbcb.
+cdeedddbc.cdddbb
+cdJPJedbbcdeeddb
+cdPGPddbbcJPJedb
+cdPGPddbbcPGPddb
+cddddcbbbcPGPddb
+.cddcbbb.cddddbb
+..bbbbb...bbbbb.

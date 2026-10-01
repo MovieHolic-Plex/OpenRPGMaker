@@ -1,0 +1,57 @@
+// 검보라 구슬에 금장 요람·받침 테·봉인 문양을 더하고 돌 윗면을 3행으로 표현.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A purple 0
+@mat B purple 1
+@mat C purple 2
+@mat D purple 3
+@mat E purple 4
+@mat K black 1
+@mat L black 2
+@mat M black 3
+@mat N black 4
+@mat s stone 0
+@mat t stone 1
+@mat u stone 2
+@mat v stone 3
+@mat w stone 4
+@mat g gold 1
+@mat h gold 2
+@mat i gold 3
+@mat j gold 4
+@mat k gold 5
+@layer object
+@mblock 0 0
+.....AAAAAA.....
+....BCCBBBAA....
+...BCDDCBBKAA...
+..BCDEECBLKKAA..
+.BCDEDCBLKKKAAA.
+.BCDDCBLKKKKAAA.
+.BCCCBMLKKKKABA.
+.BCCBMLLKKKKABA.
+.BCBMLLLKKKKABA.
+.BBMLLLKKKKKABA.
+.ABMLLKKKKKKABA.
+..ABMLKKKKKABA..
+...ABLLLLLBAA...
+....ABBBBAAA....
+.....ghhhhg.....
+....gjkkjihg....
+..twwgjjihwvts..
+.twwwwwwvvvvvts.
+.twwvvvuuuuvvts.
+..gjjjiiiihhgs..
+...tuvuuuuuts...
+....tuvvvuus....
+....tuvjiuus....
+....tuijhius....
+....tuhggius....
+....tuuhhuus....
+....tuvvuuus....
+....tuvvuuus....
+...tvwwvuuuts...
+..tvwwwwvvvuts..
+.tgjjjiiiihhhgs.
+.stttttttttttss.

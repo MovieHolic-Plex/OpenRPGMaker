@@ -1,0 +1,51 @@
+// A: 갈색 창틀과 어두운 유리 위에 비스듬한 판자 세 장, 양끝 못과 윗면이 보이는 창턱.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood 3
+@mat t wood 5
+@mat h wood 7
+@mat a pine 0
+@mat b pine 1
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f pine 5
+@mat g glass 0
+@mat j glass 1
+@mat k glass 2
+@mat n iron 2
+@mat m iron 4
+@layer window
+@mblock 0 0
+................
+...wwwwwwwwww...
+..whtttttttttw..
+..whkjjjgjjjtw..
+..whkjjjgjjgtw..
+..whjjjggjjgtw..
+..whjjgggjggtw..
+..whggggggggtw..
+..whggggggggtw..
+..whjjgggjjgtw..
+..whjjgggjjgtw..
+..whggggggggtw..
+..whggggggggtw..
+..wttttttttttw..
+..whhhtttttttw..
+..wwwwwwwwwwww..
+@layer boards
+@mblock 3 2
+.......eef
+...feedcnd
+eefddccaaa
+dmdaaaa...
+aaa....efe
+...eeeednd
+eefdcddaaa
+dncaaaa...
+aaa....eef
+...feeednd
+efeddccaaa
+dmdaaaa...
+aaa.......

@@ -1,0 +1,31 @@
+// h39 D(2차): 금속 고리를 버리고 돌 테두리로 — 윗쪽 홈·오른쪽 금(밝은 돌색)·아래 부스러기 둘, 보라 점 제거, 구멍 안 깊이 3단
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat e stone 1
+@mat d stone 0
+@mat f stone 2
+@mat g stone 3
+@mat h stone 4
+@mat K black 1
+@mat k black 0
+@mat p gold 2
+@mat q gold 3
+@mat n purple 2
+@mblock 0 0
+................
+....eefghgee....
+..eehhhgdfgfee..
+.ehhgdddddddgge.
+.ehgdeefeefdgff.
+.eggdKeeeeeKdgf.
+.egdKKKKKKKKdhf.
+.ehdKKKKKKKKdgf.
+.egdKkkkkkkKdhf.
+.ehdKkkfkkkKdgf.
+.egdKKKKKeKKdgf.
+.ehhgdddddddggf.
+..egghhhgfhhgfe.
+..eefggggggffe..
+....eeffffee....
+.....eeeeee.....

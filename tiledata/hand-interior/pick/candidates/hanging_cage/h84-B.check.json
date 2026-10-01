@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hanging_cage/h84-B.pxg",
+ "id": "hanging cage",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.072
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "새장·감옥 창살의 회청색 쇠 결로 사슬과 둥근 우리를 그리고, 바닥판 윗면 3줄과 분리된 바닥 그림자를 넣음.",
+ "ok": true
+}

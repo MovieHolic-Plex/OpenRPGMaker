@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/child_bed/h108-A.pxg",
+ "id": "child bed",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "A: 16×32 빈 캔버스에 별 무늬 나무 머리판, 밝은 베개, 파란 이불 윗면과 남쪽 틀·다리를 그려 전형적인 SFC JRPG 아이 침대로 구성.",
+ "ok": true
+}

@@ -1,0 +1,40 @@
+// arrow floor A: 돌 판(안쪽 단 테) 위에 새겨진 북쪽 밝은 파란 화살표, 오른쪽 아래 새김 그늘
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mat b blue 4
+@mblock 0 0
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+sssssssbbsssssss
+ssssssbbbbssssss
+sssssbbbbbbsssss
+ssssbbbbbbbbssss
+ssssssbbbbssssss
+ssssssbbbbssssss
+ssssssbbbbssssss
+ssssssbbbbssssss
+ssssssbbbbssssss
+ssssssbbbbssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+@tblock 0 0
+2222222222222221
+2555555555555531
+2533333333333321
+2533333641333321
+2533336554133321
+2533365555413321
+2533655555541321
+2533336554133321
+2533336554133321
+2533336554133321
+2533336554133321
+2533336554133321
+2533336544133321
+2533331111133321
+2422222222222221
+1111111111111110

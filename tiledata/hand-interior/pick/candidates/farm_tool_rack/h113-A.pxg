@@ -1,0 +1,35 @@
+// A: 나무 가로대에 괭이·낫·물뿌리개를 걸고 윗면과 남쪽 면을 분리했다.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a wood 3
+@mat b wood 4
+@mat c wood 6
+@mat d wood 7
+@mat e pine 2
+@mat f pine 3
+@mat g pine 4
+@mat h pine 5
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat n iron 6
+@mblock 0 0
+................................
+.acccccccccccccccccccccccccccca.
+.cdddccccccdddccccccccdddcccccb.
+.bblbbbbbblbbbbbbbbbbbbblbbbba.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+..jmmmmmlj...jmmmlj......jkkj....
+..jlllllkj...jl..mlj....jl..kj...
+...jjfgjj....jl...lk....jl..kj...
+.....hg......jf..lkj....jl..kj...
+.....gf......gf.jkj....jmljlkj..
+.....gf......gf.jj.jmljjmnnmlj..
+.....gf......gf....jllklmlllkj..
+.....gf......gf.....jklmlllkjj..
+.....gf......gf......jlmlllkj...
+.....fe......fe......jkkkkkjj...
+.....ee......ee.......jjjjjj....

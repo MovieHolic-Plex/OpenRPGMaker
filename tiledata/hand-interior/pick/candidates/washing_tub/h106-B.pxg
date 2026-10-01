@@ -1,0 +1,39 @@
+// 같은 방 담금질 통의 갈색 통널·회색 테에 5행 물 윗면과 비스듬한 빨래판을 손으로 배치.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 3
+@mat C wood 4
+@mat D wood 5
+@mat E wood 6
+@mat F wood 7
+@mat G pine 2
+@mat H pine 4
+@mat J pine 5
+@mat L iron 1
+@mat M iron 3
+@mat N iron 4
+@mat O water 0
+@mat P water 1
+@mat Q water 2
+@mat R water 4
+@mat S linen 4
+@layer tub
+@mblock 0 0
+..........GGGG..
+.........HNNMG..
+.........HMMLG..
+.........HNNMG..
+....DEEEEHMMGB..
+..DEOPPPPJNNGCB.
+.CEPRRQPJMMGPOC.
+.BEPQQQPJNNGPOB.
+.BDPPPPPJMMGPOB.
+.BDOOPPPHHGPOOB.
+.BEEDDDDCCCBMLB.
+.BMNNNNMMMMMLLB.
+..CEEDDDDCCBAB..
+..CEEDDDDCCBAB..
+..BMNNNMMMLLB~..
+...BBBBBAAAA~...

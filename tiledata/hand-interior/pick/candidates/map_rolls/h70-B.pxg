@@ -1,0 +1,52 @@
+// B: 방의 무기 통과 두루마리 선반에 맞춘 갈색 통, 열린 입구와 높이가 다른 지도 끝.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat O wood 1
+@mat S wood 3
+@mat W wood 5
+@mat H wood 6
+@mat G wood 7
+@mat a linen 1
+@mat b linen 2
+@mat c linen 3
+@mat d linen 4
+@mat e linen 5
+@mat f linen 6
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@layer object
+@mblock 0 0
+................
+.......bdd......
+.......ead......
+.......edb......
+.......edc......
+...bdd.edc......
+...ead.edc......
+...edb.edc......
+...edc.edc.bdd..
+...edc.edc.ead..
+...edc.edc.edb..
+...edc.edc.edc..
+...edc.edc.edc..
+...edc.edc.edc..
+...edc.edc.edc..
+...SdcSedcSedc..
+..SHdcOedcOdcS..
+.OSWbcOedcObcS..
+.OWSOOOcbbOOOSS.
+.OWHSSOOOOOOWWS.
+.SWHHHWWWWWWSOS.
+.SHWWHWWWWSSWOS.
+.SHWWSWWWSWWSOS.
+.SHWWSWWWSWWSOS.
+.SHWWSWWWSSWSOS.
+.SkkkjjjjjjjiiS.
+.SjkkkjjjjjjiiS.
+.SHWWSWWWSWWSOS.
+..HWWSWWWSWWSO..
+..SWWSWWWSSWSO..
+...SWWWWWWSSO...
+....SSOOOOOO....

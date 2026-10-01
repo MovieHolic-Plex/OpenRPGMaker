@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/washbasin/h128-B.pxg",
+ "id": "washbasin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 14,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "note": "수건 제거, 대야 왼 테와 물 윗면 반사 정리, 받침 빛 쪽 윤곽 완화; 크기·위 패딩·접지선 유지.",
+ "ok": true
+}

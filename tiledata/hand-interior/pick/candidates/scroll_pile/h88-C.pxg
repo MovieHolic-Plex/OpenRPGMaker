@@ -1,0 +1,29 @@
+// C: 양피지 세 덩어리를 크게 겹치고 넓은 윗면·둥근 말린 끝·묶음끈만 남김.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a linen 1
+@mat b linen 2
+@mat c linen 3
+@mat d linen 4
+@mat e linen 5
+@mat f linen 6
+@mat g dwood 3
+@mat h dwood 4
+@mblock 0 0
+................
+................
+....bbbbbb......
+...beeeheedbb...
+..befffheedfeb..
+..bdddchddcbdb..
+...bbbbbddbccb..
+..beeeheebbbb...
+.bffffheedfeb...
+.bdddchddcbdb...
+..bbbbbddbccb...
+...beeeheebbbb..
+..befffheeddfeb.
+..bddddhdddcbdb.
+...bcccgdddbccb.
+....bbbbbbbbbb..

@@ -1,0 +1,38 @@
+// D: 하늘빛 결정의 밝은 윗면, 금장 띠와 룬 받침으로 장식; 잔점 대신 덩이 빛.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a glass 1
+@mat b glass 3
+@mat c glass 4
+@mat d ice 4
+@mat e ice 5
+@mat g gold 1
+@mat h gold 3
+@mat j gold 5
+@mat k stone 1
+@mat l stone 2
+@mat m stone 3
+@layer crystal
+@mblock 0 16
+.......dd.......
+......deec......
+.....adeccb.....
+.....adccba.....
+.....adccba.....
+...ddadccba.....
+..adcadccba.dd..
+..adcbadcbacdc..
+..adcbadcbacba..
+..adcbadcbacba..
+..adcbadcbacba..
+..ajhjadjhacba..
+..aghhjjhhgjha..
+.kmmabbbbbaagk..
+klmmjjhhjjhlllk.
+.kkllgghggllkk..
+@layer light
+@mblock 12 18
+.e.
+ded
+.d.

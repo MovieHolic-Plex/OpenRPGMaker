@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shipping_bin/h109-E.pxg",
+ "id": "shipping bin",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  8,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "넓은 10행 판자 뚜껑·뒤 경첩·앞 빗장 손잡이·굵은 모서리 기둥을 갖춘 24px 높이 농가 출하함으로 새로 그렸다.",
+ "ok": true
+}

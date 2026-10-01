@@ -1,0 +1,98 @@
+// D: 금장 모서리와 길드 문양, 두 줄 윗면을 두른 나무 의뢰판에 붉은 핀과 글줄의 쪽지 여섯 장.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f dwood 4
+@mat g gold 3
+@mat h gold 5
+@mat i gold 1
+@mat p linen 5
+@mat q linen 4
+@mat s linen 2
+@mat t linen 3
+@mat r red 3
+@mat v red 1
+@layer board
+@mblock 2 0
+bbbbbbbbbbbbbbbbbbbbbbbbbbbb
+@mblock 1 1
+beeeeeeeeeeeeeeeeeeeeeeeeeeeeb
+bdccccccccccccccccccccccccccba
+bdffffffffffffffffffffffffffba
+bdffffffffffffffffffffffffffba
+bdffffffffffffffffffffffffffba
+bdffffffffffffffffffffffffffba
+bdffffffffffffffffffffffffffba
+bcffffffffffffffffffffffffffba
+bcffffffffffffffffffffffffffba
+bcffffffffffffffffffffffffffba
+bcffffffffffffffffffffffffffba
+bcffffffffffffffffffffffffffba
+bcffffffffffffffffffffffffffba
+bcccccccccccccccccccccccccccba
+@mblock 2 15
+aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+@layer gilding
+@mblock 2 1
+hhh
+hgg
+hg
+@mblock 27 1
+hhh
+ggh
+.gh
+@mblock 2 12
+hg
+hgg
+igg
+@mblock 27 12
+.gh
+ggh
+ggi
+@mblock 13 0
+..hh..
+.hhgh.
+hhgggi
+.iggii
+..ii..
+@layer papers
+@mblock 4 4
+pprppp
+pppppp
+pssspp
+pppppp
+pssppq
+qqqqqs
+@mblock 12 5
+ppprpp
+pppppp
+pssspp
+pppppq
+qqqqqs
+@mblock 21 4
+ppprppp
+ppppppp
+psssppp
+ppppppp
+psssspp
+qqqqqqs
+@mblock 3 10
+qqrqqqq
+qqqqqqq
+qssstqq
+qqqqqqs
+@mblock 12 10
+pprpppp
+ppppppp
+psssppp
+qqqqqqs
+@mblock 22 10
+qqqrqq
+qqqqqq
+qssstq
+qqqqqs

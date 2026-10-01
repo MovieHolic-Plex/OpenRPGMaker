@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cargo_netted/h98-D.pxg",
+ "id": "cargo netted",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  7,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "25px 상자 더미에 금장 모서리·마름모 잠금장식을 더하고, 보이는 윗면 위로 성긴 그물코와 매듭을 연결했다.",
+ "ok": true
+}

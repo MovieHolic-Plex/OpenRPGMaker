@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magic_mirror/h76-C.pxg",
+ "id": "magic mirror",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "두꺼운 은테·넓은 보라 거울 면·큰 소용돌이로 단순화하고, 윗면과 남쪽 앞면이 구분되는 낮은 은색 받침을 넣음.",
+ "ok": true
+}

@@ -1,0 +1,40 @@
+// 눌린 압력판 B: 돌판이 바닥 높이로 평평하게 가라앉음 — 앞면·밝은 테 없음, 둘레 홈 2px 어둡게, 판은 한 톤 낮춘 평면+가운데 눌린 자리
+// 압력판 B: 같은 방 화풍 — 배수구 창살처럼 어두운 홈 틀 안에 솟은 돌판, 윗면 안쪽 새긴 네모(눌리는 자리), 앞면 두 단, 이끼 돌 결에 맞춘 중간 명도
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+................
+................
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+................
+................
+.11111111111111.
+.10000000000001.
+.10000000000001.
+.10033333333011.
+.10044444444011.
+.10044333344011.
+.10044333344011.
+.10044444444011.
+.10033333333011.
+.10111111111101.
+.11222222222211.
+.12222222222221.
+.00000000000000.

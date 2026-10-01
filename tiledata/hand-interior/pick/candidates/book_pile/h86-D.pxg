@@ -1,0 +1,42 @@
+// 다섯 권을 비뚤게 쌓고 붉은 윗책에 금장 테두리와 책등 띠를 더함.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat R red 1
+@mat r red 2
+@mat H red 4
+@mat g gold 3
+@mat G gold 5
+@mat d gold 1
+@mat p linen 4
+@mat q linen 2
+@mat P linen 5
+@mat b blue 2
+@mat B blue 4
+@mat c blue 1
+@mat e green 2
+@mat E green 4
+@mat f green 1
+@mat u purple 2
+@mat U purple 4
+@mat v purple 1
+@mat o gold 2
+@mat O gold 4
+@layer books
+@mblock 0 0
+....RRRRRRRR....
+...RHHHHHrrrR...
+..RHHGGGGGrrR...
+..RHrGrrrgrrR...
+..RrrgggggrrR...
+..RgPPpppppqR...
+..RRrrrrrrrrR...
+...cBBbbbbbbbbc.
+...cgPpppppppqc.
+.fEEeeeeeeef....
+.fgPppppppqf....
+..vUUuuuuuuuv...
+..vgPppppppqv...
+.ddOOooooooood..
+.dgPPpppppppqd..
+.ddooooooooood..

@@ -1,0 +1,82 @@
+// B: 기존 조타륜의 목재 결·굵은 윤곽과 제어반의 넓은 경사 상판을 따른 놋쇠 조종석.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a brass 1
+@mat b brass 2
+@mat c brass 3
+@mat d brass 4
+@mat e brass 5
+@mat f brass 0
+@mat l wood 1
+@mat m wood 3
+@mat n wood 4
+@mat o wood 6
+@mat p wood 7
+@mat u iron 1
+@mat v iron 2
+@mat w iron 4
+@mat h linen 4
+@mat i linen 6
+@mat r red 3
+@layer cabinet
+@mblock 1 13
+aeeeeeedcaa........aeeeeeedcaa
+aedddddddba........aedddddddba
+aduhhhucdba........aduhhhucdba
+aduihiucdba........aduihiucdba
+acuuuuucdba........acuuuuucdba
+acddddddddddddddddddddddddddba
+acddddcddddddddddddddddcddddba
+acccccccccccccccccccccccccccca
+abbbbbbbbbbbbbbbbbbbbbbbbbbbaa
+amdddddddbadddddddddabddddddba
+amddcddddbadddcdddddabddcdddba
+amdddddddbadddddddddabddddddba
+amdcdddddbadddddddddabddddcdba
+amcccccccbacccccccccabccccccba
+ammmmmmmmbaabbbbbbbbaaammmmmba
+alllllllllaaaaaaaaaaaallllllla
+...anonnma............anonnma
+...ammmmma............ammmmma
+...allllla............allllla
+@layer lever
+@mblock 4 9
+rr
+nr
+mw
+.w
+.w
+@mblock 26 9
+rr
+nr
+mw
+.w
+.w
+@layer wheel
+@mblock 8 1
+.......ll
+.......op
+...ll..op..ll
+...nooommmoom
+..loppommmnool
+.lopm..op..mool
+.lom...op...nol
+lnnm...op...mnml
+noooooocednnnnnl
+lmmm...ed...mmml
+.lnm...nb...nml
+.lnom..nn..nnml
+..lnonnnnoonml
+...lmnonnnmml
+...ll..nm..ll
+.......nm
+.......ll
+@mblock 14 18
+lool
+lonn
+lonn
+lonn
+lonn
+lonn
+lmml

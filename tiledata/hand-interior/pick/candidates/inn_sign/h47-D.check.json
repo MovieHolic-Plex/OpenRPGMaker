@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/inn_sign/h47-D.pxg",
+ "id": "inn sign",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.079
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  29,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "금장 이중 테와 쇠사슬 달린 나무 간판에 침대와 별 문양(빛나는 중심)을 넣어 화려하게",
+ "ok": true
+}

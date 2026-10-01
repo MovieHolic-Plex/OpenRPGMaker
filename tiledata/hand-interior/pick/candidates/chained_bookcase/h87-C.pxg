@@ -1,0 +1,88 @@
+// C: 기존 검은 틀·책 덩어리·X 사슬·자물쇠를 유지하며 32행으로 압축, 윗면 4행과 앞 테·그림자를 분리.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A black 1
+@mat B black 2
+@mat C black 3
+@mat D black 4
+@mat E black 5
+@mat k iron 2
+@mat l iron 3
+@mat m iron 4
+@mat n iron 5
+@mat r red 1
+@mat s red 2
+@mat t linen 2
+@mat u linen 3
+@mat g green 1
+@mat h green 2
+@mat q brass 2
+@mat v brass 4
+@mat z brass 1
+@layer body
+@mblock 0 16
+.AAAAAAAAAAAAAA.
+.DEEEEEDDDDDDDC.
+.DDDDDDDDDDDDDC.
+.DDDDDDDDDDDDDC.
+.DDDDDDDDDDDDDC.
+.CCCCCCCCCCCCCB.
+.BAAAAAAAAAAAAB.
+.BDAAAAAAAAACAB.
+.BDrrrAtttggCAB.
+.BDssrAuttghCAB.
+.BDssrAuttghCAB.
+.BDrrrAtttggCAB.
+.BDCCCCCCCCCCAB.
+.BDDDDDDCCCCCCB.
+.BCCCCCCCCCCCCB.
+.BDAAAAAAAAACAB.
+.BDgggArrrttCAB.
+.BDhggAssrutCAB.
+.BDhggAssrutCAB.
+.BDgggArrrttCAB.
+.BDCCCCCCCCCCAB.
+.BDDDDDDCCCCCCB.
+.BCCCCCCCCCCCCB.
+.BDAAAAAAAAACAB.
+.BDtttggArrrCAB.
+.BDuttghAssrCAB.
+.BDuttghAssrCAB.
+.BDtttggArrrCAB.
+.BDDDDDDDCCCCCB.
+.BCCCCCCCCCCCBB.
+.BBBBBBBBBBBBBB.
+.AAAAAAAAAAAAAA.
+@layer chain
+@mblock 2 24
+mk........km
+lm........ml
+.mk......km.
+.lm......ml.
+..mk....km..
+..lm....ml..
+...mk..km...
+...lm..ml...
+....mkkm....
+....lmml....
+....lmml....
+....mkkm....
+...lm..ml...
+...mk..km...
+..lm....ml..
+..mk....km..
+.lm......ml.
+.mk......km.
+lm........ml
+mk........km
+@layer lock
+@mblock 6 30
+.ll.
+mAAl
+mAAl
+vvvv
+vqvq
+vqAq
+vqqz
+.zz.

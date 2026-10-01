@@ -1,0 +1,30 @@
+// 둥근 나무 등판과 열린 편지 주머니, 밝은 편지 한 통과 위에서 보이는 입구.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f dwood 1
+@mat g linen 3
+@mat h linen 5
+@mat i linen 6
+@mblock 0 0
+.....aaaaaa.....
+...abeddddba....
+..abedccccdba...
+..aedccbcccbfa..
+..adchiiiiigbfa.
+..adchhiiihgbfa.
+..adchihihigbfa.
+..adchiihiigbfa.
+..abbhiiiiigffa.
+.abffghhhhhgffba
+.aedddcccccccdbf
+.adcccdccbcccbaf
+.adcbbdcccccbbaf
+.adcccdccccccbaf
+..bdcccccccbbfa.
+...abbbbbbbffa..

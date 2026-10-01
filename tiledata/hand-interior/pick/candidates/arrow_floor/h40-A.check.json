@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/arrow_floor/h40-A.pxg",
+ "id": "arrow floor",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "돌 판(밝은 윗·왼 테, 어두운 아래·오른 테)에 북쪽 파란 화살표(머리 4줄+몸통 6줄), 새김 그늘",
+ "ok": true
+}

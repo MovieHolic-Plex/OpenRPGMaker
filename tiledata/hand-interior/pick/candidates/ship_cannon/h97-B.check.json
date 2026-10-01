@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ship_cannon/h97-B.pxg",
+ "id": "ship cannon",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "닻의 회색 쇠 명암·조타륜의 갈색 목재 톤으로 남향 포신 윗면과 검은 포구를 그리고, 앞바퀴 사이 여백·쇠 축으로 나무 받침을 구분했다.",
+ "ok": true
+}

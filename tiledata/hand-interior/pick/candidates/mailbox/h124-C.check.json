@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mailbox/h124-C.pxg",
+ "id": "mailbox",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  3,
+  13,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "넓은 나무 몸통과 위에서 보이는 입구, 큰 봉투 한 통으로 단순화하고 나뭇결은 한 군데만 남겼다.",
+ "ok": true
+}

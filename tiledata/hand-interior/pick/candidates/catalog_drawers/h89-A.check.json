@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/catalog_drawers/h89-A.pxg",
+ "id": "catalog drawers",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  16,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "상판 윗면 3행·목재 색·윤곽·접지선 y=31을 유지하고 서랍 세 단과 높은 받침을 압축해 실루엣을 16px(y=16~31)로 축소, 아홉 서랍과 놋쇠 이름표 유지.",
+ "ok": true
+}

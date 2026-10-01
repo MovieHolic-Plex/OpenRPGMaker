@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cobweb/h121-B.pxg",
+ "id": "cobweb",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "같은 방 그물의 따뜻한 린넨 3단 명암으로 성긴 모서리 거미줄과 작은 갈색 거미를 새로 그렸다; 16×16·하단 15행 유지, hard 검사 합격, 8배·방 안 확인.",
+ "ok": true
+}

@@ -1,0 +1,55 @@
+// 금빛 뚜껑·선반 테·마름모 문양을 더한 두 단 표본 병 선반
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b wood 3
+@mat c wood 5
+@mat d wood 7
+@mat e gold 2
+@mat f gold 4
+@mat g gold 5
+@mat h glass 1
+@mat i glass 2
+@mat j glass 4
+@mat k glass 5
+@mat m linen 5
+@mat n red 2
+@mat o black 3
+@mat p linen 3
+@mat q purple 2
+@mat r purple 4
+@layer shelf
+@mblock 0 0
+......effe......
+.....abccba.....
+.adddddddddddda.
+.cfffffffffffea.
+.c.efffe.effe.a.
+.c.hkkkh.hkkkha.
+.c.jimii.jiimha.
+.c.jmomi.jimpha.
+.c.jmnmi.jmppha.
+.c.jimii.jmpiha.
+.c.jkkii.jpiiha.
+.c.hiiih.hiiiha.
+.caaaaaaaaaaaaa.
+.cdddddddddddca.
+.cddddcccccccca.
+.cfffefggfefeea.
+.abbbbbbbbbbbba.
+.c...........ba.
+.c...effffe..ba.
+.c...hkkkh...ba.
+.c..hjkrrrh..ba.
+.c..jkrrrrqi.ba.
+.c..jkqqqqqi.ba.
+.c..jkimmiii.ba.
+.c..jkimmiih.ba.
+.c..jkiiiiih.ba.
+.c..hiiiiiih.ba.
+.cdddddddddddca.
+.cdddccccccccca.
+.cfffefggfefeea.
+.abbbbbbbbbbbba.
+.aa..........aa.

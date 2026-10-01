@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/guild_counter/h66-B.pxg",
+ "id": "guild counter",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  6,
+  47,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "기존 방 카운터의 나무색·세 칸 앞판·드문 결을 따라 6행 상판과 서류·잉크병·도장·낮은 중앙 칸막이를 손 도트로 신작(전체 높이 26px).",
+ "ok": true
+}

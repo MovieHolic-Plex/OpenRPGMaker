@@ -1,0 +1,70 @@
+// 2층 침대 D: 금장 기둥 머리·머릿판 금띠·이불에 금빛 마름모 무늬(빨강), 금 징 — 같은 물건을 한 단계 화려하게
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat u wood 0
+@mat p wood 3
+@mat q wood 4
+@mat r wood 5
+@mat s wood 6
+@mat t wood 7
+@mat i brass 5
+@mat g brass 3
+@mat n linen 3
+@mat m linen 4
+@mat L linen 5
+@mat R red 3
+@mat S red 2
+@mat T red 4
+@mat y dwood 2
+@mat z dwood 1
+@mblock 0 0
+................
+ii............ii
+gg............gg
+otiiiiiiiiiiiiqo
+otggggggggggggqo
+otttttttttttttqo
+otssssssssssssqo
+otnLLLLLLLntttqo
+otnmmmmmmmnsssqo
+otgggggggggqyqqo
+otTRRRiRRRRtttqo
+otRRRiRiRRRqyqqo
+otRRRRiRRRSqyqqo
+otSSSSSSSSSqyqqo
+otrrrrrrrrrtttqo
+otssssgssssqyqqo
+otpppppppppqyqqo
+otzzzzzzzzzqzqqo
+otyyyyyyyyytttqo
+otyyyyyyyyyqyqqo
+otyyyyyyyyyqyqqo
+otyyyyyyyyyqyqqo
+otyyyyyyyyytttqo
+otyyyyyyyyyqyqqo
+otyyyyyyyyyqyqqo
+otiiiiiiiiiqyqqo
+otsssssssssqyqqo
+otnLLLLLLLntttqo
+otnmmmmmmmnqyqqo
+otgggggggggqyqqo
+otTRRRiRRRRtttqo
+otRRRiRiRRRqyqqo
+otRRRRiRRRSqyqqo
+otSSSSSSSSSqyqqo
+otrrrrrrrrrtttqo
+otssssgssssqyqqo
+otsssssssssqyqqo
+otqqqqqqqqqqyqqo
+otppppppppptttqo
+otzzzzzzzzzqyqqo
+otzzzzzzzzzqyqqo
+otzzzzzzzzzqyqqo
+otzzzzzzzzztttqo
+otzzzzzzzzzqyqqo
+otzzzzzzzzzqyqqo
+otzzzzzzzzzqyqqo
+otzzzzzzzzzqyqqo
+ooo~~~~~~~~~~ooo

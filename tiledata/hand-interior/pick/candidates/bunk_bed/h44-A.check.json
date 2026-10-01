@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bunk_bed/h44-A.pxg",
+ "id": "bunk bed",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "2층 침대 처음부터: 윗·아랫 침상 베개+흰 이불 윗면 각 9행, 앞 틀, 사이 그늘, 오른쪽 사다리",
+ "ok": true
+}

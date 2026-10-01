@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/floating_book/h74-C.pxg",
+ "id": "floating book",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  9,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "두 책장을 큰 밝은 덩어리로 펼치고 중앙 접힘·남쪽 책 두께·보라 표지만 최소로 표시, 바닥의 둥근 청록빛과 여백으로 부유감을 줌.",
+ "ok": true
+}

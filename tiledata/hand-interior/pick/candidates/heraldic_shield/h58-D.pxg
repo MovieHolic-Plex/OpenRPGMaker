@@ -1,0 +1,27 @@
+// 장식판: 금테(밝은 위·왼, 어두운 아래·오른) + 파랑·금 사분 + 파랑 칸마다 금 사자, 윤곽은 놋쇠 어두운 단
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o brass 1
+@mat O brass 0
+@mat h gold 5
+@mat s gold 3
+@mat y yellow 3
+@mat b blue 3
+@mblock 0 0
+..oooooooooooO..
+..ohhhhhhhhhsO..
+..ohbbbbyyyysO..
+..ohbbhhyyyysO..
+..ohbhhbyyyysO..
+..ohbhhbyyyysO..
+..ohbhbhyyyysO..
+..ohyyyyhhbbsO..
+..ohyyyybhhbsO..
+...ohyyybhhsO...
+...ohyyyhbhsO...
+....ohyybbsO....
+....ohyybbsO....
+.....ohybsO.....
+......ohsO......
+.......oO.......

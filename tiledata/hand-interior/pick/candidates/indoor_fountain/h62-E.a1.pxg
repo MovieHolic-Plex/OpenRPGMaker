@@ -1,0 +1,111 @@
+// E: 조개껍질 돌 장식에서 두 갈래 낙수가 흐르는 궁정 분수, 수면 13행.
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat e stone 5
+@mat f stone 6
+@mat u water 1
+@mat v water 2
+@mat w water 3
+@mat x water 4
+@mat y water 5
+@mat z water 6
+@mat k brass 3
+@mat l brass 4
+@mat n brass 5
+@mblock 8 0
+......deec......
+....ddeeeddc....
+..deeffeeddccb..
+.deefedeedcdccb.
+deefedfeedcdcccb
+eefedeeedcdcccb.
+eefdeeeedcdcccb.
+defdeeedcdcccb..
+.deedeedcdccb...
+..deeedddccb....
+...deedddcb.....
+....deedcb......
+....deffdcc.....
+.....denlcb.....
+.....delkcb.....
+.....dedccb.....
+.....dedccb.....
+.....dedccb.....
+.....dedccb.....
+.....dedccb.....
+.....dedccb.....
+.....dedccb.....
+@mblock 0 22
+...........ddeeeeeccc...........
+........deeeeeeedddccccb........
+......deeffffedddcddddcccb.......
+....deeffddddedddcdddddcccbb.....
+...deefuvvvvvdedccbvvvvvddccb....
+..deefvwwwxxxwedccbwwwwwvvdcbb...
+..defvwwxxxxywedccbwxxxxwvvdcb...
+.defvwwxxyyyywedccbwxxxwwwvvdcb..
+.defvwwxyyzzxwedccbwxxxwwwvvdcb..
+.defvwwxyzzxxdeeddcbxyyyxwwvvdcb.
+.defvwwxyyxxxyeeddcbyzzyxwwvvdcb.
+.defvwwxxxxxxyyyxxxyyyxxxwwvvdcb.
+.defvwwwxxwwwwxxxyxxxwwwwwvvdcb.
+.defvwwwwwwwwwxxwwwwwwwwvvvvdcb.
+..defvwwwxxwwwwwwwwwwwvvvvvccb..
+..deefvwwwwwwwwwwwwvvvvvvvdcbb..
+...deefvvvvvvvvvvvvvvvvvddcbb...
+...ddeeffdddddddddddddddcbb.....
+....ddeeeeffddddddddddcccbb.....
+......deeedddccccccccccbb.......
+.......bdddcccclnlccccbb........
+.......bbdcccclnnlkccbbb........
+........bbcccclllkccbbb.........
+.........bbbcccccccbbb..........
+...........bbbbbbbb.............
+............bbbbbb..............
+// 조개 장식 양쪽에서 흐르는 낙수: 왼쪽은 빛, 오른쪽은 그늘.
+@mblock 9 11
+xy
+xy
+xy
+wy
+xy
+xy
+wy
+xy
+xy
+wy
+xy
+xy
+wy
+xy
+xy
+wy
+xy
+yz
+xy
+yz
+@mblock 21 11
+wx
+wx
+wx
+vx
+wx
+wx
+vx
+wx
+wx
+vx
+wx
+wx
+vx
+wx
+wx
+vx
+wx
+xy
+wx
+xy

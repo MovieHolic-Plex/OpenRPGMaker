@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shipping_bin/h109-D.pxg",
+ "id": "shipping bin",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  8,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "높이 24px·윗면 9행의 나무 출하 상자에 금장 경첩 띠와 새싹 문양을 더하고 왼쪽 위 빛을 강조했다.",
+ "ok": true
+}

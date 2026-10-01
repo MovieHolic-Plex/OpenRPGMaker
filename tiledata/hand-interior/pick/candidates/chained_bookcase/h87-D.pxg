@@ -1,0 +1,116 @@
+// D: 검은 금서 책장에 금장 처마·모서리 문양과 금빛 자물쇠, 은철 X 사슬을 더함.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a black 0
+@mat b black 1
+@mat c black 2
+@mat d black 3
+@mat e black 4
+@mat f black 5
+@mat G gold 2
+@mat H gold 4
+@mat J gold 5
+@mat i iron 2
+@mat j iron 4
+@mat k iron 5
+@mat r red 1
+@mat s red 2
+@mat u blue 1
+@mat v blue 2
+@mat n purple 2
+@mat p linen 2
+@mat q linen 4
+@layer cabinet
+@mblock 0 0
+.bbbbbbbbbbbbbb.
+bHHHHHHHHHHHHHGb
+bHeeeeeedddddGcb
+bHeddddddddccGcb
+bGGGGGGGGGGGGGcb
+bHHGccccccccGHcb
+bHGJHddddddHJGcb
+bHGccccccccccGcb
+bHcaaaaaaaaaaGcb
+bHcsqaavvppaaGcb
+bHcsqrrvvppnaGcb
+bHcsqrrvvppnaGcb
+bHcsqrrvuqpnaGcb
+bHcsprrvuqpnaGcb
+bHcrprrvuqpnaGcb
+bHcrprruuqnnaGcb
+bHeeeeeedddddGcb
+bHdddddddccccGcb
+bHGccccccccccGcb
+bHcaaaaaaaaaaGcb
+bHcaannnaarraGcb
+bHcqannnaarpaGcb
+bHcqvnssqsrpaGcb
+bHpqvnssqsrpaGcb
+bHpqvnssqsrpaGcb
+bHpqvnsspsrpaGcb
+bHppunsspsrpaGcb
+bHppunrrprrpaGcb
+bHeeeeeedddddGcb
+bHdddddddccccGcb
+bHGccccccccccGcb
+bHcaaaaaaaaaaGcb
+bHcauvaaarraaGcb
+bHcpuvannrrqaGcb
+bHcpuvannrrqaGcb
+bHcpuvannrrqaGcb
+bHcpuvannrpqaGcb
+bHcpuuannrpqaGcb
+bHcpuuannrpqaGcb
+bHcpuuannrpqaGcb
+bHeeeeeedddddGcb
+bHdddddddccccGcb
+bHHGccccccccGHcb
+bHGJHddddddHJGcb
+bHGccccccccccGcb
+bGGGGGGGGGGGGGcb
+.bddccccccccccb.
+.bbbbaaaaabbbbb.
+@layer chains
+@mblock 2 8
+ki........ik
+ij........ji
+.ji......ij.
+.ki......jk.
+.ij......ji.
+..ji....ij..
+..ki....jk..
+..ij....ji..
+...ji..ij...
+...ki..jk...
+...ij..ji...
+....jiij....
+....kijk....
+....ijji....
+.....ji.....
+.....ki.....
+.....ij.....
+....ijji....
+....jkki....
+....jiij....
+...ij..ji...
+...jk..ki...
+...ji..ij...
+..ij....ji..
+..jk....ki..
+..ji....ij..
+.ij......ji.
+.jk......ki.
+.ji......ij.
+ij........ji
+jk........ki
+ji........ij
+@layer seal
+@mblock 6 23
+.GGG.
+.GaG.
+.GaG.
+JHHHG
+JHaHG
+GHaHG
+.GGG.

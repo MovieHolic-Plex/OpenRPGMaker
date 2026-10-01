@@ -1,0 +1,52 @@
+// 낮은 판자 지붕과 목재 권양축을 얹은 회색 석축 우물, 열린 물 윗면.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a pine 0
+@mat b pine 1
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f stone 1
+@mat g stone 2
+@mat h stone 3
+@mat i stone 4
+@mat j stone 5
+@mat k water 0
+@mat l water 1
+@mat m straw 2
+@mat n straw 3
+@layer well
+@mblock 0 0
+......abba......
+.....acddba.....
+....aceddedb....
+...acddcdddcb...
+..aceddcddcddb..
+.acdddcdddcddcb.
+accccbbcccbcccca
+abbbbbbbbbbbbbaa
+..ec........cb..
+..dc........cb..
+..dc...aba..cb..
+..dcbbbcddbbcb..
+..dc...bcb..cb..
+..dc...aba..cb..
+..dc....n...cb..
+..dc....m...cb..
+..dc....m...cb..
+..dc....n...cb..
+..dc....m...cb..
+..dc....m...cb..
+..dcfiiiihhfcb..
+..djjiikkgihcb..
+.fjikkkkmkkkghf.
+.fiikllkmkkkghf.
+.fihkkkklkkkghf.
+.fjiihhhhhhhggf.
+.fhhhhhghhhhggf.
+.fhhhgghhhhgggf.
+..fgggggfggggf..
+..fhhhghhhgggf..
+...fggggggggf...
+....ffffffff....

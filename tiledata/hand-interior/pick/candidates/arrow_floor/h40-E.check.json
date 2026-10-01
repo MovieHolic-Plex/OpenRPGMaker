@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/arrow_floor/h40-E.pxg",
+ "id": "arrow floor",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "돌판 위 막대 화살 대신 겹친 V자(쉐브론) 두 줄이 북쪽을 가리키는 해석 — 파랑 윗·왼 밝게 아래·오른 어둡게, 압력판과 같은 홈·벽돌 테",
+ "ok": true
+}

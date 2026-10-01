@@ -1,0 +1,28 @@
+// D: 흰 비단빛 물결 거미줄과 금빛 등무늬 작은 거미.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat h white 6
+@mat e white 5
+@mat m white 3
+@mat s white 2
+@mat k black 4
+@mat b black 2
+@mat g gold 4
+@mblock 0 0
+hhhheeeeemmmmss.
+hhheh...e.....s.
+eeh.eeem......s.
+ee.h...emm...s..
+ehheh.e...mmms..
+e.e..he.....sms.
+m..e.ee.....s...
+m..ee..e...se...
+mmm.e...e.s.e...
+s...m....s..e...
+s...m...s.m.e...
+s....mss....e...
+s...ss....k.k.k.
+ssss.......bgb..
+............bk..
+...........k..k.

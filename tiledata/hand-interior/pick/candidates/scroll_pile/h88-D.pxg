@@ -1,0 +1,34 @@
+// 양피지 세 두루마리를 엇쌓고 금장 띠·붉은 매듭과 둥근 말림 끝을 더했다.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a linen 1
+@mat b linen 2
+@mat c linen 3
+@mat d linen 4
+@mat e linen 5
+@mat f linen 6
+@mat g gold 2
+@mat h gold 3
+@mat i gold 4
+@mat j gold 5
+@mat r red 1
+@mat s red 2
+@layer scrolls
+@mblock 0 0
+................
+................
+....cccccccc....
+...efffjffeeec..
+...eeejieeededb.
+...dddihdddcadb.
+....cchgdccddcb.
+..ccccrccccbbb..
+.efffjffeec.....
+.eeeejieededb...
+.ddddisrdcadb...
+..cchhgccddcb...
+...efffjffeeeec.
+..eeeejieeededdb
+..ddddihdddcaddb
+...ccchgcccccbb.

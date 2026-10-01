@@ -1,0 +1,68 @@
+// 뾰족한 아치형 검은 테와 갈라진 유리 속 붉은 외눈, 윗면이 보이는 낮은 받침으로 재해석.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat b black 1
+@mat c black 2
+@mat d black 3
+@mat e black 4
+@mat f black 5
+@mat g glass 1
+@mat h glass 2
+@mat j glass 3
+@mat k glass 4
+@mat l glass 5
+@mat a glass 0
+@mat r red 2
+@mat s red 4
+@mat t red 5
+@layer mirror
+@mblock 0 0
+.......ed.......
+......efdc......
+......fedb......
+.....efddcb.....
+....efdhhdcb....
+...efdhkjgdcb...
+...fdhkkjjgcb...
+..efdlkkjjhgcb..
+..fdllkkjjhgcb..
+..edlkkajjhgcb..
+..edlkkhajhgcb..
+..edlkkhjaggcb..
+..edlkkhjhagcb..
+..edlkkhjaagcb..
+..edlkkajhgacb..
+..edlkahjhggcb..
+..edlahhjhggcb..
+..edlkhhjhggcb..
+..edkkhhjhggcb..
+..edkhhhjhggcb..
+..edkhhhghggcb..
+..edkhgrrrrgcb..
+..edhrrtbsrgcb..
+..edhgrsbrggcb..
+..edhhggggggcb..
+..edhhggghggcb..
+..edhhggghggcb..
+..edhhggahggcb..
+..edhhgaghggcb..
+..edhhaghgggcb..
+..edhagghgggcb..
+..edahgghgggcb..
+..edhhgghgggcb..
+..edhhgghgggcb..
+..edhhggggggcb..
+..edhhggggggcb..
+..edhgggggggcb..
+..edhgggggggcb..
+..edggggggggcb..
+..efdddddddccb..
+..edeeeeeddccb..
+..cdddddddccbb..
+.efeeeeeeddddcb.
+.ffeeeeeddddccb.
+.edddddddcccbbb.
+.cdddcccccccbbb.
+..cddccccccbbb..
+..bbbbbbbbbbbb..

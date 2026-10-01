@@ -1,0 +1,50 @@
+// B: 방의 곡식 자루에 맞춘 누런 천 덩이 명암, 위에서 보이는 묶은 입구와 씨앗 그림 표 셋.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 1
+@mat b straw 2
+@mat c straw 3
+@mat d straw 4
+@mat e straw 5
+@mat t pine 4
+@mat u pine 5
+@mat l linen 4
+@mat p linen 3
+@mat g leaf 2
+@mat r bread 3
+@layer sacks
+@mblock 4 0
+.u..u...
+.tuuut..
+..bcb...
+.bddccb.
+bdccccbb
+bdlrlccb
+bdlrlccb
+bdpppccb
+.bcccba.
+..baaa..
+@mblock 0 5
+.u.u....
+.tuut...
+..bct...
+.bddcb..
+bedcccb.
+bdlgpcb.
+bdlggcb.
+bdpppcb.
+bdcccca.
+.bcccba.
+..baaa..
+@mblock 8 6
+..u.u...
+..tuut..
+...bct..
+..bddcb.
+.bedcccb
+.bdlrpcb
+.bdlrrcb
+.bdpppca
+.bdcccca
+..baaaa.

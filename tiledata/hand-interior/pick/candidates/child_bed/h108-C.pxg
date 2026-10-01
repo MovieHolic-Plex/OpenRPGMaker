@@ -1,0 +1,52 @@
+// C: 별 머리판·밝은 베개·큰 파란 이불 덩어리, 결을 줄이고 남쪽 틀과 다리를 또렷하게.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat l linen 4
+@mat m linen 5
+@mat n linen 2
+@mat o linen 3
+@mat q blue 4
+@mat r blue 3
+@mat s blue 2
+@mat t blue 1
+@mat u blue 5
+@mat v brass 5
+@mblock 0 0
+...bbbbbbbbbb...
+..beeeeeeeeeeb..
+.becddddddddcba.
+.becdddvddddcba.
+.becdvvvvvddcba.
+.becddvvvdddcba.
+.becdvdddvddcba.
+.becddddddddcba.
+.becddddddddcba.
+.bbcccccccccbba.
+.bcbbbbbbbbbcba.
+.bc.nlllllln.ba.
+.bcnmmmmmmmlnba.
+.bcnmmmmmmmlnba.
+.bc.olllllon.ba.
+.bcllllllllllba.
+.bcuuuuuuuuqrba.
+.bcqqqqqqqqqrba.
+.bcqqqqqqqqqrba.
+.bcqqqqqqqqqrba.
+.bcqqqqqqqqqrba.
+.bcqqqqqqqqqrba.
+.bcqqqqqqqqqrba.
+.bcqqqqqqqqrrba.
+.bcrrrrrrrrrsba.
+.bcssssssssstba.
+.bcbbbbbbbbbbba.
+.beeeeeeeeedcba.
+.bcdddddddddbaa.
+.bbcccccccccbaa.
+.bcba......bbaa.
+.bbaa......baaa.

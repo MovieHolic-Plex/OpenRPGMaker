@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/guild_lockers/h69-C.pxg",
+ "id": "guild lockers",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  2,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "여섯 문을 3열×2단의 큰 덩어리로 나누고 4행 윗면·작은 번호·쇠 손잡이만 남겨 또렷하게 정리.",
+ "ok": true
+}

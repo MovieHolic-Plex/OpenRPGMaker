@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/diary_stand/h123-C.pxg",
+ "id": "diary stand",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "펼친 두 쪽을 앞쪽이 넓은 큰 면으로 보여 주고, 깃펜과 나무 받침은 성경대 명암의 단순한 덩어리로 정리.",
+ "ok": true
+}

@@ -1,0 +1,59 @@
+// C: 굵은 가로대와 떨어진 세 농기구 덩이, 최소 결과 보이는 윗면.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a wood 3
+@mat b wood 5
+@mat c wood 6
+@mat d wood 7
+@mat e iron 1
+@mat f iron 2
+@mat g iron 3
+@mat h iron 4
+@mat i iron 5
+@layer rack
+@mblock 1 1
+.cccccccccccccccccccccccccccc.
+cdddddddccccccccdddddddccccccb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+@layer tools
+// 괭이: 넓은 아래로 꺾인 날과 두 칸 자루.
+@mblock 2 5
+....ca.
+ghhhcag
+ihhfcaf
+hgffca.
+fff.ca.
+....ca.
+....ba.
+....ba.
+....ba.
+....ba.
+....aa.
+// 낫: 열린 굽은 날, 짧고 굵은 손잡이.
+@mblock 11 5
+...hhhf.
+..hi..gf
+.hg...hf
+.g....hf
+.....hg.
+....hg..
+...hgf..
+..cag...
+..ca....
+..ba....
+..aa....
+// 물뿌리개: 손잡이 구멍과 두 줄 입구, 왼쪽 주둥이.
+@mblock 19 5
+......hhh...
+.....hf.gf..
+.....hf.gf..
+.....hhhhf..
+hg..hiffhhf.
+ihg.hhhgggf.
+.hggghhgggf.
+..fghhhgggf.
+....ghhgggf.
+....fggggf..
+.....ffff...

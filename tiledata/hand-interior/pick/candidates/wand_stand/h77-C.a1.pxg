@@ -1,0 +1,68 @@
+// C: 큰 청록 빛끝과 두 칸 지팡이, 윗면 3행의 낮은 돌 받침으로 단순하고 또렷하게.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mat t teal 4
+@mat b brass 3
+@mat w wood 3
+@layer stand
+@mblock 2 23
+..ssssssss..
+.ssssssssss.
+.ssssssssss.
+.ssssssssss.
+.ssssssssss.
+.ssssssssss.
+.ssssssssss.
+ssssssssssss
+ssssssssssss
+@tblock 2 23
+..45555543..
+.4566654432.
+.3444443332.
+.3333333222.
+.3433333222.
+.3433333222.
+.3333322222.
+344444333322
+222222222221
+@layer wand
+@mblock 7 7
+ww *17
+@tblock 7 7
+73
+73
+73
+73
+73
+73
+73
+73
+73
+73
+73
+73
+73
+73
+73
+73
+73
+@mblock 6 5
+bbbb
+.bb.
+@tblock 6 5
+4542
+.42.
+@mblock 5 0
+..tt..
+.tttt.
+tttttt
+tttttt
+.tttt.
+@tblock 5 0
+..43..
+.5642.
+466432
+455432
+.3432.

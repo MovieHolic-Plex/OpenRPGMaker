@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/indoor_fountain/h62-E.pxg",
+ "id": "indoor fountain",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  16,
+  31,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "돌 물그릇과 수면(y22~47)은 그대로 두고 조개 장식을 y16으로 내려 축소, 중앙 기둥과 양쪽 낙수를 줄여 약 16px 솟음으로 수정.",
+ "ok": true
+}

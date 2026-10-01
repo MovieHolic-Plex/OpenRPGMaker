@@ -1,0 +1,30 @@
+// C: 넓은 나무 몸통과 두 줄 입구, 큰 편지 한 통으로 읽히는 벽 우편함.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f linen 2
+@mat g linen 3
+@mat h linen 4
+@mat i linen 5
+@mblock 0 0
+................
+................
+................
+....ffffffff....
+....fiiiiihf....
+....fhiiiihf....
+....fighighf....
+...afiggghhfa...
+..adehhhhhhbba..
+..adaaaaaaaaba..
+..adeeeedddcba..
+..adcccccccbba..
+..adcccccccbba..
+..adccbbcccbba..
+..abbbbbbbbbaa..
+...aaaaaaaaaa...

@@ -1,0 +1,47 @@
+// 남향 검은 함포: 긴 포신 윗면과 열린 포구, 네 나무 바퀴와 목제 받침.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A iron 0
+@mat B iron 1
+@mat C iron 2
+@mat D iron 3
+@mat E iron 4
+@mat w wood 1
+@mat x wood 3
+@mat y wood 5
+@mat z wood 7
+@layer cannon
+@mblock 0 0
+................
+......BBBB......
+.....BDDDCB.....
+....BEDDDCCB....
+....BEDDCCCB....
+....BEDDCCCB....
+....BDDDCCCB....
+....BEDDDCCB....
+....BDCCCCCB....
+.....BDCCCB.....
+.....BDCCCB.....
+...wwBDCCCBww...
+..wzyBDCCCBxyw..
+..wyxBDDCCBxxw..
+.wwyxDEDDCCxyww.
+wyzwBEDDDCCBwyxw
+wyxwBDDDCCCBwyxw
+wyxwBEDDCCCBwxxw
+wxxwBEDDCCCBwxxw
+.wwxBDEDDCCBxww.
+..wyBEDDDCCBxw..
+..wyBEDCCCCBxw..
+..wyBDDBBBCBxw..
+..wyBCBAAABAxw..
+..wyxBBAAABxxw..
+..wyzwBBBBwyxw..
+.wwzyyyyyyyyxww.
+wyzxxyyxxxyyxyxw
+wyxwxyyxxxxywyxw
+wyxwwxxxxxxwwxxw
+wxxw.wwwwww.wxxw
+.ww..........ww.

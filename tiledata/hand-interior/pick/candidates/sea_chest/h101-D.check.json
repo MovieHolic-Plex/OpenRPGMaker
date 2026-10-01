@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sea_chest/h101-D.pxg",
+ "id": "sea chest",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  2,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "윗면 5행의 파란 선원 궤짝에 금장 띠·앞면 문양과 쇠 잠금쇠, 양끝 밧줄 손잡이를 더했다.",
+ "ok": true
+}

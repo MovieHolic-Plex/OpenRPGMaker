@@ -1,0 +1,40 @@
+// C: 다섯 권의 어긋난 큰 덩어리, 넓은 파란 표지 윗면과 한 줄 책장만 남겼다.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a blue 1
+@mat b blue 2
+@mat c blue 3
+@mat d blue 4
+@mat e linen 2
+@mat f linen 4
+@mat g linen 3
+@mat h green 1
+@mat i green 3
+@mat j green 4
+@mat k yellow 1
+@mat l yellow 2
+@mat m yellow 4
+@mat n red 1
+@mat o red 3
+@mat p red 4
+@mat q purple 1
+@mat r purple 2
+@mat s purple 3
+@mblock 0 0
+....bbbbbbbb....
+...bddddddcca...
+...bdccccccca...
+..bdcccccccba...
+..bccccccccaa...
+..bffffffffga...
+..aaaaaaaaaaa...
+.hjffffffffgh...
+.hiiiiiiiiiih...
+...lmmmmmmmmml..
+...lffffffffgk..
+..nkkkkkkkkkkk..
+..pffffffffgn...
+..nooooooooon...
+.qsffffffffggq..
+.qrrrrrrrrrrqq..

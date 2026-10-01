@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chart_table/h96-E.pxg",
+ "id": "chart table",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  7,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "E: 높이 25px·윗면 8행의 두 받침 해도 탁자로 재해석하고, 펼친 바다 지도·황동 컴퍼스·망원경과 아래 해도 보관 선반을 배치했다.",
+ "ok": true
+}

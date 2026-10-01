@@ -1,0 +1,50 @@
+// C: 넓은 나무 윗면·두 둥근 유리 덩이·굵은 금모래로 또렷한 모래시계.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 5
+@mat e wood 7
+@mat f glass 1
+@mat g glass 2
+@mat h glass 4
+@mat i glass 5
+@mat j gold 2
+@mat k gold 3
+@mat l gold 4
+@mat m gold 5
+@layer body
+@mblock 0 0
+...aaaaaaaaaa...
+..aeeeeeecccca..
+.aeeccccccccbba.
+.aeccccccccbbba.
+..abbbbbbbbbba..
+..acafhhhhfaba..
+..acfiihhhgfba..
+..acfihhhggfba..
+..acfhmmmjgfba..
+..acfgllljjfba..
+..acafgkjjfaba..
+..aca.fkjf.aba..
+..aca..fk..aba..
+..aca..fk..aba..
+..aca..fk..aba..
+..aca..fk..aba..
+..aca..fk..aba..
+..aca.fhkf.aba..
+..acafihkgfaba..
+..acfiihkggfba..
+..acfiihkggfba..
+..acfiihkggfba..
+..acfhlmlggfba..
+..acfhmlljgfba..
+..acfgllljjfba..
+..acafjjjjfaba..
+..aca.ffff.aba..
+..aceccccccbba..
+.aeeccccccccbba.
+.aeccccccccbbba.
+..acbbbbbbbbba..
+..aaaaaaaaaaaa..

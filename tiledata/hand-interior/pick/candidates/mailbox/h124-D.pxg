@@ -1,0 +1,33 @@
+// D: 위에서 보이는 투입구와 편지 한 통, 금장 테두리와 마름모 문양의 나무 우편함.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 3
+@mat c pine 3
+@mat d pine 4
+@mat e pine 5
+@mat g brass 2
+@mat h brass 4
+@mat i brass 5
+@mat l linen 3
+@mat m linen 5
+@mat n linen 6
+@layer body
+@mblock 0 0
+................
+.....lllllll....
+.....lmnnnml....
+.....lnmlmnl....
+...bclnnlnnlcb..
+..beelmmmmmlab..
+..edhhaaaahcgb..
+..bhddddddhhgb..
+..bideedccchgb..
+..bhddddccchgb..
+..bhdcchhccggb..
+..bhddhiihcggb..
+..bhccchhccggb..
+..bhddddcccggb..
+..bihhhhhhgggb..
+...aaaaaaaaaa...

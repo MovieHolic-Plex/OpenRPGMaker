@@ -1,0 +1,35 @@
+// E: 끈을 감은 황마 자루 둘 앞에 열린 가죽 금화 주머니를 겹친 전리품 꾸러미.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 1
+@mat b straw 2
+@mat c straw 3
+@mat d straw 4
+@mat e straw 5
+@mat r linen 2
+@mat s linen 3
+@mat u dwood 2
+@mat v dwood 3
+@mat w dwood 4
+@mat x dwood 5
+@mat g gold 3
+@mat h gold 5
+@mat i gold 6
+@mblock 0 0
+...bc...........
+..bdec..........
+...ra.....bc....
+..bssb...bdec...
+.bddcba...ra....
+bdedccba.bssb...
+beedccbabddcba..
+bedcccbadeedcba.
+bddcccbadeedccba
+bdccbcbaeddccba.
+bdccbcbauihguba.
+.bcccbauhiihgub.
+.bbbbauxxggwvua.
+..aaauxxxwwvvu..
+.....uxxwwvvvu..
+......uvvvvuu...

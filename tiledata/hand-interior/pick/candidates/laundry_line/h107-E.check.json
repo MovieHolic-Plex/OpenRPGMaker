@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/laundry_line/h107-E.pxg",
+ "id": "laundry line",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "처진 빨랫줄에 어깨 윗면이 보이게 접어 넌 흰 셔츠와 발끝이 서로 다른 양말 한 쌍을 따뜻한 천색·가벼운 윤곽으로 새로 그렸다.",
+ "ok": true
+}

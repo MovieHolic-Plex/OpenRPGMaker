@@ -1,0 +1,48 @@
+// D: 갈색 나무 틀에 금장 테와 중앙 마름모 문양, 둥근 유리와 흐르는 금모래.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat d dwood 3
+@mat w wood 5
+@mat h pine 4
+@mat b gold 1
+@mat g gold 3
+@mat l gold 5
+@mat s glass 1
+@mat t glass 2
+@mat a glass 4
+@mat c glass 5
+@mblock 0 0
+.....oooooo.....
+...oohhhhwwdo...
+..ohhhwwwwwddo..
+..olllllggggbo..
+..owwwwllwdddo..
+..oddddggddddo..
+..ohdoottsooho..
+..ohdosccatswo..
+..ohdocaaattwo..
+..ogldcllggtgo..
+..ogbdallgbtbo..
+..ohdosaggtowo..
+..ohdo.tagtswo..
+..ohdo.sats.wo..
+..ohdo..as..wo..
+..ohdo..ls..wo..
+..ohdo..gs..wo..
+..ohdo..ls..wo..
+..ohdo.sat..wo..
+..ohdo.cats.wo..
+..ohdoscaatswo..
+..ogldcaaattgo..
+..ogbdcatggtbo..
+..ohdoctllggwo..
+..ohdosllggbwo..
+..ohdosggbbswo..
+..ohdoossssoho..
+..owwwwwwwwddo..
+..olllllggggbo..
+..ohhhwwwwwddo..
+..owwwwdddddbo..
+..oooooooooooo..

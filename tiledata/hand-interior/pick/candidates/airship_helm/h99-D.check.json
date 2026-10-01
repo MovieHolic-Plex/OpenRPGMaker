@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/airship_helm/h99-D.pxg",
+ "id": "airship helm",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  2,
+  29,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "놋쇠 조종석을 새로 찍고 조타륜 금장·중앙 금빛 장식·전면 연결 문양을 더했으며, 양옆 계기판의 기울어진 윗면과 남쪽 면을 구분했다.",
+ "ok": true
+}

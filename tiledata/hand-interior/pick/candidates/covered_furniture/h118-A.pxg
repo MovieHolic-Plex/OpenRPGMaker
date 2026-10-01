@@ -1,0 +1,35 @@
+// 흰 천 아래 소파 등받이·팔걸이·좌판과 윗면 주름, 바닥까지 늘어진 천을 24px 높이로 손 도트 작도.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o white 1
+@mat s white 2
+@mat m white 3
+@mat c white 4
+@mat h white 5
+@layer cloth
+@mblock 0 8
+.......oooooooooooooooooo.......
+.....oohhhhhhhhhhhhhhhhhmoo.....
+....ohhcccccccccccccccccmmso....
+....ohccccccccccccccccccmmso....
+....ohcccccccccmccccccccmmso....
+....ohcccccccccmccccccccmmso....
+....ohccccccccmsccccccccmmso....
+...oohccccccccmsccccccccmmsoo...
+..ohhcmccccccsscccccccccmchhmo..
+.ohcccmsmmmmmssmmmmmmmmsmcccmso.
+.ohcccsohcccccmccccccchoomcccso.
+.ohccmsohcccccmcccccchmssmcccso.
+.ohccmsohcccccmccccchmmssmcccso.
+.ohccmsmhccccmscccchmmsssmccmso.
+.ohccmccchhccmschhhmmmsssmccmso.
+.ohcccccccchhmmhmmmmmmmmmmccmso.
+.ohccccmccccccmcccccccmcccccmso.
+.ohccccmscccccmccccccmscccccmso.
+.ohcccmsscccccmcccccmmssccccmso.
+.ohcccmssccccmmcccccmmssccccmso.
+.ohcccmsscccmmccccccmsscccmmsso.
+.omccmmsscccmmccccccmsscccmmsso.
+..ommmsssmcmmmccccccmssscmmmso..
+..ooooo..ooooommmmooooo..ooooo..

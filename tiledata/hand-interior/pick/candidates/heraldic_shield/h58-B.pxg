@@ -1,0 +1,29 @@
+// h58-B 같은 방 화풍: 철 테두리(왼위 밝게·오른아래 어둡게) 하이터 방패, 파랑·금 사분, 왼위 칸에 금 사자
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o iron 1
+@mat q iron 2
+@mat b blue 4
+@mat B blue 3
+@mat d blue 2
+@mat G gold 3
+@mat h gold 4
+@mat j gold 2
+@mblock 0 0
+.qqqqqqqqqqqqo..
+.qbBBBBBGGGGGjo.
+.qbBGGBBGGGGGjo.
+.qbGGBGBGGGGGjo.
+.qbBGGGBGGGGGjo.
+.qbBGBGBGGGGGjo.
+.qbBBBBBGGGGGjo.
+.qhGGGGGBBBBBdo.
+.qhGGGGGBBBBBdo.
+..qhGGGGBBBBdo..
+..qhGGGGBBBBdo..
+...qhGGGBBBdo...
+...qhGGGBBBdo...
+....qGGGBBdo....
+.....qhGBdo.....
+......oooo......

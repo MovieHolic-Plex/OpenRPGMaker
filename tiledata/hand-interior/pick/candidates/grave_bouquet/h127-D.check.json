@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/grave_bouquet/h127-D.pxg",
+ "id": "grave bouquet",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  16,
+  13,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "묘비 상단을 y=16으로 내려 높이 16px·윗면 2행(y=16~17)을 맞추고 금장 십자를 앞면에 이동; y=24~31 꽃다발·잎·접지선 유지, 후보 검사 합격.",
+ "ok": true
+}

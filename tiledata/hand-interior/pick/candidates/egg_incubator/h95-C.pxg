@@ -1,0 +1,54 @@
+// C: 큰 점박이 알 하나, 넓은 돔 반사광과 낮은 놋쇠 받침으로 단순하고 또렷하게.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat g glass 2
+@mat a glass 4
+@mat b glass 5
+@mat c glass 6
+@mat d glass 1
+@mat e linen 5
+@mat f linen 6
+@mat h linen 4
+@mat i linen 3
+@mat s green 2
+@mat j brass 1
+@mat k brass 2
+@mat l brass 3
+@mat m brass 4
+@mat n brass 5
+@mat o brass 0
+@layer body
+@mblock 0 0
+......gggg......
+....ggbaaagg....
+...gbccbaaagd...
+..gbccbaaaaagd..
+..gcbbbaaaaagd..
+.gbcbaaaaaaaagd.
+.gbcaaaaaaaaagd.
+.gbaaaaaaaaaagd.
+.gbaaaaaaaaaagd.
+.gbaaaaaaaaaagd.
+.gbaaaaiiaaaagd.
+.gbaaaifeiaaagd.
+.gbaaiffeeiaagd.
+.gbaiffeeehiagd.
+.gbaiffseeeiagd.
+.gbaifsseehiagd.
+.gbaifffeehiagd.
+.gbaifffeehiagd.
+.gbiffffeehiagd.
+.gbifffeeshiagd.
+.gbiffessshiagd.
+.gbaifeeeshiagd.
+.gbaaifeehiaagd.
+.gbaaaaiiiaaagd.
+.gbaaaaaaaaaggd.
+..gnnmmmmmmkdg..
+.jnnnmmmmmllkkj.
+jnnmmmmmmmlllkkj
+jmmmmmmllllkkkkj
+.jmlllllkkkkkjj.
+..jlllkkkkkjjj..
+....jjjjjjjj....

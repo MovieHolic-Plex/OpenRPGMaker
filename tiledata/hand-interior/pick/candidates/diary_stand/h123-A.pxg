@@ -1,0 +1,51 @@
+// 펼친 두 쪽과 깃펜을 작은 목제 받침에 올리고 성경대 계열 명암과 접지선을 맞춤.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat l linen 2
+@mat m linen 3
+@mat n linen 4
+@mat p linen 5
+@mat q linen 6
+@mat r red 1
+@mat s red 2
+@mat i iron 2
+@layer object
+@mblock 0 0
+..............p.
+.............pq.
+............pqp.
+............qqn.
+...........pqp..
+...........qpn..
+...........pn...
+...........l....
+...abbbbbbblba..
+...pqqpmpppl....
+..pqqqpmpppnl...
+.aepqlpmpllpna..
+.aepqqpmpppncba.
+.aepppnmnnnncba.
+.aersssrsssrcca.
+.aedddbbbdddcca.
+.aedccddccdccca.
+.abcccccccccbba.
+..abbbbbbbbbaa..
+.....aecaab.....
+.....aecaab.....
+.....aecaab.....
+.....aecbab.....
+.....aecbab.....
+.....adcbab.....
+.....adcbab.....
+.....abcbab.....
+.....abcbab.....
+....abccbbba....
+..abedddddcbba..
+..abcccccccbaa..
+..aaaaaaaaaaaa..

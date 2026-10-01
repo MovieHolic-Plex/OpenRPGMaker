@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/demon_statue/h81-E.pxg",
+ "id": "demon statue",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "바깥으로 말린 뿔과 등 뒤에 접은 날개의 수호 마족으로 새로 해석하고, 기존 석상의 회색 명암·붉은 눈·받침 윗면 2행·바닥 접지선 y47을 맞춤.",
+ "ok": true
+}

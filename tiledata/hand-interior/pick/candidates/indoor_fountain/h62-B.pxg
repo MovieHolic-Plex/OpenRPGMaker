@@ -1,0 +1,81 @@
+// B: 뒤쪽 돌 테두리를 3행 당겨 수면을 14행으로 줄임; 기둥·낙수·앞면 돌 결 유지.
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a stone 1
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat e stone 5
+@mat f stone 6
+@mat u glass 2
+@mat v glass 3
+@mat w glass 4
+@mat x glass 5
+@mat y glass 6
+@mat k brass 4
+@mat l brass 5
+@layer basin
+@mblock 0 19
+= 11. 10b 11.
+= 8. 3b 9d 4b 8.
+= 6. 2b 5e 9d 4c 6.
+= 5. 1b 3e 3d 8c 5d 2b 5.
+= 4. 1b 3e 2d 12u 5c 1b 4.
+= 3. 1b 3e 2u 14v 3u 2c 1b 3.
+= 2. 1b 3e 2u 5v 3w 10v 2u 1c 1b 2.
+= 2. 1c 2e 2u 6v 5w 9v 2c 1a 2.
+= 1. 1b 2e 2u 6v 3w 4v 2w 7v 2c 1a 1.
+= 1. 1c 2e 1u 8v 2w 3v 3w 7v 1u 1c 1a 1.
+= 1c 1e 1d 1u 5v 2w 6v 3w 7v 2u 2c 1a
+= 1c 1e 1d 2u 5v 3w 13v 3u 2c 1a
+= 1b 1d 1e 2u 8v 2w 9v 3u 3c 1b 1a
+= 1. 1c 2e 2u 4v 3w 10v 3u 3c 2a 1.
+= 1. 1b 2d 1e 2u 3v 3w 9v 3u 3c 3b 1.
+= 2. 1c 2d 2e 2u 14v 3u 2c 1b 1a 2.
+= 2. 1b 3d 2e 3u 10v 4u 3c 2b 2.
+= 3. 1b 3d 3e 12u 4c 2b 1a 3.
+= 3. 1b 4d 5e 8d 5c 2b 1a 3.
+= 4. 1b 6d 3e 9c 3b 2a 4.
+= 4. 2b 7d 8c 5b 2a 4.
+= 5. 1b 4d 4c 2b 5c 4b 2a 5.
+= 5. 1b 3d 4c 1b 6c 5b 2a 5.
+= 6. 1b 5c 2b 4c 5b 2a 1b 6.
+= 6. 2b 4c 1b 4c 6b 2a 1b 6.
+= 7. 2b 5c 1b 3c 4b 2a 1b 7.
+= 8. 2b 3c 2b 2c 4b 2a 1b 8.
+= 9. 3b 2c 3b 3a 3b 9.
+= 11. 4b 3a 3b 11.
+@layer column
+@mblock 9 1
+......bb......
+.....beeb.....
+.....efdc.....
+.....eddc.....
+......dc......
+.....bddb.....
+...bdeeedcb...
+..beexwwxdcb..
+.beeuwvvwudcb.
+bdeduvvvvucbba
+bddeeeedcccbba
+.bdddeedccbaa.
+..bbbddcbbb...
+..x..edcb.w...
+..x..edcb.w...
+..w..edcb.x...
+..x..edcb.x...
+..x..edcb.w...
+..w..edcb.x...
+..x..edcb.x...
+..x..edcb.w...
+..w..edcb.x...
+..x..edcb.x...
+..x..ddcb.w...
+..w.beddcbx...
+..x.beddcbx...
+..x.bddccbw...
+.wx.bddccbxw..
+.vxwbbccbbxv..
+..wwvuuuwwv...
+...vvwvvwv....

@@ -1,0 +1,38 @@
+// C: 넓은 9행 경첩 뚜껑과 큰 앞판 세 장, 결을 덜어 또렷하게 만든 24px 출하 상자.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f wood 4
+@mat i iron 2
+@mat j iron 3
+@layer body
+@mblock 0 8
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+.beeeeejjeeeeeeeeeeeeejjeeeeeeb.
+.beddddijdddddddddddddijddddddb.
+.beddddddddddddddddddddddddddb.
+.beddddddddddddddddddddddddddb.
+.beccccccccccccccccccccccccccb.
+.beddddddddddddddddddddddddddb.
+.beddddddddddddddddddddddddddb.
+.bddddddddddddddddddddddddddcbb.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.adccccccccccccccccccccccccccba.
+.adccccccccccccccccccccccccccba.
+.adccccccccccccccccccccccccccba.
+.adccccccccccccccccccccccccccba.
+.adffffffffffffffffffffffffcba.
+.adccccccccccccccccccccccccccba.
+.adccccccccccccccccccccccccccba.
+.adccccccccccccccccccccccccccba.
+.adccccccccccccccccccccccccccba.
+.adffffffffffffffffffffffffcba.
+.adccccccccccccccccccccccccccba.
+.adccccccccccccccccccccccccccba.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.

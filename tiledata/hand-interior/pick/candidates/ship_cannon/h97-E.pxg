@@ -1,0 +1,50 @@
+// E: 짧고 굵은 함포, 벌어진 포구와 낮은 네 바퀴 나무 받침.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A iron 0
+@mat B iron 1
+@mat C iron 2
+@mat D iron 3
+@mat E iron 4
+@mat f wood 1
+@mat g wood 2
+@mat h wood 3
+@mat i wood 4
+@mat j wood 5
+@mat k wood 6
+@mat l wood 7
+@layer body
+@mblock 0 0
+................
+.......BB.......
+......BDCB......
+......BCCB......
+......BCCC......
+....BCCCCCCB....
+...BDEDDDCCCB...
+...BDDCCCCCCB...
+...BDDCCCCCCB...
+...BDCCCCCCBB...
+...BDEDDDCCCB...
+....BDDCCCBB....
+....BDDCCCBB....
+....BDCCCCBB....
+..BBBDCCCCBBBB..
+..CDBDCCCCBCCB..
+..fhBDDDCCBhgf..
+..flBDCCCCBijhf.
+.fflBDCCCCBijhf.
+fgilBDCCCCBijhgf
+fjkhBDDDDCBhjigf
+fjhBDEDDDDCCBhgf
+fhhBCAAAAAACBhhf
+.ffBCAAAAAABBff.
+..fiBBCCCCBBihf.
+..fijBBBBBBihhf.
+..fjikjjjiihghf.
+..fkjhhhhiihghf.
+.ffkjjjjjiiihff.
+fgifhhhhhhhhfgif
+fjjf........fjhf
+.ff..........ff.

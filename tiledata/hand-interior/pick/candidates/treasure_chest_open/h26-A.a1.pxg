@@ -1,0 +1,43 @@
+// A 상태만 바꾸기: h13-D 몸통·금띠 화소 그대로, 둥근 뚜껑을 뒤로 세워 안쪽면(어두운 나무)을 보이고 위에서 본 빈 속을 연다
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+...ooooooooooo..
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+..ooooooooooooo.
+..ooooooooooooo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+...11111111111..
+...15544444330..
+...15533333330..
+...15422222330..
+..1111111111110.
+..1222222222220.
+..1454333333330.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................

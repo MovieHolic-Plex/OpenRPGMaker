@@ -1,0 +1,54 @@
+// inn reception D: 장식 — 놋쇠 윗선·판넬 틀·메달리온·못, 펼친 숙박부와 놋쇠 종(짙은 나무 카운터)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat d dwood 2
+@mat g dwood 3
+@mat f dwood 4
+@mat h dwood 5
+@mat t dwood 6
+@mat u dwood 5
+@mat v dwood 4
+@mat j brass 6
+@mat k brass 5
+@mat l brass 4
+@mat m brass 3
+@mat n brass 2
+@mat p linen 6
+@mat q linen 4
+@mat r linen 2
+@mat s black 3
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+oooooooooooooooooooooooooooooooo
+ottttttttttttttttttttttkktttttto
+otuuppppqqppppuuuuuuuulkkmuuuuuo
+otuupsssqqssspuuuuuuuulklmuuuuuo
+otuupsspqqpsspuuuuuuunlmmmnuuuuo
+otuurrrrrrrrrruuuuuuuuvvvvvuuuuo
+ovvvvvvvvvvvvvvvvvvvvvvvvvvvvvvo
+ojkkkkkkkkkkkkkkkkkkkkkkkkkkkkko
+ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmo
+oddddddddddddddddddddddddddddddo
+ohhhhhhhhhhhhhhhhhhhhhhhhhhhhhho
+ohfglkkkkkkkkmghfglkkkkkkkkmhfgo
+ohfglggggggghnghfglggggggghnhfgo
+ohkglgfffdffhnghkglgfffdffhnhkgo
+ohfglgfffdffhnghfglgfffdffhnhfgo
+ohfglgffkkffhnghfglgffkkffhnhfgo
+ohfglgflkjmfhnghfglgflkjmfhnhfgo
+ohfglgflkkmfhnghfglgflkkmfhnhfgo
+ohfglgffmnffhnghfglgffmnffhnhfgo
+ohfglgfffdffhnghfglgfffdffhnhfgo
+ohkglgfffdffhnghkglgfffdffhnhkgo
+ohfglhhhhhhhhnghfglhhhhhhhhnhfgo
+ohfgnnnnnnnnnnghfgnnnnnnnnnnhfgo
+offffffffffffffffffffffffffffffo
+oggggggggggggggggggggggggggggggo
+oooooooooooooooooooooooooooooooo

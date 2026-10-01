@@ -1,0 +1,111 @@
+// E: 서류 수납칸과 작은 길드 명패를 단 접수대, 6행 상판에 서류·잉크병·도장과 낮은 중앙 칸막이.
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g linen 3
+@mat h linen 4
+@mat i linen 5
+@mat j linen 6
+@mat k iron 1
+@mat l iron 2
+@mat m iron 4
+@mat n brass 2
+@mat o brass 4
+@mat p brass 5
+@layer counter
+@mblock 0 12
+= 1b 46f 1a
+= 1b 1f 43e 2d 1a
+= 1b 1f 43e 2d 1a
+= 1b 1f 43e 2d 1a
+= 1b 1f 43e 2d 1a
+= 1b 1f 43e 2d 1a
+= 1b 46d 1a
+= 48a
+= 1b 1e 16c 1b 10e 1b 16c 1a
+= 1b 1e 1c 14b 1c 1b 1e 8c 1b 1b 1e 14b 1c 1a
+= 1b 1e 1c 1b 12a 1b 1c 1b 1e 8c 1b 1b 1e 1b 12a 1b 1c 1a
+= 1b 1e 1c 1b 12a 1b 1c 1b 1e 8c 1b 1b 1e 1b 12a 1b 1c 1a
+= 1b 1e 1c 1b 12a 1b 1c 1b 1e 8c 1b 1b 1e 1b 12a 1b 1c 1a
+= 1b 1e 1c 14e 1c 1b 1e 8c 1b 1b 1e 14e 1c 1a
+= 1b 1e 1c 14b 1c 1b 1e 8c 1b 1b 1e 14b 1c 1a
+= 1b 1e 1c 1b 12a 1b 1c 1b 1e 8c 1b 1b 1e 1b 12a 1b 1c 1a
+= 1b 1e 1c 1b 12a 1b 1c 1b 1e 8c 1b 1b 1e 1b 12a 1b 1c 1a
+= 1b 1e 1c 14b 1c 1b 1e 8c 1b 1b 1e 14b 1c 1a
+= 1b 46e 1a
+= 48a
+@layer grain
+@mblock 4 14
+ddddddd
+@mblock 15 13
+ddddd
+@mblock 33 14
+ddddddd
+@mblock 12 16
+dddddd
+@mblock 30 16
+dddd
+@layer stored_papers
+@mblock 5 23
+hhhhhi...gg
+iggggh...ih
+@mblock 33 23
+...hhhhhii
+...igggggh
+@mblock 6 27
+hiiiiiggg
+iggggghhh
+@mblock 34 27
+hhh...iiii
+igg...ghhh
+@layer nameplate
+@mblock 21 22
+noooon
+opppon
+opopon
+.noon.
+..nn..
+@layer divider
+@mblock 20 6
+bffffffa
+bfeeeeeb
+bedddddb
+bedccccb
+bedccccb
+bedccccb
+bbbbbbaa
+@layer paperwork
+@mblock 6 9
+.hhhhhhhh.
+hjjjjjjjjg
+hjiijjjjjg
+hjjjjjjjjg
+ghhhhhhhhg
+.gggggggg.
+@layer writing
+@mblock 7 13
+hhgggghhh
+@mblock 9 11
+gggg
+@mblock 14 12
+hh
+@layer ink
+@mblock 30 9
+.kk.
+.ml.
+kmlk
+kllk
+.kk.
+@layer stamp
+@mblock 39 10
+.bb.
+.ed.
+.bc.
+bffb
+baab

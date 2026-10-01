@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dark_altar/h83-C.pxg",
+ "id": "dark altar",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  6,
+  29,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "검은 돌 제단을 26px 높이·8행 윗면의 큰 덩어리로 그리고, 보라 불꽃 촛대 둘·해골 잔·큰 붉은 문양만 남겨 또렷하게 단순화.",
+ "ok": true
+}

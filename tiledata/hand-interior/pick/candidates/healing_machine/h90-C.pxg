@@ -1,0 +1,49 @@
+// C: 8행 상판에 여섯 구슬 홈, 큰 초록 화면과 조용한 흰 몸체로 읽힘을 정리.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o white 0
+@mat s white 2
+@mat b white 3
+@mat t white 4
+@mat h white 5
+@mat d iron 3
+@mat r red 4
+@mat w white 5
+@mat f green 1
+@mat g green 3
+@mat l green 5
+@layer machine
+@mblock 0 0
+................................
+................................
+................................
+................................
+...oooooooooooooooooooooooooo...
+..ohhhdrrdhhhhdrrdhhhhdrrdttto..
+.obhhddwwddhhddwwddhhddwwddttto.
+.ohhhhddddhhhhddddhhhhddddtttto.
+.ohhhhhhhhhhhhhhhhhhhhhhhttttso.
+.ohhhhdrrdhhhhdrrdhhhhdrrdtttto.
+.ohhhddwwddhhddwwddhhddwwddttto.
+.ohhhhddddhhhhddddhhhhddddtttto.
+.obbbbbbbbbbbbbbbbbbbbbbbbbbbso.
+.ohbbbbbbbbbbbbbbbbbbbbbbbbbbso.
+.ohbbbbbbbbbbbbbbbbbbbbbbbbbbso.
+.ohbbbbbbffffffffffffffbbbbbbso.
+.ohbbbbbbfllllllllllggfbbbbbbso.
+.ohbbbbbbfllggggggggggfbbbbbbso.
+.ohbbbbbbfggggggggggggfbbbbbbso.
+.ohbbbbbbfggggggggggggfbbbbbbso.
+.ohbbbbbbfggggggggggggfbbbbbbso.
+.ohbbbbbbfggggggggggggfbbbbbbso.
+.ohbbbbbbffffffffffffffbbbbbbso.
+.ohbbbbbbbbbbbbbbbbbbbbbbbbbbso.
+.ohbbbbbbbbbbbbbbbbbbbbbbbbbbso.
+.ohbbbbbbbbbbbbbbbbbbbbbbbbbbso.
+.ohbbbbbbbbbbbbbbbbbbbbbbbbbbso.
+.ohbbbbbbbbbbbbbbbbbbbbbbbbbbso.
+.obssssssssssssssssssssssssssso.
+.obssssssssssssssssssssssssssso.
+..osssssssssssssssssssssssssso..
+...oooooooooooooooooooooooooo...

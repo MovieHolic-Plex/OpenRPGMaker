@@ -1,0 +1,56 @@
+// B: 기존 침대·요람의 갈색 나무 테와 파란 천 명암에 맞춘 별 머리판 아이 침대.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat h linen 3
+@mat i linen 4
+@mat j linen 5
+@mat k linen 6
+@mat l blue 1
+@mat m blue 2
+@mat n blue 3
+@mat o blue 4
+@mat p blue 5
+@mat q blue 6
+@mat r gold 4
+@mat s gold 5
+@mblock 0 0
+..a..aaaaaa..a..
+.agaaggggggaaga.
+.afagffffffeafa.
+.afafffsffffafa.
+.afafsssssffafa.
+.afaffssrfffafa.
+.afaffrfrfffafa.
+.afafffffeffafa.
+.afaffeeefffafa.
+.afaaccccccaafa.
+.afahijjjjihaea.
+.afijkkkkjjhaea.
+.afijkkkkjjhaea.
+.afhiijjjihhaea.
+.afhiiiiihhhaea.
+.agjjjjjjjjjafa.
+.agkkkkjjjjjafa.
+.afppppppooomca.
+.afpqppppoonmca.
+.afopppppoonmca.
+.afopppoooonmca.
+.afoppppooonmca.
+.afopppppoonmca.
+.afopppppoonmca.
+.afoppppooonmca.
+.afnnooooonmmca.
+.afmmnnnnmmmlca.
+.agggggggfffefa.
+.afffeffffffeaa.
+.afcccccceccaaa.
+.afa........aca.
+.aaa........aaa.

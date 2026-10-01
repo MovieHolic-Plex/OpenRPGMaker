@@ -1,0 +1,49 @@
+// E: 기운 파란 화면과 자판 상판, 하부 보관문을 갖춘 밝은 일체형 보관 단말기.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o iron 1
+@mat d iron 2
+@mat s iron 3
+@mat m iron 4
+@mat h iron 5
+@mat c linen 4
+@mat l linen 5
+@mat a linen 3
+@mat b blue 2
+@mat u blue 3
+@mat v blue 4
+@mat w blue 5
+@mblock 0 0
+....dddddddd....
+...dlllcaaasd...
+..dllccccaaasd..
+..dllddddddasd..
+..dldwvvvvbdad..
+..dldwvvvubdad..
+..dldvvuuubdad..
+..dldvuuuubdad..
+..dlduuuuubdad..
+..dlduuuubbdad..
+..dldbbbbbbdad..
+..dladdddddasd..
+..dlccccccaasd..
+.dllccccccaaasd.
+.dlhhhhhmmmaasd.
+.dldsdssdsdmaad.
+.dldmdmmdmdmaad.
+.dlhhhhmmmmaaad.
+.dllccccccaaasd.
+.dccccccaaaassd.
+.dasssssssssasd.
+.dasmmmmmmmsasd.
+.dashmmmmmmmasd.
+.dashmmmmmmmasd.
+.dashmmmmmmmasd.
+.dashmddddmmasd.
+.dashmmmmmmmasd.
+.dasmmmmmmmsasd.
+.dasmmmmmmmsasd.
+.dasdddddddsasd.
+.ddssssssssssdd.
+..dddddddddddd..

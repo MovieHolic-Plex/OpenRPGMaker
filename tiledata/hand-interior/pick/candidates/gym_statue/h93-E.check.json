@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/gym_statue/h93-E.pxg",
+ "id": "gym statue",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 5,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "E: 회보라색 뿔 달린 수호 몬스터가 날개를 펼치고 웅크린 디자인으로 새로 작도; 16×48·32px 솟음·접지선 47행, 받침 윗면 2행과 전면 명판 유지.",
+ "ok": true
+}

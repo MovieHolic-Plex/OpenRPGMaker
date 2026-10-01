@@ -1,0 +1,97 @@
+// D: 8행 해도 상판, 금장 테두리와 앞판 항해 문양, 황동 컴퍼스·망원경.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b dwood 4
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f pine 5
+@mat g gold 3
+@mat h gold 4
+@mat i gold 5
+@mat j linen 3
+@mat k linen 5
+@mat l water 4
+@mat m water 3
+@mat n leaf 4
+@mat o leaf 5
+@mat p iron 2
+@mat q iron 4
+@mblock 1 7
+ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ aheeeeeeeeeeeeeeeeeeeeeeeeehha
+ ahddddddddddddddddddddddddddga
+ acddddddddddddddddddddddddddca
+ acddddddddddddddddddddddddddca
+ acdddddccddddddddddddddddddcca
+ acddddddddddddddddddccddddddca
+ ahhhhhhhhhhhhhhhhhhhhhhhhhhgga
+ abccccccccccccccccccccccccccba
+ abiiiiihhhhhhhhhhhhhhhhhggggba
+ abgbbbbbbbbbbbbbbbbbbbbbbbgba
+ abgbddddddbbbbbbbbdddddbbbgba
+ abgbddddddbbbbbbbbdddddbbbgba
+ abgbbbbbbbbbbbbbbbbbbbbbbbgba
+ aabaaaaaaaaaaaaaaaaaaaaaaaabaa
+@mblock 2 22
+acdda...................accca
+ahhga...................aggba
+ahgga...................agbba
+acdda...................accba
+acdda...................accba
+acdda...................accba
+acdda...................accba
+acdda...................accba
+accca...................abbba
+aaaaa...................aaaaa
+// 펼친 종이: 바다 두 덩이와 연결된 해안선, 접힌 아래 가장자리.
+@mblock 4 8
+kkkkkkkkkkkkkkkkk
+kllllllmmlllllllk
+kllnnnlmmlllllllk
+klnnonnlllmmllllk
+kllnnnllllmmllllk
+jjkkkkkkkkkkkkjjj
+// 망원경: 수평 상판에 놓인 황동 몸통과 어두운 접안부.
+@mblock 22 8
+.iiihh..
+pghhhggp
+ppgggbpp
+// 컴퍼스: 밝은 북서 테와 남쪽의 어두운 두께.
+@mblock 23 11
+.ihh.
+iqkgh
+hkggh
+.ggg.
+// 앞판: 연속 금줄에서 이어진 항해 마름모 문양.
+@mblock 11 17
+hh..hhh..hh
+bhhhgighhhb
+....hih....
+.....h.....
+// 겹쳐 놓은 소품의 재료별 명암을 손으로 지정한다.
+@tblock 4 8
+55555555555555555
+54444443344444445
+54444443344444445
+54445444443344445
+54444444443344445
+33555555555555333
+@tblock 22 8
+.55544..
+23444332
+22233222
+@tblock 23 11
+.544.
+54634
+46334
+.222.
+@tblock 11 17
+44..444..44
+44443534444
+....454....
+.....3.....
+@tblock 3 16
+55555444444444444444443333

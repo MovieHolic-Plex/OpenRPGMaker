@@ -1,0 +1,63 @@
+// C: 두꺼운 은테와 넓은 보라 소용돌이, 윗면이 보이는 낮은 받침으로 단순화.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat e iron 2
+@mat q iron 3
+@mat s iron 4
+@mat l iron 5
+@mat h iron 6
+@mat d purple 1
+@mat p purple 2
+@mat v purple 4
+@mat b purple 5
+@layer mirror
+@mblock 0 0
+......ssss......
+....slhhllqs....
+...slhhhhllqs...
+..slhllllllqqe..
+..lhddddddddqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhppvvvvpdqe..
+..lhpvvbbvvdqe..
+..lhvvbppbvdqe..
+..lhvbppppvdqe..
+..lhvbppppbdqe..
+..lhvbppvpbdqe..
+..lhvbppvbbdqe..
+..lhvbbppvvdqe..
+..lhvvbbbbvdqe..
+..lhpvvvvvvdqe..
+..lhppvvvvpdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhpppppppdqe..
+..lhddddddddqe..
+..sllllllllqee..
+..ssqqqqqqqeee..
+...sqeeeeeqqe...
+..slhhhhllllqs..
+.slhllllllllqqe.
+.sllllllllllqqe.
+.eqqqqqqqqqqeee.
+..eee......eee..

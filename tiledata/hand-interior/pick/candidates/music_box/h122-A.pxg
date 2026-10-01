@@ -1,0 +1,35 @@
+// A: 열린 나무 오르골에 안쪽 거울과 춤추는 인형, 윗면 5행과 남쪽 앞면을 손 도트로 구성.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 3
+@mat c wood 2
+@mat d wood 4
+@mat e wood 7
+@mat g iron 4
+@mat h iron 5
+@mat i iron 6
+@mat k linen 5
+@mat l pink 4
+@mat m pink 2
+@mat n brass 3
+@mat o brass 5
+@layer music_box
+@mblock 0 0
+....aaaaaaaa....
+...aeeeeeeeca...
+...aeihhhhgca...
+...aeihhhggca...
+...aehhhgggca...
+...aecggggcca...
+...acccckckaa...
+....aakmmkka....
+.aeeeeeembeeeca.
+.aebbbblllbbbca.
+.aebbblllllbbca.
+.aebbbbbkkbbbca.
+.aeeeeekeeeedca.
+.acdddddnodddba.
+.abccdddnccccba.
+..aaaaaaaaaaaa..

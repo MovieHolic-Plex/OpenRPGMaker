@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/toy_box/h103-D.pxg",
+ "id": "toy box",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "6행 입구와 열린 뚜껑의 파란 장난감 상자를 새로 그리고, 금테·중앙 마름모 문양과 공·곰인형·나무칼을 배치했다.",
+ "ok": true
+}

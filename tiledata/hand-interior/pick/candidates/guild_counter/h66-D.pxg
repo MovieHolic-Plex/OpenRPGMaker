@@ -1,0 +1,120 @@
+// D: 참나무 세 칸 창구에 금장 몰딩과 붉은 길드 방패 문장, 서류·잉크병·도장·낮은 중앙 칸막이.
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat K brass 2
+@mat G brass 3
+@mat H brass 4
+@mat J brass 5
+@mat l linen 2
+@mat m linen 3
+@mat n linen 4
+@mat p linen 5
+@mat i iron 1
+@mat j iron 2
+@mat k iron 4
+@mat r red 1
+@mat s red 2
+@layer cabinet
+@mblock 1 13
+= 1b 44f 1a
+= 1b 44e 1a
+= 1b 5e 7d 15e 9d 8e 1a
+= 1b 13e 10d 21e 1a
+= 1b 3d 17e 6d 18e 1a
+= 1b 44d 1a
+= 1b 44H 1a
+= 1b 44b 1a
+= 1b 44c 1a
+= 1b 44c 1a
+= 1b 44c 1a
+= 1b 44c 1a
+= 1b 44c 1a
+= 1b 44c 1a
+= 1b 44c 1a
+= 1b 44c 1a
+= 1b 44c 1a
+= 1b 44G 1a
+@mblock 2 31
+= 44a
+@layer front
+@mblock 3 22
+HHHHHHHHHHHK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+GKKKKKKKKKKK
+@mblock 18 22
+HHHHHHHHHHHK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+GKKKKKKKKKKK
+@mblock 33 22
+HHHHHHHHHHHK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+HdccccccccbK
+GKKKKKKKKKKK
+@layer ornaments
+@mblock 5 24
+HHG
+G
+@mblock 40 24
+GHH
+..K
+@mblock 21 23
+JHHHHK
+HssHsK
+HsHHsK
+.HssK
+..GK
+@layer divider
+@mblock 19 6
+.bHHHHHHHb
+bJHHHHHHHKa
+bdddddddGKa
+bdcccccccba
+bdcccccccba
+bdcccccccba
+bdcccccccba
+bccccccccba
+.bbbbbbbbaa
+@layer paperwork
+@mblock 6 10
+.lmmmmmmml
+lppppppppnl
+lnnnnnnnnml
+.mlllllllml
+.lpppppppnl
+..mmmmmmmll
+@layer inkwell
+@mblock 32 10
+.ii.
+.kk.
+ijji
+ikji
+ijji
+.ii.
+@layer stamp
+@mblock 40 11
+.bb.
+.dd.
+.bc.
+HHGK
+.GKa

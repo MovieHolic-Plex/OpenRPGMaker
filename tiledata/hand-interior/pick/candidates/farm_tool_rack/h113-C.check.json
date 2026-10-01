@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/farm_tool_rack/h113-C.pxg",
+ "id": "farm tool rack",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "굵은 나무 가로대 아래 괭이·굽은 낫·물뿌리개를 큰 덩이로 분리하고, 결을 줄여 윗면과 입구를 또렷하게 했다.",
+ "ok": true
+}

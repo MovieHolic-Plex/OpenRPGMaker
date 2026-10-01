@@ -1,0 +1,76 @@
+// 금장 지붕 테와 앞면 마름모 장식을 더한 돌 우물, 어두운 물 윗면과 나무 도르래.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 4
+@mat s stone 3
+@mat g gold 3
+@mat a water 1
+@mat r pine 3
+@layer well
+@mblock 0 0
+......gggg......
+.....wwggww.....
+....wwwwwwww....
+...wwwwwwwwww...
+..wwwwwwwwwwww..
+.wwwwwwwwwwwwww.
+wwwwwwwwwwwwwwww
+wggggggggggggggw
+.wwwwwwwwwwwwww.
+..ww........ww..
+..ww........ww..
+..ww..wwww..ww..
+..wwwwggwwwwww..
+..ww..wgrw..www.
+..ww...r....wwww
+..ww...r....ww.w
+..ww...r....ww..
+..ww...r....ww..
+..ww...r....ww..
+..ww...r....ww..
+..wwssssssssww..
+..wwssaaaassww..
+.swwsaaaaaaswws.
+.sswaaaaaaaawss.
+.sssaaaaaaaaass.
+.ssssssssssssss.
+.ssssssssssssss.
+..sssssggsssss..
+..ssssggggssss..
+..sssssggsssss..
+...ssssssssss...
+....ssssssss....
+@tblock 0 0
+......3552......
+.....135531.....
+....16774431....
+...1677674431...
+..167766544331..
+.16777665443331.
+1677766554433331
+1555544443333331
+.13333332222221.
+..64........31..
+..64........31..
+..64..1331..31..
+..646745333331..
+..64..1231..361.
+..64...4....3161
+..64...4....31.1
+..64...4....31..
+..64...4....31..
+..64...4....31..
+..64...3....31..
+..645555443331..
+..645300003231..
+.46420000001312.
+.54301111111032.
+.55411112211132.
+.45555444333332.
+.35444443333221.
+..454443333222..
+..445345432222..
+..344333322221..
+...3433332221...
+....12222211....

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/indoor_fountain/h62-C.pxg",
+ "id": "indoor fountain",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "넓은 14행 물면과 굵은 돌기둥·두 물줄기로 새 분수를 단순하게 구성하고, 밝은 왼 테와 어두운 남쪽 면으로 3/4 시점을 살림.",
+ "ok": true
+}

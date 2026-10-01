@@ -1,0 +1,185 @@
+// A: 검은 세 단 책장, 위에서 보이는 처마 4행, X 쇠사슬과 황동 자물쇠.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a black 0
+@mat b black 1
+@mat c black 2
+@mat d black 3
+@mat e black 4
+@mat f black 5
+@mat h iron 2
+@mat i iron 3
+@mat j iron 4
+@mat k iron 5
+@mat m red 2
+@mat n red 3
+@mat o linen 2
+@mat p linen 4
+@mat q blue 2
+@mat r blue 3
+@mat s green 2
+@mat t green 3
+@mat u purple 2
+@mat v purple 3
+@mat w brass 1
+@mat x brass 3
+@mat y brass 4
+@mat z brass 5
+@layer cabinet
+@mblock 0 0
+.bbbbbbbbbbbbbb.
+beeeeeeeeeeedddb
+beddddddddddcccb
+bdddddddddcccccb
+ceeeeeeeeeedddcb
+cddddddddddcccca
+cbbaaaaaaaaaabba
+cdbaaaaaaaaaabca
+cdbaaaaaaaaaabca
+cdbppannatsqqbca
+cdbpoannatsrqbca
+cdbpoanmatsrqbca
+cdbpoanmastrqbca
+cdbpoanmatsrqbca
+cdbpoanmatsrqbca
+cdbpoanmatsrqbca
+cdbpoannatsrqbca
+cdbbbbbbbbbbbbca
+cdeeeeeeedddddca
+cdddddddccccccca
+cbbaaaaaaaaaabba
+cdbaaaaaaaaaabca
+cdbaaaaaaaaaabca
+cdbstaavvppppbca
+cdbtsoauummmmbca
+cdbtsoauvnnnnbca
+cdbssoauummmmbca
+cdbssoabpppppbca
+cdbtsoacooooobca
+cdbtsoabpppppbca
+cdbssoabooooobca
+cdbbbbbbbbbbbbca
+cdeeeeeeedddddca
+cdddddddccccccca
+cbbaaaaaaaaaabba
+cdbaaaaaaaaaabca
+cdbaaaaaaaaaabca
+cdbrrqaoavvnnbca
+cdbqqqpoavmnmbca
+cdbrrqpoavmnmbca
+cdbrrqpoavmnmbca
+cdbqqqpoavmnmbca
+cdbqqqpoavmnmbca
+cdbbbbbbbbbbbbca
+cdeeeeeeedddddca
+cdddddddccccccca
+cbbbbbbbbbbbbbba
+.bbbbbbbbbbbbbb.
+@layer chains
+@mblock 1 8
+kj
+hi
+jk
+@mblock 2 11
+ji
+hk
+ij
+@mblock 3 14
+kj
+hi
+jk
+@mblock 4 17
+ji
+hk
+ij
+@mblock 5 20
+kj
+hi
+jk
+@mblock 6 23
+ji
+hk
+ij
+@mblock 7 26
+kj
+hi
+jk
+@mblock 8 29
+ji
+hk
+ij
+@mblock 9 32
+kj
+hi
+jk
+@mblock 10 35
+ji
+hk
+ij
+@mblock 11 38
+kj
+hi
+jk
+@mblock 12 41
+ji
+hk
+ij
+@mblock 13 8
+jk
+ih
+kj
+@mblock 12 11
+ij
+kh
+ji
+@mblock 11 14
+jk
+ih
+kj
+@mblock 10 17
+ij
+kh
+ji
+@mblock 9 20
+jk
+ih
+kj
+@mblock 8 23
+ij
+kh
+ji
+@mblock 7 26
+jk
+ih
+kj
+@mblock 6 29
+ij
+kh
+ji
+@mblock 5 32
+jk
+ih
+kj
+@mblock 4 35
+ij
+kh
+ji
+@mblock 3 38
+jk
+ih
+kj
+@mblock 2 41
+ij
+kh
+ji
+@layer lock
+@mblock 6 23
+.hjh.
+ji.jh
+jh.hi
+wzzxw
+wyxyw
+wyayw
+wyyyw
+.wwww

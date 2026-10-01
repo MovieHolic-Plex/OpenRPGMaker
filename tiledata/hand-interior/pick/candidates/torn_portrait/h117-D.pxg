@@ -1,0 +1,59 @@
+// D: 상단 꽃장식과 금장 모서리 몰딩, 귀부인 얼굴의 X자 칼찢김.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a gold 0
+@mat b gold 1
+@mat c gold 2
+@mat d gold 3
+@mat e gold 4
+@mat f gold 5
+@mat g gold 6
+@mat i blue 0
+@mat k black 1
+@mat m dwood 1
+@mat n dwood 3
+@mat o dwood 5
+@mat p clay 3
+@mat q clay 4
+@mat r linen 2
+@mat s red 0
+@mat t red 1
+@mat u red 4
+@mat v linen 3
+@mat w linen 5
+@layer portrait
+@mblock 12 0
+..bccb..
+.befecb.
+abedddba
+@mblock 3 3
+acccccccccccccccccccccccca
+bffffeeeeeffffffeeeeeffffb
+cfgdcddddddddddddddddcdedb
+cfcdabbbbbbbbbbbbbbbbadedb
+cfeaiiiiiiiiiiiiiiiiiiadcb
+cfeaiiiiiimmmmmmiiiiiiadcb
+cedaiiiiimnnoonnmiiiiiadcb
+cedaiiikkmnnoonnmrkiiiadcb
+cedaiiirkkopqqpmkkiiiiadcb
+cedaiiiimrkkqqkkrmiiiiadcb
+cfdaiiiimnqkkkkqnmiiiiadcb
+cfeaiiiimnqkkkqqnmiiiiadcb
+cedaiiiimnkkpkkqnmiiiiadcb
+cedaiiiirkkpqqpkkriiiiadcb
+cedaiiirkkmpqqpmnkkriiadcb
+cedaiiikkiivvvviirkkriadcb
+cedaiiiissvwvvwssiiiikadcb
+cedaiiisttvwwvttssiiiiadcb
+cedaiisttuvwwvtttssiiiadcb
+cedaisttuuuvvuttttssiiadcb
+cedastttuuuuutttttsssiadcb
+cedasttuuuutttttttsssiadcb
+cedatttuuuttttttttssssadcb
+cfdattuutttttttttsssssadcb
+cfedabbbbbbbbbbbbbbbbadecb
+cfgeeddddddeeeeddddddecddb
+bedccdddddddddddddddccccbb
+abccdddddddddddddddddcccba
+.aaaaaaaaaaaaaaaaaaaaaaaa.

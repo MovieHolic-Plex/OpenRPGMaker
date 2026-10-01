@@ -1,0 +1,157 @@
+// C: 넓은 붉은 오망성, 눌린 고리와 짧은 룬, 꼭짓점 초 다섯 개로 또렷하게.
+@size 48 48
+@cell 16
+@palette palette.pal
+@mat r meat 3
+@mat h meat 4
+@mat d meat 2
+@mat w linen 4
+@mat v linen 3
+@mat W linen 5
+@mat f orange 3
+@mat F yellow 5
+@mat b clay 1
+@layer ring
+@mblock 2 15
+= 15. 14h
+= 10. 5h 14r 5r
+= 7. 3h 5r 14. 5r 3r
+= 5. 2h 3r 24. 3r 2r
+= 4. 2h 2r 28. 2r 2d
+= 3. 2h 2r 30. 2r 2d
+= 2. 2h 2r 32. 2r 2d
+= 2. 1h 2r 34. 2r 1d
+= 1. 2h 2r 34. 2r 2d
+= 1. 1h 2r 36. 2r 1d
+= 1. 1h 1r 38. 1r 1d
+= 1h 2r 38. 2r 1d
+= 1h 1r 40. 1r 1d *9
+= 1r 2r 38. 2r 1d
+= 1. 1r 1r 38. 1r 1d
+= 1. 1r 2r 36. 2r 1d
+= 1. 2r 2r 34. 2r 2d
+= 2. 1r 2r 34. 2r 1d
+= 2. 2r 2r 32. 2r 2d
+= 3. 2r 2r 30. 2r 2d
+= 4. 2r 2r 28. 2r 2d
+= 5. 2r 3r 24. 3r 2d
+= 7. 3r 5r 14. 5r 3d
+= 10. 5r 14r 5d
+= 15. 14d
+@layer star
+// 두 개의 긴 사선, 한 줄의 넓은 가로획.
+@mblock 23 20
+hr
+@mblock 22 21
+hrhr *2
+@mblock 21 23
+hr..hr *3
+@mblock 20 26
+hr....hr *3
+@mblock 9 29
+hhhhrrrrrrrrrrrrrrrrrrrrrrrrrr
+rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
+@mblock 19 31
+hr......rr *2
+@mblock 18 33
+hr........rr *3
+@mblock 17 36
+rr..........rr *3
+@mblock 16 39
+rr............rr *3
+@mblock 15 42
+rr..............rr *2
+// 아래 두 꼭짓점에서 맞은편 위 꼭짓점으로 잇는 획.
+@mblock 10 31
+hrr......................rrr
+..hrr..................rrr
+...hrr................rrr
+.....hrr............rrr
+......hrr..........rrr
+........hrr......rrr
+.........hrr....rrr
+...........hrrrrr
+............rrr
+..........rrr.hrr
+.........rrr...hrr
+.......rrr.......hrr
+......rrr.........rrr
+@layer runes
+// 고리 안쪽의 다섯 간단한 룬. 선이 아닌 글자 덩이로 놓는다.
+@mblock 14 20
+h.h
+hhh
+h..
+@mblock 31 20
+rrr
+.r.
+.rr
+@mblock 6 34
+hr.
+.hh
+hr.
+@mblock 39 34
+rrr
+.r.
+rrr
+@mblock 22 42
+rrr
+.r.
+rrr
+@layer candles
+// 꼭짓점마다 짧은 초: 왼쪽 밝은 밀랍과 오른쪽 그늘, 낮은 받침.
+@mblock 22 10
+..f
+.FF
+.fFf
+..f
+.Wwv
+.Wwv
+.Wwv
+.Wwv
+.bbb
+bbbb.
+@mblock 7 20
+..f
+.FF
+.fFf
+..f
+.Wwv
+.Wwv
+.Wwv
+.Wwv
+.bbb
+bbbb.
+@mblock 36 20
+..f
+.FF
+.fFf
+..f
+.Wwv
+.Wwv
+.Wwv
+.Wwv
+.bbb
+bbbb.
+@mblock 13 34
+..f
+.FF
+.fFf
+..f
+.Wwv
+.Wwv
+.Wwv
+.Wwv
+.bbb
+bbbb.
+@mblock 30 34
+..f
+.FF
+.fFf
+..f
+.Wwv
+.Wwv
+.Wwv
+.Wwv
+.bbb
+bbbb.

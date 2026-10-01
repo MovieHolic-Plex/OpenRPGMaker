@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/monster_trophy/h67-E.pxg",
+ "id": "monster trophy",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  7,
+  0,
+  23,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "나무 방패판에 휜 상아색 뿔·금빛 눈·오른쪽으로 내민 넓은 주둥이의 초록 용 머리를 새로 그리고, 주둥이 윗면과 어두운 아래턱을 구분했다.",
+ "ok": true
+}

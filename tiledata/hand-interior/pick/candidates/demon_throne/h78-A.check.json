@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/demon_throne/h78-A.pxg",
+ "id": "demon throne",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.118
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  30,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "검은 돌 뿔 등받이와 양쪽 해골 팔걸이를 새로 그리고 붉은 방석 윗면 6줄·남쪽 두께·돌 받침을 넣었다.",
+ "ok": true
+}

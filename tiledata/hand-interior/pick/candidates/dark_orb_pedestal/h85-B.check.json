@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dark_orb_pedestal/h85-B.pxg",
+ "id": "dark orb pedestal",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.058
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "수정구의 왼쪽 위 보라 반사 덩이와 열쇠 받침대의 회청 돌 명암을 따라 검보라 구슬·윗면 3행·남쪽 면이 보이는 받침을 새로 그렸다.",
+ "ok": true
+}

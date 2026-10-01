@@ -1,0 +1,48 @@
+// C: 큰 흰 셔츠와 두 양말, 가는 처진 줄과 밝은 어깨 접힘만으로 또렷하게.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a linen 2
+@mat b linen 3
+@mat c linen 4
+@mat d linen 5
+@mat e linen 6
+@mat r pine 2
+@mat s pine 3
+@mat p pine 4
+@mat q pine 5
+@mat n iron 3
+@layer line
+@mblock 0 1
+= 1n 30. 1n
+= 1r 5s 20. 5s 1r
+= 6. 20s 6.
+@layer clothes
+@mblock 3 4
+= 3. 1b 3d 2. 3d 1b 3.
+= 2. 1b 3e 1c 2b 3d 1c 1b 2.
+= 1. 1b 4e 5d 3c 1b 1.
+= 1b 4d 1e 5d 4c 1b
+= 1b 2d 1b 1e 6d 1c 1b 2c 1b
+= 1a 2b 1. 1e 6d 1c 1b 1. 2a
+= 3. 1b 1e 6d 1c 1a 3.
+= 3. 1b 7d 1c 1a 3.
+= 3. 1b 6d 2c 1a 3.
+= 3. 1b 5d 1c 2d 1a 3.
+= 3. 1b 8c 1a 3.
+= 3. 1a 8b 1a 3.
+@mblock 21 5
+bdb...bdb
+edc...ddc
+edc...ddc
+edc...ddc
+edc...ddc
+edc...ddc
+eddcb.ddc
+.bdda.ddcb
+..aaa.bdda
+.......aa
+@layer pegs
+@mblock 6 3
+q.......q.......q....q
+p.......p.......p....p

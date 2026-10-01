@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/torn_portrait/h117-E.pxg",
+ "id": "torn portrait",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 21,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  29,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "모서리 장식 금테와 타원 안테, 흰 머릿수건·붉은 드레스의 세피아 귀부인으로 재해석하고 얼굴에 어두운 X자 칼자국과 찢긴 캔버스 가장자리를 넣음.",
+ "ok": true
+}

@@ -1,0 +1,37 @@
+// 장식: 금장 이중 테·쇠사슬 아래 침대와 네 갈래 별을 한 단 화려하게
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat G gold 5
+@mat H gold 3
+@mat I gold 1
+@mat e dwood 4
+@mat f dwood 3
+@mat c iron 4
+@mat k iron 2
+@mat n wood 5
+@mat N wood 3
+@mat l linen 5
+@mat L linen 3
+@mat r red 3
+@mat R red 2
+@mat y yellow 5
+@mat Y yellow 3
+@mat w yellow 6
+@mblock 0 0
+......ck................ck......
+......kc................kc......
+......ck................ck......
+..HGGGGGGGGGGGGGGGGGGGGGGGGGGH..
+..GHHHHHHHHHHHHHHHHHHHHHHHHHHI..
+..GHffffffffffffffffffffffffHI..
+..GHeenneeeeeeeeeeeeeeYeeeeeHI..
+..GHeennlleeeeeeeeeeeeyeeeeeHI..
+..GHeennlLrrrrrreeeeeywyeeeeHI..
+..GHeennLLrrrrrreeeYywwwyYeeHI..
+..GHeennLLRRRRRReeeeeywyeeeeHI..
+..GHeeNNNNNNNNNNeeeeeeyeeeeeHI..
+..GHeeNNeeeeeeNNeeeeeeYeeeeeHI..
+..GHeeeeeeeeeeeeeeeeeeeeeeeeHI..
+..GHHHHHHHHHHHHHHHHHHHHHHHHHHI..
+..IIIIIIIIIIIIIIIIIIIIIIIIIIII..

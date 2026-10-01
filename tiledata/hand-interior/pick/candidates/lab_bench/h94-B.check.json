@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/lab_bench/h94-B.pxg",
+ "id": "lab bench",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 23,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  6,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "같은 방 작업대의 얇은 갈색 윤곽·목재 덩이 명암에 맞춰 26px 실험대, 8행 흰 상판과 현미경·서류·포획 구슬·앞 서랍을 손 도트로 새로 그림.",
+ "ok": true
+}

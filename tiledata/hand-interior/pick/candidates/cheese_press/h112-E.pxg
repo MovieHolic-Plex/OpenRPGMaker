@@ -1,0 +1,49 @@
+// 기존 틀·나사·치즈를 유지하고 압착판 윗면 3행, 받침판 윗면 4행과 양옆 깊이만 보강.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat d wood 5
+@mat e wood 7
+@mat i iron 2
+@mat j iron 4
+@mat k iron 5
+@mat c cheese 2
+@mat f cheese 4
+@mat g cheese 5
+@mat h cheese 6
+@layer body
+@mblock 0 0
+.......ii.......
+...beeejkeedb...
+...bdddiibbaa...
+.......ji.......
+.......ki.......
+.......ij.......
+.......ki.......
+..beeeeikeeeb...
+..eddddijdddb...
+..dbbbbikbbba...
+..edb..ji..dba..
+..edb..ki..dba..
+..edb..ij..dba..
+..edb..ki..dba..
+..edb..ji..dba..
+..ddb..ki..dba..
+..edbbeijebdba..
+..edbbeeedbdba..
+..edbeeededdba..
+..edbbddddbdba..
+..edb.cggc.dba..
+..edbcghhgcdba..
+..ddbcgfffcdba..
+.bedbcfffccdbab.
+.eedbeccccedbad.
+.eedbeeeeeddbad.
+.beeeeddeeeeedb.
+.eddddbdddddddb.
+.bddddbddddbbba.
+.abbbbbbbbbbaa..
+..edb......dba..
+..bba......baa..

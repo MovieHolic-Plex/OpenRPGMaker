@@ -1,0 +1,52 @@
+// B: 카운터의 얇은 윤곽과 덩이 명암을 따른 흰 회복 장치, 8줄 윗면의 여섯 구슬 홈과 앞면 초록 화면.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a iron 3
+@mat b white 0
+@mat c white 2
+@mat d white 3
+@mat e white 4
+@mat f white 5
+@mat h white 6
+@mat i iron 1
+@mat j iron 3
+@mat r red 3
+@mat s red 4
+@mat g green 2
+@mat n green 4
+@mat o green 5
+@layer machine
+@mblock 0 0
+................................
+................................
+................................
+................................
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+.bffcrsrcffffcrsrcffffcrsrcfffb.
+.bffjfhfjffffjfhfjffffjfhfjffeb.
+.bfffbcbeffffbcbeffffbcbefffeeb.
+.bffffffffffffffffffffffffffeeb.
+.bfecrsrceffecrsrceffecrsrcfeeb.
+.bfejfhfjeffejfhfjeffejfhfjfeeb.
+.beeebcbeeeeebcbeeeeebcbeeeeecb.
+.bddddddddddddddddddddddddddddb.
+.abffffffffffffffffffffffffffba.
+.abeeeeeeeeeeeeeeeeeeeeeeeeedba.
+.abeeeeeeeeiiiiiiiiiiiieeeeedba.
+.abeeeeeeeeiggggggggggieeeeedba.
+.abeeeeeeeeignnnnnnnngieebsbdba.
+.abeeeeeeeeignoonnnnngieebcbdba.
+.abeeeeeeeeiggggggggggieeeeedba.
+.abeeeeeeeeijjjjjjjjjjieeeeedba.
+.abeeeeeeeeeeeeeeeeeeeeeeeeedba.
+.abeeeeeeeeeeeeeeeeeeeeeeeeedba.
+.abddddddddddddddbdddddddddddba.
+.abddeeeeeeeeeeedbeeeeeeeeeedba.
+.abddejjjjjjjjeedbeeeeeeeeeedba.
+.abddecccccccceedbeeeeeeeeeedba.
+.abddeeeeeeeeeeedbeeeeeeeeeedba.
+.abddeeeeeeeeeeedbeeeeeeeeeedba.
+.abddddddddddddddbdddddddddddba.
+..bccccccccccccccccccccccccccb..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..

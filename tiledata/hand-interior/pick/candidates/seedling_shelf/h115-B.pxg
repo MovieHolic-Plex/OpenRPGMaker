@@ -1,0 +1,51 @@
+// 같은 방의 발효 선반처럼 굵은 목재와 조용한 명암, 두 흙 상자의 윗면에 줄지은 새싹.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat s dwood 2
+@mat t dwood 3
+@mat u dwood 4
+@mat g leaf 2
+@mat h leaf 3
+@mat i leaf 4
+@mat j leaf 5
+@layer shelf
+@mblock 0 0
+................................
+................................
+................................
+................................
+........ij......................
+.......ihg......ji..............
+........g.......hgi.....ij......
+...bbbbbgbbbbbbbgibbbbbihgbbb...
+..befffegeeeeeeegeeeeeeegeeeab..
+..destttgtttttsugtttttsugsscab..
+..deutttuutttttttuusttttttscab..
+..detttttttttttttsstttttttscab..
+..dffffffffeeeeeefeeeeeeeeeeab..
+..decccccccccdccccccccccccccab..
+..ddccccdcccccccccccdcccccccbab..
+..baaaaaaaaaaaaaaaaaaaaaaaaaab..
+..de.......................cab..
+..de.......................cab..
+..de......ji...............cab..
+..de.....ihg.....ij........cab..
+..de..ji..g.....ihg....ji...cab..
+..beeehgiegeeeeeeegeeeihgeeeeab..
+..desttgttttttssugttttsgtttscab..
+..deutttttttttttttustttuuttscab..
+..detttttttttttssuttttttttscab..
+..dffffffeeeeeeefeeeeeeeeeeeab..
+..decccccccdccccccccdcccccccab..
+..ddcdcccccccccdcccccccccccbab..
+..baaaaaaaaaaaaaaaaaaaaaaaaaab..
+..de.......................cab..
+..de.......................cab..
+..ba.......................aab..

@@ -1,0 +1,77 @@
+// A: 8행 흰 상판에 현미경·서류·포획 구슬, 나무 서랍 앞면을 둔 26px 연구소 실험대.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a pine 0
+@mat b pine 2
+@mat c pine 3
+@mat d pine 4
+@mat e pine 5
+@mat f pine 6
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat n iron 6
+@mat u white 0
+@mat v white 2
+@mat w white 3
+@mat x white 4
+@mat y white 5
+@mat z white 6
+@mat r red 1
+@mat s red 3
+@mat t red 4
+@mat p linen 5
+@mat q linen 6
+@layer bench
+@mblock 0 14
+.uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu.
+uyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxu
+uyzzzzzzzzzyyyyyyyyyyyyyyyyyyyxu
+uyzzzzzzzzzyyyyyyyyyyyyyyyyyyyxu
+uyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxu
+uyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxu
+uxxxxxxyyyyyyyyyyyyyyyyyxxxxxxvu
+uvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvu
+.uwxxxxxxxxxxxxxxxxxxxxxxxxxvu.
+.aeeeeeeeeeeeeeeeeeeeeeeeeeeba.
+.abccccccccccccabcccccccccccba.
+.abdeeeeeeeeeecabdeeeeeeeeecbba.
+.abddddaaaddddcabddddaaadddcbba.
+.abddddbbbddddcabddddbbbdddcbba.
+.abcccccccccccbaabcccccccccbbaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.abba.....................abba.
+.aaa.......................aaa.
+@layer instruments
+@mblock 5 6
+...iii....
+...lnji...
+..imnki...
+..imji....
+.imji.ij..
+.iji..mlj.
+..i...mlj.
+......mlj.
+...iiimlj.
+...lmmllj.
+..illljlj.
+..ij..ljj.
+.ilmnnmlj.
+iiikkkjji.
+@mblock 15 17
+.vvvvvv.
+vqqqqqpu
+vqlllqpu
+vqllqqpu
+.vvvvvvu
+@mblock 24 11
+..rr..
+.rttsr
+rttssr
+rtsssr
+ijjmji
+uwzzvu
+.uvvu.

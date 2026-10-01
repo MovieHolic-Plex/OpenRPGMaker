@@ -1,0 +1,50 @@
+// B: 기존 창의 황갈색 프레임과 유리 틈, 윗모서리가 보이는 비스듬한 판자 세 장.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 5
+@mat h wood 7
+@mat p wood 6
+@mat d dwood 1
+@mat e glass 1
+@mat g glass 2
+@mat n iron 3
+@layer frame
+@mblock 0 0
+................
+..aaaaaaaaaaaa..
+..ahhhhhhhhhba..
+..ahggeeggeeba..
+..ahgggeegeeba..
+..ahggeegeeeba..
+..ahgeeeggeeba..
+..ahggeeggeeba..
+..ahggeeggeeba..
+..ahgeeeggeeba..
+..ahggeegeeeba..
+..ahggeegeeeba..
+..ahgeeeggeeba..
+..ahhhhhhhhhba..
+..acccccccccba..
+..abbbbbbbbbda..
+@layer boards
+@mblock 1 3
+..........pppa
+.....pppppcnca
+pppppccbccbbaa
+cncccbbbaa....
+bbbaa.........
+@mblock 1 7
+..........pppa
+.....pppppcnca
+pppppcbcccbbaa
+cncccbbbaa....
+bbbaa.........
+@mblock 1 11
+..........pppa
+.....pppppcnca
+pppppcccbcbbaa
+cncccbbbaa....
+bbbaa.........

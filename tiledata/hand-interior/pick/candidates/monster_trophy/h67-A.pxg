@@ -1,0 +1,36 @@
+// 방패꼴 목판에 밝은 쌍뿔과 초록 용 머리; 이마와 주둥이 윗면이 보이는 길드 박제.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 2
+@mat c wood 4
+@mat d wood 6
+@mat g green 0
+@mat h green 1
+@mat i green 2
+@mat j green 3
+@mat k green 4
+@mat f green 5
+@mat l linen 2
+@mat m linen 3
+@mat n linen 5
+@mat e brass 4
+@layer trophy
+@mblock 7 0
+.l..............l.
+.mn............ml.
+..nm..........ml..
+..lnm.gggggg.ml...
+.abbnhgkkkjghlbba.
+.adchkkfkkjjihcba.
+.acgkjjkkjjiihgba.
+.acghegiiigehgcca.
+.acchgjkkjighccba.
+.acchgkkkjjjghcba.
+.acchjkggjjgihcba.
+.abcgjjiiihhhgba.
+..abcgmhhmhgba...
+...abchhhhgba....
+....abbggbba.....
+......aaaa.......

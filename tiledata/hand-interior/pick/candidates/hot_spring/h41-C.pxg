@@ -1,0 +1,48 @@
+// C 단순·또렷: 큰 돌 둘레(윗면 밝게·앞면 어둡게) + 하늘색 물 한 덩이, 김은 오른쪽 한 덩이
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat o stone 1
+@mat p stone 2
+@mat q stone 3
+@mat r stone 4
+@mat s stone 5
+@mat t stone 6
+@mat d glass 1
+@mat e glass 3
+@mat f glass 4
+@mat g glass 5
+@mat h glass 6
+@mblock 0 0
+= 48.
+= 8. 32o 8.
+= 5. 1o 36t 1o 5.
+= 3. 1o 40s 1o 3.
+= 2. 1o 42s 1o 2.
+= 1. 1o 4s 36d 4r 1o 1.
+= 1. 1o 3s 38d 3r 1o 1.
+= 1. 1o 2s 40e 2r 1o 1.
+= 1. 1o 2s 4e 8f 28e 2r 1o 1.
+= 1. 1o 2s 3e 3f 5g 3f 26e 2r 1o 1.
+= 1. 1o 2s 5e 6f 29e 2r 1o 1.
+= 1. 1o 2s 30e 3h 7e 2r 1o 1.
+= 1. 1o 2s 28e 2h 3g 2h 5e 2r 1o 1.
+= 1. 1o 2s 29e 4h 7e 2r 1o 1.
+= 1. 1o 2s 12e 8f 20e 2r 1o 1.
+= 1. 1o 2s 10e 3f 27e 2r 1o 1.
+= 1. 1o 2s 40e 2r 1o 1.
+= 1. 1o 2s 20e 10f 10e 2r 1o 1.
+= 1. 1o 2s 22e 6f 12e 2r 1o 1.
+= 1. 1o 2s 6e 5f 29e 2r 1o 1.
+= 1. 1o 2s 40e 2r 1o 1.
+= 1. 1o 2s 3e 4f 33e 2r 1o 1.
+= 1. 1o 3s 38e 3r 1o 1.
+= 1. 1o 4s 36d 4r 1o 1.
+= 2. 1o 42s 1o 2.
+= 3. 1o 40s 1o 3.
+= 3. 1o 40p 1o 3.
+= 4. 1o 9q 1p 13q 1p 14q 1o 4.
+= 4. 1o 3q 1p 13q 1p 13q 1p 6q 1o 4.
+= 5. 1o 9q 1p 13q 1p 12q 1o 5.
+= 5. 1o 36p 1o 5.
+= 6. 36o 6.

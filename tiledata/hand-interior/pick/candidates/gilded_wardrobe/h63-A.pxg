@@ -1,0 +1,62 @@
+// 상부 8행과 하부 5행 유지, 문 몸통에서 16행을 덜어 전체 실루엣을 y=0~31로 축소.
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a white 1
+@mat b white 2
+@mat c white 3
+@mat d white 4
+@mat e white 5
+@mat f white 6
+@mat g gold 1
+@mat h gold 2
+@mat i gold 3
+@mat j gold 4
+@mat k gold 5
+@mat l gold 6
+@layer wardrobe
+@mblock 0 0
+..hhhhhhhhhhhhhhhhhhhhhhhhhhhh..
+.jllllllllllllllllllllllllllllh.
+.jkeeeeeeeeeeeeeeeeeeeeeeeeedjh.
+.jkeeeeeeeeeeeeeeeeddddddddddjh.
+.jkdddddddddddddddddddddddddcjh.
+.jllllllllllllllllllllllllllkjh.
+.hjjjjjjjjjjjjjjjjjjjjjjjjjjjih.
+..gggggggggggggggggggggggggggg..
+@mblock 2 8
+beeddddddddddbbcddddddddddcb *19
+@mblock 4 10
+kkkkkkkkkjh
+keeeeeeedih
+kekkkkkedih
+kekeeejcdih *3
+kedhhhhcdih
+keddddddlih
+keddddddlih
+keddddddjih
+kekkkkkedih
+kekeeejcdih
+kedhhhhcdih
+kedddddddih
+jjjjjjjjjih
+@mblock 17 10
+kkkkkkkkjih
+keeeeeedcih
+kekkkkkdcih
+kekeeejbcih *3
+kcdhhhhbcih
+klddddddcih
+klddddddcih
+kjddddddcih
+kekkkkkdcih
+kekeeejbcih
+kcdhhhhbcih
+kcddddddcih
+jiiiiiiiihh
+@mblock 0 27
+.jllllllllllllllllllllllllllkjh.
+.hjjjjjjjjjjjjjjjjjjjjjjjjjjjih.
+..ghhhhhhhhhhhhhhhhhhhhhhhhhgg..
+...jedh..................jdhg...
+...hihg..................hihg...

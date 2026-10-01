@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ship_cannon/h97-E.pxg",
+ "id": "ship cannon",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "E: 굵은 약실과 벌어진 남향 포구의 함포로 새로 찍고, 포신·받침 윗면과 네 나무 바퀴를 드러냈다.",
+ "ok": true
+}

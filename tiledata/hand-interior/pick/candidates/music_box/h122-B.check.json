@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/music_box/h122-B.pxg",
+ "id": "music box",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "같은 방 상자의 갈색 윤곽·나무 명암에 맞춰 윗면 5행, 열린 뚜껑의 거울과 팔을 든 춤추는 인형을 그렸다.",
+ "ok": true
+}

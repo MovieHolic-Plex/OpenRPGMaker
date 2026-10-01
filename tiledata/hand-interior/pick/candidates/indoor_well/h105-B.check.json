@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/indoor_well/h105-B.pxg",
+ "id": "indoor well",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "방의 통·의자에 맞춘 굵은 갈색 목재 테와 짧은 결, 16px 솟은 도르래 지붕 아래 물 윗면과 두 단 돌쌓기가 보이는 우물을 새로 그림.",
+ "ok": true
+}

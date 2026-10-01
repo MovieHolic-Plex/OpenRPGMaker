@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/seedling_shelf/h115-A.pxg",
+ "id": "seedling shelf",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  5,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "높이 27px의 목제 2단 선반에 흙 윗면 3줄과 앞 판자를 구분하고, 각 상자에 두 잎 새싹 3개를 줄지어 배치; 발효 선반 계열 목재 명암과 접지선 유지.",
+ "ok": true
+}

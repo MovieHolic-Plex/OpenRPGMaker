@@ -1,0 +1,124 @@
+// E: 적갈색 분필 룬 원과 오망성, 다섯 꼭짓점의 녹은 밀랍 초.
+@size 48 48
+@cell 16
+@palette palette.pal
+@mat a meat 2
+@mat b meat 3
+@mat c meat 4
+@mat d meat 5
+@mat w linen 3
+@mat W linen 4
+@mat V linen 5
+@mat s linen 1
+@mat g brass 2
+@mat G brass 4
+@mat f orange 3
+@mat F yellow 5
+@mat H yellow 6
+@layer chalk
+@mblock 2 14
+= 17. 10c
+= 13. 4c 10. 4b
+= 10. 3c 18. 3b
+= 8. 2c 24. 2b
+= 6. 2c 28. 2b
+= 5. 2c 30. 2b
+= 4. 2c 32. 2b
+= 3. 2c 34. 2b
+= 2. 2c 36. 2b
+= 2. 1c 38. 1b
+= 1. 2c 38. 2b
+= 1. 1c 40. 1b
+= 1c 42. 1b
+= 1c 42. 1b
+= 1c 42. 1b
+= 1c 42. 1b
+= 1c 42. 1b
+= 1c 42. 1b
+= 1b 42. 1a
+= 1b 42. 1a
+= 1b 42. 1a
+= 1. 1b 40. 1a
+= 1. 2b 38. 2a
+= 2. 1b 38. 1a
+= 2. 2b 36. 2a
+= 3. 2b 34. 2a
+= 4. 2b 32. 2a
+= 5. 2b 30. 2a
+= 6. 2b 28. 2a
+= 8. 2b 24. 2a
+= 10. 3b 18. 3a
+= 13. 4b 10. 4a
+= 17. 10b
+= 18. 8a
+// 오망성: 위 꼭짓점에서 남동, 서, 동, 남서 순서로 연결.
+@px 24 18 meat:4 24 19 meat:4 25 20 meat:4 25 21 meat:4 26 22 meat:4 26 23 meat:4 27 24 meat:4 27 25 meat:4 28 26 meat:4 28 27 meat:4 29 28 meat:4 29 29 meat:4 30 30 meat:3 30 31 meat:3 31 32 meat:3 31 33 meat:3 32 34 meat:3 32 35 meat:3 33 36 meat:3 33 37 meat:3 34 38 meat:3 34 39 meat:3 35 40 meat:3 35 41 meat:3 36 42 meat:3
+@px 36 42 meat:3 34 41 meat:3 35 41 meat:3 32 40 meat:3 33 40 meat:3 30 39 meat:3 31 39 meat:3 28 38 meat:3 29 38 meat:3 26 37 meat:3 27 37 meat:3 24 36 meat:3 25 36 meat:3 22 35 meat:3 23 35 meat:3 20 34 meat:3 21 34 meat:3 18 33 meat:4 19 33 meat:4 16 32 meat:4 17 32 meat:4 14 31 meat:4 15 31 meat:4 12 30 meat:4 13 30 meat:4 10 29 meat:4 11 29 meat:4 8 28 meat:4 9 28 meat:4 7 27 meat:4
+@mblock 7 27
+= 34c
+@px 40 27 meat:4 39 28 meat:4 38 29 meat:4 37 29 meat:4 36 30 meat:4 35 30 meat:4 34 31 meat:4 33 31 meat:4 32 32 meat:4 31 32 meat:4 30 33 meat:3 29 33 meat:3 28 34 meat:3 27 34 meat:3 26 35 meat:3 25 35 meat:3 24 36 meat:3 23 36 meat:3 22 37 meat:3 21 37 meat:3 20 38 meat:3 19 38 meat:3 18 39 meat:3 17 39 meat:3 16 40 meat:3 15 40 meat:3 14 41 meat:3 13 41 meat:3 12 42 meat:3
+@px 12 42 meat:3 13 41 meat:3 13 40 meat:3 14 39 meat:3 14 38 meat:3 15 37 meat:3 15 36 meat:3 16 35 meat:3 16 34 meat:3 17 33 meat:4 17 32 meat:4 18 31 meat:4 18 30 meat:4 19 29 meat:4 19 28 meat:4 20 27 meat:4 20 26 meat:4 21 25 meat:4 21 24 meat:4 22 23 meat:4 22 22 meat:4 23 21 meat:4 23 20 meat:4 24 19 meat:4 24 18 meat:4
+// 잘게 쪼개지지 않는 붓획 룬.
+@mblock 15 18
+cc.
+.c.
+.cc
+@mblock 30 18
+c.c
+ccc
+c..
+@mblock 8 21
+cc.
+.c.
+.cc
+@mblock 36 21
+.cc
+.c.
+cc.
+@mblock 5 32
+c.c
+ccc
+..c
+@mblock 40 32
+b.b
+bbb
+b..
+@mblock 8 37
+bb.
+.b.
+.bb
+@mblock 36 37
+.bb
+.b.
+bb.
+@mblock 20 42
+b.b
+bbb
+.b.
+@mblock 26 42
+bb.
+.b.
+bbb
+// 초는 바닥보다 위로 솟고, 녹은 밀랍과 작은 받침이 남쪽에 보인다.
+@layer candles
+@def candle
+..F...
+..HF..
+..Ff..
+..f...
+.VVW..
+.VWw..
+.VWw..
+.VWw..
+.Vww..
+WWwws.
+gGGggs
+.gggs.
+@end
+@mstamp candle 21 7
+@mstamp candle 4 17
+@mstamp candle 37 17
+@mstamp candle 9 32
+@mstamp candle 33 32
+// 밀랍은 똑같이 떨어지지 않는다.
+@px 22 15 linen:5 24 16 linen:4 5 25 linen:4 7 26 linen:3 39 24 linen:4 40 27 linen:1 10 40 linen:5 13 41 linen:3 35 39 linen:4 34 41 linen:4

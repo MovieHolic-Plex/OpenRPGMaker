@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/laundry_line/h107-B.pxg",
+ "id": "laundry line",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "약초 걸이의 가는 처진 줄·고정부와 탁자보의 따뜻한 흰색을 따라, 접힌 윗단과 남쪽 주름이 보이는 셔츠·양말을 손 도트로 신작.",
+ "ok": true
+}

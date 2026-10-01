@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cobweb/h121-E.pxg",
+ "id": "cobweb",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  13,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "E: 왼쪽 위 모서리에 성긴 부채꼴 흰 거미줄을 펼치고, 끝 실에 다리를 벌린 작은 거미를 달았다.",
+ "ok": true
+}

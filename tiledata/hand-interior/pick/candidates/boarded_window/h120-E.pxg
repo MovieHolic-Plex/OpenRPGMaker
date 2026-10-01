@@ -1,0 +1,52 @@
+// E: 둥근 윗틀의 어두운 창에 바랜 판자 세 장을 사선으로 못 박고 창턱 윗면을 드러냄.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a pine 0
+@mat b pine 1
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f pine 5
+@mat h dwood 1
+@mat i dwood 2
+@mat j dwood 3
+@mat k dwood 4
+@mat l dwood 5
+@mat m dwood 6
+@mat n glass 0
+@mat o glass 1
+@mat p iron 1
+@mat q iron 4
+@layer window
+@mblock 0 0
+................
+.....jjjjjj.....
+...jlmmmmlijj...
+..jmlknnnnkijj..
+..jlknoonnnkij..
+..jlknonnnnkij..
+..jlknnnonnkij..
+..jlknnnonnkij..
+..jlknnnnnnkij..
+..jlknnnnnnkij..
+..jlknnnnnnkij..
+..jlknnnnnnkij..
+..jlknnnnnnkij..
+..jlkkkkkkkkij..
+.jmmlmmmmmmlkij.
+.jkkkkkkkkkkijj.
+@layer boards
+@mblock 0 3
+.........eeefea.
+.....feeedcpdba.
+.aeeedcdddbaaaa.
+.apddbaaaa......
+.........eefeea.
+.....eeedddpdba.
+.aefedcdddbaaaa.
+.apddbaaaa......
+.........eefeea.
+.....feeedcpdba.
+.aeedddcddbaaaa.
+.apcdbaaaa......

@@ -1,0 +1,34 @@
+// D: 작은 씨앗 자루 셋에 금빛 묶음띠와 금테 새싹 그림표, 위에서 보이는 입구 주름.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 1
+@mat b straw 2
+@mat c straw 3
+@mat d straw 4
+@mat e straw 5
+@mat f gold 2
+@mat g gold 4
+@mat h gold 5
+@mat i linen 5
+@mat j leaf 2
+@mat k leaf 4
+@mat l straw 0
+@layer sacks
+@mblock 0 0
+................
+........dd.ed...
+.......debbdd...
+........fhgf....
+.......bddcba...
+..dd.edbedccba..
+.debbddbegggba..
+..fhgfbeiikcb...
+.bedcb.bgjgcbdd.
+beddccbabbbdebbd
+bedddcba..b.fhg.
+bdhhgfba.beddcb.
+begkkfba.bdhhgfa
+bdgijfba.bdgkkfa
+.bggffb..bdgijfa
+..bbba....bggfa.

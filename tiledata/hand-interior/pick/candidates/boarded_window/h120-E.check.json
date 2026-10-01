@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/boarded_window/h120-E.pxg",
+ "id": "boarded window",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "둥근 윗틀과 어두운 창 안쪽에 바랜 사선 판자 세 장·못을 넣고, 창턱 윗면과 남쪽 두께를 드러낸 폐가 창 디자인.",
+ "ok": true
+}

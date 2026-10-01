@@ -1,0 +1,48 @@
+// C: 넓은 해도와 세 덩이 도구, 8행 윗면과 굵은 다리로 단순하고 또렷한 선장 탁자.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A dwood 1
+@mat B dwood 2
+@mat C dwood 3
+@mat D pine 2
+@mat E pine 3
+@mat F pine 4
+@mat G pine 5
+@mat H linen 3
+@mat I linen 5
+@mat J fish 3
+@mat K fish 4
+@mat L brass 2
+@mat M brass 4
+@mat N brass 5
+@mat O iron 1
+@mat P iron 3
+@mat Q green 4
+@layer table
+@mblock 0 7
+= 2. 28C 2.
+= 1. 1C 28G 1B 1.
+= 1. 1C 1G 1F 17I 8F 1D 1B 1.
+= 1. 1C 1G 1F 1I 3Q 11K 1H 1I 2F 1O 4N 1L 1O 1D 1B 1.
+= 1. 1C 1G 1F 1I 4Q 10K 1H 1I 2F 1O 4M 1L 1O 1D 1B 1.
+= 1. 1C 1G 1F 1I 3Q 3K 3Q 5K 1H 1I 2F 1O 4L 1L 1O 1D 1B 1.
+= 1. 1C 1G 1F 1I 5K 4Q 6K 1I 3F 1L 1N 1L 2F 1D 1B 1.
+= 1. 1C 1G 1F 17I 3F 1N 1P 1M 2F 1D 1B 1.
+= 1. 1C 21F 1D 1L 1M 1L 3D 1B 1.
+= 1. 1C 27E 1D 1B 1.
+= 1. 1B 28D 1B 1.
+= 2. 1B 25E 1D 1B 2.
+= 2. 1B 5E 3D 13E 4D 1D 1B 2.
+= 2. 1B 25D 1C 1B 2.
+= 2. 28B 2.
+= 3. 1B 2F 1C 18. 1B 2E 1A 3.
+= 3. 1B 2E 1C 18. 1B 2D 1A 3.
+= 3. 1B 2E 1C 18. 1B 2D 1A 3.
+= 3. 1B 2E 1C 18. 1B 2D 1A 3.
+= 3. 1B 2D 1C 18. 1B 2D 1A 3.
+= 3. 1B 2E 1C 18. 1B 2D 1A 3.
+= 3. 1B 2E 1C 18. 1B 2C 1A 3.
+= 3. 1B 2D 1C 18. 1B 2D 1A 3.
+= 3. 1B 2D 1C 18. 1B 2C 1A 3.
+= 3. 4B 18. 4A 3.

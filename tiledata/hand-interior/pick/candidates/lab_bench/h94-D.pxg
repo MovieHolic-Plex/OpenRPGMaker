@@ -1,0 +1,83 @@
+// 흰 8행 상판에 현미경·서류·포획 구슬, 금빛 테와 서랍 손잡이를 더한 장식 실험대.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b pine 2
+@mat c pine 3
+@mat d pine 4
+@mat e pine 5
+@mat f pine 6
+@mat h white 1
+@mat j white 3
+@mat k white 4
+@mat l white 5
+@mat m white 6
+@mat n iron 1
+@mat o iron 2
+@mat p iron 3
+@mat q iron 4
+@mat s iron 5
+@mat t gold 1
+@mat u gold 3
+@mat v gold 4
+@mat w gold 5
+@mat x gold 6
+@mat R red 1
+@mat S red 3
+@mat T red 5
+@layer bench
+@mblock 1 14
+hllllllllllllllllllllllllllllh
+hmmmmmmmmmmmmmmmmmmmmmmmmllllh
+hmmllllllllllllllllllllllllkkh
+hmmllllllllllllllllllllllllkkh
+hmmllllllllllllllllllllllllkkh
+hmmllllllllllllllllllllllllkkh
+hllllllllllllllllllllllkkkkjjh
+hkkkkkkkkkkkkkkkkkkkkkkjjjjjjh
+bwwwwwwwwwwwwwwwwwwwwwwwwwvvvt
+acccccccccccccccccccccccccccca
+abeeddddddddddbbeedddddddddcba
+abedewwwwveddcbbdedwwwwvdddcba
+abedduuuutdddcbbddduuuutdddcba
+abdddddddddddcbbddddddddddccba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbba
+abfcaaaaaaaaaaaaaaaaaaaaaccbba
+abec......................cbba
+abba......................abba
+@mblock 14 24
+.t.
+wxv
+.u.
+@layer instruments
+@mblock 5 6
+.nnnn....
+nvwqn....
+.nqsn....
+..nn..nn.
+..ut..nqn
+..ut...qn
+..ut...qn
+.nppn..qn
+.nssn.nqn
+..nnnnqon
+.....qon.
+..nssqon.
+.nqqqqqn.
+..ooooo..
+@mblock 15 15
+.jjjjj.
+jmmmmlj
+jmlkkkj
+jmmlllj
+.jjjjj.
+@mblock 23 12
+..RRR..
+.RTTSR.
+RTSSSSR
+RnnmnnR
+RmlkljR
+.RkkjR.
+..hhh..
+.twwwt.

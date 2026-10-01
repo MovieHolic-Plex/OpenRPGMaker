@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crossed_swords/h60-D.pxg",
+ "id": "crossed swords",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "금테 현판 위에 교차한 두 검(금 가드·자루)과 금 문장 붉은 방패로 한 단계 화려하게",
+ "ok": true
+}

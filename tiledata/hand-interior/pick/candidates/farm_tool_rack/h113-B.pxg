@@ -1,0 +1,33 @@
+// B: 방의 공구 걸이와 같은 얇은 목재·회색 쇠 명암, 윗면 보이는 가로대와 괭이·낫·물뿌리개.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a wood 3
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f iron 1
+@mat g iron 2
+@mat h iron 3
+@mat i iron 4
+@mat j iron 5
+@layer rack
+@mblock 0 1
+.dddddddddddddddddddddddddddddd.
+.ccccccdcccccddcccccccdcccccccb.
+.abbbabbabbbbbbbabbbbbbbabbbbba.
+@layer tools
+@mblock 0 4
+......ca......h.........h.......
+..jjjica....jiiih.....ghhhg.....
+..iiihca...jh..ghh....h..gh.....
+..hhggca.........h....i..gh.....
+......ca........hg.....ihhg.....
+......ca......ih.......gjgig....
+......ca......ca....jiihhhig..ii
+......ca......ca....ijiiihhhgihg
+......ca......ca....hijiiihhghhg
+......ca......ca....hiiiihhhg...
+......ca......ca....ghhhhhhg....
+......ba......ba.....gggggg.....

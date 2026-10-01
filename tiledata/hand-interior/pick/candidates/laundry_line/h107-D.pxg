@@ -1,0 +1,82 @@
+// D: 흰 셔츠와 양말에 금색 테두리, 윗면이 보이는 금빛 벽 고정쇠.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat s linen 2
+@mat t linen 3
+@mat l linen 4
+@mat w linen 5
+@mat W linen 6
+@mat b brass 2
+@mat g brass 3
+@mat h brass 4
+@mat H brass 5
+@mat r pine 2
+@mat R pine 4
+@layer line
+@mblock 0 1
+.HH.
+hggb
+.hgb
+..bb
+@mblock 28 1
+.HH.
+hggb
+bhg.
+bb..
+@mblock 3 3
+RRRRRRR...............RRRR
+.......rrrrrrrrrrrrrrr...
+@layer laundry
+@mblock 4 4
+....stts.....
+..sswhhwts...
+.sWWWwwllts..
+sWWWwwwwllts.
+sWwwwwwwllts.
+shhslwwwltgs.
+.ssslWWWlts..
+....lWWwlts..
+....lWWwlts..
+....lwwllts..
+....lhhhhgs..
+....sttttss..
+@mblock 20 5
+.shhs
+.lwlt
+.lWlt
+.lWlt
+.lwlt
+.lwlt
+slwlt
+lwwlt
+sttts
+@mblock 26 6
+shhs
+lwlt
+lWlt
+lWlt
+lwlt
+lwlt
+lwlt
+lwlt
+wwlt
+ttts
+@mblock 24 13
+.sl
+slw
+stt
+@layer pegs
+@mblock 7 3
+Rh
+rg
+.r
+@mblock 14 4
+Rh
+rg
+@mblock 21 4
+Rh
+rg
+@mblock 28 4
+Rh
+rg

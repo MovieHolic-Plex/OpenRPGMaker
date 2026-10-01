@@ -1,0 +1,45 @@
+// B: 같은 방 궤짝의 갈색 윤곽과 성긴 판자 결, 9행 경첩 뚜껑·23px 높이.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g iron 2
+@mat h iron 3
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+..affffggffffffffffeeeggeeeeaa..
+.affeeehheeeeeeeeeeeeehheeeeeba.
+.afeeeeeeeeddeeeeeeeeeeeeeeeeba.
+.afddddddddddddddddddddddddddba.
+.afeeeeeeeeeeeeeeeeeddeeeeeeeba.
+.afeeeeddeeeeeeeeeeeeeeeeeeeeba.
+.afeeeeeeeeeeeeeeeeeeeeeeeeeeba.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbaa.
+..affddddddddddddddddddddcccaa..
+..afdccccccccbbbbcccccccccccaa..
+..afddcccccccbaabccccddcccccaa..
+..afddccddccccccccccddddccccaa..
+..afddccccccccccccccccccccccaa..
+..abbbbbbbbbbbbbbbbbbbbbbbbbaa..
+..afdccccddddcccccccccccccccaa..
+..afddccccccccccccddccccccccaa..
+..afddcccccddcccccccccddccccaa..
+..afddccccccccccccccccccccccaa..
+..abbbbbbbbbbbbbbbbbbbbbbbbbaa..
+..addcccccccccccccccccccccccaa..
+..abbbbbbbbbbbbbbbbbbbbbbbbbaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..

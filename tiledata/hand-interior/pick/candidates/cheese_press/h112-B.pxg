@@ -1,0 +1,51 @@
+// B: 숫돌의 갈색 나무 틀·밝은 짧은 테를 따른 치즈 압착기, 윗보·압착판·받침의 윗면을 노출.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 7
+@mat i iron 1
+@mat j iron 3
+@mat k iron 4
+@mat q cheese 2
+@mat r cheese 3
+@mat s cheese 4
+@mat t cheese 5
+@mat u cheese 6
+@layer press
+@mblock 0 0
+....aaaaaaaa....
+....eddddcba....
+.......ki.......
+.......ji.......
+..aaaaaaaaaaaa..
+.aeedddeddddcca.
+.aedcccdccccbba.
+.abbbbbbbbbbbba.
+.aec...ki...dba.
+.aec...ji...dba.
+.aec...kj...cba.
+.adc...ji...cba.
+.aec...ki...dba.
+.aec...ji...dba.
+.aec...kj...dba.
+.adc...ji...cba.
+.aec...ji...dba.
+.aec..abbaa.dba.
+.aec.aeddba.dba.
+.aec.edddcbadba.
+.aec.bbbbbbadba.
+.aec..qttsq..dba
+.aec.qutttsq.dba
+.aec.qtsrrrq.dba
+.aec..qrrqq..dba
+.aeedddedddddca.
+aeeddddcdddcccba
+.aedcdddcddccba.
+.abbbbbbbbbbbba.
+.aedccccccccbba.
+.aecaaaaaaaaaba.
+.aba........aba.

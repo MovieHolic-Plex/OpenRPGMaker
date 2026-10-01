@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/egg_incubator/h95-B.pxg",
+ "id": "egg incubator",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  7,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "돔 솟음을 23→16px로 7행 줄이고 점박이 알을 축소; 상부 반사광·놋쇠 받침 윗면 4행·남쪽 면·접지선 보존, 후보 검사 합격.",
+ "ok": true
+}

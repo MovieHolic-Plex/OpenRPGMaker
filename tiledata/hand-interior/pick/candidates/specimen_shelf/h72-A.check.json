@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/specimen_shelf/h72-A.pxg",
+ "id": "specimen shelf",
+ "hard": [],
+ "warn": [
+  "접지: 맨 아래 불투명 줄 y=15 — 캔버스 바닥 y=31 에서 16px 떠 있다"
+ ],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "기존 눈알·뿔·버섯 병과 색을 유지한 채 두 단을 y=0~15의 한 단으로 줄이고, 선반판 윗면 3행과 남쪽 앞판을 남김.",
+ "ok": true
+}

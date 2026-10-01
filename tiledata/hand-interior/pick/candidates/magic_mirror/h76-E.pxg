@@ -1,0 +1,65 @@
+// E: 뾰족한 은빛 아치와 보라 소용돌이, 윗면이 보이는 낮은 은빛 받침.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A iron 2
+@mat B iron 3
+@mat C iron 4
+@mat D iron 5
+@mat E iron 6
+@mat P purple 0
+@mat Q purple 1
+@mat R purple 2
+@mat S purple 3
+@mat T purple 4
+@mat U purple 5
+@mat V purple 6
+@mblock 0 0
+.......DC.......
+......DECB......
+......EDCB......
+.....DECDCB.....
+....DECPQCCB....
+...DECQPQRCCB...
+..DECQRRRRQCCB..
+..ECQRTTSSRQCB..
+..EDQRTSSSRQCB..
+..EDQRTSSRRQCB..
+..EDQRTSRRRQCB..
+..EDQRTSRRRQCB..
+..EDQRTSSRRQCB..
+..EDQRUTSSRRCB..
+..EDQRTUTSRRCB..
+..EDQRRUTTSRCB..
+..EDQRRRTUTRCB..
+..EDQRRSSTURCB..
+..EDQRRTTTURCB..
+..EDQRTUUUTRCB..
+..EDQTUVUTSRCB..
+..EDQTURRSTRCB..
+..EDQTURTUVRCB..
+..EDQTUTTUVRCB..
+..EDQSTUUUTRCB..
+..EDQRSSUTSRCB..
+..EDQRRSTTSRCB..
+..EDQRRSTSRRCB..
+..EDQRRSTSRRCB..
+..EDQRSUTSRRCB..
+..EDQSTTSRRRCB..
+..EDQSTSRRRQCB..
+..EDQRTSRRRQCB..
+..EDQRTSRRRQCB..
+..EDQRSSRRRQCB..
+..EDQRRRRRQQCB..
+..EDQQRRQQQPCB..
+..EDCQQQQQPCCB..
+..CEDCCCCCCCBA..
+...CDDCCCCBBA...
+....ACDCCBA.....
+...BCDDEDCBA....
+..BCDEEEEEDCB...
+.BCDDDDDDCCCBBA.
+.BCDCCCCCCCCBBA.
+.ACCCCCCCBBBBAA.
+..BBBBBBBBBAAA..
+..AAAAAAAAAAAA..

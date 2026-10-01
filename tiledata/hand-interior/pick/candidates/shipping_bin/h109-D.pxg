@@ -1,0 +1,40 @@
+// D: 24px 나무 출하 상자, 9행 뚜껑에 금장 경첩 띠와 앞면 새싹 문양.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b dwood 4
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f pine 5
+@mat g brass 1
+@mat h brass 3
+@mat i brass 4
+@mat j brass 5
+@layer bin
+@mblock 0 8
+= 2. 28a 2.
+= 1. 1a 3e 2g 18e 2g 3c 1a 1.
+= 1. 1a 3f 1j 1i 7f 11e 1i 1h 3e 1a 1.
+= 1. 1a 3e 1i 1h 18e 1i 1h 3d 1a 1.
+= 1. 1a 3c 1i 1h 18c 1i 1h 3b 1a 1.
+= 1. 1a 3e 1i 1h 18e 1i 1h 3d 1a 1.
+= 1. 1a 3e 1i 1h 5e 4d 9e 1i 1h 3d 1a 1.
+= 1. 1a 3e 1i 1h 18e 1i 1h 3d 1a 1.
+= 1. 1a 3d 1i 1h 18d 1i 1h 3c 1a 1.
+= 1. 1a 3e 1j 1i 18e 1i 1h 3d 1a 1.
+= 1. 1a 3b 2g 18b 2g 3b 1a 1.
+= 1. 1a 3d 1i 1h 18d 1h 1g 3c 1a 1.
+= 1. 1a 3c 1i 1h 18c 1h 1g 3c 1a 1.
+= 1. 1a 3c 1i 1h 18c 1h 1g 3b 1a 1.
+= 1. 1a 3c 1i 1h 5c 8b 5c 1h 1g 3b 1a 1.
+= 1. 1a 3c 1i 1h 5c 1b 2i 2b 2h 1b 5c 1h 1g 3b 1a 1.
+= 1. 1a 3b 1h 1g 5b 2b 1i 2h 3b 5b 1h 1g 3b 1a 1.
+= 1. 1a 3c 1i 1h 5c 3b 2i 3b 5c 1h 1g 3b 1a 1.
+= 1. 1a 3c 1i 1h 5c 3b 2h 3b 5c 1h 1g 3b 1a 1.
+= 1. 1a 3c 1i 1h 18c 1h 1g 3b 1a 1.
+= 1. 1a 3c 1i 1h 7c 4b 7c 1h 1g 3b 1a 1.
+= 1. 1a 3c 1i 1h 18c 1h 1g 3b 1a 1.
+= 1. 1a 3b 1h 1g 18b 2g 3b 1a 1.
+= 2. 28a 2.

@@ -1,0 +1,54 @@
+// B: 계기판의 쇠 테두리와 방의 목재 결을 따른 파란 화면 보관 단말기.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a iron 1
+@mat b iron 2
+@mat c iron 3
+@mat d iron 4
+@mat e iron 5
+@mat f blue 1
+@mat g blue 2
+@mat h blue 3
+@mat i blue 4
+@mat j blue 5
+@mat k wood 2
+@mat l wood 3
+@mat m wood 4
+@mat n wood 5
+@mat o wood 6
+@mat p wood 7
+@mat q linen 4
+@mblock 0 0
+...bbbbbbbbbb...
+..bddddddddddb..
+..bdcccccccccb..
+..bdaaaaaaaaab..
+..bdajjjjiiiab..
+..bdaihhhhhhgab.
+..bdaihhhhhggab.
+..bdaihjjjhggab.
+..bdaihhhhgggab.
+..bdaihhjjjggab.
+.bcdaihhhhgggab.
+.bcdaffffffffab.
+.bcdaaaaaaaaaab.
+.bcddddddddccab.
+.bbccccccccccab.
+.bdeeeeeeedccab.
+.bddbdbdbdbdccb.
+.bcddddddddcccb.
+.bcdbdbdbdbdccb.
+.bccccqqqqccccb.
+.abbbbbbbbbbbba.
+.kppoooooooommk.
+.knnnnnnnnnmmlk.
+.knoooooooommlk.
+.knllllllllmmlk.
+.knlmnnnnmlmmlk.
+.knlmcccnmlmmlk.
+.knlmmmmmmllmlk.
+.knllllllllmmlk.
+.knnnnnnnnnmmlk.
+.kmmmmmmmmmmllk.
+..kkkkkkkkkkkk..

@@ -1,0 +1,59 @@
+// 금장 꼭지와 받침 문양, 넓은 돔 반사광을 더한 점박이 알 부화기
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a glass 1
+@mat b glass 2
+@mat c glass 3
+@mat h glass 4
+@mat i glass 5
+@mat j glass 6
+@mat d linen 3
+@mat e linen 5
+@mat f linen 4
+@mat s green 1
+@mat t green 2
+@mat k brass 0
+@mat l brass 1
+@mat m brass 2
+@mat n brass 3
+@mat o brass 4
+@mat p brass 5
+@mat R gold 3
+@mat S gold 4
+@mat T gold 5
+@mat U gold 6
+@layer body
+@mblock 0 0
+.......TT.......
+.......SR.......
+......TTSR......
+.....bhhhba.....
+....bhiiiiba....
+...bhijjihcba...
+...hijhhccbaa...
+..bhihccccbbaa..
+..bijhccccbbaa..
+..bijhccccbbaa..
+..bihcdeedbbaa..
+..bihdeeeefbaa..
+..bhceeeeefdaa..
+..bhceeteefdaa..
+..bhdeessefdaa..
+..bcdeeeeffdaa..
+..bcdeeeffddaa..
+..bcdeefftsdaa..
+..bcdeeffssdaa..
+..bcdeefffddaa..
+..bcbdfffddbaa..
+..bcbdddddbbaa..
+..bbbbbbbbbaaa..
+..opppooonnnml..
+.npTToooooonnml.
+.opooonnnnnnmml.
+.lnoooonnnnmmml.
+..loonnTTnnmml..
+..lnnTnmmSnml...
+...mnTSSSnml....
+...npllllmml....
+...ml.....lk....

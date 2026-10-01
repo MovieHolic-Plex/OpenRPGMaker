@@ -1,0 +1,51 @@
+// A 설명 충실 a2: 왕관 뒤 안쪽 테 y=11 추가·밑단이 방석에 파고듦, 받침 윗면 2행
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat G gold 1
+@mat i gold 3
+@mat j gold 4
+@mat k gold 5
+@mat l gold 6
+@mat m red 1
+@mat n red 2
+@mat o red 3
+@mat p red 4
+@mat q red 5
+@mat r stone 1
+@mat s stone 2
+@mat t stone 3
+@mat u stone 4
+@mat v stone 5
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+...G...GG...G...
+..GkG.GkkG.GiG..
+..GkiiiiiiiiiG..
+..GkjjjopjjjiG..
+..GkjjjjjjjjiG..
+..GGiiiiiiiiGG..
+.mqqqqqqqqqqqqm.
+.mqqqqqqqqqqppm.
+.mppppppppppoom.
+.mnoooooooooonm.
+rvvvvvvvvvvvvvvr
+rvvvvvvvvvvvvvvr
+rutttttttttttssr
+...rutttttssr...
+...rutttttssr...
+...rutttttssr...
+...rutttttssr...
+...rutttttssr...
+..rvvvvvvvvvvr..
+..rutttttttssr..
+..rustttttsssr..
+..rrrrrrrrrrrr..

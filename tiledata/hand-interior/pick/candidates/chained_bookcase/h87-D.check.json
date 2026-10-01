@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chained_bookcase/h87-D.pxg",
+ "id": "chained bookcase",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "검은 책장에 금장 처마·모서리 문양과 금빛 자물쇠를 더하고, 은철 X 사슬과 4행 윗면을 또렷하게 표현함.",
+ "ok": true
+}

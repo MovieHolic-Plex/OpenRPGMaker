@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/rocking_horse/h104-A.pxg",
+ "id": "rocking horse",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  16,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "전체 높이를 24→16행(y16~31)으로 줄임; 안장 윗면 3행·흰 몸통과 다리·휜 받침 구분을 유지하고 y26~31 받침 화소는 그대로 보존. 후보 검사 1/1 합격.",
+ "ok": true
+}

@@ -1,0 +1,60 @@
+// B: 광석 더미의 돌 결·룬석의 빛 점에 맞춘 하늘색 결정 군집, 밝은 윗면과 남쪽 면.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a glass 1
+@mat b glass 2
+@mat c glass 3
+@mat d glass 4
+@mat e glass 5
+@mat f ice 3
+@mat g stone 1
+@mat h stone 2
+@mat i stone 3
+@mat j stone 4
+@mat k teal 5
+@layer shadow
+@block 0 29
+..------------..
+.---~~~~~~~~---.
+..---~~~~~~----.
+@layer object
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+.......f........
+......eff.......
+.....eeefb......
+.....dedcba.....
+.....eddcba.....
+.....eddcba.....
+.....ddccba.....
+.....ddccba.....
+.....ddccba.....
+.....ddccba.e...
+.....ddccbeff...
+.....ddccbedcb..
+...e.ddccbddcba.
+..effbdccbddcba.
+..edcbaccbddcba.
+..edcbaccbddcba.
+..ddcbaccbddcba.
+..ddcbaccbcccba.
+..ddcbaccbcccba.
+..ddcbaccbcccba.
+..dhcbhccbhccbh.
+.ijjhbiccbbhijh.
+ijjihhihbhhjjihg
+ijjhhiiiihijhhhg
+.hiiihhhihihhhg.
+..hhggghhhgggg..
+@mblock 2 13
+k
+@mblock 13 10
+k
+@mblock 14 23
+k

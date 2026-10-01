@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/washing_tub/h106-A.pxg",
+ "id": "washing tub",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "물 윗면을 5행으로 드러낸 나무 통에 골이 있는 빨래판을 기대고, 담금질 통에 맞춘 목재 명암·테·접지선으로 새로 그림.",
+ "ok": true
+}

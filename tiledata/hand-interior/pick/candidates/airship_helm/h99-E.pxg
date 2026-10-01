@@ -1,0 +1,79 @@
+// 놋쇠 날개형 조종대: 중앙 조타륜, 기울어진 양쪽 계기판과 레버, 좁은 받침.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A brass 1
+@mat B brass 2
+@mat C brass 3
+@mat D brass 4
+@mat E brass 5
+@mat F brass 6
+@mat p dwood 2
+@mat s dwood 5
+@mat j iron 2
+@mat k iron 4
+@mat v linen 4
+@mat R red 4
+@layer body
+@mblock 0 10
+....AAAAAAA..........AAAAAAA
+...AEEEEDDCA........AEEEEDDCCA
+..ADEjjjjjDCA......ADEjjjjjDDCA
+.ADEjvvvjkjDCA....ADEjvvvjkjDCA
+ADEEjvkvjkjDDCA..ADEjvvvjkjDDCCA
+ADEDjjjjjkjDDDCAADDDjjjjjkjDDDCA
+ADDEDDDDDDDDDDDDDDDDDDDDDDDCCBA
+ACDEEDDDDDDDCDDDDCCCDDDDDDCCBA
+.ACDDDDDCCCDCDDDDCCCDDDDDCCBA
+.ABCCCCCCCCBCCDDDCBCCCCCCCBA
+..ABDDDDDDCBBCDDCBBDDDDDCBA
+..ABDDCDDDCBBCDDCBBDCDDDCBA
+..ABDDCDDDCBBCDDCBBDCDDDCBA
+..ABDDDDDDCBBCDDCBBDDDDDCBA
+..ABDDDDDDCBBCDDCBBDDDDDCBA
+...ABCCCCCBABCDBCBABCCCCBA
+....AAAAAAA.ACDBCA.AAAAAA
+............ACDBCA
+...........ADEDDCCA
+..........ADEDDCCBCA
+..........ABCCCCCBBA
+..........AAAAAAAAAA
+@layer wheel
+@mblock 10 0
+.....pp
+.....sA
+...ppABBpp
+..pDEEDDCAp
+.pEDp..pDCAp
+.pDp.Ep..CAp
+pEDp.Ep..pCAp
+sDpDDEFCCpCBs
+pDCppEFppCBp
+.pBCCDFCCAp
+.pDCpDCpCAp
+..pCCDCBCp
+...ppDCpp
+.....DB
+.....DA
+.....DA
+@mblock 8 7
+ssp
+.pp
+@mblock 22 7
+pss
+pp
+@layer levers
+@mblock 3 7
+RR
+sB
+sB
+sB
+sB
+sB
+@mblock 28 8
+RR
+sB
+sB
+sB
+sB
+sB

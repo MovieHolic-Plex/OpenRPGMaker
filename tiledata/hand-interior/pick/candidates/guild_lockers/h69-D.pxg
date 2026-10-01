@@ -1,0 +1,55 @@
+// D: 금장 처마와 번호 1~6, 쇠 손잡이를 단 여섯 칸 나무 보관함.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat d wood 2
+@mat s wood 3
+@mat e wood 4
+@mat w wood 5
+@mat h wood 6
+@mat l wood 7
+@mat g brass 2
+@mat b brass 3
+@mat a brass 4
+@mat i iron 3
+@mat j iron 5
+@layer body
+@mblock 0 0
+................................
+................................
+..dddddddddddddddddddddddddddd..
+.dllhhhhhhhhhhhhhllllhhhhhhhhed.
+.dhhhhhhhhhhllllhhhhhhhhhhhhhhd.
+.dhhhhhhhhhhhhhhhhhhhhhhhhhheed.
+.sgbbbbbbbbbbbaabbbbbbbbbbbbggd.
+.dssssssssssssssssssssssssssssd.
+.dhhhhhhhheshhhhhhheshhhhhheeed.
+.dhhwawwweeshaaawweeshaaawweeed.
+.dhhaawwweeshwwawweeshwwawweeed.
+.dhhwawwweeshaaawweeshwaawweeed.
+.dhhwawwweeshawwwweeshwwawweeed.
+.dhhaaawweeshaaawweeshaaawweeed.
+.dhhwwwwjjeshwwwwjjeshwwwwjjeed.
+.dhhwwwwiieshwwwwiieshwwwwiieed.
+.dhhhwwwweeshwwwwweeshwwwwweeed.
+.dseeeeeeesseeeeeeesseeeeeeessd.
+.dssssssssssssssssssssssssssssd.
+.dgbbbbbbggbbbbbbbggbbbbbbbgggd.
+.dhhhhhhhheshhhhhhheshhhhhheeed.
+.dhhawawweeshaaawweeshaaawweeed.
+.dhhawawweeshawwwweeshawwwweeed.
+.dhhaaawweeshaaawweeshaaawweeed.
+.dhhwwawweeshwwawweeshawawweeed.
+.dhhwwawweeshaaawweeshaaawweeed.
+.dhhwwwwjjeshwwwwjjeshwwwwjjeed.
+.dhhwwwwiieshwwwwiieshwwwwiieed.
+.dhhhwwwweeshwwwwweeshwwwwweeed.
+.dseeeeeeesseeeeeeesseeeeeeessd.
+.dghhhhhhhhhhhhhhhhhhhhhhhhhegd.
+.dddddddddddddddddddddddddddddd.
+
+@layer crest
+@mblock 12 3
+..baab..
+.baaaab.
+..gbbg..

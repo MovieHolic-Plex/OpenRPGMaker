@@ -1,0 +1,43 @@
+// A: 갈색 나무 테를 두른 열린 파란 상자, 6행 입구에 빨간 공·분홍 인형·나무칼.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 2
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f pine 5
+@mat g blue 1
+@mat h blue 2
+@mat i blue 3
+@mat j blue 4
+@mat k red 1
+@mat l red 2
+@mat m red 4
+@mat n red 5
+@mat o linen 1
+@mat p linen 4
+@mat q linen 5
+@mat r pink 2
+@mat s pink 4
+@mat t pink 5
+@mat u pine 6
+@layer box
+@mblock 0 0
+...aaaaaaaaaa...
+..aeeedddddaua..
+..aejjiiihhauaa.
+..aeiihhhhhafaa.
+..adehhhoooafaa.
+..aeeeaqoqaadaa.
+.acbbbkoppadefa.
+.adbknmkrsradba.
+.adbnmmltstrcba.
+.adbkmllrsrbcba.
+..aeeeeedddddba.
+..adjiiiiiihhca.
+..adjiihhhhhhca.
+..adjiihhghhhca.
+..acdddddddccba.
+..aaaaaaaaaaaa..

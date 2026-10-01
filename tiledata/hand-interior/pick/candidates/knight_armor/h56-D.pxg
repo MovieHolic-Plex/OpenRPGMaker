@@ -1,0 +1,74 @@
+// 장식: 금장 투구 목테·어깨 징·흉갑 문장·허리띠·붉은 가문 천(금 마름모)과 무릎·금 명패 받침, 붉은 깃털 투구, 금 창날
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat o iron 1
+@mat a iron 2
+@mat b iron 3
+@mat c iron 4
+@mat d iron 5
+@mat e iron 6
+@mat g gold 2
+@mat j gold 4
+@mat h gold 5
+@mat t red 2
+@mat r red 3
+@mat s red 4
+@mat u red 5
+@mat z pine 4
+@mat x pine 2
+@mat k stone 1
+@mat l stone 2
+@mat m stone 3
+@mat n stone 4
+@mat p stone 5
+@mat q stone 6
+@mblock 0 0
+.............o..
+............ojh.
+.......ur...ojh.
+......outr...o..
+.....oddddo..zx.
+....oedddcco.zx.
+....oecccbbo.zx.
+....obaaaabo.zx.
+....oecccbbo.zx.
+....ojhhhhjo.zx.
+.oeeedddddco.zx.
+.ojddcccccjo.zx.
+.oecdddcbbbo.zx.
+.oecdhhdbbbo.zx.
+.oecdhghbbbo.zx.
+.oecdhhdbbbo.zx.
+..ojjhjjjjo..zx.
+..oecrsrbbo..zx.
+..oecrsrbbo..zx.
+..oecrsrbbo..zx.
+..oecrjrbbo..zx.
+..oecjhjbbo..zx.
+..oecrjrbbo..zx.
+..oecrsrbbo..zx.
+..oecrsrbbo..zx.
+..oecrsrbbo..zx.
+..ojjjjjjjo..zx.
+..oecbooecbo.zx.
+..oecbooecbo.zx.
+..oecbooecbo.zx.
+..oecbooecbo.zx.
+..oecbooecbo.zx.
+..oecbooecbo.zx.
+..oecbooecbo.zx.
+..oecbooecbo.zx.
+..ohhbooehho.zx.
+..oaaaooaaao.zx.
+..oaaaooaaao.zx.
+.oqqqqqqqqqqqqo.
+.oppppppppppppo.
+.onnnnnnnnnnnno.
+.onmmmmmmmmmmko.
+.onmjhhhhhhjmko.
+.onmjhgggghjmko.
+.onmjjjjjjjjmko.
+.onmmmmmmmmmmko.
+.ollllllllllllo.
+.okkkkkkkkkkkko.

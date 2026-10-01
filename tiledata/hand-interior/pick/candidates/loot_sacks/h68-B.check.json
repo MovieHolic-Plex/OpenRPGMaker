@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/loot_sacks/h68-B.pxg",
+ "id": "loot sacks",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "기준 자루의 황토색·덩이 명암으로 묶은 자루 둘과 금화 자루를 새로 그리고, 위에서 보이는 입구와 아래·오른쪽 그늘을 구분했다.",
+ "ok": true
+}

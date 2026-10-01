@@ -1,0 +1,44 @@
+// h61-A 설명 충실: 네모 대리석 받침(윗면 3행) 위 흰 머리·목·어깨 흉상, 빛 왼쪽 위
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o marble 0
+@mat a marble 1
+@mat b marble 2
+@mat c marble 3
+@mat d marble 4
+@mat e marble 5
+@mat f marble 6
+@mblock 0 0
+................
+................
+................
+......oooo......
+.....oeffdo.....
+....oefffddo....
+....oefffddo....
+....oeffffdo....
+....oeffcddo....
+.....oefcdo.....
+......oedo......
+......oedo......
+...oeeffffddbo..
+..oeeffffffddbo.
+..oeffffffffddo.
+..oeffffffffcdo.
+..oeffffcffcddo.
+..oeffffffffcdo.
+..oeeffffffffdo.
+..oaaaaaaaaaaao.
+.oooooooooooooo.
+.offfffffffffdo.
+.offfffffffffdo.
+.occccccccccbao.
+.ocbbbbbbbbbbao.
+.ocbbbbbbbbbbao.
+.ocbbbbbbbbbbao.
+.ocbbbbbbbbbbao.
+.ocbbbbbbbbbbao.
+.occccccccccbao.
+.ocbbbbbbbbbbao.
+.oaaaaaaaaaaaao.

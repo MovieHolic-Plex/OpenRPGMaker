@@ -1,0 +1,73 @@
+// E: 검보라 구슬을 집게형 돌 봉인 받침에 담고, 앞면에 작은 봉인 홈과 넓은 돌 발을 둠.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat p purple 1
+@mat s stone 2
+@layer body
+@mblock 0 0
+......pppp......
+....pppppppp....
+...pppppppppp...
+..pppppppppppp..
+..pppppppppppp..
+.pppppppppppppp.
+.pppppppppppppp.
+.pppppppppppppp.
+.pppppppppppppp.
+.pppppppppppppp.
+..pppppppppppp..
+..pppppppppppp..
+.spppppppppppps.
+.ssppppppppppss.
+.sssppppppppsss.
+..sssppppppsss..
+..ssssssssssss..
+.ssssssssssssss.
+.ssssssssssssss.
+..ssssssssssss..
+...ssssssssss...
+....ssssssss....
+....ssssssss....
+....sssppsss....
+....sssppsss....
+....ssssssss....
+....ssssssss....
+...ssssssssss...
+..ssssssssssss..
+.ssssssssssssss.
+.ssssssssssssss.
+..ssssssssssss..
+@tblock 0 0
+......2221......
+....23322110....
+...2343221100...
+..233322111000..
+..233221110000..
+.22322111100000.
+.22221111100000.
+.22111111000000.
+.21111111000000.
+.11111110000001.
+..111110000001..
+..111100000011..
+.31111000001121.
+.32111000011210.
+.32211100112210.
+..322111112210..
+..344322223210..
+.34443332222210.
+.23332222211110.
+..122211111100..
+...1322221100...
+....33222110....
+....33222110....
+....33221110....
+....33211110....
+....33222110....
+....33222110....
+...3443222110...
+..344443322210..
+.34443332222210.
+.23332222111110.
+..111111100000..

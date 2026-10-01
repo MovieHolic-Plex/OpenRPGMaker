@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wooden_toilet/h102-E.pxg",
+ "id": "wooden toilet",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  3,
+  0,
+  12,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "E: 스툴 계열의 갈색 명암으로 6행 둥근 뚜껑·황동 들손잡이·막힌 널판 몸체·짧은 발을 가진 나무 변기 의자를 새로 그렸다.",
+ "ok": true
+}

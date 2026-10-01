@@ -1,0 +1,56 @@
+// A: 눈알·뿔·버섯 유리 표본병을 두 단에 늘어놓고 밝은 선반 윗면과 어두운 남쪽 두께를 손 도트로 구분.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 4
+@mat c wood 5
+@mat d wood 7
+@mat e wood 3
+@mat f glass 1
+@mat g fish 2
+@mat h fish 4
+@mat i glass 5
+@mat j teal 1
+@mat k teal 2
+@mat l linen 5
+@mat m linen 3
+@mat n linen 2
+@mat o teal 1
+@mat p red 4
+@mat q red 2
+@mat r red 5
+@layer shelf
+@mblock 0 0
+.b............a.
+c..............a
+b.bcb..bc..bcb.a
+bfihgffihffihgfa
+bhjjgfhjgfhjjgfa
+bhjjgfhjlfhjjgfa
+bhlllfhjmfhrppfa
+bhlolfhmlfhqqqfa
+bhnmmfhmjfhjmjfa
+bhjkgfhngfhjmgfa
+bhjjgfhjgfhjjgfa
+bhjkgfhkgfhjkgfa
+bfgff.ffgfbfgffa
+bcccccccccccccca
+cdddcddddccdddca
+cdcccccccbccccba
+beeeebeeeeeeebea
+aaaaaaaaaaaaaaaa
+b..............a
+b.bcb..bc..bcb.a
+bfihgffihffihgfa
+bhjjgfhjlfhjjgfa
+bhlllfhjmfhrppfa
+bhlolfhmlfhqqqfa
+bhnmmfhmjfhjmjfa
+bhjjgfhngfhjmgfa
+bhjkgfhkgfhjkgfa
+bfgff.ffgfbfgffa
+bcccccccccccccca
+cdddddccddddddca
+cdccccccccbccbba
+.aeeeaeeeeeeeaa.

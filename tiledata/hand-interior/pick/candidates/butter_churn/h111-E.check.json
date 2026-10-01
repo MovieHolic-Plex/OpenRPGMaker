@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/butter_churn/h111-E.pxg",
+ "id": "butter churn",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  13,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "E: T자 손잡이와 16px 솟은 막대, 4줄 뚜껑 윗면, 나무 테 두 줄을 두른 아래가 넓은 통널 교반통으로 새로 그림.",
+ "ok": true
+}

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/guild_lockers/h69-E.pxg",
+ "id": "guild lockers",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  2,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "E: 가로 3칸×세로 2단의 번호 목제 보관함으로 재해석하고, 4행 처마 상판·철제 손잡이·드문 나뭇결을 넣음(32×32, 높이 30px, 바닥 접지 유지).",
+ "ok": true
+}

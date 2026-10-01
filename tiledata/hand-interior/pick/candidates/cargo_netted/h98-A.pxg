@@ -1,0 +1,79 @@
+// A: 25px 높이의 나무 상자 세 개, 위에서 보이는 뚜껑과 더미를 감싼 그물·매듭.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat d wood 3
+@mat b wood 5
+@mat w wood 6
+@mat h wood 7
+@mat q straw 2
+@mat n straw 3
+@mat r straw 4
+@mat k straw 5
+@layer crates
+@mblock 7 7
+oooooooooooooooo
+ohhhhhhhhhhhhhoo
+ohhhwhhhhwhhhhoo
+ohhwwwwwwwwwwwoo
+oooooooooooooooo
+owwwwwwwwwwwwdoo
+owbbbwbbbbbbwdoo
+owwwwwbwwwwwbdoo
+odddddddddddddoo
+owbbwwwwbwwwbdoo
+owwwwwbwwwwbbdoo
+owwwwwwwwwwwwdoo
+oooooooooooooooo
+@mblock 1 18
+..oooooo..............ooooo..
+.ohhhhhhoooooooooooooohhhhho.
+ohhhhwwwhhhhoohhhhhhhhhwhhhho
+owwwwwwwwwwwoowwwwwwwwwwwwdo
+oooooooooooooooooodddddddddo
+owwwwwwwwwwwdowwwwwwwwwwwwdo
+owbbwwwwwbbbdoowwwbwwwwwbbdo
+owwwwbwwwwwwdoowwwwwwbwwwwdo
+oddddddddddddooodddddddddddo
+owwwwwwbbwwwdoowbwwwwwwwwwdo
+owbbwbbwwwwwdoowwwbwwwbbbwwdo
+owwwwwwwwwwwdoowwwwwwwwwwwdo
+oddddddddddddddddddddddddddo
+oooooooooooooooooooooooooooo
+@layer net
+@mblock 7 7
+....r.......r...
+...k.r.....r.k..
+..r...r...r...r.
+.r.....krk.....r
+r.....r...r...r.
+.r...r.....r.r..
+..r.r.......k...
+...k.......r.r..
+..r.r.....r...r.
+.r...r...r.....r
+r.....krk.....r.
+.r...r...r...r..
+..r.r.....r.r...
+@mblock 1 19
+...r.........k.........r....
+..k.r.......r.r.......r.k...
+.r...r.....r...r.....r...r..
+r.....r...r.....r...r.....r.
+.r.....krk.......krk.....r..
+..r...r...r.....r...r...r...
+...r.r.....r...r.....r.r....
+....k.......krk.......k.....
+...n.n.....n...n.....n.n....
+..n...n...n.....n...n...n...
+.n.....nqn.......nqn.....n..
+q.......q.........q.......q.
+@mblock 4 20
+kr
+r.
+q.
+@mblock 24 20
+kr
+r.
+q.

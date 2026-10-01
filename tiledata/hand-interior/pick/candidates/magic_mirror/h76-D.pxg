@@ -1,0 +1,73 @@
+// D: 은테에 금장 머리장식·받침 문양, 이어지는 보랏빛 소용돌이와 빛을 더함.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat n iron 6
+@mat a gold 1
+@mat b gold 2
+@mat c gold 3
+@mat d gold 4
+@mat e gold 5
+@mat f gold 6
+@mat p purple 0
+@mat q purple 1
+@mat r purple 2
+@mat s purple 3
+@mat t purple 4
+@mat u purple 5
+@mat v purple 6
+@layer mirror
+@mblock 0 0
+.......dd.......
+......deec......
+.....adffca.....
+....adeeedba....
+...ilmnnmlki....
+..imnnmmmmllki..
+..inlkkkkkklli..
+..inmrrrrrrkli..
+..inmrrrrqqkli..
+..inmsrrrqqkli..
+..inmsrrrqqkli..
+..inmsrrrqqkli..
+..inmssrrqqkli..
+..inmrssrqqkli..
+..inmrrssqqkli..
+..inmqrrssrkli..
+..inmqqrsstkli..
+..inmqqrstuuli..
+..inmqrsutukli..
+..inmrstuuskli..
+..inmstussskli..
+..inmtussrskli..
+..inmusrqrskli..
+..inmusrqtskli..
+..inmusrutskli..
+..inmtruutrkli..
+..inmstrrrqkli..
+..inmrssrqqkli..
+..inmqstrqqkli..
+..inmqrttrqkli..
+..inmqqrtsrkli..
+..inmqqrrttkli..
+..inmqqrrtskli..
+..inmqqrstskli..
+..inmqqrstqkli..
+..inmqqqrrqkli..
+..inmqqqqqqkli..
+..inmkkkkkkkli..
+..immmmmlllkii..
+..ikkllllkkjii..
+...adeccccdba...
+...bdeeddcbba...
+...adbccdbbaa...
+....ikkkkji.....
+...ilmmmmlki....
+..imnnmmmllki...
+..ikllllkkjii...
+...ijjjjjjii....

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/photo_frames/h126-E.pxg",
+ "id": "photo frames",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 23,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  7,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "타원 황동 초상·작은 풍경·은빛 사진 액자 셋을 5행 상판에 세우고, 16px 협탁에 서랍과 아래 선반을 넣었다.",
+ "ok": true
+}

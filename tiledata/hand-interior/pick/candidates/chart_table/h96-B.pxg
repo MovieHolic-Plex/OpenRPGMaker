@@ -1,0 +1,47 @@
+// B: 책상 앵커의 갈색 테와 넓은 나무 덩이, 벽 지도 결의 해도·컴퍼스·망원경.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat w pine 3
+@mat h pine 4
+@mat d pine 2
+@mat o dwood 2
+@mat b blue 4
+@mat c blue 5
+@mat g green 4
+@mat f green 5
+@mat p linen 5
+@mat q linen 4
+@mat k brass 2
+@mat j brass 4
+@mat t brass 5
+@mat i iron 2
+@mat n iron 4
+@layer table
+@mblock 0 6
+= 1. 1d 28h 1d 1.
+= 1. 1h 28w 1d 1.
+= 1. 1h 2w 17p 4w 1j 4w 1d 1.
+= 1. 1h 2w 1p 3b 3c 3b 3g 3b 1p 3w 1k 1t 1k 3w 1d 1.
+= 1. 1h 2w 1p 2b 2c 3g 1f 3g 4b 1p 4w 1k 4w 1d 1.
+= 1. 1h 2w 1p 3b 2g 1f 3g 2b 1c 3b 1p 9w 1d 1.
+= 1. 1h 2w 1p 5b 2g 1f 2g 5b 1p 3w 1i 3j 1n 1i 1d 1.
+= 1. 1h 2w 17q 7w 2d 1d 1.
+= 1. 1d 28w 1d 1.
+= 1. 1o 28d 1o 1.
+= 2. 1o 12w 2d 12w 1o 2.
+= 2. 1o 5w 2k 5w 2d 5w 2k 5w 1o 2.
+= 2. 1o 12w 2d 12w 1o 2.
+= 2. 1o 26d 1o 2.
+= 3. 1o 1h 3w 1d 14. 1o 3w 2d 3.
+= 3. 1o 1h 3w 1d 14. 1o 3w 2d 3.
+= 3. 1o 1h 1d 2w 1d 14. 1o 2w 3d 3.
+= 3. 1o 1h 1d 2w 1d 14. 1o 3w 2d 3.
+= 3. 1o 1h 3w 1d 14. 1o 3w 2d 3.
+= 3. 1o 1h 3w 1d 14o 1o 3w 2d 3.
+= 3. 1o 1h 3w 1d 14d 1o 3w 2d 3.
+= 3. 1o 1h 3w 1d 14. 1o 3w 2d 3.
+= 3. 1o 1h 2w 2d 14. 1o 1w 4d 3.
+= 3. 1o 1h 3w 1d 14. 1o 2w 3d 3.
+= 2. 1o 1h 4w 2d 12. 1o 3w 4d 2.
+= 2. 8o 12. 8o 2.

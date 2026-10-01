@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hanging_cage/h84-E.pxg",
+ "id": "hanging cage",
+ "hard": [],
+ "warn": [
+  "접지: 맨 아래 불투명 줄 y=35 — 캔버스 바닥 y=47 에서 12px 떠 있다"
+ ],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.06
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  35
+ ],
+ "v5_bbox": null,
+ "note": "분절 지붕·배부른 철창·황동 문걸쇠의 매달린 우리로 새로 해석하고, 바닥판 윗면과 발밑 그림자로 3/4 시점과 공중 높이를 표현.",
+ "ok": true
+}

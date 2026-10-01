@@ -1,0 +1,66 @@
+// A: 28px 연금술 실험대, 8행 나무 윗면·불 켠 버너·둥근 플라스크·연결 관·앞 서랍.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 2
+@mat c pine 1
+@mat d pine 2
+@mat e pine 3
+@mat f pine 4
+@mat g pine 5
+@mat h glass 1
+@mat i glass 3
+@mat j glass 4
+@mat k glass 5
+@mat l green 2
+@mat m green 3
+@mat n green 4
+@mat o brass 1
+@mat p brass 3
+@mat q brass 4
+@mat r iron 1
+@mat s iron 3
+@mat t iron 4
+@mat u orange 3
+@mat v orange 5
+@mat w yellow 5
+@layer table
+@mblock 0 16
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+.bggggggggggggggggggggggggggggb.
+.bgfggffffffggffffffffffggffffb.
+.bgfffffffeefffffffffeefffffffb.
+.bgfffffffffffeffffffffffeffffb.
+.bgffffeeffffffefffffffffffffeb.
+.bgfffffffffffffffffffffffffffb.
+.bggggggggggggggggggggggggggggb.
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeeb.
+.acccccccccccccccccccccccccccca.
+.acdeeeeeeeeedccdeeeeeeeeeeddca.
+.acdefeeqeeeedccdeeeeqeeeeeddca.
+.acddddddddddccddddddddddddddca.
+.acccccccccccccccccccccccccccca.
+..cgca....................cdca..
+..ceca....................cdca..
+@layer apparatus
+@mblock 8 4
+..hhh..............
+..hkioppqqqqqo.....
+..hji......oopq....
+..hji........opq...
+..hji.........opq..
+.hkkih.........op..
+hkkjjih........op..
+hkjjjiih.......op..
+hkjjjiih.......op..
+hknnnmlh......hhhh.
+hnnmmmlh......hkih.
+.hmmmlh.......hjih.
+..hhhh.......hkjjih
+@mblock 9 17
+..v.........hkjjjih
+.vwv........hknnmlh
+..u.........hmmmlh.
+.rtr.........hhhh..
+rsstsr.............

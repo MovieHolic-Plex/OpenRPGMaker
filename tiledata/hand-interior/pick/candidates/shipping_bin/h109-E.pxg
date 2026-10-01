@@ -1,0 +1,39 @@
+// E: 넓은 판자 뚜껑에 뒤 경첩, 앞 빗장 손잡이와 굵은 모서리 기둥을 둔 농가 출하함.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat h iron 2
+@mat j iron 4
+@layer bin
+@mblock 0 8
+....aaaaaaaaaaaaaaaaaaaaaaaa....
+...aggggjhggggggggggggjhgggga...
+..agffffjhffffffffffffjhfffega..
+.agfffffeffffeefffffffffffeeega.
+.agfffffffeeeffffffeeefffffedga.
+.agddddddddddddddddddddddddddga.
+.agffffggffffffffffggfffffffega.
+.agfffeffffffeefggffffffeeffega.
+.agffffffeeefffffffffefffffedga.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.abgdddeeeeeeeeeeeeeeeeeedcdcba.
+.abgcdffffffffffffffffffddcdcba.
+.abgcdffffeeffffffffffffddcdcba.
+.abgcdfffffffbbbbfffffffddcdcba.
+.abgcdffffffbhhhhbffffffddcdcba.
+.abgccccccccbhjjhbcccccccccccba.
+.abgdddeeeeebhjjhbeeeeeeedcdcba.
+.abgcdfffffffbbbbfffffffddcdcba.
+.abgcdffeefffffffffeffffddcdcba.
+.abgcdfffffffdeeffffffffddcdcba.
+.abgcddeeeeeeeeeeeeeeeedddcdcba.
+.abdcccccccccccccccccccccccccba.
+..abbbbbbbbbbbbbbbbbbbbbbbbbba..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..

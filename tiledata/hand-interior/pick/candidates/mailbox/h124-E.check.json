@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mailbox/h124-E.pxg",
+ "id": "mailbox",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "둥근 나무 등판의 열린 편지 주머니로 해석하고, 두 줄의 입구 윗면과 낮은 대비의 봉투 접힌 선을 넣었다.",
+ "ok": true
+}

@@ -1,0 +1,44 @@
+// D 효과: h13-D 상자의 뚜껑을 뒤로 젖히고(안쪽 어두운 나무+금 띠), 속에서 금빛이 올라와 뚜껑 안쪽 아래를 비춘다
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat i wood 3
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+...ooooooooooo..
+..oiggiiiiiggio.
+..oiggiiiiiggio.
+..oiggiiiiiggio.
+..ooooooooooooo.
+..ogggggggggggo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+...11111111111..
+..1334333333221.
+..1334333333221.
+..1334444433221.
+..1111111111111.
+..1343456543330.
+..1666555443330.
+..1454333333330.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................

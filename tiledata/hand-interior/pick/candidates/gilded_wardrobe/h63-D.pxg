@@ -1,0 +1,66 @@
+// D: 흰 칠 두 문 옷장에 금장 처마·문틀·연결된 꽃 문양, 윗면 5행과 왼쪽 위 빛.
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat o gold 1
+@mat s gold 2
+@mat t gold 3
+@mat g gold 4
+@mat h gold 5
+@mat i gold 6
+@mat a white 1
+@mat b white 2
+@mat c white 3
+@mat d white 4
+@mat e white 5
+@mat f white 6
+@layer wardrobe
+@mblock 1 0
+..oghhhhhhhhhhhhhhhhhhhhhhgo..
+.ogheeeeeeeeeeeeeeeeeeeeddtgo.
+ogheffffffffffffffffeeeeddbtso
+gheeeeeeeeeeeeeeeeeeeedddbbtso
+ghhhhhhhhhhhhhhhhhhhhhhhggttso
+ohgggggggggggggggggggggggtttso
+oheddddddddddddddddddddddcbtso
+ohgghhhhggggghhhhggggghhhggtso
+ootttttttttttttttttttttttttsso
+.ohddddddddddcbotddddddddcbso.
+.ohdhhhhhhhgcbotdhhhhhhhgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddhhddgcbotdhddggddgcbso.
+.ohdhhhehhhgcbotdhggdhgggcbso.
+.ohdhhdddhtgcbotdhgdddgtgcbso.
+.ohdhhddhhtgcbotdhgddggtgcbso.
+.ohdhddhhddgcbotdhddggddgcbso.
+.ohdhdddhddgcbotdhdddgddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbiidhddddddgcbso.
+.ohdhddddddgchtthhddddddgcbso.
+.ohdhddddddgchtthhddddddgcbso.
+.ohdhddddddgcbssdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddddddgcbotdhddddddgcbso.
+.ohdhddhhddgcbotdhddggddgcbso.
+.ohdhhddddhgcbotdhgddddggcbso.
+.ohdhhhhhhggcbotdhgggggggcbso.
+.ohdggggggggcbotdggggggggcbso.
+.ohdddddddddccbotddddddddccso.
+.ohcccccccccccbotccccccccccso.
+ohhhhhhhhhhhhhhhhhhhhhhhggttso
+oheddddddddddddddddddddddcbtso
+ohgggggggggggggggggggggggtttso
+ootttttttttttttttttttttttttsso
+.ohdgo..................otbso.
+.ohgto..................otbso.
+.ottso..................ossso.

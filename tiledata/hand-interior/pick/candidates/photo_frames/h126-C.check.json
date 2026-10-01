@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/photo_frames/h126-C.pxg",
+ "id": "photo frames",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  7,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "C: 16px 높이 협탁·5행 윗면에 높이가 다른 액자 셋을 새로 그리고, 얼굴·어깨를 큰 덩어리로 단순화해 작은 칸에서도 또렷하게 읽히도록 함.",
+ "ok": true
+}

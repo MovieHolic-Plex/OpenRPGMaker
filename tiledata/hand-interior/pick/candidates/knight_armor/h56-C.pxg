@@ -1,0 +1,67 @@
+// 기사 갑옷(방향 C 단순·또렷): 투구·어깨·몸통 큰 덩이, 오른쪽에 창, 허리 금띠, 돌 받침 윗면 2줄.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A iron 1
+@mat B iron 4
+@mat C iron 5
+@mat D iron 3
+@mat E iron 6
+@mat F black 0
+@mat G gold 4
+@mat H gold 2
+@mat I wood 5
+@mat J wood 2
+@mat K stone 5
+@mat L stone 4
+@mat M stone 3
+@mat N stone 1
+@mblock 0 0
+................
+.............AE.
+............AECA
+...........AECBA
+............AEBA
+.............AA.
+.............IJ.
+.....AAAA....IJ.
+....ACEEBA...IJ.
+....ACBBBA...IJ.
+....AFFFFA...IJ.
+....ABFFBA...IJ.
+.....ADBDA...IJ.
+.....ADBDA...IJ.
+..AAAAAAAAAA.IJ.
+.AECCBBBBDDAAIJ.
+.ACBBBBBBBDDAIJ.
+.ACBBCCBBBDDAAJ.
+.AABBCCBBBDDAIJ.
+..ABBCBBBBDDAIJ.
+..ABBBBBBBDDAIJ.
+..AABBBBBBDAAIJ.
+...ADBBBBDDA.IJ.
+...AADBBBDAA.IJ.
+....ABCCBDA..IJ.
+....ABCCBDA..IJ.
+....AGGGGGA..IJ.
+....AHHHHHA..IJ.
+....ABCCBDA..IJ.
+...AABBBBDAA.IJ.
+....ABBBBDA..IJ.
+....ABBADBA..IJ.
+....ABBADBA..IJ.
+....ABCADBA..IJ.
+....ABCADDA..IJ.
+....ABBADDA..IJ.
+....ABBADDA..IJ.
+....ABBADDA..IJ.
+....ABBADDA..IJ.
+...AABBAADDAAIJ.
+.KKKKKKKKKKKKKN.
+.KKKKKKKKKKKKLN.
+.LLLLLLLLLLLLMN.
+.LLLLLLLLLLLMMN.
+.LLLLLLLLLLLMMN.
+.LLLLLLLLLLMMMN.
+.MMMMMMMMMMMMMN.
+.NNNNNNNNNNNNNN.

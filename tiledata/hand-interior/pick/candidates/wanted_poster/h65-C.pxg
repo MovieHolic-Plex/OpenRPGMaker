@@ -1,0 +1,34 @@
+// C: 큰 흉상과 금화 한 개로 읽히는 누런 수배지, 상단 말림과 아래 종이 두께.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat P straw 5
+@mat L straw 6
+@mat S straw 4
+@mat E straw 2
+@mat D straw 3
+@mat I dwood 2
+@mat H dwood 3
+@mat F pine 5
+@mat A pine 6
+@mat G gold 4
+@mat B gold 2
+@mat Y gold 6
+@layer poster
+@mblock 0 0
+................
+...DLLLLLLLLD...
+..DLLPPPPPPPSE..
+..LPIIIIIIPPSD..
+..LPPPPPPPPPSE..
+..LPPPPIIIPPSE..
+..LPPPIAAIPPSD..
+..LPPPFAAFPPSE..
+..LPPPPFFPPPSE..
+..LPPPPHHPPPSE..
+..LPPPHHHHPPSE..
+..LPPPPPPPPPSE..
+..LPIIIPPPBBPE..
+..LPPPPPPBYGBE..
+...LSSSSSSBBSE..
+...DDDDDDDDDE...

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mimic/h36-B.pxg",
+ "id": "mimic",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": null,
+ "note": "chest 앵커 결(밝은 윗 테·쇠띠·황동 자물쇠)에 어두운 뚜껑 안쪽+위아래 이빨 줄+붉은 입+분홍 혀를 얹은 같은 방 화풍",
+ "ok": true
+}

@@ -1,0 +1,48 @@
+// E: 상판과 아홉 놋쇠 이름표 유지, 서랍·다리·하단틀을 줄여 상판 아래 16행으로 축소
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a pine 1
+@mat b pine 2
+@mat c pine 3
+@mat d pine 4
+@mat e pine 5
+@mat g dwood 3
+@mat h dwood 4
+@mat i dwood 5
+@mat l brass 5
+@mat m brass 3
+@layer cabinet
+@mblock 0 0
+.bbbbbbbbbbbbbb.
+beeeeddddddddddb
+bddddddccccccccb
+addddddddddddcca
+.agggggggggggga.
+.adiiidiiidiiia.
+.adllhdllhdllha.
+.admmhdmmhdmmha.
+.acccccccccccba.
+.adiiidiiidiiia.
+.adllhdllhdllha.
+.admmhdmmhdmmha.
+.acccccccccccba.
+.adiiidiiidiiia.
+.adllhdllhdllha.
+.admmhdmmhdmmha.
+.acccccccccccba.
+.adddddddddddca.
+.agggggggggggga.
+.aa.........aa..
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................

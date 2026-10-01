@@ -1,0 +1,63 @@
+// h55-A 설명 충실: 2단 잡화 선반 — 윗단 빨강·파랑·초록·노랑 병과 약초 묶음, 아랫단 밧줄 타래·병·횃불 둘, 선반판 윗면 2줄
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 6
+@mat b wood 3
+@mat c wood 1
+@mat m dwood 3
+@mat n linen 4
+@mat r red 4
+@mat R red 3
+@mat h red 6
+@mat u blue 4
+@mat U blue 3
+@mat i blue 6
+@mat g green 4
+@mat G green 3
+@mat j green 6
+@mat y yellow 4
+@mat Y yellow 3
+@mat z yellow 6
+@mat o orange 4
+@mat l leaf 4
+@mat L leaf 3
+@mat k leaf 6
+@mat s straw 4
+@mat S straw 3
+@mat t straw 6
+@mat p pine 4
+@mat P pine 2
+@mblock 0 0
+................................
+................................
+cammmmmmmmmmmmmmmmmmmmnnmmmmmmbc
+cammnnmmmmmmmmmmmmmmmmnnmmmmmmbc
+cammhrmmmnnmmmkmkmkmmmjgmmmmmmbc
+camhrrRmmiummlkLlkLlmmjgmmmmmmbc
+camhrrRmiuuUmlLlkLlLmjggGmmnnmbc
+camhrrRmiuuUmmlLlLlmmjggGmzyyYbc
+camrrRRmuuUUmmmsssmmmggGGmyyYYbc
+camRRRRmUUUUmmlLlLlmmGGGGmYYYYbc
+caaaaaaaaaaaaaaaaaaaaaaaaaaaaabc
+caaaaaaaaaaaaaaaaaaaaaaaaaaaaabc
+cabbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+cabbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+caccccccccccccccccccccccccccccbc
+cammmmmmmmmmmnnmmmmmmmmmymmmmmbc
+cammmmmmmmmmmnnmmmmmmmmoyommymbc
+cammmtstsmmmmjgmmmnnmmmoyomoyobc
+cammtsmmsSmmjggGmmnnmmmPpPmoyobc
+cammssmmSSmmjggGmmhrmmmmpPmPpPbc
+cammstsSSSmmjggGmhrrRmmmpPmmpPbc
+cammSsSSSSmmgggGmrrRRmmmpPmmpPbc
+cammmSSSSmmmGGGGmRRRRmmmpPmmpPbc
+caaaaaaaaaaaaaaaaaaaaaaaaaaaaabc
+caaaaaaaaaaaaaaaaaaaaaaaaaaaaabc
+cabbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+cabbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+caccccccccccccccccccccccccccccbc
+cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+cccccccccccccccccccccccccccccccc

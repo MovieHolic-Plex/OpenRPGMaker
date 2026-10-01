@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/healing_machine/h90-E.pxg",
+ "id": "healing machine",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  4,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "E: 28px 흰 회복 콘솔에 8행 윗면의 둥근 구슬 홈 여섯 개, 초록 맥박 화면, 붉은 측면 표식과 하단 정비 패널을 손 도트로 그렸다.",
+ "ok": true
+}
