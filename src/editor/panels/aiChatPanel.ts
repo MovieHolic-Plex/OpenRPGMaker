@@ -2927,7 +2927,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyButton.click();
     },
     openTools: () => toolsButton.click(),
-    openAuthoring: (tab: "library" | "dialogue" | "inspector") => openAiAuthoringModal(tab, {
+    openAuthoring: (tab: "quests" | "library" | "dialogue" | "inspector") => openAiAuthoringModal(tab, {
       composer: input.value,
       apply: text => { input.value = input.value.trim() ? `${input.value}\n\n${text}` : text; input.dispatchEvent(new Event("input")); refreshSendEnabled(); input.focus(); },
     }),

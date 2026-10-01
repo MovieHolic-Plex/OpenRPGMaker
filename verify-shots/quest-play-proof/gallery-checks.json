@@ -1,0 +1,113 @@
+{
+  "checked": [
+    {
+      "width": 736,
+      "quest": "delivery",
+      "index": 0,
+      "caption": "배달 NPC에게 물품을 건네는 실제 장면"
+    },
+    {
+      "width": 736,
+      "quest": "delivery",
+      "index": 1,
+      "caption": "의뢰인에게 돌아와 배달 완료를 보고"
+    },
+    {
+      "width": 736,
+      "quest": "escort",
+      "index": 0,
+      "caption": "합류한 NPC가 플레이어를 실제로 뒤따르는 장면"
+    },
+    {
+      "width": 736,
+      "quest": "escort",
+      "index": 1,
+      "caption": "목적지에서 동행이 끝나고 NPC가 도착 대사를 표시"
+    },
+    {
+      "width": 736,
+      "quest": "escort",
+      "index": 2,
+      "caption": "의뢰인에게 돌아와 동행 완료를 보고"
+    },
+    {
+      "width": 736,
+      "quest": "puzzle",
+      "index": 0,
+      "caption": "잘못된 답을 고른 뒤 다시 생각해 보라는 실제 대사"
+    },
+    {
+      "width": 736,
+      "quest": "puzzle",
+      "index": 1,
+      "caption": "단서 조사와 정답 선택을 마치고 의뢰인에게 보고"
+    },
+    {
+      "width": 736,
+      "quest": "log",
+      "index": 0,
+      "caption": "세 의뢰 완료 후 실제 게임 메뉴에 표시된 300G"
+    },
+    {
+      "width": 736,
+      "quest": "log",
+      "index": 1,
+      "caption": "실제 의뢰 목록에서 단서 조사와 해결 방법 선택의 완료 확인"
+    },
+    {
+      "width": 320,
+      "quest": "delivery",
+      "index": 0,
+      "caption": "배달 NPC에게 물품을 건네는 실제 장면"
+    },
+    {
+      "width": 320,
+      "quest": "delivery",
+      "index": 1,
+      "caption": "의뢰인에게 돌아와 배달 완료를 보고"
+    },
+    {
+      "width": 320,
+      "quest": "escort",
+      "index": 0,
+      "caption": "합류한 NPC가 플레이어를 실제로 뒤따르는 장면"
+    },
+    {
+      "width": 320,
+      "quest": "escort",
+      "index": 1,
+      "caption": "목적지에서 동행이 끝나고 NPC가 도착 대사를 표시"
+    },
+    {
+      "width": 320,
+      "quest": "escort",
+      "index": 2,
+      "caption": "의뢰인에게 돌아와 동행 완료를 보고"
+    },
+    {
+      "width": 320,
+      "quest": "puzzle",
+      "index": 0,
+      "caption": "잘못된 답을 고른 뒤 다시 생각해 보라는 실제 대사"
+    },
+    {
+      "width": 320,
+      "quest": "puzzle",
+      "index": 1,
+      "caption": "단서 조사와 정답 선택을 마치고 의뢰인에게 보고"
+    },
+    {
+      "width": 320,
+      "quest": "log",
+      "index": 0,
+      "caption": "세 의뢰 완료 후 실제 게임 메뉴에 표시된 300G"
+    },
+    {
+      "width": 320,
+      "quest": "log",
+      "index": 1,
+      "caption": "실제 의뢰 목록에서 단서 조사와 해결 방법 선택의 완료 확인"
+    }
+  ],
+  "errors": []
+}

@@ -8,6 +8,8 @@ import { resolveEventPlacement, upsertEventIntoMap } from "@/editor/tools/eventT
 import { ensureNamedSwitch, ensureNamedVariable } from "@/editor/tools/flagHelpers";
 import { resolveGraphic, type GraphicSpec } from "@/editor/tools/eventCompile";
 import { isPassable } from "@/project/collision";
+import { questPresetIssue } from './questPresets';
+import { validateQuestReferences } from './questValidation';
 import { resolveAnchorPoint } from "@/project/locationAnchors";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
 import {
@@ -19,6 +21,8 @@ import {
   type QuestGate,
   type QuestNpcSpec,
   type QuestStep,
+  type QuestCost,
+  type QuestEffects,
   questDefId,
 } from "./questDef";
 
@@ -104,8 +108,59 @@ function switchCond(switchId: string, value = true): EventPageCondition {
   return { kind: "switch", switchId, value };
 }
 
-function selfSwitchCond(key: "A" | "B" | "C" | "D", value = true): EventPageCondition {
-  return { kind: "selfSwitch", key, value };
+function stepConditions(def: QuestDef, flags: QuestFlagIds, index: number): EventPageCondition[] {
+  return [switchCond(flags.started), switchCond(flags.done, false), switchCond(flags.stepSwitches[index], false),
+    ...(def.order === 'sequence' ? flags.stepSwitches.slice(0, index).map(id => switchCond(id)) : []),
+    ...(def.steps[index].timePhase ? [{ kind: 'timePhase' as const, phase: def.steps[index].timePhase! }] : [])];
+}
+
+function finish(flags: QuestFlagIds, index: number): Command[] {
+  return [{ kind: 'setSwitch', switchId: flags.stepSwitches[index], value: true }, { kind: 'setVariable', variableId: flags.progress, op: '+=', value: 1 }];
+}
+
+function effects(project: Project, value: QuestEffects | undefined): Command[] {
+  return [
+    ...(value?.switches ?? []).map(flag => { ensureNamedSwitch(project, flag.id, flag.id); return { kind: 'setSwitch' as const, switchId: flag.id, value: flag.value }; }),
+    ...(value?.variables ?? []).map(flag => { ensureNamedVariable(project, flag.id, flag.id); return { kind: 'setVariable' as const, variableId: flag.id, op: '=' as const, value: flag.value }; }),
+    ...(value?.actors ?? []).map(actorId => ({ kind: 'changeParty' as const, actorId, action: 'add' as const })),
+  ];
+}
+
+/** Check every cost before changing inventory. The shipped data query returns actual quantities. */
+function paid(project: Project, key: string, cost: QuestCost | undefined, success: Command[], sink: CompileSink): Command[] {
+  const deduct: Command[] = [
+    ...(cost?.gold ? [{ kind: 'changeGold' as const, op: '-=' as const, amount: cost.gold }] : []),
+    ...(cost?.items ?? []).map(item => ({ kind: 'changeItem' as const, itemId: item.itemId, op: '-=' as const, amount: item.count })),
+  ];
+  let result: Command[] = [...deduct, ...success];
+  const missing = [text('필요한 물건이나 비용이 부족합니다.')];
+  if (cost?.gold) result = [{ kind: 'fork', condition: { kind: 'gold', op: '>=', amount: cost.gold }, then: result, else: missing }];
+  for (const [i, item] of (cost?.items ?? []).entries()) {
+    const variableId = `var_${key}_quantity${i}`;
+    ensureNamedVariable(project, variableId, '납품 수량 확인'); sink.variables += 1;
+    result = [{ kind: 'm2Command', commandId: 'm2-217-data-query', fields: { query: 'itemCount', target: item.itemId, variableId } },
+      { kind: 'fork', condition: { kind: 'variable', variableId, op: '>=', value: item.count }, then: result, else: missing }];
+  }
+  return result;
+}
+
+function preservePages(target: GameEvent): EventPage[] {
+  if (!target.pages?.length) target.pages = [page(`${target.id}_base`, '기존 이벤트', [], [...target.commands], { transparent: true }, { trigger: target.trigger.kind as SimpleTriggerKind })];
+  return target.pages;
+}
+
+function npcTarget(project: Project, def: QuestDef, target: QuestDef['giver'], index: number, sink: CompileSink): { event: GameEvent; graphic: EventPageGraphic; name: string } {
+  if ('create' in target) {
+    const spec = target.create, map = requireMap(project, spec.mapId), id = `ev_${def.key}_${def.steps[index].kind}${index}`;
+    const graphic = npcGraphic(spec);
+    const at = placeQuestEvent(project, map, spec.x, spec.y, { kind: 'character', eventId: id, label: spec.name, code: 'quest-npc-impassable' }, sink);
+    const created = event(id, at.x, at.y, 'action', [page(`${id}_idle`, spec.name, [], [text('...', spec.name)], graphic)]);
+    upsertEventIntoMap(map, created); sink.events += 1;
+    return { event: created, graphic, name: spec.name };
+  }
+  const existing = requireMap(project, target.mapId).events.find(entry => entry.id === target.eventId)!;
+  preservePages(existing);
+  return { event: existing, graphic: existing.pages![0].graphic ?? { transparent: true }, name: existing.pages![0].name ?? '인물' };
 }
 
 function page(
@@ -168,13 +223,12 @@ function materializeStep(
         const graphic = npcGraphic(spec);
         const id = `ev_${def.key}_talk${index}`;
         const lines = (step.lines ?? [`${spec.name}와 대화했다.`]).map((line) => text(line, spec.name));
-        const talkNow = page(`${id}_talk`, spec.name, [switchCond(flags.started)], [
+        const talkNow = page(`${id}_talk`, spec.name, stepConditions(def, flags, index), [
           ...lines,
           { kind: "setSwitch", switchId: stepSwitch, value: true },
           { kind: "setVariable", variableId: flags.progress, op: "+=", value: 1 },
-          { kind: "setSelfSwitch", key: "A", value: true },
         ], graphic);
-        const already = page(`${id}_done`, spec.name, [selfSwitchCond("A")], [text("고맙네, 잘 부탁하지.", spec.name)], graphic);
+        const already = page(`${id}_done`, spec.name, [switchCond(stepSwitch)], [text("고맙네, 잘 부탁하지.", spec.name)], graphic);
         const idle = page(`${id}_idle`, spec.name, [], [text("...", spec.name)], graphic);
         // 그래픽을 가진 캐릭터형 NPC — 물·벽 위에 세우면 지형에 박힌다.
         const at = placeQuestEvent(project, targetMap, spec.x, spec.y, {
@@ -191,15 +245,14 @@ function materializeStep(
         if (!target) throw new QuestCompileError(`talk 대상 이벤트가 없습니다: ${(step.target as { eventId: string }).eventId}`);
         const graphic = target.pages?.[0]?.graphic ?? { transparent: true };
         const lines = (step.lines ?? ["부탁한 일을 확인했다."]).map((line) => text(line));
-        target.pages = target.pages ?? [];
-        target.pages.push(
-          page(`${target.id}_${def.key}_talk${index}`, target.pages[0]?.name ?? "대화", [switchCond(flags.started)], [
+        const pages = preservePages(target);
+        pages.push(
+          page(`${target.id}_${def.key}_talk${index}`, pages[0]?.name ?? "대화", stepConditions(def, flags, index), [
             ...lines,
             { kind: "setSwitch", switchId: stepSwitch, value: true },
             { kind: "setVariable", variableId: flags.progress, op: "+=", value: 1 },
-            { kind: "setSelfSwitch", key: "A", value: true },
           ], graphic),
-          page(`${target.id}_${def.key}_talkdone${index}`, target.pages[0]?.name ?? "대화", [selfSwitchCond("A")], [text("고맙네.")], graphic)
+          page(`${target.id}_${def.key}_talkdone${index}`, pages[0]?.name ?? "대화", [switchCond(stepSwitch)], [text("고맙네.")], graphic)
         );
       }
       break;
@@ -221,12 +274,14 @@ function materializeStep(
       const graphic = graphicFromQuery(step.at.graphicQuery ?? "몬스터");
       const intro = (step.at.intro ?? ["적이 앞을 가로막았다!"]).map((line) => text(line));
       const victory = (step.at.victory ?? ["길이 열렸다."]).map((line) => text(line));
-      const fight = page(`${id}_fight`, "전투", [switchCond(flags.started)], [
+      const fight = page(`${id}_fight`, "전투", stepConditions(def, flags, index), [
         ...intro,
         { kind: "battleProcessing", troopId: step.troopId, canEscape: true, canLose: false },
-        { kind: "setSwitch", switchId: stepSwitch, value: true },
-        { kind: "setVariable", variableId: flags.progress, op: "+=", value: 1 },
-        ...victory,
+        { kind: 'fork', condition: { kind: 'battleResult', result: 'victory' }, then: [
+          { kind: "setSwitch", switchId: stepSwitch, value: true },
+          { kind: "setVariable", variableId: flags.progress, op: "+=", value: 1 },
+          ...victory,
+        ] },
       ], graphic);
       const cleared = page(`${id}_cleared`, "정리된 자리", [switchCond(stepSwitch)], [], { transparent: true }, { priority: "below" });
       const idle = page(`${id}_idle`, "휴식", [], [text("아직은 조용하다.")], graphic);
@@ -245,7 +300,7 @@ function materializeStep(
     case "reach": {
       const map = requireMap(project, step.mapId);
       const id = `ev_${def.key}_reach${index}`;
-      const arrive = page(`${id}_arrive`, "도착", [switchCond(flags.started)], [
+      const arrive = page(`${id}_arrive`, "도착", stepConditions(def, flags, index), [
         { kind: "setSwitch", switchId: stepSwitch, value: true },
         { kind: "setVariable", variableId: flags.progress, op: "+=", value: 1 },
       ], { transparent: true }, { trigger: "playerTouch", priority: "below" });
@@ -260,6 +315,75 @@ function materializeStep(
       }, counters);
       upsertEventIntoMap(map, event(id, at.x, at.y, "playerTouch", [arrive]));
       counters.events += 1;
+      break;
+    }
+    case 'inspect':
+    case 'craft': {
+      const map = requireMap(project, step.at.mapId), id = `ev_${def.key}_${step.kind}${index}`;
+      let commands: Command[] = [...(step.lines ?? ['작업을 마쳤다.']).map(line => text(line)), ...finish(flags, index)];
+      if (step.kind === 'craft') {
+        const variableId = `var_${def.key}_craft${index}`;
+        ensureNamedVariable(project, variableId, '제작 결과'); counters.variables += 1;
+        commands = [{ kind: 'craftRecipe', recipeId: step.recipeId, resultVariableId: variableId },
+          { kind: 'fork', condition: { kind: 'variable', variableId, op: '==', value: 1 }, then: commands, else: [text('제작에 필요한 재료나 비용을 확인해 주세요.')] }];
+      }
+      const at = placeQuestEvent(project, map, step.at.x, step.at.y, { kind: 'interaction', eventId: id, label: step.label ?? '조사 지점', code: 'quest-inspect-impassable', locationId: step.at.locationId }, counters);
+      upsertEventIntoMap(map, event(id, at.x, at.y, 'action', [
+        page(`${id}_active`, step.label ?? '조사', stepConditions(def, flags, index), commands, { transparent: true }, { priority: 'below' }),
+        page(`${id}_done`, '완료', [switchCond(stepSwitch)], [text('확인을 마쳤다.')], { transparent: true }, { priority: 'below' }),
+      ])); counters.events += 1; break;
+    }
+    case 'deliver':
+    case 'choice':
+    case 'escort': {
+      const target = npcTarget(project, def, step.target, index, counters), id = `${target.event.id}_${def.key}_${index}`;
+      let commands: Command[];
+      if (step.kind === 'deliver') {
+        commands = paid(project, `${def.key}_deliver${index}`, { items: [{ itemId: step.itemId, count: step.count }] }, [
+          ...(step.gives ?? []).map(item => ({ kind: 'changeItem' as const, itemId: item.itemId, op: '+=' as const, amount: item.count })),
+          ...(step.lines ?? ['물건을 잘 받았습니다.']).map(line => text(line, target.name)), ...finish(flags, index),
+        ], counters);
+      } else if (step.kind === 'choice') {
+        const variableId = `var_${def.key}_choice${index}`;
+        ensureNamedVariable(project, variableId, '선택 결과'); counters.variables += 1;
+        commands = [{ kind: 'choices', prompt: step.prompt, cancelBehavior: 'disallow', options: step.options.map((option, choiceIndex) => {
+          const lines = (option.lines ?? []).map(line => text(line, target.name));
+          if (option.completes === false) return { text: option.text, branch: lines.length ? lines : [text('다시 생각해 보세요.')] };
+          let branch = paid(project, `${def.key}_choice${index}_${choiceIndex}`, option.cost, [
+            ...lines, ...effects(project, option.effects), { kind: 'setVariable', variableId, op: '=', value: choiceIndex + 1 }, ...finish(flags, index),
+          ], counters);
+          if (option.troopId) branch = [
+            { kind: 'battleProcessing', troopId: option.troopId, canEscape: true, canLose: true },
+            { kind: 'fork', condition: { kind: 'battleResult', result: 'victory' }, then: branch, else: [text('이번에는 해결하지 못했다. 다시 도전할 수 있다.')] },
+          ];
+          return { text: option.text, branch };
+        }) }];
+      } else {
+        const joined = `sw_${def.key}_escort${index}`, followerName = `quest:${def.key}:${index}`;
+        ensureNamedSwitch(project, joined, '퀘스트 동행 시작');
+        const variableId = `var_${def.key}_follower${index}`;
+        ensureNamedVariable(project, variableId, '퀘스트 동행자 확인'); counters.variables += 1;
+        const query: Command = { kind: 'm2Command', commandId: 'm2-217-data-query', fields: { query: 'followerPresent', target: followerName, variableId } };
+        const present: EventPageCondition = { kind: 'variable', variableId, op: '==', value: 1 };
+        commands = [...(step.lines ?? ['목적지까지 함께 가 주세요.']).map(line => text(line, target.name)),
+          { kind: 'addFollower', graphic: target.graphic, name: followerName }, query,
+          { kind: 'fork', condition: present, then: [{ kind: 'setSwitch', switchId: joined, value: true }], else: [text('동행할 자리가 부족합니다. 동행자를 정리하고 다시 말을 걸어 주세요.')] }];
+        const map = requireMap(project, step.destination.mapId), destinationId = `ev_${def.key}_destination${index}`;
+        const at = placeQuestEvent(project, map, step.destination.x, step.destination.y, { kind: 'interaction', steppable: true, eventId: destinationId, label: '동행 목적지', code: 'quest-escort-impassable', locationId: step.destination.locationId }, counters);
+        upsertEventIntoMap(map, event(destinationId, at.x, at.y, 'playerTouch', [
+          page(`${destinationId}_arrive`, '도착', [...stepConditions(def, flags, index), switchCond(joined)], [
+            query, { kind: 'fork', condition: present, then: [
+              { kind: 'removeFollower', name: followerName }, ...finish(flags, index), text('덕분에 무사히 도착했어요.', target.name),
+            ], else: [{ kind: 'setSwitch', switchId: joined, value: false }, text('동행자가 없습니다. 출발 지점에서 다시 합류해 주세요.')] },
+          ], { transparent: true }, { trigger: 'playerTouch', priority: 'below' }),
+          page(`${destinationId}_done`, target.name, [switchCond(stepSwitch)], [text('함께 와 주셔서 고마워요.', target.name)], target.graphic),
+        ])); counters.events += 1;
+        preservePages(target.event).push(page(`${id}_join`, target.name, [...stepConditions(def, flags, index), switchCond(joined, false)], commands, target.graphic),
+          page(`${id}_following`, '동행 중', [switchCond(joined)], [], { transparent: true }, { priority: 'below' }));
+        break;
+      }
+      preservePages(target.event).push(page(`${id}_active`, target.name, stepConditions(def, flags, index), commands, target.graphic),
+        page(`${id}_done`, target.name, [switchCond(stepSwitch)], [text('고맙습니다.', target.name)], target.graphic));
       break;
     }
   }
@@ -279,6 +403,8 @@ function materializeCollectSource(
   counters: CompileSink
 ): void {
   const map = requireMap(project, source.mapId);
+  const clearSwitch = `sw_${def.key}_source${stepIndex}_${sourceIndex}`;
+  ensureNamedSwitch(project, clearSwitch, `${def.title} 수집원 ${stepIndex}-${sourceIndex}`);
   // count 도달 시 stepSwitch를 세우는 공통 커맨드.
   const grantAndCheck: Command[] = [
     { kind: "changeItem", itemId, op: "+=", amount: 1 },
@@ -298,12 +424,12 @@ function materializeCollectSource(
       trigger: "action",
       priority: "below",
     });
-    const pick = page(`${id}_pick`, "습득", [switchCond(flags.started)], [
+    const pick = page(`${id}_pick`, "습득", stepConditions(def, flags, stepIndex), [
       text("조심스럽게 손에 넣었다."),
       ...grantAndCheck,
-      { kind: "setSelfSwitch", key: "A", value: true },
+      { kind: "setSwitch", switchId: clearSwitch, value: true },
     ], { transparent: true }, { priority: "below" });
-    const empty = page(`${id}_empty`, "빈 자리", [selfSwitchCond("A")], [], { transparent: true }, { priority: "below" });
+    const empty = page(`${id}_empty`, "빈 자리", [switchCond(clearSwitch)], [], { transparent: true }, { priority: "below" });
     // 투명 action 트리거 습득물 — 벽 위(선반·틈) 허용, 대신 인접 칸에서 조사할 수 있어야 한다.
     const at = placeQuestEvent(project, map, source.x, source.y, {
       kind: "interaction",
@@ -318,9 +444,7 @@ function materializeCollectSource(
     // drop: 전투 블로커가 승리 시 아이템 지급 + 카운트.
     const id = `ev_${def.key}_drop${stepIndex}_${sourceIndex}`;
     const graphic = graphicFromQuery(source.graphicQuery ?? "몬스터");
-    const clearSwitch = `sw_${def.key}_drop${stepIndex}_${sourceIndex}`;
-    ensureNamedSwitch(project, clearSwitch, `${def.title} 전투 처치 ${stepIndex}-${sourceIndex}`);
-    const fight = page(`${id}_fight`, "전투", [switchCond(flags.started)], [
+    const fight = page(`${id}_fight`, "전투", stepConditions(def, flags, stepIndex), [
       text("적이 나타났다!"),
       { kind: "battleProcessing", troopId: source.troopId, canEscape: true, canLose: false },
       {
@@ -328,7 +452,6 @@ function materializeCollectSource(
         condition: { kind: "battleResult", result: "victory" },
         then: [
           { kind: "setSwitch", switchId: clearSwitch, value: true },
-          { kind: "m2Command", commandId: "m2-086-erase-event", fields: {} },
           ...grantAndCheck,
         ],
       },
@@ -359,10 +482,13 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
 
   // 턴인 조건: 모든 stepSwitch가 true → 보상 지급 + done.
   const rewardCommands: Command[] = [];
+  const returned = ['lost_item','gather','repeatable_contract'].includes(def.presetId ?? '') && def.steps[0]?.kind === 'collect'
+    ? { itemId: def.steps[0].itemId, count: def.steps[0].count } : undefined;
   if (def.rewards?.gold) rewardCommands.push({ kind: "changeGold", op: "+=", amount: def.rewards.gold });
   for (const reward of def.rewards?.items ?? []) rewardCommands.push({ kind: "changeItem", itemId: reward.itemId, op: "+=", amount: reward.count });
   rewardCommands.push({ kind: "setSwitch", switchId: flags.done, value: true });
-  rewardCommands.push(text(`의뢰 '${def.title}'을 완수했다!`, giverName));
+  rewardCommands.push(...effects(project, def.effects));
+  rewardCommands.push(text(def.dialogue?.completed ?? `의뢰 '${def.title}'을 완수했다!`, giverName));
 
   // 모든 단계 완료 여부를 중첩 fork로 검사.
   const allDone: Command = flags.stepSwitches.reduceRight<Command>(
@@ -370,25 +496,46 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
       kind: "fork",
       condition: { kind: "switch", switchId, value: true },
       then: [inner],
-      else: [text("아직 할 일이 남은 것 같군.", giverName)],
+      else: [text(def.dialogue?.reminder ?? "아직 할 일이 남은 것 같군.", giverName)],
     }),
-    { kind: "fork", condition: { kind: "switch", switchId: flags.done, value: false }, then: rewardCommands } as Command
+    { kind: "fork", condition: { kind: "switch", switchId: flags.done, value: false }, then: returned
+      ? paid(project, `${def.key}_report`, { items: [returned] }, rewardCommands, sink) : rewardCommands } as Command
   );
 
-  const proposal = page(`${id}_offer`, giverName, [], [
+  const accept: Command[] = [{ kind: 'setSwitch', switchId: flags.started, value: true },
+    ...(def.onAcceptItems ?? []).map(item => ({ kind: 'changeItem' as const, itemId: item.itemId, op: '+=' as const, amount: item.count })),
+    text(def.dialogue?.accepted ?? '고맙네! 잘 부탁하지.', giverName)];
+  const prerequisites = (def.requiresQuestKeys ?? []).map(key => switchCond(questFlagIds(key, 0).done));
+  const proposal = page(`${id}_offer`, giverName, prerequisites, [
     text(def.summary, giverName),
     {
       kind: "choices",
       prompt: `의뢰 '${def.title}'을 수락할까요?`,
       options: [
-        { text: "수락한다", branch: [{ kind: "setSwitch", switchId: flags.started, value: true }, text("고맙네! 잘 부탁하지.", giverName)] },
-        { text: "다음에", branch: [text("마음이 바뀌면 다시 오게.", giverName)] },
+        { text: "수락한다", branch: accept },
+        { text: "다음에", branch: [text(def.dialogue?.declined ?? "마음이 바뀌면 다시 오게.", giverName)] },
       ],
       cancelBehavior: "choice2",
     },
   ], graphic);
   const active = page(`${id}_active`, giverName, [switchCond(flags.started)], [allDone], graphic);
-  const done = page(`${id}_done`, giverName, [switchCond(flags.done)], [text("자네 덕분에 살았어. 정말 고맙네.", giverName)], graphic);
+  const doneCommands: Command[] = [text(def.dialogue?.afterComplete ?? '자네 덕분에 살았어. 정말 고맙네.', giverName)];
+  if (def.repeatable) {
+    const reset: Command[] = [{ kind: 'setSwitch', switchId: flags.done, value: false },
+      ...flags.stepSwitches.map(switchId => ({ kind: 'setSwitch' as const, switchId, value: false })),
+      { kind: 'setVariable', variableId: flags.progress, op: '=', value: 0 }];
+    def.steps.forEach((step, i) => {
+      if (step.kind === 'collect') { reset.push({ kind: 'setVariable', variableId: `var_${def.key}_c${i}`, op: '=', value: 0 });
+        step.sources.forEach((_, j) => reset.push({ kind: 'setSwitch', switchId: `sw_${def.key}_source${i}_${j}`, value: false })); }
+      if (step.kind === 'escort') reset.push({ kind: 'setSwitch', switchId: `sw_${def.key}_escort${i}`, value: false });
+      if (step.kind === 'choice') reset.push({ kind: 'setVariable', variableId: `var_${def.key}_choice${i}`, op: '=', value: 0 });
+    });
+    doneCommands.push({ kind: 'choices', prompt: '이 의뢰를 다시 수행할까요?', cancelBehavior: 'choice2', options: [
+      { text: '다시 수락한다', branch: [...reset, ...accept] }, { text: '다음에', branch: [] },
+    ] });
+  }
+  const done = page(`${id}_done`, giverName, [switchCond(flags.done)], doneCommands, graphic);
+  const unavailable = page(`${id}_unavailable`, giverName, [], [text('먼저 앞선 의뢰를 마쳐 주세요.', giverName)], graphic);
 
   if (isCreate) {
     // 기버는 말을 걸어야 하는 캐릭터형 NPC — 통행 가능 칸에 서야 한다.
@@ -398,14 +545,14 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
       code: "quest-giver-impassable",
       eventId: id,
     }, sink);
-    const giverEvent = event(id, at.x, at.y, "action", [proposal, active, done]);
+    const giverEvent = event(id, at.x, at.y, "action", [...(prerequisites.length ? [unavailable] : []), proposal, active, done]);
     upsertEventIntoMap(map, giverEvent);
     return giverEvent;
   }
   // 기존 이벤트에 페이지 병합.
   const existing = map.events.find((entry) => entry.id === id);
   if (!existing) throw new QuestCompileError(`기버 이벤트가 없습니다: ${id}`);
-  existing.pages = [...(existing.pages ?? []), proposal, active, done];
+  existing.pages = [...preservePages(existing), ...(prerequisites.length ? [unavailable] : []), proposal, active, done];
   return existing;
 }
 
@@ -441,6 +588,9 @@ function buildGate(project: Project, def: QuestDef, flags: QuestFlagIds, gate: Q
 
 // QuestDef를 draft에 컴파일한다.
 export function compileQuest(project: Project, def: QuestDef): QuestCompileResult {
+  try { validateQuestReferences(project, def); } catch (cause) { throw new QuestCompileError(cause instanceof Error ? cause.message : String(cause)); }
+  const presetIssue = questPresetIssue(project, def);
+  if (presetIssue) throw new QuestCompileError(presetIssue);
   if (!isValidQuestKey(def.key)) throw new QuestCompileError(`questKey는 영문/숫자/밑줄만 허용합니다: ${def.key}`);
   if (def.steps.length === 0) throw new QuestCompileError("퀘스트에는 최소 1개의 단계가 필요합니다.");
   const flags = questFlagIds(def.key, def.steps.length);
@@ -468,6 +618,13 @@ export function compileQuest(project: Project, def: QuestDef): QuestCompileResul
     buildGate(project, def, flags, gate, index, counters);
     counters.events += 1;
   });
+
+  for (const [i, change] of (def.worldChanges ?? []).entries()) {
+    const target = requireMap(project, change.target.mapId).events.find(event => event.id === change.target.eventId)!;
+    const base = preservePages(target)[0];
+    const changed = page(`${target.id}_${def.key}_world${i}`, base.name ?? '변화', [switchCond(flags.done)], change.lines.map(line => text(line)), base.graphic ?? { transparent: true }, { priority: change.passable ? 'below' : base.priority });
+    target.pages!.push(changed);
+  }
 
   // 5) 메타 보존.
   project.quests = [...(project.quests ?? []).filter((quest) => questDefId(quest) !== def.key), def];

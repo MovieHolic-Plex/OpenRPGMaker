@@ -1,0 +1,123 @@
+{
+  "projectId": "d5b4bd38-872e-49d4-a82d-c9ef7c466026",
+  "projectDir": "/home/main/.codex/worktrees/39a3/rpg-zzu/output/evidence/quest-library/sqlite-project",
+  "revision": 2,
+  "sha256": "ba8aed934f23ef64b3f204974f68a3b6587cc1c6ef82336d443e4a4b1cc6f7bb",
+  "reopened": true,
+  "quests": [
+    {
+      "key": "library_errand",
+      "presetId": "errand"
+    },
+    {
+      "key": "library_lost_item",
+      "presetId": "lost_item"
+    },
+    {
+      "key": "library_hunt",
+      "presetId": "hunt"
+    },
+    {
+      "key": "library_delivery",
+      "presetId": "delivery"
+    },
+    {
+      "key": "library_gather",
+      "presetId": "gather"
+    },
+    {
+      "key": "library_trade_chain",
+      "presetId": "trade_chain"
+    },
+    {
+      "key": "library_crafting",
+      "presetId": "crafting"
+    },
+    {
+      "key": "library_investigate",
+      "presetId": "investigate"
+    },
+    {
+      "key": "library_witness_chain",
+      "presetId": "witness_chain"
+    },
+    {
+      "key": "library_treasure_hunt",
+      "presetId": "treasure_hunt"
+    },
+    {
+      "key": "library_exploration",
+      "presetId": "exploration"
+    },
+    {
+      "key": "library_patrol",
+      "presetId": "patrol"
+    },
+    {
+      "key": "library_escort",
+      "presetId": "escort"
+    },
+    {
+      "key": "library_rescue",
+      "presetId": "rescue"
+    },
+    {
+      "key": "library_boss_hunt",
+      "presetId": "boss_hunt"
+    },
+    {
+      "key": "library_gauntlet",
+      "presetId": "gauntlet"
+    },
+    {
+      "key": "library_duel",
+      "presetId": "duel"
+    },
+    {
+      "key": "library_puzzle_choice",
+      "presetId": "puzzle_choice"
+    },
+    {
+      "key": "library_mechanism",
+      "presetId": "mechanism"
+    },
+    {
+      "key": "library_alternate_solution",
+      "presetId": "alternate_solution"
+    },
+    {
+      "key": "library_moral_choice",
+      "presetId": "moral_choice"
+    },
+    {
+      "key": "library_recruitment",
+      "presetId": "recruitment"
+    },
+    {
+      "key": "library_world_repair",
+      "presetId": "world_repair"
+    },
+    {
+      "key": "library_time_echo",
+      "presetId": "time_echo"
+    },
+    {
+      "key": "library_appointment",
+      "presetId": "appointment"
+    },
+    {
+      "key": "library_repeatable_contract",
+      "presetId": "repeatable_contract"
+    },
+    {
+      "key": "library_story_chain",
+      "presetId": "story_chain"
+    },
+    {
+      "key": "library_custom",
+      "presetId": "custom"
+    }
+  ],
+  "eventsPreserved": true,
+  "userProjectModified": false
+}

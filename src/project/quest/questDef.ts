@@ -3,6 +3,8 @@
 // questCompiler가 결정적으로 컴파일한다. 스키마 v3에 optional 필드 `quests?: QuestDef[]`로 보존된다.
 
 import type { Condition, ItemId, MapId, TroopId } from "@/project/types";
+import type { TimePhase } from '@/project/gameTime';
+import type { QuestPresetId } from './questPresetIds';
 
 // 기존 이벤트 참조.
 export interface EventRef {
@@ -49,6 +51,7 @@ export interface DropSpec {
 }
 
 export type CollectSource = PickupSpec | DropSpec;
+export type QuestPoint = Omit<PickupSpec, 'kind'>;
 
 // 전투 블로커 배치 스펙.
 export interface BlockerSpec {
@@ -62,7 +65,28 @@ export interface BlockerSpec {
   readonly victory?: readonly string[];
 }
 
-export type QuestStep =
+export interface QuestEffects {
+  readonly switches?: readonly { readonly id: string; readonly value: boolean }[];
+  readonly variables?: readonly { readonly id: string; readonly value: number }[];
+  readonly actors?: readonly string[];
+}
+
+export interface QuestCost {
+  readonly gold?: number;
+  readonly items?: readonly { readonly itemId: ItemId; readonly count: number }[];
+}
+
+export interface QuestChoiceOption {
+  readonly text: string;
+  readonly lines?: readonly string[];
+  /** False is a retry/hint answer: no cost, effect or progression is applied. */
+  readonly completes?: boolean;
+  readonly cost?: QuestCost;
+  readonly troopId?: TroopId;
+  readonly effects?: QuestEffects;
+}
+
+export type QuestStep = (
   | { readonly kind: "talk"; readonly target: EventRef | { readonly create: QuestNpcSpec }; readonly lines?: readonly string[] }
   | { readonly kind: "collect"; readonly itemId: ItemId; readonly count: number; readonly sources: readonly CollectSource[] }
   | { readonly kind: "kill"; readonly troopId: TroopId; readonly at: BlockerSpec }
@@ -74,7 +98,15 @@ export type QuestStep =
       readonly y: number;
       /** 같은 맵의 구역 이름. 있으면 중심 칸이 목적지다. */
       readonly locationId?: string;
-    };
+    }
+  | { readonly kind: 'inspect'; readonly at: QuestPoint; readonly lines: readonly string[] }
+  | { readonly kind: 'deliver'; readonly target: EventRef | { readonly create: QuestNpcSpec }; readonly itemId: ItemId; readonly count: number; readonly gives?: QuestReward['items']; readonly lines?: readonly string[] }
+  | { readonly kind: 'choice'; readonly target: EventRef | { readonly create: QuestNpcSpec }; readonly prompt: string; readonly options: readonly QuestChoiceOption[] }
+  | { readonly kind: 'escort'; readonly target: EventRef | { readonly create: QuestNpcSpec }; readonly destination: { readonly mapId: MapId; readonly x: number; readonly y: number; readonly locationId?: string }; readonly lines?: readonly string[] }
+  | { readonly kind: 'craft'; readonly recipeId: string; readonly at: QuestPoint; readonly lines?: readonly string[] }
+) & { readonly label?: string; readonly timePhase?: TimePhase };
+
+export type QuestStepKind = QuestStep['kind'];
 
 export interface QuestReward {
   readonly gold?: number;
@@ -93,6 +125,24 @@ export interface QuestGate {
 }
 
 export interface QuestDef {
+  readonly presetId?: QuestPresetId;
+  /** Custom authoring plan, checked against the compiled step kinds. */
+  readonly blueprint?: readonly QuestStepKind[];
+  /** Legacy quests keep any order; all new preset plans use sequence. */
+  readonly order?: 'sequence' | 'any';
+  readonly repeatable?: boolean;
+  readonly requiresQuestKeys?: readonly string[];
+  readonly onAcceptItems?: QuestReward['items'];
+  readonly effects?: QuestEffects;
+  /** Deterministic post-report changes to existing NPC/object pages, across maps. */
+  readonly worldChanges?: readonly { readonly target: EventRef; readonly lines: readonly string[]; readonly passable?: boolean }[];
+  readonly dialogue?: {
+    readonly accepted?: string;
+    readonly declined?: string;
+    readonly reminder?: string;
+    readonly completed?: string;
+    readonly afterComplete?: string;
+  };
   readonly key: string; // 영문/숫자/밑줄
   readonly title: string;
   readonly summary: string;

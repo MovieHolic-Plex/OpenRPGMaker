@@ -2,6 +2,16 @@
 
 M2 runtime commands: event processing, erase, graphic pattern, movement, checkpoint, kill, ending, scroll, camera, cutscene, lighting, weather, animation, picture, spawn/remove event, and scene test runner.
 
+## Quest companion presence query (2026-10-01)
+
+Modern `Data Query` (`m2-217-data-query`) adds `query:"followerPresent"` with
+`target:<exact follower name>` and a registered `variableId`. It records 1 for a
+live named follower, otherwise 0. Quest escorts check this after addFollower and
+at arrival: capacity rejection, transfer clearing, or other removal cannot falsely
+complete an escort. The missing follower path resets joining so the source NPC can
+be approached again. No display text is used to identify the follower.
+Evidence: `scripts/qa/quest-library.mjs` and the shipped-player `quest-library` scenario.
+
 ## Map-effect repair boundary (2026-09-06)
 
 - `Set Event Location` and `Swap Event Location` commit `session.eventLocations` using current runtime views, preserve each event's facing, and keep spawned map ownership/template metadata consistent. Authored events remain unchanged. The internal `relocateEvents` step carries affected IDs to foreground/parallel hosts for movement cancellation and refresh; `sceneTestRunner` consumes the same handoff and keeps later chase movement in the authoritative location record.
