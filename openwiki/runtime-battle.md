@@ -449,6 +449,16 @@
   실측(3대진 평균): 돌진→착탄 471→318ms, 적 공격 866→611ms, 한 차례 1.89→1.39초. 효과음은 원래 울리고 있었다(착탄 10ms 안에 타격 샘플 +
   `thud`) — GIF 녹화에 소리가 없었을 뿐이다. 소리 포함 녹화는 실시간 MediaRecorder 가 headless 에서 ±0.15초 흔들리므로, 소리를 「악보」로
   적어 OfflineAudioContext 로 다시 렌더한다(QA 스크래치 `qa-runs/battle-sfx/audio-score.js`).
+- **포켓몬 타격 안무 (2026-10-02, `battlePokemonMotion.ts`):** 「공격하는 느낌·맞는 느낌이 없다」 진단(25fps 칸 단위): 돌진 72px 로 상대(약 300px)에
+  닿지 않았고, 맞은 쪽은 노드 filter(밝기 1.5)·`battle-juice-hit`(밝기 1.9, 0.3초)·기술 대상 섬광이 겹쳐 **발판째** 0.36초 바랬으며, 내 몬스터는
+  반투명 점멸로 「사라지는」 것처럼 보였고, 적 돌진은 정지 비트 60ms 안에 끝났다. 지금은 그림(battlerSpriteNode) 단위 WAAPI 가
+  `translate`·`scale` 개별 속성으로: 예비(뒤로 14px 웅크림) → 상대 몸 앞끝까지 대각선 돌진(늘어남, 비트 끝 `--motion-lunge-ms` 동안) →
+  정지 비트 동안 접촉 자세(찌그러짐) → 살짝 지나쳤다 제자리. 맞은 쪽은 정지 동안 16px 밀린 흰 실루엣 → 풀리며 48px 날아갔다 떨며 복귀(380ms)
+  → 두 번 꺼졌다 켜짐. 적의 돌진도 예고 비트 끝에 같은 모양으로 온다. 함정: ① 발판이 노드 `::before` 라 노드를 옮기면 발판도 움직인다 —
+  노드 모션 클래스의 transform·filter 는 포켓몬 CSS 가 끈다. ② CSS 히트스톱(`animation-play-state: paused`)은 WAAPI 를 멈추지 않는다 — 정지는
+  키프레임으로 붙든다. ③ 넉백 방향을 착탄 순간의 공격자 그림 위치로 재면 공격자가 상대 몸 안에 있어 **뒤집힌다** — 돌진 시작 때 제자리에서 잰
+  단위 벡터를 쓴다. ④ 기술 애니메이션 화면 섬광(저작 0.85×2)은 포켓몬에서 0.32 한 번(140ms), 대상 섬광 tint 는 끈다. 강타·급소·막타만
+  필드를 3px 흔든다(`pokemonHeavyShake`). jsdom 에는 `animate` 가 없어 단위 테스트 대신 녹화로 검증했다.
 - **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
   `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
   AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중

@@ -49,6 +49,7 @@ import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleSfx } from "@/player/battleSfx";
+import { pokemonActionMotion, pokemonHeavyShake } from "@/player/battlePokemonMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
 import {
@@ -138,6 +139,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 포켓몬 스킨의 동작 템포 — 돌진·넉백·이펙트를 1.5배 빠르게 돈다(사용자 요청 2026-10-02). 히트스톱·대사는 그대로.
   const motionTempo = root.dataset.battleUiStyle === "pokemon" ? POKEMON_MOTION_TEMPO : 1;
   if (motionTempo !== 1) root.dataset.battleMotionTempo = String(motionTempo);
+  // 포켓몬 스킨은 돌진·착탄·넉백을 그림 단위 안무(battlePokemonMotion)로 그린다.
+  const pokemonMotion = root.dataset.battleUiStyle === "pokemon" && !retroMotion;
   if (retroMotion) root.dataset.battleMotion = "retro";
   // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
   root.dataset.battleSkinFamily = battleSkinFamily(skinId);
@@ -506,6 +509,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           if (hitFeel === "impact" && intensity) playBattleSfx("thud");
           // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
           if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
+          if (pokemonMotion && (feedback.critical || lethal || intensity === "heavy" || intensity === "crushing")) pokemonHeavyShake(field);
         }
       }
     },
@@ -518,10 +522,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         hitStopFeedback = undefined;
         const node = findBattlerNode(field, struck.targetId);
         if (retroMotion && node?.classList.contains("battle-actor")) retroHitRelease(node);
-        else if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
+        // 포켓몬 안무는 넉백이 끝난 뒤 스스로 깜빡인다(battlePokemonMotion.releaseTarget).
+        else if (node && !pokemonMotion && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
       }
       // 히트스톱이 걸리는 순간 맞은 쪽이 떨기 시작한다(impact). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
-      if (active && hitFeel === "impact" && feedback && !prefersReducedMotion()) {
+      // 포켓몬 안무는 맞은 그림을 직접 밀고 떨게 한다 — 진동을 겹치면 같은 translate 를 서로 덮는다.
+      if (active && hitFeel === "impact" && feedback && !pokemonMotion && !prefersReducedMotion()) {
         const node = findBattlerNode(field, feedback.targetId);
         const strength = node?.dataset.hitIntensity;
         if (node && (strength === "graze" || strength === "normal" || strength === "heavy" || strength === "crushing")) {
@@ -541,6 +547,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         retroActionMotion(field, timed, options.runtime.snapshot());
       }
       else applyActionMotion(field, beat);
+      if (pokemonMotion) {
+        const lungeMs = Number.parseFloat(getComputedStyle(root).getPropertyValue("--motion-lunge-ms")) || 160;
+        pokemonActionMotion(field, beat, lungeMs);
+      }
       // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
       // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
       if (hitFeel === "impact" && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {

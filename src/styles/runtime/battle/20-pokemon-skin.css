@@ -1043,24 +1043,35 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor.battle-motion-knockback {
   animation: none;
 }
-/* 맞은 몬스터 **그림만** 떤다 (화면은 흔들지 않는다). 히트스톱 동안은 22-hit-feel ① 이 멈춰 흰 실루엣으로
-   붙들고, 정지가 풀리는 순간 좌우로 세 번 떨며 밀려난다 — 「멈춤 → 터짐」이 타격감의 대부분이다.
-   2026-10-02: 넉백 노드 이동만 있고 그림이 가만히 있어서 맞았는지 안 맞았는지 모르겠다는 지적. */
-/* 동작 템포 1.5배 — 돌진(22-hit-feel ⑦)도 240→160ms. 맞은 그림 흔들림도 300→200ms. */
+/* 타격 안무는 그림 단위 WAAPI 가 맡는다(battlePokemonMotion.ts, 2026-10-02). 노드의 모션 클래스는 상태 표시로만 남기고
+   노드 이동·filter·juice 애니메이션을 끈다 — 발판이 노드의 ::before 라 노드를 옮기면 발판까지 따라 움직였고,
+   노드 filter(밝기 1.5)와 battle-juice-hit(밝기 1.9, 0.3초)가 겹쳐 맞은 쪽이 발판째 0.36초 하얗게 바랬다.
+   돌진 구간 길이 --motion-lunge-ms 는 동작 템포 1.5배(240→160ms)이고 안무도 이 값을 읽는다. */
 .battle-scene[data-battle-ui-style="pokemon"] {
   --motion-lunge-ms: 160ms;
 }
-.battle-scene[data-battle-ui-style="pokemon"] .battle-motion-knockback :is(.battle-enemy-image, .battle-monster-image) {
-  animation: pkmn-hit-shake 200ms steps(1, end) 1;
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-enemy-group .battle-enemy, .battle-actor-group .battle-actor):is(.battle-motion-windup, .battle-motion-lunge, .battle-motion-return, .battle-motion-knockback) {
+  filter: none;
+  transform: translate(-50%, -100%);
+  transition: none;
 }
-@keyframes pkmn-hit-shake {
-  0% { translate: 6px 0; }
-  16% { translate: -6px 0; }
-  33% { translate: 5px 0; }
-  50% { translate: -4px 0; }
-  66% { translate: 3px 0; }
-  83% { translate: -2px 0; }
-  100% { translate: 0 0; }
+.battle-scene[data-battle-ui-style="pokemon"] :is(.battle-enemy, .battle-actor):is(.battle-juice-hit, .battle-juice-critical, .battle-juice-swing, .battle-juice-miss) {
+  animation: none;
+}
+/* 기술 애니메이션의 대상 섬광(#battle-flash-tint)은 끈다 — 착탄 흰 실루엣(22-hit-feel ①, 정지 동안) 바로 뒤에 0.12초 더
+   물들어서 넉백으로 날아가는 그림이 흐릿하게 바랜 채 보였다. 흰 번쩍임은 정지 비트 한 번이면 된다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-enemy, .battle-actor).battle-animation-target-flash :is(.battle-enemy-image, .battle-actor-image) {
+  filter: none;
+}
+/* 기술 애니메이션의 화면 섬광은 한 번, 옅게. 저작 값(0.85 두 번)이면 착탄 정지 동안 화면 전체가 하얘져
+   맞은 몬스터의 흰 실루엣이 배경에 묻혔다(2026-10-02 녹화). 색은 저작 값 그대로다. */
+.battle-scene[data-battle-ui-style="pokemon"].battle-screen-flash::before {
+  animation: pkmn-screen-flash 140ms ease-out 1;
+}
+@keyframes pkmn-screen-flash {
+  0% { opacity: 0; }
+  35% { opacity: 0.32; }
+  100% { opacity: 0; }
 }
 
 /* ── ⑧ 데미지 숫자 팝업 제거 ──
