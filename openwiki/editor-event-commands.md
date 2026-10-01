@@ -217,6 +217,15 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 - 전신 프리셋(`generated-face-actor1-full`)은 `actor1-bust.png` 를 공유한다
   (`generatedAssetResourceResolver` 의 기존 관례). 그림은 흉상, 다른 것은 레이아웃뿐이므로
   폼 문구가 "통짜 전신 이미지"라고 말하지 않게 고쳤다.
+- **하단 대사창의 전신(`-full`) 초상은 대사창 뒤 입상이다 (2026-10-01):** `player/dialogue.ts` 가 화면 높이로 크기를
+  정한다(`fullPortraitMetrics`: 높이 125% · 폭 9:16 · 아래 20% 는 화면 밖). 해상도가 달라도 존재감이 같다.
+  초상은 상자 안이 아니라 **오버레이의 상자 뒤 형제**(`.dialogue-face-behind`, z-index 0 / 상자 1)다 — 상자는
+  `backdrop-filter` 로 자기 쌓임 맥락을 만들어 안의 자식은 상자 배경 뒤로 못 간다. 퇴장 연출은 `~` 선택자로 같이 걷힌다.
+  글 여백은 0(왼쪽 끝부터). 상단·중앙 위치는 예전 92×164 상자 위 방식 그대로다. 그림은 9:16 세로여야 틀이 찬다
+  (정사각 `actor1-bust` 를 공유하면 92×92 로만 그려진다). QA: `npm run qa:runtime -- --scenario dialogue-full-portrait --project <전신 업로드가 든 픽스처>`.
+- **대사창 한 페이지는 최대 3줄, 본문 줄간격 1.5 (2026-10-01):** `dialogueMaxLines` 가 상자에서 유도한 줄 수를
+  `DIALOGUE_VISIBLE_LINES = 3` 으로 자른다(RPG 만들기식). 「기록」 버튼은 평소 숨기고(상자 호버·포커스 때만 보임, 키 L),
+  진행 표시는 마름모/네모 대신 ▼ 삼각형이다(다음 장은 위아래 깜박임, 마지막 장은 제자리 점멸).
 - 표시 옵션 줄(`.event-command-face-options`)은 필드 수만큼만 열을 만들어야 한다. 얼굴 칸 번호
   컨트롤이 삭제된 뒤에도 3열 선언이 남아 오른쪽에 죽은 열이 있었다.
 - (2026-09-17 이후) 대사·선택지 미리보기 창은 자기 유리를 갖지 않는다 — 게임과 같은

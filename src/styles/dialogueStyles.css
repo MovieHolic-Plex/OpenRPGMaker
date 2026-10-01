@@ -516,7 +516,7 @@
   50% { transform: translateY(-2px); }
 }
 
-/* === 끝 표시 — 다음 장 ▼(마름모) / 대화 끝 ■(네모) === */
+/* === 끝 표시 — 다음 장 ▼ 는 위아래 깜박임, 대화 끝 ▼ 는 제자리 점멸 === */
 .dialogue-page-cursor.is-end {
   border-radius: 0;
   transform: none;
@@ -747,17 +747,24 @@
   font-family: var(--runtime-dialogue-font);
   font-size: 7px;
   line-height: 1;
-  opacity: 0.7;
+  /* 평소엔 숨긴다(글을 가리지 않는다). 상자에 마우스를 올리거나 키보드 포커스가 가면 나타난다. 키는 L. */
+  opacity: 0;
   padding: 1px 3px;
-  pointer-events: auto;
+  pointer-events: none;
   position: absolute;
   right: 4px;
   top: 3px;
 }
 
+.dialogue-box:hover .dialogue-log-button {
+  opacity: 0.7;
+  pointer-events: auto;
+}
+
 .dialogue-log-button:hover,
 .dialogue-log-button:focus-visible {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .dialogue-log {
