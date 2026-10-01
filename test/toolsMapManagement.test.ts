@@ -6,6 +6,7 @@ import type { ToolContext } from "@/editor/tools/types";
 import { toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
+import { MAX_TOOL_MAP_DIMENSION } from '@/project/mapSizeLimits';
 
 function ctxWithMap(width = 12, height = 12): { context: ToolContext; mapId: string } {
   const context: ToolContext = { project: createBlankProject() };
@@ -293,11 +294,11 @@ describe("resize_map", () => {
     expect(result.summary).toContain("ev_corner");
   });
 
-  it("256x256 초과 확장은 거부하고 분할 맵 대안을 안내한다", () => {
+  it("지원 상한 초과 확장은 거부하고 분할 맵 대안을 안내한다", () => {
     const { context, mapId } = ctxWithMap(12, 12);
-    const result = runTool(context, "resize_map", { mapId, width: 257, height: 12 });
+    const result = runTool(context, "resize_map", { mapId, width: MAX_TOOL_MAP_DIMENSION + 1, height: 12 });
     expect(result.ok).toBe(false);
-    expect(result.summary).toContain("최대 256×256");
+    expect(result.summary).toContain(`최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}`);
     expect(result.summary).toContain("여러 맵");
   });
 });
@@ -336,11 +337,11 @@ describe("create_map", () => {
     expect(tool!.function.description).not.toContain("border");
   });
 
-  it("256x256 초과 생성은 거부한다", () => {
+  it("지원 상한 초과 생성은 거부한다", () => {
     const context: ToolContext = { project: createBlankProject() };
-    const result = runTool(context, "create_map", { name: "초대형", width: 500, height: 500, id: "map_huge" });
+    const result = runTool(context, "create_map", { name: "초대형", width: MAX_TOOL_MAP_DIMENSION + 1, height: MAX_TOOL_MAP_DIMENSION + 1, id: "map_huge" });
     expect(result.ok).toBe(false);
-    expect(result.summary).toContain("최대 256×256");
+    expect(result.summary).toContain(`최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}`);
     expect(context.project.maps.map_huge).toBeUndefined();
   });
 });

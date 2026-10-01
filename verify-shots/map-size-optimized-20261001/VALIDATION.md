@@ -1,5 +1,7 @@
 # 최종 검증
 
+이 문서는 런타임 최적화 커밋 `1b54977be`를 만들기 직전의 검증 기록이다. 후속 공식 상한 512 변경은 `../official-map-512-20261001/SUMMARY.md`를 본다.
+
 - 관련 5파일 54개 테스트: 실제 프로세스 exit 0. unit-tests.log 참조.
 - 앱 typecheck: NODE_OPTIONS=--max-old-space-size=8192, 실제 프로세스 exit 0. typecheck.log 참조.
 - 256/512 벤치마크: 실제 프로세스 exit 0; 측정 실행 6회, 각 오류 0.

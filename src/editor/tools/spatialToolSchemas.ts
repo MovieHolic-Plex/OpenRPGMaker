@@ -1,9 +1,10 @@
 import type { JsonSchema } from "./types";
+import { SPATIAL_SIZE_MAX } from "@/project/spatial/types";
 
 const text = { type: "string" } as const;
 const id = { type: "string", minLength: 1 } as const;
 const integer = { type: "integer" } as const;
-const size = { type: "integer", minimum: 1, maximum: 256 } as const;
+const size = { type: "integer", minimum: 1, maximum: SPATIAL_SIZE_MAX } as const;
 const array = (items: JsonSchema): JsonSchema => ({ type: "array", items });
 const object = (properties: Record<string, JsonSchema>, required = Object.keys(properties)): JsonSchema => ({ type: "object", properties, required, additionalProperties: false });
 const choices = (values: readonly string[]): JsonSchema => ({ type: "string", enum: values });

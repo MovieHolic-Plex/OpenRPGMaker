@@ -1,0 +1,3 @@
+
+> oprn@0.57.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json

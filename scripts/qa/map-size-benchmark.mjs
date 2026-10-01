@@ -16,6 +16,9 @@ const source = JSON.parse(await readFile(resolve(root, 'test/fixtures/projects/e
 const sizes = [256, 512];
 const repetitions = 3;
 const frames = 180;
+const supportedDimension = Number((await readFile(resolve(root, 'src/project/mapSizeLimits.ts'), 'utf8'))
+  .match(/MAX_TOOL_MAP_DIMENSION\s*=\s*(\d+)/)?.[1]);
+assert.ok(supportedDimension > 0);
 await mkdir(out, { recursive: true });
 
 function makeMap(size, id) {
@@ -92,11 +95,11 @@ const result = {
     node: process.version, cpu: cpus()[0].model, logicalCpus: cpus().length,
     totalMemoryBytes: totalmem(), loadStart: loadavg(), viewport: { width: 640, height: 480 },
     launchArgs, browser: null, sourceHashes },
-  conditions: { sizes, repetitions, framesPerPhase: frames, tileSize: 16,
+  conditions: { sizes, supportedDimension, repetitions, framesPerPhase: frames, tileSize: 16,
     lowerTile: 360, upperTile: -1, events: 0, qaInstrumentation: true,
     path: 'player.html via startPlayerQaServer; export store shim',
     transport: 'Local module/asset HTTP requests fulfilled through Node fetch to avoid shared-host Chromium ERR_NETWORK_CHANGED. Vite development WebSocket receives a connected stub; no HMR is used.',
-    note: '512 bypasses the authoring limit only in this synthetic fixture. No NPC, water, shadows or authored game project. Frame CPU is Phaser prestep→postrender, excludes GPU completion. Heap is CDP used JS heap after forced GC, excludes GPU/native memory.' },
+    note: 'Synthetic fixtures only. No NPC, water, shadows or authored game project. Frame CPU is Phaser prestep→postrender, excludes GPU completion. Heap is CDP used JS heap after forced GC, excludes GPU/native memory.' },
   runs: [],
 };
 const server = await startPlayerQaServer();
@@ -221,6 +224,6 @@ const rows = [['Map-entry synchronous CPU, ms', a.enterMs.median, b.enterMs.medi
   ['Idle frame CPU median, ms', a.idleCpuMs.median, b.idleCpuMs.median],
   ['Moving frame CPU median, ms', a.movingCpuMs.median, b.movingCpuMs.median],
   ['Moving FPS', a.movingFps.median, b.movingFps.median]];
-const markdown = `# Map size benchmark — 2026-10-01\n\n## Conditions\n\n- ${result.environment.browser}, Linux, software WebGL (SwiftShader), viewport 640×480.\n- Actual export player path; QA hooks enabled. One discarded warmup then 3 repetitions per size, alternating order.\n- Static tile 360 everywhere, empty upper layer, no events. Same tile density, camera zoom, player and viewport.\n- Each idle/moving phase contains ${frames} real engine frames. Movement verified; no tile rebuild during movement.\n- Map entry measured inside the browser with performance.now around synchronous transfer (no fade). Texture already loaded on 32×32 base map. Includes base teardown and runtime initialization; excludes network/title boot and first GPU upload.\n- Heap delta: retained JS heap after forced GC, target minus base. Excludes native/GPU memory. CPU duration excludes GPU completion.\n- 512 is unsupported by authoring tools; limit was not changed. Synthetic fixture only; no canonical project writes.\n\n## Results\n\nMedians of 3 runs; each frame CPU value is the median within its run.\n\n| Metric | 256×256 | 512×512 | Ratio 512/256 |\n|---|---:|---:|---:|\n${rows.map(([name, x, y]) => `| ${name} | ${x.toFixed(2)} | ${y.toFixed(2)} | ${(y / x).toFixed(2)}× |`).join('\n')}\n\n## Evidence\n\n- raw-results.json: all runs, every sampled frame, movement coordinates, heap counters, tile counters, environment and source commit.\n- 256-field.png and 512-field.png: immediate visual inspection.\n- Reproduce: node scripts/qa/map-size-benchmark.mjs\n\n## Limits\n\nA controlled empty field measures size overhead, not the performance of every game. NPCs, layered art, animation, shadows, pathfinding and actual hardware can change the result. No memory-pressure threshold or general-purpose safe maximum was established.\n`;
+const markdown = `# Map size benchmark — 2026-10-01\n\n## Conditions\n\n- ${result.environment.browser}, Linux, software WebGL (SwiftShader), viewport 640×480.\n- Actual export player path; QA hooks enabled. One discarded warmup then 3 repetitions per size, alternating order.\n- Static tile 360 everywhere, empty upper layer, no events. Same tile density, camera zoom, player and viewport.\n- Each idle/moving phase contains ${frames} real engine frames. Movement verified; no tile rebuild during movement.\n- Map entry measured inside the browser with performance.now around synchronous transfer (no fade). Texture already loaded on 32×32 base map. Includes base teardown and runtime initialization; excludes network/title boot and first GPU upload.\n- Heap delta: retained JS heap after forced GC, target minus base. Excludes native/GPU memory. CPU duration excludes GPU completion.\n- Supported authoring dimension in this run: ${supportedDimension}. Synthetic fixtures only; no canonical project writes.\n\n## Results\n\nMedians of 3 runs; each frame CPU value is the median within its run.\n\n| Metric | 256×256 | 512×512 | Ratio 512/256 |\n|---|---:|---:|---:|\n${rows.map(([name, x, y]) => `| ${name} | ${x.toFixed(2)} | ${y.toFixed(2)} | ${(y / x).toFixed(2)}× |`).join('\n')}\n\n## Evidence\n\n- raw-results.json: all runs, every sampled frame, movement coordinates, heap counters, tile counters, environment and source commit.\n- 256-field.png and 512-field.png: immediate visual inspection.\n- Reproduce: node scripts/qa/map-size-benchmark.mjs\n\n## Limits\n\nA controlled empty field measures size overhead, not the performance of every game. NPCs, layered art, animation, shadows, pathfinding and actual hardware can change the result. No memory-pressure threshold or general-purpose safe maximum was established.\n`;
 await writeFile(resolve(out, 'SUMMARY.md'), markdown);
 console.log(markdown);

@@ -1925,8 +1925,9 @@ under `test/fixtures` derives existing engine test data without remote persisten
 
 사용자가 성능 실측을 요청했을 때 `node scripts/qa/map-size-benchmark.mjs`로 256×256과
 512×512를 비교한다. `startPlayerQaServer`의 전용 `player.html`/export store shim을 쓰며
-정본 프로젝트나 맵 크기 상한을 바꾸지 않는다. 512는 저작 도구의 지원 크기가 아니라
-실험용 fixture다. 같은 합본 마을 바닥 타일 360(칸당 쿼터 이미지 4개), NPC 0명,
+정본 프로젝트나 맵 크기 상한을 바꾸지 않는다. 최초 실측 당시 상한은 256이었고 512는
+실험용 fixture였다. 같은 날짜 후속 변경으로 공식 상한이 512가 됐으며, 새 실행은
+`supportedDimension`에 현재 상한을 기록한다. 같은 합본 마을 바닥 타일 360(칸당 쿼터 이미지 4개), NPC 0명,
 같은 카메라·화면에서 준비 실행을 버리고 크기별 3회 교대 측정한다.
 
 결과는 `verify-shots/map-size-benchmark-20261001/SUMMARY.md`를 먼저 읽는다.
@@ -1963,3 +1964,25 @@ test/eventLayerReuse.test.ts test/terrainQuarterAutotile.test.ts test/lakeAutoti
 --maxWorkers=2 --minWorkers=1`. 앱 타입 검사는 기본 Node heap 한도에서 OOM(exit 134)이므로
 `NODE_OPTIONS=--max-old-space-size=8192 npm run typecheck:app`로 확인했다.
 테스트 실행에는 AGENTS.md의 세션별 사용자 명시 허가가 필요하다.
+
+### 공식 512×512 저작 상한 검증
+
+공식 상한 변경의 증거는 `verify-shots/official-map-512-20261001/SUMMARY.md`다.
+핵심 테스트는 `mapSizeGuard`·`mapEdgeGrow`·`mapCreateSpec`·`runtimeTileWindow` 네 파일을
+`--maxWorkers=1 --minWorkers=1`로 실행한다. 공간 설계 저장/초과 크기와 기존 도구 경계는
+`spatialSchema`·`spatialBindingProjection`·`generateMap`·`toolsMapManagement` 네 파일에
+`-t '512×512|unbounded size|oversized extent|지원 상한 초과'`를 주어 별도로 확인한다.
+512×512 생성·확장·마지막 셀 저장 왕복·편집기 선택 허용·513 거부를 검증한다.
+
+`node scripts/qa/official-map-size.mjs`는 새 `npm run dev:worktree` 서버에서 실제 편집기
+생성창·actions·store·io 모듈만 독립 브라우저 화면으로 실행한다(검사 중 HMR 편집 금지).
+입력 max=512, 513 거부, 512 생성과 재로드 배열 길이를 확인한다. 전체 편집기 부팅/캔버스
+검사와 SQLite 정본 저장 증거는 아니다. 전체 셸을 쓰던 최초 시도는 브라우저 종료로 미완료다.
+플레이어 화면 QA는 위 전용 런타임 하네스를 별도로 쓴다.
+
+큰 6파일 실행에서는 148개 assertion이 통과했지만 Vitest `onTaskUpdate` RPC 시간 초과
+2건으로 exit 1이었다. 이를 초록으로 세지 않는다. 위 작은 묶음의 실제 종료 코드와 로그를 쓴다.
+더 넓은 8파일 실행의 16개 실패는 수정하지 않은 main `c7de9b0b7`에서도 재현했다:
+기본 beodeul_city에 구 generate_map 프로필이 없고, 구 테스트의 잔디 번호/이벤트 오류 경로
+기대값이 현재 기본값과 다르다. 경계 테스트는 생성기 지원 칩셋을 명시해 크기 계약 자체를 검사한다.
+전체 게이트/전체 스위트는 이 변경에서 로컬 실행하지 않았다.
