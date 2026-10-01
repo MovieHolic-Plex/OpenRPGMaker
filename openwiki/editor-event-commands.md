@@ -226,6 +226,18 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 - **대사창 한 페이지는 최대 3줄, 본문 줄간격 1.5 (2026-10-01):** `dialogueMaxLines` 가 상자에서 유도한 줄 수를
   `DIALOGUE_VISIBLE_LINES = 3` 으로 자른다(RPG 만들기식). 「기록」 버튼은 평소 숨기고(상자 호버·포커스 때만 보임, 키 L),
   진행 표시는 마름모/네모 대신 ▼ 삼각형이다(다음 장은 위아래 깜박임, 마지막 장은 제자리 점멸).
+- **공용 표정 세트의 흉상·전신 (2026-10-01):** 76세트마다 흉상·전신 × 5표정(base·happy·sad·angry·surprised) 760장이
+  `public/assets/shared/portraits/<줄기>/<모양>-<표정>.png` 에 있다. 목록·id 규칙은 `src/assets/sharedPortraitAssets.ts`
+  (id `shared-<줄기>-expressions-<bust|full>-<표정>`, id 안의 `-bust`/`-full` 이 표시 방식을 정한다). 내장 리소스 표
+  (`BUILTIN_GENERATED_RESOURCE_URLS`)에 실려 저장 검증·AI 검증을 통과한다.
+  - **표정은 대사의 emotion 이 고른다.** `dialogue.ts` 가 바탕 얼굴이 공용 초상이면 `dialogueFaceForEmotion` 으로
+    같은 모양의 표정 그림을 쓴다(본문 태그 `[표정:기쁨]` 도 같다). 화자 프로필의 표정 얼굴이 48px 낱장이어도
+    흉상이 낱장으로 떨어지지 않는다 — 프로필 표정 얼굴이 따로 흉상·전신일 때만 그것이 이긴다.
+  - 얼굴 바꾸기 폼: 「흉상」「전신」 버튼은 고른 얼굴이 공용 세트(낱장·초상)면 **그 인물의** 그림으로, 아니면 Actor1 프리셋으로 간다.
+    공용 초상이면 「얼굴」 버튼(낱장 00 으로 복귀)과 5표정 줄(표정 없는 대사의 기본 그림)이 보인다.
+  - 외형 흉상 칸: 얼굴이 공용 세트면 「이 얼굴의 공용 흉상 연결」. 그림 피커(`picture`)에는 세트당 `bust-base` 한 장만 나온다.
+  - 웹 내보내기는 참조된 공용 초상의 같은 모양 5표정을 함께 싣는다(`webExportAssets.ts`) — 표정은 런타임에서 파생되기 때문.
+  - 생성·검수 파이프라인과 계약(칩이 정답, 정수리 메모, 등신 고정): `scripts/content/portraits/README.md`.
 - 표시 옵션 줄(`.event-command-face-options`)은 필드 수만큼만 열을 만들어야 한다. 얼굴 칸 번호
   컨트롤이 삭제된 뒤에도 3열 선언이 남아 오른쪽에 죽은 열이 있었다.
 - (2026-09-17 이후) 대사·선택지 미리보기 창은 자기 유리를 갖지 않는다 — 게임과 같은

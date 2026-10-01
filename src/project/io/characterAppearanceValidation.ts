@@ -1,3 +1,4 @@
+import { findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
@@ -45,7 +46,7 @@ export function characterAppearanceReferenceIssues(project: Project): string[] {
         ?? (CHARSET_ASSETS.some((asset) => asset.id === id || asset.textureKey === id) ? "charset" : undefined)
         ?? (FACESET_FACE_ASSETS.some((asset) => asset.id === id) ? "faceset" : undefined)
         ?? EASYRPG_RTP_ASSETS.find((asset) => asset.id === id)?.category
-        ?? (id === "generated-face-actor1-bust" || id === "generated-face-actor1-full" ? "picture" : undefined)
+        ?? (id === "generated-face-actor1-bust" || id === "generated-face-actor1-full" || findSharedPortrait(id) ? "picture" : undefined)
         ?? GENERATED_ASSET_PLAN.assets.find((asset) => asset.resourceId === id && asset.status === "promoted" && (asset.resourceKind === "faceset" || asset.resourceKind === "picture"))?.resourceKind
         ?? project.resourceProfiles.find((profile) => profile.assetId === id)?.kind;
       if (kind !== expectedKind) issues.push(`characterAppearance ${appearance.id}: ${slot} requires an existing ${expectedKind} resource: ${id}`);

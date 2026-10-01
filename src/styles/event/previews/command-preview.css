@@ -123,6 +123,41 @@
   margin: 0;
 }
 
+/* 공용 흉상·전신의 5표정 줄 — 표정 없는 대사에 쓸 기본 그림을 고른다. */
+.event-command-face-portrait-expressions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-command-face-portrait-expression {
+  align-items: center;
+  background: var(--event-modern-field-muted);
+  border: 1px solid var(--event-modern-line);
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: grid;
+  font: 600 11px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  gap: 2px;
+  justify-items: center;
+  padding: 4px;
+  width: 64px;
+}
+
+.event-command-face-portrait-expression img {
+  height: 64px;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 56px;
+}
+
+.event-command-face-portrait-expression.selected {
+  border-color: var(--accent, #6aa0ff);
+  box-shadow: 0 0 0 1px var(--accent, #6aa0ff) inset;
+  color: var(--text-1);
+}
+
 .event-command-face-crop.event-command-face-bust {
   background-position: bottom center;
   background-repeat: no-repeat;

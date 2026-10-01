@@ -4,6 +4,7 @@ import { playerTextDelay } from '@/player/playerPreferences';
 // It resolves text advancement and choice selection through promises.
 
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { dialogueFaceForEmotion, findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
@@ -498,7 +499,9 @@ export function createDialogueUI(
         applyDialoguePresentation(box, profile);
         applyDialogueScrim(scrim, profile, position);
         const baseFace = look.hideFace || balloon ? undefined : request.face;
-        faceForLine = baseFace && look.expressionFace ? { ...baseFace, resourceId: look.expressionFace } : baseFace;
+        // 공용 흉상·전신이면 줄의 표정으로 같은 모양의 표정 그림을 고른다(sharedPortraitAssets.ts).
+        const lineFaceId = baseFace ? dialogueFaceForEmotion(baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
+        faceForLine = baseFace && lineFaceId && lineFaceId !== baseFace.resourceId ? { ...baseFace, resourceId: lineFaceId } : baseFace;
         const face = faceForLine;
         const portraitMode = dialoguePortraitMode(face);
         const isPortrait = portraitMode !== "face";
@@ -703,9 +706,12 @@ export function createDialogueUI(
           ...(expression?.emote ? { emote: expression.emote } : {}),
         };
         voice = createDialogueVoice(voiceUrl ? { ...look, voice: null } : look);
-        if (expression?.face && faceEl) {
-          currentFaceId = expression.face;
-          setFaceImage(faceEl, expression.face);
+        const nextFace = findSharedPortrait(request.face?.resourceId)
+          ? dialogueFaceForEmotion(request.face?.resourceId, emotion, expression?.face)
+          : expression?.face;
+        if (nextFace && faceEl) {
+          currentFaceId = nextFace;
+          setFaceImage(faceEl, nextFace);
         }
         box.dataset.dialogueExpression = emotion;
         if (expression?.emote) {

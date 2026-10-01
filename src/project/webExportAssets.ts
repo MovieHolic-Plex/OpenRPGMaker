@@ -4,6 +4,7 @@ import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { sharedPortraitExpressionSiblings } from "@/assets/sharedPortraitAssets";
 import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
 import { pixelEnemySheet } from "@/assets/pixelEnemySheets";
@@ -24,6 +25,8 @@ const encoder = new TextEncoder();
 
 export function collectWebExportAssets(project: Project): readonly WebExportAsset[] {
   const ids = collectProjectStrings(project);
+  // 공용 흉상·전신은 대사의 표정에 따라 런타임이 같은 모양의 다른 표정 그림으로 바꾼다 — 참조된 모양의 5표정을 같이 싣는다.
+  for (const id of [...ids]) for (const sibling of sharedPortraitExpressionSiblings(id)) ids.add(sibling);
   const usedUploadedIds = collectUsedUploadedAssetIds(project);
   const assets = new Map<string, WebExportAsset>();
   for (const path of requiredRuntimeAssetPaths(project)) {
