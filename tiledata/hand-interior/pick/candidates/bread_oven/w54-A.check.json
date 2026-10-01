@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_oven/w54-A.pxg",
+ "id": "bread oven",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.095
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 20,
+ "v5_colors": 20,
+ "bbox": [
+  0,
+  4,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  4,
+  31,
+  31
+ ],
+ "note": "3/4 돔: 동심 아치 줄·윗면 밝은 렌즈+연기 구멍·두꺼운 화구 테·돌 받침단. 불 자리 v5 그대로",
+ "ok": true
+}
