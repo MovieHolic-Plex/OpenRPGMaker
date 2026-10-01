@@ -298,6 +298,16 @@ export interface SkillRecord {
    */
   drainPercent?: number;
   /**
+   * 게이지 밀기(-100~100, ATB 게이지 흐름 전용): 명중한 대상의 행동 게이지를 이만큼 옮긴다. 음수 = 늦추기(크로노 트리거
+   * 시간 계열·FF 의 딜레이 공격), 양수 = 앞당기기(아군 퀵). 타격마다 적용한다. strict 턴제에서는 아무 일도 없다. 생략 = 없음.
+   */
+  gaugeShift?: number;
+  /**
+   * 힘 모으기(1~3): 쓰겠다고 정한 차례에는 예고만 하고(「…을 준비한다!」), 자기 차례가 이만큼 더 지난 뒤에 발동한다.
+   * 적이 쓰면 보스 대기술 예고가 된다 — 플레이어가 방어·회복으로 대비할 틈. 아군도 같다. 생략 = 바로 발동.
+   */
+  chargeTurns?: number;
+  /**
    * retro2003 도트 연출 빌리기: 이 스킬 id 가 연출 계약(retroClassSkills·retroRosterSkills·retroMonsterSkills)에 없을 때,
    * 재생할 계약 스킬 id. 새 스킬·복제 스킬이 850여 개 계약 연출을 그대로 쓴다. 조회 순서는 「자기 id → 이 필드」.
    * 위력·비용·상태는 이 레코드 값을 쓰고 그림·움직임·소리·타수 간격만 빌린다. 생략 = 빌리지 않음.
@@ -869,6 +879,11 @@ export interface StateRuntimeEffects {
   reraisePercent?: number;
   /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
   doomTurns?: number;
+  /**
+   * 변신: 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 전투 그림 id(예 "party-pixel-monster4-5" 9칸 시트,
+   * 걷기 칩 전투 시트), 적은 몬스터 그림 id. 능력치는 같은 상태의 배율 칸으로 바꾼다. 풀리면 원래 그림으로 돌아온다.
+   */
+  transformResourceId?: string;
 }
 
 export interface BattleAnimationRecord {

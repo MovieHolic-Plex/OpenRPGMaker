@@ -453,6 +453,8 @@ export function applyRetroSkillMechanic(base: SkillRecord, mechanic: RetroSkillM
   if (mechanic.hitRate !== undefined) next.hitRate = mechanic.hitRate;
   if (mechanic.priority) next.movePriority = mechanic.priority;
   if (mechanic.cooldown) next.cooldownTurns = mechanic.cooldown;
+  if (mechanic.gauge) next.gaugeShift = mechanic.gauge;
+  if (mechanic.charge) next.chargeTurns = mechanic.charge;
   let states: DatabaseStateEffect[] | undefined = mechanic.states
     ? mechanic.states.map((state) => ({ stateId: state.id, chance: state.chance ?? 100, operation: state.op ?? "add" }))
     : base.stateEffects ? [...base.stateEffects] : undefined;

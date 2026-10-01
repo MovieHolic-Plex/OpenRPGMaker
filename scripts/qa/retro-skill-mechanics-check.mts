@@ -65,6 +65,8 @@ function mechanicKinds(skill: SkillRecord): string[] {
   if (skill.damageFormula) kinds.push("비율 수식");
   if (skill.hpCostPercent) kinds.push("대가");
   if (skill.drainPercent) kinds.push("흡수");
+  if (skill.gaugeShift) kinds.push("시간");
+  if (skill.chargeTurns) kinds.push("모으기");
   if (skill.effect.kind === "healing") kinds.push(has(skill, "state_death", "remove") ? "부활" : "회복");
   if (skill.effect.kind === "steal") kinds.push("훔치기");
   if (skill.effect.kind === "scan") kinds.push("탐지");

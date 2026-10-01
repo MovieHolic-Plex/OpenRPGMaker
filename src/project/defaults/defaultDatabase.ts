@@ -54,7 +54,7 @@ export function ensureBundledBattleAnimations(project: {
 const RETRO_GIMMICK_STATE_IDS: readonly string[] = [
   "state_blind", "state_stop", "state_protect", "state_shell",
   "state_berserk", "state_petrify", "state_wet", "state_oiled",
-  "state_counter", "state_taunt", "state_cover", "state_evade", "state_reflect", "state_reraise", "state_doom",
+  "state_counter", "state_taunt", "state_cover", "state_evade", "state_reflect", "state_reraise", "state_doom", "state_form_stone",
 ];
 const RETRO_EXTENSION_CLASS_IDS: readonly string[] = [
   CLASS_SAMURAI_ID, CLASS_NINJA_ID, CLASS_MONK_ID, CLASS_BARD_ID, CLASS_DRUID_ID, CLASS_WITCH_ID,

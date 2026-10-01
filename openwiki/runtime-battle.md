@@ -37,6 +37,17 @@
 - `state_death` 는 **해제(부활)만** 엔진이 안다. add 로 거는 즉사는 `applyStateEffects` 가 레코드 없는 상태로 보고 조용히 건너뛴다.
 - 층 앵커만 바꾼 스킬 4개(`target`→`allTargets`: 가시 회전·버섯 고리 춤·바위 비·꼬리 휩쓸기) — 전체 공격인데 이펙트가 한 적에게만 떴다.
 
+## 힘 모으기 · 게이지 밀기 · 변신 (2026-10-01, B)
+
+- **힘 모으기 `SkillRecord.chargeTurns`(1~3)** — 런타임 장부 `pendingCharges`(runtime.ts). 정한 차례엔 `kind:"special", charge:true` 예고 줄만 남기고(「X가 Y를 준비한다! (N턴 뒤)」), 자기 차례가 N 번 더 오면 저장한 명령/행동을 발동한다. 아군은 `applyActorCommandEffect` 앞의 `actorChargeStep`, 적은 `executeEnemyTurnAction`(gauge·strict 둘 다 이 길). 반격·최후의 일격(drainCounters)은 모으지 않는다. 모으는 동안 아군 메뉴는 열리지 않는다(gauge: tick 의 분기, strict: `queueBerserkStrictCommands` 가 저장 명령을 넣는다). 발동 때 MP·봉인으로 못 쓰면 「모은 힘이 흩어졌다」. 쓰러지면 장부에서 지운다(`dropDefeatedCharges`).
+  - 예고 줄에 **skillId 를 싣지 않는다** — 실으면 연출 재생기가 시전으로 보고 시전자 위에 착탄 연출을 튼다(녹화 실측). 시퀀서는 `charge` 줄이면 명령 줄(「…을 사용했다!」) 없이 예고 문장만 읽는다.
+  - 스냅숏 `BattleBattlerSnapshot.charging {skillId, skillName, turnsLeft}` → DOM `data-charging` + `.battle-charge-mark`(머리 위 「기술 · 남은 차례」 띠), 몸은 금빛 떨림(28-retro-state-aura.css, 모든 스킨).
+- **게이지 밀기 `SkillRecord.gaugeShift`(-100~100)** — ATB(gauge) 흐름에서 명중한 대상의 `gauge` 를 타마다 옮긴다(`shiftGauge`). 음수 = 늦추기, 양수 = 아군 앞당기기. 대상당 「행동이 늦춰졌다/빨라졌다」 special 한 줄. strict 는 무시.
+- **변신 `StateRuntimeEffects.transformResourceId`** — 스냅숏 `transformResourceId`(원래 `battleCharacterResourceId` 는 그대로). DOM `presentedForm` 이 상태 장부(stateView)를 따라 「…에 걸렸다!」 줄에서 그 노드만 새 그림으로 다시 만든다(`data-battle-form`, `.battle-actor-transformed` 펑). 아군은 `party-pixel-<칩>`·전투 시트 id, 적은 몬스터 그림 id. 배지 `FRM`(id 에 `form_`). 기본 상태 `state_form_stone` 바위 둔갑(이끼 골렘, 방어 1.8·민첩 0.7) — 너구리 「둔갑」.
+- 로스터 재연결(`verify-shots/retro-btl-b/reconnect.py`): 게이지 — 시간 화살 -40·시간 도약 -25·갱도 진동 -25·데드아이 -30·신호탄 +30·귀족의 명령 +30·돛을 올려라 +25. 모으기 1턴(위력 약 1.7배) — 원소 대융합·영혼 수확제 300, 화염 브레스(용인) 120, 외눈 광선 130. 기믹 어휘 `gauge`·`charge`(retroSkillMechanics.ts).
+- 재생 오라를 키웠다: 몸이 초록으로 숨 쉬고(aura-regen), 반짝이 두 겹(::after 반 박자)과 발밑 빛기둥(::before).
+- 녹화 하네스 `--enemy-skill <id>`(적이 통상 공격 대신 그 스킬). 증거: 프로브 `verify-shots/retro-btl-b/probe.mts`(gauge·strict 양쪽 예고 → 발동, 모으는 중 메뉴 0회, 게이지 100→40), 녹화 `verify-shots/retro-btl-b/run.sh`.
+
 ## 반응·표적 상태 7종 — 반격·도발·감싸기·회피·리플렉·리레이즈·선고 (2026-10-01)
 
 `StateRuntimeEffects` 에 7칸이 늘었다. 엔진(`battleStates.ts` 의 `stateBehavior` → `runtime.ts`)·자료집 상태 탭(`databaseStateRecordView.ts` 의 `retroGimmickControls`)·조수 스키마(`dbTools.ts` 의 `stateRuntimeEffectsSchema`)가 같은 칸을 읽는다. gen1 규칙 모델에서는 모두 꺼진다.

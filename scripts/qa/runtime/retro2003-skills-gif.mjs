@@ -1,4 +1,4 @@
-// node scripts/qa/runtime/retro2003-skills-gif.mjs [--set class|legacy|roster|party-pixel] [--batch a1] [--skills a,b] [--out DIR] [--reduced] [--linger N]
+// node scripts/qa/runtime/retro2003-skills-gif.mjs [--set class|legacy|roster|party-pixel] [--batch a1] [--skills a,b] [--out DIR] [--reduced] [--linger N] [--enemy-skill <스킬 id>]
 // roster(2026-09-28 2차 로스터): 계약 src/assets/retroRoster.ts + 묶음 파일(retroRosterSkills/<batch>.ts)의 스킬을 그 직업 배우가 쓴다.
 //   --batch a1 처럼 묶음 하나만. 세 명씩 조(부활 스킬이 있으면 쓰러진 주인공을 곁들임)로 찍는다. 스킬이 없는 빈 묶음은 건너뛴다.
 // party-pixel: 사람형이 아닌 파티원(짐승·탈것·몬스터 칩, 몬스터 9칸 시트)의 통상 공격 한 번 — party-<칩>.gif. --batch 로 묶음을 좁힌다.
@@ -19,7 +19,7 @@ const { values } = parseArgs({ options: {
   out: { type: 'string', default: '.omo/retro-skills/recording' },
   set: { type: 'string', default: 'class' },
   fps: { type: 'string', default: '15' }, width: { type: 'string', default: '640' },
-  skills: { type: 'string' }, batch: { type: 'string' }, custom: { type: 'string' }, reduced: { type: 'boolean', default: false }, linger: { type: 'string' },
+  skills: { type: 'string' }, batch: { type: 'string' }, custom: { type: 'string' }, reduced: { type: 'boolean', default: false }, linger: { type: 'string' }, 'enemy-skill': { type: 'string' },
 } });
 const fps = Number(values.fps), width = Number(values.width);
 if (!Number.isInteger(fps) || fps < 1 || fps > 30 || !Number.isInteger(width) || width < 320 || width > 1280) throw new Error('fps 1..30, width 320..1280');
@@ -179,7 +179,9 @@ async function recordGroup(groupIndex, group, defaults, contract) {
     }
     for (const enemy of project.database.enemies) {
       enemy.stats.maxHp = 99999; enemy.stats.attack = 1; enemy.stats.agility = 1;
-      enemy.actions = [{ skillId: 'skill_attack', priority: 5, condition: { kind: 'always' } }];
+      // --enemy-skill <id>: 적이 통상 공격 대신 이 스킬을 쓴다(힘 모으기 예고·적 연출 확인용).
+      enemy.actions = [{ skillId: values['enemy-skill'] ?? 'skill_attack', priority: 5, condition: { kind: 'always' } }];
+      if (values['enemy-skill']) enemy.stats.maxMp = 999;
       enemy.stealItems = [{ itemId: 'item_potion', rate: 100 }];
     }
     if (customChoreographies.length) project.database.skillChoreographies = structuredClone(customChoreographies);

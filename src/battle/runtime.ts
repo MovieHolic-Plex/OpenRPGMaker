@@ -51,6 +51,7 @@ import {
   evasionChanceForStates,
   reraiseForStates,
   stateFlag,
+  transformResourceForStates,
   gaugeFrozenByStates,
   recoverStatesWhenHit,
   runStateUpkeep,
@@ -67,6 +68,7 @@ import type {
   BattleAnimationSnapshot,
   BattleCapturedMonsterSnapshot,
   BattleCaptureResultSnapshot,
+  BattleBattlerSnapshot,
   BattleFlow,
   BattleEventChoiceSnapshot,
   BattleEventPauseSnapshot,
@@ -1050,6 +1052,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(ready.battler));
           return;
         }
+        // 힘 모으기 중이면 메뉴 없이 모은 기술을 이어 간다(예고 → 발동).
+        const charging = pendingCharges.get(ready.battler.id)?.command;
+        if (charging) {
+          activeActorId = ready.battler.recordId;
+          applyActorCommandEffect(ready.battler, charging);
+          applyTroopEvents(() => finishGaugeActorCommand(ready.battler), markGaugeActionCycle(ready.battler));
+          return;
+        }
         // 버서크: 명령 메뉴 없이 무작위 적을 통상 공격한다.
         const forced = berserkAttackCommand(ready.battler);
         if (forced) {
@@ -1234,7 +1244,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function applyActorCommandEffect(actor: MutableBattler, command: ActorCommand): void {
-    applyActorCommandEffectCore(actor, command);
+    const charged = actorChargeStep(actor, command);
+    if (!charged) return;
+    applyActorCommandEffectCore(actor, charged);
     // 반격은 행동의 모든 타격이 끝난 뒤에 온다(다단히트 사이에 끼어들지 않는다).
     drainCounters();
   }
@@ -1645,7 +1657,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const actorId of [...strictPendingActorIds]) {
       if (!strictPendingActorIds.includes(actorId)) continue;
       const actor = actors.find((entry) => entry.recordId === actorId);
-      const forced = actor ? berserkAttackCommand(actor) ?? autoActorCommand(actor) : undefined;
+      const forced = actor ? pendingCharges.get(actor.id)?.command ?? berserkAttackCommand(actor) ?? autoActorCommand(actor) : undefined;
       if (!actor || !forced) continue;
       strictActorCommands = [...strictActorCommands, { actorId: actor.recordId, command: forced }];
       const partnerIds = comboPartners(actor, forced).map((partner) => partner.recordId);
@@ -1737,7 +1749,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           const planned = action.action?.requiresPart && brokenPartTags(action.enemy).has(action.action.requiresPart)
             ? chooseEnemyAction(action.enemy)
             : action.action;
-          executeEnemyAction(action.enemy, planned);
+          executeEnemyTurnAction(action.enemy, planned);
           drainCounters();
         }
         logStrictAction(queue.round, queue.index, action, beforeResult);
@@ -1951,9 +1963,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       forcedSwitchActorId: forcedActor?.recordId,
       switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
       participatingActorIds: [...participatingActorIds],
-      actors: activeActors().map((actor, index) => battlerSnapshot(actor, activeActorPosition(index), actorPoseContext)),
+      actors: activeActors().map((actor, index) => withCharging(actor, battlerSnapshot(actor, activeActorPosition(index), actorPoseContext))),
       reserveActors: reserveActors().map((actor) => battlerSnapshot(actor, undefined, { showActionPose: false })),
-      enemies: enemiesInBattle.map((enemy) => battlerSnapshot(enemy, undefined, poseContext)),
+      enemies: enemiesInBattle.map((enemy) => withCharging(enemy, battlerSnapshot(enemy, undefined, poseContext))),
       lastAnimation,
       lastActionResult,
       actionLog: [...actionLog],
@@ -2005,7 +2017,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     }
-    executeEnemyAction(enemy, chooseEnemyAction(enemy));
+    executeEnemyTurnAction(enemy, pendingCharges.has(enemy.id) ? undefined : chooseEnemyAction(enemy));
     // 적의 물리 타격에 아군의 반격 상태가 걸려 있으면 행동이 끝난 뒤 되받아친다.
     drainCounters();
     enemy.gauge = 0;
@@ -2020,6 +2032,107 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     resolveOutcome();
     if (!result && beginForcedSwitchIfNeeded()) return;
     phase = result ? "resolved" : "charging";
+  }
+
+  // ── 힘 모으기(SkillRecord.chargeTurns, 2026-10-01) ──
+  // 쓰겠다고 정한 차례에는 예고만 남기고, 자기 차례가 chargeTurns 번 더 오면 그때 발동한다. 적·아군 같은 규칙이고
+  // gauge·strict 흐름 모두 「자기 차례」를 센다. 반격(drainCounters)처럼 차례 밖에서 쓰는 기술은 모으지 않는다.
+  const pendingCharges = new Map<string, { readonly skillId: SkillId; turnsLeft: number; readonly command?: ActorCommand; readonly action?: EnemyActionChoice }>();
+
+  function chargeTurnsOf(skillId: SkillId | undefined): number {
+    if (gen1 || !skillId) return 0;
+    const turns = Math.round(lookupSkill(skillId)?.chargeTurns ?? 0);
+    return Math.max(0, Math.min(3, turns));
+  }
+
+  function recordCharging(battler: MutableBattler, skillId: SkillId, turnsLeft: number, first: boolean): void {
+    beginTimelineAction();
+    const name = lookupSkill(skillId)?.name ?? "기술";
+    // skillId 를 싣지 않는다 — 실으면 연출 재생기가 이 줄을 기술 시전으로 보고 시전자 위에 착탄 연출을 튼다(녹화 실측).
+    recordTimeline({
+      kind: "special", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id, charge: true,
+      message: first
+        ? `${withJosa(battler.name, "이/가")} ${withJosa(name, "을/를")} 준비한다! (${turnsLeft}턴 뒤)`
+        : `${withJosa(battler.name, "이/가")} 힘을 모으고 있다… (${name}까지 ${turnsLeft}턴)`,
+    });
+  }
+
+  /** 아군 명령의 힘 모으기 단계. 이번 차례에 실제로 실행할 명령, 또는 모으느라 차례를 쓴 경우 undefined. */
+  function actorChargeStep(actor: MutableBattler, command: ActorCommand): ActorCommand | undefined {
+    const pending = pendingCharges.get(actor.id);
+    if (pending?.command) {
+      pending.turnsLeft -= 1;
+      if (pending.turnsLeft > 0) {
+        recordCharging(actor, pending.skillId, pending.turnsLeft, false);
+        return undefined;
+      }
+      pendingCharges.delete(actor.id);
+      // 모으는 사이 MP·쿨다운·봉인으로 못 쓰게 됐으면 흩어진다.
+      if (battleActorSkillFailure(options.project, actor, pending.skillId, comboParticipants(true), partyGauge)) {
+        beginTimelineAction();
+        recordSpecial(actor, actor, `${withJosa(actor.name, "이/가")} 모은 힘이 흩어졌다.`);
+        return undefined;
+      }
+      return pending.command;
+    }
+    if (command.kind === "skill") {
+      const turns = chargeTurnsOf(command.skillId);
+      if (turns > 0) {
+        pendingCharges.set(actor.id, { skillId: command.skillId, turnsLeft: turns, command });
+        recordCharging(actor, command.skillId, turns, true);
+        return undefined;
+      }
+    }
+    return command;
+  }
+
+  /** 적의 자기 차례 행동(gauge·strict). 힘 모으기를 거친 뒤 executeEnemyAction 으로 넘긴다. */
+  function executeEnemyTurnAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
+    const pending = pendingCharges.get(enemy.id);
+    if (pending?.action) {
+      pending.turnsLeft -= 1;
+      if (pending.turnsLeft > 0) {
+        weakness.standUp(enemy.id);
+        recordCharging(enemy, pending.skillId, pending.turnsLeft, false);
+        return;
+      }
+      pendingCharges.delete(enemy.id);
+      executeEnemyAction(enemy, pending.action);
+      return;
+    }
+    const turns = chargeTurnsOf(action?.skillId);
+    if (action?.skillId && turns > 0) {
+      weakness.standUp(enemy.id);
+      pendingCharges.set(enemy.id, { skillId: action.skillId, turnsLeft: turns, action });
+      recordCharging(enemy, action.skillId, turns, true);
+      return;
+    }
+    executeEnemyAction(enemy, action);
+  }
+
+  /** 쓰러진 배틀러는 모으던 힘을 잃는다(부활해도 이어지지 않는다). */
+  function dropDefeatedCharges(): void {
+    for (const battler of [...actors, ...enemies]) if (battler.hp <= 0) pendingCharges.delete(battler.id);
+  }
+
+  /** 스냅숏에 힘 모으기·변신을 싣는다(배틀러 자체 필드가 아니라 런타임 장부·상태에서 온다). */
+  function withCharging(battler: MutableBattler, view: BattleBattlerSnapshot): BattleBattlerSnapshot {
+    const pending = pendingCharges.get(battler.id);
+    const form = gen1 ? undefined : transformResourceForStates(options.project, battler);
+    if (!pending && !form) return view;
+    return {
+      ...view,
+      ...(pending ? { charging: { skillId: pending.skillId, skillName: lookupSkill(pending.skillId)?.name ?? "", turnsLeft: pending.turnsLeft } } : {}),
+      ...(form ? { transformResourceId: form } : {}),
+    };
+  }
+
+  /** 게이지 밀기(SkillRecord.gaugeShift): ATB 흐름에서 대상의 행동 게이지를 옮긴다. */
+  let gaugeShiftedTargetId: string | undefined;
+  function shiftGauge(target: MutableBattler, amount: number): void {
+    if (gen1 || battleFlow !== "gauge" || target.hp <= 0 || !amount) return;
+    target.gauge = Math.max(0, Math.min(100, target.gauge + amount));
+    gaugeShiftedTargetId = target.id;
   }
 
   function executeEnemyAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
@@ -2863,10 +2976,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applySpecialSkill(user, target, skill, commandKind);
       return;
     }
+    gaugeShiftedTargetId = undefined;
     for (const multiplier of skill?.hitSequence ?? [1]) {
       if (user.hp <= 0 || (target.hp <= 0 && skill?.effect.kind === "damage")) break;
       applySkillHit(user, target, skillId, commandKind, multiplier * powerMultiplier);
     }
+    // 게이지 밀기는 타마다 옮기고 문장은 대상당 한 줄.
+    if (skill?.gaugeShift && gaugeShiftedTargetId === target.id && target.hp > 0) {
+      recordSpecial(user, target, skill.gaugeShift < 0 ? `${target.name}의 행동이 늦춰졌다!` : `${target.name}의 행동이 빨라졌다!`);
+    }
+    gaugeShiftedTargetId = undefined;
   }
 
   function recordSpecial(user: MutableBattler, target: MutableBattler, message: string, skillId?: SkillId, commandKind?: BattleTimelineEntrySnapshot["commandKind"]): void {
@@ -3027,6 +3146,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit) {
       applyStates(user, target, skill?.stateEffects);
     }
+    if (result.hit && skill?.gaugeShift) shiftGauge(target, skill.gaugeShift);
     if (result.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       // RM2K3 스위치형 스킬: 명중 시 지정 스위치를 ON으로 만든다.
       battleEventState.switches[skill.effect.switchId] = true;
@@ -3392,6 +3512,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result) return;
     applyAutoRevives();
     resolveEnemyParts();
+    dropDefeatedCharges();
     // Recoil and event effects can wipe out both sides in the same resolution.
     // Defeat must win before either the Gen1 or the ordinary victory path pays rewards.
     // 석화처럼 incapacitates 상태인 배우도 쓰러진 것으로 센다 — 전원이 그렇다면 패배.

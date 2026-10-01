@@ -27,6 +27,11 @@ export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 �
   element   속성 id(sword spear hit bow fire ice thunder water earth wind holy dark). null = 무속성으로 강제.
   crit      치명 확률 %.   hitRate  명중 %.   priority  기술 우선도 -7~7(strict 턴제에서만 순서를 바꾼다).
   cooldown  사용 뒤 못 쓰는 라운드 수.
+  gauge     게이지 밀기 -100~100. 맞은 대상의 ATB 게이지를 옮긴다 — 음수 = 늦추기(시간 화살·발 묶기), 양수 = 아군 퀵(재촉·신호).
+            타마다 적용하고 대상당 「행동이 늦춰졌다/빨라졌다」 한 줄. ATB(gauge) 흐름 전용, strict 턴제에서는 무시.
+  charge    힘 모으기 1~3. 정한 차례엔 「…을 준비한다! (N턴 뒤)」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 몸이 금빛으로
+            떨리고 머리 위에 「기술 · 남은 차례」 띠가 뜬다. 한 차례를 버리므로 위력을 1.6~1.8배로 올려 준다(「모아」「숨을 모아」 기술).
+            적이 쓰면 보스 대기술 예고가 된다.
 
 기본 DB 상태(쓸 수 있는 id): state_poison 독 · state_deep_poison 맹독(출혈) ·
   state_sleep 수면 · state_paralysis 마비 · state_silence 침묵 · state_blind 암흑(통상 공격 명중 ½) ·
@@ -36,6 +41,8 @@ export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 �
   반응·표적(자신·아군에 거는 것): state_counter 반격(물리에 맞으면 60% 통상 반격) · state_taunt 도발(적이 먼저 노린다, 방어 1.2배) ·
   state_cover 감싸기(빈사 아군 대신 물리를 맞는다) · state_evade 회피(물리 명중 -40%, 잔상·분신) ·
   state_reflect 리플렉(단일 마법을 시전자에게 튕긴다) · state_reraise 리레이즈(쓰러지면 HP 25% 로 한 번 부활, 아군만).
+  변신: state_form_stone 바위 둔갑(그림이 이끼 골렘으로, 방어 1.8배·민첩 0.7배). 새 변신은 상태의 runtimeEffects.transformResourceId 에
+  "party-pixel-<칩>" 을 넣고 배율 칸으로 능력치를 바꾼다(update_state).
   적에게 거는 것: state_doom 선고(자기 차례 3번 뒤 전투 불능 — **즉사는 이것**. 강하므로 chance 낮게, 정화로 풀린다).
   화상·빙결(state_burn/freeze)은 포켓몬 데모 DB 에만 있다 — 기본 DB 에 없는 id 를 쓰면 프로젝트 검증이
   「stateId does not exist」로 player 부팅을 막는다.
@@ -49,7 +56,7 @@ export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 �
      반격→state_counter, 도발→state_taunt(자신), 감싸기·수호→state_cover, 잔상·분신·회피→state_evade, 리플렉·반사→state_reflect,
      불사·리레이즈→state_reraise, 선고·사형·즉사→state_doom.
      효과와 설명이 어긋나면 설명 한 줄을 고친다.
-  4. 직업 정체성: 암흑기사=HP 대가·흡수·현재 HP 비례 · 시공술사=헤이스트·슬로우·스톱·그래비티 · 도적=다단·훔치기·암흑·독 ·
+  4. 직업 정체성: 암흑기사=HP 대가·흡수·현재 HP 비례 · 시공술사=헤이스트·슬로우·스톱·그래비티·게이지 밀기 · 도적=다단·훔치기·암흑·독 ·
      성기사=프로텍트·실드·부활·신성 · 적마도사=두 번 치기·해제·MP 전환·약점 만들기 · 발키리=직선·강하·다단 ·
      야수조련사=소환 다단·출혈(맹독)·위압. 새 직업도 이런 정체성 한 줄을 먼저 정하고 8개를 거기에 맞춘다.
 
@@ -117,6 +124,10 @@ export interface RetroSkillMechanic {
   readonly hitRate?: number;
   readonly priority?: number;
   readonly cooldown?: number;
+  /** 게이지 밀기 -100~100(SkillRecord.gaugeShift). */
+  readonly gauge?: number;
+  /** 힘 모으기 1~3(SkillRecord.chargeTurns). */
+  readonly charge?: number;
 }
 
 /** area 모양별 반지름(전투장 논리 px). circle 은 주 대상 둘레, line 은 |dy| <= radius/2 인 가로 띠. */
@@ -137,6 +148,8 @@ export function describeRetroSkillMechanic(mechanic: RetroSkillMechanic | undefi
   if (mechanic.crit) parts.push(`치명 ${mechanic.crit}%`);
   if (mechanic.priority) parts.push(`우선 ${mechanic.priority > 0 ? "+" : ""}${mechanic.priority}`);
   if (mechanic.cooldown) parts.push(`대기 ${mechanic.cooldown}턴`);
+  if (mechanic.gauge) parts.push(mechanic.gauge < 0 ? `게이지 ${mechanic.gauge}` : `게이지 +${mechanic.gauge}`);
+  if (mechanic.charge) parts.push(`모으기 ${mechanic.charge}턴`);
   if (mechanic.element === null) parts.push("무속성");
   else if (mechanic.element) parts.push(`속성 ${mechanic.element}`);
   return parts.length > 0 ? parts.join(" · ") : "순수 데미지";

@@ -190,6 +190,8 @@ export function defaultStateRecords(): StateRecord[] {
     // 리레이즈: 쓰러지면 최대 HP 25% 로 한 번 일어난다. 저절로 풀리지 않는다.
     { id: "state_reraise", name: "리레이즈", battleAura: "regen-sparkle", restriction: "없음", removalCondition: "전투 종료", runtimeEffects: { reraisePercent: 25, removeOnBattleEnd: true } },
     // 선고: 자기 차례 3번 뒤 전투 불능. 저절로 풀리지 않는다(정화로 해제).
+    // 바위 둔갑(변신): 그림이 이끼 골렘 9칸 시트로 바뀌고 단단해지는 대신 느려진다. 너구리 「둔갑」.
+    { id: "state_form_stone", name: "바위 둔갑", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 30, runtimeEffects: { transformResourceId: "party-pixel-monster4-5", defenseMultiplier: 1.8, agilityMultiplier: 0.7, removeOnBattleEnd: true } },
     { id: "state_doom", name: "선고", battleAura: "dark-fog", restriction: "없음", removalCondition: "전투 종료", runtimeEffects: { doomTurns: 3, removeOnBattleEnd: true } },
   ];
 }

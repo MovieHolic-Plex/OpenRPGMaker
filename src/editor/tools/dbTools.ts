@@ -498,6 +498,7 @@ const stateRuntimeEffectsSchema = objectSchema({
   evasionChance: numberSchema("회피 % 0~95 — 물리 공격(통상·attack 계열)의 명중을 이만큼 깎는다"),
   reflect: booleanSchema("리플렉 — 나를 노린 단일 대상 마법(mind 계열 피해·회복, 상태만 거는 support)을 시전자에게 한 번 튕긴다"),
   reraisePercent: numberSchema("리레이즈 % 1~100 — 쓰러지면 최대 HP 의 이 비율로 한 번 일어나고 상태는 사라진다(아군만)"),
+  transformResourceId: stringSchema("변신 — 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 9칸 시트 \"party-pixel-<칩>\"(예 party-pixel-monster4-5 이끼 골렘) 또는 전투 시트 id, 적은 몬스터 그림 id. 능력치는 같은 상태의 공격·방어·민첩 배율로. 풀리면 원래 그림. 빈 문자열이면 해제"),
   doomTurns: numberSchema("선고 1~9 — 걸린 뒤 자기 차례가 이만큼 오면 전투 불능. 상태를 풀면 멈춘다"),
 });
 
@@ -695,6 +696,8 @@ const skillRecordSchema = objectSchema({
   partyGaugeCost: integerSchema("추격 연계기 — 파티 공용 게이지 소모량(system.partyGauge.enabled 일 때만). 0 이면 없음"),
   hpCostPercent: integerSchema("시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가"),
   drainPercent: integerSchema("준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다"),
+  gaugeShift: integerSchema("게이지 밀기 -100~100(0=없음). 명중한 대상의 ATB 행동 게이지를 옮긴다 — 음수 = 늦추기(시간 화살·발 묶기), 양수 = 아군을 앞당기기(재촉). 타마다 적용. ATB(gauge) 전투 전용"),
+  chargeTurns: integerSchema("힘 모으기 1~3(0=바로 발동). 고른 차례엔 「…을 준비한다!」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 적이 쓰면 보스 대기술 예고. 한 차례를 버리므로 위력을 1.6~1.8배로"),
   retroChoreographyId: stringSchema("retro2003 측면 전투에서 이 스킬이 보여 줄 도트 연출을 계약 id 로 빌린다(예: skill_knight_slash). 새·복제 스킬은 이걸 안 주면 기본 베기/불꽃으로 보인다. 후보는 list_retro_choreographies 로 찾는다. 빈 문자열이면 해제"),
 }) as RecordSchema;
 
