@@ -1,0 +1,25 @@
+{
+  "baseCommit": "593ea9c6dc05e48d6319da79f6b36a932a5c31ef",
+  "exits": {
+    "coreTests": 0,
+    "boundaryTests": 0,
+    "browserProbe": 0,
+    "barrel": 0,
+    "selfHosted": 0,
+    "typecheckApp": 0,
+    "buildApp": 0,
+    "parityTests": 0
+  },
+  "tests": {
+    "corePassed": 52,
+    "boundaryPassed": 7,
+    "boundarySkipped": 131,
+    "parityPassed": 42
+  },
+  "browserImagesInspected": [
+    "1024-dialog.png",
+    "1024-created.png"
+  ],
+  "canonicalProjectWrites": false,
+  "fullEditorCanvasVerified": false
+}

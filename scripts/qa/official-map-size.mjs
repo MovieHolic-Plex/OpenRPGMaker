@@ -6,12 +6,18 @@ import { resolve } from 'node:path';
 import { chromium } from '@playwright/test';
 
 const root = resolve(import.meta.dirname, '../..');
-const out = resolve(root, 'verify-shots/official-map-512-20261001');
+const dimension = Number((await readFile(resolve(root, 'src/project/mapSizeLimits.ts'), 'utf8'))
+  .match(/MAX_TOOL_MAP_DIMENSION\s*=\s*(\d+)/)?.[1]);
+assert.ok(Number.isInteger(dimension) && dimension >= 4);
+const outIndex = process.argv.indexOf('--out');
+const out = resolve(root, outIndex >= 0 ? process.argv[outIndex + 1]
+  : `verify-shots/official-map-${dimension}-${new Date().toISOString().replace(/[:.]/g, '-')}`);
+const mapName = `${dimension} 크기 QA fixture`;
 const port = (await readFile(resolve(root, '.env.local'), 'utf8')).match(/^DEV_SERVER_PORT=(\d+)/m)?.[1];
 assert.ok(port, 'Start a fresh npm run dev:worktree server first (no HMR edits during this probe)');
 await mkdir(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--use-gl=swiftshader', '--disable-gpu'] });
-const report = { fixtureOnly: true, harness: 'editor dialog modules (not full editor boot)', errors: [] };
+const report = { fixtureOnly: true, dimension, harness: 'editor dialog modules (not full editor boot)', errors: [] };
 try {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
   page.on('pageerror', error => report.errors.push(String(error)));
@@ -19,7 +25,7 @@ try {
   await page.route('**/*', async route => {
     const url = route.request().url();
     if (!url.startsWith(`http://127.0.0.1:${port}/`)) return route.continue();
-    if (new URL(url).pathname === '/__map512-dialog-qa.html') {
+    if (new URL(url).pathname === '/__map-size-dialog-qa.html') {
       return route.fulfill({ contentType: 'text/html', body: `<!doctype html>
         <html lang="ko"><head><meta charset="utf-8"><link rel="stylesheet" href="/src/styles/index.css?direct"></head>
         <body><main style="padding:32px"><h1>맵 크기 입력 검증</h1>
@@ -35,36 +41,46 @@ try {
   await page.addInitScript(() => {
     localStorage.clear();
   });
-  await page.goto(`http://127.0.0.1:${port}/__map512-dialog-qa.html?freshProject=1&aiBridge=0`, { waitUntil: 'networkidle', timeout: 120000 });
+  await page.goto(`http://127.0.0.1:${port}/__map-size-dialog-qa.html?freshProject=1&aiBridge=0`, { waitUntil: 'networkidle', timeout: 120000 });
   await page.evaluate(async () => { const { openMapCreateDialog } = await import('/src/editor/panels/mapCreateDialog.ts'); openMapCreateDialog(); });
-  await page.getByTestId('map-create-name').fill('512 크기 QA fixture');
-  await page.getByTestId('map-create-width').fill('513');
-  await page.getByTestId('map-create-height').fill('512');
+  await page.getByTestId('map-create-name').fill(mapName);
+  await page.getByTestId('map-create-width').fill(String(dimension + 1));
+  await page.getByTestId('map-create-height').fill(String(dimension));
   report.inputMax = await page.getByTestId('map-create-width').getAttribute('max');
-  assert.equal(report.inputMax, '512');
+  assert.equal(report.inputMax, String(dimension));
   await page.getByTestId('map-create-confirm').click();
   assert.equal(await page.getByTestId('map-create-dialog').isVisible(), true);
-  assert.ok((await page.locator('body').innerText()).includes('최대 512×512'));
+  assert.ok((await page.locator('body').innerText()).includes(`최대 ${dimension}×${dimension}`));
   report.overLimitRejected = true;
-  await page.getByTestId('map-create-width').fill('512');
-  await page.getByTestId('map-create-dialog').screenshot({ path: resolve(out, '512-dialog.png') });
-  await page.getByTestId('map-create-confirm').click();
+  await page.getByTestId('map-create-width').fill(String(dimension));
+  await page.getByTestId('map-create-dialog').screenshot({ path: resolve(out, `${dimension}-dialog.png`) });
+  report.createActionMs = await page.evaluate(() => {
+    const started = performance.now();
+    document.querySelector('[data-testid="map-create-confirm"]').click();
+    return performance.now() - started;
+  });
   await page.getByTestId('map-create-dialog').waitFor({ state: 'hidden', timeout: 30000 });
-  report.created = await page.evaluate(async () => {
+  const io = await page.evaluate(async mapName => {
     const { store } = await import('/src/project/store.ts');
     const { serialize, deserialize } = await import('/src/project/io.ts');
     const { canOpenEditorMap } = await import('/src/editor/mapSelection.ts');
     const project = store.getCurrent();
-    const map = Object.values(project.maps).find(map => map.name === '512 크기 QA fixture');
+    const map = Object.values(project.maps).find(map => map.name === mapName);
     if (!map) throw new Error(`UI did not create the map: ${JSON.stringify(Object.values(project.maps).map(m => ({ name: m.name, width: m.width, height: m.height })))}`);
-    const restored = deserialize(serialize(project)).maps[map.id];
-    return { width: map.width, height: map.height, lowerCells: map.lowerTiles.length, editorOpenable: canOpenEditorMap(map.id),
-      reloadedWidth: restored.width, reloadedHeight: restored.height, reloadedCells: restored.lowerTiles.length };
-  });
-  assert.deepEqual(report.created, { width: 512, height: 512, lowerCells: 262144, editorOpenable: true,
-    reloadedWidth: 512, reloadedHeight: 512, reloadedCells: 262144 });
+    const started = performance.now();
+    const wire = serialize(project);
+    const serializedAt = performance.now();
+    const restored = deserialize(wire).maps[map.id];
+    const reloadedAt = performance.now();
+    return { created: { width: map.width, height: map.height, lowerCells: map.lowerTiles.length, editorOpenable: canOpenEditorMap(map.id),
+      reloadedWidth: restored.width, reloadedHeight: restored.height, reloadedCells: restored.lowerTiles.length },
+      timings: { serializeMs: serializedAt - started, reloadMs: reloadedAt - serializedAt, serializedBytes: new TextEncoder().encode(wire).length } };
+  }, mapName);
+  Object.assign(report, io);
+  assert.deepEqual(report.created, { width: dimension, height: dimension, lowerCells: dimension * dimension, editorOpenable: true,
+    reloadedWidth: dimension, reloadedHeight: dimension, reloadedCells: dimension * dimension });
   await page.locator('#result').evaluate((element, result) => { element.textContent = JSON.stringify(result, null, 2); }, report.created);
-  await page.screenshot({ path: resolve(out, '512-created.png') });
+  await page.screenshot({ path: resolve(out, `${dimension}-created.png`) });
   assert.deepEqual(report.errors, []);
   console.log(JSON.stringify(report));
 } finally {

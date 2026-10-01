@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { deserialize, ProjectFormatError, serialize, serializePretty } from "@/project/io";
 import { validateProjectV4 } from "@/project/io/shape";
 import { emptySpatialDocument, placeDesign, spaceDesign, spatialBindingFixture, spatialFixture, spatialHierarchyFixture, spatialProject, spatialWire } from "./support/spatialSchemaFixture";
+import { SPATIAL_SIZE_MAX } from "@/project/spatial/types";
 
 type FixtureDocument = ReturnType<typeof spatialFixture>["document"];
 const invalidCases: readonly { name: string; path: string; change: (document: FixtureDocument) => unknown }[] = [
@@ -19,7 +20,7 @@ const invalidCases: readonly { name: string; path: string; change: (document: Fi
   { name: "three-node cycle", path: "children", change: d => ({ ...d, library: { ...d.library, places: { a: placeDesign("a", "b", "place"), b: placeDesign("b", "c", "place"), c: placeDesign("c", "a", "place") } } }) },
   { name: "illegal kind edge", path: "source.kind", change: d => ({ ...d, library: { ...d.library, places: { inn: placeDesign("inn", "desk", "object") } } }) },
   { name: "zero size", path: "width", change: d => ({ ...d, library: { ...d.library, spaces: { room: { ...d.library.spaces.room, width: 0 } } } }) },
-  { name: "unbounded size", path: "height", change: d => ({ ...d, library: { ...d.library, spaces: { room: { ...d.library.spaces.room, height: 513 } } } }) },
+  { name: "unbounded size", path: "height", change: d => ({ ...d, library: { ...d.library, spaces: { room: { ...d.library.spaces.room, height: SPATIAL_SIZE_MAX + 1 } } } }) },
   { name: "fractional slot geometry", path: "placement.x", change: d => ({ ...d, library: { ...d.library, spaces: { room: { ...d.library.spaces.room, objectSlots: [{ ...d.library.spaces.room.objectSlots[0], placement: { mode: "fixed", x: 0.5, y: 1 } }] } } } }) },
   { name: "NaN wire geometry", path: "occurrences.occ-a.x", change: d => ({ ...d, occurrences: { ...d.occurrences, "occ-a": { ...d.occurrences["occ-a"], x: Number.NaN } } }) },
   { name: "fractional occurrence geometry", path: "occurrences.occ-a.y", change: d => ({ ...d, occurrences: { ...d.occurrences, "occ-a": { ...d.occurrences["occ-a"], y: 1.5 } } }) },
@@ -38,12 +39,12 @@ const invalidCases: readonly { name: string; path: string; change: (document: Fi
 ];
 
 describe("spatial authoring IO contract", () => {
-  it('roundtrips an authored 512×512 space without truncating its dimensions', () => {
+  it.each([512, 1024])('roundtrips an authored %i space without truncating its dimensions', size => {
     const { project, document } = spatialFixture();
-    Object.assign(document.library.spaces.room, { width: 512, height: 512 });
+    Object.assign(document.library.spaces.room, { width: size, height: size });
     const loaded = deserialize(spatialWire(project, document));
     const restored = deserialize(serialize(loaded));
-    expect(restored.spatialAuthoring!.library.spaces.room).toMatchObject({ width: 512, height: 512 });
+    expect(restored.spatialAuthoring!.library.spaces.room).toMatchObject({ width: size, height: size });
   });
   it.each(["rotation", "scale"])("rejects unsupported %s when a route point carries transform geometry", field => {
     // Given

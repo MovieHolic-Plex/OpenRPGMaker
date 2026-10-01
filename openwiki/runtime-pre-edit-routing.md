@@ -773,7 +773,8 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - 카메라 없는 최소 렌더 컨텍스트는 기존 전체 맵 경로를 유지한다. 이것을 차등 렌더 오라클로 쓴다.
   편집기의 lazy/chunk 렌더와 공유 컬링 계약은 바꾸지 않는다.
 
-검증: `test/runtimeTileWindow.test.ts`(512 칸 유지 상한/겹침 재사용/긴 이동/순서/16·32px/줌/
+검증: `test/runtimeTileWindow.test.ts`(512/1024 맵의 화면 객체 유지 상한/겹침 재사용/긴 이동/순서/16·32px/줌/
 제자리 변경/물 위상/해제), 기존 컬링·NPC 재사용·지형/호수 테스트. 실제 내보내기 플레이어의
 픽셀 대조는 `scripts/qa/runtime-tile-window.mjs`, 크기별 전후 실측은
 `scripts/qa/map-size-benchmark.mjs`와 `verify-shots/map-size-optimized-20261001/` 참조.
+공식 1024 확장 뒤 같은 조건의 512/1024 비교는 `verify-shots/map-size-1024-20261001/`다.

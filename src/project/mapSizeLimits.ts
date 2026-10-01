@@ -9,7 +9,7 @@
 // lint 가 같은 계약을 말하게 한다.
 
 // Runtime tiles are resident only around the camera; editor rendering is lazy.
-export const MAX_TOOL_MAP_DIMENSION = 512;
+export const MAX_TOOL_MAP_DIMENSION = 1024;
 
 export function exceedsMapDimensionLimit(width: number, height: number): boolean {
   return width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION;
