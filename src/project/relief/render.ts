@@ -6,7 +6,7 @@
 
 import palette from "./reliefPalette.json";
 import { copyGrid, RELIEF_MAX_LEVEL, RELIEF_TILE as T, RELIEF_UNIT as U, type HeightGrid } from "./types";
-import { compileReliefStyle, RELIEF_DEFAULT_RIM, type ReliefWallStyle } from "./styles";
+import { compileReliefStyle, type ReliefWallStyle } from "./styles";
 
 type Rgb = [number, number, number];
 const D = palette as { G: Rgb[]; B: Rgb[]; TOP: number[]; GROUND: number[]; LIP: Record<"L" | "M" | "R", number[]>; TILES: number[][] };
