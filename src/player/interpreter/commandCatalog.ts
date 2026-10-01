@@ -1,3 +1,4 @@
+import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
 import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
 import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
@@ -691,6 +692,7 @@ export function executeCommand(
         opacity: command.opacity,
         rotation: command.rotation,
         durationMs: command.durationMs,
+        ...(command.easing ? { easing: command.easing } : {}),
         waitForPicture: command.waitForPicture,
       });
     case "erasePicture":
@@ -1155,6 +1157,7 @@ function cameraControlStep(
     offsetX: optionalNumberField(fields, "offsetX"),
     offsetY: optionalNumberField(fields, "offsetY"),
     zoom: optionalNumberField(fields, "zoom"),
+    ...(normalizeEasing(fields.easing) ? { easing: normalizeEasing(fields.easing) } : {}),
   };
 }
 

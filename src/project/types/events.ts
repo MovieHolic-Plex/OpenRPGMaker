@@ -1,3 +1,4 @@
+import type { EasingName } from "@/project/easing";
 import type {
   ActorId,
   AssetRef,
@@ -480,6 +481,8 @@ export type Command =
       opacity?: number;
       rotation?: number;
       durationMs?: number;
+      /** 이동 곡선(생략 = 일정하게). 그림이 가감속하며 들어오고 멈춘다. */
+      easing?: EasingName;
       waitForPicture?: boolean;
       /** 시스템이 갤러리를 켜 둔 동안, 이 그림을 한 번 보면 메뉴 목록에 남긴다. */
       recordInGallery?: boolean;

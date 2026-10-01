@@ -1,3 +1,4 @@
+import { normalizeEasing, type EasingName } from "@/project/easing";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { MAP_BACKGROUND_FLOW_PERCENT_LIMIT } from "@/project/mapBackground";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -61,6 +62,8 @@ export type CutsceneCameraBeat = {
   readonly offsetX?: number;
   readonly offsetY?: number;
   readonly zoom?: number;
+  /** 팬 곡선(생략 = 일정하게). */
+  readonly easing?: EasingName;
 };
 
 export type CutscenePictureBeat = {
@@ -75,6 +78,8 @@ export type CutscenePictureBeat = {
   readonly opacity?: number;
   readonly rotation?: number;
   readonly durationMs?: number;
+  /** 이동 곡선(생략 = 일정하게). */
+  readonly easing?: EasingName;
   readonly wait?: boolean;
   readonly waitForPicture?: boolean;
 };
@@ -508,6 +513,7 @@ function cameraFields(beat: CutsceneCameraBeat, forceNonBlocking: boolean): M2Co
     offsetX: beat.offsetX,
     offsetY: beat.offsetY,
     zoom: beat.zoom,
+    easing: normalizeEasing(beat.easing),
   });
 }
 
@@ -528,6 +534,7 @@ function compilePictureBeat(beat: CutscenePictureBeat, state: CompileState, forc
       opacity: beat.opacity,
       rotation: beat.rotation,
       durationMs: beat.durationMs,
+      easing: normalizeEasing(beat.easing),
       waitForPicture: forceNonBlocking ? false : beat.waitForPicture ?? beat.wait,
     }) as Command;
     updateFinalPicture(state, pictureId, beat);
@@ -543,6 +550,7 @@ function compilePictureBeat(beat: CutscenePictureBeat, state: CompileState, forc
     opacity: beat.opacity,
     rotation: beat.rotation,
     durationMs: beat.durationMs,
+    easing: normalizeEasing(beat.easing),
     wait,
     waitForPicture: wait,
   });

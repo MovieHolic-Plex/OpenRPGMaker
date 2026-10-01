@@ -1,3 +1,4 @@
+import type { EasingName } from "@/project/easing";
 import type { EmoteKind } from "@/project/emotes";
 import type { AudioChannel, AudioTrackState } from "@/project/session";
 import type {
@@ -122,6 +123,7 @@ export type StepResult =
       opacity?: number;
       rotation?: number;
       durationMs?: number;
+      easing?: EasingName;
       waitForPicture?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
@@ -153,6 +155,7 @@ export type StepResult =
       offsetX?: number;
       offsetY?: number;
       zoom?: number;
+      easing?: EasingName;
     }
   | { kind: "relocateEvents"; eventIds: readonly string[] }
   /** Get On/Off Vehicle — 씬이 정면·발밑의 탈것에 타거나 내린다(안 되면 아무 일도 없다). */

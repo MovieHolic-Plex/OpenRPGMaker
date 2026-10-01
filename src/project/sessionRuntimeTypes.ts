@@ -2,6 +2,7 @@
 // 플레이어 쪽 공용 타입. 인터프리터가 요구하는 세션 인터페이스 등.
 // v2: switches/variables/timers/commonEvents 포함.
 
+import type { EasingName } from "@/project/easing";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
 import type { RelationshipState } from "./relationshipState";
 import type { FactionStanceOverrides } from "@/project/factionRuntime";
@@ -25,6 +26,7 @@ export type RuntimePictureState = {
   readonly opacity?: number;
   readonly rotation?: number;
   readonly durationMs?: number;
+  readonly easing?: EasingName;
 };
 
 export type M2RecordedFallback = {

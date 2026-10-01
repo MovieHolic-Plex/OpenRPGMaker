@@ -3,6 +3,7 @@
 // 트윈을 시간 기반으로 보간한다. DOM 렌더러(runtimeDom)는 여기 결과를 적용만 한다.
 // 테스트는 이 순수 함수들을 직접 검증한다.
 
+import { applyEasing, type EasingName } from "@/project/easing";
 import type { PictureState } from "@/project/session";
 
 export type PictureTransform = {
@@ -54,6 +55,11 @@ export function tweenProgress(elapsedMs: number, durationMs: number): number {
   if (!Number.isFinite(durationMs) || durationMs <= 0) return 1;
   if (!Number.isFinite(elapsedMs) || elapsedMs <= 0) return 0;
   return Math.max(0, Math.min(1, elapsedMs / durationMs));
+}
+
+// 시간 진행도 → 보간 계수. 끝 판정은 시간 진행도(tweenProgress)로 하고, 보간에만 곡선을 건다.
+export function easedTweenProgress(progress: number, easing: EasingName | undefined): number {
+  return applyEasing(easing, progress);
 }
 
 function lerp(from: number, to: number, t: number): number {

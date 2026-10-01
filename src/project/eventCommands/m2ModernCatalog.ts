@@ -1,3 +1,4 @@
+import { EASING_OPTIONS } from "./easingOptions";
 import type { M2CommandFieldOption, M2CommandFieldSpec } from "./m2Catalog";
 
 const CAMERA_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
@@ -171,6 +172,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
         { key: "zoom", label: "줌", type: "number", defaultValue: 1, min: 0.25, max: 6, step: 0.25 },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
+        { key: "easing", label: "움직임 곡선", type: "select", defaultValue: "linear", options: EASING_OPTIONS },
       ];
     case "Screen Effect":
       return [

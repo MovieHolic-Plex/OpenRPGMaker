@@ -546,6 +546,12 @@ defineCommand({
     scale: f.range("배율", 10, 400, { unit: "%", optional: true }),
     opacity: f.range("불투명도", 0, 100, { unit: "%", optional: true }),
     durationMs: f.number("전환 시간", { min: 0, unit: "ms", optional: true }),
+    easing: f.enum("움직임 곡선", [
+      { value: "linear", label: "일정하게", key: "linear" },
+      { value: "easeIn", label: "천천히 출발", key: "easeIn" },
+      { value: "easeOut", label: "천천히 멈춤", key: "easeOut" },
+      { value: "easeInOut", label: "천천히 출발·멈춤", key: "easeInOut" },
+    ], { optional: true }),
     waitForPicture: f.bool("완료까지 대기", { optional: true }),
   },
   summary: (c, l) => `${l.recordName(str(c.resourceId))} 표시`,

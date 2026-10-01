@@ -1,6 +1,7 @@
 // Page 3 native command rich forms (맵·연출): lighting, weather, animation, picture, tile.
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { EASING_LABELS, EASING_NAMES, normalizeEasing } from "@/project/easing";
 import { galleryMenuLabel } from "@/project/gallery";
 import { store } from "@/project/store";
 import type { Command, WeatherKind } from "@/project/types";
@@ -1124,6 +1125,13 @@ export function showPictureBody(
   const opacity = numberInput(opacityToPercent(cmd.opacity ?? 255), "불투명도(%)", "show-picture-opacity-input");
   const rotation = numberInput(cmd.rotation ?? 0, "회전(도)", "show-picture-rotation-input");
   const durationMs = numberInput(cmd.durationMs ?? 0, "전환 시간 — 0이면 즉시", "show-picture-duration-input");
+  // 전환 곡선. 선형만 있으면 그림이 벽에 부딪히듯 멈춘다 — 가감속이 연출의 무게다.
+  const easing = el("select", {
+    attrs: { "aria-label": "움직임 곡선" },
+    dataset: { testid: "show-picture-easing-select" },
+    children: EASING_NAMES.map((name) => el("option", { attrs: { value: name }, text: EASING_LABELS[name] })),
+  }) as HTMLSelectElement;
+  easing.value = cmd.easing ?? "linear";
   const recordInGallery = el("input", {
     attrs: { type: "checkbox" },
     dataset: { testid: "show-picture-gallery" },
@@ -1161,6 +1169,9 @@ export function showPictureBody(
       // 회전은 한 바퀴를 넘겨도 뜻이 통하므로 접지 않고 그대로 싣는다.
       rotation: parseInt(rotation.value, 10) || 0,
       durationMs: intInRange(durationMs, 0, 0, 60_000),
+      ...(normalizeEasing(easing.value) ? { easing: normalizeEasing(easing.value) } : {}),
+      // 폼에 칸이 없는 필드는 그대로 실어 보낸다 — 다른 칸을 고쳤다고 대기 설정이 사라지면 안 된다.
+      ...(cmd.waitForPicture === true ? { waitForPicture: true } : {}),
       ...(recordInGallery.checked ? { recordInGallery: true } : {}),
     });
     renderPreview();
@@ -1230,6 +1241,7 @@ export function showPictureBody(
     control.addEventListener("input", renderPreview);
   }
   recordInGallery.addEventListener("change", commit);
+  easing.addEventListener("change", commit);
 
   for (const preset of [
     { id: "center", label: "중앙", x: 160, y: 120 },
@@ -1331,7 +1343,7 @@ export function showPictureBody(
             el("details", {
               class: "page3-more-fields",
               attrs: {
-                ...(Number(rotation.value) || Number(durationMs.value) ? { open: "" } : {}),
+                ...(Number(rotation.value) || Number(durationMs.value) || cmd.easing ? { open: "" } : {}),
               },
               children: [
                 el("summary", { text: "회전 · 서서히" }),
@@ -1339,6 +1351,7 @@ export function showPictureBody(
                   "회전 · 서서히",
                   el("div", { class: "actor-m2-inline page3-coord-row", children: [rotation, durationMs] })
                 ),
+                fieldBlock("움직임 곡선", easing),
               ],
             }),
           ],
