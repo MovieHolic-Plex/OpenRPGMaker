@@ -31,7 +31,7 @@ describe("relief wall styles", () => {
         }
       }
     }
-    expect(Object.keys(RELIEF_WALL_FAMILIES).sort()).toEqual(["basalt", "crystal", "earth", "masonry", "snow", "strata"]);
+    expect(Object.keys(RELIEF_WALL_FAMILIES).sort()).toEqual(["basalt", "crystal", "earth", "masonry", "peat", "snow", "strata"]);
   });
 
   it("every biome style compiles and names a known family", () => {

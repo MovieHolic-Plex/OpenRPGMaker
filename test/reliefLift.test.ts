@@ -92,8 +92,16 @@ describe("relief row strips", () => {
     expect(wall).toBeDefined();
     // 줄 5 윗면은 화면 y = 5·16 + pad - 2·16, 벽은 그 아래(줄 6 자리)에서 2단 = 32px
     const topOfRow = 5 * 16 + render.pad - 2 * 16;
-    expect(wall!.y).toBeGreaterThanOrEqual(topOfRow + 16);
-    expect(wall!.y + wall!.h).toBeLessThanOrEqual(topOfRow + 16 + 2 * 16 + 1);
+    // 띠 상자에는 맵 가장자리 테두리(edge)도 든다 — 벽 화소(kind≠0)만 따로 재서 그 위치를 본다.
+    let wallTop = Infinity, wallBottom = -1;
+    for (let i = 0; i < render.src.length; i++) {
+      if (render.src[i] < 0 || Math.floor(render.src[i] / W) !== 5 || render.kind[i] === 0 || render.rgba[i * 4 + 3] === 0) continue;
+      const sy = (i / render.PW) | 0;
+      wallTop = Math.min(wallTop, sy);
+      wallBottom = Math.max(wallBottom, sy);
+    }
+    expect(wallTop).toBeGreaterThanOrEqual(topOfRow + 16);
+    expect(wallBottom).toBeLessThanOrEqual(topOfRow + 16 + 2 * 16 + 1);
   });
 
   it("윗면 띠(under)에는 고지대 줄만 있고 평지 줄은 없다", () => {
