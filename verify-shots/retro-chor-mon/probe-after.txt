@@ -1,0 +1,40 @@
+== (3) 독 자동 추천 ==
+  물리 단일 독칼(name)                       => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 독칼(name) 초록
+  물리 단일 독 베기(name)                     => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 독 베기(name) 초록
+  물리 단일 +state_poison                  => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 +state_poison 초록
+  물리 단일 +state_deep_poison             => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 +state_deep_poison 초록
+  물리 단일 +커스텀 독 상태                      => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 +커스텀 독 상태 초록
+  물리 단일 elementId=poison               => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 elementId=poison 초록
+  물리 단일 elementId=elem_poison          => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 elementId=elem_poison 초록
+  물리 3연타 +state_poison                 => [skill_scout_twin_strike] tint=poison green=Y layers=scout_flurry@target/poison
+PASS 물리 3연타 +state_poison 초록
+  물리 전체 +state_poison                  => [skill_hero_whirlwind] tint=poison green=Y layers=hero_whirl@allTargets/poison
+PASS 물리 전체 +state_poison 초록
+  마법 단일 독 볼트(name)                     => [skill_mage_fireball] tint=poison green=Y layers=mage_fireball_orb@projectile/poison,mage_fire_burst@target/poison
+PASS 마법 단일 독 볼트(name) 초록
+  마법 단일 +state_poison                  => [skill_mage_fireball] tint=poison green=Y layers=mage_fireball_orb@projectile/poison,mage_fire_burst@target/poison
+PASS 마법 단일 +state_poison 초록
+  마법 전체 +state_deep_poison             => [skill_mage_chain_lightning] tint=poison green=Y layers=mage_chain_bolt@allTargets/poison
+PASS 마법 전체 +state_deep_poison 초록
+  마법 전체 독안개(name)                      => [skill_mage_chain_lightning] tint=poison green=Y layers=mage_chain_bolt@allTargets/poison
+PASS 마법 전체 독안개(name) 초록
+  약화 support +state_poison             => [skill_witch_hex] tint=poison green=Y layers=witch_hex@target/poison
+PASS 약화 support +state_poison 초록
+  약화 support 전체 +state_deep_poison     => [skill_bard_discord] tint=poison green=Y layers=bard_discord@allTargets/poison
+PASS 약화 support 전체 +state_deep_poison 초록
+  (음성) 독 해제 remove                     => [skill_cleric_heal_light] tint=- green=N layers=-
+PASS (음성) 독 해제 remove 초록 아님
+  (음성) 일반 베기                           => [skill_hero_cross_slash] tint=- green=N layers=-
+PASS (음성) 일반 베기 초록 아님
+  (음성) 불 속성 + 독 상태                     => [skill_mage_fireball] tint=- green=N layers=-
+PASS (음성) 불 속성 + 독 상태 초록 아님
+  poison filter = grayscale(1) sepia(1) hue-rotate(58deg) saturate(3.6) brightness(1.0) contrast(1.08)
+
+ALL PASS
