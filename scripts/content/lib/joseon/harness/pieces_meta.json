@@ -327,5 +327,112 @@
    "planter_round"
   ],
   "thin_ok": "풀·갈대·석축 틈"
+ },
+ "thatch_house_3": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "blocks.house('jc',5,…)"
+ },
+ "thatch_house_3b": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "blocks.house('jc',5,…)"
+ },
+ "giwa_house_4": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',6,…)"
+ },
+ "giwa_house_3": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',6,…)"
+ },
+ "laundry": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "빨랫줄·꽃 줄기·계단 가장자리"
+ },
+ "flower_bed": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "빨랫줄·꽃 줄기·계단 가장자리"
+ },
+ "bank_stairs": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "빨랫줄·꽃 줄기·계단 가장자리"
+ },
+ "zelkova_d": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "zelkova_e": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "pine_c": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "pine_d": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "persimmon_c": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
  }
 }

@@ -101,3 +101,61 @@ def rocks():
     for x in range(1, 15): c.put(x, 15, SHADOW, 80)
     outline(c)
     return c
+
+
+def laundry():
+    """빨랫줄 32×32: 두 기둥과 줄, 흰 옷·푸른 옷·붉은 옷 세 벌."""
+    c = Cv(2 * T, 2 * T)
+    W = RGB['wood']; B = RGB['dblue']; R = RGB['red']
+    for x in (3, 28):
+        for y in range(8, 30):
+            c.put(x, y, W[5]); c.put(x + 1, y, W[3])
+    for x in range(4, 28):
+        c.put(x, 9 + (1 if 10 < x < 21 else 0), W[2])
+    St = RGB['stone']
+    for x0, (lt, dk), hh in ((7, (St[6], St[5]), 11), (14, (B[5], B[4]), 9), (21, (R[4], R[3]), 10)):
+        for y in range(11, 11 + hh):
+            for x in range(x0, x0 + 5):
+                c.put(x, y, lt if (x - x0) < 3 else dk)
+    outline(c)
+    for x in range(2, 30): c.put(x, 30, SHADOW, 80)
+    return c
+
+
+def flower_bed():
+    """화단 32×16: 돌 두른 흙 위 붉은·노란·흰 꽃."""
+    c = Cv(2 * T, T)
+    E = RGB['earth']; S = RGB['stone']; G = RGB['leaf']; R = RGB['red']; Y = RGB['straw']
+    for y in range(3, 14):
+        for x in range(1, 31):
+            c.put(x, y, E[3] if (x + y) % 3 else E[2])
+    for x in range(1, 31):
+        c.put(x, 3, S[6]); c.put(x, 13, S[3])
+    for y in range(3, 14):
+        c.put(1, y, S[5]); c.put(30, y, S[3])
+    for k in range(14):
+        x = 3 + int(rnd(k, 1, 51) * 25); y = 5 + int(rnd(k, 2, 52) * 6)
+        c.put(x, y + 1, G[3]); c.put(x, y, [R[4], Y[5], hx('#f7fdff')][k % 3])
+        c.put(x + 1, y, [R[3], Y[4], hx('#d8e4e8')][k % 3] if False else G[4])
+    for x in range(1, 31): c.put(x, 14, SHADOW, 80)
+    return c
+
+
+def bank_stairs():
+    """석축 둑을 가르는 돌계단 16×32: 단마다 윗면(밝음)+앞면(어두움), 양옆 난간돌."""
+    c = Cv(T, 2 * T)
+    S = RGB['stone']; G = RGB['leaf']; E = RGB['earth']
+    for x in range(T):
+        c.put(x, 0, G[3]); c.put(x, 1, G[2])
+    for k in range(5):
+        y0 = 2 + k * 5
+        for y in range(y0, y0 + 5):
+            for x in range(T):
+                if y - y0 < 2: tone = 6 - (1 if k % 2 else 0)
+                else: tone = 3 if y - y0 < 4 else 2
+                if x in (0, 1): tone = max(2, tone - 1) if y - y0 >= 2 else 5
+                if x in (14, 15): tone = max(2, tone - 1)
+                c.put(x, y, S[tone])
+    for x in range(T):
+        c.put(x, 30, E[2]); c.put(x, 31, SHADOW, 90)
+    return c

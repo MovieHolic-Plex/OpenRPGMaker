@@ -326,5 +326,101 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
+ },
+ "thatch_house_3": {
+  "hash": "c14aa1a84bbc",
+  "status": "pass",
+  "line": "같은 블록 조립 문법, 폭만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_house_3b": {
+  "hash": "ec0235318b47",
+  "status": "pass",
+  "line": "같은 블록 조립 문법, 폭만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_house_4": {
+  "hash": "9a25f4747eca",
+  "status": "pass",
+  "line": "같은 블록 조립 문법, 폭만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_house_3": {
+  "hash": "34947a4a2237",
+  "status": "pass",
+  "line": "같은 블록 조립 문법, 폭만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "laundry": {
+  "hash": "6a968ed9fb86",
+  "status": "pass",
+  "line": "기둥 둘+줄+흰·청·적 옷, 왼쪽 밝음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "flower_bed": {
+  "hash": "786c6c0e1ee2",
+  "status": "pass",
+  "line": "돌 두른 흙 화단+꽃 점, 윗면+앞 띠",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bank_stairs": {
+  "hash": "2fdda31976d8",
+  "status": "pass",
+  "line": "석축 둑 돌계단 5단 윗면/앞면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "zelkova_d": {
+  "hash": "7eb5bec1cbcf",
+  "status": "pass",
+  "line": "같은 종 변형(시드)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "zelkova_e": {
+  "hash": "9a6798f15912",
+  "status": "pass",
+  "line": "같은 종 변형(시드)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pine_c": {
+  "hash": "d8e534486cf8",
+  "status": "pass",
+  "line": "같은 종 변형(시드)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pine_d": {
+  "hash": "62c2999d8104",
+  "status": "pass",
+  "line": "같은 종 변형(시드)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "persimmon_c": {
+  "hash": "801418a412d4",
+  "status": "pass",
+  "line": "같은 종 변형(시드)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
  }
 }
