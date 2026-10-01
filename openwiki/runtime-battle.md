@@ -37,6 +37,24 @@
 - `state_death` 는 **해제(부활)만** 엔진이 안다. add 로 거는 즉사는 `applyStateEffects` 가 레코드 없는 상태로 보고 조용히 건너뛴다.
 - 층 앵커만 바꾼 스킬 4개(`target`→`allTargets`: 가시 회전·버섯 고리 춤·바위 비·꼬리 휩쓸기) — 전체 공격인데 이펙트가 한 적에게만 떴다.
 
+## 반응·표적 상태 7종 — 반격·도발·감싸기·회피·리플렉·리레이즈·선고 (2026-10-01)
+
+`StateRuntimeEffects` 에 7칸이 늘었다. 엔진(`battleStates.ts` 의 `stateBehavior` → `runtime.ts`)·자료집 상태 탭(`databaseStateRecordView.ts` 의 `retroGimmickControls`)·조수 스키마(`dbTools.ts` 의 `stateRuntimeEffectsSchema`)가 같은 칸을 읽는다. gen1 규칙 모델에서는 모두 꺼진다.
+
+| 칸 | 기본 상태 | 런타임 의미 |
+|---|---|---|
+| `counterChance` % | `state_counter` 반격 60 | 물리 타격(통상 공격·attack 계열 스킬)에 맞으면 그 **행동이 끝난 뒤** 통상 공격으로 되받는다. 행동당 한 번(`pendingStateCounters`), 반격끼리는 이어지지 않는다(`resolvingStateCounter` — 적 `reactions` 반격도 이때 막힌다). 타임라인 `kind: "counter"` 의 `side` 가 반격하는 쪽이고, 시퀀서는 아군 반격이면 배우 이름으로 「○○의 반격!」을 쓴다. 아군 반격은 `beginTimelineAction()` 으로 새 행동 번호를 뗀다. |
+| `taunt` | `state_taunt` 도발(방어 1.2배) | 상대가 단일 대상을 고를 때 도발 상태인 쪽으로 후보를 좁힌다(`tauntCandidates` — `chooseBasicEnemyTarget`·단일 스킬 대상 고르기). **효용 점수에 더하지 않는다** — 효용은 행동 선택에도 쓰여 적이 기술을 고르는 방식까지 바뀐다. |
+| `cover` | `state_cover` 감싸기 | HP ¼ 이하 동료를 노린 단일 물리 공격(통상·단일 물리 스킬)을 감싸기 상태의 다른 동료가 대신 맞는다(`coverTarget`, special 문장). |
+| `evasionChance` % (최대 95) | `state_evade` 회피 40 | 물리 명중률에서 뺀다(`withEvasion` — 통상 공격 두 경로와 `applySkillHit` 의 attack 계열 피해). |
+| `reflect` | `state_reflect` 리플렉 | 단일 대상(enemy/ally, area 없음) 마법 — mind 계열 피해·회복, 또는 support — 이 시전자에게 튕긴다(`reflectedTarget`, 한 번만). |
+| `reraisePercent` % | `state_reraise` 리레이즈 25 | 쓰러지면 최대 HP 의 N% 로 일어나고 상태가 사라진다. **아군만**(`applyAutoRevives` 가 장비 자동 부활보다 먼저 본다). |
+| `doomTurns` 1~9 | `state_doom` 선고 3 | 걸린 뒤 자기 차례 upkeep 이 N 번 지나면 HP 0(`runStateUpkeep` 이 자연 회복 굴림보다 먼저 본다). 적·아군 모두. 그 차례는 건너뛴다. 엔트리는 `stateUpkeep` 하나(`stateId`·`message` 포함) — 시퀀서는 「상태 이상으로 N 피해」 대신 그 문장을 읽고 팝업도 남은 HP 숫자 대신 상태 이름을 띄운다(amount 는 HP 원장용). 리레이즈가 있으면 곧바로 일어난다. 즉사 기술은 `state_death` add 가 아니라 이것을 쓴다. |
+
+- 기존 프로젝트에는 `ensureRetroRosterRecords` 가 7 상태를 빠진 것만 심는다(`RETRO_GIMMICK_STATE_IDS`). **기존 프로젝트의 스킬 행은 바꾸지 않는다** — 아래 재연결은 새 프로젝트와 기본 DB 에만 들어간다.
+- 로스터 21 스킬을 다시 이었다(반격 태세·받아넘기기 → 반격, 도발·덤벼 봐·철갑 도발 → 도발, 대신 받기 → 감싸기, 잔상 회피·분신·신기루·분열·바람 장막·포커페이스·정중한 인사·노련한 눈 → 회피, 어둠의 장막 → 리플렉, 아홉 목숨·불사 → 리레이즈, 죽음의 저주·즉사의 낫·종말의 저주·죽음의 울음 → 선고). 스크립트 `verify-shots/retro-states/reconnect.py`. 검사기는 반격·도발·감싸기·잔상(support 일 때만)·리플렉·불사·선고 낱말을 본다.
+- 증거: 헤드리스 프로브 `verify-shots/retro-states/probe.mts`(7종 + 적 선고 → 승리 + 선고·리레이즈 겹침), 출하 플레이어 녹화는 하네스의 새 `--linger N`(스킬을 다 쓴 뒤 N 차례를 방어로 넘기며 적의 차례를 `skill-linger-<조>.gif` 로 찍는다).
+
 ## 스킬이 계약 도트 연출을 빌린다 — retroChoreographyId (2026-09-30)
 
 새 스킬은 자기 id 가 계약(`retroClassSkills`·`retroRosterSkills`·`retroMonsterSkills`)에 없어도 `SkillRecord.retroChoreographyId` 가 가리키는 계약의 연출(모션·층·소리·타격 간격)을 그대로 재생한다. 위력·비용·상태·범위는 레코드 값을 쓴다. 조회는 `src/assets/retroSkillCatalog.ts`의 직업/몬스터 resolver를 런타임과 편집기 무대·배지·서명이 같이 쓴다. 모든 계약 종류에 대해 자기 id를 먼저 선택하고 없을 때만 `retroChoreographyId`를 조회하므로 레이어와 타임라인이 같은 계약을 쓴다. 런타임은 타임라인의 정확한 **skillId**로 레코드를 찾으며 ID 없는 과거 엔트리만 이름으로 조회한다. 자기 id 가 계약이면 그쪽이 우선이라 빌린 값은 무시된다. 스킬 복제(편집기·조수)는 사본에 원본 계약 id 를 채운다. 내보내기 플레이어는 `pixel-fx` 폴더 전량을 번들하므로 자산 배선이 더 필요 없다. 증거: `verify-shots/retro-assistant/SUMMARY.md`(새 직업 「화염 검투사」 스킬 8개가 모두 빌린 연출을 재생).

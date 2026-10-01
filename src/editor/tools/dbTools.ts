@@ -492,6 +492,13 @@ const stateRuntimeEffectsSchema = objectSchema({
   elementRates: { ...rateMapSchema, description: "이 상태인 동안 덮어쓸 속성 등급(속성 id → A~E)" },
   incapacitates: booleanSchema("석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다"),
   damageToMpRate: numberSchema("받는 HP 피해 중 MP 에서 대신 깎는 비율 0~1(예 0.5 = 절반을 MP 로)"),
+  counterChance: numberSchema("반격 % 0~100 — 물리 공격(통상·attack 계열)에 맞으면 이 확률로 통상 공격을 되돌린다. 반격끼리는 이어지지 않는다"),
+  taunt: booleanSchema("도발 — 상대가 단일 대상을 고를 때 이 상태인 쪽을 먼저 노린다"),
+  cover: booleanSchema("감싸기 — HP 1/4 이하인 아군을 노린 단일 물리 공격을 대신 맞는다"),
+  evasionChance: numberSchema("회피 % 0~95 — 물리 공격(통상·attack 계열)의 명중을 이만큼 깎는다"),
+  reflect: booleanSchema("리플렉 — 나를 노린 단일 대상 마법(mind 계열 피해·회복, 상태만 거는 support)을 시전자에게 한 번 튕긴다"),
+  reraisePercent: numberSchema("리레이즈 % 1~100 — 쓰러지면 최대 HP 의 이 비율로 한 번 일어나고 상태는 사라진다(아군만)"),
+  doomTurns: numberSchema("선고 1~9 — 걸린 뒤 자기 차례가 이만큼 오면 전투 불능. 상태를 풀면 멈춘다"),
 });
 
 const itemRecordSchema = objectSchema({

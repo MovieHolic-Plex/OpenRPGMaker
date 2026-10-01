@@ -434,8 +434,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onDamageFeedback(feedback) {
       lastDamageFeedback = feedback;
-      // 상태 이름 팝업(label)은 표시 전용 — 원장·타격 세기·효과음·플래시를 건드리지 않는다.
-      if (feedback?.label) return;
+      // 상태 이름 팝업(label)은 표시 전용 — 타격 세기·효과음·플래시를 건드리지 않는다. 단 HP 를 실은 label
+      // (선고로 쓰러지는 upkeep: 숫자 대신 상태 이름)은 원장에 반영해야 쓰러진 적이 다시 서 있지 않는다.
+      if (feedback?.label) {
+        if (feedback.amount > 0) presentation?.applyFeedback(feedback);
+        return;
+      }
       if (feedback) {
         const vitalsBefore = presentation?.vitalsFor(feedback.targetId);
         const wasAlive = !vitalsBefore?.defeated;

@@ -855,6 +855,20 @@ export interface StateRuntimeEffects {
   incapacitates?: boolean;
   /** 받는 HP 피해 중 이 비율(0~1)을 MP 에서 대신 깎는다(MP 가 모자라면 남은 만큼만). */
   damageToMpRate?: number;
+  /** 반격: 상대의 물리(공격력 계열) 타격을 맞으면 이 확률(%)로 통상 공격을 되돌려 준다. */
+  counterChance?: number;
+  /** 도발: 적이 대상을 고를 때 이 상태인 배우를 먼저 노린다. */
+  taunt?: boolean;
+  /** 감싸기: HP 가 1/4 이하인 동료가 단일 물리 공격을 받으면 대신 맞는다. */
+  cover?: boolean;
+  /** 회피: 물리(공격력 계열) 피해 타격을 이 확률(%, 최대 95)로 피한다. */
+  evasionChance?: number;
+  /** 리플렉: 이 배틀러를 겨눈 단일 대상 마법(정신력 계열 피해·회복, 보조)을 시전자에게 되돌린다. 되돌린 마법은 다시 튕기지 않는다. */
+  reflect?: boolean;
+  /** 리레이즈: 쓰러지면 최대 HP 의 이 %(1~100)로 한 번 일어나고 상태가 풀린다(배우만). */
+  reraisePercent?: number;
+  /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
+  doomTurns?: number;
 }
 
 export interface BattleAnimationRecord {

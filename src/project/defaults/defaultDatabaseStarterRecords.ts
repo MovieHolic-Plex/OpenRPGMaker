@@ -176,6 +176,21 @@ export function defaultStateRecords(): StateRecord[] {
     { id: "state_wet", name: "젖음", battleAura: "wet-drip", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 35, runtimeEffects: { elementRates: { thunder: "A", fire: "D" }, removeOnBattleEnd: true } },
     // 기름: 불 약점(A).
     { id: "state_oiled", name: "기름", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 35, runtimeEffects: { elementRates: { fire: "A" }, removeOnBattleEnd: true } },
+    // ── 반응·표적 상태(2026-10-01). FF 의 반격·도발·감싸기·회피·리플렉·리레이즈·선고 ──
+    // 반격: 물리에 맞으면 60% 로 통상 공격을 되돌린다.
+    { id: "state_counter", name: "반격", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25, runtimeEffects: { counterChance: 60, removeOnBattleEnd: true } },
+    // 도발: 적이 단일 대상으로 이 아군을 먼저 노린다. 방어는 조금 단단하게.
+    { id: "state_taunt", name: "도발", battleAura: "berserk-pulse", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { taunt: true, defenseMultiplier: 1.2, removeOnBattleEnd: true } },
+    // 감싸기: 빈사 아군을 노린 단일 물리 공격을 대신 맞는다.
+    { id: "state_cover", name: "감싸기", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25, runtimeEffects: { cover: true, removeOnBattleEnd: true } },
+    // 회피: 물리 명중을 40% 깎는다(잔상·분신).
+    { id: "state_evade", name: "회피", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { evasionChance: 40, removeOnBattleEnd: true } },
+    // 리플렉: 단일 마법을 시전자에게 튕긴다.
+    { id: "state_reflect", name: "리플렉", battleAura: "shield-shimmer", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25, runtimeEffects: { reflect: true, removeOnBattleEnd: true } },
+    // 리레이즈: 쓰러지면 최대 HP 25% 로 한 번 일어난다. 저절로 풀리지 않는다.
+    { id: "state_reraise", name: "리레이즈", battleAura: "regen-sparkle", restriction: "없음", removalCondition: "전투 종료", runtimeEffects: { reraisePercent: 25, removeOnBattleEnd: true } },
+    // 선고: 자기 차례 3번 뒤 전투 불능. 저절로 풀리지 않는다(정화로 해제).
+    { id: "state_doom", name: "선고", battleAura: "dark-fog", restriction: "없음", removalCondition: "전투 종료", runtimeEffects: { doomTurns: 3, removeOnBattleEnd: true } },
   ];
 }
 
