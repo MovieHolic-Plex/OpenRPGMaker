@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/timber_prop/w53-B.pxg",
+ "id": "timber prop",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.111
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 4,
+ "bbox": [
+  0,
+  9,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  9,
+  15,
+  47
+ ],
+ "note": "current(w7-B 외기둥 T형) 모양 유지 3/4: 들보 윗면 4px+앞 모서리 하이라이트+처마 그림자, 기둥 왼쪽 밝은 면, 볼트·쇠띠",
+ "ok": true
+}

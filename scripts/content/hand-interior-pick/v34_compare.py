@@ -1,5 +1,5 @@
 # 3/4 재작도(v34-redo.json) 비교 페이지: 항목마다 「지금 | 새 후보들 | 방 안」 을 4배로, 움직이는 기물은 12프레임 GIF 로.
-#   python3 scripts/content/hand-interior-pick/v34_compare.py <out.html> [verdicts.json]
+#   python3 scripts/content/hand-interior-pick/v34_compare.py <out.html> [verdicts.json] [w51,w52,…(이 작업자 몫만)]
 # verdicts.json = {"<slug>": "감독 판정 한 줄"} (선택). 그림은 data URI 로 넣어 파일 하나로 열린다.
 import base64, glob, io, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -53,12 +53,13 @@ def animate(v5f, body):
     return out
 
 
-def main(out, verdicts=None):
+def main(out, verdicts=None, only=None):
     plan = json.load(open(os.path.join(PICK, 'v34-redo.json'), encoding='utf-8'))
     V = json.load(open(verdicts, encoding='utf-8')) if verdicts else {}
     by = objects_by_id()
-    nums = sorted({int(w[1:]) for w in plan['workers']})
     cards = []
+    if only: plan['workers'] = {w: v for w, v in plan['workers'].items() if w in only}
+    nums = sorted({int(w[1:]) for w in plan['workers']})
     for w, items in plan['workers'].items():
         for it in items:
             s = it['slug']; d = os.path.join(CAND, s); o = by[it['id']]
@@ -104,4 +105,4 @@ figcaption{{font-size:12px;color:#ccc;margin-top:3px}}small{{display:block;color
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] else None, sys.argv[3].split(',') if len(sys.argv) > 3 else None)
