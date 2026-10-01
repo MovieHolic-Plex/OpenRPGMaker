@@ -193,6 +193,7 @@ def main():
     TS = json.loads(TS_PATH.read_text())
     assert TS["count"] >= BASE
     reg = Registry()
+    DOORS = json.loads((VAR / "pick-doors.json").read_text()) if (VAR / "pick-doors.json").exists() else {}
 
     # ---- 조각 → 키트 (같은 그림은 한 키트, 장소는 여럿) ----
     by_hash, order = {}, []
@@ -271,6 +272,9 @@ def main():
                            role=ROLE[kind], repeatability="repeat" if kind in ("floor", "liquid", "wall") else "fixed",
                            layerHome="upper" if kind in ("object", "tree") else ("lower" if all(u < 0 for r in upper for u in r) else "perCell"),
                            themes=[*cats, *[CAT_KO[c] for c in cats]]))
+        if kid in DOORS:   # 문 칸 — find_pick_doors.py 가 그림에서 찾은 것(tiledata/beodeul-variants/pick-doors.json)
+            d = DOORS[kid]
+            kit["parts"] = [dict(id="door", kind="entrance", dx=d["dx"], dy=d["dy"], w=1, h=1, note="문 칸(윗부분 그림, 그림에서 찾음) — 문 칸 자체는 막힘, 그 아래 칸이 문 앞 길")]
         kits.append(kit)
         rows_out.append(dict(kit=kid, ko=ko, kind=kind, w=w, h=hh, brows=brows, frames=nfr, places=places, var=first["var"],
                              status=[x["status"] for x in g["items"]], rel=first["rel"]))
