@@ -19,7 +19,7 @@ const invalidCases: readonly { name: string; path: string; change: (document: Fi
   { name: "three-node cycle", path: "children", change: d => ({ ...d, library: { ...d.library, places: { a: placeDesign("a", "b", "place"), b: placeDesign("b", "c", "place"), c: placeDesign("c", "a", "place") } } }) },
   { name: "illegal kind edge", path: "source.kind", change: d => ({ ...d, library: { ...d.library, places: { inn: placeDesign("inn", "desk", "object") } } }) },
   { name: "zero size", path: "width", change: d => ({ ...d, library: { ...d.library, spaces: { room: { ...d.library.spaces.room, width: 0 } } } }) },
-  { name: "unbounded size", path: "height", change: d => ({ ...d, library: { ...d.library, spaces: { room: { ...d.library.spaces.room, height: 257 } } } }) },
+  { name: "unbounded size", path: "height", change: d => ({ ...d, library: { ...d.library, spaces: { room: { ...d.library.spaces.room, height: 513 } } } }) },
   { name: "fractional slot geometry", path: "placement.x", change: d => ({ ...d, library: { ...d.library, spaces: { room: { ...d.library.spaces.room, objectSlots: [{ ...d.library.spaces.room.objectSlots[0], placement: { mode: "fixed", x: 0.5, y: 1 } }] } } } }) },
   { name: "NaN wire geometry", path: "occurrences.occ-a.x", change: d => ({ ...d, occurrences: { ...d.occurrences, "occ-a": { ...d.occurrences["occ-a"], x: Number.NaN } } }) },
   { name: "fractional occurrence geometry", path: "occurrences.occ-a.y", change: d => ({ ...d, occurrences: { ...d.occurrences, "occ-a": { ...d.occurrences["occ-a"], y: 1.5 } } }) },
@@ -38,6 +38,13 @@ const invalidCases: readonly { name: string; path: string; change: (document: Fi
 ];
 
 describe("spatial authoring IO contract", () => {
+  it('roundtrips an authored 512×512 space without truncating its dimensions', () => {
+    const { project, document } = spatialFixture();
+    Object.assign(document.library.spaces.room, { width: 512, height: 512 });
+    const loaded = deserialize(spatialWire(project, document));
+    const restored = deserialize(serialize(loaded));
+    expect(restored.spatialAuthoring!.library.spaces.room).toMatchObject({ width: 512, height: 512 });
+  });
   it.each(["rotation", "scale"])("rejects unsupported %s when a route point carries transform geometry", field => {
     // Given
     const { project, document } = spatialHierarchyFixture();

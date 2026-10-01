@@ -1,0 +1,22 @@
+
+> oprn@0.60.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/spatialSchema.test.ts test/spatialBindingProjection.test.ts test/generateMap.test.ts test/toolsMapManagement.test.ts -t 512×512|unbounded size|oversized extent|지원 상한 초과 --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/320d/rpg-zzu
+
+ ✓ test/toolsMapManagement.test.ts (22 tests | 20 skipped) 2159ms
+   ✓ resize_map > 지원 상한 초과 확장은 거부하고 분할 맵 대안을 안내한다  1398ms
+   ✓ create_map > 지원 상한 초과 생성은 거부한다  758ms
+ ✓ test/generateMap.test.ts (17 tests | 16 skipped) 816ms
+   ✓ generate_map > 지원 상한 초과 생성은 거부하고 분할 맵 대안을 안내한다  813ms
+ ✓ test/spatialSchema.test.ts (60 tests | 58 skipped) 3649ms
+   ✓ spatial authoring IO contract > roundtrips an authored 512×512 space without truncating its dimensions  2192ms
+   ✓ spatial authoring IO contract > rejects 'unbounded size' with its record path when loading wire data  1454ms
+ ✓ test/spatialBindingProjection.test.ts (38 tests | 37 skipped) 1500ms
+   ✓ non-owning compiled projections > rejects 'oversized extent' when parsing a projection boundary  1498ms
+
+ Test Files  4 passed (4)
+      Tests  6 passed | 131 skipped (137)
+   Start at  20:33:40
+   Duration  37.99s (transform 12.91s, setup 0ms, collect 27.97s, tests 8.12s, environment 1ms, prepare 323ms)

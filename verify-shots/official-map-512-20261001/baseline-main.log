@@ -1,0 +1,324 @@
+
+> oprn@0.60.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/generateMap.test.ts test/mapSizeGuard.test.ts test/toolsMapManagement.test.ts -t generate_map|upsert_event commands kind 오류|확장부는 잔디|기본 생성은 돌벽|border.*wall --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /tmp/rpg-zzu-map512-baseline
+
+ ❯ test/mapSizeGuard.test.ts (25 tests | 2 failed | 23 skipped) 1754ms
+   ↓ build_world 맵 크기 상한 > 256×256 노드는 만든다
+   ↓ build_world 맵 크기 상한 > 257×257 노드는 셀 할당 전에 거부한다
+   ↓ build_world 맵 크기 상한 > size:{w,h} 별칭으로 우회할 수 없다
+   ↓ build_world 맵 크기 상한 > 초대형 노드 하나가 섞이면 같은 요청의 정상 노드도 만들지 않는다
+   ↓ plan_world 크기 힌트 상한 > build_world 가 그대로 읽는 초대형 힌트는 계획 단계에서 거부한다
+   ↓ plan_world 크기 힌트 상한 > 256 힌트는 계획으로 등록한다
+   ↓ 나머지 조수 생성/크기변경 경로 > create_map { name: '경계', width: 256, height: 256, id: 'map_edge' } → ok:true
+   ↓ 나머지 조수 생성/크기변경 경로 > create_map { name: '초과', width: 257, height: 257, id: 'map_edge' } → ok:false
+   × 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 256, height: 256, id: 'map_edge' } → ok:true 902ms
+     → 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+   × 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 257, height: 257, id: 'map_edge' } → ok:false 850ms
+     → expected '\'generate_map\' 실행 실패: 타일셋 \'beodeul…' to contain '최대 256×256'
+   ↓ 나머지 조수 생성/크기변경 경로 > resize_map 은 256까지 늘리고 257은 거부한다
+   ↓ 나머지 조수 생성/크기변경 경로 > start_dungeon_room_session 은 초대형 방을 거부한다
+   ↓ 나머지 조수 생성/크기변경 경로 > start_interior_room_session 은 초대형 실내를 거부한다
+   ↓ 나머지 조수 생성/크기변경 경로 > author_village 는 초대형 새 맵 대상을 거부한다
+   ↓ 나머지 조수 생성/크기변경 경로 > build_village/build_castle 은 상한을 넘는 맵을 만들지 않는다
+   ↓ 사람 생성/크기변경 경로 > addMap 은 초대형 요청으로 맵을 만들지 않는다
+   ↓ 사람 생성/크기변경 경로 > addChildMap 도 초대형 요청으로 맵을 만들지 않는다
+   ↓ 사람 생성/크기변경 경로 > addMap 은 경계 256을 그대로 만든다
+   ↓ 사람 생성/크기변경 경로 > resizeMap 은 초대형 크기로 바꾸지 않는다
+   ↓ 사람 생성/크기변경 경로 > createMapFromSpec 은 상한 밖 스펙으로 초대형 맵을 남기지 않는다
+   ↓ lint 계약이 생성 계약과 일치한다 > 257 맵은 error 로 보고한다(warning-only 미지원 상태 금지)
+   ↓ lint 계약이 생성 계약과 일치한다 > 256 맵은 보고하지 않는다
+   ↓ 이미 들어온 초대형 맵(외부/구 데이터) > 선재 초대형 맵이 무관한 편집을 막지 않는다
+   ↓ 이미 들어온 초대형 맵(외부/구 데이터) > 조수 경로에서도 렌더 없이 삭제할 수 있다
+   ↓ 이미 들어온 초대형 맵(외부/구 데이터) > 캔버스를 열지 않고도 식별하고 지울 수 있다
+ ❯ test/toolsMapManagement.test.ts (22 tests | 4 failed | 18 skipped) 5237ms
+   ↓ find_events catalog > 페이지 수·조건·이름을 돌려 새 NPC의 템플릿을 고를 수 있다
+   ↓ get_event > 이벤트 전체 정의를 돌려주고, 없으면 보유 목록을 안내한다
+   ↓ get_event > place_npc가 런타임 지원 제한 페이지 명령 warning을 ToolResult.issues에 담는다
+   ↓ get_event > upsert_event가 런타임 지원 제한 페이지 명령 warning과 요약 count를 담는다
+   ↓ get_event > upsert_event pages[].commands 단수 객체 입력은 배열로 승격하고 warning을 남긴다
+   ↓ get_event > upsert_event 부분 수정은 기존 NPC의 대사·그래픽·위치를 보존한다
+   ↓ get_event > upsert_event 후속 수정은 place_chest의 50G 보상 페이지를 보존한다
+   ↓ get_event > upsert_event는 event trigger 안에 잘못 넣은 명령을 거부하고 기존 귀환을 보존한다
+   ↓ get_event > upsert_event는 page trigger 안에 잘못 넣은 명령을 거부하고 기존 귀환을 보존한다
+   × get_event > upsert_event commands kind 오류는 인덱스와 기대 형식을 invalid-args에 담는다 1410ms
+     → expected '커맨드 형식 오류:\n- ev_bad_kind.ev_bad_kind…' to contain 'ev_bad_kind.commands[0].kind'
+   ↓ get_event > upsert_event 인자 누락은 NPC 배치용 place_npc 힌트를 돌려준다
+   ↓ set_map_properties > 이름/인카운트율/트룹을 설정하고, 없는 트룹은 거부한다
+   × resize_map > 확장부는 잔디로 채우고 기존 타일은 보존한다 1753ms
+     → expected 737 to be 240 // Object.is equality
+   ↓ resize_map > 축소로 이벤트가 밖에 나가면 거부한다
+   ↓ resize_map > 256x256 초과 확장은 거부하고 분할 맵 대안을 안내한다
+   × create_map > 기본 생성은 돌벽 테두리 없이 잔디 평지로 만든다 1030ms
+     → expected false to be true // Object.is equality
+   × create_map > border:'wall'을 지정하면 기존처럼 외곽을 돌벽으로 두른다 1042ms
+     → expected 737 to be 240 // Object.is equality
+   ↓ create_map > 모델 노출 스키마에서 border 를 뺐다 — 조수가 스스로 외곽 벽을 고를 수 없다
+   ↓ create_map > 256x256 초과 생성은 거부한다
+   ↓ remove_map > 일반 맵은 삭제되고 맵 트리에서도 사라진다
+   ↓ remove_map > 시작 맵은 삭제를 거부한다
+   ↓ rename_variable > 정의·세션·커맨드·조건의 변수 참조를 일괄 치환한다
+ ❯ test/generateMap.test.ts (17 tests | 10 failed) 15899ms
+   × generate_map > village (seed 1) — lint 0 error + 모든 POI 도달 가능 927ms
+     → expected false to be true // Object.is equality
+   × generate_map > village (seed 99) — lint 0 error + 모든 POI 도달 가능 956ms
+     → expected false to be true // Object.is equality
+   × generate_map > forest (seed 1) — lint 0 error + 모든 POI 도달 가능 968ms
+     → expected false to be true // Object.is equality
+   × generate_map > forest (seed 99) — lint 0 error + 모든 POI 도달 가능 891ms
+     → expected false to be true // Object.is equality
+   ✓ generate_map > cave (seed 1) — lint 0 error + 모든 POI 도달 가능  1941ms
+   ✓ generate_map > cave (seed 99) — lint 0 error + 모든 POI 도달 가능  1583ms
+   ✓ generate_map > 장애물 밀도가 높아도(90) 도달성이 보장된다  738ms
+   × generate_map > 256x256 초과 생성은 거부하고 분할 맵 대안을 안내한다 835ms
+     → expected '\'generate_map\' 실행 실패: 타일셋 \'beodeul…' to contain '최대 256×256'
+   × generate_map > 번들 프로필을 디스패치하되 실내는 개념 시공으로 안내한다 1407ms
+     → shared_forest_village_objects: 'generate_map' 실행 실패: 존재하지 않는 타일셋입니다: shared_forest_village_objects: expected false to be true // Object.is equality
+   × generate_map > 외곽 테두리는 옵션이다(기본 none) > village: border 생략 시 외곽에 장애물 벽을 두르지 않는다 837ms
+     → 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+   × generate_map > 외곽 테두리는 옵션이다(기본 none) > forest: border 생략 시 외곽에 장애물 벽을 두르지 않는다 898ms
+     → 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+   ✓ generate_map > 외곽 테두리는 옵션이다(기본 none) > cave: border 생략 시 외곽에 장애물 벽을 두르지 않는다  757ms
+   × generate_map > 외곽 테두리는 옵션이다(기본 none) > border 생략 시 기본 입구는 맵 가장자리에 붙는다 897ms
+     → 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+   ✓ generate_map > 외곽 테두리는 옵션이다(기본 none) > border:"wall" 은 종전처럼 외곽 4변을 봉인한다  724ms
+   × generate_map > 외곽 테두리는 옵션이다(기본 none) > 알 수 없는 border 값은 조용히 무시되지 않고 거부된다 816ms
+     → expected '타일셋 \'beodeul_city\' 전용 맵 생성 로직이 아직 없…' to contain 'border'
+   ✓ generate_map > 외곽 테두리는 옵션이다(기본 none) > 모델 노출 스키마에는 border 가 없다 3ms
+   ✓ generate_map > 등록되지 않은 타일셋은 다른 타일 문법으로 대체하지 않는다  716ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > village (seed 1) — lint 0 error + 모든 POI 도달 가능
+ FAIL  test/generateMap.test.ts > generate_map > village (seed 99) — lint 0 error + 모든 POI 도달 가능
+ FAIL  test/generateMap.test.ts > generate_map > forest (seed 1) — lint 0 error + 모든 POI 도달 가능
+ FAIL  test/generateMap.test.ts > generate_map > forest (seed 99) — lint 0 error + 모든 POI 도달 가능
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/generateMap.test.ts:37:27
+     35|           { dryRun: false }
+     36|         );
+     37|         expect(result.ok).toBe(true);
+       |                           ^
+     38|
+     39|         // lint 0 error.
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 256x256 초과 생성은 거부하고 분할 맵 대안을 안내한다
+AssertionError: expected '\'generate_map\' 실행 실패: 타일셋 \'beodeul…' to contain '최대 256×256'
+
+Expected: "최대 256×256"
+Received: "'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다"
+
+ ❯ test/generateMap.test.ts:72:28
+     70|     const result = runTool(ctx, "generate_map", { theme: "forest", wid…
+     71|     expect(result.ok).toBe(false);
+     72|     expect(result.summary).toContain("최대 256×256");
+       |                            ^
+     73|     expect(result.summary).toContain("여러 맵");
+     74|     expect(ctx.project.maps.gen_huge).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 번들 프로필을 디스패치하되 실내는 개념 시공으로 안내한다
+AssertionError: shared_forest_village_objects: 'generate_map' 실행 실패: 존재하지 않는 타일셋입니다: shared_forest_village_objects: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/generateMap.test.ts:123:60
+    121|         continue;
+    122|       }
+    123|       expect(result.ok, `${tilesetId}: ${result.summary}`).toBe(true);
+       |                                                            ^
+    124|       const data = result.data as { mapId: string; generationProfile: …
+    125|       const map = ctx.project.maps[data.mapId];
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 외곽 테두리는 옵션이다(기본 none) > village: border 생략 시 외곽에 장애물 벽을 두르지 않는다
+ FAIL  test/generateMap.test.ts > generate_map > 외곽 테두리는 옵션이다(기본 none) > forest: border 생략 시 외곽에 장애물 벽을 두르지 않는다
+AssertionError: 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/generateMap.test.ts:165:43
+    163|           { dryRun: false },
+    164|         );
+    165|         expect(result.ok, result.summary).toBe(true);
+       |                                           ^
+    166|         expect((result.data as { border: string }).border).toBe("none"…
+    167|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 외곽 테두리는 옵션이다(기본 none) > border 생략 시 기본 입구는 맵 가장자리에 붙는다
+AssertionError: 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/generateMap.test.ts:189:41
+    187|         { dryRun: false },
+    188|       );
+    189|       expect(result.ok, result.summary).toBe(true);
+       |                                         ^
+    190|       expect((result.data as { entrance: { x: number; y: number } }).e…
+    191|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 외곽 테두리는 옵션이다(기본 none) > 알 수 없는 border 값은 조용히 무시되지 않고 거부된다
+AssertionError: expected '타일셋 \'beodeul_city\' 전용 맵 생성 로직이 아직 없…' to contain 'border'
+
+Expected: "border"
+Received: "타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다"
+
+ ❯ test/generateMap.test.ts:214:70
+    212|       const result = runTool(ctx, "generate_map", { theme: "village", …
+    213|       expect(result.ok).toBe(false);
+    214|       expect(result.issues?.map((issue) => issue.message).join(" ")).t…
+       |                                                                      ^
+    215|       expect(ctx.project.maps.gen_bad).toBeUndefined();
+    216|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  test/mapSizeGuard.test.ts > 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 256, height: 256, id: 'map_edge' } → ok:true
+AssertionError: 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/mapSizeGuard.test.ts:121:39
+    119|     const context = ctx();
+    120|     const result = runTool(context, tool, { ...args });
+    121|     expect(result.ok, result.summary).toBe(ok);
+       |                                       ^
+    122|     if (!ok) {
+    123|       expectRejection(result.summary);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  test/mapSizeGuard.test.ts > 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 257, height: 257, id: 'map_edge' } → ok:false
+AssertionError: expected '\'generate_map\' 실행 실패: 타일셋 \'beodeul…' to contain '최대 256×256'
+
+Expected: "최대 256×256"
+Received: "'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다"
+
+ ❯ expectRejection test/mapSizeGuard.test.ts:29:19
+     27| /** 거부 메시지는 상한과 회복 수단(맵 분할 + transfer 연결)을 함께 말해야 한다. */
+     28| function expectRejection(summary: string): void {
+     29|   expect(summary).toContain(`최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_M…
+       |                   ^
+     30|   expect(summary).toContain("여러 맵");
+     31|   expect(summary).toContain("transfer");
+ ❯ test/mapSizeGuard.test.ts:123:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  test/toolsMapManagement.test.ts > get_event > upsert_event commands kind 오류는 인덱스와 기대 형식을 invalid-args에 담는다
+AssertionError: expected '커맨드 형식 오류:\n- ev_bad_kind.ev_bad_kind…' to contain 'ev_bad_kind.commands[0].kind'
+
+- Expected
++ Received
+
+- ev_bad_kind.commands[0].kind
++ 커맨드 형식 오류:
++ - ev_bad_kind.ev_bad_kind_page.commands[0].kind: 기대 형식 string, 실제 타입 object(keys:command)
++ - ev_bad_kind.ev_bad_kind_page.commands[1].kind: 기대 형식 string, 실제 타입 undefined 커맨드 kind는 문자열. 형식이 어려우면 event_command_assist나 고수준 툴을 사용하라. 올바른 1커맨드 예시 JSON: {"commands":[{"kind":"text","body":"안녕하세요"}]}
+
+ ❯ test/toolsMapManagement.test.ts:242:21
+    240|     expect(result.issues?.[0]?.code).toBe("invalid-args");
+    241|     const message = result.issues?.[0]?.message ?? "";
+    242|     expect(message).toContain("ev_bad_kind.commands[0].kind");
+       |                     ^
+    243|     expect(message).toContain("ev_bad_kind.commands[1].kind");
+    244|     expect(message).toContain("기대 형식 string");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  test/toolsMapManagement.test.ts > resize_map > 확장부는 잔디로 채우고 기존 타일은 보존한다
+AssertionError: expected 737 to be 240 // Object.is equality
+
+- Expected
++ Received
+
+- 240
++ 737
+
+ ❯ test/toolsMapManagement.test.ts:285:41
+    283|     expect(map.width).toBe(14);
+    284|     expect(map.lowerTiles[2 * 14 + 2]).toBe(TILE.WATER); // 기존 타일 보존.
+    285|     expect(map.lowerTiles[5 * 14 + 12]).toBe(TILE.GRASS); // 확장부 잔디.
+       |                                         ^
+    286|   });
+    287|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  test/toolsMapManagement.test.ts > create_map > 기본 생성은 돌벽 테두리 없이 잔디 평지로 만든다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/toolsMapManagement.test.ts:311:65
+    309|     expect(result.ok, result.summary).toBe(true);
+    310|     const map = context.project.maps.map_plain;
+    311|     expect(map.lowerTiles.every((tile) => tile === TILE.GRASS)).toBe(t…
+       |                                                                 ^
+    312|   });
+    313|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  test/toolsMapManagement.test.ts > create_map > border:'wall'을 지정하면 기존처럼 외곽을 돌벽으로 두른다
+AssertionError: expected 737 to be 240 // Object.is equality
+
+- Expected
++ Received
+
+- 240
++ 737
+
+ ❯ test/toolsMapManagement.test.ts:327:47
+    325|       expect(map.lowerTiles[y * map.width + map.width - 1]).toBe(TILE.…
+    326|     }
+    327|     expect(map.lowerTiles[1 * map.width + 1]).toBe(TILE.GRASS);
+       |                                               ^
+    328|   });
+    329|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  16 failed | 7 passed | 41 skipped (64)
+   Start at  20:24:38
+   Duration  42.77s (transform 14.08s, setup 0ms, collect 36.48s, tests 22.89s, environment 1ms, prepare 234ms)

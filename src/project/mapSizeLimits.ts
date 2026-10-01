@@ -8,7 +8,8 @@
 // 입력 크기 HTTP 400 으로 실패해 커밋 전에 멈췄다). 숫자와 문구를 여기서만 정해 생성·크기변경·
 // lint 가 같은 계약을 말하게 한다.
 
-export const MAX_TOOL_MAP_DIMENSION = 256;
+// Runtime tiles are resident only around the camera; editor rendering is lazy.
+export const MAX_TOOL_MAP_DIMENSION = 512;
 
 export function exceedsMapDimensionLimit(width: number, height: number): boolean {
   return width > MAX_TOOL_MAP_DIMENSION || height > MAX_TOOL_MAP_DIMENSION;

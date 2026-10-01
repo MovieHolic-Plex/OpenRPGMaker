@@ -46,6 +46,8 @@ import {
   refreshRuntimeSurfaces as refreshSceneRuntimeSurfaces,
   refreshRuntimeEntities as refreshSceneRuntimeEntities,
   fireAutoTriggers as fireSceneAutoTriggers,
+  syncRuntimeTileWindow,
+  releaseRuntimeTileWindow,
 } from "@/player/playSceneMapRuntime";
 import {
   applyChangeTileStep as applySceneChangeTileStep,
@@ -88,7 +90,8 @@ import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { initializeActionCombatForScene, updateActionCombatForScene } from "@/player/playSceneActionCombat";
 import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, isGameTimePausedForRuntime, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
 import { tickNpcSchedules, updateNpcSchedules } from "@/player/npcSchedules";
-import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
+import { syncTileCulling } from "@/player/playSceneTileCulling";
+import { runtimeCameraTileView } from './runtimeTileWindow';
 import {
   createPlaySceneZoneFeedback,
   destroyPlaySceneZoneFeedback,
@@ -370,7 +373,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.events.once("destroy", destroyZoneFeedback);
     // 컬링의 직전 짝 기억은 모듈 스코프의 **강한** 참조다(WeakMap 인 본체와 다르다).
     // 풀지 않으면 내려간 씬과 타일 GameObject 1만~2.1만개가 그대로 남는다.
-    const releaseCulling = (): void => resetCullableTiles(this);
+    const releaseCulling = (): void => releaseRuntimeTileWindow(this);
     this.events.once("shutdown", releaseCulling);
     this.events.once("destroy", releaseCulling);
     // player.ts 로딩 오버레이가 create 완료를 기다릴 수 있게 신호.
@@ -392,7 +395,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
-    syncTileCulling(this, this.cameras.main.worldView, mapTileSize(this.map));
+    const tileView = runtimeCameraTileView(this.cameras.main);
+    syncRuntimeTileWindow(this, tileView);
+    syncTileCulling(this, tileView, mapTileSize(this.map));
     // 이벤트 마커는 화면 좌표로 놓여야 한다 — 카메라를 반영하지 않으면 무대의 스크롤 영역이
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
