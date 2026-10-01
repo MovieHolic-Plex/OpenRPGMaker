@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/votive_stand/w102-A.pxg",
+ "id": "votive stand",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w102-A.pxg"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  1,
+  11,
+  14,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  11,
+  14,
+  30
+ ],
+ "note": "봉헌 초 받침 3/4 정면: 선반 3단 각각 윗면 2행(초 밑동이 얹힘, iron4+iron5) + 앞면 1행, 맨 아래 받침 윗면 1행. 불꽃 자리·anim-mask·불꽃 색·바닥 줄(y=30)·폭 16 유지, 캔버스 그대로.",
+ "ok": true
+}

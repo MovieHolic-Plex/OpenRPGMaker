@@ -1,0 +1,53 @@
+// w105-A 해먹
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat m wood 2
+@mat n wood 3
+@mat p wood 4
+@mat q wood 5
+@mat r wood 6
+@mat s wood 7
+@mat x linen 1
+@mat y linen 2
+@mat z linen 3
+@mat u linen 4
+@mat v linen 5
+@mat w linen 6
+@mat a straw 2
+@mat b straw 3
+@mat c straw 4
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+ooooo......................ooooo
+ossro......................ossro
+orrqo......................orrqo
+orqpo......................orqno
+orqpoc....................corqno
+orqpo.b...................borqno
+orqpo.b..................b.orqno
+orqpo.b.................b..orqno
+orqpo..b................b..orqno
+orqpo...b.xxxxxxxxxxxx..b..orqno
+orqpo..xbwwwwwwwvvvvvvvbx..orqno
+orqpo.xwwwwwvvvvvuuuuuzzzx.orqno
+orqpo.xwwwwwvvvvvuuuuuzzzx.orqno
+orqpo.xwwwwwvvvvvuuuuuzzzx.orqno
+orqpo.xwwwwwvvvvvuuuuuzzzx.orqno
+orqpo.xwwwwwvvvvvuuuuuzzzx.orqno
+orqpo..xwwwwwvvvvuuuuzzzx..orqno
+orqpo.....xuuuuuzzzzzx.....orqno
+orqpo......xzzzzyyyyx......orqno
+orqpo.......xyyyxxxx.......orqno
+orqpo........xxxxxx........orqno
+orqpo......................orqno
+orqpo......................orqno
+orqpo......................orqno
+qpnno......................oqpnn
+mmmmo......................ommmm
+...---~~~~~~~~~~~~~~~~~~~~~---..

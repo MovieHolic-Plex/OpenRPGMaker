@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/slot_machine/w104-A.pxg",
+ "id": "slot machine",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w104-A.pxg"
+ ],
+ "resized": {
+  "canvas": [
+   16,
+   48
+  ],
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "why": "3/4 윗면 자리: 위로 16px(애니 마스크는 아래 정렬 그대로)"
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  2,
+  15,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  15,
+  31
+ ],
+ "note": "윗면 금빛 5행(뒤 가장자리 1+면 3+앞 모서리 밝은 띠=전구줄) + 처마 그림자 2행 + 들어간 붉은 앞면, 캔버스 16x48(위로 +16)",
+ "ok": true
+}

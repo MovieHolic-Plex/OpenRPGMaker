@@ -9,10 +9,7 @@
   "max": 0.065
  },
  "lint": {
-  "failed": [
-   "saturation"
-  ],
-  "pass": false
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
  },
  "colors": 17,
  "v5_colors": 11,

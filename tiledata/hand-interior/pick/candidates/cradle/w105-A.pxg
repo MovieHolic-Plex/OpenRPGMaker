@@ -1,0 +1,52 @@
+// w105-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a pine 0
+@mat b pine 1
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f pine 5
+@mat g pine 6
+@mat h linen 1
+@mat i linen 2
+@mat j linen 3
+@mat k linen 4
+@mat l linen 5
+@mat m linen 6
+@mat n ice 0
+@mat o ice 1
+@mat p ice 2
+@mat q ice 3
+@mat r ice 4
+@mat s dwood 1
+@mat t dwood 2
+@mat u dwood 3
+@mat v dwood 4
+@mat w dwood 5
+@mat x wood 1
+@mat y wood 3
+@mat z wood 2
+@mat P wood 4
+@mat Q wood 5
+@mat E pink 5
+@mat R pink 4
+@mat S pink 3
+@mblock 0 0
+................
+................
+................
+.aaaaaaaaaaaaaa.
+.agggggggggggea.
+.agbbbbbbbbbbea.
+.agkmmmmERRREea.
+.agjllllRRRRSea.
+.agbjjjjSSSSSea.
+.aggggggggggfea.
+.addddddddddcba.
+.accccccccccbba.
+.abbbbbbbbbbbba.
+..aaabbbbbbaaa..
+..adeaaaaaaaeda.
+...aaa......aaa.

@@ -1,0 +1,106 @@
+// w102 A: 성가대석 — 3/4 정면(남향). 좌판 윗면 5행(붉은 방석·나무 테두리) + 앞면 14행(들어간 앞판·금 장식) + 등판 + 칸막이 기둥·팔걸이 윗면.
+@size 48 48
+@cell 16
+@palette palette.pal
+@mat a gold
+@mat b dwood
+@mat c wood
+@mat d red
+@mblock 0 0
+................................................
+................................................
+................................................
+................................................
+................................................
+................................................
+................................................
+................................................
+aaa...........aaaa...........aaaa...........aaaa
+aaa...........aaaa...........aaaa...........aaaa
+aaacccccccccccaaaacccccccccccaaaacccccccccccaaaa
+aaacccccccccccaaaacccccccccccaaaacccccccccccaaaa
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbaaaaaaaabccccbbaaaaaaaabccccbbaaaaaaaabcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbaabbbbccccbbbbbaabbbbccccbbbbbaabbbbcccc
+cccbbbbbaabbbbccccbbbbbaabbbbccccbbbbbaabbbbcccc
+cccbbbbbaabbbbccccbbbbbaabbbbccccbbbbbaabbbbcccc
+cccbbbbbaabbbbccccbbbbbaabbbbccccbbbbbaabbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccdddddddddddccccdddddddddddccccdddddddddddcccc
+cccdddddddddddccccdddddddddddccccdddddddddddcccc
+cccdddddddddddccccdddddddddddccccdddddddddddcccc
+cccdddddddddddccccdddddddddddccccdddddddddddcccc
+cccdddddddddddccccdddddddddddccccdddddddddddcccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbaaaabbbccccbbbbaaaabbbccccbbbbaaaabbbcccc
+cccbbbbaaaabbbccccbbbbaaaabbbccccbbbbaaaabbbcccc
+cccbbbbaaaabbbccccbbbbaaaabbbccccbbbbaaaabbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+cccbbbbbbbbbbbccccbbbbbbbbbbbccccbbbbbbbbbbbcccc
+@tblock 0 0
+................................................
+................................................
+................................................
+................................................
+................................................
+................................................
+................................................
+................................................
+532...........5332...........5332...........5332
+532...........5332...........5332...........5332
+532777777777775332777777777775332777777777775332
+532555555555555332555555555555332555555555555332
+642555555555556442555555555556442555555555556442
+642333333333336442333333333336442333333333336442
+642344444444446442344444444446442344444444446442
+642322222222226442322222222226442322222222226442
+642323333333326442323333333326442323333333326442
+642322222222226442322222222226442322222222226442
+642322223322226442322223322226442322223322226442
+642322223322226442322223322226442322223322226442
+642322223322226442322223322226442322223322226442
+774322223322227774322223322227774322223322227774
+664322222222226664322222222226664322222222226664
+664322222222226664322222222226664322222222226664
+644333333333336444333333333336444333333333336444
+642444444444446442444444444446442444444444446442
+642533333333336442533333333336442533333333336442
+642544444444446442544444444446442544444444446442
+642544444444446442544444444446442544444444446442
+642544444444446442544444444446442544444444446442
+642333333333336442333333333336442333333333336442
+642666666666666442666666666666442666666666666442
+642555555555556442555555555556442555555555556442
+642444444444446442444444444446442444444444446442
+642222222222226442222222222226442222222222226442
+642233333333336442233333333336442233333333336442
+642233333333336442233333333336442233333333336442
+642233333333336442233333333336442233333333336442
+642233335333336442233335333336442233335333336442
+642233333333336442233333333336442233333333336442
+642233333333336442233333333336442233333333336442
+642233333333336442233333333336442233333333336442
+642233333333336442233333333336442233333333336442
+642444444444446442444444444446442444444444446442
+333444444444443333444444444443333444444444443333
+333444444444443333444444444443333444444444443333
+333222222222223333222222222223333222222222223333
+333111111111113333111111111113333111111111113333
