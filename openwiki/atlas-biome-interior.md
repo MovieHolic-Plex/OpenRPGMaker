@@ -129,6 +129,9 @@ v5 381종 밖의 기물을 추가하는 길. 명세 `tiledata/hand-interior/new/
 - 새 분류 ko 이름: `ship`=배 선실, `crypt`=지하묘지(`tiledata/hand-interior/v5/meta5.py` 의 `ko.CAT.update`).
 - 새 기물은 resize.json·변형·예제 방이 없다. `prepare-references.mts` 는 v5 메타가 없으면 명세의 desc·place 를 쓰고 「예제 방 없음」을 덧붙인다.
 - 한계: `apply_picks.py`(미리보기 아틀라스)는 새 기물을 넣지 않는다(아틀라스 자리 없음).
+- **쓰임·방향·상태 짝 (2026-10-01).** `tiledata/hand-interior/v5/use6.py` 가 414종에 `use`(sit·sleep·open·search·read·counter·travel·light·walk·block, 새 기물은 save·heal·switch·push·trap·key·gate·seal 도)·`facing`(이름의 N/S/E/W)을 붙이고 짧던 설명 44종을 보강한다 → `notes6.spec_notes` → `handInteriorSpec` objects → `hand_interior_parts` 결과 행·검색어. 새 기물은 items.json 항목에 `use`·`facing`·`states`(`{group,state,others:{상태: id}}` — 닫힘↔열림 그림 짝)·`place`·`pair`·`refs`(가장 닮은 기존 기물, 하네스가 화풍 기준 맨 앞에 둔다)를 직접 적는다.
+- **JRPG 장치(분류 `gimmick`) 11종 시범**: 보물상자 작은·큰, 세이브 수정, 회복의 샘, 벽 레버, 압력판, 밀 바위, 쇠창살 문, 가시 함정, 열쇠 받침대, 봉인석. 둘째 상태(열림·켬·눌림·열린 문·숨은 가시)는 사용자가 첫 상태를 고른 뒤 그 그림을 출발점(`--base`)으로 그리고 `states` 로 묶는다.
+- **함정 — 굽기마다 칸 번호가 밀린다.** 변형 몸통의 고유 칸 수가 바뀌면 그 뒤 번호가 통째로 밀린다(2026-10-01 굽기: 4025번 뒤 561칸). 예제 맵은 굽기가 다시 만들지만, 이 칩셋으로 이미 깐 사용자 맵은 그림이 어긋난다. 번호 고정(덧붙이기만 하는 배치)은 남은 일.
 
 ## 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
 

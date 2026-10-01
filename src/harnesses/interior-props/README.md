@@ -69,6 +69,12 @@ python3 src/harnesses/interior-props/harness.py bake                            
 - 모델·노력: `PROP_HARNESS_MODEL`(기본 `claude-sonnet-5-5`), `PROP_HARNESS_EFFORT`(그리기, 기본 `medium`), `PROP_HARNESS_REVIEW_EFFORT`(검수, 기본 `high`), `PROP_HARNESS_ATTEMPTS`(한 장 최대 그리기 횟수, 기본 3). 고르기 서버 유닛 환경에 넣으면 화면에서 연 판에도 적용된다.
 - 방향: `brief.py` 의 `DIRECTIONS`. 버림 이유 칩: `REASONS`.
 
+## 새 기물 (아직 고른 그림이 없는 `tiledata/hand-interior/new/items.json` 항목)
+- 방향이 바뀐다: A 설명 충실 · B 같은 방 화풍 · C 단순·또렷 · D 장식 · E 자유 해석(`brief.NEW_DIRECTIONS`). 출발 파일은 빈 캔버스.
+- 항목의 `refs`(가장 닮은 기존 기물)가 화풍 기준 맨 앞에 들어간다 — 보물상자 → 상자·왕실 상자.
+- 검수는 「지금보다 나빠졌나」 대신 「설명대로 읽히나」(`READ`·`STYLE`), 설명의 수치(높이·윗면 행 수)를 잰다.
+- **설명이 곧 그림 명세다.** 「16px 솟음」 처럼 높이만 적으면 키 큰 정면 상자가 나온다(큰 보물상자 h14) — 넓적한 물건은 전체 높이와 윗면 행 수를 적는다.
+
 ## 검수의 한계 (2026-10-01 보정 시험)
 v5 원본을 일부러 후보로 넣어 검수자를 시험했다(`PROP_HARNESS_DATA` 를 임시 폴더로 바꿔서). 대리석 기둥(머리가 정면 띠)은 떨어뜨리고 다시 그리게 해서 머리 윗면이 두꺼워진 그림으로 합격,
 나선 계단·조리 화덕(사용자가 「이전이 낫다」 한 것)은 합격 — 맞았다. 통(뚜껑 타원)은 전수조사와 판정이 갈렸고, 의자 좌판 윗면 1행도 「방 안에서 읽힌다」로 합격시킨다.
