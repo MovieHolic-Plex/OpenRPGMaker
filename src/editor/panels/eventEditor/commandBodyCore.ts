@@ -47,7 +47,7 @@ import { appearanceBindingControl } from "../appearanceBindingControl";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
-  SHARED_PORTRAIT_EXPRESSIONS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId,
+  SHARED_PORTRAIT_EXPRESSIONS, SHARED_PORTRAIT_EXPRESSION_LABELS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId,
   type SharedPortraitExpression, type SharedPortraitMode,
 } from "@/assets/sharedPortraitAssets";
 
@@ -622,11 +622,7 @@ function wrapSelection(body: HTMLTextAreaElement, prefix: string, suffix: string
   }
 }
 
-const SHARED_PORTRAIT_EXPRESSION_LABELS: Readonly<Record<SharedPortraitExpression, string>> = {
-  base: "기본", happy: "기쁨", sad: "슬픔", angry: "분노", surprised: "놀람",
-};
-
-/** 공용 흉상·전신의 5표정 줄. 고르면 표정이 없는 대사에 쓸 기본 그림이 바뀐다. */
+/** 공용 흉상·전신의 16표정 줄. 고르면 표정이 없는 대사에 쓸 기본 그림이 바뀐다. */
 function sharedPortraitExpressionRow(
   setId: string,
   mode: SharedPortraitMode,
@@ -656,7 +652,7 @@ function sharedPortraitExpressionRow(
 function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
   let appearanceId = cmd.appearanceId;
   const presentation = selectWithOptions([
-    { value: "face", label: "얼굴" }, { value: "bust", label: "흉상 (없으면 얼굴)" },
+    { value: "face", label: "얼굴" }, { value: "bust", label: "흉상 (없으면 얼굴)" }, { value: "full", label: "전신 (없으면 흉상·얼굴)" },
   ] as const, cmd.presentation ?? "face", "event-command-face-presentation");
   const appearance = appearanceBindingControl(appearanceId, "event-command-face-appearance", (id) => {
     appearanceId = id;
@@ -702,7 +698,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
 
   const readDraft = (): Extract<Command, { kind: "changeFace" }> => ({
     kind: "changeFace",
-    ...(appearanceId ? { appearanceId, presentation: presentation.value === "bust" ? "bust" : "face" } : {}),
+    ...(appearanceId ? { appearanceId, presentation: presentation.value === "bust" || presentation.value === "full" ? presentation.value : "face" } : {}),
     resourceId: resource.value.trim(),
     position: position.value === "right" ? "right" : "left",
     flipHorizontally: flip.checked,
@@ -751,7 +747,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
             el("strong", { text: mode === "full" ? "전신 모드" : "흉상 모드" }),
             el("p", {
               text: shared
-                ? `대사 창 ${mode === "full" ? "뒤에 크게 세우는 전신" : "옆의 흉상"}입니다. 이어지는 대사에 표정(기쁨·슬픔·분노·놀람)을 고르면 같은 인물의 그 표정 그림으로 바뀝니다. 아래는 표정이 없을 때의 기본 그림입니다.`
+                ? `대사 창 ${mode === "full" ? "뒤에 크게 세우는 전신" : "옆의 흉상"}입니다. 이어지는 대사에 표정(기쁨·슬픔·분노·놀람)을 고르면 같은 인물의 그 표정 그림으로 바뀝니다. 아래 16표정 중 고른 것이 표정 없는 대사의 그림입니다.`
                 : mode === "full"
                   ? "전신 레이아웃으로 대사 창 위에 크게 세웁니다. 번들 프리셋(generated-face-actor1-full)은 아직 흉상 그림을 공유하므로 그림 자체는 흉상입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
                   : "이 리소스는 통짜 흉상 이미지입니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요.",

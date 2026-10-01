@@ -12,14 +12,14 @@ import { openDatabaseResourcePickerDialog } from "./databaseResourcePickerDialog
 import { openResourceModal } from "./resourceModal";
 import { updateAppearance } from "./databaseAppearanceView";
 
-type Slot = "charset" | "face" | "bust";
-const labels = { charset: "걷기 캐릭터", face: "얼굴", bust: "흉상" } as const;
+type Slot = "charset" | "face" | "bust" | "full";
+const labels = { charset: "걷기 캐릭터", face: "얼굴", bust: "흉상", full: "전신" } as const;
 const SHARED_STATUS_LABELS = { pending: "미검토", mapped: "얼굴 지정", "no-face": "얼굴 없음 확정" } as const;
 const SHARED_QUALITY_LABELS = { unspecified: "미지정", exact: "정확", approximate: "근사" } as const;
 
 /** Read-only shared-catalog line. Bust has no shared concept; missing rows are stated, never synced. */
 function sharedSlotLine(record: CharacterAppearanceRecord, slot: Slot): HTMLElement | null {
-  if (slot === "bust") return null;
+  if (slot === "bust" || slot === "full") return null;
   const resourceId = record[slot]?.resourceId;
   if (!resourceId) return el("p", { class: "appearance-help", text: "공용 분류 · 아직 그림이 없습니다.", dataset: { testid: `appearance-shared-${slot}` } });
   if (slot === "charset") {
@@ -49,7 +49,7 @@ export function appearanceSlotCard(record: CharacterAppearanceRecord, slot: Slot
     : portraitPreview(resourceId, labels[slot]);
   preview.classList.add("appearance-slot-preview");
   const choose = (): void => openDatabaseResourcePickerDialog({
-    kind: slot === "bust" ? "picture" : slot === "face" ? "faceset" : "charset",
+    kind: slot === "bust" || slot === "full" ? "picture" : slot === "face" ? "faceset" : "charset",
     title: `${labels[slot]} 선택`,
     currentId: resourceId,
     currentCharacterIndex: record.charset?.characterIndex,
@@ -68,25 +68,27 @@ export function appearanceSlotCard(record: CharacterAppearanceRecord, slot: Slot
   ]);
   const children: HTMLElement[] = [preview, el("p", { class: "appearance-help", text: slot === "charset"
     ? `수동 선택 전용 · 슬롯 ${(record.charset?.characterIndex ?? 0) + 1}`
-    : slot === "bust" ? "선택 사항 · 없으면 대사에서 얼굴을 사용합니다." : "선택 사항 · 얼굴 한 장을 연결합니다." })];
+    : slot === "bust" ? "선택 사항 · 없으면 대사에서 얼굴을 사용합니다."
+    : slot === "full" ? "선택 사항 · 대사 창 뒤에 크게 섭니다. 없으면 흉상, 그것도 없으면 얼굴." : "선택 사항 · 얼굴 한 장을 연결합니다." })];
   const sharedLine = sharedSlotLine(record, slot);
   if (sharedLine) children.push(sharedLine);
   children.push(actions);
   // 얼굴이 공용 표정 세트면 그 인물의 공용 흉상을 한 번에 잇는다(대사 표정이 나머지 표정 그림을 고른다).
-  const faceSet = slot === "bust" ? sharedExpressionSetIdOf(record.face?.resourceId) : undefined;
-  if (faceSet) {
-    const bustId = sharedPortraitId(faceSet, "bust", "base");
-    const linked = resourceId === bustId;
+  const faceSet = slot === "bust" || slot === "full" ? sharedExpressionSetIdOf(record.face?.resourceId) : undefined;
+  if (faceSet && (slot === "bust" || slot === "full")) {
+    const portraitId = sharedPortraitId(faceSet, slot, "base");
+    const linked = resourceId === portraitId;
     children.push(listToolbar([{
-      label: linked ? "공용 흉상 연결됨" : "이 얼굴의 공용 흉상 연결",
-      testid: "appearance-link-shared-bust",
+      label: linked ? `공용 ${labels[slot]} 연결됨` : `이 얼굴의 공용 ${labels[slot]} 연결`,
+      testid: `appearance-link-shared-${slot}`,
       disabled: linked,
-      title: "얼굴과 같은 인물의 공용 흉상을 연결합니다. 대사에 표정을 고르면 기쁨·슬픔·분노·놀람 흉상으로 바뀝니다.",
-      onClick: () => { updateAppearance(record.id, { bust: { resourceId: bustId } }); refresh(); },
+      title: `얼굴과 같은 인물의 공용 ${labels[slot]}을 연결합니다. 대사에 표정을 고르면 기쁨·슬픔·분노·놀람 ${labels[slot]}으로 바뀝니다.`,
+      onClick: () => { updateAppearance(record.id, { [slot]: { resourceId: portraitId } }); refresh(); },
     }]));
   }
   children.push(el("p", { class: "appearance-help", text: "업로드 후 ‘그림 선택’에서 새 리소스를 연결하세요." }));
-  if (slot !== "charset") {
+  // AI 후보 생성은 얼굴·흉상만(전신은 공용 그림을 잇거나 업로드한다).
+  if (slot === "face" || slot === "bust") {
     const candidateHost = el("div", { class: "appearance-candidate", attrs: { "aria-live": "polite" }, dataset: { testid: `appearance-candidate-${slot}` } });
     const renderCandidate = (): void => {
       const state = appearanceGenerationController.getState();

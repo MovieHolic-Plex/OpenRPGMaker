@@ -3,6 +3,7 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
+import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS } from "@/assets/sharedPortraitAssets";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { reviewedCharsetFaceRow } from "@/assets/reviewedCharsetFaces";
 import reviewedCharacterGraphics from "@/assets/sharedCharacterGraphics.json";
@@ -421,8 +422,15 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
   const others = listDatabaseResourceOptions("faceset", project)
     .filter((option) => !bundledIds.has(option.id))
     .map((option) => ({ id: option.id, label: option.name, description: "업로드·생성 얼굴", haystack: `${option.id} ${option.name} ${(option.searchTerms ?? []).join(" ")}`.toLocaleLowerCase() }));
+  // 공용 흉상·전신(세트당 기본 표정 한 장씩). 전체 둘러보기에는 넣지 않는다 — 이름·「흉상」「전신」으로 찾을 때만.
+  const portraits = SHARED_PORTRAIT_ASSETS.filter((asset) => asset.expression === "base").map((asset) => ({
+    id: asset.id,
+    label: asset.name,
+    description: `${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${SHARED_PORTRAIT_EXPRESSIONS.filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
+    haystack: `${asset.id} ${asset.name} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
+  }));
   const terms = needle.split(/\s+/).filter(Boolean);
-  return [...bundled, ...others]
+  return [...bundled, ...others, ...(browse ? [] : portraits)]
     .filter((face) => browse || terms.every((term) => face.haystack.includes(term)))
     .map(({ haystack: _haystack, ...face }) => face);
 }

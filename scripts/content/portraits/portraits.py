@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """76종 공용 얼굴 → 흉상/전신 기본 + 표정 4종 일괄 생성 (Tibo / MDC 이미지 API).
 재개 가능: 이미 있는 출력은 건너뛴다.  사용: portraits.py [--only slug,slug] [--workers 10]
-출력: out/<slug>/{bust,full}-{base,happy,sad,angry,surprised}.png   로그: run.log.jsonl
+출력: out/<slug>/{bust,full}-{base,happy,sad,angry,surprised,…16표정}.png   로그: run.log.jsonl
 """
 import base64, io, json, os, sys, threading, time, urllib.request, queue, argparse
 from pathlib import Path
@@ -13,7 +13,10 @@ FACES = ROOT / "public/assets/shared/faceset"
 STYLE = ROOT / "public/assets/generated/faces/actor1-bust.png"
 OUT = WORK / "out"
 API = os.environ.get("MDC_IMAGE_API", "http://100.73.251.77:8091") + "/v1/generate/json"
-EMO_CELL = {"happy": 2, "surprised": 4, "angry": 9, "sad": 10}
+EMO_CELL = {"happy": 2, "surprised": 4, "angry": 9, "sad": 10,
+  # 얼굴 16칸의 나머지 11표정(2026-10-01 추가). 칸 이름은 scripts/slice-faceset-sheets.mjs 와 같다.
+  "smile": 1, "content": 3, "embarrassed": 5, "doubtful": 6, "serious": 7, "annoyed": 8,
+  "crying": 11, "worried": 12, "determined": 13, "shy": 14, "wink": 15}
 MAG = (255, 0, 255)
 
 PROMPT_BUST = " ".join([
@@ -49,6 +52,17 @@ EMO_TEXT = {
   "surprised": "a surprised expression, wide eyes, raised brows, mouth open",
   "angry": "an angry expression, lowered furrowed brows, glaring, scowling",
   "sad": "a clearly sad, tearful expression, brows drawn together, downcast",
+  "smile": "a happy smile with closed, curved smiling eyes",
+  "content": "a calm, pleased and satisfied smile",
+  "embarrassed": "an embarrassed, flustered expression, blushing, awkward smile or sweat drop",
+  "doubtful": "a doubtful, suspicious, unimpressed look, one brow raised, flat mouth",
+  "serious": "a serious, expressionless straight face",
+  "annoyed": "an annoyed, irritated frown, mouth pulled to one side",
+  "crying": "crying openly, tears streaming down the cheeks, mouth trembling",
+  "worried": "a worried, anxious expression, brows raised in the middle",
+  "determined": "a confident, determined look, firm brows and a resolute mouth",
+  "shy": "a shy, bashful smile with a light blush",
+  "wink": "a playful wink, one eye closed, cheeky grin",
 }
 def prompt_emo(kind, emo):
   sub = "bust portrait" if kind == "bust" else "full-length standing figure"

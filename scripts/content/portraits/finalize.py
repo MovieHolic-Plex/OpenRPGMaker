@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image
 from scipy import ndimage
 ROOT=Path(__file__).resolve().parents[3]
-SRC=ROOT/'.omo/asset-gen-tmp/portraits/out3'; DST=ROOT/'public/assets/shared/portraits'; EM=['base','happy','sad','angry','surprised']
+SRC=ROOT/'.omo/asset-gen-tmp/portraits/out3'; DST=ROOT/'public/assets/shared/portraits'; EM=['base','smile','happy','content','surprised','embarrassed','doubtful','serious','annoyed','angry','sad','crying','worried','determined','shy','wink']
 def clean(im):
   a=np.array(im.convert('RGBA')).astype(int); r,g,b,al=a[...,0],a[...,1],a[...,2],a[...,3]
   mag=(np.minimum(r,b)-g)  # 분홍(#FF00FF) 성분

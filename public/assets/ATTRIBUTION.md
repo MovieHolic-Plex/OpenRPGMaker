@@ -353,8 +353,8 @@
 
 - AI-generated with god-tibo-imagen (MDC image API) at the user's request, so every one of the 76 common expression sets (`shared/faceset/*-expressions`) has a dialogue bust and a full-body portrait.
 - One generation per expression draws the full figure and the bust together on one sheet, so both stay consistent. Inputs per sheet: a house-style bust as style reference, the set's face cell, the paired walking sprite (front + side, as ground truth for headwear, clothing and body plan) and a proportion mannequin (about 8 heads for adults, 6 for children, 7–7.5 for elders; animals and monsters keep their natural body).
-- Expressions: base (face cell 00), happy (02), surprised (04), angry (09), sad (10); expression sheets are edits of the base sheet.
-- Files: `shared/portraits/<stem>/{bust,full}-{base,happy,sad,angry,surprised}.png` (magenta key removed, trimmed, 128-colour PNG).
+- Expressions: all 16 face cells — base (00), smile (01), happy (02), content (03), surprised (04), embarrassed (05), doubtful (06), serious (07), annoyed (08), angry (09), sad (10), crying (11), worried (12), determined (13), shy (14), wink (15); expression sheets are edits of the base sheet.
+- Files: `shared/portraits/<stem>/{bust,full}-<expression>.png`, 2432 files (magenta key removed, trimmed, 128-colour PNG).
 - The EasyRPG and supplied-expression attributions above still apply to the referenced faces and sprites. Generation does not establish a new license.
 
 ### Forest harmony bundled snapshot (2026-09-18)

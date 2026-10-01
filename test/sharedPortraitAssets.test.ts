@@ -3,6 +3,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { FACE_EXPRESSION_SETS } from "@/assets/faceExpressionSets";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { resolveAppearancePortrait } from "@/project/characterAppearances";
+import type { Project } from "@/project/types";
 import {
   SHARED_PORTRAIT_ASSETS,
   dialogueFaceForEmotion,
@@ -13,9 +15,9 @@ import {
 } from "@/assets/sharedPortraitAssets";
 
 describe("공용 표정 세트 흉상·전신", () => {
-  it("76세트 × 2모양 × 5표정 = 760장이고 파일이 모두 있다", () => {
+  it("76세트 × 2모양 × 16표정 = 2432장이고 파일이 모두 있다", () => {
     expect(FACE_EXPRESSION_SETS).toHaveLength(76);
-    expect(SHARED_PORTRAIT_ASSETS).toHaveLength(760);
+    expect(SHARED_PORTRAIT_ASSETS).toHaveLength(2432);
     const missing = SHARED_PORTRAIT_ASSETS.filter((asset) => !existsSync(path.join("public", asset.path))).map((asset) => asset.path);
     expect(missing).toEqual([]);
   });
@@ -48,8 +50,21 @@ describe("공용 표정 세트 흉상·전신", () => {
     expect(sharedPortraitWithExpression("shared-monster-slime-expressions-full-sad", "base")).toBe("shared-monster-slime-expressions-full-base");
     expect(sharedPortraitExpressionSiblings("shared-monster-slime-expressions-bust-base")).toHaveLength(5);
     expect(sharedPortraitExpressionSiblings("easyrpg-faceset-actor1-00")).toEqual([]);
+    // 대사 표정이 아닌 표정은 emotion 으로 바뀌지 않는다(직접 고른 그대로).
+    expect(dialogueFaceForEmotion("shared-monster-slime-expressions-bust-wink", undefined, undefined)).toBe("shared-monster-slime-expressions-bust-wink");
     expect(sharedExpressionSetIdOf("shared-people1-girl-expressions-07")).toBe("shared-people1-girl-expressions");
     expect(sharedExpressionSetIdOf("shared-people1-girl-expressions-bust-angry")).toBe("shared-people1-girl-expressions");
     expect(sharedExpressionSetIdOf("easyrpg-faceset-people1-01")).toBeUndefined();
+  });
+
+  it("외형의 전신 칸: 전신 → 흉상 → 얼굴 순으로 내려간다", () => {
+    const project = (appearance: Record<string, unknown>) => ({ database: { characterAppearances: [{ id: "a", name: "", description: "", ...appearance }] } }) as unknown as Project;
+    const all = project({ face: { resourceId: "shared-people1-boy-expressions-00" }, bust: { resourceId: "shared-people1-boy-expressions-bust-base" }, full: { resourceId: "shared-people1-boy-expressions-full-base" } });
+    expect(resolveAppearancePortrait(all, "a", "full")).toMatchObject({ resourceId: "shared-people1-boy-expressions-full-base", presentation: "full" });
+    expect(resolveAppearancePortrait(all, "a", "bust")).toMatchObject({ resourceId: "shared-people1-boy-expressions-bust-base", presentation: "bust" });
+    const noFull = project({ face: { resourceId: "shared-people1-boy-expressions-00" }, bust: { resourceId: "shared-people1-boy-expressions-bust-base" } });
+    expect(resolveAppearancePortrait(noFull, "a", "full")).toMatchObject({ resourceId: "shared-people1-boy-expressions-bust-base", presentation: "bust" });
+    const faceOnly = project({ face: { resourceId: "shared-people1-boy-expressions-00" } });
+    expect(resolveAppearancePortrait(faceOnly, "a", "full")).toMatchObject({ resourceId: "shared-people1-boy-expressions-00", presentation: "face" });
   });
 });
