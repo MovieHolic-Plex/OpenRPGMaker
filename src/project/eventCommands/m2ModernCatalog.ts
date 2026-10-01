@@ -27,6 +27,11 @@ export const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
   // 조용한 실패가 난다 — 목록에서 내린다. 기존 프로젝트에 남아 있는 값은
   // planScreenEffect 가 unsupported 로 돌려 fallbacks 에 기록된다.
   { value: "weather", label: "날씨" },
+  // 화면 그림 자체를 비튼다(카메라 후처리). 값 = 세기(비우면 기본), 0 = 그 효과만 끄기.
+  { value: "wave", label: "물결 왜곡" },
+  { value: "mosaic", label: "모자이크" },
+  { value: "rotate", label: "화면 기울기" },
+  { value: "clearDistortion", label: "왜곡 모두 끄기" },
 ];
 
 // OPRN-OUT-013: 좌표 목적지 이동. 저장 형태·기본값의 정본 주석은
