@@ -2,7 +2,8 @@
 
 - 저장소 루트: {ROOT} — 너의 작업 폴더는 저장소 밖이다. **Bash 명령은 늘 `cd {ROOT} && …` 로 시작**하고, 작업지시서(brief.md)에 적힌 상대 경로는 {ROOT} 기준이다. 파일을 읽고 쓸 때는 절대 경로를 쓴다.
 - 기물: {ITEM} (후보 폴더 `{FOLDER}`)
-- 작업지시서 폴더: {BRIEF}  ← `brief.md` 를 먼저 읽고, 거기 적힌 그림(current-x4.png, context.png, family/*, anchors/*, rejected/*, base-x4.png)을 **전부 Read 로 열어 본다**.
+- 작업지시서 폴더: {BRIEF}  ← `brief.md` 를 먼저 읽고, 거기 적힌 그림(current-x8.png, context.png, family/*, anchors/*, rejected/*, base-x8.png)을 **전부 이미지 보기 도구로 열어 본다**(Claude 는 Read, Codex 는 view_image).
+- **이 지시문과 작업지시서가 전부다.** 저장소의 AGENTS.md·CLAUDE.md·openwiki 는 읽지 않는다(필요 없다 — 시간·토큰만 쓴다).
 - 너의 방향 **{LETTER}**: {DIRECTION}
 - 결과 파일: `{FOLDER}/{OUT}.pxg` 와 한 줄 메모 `{FOLDER}/{OUT}.note` (무엇을 바꿨나).
 {REDRAW}
@@ -13,7 +14,8 @@
 3. 격자를 고친다. 그다음 검사·렌더:
    `cd {ROOT} && python3 scripts/content/hand-interior-pick/check_candidate.py {FOLDER}/{OUT}.pxg`  (hard 불합격 ✗ 는 반드시 고친다)
    `cd {ROOT} && python3 scripts/content/hand-interior-pick/context.py {FOLDER}/{OUT}.pxg`          (방 안 → `{OUT}.ctx.png`)
-4. `{FOLDER}/{OUT}-x4.png` 와 `{OUT}.ctx.png` 를 열어 **current-x4.png·family·anchors 옆에 놓고** 본다. 물어볼 것:
+   `cd {ROOT} && python3 -c "from PIL import Image as I; im=I.open('{FOLDER}/{OUT}.png'); im.resize((im.width*8, im.height*8), 0).save('{FOLDER}/{OUT}-x8.png')"`  (8배 — 작은 그림은 잘못 읽기 쉽다)
+4. `{FOLDER}/{OUT}-x8.png` 와 `{OUT}.ctx.png` 를 열어 **current-x8.png·family·anchors 옆에 놓고** 본다. 물어볼 것:
    - 지금 그림보다 나빠진 데가 없나? (사용자가 가장 싫어한 것: 「고쳤는데 더 이상해졌다」)
    - 같은 방의 다른 기물과 화풍(윤곽·명암·결)이 같나? 수평 면이 위에서 보이나?
    - 버린 후보(rejected/)와 같은 실수를 하지 않았나?

@@ -18,11 +18,14 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 import store  # noqa: E402
 
-MODEL = os.environ.get('PROP_HARNESS_MODEL', 'claude-sonnet-5-5')
+# 엔진: codex(기본, 2026-10-01 사용자 「전체 다 codex 가」 — gpt-6.1-sol medium) | claude(Sonnet 5.5)
+ENGINE = os.environ.get('PROP_HARNESS_ENGINE', 'codex')
+CODEX_MODEL = os.environ.get('PROP_HARNESS_CODEX_MODEL', 'gpt-6.1-sol')
+MODEL = os.environ.get('PROP_HARNESS_MODEL', CODEX_MODEL if ENGINE == 'codex' else 'claude-sonnet-5-5')
 EFFORT = os.environ.get('PROP_HARNESS_EFFORT', 'medium')
-MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '16'))   # 8 명에서 429 0건·부하 16/32 코어였다(2026-10-01) → 16. 429 가 나면 낮춘다
+MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '12'))   # codex 12 명(2026-10-01, 4시간 안에 335장 목표). Claude 는 8 명에서 429 0건
 TIMEOUT_S = int(os.environ.get('PROP_HARNESS_TIMEOUT', str(40 * 60)))
-REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'high')
+REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'medium' if ENGINE == 'codex' else 'high')
 MAX_ATTEMPTS = int(os.environ.get('PROP_HARNESS_ATTEMPTS', '3'))   # 한 장 = 그리기 최대 3번(처음 + 다시 그리기 2번)
 N_DEFAULT = 5
 CANDS = 'tiledata/hand-interior/pick/candidates'
@@ -139,7 +142,10 @@ def _review_pack(r):
     pair.save(os.path.join(pack, 'pair-x8.png'))
     cur = brief.current_choice(r['item'])
     for name, im in (('ctx-current.png', None if cur == 'v5' else cur_im), ('ctx-cand.png', c_im)):
-        ctx, _room = context.context_image(o, im)
+        try:
+            ctx, _room = context.context_image(o, im)
+        except (Exception, SystemExit) as e:   # 맥락 방에 자리가 없는 기물 — 방 그림 없이 검수한다
+            print(store.now(), f'{_out(r)} 맥락 그림 없음: {e}', flush=True); continue
         ctx.resize((ctx.width * 4, ctx.height * 4), Image.NEAREST).save(os.path.join(pack, name))
     return pack, o
 
@@ -155,8 +161,8 @@ def _review_prompt(r):
     if h:
         prev = '\n## 같은 후보의 지난 검수(참고 — 그때 지적이 고쳐졌는지 본다)\n' + '\n'.join(
             f"- 시도 {x['attempt']}: {','.join((x.get('review') or {}).get('codes') or [])} — {(x.get('review') or {}).get('reasons', '')}"[:400] for x in h) + '\n'
-    if os.path.exists(os.path.join(r['brief'], 'base-x4.png')):
-        prev += f"\n## 출발 그림\n`{r['brief']}/base-x4.png` — 이 후보의 출발점(다른 상태·고른 그림). 같은 물건으로 읽혀야 하고, 바뀌어야 할 부분만 달라야 한다. 출발 그림과 거의 같은데 상태가 안 바뀌었으면 `READ`.\n"
+    if os.path.exists(os.path.join(r['brief'], 'base-x8.png')):
+        prev += f"\n## 출발 그림\n`{r['brief']}/base-x8.png` — 이 후보의 출발점(다른 상태·고른 그림). 같은 물건으로 읽혀야 하고, 바뀌어야 할 부분만 달라야 한다. 출발 그림과 거의 같은데 상태가 안 바뀌었으면 `READ`.\n"
     rep = {'{ROOT}': r['root'], '{ITEM}': r['item'], '{DESC}': o['description'], '{KIND}': o['kind_ko'], '{CAT}': o['category_ko'],
            '{CAND}': f"{_folder(r, absolute=True)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,
@@ -186,6 +192,7 @@ def _start(r):
     else:
         prompt, _ = _prompt(r); effort = r['effort'] or EFFORT
     log = os.path.join(LOGS, f"{_out(r)}.a{att}{'.review' if phase == 'review' else ''}.log"); os.makedirs(LOGS, exist_ok=True)
+    if ENGINE == 'codex': return _start_codex(r, prompt, effort if phase == 'review' else EFFORT, log)
     env = dict(os.environ, PH_PROMPT=prompt, PH_CLAUDE=claude_bin(), PH_MODEL=r['model'] or MODEL, PH_EFFORT=effort, PH_ROOT=r['root'])
     # 가벼운 세션: 작업 폴더를 저장소 밖에 두어 저장소 AGENTS.md·프로젝트 메모리·훅을 안 싣고(저장소는 --add-dir),
     # 사용자 설정(플러그인·훅)·MCP·스킬 목록을 빼고 도구를 넷만 준다. 「ok」 한 마디 기준 문맥 54k → 5k 토큰(2026-10-01 실측).
@@ -200,10 +207,24 @@ def _start(r):
     return p
 
 
+def _start_codex(r, prompt, effort, log):
+    """Codex CLI(gpt-6.1-sol) 작업자. 작업 폴더는 저장소 밖(저장소 AGENTS.md 를 안 싣는다), 저장소는 --add-dir 로 쓰기 허용.
+    한 장 실측(2026-10-01): 그리기 265초 · 입력 38만(캐시 35만) · 출력 4.5천."""
+    os.makedirs(WORK, exist_ok=True)
+    pf = log[:-4] + '.prompt.txt'; open(pf, 'w', encoding='utf-8').write(prompt)
+    cmd = [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec', '-m', CODEX_MODEL,
+           '-c', f'model_reasoning_effort="{effort}"', '--skip-git-repo-check', '-s', 'workspace-write',
+           '--add-dir', r['root'], '--add-dir', store.DATA, '-C', WORK, '-']
+    p = subprocess.Popen(cmd, cwd=WORK, stdin=open(pf, 'rb'), stdout=open(log, 'w'), stderr=subprocess.STDOUT,
+                         start_new_session=True)
+    store.update_run(r['id'], status='running', pid=p.pid, started=store.now(), log=log)
+    return p
+
+
 def _keep_attempt(r):
     """떨어진 시도를 h<판>-<글자>.a<시도>.* 로 남긴다(고르는 화면의 후보 이름 규칙에 안 걸린다). 다음 시도는 그 사본에서 출발."""
     base = os.path.join(r['root'], _folder(r), _out(r)); att = r.get('attempt') or 1
-    for ext in ('.pxg', '.png', '-x4.png', '.ctx.png', '.note'):
+    for ext in ('.pxg', '.png', '-x4.png', '-x8.png', '.ctx.png', '.note'):
         if os.path.exists(base + ext): shutil.copyfile(base + ext, f'{base}.a{att}{ext}')
 
 
@@ -313,7 +334,7 @@ def pool():
             if code is not None:
                 del live[rid_]
                 try: _finish(r, code)
-                except Exception as e: store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
+                except (Exception, SystemExit) as e: store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
                 print(store.now(), f"h{r['round']}-{r['letter']} 끝({code})", flush=True)
         queued = store.runs(status=('queued',))
         while queued and len(live) < MAX_PAR:
@@ -321,7 +342,7 @@ def pool():
             try:
                 live[r['id']] = (_start(r), r, time.time())
                 print(store.now(), f"h{r['round']}-{r['letter']} 시작 — {r['item']}", flush=True)
-            except Exception as e:
+            except (Exception, SystemExit) as e:
                 store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
         if not live and not store.runs(status=('queued',)): break
         time.sleep(3)

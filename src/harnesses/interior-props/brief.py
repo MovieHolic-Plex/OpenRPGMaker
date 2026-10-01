@@ -1,7 +1,7 @@
 """작업지시서(brief) — 판 하나에 하나. 작업자(Sonnet)가 읽는 것은 이 폴더뿐이다.
 
   <DATA>/rounds/h<판>/brief.md        무엇을 · 어떤 캔버스로 · 사용자 메모 · 지난 판에 버린 것과 이유 · 화풍 기준
-  <DATA>/rounds/h<판>/current-x4.png  지금 시트에 쓰는 그림(4배)        current.png 원 크기
+  <DATA>/rounds/h<판>/current-x8.png  지금 시트에 쓰는 그림(8배)        current.png 원 크기
   <DATA>/rounds/h<판>/context.png     지금 그림을 방 안에 놓은 것(3배)
   <DATA>/rounds/h<판>/anchors/*.png   사용자가 직접 고른 같은 계열 기물(4배) — 화풍 기준. 규칙 글보다 이걸 따른다
   <DATA>/rounds/h<판>/rejected/*.png  이 기물에서 사용자가 버린 후보(4배) — 이렇게 하지 말 것
@@ -34,7 +34,7 @@ NEW_DIRECTIONS = [
 ]
 # 둘째 상태(열린 상자·켠 레버 …) — 다른 기물의 고른 그림(base = 「후보@기물」)에서 출발해 상태만 바꾼다.
 STATE_DIRECTIONS = [
-    ('A', '상태만 바꾸기: 출발 그림(base-x4.png)의 화소를 그대로 두고 상태가 바뀌는 부분만 고친다(뚜껑·손잡이·창살·가시).'),
+    ('A', '상태만 바꾸기: 출발 그림(base-x8.png)의 화소를 그대로 두고 상태가 바뀌는 부분만 고친다(뚜껑·손잡이·창살·가시).'),
     ('B', '상태만 바꾸기 (A 와 다른 해석): 바뀐 부분의 모양을 A 와 다르게 해석한다. 나머지는 출발 그림 그대로.'),
     ('C', '또렷하게: 한눈에 상태가 바뀐 것이 보이게 바뀐 부분을 크게. 같은 물건으로 읽혀야 한다.'),
     ('D', '효과: 상태가 바뀐 표시(빛·속이 보임·그림자)를 더한다. 잔점 금지.'),
@@ -147,7 +147,7 @@ def make(rid, item, note='', base=''):
     out = os.path.join(store.DATA, 'rounds', f'h{rid}'); os.makedirs(out, exist_ok=True)
     cur = current_choice(item)
     im = Image.open(cand_png(item, cur)).convert('RGBA')
-    im.save(os.path.join(out, 'current.png')); _bg(im, 4).save(os.path.join(out, 'current-x4.png'))
+    im.save(os.path.join(out, 'current.png')); _bg(im, 8).save(os.path.join(out, 'current-x8.png'))
     try:
         sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick')); import context
         ctx, room = context.context_image(o, None if cur == 'v5' else im)
@@ -156,26 +156,26 @@ def make(rid, item, note='', base=''):
         room = f'(맥락 그림 실패: {e!r})'
     if base:
         bitem, bc = base_src(item, base)
-        bim = Image.open(cand_png(bitem, bc)).convert('RGBA'); _bg(bim, 4).save(os.path.join(out, 'base-x4.png'))
+        bim = Image.open(cand_png(bitem, bc)).convert('RGBA'); _bg(bim, 8).save(os.path.join(out, 'base-x8.png'))
         bpxg = os.path.relpath(os.path.join(CAND, slug(bitem), (bc if bc != 'v5' else 'v5') + '.pxg'), ROOT)
     an = anchors(item)
     fam = [(i, cand_png(i, current_choice(i))) for i in family(item)[:6]]
     fam = [(i, p) for i, p in fam if os.path.exists(p)]
     if fam:
         os.makedirs(os.path.join(out, 'family'), exist_ok=True)
-        for i, p in fam: _bg(Image.open(p), 4).save(os.path.join(out, 'family', slug(i) + '-x4.png'))
+        for i, p in fam: _bg(Image.open(p), 8).save(os.path.join(out, 'family', slug(i) + '-x8.png'))
     if an:
         os.makedirs(os.path.join(out, 'anchors'), exist_ok=True)
-        for i, p in an: _bg(Image.open(p), 4).save(os.path.join(out, 'anchors', slug(i) + '-x4.png'))
+        for i, p in an: _bg(Image.open(p), 8).save(os.path.join(out, 'anchors', slug(i) + '-x8.png'))
     rej = [f for f in store.feedback(item) if f['verdict'] == 'reject' and f['cand']]
     lines_rej = []
     if rej:
         os.makedirs(os.path.join(out, 'rejected'), exist_ok=True)
         for f in rej[-8:]:
             p = cand_png(item, f['cand'])
-            if os.path.exists(p): _bg(Image.open(p), 4).save(os.path.join(out, 'rejected', f['cand'] + '-x4.png'))
+            if os.path.exists(p): _bg(Image.open(p), 8).save(os.path.join(out, 'rejected', f['cand'] + '-x8.png'))
             why = ', '.join(REASONS.get(r, r) for r in f['reasons']) or '이유 없음'
-            lines_rej.append(f"- `rejected/{f['cand']}-x4.png` — {why}" + (f" · 「{f['note']}」" if f['note'] else ''))
+            lines_rej.append(f"- `rejected/{f['cand']}-x8.png` — {why}" + (f" · 「{f['note']}」" if f['note'] else ''))
     notes = [f['note'] for f in store.feedback(item) if f['note'] and f['verdict'] != 'reject']
     md = [f'# 작업지시서 h{rid} — {o["name_ko"]} (`{item}`)', '',
           f'- 물건: {o["description"]}', f'- 종류: {o["kind_ko"]} · 분류: {o["category_ko"]}',
@@ -185,7 +185,7 @@ def make(rid, item, note='', base=''):
           f'- 방 안 맥락: `context.png` ({room})', '']
     if is_new(item):
         md += ['## 새 기물 — 지금 그림이 없다', '',
-               f'`v5.pxg` 는 빈 캔버스다({G["canvas"][0]}×{G["canvas"][1]}). **위 「물건」 설명대로 처음부터 그린다.** current-x4.png·context.png 에는 아직 이 물건이 없다(방 자리만 본다).',
+               f'`v5.pxg` 는 빈 캔버스다({G["canvas"][0]}×{G["canvas"][1]}). **위 「물건」 설명대로 처음부터 그린다.** current-x8.png·context.png 에는 아직 이 물건이 없다(방 자리만 본다).',
                f'- 쓰임: {", ".join(o.get("use") or [])} · 놓는 곳: {o.get("place", "")}',
                '- 맨 아래 불투명 줄 = 발밑 칸의 바닥 접지선(캔버스 맨 아래). 솟는 부분은 캔버스 위쪽을 쓴다(위 패딩 없음).',
                '- 같은 방에 놓을 기존 가구(anchors/)와 윤곽 굵기·명암 단 수·크기감이 같아야 한다.', '']
@@ -194,17 +194,17 @@ def make(rid, item, note='', base=''):
     if base and '@' in base:
         bitem, bc = base_src(item, base)
         md += ['## 출발점 — 같은 물건의 다른 상태', '',
-               f'이 기물은 「{objects_by_id()[bitem]["name_ko"]}」(`{bitem}`)의 다른 상태다. 사용자가 고른 그 그림 `{bpxg}`(`base-x4.png`)를 **복사해서 출발**한다 — `cp {bpxg} <네 결과 파일>.pxg`.',
+               f'이 기물은 「{objects_by_id()[bitem]["name_ko"]}」(`{bitem}`)의 다른 상태다. 사용자가 고른 그 그림 `{bpxg}`(`base-x8.png`)를 **복사해서 출발**한다 — `cp {bpxg} <네 결과 파일>.pxg`.',
                '팔레트가 다르면 출발 그림 폴더의 palette.pal 색과 같은 색만 쓴다(검사가 이 폴더 palette.pal 로 본다 — 없는 색이면 가장 가까운 색으로).',
                '둘을 나란히 놓으면 같은 물건의 두 상태로 읽혀야 한다: 크기·윤곽·색은 그대로, 상태가 바뀌는 부분만 다르다.', '']
-    elif base: md += [f'## 출발점', '', f'사용자가 이 후보(`{base}`, `base-x4.png`)를 출발점으로 골랐다. 지금 그림 대신 이걸 다듬는다.', '']
+    elif base: md += [f'## 출발점', '', f'사용자가 이 후보(`{base}`, `base-x8.png`)를 출발점으로 골랐다. 지금 그림 대신 이걸 다듬는다.', '']
     if fam:
         md += ['## 같은 물건의 짝 (family/) — 이것들과 같은 물건으로 읽혀야 한다', '',
                '같은 디자인·나무색·굵기의 다른 방향(또는 크기)이다. 네 그림을 이 옆에 놓아도 한 벌로 보여야 한다.', '']
-        md += [f'- `family/{slug(i)}-x4.png` — {objects_by_id()[i]["name_ko"]} ({current_choice(i)})' for i, _ in fam] + ['']
+        md += [f'- `family/{slug(i)}-x8.png` — {objects_by_id()[i]["name_ko"]} ({current_choice(i)})' for i, _ in fam] + ['']
     md += ['## 화풍 기준 (anchors/)', '',
            '사용자가 직접 고른 같은 계열 기물이다. **규칙 문장보다 이 그림들을 따른다** — 윤곽 굵기, 명암 단 수, 윗면 두께, 결.', '']
-    md += [f'- `anchors/{slug(i)}-x4.png` — {objects_by_id()[i]["name_ko"]}' + (' **(가장 닮은 기존 기물 — 크기·결을 이것에 맞춘다)**' if i in (o.get('refs') or []) else '')
+    md += [f'- `anchors/{slug(i)}-x8.png` — {objects_by_id()[i]["name_ko"]}' + (' **(가장 닮은 기존 기물 — 크기·결을 이것에 맞춘다)**' if i in (o.get('refs') or []) else '')
            for i, _ in an] or ['- (아직 없음 — 지금 그림의 결을 따른다)']
     md += ['']
     if lines_rej: md += ['## 사용자가 버린 후보 (이렇게 하지 말 것)', ''] + lines_rej + ['']

@@ -7,7 +7,9 @@
 - 검수 폴더: {PACK}
 - 결과를 쓸 파일: `{PACK}/verdict.json` — **이 파일 하나만 만든다.**
 
-## 먼저 전부 Read 로 열어 본다
+## 먼저 전부 이미지 보기 도구로 열어 본다 (Claude 는 Read, Codex 는 view_image)
+이 지시문이 전부다 — 저장소의 AGENTS.md·CLAUDE.md·openwiki 는 읽지 않는다.
+
 1. `{PACK}/pair-x8.png` — 왼쪽 = 지금 시트의 그림, 오른쪽 = 후보. 8배. 같은 배경.
 2. `{PACK}/cand-x8.png`, `{PACK}/current-x8.png` — 각각 크게.
 3. `{PACK}/ctx-current.png`, `{PACK}/ctx-cand.png` — 같은 방 안에 놓은 것(4배). **판정은 방 안 그림으로 한다** — 단품만 보면 과하게 떨어뜨린다.
