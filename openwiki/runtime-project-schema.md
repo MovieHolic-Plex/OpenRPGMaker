@@ -2,10 +2,10 @@
 
 ## 공식 맵 크기와 저장 형태 (2026-10-01)
 
-공식 상한은 각 축 512칸(`mapSizeLimits.ts`), 면적 262,144칸이다. `GameMap`의
+공식 상한은 각 축 1024칸(`mapSizeLimits.ts`), 면적 1,048,576칸이다. `GameMap`의
 width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴리스 버전 변경은 없다.
-저작·확장·lint·공간 설계가 같은 상한을 쓴다. `serialize`/`deserialize`는 512×512
-맵의 마지막 셀과 공간 설계 크기를 보존한다(`mapSizeGuard.test.ts`, `spatialSchema.test.ts`).
+저작·확장·lint·공간 설계가 같은 상한을 쓴다. `serialize`/`deserialize`는 512×512와 1024×1024
+맵의 4개 타일 층·그림자 마지막 셀과 공간 설계 크기를 보존한다(`mapSizeGuard.test.ts`, `spatialSchema.test.ts`).
 런타임 화면 객체만 카메라 주변으로 제한되며 논리 배열을 줄이거나 저장을 청크로 바꾸지 않는다.
 
 ## 번들·공용 참고문서 소유 분리 — 저장 문서에서 빼고 로드에서 되돌림 (2026-09-30, 편집기 렉 F)

@@ -1,0 +1,43 @@
+{
+  "benchmarkExitCode": 0,
+  "sourceHashesMatch": {
+    "src/player/PlayScene.ts": true,
+    "src/player/playSceneMapRuntime.ts": true,
+    "src/player/runtimeTileWindow.ts": true,
+    "scripts/qa/map-size-benchmark.mjs": true,
+    "src/project/mapSizeLimits.ts": true
+  },
+  "frameTail": {
+    "512": {
+      "runs": 3,
+      "movingCpuFrames": 1800,
+      "movingIntervalSamples": 1797,
+      "intervalsOver33ms": 1,
+      "intervalsOver50ms": 1,
+      "cpuFramesOver16ms": 0,
+      "intervalMaxMs": 60.80000001192093,
+      "errors": []
+    },
+    "1024": {
+      "runs": 3,
+      "movingCpuFrames": 1800,
+      "movingIntervalSamples": 1797,
+      "intervalsOver33ms": 1,
+      "intervalsOver50ms": 1,
+      "cpuFramesOver16ms": 0,
+      "intervalMaxMs": 56.10000002384186,
+      "errors": []
+    }
+  },
+  "finalRuntimeAndLimitHashesMatch": {
+    "src/player/PlayScene.ts": true,
+    "src/player/playSceneMapRuntime.ts": true,
+    "src/player/runtimeTileWindow.ts": true,
+    "src/project/mapSizeLimits.ts": true
+  },
+  "measuredScriptSnapshotMatches": true,
+  "harnessEditsAfterMeasurement": [
+    "deadline for long frame counts; 600-frame deadline remains 45000ms",
+    "report aggregation wording"
+  ]
+}

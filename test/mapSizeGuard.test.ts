@@ -5,7 +5,7 @@
 // 성공, 이어진 검토가 입력 크기 HTTP 400 으로 실패), projectLint 는 그 맵을 warning 으로만
 // 보고해 "지원하지 않는데 존재하는" 상태가 그대로 남았다.
 //
-// 경계는 항상 짝으로 본다 — 현재 512는 통과, 513은 할당 전에 거부.
+// 경계는 항상 짝으로 본다 — 현재 1024는 통과, 1025는 할당 전에 거부.
 import { describe, expect, it } from "vitest";
 import { addChildMap, addMap, createMapFromSpec, deleteMap, resizeMap } from "@/editor/actions";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -111,18 +111,29 @@ describe("plan_world 크기 힌트 상한", () => {
 });
 
 describe("나머지 조수 생성/크기변경 경로", () => {
-  it('official 512×512 maps retain the edge cells through export and reload', () => {
+  it.each([{ size: 512 }, { size: 1024 }])('official $size×$size maps retain the edge cells through export and reload', ({ size }) => {
     const context = ctx();
-    const created = runTool(context, 'create_map', { name: '512 경계', width: 512, height: 512, id: 'map_512' });
+    const created = runTool(context, 'create_map', { name: `${size} 경계`, width: size, height: size, id: 'map_edge' });
     expect(created.ok, created.summary).toBe(true);
-    const map = context.project.maps.map_512!;
-    expect(map.lowerTiles).toHaveLength(512 * 512);
+    const map = context.project.maps.map_edge!;
+    expect(map.lowerTiles).toHaveLength(size * size);
     const edgeTile = map.lowerTiles[0] === 0 ? 1 : 0;
-    map.lowerTiles[512 * 512 - 1] = edgeTile;
-    const restored = deserialize(serialize(context.project)).maps.map_512!;
-    expect([restored.width, restored.height]).toEqual([512, 512]);
-    expect(restored.lowerTiles).toHaveLength(512 * 512);
-    expect(restored.lowerTiles[512 * 512 - 1]).toBe(edgeTile);
+    map.lowerTiles[size * size - 1] = edgeTile;
+    map.upperTiles[size * size - 1] = edgeTile;
+    map.lowerOverlayTiles = new Array(size * size).fill(-1);
+    map.upperOverlayTiles = new Array(size * size).fill(-1);
+    map.shadowBits = new Array(size * size).fill(0);
+    map.lowerOverlayTiles[size * size - 1] = edgeTile;
+    map.upperOverlayTiles[size * size - 1] = edgeTile;
+    map.shadowBits[size * size - 1] = 15;
+    const restored = deserialize(serialize(context.project)).maps.map_edge!;
+    expect([restored.width, restored.height]).toEqual([size, size]);
+    for (const layer of [restored.lowerTiles, restored.upperTiles, restored.lowerOverlayTiles, restored.upperOverlayTiles]) {
+      expect(layer).toHaveLength(size * size);
+      expect(layer![size * size - 1]).toBe(edgeTile);
+    }
+    expect(restored.shadowBits).toHaveLength(size * size);
+    expect(restored.shadowBits![size * size - 1]).toBe(15);
     expect(projectLint(context.project).filter(issue => issue.code === 'map-size')).toEqual([]);
   });
   it.each([

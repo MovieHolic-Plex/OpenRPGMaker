@@ -1926,7 +1926,7 @@ under `test/fixtures` derives existing engine test data without remote persisten
 사용자가 성능 실측을 요청했을 때 `node scripts/qa/map-size-benchmark.mjs`로 256×256과
 512×512를 비교한다. `startPlayerQaServer`의 전용 `player.html`/export store shim을 쓰며
 정본 프로젝트나 맵 크기 상한을 바꾸지 않는다. 최초 실측 당시 상한은 256이었고 512는
-실험용 fixture였다. 같은 날짜 후속 변경으로 공식 상한이 512가 됐으며, 새 실행은
+실험용 fixture였다. 같은 날짜 후속 변경으로 공식 상한이 512, 이어 1024가 됐으며, 새 실행은
 `supportedDimension`에 현재 상한을 기록한다. 같은 합본 마을 바닥 타일 360(칸당 쿼터 이미지 4개), NPC 0명,
 같은 카메라·화면에서 준비 실행을 버리고 크기별 3회 교대 측정한다.
 
@@ -1992,3 +1992,21 @@ CI의 기존 main 실행이 러너 연결 끊김으로 실패하고 PR 검사도
 parity 목록의 `equipment.elementalDefenseIds` 소비자 주소는 전투 코드 이동 뒤 남은
 `runtime.ts`에서 실제 계산 파일 `battleElementModifiers.ts`로 바로잡았다. 상태/래칫과
 전투 동작은 그대로다. 상세 결과/기준선 SHA는 같은 공식 상한 증거 폴더를 본다.
+
+### 공식 1024×1024 저작 상한과 성능 검증
+
+현재 상한은 1024, 거부 경계는 1025다. 512의 과거 결과는 위 폴더에 보존한다.
+`mapSizeGuard`는 512/1024 모두의 4개 타일 층과 그림자 길이·마지막 셀을 저장 왕복하며,
+`runtimeTileWindow`는 두 크기 모두 긴 이동 뒤 화면 객체 수가 제한되는지 검사한다.
+핵심 네 파일의 실행 옵션은 위와 같다. 공간/도구 경계 필터는 이제
+`-t 'roundtrips an authored|unbounded size|oversized extent|지원 상한 초과'`다.
+브라우저 생성창 검사기는 소스 상한을 읽고 1025 거부 → 1024 생성 → 재로드를 검증한다:
+`node scripts/qa/official-map-size.mjs --out verify-shots/official-map-1024-20261001`.
+전체 편집기 셸·캔버스 및 SQLite 정본 저장 검사는 아니다.
+
+전용 플레이어 실측은 `node scripts/qa/map-size-benchmark.mjs --sizes 512,1024 --frames 600
+--out verify-shots/map-size-1024-20261001`로 크기별 3회, 정지/이동 각 600프레임을 기록한다.
+진입/CPU 중앙값 외 CPU p95·최대, 프레임 간격 p95, GC 후 총 JS heap과 기준 맵 대비
+추가 heap을 구분한다. 원시 로그·스크린샷·코드 해시는 같은 폴더에 있다.
+바닥 타일 1층, 높이 없음, NPC 0명 조건이므로 1024의 비평탄 relief·많은 이벤트·길찾기
+성능까지 입증하지 않는다. 높이 붓은 기존 전체 맵 CanvasTexture 경로가 남아 있다.

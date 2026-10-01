@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **110쪽 / 4140KB / 약 1,193,583 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **110쪽 / 4142KB / 약 1,194,183 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,13 +22,13 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
-| `openwiki/editor-pre-edit-routing.md` | 179KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1126 | ~52,514 |
+| `openwiki/editor-pre-edit-routing.md` | 179KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1131 | ~52,623 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 519 | ~20,470 |
 | `openwiki/runtime-battle.md` | 267KB | 31KB | 1388 | ~77,754 |
-| `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 780 | ~32,347 |
-| `openwiki/runtime-project-schema.md` | 194KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1403 | ~53,873 |
+| `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 781 | ~32,382 |
+| `openwiki/runtime-project-schema.md` | 194KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1403 | ~53,886 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
-| `openwiki/testing.md` | 212KB | 48KB | 1995 | ~58,780 |
+| `openwiki/testing.md` | 213KB | 48KB | 2013 | ~59,223 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
 
 ## 한국어 산문이 깨진 페이지
@@ -44,7 +44,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 127, 140, 141, 143, 146, 147 |
 | `openwiki/editor-observability.md` | 1 | 349 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 892, 901, 909, 913, 937 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 897, 906, 914, 918, 942 |
 | `openwiki/runtime-project-schema.md` | 1 | 54 |
 | `openwiki/state-system.md` | 2 | 5, 89 |
 
@@ -70,7 +70,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-genre-packs.md` | 2 | `src/editor/panels/newProjectDialog.ts`, `test/modalEscapeLayerGate.test.ts` |
 | `openwiki/editor-interior-room-harness.md` | 38 | `hearth-lit.json`, `hearth-unlit.json`, `output/audit-element-cliff-seams.py`, `output/audit-element-complex-seams.py`, `output/audit-four-context-dungeons-v3.py`, `output/audit-four-context-dungeons.py`, `output/build-element-complex-caves.mts`, `output/build-element-confluence-caves.mts`, `output/build-element-contour-caves.mts`, `output/build-four-context-dungeons-v2.mts`, `output/build-four-context-dungeons-v3.mts`, `output/build-four-context-dungeons.mts`, `output/context-element-caves.mts`, `output/decorate-element-caves.mts`, `output/element-complex-qa.mjs`, `output/element-confluence-qa.mjs`, `output/element-contour-qa.mjs`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `output/four-context-dungeons-qa.mjs`, `output/four-context-dungeons-v3-qa.mjs`, `output/save-element-complex-caves.mts`, `output/save-element-confluence-caves.mts`, `output/save-four-context-dungeons-v3.mts`, `output/save-four-context-dungeons.mts`, `reports.json`, `scripts/demo-assistant-interior-build.mts`, `seam-audit.json`, `test/innConceptRebuild.test.ts`, `test/innExploration.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/interiorLoadConsistency.test.ts`, `test/interiorLongTable.test.ts`, `test/stoneHearth.test.ts`, `test/storeDeferredLineage.test.ts`, `test/storeSaveOrdering.test.ts` |
 | `openwiki/editor-observability.md` | 2 | `scripts/qa/issue693-boot-diagnostics.mjs`, `scripts/qa/issue693-diagnostics.mjs` |
-| `openwiki/editor-pre-edit-routing.md` | 30 | `@/styles/database/index.css`, `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `editor/coachMarks.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `legacyDb-root-cache.spec.ts`, `output/paw-380-corrections/editor-observations.json`, `panels/basicLeftRail.ts`, `panels/basicTilePalette.ts`, `panels/databaseUxLevel.ts`, `referencePresetSnapshot.ts`, `reliefBake.ts`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/editorUiMode.ts`, `src/editor/tools/worldTools.ts`, `src/project/legacyDbProjectSync.ts`, `src/styles/editor/event-editor.balanced.css`, `src/styles/editor/left-sidebar.modern.css`, `src/styles/editor/map-location-layer.css`, `src/styles/editor/map-props.css`, `src/styles/editor/region-task.css`, `styles/database/modern/monster-ux.css`, `test/basicLeftRail.test.ts`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `worldTools.ts` |
+| `openwiki/editor-pre-edit-routing.md` | 32 | `@/styles/database/index.css`, `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `editor/coachMarks.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `legacyDb-root-cache.spec.ts`, `output/paw-380-corrections/editor-observations.json`, `panels/basicLeftRail.ts`, `panels/basicTilePalette.ts`, `panels/databaseUxLevel.ts`, `referencePresetSnapshot.ts`, `reliefBake.ts`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/editorUiMode.ts`, `src/editor/tools/worldTools.ts`, `src/project/legacyDbProjectSync.ts`, `src/styles/editor/event-editor.balanced.css`, `src/styles/editor/left-sidebar.modern.css`, `src/styles/editor/map-location-layer.css`, `src/styles/editor/map-props.css`, `src/styles/editor/region-task.css`, `styles/database/modern/monster-ux.css`, `test/basicLeftRail.test.ts`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `verify-shots/map-size-1024-20261001/SUMMARY.md`, `verify-shots/official-map-1024-20261001/SUMMARY.md`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 8 | `final-layout.json`, `test/aiBlockedEventRelocation.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/databaseSystemView.test.ts`, `test/interiorLongTable.test.ts`, `test/p0ProjectSchema.test.ts`, `test/projectLint.test.ts`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 24 | `.qa.json`, `basicTilePalette.test.ts`, `basicTilePalette.ts`, `default.json`, `game.html`, `loadNewRemoteProject.test.ts`, `release.json`, `runtime.json`, `scripts/build-dungeon-themed-maps.mts`, `scripts/build-grand-ice-cave.mts`, `scripts/build-ice-pass-map.mts`, `scripts/extend-home-8pyeong-with-dungeons.mts`, `src/editor/authoringTestGate.ts`, `src/styles/editor/audio-test-dialog.css`, `src/styles/editor/event-editor-help.css`, `src/styles/editor/help-modal.css`, `src/styles/editor/map-event-search.css`, `src/styles/editor/map-props.css`, `test/audioDescriptionCommandSurfaces.test.ts`, `test/audioDescriptionLifecycle.test.ts`, `test/devRuntimeArchive.test.ts`, `test/mapSurfaceFocus.test.ts`, `test/runtimePictureStacking.test.ts`, `transactionalNewRemoteProject.test.ts` |
 | `openwiki/emerald-fields.md` | 27 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `author-emerald-wide.mts`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `output/evidence/emerald-fields/fidelity/VALIDATION.md`, `output/evidence/emerald-region/legacy-db-proof.json`, `output/evidence/emerald-wide/reloaded-project.json`, `refine-emerald-reference.mts`, `region-saved.png`, `road-graph.json`, `scripts/author-emerald-fields.mts`, `scripts/author-emerald-wide.mts`, `scripts/refine-emerald-reference.mts`, `scripts/refine-emerald-wide.mts`, `scripts/register-emerald-region.mts`, `verify-shots/runtime-qa/emerald-fields/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide-v2/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide/SUMMARY.md` |
@@ -856,47 +856,47 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L578` 조수 적용·체크리스트 경로의 전체 문서 비용 (2026-09-28)
 - `L618` store.update copy-on-write 와 자동저장 요약 (2026-09-30)
 
-### `openwiki/editor-pre-edit-routing.md` — 179KB · 1126줄 · ~52,514 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 179KB · 1131줄 · ~52,623 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
-- `L5` 공식 맵 상한 512×512 (2026-10-01)
-- `L17` 「높이」 붓 — 절벽 높이 지형 (2026-09-26)
-- `L46` 맵별 16/32/48px 좌표
-- `L54` 맵 칸 층은 `mapLayers.ts` 로만 읽고 쓴다 (MZ식 4층, 2026-09-24)
-- `L94` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
-- `L147` 자동저장이 프로젝트 문서를 여섯 번 지나가지 않는다 (2026-09-25)
-  - `L159` 계약
-- `L184` 안 바뀐 타일셋은 복제하지 않는다 — 타일셋 구조 공유 (2026-09-27)
-- `L208` DB 레코드 편집은 컬렉션만 복제한다 (2026-09-25)
-- `L223` 참고문서가 많은 프로젝트의 DB 되돌리기 스냅샷 (2026-09-25)
-- `L234` database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
-- `L247` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
-- `L265` 편집기 CSS·목록 비용 (2026-09-25)
-- `L300` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
-  - `L406` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
-- `L458` Exterior door backing
-- `L468` Tile brush reliability (2026-09-06)
-- `L506` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L511` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L523` 소유 경계
-  - `L535` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L546` 검토 책임
-  - `L558` 경계와 진단
-  - `L568` 회귀 이음줌
-- `L580` Pre-edit routing
-  - `L582` 명명 로케이션 레이어 (2026-09-10)
-  - `L664` 로케이션 역할과 겹침 클릭 (2026-09-12)
-  - `L723` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L725` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
-  - `L778` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L838` Automatic usage guides disabled (2026-09-06)
-  - `L848` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L956` Agent cautions
-- `L970` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L1006` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L1038` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L1067` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
-- `L1093` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
-- `L1109` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
+- `L5` 공식 맵 상한 1024×1024 (2026-10-01)
+- `L22` 「높이」 붓 — 절벽 높이 지형 (2026-09-26)
+- `L51` 맵별 16/32/48px 좌표
+- `L59` 맵 칸 층은 `mapLayers.ts` 로만 읽고 쓴다 (MZ식 4층, 2026-09-24)
+- `L99` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
+- `L152` 자동저장이 프로젝트 문서를 여섯 번 지나가지 않는다 (2026-09-25)
+  - `L164` 계약
+- `L189` 안 바뀐 타일셋은 복제하지 않는다 — 타일셋 구조 공유 (2026-09-27)
+- `L213` DB 레코드 편집은 컬렉션만 복제한다 (2026-09-25)
+- `L228` 참고문서가 많은 프로젝트의 DB 되돌리기 스냅샷 (2026-09-25)
+- `L239` database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
+- `L252` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
+- `L270` 편집기 CSS·목록 비용 (2026-09-25)
+- `L305` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
+  - `L411` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
+- `L463` Exterior door backing
+- `L473` Tile brush reliability (2026-09-06)
+- `L511` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L516` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L528` 소유 경계
+  - `L540` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L551` 검토 책임
+  - `L563` 경계와 진단
+  - `L573` 회귀 이음줌
+- `L585` Pre-edit routing
+  - `L587` 명명 로케이션 레이어 (2026-09-10)
+  - `L669` 로케이션 역할과 겹침 클릭 (2026-09-12)
+  - `L728` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L730` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L783` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L843` Automatic usage guides disabled (2026-09-06)
+  - `L853` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L961` Agent cautions
+- `L975` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L1011` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L1043` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L1072` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L1098` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
+- `L1114` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
 
 ### `openwiki/editor-storage-chest.md` — 2KB · 17줄 · ~571 토큰
 
@@ -1343,7 +1343,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L247` Genre ambience presets and sound pairing (2026-09-21)
   - `L271` Thirty audiovisual presets — evidence (2026-09-21)
 
-### `openwiki/runtime-pre-edit-routing.md` — 108KB · 780줄 · ~32,347 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 108KB · 781줄 · ~32,382 토큰 · 통째읽기 잘림
 
 - `L511` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
 - `L531` 맵별 16/32/48px 좌표
@@ -1359,7 +1359,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L720` 8차 맵 진입 (2026-09-28)
 - `L753` 화면 주변 타일 유지 (2026-10-01)
 
-### `openwiki/runtime-project-schema.md` — 194KB · 1403줄 · ~53,873 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 194KB · 1403줄 · ~53,886 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 공식 맵 크기와 저장 형태 (2026-10-01)
 - `L11` 번들·공용 참고문서 소유 분리 — 저장 문서에서 빼고 로드에서 되돌림 (2026-09-30, 편집기 렉 F)
@@ -1852,7 +1852,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L428` 웹 편집기 저장 경로 경량화 (2026-09-25)
   - `L443` 저장 경로의 전체 복제·직렬화 제거 (2026-09-26~27)
 
-### `openwiki/testing.md` — 212KB · 1995줄 · ~58,780 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 213KB · 2013줄 · ~59,223 토큰 · 통째읽기 잘림
 
 - `L3` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L19` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
@@ -1945,6 +1945,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1924` 맵 크기 성능 실측 (2026-10-01)
   - `L1945` 화면 주변 타일 유지 검증
   - `L1968` 공식 512×512 저작 상한 검증
+  - `L1996` 공식 1024×1024 저작 상한과 성능 검증
 
 ### `openwiki/tile-geometry.md` — 12KB · 144줄 · ~3,583 토큰
 

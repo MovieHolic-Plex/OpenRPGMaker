@@ -2,17 +2,22 @@
 
 # Editor Pre-edit Routing & Cautions
 
-## 공식 맵 상한 512×512 (2026-10-01)
+## 공식 맵 상한 1024×1024 (2026-10-01)
 
-`src/project/mapSizeLimits.ts`의 `MAX_TOOL_MAP_DIMENSION = 512`가 유일한 상한이다.
+`src/project/mapSizeLimits.ts`의 `MAX_TOOL_MAP_DIMENSION = 1024`가 유일한 상한이다.
 새 맵 창·맵 가장자리 확장·편집기 맵 선택·조수 생성/크기변경·lint는 이 계약을 함께 쓴다.
 공간 설계의 `SPATIAL_SIZE_MAX`, 조수 공간 스키마, 공간 캔버스 입력과 마을 오브젝트
-`previewSize`도 같은 상수를 따른다. 512는 그대로 받아들이고 513 이상은 기존 경로처럼
-거부한다(가장자리 드래그 확장은 상한에서 멈춘다). 새로 하드코딩한 256/512를 추가하지 않는다.
+`previewSize`도 같은 상수를 따른다. 1024까지 받아들이고 1025 이상은 기존 경로처럼
+거부한다(가장자리 드래그 확장은 상한에서 멈춘다). 새 크기 제한 숫자를 하드코딩하지 않는다.
 
 상한을 올리기 전에 런타임 타일을 카메라 주변만 유지하도록 수정했다. 전체 타일 배열·저장 크기와
 NPC/길찾기 비용은 여전히 맵 내용에 따라 늘어난다. 성능 증거와 공식 경계/저장 왕복 검사는
-`verify-shots/official-map-512-20261001/SUMMARY.md` 및 `openwiki/testing.md`의 같은 날짜 절을 본다.
+`verify-shots/official-map-1024-20261001/SUMMARY.md`,
+`verify-shots/map-size-1024-20261001/SUMMARY.md` 및 `openwiki/testing.md`의 같은 날짜 절을 본다.
+
+1024 실측은 높이 없는 바닥과 NPC 0명 조건이다. 높이 붓의 비평탄 relief는
+`EditScene.renderReliefLayer`에서 전체 맵 CanvasTexture를 만들므로 별도 비용이 남는다.
+16px 기준 1024 맵의 relief 래스터 폭은 16,384px이며 이 경로는 이번 실측에 포함하지 않았다.
 
 ## 「높이」 붓 — 절벽 높이 지형 (2026-09-26)
 

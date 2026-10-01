@@ -80,8 +80,8 @@ describe('runtime viewport tile residency', () => {
       worldView: { x: 0, y: 0, width: 640, height: 480 } };
     expect(runtimeCameraTileView(camera)).toEqual({ x: 3160, y: 2120, width: 320, height: 240 });
   });
-  it('keeps only the camera neighborhood even on a 512 map, reuses overlap, evicts roots and containers', () => {
-    const { scene, all, view, roots } = fixture(512);
+  it.each([512, 1024])('keeps only the camera neighborhood even on a %i map, reuses overlap, evicts roots and containers', size => {
+    const { scene, all, view, roots } = fixture(size);
     scene.map.upperTiles.fill(TILE.TREE);
     renderTiles(scene as never);
     expect(all.length).toBeLessThan(6000);
