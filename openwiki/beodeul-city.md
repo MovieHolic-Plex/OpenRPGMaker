@@ -270,3 +270,61 @@ revision 1. 재로드 deepEqual 프로젝트·맵·타일셋 true, 통행 불일
 - 노출: `sessionToolExposure.ts::schemasForIntent` 가 두 마을 도구에 `check_city_form`·`check_reachability` 를 짝지어 노출한다. `TILESET_REFERENCE_WRITERS`(`tilesetReferenceTools.ts`)에 `author_beodeul_town` 포함 → 참고문서 용도를 먼저 읽어야 한다.
 - 실모델 시험 `scripts/qa/beodeul-village-plain.mts`(증거 `verify-shots/assistant-beodeul-village/`): 새 프로젝트 「마을 만들어 줘」 → `author_beodeul_town` 1회 → `check_city_form`·`check_reachability` → 소품 `stamp_object`. 기존 합본 마을 프로젝트는 옛 경로 유지.
 - 함정: `list_tileset_references` 에 없는 `categoryId` 를 주면 「용도를 찾을 수 없습니다」만 돌려줘 모델이 14번 반복했다 → 가능한 용도 id 를 함께 돌려주도록 수리(`unknownIdMessage`).
+
+## 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
+
+버들항 변형 20곳(마을·기후 마을·던전·특수 던전·필드 각 4곳, `tiledata/beodeul-variants/<장소>/`)은 데모 렌더였고 시트에 칸이 없었다.
+사용자가 고르기 화면(`scripts/content/beodeul-pick/pick_server.py`, 정본 `~/.local/share/oprn/beodeul-pick/picks.sqlite`)에서 BEFORE/AFTER 를 고른 조각을 **공용 버들항 번들**에 구웠다.
+
+| 단계 | 명령 | 결과 |
+|---|---|---|
+| 1. 고른 세트 설치 | `python3 scripts/content/beodeul-picks/install_picks.py [--dry]` | `tiledata/beodeul-variants/<장소>/parts/*.png`·`render-1x.png` 를 고른 판으로 바꾼다(옛 사본 지움). `picks.json`(스냅숏) + `MANIFEST.md`(항목별 판정) |
+| 2. 굽기 | `python3 scripts/content/beodeul-picks/bake_picks.py [--dry]` | 시트 꼬리 칸 · 키트 `bd-pick-*` · 참고문서 용도 `beodeul-picks-*` · 그림 `public/assets/beodeul-city/references/picks/` |
+
+판정 규칙(설치): `after` → 변형 워크트리(`~/.t3/worktrees/rpg-zzu/beodeul-var<n>`)의 현재 파일, `before` → `before/var<n>/` 사본, 안 고름 → AFTER, `redo`(둘 다 별로) → 뺀다.
+`redo` 뒤 다시 그려져(파일 mtime > 고른 시각) 아직 안 고른 것도 뺀다. **var6 은 재작업 중이라 통째로 뺐다.** 2026-10-01 실측: 545항목 = after 338 · 안 고름 151 · before 45 · redo(다시 그림, 재선택 대기) 11.
+
+### 칸·키트
+- 칸: 도시 시트 0~23,935 는 그대로, **23,936~27,647**(행 187~215)이 고른 조각 칸. `BEODEUL_CITY_BASE_COUNT = 23936`(`beodeulCity.ts`) / `BASE`(`bake_picks.py`).
+  514조각(같은 그림 합쳐 439종) → 3,708칸 사용, 시트 2048×3456. 같은 그림·같은 층·같은 통행 칸은 한 칸을 같이 쓴다.
+- **덧붙이기 전용 등록부** `tiledata/beodeul-variants/pick-cells.json` + `pick-cells.png`: 칸마다 (그림 해시·층·우선·통행) 열쇠. 다시 돌려도 같은 열쇠는 같은 번호,
+  새 조각은 뒤에 붙고 빠진 조각의 칸도 지우지 않는다 — 그 칸을 찍은 맵이 바뀌지 않게. `build-beodeul-city.py` 로 도시 시트를 다시 자르면 끝에서 `bake_picks.py` 를 자동으로 다시 돌린다
+  (도시 칸 수가 23,936 이 아니면 돌리지 않는다 — 그때는 두 BASE 상수를 함께 고친다). `prepare-beodeul-city-references.py` 는 `beodeul-picks-*` 용도를 지우지 않고 보존한다.
+- 조각 → 키트 `bd-pick-<장소>-<파일 이름>`(같은 그림이 여러 장소면 첫 장소 id 하나, themes·tags 에 모든 장소). 이름은 `parts.md` 설명의 앞부분(없으면 사전 대체).
+  분류 `ai.themes` = village·coast·desert·mine·snow·swamp·dungeon·landmark·volcano·field·forest·mountain + 한글.
+- 자리 맞춤: 물체는 **왼쪽 아래**(변형 스크립트 `img(X,Y)` = 왼쪽 아래 칸 규약), 바닥 표본은 왼쪽 위. 칸에 안 맞는 폭·높이는 투명으로 채운다.
+- 층·통행(종류는 파일 이름으로 판정, `classify`):
+
+| 종류 | 예 | 층 | 통행 |
+|---|---|---|---|
+| 물체 | 집·좌판·제단·등대 | 윗층(아래층 -1) | 아래 N줄 막힘(1~2칸 높이·폭 1·나무 = 1줄, 그 밖 = 높이의 절반 이상·최소 2), 위는 ★ |
+| 나무 | 전나무·야자·올리브·맹그로브 | 윗층 | 밑동 1줄 막힘, 수관 ★ |
+| 바닥 표본 | `ground-*`·`floor_*`·모자이크·깔개 | 불투명 = 아래층, 투명 낀 칸 = 윗층(우선 lower) | 걸음 |
+| 물·용암 | `water_*`·`ground-water/hot/bog/tail`·용암 | 아래층 | 막힘. 용암 2종은 칸마다 4장면 띠(fps 4) |
+| 벽·절벽·천장 | `face_*`·`ground-cliff/tcliff`·`ceiling*` | 아래층 | 막힘 |
+| 걸음 구조물 | 잔교·널다리·다리·계단·나선 계단 | 불투명 = 아래층, 투명 낀 칸 = 윗층 우선 lower(사람 아래, 통행 표시 `o`) | 걸음 |
+| 바닥 소품 | 헤더·고사리·들꽃·자갈·뼈·조개 | 윗층 우선 lower | 걸음 |
+
+  우선 lower 윗층 칸은 `characterDepth.mapUpperTileDepth` 에서 `o` 로 하층 깊이에 그려진다(★ 는 사람 위). 문 칸 위치는 키트에 없다(문 이벤트는 따로).
+
+### 기존 프로젝트
+`ensureBeodeulCityTileset` 은 칸 수가 23,936 이상인 도시 시트 사본(`beodeul_road_autotile` 있음)을 갈아엎지 않고 **꼬리만 덧붙인다**:
+23,936번 뒤 칸 표(통행·우선·terrain·tileMeta)와 그 구간 애니메이션 띠를 번들 것으로, `bd-pick-*` 키트는 번들 것으로 바꾸거나 더하고(번들에서 빠진 것은 뺀다), 다른 키트·그룹·앞 칸은 그대로.
+번들보다 꼬리가 긴(더 새 빌드가 저장한) 사본은 줄이지 않는다. 용도는 `ensureBeodeulCityReferences` 가 빠진 `beodeul-picks-*` 를 더한다(문서·그림 id 가 `bd-` 라 번들 소유).
+회귀 계약 `test/beodeulPickedParts.test.ts`(이 브랜치에서는 실행하지 않았다).
+
+### 참고문서 (조수)
+용도 5 — `beodeul-picks-village`(포구·방앗간·포도원·장터) · `climate-village`(사막·광산·설원·늪) · `dungeon`(하수도·카타콤·바다 동굴·신전) · `special`(곶 등대·난파선·화산 동굴·마법사의 탑) · `field`(해안 절벽길·숲길·산길·밀밭).
+각 용도: 안내 문서(작업 순서 7단계·층/통행 규칙·검사 범위·없는 소재) + 장소마다 문서(plan.md 앞부분·조각 표·키트별 역할 글자와 아래층/윗층 전체 배열) + 그림 `<장소>-map`(고른 맵 렌더 — **Python 데모 렌더, 엔진 출력 아님**, render 가 redo 면 뺀다) · `<장소>-parts`(시트 칸으로 그린 키트 판, 번호 = 표 번호).
+마을 용도에만 오류 그림 `err-layer`(윗부분 칸을 아래층에 칠해 투명 부분이 검게 빈 것 / 정답). 25문서 · 41그림, 문서 17만 자, 그림 5.6MB(긴 변 ≤820px·128색, 번들 JSON 에는 경로만).
+MD 사본 `tiledata/beodeul-city/references/bd-pick-doc-*.md`.
+조수 안내: 시스템 프롬프트(`systemPrompt.ts` 버들항 줄)와 `author_beodeul_town` 설명에 「로마풍 도시가 아닌 장소는 `bd-pick-*` 키트를 `stamp_object` 로」를 더했다. 조수 실모델 시험은 이번에 하지 않았다.
+
+### 화면 증거
+`verify-shots/beodeul-picked-parts/`(`drive.mjs`, `report.json`): 새 프로젝트(`?blankProject=1`) — 칸 27,648 · 키트 725(고른 439) · 용도 5, 「내 구조물」 선반에서 키트 3개를 찍음.
+기존 프로젝트 — 고른 조각 전 사본(23,936칸, 키트 287, 옛 키트로 그린 맵, 저자 키트 1)을 `store.loadFallbackProject`(로드 정규화)로 열면 27,648칸 · 키트 726 · 용도 5, 맵 칸과 앞 칸 통행은 그대로, 저자 키트 유지 → 키트 3개를 찍음.
+
+### 남은 것
+- var2·var4(재선택 대기 11항목)·var6(재작업 중)이 끝나면 `install_picks.py` → `bake_picks.py` 를 다시 돌린다(칸 번호는 등록부가 지킨다).
+- 문 칸(입구) 부위·실내 연결, 큰 건물의 박공별 통행 세부는 키트에 없다. 막힘 줄 수는 크기 규칙으로 정했다(그림마다 손으로 맞춘 것이 아니다).
+- 땅 표본은 오토타일이 아니다(이어 찍는 2×2·3×3 표본). 조수가 이 키트로 장소를 까는 실모델 시험은 아직 없다.

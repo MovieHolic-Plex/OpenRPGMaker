@@ -14,6 +14,13 @@ export const BEODEUL_CITY_ID = "beodeul_city";
 export const BEODEUL_CITY_TILE_COUNT: number = data.count;
 export const BEODEUL_CITY_TILES_PER_ROW: number = data.tilesPerRow;
 /**
+ * 도시 시트(build-beodeul-city.py) 의 칸 수. 그 뒤(23,936~)는 버들항 변형 20곳에서 사용자가 고른 조각 칸이다
+ * (scripts/content/beodeul-picks/bake_picks.py, 키트 `bd-pick-*`). 덧붙이기 전용 — 앞 칸 번호는 바뀌지 않는다.
+ */
+export const BEODEUL_CITY_BASE_COUNT = 23936;
+/** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
+export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
+/**
  * 버들항은 처음부터 코드로 그린 생성 칩셋이다(2026-09-29 EasyRPG 계열 폐기 결정). 시트 JSON 은 "easyrpg" 로 적혀 있어
  * 숲마을과 같은 계열로 묶였고, 계열 검사가 버들항 맵에서 숲마을 새 맵으로 가는 것을 막지 못했다.
  */
@@ -74,19 +81,24 @@ export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
  * author added groups or kits — are left alone. When the cell tables are replaced, the shipped reference categories (same
  * category id) are replaced too: their cell numbers belong to the old sheet. Authored categories stay; missing shipped ones are
  * added by ensureBeodeulCityReferences. A same-count copy only gains the shipped kits it lacks (by kit id).
+ *
+ * Picked-parts extension (2026-10-01): the sheet grows only at the end (BEODEUL_CITY_BASE_COUNT onward = the picked Beodeul
+ * variant parts). A copy whose count is between the base and the shipped count is the same city sheet with a shorter (or no)
+ * picks tail, so it is extended in place: the cell tables from the base onward are taken from the bundle (the bundle owns that
+ * range), animation strips in that range are replaced, bundle-owned `bd-pick-*` kits are replaced/added, and every other kit,
+ * group and authored entry stays. Cells 0..base-1 are not touched, so maps painted on the city sheet do not change.
  */
 export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== BEODEUL_CITY_ID || tileset.image.type !== "bundled" || tileset.image.id !== BEODEUL_CITY_TEXTURE) return false;
   // 옛 사본은 계열이 "easyrpg" 로 들어 있다 — 생성 칩셋 계열로 고친다.
   const familyFixed = tileset.family !== BEODEUL_CITY_FAMILY;
   if (familyFixed) tileset.family = BEODEUL_CITY_FAMILY;
-  if (tileset.count === data.count && tileset.autotileGroups?.some(group => group.id === "beodeul_road_autotile")) {
-    // same sheet: only add shipped kits the copy does not have yet (round 3 block kits bd-block-*); authored and existing kits stay
-    const have = new Set((tileset.structureKits ?? []).map(kit => kit.id));
-    const missing = (data.structureKits as unknown as StructureKitDef[]).filter(kit => !have.has(kit.id));
-    if (!missing.length) return familyFixed;
-    tileset.structureKits = [...(tileset.structureKits ?? []), ...structuredClone(missing)];
-    return true;
+  const citySheet = tileset.autotileGroups?.some(group => group.id === "beodeul_road_autotile") ?? false;
+  if (citySheet && tileset.count >= BEODEUL_CITY_BASE_COUNT) {
+    // 더 새 번들에서 저장된 사본(꼬리가 더 긴 것)은 칸 표를 줄이지 않는다.
+    if (tileset.count > data.count) return familyFixed;
+    const extended = extendPickedParts(tileset);
+    return mergeShippedKits(tileset) || extended || familyFixed;
   }
   const fresh = createBeodeulCityTileset();
   tileset.count = fresh.count;
@@ -103,5 +115,46 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
     const shipped = new Map(REFERENCES.map(category => [category.id, category]));
     tileset.referenceDocuments = tileset.referenceDocuments.map(category => shipped.has(category.id) ? structuredClone(shipped.get(category.id)!) : category);
   }
+  return true;
+}
+
+/** Cell tables from BEODEUL_CITY_BASE_COUNT on are the bundle's: copy them in (and grow the copy to the shipped count). */
+function extendPickedParts(tileset: TilesetDef): boolean {
+  const base = BEODEUL_CITY_BASE_COUNT;
+  const shippedPass = data.passability as PassFlag[];
+  const shippedMeta = data.tileMeta as TileAiMetadata[];
+  const same = tileset.count === data.count
+    && JSON.stringify(tileset.passability.slice(base)) === JSON.stringify(shippedPass.slice(base))
+    && JSON.stringify(tileset.priority.slice(base)) === JSON.stringify(data.priority.slice(base))
+    && JSON.stringify((tileset.tileMeta ?? []).slice(base)) === JSON.stringify(shippedMeta.slice(base));
+  const shippedStrips = data.animationStrips.filter(strip => strip.baseTile >= base);
+  const ownStrips = (tileset.animationStrips ?? []).filter(strip => strip.baseTile >= base);
+  if (same && JSON.stringify(ownStrips) === JSON.stringify(shippedStrips)) return false;
+  tileset.count = data.count;
+  tileset.passability = [...tileset.passability.slice(0, base), ...structuredClone(shippedPass.slice(base))];
+  tileset.priority = [...tileset.priority.slice(0, base), ...(data.priority.slice(base) as ("lower" | "upper")[])];
+  tileset.terrain = [...tileset.terrain.slice(0, base), ...data.terrain.slice(base)];
+  tileset.tileMeta = [...(tileset.tileMeta ?? []).slice(0, base), ...structuredClone(shippedMeta.slice(base))];
+  tileset.animationStrips = [...(tileset.animationStrips ?? []).filter(strip => strip.baseTile < base), ...structuredClone(shippedStrips)];
+  return true;
+}
+
+/** Shipped kits the copy lacks are added (by id); bundle-owned `bd-pick-*` kits are replaced by the shipped ones. Others stay. */
+function mergeShippedKits(tileset: TilesetDef): boolean {
+  const shipped = data.structureKits as unknown as StructureKitDef[];
+  const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
+  const current = tileset.structureKits ?? [];
+  let changed = false;
+  const kept = current.filter(kit => {
+    if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX)) return true;
+    const ship = shippedById.get(kit.id);
+    if (!ship) { changed = true; return false; }                       // a pick that was dropped from the bundle
+    if (JSON.stringify(ship) !== JSON.stringify(kit)) { changed = true; return false; }
+    return true;
+  });
+  const have = new Set(kept.map(kit => kit.id));
+  const missing = shipped.filter(kit => !have.has(kit.id));
+  if (!missing.length && !changed) return false;
+  tileset.structureKits = [...kept, ...structuredClone(missing)];
   return true;
 }

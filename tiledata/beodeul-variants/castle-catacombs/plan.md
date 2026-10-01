@@ -38,3 +38,7 @@
 - 다시 그린 물체 9개: brazier, bucket, cage_hanging, candles, column_cata, iron_maiden, rubble, skulls, straw_bed. 나머지는 벽 부착물·바닥 무늬(면제)이거나 눈으로 확인한 OK. 조각별 판정은 `view34-audit.md`.
 - 조각은 같은 파일 이름으로 덮어썼고 지운 조각은 없다. 새 조각 없음.
 - **BEFORE 선택표**: `_lib3/dlib.py` 의 `BEFORE_PICKS['castle-catacombs']` (정적 표, 현재 비어 있음)와 `~/.local/share/oprn/beodeul-pick/picks.sqlite` 의 `current` 에서 choice=before 인 조각은 맵 렌더에서 `before/var3/castle-catacombs/parts/<이름>.png` 원본을 쓴다. `parts/` 폴더의 파일은 항상 AFTER 이다. 최종 확인 시 선택 기록 0건이었다.
+
+## QA — 2026-10-01 사용자 선택 2차 (redo)
+- column_cata 를 `_lib3/dredo.py` 로 처음부터 다시: 네모 주춧돌 윗면 3+앞면 4, 원통 몸통(밑동 호), 목 그림자, 에키누스, 머리판 윗면 3+앞면 2, 주춧돌 오른쪽 그림자. 배치·통행 변화 없음.
+- 약한 곳: 에키누스가 2줄이라 머리판과 한 덩이로 읽힌다.

@@ -40,7 +40,8 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "mapId 없으면 버들항 새 맵을 만든다(width/height 는 블록 격자에 맞게 조금 조정된다, 기본 60×60, 작게는 16×10). " +
     "mapId 가 있으면 그 버들항 맵 전체를 풀밭으로 비우고 다시 깐다(다른 계열 맵이면 거부 — 맵을 만들어 쓰거나 칩셋 변경을 먼저 물을 것). " +
     "harbour:true 이고 가로 83 이상이면 맨 아래에 항구 호수(bd-harbour-lake)를 붙인다. 시공 뒤 check_city_form 으로 점검하되 「곧은 길」 경고는 격자 도시의 정상이라 고치려 들지 말 것(블록·골목·막다른 길 경고만 본다). " +
-    "결과가 마음에 안 들면 stamp_object(kit:beodeul_city/bd-block-…)·fill_region 으로 블록·길을 고친다. 집을 하나씩 author_house 로 놓지 말 것.",
+    "결과가 마음에 안 들면 stamp_object(kit:beodeul_city/bd-block-…)·fill_region 으로 블록·길을 고친다. 집을 하나씩 author_house 로 놓지 말 것. " +
+    "로마풍 도시가 아닌 장소(사막·광산·설원·늪 마을, 포구·포도원, 던전, 필드)는 이 도구가 아니라 고른 조각 키트 bd-pick-<장소>-<이름>(참고문서 beodeul-picks-*)을 stamp_object 로 찍어 짓는다.",
   mode: "write",
   domains: ["map"],
   preservesAuthoredRaster: true,

@@ -8,11 +8,11 @@
 | parts/jetty_head.png | 잔교 T자 머리 10x2 (윗면+앞면) | 160x52 | 40 |
 | parts/jetty_west.png | 서쪽 작은 부두 1x8 | 16x148 | 10 |
 | parts/jetty_post.png | 잔교 말뚝 | 16x24 | 2 |
-| parts/lighthouse.png | 등대 (흰·붉은 띠, 램프방) | 48x144 | 27 |
+| parts/lighthouse.png | 등대 (흰·붉은 띠, 램프방) | 56x144 | 36 |
 | parts/fish_market.png | 생선 시장 차양 좌판 | 96x88 | 36 |
 | parts/drying_rack_a.png | 그물 말림대 (2칸) | 32x32 | 4 |
 | parts/drying_rack_b.png | 그물 말림대 (3칸) | 48x32 | 6 |
 | parts/upturned_boat.png | 엎어 둔 배 | 32x24 | 4 |
 | parts/lobster_pots.png | 통발 더미 | 32x24 | 4 |
 
-조각 10종 · 합계 153칸
+조각 10종 · 합계 162칸

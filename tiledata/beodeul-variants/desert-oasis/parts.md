@@ -1,44 +1,51 @@
 # 새로 찍은 조각 — desert-oasis
 
-- `parts/ground-sand.png` (48x48 px) — 모래 바닥 (새 재료, 버들항 잔디와 같은 결·6단) / 3x3칸 표본
-- `parts/ground-dune.png` (48x48 px) — 모래 언덕 자락 (명암 한 단 어두움) / 3x3칸 표본
+- `parts/ground-sand.png` (48x48 px) — 모래 바닥 / 3x3칸 표본
+- `parts/ground-dune.png` (48x48 px) — 모래 언덕(바람 물결) / 3x3칸 표본
 - `parts/ground-road.png` (48x48 px) — 다져진 모래길 / 3x3칸 표본
-- `parts/ground-camp.png` (48x48 px) — 밟혀 굳은 캠프 바닥 / 3x3칸 표본
-- `parts/ground-plaza.png` (48x48 px) — 사암 판석 광장 (버들항 자갈 광장의 엇갈림 결) / 3x3칸 표본
+- `parts/ground-camp.png` (48x48 px) — 밟혀 굳은 야영지 바닥 / 3x3칸 표본
+- `parts/ground-plaza.png` (48x48 px) — 사암 판석 광장 / 3x3칸 표본
 - `parts/ground-lawn.png` (48x48 px) — 오아시스 풀밭 / 3x3칸 표본
-- `parts/ground-water.png` (48x48 px) — 오아시스 물 (청록, 물가가 밝은 띠) / 3x3칸 표본
-- `parts/ground-cliff.png` (48x48 px) — 사암 메사 절벽 (층리 줄) / 3x3칸 표본
-- `parts/temple.png` (114x64 px) — 돔 사원 (사암 평지붕 집 위에 청록 돔·금 첨탑) / 8x4칸
-- `parts/n1.png` (82x48 px) — n1 / 6x3칸
-- `parts/n2.png` (66x48 px) — n2 / 5x3칸
-- `parts/n3.png` (82x48 px) — n3 / 6x3칸
-- `parts/n4.png` (82x48 px) — n4 / 6x3칸
-- `parts/n5.png` (66x48 px) — n5 / 5x3칸
-- `parts/n6.png` (82x48 px) — n6 / 6x3칸
-- `parts/khan.png` (114x62 px) — 대상 숙소(옥상 계단실) / 8x4칸
-- `parts/e2.png` (82x48 px) — e2 / 6x3칸
-- `parts/w1.png` (82x48 px) — w1 / 6x3칸
-- `parts/w2.png` (82x48 px) — w2 / 6x3칸
-- `parts/w3.png` (66x48 px) — w3 / 5x3칸
-- `parts/w4.png` (50x48 px) — w4 / 4x3칸
-- `parts/s1.png` (82x48 px) — s1 / 6x3칸
-- `parts/s2.png` (82x48 px) — s2 / 6x3칸
-- `parts/s3.png` (50x48 px) — s3 / 4x3칸
-- `parts/well.png` (40x44 px) — 우물 / 3x3칸
+- `parts/ground-dry.png` (48x48 px) — 마른 풀 가장자리(풀밭→모래) / 3x3칸 표본
+- `parts/ground-field.png` (48x48 px) — 물길 밭(푸른 이랑) / 3x3칸 표본
+- `parts/ground-grain.png` (48x48 px) — 물길 밭(누런 곡식 이랑) / 3x3칸 표본
+- `parts/ground-bank.png` (32x32 px) — 밭 둑(흙) / 2x2칸 표본
+- `parts/ground-water.png` (48x48 px) — 오아시스 물 / 3x3칸 표본
+- `parts/ground-cliff.png` (48x48 px) — 사암 메사 절벽 / 3x3칸 표본
+- `parts/temple.png` (118x71 px) — 돔 사원 (이전 판 유지) / 8x5칸
+- `parts/n1.png` (86x50 px) — n1 / 6x4칸
+- `parts/e2.png` (86x50 px) — e2 / 6x4칸
+- `parts/s3.png` (54x50 px) — s3 / 4x4칸
+- `parts/n2.png` (70x84 px) — 흙집+바깥 계단 / 5x6칸
+- `parts/n5.png` (54x104 px) — 흙 탑집(성가퀴) / 4x7칸
+- `parts/n3.png` (86x100 px) — 회칠 2층(물린 윗층) / 6x7칸
+- `parts/n4.png` (70x92 px) — 황토 돔집+야자잎 차양 / 5x6칸
+- `parts/w2.png` (70x102 px) — 바람탑집 / 5x7칸
+- `parts/n6.png` (86x76 px) — 사암 아케이드집 / 6x5칸
+- `parts/s2.png` (70x78 px) — 회칠 쪽빛 굽도리집 / 5x5칸
+- `parts/w1.png` (102x100 px) — 흙·황토 연립 / 7x7칸
+- `parts/khan.png` (136x130 px) — 대상 숙소(모서리 탑·안뜰 회랑) / 9x9칸
+- `parts/s1.png` (86x104 px) — 흙 마당집(앞 담·대문) / 6x7칸
+- `parts/w3.png` (70x60 px) — 벌집 흙돔 두 채 / 5x4칸
+- `parts/w4.png` (54x72 px) — 야자잎 지붕 헛간 / 4x5칸
+- `parts/shrine.png` (54x92 px) — 성자 무덤(흰 돔) / 4x6칸
+- `parts/well.png` (50x50 px) — 돌 우물(돌기둥·도르래·물구유) / 4x4칸
 - `parts/stall.png` (48x49 px) — 천막 노점 / 3x4칸
 - `parts/rug.png` (32x20 px) — 카펫 깔개 / 2x2칸
-- `parts/palm.png` (44x62 px) — 야자수 / 3x4칸
+- `parts/palm.png` (44x62 px) — 대추야자 / 3x4칸
 - `parts/reed.png` (18x26 px) — 갈대 무더기 / 2x2칸
 - `parts/lily.png` (14x8 px) — 수련 잎 / 1x1칸
-- `parts/tent.png` (48x38 px) — 유목민 줄무늬 천막 / 3x3칸
+- `parts/tent.png` (52x40 px) — 검은 염소털 천막 / 4x3칸
 - `parts/camel.png` (52x42 px) — 낙타 / 4x3칸
-- `parts/hitch.png` (48x22 px) — 낙타 말뚝 / 3x2칸
-- `parts/bales.png` (32x24 px) — 짐 꾸러미 / 2x2칸
-- `parts/oven.png` (28x28 px) — 흙 화덕 / 2x2칸
-- `parts/jars.png` (24x22 px) — 항아리 / 2x2칸
-- `parts/cactus.png` (18x18 px) — 선인장 / 2x2칸
-- `parts/rock.png` (28x20 px) — 사암 바위 / 2x2칸
-- `parts/scrub.png` (24x16 px) — 마른 덤불 / 2x1칸
-- `parts/pillar.png` (30x56 px) — 메사 기둥 / 2x4칸
+- `parts/hitch.png` (48x22 px) — 낙타 말뚝 (이전 판) / 3x2칸
+- `parts/bales.png` (36x30 px) — 천으로 싼 짐 꾸러미 / 3x2칸
+- `parts/grave.png` (22x16 px) — 무덤(둔덕+머리돌) / 2x1칸
+- `parts/datemat.png` (34x22 px) — 대추 말리는 돗자리 / 3x2칸
+- `parts/oven.png` (32x30 px) — 흙 화덕(탄누르) / 2x2칸
+- `parts/jars.png` (24x22 px) — 항아리 (이전 판) / 2x2칸
+- `parts/pillar.png` (36x60 px) — 메사 바위기둥 / 3x4칸
+- `parts/cactus.png` (22x36 px) — 기둥 선인장 / 2x3칸
+- `parts/rock.png` (32x24 px) — 사암 바위 무더기 / 2x2칸
+- `parts/scrub.png` (24x16 px) — 마른 덤불 (이전 판) / 2x1칸
 
-합계: 40 조각
+합계: 47 조각
