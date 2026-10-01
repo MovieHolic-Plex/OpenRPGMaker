@@ -133,7 +133,7 @@ v5 381종 밖의 기물을 추가하는 길. 명세 `tiledata/hand-interior/new/
 ## 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
 
 기물 그림을 고칠 때 감독이 직접 고르고 끼워 넣지 않는다(3/4 전수조사에서 감독이 고친 것 다수가 되돌려졌다 — `tiledata/atlas-pick/modern-style-bible.md` §11-4b).
-`src/harnesses/interior-props/` 가 판을 연다: 기물 하나에 Sonnet 5.5(effort medium) 다섯 명이 방향 A~E(최소 수정 ×2 · 기준 맞추기 ×2 · 자유)로 후보 `h<판>-<글자>.pxg` 를 한 장씩 찍고,
+`src/harnesses/interior-props/` 가 판을 연다: 기물 하나에 Sonnet 5.5(effort medium) 다섯 명이 방향 A~E(최소 수정 ×2 · 기준 맞추기 ×2 · 자유)로 후보 `h<판>-<글자>.pxg` 를 한 장씩 찍는다. 한 장마다 깨짐 검사 → 독립 검수자(3/4 시점·「지금보다 나빠졌나」, 8배·방 안)를 거치고 떨어지면 이유를 들고 최대 3번까지 다시 그린다. 그다음
 사용자가 고르기 서버의 `/harness` 화면(18302)에서 지금 그림·방 안과 나란히 보고 확정·버림(+이유)·다시 뽑기(+메모)를 한다.
 고른 것은 `picks.sqlite` 에 client=web 으로 들어가 다음 판의 화풍 기준(anchors)이 되고, 버린 것·이유·메모는 다음 판 작업지시서에 들어간다.
 굽기는 `harness.py bake`. 쓰는 법·함정은 `src/harnesses/interior-props/README.md`.

@@ -5,10 +5,10 @@
 - 작업지시서 폴더: {BRIEF}  ← `brief.md` 를 먼저 읽고, 거기 적힌 그림(current-x4.png, context.png, family/*, anchors/*, rejected/*, base-x4.png)을 **전부 Read 로 열어 본다**.
 - 너의 방향 **{LETTER}**: {DIRECTION}
 - 결과 파일: `{FOLDER}/{OUT}.pxg` 와 한 줄 메모 `{FOLDER}/{OUT}.note` (무엇을 바꿨나).
-
+{REDRAW}
 ## 절차
 1. `scripts/content/pixel-harness/pxgrid/README.md` 의 격자 형식과 `tiledata/hand-interior/pick/WORKER.md` §3·§4(파일 규약·색 규칙)를 읽는다.
-2. 출발 파일을 복사한다: 작업지시서에 출발점이 있으면 그 후보, 없으면 지금 그림(`brief.md` 의 「지금 그림」).
+2. 출발 파일을 복사한다: 작업지시서에 출발점이 있으면 그 후보, 없으면 지금 그림(`brief.md` 의 「지금 그림」). **다시 그리기면 복사하지 않는다** — `{OUT}.pxg` 가 이미 지난 시도다.
    `cp {FOLDER}/<출발>.pxg {FOLDER}/{OUT}.pxg` — 첫 줄 주석을 네 메모로 바꾼다. 캔버스·접지선(맨 아래 불투명 줄)·위 패딩은 그대로.
 3. 격자를 고친다. 그다음 검사·렌더:
    `python3 scripts/content/hand-interior-pick/check_candidate.py {FOLDER}/{OUT}.pxg`  (hard 불합격 ✗ 는 반드시 고친다)
@@ -18,7 +18,7 @@
    - 같은 방의 다른 기물과 화풍(윤곽·명암·결)이 같나? 수평 면이 위에서 보이나?
    - 버린 후보(rejected/)와 같은 실수를 하지 않았나?
    고칠 게 있으면 3 으로. **최대 3바퀴**, 30분 안.
-5. 메모 한 줄을 쓰고 끝낸다.
+5. 메모 한 줄을 쓰고 끝낸다. 네가 끝나면 **다른 검수자가 3/4 시점과 「지금보다 나빠졌나」를 8배·방 안으로 따로 본다** — 떨어지면 이유를 받아 다시 그린다.
 
 ## 금지
 - 네 파일(`{FOLDER}/{OUT}.*`) 말고는 아무것도 만들거나 고치지 않는다(저장소 루트 등 폴더 밖에 생긴 파일은 지운다). 다른 후보·`palette.pal`·`info.json`·`resize.json`·`picks.json`·저장소의 다른 파일 금지.

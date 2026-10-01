@@ -50,8 +50,19 @@ def state():
         for r in store.runs(rd['id']):
             cand = f"h{rd['id']}-{r['letter']}"
             png = os.path.join(CAND, s, cand + '.png')
+            try: rv = json.loads(r.get('review') or '{}')
+            except ValueError: rv = {}
+            try: hist = json.loads(r.get('history') or '[]')
+            except ValueError: hist = []
             runs.append(dict(letter=r['letter'], cand=cand, direction=r['direction'].split(':')[0], directionFull=r['direction'],
                              status=r['status'], ok=r['ok'], error=r['error'] or '', note=_note(i, cand),
+                             phase=r.get('phase') or 'draw', attempt=r.get('attempt') or 1,
+                             review=dict(verdict=rv.get('verdict'), codes=rv.get('codes') or [], reasons=rv.get('reasons', ''),
+                                         surfaces=rv.get('surfaces', ''), worse=rv.get('worse')) if rv else None,
+                             history=[dict(attempt=h['attempt'], stage=h['stage'],
+                                           why=('; '.join(h.get('hard', [])) if h['stage'] == 'hard' else
+                                                ', '.join((h.get('review') or {}).get('codes') or []) + ' — ' + (h.get('review') or {}).get('reasons', '')
+                                                if h['stage'] == 'review' else h.get('error', ''))[:400]) for h in hist],
                              v=int(os.path.getmtime(png)) if os.path.exists(png) else 0))
         d = decided.get((i, rd['id']))
         it['rounds'].append(dict(id=rd['id'], created=rd['created'], note=rd['note'], base=rd['base'], runs=runs,
@@ -63,6 +74,7 @@ def state():
         busy = sum(1 for r in rs if r['status'] in ('queued', 'running'))
         it['status'] = 'drawing' if busy else ('done' if lr['decided'] else 'ready')
         it['busy'] = busy; it['readyCount'] = sum(1 for r in rs if r['status'] == 'done' and r['ok'])
+        it['passCount'] = sum(1 for r in rs if r['status'] == 'done' and r['ok'] and (r['review'] or {}).get('verdict') == 'PASS')
         it['rejected'] = sorted({f['cand'] for f in fb if f['item'] == it['id'] and f['verdict'] == 'reject'})
         out.append(it)
     order = {'ready': 0, 'drawing': 1, 'done': 2}
@@ -70,7 +82,7 @@ def state():
     allruns = store.runs()
     return dict(items=out, reasons=__import__('brief').REASONS,
                 pool=dict(alive=harness.pool_alive(), queued=sum(1 for r in allruns if r['status'] == 'queued'),
-                          running=sum(1 for r in allruns if r['status'] == 'running'), par=harness.MAX_PAR,
+                          running=sum(1 for r in allruns if r['status'] == 'running'), par=harness.MAX_PAR, attempts=harness.MAX_ATTEMPTS, reviewEffort=harness.REVIEW_EFFORT,
                           model=harness.MODEL, effort=harness.EFFORT))
 
 

@@ -3,6 +3,8 @@
 DB: ~/.local/share/oprn/prop-harness/harness.sqlite  (PROP_HARNESS_DATA 로 폴더를 바꿀 수 있다)
   rounds    한 기물에 대한 「한 판」(후보 N장을 한꺼번에 찍는다). 후보 이름 = h<판 번호>-<A..E>
   runs      판 안의 작업자 한 명(= 후보 한 장). queued → running → done | failed
+            phase = draw(그리기) | review(검수). 한 장은 그리기 → 깨짐 검사 → 검수를 돌고, 떨어지면 attempt+1 로 다시 그린다.
+            review = 마지막 검수 결과(json), history = 지난 시도들의 탈락 이유(json 목록)
   feedback  사용자의 판정(pick·reject·keep)·이유·메모. 추가만 한다 — 다음 판의 작업지시서가 읽는다.
 고른 결과(어느 후보를 시트에 쓰나)의 정본은 여전히 picks.sqlite(picks_db.py)다. 여기는 하네스 진행·피드백만.
 """
@@ -37,6 +39,10 @@ def conn():
             _C.row_factory = sqlite3.Row
             _C.execute('PRAGMA journal_mode=WAL'); _C.execute('PRAGMA synchronous=FULL')
             _C.executescript(SCHEMA)
+            have = {r[1] for r in _C.execute('PRAGMA table_info(runs)')}
+            for col, decl in (('attempt', 'INTEGER DEFAULT 1'), ('phase', "TEXT DEFAULT 'draw'"),
+                              ('review', "TEXT DEFAULT ''"), ('history', "TEXT DEFAULT '[]'")):
+                if col not in have: _C.execute(f'ALTER TABLE runs ADD COLUMN {col} {decl}')
         return _C
 
 

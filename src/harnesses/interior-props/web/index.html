@@ -52,8 +52,8 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 .card.rej .pic { filter:grayscale(.7); }
 .card .top { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
 .card .key { background:#000a; border-radius:5px; padding:0 7px; font-weight:800; font-size:13px; }
-.card .dir { font-size:12px; color:var(--acc); }
-.card .x { margin-left:auto; background:transparent; border:1px solid var(--line); border-radius:6px; cursor:pointer; padding:0 7px; color:var(--dim); }
+.card .dir { font-size:12px; color:var(--acc); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1; }
+.card .x { margin-left:4px; background:transparent; border:1px solid var(--line); border-radius:6px; cursor:pointer; padding:0 7px; color:var(--dim); }
 .card .x:hover { color:var(--bad); border-color:var(--bad); }
 .card.rej .x { color:#fff; background:var(--rej); border-color:var(--rej); }
 .pic { display:flex; align-items:flex-end; justify-content:center; border-radius:6px; padding:8px; flex:1; min-height:80px; overflow:hidden; }
@@ -67,6 +67,13 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 .mode-ctx .pic { padding:0; background:#000 !important; }
 .card .nt { font-size:12px; color:#cfc6ba; margin-top:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .card .bad { color:var(--bad); font-size:12px; margin-top:4px; }
+.vb { font-size:11px; font-weight:800; border-radius:4px; padding:0 6px; white-space:nowrap; }
+.vb.pass { background:#2f4a2c; color:#cdeac6; } .vb.fail { background:#5a2320; color:#ffd9d3; } .vb.unk { background:#3a3640; color:var(--dim); }
+.rv { font-size:12px; margin-top:4px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.rv.pass { color:#a9d79a; } .rv.fail { color:#ff9d8f; }
+.hist { font-size:11px; color:var(--dim); margin-top:3px; cursor:help; text-decoration:underline dotted; }
+.card.vfail { border-color:#6a2a24; }
+.pic.over { position:relative; } .pic.over::after { content:attr(data-over); position:absolute; inset:auto 6px 6px auto; background:#000c; color:#cfe0ff; font-size:11px; padding:1px 6px; border-radius:4px; }
 .reasons { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
 .reasons button { font-size:11px; border-radius:999px; border:1px solid var(--line); background:#2a2730; padding:1px 8px; cursor:pointer; }
 .reasons button.on { background:var(--rej); border-color:var(--rej); color:#fff; }
@@ -114,7 +121,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
   <button class="tab on" data-v="pick">후보 고르기</button>
   <button class="tab" data-v="objs">기물 골라 새로 뽑기</button>
   <span class="chip">고를 차례 <b id="cReady">0</b></span>
-  <span class="chip">그리는 중 <b id="cDraw">0</b></span>
+  <span class="chip">그리는·검수 중 <b id="cDraw">0</b></span>
   <span class="chip">끝남 <b id="cDone">0</b></span>
   <span class="pool" id="pool"></span>
 </header>
@@ -153,7 +160,7 @@ async function load(keep) {
   $('#cDraw').textContent = its.filter(i => i.status === 'drawing').length;
   $('#cDone').textContent = its.filter(i => i.status === 'done').length;
   const p = S.data.pool;
-  $('#pool').innerHTML = `${esc(p.model)} · ${esc(p.effort)} · 동시 ${p.par} · ` + (p.alive ? `<span class="live">● 그리는 중 ${p.running} · 대기 ${p.queued}</span>` : '쉼');
+  $('#pool').innerHTML = `<span title="그리기 ${esc(p.effort)} · 검수 ${esc(p.reviewEffort)} · 한 장 최대 ${p.attempts}번 그림(검수 탈락 시 다시)">${esc(p.model)} · 그림 ${esc(p.effort)} · 검수 ${esc(p.reviewEffort)} · 동시 ${p.par}</span> · ` + (p.alive ? `<span class="live">● 작업 중 ${p.running} · 대기 ${p.queued}</span>` : '쉼');
   if (!S.cur || !item()) { const f = its.find(i => i.status === 'ready') || its[0]; S.cur = f?.id || null; S.round = null; S.sel = null; S.rej = {}; }
   if (!keep) S.round = null;
   if (S.view === 'pick') { renderNav(); renderPick(); }
@@ -161,7 +168,7 @@ async function load(keep) {
 }
 
 function renderNav() {
-  const its = S.data.items, g = {ready:'고를 차례', drawing:'그리는 중', done:'끝남'};
+  const its = S.data.items, g = {ready:'고를 차례', drawing:'그리는·검수 중', done:'끝남'};
   let h = '';
   for (const k of ['ready', 'drawing', 'done']) {
     const L = its.filter(i => i.status === k); if (!L.length) continue;
@@ -176,15 +183,29 @@ function renderNav() {
   $('#nav').querySelectorAll('.it').forEach(e => e.onclick = () => { S.cur = e.dataset.id; S.round = null; S.sel = null; S.rej = {}; S.memo = ''; renderNav(); renderPick(); });
 }
 
+function vbadge(o) {
+  if (o.cur || o.busy || o.failed || o.bad || !o.review) return '';
+  const v = o.review.verdict;
+  return v === 'PASS' ? '<span class="vb pass" title="독립 검수자가 3/4 시점·「지금보다 나빠졌나」를 봤다">3/4 ✓</span>'
+       : v === 'FAIL' ? `<span class="vb fail" title="시도 ${o.attempt}번 모두 검수에서 떨어졌다 — 그래도 고를 수 있다">3/4 ✗</span>`
+       : '<span class="vb unk">검수?</span>';
+}
+
 function card(it, key, c, opt) {
   const sel = S.sel === c, rej = S.rej[c];
-  let h = `<div class="card ${opt.cur ? 'cur' : ''} ${sel ? 'sel' : ''} ${rej ? 'rej' : ''}" data-c="${esc(c)}" ${opt.disabled ? 'data-dis="1"' : ''}>
-    <div class="top"><span class="key">${key}</span><span class="dir">${esc(opt.label)}</span>${opt.cur ? '' : `<button class="x" data-x="${esc(c)}" title="이 후보 버리기 (X)">✕</button>`}</div>`;
-  if (opt.busy) h += `<div class="spin"><i></i>${opt.busy === 'queued' ? '대기 중' : '그리는 중…'}</div>`;
+  let h = `<div class="card ${opt.cur ? 'cur' : ''} ${sel ? 'sel' : ''} ${rej ? 'rej' : ''} ${!opt.busy && opt.review && opt.review.verdict === 'FAIL' ? 'vfail' : ''}" data-c="${esc(c)}" ${opt.disabled ? 'data-dis="1"' : ''}>
+    <div class="top"><span class="key">${key}</span><span class="dir">${esc(opt.label)}</span>${vbadge(opt)}${opt.cur ? '' : `<button class="x" data-x="${esc(c)}" title="이 후보 버리기 (X)">✕</button>`}</div>`;
+  const att = opt.attempt > 1 ? ` (시도 ${opt.attempt}/${S.data.pool.attempts})` : '';
+  if (opt.busy && opt.phase === 'review' && opt.v) h += `<div class="pic over" data-over="${opt.busy === 'queued' ? '검수 대기' : '3/4 검수 중…'}"><img data-src="${imgSrc(it, c, opt.v)}"></div>`;
+  else if (opt.busy) h += `<div class="spin"><i></i>${opt.busy === 'queued' ? '대기 중' + att : (opt.attempt > 1 ? '검수에서 떨어져 다시 그리는 중' + att : '그리는 중…')}</div>`;
   else if (opt.failed) h += `<div class="spin" style="color:var(--bad)">못 그림<br><small>${esc(opt.failed).slice(0, 80)}</small></div>`;
   else h += `<div class="pic"><img data-src="${imgSrc(it, c, opt.v)}"></div>`;
   if (opt.note) h += `<div class="nt" title="${esc(opt.note)}">${esc(opt.note)}</div>`;
   if (opt.bad) h += `<div class="bad">검사 ✗ ${esc(opt.bad).slice(0, 90)}</div>`;
+  const rv = opt.review;
+  if (rv && !opt.busy && rv.verdict === 'FAIL') h += `<div class="rv fail" title="${esc(rv.reasons + (rv.surfaces ? '\n면: ' + rv.surfaces : ''))}">3/4 검수 ✗ ${esc((rv.codes || []).join(','))} — ${esc(rv.reasons)}</div>`;
+  else if (rv && !opt.busy && rv.verdict === 'PASS') h += `<div class="rv pass" title="${esc(rv.reasons)}">3/4 검수 ✓ ${esc(rv.surfaces || rv.reasons)}</div>`;
+  if (opt.history && opt.history.length) h += `<div class="hist" title="${esc(opt.history.map(x => `시도 ${x.attempt} ${x.stage === 'hard' ? '깨짐' : '검수'} ✗: ${x.why}`).join('\n'))}">검수에서 떨어져 ${opt.history.filter(x => x.stage !== 'review-error').length}번 다시 그림</div>`;
   if (rej) h += `<div class="reasons">` + Object.entries(S.data.reasons).map(([k, v]) => `<button data-r="${k}" data-rc="${esc(c)}" class="${rej.includes(k) ? 'on' : ''}">${v}</button>`).join('') + `</div>`;
   return h + '</div>';
 }
@@ -205,7 +226,7 @@ function renderPick() {
     <span>확대 <span class="seg">${[3, 4, 6, 8].map(z => `<button data-z="${z}" class="${S.zoom === z ? 'on' : ''}">${z}배</button>`).join('')}</span></span></div>`;
   h += `<div class="grid bg-${S.bg} ${S.mode === 'ctx' ? 'mode-ctx' : ''}">` + card(it, '0', cur, {cur:1, label:'지금 그림', v:0});
   r.runs.forEach((x, k) => {
-    h += card(it, String(k + 1), x.cand, {label:DIRS[x.letter] || x.direction, v:x.v, note:x.note,
+    h += card(it, String(k + 1), x.cand, {label:DIRS[x.letter] || x.direction, v:x.v, note:x.note, phase:x.phase, attempt:x.attempt, review:x.review, history:x.history,
       busy:['queued', 'running'].includes(x.status) ? x.status : null, failed:x.status === 'failed' ? (x.error || '실패') : null,
       bad:x.status === 'done' && !x.ok ? (x.error || '하드 검사 불합격') : null});
   });
