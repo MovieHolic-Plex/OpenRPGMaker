@@ -1,0 +1,59 @@
+[oprn] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+(node:3401170) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+== (1) 적 스킬 + 프로젝트 연출 레코드 ==
+  want=- -> origin=project kind=monster skillId=chor_mon_claw record=chor_mon_claw motion=lunge
+  want=monster -> origin=project kind=monster skillId=chor_mon_claw record=chor_mon_claw motion=lunge
+  want=class -> origin=project kind=class skillId=chor_mon_claw record=chor_mon_claw motion=dash-strike
+PASS 적 스킬 + 레코드 → 레코드로 해석(monster)
+PASS 레코드 없으면 해석 안 됨(undefined)
+== (1b) isEnemyUsedSkill ==
+PASS 적 행동에 있는 스킬 → true
+PASS 행동에 없는 스킬 → false
+PASS database/skillId 없음 → false
+PASS 직업 동작 레코드도 monster 요청이면 monster 형태로 합성 | motion=lunge
+PASS 없는 연출 id → undefined(런타임은 기본 몬스터 연출)
+== (2) 기존 몬스터 계약(skill_mon_*) 레코드·id 없을 때 ==
+PASS 몬스터 계약 id 는 레코드가 있어도 계약 그대로
+PASS 타임라인 직렬화 동일
+PASS class 요청은 계약 종류 불일치로 거절 | kind=monster
+== (3) 독 자동 추천 ==
+  물리 단일 독칼(name)                       => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 독칼(name) 초록
+  물리 단일 독 베기(name)                     => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 독 베기(name) 초록
+  물리 단일 +state_poison                  => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 +state_poison 초록
+  물리 단일 +state_deep_poison             => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 +state_deep_poison 초록
+  물리 단일 +커스텀 독 상태                      => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 +커스텀 독 상태 초록
+  물리 단일 elementId=poison               => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 elementId=poison 초록
+  물리 단일 elementId=elem_poison          => [skill_scout_venom_blade] tint=- green=Y layers=-
+PASS 물리 단일 elementId=elem_poison 초록
+  물리 3연타 +state_poison                 => [skill_scout_twin_strike] tint=poison green=Y layers=scout_flurry@target/poison
+PASS 물리 3연타 +state_poison 초록
+  물리 전체 +state_poison                  => [skill_hero_whirlwind] tint=poison green=Y layers=hero_whirl@allTargets/poison
+PASS 물리 전체 +state_poison 초록
+  마법 단일 독 볼트(name)                     => [skill_mage_fireball] tint=poison green=Y layers=mage_fireball_orb@projectile/poison,mage_fire_burst@target/poison
+PASS 마법 단일 독 볼트(name) 초록
+  마법 단일 +state_poison                  => [skill_mage_fireball] tint=poison green=Y layers=mage_fireball_orb@projectile/poison,mage_fire_burst@target/poison
+PASS 마법 단일 +state_poison 초록
+  마법 전체 +state_deep_poison             => [skill_mage_chain_lightning] tint=poison green=Y layers=mage_chain_bolt@allTargets/poison
+PASS 마법 전체 +state_deep_poison 초록
+  마법 전체 독안개(name)                      => [skill_mage_chain_lightning] tint=poison green=Y layers=mage_chain_bolt@allTargets/poison
+PASS 마법 전체 독안개(name) 초록
+  약화 support +state_poison             => [skill_witch_hex] tint=poison green=Y layers=witch_hex@target/poison
+PASS 약화 support +state_poison 초록
+  약화 support 전체 +state_deep_poison     => [skill_bard_discord] tint=poison green=Y layers=bard_discord@allTargets/poison
+PASS 약화 support 전체 +state_deep_poison 초록
+  (음성) 독 해제 remove                     => [skill_cleric_heal_light] tint=- green=N layers=-
+PASS (음성) 독 해제 remove 초록 아님
+  (음성) 일반 베기                           => [skill_hero_cross_slash] tint=- green=N layers=-
+PASS (음성) 일반 베기 초록 아님
+  (음성) 불 속성 + 독 상태                     => [skill_mage_fireball] tint=- green=N layers=-
+PASS (음성) 불 속성 + 독 상태 초록 아님
+  poison filter = grayscale(1) sepia(1) hue-rotate(58deg) saturate(3.6) brightness(1.0) contrast(1.08)
+
+ALL PASS
