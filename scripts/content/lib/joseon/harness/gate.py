@@ -6,6 +6,7 @@ FAIL(통과 못 하면 시트·지도 굽기 금지):
   T  가는 줄: 폭 1px 화소 비율이 버들항 p95 의 2배+0.02 초과(thin_ok 조각 제외)
   L  빛: 왼쪽 반이 오른쪽 반보다 어두움(버들항 p5 미만), front_only 제외
   S  그림자: 반투명 그림자 무게중심이 본체보다 위
+  A  적대 리뷰: 독립 리뷰어 두 렌즈(culture 조선다움·view 3/4)가 현재 해시에 둘 다 keep 이어야 함(ADVERSARIAL.md)
   K  조립: built 조각은 blocks.house 블록 조립(pieces_meta 의 kit)이어야 함
   V  판정: harness/verdicts.json 에 이 조각의 현재 그림에 대한 3/4 판정 줄이 없음(그림이 바뀌면 다시 써야 함)
 WARN: 결(grain) 부족, built 조각의 좌우 비대칭(0.08 초과, sym:true).
@@ -18,6 +19,7 @@ sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 import tk
 from metrics import metrics
 import catalog
+import adversarial
 
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..', '..'))
 CAL = json.load(open(os.path.join(HERE, 'calibration.json')))['band']
@@ -41,7 +43,7 @@ def palette_report(arr):
     return bad
 
 
-def run():
+def run(skip_a=False):
     tk.VIOLATIONS.clear()
     objs = catalog.objects()
     terr = catalog.terrain()
@@ -80,6 +82,9 @@ def run():
                 w.append(f"결 {m['grain']:.1f} < {CAL['grain']['p5']:.1f}")
             if meta.get('sym') and m['asym'] > 0.08:
                 w.append(f"비대칭 {m['asym']:.2f}")
+        if not skip_a:
+            _ok, _why = adversarial.check(name, cv)
+            if not _ok: why.append(_why)
         if meta.get('cls') == 'built' and not meta.get('kit'):
             why.append('K 건물은 블록 조립(blocks.house)이어야 함 — 통그림 금지')
         h = piece_hash(cv)

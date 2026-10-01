@@ -9,9 +9,10 @@ from tk import *
 import ground as G, build as B, props as P
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "harness"))
 import gate as _gate
-_rows, _fails, _warns, _ = _gate.run()
+_CANDIDATE = '--candidate' in sys.argv
+_rows, _fails, _warns, _ = _gate.run(skip_a=_CANDIDATE)
 if _fails:
-    print("게이트 FAIL %d — 굽지 않는다. python3 harness/gate.py 로 확인" % _fails); sys.exit(1)
+    print("게이트 FAIL %d — 굽지 않는다. python3 harness/gate.py 로 확인 (후보 굽기: --candidate = 적대 리뷰 A 만 건너뜀)" % _fails); sys.exit(1)
 from PIL import Image
 
 OUT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'tiledata', 'joseon-demo'))

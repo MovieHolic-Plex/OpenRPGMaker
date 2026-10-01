@@ -1,0 +1,103 @@
+[
+{"piece":"giwa_house_6","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"뒷사면 위 치미 두 개","what":"작은 회색 덩어리 두 개가 토끼 귀·쥐 모양 실루엣으로 읽히고, 뒷사면 줄무늬 위에 외곽선 없이 떠 있다. 용마루선(어두운 띠)과도 이어지지 않는다.","fix":"치미를 용마루 띠 양끝에 접붙이고 2~3px 어두운 외곽을 줘 실루엣을 분명히 한다."},
+ {"severity":"minor","where":"팔작 측면 사선 쐐기","what":"좌우 처마 끝 쐐기가 체커 디더 한 장으로 칠해져 기왓골이 사라지고 정면 앞사면의 세로 골과 결이 끊긴다. 기준 조각(버들항)은 측면에도 결을 이어 준다.","fix":"측면에도 사선 방향 기왓골 1~2줄을 넣거나 디더 대신 단색 두 톤으로 정리."},
+ {"severity":"minor","where":"댓돌 두 개/기단 아래","what":"기단 바로 아래 댓돌 두 개가 허공에 뜬 듯 접지 그림자가 없고 오른쪽 아래 그림자 규칙이 어디에도 없다. 기준 조각은 외곽선으로 접지감을 준다.","fix":"댓돌 아래·기단 오른쪽 아래에 1~2px 어두운 접지선 추가."},
+ {"severity":"minor","where":"기와 대비","what":"앞사면/뒷사면 명암 차가 기준(적갈색 기와의 밝은 하이라이트·짙은 외곽)보다 낮아 밀도·대비가 약하고 맵에서 한 덩이 회색으로 뭉친다.","fix":"앞사면 하단 처마 선과 용마루에 1톤 밝은 하이라이트, 지붕 외곽 1px 짙은 선."}],
+ "verdict":"keep"},
+{"piece":"thatch_house_5","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"지붕 전체","what":"뒷사면(밝음)·용마루·앞사면(어두움) 구분이 없고 같은 노란 가로 띠 6줄이 평평하게 쌓여 정면 입면도처럼 보인다. 윗면(뒷사면)이 안 보여 기준 문법(밝은 뒷+용마루+어두운 앞)과 어긋난다. 널빤지·대나무 층처럼 읽힌다.","fix":"상단 3분의 1을 밝은 뒷사면으로 분리하고 용마름(마루 새끼줄 얹은 띠)을 한 줄 넣은 뒤 앞사면은 한 톤 어둡게."},
+ {"severity":"major","where":"우측 어두운 측면 블록","what":"오른쪽 끝에만 갈색 블록이 비대칭으로 붙고 왼쪽은 밝은 짚이 그대로 이어져, 빛 왼쪽 위 규칙으론 설명되나 형태가 사선이 아닌 수직 절단이라 지붕 몸체가 잘린 것처럼 보인다.","fix":"좌우 모두 처마 쪽으로 좁아지는 사선 측면을 넣고 오른쪽만 한 톤 어둡게."},
+ {"severity":"minor","where":"처마 하단 짚 끝","what":"처마 끝 3px 띠가 잔 체커 노이즈로 보여 두툼한 이엉 단면 느낌이 약하다.","fix":"처마 끝을 둥글게 2단 두께로."}],
+ "verdict":"revise"},
+{"piece":"gate_4","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"문짝","what":"문짝 2장이 평평한 갈색 패널에 점 못 6개씩이라 얕은 2D 스티커처럼 보이고, 문턱·문지방의 윗면이 없다.","fix":"문 아래 문지방 1줄과 문짝 좌측 하이라이트 1px 추가."},
+ {"severity":"minor","where":"기단 아래 돌계단","what":"계단 돌 두 개가 문 중심(2~3번째 기둥 사이)이 아닌 왼쪽으로 치우쳐 보인다.","fix":"계단 중심을 문 가운데로."},
+ {"severity":"minor","where":"기와","what":"giwa 와 같은 문법이라 이질감은 없으나 치미가 없어 지붕이 단조롭다(관아·솟을대문 느낌 약함).","fix":"선택: 용마루 양끝 치미 추가."}],
+ "verdict":"keep"},
+{"piece":"pavilion_5","lens":"view","score":2,"defects":[
+ {"severity":"major","where":"몸체 벽","what":"기둥 사이 전체가 같은 갈색 판벽으로 막혀 창호·난간·마루가 전혀 없다. 정면 입면도처럼 평평하며 윗면(마루)·앞 난간의 깊이가 0이다. 정자가 아니라 창고처럼 읽힌다.","fix":"가운데 3칸은 개방해 어두운 실내·뒷기둥을 보이고 앞에 난간 한 줄과 마루 윗면 2행을 넣는다."},
+ {"severity":"major","where":"지붕 대비 몸체 비율","what":"지붕 높이가 몸체의 약 1배인데 몸체 전체가 어두운 단일 갈색이라 하중감이 위로 쏠리고 기준 조각의 벽 층당 두 행 문법이 안 보인다.","fix":"벽 층을 두 행으로 나눠 상단 어두운 처마 그림자 / 하단 밝은 면."},
+ {"severity":"minor","where":"치미","what":"치미가 giwa 와 같은 복사본이라 정자 지붕에 놓인 위치가 어색하다.","fix":"정자는 잡상/절병통 형태로 바꾸거나 생략."}],
+ "verdict":"revise"},
+{"piece":"pine","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"가지 구조","what":"오른쪽 아래 가지가 1~2px 가는 막대로 수관 아래에 매달려 보이고 줄기와 이어지는 굵기가 없다.","fix":"가지 시작부를 줄기에서 3px 굵기로 키워 점점 가늘게."},
+ {"severity":"minor","where":"뿌리 오른쪽 끝","what":"바닥 오른쪽에 1px 가는 선이 길게 새어 나와 얼룩으로 보인다.","fix":"뿌리선을 짧은 2갈래로 정리."},
+ {"severity":"minor","where":"수관 원반","what":"수관이 윗면 타원이 보이는 납작 원반이라 3/4 의도에는 맞으나 모두 같은 각도·크기로 반복되어 규칙적이다.","fix":"원반 크기·기울기를 한두 개 달리."}],
+ "verdict":"keep"},
+{"piece":"persimmon","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"수관 명암","what":"밝은 큰 면이 수관 중앙~오른쪽에 있고 왼쪽 아래가 어두워 빛 왼쪽 위 규칙과 반대다. 같은 맵 giwa 지붕의 빛과 맞지 않는다.","fix":"하이라이트 덩이를 수관 왼쪽 위로 옮기고 오른쪽 아래를 그림자색으로."},
+ {"severity":"minor","where":"줄기·접지","what":"줄기 바닥에 접지 그림자가 없고 뿌리 2가닥이 줄기와 다른 어두운 선이다.","fix":"오른쪽 아래로 어두운 타원 1단 추가."},
+ {"severity":"minor","where":"감","what":"감 열매가 큰 주황 덩어리로 가지에 걸치지 않고 수관 안에 떠 있고 일부는 서로 겹쳐 뭉친다.","fix":"열매 위에 짧은 꼭지·가지 1px, 겹침 해소."}],
+ "verdict":"revise"},
+{"piece":"willow","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"늘어진 가지(수양)","what":"세로 1~2px 줄이 서로 끊긴 점선처럼 늘어져 실·슬라임 방울로 읽히고 수관 아래 윤곽이 지저분하다. 밝은 수관 덩이와 질감 문법이 다르다.","fix":"가지 4~5가닥을 3px 폭 연속 줄로 묶고 끝을 뾰족하게, 수관 아래 어두운 띠로 접속."},
+ {"severity":"major","where":"줄기 좌측 윤곽","what":"줄기 왼쪽이 3~4단 계단식으로 꺾여 사각 블록을 쌓은 듯 보이고 persimmon/pine 줄기의 매끈한 곡선과 이질적이다.","fix":"줄기를 위로 갈수록 좁아지는 매끈한 곡선으로 다시 그림."},
+ {"severity":"minor","where":"수관","what":"밝은 연두 하이라이트 면이 매우 커서 pine 의 저채도 톤과 대비가 어긋난다.","fix":"한 톤 낮춰 채도 맞춤."}],
+ "verdict":"revise"},
+{"piece":"well","lens":"view","score":2,"defects":[
+ {"severity":"major","where":"전체 형태","what":"직사각 돌 테 안에 물이 보이는 납작한 수조·석관 모양이다. 두레박 틀·도르래·지붕이 없고 위 직사각 갈색 상자만 있어 우물로 안 읽힌다. 원형 우물 정(井)의 둥근 윗면 타원도 없다.","fix":"둥근 석축 테 + 윗면 타원 + 두레박 틀(두 기둥·가로대)과 줄 한 가닥."},
+ {"severity":"major","where":"크기/밀도","what":"한 칸에 압축되어 다른 소품(jars·bench)과 달리 외곽선·하이라이트가 없어 결이 빈약하다.","fix":"테 윗면 하이라이트 1px, 외곽 어두운 선."},
+ {"severity":"minor","where":"황금 원반","what":"왼쪽 노란 원이 무엇인지 알 수 없다(두레박 뚜껑? 볏짚?).","fix":"두레박으로 형태 명확히 하거나 제거."}],
+ "verdict":"revise"},
+{"piece":"bridge","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"전체 구성","what":"뒷난간·상판·앞난간이 거의 같은 갈색이라 위에서 본 상판과 앞면의 구분이 약해 맵에서는 가로 담장처럼 읽힌다. 다리 위로 걸어간다는 느낌(상판 윗면이 넓고 밝음)이 없다.","fix":"상판 윗면 행을 밝게, 앞 난간·상판 앞 옆면은 어둡게 분리."},
+ {"severity":"major","where":"하단 그림자","what":"다리 아래에 옅은 회색 직사각 띠가 따로 떠 있다. 물 위 그림자는 어두워야 하며, 밝은 회색이라 기준의 오른쪽 아래 어두운 그림자 규칙에 반한다.","fix":"어두운 녹청색 반투명 그림자, 오른쪽 아래로 치우쳐."},
+ {"severity":"minor","where":"양쪽 석축","what":"좌우 돌 기둥이 격자 타일 느낌의 밝은 점을 박아 놓은 듯 보여 다리판과 결이 다르다.","fix":"돌에 한 톤 낮은 대비."}],
+ "verdict":"revise"},
+{"piece":"jars","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"받침 띠","what":"아래 어두운 회색 가로 띠가 항아리와 같은 높이 평면이라 어색한 판처럼 보인다. 장독대 돌 기단 윗면 질감이 없다.","fix":"돌 윗면에 밝은 윗행 + 앞면 어두운 행."},
+ {"severity":"minor","where":"항아리 입구","what":"뚜껑이 평평한 모자 모양이고 윗면 타원이 없다. 3/4 에서는 입구 타원이 살짝 보여야 한다.","fix":"뚜껑 위 1px 밝은 타원."},
+ {"severity":"minor","where":"접지","what":"항아리 아래 접지 그림자가 없다.","fix":"오른쪽 아래 어두운 1px."}],
+ "verdict":"keep"},
+{"piece":"bench","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"상판","what":"좌판의 윗면이 안 보이고 앞면 가로 띠만 있어 정면 입면도처럼 평평하다. 기준 문법(윗면 짧게, 앞면 길게)에서 윗면이 빠졌다.","fix":"위쪽 3px 밝은 윗면 행, 아래 어두운 앞면 행으로 분리."},
+ {"severity":"minor","where":"다리","what":"앞다리 2개와 뒷다리 2개 간격·길이가 어긋나 떠 있는 못 같고 접지 그림자가 없다.","fix":"다리 폭 3px, 뒷다리는 한 톤 어둡게 짧게."},
+ {"severity":"minor","where":"크기","what":"맵에서 몸체가 너무 길어 다른 소품보다 큰 판때기처럼 보인다.","fix":"길이 20~30% 축소."}],
+ "verdict":"revise"},
+{"piece":"mat_peppers","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"고추 알갱이","what":"붉은 점이 무작위 흩뿌림이라 고추 모양(길쭉한 꼭지·곡선)이 안 보이고 빨간 카펫으로 읽힌다.","fix":"2x1 길쭉한 고추 몇 개를 방향 다르게 배치."},
+ {"severity":"minor","where":"멍석 테두리","what":"테두리 짙은 갈색이 한 줄 균일해 짚 엮임이 없다.","fix":"테두리에 엮음 점선."},
+ {"severity":"minor","where":"접지","what":"그림자 없이 바닥에 평평히 붙어 맵에서 존재감이 약하다.","fix":"오른쪽 아래 1px 그림자."}],
+ "verdict":"keep"},
+{"piece":"jangseung_m","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"몸통 붉은 글자","what":"천하대장군 글자가 붉은 얼룩 3덩이로 뭉개져 피 흘린 흔적처럼 읽힌다. 화풍상 글자는 2px 세로 획으로 정리돼야 한다.","fix":"붉은 덩이를 세로 4행의 획 형태로 재도트하거나 한 줄 띠로."},
+ {"severity":"minor","where":"얼굴","what":"얼굴이 검은 눈·흰 이빨 3px의 평평한 가면이라 정면 소품임을 감안해도 윗면(모자 윗면·기단 타원)이 약하다.","fix":"모자 윗면 1행 밝게, 기단 타원 유지."},
+ {"severity":"minor","where":"남녀 구분","what":"jangseung_f 와 거의 같은 실루엣이라 구분이 수염 한 줄뿐이다.","fix":"모자·표정 차를 크게."}],
+ "verdict":"revise"},
+{"piece":"jangseung_f","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"몸통 붉은 글자","what":"지하여장군 글자가 붉은 얼룩으로 뭉개져 장승 m 과 똑같은 문제. 피 얼룩처럼 읽힌다.","fix":"획 재도트."},
+ {"severity":"minor","where":"모자/얼굴","what":"m 과 거의 복제 수준이라 두 장승이 나란히 있어도 변화가 없다.","fix":"눈·코 위치와 모자 폭 차별."},
+ {"severity":"minor","where":"정면 소품 판정","what":"장승은 얼굴이 정면이어야 하므로 user_pending 사유는 타당하나 기단 타원·모자 윗면은 3/4 로 가능하다.","fix":"보류 사유를 '얼굴만 정면'으로 한정."}],
+ "verdict":"revise"},
+{"piece":"sotdae","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"오리 머리","what":"머리·부리 윗면이 1px 선으로만 처리돼 입체감이 약하고 목 두께가 몸 대비 가늘다.","fix":"목을 2px로, 머리 위 하이라이트 1px."},
+ {"severity":"minor","where":"기둥 가로 마디","what":"가로 마디가 기둥 좌우로 같은 길이로 튀어나와 사다리처럼 보인다.","fix":"마디 길이를 교차."},
+ {"severity":"minor","where":"받침","what":"하단 돌 받침이 작아 접지가 약하다.","fix":"받침 폭 1~2px 확대."}],
+ "verdict":"keep"},
+{"piece":"lantern","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"화사석 창","what":"주황 불빛 사각이 평평하고 외곽이 없어 스티커처럼 보인다.","fix":"창 안쪽에 짙은 테두리 1px."},
+ {"severity":"minor","where":"지붕돌 윗면","what":"지붕돌 윗면이 얇은 1행이라 3/4 윗면이 약하다(정면 소품이라 허용 범위).","fix":"윗면 행 1개 추가."},
+ {"severity":"minor","where":"받침","what":"접지 그림자가 없어 허공에 선 듯하다.","fix":"우하 어두운 1px."}],
+ "verdict":"keep"},
+{"piece":"wall_h","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"기와 덮개","what":"덮개가 푸른 회색 띠 하나라 기와 골이 없고 giwa 지붕과 결이 다르다.","fix":"2px 세로 골 반복."},
+ {"severity":"minor","where":"돌 줄","what":"흰·회색 가로 줄이 3줄이지만 돌 크기가 균일해 줄 무늬 접시처럼 보인다.","fix":"돌 길이를 불규칙하게."},
+ {"severity":"minor","where":"황토 하단","what":"하단 갈색 띠에 접지 그림자가 없다.","fix":"어두운 1px."}],
+ "verdict":"keep"},
+{"piece":"wall_v","lens":"view","score":4,"defects":[
+ {"severity":"minor","where":"덮개 윗면","what":"세로 담장의 덮개가 넓은 푸른 띠라 윗면이 폭만 넓고 높이 구분이 없다.","fix":"왼쪽 밝은 선 + 오른쪽 어두운 선."},
+ {"severity":"minor","where":"돌 결","what":"세로 방향 돌 줄이 wall_h 의 가로 줄과 연속되지 않고 2행뿐이다.","fix":"행 수 3으로 맞춤."},
+ {"severity":"minor","where":"오른쪽 갈색 띠","what":"오른쪽 1px 갈색 띠가 외곽선으로도 그림자로도 안 읽힌다.","fix":"그림자 폭 2px 어둡게."}],
+ "verdict":"keep"},
+{"piece":"wall_corner_l","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"덮개 블록","what":"회청색 덮개가 벽 몸통 폭 밖으로 사각 블록처럼 튀어나와 우편함·모자처럼 보이고 wall_h 덮개와 이어지지 않는다.","fix":"덮개를 wall_h 와 같은 높이로 맞추고 코너에서 접합."},
+ {"severity":"minor","where":"황토 하단","what":"하단 층이 wall_h 보다 좁게 보여 맵 이음에서 단차가 생긴다.","fix":"하단 높이 맞춤."},
+ {"severity":"minor","where":"그림자","what":"덮개 아래 그림자가 없다.","fix":"처마 그림자 1행."}],
+ "verdict":"revise"},
+{"piece":"wall_corner_r","lens":"view","score":3,"defects":[
+ {"severity":"major","where":"덮개 블록","what":"wall_corner_l 의 단순 좌우 반전이라 덮개가 오른쪽으로 사각으로 튀어나오고, 빛 왼쪽 위 규칙이 있는 조각에서 명암도 함께 뒤집혀 모순된다.","fix":"반전 후 명암을 재배치."},
+ {"severity":"minor","where":"몸통 결","what":"돌 줄 패턴이 좌우 거울이라 맵에서 대칭이 눈에 띈다.","fix":"돌 크기 변화."},
+ {"severity":"minor","where":"이음","what":"wall_v 와 접하는 면에서 색 단차.","fix":"접합부 색 일치."}],
+ "verdict":"revise"}
+]
