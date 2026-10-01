@@ -12,6 +12,8 @@ export type FontFamilyId =
   | "system-sans"
   | "system-serif"
   | "system-mono"
+  | "myeongjo"
+  | "rounded"
   | "neodgm"
   | "galmuri11"
   | "galmuri9";
@@ -39,6 +41,22 @@ export const FONT_REGISTRY: readonly FontDefinition[] = [
     label: "시스템 세리프",
     roles: ["ui"],
     stack: `Georgia, "Noto Serif KR", serif`,
+    bundled: false,
+  },
+  {
+    // 한글 명조 — 시스템 명조를 차례로 찾는다(번들 아님). 전투 「먹빛 금테」 꾸밈의 기본 글꼴.
+    id: "myeongjo",
+    label: "명조 · 한글 세리프",
+    roles: ["ui"],
+    stack: `"Noto Serif KR", "NanumMyeongjo", "Nanum Myeongjo", "AppleMyungjo", "Batang", "BatangChe", Georgia, serif`,
+    bundled: false,
+  },
+  {
+    // 둥근 고딕 — 시스템 글꼴을 차례로 찾는다(번들 아님). 전투 「부드러운 둥근 창」의 기본 글꼴.
+    id: "rounded",
+    label: "둥근 고딕",
+    roles: ["ui"],
+    stack: `"NanumSquareRound", "Nanum Square Round", "NanumSquareRoundR", "Pretendard", system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif`,
     bundled: false,
   },
   {

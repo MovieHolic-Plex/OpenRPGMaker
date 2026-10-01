@@ -42,9 +42,31 @@ try {
       return { attrs: { ...scene.dataset }, pick };
     });
   };
+  if (process.argv.includes("--clean")) {
+    // 레이아웃 시안용: 창·메시지·재생 안내를 숨긴 맨 필드 한 장.
+    await page.addStyleTag({ content: ".battle-message-window,.battle-party,.battle-command-host,.battle-enemy-list-panel,.battle-playback-status{visibility:hidden!important}" });
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: join(out, "clean-field.png") });
+  }
   const at0 = await measure("t0");
   await page.waitForTimeout(1500);
   const at1 = await measure("t1500");
+  const evalExpr = arg("--eval", "");
+  if (evalExpr) {
+    const value = await page.evaluate(evalExpr);
+    await writeFile(join(out, "eval.txt"), typeof value === "string" ? value : JSON.stringify(value, null, 1));
+  }
+  const stackAt = arg("--stack", "");
+  if (stackAt) {
+    // 한 점 아래에 겹친 요소와 그 배경을 위에서부터 적는다 — "이 띠는 누가 칠하나" 를 찾을 때.
+    const [sx, sy] = stackAt.split(",").map(Number);
+    const stack = await page.evaluate(([x, y]) => document.elementsFromPoint(x, y).map((el) => {
+      const cs = getComputedStyle(el); const b = cs.getPropertyValue("background").slice(0, 160);
+      const pb = getComputedStyle(el, "::before").getPropertyValue("background").slice(0, 160);
+      return `${el.tagName.toLowerCase()}.${String(el.getAttribute("class") ?? "").replace(/ /g, ".")} | bg=${b} | ::before=${pb}`;
+    }), [sx, sy]);
+    console.log(stack.join("\n"));
+  }
   const steps = {};
   const press = async (key, label) => { await page.keyboard.press(key); await page.waitForTimeout(700); steps[label] = await measure(label); };
   await press("ArrowRight", "s1-cursor-skill");
