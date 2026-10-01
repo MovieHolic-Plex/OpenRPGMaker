@@ -14,6 +14,23 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 2. **`openwiki/INDEX.md`** — 위키 절 좌표(생성 파일, `npm run openwiki:index`). 위키는 41쪽 약 1MB(약 27만 토큰)이고
    7쪽은 읽기 도구 상한 50KB 를 넘어 **통째로 읽으면 조용히 잘린다**. 필요한 절만 줄 번호로 잘라 읽어라.
 
+## 하네스 (hard rule)
+
+아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
+구조 규칙은 `openwiki/harnesses/README.md`.
+
+- **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
+  → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
+  → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
+  → 후보는 사람이 고른다. JRPG 일반 적 그림에는 쓰지 않는다.
+- **modern3 현대 거리 칩셋의 기물 도트(현재 탈것: 자동차·버스·트럭·열차)를 그릴 때** (3/4 시점: 윗면이 면으로 보여야 한다)
+  → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
+  → `npm run harness -- modern-chipset <단계>` · 문서 `openwiki/harnesses/modern-chipset.md`
+  → 기준 = 프로젝트의 modern-city-atlas 경찰차. 후보는 Sonnet 5명이 pxgrid 로 찍고 사람이 고른다. 직접 그리지 말 것.
+
+새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
+`npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
+
 그다음에 아래 순서로 간다.
 
 1. `openwiki/PROJECT_WIKI.md` - the current project-specific AI map.
