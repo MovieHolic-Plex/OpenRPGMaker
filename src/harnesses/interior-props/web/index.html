@@ -23,7 +23,7 @@ nav h3 { margin:0; padding:10px 12px 4px; font-size:12px; color:var(--dim); font
 nav .it { display:flex; gap:8px; align-items:center; padding:6px 10px; cursor:pointer; border-left:3px solid transparent; }
 nav .it:hover { background:var(--panel2); }
 nav .it.cur { background:#38323f; border-left-color:var(--sel); }
-nav .th { width:32px; height:32px; flex:none; display:flex; align-items:flex-end; justify-content:center; background:#5d4632; border-radius:4px; overflow:hidden; }
+nav .th { width:32px; height:32px; flex:none; display:flex; align-items:center; justify-content:center; background:#5d4632; border-radius:4px; overflow:hidden; }
 nav .th img { image-rendering:pixelated; max-width:32px; max-height:32px; }
 nav .n { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 nav .b { font-size:11px; border-radius:4px; padding:0 6px; flex:none; }
@@ -178,7 +178,7 @@ function renderNav() {
     h += `<h3>${g[k]} · ${L.length}</h3>`;
     for (const i of L) {
       const b = k === 'drawing' ? `${i.rounds.at(-1).runs.length - i.busy}/${i.rounds.at(-1).runs.length}` : k === 'ready' ? `${i.readyCount}장` : '✓';
-      h += `<div class="it ${i.id === S.cur ? 'cur' : ''}" data-id="${esc(i.id)}"><span class="th"><img src="/api/harness/thumb/${i.slug}.png"></span>
+      h += `<div class="it ${i.id === S.cur ? 'cur' : ''}" data-id="${esc(i.id)}"><span class="th"><img src="/api/harness/thumb/${i.slug}.png" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'nb',textContent:'새'}))"></span>
             <span class="n" title="${esc(i.desc)}">${esc(i.name)}</span><span class="b ${k}">${b}</span></div>`;
     }
   }
@@ -316,7 +316,7 @@ function renderObjs() {
   const q = S.q.trim().toLowerCase();
   const L = S.objs.filter(o => (S.cat === '전체' || o.category === S.cat) && (!q || (o.name + ' ' + o.id + ' ' + o.desc).toLowerCase().includes(q)));
   $('#nav').innerHTML = `<h3>고른 기물 · ${S.objSel.size}</h3>` + [...S.objSel].map(id => { const o = S.objs.find(x => x.id === id);
-    return `<div class="it" data-un="${esc(id)}"><span class="th"><img src="/api/harness/thumb/${o.slug}.png"></span><span class="n">${esc(o.name)}</span><span class="b drawing">빼기</span></div>`; }).join('');
+    return `<div class="it" data-un="${esc(id)}"><span class="th"><img src="/api/harness/thumb/${o.slug}.png" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'nb',textContent:'새'}))"></span><span class="n">${esc(o.name)}</span><span class="b drawing">빼기</span></div>`; }).join('');
   $('#nav').querySelectorAll('[data-un]').forEach(e => e.onclick = () => { S.objSel.delete(e.dataset.un); renderObjs(); });
   $('#main').innerHTML = `<div class="objtools"><input id="q" placeholder="찾기 — 이름·영문 id·설명" value="${esc(S.q)}">
      <div class="cats">${cats.map(c => `<button data-cat="${esc(c)}" class="${S.cat === c ? 'on' : ''}">${esc(c)}</button>`).join('')}</div></div>
