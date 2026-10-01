@@ -20,7 +20,7 @@ import store  # noqa: E402
 
 MODEL = os.environ.get('PROP_HARNESS_MODEL', 'claude-sonnet-5-5')
 EFFORT = os.environ.get('PROP_HARNESS_EFFORT', 'medium')
-MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '5'))
+MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '16'))   # 8 명에서 429 0건·부하 16/32 코어였다(2026-10-01) → 16. 429 가 나면 낮춘다
 TIMEOUT_S = int(os.environ.get('PROP_HARNESS_TIMEOUT', str(40 * 60)))
 REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'high')
 MAX_ATTEMPTS = int(os.environ.get('PROP_HARNESS_ATTEMPTS', '3'))   # 한 장 = 그리기 최대 3번(처음 + 다시 그리기 2번)

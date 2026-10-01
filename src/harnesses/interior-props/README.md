@@ -55,7 +55,7 @@ python3 src/harnesses/interior-props/harness.py bake                            
 
 | 파일 | 하는 일 |
 |---|---|
-| `harness.py` | 명령줄: `draw`·`pool`·`status`·`bake`. `pool` = 대기열 일꾼(동시 `PROP_HARNESS_PAR`=5, 한 명 `PROP_HARNESS_TIMEOUT`=40분) — `draw` 가 알아서 띄운다 |
+| `harness.py` | 명령줄: `draw`·`pool`·`status`·`bake`. `pool` = 대기열 일꾼(동시 `PROP_HARNESS_PAR`=16, 한 명 `PROP_HARNESS_TIMEOUT`=40분) — `draw` 가 알아서 띄운다 |
 | `brief.py` | 판마다 작업지시서: 지금 그림·방 안·**같은 물건의 짝(family/)**·화풍 기준(anchors/ = 사용자가 고른 것, 모자라면 같은 분류 v5 원본)·버린 후보와 이유·사용자 메모. 방향 5개(`DIRECTIONS`) |
 | `prompt.md` | 작업자 지시문 틀(한 장만, 자기 파일만, 3바퀴 자기 검수, git·테스트 금지) |
 | `review.md` | 검수자 지시문 틀 — 3/4 계약(옆을 보는 물건의 L자 옆모습은 정상), 사유 코드 FRONT·THIN·TOPDOWN·CAP·MIXED·SIDE·WORSE·READ, verdict.json 형식 |
