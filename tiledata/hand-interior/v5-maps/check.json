@@ -27,7 +27,7 @@
   "unreached": [],
   "reachable": 67,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8751
+  "sameAsUnfoldedOriginal": 0.8749
  },
  {
   "map": "fish",
@@ -87,7 +87,7 @@
   "unreached": [],
   "reachable": 241,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8632
+  "sameAsUnfoldedOriginal": 0.8629
  },
  {
   "map": "scholar",
@@ -132,7 +132,7 @@
   "unreached": [],
   "reachable": 92,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8615
+  "sameAsUnfoldedOriginal": 0.8604
  },
  {
   "map": "manor_1f",
@@ -192,7 +192,7 @@
   "unreached": [],
   "reachable": 144,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8766
+  "sameAsUnfoldedOriginal": 0.8763
  },
  {
   "map": "dwarf",
@@ -237,7 +237,7 @@
   "unreached": [],
   "reachable": 182,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8125
+  "sameAsUnfoldedOriginal": 0.8112
  },
  {
   "map": "throne",
@@ -267,7 +267,7 @@
   "unreached": [],
   "reachable": 85,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.869
+  "sameAsUnfoldedOriginal": 0.8688
  },
  {
   "map": "dungeon",
@@ -357,7 +357,7 @@
   "unreached": [],
   "reachable": 83,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.7983
+  "sameAsUnfoldedOriginal": 0.7979
  },
  {
   "map": "narshe",
@@ -372,7 +372,7 @@
   "unreached": [],
   "reachable": 65,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8486
+  "sameAsUnfoldedOriginal": 0.8483
  },
  {
   "map": "zozo",

@@ -93,7 +93,7 @@
   },
   {
    "id": "school desk",
-   "choice": "w105-A",
+   "choice": "w71-A",
    "new": true
   },
   {
@@ -402,22 +402,6 @@
    "choice": "w4-C"
   },
   {
-   "id": "chair E",
-   "choice": "w101-A"
-  },
-  {
-   "id": "chair N",
-   "choice": "w110-A"
-  },
-  {
-   "id": "chair S",
-   "choice": "w110-A"
-  },
-  {
-   "id": "chair W",
-   "choice": "w101-A"
-  },
-  {
    "id": "chest",
    "choice": "w3-C"
   },
@@ -634,10 +618,6 @@
    "choice": "w48-A"
   },
   {
-   "id": "kitchen range",
-   "choice": "w104-A"
-  },
-  {
    "id": "kitchen sink",
    "choice": "w10-A"
   },
@@ -647,7 +627,7 @@
   },
   {
    "id": "loom",
-   "choice": "w110-A"
+   "choice": "w43-A"
   },
   {
    "id": "magic circle",
@@ -807,7 +787,7 @@
   },
   {
    "id": "saddle rack",
-   "choice": "w110-A"
+   "choice": "w26-D"
   },
   {
    "id": "scenery flat",
@@ -908,10 +888,6 @@
   {
    "id": "spinning wheel",
    "choice": "w1-B"
-  },
-  {
-   "id": "spiral stair",
-   "choice": "w110-A"
   },
   {
    "id": "stairs up stone",
@@ -1319,6 +1295,26 @@
    "why": "v5 유지"
   },
   {
+   "id": "chair E",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "chair N",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "chair S",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "chair W",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
    "id": "cheese wheels",
    "choice": "v5",
    "why": "v5 유지"
@@ -1359,6 +1355,11 @@
    "why": "v5 유지"
   },
   {
+   "id": "kitchen range",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
    "id": "lute",
    "choice": "v5",
    "why": "v5 유지"
@@ -1390,6 +1391,11 @@
   },
   {
    "id": "shackles",
+   "choice": "v5",
+   "why": "v5 유지"
+  },
+  {
+   "id": "spiral stair",
    "choice": "v5",
    "why": "v5 유지"
   },
@@ -1599,7 +1605,7 @@
   },
   {
    "id": "school desk",
-   "choice": "w105-A",
+   "choice": "w71-A",
    "kind": "floor",
    "footprint": [
     1,
