@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/statue/w71-A.pxg",
+ "id": "statue",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  2,
+  13,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "대리석 인물상(토가·두루마리 팔)+각진 받침대, 기둥 w51 돌 결, 관문 object 참고만 눈 O",
+ "ok": true
+}

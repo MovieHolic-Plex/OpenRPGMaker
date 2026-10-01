@@ -1,0 +1,132 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat g gold
+@mat b blue
+@mat k clay
+@mat h black
+@mat r red
+@mat w linen
+@mblock 0 0
+................................
+.gggggggggggggggggggggggggggggg.
+.gggggggggggggggggggggggggggggg.
+.gggggggggggggggggggggggggggggg.
+.gggbbbbbbbbbbbbbbbbbbbbbbbbggg.
+.gggbbbbbbbbbhhhhhhbbbbbbbbbggg.
+.gggbbbbbbbhhhhhhhhhhbbbbbbbggg.
+.gggbbbbbbbhhhkkkkhhhbbbbbbbggg.
+.gggbbbbbbhhhhhkkhhhhhbbbbbbggg.
+.gggbbbbbbhhkkkkkkkkhhbbbbbbggg.
+.gggbbbbbbhhkkkkkkkkhhbbbbbbggg.
+.gggbbbbbbhhkhhkkhhkhhbbbbbbggg.
+.gggbbbbbbhhkwhkkwhkhhbbbbbbggg.
+.gggbbbbbbhhkkkkkkkkhhbbbbbbggg.
+.gggbbbbbbbbkkkkkkkkbbbbbbbbggg.
+.gggbbbbbbbbkkrrrkkkbbbbbbbbggg.
+.gggbbbbbbbbbkkkkkkbbbbbbbbbggg.
+.gggbbbbbbbbbbkkkkbbbbbbbbbbggg.
+.gggbbbbbbbbbbkkkkbbbbbbbbbbggg.
+.gggbbbbbbbrwwkkkkwwrbbbbbbbggg.
+.gggbbbbbbrrrwwwwwwrrrbbbbbbggg.
+.gggbbbbbrrrrrwwwwrrrrrbbbbbggg.
+.gggbbbrrrrrgrrwwrrgrrrrrbbbggg.
+.gggbbrrrrrrrgrrrrgrrrrrrrbbggg.
+.gggrrrrrrrrrrrrrrrrrrrrrrrrggg.
+.ggrrrrrrrrrrrrrrrrrrrrrrrrrrgg.
+.grrrrrrrrrrrrrrrrrrrrrrrrrrrrg.
+.gggggggggggggggggggggggggggggg.
+.gggggggggggggggggggggggggggggg.
+.gggggggggggggggggggggggggggggg.
+................................
+................................
+@tblock 0 0
+................................
+.000000000000002100000000000000.
+.065555555555566555555555555650.
+.055444444444444334444444444550.
+.054222222222222111111111111230.
+.054222222222211111111111111230.
+.054222222222331111111111111230.
+.054222222223244331111111111230.
+.054222222111114300001111111230.
+.054222222005444332200111111230.
+.054222222005444332200111111230.
+.054222221005004300200111111230.
+.054222211005604350200111111230.
+.054222111005442332200111111230.
+.054221111115442332211000000230.
+.054211111115421232211000000230.
+.054111111111442332111000000230.
+.054111111111144331111000000230.
+.054111111111133221111000000230.
+.054111111114633225301000000230.
+.054111111155666555220000000230.
+.054111111554466553222000000230.
+.054111155544446533322220000230.
+.054111555444441133322221000230.
+.054155554444441133332222210230.
+.051555554444441133333222221030.
+.015555544444443333333222222100.
+.065222222222222222222222222650.
+.055333333333333333333333333550.
+.000000000000000000000000000000.
+................................
+................................
+@px 2 30 ~
+@px 3 30 ~
+@px 4 30 ~
+@px 5 30 ~
+@px 6 30 ~
+@px 7 30 ~
+@px 8 30 ~
+@px 9 30 ~
+@px 10 30 ~
+@px 11 30 ~
+@px 12 30 ~
+@px 13 30 ~
+@px 14 30 ~
+@px 15 30 ~
+@px 16 30 ~
+@px 17 30 ~
+@px 18 30 ~
+@px 19 30 ~
+@px 20 30 ~
+@px 21 30 ~
+@px 22 30 ~
+@px 23 30 ~
+@px 24 30 ~
+@px 25 30 ~
+@px 26 30 ~
+@px 27 30 ~
+@px 28 30 ~
+@px 29 30 ~
+@px 30 30 ~
+@px 3 31 -
+@px 4 31 -
+@px 5 31 -
+@px 6 31 -
+@px 7 31 -
+@px 8 31 -
+@px 9 31 -
+@px 10 31 -
+@px 11 31 -
+@px 12 31 -
+@px 13 31 -
+@px 14 31 -
+@px 15 31 -
+@px 16 31 -
+@px 17 31 -
+@px 18 31 -
+@px 19 31 -
+@px 20 31 -
+@px 21 31 -
+@px 22 31 -
+@px 23 31 -
+@px 24 31 -
+@px 25 31 -
+@px 26 31 -
+@px 27 31 -
+@px 28 31 -
+@px 29 31 -
+@px 30 31 -

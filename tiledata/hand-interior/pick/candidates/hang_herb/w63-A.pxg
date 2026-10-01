@@ -1,0 +1,27 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a iron 5
+@mat b straw 3
+@mat c straw 2
+@mat d leaf 4
+@mat e leaf 5
+@mat f leaf 3
+@mat g leaf 2
+@mblock 0 0
+................
+.a............a.
+.a............a.
+..bb.......ccc..
+..b.bb...cc.b...
+d.e.d.bbc.d.e.d.
+.ded.d.e.d.ded..
+f.d.f.ded.f.d.f.
+.gbg.f.d.f.gbg..
+.bbb..gbg..bbb..
+......bbb.......
+................
+................
+................
+................
+................

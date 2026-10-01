@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/skull_pile/w73-A.pxg",
+ "id": "skull pile",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  14
+ ],
+ "v5_bbox": null,
+ "note": "해골 더미: 해골 4개 둥근 덩이(리넨 5단·검은 눈구멍)+양쪽 뼈 두 대, 왼쪽 위 빛",
+ "ok": true
+}

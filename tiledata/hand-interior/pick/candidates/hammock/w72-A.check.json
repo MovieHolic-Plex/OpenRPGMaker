@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hammock/w72-A.pxg",
+ "id": "hammock",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  5,
+  31,
+  30
+ ],
+ "v5_bbox": null,
+ "note": "선원 해먹: 나무 기둥 둘 사이 늘어진 아마천(윗면 밝은 줄+배 쪽 어두움)과 밧줄 묶음",
+ "ok": true
+}

@@ -1,0 +1,53 @@
+{
+ "id": "dining 3x2",
+ "slug": "dining_3x2",
+ "name_ko": "식탁 3×2",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  48,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 32
+ },
+ "footprint": {
+  "w": 3,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": {
+  "rect_px": [
+   2,
+   3,
+   45,
+   24
+  ],
+  "capacity": 6,
+  "note": "탁상 물건의 밑변을 윗면 안에 둔다"
+ },
+ "description": "3×2 넓은 나무 식탁(자동 타일). 식당 가운데 1개. 위아래 의자 3개씩, 양 끝 E/W.",
+ "where": "식당 가운데 1개. 위아래 의자 3개씩, 양 끝 E/W.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다",
+  "윗면에 탁상 물건(goods:*)을 올린다. 비워 두지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  47,
+  31
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": [
+  "chair S",
+  "chair N",
+  "chair E",
+  "chair W",
+  "goods:plates"
+ ]
+}

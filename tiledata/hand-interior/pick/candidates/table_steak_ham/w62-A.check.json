@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_steak_ham/w62-A.pxg",
+ "id": "table:steak+ham",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.06
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "3/4: ref(table:bolt+yarn w46-A) 몸통 — 상판 윗면 6~10행·앞 모서리 하이라이트 11행·다리·그림자, 물건은 v5 steak_ham 그대로 1행 위로. work/w62-tables.py",
+ "ok": true
+}

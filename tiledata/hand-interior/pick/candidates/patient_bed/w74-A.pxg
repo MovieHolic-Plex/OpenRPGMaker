@@ -1,0 +1,67 @@
+// w74-A 환자 침대 재작: bed_green 짜임 — 철 머리판(세로살), 흰 베개, 접어 내린 흰 시트, 가운데 하늘색 접힘띠 이불, 발판 앞면 4줄, 철 다리+바닥 그림자
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat o iron 1
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@mat l iron 5
+@mat L iron 6
+@mat W white 6
+@mat V white 5
+@mat U white 4
+@mat T white 3
+@mat S white 2
+@mat c blue 5
+@mat d blue 6
+@mat e blue 4
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.l..oooooooo..j.
+oLlLLLLLLLLLLkjo
+oLlllllllllllkjo
+oLlkkkkkkkkkkkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLllkolkolklkkjo
+oLlkkkkkkkkkkkjo
+oLljjjjjjjjjjkjo
+oLlooooooooookjo
+oLlTTTTTTTTTTkjo
+oLlTSWWWWWWSTkjo
+oLlTVWWWWWWVTkjo
+oLlTVVWWWWVVTkjo
+oLlTUVVVVVVUTkjo
+oLlTTUUUUUUTTkjo
+oLlWWWWWWWWWWkjo
+oLlVVVVVVVVVVkjo
+oLlTTTTTTTTTTkjo
+oLlWWWWWWWWWWkjo
+oLlWVVVVVVVVUkjo
+oLlWddddddddUkjo
+oLlWcccccccdUkjo
+oLlWccccccccUkjo
+oLlWeeeeeeeeUkjo
+oLlVUUUUUUUUTkjo
+oLlWVVVVVVVUTkjo
+oLlWVVVVVVUUTkjo
+oLlVVVVVVVUUTkjo
+oLlVVVVVVUUTTkjo
+oLlUUUUUUTTTTkjo
+oLlllllllllllkjo
+oLlkkkkkkkkkkkjo
+oLljjjjjjjjjjkjo
+oLliiiiiiiiiikjo
+oLl~~~~~~~~~~kjo

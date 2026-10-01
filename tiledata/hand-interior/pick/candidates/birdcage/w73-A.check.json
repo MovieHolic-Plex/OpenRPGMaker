@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/birdcage/w73-A.pxg",
+ "id": "birdcage",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  13,
+  30
+ ],
+ "v5_bbox": null,
+ "note": "새장: 쇠 고리·둥근 쇠창살 새장(윗면 뚜껑·가로띠·창살 사이로 노란 새)+쇠 기둥 받침, 왼쪽 위 빛",
+ "ok": true
+}

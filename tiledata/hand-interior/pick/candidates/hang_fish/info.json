@@ -1,0 +1,37 @@
+{
+ "id": "hang:fish",
+ "slug": "hang_fish",
+ "name_ko": "생선 걸이",
+ "category": "생선가게",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "생선 걸이 — 줄에 매단 걸이, 담긴 상품만 다른 변형. 생선가게·항구 창고의 벽면 윗줄, 작업대·카운터 위에 1~2개.",
+ "where": "생선가게·항구 창고의 벽면 윗줄, 작업대·카운터 위에 1~2개.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  8
+ ],
+ "v5_colors": 11,
+ "material": "wood",
+ "related": []
+}

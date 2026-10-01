@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sack/w60-A.pxg",
+ "id": "sack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 5,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  3,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  13,
+  13
+ ],
+ "note": "body = sack:grain w10-C weave (more 3/4: light upper-left+dark base+round belly; w6-B has a flat linen cap and flat top), shape and colors from v5 empty tied sack",
+ "ok": true
+}

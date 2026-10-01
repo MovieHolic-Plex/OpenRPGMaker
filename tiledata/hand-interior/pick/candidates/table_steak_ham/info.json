@@ -1,0 +1,37 @@
+{
+ "id": "table:steak+ham",
+ "slug": "table_steak_ham",
+ "name_ko": "고기·햄 탁자",
+ "category": "정육점",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 16
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "고기·햄 탁자 — 천 덮은 2칸 진열 탁자, 담긴 상품만 다른 변형. 정육점·식료품 방의 가게 가운데 바닥에 1개.",
+ "where": "정육점·식료품 방의 가게 가운데 바닥에 1개.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_colors": 13,
+ "material": "wood",
+ "related": []
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/basket_loaf/w60-A.pxg",
+ "id": "basket:loaf",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  3,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  13,
+  14
+ ],
+ "note": "body = basket:mushroom w9-B (weave redrawn rim and body), contents = v5 pixels seated by script basket_mushroom/work/w60-compose.py",
+ "ok": true
+}
