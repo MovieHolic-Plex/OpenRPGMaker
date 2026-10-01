@@ -3,41 +3,41 @@
    - `.battle-aura-layer > .battle-aura[data-aura]` 가 입자·막을 그린다(그림 시트 없음, 그라디언트만).
    특정도: 스킨의 `.battle-enemy .battle-enemy-image { filter: none }` 을 이겨야 하므로 스킨 속성 넷을 다 단다.
    섬광(battle-animation-target-flash) 중에는 물러난다. 감쇠 모션 선호에서는 움직임을 끈다. */
-.battle-scene[data-battle-skin="retro2003"] .battle-aura-layer {
+.battle-scene[data-battle-motion="retro"] .battle-aura-layer {
   inset: 0;
   overflow: visible;
   pointer-events: none;
   position: absolute;
   z-index: 3;
 }
-.battle-scene[data-battle-skin="retro2003"] .battle-aura {
+.battle-scene[data-battle-motion="retro"] .battle-aura {
   inset: 0;
   position: absolute;
 }
 
 /* ── 몸 색 ── */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="freeze-grey"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="freeze-grey"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
   filter: grayscale(0.85) brightness(0.92) contrast(1.1) drop-shadow(0 0 2px #a9cfff);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="berserk-pulse"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="berserk-pulse"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
   animation: aura-berserk 0.7s ease-in-out infinite alternate;
   filter: sepia(0.55) saturate(3.2) hue-rotate(-38deg) brightness(1.05) drop-shadow(0 0 3px #ff3a1a);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="wet-drip"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="wet-drip"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
   filter: brightness(0.86) saturate(1.25) hue-rotate(12deg) drop-shadow(0 1px 1px #2f7bff);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="poison-bubble"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="poison-bubble"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
   filter: sepia(0.5) saturate(1.8) hue-rotate(58deg) brightness(0.95);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="dark-fog"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="dark-fog"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
   filter: brightness(0.5) contrast(1.15) saturate(0.7);
 }
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="petrify-still"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="petrify-still"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
   animation-play-state: paused;
   filter: grayscale(1) sepia(0.25) brightness(0.82) contrast(1.3);
 }
 /* 재생: 다른 오라보다 약해 보였다(2026-10-01) — 몸이 초록으로 숨 쉬듯 밝아졌다 가라앉는다. */
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="regen-sparkle"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] :is(.battle-actor, .battle-enemy)[data-battle-aura~="regen-sparkle"]:not(.battle-animation-target-flash) :is(.battle-actor-sprite, .battle-actor-image, .battle-enemy-image) {
   animation: aura-regen 1.2s ease-in-out infinite alternate;
   filter: brightness(1.08) saturate(1.15) drop-shadow(0 0 3px #62e07a);
 }

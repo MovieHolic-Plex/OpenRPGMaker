@@ -98,13 +98,13 @@ function activeSkin(): BattleSkin {
 function partyStatusRowsCarryIcons(): boolean {
   // retro2003 은 필드에 아군을 그리지만 배지는 파티 창 이름 옆에 단다(FF6·크로노 트리거 관례).
   // 필드 노드 머리 위 배지는 이웃 배우 사이에 떠서 누구 것인지 읽히지 않았다(2026-09-29 실측).
-  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden" || activeSkin().id === "retro2003";
+  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden" || activeSkin().motionStyle === "retro";
 }
 
 /** retro2003 은 적 chrome(이름·HUD)을 대상 선택 때만 펼친다 — 그 안의 배지도 함께 숨었다.
  *  이 스킨에서는 배지를 적 노드 직계로 달아 스프라이트 위에 늘 보이게 한다. */
 function enemyIconsOutsideChrome(): boolean {
-  return activeSkin().id === "retro2003";
+  return activeSkin().motionStyle === "retro";
 }
 
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
@@ -1246,7 +1246,7 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   }
   // 정면 사이드뷰에서는 배우가 저작한 전투 시트를 최우선으로 쓴다. 스킨 공용 전사/마법사를
   // 먼저 쓰면 모든 짝수 배우와 홀수 배우가 각각 같은 사람으로 보이고 faceset과도 어긋난다.
-  const resourceId = place.partyFacing === "front" ? resolvePartyBattleCharset(actor, activeSkin().id === "retro2003") : undefined;
+  const resourceId = place.partyFacing === "front" ? resolvePartyBattleCharset(actor, activeSkin().motionStyle === "retro") : undefined;
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;

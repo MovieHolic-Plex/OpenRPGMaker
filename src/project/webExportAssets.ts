@@ -177,7 +177,7 @@ function collectProjectStrings(project: Project): Set<string> {
   // Include reserve actors too: party membership/order can change after export.
   for (const actor of project.database.actors) {
     if (facing === "front") {
-      const sheet = resolvePartyBattleCharset(actor, skinId === "retro2003");
+      const sheet = resolvePartyBattleCharset(actor, getBattleSkin(skinId).motionStyle === "retro");
       if (sheet) { values.add(sheet); continue; }
     }
     // Either fallback slot can be selected after reordering the party.

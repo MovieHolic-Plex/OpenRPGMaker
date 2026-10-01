@@ -1,0 +1,112 @@
+/* _retro-themes.css — 도트 측면 전투 뼈대(motionStyle "retro") 위의 **창 색** (2026-10-01).
+   뼈대(배치·도트 연출·겹 배경·상태 오라·HUD 칸)는 `[data-battle-motion="retro"]` 에 걸려 있고(_retro2003.css · 26~28),
+   여기서는 스킨 id 마다 _retro2003.css 루트의 --retro-* 색 변수만 바꾼다. 기본 청색 창(retro2003)은 변수 기본값이다.
+   선택자는 _retro2003.css 루트(속성 5개)보다 스킨 속성 하나가 많아 로드 순서와 무관하게 이긴다. */
+
+/* 유리 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-skin="rm2003"] {
+  --retro-top: rgba(30,36,64,.86);
+  --retro-bottom: rgba(10,12,26,.92);
+  --retro-edge: rgba(210,220,255,.6);
+  --retro-edge-inner: rgba(0,0,0,.35);
+  --retro-deep: #070a16;
+  --retro-shade: #000000;
+  --retro-accent: #f2c063;
+  --retro-mp: #9ad8ff;
+  --retro-atb: #c9a04c;
+  --retro-line: rgba(154,170,226,.5);
+  --retro-select: rgba(242,192,99,.18);
+  --retro-row: rgba(255,255,255,.06);
+  --retro-raised: rgba(242,192,99,.3);
+  --retro-raised-edge: #f2c063;
+}
+
+/* 코발트 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-skin="ff"] {
+  --retro-top: #2a4fc8;
+  --retro-bottom: #0b1550;
+  --retro-edge: #ffffff;
+  --retro-edge-inner: #7f88b8;
+  --retro-deep: #050a2c;
+  --retro-shade: #000010;
+  --retro-accent: #fff4a0;
+  --retro-mp: #a0d8ff;
+  --retro-atb: #c0c8ff;
+  --retro-line: #8090d0;
+  --retro-select: #ffffff22;
+  --retro-row: #ffffff14;
+  --retro-raised: #ffffff33;
+  --retro-raised-edge: #ffffff;
+}
+
+/* 청람 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-skin="chrono"] {
+  --retro-top: #1b6aa0;
+  --retro-bottom: #062645;
+  --retro-edge: #a8eeff;
+  --retro-edge-inner: #02182c;
+  --retro-deep: #021424;
+  --retro-shade: #00101c;
+  --retro-accent: #ffcc33;
+  --retro-mp: #7ff0ff;
+  --retro-atb: #33d6ff;
+  --retro-line: #4aa8d0;
+  --retro-select: #2ec4ff33;
+  --retro-row: #2ec4ff1f;
+  --retro-raised: #2ec4ff44;
+  --retro-raised-edge: #a8eeff;
+}
+
+/* 먹빛 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-skin="octopath"] {
+  --retro-top: #1e2434;
+  --retro-bottom: #080b14;
+  --retro-edge: #c9a24a;
+  --retro-edge-inner: #000000;
+  --retro-deep: #05070d;
+  --retro-shade: #000000;
+  --retro-accent: #e8b84b;
+  --retro-mp: #b8d0e8;
+  --retro-atb: #c9a24a;
+  --retro-line: #6a5a34;
+  --retro-select: #e8b84b26;
+  --retro-row: #c9a24a14;
+  --retro-raised: #c9a24a33;
+  --retro-raised-edge: #e8c870;
+}
+
+/* 세피아 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-skin="bravely"] {
+  --retro-top: #6e5236;
+  --retro-bottom: #2e2010;
+  --retro-edge: #f2dcae;
+  --retro-edge-inner: #1c1206;
+  --retro-deep: #1a1006;
+  --retro-shade: #120a02;
+  --retro-accent: #ffd890;
+  --retro-mp: #bfe0d0;
+  --retro-atb: #e8b060;
+  --retro-line: #a08060;
+  --retro-select: #f2dcae26;
+  --retro-row: #f2dcae14;
+  --retro-raised: #f2dcae33;
+  --retro-raised-edge: #f2dcae;
+}
+
+/* 금갈색 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-skin="goldensun"] {
+  --retro-top: #9a6420;
+  --retro-bottom: #4a2a08;
+  --retro-edge: #ffe2a0;
+  --retro-edge-inner: #2a1400;
+  --retro-deep: #241200;
+  --retro-shade: #1a0c00;
+  --retro-accent: #fff2a0;
+  --retro-mp: #a8e0ff;
+  --retro-atb: #ffd060;
+  --retro-line: #c09040;
+  --retro-select: #ffe2a033;
+  --retro-row: #ffe2a01a;
+  --retro-raised: #ffe2a044;
+  --retro-raised-edge: #ffe2a0;
+}

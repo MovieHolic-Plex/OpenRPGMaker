@@ -32,18 +32,6 @@ const FRONTVIEW: SkinBattlerPlacement = {
   party: (i, n) => ({ x: RM2000_PARTY_SLOTS[Math.min(4, Math.max(1, n))]![i] ?? 160, y: 160 }),
 };
 
-/** 측면 구도(유리 뼈대): 적은 왼쪽 두 줄, 아군 전투 시트는 오른쪽 사선 열. */
-const SIDEVIEW: SkinBattlerPlacement = {
-  partyFacing: "front",
-  enemy: (i, n) => ({
-    x: Math.round(108 + (i - (n - 1) / 2) * 48),
-    y: n <= 1 ? 124 : 112 + (i % 2) * 12,
-  }),
-  // 아군 4명 가로 간격 32 RM px(스프라이트 1.25배). 22 면 다음 배우가 앞 배우를 38% 덮어 2·3번은
-  // 실루엣만 남았다(2026-09-14 실측). 시작 x 196 → 마지막 292 + 반폭 24 = 316 으로 무대(320) 안에 든다.
-  party: (i) => ({ x: 196 + i * 32, y: 84 + i * 25 }),
-};
-
 // ── 도트 측면 적 진형(retro2003) ─────────────────────────────────────────────────────────
 // 적 발 위치가 설 수 있는 구역(무대 논리 좌표 320×160). 아군은 오른쪽 x 222~294.
 // 아래 한계 142 = 아군 마지막 발(136)보다 조금 아래, HUD 위.
@@ -130,16 +118,16 @@ const RETRO_SIDEVIEW: SkinBattlerPlacement = {
 export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 239, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 76, y: 152 }) },
   rm2000: FRONTVIEW,
-  rm2003: SIDEVIEW,
-  // 유리 뼈대 변형(2026-09-25): 구도가 같으면 배치도 같다 — 정면은 rm2000, 측면은 rm2003 을 그대로 쓴다.
-  // 예전 스킨별 배치표는 각자 CSS 와 짝이었고, CSS 를 지우면서 함께 걷었다.
-  octopath: SIDEVIEW,
-  chrono: SIDEVIEW,
-  bravely: SIDEVIEW,
+  // 유리 뼈대 변형(2026-09-25): 구도가 같으면 배치도 같다 — 정면은 rm2000 을 그대로 쓴다.
+  // 측면 스킨은 2026-10-01 부터 모두 도트 측면 전투 뼈대(motionStyle "retro")라 retro2003 과 같은 배치다.
+  rm2003: RETRO_SIDEVIEW,
+  octopath: RETRO_SIDEVIEW,
+  chrono: RETRO_SIDEVIEW,
+  bravely: RETRO_SIDEVIEW,
   dragonquest: FRONTVIEW,
-  ff: SIDEVIEW,
+  ff: RETRO_SIDEVIEW,
   mother: FRONTVIEW,
-  goldensun: SIDEVIEW,
+  goldensun: RETRO_SIDEVIEW,
   mv: FRONTVIEW,
   vxace: FRONTVIEW,
   // 도트 측면 전투의 독립 접지·간격 계약.
@@ -168,7 +156,7 @@ export function resolveSkinEnemyPosition(
   const cx = canonical?.x;
   if (cx == null || !Number.isFinite(cx)) return fallback;
   // 옛 트룹의 0..240 y를 그대로 쓰면 새 접지 띠 위에 뜬다. 이 스킨만 안전 구간에 맞춘다.
-  if (skinId === "retro2003") {
+  if (BATTLE_SKINS[skinId]?.motionStyle === "retro") {
     const cy = canonical?.y;
     return { x: Math.max(RETRO_ZONE.left, Math.min(RETRO_ZONE.right, cx)),
       y: cy != null && Number.isFinite(cy) ? Math.max(RETRO_ZONE.top, Math.min(RETRO_ZONE.bottom, cy * 2 / 3)) : fallback.y };
@@ -227,7 +215,7 @@ export function resolveSkinEnemyPositions(
     }));
   }
   // 도트 측면: 저작 모양을 살리거나 진형 후보를 고른다(retroManualFormation).
-  if (skinId === "retro2003") return retroManualFormation(canonicals);
+  if (BATTLE_SKINS[skinId]?.motionStyle === "retro") return retroManualFormation(canonicals);
   const resolved = canonicals.map((c, i) => resolveSkinEnemyPosition(skinId, c, i, n, false));
   if (layout !== "sideview" && layout !== "active") return resolved;
 
