@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.63.0 — 2026-10-01
+
+### 기능
+
+- add composable quest presets and verified player workflows (`4e97a36`)
+
+### 수정
+
+- **editor** — 퀘스트 선택 아이콘 크기를 DeckIconSize에 맞춘다 (`e7464ca`)
+
 ## 0.62.0 — 2026-10-01
 
 ### 기능
