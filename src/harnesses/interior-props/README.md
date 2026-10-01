@@ -58,7 +58,7 @@ python3 src/harnesses/interior-props/harness.py bake                            
 | `harness.py` | 명령줄: `draw`·`pool`·`status`·`bake`. `pool` = 대기열 일꾼(동시 `PROP_HARNESS_PAR`=16, 한 명 `PROP_HARNESS_TIMEOUT`=40분) — `draw` 가 알아서 띄운다 |
 | `brief.py` | 판마다 작업지시서: 지금 그림·방 안·**같은 물건의 짝(family/)**·화풍 기준(anchors/ = 사용자가 고른 것, 모자라면 같은 분류 v5 원본)·버린 후보와 이유·사용자 메모. 방향 5개(`DIRECTIONS`) |
 | `prompt.md` | 작업자 지시문 틀(한 장만, 자기 파일만, 3바퀴 자기 검수, git·테스트 금지) |
-| `review.md` | 검수자 지시문 틀 — 3/4 계약(옆을 보는 물건의 L자 옆모습은 정상), 사유 코드 FRONT·THIN·TOPDOWN·CAP·MIXED·SIDE·WORSE·READ, verdict.json 형식 |
+| `review.md` | 검수자 지시문 틀 — **꼭대기 면 규칙**(가구의 가장 높은 수평 면 윗면 ≥3행, 안쪽 선반판은 대신 못 함, 얹힌 물건도 윗면, 「벽에 붙임」≠벽면 걸이; 하네스 `_top_gate` 가 `top_rows<3` 이면 PASS 를 FAIL 로 뒤집는다, 판정 그림 `ref-x8.png` = 칩셋 합격 가구|후보) · 3/4 계약(옆을 보는 물건의 L자 옆모습은 정상), 사유 코드 FRONT·THIN·TOPDOWN·CAP·MIXED·SIDE·WORSE·READ, verdict.json 형식 |
 | `store.py` | `~/.local/share/oprn/prop-harness/harness.sqlite` — rounds·runs·feedback (추가만) |
 | `api.py` | 고르기 서버에 붙는 경로: `/harness`, `/api/harness/{state,objects,thumb,decide,draw}` |
 | `web/index.html` | 고르는 화면 |
@@ -78,7 +78,9 @@ python3 src/harnesses/interior-props/harness.py bake                            
 ## 검수의 한계 (2026-10-01 보정 시험)
 v5 원본을 일부러 후보로 넣어 검수자를 시험했다(`PROP_HARNESS_DATA` 를 임시 폴더로 바꿔서). 대리석 기둥(머리가 정면 띠)은 떨어뜨리고 다시 그리게 해서 머리 윗면이 두꺼워진 그림으로 합격,
 나선 계단·조리 화덕(사용자가 「이전이 낫다」 한 것)은 합격 — 맞았다. 통(뚜껑 타원)은 전수조사와 판정이 갈렸고, 의자 좌판 윗면 1행도 「방 안에서 읽힌다」로 합격시킨다.
-**검수 ✓ 는 「확실한 시점 깨짐·퇴보는 없다」는 뜻이지 합격 보증이 아니다.** 마지막 판정은 화면에서 사용자가 한다. 기준을 조이거나 풀려면 `review.md` 의 「3/4 시점 계약」을 고친다.
+**2026-10-02 사용자 지적:** 투구 진열 선반 h49 다섯 장이 모두 윗판 없는 정면도인데 「3/4 ✓」였다. 원인 — 안쪽 선반판 2행 띠를 윗면으로 셌고, 윗판 1행을 적고도 통과시켰고, 얹힌 투구는 「소품 크기라 허용」, 새 기물에도 「확실하지 않으면 통과」가 걸렸고, 「벽에 붙임」을 벽면 걸이로 읽었다. 꼭대기 면 규칙 + `_top_gate` 를 넣은 뒤 같은 다섯 장을 Codex 로 다시 검수하니 다섯 장 모두 FRONT(꼭대기 0~1행), 손으로 고친 판(윗판 3행)은 꼭대기 규칙을 통과했다. 화면 딱지는 「3/4 ✓」에서 「검수 통과」로 바꿨다. **그 전 검수 결과(h3~h129)는 이 규칙 전이다.**
+
+**검수 통과는 「확실한 시점 깨짐·퇴보는 없다」는 뜻이지 합격 보증이 아니다.** 마지막 판정은 화면에서 사용자가 한다. 기준을 조이거나 풀려면 `review.md` 의 「3/4 시점 계약」을 고친다.
 
 ## 함정
 - 작업자 프로세스를 끌 때 `pkill -f <경로>` 금지 — 명령 줄에 같은 글자가 든 자기 셸까지 죽는다. `harness.py status` 로 보고, pid 로 끈다.

@@ -126,6 +126,10 @@ def _bg(im, s, bg=(150, 120, 90, 255)):
     return b.resize((im.size[0] * s, im.size[1] * s), Image.NEAREST)
 
 
+REVIEW_REFS = ['tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png', 'tiledata/atlas-pick/style-demo-view34/interior-new-wardrobe.png',
+               'tiledata/hand-interior/pick/candidates/sideboard_2x1/v5.png', 'tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png']
+
+
 def _review_pack(r):
     """검수자가 볼 그림: 지금|후보 8배 나란히, 각각 8배, 같은 방 안(4배)."""
     from PIL import Image
@@ -140,6 +144,11 @@ def _review_pack(r):
     pair = Image.new('RGBA', (a.width + b.width + 24, max(a.height, b.height)), (40, 36, 44, 255))
     pair.alpha_composite(a, (0, pair.height - a.height)); pair.alpha_composite(b, (a.width + 24, pair.height - b.height))
     pair.save(os.path.join(pack, 'pair-x8.png'))
+    refs = [Image.open(os.path.join(r['root'], p)).convert('RGBA') for p in REVIEW_REFS]   # 칩셋 3/4 합격 가구 | 후보, 같은 배율
+    ims = [_bg(x, 8) for x in refs] + [b]
+    ref = Image.new('RGBA', (sum(x.width for x in ims) + 24 * (len(ims) - 1), max(x.height for x in ims)), (40, 36, 44, 255)); x0 = 0
+    for x in ims: ref.alpha_composite(x, (x0, ref.height - x.height)); x0 += x.width + 24
+    ref.save(os.path.join(pack, 'ref-x8.png'))
     cur = brief.current_choice(r['item'])
     for name, im in (('ctx-current.png', None if cur == 'v5' else cur_im), ('ctx-cand.png', c_im)):
         try:
@@ -240,6 +249,20 @@ def _again(r, entry):
     return False
 
 
+TOP_MIN = 3   # 꼭대기 면 윗면 최소 행 수(16px). 칩셋 책장 3~4·옷장 4·찬장 6
+
+
+def _top_gate(r, v):
+    """검수자가 잰 꼭대기 면 행 수가 모자라면 PASS 를 FAIL(FRONT)로 — 「읽힌다」로 넘어가는 것을 막는 마지막 문."""
+    from common import objects_by_id
+    kind = (objects_by_id().get(r['item']) or {}).get('kind')
+    n = v.get('top_rows')
+    if v['verdict'] != 'PASS' or kind not in ('floor', 'wall') or not isinstance(n, int) or n >= TOP_MIN: return
+    v['verdict'] = 'FAIL'; v['codes'] = sorted(set((v.get('codes') or []) + ['FRONT']))
+    v['reasons'] = f"꼭대기 면 윗면 {n}행 < {TOP_MIN}행(하네스 규칙). " + (v.get('reasons') or '')
+    v['fix'] = (v.get('fix') or '') + f" 꼭대기 면({v.get('top', '')}) 윗면을 {TOP_MIN}행 이상으로 — 필요하면 캔버스를 위로 키운다."
+
+
 def _finish(r, code):
     """그리기가 끝나면 깨짐 검사 → (통과) 검수 대기열 / (불합격) 다시 그리기.
     검수가 끝나면 PASS → 끝, FAIL → 이유를 들고 다시 그리기. 시도는 MAX_ATTEMPTS 번까지. 고르는 건 여전히 사용자."""
@@ -258,6 +281,7 @@ def _finish(r, code):
             return store.update_run(r['id'], status='done', ended=store.now(), history=json.dumps(h, ensure_ascii=False),
                                     review=json.dumps(dict(verdict='ERROR', reasons='검수자가 결과를 못 냈다'), ensure_ascii=False))
         v['attempt'] = att; v['pack'] = pack
+        _top_gate(r, v)
         store.update_run(r['id'], review=json.dumps(v, ensure_ascii=False))
         if v['verdict'] == 'FAIL' and _again(r, dict(stage='review', attempt=att, review=v, pack=pack)): return
         return store.update_run(r['id'], status='done', ended=store.now())

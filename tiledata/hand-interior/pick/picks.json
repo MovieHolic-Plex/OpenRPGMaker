@@ -44,6 +44,11 @@
   "choice": "w52-A",
   "note": ""
  },
+ "arrow floor": {
+  "at": "2026-10-02T06:20:20+09:00",
+  "choice": "h40-D",
+  "note": ""
+ },
  "balance scale": {
   "at": "2026-09-30T06:22:22+09:00",
   "choice": "w6-C",
@@ -490,6 +495,11 @@
   "choice": "w45-A",
   "note": ""
  },
+ "cracked wall": {
+  "at": "2026-10-02T06:19:54+09:00",
+  "choice": "h37-C",
+  "note": ""
+ },
  "cradle": {
   "at": "2026-10-01T17:42:22+09:00",
   "choice": "w105-A",
@@ -784,6 +794,11 @@
   "choice": "w43-A",
   "note": ""
  },
+ "hint tablet": {
+  "at": "2026-10-02T06:20:02+09:00",
+  "choice": "h38-B",
+  "note": ""
+ },
  "holy water font": {
   "at": "2026-09-30T06:25:06+09:00",
   "choice": "w7-A",
@@ -797,6 +812,11 @@
  "ice chest:fish+fishg+fishr": {
   "at": "2026-09-30T06:20:59+09:00",
   "choice": "v5",
+  "note": ""
+ },
+ "inn reception": {
+  "at": "2026-10-02T06:21:25+09:00",
+  "choice": "h42-E",
   "note": ""
  },
  "iron gate": {
@@ -978,6 +998,11 @@
  "pitchfork": {
   "at": "2026-09-30T05:53:49+09:00",
   "choice": "w1-C",
+  "note": ""
+ },
+ "pitfall": {
+  "at": "2026-10-02T06:20:13+09:00",
+  "choice": "h39-C",
   "note": ""
  },
  "plant": {
@@ -1513,6 +1538,11 @@
  "tea 2x1": {
   "at": "2026-10-01T19:52:42+09:00",
   "choice": "h5-A",
+  "note": ""
+ },
+ "teleport pad": {
+  "at": "2026-10-02T06:19:47+09:00",
+  "choice": "h33-E",
   "note": ""
  },
  "telescope": {

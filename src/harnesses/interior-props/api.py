@@ -60,7 +60,7 @@ def state():
                              phase=r.get('phase') or 'draw', attempt=r.get('attempt') or 1,
                              engine=r.get('engine') or '', reviewEngine=r.get('review_engine') or '',
                              review=dict(verdict=rv.get('verdict'), codes=rv.get('codes') or [], reasons=rv.get('reasons', ''),
-                                         surfaces=rv.get('surfaces', ''), worse=rv.get('worse')) if rv else None,
+                                         surfaces=rv.get('surfaces', ''), top=rv.get('top', ''), worse=rv.get('worse')) if rv else None,
                              history=[dict(attempt=h['attempt'], stage=h['stage'],
                                            why=('; '.join(h.get('hard', [])) if h['stage'] == 'hard' else
                                                 ', '.join((h.get('review') or {}).get('codes') or []) + ' — ' + (h.get('review') or {}).get('reasons', '')

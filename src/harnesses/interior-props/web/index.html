@@ -202,8 +202,8 @@ function renderNav() {
 function vbadge(o) {
   if (o.cur || o.busy || o.failed || o.bad || !o.review) return '';
   const v = o.review.verdict;
-  return v === 'PASS' ? '<span class="vb pass" title="독립 검수자가 3/4 시점·「지금보다 나빠졌나」를 봤다">3/4 ✓</span>'
-       : v === 'FAIL' ? `<span class="vb fail" title="시도 ${o.attempt}번 모두 검수에서 떨어졌다 — 그래도 고를 수 있다">3/4 ✗</span>`
+  return v === 'PASS' ? '<span class="vb pass" title="검수자(AI)가 통과시켰다 — 보증이 아니다. 꼭대기 면 규칙(2026-10-02) 전 검수는 특히 너그럽다">검수 통과</span>'
+       : v === 'FAIL' ? `<span class="vb fail" title="시도 ${o.attempt}번 모두 검수에서 떨어졌다 — 그래도 고를 수 있다">검수 ✗</span>`
        : '<span class="vb unk">검수?</span>';
 }
 
@@ -219,8 +219,8 @@ function card(it, key, c, opt) {
   if (opt.note) h += `<div class="nt" title="${esc(opt.note)}">${esc(opt.note)}</div>`;
   if (opt.bad) h += `<div class="bad">검사 ✗ ${esc(opt.bad).slice(0, 90)}</div>`;
   const rv = opt.review;
-  if (rv && !opt.busy && rv.verdict === 'FAIL') h += `<div class="rv fail" title="${esc(rv.reasons + (rv.surfaces ? '\n면: ' + rv.surfaces : ''))}">3/4 검수 ✗ ${esc((rv.codes || []).join(','))} — ${esc(rv.reasons)}</div>`;
-  else if (rv && !opt.busy && rv.verdict === 'PASS') h += `<div class="rv pass" title="${esc(rv.reasons)}">3/4 검수 ✓ ${esc(rv.surfaces || rv.reasons)}</div>`;
+  if (rv && !opt.busy && rv.verdict === 'FAIL') h += `<div class="rv fail" title="${esc(rv.reasons + (rv.surfaces ? '\n면: ' + rv.surfaces : ''))}">검수 ✗ ${esc((rv.codes || []).join(','))} — ${esc(rv.reasons)}</div>`;
+  else if (rv && !opt.busy && rv.verdict === 'PASS') h += `<div class="rv pass" title="${esc(rv.reasons)}">검수 통과 · ${esc(rv.top ? '꼭대기 ' + rv.top + ' · ' : '')}${esc(rv.surfaces || rv.reasons)}</div>`;
   if (opt.history && opt.history.length) h += `<div class="hist" title="${esc(opt.history.map(x => `시도 ${x.attempt} ${x.stage === 'hard' ? '깨짐' : '검수'} ✗: ${x.why}`).join('\n'))}">검수에서 떨어져 ${opt.history.filter(x => x.stage !== 'review-error').length}번 다시 그림</div>`;
   if (rej) h += `<div class="reasons">` + Object.entries(S.data.reasons).map(([k, v]) => `<button data-r="${k}" data-rc="${esc(c)}" class="${rej.includes(k) ? 'on' : ''}">${v}</button>`).join('') + `</div>`;
   return h + '</div>';
