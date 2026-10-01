@@ -87,6 +87,7 @@ const RUNTIME_IMPORTS = [
   "./battle-skins/_retro2003.css",
   // 같은 뼈대를 쓰는 측면 스킨의 창 색.
   "./battle-skins/_retro-themes.css",
+  "./battle-skins/_battle-look.css",
   "./battle/26-battle-scenery.css",
   "./battle/27-retro-motion.css",
   "./commerce.css",

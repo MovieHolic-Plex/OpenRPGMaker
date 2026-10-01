@@ -26,11 +26,11 @@
   --retro-window: linear-gradient(180deg, var(--retro-top), var(--retro-bottom));
   --retro-frame: 0 0 0 2px var(--retro-edge), inset 0 0 0 2px var(--retro-edge-inner);
   --retro-pixel: calc(2px / 2);
-  --runtime-ui-font: var(--runtime-pixel-font);
+  --runtime-ui-font: var(--battle-look-font, var(--runtime-pixel-font));
   /* RM2003 배치: 왼쪽 = 적 이름 창(내 차례엔 그 자리에 명령 창), 오른쪽 = 파티 상태 창.
      유리 묶음은 연출 단계에 1열을 0 으로 접지만 이 스킨은 두 창을 늘 띄운다(접으면 빈 남색 판이 남았다). */
   grid-template-columns: minmax(0, 38fr) minmax(0, 62fr);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--battle-look-font, var(--runtime-pixel-font));
   color: #fff;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
   transition: none;
@@ -47,7 +47,7 @@
   border-radius: 4px;
   box-shadow: var(--retro-frame);
   backdrop-filter: none;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--battle-look-font, var(--runtime-pixel-font));
   color: #fff;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
@@ -71,7 +71,7 @@
   border-radius: 0;
   box-shadow: var(--retro-frame);
   color: var(--retro-accent);
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--battle-look-font, var(--runtime-pixel-font));
   font-size: 14px;
   font-weight: 400;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
@@ -86,7 +86,7 @@
   grid-template-columns: minmax(0, 1fr);
   color: #fff;
   padding: 0 6px 0 36px;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--battle-look-font, var(--runtime-pixel-font));
   font-size: 20px;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
@@ -103,7 +103,7 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-name {
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--battle-look-font, var(--runtime-pixel-font));
   font-weight: 400;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
@@ -254,7 +254,7 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::before {
   content: "▼";
   color: #fff;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--battle-look-font, var(--runtime-pixel-font));
   font-size: 24px;
   line-height: 28px;
   text-align: center;
@@ -423,7 +423,7 @@
   border-radius: 0;
   box-shadow: none;
   box-sizing: border-box;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--battle-look-font, var(--runtime-pixel-font));
   font-size: 16px;
   font-weight: 400;
   height: 20px;
@@ -471,7 +471,9 @@
   position: relative;
   z-index: 8;
 }
-.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-director-step="command"] .battle-enemy-list-panel { visibility: hidden; }
+/* 대상 고르기에도 명령 창이 같은 칸에 떠 있다 — 비치는 창 꾸밈(ink·veil)에서 적 이름이 겹쳐 보였다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-director-step="command"] .battle-enemy-list-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-director-step="target"] .battle-enemy-list-panel { visibility: hidden; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list {
   display: grid;
   grid-auto-rows: var(--battle-command-row-height);
@@ -498,7 +500,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--runtime-pixel-font);
+  font-family: var(--battle-look-font, var(--runtime-pixel-font));
   font-size: 20px;
   line-height: 24px;
   color: #fff;
