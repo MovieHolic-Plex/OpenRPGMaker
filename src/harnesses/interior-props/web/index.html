@@ -115,6 +115,11 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 .obj .newpic { color:#f2c14e; font-size:12px; font-weight:800; align-self:center; line-height:1.3; }
 .obj .newpic small { color:#e9d9a8; font-weight:600; }
 .nb { background:#f2c14e; color:#1a1a1a; border-radius:3px; padding:0 4px; font-size:10px; }
+.eng { font-size:10px; font-weight:800; border-radius:4px; padding:0 5px; letter-spacing:.02em; flex:none; }
+.eng.codex { background:#1f4d3a; color:#9ff0c6; }
+.eng.claude { background:#5a3a22; color:#ffc99a; }
+.it .eng { margin-left:4px; }
+.engf { position:sticky; top:0; z-index:2; background:#1f1d23; border-bottom:1px solid var(--line); display:flex; gap:6px; align-items:center; padding:8px 10px 6px; color:var(--dim); font-size:12px; }
 .obj .rb { position:absolute; top:4px; left:6px; font-size:10px; background:#2b3b55; color:#cfe0ff; border-radius:4px; padding:0 4px; }
 </style>
 </head>
@@ -126,6 +131,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
   <span class="chip">고를 차례 <b id="cReady">0</b></span>
   <span class="chip">그리는·검수 중 <b id="cDraw">0</b></span>
   <span class="chip">끝남 <b id="cDone">0</b></span>
+  <span class="chip" id="cEng" title="마지막으로 그린 쪽 — 다시 그린 후보는 마지막 그림의 엔진"></span>
   <span class="pool" id="pool"></span>
 </header>
 <div class="wrap">
@@ -135,7 +141,9 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 <div class="bar" id="bar"></div>
 <div class="toast" id="toast"></div>
 <script>
-const S = { view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'one', bg:'wood', zoom:6, flip:false,
+const ENG = {codex:'Codex', claude:'Sonnet'};
+const ENG_FULL = {codex:'Codex gpt-6.1-sol', claude:'Claude Sonnet 5.5'};
+const S = { eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'one', bg:'wood', zoom:6, flip:false,
             objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -162,6 +170,8 @@ async function load(keep) {
   $('#cReady').textContent = its.filter(i => i.status === 'ready').length;
   $('#cDraw').textContent = its.filter(i => i.status === 'drawing').length;
   $('#cDone').textContent = its.filter(i => i.status === 'done').length;
+  const all = its.flatMap(i => i.rounds.flatMap(r => r.runs));
+  $('#cEng').innerHTML = `<span class="eng codex">Codex</span> ${all.filter(r => r.engine === 'codex').length}장 · <span class="eng claude">Sonnet</span> ${all.filter(r => r.engine === 'claude').length}장`;
   const p = S.data.pool;
   $('#pool').innerHTML = `<span title="그리기 ${esc(p.effort)} · 검수 ${esc(p.reviewEffort)} · 한 장 최대 ${p.attempts}번 그림(검수 탈락 시 다시)">${esc(p.model)} · 그림 ${esc(p.effort)} · 검수 ${esc(p.reviewEffort)} · 동시 ${p.par}</span> · ` + (p.alive ? `<span class="live">● 작업 중 ${p.running} · 대기 ${p.queued}</span>` : '쉼');
   if (!S.cur || !item()) { const f = its.find(i => i.status === 'ready') || its[0]; S.cur = f?.id || null; S.round = null; S.sel = null; S.rej = {}; }
@@ -171,18 +181,21 @@ async function load(keep) {
 }
 
 function renderNav() {
-  const its = S.data.items, g = {ready:'고를 차례', drawing:'그리는·검수 중', done:'끝남'};
-  let h = '';
+  const g = {ready:'고를 차례', drawing:'그리는·검수 중', done:'끝남'};
+  const engOf = i => [...new Set(i.rounds.at(-1).runs.map(r => r.engine).filter(Boolean))];
+  const its = S.data.items.filter(i => S.eng === 'all' || engOf(i).includes(S.eng));
+  let h = `<div class="engf">그린 쪽 <span class="seg">${[['all', '전체'], ['codex', 'Codex'], ['claude', 'Sonnet']].map(([k, v]) => `<button data-eng="${k}" class="${S.eng === k ? 'on' : ''}">${v}</button>`).join('')}</span></div>`;
   for (const k of ['ready', 'drawing', 'done']) {
     const L = its.filter(i => i.status === k); if (!L.length) continue;
     h += `<h3>${g[k]} · ${L.length}</h3>`;
     for (const i of L) {
       const b = k === 'drawing' ? `${i.rounds.at(-1).runs.length - i.busy}/${i.rounds.at(-1).runs.length}` : k === 'ready' ? `${i.readyCount}장` : '✓';
       h += `<div class="it ${i.id === S.cur ? 'cur' : ''}" data-id="${esc(i.id)}"><span class="th"><img src="/api/harness/thumb/${i.slug}.png" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'nb',textContent:'새'}))"></span>
-            <span class="n" title="${esc(i.desc)}">${esc(i.name)}</span><span class="b ${k}">${b}</span></div>`;
+            <span class="n" title="${esc(i.desc)}">${esc(i.name)}</span>${engOf(i).map(e => `<span class="eng ${e}" title="마지막 판을 ${ENG_FULL[e]} 가 그렸다">${ENG[e][0]}</span>`).join('')}<span class="b ${k}">${b}</span></div>`;
     }
   }
   $('#nav').innerHTML = h || '<div class="empty" style="padding:20px">아직 판이 없다.<br>위 「기물 골라 새로 뽑기」에서 시작.</div>';
+  $('#nav').querySelectorAll('[data-eng]').forEach(b => b.onclick = () => { S.eng = b.dataset.eng; renderNav(); });
   $('#nav').querySelectorAll('.it').forEach(e => e.onclick = () => { S.cur = e.dataset.id; S.round = null; S.sel = null; S.rej = {}; S.memo = ''; renderNav(); renderPick(); });
 }
 
@@ -197,7 +210,7 @@ function vbadge(o) {
 function card(it, key, c, opt) {
   const sel = S.sel === c, rej = S.rej[c];
   let h = `<div class="card ${opt.cur ? 'cur' : ''} ${sel ? 'sel' : ''} ${rej ? 'rej' : ''} ${!opt.busy && opt.review && opt.review.verdict === 'FAIL' ? 'vfail' : ''}" data-c="${esc(c)}" ${opt.disabled ? 'data-dis="1"' : ''}>
-    <div class="top"><span class="key">${key}</span><span class="dir">${esc(opt.label)}</span>${vbadge(opt)}${opt.cur ? '' : `<button class="x" data-x="${esc(c)}" title="이 후보 버리기 (X)">✕</button>`}</div>`;
+    <div class="top"><span class="key">${key}</span>${opt.engine ? `<span class="eng ${opt.engine}" title="그림: ${ENG_FULL[opt.engine]}${opt.reviewEngine ? ' · 검수: ' + ENG_FULL[opt.reviewEngine] : ''}">${ENG[opt.engine]}</span>` : ''}<span class="dir">${esc(opt.label)}</span>${vbadge(opt)}${opt.cur ? '' : `<button class="x" data-x="${esc(c)}" title="이 후보 버리기 (X)">✕</button>`}</div>`;
   const att = opt.attempt > 1 ? ` (시도 ${opt.attempt}/${S.data.pool.attempts})` : '';
   if (opt.busy && opt.phase === 'review' && opt.v) h += `<div class="pic over" data-over="${opt.busy === 'queued' ? '검수 대기' : '3/4 검수 중…'}"><img data-src="${imgSrc(it, c, opt.v)}"></div>`;
   else if (opt.busy) h += `<div class="spin"><i></i>${opt.busy === 'queued' ? '대기 중' + att : (opt.attempt > 1 ? '검수에서 떨어져 다시 그리는 중' + att : '그리는 중…')}</div>`;
@@ -229,7 +242,7 @@ function renderPick() {
     <span>확대 <span class="seg">${[3, 4, 6, 8].map(z => `<button data-z="${z}" class="${S.zoom === z ? 'on' : ''}">${z}배</button>`).join('')}</span></span></div>`;
   h += `<div class="grid bg-${S.bg} ${S.mode === 'ctx' ? 'mode-ctx' : ''}">` + card(it, '0', cur, {cur:1, label:it.isNew && cur === 'v5' ? '지금 그림 없음(새 기물)' : '지금 그림', v:0});
   r.runs.forEach((x, k) => {
-    h += card(it, String(k + 1), x.cand, {label:x.direction || DIRS[x.letter], v:x.v, note:x.note, phase:x.phase, attempt:x.attempt, review:x.review, history:x.history,
+    h += card(it, String(k + 1), x.cand, {label:x.direction || DIRS[x.letter], v:x.v, note:x.note, phase:x.phase, attempt:x.attempt, review:x.review, history:x.history, engine:x.engine, reviewEngine:x.reviewEngine,
       busy:['queued', 'running'].includes(x.status) ? x.status : null, failed:x.status === 'failed' ? (x.error || '실패') : null,
       bad:x.status === 'done' && !x.ok ? (x.error || '하드 검사 불합격') : null});
   });

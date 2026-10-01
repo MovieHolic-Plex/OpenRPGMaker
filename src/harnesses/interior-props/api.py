@@ -58,6 +58,7 @@ def state():
             runs.append(dict(letter=r['letter'], cand=cand, direction=r['direction'].split(':')[0], directionFull=r['direction'],
                              status=r['status'], ok=r['ok'], error=r['error'] or '', note=_note(i, cand),
                              phase=r.get('phase') or 'draw', attempt=r.get('attempt') or 1,
+                             engine=r.get('engine') or '', reviewEngine=r.get('review_engine') or '',
                              review=dict(verdict=rv.get('verdict'), codes=rv.get('codes') or [], reasons=rv.get('reasons', ''),
                                          surfaces=rv.get('surfaces', ''), worse=rv.get('worse')) if rv else None,
                              history=[dict(attempt=h['attempt'], stage=h['stage'],

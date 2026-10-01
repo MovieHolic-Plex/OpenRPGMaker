@@ -11,7 +11,7 @@
 고르는 화면: 고르기 서버(scripts/content/hand-interior-pick/pick_server.py) 의 /harness — http://mdc-server:18302/harness
 자세한 것: src/harnesses/interior-props/README.md
 """
-import argparse, datetime, fcntl, glob, json, os, shutil, signal, subprocess, sys, time
+import argparse, collections, datetime, fcntl, glob, json, os, shutil, signal, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
@@ -192,6 +192,7 @@ def _start(r):
     else:
         prompt, _ = _prompt(r); effort = r['effort'] or EFFORT
     log = os.path.join(LOGS, f"{_out(r)}.a{att}{'.review' if phase == 'review' else ''}.log"); os.makedirs(LOGS, exist_ok=True)
+    store.update_run(r['id'], **{('review_engine' if phase == 'review' else 'engine'): ENGINE})   # 화면에서 Codex·Sonnet 을 가려 본다
     if ENGINE == 'codex': return _start_codex(r, prompt, effort if phase == 'review' else EFFORT, log)
     env = dict(os.environ, PH_PROMPT=prompt, PH_CLAUDE=claude_bin(), PH_MODEL=r['model'] or MODEL, PH_EFFORT=effort, PH_ROOT=r['root'])
     # 가벼운 세션: 작업 폴더를 저장소 밖에 두어 저장소 AGENTS.md·프로젝트 메모리·훅을 안 싣고(저장소는 --add-dir),
@@ -376,13 +377,27 @@ def bake():
         if r.returncode: raise SystemExit(r.returncode)
 
 
+def engines():
+    """엔진 칸이 비어 있는(2026-10-02 전) 실행을 로그 첫 줄로 채운다 — Codex 로그는 「OpenAI Codex」 머리로 시작한다."""
+    n = collections.Counter()
+    for r in store.runs():
+        for col, suf in (('engine', ''), ('review_engine', '.review')):
+            if r.get(col): continue
+            f = os.path.join(LOGS, f"{_out(r)}.a{r.get('attempt') or 1}{suf}.log")
+            if not os.path.exists(f): continue
+            with open(f, encoding='utf-8', errors='replace') as fh: head = fh.read(200)
+            e = 'codex' if head.startswith('OpenAI Codex') else 'claude'
+            store.update_run(r['id'], **{col: e}); n[(col, e)] += 1
+    print(dict(n))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = ap.add_subparsers(dest='cmd', required=True)
     d = sp.add_parser('draw'); d.add_argument('items', nargs='+'); d.add_argument('--n', type=int, default=N_DEFAULT)
     d.add_argument('--note', default=''); d.add_argument('--base', default='')
     rv = sp.add_parser('review'); rv.add_argument('rounds', nargs='+', type=int)
-    sp.add_parser('pool'); sp.add_parser('status'); sp.add_parser('bake')
+    sp.add_parser('pool'); sp.add_parser('status'); sp.add_parser('bake'); sp.add_parser('engines')
     a = ap.parse_args()
     sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
     if a.cmd == 'draw': draw(a.items, a.n, a.note, a.base)
@@ -390,6 +405,7 @@ def main():
     elif a.cmd == 'pool': pool()
     elif a.cmd == 'status': status()
     elif a.cmd == 'bake': bake()
+    elif a.cmd == 'engines': engines()
 
 
 if __name__ == '__main__':

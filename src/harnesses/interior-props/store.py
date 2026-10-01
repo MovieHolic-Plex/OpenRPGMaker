@@ -41,7 +41,8 @@ def conn():
             _C.executescript(SCHEMA)
             have = {r[1] for r in _C.execute('PRAGMA table_info(runs)')}
             for col, decl in (('attempt', 'INTEGER DEFAULT 1'), ('phase', "TEXT DEFAULT 'draw'"),
-                              ('review', "TEXT DEFAULT ''"), ('history', "TEXT DEFAULT '[]'")):
+                              ('review', "TEXT DEFAULT ''"), ('history', "TEXT DEFAULT '[]'"),
+                              ('engine', "TEXT DEFAULT ''"), ('review_engine', "TEXT DEFAULT ''")):   # 마지막으로 그린·검수한 쪽(codex|claude)
                 if col not in have: _C.execute(f'ALTER TABLE runs ADD COLUMN {col} {decl}')
         return _C
 
