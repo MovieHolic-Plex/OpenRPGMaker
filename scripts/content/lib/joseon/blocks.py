@@ -379,7 +379,8 @@ def thatch_baram(cv, R=3, over=0):
     import thatch3d
     H = R * T
     cv.a[:H, :, :] = 0
-    cv.paste(thatch3d.dome(cv.w + over, H + 2, seed=cv.w), 0, 0)
+    hd = max(32, min(48, int((cv.w + over) * 0.46)))
+    cv.paste(thatch3d.dome(cv.w + over, hd, seed=cv.w), 0, 51 - hd)
     dither_under(cv, H, 4)
 
 
