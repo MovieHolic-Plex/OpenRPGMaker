@@ -1,0 +1,34 @@
+{
+ "id": "quest board",
+ "slug": "quest_board",
+ "name_ko": "의뢰 게시판",
+ "category": "모험가 길드",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  32,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 16
+ },
+ "footprint": {
+  "w": 2,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "쪽지가 빼곡히 꽂힌 나무 게시판(2칸) — 종이마다 붉은 핀·글 줄.",
+ "where": "",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "tavern"
+}

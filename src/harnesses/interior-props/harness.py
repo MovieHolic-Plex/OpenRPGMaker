@@ -40,7 +40,7 @@ def draw(items, n=N_DEFAULT, note='', base='', start_pool=True):
     by = objects_by_id(); out = []
     for item in items:
         if item not in by: raise SystemExit(f'모르는 기물: {item!r}')
-        dirs = brief.directions(item) if not base else brief.DIRECTIONS
+        dirs = brief.directions(item, base)
         rid = store.new_round(item, n, dirs, note=note, base=base, model=MODEL, effort=EFFORT, root=ROOT)
         brief.make(rid, item, note=note, base=base)
         out.append(rid)
@@ -153,6 +153,8 @@ def _review_prompt(r):
     if h:
         prev = '\n## 같은 후보의 지난 검수(참고 — 그때 지적이 고쳐졌는지 본다)\n' + '\n'.join(
             f"- 시도 {x['attempt']}: {','.join((x.get('review') or {}).get('codes') or [])} — {(x.get('review') or {}).get('reasons', '')}"[:400] for x in h) + '\n'
+    if os.path.exists(os.path.join(r['brief'], 'base-x4.png')):
+        prev += f"\n## 출발 그림\n`{r['brief']}/base-x4.png` — 이 후보의 출발점(다른 상태·고른 그림). 같은 물건으로 읽혀야 하고, 바뀌어야 할 부분만 달라야 한다. 출발 그림과 거의 같은데 상태가 안 바뀌었으면 `READ`.\n"
     rep = {'{ROOT}': r['root'], '{ITEM}': r['item'], '{DESC}': o['description'], '{KIND}': o['kind_ko'], '{CAT}': o['category_ko'],
            '{CAND}': f"{_folder(r)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,

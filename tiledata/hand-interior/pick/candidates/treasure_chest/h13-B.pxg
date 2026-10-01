@@ -1,0 +1,31 @@
+// h13-B 같은 방 화풍: 상자(chest) 앵커와 같은 12행·13폭, 둥근 뚜껑·황동 테 둘·가운데 자물쇠, 윤곽은 나무 어두운 단
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat O wood 1
+@mat p wood 2
+@mat a wood 3
+@mat b wood 4
+@mat c wood 5
+@mat e wood 6
+@mat d wood 7
+@mat g brass 1
+@mat m brass 2
+@mat i brass 3
+@mat h brass 4
+@mat k brass 5
+@mat q iron 0
+@mblock 0 3
+....OOOOOOOOO...
+...OhdddddddhO..
+..OghdeeeeechgO.
+..OghbbbbbbahgO.
+..OghaaaaaaphgO.
+..OghppppppphgO.
+..OghcbbbbbahgO.
+..OghbbkkibahgO.
+..OghbbkqibahgO.
+..OghbbiimbahgO.
+..OghaaaaapphgO.
+..OOOOOOOOOOOOO.
+...~~~~~~~~~~~~~

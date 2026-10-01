@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pressure_plate/h18-A.pxg",
+ "id": "pressure plate",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "홈 둘레 안에 솟은 돌판: 윗면 위·왼 밝은 테, 새긴 네모, 앞면 두 단, 맨 아래 접지 홈",
+ "ok": true
+}

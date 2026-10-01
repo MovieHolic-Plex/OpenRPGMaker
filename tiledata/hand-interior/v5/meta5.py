@@ -23,7 +23,7 @@ KO={'column marble':'대리석 기둥','column stone':'돌 기둥','column dwarf
  'nightstand':'협탁'}
 ko.UK.update(KO)
 ko.GK.update(notes6.GK_FIX)
-ko.CAT.update({'casino':'카지노','dungeon':'지하 감옥','elf':'엘프 궁정','hall':'연회장·알현실','hobbit':'호빗 굴','magitek':'마도 기관','mine':'광산','opera':'극장','stable':'마구간','tower':'마법사의 탑','ship':'배 선실','crypt':'지하묘지','gimmick':'JRPG 장치'})
+ko.CAT.update({'casino':'카지노','dungeon':'지하 감옥','elf':'엘프 궁정','hall':'연회장·알현실','hobbit':'호빗 굴','magitek':'마도 기관','mine':'광산','opera':'극장','stable':'마구간','tower':'마법사의 탑','ship':'배 선실','crypt':'지하묘지','gimmick':'JRPG 장치','inn':'여관','castle':'성','guild':'모험가 길드','demon':'마왕성','monster':'몬스터 센터','horror':'폐가','farm':'농가','story':'추억'})
 D={
  'column marble':'홀을 신랑·측랑으로 나누는 대리석 기둥(1칸, 24px 솟음). 3~4칸 간격으로 두 줄. 기둥 사이 베이마다 북쪽 벽에 창 하나.',
  'column stone':'=D(column marble)','column dwarf':'드워프 홀의 네모 돌기둥, 금빛 룬. 긴 식탁 줄 사이에 두 줄.','column wood':'연회장 나무 기둥(금 띠 둘). 긴 화덕 양옆에 두 줄.',

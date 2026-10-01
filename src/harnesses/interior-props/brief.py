@@ -32,6 +32,14 @@ NEW_DIRECTIONS = [
     ('D', '장식: 같은 물건을 한 단계 화려하게(금장·문양·빛). 잔점·노이즈는 금지.'),
     ('E', '자유 해석: 같은 쓰임(use)의 물건을 다른 디자인으로 해석한다. 칸 수·캔버스는 지킨다.'),
 ]
+# 둘째 상태(열린 상자·켠 레버 …) — 다른 기물의 고른 그림(base = 「후보@기물」)에서 출발해 상태만 바꾼다.
+STATE_DIRECTIONS = [
+    ('A', '상태만 바꾸기: 출발 그림(base-x4.png)의 화소를 그대로 두고 상태가 바뀌는 부분만 고친다(뚜껑·손잡이·창살·가시).'),
+    ('B', '상태만 바꾸기 (A 와 다른 해석): 바뀐 부분의 모양을 A 와 다르게 해석한다. 나머지는 출발 그림 그대로.'),
+    ('C', '또렷하게: 한눈에 상태가 바뀐 것이 보이게 바뀐 부분을 크게. 같은 물건으로 읽혀야 한다.'),
+    ('D', '효과: 상태가 바뀐 표시(빛·속이 보임·그림자)를 더한다. 잔점 금지.'),
+    ('E', '자유: 같은 물건의 그 상태를 자유롭게. 출발 그림과 한 벌로 읽혀야 한다.'),
+]
 REASONS = {'view': '시점 이상', 'size': '크기·비율 이상', 'style': '화풍이 다름', 'read': '무슨 물건인지 안 읽힘',
            'messy': '지저분함·잔점', 'worse': '원래 그림이 더 나음'}
 
@@ -46,8 +54,17 @@ def is_new(item):
     return bool(objects_by_id()[item].get('new')) and current_choice(item) == 'v5'
 
 
-def directions(item):
+def directions(item, base=''):
+    if '@' in (base or ''): return STATE_DIRECTIONS
+    if base: return DIRECTIONS
     return NEW_DIRECTIONS if is_new(item) else DIRECTIONS
+
+
+def base_src(item, base):
+    """base = 「h13-D」(이 기물의 후보) 또는 「h13-D@treasure chest」(다른 기물의 후보) → (기물, 후보)."""
+    if '@' in base:
+        c, src = base.split('@', 1); return src, c
+    return item, base
 
 
 def current_choice(item):
@@ -135,10 +152,12 @@ def make(rid, item, note='', base=''):
         sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick')); import context
         ctx, room = context.context_image(o, None if cur == 'v5' else im)
         ctx.resize((ctx.width * 3, ctx.height * 3), Image.NEAREST).save(os.path.join(out, 'context.png'))
-    except Exception as e:  # 맥락 그림이 안 되는 기물도 판은 돈다
+    except (Exception, SystemExit) as e:  # 맥락 그림이 안 되는 기물도 판은 돈다
         room = f'(맥락 그림 실패: {e!r})'
     if base:
-        bim = Image.open(cand_png(item, base)).convert('RGBA'); _bg(bim, 4).save(os.path.join(out, 'base-x4.png'))
+        bitem, bc = base_src(item, base)
+        bim = Image.open(cand_png(bitem, bc)).convert('RGBA'); _bg(bim, 4).save(os.path.join(out, 'base-x4.png'))
+        bpxg = os.path.relpath(os.path.join(CAND, slug(bitem), (bc if bc != 'v5' else 'v5') + '.pxg'), ROOT)
     an = anchors(item)
     fam = [(i, cand_png(i, current_choice(i))) for i in family(item)[:6]]
     fam = [(i, p) for i, p in fam if os.path.exists(p)]
@@ -172,7 +191,13 @@ def make(rid, item, note='', base=''):
                '- 같은 방에 놓을 기존 가구(anchors/)와 윤곽 굵기·명암 단 수·크기감이 같아야 한다.', '']
     if note: md += ['## 사용자 메모 (가장 먼저 따른다)', '', note, '']
     if notes: md += ['## 이 기물에 대한 사용자의 지난 말', ''] + [f'- {n}' for n in notes[-5:]] + ['']
-    if base: md += [f'## 출발점', '', f'사용자가 이 후보(`{base}`, `base-x4.png`)를 출발점으로 골랐다. 지금 그림 대신 이걸 다듬는다.', '']
+    if base and '@' in base:
+        bitem, bc = base_src(item, base)
+        md += ['## 출발점 — 같은 물건의 다른 상태', '',
+               f'이 기물은 「{objects_by_id()[bitem]["name_ko"]}」(`{bitem}`)의 다른 상태다. 사용자가 고른 그 그림 `{bpxg}`(`base-x4.png`)를 **복사해서 출발**한다 — `cp {bpxg} <네 결과 파일>.pxg`.',
+               '팔레트가 다르면 출발 그림 폴더의 palette.pal 색과 같은 색만 쓴다(검사가 이 폴더 palette.pal 로 본다 — 없는 색이면 가장 가까운 색으로).',
+               '둘을 나란히 놓으면 같은 물건의 두 상태로 읽혀야 한다: 크기·윤곽·색은 그대로, 상태가 바뀌는 부분만 다르다.', '']
+    elif base: md += [f'## 출발점', '', f'사용자가 이 후보(`{base}`, `base-x4.png`)를 출발점으로 골랐다. 지금 그림 대신 이걸 다듬는다.', '']
     if fam:
         md += ['## 같은 물건의 짝 (family/) — 이것들과 같은 물건으로 읽혀야 한다', '',
                '같은 디자인·나무색·굵기의 다른 방향(또는 크기)이다. 네 그림을 이 옆에 놓아도 한 벌로 보여야 한다.', '']

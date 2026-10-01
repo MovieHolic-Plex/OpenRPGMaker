@@ -1,0 +1,39 @@
+// h21-A: 구멍 뚫린 쇠판에 쇠가시 넷이 솟은 모습 — 모서리 위·왼 밝은 테, 아래·오른 어두운 테, 가시는 왼쪽이 밝다.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 2
+@mblock 0 0
+................
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+................
+@tblock 0 0
+................
+.44444444444440.
+.42622222262220.
+.42512222251220.
+.44512222451220.
+.40002222000220.
+.42222222222220.
+.42222222222220.
+.42622222262220.
+.42512222251220.
+.44512222451220.
+.40002222000220.
+.42222222222220.
+.42222222222220.
+.00000000000000.
+................

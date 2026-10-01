@@ -1,0 +1,35 @@
+{
+ "id": "bone pillar",
+ "slug": "bone_pillar",
+ "name_ko": "뼈 기둥",
+ "category": "마왕성",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  48
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 48
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 32,
+ "surface": null,
+ "description": "뼈와 해골을 쌓아 묶은 기둥(32px 솟음) — 머리에 해골 둘레 윗면.",
+ "where": "",
+ "placement": [
+  "그림이 발밑 칸 위로 32px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "dungeon"
+}

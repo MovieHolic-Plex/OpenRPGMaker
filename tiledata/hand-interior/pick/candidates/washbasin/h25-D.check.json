@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/washbasin/h25-D.pxg",
+ "id": "washbasin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 14,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "note": "수건 삭제, 놋 수전 + 넓은 테두리 위 물(위에서 보임) + 앞 림 + 기둥·밑받침",
+ "ok": true
+}

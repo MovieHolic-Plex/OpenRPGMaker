@@ -1,0 +1,39 @@
+// 압력판 A: 설명 충실 — 홈 둘레(1px 어두운 테) 안에 솟은 네모 돌판, 윗면 밝은 위·왼 테, 속에 새긴 네모, 앞면 두 단
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 4
+@mblock 0 0
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+.11111111111111.
+.15555555555541.
+.15444444444431.
+.15444444444431.
+.15443333334431.
+.15443444454431.
+.15443444454431.
+.15443444454431.
+.15443555554431.
+.15444444444431.
+.15434444444431.
+.14444444444431.
+.13333333333331.
+.12222222222221.
+.00000000000000.

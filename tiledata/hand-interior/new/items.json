@@ -512,7 +512,14 @@
    "tags": [
     "지하묘지",
     "장의사"
-   ]
+   ],
+   "states": {
+    "group": "coffin",
+    "state": "닫힘",
+    "others": {
+     "열림": "coffin open"
+    }
+   }
   },
   {
    "id": "sarcophagus",
@@ -659,7 +666,14 @@
    "refs": [
     "chest",
     "royal chest"
-   ]
+   ],
+   "states": {
+    "group": "treasure chest",
+    "state": "닫힘",
+    "others": {
+     "열림": "treasure chest open"
+    }
+   }
   },
   {
    "id": "treasure chest big",
@@ -695,7 +709,14 @@
    "refs": [
     "royal chest",
     "treasure pile"
-   ]
+   ],
+   "states": {
+    "group": "treasure chest big",
+    "state": "닫힘",
+    "others": {
+     "열림": "treasure chest big open"
+    }
+   }
   },
   {
    "id": "save crystal",
@@ -803,7 +824,14 @@
    "refs": [
     "tool wall",
     "wall torch"
-   ]
+   ],
+   "states": {
+    "group": "wall lever",
+    "state": "끔",
+    "others": {
+     "켬": "wall lever on"
+    }
+   }
   },
   {
    "id": "pressure plate",
@@ -838,7 +866,14 @@
    "refs": [
     "drain grate",
     "magic circle"
-   ]
+   ],
+   "states": {
+    "group": "pressure plate",
+    "state": "올라옴",
+    "others": {
+     "눌림": "pressure plate down"
+    }
+   }
   },
   {
    "id": "push boulder",
@@ -910,7 +945,14 @@
    "refs": [
     "drain grate",
     "shackles"
-   ]
+   ],
+   "states": {
+    "group": "iron gate",
+    "state": "닫힘",
+    "others": {
+     "열림": "iron gate open"
+    }
+   }
   },
   {
    "id": "spike trap",
@@ -945,7 +987,14 @@
    "refs": [
     "drain grate",
     "straw pile"
-   ]
+   ],
+   "states": {
+    "group": "spike trap",
+    "state": "솟음",
+    "others": {
+     "숨음": "spike trap down"
+    }
+   }
   },
   {
    "id": "key pedestal",
@@ -1017,6 +1066,3332 @@
    "refs": [
     "rune stone",
     "column stone"
+   ]
+  },
+  {
+   "id": "treasure chest open",
+   "name_ko": "열린 보물상자",
+   "name_en": "treasure chest open",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "열린 보물상자 — 닫힌 보물상자(h13-D)와 같은 상자, 뚜껑이 뒤로 젖혀져 위에 서 있고 안의 어두운 속(빈 바닥)이 위에서 보인다. 높이·폭은 닫힌 것과 같다.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "보물고"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "닫힌 보물상자 자리 그대로(이벤트 2쪽 그림).",
+   "pair": [
+    "treasure chest"
+   ],
+   "refs": [
+    "chest"
+   ],
+   "states": {
+    "group": "treasure chest",
+    "state": "열림",
+    "others": {
+     "닫힘": "treasure chest"
+    }
+   },
+   "drawBase": "h13-D@treasure chest"
+  },
+  {
+   "id": "treasure chest big open",
+   "name_ko": "열린 큰 보물상자",
+   "name_en": "treasure chest big open",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "열린 큰 보물상자(2칸) — 닫힌 큰 보물상자(h24-D)와 같은 상자, 둥근 뚜껑이 뒤로 젖혀져 섰고 안쪽 붉은 천 바닥이 위에서 보인다(속 6~8행). 높이·폭은 닫힌 것과 같다.",
+   "contextRoom": "throne",
+   "tags": [
+    "보스 방",
+    "보물고"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "닫힌 큰 보물상자 자리 그대로.",
+   "pair": [
+    "treasure chest big"
+   ],
+   "refs": [
+    "royal chest"
+   ],
+   "states": {
+    "group": "treasure chest big",
+    "state": "열림",
+    "others": {
+     "닫힘": "treasure chest big"
+    }
+   },
+   "drawBase": "h24-D@treasure chest big"
+  },
+  {
+   "id": "wall lever on",
+   "name_ko": "벽 레버(켬)",
+   "name_en": "wall lever on",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 레버(켬) — 꺼진 벽 레버(h17-A)와 같은 쇠판·축, 손잡이만 위로 올라갔다. 축 옆에 작은 초록 불빛 한 점.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "퍼즐"
+   ],
+   "use": [
+    "switch"
+   ],
+   "place": "꺼진 레버 자리 그대로.",
+   "pair": [
+    "wall lever"
+   ],
+   "refs": [
+    "wall lever"
+   ],
+   "states": {
+    "group": "wall lever",
+    "state": "켬",
+    "others": {
+     "끔": "wall lever"
+    }
+   },
+   "drawBase": "h17-A@wall lever"
+  },
+  {
+   "id": "pressure plate down",
+   "name_ko": "눌린 압력판",
+   "name_en": "pressure plate down",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "눌린 압력판 — 압력판(h18-B)과 같은 돌판이 바닥 높이로 가라앉아 둘레 홈이 어둡게 넓어졌다. 판 위 밝은 테두리가 사라진다.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "퍼즐"
+   ],
+   "use": [
+    "switch"
+   ],
+   "place": "압력판 자리 그대로.",
+   "pair": [
+    "pressure plate"
+   ],
+   "refs": [
+    "pressure plate"
+   ],
+   "states": {
+    "group": "pressure plate",
+    "state": "눌림",
+    "others": {
+     "올라옴": "pressure plate"
+    }
+   },
+   "drawBase": "h18-B@pressure plate"
+  },
+  {
+   "id": "iron gate open",
+   "name_ko": "열린 쇠창살 문",
+   "name_en": "iron gate open",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "열린 쇠창살 문 — 쇠창살 문(h20-A)이 위로 올라가 칸 위쪽 문틀 속에 걸렸다. 아래 바닥 칸은 비어 지나갈 수 있고 창살 끝만 위에 보인다.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "감옥"
+   ],
+   "use": [
+    "gate"
+   ],
+   "place": "쇠창살 문 자리 그대로(열린 뒤 통행 가능).",
+   "pair": [
+    "iron gate"
+   ],
+   "refs": [
+    "iron gate"
+   ],
+   "states": {
+    "group": "iron gate",
+    "state": "열림",
+    "others": {
+     "닫힘": "iron gate"
+    }
+   },
+   "drawBase": "h20-A@iron gate"
+  },
+  {
+   "id": "spike trap down",
+   "name_ko": "숨은 가시 함정",
+   "name_en": "spike trap down",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "숨은 가시 함정 — 가시 함정(h21-B)의 구멍 뚫린 쇠판만 보이고 가시는 구멍 속으로 들어갔다(구멍마다 어두운 점).",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "함정"
+   ],
+   "use": [
+    "trap"
+   ],
+   "place": "가시 함정 자리 그대로.",
+   "pair": [
+    "spike trap"
+   ],
+   "refs": [
+    "spike trap"
+   ],
+   "states": {
+    "group": "spike trap",
+    "state": "숨음",
+    "others": {
+     "솟음": "spike trap"
+    }
+   },
+   "drawBase": "h21-B@spike trap"
+  },
+  {
+   "id": "coffin open",
+   "name_ko": "열린 관",
+   "name_en": "coffin open",
+   "category": "crypt",
+   "category_ko": "지하묘지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "열린 관(남북 1×2) — 관(w103-A)과 같은 관, 뚜껑이 비스듬히 옆으로 밀려 안의 붉은 천과 빈 속이 위에서 보인다. 높이·폭은 닫힌 관과 같다.",
+   "contextRoom": "chapel",
+   "tags": [
+    "지하묘지",
+    "예배당"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "관 자리 그대로.",
+   "pair": [
+    "coffin"
+   ],
+   "refs": [
+    "coffin"
+   ],
+   "states": {
+    "group": "coffin",
+    "state": "열림",
+    "others": {
+     "닫힘": "coffin"
+    }
+   },
+   "drawBase": "w103-A@coffin"
+  },
+  {
+   "id": "inn reception",
+   "name_ko": "여관 접수대",
+   "name_en": "inn reception",
+   "category": "inn",
+   "category_ko": "여관",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "여관 접수대(2칸) — 짙은 나무 카운터 상판(윗면 6행)에 펼친 숙박부와 놋쇠 종, 앞판에 판자 무늬. 전체 높이 24~26px. 주인은 북쪽 뒤에 선다.",
+   "contextRoom": "inn",
+   "tags": [
+    "여관",
+    "현관"
+   ],
+   "use": [
+    "counter"
+   ],
+   "place": "여관 1층 현관 맞은편. 뒤 북쪽 벽에 열쇠판.",
+   "pair": [
+    "room key board",
+    "inn sign"
+   ],
+   "refs": [
+    "counter 2x1"
+   ]
+  },
+  {
+   "id": "room key board",
+   "name_ko": "객실 열쇠판",
+   "name_en": "room key board",
+   "category": "inn",
+   "category_ko": "여관",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "객실 열쇠판(벽면 윗줄 2칸) — 나무 판에 놋쇠 열쇠 다섯 개가 고리에 걸리고 밑에 번호 패.",
+   "contextRoom": "inn",
+   "tags": [
+    "여관"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "여관 접수대 뒤 북쪽 벽.",
+   "pair": [
+    "inn reception"
+   ],
+   "refs": [
+    "tool wall"
+   ]
+  },
+  {
+   "id": "bunk bed",
+   "name_ko": "2층 침대",
+   "name_en": "bunk bed",
+   "category": "inn",
+   "category_ko": "여관",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "나무 2층 침대(1×2, 32px 솟음) — 아래 침상과 위 침상에 흰 이불, 옆에 사다리. 두 침상의 이불 윗면이 각각 위에서 보인다.",
+   "contextRoom": "inn",
+   "tags": [
+    "여관",
+    "병영",
+    "배"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "여관 싼 객실·병영·선원 숙소 북쪽 벽.",
+   "pair": [
+    "luggage trunk"
+   ],
+   "refs": [
+    "bed blue",
+    "prison cot"
+   ]
+  },
+  {
+   "id": "menu board",
+   "name_ko": "메뉴판",
+   "name_en": "menu board",
+   "category": "inn",
+   "category_ko": "여관",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "분필로 쓴 작은 메뉴판(벽면 윗줄) — 검은 판에 흰 글 줄과 그림(잔·빵).",
+   "contextRoom": "tavern",
+   "tags": [
+    "선술집",
+    "여관"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "선술집·여관 바 뒤 벽.",
+   "pair": [
+    "counter 4x1"
+   ],
+   "refs": [
+    "notice board"
+   ]
+  },
+  {
+   "id": "luggage trunk",
+   "name_ko": "여행 가방",
+   "name_en": "luggage trunk",
+   "category": "inn",
+   "category_ko": "여관",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "가죽 띠 두른 여행 트렁크 — 납작하고 넓다(높이 11~12px), 뚜껑 윗면 4행이 위에서 보이고 앞에 쇠 장식.",
+   "contextRoom": "inn",
+   "tags": [
+    "여관",
+    "객실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "객실 침대 발치.",
+   "pair": [
+    "bunk bed"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "inn sign",
+   "name_ko": "여관 간판(실내)",
+   "name_en": "inn sign",
+   "category": "inn",
+   "category_ko": "여관",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "실내 벽에 건 나무 간판(2칸) — 침대와 별 그림, 쇠사슬로 매달림.",
+   "contextRoom": "inn",
+   "tags": [
+    "여관"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "여관 홀 북쪽 벽 윗줄.",
+   "pair": [
+    "inn reception"
+   ],
+   "refs": [
+    "tapestry"
+   ]
+  },
+  {
+   "id": "leather armor stand",
+   "name_ko": "가죽 갑옷 거치대",
+   "name_en": "leather armor stand",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 십자 거치대에 건 갈색 가죽 갑옷(16px 솟음) — 어깨 윗면·받침 윗면이 위에서 보인다.",
+   "contextRoom": "smithy",
+   "tags": [
+    "방어구점",
+    "대장간"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "방어구점 바닥, 카운터 옆 줄로.",
+   "pair": [
+    "helmet shelf"
+   ],
+   "refs": [
+    "armor stand",
+    "mannequin"
+   ]
+  },
+  {
+   "id": "helmet shelf",
+   "name_ko": "투구 진열 선반",
+   "name_en": "helmet shelf",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "투구 세 개(쇠·뿔 달린·깃 장식)를 얹은 2단 나무 선반(2칸) — 선반판 윗면이 보인다. 전체 높이 28~30px.",
+   "contextRoom": "tailor",
+   "tags": [
+    "방어구점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "방어구점 북쪽 벽.",
+   "pair": [
+    "leather armor stand"
+   ],
+   "refs": [
+    "sideboard 2x1",
+    "shield wall"
+   ]
+  },
+  {
+   "id": "arrow barrel",
+   "name_ko": "화살 통",
+   "name_en": "arrow barrel",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "깃이 위로 삐죽 꽂힌 화살 다발이 든 나무 통(16px 솟음) — 통 입구 타원 윗면이 보인다.",
+   "contextRoom": "smithy",
+   "tags": [
+    "무기점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "무기점 바닥, 활 걸이 아래.",
+   "pair": [
+    "bow rack"
+   ],
+   "refs": [
+    "weapon barrel"
+   ]
+  },
+  {
+   "id": "staff rack",
+   "name_ko": "지팡이 걸이",
+   "name_en": "staff rack",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "마법 지팡이 세 개(보석 머리)가 꽂힌 나무 걸이(16px 솟음).",
+   "contextRoom": "tower",
+   "tags": [
+    "마법 상점",
+    "마법사의 탑"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "마법 상점·탑 북쪽 벽.",
+   "pair": [
+    "wand stand"
+   ],
+   "refs": [
+    "spear rack"
+   ]
+  },
+  {
+   "id": "weapon crate",
+   "name_ko": "무기 상자",
+   "name_en": "weapon crate",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "뚜껑이 반쯤 열린 나무 상자에 칼자루·도끼 손잡이가 보인다 — 입구 윗면 5~6행.",
+   "contextRoom": "smithy",
+   "tags": [
+    "무기점",
+    "무기고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "무기점·무기고 구석.",
+   "pair": [
+    "weapon barrel"
+   ],
+   "refs": [
+    "crate"
+   ]
+  },
+  {
+   "id": "axe mace wall",
+   "name_ko": "도끼·철퇴 벽걸이",
+   "name_en": "axe mace wall",
+   "category": "smith",
+   "category_ko": "대장간",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽에 건 전투 도끼 하나와 철퇴 하나(2칸), 나무 걸쇠.",
+   "contextRoom": "smithy",
+   "tags": [
+    "무기점"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "무기점 벽 윗줄.",
+   "pair": [
+    "sword rack"
+   ],
+   "refs": [
+    "tool wall",
+    "shield wall"
+   ]
+  },
+  {
+   "id": "accessory case",
+   "name_ko": "장신구 진열장",
+   "name_en": "accessory case",
+   "category": "shop",
+   "category_ko": "상점",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "유리 덮개 진열장(16px 솟음) — 유리 윗면 너머로 반지·목걸이·부적이 위에서 보인다(윗면 7~8행), 나무 다리.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "상점",
+    "보석상"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "잡화점·보석상 카운터 옆.",
+   "pair": [
+    "item shop shelf"
+   ],
+   "refs": [
+    "cake display case",
+    "cabinet:gem+gemr"
+   ]
+  },
+  {
+   "id": "item shop shelf",
+   "name_ko": "잡화점 진열 선반",
+   "name_en": "item shop shelf",
+   "category": "shop",
+   "category_ko": "상점",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "물약 병·약초 묶음·밧줄·횃불을 섞어 얹은 2단 선반(2칸) — 선반판 윗면이 보인다. 전체 높이 28~30px.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "도구점",
+    "상점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "JRPG 도구점 북쪽 벽.",
+   "pair": [
+    "accessory case",
+    "counter 3x1"
+   ],
+   "refs": [
+    "shelf:potion+potionb+potiong"
+   ]
+  },
+  {
+   "id": "knight armor",
+   "name_ko": "기사 갑옷 장식",
+   "name_en": "knight armor",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "창을 세워 든 판금 기사 갑옷(32px 솟음) — 투구 윗면·어깨 윗면, 받침 돌판 윗면 2행.",
+   "contextRoom": "throne",
+   "tags": [
+    "성",
+    "알현실",
+    "복도"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "성 복도·알현실 양옆에 한 쌍.",
+   "pair": [
+    "heraldic shield"
+   ],
+   "refs": [
+    "statue",
+    "armor stand"
+   ]
+  },
+  {
+   "id": "crown pedestal",
+   "name_ko": "왕관 받침",
+   "name_en": "crown pedestal",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "돌 받침대 위 붉은 방석에 금관(16px 솟음) — 방석 윗면과 왕관 둥근 테가 위에서 보인다.",
+   "contextRoom": "throne",
+   "tags": [
+    "성",
+    "보물고"
+   ],
+   "use": [
+    "key"
+   ],
+   "place": "보물고·왕의 방 가운데.",
+   "pair": [
+    "royal chest"
+   ],
+   "refs": [
+    "spellbook stand"
+   ]
+  },
+  {
+   "id": "heraldic shield",
+   "name_ko": "문장 방패",
+   "name_en": "heraldic shield",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽에 건 문장 방패 — 파랑·금 사분 문장에 사자 무늬.",
+   "contextRoom": "throne",
+   "tags": [
+    "성"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "성 홀 벽 윗줄, 깃발 사이.",
+   "pair": [
+    "knight armor"
+   ],
+   "refs": [
+    "shield"
+   ]
+  },
+  {
+   "id": "war map table",
+   "name_ko": "작전 지도 탁자",
+   "name_en": "war map table",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "작전 지도 탁자(2×2) — 넓은 상판(윗면 14~16행)에 펼친 지도와 말 조각·단검, 짧은 다리.",
+   "contextRoom": "throne",
+   "tags": [
+    "성",
+    "근위대"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "근위대 방·왕의 서재 가운데.",
+   "pair": [
+    "knight armor"
+   ],
+   "refs": [
+    "desk 2x2",
+    "wall map"
+   ]
+  },
+  {
+   "id": "crossed swords",
+   "name_ko": "교차한 검 장식",
+   "name_en": "crossed swords",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "방패 뒤로 X 자로 교차한 두 검(2칸).",
+   "contextRoom": "mead",
+   "tags": [
+    "성",
+    "연회장"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "알현실·연회장 벽 윗줄.",
+   "pair": [
+    "heraldic shield"
+   ],
+   "refs": [
+    "shield wall"
+   ]
+  },
+  {
+   "id": "marble bust",
+   "name_ko": "대리석 흉상",
+   "name_en": "marble bust",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "네모 대리석 받침 위 흰 흉상(16px 솟음) — 받침 윗면 2~3행.",
+   "contextRoom": "manor",
+   "tags": [
+    "성",
+    "저택"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "복도·서재·홀 구석.",
+   "pair": [
+    "knight armor"
+   ],
+   "refs": [
+    "statue",
+    "column marble"
+   ]
+  },
+  {
+   "id": "indoor fountain",
+   "name_ko": "실내 분수",
+   "name_en": "indoor fountain",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "둥근 돌 분수(2×2, 16px 솟음) — 넓은 물그릇 윗면(물 표면 12~14행)과 가운데 기둥에서 떨어지는 물줄기.",
+   "contextRoom": "throne",
+   "tags": [
+    "성",
+    "궁정"
+   ],
+   "use": [
+    "heal"
+   ],
+   "place": "성 홀·궁정 정원 방 가운데.",
+   "pair": [
+    "marble bust"
+   ],
+   "refs": [
+    "moon pool",
+    "healing spring"
+   ]
+  },
+  {
+   "id": "gilded wardrobe",
+   "name_ko": "금장 옷장",
+   "name_en": "gilded wardrobe",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "흰 칠에 금 장식 두 문 옷장(2칸, 32px 솟음) — 윗면 처마 4~5행.",
+   "contextRoom": "throne",
+   "tags": [
+    "성",
+    "침소"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "왕·왕비 침소 북쪽 벽.",
+   "pair": [
+    "canopy bed"
+   ],
+   "refs": [
+    "wardrobe"
+   ]
+  },
+  {
+   "id": "quest board",
+   "name_ko": "의뢰 게시판",
+   "name_en": "quest board",
+   "category": "guild",
+   "category_ko": "모험가 길드",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "쪽지가 빼곡히 꽂힌 나무 게시판(2칸) — 종이마다 붉은 핀·글 줄.",
+   "contextRoom": "tavern",
+   "tags": [
+    "모험가 길드",
+    "선술집"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "길드 홀 북쪽 벽 윗줄. 앞에 서서 조사.",
+   "pair": [
+    "guild counter",
+    "wanted poster"
+   ],
+   "refs": [
+    "notice board"
+   ]
+  },
+  {
+   "id": "wanted poster",
+   "name_ko": "현상수배 벽보",
+   "name_en": "wanted poster",
+   "category": "guild",
+   "category_ko": "모험가 길드",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "얼굴 그림과 금화 표시가 있는 누런 수배지.",
+   "contextRoom": "zozo",
+   "tags": [
+    "모험가 길드",
+    "초소"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "길드·초소·뒷골목 벽.",
+   "pair": [
+    "quest board"
+   ],
+   "refs": [
+    "notice board"
+   ]
+  },
+  {
+   "id": "guild counter",
+   "name_ko": "길드 접수 창구",
+   "name_en": "guild counter",
+   "category": "guild",
+   "category_ko": "모험가 길드",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 1
+   },
+   "canvas": [
+    48,
+    32
+   ],
+   "description": "길드 접수 창구(3칸) — 나무 카운터 상판(윗면 6행)에 서류 더미·잉크병·도장, 가운데 낮은 칸막이. 전체 높이 24~26px.",
+   "contextRoom": "tavern",
+   "tags": [
+    "모험가 길드"
+   ],
+   "use": [
+    "counter"
+   ],
+   "place": "길드 홀 북쪽. 뒤 벽에 의뢰 게시판.",
+   "pair": [
+    "quest board"
+   ],
+   "refs": [
+    "counter 3x1"
+   ]
+  },
+  {
+   "id": "monster trophy",
+   "name_ko": "몬스터 머리 박제",
+   "name_en": "monster trophy",
+   "category": "guild",
+   "category_ko": "모험가 길드",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "방패꼴 판에 단 뿔 달린 초록 용 머리 박제(2칸).",
+   "contextRoom": "tavern",
+   "tags": [
+    "모험가 길드",
+    "선술집"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "길드 홀 벽 윗줄 가운데.",
+   "pair": [
+    "quest board"
+   ],
+   "refs": [
+    "deer trophy"
+   ]
+  },
+  {
+   "id": "loot sacks",
+   "name_ko": "전리품 자루",
+   "name_en": "loot sacks",
+   "category": "guild",
+   "category_ko": "모험가 길드",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "불룩한 자루 둘과 금화가 삐져나온 작은 자루 — 묶은 입구가 위에서 보인다.",
+   "contextRoom": "tavern",
+   "tags": [
+    "모험가 길드",
+    "도적 소굴"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "길드 창고·도적 소굴 구석.",
+   "pair": [
+    "guild lockers"
+   ],
+   "refs": [
+    "sack",
+    "coin pile"
+   ]
+  },
+  {
+   "id": "guild lockers",
+   "name_ko": "개인 보관함",
+   "name_en": "guild lockers",
+   "category": "guild",
+   "category_ko": "모험가 길드",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "번호 붙은 나무 칸 여섯 개 보관함(2칸) — 윗면 처마 3~4행, 칸마다 쇠 손잡이. 전체 높이 28~30px.",
+   "contextRoom": "tavern",
+   "tags": [
+    "모험가 길드"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "길드 창고 북쪽 벽.",
+   "pair": [
+    "loot sacks"
+   ],
+   "refs": [
+    "apothecary drawers",
+    "cupboard"
+   ]
+  },
+  {
+   "id": "map rolls",
+   "name_ko": "지도 두루마리 통",
+   "name_en": "map rolls",
+   "category": "guild",
+   "category_ko": "모험가 길드",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "말린 지도 여러 개가 꽂힌 나무 통(16px 솟음) — 통 입구 타원과 두루마리 끝이 위에서 보인다.",
+   "contextRoom": "scholar",
+   "tags": [
+    "모험가 길드",
+    "서재"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "길드·서재·선장실 구석.",
+   "pair": [
+    "war map table"
+   ],
+   "refs": [
+    "scroll rack",
+    "weapon barrel"
+   ]
+  },
+  {
+   "id": "alchemy table",
+   "name_ko": "연금술 실험대",
+   "name_en": "alchemy table",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "연금술 실험대(2칸) — 나무 상판(윗면 8행)에 불 켠 버너·둥근 플라스크·관, 아래 서랍. 전체 높이 26~28px.",
+   "contextRoom": "tower",
+   "tags": [
+    "연금술 방",
+    "마법사의 탑"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "연금술 방 가운데·벽 앞.",
+   "pair": [
+    "specimen shelf"
+   ],
+   "refs": [
+    "work 2x1",
+    "alembic"
+   ]
+  },
+  {
+   "id": "specimen shelf",
+   "name_ko": "표본 병 선반",
+   "name_en": "specimen shelf",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "눈알·뿔·버섯이 든 유리 병을 늘어놓은 좁은 선반(16px 솟음) — 선반판 윗면이 보인다.",
+   "contextRoom": "tower",
+   "tags": [
+    "연금술 방",
+    "마법사의 탑"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "연금술 방·약국 안방 벽.",
+   "pair": [
+    "alchemy table"
+   ],
+   "refs": [
+    "shelf:vial+flask"
+   ]
+  },
+  {
+   "id": "mana crystal",
+   "name_ko": "마나 결정",
+   "name_en": "mana crystal",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "바닥에서 솟은 하늘색 결정 덩이(16px 솟음) — 결정 면마다 밝은 윗면, 둘레에 빛 점.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑",
+    "동굴"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "탑·동굴 신전 바닥.",
+   "pair": [
+    "save crystal"
+   ],
+   "refs": [
+    "ore pile",
+    "rune stone"
+   ]
+  },
+  {
+   "id": "floating book",
+   "name_ko": "떠 있는 마법책",
+   "name_en": "floating book",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "펼친 채 공중에 뜬 마법책과 그 아래 바닥의 둥근 빛 그림자 — 책장 두 쪽이 위에서 보인다.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑",
+    "서고"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "서재·탑 꼭대기.",
+   "pair": [
+    "spellbook stand"
+   ],
+   "refs": [
+    "spellbook stand"
+   ]
+  },
+  {
+   "id": "summoning circle",
+   "name_ko": "소환진",
+   "name_en": "summoning circle",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "flat",
+   "footprint": {
+    "w": 3,
+    "h": 3
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "바닥에 그린 붉은 오망성 소환진(3×3, 밟을 수 있음) — 원 둘레에 룬 글자, 꼭짓점마다 초.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑",
+    "마왕성"
+   ],
+   "use": [
+    "walk"
+   ],
+   "place": "탑·마왕성 의식실 한가운데.",
+   "pair": [
+    "dark altar"
+   ],
+   "refs": [
+    "magic circle"
+   ]
+  },
+  {
+   "id": "magic mirror",
+   "name_ko": "마법 거울",
+   "name_en": "magic mirror",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "은테 두른 키 큰 거울(32px 솟음) — 거울 면에 보랏빛 소용돌이.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑",
+    "저택"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "탑·저택 침실 북쪽 벽.",
+   "pair": [
+    "floating book"
+   ],
+   "refs": [
+    "tailor mirror"
+   ]
+  },
+  {
+   "id": "wand stand",
+   "name_ko": "지팡이 받침",
+   "name_en": "wand stand",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 돌 받침에 꽂힌 빛나는 마법 지팡이 하나(16px 솟음) — 받침 윗면 2~3행.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑"
+   ],
+   "use": [
+    "key"
+   ],
+   "place": "탑 꼭대기·보물고.",
+   "pair": [
+    "staff rack"
+   ],
+   "refs": [
+    "key pedestal"
+   ]
+  },
+  {
+   "id": "book pile",
+   "name_ko": "쌓인 책 더미",
+   "name_en": "book pile",
+   "category": "study",
+   "category_ko": "서재",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "색색 책 다섯 권이 비뚤게 쌓인 더미 — 맨 위 책 표지 윗면이 보인다.",
+   "contextRoom": "scholar",
+   "tags": [
+    "서고",
+    "서재"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "서고 바닥·책상 옆.",
+   "pair": [
+    "bookshelf 1w"
+   ],
+   "refs": [
+    "shelf:book+bookb+bookg"
+   ]
+  },
+  {
+   "id": "chained bookcase",
+   "name_ko": "금서 책장",
+   "name_en": "chained bookcase",
+   "category": "study",
+   "category_ko": "서재",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "쇠사슬을 X 로 두르고 자물쇠 채운 검은 책장(32px 솟음) — 윗면 처마 3~4행.",
+   "contextRoom": "scholar",
+   "tags": [
+    "서고",
+    "마법사의 탑"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "서고 깊은 곳·마법사의 탑.",
+   "pair": [
+    "book pile"
+   ],
+   "refs": [
+    "bookshelf 1w"
+   ]
+  },
+  {
+   "id": "scroll pile",
+   "name_ko": "두루마리 더미",
+   "name_en": "scroll pile",
+   "category": "study",
+   "category_ko": "서재",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "끈 묶은 양피지 두루마리 여러 개가 쌓인 더미 — 두루마리 끝 동그라미가 보인다.",
+   "contextRoom": "scholar",
+   "tags": [
+    "서고",
+    "필사실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "필사실·서고 바닥.",
+   "pair": [
+    "book pile"
+   ],
+   "refs": [
+    "scroll rack"
+   ]
+  },
+  {
+   "id": "catalog drawers",
+   "name_ko": "목록 서랍장",
+   "name_en": "catalog drawers",
+   "category": "study",
+   "category_ko": "서재",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 서랍 아홉 칸 목록함(16px 솟음) — 윗면 3행, 서랍마다 놋쇠 이름표.",
+   "contextRoom": "scholar",
+   "tags": [
+    "서고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "서고 입구 벽.",
+   "pair": [
+    "chained bookcase"
+   ],
+   "refs": [
+    "apothecary drawers"
+   ]
+  },
+  {
+   "id": "demon throne",
+   "name_ko": "마왕 옥좌",
+   "name_en": "demon throne",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "검은 돌 마왕 옥좌(2×2, 16px 솟음) — 뿔 달린 높은 등받이, 팔걸이에 해골, 붉은 방석 윗면이 위에서 보인다.",
+   "contextRoom": "throne",
+   "tags": [
+    "마왕성"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "마왕성 알현실 북쪽 단 위 가운데.",
+   "pair": [
+    "demon statue",
+    "lava brazier"
+   ],
+   "refs": [
+    "stone throne",
+    "throne"
+   ]
+  },
+  {
+   "id": "bone pillar",
+   "name_ko": "뼈 기둥",
+   "name_en": "bone pillar",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "뼈와 해골을 쌓아 묶은 기둥(32px 솟음) — 머리에 해골 둘레 윗면.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "마왕성",
+    "지하묘지"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "마왕성·사교 신전 통로 양옆.",
+   "pair": [
+    "demon throne"
+   ],
+   "refs": [
+    "column stone",
+    "skull pile"
+   ]
+  },
+  {
+   "id": "lava brazier",
+   "name_ko": "용암 화로",
+   "name_en": "lava brazier",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "검은 쇠 화로에 끓는 주황 용암(16px 솟음) — 화로 입구의 용암 윗면이 위에서 보인다.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "마왕성",
+    "화산"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "마왕성 홀 양옆·화산 신전.",
+   "pair": [
+    "demon throne"
+   ],
+   "refs": [
+    "brazier"
+   ]
+  },
+  {
+   "id": "demon statue",
+   "name_ko": "마족 석상",
+   "name_en": "demon statue",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "날개 접은 뿔 달린 마족 석상(32px 솟음) — 받침 윗면 2행, 눈에 붉은 점.",
+   "contextRoom": "throne",
+   "tags": [
+    "마왕성"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "마왕성 입구·복도 양옆.",
+   "pair": [
+    "bone pillar"
+   ],
+   "refs": [
+    "statue"
+   ]
+  },
+  {
+   "id": "cursed mirror",
+   "name_ko": "저주받은 거울",
+   "name_en": "cursed mirror",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "금 간 검은 테 거울(32px 솟음) — 거울 면에 금이 가고 붉은 눈 하나가 비친다.",
+   "contextRoom": "manor",
+   "tags": [
+    "마왕성",
+    "폐가"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "마왕성·폐가 침실 벽.",
+   "pair": [
+    "torn portrait"
+   ],
+   "refs": [
+    "tailor mirror"
+   ]
+  },
+  {
+   "id": "dark altar",
+   "name_ko": "검은 제단",
+   "name_en": "dark altar",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "검은 돌 제단(2칸) — 윗면 8행에 보라 불꽃 촛대 둘과 해골 잔, 앞면에 붉은 문양. 전체 높이 24~26px.",
+   "contextRoom": "chapel",
+   "tags": [
+    "마왕성",
+    "사교 신전"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "사교 신전·마왕성 의식실 북쪽.",
+   "pair": [
+    "summoning circle"
+   ],
+   "refs": [
+    "altar"
+   ]
+  },
+  {
+   "id": "hanging cage",
+   "name_ko": "쇠 우리",
+   "name_en": "hanging cage",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "천장 사슬에 매달린 둥근 쇠 우리(32px 솟음) — 바닥에 그림자, 우리 바닥판 윗면이 보인다.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "마왕성",
+    "감옥"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "마왕성 감옥·괴물 둥지.",
+   "pair": [
+    "shackles"
+   ],
+   "refs": [
+    "birdcage"
+   ]
+  },
+  {
+   "id": "dark orb pedestal",
+   "name_ko": "어둠 구슬 받침",
+   "name_en": "dark orb pedestal",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "돌 받침 위 검보라 구슬(16px 솟음) — 구슬 둘레 보랏빛, 받침 윗면 2~3행.",
+   "contextRoom": "throne",
+   "tags": [
+    "마왕성",
+    "봉인실"
+   ],
+   "use": [
+    "seal"
+   ],
+   "place": "마왕성 봉인실 가운데.",
+   "pair": [
+    "seal stone"
+   ],
+   "refs": [
+    "crystal ball",
+    "key pedestal"
+   ]
+  },
+  {
+   "id": "teleport pad",
+   "name_ko": "순간이동 진",
+   "name_en": "teleport pad",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "flat",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "바닥의 둥근 푸른 빛 원판(2×2, 밟을 수 있음) — 가운데 별 무늬, 둘레 돌 테.",
+   "contextRoom": "tower",
+   "tags": [
+    "던전",
+    "마법사의 탑"
+   ],
+   "use": [
+    "travel"
+   ],
+   "place": "던전·탑의 층 사이 이동.",
+   "pair": [
+    "save crystal"
+   ],
+   "refs": [
+    "magic circle"
+   ]
+  },
+  {
+   "id": "crystal switch",
+   "name_ko": "수정 스위치",
+   "name_en": "crystal switch",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "돌 받침 위 둥근 파란 수정 구슬(16px 솟음) — 때리면 색이 바뀐다. 받침 윗면 2~3행.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "퍼즐"
+   ],
+   "use": [
+    "switch"
+   ],
+   "place": "던전 퍼즐 방.",
+   "pair": [
+    "iron gate"
+   ],
+   "refs": [
+    "crystal ball"
+   ]
+  },
+  {
+   "id": "locked door",
+   "name_ko": "잠긴 나무 문",
+   "name_en": "locked door",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "쇠띠와 큰 자물쇠를 채운 나무 문(16px 솟음) — 문 위 돌 문틀 윗면 2행.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "성"
+   ],
+   "use": [
+    "gate"
+   ],
+   "place": "던전·성 통로 칸. 열쇠로 연다.",
+   "pair": [
+    "key pedestal"
+   ],
+   "refs": [
+    "iron gate"
+   ]
+  },
+  {
+   "id": "mimic",
+   "name_ko": "미믹",
+   "name_en": "mimic",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "보물상자 꼴 괴물 — 뚜껑이 벌어져 이빨과 혀가 보인다. 보물상자(h13-D)와 같은 크기.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "함정"
+   ],
+   "use": [
+    "trap"
+   ],
+   "place": "보물상자 사이 함정.",
+   "pair": [
+    "treasure chest"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "cracked wall",
+   "name_ko": "금 간 벽",
+   "name_en": "cracked wall",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽면 윗줄의 큰 금 — 돌이 금 가 부서질 듯하다(폭탄으로 뚫는 벽).",
+   "contextRoom": "mine",
+   "tags": [
+    "던전",
+    "광산"
+   ],
+   "use": [
+    "gate"
+   ],
+   "place": "던전·광산 벽면.",
+   "pair": [
+    "push boulder"
+   ],
+   "refs": [
+    "ore vein"
+   ]
+  },
+  {
+   "id": "hint tablet",
+   "name_ko": "힌트 석판",
+   "name_en": "hint tablet",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "글자가 새겨진 비스듬한 돌 석판(16px 솟음) — 윗면 기운 판에 글 줄이 보인다.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "유적"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "퍼즐 방 입구.",
+   "pair": [
+    "seal stone"
+   ],
+   "refs": [
+    "rune stone"
+   ]
+  },
+  {
+   "id": "pitfall",
+   "name_ko": "구멍 함정",
+   "name_en": "pitfall",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 뚫린 깊은 검은 구멍 — 가장자리 돌이 부서져 있다. 빠지면 아래층.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "함정"
+   ],
+   "use": [
+    "trap",
+    "travel"
+   ],
+   "place": "던전 바닥.",
+   "pair": [
+    "spike trap"
+   ],
+   "refs": [
+    "drain grate"
+   ]
+  },
+  {
+   "id": "arrow floor",
+   "name_ko": "화살표 바닥",
+   "name_en": "arrow floor",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "화살표가 새겨진 밀어내는 바닥 판 — 밝은 파란 화살표(북쪽).",
+   "contextRoom": "dungeon",
+   "tags": [
+    "던전",
+    "퍼즐"
+   ],
+   "use": [
+    "trap"
+   ],
+   "place": "던전 퍼즐 통로.",
+   "pair": [
+    "pressure plate"
+   ],
+   "refs": [
+    "pressure plate"
+   ]
+  },
+  {
+   "id": "hot spring",
+   "name_ko": "온천탕",
+   "name_en": "hot spring",
+   "category": "gimmick",
+   "category_ko": "JRPG 장치",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    32
+   ],
+   "description": "돌로 두른 온천탕(3×2) — 김 오르는 하늘색 물 표면(윗면 20행 이상), 둘레 바위 윗면.",
+   "contextRoom": "elf",
+   "tags": [
+    "여관",
+    "온천"
+   ],
+   "use": [
+    "heal"
+   ],
+   "place": "여관 목욕탕·산 마을.",
+   "pair": [
+    "healing spring"
+   ],
+   "refs": [
+    "moon pool",
+    "bathtub"
+   ]
+  },
+  {
+   "id": "wooden toilet",
+   "name_ko": "나무 변기",
+   "name_en": "wooden toilet",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "뚜껑 달린 나무 변기 의자 — 둥근 뚜껑 윗면 5~6행.",
+   "contextRoom": "manor",
+   "tags": [
+    "욕실",
+    "민가"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "욕실·뒷방 구석.",
+   "pair": [
+    "washbasin"
+   ],
+   "refs": [
+    "stool"
+   ]
+  },
+  {
+   "id": "toy box",
+   "name_ko": "장난감 상자",
+   "name_en": "toy box",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "뚜껑 열린 색칠 상자에 공·인형·나무칼 — 입구 윗면 5~6행.",
+   "contextRoom": "manor",
+   "tags": [
+    "아이 방",
+    "민가"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "아이 방 구석.",
+   "pair": [
+    "rocking horse"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "rocking horse",
+   "name_ko": "흔들 목마",
+   "name_en": "rocking horse",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 칠 나무 흔들 목마(16px 솟음) — 등 안장 윗면이 보이고 아래 휜 받침.",
+   "contextRoom": "manor",
+   "tags": [
+    "아이 방"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "아이 방.",
+   "pair": [
+    "toy box"
+   ],
+   "refs": [
+    "stool"
+   ]
+  },
+  {
+   "id": "indoor well",
+   "name_ko": "실내 우물",
+   "name_en": "indoor well",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "둥근 돌 우물과 나무 도르래 지붕(16px 솟음) — 우물 입구의 어두운 물 윗면이 보인다.",
+   "contextRoom": "narshe",
+   "tags": [
+    "부엌",
+    "민가"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "부엌·광장 실내 구석.",
+   "pair": [
+    "water jar"
+   ],
+   "refs": [
+    "quench barrel"
+   ]
+  },
+  {
+   "id": "washing tub",
+   "name_ko": "빨래 통",
+   "name_en": "washing tub",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "물 찬 나무 통에 빨래판이 기대 있다 — 통 입구 물 윗면 5행.",
+   "contextRoom": "manor",
+   "tags": [
+    "부엌",
+    "민가"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "부엌·뒷마당 실내.",
+   "pair": [
+    "laundry line"
+   ],
+   "refs": [
+    "quench barrel"
+   ]
+  },
+  {
+   "id": "laundry line",
+   "name_ko": "빨랫줄",
+   "name_en": "laundry line",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽 사이 줄에 널린 흰 셔츠와 양말(2칸).",
+   "contextRoom": "manor",
+   "tags": [
+    "민가"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "부엌·하녀 방 벽 윗줄.",
+   "pair": [
+    "washing tub"
+   ],
+   "refs": [
+    "hang:herb"
+   ]
+  },
+  {
+   "id": "child bed",
+   "name_ko": "아이 침대",
+   "name_en": "child bed",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 나무 침대(16px 솟음) — 이불 윗면과 베개, 머리판에 별 무늬.",
+   "contextRoom": "manor",
+   "tags": [
+    "아이 방"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "아이 방 북쪽 벽.",
+   "pair": [
+    "toy box"
+   ],
+   "refs": [
+    "bed blue",
+    "cradle"
+   ]
+  },
+  {
+   "id": "chart table",
+   "name_ko": "선장 해도 탁자",
+   "name_en": "chart table",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "해도 탁자(2칸) — 상판(윗면 8행)에 펼친 바다 지도·컴퍼스·망원경. 전체 높이 24~26px.",
+   "contextRoom": "fish",
+   "tags": [
+    "배",
+    "선장실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "선장실 가운데.",
+   "pair": [
+    "ship wheel"
+   ],
+   "refs": [
+    "desk 2x1",
+    "wall map"
+   ]
+  },
+  {
+   "id": "ship cannon",
+   "name_ko": "함포",
+   "name_en": "ship cannon",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 바퀴 받침에 얹은 검은 함포(16px 솟음) — 포신이 남쪽을 본다, 포신 윗면이 보인다.",
+   "contextRoom": "fish",
+   "tags": [
+    "배",
+    "포갑판"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "배 포갑판 벽 앞 줄로.",
+   "pair": [
+    "sea chest"
+   ],
+   "refs": [
+    "anchor"
+   ]
+  },
+  {
+   "id": "cargo netted",
+   "name_ko": "그물 덮은 화물",
+   "name_en": "cargo netted",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "그물로 덮어 묶은 나무 상자 더미(2칸) — 상자 윗면·그물 매듭이 보인다. 전체 높이 24~26px.",
+   "contextRoom": "fish",
+   "tags": [
+    "배",
+    "항구"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "배 화물칸·항구 창고.",
+   "pair": [
+    "sea chest"
+   ],
+   "refs": [
+    "crate",
+    "fishing net"
+   ]
+  },
+  {
+   "id": "airship helm",
+   "name_ko": "비공정 조종석",
+   "name_en": "airship helm",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "놋쇠 조종석(2칸) — 가운데 키와 양옆 계기판·레버, 계기판 윗면이 기울어 위에서 보인다.",
+   "contextRoom": "magitek",
+   "tags": [
+    "비공정"
+   ],
+   "use": [
+    "switch"
+   ],
+   "place": "비공정 조타실 북쪽.",
+   "pair": [
+    "gauge panel"
+   ],
+   "refs": [
+    "ship wheel",
+    "control console"
+   ]
+  },
+  {
+   "id": "ship bell",
+   "name_ko": "배 종",
+   "name_en": "ship bell",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "쇠걸이에 매단 놋쇠 종과 줄.",
+   "contextRoom": "fish",
+   "tags": [
+    "배"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "갑판·선실 벽 윗줄.",
+   "pair": [
+    "ship wheel"
+   ],
+   "refs": [
+    "bell rope"
+   ]
+  },
+  {
+   "id": "sea chest",
+   "name_ko": "선원 궤짝",
+   "name_en": "sea chest",
+   "category": "ship",
+   "category_ko": "배 선실",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "밧줄 손잡이 달린 파란 칠 궤짝 — 뚜껑 윗면 5행, 앞에 쇠 장식.",
+   "contextRoom": "fish",
+   "tags": [
+    "배"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "선원 숙소 해먹 아래.",
+   "pair": [
+    "hammock"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "healing machine",
+   "name_ko": "몬스터 회복 장치",
+   "name_en": "healing machine",
+   "category": "monster",
+   "category_ko": "몬스터 센터",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "흰 기계 회복 장치(2칸) — 윗면(7~8행)에 둥근 홈 여섯 개와 그 속 붉은·흰 구슬, 앞면 초록 화면. 전체 높이 26~28px.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "몬스터 센터"
+   ],
+   "use": [
+    "heal"
+   ],
+   "place": "몬스터 센터 카운터 뒤 북쪽 벽.",
+   "pair": [
+    "counter 3x1",
+    "storage terminal"
+   ],
+   "refs": [
+    "counter 2x1"
+   ]
+  },
+  {
+   "id": "orb pedestal",
+   "name_ko": "포획 구슬 받침",
+   "name_en": "orb pedestal",
+   "category": "monster",
+   "category_ko": "몬스터 센터",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "하얀 받침대 위 붉은·흰 포획 구슬 하나(16px 솟음) — 받침 윗면에 구슬이 놓여 보인다.",
+   "contextRoom": "scholar",
+   "tags": [
+    "연구소",
+    "몬스터 센터"
+   ],
+   "use": [
+    "key"
+   ],
+   "place": "연구소 탁자 옆에 세 개 나란히(첫 동료 고르기).",
+   "pair": [
+    "lab bench"
+   ],
+   "refs": [
+    "crystal ball"
+   ]
+  },
+  {
+   "id": "storage terminal",
+   "name_ko": "보관 단말기",
+   "name_en": "storage terminal",
+   "category": "monster",
+   "category_ko": "몬스터 센터",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "파란 화면의 보관함 단말기(16px 솟음) — 기운 화면 윗면과 자판이 보인다.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "몬스터 센터"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "몬스터 센터 구석 벽.",
+   "pair": [
+    "healing machine"
+   ],
+   "refs": [
+    "gauge panel"
+   ]
+  },
+  {
+   "id": "gym statue",
+   "name_ko": "체육관 석상",
+   "name_en": "gym statue",
+   "category": "monster",
+   "category_ko": "몬스터 센터",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "받침 위 날개 편 몬스터 석상(32px 솟음) — 받침 앞면에 명판, 받침 윗면 2행.",
+   "contextRoom": "throne",
+   "tags": [
+    "체육관"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "체육관 입구 양옆.",
+   "pair": [
+    "orb pedestal"
+   ],
+   "refs": [
+    "statue"
+   ]
+  },
+  {
+   "id": "lab bench",
+   "name_ko": "연구소 실험대",
+   "name_en": "lab bench",
+   "category": "monster",
+   "category_ko": "몬스터 센터",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "흰 상판 실험대(2칸) — 윗면 8행에 현미경·서류·포획 구슬, 앞에 서랍. 전체 높이 24~26px.",
+   "contextRoom": "scholar",
+   "tags": [
+    "연구소"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "연구소 가운데.",
+   "pair": [
+    "orb pedestal"
+   ],
+   "refs": [
+    "work 2x1"
+   ]
+  },
+  {
+   "id": "egg incubator",
+   "name_ko": "알 부화기",
+   "name_en": "egg incubator",
+   "category": "monster",
+   "category_ko": "몬스터 센터",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "유리 돔 속 점박이 알 하나(16px 솟음) — 돔 윗면 반사광, 아래 놋쇠 받침.",
+   "contextRoom": "scholar",
+   "tags": [
+    "연구소"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "연구소·몬스터 센터 구석.",
+   "pair": [
+    "lab bench"
+   ],
+   "refs": [
+    "crystal ball"
+   ]
+  },
+  {
+   "id": "old doll",
+   "name_ko": "낡은 인형",
+   "name_en": "old doll",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 주저앉은 금 간 도자기 인형 — 드레스 자락이 위에서 보이고 한쪽 눈이 비었다.",
+   "contextRoom": "manor",
+   "tags": [
+    "폐가",
+    "저택"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "폐가 아이 방·복도 구석.",
+   "pair": [
+    "torn portrait"
+   ],
+   "refs": [
+    "sleeping cat"
+   ]
+  },
+  {
+   "id": "torn portrait",
+   "name_ko": "찢긴 초상화",
+   "name_en": "torn portrait",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "칼로 찢긴 귀부인 초상화(2칸, 금테) — 얼굴 부분이 X 로 찢겼다.",
+   "contextRoom": "manor",
+   "tags": [
+    "폐가",
+    "저택"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "폐가 홀 벽.",
+   "pair": [
+    "cursed mirror"
+   ],
+   "refs": [
+    "portrait large"
+   ]
+  },
+  {
+   "id": "covered furniture",
+   "name_ko": "천 덮인 가구",
+   "name_en": "covered furniture",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "흰 천을 덮은 소파꼴 가구(2칸) — 천 주름 윗면이 위에서 보인다. 전체 높이 22~24px.",
+   "contextRoom": "manor",
+   "tags": [
+    "폐가",
+    "저택"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "버려진 저택 거실.",
+   "pair": [
+    "old doll"
+   ],
+   "refs": [
+    "sofa"
+   ]
+  },
+  {
+   "id": "candle stubs",
+   "name_ko": "녹은 촛불 무더기",
+   "name_en": "candle stubs",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 녹아 붙은 초 여러 개와 작은 불꽃 — 촛농 웅덩이 윗면.",
+   "contextRoom": "manor",
+   "tags": [
+    "폐가",
+    "지하실"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "폐가·지하실 바닥.",
+   "pair": [
+    "old doll"
+   ],
+   "refs": [
+    "candle"
+   ]
+  },
+  {
+   "id": "boarded window",
+   "name_ko": "판자로 막은 창",
+   "name_en": "boarded window",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "판자 세 장을 비스듬히 못 박아 막은 창.",
+   "contextRoom": "manor",
+   "tags": [
+    "폐가"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "폐가 벽 윗줄.",
+   "pair": [
+    "cobweb"
+   ],
+   "refs": [
+    "window"
+   ]
+  },
+  {
+   "id": "cobweb",
+   "name_ko": "거미줄",
+   "name_en": "cobweb",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 모서리의 흰 거미줄과 작은 거미.",
+   "contextRoom": "manor",
+   "tags": [
+    "폐가",
+    "지하실"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "폐가·지하실 벽 윗줄 구석.",
+   "pair": [
+    "boarded window"
+   ],
+   "refs": [
+    "picture"
+   ]
+  },
+  {
+   "id": "music box",
+   "name_ko": "오르골",
+   "name_en": "music box",
+   "category": "story",
+   "category_ko": "추억",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "뚜껑 열린 작은 나무 오르골 — 뚜껑 안쪽 거울과 춤추는 인형, 상자 윗면 5행.",
+   "contextRoom": "manor",
+   "tags": [
+    "추억",
+    "폐가"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "아이 방·추억의 방 협탁 옆.",
+   "pair": [
+    "diary stand"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "shipping bin",
+   "name_ko": "출하 상자",
+   "name_en": "shipping bin",
+   "category": "farm",
+   "category_ko": "농가",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "나무 출하 상자(2칸) — 넓은 경첩 뚜껑 윗면 8~10행, 앞에 판자. 전체 높이 22~24px.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "농가"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "농가 문 옆.",
+   "pair": [
+    "seed sacks"
+   ],
+   "refs": [
+    "crate",
+    "royal chest"
+   ]
+  },
+  {
+   "id": "seed sacks",
+   "name_ko": "씨앗 자루",
+   "name_en": "seed sacks",
+   "category": "farm",
+   "category_ko": "농가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "그림 표 붙은 작은 씨앗 자루 셋 — 묶은 입구가 위에서 보인다.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "농가",
+    "창고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "농가 창고 선반 아래.",
+   "pair": [
+    "shipping bin"
+   ],
+   "refs": [
+    "sack:grain"
+   ]
+  },
+  {
+   "id": "butter churn",
+   "name_ko": "버터 교반기",
+   "name_en": "butter churn",
+   "category": "farm",
+   "category_ko": "농가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 테 두른 높은 통과 막대(16px 솟음) — 통 뚜껑 윗면.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "농가",
+    "부엌"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "농가 부엌.",
+   "pair": [
+    "milk cans"
+   ],
+   "refs": [
+    "barrel"
+   ]
+  },
+  {
+   "id": "cheese press",
+   "name_ko": "치즈 압착기",
+   "name_en": "cheese press",
+   "category": "farm",
+   "category_ko": "농가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 틀 나사 압착기에 치즈 덩이(16px 솟음).",
+   "contextRoom": "hobbit",
+   "tags": [
+    "농가"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "농가 부엌·식료품 방.",
+   "pair": [
+    "cheese wheels"
+   ],
+   "refs": [
+    "grindstone"
+   ]
+  },
+  {
+   "id": "farm tool rack",
+   "name_ko": "농기구 걸이",
+   "name_en": "farm tool rack",
+   "category": "farm",
+   "category_ko": "농가",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "괭이·낫·물뿌리개를 건 나무 걸이(2칸).",
+   "contextRoom": "stable",
+   "tags": [
+    "농가",
+    "헛간"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "농가 헛간 벽 윗줄.",
+   "pair": [
+    "seed sacks"
+   ],
+   "refs": [
+    "tool wall",
+    "pitchfork"
+   ]
+  },
+  {
+   "id": "milk cans",
+   "name_ko": "우유 통",
+   "name_en": "milk cans",
+   "category": "farm",
+   "category_ko": "농가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "은빛 우유 통 둘 — 둥근 뚜껑 윗면이 보인다.",
+   "contextRoom": "stable",
+   "tags": [
+    "농가",
+    "마구간"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마구간·농가 부엌.",
+   "pair": [
+    "butter churn"
+   ],
+   "refs": [
+    "powder kegs"
+   ]
+  },
+  {
+   "id": "seedling shelf",
+   "name_ko": "모종 선반",
+   "name_en": "seedling shelf",
+   "category": "farm",
+   "category_ko": "농가",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "흙 상자에 새싹이 줄지은 2단 선반(2칸) — 상자 윗면 흙과 새싹이 위에서 보인다. 전체 높이 26~28px.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "농가"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "농가 볕 드는 창 아래 북쪽 벽.",
+   "pair": [
+    "seed sacks"
+   ],
+   "refs": [
+    "potted sapling",
+    "proofing rack"
+   ]
+  },
+  {
+   "id": "diary stand",
+   "name_ko": "일기장 받침",
+   "name_en": "diary stand",
+   "category": "story",
+   "category_ko": "추억",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 나무 받침에 펼친 일기장과 깃펜(16px 솟음) — 펼친 두 쪽이 위에서 보인다.",
+   "contextRoom": "manor",
+   "tags": [
+    "추억",
+    "침실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "침실 협탁 옆·추억의 방.",
+   "pair": [
+    "music box"
+   ],
+   "refs": [
+    "lectern"
+   ]
+  },
+  {
+   "id": "mailbox",
+   "name_ko": "우편함",
+   "name_en": "mailbox",
+   "category": "story",
+   "category_ko": "추억",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽에 붙인 나무 우편함, 편지 한 통이 삐져나왔다.",
+   "contextRoom": "manor",
+   "tags": [
+    "민가",
+    "여관"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "현관 벽 윗줄.",
+   "pair": [
+    "diary stand"
+   ],
+   "refs": [
+    "hymn board"
+   ]
+  },
+  {
+   "id": "hourglass",
+   "name_ko": "큰 모래시계",
+   "name_en": "hourglass",
+   "category": "story",
+   "category_ko": "추억",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 틀 큰 모래시계(16px 솟음) — 위아래 유리 둥근 윗면과 흐르는 금모래.",
+   "contextRoom": "tower",
+   "tags": [
+    "추억",
+    "마법사의 탑"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "탑·추억의 방·시간 신전.",
+   "pair": [
+    "diary stand"
+   ],
+   "refs": [
+    "clock"
+   ]
+  },
+  {
+   "id": "photo frames",
+   "name_ko": "액자 탁자",
+   "name_en": "photo frames",
+   "category": "story",
+   "category_ko": "추억",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 협탁(16px 솟음) 위 사진·초상 액자 셋 — 협탁 윗면 5행에 액자가 기대 선다.",
+   "contextRoom": "manor",
+   "tags": [
+    "추억",
+    "거실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "거실·침실 구석.",
+   "pair": [
+    "music box"
+   ],
+   "refs": [
+    "nightstand"
+   ]
+  },
+  {
+   "id": "grave bouquet",
+   "name_ko": "꽃다발 묘비(실내)",
+   "name_en": "grave bouquet",
+   "category": "story",
+   "category_ko": "추억",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 돌 묘비 앞에 놓인 흰 꽃다발(16px 솟음) — 묘비 윗면 2행.",
+   "contextRoom": "chapel",
+   "tags": [
+    "추억",
+    "예배당"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "예배당 지하·추모실.",
+   "pair": [
+    "candle stubs"
+   ],
+   "refs": [
+    "rune stone"
    ]
   }
  ]
