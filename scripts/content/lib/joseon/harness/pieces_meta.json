@@ -1,23 +1,171 @@
 {
  "_doc": "조각별 분류와 기준 조각(버들항 객체 이름). cls: built(건물, 좌우 대칭 검사) / tree / prop / wall. thin_ok: 폭 1px 줄을 의도적으로 쓰는 조각(이유 필수).",
- "giwa_house_7":  {"cls": "built", "sym": true,  "refs": ["inn", "smithy_town", "h104_0"]},
- "thatch_house":  {"cls": "built", "sym": false, "refs": ["h101_0", "h107_0", "cafe"], "why_asym": "굴뚝이 오른쪽 뒤에 선다"},
- "gate_6":        {"cls": "built", "sym": true,  "refs": ["forum.gate", "castle.gatehouse"]},
- "pavilion":      {"cls": "built", "sym": true,  "refs": ["forum.stoa", "forum.temple"]},
- "pine":          {"cls": "tree",  "refs": ["tree", "tree", "tree"]},
- "persimmon":     {"cls": "tree",  "refs": ["tree", "tree", "tree"]},
- "willow":        {"cls": "tree",  "refs": ["tree", "tree", "tree"], "thin_ok": "늘어진 가닥이 2px 폭 반쪽씩이라 한쪽이 가늘다"},
- "well":          {"cls": "prop",  "refs": ["forum.fountain", "planter_round", "fish_barrel"]},
- "bridge":        {"cls": "prop",  "refs": ["castle.drawbridge", "bench_wood"]},
- "jars":          {"cls": "prop",  "refs": ["fish_barrel", "door_pots", "planter_round"]},
- "bench":         {"cls": "prop",  "refs": ["bench_wood", "table_mugs"]},
- "mat_peppers":   {"cls": "prop",  "refs": ["cloth_stand", "crate_apple", "goods_pile"]},
- "jangseung_m":   {"cls": "prop",  "refs": ["statue_sage", "lamp_crook", "column_monument"], "front_only": true},
- "jangseung_f":   {"cls": "prop",  "refs": ["statue_sage", "lamp_crook", "column_monument"], "front_only": true},
- "sotdae":        {"cls": "prop",  "refs": ["lamp_crook", "lamp_double", "mooring_bollard"], "front_only": true, "thin_ok": "솟대는 가는 장대"},
- "lantern":       {"cls": "prop",  "refs": ["lamp_crook", "statue_sage", "column_monument"], "front_only": true},
- "wall_h":        {"cls": "wall",  "refs": ["castle.wall_h", "estate.wall", "hedge"]},
- "wall_v":        {"cls": "wall",  "refs": ["castle.wall_v", "estate.wall"], "thin_ok": "위에서 본 세로 담의 덮개 띠"},
- "wall_corner_l": {"cls": "wall",  "refs": ["castle.wall_h", "castle.wall_v"]},
- "wall_corner_r": {"cls": "wall",  "refs": ["castle.wall_h", "castle.wall_v"]}
+ "pine": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "persimmon": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "willow": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ],
+  "thin_ok": "늘어진 가닥이 2px 폭 반쪽씩이라 한쪽이 가늘다"
+ },
+ "well": {
+  "cls": "prop",
+  "refs": [
+   "forum.fountain",
+   "planter_round",
+   "fish_barrel"
+  ]
+ },
+ "bridge": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ]
+ },
+ "jars": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "bench": {
+  "cls": "prop",
+  "refs": [
+   "bench_wood",
+   "table_mugs"
+  ]
+ },
+ "mat_peppers": {
+  "cls": "prop",
+  "refs": [
+   "cloth_stand",
+   "crate_apple",
+   "goods_pile"
+  ]
+ },
+ "jangseung_m": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "lamp_crook",
+   "column_monument"
+  ],
+  "front_only": true
+ },
+ "jangseung_f": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "lamp_crook",
+   "column_monument"
+  ],
+  "front_only": true
+ },
+ "sotdae": {
+  "cls": "prop",
+  "refs": [
+   "lamp_crook",
+   "lamp_double",
+   "mooring_bollard"
+  ],
+  "front_only": true,
+  "thin_ok": "솟대는 가는 장대"
+ },
+ "lantern": {
+  "cls": "prop",
+  "refs": [
+   "lamp_crook",
+   "statue_sage",
+   "column_monument"
+  ],
+  "front_only": true
+ },
+ "wall_h": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "wall_v": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_v",
+   "estate.wall"
+  ],
+  "thin_ok": "위에서 본 세로 담의 덮개 띠"
+ },
+ "wall_corner_l": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "castle.wall_v"
+  ]
+ },
+ "wall_corner_r": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "castle.wall_v"
+  ]
+ },
+ "giwa_house_6": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',6,…)"
+ },
+ "thatch_house_5": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "blocks.house('jc',5,…)"
+ },
+ "gate_4": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "blocks.house('jo',4,…,dan)"
+ },
+ "pavilion_5": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "forum.stoa",
+   "forum.temple"
+  ],
+  "kit": "blocks.house('pv',5,…,dan)"
+ }
 }

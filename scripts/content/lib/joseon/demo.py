@@ -15,7 +15,7 @@ if _fails:
 from PIL import Image
 
 OUT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'tiledata', 'joseon-demo'))
-MW, MH = 40, 28
+MW, MH = 40, 34
 N, E, S, W = G.N, G.E, G.S, G.W
 
 # ---------- 시트 ----------
@@ -125,33 +125,31 @@ def mask_of(cells, x, y, wrap=True):
 for (x, y) in water:
     setg(x, y, STREAM + mask_of(water, x, y), 'water')
 
-# 큰길: y=15..16, 시내 구간(다리 밑)은 비운다
-road = {(x, y) for y in (15, 16) for x in range(MW) if not 29 <= x <= 33}
-road |= {(x, y) for y in (13, 14) for x in (11, 12)}          # 대문 앞 진입로
-road |= {(x, 14) for x in (23, 24)}                           # 초가집 진입로
+# 큰길 y=21..22 (다리 구간은 비움), 대문 진입로, 초가 진입로
+road = {(x, y) for y in (21, 22) for x in range(MW) if not 29 <= x <= 33}
+road |= {(x, y) for y in (19, 20) for x in (11, 12)}
+road |= {(24, 20)}
 for (x, y) in road:
-    # 지도 가장자리는 이어진 것, 다리 쪽 끝은 다리가 받는다
     m = mask_of(road, x, y)
-    if x == 28 and y in (15, 16): m |= E
-    if x == 34 and y in (15, 16): m |= W
+    if x == 28 and y in (21, 22): m |= E
+    if x == 34 and y in (21, 22): m |= W
     setg(x, y, ROAD + m, 'road')
 
-# 마당(이음 있는 흙바닥): 대문 안, 초가집 앞
-yard = {(x, y) for y in range(8, 12) for x in range(6, 19)}
-yard |= {(x, y) for y in range(2, 8) for x in list(range(6, 8)) + list(range(16, 19))}
-yard |= {(x, y) for y in range(9, 14) for x in range(20, 27)}
+# 마당(이음 있는 흙바닥)
+yard = {(x, y) for y in range(1, 17) for x in range(6, 19)}
+yard |= {(x, y) for y in range(13, 21) for x in range(20, 29)}
 ysets = yard | road
 for (x, y) in yard:
     if (x, y) in road: continue
     setg(x, y, YARD16 + mask_of(ysets, x, y, wrap=False), 'yard')
-for y in range(8, 12):
+for y in range(8, 19):
     for x in (11, 12):
         setg(x, y, PAV + (x + y) % 2, 'paving')
-# 논(논두렁 이음)과 밭
-paddy = {(x, y) for y in range(19, 27) for x in range(2, 15)}
+# 논과 밭
+paddy = {(x, y) for y in range(25, 33) for x in range(2, 15)}
 for (x, y) in paddy:
     setg(x, y, PADDY + mask_of(paddy, x, y, wrap=False), 'paddy')
-for y in range(19, 25):
+for y in range(25, 31):
     for x in range(17, 26):
         setg(x, y, FIELD + hsh(x, y, 9) % 2, 'field')
 
@@ -160,49 +158,40 @@ OBJ = Cv(MW * T, MH * T)
 placed = []
 
 
-def place(name, tx, ty, flip=False):
-    cv = objects[name]
-    if flip: cv = cv.hflip()
-    placed.append((name, tx, ty))
-    return cv
-
-
 def put_obj(name, tx, ty):
     cv = objects[name]
     return (ty + cv.h // T, name, tx, ty, cv)      # y 정렬 키 = 아래쪽 칸
 
 
 items = []
-# 양반집 한 채: 대문·기와집·담
-items.append(put_obj('giwa_house_7', 8, 2))
-items.append(put_obj('gate_6', 9, 9))
-for x in (6, 7, 8): items.append(put_obj('wall_h', x, 12))
-for x in (15, 16, 17, 18): items.append(put_obj('wall_h', x, 12))
-items.append(put_obj('wall_corner_l', 5, 12)); items.append(put_obj('wall_corner_r', 19, 12))
-for y in range(1, 12):
+# 양반집: 기와집(팔작) · 솟을 아닌 맞배 대문 · 토석담
+items.append(put_obj('giwa_house_6', 8, 1))
+items.append(put_obj('gate_4', 9, 12))
+for x in (6, 7, 8): items.append(put_obj('wall_h', x, 17))
+for x in (15, 16, 17, 18): items.append(put_obj('wall_h', x, 17))
+items.append(put_obj('wall_corner_l', 5, 17)); items.append(put_obj('wall_corner_r', 19, 17))
+for y in range(1, 17):
     items.append(put_obj('wall_v', 5, y)); items.append(put_obj('wall_v', 19, y))
-items.append(put_obj('jars', 6, 6))
-items.append(put_obj('well', 16, 6))
-items.append(put_obj('persimmon', 15, 8))
-items.append(put_obj('bench', 6, 9))
-items.append(put_obj('lantern', 9, 6))
+items.append(put_obj('jars', 6, 5))
+items.append(put_obj('well', 17, 2))
+items.append(put_obj('persimmon', 15, 12))
+items.append(put_obj('bench', 6, 10))
+items.append(put_obj('lantern', 9, 9))
 # 초가집과 살림살이
-items.append(put_obj('thatch_house', 21, 9))
-items.append(put_obj('mat_peppers', 19 + 0, 13)) if False else None
-items.append(put_obj('mat_peppers', 25, 13))
-items.append(put_obj('jars', 20, 13))
+items.append(put_obj('thatch_house_5', 21, 13))
+items.append(put_obj('mat_peppers', 22, 20))
+items.append(put_obj('jars', 26, 19))
 # 마을 어귀
-items.append(put_obj('jangseung_m', 2, 13)); items.append(put_obj('jangseung_f', 2, 17))
-items.append(put_obj('sotdae', 4, 13))
+items.append(put_obj('jangseung_m', 2, 19)); items.append(put_obj('jangseung_f', 2, 23))
+items.append(put_obj('sotdae', 4, 19))
 # 시내 둔덕
-items.append(put_obj('bridge', 29, 14))
-items.append(put_obj('willow', 27, 9))
-items.append(put_obj('pavilion', 34, 7))
-items.append(put_obj('pine', 35, 0)); items.append(put_obj('pine', 0, 0)); items.append(put_obj('pine', 1, 5))
-items.append(put_obj('pine', 22, 0)); items.append(put_obj('persimmon', 12, 24)) if False else None
-items.append(put_obj('persimmon', 18, 24))
-items.append(put_obj('willow', 33, 19)); items.append(put_obj('lantern', 33, 10))
-items = [i for i in items if i]
+items.append(put_obj('bridge', 29, 20))
+items.append(put_obj('willow', 26, 6))
+items.append(put_obj('pavilion_5', 33, 10))
+items.append(put_obj('lantern', 33, 17))
+items.append(put_obj('pine', 35, 1)); items.append(put_obj('pine', 0, 0)); items.append(put_obj('pine', 1, 7))
+items.append(put_obj('pine', 22, 0)); items.append(put_obj('persimmon', 18, 29))
+items.append(put_obj('willow', 33, 25))
 items.sort(key=lambda i: (i[0], i[3], i[2]))
 for _, name, tx, ty, cv in items:
     OBJ.paste(cv, tx * T, ty * T)

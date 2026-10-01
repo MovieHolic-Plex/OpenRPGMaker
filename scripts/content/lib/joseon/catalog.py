@@ -1,5 +1,14 @@
 """조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
-import ground as G, build as B, props as P
+import ground as G, build as B, props as P, blocks as K
+_L = None
+
+
+def lib():
+    global _L
+    if _L is None:
+        _L = K.library()
+    return _L
+
 
 
 def terrain():
@@ -17,10 +26,10 @@ def terrain():
 
 def objects():
     return {
-        'giwa_house_7': B.giwa_house(7),
-        'thatch_house': P.thatch_house(),
-        'gate_6': P.gate(6),
-        'pavilion': P.pavilion(),
+        'giwa_house_6': K.assemble(K.house('jo', 6, 'lwddwr', 'lfddfr', steps=(2, 3), hip=True), lib(), post=lambda cv: K.hip_cut(cv, 0, 3, 'jo')),
+        'thatch_house_5': K.assemble(K.house('jc', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True, chimi=False), lib(), post=lambda cv: K.hip_cut(cv, 0, 3, 'jc')),
+        'gate_4': K.assemble(K.house('jo', 4, 'lggr', 'lggr', rows=3, dan=True, steps=(1, 2)), lib()),
+        'pavilion_5': K.assemble(K.house('pv', 5, 'ooooo', 'kkkkk', rows=3, dan=True, steps=(2,), hip=True), lib(), post=lambda cv: K.hip_cut(cv, 0, 3, 'pv')),
         'pine': P.pine(),
         'persimmon': P.persimmon(),
         'willow': P.willow(),

@@ -1,36 +1,4 @@
 {
- "giwa_house_7": {
-  "hash": "c1cbc867b837",
-  "status": "note",
-  "line": "앞면(창호·기단)+위에서 본 지붕 앞사면, 좌우 대칭, 빛 왼쪽 위. 기준(inn·h104)보다 벽이 한 줄 낮고 지붕 대비가 약하다(청회색 기와 의도)",
-  "reviewer": "claude",
-  "user": "pending",
-  "date": "2026-10-02"
- },
- "thatch_house": {
-  "hash": "b9dd0a01b2b5",
-  "status": "note",
-  "line": "앞면+둥근 지붕 앞사면, 윗면 문법 일치. 새끼줄 격자가 굵고 오른쪽 어두운 면이 평평해 기준 지붕보다 결이 단순하다",
-  "reviewer": "claude",
-  "user": "pending",
-  "date": "2026-10-02"
- },
- "gate_6": {
-  "hash": "0e93efa7a97d",
-  "status": "note",
-  "line": "앞면+지붕 앞사면, 대칭. 안쪽 어두운 벽이 평평하고 문 못이 1px 점이다. 기준 대문은 석조라 재질만 다름",
-  "reviewer": "claude",
-  "user": "pending",
-  "date": "2026-10-02"
- },
- "pavilion": {
-  "hash": "4b8085577f5b",
-  "status": "pass",
-  "line": "앞면(기둥·난간·기단)+지붕 앞사면, 마루 윗면 8px 보임. 기준 stoa 와 같은 문법",
-  "reviewer": "claude",
-  "user": "pending",
-  "date": "2026-10-02"
- },
  "pine": {
   "hash": "a3ebab1f95d8",
   "status": "note",
@@ -155,6 +123,38 @@
   "hash": "7caafc4f3e6b",
   "status": "note",
   "line": "접합부 단차, 위와 같음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_house_6": {
+  "hash": "31cb78819554",
+  "status": "note",
+  "line": "블록 조립(roof ridge·front·eave + 벽 u/b + 기단). 기준 h104_0/inn 과 같은 문법: 밝은 뒷사면+용마루+어두운 앞사면, 벽 두 행, 처마 깊이 1칸, 팔작 옆 추녀. 차이: 지붕 질감이 단조롭고 치미가 작음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_house_5": {
+  "hash": "e54e38f9b001",
+  "status": "note",
+  "line": "같은 블록 문법의 초가 팔작. 짚 단 쌓기 질감+새끼줄, 처마 끝 짚단. 기준 지붕보다 대비가 약하고 옆 추녀 면이 평평",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gate_4": {
+  "hash": "36eadba70bb2",
+  "status": "note",
+  "line": "맞배 지붕+단청 보+판문+기단. 기준 대문은 석조 아치라 재질 다름. 지붕이 3행이라 높다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pavilion_5": {
+  "hash": "9426dca873ee",
+  "status": "pass",
+  "line": "팔작 지붕+주홍 기둥 열린 칸+난간+기단. 기준 stoa 의 4면 지붕 문법과 같다",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

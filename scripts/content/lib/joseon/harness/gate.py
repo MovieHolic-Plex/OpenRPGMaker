@@ -6,6 +6,7 @@ FAIL(통과 못 하면 시트·지도 굽기 금지):
   T  가는 줄: 폭 1px 화소 비율이 버들항 p95 의 2배+0.02 초과(thin_ok 조각 제외)
   L  빛: 왼쪽 반이 오른쪽 반보다 어두움(버들항 p5 미만), front_only 제외
   S  그림자: 반투명 그림자 무게중심이 본체보다 위
+  K  조립: built 조각은 blocks.house 블록 조립(pieces_meta 의 kit)이어야 함
   V  판정: harness/verdicts.json 에 이 조각의 현재 그림에 대한 3/4 판정 줄이 없음(그림이 바뀌면 다시 써야 함)
 WARN: 결(grain) 부족, built 조각의 좌우 비대칭(0.08 초과, sym:true).
 """
@@ -79,6 +80,8 @@ def run():
                 w.append(f"결 {m['grain']:.1f} < {CAL['grain']['p5']:.1f}")
             if meta.get('sym') and m['asym'] > 0.08:
                 w.append(f"비대칭 {m['asym']:.2f}")
+        if meta.get('cls') == 'built' and not meta.get('kit'):
+            why.append('K 건물은 블록 조립(blocks.house)이어야 함 — 통그림 금지')
         h = piece_hash(cv)
         v = verd.get(name)
         if not v or v.get('hash') != h:
