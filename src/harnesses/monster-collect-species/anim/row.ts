@@ -145,20 +145,30 @@ export function splitRow(grid: RgbaImage, frames: number): RgbaImage[] {
   });
 }
 
-/** 발 위치: 맨 아래 3줄의 불투명 칸 가로 평균 */
-function feetX(image: RgbaImage): number {
+/**
+ * 발 위치: 맨 아래 3줄의 불투명 칸. edge 0 = 가로 평균, +1 = 가장 오른쪽, −1 = 가장 왼쪽.
+ * 덤비는 자세는 앞발을 앞으로 뻗으므로 평균에 맞추면 몸 전체가 뒤로 밀려 덤빈 거리가 지워진다
+ * (2026-10-01 리프링 앞모습: 머리는 왼쪽으로 덤비는데 몸이 오른쪽으로 10칸 밀렸다). 그래서 공격·피격은
+ * **뒷발(공격 방향의 반대쪽 끝)** 을 0번 뒷발 자리에 둔다.
+ */
+function feetX(image: RgbaImage, edge: -1 | 0 | 1 = 0): number {
   const box = opaqueBounds(image)!;
   let sum = 0;
   let n = 0;
+  let min = Infinity;
+  let max = -Infinity;
   for (let y = box.y + box.height - 3; y < box.y + box.height; y += 1) {
     for (let x = 0; x < image.width; x += 1) {
       if (image.data[(y * image.width + x) * 4 + 3]) {
         sum += x;
         n += 1;
+        if (x < min) min = x;
+        if (x > max) max = x;
       }
     }
   }
-  return n ? sum / n : box.x + box.width / 2;
+  if (!n) return box.x + box.width / 2;
+  return edge === 0 ? sum / n : edge > 0 ? max : min;
 }
 
 export type RowFrames = {
@@ -174,7 +184,7 @@ export type RowFrames = {
  * baseInkWidth 를 주면 0번 잉크 폭을 기준 스프라이트 폭에 맞춘다 — 대기에서 동작으로 넘어갈 때 크기가 튀지 않게.
  * (작으면 키우지 않는다. 도트를 늘리면 블록이 두 배가 된다)
  */
-export function rowFrames(parts: RgbaImage[], side: SpriteSide, stage: 1 | 2 | 3 = 1, baseInkWidth?: number): RowFrames {
+export function rowFrames(parts: RgbaImage[], side: SpriteSide, stage: 1 | 2 | 3 = 1, baseInkWidth?: number, anchorEdge: -1 | 0 | 1 = 0): RowFrames {
   const first = parts[0]!;
   const plan: ScalePlan = baseInkWidth
     ? first.width > baseInkWidth ? { kind: "fraction", width: baseInkWidth } : { kind: "keep" }
@@ -191,15 +201,15 @@ export function rowFrames(parts: RgbaImage[], side: SpriteSide, stage: 1 | 2 | 3
       : downscaleTo(part, Math.max(1, Math.floor(part.width * scale)));
     return cropToInk(removeMagentaCasts(cropToInk(scaled)).image);
   });
-  const anchor = Math.floor((SPRITE_CANVAS - bodies[0]!.width) / 2) + feetX(bodies[0]!);
+  const anchor = Math.floor((SPRITE_CANVAS - bodies[0]!.width) / 2) + feetX(bodies[0]!, anchorEdge);
   let clipped = 0;
   const frames = bodies.map((body) => {
     const sprite = createImage(SPRITE_CANVAS, SPRITE_CANVAS);
     // 발을 0번 발 자리에 두되, 캔버스 안에 들어가게 민다. 돌진 거리는 엔진이 몸 전체를 옮겨 낸다(lunge) —
     // 프레임 안에서 앞으로 나간 만큼 잘리면 머리가 사라진다 (2026-10-01 아쿠아링 앞모습 344칸)
     const left = body.width <= SPRITE_CANVAS
-      ? Math.min(SPRITE_CANVAS - body.width, Math.max(0, Math.round(anchor - feetX(body))))
-      : Math.round(anchor - feetX(body));
+      ? Math.min(SPRITE_CANVAS - body.width, Math.max(0, Math.round(anchor - feetX(body, anchorEdge))))
+      : Math.round(anchor - feetX(body, anchorEdge));
     const top = SPRITE_CANVAS - body.height;
     for (let y = 0; y < body.height; y += 1) {
       for (let x = 0; x < body.width; x += 1) {

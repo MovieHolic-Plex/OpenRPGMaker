@@ -16,8 +16,17 @@ export type StyleContract = {
 
 export type AnimationState = { frames: number; frameMs: number; loop: boolean };
 
-/** 큰 동작 하나 — 생성 프롬프트에 action 문장이 들어간다 */
-export type ActionContract = AnimationState & { action: string };
+/**
+ * 큰 동작의 종류 — 방향 계약을 어떻게 쓰는지가 다르다.
+ * attack: 공격 방향으로 기운다 · self: 제자리(방향 없음) · hurt: 공격 방향의 반대로 밀린다
+ */
+export type ActionKind = "attack" | "self" | "hurt";
+
+/** 큰 동작 하나(공격 자세) — 생성 프롬프트에 action 문장이 들어간다. 스킬 → 자세는 anim/poses.ts */
+export type ActionContract = AnimationState & { kind: ActionKind; action: string };
+
+/** 화면 방향 (x 오른쪽 +, y 아래 +). 면마다 「이 몬스터가 공격할 때 향하는 쪽」 */
+export type ScreenVector = { x: number; y: number };
 
 /**
  * 애니메이션 계약. 대기는 고른 스프라이트를 정수 픽셀로 움직이고(anim/idle.ts, 생성 없음),
@@ -25,6 +34,11 @@ export type ActionContract = AnimationState & { action: string };
  */
 export type AnimationContract = {
   idle: AnimationState;
+  /**
+   * 공격 방향 계약. 포켓몬 구도는 내 몬스터(back)가 왼쪽 아래, 상대(front)가 오른쪽 위라
+   * back 은 (+1,−1), front 는 (−1,+1). 생성 프롬프트·방향 검사·엔진 돌진 CSS(05-poses-motion.css)가 같은 값을 쓴다.
+   */
+  direction: Record<SpriteSide, ScreenVector>;
   actions: Record<string, ActionContract>;
 };
 
@@ -78,13 +92,19 @@ export function validateSeed(value: unknown): MonsterSeed {
   const seed = value as MonsterSeed;
   if (!seed || seed.version !== 1 || !Array.isArray(seed.species) || !seed.style) throw new Error("seed.json 형식이 아니다 (version 1, style, species 필요)");
   const animation = seed.animation;
-  if (!animation?.idle || !animation.actions) throw new Error("seed.json 에 animation.idle·animation.actions 가 없다");
+  if (!animation?.idle || !animation.actions || !animation.direction) throw new Error("seed.json 에 animation.idle·direction·actions 가 없다");
+  for (const side of ["front", "back"] as const) {
+    const v = animation.direction[side];
+    if (!v || (v.x !== 1 && v.x !== -1) || (v.y !== 1 && v.y !== -1)) throw new Error(`animation.direction.${side} 는 x·y 가 ±1`);
+  }
+  if (animation.direction.front.x === animation.direction.back.x) throw new Error("animation.direction: 앞·뒤는 서로 마주 봐야 한다 (x 부호가 반대)");
   if (animation.idle.frames !== IDLE_PLAN.length) throw new Error(`animation.idle.frames 는 ${IDLE_PLAN.length} (대기 움직임 계획 anim/idle.ts IDLE_PLAN 과 같아야 한다)`);
   for (const [id, action] of Object.entries(animation.actions)) {
     if (!/^[a-z][a-z0-9-]*$/.test(id)) throw new Error(`동작 id 는 소문자 kebab-case: ${id}`);
     if (id === "idle") throw new Error("idle 은 동작(actions)이 아니다 — 생성하지 않고 animation.idle 로 만든다");
     if (!Number.isInteger(action.frames) || action.frames < 2 || action.frames > 6) throw new Error(`동작 ${id} frames 는 2~6 (한 줄 생성은 6장을 넘으면 겹치고 빠진다)`);
     if (!action.action?.trim()) throw new Error(`동작 ${id} 에 action 설명이 없다`);
+    if (!["attack", "self", "hurt"].includes(action.kind)) throw new Error(`동작 ${id} kind 는 attack·self·hurt`);
   }
   const ids = new Set<string>();
   for (const species of seed.species) {

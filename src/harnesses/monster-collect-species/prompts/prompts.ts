@@ -5,7 +5,7 @@
  * - 마젠타 단색 캔버스를 참고 이미지로 주지 않으면 검정 배경·불꽃 후광이 자주 붙는다(배경 제거가 안 된다).
  * - 뒷모습은 원본 생성 그림이 아니라 「깨끗한 도트를 키운 것」을 참고로 넣어야 후광·색 번짐이 덜하다.
  */
-import type { SpeciesSeed, StyleContract } from "../seed";
+import type { ActionContract, ScreenVector, SpeciesSeed, StyleContract } from "../seed";
 
 export function frontPrompt(style: StyleContract, species: SpeciesSeed): string {
   return [
@@ -54,19 +54,28 @@ export function evolutionPrompt(style: StyleContract, species: SpeciesSeed, prev
  * 큰 동작 한 줄(sprite-gen component-row 방식). 참고 이미지 = 첫 칸에 기준 스프라이트를 넣은 N 칸 안내(anim/row.ts rowReference).
  * sprite-gen 프롬프트 계약에서 가져온 것: 칸마다 전신 하나, 칸 넘침·겹침 금지, 떨어진 효과·잔상·그림자 금지, 안내 상자 재현 금지.
  * 뺀 것: sprite-gen 기본 화풍 문구(치비·마스코트 친화) — 이 하네스의 화풍 계약과 반대다.
+ * 방향은 시드 animation.direction 에서 문장을 만든다 (「상대 쪽으로」만 쓰면 어느 쪽이 상대인지 그림마다 달랐다).
+ * 속성 효과(불·물·잎)는 그리지 않는다 — 스킬의 전투 효과 애니메이션(animationId)이 따로 그린다.
  */
-export function actionPrompt(style: StyleContract, species: SpeciesSeed, side: "front" | "back", action: { frames: number; action: string }): string {
-  const view = side === "front"
-    ? "opponent view: three-quarter view turned to the LEFT, the creature attacks toward the LEFT"
-    : "the player's monster seen from BEHIND, facing away toward the upper RIGHT, it attacks toward the upper RIGHT";
+export function actionPrompt(style: StyleContract, species: SpeciesSeed, side: "front" | "back", action: ActionContract, direction: ScreenVector): string {
+  const facing = side === "front"
+    ? "opponent view: three-quarter view turned to the LEFT"
+    : "the player's monster seen from BEHIND, facing away toward the upper RIGHT";
+  const toward = `${direction.y < 0 ? "UPPER" : "LOWER"} ${direction.x < 0 ? "LEFT" : "RIGHT"}`;
+  const away = `${direction.y < 0 ? "LOWER" : "UPPER"} ${direction.x < 0 ? "RIGHT" : "LEFT"}`;
+  const motion = action.kind === "attack"
+    ? `The target stands toward the ${toward} of the picture: every attack motion leans and reaches toward the ${toward}, never the other way.`
+    : action.kind === "hurt"
+      ? `The attacker stands toward the ${toward} of the picture: the recoil pushes the body toward the ${away}.`
+      : "It stays in place and keeps facing the same way.";
   return [
     `Create ONE horizontal sprite strip of exactly ${action.frames} animation frames, left to right, for a monster battle in ${style.reference} pixel art style.`,
     "The reference image has the frame boxes; its FIRST box already holds the canonical sprite of this creature — that is frame 1's identity, size and pixel block size.",
     `Animation: ${action.action}.`,
-    `Camera: ${view}. Keep this camera angle in every frame.`,
+    `Camera: ${facing}. Keep this camera angle in every frame. ${motion}`,
     "Same creature in every frame: identical design, markings, colors, palette, outline and pixel block size as the reference sprite. Change only pose and body motion.",
     "Exactly one complete full-body pose centered in each box; no pose may cross into a neighboring box or overlap another pose; nothing cropped.",
-    "Effects only if physically attached to the creature and opaque, hard-edged pixel art. NO detached effects, sparks, motion lines, speed lines, afterimages, smears, blur, glow, aura, shadow, dust or impact bursts.",
+    "NO effects of any kind (the game draws fire, water, leaves and impacts itself): no sparks, beams, particles, motion lines, speed lines, afterimages, smears, blur, glow, aura, shadow, dust or impact bursts.",
     "Do NOT draw the boxes, guide lines, frame numbers, labels or any text. The whole background is flat solid pure magenta #FF00FF, magenta touching the outline directly.",
     `Creature (${species.types.join("/")} type): ${species.design}`,
     "Pixel art: chunky clean square pixel blocks, dark colored outline, flat shading, no anti-aliasing, no gradients.",

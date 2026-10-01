@@ -19,9 +19,9 @@ import { join, relative, resolve } from "node:path";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../harness";
 import { cleanReference, magentaCanvas, pixelize, toSprite } from "../pixel/pipeline";
 import { SPRITE_CANVAS, type SpriteSide } from "../pixel/fit";
-import { checkFrames, checkPair, checkSprite, type CheckIssue } from "../checks/checks";
+import { checkDirection, checkFrames, checkPair, checkSprite, type CheckIssue } from "../checks/checks";
 import { actionPrompt, backPrompt, evolutionPrompt, frontPrompt } from "../prompts/prompts";
-import { emptyLedger, validateSeed, type ActionContract, type MonsterLedger, type MonsterSeed, type SpeciesSeed } from "../seed";
+import { emptyLedger, validateSeed, type ActionContract, type ActionKind, type MonsterLedger, type MonsterSeed, type SpeciesSeed } from "../seed";
 import { idleFrames } from "../anim/idle";
 import { fromStrip, rowBlockHint, rowFrames, rowReference, splitRow, toStrip } from "../anim/row";
 import { cropToInk, type RgbaImage } from "../pixel/image";
@@ -103,6 +103,16 @@ function actionGridPath(speciesId: string, which: SpriteSide, action: string): s
   return join(PATHS.grids, `${speciesId}-${which}-${action}.png`);
 }
 
+/** 동작 프레임 검사 + 방향 검사 (attack 은 공격 방향, hurt 는 반대, self 는 없음) */
+function actionIssues(seed: MonsterSeed, which: SpriteSide, kind: ActionKind, frames: RgbaImage[], base: RgbaImage): CheckIssue[] {
+  const issues = checkFrames(frames, base, seed.style.maxColors, "action");
+  const x = seed.animation.direction[which].x;
+  if (kind === "attack") issues.push(...checkDirection(frames, x, "공격"));
+  // 피격: 공격자 쪽(앞) 끝이 뒤로 물러나야 한다 — 재는 쪽은 앞(x), 움직임은 반대(−x)
+  if (kind === "hurt") issues.push(...checkDirection(frames, -x, "피격 밀림", 2, x));
+  return issues;
+}
+
 function actionOf(seed: MonsterSeed, id: string): ActionContract {
   const action = seed.animation.actions[id];
   if (!action) throw new Error(`시드에 동작 ${id} 가 없다 (있는 동작: ${Object.keys(seed.animation.actions).join(", ")})`);
@@ -116,9 +126,14 @@ function pickedSprite(ledger: MonsterLedger, species: SpeciesSeed, which: Sprite
   return toSprite(readPng(resolve(PATHS.data, pick.grid)), which, species.stage).sprite;
 }
 
-/** 줄 격자 → 112 프레임 (build 와 후보 시트가 같은 함수를 쓴다). 0번 폭을 기준 스프라이트 폭에 맞춘다 */
-function actionFramesFromGrid(grid: RgbaImage, frames: number, which: SpriteSide, stage: 1 | 2 | 3, base: RgbaImage) {
-  return rowFrames(splitRow(grid, frames), which, stage, cropToInk(base).width);
+/**
+ * 줄 격자 → 112 프레임 (build 와 후보 시트가 같은 함수를 쓴다). 0번 폭을 기준 스프라이트 폭에 맞추고,
+ * 공격·피격은 뒷발(공격 방향 반대쪽 끝)을 고정한다 — 덤빈 거리가 프레임 안에 남는다.
+ */
+function actionFramesFromGrid(seed: MonsterSeed, actionId: string, grid: RgbaImage, which: SpriteSide, stage: 1 | 2 | 3, base: RgbaImage) {
+  const action = actionOf(seed, actionId);
+  const rear = (action.kind === "self" ? 0 : -Math.sign(seed.animation.direction[which].x)) as -1 | 0 | 1;
+  return rowFrames(splitRow(grid, action.frames), which, stage, cropToInk(base).width, rear);
 }
 
 type Candidate = { k: number; raw: string; grid: string; sprite: string; sha256: string; block: number; colors: number; issues: CheckIssue[] };
@@ -185,9 +200,9 @@ function writeActionRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSi
       const around = rowBlockHint(source, cropToInk(base).width);
       const { grid, block, colors } = pixelize(source, seed.style.maxColors, { around });
       writePng(join(dir, `grid-${k}.png`), grid);
-      const { frames, clipped } = actionFramesFromGrid(grid, action.frames, which, species.stage, base);
+      const { frames, clipped } = actionFramesFromGrid(seed, actionId, grid, which, species.stage, base);
       writePng(join(dir, `strip-${k}.png`), toStrip(frames));
-      const issues = checkFrames(frames, base, seed.style.maxColors, "action");
+      const issues = actionIssues(seed, which, action.kind, frames, base);
       if (clipped > 0) issues.push({ level: "warn", message: `캔버스 밖으로 ${clipped}칸 잘렸다` });
       candidates.push({ k, raw: `raw-${k}.png`, grid: `grid-${k}.png`, strip: `strip-${k}.png`, sha256: sha256(bytes), block, colors, issues });
     } catch (error) {
@@ -226,7 +241,7 @@ async function stageAction(args: Args): Promise<void> {
   const action = actionOf(seed, actionId);
   const n = Number(args.flags.get("n") ?? 2);
   const reference = encodePng(rowReference(pickedSprite(loadLedger(), species, which), action.frames));
-  const prompt = actionPrompt(seed.style, species, which, action);
+  const prompt = actionPrompt(seed.style, species, which, action, seed.animation.direction[which]);
   const raws = await mapLimit(Array.from({ length: n }, (_, i) => i), 4, (i) =>
     generateImage({ prompt, reference, slug: `mcs-${species.id}-${which}-${actionId}-${i + 1}` }));
   writeActionRun(seed, species, which, actionId, prompt, raws);
@@ -340,7 +355,8 @@ function pickAction(args: Args, species: SpeciesSeed, which: SpriteSide, actionI
   console.log(`${species.id} ${which} ${actionId} ← run ${run} 후보 ${k} (격자 ${relativeToRepo(target)})`);
 }
 
-type AnimManifest = { canvas: number; sides: Partial<Record<SpriteSide, Record<string, { path: string; frames: number; frameMs: number; loop: boolean; source: "idle-shift" | "row-generation" }>>> };
+type AnimEntry = { path: string; frames: number; frameMs: number; loop: boolean; source: "idle-shift" | "row-generation"; kind?: ActionKind };
+type AnimManifest = { canvas: number; direction: MonsterSeed["animation"]["direction"]; sides: Partial<Record<SpriteSide, Record<string, AnimEntry>>> };
 
 function printIssues(label: string, issues: CheckIssue[]): number {
   for (const issue of issues) console.log(`  ${issue.level === "error" ? "✗" : "!"} ${label}: ${issue.message}`);
@@ -359,7 +375,7 @@ function stageBuild(): number {
       const fit = toSprite(readPng(resolve(PATHS.data, pick.grid)), which, species.stage);
       writePng(bundlePath(species.id, which), fit.sprite);
       console.log(`${species.id} ${which}: 잉크 ${fit.ink.width}x${fit.ink.height} · 축소 ${fit.factor.toFixed(2)} · 마젠타 정리 ${fit.magentaRemoved}`);
-      const manifest = (anim[species.id] ??= { canvas: SPRITE_CANVAS, sides: {} });
+      const manifest = (anim[species.id] ??= { canvas: SPRITE_CANVAS, direction: seed.animation.direction, sides: {} });
       const states = (manifest.sides[which] ??= {});
       const { idle } = seed.animation;
       mkdirSync(join(PATHS.bundle, species.id, "anim"), { recursive: true });
@@ -368,9 +384,9 @@ function stageBuild(): number {
       for (const [actionId, actionPick] of Object.entries(ledger.actions?.[species.id]?.[which] ?? {})) {
         const action = actionOf(seed, actionId);
         if (actionPick.frames !== action.frames) throw new Error(`${species.id} ${which} ${actionId}: 고른 줄은 ${actionPick.frames}장인데 시드는 ${action.frames}장 — 다시 생성해 고른다`);
-        const { frames, clipped } = actionFramesFromGrid(readPng(resolve(PATHS.data, actionPick.grid)), action.frames, which, species.stage, fit.sprite);
+        const { frames, clipped } = actionFramesFromGrid(seed, actionId, readPng(resolve(PATHS.data, actionPick.grid)), which, species.stage, fit.sprite);
         writePng(animPath(species.id, which, actionId), toStrip(frames));
-        states[actionId] = { path: `anim/${which}-${actionId}.png`, frames: action.frames, frameMs: action.frameMs, loop: action.loop, source: "row-generation" };
+        states[actionId] = { path: `anim/${which}-${actionId}.png`, frames: action.frames, frameMs: action.frameMs, loop: action.loop, source: "row-generation", kind: action.kind };
         console.log(`${species.id} ${which} ${actionId}: ${action.frames}장${clipped ? ` · 잘린 칸 ${clipped}` : ""}`);
       }
     }
@@ -399,7 +415,9 @@ function stageCheck(): number {
         const file = join(PATHS.bundle, species.id, entry.path);
         if (!existsSync(file)) { errors += printIssues(`${species.id} ${which} ${state}`, [{ level: "error", message: `${entry.path} 가 없다` }]); continue; }
         const frames = fromStrip(readPng(file), entry.frames);
-        errors += printIssues(`${species.id} ${which} ${state}`, checkFrames(frames, base, seed.style.maxColors, entry.source === "idle-shift" ? "idle" : "action"));
+        errors += printIssues(`${species.id} ${which} ${state}`, entry.source === "idle-shift"
+          ? checkFrames(frames, base, seed.style.maxColors, "idle")
+          : actionIssues(seed, which, entry.kind ?? actionOf(seed, state).kind, frames, base));
       }
     }
   }

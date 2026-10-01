@@ -1,5 +1,15 @@
 {
   "canvas": 112,
+  "direction": {
+    "front": {
+      "x": -1,
+      "y": 1
+    },
+    "back": {
+      "x": 1,
+      "y": -1
+    }
+  },
   "sides": {
     "front": {
       "idle": {

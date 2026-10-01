@@ -10,6 +10,8 @@ import { cleanReference, pixelize } from "@/harnesses/monster-collect-species/pi
 import { createImage, cropToInk, opaqueBounds, pixelAt, setPixel, type Rgba, type RgbaImage } from "@/harnesses/monster-collect-species/pixel/image";
 import { checkFrames, checkPair, checkSprite, spriteStats } from "@/harnesses/monster-collect-species/checks/checks";
 import { IDLE_PLAN, idleFrames } from "@/harnesses/monster-collect-species/anim/idle";
+import { poseForSkill } from "@/harnesses/monster-collect-species/anim/poses";
+import { checkDirection, directionShift } from "@/harnesses/monster-collect-species/checks/checks";
 import { fromStrip, ROW_REFERENCE, rowFrames, rowReference, splitRow, toStrip } from "@/harnesses/monster-collect-species/anim/row";
 import { validateSeed } from "@/harnesses/monster-collect-species/seed";
 import { HARNESSES, getHarness, harnessesForGenre } from "@/harnesses/_core/registry";
@@ -305,6 +307,31 @@ describe("monster-collect-species 애니메이션", () => {
     expect(messages.some((m) => m.includes("프레임 2: 발"))).toBe(true);
   });
 
+  it("스킬 → 자세: 저자 지정 > 자기 대상 buff > 속성 special > 나머지 tackle", () => {
+    expect(poseForSkill({ scope: "enemy" })).toBe("tackle");
+    expect(poseForSkill({ scope: "enemy", elementId: "fire" })).toBe("special");
+    expect(poseForSkill({ scope: "enemy", elementId: "none" })).toBe("tackle");
+    expect(poseForSkill({ scope: "self", elementId: "fire" })).toBe("buff");
+    expect(poseForSkill({ scope: "enemy", elementId: "fire", battlePose: "tackle" })).toBe("tackle");
+    expect(poseForSkill({ scope: "enemy", battlePose: "dance" })).toBe("tackle");
+  });
+
+  it("방향 검사: 윗몸 앞 끝이 기대 방향으로 나간 줄만 통과", () => {
+    const lean = (dx: number) => {
+      const out = createImage(SPRITE_CANVAS, SPRITE_CANVAS);
+      for (let y = 0; y < sprite.height; y += 1) for (let x = 0; x < sprite.width; x += 1) {
+        const p = pixelAt(sprite, x, y);
+        const shift = y < 80 ? dx : 0;
+        if (p[3] && x + shift >= 0 && x + shift < SPRITE_CANVAS) setPixel(out, x + shift, y, p);
+      }
+      return out;
+    };
+    const left = [sprite, lean(-2), lean(-6), lean(-1)];
+    expect(directionShift(left, -1)).toBeGreaterThanOrEqual(4);
+    expect(checkDirection(left, -1, "공격")).toEqual([]);
+    expect(checkDirection(left, 1, "공격")[0]?.message).toContain("나가지 않는다");
+  });
+
   it("큰 동작 참고 그림: 2172×724 마젠타, 첫 칸에만 기준 스프라이트", () => {
     const reference = rowReference(sprite, 4);
     expect([reference.width, reference.height]).toEqual([ROW_REFERENCE.width, ROW_REFERENCE.height]);
@@ -351,8 +378,10 @@ describe("monster-collect-species 시드·레지스트리", () => {
     expect(() => validateSeed({ ...base, species: [{ ...seed.species[0], id: "evo", stage: 2, evolvesFrom: "nope" }] })).toThrow("evolvesFrom");
     expect(() => validateSeed({ ...base, animation: undefined, species: seed.species })).toThrow("animation");
     expect(() => validateSeed({ ...base, animation: { ...seed.animation, idle: { ...seed.animation.idle, frames: 6 } }, species: seed.species })).toThrow("IDLE_PLAN");
-    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { idle: seed.animation.actions.attack } }, species: seed.species })).toThrow("idle 은 동작");
-    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.attack, frames: 9 } } }, species: seed.species })).toThrow("2~6");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { idle: seed.animation.actions.tackle } }, species: seed.species })).toThrow("idle 은 동작");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, frames: 9 } } }, species: seed.species })).toThrow("2~6");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, kind: "dance" } } }, species: seed.species })).toThrow("kind");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, direction: { front: { x: 1, y: 1 }, back: { x: 1, y: -1 } } }, species: seed.species })).toThrow("마주 봐야");
   });
 
   it("장르 범위: 몬스터 수집 프로젝트에서만 보인다", () => {
@@ -404,11 +433,11 @@ describe("monster-collect-species CLI (모래상자, 네트워크 없음)", () =
       // 큰 동작: 한 줄 원본을 가져와 고르고 굽는다
       const rowRaw = join(sandbox, "row.png");
       writeFileSync(rowRaw, encodePng(fakeGenerated(sampleRow(4), 12, [255, 0, 255, 255])));
-      expect(await cli.run(["import", "--species", "sparkit", "--side", "front", "--action", "attack", "--raw", rowRaw])).toBe(0);
-      const actionDir = join(sandbox, "runs/sparkit/front-attack");
+      expect(await cli.run(["import", "--species", "sparkit", "--side", "front", "--action", "tackle", "--raw", rowRaw])).toBe(0);
+      const actionDir = join(sandbox, "runs/sparkit/front-tackle");
       const actionRun = readdirSync(actionDir)[0]!;
       expect(JSON.parse(readFileSync(join(actionDir, actionRun, "run.json"), "utf8")).candidates).toHaveLength(1);
-      expect(await cli.run(["pick", "--species", "sparkit", "--side", "front", "--action", "attack", "--run", actionRun, "--candidate", "1"])).toBe(0);
+      expect(await cli.run(["pick", "--species", "sparkit", "--side", "front", "--action", "tackle", "--run", actionRun, "--candidate", "1"])).toBe(0);
       expect(await cli.run(["build"])).toBe(0);
       expect(await cli.run(["check"])).toBe(0);
       expect(await cli.run(["preview"])).toBe(0);
@@ -421,11 +450,12 @@ describe("monster-collect-species CLI (모래상자, 네트워크 없음)", () =
     expect(ledger.picks.sparkit.front.grid).toBe("grids/sparkit-front.png");
     const built = readPng(join(sandbox, "bundle/sparkit/front.png"));
     expect([built.width, built.height]).toEqual([SPRITE_CANVAS, SPRITE_CANVAS]);
-    expect(ledger.actions.sparkit.front.attack).toMatchObject({ grid: "grids/sparkit-front-attack.png", frames: 4 });
+    expect(ledger.actions.sparkit.front.tackle).toMatchObject({ grid: "grids/sparkit-front-tackle.png", frames: 4 });
     const anim = JSON.parse(readFileSync(join(sandbox, "bundle/sparkit/anim.json"), "utf8"));
-    expect(Object.keys(anim.sides.front)).toEqual(["idle", "attack"]);
+    expect(Object.keys(anim.sides.front)).toEqual(["idle", "tackle"]);
+    expect(anim.direction).toEqual({ front: { x: -1, y: 1 }, back: { x: 1, y: -1 } });
     expect(Object.keys(anim.sides.back)).toEqual(["idle"]);
-    expect(anim.sides.front.attack).toMatchObject({ path: "anim/front-attack.png", frames: 4, loop: false, source: "row-generation" });
+    expect(anim.sides.front.tackle).toMatchObject({ path: "anim/front-tackle.png", frames: 4, loop: false, source: "row-generation", kind: "attack" });
     expect(readPng(join(sandbox, "bundle/sparkit/anim/front-idle.png")).width).toBe(SPRITE_CANVAS * 4);
     // 커밋된 기록은 그대로
     expect(readFileSync(join(ROOT, "harness-data/monster-collect-species/ledger.json"), "utf8")).toBe(ledgerBefore);

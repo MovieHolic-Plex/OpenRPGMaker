@@ -148,3 +148,42 @@ export function checkFrames(frames: RgbaImage[], base: RgbaImage, maxColors: num
   }
   return issues;
 }
+
+/**
+ * 윗몸(잉크 상자 위 절반)의 앞 끝 x — dir>0 이면 가장 오른쪽, dir<0 이면 가장 왼쪽 칸.
+ * 무게중심으로 재면 큰 꼬리·잎 귀가 반대로 휘두르는 종(리프링)에서 머리가 덤벼도 −9칸이 나왔다(2026-10-01).
+ * 공격은 머리·앞발 끝이 앞으로 나가는 것이라 앞 끝을 잰다. 발은 0번에 맞춰 두므로 몸 전체 이동은 섞이지 않는다.
+ */
+function leadingEdgeX(image: RgbaImage, dir: number): number | null {
+  const box = opaqueBounds(image);
+  if (!box) return null;
+  let edge: number | null = null;
+  for (let y = box.y; y < box.y + Math.ceil(box.height / 2); y += 1) {
+    for (let x = box.x; x < box.x + box.width; x += 1) {
+      if (!isOpaque(image, x, y)) continue;
+      if (edge === null || (dir > 0 ? x > edge : x < edge)) edge = x;
+    }
+  }
+  return edge;
+}
+
+/**
+ * 방향 검사: 공격 자세는 어느 프레임이든 윗몸 앞 끝이 0번보다 공격 방향으로 minShift 칸 이상 나가야 하고,
+ * 피격은 공격자 쪽 앞 끝이 반대로 물러나야 한다. 반대로 덤비는 후보를 사람이 보기 전에 거른다. 가장 많이 간 칸 수를 돌려준다.
+ * sign: 움직임을 기대하는 가로 부호. edgeSide: 앞 끝을 재는 쪽 (공격은 sign 과 같다. 피격은 공격자 쪽 끝을 재고 sign 은 그 반대)
+ */
+export function directionShift(frames: RgbaImage[], sign: number, edgeSide = sign): number {
+  const base = leadingEdgeX(frames[0]!, edgeSide);
+  if (base === null) return 0;
+  let best = -Infinity;
+  for (const frame of frames.slice(1)) {
+    const e = leadingEdgeX(frame, edgeSide);
+    if (e !== null) best = Math.max(best, (e - base) * Math.sign(sign));
+  }
+  return best === -Infinity ? 0 : best;
+}
+
+export function checkDirection(frames: RgbaImage[], sign: number, label: string, minShift = 2, edgeSide = sign): CheckIssue[] {
+  const shift = directionShift(frames, sign, edgeSide);
+  return shift >= minShift ? [] : [{ level: "warn", message: `${label} 방향(${sign > 0 ? "오른쪽" : "왼쪽"})으로 나가지 않는다 (윗몸 앞 끝 최대 ${shift.toFixed(0)}칸 < ${minShift})` }];
+}
