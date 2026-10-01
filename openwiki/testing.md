@@ -1920,3 +1920,46 @@ under `test/fixtures` derives existing engine test data without remote persisten
 수집형은 실제 방향키/Enter/Escape 메뉴 왕복, 호러형은 생명 5/3/1/0꽃잎을 확인한다.
 `scripts/qa/field-hud-editor.probe.mjs`는 글꼴·메뉴·수치 표시를 실제 DB 컨트롤로
 저장하고 serialize/deserialize 및 섹션 왕복을 확인한다. 운영 콘텐츠 작성은 하지 않는다.
+
+## 맵 크기 성능 실측 (2026-10-01)
+
+사용자가 성능 실측을 요청했을 때 `node scripts/qa/map-size-benchmark.mjs`로 256×256과
+512×512를 비교한다. `startPlayerQaServer`의 전용 `player.html`/export store shim을 쓰며
+정본 프로젝트나 맵 크기 상한을 바꾸지 않는다. 512는 저작 도구의 지원 크기가 아니라
+실험용 fixture다. 같은 합본 마을 바닥 타일 360(칸당 쿼터 이미지 4개), NPC 0명,
+같은 카메라·화면에서 준비 실행을 버리고 크기별 3회 교대 측정한다.
+
+결과는 `verify-shots/map-size-benchmark-20261001/SUMMARY.md`를 먼저 읽는다.
+`raw-results.json`에는 맵 진입 동기 시간, GC 후 JS heap, 타일 객체 수,
+180프레임씩의 정지/이동 CPU 시간·간격, 실제 이동 좌표, 오류와 환경이 있다.
+`SOURCE-EVIDENCE.md`에는 전체 타일 생성, Phaser Container.add의 누적 목록 검색,
+화면 밖 타일 숨김 뒤에도 남는 프레임별 전체 목록 순회의 코드 좌표가 있다.
+
+측정 환경은 공유 Linux Chromium/SwiftShader다. `ERR_NETWORK_CHANGED`를 피하기 위해
+로컬 HTTP 파일은 Node fetch로 전달하고 사용하지 않는 Vite 개발 WebSocket은 connected
+응답으로 대체한다. JS heap은 native/GPU 메모리를 포함하지 않고, 프레임 CPU는 GPU 완료
+시간을 포함하지 않는다. 이 결과는 편집기 붓·되돌리기·파일 저장이나 메모리 부족 임계점을
+측정한 결과가 아니며 사용자 GPU의 절대 FPS나 범용 안전 상한으로 해석하지 않는다.
+
+### 화면 주변 타일 유지 검증
+
+2026-10-01 최적화 후 결과는 `verify-shots/map-size-optimized-20261001/SUMMARY.md`와
+`COMPARISON.md`다. 개선 전 증거 폴더는 보존한다. 재측정은
+`node scripts/qa/map-size-benchmark.mjs --out verify-shots/map-size-current`로 별도 폴더에 한다.
+출력 경로를 생략하면 실행 시각으로 새 폴더를 만든다. 원시 JSON에 실행 코드 SHA-256을 남긴다.
+진입 동기 시간과 별도로 첫 postrender까지의 지연도 기록한다(기준선에는 후자 측정이 없다).
+초기 타일 창 생성 뒤 도착 카메라 창을 첫 update에서 맞추는 비용을 숨기지 않기 위해서다.
+
+`node scripts/qa/runtime-tile-window.mjs`는 전용 player에서 64×64의 16px/32px 맵을 쓴다.
+4층/쿼터/물/그림자/솔리드 upper/★ upper/NPC/밭/설치물을 포함하고,
+이동·순간이동·복귀·맵 전환·줌·타일 수정 화면을 카메라 없는 전체 맵 렌더 경로와 RGBA로 대조한다.
+물의 비교 위상은 표시 창이 갱신된 **뒤** 고정한다. 복귀 시 새로 생성된 물을 고정 전에
+찍으면 위상 차이가 그림 차이로 오인된다. 실제 물 UpdateList 틱은 별도로 네 프레임으로 확인한다.
+`verify-shots/runtime-tile-window-20261001/SUMMARY.md`를 먼저 읽고 지정 PNG만 연다.
+이 스크립트는 테스트 fixture만 로드하며 정본 프로젝트를 저장하지 않는다.
+
+관련 테스트는 `npm test -- test/runtimeTileWindow.test.ts test/playSceneTileCulling.test.ts
+test/eventLayerReuse.test.ts test/terrainQuarterAutotile.test.ts test/lakeAutotile.test.ts
+--maxWorkers=2 --minWorkers=1`. 앱 타입 검사는 기본 Node heap 한도에서 OOM(exit 134)이므로
+`NODE_OPTIONS=--max-old-space-size=8192 npm run typecheck:app`로 확인했다.
+테스트 실행에는 AGENTS.md의 세션별 사용자 명시 허가가 필요하다.
