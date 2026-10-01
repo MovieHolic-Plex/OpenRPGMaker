@@ -1,15 +1,15 @@
 {
  "spec": "desert:11",
- "ms": 631,
+ "ms": 292,
  "size": "58x44",
- "summary": "버들항 사막 오아시스 마을 58×44 (맵 map_beodeul_desert_11, seed 11): 큰길 하나(굽은 폭 2)·6개 갈래길, 광장(19,27), 집 15채(12종), 앵커 desert-oasis-khan, 일터 「대상 마당」, 밭 5, 나무 50, 광장 소품 6. 문 앞 16/16 도달. 다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
- "houses": 15,
+ "summary": "버들항 사막 오아시스 마을 58×44 (맵 map_beodeul_desert_11, seed 11): 큰길 하나(굽은 폭 2)·6개 갈래길, 광장(20,28), 집 14채(12종), 앵커 desert-oasis-temple, 일터 「대상 마당」, 밭 3, 나무 48, 광장 소품 5. 문 앞 15/15 도달. 다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
+ "houses": 14,
  "distinct": 12,
- "doors": "16/16",
+ "doors": "15/15",
  "stampFailed": 0,
  "open": {
-  "share": 0.3785,
-  "worst": 0.448,
+  "share": 0.3793,
+  "worst": 0.457,
   "over40": 2
  },
  "cityForm": {
@@ -23,8 +23,8 @@
    "isolatedLines": 0,
    "nodes": 1,
    "landmarks": 0,
-   "meanDepth": 2.39,
-   "bentStreetCells": 25,
+   "meanDepth": 3.28,
+   "bentStreetCells": 19,
    "spacingCv": null
   },
   "advice": []

@@ -1,34 +1,32 @@
 {
  "spec": "swamp:11",
- "ms": 600,
+ "ms": 285,
  "size": "56x44",
- "summary": "버들항 늪 수상 마을 56×44 (맵 map_beodeul_swamp_11, seed 11): 큰길 하나(굽은 폭 2)·6개 갈래길, 광장(15,30), 집 14채(13종), 앵커 swamp-stilt-loom, 일터 「고기 말림터」, 밭 0, 나무 1, 광장 소품 8. 문 앞 15/15 도달. 다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
- "houses": 14,
+ "summary": "버들항 늪 수상 마을 56×44 (맵 map_beodeul_swamp_11, seed 11): 큰길 하나(굽은 폭 2)·6개 갈래길, 광장(33,30), 집 15채(13종), 앵커 swamp-stilt-shrine, 일터 「고기 말림터」, 밭 0, 나무 0, 광장 소품 8. 문 앞 16/16 도달. 다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
+ "houses": 15,
  "distinct": 13,
- "doors": "15/15",
+ "doors": "16/16",
  "stampFailed": 0,
  "open": {
-  "share": 0.233,
-  "worst": 0.354,
+  "share": 0.2618,
+  "worst": 0.366,
   "over40": 0
  },
  "cityForm": {
-  "ok": false,
+  "ok": true,
   "counts": {
    "deadEnds": 0,
    "longStraight": 0,
    "canalStraight": null,
    "neighbourRepeats": 0,
    "overused": 0,
-   "isolatedLines": 1,
+   "isolatedLines": 0,
    "nodes": 1,
    "landmarks": 0,
-   "meanDepth": 2.07,
-   "bentStreetCells": 21,
+   "meanDepth": 3.07,
+   "bentStreetCells": 8,
    "spacingCv": null
   },
-  "advice": [
-   "길망에서 떨어진 길 1개: (0,35)→(6,35)"
-  ]
+  "advice": []
  }
 }

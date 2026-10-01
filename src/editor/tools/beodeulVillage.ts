@@ -233,21 +233,25 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   };
   const yAt = (s: Street, x: number): number | null => { for (let y = 0; y < H; y += 1) if (s.cells.has(idx(x, y))) return y; return null; };
 
+  /** x0→x1 구간에 12~16칸마다 열쇠점, 높이는 yBase ± 1~amp 로 번갈아(곧은 길 45칸 넘지 않게). 끝점 높이는 고정할 수 있다. */
+  const wavy = (x0: number, x1: number, yBase: number, amp: number, yStart?: number, yEnd?: number): [number, number][] => {
+    const keys: [number, number][] = []; let sg = rand() < 0.5 ? 1 : -1;
+    keys.push([x0, yStart ?? yBase + sg * ri(1, amp)]);
+    for (let x = x0 + ri(12, 16); x < x1 - 8; x += ri(12, 16)) { sg = -sg; keys.push([x, yBase + sg * ri(1, amp)]); }
+    keys.push([x1, yEnd ?? yBase - sg * ri(1, amp)]);
+    return keys;
+  };
   let mainKeys: [number, number][];
   if (theme === "coast") {
     const top = Math.min(...shoreY) - 9;
     const yM = Math.max(10, Math.min(yMainBase, top));
-    const sg = rand() < 0.5 ? 1 : -1;
-    mainKeys = [[0, yM + sg * 2], [Math.round(W * 0.3), yM - sg * ri(1, 2)], [Math.round(W * 0.62), yM + sg * ri(1, 2)], [W - 1, yM - sg * 2]];
+    mainKeys = wavy(0, W - 1, yM, 2);
   } else if (riverX >= 0) {
+    // 다리 앞뒤(강 왼쪽 4칸 ~ 오른쪽 7칸)는 곧게
     const yc = yMainBase;
-    const sg = rand() < 0.5 ? 1 : -1;
-    mainKeys = riverLeft
-      ? [[0, yc + sg], [riverX - 4, yc], [riverX + 7, yc], [riverX + 7 + Math.round((W - riverX) * 0.35), yc - sg], [riverX + 7 + Math.round((W - riverX) * 0.7), yc - sg * 2], [W - 1, yc - sg * 2]]
-      : [[0, yc + sg * 2], [Math.round(riverX * 0.25), yc + sg * 2], [Math.round(riverX * 0.6), yc + sg], [riverX - 4, yc], [riverX + 7, yc], [W - 1, yc - sg]];
+    mainKeys = [...wavy(0, riverX - 4, yc, 2, undefined, yc), ...wavy(riverX + 7, W - 1, yc, 2, yc)];
   } else {
-    const sg = rand() < 0.5 ? 1 : -1;
-    mainKeys = [[0, yMainBase + sg * ri(2, 3)], [Math.round(W * 0.33), yMainBase - sg * ri(1, 2)], [Math.round(W * 0.66), yMainBase + sg * ri(1, 2)], [W - 1, yMainBase - sg * ri(2, 3)]];
+    mainKeys = wavy(0, W - 1, yMainBase, 3);
   }
   const main = hStreet("큰길", mainKeys, 2);
   // 다리 칸: 큰길이 물을 지나는 곳은 길 대신 다리 키트
@@ -280,8 +284,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 강이 서쪽이면 뒷길은 동쪽 둑(방앗간 자리 10칸을 비우고 동쪽 끝까지)
     const x0 = toWestEdge ? 0 : riverLeft ? eastStart + 10 : Math.round(W * 0.3) + ri(-3, 3);
     const x1 = toWestEdge ? Math.min(westEnd, Math.round(W * (riverX >= 0 ? 0.55 : 0.7)) + ri(-3, 3)) : W - 1;
-    const sg = rand() < 0.5 ? 1 : -1, span = x1 - x0;
-    const s = hStreet("뒷길(북)", [[x0, yN], [x0 + Math.round(span / 3), yN - sg], [x0 + Math.round(span * 2 / 3), yN + sg], [x1, yN]], theme === "coast" ? 2 : 1 + (rand() < 0.4 ? 1 : 0));
+    const s = hStreet("뒷길(북)", wavy(x0, x1, yN, 1, yN, yN), theme === "coast" ? 2 : 1 + (rand() < 0.4 ? 1 : 0));
     markStreet(s);
     return { s, x0, x1 };
   })();
@@ -307,7 +310,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   if (theme === "coast") {
     // 물가 길: 해안선 3칸 위를 따라 동서로(곶 앞에서 멈춤)
     const keys: [number, number][] = [];
-    for (let x = 0; x <= W - 10; x += 6) keys.push([x, Math.min(...shoreY.slice(Math.max(0, x - 3), x + 4)) - 3]);
+    // 열쇠점 12칸마다, 물가에서 3~4칸 위로 번갈아(물가를 따라 굽고 45칸 넘게 곧지 않게)
+    for (let x = 0, k = 0; x <= W - 12; x += 12, k += 1) keys.push([x, Math.min(...shoreY.slice(Math.max(0, x - 6), x + 7)) - 3 - (k % 2)]);
     keys.push([W - 10, Math.min(...shoreY.slice(W - 13, W - 7)) - 3]);
     south = hStreet("물가 길", keys, 2); markStreet(south);
     connect("포구 길", Math.round(W * 0.5) + ri(-4, 4), main, south);
@@ -320,8 +324,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const [x0, x1] of spans) {
       if (x1 - x0 < 12) continue;
       const yS = Math.min(H - 6, yMainBase + ri(11, 13));
-      const sg = rand() < 0.5 ? 1 : -1, span = x1 - x0;
-      const st = hStreet("뒷길(남)", [[x0, yS], [x0 + Math.round(span / 3), yS + sg * 2], [x0 + Math.round(span * 2 / 3), yS + sg], [x1, yS - sg]], 1 + (rand() < 0.4 ? 1 : 0));
+      const st = hStreet("뒷길(남)", wavy(x0, x1, yS, 2, yS), 1 + (rand() < 0.4 ? 1 : 0));
       markStreet(st); souths.push(st);
       const ends = [x0 > 0 ? x0 : -1, x1 < W - 1 ? x1 : -1].filter((x) => x >= 0);
       if (!ends.length) ends.push(Math.round((x0 + x1) / 2));
