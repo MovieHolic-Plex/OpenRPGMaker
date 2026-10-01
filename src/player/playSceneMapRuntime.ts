@@ -83,7 +83,7 @@ import {
   reliefRowDepth,
   renderReliefLayer,
 } from "@/player/playSceneRelief";
-import type { ReliefTextureManager } from "@/player/reliefStrips";
+import { reliefFieldOf, type ReliefTextureManager } from "@/player/reliefStrips";
 import { reliefPaintsCell, reliefSignature } from "@/project/relief/screen";
 
 interface RenderedTileImage {
@@ -315,7 +315,9 @@ export function renderTiles<
   };
   // The real runtime has a camera and flat Phaser lists. Minimal render oracles
   // without a camera keep the complete-map path.
-  if (scene.cameras && scene.tileLayer.list) {
+  // 높이 지형 맵도 전체 경로를 쓴다: 들린 칸은 화면에서 칸 위치보다 위에 그려지므로 창(보이는 칸만 그림)이
+  // 칸 좌표 기준이면 화면 아래쪽 들린 칸이 빠지거나 잘못 숨겨진다.
+  if (scene.cameras && scene.tileLayer.list && !reliefFieldOf(map.relief)) {
     const resident = new RuntimeTileWindow<RenderedTileImage>(map.width, map.height, pass.size);
     const beforeRootTiles = new WeakSet(scene.children?.list as object[] | undefined);
     const lowerBatch: RenderedTileImage[] = [], upperBatch: RenderedTileImage[] = [];
