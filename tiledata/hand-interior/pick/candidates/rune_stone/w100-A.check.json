@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/rune_stone/w100-A.pxg",
+ "id": "rune stone",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w100-A.pxg",
+  "키: 위 끝 y=1 (v5 y=6) — 낮은 가구가 솟았다"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.091
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 5,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  1,
+  13,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  6,
+  13,
+  31
+ ],
+ "note": "둥근 머리 타원 윗면 5행(밝은 돌+아래 그늘) + 아래 호/그림자 띠 1행 + 옆 띠 3행; 마스크 화소(11행 x7,8 등)·몸통 그대로, 캔버스 그대로(위 빈 자리를 씀)",
+ "ok": true
+}

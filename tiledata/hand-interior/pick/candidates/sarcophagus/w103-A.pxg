@@ -1,0 +1,71 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a stone
+@mblock 0 0
+................................
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+................................
+@tblock 0 0
+................................
+..0000000000000000000000000000..
+.065555555555555555555555555550.
+.064444444444444444444444444430.
+.064446666344466666666663444430.
+.064465555666655555555556666330.
+.064463553555544554455555555630.
+.064655555555555445555555555530.
+.064655555555544554455555555530.
+.064365555555555555555555555530.
+.064465355533655555555555555330.
+.064436555344344444444443333430.
+.064443333444433333333334444430.
+.064444444444444444444444444430.
+.066666666666666666666666666660.
+.144444444444444444444444444441.
+.133333333333333333333333333331.
+..1111111111111111111111111111..
+.111111111111111111111111111111.
+.122222222222222222222222222221.
+.143333333333333333333333333321.
+.143311111111133331111111113321.
+.143312222222233331222222223321.
+.143312222222233331222222223321.
+.143312222222233331222222223321.
+.143312222222233331222222223321.
+.143344444444533334444444453321.
+.143333333333333333333333333321.
+.143333333333333333333333333321.
+.544444444444444444444444444444.
+.111111111111111111111111111111.
+................................
+@px 4 31 - 5 31 ~ 6 31 ~ 7 31 ~ 8 31 ~ 9 31 ~ 10 31 ~ 11 31 ~ 12 31 ~ 13 31 ~ 14 31 ~ 15 31 ~ 16 31 ~ 17 31 ~ 18 31 ~ 19 31 ~ 20 31 ~ 21 31 ~ 22 31 ~ 23 31 ~ 24 31 ~ 25 31 ~ 26 31 ~ 27 31 ~ 28 31 -

@@ -7,5 +7,5 @@ cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구
 - `skull pile` 해골 더미 — 해골과 뼈 더미. 지하묘지·던전 구석.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 지하묘지·던전
 
 ```json
-[{"id":"coffin","ko":"관","kind":"floor","w":1,"h":2,"overhangPx":0,"cells":[[0,0,5126,3],[0,1,5127,3]]},{"id":"sarcophagus","ko":"석관","kind":"floor","w":2,"h":1,"overhangPx":16,"cells":[[0,-1,5161,3],[1,-1,5162,3],[0,0,5163,3],[1,0,5164,3]]},{"id":"skull pile","ko":"해골 더미","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,5171,3]]}]
+[{"id":"coffin","ko":"관","kind":"floor","w":1,"h":2,"overhangPx":0,"cells":[[0,0,5150,3],[0,1,5151,3]]},{"id":"sarcophagus","ko":"석관","kind":"floor","w":2,"h":1,"overhangPx":16,"cells":[[0,-1,5185,3],[1,-1,5186,3],[0,0,5187,3],[1,0,5188,3]]},{"id":"skull pile","ko":"해골 더미","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,5195,3]]}]
 ```

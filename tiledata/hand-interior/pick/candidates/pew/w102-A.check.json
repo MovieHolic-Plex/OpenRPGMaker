@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew/w102-A.pxg",
+ "id": "pew",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w102-A.pxg"
+ ],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "why": "북향 긴의자: 좌판·방석 윗면 띠와 등판 윗날이 보이려면 위로 8줄 필요(v5 15줄 → 23줄)."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  9,
+  31,
+  30
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "note": "북향 긴의자: 등판 윗날 2행(밝은 윗날+중간) + 오목 판 뒷면, 위 방석 띠 2행(붉은 윗면), 양 끝판 윗날. 캔버스 32x32로 키움(v5 15줄 → 23줄)",
+ "ok": true
+}

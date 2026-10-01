@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_bundle/w110-A.pxg",
+ "id": "firewood bundle",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w110-A.pxg",
+  "키: 위 끝 y=0 (v5 y=3) — 낮은 가구가 솟았다"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  0,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  14,
+  14
+ ],
+ "note": "감독자 작도(2차): 수평 면(방석·뚜껑·상판·디딤판)을 위에서 보이는 판 4~6행으로",
+ "ok": true
+}

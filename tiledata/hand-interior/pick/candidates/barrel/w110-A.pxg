@@ -1,0 +1,21 @@
+// w110-A 감독자 작도: 통 윗면 = 위에서 보이는 타원 뚜껑
+@size 16 16
+@cell 16
+@palette w110-A.pal
+@block 0 0
+................
+.....GGGGGG.....
+...GGEEEEEEGG...
+..GEEEEEEEEEEG..
+.GEBBBBBBBBBBEG.
+.GDDEEEEEEEEDDG.
+.GFFDDDDDDDDFFG.
+.GADFFFFFFFFAAG.
+.GIDDDDCBBJJAHG.
+.GAIIIIHHHHHHAG-
+.GADDDDCBBJJAAG-
+.GADDDDCBBJJAAG-
+..GDDDDCBBJJAG.-
+..GGIIIHHHHHGG.-
+....GGGGGGGG...-
+....~~~~~~~~~~~~

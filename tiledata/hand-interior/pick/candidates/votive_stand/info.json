@@ -1,0 +1,38 @@
+{
+ "id": "votive stand",
+ "slug": "votive_stand",
+ "name_ko": "봉헌 초 받침(움직임)",
+ "category": "예배당",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 24
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": null,
+ "description": "봉헌 초 받침(작은 초들이 따로 깜박인다). 측랑.",
+ "where": "측랑.",
+ "placement": [
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  11,
+  14,
+  30
+ ],
+ "v5_colors": 11,
+ "material": "wood",
+ "related": []
+}

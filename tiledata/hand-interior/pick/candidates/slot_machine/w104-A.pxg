@@ -1,0 +1,53 @@
+@size 16 48
+// v5 현재판 slot machine (16x32, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+..AAAAAAAAAAAA..
+..ABEEEEEEEEEA..
+..ABEEEEEEEEEA..
+..ABEEEEEEEEEA..
+..ABBEEEEEEEEA..
+..ACBDBCBDBCBD..
+..FFFFFFFFFFFF..
+..FFFFFFFFFFFF..
+..FGGGGGGGGGGF..
+..FGGGGGGGGGGFHI
+..FGGGGGGGGGGFJ.
+..FGGGGGGGGGGFJ.
+..FGKKJKKJKKGFJ.
+..FGIIJIIJIIGFJ.
+..FGIIJIIJIIGFJ.
+..FGIIJIIJIIGFJ.
+..FGLLJLLJLLGFJ.
+..FGLLJLLJLLGFJ.
+..FGKKJKKJKKGFJ.
+..FGGGGGGGGGGFJ.
+..FGGGGGGGGGGFJ.
+..FGGGGGGGGGGF..
+..FGGGGGGGGGGF..
+..FGGGGGGGGGGF..
+..FGGGGGGGGGGF..
+..FGGGGGGGGGGF..
+..FGGGGGGGGGGF..
+..FGGGGGGGGGGF..
+..AEEEEEEEEEEA..
+..AEEEEEEEEEEA..
+..AAAAAAAAAAAA..
+..AAAAAAAAAAAA..
+..AAAAAAAAAAAA..
