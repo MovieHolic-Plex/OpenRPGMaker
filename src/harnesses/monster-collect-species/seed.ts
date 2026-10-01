@@ -22,8 +22,17 @@ export type AnimationState = { frames: number; frameMs: number; loop: boolean };
  */
 export type ActionKind = "attack" | "self" | "hurt";
 
+/**
+ * 엔진 비트 → 프레임. 스트립을 제 시계로 돌리면 덤비는 프레임이 착탄보다 먼저 지나가 버린다(2026-10-01:
+ * 120ms 간격이면 3번째 칸이 240ms 에 나오는데 착탄은 400ms). 엔진이 비트에 맞춰 이 칸을 붙든다:
+ *   anticipation — 예비동작(접근 비트 앞부분·적 windup) 동안
+ *   contact      — 착탄 순간부터 정지(hit-stop) 끝까지
+ *   recover      — 돌아가는(recover) 비트 동안, 끝나면 대기
+ */
+export type ActionKeys = { anticipation?: number; contact: number; recover?: number };
+
 /** 큰 동작 하나(공격 자세) — 생성 프롬프트에 action 문장이 들어간다. 스킬 → 자세는 anim/poses.ts */
-export type ActionContract = AnimationState & { kind: ActionKind; action: string };
+export type ActionContract = AnimationState & { kind: ActionKind; action: string; keys: ActionKeys };
 
 /** 화면 방향 (x 오른쪽 +, y 아래 +). 면마다 「이 몬스터가 공격할 때 향하는 쪽」 */
 export type ScreenVector = { x: number; y: number };
@@ -105,6 +114,8 @@ export function validateSeed(value: unknown): MonsterSeed {
     if (!Number.isInteger(action.frames) || action.frames < 2 || action.frames > 6) throw new Error(`동작 ${id} frames 는 2~6 (한 줄 생성은 6장을 넘으면 겹치고 빠진다)`);
     if (!action.action?.trim()) throw new Error(`동작 ${id} 에 action 설명이 없다`);
     if (!["attack", "self", "hurt"].includes(action.kind)) throw new Error(`동작 ${id} kind 는 attack·self·hurt`);
+    const keys = Object.values(action.keys ?? {});
+    if (!action.keys || keys.some((k) => !Number.isInteger(k) || k < 0 || k >= action.frames)) throw new Error(`동작 ${id} keys 는 0~${action.frames - 1} 칸 번호 (anticipation·contact·recover)`);
   }
   const ids = new Set<string>();
   for (const species of seed.species) {

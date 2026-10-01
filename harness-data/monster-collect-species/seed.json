@@ -36,28 +36,47 @@
         "frames": 4,
         "frameMs": 120,
         "loop": false,
-        "action": "a physical tackle or bite: frame 1 ready stance (the reference pose), frame 2 crouch low and pull back away from the target, frame 3 lunge the head, chest and front legs far toward the target with the mouth open to bite, frame 4 recover halfway back toward the ready stance; the feet stay on the ground"
+        "action": "a physical tackle or bite: frame 1 ready stance (the reference pose), frame 2 crouch low and pull back away from the target, frame 3 lunge the head, chest and front legs far toward the target with the mouth open to bite, frame 4 recover halfway back toward the ready stance; the feet stay on the ground",
+        "keys": {
+          "anticipation": 1,
+          "contact": 2,
+          "recover": 3
+        }
       },
       "special": {
         "kind": "attack",
         "frames": 4,
         "frameMs": 140,
         "loop": false,
-        "action": "an elemental special move WITHOUT drawing the element: frame 1 ready stance (the reference pose), frame 2 plant the feet wide and draw the head back inhaling with the chest swelling, frame 3 thrust the head and neck toward the target with the mouth wide open as if blasting a beam out of it (draw NO fire, water, leaves, beam or particles), frame 4 hold the mouth open slightly less; the body stays in place"
+        "action": "an elemental special move WITHOUT drawing the element: frame 1 ready stance (the reference pose), frame 2 plant the feet wide and draw the head back inhaling with the chest swelling, frame 3 thrust the head and neck toward the target with the mouth wide open as if blasting a beam out of it (draw NO fire, water, leaves, beam or particles), frame 4 hold the mouth open slightly less; the body stays in place",
+        "keys": {
+          "anticipation": 1,
+          "contact": 2,
+          "recover": 3
+        }
       },
       "buff": {
         "kind": "self",
         "frames": 4,
         "frameMs": 140,
         "loop": false,
-        "action": "powering up: frame 1 ready stance (the reference pose), frame 2 crouch and tense the whole body, frame 3 rear up tall with the chest puffed out and the head raised, roaring, frame 4 settle back toward the ready stance; it stays in place and keeps facing the same way"
+        "action": "powering up: frame 1 ready stance (the reference pose), frame 2 crouch and tense the whole body, frame 3 rear up tall with the chest puffed out and the head raised, roaring, frame 4 settle back toward the ready stance; it stays in place and keeps facing the same way",
+        "keys": {
+          "anticipation": 1,
+          "contact": 2,
+          "recover": 3
+        }
       },
       "hurt": {
         "kind": "hurt",
         "frames": 3,
         "frameMs": 120,
         "loop": false,
-        "action": "taking a hit: frame 1 ready stance (the reference pose), frame 2 recoil away from the attacker, the head knocked back, eyes squeezed shut and the body flinching, frame 3 recovering most of the way back toward the ready stance"
+        "action": "taking a hit: frame 1 ready stance (the reference pose), frame 2 recoil away from the attacker, the head knocked back, eyes squeezed shut and the body flinching, frame 3 recovering most of the way back toward the ready stance",
+        "keys": {
+          "contact": 1,
+          "recover": 2
+        }
       }
     }
   },

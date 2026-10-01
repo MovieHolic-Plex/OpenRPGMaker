@@ -355,7 +355,7 @@ function pickAction(args: Args, species: SpeciesSeed, which: SpriteSide, actionI
   console.log(`${species.id} ${which} ${actionId} ← run ${run} 후보 ${k} (격자 ${relativeToRepo(target)})`);
 }
 
-type AnimEntry = { path: string; frames: number; frameMs: number; loop: boolean; source: "idle-shift" | "row-generation"; kind?: ActionKind };
+type AnimEntry = { path: string; frames: number; frameMs: number; loop: boolean; source: "idle-shift" | "row-generation"; kind?: ActionKind; keys?: ActionContract["keys"] };
 type AnimManifest = { canvas: number; direction: MonsterSeed["animation"]["direction"]; sides: Partial<Record<SpriteSide, Record<string, AnimEntry>>> };
 
 function printIssues(label: string, issues: CheckIssue[]): number {
@@ -386,7 +386,7 @@ function stageBuild(): number {
         if (actionPick.frames !== action.frames) throw new Error(`${species.id} ${which} ${actionId}: 고른 줄은 ${actionPick.frames}장인데 시드는 ${action.frames}장 — 다시 생성해 고른다`);
         const { frames, clipped } = actionFramesFromGrid(seed, actionId, readPng(resolve(PATHS.data, actionPick.grid)), which, species.stage, fit.sprite);
         writePng(animPath(species.id, which, actionId), toStrip(frames));
-        states[actionId] = { path: `anim/${which}-${actionId}.png`, frames: action.frames, frameMs: action.frameMs, loop: action.loop, source: "row-generation", kind: action.kind };
+        states[actionId] = { path: `anim/${which}-${actionId}.png`, frames: action.frames, frameMs: action.frameMs, loop: action.loop, source: "row-generation", kind: action.kind, keys: action.keys };
         console.log(`${species.id} ${which} ${actionId}: ${action.frames}장${clipped ? ` · 잘린 칸 ${clipped}` : ""}`);
       }
     }

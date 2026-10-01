@@ -381,6 +381,7 @@ describe("monster-collect-species 시드·레지스트리", () => {
     expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { idle: seed.animation.actions.tackle } }, species: seed.species })).toThrow("idle 은 동작");
     expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, frames: 9 } } }, species: seed.species })).toThrow("2~6");
     expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, kind: "dance" } } }, species: seed.species })).toThrow("kind");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, keys: { contact: 4 } } } }, species: seed.species })).toThrow("keys");
     expect(() => validateSeed({ ...base, animation: { ...seed.animation, direction: { front: { x: 1, y: 1 }, back: { x: 1, y: -1 } } }, species: seed.species })).toThrow("마주 봐야");
   });
 
@@ -455,7 +456,7 @@ describe("monster-collect-species CLI (모래상자, 네트워크 없음)", () =
     expect(Object.keys(anim.sides.front)).toEqual(["idle", "tackle"]);
     expect(anim.direction).toEqual({ front: { x: -1, y: 1 }, back: { x: 1, y: -1 } });
     expect(Object.keys(anim.sides.back)).toEqual(["idle"]);
-    expect(anim.sides.front.tackle).toMatchObject({ path: "anim/front-tackle.png", frames: 4, loop: false, source: "row-generation", kind: "attack" });
+    expect(anim.sides.front.tackle).toMatchObject({ path: "anim/front-tackle.png", frames: 4, loop: false, source: "row-generation", kind: "attack", keys: { anticipation: 1, contact: 2, recover: 3 } });
     expect(readPng(join(sandbox, "bundle/sparkit/anim/front-idle.png")).width).toBe(SPRITE_CANVAS * 4);
     // 커밋된 기록은 그대로
     expect(readFileSync(join(ROOT, "harness-data/monster-collect-species/ledger.json"), "utf8")).toBe(ledgerBefore);

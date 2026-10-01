@@ -436,6 +436,12 @@
 - **HP 잔상(유리 창):** `.battle-stat-bar-hp::after` 가 같은 `--battle-stat` 폭으로 360ms 뒤 440ms 따라 빠진다. 채움은 90ms.
   포켓몬 HP 바는 `::after` 가 「체력」 라벨이라 잔상 대신 620ms 로 눈에 보이게 줄어든다.
 - **포켓몬 기절:** 흐려지는 대신 `pkmn-battler-sink`(translate 100% + 아래쪽 clip)로 발판 아래로 꺼진다.
+- **포켓몬 타격 (2026-10-02):** ① 돌진·넉백 방향은 상대 쪽 대각선(내 몬스터 +x·−y, 상대 −x·+y, `05-poses-motion.css`) — 옆 구도 부호를
+  쓰던 때는 돌진이 상대에게서 멀어졌다. ② 파티 몬스터 배틀러는 런타임 id `mon:<instanceId>` 로 맞는데 노드 testid 는 recordId 라
+  `findBattlerNode` 가 못 찾아 **적이 내 몬스터를 때려도 넉백·흰 실루엣·점멸·이펙트 위치가 하나도 안 붙었다** → 노드에
+  `data-battler-id`(= 런타임 id)를 찍고 마지막 폴백으로 찾는다. ③ 화면은 여전히 흔들지 않고, 맞은 몬스터 **그림만** `pkmn-hit-shake`
+  (300ms, 6→2px 좌우)로 떤다 — 히트스톱 동안은 ① 정지 규칙에 붙들려 흰 실루엣, 풀리면서 떤다.
+  QA 함정: 연출 중 Z 는 5배속 넘기기(`beginSkip`)라, 메시지를 Z 로 넘기는 녹화는 적 턴이 0.2초로 지나간다 — `data-battle-sequence-busy` 동안은 누르지 말 것.
 - **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
   `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
   AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중

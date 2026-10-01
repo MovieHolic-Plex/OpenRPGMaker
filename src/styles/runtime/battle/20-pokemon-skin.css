@@ -1043,6 +1043,21 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor.battle-motion-knockback {
   animation: none;
 }
+/* 맞은 몬스터 **그림만** 떤다 (화면은 흔들지 않는다). 히트스톱 동안은 22-hit-feel ① 이 멈춰 흰 실루엣으로
+   붙들고, 정지가 풀리는 순간 좌우로 세 번 떨며 밀려난다 — 「멈춤 → 터짐」이 타격감의 대부분이다.
+   2026-10-02: 넉백 노드 이동만 있고 그림이 가만히 있어서 맞았는지 안 맞았는지 모르겠다는 지적. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-motion-knockback :is(.battle-enemy-image, .battle-monster-image) {
+  animation: pkmn-hit-shake 300ms steps(1, end) 1;
+}
+@keyframes pkmn-hit-shake {
+  0% { translate: 6px 0; }
+  16% { translate: -6px 0; }
+  33% { translate: 5px 0; }
+  50% { translate: -4px 0; }
+  66% { translate: 3px 0; }
+  83% { translate: -2px 0; }
+  100% { translate: 0 0; }
+}
 
 /* ── ⑧ 데미지 숫자 팝업 제거 ──
    본가에 데미지 숫자가 없다. 필드에 뜨던 주황색 「-67」은 RPG Maker 문법이고, 같은 정보를
