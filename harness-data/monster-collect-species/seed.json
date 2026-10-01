@@ -6,6 +6,19 @@
     "canvas": 112,
     "avoid": ["Bulbasaur", "Ivysaur", "Charmander", "Charmeleon", "Squirtle", "Leafeon", "Eevee"]
   },
+  "animation": {
+    "idle": { "frames": 4, "frameMs": 220, "loop": true },
+    "actions": {
+      "attack": {
+        "frames": 4, "frameMs": 120, "loop": false,
+        "action": "a physical tackle or bite attack: frame 1 ready stance (the reference pose), frame 2 crouch and wind up pulling back, frame 3 lunge forward with the head and mouth thrust at the target, frame 4 recover back toward the ready stance; the feet push off but the body stays on the ground"
+      },
+      "hurt": {
+        "frames": 3, "frameMs": 120, "loop": false,
+        "action": "taking a hit: frame 1 ready stance (the reference pose), frame 2 recoil backward away from the attacker with eyes squeezed shut and the body flinching, frame 3 recovering back toward the ready stance"
+      }
+    }
+  },
   "species": [
     {
       "id": "sparkit",
@@ -14,7 +27,8 @@
       "stage": 1,
       "starterSet": "first-region",
       "design": "A young fire newt starter on four legs, low and agile like a lizard: ember-orange back with darker red stripe markings, cream belly, a small crisp pixel flame (drawn with flat pixel colors and a dark outline, not glowing) at the tail tip, head raised alert.",
-      "palette": "ember orange, dark red stripes, cream"
+      "palette": "ember orange, dark red stripes, cream",
+      "motion": { "flicker": "flame" }
     },
     {
       "id": "aqualing",

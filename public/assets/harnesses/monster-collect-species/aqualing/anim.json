@@ -1,0 +1,23 @@
+{
+  "canvas": 112,
+  "sides": {
+    "front": {
+      "idle": {
+        "path": "anim/front-idle.png",
+        "frames": 4,
+        "frameMs": 220,
+        "loop": true,
+        "source": "idle-shift"
+      }
+    },
+    "back": {
+      "idle": {
+        "path": "anim/back-idle.png",
+        "frames": 4,
+        "frameMs": 220,
+        "loop": true,
+        "source": "idle-shift"
+      }
+    }
+  }
+}

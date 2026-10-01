@@ -49,3 +49,26 @@ export function evolutionPrompt(style: StyleContract, species: SpeciesSeed, prev
     frontPrompt(style, species).replace("Draw on this flat magenta canvas. ", ""),
   ].join(" ");
 }
+
+/**
+ * 큰 동작 한 줄(sprite-gen component-row 방식). 참고 이미지 = 첫 칸에 기준 스프라이트를 넣은 N 칸 안내(anim/row.ts rowReference).
+ * sprite-gen 프롬프트 계약에서 가져온 것: 칸마다 전신 하나, 칸 넘침·겹침 금지, 떨어진 효과·잔상·그림자 금지, 안내 상자 재현 금지.
+ * 뺀 것: sprite-gen 기본 화풍 문구(치비·마스코트 친화) — 이 하네스의 화풍 계약과 반대다.
+ */
+export function actionPrompt(style: StyleContract, species: SpeciesSeed, side: "front" | "back", action: { frames: number; action: string }): string {
+  const view = side === "front"
+    ? "opponent view: three-quarter view turned to the LEFT, the creature attacks toward the LEFT"
+    : "the player's monster seen from BEHIND, facing away toward the upper RIGHT, it attacks toward the upper RIGHT";
+  return [
+    `Create ONE horizontal sprite strip of exactly ${action.frames} animation frames, left to right, for a monster battle in ${style.reference} pixel art style.`,
+    "The reference image has the frame boxes; its FIRST box already holds the canonical sprite of this creature — that is frame 1's identity, size and pixel block size.",
+    `Animation: ${action.action}.`,
+    `Camera: ${view}. Keep this camera angle in every frame.`,
+    "Same creature in every frame: identical design, markings, colors, palette, outline and pixel block size as the reference sprite. Change only pose and body motion.",
+    "Exactly one complete full-body pose centered in each box; no pose may cross into a neighboring box or overlap another pose; nothing cropped.",
+    "Effects only if physically attached to the creature and opaque, hard-edged pixel art. NO detached effects, sparks, motion lines, speed lines, afterimages, smears, blur, glow, aura, shadow, dust or impact bursts.",
+    "Do NOT draw the boxes, guide lines, frame numbers, labels or any text. The whole background is flat solid pure magenta #FF00FF, magenta touching the outline directly.",
+    `Creature (${species.types.join("/")} type): ${species.design}`,
+    "Pixel art: chunky clean square pixel blocks, dark colored outline, flat shading, no anti-aliasing, no gradients.",
+  ].join(" ");
+}

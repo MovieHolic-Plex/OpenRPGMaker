@@ -97,12 +97,18 @@ function peaksOf(profile: number[]): number[] {
   return peaks;
 }
 
-export function peakGaps(profile: number[]): number[] {
+/**
+ * 블록 크기 하한. 한 장에 한 마리를 그린 그림은 블록이 8~27px 라 5 아래는 경계 번짐 잡음이다.
+ * 한 줄에 여러 프레임을 그린 동작 줄은 블록이 3~4px 까지 작아진다 — 하한 5 에선 2배 크기를 골라 몸집이 반이 됐다(2026-10-01).
+ */
+export const DEFAULT_MIN_BLOCK = 5;
+
+export function peakGaps(profile: number[], minBlock = DEFAULT_MIN_BLOCK): number[] {
   const peaks = peaksOf(profile);
   const gaps: number[] = [];
   for (let i = 1; i < peaks.length; i += 1) {
     const gap = peaks[i]! - peaks[i - 1]!;
-    if (gap >= 5 && gap <= 40) gaps.push(gap);
+    if (gap >= minBlock && gap <= 40) gaps.push(gap);
   }
   return gaps;
 }
@@ -111,10 +117,10 @@ export function peakGaps(profile: number[]): number[] {
  * 블록 크기 고르기: 크기 p 마다 「간격이 p 의 정수배에 가까운가」를 센다. 배수 k 일수록 가중치 1/k.
  * 반올림한 몫에 투표하면 13·14px 간격이 반 크기 7 에 몰려 칸을 둘로 쪼갠다 (2026-10-01 리프링 뒷모습).
  */
-export function chooseBlock(gaps: number[]): number {
+export function chooseBlock(gaps: number[], minBlock = DEFAULT_MIN_BLOCK, maxBlock = 40): number {
   let best = 0;
   let bestScore = 0;
-  for (let p = 5; p <= 40; p += 1) {
+  for (let p = minBlock; p <= maxBlock; p += 1) {
     let score = 0;
     for (const gap of gaps) {
       const k = Math.max(1, Math.round(gap / p));
@@ -175,10 +181,19 @@ export function edgeProfiles(source: RgbaImage): { bg: Uint8Array; dx: number[];
   return { bg, dx, dy };
 }
 
-export function extractGrid(source: RgbaImage): GridResult {
+export type GridOptions = {
+  /** 블록 크기 하한 (기본 5) */
+  minBlock?: number;
+  /** 블록 크기를 대략 안다면 그 ±30% 안에서만 고른다 (동작 줄: 기준 스프라이트 폭으로 잰다 — anim/row.ts) */
+  around?: number;
+};
+
+export function extractGrid(source: RgbaImage, options: GridOptions = {}): GridResult {
   const { width } = source;
   const { bg, dx, dy } = edgeProfiles(source);
-  const block = chooseBlock([...peakGaps(dx), ...peakGaps(dy)]);
+  const lo = options.around ? Math.max(2, Math.floor(options.around * 0.7)) : options.minBlock ?? DEFAULT_MIN_BLOCK;
+  const hi = options.around ? Math.ceil(options.around * 1.3) : 40;
+  const block = chooseBlock([...peakGaps(dx, lo), ...peakGaps(dy, lo)], lo, hi) || (options.around ? Math.round(options.around) : 0);
   if (block === 0) throw new Error("픽셀 격자를 찾지 못했다 — 도트풍 그림이 아니다");
   const xs = gridLines(dx, block);
   const ys = gridLines(dy, block);
@@ -193,8 +208,10 @@ export function extractGrid(source: RgbaImage): GridResult {
       const y0 = ys[j]!;
       const y1 = ys[j + 1]!;
       if (x1 - x0 < 2 || y1 - y0 < 2) continue;
-      const mx = Math.max(1, Math.floor((x1 - x0) / 4));
-      const my = Math.max(1, Math.floor((y1 - y0) / 4));
+      // 가운데 영역만 본다. 2~3px 칸(작은 블록 줄)에서 여백을 1px 씩 빼면 표본이 0개가 되어 칸이 빠지고,
+      // 빠진 칸 열이 몸을 세로로 갈라 프레임 나누기가 틀렸다 (2026-10-01 동작 줄).
+      const mx = Math.floor((x1 - x0) / 4);
+      const my = Math.floor((y1 - y0) / 4);
       let total = 0;
       let background = 0;
       const buckets = new Map<number, number[]>();

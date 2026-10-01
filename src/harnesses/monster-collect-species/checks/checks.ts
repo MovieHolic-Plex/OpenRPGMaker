@@ -105,3 +105,46 @@ export function checkPair(front: RgbaImage, back: RgbaImage): CheckIssue[] {
   const drift = paletteDrift(front, back);
   return drift > 0.06 ? [{ level: "warn", message: `앞·뒤 색이 다르다 (팔레트 거리 ${drift.toFixed(3)} > 0.06)` }] : [];
 }
+
+/**
+ * 애니메이션 프레임 검사. 대기(kind idle)는 0번이 스프라이트와 같고 발 줄이 움직이지 않아야 한다.
+ * 큰 동작(kind action)은 다시 생성한 그림이라 같을 수 없다 — 색이 기준과 가까운지, 몸집이 줄지 않았는지만 본다.
+ */
+export function checkFrames(frames: RgbaImage[], base: RgbaImage, maxColors: number, kind: "idle" | "action"): CheckIssue[] {
+  const issues: CheckIssue[] = [];
+  const baseStats = spriteStats(base);
+  const baseBody = Math.sqrt(baseStats.ink.width * baseStats.ink.height);
+  frames.forEach((frame, k) => {
+    const label = `프레임 ${k}`;
+    if (frame.width !== SPRITE_CANVAS || frame.height !== SPRITE_CANVAS) issues.push({ level: "error", message: `${label}: 캔버스가 ${SPRITE_CANVAS}x${SPRITE_CANVAS} 가 아니다` });
+    const stats = spriteStats(frame);
+    if (stats.ink.width === 0) issues.push({ level: "error", message: `${label}: 비었다` });
+    if (stats.colors > maxColors) issues.push({ level: "error", message: `${label}: 색 ${stats.colors}개 > ${maxColors}` });
+    if (stats.magentaPixels > 0) issues.push({ level: "error", message: `${label}: 마젠타 기운 점 ${stats.magentaPixels}개` });
+    if (kind === "action") {
+      const body = Math.sqrt(stats.ink.width * stats.ink.height);
+      if (k === 0 && body < baseBody * 0.85) issues.push({ level: "warn", message: `${label}: 기준 스프라이트보다 작다 (몸집 ${body.toFixed(0)} < ${baseBody.toFixed(0)}의 85%) — 대기에서 넘어갈 때 크기가 튄다` });
+      const drift = paletteDrift(base, frame);
+      if (drift > 0.06) issues.push({ level: "warn", message: `${label}: 기준과 색이 다르다 (팔레트 거리 ${drift.toFixed(3)})` });
+    }
+  });
+  if (kind === "idle") {
+    const first = frames[0];
+    if (!first || !first.data.every((v, i) => v === base.data[i])) issues.push({ level: "error", message: "대기 0번 프레임이 스프라이트와 다르다" });
+    const box = opaqueBounds(base);
+    if (box) {
+      const y = box.y + box.height - 1;
+      frames.forEach((frame, k) => {
+        for (let x = 0; x < base.width; x += 1) {
+          const a = pixelAt(base, x, y);
+          const b = pixelAt(frame, x, y);
+          if (a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2] || a[3] !== b[3]) {
+            issues.push({ level: "error", message: `대기 프레임 ${k}: 발(맨 아래 줄)이 움직였다` });
+            return;
+          }
+        }
+      });
+    }
+  }
+  return issues;
+}
