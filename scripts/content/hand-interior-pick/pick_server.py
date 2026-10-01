@@ -33,6 +33,15 @@ OUT = os.path.join(PICK, 'out')
 LOCK = threading.Lock(); CTX_LOCK = threading.Lock()
 SAFE = re.compile(r'^[A-Za-z0-9_]+$'); SAFE_FILE = re.compile(r'^[A-Za-z0-9_.\-]+$')
 
+def _harness_api():
+    """소품 하네스(src/harnesses/interior-props) 경로 — /harness 화면과 /api/harness/*. 없으면 None(옛 화면만)."""
+    import importlib.util
+    p = os.path.join(ROOT, 'src', 'harnesses', 'interior-props', 'api.py')
+    if not os.path.exists(p): return None
+    spec = importlib.util.spec_from_file_location('prop_harness_api', p); m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m); return m
+HAPI = _harness_api()
+
 def read_json(p, default):
     try:
         return json.load(open(p, encoding='utf-8'))
@@ -165,6 +174,8 @@ class H(BaseHTTPRequestHandler):
     def do_GET(self):
         p = urllib.parse.urlparse(self.path).path; parts = [urllib.parse.unquote(x) for x in p.split('/') if x]
         try:
+            if HAPI and HAPI.handle(self, 'GET', parts):
+                return
             if parts == ['favicon.ico']:
                 self.send_response(204); self.end_headers(); return
             if not parts or parts == ['index.html']:
@@ -189,6 +200,12 @@ class H(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urllib.parse.urlparse(self.path).path
+        if HAPI and path.startswith('/api/harness/'):
+            try:
+                n = int(self.headers.get('Content-Length', 0)); body = json.loads(self.rfile.read(n) or b'{}')
+            except ValueError:
+                return self.send(400, '{"error":"JSON 아님"}')
+            if HAPI.handle(self, 'POST', [x for x in path.split('/') if x], body): return
         if path not in ('/api/pick', '/api/revert'):
             return self.send(404, '{}')
         try:

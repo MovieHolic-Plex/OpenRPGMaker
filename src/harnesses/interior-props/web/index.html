@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>소품 고르기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root { --bg:#1b191e; --panel:#25222a; --panel2:#2d2932; --line:#3a3640; --text:#ece7e0; --dim:#9b958d; --ok:#7fbf6a; --bad:#e0685a; --sel:#f2c14e; --acc:#8fb3e8; --rej:#c2410c; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Noto Sans KR", sans-serif; }
+button, input, textarea, select { font:inherit; color:var(--text); }
+header { display:flex; gap:10px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:10; height:50px; }
+header h1 { font-size:16px; margin:0 6px 0 0; white-space:nowrap; }
+.tab { background:transparent; border:1px solid transparent; border-radius:7px; padding:5px 12px; cursor:pointer; }
+.tab.on { background:#3a3442; border-color:var(--sel); }
+.chip { border-radius:999px; padding:2px 10px; font-size:12px; background:#33303a; color:var(--dim); white-space:nowrap; }
+.chip b { color:var(--text); }
+.pool { margin-left:auto; color:var(--dim); font-size:12px; white-space:nowrap; }
+.pool .live { color:var(--ok); }
+.wrap { display:flex; height:calc(100vh - 50px); }
+nav { width:250px; flex:none; overflow:auto; border-right:1px solid var(--line); background:#1f1d23; }
+nav h3 { margin:0; padding:10px 12px 4px; font-size:12px; color:var(--dim); font-weight:600; letter-spacing:.02em; }
+nav .it { display:flex; gap:8px; align-items:center; padding:6px 10px; cursor:pointer; border-left:3px solid transparent; }
+nav .it:hover { background:var(--panel2); }
+nav .it.cur { background:#38323f; border-left-color:var(--sel); }
+nav .th { width:32px; height:32px; flex:none; display:flex; align-items:flex-end; justify-content:center; background:#5d4632; border-radius:4px; overflow:hidden; }
+nav .th img { image-rendering:pixelated; max-width:32px; max-height:32px; }
+nav .n { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+nav .b { font-size:11px; border-radius:4px; padding:0 6px; flex:none; }
+.b.ready { background:var(--sel); color:#1a1a1a; font-weight:700; }
+.b.drawing { background:#2b3b55; color:#cfe0ff; }
+.b.done { background:#2f4a2c; color:#cdeac6; }
+main { flex:1; overflow:auto; padding:14px 20px 140px; }
+.empty { color:var(--dim); padding:40px; text-align:center; font-size:15px; }
+.head { display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; }
+.head h2 { margin:0; font-size:20px; }
+.head .meta { color:var(--dim); }
+.rounds { display:flex; gap:6px; margin:8px 0 2px; flex-wrap:wrap; }
+.rounds button { background:#2c2932; border:1px solid var(--line); border-radius:6px; padding:2px 10px; cursor:pointer; font-size:12px; }
+.rounds button.on { border-color:var(--sel); background:#3a3442; }
+.rnote { color:#e9d9a8; font-size:13px; margin:2px 0 6px; }
+.tools { display:flex; gap:14px; align-items:center; margin:10px 0 12px; color:var(--dim); font-size:13px; flex-wrap:wrap; }
+.seg { display:inline-flex; border:1px solid var(--line); border-radius:7px; overflow:hidden; }
+.seg button { background:#2a2730; border:0; padding:3px 10px; cursor:pointer; }
+.seg button.on { background:#4a4252; color:#fff; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(172px, 1fr)); gap:10px; align-items:stretch; }
+.card { background:var(--panel); border:2px solid var(--line); border-radius:10px; padding:8px; cursor:pointer; position:relative; display:flex; flex-direction:column; min-width:0; transition:border-color .1s; }
+.card:hover { border-color:#6d6377; }
+.card.sel { border-color:var(--sel); box-shadow:0 0 0 3px #f2c14e55; }
+.card.cur { background:#2a2a24; }
+.card.rej { opacity:.45; }
+.card.rej .pic { filter:grayscale(.7); }
+.card .top { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+.card .key { background:#000a; border-radius:5px; padding:0 7px; font-weight:800; font-size:13px; }
+.card .dir { font-size:12px; color:var(--acc); }
+.card .x { margin-left:auto; background:transparent; border:1px solid var(--line); border-radius:6px; cursor:pointer; padding:0 7px; color:var(--dim); }
+.card .x:hover { color:var(--bad); border-color:var(--bad); }
+.card.rej .x { color:#fff; background:var(--rej); border-color:var(--rej); }
+.pic { display:flex; align-items:flex-end; justify-content:center; border-radius:6px; padding:8px; flex:1; min-height:80px; overflow:hidden; }
+.pic img.ld { opacity:0; }
+.pic.wait { background-image:linear-gradient(90deg,#0000,#ffffff10,#0000) !important; background-size:200% 100% !important; animation:sh 1.2s linear infinite; }
+@keyframes sh { to { background-position:-200% 0; } }
+.pic img { image-rendering:pixelated; display:block; }
+.bg-wood .pic { background:#8a6b4c; }
+.bg-dark .pic { background:#151417; }
+.bg-check .pic { background:#3a3540 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><rect width="8" height="8" fill="%234a4450"/><rect x="8" y="8" width="8" height="8" fill="%234a4450"/></svg>'); }
+.mode-ctx .pic { padding:0; background:#000 !important; }
+.card .nt { font-size:12px; color:#cfc6ba; margin-top:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card .bad { color:var(--bad); font-size:12px; margin-top:4px; }
+.reasons { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.reasons button { font-size:11px; border-radius:999px; border:1px solid var(--line); background:#2a2730; padding:1px 8px; cursor:pointer; }
+.reasons button.on { background:var(--rej); border-color:var(--rej); color:#fff; }
+.spin { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--dim); min-height:120px; min-width:120px; }
+.spin i { width:22px; height:22px; border:3px solid #444; border-top-color:var(--acc); border-radius:50%; animation:r 1s linear infinite; }
+@keyframes r { to { transform:rotate(360deg); } }
+.cmp { margin-top:18px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px; }
+.cmp h4 { margin:0 0 8px; font-size:13px; color:var(--dim); font-weight:600; }
+.cmp .row { display:flex; gap:24px; align-items:flex-end; flex-wrap:wrap; }
+.cmp .col .pic.ctxp { min-width:336px; min-height:336px; }
+.cmp .col { text-align:center; color:var(--dim); font-size:12px; }
+.cmp .col .pic { padding:12px; }
+.bar { position:fixed; left:250px; right:0; bottom:0; background:#211e25ee; backdrop-filter:blur(4px); border-top:1px solid var(--line); padding:10px 20px; display:flex; gap:10px; align-items:center; z-index:9; }
+.bar textarea { flex:1; min-height:38px; max-height:120px; resize:vertical; background:#1a181d; border:1px solid var(--line); border-radius:8px; padding:7px 10px; }
+.btn { border:1px solid var(--line); background:#34303b; border-radius:8px; padding:8px 14px; cursor:pointer; white-space:nowrap; }
+.btn:hover { border-color:#776d82; }
+.btn.go { background:var(--sel); color:#1a1a1a; font-weight:800; border-color:var(--sel); }
+.btn.go:disabled { opacity:.4; cursor:default; }
+.btn.redo { background:#2b3b55; border-color:#3e5b8a; }
+.bar label { color:var(--dim); font-size:12px; display:flex; gap:4px; align-items:center; white-space:nowrap; }
+.keys { color:var(--dim); font-size:12px; margin-top:14px; }
+.keys kbd { background:#2f2b35; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 5px; font-size:11px; }
+.toast { position:fixed; top:62px; left:50%; transform:translateX(-50%); background:#2f4a2c; color:#e6f6e1; padding:8px 16px; border-radius:8px; z-index:20; display:none; }
+.toast.err { background:#5a2320; }
+/* 기물 고르기(새 판) */
+.objtools { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+.objtools input { background:#1a181d; border:1px solid var(--line); border-radius:8px; padding:6px 10px; width:260px; }
+.cats { display:flex; gap:5px; flex-wrap:wrap; }
+.cats button { font-size:12px; border-radius:999px; border:1px solid var(--line); background:#2a2730; padding:2px 10px; cursor:pointer; }
+.cats button.on { background:#4a4252; border-color:var(--sel); }
+.objs { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:8px; }
+.obj { background:var(--panel); border:2px solid var(--line); border-radius:9px; padding:6px; cursor:pointer; position:relative; text-align:center; }
+.obj:hover { border-color:#6d6377; }
+.obj.on { border-color:var(--sel); background:#3a3426; }
+.obj .pic { min-height:70px; padding:6px; background:#8a6b4c; }
+.obj .nm { font-size:12px; margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.obj .ck { position:absolute; top:4px; right:6px; color:var(--sel); font-weight:900; display:none; }
+.obj.on .ck { display:block; }
+.obj .rb { position:absolute; top:4px; left:6px; font-size:10px; background:#2b3b55; color:#cfe0ff; border-radius:4px; padding:0 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>소품 고르기</h1>
+  <button class="tab on" data-v="pick">후보 고르기</button>
+  <button class="tab" data-v="objs">기물 골라 새로 뽑기</button>
+  <span class="chip">고를 차례 <b id="cReady">0</b></span>
+  <span class="chip">그리는 중 <b id="cDraw">0</b></span>
+  <span class="chip">끝남 <b id="cDone">0</b></span>
+  <span class="pool" id="pool"></span>
+</header>
+<div class="wrap">
+  <nav id="nav"></nav>
+  <main id="main"></main>
+</div>
+<div class="bar" id="bar"></div>
+<div class="toast" id="toast"></div>
+<script>
+const S = { view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'one', bg:'wood', zoom:6, flip:false,
+            objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false };
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DIRS = {A:'최소 수정', B:'최소 수정 2', C:'기준 맞추기', D:'기준 맞추기 2', E:'자유'};
+function toast(t, err) { const e = $('#toast'); e.textContent = t; e.className = 'toast' + (err ? ' err' : ''); e.style.display = 'block'; clearTimeout(e._t); e._t = setTimeout(() => e.style.display = 'none', 2200); }
+async function api(p, body) {
+  const r = await fetch(p, body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {cache:'no-store'});
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j;
+}
+const item = () => S.data?.items.find(i => i.id === S.cur);
+const rnd = () => { const it = item(); return it && (it.rounds.find(r => r.id === S.round) || it.rounds[it.rounds.length - 1]); };
+const curSrc = it => `/c/${it.slug}/${it.current === 'v5' ? 'v5' : it.current}.png`;
+const imgSrc = (it, c, v) => S.mode === 'ctx' ? `/ctx/${it.slug}/${c}.png?v=${v||0}` : `/c/${it.slug}/${c}.png?v=${v||0}`;
+function sized(img, z) {
+  const fit = () => { img.style.width = img.naturalWidth * z + 'px'; img.classList.remove('ld'); img.parentElement.classList.remove('wait'); };
+  img.classList.add('ld'); img.parentElement.classList.add('wait');
+  img.onload = fit; img.onerror = () => { img.parentElement.classList.remove('wait'); img.parentElement.title = '그림을 못 불러왔다'; };
+  if (img.complete && img.naturalWidth) fit();
+}
+
+async function load(keep) {
+  try { S.data = await api('/api/harness/state'); } catch (e) { toast('상태를 못 읽었다: ' + e.message, 1); return; }
+  const its = S.data.items;
+  $('#cReady').textContent = its.filter(i => i.status === 'ready').length;
+  $('#cDraw').textContent = its.filter(i => i.status === 'drawing').length;
+  $('#cDone').textContent = its.filter(i => i.status === 'done').length;
+  const p = S.data.pool;
+  $('#pool').innerHTML = `${esc(p.model)} · ${esc(p.effort)} · 동시 ${p.par} · ` + (p.alive ? `<span class="live">● 그리는 중 ${p.running} · 대기 ${p.queued}</span>` : '쉼');
+  if (!S.cur || !item()) { const f = its.find(i => i.status === 'ready') || its[0]; S.cur = f?.id || null; S.round = null; S.sel = null; S.rej = {}; }
+  if (!keep) S.round = null;
+  if (S.view === 'pick') { renderNav(); renderPick(); }
+  clearTimeout(S._poll); S._poll = setTimeout(() => load(true), (p.alive || its.some(i => i.status === 'drawing')) ? 3000 : 15000);
+}
+
+function renderNav() {
+  const its = S.data.items, g = {ready:'고를 차례', drawing:'그리는 중', done:'끝남'};
+  let h = '';
+  for (const k of ['ready', 'drawing', 'done']) {
+    const L = its.filter(i => i.status === k); if (!L.length) continue;
+    h += `<h3>${g[k]} · ${L.length}</h3>`;
+    for (const i of L) {
+      const b = k === 'drawing' ? `${i.rounds.at(-1).runs.length - i.busy}/${i.rounds.at(-1).runs.length}` : k === 'ready' ? `${i.readyCount}장` : '✓';
+      h += `<div class="it ${i.id === S.cur ? 'cur' : ''}" data-id="${esc(i.id)}"><span class="th"><img src="/api/harness/thumb/${i.slug}.png"></span>
+            <span class="n" title="${esc(i.desc)}">${esc(i.name)}</span><span class="b ${k}">${b}</span></div>`;
+    }
+  }
+  $('#nav').innerHTML = h || '<div class="empty" style="padding:20px">아직 판이 없다.<br>위 「기물 골라 새로 뽑기」에서 시작.</div>';
+  $('#nav').querySelectorAll('.it').forEach(e => e.onclick = () => { S.cur = e.dataset.id; S.round = null; S.sel = null; S.rej = {}; S.memo = ''; renderNav(); renderPick(); });
+}
+
+function card(it, key, c, opt) {
+  const sel = S.sel === c, rej = S.rej[c];
+  let h = `<div class="card ${opt.cur ? 'cur' : ''} ${sel ? 'sel' : ''} ${rej ? 'rej' : ''}" data-c="${esc(c)}" ${opt.disabled ? 'data-dis="1"' : ''}>
+    <div class="top"><span class="key">${key}</span><span class="dir">${esc(opt.label)}</span>${opt.cur ? '' : `<button class="x" data-x="${esc(c)}" title="이 후보 버리기 (X)">✕</button>`}</div>`;
+  if (opt.busy) h += `<div class="spin"><i></i>${opt.busy === 'queued' ? '대기 중' : '그리는 중…'}</div>`;
+  else if (opt.failed) h += `<div class="spin" style="color:var(--bad)">못 그림<br><small>${esc(opt.failed).slice(0, 80)}</small></div>`;
+  else h += `<div class="pic"><img data-src="${imgSrc(it, c, opt.v)}"></div>`;
+  if (opt.note) h += `<div class="nt" title="${esc(opt.note)}">${esc(opt.note)}</div>`;
+  if (opt.bad) h += `<div class="bad">검사 ✗ ${esc(opt.bad).slice(0, 90)}</div>`;
+  if (rej) h += `<div class="reasons">` + Object.entries(S.data.reasons).map(([k, v]) => `<button data-r="${k}" data-rc="${esc(c)}" class="${rej.includes(k) ? 'on' : ''}">${v}</button>`).join('') + `</div>`;
+  return h + '</div>';
+}
+
+function renderPick() {
+  const it = item(); const m = $('#main');
+  if (!it) { m.innerHTML = '<div class="empty">고를 판이 없다. 「기물 골라 새로 뽑기」에서 기물을 고르면 Sonnet 다섯 명이 후보를 찍는다.</div>'; renderBar(); return; }
+  const r = rnd(); S.round = r.id;
+  const cur = it.current === 'v5' ? 'v5' : it.current;
+  let h = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.category)} · ${esc(it.kind)} · ${it.canvas[0]}×${it.canvas[1]}px · <code>${esc(it.id)}</code></span></div>
+    <div class="meta" style="color:var(--dim)">${esc(it.desc)}</div>
+    <div class="rounds">` + it.rounds.map(x => `<button data-r="${x.id}" class="${x.id === r.id ? 'on' : ''}">판 h${x.id}${x.decided ? (x.decided.verdict === 'keep' ? ' · 그대로' : ' · ' + x.decided.cand.split('-')[1]) : ''}</button>`).join('') + `</div>`;
+  if (r.note) h += `<div class="rnote">메모: ${esc(r.note)}</div>`;
+  if (r.base) h += `<div class="rnote">출발점: ${esc(r.base)}</div>`;
+  h += `<div class="tools">
+    <span>보기 <span class="seg"><button data-mode="one" class="${S.mode === 'one' ? 'on' : ''}">단품</button><button data-mode="ctx" class="${S.mode === 'ctx' ? 'on' : ''}">방 안</button></span></span>
+    <span>배경 <span class="seg">${['wood:나무', 'dark:어둠', 'check:체크'].map(x => { const [k, v] = x.split(':'); return `<button data-bg="${k}" class="${S.bg === k ? 'on' : ''}">${v}</button>`; }).join('')}</span></span>
+    <span>확대 <span class="seg">${[3, 4, 6, 8].map(z => `<button data-z="${z}" class="${S.zoom === z ? 'on' : ''}">${z}배</button>`).join('')}</span></span></div>`;
+  h += `<div class="grid bg-${S.bg} ${S.mode === 'ctx' ? 'mode-ctx' : ''}">` + card(it, '0', cur, {cur:1, label:'지금 그림', v:0});
+  r.runs.forEach((x, k) => {
+    h += card(it, String(k + 1), x.cand, {label:DIRS[x.letter] || x.direction, v:x.v, note:x.note,
+      busy:['queued', 'running'].includes(x.status) ? x.status : null, failed:x.status === 'failed' ? (x.error || '실패') : null,
+      bad:x.status === 'done' && !x.ok ? (x.error || '하드 검사 불합격') : null});
+  });
+  h += `</div>`;
+  const pick = S.sel && S.sel !== cur ? S.sel : null;
+  if (pick) h += `<div class="cmp bg-${S.bg}"><h4>나란히 — 지금 그림 · 고른 후보 (Space 를 누르고 있으면 고른 자리에 지금 그림이 겹쳐 보인다)</h4><div class="row">
+      <div class="col"><div class="pic"><img id="cmpA" src="${curSrc(it)}"></div>지금</div>
+      <div class="col"><div class="pic"><img id="cmpB" src="/c/${it.slug}/${pick}.png"></div>고른 것 · ${esc(pick.split('-')[1])}</div>
+      <div class="col"><div class="pic ctxp" style="padding:0;background:#000"><img id="cmpC" src="/ctx/${it.slug}/${pick}.png"></div>방 안</div></div></div>`;
+  h += `<div class="keys"><kbd>1</kbd>~<kbd>5</kbd> 후보 고르기 · <kbd>0</kbd> 지금 그대로 · <kbd>Enter</kbd> 확정하고 다음 · <kbd>X</kbd> 고른 카드 버리기 · <kbd>R</kbd> 다시 뽑기 · <kbd>V</kbd> 단품/방 안 · <kbd>B</kbd> 배경 · <kbd>+</kbd><kbd>-</kbd> 확대 · <kbd>↑</kbd><kbd>↓</kbd> 이전/다음 기물 · <kbd>Space</kbd> 겹쳐 보기</div>`;
+  m.innerHTML = h;
+  const zc = S.mode === 'ctx' ? Math.max(2, Math.round(S.zoom / 2)) : S.zoom;
+  m.querySelectorAll('.grid img').forEach(img => { sized(img, zc); img.src = img.dataset.src; });
+  ['cmpA', 'cmpB'].forEach(id => { const e = document.getElementById(id); if (e) sized(e, S.zoom * 2 > 16 ? 12 : S.zoom * 2); });
+  const cc = document.getElementById('cmpC'); if (cc) sized(cc, 3);
+  m.querySelectorAll('.card').forEach(e => e.onclick = ev => {
+    if (ev.target.dataset.x) { toggleRej(ev.target.dataset.x); return; }
+    if (ev.target.dataset.r) { const c = ev.target.dataset.rc, k = ev.target.dataset.r; const L = S.rej[c]; L.includes(k) ? L.splice(L.indexOf(k), 1) : L.push(k); renderPick(); return; }
+    if (e.dataset.dis || e.querySelector('.spin')) return;
+    S.sel = e.dataset.c; if (S.rej[S.sel]) delete S.rej[S.sel]; renderPick();
+  });
+  m.querySelectorAll('.rounds button').forEach(b => b.onclick = () => { S.round = +b.dataset.r; S.sel = null; S.rej = {}; renderPick(); });
+  m.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { S.mode = b.dataset.mode; renderPick(); });
+  m.querySelectorAll('[data-bg]').forEach(b => b.onclick = () => { S.bg = b.dataset.bg; renderPick(); });
+  m.querySelectorAll('[data-z]').forEach(b => b.onclick = () => { S.zoom = +b.dataset.z; renderPick(); });
+  renderBar();
+}
+
+function toggleRej(c) { if (S.rej[c]) delete S.rej[c]; else { S.rej[c] = []; if (S.sel === c) S.sel = null; } renderPick(); }
+
+function renderBar() {
+  const b = $('#bar');
+  if (S.view === 'objs') {
+    b.innerHTML = `<span><b>${S.objSel.size}</b>개 골랐다</span>
+      <textarea id="memo" placeholder="작업자에게 줄 메모(모든 기물에 같이 간다) — 예: 의자 다리가 너무 굵다, 원래 디자인 살려라">${esc(S.memo)}</textarea>
+      <button class="btn" id="clr">선택 지우기</button><button class="btn go" id="go" ${S.objSel.size ? '' : 'disabled'}>후보 5장씩 뽑기</button>`;
+    $('#memo').oninput = e => S.memo = e.target.value;
+    $('#clr').onclick = () => { S.objSel.clear(); renderObjs(); };
+    $('#go').onclick = startDraw;
+    return;
+  }
+  const it = item(); if (!it) { b.innerHTML = ''; return; }
+  const r = rnd(); const cur = it.current === 'v5' ? 'v5' : it.current;
+  const can = S.sel && !r.runs.some(x => ['queued', 'running'].includes(x.status) && x.cand === S.sel);
+  const busy = r.runs.some(x => ['queued', 'running'].includes(x.status));
+  b.innerHTML = `<textarea id="memo" placeholder="메모 — 다시 뽑을 때 작업자에게 그대로 간다. 고를 때 남기면 다음 판의 기억이 된다.">${esc(S.memo)}</textarea>
+    <label title="다시 뽑을 때 지금 고른 후보를 출발점으로"><input type="checkbox" id="fromSel" ${S.fromSel ? 'checked' : ''}> 고른 후보에서 출발</label>
+    <button class="btn redo" id="redo" title="R">다시 뽑기 ${busy ? '(그리는 중)' : ''}</button>
+    <button class="btn" id="keep" title="0 → Enter">지금 그대로</button>
+    <button class="btn go" id="ok" ${can ? '' : 'disabled'} title="Enter">${S.sel && S.sel !== cur ? `✓ ${esc(S.sel.split('-')[1])} 로 확정` : '✓ 확정'}</button>`;
+  $('#memo').oninput = e => S.memo = e.target.value;
+  $('#fromSel').onchange = e => S.fromSel = e.target.checked;
+  $('#ok').onclick = () => decide(S.sel === cur ? 'keep' : S.sel);
+  $('#keep').onclick = () => decide('keep');
+  $('#redo').onclick = redraw;
+}
+
+function nextItem() {
+  const its = S.data.items.filter(i => i.status === 'ready' && i.id !== S.cur);
+  S.cur = its[0]?.id || S.cur; S.round = null; S.sel = null; S.rej = {}; S.memo = '';
+}
+async function decide(choice) {
+  const it = item(), r = rnd(); if (!it) return;
+  try {
+    await api('/api/harness/decide', {id:it.id, round:r.id, choice, rejects:S.rej, note:S.memo});
+    toast(choice === 'keep' ? `${it.name}: 지금 그대로` : `${it.name}: ${choice.split('-')[1]} 로 확정`);
+    nextItem(); await load(true);
+  } catch (e) { toast('저장 실패: ' + e.message, 1); }
+}
+async function redraw() {
+  const it = item(), r = rnd(); if (!it) return;
+  const base = S.fromSel && S.sel && S.sel !== (it.current === 'v5' ? 'v5' : it.current) ? S.sel : '';
+  if (!S.memo.trim() && !Object.keys(S.rej).length && !confirm('메모도 버린 후보도 없이 다시 뽑을까? (뭐가 별로였는지 적으면 다음 판이 나아진다)')) return;
+  try {
+    await api('/api/harness/draw', {ids:[it.id], note:S.memo, base, n:5, round:r.id, rejects:S.rej});
+    toast(`${it.name}: 다시 뽑는 중 — 5장`); S.sel = null; S.rej = {}; S.memo = ''; S.round = null;
+    setTimeout(() => load(), 1500);
+  } catch (e) { toast('실패: ' + e.message, 1); }
+}
+
+async function loadObjs() { if (!S.objs) S.objs = await api('/api/harness/objects'); renderObjs(); }
+function renderObjs() {
+  const cats = ['전체', ...new Set(S.objs.map(o => o.category))];
+  const q = S.q.trim().toLowerCase();
+  const L = S.objs.filter(o => (S.cat === '전체' || o.category === S.cat) && (!q || (o.name + ' ' + o.id + ' ' + o.desc).toLowerCase().includes(q)));
+  $('#nav').innerHTML = `<h3>고른 기물 · ${S.objSel.size}</h3>` + [...S.objSel].map(id => { const o = S.objs.find(x => x.id === id);
+    return `<div class="it" data-un="${esc(id)}"><span class="th"><img src="/api/harness/thumb/${o.slug}.png"></span><span class="n">${esc(o.name)}</span><span class="b drawing">빼기</span></div>`; }).join('');
+  $('#nav').querySelectorAll('[data-un]').forEach(e => e.onclick = () => { S.objSel.delete(e.dataset.un); renderObjs(); });
+  $('#main').innerHTML = `<div class="objtools"><input id="q" placeholder="찾기 — 이름·영문 id·설명" value="${esc(S.q)}">
+     <div class="cats">${cats.map(c => `<button data-cat="${esc(c)}" class="${S.cat === c ? 'on' : ''}">${esc(c)}</button>`).join('')}</div></div>
+     <div class="objs">` + L.map(o => `<div class="obj ${S.objSel.has(o.id) ? 'on' : ''}" data-id="${esc(o.id)}" title="${esc(o.desc)}">
+       ${o.rounds ? `<span class="rb">판 ${o.rounds}</span>` : ''}<span class="ck">✓</span>
+       <div class="pic"><img data-src="/api/harness/thumb/${o.slug}.png"></div><div class="nm">${esc(o.name)}</div></div>`).join('') + `</div>
+     <div class="keys">기물을 눌러 고르고(여러 개 가능), 아래에서 메모를 달고 「후보 5장씩 뽑기」. 기물마다 Sonnet 다섯 명이 방향을 나눠 한 장씩 찍는다(최소 수정 2 · 기준 맞추기 2 · 자유 1).</div>`;
+  $('#main').querySelectorAll('.obj img').forEach(img => { sized(img, 3); img.src = img.dataset.src; });
+  const qi = $('#q'); qi.oninput = e => { S.q = e.target.value; const p = qi.selectionStart; renderObjs(); const n = $('#q'); n.focus(); n.setSelectionRange(p, p); };
+  $('#main').querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { S.cat = b.dataset.cat; renderObjs(); });
+  $('#main').querySelectorAll('.obj').forEach(e => e.onclick = () => { const id = e.dataset.id; S.objSel.has(id) ? S.objSel.delete(id) : S.objSel.add(id); renderObjs(); });
+  renderBar();
+}
+async function startDraw() {
+  const ids = [...S.objSel]; if (!ids.length) return;
+  try {
+    await api('/api/harness/draw', {ids, note:S.memo, n:5});
+    toast(`${ids.length}개 기물 — 후보 5장씩 뽑기 시작`); S.objSel.clear(); S.memo = ''; S.objs = null;
+    setView('pick'); setTimeout(() => load(), 1500);
+  } catch (e) { toast('실패: ' + e.message, 1); }
+}
+
+function setView(v) {
+  S.view = v; document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.v === v));
+  if (v === 'objs') loadObjs(); else { renderNav(); renderPick(); }
+}
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => setView(t.dataset.v));
+
+document.addEventListener('keydown', e => {
+  if (S.view !== 'pick' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  const it = item(); if (!it) return; const r = rnd(); const cur = it.current === 'v5' ? 'v5' : it.current;
+  if (e.key === ' ') { e.preventDefault(); const b = document.getElementById('cmpB'); if (b && !S.flip) { S.flip = true; b.dataset.o = b.src; b.src = curSrc(it); } return; }
+  if (/^[0-5]$/.test(e.key)) { const k = +e.key; if (k === 0) { S.sel = cur; } else { const x = r.runs[k - 1]; if (x && x.status === 'done') { S.sel = x.cand; delete S.rej[x.cand]; } } renderPick(); }
+  else if (e.key === 'Enter') { if (S.sel) decide(S.sel === cur ? 'keep' : S.sel); }
+  else if (e.key === 'x' || e.key === 'X') { if (S.sel && S.sel !== cur) toggleRej(S.sel); }
+  else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); $('#memo')?.focus(); }
+  else if (e.key === 'v' || e.key === 'V') { S.mode = S.mode === 'one' ? 'ctx' : 'one'; renderPick(); }
+  else if (e.key === 'b' || e.key === 'B') { S.bg = {wood:'dark', dark:'check', check:'wood'}[S.bg]; renderPick(); }
+  else if (e.key === '+' || e.key === '=') { S.zoom = Math.min(8, {3:4, 4:6, 6:8, 8:8}[S.zoom]); renderPick(); }
+  else if (e.key === '-') { S.zoom = {3:3, 4:3, 6:4, 8:6}[S.zoom]; renderPick(); }
+  else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault(); const L = [...$('#nav').querySelectorAll('.it')].map(x => x.dataset.id); const i = L.indexOf(S.cur);
+    const n = L[(i + (e.key === 'ArrowDown' ? 1 : -1) + L.length) % L.length]; if (n) { S.cur = n; S.round = null; S.sel = null; S.rej = {}; renderNav(); renderPick(); }
+  }
+});
+document.addEventListener('keyup', e => { if (e.key === ' ' && S.flip) { S.flip = false; const b = document.getElementById('cmpB'); if (b && b.dataset.o) b.src = b.dataset.o; } });
+load();
+</script>
+</body>
+</html>

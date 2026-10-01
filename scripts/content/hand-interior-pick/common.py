@@ -11,7 +11,7 @@ PAL_DIR = os.path.join(PICK, 'palette')
 SHARED_PAL = os.path.join(PAL_DIR, 'v5.pal')
 PXGRID = os.path.join(ROOT, 'scripts/content/pixel-harness/pxgrid')
 HARNESS = os.path.join(ROOT, 'scripts/content/pixel-harness')
-WORKER_RE = re.compile(r'^(w[0-9]{1,2}|pilot)-([A-Z])\.pxg$')   # 작업자 id(w1…w99, pilot) + 방향 글자
+WORKER_RE = re.compile(r'^(w[0-9]{1,3}|h[0-9]{1,4}|pilot)-([A-Z])\.pxg$')   # 작업자 id(w1…w999, 소품 하네스 판 h1…, pilot) + 방향 글자
 
 def slug(i):
     return re.sub(r'[^A-Za-z0-9]+', '_', i).strip('_')

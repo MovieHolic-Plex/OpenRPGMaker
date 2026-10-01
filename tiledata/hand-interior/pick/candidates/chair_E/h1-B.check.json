@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_E/h1-B.pxg",
+ "id": "chair E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.103
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "좌판 윗면을 가장 밝은 단(B)으로, 앞면 B→D 로 어둡게 해 윗면>앞면>앞 띠 명암 순서를 세움. 실루엣·접지선 그대로",
+ "ok": true
+}

@@ -129,3 +129,11 @@ v5 381종 밖의 기물을 추가하는 길. 명세 `tiledata/hand-interior/new/
 - 새 분류 ko 이름: `ship`=배 선실, `crypt`=지하묘지(`tiledata/hand-interior/v5/meta5.py` 의 `ko.CAT.update`).
 - 새 기물은 resize.json·변형·예제 방이 없다. `prepare-references.mts` 는 v5 메타가 없으면 명세의 desc·place 를 쓰고 「예제 방 없음」을 덧붙인다.
 - 한계: `apply_picks.py`(미리보기 아틀라스)는 새 기물을 넣지 않는다(아틀라스 자리 없음).
+
+## 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
+
+기물 그림을 고칠 때 감독이 직접 고르고 끼워 넣지 않는다(3/4 전수조사에서 감독이 고친 것 다수가 되돌려졌다 — `tiledata/atlas-pick/modern-style-bible.md` §11-4b).
+`src/harnesses/interior-props/` 가 판을 연다: 기물 하나에 Sonnet 5.5(effort medium) 다섯 명이 방향 A~E(최소 수정 ×2 · 기준 맞추기 ×2 · 자유)로 후보 `h<판>-<글자>.pxg` 를 한 장씩 찍고,
+사용자가 고르기 서버의 `/harness` 화면(18302)에서 지금 그림·방 안과 나란히 보고 확정·버림(+이유)·다시 뽑기(+메모)를 한다.
+고른 것은 `picks.sqlite` 에 client=web 으로 들어가 다음 판의 화풍 기준(anchors)이 되고, 버린 것·이유·메모는 다음 판 작업지시서에 들어간다.
+굽기는 `harness.py bake`. 쓰는 법·함정은 `src/harnesses/interior-props/README.md`.
