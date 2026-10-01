@@ -1,6 +1,7 @@
 // editor/resourceOptions.ts
 // 리소스 종류별 후보 목록의 단일 정본 — DB 피커와 AI 툴이 같은 목록을 봐야 한다.
 // DOM/스토어를 모르는 순수 모듈이라 툴 레이어(headless 포함)에서도 쓸 수 있다.
+import { findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
@@ -156,7 +157,7 @@ export function listDatabaseResourceOptions(
     }
   }
   for (const id of builtinGeneratedResourceIds()) {
-    if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? (partyPixelSheet(id) ? partyPixelLabel(partyPixelSheet(id)!) : `${prettyId(id)} <생성>`));
+    if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? findSharedPortrait(id)?.name ?? (partyPixelSheet(id) ? partyPixelLabel(partyPixelSheet(id)!) : `${prettyId(id)} <생성>`));
   }
   for (const [id, uploaded] of Object.entries(project.assets.uploaded ?? {})) {
     if (uploadedMatchesKind(kind, uploaded.kind, id)) {
@@ -180,7 +181,11 @@ export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceK
       || matchesGeneratedKind("picture", resourceKind, id);
   }
   if (kind === "movie") return resourceKind === "movie";
-  if (kind === "picture") return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full";
+  if (kind === "picture") {
+    // 공용 흉상은 기본 표정 한 장씩만 고르게 한다 — 대사의 표정이 나머지를 고른다(sharedPortraitAssets.ts).
+    return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full"
+      || (findSharedPortrait(id)?.mode === "bust" && findSharedPortrait(id)?.expression === "base");
+  }
   if (kind === "faceset") {
     // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.
     if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;

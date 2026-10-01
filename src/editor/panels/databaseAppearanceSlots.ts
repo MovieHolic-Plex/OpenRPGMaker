@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { appearanceGenerationController } from "@/editor/characterAppearanceGeneration";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
+import { sharedExpressionSetIdOf, sharedPortraitId } from "@/assets/sharedPortraitAssets";
 import { sharedCharsetRow, sharedFaceRow } from "@/project/sharedCharacterFaceResolver";
 import { store } from "@/project/store";
 import type { CharacterAppearanceRecord } from "@/project/types";
@@ -71,6 +72,19 @@ export function appearanceSlotCard(record: CharacterAppearanceRecord, slot: Slot
   const sharedLine = sharedSlotLine(record, slot);
   if (sharedLine) children.push(sharedLine);
   children.push(actions);
+  // 얼굴이 공용 표정 세트면 그 인물의 공용 흉상을 한 번에 잇는다(대사 표정이 나머지 표정 그림을 고른다).
+  const faceSet = slot === "bust" ? sharedExpressionSetIdOf(record.face?.resourceId) : undefined;
+  if (faceSet) {
+    const bustId = sharedPortraitId(faceSet, "bust", "base");
+    const linked = resourceId === bustId;
+    children.push(listToolbar([{
+      label: linked ? "공용 흉상 연결됨" : "이 얼굴의 공용 흉상 연결",
+      testid: "appearance-link-shared-bust",
+      disabled: linked,
+      title: "얼굴과 같은 인물의 공용 흉상을 연결합니다. 대사에 표정을 고르면 기쁨·슬픔·분노·놀람 흉상으로 바뀝니다.",
+      onClick: () => { updateAppearance(record.id, { bust: { resourceId: bustId } }); refresh(); },
+    }]));
+  }
   children.push(el("p", { class: "appearance-help", text: "업로드 후 ‘그림 선택’에서 새 리소스를 연결하세요." }));
   if (slot !== "charset") {
     const candidateHost = el("div", { class: "appearance-candidate", attrs: { "aria-live": "polite" }, dataset: { testid: `appearance-candidate-${slot}` } });
