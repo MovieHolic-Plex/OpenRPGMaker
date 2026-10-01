@@ -88,6 +88,7 @@ details.hist summary { cursor:pointer; color:var(--acc); }
   <label><input type="checkbox" id="fDone" checked> 완료 숨기기</label>
   <label><input type="checkbox" id="fMemo"> 메모만</label>
   <label><input type="checkbox" id="fReview"> ? 확인할 것만</label>
+  <label><input type="checkbox" id="fFresh"> ✱ 새 후보만</label>
   <label><input type="checkbox" id="fHas" checked> 후보 있는 것만</label>
   <button id="reload" title="후보 다시 읽기">다시 읽기</button>
 </header>
@@ -151,11 +152,11 @@ function filtered() {
   const w = $('#fWorker').value, c = $('#fCat').value, todo = $('#fTodo').checked, has = $('#fHas').checked;
   return S.items.filter(i => (!w || i.worker === w || i.candidates.some(x => x.worker === w)) && (!c || i.category === c)
     && (!todo || !(i.pick && i.pick.choice)) && (!has || i.candidates.length)
-    && (!$('#fMemo')?.checked || i.hasNote) && (!$('#fReview')?.checked || i.review)
+    && (!$('#fMemo')?.checked || i.hasNote) && (!$('#fReview')?.checked || i.review) && (!$('#fFresh')?.checked || i.fresh)
     && (!$('#fDone')?.checked || !isDone(i) || i.id === cur));
 }
 // 완료 = 골랐고, 반영 안 된 메모가 없고, 확인할 ?도 없다. (지금 보고 있는 기물은 방금 골라도 사라지지 않게 둔다)
-function isDone(i) { return !!(i.pick && i.pick.choice) && !(i.hasNote && !i.addressed) && !i.review;
+function isDone(i) { return !!(i.pick && i.pick.choice) && !(i.hasNote && !i.addressed) && !i.review && !i.fresh;
 }
 function vars(i) { return (i.pick && i.pick.variants) || []; }
 function esc(s) { return String(s ?? '').replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
@@ -169,9 +170,9 @@ function render() {
 function renderList() {
   const items = filtered();
   const nv = S.items.filter(i => vars(i).length), tv = nv.reduce((a, i) => a + vars(i).length, 0);
-  $('#prog').textContent = `고름 ${S.picked} / ${S.items.length} · 완료 ${S.items.filter(isDone).length} · 보이는 ${items.length}` + (tv ? ` · 함께 쓰기 ${nv.length}개 기물 +${tv}` : '');
+  $('#prog').textContent = `고름 ${S.picked} / ${S.items.length} · 완료 ${S.items.filter(isDone).length} · 보이는 ${items.length}` + (S.fresh ? ` · ✱ 새 후보 ${S.fresh}` : '') + (tv ? ` · 함께 쓰기 ${nv.length}개 기물 +${tv}` : '');
   $('#list').innerHTML = items.map(i => `<div class="it ${i.id===cur?'cur':''}" data-id="${esc(i.id)}">
-      <span class="dot ${i.pick&&i.pick.choice?'done':''}"></span><span class="memo ${i.hasNote?'':'off'}" title="메모 있음"></span><span class="n">${esc(i.name)}</span>${vars(i).length?`<span class="vc" title="함께 쓰기 ${vars(i).join(', ')}">+${vars(i).length}</span>`:''}${i.review?'<span class="q" title="메모 반영됨 — 확인해 주세요">?</span>':''}
+      <span class="dot ${i.pick&&i.pick.choice?'done':''}"></span><span class="memo ${i.hasNote?'':'off'}" title="메모 있음"></span><span class="n">${esc(i.name)}</span>${vars(i).length?`<span class="vc" title="함께 쓰기 ${vars(i).join(', ')}">+${vars(i).length}</span>`:''}${i.review?'<span class="q" title="메모 반영됨 — 확인해 주세요">?</span>':''}${i.fresh?'<span class="q" title="마지막으로 본 뒤 새 후보가 들어왔다">✱</span>':''}
       <span class="c">${i.candidates.length} · ${esc(i.worker)}</span></div>`).join('') || '<div class="empty">조건에 맞는 기물 없음</div>';
   $('#list').querySelectorAll('.it').forEach(e => e.onclick = () => { cur = e.dataset.id; view = 'item'; setView(); render(); });
 }
@@ -202,7 +203,7 @@ function renderItem() {
     ${it.hasNote?`<div class="addressed" style="${it.addressed?'':'background:#1e2a3d;border-color:#3b82f6'}">${it.addressed?'<b>? 메모 반영됨</b> — 새 후보가 들어왔습니다. 확인하고 고르거나 메모를 고쳐 주세요.':'<b>메모</b> — 아직 반영 전'}<br>「${esc(it.pick.note)}」${it.addressedSummary?'<br>반영 내용: '+esc(it.addressedSummary):''}</div>`:''}
     ${vars(it).length?`<div class="st" style="margin-bottom:6px">주 선택 <b style="color:var(--sel)">${esc(ch||'없음')}</b> + <b style="color:#8fb8ff">함께 쓰기 ${vars(it).length}</b>: ${esc(vars(it).join(', '))}</div>`:''}
     <div class="cards">${opts(it).map((o, k) => `<div class="card ${ch===o.name?'sel':''} ${vars(it).includes(o.name)?'var':''}" data-c="${esc(o.name)}">
-       <span class="k">${k}</span><div class="lab">${vars(it).includes(o.name)?'<span class="vb">+함께</span> ':''}${esc(o.label)} ${o.dir?`<span class="d">${o.dir} ${DIRS[o.dir]||''}</span>`:''} ${ch===o.name?'· <b style="color:var(--sel)">선택됨</b>':''}</div>
+       <span class="k">${k}</span><div class="lab">${vars(it).includes(o.name)?'<span class="vb">+함께</span> ':''}${o.fresh?'<b style="color:#e8b04a">✱새</b> ':''}${esc(o.label)} ${o.dir?`<span class="d">${o.dir} ${DIRS[o.dir]||''}</span>`:''} ${ch===o.name?'· <b style="color:var(--sel)">선택됨</b>':''}</div>
        ${imgs(it, o)}${status(o)}${o.note?`<div class="note">「${esc(o.note)}」</div>`:''}</div>`).join('')}</div>
     <div class="memo"><div>메모 (치는 동안 자동 저장 · 칸 밖·Ctrl+Enter·다른 기물·창 닫기에도 바로 저장)</div><textarea id="memo">${esc(it.pick&&it.pick.note||'')}</textarea>
       <div class="saved" id="saved">${it.pick ? '저장됨 ' + esc(it.pick.at) + (ch ? ' · 선택 ' + esc(ch) : ' · 선택 없음') : '아직 저장 없음'}</div></div>
@@ -329,7 +330,7 @@ document.addEventListener('keydown', ev => {
 $('#vItem').onclick = () => { view = 'item'; setView(); render(); };
 $('#vOut').onclick = () => { view = 'out'; setView(); render(); };
 $('#vDir').onchange = () => { dirView = $('#vDir').value; view = dirView ? 'dir' : 'item'; render(); };
-['#fWorker', '#fCat', '#fTodo', '#fHas', '#fMemo', '#fReview', '#fDone'].forEach(s => $(s).onchange = render);
+['#fWorker', '#fCat', '#fTodo', '#fHas', '#fMemo', '#fReview', '#fFresh', '#fDone'].forEach(s => $(s).onchange = render);
 $('#reload').onclick = load;
 load();
 </script>
