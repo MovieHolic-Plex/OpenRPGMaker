@@ -1,0 +1,162 @@
+{
+ "giwa_house_7": {
+  "hash": "c1cbc867b837",
+  "status": "note",
+  "line": "앞면(창호·기단)+위에서 본 지붕 앞사면, 좌우 대칭, 빛 왼쪽 위. 기준(inn·h104)보다 벽이 한 줄 낮고 지붕 대비가 약하다(청회색 기와 의도)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_house": {
+  "hash": "b9dd0a01b2b5",
+  "status": "note",
+  "line": "앞면+둥근 지붕 앞사면, 윗면 문법 일치. 새끼줄 격자가 굵고 오른쪽 어두운 면이 평평해 기준 지붕보다 결이 단순하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gate_6": {
+  "hash": "0e93efa7a97d",
+  "status": "note",
+  "line": "앞면+지붕 앞사면, 대칭. 안쪽 어두운 벽이 평평하고 문 못이 1px 점이다. 기준 대문은 석조라 재질만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pavilion": {
+  "hash": "4b8085577f5b",
+  "status": "pass",
+  "line": "앞면(기둥·난간·기단)+지붕 앞사면, 마루 윗면 8px 보임. 기준 stoa 와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pine": {
+  "hash": "a3ebab1f95d8",
+  "status": "note",
+  "line": "줄기+구름 솔잎 단. 잎뭉치 문법은 기준과 같으나 기준 나무(6×8칸)보다 작고 결이 단순하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "persimmon": {
+  "hash": "71a153d46c93",
+  "status": "note",
+  "line": "둥근 수관+주황 감. 잎뭉치 문법 일치, 기준보다 작고 단순",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "willow": {
+  "hash": "c94441715e4b",
+  "status": "note",
+  "line": "수관 puff + 3px 리본 가닥이 커튼처럼 늘어짐, 기준 나무(6×8칸)보다 작고 단순. 가닥 끝 처리는 단조",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "well": {
+  "hash": "59860fbbb004",
+  "status": "pass",
+  "line": "돌 테두리 윗면 타원+앞면, 기준 분수대와 같은 납작함",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bridge": {
+  "hash": "f67cbd7b6dac",
+  "status": "note",
+  "line": "널 윗면+앞쪽 난간+물 그림자. 기준 도개교(정면 판) 와 다른 구성이라 맥락 확인 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "jars": {
+  "hash": "a406fcd46ca9",
+  "status": "pass",
+  "line": "옹기 뚜껑 윗면이 보이는 정면-위 시점, 기준 통과 같은 크기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "bench": {
+  "hash": "10adb71eb837",
+  "status": "pass",
+  "line": "상판 윗면 7px + 앞면 + 다리, 기준 벤치와 같은 비율",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "mat_peppers": {
+  "hash": "1da98943d85d",
+  "status": "note",
+  "line": "바닥에 깔린 멍석(윗면만). 윗면이 거의 전부인 납작 소품",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "jangseung_m": {
+  "hash": "05c9c34a2816",
+  "status": "user",
+  "line": "정면 소품: 윗면 거의 안 보임(모자 챙만). 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "jangseung_f": {
+  "hash": "c6f21b10f979",
+  "status": "user",
+  "line": "정면 소품: 윗면 거의 안 보임. 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "sotdae": {
+  "hash": "215a678da845",
+  "status": "user",
+  "line": "가는 장대+오리: 윗면 안 보임, 장대 폭 2px. 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "lantern": {
+  "hash": "fe1f5a9699de",
+  "status": "user",
+  "line": "석등: 지붕돌 윗면만 약간. 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "wall_h": {
+  "hash": "df495fa1340b",
+  "status": "note",
+  "line": "덮개 기와 윗면+돌 앞면. 기준 성벽보다 낮고 단순",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "wall_v": {
+  "hash": "439f47413b86",
+  "status": "pass",
+  "line": "세로 담 위에서 본 덮개 띠+왼쪽 앞면 2px, 기준 성벽 세로와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "wall_corner_l": {
+  "hash": "04af54c7d7de",
+  "status": "note",
+  "line": "세로 담이 가로 담 덮개로 이어지는 접합부가 어색하다(덮개 단차) — 맵에서 확인",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "wall_corner_r": {
+  "hash": "7caafc4f3e6b",
+  "status": "note",
+  "line": "접합부 단차, 위와 같음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ }
+}

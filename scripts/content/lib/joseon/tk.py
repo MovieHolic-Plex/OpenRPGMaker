@@ -10,24 +10,24 @@ T = 16
 def hx(c):
     return tuple(int(c[i:i + 2], 16) for i in (1, 3, 5))
 
-# 램프: [외곽선, 어두움 1~6 밝음]. 앞 5개 소재는 버들항 RAMPS_CHIP/OUT_CHIP 값 그대로.
-R = {
-    'wood':   ['#1b1024', '#312210', '#452a17', '#633712', '#6f4725', '#885a26', '#b77541'],
-    'stone':  ['#1c2626', '#2b3934', '#3e403d', '#595b58', '#929491', '#c4c6c3', '#dee0dd'],
-    'water':  ['#071528', '#143a27', '#1c4a44', '#21584e', '#3fa2ae', '#7d98a2', '#a7d4db'],
-    'leaf':   ['#071528', '#143a27', '#205030', '#4b8232', '#58a035', '#73b83e', '#8fd24a'],
-    'plaster': ['#2b203f', '#51283d', '#9e8d83', '#bcaaa0', '#d9d2be', '#ecd6c6', '#f7fdff'],
-    'thatch': ['#312210', '#452a17', '#714210', '#845c1f', '#aa7a08', '#c9a24a', '#ecdb95'],
-    'red':    ['#2b203f', '#562945', '#9e2514', '#a40100', '#dd2912', '#e0482a', '#ec9900'],
-    # 조선 새 램프 — 그림자는 차갑게(보라·청), 빛은 따뜻하게
-    'giwa':   ['#0e111a', '#1a1f2b', '#2a3140', '#3d4757', '#566174', '#7c879b', '#aab4c4'],
-    'earth':  ['#2a1c14', '#3b2918', '#5a3f26', '#7d5a38', '#a07a4e', '#c29a68', '#dcbb88'],
-    'green':  ['#0a1c1a', '#0f2a24', '#17463a', '#1f6652', '#2f8a6c', '#4fb08a', '#8adcb0'],
-    'blue':   ['#0a1230', '#10204a', '#1a3470', '#274c9a', '#3a6cc4', '#6a98e0', '#a8c8f4'],
-    'orange': ['#3a1408', '#7a2a10', '#b84a14', '#e0701c', '#f0902c', '#f8b04c', '#fcd070'],
-    'pine':   ['#071528', '#0f2a24', '#17402c', '#235a34', '#2f7a3c', '#46984a', '#6ab45c'],
-}
+# 팔레트는 harness/palette.json(버들항 시트에서 잠금)만 쓴다. 이 파일에 색을 직접 적지 않는다.
+import json as _json, os as _os
+_PAL = _json.load(open(_os.path.join(_os.path.dirname(__file__), 'harness', 'palette.json')))
+R = dict(_PAL['ramps'])
+R['thatch'] = R['straw']          # 초가·멍석·새끼줄
+R['green'] = R['dgreen']          # 단청 녹
+R['blue'] = R['dblue']            # 단청 청
+R['orange'] = R['persimmon']      # 감
 RGB = {k: [hx(c) for c in v] for k, v in R.items()}
+ALLOWED = {hx(c) for c in _PAL['allowed']}
+SHADOW = hx(_PAL['shadow'])
+VIOLATIONS = {}                   # 허용 밖 색 -> 화소 수 (게이트가 읽는다)
+
+
+def _chk(c):
+    c = tuple(int(v) for v in c[:3])
+    if c not in ALLOWED:
+        VIOLATIONS[c] = VIOLATIONS.get(c, 0) + 1
 
 
 def hsh(x, y, s=0):
@@ -51,6 +51,7 @@ class Cv:
 
     def put(s, x, y, c, al=255):
         if 0 <= x < s.w and 0 <= y < s.h:
+            _chk(c)
             s.a[y, x, :3] = c
             s.a[y, x, 3] = al
 
@@ -59,6 +60,7 @@ class Cv:
 
     def rect(s, x0, y0, x1, y1, c):
         """x0..x1-1, y0..y1-1"""
+        _chk(c)
         for y in range(max(0, y0), min(s.h, y1)):
             for x in range(max(0, x0), min(s.w, x1)):
                 s.a[y, x, :3] = c

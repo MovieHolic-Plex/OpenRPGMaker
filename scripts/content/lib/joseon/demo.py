@@ -7,6 +7,11 @@ import json, os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from tk import *
 import ground as G, build as B, props as P
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "harness"))
+import gate as _gate
+_rows, _fails, _warns, _ = _gate.run()
+if _fails:
+    print("게이트 FAIL %d — 굽지 않는다. python3 harness/gate.py 로 확인" % _fails); sys.exit(1)
 from PIL import Image
 
 OUT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'tiledata', 'joseon-demo'))
@@ -35,42 +40,21 @@ def add_group(name, cvs):
 
 
 # 지형
-add_group('grass', [G.grass(v) for v in range(4)])
-add_group('yard', [G.yard(v) for v in range(2)])
-add_group('paving', [G.paving(v) for v in range(2)])
-add_group('paddy16', [G.paddy_edge(m) for m in range(16)])
-add_group('field', [G.field(v) for v in range(2)])
+import catalog
+_terr = catalog.terrain()
+for _k in ('grass', 'yard', 'paving'):
+    add_group(_k, _terr[_k])
+add_group('field', _terr['field'])
 pad_row()
-add_group('road16', [G.road(m) for m in range(16)])
-add_group('yard16', [G.yard_edge(m) for m in range(16)])
-add_group('stream16', [G.stream(m) for m in range(16)])
-GRASS, YARD, PAV, PADDY, FIELD = (pieces[k]['id'] for k in ('grass', 'yard', 'paving', 'paddy16', 'field'))
+for _k in ('road16', 'yard16', 'stream16', 'paddy16'):
+    add_group(_k, _terr[_k])
+GRASS, YARD, PAV, FIELD = (pieces[k]['id'] for k in ('grass', 'yard', 'paving', 'field'))
+PADDY = pieces['paddy16']['id']
 YARD16 = pieces['yard16']['id']
 ROAD, STREAM = pieces['road16']['id'], pieces['stream16']['id']
 
 # 물체: 칸 블록으로 시트에 놓는다(줄 맞춰 쌓기)
-objects = {
-    'giwa_house_7': B.giwa_house(7),
-    'thatch_house': P.thatch_house(),
-    'gate_6': P.gate(6),
-    'pavilion': P.pavilion(),
-    'pine': P.pine(),
-    'persimmon': P.persimmon(),
-    'willow': P.willow(),
-    'well': P.well(),
-    'bridge': P.bridge(),
-    'jars': P.jars(),
-    'bench': P.bench(),
-    'mat_peppers': P.mat_peppers(),
-    'jangseung_m': P.jangseung(False),
-    'jangseung_f': P.jangseung(True),
-    'sotdae': P.sotdae(),
-    'lantern': P.lantern(),
-    'wall_h': P.wall_h(),
-    'wall_v': P.wall_v(),
-    'wall_corner_l': P.wall_corner('L'),
-    'wall_corner_r': P.wall_corner('R'),
-}
+objects = catalog.objects()
 
 
 def slice_tiles(cv):
@@ -199,7 +183,7 @@ for y in range(1, 12):
     items.append(put_obj('wall_v', 5, y)); items.append(put_obj('wall_v', 19, y))
 items.append(put_obj('jars', 6, 6))
 items.append(put_obj('well', 16, 6))
-items.append(put_obj('persimmon', 16, 8))
+items.append(put_obj('persimmon', 15, 8))
 items.append(put_obj('bench', 6, 9))
 items.append(put_obj('lantern', 9, 6))
 # 초가집과 살림살이
@@ -212,12 +196,12 @@ items.append(put_obj('jangseung_m', 2, 13)); items.append(put_obj('jangseung_f',
 items.append(put_obj('sotdae', 4, 13))
 # 시내 둔덕
 items.append(put_obj('bridge', 29, 14))
-items.append(put_obj('willow', 27, 10))
+items.append(put_obj('willow', 27, 9))
 items.append(put_obj('pavilion', 34, 7))
-items.append(put_obj('pine', 35, 1)); items.append(put_obj('pine', 0, 0)); items.append(put_obj('pine', 3, 1))
-items.append(put_obj('pine', 22, 1)); items.append(put_obj('persimmon', 12, 24)) if False else None
-items.append(put_obj('persimmon', 18, 25))
-items.append(put_obj('willow', 33, 20)); items.append(put_obj('lantern', 33, 10))
+items.append(put_obj('pine', 35, 0)); items.append(put_obj('pine', 0, 0)); items.append(put_obj('pine', 1, 5))
+items.append(put_obj('pine', 22, 0)); items.append(put_obj('persimmon', 12, 24)) if False else None
+items.append(put_obj('persimmon', 18, 24))
+items.append(put_obj('willow', 33, 19)); items.append(put_obj('lantern', 33, 10))
 items = [i for i in items if i]
 items.sort(key=lambda i: (i[0], i[3], i[2]))
 for _, name, tx, ty, cv in items:

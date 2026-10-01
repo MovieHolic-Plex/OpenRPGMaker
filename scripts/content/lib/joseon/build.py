@@ -1,30 +1,50 @@
 """건물류: 팔작지붕 기와, 초가지붕, 기와집, 초가집, 대문, 돌담, 정자."""
 from tk import *
 
-OUTLINE = hx('#1b1024')
 
 
-def outline(cv, col=OUTLINE):
-    """불투명 화소와 이웃한(상하좌우) 투명 칸을 외곽선 색으로."""
-    a = cv.a[:, :, 3] > 0
-    add = []
+_ALLOWED_ARR = None
+
+
+def _snap_dark(rgb):
+    """rgb 보다 어두운 허용 색 중 가장 가까운 것."""
+    global _ALLOWED_ARR
+    if _ALLOWED_ARR is None:
+        _ALLOWED_ARR = np.array(sorted(ALLOWED), dtype=np.int32)
+    lum = lambda c: 0.299 * c[..., 0] + 0.587 * c[..., 1] + 0.114 * c[..., 2]
+    cand = _ALLOWED_ARR[lum(_ALLOWED_ARR) <= lum(np.array(rgb)) + 1]
+    if len(cand) == 0:
+        cand = _ALLOWED_ARR[lum(_ALLOWED_ARR) <= lum(_ALLOWED_ARR).min() + 1]
+    d = ((cand - np.array(rgb)) ** 2).sum(axis=1)
+    return tuple(int(v) for v in cand[int(d.argmin())])
+
+
+def outline(cv, col=None):
+    """안쪽 외곽선(inset): 실루엣 가장자리 화소를 0.62배로 어둡게 한 뒤 허용 색으로 맞춘다.
+    실루엣 바깥에 어두운 링을 덧대지 않는다(스킬 0i-2)."""
+    a = cv.a[:, :, 3] == 255
+    edge = []
     for y in range(cv.h):
         for x in range(cv.w):
-            if a[y, x]:
+            if not a[y, x]:
                 continue
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 X, Y = x + dx, y + dy
-                if 0 <= X < cv.w and 0 <= Y < cv.h and a[Y, X] and cv.a[Y, X, 3] == 255:
-                    add.append((x, y)); break
-    for x, y in add:
-        cv.put(x, y, col)
+                if 0 <= X < cv.w and 0 <= Y < cv.h and cv.a[Y, X, 3] == 0:
+                    edge.append((x, y)); break
+    cache = {}
+    for x, y in edge:
+        c = tuple(int(v) for v in cv.a[y, x, :3])
+        if c not in cache:
+            cache[c] = _snap_dark(tuple(int(v * 0.62) for v in c))
+        cv.put(x, y, cache[c])
 
 
 def shadow(cv, x0, x1, y, h=3, al=90):
     for j in range(h):
         for x in range(x0, x1):
             if cv.a[y + j, x, 3] == 0:
-                cv.put(x, y + j, hx('#140c1c'), al - j * 25)
+                cv.put(x, y + j, SHADOW, al - j * 25)
 
 
 def hip_roof(cv, x0, x1, ytop, ybot, inset=12, ramp='giwa', dancheong=False, seed=0):
@@ -154,7 +174,7 @@ def stone_face(cv, x0, y0, x1, y1, rowh=6, seed=0, top=0):
 def steps(cv, cx, ybase, tiers=2):
     """디딤돌 계단(앞으로 넓어지는 두 단). ybase 는 맨 아래 단 밑줄."""
     s = RGB['stone']
-    o = OUTLINE
+    o = RGB['stone'][1]
     for t in range(tiers):
         w = 22 + t * 10
         y = ybase - 5 * (t + 1) + 1
