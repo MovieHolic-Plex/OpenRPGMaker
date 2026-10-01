@@ -8,13 +8,15 @@ import battleScenario from "../../scripts/qa/runtime/battle.scenario.mjs";
 
 const arg = (name, fallback) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : fallback; };
 const skin = arg("--skin", "");
+const systemPatch = JSON.parse(arg("--system", "{}"));
 const width = Number(arg("--width", 1024)), height = Number(arg("--height", 768));
 const out = arg("--out", `verify-shots/battle-ui-default/${skin || "default"}-${width}x${height}`);
 await mkdir(out, { recursive: true });
 let fixture = battleScenario.projectFixture ?? "test/fixtures/projects/editor-authored-demo-v3.json";
-if (skin) {
+if (skin || Object.keys(systemPatch).length) {
   const project = JSON.parse(await readFile(fixture, "utf8"));
-  project.system.battleUiStyle = skin;
+  if (skin) project.system.battleUiStyle = skin;
+  Object.assign(project.system, systemPatch);
   fixture = join(out, "fixture.json");
   await writeFile(fixture, JSON.stringify(project));
 }

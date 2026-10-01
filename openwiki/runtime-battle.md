@@ -855,6 +855,14 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 ## 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
 
+- **측면 스킨 = 도트 측면 뼈대 위의 창 모양 (2026-10-01).** 측면 스킨 여섯(`rm2003` 유리 · `octopath` 먹빛 · `chrono` 청람 · `bravely` 세피아 · `ff` 코발트 · `goldensun` 금갈색)이
+  retro2003 과 같은 `motionStyle: "retro"` · `scenery: "layered"` · `hudTemplate: "rows"` · 배치 `RETRO_SIDEVIEW` 를 쓴다. 도트 연출·겹 배경·상태 오라·HUD 칸 CSS
+  (26~28·`_retro2003.css`)는 스킨 id 대신 루트 `data-battle-motion="retro"` 에 걸리고, TS 분기(`battleFieldDom` 배지·적 chrome·파티 시트, `webExportAssets`,
+  `battlerPlacements` 의 적 구역·수동 진형)도 `motionStyle === "retro"` 로 판정한다. 창 색은 `_retro2003.css` 루트의 `--retro-*` 변수(기본 청색)이고
+  `_retro-themes.css` 가 스킨 id 마다 그 변수만 바꾼다. 그래서 측면 스킨을 골라도 도트 연출이 빠지지 않는다. 링·얇은 줄 HUD(`_glass-variants.css`)는 이제
+  쓰는 스킨이 없다(정면은 줄·얼굴 카드). 옛 측면 배치 `SIDEVIEW` 와 측면 수동 배치의 「x>150 → 고전 진형」 규칙은 등록 스킨에서 더 타지 않는다.
+  새 창 모양을 더하려면 레지스트리에 측면 스킨을 넣고 `_retro-themes.css` 에 변수 블록 하나를 쓴다. 증거: `verify-shots/battle-ui-default/themes.sh`.
+
 - 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
 - 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
 - **스킨 id 이력 (2026-09-03):** 기존 정면 스킨 `rm2003`을 `rm2000`으로 개명한 뒤, 같은 날 `rm2003`을 별도 측면 스킨으로 되살렸다. 현재 `resolveSkinId("rm2003") === "rm2003"`이며 옛 별칭 `classic`만 `rm2000`으로 간다. 등록 스킨은 12종이다. 두 스킨은 `_rm2000.css`의 유리 HUD를 `family: "glass"`로 공유하고 측면 배치는 `_rm2003.css`가 담당한다. 사용자 노출 라벨은 「유리 창 · 정면 필드」와 「유리 창 · 측면 필드」이며 타사 제품명은 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`).

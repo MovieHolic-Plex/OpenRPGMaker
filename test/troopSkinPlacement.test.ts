@@ -44,9 +44,10 @@ describe("resolveSkinEnemyPosition", () => {
     }
   });
 
-  it("manual sideview recenters x>150 into the left formation", () => {
+  // 2026-10-01: 측면 스킨은 모두 도트 측면 뼈대라 저작 좌표를 적 구역(RETRO_ZONE x 34~150 · y 92~142)에 가둔다.
+  it("manual sideview clamps authored x into the dot-sideview enemy zone", () => {
     expect(resolveSkinEnemyPosition("rm2003", { x: 200, y: 180 }, 0, 3, false)).toEqual({
-      x: 84,
+      x: 150,
       y: 120,
     });
   });
@@ -57,10 +58,10 @@ describe("resolveSkinEnemyPosition", () => {
       y: 120,
     });
     expect(resolveSkinEnemyPosition("rm2003", { x: 400, y: 300 }, 0, 1, false)).toEqual({
-      x: 84,
-      y: 160,
+      x: 150,
+      y: 142,
     });
-    expect(resolveSkinEnemyPosition("rm2003", { x: -10, y: -5 }, 0, 1, false).x).toBe(0);
+    expect(resolveSkinEnemyPosition("rm2003", { x: -10, y: -5 }, 0, 1, false).x).toBe(34);
   });
 
   it("manual frontal keeps y and shifts x by the damped offset", () => {
