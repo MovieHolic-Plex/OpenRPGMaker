@@ -1,0 +1,193 @@
+{
+ "basket": {
+  "refs": [
+   [
+    "basket:mushroom",
+    "w9-B"
+   ]
+  ],
+  "todo": [
+   "basket:cabbage",
+   "basket:carrot",
+   "basket:tomato",
+   "basket:pumpkin",
+   "basket:potato",
+   "basket:onion",
+   "basket:eggplant",
+   "basket:apple",
+   "basket:lemon",
+   "basket:grape",
+   "basket:fish",
+   "basket:shell",
+   "basket:fish+ice",
+   "basket:loaf",
+   "basket:baguette",
+   "basket:bun",
+   "basket:pie",
+   "basket:cake",
+   "basket:potion+potionb+potiong",
+   "basket:vial+flask",
+   "basket:jar+jarb+jarg",
+   "basket:flower",
+   "basket:yarn+yarnb+yarny",
+   "basket:egg",
+   "basket:wool"
+  ]
+ },
+ "sack": {
+  "refs": [
+   [
+    "sack:grain",
+    "w10-C"
+   ],
+   [
+    "sack:flour",
+    "w6-B"
+   ]
+  ],
+  "todo": [
+   "sack"
+  ]
+ },
+ "shelf": {
+  "refs": [
+   [
+    "shelf:coins",
+    "w10-C"
+   ],
+   [
+    "shelf:cheese",
+    "w4-C"
+   ]
+  ],
+  "todo": [
+   "shelf:potion+potionb+potiong",
+   "shelf:herb",
+   "shelf:vial+flask",
+   "shelf:jar+jarb+jarg",
+   "shelf:mushroom",
+   "shelf:flower",
+   "shelf:book+bookb+bookg",
+   "shelf:scroll",
+   "shelf:gem+gemr",
+   "shelf:yarn+yarnb+yarny",
+   "shelf:bolt+boltg+boltr",
+   "shelf:bottle+bottler+bottley",
+   "shelf:candle",
+   "shelf:ingot+ingotg",
+   "shelf:toy",
+   "shelf:skull+crystal"
+  ]
+ },
+ "display": {
+  "refs": [
+   [
+    "display potion",
+    "w7-B"
+   ]
+  ],
+  "todo": [
+   "display apple",
+   "display bread"
+  ]
+ },
+ "table": {
+  "refs": [
+   [
+    "table:bolt+yarn",
+    "w46-A"
+   ]
+  ],
+  "todo": [
+   "table:loaf+bun",
+   "table:cake+pie",
+   "table:fish+fishr",
+   "table:potion+flask",
+   "table:plate+cup",
+   "table:book+scroll",
+   "table:mug+bottle",
+   "table:steak+ham",
+   "table:gem+coins"
+  ]
+ },
+ "dining": {
+  "refs": [
+   [
+    "dining 2x1",
+    "pilot-B"
+   ]
+  ],
+  "todo": [
+   "dining 1x1",
+   "dining 3x1",
+   "dining 4x1",
+   "dining 2x2",
+   "dining 3x2",
+   "dining 4x2"
+  ]
+ },
+ "hang": {
+  "refs": [
+   [
+    "hang:ham",
+    "w4-A"
+   ],
+   [
+    "hang:onion",
+    "w5-C"
+   ]
+  ],
+  "todo": [
+   "hang:fish",
+   "hang:herb",
+   "hang:sausage",
+   "hang:mushroom",
+   "hang:flower",
+   "hang:fishr"
+  ]
+ },
+ "tall vase": {
+  "refs": [
+   [
+    "tall vase blue",
+    "w2-B"
+   ],
+   [
+    "tall vase red",
+    "w2-B"
+   ]
+  ],
+  "todo": [
+   "tall vase teal",
+   "tall vase yellow"
+  ]
+ },
+ "potted": {
+  "refs": [
+   [
+    "potted fern",
+    "w7-B"
+   ],
+   [
+    "potted flowering",
+    "w3-B"
+   ]
+  ],
+  "todo": [
+   "potted sapling",
+   "potted cactus"
+  ]
+ },
+ "banner": {
+  "refs": [
+   [
+    "banner green",
+    "w8-C"
+   ]
+  ],
+  "todo": [
+   "banner red",
+   "banner blue"
+  ]
+ }
+}

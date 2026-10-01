@@ -1,12 +1,9 @@
 // node scripts/qa/runtime/retro2003-monster-skills-gif.mjs [--out DIR] [--skills acid_spit,dark_judgment] [--fps 12] [--width 520]
-//   [--custom spec.json]  계약 42개 대신 프로젝트 연출 레코드(database.skillChoreographies)를 붙인 적 스킬을 찍는다.
-//     spec = { monster: '<slug>', skills: [스킬 레코드…], choreographies: [연출 레코드…], cases: [{ slug, skillId, expect: 'record'|'none' }] }
-//     expect 'record' = 그 스킬의 retroChoreographyId 레코드 레이어가 전부 떠야 한다, 'none' = 연출 레이어가 하나도 뜨면 안 된다(대조군).
 // 몬스터 스킬 42개(계약 src/assets/retroMonsterSkills.ts)를 스킬마다 대표 몬스터(RETRO_MONSTER_SKILLSETS 에서 그 스킬을 가진 첫 slug)
 // 한 마리 트룹으로 세워 그 스킬 한 번을 녹화하고 mskill-<id>.gif 로 자른다. retro2003-monsters-gif.mjs 와 같은 출하 player.html 경로·키보드 입력.
 // 녹화 사본만 고친다: 기본 DB 의 스킬·상태·전투 애니메이션을 합치고, 적은 그 스킬 하나만(MP 999·민첩 999), 아군 파티 셋(전체기 확인)은 방어로 넘긴다.
 // 이펙트 PNG(public/assets/generated/pixel-fx/mon_*.png)가 없으면 그 레이어만 비어 찍힌다 — SUMMARY 에 빠진 키를 적는다.
-import { mkdir, writeFile, readFile, stat, access } from 'node:fs/promises';
+import { mkdir, writeFile, stat, access } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { parseArgs, promisify } from 'node:util';
 import { execFile } from 'node:child_process';
@@ -16,7 +13,7 @@ import { recordingFixture } from './retro2003-gif-fixture.mjs';
 
 const { values } = parseArgs({ options: {
   out: { type: 'string', default: '.omo/retro-monster-skills/recording' },
-  skills: { type: 'string' }, custom: { type: 'string' }, fps: { type: 'string', default: '12' }, width: { type: 'string', default: '520' },
+  skills: { type: 'string' }, fps: { type: 'string', default: '12' }, width: { type: 'string', default: '520' },
 } });
 const fps = Number(values.fps), width = Number(values.width);
 if (!Number.isInteger(fps) || fps < 1 || fps > 30 || !Number.isInteger(width) || width < 320 || width > 1280) throw new Error('fps 1..30, width 320..1280');
@@ -29,7 +26,6 @@ const run = promisify(execFile);
 const selector = (id) => '[data-testid="' + id + '"]';
 const report = { clips: [], skipped: [], errors: [], evidence: [] };
 let server, browser;
-let customChoreographies = [];
 
 try {
   server = await startPlayerQaServer();
@@ -57,34 +53,11 @@ try {
     };
   });
   await setup.close();
-  const customSpec = values.custom ? JSON.parse(await readFile(resolve(values.custom), 'utf8')) : undefined;
-  if (customSpec) {
-    // spec.skills[i].base = 기본 DB 스킬 id — 그 레코드를 복제해 id·이름·retroChoreographyId 만 덮는다(효과·위력은 기본 그대로).
-    customSpec.skills = customSpec.skills.map(({ base, ...rest }) => {
-      const source = base ? defaults.skills.find((r) => r.id === base) : undefined;
-      if (base && !source) throw new Error('--custom base skill not found: ' + base);
-      const merged = { ...(source ? structuredClone(source) : {}), ...rest };
-      if (rest.retroChoreographyId === null) delete merged.retroChoreographyId;
-      return merged;
-    });
-    defaults.skills = [...defaults.skills.filter((row) => !customSpec.skills.some((r) => r.id === row.id)), ...customSpec.skills];
-    customChoreographies = customSpec.choreographies ?? [];
-  }
   const all = defaults.contract.map((row) => row.id);
-  const wanted = customSpec ? [] : values.skills ? values.skills.split(',').map((id) => id.startsWith('skill_mon_') ? id : 'skill_mon_' + id) : all;
+  const wanted = values.skills ? values.skills.split(',').map((id) => id.startsWith('skill_mon_') ? id : 'skill_mon_' + id) : all;
   const unknown = wanted.filter((id) => !all.includes(id));
   if (unknown.length) throw new Error('Unknown --skills: ' + unknown.join(','));
   const ready = [];
-  for (const entry of customSpec?.cases ?? []) {
-    const row = defaults.catalog.find((c) => c.slug === customSpec.monster);
-    if (!row?.enemy) { report.skipped.push({ slug: entry.slug, reason: 'no enemy for monster ' + customSpec.monster }); continue; }
-    const skillRecord = customSpec.skills.find((r) => r.id === entry.skillId);
-    const record = customChoreographies.find((r) => r.id === skillRecord?.retroChoreographyId);
-    const layers = entry.expect === 'record' ? (record?.layers ?? []).map((l) => ({ key: l.sheet, anchor: l.anchor })) : [];
-    const missingFx = [];
-    for (const layer of layers) { try { await access(resolve('public/assets/generated/pixel-fx', layer.key + '.png')); } catch { missingFx.push(layer.key); } }
-    ready.push({ ...row, slug: entry.slug, monster: row.slug, custom: { ...entry, playedId: skillRecord?.retroChoreographyId },  skill: { id: skillRecord?.id ?? entry.skillId, name: skillRecord?.name ?? entry.slug, motion: record?.motion ?? 'default', layers }, missingFx });
-  }
   for (const skill of defaults.contract.filter((row) => wanted.includes(row.id))) {
     // 대표 몬스터 = 계약 목록 순서에서 이 스킬을 가진 첫 slug.
     const slug = Object.keys(defaults.skillsets).find((key) => defaults.skillsets[key].includes(skill.id));
@@ -178,7 +151,6 @@ async function recordAll(rows, defaults) {
       project.database.troops.push({ id: 'qa_troop_' + row.slug, name: row.skill.name, enemyIds: [enemy.id], members: [{ enemyId: enemy.id, x: 88, y: 132, hidden: false }], autoAlign: true, battleEventPages: [] });
     }
     // 전투 이벤트는 변수 qa_monster_index 번째 트룹을 읽는다(troopSource variable). 종마다 변수만 바꿔 다시 말을 건다.
-    if (customChoreographies.length) project.database.skillChoreographies = structuredClone(customChoreographies);
     const map = project.maps[fixture.entry.mapId];
     const event = map.events.find((row) => row.id === fixture.entry.eventId);
     const page0 = event.pages?.find((row) => row.commands?.some((c) => c.kind === 'battleProcessing')) ?? event;
@@ -254,12 +226,11 @@ async function recordAll(rows, defaults) {
     await page.waitForSelector(selector('battle-actor-sprites'), { timeout: 30000 });
     crop ??= await page.locator(selector('battle-scene')).boundingBox().then((b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, Math.round(v)])));
     const odd = segments.length % 2 === 1;
-    const seen = { beats: [], frames: [], reach: null, sheet: null, pixel: null, cell: null, played: false, fx: new Set(), screens: new Set(), sounds: 0, layer: 0, playedIds: new Set() };
+    const seen = { beats: [], frames: [], reach: null, sheet: null, pixel: null, cell: null, played: false, fx: new Set(), screens: new Set(), sounds: 0, layer: 0 };
     let from = -1, done = false;
     for (let i = 0; i < 600 && !done; i++) {
       const s = await scene();
-      if (s.classSkill) seen.playedIds.add(s.classSkill);
-      if (s.classSkill === (row.custom ? row.custom.playedId : row.skill.id)) seen.played = true;
+      if (s.classSkill === row.skill.id) seen.played = true;
       for (const key of s.fx) seen.fx.add(key); for (const key of s.screens) seen.screens.add(key);
       seen.sounds = Math.max(seen.sounds, s.sounds); seen.layer = Math.max(seen.layer, s.layer);
       if (s.sheet) seen.sheet = s.sheet; if (s.pixel) seen.pixel = s.pixel; if (s.cell) seen.cell = s.cell; if (s.reach) seen.reach = s.reach;
@@ -281,17 +252,13 @@ async function recordAll(rows, defaults) {
     if (!done) problems.push('attack did not finish');
     if (seen.sheet !== row.resourceId) problems.push('pixel sheet not applied (' + seen.sheet + ')');
     if (String(seen.cell) !== String(row.cell)) problems.push('cell ' + seen.cell + ' != ' + row.cell);
-    if (row.custom?.expect === 'none') { if (seen.playedIds.size) problems.push('choreography played though none expected (' + [...seen.playedIds].join(',') + ')'); }
-    else if (!seen.played) problems.push('monster skill player never started');
-    if (!row.custom) {
-      if (!seen.frames.includes('attack') && row.skill.motion !== 'buff') problems.push('attack cell not shown');
-      if (!seen.frames.includes('windup')) problems.push('windup cell not shown');
-    }
+    if (!seen.played) problems.push('monster skill player never started');
+    if (!seen.frames.includes('attack') && row.skill.motion !== 'buff') problems.push('attack cell not shown');
+    if (!seen.frames.includes('windup')) problems.push('windup cell not shown');
     const seenKeys = new Set([...seen.fx].map((k) => k.split('@')[0]));
     // 그림이 있는 레이어는 반드시 떠야 한다. 없는 그림은 레이어 노드만 빈 배경으로 뜬다(missingFx 로 따로 적는다).
     for (const layer of row.skill.layers) if (!seenKeys.has(layer.key)) problems.push('layer ' + layer.key + ' not shown');
-    if (row.custom?.expect === 'none') { if (seenKeys.size) problems.push('unexpected fx ' + [...seenKeys].join(',')); }
-    else if (seen.layer > 0) problems.push('stock animation layer also played (' + seen.layer + ')');
+    if (seen.layer > 0) problems.push('stock animation layer also played (' + seen.layer + ')');
     if (row.skill.motion === 'finisher' && !seen.screens.has('dim')) problems.push('finisher without dim');
     const fx = [...seen.fx];
     report.evidence.push({ slug: row.slug, skill: row.skill.id, name: row.skill.name, monster: row.monster, motion: row.skill.motion, cell: row.cell, enemy: row.enemy.id,

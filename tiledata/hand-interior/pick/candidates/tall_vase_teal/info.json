@@ -1,0 +1,38 @@
+{
+ "id": "tall vase teal",
+ "slug": "tall_vase_teal",
+ "name_ko": "키큰 꽃병 청록",
+ "category": "장식",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 24
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": null,
+ "description": "청록 유약 목긴 꽃병(8px 솟음). 저택 거실·응접실 구석에 1개. 안락의자·피아노 곁.",
+ "where": "저택 거실·응접실 구석에 1개. 안락의자·피아노 곁.",
+ "placement": [
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "v5_colors": 6,
+ "material": "ceramic",
+ "related": []
+}

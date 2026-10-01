@@ -1,0 +1,60 @@
+// w74-A 석상 재작: 받침대(윗면+앞면+밑단) 위에 선 사람(머리·어깨·한 팔 가슴·토가 주름), column_marble 돌 6단, 빛 왼쪽 위
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a marble 0
+@mat b marble 1
+@mat c marble 2
+@mat d marble 3
+@mat e marble 4
+@mat f marble 5
+@mat g marble 6
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+......bbbb......
+.....bgfedb.....
+.....bfeddb.....
+.....bfeddb.....
+......bddb......
+......bcdb......
+....bgggfedb....
+..bgggggggfeddb.
+..bgfbgggggfeddb
+..bgfbggggggedb.
+..bgebccccceddb.
+..bfebgfffeeddb.
+..bfdbfffeeedcb.
+..bfdbcfeeedccb.
+..bfdbcffeedccb.
+..bfdbcfeedcccb.
+..bffbccfedcccb.
+..bfebcefedcccb.
+.bgfebcefedcccb.
+.bfffbcefeddccb.
+.bbbbbcefeddccb.
+..bcbbcefeddccb.
+...bbbcefeddccb.
+...bcbcefeddcccb
+..bfbcceffeddccb
+..bfcbcefeeddccb
+.bfeccbcefeeddcb
+.bfedcbcefeedccb
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+bgggggggggggfedb
+bgggggggfffeeddb
+bfffffffffffeddb
+bfeeeeeeeeeeddcb
+bfeeeeeeeeeeddcb
+bfeeeeeeeeeeddcb
+bfeeeeeeeeeeddcb
+bbbbbbbbbbbbbbbb
+bddddddddddddccb
+.bbbbbbbbbbbbbb.
+.-~~~~~~~~~~~~-.

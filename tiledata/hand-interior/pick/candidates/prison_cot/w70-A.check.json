@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/prison_cot/w70-A.pxg",
+ "id": "prison cot",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  46
+ ],
+ "v5_bbox": null,
+ "note": "벽 붙이 판자 침상: 머리판 윗면+앞면(쇠사슬 고정), 짚 매트, 발판 앞면. 관문 O(t=5 f=42) 눈 O",
+ "ok": true
+}

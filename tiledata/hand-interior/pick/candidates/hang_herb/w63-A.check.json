@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hang_herb/w63-A.pxg",
+ "id": "hang:herb",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  1,
+  14,
+  10
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  10
+ ],
+ "note": "몸통=hang:onion w5-C(못 iron:5 둘 + 가운데가 처진 straw 끈, 가운데 물건이 한 줄 낮게). 매단 허브 다발은 v5 화소를 왼쪽 1칸만 옮겨 끈 매듭(x2·x7·x12)에 맞춤. 합성 work/w63-compose.py",
+ "ok": true
+}

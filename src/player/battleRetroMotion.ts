@@ -3,7 +3,6 @@ import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type 
 import type { PartyPixelCell, PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
 import { retroRosterClass } from "@/assets/retroRoster";
-import { resolveSkillChoreography } from "@/assets/retroSkillCatalog";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { BattleSnapshot } from "@/battle/runtime";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
@@ -640,15 +639,8 @@ function isMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
   const recipe = retroSkillForEntry(entry);
   if (recipe) return recipe.approach !== "still";
   const skill = battleEntrySkillRecord(entry);
-  if (!(skill?.effect.kind === "damage" && skill.effect.statistic === "attack")) return false;
-  // 프로젝트 연출 레코드를 붙인 적 스킬은 레코드의 동작이 정한다: 제자리에서 쏘거나 시전하는 동작(shoot·breath·cast·buff)이면 다가가지 않는다.
-  // 레코드가 없거나 계약 id 면 위의 효과 판정 그대로(기존 몬스터 스킬 재생 불변).
-  const chosen = skill.retroChoreographyId && !resolveSkillChoreography({ id: skill.id }, undefined)
-    ? resolveSkillChoreography(skill, store.getCurrent().database.skillChoreographies, "monster") : undefined;
-  return !(chosen?.origin === "project" && STATIONARY_RECORD_MOTIONS.has(chosen.motion));
+  return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
 }
-
-const STATIONARY_RECORD_MOTIONS: ReadonlySet<string> = new Set(["shoot", "breath", "cast", "buff"]);
 
 export function retroWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroWalk | undefined {
   let cache = walkCache.get(field);

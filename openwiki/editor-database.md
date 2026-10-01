@@ -24,7 +24,7 @@ retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있
 
 ## 스킬 탭 「도트 연출」 고르기 (2026-09-30)
 
-스킬 탭 「연출」 카드의 `db-skill-retro-picker`(`src/editor/panels/databaseSkillRetroPicker.ts`): 낱말 검색·모션·속성·계열(직업/몬스터 계열 칩)로 계약 약 850개를 거르고 목록에서 고르면 `updateDatabaseRecord("skills", id, { retroChoreographyId })` 로 저장하며 무대(`db-skill-retro-stage`)가 그 연출로 다시 그려진다(「빌려 온 연출: 이름 (id)」 상태 줄, 「연출 지우기」). 색인·필터는 `retroSkillCatalog.ts` 의 `retroChoreographyEntries`/`filterRetroChoreographies` 를 조수 도구와 공유한다. 스킬 id 자체가 계약이면 고르기는 안내만 보인다. **적이 쓰는 스킬(`isEnemyUsedSkill`)이면 몬스터 모양으로 푼다**(`want="monster"`): 「자동: ○○」 줄은 꺼지고(적 스킬은 자동 추천 없음) 「기본 몬스터 연출로 재생됩니다」 안내가 보이며, 고른 연출이 직업(아군) 전용 기본 연출이면 「적에게는 재생되지 않습니다」 경고가 난다. 프로젝트 레코드를 고르면 적도 그 연출로 재생한다([runtime-battle.md](runtime-battle.md) 같은 날짜 절). 캡처: `scripts/capture-retro-choreo-a2.mjs` -> `verify-shots/retro-choreo-a2/d*.png`(옛 capture-retro-picker.mjs 는 폐기).
+스킬 탭 「연출」 카드의 `db-skill-retro-picker`(`src/editor/panels/databaseSkillRetroPicker.ts`): 낱말 검색·모션·속성·계열(직업/몬스터 계열 칩)로 계약 약 850개를 거르고 목록에서 고르면 `updateDatabaseRecord("skills", id, { retroChoreographyId })` 로 저장하며 무대(`db-skill-retro-stage`)가 그 연출로 다시 그려진다(「빌려 온 연출: 이름 (id)」 상태 줄, 「연출 지우기」). 색인·필터는 `retroSkillCatalog.ts` 의 `retroChoreographyEntries`/`filterRetroChoreographies` 를 조수 도구와 공유한다. 스킬 id 자체가 계약이면 고르기는 안내만 보인다. 캡처: `scripts/capture-retro-choreo-a2.mjs` -> `verify-shots/retro-choreo-a2/d*.png`(옛 capture-retro-picker.mjs 는 폐기).
 
 ## 적 그룹 「전투 뒤」 구획 (2026-09-28)
 

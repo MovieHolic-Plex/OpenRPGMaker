@@ -24,17 +24,11 @@ export interface RetroChoreographyRecommendation {
   readonly skill: RetroClassSkill;
 }
 
-/**
- * 독 낱말. 「독」 한 글자는 해독·독수리·독립에 걸리므로 복합어 목록으로만 센다(독칼·독 베기·독 볼트 …).
- * 상태 id·속성 id 는 영문 낱말로 본다(state_poison · state_deep_poison · 사용자 상태 id 모두).
- */
-const POISON_WORDS = /(?<!해)독\s?(?:칼|날|침|검|창|화살|볼트|탄|구름|안개|포자|숨결|거품|가시|가루|액|분사|베기|찌르기|공격|속성|살포|폭발|물)|맹독|극독|중독|독액|독성|독기|poison|venom|toxic|toxin/i;
-const POISON_ID = /poison|venom|toxi[cn]/i;
 const ELEMENTS = new Set(["fire", "ice", "thunder", "water", "earth", "wind", "holy", "dark"]);
 const ELEMENT_WORDS: readonly [RegExp, string][] = [
   [/화염|불꽃|fire|flame|inferno|blaze/i, "fire"], [/빙결|얼음|냉기|눈보라|\bice\b|frost|blizzard/i, "ice"], [/번개|낙뢰|전격|thunder|lightning/i, "thunder"],
   [/대지|암석|지진|earth|quake/i, "earth"], [/질풍|돌풍|\bwind\b|gale/i, "wind"], [/성스|신성|성광|holy|divine|smite/i, "holy"],
-  [/암흑|어둠|dark|shadow|abyss/i, "dark"], [POISON_WORDS, "poison"],
+  [/암흑|어둠|dark|shadow|abyss/i, "dark"], [/독침|맹독|독안개|poison|venom/i, "poison"],
 ];
 /** 계약이 이미 그 속성이라 색을 덧입히지 않는 경우(계약 id → 속성). */
 const NATIVE_ELEMENT: Readonly<Record<string, string>> = {
@@ -45,12 +39,10 @@ const NATIVE_ELEMENT: Readonly<Record<string, string>> = {
 
 function elementOf(skill: RetroRecommendInput): string | undefined {
   if (skill.elementId && ELEMENTS.has(skill.elementId)) return skill.elementId;
-  if (skill.elementId && POISON_ID.test(skill.elementId)) return "poison";
+  if (skill.elementId === "poison") return "poison";
   const named = ELEMENT_WORDS.find(([word]) => word.test(skill.name))?.[1];
-  // 해독·정화 같은 회복 스킬은 이름에 독이 들어 있어도 초록으로 칠하지 않는다.
-  if (named && !(named === "poison" && skill.effect.kind === "healing")) return named;
-  // 독을 「거는」 스킬만 독 연출. 상태 제거(remove)는 세지 않는다. state_deep_poison·사용자 독 상태 id 도 포함.
-  return skill.stateEffects?.some((effect) => effect.operation === "add" && POISON_ID.test(effect.stateId)) ? "poison" : undefined;
+  if (named) return named;
+  return skill.stateEffects?.some((effect) => effect.operation === "add" && effect.stateId === "state_poison") ? "poison" : undefined;
 }
 
 interface Pick3 { readonly baseId: string; readonly reason: string; readonly each?: boolean }
