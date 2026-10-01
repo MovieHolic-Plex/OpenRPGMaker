@@ -678,3 +678,10 @@ stats = dict(tiles=count, used=len(tiles), strips=len(strips), sheet=[COLS * T, 
              upperCells=sum(1 for t in upper if t >= 0), walkableCells=sum(1 for y in range(H) for x in range(W) if walkable(x, y)))
 (DATA / "build-stats.json").write_text(json.dumps(stats, indent=1) + "\n")
 print(json.dumps(stats))
+
+# 고른 장소 조각(칸 23,936~, 키트 bd-pick-*, 용도 beodeul-picks-*)은 이 스크립트가 아니라 bake_picks.py 소유다.
+# 시트를 다시 자르면 꼬리가 사라지므로 이어서 굽는다(등록부 tiledata/beodeul-variants/pick-cells.* 가 칸 번호를 지킨다).
+# 도시 칸 수가 바뀌면(count != 23936) bake_picks.py 의 BASE 와 beodeulCity.ts 의 BEODEUL_CITY_BASE_COUNT 를 함께 고쳐야 한다.
+import subprocess, sys as _sys
+if count == 23936 and (ROOT / "tiledata/beodeul-variants/picks.json").exists():
+    subprocess.run([_sys.executable, str(ROOT / "scripts/content/beodeul-picks/bake_picks.py")], check=True)
