@@ -174,9 +174,12 @@ def from_actor(png, index):
 
 # ─────────────────────────────── 기계 검수 ───────────────────────────────
 # 기준은 Actor1 8명에서 쟀다(`harness.py calibrate` 가 8명 전원 통과를 확인한다).
-#   머리 높이 출렁임 = 방향마다 정확히 1px, 윤곽 픽셀 중 어두운 것 83~96 %, 색 22~32 개, 실루엣 217~390 px.
+#   머리 높이 출렁임 = 방향마다 정확히 1px, 윤곽 픽셀 중 어두운 것 83~96 %, 색 22~32 개, 실루엣 217~390 px,
+#   걸음 0↔2 프레임 전체에서 다른 픽셀 79~279 (팔·다리·옷자락이 다 움직인다). 2026-10-02 첫 실행에서 Sonnet 이
+#   몸을 1px 내리고 발끝만 바꾼 걸음(16~26px)을 냈는데 옛 검수를 통과했다 — 그래서 walk_motion 을 넣었다.
 LIMITS = dict(max_colors=32, top_jitter_max=1, area_min=190, area_max=420, bbox_w_max=23, bbox_h_max=30,
-              dark_edge_min=0.75, dark_luma=70, leg_diff_min=6, changed_min=0.20)
+              dark_edge_min=0.75, dark_luma=70, leg_diff_min=6, walk_motion_min=70, walk_motion_vs_base=0.6,
+              changed_min=0.20)
 
 
 def _lum(c):
@@ -245,6 +248,15 @@ def gate(pal, frames, base=None):
         m[f'leg_diff_{d}'] = leg
         if leg < L['leg_diff_min']:
             fails.append(f'{DIR_KO[d]}: 걸음 0·2 의 다리가 거의 같다({leg}px) — 걷는 것처럼 안 보인다')
+        motion = sum(a[y][x] != b[y][x] for y in range(FH) for x in range(FW))
+        m[f'walk_motion_{d}'] = motion
+        if motion < L['walk_motion_min']:
+            fails.append(f'{DIR_KO[d]}: 걸음 0↔2 에서 바뀐 픽셀 {motion} < {L["walk_motion_min"]} (Actor1 최소 79) — 팔·다리가 거의 안 움직인다')
+        if base is not None:
+            bf = base[1]
+            bm = sum(bf[(d, 0)][y][x] != bf[(d, 2)][y][x] for y in range(FH) for x in range(FW))
+            if motion < bm * L['walk_motion_vs_base']:
+                fails.append(f'{DIR_KO[d]}: 걸음 동작이 뼈대의 {motion / bm:.0%} 뿐이다(뼈대 {bm}px) — 뼈대의 걸음을 따르지 않았다')
         idle = frames[(d, 1)]
         if a == idle or b == idle:
             fails.append(f'{DIR_KO[d]}: 걸음 프레임이 서 있는 자세와 똑같다')
