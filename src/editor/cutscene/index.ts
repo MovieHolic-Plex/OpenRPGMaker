@@ -13,6 +13,7 @@ export type CutsceneBeat =
   | CutsceneMusicBeat
   | CutsceneFadeBeat
   | CutsceneTintBeat
+  | CutsceneDistortBeat
   | CutsceneBackgroundBeat
   | CutsceneFlashBeat
   | CutsceneShakeBeat
@@ -103,6 +104,19 @@ export type CutsceneTintBeat = {
   readonly kind: "tint";
   readonly color?: string;
   readonly value?: string;
+  readonly durationMs?: number;
+  readonly wait?: boolean;
+};
+
+/**
+ * 화면 왜곡 비트 — 이벤트 명령 「화면 효과」 의 물결·모자이크·기울기(지속형)로 컴파일된다.
+ * 수중·꿈·시간 왜곡·회상 진입. 컷신이 끝나도(건너뛰어도) 마지막 상태가 남는다 — 끄려면 effect "clear".
+ */
+export type CutsceneDistortBeat = {
+  readonly kind: "distort";
+  readonly effect: "wave" | "mosaic" | "rotate" | "clear";
+  /** 세기 — 물결 px(0~16)·모자이크 블록 px(0~32)·기울기 도(-180~180). 생략하면 기본 세기, 0 은 그 효과만 끄기. */
+  readonly amount?: number;
   readonly durationMs?: number;
   readonly wait?: boolean;
 };
@@ -241,6 +255,8 @@ type CompileState = {
   camera?: FinalCameraState;
   tint?: FinalTintState;
   background?: { readonly resourceId: string; readonly flowPercent: number };
+  /** 왜곡 비트의 끝 상태. clear 뒤에 다시 건 축만 axes 에 남는다. */
+  distort?: { readonly clear: boolean; readonly axes: Partial<Record<"wave" | "mosaic" | "rotate", number | undefined>> };
 };
 
 /**
@@ -379,6 +395,8 @@ function compileBeat(
       return compileFadeBeat(beat, options.forceNonBlocking);
     case "tint":
       return compileTintBeat(beat, state, options.forceNonBlocking);
+    case "distort":
+      return compileDistortBeat(beat, state, options.forceNonBlocking);
     case "background":
       return compileBackgroundBeat(beat, state, options.forceNonBlocking);
     case "flash":
@@ -627,6 +645,25 @@ function compileTintBeat(beat: CutsceneTintBeat, state: CompileState, forceNonBl
   return commands;
 }
 
+function distortFields(effect: CutsceneDistortBeat["effect"], amount: number | undefined, ms: number): M2CommandFields {
+  return m2Fields({
+    effect: effect === "clear" ? "clearDistortion" : effect,
+    value: effect === "clear" || amount === undefined || !Number.isFinite(amount) ? "" : String(amount),
+    durationMs: ms,
+  });
+}
+
+function compileDistortBeat(beat: CutsceneDistortBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
+  const ms = durationMs(beat.durationMs, 0);
+  const effect = beat.effect;
+  // 정리 단계가 다시 걸 수 있게 축별 마지막 값을 적어 둔다(clear 는 전부 지운다).
+  if (effect === "clear") state.distort = { clear: true, axes: {} };
+  else state.distort = { clear: state.distort?.clear ?? false, axes: { ...state.distort?.axes, [effect]: beat.amount } };
+  const commands: Command[] = [m2Command("Screen Effect", distortFields(effect, beat.amount, ms))];
+  if (!forceNonBlocking && beat.wait === true && ms > 0) commands.push({ kind: "wait", ms });
+  return commands;
+}
+
 function backgroundFlowPercent(beat: CutsceneBackgroundBeat): number {
   const value = Number(beat.flowPercent ?? 100);
   return Number.isFinite(value) ? Math.min(MAP_BACKGROUND_FLOW_PERCENT_LIMIT, Math.max(0, Math.round(value))) : 100;
@@ -675,6 +712,7 @@ function parallelWaitMs(beat: CutsceneBeat): number {
   if (beat.kind === "camera" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "fade" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "tint" && beat.wait === true) return durationMs(beat.durationMs, 0);
+  if (beat.kind === "distort" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "background" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "wait") return waitBeatMs(beat);
   if (beat.kind === "parallel") return Math.max(0, ...beat.beats.map(parallelWaitMs));
@@ -693,6 +731,13 @@ function cleanupCommands(state: CompileState): Command[] {
   }
   if (state.tint) {
     commands.push(m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", durationMs: 0 }));
+  }
+  if (state.distort) {
+    // 건너뛰어도 끝 상태가 같아야 한다 — 전환 없이 마지막 왜곡을 다시 건다.
+    if (state.distort.clear) commands.push(m2Command("Screen Effect", distortFields("clear", undefined, 0)));
+    for (const [axis, amount] of Object.entries(state.distort.axes)) {
+      commands.push(m2Command("Screen Effect", distortFields(axis as "wave" | "mosaic" | "rotate", amount, 0)));
+    }
   }
   if (state.background) {
     // 건너뛰어도 끝 상태는 같아야 한다 — 전환 없이 마지막 흐름·그림을 다시 건다.
@@ -897,6 +942,7 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "music",
   "fade",
   "tint",
+  "distort",
   "background",
   "flash",
   "shake",

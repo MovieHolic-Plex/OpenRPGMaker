@@ -178,7 +178,7 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     kind: {
       type: "string",
       // text·narrate 는 say 의 별칭 — 받아서 say 로 옮긴다(이벤트 명령 모양 {kind:"text",body} 가 enum 에서 통째로 튕기던 문제).
-      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "background", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
+      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
     },
     // 진행 비트: switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId}
     switchId: { type: "string", description: "switch 비트: 켤 전역 스위치 id" },
@@ -220,6 +220,16 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     },
     offsetX: { type: "integer" },
     offsetY: { type: "integer" },
+    // 화면 왜곡 비트 — 수중·꿈·시간 왜곡·회상 진입. 끄려면 effect "clear".
+    effect: {
+      type: "string",
+      enum: ["wave", "mosaic", "rotate", "clear"],
+      description: "distort 비트 전용: wave=줄마다 흔들리는 물결, mosaic=모자이크 블록, rotate=화면 기울기, clear=왜곡 모두 끄기. 컷신이 끝나도 남으므로 끝에 clear 를 넣을지 정한다.",
+    },
+    amount: {
+      type: "number",
+      description: "distort 비트 전용 세기: wave px 0~16(기본 4), mosaic 블록 px 0~32(기본 8), rotate 도 -180~180(기본 8). 0 이면 그 효과만 끈다.",
+    },
     easing: {
       type: "string",
       enum: ["linear", "easeIn", "easeOut", "easeInOut"],
