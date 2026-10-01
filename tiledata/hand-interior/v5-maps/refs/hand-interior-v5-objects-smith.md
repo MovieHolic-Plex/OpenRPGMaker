@@ -1,4 +1,4 @@
-# 가구 사전 — 대장간 (8종)
+# 가구 사전 — 대장간 (12종)
 
 cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구(막힘) · wall 북쪽 벽 앞(막힘) · hang 벽면 윗줄 걸이(★) · flat 밟는 바닥 무늬(2층).
 
@@ -10,7 +10,11 @@ cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구
 - `weapon barrel` 무기 통 — 칼·창이 꽂힌 통. 대장간·무기점 바닥. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장·큰 홀·연회장 · 짝: shield, grindstone, weapon rack
 - `tool wall` 공구 걸이 — 망치·편자·집게를 건 벽 판. 대장간 벽면. 벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장·정비소 · 짝: quench barrel, forge, anvil
 - `coal bin` 숯 통 — 숯이 담긴 나무 통. 대장간 화로 바로 옆. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 대장간·무기점·대장간 작업장·현관·입구 홀 · 짝: quench barrel, forge, anvil
+- `bow rack` 활 걸이 — 벽면 윗줄에 거는 활 두 자루와 화살통. 사냥꾼 집·무기점.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 무기점·사냥꾼
+- `shield wall` 방패 진열 — 벽면 윗줄에 문장 방패 둘을 나란히. 무기점·성 홀.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 무기점·알현실
+- `spear rack` 창꽂이 — 창 서너 자루를 꽂은 둥근 나무 통(창날이 32px 솟는다). 무기고·성문 초소 구석.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 무기점·무기고·병영
+- `sword rack` 검 진열대 — 검 세 자루를 칼끝이 위로 가게 세운 나무 진열대. 무기점·대장간 가게 북쪽 벽 앞.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 무기점·대장간·무기고
 
 ```json
-[{"id":"anvil","ko":"모루","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3556,3]]},{"id":"forge","ko":"용광로","kind":"wall","w":2,"h":1,"overhangPx":16,"animated":true,"cells":[[0,-1,3564,3],[1,-1,3576,3],[0,0,3588,3],[1,0,3600,3]]},{"id":"grindstone","ko":"숫돌","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3612,3]]},{"id":"quench barrel","ko":"담금질 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3613,3]]},{"id":"armor stand","ko":"갑옷 거치대","kind":"floor","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,3614,3],[0,0,3615,3]]},{"id":"weapon barrel","ko":"무기 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3616,3]]},{"id":"tool wall","ko":"공구 걸이","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,3617,3],[0,1,3618,3]]},{"id":"coal bin","ko":"숯 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4112,3]]}]
+[{"id":"anvil","ko":"모루","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3556,3]]},{"id":"forge","ko":"용광로","kind":"wall","w":2,"h":1,"overhangPx":16,"animated":true,"cells":[[0,-1,3564,3],[1,-1,3576,3],[0,0,3588,3],[1,0,3600,3]]},{"id":"grindstone","ko":"숫돌","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3612,3]]},{"id":"quench barrel","ko":"담금질 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3613,3]]},{"id":"armor stand","ko":"갑옷 거치대","kind":"floor","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,3614,3],[0,0,3615,3]]},{"id":"weapon barrel","ko":"무기 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3616,3]]},{"id":"tool wall","ko":"공구 걸이","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,3617,3],[0,1,3618,3]]},{"id":"coal bin","ko":"숯 통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4112,3]]},{"id":"bow rack","ko":"활 걸이","kind":"hang","w":2,"h":0,"overhangPx":0,"cells":[[0,0,5122,3],[1,0,5123,3],[0,1,5124,3],[1,1,5125,3]]},{"id":"shield wall","ko":"방패 진열","kind":"hang","w":2,"h":0,"overhangPx":0,"cells":[[0,0,5167,3],[1,0,5168,3],[0,1,5124,3],[1,1,5125,3]]},{"id":"spear rack","ko":"창꽂이","kind":"floor","w":1,"h":1,"overhangPx":32,"cells":[[0,-2,5173,3],[0,-1,5174,3],[0,0,5175,3]]},{"id":"sword rack","ko":"검 진열대","kind":"wall","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,5180,3],[0,0,5181,3]]}]
 ```

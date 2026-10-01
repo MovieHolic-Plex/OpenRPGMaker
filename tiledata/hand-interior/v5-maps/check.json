@@ -12,7 +12,7 @@
   "unreached": [],
   "reachable": 72,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8827
+  "sameAsUnfoldedOriginal": 0.8829
  },
  {
   "map": "pharmacy",
@@ -27,7 +27,7 @@
   "unreached": [],
   "reachable": 67,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8741
+  "sameAsUnfoldedOriginal": 0.8749
  },
  {
   "map": "fish",
@@ -72,7 +72,7 @@
   "unreached": [],
   "reachable": 55,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8545
+  "sameAsUnfoldedOriginal": 0.8548
  },
  {
   "map": "chapel",
@@ -87,7 +87,7 @@
   "unreached": [],
   "reachable": 241,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8601
+  "sameAsUnfoldedOriginal": 0.8603
  },
  {
   "map": "scholar",
@@ -117,7 +117,7 @@
   "unreached": [],
   "reachable": 76,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8896
+  "sameAsUnfoldedOriginal": 0.8894
  },
  {
   "map": "tavern",
@@ -132,7 +132,7 @@
   "unreached": [],
   "reachable": 92,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8591
+  "sameAsUnfoldedOriginal": 0.8598
  },
  {
   "map": "manor_1f",
@@ -147,7 +147,7 @@
   "unreached": [],
   "reachable": 178,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8906
+  "sameAsUnfoldedOriginal": 0.891
  },
  {
   "map": "manor_2f",
@@ -192,7 +192,7 @@
   "unreached": [],
   "reachable": 144,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8762
+  "sameAsUnfoldedOriginal": 0.8763
  },
  {
   "map": "dwarf",
@@ -207,7 +207,7 @@
   "unreached": [],
   "reachable": 169,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8429
+  "sameAsUnfoldedOriginal": 0.843
  },
  {
   "map": "elf",
@@ -222,7 +222,7 @@
   "unreached": [],
   "reachable": 138,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8008
+  "sameAsUnfoldedOriginal": 0.8009
  },
  {
   "map": "mead",
@@ -237,7 +237,7 @@
   "unreached": [],
   "reachable": 182,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8106
+  "sameAsUnfoldedOriginal": 0.811
  },
  {
   "map": "throne",
@@ -252,7 +252,7 @@
   "unreached": [],
   "reachable": 178,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8807
+  "sameAsUnfoldedOriginal": 0.8818
  },
  {
   "map": "tower",
@@ -265,9 +265,9 @@
   "walkMismatch": 0,
   "walkMismatchCells": [],
   "unreached": [],
-  "reachable": 86,
+  "reachable": 85,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.867
+  "sameAsUnfoldedOriginal": 0.8688
  },
  {
   "map": "dungeon",
@@ -282,7 +282,7 @@
   "unreached": [],
   "reachable": 78,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.7526
+  "sameAsUnfoldedOriginal": 0.7552
  },
  {
   "map": "mine",
@@ -297,7 +297,7 @@
   "unreached": [],
   "reachable": 123,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.6956
+  "sameAsUnfoldedOriginal": 0.6975
  },
  {
   "map": "magitek",
@@ -327,7 +327,7 @@
   "unreached": [],
   "reachable": 166,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.873
+  "sameAsUnfoldedOriginal": 0.8729
  },
  {
   "map": "casino",
@@ -357,7 +357,7 @@
   "unreached": [],
   "reachable": 83,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.7971
+  "sameAsUnfoldedOriginal": 0.7973
  },
  {
   "map": "narshe",
@@ -387,6 +387,6 @@
   "unreached": [],
   "reachable": 72,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8211
+  "sameAsUnfoldedOriginal": 0.8216
  }
 ]

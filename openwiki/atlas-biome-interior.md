@@ -18,7 +18,7 @@
 | 천장 | 기본+7종 × 32 | 비트 1 남쪽 안 · 2 북쪽 안 · 4 서쪽 안 · 8 동쪽 안 · 16 북쪽 공허 |
 | 바닥 | 27종 × (열×줄×4) | 표면마다 **짜임 주기**(판자·줄눈 간격, 64px 이상 배수)로 접어 열×줄 위치 × 그림자 4(없음·벽면 밑 접촉·서쪽·둘 다). 사양 `floors[id].cols/rows` |
 | 벽면 | 19종 × (열×4) | 윗줄/아랫줄 × 열(기둥·지지목 간격의 배수: 벨벳 80·광산 96·리벳 96·룬 240…) × 서쪽 그림자. 사양 `walls[id].cols` |
-| 가구 | 381종 | 발밑 칸 = 막힘 x, 솟은 칸·걸이 = ★, 바닥 무늬·계단 = o. 움직이는 칸은 12프레임 `animationStrips`(10fps) |
+| 가구 | 414종(v5 381 + 함께 쓰기 변형 5 + 새 기물 28, 2026-10-01 굽기 2판) | 발밑 칸 = 막힘 x, 솟은 칸·걸이 = ★, 바닥 무늬·계단 = o. 움직이는 칸은 12프레임 `animationStrips`(10fps) |
 | 자동 타일 | 탁자 9(dining·work·desk·display·counter·kcounter·sideboard·tea·felt), 줄 11(깔개 6·선로·울타리·창살·제단 난간·증기관), 단 5 | 줄은 안쪽 모서리가 여럿 겹친 조합까지 |
 | 탁상 물건 | 119 | 가구 윗면 4층, 막힘 x |
 | 예제 합성 | 352 | 탁상 물건을 윗면 안 위치까지 얹은 가구·창 빛 바닥(예제 맵만) |
@@ -114,6 +114,7 @@ v5 맵을 바닥 한 칸으로 채우지 않고 `handInteriorStructure` 로 **�
   바뀐 방은 META 의 items·정답 격자(`room4.check` grid)를 다시 써서 `tiledata/hand-interior/v5-maps/buildings.json` 으로 내보낸다 — `prepare-references.mts` 가 이것으로 도구 인자를 만든다(예제 도구 오류 0).
   발밑 칸 중 그림이 없는 칸(설교단 계단 귀퉁이)은 `cells` 로 빼서 걷게 둔다.
 - 「함께 쓰기」 변형: `<원 id>#2…` 로 가구 표에 더한다(무대 배경판 5개). 가구 381 → 386종.
+- 굽기 2판(2026-10-01): 3/4 재작도 64종(v34-redo.json) + 변형 몸통 맞추기 71종(variant-bodies.json) + 새 기물 28종. 사용자가 「3/4 만 지키고 알아서 골라라」로 위임해 감독이 고름(picks 이벤트 client=agent-v34). 386 → 414종, 예제 26곳 BAD 0·예제 도구 오류 0.
 - 건너뛰는 것: 선택 없음·v5 유지, 크기를 바꾸라는 메모 뒤 새 크기 후보를 아직 고르지 않은 것(마법서 독서대), 애니메이션 기물. 목록은 `tiledata/hand-interior/pick/out/baked.json`.
 - 3/4 재작도 후보(w90·w91, 54종)는 아직 고르지 않아 들어가지 않았다. 고른 뒤 `python3 scripts/content/hand-interior/build_tileset.py && bun scripts/content/hand-interior/prepare-references.mts` 를 다시 돌린다.
 

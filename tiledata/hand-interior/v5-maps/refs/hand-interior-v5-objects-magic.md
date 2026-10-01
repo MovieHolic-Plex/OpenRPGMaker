@@ -8,5 +8,5 @@ cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구
 - `treasure pile` 보물 더미 — 금화·보석 더미(2칸). 보물고·용의 둥지. 출입문 칸과 문으로 이어지는 통로를 막지 않는다 · 쓰는 방: 마법사 방·보물고·보물 창고 · 짝: shelf:gem+gemr, shelf:coins, ore pile
 
 ```json
-[{"id":"crystal ball","ko":"수정구","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3703,3]]},{"id":"spellbook stand","ko":"마법서 받침","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3704,3]]},{"id":"magic circle","ko":"마법진","kind":"flat","w":2,"h":2,"overhangPx":0,"cells":[[0,0,3705,2],[1,0,3706,2],[0,1,3707,2],[1,1,3708,2]]},{"id":"treasure pile","ko":"보물 더미","kind":"floor","w":2,"h":1,"overhangPx":0,"cells":[[0,0,3709,3],[1,0,3710,3]]}]
+[{"id":"crystal ball","ko":"수정구","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,3703,3]]},{"id":"spellbook stand","ko":"마법서 받침","kind":"floor","w":2,"h":1,"overhangPx":16,"cells":[[0,-1,3704,3],[1,-1,3705,3],[0,0,3706,3],[1,0,3707,3]]},{"id":"magic circle","ko":"마법진","kind":"flat","w":2,"h":2,"overhangPx":0,"cells":[[0,0,3708,2],[1,0,3709,2],[0,1,3710,2],[1,1,3711,2]]},{"id":"treasure pile","ko":"보물 더미","kind":"floor","w":2,"h":1,"overhangPx":0,"cells":[[0,0,3712,3],[1,0,3713,3]]}]
 ```

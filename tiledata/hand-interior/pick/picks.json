@@ -19,14 +19,19 @@
   "choice": "w21-G",
   "note": ""
  },
+ "anchor": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w72-A",
+  "note": ""
+ },
  "anvil": {
   "at": "2026-09-30T05:38:08+09:00",
   "choice": "w7-B",
   "note": ""
  },
  "apothecary drawers": {
-  "at": "2026-09-30T05:02:41+09:00",
-  "choice": "w5-C",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w42-A",
   "note": ""
  },
  "armchair": {
@@ -35,8 +40,8 @@
   "note": ""
  },
  "armor stand": {
-  "at": "2026-09-30T04:58:26+09:00",
-  "choice": "w3-A",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w52-A",
   "note": ""
  },
  "balance scale": {
@@ -44,9 +49,19 @@
   "choice": "w6-C",
   "note": ""
  },
+ "banner blue": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
  "banner green": {
   "at": "2026-09-30T06:05:53+09:00",
   "choice": "w8-C",
+  "note": ""
+ },
+ "banner red": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w63-A",
   "note": ""
  },
  "bar stool": {
@@ -64,14 +79,139 @@
   "choice": "v5",
   "note": ""
  },
+ "basket:apple": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:baguette": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:bun": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:cabbage": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:cake": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:carrot": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:egg": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:eggplant": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:fish": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:fish+ice": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:flower": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:grape": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
  "basket:herb": {
   "at": "2026-09-30T05:39:09+09:00",
   "choice": "v5",
   "note": ""
  },
+ "basket:jar+jarb+jarg": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:lemon": {
+  "at": "2026-10-01T15:07:37+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:loaf": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
  "basket:mushroom": {
   "at": "2026-09-30T06:06:05+09:00",
   "choice": "w9-B",
+  "note": ""
+ },
+ "basket:onion": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:pie": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:potato": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:potion+potionb+potiong": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:pumpkin": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:shell": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:tomato": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:vial+flask": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:wool": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
+  "note": ""
+ },
+ "basket:yarn+yarnb+yarny": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w60-A",
   "note": ""
  },
  "bathtub": {
@@ -104,14 +244,29 @@
   "choice": "v5",
   "note": ""
  },
+ "birdcage": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w73-A",
+  "note": ""
+ },
+ "blackboard": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w71-A",
+  "note": ""
+ },
  "bookshelf 1w": {
-  "at": "2026-09-30T04:57:35+09:00",
-  "choice": "w2-C",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w41-A",
   "note": ""
  },
  "bookshelf 2w": {
-  "at": "2026-09-30T06:20:36+09:00",
-  "choice": "w4-C",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w41-A",
+  "note": ""
+ },
+ "bookshelf 3w": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w41-A",
   "note": ""
  },
  "bottles": {
@@ -119,14 +274,29 @@
   "choice": "w7-B",
   "note": ""
  },
+ "bow rack": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w70-A",
+  "note": ""
+ },
+ "bread oven": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w56-A",
+  "note": ""
+ },
  "bread shelf": {
-  "at": "2026-09-30T05:38:40+09:00",
-  "choice": "w7-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w41-A",
   "note": ""
  },
  "bread shelf baguette": {
-  "at": "2026-09-30T06:05:45+09:00",
-  "choice": "w8-A",
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w41-A",
+  "note": ""
+ },
+ "bread shelf pie": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
   "note": ""
  },
  "broom and bucket": {
@@ -134,14 +304,69 @@
   "choice": "w9-C",
   "note": ""
  },
+ "cabinet:bolt+boltg+boltr": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:book+bookb+bookg": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
  "cabinet:bottle+bottler+bottley": {
-  "at": "2026-09-30T05:14:45+09:00",
-  "choice": "v5",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:bun": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
   "note": ""
  },
  "cabinet:candle": {
-  "at": "2026-09-30T06:05:34+09:00",
-  "choice": "w8-C",
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w47-A",
+  "note": ""
+ },
+ "cabinet:cheese": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:gem+gemr": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:jar+jarb+jarg": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:loaf": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:pie": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:potion+potionb+potiong": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:toy": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
+  "note": ""
+ },
+ "cabinet:vial+flask": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w40-A",
   "note": ""
  },
  "cake display case": {
@@ -175,8 +400,8 @@
   "note": ""
  },
  "choir stall": {
-  "at": "2026-09-30T05:37:15+09:00",
-  "choice": "w6-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w45-A",
   "note": ""
  },
  "chopping block": {
@@ -185,8 +410,8 @@
   "note": ""
  },
  "clock": {
-  "at": "2026-09-30T05:41:24+09:00",
-  "choice": "w10-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w42-A",
   "note": ""
  },
  "coal bin": {
@@ -199,34 +424,44 @@
   "choice": "w8-C",
   "note": ""
  },
+ "coffin": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w73-A",
+  "note": ""
+ },
+ "coin pile": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w72-A",
+  "note": ""
+ },
  "column dwarf": {
-  "at": "2026-09-30T05:27:34+09:00",
-  "choice": "w5-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w51-A",
   "note": ""
  },
  "column live": {
-  "at": "2026-09-30T05:40:58+09:00",
-  "choice": "v5",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w51-A",
   "note": ""
  },
  "column marble": {
-  "at": "2026-09-30T05:14:26+09:00",
-  "choice": "w1-B",
+  "at": "2026-10-01T13:58:49+09:00",
+  "choice": "w51-A",
   "note": ""
  },
  "column steel": {
-  "at": "2026-09-30T06:21:13+09:00",
-  "choice": "w5-C",
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w51-A",
   "note": ""
  },
  "column stone": {
-  "at": "2026-09-30T05:59:25+09:00",
-  "choice": "v5",
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w51-A",
   "note": ""
  },
  "column wood": {
-  "at": "2026-09-30T05:14:56+09:00",
-  "choice": "w1-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w51-A",
   "note": ""
  },
  "conductor podium": {
@@ -236,8 +471,8 @@
   "noteAt": "2026-09-30T06:26:38+09:00"
  },
  "confessional": {
-  "at": "2026-09-30T06:16:51+09:00",
-  "choice": "w22-G",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w45-A",
   "note": ""
  },
  "cradle": {
@@ -247,8 +482,8 @@
   "noteAt": "2026-09-30T06:07:30+09:00"
  },
  "crate": {
-  "at": "2026-09-30T05:03:13+09:00",
-  "choice": "v5",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w42-A",
   "note": ""
  },
  "crate:potato": {
@@ -286,14 +521,54 @@
   "choice": "w23-D",
   "note": ""
  },
+ "dining 1x1": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
  "dining 2x1": {
   "at": "2026-09-30T04:56:20+09:00",
   "choice": "pilot-B",
   "note": ""
  },
+ "dining 2x2": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "dining 3x1": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "dining 3x2": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "dining 4x1": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "dining 4x2": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
  "dish rack": {
   "at": "2026-09-30T05:39:55+09:00",
   "choice": "w9-B",
+  "note": ""
+ },
+ "display apple": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "display bread": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w61-A",
   "note": ""
  },
  "display potion": {
@@ -302,7 +577,7 @@
   "note": ""
  },
  "doormat": {
-  "at": "2026-09-30T06:13:15+09:00",
+  "at": "2026-10-01T15:10:52+09:00",
   "choice": "w25-F",
   "note": "발깔개를 2x1 로 만들고.. 3번이 좀 괜찮은듯.",
   "noteAt": "2026-09-30T05:14:18+09:00"
@@ -322,6 +597,11 @@
   "choice": "v5",
   "note": ""
  },
+ "dresser": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w71-A",
+  "note": ""
+ },
  "elven bed": {
   "at": "2026-09-30T06:00:22+09:00",
   "choice": "v5",
@@ -333,13 +613,18 @@
   "note": ""
  },
  "fabric bolt rack": {
-  "at": "2026-09-30T05:28:24+09:00",
-  "choice": "w6-C",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w41-A",
   "note": ""
  },
  "feed trough": {
   "at": "2026-09-30T05:26:00+09:00",
   "choice": "w4-B",
+  "note": ""
+ },
+ "fireplace": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w44-A",
   "note": ""
  },
  "firewood bundle": {
@@ -348,13 +633,13 @@
   "note": ""
  },
  "firewood rack": {
-  "at": "2026-09-30T06:14:05+09:00",
-  "choice": "w12-D",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w49-A",
   "note": ""
  },
  "firewood rack 2w": {
-  "at": "2026-09-30T06:57:56+09:00",
-  "choice": null,
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w49-A",
   "note": "눕혀서 쌓인 느낌으로",
   "noteAt": "2026-09-30T06:57:56+09:00"
  },
@@ -363,15 +648,35 @@
   "choice": "v5",
   "note": ""
  },
+ "fish tank": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w44-A",
+  "note": ""
+ },
  "fishing net": {
   "at": "2026-09-30T06:57:06+09:00",
   "choice": "w33-B",
   "note": "좀 더 큰 3x2 사이즈로",
   "noteAt": "2026-09-30T06:25:37+09:00"
  },
+ "folding screen": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w72-A",
+  "note": ""
+ },
+ "forge": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w44-A",
+  "note": ""
+ },
  "fur rug": {
   "at": "2026-09-30T05:03:33+09:00",
   "choice": "w7-B",
+  "note": ""
+ },
+ "globe": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w71-A",
   "note": ""
  },
  "green rug": {
@@ -384,14 +689,49 @@
   "choice": "v5",
   "note": ""
  },
+ "hammock": {
+  "at": "2026-10-01T15:07:38+09:00",
+  "choice": "w72-A",
+  "note": ""
+ },
+ "hang:fish": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
+ "hang:fishr": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
+ "hang:flower": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
  "hang:ham": {
   "at": "2026-09-30T05:22:56+09:00",
   "choice": "w4-A",
   "note": ""
  },
+ "hang:herb": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
+ "hang:mushroom": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
  "hang:onion": {
   "at": "2026-09-30T05:59:47+09:00",
   "choice": "w5-C",
+  "note": ""
+ },
+ "hang:sausage": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w63-A",
   "note": ""
  },
  "hanging pans": {
@@ -400,13 +740,13 @@
   "note": ""
  },
  "hay bale": {
-  "at": "2026-09-30T05:38:25+09:00",
-  "choice": "w7-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w44-A",
   "note": ""
  },
  "herb drying rack": {
-  "at": "2026-09-30T05:38:17+09:00",
-  "choice": "w7-A",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w43-A",
   "note": ""
  },
  "holy water font": {
@@ -425,8 +765,13 @@
   "note": ""
  },
  "keg rack": {
-  "at": "2026-09-30T05:22:46+09:00",
-  "choice": "w4-A",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w48-A",
+  "note": ""
+ },
+ "key ring hook": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w70-A",
   "note": ""
  },
  "kitchen sink": {
@@ -439,9 +784,14 @@
   "choice": "w5-C",
   "note": ""
  },
+ "library ladder": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w74-A",
+  "note": ""
+ },
  "loom": {
-  "at": "2026-09-30T06:20:50+09:00",
-  "choice": "w4-B",
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w43-A",
   "note": ""
  },
  "lute": {
@@ -460,14 +810,19 @@
   "note": "사람은 타고잇지 않는 w26-F 버전으로",
   "noteAt": "2026-09-30T06:17:44+09:00"
  },
+ "magitek engine": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w46-A",
+  "note": ""
+ },
  "mannequin": {
   "at": "2026-09-30T05:37:40+09:00",
   "choice": "w7-C",
   "note": ""
  },
  "meat hooks": {
-  "at": "2026-09-30T06:20:02+09:00",
-  "choice": "v5",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w48-A",
   "note": ""
  },
  "mine cart": {
@@ -505,6 +860,11 @@
   "choice": "w27-H",
   "note": ""
  },
+ "patient bed": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w74-A",
+  "note": ""
+ },
  "peel rack": {
   "at": "2026-09-30T05:56:14+09:00",
   "choice": "w4-C",
@@ -516,18 +876,18 @@
   "note": ""
  },
  "pew E2": {
-  "at": "2026-09-30T06:15:58+09:00",
-  "choice": "w13-D",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w45-A",
   "note": ""
  },
  "pew E3": {
-  "at": "2026-09-30T06:25:47+09:00",
-  "choice": "w8-B",
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w45-A",
   "note": ""
  },
  "piano": {
-  "at": "2026-09-30T05:25:11+09:00",
-  "choice": "w4-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w42-A",
   "note": ""
  },
  "pick rack": {
@@ -541,8 +901,8 @@
   "note": ""
  },
  "pipe organ": {
-  "at": "2026-09-30T06:19:56+09:00",
-  "choice": "w2-A",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w50-A",
   "note": ""
  },
  "pipe rack": {
@@ -560,9 +920,19 @@
   "choice": "w1-C",
   "note": ""
  },
+ "portrait large": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w71-A",
+  "note": ""
+ },
  "pot": {
   "at": "2026-09-30T05:55:44+09:00",
   "choice": "v5",
+  "note": ""
+ },
+ "potted cactus": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w63-A",
   "note": ""
  },
  "potted fern": {
@@ -575,14 +945,24 @@
   "choice": "w3-B",
   "note": ""
  },
+ "potted sapling": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
  "powder kegs": {
   "at": "2026-09-30T05:40:04+09:00",
   "choice": "w9-B",
   "note": ""
  },
+ "prison cot": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w70-A",
+  "note": ""
+ },
  "proofing rack": {
-  "at": "2026-09-30T05:54:07+09:00",
-  "choice": "w1-C",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w43-A",
   "note": ""
  },
  "pulpit": {
@@ -604,6 +984,11 @@
  "reredos": {
   "at": "2026-09-30T05:15:55+09:00",
   "choice": "w1-C",
+  "note": ""
+ },
+ "rope coil": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w72-A",
   "note": ""
  },
  "round arch": {
@@ -637,8 +1022,8 @@
   "note": ""
  },
  "royal chest": {
-  "at": "2026-09-30T05:28:10+09:00",
-  "choice": "w6-C",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w42-A",
   "note": ""
  },
  "rug red": {
@@ -646,9 +1031,19 @@
   "choice": "w3-C",
   "note": ""
  },
+ "rune stone": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w45-A",
+  "note": ""
+ },
  "runner": {
   "at": "2026-09-30T06:07:38+09:00",
   "choice": "v5",
+  "note": ""
+ },
+ "sack": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w60-A",
   "note": ""
  },
  "sack:flour": {
@@ -666,6 +1061,16 @@
   "choice": "w26-D",
   "note": ""
  },
+ "safe": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w72-A",
+  "note": ""
+ },
+ "sarcophagus": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w73-A",
+  "note": ""
+ },
  "scenery flat": {
   "at": "2026-09-30T06:55:53+09:00",
   "choice": "w9-C",
@@ -678,9 +1083,14 @@
    "w28-H"
   ]
  },
+ "school desk": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w71-A",
+  "note": ""
+ },
  "scroll rack": {
-  "at": "2026-09-30T04:58:06+09:00",
-  "choice": "w2-C",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w48-A",
   "note": ""
  },
  "shackles": {
@@ -693,6 +1103,26 @@
   "choice": "w4-B",
   "note": ""
  },
+ "shelf:bolt+boltg+boltr": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:book+bookb+bookg": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:bottle+bottler+bottley": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:candle": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
  "shelf:cheese": {
   "at": "2026-09-30T05:25:21+09:00",
   "choice": "w4-C",
@@ -703,9 +1133,89 @@
   "choice": "w10-C",
   "note": ""
  },
+ "shelf:flower": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:gem+gemr": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:herb": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:ingot+ingotg": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:jar+jarb+jarg": {
+  "at": "2026-10-01T15:07:39+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:mushroom": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:potion+potionb+potiong": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:scroll": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:skull+crystal": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:toy": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:vial+flask": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
+ "shelf:yarn+yarnb+yarny": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w61-A",
+  "note": ""
+ },
  "shield": {
   "at": "2026-09-30T05:20:23+09:00",
   "choice": "w3-B",
+  "note": ""
+ },
+ "shield wall": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w70-A",
+  "note": ""
+ },
+ "ship wheel": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w72-A",
+  "note": ""
+ },
+ "skull pile": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w73-A",
+  "note": ""
+ },
+ "sleeping cat": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w74-A",
   "note": ""
  },
  "slop bucket": {
@@ -713,14 +1223,24 @@
   "choice": "w3-C",
   "note": ""
  },
+ "slot machine": {
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w46-A",
+  "note": ""
+ },
  "sofa": {
   "at": "2026-09-30T05:55:15+09:00",
   "choice": "v5",
   "note": ""
  },
+ "spear rack": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w70-A",
+  "note": ""
+ },
  "spellbook stand": {
-  "at": "2026-09-30T06:35:36+09:00",
-  "choice": "w2-C",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w55-A",
   "note": "흠... 2x1 사이즈가 나을듯..",
   "noteAt": "2026-09-30T06:35:36+09:00"
  },
@@ -770,9 +1290,14 @@
   "choice": "w24-D",
   "note": ""
  },
+ "statue": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w74-A",
+  "note": ""
+ },
  "stone throne": {
-  "at": "2026-09-30T06:22:26+09:00",
-  "choice": "w6-C",
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w52-A",
   "note": ""
  },
  "stool": {
@@ -780,14 +1305,74 @@
   "choice": "v5",
   "note": ""
  },
+ "stove": {
+  "at": "2026-10-01T13:58:52+09:00",
+  "choice": "w44-A",
+  "note": ""
+ },
  "straw bed": {
-  "at": "2026-09-30T06:14:20+09:00",
-  "choice": "w25-F",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w44-A",
+  "note": ""
+ },
+ "straw pile": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w70-A",
+  "note": ""
+ },
+ "sword rack": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w70-A",
   "note": ""
  },
  "table:bolt+yarn": {
-  "at": "2026-09-30T06:25:17+09:00",
-  "choice": "w7-B",
+  "at": "2026-10-01T13:58:51+09:00",
+  "choice": "w46-A",
+  "note": ""
+ },
+ "table:book+scroll": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "table:cake+pie": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "table:fish+fishr": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "table:gem+coins": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "table:loaf+bun": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "table:mug+bottle": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "table:plate+cup": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "table:potion+flask": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
+  "note": ""
+ },
+ "table:steak+ham": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w62-A",
   "note": ""
  },
  "tailor mirror": {
@@ -810,6 +1395,16 @@
   "choice": "w2-B",
   "note": ""
  },
+ "tall vase teal": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
+ "tall vase yellow": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w63-A",
+  "note": ""
+ },
  "tapestry": {
   "at": "2026-09-30T05:14:36+09:00",
   "choice": "w1-B",
@@ -827,13 +1422,13 @@
   "noteAt": "2026-09-30T05:41:11+09:00"
  },
  "throne": {
-  "at": "2026-09-30T06:55:44+09:00",
-  "choice": "w30-E",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w52-A",
   "note": ""
  },
  "timber prop": {
-  "at": "2026-09-30T05:38:33+09:00",
-  "choice": "w7-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w53-B",
   "note": ""
  },
  "tool wall": {
@@ -846,14 +1441,19 @@
   "choice": "w3-C",
   "note": ""
  },
+ "trapdoor": {
+  "at": "2026-10-01T15:07:40+09:00",
+  "choice": "w73-A",
+  "note": ""
+ },
  "treasure pile": {
   "at": "2026-09-30T06:21:03+09:00",
   "choice": "w5-C",
   "note": ""
  },
  "vanity mirror": {
-  "at": "2026-09-30T05:15:39+09:00",
-  "choice": "w1-B",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w47-A",
   "note": ""
  },
  "wall clock": {
@@ -867,8 +1467,8 @@
   "note": ""
  },
  "wardrobe": {
-  "at": "2026-09-30T05:04:46+09:00",
-  "choice": "w9-A",
+  "at": "2026-10-01T13:58:50+09:00",
+  "choice": "w42-A",
   "note": ""
  },
  "washbasin": {

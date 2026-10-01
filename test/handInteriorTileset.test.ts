@@ -20,7 +20,7 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     expect(t.family).toBe("oprn-atlas");
     expect(t.count).toBe(ATLAS_BIOME_INTERIOR_COUNT);
     expect(t.tilesPerRow).toBe(48);
-    expect(t.structureKits!.length).toBe(386);
+    expect(t.structureKits!.length).toBe(414);   // v5 381 + 함께 쓰기 변형 5 + 새 기물 28(new/items.json)
     expect(t.structureKits!.every((k) => k.id.startsWith("hand-interior:"))).toBe(true);
     expect(t.referenceDocuments!.map((c) => c.id)).toContain("hand-interior-v5");
     // strips are 12 frames and never cross a sheet row
