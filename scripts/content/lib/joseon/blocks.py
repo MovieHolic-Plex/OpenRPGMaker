@@ -164,8 +164,54 @@ def _plank_door(c, y_off, ytop, lower=False):
         for x in range(3, T): c.put(x, 11, W[2])
 
 
+def thatch_wall_block(half, kind):
+    """초가 전용 황토 회벽, 작은 창, 널문. 기와·정자 블록과 분리."""
+    c = Cv(T, T)
+    E, P, W = RGB['earth'], RGB['plaster'], RGB['wood']
+    for y in range(T):
+        for x in range(T):
+            col = P[4]
+            if rnd(x // 2, y // 2, 41) < .035: col = E[6]
+            c.put(x, y, col)
+    if half == 'u':
+        c.rect(0, 0, T, 3, E[3]); c.hl(0, T, 3, W[4])
+        c.hl(0, T, 4, W[3])
+        for y in (5, 6):
+            for x in range(T):
+                if (x + y) % 2 == 0: c.put(x, y, E[4])
+        if kind == 'w':
+            c.rect(5, 8, 13, 16, W[3]); c.rect(6, 9, 12, 15, P[5])
+            c.rect(8, 9, 10, 15, W[4]); c.hl(6, 12, 12, W[4])
+    else:
+        if kind == 'f': c.rect(4, 0, 14, 2, W[4])
+        c.hl(0, T, 14, E[3]); c.hl(0, T, 15, E[2])
+    if kind == 'd':
+        y0, y1 = (7, 16) if half == 'u' else (0, 14)
+        c.rect(4, y0, 14, y1, W[3])
+        c.rect(5, y0 + (1 if half == 'u' else 0), 13, y1, W[4])
+        c.vl(8, y0, y1, W[3]); c.vl(12, y0, y1, W[3])
+        if half == 'b':
+            c.rect(5, 7, 13, 9, W[3]); c.rect(10, 3, 12, 5, W[1])
+    c.rect(0, 3 if half == 'u' else 0, 2, 16, W[4])
+    if kind == 'r': c.rect(14, 3 if half == 'u' else 0, 16, 16, W[3])
+    return c
+
+
+def thatch_plinth_block(steps=False):
+    """낮은 흙·막돌 기단과 문 앞 넓은 디딤돌 한 장."""
+    c = Cv(T, T); E, S = RGB['earth'], RGB['stone']
+    c.rect(0, 0, T, 5, E[3]); c.hl(0, T, 0, E[5])
+    for x in range(1, T, 7):
+        c.rect(x, 1, x + 5, 4, S[4]); c.rect(x, 1, x + 4, 2, S[5])
+    if steps:
+        c.rect(3, 5, 14, 9, E[3]); c.rect(3, 5, 14, 7, S[5])
+    return c
+
+
 def wall_block(style, half, kind, base=True, dan=False):
     """half 'u' 또는 'b'."""
+    if style == 'jc':
+        return thatch_wall_block(half, kind)
     c = Cv(T, T)
     W = RGB['wood']; St = RGB['stone']
     wallramp = {'jo': 'plaster', 'jc': 'earth', 'pv': 'wood'}[style]
@@ -309,6 +355,8 @@ def library():
             L[f'{st}.ud.{kind}'] = wall_block(st, 'u', kind, dan=True)
         for kind in ('l', 'r', 'p', 'f', 'd', 'k', 'g'):
             L[f'{st}.b.{kind}'] = wall_block(st, 'b', kind)
+    L['jc.plinth'] = thatch_plinth_block()
+    L['jc.plinths'] = thatch_plinth_block(True)
     L['step'] = step_block()
     L['plinth'] = plinth_block(); L['plinths'] = plinth_block(True)
     L['jo.roof.ridge.cl'] = ridge_chimi('jo', 'l'); L['jo.roof.ridge.cr'] = ridge_chimi('jo', 'r')
@@ -413,8 +461,9 @@ def house(st, w, kinds_u, kinds_b, rows=3, steps=(), chimi=True, dan=False, hip=
     up = 'ud' if dan else 'u'
     u = ' '.join(f'{st}.{up}.{k}' for k in kinds_u); b = ' '.join(f'{st}.b.{k}' for k in kinds_b)
     out += [pad(u), pad(b)]
-    pl = ['.'] + ['plinth'] * w + ['.']
-    for i in steps: pl[i + 1] = 'plinths'
+    plinth = 'jc.plinth' if st == 'jc' else 'plinth'
+    pl = ['.'] + [plinth] * w + ['.']
+    for i in steps: pl[i + 1] = plinth + 's'
     out.append(' '.join(pl))
     return out
 
