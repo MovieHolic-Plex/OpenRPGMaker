@@ -119,3 +119,64 @@ def dome2(W, H, seed=0):
             if abs(u) < 0.6 and y in (1, 2): base += 0.4
             cv.put(x, y, BR[max(0, min(5, int(round(base))))])
     return cv
+
+
+# 바람의나라 초가 색: 허용 팔레트 안의 주황 갈색 램프(어두움 → 밝음)
+BR2 = [(69, 42, 23), (94, 58, 28), (116, 76, 42), (136, 90, 38), (162, 110, 54), (183, 117, 65), (198, 146, 80), (207, 149, 88)]
+
+
+def dome3(W, H, seed=0):
+    """초가 지붕 v3 — 바람의나라 초가의 '쌓은 방석' 구조.
+    윗단(좁음) · 가운뎃단 · 아랫단(가장 넓고 불룩)이 계단식으로 겹치고, 단마다 위가 밝고 아래가 어둡다.
+    위 단이 아래 단 위로 드리워 그 밑에 짙은 그늘 띠가 지고, 단 아랫가장자리는 긴 짚 가닥이 털처럼 늘어진다.
+    결: 4~9px 긴 세로 짚 가닥, 밝은 가닥과 어두운 틈이 뚜렷."""
+    cv = Cv(W, H)
+    cx = (W - 1) / 2.0
+    tiers = [  # (y0, y1, 폭 비율) — 아래부터 그린다
+        (int(H * 0.50), H, 1.00),
+        (int(H * 0.18), int(H * 0.68), 0.96),
+        (0, int(H * 0.36), 0.86),
+    ]
+    ln = [4 + int(rnd(x, 5, seed + 1) * 6) for x in range(W)]
+    off = [int(rnd(x, 6, seed + 2) * 11) for x in range(W)]
+    fr = [int(rnd(x, 8, seed + 3) * 4) for x in range(W)]
+    owner = [[-1] * W for _ in range(H)]
+    for ti, (y0, y1, wf) in enumerate(tiers):
+        hb = y1 - y0
+        wb = W * wf
+        for x in range(W):
+            u = (x - cx) / (wb / 2.0)
+            if abs(u) > 1: continue
+            # 단의 위·아래 경계(슈퍼타원): 가운데가 가장 불룩
+            k = (1 - abs(u) ** 2.6) ** (1 / 2.6)
+            top = y0 + (1 - k) * hb * 0.55
+            bot = y1 - 1 - (1 - k) * hb * (0.45 if ti == 0 else 0.30)
+            bot_f = bot + fr[x] * (0.0 if ti == 0 else 0.8) + (0 if ti == 0 else 1)
+            for y in range(int(round(top)), min(H, int(round(bot_f)) + 1)):
+                if ti == 0 and y >= H - 2 and rnd(x, y, seed + 11) < 0.35:
+                    continue                                  # 맨 아랫단 가장자리: 짚 끝이 들쭉날쭉
+                t = (y - y0) / max(1.0, hb - 1)
+                t = max(0.0, min(1.0, t))
+                base = 5.6 - 3.0 * t - 0.55 * u
+                if y > bot + 0.5: base -= 1.2                   # 늘어진 짚 끝(털)은 한 톤 어둡다
+                run = (y + off[x]) // ln[x]
+                j = rnd(x, run, seed + 7 + ti)
+                base += 1.1 if j > 0.78 else (-1.0 if j < 0.2 else (0.45 if j > 0.55 else 0.0))
+                if x % 2 == 0: base -= 0.35
+                if abs(u) > 0.93: base -= 0.8                   # 좌우 가장자리 어두움
+                if y <= top + 0.8: base += 0.5                  # 단 윗가장자리 반사
+                cv.put(x, y, BR2[max(0, min(7, int(round(base))))])
+                owner[y][x] = ti
+    # 위 단이 아래 단에 드리운 그늘 띠(단 밑 2행)
+    for ti in (1, 2):
+        for x in range(W):
+            ys = [y for y in range(H) if owner[y][x] == ti]
+            if not ys: continue
+            yb = max(ys)
+            for d, tone in ((1, 1), (2, 2), (3, 3)):
+                y = yb + d
+                if y < H and owner[y][x] in (ti - 1,):
+                    cur = cv.a[y, x, :3]
+                    idx = min(range(8), key=lambda i: sum((int(cur[c]) - BR2[i][c]) ** 2 for c in range(3)))
+                    cv.put(x, y, BR2[max(0, idx - (3 - d) - 1)])
+    return cv

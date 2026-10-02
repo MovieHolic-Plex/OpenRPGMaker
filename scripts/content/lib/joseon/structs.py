@@ -274,7 +274,7 @@ def market_stall(thatch=False):
             if abs(dx - 34) <= hw: c.put(dx, dy, E[5] if dx < 34 else E[3])
     c.hl(32, 37, 27, E[2])
     if thatch:
-        c.paste(thatch3d.dome2(48, 20, seed=5), 0, 2)
+        c.paste(thatch3d.dome3(48, 20, seed=5), 0, 2)
     else:
         for y in range(3, 9):
             t = (y - 3) / 5
@@ -316,7 +316,7 @@ def wondumak():
     for y in range(47, 61):                                           # 사다리(오른쪽 앞)
         c.put(33, y, Wd[5]); c.put(34, y, Wd[3]); c.put(40, y, Wd[4]); c.put(41, y, Wd[2])
     for y in range(49, 60, 3): c.hl(34, 40, y, Wd[5])
-    c.paste(thatch3d.dome2(48, 24, seed=3), 0, 6)
+    c.paste(thatch3d.dome3(48, 24, seed=3), 0, 6)
     for x in range(6, 42):                                            # 처마 밑 그늘(얇게)
         for y in range(30, 32):
             if c.a[y, x, 3] == 0: c.put(x, y, E[0], 160)
