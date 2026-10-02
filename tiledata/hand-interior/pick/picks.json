@@ -519,6 +519,11 @@
   "choice": "w10-B",
   "note": ""
  },
+ "coal wagon": {
+  "at": "2026-10-02T19:19:25+09:00",
+  "choice": "h225-D",
+  "note": ""
+ },
  "coat rack": {
   "at": "2026-09-30T05:04:11+09:00",
   "choice": "w8-C",
@@ -999,6 +1004,11 @@
   "choice": "w7-A",
   "note": ""
  },
+ "horse carriage": {
+  "at": "2026-10-02T19:19:32+09:00",
+  "choice": "h226-A",
+  "note": ""
+ },
  "hot spring": {
   "at": "2026-10-02T07:10:25+09:00",
   "choice": "h129-E",
@@ -1258,6 +1268,11 @@
  "ore vein": {
   "at": "2026-09-30T06:15:48+09:00",
   "choice": "w27-H",
+  "note": ""
+ },
+ "passenger coach": {
+  "at": "2026-10-02T19:19:20+09:00",
+  "choice": "h224-D",
   "note": ""
  },
  "patient bed": {
@@ -1798,6 +1813,11 @@
  "statue": {
   "at": "2026-10-01T15:07:40+09:00",
   "choice": "w74-A",
+  "note": ""
+ },
+ "steam locomotive": {
+  "at": "2026-10-02T19:19:14+09:00",
+  "choice": "h223-D",
   "note": ""
  },
  "stone throne": {

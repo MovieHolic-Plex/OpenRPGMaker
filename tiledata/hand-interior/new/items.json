@@ -4844,6 +4844,459 @@
     ],
     "cover": 0.6
    }
+  },
+  {
+   "id": "coal tender",
+   "name_ko": "탄수차",
+   "name_en": "coal tender",
+   "category": "rail",
+   "category_ko": "기차·역",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "기관차 바로 뒤에 붙는 검은 쇠 탄수차(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=4~21) — 위가 열린 쇠 상자 안을 내려다본 석탄 더미(검은 덩이, 회색 반짝임)와 동쪽 끝 둥근 물탱크 뚜껑, 북쪽 테두리까지 보인다. 그 아래 남쪽 옆면 밑그림 y=22~47: 리벳 박은 쇠판, 붉은 띠, 바퀴 넷(바퀴 아래 끝이 캔버스 바닥에 닿는다). 옆모습 금지. 레일은 그리지 않는다.",
+   "contextRoom": "magitek",
+   "tags": [
+    "기차",
+    "역",
+    "차고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "증기 기관차 서쪽(뒤)에 바로 붙인다. 역·차고 선로 위.",
+   "pair": [
+    "steam locomotive",
+    "coal wagon"
+   ],
+   "refs": [
+    "mine cart"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     21
+    ],
+    "front": [
+     22,
+     47
+    ],
+    "cover": 0.8
+   }
+  },
+  {
+   "id": "boxcar",
+   "name_ko": "유개 화차",
+   "name_en": "boxcar",
+   "category": "rail",
+   "category_ko": "기차·역",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    64
+   ],
+   "description": "붉은 갈색 나무 유개 화차(4×2칸, 32px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=4~21) — 지붕을 위에서 본 긴 면(가운데 걷는 판자 줄이 동서로 이어지고, 남쪽 가장자리로 갈수록 어두워진다). 그 아래 남쪽 옆면 밑그림 y=22~63: 세로 판자 벽, 가운데 커다란 미닫이 문(쇠 레일·손잡이), 바퀴 넷짜리 대차 둘(바퀴 아래 끝이 캔버스 바닥). 옆모습 금지. 레일은 그리지 않는다.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "기차",
+    "화물역",
+    "차고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "화물역·차고 선로 위, 석탄 화차 옆.",
+   "pair": [
+    "coal wagon",
+    "steam locomotive"
+   ],
+   "refs": [
+    "crate",
+    "mine cart"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     21
+    ],
+    "front": [
+     22,
+     63
+    ],
+    "cover": 0.85
+   }
+  },
+  {
+   "id": "cargo wagon",
+   "name_ko": "짐마차",
+   "name_en": "cargo wagon",
+   "category": "stable",
+   "category_ko": "마구간",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    48
+   ],
+   "description": "나무 짐마차(4×2칸, 16px 솟음, 말은 없다) — 동쪽을 향한다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=6~23) — 낮은 난간을 두른 짐칸 바닥을 위에서 내려다본 면에 나무 궤짝 둘·밀가루 자루 셋·통 하나(각각 뚜껑·자루 입구가 위에서 보인다), 동쪽으로 뻗은 끌채 두 개. 그 아래 남쪽 옆면 밑그림 y=24~47: 짐칸 옆판(판자·쇠띠)과 살 보이는 나무 바퀴 둘, 바퀴 아래 끝이 캔버스 바닥에 닿는다. 옆모습 금지.",
+   "contextRoom": "magitek",
+   "tags": [
+    "마구간",
+    "창고",
+    "상단"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마구간·창고·상단 차고 안.",
+   "pair": [
+    "hay bale",
+    "crate",
+    "barrel"
+   ],
+   "refs": [
+    "crate",
+    "barrel",
+    "hay bale"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "grand piano",
+   "name_ko": "그랜드 피아노",
+   "name_en": "grand piano",
+   "category": "opera",
+   "category_ko": "극장",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "검은 옻칠 그랜드 피아노(3×2칸, 16px 솟음), 건반이 남쪽을 본다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 22행(밑그림 y=4~25) — 닫힌 뚜껑을 위에서 본 날개 모양 면(서쪽이 넓고 동쪽으로 둥글게 좁아진다, 흰 반사 한 줄), 그 남쪽 끝에 악보대. 그 아래 남쪽 면 밑그림 y=26~47: 흰·검은 건반 한 줄(건반 윗면이 보인다), 몸통 옆판, 굵은 다리 셋과 페달. 옆모습 금지.",
+   "contextRoom": "opera",
+   "tags": [
+    "극장",
+    "저택",
+    "무도회장"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "극장·저택 응접실·무도회장 한쪽.",
+   "pair": [
+    "piano"
+   ],
+   "refs": [
+    "piano"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     25
+    ],
+    "front": [
+     26,
+     47
+    ],
+    "cover": 0.65
+   }
+  },
+  {
+   "id": "giant cauldron",
+   "name_ko": "거대 가마솥",
+   "name_en": "giant cauldron",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "세 발 달린 검은 쇠 거대 가마솥(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=6~23) — 솥 입구를 위에서 본 큰 타원 테두리와 그 안의 끓는 초록 물약 면(거품 방울 셋, 밝은 김 한 줄기가 위로). 그 아래 남쪽 면 밑그림 y=24~47: 둥근 솥 배(쇠 명암 세 단, 리벳 한 줄), 짧은 다리 셋, 아래에 장작불(붉은·노란 불꽃). 옆모습 금지.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑",
+    "마녀",
+    "폐가"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마녀 오두막·마법사의 탑 작업실 가운데.",
+   "pair": [
+    "alembic"
+   ],
+   "refs": [
+    "cauldron"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.65
+   }
+  },
+  {
+   "id": "dragon nest",
+   "name_ko": "용 알 둥지",
+   "name_en": "dragon nest",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "굵은 가지와 뼈로 엮은 둥지에 놓인 용 알 셋(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 24행(밑그림 y=10~33) — 둥지 안쪽을 위에서 내려다본 오목한 면(짚·깃털), 그 안의 커다란 알 셋(붉은·청록·금빛 비늘 무늬, 정수리 반사)과 둥지 북쪽 테두리. 그 아래 남쪽 면 밑그림 y=34~47: 엮은 가지 겉면과 뼈 몇 개, 바닥에 흩어진 깃털. 옆모습 금지.",
+   "contextRoom": "throne",
+   "tags": [
+    "마왕성",
+    "용",
+    "보물고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마왕성 보물고·용의 둥지 방 가운데.",
+   "pair": [
+    "treasure hoard"
+   ],
+   "refs": [
+    "egg incubator",
+    "ore pile"
+   ],
+   "blockout": {
+    "top": [
+     10,
+     33
+    ],
+    "front": [
+     34,
+     47
+    ],
+    "cover": 0.7
+   }
+  },
+  {
+   "id": "treasure hoard",
+   "name_ko": "보물 더미",
+   "name_en": "treasure hoard",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    48
+   ],
+   "description": "금화가 산처럼 쌓인 보물 더미(4×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 26행(밑그림 y=8~33) — 위에서 본 넓게 퍼진 금화 더미 면(가운데가 봉긋, 금화 둥근 윗면들이 반짝인다) 위에 왕관·보석 박힌 잔·꽂힌 검 한 자루(검은 위로 솟는다). 그 아래 남쪽 면 밑그림 y=34~47: 무너져 흘러내린 금화 비탈과 반쯤 묻힌 작은 보물상자. 옆모습 금지.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "마왕성",
+    "보물고",
+    "용"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마왕성·용의 굴 보물고 가운데.",
+   "pair": [
+    "dragon nest",
+    "treasure chest big"
+   ],
+   "refs": [
+    "coin pile",
+    "treasure chest big"
+   ],
+   "blockout": {
+    "top": [
+     8,
+     33
+    ],
+    "front": [
+     34,
+     47
+    ],
+    "cover": 0.7
+   }
+  },
+  {
+   "id": "billiard table",
+   "name_ko": "당구대",
+   "name_en": "billiard table",
+   "category": "casino",
+   "category_ko": "카지노",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    48
+   ],
+   "description": "짙은 나무 틀 당구대(4×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 26행(밑그림 y=8~33) — 초록 천을 위에서 본 넓은 판, 둘레 나무 쿠션 테두리와 네 귀퉁이·긴 변 가운데 구멍 여섯, 천 위에 공 몇 개(흰·빨강·노랑, 반사점)와 큐 한 자루. 그 아래 남쪽 면 밑그림 y=34~47: 나무 앞판(조각 무늬)과 굵은 다리 셋. 옆모습 금지.",
+   "contextRoom": "mead",
+   "tags": [
+    "카지노",
+    "저택",
+    "오락실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "카지노·저택 오락실 가운데, 사방으로 돌 수 있게.",
+   "pair": [
+    "roulette table"
+   ],
+   "refs": [
+    "felt 2x2",
+    "roulette table"
+   ],
+   "blockout": {
+    "top": [
+     8,
+     33
+    ],
+    "front": [
+     34,
+     47
+    ],
+    "cover": 0.85
+   }
+  },
+  {
+   "id": "royal bed",
+   "name_ko": "왕실 침대",
+   "name_en": "royal bed",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 3
+   },
+   "canvas": [
+    48,
+    80
+   ],
+   "description": "왕과 왕비의 큰 침대(3×3칸, 32px 솟음), 머리가 북쪽. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 48행(밑그림 y=20~67) — 위에서 본 침대 면: 북쪽에 흰 베개 둘, 그 아래 금 수 놓은 붉은 이불이 남쪽으로 길게 덮이고 접힌 끝단이 보인다. 그 위(y<20)에 금 장식 높은 머리판과 양옆 기둥 머리. 그 아래 남쪽 면 밑그림 y=68~79: 발치판과 이불이 늘어진 앞자락, 짧은 다리. 옆모습 금지.",
+   "contextRoom": "throne",
+   "tags": [
+    "성",
+    "침실",
+    "왕실"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "성의 왕실 침실 북쪽 벽 가운데.",
+   "pair": [
+    "canopy bed"
+   ],
+   "refs": [
+    "canopy bed",
+    "double bed red"
+   ],
+   "blockout": {
+    "top": [
+     20,
+     67
+    ],
+    "front": [
+     68,
+     79
+    ],
+    "cover": 0.85
+   }
+  },
+  {
+   "id": "giant crystal",
+   "name_ko": "거대 수정",
+   "name_en": "giant crystal",
+   "category": "mine",
+   "category_ko": "광산",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "바위에서 솟은 푸른 거대 수정 무리(3×2칸, 32px 솟음). 바위 받침의 꼭대기 윗면 14행(밑그림 y=40~53) — 위에서 본 울퉁불퉁한 바위 윗면(작은 수정 조각들이 박혀 반짝인다), 남쪽 면 y=54~63. 그 위로 크고 작은 수정 기둥 다섯이 비스듬히 솟는다(가장 큰 것이 가운데, 끝이 뾰족, 각 기둥의 위쪽 면이 밝고 남쪽 면이 어둡다, 흰 반사 사선). 은은한 청록 빛 번짐.",
+   "contextRoom": "mine",
+   "tags": [
+    "광산",
+    "동굴",
+    "마법"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "광산 깊은 곳·수정 동굴·마법 연구실.",
+   "pair": [
+    "mana crystal"
+   ],
+   "refs": [
+    "mana crystal",
+    "ore pile"
+   ],
+   "blockout": {
+    "top": [
+     40,
+     53
+    ],
+    "front": [
+     54,
+     63
+    ],
+    "cover": 0.7
+   }
   }
  ]
 }
