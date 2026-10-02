@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
 from check_candidate import LINE_THICK_MAX, LINE_NONE_MAX  # noqa: E402
 from common import CAND, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
 import picks_db  # noqa: E402
+import outline_select  # noqa: E402
 import store  # noqa: E402
 
 # 방향 — 한 판 5장의 작업자마다 하나. 같은 기물을 다른 해석으로 찍게 해서 사용자가 고를 폭을 만든다.
@@ -83,6 +84,8 @@ def ensure_folder(item):
 
 def cand_png(item, choice):
     d = os.path.join(CAND, slug(item))
+    b, sel = outline_select.split(choice or '')
+    if sel: return outline_select.ensure_png(d, b, objects_by_id()[item])
     p = os.path.join(d, ('v5' if choice in (None, 'v5') else choice) + '.png')
     if not os.path.exists(p) and choice not in (None, 'v5'):
         sys.path.insert(0, os.path.join(ROOT, 'scripts/content/pixel-harness/pxgrid')); import pxgrid
