@@ -1,0 +1,256 @@
+{
+ "id": "wuxia",
+ "name": "무협 중국",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "황도 자금성",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "붉은 궁 담·오문 겹지붕·한백옥 3단 기단 위 노란 기와 태화전·좌우 배전"
+  },
+  {
+   "role": "fort_city",
+   "name": "장성 성곽 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "회색 벽돌 성벽·총안·전루·모서리 각루·안의 고루와 기와 민가"
+  },
+  {
+   "role": "harbor_city",
+   "name": "강 포구",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "뒤 성벽·강변 누각·기와 민가·아치 돌다리·부두의 대나무 돛 정크선 둘"
+  },
+  {
+   "role": "castle",
+   "name": "무림 문파 본산",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "바위산 위 높은 기단 청기와 대전·종루 고루·긴 돌계단·앞 패방 산문"
+  },
+  {
+   "role": "castle",
+   "name": "마교 총단",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "검은 바위·현무암 성벽 안 검은 기와 대전·붉은 문·불 화로·붉은 깃발"
+  },
+  {
+   "role": "large_town",
+   "name": "객잔 거리",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "2층 객잔(주기·홍등)·청기와 찻집·기와 민가"
+  },
+  {
+   "role": "village",
+   "name": "산골 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "흙벽 청회 기와집 셋과 소나무"
+  },
+  {
+   "role": "village",
+   "name": "대나무 숲 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 6,
+   "desc": "대숲 사이 초가지붕 대나무집 둘"
+  },
+  {
+   "role": "camp",
+   "name": "표국 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 6,
+   "desc": "짐 실은 마차·노란 표기·천막·모닥불"
+  },
+  {
+   "role": "tower_small",
+   "name": "누각",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 23,
+   "row": 6,
+   "desc": "돌 기단 위 붉은 기둥 2층 누각, 청기와 겹처마"
+  },
+  {
+   "role": "tower_great",
+   "name": "9층 팔각 전탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "한백옥 기단·벽돌 팔각 몸통 9층·층마다 기와 처마·금 상륜"
+  },
+  {
+   "role": "cave",
+   "name": "수련 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 6,
+   "desc": "바위 절벽 동굴 입구를 반쯤 가린 폭포와 물웅덩이, 꼭대기 소나무"
+  },
+  {
+   "role": "ruin",
+   "name": "무너진 사당",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 6,
+   "desc": "부러진 붉은 기둥·반쯤 남은 담·땅에 내려앉은 기와지붕·쓰러진 향로"
+  },
+  {
+   "role": "ruin_city",
+   "name": "장성 폐허",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "능선 따라 끊긴 장성 구간·무너진 봉화대·벽돌 더미"
+  },
+  {
+   "role": "shrine",
+   "name": "소림사",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "황토 담·산문·높은 기단 대웅전 겹처마·탑림·향로"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "기암 소나무 봉우리",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "가파른 바위 기둥 셋·꼭대기 소나무·허리 구름"
+  },
+  {
+   "role": "circle",
+   "name": "팔괘진",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 6,
+   "desc": "팔각 돌 단 위 태극·팔괘 무늬, 돌기둥, 청동 향로"
+  },
+  {
+   "role": "volcano",
+   "name": "화염산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 6,
+   "desc": "세로 골 패인 붉은 사암 산과 꼭대기 불꽃"
+  },
+  {
+   "role": "floating",
+   "name": "구름 위 선계",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "거꾸로 선 바위섬 위 금·청기와 누각, 소나무, 폭포, 학, 구름"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}
