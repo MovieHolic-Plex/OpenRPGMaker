@@ -29,8 +29,8 @@ def stone_courses(c, x0, y0, x1, y1, seed=0, ch=8, lit=1.0, lo=None, hi=None, ro
             if lit < 1: tone -= 1
             bx = (x - x0 + off) % bw
             q = rnd(x // bw + row * 7, row, seed + 3)
-            if q > 0.8: tone += 1
-            elif q < 0.2: tone -= 1
+            if q > 0.85: tone += 1
+            elif q < 0.12 and tone > 3: tone -= 1
             if ry == 0: tone = min(6, tone + 1)                       # 돌 윗모서리 밝음
             elif ry == ch - 1: tone = max(1, tone - 2)                # 줄 사이 어두운 틈
             if bx == 0: tone = max(1, tone - 2)                       # 이음매
@@ -116,24 +116,24 @@ def fort_gate():
     return c
 
 
-def fort_wall_h():
-    """성벽 한 칸(16×32): 윗면(걷는 길) + 여장 + 앞 돌 쌓기. 이어 붙이면 성곽이 된다."""
+def fort_wall_h(var=0):
+    """성벽 한 칸(16×32): 윗면(걷는 길) + 여장 + 앞 돌 쌓기. 이음마다 줄눈이 겹치지 않게 변형(var) 셋을 번갈아 쓴다."""
     c = Cv(T, 2 * T)
     S = RGB['stone']
-    for y in range(4, 11):
+    for y in range(4, 12):
         for x in range(T):
             c.put(x, y, S[5] if y < 10 else S[4])
     c.hl(0, T, 4, S[6])
-    slab(c, 3, 7, 10, 5, 2, S, (6, 5), (5, 4, 3, 2))                  # 여장(한 칸에 하나, 가운데)
-    stone_courses(c, 0, 12, T, 2 * T - 2, seed=11, ch=6)
+    mx = (2, 4, 1)[var % 3]
+    slab(c, mx, 7, 10, 5, 2, S, (6, 5), (5, 4, 3, 2))                  # 여장
+    stone_courses(c, 0, 12, T, 2 * T - 2, seed=11 + 7 * var, ch=6)
     for x in range(T): c.put(x, 2 * T - 2, S[2]); c.put(x, 2 * T - 1, SHADOW, 80)
     return c
 
 
 def fort_wall_end(side='l'):
     """성벽 끝(성문 옆으로 붙는 쪽): 바깥 모서리가 안으로 기운다."""
-    c = fort_wall_h()
-    S = RGB['stone']
+    c = fort_wall_h(0)
     for y in range(c.h):
         cut = max(0, 4 - (y - 12) // 5) if y >= 12 else 0
         for k in range(cut):
@@ -143,118 +143,121 @@ def fort_wall_end(side='l'):
 
 
 def stone_pagoda():
-    """삼층 석탑 32×48: 기단 → 몸돌 + 옥개석(윗 경사면이 밝고 앞 처마가 어둡다)이 세 번 → 상륜."""
+    """삼층 석탑 32×48: 이중 기단(하대·상대, 모서리 우주) 위에 탑신+옥개석이 1:0.83:0.67 로 줄어들며 세 번, 상륜은 노반·복발·보주."""
     c = Cv(2 * T, 3 * T)
     S = RGB['stone']
-    ground_shadow(c, 18, 45, 14, 2.2, 70)
-    slab(c, 2, 39, 28, 5, 3, S, (6, 5), (5, 4, 3, 2))               # 기단 아래층
-    slab(c, 5, 34, 22, 3, 2, S, (6, 5), (5, 4, 3, 2))               # 기단 윗층
-    y = 34
-    widths = [(20, 7), (16, 6), (12, 5)]                             # (옥개 폭, 몸돌 높이)
-    for tier, (ow, bh) in enumerate(widths):
-        bw = ow - 8
-        bx = 16 - bw // 2
-        y -= bh
-        for yy in range(y, y + bh):                                  # 몸돌: 왼쪽 밝음, 가운데 모서리 기둥선
-            for x in range(bx, bx + bw):
-                f = (x - bx) / max(1, bw - 1)
+    ground_shadow(c, 18, 46, 14, 2.0, 70)
+    def block(x0, ytop, w, top, face):
+        slab(c, x0, ytop, w, face, top, S, (6, 5), (5, 4, 3, 2))
+        c.vl(x0, ytop + top, ytop + top + face, S[6])              # 모서리 우주(밝은 왼쪽 모서리 줄)
+        c.vl(x0 + w - 1, ytop + top, ytop + top + face, S[2])
+    block(2, 38, 28, 3, 4)          # 하대 (y 38..44)
+    block(5, 33, 22, 2, 3)          # 상대 (y 33..37)
+    y = 33
+    for roof_w, body_h in ((24, 5), (20, 4), (16, 4)):
+        body_w = roof_w - 10
+        bx = 16 - body_w // 2
+        y -= body_h
+        for yy in range(y, y + body_h):                              # 탑신: 왼쪽 밝음, 모서리 우주
+            for x in range(bx, bx + body_w):
+                f = (x - bx) / max(1, body_w - 1)
                 c.put(x, yy, S[5] if f < 0.3 else (S[4] if f < 0.75 else S[3]))
-            c.put(bx, yy, S[6]); c.put(bx + bw - 1, yy, S[2])
-        # 옥개석: 윗 경사면 2줄(밝음) + 앞 처마 3줄(왼밝/오른어두움), 끝이 살짝 들린다
-        oy = y - 5
-        ox = 16 - ow // 2
-        for k, (ins, tone) in enumerate(((4, 6), (2, 6), (0, 5))):
-            for x in range(ox + ins, ox + ow - ins):
-                c.put(x, oy + k, S[tone] if x < 16 else S[min(tone, 5)])
+            c.put(bx, yy, S[6]); c.put(bx + body_w - 1, yy, S[2])
+        oy = y - 5                                                   # 옥개석: 윗사면 2줄 + 앞 처마 3줄(양끝 1px 반전)
+        ox = 16 - roof_w // 2
+        for k, ins in enumerate((4, 1)):
+            for x in range(ox + ins, ox + roof_w - ins):
+                f = (x - ox) / max(1, roof_w - 1)
+                c.put(x, oy + k, S[6] if f < 0.55 else S[5])
         for k in range(3):
-            for x in range(ox, ox + ow):
-                f = (x - ox) / max(1, ow - 1)
-                c.put(x, oy + 3 + k, S[5 if f < 0.3 else (4 if f < 0.65 else 3)] if k < 2 else S[2])
-        c.put(ox, oy + 2, S[6]); c.put(ox + ow - 1, oy + 2, S[5])    # 처마 끝 들림
+            for x in range(ox, ox + roof_w):
+                f = (x - ox) / max(1, roof_w - 1)
+                tone = 5 if f < 0.3 else (4 if f < 0.65 else 3)
+                c.put(x, oy + 2 + k, S[tone] if k < 2 else S[2])
+        c.put(ox, oy + 1, S[6]); c.put(ox + roof_w - 1, oy + 1, S[5])     # 처마 끝 반전
         y = oy
-    for yy in range(y - 6, y):                                       # 상륜: 찰주와 보주
-        c.put(15, yy, S[5]); c.put(16, yy, S[4])
-    for dx, dy in ((14, 3), (17, 3), (13, 2)): c.put(dx, y - 2 - dy + 3, S[5])
-    c.put(15, y - 7, S[6]); c.put(16, y - 7, S[5])
+    # 상륜: 노반(사각) → 복발(반구) → 보주
+    for x in range(13, 19): c.put(x, y - 1, S[5] if x < 16 else S[3])
+    for k, (a, b) in enumerate(((14, 18), (13, 19))):
+        for x in range(a, b): c.put(x, y - 3 + k, S[6] if x < 16 else S[4])
+    c.vl(15, y - 6, y - 3, S[5]); c.vl(16, y - 6, y - 3, S[3])
+    c.put(15, y - 8, S[6]); c.put(16, y - 8, S[5]); c.put(15, y - 7, S[5]); c.put(16, y - 7, S[4])
     outline(c)
     return c
 
 
 def hongsalmun():
-    """홍살문 64×48: 붉은 기둥 둘, 위에 가로 보와 붉은 살(창끝) 줄, 가운데 태극. 정면에서 마주 보는 문이라 윗면은 보 윗줄뿐."""
+    """홍살문 64×48: 가는 붉은 기둥 둘, 가는 인방 두 줄, 인방 위를 덮는 붉은 홍살(창살 대), 가운데 태극. 정면 문이라 윗면은 인방 윗줄뿐."""
     c = Cv(4 * T, 3 * T)
-    R = RGB['red']; S = RGB['stone']; B = RGB['dblue']; Wd = RGB['wood']
+    R = RGB['red']; S = RGB['stone']; B = RGB['dblue']
     ground_shadow(c, 34, 45, 28, 2.2, 70)
-    for px in (6, 50):
-        slab(c, px - 3, 40, 12, 5, 2, S, (6, 5), (5, 4, 3, 2))        # 주춧돌
-        for y in range(8, 40):
-            for x in range(px, px + 6):
-                f = (x - px) / 5
-                c.put(x, y, R[4] if f < 0.2 else (R[3] if f < 0.6 else (R[2] if f < 0.9 else R[1])))
-        c.hl(px, px + 6, 8, R[5]); c.hl(px - 1, px + 7, 9, R[5])
-    for yb, hh in ((10, 4), (22, 3)):                                 # 위 보·아래 보: 윗면 1줄 + 앞면
-        for x in range(4, 58): c.put(x, yb, R[5])
-        for y in range(yb + 1, yb + 1 + hh):
-            for x in range(4, 58): c.put(x, y, R[3] if x < 30 else R[2])
-    for x in range(10, 52, 3):                                        # 살: 위가 뾰족한 붉은 창끝
-        for y in range(2, 10):
+    for px in (6, 52):
+        slab(c, px - 3, 40, 10, 5, 2, S, (6, 5), (5, 4, 3, 2))        # 주춧돌
+        for y in range(10, 40):
+            for x in range(px, px + 4):
+                f = (x - px) / 3
+                c.put(x, y, R[4] if f < 0.3 else (R[3] if f < 0.7 else R[2]))
+        c.hl(px, px + 4, 10, R[5])
+    for yb in (12, 24):                                                # 인방: 윗면 1줄 + 앞 2줄
+        for x in range(6, 56): c.put(x, yb, R[5]); c.put(x, yb + 1, R[3] if x < 30 else R[2]); c.put(x, yb + 2, R[2])
+    for x in range(8, 54, 3):                                          # 홍살: 위 인방 위로 솟은 뾰족한 살
+        for y in range(3, 12):
             c.put(x, y, R[4]); c.put(x + 1, y, R[2])
-        c.put(x, 1, R[5]); c.put(x, 0, R[5])
-    for y in range(11, 22):                                           # 가운데 태극(위 홍·아래 청)
-        for x in range(26, 38):
-            d = math.hypot(x - 31.5, y - 16.5)
-            if d <= 5.5:
-                c.put(x, y, R[4] if y < 16.5 else B[5])
-                if y == 16 or y == 17: c.put(x, y, R[2] if x < 31 else B[3])
+        c.put(x, 2, R[5]); c.put(x, 1, R[5])
+    for y in range(14, 24):                                            # 인방 사이 가는 살
+        for x in range(8, 54, 6): c.put(x, y, R[3])
+    cx, cy, rr = 31, 19, 5                                             # 태극: 위 홍, 아래 청, 중간 S선
+    for y in range(cy - rr, cy + rr + 1):
+        for x in range(cx - rr, cx + rr + 1):
+            d = math.hypot(x - cx + 0.5, y - cy + 0.5)
+            if d > rr: continue
+            up = y < cy
+            col = R[4] if up else B[5]
+            if abs(y - cy + 0.5) < 0.9: col = R[4] if x < cx else B[5]          # 가운데 S선 대신 한 줄 경계
+            if d > rr - 1: col = R[2] if up else B[3]
+            c.put(x, y, col)
     outline(c)
     return c
 
 
 def deungrong_mun():
-    """청사초롱 문 80×64: 청색 기둥 둘 머리에 흰 등, 가운데 가로대에 붉은 초롱이 줄지어 걸린다(바람의나라 마을 어귀)."""
+    """청사초롱 문(잔치·장터 어귀) 80×64: 납작한 주두(네모 갓)를 얹은 청색 기둥 둘, 가로대에 청사초롱 다섯. 정면 문."""
     c = Cv(5 * T, 4 * T)
-    B = RGB['dblue']; R = RGB['red']; P = RGB['plaster']; Wd = RGB['wood']; S = RGB['stone']
+    B = RGB['dblue']; R = RGB['red']; Wd = RGB['wood']; S = RGB['stone']; St = RGB['straw']
     ground_shadow(c, 42, 61, 34, 2.4, 70)
-    for px in (6, 66):
+    for px in (8, 66):
         slab(c, px - 3, 54, 12, 6, 2, S, (6, 5), (5, 4, 3, 2))
         for y in range(14, 54):
             for x in range(px, px + 6):
                 f = (x - px) / 5
                 c.put(x, y, B[5] if f < 0.2 else (B[4] if f < 0.6 else (B[3] if f < 0.9 else B[2])))
-        for x in range(px - 1, px + 7):                               # 기둥머리 윗면 + 앞띠
-            c.put(x, 12, B[6]); c.put(x, 13, B[5]); c.put(x, 14, B[2])
-        for y in range(1, 11):                                        # 등: 흰 종이 몸통 + 붉은 뚜껑·받침
-            for x in range(px - 1, px + 7):
-                f = (x - px + 1) / 7
-                c.put(x, y, P[5] if f < 0.4 else (P[4] if f < 0.75 else P[3]))
-        c.hl(px - 2, px + 8, 0, R[3]); c.hl(px - 2, px + 8, 1, R[4]); c.hl(px - 2, px + 8, 10, R[2])
-        c.vl(px + 2, 3, 10, P[2])
-    for x in range(4, 76): c.put(x, 18, Wd[6]); c.put(x, 19, Wd[5]); c.put(x, 20, Wd[3])   # 가로대
-    for x in range(14, 68, 8):                                         # 붉은 초롱: 위 끈·몸통(왼밝)·아래 술
-        c.vl(x + 3, 21, 24, Wd[2])
-        for y in range(24, 34):
+        slab(c, px - 3, 8, 12, 4, 3, Wd, (6, 5), (5, 4, 3, 2))          # 주두: 납작한 네모 갓(윗면+앞면)
+    for x in range(6, 76): c.put(x, 17, Wd[6]); c.put(x, 18, Wd[5]); c.put(x, 19, Wd[3])   # 가로대
+    for x in range(19, 62, 9):                                          # 청사초롱: 위아래 청 띠 + 홍색 몸통
+        c.vl(x + 3, 20, 23, Wd[2])
+        c.hl(x, x + 7, 23, B[4]); c.hl(x, x + 7, 24, B[3])
+        for y in range(25, 34):
             for xx in range(x, x + 7):
                 f = (xx - x) / 6
                 c.put(xx, y, R[5] if f < 0.25 else (R[4] if f < 0.65 else R[3]))
-        c.hl(x, x + 7, 24, R[2]); c.hl(x, x + 7, 33, R[2])
-        c.put(x + 2, 28, RGB['straw'][5]); c.put(x + 4, 28, RGB['straw'][5])
-        c.vl(x + 3, 34, 38, R[3])
+        c.hl(x, x + 7, 34, B[3]); c.hl(x, x + 7, 35, B[2])
+        c.vl(x + 3, 28, 31, R[2])                                       # 글자 한 획(어두운 홍)
+        c.vl(x + 3, 36, 40, B[4])
     outline(c)
     return c
 
 
 def market_stall(seed=0):
-    """장터 차일 48×48: 윗면(뒤가 밝고 가로로 줄무늬 천) + 앞 늘어진 천(파란 단 가장자리 물결) + 앞 기둥 둘 + 물건 놓은 좌판."""
+    """장터 가판 48×48: 흰 베 차일을 평평히 치고(윗면 3줄 밝음 + 앞 늘어진 베 어둡게) 새끼줄·대나무 장대, 좌판에 감·채소·독."""
     c = Cv(3 * T, 3 * T)
-    P = RGB['plaster']; B = RGB['dblue']; Wd = RGB['wood']; R = RGB['red']; S = RGB['straw']; G = RGB['leaf']; E = RGB['earth']
+    P = RGB['plaster']; Wd = RGB['wood']; R = RGB['red']; S = RGB['straw']; G = RGB['leaf']; E = RGB['earth']
     ground_shadow(c, 26, 46, 22, 2.2, 70)
-    for px in (5, 41):                                                # 앞 기둥(원통)
-        for y in range(20, 44):
-            c.put(px, y, Wd[5]); c.put(px + 1, y, Wd[4]); c.put(px + 2, y, Wd[2])
-    # 좌판: 윗면(널) + 앞면
+    for px in (5, 41):                                                # 대나무 장대 기둥(마디)
+        for y in range(15, 44):
+            c.put(px, y, S[5]); c.put(px + 1, y, S[4]); c.put(px + 2, y, S[2])
+            if y % 7 == 3: c.hl(px, px + 3, y, S[1])
     slab(c, 7, 34, 34, 5, 4, Wd, (6, 5), (5, 4, 3, 2))
     for x in range(9, 39, 5): c.vl(x, 34, 38, Wd[4])
-    # 좌판 위 물건: 붉은 감 더미, 푸른 채소, 독
     for (gx, gy, tone) in ((11, 31, 4), (14, 32, 5), (17, 31, 4), (13, 29, 5)):
         c.rect(gx, gy, gx + 3, gy + 3, R[tone]); c.put(gx, gy, R[6] if tone == 5 else R[5])
     for gx in range(22, 29, 2):
@@ -264,60 +267,47 @@ def market_stall(seed=0):
             hw = 3.4 - abs(dy - 31) * 0.4
             if abs(dx - 34) <= hw: c.put(dx, dy, E[5] if dx < 34 else E[3])
     c.hl(32, 37, 27, E[2])
-    # 차일: 윗면(사다리꼴) y 2..14, 앞 천 y 14..22
-    for y in range(2, 15):
-        t = (y - 2) / 12
-        x0 = int(10 - 8 * t); x1 = int(38 + 8 * t)
+    for y in range(3, 9):                                             # 차일 윗면: 뒤쪽 사다리꼴, 밝은 흰 베
+        t = (y - 3) / 5
+        x0 = int(8 - 5 * t); x1 = int(40 + 5 * t)
         for x in range(x0, x1):
-            f = (x - x0) / max(1, x1 - x0)
-            stripe = ((x + 3) // 6) % 2
-            tone = (5 if y < 6 else 4) if stripe == 0 else 3
-            if f > 0.7: tone = max(2, tone - 1)
-            c.put(x, y, P[tone])
-        c.put(x0, y, P[2]); c.put(x1 - 1, y, P[2])
-    for y in range(15, 22):
+            c.put(x, y, P[5] if y < 6 else P[4])
+        c.put(x0, y, P[3]); c.put(x1 - 1, y, P[3])
+    for y in range(9, 21):                                            # 앞으로 늘어진 베(왼쪽 밝음 → 오른쪽 어둠), 가는 주름
         for x in range(2, 46):
-            stripe = ((x + 1) // 6) % 2
             f = (x - 2) / 43
-            tone = (4 if f < 0.5 else 3) if stripe == 0 else (3 if f < 0.5 else 2)
+            tone = 4 if f < 0.45 else (3 if f < 0.8 else 2)
+            if (x // 5) % 2 == 0 and y > 12: tone = max(2, tone - 1)
+            if y == 9: tone = 5
             c.put(x, y, P[tone])
-    for x in range(2, 46):                                            # 파란 단과 물결 가장자리
-        c.put(x, 15, B[5]); c.put(x, 16, B[4])
-        wave = 2 if (x // 3) % 2 == 0 else 1
-        for y in range(22 - wave, 22):
-            c.put(x, y, B[3] if x < 24 else B[2])
-        if (x // 3) % 2 == 0:
-            c.put(x, 22, B[2])
+    for x in range(2, 46, 2):                                         # 처마 끝 새끼줄 점선
+        c.put(x, 21, S[2]); c.put(x + 1, 20, S[3])
     outline(c)
     return c
 
 
 def wondumak():
-    """원두막 48×64: 네 기둥 위의 높은 마루 + 낮은 초가 지붕, 마루 앞 가는 난간, 오른쪽 사다리."""
+    """원두막 48×64: 굵기 같은 기둥 넷, 사방이 트인 높은 마루(윗면 밝음 + 앞은 가는 난간 살), 낮은 초가 지붕, 오른쪽 사다리."""
     c = Cv(3 * T, 4 * T)
     Wd = RGB['wood']; E = RGB['earth']; S = RGB['straw']
     ground_shadow(c, 26, 61, 22, 2.4, 70)
-    for px in (4, 42):                                                # 기둥(뒤 두 개는 마루 뒤로 숨는다)
-        for y in range(26, 60):
-            c.put(px, y, Wd[5]); c.put(px + 1, y, Wd[4]); c.put(px + 2, y, Wd[2])
-    for px in (13, 33):
-        for y in range(26, 44):
-            c.put(px, y, Wd[3]); c.put(px + 1, y, Wd[2])
-    # 마루: 윗면(널) y 40..46, 앞 널 y 46..50, 아래 보
-    for y in range(40, 47):
+    for px in (4, 18, 28, 42):                                        # 기둥 넷(굵기 같음, 뒤 둘은 마루 아래로 어둡게)
+        back = px in (18, 28)
+        for y in range(28, 60 if not back else 52):
+            c.put(px, y, Wd[4 if back else 5]); c.put(px + 1, y, Wd[3 if back else 4]); c.put(px + 2, y, Wd[1 if back else 2])
+    for x in range(3, 45): c.put(x, 56, Wd[3])                       # 아래 가로 도리(그림자 속)
+    for y in range(38, 47):                                           # 마루 윗면(앞쪽이 넓다)
         for x in range(2, 46):
-            c.put(x, y, Wd[6] if y == 40 else (Wd[5] if (x // 5) % 2 else Wd[4]))
-    for y in range(47, 51):
-        for x in range(2, 46): c.put(x, y, Wd[4] if x < 20 else (Wd[3] if x < 36 else Wd[2]))
-    for x in range(2, 46): c.put(x, 51, SHADOW, 80); c.put(x, 52, SHADOW, 50)
-    # 뒤 난간(마루 뒤쪽 가로대)과 앞 낮은 가로대
-    for x in range(3, 45): c.put(x, 36, Wd[5]); c.put(x, 37, Wd[3])
-    for x in (3, 22, 43): c.vl(x, 36, 41, Wd[3])
-    # 사다리(오른쪽 앞): 두 가로 기둥 + 가로대
-    for y in range(47, 61):
+            c.put(x, y, Wd[6] if y == 38 else (Wd[5] if (x // 5) % 2 else Wd[4]))
+    for y in range(47, 49):
+        for x in range(2, 46): c.put(x, y, Wd[3] if x < 24 else Wd[2])
+    for x in range(2, 46): c.put(x, 49, SHADOW, 80)
+    for x in range(3, 45): c.put(x, 40, Wd[5])                        # 앞 난간: 가로대 + 세로 살 (마루 앞)
+    for x in range(3, 45, 4): c.vl(x, 41, 47, Wd[3]); c.vl(x + 1, 41, 47, Wd[2])
+    for x in range(3, 45): c.put(x, 43, Wd[4])
+    for y in range(47, 61):                                           # 사다리(오른쪽 앞)
         c.put(33, y, Wd[5]); c.put(34, y, Wd[3]); c.put(40, y, Wd[4]); c.put(41, y, Wd[2])
     for y in range(49, 60, 3): c.hl(34, 40, y, Wd[5])
-    # 지붕: 낮고 넓은 초가 방석
     roof = thatch3d.dome2(48, 24, seed=3)
     c.paste(roof, 0, 6)
     for x in range(4, 44):                                            # 처마 밑 그늘
@@ -351,22 +341,31 @@ def pagoda_on_podium():
 
 
 def nugak():
-    """누각 128×128: 석축 높은 단 위에 단청 정자. 가운데 돌계단이 땅까지 내려온다."""
+    """누각 128×128: 석축 단 위에 높은 마루를 얹은 2층 누각 — 마루 밑에 누하주(굵은 붉은 기둥)가 보이고 난간을 두르며, 가운데 돌계단이 땅까지 내려온다."""
     W, H = 8 * T, 8 * T
     c = Cv(W, H)
-    S = RGB['stone']
+    S = RGB['stone']; R = RGB['red']; Wd = RGB['wood']; E = RGB['earth']
     ground_shadow(c, W // 2 + 4, H - 3, W // 2 - 4, 3, 70)
-    FY = 100                                                          # 단 앞면 시작 y
-    for y in range(86, FY):                                           # 단 윗면
+    FY = 100
+    for y in range(92, FY):                                           # 단 윗면
         for x in range(2, W - 2):
             c.put(x, y, S[5] if (x // 6 + y) % 4 else S[4])
-    c.hl(2, W - 2, 86, S[6])
+    c.hl(2, W - 2, 92, S[6])
     pav_rows = K.house('pv', 5, 'ooooo', 'kkkkk', rows=3, dan=False, steps=(), hip=True)[:-1]
     pav = K.assemble(pav_rows, K.library(), post=lambda cv: (K.roof_baram(cv, 3, 'dg', wing=24), K.pavilion_open(cv, 5)))
-    c.paste(pav, (W - pav.w) // 2, 12)
+    c.paste(pav, (W - pav.w) // 2, 6)
+    # 누하주: 마루 밑(정자 마루 y≈86 아래)부터 단까지 굵은 붉은 기둥 여섯 + 사이 어두운 그늘
+    x0 = (W - pav.w) // 2 + 16
+    for y in range(82, 94):
+        for x in range(x0, x0 + 80): c.put(x, y, E[0])
+    for i in range(6):
+        px = x0 + i * 16 - 2
+        for y in range(80, 93):
+            for dx in range(5):
+                c.put(px + dx, y, R[4] if dx == 1 else (R[3] if dx < 3 else R[2]))
+    for x in range(x0 - 6, x0 + 86): c.put(x, 80, Wd[5]); c.put(x, 81, Wd[3])      # 마루 밑 보
     stone_courses(c, 0, FY, W, H - 4, seed=21, ch=8)
     for x in range(W): c.put(x, FY, S[6]); c.put(x, FY + 1, S[2])
-    # 가운데 돌계단: 위 윗면 3줄 + 앞 단 3개
     sx0, sx1 = W // 2 - 20, W // 2 + 20
     for k in range(4):
         yy = H - 4 - (k + 1) * 6
@@ -378,7 +377,5 @@ def nugak():
                 c.put(x, y, S[6] if top and y == yy else (S[5] if top else (S[4] if f < 0.6 else S[3])))
         c.hl(sx0 + inset, sx1 - inset, yy + 5, S[2])
     for x in range(W): c.put(x, H - 4, S[2]); c.put(x, H - 3, SHADOW, 90)
-    for y in range(H - 2, H):
-        for x in range(4, W - 4): c.put(x, y, SHADOW, 60)
     outline(c)
     return c

@@ -99,6 +99,8 @@ def dome2(W, H, seed=0):
             low = H - 1 - 2.0 * u * u - fr[x] * (1 if y > H - 6 else 0)
             if y > low:
                 continue
+            if y >= H - 2 and rnd(x, y, seed + 11) < 0.35:
+                continue                              # 짚 끝이 들쭉날쭉
             base = 3.9 - 1.5 * t                       # 위 밝음 → 아래 어두움
             base += -0.45 * u                          # 빛은 왼쪽 위
             for tb in (0.36, 0.68):                    # 방석 세 단의 경계: 어두운 골 + 바로 아래 밝은 입술
@@ -112,5 +114,9 @@ def dome2(W, H, seed=0):
             if x % 2 == 0: base -= 0.35                 # 가닥 사이 틈
             if abs(dx) > hw - 1.0 or y == 0: base -= 0.45
             if y > H - 3: base -= 0.5
+            if t > 0.74: base -= 0.7                   # 아래 앞사면은 한 톤 어둡다(처마 안쪽 그늘)
+            if abs(u) < 0.6 and y in (3, 4): base -= 0.7   # 용마름: 마루를 덮은 어두운 띠 + 위 밝은 줄
+            if abs(u) < 0.6 and y in (1, 2): base += 0.4
+            if 5 < y < H - 5 and ((x + y) % 16 == 0 or (x - y) % 16 == 0): base -= 0.55   # 새끼줄 격자
             cv.put(x, y, BR[max(0, min(5, int(round(base))))])
     return cv

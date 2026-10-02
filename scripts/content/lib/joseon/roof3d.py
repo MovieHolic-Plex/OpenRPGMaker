@@ -74,12 +74,18 @@ def roof(W, H, style='giwa', wing=22, seed=0):
         for y in range(ridge_h - 1, int(wb1) + 1):
             if cv.a[y, xi, 3]:
                 cv.put(xi, y, line)
-        # 마루 끝: 날개 안쪽 용마루 끝에 둥근 장식
-        cx = xi
-        for dy, dx, c in ((-1, 0, hi), (-1, 1 * sgn, mid), (0, 0, hi), (0, 1 * sgn, hi), (1, 0, mid), (1, 1 * sgn, lo)):
-            xx, yy = cx + dx, 1 + dy
-            if 0 <= yy < H and 0 <= xx < W:
-                cv.put(xx, max(0, yy), c)
+        # 치미: 용마루 끝에 앉은 뭉툭한 마감 기와(바깥 윗끝이 말려 오른다)
+        shape = {0: (0, 2, 'tip'), 1: (0, 4, 'hi'), 2: (0, 5, 'face'), 3: (0, 5, 'face'), 4: (0, 5, 'face'), 5: (1, 5, 'dark')}
+        for yy, (k0, k1, kind) in shape.items():
+            for k in range(k0, k1):
+                xx = xi + sgn * k
+                if not (0 <= xx < W): continue
+                if kind == 'tip': col = G[6]
+                elif kind == 'hi': col = G[6] if k < 2 else G[5]
+                elif kind == 'dark': col = G[2]
+                else: col = G[5] if k < 2 else (G[4] if k < 4 else G[3])
+                if k == k1 - 1 and kind == 'face': col = G[2]       # 안쪽 가장자리 그늘
+                cv.put(xx, yy, col)
     # 날개 끝 갈고리: 바깥 위쪽 모서리 두 화소를 위로 말아 올린다
     for sgn in (1, -1):
         x0 = 0 if sgn == 1 else W - 1

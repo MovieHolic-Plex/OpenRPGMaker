@@ -583,7 +583,8 @@
    "lamp_double",
    "column_monument"
   ],
-  "front_only": true
+  "front_only": true,
+  "thin_ok": "홍살(창살 대)과 가는 살은 원래 가는 선"
  },
  "deungrong_mun": {
   "cls": "prop",
@@ -617,6 +618,22 @@
    "forum.stoa",
    "forum.temple",
    "castle.gatehouse"
+  ]
+ },
+ "fort_wall_h1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ]
+ },
+ "fort_wall_h2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
   ]
  }
 }

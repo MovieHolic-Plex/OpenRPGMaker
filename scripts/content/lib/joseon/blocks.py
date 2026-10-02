@@ -180,10 +180,13 @@ def thatch_wall_block(half, kind):
             for x in range(T):
                 if (x + y) % 2 == 0: c.put(x, y, E[4])
         if kind == 'w':
-            c.rect(5, 8, 13, 16, W[3]); c.rect(6, 9, 12, 15, P[5])
-            c.rect(8, 9, 10, 15, W[4]); c.hl(6, 12, 12, W[4])
+            c.rect(5, 8, 13, 16, W[3]); c.rect(6, 9, 12, 16, P[5])           # 한지 살창: 세로 살만
+            for xx in (7, 9, 11): c.vl(xx, 9, 16, W[4])
     else:
-        if kind == 'f': c.rect(4, 0, 14, 2, W[4])
+        if kind == 'f':
+            c.rect(5, 0, 13, 5, W[3]); c.rect(6, 0, 12, 5, P[5])
+            for xx in (7, 9, 11): c.vl(xx, 0, 5, W[4])
+            c.hl(5, 13, 5, W[4])
         if kind != 'o': c.hl(0, T, 14, E[3]); c.hl(0, T, 15, E[2])
         else: c.hl(0, T, 14, E[2]); c.hl(0, T, 15, E[1])
     if kind == 'o':                                   # 열린 마루칸: 어두운 방 안, 앞에 마루 윗면과 마루 앞 널
@@ -197,13 +200,14 @@ def thatch_wall_block(half, kind):
             for y in range(7, 11):
                 for x in range(T): c.put(x, y, W[5] if y == 7 else (W[4] if (x // 5 + y) % 2 else W[3]))
             c.hl(0, T, 11, W[5]); c.hl(0, T, 12, W[2]); c.hl(0, T, 13, W[1])
-    if kind == 'd':
+    if kind == 'd':                                   # 한지 바른 격자 미닫이(외짝): 세로 살 셋 + 가로대, 손잡이 없음
         y0, y1 = (7, 16) if half == 'u' else (0, 14)
         c.rect(4, y0, 14, y1, W[3])
-        c.rect(5, y0 + (1 if half == 'u' else 0), 13, y1, W[4])
-        c.vl(8, y0, y1, W[3]); c.vl(12, y0, y1, W[3])
+        c.rect(5, y0 + 1, 13, y1 - (3 if half == 'b' else 0), P[5])
+        for xx in (7, 9, 11): c.vl(xx, y0 + 1, y1 - (3 if half == 'b' else 0), W[4])
+        c.hl(5, 13, y0 + (4 if half == 'u' else 4), W[4])
         if half == 'b':
-            c.rect(5, 7, 13, 9, W[3]); c.rect(10, 3, 12, 5, W[1])
+            c.rect(5, 11, 13, 14, W[4]); c.hl(5, 13, 11, W[5])           # 머름 널
     c.rect(0, 3 if half == 'u' else 0, 2, 16, W[4])
     if kind == 'r': c.rect(14, 3 if half == 'u' else 0, 16, 16, W[3])
     return c
@@ -387,6 +391,20 @@ def roof_baram(cv, R=3, style='giwa', wing=24, trim=False):
         eave_trim(cv, H)
     eave_fill(cv, H)
     dither_under(cv, H, 4)
+    if trim:
+        plaque(cv, H + 1)
+
+
+def plaque(cv, y0, w=16):
+    """현판: 처마 밑 가운데에 거는 어두운 편액(금빛 글자 점)."""
+    W = RGB['wood']; S = RGB['straw']
+    x0 = (cv.w - w) // 2
+    for y in range(y0, y0 + 6):
+        for x in range(x0, x0 + w):
+            edge = y in (y0, y0 + 5) or x in (x0, x0 + w - 1)
+            cv.put(x, y, W[5] if edge else W[1])
+    for gx in range(x0 + 3, x0 + w - 3, 3):
+        cv.put(gx, y0 + 2, S[5]); cv.put(gx + 1, y0 + 3, S[4]); cv.put(gx, y0 + 3, S[3])
 
 
 def eave_trim(cv, roof_h=48):
@@ -407,8 +425,8 @@ def thatch_baram(cv, R=3, over=0):
     import thatch3d
     H = R * T
     cv.a[:H, :, :] = 0
-    hd = max(32, min(44, int((cv.w + over) * 0.40)))
-    cv.paste(thatch3d.dome2(cv.w - 8 + over, hd, seed=cv.w), 4, 51 - hd)
+    hd = max(28, min(38, int((cv.w + over) * 0.34)))
+    cv.paste(thatch3d.dome2(cv.w - 16 + over, hd, seed=cv.w), 8, 51 - hd)
     eave_fill(cv, H, thatch=True)
     dither_under(cv, H, 4)
 
@@ -579,9 +597,10 @@ def pavilion_open(cv, bays, wall_y0=48, wall_y1=80, x0=16):
         for y in range(wall_y0 - 1, wall_y1 - 7):
             for dx in range(5):
                 xx = min(max(cxp - 2 + dx, x0 - 2), x1 + 1)
-                tone = G[5] if dx == 1 else (G[4] if dx < 3 else G[2])
-                if (y - wall_y0) % 8 in (2, 3) and dx in (1, 2, 3):
-                    tone = R[3] if dx == 2 else B[3]                # 단청 띠
+                rel = y - (wall_y0 - 1)
+                tone = R[4] if dx == 1 else (R[3] if dx < 3 else R[2])          # 붉은 주칠 기둥
+                if rel < 7:                                                      # 기둥머리 단청: 청·녹 띠와 붉은 무늬
+                    tone = [B[5], G[4], B[4], G[4], B[3]][dx] if rel % 4 < 2 else [G[5], R[4], G[4], R[4], G[3]][dx]
                 cv.a[y, xx] = (*tone, 255)
         for dx in range(7):                                         # 주춧돌
             xx = cxp - 3 + dx

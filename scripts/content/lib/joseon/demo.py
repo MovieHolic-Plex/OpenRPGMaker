@@ -249,7 +249,7 @@ for y in range(5, 21):
 for x in range(5, 20): put_obj('stone_bank', x, 3, True)
 # 정자가 선 언덕: 석축 둑과 돌계단
 put_obj('fort_wall_end_l', 34, 40, True)
-for x in range(35, 38): put_obj('fort_wall_h', x, 40, True)
+for x in range(35, 38): put_obj(('fort_wall_h', 'fort_wall_h1', 'fort_wall_h2')[x % 3], x, 40, True)
 
 # 숲띠: 큰 나무·어린 나무·덤불을 크기 섞어 겹치게(맵 밖으로 이어지는 뒷숲 포함)
 for nm, x, y in (('zelkova_a', 0, -1), ('pine_a', 3, -2), ('zelkova_b', 7, -2), ('pine_b', 11, -2), ('zelkova_c', 15, -2), ('pine_c', 19, -2), ('zelkova_e', 23, -2), ('pine_d', 27, -2),
@@ -336,7 +336,7 @@ def tiles_by_id(i):
 # ---------- 빈 잔디 채우기: 맨 잔디 창이 가장 큰 곳에 덤불·어린 나무·화단을 놓는다(같은 그림 6칸 안 반복 금지) ----------
 import random as _rand
 _POOL = ['bush_l_a', 'bush_l_b', 'bush_s_a', 'bush_s_b', 'pine_c', 'pine_d', 'pine_a', 'bamboo_grove', 'bush_a', 'bush_b', 'bush_c', 'small_z_a', 'small_z_b', 'small_p', 'flower_bed', 'bush_a', 'bush_b', 'bush_c', 'haystack', 'jars', 'persimmon_b', 'persimmon_c']
-_rng = _rand.Random(7)
+_rng = _rand.Random(int(os.environ.get('JS_SEED', '13')))
 
 
 def _lawn_grid():
