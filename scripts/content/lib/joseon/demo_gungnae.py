@@ -27,7 +27,7 @@ from PIL import Image
 
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
 OUT = os.path.join(ROOT, 'tiledata', 'joseon-gungnae')
-MW, MH = 96, 88
+MW, MH = 96, 96
 N, E, S, W = G.N, G.E, G.S, G.W
 COLS = 16
 
@@ -126,10 +126,10 @@ def SH(x, y, w, h, alpha=58):
 
 # ================================================================ 1단계: 틀(성벽 + 문 + 바깥 길 + 숲띠)
 XW, XE = 8, 86                 # 서·동 성벽 왼쪽 칸(폭 2)
-YN, YS = 14, 79                # 북·남 성벽 발 행(그림은 위로 5칸)
+YN, YS = 14, 87                # 북·남 성벽 발 행(그림은 위로 5칸)
 GX = 42                        # 대문루 왼쪽 칸(폭 12 → 42..53, 가운데 x=48.0)
-YG = 46                        # 동·서 소문루 발 행(그림 9칸: 38..46)
-IN_X0, IN_X1, IN_Y0, IN_Y1 = XW + 2, XE - 1, YN + 1, YS - 5      # 성 안 칸 범위(10..85, 15..74)
+YG = 50                        # 동·서 소문루 발 행(그림 9칸: 42..50)
+IN_X0, IN_X1, IN_Y0, IN_Y1 = XW + 2, XE - 1, YN + 1, YS - 5      # 성 안 칸 범위(10..85, 15..82)
 CX = 48                        # 중심 경계선 x
 
 # --- 바깥 흙길 고리(폭 2) · 바깥 숲띠는 나무로(아래)
@@ -140,11 +140,11 @@ paint('wall', XW, YN - 4, XE + 1, YN); paint('wall', XW, YS - 4, XE + 1, YS)
 paint('wall', XW, YN, XW + 1, YS); paint('wall', XE, YN, XE + 1, YS)
 # --- 북·남 대문 통로 + 석판 대로(폭 4: 46..49)
 paint('slab', 46, 2, 49, YN)                                                   # 북문 아래(문루 그림이 덮는다) + 문 앞
-paint('slab', 46, YN + 1, 49, 21)                                              # 북문 → 해자 다리 앞
+paint('slab', 46, YN + 1, 49, 28)                                              # 북문 → 해자 다리 앞(다리 데크가 21..27 을 덮는다)
 paint('slab', 46, YS - 12, 49, YS + 6)                                         # 남문(그림 덮음)·성 안 앞·성 밖 대로
 # --- 동·서 소문루 앞 길(성벽 틈 2행)
-GAP_Y0, GAP_Y1 = YG + 1, YG + 2
-paint('road', 0, GAP_Y0, 13, GAP_Y1); paint('road', MW - 14, GAP_Y0, MW - 1, GAP_Y1)
+GAP_Y0, GAP_Y1 = YG + 1, YG + 3                    # 3행 틈(길 폭 3)
+paint('road', 0, GAP_Y0, 27, GAP_Y1); paint('road', 68, GAP_Y0, MW - 1, GAP_Y1)
 paint('slab', XW - 2, GAP_Y0, XW + 3, GAP_Y1); paint('slab', XE - 2, GAP_Y0, XE + 3, GAP_Y1)
 
 
@@ -163,7 +163,7 @@ def wall_ring():
         for x in range(GX + 13, XE):
             Pb(H3[(x * 5 + 1 + (yb % 7)) % 3], x, yb)
     for y in range(YN + 1, YS):
-        if YG - 8 <= y <= YG + 2:                      # 소문루 몸체 + 통행 틈
+        if YG - 8 <= y <= YG + 3:                      # 소문루 몸체 + 통행 틈
             continue
         P(V3[y % 3], XW, y, 'foot'); P(VE3[y % 3], XE, y, 'foot')
     P('gungnae_gate_small_6', XW - 2, YG - 8, 'foot'); P('gungnae_gate_small_6', XE - 2, YG - 8, 'foot')
@@ -174,6 +174,237 @@ def wall_ring():
 
 wall_ring()
 
+
+
+# ================================================================ 2단계: 해자 고리 + 지류 + 연못/섬 + 다리
+WATER = set()
+
+
+def w_rect(x0, y0, x1, y1):
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            WATER.add((x, y))
+
+
+def w_ell(cx, cy, rx, ry):
+    for y in range(int(cy - ry) - 1, int(cy + ry) + 2):
+        for x in range(int(cx - rx) - 1, int(cx + rx) + 2):
+            if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1.0:
+                WATER.add((x, y))
+
+
+def w_cut_ell(cx, cy, rx, ry):
+    for y in range(int(cy - ry) - 1, int(cy + ry) + 2):
+        for x in range(int(cx - rx) - 1, int(cx + rx) + 2):
+            if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1.0:
+                WATER.discard((x, y))
+
+
+def w_clean(it=4):
+    """1칸 두께 가시·1칸 구멍을 없앤다(8방향 블롭이 깨끗하게 이어지도록)."""
+    for _ in range(it):
+        add, rem = set(), set()
+        for y in range(MH):
+            for x in range(MW):
+                c = (x, y) in WATER
+                n_, s_, e_, w_ = ((x, y - 1) in WATER), ((x, y + 1) in WATER), ((x + 1, y) in WATER), ((x - 1, y) in WATER)
+                if not c and ((n_ and s_) or (e_ and w_)):
+                    add.add((x, y))
+                if c and ((not n_ and not s_) or (not e_ and not w_)):
+                    rem.add((x, y))
+        WATER.update(add); WATER.difference_update(rem)
+
+
+# --- 닫힌 고리: 북·남변은 직선 운하(폭 5), 서·동변은 굽이쳐 넓어진다(바깥쪽 둑에 연못이 붙는다)
+MX0, MX1 = 28, 67                  # 해자 바깥 x 범위(28..32 · 63..67)
+MY0, MY1 = 22, 68                  # 해자 바깥 y 범위(북 22..26 · 남 64..68)
+w_rect(MX0, MY0, MX1, MY0 + 4); w_rect(MX0, MY1 - 4, MX1, MY1)
+w_rect(MX0, MY0, MX0 + 4, MY1); w_rect(MX1 - 4, MY0, MX1, MY1)
+# 서쪽: 물가가 굽이친다(바깥 둑 불룩 둘)
+w_ell(29, 37, 3.4, 4.5); w_ell(31, 60, 2.6, 3.6)
+# 동쪽: 같은 식으로 어긋나게
+w_ell(66, 33, 3.4, 4.5)
+# 서쪽 연못(좌성황 섬): 해자에서 가지 물길로 이어진다
+w_ell(22, 40, 5.6, 4.2); w_rect(22, 43, MX0, 45)
+# 동쪽 연못(감옥 섬): 가지 물길이 해자에서 호수로
+w_ell(75, 60, 7, 6.2)
+w_clean()
+# --- 섬(연못 안 땅): 좌성황 섬 · 감옥 섬 · 서남 작은 섬 둘
+ISLANDS = []
+
+
+def island(cx, cy, rx, ry):
+    w_cut_ell(cx, cy, rx, ry)
+    ISLANDS.append((cx, cy, rx, ry))
+
+
+island(22, 40, 2.4, 1.6)
+island(75, 60, 3.6, 3.4)
+w_clean(2)
+for (x, y) in WATER:
+    KG[y][x] = 'water'
+
+
+# --- 다리: v6(남북 통행, 길이 6 = 물 5칸 + 양쪽 둑 한 칸씩 걸침) / h5·h6(동서 통행)
+def bridge_v(x, y_water0, size='6', over=None):
+    """남북 다리: 물 첫 행 y_water0. 데크 = y_water0-1 .. +4(길이 6), 남쪽 끝 앞면 행 = y_water0+5."""
+    n = 'gungnae_bridge_v' + size
+    cv = objects[n]
+    h = cv.h // T
+    top = y_water0 - 1
+    P(n, x, top, solid=None)
+    wd = {'4': 3, '5': 3, '6': 4}[size]
+    for yy in range(top, top + h):
+        for xx in range(x, x + wd):
+            KG[yy][xx] = 'bridge'
+    KEEP.update({(xx, yy) for yy in range(top - 1, top + h + 1) for xx in range(x - 1, x + wd + 1)})
+    return top, h, wd
+
+
+def bridge_h(x_water0, y, size='5'):
+    """동서 다리: 물 첫 열 x_water0, 데크 = x_water0 .. 길이만큼. 걷는 행 = 조각 1..width."""
+    n = 'gungnae_bridge_h' + size
+    cv = objects[n]
+    w, h = cv.w // T, cv.h // T
+    wd = {'4': 3, '5': 3, '6': 4}[size]
+    x = x_water0 if size == '5' else x_water0 - 1
+    P(n, x, y, solid=None)
+    for yy in range(y + 1, y + 1 + wd):
+        for xx in range(x, x + w):
+            KG[yy][xx] = 'bridge'
+    KEEP.update({(xx, yy) for yy in range(y - 1, y + h + 1) for xx in range(x - 1, x + w + 1)})
+    return x, w
+
+
+# 북 대로(폭 4)·남 대로
+bridge_v(46, MY0)                                   # 북: 물 22..26 → 데크 21..26, 앞면 27
+bridge_v(46, MY1 - 4)                               # 남: 물 64..68 → 데크 63..68, 앞면 69
+# 북·남 보조 다리(폭 3 → v5 대신 v6 폭 4 도 쓴다)
+bridge_v(36, MY0); bridge_v(58, MY0)
+bridge_v(36, MY1 - 4); bridge_v(58, MY1 - 4)
+# 서·동 다리
+bridge_h(MX0, 50); bridge_h(MX1 - 4, 50)            # 서·동 중앙 대로(석판): 물 열 30..34 / 61..65, 걷는 행 48..50
+
+
+# 섬으로 가는 좁은 다리(폭 1칸)
+def bridge_narrow_h(x, y):
+    P('gungnae_bridge_narrow_h', x, y, solid=None)
+    for xx in range(x, x + 4):
+        KG[y + 1][xx] = 'bridge'
+
+
+bridge_narrow_h(17, 39)        # 서쪽 연못: 서안 → 좌성황 섬
+bridge_narrow_h(79, 59)        # 동쪽 호수: 동안(바깥 고리 길) → 감옥 섬
+
+# ================================================================ 3단계: 중앙 왕궁 구역(담 + 정전 + 전각 + 행각 + 궁문 + 연못 + 소나무 + 석등)
+PX0_, PY0_, PX1_, PY1_ = 34, 33, 61, 62                 # 궁 담 사각형(모서리 칸 좌표)
+PV0, PV1, PH0, PH1 = 37, 58, 37, 59                     # 포장 마당(x 37..58, y 37..59)
+paint('yard', PX0_, PY0_ + 2, PX1_, PY1_ - 1)
+paint('paving', PV0, PH0, PV1, PH1)
+# 안쪽 고리 길(해자 안 땅): 담 둘레 한 칸
+paint('road', 33, 31, 62, 31); paint('road', 33, 31, 33, 64); paint('road', 62, 31, 62, 64); paint('road', 33, 64, 62, 64)
+# 북·남 보조 다리 앞 샛길
+paint('road', 36, 28, 38, 30); paint('road', 58, 28, 60, 30)
+paint('slab', 46, 28, 49, 36)                           # 북 대로 → 궁 북문
+paint('slab', 46, 57, 49, 69)                           # 궁 남문 → 남쪽 해자 다리
+paint('slab', 46, 70, 49, YS - 12)                      # 다리 앞 대로(남문루까지 석판)
+
+
+def palace():
+    pw = ['palace_wall_h', 'palace_wall_h1', 'palace_wall_h2']
+    for x in range(PX0_ + 1, PX1_):
+        if 45 <= x <= 50:
+            continue
+        P(pw[x % 3], x, PY0_, 'foot'); P(pw[(x + 1) % 3], x, PY1_ - 2, 'foot')
+    P('palace_wall_nw', PX0_, PY0_); P('palace_wall_ne', PX1_, PY0_)
+    P('palace_wall_sw', PX0_, PY1_ - 2); P('palace_wall_se', PX1_, PY1_ - 2)
+    for y in range(PY0_ + 2, PY1_ - 2):
+        P('palace_wall_v', PX0_, y); P('palace_wall_v_e', PX1_, y)
+    P('palace_gate_4', 45, PY0_ - 3, 'foot'); P('palace_gate_4', 45, PY1_ - 5, 'foot')
+    P('palace_hall_5', 43, 37, 'body')
+    for y in range(49, 59):
+        P('palace_eodo', 47, y, None)
+    P('palace_haengnak_6', 37, 43, 'body'); P('palace_haengnak_6', 52, 43, 'body')
+    P('palace_jeongak_a', 38, 53, 'body'); P('palace_jeongak_c', 51, 53, 'body')
+    P('palace_pond_4', 37, 50, 'body'); P('palace_pond_4', 55, 50, 'body')
+    P('palace_pine_a', 38, 37, 'foot'); P('palace_pine_b', 54, 37, 'foot')
+    P('palace_haetae', 41, 47); P('palace_haetae', 53, 47)
+    P('palace_deumeu', 43, 49); P('palace_deumeu', 52, 49)
+    P('palace_lantern', 46, 51); P('palace_lantern', 50, 51)
+    P('palace_censer', 48, 54)
+
+
+palace()
+
+
+# ================================================================ 4단계: 길 고리 + 구획 건물(문 앞은 길망에 닿는다)
+paint('road', 10, 15, 85, 16); paint('road', 10, 81, 85, 82)            # 성 안 고리 길(폭 2, 성벽 바로 안쪽)
+paint('road', 10, 15, 11, 82); paint('road', 84, 15, 85, 82)
+paint('road', 10, 51, 27, 53); paint('road', 68, 51, 85, 53)             # 동서 큰길(폭 3) → 해자 다리
+paint('slab', 46, 17, 49, 28)                                            # 북 대로가 안쪽 고리를 가로지른다
+paint('slab', 46, 70, 49, YS - 12)                                       # 남 대로
+NOTREE = []        # 나무가 서면 안 되는 사각형 (x, y, w, h)
+
+
+def building(name, x, y, door=None, apron=True, solid='body', notree=True):
+    """건물: 놓고, 발 밑 한 줄을 흙(yard) 앞마당으로 깔고, 문 앞 칸을 DOORS 에 적는다."""
+    cv = objects[name]
+    w, h = cv.w // T, cv.h // T
+    P(name, x, y, solid)
+    if apron:
+        for xx in range(x, x + w):
+            if inb(xx, y + h) and KG[y + h][xx] in (None, 'yard'):
+                KG[y + h][xx] = 'yard'
+    d = (w // 2) if door is None else door
+    DOORS.append({'x': x + d, 'y': y + h, 'piece': name})
+    if notree:
+        NOTREE.append((x - 1, y, w + 2, h + 2))
+    return w, h
+
+
+def jumak(x0, y0, ramp_front=('gn_jm_row_room_4', 'gn_jm_daemun_6'), wall='gn_mudg', fill=True):
+    """ㅁ자 주막(주막 키트 조합): 담 16×18 안에 안채·뒤 모서리 둘·세로 행랑 둘·앞 대문채. 마당은 yard, 문 앞은 샛길로 이어진다."""
+    W_, H_ = 16, 18
+    paint('yard', x0, y0, x0 + W_ - 1, y0 + H_ - 1)
+    for x in range(x0 + 1, x0 + W_ - 1):
+        P(f'{wall}_h{x % 3}', x, y0, 'foot')
+        if abs(x - (x0 + 10.5)) > 1:
+            P(f'{wall}_h{(x + 1) % 3}', x, y0 + H_ - 1, 'foot')
+    P(f'{wall}_c_nw', x0, y0); P(f'{wall}_c_ne', x0 + W_ - 1, y0)
+    P(f'{wall}_c_sw', x0, y0 + H_ - 1); P(f'{wall}_c_se', x0 + W_ - 1, y0 + H_ - 1)
+    for y in range(y0 + 1, y0 + H_ - 1):
+        P(f'{wall}_v', x0, y); P(f'{wall}_v1', x0 + W_ - 1, y)
+    bx, by = x0 + 1, y0 + 1
+    P('gn_jm_corner_l', bx, by, 'body'); P('gn_jm_anchae_4', bx + 5, by, 'body'); P('gn_jm_corner_r', bx + 9, by, 'body')
+    P('gn_jm_row_v_3', bx, by + 6, 'body'); P('gn_jm_row_v_3', bx + 10, by + 6, 'body')
+    P('gn_jm_row_room_4', bx, by + 9, 'body'); P('gn_jm_daemun_6', bx + 6, by + 9, 'body')
+    P('gn_sarip_mud', x0 + 10, y0 + H_ - 1, 'foot')
+    # 마당 소품: 뒤 담 쪽 장독대와 우물
+    P('jars', bx + 5, by + 6); P('well', bx + 7, by + 6); P('pyeongsang', x0 + 6, by + 8, 'foot')
+    NOTREE.append((x0 - 1, y0 - 1, W_ + 2, H_ + 3))
+    DOORS.append({'x': x0 + 10, 'y': y0 + H_, 'piece': 'gn_jm_daemun_6'})
+    DOORS.append({'x': x0 + 11, 'y': y0 + H_, 'piece': 'gn_jm_daemun_6'})
+    for xx in range(x0, x0 + W_):                        # 담 앞 한 줄: 큰 맨 흙 앞마당
+        if KG[y0 + H_][xx] is None:
+            KG[y0 + H_][xx] = 'yard'
+
+
+# --- 서쪽
+building('gn_shop_armory', 12, 17, 4); building('gn_shop_butcher', 21, 17, 3)       # 서북 상점 줄 A (9+7)
+building('gn_shop_smithy', 12, 25, 3); building('gn_shop_cloth', 20, 25, 4)         # 상점 줄 B (8+8)
+jumak(12, 54)                                                                       # 서남 ㅁ자 주막(담 포함 x 12..27, y 54..71)
+building('gn_u_thatch_6', 12, 73, 1); building('gn_thatch_d', 20, 75, 3)            # 주막 아래 집 둘(문 앞은 고리 길)
+P('seonangdang', 21, 39, 'foot')                                                    # 좌성황 섬 사당
+# --- 동쪽
+jumak(68, 17)                                                                       # 동북 ㅁ자 주막(x 68..83, y 17..34)
+building('tower_sulsa_5', 71, 36, 4, solid='foot')                                   # 술사의 길 탑
+building('giwa_sadang', 80, 37, 2); building('thatch_hut_2', 80, 44, 2)             # 우성황 · 초가
+P('gwanah_5', 72, 57, 'body')                                                       # 감옥(섬 위)
+DOORS.append({'x': 75, 'y': 63, 'piece': 'gwanah_5'})
+building('tower_yesik_7', 70, 67, 5, solid='foot', apron=False)                     # 예식장(남쪽 고리 길 앞)
+# --- 남쪽 띠
+building('gn_l_giwa_6', 29, 71, 1); building('thatch_house_3', 38, 74, 2)
+building('gn_g2_inn_6', 54, 70, 3); building('gn_g2_nugak_5', 62, 70, 3)
 
 # ================================================================ ==== PIPELINE (맨 아래 고정) ====
 def finish(tag='stage'):
