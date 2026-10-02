@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.72.0 — 2026-10-02
+
+### 기능
+
+- replace arcane legacy enemy art with editable pixel sheets (`c596d06`)
+- replace organic legacy enemies with articulated native pixel sheets (`805c566`)
+- add original humanoid and boss enemy pixel sheets (`20f09e6`)
+
+### 수정
+
+- retire deprecated monster art with 100 native replacements (#1872) (`f9edf69`)
+- retire legacy monster paintings and preserve native enemy catalog (`4428a19`)
+
 ## 0.71.0 — 2026-10-02
 
 ### 기능
