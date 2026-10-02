@@ -6,30 +6,30 @@
   "tiledata/joseon-village20/joseon-village20-chipset.png",
   "tiledata/joseon-gungnae/joseon-gungnae-chipset.png"
  ],
- "sourceCells": 9215,
- "baseSheetCells": 8112,
- "tailCopies": 83,
+ "sourceCells": 9389,
+ "baseSheetCells": 8144,
+ "tailCopies": 81,
  "tailByClass": {
-  "X": 37,
+  "X": 35,
   "C": 10,
   "F": 36
  },
- "count": 9344,
+ "count": 9472,
  "tilesPerRow": 64,
  "sheetPx": [
   1024,
-  2336
+  2368
  ],
  "pieces": 248,
  "terrainGroups": 17,
  "autotileGroups": 8,
  "structureKits": 248,
  "tileGroups": 265,
- "overlapCells": 1186,
+ "overlapCells": 1328,
  "overlapByClass": {
-  "X": 647,
-  "C": 361,
-  "F": 178
+  "X": 699,
+  "C": 401,
+  "F": 228
  },
  "pieceWalkSource": {
   "auto": 204,
@@ -65,18 +65,18 @@
     96,
     96
    ],
-   "objectCells": 5406,
-   "walkable": 5055,
+   "objectCells": 5835,
+   "walkable": 5009,
    "doors": 17,
    "passages": 5,
    "crossings": 17,
    "fronts": 1,
-   "people": 17,
+   "people": 19,
    "start": [
     52,
     48
    ],
-   "shadowOnlyCells": 0,
+   "shadowOnlyCells": 367,
    "groundKindMismatch": 0,
    "groundKindMismatchSamples": []
   }
@@ -109,7 +109,7 @@
    "gungnae_wall_v2",
    "gungnae_wall_v2_e",
    "gungnae_gate_side_5",
-   "gungnae_tower_corner_4",
+   "gungnae_tower_corner_5",
    "gungnae_bridge_v6",
    "gungnae_bridge_h6",
    "gungnae_bridge_narrow_h5",
@@ -211,8 +211,8 @@
    "zelkova_a",
    "pine_d",
    "bush_b",
-   "bush_s_b",
-   "bush_l_a"
+   "bush_l_a",
+   "bush_s_b"
   ],
   "appended": [
    "water47g",
@@ -226,7 +226,7 @@
   ],
   "variants": [],
   "softDiff": {
-   "cells": 261,
+   "cells": 269,
    "maxRgbDelta": 198
   }
  },

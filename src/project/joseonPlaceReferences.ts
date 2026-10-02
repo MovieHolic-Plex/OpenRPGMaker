@@ -15,7 +15,7 @@ export const JOSEON_PLACE_REFERENCES = [
     "preview": "/assets/region-references/joseon-v20.png",
     "tilesetPreview": "/assets/joseon-baram/joseon-baram-chipset.png",
     "projectDownload": "/assets/region-references/joseon-v20.oprn.json",
-    "sourceProjectId": "a37392ac-9965-42ef-bc72-deaeea94d4de",
+    "sourceProjectId": "c47c4be2-e794-402b-a6ec-289971e79400",
     "sourceMapId": "joseon_v20",
     "snapshotProjectId": "oprn-place-joseon-v20-v1",
     "rules": [
@@ -41,13 +41,13 @@ export const JOSEON_PLACE_REFERENCES = [
     "preview": "/assets/region-references/gungnae.png",
     "tilesetPreview": "/assets/joseon-baram/joseon-baram-chipset.png",
     "projectDownload": "/assets/region-references/gungnae.oprn.json",
-    "sourceProjectId": "a37392ac-9965-42ef-bc72-deaeea94d4de",
+    "sourceProjectId": "c47c4be2-e794-402b-a6ec-289971e79400",
     "sourceMapId": "gungnae",
     "snapshotProjectId": "oprn-place-gungnae-v1",
     "rules": [
       "조선(바람의나라풍) 손 도트 조각 248종과 오토타일 8종으로 지은 마을 참고 사례. 칩셋 계열 `oprn-joseon`, 칸 96×96.",
-      "집 문 17곳(문 앞 접근칸 + 디딤돌), 통로 5곳(대문·성문), 주민 17명. 시작 칸 (52,48).",
-      "걸을 수 있는 칸 5055/9216. 시작 칸에서 모든 문 앞·디딤돌·통로·주민 칸까지 런타임 이동 규칙(canMove)으로 닿는 것을 확인했다 (4962칸 도달, 놓친 곳 0).",
+      "집 문 17곳(문 앞 접근칸 + 디딤돌), 통로 5곳(대문·성문), 주민 19명. 시작 칸 (52,48).",
+      "걸을 수 있는 칸 5009/9216. 시작 칸에서 모든 문 앞·디딤돌·통로·주민 칸까지 런타임 이동 규칙(canMove)으로 닿는 것을 확인했다 (4903칸 도달, 놓친 곳 0).",
       "칸 통행은 조각마다 X(막힘)·C(걸음, 사람 위)·F(걸음, 사람 아래)로 구운 값이다. 타일셋 「참고문서」에 조각 사전·칸 배열·오토타일 표·조립 예제·오류 교훈이 있다.",
       "새 프로젝트와 기존 프로젝트 모두 불러올 때 이 타일셋(joseon_baram)과 참고문서가 생긴다."
     ],

@@ -2457,49 +2457,44 @@
 },
 "gungnae_gate_side_5": {
 "w": 5,
-"h": 11,
+"h": 8,
 "cls": "prop",
 "rows": [
 ".XXX.",
 "XXXXX",
 "XXXXX",
 "XXXXX",
-"XXXXX",
-"XXXXX",
-"XXXXX",
-"FFFFF",
-"FF.FF",
-"FF.FF",
-"FF.FF"
+".FFFF",
+".F.FF",
+".F.FF",
+".F.FF"
 ],
 "source": "override",
 "steps": []
 },
 "palace_gate_side_3": {
 "w": 3,
-"h": 11,
+"h": 8,
 "cls": "prop",
 "rows": [
+"FXF",
 "XXX",
 "XXX",
 "XXX",
-"XXX",
-"XXX",
-"XXX",
-"XXX",
-"FFF",
-"FFF",
-"FFF",
-"FFF"
+".FF",
+".FF",
+".FF",
+".FF"
 ],
 "source": "override",
 "steps": []
 },
 "gungnae_tower_corner_5": {
 "w": 5,
-"h": 11,
+"h": 12,
 "cls": "prop",
 "rows": [
+"FXXXF",
 "XXXXX",
 "XXXXX",
 "XXXXX",
@@ -2517,9 +2512,10 @@
 },
 "gungnae_tower_corner_4": {
 "w": 4,
-"h": 11,
+"h": 12,
 "cls": "prop",
 "rows": [
+"FXXF",
 "XXXX",
 "XXXX",
 "XXXX",

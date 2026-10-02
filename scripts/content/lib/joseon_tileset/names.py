@@ -26,6 +26,9 @@ SIDES = {"h": "가로", "v": "세로", "e": "동", "nw": "북서", "ne": "북동
 
 
 def ko_name(name):
+    m_ = re.match(r"^(.*)__s(\d+)$", name)
+    if m_:
+        return ko_name(m_.group(1)) + f" (변형 {m_.group(2)})"
     if name in FIX:
         return FIX[name]
     for pat, fmt in WORDS:

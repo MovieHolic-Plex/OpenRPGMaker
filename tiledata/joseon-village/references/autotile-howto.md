@@ -1,6 +1,6 @@
 # 오토타일 칠하는 법과 검사
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9344칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9215 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9472칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9389 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 1. 칠하는 도구는 `fill_region`/`lay_path` — 재료 이름(`조선 흙길`·`조선 마당`·`조선 강·연못`·`조선 모 논`)을 준다. 도구가 마스크를 계산해 가장자리를 맞춘다.
 2. 한 칸만 지울 때 둘레 칸도 다시 계산된다(8방향 그룹은 대각 이웃까지). 칠한 뒤 `show_map_region` 으로 가장자리를 눈으로 본다.

@@ -36,8 +36,17 @@ def cell_stats(img):
     }
 
 
+VARIANT_RE = re.compile(r"__s\d+$")
+
+
+def base_name(name):
+    """시트 합치기가 만든 변형 이름(`gungnae_gate_great_12__s1`)에서 기준 조각 이름을 돌려준다."""
+    return VARIANT_RE.sub("", name)
+
+
 def infer_cls(name, meta):
     """pieces_meta.json 에 없는 조각의 분류를 이름에서 짐작한다."""
+    name = base_name(name) if name not in (meta or {}) else name
     m = (meta or {}).get(name)
     if m and m.get("cls"):
         return m["cls"]
@@ -161,6 +170,8 @@ def apply_override(grid, spec, st, w, h, name):
                 else:
                     g[j][i] = "F" if j >= p["from"] else above
     for (j0, i0, j1, i1, ch) in spec.get("rect", []):
+        if j1 >= h or i1 >= w:
+            raise ValueError(f"{name}: rect {[j0, i0, j1, i1]} 가 조각({w}x{h}) 밖이다 — 그림이 바뀐 조각이면 piece-walk-overrides.json 의 줄을 새 그림에 맞게 고친다")
         for j in range(j0, j1 + 1):
             for i in range(i0, i1 + 1):
                 g[j][i] = ch if st[j][i]["any"] else "."
@@ -182,8 +193,9 @@ def build_piece_walk(pieces, cell_img, meta, overrides):
         cls = infer_cls(name, meta)
         grid, steps = auto_grid(name, cls, st, w, h)
         source = "auto"
-        if name in ov:
-            grid = apply_override(grid, ov[name], st, w, h, name)
+        oname = name if name in ov else base_name(name)      # 변형(`…__s1`)은 기준 이름의 보정을 이어받는다(그림이 달라 격자가 안 맞으면 변형 이름으로 따로 줄을 적는다)
+        if oname in ov:
+            grid = apply_override(grid, ov[oname], st, w, h, name)
             source = "override"
             steps = [(j, i) for (j, i) in steps if grid[j][i] == "F"]
         out[name] = {"w": w, "h": h, "cls": cls, "rows": ["".join(r) for r in grid], "source": source,

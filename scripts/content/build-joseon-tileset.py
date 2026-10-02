@@ -188,6 +188,12 @@ def cell(i):
     return CELLS[i]
 
 
+def OVP(name):
+    """조각 보정 한 건. 변형 이름(`…__s1`)은 따로 줄이 없으면 기준 이름의 줄을 이어받는다."""
+    ov = overrides.get("pieces", {})
+    return ov.get(name) or ov.get(W.base_name(name)) or {}
+
+
 groups = {n: v for n, v in pieces.items() if "count" in v and "w" not in v}     # 지형 묶음(평면 줄)
 objects = {n: v for n, v in pieces.items() if "w" in v}                         # 물체 조각(칸 격자)
 
@@ -294,7 +300,7 @@ for mi, spec in enumerate(args.maps):
                 for i in range(wk["w"]):
                     ch = wk["rows"][j][i]
                     if ch != ".":
-                        pcols = overrides.get("pieces", {}).get(pl["name"], {}).get("passage", {}).get("cols", [])
+                        pcols = OVP(pl["name"]).get("passage", {}).get("cols", [])
                         cover.setdefault((pl["x"] + i, pl["y"] + j), []).append((ch, objects[pl["name"]]["tiles"][j][i], i in pcols))
     else:
         warn(f"{mid}: extra.json 이 없어 겹침 칸 통행을 짐작(F)한다")
@@ -322,7 +328,8 @@ for mi, spec in enumerate(args.maps):
             if need is None:
                 if ex and t not in piece_cell_class:
                     shadow_only += 1
-                need = piece_cell_class.get(t) or "F"
+                # 어느 조각의 배치 기록에도 없는 칸 그림(주로 물·땅에 떨어진 그림자): 막힘 조각 칸이면 막힘, 아니면 아래 땅이 정하게(C) — F 로 두면 물 위가 걸어진다.
+                need = "X" if piece_cell_class.get(t) == "X" else "C"
             nt = resolve(t, need)
             upper.append(nt)
             cls_grid[y][x] = need
@@ -510,7 +517,7 @@ for name, p in objects.items():
     if door:
         parts.append(dict(id="door", kind="entrance", dx=door[1], dy=door[0], w=1, h=1,
                           note="문 앞 디딤돌 칸(걸음) — 문 칸 자체는 막힘, 그 아래 칸이 문 앞 길"))
-    ovr = overrides.get("pieces", {}).get(name, {})
+    ovr = OVP(name)
     if "passage" in ovr:
         pa = ovr["passage"]
         parts.append(dict(id="passage", kind="entrance", dx=min(pa["cols"]), dy=pa["from"], w=len(pa["cols"]), h=p["h"] - pa["from"],
@@ -596,7 +603,7 @@ for m in maps_out:
     passages = []
     if ex:
         for pl in ex["placed"]:
-            ovr = overrides.get("pieces", {}).get(pl["name"], {})
+            ovr = OVP(pl["name"])
             if "passage" in ovr:
                 for c in ovr["passage"]["cols"][:1]:
                     passages.append(dict(piece=pl["name"], x=pl["x"] + c, front=pl["y"] + pl["h"], behind=pl["y"] - 1,
@@ -605,7 +612,7 @@ for m in maps_out:
     crossings, fronts = [], []
     if ex:
         for pl in ex["placed"]:
-            ovp = overrides.get("pieces", {}).get(pl["name"], {})
+            ovp = OVP(pl["name"])
             wk = walk.get(pl["name"])
             if not wk:
                 continue

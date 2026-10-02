@@ -1,9 +1,9 @@
 {
- "projectId": "a37392ac-9965-42ef-bc72-deaeea94d4de",
+ "projectId": "c47c4be2-e794-402b-a6ec-289971e79400",
  "projectDir": "/tmp/oprn-joseon-baram-proof",
  "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
  "revision": 1,
- "sha256": "07363bded654bf93a15f73392e515a6921d7028179d4aeef1883504fa8cf8f59",
+ "sha256": "8d8dc9cc64e138aa34e34a651467a73f9387d91776289eb576c4594a69dca92b",
  "saved": true,
  "reopened": true,
  "deepEqual": {
@@ -15,7 +15,7 @@
  "tileset": {
   "id": "joseon_baram",
   "family": "oprn-joseon",
-  "count": 9344,
+  "count": 9472,
   "tilesPerRow": 64,
   "image": {
    "type": "bundled",
@@ -73,8 +73,8 @@
     96
    ],
    "lower": 9216,
-   "upper": 5406,
-   "npcs": 17
+   "upper": 5835,
+   "npcs": 19
   },
   "joseon_v20": {
    "size": [
@@ -93,7 +93,7 @@
     "same": 9216,
     "mismatch": 0,
     "samples": [],
-    "walkable": 5055
+    "walkable": 5009
    },
    "reach": {
     "crossLines": 56,
@@ -121,8 +121,8 @@
      52,
      48
     ],
-    "reachable": 4962,
-    "walkable": 5055,
+    "reachable": 4903,
+    "walkable": 5009,
     "missed": {
      "doorFront": [],
      "doorStep": [],
@@ -139,14 +139,14 @@
    "masks": [
     {
      "group": "jb_road16_autotile",
-     "cells": 1600,
+     "cells": 1615,
      "mismatch": 0,
      "edgeConnects": true,
      "samples": []
     },
     {
      "group": "jb_yard16_autotile",
-     "cells": 839,
+     "cells": 856,
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
@@ -174,21 +174,21 @@
     },
     {
      "group": "jb_water47g_autotile",
-     "cells": 975,
+     "cells": 993,
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
     },
     {
      "group": "jb_slab_edge16_autotile",
-     "cells": 303,
+     "cells": 307,
      "mismatch": 0,
      "edgeConnects": true,
      "samples": []
     },
     {
      "group": "jb_palace_court16_autotile",
-     "cells": 494,
+     "cells": 456,
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
@@ -409,7 +409,7 @@
    "same": 9216,
    "mismatch": 0,
    "samples": [],
-   "walkable": 5055
+   "walkable": 5009
   },
   "joseon_v20": {
    "cells": 3584,
