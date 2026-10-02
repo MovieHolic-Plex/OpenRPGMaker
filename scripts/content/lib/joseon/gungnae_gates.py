@@ -173,12 +173,13 @@ def wall_end(side='l', var=0):
 
 
 # ---------------------------------------------------------------- 세로 성벽 (동서 변)
-VW = 48            # 폭 3칸: 왼쪽 여백 4 + 서쪽 옆면 12px + 윗면 28px(몸체 가운데 = 칸 가운데 24) + 오른쪽 땅 그림자 4px
-OX = 4
-FACE_W, TOP_X0, TOP_X1 = 12, 16, 44
+VW = 48            # 폭 3칸을 꽉 채운다: 서쪽 옆면 12px + 윗면 36px(성가퀴 띠 9 · 걷는 길 18 · 성가퀴 띠 9). 땅 그림자는 조각 밖 별도 항목(demo_gungnae)
+OX = 0
+FACE_W, TOP_X0, TOP_X1 = 12, 12, 48
+BAND, WALK = 9, 18
 
 
-def _vwall_cols(c, y0, y1, seed, shadow=True, face=True):
+def _vwall_cols(c, y0, y1, seed, shadow=False, face=True):
     """세로 성벽 한 줄(폭 48): 3/4 시점에서 서쪽 옆면(돌 쌓기, 빛을 받아 밝음)이 왼쪽에 보이고, 그 옆에 윗면(성가퀴 띠 · 걷는 길 · 성가퀴 띠),
     오른쪽에는 땅에 지는 그림자(반투명 8px). 가로 성벽의 앞면(장대석+막돌)과 같은 돌 문법이다.
     옆면: 12px = 돌 줄 3(4px씩)이 세로로 달리고 줄눈은 가로 틱. 성가퀴는 10줄 + 틈 6줄 주기(16)라 칸 위아래로 이어진다."""
@@ -196,23 +197,23 @@ def _vwall_cols(c, y0, y1, seed, shadow=True, face=True):
                 elif rnd(x, y, 70 + seed) > 0.92: t = max(2, t - 1)
                 if x == OX + FACE_W - 1: t = 3                                # 윗면과 만나는 아래 그늘선
                 c.put(x, y, S[t])
-        for x in range(TOP_X0 + 7, TOP_X0 + 21):                              # 걷는 길
-            t = 5 if x < TOP_X0 + 14 else 4
+        for x in range(TOP_X0 + BAND, TOP_X0 + BAND + WALK):                  # 걷는 길
+            t = 5 if x < TOP_X0 + BAND + WALK // 2 else 4
             if (y + seed * 3) % 8 == 7: t -= 1
-            elif x == TOP_X0 + 7: t = 6
+            elif x == TOP_X0 + BAND: t = 6
             elif rnd(x, y, 80 + seed) > 0.93: t = min(6, t + 1)
             c.put(x, y, S[t])
         m = (y + seed * 4) % 16
-        for (ax, bx, left) in ((TOP_X0, TOP_X0 + 7, True), (TOP_X0 + 21, TOP_X0 + 28, False)):    # 성가퀴 띠
+        for (ax, bx, left) in ((TOP_X0, TOP_X0 + BAND, True), (TOP_X0 + BAND + WALK, TOP_X1, False)):    # 성가퀴 띠
             for x in range(ax, bx):
                 u = x - ax
                 if m < 10:
                     if u == 0: t = 6
-                    elif u < 4: t = 6 if left else 5
+                    elif u < 5: t = 6 if left else 5
                     else: t = 4 if left else 3
                     if m == 0: t = 6
                     if m == 9: t = max(2, t - 2)
-                    if m in (4, 5) and u == 3 and seed % 2: t = 1
+                    if m in (4, 5) and u == 4 and seed % 2: t = 1
                 else:
                     t = 3 if left else 2                                      # 성가퀴 사이 낮은 턱(어두워 이빨이 도드라진다)
                     if u == 0: t = 4 if left else 3
@@ -240,8 +241,7 @@ def wall_corner(kind):
     hz = wall_h(1)
     arm = Cv(VW, WH)
     _vwall_cols(arm, 0, WH, 1, shadow=False)
-    sh = Cv(VW, WH)
-    _vwall_cols(sh, 0, WH, 1, shadow=True)
+    sh = arm
 
     def copy_hz(xa, xb, ya, yb):
         for y in range(ya, yb):
@@ -252,7 +252,7 @@ def wall_corner(kind):
         for y in range(ya, yb):
             for x in range(xa, xb):
                 c.a[y, x] = src.a[y, x]
-    tx0, tx1 = TOP_X0 + 7, TOP_X0 + 21                 # 세로 걷는 길(19..32)
+    tx0, tx1 = TOP_X0 + BAND, TOP_X0 + BAND + WALK     # 세로 걷는 길
     if east:
         ax0, ax1 = tx1, VW                             # 가로 팔이 열린 구간(32..47)
     else:
@@ -262,7 +262,7 @@ def wall_corner(kind):
         copy_hz(0, VW, 0, Y_WALK0)                         # 위 가장자리: 뒤 성가퀴 줄
         copy_hz(ax0, ax1, Y_WALK0, Y_FACE)                 # 열린 쪽: 걷는 길 + 앞 성가퀴
         # 열린 쪽 아래 가로 성벽 앞면(성벽이 가로로 이어지는 쪽)
-        fx0, fx1 = (TOP_X1, VW) if east else (0, OX + FACE_W)
+        fx0, fx1 = (TOP_X1, VW) if east else (0, FACE_W)
         copy_hz(fx0, fx1, Y_FACE, WH)
     else:
         copy_arm(0, VW, 0, Y_FACE, arm)                    # 위에서 내려오는 세로 성벽
@@ -586,7 +586,7 @@ def gate_small(bays=6, pass_w=32):
     return c
 
 
-def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(20, 60), pw=6, roof=(10, 70), wall=None, wall_x=16, plaster=False):
+def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8, 72), wall=None, wall_x=16, plaster=False):
     """측면 문루 (동·서문용): 세로 성벽 한 줄을 동서로 가로지르는 열린 문루. 통로(맨 아래 4행)를 기준으로 짠다.
     3/4 시점에서 용마루가 남북(성벽 방향)으로 달리는 맞배 지붕이 통로 바로 위에 얹히고(rows-4 행), 지붕 밑 남쪽 처마 아래 양끝(=벽 몸체 양끝)에 기둥,
     기둥 사이로 통로 바닥(길)이 보인다. 지붕·기둥은 같은 중심선을 쓰고 기둥 바깥 끝 = 성벽 몸체 바깥 끝. 위쪽에는 wall(성벽 한 칸 그림)을 붙여
@@ -615,6 +615,11 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(20, 60), pw=6, roof=(10
                 c.put(xp + k, y, S[k0[kk]] if not plaster else Wd[k0[kk]])
         for k in range(pw + 2):                                         # 주춧돌
             c.put(xp - 1 + k, H - 2, S[6]); c.put(xp - 1 + k, H - 1, S[3])
+    for x in range(px0 - 1, px1 + 1):                                   # 기둥 머리를 잇는 문틀 보(도리): 두 기둥이 한 문틀로 읽히게 한다
+        for k, t in enumerate((6, 5, 4, 3, 2)):
+            c.put(x, y_e + k, Wd[t] if plaster else S[t])
+        if (x - px0) % 6 == 2:
+            c.put(x, y_e + 5, Wd[2] if plaster else S[2])
     for y in range(y_e, y_e + 6):                                       # 지붕 밑 처마 그늘(길 위, 반투명)
         for x in range(px0 + pw, px1 - pw):
             c.put(x, y, SHADOW, 120 - (y - y_e) * 18)
@@ -702,8 +707,7 @@ def _deck_h(c, x0, x1, y0, y1, seed=0, style=0):
     for y in range(y0, y1):
         row = (y - y0) // 8
         for x in range(x0, x1):
-            f = (y - y0) / max(1.0, y1 - y0)
-            t = 5 if f < 0.5 else 4
+            t = 4 if (y - y0) < 2 else 5                     # 한 톤 판석: 뒤 난간 밑 2줄만 그늘(위/아래 반분 명암 없음)
             off = 10 if row % 2 else 0
             if (x - x0 + off) % 20 == 0: t -= 1
             elif (y - y0) % 8 == 7: t -= 1
@@ -790,8 +794,7 @@ def stone_bridge_v(length=5, width=3, style=0, landing=True):
         row = y // 12
         for x in range(dx0, dx1):
             off = 10 if row % 2 else 0
-            f = (x - dx0) / max(1.0, dx1 - dx0)
-            t = 5 if f < 0.5 else 4
+            t = 4 if x < dx0 + 2 else 5                     # 한 톤 판석: 왼쪽 난간 밑 2열만 그늘(좌/우 반분 명암 없음)
             if y % 12 == 11: t -= 1
             elif (x - dx0 + off) % 20 == 0: t -= 1
             elif rnd(x, y, 130 + style) > 0.93: t = min(6, t + 1)
@@ -869,7 +872,7 @@ def narrow_bridge(length=4, vertical=False):
         for x in range(4, W - 4):                                              # 밧줄
             c.put(x, y0 - 8 + (1 if (x // 8) % 2 else 0), S_[4] if x % 3 else S_[3])
         for (a, b2) in ((0, 8), (W - 8, W)):                                   # 돌 받침
-            for y in range(y0 - 2, y1 + 8):
+            for y in range(y0 - 1, y1 + 3):                                    # 갑판 높이에 맞춘 낮은 교대
                 for x in range(a, b2):
                     c.put(x, y, S[5] if (y < y0 + 2) else (S[4] if (x * 3 + y) % 5 else S[3]))
         for xx in range(14, W - 10, 16):                                       # 물속 말뚝

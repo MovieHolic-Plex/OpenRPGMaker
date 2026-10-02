@@ -203,6 +203,16 @@ def wall_ring():
             if GX <= x < GX + 12:
                 continue
             items.append((yb + 1 + 12 / T, 0, x, 'shadow', shv))
+    # 동·서 세로 성벽 밑 땅 그림자(몸체 오른쪽 한 칸에 반투명 3단: 문루 행은 문 조각이 제 그림자를 갖는다)
+    svx = Cv(T, T)
+    for xx, al in enumerate((54, 54, 36, 36, 36, 20, 20, 20, 0)):
+        for yy in range(T):
+            if al: svx.put(xx, yy, SHADOW, al)
+    for xs in (XW + 3, XE + 3):
+        for yy in range(YN + 1, YS):
+            if GATE_Y0 <= yy <= GATE_Y1:
+                continue
+            items.append((yy + 1, 0, xs, 'shadow', svx))
     # 모서리 망루(폭 4: 성벽 바깥으로 한 칸 나온다)
     for (x, yb) in ((XW - 1, YN), (XE - 1, YN), (XW - 1, YS), (XE - 1, YS)):    # 망루 폭 5: 중심 = 세로 성벽 몸체 가운데(x+1.5칸)
         Pb('gungnae_tower_corner_5', x, yb)
@@ -262,15 +272,10 @@ for (cx, cy, rx, ry) in ((29, 36, 3.6, 4.6), (30, 60, 2.8, 3.8), (29, 29, 2.4, 2
                          (42.6, 22.5, 3.0, 1.9), (52.6, 23, 3.0, 2.2), (66, 30, 2.4, 3.4), (66.5, 62, 2.6, 3.6),
                          (38, 70.5, 3.6, 2.6), (56, 70.5, 3.4, 2.6), (65, 67, 2.4, 2.4)):
     w_ell(cx, cy, rx, ry)
-# 안쪽 기슭 물러남(폭 4): 서·동 x=32/63 열, 북·남 y=28/67 행
-for y in list(range(33, 41)) + list(range(55, 62)):
-    WATER.discard((MX0 + 4, y))
-for y in list(range(31, 38)) + list(range(57, 64)):
-    WATER.discard((MX1 - 4, y))
-for x in list(range(31, 35)) + list(range(52, 57)):
-    WATER.discard((x, MY0 + 4))
-for x in list(range(42, 45)) + list(range(33, 36)) + list(range(52, 58)):
-    WATER.discard((x, MY1 - 4))
+# 안쪽 기슭 물러남(폭 4): 사각 행/열을 걷어내는 대신 타원으로 파서 기슭이 완만한 사선 굽이가 되게 한다
+for (cx, cy, rx, ry) in ((32.0, 36.5, 1.2, 4.6), (32.0, 58.0, 1.2, 3.9), (63.0, 34.0, 1.2, 3.9), (63.0, 60.0, 1.2, 3.9),
+                         (32.5, 26.0, 2.5, 1.2), (53.5, 26.0, 2.9, 1.2), (43.0, 67.0, 2.1, 1.2), (34.0, 67.0, 2.1, 1.2), (54.5, 67.0, 3.3, 1.2)):
+    w_cut_ell(cx, cy, rx, ry)
 # 남안 건물 뒤뜰: 건물이 서는 구간(x 27..36 · 56..72)의 맨 아래 물 행을 풀로 물려 건물과 물 사이에 뒤뜰 한 줄을 둔다
 for x in list(range(27, 38)) + list(range(55, 73)):
     WATER.discard((x, MY1))

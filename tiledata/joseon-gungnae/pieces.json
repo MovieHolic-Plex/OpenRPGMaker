@@ -1,8 +1,8 @@
 {
  "tile": 16,
  "cols": 16,
- "rows": 275,
- "tileCount": 3319,
+ "rows": 277,
+ "tileCount": 3354,
  "pieces": {
   "grass8": {
    "id": 0,
@@ -4332,7 +4332,7 @@
     ]
    ]
   },
-  "millstone": {
+  "firewood": {
    "id": 3590,
    "w": 2,
    "h": 1,
@@ -4363,10 +4363,23 @@
      3594
     ]
    ]
+  },
+  "sotdae": {
+   "id": 3595,
+   "w": 1,
+   "h": 2,
+   "tiles": [
+    [
+     3595
+    ],
+    [
+     3611
+    ]
+   ]
   }
  },
  "overlapTiles": {
   "start": 3664,
-  "count": 732
+  "count": 765
  }
 }
