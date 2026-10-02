@@ -53,7 +53,7 @@ def objects():
         'bamboo_grove': TR.bamboo_grove(0),
         'bush_a': TR.bush('a', 0),
         'bush_b': TR.bush('b', 6),
-        'bush_c': TR.bush('c', 2),
+        'bush_c': TR.bush('c', 0),
         'giwa_house_5b': K.assemble(K.house('jo', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'brown', wing=24)),
         'thatch_house_3': K.assemble(K.house('jc', 3, 'ldr', 'ldr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
         'thatch_house_3b': K.assemble(K.house('jc', 3, 'lwr', 'lfr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),

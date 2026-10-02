@@ -240,9 +240,9 @@ def _rubble(c, x0, x1, y0, y1, var=0):
             for yy in range(a, b):
                 for xx in range(max(x0, bx0), min(x1, bx1)):
                     edge = xx == bx0 or yy == b - 1
-                    if edge: tone = 1
-                    elif yy == a: tone = 5 if xx < bx0 + (bx1 - bx0) * 0.7 else 4         # 돌 윗면 반사
-                    else: tone = 4 if xx < bx0 + (bx1 - bx0) * 0.55 else 3
+                    if edge: tone = 2
+                    elif yy == a: tone = 6 if xx < bx0 + (bx1 - bx0) * 0.7 else 5         # 돌 윗면 반사
+                    else: tone = 5 if xx < bx0 + (bx1 - bx0) * 0.55 else 4
                     if xx > 11: tone = max(2, tone - 1)                                   # 오른쪽 어둡게
                     if not edge and rnd(xx, yy, 73 + var) < 0.14: tone = max(2, tone - 1)
                     c.put(xx, yy, S[tone])
@@ -291,14 +291,14 @@ def wall_corner2(side):
         for x in range(2, T): c.put(x, 8, S[1]); c.put(x, 9, S[1])
         _cap_rows(c, 2, T, round_l=True)
         for y in range(10, 30):                                      # 끝 돌기둥(짙게 + 왼쪽 반사)
-            for x in range(2, 8): c.put(x, y, S[4] if x == 2 else (S[2] if x < 6 else S[1]))
+            for x in range(2, 8): c.put(x, y, S[6] if x == 2 else (S[4] if x < 6 else S[3]))
         for x in range(1, 9): c.put(x, 8, W_[3]); c.put(x, 9, W_[5] if x < 5 else W_[3])
     else:
         _rubble(c, 0, 15, 9, 30, 2)
         for x in range(0, 15): c.put(x, 8, S[1]); c.put(x, 9, S[1])
         _cap_rows(c, 0, 15, round_r=True)
         for y in range(10, 30):
-            for x in range(8, 14): c.put(x, y, S[3] if x == 8 else (S[2] if x < 12 else S[1]))
+            for x in range(8, 14): c.put(x, y, S[5] if x == 8 else (S[4] if x < 12 else S[3]))
         for x in range(7, 15): c.put(x, 8, W_[3]); c.put(x, 9, W_[5] if x < 11 else W_[2])
     for x in range(T): c.put(x, 30, S[1]); c.put(x, 31, SHADOW, 80)
     return c

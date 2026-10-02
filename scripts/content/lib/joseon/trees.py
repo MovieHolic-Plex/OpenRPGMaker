@@ -328,7 +328,7 @@ def bush(kind='a', seed=0):
     """관목 32×32: a=둥근 짙은 덤불, b=연두 덤불, c=개나리(노란 꽃 점)."""
     W, H = 32, 32
     cv = Cv(W, H)
-    ground_shadow(cv, 16, 27, 12, 2.5)
+    ground_shadow(cv, 17, 25, 12, 2.5)
     c = Crown(W, H, seed, shift={'a': -1, 'b': 1, 'c': 1}[kind])
     scatter(c, 16, 15, 15, 11, 18, 4.0, 5.6, flat=0.12, seed=seed)
     c.paint()
@@ -355,13 +355,12 @@ def small_tree(kind='z', seed=0):
     W, H = 32, 48
     cv = Cv(W, H)
     ground_shadow(cv, 16, 44, 11, 2.5)
-    trunk(cv, 16, 28, 45, 5, flare=3, lean=0.03, seed=seed, roots=True)
+    trunk(cv, 16, 28 if kind == 'z' else 20, 45, 5, flare=3, lean=0.03, seed=seed, roots=True)
     c = Crown(W, H, seed, shift=1 if kind == 'z' else 0)
     if kind == 'z':
         scatter(c, 16, 15, 15, 13, 22, 3.6, 5.4, flat=0.15, seed=seed, dark_below=22)
     else:
         scatter(c, 16, 14, 15, 8, 16, 3.6, 5.2, flat=0.2, seed=seed)
-        bark_line(cv, [(16, 30), (14, 24)], 3, 2, seed)
     c.paint()
     c.edge_dark()
     c.bake(cv)
@@ -382,7 +381,7 @@ def bush_size(size='l', seed=0):
         return cv
     W, H = 48, 32
     cv = Cv(W, H)
-    ground_shadow(cv, 24, 28, 19, 2.5)
+    ground_shadow(cv, 25, 26, 19, 2.5)
     c = Crown(W, H, seed, shift=-1 if seed % 2 else 1)
     scatter(c, 24, 15, 22, 12, 26, 4.2, 6.0, flat=0.12, seed=seed)
     c.paint(); c.edge_dark(); c.bake(cv)

@@ -525,7 +525,35 @@ def hip_cut(cv, y0, R, style, wg=32):
                         else: cv.put(x, y, G[2] if k == 0 else G[3])
 
 
-def assemble(rows, L, overlays=(), post=None):
+def finish_house(cv):
+    """벽 오른쪽을 어둡게(빛은 왼쪽 위 → 왼쪽 밝음/오른쪽 어두움) + 오른쪽 옆 땅 그림자. 벽 두 줄 + 기단 줄에만."""
+    from build import _snap_dark
+    y0, y1 = cv.h - 48, cv.h
+    xs = [x for x in range(cv.w) if cv.a[y0 + 4:y1 - 20, x, 3].min() == 255]
+    if not xs:
+        return
+    xa, xb = min(xs), max(xs)
+    cache = {}
+    for y in range(y0, y1):
+        for x in range(xa, xb + 1):
+            if cv.a[y, x, 3] != 255:
+                continue
+            t = (x - xa) / max(1, xb - xa)
+            f = 0.78 if t > 0.86 else 0.88 if t > 0.62 else 1.0
+            if f < 1.0:
+                c = tuple(int(v) for v in cv.a[y, x, :3])
+                k = (c, f)
+                if k not in cache:
+                    cache[k] = _snap_dark(tuple(int(v * f) for v in c))
+                cv.put(x, y, cache[k])
+    for x in range(xb + 1, min(cv.w, xb + 1 + 6)):
+        k = x - xb - 1
+        for y in range(cv.h - 34 + 3 * k, cv.h):
+            if cv.a[y, x, 3] == 0:
+                cv.put(x, y, SHADOW, 72 - 9 * k)
+
+
+def assemble(rows, L, overlays=(), post=None, finish=True):
     """rows: 이름 문자열 한 줄(공백 구분)의 목록. '.' 은 빈 칸."""
     h = len(rows); w = len(rows[0].split())
     cv = Cv(w * T, h * T)
@@ -536,6 +564,7 @@ def assemble(rows, L, overlays=(), post=None):
     for n, x, y in overlays:
         cv.paste(L[n], x * T, y * T)
     if post: post(cv)
+    if finish and h >= 5: finish_house(cv)
     outline(cv)
     return cv
 

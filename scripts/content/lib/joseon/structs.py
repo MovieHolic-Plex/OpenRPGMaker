@@ -97,7 +97,7 @@ def fort_gate():
             c.put(x, y, S[6] if y == 70 else S[5])
     # 누각(벽 없는 정자 + 청록 지붕) — 아래 플린스 줄은 뺀다
     pav_rows = K.house('pv', 5, 'ooooo', 'kkkkk', rows=3, dan=False, steps=(), hip=True)[:-1]
-    pav = K.assemble(pav_rows, K.library(), post=lambda cv: (K.roof_baram(cv, 3, 'giwa', wing=24), K.pavilion_open(cv, 5)))
+    pav = K.assemble(pav_rows, K.library(), post=lambda cv: (K.roof_baram(cv, 3, 'giwa', wing=24), K.pavilion_open(cv, 5)), finish=False)
     c.paste(pav, (W - pav.w) // 2, 0)
     merlons(c, 6, W - 6, 77, step=14, w=10)
     # 앞면: 아래가 넓은 사다리꼴
@@ -366,7 +366,7 @@ def nugak():
             c.put(x, y, S[5] if (x // 6 + y) % 4 else S[4])
     c.hl(2, W - 2, 92, S[6])
     pav_rows = K.house('pv', 5, 'ooooo', 'kkkkk', rows=3, dan=False, steps=(), hip=True)[:-1]
-    pav = K.assemble(pav_rows, K.library(), post=lambda cv: (K.roof_baram(cv, 3, 'giwa', wing=24), K.pavilion_open(cv, 5)))
+    pav = K.assemble(pav_rows, K.library(), post=lambda cv: (K.roof_baram(cv, 3, 'giwa', wing=24), K.pavilion_open(cv, 5)), finish=False)
     c.paste(pav, (W - pav.w) // 2, 6)
     # 누하주: 마루 밑(정자 마루 y≈86 아래)부터 단까지 굵은 붉은 기둥 여섯 + 사이 어두운 그늘
     x0 = (W - pav.w) // 2 + 16
