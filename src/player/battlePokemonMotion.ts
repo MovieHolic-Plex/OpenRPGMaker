@@ -1,6 +1,7 @@
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { battlerSpriteNode, findBattlerNode } from "@/player/battleFieldDom";
 import { spriteEmitPoint, type PokemonMoveMotion } from "@/battle/pokemonMoveMotion";
+import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 
 /**
  * 포켓몬 스킨 기술 안무 (2026-10-02).
@@ -49,6 +50,8 @@ interface Knock {
   squash: boolean;
   /** 타격 세기 0..1 */
   power: number;
+  /** 정지 동안 밀려 있던 거리(로컬 px) — 풀릴 때 이 자리에서 출발한다 */
+  push: number;
 }
 
 /** 착탄 한 번의 세기. 피해 비율(최대 HP 대비)에서 온다 — 40% 를 넘게 깎으면 1. */
@@ -72,6 +75,13 @@ let shakenActionId: number | undefined;
 const WIND_BACK = 14;
 const PUSH = 16;
 const KNOCK = 48;
+/** 발사체가 입에서 떠나는 순간의 「슈웅」(포켓몬 안무 전용, 착탄음과 따로 난다) */
+const LAUNCH_SE = "easyrpg-sound-wind8";
+
+/** 안무가 직접 내는 소리를 전투 시작 때 미리 디코드한다. */
+export function preloadPokemonMotionSounds(): void {
+  preloadBattleSamples([LAUNCH_SE]);
+}
 /** 발사체가 나는 시간 상한·비트 대비 비율 */
 const TRAVEL_MS = 220;
 /** 능력 올리기·회복·상태 걸기의 부르는 동작 길이. 보조 기술의 approach 비트는 가벼운 무게(0.72배)라 190ms 남짓이어서
@@ -313,15 +323,22 @@ function shoot(field: HTMLElement, user: HTMLElement, target: HTMLElement, durat
   // 모으는 동안 입에 빛이 맺힌다
   const charge = fx(field, fieldPoint(field, mouth), orbCss(30, color));
   play(charge, [{ transform: "scale(0.2)", opacity: 0 }, { transform: "scale(1)", opacity: 1, offset: 0.85 }, { transform: "scale(0.6)", opacity: 0 }], { duration: Math.max(60, release + 40), easing: "ease-in" });
+  // 꼬리 구슬은 늦게 떠나 더 빨리 날아 모두 비트 끝(착탄)에 함께 닿는다. 예전엔 28ms 씩 늦게 떠나 같은 시간을 날아
+  // 착탄 뒤 112ms 까지 구슬이 날아오는 중이었다 — 「공이 도착 안 했는데 맞는 동작을 시작한다」(2026-10-02 사용자 리뷰).
   for (let i = 0; i < 5; i += 1) {
     const size = 44 - i * 7;
+    const lag = Math.min(i * 28, travel * 0.5);
     const orb = fx(field, from, orbCss(size, color));
     play(orb, [
       { transform: "translate(0px, 0px) scale(0.5)", opacity: 0 },
       { transform: "translate(0px, 0px) scale(1)", opacity: 1 - i * 0.16, offset: 0.08 },
       { transform: `translate(${d.x}px, ${d.y}px) scale(1)`, opacity: 1 - i * 0.16 },
-    ], { duration: travel, delay: release + i * 28, easing: "cubic-bezier(0.4, 0, 0.9, 0.6)" });
+    ], { duration: Math.max(40, travel - lag), delay: release + lag, easing: "cubic-bezier(0.4, 0, 0.9, 0.6)" });
   }
+  // 떠나는 순간 「슈웅」 — 착탄 소리만 있으면 날아가는 동안이 무음이라 맞는 소리가 갑자기 튀었다(사용자 리뷰).
+  window.setTimeout(() => {
+    if (field.isConnected) playBattleSample(LAUNCH_SE, 0.22, 1.25);
+  }, release);
   ring(field, to, color, 160, 300, durationMs);
   ring(field, to, "#ffffff", 110, 220, durationMs);
 }
@@ -614,7 +631,9 @@ function pushTarget(field: HTMLElement, target: HTMLElement, attacker: HTMLEleme
   const squash = motion === "strike" && !fromBelow;
   prepare(sprite);
   // 정지 동안 밀린 자리에서 좌우로 빠르게 떤다(격투게임식 진동). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
-  const push = { x: unit.x * PUSH * k, y: unit.y * PUSH * k };
+  // 밀림은 세기에 비례 — 2 깎인 작은 타격이 크게 밀리면 맞은 게 아니라 피한 것처럼 보였다(사용자 리뷰).
+  const pushMag = PUSH * k * (0.45 + hit.power * 0.75);
+  const push = { x: unit.x * pushMag, y: unit.y * pushMag };
   const amp = 4 + hit.power * 4;
   const shake = [1, -1, 0.8, -0.8, 0.55, -0.4, 0.2];
   sprite.animate(
@@ -645,35 +664,63 @@ function pushTarget(field: HTMLElement, target: HTMLElement, attacker: HTMLEleme
   const at = fieldPoint(field, { x: c.x - unit.x * edge, y: c.y - unit.y * edge });
   impactBurst(field, at, unit, color, hit);
   cameraKick(field, unit, hit);
-  knocked.set(target, { unit, k, squash, power: hit.power });
+  knocked.set(target, { unit, k, squash, power: hit.power, push: pushMag });
 }
 
-/** 정지가 풀리면 날아갔다 튕겨 돌아오며 좌우로 떤다. 다 돌아온 뒤 두 번 꺼졌다 켜진다 —
- *  날아가는 동안 깜빡이면 넉백이 깜빡임에 가려 안 보였다(그래서 포켓몬은 blinkBattlerNode 를 쓰지 않는다). */
+/** 정지가 풀리면 **끊어서** 움직인다 — 한 프레임에 밀려난 자리로 튀고, 거기서 잠깐 굳은 채 떨다가(경직),
+ *  계단 세 번으로 돌아온 뒤 두 번 꺼졌다 켜진다. 예전엔 곡선으로 미끄러져 갔다가 용수철처럼 출렁이며 돌아와
+ *  「맞았다」가 아니라 「피했다」로 읽혔다(2026-10-02 사용자 리뷰). 거리·기울기·경직 길이는 세기에 비례한다 —
+ *  작은 타격은 밀리기보다 그 자리에서 찌릿 떤다. 날아가는 동안 깜빡이면 넉백이 가려 안 보였으므로 깜빡임은 끝에. */
 function releaseTarget(target: HTMLElement): void {
   const knock = knocked.get(target);
   knocked.delete(target);
   if (!knock) return;
-  const { unit, k, squash, power } = knock;
+  const { unit, k, squash, power, push } = knock;
   const sprite = battlerSpriteNode(target);
-  // 세게 맞을수록 멀리 날아가고 더 기운다(약한 타격 0.8배 … 40% 넘게 깎이면 1.7배)
-  const far = KNOCK * k * (0.8 + power * 0.9);
-  const tilt = Math.round((unit.x >= 0 ? 1 : -1) * (5 + power * 9) * k);
-  const shake = [7, -6, 5, -4, 2];
+  // 세기 0.1 넘는 몫만 거리로 — 2/18 깎인 물대포(0.28)는 화면 약 28px 찌릿, 40% 넘게 깎이면 약 140px 날아간다.
+  const far = Math.max(push, KNOCK * k * Math.max(0, power - 0.1) * 1.4);
+  const tilt = Math.round((unit.x >= 0 ? 1 : -1) * (3 + power * 10) * k);
+  const jitter = 1.5 + power * 2.5;
+  const duration = 380 + Math.round(power * 180);
+  const at = (d: number, dx = 0): string => `${Math.round(unit.x * d + dx)}px ${Math.round(unit.y * d)}px`;
+  // 경직: 전체의 6%→42% 동안 밀린 자리에서 좌우로 끊어 떤다(약 40ms 간격)
+  const stun = [1, -1, 0.7, -0.7, 0.4].map((f, index) => ({
+    translate: at(far, f * jitter), scale: squash ? "1.06 0.94" : "0.98 1.02", rotate: `${tilt}deg`, offset: 0.06 + index * 0.08, easing: "steps(1, end)",
+  }));
   const animation = sprite.animate(
     [
-      { translate: px(unit, PUSH * k), scale: squash ? "1.1 0.88" : "0.96 1.03", rotate: "0deg", offset: 0 },
-      { translate: px(unit, far), scale: "1 1", rotate: `${tilt}deg`, offset: 0.22, easing: "cubic-bezier(0.3, 0, 0.4, 1)" },
-      { translate: px(unit, far * 0.92), rotate: `${Math.round(tilt * 0.8)}deg`, offset: 0.34 },
-      ...shake.map((dx, index) => ({ translate: `${Math.round(unit.x * far * 0.92 * (1 - (index + 1) / 6) + dx)}px ${Math.round(unit.y * far * 0.92 * (1 - (index + 1) / 6))}px`, rotate: `${Math.round(tilt * 0.8 * (1 - (index + 1) / 6))}deg`, offset: 0.42 + index * 0.1 })),
+      { translate: at(push), scale: squash ? "1.1 0.88" : "0.96 1.03", rotate: "0deg", offset: 0, easing: "steps(1, end)" },
+      ...stun,
+      { translate: at(far * 0.55), scale: "1 1", rotate: `${Math.round(tilt * 0.5)}deg`, offset: 0.5, easing: "steps(1, end)" },
+      { translate: at(far * 0.25), rotate: `${Math.round(tilt * 0.2)}deg`, offset: 0.64, easing: "steps(1, end)" },
+      { translate: "0px 0px", scale: "1 1", rotate: "0deg", offset: 0.78, easing: "steps(1, end)" },
       { translate: "0px 0px", scale: "1 1", rotate: "0deg", offset: 1 },
     ],
-    { duration: 440 + Math.round(power * 120), easing: "linear", fill: "forwards" },
+    { duration, easing: "linear", fill: "forwards" },
   );
   animation.onfinish = () => {
     if (!knocked.has(target)) for (const running of sprite.getAnimations()) if (!(running as CSSAnimation).animationName) running.cancel();
   };
-  sprite.animate([{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 420 + Math.round(power * 120), easing: "steps(1, end)" });
+  sprite.animate([{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }, { opacity: 1 }], { duration: 200, delay: Math.round(duration * 0.8), easing: "steps(1, end)" });
+}
+
+/** 맞은 쪽의 HP 상자가 **맞는 순간**(흰 잔상이 생기는 순간) 끊어 흔들린다 — 세기에 비례(2~9px).
+ *  예전엔 맞는 순간에는 가만히 있다가 0.4초 뒤 다음 차례 표시(.battle-acting 의 한 걸음 나섬)가 상자를 밀어
+ *  「한 박자 늦은 흔들림」으로 읽혔다(2026-10-02 사용자 리뷰). 위치를 덮지 않게 더하기 합성. */
+export function pokemonHudJolt(hud: HTMLElement | null | undefined, hit: PokemonHit): void {
+  if (!hud || reduced() || typeof hud.animate !== "function") return;
+  const a = 2 + hit.power * 5 + (hit.critical ? 2 : 0);
+  const r = (v: number): string => `${Math.round(v * 10) / 10}px`;
+  hud.animate(
+    [
+      { translate: `${r(a)} ${r(-a * 0.4)}`, easing: "steps(1, end)" },
+      { translate: `${r(-a * 0.8)} ${r(a * 0.3)}`, easing: "steps(1, end)" },
+      { translate: `${r(a * 0.5)} 0px`, easing: "steps(1, end)" },
+      { translate: `${r(-a * 0.25)} 0px`, easing: "steps(1, end)" },
+      { translate: "0px 0px" },
+    ],
+    { duration: 200, easing: "linear", composite: "add" },
+  );
 }
 
 /** 강타·급소·막타만 화면을 짧게 3px 흔든다. 보통 타격은 흔들지 않는다(포켓몬 문법). */

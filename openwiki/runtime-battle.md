@@ -493,14 +493,28 @@
   타격 샘플·아래층은 착탄 ±10ms 로 맞았는데 **저작 이펙트의 타이밍 효과음이 착탄 뒤 160~420ms 에 한 번 더** 났다 —
   안무가 이펙트를 착탄 순간에 마운트하는데(`animationImpactMs` = 1) 재생은 프레임 0부터라, 효과음이 걸린 프레임까지 그만큼 늦었다
   (몸통박치기 +174 · 물대포 +272 · 불꽃 +220 · 번개 +159ms). 첫 재생 소리가 디코드 캐시에 없으면 `new Audio` 로 물러나 더 늦었다(Fog1 +421ms).
-  또 확정 순간 휘두름(attack1)이 착탄 280ms 전에 불꽃·번개에도 울렸다. 지금: ① 포켓몬 안무면 씬 루트에
-  `data-battle-animation-start-at-impact` 를 달고 `mountBattleAnimationPlayback` 이 착탄 프레임(효과음·섬광·흔들림이 걸린 첫 프레임)부터 재생한다 —
-  앞 프레임은 건너뛰고 후속(followUps) 시작도 그만큼 당긴다. ② 행동 엔트리 순간 `preloadBattleAnimationSounds(animationId)` 가 본체·후속의 타이밍 소리를
-  미리 디코드한다. ③ 휘두름은 접촉 기술만, 착탄 160ms 전(기존 무장 경로) — 발사체·현장 발생·범위 기술은 휘두름을 내지 않는다.
-  ④ 회복은 `hit-heal` 신호와 회복 애니메이션 타이밍 소리가 같은 Recovery5 라 5~95ms 차로 두 번 울렸다 — `playBattleSample` 은 같은 샘플이
-  80ms 안에 다시 시작되면 한 번으로 친다(true 를 돌려 요소 폴백도 막는다). 결과(같은 시드 재녹화): 효과음이 타격음과 −22~−34ms 로 붙는다.
-  남은 것: 고르기 확인음(Decision1, 크게 들리는 길이 약 0.5초)이 착탄 약 0.29초 전에 나서 꼬리가 타격과 겹친다 — 메뉴→행동 박자 문제라 손대지 않았다.
-  단위 테스트 `test/battleAnimationFollowUps.test.ts` 「착탄 프레임부터 재생」, `test/battleSeSamples.test.ts` 같은 샘플 병합(작성만, 미실행).
+  또 확정 순간 휘두름(attack1)이 착탄 280ms 전에 불꽃·번개에도 울렸다. 지금:
+  ① **이펙트 재생 계획** `battleAnimationLeadPlan(animationId, availableMs)` — 착탄 프레임(효과음·섬광·흔들림이 걸린 첫 프레임) 앞 프레임 중
+  approach 안에 들어가는 만큼은 **앞당겨 틀고**(`leadMs`), 안 들어가는 맨 앞만 **건너뛴다**(`skipFrames`). 접촉·발사체는 몸·빛 덩이가 다가감을 그리므로
+  0을 넘겨 착탄 프레임부터, 현장 발생·범위·보조는 이펙트 자체가 다가감(내리꽂는 번개·솟는 가시·떨어지는 운석)이라 approach 길이를 넘긴다 —
+  처음엔 전부 건너뛰어 번개·운석의 내려오는 칸이 사라졌다(적대적 QA). battleDom 의 `animationImpactMs(animation, approachMs)` 가 계획을 세우고
+  `onEntryAnimation` 이 씬 루트 `data-battle-animation-skip-frames` 로 넘기면 `mountBattleAnimationPlayback` 이 거기서 시작한다(본체 `data-playback-start-frame`).
+  그보다 먼저 시작했어야 할 후속은 그만큼 진행된 칸부터, 이미 끝났어야 할 후속은 틀지 않는다. 시퀀서는 `animationRemainingMs` 로 recover 를 실제 끝에 맞춘다.
+  ② 전투 시작 때 `preloadAllBattleAnimationSounds()`(+ 행동 시작 때 `preloadBattleAnimationSounds`) — 3배속이면 approach 가 60~110ms 라 행동 때 받으면 늦었다.
+  ③ 휘두름은 포켓몬 스킨에서 접촉 기술만, 착탄 160ms 전 — 타격감 프리셋(light 포함)과 무관. 무장은 명령마다 새로 정한다(막힌 행동의 무장이 남아 엉뚱한 휘두름).
+  ④ 신호(cue)와 이펙트(animation)가 같은 샘플을 80ms 안에 내면 하나만 — **언제나 신호가 남는다**(이펙트가 먼저면 멈추고 신호로 바꾼다).
+  회복은 hit-heal 과 회복 이펙트가 같은 Recovery5 라 겹쳐 울렸고, 물기(damage2)·몸통박치기(blow4) 이펙트는 타격 신호와 같은 샘플이라 먼저 온 쪽을 남기면
+  세기 모양(크기·높이)이 사라졌다. 같은 출처끼리·출처 미지정(`other`)은 합치지 않는다(빠른 배속에서 매 프레임 같은 소리를 내는 저작).
+  ⑤ 고르기 확인음(Decision1, 크게 들리는 길이 약 0.5초)은 행동 approach 가 시작되면 150ms 동안 거둔다(`fadeBattleCue`) — 꼬리가 착탄과 겹쳤다.
+  결과(같은 시드 재녹화): 효과음이 타격음과 −22~−34ms 로 붙는다.
+  단위 테스트 `test/battleAnimationFollowUps.test.ts` 「앞 프레임 건너뛰기」, `test/battleSeSamples.test.ts` 병합·출처(작성만, 미실행).
+- **피격 반응 리뷰 반영 (2026-10-02, 사용자 전달 리뷰):** 「충격음이 아니라 피 차거나 피한 소리」·「HP 상자 흔들림이 한 박자 늦다」·
+  「맞는 게 아니라 피한 모션, 공이 도착 안 했는데 시작」·「2 깎인 작은 공에 크게 밀린다」. 기하 탐침(`qa-runs/battle-moves/anim.js` `__geoLog`)으로 쟀다:
+  HP 상자는 맞는 순간 가만히 있다가 **+414ms 다음 차례 표시(`.battle-acting` 의 oprn-actor-step)로 24px 밀렸다 돌아왔다** — 늦은 흔들림의 정체.
+  아군 그림은 정지 뒤 곡선으로 90px 미끄러졌다 용수철처럼 출렁이며 돌아왔다(2/18 피해). 물대포 꼬리 구슬은 28ms 씩 늦게 떠나 착탄 뒤 112ms 까지 날아왔다.
+  지금: HP 상자와 몬스터 노드에서 차례 걸음을 끄고(20-pokemon-skin ⑤ — 방금 맞은 몬스터도 +450ms 에 한 번 더 미끄러졌다) **맞는 순간** `pokemonHudJolt`(2~9px, 끊어 흔들기, 더하기 합성). 풀림(`releaseTarget`)은 끊어 움직인다 —
+  한 프레임에 밀린 자리로 튀고 경직(좌우 떨림 40ms 간격) → 계단 세 번으로 복귀 → 두 번 깜빡. 거리 `KNOCK·k·max(0, p−0.1)·1.4`(작은 타격은 밀림보다 떨림), 정지 중 밀림도 `0.45+0.75p` 배.
+  발사체 꼬리 구슬은 늦게 떠나 더 빨리 날아 모두 착탄에 함께 닿고, 떠나는 순간 「슈웅」(Wind8 0.22·1.25배속). 아픈 표정은 그림이 필요하다 — 몬스터 하네스 후보로.
 - **발사체는 「입·손」 자리에서 나간다 (`spriteEmitPoint`).** 그림 몸 위쪽 60% 안에서 상대 방향으로 가장 튀어나온 칸(가로 위주, 세로 0.35배).
   런타임은 그림 픽셀을 캔버스로 읽어 캐시한다(가로 스트립은 `data-strip-frames` 첫 칸만). 그림에 `data-emit-x/y`(칸 좌표)가 있으면 그것을 쓴다 —
   몬스터 하네스 `anim.json` 의 `emit` 이 같은 함수로 구한 값이고, 시드 `emit` 으로 손 고칠 수 있다(`openwiki/harnesses/monster-collect-species.md`).

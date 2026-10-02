@@ -20,7 +20,7 @@ import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
-import { battleAnimationImpactMs, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
+import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
@@ -39,7 +39,7 @@ import {
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
-import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
+import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
@@ -49,7 +49,7 @@ import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleImpactLayer, playBattleSfx } from "@/player/battleSfx";
-import { pokemonActionMotion, pokemonHeavyShake, pokemonHitPower, type PokemonMoveContext } from "@/player/battlePokemonMotion";
+import { pokemonActionMotion, pokemonHeavyShake, pokemonHitPower, pokemonHudJolt, preloadPokemonMotionSounds, type PokemonMoveContext } from "@/player/battlePokemonMotion";
 import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
@@ -117,6 +117,9 @@ export function destroyBattleSceneOnHost(host: HTMLElement): void {
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
   // 블라인드 전환 동안 기본 SE 세트를 디코딩해 둔다 — 첫 임팩트부터 소리가 정시에 온다.
   preloadBattleJuiceSamples();
+  // 기술 이펙트의 타이밍 소리도 — 행동 시작 때(preloadBattleAnimationSounds) 받으면 3배속에서는 approach 가 60~110ms 라
+  // 디코딩이 끝나기 전에 착탄이 와서 요소 재생(0.2~0.4초 늦음)으로 떨어졌다.
+  preloadAllBattleAnimationSounds();
   const playBattleCue = (event: BattleJuiceEvent): void => playContextBattleCue(event, options.audioContext);
   const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null, shape?: BattleCueShape): void =>
     emitContextBattleJuice(event, target, options.audioContext, shape);
@@ -142,8 +145,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   if (motionTempo !== 1) root.dataset.battleMotionTempo = String(motionTempo);
   // 포켓몬 스킨은 돌진·착탄·넉백을 그림 단위 안무(battlePokemonMotion)로 그린다.
   const pokemonMotion = root.dataset.battleUiStyle === "pokemon" && !retroMotion;
-  // 포켓몬 안무는 기술 이펙트를 착탄 순간에 올린다(animationImpactMs) — 이펙트는 자기 착탄 프레임부터 돌아야 효과음이 타격과 맞는다.
-  if (pokemonMotion) root.dataset.battleAnimationStartAtImpact = "true";
+  // 포켓몬 안무의 이펙트 재생 계획 — animationImpactMs 가 정하고 onEntryAnimation 이 씬 루트에 건너뛸 프레임 수로 넘긴다.
+  let animationPlan: { animationId: string; skipFrames: number; skippedMs: number } | undefined;
+  if (pokemonMotion) preloadPokemonMotionSounds();
   // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
   let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
   if (retroMotion) root.dataset.battleMotion = "retro";
@@ -465,6 +469,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 엔트리 단위 애니메이션 — 잔류하는 snapshot.lastAnimation 대신, 지금 재생 중인
       // 액션의 애니메이션만 레이어에 올린다. animation 이 없으면 레이어를 비운다.
       activeAnimation?.destroy();
+      const skipFrames = animation && animationPlan?.animationId === animation.animationId ? animationPlan.skipFrames : 0;
+      if (skipFrames > 0) root.dataset.battleAnimationSkipFrames = String(skipFrames);
+      else delete root.dataset.battleAnimationSkipFrames;
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
         { ...options.runtime.snapshot(), lastAnimation: retroMotion && (hasRetroChoreography(field) || isTravellingEffect(animation)) ? undefined : animation },
@@ -531,6 +538,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
           if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
           if (pokemonMotion && (feedback.critical || lethal || intensity === "heavy" || intensity === "crushing")) pokemonHeavyShake(field);
+          // HP 상자는 맞는 순간(흰 잔상이 생기는 순간) 흔들린다 — 아군은 파티 상자, 적은 자기 노드의 HUD.
+          if (pokemonMotion) {
+            const actor = options.runtime.snapshot().actors.find((one) => one.id === feedback.targetId || one.recordId === feedback.targetId);
+            const hud = actor
+              ? root.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`)
+              : targetNode?.querySelector<HTMLElement>(".battle-enemy-hud");
+            pokemonHudJolt(hud, { power: pokemonHitPower(feedback.amount, maxHp, feedback.critical), critical: Boolean(feedback.critical) });
+          }
         }
       }
     },
@@ -575,11 +590,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const hitMaxHp = hitFeedback ? battlerMaxHp(options.runtime.snapshot(), hitFeedback.targetId) : 0;
         const power = hitFeedback ? pokemonHitPower(hitFeedback.amount, hitMaxHp, hitFeedback.critical) : 0.3;
         pokemonActionMotion(field, beat, lungeMs, pokemonMove, { power, critical: Boolean(hitFeedback?.critical) });
+        // 고르기 확인음(Decision1, 크게 들리는 길이 약 0.5초)은 행동이 시작돼도 울려 착탄 소리와 꼬리가 겹쳤다 —
+        // 움직임이 시작되면 150ms 동안 거둔다. 짧은 「딸깍」은 남는다(2026-10-02 적대적 QA).
+        if (beat?.kind === "approach") fadeBattleCue("command-confirm", 150);
       }
       // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
       // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
       // 포켓몬 스킨은 베기 궤적을 그리지 않는다(몬스터 몸통박치기에 칼 획이 지나갔다). 휘두름 소리는 남긴다.
-      if (hitFeel === "impact" && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {
+      if ((hitFeel === "impact" || pokemonMotion) && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {
         swingArmed = false;
         const targetId = beat.targetId;
         scheduleBattleTimer(() => {
@@ -591,12 +609,25 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         }, Math.max(0, beat.durationMs - SWING_LEAD_MS));
       }
     },
-    animationImpactMs(animation) {
-      // 포켓몬 스킨의 접촉 아닌 기술은 기술 이펙트를 「닿는 순간」(impact 시작)에 띄운다 — 착탄 프레임에 맞춰 일찍 띄우면
-      // 발사체가 날아가는 동안 상대 몸에서 불길이 먼저 피었다(2026-10-02 녹화). 1ms = 시퀀서 오프셋이 approach 길이가 된다.
-      // 몸으로 치는 기술도 같다 — 저작 타격 별이 착탄 85ms 전에 먼저 떴다. 착탄 「팍」은 안무(impactBurst)가 그린다.
-      if (pokemonMotion) return 1;
+    animationImpactMs(animation, approachMs) {
+      if (pokemonMotion) {
+        // 접촉·발사체: 이펙트는 「닿는 순간」 착탄 프레임부터 — 일찍 띄우면 발사체가 날아가는 동안 상대 몸에서 불길이 먼저
+        // 피었고, 몸통박치기는 저작 타격 별이 착탄 85ms 전에 먼저 떴다(2026-10-02 녹화). 착탄 「팍」은 안무(impactBurst)가 그린다.
+        // 현장 발생·범위·보조: 이펙트 자체가 다가감(내리꽂는 번개·솟는 가시·떨어지는 운석)이라 approach 안에 들어가는 만큼 앞당겨 튼다.
+        // 어느 쪽이든 못 들어간 앞 프레임은 건너뛴다 — 0번부터 돌면 착탄 효과음이 타격 뒤 160~420ms 에 한 번 더 났다.
+        const bodyCarriesApproach = pokemonMove.motion === "contact" || pokemonMove.motion === "projectile";
+        const plan = battleAnimationLeadPlan(animation.animationId, bodyCarriesApproach ? 0 : approachMs * motionTempo);
+        animationPlan = { animationId: animation.animationId, skipFrames: plan.skipFrames, skippedMs: plan.skippedMs };
+        // 1ms = 시퀀서 오프셋이 approach 길이가 된다(착탄 순간 마운트).
+        return plan.leadMs > 0 ? plan.leadMs : 1;
+      }
       return battleAnimationImpactMs(animation.animationId);
+    },
+    // 건너뛴 앞 프레임만큼 이펙트가 짧게 돈다 — 시퀀서가 recover 를 실제 끝에 맞춘다.
+    animationRemainingMs(animation) {
+      if (!pokemonMotion || !animation.durationMs) return undefined;
+      const skipped = animationPlan?.animationId === animation.animationId ? animationPlan.skippedMs : 0;
+      return Math.max(0, animation.durationMs - skipped);
     },
     onEscapeOutcome(success) {
       // 도주음·BGM 정지는 성공이 **화면에 도달한** 순간에만. 예전엔 명령 확정 시점에 울려
@@ -1416,6 +1447,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
     const skillRecord = command.kind === "skill" ? store.getCurrent().database.skills.find((skill) => skill.id === command.skillId) : undefined;
+    // 지난 명령의 무장이 남아 있으면(막힌 행동·비트 없는 행동) 다음 돌진에서 엉뚱한 휘두름이 났다 — 명령마다 새로 정한다.
+    swingArmed = false;
     pendingRetroSkillId = retroMotion && hasRetroSkillContract(skillRecord) ? skillRecord?.id : undefined;
     pendingRetroSkillUserId = snapshot.activeActorId;
     if (retroMotion && command.kind === "skill" && (retroSkillRecipe(skillRecord) || hasRetroSkillContract(skillRecord))) {
@@ -1428,7 +1461,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 포켓몬 스킨: 확정 순간의 휘두름 소리는 착탄 0.28초 전, 아직 웅크리는 중에 났고 화염·낙뢰에도 칼 바람 소리가 났다
       // (2026-10-02 소리 악보). 몸으로 치는 기술만 돌진 직전에 울리고, 쏘거나 부르는 기술은 자기 이펙트 소리만 낸다.
       const pokemonRanged = pokemonMotion && command.kind === "skill" && pokemonMoveMotion(skillRecord) !== "contact";
-      swingArmed = hitFeel === "impact" && !pokemonRanged && (command.kind === "attack" || pokemonMotion);
+      // 포켓몬 스킨은 타격감 프리셋(light 포함)과 무관하게 돌진 직전에 울린다 — light 에서 확정 순간으로 돌아가면 같은 어긋남이 난다.
+      swingArmed = !pokemonRanged && (pokemonMotion || (hitFeel === "impact" && command.kind === "attack"));
       if (!swingArmed && !pokemonRanged) emitBattleJuice("attack-swing", actorNode ?? undefined);
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);

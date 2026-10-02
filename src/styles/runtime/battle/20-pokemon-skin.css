@@ -1542,3 +1542,12 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-battle-skin]:is(.battle-hit-stop, .battle-hit-stop-critical) .battle-field {
   filter: none;
 }
+
+/* ⑤ 차례 표시의 「한 걸음 나섬」(06 .battle-acting: oprn-actor-step 0.3s margin-left −16px + 밝기 1.2)을 HP 상자와 몬스터 노드에서 끈다 —
+   맞은 뒤 0.4초, 다음 차례가 오는 순간 HP 상자가 24px 밀렸다 돌아와 「한 박자 늦은 피격 흔들림」으로, 방금 맞은 몬스터는 한 번 더
+   미끄러져 「피한 모션」으로 읽혔다(2026-10-02 사용자 리뷰, 기하 탐침). 포켓몬은 차례를 몸짓으로 알리지 않는다.
+   피격 흔들림은 맞는 순간 안무(pokemonHudJolt·releaseTarget)가 낸다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-actor-status, .battle-actor, .battle-enemy).battle-acting {
+  animation: none;
+  filter: none;
+}

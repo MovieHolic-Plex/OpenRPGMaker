@@ -16,9 +16,13 @@ import { battleAudioContext } from "@/player/battleSfx";
 
 const buffers = new Map<string, AudioBuffer | null>();
 const pending = new Map<string, Promise<AudioBuffer | null>>();
-/** 같은 샘플이 이 간격 안에 다시 시작되면 한 번으로 친다(ms, AudioContext 시계). */
+/** 같은 샘플이 이 간격 안에 **다른 출처**에서 다시 시작되면 한 번으로 친다(ms, AudioContext 시계). */
 const SAME_SAMPLE_MERGE_MS = 80;
-const lastStartedAt = new Map<string, number>();
+/** 소리 출처. `cue` = 전투 사건 신호(battleJuice), `animation` = 이펙트 프레임의 타이밍 소리. 그 밖은 합치지 않는다. */
+export type BattleSampleSource = "cue" | "animation" | "other";
+const lastStarted = new Map<string, { at: number; origin: BattleSampleSource; node: { stop(): void } }>();
+/** 샘플마다 마지막으로 시작한 재생 — fadeOutBattleSample 이 꼬리를 거둔다. */
+const live = new Map<string, { source: AudioBufferSourceNode; gain: GainNode }>();
 
 function resolveSampleUrl(resourceId: string): string | null {
   return resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
@@ -65,7 +69,7 @@ export function preloadBattleSamples(resourceIds: readonly string[]): void {
 }
 
 /** 캐시된 샘플을 즉시 재생한다. 준비 안 됐으면 false — 호출부가 요소 경로로 폴백한다. */
-export function playBattleSample(resourceId: string, volume: number, rate = 1): boolean {
+export function playBattleSample(resourceId: string, volume: number, rate = 1, origin: BattleSampleSource = "other"): boolean {
   const buffer = buffers.get(resourceId);
   if (!buffer) {
     if (buffers.get(resourceId) === undefined && !pending.has(resourceId)) {
@@ -75,13 +79,23 @@ export function playBattleSample(resourceId: string, volume: number, rate = 1): 
   }
   const context = battleAudioContext();
   if (!context) return false;
-  // 회복 기술은 hit-heal 신호와 회복 애니메이션 타이밍 소리가 같은 Recovery5 다 — 둘이 5~95ms 차로 겹쳐
-  // 위상이 엇갈린 한 소리(또는 메아리)로 들렸다(2026-10-02 녹화). 같은 샘플이 붙어 오면 먼저 온 것만 낸다.
+  // 신호(cue)와 이펙트(animation)가 같은 샘플을 붙여 내면 하나만 낸다 — 회복은 hit-heal 과 회복 이펙트가 같은
+  // Recovery5 라 5~95ms 차로 겹쳐 위상이 엇갈린 한 소리(또는 메아리)로 들렸다(2026-10-02 녹화). 남기는 쪽은 언제나 신호다:
+  // 타격 신호는 세기에 따라 크기·높이를 바꾸는데(battleDom), 물기(damage2)·몸통박치기(blow4) 이펙트가 같은 샘플을
+  // 20~30ms 먼저 내므로 먼저 온 쪽을 남기면 세기 모양이 사라졌다. 이펙트가 먼저면 멈추고 신호로 바꾼다.
+  // 같은 출처끼리는 합치지 않는다 — 빠른 배속(프레임 40ms)에서 매 프레임 같은 소리를 내는 저작은 그대로 들려야 한다.
   const now = context.currentTime * 1000;
-  const last = lastStartedAt.get(resourceId);
-  if (Number.isFinite(now)) {
-    if (last !== undefined && now - last >= 0 && now - last < SAME_SAMPLE_MERGE_MS) return true;
-    lastStartedAt.set(resourceId, now);
+  const merging = origin !== "other" && Number.isFinite(now);
+  if (merging) {
+    const last = lastStarted.get(resourceId);
+    if (last && last.origin !== origin && now - last.at >= 0 && now - last.at < SAME_SAMPLE_MERGE_MS) {
+      if (origin === "animation") return true;
+      try {
+        last.node.stop();
+      } catch {
+        // 이미 끝난 노드
+      }
+    }
   }
   const source = context.createBufferSource();
   source.buffer = buffer;
@@ -90,5 +104,26 @@ export function playBattleSample(resourceId: string, volume: number, rate = 1): 
   gain.gain.value = volume;
   source.connect(gain).connect(context.destination);
   source.start();
+  if (merging) lastStarted.set(resourceId, { at: now, origin, node: source });
+  live.set(resourceId, { source, gain });
+  source.onended = () => {
+    if (live.get(resourceId)?.source === source) live.delete(resourceId);
+  };
   return true;
+}
+
+/** 아직 울리는 샘플의 꼬리를 `ms` 동안 줄여 끈다. 울리고 있지 않으면 아무것도 안 한다. */
+export function fadeOutBattleSample(resourceId: string, ms: number): void {
+  const playing = live.get(resourceId);
+  const context = battleAudioContext();
+  if (!playing || !context) return;
+  live.delete(resourceId);
+  try {
+    const now = context.currentTime;
+    playing.gain.gain.setValueAtTime(playing.gain.gain.value, now);
+    playing.gain.gain.linearRampToValueAtTime(0, now + ms / 1000);
+    playing.source.stop(now + ms / 1000 + 0.02);
+  } catch {
+    // 이미 끝났거나 멈춘 노드
+  }
 }

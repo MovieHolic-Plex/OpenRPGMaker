@@ -8,7 +8,7 @@ import { playAudioCommand } from "@/player/audio";
 export type BattleAudioContext = { readonly project: Project; readonly session: PlaySession };
 import { beginBattleResultAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
 import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/battleSfx";
-import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
+import { fadeOutBattleSample, playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 import { HIT_INTENSITY_STYLE, hitIntensityStageVariables, type BattleHitIntensity } from "@/player/battleHitIntensity";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 
@@ -151,12 +151,19 @@ export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioCont
   playSynthVoice(SYNTH_VOICE[event]);
 }
 
+/** 기본 샘플로 울린 신호의 꼬리를 거둔다(저작 덮어쓰기·요소 폴백으로 난 소리는 건드리지 않는다). */
+export function fadeBattleCue(event: BattleJuiceEvent, ms: number): void {
+  fadeOutBattleSample(BATTLE_SFX[event], ms);
+  const fallback = SFX_FALLBACK[event];
+  if (fallback) fadeOutBattleSample(fallback, ms);
+}
+
 function tryPlay(soundResourceId: string, shape?: BattleCueShape): boolean {
   const volume = Math.max(0, Math.min(1, DEFAULT_VOLUME * (shape?.volume ?? 1)));
   const rate = shape?.rate ?? 1;
   // 디코딩 캐시에 있으면 WebAudio 로 즉시 재생 — 요소 경로는 새 요소마다 로드를 기다리므로
   // 임팩트 발화가 그만큼 늦게 들린다. 캐시 미스면 false 로 요소 경로가 소리를 낸다.
-  if (playBattleSample(soundResourceId, volume, rate)) return true;
+  if (playBattleSample(soundResourceId, volume, rate, "cue")) return true;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return false;
   const audio = new Audio(url);

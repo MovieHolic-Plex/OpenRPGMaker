@@ -9,7 +9,7 @@ import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { battleAnimationChainDurationMs, battleAnimationDurationMs } from "@/battle/animationTiming";
 import { GENERATED_EFFECT_SHEETS, generatedEffectFollowUps } from "@/assets/generatedEffectSheets";
 import { recoverMsForAnimation } from "@/player/battleActionBeats";
-import { mountBattleAnimationPlayback } from "@/player/battleAnimationDom";
+import { battleAnimationLeadPlan, mountBattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { defaultBattleAnimationRecords } from "@/project/defaults/defaultDatabaseStarterRecords";
@@ -162,9 +162,9 @@ describe("DOM 재생", () => {
   });
 });
 
-describe("착탄 프레임부터 재생 (battleAnimationStartAtImpact)", () => {
-  // 포켓몬 안무는 이펙트를 착탄 순간에 올린다. 프레임 0부터 돌리면 첫 효과음 프레임까지 늦어져
-  // 소리가 타격보다 160~420ms 뒤에 났다(2026-10-02 실측). 장면 표식이 있으면 착탄 프레임부터 돈다.
+describe("앞 프레임 건너뛰기 (battleAnimationSkipFrames · battleAnimationLeadPlan)", () => {
+  // 포켓몬 안무는 이펙트를 착탄 직전에 올린다. approach 안에 다 들어가지 않는 앞 프레임까지 0번부터 돌리면
+  // 착탄 효과음이 타격보다 160~420ms 뒤에 났다(2026-10-02 실측). 들어가지 않는 만큼만 건너뛴다.
   const TARGET = "enemy_1";
   beforeEach(() => {
     vi.useFakeTimers();
@@ -180,9 +180,9 @@ describe("착탄 프레임부터 재생 (battleAnimationStartAtImpact)", () => {
     vi.useRealTimers();
   });
 
-  function mount(startAtImpact: boolean): HTMLElement {
+  function mount(skipFrames: number): HTMLElement {
     const scene = document.createElement("section");
-    if (startAtImpact) scene.dataset.battleAnimationStartAtImpact = "true";
+    if (skipFrames > 0) scene.dataset.battleAnimationSkipFrames = String(skipFrames);
     const target = document.createElement("div");
     target.dataset.testid = TARGET;
     scene.append(target);
@@ -199,9 +199,17 @@ describe("착탄 프레임부터 재생 (battleAnimationStartAtImpact)", () => {
   const visibleMain = (element: HTMLElement) =>
     [...element.querySelectorAll<HTMLElement>(":scope > .battle-animation-sheet > .battle-animation-frame")].filter((f) => !f.hidden).map((f) => f.dataset.frameIndex);
 
-  it("표식이 있으면 첫 효과음 프레임에서 시작하고 그 프레임의 소리가 마운트 즉시 걸린다", () => {
-    const element = mount(true);
-    expect(element.dataset.startFrame).toBe("3");
+  it("계획: 착탄 프레임 앞을 쓸 수 있는 시간만큼 앞당기고 나머지만 건너뛴다", () => {
+    // main: 6프레임 · 착탄(효과음) 3번 · 프레임 120ms.
+    expect(battleAnimationLeadPlan("main", 0)).toEqual({ leadMs: 0, skipFrames: 3, skippedMs: 360 }); // 접촉·발사체 — 착탄 프레임부터
+    expect(battleAnimationLeadPlan("main", 250)).toEqual({ leadMs: 240, skipFrames: 1, skippedMs: 120 }); // 두 프레임만 들어간다
+    expect(battleAnimationLeadPlan("main", 1000)).toEqual({ leadMs: 360, skipFrames: 0, skippedMs: 0 }); // 다 들어가면 0번부터
+    expect(battleAnimationLeadPlan("tail", 1000)).toEqual({ leadMs: 0, skipFrames: 0, skippedMs: 0 }); // 타이밍 없는 레코드
+  });
+
+  it("건너뛸 프레임 수가 있으면 거기서 시작하고 그 프레임의 소리가 마운트 즉시 걸린다", () => {
+    const element = mount(3);
+    expect(element.dataset.playbackStartFrame).toBe("3");
     expect(visibleMain(element)).toEqual(["3"]);
     expect(element.dataset.activeSoundResourceId).toBe("se-test");
     vi.advanceTimersByTime(120);
@@ -209,7 +217,7 @@ describe("착탄 프레임부터 재생 (battleAnimationStartAtImpact)", () => {
   });
 
   it("후속은 건너뛴 프레임만큼 당겨진다", () => {
-    const element = mount(true);
+    const element = mount(3);
     // 후속 startFrame 4 − 건너뜀 3 = 1프레임(120ms) 뒤.
     vi.advanceTimersByTime(119);
     expect(element.querySelector(".battle-animation-followup")).toBeNull();
@@ -217,9 +225,26 @@ describe("착탄 프레임부터 재생 (battleAnimationStartAtImpact)", () => {
     expect(element.querySelector<HTMLElement>(".battle-animation-followup")?.dataset.animationId).toBe("tail");
   });
 
-  it("표식이 없으면 기존대로 프레임 0부터 돈다", () => {
-    const element = mount(false);
-    expect(element.dataset.startFrame).toBe("0");
+  it("건너뛴 지점보다 먼저 시작했어야 할 후속은 그만큼 진행된 프레임부터 바로 튼다", () => {
+    // 후속 startFrame 4 · 건너뜀 5 → 후속은 이미 1프레임 지났어야 한다.
+    const element = mount(5);
+    const follow = element.querySelector<HTMLElement>(".battle-animation-followup");
+    expect(follow?.dataset.animationId).toBe("tail");
+    const followFrames = [...follow!.querySelectorAll<HTMLElement>(".battle-animation-frame")];
+    expect(followFrames.filter((f) => !f.hidden).map((f) => f.dataset.frameIndex)).toEqual(["1"]);
+  });
+
+  it("늦게 온 틱은 흐른 시간만큼 프레임을 따라잡는다(부하 때 착탄 프레임이 밀리지 않는다)", () => {
+    const element = mount(0);
+    // 틱이 4프레임(480ms) 늦게 왔다고 치고 다음 틱을 돌린다 — 흐른 시간은 600ms = 5프레임.
+    vi.setSystemTime(new Date(Date.now() + 4 * 120));
+    vi.advanceTimersByTime(120);
+    expect(visibleMain(element)).toEqual(["5"]);
+  });
+
+  it("값이 없으면 기존대로 프레임 0부터 돈다", () => {
+    const element = mount(0);
+    expect(element.dataset.playbackStartFrame).toBe("0");
     expect(visibleMain(element)).toEqual(["0"]);
   });
 });
