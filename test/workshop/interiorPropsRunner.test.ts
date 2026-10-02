@@ -41,9 +41,9 @@ describe("팔레트", () => {
 });
 
 describe("기물 사전", () => {
-  it("번들 사양 414종, 캔버스는 칸 경계, padTop 은 지금 그림의 투명 윗줄", () => {
+  it("번들 사양 527종, 캔버스는 칸 경계, padTop 은 지금 그림의 투명 윗줄", () => {
     const objects = specObjects();
-    expect(objects.length).toBe(414);
+    expect(objects.length).toBe(527);
     const [, crate] = objects.find(([key]) => key === "crate:cabbage")!;
     const blank = { width: 16, height: 16, data: new Uint8ClampedArray(16 * 16 * 4) };
     blank.data.fill(255, 4 * 16 * 3); // 위 3줄은 투명, 나머지 칠함

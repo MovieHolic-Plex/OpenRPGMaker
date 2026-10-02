@@ -1,6 +1,6 @@
 // src/harnesses/interior-props/editor/items.ts
 /**
- * 기물 사전: 번들 handInteriorSpec.json(414종) + 사용자가 공방에서 정의한 새 기물.
+ * 기물 사전: 번들 handInteriorSpec.json(527종, 2026-10-02 굽기 4판) + 사용자가 공방에서 정의한 새 기물.
  * 지금 그림은 시트(public/assets/atlas-interior/interior-chipset.png, 16px · 48칸 폭)에서 cells 대로 잘라 붙인다.
  */
 import spec from "@/assets/handInteriorSpec.json";
