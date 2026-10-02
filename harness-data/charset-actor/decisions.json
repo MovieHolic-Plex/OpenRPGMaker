@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T13:27:52+00:00",
+ "updated": "2026-10-02T22:41:26+00:00",
  "decisions": [
   {
    "id": "20261002-1142-sonnet-batch/f-archer__sonnet-r1",
@@ -416,6 +416,102 @@
    "note": "",
    "client": "web",
    "at": "2026-10-02T13:27:52+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-bob-clerk__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:05:29+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-braid-girl__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:05:40+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-check-farmer__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:05:48+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-crew-cut-cook__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:05:52+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-curly-baker__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:05:56+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-long-hair-scholar__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:06:03+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-mohawk-porter__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:06:07+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-ponytail-guard__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:06:14+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-short-maid__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:06:18+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-stripe-sailor__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:06:23+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-twin-buns__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:06:51+00:00"
+  },
+  {
+   "id": "20261002-2234-vary/v-wavy-singer__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T14:06:55+00:00"
   }
  ]
 }

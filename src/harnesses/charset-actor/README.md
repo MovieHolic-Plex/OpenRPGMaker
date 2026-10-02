@@ -84,6 +84,31 @@ systemd-run --user --unit=charset-actor-harness -p Restart=on-failure /usr/bin/p
 RTP 얼굴(`easyrpg-faceset-*`)이 짝인 경우만 쓴다 — 72명 중 59명. 짝 얼굴이 생성 그림(`generated-faceset-*`)인 13명은 얼굴 단계를 건너뛴다.
 `loop` 는 칩 → 검수 → 손 도트 얼굴 → 생성 얼굴(v3)까지 한 번에 간다(`--no-gen-face` 로 끔).
 
+## 그림 넣어 고치기 + 수정 강도 (2026-10-03 「이런 거 약간 수정해서 쓰는 방향도… 약함·보통·강함」)
+화면 왼쪽 위 「그림 넣어 고치기…」 또는 `ingest IMG --strength weak,normal,strong --go`. CharSet(72×128 한 명 / 288×256 여덟 명)을 받아
+배경(왼쪽 위 픽셀 색, 투명이면 KEY)을 맞추고 `~/.local/share/oprn/charset-actor-harness/inputs/<id>.png` 로 둔다. 뼈대 키는 `input:<id>:<칸>`.
+캐릭터가 있는 칸(1000px 이상)마다 × 고른 강도마다 지시가 하나씩 생긴다(`briefs-local.json`, 저장소 밖 — 남의 그림일 수 있다).
+지시문은 비워도 된다 — 작업자가 강도 안에서 어떤 사람인지 정한다. 올린 그림은 짝 얼굴이 없어 얼굴 단계를 건너뛴다.
+받은 것도 저장소가 아니라 `~/.local/share/oprn/charset-actor-harness/accepted/` 로 간다.
+
+| 강도 | 작업자 규칙(`STRENGTH_RULES`) | 기계 기준(`chr.STRENGTH`) |
+|---|---|---|
+| 약함 | 모양 그대로 색만(머리색·옷 색·작은 무늬) | 실루엣 변화 합 ≤30px · 튀어나온 픽셀 0 · 원본과 ≥15% 다름 |
+| 보통 | 머리 모양·옷 모양과 무늬, 새 소지품 금지(지금까지의 v-* 규칙) | 튀어나옴 프레임당 ≤10 · 합 ≤60 · ≥20% · 다시 찍은 픽셀 ≥10% |
+| 강함 | 머리·옷 형태를 크게, 작은 장신구 허용, 큰 무기·날개 금지 | 튀어나옴 ≤20 · 합 ≤160 · ≥30% · 다시 찍은 픽셀 ≥25% |
+
+「다시 찍은 픽셀」(`chr.redrawn`) = 뼈대 글자마다 가장 많이 옮겨 간 새 글자 하나로 색을 바꿨다고 보고, 그걸로 설명되지 않는 픽셀 비율.
+첫 「보통」 조선 병사가 팔레트만 바꾸고 1분 만에 끝내서(0.02) 넣었다. 기존 판정 자료: 색 바꾸기 c-* 0~0.09, 받은 v-* 0.14~0.51.
+
+세 강도 모두 서 있는 자세만 고치고 걸음은 전파한다. RTP 밖 그림은 절대 울타리(48색·24×31·480px)를 넘을 수 있어서(조선 병사 55색,
+깃털이 칸 끝까지) 뼈대가 이미 넘은 만큼은 허용한다. `--strength` 는 `check`·`views`·`propagate` 에도 있다.
+
+## 설명 (`desc.json`) — 조수가 NPC 를 고를 때 읽는다 (2026-10-03)
+`loop` 끝에 Sonnet 이 그림만 보고(`sheet_x8.png`·`strip.png`·생성 얼굴) `describe.md` 형식으로 쓴다: `label`·`gender`·
+`attributes{kind, age, hair}`(정본 `sharedCharacterGraphics.json` 과 같은 칸)·`role`·`appearance`·`colors`·`tags`·`fits`.
+지시와 그림이 다르면 그림대로 쓴다. 이미 있는 것은 `describe --accepted`(받은 것만) / `describe --run R` 로 채운다.
+받으면 `accepted/<stem>.json` 에 설명·뼈대·강도·파일 이름이 같이 나간다 — 번들 등록 단계의 원본.
+
 ## 기계 검수 (`chr.gate`) — 형식을 거르는 것이지 품질 판정이 아니다
 처음엔 Actor1 8명에서 잰 고정 기준이었는데 다른 칩셋 원본 64명 중 44명을 떨어뜨렸다(색 있는 윤곽선·47색·2px 출렁임·아이 몸).
 지금은 넓은 절대 울타리 + **뼈대 원본 대비** 기준이고, `calibrate` 가 RTP 원본 72명 전원 통과를 확인한다.
@@ -104,7 +129,9 @@ python3 $H draw hunter --engine gpt --run R
 python3 $H status --run R
 python3 $H loop knight-boy herbalist-girl --run R   # 원샷 그리기 + 검수(캐릭터마다 병렬). 반복은 --rounds N
 python3 $H page --run R                              # 비교 화면
-python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0
+python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0 [--strength weak]
+python3 $H ingest soldier.png --name "조선 병사" --strength weak,normal,strong --go   # 올린 그림을 뼈대로
+python3 $H describe --accepted                       # 받은 것에 설명 채우기
 ```
 
 ## 파일
@@ -114,6 +141,7 @@ python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0
 | `web/index.html` | 받기/버리기 화면 |
 | `reviewer.md` | 검수자 지시문 틀 |
 | `face.md` | 얼굴 작업자 지시문 틀(손 도트) |
+| `describe.md` | 설명 작성자 지시문 틀(desc.json) |
 | `gen_face.py` | 생성 얼굴 — 참고 그림·프롬프트·48×48 축소 |
 | `chr.py` | `.chr.txt` 읽기·쓰기, Actor1 → 격자, 기계 검수, 시트·필름 띠·GIF 3종 |
 | `worker.md` | 작업자 지시문 틀(절대 규칙: 생성 이미지·외부 그림 금지, 모양은 격자를 직접 고쳐서) |

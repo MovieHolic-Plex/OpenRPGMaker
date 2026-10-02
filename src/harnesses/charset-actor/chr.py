@@ -219,9 +219,36 @@ def stats(pal, frames):
     return st
 
 
-def gate(pal, frames, base=None, check_changed=True):
-    """→ dict(ok, fails[], warns[], metrics{}). base=(pal, frames) 가 있으면 뼈대 대비 기준과 「새 캐릭터인가」도 잰다."""
-    L = LIMITS
+# 수정 강도(2026-10-03 사용자: 그림을 넣으면 「약함·보통·강함」으로 얼마나 고칠지 정한다).
+# 약함 = 색만(실루엣 그대로), 보통 = 머리 모양·옷 무늬까지(소지품 금지), 강함 = 머리·옷 실루엣과 작은 장신구까지(큰 무기·날개 금지).
+STRENGTH = {
+    'weak': dict(label='약함', protrude_frame_max=0, protrude_sum_max=0, silhouette_max=30, changed_min=0.15, redrawn_min=0),
+    'normal': dict(label='보통', protrude_frame_max=10, protrude_sum_max=60, silhouette_max=None, changed_min=0.20, redrawn_min=0.10),
+    'strong': dict(label='강함', protrude_frame_max=20, protrude_sum_max=160, silhouette_max=None, changed_min=0.30, redrawn_min=0.25),
+}
+# redrawn = 「색 바꾸기로 설명되지 않는 픽셀」 비율: 뼈대 글자마다 가장 많이 바뀐 새 글자 하나로 옮겼다고 보고 남는 픽셀.
+# 2026-10-03 「보통」 조선 병사가 색만 바꾸고(0.02) 끝냈다. 판정 자료: 색 바꾸기(c-*) 0~0.09, 받은 v-* 0.14~0.51.
+
+
+def redrawn(bframes, frames):
+    from collections import Counter, defaultdict
+    m, tot = defaultdict(Counter), 0
+    for k in frames:
+        for y in range(FH):
+            for x in range(FW):
+                b, c = bframes[k][y][x], frames[k][y][x]
+                if b == TRANSPARENT and c == TRANSPARENT:
+                    continue
+                tot += 1
+                m[b][c] += 1
+    return 1 - sum(cn.most_common(1)[0][1] for cn in m.values()) / max(tot, 1)
+
+
+def gate(pal, frames, base=None, check_changed=True, strength='normal'):
+    """→ dict(ok, fails[], warns[], metrics{}). base=(pal, frames) 가 있으면 뼈대 대비 기준과 「새 캐릭터인가」도 잰다.
+    strength(weak·normal·strong)가 돌출·실루엣·변화량 기준을 정한다."""
+    L = dict(LIMITS)
+    L.update({k: v for k, v in STRENGTH.get(strength or 'normal', STRENGTH['normal']).items() if k != 'label'})
     fails, warns, m = [], [], {}
     se = structural_errors(pal, frames)
     if se:
@@ -233,6 +260,10 @@ def gate(pal, frames, base=None, check_changed=True):
                 if c != TRANSPARENT:
                     used.setdefault(c, set()).add(k)
     m['colors'] = len(used)
+    if base is not None:
+        # 올린 그림(RTP 밖)은 울타리를 넘을 수 있다(조선 병사 55색·깃털이 칸 끝까지) — 뼈대가 이미 넘은 만큼은 허용한다.
+        bused = {c for rows in base[1].values() for r in rows for c in r if c != TRANSPARENT}
+        L['max_colors'] = max(L['max_colors'], len(bused))
     if len(used) > L['max_colors']:
         fails.append(f'색 {len(used)}개 > {L["max_colors"]} (RTP 원본 최대 47)')
     once = sorted(c for c, ks in used.items() if len(ks) == 1)
@@ -250,11 +281,15 @@ def gate(pal, frames, base=None, check_changed=True):
                 fails.append(f'{DIR_KO[d]} {f}: 빈 프레임')
                 continue
             ar = st['area'][k]
-            if not (L['area_min'] <= ar <= L['area_max']):
-                fails.append(f'{DIR_KO[d]} {f}: 실루엣 {ar}px — RTP 범위({L["area_min"]}~{L["area_max"]}) 밖')
+            amin = min(L['area_min'], bs['area'].get(k, L['area_min'])) if bs else L['area_min']
+            amax = max(L['area_max'], bs['area'].get(k, 0)) if bs else L['area_max']
+            if not (amin <= ar <= amax):
+                fails.append(f'{DIR_KO[d]} {f}: 실루엣 {ar}px — 범위({amin}~{amax}) 밖')
             w, h = st['bbox'][k]
-            if w > L['bbox_w_max'] or h > L['bbox_h_max']:
-                fails.append(f'{DIR_KO[d]} {f}: 크기 {w}×{h} — 칸 가장자리까지 찼다(≤{L["bbox_w_max"]}×{L["bbox_h_max"]})')
+            bw, bh = bs['bbox'].get(k, (0, 0)) if bs else (0, 0)
+            wmax, hmax = max(L['bbox_w_max'], bw), max(L['bbox_h_max'], bh)
+            if w > wmax or h > hmax:
+                fails.append(f'{DIR_KO[d]} {f}: 크기 {w}×{h} — 칸 가장자리까지 찼다(≤{wmax}×{hmax})')
             if bs and k in bs['area']:
                 lo, hi = L['area_vs_base']
                 if not (lo * bs['area'][k] <= ar <= hi * bs['area'][k]):
@@ -304,13 +339,19 @@ def gate(pal, frames, base=None, check_changed=True):
         m['silhouette_changed_px'] = sil
         if chg / max(tot, 1) < L['changed_min']:
             fails.append(f'뼈대 원본과 {chg / max(tot, 1):.0%} 만 다르다 — 새 캐릭터가 아니라 복사에 가깝다(≥{L["changed_min"]:.0%})')
+        rd = redrawn(bframes, frames)
+        m['redrawn_vs_base'] = round(rd, 3)
+        if rd < L['redrawn_min']:
+            fails.append(f'모양을 다시 찍은 픽셀이 {rd:.0%} 뿐이다(≥{L["redrawn_min"]:.0%}) — 색만 바꿨다. 이 강도에서는 머리 모양·옷 모양을 바꿔야 한다')
+        if L.get('silhouette_max') is not None and sil > L['silhouette_max']:
+            fails.append(f'실루엣이 뼈대와 {sil}px 다르다(≤{L["silhouette_max"]}, 강도 약함 = 색만 바꾼다)')
         pr = protrusion(bframes, frames, L['protrude_margin'])
         m['protrusion_max'], m['protrusion_sum'] = max(pr.values()), sum(pr.values())
         if m['protrusion_max'] > L['protrude_frame_max'] or m['protrusion_sum'] > L['protrude_sum_max']:
             worst = max(pr, key=pr.get)
             fails.append(f'뼈대 실루엣 밖(+{L["protrude_margin"]}px)으로 튀어나온 픽셀 프레임당 최대 {m["protrusion_max"]}'
                          f'({DIR_KO[worst[0]]} {worst[1]})·합 {m["protrusion_sum"]} (≤{L["protrude_frame_max"]}·≤{L["protrude_sum_max"]})'
-                         ' — 무기·모자·날개 같은 소지품을 더하지 말 것')
+                         ' — 이 강도에서 허용하는 것보다 몸 밖으로 많이 튀어나왔다(소지품·모자·날개)')
     return dict(ok=not fails, fails=fails, warns=warns, metrics=m)
 
 

@@ -44,8 +44,34 @@ ENGINES = {
     'opus': dict(label='Claude Opus 5.5 · high', model='claude-opus-5-5', effort='high'),
 }
 CLAUDE_ENGINES = ('sonnet', 'opus')
-DEFAULT_KEEP = ('몸 비율·머리 크기·팔다리 위치·걸음 동작(다리 모양과 1px 출렁임)은 뼈대 그대로 둔다. 바꾸는 것은 머리 모양, 옷, 색, '
-                '소지품이다. 지시한 옷·머리가 뼈대보다 크거나 길면(망토·긴 치마·큰 짐) 그 부분의 실루엣은 바뀌어도 된다.')
+DEFAULT_KEEP = ('몸 비율·머리 크기·팔다리 위치·걸음 동작(다리 모양과 1px 출렁임)은 뼈대 그대로 둔다. 무엇을 얼마나 바꾸는지는 '
+                '아래 6번(수정 강도)을 따른다.')
+
+# 수정 강도별 작업자 규칙(worker.md 의 {STRENGTH_RULES}). 기계 기준은 chr.STRENGTH.
+STRENGTH_RULES = {
+    'weak': '''**강도 「약함」 — 같은 사람, 다른 색.** 원래 그림의 모양은 그대로 두고 **색만** 바꾼다.
+   - 바꾸는 것: 머리색·옷 색·피부 톤·눈 색, 옷 안쪽의 작은 무늬(띠·단추·줄 1~2개, 옷 색 나누기). 색의 명암 단계는 원래대로 옮긴다.
+   - 하지 않는 것: 머리 모양·옷 모양·소지품을 바꾸거나 더하기. **바깥 윤곽(실루엣)은 한 픽셀도 바꾸지 않는 것이 목표**다.
+   기계 검사: 뼈대 실루엣과 다른 픽셀이 12프레임 합 30 을 넘거나, 뼈대 밖으로 튀어나온 픽셀이 하나라도 있으면 불합격.''',
+    'normal': '''**강도 「보통」 — 「색만 바꾼 같은 사람」이 아니라 「다른 사람」으로 보여야 한다**(2026-10-02 사용자: 「너무 비슷하다, 약간 더 바꾸되」). 바꿔도 되는 것:
+   - **머리 모양**: 길이·앞머리·묶음·곱슬·숱. 머리 둘레 2px 안에서 실루엣이 바뀌어도 된다.
+   - **옷의 모양과 무늬**: 깃·소매 길이·조끼/망토 자락의 안쪽 선·줄무늬·체크·띠·단추·주머니·옷 색 나누기.
+   - 피부 톤, 눈 색, 수염, 얼굴 디테일(주근깨·볼).
+   **하지 않는 것:** 무기·모자·두건·들고 있는 물건·날개·지팡이·가방처럼 **몸 밖으로 튀어나오는 새 소지품**(2026-10-02 사용자: 「무기나 모자 추가는 별로」).
+   기계 검사가 뼈대 실루엣을 2px 넓힌 밖으로 튀어나온 픽셀을 세서, 프레임당 10·전체 60 을 넘으면 불합격이다. 뼈대에 원래 있던 소지품은 두고 색만 바꿔도 된다.
+   **색만 바꾸면 불합격이다**: 색 바꾸기로 설명되지 않는 픽셀(모양을 새로 찍은 픽셀)이 10 % 이상이어야 한다(2026-10-03 「보통」 작업자가 팔레트만 바꾸고 1분 만에 끝냈다).''',
+    'strong': '''**강도 「강함」 — 원본을 알아보기 어려울 만큼 다른 캐릭터로.** 몸 비율·머리 크기·팔다리 위치·걸음은 그대로 두고 그 위를 크게 바꾼다:
+   - **머리 모양을 확실히** 바꾼다(짧은 머리 ↔ 긴 머리·묶음·땋은 머리·앞머리). 머리 둘레 3px 까지 실루엣이 바뀌어도 된다.
+   - **옷의 형태**를 바꾼다: 갑옷 ↔ 천옷, 소매·깃·치마/바지 자락, 망토·목도리 자락, 옷 색 나누기. 원래 옷과 다른 직업으로 읽혀도 된다.
+   - 작은 장신구(머리띠·리본·깃털 하나·귀걸이·목걸이·허리띠 주머니)는 실루엣 밖으로 조금 나와도 된다.
+   - 원본에 있던 소지품(창·검·투구 장식)은 지워도 되고 색만 바꿔도 된다.
+   **하지 않는 것:** 큰 무기·방패·날개·지팡이·가방·높은 모자처럼 몸에서 크게 튀어나오는 새 소지품.
+   기계 검사: 뼈대 실루엣을 2px 넓힌 밖으로 튀어나온 픽셀이 프레임당 20·전체 160 을 넘으면 불합격. 원본과 30 % 넘게 달라야 하고,
+   색 바꾸기로 설명되지 않는 픽셀(모양을 새로 찍은 픽셀)이 25 % 이상이어야 한다.''',
+}
+NO_BRIEF = ('(지시 없음 — 위 강도 안에서 네가 새 캐릭터를 정한다. 어떤 사람인지(직업·나이·성격이 옷과 색에 드러나게) 먼저 정하고 '
+            'notes.md 첫 줄에 쓴다.)')
+
 TIMEOUT_S = int(os.environ.get('CHR_HARNESS_TIMEOUT', str(60 * 60)))
 
 
@@ -53,14 +79,30 @@ def now():
     return datetime.now(timezone.utc).isoformat(timespec='seconds')
 
 
+LOCAL_BRIEFS = DATA / 'briefs-local.json'   # 화면에서 올린 그림으로 만든 지시(저장소 밖 — 남의 그림일 수 있다)
+INPUTS = DATA / 'inputs'                     # 올린 칩 그림(배경 키 색으로 정규화한 288×256)
+
+
 def briefs():
-    return json.loads((HDATA / 'briefs.json').read_text(encoding='utf-8'))
+    b = json.loads((HDATA / 'briefs.json').read_text(encoding='utf-8'))
+    if LOCAL_BRIEFS.exists():
+        b.update(json.loads(LOCAL_BRIEFS.read_text(encoding='utf-8')))
+    return b
+
+
+def strength_of(brief_name):
+    return (briefs().get(brief_name) or {}).get('strength', 'normal')
 
 
 def norm_base(x):
-    """뼈대 키 → 'Actor2:3'. 옛 지시·기록의 정수는 Actor1 번호다."""
+    """뼈대 키 → 'Actor2:3' 또는 'input:<id>:<칸>'(화면에서 올린 그림). 옛 지시·기록의 정수는 Actor1 번호다."""
     if isinstance(x, int) or (isinstance(x, str) and x.isdigit()):
         return f'Actor1:{int(x)}'
+    if str(x).startswith('input:'):
+        _, iid, n = str(x).split(':')
+        if not (INPUTS / f'{iid}.png').exists():
+            raise SystemExit(f'올린 그림 {iid} 이 없다({INPUTS})')
+        return f'input:{iid}:{int(n)}'
     sheet, n = str(x).split(':')
     if sheet not in BASE_SHEETS:
         raise SystemExit(f'뼈대 칩셋 {sheet!r} 은 {BASE_SHEETS} 중 하나여야 한다')
@@ -68,12 +110,20 @@ def norm_base(x):
 
 
 def base_sheet(key):
-    sheet, n = norm_base(key).split(':')
+    k = norm_base(key)
+    if k.startswith('input:'):
+        _, iid, n = k.split(':')
+        return INPUTS / f'{iid}.png', int(n)
+    sheet, n = k.split(':')
     return RTP / 'charset' / f'{sheet}.png', int(n)
 
 
 def base_label(key):
-    sheet, n = norm_base(key).split(':')
+    k = norm_base(key)
+    if k.startswith('input:'):
+        _, iid, n = k.split(':')
+        return f'올린 그림 {iid} {int(n) + 1}번'
+    sheet, n = k.split(':')
     return f'{sheet} {int(n) + 1}번'
 
 
@@ -85,7 +135,9 @@ def base_of(key):
 
 def face_ref(key):
     """칩 뼈대의 짝 얼굴 → (FaceSet png, 번호) 또는 None. 정본 sharedCharacterGraphics.json 에서 RTP 얼굴(easyrpg-faceset-*)만 쓴다
-    — 생성 얼굴(generated-faceset-*)이 짝인 칩은 얼굴 뼈대가 없다."""
+    — 생성 얼굴(generated-faceset-*)이 짝인 칩과 올린 그림은 얼굴 뼈대가 없다."""
+    if norm_base(key).startswith('input:'):
+        return None
     sheet, n = norm_base(key).split(':')
     tk = f'tex_easyrpg_charset_{sheet.lower()}'
     for m in json.loads(GRAPHICS.read_text(encoding='utf-8'))['mappings']:
@@ -137,17 +189,17 @@ def propagate_file(file, base_key, keep_worker=True):
 def cmd_propagate(a):
     propagate_file(a.file, a.base, keep_worker=not a.no_keep)
     pal, _, frames = C.load(a.file)
-    print(json.dumps(C.gate(pal, frames, base_of(a.base)), ensure_ascii=False, indent=1))
+    print(json.dumps(C.gate(pal, frames, base_of(a.base), strength=a.strength), ensure_ascii=False, indent=1))
 
 
 def cmd_check(a):
     pal, _, frames = C.load(a.file)
-    r = C.gate(pal, frames, base_of(a.base) if a.base is not None else None)
+    r = C.gate(pal, frames, base_of(a.base) if a.base is not None else None, strength=a.strength)
     print(json.dumps(r, ensure_ascii=False, indent=1))
     sys.exit(0 if r['ok'] else 1)
 
 
-def make_views(file, out, base_n=None):
+def make_views(file, out, base_n=None, strength='normal'):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     pal, _, frames = C.load(file)
@@ -163,13 +215,14 @@ def make_views(file, out, base_n=None):
     C.gif_stroll(pal, frames, out / 'stroll.gif', 3, LAWN)
     png = base_sheet(base_n)[0] if base_n is not None else ACTOR1
     C.context(pal, frames, png, 3, LAWN).save(out / 'context.png')
-    r = C.gate(pal, frames, base)
+    r = C.gate(pal, frames, base, strength=strength)
+    r['strength'] = strength
     (out / 'gate.json').write_text(json.dumps(r, ensure_ascii=False, indent=1), encoding='utf-8')
     return r
 
 
 def cmd_views(a):
-    r = make_views(a.file, a.out, a.base)
+    r = make_views(a.file, a.out, a.base, a.strength)
     print(json.dumps(r, ensure_ascii=False, indent=1))
     print('그림:', ', '.join(sorted(p.name for p in Path(a.out).iterdir())))
 
@@ -188,23 +241,25 @@ def start_draw(brief, engine, run, w, src=None, fix_text=None):
     pal, frames = base_of(bk)
     base_txt.write_text(C.dump(pal, {}, frames, header=f'{base_label(bk)} 캐릭터 (뼈대) — 고치지 말 것, 복사해서 쓴다'),
                         encoding='utf-8')
-    make_views(base_txt, w / 'base-views', bk)
+    stg = b.get('strength', 'normal')
+    make_views(base_txt, w / 'base-views', bk, stg)
     tool = f'python3 {HERE / "harness.py"}'
     t = (HERE / 'worker.md').read_text(encoding='utf-8')
     rep = {'{TOOL}': tool, '{DIR}': str(w), '{BASE_N}': bk, '{BASE_LABEL}': base_label(bk), '{NAME}': b['name'],
-           '{BRIEF}': b['brief'], '{KEEP}': b.get('keep', DEFAULT_KEEP), '{SHEET_PNG}': str(base_sheet(bk)[0])}
+           '{STRENGTH_RULES}': STRENGTH_RULES[stg], '{STRENGTH}': stg,
+           '{BRIEF}': b.get('brief') or NO_BRIEF, '{KEEP}': b.get('keep', DEFAULT_KEEP), '{SHEET_PNG}': str(base_sheet(bk)[0])}
     for k, v in rep.items():
         t = t.replace(k, v)
     if src:
         # 수정 작업: 다른 작업자(또는 이전 판)의 결과에서 시작한다. 지적은 감독·검수자가 쓴 글을 그대로 붙인다.
         shutil.copy(src / 'out.chr.txt', w / 'start.chr.txt')
-        make_views(w / 'start.chr.txt', w / 'start-views', bk)
+        make_views(w / 'start.chr.txt', w / 'start-views', bk, stg)
         t += (HERE / 'fixer.md').read_text(encoding='utf-8').replace('{FIX}', fix_text or '(지적 없음 — 스스로 찾아 고친다)') \
             .replace('{SRC}', str(src))
     (w / 'prompt.md').write_text(t, encoding='utf-8')
     p = _spawn(engine, w, w / 'prompt.md', w / 'worker.log')
     meta = dict(run=run, brief=brief, engine=engine, label=eng['label'], model=eng['model'], effort=eng['effort'],
-                pid=p.pid, started=now(), dir=str(w), base=bk, src=str(src) if src else None)
+                pid=p.pid, started=now(), dir=str(w), base=bk, strength=stg, src=str(src) if src else None)
     if src:
         meta['label'] += f' — {json.loads((src / "meta.json").read_text())["label"]} 결과를 수정'
     (w / 'meta.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')
@@ -246,12 +301,14 @@ def start_review(w, engine='sonnet'):
         shutil.rmtree(rv)
     rv.mkdir()
     v = w / 'views'
-    make_views(w / 'out.chr.txt', v, norm_base(b['base']))
+    stg = b.get('strength', 'normal')
+    make_views(w / 'out.chr.txt', v, norm_base(b['base']), stg)
     for n in ('strip.png', 'sheet_x8.png', 'context.png', 'gate.json'):
         shutil.copy(v / n, rv / n)
     shutil.copy(w / 'base-views' / 'strip.png', rv / 'base_strip.png')
     t = (HERE / 'reviewer.md').read_text(encoding='utf-8')
-    for k, val in {'{NAME}': b['name'], '{BRIEF}': b['brief'], '{KEEP}': b.get('keep', DEFAULT_KEEP), '{DIR}': str(rv),
+    for k, val in {'{NAME}': b['name'], '{BRIEF}': b.get('brief') or '(지시 없음 — 작업자가 강도 안에서 정했다)',
+                   '{STRENGTH_LABEL}': C.STRENGTH[stg]['label'], '{KEEP}': b.get('keep', DEFAULT_KEEP), '{DIR}': str(rv),
                    '{BASE_N}': norm_base(b['base']), '{BASE_LABEL}': base_label(b['base'])}.items():
         t = t.replace(k, val)
     (rv / 'prompt.md').write_text(t, encoding='utf-8')
@@ -306,7 +363,7 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True
                 log(f'{brief} r{r}: 걸음 0·2 전파')
             except Exception as e:  # noqa: BLE001
                 log(f'{brief} r{r}: 전파 실패 {e!r}'[:300])
-        make_views(w / 'out.chr.txt', w / 'views', norm_base(briefs()[brief]['base']))
+        make_views(w / 'out.chr.txt', w / 'views', norm_base(briefs()[brief]['base']), strength_of(brief))
         rp = start_review(w, reviewer)
         log(f'{brief} r{r}: {reviewer} 검수 시작 pid={rp.pid}')
         _wait(rp)
@@ -329,6 +386,11 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True
                         log(f'{brief} r{r}: 생성 얼굴 {gen_face_one(w)}')
                     except Exception as e:  # noqa: BLE001
                         log(f'{brief} r{r}: 생성 얼굴 실패 {e!r}'[:300])
+            try:
+                d = describe_one(w)
+                log(f'{brief} r{r}: 설명 「{d.get("label") if d else "없음"}」')
+            except Exception as e:  # noqa: BLE001
+                log(f'{brief} r{r}: 설명 실패 {e!r}'[:300])
             return
         prev = w
 
@@ -396,7 +458,7 @@ def cmd_page(a):
             cards.append(dict(title=m['label'] + ' · ' + w.name.split('__')[-1], views=None, gate=None, notes='(아직 그리는 중)', base=False))
             continue
         v = w / 'views'
-        r = make_views(out, v, norm_base(m['base']))
+        r = make_views(out, v, norm_base(m['base']), m.get('strength', 'normal'))
         notes = (w / 'notes.md').read_text(encoding='utf-8') if (w / 'notes.md').exists() else ''
         rv = read_verdict(w)
         title = m['label'] + (f' · {w.name.rsplit("-", 1)[-1]}' if w.name.split('__')[-1].count('-r') else '')
@@ -513,7 +575,7 @@ def start_face(w, engine='sonnet'):
     ref = fd / 'ref'
     ref.mkdir(exist_ok=True)
     bk = norm_base(b['base'])
-    make_views(w / 'out.chr.txt', w / 'views', bk)
+    make_views(w / 'out.chr.txt', w / 'views', bk, b.get('strength', 'normal'))
     shutil.copy(w / 'views' / 'strip.png', ref / 'chip_strip.png')
     shutil.copy(w / 'views' / 'sheet_x8.png', ref / 'chip_x8.png')
     bp, brows = base_face(bk)
@@ -652,11 +714,157 @@ def cmd_faces(a):
     print('끝', flush=True)
 
 
+# ─────────────────────────────── 그림 넣기(올린 칩) ───────────────────────────────
+def ingest(src, name=None):
+    """올린 CharSet 그림 → INPUTS/<id>.png(288×256, 배경 키 색 칠함) → (id, [캐릭터가 있는 칸], 자기 검사 결과).
+    72×128(한 명) 그림은 0번 칸에 넣는다. 투명 배경이면 KEY 로 칠한다. 한 칸 색이 60개를 넘으면 60색으로 줄인다."""
+    import hashlib
+    im = Image.open(src)
+    w, h = im.size
+    if not (w % 72 == 0 and h % 128 == 0 and w <= 288 and h <= 256):
+        raise ValueError(f'CharSet 크기가 아니다 {w}×{h} — 72×128(한 명) 또는 288×256(여덟 명)')
+    if im.mode in ('RGBA', 'LA') or (im.mode == 'P' and 'transparency' in im.info):
+        rgba = im.convert('RGBA')
+        key = C.KEY
+        flat = Image.new('RGB', (w, h), key)
+        flat.paste(rgba.convert('RGB'), (0, 0), rgba.split()[3].point(lambda a: 255 if a >= 128 else 0))
+    else:
+        flat = im.convert('RGB')
+        key = flat.getpixel((0, 0))
+    sheet = Image.new('RGB', (288, 256), key)
+    sheet.paste(flat, (0, 0))
+    slots = []
+    for n in range(8):
+        bx, by = (n % 4) * 72, (n // 4) * 128
+        blk = sheet.crop((bx, by, bx + 72, by + 128))
+        px = list(blk.getdata())
+        opaque = sum(c != key for c in px)
+        if opaque < 1000:   # 옆 칸에서 넘어온 몇 픽셀(조선 병사 1번 칸 25px)은 캐릭터가 아니다
+            continue
+        cols = {c for c in px if c != key}
+        if len(cols) > 60:
+            q = blk.quantize(61, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).convert('RGB')
+            qd = [key if c == key else (qc if qc != key else (qc[0], qc[1], qc[2] ^ 1)) for c, qc in zip(px, q.getdata())]
+            blk = Image.new('RGB', blk.size)
+            blk.putdata(qd)
+            sheet.paste(blk, (bx, by))
+        slots.append(n)
+    if not slots:
+        raise ValueError('캐릭터가 있는 칸이 없다(배경 키 색은 왼쪽 위 픽셀로 읽는다)')
+    iid = hashlib.sha1(sheet.tobytes()).hexdigest()[:8]
+    INPUTS.mkdir(parents=True, exist_ok=True)
+    sheet.save(INPUTS / f'{iid}.png')
+    selfcheck = {}
+    for n in slots:
+        pal, _, frames = C.from_actor(INPUTS / f'{iid}.png', n)
+        r = C.gate(pal, frames, (pal, frames), check_changed=False)
+        selfcheck[n] = r['fails']
+    (INPUTS / f'{iid}.json').write_text(json.dumps(dict(name=name or Path(str(src)).stem, src=str(src), slots=slots,
+                                                        selfcheck=selfcheck, at=now()), ensure_ascii=False), encoding='utf-8')
+    return iid, slots, selfcheck
+
+
+def add_input_briefs(iid, slots, strengths, name, brief=''):
+    """올린 그림의 칸 × 강도마다 지시를 만들어 LOCAL_BRIEFS 에 넣는다 → 지시 이름 목록."""
+    loc = json.loads(LOCAL_BRIEFS.read_text(encoding='utf-8')) if LOCAL_BRIEFS.exists() else {}
+    keys = []
+    for n in slots:
+        for stg in strengths:
+            k = f'in-{iid}-{n}-{stg}'
+            loc[k] = dict(name=f'{name}{f" {n + 1}" if len(slots) > 1 else ""} · {C.STRENGTH[stg]["label"]}',
+                          base=f'input:{iid}:{n}', gender='', brief=brief or '', strength=stg, source='upload', at=now())
+            keys.append(k)
+    LOCAL_BRIEFS.parent.mkdir(parents=True, exist_ok=True)
+    LOCAL_BRIEFS.write_text(json.dumps(loc, ensure_ascii=False, indent=1), encoding='utf-8')
+    return keys
+
+
+def spawn_loop(keys, run, drawer='sonnet'):
+    """loop 를 따로 프로세스로(화면 서버가 막히지 않게)."""
+    run_dir(run).mkdir(parents=True, exist_ok=True)
+    return subprocess.Popen([sys.executable, str(HERE / 'harness.py'), 'loop', *keys, '--run', run, '--drawer', drawer,
+                             '--par', str(min(6, len(keys)))], cwd=str(ROOT), stdout=open(run_dir(run) / 'loop.out', 'a'),
+                            stderr=subprocess.STDOUT, start_new_session=True)
+
+
+def cmd_ingest(a):
+    iid, slots, sc = ingest(a.image, a.name)
+    if a.slot is not None:
+        slots = [s_ for s_ in slots if s_ in a.slot]
+    strengths = a.strength.split(',')
+    for stg in strengths:
+        if stg not in C.STRENGTH:
+            sys.exit(f'강도 {stg!r} 은 {list(C.STRENGTH)} 중 하나')
+    keys = add_input_briefs(iid, slots, strengths, a.name or Path(a.image).stem, a.brief or '')
+    print(json.dumps(dict(id=iid, slots=slots, selfcheck=sc, briefs=keys), ensure_ascii=False, indent=1))
+    if a.go:
+        run = a.run or datetime.now().strftime('%Y%m%d-%H%M') + f'-in-{iid}'
+        p = spawn_loop(keys, run, a.drawer)
+        print(f'loop pid={p.pid} run={run}')
+
+
+# ─────────────────────────────── 설명(조수가 읽을 것) ───────────────────────────────
+def describe_one(w, engine='sonnet'):
+    """완성된 칩을 Sonnet 이 그림만 보고 설명한다 → w/desc.json (sharedCharacterGraphics 의 label·attributes 형식 + 외형 문장·태그)."""
+    meta = json.loads((w / 'meta.json').read_text())
+    b = briefs().get(meta['brief'], {})
+    dd = w / 'describe'
+    if dd.exists():
+        shutil.rmtree(dd)
+    dd.mkdir()
+    for n in ('sheet_x8.png', 'strip.png'):
+        shutil.copy(w / 'views' / n, dd / n)
+    face_line = ''
+    if (w / 'face_gen' / 'face_x4.png').exists():
+        shutil.copy(w / 'face_gen' / 'face_x4.png', dd / 'face_x4.png')
+        face_line = '- `face_x4.png` — 이 캐릭터의 대화창 얼굴(4배). 머리·눈·옷깃 색은 칩과 맞춰 본다.'
+    t = (HERE / 'describe.md').read_text(encoding='utf-8')
+    for k, v in {'{NAME}': b.get('name', meta['brief']), '{DIR}': str(dd), '{FACE_LINE}': face_line,
+                 '{BRIEF}': b.get('brief') or '(지시 없음)'}.items():
+        t = t.replace(k, v)
+    (dd / 'prompt.md').write_text(t, encoding='utf-8')
+    _spawn(engine, dd, dd / 'prompt.md', dd / 'describe.log').wait()
+    try:
+        d = json.loads((dd / 'desc.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return None
+    d['by'], d['at'] = ENGINES[engine]['label'], now()
+    (w / 'desc.json').write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding='utf-8')
+    return d
+
+
+def _desc(w):
+    try:
+        return json.loads((w / 'desc.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return None
+
+
+def cmd_describe(a):
+    from concurrent.futures import ThreadPoolExecutor
+    runs = [run_dir(a.run)] if a.run else sorted((DATA / 'runs').glob('*'))
+    ws = [w for r in runs for w in sorted(r.glob('*__*')) if (w / 'views' / 'sheet_x8.png').exists()
+          and (a.redo or not (w / 'desc.json').exists()) and (not a.only or w.name.split('__')[0] in a.only.split(','))]
+    if a.accepted:
+        acc = {k for k, d in _decisions().items() if d['decision'] == 'accept'}
+        ws = [w for w in ws if f'{w.parent.name}/{w.name}' in acc]
+
+    def one(w):
+        d = describe_one(w)
+        print(f'{datetime.now():%H:%M:%S} {w.parent.name}/{w.name} 「{d.get("label") if d else "실패"}」', flush=True)
+    with ThreadPoolExecutor(max_workers=a.par) as ex:
+        list(ex.map(one, ws))
+    if a.accepted or not a.run:
+        export_decisions()
+    print(f'끝 {len(ws)}개', flush=True)
+
+
 # ─────────────────────────────── 받기/버리기 화면 ───────────────────────────────
 REASONS = ['Actor1 과 화풍 다름', '지시와 다름', '1배에서 안 읽힘', '방향마다 다른 사람', '걸음 어색', '형태 뭉개짐', '색이 탁함', '잡티']
 DECISIONS = DATA / 'decisions.jsonl'          # 정본(추가만). 저장소 사본은 export_decisions 가 쓴다.
 EXPORT = HDATA / 'decisions.json'
 ACCEPTED = HDATA / 'accepted'
+ACCEPTED_LOCAL = DATA / 'accepted'           # 올린 그림에서 나온 것(남의 그림일 수 있다 — 저장소 밖)
 
 
 def _items():
@@ -675,6 +883,8 @@ def _items():
             out.append(dict(id=f'{rd.name}/{w.name}', run=rd.name, dir=w.name, brief=m['brief'], name=b.get('name', m['brief']),
                             gender=b.get('gender', ''), brief_text=b.get('brief', ''), base=norm_base(m['base']), base_label=base_label(m['base']),
                             has_face=face_ref(m['base']) is not None, label=m['label'],
+                            strength=m.get('strength') or b.get('strength', 'normal'), upload=b.get('source') == 'upload',
+                            desc=_desc(w),
                             status='running' if _alive(m['pid']) else ('done' if has else 'failed'),  # 작업자도 views 를 만들므로 살아 있으면 아직 그리는 중
                             gate=gate, review=read_verdict(w) if has else None,
                             face=_face_state(w), face_gen=_gen_meta(w)))
@@ -720,8 +930,9 @@ def export_decisions():
     EXPORT.write_text(json.dumps(dict(updated=now(), decisions=list(cur.values())), ensure_ascii=False, indent=1) + '\n',
                       encoding='utf-8')
     # 받은 것은 격자·1배 시트를 저장소로 옮긴다(작은 글자 파일 — 다음 단계 번들 등록의 원본)
-    ACCEPTED.mkdir(parents=True, exist_ok=True)
+    # 설명(desc.json)은 <stem>.json 으로 — 조수가 NPC 를 고를 때 읽을 것(label·attributes 는 sharedCharacterGraphics 형식).
     keep = set()
+    bs = briefs()
     for d in cur.values():
         if d['decision'] != 'accept':
             continue
@@ -729,12 +940,22 @@ def export_decisions():
         w = run_dir(run) / dname
         stem = f'{dname}__{run}'
         keep.add(stem)
-        if (w / 'out.chr.txt').exists():
-            shutil.copy(w / 'out.chr.txt', ACCEPTED / f'{stem}.chr.txt')
-            shutil.copy(w / 'views' / 'sheet.png', ACCEPTED / f'{stem}.png')
-    for f in ACCEPTED.glob('*'):
-        if f.name.rsplit('.', 1)[0].removesuffix('.chr') not in keep:
-            f.unlink()
+        if not (w / 'out.chr.txt').exists():
+            continue
+        m = json.loads((w / 'meta.json').read_text())
+        b = bs.get(m['brief'], {})
+        dest = ACCEPTED_LOCAL if b.get('source') == 'upload' else ACCEPTED
+        dest.mkdir(parents=True, exist_ok=True)
+        shutil.copy(w / 'out.chr.txt', dest / f'{stem}.chr.txt')
+        shutil.copy(w / 'views' / 'sheet.png', dest / f'{stem}.png')
+        info = dict(id=d['id'], brief=m['brief'], name=b.get('name'), base=norm_base(m['base']), base_label=base_label(m['base']),
+                    strength=m.get('strength') or b.get('strength', 'normal'), files=dict(chr=f'{stem}.chr.txt', sheet=f'{stem}.png'),
+                    description=_desc(w))
+        (dest / f'{stem}.json').write_text(json.dumps(info, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    for dest in (ACCEPTED, ACCEPTED_LOCAL):
+        for f in dest.glob('*') if dest.exists() else []:
+            if f.name.split('.', 1)[0] not in keep:
+                f.unlink()
 
 
 def cmd_serve(a):
@@ -767,6 +988,11 @@ def cmd_serve(a):
                 for it in items:
                     it['decision'] = dec.get(it['id'])
                 return self._send(200, json.dumps(dict(items=items, reasons=REASONS), ensure_ascii=False))
+            if path.startswith('/in/'):
+                f = (INPUTS / path[4:]).resolve()
+                if INPUTS.resolve() not in f.parents or not f.is_file():
+                    return self._send(404, 'not found', 'text/plain')
+                return self._send(200, f.read_bytes(), 'image/png')
             if path.startswith('/f/'):
                 f = (root / path[3:]).resolve()
                 if root not in f.parents or not f.is_file():
@@ -776,10 +1002,12 @@ def cmd_serve(a):
             return self._send(404, 'not found', 'text/plain')
 
         def do_POST(self):
-            if self.path != '/api/decide':
-                return self._send(404, '{}')
             n = int(self.headers.get('Content-Length') or 0)
             d = json.loads(self.rfile.read(n) or b'{}')
+            if self.path == '/api/new':
+                return self._new(d)
+            if self.path != '/api/decide':
+                return self._send(404, '{}')
             if d.get('decision') not in ('accept', 'reject', 'clear') or '/' not in str(d.get('id', '')):
                 return self._send(400, '{"error":"bad"}')
             rec = dict(id=d['id'], decision=d['decision'], reasons=d.get('reasons') or [], note=d.get('note') or '',
@@ -789,6 +1017,26 @@ def cmd_serve(a):
                 fh.write(json.dumps(rec, ensure_ascii=False) + '\n')
             export_decisions()
             return self._send(200, json.dumps(rec, ensure_ascii=False))
+
+        def _new(self, d):
+            """그림 넣기: {image: dataURL, name, strengths: [weak|normal|strong], brief} → 칸 × 강도마다 loop 를 띄운다."""
+            import io
+            try:
+                raw = base64.b64decode(str(d.get('image', '')).split(',', 1)[-1])
+                strengths = [x for x in d.get('strengths') or [] if x in C.STRENGTH] or ['normal']
+                name = (d.get('name') or '올린 그림').strip()[:40]
+                up = DATA / 'uploads'
+                up.mkdir(parents=True, exist_ok=True)
+                f = up / f'{datetime.now():%Y%m%d-%H%M%S}.png'
+                Image.open(io.BytesIO(raw)).save(f)
+                iid, slots, sc = ingest(f, name)
+                keys = add_input_briefs(iid, slots, strengths, name, (d.get('brief') or '').strip())
+                run = datetime.now().strftime('%Y%m%d-%H%M') + f'-in-{iid}'
+                p = spawn_loop(keys, run)
+            except Exception as e:  # noqa: BLE001 — 화면에 그대로 보여 준다
+                return self._send(400, json.dumps(dict(error=str(e)), ensure_ascii=False))
+            return self._send(200, json.dumps(dict(id=iid, slots=slots, selfcheck=sc, briefs=keys, run=run, pid=p.pid),
+                                              ensure_ascii=False))
 
     print(f'http://mdc-server:{a.port}/', flush=True)
     ThreadingHTTPServer(('0.0.0.0', a.port), H).serve_forever()
@@ -805,16 +1053,19 @@ def main():
     p = sp.add_parser('check')
     p.add_argument('file')
     p.add_argument('--base', help='Actor2:3 처럼 (정수는 Actor1)')
+    p.add_argument('--strength', default='normal', choices=list(C.STRENGTH))
     p.set_defaults(fn=cmd_check)
     p = sp.add_parser('propagate', help='걸음 0·2 를 서 있는 자세에서 다시 만든다')
     p.add_argument('file')
     p.add_argument('--base', required=True)
     p.add_argument('--no-keep', action='store_true', help='작업자 원본(out.worker.chr.txt)을 남기지 않는다')
+    p.add_argument('--strength', default='normal', choices=list(C.STRENGTH))
     p.set_defaults(fn=cmd_propagate)
     p = sp.add_parser('views')
     p.add_argument('file')
     p.add_argument('out')
     p.add_argument('--base', help='Actor2:3 처럼 (정수는 Actor1)')
+    p.add_argument('--strength', default='normal', choices=list(C.STRENGTH))
     p.set_defaults(fn=cmd_views)
     p = sp.add_parser('draw')
     p.add_argument('brief')
@@ -867,6 +1118,23 @@ def main():
     p.add_argument('--redo', action='store_true')
     p.add_argument('--reuse', action='store_true', help='이미 뽑은 raw 를 다시 자르고 다시 판정, 모자라면 새로 뽑기')
     p.set_defaults(fn=cmd_gen_faces)
+    p = sp.add_parser('ingest', help='올린 CharSet 그림을 뼈대로 넣는다(input:<id>:<칸>) — --go 면 바로 loop')
+    p.add_argument('image')
+    p.add_argument('--name')
+    p.add_argument('--strength', default='normal', help='weak,normal,strong 쉼표 목록(칸마다 강도별로 하나씩)')
+    p.add_argument('--brief', help='무엇으로 바꿀지(없으면 작업자가 강도 안에서 정한다)')
+    p.add_argument('--slot', type=int, nargs='+', help='쓸 칸 번호(0부터, 기본 캐릭터가 있는 칸 전부)')
+    p.add_argument('--go', action='store_true')
+    p.add_argument('--run')
+    p.add_argument('--drawer', default='sonnet', choices=list(ENGINES))
+    p.set_defaults(fn=cmd_ingest)
+    p = sp.add_parser('describe', help='완성된 칩에 설명(desc.json)을 붙인다 — 조수가 읽을 것')
+    p.add_argument('--run')
+    p.add_argument('--only')
+    p.add_argument('--accepted', action='store_true', help='받은 것만')
+    p.add_argument('--redo', action='store_true')
+    p.add_argument('--par', type=int, default=6)
+    p.set_defaults(fn=cmd_describe)
     sp.add_parser('export', help='결정을 harness-data/charset-actor/decisions.json·accepted/ 로').set_defaults(
         fn=lambda a: export_decisions())
     a = ap.parse_args()

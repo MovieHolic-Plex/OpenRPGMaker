@@ -53,6 +53,19 @@
   .ba .col { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:8px 12px; }
   .ba .lbl { color:var(--dim); font-size:12px; margin-bottom:6px; }
   img.x2 { width:144px; height:256px; } img.fx { width:192px; height:192px; } img.fs { width:96px; height:96px; opacity:.85; }
+  .strength { font-size:11px; padding:1px 6px; border-radius:3px; border:1px solid var(--line); color:#e8d27a; }
+  .dbox { border-color:#3a4a6a; } .dbox b { color:#cfe0ff; } .dbox .tags span { display:inline-block; font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:9px; padding:0 7px; margin:2px 3px 0 0; }
+  #newBtn { margin-top:8px; width:100%; }
+  .modal { position:fixed; inset:0; background:#000a; display:flex; align-items:center; justify-content:center; z-index:10; }
+  .modal[hidden] { display:none; }
+  .modal .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px 18px; width:min(560px, 94vw); display:flex; flex-direction:column; gap:10px; }
+  .modal h3 { margin:0; font-size:16px; }
+  .modal label { color:var(--dim); font-size:12px; }
+  .modal input[type=text], .modal textarea { width:100%; background:#15141a; border:1px solid var(--line); color:var(--text); border-radius:5px; padding:6px 9px; font:inherit; }
+  .modal textarea { height:64px; resize:vertical; }
+  .modal .prev { image-rendering:pixelated; max-width:100%; background:#3d6b2f; border-radius:4px; }
+  .modal .st { display:flex; gap:8px; } .modal .st .chip.on { border-color:#e8d27a; background:#3a3420; color:var(--text); }
+  .modal .msg { color:var(--dim); font-size:12px; white-space:pre-wrap; } .modal .msg.err { color:#ff9a9a; }
   div.fx.wait { width:192px; height:192px; display:flex; align-items:center; justify-content:center; color:var(--dim); border:1px dashed var(--line); border-radius:4px; }
 </style>
 </head>
@@ -62,10 +75,28 @@
     <h1>캐릭터 칩 — 받기 / 버리기</h1>
     <div class="prog" id="prog"></div>
     <div class="bar" id="bar"></div>
+    <button class="big" id="newBtn">그림 넣어 고치기…</button>
   </header>
   <div class="filters" id="filters"></div>
   <ul id="list"></ul>
 </aside>
+<div class="modal" id="modal" hidden><div class="card">
+  <h3>칩 그림 넣어 고치기</h3>
+  <div class="msg">RPG Maker 2000/2003 CharSet(72×128 한 명 또는 288×256 여덟 명). 배경은 왼쪽 위 픽셀 색이나 투명. 캐릭터가 있는 칸마다, 고른 강도마다 하나씩 그린다.</div>
+  <input type="file" id="nFile" accept="image/png,image/gif,image/bmp">
+  <img id="nPrev" class="prev" hidden>
+  <label>이름</label><input type="text" id="nName" placeholder="예: 조선 병사">
+  <label>얼마나 고칠까 (여러 개 고르면 강도마다 하나씩)</label>
+  <div class="st" id="nSt">
+    <button class="chip" data-s="weak" title="모양은 그대로, 색만 바꾼다(실루엣 그대로)">약함 — 색만</button>
+    <button class="chip on" data-s="normal" title="머리 모양·옷 무늬까지. 새 소지품은 안 된다">보통 — 머리·옷 무늬</button>
+    <button class="chip" data-s="strong" title="머리·옷 형태와 작은 장신구까지. 큰 무기·날개는 안 된다">강함 — 다른 사람</button>
+  </div>
+  <label>무엇으로 바꿀지 (선택 — 비우면 작업자가 강도 안에서 정한다)</label>
+  <textarea id="nBrief" placeholder="예: 같은 병사인데 푸른 군복의 다른 부대 / 여자 병사로"></textarea>
+  <div class="row"><button class="big acc" id="nGo">그리기 시작</button><button class="big" id="nCancel">닫기</button></div>
+  <div class="msg" id="nMsg"></div>
+</div></div>
 <main id="main"><p class="cur">불러오는 중…</p></main>
 <div class="decide" id="decide" hidden>
   <div class="row">
@@ -81,6 +112,7 @@
 <script>
 let S = { items: [], reasons: [] }, sel = null, rej = new Set(), armed = false;
 const F = { show: 'todo', run: 'all' };
+const STL = { weak: '약함', normal: '보통', strong: '강함' };
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const fu = (it, p) => `/f/${it.run}/${it.dir}/${p}?t=${encodeURIComponent(it.review ? it.review.score : '')}`;
@@ -126,7 +158,7 @@ function render() {
       : d ? `<span class="tag d-${d}">${d === 'accept' ? '받음' : '버림'}</span>` : '';
     const th = it.status === 'done' ? `style="background-image:url('${fu(it, 'views/sheet.png')}')"` : '';
     html += `<li class="it ${it.id === sel ? 'sel' : ''}" data-id="${esc(it.id)}"><div class="thumb" ${th}></div>
-      <div class="nm">${esc(it.name)}<small>${esc(it.gender)} · ${esc(it.dir.split('__')[1])}</small></div>${tag}</li>`;
+      <div class="nm">${esc(it.name)}<small>${it.desc ? esc(it.desc.label) + ' · ' : ''}${esc(it.gender)}${it.gender ? ' · ' : ''}${esc(it.dir.split('__')[1])}${it.strength !== 'normal' || it.upload ? ' · 강도 ' + esc(STL[it.strength]) : ''}</small></div>${tag}</li>`;
   }
   $('list').innerHTML = html || '<li class="grp">없음</li>';
   $('list').querySelectorAll('li.it').forEach((li) => (li.onclick = () => { sel = li.dataset.id; render(); }));
@@ -138,7 +170,7 @@ let lastMain = '';
 function renderMain() {
   const it = S.items.find((i) => i.id === sel);
   // 주기 새로고침이 GIF 를 처음부터 다시 돌리거나 고르던 이유를 지우지 않게, 바뀐 게 없으면 그대로 둔다
-  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score, it && it.face, it && it.face_gen && it.face_gen.at]);
+  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score, it && it.face, it && it.face_gen && it.face_gen.at, it && it.desc && it.desc.at]);
   if (key === lastMain) return;
   lastMain = key;
   if (!it) { $('main').innerHTML = '<p class="cur">고를 것이 없습니다.</p>'; $('decide').hidden = true; return; }
@@ -153,8 +185,13 @@ function renderMain() {
       ${rv.good && rv.good.length ? `<div class="m">잘 된 점: ${esc(rv.good.join(' / '))}</div>` : ''}</div>` : '';
   const gHtml = `<div class="box">기계 검수 <b class="${g.ok ? 'v-pass' : 'v-fail'}">${g.ok ? '통과' : '불통과'}</b>
       ${g.fails.map((x) => `<div class="f">✗ ${esc(x)}</div>`).join('')}${g.warns.map((x) => `<div class="w">△ ${esc(x)}</div>`).join('')}</div>`;
-  $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.gender)} · 뼈대 ${esc(it.base_label)} · ${esc(it.label)} · ${esc(it.run)}</span></div>
-    <div class="desc">${esc(it.brief_text)}</div>
+  $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="strength">강도 ${esc(STL[it.strength] || it.strength)}</span><span class="meta">${esc(it.gender)} · 뼈대 ${esc(it.base_label)} · ${esc(it.label)} · ${esc(it.run)}</span></div>
+    <div class="desc">${esc(it.brief_text || '(지시 없음 — 작업자가 강도 안에서 정함)')}</div>
+    ${it.desc ? `<div class="box dbox"><b>${esc(it.desc.label)}</b> <span class="m">· ${esc(it.desc.gender || '')} · ${esc((it.desc.attributes || {}).age || '')} · ${esc((it.desc.attributes || {}).hair || '')} · ${esc(it.desc.role || '')}</span>
+      <div>${esc(it.desc.appearance || '')}</div>
+      ${it.desc.fits ? `<div class="m">어울리는 곳: ${esc(it.desc.fits)}</div>` : ''}
+      <div class="tags">${(it.desc.tags || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>
+      <div class="m">설명 — ${esc(it.desc.by || '')}가 그림만 보고 씀 · AI 조수가 NPC 를 고를 때 읽는다</div></div>` : '<div class="box dbox m">설명 아직 없음</div>'}
     <div class="ba">
       <div class="col"><div class="lbl">비포 — ${esc(it.base_label)} 원본</div>
         <div class="views">
@@ -168,7 +205,7 @@ function renderMain() {
           <figure><img src="${fu(it, 'views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
           <figure><img src="${fu(it, 'views/turn.gif')}"><figcaption>돌기</figcaption></figure>
           <figure><img src="${fu(it, 'views/sheet.png')}" class="x2"><figcaption>시트 (2배)</figcaption></figure>
-          ${!it.has_face ? '<figure><div class="fx wait">짝 얼굴 뼈대 없음</div></figure>' : it.face_gen ? `<figure><img src="${fu(it, 'face_gen/face_x4.png') + '&v=' + encodeURIComponent(it.face_gen.at || '')}" class="fx"><figcaption>얼굴 (생성 ${esc(it.face_gen.version || 'v1')}${it.face_gen.angle != null ? ` · 각도 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.angle}/10</b>` : it.face_gen.pose != null ? ` · 골격 일치 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.pose}</b>` : ''})</figcaption></figure>` : '<figure><div class="fx wait">생성 얼굴 만드는 중…</div></figure>'}
+          ${!it.has_face ? `<figure><div class="fx wait">${it.upload ? '올린 그림 — 짝 얼굴 없음' : '짝 얼굴 뼈대 없음'}</div></figure>` : it.face_gen ? `<figure><img src="${fu(it, 'face_gen/face_x4.png') + '&v=' + encodeURIComponent(it.face_gen.at || '')}" class="fx"><figcaption>얼굴 (생성 ${esc(it.face_gen.version || 'v1')}${it.face_gen.angle != null ? ` · 각도 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.angle}/10</b>` : it.face_gen.pose != null ? ` · 골격 일치 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.pose}</b>` : ''})</figcaption></figure>` : '<figure><div class="fx wait">생성 얼굴 만드는 중…</div></figure>'}
           ${it.face === 'done' ? `<figure><img src="${fu(it, 'face/views/face_x4.png')}" class="fs"><figcaption>얼굴 (손 도트)</figcaption></figure>` : ''}
         </div></div>
     </div>
@@ -207,8 +244,40 @@ function move(k) {
 $('bAcc').onclick = () => decide('accept');
 $('bRej').onclick = () => decide('reject');
 $('bClr').onclick = () => decide('clear');
+// 그림 넣기
+let nData = null;
+$('newBtn').onclick = () => { $('modal').hidden = false; $('nMsg').textContent = ''; };
+$('nCancel').onclick = () => { $('modal').hidden = true; };
+$('nSt').querySelectorAll('.chip').forEach((b) => (b.onclick = () => b.classList.toggle('on')));
+$('nFile').onchange = () => {
+  const f = $('nFile').files[0];
+  if (!f) return;
+  if (!$('nName').value) $('nName').value = f.name.replace(/\.[^.]+$/, '');
+  const rd = new FileReader();
+  rd.onload = () => { nData = rd.result; $('nPrev').src = nData; $('nPrev').hidden = false;
+    $('nPrev').onload = () => { $('nPrev').style.width = Math.min(520, $('nPrev').naturalWidth * 2) + 'px'; }; };
+  rd.readAsDataURL(f);
+};
+$('nGo').onclick = async () => {
+  const strengths = [...$('nSt').querySelectorAll('.chip.on')].map((b) => b.dataset.s);
+  if (!nData) { $('nMsg').className = 'msg err'; $('nMsg').textContent = '그림을 고르세요'; return; }
+  if (!strengths.length) { $('nMsg').className = 'msg err'; $('nMsg').textContent = '강도를 하나 이상 고르세요'; return; }
+  $('nGo').disabled = true; $('nMsg').className = 'msg'; $('nMsg').textContent = '넣는 중…';
+  try {
+    const r = await fetch('/api/new', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: nData, name: $('nName').value, strengths, brief: $('nBrief').value }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || r.status);
+    const bad = Object.entries(j.selfcheck || {}).filter(([, f]) => f.length);
+    $('nMsg').textContent = `칸 ${j.slots.map((n) => n + 1).join(', ')} × 강도 ${strengths.map((s) => STL[s]).join('·')} = ${j.briefs.length}명 그리기 시작 (실행 ${j.run}). 한 명에 10~20분.`
+      + (bad.length ? `\n원본 자체 검사 경고: ${bad.map(([n, f]) => (+n + 1) + '번 ' + f.join('; ')).join(' / ')}` : '');
+    F.run = j.run; F.show = 'all'; await load();
+  } catch (e) { $('nMsg').className = 'msg err'; $('nMsg').textContent = '실패: ' + e.message; }
+  $('nGo').disabled = false;
+};
 document.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'INPUT') { if (e.key === 'Enter') decide('reject'); return; }
+  if (!$('modal').hidden) { if (e.key === 'Escape') $('modal').hidden = true; return; }
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') { if (e.key === 'Enter') decide('reject'); return; }
   if (e.key === 'ArrowDown') { move(1); e.preventDefault(); }
   else if (e.key === 'ArrowUp') { move(-1); e.preventDefault(); }
   else if (e.key === 'a' || e.key === 'A') decide('accept');
@@ -216,7 +285,7 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'Enter' && (armed || rej.size)) decide('reject');
 });
 load();
-setInterval(() => { if (document.activeElement.tagName !== 'INPUT' && !armed && !rej.size) load(true); }, 20000);
+setInterval(() => { if ($('modal').hidden && document.activeElement.tagName !== 'INPUT' && !armed && !rej.size) load(true); }, 20000);
 </script>
 </body>
 </html>
