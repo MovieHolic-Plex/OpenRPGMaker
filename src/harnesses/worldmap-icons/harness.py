@@ -36,7 +36,7 @@ REF = DATA / 'ref-easyrpg-x4.png'
 EXPORT = ROOT / 'harness-data' / 'worldmap-icons' / 'decisions.json'
 CODEX_MODEL = os.environ.get('WMI_HARNESS_CODEX_MODEL', 'gpt-6.1-sol')
 EFFORT = os.environ.get('WMI_HARNESS_EFFORT', 'medium')
-PAR = int(os.environ.get('WMI_HARNESS_PAR', '8'))
+PAR = int(os.environ.get('WMI_HARNESS_PAR', '12'))
 TIMEOUT_S = int(os.environ.get('WMI_HARNESS_TIMEOUT', str(20 * 60)))
 SETS = ('fantasy', 'desert-east', 'modern-sf')
 REASONS = ['옆면 보임(아이소)', '시점 이상', '안 읽힘', '화풍 다름', '크기·비례', '지저분함', '원래(v9)가 나음']
@@ -49,8 +49,9 @@ def now():
 # ─────────────────────────────── 저장소(추가만) ───────────────────────────────
 def db():
     DATA.mkdir(parents=True, exist_ok=True)
-    c = sqlite3.connect(DATA / 'harness.sqlite', timeout=30)
+    c = sqlite3.connect(DATA / 'harness.sqlite', timeout=120)
     c.row_factory = sqlite3.Row
+    c.execute('pragma journal_mode=wal')   # 화면 서버·일꾼·명령이 같이 쓴다 — 읽기가 쓰기를 막지 않게
     c.executescript('''
       create table if not exists items(id text primary key, iset text, name text, role text, cells text, descr text,
                                        place text, used int, sha text, updated text);
@@ -329,6 +330,9 @@ def main():
     a = sub.add_parser('draw', help='다시 그리기 판 열기'); a.add_argument('item'); a.add_argument('--note', default='')
     a.add_argument('--base', default='', help="'r<판>/<글자>' = 그 후보에서 출발"); a.add_argument('-n', type=int, default=5)
     sub.add_parser('pool', help='다시 그리기 일꾼(draw 가 알아서 띄운다)')
+    a = sub.add_parser('restrict', help='끝난 합격 후보에 엄격 검수를 다시 적용(떨어지면 다시 그림·끝내 폐기)'); a.add_argument('--round', type=int, action='append')
+    a = sub.add_parser('purge', help='사용자 미결정 아이콘 중 투영 세트·엄격 불합격을 버리고 다시 그리기 판을 연다'); a.add_argument('--set', action='append', choices=SETS)
+    a.add_argument('-n', type=int, default=3)
     a = sub.add_parser('preview', help='작업자 자가 확인: <폴더>/cand.png → 8배·지도 자리·check.json'); a.add_argument('out'); a.add_argument('--item')
     a = sub.add_parser('serve'); a.add_argument('--port', type=int, default=18313); a.add_argument('--host', default='0.0.0.0')
     a = ap.parse_args()
@@ -343,6 +347,15 @@ def main():
     elif a.cmd == 'draw':
         import redraw
         print('판', redraw.open_round(a.item, a.note, a.base, a.n))
+    elif a.cmd == 'restrict':
+        import redraw
+        print('다시 검수', redraw.restrict(a.round))
+    elif a.cmd == 'purge':
+        import redraw
+        rej, op = redraw.purge(a.set or SETS, a.n, ('A', 'B', 'C', 'D', 'E')[:a.n])
+        print(f'버림 {len(rej)} · 새 판 {len(op)}')
+        for x in rej:
+            print(' ', x)
     elif a.cmd == 'pool':
         import redraw
         redraw.pool()

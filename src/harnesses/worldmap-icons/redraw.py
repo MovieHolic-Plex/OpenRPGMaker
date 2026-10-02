@@ -17,12 +17,13 @@ import harness as H
 
 ROUNDS = H.DATA / 'rounds'
 POOL_LOCK = H.DATA / 'pool.pid'
-ATTEMPTS = int(os.environ.get('WMI_HARNESS_ATTEMPTS', '2'))
+ATTEMPTS = int(os.environ.get('WMI_HARNESS_ATTEMPTS', '3'))
+REPLACE_PER_ROUND = int(os.environ.get('WMI_HARNESS_REPLACE', '2'))   # 판의 후보 수 × 이 배수만큼 폐기분을 새 후보로 채운다
 DRAW_EFFORT = os.environ.get('WMI_HARNESS_DRAW_EFFORT', 'medium')
 ENGINE = os.environ.get('WMI_HARNESS_ENGINE', 'codex')   # codex | claude
 CLAUDE_MODEL = os.environ.get('WMI_HARNESS_CLAUDE_MODEL', 'claude-sonnet-5-5')
 DIRECTIONS = {
-    'A': '최소 수정 — 출발 그림의 디자인·색을 그대로 두고, 옆면·사선 윗면만 없애 정면 벽과 윗면으로 바꾼다',
+    'A': '정면 새로 찍기 — 출발 그림은 무엇이 있는지(구성·색)만 참고하고, 시점은 처음부터 정면 3/4 로 다시 찍는다. 옆면이 있던 자리는 정면 벽을 넓혀 채운다',
     'B': '기준 맞추기 — 원본 EasyRPG 월드 시트의 같은 종류 칸(마을·성·탑)과 구조·명암 단 수·윤곽을 똑같이 맞춘다',
     'C': '단순·또렷 — 1배에서 한눈에 읽히는 큰 실루엣 하나, 세부는 줄인다',
     'D': '설명 충실 — 설명 문장의 요소를 정면 3/4 로 빠짐없이 담되 지저분하지 않게',
@@ -48,7 +49,7 @@ def attempt_dir(rnd, letter, att):
 
 
 # ─────────────────────────────── 판 열기 ───────────────────────────────
-def open_round(item_id, note='', base='', n=5):
+def open_round(item_id, note='', base='', n=5, letters=None):
     """base: '' = 지금 아이콘, 'r<판>/<글자>' = 그 후보에서 출발."""
     c = H.db()
     tables(c)
@@ -57,7 +58,7 @@ def open_round(item_id, note='', base='', n=5):
     n = max(1, min(5, int(n)))
     cur = c.execute('insert into rounds(item,note,base,n,created) values(?,?,?,?,?)', (item_id, note[:2000], base, n, H.now()))
     rid = cur.lastrowid
-    for L in list(DIRECTIONS)[:n]:
+    for L in (letters or list(DIRECTIONS)[:n]):
         c.execute('insert into cands(round,letter,direction,status,attempt) values(?,?,?,?,?)', (rid, L, DIRECTIONS[L], 'queued', 1))
     c.commit()
     ensure_pool()
@@ -286,8 +287,9 @@ def _after_review(c, cand):
         v = json.loads((out / 'verdict.json').read_text())
     except (OSError, ValueError):
         v = None
-    if not v:
-        c.execute('update cands set status=?, finished=? where id=?', ('done', H.now(), cand['id']))
+    if not v:   # 검수 결과가 없으면 합격으로 치지 않는다
+        c.execute('update cands set status=?, finished=? where id=?', ('discarded', H.now(), cand['id']))
+        _replace(c, cand['round'])
         return
     verdict = str(v.get('verdict', '')).upper()
     c.execute('update cands set verdict=?, codes=?, body=? where id=?',
@@ -305,7 +307,74 @@ def _retry_or_finish(c, cand, problem, fail_status):
             (d / 'verdict.json').write_text(json.dumps(dict(verdict='FAIL', codes=['BROKEN'], reasons=problem, fix=problem), ensure_ascii=False))
         c.execute('update cands set status=?, attempt=attempt+1, pid=null where id=?', ('queued', cand['id']))
     else:
-        c.execute('update cands set status=?, finished=? where id=?', (fail_status, H.now(), cand['id']))
+        # 공격적 폐기(사용자 지시 2026-10-02): 끝까지 떨어진 후보는 고를 수 없게 버리고, 판 안에서 새 후보로 다시 그린다
+        c.execute('update cands set status=?, finished=? where id=?', ('discarded', H.now(), cand['id']))
+        _replace(c, cand['round'])
+
+
+def _replace(c, rnd):
+    r = c.execute('select n from rounds where id=?', (rnd,)).fetchone()
+    gone = c.execute("select count(*) from cands where round=? and status='discarded'", (rnd,)).fetchone()[0]
+    if gone > r['n'] * REPLACE_PER_ROUND:
+        return
+    used = {x['letter'] for x in c.execute('select letter from cands where round=?', (rnd,))}
+    letter = next(ch for ch in 'FGHIJKLMNOPQRSTUVWXYZ' if ch not in used)
+    base = list(DIRECTIONS.values())[(ord(letter) - ord('F')) % len(DIRECTIONS)]
+    c.execute('insert into cands(round,letter,direction,status,attempt) values(?,?,?,?,?)',
+              (rnd, letter, '다시 그림(앞 후보 폐기) · ' + base, 'queued', 1))
+
+
+def restrict(rounds=None):
+    """엄격 검수를 이미 끝난(합격) 후보에 다시 적용한다 — 떨어지면 같은 작업자가 이유를 들고 다시 그리고, 끝내 떨어지면 폐기·대체."""
+    c = H.db()
+    tables(c)
+    q = "select id from cands where status='done' and (verdict='PASS' or verdict is null)"
+    ids = [r['id'] for r in c.execute(q) if not rounds or True]
+    if rounds:
+        ids = [r['id'] for r in c.execute(q + ' and round in (%s)' % ','.join('?' * len(rounds)), rounds)]
+    for i in ids:
+        c.execute("update cands set status='review_queued', verdict=null, codes=null, body=null where id=?", (i,))
+    c.commit()
+    ensure_pool()
+    return len(ids)
+
+
+def purge(sets, n=3, letters=('A', 'B', 'C')):
+    """공격적 폐기(사용자 지시 2026-10-02): 사용자가 아직 정하지 않은 아이콘 중 투영 렌더러로 그린 세트(옆면이 반드시 생긴다)와
+    엄격 검수에서 떨어진 것을 버림(client=harness-strict)으로 표시하고, 다시 그리기 판이 없으면 연다. 사용자가 받은 것은 건드리지 않는다."""
+    c = H.db()
+    tables(c)
+    dec = H._latest_decisions(c)
+    rv = H._latest_reviews(c)
+    active = {r['item'] for r in c.execute("select distinct r.item from rounds r join cands x on x.round=r.id where x.status != 'discarded'")}
+    opened, rejected = [], []
+    strict = {r['item'] for r in c.execute("select item from decisions where client='harness-strict'")}
+    for it in list(c.execute('select * from items order by iset, role, name')):
+        if it['iset'] not in sets:
+            continue
+        if it['id'] in strict and it['id'] in dec and dec[it['id']]['decision'] == 'reject':
+            if it['id'] not in active:   # 지난번에 버림만 적고 판을 못 연 것
+                opened.append((it['id'], open_round(it['id'], '', '', n, list(letters))))
+            continue
+        if it['id'] in dec:
+            continue
+        v = rv.get(it['id'])
+        proj = it['iset'] in PROJECTION_SETS
+        if not proj and v and v['verdict'] == 'PASS':
+            continue
+        why = '투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다' if proj else f"엄격 검수 불합격 {','.join(v['codes']) if v else '(검수 없음)'}"
+        c.execute('insert into decisions(item,sha,decision,reasons,note,client,at) values(?,?,?,?,?,?,?)',
+                  (it['id'], it['sha'], 'reject', json.dumps(['옆면 보임(아이소)'], ensure_ascii=False), why, 'harness-strict', H.now()))
+        c.commit()
+        rejected.append(it['id'])
+        if it['id'] not in active:
+            opened.append((it['id'], open_round(it['id'], '', '', n, list(letters))))
+    c.commit()
+    H.export()
+    return rejected, opened
+
+
+PROJECTION_SETS = ('desert-east', 'modern-sf')
 
 
 def _alive(pid):
@@ -321,10 +390,18 @@ def _alive(pid):
 
 
 def pool_alive():
+    import fcntl
     try:
-        return _alive(int(POOL_LOCK.read_text()))
-    except (OSError, ValueError):
+        f = open(H.DATA / 'pool.lock', 'w')
+    except OSError:
         return False
+    try:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        return True    # 누가 잡고 있다 = 일꾼이 돈다
+    fcntl.flock(f, fcntl.LOCK_UN)
+    f.close()
+    return False
 
 
 def ensure_pool():
@@ -336,6 +413,12 @@ def ensure_pool():
 
 
 def pool():
+    import fcntl
+    lockf = open(H.DATA / 'pool.lock', 'w')
+    try:   # 일꾼은 하나만 — 판을 연달아 열면 ensure_pool 이 여러 번 불린다(2026-10-02 실측: 일꾼 4개가 같은 후보를 겹쳐 돌렸다)
+        fcntl.flock(lockf, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        return
     POOL_LOCK.write_text(str(os.getpid()))
     signal.signal(signal.SIGCHLD, signal.SIG_DFL)
     c = H.db()

@@ -70,6 +70,16 @@ systemd-run --user --unit=worldmap-icon-harness -p Restart=on-failure /usr/bin/p
 명령으로도 연다: `python3 src/harnesses/worldmap-icons/harness.py draw <세트/이름> --note "…" [--base r3/B] [-n 5]` (일꾼은 알아서 뜨고, 1분 놀면 내려간다).
 엔진을 Claude 로: `WMI_HARNESS_ENGINE=claude` (기본 모델 `claude-sonnet-5-5`).
 
+## 공격적 폐기 (사용자 지시, 2026-10-02)
+「정면 + 3/4 탑뷰를 안 지킨 것은 공격적으로 폐기하라」.
+- 검수자(review.md)는 **의심되면 FAIL** — 탑 하나·집 한 채라도 옆면이 남으면 `SIDE`, 옆면을 일부만 지운 그림도 불합격.
+- 후보가 끝까지(최대 `WMI_HARNESS_ATTEMPTS`=3) 떨어지면 `discarded` — 화면에서 고를 수 없게 숨기고, 판 안에서 새 후보(F, G…)를 다시 그린다(판 후보 수 × `WMI_HARNESS_REPLACE`=2 까지).
+  검수 ✓ 가 아닌 후보에는 「이걸로」 버튼이 없다.
+- 방향 A 는 「최소 수정」에서 「정면 새로 찍기」로 바꿨다 — 최소 수정은 옆면을 물려받았다.
+- `harness.py restrict` = 이미 끝난 합격 후보에 엄격 검수를 다시 적용. `harness.py purge` = 사용자가 정하지 않은 아이콘 중 투영 렌더러로 그린 세트(사막·동양풍, 현대·SF)와 엄격 불합격을
+  버림(client=`harness-strict`)으로 적고 다시 그리기 판(A·B·C)을 연다. **사용자가 받은 아이콘은 건드리지 않는다.**
+- 일꾼은 `pool.lock`(flock)으로 하나만 돈다 — 판을 연달아 열면 일꾼이 여럿 떠 같은 후보를 겹쳐 돌렸다. 동시 작업자 기본 12.
+
 ## 아직 없는 것
 - **굽기.** 고른 후보를 세트 시트(`iconsets/<세트>/sheet.png`)의 그 칸에 넣고 manifest·키트 자체 시험을 다시 돌리는 단계.
 - 하네스 레지스트리(`src/harnesses/_core`, PR #1832) 등록 — 그 PR 이 main 에 들어오면 한 줄 등록한다.
