@@ -1,0 +1,699 @@
+{
+  "set": "class",
+  "reduced": false,
+  "clips": [
+    {
+      "skill": "skill_mage_fireball",
+      "start": 16.72,
+      "duration": 3,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/7fd5/rpg-zzu/output/battle-effects-comparison/runtime/skill-skill_mage_fireball.gif",
+      "bytes": 1159914
+    },
+    {
+      "skill": "skill_mage_blizzard",
+      "start": 22.4,
+      "duration": 3.12,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/7fd5/rpg-zzu/output/battle-effects-comparison/runtime/skill-skill_mage_blizzard.gif",
+      "bytes": 1228511
+    },
+    {
+      "skill": "skill_mage_chain_lightning",
+      "start": 28.52,
+      "duration": 3.96,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/7fd5/rpg-zzu/output/battle-effects-comparison/runtime/skill-skill_mage_chain_lightning.gif",
+      "bytes": 1800544
+    },
+    {
+      "skill": "skill_cleric_heal_light",
+      "start": 14.2,
+      "duration": 3.4,
+      "group": 1,
+      "file": "/home/main/.codex/worktrees/7fd5/rpg-zzu/output/battle-effects-comparison/runtime/skill-skill_cleric_heal_light.gif",
+      "bytes": 1095113
+    }
+  ],
+  "errors": [],
+  "evidence": [
+    {
+      "skill": "skill_mage_fireball",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 17833,
+          "fx": "mage_fireball_orb",
+          "anchor": "projectile",
+          "size": "32",
+          "box": "64",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            0
+          ],
+          "positions": [
+            "0px 0px",
+            "-64px 0px",
+            "-128px 0px",
+            "-192px 0px",
+            "0px 0px"
+          ],
+          "filter": "none",
+          "width": "64px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 18133,
+          "fx": "mage_fire_burst",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 17113,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 17167,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 17474,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 17795,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 18566,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "at": 18318,
+          "target": "enemy-1",
+          "text": "-111",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 18318,
+          "on": true
+        },
+        {
+          "at": 18442,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">마도사는 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">마도사가 파이어볼을 사용했다!",
+        ">마도사가 파이어볼을 사용했다!슬라임 1에게 111 피해!",
+        ">정찰병은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 3,
+      "remainingFx": 0,
+      "layerKeys": [
+        "mage_fireball_orb",
+        "mage_fire_burst"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_mage_blizzard",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 23468,
+          "fx": "mage_blizzard",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 23468,
+          "fx": "mage_blizzard",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 23468,
+          "fx": "mage_blizzard",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 23801,
+          "fx": "mage_snow",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-256px 0px",
+            "-512px 0px",
+            "-768px 0px",
+            "-1024px 0px",
+            "-1280px 0px",
+            "-1536px 0px",
+            "-1792px 0px"
+          ],
+          "filter": "none",
+          "width": "256px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 22720,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 22771,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 23072,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 23391,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 24206,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "at": 23624,
+          "target": "enemy-1",
+          "text": "-108",
+          "heal": false
+        },
+        {
+          "at": 23770,
+          "target": "enemy-2",
+          "text": "-104",
+          "heal": false
+        },
+        {
+          "at": 23914,
+          "target": "enemy-3",
+          "text": "-107",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 23624,
+          "on": true
+        },
+        {
+          "at": 24027,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">마도사는 무엇을 할까?",
+        ">마도사가 블리자드를 사용했다!",
+        ">마도사가 블리자드를 사용했다!슬라임 1에게 108 피해!",
+        ">마도사가 블리자드를 사용했다!동굴 박쥐가 104 피해를 입었다!",
+        ">마도사가 블리자드를 사용했다!슬라임 2가 107 피해를 입었다!",
+        ">정찰병은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 3,
+      "remainingFx": 0,
+      "layerKeys": [
+        "mage_blizzard",
+        "mage_snow"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_mage_chain_lightning",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 29385,
+          "fx": "mage_chain_bolt",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 29385,
+          "fx": "mage_chain_bolt",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 29385,
+          "fx": "mage_chain_bolt",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 28645,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 28695,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 28996,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 29315,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 29695,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "at": 29532,
+          "target": "enemy-1",
+          "text": "-87",
+          "heal": false
+        },
+        {
+          "at": 29664,
+          "target": "enemy-2",
+          "text": "-109",
+          "heal": false
+        },
+        {
+          "at": 29787,
+          "target": "enemy-2",
+          "text": "마비",
+          "heal": false
+        },
+        {
+          "at": 30607,
+          "target": "enemy-3",
+          "text": "-83",
+          "heal": false
+        },
+        {
+          "at": 31317,
+          "target": "enemy-3",
+          "text": "마비",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 29532,
+          "on": true
+        },
+        {
+          "at": 29787,
+          "on": false
+        },
+        {
+          "at": 30607,
+          "on": true
+        },
+        {
+          "at": 30720,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">마도사는 무엇을 할까?",
+        ">마도사가 연쇄 번개를 사용했다!",
+        ">마도사가 연쇄 번개를 사용했다!슬라임 1에게 87 피해!",
+        ">마도사가 연쇄 번개를 사용했다!동굴 박쥐가 109 피해를 입었다!",
+        ">동굴 박쥐는 마비에 걸렸다!",
+        ">마도사가 연쇄 번개를 사용했다!슬라임 2가 83 피해를 입었다!",
+        ">슬라임 2는 마비에 걸렸다!",
+        ">정찰병은 무엇을 할까?"
+      ],
+      "statuses": [
+        "enemy-2-paralysis:마비",
+        "enemy-3-paralysis:마비"
+      ],
+      "sounds": 2,
+      "remainingFx": 0,
+      "layerKeys": [
+        "mage_chain_bolt"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_cleric_heal_light",
+      "group": 1,
+      "completed": true,
+      "effects": [
+        {
+          "at": 15129,
+          "fx": "cleric_heal",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 14389,
+          "actor": "actor_cleric",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 14444,
+          "actor": "actor_cleric",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 14744,
+          "actor": "actor_cleric",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 15064,
+          "actor": "actor_cleric",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 15564,
+          "actor": "actor_cleric",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "at": 15290,
+          "target": "actor_cleric",
+          "text": "+78",
+          "heal": true
+        }
+      ],
+      "hitStops": [],
+      "lines": [
+        ">성직자는 무엇을 할까?",
+        ">성직자: 대상을 고른다.성직자를 노린다.",
+        ">성직자가 치유의 빛을 사용했다!",
+        ">성직자가 치유의 빛을 사용했다!성직자가 78 회복했다!",
+        ">궁수는 무엇을 할까?"
+      ],
+      "statuses": [
+        "actor_hero-death:전투불능",
+        "actor_hero-death:전투불능"
+      ],
+      "sounds": 2,
+      "remainingFx": 0,
+      "layerKeys": [
+        "cleric_heal"
+      ],
+      "problems": []
+    }
+  ],
+  "passed": true
+}

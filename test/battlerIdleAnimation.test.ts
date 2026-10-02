@@ -180,12 +180,12 @@ describe("배틀러 idle 애니메이션 — 카탈로그", () => {
   it("등록되지 않은 리소스 id 는 undefined 를 돌려준다 (정적 폴백)", () => {
     expect(battlerIdleAnimation("generated-enemy-dragon-01")).toBeUndefined();
     expect(battlerIdleAnimation(undefined)).toBeUndefined();
-    expect(battlerIdleAnimation("generated-enemy-slime-01")).toBeDefined();
+    expect(battlerIdleAnimation("generated-enemy-slime-01")).toBeUndefined();
   });
 
   it("URL 은 public 기준 절대 경로다", () => {
-    const entry = battlerIdleAnimation("generated-enemy-slime-01");
-    if (!entry) throw new Error("슬라임 항목이 등록돼 있어야 한다");
+    const entry = battlerIdleAnimation("generated-actor-hero-01-battle");
+    if (!entry) throw new Error("액터 항목이 등록돼 있어야 한다");
     expect(battlerIdleAnimationUrl(entry)).toBe(`/${entry.path}`);
   });
 });
@@ -196,7 +196,7 @@ describe("배틀러 idle 애니메이션 — 적 배틀러(<img> 유지)", () =>
     const golem = field.querySelector<HTMLElement>('[data-record-id="enemy_stone_golem"] .battle-enemy-image');
     expect(golem).toBeTruthy();
     expect(golem?.tagName).toBe("IMG");
-    expect((golem as HTMLImageElement).getAttribute("src")).toContain("monster-golem-01.png");
+    expect((golem as HTMLImageElement).getAttribute("src")).toContain("pixel-enemy-portraits/golem.png");
     expect((golem as HTMLImageElement).getAttribute("src")).not.toContain("/idle/");
     expect(golem?.dataset.battlerAnim).toBeUndefined();
     expect(golem?.style.getPropertyValue("--battler-anim-url")).toBe("");

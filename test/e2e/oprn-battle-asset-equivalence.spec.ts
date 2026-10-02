@@ -17,7 +17,7 @@ test("battle reference scene uses equivalent enemy, party, portrait, and icon as
   await writeFile(`${evidenceDir}/01-command-assets.json`, `${JSON.stringify(commandMetrics, null, 2)}\n`, "utf8");
 
   expect(commandMetrics.enemyResourceIds).toEqual(["generated-enemy-sylph-hornet"]);
-  expect(commandMetrics.enemyImageSources[0]).toContain("sylph-hornet-transparent.png");
+  expect(commandMetrics.enemyImageSources[0]).toContain("pixel-enemy-portraits/sylph-hornet-transparent.png");
   expect(commandMetrics.actorResourceIds).toEqual([
     "generated-actor-hero-01-battle",
     "generated-actor-hero-02-battle",

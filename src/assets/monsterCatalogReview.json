@@ -1,861 +1,1567 @@
 {
   "version": 1,
-  "sourceCommit": "b9dec50fb6159e8be220b42eb59e526808b92b97",
-  "inspectionMethod": "Original PNG bytes through image-sensitive corrected pi-ai adapter; Gemini3.1Pro observation of each resource; lead reviews every returned caption and edits metadata; no native image visibility claim.",
-  "observerModel": "gemini-3.1-pro",
+  "sourceCommit": "c596d06ff5b2ff20cf4edf019a2bc6c6b32007eb",
+  "inspectionMethod": "Per-entry mixed evidence: current native pixels reviewed directly by Codex, selected collect sprite preserved; remaining external entries retain original image-sensitive caption evidence.",
+  "observerModel": "Codex direct native image review / original Gemini3.1Pro external captions",
   "reviewedBy": "lead",
   "entries": {
     "generated-enemy-slime-01": {
-      "url": "/assets/generated/starter/monster-slime-01.png",
-      "sha256": "22d4a49dadaf05ca84298c2ec24c4ddbd8b943594414c01b03f4bb43f9b02143",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 1
+      "url": "/assets/generated/pixel-enemy-portraits/slime.png",
+      "sha256": "01027b1f6858f5a303aca4b894fbfcff41b2d58cd16afd81db8df314c082b920",
+      "observation": "푸른 물방울 몸에 작은 눈이 있는 둥근 슬라임입니다.",
+      "index": 1,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/slime.png",
+      "nativeSheetSha256": "368acc8d6770385d4caebd46fcbc37eccb2e91cbc2ba0d8b38e0d70a15a55c07",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-bat-01": {
-      "url": "/assets/generated/starter/monster-bat-01.png",
-      "sha256": "fc38e07fb328d47480b9f27b2cc7b61f71a0f7222290c38c3bd7d9178a44dbe9",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 2
+      "url": "/assets/generated/pixel-enemy-portraits/bat.png",
+      "sha256": "a17f974181df2402271ce0f992f7fde68d779569d6a25f77d7d7a2dd00eb2b11",
+      "observation": "보라색 몸과 넓은 피막 날개를 가진 작은 박쥐입니다.",
+      "index": 2,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/bat.png",
+      "nativeSheetSha256": "907935e214a5263154f3f36587edcfe4cdf68b903edc40497c8e198969187168",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-golem-01": {
-      "url": "/assets/generated/starter/monster-golem-01.png",
-      "sha256": "eef07b4fcfcb4c02724d019bfdfec27a1d39a972910479a49d861054a062d733",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 3
+      "url": "/assets/generated/pixel-enemy-portraits/golem.png",
+      "sha256": "bdb091bcbb57412e0ced2fa482a3bb3e6ed60a8aae2702329813e3565c02ab53",
+      "observation": "회색 각진 바위 몸체와 굵은 양팔, 노란 눈을 가진 골렘입니다.",
+      "index": 3,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/golem.png",
+      "nativeSheetSha256": "d9406d90c1ef2ab198c5774f830eb64ff5e38424c88c59792e19fe91996bdbcc",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-dragon-01": {
-      "url": "/assets/generated/starter/monster-dragon-01.png",
-      "sha256": "ebbff8d7c05c1ad19fab5b3bfc3d240518428acc5ca674cc067dd9ff44053cee",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 4
+      "url": "/assets/generated/pixel-enemy-portraits/dragon.png",
+      "sha256": "4468d553b625091c1c10a3cc1372786405b3e594b6e89b577213f1f2d3e6ca32",
+      "observation": "큰 붉은 날개와 긴 꼬리, 노란 배를 가진 드래곤입니다.",
+      "index": 4,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/dragon.png",
+      "nativeSheetSha256": "f91331e7d1d41f415ba5a8b510d1d62c4625252baa4b6cc1265ec227b8f21cfd",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-sylph-hornet": {
-      "url": "/assets/generated/starter/sylph-hornet-transparent.png",
-      "sha256": "0dede0b45624a89af29500c9b2dd32ae775f4f465c7cb0b7f1be381de1c45e07",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 5
+      "url": "/assets/generated/pixel-enemy-portraits/sylph-hornet-transparent.png",
+      "sha256": "566fb8f8bae8cb89f32d0ec36270ce3b8eb4867f02dc709c1a39f6c1c934e077",
+      "observation": "적갈색 몸체에 배 부분에 노란색 줄무늬가 있는 벌 형태의 생물입니다. 네 장의 옅은 색 날개를 펼치고 공중에 떠 있는 자세를 취하고 있습니다.",
+      "index": 5,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/sylph-hornet-transparent.png",
+      "nativeSheetSha256": "74d6350ae5427fb95cdf18afe1af74a3bad2666e3c579e149a26bcd363a6a059",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-troop-preview-slime": {
-      "url": "/assets/generated/starter/troop-preview-slime.png",
-      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 6
+      "url": "/assets/generated/pixel-enemy-portraits/slime.png",
+      "sha256": "01027b1f6858f5a303aca4b894fbfcff41b2d58cd16afd81db8df314c082b920",
+      "observation": "푸른 물방울 몸에 작은 눈이 있는 둥근 슬라임입니다.",
+      "index": 6,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/slime.png",
+      "nativeSheetSha256": "368acc8d6770385d4caebd46fcbc37eccb2e91cbc2ba0d8b38e0d70a15a55c07",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ontology-8da61312": {
-      "url": "/assets/generated/starter/monster-ontology-8da61312.png",
-      "sha256": "bf9b207b2ffa15b1e46dbdd190b84f9526a932e4d6569f89b0d74cb3d362ada2",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 7
+      "url": "/assets/generated/pixel-enemy-portraits/ontology-8da61312.png",
+      "sha256": "cea4a0af2d059fb6ad5141753933ef526606af54b4595c0cef07ecfdfc3e73e9",
+      "observation": "형광빛의 기호들이 새겨진 어두운 다면체 돌 조각들이 공중에 부유하는 형태입니다. 조각들 중심에는 분홍색과 청록색이 섞인 소용돌이 모양의 빛이 자리 잡고 있습니다.",
+      "index": 7,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ontology-8da61312.png",
+      "nativeSheetSha256": "ab2191a441030e6195107f2b620009531df13c3778e8cfe62f8a1670001a5279",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-zombie-01": {
-      "url": "/assets/generated/starter/monster-zombie-01.png",
-      "sha256": "9eba1ea6536f50647b5d5dfdcf42287059b5a5770f222db62b21df5f950275db",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 8
+      "url": "/assets/generated/pixel-enemy-portraits/zombie-01.png",
+      "sha256": "c102763e840b05f4da963ff0077617af218e42a7a8879b333704da946942f25f",
+      "observation": "탁한 녹회색 피부를 가지고 가슴의 뼈가 드러난 인간형 생물로, 낡고 찢어진 갈색 옷을 입고 있습니다. 무릎을 약간 굽히고 양팔을 앞으로 뻗어 마치 할퀴려는 듯한 자세를 취하고 있습니다.",
+      "index": 8,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/zombie-01.png",
+      "nativeSheetSha256": "dc017229a8bb5a0c829b061272fb27adbf170d94d2664e61651526ddbc41c627",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-skeleton-01": {
-      "url": "/assets/generated/starter/monster-skeleton-01.png",
-      "sha256": "5d120ed3181f8cfed50ebc84cc3fb652738f7fbd2cdab9c3a4de6c6b94c3c3c1",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 9
+      "url": "/assets/generated/pixel-enemy-portraits/skeleton-01.png",
+      "sha256": "d4af30cba02d2e02e9c7bf1168e702682960b3a05340f95bf5c227c5644b7af7",
+      "observation": "어깨에 낡고 해진 갈색 천 조각을 걸치고 있는 뼈만 남은 모습의 해골입니다. 오른손에는 붉게 녹슬고 날이 상한 넓은 검을 쥐고 비스듬히 서 있습니다.",
+      "index": 9,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/skeleton-01.png",
+      "nativeSheetSha256": "ec6bc4d202171db96ba2308335b7caf799c7d9548e75e0cf56b48d38e3b32a20",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-orc-01": {
-      "url": "/assets/generated/starter/monster-orc-01.png",
-      "sha256": "dcdfe7c2867fe90e3db06b56118a747cf36853c2c2212d0d8eb866c453ec9686",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 10
+      "url": "/assets/generated/pixel-enemy-portraits/orc-01.png",
+      "sha256": "350deb4982e15a8fbdbc399e6bb2dad34300ea29e07557df1c015e3aa64fcceb",
+      "observation": "징이 박힌 가죽 갑옷을 입고 크고 낡은 양날 도끼를 양손에 쥔 근육질의 녹색 인간형 생물입니다. 뾰족한 귀와 아래턱에서 위로 솟아오른 큰 송곳니가 특징입니다.",
+      "index": 10,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/orc-01.png",
+      "nativeSheetSha256": "d555f56efae475d8da305c32ff9d67dd9c96f6194e36feb67625092c8aebf725",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ghost-01": {
-      "url": "/assets/generated/starter/monster-ghost-01.png",
-      "sha256": "02eda64c530d0cc1a18392640faf41fe9f84026576e40920f6d38fe8696cd6fc",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 11
+      "url": "/assets/generated/pixel-enemy-portraits/ghost-01.png",
+      "sha256": "77cd94efff30d024cc678a36695f91a5dc89ac50b7922c88675870480719cdd2",
+      "observation": "흐릿한 푸른빛을 띠며 하반신이 연기처럼 흩어지는 유령 형태의 생물입니다. 동공이 없는 하얀 눈과 뾰족한 이빨을 드러내고 입을 크게 벌린 채 양팔을 앞으로 뻗고 있습니다.",
+      "index": 11,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ghost-01.png",
+      "nativeSheetSha256": "58fa614e3f0febd58301c440610cddb787e8e73775da0bcf7b961b6494cc0ddd",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-crab-01": {
-      "url": "/assets/generated/starter/monster-crab-01.png",
-      "sha256": "f5baa7378dea1bf19336f20a17f2ba1b9b120968212617ac23e9283b8a7b4e02",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 12
+      "url": "/assets/generated/pixel-enemy-portraits/crab-01.png",
+      "sha256": "3ce5fb041a59fea630dfee601822a57f61cdd74428ec99d488fad1d14823dcb4",
+      "observation": "바위처럼 단단하고 금이 간 질감의 등껍질을 지닌 게 형태의 생물입니다. 껍질과 커다란 집게발 곳곳에 녹색 이끼가 묻어 있으며, 노란색으로 빛나는 눈을 번뜩이며 앞을 향해 자세를 취하고 있습니다.",
+      "index": 12,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/crab-01.png",
+      "nativeSheetSha256": "a3f94c88c05379e86700456bbd0bb260f6883a7be91877d5492f343edae7c6c8",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spider-01": {
-      "url": "/assets/generated/starter/monster-spider-01.png",
-      "sha256": "ab4cef4d1afe477c51bf35b0d90ca502a3f72997e4bb6433c5e83be73e4f97fc",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 13
+      "url": "/assets/generated/pixel-enemy-portraits/spider-01.png",
+      "sha256": "bb0f67a546c372f6d466d1dc5d98d4eaaa311dbb2110afe5c2bf72d645779834",
+      "observation": "짙은 보라색과 녹색 무늬가 섞인 거대한 거미 형태의 생물입니다. 몸통 전체에 작고 뾰족한 가시들이 돋아 있으며, 여러 개의 붉은 눈과 날카로운 턱을 드러낸 채 다리를 벌리고 서 있습니다.",
+      "index": 13,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spider-01.png",
+      "nativeSheetSha256": "4d9e7518c85128061f0c29d2cbe1544495d8a9c3c9ef4555fb8843d53a0182aa",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-snake-01": {
-      "url": "/assets/generated/starter/monster-snake-01.png",
-      "sha256": "9c4fd8a62c9efd81da07c0317ed87f76ba287a726fb61e38f82a56b8aad3589b",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 14
+      "url": "/assets/generated/pixel-enemy-portraits/snake-01.png",
+      "sha256": "36808496f90a0941112a66f8a624c2bd3ddffd5ee61bd51e8473304ff0ba892e",
+      "observation": "녹색과 갈색 비늘이 섞인 몸을 똬리 틀고 상체를 높이 세운 뱀 형태의 생물입니다. 목 부분을 넓게 펼친 채 입을 크게 벌려 날카로운 송곳니를 드러내고 있습니다.",
+      "index": 14,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/snake-01.png",
+      "nativeSheetSha256": "7a940b2c20df52ce2a630532d0d70b3e0ab16fb7af93eaf44b1e34d8091b529c",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-scorpion-01": {
-      "url": "/assets/generated/starter/monster-scorpion-01.png",
-      "sha256": "17c34d0e725e95a3e87db6eb25c68d87c5ca69536e20fe6dd4183c41704ae549",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 15
+      "url": "/assets/generated/pixel-enemy-portraits/scorpion-01.png",
+      "sha256": "0f9eae05a9b4e755e858b62b8ff29b02e0b2fe5ac0d53313b3947b2542ca0104",
+      "observation": "황갈색 외골격에 짙은 갈색 얼룩무늬를 가진 전갈 형태의 생물입니다. 커다란 두 집게발을 앞으로 내밀고, 끝에 뾰족한 침이 있는 꼬리를 등 위로 둥글게 말아 올린 자세를 취하고 있습니다.",
+      "index": 15,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/scorpion-01.png",
+      "nativeSheetSha256": "b46ebe29612ff0f6c1225466c400fa587d25de256b3d78bbe2c00a1a6da28151",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-wolf-01": {
-      "url": "/assets/generated/starter/monster-wolf-01.png",
-      "sha256": "c735e29afa9ce64cf01930857daf0dbee8ff817f9865f6ef8a25d2e6b8e3351f",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 16
+      "url": "/assets/generated/pixel-enemy-portraits/wolf-01.png",
+      "sha256": "e0da11ccd2917968dfc6f76a40490291c099065edd1161f85d2d106492058a33",
+      "observation": "짙은 회색과 밝은 회색 털이 섞인 네 발 짐승입니다. 몸을 낮추고 이빨을 드러내며 위협하는 자세를 취하고 있습니다.",
+      "index": 16,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/wolf-01.png",
+      "nativeSheetSha256": "690b84b4e5ab351ecabf74e3b2fc829b2fe4fe1f9d0f8b59ac8fc39545973f1b",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-harpy-01": {
-      "url": "/assets/generated/starter/monster-harpy-01.png",
-      "sha256": "de95836c765da58df94ff48173eb34637132c6d41821b17825b0158371df5ce3",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 17
+      "url": "/assets/generated/pixel-enemy-portraits/harpy-01.png",
+      "sha256": "fa165d30000203f7e54ea9978dfe59edadccf038f0b2fc2f0fde9522ed082272",
+      "observation": "갈색 깃털로 덮인 거대한 날개와 새의 다리를 가진 여성 형태의 생물입니다. 가죽 재질의 방어구를 착용하고 날카로운 발톱을 세운 채 공중에 떠 있는 듯한 자세를 취하고 있습니다.",
+      "index": 17,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/harpy-01.png",
+      "nativeSheetSha256": "3d0e22df4e805e5a13a681cbc7ec883d2920879ce2e8d2544d8d7747c5ce224b",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-centipede-01": {
-      "url": "/assets/generated/starter/monster-centipede-01.png",
-      "sha256": "55d34934540c2fa99924a5a801d889a7830b2a0be47c65c3cc56614d62b3ec19",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 18
+      "url": "/assets/generated/pixel-enemy-portraits/centipede-01.png",
+      "sha256": "8b7f34002749f0e858ffd85b640285d4667b70f5a9758b8b98a99a64895bca5c",
+      "observation": "짙은 보라색 등갑과 주황색 다리를 가진 거대한 지네 형태의 생물입니다. 몸을 둥글게 만 채 날카로운 큰턱과 붉은 눈을 번뜩이며 위협적인 자세를 취하고 있습니다.",
+      "index": 18,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/centipede-01.png",
+      "nativeSheetSha256": "ff2dfbbca60ed598838c4545b9179b7f024b38e736ca87ad1013cff57550f60b",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-plant-01": {
-      "url": "/assets/generated/starter/monster-plant-01.png",
-      "sha256": "70c6e8c43cac858804069e1e886c7d57063f21854623e51192cd16718675304a",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 19
+      "url": "/assets/generated/pixel-enemy-portraits/plant-01.png",
+      "sha256": "c28cc17bfa1ac8b63b81a0e2cb30f966d2d01d61ef8cd576fe92aa74852175ef",
+      "observation": "커다란 입과 날카로운 이빨을 벌리고 있는 녹색의 식물형 몬스터입니다. 가시가 있는 줄기 중간에 노란 눈을 가진 작은 얼굴이 붙어 있으며, 큰 입에서는 녹색 점액이 떨어지고 있습니다.",
+      "index": 19,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/plant-01.png",
+      "nativeSheetSha256": "e3d921a7d40da114c1f3bddd550bc40e7fb9480b3962e34a7a7382a7c6730eb9",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-horse-01": {
-      "url": "/assets/generated/starter/monster-horse-01.png",
-      "sha256": "04ddad19b201f28976a3ce64f3d4ab196beb354f39433e8b860d717ea514e77c",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 20
+      "url": "/assets/generated/pixel-enemy-portraits/horse-01.png",
+      "sha256": "9472ccec4b0a35262941e3191ff8b833575af20b42b0db340cfbb771d51bf367",
+      "observation": "갈색 털을 가진 동물이 머리, 목, 등에 금속과 가죽으로 된 갑옷과 안장을 착용하고 있습니다. 앞다리를 들고 뛰어오르거나 달리는 듯한 역동적인 자세를 취하고 있습니다.",
+      "index": 20,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/horse-01.png",
+      "nativeSheetSha256": "03bc74e3202ba153e4b041b68f5513a7008f3f953d50a999052d93bff40a2483",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-unicorn-01": {
-      "url": "/assets/generated/starter/monster-unicorn-01.png",
-      "sha256": "7e4bf2fb641edd1f98016ef55111085508b337f60ffc76caa31370c4693e915f",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 21
+      "url": "/assets/generated/pixel-enemy-portraits/unicorn-01.png",
+      "sha256": "daf6a6e341914cc07aa4cd5418203111ab950ed1d865e008eca5bec3d00a5739",
+      "observation": "이마에 긴 나선형 뿔이 돋아 있는 하얀색 말 형태의 생물입니다. 두 앞다리를 공중으로 번쩍 들고 도약하는 듯한 자세를 취하고 있습니다.",
+      "index": 21,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/unicorn-01.png",
+      "nativeSheetSha256": "49280326292db373a53e2c9d4b382064a27d61ea6c75e2978d5bb481115a832c",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-salamander-01": {
-      "url": "/assets/generated/starter/monster-salamander-01.png",
-      "sha256": "77392af9d3295ed684318e849844f5add1e3a7889c2ba98e963aae730c295eb0",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 22
+      "url": "/assets/generated/pixel-enemy-portraits/salamander-01.png",
+      "sha256": "331abc84b52356e48cf15f2fe1a637cd5d1683a996b9f58b5cf1ea6ae010ed02",
+      "observation": "주황색 바탕에 검은색 얼룩무늬가 있는 네 발 달린 파충류 형태의 몬스터입니다. 등과 머리에 뾰족한 돌기가 돋아 있으며 날카로운 이빨을 드러낸 채 서 있습니다.",
+      "index": 22,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/salamander-01.png",
+      "nativeSheetSha256": "1b2fb9b4a18c19e0b56cbba0d61a4f94a91a5822072f3ed84a897192f4b18e08",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-carbuncle-01": {
-      "url": "/assets/generated/starter/monster-carbuncle-01.png",
-      "sha256": "7edb01f4d06e1b2aceae0777d4e2f490a6eb384a8ed983030c8e5f6a5c199779",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 23
+      "url": "/assets/generated/pixel-enemy-portraits/carbuncle-01.png",
+      "sha256": "1f7688c582ecb6b64b942eaded23fefb8ccc8e55364997d87857009bf2d45321",
+      "observation": "붉은색과 하얀색 털을 지닌 여우 형태의 생물로, 이마 중앙에 커다란 붉은색 마름모꼴 보석이 박혀 있습니다. 네 발로 서서 가볍게 걷는 듯한 자세를 취하고 있습니다.",
+      "index": 23,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/carbuncle-01.png",
+      "nativeSheetSha256": "c30c41abef2b428fd59f9d23488a9651ebbd5e7490b19f3d18019d0d53d78f92",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-cat-01": {
-      "url": "/assets/generated/starter/monster-cat-01.png",
-      "sha256": "d1e18779d2e9194ef54651c57dc56dad17ea7944b3c83370c9ea7b962c3f65b0",
-      "observation": "output/evidence/monster-catalog/visual/observations-01.json",
-      "index": 24
+      "url": "/assets/generated/pixel-enemy-portraits/cat-01.png",
+      "sha256": "c4a5b236a3d126cd7bd48f0b5bdf2ac86654047f4efb485017c249b33fbd0bd3",
+      "observation": "주황색과 갈색의 줄무늬 털을 가진 고양이 형태의 생물입니다. 징이 박힌 가죽 목걸이와 양 앞다리에 스파이크가 달린 가죽 팔찌를 착용한 채, 앞을 향해 걷거나 경계하는 듯한 자세를 취하고 있습니다.",
+      "index": 24,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/cat-01.png",
+      "nativeSheetSha256": "0c2ffbf6d9f787ee1d8fadb02cc3291fe99f35d5ab67b551a4b2c549dbd9c6e7",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-kappa-01": {
-      "url": "/assets/generated/starter/monster-kappa-01.png",
-      "sha256": "b2048f5956ca2cf58e64b022d24a0bc07c750f29778e37da7a808d03a8025354",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 25
+      "url": "/assets/generated/pixel-enemy-portraits/kappa-01.png",
+      "sha256": "c93818d8e1a99839dd8e9f239c7402ffe1332abf72cdc5f839b45663398c79d5",
+      "observation": "녹색 피부와 등껍질, 그리고 뾰족한 노란색 부리를 가진 이족 보행 거북 형태의 생물입니다. 머리 위에는 물이 찰랑거리는 얕은 접시를 얹고 있으며, 허리에 짚으로 만든 치마를 두른 채 양팔을 살짝 벌리고 앞으로 걸어가는 자세를 취하고 있습니다.",
+      "index": 25,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/kappa-01.png",
+      "nativeSheetSha256": "5235e2968fc09a12609903e37d4195528b20656ef5d2021ec6d38dd03e2e3f42",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-cockatrice-01": {
-      "url": "/assets/generated/starter/monster-cockatrice-01.png",
-      "sha256": "a0596b4cf9a0fb1ea74e29fe783d860f77067f5d9f1b5d0d0ce52deedfb0f54c",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 26
+      "url": "/assets/generated/pixel-enemy-portraits/cockatrice-01.png",
+      "sha256": "7dd119457e77c78eb457776d06317e95eabec12fd0a12fa39056c614c8972770",
+      "observation": "붉은 볏을 가진 닭의 머리에 갈색 비늘로 덮인 몸통과 긴 꼬리를 지닌 생물입니다. 날카로운 발톱을 가진 두 발로 서서 한쪽 다리를 들어 올린 자세를 취하고 있습니다.",
+      "index": 26,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/cockatrice-01.png",
+      "nativeSheetSha256": "9e7fa20e98f0c0eedc60a0761986ccbde9355a89e6226c1b1845fc08d80556d4",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-parasite-01": {
-      "url": "/assets/generated/starter/monster-parasite-01.png",
-      "sha256": "2f55a4d31e7eebe179b64de01d0867c64d33847cd500fdde648b3b5860e8a031",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 27
+      "url": "/assets/generated/pixel-enemy-portraits/parasite-01.png",
+      "sha256": "598ec26d90d99950f9ce3e221103f184ecee27b88eacc797f29ee07a2ac8d4d1",
+      "observation": "마디가 있는 붉은색과 살구색 몸통을 가진 벌레 형태의 생물입니다. 크게 벌린 입에는 날카로운 이빨이 가득하고 여러 갈래의 붉은 촉수가 뻗어 나와 있습니다.",
+      "index": 27,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/parasite-01.png",
+      "nativeSheetSha256": "66b36366c7af6bf7008a6e9693041284b66d0c891a822b73fe66ff5882806359",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-mantis-01": {
-      "url": "/assets/generated/starter/monster-mantis-01.png",
-      "sha256": "f08906fd930cbf6fecf0958355329e63e672afe3ee8ca935952507b850f88e4e",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 28
+      "url": "/assets/generated/pixel-enemy-portraits/mantis-01.png",
+      "sha256": "8d792ef678a084ef76652d5b447a2a8e0131a5b1635fd2b5d76067e739ae4895",
+      "observation": "녹색과 갈색이 섞인 단단한 외골격을 지닌 거대한 사마귀 형태의 생물입니다. 가시가 돋친 크고 낫 모양인 앞다리를 들어 올린 채 서 있습니다.",
+      "index": 28,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/mantis-01.png",
+      "nativeSheetSha256": "b2dd4392c7da750a40a4631fa049f6f5d7244242e55f8c8ca608d900bcd8fd27",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-jackolantern-01": {
-      "url": "/assets/generated/starter/monster-jackolantern-01.png",
-      "sha256": "d0b22b4c714df39cf38b75ca2adc0ace1620d19579163bdfe6724ac7cb8f32ec",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 29
+      "url": "/assets/generated/pixel-enemy-portraits/jackolantern-01.png",
+      "sha256": "a8b9fd28f096adcaf8c628009731d4c0d400fe22698caff61047025238ad054d",
+      "observation": "험악하게 웃는 얼굴 모양이 파여 있는 주황색 호박입니다. 입 안에는 불이 켜진 양초가 놓여 있어 파인 눈과 입을 통해 환한 빛을 내뿜고 있습니다.",
+      "index": 29,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/jackolantern-01.png",
+      "nativeSheetSha256": "9af6fa1ecf44ff7b88e8fbb20774efd57583f748b65560ceeab727a99ef27195",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-fish-01": {
-      "url": "/assets/generated/starter/monster-fish-01.png",
-      "sha256": "d00278f4c80562c8c2e13eaf00c86ec4c74d06a35b631a6053f650775e1aeab8",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 30
+      "url": "/assets/generated/pixel-enemy-portraits/fish-01.png",
+      "sha256": "33fdf5a7f0303feaa2d388a5622aebc4b45b3e77fd8443352f2776b0ed69ce56",
+      "observation": "날카로운 이빨을 드러내고 입을 벌린 채 있는 물고기입니다. 등 부분은 파란색, 배와 지느러미 부분은 주황색을 띠며 뚜렷한 비늘을 가지고 있습니다.",
+      "index": 30,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/fish-01.png",
+      "nativeSheetSha256": "c7c8494f5c29c71352646c756bc1221a17326ec5f83df19cb8a4a8698cba0a46",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spirit-01": {
-      "url": "/assets/generated/starter/monster-spirit-01.png",
-      "sha256": "5feaf829081688f9964664351e9e14c02734eb781bac872280e79e6bb2c63d57",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 31
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-01.png",
+      "sha256": "814c53793e4326504c905be347752909e57d69b4862f288f32347c8f7f2cd760",
+      "observation": "옅은 분홍빛이 도는 흰색 몸을 가진 유령 형태의 생물입니다. 날카로운 이빨을 드러내며 입을 벌리고 양팔을 뻗은 자세를 취하고 있으며, 하반신은 연기처럼 흩어져 있습니다.",
+      "index": 31,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spirit-01.png",
+      "nativeSheetSha256": "7abc88ca860ef3b3e331239a47533e70cb8da595495e4ded6b7e10405af62152",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ghoul-01": {
-      "url": "/assets/generated/starter/monster-ghoul-01.png",
-      "sha256": "73921cdf2e318b0ab7782b62ca56327dbe4bc18b8f3d0f4cf2940d16933e65f3",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 32
+      "url": "/assets/generated/pixel-enemy-portraits/ghoul-01.png",
+      "sha256": "8c5a5d7ebf95b80e4565bbd0c7afb03e37dd683d37a0d18a7b65e22268950b0f",
+      "observation": "빛나는 초록색 눈과 갈비뼈가 드러난 몸을 가진 인간형 생물입니다. 낡고 찢어진 녹색 옷을 입은 채 양팔을 앞으로 뻗은 자세를 하고 있습니다.",
+      "index": 32,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ghoul-01.png",
+      "nativeSheetSha256": "09f682934f195c725c5d6725194261c55ab2ea95be2b53722a7ac31e642fc740",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-specter-01": {
-      "url": "/assets/generated/starter/monster-specter-01.png",
-      "sha256": "d08db7a6f2e8c9f22903ec7ca7797f1289f7d1eab6e0279926e36fd8ac5494b7",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 33
+      "url": "/assets/generated/pixel-enemy-portraits/specter-01.png",
+      "sha256": "f18f879f2072d33c151dd296925a68e361bd7b0312fa1cc4e087f6d5ff66827a",
+      "observation": "하반신이 연기처럼 흩어지는 옅은 회색의 유령 형태 몬스터입니다. 날카로운 이빨과 뾰족한 귀를 가지고 있으며, 양팔을 벌린 채 허공에 떠 있는 자세를 취하고 있습니다.",
+      "index": 33,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/specter-01.png",
+      "nativeSheetSha256": "b6c01878c781d76f6f5221cb7498c97c9b68b2c65f4307d09c4ada94c431351b",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-lemora-01": {
-      "url": "/assets/generated/starter/monster-lemora-01.png",
-      "sha256": "f6c4b46a314ff116d07f2b42f6fadeaf32cf7c78ef39ab2cdc8583100b605a49",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 34
+      "url": "/assets/generated/pixel-enemy-portraits/lemora-01.png",
+      "sha256": "930b28be7e8d48ca51c2ae8d22037965bdb88fc45db7b45b639514eb978d8510",
+      "observation": "짙은 푸른색 비늘과 붉은빛이 도는 뾰족한 지느러미를 가진 긴 뱀 형태의 생물입니다. 입을 크게 벌려 날카로운 이빨을 드러내고 몸을 'S'자 모양으로 둥글게 만 자세를 취하고 있습니다.",
+      "index": 34,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/lemora-01.png",
+      "nativeSheetSha256": "d1bc1c6fd590bd2ce10e874ffc1f02a9e6a0c8c262d8d56ee92a18058c2d5853",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-sylph-01": {
-      "url": "/assets/generated/starter/monster-sylph-01.png",
-      "sha256": "686abd282039647235b18f7d51603d1f1609eaf4a35290a0aff3b454fe76a76f",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 35
+      "url": "/assets/generated/pixel-enemy-portraits/sylph-01.png",
+      "sha256": "9c2a895929e0b1127413f038e483d454b3a8a4ce9b2aae7cbdffa54a9d29266b",
+      "observation": "구름 모양의 두건을 쓰고, 팔과 하반신이 바람이나 안개처럼 소용돌이치며 흩날리는 형태의 하늘색 생물입니다. 하얗게 빛나는 두 눈을 뜬 채 공중에 떠 있는 자세를 취하고 있습니다.",
+      "index": 35,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/sylph-01.png",
+      "nativeSheetSha256": "8490f7557aa86e09b2c720c1b64d225c4b0d4c70f2a60c5696c9eb1c30806028",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-leaf-fox": {
-      "url": "/assets/generated/monsters/corrected/leaf-fox.png",
-      "sha256": "d974105acb3903202057dd1d878ef509aad8c93bdfdfcf7f8f52a13760667376",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 36
+      "url": "/assets/generated/pixel-enemy-portraits/leaf-fox.png",
+      "sha256": "165e9e73939dd8a85cc97991e7c56c05eccd33dcbc8107c0c7bb3a97f2660277",
+      "observation": "짙은 녹색과 크림색 털을 가진 여우 형태의 생물입니다. 목과 꼬리를 비롯한 몸 곳곳에 나뭇잎이 돋아나 있으며, 한쪽 앞발을 살짝 들고 고개를 돌려 서 있습니다.",
+      "index": 36,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/leaf-fox.png",
+      "nativeSheetSha256": "582b560df97ed6ddd6fa6202d0122870688565b62f7c2bed304f1e7668bc8fc4",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-fire-pup": {
-      "url": "/assets/generated/monsters/corrected/fire-pup.png",
-      "sha256": "5135188c721b035932a1eb08e7bedae271f998914e351bb9413c60064a2c3ea6",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 37
+      "url": "/assets/generated/pixel-enemy-portraits/fire-pup.png",
+      "sha256": "92652dfb11fe632768a14733bb984731d1b0baff6f554183e8b82ebc73d0cf27",
+      "observation": "주황색 털을 가진 강아지 형태의 생물로, 머리 양옆과 말린 꼬리 끝에 불꽃이 타오르고 있습니다. 입을 벌려 웃는 표정으로 한쪽 앞발을 들어 올린 자세를 취하고 있습니다.",
+      "index": 37,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/fire-pup.png",
+      "nativeSheetSha256": "183abd0db54f370cbc89ea84895599769aa71699a6da1532a2995dd001a4c3da",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-sparkit-fire": {
-      "url": "/assets/generated/monsters/corrected/sparkit-fire.png",
-      "sha256": "f1062d23b1c6d24439aa55384f6afd57ea31e64111c1552f17a4d9719a363bee",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 38
+      "url": "/assets/harnesses/monster-collect-species/sparkit/front.png",
+      "sha256": "1e5c83b6b964c3add82a277964651301a49877622dad792c8c60f0fc31638001",
+      "observation": "주황색 등과 짙은 붉은 무늬, 밝은 배를 가진 네발 불 도롱뇽입니다. 꼬리 끝에는 작은 불꽃이 있습니다.",
+      "index": 38,
+      "inspectionMethod": "Existing human-selected sprite, monster-collect-species/ledger.json sparkit.front; no new candidate selection."
     },
     "generated-enemy-leafling-01": {
-      "url": "/assets/generated/starter/monster-leafling-01.png",
-      "sha256": "f1ae781b821c4c7bd2ca64913e6d1962dcbdc31a6b8fb562b92e4f66a357691a",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 39
+      "url": "/assets/generated/pixel-enemy-portraits/leafling-01.png",
+      "sha256": "c64fe31706fd5a5b0f07e9b7dbe2bec5cf5ccd52d1b3303a4be993faefb86149",
+      "observation": "온몸이 초록색 나뭇잎과 덩굴로 이루어져 있으며, 머리에는 큰 나뭇잎 형태의 후드를 쓴 생물입니다. 갈색 나뭇가지 모양의 두 팔을 양옆으로 벌린 채 공중에 떠 있습니다.",
+      "index": 39,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/leafling-01.png",
+      "nativeSheetSha256": "05b2b379bcf806bffa660db7e3bcfe53799d1b2ecc9c5eddff800424630514e2",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-sparkit-01": {
-      "url": "/assets/generated/starter/monster-sparkit-01.png",
-      "sha256": "ee700972f58f5c390b921e8b4cb98a6f33a501769ff35c0fff54e124c1843763",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 40
+      "url": "/assets/generated/pixel-enemy-portraits/sparkit-01.png",
+      "sha256": "322f6463dd341efbf5fc632566da855030e782f78ab660257f2af2b82c511598",
+      "observation": "파란색과 노란색이 섞인 번개 형태의 생물입니다. 다리 대신 하반신이 뾰족한 번개 모양으로 이루어져 있으며, 양팔을 벌린 채 떠 있는 자세를 하고 있습니다.",
+      "index": 40,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/sparkit-01.png",
+      "nativeSheetSha256": "2d7cd0826f353c64a957e8ccf695a277a631edd49ba32bc17595567cbb299852",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-aqualing-01": {
-      "url": "/assets/generated/starter/monster-aqualing-01.png",
-      "sha256": "1bd5a5da5e731b87276f0a643272781bd3dd426a4fb7e00f2e5c4fe945455f2e",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 41
+      "url": "/assets/generated/pixel-enemy-portraits/aqualing-01.png",
+      "sha256": "64faddcfcc7d95a4915a46bf808547fdc7e781436921a5d319fc58db4c6d8637",
+      "observation": "파란색 물로 이루어진 물고기 형태의 생물체로, 큰 눈과 지느러미를 가지고 있습니다. 꼬리와 머리 부분이 파도처럼 흩어지며 유영하는 듯한 자세를 취하고 있습니다.",
+      "index": 41,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/aqualing-01.png",
+      "nativeSheetSha256": "75298ff4cd0cf1eeb0ca46a9274644c9f8f46338b903bd643c4bbf0ccdbecf63",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-king-slime-01": {
-      "url": "/assets/generated/starter/monster-king-slime-01.png",
-      "sha256": "f506286fa16d1319c82eb4cdf33c31959dd3250efb4fc9f5b8f932d7c6cb108e",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 42
+      "url": "/assets/generated/pixel-enemy-portraits/king-slime-01.png",
+      "sha256": "1f89c600fbf1cc4548d47db989a60a2143f940131a380c9e40b346a925091676",
+      "observation": "머리에 빨간 보석이 장식된 금색 왕관을 쓰고 있는 둥글고 젤리 같은 형태의 초록색 생물입니다. 크고 동그란 두 눈과 단순하게 그려진 웃는 입 모양을 하고 있습니다.",
+      "index": 42,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/king-slime-01.png",
+      "nativeSheetSha256": "d4bdc8bd66ba7b9b8dee481ef6f176fcc972b3b6c90918d14b00f217cc777104",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-slime-blue": {
-      "url": "/assets/generated/starter/monster-slime-blue.png",
-      "sha256": "113844629a9114851fed5d8f1aaf65f3de8ba26ddb1c185f7f4aab22e1aa78c8",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 43
+      "url": "/assets/generated/pixel-enemy-portraits/slime-blue.png",
+      "sha256": "3da87e0735c5145a5162afd65598a7d199f52e30b0701b1987e725419f280ee4",
+      "observation": "파란색의 젤리 같은 반구형 몸체를 가진 생물입니다. 커다란 두 눈과 작은 입을 가지고 있습니다.",
+      "index": 43,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/slime-blue.png",
+      "nativeSheetSha256": "52ca84920f89a9e786c1ba8f3ee124307d90539d49e44855c1e73ea743e3876e",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-slime-red": {
-      "url": "/assets/generated/starter/monster-slime-red.png",
-      "sha256": "e9b0bd0847f36453d363b89737ecb08517083ae9d91518f47459982160979bf8",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 44
+      "url": "/assets/generated/pixel-enemy-portraits/slime-red.png",
+      "sha256": "f6c6f2687e11bb9579326aba2223bb5dd2f3d9507dc91e0fad8a6bcab21e6bac",
+      "observation": "붉은 물방울 몸과 밝은 눈을 가진 슬라임입니다.",
+      "index": 44,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/slime-red.png",
+      "nativeSheetSha256": "98871c1a21dbe6670ecb50ab741d02818334c3a6692f6c2d6cfc3009b34a0eef",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-slime-green": {
-      "url": "/assets/generated/starter/monster-slime-green.png",
-      "sha256": "54a649098f8f9faf65f96858fb01425c2ad90ac94f05bc46746648ea7ef6065c",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 45
+      "url": "/assets/generated/pixel-enemy-portraits/slime-green.png",
+      "sha256": "fdf207802f347c14386260076c8ede396d0a7f995b64b5347e61eb20e428a634",
+      "observation": "반투명한 초록색을 띠는 둥글고 납작한 젤리 형태의 생물입니다. 커다란 두 눈을 가지고 있으며 입꼬리가 올라간 미소를 짓고 있습니다.",
+      "index": 45,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/slime-green.png",
+      "nativeSheetSha256": "31ba70f498dcde8ece12f3636157919f9ad1f0ac0d6af149a357fedaea67441b",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-slime-metal": {
-      "url": "/assets/generated/starter/monster-slime-metal.png",
-      "sha256": "f03c538a440a0fd4380fc16b4f8de501c4b2edd3b24e0e47a6c3c7bb2e96375d",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 46
+      "url": "/assets/generated/pixel-enemy-portraits/slime-metal.png",
+      "sha256": "7523f74e94ccb113f1367aecc92926e90fbd3b79b0a7160cdb71497a2c9c450e",
+      "observation": "은빛을 띠는 둥글고 납작한 점액질 몸체의 몬스터입니다. 크고 둥근 두 눈과 웃는 입이 있습니다.",
+      "index": 46,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/slime-metal.png",
+      "nativeSheetSha256": "497ec71f6d8e17854fef3c997268fb09bd08521bfb71a391056d51f7fe4b8fa3",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-slime-king": {
-      "url": "/assets/generated/starter/monster-slime-king.png",
-      "sha256": "f506286fa16d1319c82eb4cdf33c31959dd3250efb4fc9f5b8f932d7c6cb108e",
-      "observation": "output/evidence/monster-catalog/visual/observations-02.json",
-      "index": 47
+      "url": "/assets/generated/pixel-enemy-portraits/slime-king.png",
+      "sha256": "2f776f8ea78347c4f796d78bddd36d4df398d508b233e1d2f14f931eccd35705",
+      "observation": "머리에 빨간 보석이 장식된 금색 왕관을 쓰고 있는 둥글고 젤리 같은 형태의 초록색 생물입니다. 크고 동그란 두 눈과 단순하게 그려진 웃는 입 모양을 하고 있습니다.",
+      "index": 47,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/slime-king.png",
+      "nativeSheetSha256": "66e6fda524ad0f76e300debd622e924983aad15feaf9fcde84c18d95dda589cc",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-slime-cube": {
-      "url": "/assets/generated/starter/monster-slime-cube.png",
-      "sha256": "dc3b92cbd17a9408b2471a6752db383925219878c7cfa0ec3d3d1e240283645e",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 48
+      "url": "/assets/generated/pixel-enemy-portraits/slime-cube.png",
+      "sha256": "82d3930a087ae7202a0ae7c10b89e920d3eb80ff731fde1c9a58548923acec94",
+      "observation": "투명한 초록색을 띠는 정육면체 모양의 젤리 또는 슬라임 형태의 생물입니다. 정면에 두 개의 크고 둥근 눈과 미소 짓는 입이 그려져 있습니다.",
+      "index": 48,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/slime-cube.png",
+      "nativeSheetSha256": "6280b6a59bcff532d6b0e298dffb3a82078501401aea68f1dbc1a6b6399d209a",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ooze-black": {
-      "url": "/assets/generated/starter/monster-ooze-black.png",
-      "sha256": "a1683cd4234a6a6b7d0aa0b49dbccbe40b098dc85a1fc29391536992cbc9442f",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 49
+      "url": "/assets/generated/pixel-enemy-portraits/ooze-black.png",
+      "sha256": "beb6c8a29986515468fcabbfc0d9df5868b889052f88b1789cbc34fe248abaf6",
+      "observation": "짙은 검은색 바탕에 흰색 무늬가 불규칙하게 섞여 있는 둥근 점액질 형태의 생물입니다. 둥글고 큰 두 눈과 미소 짓는 입을 가지고 바닥에 자리 잡고 있습니다.",
+      "index": 49,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ooze-black.png",
+      "nativeSheetSha256": "3ee63aa3e08afab7ed291ea3c32b1125fc07e75af72ef86f96c8933e00837aff",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ooze-acid": {
-      "url": "/assets/generated/starter/monster-ooze-acid.png",
-      "sha256": "930b33d4e50950b487ce88fb79f44bdbf44880a4addd74f313689966ef8a54f7",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 50
+      "url": "/assets/generated/pixel-enemy-portraits/ooze-acid.png",
+      "sha256": "c4b0d6b5770f8b247b2695cfff26f2430b57d9a8cd598e8e267c13533a292cb5",
+      "observation": "바닥에 퍼진 둥근 반구 형태의 청록색 슬라임입니다. 커다란 두 눈과 미소 짓는 입이 있으며, 표면에는 흰색으로 밝게 보이는 부분이 있습니다.",
+      "index": 50,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ooze-acid.png",
+      "nativeSheetSha256": "c6ebd2fce0509b246dcb1ca48092a3c256b3fafce68c855c1fe7e6eff3ac24b5",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-bat-cave": {
-      "url": "/assets/generated/starter/monster-bat-cave.png",
-      "sha256": "38be67d39197156b2e6d682a18ebe9e4caf29bbb825df178d2102d24bb2cd6cd",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 51
+      "url": "/assets/generated/pixel-enemy-portraits/bat-cave.png",
+      "sha256": "e2a4951f5b765db5d0980065c7ecae97b940e24754e954d1362dd0ef4f12ded8",
+      "observation": "갈색 털과 짙은 갈색의 넓은 날개막을 가진 박쥐 형태의 생물입니다. 날개를 활짝 펴고 비행하는 자세로, 입을 벌려 날카로운 이빨을 드러내고 있습니다.",
+      "index": 51,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/bat-cave.png",
+      "nativeSheetSha256": "1a96a48aedbbf6e9eff73f235a1bef4eac2e534b927235314819742a106e2e5e",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-bat-vampire": {
-      "url": "/assets/generated/starter/monster-bat-vampire.png",
-      "sha256": "09ad805a30220ed8e3d09e7670e7a04c042af6451b0b26e28b186637a37e16f0",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 52
+      "url": "/assets/generated/pixel-enemy-portraits/bat-vampire.png",
+      "sha256": "9a781b62a52eb07866a0cadb41a712d3d63c001f3ed9d176c49a304d0db7be5e",
+      "observation": "붉은 몸과 어두운 피막 날개, 밝은 송곳니를 가진 박쥐입니다.",
+      "index": 52,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/bat-vampire.png",
+      "nativeSheetSha256": "46f6b6e37069b0a406c872a9fee7742d98ac39a8a16f5a9e88d347af65cfba24",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-bee-giant": {
-      "url": "/assets/generated/starter/monster-bee-giant.png",
-      "sha256": "0fe40f155d4a7cba75dabd9c877cafe27eed924722a87e6afcad02297324370e",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 53
+      "url": "/assets/generated/pixel-enemy-portraits/bee-giant.png",
+      "sha256": "f416ada6264bd1ec8ac0a96884c61540a7616a5849eb4e6c9f3b7319113a35e3",
+      "observation": "노랑과 검정 줄무늬 몸통에 밝은 날개와 침이 달린 벌입니다.",
+      "index": 53,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/bee-giant.png",
+      "nativeSheetSha256": "77b3781259cff4bc91b064538b2d9aea02d0f1656e716960a2db31924566df70",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spider-cave": {
-      "url": "/assets/generated/starter/monster-spider-cave.png",
-      "sha256": "3733e8b1667042705fd1058777ac78bc59b9b56d75f76e74ff59f70e04caf78c",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 54
+      "url": "/assets/generated/pixel-enemy-portraits/spider-cave.png",
+      "sha256": "cccf66147476457b854c9729c8a1abba6784d59e611446b042c3edbd8248b189",
+      "observation": "자주색 몸통과 가는 다리, 붉은 눈을 가진 거미입니다.",
+      "index": 54,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spider-cave.png",
+      "nativeSheetSha256": "776a4814ab6d6bf774f1c5cb3e4f2742161f5c2ce9aaeb8098fa2c9417fb3c1f",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spider-widow": {
-      "url": "/assets/generated/starter/monster-spider-widow.png",
-      "sha256": "88357b1dbd547b58019645acaaa0bf3b39ea73d00825917454b930723855a217",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 55
+      "url": "/assets/generated/pixel-enemy-portraits/spider-widow.png",
+      "sha256": "06d9edf73317aa210e5331ee778d1d5875a5e1ea141710c7aa0611df5a30ec87",
+      "observation": "어두운 색상의 몸체에 뾰족한 가시들이 돋아 있는 거미 형태의 생물입니다. 붉은색 눈 여러 개와 날카로운 이빨을 드러낸 채 여덟 개의 다리로 서 있습니다.",
+      "index": 55,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spider-widow.png",
+      "nativeSheetSha256": "44205d776f2d2ccd395a8fbc4f2f83f7e853568e0f5e38edabed42e5bbd0811f",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-scorpion-sand": {
-      "url": "/assets/generated/starter/monster-scorpion-sand.png",
-      "sha256": "5517400a05677af88125c2f1774435cafc721960ec26afedece086914333b3fa",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 56
+      "url": "/assets/generated/pixel-enemy-portraits/scorpion-sand.png",
+      "sha256": "e282ca5a71b3aca17c69e349a61c450d54b26f40cfd6023918416262b52ec564",
+      "observation": "황갈색 몸과 두 집게, 등 위로 굽은 꼬리침을 가진 전갈입니다.",
+      "index": 56,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/scorpion-sand.png",
+      "nativeSheetSha256": "784a3a2a63a24e6c80cd1176d5913db2f95f42d4da7b4eb426da26eecf4ce0ab",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-beetle-horn": {
-      "url": "/assets/generated/starter/monster-beetle-horn.png",
-      "sha256": "4681ee9fef1937bc1dbc8652397b590e76f0a1dac54fa23859bf6b8f90a8cd05",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 57
+      "url": "/assets/generated/pixel-enemy-portraits/beetle-horn.png",
+      "sha256": "f79506980185a5599f4a2ad05365928f5a5175022f30d0f8621b58212a02a7f5",
+      "observation": "머리와 앞가슴에 크고 날카로운 뿔을 가진 장수풍뎅이 형태의 생물입니다. 단단해 보이는 외골격은 푸른색과 보라색이 감도는 짙은 금속성 광택을 띠고 있습니다.",
+      "index": 57,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/beetle-horn.png",
+      "nativeSheetSha256": "8f94947e22605a0c5b916137a958f4d2b17222bb5339bba448e7577f718705c0",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-mantis-blade": {
-      "url": "/assets/generated/starter/monster-mantis-blade.png",
-      "sha256": "dc75536d101f411761205e6aba74dfcee154be986be2f7fa46604cd76d4fd7c5",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 58
+      "url": "/assets/generated/pixel-enemy-portraits/mantis-blade.png",
+      "sha256": "2ac4cef801f6fa874bc7baf5f608fa192074e0f004718f76dc04ddb5bc13f9cb",
+      "observation": "녹색 몸과 길게 접힌 낫 모양 앞다리를 가진 사마귀입니다.",
+      "index": 58,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/mantis-blade.png",
+      "nativeSheetSha256": "fc878b47b10eb4502f9851f138c326536b64bc0c5f35bb57be6ceb2387b406bb",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-centipede-fire": {
-      "url": "/assets/generated/starter/monster-centipede-fire.png",
-      "sha256": "b994d398485435d5555950a11fec5841dee81f5a94de9c60271ae3d0db688c25",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 59
+      "url": "/assets/generated/pixel-enemy-portraits/centipede-fire.png",
+      "sha256": "5f236763c0bec6e60af6b8e6c36cac1fec74f9e205f7131c5e36a998192de064",
+      "observation": "보라색 등껍질과 주황색 마디, 수많은 뾰족한 다리를 가진 지네 형태의 생물입니다. 몸을 C자 형태로 구부린 채 붉은 눈과 날카로운 턱을 드러내고 있습니다.",
+      "index": 59,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/centipede-fire.png",
+      "nativeSheetSha256": "ef6bbaf7bbaeb4fa788d907d20f7b30ff302c8184e6ca092f8c2a79a4786f9a6",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-moth-dust": {
-      "url": "/assets/generated/starter/monster-moth-dust.png",
-      "sha256": "29025f298867abee43d5d28ecb23bce958cdfd7d6c68619c26ab810d9b445276",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 60
+      "url": "/assets/generated/pixel-enemy-portraits/moth-dust.png",
+      "sha256": "6b10c0b2896eb002a7a53547479836a01eb04d4e3dffc883c666d628552f7336",
+      "observation": "복슬복슬한 털로 덮인 몸통과 크고 둥근 검은 눈을 가진 갈색 곤충 형태의 생물입니다. 짙은 갈색의 소용돌이무늬가 있는 크고 다소 너덜너덜한 날개를 펼친 채 날아가는 자세를 취하고 있습니다.",
+      "index": 60,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/moth-dust.png",
+      "nativeSheetSha256": "21ce872495876d9bcedcd80e0e7b30bf072fd61a1f1e25b456109f0723ec8b13",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-worm-sand": {
-      "url": "/assets/generated/starter/monster-worm-sand.png",
-      "sha256": "963d96f01a7f036efd289d61b243a9808d9fcb6fce3b9887929ccaac1234b52b",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 61
+      "url": "/assets/generated/pixel-enemy-portraits/worm-sand.png",
+      "sha256": "57bf3f53c62e50dc06bd7f1a973558f1504f00e4381d618bd712bb25ab68bc4e",
+      "observation": "단단해 보이는 마디진 갈색 몸통에 가시 돌기가 돋아난 거대한 벌레 형태의 생물입니다. 몸을 둥글게 말고 입을 크게 벌려 뾰족한 이빨과 입가에 달린 촉수들을 드러내고 있습니다.",
+      "index": 61,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/worm-sand.png",
+      "nativeSheetSha256": "fa8c6b76f91fba926476bb22f1630fe1afe68587a738471f9d06f06b2d4c3d18",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ant-soldier": {
-      "url": "/assets/generated/starter/monster-ant-soldier.png",
-      "sha256": "60239109bf9ea9be0c7d54614c00b5b119d19ef9c3e658cf4c6cba72534afe38",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 62
+      "url": "/assets/generated/pixel-enemy-portraits/ant-soldier.png",
+      "sha256": "cacc43d34a33f55a04c1cbff3085760b647de573eb055918f0c11daf4dfee708",
+      "observation": "적갈색 외골격과 크고 날카로운 큰턱을 가진 곤충형 생물입니다. 몸통 곳곳에 작은 가시 돌기가 돋아 있으며 여섯 개의 다리를 이용해 서 있습니다.",
+      "index": 62,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ant-soldier.png",
+      "nativeSheetSha256": "d93ad753b1613f55c953b63e230e7ee205b872d411bfdad7f3217beb164763c7",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-wolf-grey": {
-      "url": "/assets/generated/starter/monster-wolf-grey.png",
-      "sha256": "85181a503fec87c0574357b5c905705d6118229ff64f425af01c4f18a97b65a6",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 63
+      "url": "/assets/generated/pixel-enemy-portraits/wolf-grey.png",
+      "sha256": "f0d68dd83f332ce2b1d885313d30a5c8997db5f36eb63ae84d953e43be3fc034",
+      "observation": "밝은 회색 털과 뾰족한 귀, 긴 주둥이를 가진 네발 늑대입니다.",
+      "index": 63,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/wolf-grey.png",
+      "nativeSheetSha256": "a356b1f338ac7e5e6eb450b87943b16649e6de655ef390efac370ea2b056ae1e",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-wolf-dire": {
-      "url": "/assets/generated/starter/monster-wolf-dire.png",
-      "sha256": "4d6bf1f194657fb4753c21a3289c8db0e54763b1ee82fc8ed9d524fc18f65c0b",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 64
+      "url": "/assets/generated/pixel-enemy-portraits/wolf-dire.png",
+      "sha256": "25eda3ee1f1a396c842cc95e30e0fcdf964c4bc6b0773ab56366cc8222bbd8e9",
+      "observation": "보라색 눈을 번뜩이며 날카로운 이빨을 드러낸 채 몸을 낮추고 걷고 있는 짙은 회색 털의 늑대입니다. 입을 벌려 으르렁거리는 듯한 자세를 취하고 있습니다.",
+      "index": 64,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/wolf-dire.png",
+      "nativeSheetSha256": "829aa224f3c44a5102eb7bac1eac85fb08302fd367108758924afa59912d2880",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-boar-tusk": {
-      "url": "/assets/generated/starter/monster-boar-tusk.png",
-      "sha256": "56a63d2644d0bc422ed0e35f3d383936f0cab19a4e74e8a1eeb6fd72be2dcdbb",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 65
+      "url": "/assets/generated/pixel-enemy-portraits/boar-tusk.png",
+      "sha256": "3d831f7c0de50bd8ae1e041960321b32cdf4eb93655dfdeef1ed3cf5b3c7add0",
+      "observation": "갈색 몸과 두꺼운 주둥이, 밝은 엄니를 가진 네발 멧돼지입니다.",
+      "index": 65,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/boar-tusk.png",
+      "nativeSheetSha256": "4376e08e51e07c37e5ca767ec23e325e3d052a90bdf054961dbe8c81febec160",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-bear-brown": {
-      "url": "/assets/generated/starter/monster-bear-brown.png",
-      "sha256": "cd4d9cedff1031a260ee363a4c1d3199e4ce4bb87c0bebc7a9830e7351f3025d",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 66
+      "url": "/assets/generated/pixel-enemy-portraits/bear-brown.png",
+      "sha256": "80da18afd4af2042401720d9c37debf91ec936ee119ce61c78606c020b51982f",
+      "observation": "큰 갈색 몸과 짧은 귀, 굵은 네 다리를 가진 곰입니다.",
+      "index": 66,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/bear-brown.png",
+      "nativeSheetSha256": "18aacd44a3d84dd4ce9b4111ba7971d7879041512f185ccd28b791714d0961ab",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-tiger-saber": {
-      "url": "/assets/generated/starter/monster-tiger-saber.png",
-      "sha256": "35fb12a2be8b4f01f39cc8917dfab603840d8f6be82e02237bdef637eb51d19e",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 67
+      "url": "/assets/generated/pixel-enemy-portraits/tiger-saber.png",
+      "sha256": "d1194a4a47d98bc33874f7ae09599292c4550d3e5e5b50d9c4266104f49dd415",
+      "observation": "검은 줄무늬가 있는 주황색 털과 위턱에 거대한 두 개의 송곳니를 가진 맹수입니다. 가슴과 어깨에 긁힌 자국이 있는 금속 갑옷을 착용하고, 입을 크게 벌린 채 앞으로 뛰어드는 역동적인 자세를 취하고 있습니다.",
+      "index": 67,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/tiger-saber.png",
+      "nativeSheetSha256": "d2e9a7899c5b4f74d3c4a3dd9d2e1237ba3d1ebecb341a654a9b008a3f15cc76",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-rat-giant": {
-      "url": "/assets/generated/starter/monster-rat-giant.png",
-      "sha256": "e2658dd7b43114274a2c843b0acc531feaa11813fb4ab76d902e4f84c2729a11",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 68
+      "url": "/assets/generated/pixel-enemy-portraits/rat-giant.png",
+      "sha256": "433dfdd06ffd1900ba5f667cb9532041ab78baa7d0d174cf2139d054619235d2",
+      "observation": "갈색 털과 붉은 눈을 가진 쥐 형태의 생물입니다. 입을 크게 벌려 날카로운 이빨을 드러낸 채 앞다리를 들고 뛰어오르는 듯한 자세를 취하고 있습니다.",
+      "index": 68,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/rat-giant.png",
+      "nativeSheetSha256": "afa27302952e0934d32bb7524588b4af7f9e2ca6f7410f58396c2eb7228db4d7",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-bird-hawk": {
-      "url": "/assets/generated/starter/monster-bird-hawk.png",
-      "sha256": "49693ccc36172d608fe3f0b5a68ee59a2c917810277ebb48731568754959bf2c",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 69
+      "url": "/assets/generated/pixel-enemy-portraits/bird-hawk.png",
+      "sha256": "fc963124eb3cac9bc653df549c77a21f1109fe7ef22222d4fa9f5935d99e99c8",
+      "observation": "갈색과 흰색 무늬가 섞인 깃털을 가진 맹금류가 날개를 활짝 펴고 비행하는 모습입니다. 날카로운 노란색 부리와 발톱을 아래로 향하고 있습니다.",
+      "index": 69,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/bird-hawk.png",
+      "nativeSheetSha256": "0a05065cb32187445dba3ecdd739634fd104f2c3e85e22a25a7f4a71bae9dbde",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-snake-viper": {
-      "url": "/assets/generated/starter/monster-snake-viper.png",
-      "sha256": "fa7a65a08e6ebcba1922be3686c0b1f2e0ebba1bcd51952da676954eb3296139",
-      "observation": "output/evidence/monster-catalog/visual/observations-03.json",
-      "index": 70
+      "url": "/assets/generated/pixel-enemy-portraits/snake-viper.png",
+      "sha256": "ef0b0e72a0054304c2a9e8fdd4b7c6ee1945df6a8eb28ed2323bb3d0a9763ff8",
+      "observation": "목을 넓게 펼치고 똬리를 튼 녹색 독사입니다.",
+      "index": 70,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/snake-viper.png",
+      "nativeSheetSha256": "be651cd956c56b8d9bb27f50b23967cb3bcebb7aeaace3bdfa272d6684e02a9a",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-cat-shadow": {
-      "url": "/assets/generated/starter/monster-cat-shadow.png",
-      "sha256": "b837d416e3d4c68f26b255035a8155d1a42563c0ffcdc475aeb14b7358b2db2f",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 71
+      "url": "/assets/generated/pixel-enemy-portraits/cat-shadow.png",
+      "sha256": "ad5be696ebed53d915b4e17b2de52e822f958588a9856f1c37ad79ccd5fbc143",
+      "observation": "가시가 박힌 가죽 목줄과 앞발목 장식을 착용한 보라색 줄무늬 고양이입니다. 꼬리를 위로 치켜들고 네 발로 서서 앞으로 나아가는 자세를 취하고 있습니다.",
+      "index": 71,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/cat-shadow.png",
+      "nativeSheetSha256": "b5420b0ea78f91f2effa54cac7326f249121705479bb7a1b488bcf40fcbd0ce3",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-goat-mountain": {
-      "url": "/assets/generated/starter/monster-goat-mountain.png",
-      "sha256": "3d6b652ec69ffa7395a25996260266bbf69f528205423a6a1c0a734edd84754f",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 72
+      "url": "/assets/generated/pixel-enemy-portraits/goat-mountain.png",
+      "sha256": "7f75b23d5b19e884ae4c0291affa983ecbb677d69fb68e3b78918369c41b6ea2",
+      "observation": "크고 둥글게 말린 두 개의 뿔과 턱수염을 가진 갈색 털의 산양 형태입니다. 네 발굽을 모아 공중으로 도약하는 듯한 자세를 취하고 있습니다.",
+      "index": 72,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/goat-mountain.png",
+      "nativeSheetSha256": "d9bf3c8f58358eef1a0c3118f9f24d3c22070c0aa695f085427cfcd62f0e4435",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-crab-rock": {
-      "url": "/assets/generated/starter/monster-crab-rock.png",
-      "sha256": "9e63aaf554dba436a8b558f3bde66b2a10add33c31fa15b50056bd7fd67e081a",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 73
+      "url": "/assets/generated/pixel-enemy-portraits/crab-rock.png",
+      "sha256": "ed201bb7f59cca20afb2c61981a2288f2ed7c3935f10104178f7da7cdf3e938a",
+      "observation": "회색 등딱지와 붉은 집게, 짧은 다리를 가진 게입니다.",
+      "index": 73,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/crab-rock.png",
+      "nativeSheetSha256": "54bfecc1ecb65c3e39b21c2affd0f802caf9e25f4640cc7a4c06b21cfde46795",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-hound-hell": {
-      "url": "/assets/generated/starter/monster-hound-hell.png",
-      "sha256": "1b7eb38c6e95a936814a39b19216fceab907382001b3831564a17b194df53b17",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 74
+      "url": "/assets/generated/pixel-enemy-portraits/hound-hell.png",
+      "sha256": "905b58583e6c5f7b05f3e578a6aa7287fe4fe10293aab437ca1934833c0b90b4",
+      "observation": "검은 네발 몸에 붉은 불꽃 갈기와 꼬리가 달린 사냥개입니다.",
+      "index": 74,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/hound-hell.png",
+      "nativeSheetSha256": "49b0c4ed92103d45b6d55918485336a782363251138cef08004eee47353ee87b",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ape-stone": {
-      "url": "/assets/generated/starter/monster-ape-stone.png",
-      "sha256": "ba2fba74750a7e941b5ee9670ee549d2fa9c2457e0cc9eadd6cf7c4f1f03a36f",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 75
+      "url": "/assets/generated/pixel-enemy-portraits/ape-stone.png",
+      "sha256": "46f7d1bb734f90230ab09382b3b3b0ad01efd2c2d57cc8f6c08f884d7a66cc73",
+      "observation": "회색 바위로 이루어진 몸통의 틈새로 주황색 빛이 새어 나오는 고릴라 형태의 생물입니다. 머리와 어깨, 관절 부위에 녹색 이끼가 털처럼 덮여 있으며 양 주먹을 꽉 쥔 채 웅크린 자세를 취하고 있습니다.",
+      "index": 75,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ape-stone.png",
+      "nativeSheetSha256": "e89f0f73b3ba95fa35c5940dde6374240ea2c0ef58e54e1755a27eb26555abee",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-deer-forest": {
-      "url": "/assets/generated/starter/monster-deer-forest.png",
-      "sha256": "9f0d2b75e36069a230b851646b77fc8c013bd87937d36ecc5c1ece8e7c6a5811",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 76
+      "url": "/assets/generated/pixel-enemy-portraits/deer-forest.png",
+      "sha256": "0943f424befe9b9e382e46d1b1e3d0939e170149b5eb08975f6a144ceae81a07",
+      "observation": "이마와 거대한 뿔에 빛나는 기호가 새겨진 갈색 털의 사슴 형태 생물입니다. 뿔 곳곳에 초록색 이끼가 자라나 있으며, 앞다리를 살짝 들고 걷는 듯한 자세를 취하고 있습니다.",
+      "index": 76,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/deer-forest.png",
+      "nativeSheetSha256": "4123a8f8b7115b5f0a69a7e517bb2ab96ee85b16a6f8ffb84a331b011dc86e86",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-skeleton-bone": {
-      "url": "/assets/generated/starter/monster-skeleton-bone.png",
-      "sha256": "b9ed653bcd1ccf61d646f77098e8d27958afdd42680f55aab029733dc1ba621d",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 77
+      "url": "/assets/generated/pixel-enemy-portraits/skeleton-bone.png",
+      "sha256": "dbf6b8ab9f39b97a5fc3f4f83ea041da417714500b30a47e0eb157e22850773d",
+      "observation": "어깨에 낡고 찢어진 천 조각을 걸친 상반신 형태의 뼈대 생물입니다. 오른손에 이가 빠지고 부식된 커다란 검을 쥐고 앞으로 약간 구부정한 자세를 취하고 있습니다.",
+      "index": 77,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/skeleton-bone.png",
+      "nativeSheetSha256": "dd841ee100fc7adc2de4f9842347efdfa4b6ddf7ffc2632e34ce141a960abdf6",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-skeleton-archer": {
-      "url": "/assets/generated/monsters/corrected/skeleton-archer.png",
-      "sha256": "51269103b5b6bac393a287f3fb7756bbd66d972b5d09ce5fa1708abcffae9f4a",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 78
+      "url": "/assets/generated/pixel-enemy-portraits/skeleton-archer.png",
+      "sha256": "722f93e3037917987256d8e5ad43acb49209ae497c065cfcab41772c5293ce32",
+      "observation": "뼈로 된 몸과 나무 활을 가진 해골 궁수입니다.",
+      "index": 78,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/skeleton-archer.png",
+      "nativeSheetSha256": "b5a1250f76db9a5c9c373063c9e9ffbbb697b6529897511f8bf5b916847c2378",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-skeleton-knight": {
-      "url": "/assets/generated/starter/monster-skeleton-knight.png",
-      "sha256": "13e5092396974451c400f4cd0f90bedbf186b3ac5be20b73a9382bf60e23fa07",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 79
+      "url": "/assets/generated/pixel-enemy-portraits/skeleton-knight.png",
+      "sha256": "4d1a704fc72345e81f78616932bed8b10cca70033d3456a45f75c2623f991062",
+      "observation": "갑옷과 투구를 걸친 해골이 칼과 방패를 들고 있습니다.",
+      "index": 79,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/skeleton-knight.png",
+      "nativeSheetSha256": "4fce00c7bcb609a3e940a48044ff2c114b608340154ca75028b087fd4a70c303",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-zombie-rot": {
-      "url": "/assets/generated/starter/monster-zombie-rot.png",
-      "sha256": "43af75c7d780be34aff75bb9046110396b1ee8fa4046b58e9a09bfebbf7b9e20",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 80
+      "url": "/assets/generated/pixel-enemy-portraits/zombie-rot.png",
+      "sha256": "30e87609296a56cbf5dac02acab75972745a92acd60b8179c5bfb588bbeed911",
+      "observation": "녹색 피부와 드러난 뼈, 해진 옷을 가진 인간형 좀비입니다.",
+      "index": 80,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/zombie-rot.png",
+      "nativeSheetSha256": "9a9824c207130f6f0cb89d4ba0b4e015f33c10ca1c093596bb517d3c65d6984e",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ghoul-grave": {
-      "url": "/assets/generated/starter/monster-ghoul-grave.png",
-      "sha256": "0e1f72cf81cc2c5ea18f6d4630507043728350789d82a89e2c5c6b99ec4efb43",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 81
+      "url": "/assets/generated/pixel-enemy-portraits/ghoul-grave.png",
+      "sha256": "420a77893d53c1cadb27c7ecc81d7a94467b4ac10f6a136ebb4ce9927fc19cd6",
+      "observation": "빛나는 녹색 눈을 가지고 가슴뼈가 노출된 짙은 회녹색 피부의 인간형 생물입니다. 심하게 찢어진 녹색 옷을 입고 양손의 날카로운 손톱을 앞으로 내밀며 구부정하게 서 있습니다.",
+      "index": 81,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ghoul-grave.png",
+      "nativeSheetSha256": "396999ee3c4a853675e282c115d9bd6e1328af7d9a052741e689f70f6472c654",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ghost-pale": {
-      "url": "/assets/generated/starter/monster-ghost-pale.png",
-      "sha256": "2404c172bb67ba16a3b8efeab4d6e22314efa5edcdcf99d0d9f13e32aa19ea2f",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 82
+      "url": "/assets/generated/pixel-enemy-portraits/ghost-pale.png",
+      "sha256": "ef4fcf5d2f8ed7950b1dbb4876a5a4895edda2ef66aaa627fc66525aec3e919a",
+      "observation": "옅은 보라색 천처럼 늘어진 몸과 검은 눈을 가진 떠 있는 유령입니다.",
+      "index": 82,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ghost-pale.png",
+      "nativeSheetSha256": "ab1e47560bc1872beb7bef8ac26bce1763c21315ea7562566cc2dd139db44d2a",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-wraith-dark": {
-      "url": "/assets/generated/starter/monster-wraith-dark.png",
-      "sha256": "b17db0f971cad3264af2f23e322497cb51e4de7ff00c7dc143bdf37e8d40654c",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 83
+      "url": "/assets/generated/pixel-enemy-portraits/wraith-dark.png",
+      "sha256": "582b50c23966761f8f302f7ee7bb74a6d70f1e0ce1a62e93c2d172e083c4e0dd",
+      "observation": "짙은 회색의 인간형 상반신을 가졌으며, 하반신은 연기처럼 흩어지는 형태의 생물입니다. 흩날리는 긴 머리카락과 뾰족한 귀, 날카로운 이빨을 드러낸 채 양손을 앞으로 뻗고 허공에 떠 있습니다.",
+      "index": 83,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/wraith-dark.png",
+      "nativeSheetSha256": "5837c5b9ae8950de1b06b75a4bde0539a697b4adf15d2d68e1aa5967e7cc7e94",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-lich-frost": {
-      "url": "/assets/generated/starter/monster-lich-frost.png",
-      "sha256": "4ed519d841897b24b562248a530850235a6e53b9d045c299800eede094e0a363",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 84
+      "url": "/assets/generated/pixel-enemy-portraits/lich-frost.png",
+      "sha256": "39b2410ce50b8426a6b48a47b46f971bc0620d81398cf1f958c5128e83add0a7",
+      "observation": "푸른 로브와 왕관을 쓴 해골 마법사가 밝은 지팡이를 들고 있습니다.",
+      "index": 84,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/lich-frost.png",
+      "nativeSheetSha256": "e923a0e3bdc8ca4a687f56bb46b2aa57e11ab5ced3310ec9d81b7e1bb2350dd3",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-mummy-bandage": {
-      "url": "/assets/generated/starter/monster-mummy-bandage.png",
-      "sha256": "cbc824d6d9777ac38fcd7e48053f1a9f48d64ad01caad2d8d52017c14c388a21",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 85
+      "url": "/assets/generated/pixel-enemy-portraits/mummy-bandage.png",
+      "sha256": "350c4f2ace94bb77af60afe514955d1874a66d3e2c34d644332fd03db70c6da7",
+      "observation": "황갈색 붕대에 감긴 인간형 미라가 팔을 앞으로 내밀고 있습니다.",
+      "index": 85,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/mummy-bandage.png",
+      "nativeSheetSha256": "e320402f40c7c5bcbddac5c12c021c21d3a4f53581eb6cdedc8cf4841a3f4abf",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-banshee-wail": {
-      "url": "/assets/generated/starter/monster-banshee-wail.png",
-      "sha256": "0fa7d1f77019e055e3e8c61e3ccf3873de4c5a2b034366c5463399b30e65dc78",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 86
+      "url": "/assets/generated/pixel-enemy-portraits/banshee-wail.png",
+      "sha256": "14ec9737e0cc86a680958c05e125b145218174e31d04a298360f8b2838d554b4",
+      "observation": "길게 흩날리는 머리카락과 찢어지고 해진 원피스를 입은 창백한 푸른빛의 여성형 유령입니다. 눈동자 없는 하얀 눈으로 입을 크게 벌린 채 양팔을 앞으로 뻗으며 허공에 떠 있습니다.",
+      "index": 86,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/banshee-wail.png",
+      "nativeSheetSha256": "c401771c9547cc79578a50808e5986bbf61ad3ca8159885f4a5dc15dd704e376",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-revenant-vengeful": {
-      "url": "/assets/generated/starter/monster-revenant-vengeful.png",
-      "sha256": "40b76529d8ffcc593c8b0d9cb1fcf9869b2761e9cea4269e882ac81c1d685276",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 87
+      "url": "/assets/generated/pixel-enemy-portraits/revenant-vengeful.png",
+      "sha256": "4637c7694b14cd71476ccea11247392900e3e6c05e4a24d41a27d64960acb0c5",
+      "observation": "녹슨 철제 갑옷과 낡은 보라색 천을 걸친 인간형 해골입니다. 붉은 눈을 빛내며 초록색 빛이 감도는 커다란 검을 들고 공격적인 자세를 취하고 있습니다.",
+      "index": 87,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/revenant-vengeful.png",
+      "nativeSheetSha256": "be0efc8525b79346040b734b2ecfed723fa92284bb5fdf9807eaed48262e940e",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-bonepile-crawler": {
-      "url": "/assets/generated/starter/monster-bonepile-crawler.png",
-      "sha256": "d67b28263492802c800b194f50d080d577f8e8a41d21f4372e915946b11ba151",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 88
+      "url": "/assets/generated/pixel-enemy-portraits/bonepile-crawler.png",
+      "sha256": "7933a29b7935bd7d58cb8912de513329cbc40ff30e19e1613e965a92a8e0ec11",
+      "observation": "붉게 빛나는 두 눈과 갈라진 두개골을 가진 사족보행 형태의 뼈 몬스터입니다. 척추와 갈비뼈가 얽힌 둥글고 복잡한 몸통을 가졌으며, 뾰족한 뼈 발톱이 달린 네 다리로 땅을 짚고 있습니다.",
+      "index": 88,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/bonepile-crawler.png",
+      "nativeSheetSha256": "c81390b2c2a9c930cbc4af86fd70de358a3bc06589858575e6433c8219283fba",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spirit-fire": {
-      "url": "/assets/generated/monsters/corrected/spirit-fire.png",
-      "sha256": "a8594526daef4eba373259656e96112b4168eb4f52b566858cc4f314d92c4fc8",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 89
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-fire.png",
+      "sha256": "01b5778bb01ab24ba103b509ca72e327eebc5055430c42f532dddf5db699ecda",
+      "observation": "주황빛 불꽃으로 된 머리와 몸, 팔을 가진 떠 있는 정령입니다.",
+      "index": 89,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spirit-fire.png",
+      "nativeSheetSha256": "b3e06f489e1040e92161378d1e3f91b0ea866208adddd7c85781c75041e1b0d4",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spirit-water": {
-      "url": "/assets/generated/monsters/corrected/spirit-water.png",
-      "sha256": "2884b1d4a289af9e39e2e14fb172e5f428eb64f795c17dc2b0026b4240c39763",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 90
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-water.png",
+      "sha256": "473f7beeb660f32da683e04a6d3f1af0363c3fa1aaf635957ca57d2b328e1d83",
+      "observation": "푸른 물결로 이루어진 몸과 길게 휘어진 하반신을 가진 정령입니다.",
+      "index": 90,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spirit-water.png",
+      "nativeSheetSha256": "c2e484fcac69bd4468441dd0e89060d94b5e30e90d7d37baec2cd7d644ac75be",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spirit-earth": {
-      "url": "/assets/generated/monsters/corrected/spirit-earth.png",
-      "sha256": "38d808de93382c5b0e31c371557318af7bcbde8737ee9c04c1d061b4bd3e8872",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 91
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-earth.png",
+      "sha256": "42194d7ce2871cd3c979eceab8f072c18be754ca9080e99b47f3e8cadbe85cf5",
+      "observation": "갈색 바위 조각들에 초록색 이끼와 나무뿌리가 얽혀 형태를 이룬 인간형 몬스터입니다. 관절이 직접 연결되지 않고 공중에 떠 있는 바위 파편들로 몸이 구성되어 있으며, 눈에서는 주황색 빛이 납니다.",
+      "index": 91,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spirit-earth.png",
+      "nativeSheetSha256": "c278dc35d4d39690b1762f6570f99fc3db7d931feb5d8fedd5e14236ce64d7f2",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spirit-wind": {
-      "url": "/assets/generated/starter/monster-spirit-wind.png",
-      "sha256": "342c06bef8c7fbaf5ac1bc1d206210cc04155d2673038db7701acd19fb579e03",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 92
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-wind.png",
+      "sha256": "2e9665f7b0eabba260a22b351360c463a28705acc37b2ee6ba65350c88d9ffb4",
+      "observation": "빛나는 눈과 날카로운 이빨을 드러내고 양팔을 벌린 자세를 취하고 있는 옅은 보라색을 띠는 흰색 유령입니다. 상반신은 앙상한 인간의 모습이지만 하반신은 연기처럼 흩어지는 형태를 띠고 있습니다.",
+      "index": 92,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spirit-wind.png",
+      "nativeSheetSha256": "9d80ebca4b487f00d2e5a6291f297250d94af1f4b14db0707ba4150fc67fa9fa",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spirit-light": {
-      "url": "/assets/generated/starter/monster-spirit-light.png",
-      "sha256": "68cfa7d361880ac2b46925545f39b84b695395c6e2a705655ec736f0e74becc8",
-      "observation": "output/evidence/monster-catalog/visual/observations-04.json",
-      "index": 93
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-light.png",
+      "sha256": "717edada124098d7b76e0fe992f74ef58132296fd27a0fef132ab01bc48c3d9b",
+      "observation": "하반신이 연기처럼 흩어지는 형태를 한 흰색의 인간형 유령입니다. 날카로운 이빨을 드러내고 입을 크게 벌린 채 양손을 앞으로 뻗고 있습니다.",
+      "index": 93,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spirit-light.png",
+      "nativeSheetSha256": "929d20167a9dcd66e2fb4721533ad4b1662f4c4b60f3c33200ce8e062d0547a3",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-spirit-dark": {
-      "url": "/assets/generated/starter/monster-spirit-dark.png",
-      "sha256": "a4637d388a937586585224154e9b280ccfa9f76f38f0eb4bd51e516769889405",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 94
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-dark.png",
+      "sha256": "e7b7a72dfecbe0b769445bb1b1fc15d5102ddb7d71074efd4903e31ae52cb0b0",
+      "observation": "입을 크게 벌리고 날카로운 손톱이 있는 양팔을 뻗어 위협적인 자세를 취하고 있는 짙은 회색의 생물입니다. 상반신은 앙상한 인간의 모습이지만 하반신은 다리 없이 연기나 그림자처럼 너풀거리며 흩어지는 형태를 하고 있습니다.",
+      "index": 94,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/spirit-dark.png",
+      "nativeSheetSha256": "dd60c52c8737e435fdeb385c981b705fe641f28c30f56b5e4f57e70757f7c433",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-wisp-blue": {
-      "url": "/assets/generated/monsters/corrected/wisp-blue.png",
-      "sha256": "9cdea5ebd6e17209b07f797fc81f08afa0185f892d6e169c82aa49400c5e6fc7",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 95
+      "url": "/assets/generated/pixel-enemy-portraits/wisp-blue.png",
+      "sha256": "789fb46d1bc04b98d130aa1a9fdb648333cc2fc7ea944c22e6b2a2ad78247563",
+      "observation": "푸른 불꽃으로 둘러싸인 밝은 얼굴이 공중에 떠 있는 정령입니다.",
+      "index": 95,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/wisp-blue.png",
+      "nativeSheetSha256": "10d7699343048c2a9ee19ea74b1d931afbc31867a58d39c1e539df4bc5e8416b",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-sylph-air": {
-      "url": "/assets/generated/starter/monster-sylph-air.png",
-      "sha256": "c2fff22669d93e9ca28f8868d36ed92ca8338769112a1930a4d4dee0c10ba1f8",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 96
+      "url": "/assets/generated/pixel-enemy-portraits/sylph-air.png",
+      "sha256": "67124fe095e3fdf8bdf75a5ef2b5f129b1c9bf7f42e5f22bc595c347b9522af2",
+      "observation": "연한 파란색을 띠는 구름이나 바람 형태의 생물입니다. 머리에 구름 모양의 후드를 쓴 것처럼 보이며, 팔과 몸통 아래쪽은 소용돌이치는 모양으로 흩어져 있습니다.",
+      "index": 96,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/sylph-air.png",
+      "nativeSheetSha256": "8cae7844ec6706f48d55aa89896c70b8ade1ced6a6771ec842565da1ae7f07e1",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-undine-sea": {
-      "url": "/assets/generated/starter/monster-undine-sea.png",
-      "sha256": "6f2002dcccc7ca314f16cfcc2ab69fdfc48edb243736851494abf7f8102d43ce",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 97
+      "url": "/assets/generated/pixel-enemy-portraits/undine-sea.png",
+      "sha256": "7a466aff0797845b6d8682fd839fd6fc2d2733ad770fc1db9db26f3fc0c84005",
+      "observation": "온몸이 푸른색의 물로 이루어진 여성 형태의 생물입니다. 머리카락과 하반신이 파도처럼 굽이치며 흩날리고, 빛나는 녹색 눈을 가진 채 공중에 떠 있는 자세를 취하고 있습니다.",
+      "index": 97,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/undine-sea.png",
+      "nativeSheetSha256": "23f40f97ddaf2eadcf465aba02eb6930b43f12d9358005f212d3c558341ff870",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-salamander-flame": {
-      "url": "/assets/generated/starter/monster-salamander-flame.png",
-      "sha256": "90e2e4dd7f20acf7cd4ef62db61a14ee2c7dfcb3fdac2eadb2395638357273a5",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 98
+      "url": "/assets/generated/pixel-enemy-portraits/salamander-flame.png",
+      "sha256": "982c2d5c3b2bb92fd3abd1a5cb3e5066de658fc6ec7c855770ddebf744138aae",
+      "observation": "주황색 비늘 피부에 검은색 얼룩 무늬가 덮여 있는 네 발 달린 파충류 형태의 생물입니다. 머리부터 꼬리까지 등을 따라 뾰족한 가시 돌기가 돋아나 있습니다.",
+      "index": 98,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/salamander-flame.png",
+      "nativeSheetSha256": "1051d109d91d71d594559f0c4f02b783d6c2b078f26acf39bb25f1c8ae78e725",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-golem-stone": {
-      "url": "/assets/generated/starter/monster-golem-stone.png",
-      "sha256": "c43817ec110253203d65c4be9f7d4848f8073286912489db6e3c749ef23277cd",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 99
+      "url": "/assets/generated/pixel-enemy-portraits/golem-stone.png",
+      "sha256": "23adce5db6e069600e24475d49138f0067ad109194068a3c067367617b465cc9",
+      "observation": "온몸이 각진 회갈색 바위로 이루어진 거대한 인간형 형상이며, 돌 틈새 곳곳에 녹색 이끼가 피어 있습니다. 빛나는 노란색 눈을 가졌고, 굵고 거대한 양팔을 약간 벌린 채 서 있습니다.",
+      "index": 99,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/golem-stone.png",
+      "nativeSheetSha256": "a2f74082a1e5398c9e6a207cb8ff58d59cf94a012630da6395d0f6463cfed3ac",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-golem-iron": {
-      "url": "/assets/generated/starter/monster-golem-iron.png",
-      "sha256": "04f759b35acd59d005b31aa912557814e135e5dc69fbc053d40a49fc8654e5a3",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 100
+      "url": "/assets/generated/pixel-enemy-portraits/golem-iron.png",
+      "sha256": "623be357e39f0005f2318835d31e9c612db38e80a3346a3a0ef41329451ac7dd",
+      "observation": "회색 금속 판과 굵은 팔, 주황빛 중심부를 가진 골렘입니다.",
+      "index": 100,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/golem-iron.png",
+      "nativeSheetSha256": "af04b6c44df52b9047de9be48ea2d4f2de0842362c9b214086a96ad7dba1bdfa",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-golem-clay": {
-      "url": "/assets/generated/starter/monster-golem-clay.png",
-      "sha256": "d7bebc65b8975d6d2f059944f47e041f385e934a0e2ebb2e712f17f99e135320",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 101
+      "url": "/assets/generated/pixel-enemy-portraits/golem-clay.png",
+      "sha256": "b8f84206c6e82d572f7dcb03983d6a975c7b12fcbd037ff7b4c265e21101ca2e",
+      "observation": "수많은 각진 바위들이 뭉쳐져 거대한 인간형 형태를 이룬 몬스터로, 돌 틈새마다 녹색 이끼가 자라 있습니다. 연두색으로 빛나는 두 눈을 가졌으며, 굵고 단단한 팔다리를 벌린 채 굳건하게 서 있습니다.",
+      "index": 101,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/golem-clay.png",
+      "nativeSheetSha256": "5184a968284baa9e69ee0b20feb237ef582956f2edecf6e37cb6a31dcfb53e5e",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-golem-crystal": {
-      "url": "/assets/generated/starter/monster-golem-crystal.png",
-      "sha256": "a214a57fa4067fb106f3826e3bf394f08bf69204029ecf82d058affdf7947451",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 102
+      "url": "/assets/generated/pixel-enemy-portraits/golem-crystal.png",
+      "sha256": "ab6de9febf9ed6287c8c18b1a48e488526ee89dc4cd8529b2ee07df0744e8e63",
+      "observation": "푸른색을 띠는 여러 개의 둥글고 각진 바위가 뭉쳐서 인간의 형상을 이루고 있는 몬스터입니다. 두 눈이 보라색으로 빛나고 있고 몸 곳곳에 보라색 얼룩이 묻어 있으며, 두 발로 굳건히 서서 양팔을 살짝 벌린 자세를 취하고 있습니다.",
+      "index": 102,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/golem-crystal.png",
+      "nativeSheetSha256": "c7fa15507f86d175bb6208e65f585d0402f08031896d2e91eaa0665468a2832d",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-armor-living": {
-      "url": "/assets/generated/starter/monster-armor-living.png",
-      "sha256": "379f38d551c53f755cb61184eaa6f3cddf111112c7a4722cb45c613b8e7a9c99",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 103
+      "url": "/assets/generated/pixel-enemy-portraits/armor-living.png",
+      "sha256": "28a3ed6223a195d96546693df8f9f2279cf04feb961d770bbf6140dfd70e1e94",
+      "observation": "보라색 전신 갑옷과 투구를 걸친 존재가 칼을 들고 있습니다.",
+      "index": 103,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/armor-living.png",
+      "nativeSheetSha256": "ae017c2bbb6e55d02eb559a7930fff480309e1411301c217a75a86a237787495",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-sword-flying": {
-      "url": "/assets/generated/starter/monster-sword-flying.png",
-      "sha256": "75877631937027a8f8f4e2a69079990ec3582af06d6c78b38ea4db3413a36aa5",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 104
+      "url": "/assets/generated/pixel-enemy-portraits/sword-flying.png",
+      "sha256": "6f8e91ab5894c3706240b04eb2b71ea8526309542c11db5568bda9987b1fb4d3",
+      "observation": "금빛으로 빛나는 룬 문자가 회색 칼날에 새겨진 양날검 형태의 개체입니다. 손잡이 부근 코등이 양쪽에 노랗게 빛나는 두 개의 눈 같은 장식이 달려 있습니다.",
+      "index": 104,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/sword-flying.png",
+      "nativeSheetSha256": "cd084679abf142fcc59b33214f38673cef610aa7f684f81b138ccd8c4aa24a6d",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-mimic-chest": {
-      "url": "/assets/generated/starter/monster-mimic-chest.png",
-      "sha256": "4922ba8fce231515c60addc9a436a2831cdd8af16b3375c98e27222af55fa021",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 105
+      "url": "/assets/generated/pixel-enemy-portraits/mimic-chest.png",
+      "sha256": "ca95d14edaf5c159216da6e59f480468a47650d2444747988325436a31a08c47",
+      "observation": "뚜껑을 큰 입처럼 벌리고 하얀 이빨을 드러내는 갈색 보물상자입니다.",
+      "index": 105,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/mimic-chest.png",
+      "nativeSheetSha256": "915548bdc0f9851530aaa2dcf47d618139e03cd6a9c6ec5b0a2450e4bbe27d41",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-scarecrow-field": {
-      "url": "/assets/generated/starter/monster-scarecrow-field.png",
-      "sha256": "9f7c058516ca88da3892e9a4c9f9be142781fec2966015bd8cc90062d5c8f840",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 106
+      "url": "/assets/generated/pixel-enemy-portraits/scarecrow-field.png",
+      "sha256": "5a9d1e1a9ac9e70d1a382b59933db38a7a2bbebf90868aaef44524f7a1c3f664",
+      "observation": "낡고 기워진 갈색 튜닉과 뾰족한 모자를 착용한 짚으로 만들어진 허수아비 형태입니다. 단추로 만들어진 눈과 꿰맨 자국이 있는 입을 가지고 있으며, 한 손에 녹슨 낫을 쥔 채 나무 기둥으로 세워져 있습니다.",
+      "index": 106,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/scarecrow-field.png",
+      "nativeSheetSha256": "a522a20b1fc4a7582272d2e460fc9aa3825384a7912446ec8b070c833731c13c",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-puppet-string": {
-      "url": "/assets/generated/starter/monster-puppet-string.png",
-      "sha256": "b094c96368641d06b65b070339886527fd53c2ad089cb9095ea377ae2f81f550",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 107
+      "url": "/assets/generated/pixel-enemy-portraits/puppet-string.png",
+      "sha256": "a2f0f1301ad7aed011bdbc031670c2c1d06155d96a05bc0307a45117d0eccdce",
+      "observation": "실에 매달려 공중에 떠 있는 자세의 나무 관절을 가진 꼭두각시입니다. 하얗게 갈라진 얼굴에 입을 크게 벌린 형태를 하고 있으며, 해진 광대풍 옷을 입고 왼손에 단검을 쥐고 있습니다.",
+      "index": 107,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/puppet-string.png",
+      "nativeSheetSha256": "e790c1eb84d59e90694c80f563163c0d63b98af74c5caf1b45e3f08b48372863",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-totem-cursed": {
-      "url": "/assets/generated/starter/monster-totem-cursed.png",
-      "sha256": "6efbd0ebde0edd379987569e7ac14a7b617d1fb86c2cf5217a064599f4da97df",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 108
+      "url": "/assets/generated/pixel-enemy-portraits/totem-cursed.png",
+      "sha256": "debbe7d94272ca1ed5504cafc7da368f661466ebfb2c2527b22c79b9804ef26d",
+      "observation": "세 개의 무서운 얼굴이 세로로 층층이 조각된 갈색의 나무 기둥 형태를 하고 있습니다. 붉게 빛나는 눈을 가졌으며, 표면 곳곳에 초록색 이끼와 덩굴이 얽혀 있습니다.",
+      "index": 108,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/totem-cursed.png",
+      "nativeSheetSha256": "9ba48c4709590979761fc43fc1a3494fbd8ee995531174fb6413382a2a077968",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-goblin-scout": {
-      "url": "/assets/generated/starter/monster-goblin-scout.png",
-      "sha256": "daa3d1f9e4e440846fa1ce711e5db3a98e98e02961c19d2bee0243d99472ae99",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 109
+      "url": "/assets/generated/pixel-enemy-portraits/goblin-scout.png",
+      "sha256": "da1989a34913e67e25bc35fdabd47e2c93cad164303aa6a5acb5f32c4cf568ec",
+      "observation": "뾰족한 귀와 녹색 피부, 갈색 옷과 작은 무기를 가진 고블린입니다.",
+      "index": 109,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/goblin-scout.png",
+      "nativeSheetSha256": "c6c89b4abb9082a3846c8718ca3637c3f6adf3e133419bd0dc668fdc9aa4ff4a",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-goblin-brute": {
-      "url": "/assets/generated/starter/monster-goblin-brute.png",
-      "sha256": "4eab5389019ef5c7b6cf0e69518f70465cba5b2b735bbaeed96964dce2dc4354",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 110
+      "url": "/assets/generated/pixel-enemy-portraits/goblin-brute.png",
+      "sha256": "23ab1367f7bc8c5a8b9de165af7641c053bbfb241e7446455509a3d3a681a065",
+      "observation": "녹색 피부에 뾰족한 귀와 튀어나온 송곳니를 가진 인간형 생물입니다. 낡은 가죽 방어구를 입고 가시가 박힌 나무 몽둥이를 들고 있습니다.",
+      "index": 110,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/goblin-brute.png",
+      "nativeSheetSha256": "a631928233160f9610713247a4ba77d9e70fa18e741ca31d381cf25c85d1c335",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-orc-warrior": {
-      "url": "/assets/generated/starter/monster-orc-warrior.png",
-      "sha256": "edae127646f35d58d7dea816fe027561eb06de9838e80389ae1c7e7097dbe426",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 111
+      "url": "/assets/generated/pixel-enemy-portraits/orc-warrior.png",
+      "sha256": "9b96c26123bd05a79a8c5a417b9c85ea52b14e38741484b90115a2ffb7969693",
+      "observation": "녹색 피부와 회색 갑옷을 가진 오크가 큰 도끼를 들고 있습니다.",
+      "index": 111,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/orc-warrior.png",
+      "nativeSheetSha256": "d29faf06fba4d843c551cad503a6fd226e8b5690a56c44b51d7b0d1f02d04de5",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-orc-shaman": {
-      "url": "/assets/generated/monsters/corrected/orc-shaman.png",
-      "sha256": "d28397017631b6b7f14e1fc5af42782debded35a05142516cff5b10bc3395ec8",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 112
+      "url": "/assets/generated/pixel-enemy-portraits/orc-shaman.png",
+      "sha256": "fb365a83717bb556968766bf605998d9a6b045eb74cfdfd044b9bd655558f99d",
+      "observation": "녹색 피부와 갈색 의복, 뼈 장식 지팡이를 가진 오크입니다.",
+      "index": 112,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/orc-shaman.png",
+      "nativeSheetSha256": "5155770c7b45ead4f9f282189c1ead9456953041a889a7379e1b3c9fe8460bae",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-kobold-digger": {
-      "url": "/assets/generated/starter/monster-kobold-digger.png",
-      "sha256": "42329401f016dc4d1a59f38ca753dddd44a3fda52264b8873b8c5693e0129025",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 113
+      "url": "/assets/generated/pixel-enemy-portraits/kobold-digger.png",
+      "sha256": "9c06e490a459116a150cb36975740964472b9b1fad69c831db0da10ec4765965",
+      "observation": "녹갈색 비늘 피부와 꼬리를 가진 파충류형 이족 보행 괴물입니다. 낡은 가죽 방어구와 장갑을 착용한 채 양손으로 곡괭이를 쥐고 들어 올리고 있습니다.",
+      "index": 113,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/kobold-digger.png",
+      "nativeSheetSha256": "5701adb15bce09e7aee9586e8f94ec5d979b407e0b77581416bfe6194ed7a46c",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-bandit-mask": {
-      "url": "/assets/generated/starter/monster-bandit-mask.png",
-      "sha256": "e7a01318364d33f70567d844423a159cd1f12180250ab82cca6610f32ce23bb0",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 114
+      "url": "/assets/generated/pixel-enemy-portraits/bandit-mask.png",
+      "sha256": "7adf32a53461d3be6ae450055a80838488c647ebb0ddd58194b53d58f1f1e824",
+      "observation": "푸른 옷과 붉은 복면을 착용하고 작은 칼을 든 인간형 산적입니다.",
+      "index": 114,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/bandit-mask.png",
+      "nativeSheetSha256": "21c240e517909b133540c3fe081dec18aed46e1df27257eeed4b59dd2f8a74fb",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-mage-rogue": {
-      "url": "/assets/generated/starter/monster-mage-rogue.png",
-      "sha256": "ed47ed44de851730bf1a2ab38c93c26778ee54078c1cd56c1971752d4225995d",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 115
+      "url": "/assets/generated/pixel-enemy-portraits/mage-rogue.png",
+      "sha256": "6f30b1769ba4aa939b7a6057879aeb2b0b73e840db782440d2a387c8a771dfde",
+      "observation": "어두운 색의 낡은 로브를 입고 얼굴 상단을 후드로 가린 인간형 생물입니다. 오른손으로는 보라색 보석이 박힌 나무 지팡이를 짚고 있으며, 살짝 들어 올린 왼손 위로는 보라색 빛이 피어오르고 있습니다.",
+      "index": 115,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/mage-rogue.png",
+      "nativeSheetSha256": "f8121ca9dea9c8669ec3d354de07bb42b7bd88eb21f3d25c106e42e0fa7b98db",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-knight-fallen": {
-      "url": "/assets/generated/starter/monster-knight-fallen.png",
-      "sha256": "f95687e9f8f8a44e7eb1d89c7191660c502102f5b80521a043d2337ab5cf4c72",
-      "observation": "output/evidence/monster-catalog/visual/observations-05.json",
-      "index": 116
+      "url": "/assets/generated/pixel-enemy-portraits/knight-fallen.png",
+      "sha256": "c37f0c5745ce93a794ac6393e9a52539b362842489928cab0b1ccb78762c20d9",
+      "observation": "낡고 흠집이 많은 검은색 전신 판금 갑옷과 찢어진 망토를 착용한 개체입니다. 투구에는 깃털 장식이 있으며, 뒤로 넘어져 한 손으로 바닥을 짚고 다른 손을 허공으로 뻗고 있는 자세를 취하고 있습니다.",
+      "index": 116,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/knight-fallen.png",
+      "nativeSheetSha256": "f12d7d91389ff9fe8f275ac5f2efb5300d65e5c9605a8725c36ead5e9e7b616f",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-lizardman-spear": {
-      "url": "/assets/generated/starter/monster-lizardman-spear.png",
-      "sha256": "f567e4f034da95c48c017d72441f8eb68b29e56c02a41d7d766957dd106603f3",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 117
+      "url": "/assets/generated/pixel-enemy-portraits/lizardman-spear.png",
+      "sha256": "dfef15594f93241a338a1e48408b00e760117d28b8f5d4e792562e0736adeafc",
+      "observation": "푸른 비늘과 긴 꼬리를 가진 두발 파충류가 창을 들고 있습니다.",
+      "index": 117,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/lizardman-spear.png",
+      "nativeSheetSha256": "a5890ee4bd0f3977fee492fef23dc38ff2d87f7c46a83e5869e3ae3cb9fafbfb",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-harpy-cliff": {
-      "url": "/assets/generated/starter/monster-harpy-cliff.png",
-      "sha256": "858765c3823c9736d6cc2f7dd3de2881c7b998a1387121c83cf9a71701d9508c",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 118
+      "url": "/assets/generated/pixel-enemy-portraits/harpy-cliff.png",
+      "sha256": "786a5cb8b77c87d84f0ac1a2fbf785a0923db77547a903f170e6139e2139aafe",
+      "observation": "보라색 몸과 날개, 새의 다리를 가진 인간형 하피입니다.",
+      "index": 118,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/harpy-cliff.png",
+      "nativeSheetSha256": "284881b9ee117254f779043271a1d0a832cb0a181818835835a31127e087b737",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-minotaur-maze": {
-      "url": "/assets/generated/starter/monster-minotaur-maze.png",
-      "sha256": "f275e4c11a8606ed7ecf3ebe4fb46d197d1792c45f4294aa5d3afe7b668050ac",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 119
+      "url": "/assets/generated/pixel-enemy-portraits/minotaur-maze.png",
+      "sha256": "e490597c1dde04861f16485cf1df581a5ad3ec7712207aaa9dd67513d805babf",
+      "observation": "큰 뿔과 갈색 몸, 회색 갑옷을 가진 소 머리 괴물이 도끼를 들고 있습니다.",
+      "index": 119,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/minotaur-maze.png",
+      "nativeSheetSha256": "f7fa474a4af1830d18015912bdfa59d997bee24d8e2f7d772beb0bd0be3da688",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-centaur-plains": {
-      "url": "/assets/generated/starter/monster-centaur-plains.png",
-      "sha256": "9603231b0bfc47aaee19b6633c4a777de33c4e837dba24a7afd93e6143777d5e",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 120
+      "url": "/assets/generated/pixel-enemy-portraits/centaur-plains.png",
+      "sha256": "6d6d80626a5dec1e26c937919cf4a5677e689444bdccb4c8a5f0157cd3b9e110",
+      "observation": "상반신은 구릿빛 갑옷을 입은 인간 남성이고 하반신은 갈색 말의 형태를 한 생물입니다. 오른손에 긴 창을 비스듬히 들고 서 있는 자세를 취하고 있습니다.",
+      "index": 120,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/centaur-plains.png",
+      "nativeSheetSha256": "9127919f3f18ccb08e193c096a9ca41260b6765db3abade957831cce272d99b5",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-troll-cave": {
-      "url": "/assets/generated/starter/monster-troll-cave.png",
-      "sha256": "1b8d21c5340ff20d5dcf218faf52479aab2ec40700285586a7fbbdae2958d000",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 121
+      "url": "/assets/generated/pixel-enemy-portraits/troll-cave.png",
+      "sha256": "1054dd778a2d426796bf5ee435088babd5ee779696b6b359655d9db327eb4874",
+      "observation": "회색 피부와 둔중한 몸을 가진 큰 인간형 괴물이 갈색 곤봉을 들고 있습니다.",
+      "index": 121,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/troll-cave.png",
+      "nativeSheetSha256": "c9fec4ca1c6227c8f218743a653fd0aee91021d51b441b1dc9f557b4312292a5",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-ogre-club": {
-      "url": "/assets/generated/starter/monster-ogre-club.png",
-      "sha256": "cea402396bc17ceeeeeb00bb6874340061d1a5976b67828a4304e5a8d5eb722c",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 122
+      "url": "/assets/generated/pixel-enemy-portraits/ogre-club.png",
+      "sha256": "74b4894bf9cdb120cf8c0816229882d63851c4be6501a6c6d2a3accb16fdf352",
+      "observation": "징이 박힌 거대한 나무 곤봉을 쥐고 있는 녹색 피부의 근육질 인간형 생물입니다. 찢어진 가죽 옷과 징이 박힌 방어구를 착용하고 있으며, 입 밖으로 튀어나온 큰 송곳니를 드러낸 채 몸을 앞으로 숙인 자세를 취하고 있습니다.",
+      "index": 122,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/ogre-club.png",
+      "nativeSheetSha256": "17abc5a3cb2008848e84597720abb0acef1199a50c34cebae3f522c3b80f0ead",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-imp-mischief": {
-      "url": "/assets/generated/starter/monster-imp-mischief.png",
-      "sha256": "4f0e8a055e6417014849d85a24c4feaa1a508b82b89d0cc00419bc7bbe095aec",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 123
+      "url": "/assets/generated/pixel-enemy-portraits/imp-mischief.png",
+      "sha256": "0946623184ee05772c4b4379c080a243d7688e393b94e15c2aee737acdb1d102",
+      "observation": "붉은 피부에 뾰족한 두 개의 뿔과 작은 박쥐 날개를 가진 생물입니다. 양 손목에 징이 박힌 팔찌를 차고 낡은 천을 허리에 두른 채, 양손을 앞으로 뻗고 한쪽 다리를 들어올린 자세를 취하고 있습니다.",
+      "index": 123,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/imp-mischief.png",
+      "nativeSheetSha256": "8a088ccd5c9977bc33064662028a2c0b38971d3274e1aa80cb69be1c6be9fe4b",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-fish-piranha": {
-      "url": "/assets/generated/starter/monster-fish-piranha.png",
-      "sha256": "0f5fb73bcf629c7b7897016b67a7f280f483617c142a36c8ebe5c7a94aa6bda8",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 124
+      "url": "/assets/generated/pixel-enemy-portraits/fish-piranha.png",
+      "sha256": "319008c61b8134a02cef256bd02f9f130d331c4973bc2e23edd8b860ca987316",
+      "observation": "등 쪽은 파란색, 얼굴과 지느러미 쪽은 주황색을 띠는 물고기 형태의 생물입니다. 날카로운 이빨이 가득한 큰 입을 벌리고 헤엄치는 자세를 취하고 있습니다.",
+      "index": 124,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/fish-piranha.png",
+      "nativeSheetSha256": "8708915d265f39d9f2679c2e9c8500d0c0826849ec806786c9cf4a41838535ed",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-squid-deep": {
-      "url": "/assets/generated/starter/monster-squid-deep.png",
-      "sha256": "aad7541414437e480c0ab8b1852e5ca5b6a35d4612918955c7d84b4e9ca29e75",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 125
+      "url": "/assets/generated/pixel-enemy-portraits/squid-deep.png",
+      "sha256": "74b25ceae990eecf9be5cd626df2f54193e66dbb3130a4d88ace112cb8445724",
+      "observation": "짙은 보라색 몸체에 밝은 청록색 반점이 덮여 있는 두족류 형태의 생물입니다. 노란색의 큰 눈을 가지고 있으며, 얼굴 정면에 새의 부리를 연상시키는 뾰족한 구조가 돌출되어 있고 아래로 빨판이 달린 여러 개의 촉수가 뻗어 있습니다.",
+      "index": 125,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/squid-deep.png",
+      "nativeSheetSha256": "25e7e7318c0a9175f0da2011ee4de9bf8d63d654a0a45ddecd747e1a880cb3bd",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-shark-land": {
-      "url": "/assets/generated/starter/monster-shark-land.png",
-      "sha256": "a75f0c5db8d33f7c962f5b6af3182093f958ce5ee124865e4e816b6eb3606dbd",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 126
+      "url": "/assets/generated/pixel-enemy-portraits/shark-land.png",
+      "sha256": "1c075bb9b5d3e51e0d8e9a907b2b3596ce0d2ac06b27d5695e4796f3099782d4",
+      "observation": "푸른색 등과 밝은 배를 가진 상어의 몸체에 발톱과 비늘이 있는 네 개의 다리가 달린 생물입니다. 네 발로 땅을 딛고 서서 날카로운 이빨을 드러낸 채 입을 벌리고 있습니다.",
+      "index": 126,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/shark-land.png",
+      "nativeSheetSha256": "a77e402906f1bbaad400e008cbe4c8d13fa627b7afa4d5f631b9a5d089af2618",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-eel-electric": {
-      "url": "/assets/generated/starter/monster-eel-electric.png",
-      "sha256": "f3b400f41763ba6981761cf3075c70af87eb0e09859698f1f60cfb4560a6015e",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 127
+      "url": "/assets/generated/pixel-enemy-portraits/eel-electric.png",
+      "sha256": "0b5d34008842a755dfd38fdb81f983e41a6c51ca0e0e87a50d374071f3c231b3",
+      "observation": "파란색과 노란색의 지그재그 무늬가 교차하는 길쭉한 뱀장어 형태의 생물입니다. 날카로운 이빨을 드러낸 채 몸을 둥글게 구부리고 있으며, 몸 주변에 노란색 번개 모양의 시각 효과가 있습니다.",
+      "index": 127,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/eel-electric.png",
+      "nativeSheetSha256": "1746764d507c2413d7c30f37591bff74daf74bc7d49e1a357e26da5a872029d9",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-griffin-sky": {
-      "url": "/assets/generated/starter/monster-griffin-sky.png",
-      "sha256": "f14d449fc666ca4c91a883f6152cb85ad35fd00caafc80b1120db4b106f37e31",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 128
+      "url": "/assets/generated/pixel-enemy-portraits/griffin-sky.png",
+      "sha256": "6ff7b6f1e184afad5ad29ad9177c15d072e9469126edf844b3c6965e9aee0538",
+      "observation": "독수리의 머리와 날개, 맹수의 몸통과 꼬리를 가진 갈색 생물입니다. 깃털이 달린 커다란 날개를 펼치고 네 발로 서 있는 자세를 취하고 있습니다.",
+      "index": 128,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/griffin-sky.png",
+      "nativeSheetSha256": "1ff0ba623f4d0728012072bc3152aafc117fce8a40f10e1bd0d0d8dae57d86b4",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-wyvern-cliff": {
-      "url": "/assets/generated/starter/monster-wyvern-cliff.png",
-      "sha256": "3c4a8d634412a7dcd5597c54ac7230a91408278b6c0d0f41888aa87d051a7026",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 129
+      "url": "/assets/generated/pixel-enemy-portraits/wyvern-cliff.png",
+      "sha256": "939704c7931872820cda900a9a6904bd953fa0ce92b30990cd3045c20bd48f71",
+      "observation": "황록색 비늘과 뾰족한 뿔, 커다란 날개를 가진 네 발 달린 드래곤 형태의 생물입니다. 공중에 떠서 비행하는 자세로 입과 코에서 옅은 녹색 연기를 내뿜고 있습니다.",
+      "index": 129,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/wyvern-cliff.png",
+      "nativeSheetSha256": "8e94ba0f7af01cd005ccba9c973539d6eca4014ca564a8633944e3329050d942",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-roc-giant": {
-      "url": "/assets/generated/starter/monster-roc-giant.png",
-      "sha256": "b1602fe6ab3bc63d20ce27dc0fed23c5834693a2d38e925f686712852eacefa7",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 130
+      "url": "/assets/generated/pixel-enemy-portraits/roc-giant.png",
+      "sha256": "aa4ed415f318a086f2ee35971a6a366f8260cbd61c2a5fd15919a202f8fc2f25",
+      "observation": "짙은 갈색 깃털과 목 주변의 황금빛 깃털을 가진 독수리 형태의 생물입니다. 날개를 활짝 펴고 날카로운 발톱을 앞으로 내민 채 비행하는 자세를 취하고 있습니다.",
+      "index": 130,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/roc-giant.png",
+      "nativeSheetSha256": "9c229485319f38a796b48b21d0290bd9080d566a6650f9d36f60135b6281dbf6",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-gargoyle-stone": {
-      "url": "/assets/generated/starter/monster-gargoyle-stone.png",
-      "sha256": "be6f26e80c7e4ba149305a280404871ec9b5fa824b22994f7995b9455a18eefa",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 131
+      "url": "/assets/generated/pixel-enemy-portraits/gargoyle-stone.png",
+      "sha256": "324167c3c488cca70979a6280a3af56ef555c44433bf25fdc404a12f74f34614",
+      "observation": "회색 돌 몸과 뾰족한 뿔, 박쥐 같은 날개를 가진 괴물입니다.",
+      "index": 131,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/gargoyle-stone.png",
+      "nativeSheetSha256": "5bcf5db645898001555fae25446154081eaa8854f6b6304ccfe34878f187b643",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-phoenix-rebirth": {
-      "url": "/assets/generated/starter/monster-phoenix-rebirth.png",
-      "sha256": "57cedab653a43b46bda0ab6cb8d653ed271b21cd2c00849668b64e1e9b890cb9",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 132
+      "url": "/assets/generated/pixel-enemy-portraits/phoenix-rebirth.png",
+      "sha256": "5efc78c34588753828e1e091b95276596303140a546e3c82f1fc5ff3c39f34aa",
+      "observation": "전신이 붉은색과 주황색 깃털로 덮여 있으며, 꼬리가 길게 타오르는 불꽃 같은 형태를 한 커다란 새입니다. 양 날개를 넓게 펴고 발톱을 아래로 향한 채 비행하는 자세를 취하고 있습니다.",
+      "index": 132,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/phoenix-rebirth.png",
+      "nativeSheetSha256": "ef821af3445780f503a250c414b5675c31b8d51afd10d45438a0f62a5c46c62e",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-dragon-whelp": {
-      "url": "/assets/generated/starter/monster-dragon-whelp.png",
-      "sha256": "037483d3c09f3165b3f4b6f5345fe7e06cce71617545c39768ec814563e30cbf",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 133
+      "url": "/assets/generated/pixel-enemy-portraits/dragon-whelp.png",
+      "sha256": "08d46a760decd288855a317c07c95ae2a9b0361658bd1b0941047e044b92544d",
+      "observation": "전신이 황갈색 비늘로 덮여 있고 커다란 두 날개와 네 다리를 가진 드래곤 형태의 생물입니다. 입과 코 주변에서 연기를 뿜어내며 날개를 펼치고 공중에 떠 있는 듯한 자세를 취하고 있습니다.",
+      "index": 133,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/dragon-whelp.png",
+      "nativeSheetSha256": "41756fe96719a86de7a18c35418dc679c3c1fc9af3bf7d321d1730b0ff728fb5",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-dragon-red": {
-      "url": "/assets/generated/starter/monster-dragon-red.png",
-      "sha256": "a2d46b5113ac04e2fc57782de685f9d9ecee81aabd2dc2fbb76613f0292c7a03",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 134
+      "url": "/assets/generated/pixel-enemy-portraits/dragon-red.png",
+      "sha256": "c46ab5d60df6b35b9373e5eadc5ae7962c6f76a7c8bb0137fa93f15cec0b6ce4",
+      "observation": "전신이 붉은 비늘로 덮여 있으며 등과 꼬리를 따라 가시가 돋아난 서양식 드래곤 형태의 생물입니다. 입과 콧구멍에서 녹색 섞인 연기를 내뿜으며, 날개를 펼치고 발톱을 세운 채 공중에 떠 있는 자세를 취하고 있습니다.",
+      "index": 134,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/dragon-red.png",
+      "nativeSheetSha256": "a0741bbe5365a5fb8a75260ec9b01780567b8d52cdd453134506ec2e83c9fc4d",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-dragon-blue": {
-      "url": "/assets/generated/starter/monster-dragon-blue.png",
-      "sha256": "8528bde03f60607840ecc0a762c8f214c5b38d4dcb25e3851b41f0161809825c",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 135
+      "url": "/assets/generated/pixel-enemy-portraits/dragon-blue.png",
+      "sha256": "c01711b25002d6ade1dcd6424e89dd1cccb13bbe7e4fb72039c61ee43ac0c489",
+      "observation": "입에서 보라색 연기를 뿜어내고 있는 파란색 비늘로 덮인 드래곤입니다. 뿔과 가시가 돋친 몸통에 큰 날개를 펼치고 허공에 떠 있는 듯한 자세를 취하고 있습니다.",
+      "index": 135,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/dragon-blue.png",
+      "nativeSheetSha256": "8086c82100fd13fbb397ba3c6b3864856101367f5c705397d05ae5144afc965d",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-dragon-bone": {
-      "url": "/assets/generated/starter/monster-dragon-bone.png",
-      "sha256": "1c557a14cf769d1ee2bd150dfa95d5f75c052dae3f05f366f4858d61a6a1fc3f",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 136
+      "url": "/assets/generated/pixel-enemy-portraits/dragon-bone.png",
+      "sha256": "f00340f358b9335ddf885ff19ad4677371b01b5ad02ac2c5ae376b52c180ce21",
+      "observation": "전신이 두꺼운 회백색 비늘로 덮여 있으며, 머리에 뿔이 나 있고 등에 가시 돌기가 이어져 있는 네 발 달린 드래곤입니다. 박쥐 같은 커다란 날개를 펼쳐 공중에 떠 있는 자세를 취하고 있으며, 입에서 하얀 연기를 내뿜고 있습니다.",
+      "index": 136,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/dragon-bone.png",
+      "nativeSheetSha256": "05349e53349f89ea911ad57b2f76d3a1c691512cfd8ad1da72171758efa4dbce",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-hydra-three": {
-      "url": "/assets/generated/starter/monster-hydra-three.png",
-      "sha256": "87c4c8c629efa56b05632be6abbc856586eb1be39d643be416154e084749e328",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 137
+      "url": "/assets/generated/pixel-enemy-portraits/hydra-three.png",
+      "sha256": "dfa5282b18300bcd1ee7bd6d0fec1a2f471b7c2ea074b02ed0a65f2ad47f91e9",
+      "observation": "짙은 녹색 비늘과 황갈색 배를 가진, 머리가 세 개 달린 용 형태의 생물입니다. 뿔이 달린 세 개의 머리 모두 입을 벌리고 날카로운 이빨을 드러내며 포효하는 듯한 자세를 취하고 있습니다.",
+      "index": 137,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/hydra-three.png",
+      "nativeSheetSha256": "bf577144b87e91f993951bdc4575409070569f8528a408a016818cef4487365c",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-behemoth-horn": {
-      "url": "/assets/generated/starter/monster-behemoth-horn.png",
-      "sha256": "5f128550ae2f54274324345af9d8bd859d87c9fb5e1e5a7e803e875adc57db53",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 138
+      "url": "/assets/generated/pixel-enemy-portraits/behemoth-horn.png",
+      "sha256": "ae975c5545261deb3c9d583caaf8180002938551bf97deb9b8b7222e9fc47f28",
+      "observation": "등에 뾰족한 돌기가 돋아나 있고 거대한 뿔과 날카로운 발톱을 지닌 짙은 갈색 털의 네발짐승 몬스터입니다. 입을 크게 벌리고 땅을 짚은 채 위협적인 자세를 취하고 있습니다.",
+      "index": 138,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/behemoth-horn.png",
+      "nativeSheetSha256": "ec536fc49bf8d888fdc73a9d43055e925aa5ecb88d5f47bc3199cc488daffc39",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-demon-lord": {
-      "url": "/assets/generated/starter/monster-demon-lord.png",
-      "sha256": "5c483c5c479167e8c6a44ea4fece8ba9f2a5e323af71e74a0d76604f9c804e4d",
-      "observation": "output/evidence/monster-catalog/visual/observations-06.json",
-      "index": 139
+      "url": "/assets/generated/pixel-enemy-portraits/demon-lord.png",
+      "sha256": "33e08fec3976b5164b87b330cb358be88c398979294150667f8de427a5db5617",
+      "observation": "보라색 갑옷과 큰 뿔, 붉은 날개를 가진 인간형 마왕입니다.",
+      "index": 139,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/demon-lord.png",
+      "nativeSheetSha256": "ee09426315cb6e231204a16e67026b80d3cfb6d5149ae9de794f8c894c821052",
+      "cell": 96,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-angel-fallen": {
-      "url": "/assets/generated/starter/monster-angel-fallen.png",
-      "sha256": "6d9ffd11334d0159c7abb263e7a4f23e8e52c5509c81f991935fb4f320309027",
-      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
-      "index": 140
+      "url": "/assets/generated/pixel-enemy-portraits/angel-fallen.png",
+      "sha256": "bce0e5f6e1b314a931d96696fbd13a153a72c00313060bc637f07744c288ee1d",
+      "observation": "창백한 피부와 은발을 가진 인간형 생물이 거대한 검은 깃털 날개를 펴고 공중에 떠 있습니다. 어두운 색의 전신 갑옷과 찢어진 옷자락을 두르고, 오른손에는 붉은 장식이 있는 검을 들고 있습니다.",
+      "index": 140,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/angel-fallen.png",
+      "nativeSheetSha256": "edc9f1a49a4fee779db2b2f149afd13d5efa90ae58e85c589f15b9a533380680",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-eye-floating": {
-      "url": "/assets/generated/starter/monster-eye-floating.png",
-      "sha256": "df2a4af87d86cbb686dfaf191c2cbe3d74d700d0719ceb63f45c78d22a4c4501",
-      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
-      "index": 141
+      "url": "/assets/generated/pixel-enemy-portraits/eye-floating.png",
+      "sha256": "e2cf451c990a9aa1b1e56364ee050d5df816ab8554ae76c144966562caece8a0",
+      "observation": "보라색 몸과 가느다란 촉수에 큰 눈 하나가 달린 괴물입니다.",
+      "index": 141,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/eye-floating.png",
+      "nativeSheetSha256": "48a4dd9a8e6bc0311fd4af13c60db2968e657942481a2d1f093b5e737dd3edd1",
+      "cell": 48,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "generated-enemy-plant-carnivore": {
-      "url": "/assets/generated/starter/monster-plant-carnivore.png",
-      "sha256": "3b281214c36d051050a6ae7a869715c26420096b6a4db28b7c74419c64cf17e8",
-      "observation": "output/evidence/monster-catalog/visual/observations-07.json",
-      "index": 142
+      "url": "/assets/generated/pixel-enemy-portraits/plant-carnivore.png",
+      "sha256": "81a9d315e96c65b228d0823b88dc8a23d80282c0c253b06592fe15ce12a2ecb5",
+      "observation": "거대한 분홍 입과 날카로운 이빨, 녹색 줄기와 잎을 가진 식물 괴물입니다.",
+      "index": 142,
+      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "nativeSheet": "assets/generated/pixel-enemies/plant-carnivore.png",
+      "nativeSheetSha256": "7ede5af4c582293a71b3d4a89665bbcb4c2dedddcb5834acf2b94ec65b9bb347",
+      "cell": 64,
+      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
     },
     "easyrpg-monster-hornet": {
       "url": "/assets/easyrpg/monster/Hornet.png",
@@ -977,5 +1683,10 @@
       "observation": "output/evidence/monster-catalog/visual/observations-07.json",
       "index": 162
     }
-  }
+  },
+  "nativeArtCommits": [
+    "16ff765fff6dc686a58ddcc280cf45a2b3051bac",
+    "577ecca1bb54aea2d38ce6fec4ea721fe72707c8",
+    "f6f857eeb77750f2fcfe604acd11976d978220cd"
+  ]
 }

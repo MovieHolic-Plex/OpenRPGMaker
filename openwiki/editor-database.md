@@ -353,6 +353,8 @@ the pending UI integration boundary: [placed-place-edits.md](placed-place-edits.
 
 ## Monster resource metadata worksheet (2026-09-07)
 
+2026-10-02: 공용 몬스터 미리보기는 140종 native 시트의 idle_a 한 칸이다. 옛 painted starter/monsters 그림과 이름 추정 폴백은 폐기했다. 현재 색/외형 설명·해시·업로드 우선권 및 스킬 비교 근거: [공용 몬스터 폐기](native-enemy-retirement.md).
+
 Database > 전투 몬스터 > 몬스터 소재 uses the full resource catalog independently
 of gameplay enemies. Draft, Apply/reset, project-switch safety and focused QA
 ownership: [monster-resource-editor.md](monster-resource-editor.md).
