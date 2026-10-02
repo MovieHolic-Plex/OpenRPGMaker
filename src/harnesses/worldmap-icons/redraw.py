@@ -405,7 +405,7 @@ def purge(sets, n=3, letters=('A', 'B', 'C')):
 
 
 # 현대·SF 는 빠졌다: 사용자가 「현대는 옆면이 약간 보여도 괜찮다」고 했다(2026-10-02, SET_RULES 참고).
-PROJECTION_SETS = ('desert-east',)
+PROJECTION_SETS = ()   # 사막·동양풍도 빠졌다: 사용자 「before 로 놓는 것도 나쁘지 않다」(2026-10-02)
 
 
 def _alive(pid):
