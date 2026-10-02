@@ -173,12 +173,11 @@ for _x0, _x1, _yt in BIG:
     for _x in range(_x0, _x1 + 1):
         road |= {(_x, _yt), (_x, _yt + 1)}
 LANE = set()
-LANE |= path((6, 27), (6, 16), (7, 16), (7, 3))                                  # L1 서쪽 고샅(담 곁에서 한 칸 비껴감)
-LANE |= path((29, 28), (29, 24), (31, 24), (31, 3))        # L2 서안 안길
-LANE |= path((46, 27), (46, 16), (47, 16), (47, 0))        # L3 동안 안길(북쪽 고개로 나가는 유일한 출구)
-LANE |= path((59, 18), (59, 27))                                                                  # 농로
-LANE |= path((46, 30), (46, 38))                                              # 주막 샛길
-LANE |= path((29, 31), (29, 37))                                              # 방앗간·대장간 샛길
+LANE |= path((6, 27), (6, 3)) | path((7, 27), (7, 3))                                  # L1 서쪽 고샅(담 곁에서 한 칸 비껴감)
+LANE |= path((30, 28), (30, 3)) | path((31, 28), (31, 3))        # L2 서안 안길
+LANE |= path((46, 27), (46, 0)) | path((47, 27), (47, 0))        # L3 동안 안길(북쪽 고개로 나가는 유일한 출구)
+LANE |= path((46, 30), (46, 38))                                                     # 주막 샛길(폭 1)                                              # 주막 샛길
+LANE |= path((29, 31), (29, 37))                                                     # 방앗간 샛길(폭 1)                                              # 방앗간·대장간 샛길
 LANE |= {(x, y) for x in (16, 17) for y in range(24, 30)}                                         # 양반댁 대문 앞길(폭 2)
 road |= LANE
 road -= water
@@ -188,7 +187,7 @@ for (x, y) in road:
     if x == river_R(y) + 1 and y in (28, 29): m |= W
     setg(x, y, ROAD + m, 'road')
 # 논·밭에 물 대는 도랑(물 타일): 연못→논 사이 골, 강→동쪽 밭
-DITCH = {(x, 39) for x in range(9, 22)} | {(9, 40)} | {(x, 43) for x in range(45, 48)}
+DITCH = {(x, 39) for x in range(9, 22)} | {(9, 40)} | {(x, 43) for x in range(44, 48)}
 for (x, y) in DITCH:
     if (x, y) not in road:
         water.add((x, y))
@@ -200,19 +199,27 @@ for (x, y) in DITCH:
 BUILDINGS = [
     # 양반댁(담 x8..26, y1..23): 안채 · 사랑채 · 곳간 + 남쪽 솟을대문
     ('giwa_house_6', 13, 4), ('giwa_numa', 9, 11), ('thatch_gotgan', 21, 9), ('gate_solseul', 12, 17),
-    # 서쪽 고샅(L1): 크기·지붕을 섞고 x 를 어긋나게
-    ('thatch_hut_2', 2, 2), ('giwa_house_4w', 0, 9), ('thatch_house_5', 1, 15), ('thatch_porch_4', 0, 22),
+    # 서쪽 고샅(L1, 폭 2): 집은 x≤5 에 둔다
+    ('thatch_hut_2', 2, 2), ('giwa_house_4w', 0, 9), ('thatch_house_4', 0, 16), ('thatch_porch_4', 0, 22),
     # 서안 안길(L2) 동쪽 줄
     ('thatch_house_4', 33, 3), ('giwa_house_5b', 32, 10), ('thatch_hut_2', 34, 17),
-    # 동안 안길(L3) 동쪽 — 기와 한 채·초가 셋 + 서당, 바깥줄은 곳간·마구간
-    ('thatch_house_4k', 49, 1), ('giwa_house_4', 51, 8), ('thatch_house_5', 49, 15), ('giwa_seodang', 51, 22),
-    ('thatch_house_3b', 56, 2), ('thatch_gotgan', 56, 15), ('thatch_maguan', 55, 22),
+    # 동안 안길(L3) 동쪽 — 같은 줄 두 채는 꼬리길을 공유하되 지붕 종류가 다르다
+    ('thatch_house_4k', 49, 1), ('giwa_house_4', 50, 8), ('thatch_house_5', 49, 15), ('giwa_seodang', 50, 22),
+    ('thatch_house_3b', 56, 1), ('thatch_gotgan', 56, 15), ('thatch_house_3', 57, 22),
     # 큰길 남쪽: 대장간 · 방앗간(물레방아) · 주막 · 정자
     ('thatch_smithy', 23, 31), ('thatch_bangatgan', 33, 31), ('thatch_jumak', 48, 31), ('pavilion_5g', 0, 31),
 ]
 DOOR = {'thatch_jumak': 3, 'thatch_smithy': 3}
 bsize = {n: (objects[n].w // T, objects[n].h // T) for n in {b[0] for b in BUILDINGS}}
 _lane_cells = sorted(LANE | road)
+for _i, (_n, _x, _y) in enumerate(BUILDINGS):
+    _w, _h = bsize[_n]
+    _cells = {(_x + i, _y + j) for i in range(_w) for j in range(_h)}
+    if _cells & LANE: print('길 위 건물:', _n, _x, _y, sorted(_cells & LANE)[:3])
+    for (_m, _x2, _y2) in BUILDINGS[_i + 1:]:
+        _w2, _h2 = bsize[_m]
+        if _x < _x2 + _w2 and _x2 < _x + _w and _y < _y2 + _h2 and _y2 < _y + _h and not (_n.startswith('gate') or _m.startswith('gate')):
+            print('건물 겹침:', _n, _x, _y, _m, _x2, _y2)
 
 
 def tail_target(n, x, y):
@@ -256,7 +263,7 @@ for (x0, y0, x1, y1) in ((10, 34, 15, 39), (16, 34, 21, 39), (10, 40, 15, 45), (
     plot = {(x, y) for y in range(y0, y1) for x in range(x0, x1)}
     for (x, y) in plot:
         setg(x, y, PADDY + mask_of(plot, x, y, wrap=False), 'paddy')
-for rect, sd in (((48, 41, 55, 51), 11), ((56, 42, 64, 50), 23), ((38, 4, 41, 12), 15), ((38, 14, 41, 19), 16), ((60, 3, 64, 14), 20), ((61, 17, 64, 27), 22), ((30, 41, 38, 48), 13), ((57, 9, 60, 14), 21)):
+for rect, sd in (((48, 41, 55, 51), 11), ((56, 42, 64, 50), 23), ((38, 4, 41, 12), 15), ((38, 14, 41, 19), 16), ((62, 3, 64, 14), 20), ((62, 17, 64, 27), 22), ((27, 3, 30, 22), 24), ((30, 41, 38, 48), 13), ((57, 9, 60, 14), 21)):
     x0, y0, x1, y1 = rect
     for y in range(y0, min(y1, MH)):
         for x in range(x0, min(x1, MW)):
@@ -314,7 +321,7 @@ def put_obj(name, tx, ty, force=False):
         if any(_near(fx, fy, {'road', 'yard', 'paving'}, NEAR_D) or _near(fx, fy, {'paddy', 'field', 'water'}, 1) for fx, fy in foot):
             SKIPPED.append((name, tx, ty)); return False
     bad = {'water', 'paddy', 'road'}
-    if name.startswith(CANOPY_PFX): bad |= {'yard', 'paving'}
+    if name.startswith(CANOPY_PFX): bad |= {'yard', 'paving', 'field'}
     if name.startswith(('bridge', 'reeds', 'rocks')): bad = set()
     elif name.startswith('willow'): bad = {'paddy', 'road', 'water'}
     if not force and any(0 <= x < MW and 0 <= y < MH and ground_kind[y][x] in bad for x, y in foot):
@@ -326,6 +333,11 @@ def put_obj(name, tx, ty, force=False):
                 SKIPPED.append((name, tx, ty)); return False
     if isb: BODY.append((tx, ty + 2, w, h - 2)); BODYF.append((tx, ty, w, h))
     placed.append((name, tx, ty, w, h))
+    if name.startswith(('zelkova', 'pine', 'persimmon', 'willow', 'small')):      # 왼쪽 위 빛 → 나무 밑동 오른쪽 아래로 땅 그림자
+        import props5 as _p5
+        sh = Cv(w * T, h * T)
+        _p5.shadow_ell(sh, w * T * 0.58, h * T - 4, w * T * 0.36, 3.4, 58)
+        items.append((ty + h - 0.5, 'shadow', tx, ty, sh))
     items.append((ty + h, name, tx, ty, cv))
     return True
 
@@ -361,7 +373,7 @@ for nm, x, y in (('persimmon_a', 22, 17), ('pine_c', 10, 6), ('bush_b', 23, 2), 
     put_obj(nm, x, y, True)
 
 # 집 곁 살림 + 마당 앞 낮은 담(문 앞은 사립문 틈) — 집마다 담 종류·살림이 다르다
-_PROPS = ['firewood', 'gochu_mat', 'jars', 'haystack', 'jangdokdae']
+_PROPS = ['jars', 'haystack', 'jangdokdae']
 for i, (n, x, y) in enumerate(BUILDINGS):
     if n.startswith(('pavilion', 'gate')) or (8 <= x <= 26 and y <= 22): continue
     w, h = bsize[n]
@@ -372,11 +384,15 @@ for i, (n, x, y) in enumerate(BUILDINGS):
     dx, r, xl = tail_target(n, x, y)
     gap = set(range(min(dx, xl if xl is not None else dx) - 1, max(dx, xl if xl is not None else dx) + 2))
     wall = 'dolmadam' if n.startswith('giwa') else ('toldam' if i % 2 == 0 else 'jukbyeok')
-    for xx in range(x, x + w):
-        if xx not in gap and 0 <= xx < MW:
-            put_obj(wall, xx, r)
-    if i % 2 == 0 and xl is not None and xl != dx:
-        put_obj('sarip', dx - 1, r, True)
+    xs = [xx for xx in range(x, x + w) if xx not in gap and 0 <= xx < MW]
+    runs, cur = [], []
+    for xx in xs:
+        if cur and xx != cur[-1] + 1: runs.append(cur); cur = []
+        cur.append(xx)
+    if cur: runs.append(cur)
+    for run in runs:
+        if len(run) >= 3:                                   # 한두 칸 토막은 허공에 뜬 도장처럼 보이므로 두지 않는다
+            for xx in run: put_obj(wall, xx, r)
 
 # 마을 어귀: 서쪽은 큰길 양옆 장승 · 서낭당 · 솟대 / 동쪽은 큰길 양옆 장승 + 당산나무 + 금줄 제단
 put_obj('jangseung_m', 7, 26, True); put_obj('jangseung_f', 7, 30, True); put_obj('sotdae', 10, 26, True)
@@ -395,12 +411,12 @@ put_obj('zelkova_c', 37, 20, True); put_obj('stepping_stones', 39, 23, True)
 put_obj('waterwheel', 40, 30, True)
 for nm, x, y in (('yeonja_mill', 36, 38), ('haystack', 32, 38), ('millstone', 34, 38), ('zelkova_a', 33, 42),
                  ('pyeongsang', 49, 38), ('jangdokdae', 50, 36), ('laundry', 55, 38),
-                 ('firewood', 24, 36), ('gochu_mat', 26, 37)):
+                 ('gochu_mat', 26, 37)):
     put_obj(nm, x, y)
-for nm, x, y in (('scarecrow', 56, 44), ('scarecrow', 58, 11)):
+for nm, x, y in (('scarecrow', 56, 44), ('scarecrow', 58, 11), ('gochu_mat', 60, 8)):
     put_obj(nm, x, y)
 # 연못 선착장: 샛길 끝에서 물가로, 배 한 척
-put_obj('dock', 8, 39, True); put_obj('boat', 5, 44, True)
+put_obj('dock', 8, 39, True); put_obj('dock', 8, 41, True); put_obj('boat', 5, 44, True)
 # 연못 둘레: 남쪽 기슭에 갈대 · 바위
 _shore = sorted([(x, y) for (x, y) in pond if (x, y + 1) not in water and 3 <= x <= 8])
 for k, (x, y) in enumerate(_shore[::2][:4]):
@@ -563,7 +579,7 @@ diff = int((direct.a != re.a).any(axis=2).sum())
 
 os.makedirs(OUT, exist_ok=True)
 import people as _pp
-_pp.overlay(direct.img(), _pp.VILLAGE).save(os.path.join(OUT, 'joseon-village20-map-people.png'))
+_pp.overlay(direct.img(), [p for p in _pp.VILLAGE if ground_kind[p[1]][p[0]] in ('road', 'yard') and not any(bx <= p[0] < bx + bw and by <= p[1] < by + bh for (bx, by, bw, bh) in BODYF)]).save(os.path.join(OUT, 'joseon-village20-map-people.png'))
 SHEET.img().save(os.path.join(OUT, 'joseon-village20-chipset.png'))
 direct.img().save(os.path.join(OUT, 'joseon-village20-map.png'))
 re.img().save(os.path.join(OUT, 'joseon-village20-map-from-sheet.png'))

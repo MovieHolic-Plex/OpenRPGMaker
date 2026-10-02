@@ -268,6 +268,9 @@ def wall_block(style, half, kind, base=True, dan=False):
             _lattice(c, 4, 8, 15 if True else 14, T, 3, (4,))
         if kind == 'd':
             _lattice(c, 3, 7, 15, T, 3, (4, 9))
+            for xx in (3, 9): c.vl(xx, 6, T, W[5] if xx == 3 else W[3])       # 분합문: 굵은 문틀 + 가운데 맞댄 선 + 문고리
+            c.hl(3, 15, 6, W[5]); c.hl(3, 15, 7, W[2])
+            c.put(8, 12, RGB['straw'][5]); c.put(10, 12, RGB['straw'][5])
         if kind == 'g':
             _plank_door(c, 0, 7)
         _column(c, 0, 2, T, colramp)
@@ -295,8 +298,13 @@ def wall_block(style, half, kind, base=True, dan=False):
             _lattice(c, 4, 0, 15, 6, 3, (4,))
             for x in range(3, T): c.put(x, 6, W[6]); c.put(x, 7, W[5]); c.put(x, 8, W[4]); c.put(x, 9, W[3]); c.put(x, 10, W[3]); c.put(x, 11, W[2])
         if kind == 'd':
-            _lattice(c, 3, 0, 15, 9, 3, (4,))
-            for x in range(3, T): c.put(x, 10, W[5]); c.put(x, 11, W[3])
+            _lattice(c, 3, 0, 15, 5, 3, (2,))
+            for y in range(5, 12):                                                           # 문 아랫 판자(창은 이 칸이 가는 머름 하나뿐이라 구분된다)
+                for x in range(3, 15): c.put(x, y, W[4] if (x + y) % 5 else W[3])
+            for x in range(3, 15): c.put(x, 5, W[6]); c.put(x, 11, W[2])
+            for yy in (5, 11): c.hl(3, 15, yy, W[5] if yy == 5 else W[2])
+            for xx in (3, 9, 14): c.vl(xx, 5, 12, W[2])
+            c.vl(9, 0, 5, W[3])
         if kind == 'g':
             _plank_door(c, 0, 0, lower=True)
         # 기단 (석축)

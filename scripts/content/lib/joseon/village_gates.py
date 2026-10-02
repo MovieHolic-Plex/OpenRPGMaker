@@ -22,13 +22,12 @@ def open_passage(cv, x0, x1, y_top, y_bot, y_end, leaves=True):
     for x in range(x0, x1):                                           # 인방 밑 그림자 줄
         cv.put(x, y_top, W[2]); cv.put(x, y_top + 1, W[1])
     w = x1 - x0
-    fx0, fx1 = x0 + 5, x1 - 5                                         # 멀리 보이는 밝은 안마당(창)
+    fx0, fx1 = x0 + 5, x1 - 5                                         # 멀리 보이는 안마당(마당 흙 톤 그대로, 위만 그늘)
     fy0, fy1 = y_top + 3, y_bot - 5
     for y in range(fy0, fy1):
         for x in range(fx0, fx1):
-            t = (y - fy0) / max(1, fy1 - fy0 - 1)
-            col = E[5] if t < 0.35 else (E[4] if t < 0.75 else E[3])
-            if rnd(x, y, 7) > 0.9: col = E[6] if t < 0.5 else E[4]
+            col = E[5] if rnd(x, y, 7) > 0.15 else E[4]
+            if y < fy0 + 3: col = E[3]
             cv.put(x, y, col)
     for x in range(fx0 - 1, fx1 + 1):                                 # 창틀 그림자
         cv.put(x, fy0 - 1, W[2])
@@ -118,7 +117,7 @@ def thatch_house_6():
 
 def giwa_house_4w():
     """기와 4칸(밝은 갈색 지붕): 문 둘에 창 둘."""
-    return K.assemble(K.house('jo', 4, 'ldwr', 'ldfr', steps=(1,), hip=True), _lib(), post=lambda cv: K.roof_baram(cv, 3, 'brown', wing=20))
+    return K.assemble(K.house('jo', 4, 'ldwr', 'ldfr', steps=(1,), hip=True), _lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=20))
 
 
 def giwa_numa():
