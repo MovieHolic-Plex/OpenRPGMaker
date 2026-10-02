@@ -8,6 +8,7 @@
   harness.py pick <판> <글자> [--note]                 사용자가 고른 후보를 기록(+ harness-data/…/picked/ 에 pxg·png 복사 + 다음 판의 anchors)
   harness.py reject <판> <글자> --why "…"              사용자가 버린 후보와 이유 기록(다음 판 「하지 말 것」)
   harness.py review <판>                               이미 그린 판을 (다시) 검수에
+  harness.py bake [--dry] [--selftest] [--budget N]    합격 에셋 → 에디터용 타일셋(modern_city) 굽기: 시트 PNG + 정의 JSON + 키트 + 핀 + 리포트 (bake_tileset.py)
 
 취향 판단은 사용자만 한다. 이 스크립트는 깨짐을 거르고, 기준차 옆에 놓은 독립 검수를 돌릴 뿐 후보를 고르지 않는다.
 """
@@ -336,9 +337,16 @@ def cmd_reject(a):
     L['rejects'].append(dict(round=a.round, letter=a.letter, vehicle=st['vehicle'], view=st['view'], why=a.why, at=now())); save_ledger(L); print('기록')
 
 
+def cmd_bake(a):
+    cmd = [sys.executable, os.path.join(HERE, 'bake_tileset.py')] + (['--dry'] if a.dry else []) + (['--selftest'] if a.selftest else []) + (['--budget', str(a.budget)] if a.budget else []) + (['--out-root', a.out_root] if a.out_root else [])
+    sys.exit(subprocess.call(cmd, cwd=ROOT))
+
+
 def main():
     ap = argparse.ArgumentParser(); sub = ap.add_subparsers(dest='cmd', required=True)
     sub.add_parser('palette')
+    bk = sub.add_parser('bake', help='합격 에셋 → 에디터용 타일셋(modern_city) 굽기'); bk.add_argument('--dry', action='store_true', help='파일을 쓰지 않고 계산만'); bk.add_argument('--selftest', action='store_true', help='다시 굽기 동일·에셋 추가 시 번호 불변 시험(임시 폴더)')
+    bk.add_argument('--budget', type=int, default=0, help='칸 상한(기본 10000)'); bk.add_argument('--out-root', default='', help='산출물 루트(기본 저장소 루트)')
     d = sub.add_parser('draw'); d.add_argument('vehicle'); d.add_argument('view'); d.add_argument('--n', type=int, default=5); d.add_argument('--note', default=''); d.add_argument('--fg', action='store_true'); d.add_argument('--backend', choices=['claude', 'codex'], default=None)
     r = sub.add_parser('_run'); r.add_argument('round')
     s = sub.add_parser('status'); s.add_argument('round', nargs='?')
@@ -347,7 +355,7 @@ def main():
     j = sub.add_parser('reject'); j.add_argument('round'); j.add_argument('letter'); j.add_argument('--why', required=True)
     a = ap.parse_args()
     {'palette': lambda: PAL.write_pal(os.path.join(DATA, 'palette.pal')), 'draw': lambda: cmd_draw(a), '_run': lambda: run_round(a.round), 'status': lambda: cmd_status(a),
-     'sheet': lambda: cmd_sheet(a), 'review': lambda: cmd_review(a), 'pick': lambda: cmd_pick(a), 'reject': lambda: cmd_reject(a)}[a.cmd]()
+     'sheet': lambda: cmd_sheet(a), 'review': lambda: cmd_review(a), 'pick': lambda: cmd_pick(a), 'reject': lambda: cmd_reject(a), 'bake': lambda: cmd_bake(a)}[a.cmd]()
 
 
 if __name__ == '__main__': main()
