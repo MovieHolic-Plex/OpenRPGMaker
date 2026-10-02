@@ -3716,13 +3716,13 @@ function rejectHandMovedActorPictures(rawBeats: unknown): void {
       const id = String(b.pictureId ?? b.id ?? "");
       if (typeof b.resourceId === "string") resourceOf.set(id, b.resourceId);
       const resource = resourceOf.get(id);
-      if (b.action === "move" && resource && HAND_MOVED_ACTOR_PICTURE.test(resource)) offenders.add(resource);
+      if ((b.action === "move" || b.action === "show") && resource && HAND_MOVED_ACTOR_PICTURE.test(resource)) offenders.add(resource);
     }
   };
   visit(rawBeats);
   if (offenders.size > 0) {
     throw new ToolError(
-      `그림 ${[...offenders].join(", ")} 를 picture move 로 손수 움직이는 컷신은 만들지 않습니다 — 좌표를 어림하면 닿지 않거나 어긋납니다. `
+      `그림 ${[...offenders].join(", ")} 를 picture show·move 로 손수 세우고 움직이는 컷신은 만들지 않습니다 — 좌표·크기를 어림하면 화면을 덮거나 닿지 않고, 지우는 것도 빠뜨립니다. `
       + "script_cutscene_staged 로 다시 만드세요: actors 에 이 그림을 배우(resourceId)로 넣고, steps 에 enter/move/exit/fling/expect touching 으로 관계를 선언하면 도구가 좌표를 계산합니다(find_tools 로 script_cutscene_staged 를 찾으세요).",
       { code: "use-staged-cutscene" },
     );

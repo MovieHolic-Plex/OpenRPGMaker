@@ -175,6 +175,15 @@ const scriptCutsceneStaged: ToolDefinition = {
     const viewport = draft.system.playResolution ?? DEFAULT_PLAY_RESOLUTION;
     const rawActors = Array.isArray(args.actors) ? (args.actors as Raw[]) : [];
     if (rawActors.length === 0) throw new ToolError("actors 가 비어 있습니다.", { code: "invalid-args" });
+    for (const raw of rawActors) {
+      const heroCharacter = raw.hero === true ? characterOf(raw) : undefined;
+      if (heroCharacter && !/actor[1-4]$/iu.test(heroCharacter.resourceId)) {
+        throw new ToolError(
+          `주인공(hero:true) 은 캐릭터셋 Actor1~4 에서 고릅니다('${heroCharacter.resourceId}' 아님) — 예: character:{resourceId:'tex_easyrpg_charset_actor1', characterIndex:0}(인물 0~7번). 고른 인물로 맵 위 주인공 그래픽도 맞춰 줍니다.`,
+          { code: "invalid-args" },
+        );
+      }
+    }
     const actors: StageActor[] = rawActors.map((raw, index) => {
       const name = typeof raw.name === "string" ? raw.name.trim() : "";
       if (!name) throw new ToolError(`actors[${index}].name 이 필요합니다.`, { code: "invalid-args" });
