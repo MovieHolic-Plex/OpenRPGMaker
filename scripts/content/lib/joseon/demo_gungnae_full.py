@@ -431,7 +431,7 @@ def bridge_v(x, yh, wd=4, tag=''):
     L = yb - ya + 1
     if L > 3 * (wat + 2):
         print('다리(v) 물이 운하 방향이라 건너지 않음', x, yh, L, tag); return 0
-    n = max(1, int(round((L + 2) / float(wat + 2))))
+    n = 1 if L <= 2 * (wat + 2) else max(1, int(round((L + 2) / float(wat + 2))))
     start = ya + (L - ((wat + 2) * n - 2)) // 2
     lo, hi = min(ya, start), max(yb, start + (wat + 2) * n - 2)
     for xx in range(x - 1, x + wd + 1):          # 물 구간을 다리 칸 수에 맞춘다
@@ -463,7 +463,7 @@ def bridge_h(xh, y, wd=4, tag=''):
     L = xb - xa + 1
     if L > 21:
         print('다리(h) 물이 운하 방향이라 건너지 않음', xh, y, L, tag); return 0
-    n = max(1, int(round((L + 2) / 7.0)))
+    n = 1 if L <= 14 else max(1, int(round((L + 2) / 7.0)))
     start = xa + (L - (7 * n - 2)) // 2
     lo, hi = min(xa, start), max(xb, start + 7 * n - 2)
     for yy in range(y, y + wd + 2):
@@ -685,6 +685,12 @@ for _j in range(4):
         if all(KG[_yy][_xx] is None for _yy in range(_y0, _y0 + 3) for _xx in range(_x0, _x0 + 4)):
             paint(_k, _x0, _y0, _x0 + 3, _y0 + 2)
             USED.update({(_xx, _yy) for _yy in range(_y0 - 1, _y0 + 4) for _xx in range(_x0 - 1, _x0 + 5)})
+# 밭 사이 이랑길: 판 사이·가장자리 풀을 마른 흙길로 덮는다(맨 풀밭 창 방지 — 밭머리 길이 되어 걸을 수 있다).
+for (_xa, _xb) in ((87, 97), (102, 112)):
+    for _yy in range(OY(130) - 1, OY(130) + 16):
+        for _xx in range(_xa, _xb + 1):
+            if inb(_xx, _yy) and KG[_yy][_xx] is None and (_xx, _yy) not in BODY:
+                KG[_yy][_xx] = 'yard'
 NOTREE.append((86, OY(128), 26, 20))
 
 
@@ -875,4 +881,413 @@ for (nm, x, yb) in (('thatch_house_4', 31, 30), ('giwa_house_4', 70, 30), ('that
 if STAGE <= 4:
     _stage_png('s%d' % STAGE)
     print('stage', STAGE, 'placed', len(placed), 'doors', len(DOORS))
+    sys.exit(0)
+
+# ================================================================ 5단계: 길 이음 + 숲띠 + 나무 채움 + 소품
+WALKK = ('road', 'yard', 'slab', 'paving', 'bridge', 'diamond')
+
+
+def walk_ok(x, y):
+    if not inb(x, y):
+        return False
+    if KG[y][x] in ('water', 'wall'):
+        return False
+    if (x, y) in BODY:
+        return False
+    return True
+
+
+def network():
+    """바깥 고리 길 (0,0) 에서 길·마당·석판·다리 칸으로 이어지는 연결 성분."""
+    seen = {(0, 0)}
+    dq = deque([(0, 0)])
+    while dq:
+        x, y = dq.popleft()
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + dx, y + dy)
+            if n in seen or not inb(*n):
+                continue
+            if KG[n[1]][n[0]] in WALKK and (n not in BODY or KG[n[1]][n[0]] == 'bridge'):
+                seen.add(n); dq.append(n)
+    return seen
+
+
+def carve_lanes(targets):
+    """네트워크에 안 닿는 문 앞 칸·다리 끝마다 가장 가까운 네트워크 칸까지 1칸 폭 샛길(흙)을 낸다."""
+    net = network()
+    carved = 0
+    for d in targets:
+        c = (d['x'], d['y'])
+        if not inb(*c) or c in net:
+            continue
+        if KG[c[1]][c[0]] in ('water', 'wall') or c in BODY:
+            continue
+        prev = {c: None}
+        dq = deque([c])
+        goal = None
+        while dq and goal is None:
+            x, y = dq.popleft()
+            for dx, dy in ((0, 1), (1, 0), (-1, 0), (0, -1)):
+                n = (x + dx, y + dy)
+                if n in prev or not walk_ok(*n):
+                    continue
+                prev[n] = (x, y)
+                if n in net:
+                    goal = n; break
+                dq.append(n)
+        if goal is None:
+            continue
+        cur = prev[goal]
+        while cur is not None:
+            if KG[cur[1]][cur[0]] is None:
+                KG[cur[1]][cur[0]] = 'road'
+            cur = prev[cur]
+        carved += 1
+        net = network()
+    return carved
+
+
+def prune_deadends():
+    """막다른 길 지우기: 이웃 걷는 칸이 하나뿐인 흙길 칸(문 앞·다리 끝 제외)을 되풀이해 지운다."""
+    protect = {(d['x'], d['y']) for d in DOORS} | {(d['x'], d['y']) for d in ENDS}
+    n_rm = 0
+    for _ in range(40):
+        rm = []
+        for y in range(2, MH - 2):
+            for x in range(6, MW - 6):
+                if KG[y][x] != 'road' or (x, y) in protect:
+                    continue
+                nb = sum(1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if inb(x + dx, y + dy) and KG[y + dy][x + dx] in WALKK)
+                if nb <= 1:
+                    rm.append((x, y))
+        if not rm:
+            break
+        for (x, y) in rm:
+            KG[y][x] = None
+        n_rm += len(rm)
+    return n_rm
+
+
+_TG = ENDS + [{'x': d['x'], 'y': d['y']} for d in ENDS]
+carve_lanes(DOORS + ENDS); carve_lanes(DOORS + ENDS)
+print('막다른 길 지움', prune_deadends())
+carve_lanes(DOORS + ENDS)
+
+# ---------------------------------------------------------------- 나무 엔진(칸 배열 + 구역 색인: 큰 맵에서도 빠르게)
+ZEL = ['zelkova_' + c for c in 'abcdefghij']
+PIN = ['pine_' + c for c in 'abcdef']
+BIG = [('zelkova_' + c, 4, 5) for c in 'abcdefghij'] + [('pine_' + c, 4, 5) for c in 'abcdef']
+MID = [('persimmon_' + c, 3, 4) for c in 'abcdef'] + [('small_z_a', 2, 3), ('small_z_b', 2, 3), ('small_p', 2, 3)]
+BUSH = [('bush_a', 2, 2), ('bush_b', 2, 2), ('bush_c', 2, 2), ('bush_l_a', 3, 2), ('bush_l_b', 3, 2), ('bush_s_a', 2, 1), ('bush_s_b', 2, 1), ('bush_d', 2, 2), ('bush_e', 2, 2), ('bush_f', 2, 2), ('bush_l_c', 3, 2), ('bush_l_d', 3, 2), ('bush_s_c', 2, 1), ('bush_s_d', 2, 1)]
+_DIRT = ('road', 'yard', 'slab', 'paving', 'diamond', 'bridge', 'wall', 'water', 'paddy', 'field')
+TREEPOS = []                 # (이름, x, 발 행, w, h)
+_BK = {}                     # 구역(8칸) → TREEPOS 번호들
+OCC = np.zeros((MH, MW), bool)
+FREE = np.zeros((MH, MW), bool)
+DIRT = np.zeros((MH, MW), bool)
+ROADK = np.zeros((MH, MW), bool)
+NT = np.zeros((MH, MW), bool)
+
+
+def _tree_kind(n):
+    return n.split('_')[0] in ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'rocks', 'reeds', 'jars', 'well', 'lantern', 'scarecrow', 'stepping', 'flower', 'sotdae', 'bench', 'haystack', 'firewood', 'millstone', 'stele', 'jangseung', 'dolmadam', 'stone', 'market', 'pyeongsang', 'jangdokdae', 'boat', 'laundry', 'mat', 'gochu', 'palace')
+
+
+def build_masks():
+    global NRX, NRY, NRW, NRH, BRX, BRY, BRW, BRH
+    for y in range(MH):
+        for x in range(MW):
+            k = KG[y][x]
+            FREE[y, x] = k is None and (x, y) not in BODY and (x, y) not in KEEP
+            DIRT[y, x] = k in _DIRT
+            ROADK[y, x] = k in ('road', 'yard', 'slab', 'diamond')
+    NT[:] = False
+    for (nx, ny, nw, nh) in NOTREE:
+        NT[max(0, ny):max(0, ny + nh), max(0, nx):max(0, nx + nw)] = True
+    nr = [(x, y, w, h) for (nm, x, y, w, h) in placed if not _tree_kind(nm)]
+    br = [(x, y, w, h) for (nm, x, y, w, h) in placed if nm.startswith(_SHADOWED) and h >= 3 and w >= 2]
+    NRX, NRY, NRW, NRH = [np.array([r[i] for r in nr]) for i in range(4)]
+    BRX, BRY, BRW, BRH = [np.array([r[i] for r in br]) for i in range(4)]
+
+
+def _bk(x, y):
+    return (x // 8, y // 8)
+
+
+def _near_trees(x, y):
+    bx, by = _bk(x, y)
+    for i in (-1, 0, 1):
+        for j in (-1, 0, 1):
+            for t in _BK.get((bx + i, by + j), ()):
+                yield TREEPOS[t]
+
+
+def crown_overlap(x, yb, w, h):
+    y = yb + 1 - h
+    n = 0
+    for (_n, tx, tyb, tw, th) in _near_trees(x + w // 2, yb):
+        ox = min(x + w, tx + tw) - max(x, tx)
+        oy = min(yb + 1, tyb + 1) - max(y, tyb + 1 - th)
+        if ox > 0 and oy > 0:
+            n += ox * oy
+    return n
+
+
+def tree_ok(name, w, h, x, yb, dist, ov_big=8, ov_small=4, roadside=True, rng=6):
+    y = yb + 1 - h
+    if x < 0 or x + w > MW or y < 0 or yb >= MH:
+        return False
+    d0 = max(0, dist)
+    if OCC[max(0, yb - d0):yb + d0 + 1, max(0, x - d0):x + w + d0].any():
+        return False
+    if not FREE[yb, x:x + w].all() or NT[yb, x:x + w].any():
+        return False
+    if DIRT[max(0, y):yb, x:x + w].any():
+        return False
+    if roadside and h >= 4 and ((x - 1 >= 0 and ROADK[yb, x - 1]) or (x + w < MW and ROADK[yb, x + w])):
+        return False
+    if len(NRX):                                           # 수관이 건물·담 위 2행·좌우를 가리는 자리 금지
+        m = (x < NRX + NRW) & (NRX < x + w) & (y < NRY + NRH) & (NRY < yb + 1) & (yb >= NRY + 2)
+        if m.any():
+            return False
+    if len(BRX):                                           # 건물류: 지붕 뒤 줄기·지붕에 박힌 나무 금지(위 1행·좌우 1칸 여유)
+        m_ = 1 if h >= 3 else 0
+        m = (x < BRX + BRW + m_) & (BRX - m_ < x + w) & (BRY - 1 <= yb) & (yb < BRY + BRH)
+        if m.any():
+            return False
+    if crown_overlap(x, yb, w, h) > (ov_big if h >= 4 else ov_small):
+        return False
+    r = 3 if name.startswith('bush') else rng
+    for (n, tx, ty, _, _) in _near_trees(x + w // 2, yb):
+        if n == name and abs(x - tx) <= r and abs(yb - ty) <= r:
+            return False
+    return True
+
+
+def Tf(name, x, yb):
+    cv = objects[name]
+    w, h = cv.w // T, cv.h // T
+    placed.append((name, x, yb + 1 - h, w, h))
+    SH(x, yb + 1 - h, w, h) if name.split('_')[0] in ('zelkova', 'pine', 'persimmon', 'willow', 'small') else None
+    items.append((yb + 1, h, x, name, cv))
+    TREEPOS.append((name, x, yb, w, h))
+    _BK.setdefault(_bk(x + w // 2, yb), []).append(len(TREEPOS) - 1)
+    OCC[max(0, yb - 1):yb + 1, x:x + w] = True
+
+
+def region_fill(rects, weights=(0.6, 0.32, 0.08), dist=0, seed=1, passes=1, ov=(5, 2), roadside=False, pools=None, rng_tab=6):
+    """rects = [(x0, x1, yb0, yb1)] (발 행·열 범위). 후보 칸을 무작위로 돌며 큰 나무·중간 나무·덤불을 섞어 심는다."""
+    rg = random.Random(seed)
+    for _ in range(passes):
+        cells = [(x, y) for (xa, xb, ya, yb_) in rects for y in range(ya, yb_ + 1) for x in range(xa, xb + 1) if inb(x, y) and FREE[y, x] and not OCC[y, x]]
+        rg.shuffle(cells)
+        for (cx, cy) in cells:
+            if OCC[cy, cx]:
+                continue
+            pool = rg.choices([BIG, MID, BUSH], weights=weights, k=1)[0] if pools is None else rg.choice(pools)
+            cand = list(pool); rg.shuffle(cand)
+            for name, w, h in cand[:3]:
+                x = cx - w // 2
+                if tree_ok(name, w, h, x, cy, dist if not name.startswith('bush') else min(dist, 1), ov[0], ov[1], roadside, rng_tab):
+                    Tf(name, x, cy)
+                    break
+
+
+def tree_row(x, ys, names, jit=0, seed=0):
+    """한 줄 심기: 열 x 에 발 행 ys 마다 names 를 돌려 가며(밑동 위치를 조금씩 흔든다)."""
+    rg = random.Random(seed)
+    for i, yb in enumerate(ys):
+        nm = names[i % len(names)]
+        w, h = objects[nm].w // T, objects[nm].h // T
+        xx = x + (rg.randint(-jit, jit) if jit else 0)
+        yy = yb + (rg.randint(0, 1) if jit else 0)
+        if tree_ok(nm, w, h, xx, yy, 0, 8, 4, False, 3):
+            Tf(nm, xx, yy)
+
+
+def tree_row_h(y, xs, names, jit=0, seed=0):
+    rg = random.Random(seed)
+    for i, x in enumerate(xs):
+        nm = names[i % len(names)]
+        w, h = objects[nm].w // T, objects[nm].h // T
+        xx = x + (rg.randint(-jit, jit) if jit else 0)
+        yy = y + (rg.randint(0, 1) if jit else 0)
+        if tree_ok(nm, w, h, xx, yy, 0, 8, 4, False, 3):
+            Tf(nm, xx, yy)
+
+
+build_masks()
+# --- 바깥 숲띠: 성벽 밖 5~8칸(줄 맞춘 나무 + 불규칙 덩이). 대문루·망루·바깥 길 자리는 비운다.
+_n0 = len(TREEPOS)
+SMALLS = ['small_z_a', 'small_p', 'small_z_b']
+# 줄 맞춘 줄: 북 발 행 5·8(엇갈림), 남 201·204, 서 x 7·9, 동 x 192·194
+for j, (yb, off) in enumerate(((5, 0), (8, 2))):
+    tree_row_h(yb, [x for x in range(8 + off, 194, 5) if not (88 <= x <= 111)], ZEL[j * 3:] + PIN[j:], jit=1, seed=10 + j)
+for j, (yb, off) in enumerate(((201, 1), (204, 3))):
+    tree_row_h(yb, [x for x in range(8 + off, 194, 5) if not (88 <= x <= 111)], PIN[j:] + ZEL[j * 4:], jit=1, seed=20 + j)
+for j, (x, off) in enumerate(((7, 0), (9, 2))):
+    tree_row(x, [y for y in range(18 + off, 200, 5) if not (92 <= y <= 106)], ZEL[j * 2:] + PIN, jit=1, seed=30 + j)
+for j, (x, off) in enumerate(((191, 1), (193, 3))):
+    tree_row(x, [y for y in range(18 + off, 200, 5) if not (92 <= y <= 106)], PIN[j:] + ZEL[j * 5:], jit=1, seed=40 + j)
+# 불규칙 덩이: 길 바깥쪽 가장자리 숲과 줄 사이 틈
+region_fill([(1, 197, 3, 9), (1, 197, 199, 204), (0, 3, 10, 205), (6, 10, 10, 200), (191, 195, 10, 200), (196, 199, 10, 205)], dist=0, seed=3, passes=2, ov=(5, 2), roadside=False)
+print('바깥 숲띠 나무', len(TREEPOS) - _n0)
+# --- 성벽 안쪽 숲띠(성벽과 안쪽 고리 길 사이): 서·동 x 13..14 · 북 y 15..18 · 남 y 193..194
+_n0 = len(TREEPOS)
+tree_row(13, list(range(22, 192, 4)), SMALLS + ['persimmon_a', 'persimmon_b'], jit=0, seed=50)
+tree_row(186, list(range(22, 192, 4)), SMALLS[::-1] + ['persimmon_c', 'persimmon_d'], jit=0, seed=51)
+tree_row_h(17, [x for x in range(16, 186, 4) if not (90 <= x <= 109)], SMALLS + ['persimmon_e', 'persimmon_f'], jit=1, seed=52)
+tree_row_h(194, [x for x in range(16, 186, 4) if not (90 <= x <= 109)], SMALLS[::-1] + ['persimmon_a', 'persimmon_c'], jit=1, seed=53)
+print('안쪽 줄 나무', len(TREEPOS) - _n0)
+
+# --- 나무 채움: 풀밭마다 3~5칸당 하나(큰 나무·작은 나무·덤불 섞기, 같은 그림 6칸 안 반복 금지)
+_n0 = len(TREEPOS)
+_IN = [(IN_X0 - 1, IN_X1 + 2, IN_Y0, IN_Y1)]
+region_fill(_IN, weights=(0.45, 0.33, 0.22), dist=2, seed=7, passes=3, ov=(8, 4), roadside=True)
+region_fill(_IN, weights=(0.25, 0.4, 0.35), dist=1, seed=8, passes=3, ov=(8, 4), roadside=True)
+region_fill(_IN, weights=(0.05, 0.3, 0.65), dist=1, seed=9, passes=4, ov=(8, 4), roadside=True)
+region_fill(_IN, weights=(0.0, 0.25, 0.75), dist=0, seed=10, passes=4, ov=(8, 4), roadside=False)
+print('채움 나무', len(TREEPOS) - _n0)
+
+
+# ---------------------------------------------------------------- 소품(주인 곁 무리) — 풀 칸에만 놓아 길·앞마당을 막지 않는다
+def prop(name, x, yb, kinds=(None,)):
+    """소품 (x, 바닥 행 yb). 발 밑 칸이 kinds 이고 건물·물·문 앞 칸이 아니어야 한다."""
+    cv = objects[name]
+    w, h = cv.w // T, cv.h // T
+    doorc = {(d['x'], d['y']) for d in DOORS}
+    for xx in range(x, x + w):
+        if not inb(xx, yb) or KG[yb][xx] not in kinds or (xx, yb) in BODY or (xx, yb) in doorc or OCC[yb, xx]:
+            return False
+    for (bn, bx, by, bw, bh) in placed:                      # 소품이 건물(지붕 포함) 칸 위·뒤에 서지 않는다
+        if bn.startswith(_SHADOWED) and bh >= 3 and bx < x + w and x < bx + bw and by - 1 <= yb < by + bh:
+            return False
+    if name in ('reeds', 'rocks'):                           # 갈대·바위: 모든 칸이 물에 닿아야 한다
+        for xx in range(x, x + w):
+            if not any(inb(xx + dx, yb + dy) and KG[yb + dy][xx + dx] == 'water' for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                return False
+    P(name, x, yb + 1 - h, 'foot')
+    OCC[max(0, yb - h + 1):yb + 1, x:x + w] = True
+    return True
+
+
+def beside(bname, cands, side='LR'):
+    for (nm, x, y, w, h) in placed:
+        if nm == bname:
+            for pn in cands:
+                pw = objects[pn].w // T
+                for sx in ([x + w] if 'R' in side else []) + ([x - pw] if 'L' in side else []):
+                    if prop(pn, sx, y + h - 1):
+                        return pn
+    return None
+
+
+_cnt = {}
+for (nm, x, y, w, h) in list(placed):
+    if nm in ('gn_shop_smithy', 'gn_shop_butcher', 'gn_shop_cloth', 'gn_shop_armory'):
+        beside(nm, ['firewood', 'jars', 'bench'], 'LR')
+    elif nm.startswith(('giwa_house', 'thatch_house', 'thatch_hut')):
+        beside(nm, ['jars', 'jangdokdae', 'haystack', 'firewood'], 'LR')
+    elif nm in ('tower_yesik_7', 'giwa_haengnang_7', 'gwanah_7', 'gn_u_giwa_7'):
+        beside(nm, ['lantern', 'sotdae', 'bench'], 'LR')
+for xx, yy, nm in ((97, 22, 'palace_lantern'), (102, 22, 'palace_lantern'), (97, 36, 'palace_lantern'), (102, 36, 'palace_lantern'), (97, 62, 'palace_lantern'), (102, 62, 'palace_lantern')):
+    prop(nm, xx, yy, ('road', 'yard', None))
+for xx, nm in ((96, 'jangseung_m'), (103, 'jangseung_f')):
+    prop(nm, xx, 203, (None,))                                                          # 남문 밖
+
+# 해자·연못 기슭: 갈대·돌(풀 칸, 물이 바로 옆, 6칸 간격)
+_shore = [(x, y) for y in range(IN_Y0, IN_Y1) for x in range(IN_X0, IN_X1) if KG[y][x] is None and (x, y) not in BODY and any(KG[y + dy][x + dx] == 'water' for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+_rng0 = random.Random(5)
+_rng0.shuffle(_shore)
+_last = []
+for (x, y) in _shore:
+    if any(abs(x - a) + abs(y - b) < 7 for a, b in _last):
+        continue
+    if prop('reeds' if _rng0.random() < 0.55 else 'rocks', x, y):
+        _last.append((x, y))
+    if len(_last) >= 90:
+        break
+print('기슭 소품', len(_last))
+
+# 궁 마당 둘레 흙띠에도 작은 나무(원작: 담 안쪽 흙띠에 소나무)
+for yb in range(78, 112, 6):
+    for xx in (74, 124):
+        nm = ['small_p', 'small_z_a', 'persimmon_a'][(yb // 6) % 3]
+        w_, h_ = objects[nm].w // T, objects[nm].h // T
+        if all(KG[yb][x_] == 'yard' for x_ in range(xx, xx + w_)) and not any((x_, yb) in BODY for x_ in range(xx, xx + w_)):
+            Tf(nm, xx, yb)
+
+if STAGE <= 5:
+    d_ = _stage_png('s%d' % STAGE)
+    print('stage', STAGE, 'placed', len(placed), 'trees', len(TREEPOS))
+    sys.exit(0)
+
+# ================================================================ 6단계: 맨 잔디 창 채우기(지도 게이트 M1) + 마당 소품 + 사람
+from spacemetrics import lawn_cells, window_stats
+
+
+def composite():
+    gr = ground_ids()
+    ground = np.zeros((MH * T, MW * T, 4), np.uint8)
+    for y in range(MH):
+        for x in range(MW):
+            ground[y * T:(y + 1) * T, x * T:(x + 1) * T] = TARR[gr[y][x]]
+    OBJ = compose_objects()
+    direct = ground.copy()
+    _comp(direct, OBJ, 0, 0)
+    return gr, OBJ, direct
+
+
+LOWPROPS = ['bench', 'flower_bed', 'haystack', 'firewood', 'stepping_stones', 'millstone', 'jars', 'mat_peppers']
+
+
+def fill_lawn(rounds=3, thr=0.10, seed=100):
+    """맨 잔디(칸의 90% 이상이 잔디색)가 20×15칸 창의 thr 를 넘는 곳에 중간 나무·덤불·낮은 소품을 심는다."""
+    rg = random.Random(seed)
+    for r in range(rounds):
+        _, _, direct = composite()
+        G_ = lawn_cells(direct[:, :, :3], T)
+        worst = 0.0
+        cand = []
+        for y0 in range(0, MH - 15 + 1, 5):
+            for x0 in range(0, MW - 20 + 1, 5):
+                sub = G_[y0:y0 + 15, x0:x0 + 20]
+                f = float(sub.mean())
+                worst = max(worst, f)
+                if f > thr:
+                    ys, xs = np.nonzero(sub)
+                    cand.extend((int(x0 + a), int(y0 + b)) for a, b in zip(xs, ys))
+        cand = list(dict.fromkeys(cand))
+        rg.shuffle(cand)
+        n = 0
+        for (cx, cy) in cand:
+            if OCC[cy, cx] or not FREE[cy, cx]:
+                continue
+            pool = rg.choices([MID, BUSH, 'prop'], weights=(0.45, 0.4, 0.15), k=1)[0]
+            if pool == 'prop':
+                nm = rg.choice(LOWPROPS)
+                w_, h_ = objects[nm].w // T, objects[nm].h // T
+                if not any(abs(dd['x'] - (cx + w_ // 2)) <= 2 and -1 <= cy - dd['y'] <= 4 for dd in DOORS) and prop(nm, cx, cy):
+                    n += 1
+                continue
+            cands = list(pool); rg.shuffle(cands)
+            for name, w, h in cands[:3]:
+                x = cx - w // 2
+                if tree_ok(name, w, h, x, cy, 0, 8, 4, False, 6):
+                    Tf(name, x, cy); n += 1
+                    break
+        print('잔디 채움', r, '최악 창', round(worst, 3), '+', n)
+        if worst <= thr:
+            break
+    return worst
+
+
+# --- 문 앞·마당 소품: 주막 마당·서남 상점가 장터·도적의 길 마당
+for nm, x, y in (('market_stall_cloth', 23, 160), ('market_stall_pots', 28, 160), ('haystack', 24, 164), ('jars', 30, 164)):
+    pass
+fill_lawn(rounds=3, thr=0.10)
+
+if STAGE <= 6:
+    d_ = _stage_png('s%d' % STAGE)
+    print('stage', STAGE, 'placed', len(placed), 'trees', len(TREEPOS))
     sys.exit(0)
