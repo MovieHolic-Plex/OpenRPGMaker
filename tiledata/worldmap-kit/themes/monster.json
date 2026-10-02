@@ -3,7 +3,7 @@
  "id": "monster",
  "name": "몬스터 수집",
  "iconset": "monster",
- "palette": "original",
+ "palette": "bright",
  "overlays": [],
  "kind": "land"
 }

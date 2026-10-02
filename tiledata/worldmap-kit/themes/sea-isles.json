@@ -3,7 +3,7 @@
  "id": "sea-isles",
  "name": "바다·군도",
  "iconset": "sea-isles",
- "palette": "original",
+ "palette": "tropic",
  "overlays": [],
  "kind": "land"
 }

@@ -436,9 +436,9 @@ def overlay_roads(img, ctx, style, road_role_px):
                for dx, dy in DIRS.values()):
             sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
             dirty[sl] |= road_role_px[sl] | cmatch[sl]
-    out = fill_global(img, dirty & ~bands, bands)
     if style == 'erase':
-        return out
+        return _erase_by_donor(img, ctx, g, dirty & ~bands, bands)
+    out = fill_global(img, dirty & ~bands, bands)
     for x, y, links, band in cells:
         sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
         tile = out[sl].copy()
@@ -447,6 +447,62 @@ def overlay_roads(img, ctx, style, road_role_px):
         sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
         tile = out[sl].copy()
         out[sl] = draw_concrete_bridge(tile, d, x, y) if style == 'paved' else draw_truss_bridge(tile, d, x, y)
+    return out
+
+
+def _erase_by_donor(img, ctx, g, dirty, bands):
+    """길 지우기(선사): 칸 그림을 가까운 같은 바닥 칸에서 통째로(길 칸) 또는 같은 자리 화소로(둘레 칸) 빌려 온다.
+    8방향 전파로 넓게 메우면 화소가 한 줄로 늘어진 줄무늬가 남았다(QA 2026-10-03 prehistoric 불합격)."""
+    out = img.copy()
+    roadset = {c for c in g if c not in ctx.bridge}
+    bad = ctx.occupied | ctx.ramp | ctx.face | ctx.road
+    cache = {}
+
+    K8 = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
+
+    def sig(x, y):                                   # 8 이웃이 같은 (바닥, 물체)인가 — 가장자리 무늬(숲 그늘·해안)가 맞는 칸을 고른다
+        k = (ctx.G[y, x], ctx.O[y, x])
+        return tuple(0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and (ctx.G[y + dy, x + dx], ctx.O[y + dy, x + dx]) == k for dx, dy in K8)
+
+    def donor(x, y):
+        k = (int(ctx.G[y, x]), int(ctx.O[y, x]))
+        me = sig(x, y)
+        best = None
+        for dy in range(-10, 11):
+            for dx in range(-10, 11):
+                X, Y = x + dx, y + dy
+                if (dx, dy) == (0, 0) or not (0 <= X < ctx.W and 0 <= Y < ctx.H) or bad[Y, X] or (X, Y) in ctx.bridge or (X, Y) in roadset:
+                    continue
+                if (int(ctx.G[Y, X]), int(ctx.O[Y, X])) != k or dirty[Y * TS:(Y + 1) * TS, X * TS:(X + 1) * TS].any():
+                    continue
+                s = sum(p != q for p, q in zip(me, sig(X, Y))) * 40 + dx * dx + dy * dy
+                if best is None or s < best[0]:
+                    best = (s, X, Y)
+        return best[1:] if best else None
+    rest = np.zeros_like(dirty)
+    for y in range(ctx.H):
+        for x in range(ctx.W):
+            sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
+            if not dirty[sl].any() and (x, y) not in roadset:
+                continue
+            if ctx.ramp[y, x]:                       # 경사로는 흙 비탈 그대로 둔다(선사에도 오르는 길은 있다)
+                continue
+            if ctx.occupied[y, x]:
+                rest[sl] |= dirty[sl]
+                continue
+            d = donor(x, y)
+            if d is None:
+                rest[sl] |= dirty[sl]
+                continue
+            X, Y = d
+            src = img[Y * TS:(Y + 1) * TS, X * TS:(X + 1) * TS]
+            if (x, y) in roadset:
+                out[sl] = src
+            else:
+                m = dirty[sl]
+                out[sl][m] = src[m]
+    if rest.any():
+        out = fill_global(out, rest, bands)
     return out
 
 
