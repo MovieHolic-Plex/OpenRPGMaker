@@ -8,6 +8,7 @@ from tk import *
 from build import outline
 from trees import ground_shadow
 from props4 import slab
+from props5 import box
 import blocks as K
 import thatch3d
 
@@ -120,15 +121,19 @@ def fort_gate():
 
 
 def fort_wall_h(var=0):
-    """성벽 한 칸(16×32): 윗면(걷는 길) + 여장 + 앞 돌 쌓기. 이음마다 줄눈이 겹치지 않게 변형(var) 셋을 번갈아 쓴다."""
+    """성벽 한 칸(16×32): 걷는 길 윗면(앞쪽이 밝다, 줄눈 한 줄) + 앞 가장자리 여장 직육면체 + 앞 돌 쌓기. 변형(var) 셋을 번갈아 쓴다."""
     c = Cv(T, 2 * T)
     S = RGB['stone']
-    for y in range(0, 12):                                             # 걷는 윗면 9행(밝음) + 여장 뒤 그늘
+    for y in range(0, 11):                                             # 윗면: 뒤(위)는 어둡고 앞(아래)이 밝다
         for x in range(T):
-            c.put(x, y, S[6] if y < 2 else (S[5] if y < 9 else S[4]))
+            tone = 4 if y < 3 else (5 if y < 8 else 6)
+            if y == 5 and x % 8 < 5: tone -= 1                         # 길 돌 줄눈
+            c.put(x, y, S[tone])
     mx = (2, 4, 1)[var % 3]
-    slab(c, mx, 6, 10, 5, 2, S, (6, 5), (5, 4, 3, 2))                  # 여장
-    stone_courses(c, 0, 12, T, 2 * T - 2, seed=11 + 7 * var, ch=6)
+    box(c, mx, 14, 10, 3, 3, S, (6, 5), (5, 4, 3, 2))                  # 여장(윗면 3 + 앞면 3)
+    for x in range(T):
+        if not (mx <= x < mx + 10): c.put(x, 11, S[3]); c.put(x, 12, S[2]); c.put(x, 13, S[2])   # 여장 사이 빈틈 그늘
+    stone_courses(c, 0, 17, T, 2 * T - 2, seed=11 + 7 * var, ch=5)
     for x in range(T): c.put(x, 2 * T - 2, S[2]); c.put(x, 2 * T - 1, SHADOW, 80)
     return c
 

@@ -96,9 +96,9 @@
   "date": "2026-10-02"
  },
  "wall_h": {
-  "hash": "e80b11124d28",
+  "hash": "8fcd9ed74e44",
   "status": "note",
-  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "담을 2칸 높이(사람 키)로 키움, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -112,17 +112,17 @@
   "date": "2026-10-02"
  },
  "wall_corner_l": {
-  "hash": "4c446dc396e1",
+  "hash": "3fd6dd046add",
   "status": "note",
-  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "담을 2칸 높이(사람 키)로 키움, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "wall_corner_r": {
-  "hash": "72da0691b345",
+  "hash": "fc6a21411958",
   "status": "note",
-  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "담을 2칸 높이(사람 키)로 키움, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -248,9 +248,9 @@
   "date": "2026-10-02"
  },
  "fence_h": {
-  "hash": "8d653c35f632",
+  "hash": "f5546aa84432",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "울타리·성벽을 직육면체(윗면+앞면)로 재작도, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -552,25 +552,25 @@
   "date": "2026-10-02"
  },
  "fort_wall_h": {
-  "hash": "db9fc560cd08",
+  "hash": "656feb420e6c",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "울타리·성벽을 직육면체(윗면+앞면)로 재작도, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "fort_wall_end_l": {
-  "hash": "8215e8b5ff69",
+  "hash": "25a0e037386e",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "울타리·성벽을 직육면체(윗면+앞면)로 재작도, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "fort_wall_end_r": {
-  "hash": "8d5d3b71cfb1",
+  "hash": "88d3e54b9bec",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "울타리·성벽을 직육면체(윗면+앞면)로 재작도, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -592,17 +592,17 @@
   "date": "2026-10-02"
  },
  "fort_wall_h1": {
-  "hash": "6cd23b255abf",
+  "hash": "c5310349b0e4",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "울타리·성벽을 직육면체(윗면+앞면)로 재작도, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "fort_wall_h2": {
-  "hash": "b7e9ec3365d5",
+  "hash": "8f98810305c7",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "울타리·성벽을 직육면체(윗면+앞면)로 재작도, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -616,17 +616,17 @@
   "date": "2026-10-02"
  },
  "wall_h1": {
-  "hash": "6c3308f093b1",
+  "hash": "a2856c8634d4",
   "status": "note",
-  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "담을 2칸 높이(사람 키)로 키움, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "wall_h2": {
-  "hash": "02bc85f71620",
+  "hash": "2e2a74826321",
   "status": "note",
-  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "담을 2칸 높이(사람 키)로 키움, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

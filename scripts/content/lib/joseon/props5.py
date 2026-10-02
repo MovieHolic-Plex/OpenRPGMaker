@@ -191,18 +191,15 @@ def haystack():
 
 
 def fence_h():
-    """싸리·판자 울타리 16×16(가로로 이어붙임): 말뚝 윗면(밝은 2×1)+앞면, 가로대는 윗면 2줄 + 앞면 2줄, 땅 그림자는 오른쪽 아래."""
+    """싸리·판자 울타리 16×16(가로로 이어붙임): 말뚝 둘은 직육면체(윗면+앞면), 가로대 둘은 앞으로 튀어나온 직육면체(윗면 2줄 + 앞면 2줄), 오른쪽 아래 그림자."""
     c = Cv(T, T)
     Wd = RGB['wood']; S = RGB['straw']
-    for px in (1, 9):                                              # 말뚝(뒤에 선다): 윗면 밝은 점 + 오른쪽 옆면
-        for y in range(4, 14):
-            c.put(px, y, Wd[5]); c.put(px + 1, y, Wd[4]); c.put(px + 2, y, Wd[2])
-        c.put(px, 3, Wd[6]); c.put(px + 1, 3, Wd[6]); c.put(px + 2, 3, Wd[4]); c.put(px + 1, 2, Wd[6])
-    for yt in (5, 10):                                             # 가로대(앞): 윗면 2줄(밝음) + 앞면 2줄
-        for x in range(T):
-            c.put(x, yt, S[6]); c.put(x, yt + 1, S[5]); c.put(x, yt + 2, S[4] if x % 8 < 4 else S[3]); c.put(x, yt + 3, S[2])
-    for x in range(T): c.put(x, 14, Wd[1]); c.put(x, 15, SHADOW, 80)
-    for x in range(1, T): c.put(x, 15, SHADOW, 80)
+    for x in range(T): c.put(x, 15, SHADOW, 85); c.put(x, 14, SHADOW, 45)
+    for px in (1, 10):                                             # 말뚝: 윗면 2줄 + 앞면 10줄, 오른쪽 옆면 1px
+        box(c, px, 6, 4, 2, 8, Wd, (6, 5), (5, 4, 3, 2))
+        c.put(px + 1, 3, Wd[6]); c.put(px + 2, 3, Wd[5]); c.put(px + 1, 4, Wd[6]); c.put(px + 2, 4, Wd[5])   # 뾰족한 끝
+    for yf in (7, 11):                                             # 가로대: 말뚝 앞에 걸친 직육면체
+        box(c, 0, yf, T, 2, 2, S, (6, 5), (5, 4, 3, 2))
     return c
 
 
@@ -225,13 +222,20 @@ def _cap_rows(c, x0, x1, y0=0, round_l=False, round_r=False, groove=4):
             c.put(x, y0 + r, col)
 
 
-_RUBS = [[[(0, 6), (6, 11), (11, 16)], [(0, 4), (4, 10), (10, 16)]], [[(0, 5), (5, 12), (12, 16)], [(0, 7), (7, 11), (11, 16)]], [[(0, 8), (8, 16)], [(0, 3), (3, 9), (9, 16)]]]       # 이음이 타일 경계에서 이어지는 돌 폭(합 16)
+_RUBS = [  # 줄마다 돌 폭 분할(합 16) — 3가지 변형, 줄이 어긋나 이음이 타일 경계에서 이어진다
+    [[(0, 6), (6, 11), (11, 16)], [(0, 4), (4, 10), (10, 16)], [(0, 8), (8, 16)], [(0, 5), (5, 11), (11, 16)], [(0, 3), (3, 9), (9, 16)]],
+    [[(0, 5), (5, 12), (12, 16)], [(0, 7), (7, 11), (11, 16)], [(0, 4), (4, 9), (9, 16)], [(0, 9), (9, 16)], [(0, 6), (6, 12), (12, 16)]],
+    [[(0, 8), (8, 16)], [(0, 3), (3, 9), (9, 16)], [(0, 6), (6, 12), (12, 16)], [(0, 4), (4, 11), (11, 16)], [(0, 7), (7, 16)]],
+]
 
 
 def _rubble(c, x0, x1, y0, y1, var=0):
+    """막돌 쌓기: 줄 높이 4~5px, 돌마다 윗면 반사(왼쪽 밝음)와 줄눈, 오른쪽이 어둡다."""
     S = RGB['stone']
-    rows = [(y0, y0 + 4), (y0 + 4, y1)]
-    for ri, (a, b) in enumerate(rows):
+    n = len(_RUBS[var % 3])
+    bounds = [y0 + (y1 - y0) * i // n for i in range(n + 1)]
+    for ri in range(n):
+        a, b = bounds[ri], bounds[ri + 1]
         for (bx0, bx1) in _RUBS[var % 3][ri]:
             for yy in range(a, b):
                 for xx in range(max(x0, bx0), min(x1, bx1)):
@@ -239,36 +243,37 @@ def _rubble(c, x0, x1, y0, y1, var=0):
                     if edge: tone = 1
                     elif yy == a: tone = 5 if xx < bx0 + (bx1 - bx0) * 0.7 else 4         # 돌 윗면 반사
                     else: tone = 4 if xx < bx0 + (bx1 - bx0) * 0.55 else 3
-                    if not edge and rnd(xx, yy, 73) < 0.14: tone = max(2, tone - 1)
+                    if xx > 11: tone = max(2, tone - 1)                                   # 오른쪽 어둡게
+                    if not edge and rnd(xx, yy, 73 + var) < 0.14: tone = max(2, tone - 1)
                     c.put(xx, yy, S[tone])
 
 
 def wall_h2(seed=0):  # seed 0~2 = 돌 배열 변형
-    """가로 담 16×16: 덮개 8줄 + 돌쌓기 7줄(덮개 밑은 그늘) + 땅 그림자. 이어 붙이면 이음 없이 이어진다."""
-    c = Cv(T, T)
-    _rubble(c, 0, T, 8, 15, seed)
-    for x in range(T): c.put(x, 8, RGB['stone'][1])                # 처마 밑 그늘
+    """가로 담 16×32: 덮개 8줄 + 처마 밑 그늘 + 막돌 쌓기 22줄 + 땅 그림자. 사람 키만큼 높다. 이어 붙이면 이음 없이 이어진다."""
+    c = Cv(T, 2 * T)
+    _rubble(c, 0, T, 9, 30, seed)
+    for x in range(T): c.put(x, 8, RGB['stone'][1]); c.put(x, 9, RGB['stone'][1])      # 처마 밑 그늘 2줄
     _cap_rows(c, 0, T, groove=(3, 8, 11)[seed % 3])
-    for x in range(T): c.put(x, 15, SHADOW, 80)
+    for x in range(T): c.put(x, 30, RGB['stone'][1]); c.put(x, 31, SHADOW, 80)
     return c
 
 
 def wall_v2():
-    """세로 담 16×16: 위에서 본 덮개 띠 — 세로로 길게 이어지는 밝은 윗면(왼쪽)·용마루·어두운 앞사면(오른쪽), 가로 이음 없음.
-    오른쪽에 돌쌓기 옆면 4px(어두운 단색 + 블록선 두 줄), 땅 그림자."""
+    """세로 담 16×16: 위에서 본 덮개 띠 — 세로로 길게 이어지는 밝은 윗면(왼쪽)·용마루·어두운 앞사면(오른쪽).
+    오른쪽에 돌쌓기 옆면 4px(어두운 단색 + 블록선), 땅 그림자."""
     c = Cv(T, T)
     Wd = RGB['wood']; S = RGB['stone']
     for y in range(T):
         for x in range(2, 11):
             if x == 2: col = Wd[5]
             elif x < 6: col = Wd[6]
-            elif x == 6: col = Wd[5]                                      # 용마루선
+            elif x == 6: col = Wd[5]
             elif x < 9: col = Wd[4]
             elif x == 9: col = Wd[3]
             else: col = Wd[2]
-            if x in (4, 8) and y % 8 == 7: col = Wd[5] if x == 4 else Wd[3]   # 아주 드문 기와 이음
+            if x in (4, 8) and y % 8 == 7: col = Wd[5] if x == 4 else Wd[3]
             c.put(x, y, col)
-        for x in range(11, 15):                                           # 옆면: 어두운 단색 + 블록선 두 줄
+        for x in range(11, 15):
             tone = 2 if x < 13 else 1
             if y in (5, 11): tone = 1
             c.put(x, y, S[tone])
@@ -277,24 +282,25 @@ def wall_v2():
 
 
 def wall_corner2(side):
-    """모서리: 담 끝 기둥(어두운 돌 기둥 6px)과 그 위로 한 단 더 내민 덮개 — 직선 담과 확실히 다르다. L = 왼쪽 끝, R = 오른쪽 끝."""
-    c = Cv(T, T)
+    """모서리 16×32: 담 끝 돌기둥과 한 단 내민 덮개. L = 왼쪽 끝(오른쪽으로 이어짐), R = 오른쪽 끝(왼쪽으로 이어짐)."""
+    c = Cv(T, 2 * T)
     S = RGB['stone']
+    W_ = RGB['wood']
     if side == 'L':
-        _rubble(c, 2, T, 8, 15, 1)
-        for x in range(2, T): c.put(x, 8, S[1])
+        _rubble(c, 2, T, 9, 30, 1)
+        for x in range(2, T): c.put(x, 8, S[1]); c.put(x, 9, S[1])
         _cap_rows(c, 2, T, round_l=True)
-        for y in range(9, 15):                                       # 끝 돌기둥(짙게 + 왼쪽 반사)
+        for y in range(10, 30):                                      # 끝 돌기둥(짙게 + 왼쪽 반사)
             for x in range(2, 8): c.put(x, y, S[4] if x == 2 else (S[2] if x < 6 else S[1]))
-        for x in range(1, 9): c.put(x, 8, RGB['wood'][3]); c.put(x, 9, RGB['wood'][5] if x < 5 else RGB['wood'][3])   # 내민 덮개 한 단
+        for x in range(1, 9): c.put(x, 8, W_[3]); c.put(x, 9, W_[5] if x < 5 else W_[3])
     else:
-        _rubble(c, 0, 15, 8, 15, 2)
-        for x in range(0, 15): c.put(x, 8, S[1])
+        _rubble(c, 0, 15, 9, 30, 2)
+        for x in range(0, 15): c.put(x, 8, S[1]); c.put(x, 9, S[1])
         _cap_rows(c, 0, 15, round_r=True)
-        for y in range(9, 15):
+        for y in range(10, 30):
             for x in range(8, 14): c.put(x, y, S[3] if x == 8 else (S[2] if x < 12 else S[1]))
-        for x in range(7, 15): c.put(x, 8, RGB['wood'][3]); c.put(x, 9, RGB['wood'][5] if x < 11 else RGB['wood'][2])
-    for x in range(T): c.put(x, 15, SHADOW, 80)
+        for x in range(7, 15): c.put(x, 8, W_[3]); c.put(x, 9, W_[5] if x < 11 else W_[2])
+    for x in range(T): c.put(x, 30, S[1]); c.put(x, 31, SHADOW, 80)
     return c
 
 
