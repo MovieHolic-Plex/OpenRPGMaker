@@ -27,7 +27,8 @@ await page.addInitScript(() => {
     await new Promise((r) => setTimeout(r, 300));
     const text = JSON.stringify(request.messages);
     if (surface === "workshop-review") {
-      const failing = calls % 7 === 0;
+      // 방향 B 의 첫 시도만 결정적으로 불통과 — 「검수 불통과」→다시 그림 카드가 꼭 한 장 생긴다.
+      const failing = /시도 1\/\d+, 방향 B/.test(text);
       return JSON.stringify({ verdict: failing ? "FAIL" : "PASS", codes: failing ? ["FRONT"] : [], top: failing ? "윗판 윗면 2행" : "윗판 윗면 3행(y=4~6)", top_rows: failing ? 2 : 3, reasons: failing ? "윗판이 2행" : "윗판 3행", fix: failing ? "윗판을 3행으로" : "", worse: false });
     }
     const m = /캔버스 (\d+)×(\d+)px/.exec(text);
