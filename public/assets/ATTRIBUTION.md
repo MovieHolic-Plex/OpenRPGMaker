@@ -566,3 +566,11 @@ from the retired atlas interior sheet (commit 8e02e8e4e, cells 2160–3299):
 - Cells 0–479: EasyRPG `ChipSet/Ship.png` (JasonPerry, CC0). 480–509 blank (former Tibo graft slots).
 - Cells 510–989: EasyRPG `ChipSet/Dungeon.png` (JasonPerry, CC0); 990–992 blank, 993–998 cells grafted from EasyRPG combined town (CC0).
 - Cells 1020–1025: trapdoors, wall breach and rubble drawn in this repository. 1080+: composed water/abyss looks baked from app renders of those CC0 cells.
+- Native enemy additions (2026-10-02): the 100 original final-grid sheets in
+  `generated/pixel-enemies/` are drawn by editable repository code in
+  `scripts/asset-gen/pixel-enemy/retirement/{organic,arcane,humanoid}/`, extending
+  this repository's pixel drawing helpers. No third-party image pixels, painted
+  source shrink, tracing or smoothing is used. `generated/pixel-enemy-portraits/`
+  contains exact idle-cell derivatives of the 140 native enemy sheets.
+  `generated-enemy-sparkit-fire` reuses the existing human-selected collect sprite
+  documented in `harness-data/monster-collect-species/ledger.json`.

@@ -169,7 +169,7 @@
   - 바깥 배틀러 노드의 개별 `translate` 속성이 이동을, 안쪽 스프라이트가 피격 진동(`vibrateStruck`)을 갖는다 — 둘을 같은 요소에 걸면 서로 덮는다.
   - **걸어가서 때리기**: 통상 공격과 `effect.statistic === "attack"` 피해 스킬은 대상 적 바로 앞까지 걷는다. `retroWalk` 가 DOM 사각형으로 거리를 재고(화면 px ÷ `rect.width/offsetWidth` — 무대 배율 위에 필드 zoom 이 한 번 더 걸려 변수 하나로는 1.6배 넘쳤다), 시퀀서 훅 `actorApproachMs`/`actorRecoverMs` 가 비트 길이를 걸음에 맞춘다(0.26px/ms, 420~1100ms). approach 앞부분은 walk_a→b→c→b, 마지막 240ms 에 attack_windup→attack_strike, impact 에서 attack, recover 에서 뛰어 돌아온다(`retro-walk-up`/`retro-return`).
   - **마법별 시전 도트**: 마법(제자리 스킬)은 `castTypeForSkill`(속성 → 이름 낱말 → 효과 종류, 기본 arcane) 로 fire/ice/thunder/heal/dark/arcane/support 중 하나를 고르고, 시전 시트 `charset-battlers/cast/<id>.png`(3단계 × 7종) 의 칸을 cast_charge/raise/release 자리에 그린다. 날아가는 화살·투사체 애니메이션(`isTravellingEffect`)은 이 스킨에서 띄우지 않는다. limitSkill 또는 power≥100은 착탄 때 skill. 아이템은 item, 방어는 defend 유지. 옛 시트는 기존 6포즈 분기를 유지한다.
-  - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 기존 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)와 아래 추가 8종은 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(48·64·96px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 다른 스킨은 같은 id 로 기존 통짜 그림을 그대로 쓴다.
+  - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 기존 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)와 아래 추가 8종은 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(48·64·96px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 2026-10-02부터 일반 이미지 소비자는 같은 id의 native idle_a 초상을 쓴다. 옛 통짜 그림은 폐기했다([공용 몬스터 폐기](native-enemy-retirement.md)).
     `<img>` 는 src 를 유지하고 배경으로 칸을 그린다(`data-pixel-sheet`, cell×2 px 상자, 대기는 CSS a→b→c→b 루프). 노드 `data-pixel-enemy`가 모션 7종을 고른다(아래 확장 설명). 근접(통상 공격·공격력 기술)은 `retroEnemyReach` 가 대상 아군까지의 dx/dy 를 재고 시퀀서 훅 `enemyApproachMs`/`enemyRecoverMs` 가 비트를 늘린다. 이동은 Web Animations 의 `translate` 경로(슬라임 두 번 도약, 박쥐 치켜들기→급강하), 칸은 windup→move→attack→recover. 그 밖의 기술은 제자리에서 당겼다 나선다. 피격 hit 칸 380ms, 막타는 hit→dead 칸 뒤 네 번 깜빡여 사라진다. 시트를 못 읽으면 표시를 걷어 원본 그림이 보인다.
   - **손도트 적 8종 추가(2026-09-28, rb-monster):** 기존 슬라임·박쥐에 golem(64px/stomp), dragon(96px/breath), skeleton-archer(shoot), wolf-grey·spider-cave(dash), wisp-blue(float), slime-red(hop), zombie-rot(stomp)를 추가했다(나머지는 48px). 종별 Python 좌표 원본과 README는 `scripts/asset-gen/pixel-enemy/`·`tiledata/pixel-enemies/`, 공통 검토 출력은 `pe_lib.py`. 시트는 3×3, ≤16색, 알파 0/255, 모든 크기에서 같은 정수 2배. `applyPixelEnemySheet`가 인라인 base-width/height=cell×2와 `data-pixel-enemy-cell`을 심고, 로딩 실패 시 원래 치수를 복구한다.
     - `measureEnemyReach`는 적의 앞=cell−6·발=cell−4·부유 중심=cell/2−4로 계산하고 아군 48px 기준은 유지한다. 같은 종 여러 마리의 공격자를 전투 id로 먼저 고른다. 가까워서 dx가 0이어도 근접 모션을 유지한다.
@@ -293,7 +293,7 @@
   - 크기: 64셀 리치·철 골렘은 아군의 약 1.8~1.9배, 96셀 트롤 2.6·미노타우로스 3.2·마왕 3.4배다. 2배 정수 배율 규칙을 지키려고 **표시 배율은 바꾸지 않았다** — 줄이려면 그림을 다시 찍는다.
 - **녹화**
   - 스킬: `node scripts/qa/runtime/retro2003-skills-gif.mjs --set new`(확장 48) · `--set old`(기존 48) · 기본 `class`(96). 확장 배우·직업·장비는 기본 DB 에서 녹화 사본에 합치고, 조 (사무라이·닌자·무도가)·(음유시인·드루이드·마녀)로 찍는다.
-  - 몬스터: `node scripts/qa/runtime/retro2003-monsters-gif.mjs [--monsters a,b]` → `monster-<slug>.gif`·`SUMMARY.md`. `PIXEL_ENEMY_SHEETS` 40종마다 한 마리 트룹을 녹화 사본에 만들고, 전투 이벤트를 `troopSource: variable`(숫자 = troops 1부터 번호, 기존 `__oprnDebug.setVariable`)로 바꿔 말을 건다. 적은 통상 공격만·민첩 999, 전투마다 player.html 을 다시 연다. 시트 PNG 가 없으면 건너뛰고 적는다.
+  - 몬스터: `node scripts/qa/runtime/retro2003-monsters-gif.mjs [--monsters a,b]` → `monster-<slug>.gif`·`SUMMARY.md`. `PIXEL_ENEMY_SHEETS` 140종마다 한 마리 트룹을 녹화 사본에 만들고, 전투 이벤트를 `troopSource: variable`(숫자 = troops 1부터 번호, 기존 `__oprnDebug.setVariable`)로 바꿔 말을 건다. 적은 통상 공격만·민첩 999, 전투마다 player.html 을 다시 연다. 시트 PNG 가 없으면 건너뛰고 적는다.
     기본 DB 적 행을 데모 사본에 옮길 때 사본에 없는 참조(speciesId·드롭·훔치기)는 걷는다 — 두면 로드 검증에서 타이틀이 안 뜬다(실측).
   - 이 작업 결과: 몬스터 40/40 통과(칸 순서·셀·모션·시트 적용 계측), 미리보기 `.omo/retro-monsters/all/preview-big.png`(식충 식물 제자리 수정 전 녹화).
     확장 스킬 48/48 통과(레이어 누락·칸 이동·상자 크기 불일치·잔류 노드 0, 브라우저 오류 0), 미리보기 `.omo/retro-skills/new-1/preview.png`.
@@ -1215,12 +1215,14 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - Browser regression evidence is split by behavior: `battle-keyboard-input.spec.ts` must drive the real test-play window with keyboard only and prove root cursor/focus movement, submenu confirm/cancel, and target confirm/cancel without pointer clicks. `battle-skins-visual-qa.spec.ts` covers layout: command phase asserts no command/party rectangle intersection and zero visible command/status text intersections; target phase uses `document.elementFromPoint()` at the enemy center and requires the hit to be the enemy or its descendant. `qa-pokemon-dom.spec.ts` uses the current Scarloxy starter species, proves a complete monster-party attack changes HP and returns to actor command, and checks root-command label intersections at 375/768/1280 widths. At widths up to 480px the Pokemon surface hides the keyboard-only hint; pointer-capable commands remain available. These focused Playwright tests must pass in addition to overflow checks.
 
 ## 배틀러 idle 애니메이션 (2026-08-30)
-- 전투 화면에서 움직이는 것이 이펙트·플래시·셰이크뿐이라 아무 일도 없는 동안 배틀러가 정지 그림이었다. 이제 **카탈로그에 등록된 배틀러만** 제자리 idle 애니메이션이 돈다. 정본은 `src/assets/battlerIdleAnimations.ts` 하나다. 등록되지 않은 리소스 id 는 지금까지의 정적 렌더 그대로다 — 몬스터 그래픽이 140여 종이라 옵트인이 아니면 유지 비용이 폭발한다. **필드 적(`.battle-enemy-image`)은 idle 스트립을 쓰지 않는다.** 스트립은 영상에서 키잉한 프레임이라 반투명 픽셀이 섞이고, CSS 가 `object-position: -99999px` 로 정적 `src`(원본은 mid-alpha 0%)를 밀어 그 스트립만 보여 몬스터가 반투명해 보였다. 파티 몬스터·액터 시트 idle 은 그대로다.
+
+2026-10-02 정정: 옛 painted 몬스터 idle 3장은 폐기했다. native 적 140종의 9포즈와 대기 루프는 `pixelEnemySheets.ts`가 소유한다. 아래 영상 idle 경로는 액터용이다. 자세한 현재 자산/호환성 계약은 [공용 몬스터 폐기](native-enemy-retirement.md).
+
+- 전투 화면에서 움직이는 것이 이펙트·플래시·셰이크뿐이라 아무 일도 없는 동안 배틀러가 정지 그림이었다. 이제 **카탈로그에 등록된 배틀러만** 제자리 idle 애니메이션이 돈다. 정본은 `src/assets/battlerIdleAnimations.ts` 하나다. 등록되지 않은 리소스 id 는 지금까지의 정적 렌더 그대로다 — 몬스터 그래픽이 140여 종이라 옵트인이 아니면 유지 비용이 폭발한다. **필드 적(`.battle-enemy-image`)은 idle 스트립을 쓰지 않는다.** 스트립은 영상에서 키잉한 프레임이라 반투명 픽셀이 섞이고, CSS 가 `object-position: -99999px` 로 정적 `src`(원본은 mid-alpha 0%)를 밀어 그 스트립만 보여 몬스터가 반투명해 보였다. 액터 시트와 후면 액터 idle은 그대로다. 일반 이미지 몬스터는 native 초상을 쓴다.
 - **두 티어.** 성질이 다른 두 배틀러 경로를 각자의 좌표계로 돌린다.
 
   | 티어 | 대상 | 셀 | 좌표 | 소스 |
   |---|---|---|---|---|
-  | `image-strip` | 적·파티 몬스터 (`<img>`) | 192px 정사각 | 백분율 | 영상 클립에서 프레임 추출 |
   | `image-strip` | 후면 액터 (`<img>`) | 290×280 (표시 상자 비율) | 백분율 | 영상 클립에서 프레임 추출 |
   | `sheet-cell` | 정면 액터 전투 캐릭터셋 (`.battle-actor-sprite`) — 2026-09-03 부터 **192px 고해상도 짝**(`starter/hires/idle/`) | 192px(원본 48px 를 xBR 4배) | px | 절차 생성 + 결정적 업스케일 |
 
@@ -1451,3 +1453,7 @@ Completed runtime timelines persist into bounded session reports accessible from
   `effectFlags.halfMpCost`를 MP 계산이 실제로 소비하고, `ItemUpgradeRule.target: "equipment"`는 끼운 장비를 그 자리에서 강화한다.
 
 검증: `test/mgL3{BattleGauges,BattleGaugeHud,BattleEmotion,BattleResourceEditor,EquipmentGrants}.test.ts`, 화면은 `masterpiece-battle`(게이지 비트).
+
+## 공용 몬스터 옛 그림 폐기 (2026-10-02)
+
+[현재 공용 140종 · 343장 폐기 · ID 호환성 · 실제 RM2003 스킬 비교](native-enemy-retirement.md). 새 자산을 카탈로그와 초상 생성기 양쪽에 등록하고, 퇴역한 폴백/영상 idle을 되살리지 않는다.

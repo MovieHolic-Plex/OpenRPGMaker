@@ -16,7 +16,7 @@ import { runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { mockSprite, mockTileImage } from "./runtimeEventPageFixtures";
 
 const monsterId = "generated-enemy-slime-green";
-const monsterPath = "assets/generated/starter/monster-slime-green.png";
+const monsterPath = "assets/generated/pixel-enemy-portraits/slime-green.png";
 
 function projectWithSpawn(resourceId = monsterId) {
   const project = createBlankProject();

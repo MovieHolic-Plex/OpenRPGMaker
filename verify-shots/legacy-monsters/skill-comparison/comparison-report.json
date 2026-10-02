@@ -1,0 +1,242 @@
+{
+  "scope": "impact layer only, actual integer 2x, no audio",
+  "productionApplied": false,
+  "rows": [
+    {
+      "name": "파이어볼",
+      "current": {
+        "path": "public/assets/generated/pixel-fx/mage_fire_burst.png",
+        "size": [
+          640,
+          64
+        ],
+        "alphaLevels": [
+          0,
+          255
+        ],
+        "visibleRgbColors": 10
+      },
+      "study": {
+        "path": "verify-shots/legacy-monsters/skill-comparison/study/sheets/fire.png",
+        "size": [
+          3072,
+          96
+        ],
+        "alphaLevels": [
+          0,
+          8,
+          16,
+          25,
+          33,
+          41,
+          49,
+          58,
+          66,
+          74,
+          82,
+          90,
+          99,
+          107,
+          115,
+          123,
+          132,
+          140,
+          148,
+          156,
+          165,
+          173,
+          181,
+          189,
+          197,
+          206,
+          214,
+          222,
+          230,
+          239,
+          247,
+          255
+        ],
+        "visibleRgbColors": 406
+      },
+      "gif": "fire-comparison.gif",
+      "sha256": "1307c5522f9d2b35a66ba03bb6564855eae49a33bf4f0d7dd972a517241a2720"
+    },
+    {
+      "name": "블리자드",
+      "current": {
+        "path": "public/assets/generated/pixel-fx/mage_blizzard.png",
+        "size": [
+          640,
+          64
+        ],
+        "alphaLevels": [
+          0,
+          255
+        ],
+        "visibleRgbColors": 8
+      },
+      "study": {
+        "path": "verify-shots/legacy-monsters/skill-comparison/study/sheets/ice.png",
+        "size": [
+          3072,
+          96
+        ],
+        "alphaLevels": [
+          0,
+          8,
+          16,
+          25,
+          33,
+          41,
+          49,
+          58,
+          66,
+          74,
+          82,
+          90,
+          99,
+          107,
+          115,
+          123,
+          132,
+          140,
+          148,
+          156,
+          165,
+          173,
+          181,
+          189,
+          197,
+          206,
+          214,
+          222,
+          230,
+          239,
+          247,
+          255
+        ],
+        "visibleRgbColors": 238
+      },
+      "gif": "ice-comparison.gif",
+      "sha256": "4a3d778583f5f94eb7b67b2164178d4b3b535c7cd908ad644b51aebe4c191c47"
+    },
+    {
+      "name": "연쇄 번개",
+      "current": {
+        "path": "public/assets/generated/pixel-fx/mage_chain_bolt.png",
+        "size": [
+          512,
+          64
+        ],
+        "alphaLevels": [
+          0,
+          255
+        ],
+        "visibleRgbColors": 7
+      },
+      "study": {
+        "path": "verify-shots/legacy-monsters/skill-comparison/study/sheets/thunder.png",
+        "size": [
+          3072,
+          96
+        ],
+        "alphaLevels": [
+          0,
+          8,
+          16,
+          25,
+          33,
+          41,
+          49,
+          58,
+          66,
+          74,
+          82,
+          90,
+          99,
+          107,
+          115,
+          123,
+          132,
+          140,
+          148,
+          156,
+          165,
+          173,
+          181,
+          189,
+          197,
+          206,
+          214,
+          222,
+          230,
+          239,
+          247,
+          255
+        ],
+        "visibleRgbColors": 179
+      },
+      "gif": "thunder-comparison.gif",
+      "sha256": "a4c349a04ded6fb2a74386f8ae21f9f819f5f606b7666e851bee5fd115469a99"
+    },
+    {
+      "name": "치유의 빛",
+      "current": {
+        "path": "public/assets/generated/pixel-fx/cleric_heal.png",
+        "size": [
+          640,
+          64
+        ],
+        "alphaLevels": [
+          0,
+          255
+        ],
+        "visibleRgbColors": 7
+      },
+      "study": {
+        "path": "verify-shots/legacy-monsters/skill-comparison/study/sheets/heal.png",
+        "size": [
+          3072,
+          96
+        ],
+        "alphaLevels": [
+          0,
+          8,
+          16,
+          25,
+          33,
+          41,
+          49,
+          58,
+          66,
+          74,
+          82,
+          90,
+          99,
+          107,
+          115,
+          123,
+          132,
+          140,
+          148,
+          156,
+          165,
+          173,
+          181,
+          189,
+          197,
+          206,
+          214,
+          222,
+          230,
+          239,
+          247,
+          255
+        ],
+        "visibleRgbColors": 178
+      },
+      "gif": "heal-comparison.gif",
+      "sha256": "a6d4831292c9294f5955059c1d4b9ad6e7fc6d7474c11d44c53a5fd08ef236e7"
+    }
+  ]
+}
