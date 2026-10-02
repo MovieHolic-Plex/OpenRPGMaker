@@ -535,7 +535,14 @@
   함정(실측): ① 적 HP 상자는 필드의 `.battle-enemy-hud`(포켓몬 스킨에서 숨김)가 아니라 정보 패널 `.battle-enemy-list-row` — 숨은 HUD 를 잡으면 적 HP 가
   착탄 순간 줄고 상자도 안 떤다. ② 아군 몬스터는 런타임 id(`mon:…`)로 맞으므로 대상 노드는 반드시 `findBattlerNode` 로(직접 조회하면 null → 깜빡임 없음).
   ③ 표시 원장 `vitalsFor` 는 `applyFeedback` 이 제자리에서 고치는 객체 — 맞기 전 HP 는 그 전에 떠 둘 것. ④ 바 전환은 타이머보다 한 프레임쯤 늦게 시작한다.
+  ⑤ 막타: 원장 `deferDefeat` 로 쓰러짐 표시(.defeated → 쓰러짐 연출·적 HP 행 숨김)를 HP 바가 다 준 뒤(기절음과 같은 순간)로 미룬다 —
+  안 미루면 맞는 순간 쓰러지기 시작하고 HP 행이 줄기도 전에 사라졌다. ⑥ 박자 길이는 동작 템포 × **배속**(1.8·3·넘기기 5)으로 줄이고,
+  배속이 바뀌거나 같은 대상이 다시 맞으면 `finishPokemonPhase` 가 남은 박자를 즉시 끝낸다(숫자 끝값·CSS 전환 finish·문장·쓰러짐) —
+  시퀀서는 남은 지연을 새 배속으로 다시 거는데 이 박자만 옛 배속이라, 넘기기 중 다음 행동이 위로 올라와 결과 문장이 묻혔다.
+  ⑦ 박자를 타는 피해 판정은 `usesPokemonDamagePhase` 하나(독 틱 label·MP 피해 제외)를 onDamageFeedback 과 impactPresentationMs 가 같이 쓴다.
+  ⑧ 바 길이는 실제로 준 HP(초과 피해 제외)로 잡는다. 감소 모션은 박자 없이 상성 타격음·기절음만. 테스트 `test/battlePresentationDeferDefeat.test.ts`.
   QA: `qa-runs/battle-moves/geoscore.py <run>`(깜빡임·상자 떨림·HP 감소 구간), 탐침에 `eff=`(피해 박자가 본 상성)·`msg=`(메시지 창)가 있다.
+  넘기기 녹화는 `SKIP_DURING=1 cap.sh …`(연출 중 Z 연타), 막타는 기술 목록을 화염 4번으로.
   남은 것: 아픈 표정 그림(몬스터 하네스 후보), 타격음 후보 선택(monster-hit-review).
 - **발사체는 「입·손」 자리에서 나간다 (`spriteEmitPoint`).** 그림 몸 위쪽 60% 안에서 상대 방향으로 가장 튀어나온 칸(가로 위주, 세로 0.35배).
   런타임은 그림 픽셀을 캔버스로 읽어 캐시한다(가로 스트립은 `data-strip-frames` 첫 칸만). 그림에 `data-emit-x/y`(칸 좌표)가 있으면 그것을 쓴다 —

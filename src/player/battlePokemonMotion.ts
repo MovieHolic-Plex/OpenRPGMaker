@@ -600,27 +600,26 @@ function pushTarget(field: HTMLElement, target: HTMLElement, attacker: HTMLEleme
 
 /** 피해 순간 맞은 쪽이 **4프레임마다 꺼졌다 켜진다, 8번**(3세대 DoHitAnimBlinkSpriteEffect: 32프레임 ≈ 0.53초).
  *  기술 연출이 끝난 뒤 상성 타격음과 함께 온다 — 포켓몬에서 「맞았다」를 말하는 주 신호다. `tempo` 는 스킨 동작 템포. */
-export function pokemonDamageBlink(target: HTMLElement | null, tempo = 1): number {
+export function pokemonDamageBlink(target: HTMLElement | null, tempo = 1): Animation | undefined {
   const toggleMs = (4 * GBA_FRAME_MS) / Math.max(0.2, tempo);
-  if (!target || reduced()) return 8 * toggleMs;
+  if (!target || reduced()) return undefined;
   const sprite = battlerSpriteNode(target);
-  if (typeof sprite.animate !== "function") return 8 * toggleMs;
+  if (typeof sprite.animate !== "function") return undefined;
   const frames: Keyframe[] = [];
   for (let i = 0; i < 8; i += 1) frames.push({ opacity: i % 2 === 0 ? 0 : 1, offset: i / 8, easing: "steps(1, end)" });
   frames.push({ opacity: 1, offset: 1 });
-  sprite.animate(frames, { duration: 8 * toggleMs, easing: "linear" });
-  return 8 * toggleMs;
+  return sprite.animate(frames, { duration: 8 * toggleMs, easing: "linear" });
 }
 
 /** 피해 순간 HP 상자가 **매 프레임 위아래 1px(GBA) 씩 떤다, 21프레임**(3세대 SpriteCB_HitAnimHealthoxEffect, pokeball.c).
  *  흔드는 게 아니라 「부르르」 떤다 — 예전의 좌우 2~9px 끊어 흔들기보다 작고 빠르다. 위치를 덮지 않게 더하기 합성. */
-export function pokemonHudBuzz(hud: HTMLElement | null | undefined, tempo = 1): void {
-  if (!hud || reduced() || typeof hud.animate !== "function") return;
+export function pokemonHudBuzz(hud: HTMLElement | null | undefined, tempo = 1): Animation | undefined {
+  if (!hud || reduced() || typeof hud.animate !== "function") return undefined;
   const count = Math.max(6, Math.round(21 / Math.max(0.2, tempo)));
   const frames: Keyframe[] = [];
   for (let i = 0; i < count; i += 1) frames.push({ translate: `0px ${i % 2 === 0 ? 2 : -2}px`, offset: i / count, easing: "steps(1, end)" });
   frames.push({ translate: "0px 0px", offset: 1 });
-  hud.animate(frames, { duration: count * GBA_FRAME_MS, easing: "linear", composite: "add" });
+  return hud.animate(frames, { duration: count * GBA_FRAME_MS, easing: "linear", composite: "add" });
 }
 
 /**

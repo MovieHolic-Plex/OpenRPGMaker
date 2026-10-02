@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **119쪽 / 4239KB / 약 1,223,284 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **119쪽 / 4266KB / 약 1,231,583 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
 | `openwiki/editor-pre-edit-routing.md` | 180KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1131 | ~52,844 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 519 | ~20,470 |
-| `openwiki/runtime-battle.md` | 283KB | 32KB | 1486 | ~82,449 |
+| `openwiki/runtime-battle.md` | 302KB | 32KB | 1598 | ~88,225 |
 | `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 781 | ~32,382 |
 | `openwiki/runtime-project-schema.md` | 201KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1430 | ~55,958 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
@@ -56,7 +56,6 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/PROJECT_WIKI.md` | 2 | `.part-N.css`, `src/styles/editor/core.part-1.css` |
 | `openwiki/ai-workflow.md` | 5 | `20260709000000_ai_activity_logs.sql`, `src/ai/plannerSkip.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
-| `openwiki/atlas-biome-interior.md` | 1 | `pin_ids.py` |
 | `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/castle-map.md` | 12 | `.oprn.json`, `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json`, `scripts/build-castle-2.mts`, `scripts/build-castle-map.mts`, `scripts/build-second-castle.mts`, `scripts/observe-castle-keep.mts`, `scripts/remove-castle-reference-bridge.mjs` |
@@ -93,7 +92,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
 | `openwiki/refmap-town-outside.md` | 2 | `D_REFMAP_Interior_Extra.png`, `preset.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
-| `openwiki/runtime-battle.md` | 20 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `assets/generated/charset-battlers/actorN-k.png`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png`, `test/battleLookFrontSkin.test.ts` |
+| `openwiki/runtime-battle.md` | 21 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `assets/generated/charset-battlers/actorN-k.png`, `audio-score.js`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png`, `test/battleLookFrontSkin.test.ts` |
 | `openwiki/runtime-m2-flow-controls.md` | 4 | `scripts/capture/capture-parallax-easing.mjs`, `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 29 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `phaser.min.js`, `render-relief-maps.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
@@ -1008,15 +1007,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L24` 파일
 - `L34` 함정
 
-### `openwiki/harnesses/monster-collect-species.md` — 8KB · 82줄 · ~2,532 토큰
+### `openwiki/harnesses/monster-collect-species.md` — 17KB · 152줄 · ~5,055 토큰
 
-- `L7` 빠른 시작
-- `L24` 파일
-- `L42` 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
-- `L51` 검사 (`build` · `check`)
-- `L65` 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
-- `L71` 시험
-- `L77` 아직 없는 것
+- `L8` 빠른 시작
+- `L29` 파일
+- `L51` 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
+- `L60` 애니메이션 — 대기는 움직이고, 큰 동작은 한 줄로 생성한다 (2026-10-01 비교 시험)
+  - `L76` 공격 방향 계약 (`animation.direction`)
+  - `L87` 엔진 비트 → 프레임 (`actions.*.keys`)
+  - `L94` 입·손 자리 (`anim.json` 의 `emit`)
+  - `L101` 스킬별 공격 = 자세 몇 가지 × 스킬 매핑 (`anim/poses.ts`)
+- `L114` 검사 (`build` · `check`)
+- `L131` 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
+- `L137` 시험
+- `L146` 아직 없는 것
 
 ### `openwiki/horror-authoring.md` — 18KB · 186줄 · ~5,583 토큰
 
@@ -1324,7 +1328,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 283KB · 1486줄 · ~82,449 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 302KB · 1598줄 · ~88,225 토큰 · 통째읽기 잘림
 
 - `L3` 전투는 전부 도트 측면 — 정면 스킨 다섯·몬스터 그림 생성 삭제 (2026-10-02)
 - `L23` SNES 식 전투 연출 — 쓰러짐·배경 겹·상태 몸 표시·이펙트 겹치기·화면 필터 (2026-10-02)
@@ -1345,51 +1349,51 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L322` 몬스터 스킬 42종 (2026-09-28, mrt)
   - `L337` 2차 로스터 통합 — 걷기 칩 전부 직업·스킬, 몬스터도 파티원 (2026-09-29)
 - `L404` 타격감 층 (2026-09-25)
-- `L457` 진입 · 결판 · 복귀 연출 (2026-09-25)
-- `L491` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
-- `L517` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
-- `L542` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
-- `L564` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L635` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
-- `L646` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
-- `L691` Native event battle admission (2026-09-08)
-- `L737` Supported action authoring (2026-09-07)
-- `L749` 적별 전투 표시 크기 (2026-09-06)
-- `L759` Capture-only victory (2026-09-08)
-- `L770` Event friendship and live level changes (2026-09-06)
-- `L789` Sequential battle event completion (2026-09-08)
-- `L824` Battle-event continuation and cancellation (2026-09-06)
-- `L867` 전투 명령 custom CSS (2026-09-05)
-- `L871` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L888` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L906` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
-- `L977` Roguelike run boundary (2026-08-24)
-- `L982` 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
-- `L1001` 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
-- `L1024` Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
-- `L1067` Battle rules & runtime
-  - `L1082` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L1107` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L1123` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L1127` Gen 1(포켓몬식) 규칙 모델
-  - `L1135` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L1154` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L1193` Starter hero battle sheets (2026-08-29)
-- `L1214` Per-actor back battlers (2026-08-29)
-- `L1232` Battle input and visibility P0 contract (2026-07-30)
-- `L1243` 배틀러 idle 애니메이션 (2026-08-30)
-- `L1371` 필드 아이템 상태 부여 복구 (2026-09-05)
-- `L1375` Authored combat rules (feature16, 2026-09-21)
-- `L1389` Battle reports and physical formation (2026-09-21)
-- `L1393` Combat correctness hardening (2026-09-21)
-- `L1401` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
-- `L1411` 트레이너 전투의 도입 문구 (2026-09-24)
-- `L1418` 포획 불가 전투의 가방 목록 (2026-09-25)
-- `L1429` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
-- `L1443` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
-- `L1453` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
-- `L1470` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
-- `L1483` 공용 몬스터 옛 그림 폐기 (2026-10-02)
+- `L569` 진입 · 결판 · 복귀 연출 (2026-09-25)
+- `L603` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
+- `L629` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
+- `L654` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
+- `L676` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
+- `L747` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
+- `L758` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+- `L803` Native event battle admission (2026-09-08)
+- `L849` Supported action authoring (2026-09-07)
+- `L861` 적별 전투 표시 크기 (2026-09-06)
+- `L871` Capture-only victory (2026-09-08)
+- `L882` Event friendship and live level changes (2026-09-06)
+- `L901` Sequential battle event completion (2026-09-08)
+- `L936` Battle-event continuation and cancellation (2026-09-06)
+- `L979` 전투 명령 custom CSS (2026-09-05)
+- `L983` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L1000` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L1018` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
+- `L1089` Roguelike run boundary (2026-08-24)
+- `L1094` 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
+- `L1113` 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
+- `L1136` Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
+- `L1179` Battle rules & runtime
+  - `L1194` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L1219` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L1235` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L1239` Gen 1(포켓몬식) 규칙 모델
+  - `L1247` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L1266` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L1305` Starter hero battle sheets (2026-08-29)
+- `L1326` Per-actor back battlers (2026-08-29)
+- `L1344` Battle input and visibility P0 contract (2026-07-30)
+- `L1355` 배틀러 idle 애니메이션 (2026-08-30)
+- `L1483` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L1487` Authored combat rules (feature16, 2026-09-21)
+- `L1501` Battle reports and physical formation (2026-09-21)
+- `L1505` Combat correctness hardening (2026-09-21)
+- `L1513` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+- `L1523` 트레이너 전투의 도입 문구 (2026-09-24)
+- `L1530` 포획 불가 전투의 가방 목록 (2026-09-25)
+- `L1541` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+- `L1555` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+- `L1565` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+- `L1582` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+- `L1595` 공용 몬스터 옛 그림 폐기 (2026-10-02)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 46KB · 305줄 · ~12,541 토큰
 
