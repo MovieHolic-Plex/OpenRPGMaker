@@ -409,3 +409,100 @@ def context(pal, frames, actor_png, scale=3, lawn=None, others=(0, 1, 3, 6)):
     for i, d in enumerate(('down', 'left', 'up', 'right')):
         bg.alpha_composite(frame_rgba(pal, frames[(d, 1)]), (x0 + i * (FW + 4), 4))
     return up(bg.convert('RGB'), scale)
+
+
+# ─────────────────────────────── 얼굴 (RM2000 FaceSet 48×48) ───────────────────────────────
+# 형식은 칩과 같고 프레임이 하나뿐이다:  palette … / frame face 0 / 48글자 × 48줄.
+# Actor1 얼굴은 한 장에 125색이라 글자 하나로 못 적는다 → 뼈대로 꺼낼 때 64색으로 줄인다(눈으로는 차이 없음).
+FACE = 48
+FACE_CHARS = ''.join(c for c in map(chr, range(33, 127)) if c not in '.#')  # 92글자
+FACE_MAX_COLORS = 90
+
+
+def parse_face(text):
+    pal, notes, frames = {}, {}, {}
+    rows, mode = None, None
+    for n, raw in enumerate(text.splitlines(), 1):
+        s = raw.strip()
+        if mode != 'face' and (not s or s.startswith('# ')):
+            continue
+        if s == 'palette':
+            mode = 'pal'
+            continue
+        if s == 'frame face 0':
+            mode, rows = 'face', []
+            continue
+        if mode == 'pal':
+            m = re.fullmatch(r'(\S)\s+(transparent|#[0-9a-fA-F]{6})(?:\s+(.*))?', s)
+            if not m:
+                raise GridError(f'{n}줄: 색 줄은 "<글자> #rrggbb [설명]" 이어야 한다: {s!r}')
+            ch, v = m.group(1), m.group(2)
+            pal[ch] = None if v == 'transparent' else tuple(int(v[i:i + 2], 16) for i in (1, 3, 5))
+            notes[ch] = m.group(3) or ''
+        elif mode == 'face':
+            if s:
+                rows.append(s)
+    pal.setdefault(TRANSPARENT, None)
+    return pal, notes, rows or []
+
+
+def dump_face(pal, notes, rows, header=''):
+    out = ['# ' + h for h in header.splitlines()] if header else []
+    out.append('palette')
+    for ch, rgb in pal.items():
+        v = 'transparent' if rgb is None else '#%02x%02x%02x' % rgb
+        out.append(f'{ch} {v}' + (f'   {notes.get(ch)}' if notes.get(ch) else ''))
+    out.append('frame face 0')
+    out += rows
+    return '\n'.join(out) + '\n'
+
+
+def from_faceset(png, index, colors=64):
+    """FaceSet(192×192, 4×4) 의 index 번째 얼굴 → (pal, notes, rows). 색은 colors 개로 줄이고 어두운 것부터 글자를 준다."""
+    a = Image.open(png).convert('RGB')
+    x, y = (index % 4) * FACE, (index // 4) * FACE
+    f = a.crop((x, y, x + FACE, y + FACE)).quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+    pl = f.getpalette()[:colors * 3]
+    used = sorted(set(f.getdata()))
+    cols = {i: tuple(pl[i * 3:i * 3 + 3]) for i in used}
+    order = sorted(used, key=lambda i: _lum(cols[i]))
+    ch = {i: FACE_CHARS[k] for k, i in enumerate(order)}
+    pal = {TRANSPARENT: None}
+    pal.update({ch[i]: cols[i] for i in order})
+    rows = [''.join(ch[f.getpixel((xx, yy))] for xx in range(FACE)) for yy in range(FACE)]
+    return pal, {}, rows
+
+
+def face_rgba(pal, rows):
+    im = Image.new('RGBA', (FACE, FACE), (0, 0, 0, 0))
+    p = im.load()
+    for yy, r in enumerate(rows):
+        for xx, c in enumerate(r):
+            if pal.get(c) is not None:
+                p[xx, yy] = pal[c] + (255,)
+    return im
+
+
+def face_gate(pal, rows, base=None):
+    fails, warns, m = [], [], {}
+    if len(rows) != FACE or any(len(r) != FACE for r in rows):
+        fails.append(f'얼굴은 48글자 × 48줄이어야 한다 (지금 {len(rows)}줄, 길이 {sorted({len(r) for r in rows})})')
+        return dict(ok=False, fails=fails, warns=warns, metrics=m)
+    bad = sorted({c for r in rows for c in r if c not in pal})
+    if bad:
+        fails.append(f'팔레트에 없는 글자 {"".join(bad)!r}')
+        return dict(ok=False, fails=fails, warns=warns, metrics=m)
+    used = {c for r in rows for c in r if c != TRANSPARENT}
+    m['colors'] = len(used)
+    if len(used) > FACE_MAX_COLORS:
+        fails.append(f'색 {len(used)}개 > {FACE_MAX_COLORS}')
+    holes = sum(c == TRANSPARENT for r in rows for c in r)
+    if holes:
+        warns.append(f'투명 픽셀 {holes}개 — RM2000 얼굴은 네모 칸을 꽉 채운다')
+    if base is not None:
+        bp, brows = base
+        chg = sum(pal.get(rows[yy][xx]) != bp.get(brows[yy][xx]) for yy in range(FACE) for xx in range(FACE))
+        m['changed_vs_base'] = round(chg / FACE / FACE, 3)
+        if chg / FACE / FACE < 0.15:
+            fails.append(f'뼈대 얼굴과 {chg / FACE / FACE:.0%} 만 다르다 — 새 캐릭터의 얼굴이 아니다(≥15%)')
+    return dict(ok=not fails, fails=fails, warns=warns, metrics=m)

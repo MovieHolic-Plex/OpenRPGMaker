@@ -30,8 +30,14 @@ r2..: 불합격이면 직전 판의 out.chr.txt 에서 시작해 검수자 지�
 검수자는 작업자의 notes.md 를 받지 않는다(그림·기계 검수·지시만). 기계 검수가 막으면 검수자 판정과 상관없이 FAIL.
 검수자 지시문 `reviewer.md`, 검수자가 보는 그림 `strip.png`·`base_strip.png`·`sheet_x8.png`·`context.png`(Actor1 네 명 옆에 세움).
 
+## 얼굴 (48×48 FaceSet) — `faces --run R` 또는 `loop` 끝에 자동(`--face sonnet`)
+뼈대는 같은 번호의 Actor1 얼굴(`public/assets/easyrpg/faceset/Actor1.png`, 칩 n번 ↔ 얼굴 n번 — `sharedCharacterGraphics.json`).
+원본은 125색이라 64색으로 줄여 꺼낸다(`chr.from_faceset`, 눈으로는 차이 없음). 작업자는 완성 칩을 보고 머리·색·장신구만 고친다(`face.md`).
+결과 `<작업 폴더>/face/out.face.txt`·`face/views/{face,face_x4,compare}.png`. 기계 검수: 48×48, 색 ≤90, 뼈대 얼굴과 ≥15% 다름.
+흉상·전신은 아직 없다 — 공용 흉상·전신(`public/assets/shared/portraits/`)은 1000px 생성 그림이라 뼈대로 쓸 수 없다(생성 이미지 금지).
+
 ## 받기/버리기 화면 (`serve`, 18314)
-http://mdc-server:18314/ — 모든 실행의 완성본을 걷기·돌기·칸 위 걷기 GIF, Actor1 옆에 세운 그림, 검수자 판정(참고용)과 함께 보여 준다.
+http://mdc-server:18314/ — 비포(Actor1 원본 걷기·돌기·시트·얼굴)와 애프터를 위아래로 나란히. 모든 실행의 완성본을 걷기·돌기·칸 위 걷기 GIF, Actor1 옆에 세운 그림, 검수자 판정(참고용)과 함께 보여 준다.
 `A` 받기 · `R` 버리기(이유 칩 + 메모, `Enter`) · `↑↓` 이동. 결정의 정본은 `~/.local/share/oprn/charset-actor-harness/decisions.jsonl`(추가만),
 결정마다 `harness-data/charset-actor/decisions.json` 사본과 `accepted/<폴더>__<실행>.chr.txt`·`.png`(받은 것만)를 다시 쓴다.
 서버는 사용자 유닛(transient) — 죽었으면:
@@ -68,6 +74,7 @@ python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0
 | `harness.py` | 명령들, 작업자 실행(`claude -p` / `codex exec`), 비교 화면, 받기/버리기 서버 |
 | `web/index.html` | 받기/버리기 화면 |
 | `reviewer.md` | 검수자 지시문 틀 |
+| `face.md` | 얼굴 작업자 지시문 틀 |
 | `chr.py` | `.chr.txt` 읽기·쓰기, Actor1 → 격자, 기계 검수, 시트·필름 띠·GIF 3종 |
 | `worker.md` | 작업자 지시문 틀(절대 규칙: 생성 이미지·외부 그림 금지, 모양은 격자를 직접 고쳐서) |
 | `fixer.md` | 수정 작업 덧붙임 — `draw --src <다른 작업 폴더> --fix-notes <감독 지적>` 이면 그 결과에서 시작해 지적을 고친다 |

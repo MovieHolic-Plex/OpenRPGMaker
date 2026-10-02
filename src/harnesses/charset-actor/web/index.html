@@ -49,6 +49,11 @@
   .cur { color:var(--dim); font-size:13px; }
   kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:0 4px; font-size:11px; color:var(--dim); }
   details { margin-top:10px; } summary { cursor:pointer; color:var(--dim); }
+  .ba { display:flex; flex-direction:column; gap:12px; }
+  .ba .col { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:8px 12px; }
+  .ba .lbl { color:var(--dim); font-size:12px; margin-bottom:6px; }
+  img.x2 { width:144px; height:256px; } img.fx { width:192px; height:192px; }
+  div.fx.wait { width:192px; height:192px; display:flex; align-items:center; justify-content:center; color:var(--dim); border:1px dashed var(--line); border-radius:4px; }
 </style>
 </head>
 <body>
@@ -133,7 +138,7 @@ let lastMain = '';
 function renderMain() {
   const it = S.items.find((i) => i.id === sel);
   // 주기 새로고침이 GIF 를 처음부터 다시 돌리거나 고르던 이유를 지우지 않게, 바뀐 게 없으면 그대로 둔다
-  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score]);
+  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score, it && it.face]);
   if (key === lastMain) return;
   lastMain = key;
   if (!it) { $('main').innerHTML = '<p class="cur">고를 것이 없습니다.</p>'; $('decide').hidden = true; return; }
@@ -150,10 +155,22 @@ function renderMain() {
       ${g.fails.map((x) => `<div class="f">✗ ${esc(x)}</div>`).join('')}${g.warns.map((x) => `<div class="w">△ ${esc(x)}</div>`).join('')}</div>`;
   $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.gender)} · 뼈대 Actor1 ${it.base + 1}번 · ${esc(it.label)} · ${esc(it.run)}</span></div>
     <div class="desc">${esc(it.brief_text)}</div>
-    <div class="views">
-      <figure><img src="${fu(it, 'views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
-      <figure><img src="${fu(it, 'views/turn.gif')}"><figcaption>돌기 (4배)</figcaption></figure>
-      <figure><img src="${fu(it, 'views/sheet.png')}"><figcaption>1배</figcaption></figure>
+    <div class="ba">
+      <div class="col"><div class="lbl">비포 — Actor1 ${it.base + 1}번 원본</div>
+        <div class="views">
+          <figure><img src="${fu(it, 'base-views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
+          <figure><img src="${fu(it, 'base-views/turn.gif')}"><figcaption>돌기</figcaption></figure>
+          <figure><img src="${fu(it, 'base-views/sheet.png')}" class="x2"><figcaption>시트 (2배)</figcaption></figure>
+          ${it.face ? `<figure><img src="${fu(it, 'face/ref/base_face_x4.png')}" class="fx"><figcaption>얼굴</figcaption></figure>` : ''}
+        </div></div>
+      <div class="col"><div class="lbl">애프터 — 새 캐릭터</div>
+        <div class="views">
+          <figure><img src="${fu(it, 'views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
+          <figure><img src="${fu(it, 'views/turn.gif')}"><figcaption>돌기</figcaption></figure>
+          <figure><img src="${fu(it, 'views/sheet.png')}" class="x2"><figcaption>시트 (2배)</figcaption></figure>
+          ${it.face === 'done' ? `<figure><img src="${fu(it, 'face/views/face_x4.png')}" class="fx"><figcaption>얼굴</figcaption></figure>`
+            : it.face === 'running' ? '<figure><div class="fx wait">얼굴 그리는 중…</div></figure>' : ''}
+        </div></div>
     </div>
     <div class="views" style="margin-top:14px">
       <figure><img src="${fu(it, 'views/context.png')}"><figcaption>Actor1 네 명 옆에 세움 (3배)</figcaption></figure>
