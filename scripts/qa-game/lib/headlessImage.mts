@@ -4,6 +4,7 @@ import type { GenerateAiImageRequest, GeneratedImageAsset } from "../../../src/a
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { CODEX_PROVIDER_ID } from "../../../src/ai/oauth/credentials";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "../../../src/ai/imageModelCatalog";
 // @ts-expect-error — .mjs 동반 앱 라이브러리
 import { createOhMyPiAdapters } from "../../lib/ohMyPiPiAi.mjs";
@@ -13,8 +14,10 @@ import { handleCompanionRequest } from "../../lib/ohMyPiHttp.mjs";
 let adapters: unknown;
 export async function headlessGenerateImage(request: GenerateAiImageRequest): Promise<GeneratedImageAsset> {
   adapters ??= await createOhMyPiAdapters();
-  const providerId = request.providerId ?? DEFAULT_IMAGE_PROVIDER_ID;
-  const model = request.model ?? DEFAULT_IMAGE_MODEL;
+  // QA_IMAGE_PROVIDER=codex — Google 이미지 용량(429)이 막혔을 때 앱 안의 GPT Image(god-tibo-imagen) 경로로 돌린다.
+  const viaCodex = process.env.QA_IMAGE_PROVIDER === "codex";
+  const providerId = request.providerId ?? (viaCodex ? CODEX_PROVIDER_ID : DEFAULT_IMAGE_PROVIDER_ID);
+  const model = request.model ?? (viaCodex ? "codex-image-default" : DEFAULT_IMAGE_MODEL);
   const result = await handleCompanionRequest(
     { method: "POST", url: "/v1/images/generations", headers: { "x-oprn-provider": providerId ?? DEFAULT_OH_MY_PI_PROVIDER }, body: { prompt: request.prompt, model, ...(request.referenceImages?.length ? { referenceImages: request.referenceImages } : {}) } },
     adapters,

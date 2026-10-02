@@ -12,8 +12,10 @@ const context = await browser.newContext({ viewport: { width: 640, height: 480 }
 const pageStart = Date.now();
 const page = await context.newPage();
 const errors = [];
+const audioRequests = [];
 page.on("pageerror", (e) => errors.push(String(e.message ?? e)));
 page.on("console", (m) => { if (m.type() === "error") errors.push("console: " + m.text()); });
+page.on("response", (r) => { if (/\/assets\/(se|easyrpg\/sound|cc0\/audio)\//.test(r.url())) audioRequests.push(`${Math.round((Date.now() - pageStart) / 100) / 10}s ${r.status()} ${r.url().split("/assets/")[1]}`); });
 await page.addInitScript(() => { try { localStorage.clear(); } catch {} window.__OPENRPG_BOOT__ = { projectUrl: "/__runtime-qa/project.json", saveNamespace: "truck-demo", qaInstrumentation: true }; });
 await page.route("**/__runtime-qa/project.json", (r) => r.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
 await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
@@ -27,5 +29,5 @@ while (Date.now() - t1 < total) {
   await page.waitForTimeout(every > 0 ? every : total);
   if (every > 0) await page.keyboard.press("Enter");
 }
-console.log(JSON.stringify({ enterAtMs: enterAt, errors }));
+console.log(JSON.stringify({ enterAtMs: enterAt, errors, audioRequests }));
 await context.close(); await browser.close(); await server.close();

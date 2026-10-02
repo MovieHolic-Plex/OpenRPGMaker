@@ -31,9 +31,16 @@ export type StageStep =
   | { readonly do: "fling"; readonly actor: string; readonly dir?: Side; readonly ms?: number; readonly spin?: number }
   | { readonly do: "say"; readonly speaker?: string; readonly text: string; readonly context?: string; readonly autoAdvance?: boolean }
   | { readonly do: "wait"; readonly ms: number }
-  | { readonly do: "flash" | "shake"; readonly ms?: number; readonly intensity?: number }
+  | { readonly do: "flash"; readonly ms?: number; readonly color?: "white" | "red" | "green" | "blue" | "yellow" | "purple" | "black" }
+  | { readonly do: "shake"; readonly ms?: number; readonly intensity?: number }
   | { readonly do: "se" | "bgm"; readonly resourceId: string }
   | { readonly do: "whiteout"; readonly ms?: number }
+  /** whiteout 로 덮은 흰 화면을 걷어 낸다(새 장소에서 «눈을 뜨는» 연출). */
+  | { readonly do: "dewhite"; readonly ms?: number }
+  /** 화면의 모든 그림(배경·배우·흰 막)을 지운다 — 장소를 옮기기 전에. */
+  | { readonly do: "clear" }
+  | { readonly do: "transfer"; readonly mapId: string; readonly x: number; readonly y: number; readonly facing?: "up" | "down" | "left" | "right"; readonly fade?: "black" | "white" | "none" }
+  | { readonly do: "fade"; readonly direction: "in" | "out"; readonly ms?: number }
   | { readonly do: "expect"; readonly touching: readonly [string, string]; readonly min?: number };
 
 export type TimedStep = StageStep & { readonly withPrevious?: boolean };
@@ -49,6 +56,8 @@ export interface StageActor {
   readonly walk?: Readonly<Partial<Record<Side | "down" | "up", readonly [string, string, string]>>>;
   readonly at?: PlaceSpec;
   readonly z?: number;
+  /** 맵 위의 실제 인물(주인공·NPC)이 서 있는 화면 자리를 표시만 한다 — 그림은 그리지 않고, touch·at·expect 의 기준으로만 쓴다. at 필수. */
+  readonly ghost?: boolean;
 }
 
 export interface StageInput {
@@ -151,6 +160,7 @@ export function compileStage(input: StageInput): StageResult {
 
   const topLeft = (a: ActorState, x = a.x, y = a.y): { x: number; y: number } => ({ x: round(x - a.spec.width / 2), y: round(y - a.spec.height) });
   const showBeats = (a: ActorState): Record<string, unknown>[] => {
+    if (a.spec.ghost) return [];
     const p = topLeft(a);
     return [
       ...(a.shown ? [{ kind: "picture", action: "erase", pictureId: a.pictureId }] : []),
@@ -198,6 +208,7 @@ export function compileStage(input: StageInput): StageResult {
     out.push({ kind: "picture", action: "show", pictureId: "pic1", resourceId: input.backdrop.id, x: 0, y: 0, scale });
   }
   for (const a of states.values()) {
+    if (a.spec.ghost && !a.spec.at) throw new StageError(`배우 '${a.spec.name}' 는 ghost 라서 at(화면 자리)이 필요합니다.`);
     if (!a.spec.at) continue;
     const p = place(a, a.spec.at, -1);
     a.x = p.x; a.y = p.y;
@@ -302,7 +313,23 @@ export function compileStage(input: StageInput): StageResult {
           end(ms);
           break;
         }
-        case "flash": events.push({ t: 0, order: order.n++, beat: { kind: "flash", color: "white", durationMs: step.ms ?? 600 } }); break;
+        case "flash": events.push({ t: 0, order: order.n++, beat: { kind: "flash", color: step.color ?? "white", durationMs: step.ms ?? 600 } }); break;
+        case "dewhite": {
+          const ms = step.ms ?? 1200;
+          const scale = Math.max(W, H) * 50;
+          events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "move", pictureId: "pic90", x: 0, y: 0, scale, opacity: 0, durationMs: ms } });
+          events.push({ t: ms, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic90" } });
+          end(ms);
+          break;
+        }
+        case "clear": {
+          for (const a of states.values()) { if (a.shown && !a.spec.ghost) events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: a.pictureId } }); a.shown = false; }
+          if (input.backdrop) events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic1" } });
+          events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic90" } });
+          break;
+        }
+        case "transfer": events.push({ t: 0, order: order.n++, beat: { kind: "transfer", mapId: step.mapId, x: step.x, y: step.y, ...(step.facing ? { facing: step.facing } : {}), fade: step.fade ?? "black" } }); end(600); break;
+        case "fade": events.push({ t: 0, order: order.n++, beat: { kind: "fade", direction: step.direction, durationMs: step.ms ?? 600, wait: true } }); end(step.ms ?? 600); break;
         case "shake": events.push({ t: 0, order: order.n++, beat: { kind: "shake", intensity: step.intensity ?? 9, durationMs: step.ms ?? 900 } }); break;
         case "se": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "se", resourceId: step.resourceId } }); break;
         case "bgm": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "bgm", resourceId: step.resourceId } }); break;
