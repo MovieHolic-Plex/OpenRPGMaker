@@ -32,7 +32,8 @@ const opSchema: JsonSchema = {
     op: { type: "string", enum: [...WORLDMAP_OPS] },
     poly: { type: "array", items: point, description: "land·sea·biome·forest·clear·plateau: 꼭짓점 [[x,y],...] (칸 좌표)" },
     line: { type: "array", items: point, description: "ridge·river: 꺾은선 [[x,y],...]. 강은 바다에서 끝낸다" },
-    x: { type: "number", description: "island 중심 · pass 중심 · move_place 새 왼쪽 위 칸" },
+    lava: { type: "array", items: point, description: "volcano: 용암 줄기 꺾은선(선택)" },
+    x: { type: "number", description: "island·pass·volcano 중심 · move_place 새 왼쪽 위 칸" },
     y: { type: "number" },
     rx: { type: "number", description: "island 가로 반지름(칸)" },
     ry: { type: "number", description: "island 세로 반지름(칸)" },
@@ -41,7 +42,7 @@ const opSchema: JsonSchema = {
     kind: { type: "string", enum: ["mount", "small", "mesa", "broad", "conifer", "snow", "jungle", "dead"], description: "ridge: mount|small|mesa · forest: broad|conifer|snow|jungle|dead" },
     width: { type: "number", description: "ridge 최대 폭 1~3(기본 2)" },
     peak: point,
-    widen: { type: "number", description: "river: 이 비율(0~1)부터 하류가 두 칸 폭" },
+    widen: { type: "number", description: "river: 이 비율(0~1)부터 하류가 두 칸 폭. 0 = 처음부터 두 칸, 없으면 한 칸" },
     density: { type: "number", description: "forest 빽빽함 0~1(기본 0.55)" },
     what: { type: "string", enum: ["forest", "mount", "all"], description: "clear: 걷을 물체" },
     level: { type: "integer", enum: [1, 2], description: "plateau 높이" },
@@ -52,11 +53,14 @@ const opSchema: JsonSchema = {
 
 const OP_HELP =
   "작업(ops, 칸 좌표 96×72, x 오른쪽·y 아래): "
-  + "land{poly,ground?} 땅 더하기 · sea{poly} 바다로 자르기(대륙 가르기·만 파기) · island{x,y,rx,ry,ground?} · "
+  + "land{poly,ground?} 땅 더하기 · sea{poly} 바다로 자르기(대륙 가르기·만 파기·호수) · island{x,y,rx,ry,ground?} · "
   + "biome{poly,ground} 바닥 바꾸기 · ridge{line,kind?,width?,peak?} 산줄기 · pass{x,y,r?} 고개 뚫기 · "
   + "river{line,widen?} 강(바다로 끝낼 것) · forest{poly,kind?,density?} · clear{poly,what?} 숲·산 걷기 · "
-  + "plateau{poly,level?,ground?} 고원(절벽이 생긴다) · move_place{id,x,y} 장소 옮기기. "
-  + `바닥: ${WORLDMAP_GROUNDS.join(" ")}.`;
+  + "plateau{poly,level?,ground?} 고원(절벽이 생긴다) · volcano{x,y,lava?} 화산(분화구+고리, 반지름 4칸 땅 필요) · move_place{id,x,y} 장소 옮기기. "
+  + `바닥 이름→글자: grass . farm f crop p savanna v sand s dune d dirt D badlands b ash a basalt B swamp w marsh m tundra t snow n glacier g jungle j. `
+  + "규칙: 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다) — 해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 river 로 끊어 다리를 놓게 하라. "
+  + "숲은 물·장소 둘레·길·산 위에 안 놓이고 사막에서 지워진다. 장소마다 여정 규칙(places 줄 끝)이 있다 — 열쇠 장소·장벽 뒤 장소는 그 장벽 밖으로 옮기지 마라. "
+  + "테마는 화풍만 바꾼다(지형·장소 배치는 공용). 실제 빌드는 처음 약 2분, 같은 지형은 캐시.";
 
 // ── 준비(prepare) 결과 캐시: 같은 (테마, 작업, 미리보기) 는 한 번만 빌드한다 ──
 const prepared = new Map<string, WorldmapBuildResult>();
@@ -122,12 +126,15 @@ async function prepareRequest(request: WorldmapBuildRequest): Promise<void> {
 function resultFor(request: WorldmapBuildRequest): Extract<WorldmapBuildResult, { ok: true }> {
   const entry = prepared.get(requestKey(request));
   if (!entry) throw new ToolError("월드맵 빌드가 실행되지 않았다 — 같은 인자로 다시 호출하라.", { code: "worldmap-not-prepared" });
-  if (!entry.ok) throw new ToolError(`월드맵 빌드 실패:\n${entry.error}\n\n${OP_HELP}`, { code: "worldmap-build-failed" });
+  if (!entry.ok) {
+    throw new ToolError(`월드맵 빌드 실패:\n${entry.error}\n\n같은 ops 의 앞부분만 read_world_terrain(ops) 로 미리 보면 어디가 깨졌는지 글자 지도로 보인다.\n${OP_HELP}`, { code: "worldmap-build-failed" });
+  }
   return entry;
 }
 
 function placesSummary(result: Extract<WorldmapBuildResult, { ok: true }>): string[] {
-  return result.world.places.map(p => `${p.id}(${p.role}) ${p.x},${p.y} ${p.w}×${p.h}`);
+  const rules = result.world.placeRules ?? {};
+  return result.world.places.map(p => `${p.id}(${p.role}) ${p.x},${p.y} ${p.w}×${p.h}${rules[p.id] ? ` — ${rules[p.id]}` : ""}`);
 }
 
 function slug(text: string, i: number): string {
@@ -227,8 +234,8 @@ const readWorldTerrain: ToolDefinition = {
       summary: `세계 지형 ${result.world.terrain}(${request.theme}) — 장소 ${result.world.places.length}곳, 여정 검사 ${result.journeyCheck?.ok === false ? "불일치" : "통과"}`,
       data: {
         theme: request.theme, mapId: map?.id ?? null, ops: request.terrain?.ops ?? [],
-        ascii: result.ascii, places: placesSummary(result), journeyCheck: result.journeyCheck, warnings: result.warnings,
-        help: OP_HELP,
+        themeNote: result.themeNote, ascii: result.ascii, places: placesSummary(result), journeyCheck: result.journeyCheck,
+        warnings: result.warnings, help: OP_HELP,
       },
     };
   },
@@ -241,7 +248,7 @@ const editWorldTerrain: ToolDefinition = {
     + "월드맵 키트(테마 17종: 판타지·우주·현대·스팀펑크·조선…)가 같은 화풍으로 다시 그리고 여정 도달성(걸어서·배·사막선·비공정)을 검사한다. "
     + "mapId 가 기존 월드맵 키트 지도면 거기 쌓인 작업 뒤에 ops 를 잇는다(replace=true 면 ops 로 갈아 끼운다). mapId 가 없으면 새 세계 지도 맵을 만든다. "
     + "좌표는 먼저 read_world_terrain 의 글자 지도로 고른다. 장소 발자국이 물이 되거나 길이 막히면 실패하고 이유를 돌려준다 — 그 문장대로 작업을 고쳐 다시 부른다. "
-    + "preview=true 는 저장하지 않고 몇 초 만에 도식 그림만 본다. 실제 빌드는 지형이 바뀌면 2분 남짓 걸린다. "
+    + "preview=true 는 저장하지 않고 몇 초 만에 도식 그림만 본다(도식은 바닥 종류 색이라 테마 팔레트와 다르다 — themeNote 를 보라). 실제 빌드는 처음 2분 남짓, 같은 지형은 캐시. "
     + OP_HELP,
   mode: "write",
   domains: ["map", "world"],
@@ -273,11 +280,16 @@ const editWorldTerrain: ToolDefinition = {
     const result = resultFor(request);
     lastImage.set("edit_world_terrain", result.imageDataUrl);
     const base = {
-      theme: request.theme, ops: request.terrain?.ops ?? [], ascii: result.ascii, places: placesSummary(result),
+      theme: request.theme, themeNote: result.themeNote, ops: request.terrain?.ops ?? [], ascii: result.ascii, places: placesSummary(result),
       journeyCheck: result.journeyCheck, warnings: result.warnings, seconds: result.seconds,
     };
     if (result.journeyCheck && !result.journeyCheck.ok) {
-      throw new ToolError(`여정 도달성 검사 불일치 — 지도는 저장하지 않았다:\n${result.journeyCheck.bad.join("\n")}\n작업을 고쳐 다시 부르라.`, { code: "journey-check-failed" });
+      throw new ToolError(
+        `여정 도달성 검사 불일치 — 지도는 저장하지 않았다:\n${result.journeyCheck.bad.join("\n")}\n`
+        + `같은 ops 로 read_world_terrain 을 부르면 글자 지도·장소별 여정 규칙을 보며 고칠 수 있다.`
+        + (result.warnings.length ? `\n경고: ${result.warnings.join(" / ")}` : ""),
+        { code: "journey-check-failed" },
+      );
     }
     if (request.preview) {
       return { summary: `미리보기(저장 안 함, ${result.seconds}초) — 작업 ${base.ops.length}개, 여정 검사 통과`, data: { preview: true, ...base } };

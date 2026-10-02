@@ -1122,8 +1122,8 @@ def render_space(ctx, seed=11, road_px=None):
     lvl = np.where((lvl == 0) & wisp, 1, lvl)
     lvl = np.where((lvl == 0) & (d > .2) & (d <= .32) & (bayer(H, W) < (d - .2) / .12 * .5), 1, lvl)   # 끝자락 디더 한 단
     # 성운 종류는 크게 휜 좌표로 고른다 — 바닥 다각형의 곧은 변이 성운 경계에 그대로 남아 세로 직선이 됐다(QA 4차, (68,18~22))
-    wx3 = (vnoise(H, W, 46, seed + 31) - .5) * 64 + (vnoise(H, W, 15, seed + 32) - .5) * 14
-    wy3 = (vnoise(H, W, 46, seed + 33) - .5) * 64 + (vnoise(H, W, 15, seed + 34) - .5) * 14
+    wx3 = (vnoise(H, W, 46, seed + 31) - .5) * 84 + (vnoise(H, W, 15, seed + 32) - .5) * 14
+    wy3 = (vnoise(H, W, 46, seed + 33) - .5) * 84 + (vnoise(H, W, 15, seed + 34) - .5) * 14
     P = near[np.clip(((yy + wy3) // TS).astype(int), 0, ctx.H - 1), np.clip(((xx + wx3) // TS).astype(int), 0, ctx.W - 1)]
     wx2 = (vnoise(H, W, 22, seed + 21) - .5) * 30
     wy2 = (vnoise(H, W, 22, seed + 22) - .5) * 30

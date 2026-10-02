@@ -30,6 +30,7 @@ from PIL import Image  # noqa: E402
 
 import kit_common as K  # noqa: E402
 import kit_palette as KP  # noqa: E402
+import kit_terrain as KTer  # noqa: E402
 
 KEY_ROLES = ('grass', 'savanna', 'sand', 'tundra', 'snow', 'forest', 'mount', 'rock', 'swamp', 'badlands', 'ash', 'sea', 'river')   # 구별력 지표를 재는 주요 지형
 PALETTE_ORDER = ['original', 'ruin', 'dusk', 'winter', 'ashfall', 'regional']
@@ -71,6 +72,7 @@ def build_terrain(journey, roles, roles_data, iconset, assign, cache, terrain=No
     purity = KP.role_purity(C, ukeys, role, grp_t)
     world = W.world_dict(w, journey, assign)
     world['terrain'] = terrain['id'] if terrain else 'shared-v9'
+    world['place_rules'] = KTer.place_rules(journey)
     _collect_warnings(world, terrain)
     out = dict(C=C, ukeys=ukeys, role=role, G=w.M.G.copy(), grp_t=grp_t, world=world, paths_same=bool(paths_same), purity=purity, cached=False, seconds=time.time() - t0)
     if cache:
@@ -218,10 +220,19 @@ def schematic(world, scale=8):
         d.rectangle([x * scale + scale // 3, y * scale + scale // 3, x * scale + scale * 2 // 3, y * scale + scale * 2 // 3], fill=(150, 100, 50))
     for p in world['places']:
         d.rectangle([p['x'] * scale, p['y'] * scale, (p['x'] + p['w']) * scale - 1, (p['y'] + p['h']) * scale - 1], outline=(255, 40, 40), width=2)
+    # 10칸 격자 + 숫자 — 틱만 있으면 그림으로 좌표를 못 읽었다(조수 역할 시험)
+    ov = Image.new('RGBA', im.size, (0, 0, 0, 0))
+    od = ImageDraw.Draw(ov)
+    for x in range(10, w, 10):
+        od.line([(x * scale, 0), (x * scale, h * scale)], fill=(255, 255, 255, 70))
+    for y in range(10, h, 10):
+        od.line([(0, y * scale), (w * scale, y * scale)], fill=(255, 255, 255, 70))
+    im = Image.alpha_composite(im.convert('RGBA'), ov).convert('RGB')
+    d = ImageDraw.Draw(im)
     for x in range(0, w, 10):
-        d.line([(x * scale, 0), (x * scale, 4)], fill=(255, 255, 255))
-    for y in range(0, h, 10):
-        d.line([(0, y * scale), (4, y * scale)], fill=(255, 255, 255))
+        d.text((x * scale + 2, 1), str(x), fill=(255, 255, 255), stroke_width=1, stroke_fill=(0, 0, 0))
+    for y in range(10, h, 10):
+        d.text((2, y * scale + 1), str(y), fill=(255, 255, 255), stroke_width=1, stroke_fill=(0, 0, 0))
     return im
 
 
@@ -326,7 +337,7 @@ def main():
         from check_journey import run_check
         jw = W2.MapWorld(world)
         bad, info, txt = run_check(journey, jw, out_path=out / 'journey-check.txt', verbose=False)
-        report['journey_check'] = dict(ok=not bad, bad=bad)
+        report['journey_check'] = dict(ok=not bad, bad=KTer.explain(bad, journey))
         print('여정 검사: %s' % ('통과' if not bad else '불일치 %d건 — %s' % (len(bad), '; '.join(bad[:3]))))
     (out / 'build-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))
 
@@ -343,6 +354,7 @@ def preview(journey, roles, iconset, assign, out, no_check, terrain):
         sys.exit(2)
     world = W.world_dict(w, journey, assign)
     world['terrain'] = terrain['id'] if terrain else 'shared-v9'
+    world['place_rules'] = KTer.place_rules(journey)
     _collect_warnings(world, terrain)
     world['walk'] = walk_rows(world)
     out.mkdir(parents=True, exist_ok=True)
@@ -355,7 +367,7 @@ def preview(journey, roles, iconset, assign, out, no_check, terrain):
     if not no_check:
         from check_journey import run_check
         bad, info, txt = run_check(journey, W.MapWorld(world), out_path=out / 'journey-check.txt', verbose=False)
-        report['journey_check'] = dict(ok=not bad, bad=bad)
+        report['journey_check'] = dict(ok=not bad, bad=KTer.explain(bad, journey))
         print('여정 검사: %s' % ('통과' if not bad else '불일치 %d건 — %s' % (len(bad), '; '.join(bad[:3]))))
     (out / 'build-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))
 

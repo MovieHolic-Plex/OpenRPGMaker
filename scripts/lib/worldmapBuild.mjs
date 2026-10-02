@@ -31,6 +31,19 @@ function run(args, timeoutMs) {
   });
 }
 
+/** 테마가 지형을 어떻게 칠하는지 한 줄 — 글자 지도는 바닥 종류라서, 지역 팔레트(desert-east 등)가 정글을 모래빛으로 칠하면 조수가 오해했다. */
+async function themeNote(theme) {
+  try {
+    const t = JSON.parse(await readFile(join(KIT, "themes", `${theme}.json`), "utf8"));
+    const p = t.palette ? JSON.parse(await readFile(join(KIT, "palettes", `${t.palette}.json`), "utf8")) : null;
+    const terrain = t.terrain ? ` 이 테마는 지형 「${t.terrain}」 을 먼저 깐다.` : "";
+    return `${t.name}: 테마는 화풍(팔레트·덧칠·아이콘)만 바꾼다 — 지형·장소 배치는 모든 테마가 같은 공용 지형이다.${terrain}`
+      + (p?.desc ? ` 팔레트 ${p.id ?? t.palette}: ${p.desc}${p.regional ? " (지역 팔레트 — 같은 바닥 글자도 자리마다 다른 색으로 칠해진다)" : ""}` : "");
+  } catch {
+    return "";
+  }
+}
+
 export async function buildWorldmap(request = {}) {
   const theme = typeof request.theme === "string" && request.theme ? request.theme : "fantasy";
   if (!THEME_RE.test(theme)) return { ok: false, error: `theme 이름이 올바르지 않다: ${theme}` };
@@ -67,7 +80,9 @@ export async function buildWorldmap(request = {}) {
         width: world.width, height: world.height, terrain: world.terrain, palette: world.palette ?? null,
         ground: world.ground, object: world.object, height_level: world.height_level, walk: world.walk,
         places: world.places, road_cells: world.road_cells, ramp: world.ramp, bridges: world.bridges, sky_site: world.sky_site,
+        placeRules: world.place_rules ?? {},
       },
+      themeNote: await themeNote(theme),
       ascii,
       journeyCheck: report.journey_check ?? null,
       warnings,

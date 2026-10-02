@@ -56,6 +56,24 @@ COST = {GRASS: 1, SAND: 1, SNOW: 1, DIRT: 1, MARSH: 9, FOREST: 12, SFOREST: 12, 
 DIRS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
 
+def _blocked_at(t, targets):
+    """마지막 route 가 닿은 칸 중 목표에 가장 가까운 칸과 그 앞 칸 — 「(x,y) 까지 가서 (x2,y2) 바다에 막혔다」."""
+    reached = {(x, y) for (x, y, _d) in getattr(route, 'last_reached', {})}
+    if not reached or not targets:
+        return ''
+    tx = sum(c[0] for c in targets) / len(targets)
+    ty = sum(c[1] for c in targets) / len(targets)
+    bx, by = min(reached, key=lambda c: (c[0] - tx) ** 2 + (c[1] - ty) ** 2)
+    sx, sy = (tx > bx) - (tx < bx), (ty > by) - (ty < by)
+    nx, ny = (bx + sx, by) if abs(tx - bx) >= abs(ty - by) else (bx, by + sy)
+    H, W = t.shape
+    kind = '맵 밖'
+    if 0 <= nx < W and 0 <= ny < H:
+        k = int(t[ny, nx])
+        kind = {SEA: '바다', ICE: '빙하'}.get(k, '장소 발치')
+    return ' 길이 (%d,%d) 까지 가고 (%d,%d) 의 %s에 막혔다' % (bx, by, nx, ny, kind)
+
+
 def route(t, road, foot, starts, targets, turn=2.0):
     """멀티 시작·멀티 목표 다익스트라. 강 칸은 곧게만 건넌다. targets: dict 칸->추가비용. 반환: 칸 목록 또는 None"""
     H, W = t.shape
@@ -67,6 +85,7 @@ def route(t, road, foot, starts, targets, turn=2.0):
             dist[(s[0], s[1], d)] = 0.0
             heapq.heappush(pq, (0.0, s[0], s[1], d))
     best = None
+    route.last_reached = dist                       # 실패했을 때 「어디까지 갔나」를 오류 문장에 쓴다
     while pq:
         c, x, y, d = heapq.heappop(pq)
         if dist.get((x, y, d), 1e18) < c - 1e-9:
@@ -156,7 +175,9 @@ def plan_roads(t, icon_cells, routes, block=None):
             p = route(t, road, fb, starts, tg)
             if p is None:
                 from kit_common import KitError
-                raise KitError('길을 낼 수 없다: %s (%s → %s) — 산·사구·절벽·물에 막혔다. 고개(pass)를 내거나 장소를 옮기거나 그 사이 땅을 이어라' % (name, va, vb))
+                raise KitError('길을 낼 수 없다: %s (%s → %s)%s — 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다). '
+                               '해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 강(river)으로 끊어라. 산줄기면 고개(pass)를 내라'
+                               % (name, va, vb, _blocked_at(t, list(tg))))
             full += p if not full else p[1:]
         # 강 건널목 표시
         for i, (x, y) in enumerate(full):

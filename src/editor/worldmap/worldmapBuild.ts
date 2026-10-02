@@ -11,7 +11,7 @@ import { companionRequestBaseUrl } from "@/ai/llmClient";
 export const WORLDMAP_GROUNDS = [
   "grass", "farm", "crop", "savanna", "sand", "dune", "dirt", "badlands", "ash", "basalt", "swamp", "marsh", "tundra", "snow", "glacier", "jungle",
 ] as const;
-export const WORLDMAP_OPS = ["land", "sea", "island", "biome", "ridge", "pass", "river", "forest", "clear", "plateau", "move_place"] as const;
+export const WORLDMAP_OPS = ["land", "sea", "island", "biome", "ridge", "pass", "river", "forest", "clear", "plateau", "volcano", "move_place"] as const;
 
 export interface WorldmapPlace { id: string; role: string; act: number; x: number; y: number; w: number; h: number; icon: string }
 
@@ -30,6 +30,8 @@ export interface WorldmapWorld {
   ramp: [number, number][];
   bridges: { x: number; y: number; dir: string }[];
   sky_site: [string, number, number, number, number];
+  /** 장소 id → 여정 규칙 한 줄(몇 막에 무엇으로 처음 닿는가·열쇠 장소·길로 이어진 장소). */
+  placeRules: Record<string, string>;
 }
 
 export interface WorldmapBuildRequest {
@@ -48,6 +50,8 @@ export type WorldmapBuildResult =
     imageDataUrl: string;
     world: WorldmapWorld;
     ascii: string;
+    /** 테마가 지형을 어떻게 칠하는지(지역 팔레트면 같은 바닥도 자리마다 다른 색). */
+    themeNote: string;
     journeyCheck: { ok: boolean; bad: string[] } | null;
     warnings: string[];
     seconds: number;

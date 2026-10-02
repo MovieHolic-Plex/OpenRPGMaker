@@ -236,6 +236,8 @@ RIVERS = [
     ('동대륙 지류', [(70, 21), (68, 24), (67, 27)], 2, 5),
 ]
 LAVA_LINE = [(79, 19), (82, 20), (85, 22)]
+VOLCANOES = [(77.5, 16.5)]          # 화구 가운데(칸+.5). 지형 편집 volcano 작업이 더한다
+LAVA_LINES = [LAVA_LINE]
 TOXIC_POOLS = [[(62.5, 16, 1.3), (64, 17.2, 1.7), (65.6, 18.3, 1.4), (67, 19.6, 1.0)],
                [(66.5, 22.5, 1.2), (68, 23.4, 1.5), (69.6, 23.9, 1.0)],
                [(61.5, 21, 1.1), (62.8, 22.2, 1.3)]]
@@ -391,11 +393,13 @@ def build():
         if 0 <= x < W and 0 <= y < H and land[y, x] and G[y, x] >= 10:
             G[y, x] = CHASM
     lv = np.zeros((H, W), bool)
-    for (x, y) in river_cells(LAVA_LINE, 6, .6):
-        if land[y, x]:
-            G[y, x] = LAVA
+    for li, line in enumerate(LAVA_LINES):
+        for (x, y) in river_cells(line, 6 + li * 13, .6):
+            if 0 <= x < W and 0 <= y < H and land[y, x]:
+                G[y, x] = LAVA
     cm = np.zeros((H, W), bool)
-    disc(cm, 77.5, 16.5, 2.6)
+    for vx, vy in VOLCANOES:
+        disc(cm, vx, vy, 2.6)
     G[cm & land & (G >= 10)] = CRATER
     # 4. 고원
     for i, (poly, lvl, g) in enumerate(PLATEAUS):
@@ -448,9 +452,10 @@ def build():
         O[fm] = obj
     # 화산 덩이
     vm = np.zeros((H, W), bool)
-    disc(vm, 77.5, 16.5, 3.6)
     vm2 = np.zeros((H, W), bool)
-    disc(vm2, 77.5, 16.5, 2.6)
+    for vx, vy in VOLCANOES:
+        disc(vm, vx, vy, 3.6)
+        disc(vm2, vx, vy, 2.6)
     for y in range(H):
         for x in range(W):
             if vm[y, x] and not vm2[y, x] and land[y, x] and (G[y, x] >= 10) and rnd(x, y, 77) > .12:
