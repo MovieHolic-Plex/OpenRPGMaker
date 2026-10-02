@@ -1,5 +1,5 @@
 // start/startScreen.ts
-// 데스크톱 앱 첫 화면(start-screen.html) — 런처형: 왼쪽 레일(새 게임·폴더 열기) + 이어서 만들기·최근 작업.
+// 데스크톱 앱 첫 화면(start-screen.html) — 시네마틱 로비 + 기존 새 게임·팀 참여 흐름.
 //
 // 왜 다시 만들었나 (2026-09-27): 옛 화면은 크림색 카드에 버튼 둘과 경로 목록뿐이었다. 목록 20줄 중
 // 19줄이 QA 가 남긴 `/tmp/oprn-packaged-*` 경로였고, 「새 프로젝트」는 장르도 묻지 않고 빈 편집기로
@@ -9,6 +9,7 @@
 // 여기서는 폴더만 만들고, 고른 장르·한 문장은 startIntent 로 편집기 부팅에 넘긴다(src/editor/startScreenHandoff.ts).
 
 import "./startScreen.css";
+import { createStartLobby, createLobbyWays, createLobbyFeatures } from "./startLobby";
 import { APP_VERSION, PRODUCT_BRAND } from "@/brand";
 import { NEW_PROJECT_CHOICES, type NewProjectChoice, type NewProjectChoiceId } from "@/editor/newProjectChoices";
 import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
@@ -46,7 +47,6 @@ export const START_SCREEN_TESTIDS = {
 const DEFAULT_TITLE = "새 게임";
 /** 격자 첫 칸은 「새 게임」이라 최근 프로젝트는 11장까지 — 넓은 창에서 네 칸 세 줄이 찬다. */
 const MAX_GRID = 11;
-/** 최근 작업이 하나도 없을 때(첫 방문) 히어로 판에 까는 키아트. */
 
 type View = "home" | "new" | "join";
 
@@ -345,7 +345,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     class: "start-nav-item",
     attrs: { type: "button" },
     dataset: { testid: START_SCREEN_TESTIDS.navRecent },
-    children: [icon("clock"), "최근 작업"],
+    children: [icon("clock"), "홈"],
     on: { click: () => showView("home") },
   });
   const navNew = el("button", {
@@ -355,7 +355,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     children: [icon("sparkle"), "새 게임"],
     on: { click: () => showView("new") },
   });
-  const rail = el("aside", {
+  const rail = el("header", {
     class: "start-rail",
     children: [
       el("div", {
@@ -395,47 +395,13 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   });
 
   // ── 홈 ────────────────────────────────────────────────────────────────
-  /**
-   * 가장 최근 프로젝트를 판 전체로 보인다 — 시작 맵 그림이 배경이다. 판 전체가 「열기」 단추이고(투명 단추를 뒤에 깐다),
-   * 앞의 단추들은 같은 판 위에서 따로 눌린다. 그림은 applyCover 가 나중에 바꿔 끼울 수 있게 data-hero-for 를 단다.
-   */
-  const heroFor = (entry: RecentProjectEntry): HTMLElement => {
-    const hero = el("section", {
-      class: "start-hero" + (entry.cover ? "" : " is-empty-art"),
-      attrs: { "aria-label": "이어서 만들기" },
-      dataset: { testid: START_SCREEN_TESTIDS.continueCard, heroFor: entry.projectDir },
-    });
-    if (entry.cover) hero.append(el("img", { class: "start-hero-bg", attrs: { src: entry.cover, alt: "", decoding: "async", draggable: "false" } }));
-    hero.append(
-      el("button", {
-        class: "start-hero-open",
-        attrs: { type: "button", "aria-label": entry.title + " 열기" },
-        dataset: { testid: START_SCREEN_TESTIDS.continueOpen },
-        on: { click: () => openEntry(entry) },
-      }),
-      el("div", { class: "start-hero-body", children: [
-        el("span", { class: "start-kicker", text: "이어서 만들기" }),
-        el("h1", { class: "start-hero-title", text: entry.title }),
-        el("span", { class: "start-hero-meta", text: entryMeta(entry) }),
-        el("span", { class: "start-path", text: entry.projectDir }),
-        el("div", { class: "start-hero-actions", children: [
-          // 판 전체 단추(start-hero-open)와 같은 일을 하는 겉모양이다. 키보드·화면 낭독기는 판 단추 하나만 만난다.
-          el("span", {
-            class: "start-btn start-btn-primary start-btn-lg",
-            attrs: { "aria-hidden": "true" },
-            children: ["계속 만들기", icon("arrow")],
-          }),
-          el("button", {
-            class: "start-btn start-btn-lg",
-            attrs: { type: "button" },
-            children: [icon("plus"), "새 게임"],
-            on: { click: () => showView("new", null) },
-          }),
-        ] }),
-      ] }),
-    );
-    return hero;
-  };
+  const lobbyActions = (entry?: RecentProjectEntry) => ({
+    newGame: () => showView("new", null),
+    openProject: () => { if (entry) openEntry(entry); },
+    examples: () => showView("new", null, "example"),
+    ai: () => showView("new", GENRES[0]?.id ?? null, "ai"),
+    blank: () => showView("new", null, "blank"),
+  });
 
   const genrePosters = (onPick: (id: NewProjectChoiceId | null) => void, selected: NewProjectChoiceId | null | undefined): HTMLElement => {
     const poster = (id: NewProjectChoiceId | null, label: string, blurb: string, thumb: string | null): HTMLButtonElement => {
@@ -509,12 +475,16 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (!state.loaded) return [el("div", { class: "start-loading", text: "최근 작업을 읽는 중…" })];
     const { visible, temporary, missing } = partitionRecentEntries(state.entries);
     const list = state.showHidden ? state.entries : visible;
-    const out: HTMLElement[] = [];
-    if (list.length === 0) {
-      out.push(...renderStartChoices());
-    } else {
-      const [first, ...rest] = list;
-      out.push(heroFor(first!));
+    // Hidden QA/missing entries may be inspected, but never become the primary continue action.
+    const first = visible[0];
+    const rest = list.filter((entry) => entry !== first);
+    const actions = lobbyActions(first);
+    const out: HTMLElement[] = [
+      createStartLobby(first, first ? entryMeta(first) : "", actions),
+      createLobbyWays(actions),
+      createLobbyFeatures(),
+    ];
+    if (first || rest.length > 0) {
       out.push(el("h2", { class: "start-section", children: [
         "최근 프로젝트",
         ...(rest.length > 0 ? [el("span", { class: "start-section-count", text: String(rest.length) })] : []),
@@ -677,6 +647,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (home) { navRecent.setAttribute("aria-current", "page"); navNew.removeAttribute("aria-current"); }
     else if (state.view === "new") { navNew.setAttribute("aria-current", "page"); navRecent.removeAttribute("aria-current"); }
     else { navNew.removeAttribute("aria-current"); navRecent.removeAttribute("aria-current"); }
+    main.classList.toggle("is-home", home);
+    host.dataset.view = state.view;
     main.replaceChildren(...renderView(), errorBox);
   };
 
@@ -690,7 +662,9 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     }
     for (const hero of main.querySelectorAll<HTMLElement>("[data-hero-for]")) {
       if (hero.dataset.heroFor !== projectDir) continue;
-      hero.classList.remove("is-empty-art");
+      hero.classList.remove("is-empty-art", "is-fallback-art");
+      const credit = hero.querySelector(".start-cinema-credit > span");
+      if (credit) credit.textContent = "MADE WITH OPRN";
       const current = hero.querySelector<HTMLImageElement>(".start-hero-bg");
       if (current) current.src = cover;
       else hero.prepend(el("img", { class: "start-hero-bg", attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
@@ -748,7 +722,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     })
     .finally(() => {
       state.loaded = true;
-      // 최근 작업이 하나도 없으면 첫 방문이다 — 홈이 장르 포스터를 보여 준다.
+      // 첫 방문은 공용 장면, 재방문은 가장 최근 프로젝트의 표지 그림을 보여 준다.
       render();
       void refreshCovers();
     });

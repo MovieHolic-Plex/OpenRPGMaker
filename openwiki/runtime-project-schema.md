@@ -71,18 +71,26 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는 바이트 그대로. `normalizeSkillRecord` 화이트리스트(0 초과만 남김)·
 `updateSkillRecord` 패치 키 목록에 있다. 전투는 시전자 자신을 대상으로 한 타임라인 엔트리(대가 damage·흡수 healing)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
 
-## 데스크톱 시작 화면 — 런처형 (2026-09-27)
+## 데스크톱 시작 화면 — 시네마틱 로비 (2026-10-03)
 
 옛 `public/start-screen.html + .js`(크림색 카드, 버튼 둘, 경로 목록)를 **vite 엔트리**로 바꿨다.
 실측: 최근 목록 20줄 중 19줄이 QA 가 남긴 `/tmp/oprn-packaged-*` 였고, 「새 프로젝트」는 장르를 묻지 않고
 빈 편집기로 넘어간 뒤 캔버스 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다.
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
-- **모양(2026-09-28)**: 어두운 스튜디오 톤(`--st-*`). 가장 최근 프로젝트는 시작 맵 그림을 판 전체에 까는 히어로(판 전체가 열기 단추,
-  `start-continue`/`start-continue-open`), 그 아래 격자 첫 칸이 「새 게임」(`start-new-card`)이다. 최근 작업이 없으면
-  키아트(`public/assets/generated/welcome/start-hero.jpg`) 히어로 + 장르 포스터. 새 게임 입력판 뒤에는 고른 장르 포스터가 깔린다.
-  좁은 창(860px 이하)에서는 레일이 한 줄 머리띠로 접힌다.
-  편집기 트리를 import 하지 않는다 — 번들 11KB. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
+- **모양(2026-10-03)**: 상단 헤더에 홈·새 게임·폴더 열기·팀 참여·언어를 두고, 홈 전체 폭에 시네마틱 장면을 보여 준다.
+  `src/start/startLobby.ts` / `startLobby.css`가 로비만 소유한다(`start-lobby` layer는 기존 생성 폼 시트 뒤).
+  첫 방문은 기존 공용 참고 장면 `river-fortress.png` / `lake-village.png` / `outdoor-opening-overlook.png` 중 하나를 고른다.
+  최근 작업이 있으면 가장 최근의 **숨기지 않은** 프로젝트 표지를 배경으로 쓴다(`start-continue`).
+  실제 「계속 만들기」 버튼(`start-continue-open`)이 프로젝트를 연다. 장면 전체를 덮는 투명 버튼은 없다.
+  표지가 없을 때는 「OPRN 장면 미리보기」로 공용 그림임을 알리고, 기존 `applyCover`가 그림을 굽는 대로 배경만 교체한다.
+  숨긴 항목을 펼쳐도 임시/사라진 폴더를 대표 이어하기로 승격하지 않는다.
+  아래 세 입구(예제·AI·빈 맵)는 기존 `showView("new", choiceId, startMode)`를 사용하며, 새 게임 설정·팀 참여·SQLite 저장 계약은 유지한다.
+  세계·인물·이야기·전투·음악·AI 소개는 키보드로 여는 `details`이고, 가짜 편집기 동작을 실행하지 않는다.
+  카메라 확대·빛·입자는 CSS만 쓴다. 「움직임 멈추기」는 `oprn:start-lobby-motion-paused`에 저장하며,
+  OS `prefers-reduced-motion`이 켜지면 애니메이션과 불필요한 토글을 끈다. 오디오·런타임을 부팅하지 않는다.
+  신규 문구는 en/ja/zh 카탈로그에 함께 넣고, 저작 프로젝트 제목·경로는 `translate="no"`로 보호한다.
+  편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
 - **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
   (`electron/local-store/summary.ts`, `query_only`, 본문 `current_json` 안 읽음)으로 열어 제목·편집 시각·맵 수를 채운다.
