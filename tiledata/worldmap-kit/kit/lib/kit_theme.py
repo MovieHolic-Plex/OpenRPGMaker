@@ -801,20 +801,24 @@ def overlay_smog(img, ctx):
 
 # ──────────────────────────────── 우주 ────────────────────────────────
 SPACE = {
-    'void': hx('070816'), 'void2': hx('0b0d22'), 'fringe': hx('121638'),
+    'void': hx('070816'), 'void2': hx('0a0c1e'), 'rift': hx('020208'), 'rift_e': hx('3a1a6a'),
     'star': [hx('ffffff'), hx('cfe0ff'), hx('ffe8b0'), hx('ffb6a0')],
-    'lane': hx('5fe6ff'), 'lane_g': hx('1d5f78'), 'lane_n': hx('ffffff'), 'gate': hx('ffd66a'),
+    'lane': hx('7af0ff'), 'lane_g': hx('2a8aa8'), 'lane_n': hx('ffffff'),
+    'gate': hx('ffd66a'), 'gate_d': hx('a8741e'), 'gate_k': hx('3a2408'),
     'rock_d': hx('3a3240'), 'rock': hx('6a5e6e'), 'rock_l': hx('a2949e'), 'rock_k': hx('120e18'),
+    'dust': hx('241e30'), 'dust_l': hx('3a3248'),
 }
-NEB = {     # 바닥 종류 → 성운 색 3단(어두움 → 밝음)
-    'grass': ('122a44', '1c4560', '2c6a80'), 'farm': ('22264a', '343866', '4c5288'),
-    'savanna': ('341f3e', '512f58', '744678'), 'sand': ('3a2418', '62401f', '94642c'), 'dirt': ('261e34', '3c3050', '58486e'),
-    'badlands': ('3a1626', '5e223c', '883454'), 'ash': ('2e1016', '50181e', '7c2626'), 'swamp': ('122a1c', '1e4a2a', '30703a'),
-    'tundra': ('17263c', '243a58', '385478'), 'snow': ('1c2c4c', '34527a', '6088b4'),
+NEB = {     # 바닥 종류 → 성운 색 4단(옅음 → 핵). 사막 = 호박·금빛, 늪 = 청록·에메랄드(QA 2026-10-03)
+    'grass': ('0f2238', '17364f', '22506a', '3a7a92'), 'farm': ('1b1e3e', '2a2e5a', '3d437c', '5a64a6'),
+    'savanna': ('2a1934', '432650', '61386e', '8a5698'), 'sand': ('2e2010', '4a3416', '70501e', 'a8822e'),
+    'dirt': ('211a2e', '342a48', '4c3e66', '6c5a8c'), 'badlands': ('32142a', '4e1f40', '72305c', 'a04a80'),
+    'ash': ('2a0e14', '461620', '6a2028', '9a3434'), 'swamp': ('0c2626', '124038', '1a5c4c', '2a8a6c'),
+    'tundra': ('141f34', '1f3150', '2f4870', '486a9a'), 'snow': ('182644', '2c4670', '46689a', '78a0cc'),
 }
 G_NEB = {10: 'grass', 24: 'grass', 27: 'grass', 11: 'farm', 12: 'savanna', 13: 'sand', 14: 'sand', 15: 'dirt', 16: 'badlands',
          17: 'ash', 18: 'ash', 25: 'ash', 26: 'ash', 19: 'swamp', 20: 'swamp', 21: 'tundra', 22: 'snow', 23: 'snow', 2: 'ash', 3: 'swamp'}
 NEB_ORDER = list(NEB)
+NEB_RGB = np.array([[hx(c) for c in NEB[n]] for n in NEB_ORDER], np.uint8)      # (종류, 단, 3)
 
 
 def vnoise(H, W, cell, seed):
@@ -828,96 +832,235 @@ def vnoise(H, W, cell, seed):
     return (a * (1 - fx) + b * fx) * (1 - fy) + (c * (1 - fx) + d * fx) * fy
 
 
+def _boxblur(a, r):
+    """가로·세로 상자 흐림(반지름 r px) — 누적합."""
+    k = 2 * r + 1
+    p = np.pad(a, ((r + 1, r), (0, 0)), mode='edge')
+    c = np.cumsum(p, axis=0)
+    a = (c[k:] - c[:-k]) / k
+    p = np.pad(a, ((0, 0), (r + 1, r)), mode='edge')
+    c = np.cumsum(p, axis=1)
+    return (c[:, k:] - c[:, :-k]) / k
+
+
 def _neb_class(ctx):
-    """칸 → 성운 번호(-1 = 공허). 강은 둘레 땅의 다수 종류로 메운다(우주에 강은 없다)."""
-    cls = np.full((ctx.H, ctx.W), -1, np.int16)
+    """칸 → 성운 번호(-1 = 공허). 강은 둘레 땅으로 메우고(우주에 강은 없다), 3x3 다수결 2번 + 작은 덩이(<6칸) 흡수로
+    밭·강 조각 같은 작은 네모를 지운다(QA: 「대륙을 색만 바꾼 것처럼 읽힌다」)."""
+    H, W = ctx.H, ctx.W
+    cls = np.full((H, W), -1, np.int16)
     for g, n in G_NEB.items():
         cls[ctx.G == g] = NEB_ORDER.index(n)
-    river = ctx.G == 1
-    for _ in range(6):
-        if not (river & (cls < 0)).any():
+    land = cls >= 0
+    land |= ctx.G == 1
+    K = len(NEB_ORDER)
+
+    def votes(c):
+        v = np.zeros((K, H, W), np.int16)
+        p = np.pad(c, 1, constant_values=-1)
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                s = p[1 + dy:1 + dy + H, 1 + dx:1 + dx + W]
+                for k in range(K):
+                    v[k] += s == k
+        return v
+    for _ in range(8):                                   # 강 → 이웃 다수
+        hole = land & (cls < 0)
+        if not hole.any():
             break
-        new = cls.copy()
-        for y, x in zip(*np.nonzero(river & (cls < 0))):
-            vals = [cls[y + dy, x + dx] for dx, dy in DIRS.values() if 0 <= y + dy < ctx.H and 0 <= x + dx < ctx.W and cls[y + dy, x + dx] >= 0]
-            if vals:
-                new[y, x] = max(set(vals), key=vals.count)
-        cls = new
+        best = votes(cls).argmax(0)
+        has = votes(cls).max(0) > 0
+        cls[hole & has] = best[hole & has]
+    for _ in range(2):                                   # 다수결
+        v = votes(cls)
+        best, top = v.argmax(0), v.max(0)
+        own = np.take_along_axis(v, np.clip(cls, 0, K - 1)[None].astype(np.int64), 0)[0]
+        ch = land & (top >= 5) & (top > own)
+        cls[ch] = best[ch]
+    seen = np.zeros((H, W), bool)                        # 작은 덩이 흡수
+    for y0, x0 in zip(*np.nonzero(land)):
+        if seen[y0, x0]:
+            continue
+        k = cls[y0, x0]
+        comp, st = [], [(y0, x0)]
+        seen[y0, x0] = True
+        while st:
+            y, x = st.pop()
+            comp.append((y, x))
+            for dx, dy in DIRS.values():
+                Y, X = y + dy, x + dx
+                if 0 <= Y < H and 0 <= X < W and not seen[Y, X] and land[Y, X] and cls[Y, X] == k:
+                    seen[Y, X] = True
+                    st.append((Y, X))
+        if len(comp) < 6:
+            nb = [cls[y + dy, x + dx] for y, x in comp for dx, dy in DIRS.values()
+                  if 0 <= y + dy < H and 0 <= x + dx < W and land[y + dy, x + dx] and cls[y + dy, x + dx] != k]
+            if nb:
+                kk = max(set(nb), key=nb.count)
+                for y, x in comp:
+                    cls[y, x] = kk
     return cls
 
 
+def _nearest_fill(cls):
+    """공허 칸에도 가장 가까운 성운 번호를 채운 사본 — 바깥 끝자락·가스 실이 어느 성운 색을 쓸지 정한다."""
+    c = cls.copy()
+    H, W = c.shape
+    for _ in range(max(H, W)):
+        hole = c < 0
+        if not hole.any():
+            break
+        p = np.pad(c, 1, constant_values=-1)
+        for dx, dy in DIRS.values():
+            s = p[1 + dy:1 + dy + H, 1 + dx:1 + dx + W]
+            f = hole & (s >= 0)
+            c[f] = s[f]
+            hole &= ~f
+    return c
+
+
+def _components(mask):
+    H, W = mask.shape
+    seen = np.zeros_like(mask)
+    out = []
+    for y0, x0 in zip(*np.nonzero(mask)):
+        if seen[y0, x0]:
+            continue
+        comp, st = [], [(y0, x0)]
+        seen[y0, x0] = True
+        while st:
+            y, x = st.pop()
+            comp.append((int(x), int(y)))
+            for dx, dy in DIRS.values():
+                Y, X = y + dy, x + dx
+                if 0 <= Y < H and 0 <= X < W and mask[Y, X] and not seen[Y, X]:
+                    seen[Y, X] = True
+                    st.append((Y, X))
+        out.append(comp)
+    return out
+
+
 def render_space(ctx, seed=11, road_px=None):
-    """땅 대신 우주 지도를 처음부터 그린다. 칸 배열(바닥·물체·사구·길)을 그대로 읽어 같은 여정·같은 장벽 자리를 지킨다."""
+    """땅 대신 우주 지도를 처음부터 그린다. 칸 배열(바닥·물체·사구·길)을 그대로 읽어 같은 여정·같은 장벽 자리를 지킨다.
+
+    성운은 칸 덩어리가 아니라 밀도장이다: 휜 좌표로 읽은 땅 마스크를 흐려 밀도를 얻고, 안쪽은 노이즈로 밝기·빈 구멍,
+    바깥은 2~3칸에 걸쳐 옅어지며 가스 실이 공허로 뻗는다. 색은 바닥 종류(가장 가까운 성운)가 정한다."""
     ctx.road_px = road_px
     H, W = ctx.H * TS, ctx.W * TS
-    img = np.empty((H, W, 3), np.uint8)
     cls = _neb_class(ctx)
-    # 칸 경계를 노이즈로 휜다: 화소마다 ±12px 옮긴 자리의 칸을 읽는다 → 성운 경계가 칸 모양을 벗는다
-    wx = (vnoise(H, W, 28, seed + 3) - .5) * 24
-    wy = (vnoise(H, W, 28, seed + 4) - .5) * 24
+    near = _nearest_fill(cls)
     yy, xx = np.mgrid[0:H, 0:W]
+    wx = (vnoise(H, W, 28, seed + 3) - .5) * 24 + (vnoise(H, W, 9, seed + 5) - .5) * 8
+    wy = (vnoise(H, W, 28, seed + 4) - .5) * 24 + (vnoise(H, W, 9, seed + 6) - .5) * 8
     cx = np.clip(((xx + wx) // TS).astype(int), 0, ctx.W - 1)
     cy = np.clip(((yy + wy) // TS).astype(int), 0, ctx.H - 1)
-    P = cls[cy, cx]
-    # 공허 쪽 끝자락: 땅에서 거리(칸)를 같은 휜 좌표로 읽어 3단 디더
-    land = cls >= 0
-    dist = np.where(land, 0, 99).astype(np.int16)
-    for k in range(1, 4):
-        nb = _dilate(dist == k - 1)
-        dist[nb & (dist == 99)] = k
-    Dp = dist[cy, cx]
-    nz = .62 * vnoise(H, W, 44, seed) + .38 * vnoise(H, W, 12, seed + 1)
-    D = bayer(H, W)
+    Lp = (cls >= 0)[cy, cx].astype(np.float32)
+    d = _boxblur(_boxblur(Lp, 13), 13)                   # 0 공허 … 1 깊은 안쪽, 해안 ≈ .5
+    n1 = .6 * vnoise(H, W, 40, seed) + .4 * vnoise(H, W, 12, seed + 1)
+    din = np.clip((d - .32) / .5, 0, 1)
+    pocket = np.clip((.30 - vnoise(H, W, 64, seed + 9)) / .12, 0, 1) * np.clip((din - .5) * 2, 0, 1)
+    B = din * (.3 + .95 * n1) - 1.1 * pocket
+    ridge = 1 - np.abs(2 * vnoise(H, W, 18, seed + 12) - 1)
+    wisp = (d > .03) & (d < .45) & (ridge > .9 - .5 * d)
+    Bd = B + (bayer(H, W) - .5) * .12
+    lvl = np.select([Bd > .95, Bd > .68, Bd > .4, Bd > .1], [4, 3, 2, 1], 0)
+    lvl = np.where((lvl == 0) & wisp, 1, lvl)
+    lvl = np.where((lvl == 0) & (d > .2) & (d <= .32) & (bayer(H, W) < (d - .2) / .12 * .5), 1, lvl)   # 끝자락 디더 한 단
+    P = near[cy, cx]
+    img = np.empty((H, W, 3), np.uint8)
     img[:] = SPACE['void']
-    img[(nz + D * .25) > .62] = SPACE['void2']
-    v = nz + (D - .5) * .22
-    lvl = np.where(v > .64, 2, np.where(v > .42, 1, 0))
-    for i, name in enumerate(NEB_ORDER):
-        m = P == i
-        if m.any():
-            for k, c in enumerate(NEB[name]):
-                img[m & (lvl == k)] = hx(c)
-    for k, thr in ((1, .5), (2, .25), (3, .1)):
-        img[(Dp == k) & (D < thr)] = SPACE['fringe']
-    # 별: 성운 위는 밝고 많게, 공허는 드물게
+    img[vnoise(H, W, 50, seed + 2) + (bayer(H, W) - .5) * .08 > .68] = SPACE['void2']
+    m = lvl > 0
+    img[m] = NEB_RGB[P[m], lvl[m] - 1]
+
+    # 별 — 성운 단이 높을수록 많다
     rng = np.random.default_rng(seed + 7)
-    n = int(W * H / 90)
+    n = int(W * H / 80)
     sx, sy = rng.integers(1, W - 1, n), rng.integers(1, H - 1, n)
     sc, big, keepr = rng.integers(0, 4, n), rng.random(n), rng.random(n)
+    keep_by = np.array([.22, .45, .65, .85, 1.0])
     for x, y, c, b, kr in zip(sx, sy, sc, big, keepr):
-        if P[y, x] < 0 and kr > .45:
+        if kr > keep_by[lvl[y, x]]:
             continue
         col = SPACE['star'][c]
-        if b > .985:                                  # 십자 반짝
-            dim = (col.astype(np.int16) * 6 // 10).astype(np.uint8)
-            img[y, x] = col
-            img[y - 1, x] = img[y + 1, x] = img[y, x - 1] = img[y, x + 1] = dim
-        elif b > .8:
+        if b > .99:
+            _cross(img, x, y, col)
+        elif b > .82:
             img[y, x] = col
         else:
             img[y, x] = (col.astype(np.int16) * 55 // 100).astype(np.uint8)
-    for y in range(ctx.H):
-        for x in range(ctx.W):
-            o = int(ctx.O[y, x])
-            if o in (1, 2, 3, 5):                     # 숲 → 성단: 밝은 별 5개 + 가운데 빛무리
-                for i in range(5):
-                    h = h32('cl', x, y, i)
-                    img[y * TS + 2 + h % 12, x * TS + 2 + (h >> 8) % 12] = SPACE['star'][(h >> 16) % 3]
-            elif o in (6, 7, 9) or ctx.face[y, x]:
-                draw_asteroids(img, x, y)
-            elif o == 8:
-                draw_red_giant(img, x, y)
-    draw_ion_storm(img, ctx)
+
+    # 소행성대 먼지 띠(산·절벽 칸, 휜 좌표) → 이온 폭풍 → 성단 → 거성 → 소행성
+    rockcell = np.isin(ctx.O, (6, 7, 9)) | ctx.face
+    belt = rockcell[cy, cx]
+    belt_d = _boxblur(belt.astype(np.float32), 5)
+    D = bayer(H, W)
+    dz = (belt_d > .25) & (D < belt_d * .7)
+    img[dz] = np.where((vnoise(H, W, 7, seed + 13)[dz] > .55)[:, None], SPACE['dust_l'], SPACE['dust'])
+    draw_ion_storm(img, ctx, cy, cx)
+    for y, x in zip(*np.nonzero(np.isin(ctx.O, (1, 2, 3, 5)))):
+        draw_cluster(img, int(x), int(y))
+    vol = ctx.O == 8                                     # 화산은 2칸 안쪽끼리 한 무리 → 무리마다 거성 하나
+    grp = _dilate(_dilate(vol))
+    for comp in _components(grp):
+        cells = [c for c in comp if vol[c[1], c[0]]]
+        free = [c for c in cells if not ctx.occupied[max(0, c[1] - 1):c[1] + 2, max(0, c[0] - 1):c[0] + 2].any()]
+        if free:
+            draw_red_giant(img, cells, free)
+    for y, x in zip(*np.nonzero(rockcell)):
+        draw_asteroids(img, int(x), int(y))
+    # 아이콘 받침: 발자국 안 성운을 공허 쪽으로 눌러 아이콘 윤곽이 묻히지 않게
+    # 네모가 보이지 않게 흐린 밀도로 2단 디더
+    occ = ctx.occupied[np.clip(yy // TS, 0, ctx.H - 1), np.clip(xx // TS, 0, ctx.W - 1)].astype(np.float32)
+    a = np.clip(_boxblur(_boxblur(occ, 5), 5) * 1.5 - .15, 0, 1)
+    Dd = bayer(H, W)
+    for k, (thr, mul) in enumerate(((.25, .7), (.6, .45))):
+        mm = (a > thr) & (Dd < np.clip((a - thr) / .25, 0, 1))
+        img[mm] = (img[mm].astype(np.float32) * mul + SPACE['void'].astype(np.float32) * (1 - mul)).astype(np.uint8)
     draw_hyperlanes(img, ctx)
     return img
 
 
+def _cross(img, x, y, col, arm=1):
+    dim = (col.astype(np.int16) * 6 // 10).astype(np.uint8)
+    img[y, x] = col
+    for k in range(1, arm + 1):
+        for X, Y in ((x - k, y), (x + k, y), (x, y - k), (x, y + k)):
+            if 0 <= X < img.shape[1] and 0 <= Y < img.shape[0]:
+                img[Y, X] = dim if k == arm else col
+
+
+def draw_cluster(img, x, y):
+    """숲 칸 → 성단: 칸마다 빛무리(가운데로 갈수록 밝게, 디더) + 밝은 별 4~6개, 셋 중 하나는 십자 별."""
+    h = h32('cl', x, y)
+    ccx, ccy = x * TS + 4 + h % 8, y * TS + 4 + (h >> 4) % 8
+    glow = hx('cfe0ff').astype(np.float32)
+    for dy in range(-6, 7):
+        for dx in range(-6, 7):
+            r = np.hypot(dx, dy) / 6
+            X, Y = ccx + dx, ccy + dy
+            if r < 1 and 0 <= X < img.shape[1] and 0 <= Y < img.shape[0] and BAYER4[Y % 4, X % 4] < (1 - r) * .9:
+                img[Y, X] = (img[Y, X] * (1 - .28 * (1 - r)) + glow * .28 * (1 - r)).astype(np.uint8)
+    for i in range(4 + h % 3):
+        g = h32('cls', x, y, i)
+        img[y * TS + 2 + g % 12, x * TS + 2 + (g >> 8) % 12] = SPACE['star'][(g >> 16) % 3]
+    if h % 3 == 0:
+        _cross(img, ccx, ccy, SPACE['star'][0], 2)
+
+
+AST_LAYOUTS = [
+    [(4, 5, 4), (11, 10, 3), (12, 3, 1)],
+    [(5, 10, 4), (11, 5, 3), (3, 3, 1)],
+    [(8, 8, 5), (2, 13, 1)],
+    [(4, 4, 2), (10, 6, 2), (6, 11, 3), (13, 12, 1)],
+    [(3, 9, 3), (9, 4, 2), (12, 11, 2)],
+    [(7, 5, 3), (3, 12, 2), (12, 12, 2), (13, 2, 1)],
+]
+
+
 def draw_asteroids(img, x, y):
-    """한 칸에 소행성 2~3개 — 빛은 왼쪽 위(밝음), 오른쪽 아래 어두움 + 검은 테 1px."""
-    rocks = [(4, 5, 4), (11, 10, 3), (11, 3, 2)] if h32('ast', x, y) % 2 else [(5, 10, 4), (11, 5, 3), (3, 3, 2)]
+    """한 칸에 소행성 1~4개(6가지 배치) — 빛은 왼쪽 위, 오른쪽 아래 어두움 + 검은 테 1px."""
+    rocks = AST_LAYOUTS[h32('ast', x, y) % len(AST_LAYOUTS)]
     for i, (cx, cy, r) in enumerate(rocks):
-        if i == 2 and h32('ast3', x, y) % 3 == 0:
-            continue
         cx += h32('ax', x, y, i) % 3 - 1
         cy += h32('ay', x, y, i) % 3 - 1
         for yy in range(-r - 1, r + 2):
@@ -929,77 +1072,200 @@ def draw_asteroids(img, x, y):
                 if d <= 1.0:
                     light = -xx - yy
                     c = SPACE['rock_l'] if light > r * .6 else SPACE['rock'] if light > -r * .4 else SPACE['rock_d']
-                    if (xx * 7 + yy * 13 + x + y) % 11 == 0 and light < r * .6:
-                        c = SPACE['rock_d']                     # 크레이터 점
+                    if r >= 3 and (xx * 7 + yy * 13 + x + y) % 11 == 0 and light < r * .6:
+                        c = SPACE['rock_d']
                     img[Y, X] = c
-                elif d <= 1.5 and not (img[Y, X] == SPACE['rock']).all() and not (img[Y, X] == SPACE['rock_l']).all():
+                elif d <= 1.6 and not any((img[Y, X] == SPACE[k]).all() for k in ('rock', 'rock_l', 'rock_d')):
                     img[Y, X] = SPACE['rock_k']
 
 
-def draw_red_giant(img, x, y):
-    cx, cy, r = x * TS + 8, y * TS + 8, 6
-    for yy in range(-r - 2, r + 3):
-        for xx in range(-r - 2, r + 3):
-            d = np.hypot(xx, yy)
+def draw_red_giant(img, comp, free):
+    """화산 무리 하나 → 붉은 거성 하나(무리 가운데에 가장 가까운, 장소에서 떨어진 칸). 크기 3단, 바깥 빛무리 디더 링."""
+    mx, my = np.mean([c[0] for c in comp]), np.mean([c[1] for c in comp])
+    fx, fy = min(free, key=lambda c: (c[0] - mx) ** 2 + (c[1] - my) ** 2)
+    cx, cy = fx * TS + 8, fy * TS + 8
+    r = 5 if len(comp) <= 3 else 7 if len(comp) <= 10 else 9
+    halo = r + 6
+    for yy in range(-halo, halo + 1):
+        for xx in range(-halo, halo + 1):
+            dd = np.hypot(xx, yy)
             X, Y = cx + xx, cy + yy
             if not (0 <= X < img.shape[1] and 0 <= Y < img.shape[0]):
                 continue
-            if d <= r:
+            if dd <= r:
                 light = (-xx - yy) / r
-                img[Y, X] = hx('ffd27a') if light > .7 else hx('ff8a3a') if light > -.2 else hx('c2361e')
-            elif d <= r + 1.5 and (xx + yy) % 2 == 0:
-                img[Y, X] = hx('6a1a14')
+                img[Y, X] = hx('fff0b0') if light > 1.0 else hx('ffd27a') if light > .55 else hx('ff8a3a') if light > -.3 else hx('c2361e')
+            elif dd <= r + 1:
+                img[Y, X] = hx('7a1c14')
+            elif dd <= halo:
+                t = 1 - (dd - r - 1) / (halo - r - 1)
+                if BAYER4[Y % 4, X % 4] < t * .8:
+                    img[Y, X] = (img[Y, X] * .55 + hx('a8301e') * .45).astype(np.uint8)
 
 
-def draw_ion_storm(img, ctx):
-    """사구 바다 칸(사막선이 있어야 건너던 장벽) → 보라 이온 폭풍: 물결 줄무늬 3단 + 번개."""
-    a, b, c = hx('2a1450'), hx('5a2a8a'), hx('b06aff')
-    for y in range(ctx.H):
-        for x in range(ctx.W):
-            if not ctx.dune[y, x] or ctx.occupied[y, x]:
-                continue
-            gy, gx = np.mgrid[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
-            w = np.sin(gx * .35 + np.sin(gy * .18) * 2.2 + gy * .12)
-            t = img[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
-            t[w > -.1] = a
-            hi = w > .55
-            t[hi] = b
-            t[hi & ((gx + gy) % 5 == 0)] = c
-            h = h32('zap', x, y)
-            if h % 4 == 0:
-                px, py = 3 + h % 9, 2 + (h >> 4) % 9
-                for k in range(5):
-                    if py + k < TS:
-                        t[py + k, min(TS - 1, px + (k % 2))] = hx('ffffff')
+def draw_ion_storm(img, ctx, cy, cx):
+    """사구 바다(사막선이 있어야 건너던 장벽) → 보라 이온 폭풍. 휜 좌표로 읽어 경계가 칸 모양을 벗고,
+    물결 줄무늬 3단 + 2~3px 굵기 지그재그 번개. 발자국 밑에도 깐다(아이콘이 위를 덮는다)."""
+    if not ctx.dune.any():
+        return
+    H, W = img.shape[:2]
+    m = ctx.dune[cy, cx]
+    yy, xx = np.mgrid[0:H, 0:W]
+    w = np.sin(xx * .22 + np.sin(yy * .09 + xx * .03) * 2.0 + yy * .07) + (vnoise(H, W, 20, 31) - .5) * 1.2
+    a, b, c = hx('2a1450').astype(np.float32), hx('4a2680'), hx('9a62e8')
+    img[m] = (img[m] * .45 + a * .55).astype(np.uint8)          # 아래 성운이 비치는 보라 막
+    s = m & (w > .78)
+    img[s] = b
+    img[s & (w > 1.05) & (bayer(H, W) < .3)] = c
+    for y, x in zip(*np.nonzero(ctx.dune)):
+        h = h32('zap', int(x), int(y))
+        if h % 23:
+            continue
+        X, Y = x * TS + 4 + h % 8, y * TS + 1                  # 갈래 번개: 아래로 지그재그 18px + 옆가지 하나, 둘레 보라 빛
+        pts = []
+        for k in range(18):
+            X += (1 if (h >> (k % 16)) & 1 else -1) if k % 3 == 0 else 0
+            pts.append((X, Y + k))
+            if k == 8:
+                bx = X
+                for j in range(1, 6):
+                    pts.append((bx + j, Y + k + j))
+        for X2, Y2 in pts:
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                if 0 <= Y2 + dy < H and 0 <= X2 + dx < W and (X2 + dx, Y2 + dy) not in pts:
+                    img[Y2 + dy, X2 + dx] = np.maximum(img[Y2 + dy, X2 + dx], hx('7a4ad0'))
+        for X2, Y2 in pts:
+            if 0 <= Y2 < H and 0 <= X2 < W:
+                img[Y2, X2] = hx('f4e8ff')
+
+
+def lane_graph(ctx):
+    """항로 칸과 이어지는 방향. 길 칸 + 경사로 칸(장소 밖) + 다리 칸이 한 그물. 장소 쪽은 끝 칸에서만 한 팔."""
+    S = {(x, y) for x, y in ctx.path_cells()} | set(ctx.bridge)
+    base = set(S)
+    R = {(int(x), int(y)) for y, x in zip(*np.nonzero(ctx.ramp & ~ctx.occupied))}
+    S |= R
+
+    def nb(c):
+        return [(c[0] + dx, c[1] + dy) for dx, dy in DIRS.values() if (c[0] + dx, c[1] + dy) in S]
+    changed = True
+    while changed:                                   # 경사로 칸 다듬기: 2x2 덩이를 풀고, 장소로 안 가는 막다른 경사로를 걷는다
+        changed = False
+        for c in sorted(R & S):
+            x, y = c
+            block = any(all(q in S for q in ((x + ax, y + ay), (x + ax + 1, y + ay), (x + ax, y + ay + 1), (x + ax + 1, y + ay + 1)))
+                        for ax in (-1, 0) for ay in (-1, 0))
+            occ_nb = any(0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.occupied[y + dy, x + dx] for dx, dy in DIRS.values())
+            if (block and sum(q in base for q in nb(c)) <= 1) or (len(nb(c)) <= 1 and not occ_nb) or not nb(c):
+                S.discard(c)
+                changed = True
+    out = {}
+    for (x, y) in S:
+        ls, side = [], []
+        for d, (dx, dy) in DIRS.items():
+            X, Y = x + dx, y + dy
+            if (X, Y) in S:
+                ls.append(d)
+            elif 0 <= X < ctx.W and 0 <= Y < ctx.H and ctx.occupied[Y, X]:
+                side.append((not ctx._entered(X, Y, d), d))
+        if len(ls) <= 1 and side:                          # 끝 칸은 장소로 꼭 들어간다(옛 길 흔적이 있는 쪽 먼저)
+            ls.append(min(side)[1])
+        if ls:
+            out[(x, y)] = ls
+    return out
 
 
 def draw_hyperlanes(img, ctx):
-    """길 칸 → 초공간 항로: 칸 가운데를 잇는 1px 청록 선 + 양옆 1px 빛 + 전역 8px 마다 흰 항로 표지."""
-    def put(X, Y, horiz):
-        if not (1 <= X < img.shape[1] - 1 and 1 <= Y < img.shape[0] - 1):
-            return
-        img[Y, X] = SPACE['lane_n'] if (X + Y) % 8 == 0 else SPACE['lane']
-        for ox, oy in (((0, -1), (0, 1)) if horiz else ((-1, 0), (1, 0))):
-            q = img[Y + oy, X + ox]
-            if not (q == SPACE['lane']).all() and not (q == SPACE['lane_n']).all():
-                img[Y + oy, X + ox] = np.maximum(q, SPACE['lane_g'])
-    for (x, y) in ctx.path_cells():
+    """초공간 항로: 칸 가운데를 잇는 1px 청록 선(꺾임은 둥글게) + 2px 빛무리 + 전역 8px 마다 흰 표지.
+    다리 줄 = 워프 구간: 밑에 검은 균열, 선은 점선, 줄 양끝에만 금색 고리."""
+    H, W = img.shape[:2]
+    core = np.zeros((H, W), bool)
+    g = lane_graph(ctx)
+    OPP = {'N': 'S', 'S': 'N', 'E': 'W', 'W': 'E'}
+
+    def seg(x0, y0, x1, y1):
+        n = max(abs(x1 - x0), abs(y1 - y0))
+        for t in range(n + 1):
+            X, Y = round(x0 + (x1 - x0) * t / max(n, 1)), round(y0 + (y1 - y0) * t / max(n, 1))
+            if 0 <= X < W and 0 <= Y < H:
+                core[Y, X] = True
+    edge = {'N': (7, 0), 'S': (7, 15), 'E': (15, 7), 'W': (0, 7)}
+    beacons = []
+    for (x, y), ls in g.items():
         if (x, y) in ctx.bridge:
             continue
-        cx, cy = x * TS + 7, y * TS + 7
-        links = ctx.links(x, y) or ['E']
-        for d in links:
-            dx, dy = DIRS[d]
-            for k in range(0, 9):
-                put(cx + dx * k, cy + dy * k, dx != 0)
-    for (x, y), d in ctx.bridge.items():             # 다리 → 워프 게이트 구간(양끝 금색 고리)
-        cx, cy = x * TS + 7, y * TS + 7
-        for k in range(-7, 9):
-            put(cx + k, cy, True) if d == 'h' else put(cx, cy + k, False)
-        for e in (-5, 6):
-            for t in range(-3, 4):
-                X, Y = (cx + e, cy + t) if d == 'h' else (cx + t, cy + e)
-                img[Y, X] = SPACE['gate']
+        ox, oy = x * TS, y * TS
+        if len(ls) == 1:
+            beacons.append((ox + 7, oy + 7))
+        if len(ls) == 2 and OPP[ls[0]] != ls[1]:          # 꺾임 → 4분원
+            ccx = 15.5 if 'E' in ls else -.5
+            ccy = 15.5 if 'S' in ls else -.5
+            rx, ry = abs(ccx - 7), abs(ccy - 7)
+            for t in np.linspace(0, np.pi / 2, 40):
+                X = min(15, max(0, int(round(ccx + rx * np.cos(t) * (-1 if ccx > 7 else 1)))))
+                Y = min(15, max(0, int(round(ccy + ry * np.sin(t) * (-1 if ccy > 7 else 1)))))
+                core[oy + Y, ox + X] = True
+        else:
+            for d in ls:
+                ex, ey = edge[d]
+                seg(ox + 7, oy + 7, ox + ex, oy + ey)
+            seg(ox + 7, oy + 7, ox + 7, oy + 7)
+    # 워프 구간
+    rings = []
+    for comp in _components(np.array([[(x, y) in ctx.bridge for x in range(ctx.W)] for y in range(ctx.H)])):
+        d = ctx.bridge[comp[0]]
+        for (x, y) in comp:                                # 균열: 칸 가로질러 검은 띠 + 보라 가장자리
+            for k in range(TS):
+                for t in range(-4, 5):
+                    X, Y = (x * TS + k, y * TS + 7 + t) if d == 'h' else (x * TS + 7 + t, y * TS + k)
+                    if 0 <= X < W and 0 <= Y < H:
+                        j = (h32('rf', X, Y) % 3) - 1
+                        if abs(t) <= 2 + j:
+                            img[Y, X] = SPACE['rift']
+                        elif abs(t) <= 3 + j:
+                            img[Y, X] = SPACE['rift_e']
+            for k in range(TS):
+                if k % 4 < 2:
+                    X, Y = (x * TS + k, y * TS + 7) if d == 'h' else (x * TS + 7, y * TS + k)
+                    core[Y, X] = True
+        xs, ys = [c[0] for c in comp], [c[1] for c in comp]
+        if d == 'h':
+            rings += [(min(xs) * TS - 1, ys[0] * TS + 7), ((max(xs) + 1) * TS, ys[0] * TS + 7)]
+        else:
+            rings += [(xs[0] * TS + 7, min(ys) * TS - 1), (xs[0] * TS + 7, (max(ys) + 1) * TS)]
+    g1 = _dilate(core) & ~core
+    g2 = _dilate(_dilate(core)) & ~core & ~g1
+    G = SPACE['lane_g'].astype(np.float32)
+    img[g1] = np.maximum(img[g1], (img[g1] * .3 + G * .7).astype(np.uint8))
+    img[g2] = np.maximum(img[g2], (img[g2] * .65 + G * .35).astype(np.uint8))
+    img[core] = SPACE['lane']
+    img[core & ((xx_global(H, W) + yy_global(H, W)) % 8 == 0)] = SPACE['lane_n']
+    for (bx, by) in beacons:                               # 막다른 끝 → 항로 표지(마름모)
+        for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+            img[by + dy, bx + dx] = SPACE['lane_n'] if (dx, dy) == (0, 0) else SPACE['lane']
+        for dx, dy in ((2, 0), (-2, 0), (0, 2), (0, -2), (1, 1), (-1, -1), (1, -1), (-1, 1)):
+            img[by + dy, bx + dx] = SPACE['lane_g']
+    for (rx, ry) in rings:                                 # 금색 고리 r=4, 가운데 검게
+        for dy in range(-5, 6):
+            for dx in range(-5, 6):
+                r = np.hypot(dx, dy)
+                X, Y = rx + dx, ry + dy
+                if not (0 <= X < W and 0 <= Y < H):
+                    continue
+                if r <= 2.2:
+                    img[Y, X] = SPACE['rift']
+                elif r <= 3.6:
+                    img[Y, X] = SPACE['gate'] if dx + dy < 0 else SPACE['gate_d']
+                elif r <= 4.6:
+                    img[Y, X] = SPACE['gate_k']
+
+
+def xx_global(H, W):
+    return np.arange(W)[None, :].repeat(H, 0)
+
+
+def yy_global(H, W):
+    return np.arange(H)[:, None].repeat(W, 1)
 
 
 # ──────────────────────────────── 적용 ────────────────────────────────
