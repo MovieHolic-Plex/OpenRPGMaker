@@ -2249,6 +2249,48 @@
 "source": "auto",
 "steps": []
 },
+"gungnae_wall_h3": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_h4": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_h5": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
 "gungnae_wall_v": {
 "w": 3,
 "h": 1,
@@ -2481,10 +2523,10 @@
 "XXX",
 "XXX",
 "XXX",
-".FF",
-".FF",
-".FF",
-".FF"
+"FFF",
+"FFF",
+"FFF",
+"FFF"
 ],
 "source": "override",
 "steps": []
@@ -3560,7 +3602,7 @@
 "h": 1,
 "cls": "built",
 "rows": [
-"XFX"
+"X.X"
 ],
 "source": "override",
 "steps": []

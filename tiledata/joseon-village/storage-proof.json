@@ -1,9 +1,9 @@
 {
- "projectId": "c47c4be2-e794-402b-a6ec-289971e79400",
+ "projectId": "8365b4e6-c652-45bc-9521-49a997ff435d",
  "projectDir": "/tmp/oprn-joseon-baram-proof",
  "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
  "revision": 1,
- "sha256": "8d8dc9cc64e138aa34e34a651467a73f9387d91776289eb576c4594a69dca92b",
+ "sha256": "c144ff855f317a81304d0487519164d349842b94664c209118c5c7257b83e990",
  "saved": true,
  "reopened": true,
  "deepEqual": {
@@ -15,20 +15,22 @@
  "tileset": {
   "id": "joseon_baram",
   "family": "oprn-joseon",
-  "count": 9472,
+  "count": 9408,
   "tilesPerRow": 64,
   "image": {
    "type": "bundled",
    "id": "tex_joseon_baram"
   },
-  "structureKits": 248,
-  "tileGroups": 265,
+  "structureKits": 251,
+  "tileGroups": 271,
   "autotileGroups": [
    "jb_road16_autotile",
    "jb_yard16_autotile",
    "jb_water47_autotile",
    "jb_paddy16_autotile",
    "jb_rice16_autotile",
+   "jb_road64_autotile",
+   "jb_yard64_autotile",
    "jb_water47g_autotile",
    "jb_slab_edge16_autotile",
    "jb_palace_court16_autotile"
@@ -73,8 +75,8 @@
     96
    ],
    "lower": 9216,
-   "upper": 5835,
-   "npcs": 19
+   "upper": 5855,
+   "npcs": 21
   },
   "joseon_v20": {
    "size": [
@@ -93,11 +95,11 @@
     "same": 9216,
     "mismatch": 0,
     "samples": [],
-    "walkable": 5009
+    "walkable": 5103
    },
    "reach": {
-    "crossLines": 56,
-    "crossLinesBlockedEnd": 4,
+    "crossLines": 59,
+    "crossLinesBlockedEnd": 2,
     "exemptCrossings": [
      {
       "piece": "gungnae_bridge_narrow_h5",
@@ -113,7 +115,7 @@
       "why": "주민 (54,49) 가 드므(palace_deumeu, 54,48 1×2) 칸 안에 서 있어 걸어 닿지 못한다(국내성 맵 빌더 쪽 결함)."
      }
     ],
-    "crossings": 17,
+    "crossings": 19,
     "fronts": 1,
     "waterOpenBare": 0,
     "waterUnderObject": 171,
@@ -121,8 +123,8 @@
      52,
      48
     ],
-    "reachable": 4903,
-    "walkable": 5009,
+    "reachable": 4993,
+    "walkable": 5103,
     "missed": {
      "doorFront": [],
      "doorStep": [],
@@ -139,14 +141,14 @@
    "masks": [
     {
      "group": "jb_road16_autotile",
-     "cells": 1615,
+     "cells": 0,
      "mismatch": 0,
      "edgeConnects": true,
      "samples": []
     },
     {
      "group": "jb_yard16_autotile",
-     "cells": 856,
+     "cells": 0,
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
@@ -167,14 +169,77 @@
     },
     {
      "group": "jb_rice16_autotile",
-     "cells": 44,
+     "cells": 36,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 1622,
+     "mismatch": 252,
+     "edgeConnects": true,
+     "samples": [
+      [
+       10,
+       15
+      ],
+      [
+       11,
+       15
+      ],
+      [
+       12,
+       15
+      ],
+      [
+       13,
+       15
+      ],
+      [
+       14,
+       15
+      ],
+      [
+       15,
+       15
+      ],
+      [
+       16,
+       15
+      ],
+      [
+       17,
+       15
+      ],
+      [
+       18,
+       15
+      ],
+      [
+       19,
+       15
+      ],
+      [
+       20,
+       15
+      ],
+      [
+       21,
+       15
+      ]
+     ]
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 856,
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
     },
     {
      "group": "jb_water47g_autotile",
-     "cells": 993,
+     "cells": 914,
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
@@ -204,7 +269,7 @@
     "walkable": 2175
    },
    "reach": {
-    "crossLines": 6,
+    "crossLines": 8,
     "crossLinesBlockedEnd": 2,
     "exemptCrossings": [
      {
@@ -373,6 +438,20 @@
      "samples": []
     },
     {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
      "group": "jb_water47g_autotile",
      "cells": 0,
      "mismatch": 0,
@@ -409,7 +488,7 @@
    "same": 9216,
    "mismatch": 0,
    "samples": [],
-   "walkable": 5009
+   "walkable": 5103
   },
   "joseon_v20": {
    "cells": 3584,

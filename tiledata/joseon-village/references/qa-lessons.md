@@ -1,6 +1,6 @@
 # 오류 교훈 — 실제로 변조한 오류 그림과 검출 기록
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9472칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9389 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9408칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9347 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 아래 네 가지는 정본 마을 20호를 **실제로 변조**해 만든 그림이고, 검사 코드가 같은 좌표를 잡는다(`tiledata/joseon-village/qa-tamper-checks.json`).
 정상 맵은 `door-unreachable`·`object-tile-in-lower-layer`·`bridge-blocked` 0 건, 마스크 불일치는 알려진 칸(「땅 오토타일」)뿐이다.

@@ -6,33 +6,33 @@
   "tiledata/joseon-village20/joseon-village20-chipset.png",
   "tiledata/joseon-gungnae/joseon-gungnae-chipset.png"
  ],
- "sourceCells": 9389,
- "baseSheetCells": 8144,
- "tailCopies": 81,
+ "sourceCells": 9347,
+ "baseSheetCells": 8208,
+ "tailCopies": 48,
  "tailByClass": {
-  "X": 35,
+  "X": 29,
   "C": 10,
-  "F": 36
+  "F": 9
  },
- "count": 9472,
+ "count": 9408,
  "tilesPerRow": 64,
  "sheetPx": [
   1024,
-  2368
+  2352
  ],
- "pieces": 248,
- "terrainGroups": 17,
- "autotileGroups": 8,
- "structureKits": 248,
- "tileGroups": 265,
- "overlapCells": 1328,
+ "pieces": 251,
+ "terrainGroups": 20,
+ "autotileGroups": 10,
+ "structureKits": 251,
+ "tileGroups": 271,
+ "overlapCells": 990,
  "overlapByClass": {
-  "X": 699,
-  "C": 401,
-  "F": 228
+  "X": 586,
+  "C": 233,
+  "F": 171
  },
  "pieceWalkSource": {
-  "auto": 204,
+  "auto": 207,
   "override": 44
  },
  "maps": {
@@ -65,18 +65,18 @@
     96,
     96
    ],
-   "objectCells": 5835,
-   "walkable": 5009,
+   "objectCells": 5855,
+   "walkable": 5103,
    "doors": 17,
    "passages": 5,
-   "crossings": 17,
+   "crossings": 19,
    "fronts": 1,
-   "people": 19,
+   "people": 21,
    "start": [
     52,
     48
    ],
-   "shadowOnlyCells": 367,
+   "shadowOnlyCells": 430,
    "groundKindMismatch": 0,
    "groundKindMismatchSamples": []
   }
@@ -87,27 +87,27 @@
    "tiledata/joseon-gungnae/joseon-gungnae-chipset.png"
   ],
   "merged": [
-   "grass",
    "yard",
    "paving",
    "field",
-   "road16",
-   "yard16",
    "rice16",
    "gungnae_wall_corner_nw",
    "gungnae_wall_corner_ne",
-   "gungnae_wall_h2",
+   "gungnae_wall_h4",
    "gungnae_wall_h1",
+   "gungnae_wall_h2",
    "gungnae_wall_h",
+   "gungnae_wall_h5",
+   "gungnae_wall_h3",
    "gungnae_gate_great_12",
    "gungnae_wall_corner_sw",
    "gungnae_wall_corner_se",
-   "gungnae_wall_v",
-   "gungnae_wall_v_e",
    "gungnae_wall_v1",
    "gungnae_wall_v1_e",
    "gungnae_wall_v2",
    "gungnae_wall_v2_e",
+   "gungnae_wall_v",
+   "gungnae_wall_v_e",
    "gungnae_gate_side_5",
    "gungnae_tower_corner_5",
    "gungnae_bridge_v6",
@@ -204,17 +204,25 @@
    "persimmon_c",
    "bush_a",
    "pine_a",
-   "zelkova_c",
    "bush_c",
-   "persimmon_b",
    "pine_c",
-   "zelkova_a",
    "pine_d",
+   "persimmon_b",
+   "bush_s_b",
    "bush_b",
+   "zelkova_c",
    "bush_l_a",
-   "bush_s_b"
+   "zelkova_a",
+   "bench",
+   "firewood",
+   "flower_bed",
+   "dolmadam",
+   "sotdae"
   ],
   "appended": [
+   "grass8",
+   "road64",
+   "yard64",
    "water47g",
    "water_deep",
    "slab",
@@ -226,7 +234,7 @@
   ],
   "variants": [],
   "softDiff": {
-   "cells": 269,
+   "cells": 261,
    "maxRgbDelta": 198
   }
  },

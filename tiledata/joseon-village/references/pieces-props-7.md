@@ -1,10 +1,28 @@
 # 나무·소품·담·다리 조각 사전 7/8
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9472칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9389 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9408칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9347 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
 `upperTiles` = 윗층 칸 번호(행 위→아래, -1 = 그림 없음), `walk` = 칸 통행(X 막힘 / C 걸음★ / F 걸음 / . 없음). 아래층은 -1(찍는 자리의 땅을 그대로 둔다). `door` = 디딤돌 칸(문 앞 접근칸은 그 바로 아래 칸), `passage` = 통로 열 범위.
+
+### jb-jangseung_m · 남장승 1×2 · 1×2 · 분류 prop
+막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-jangseung_m","w":1,"h":2,"class":"prop","upperTiles":[[2203],[2219]],"walk":["X","X"]}
+```
+
+### jb-jars · 항아리 2×2 · 2×2 · 분류 prop
+막힘 3 · 걸음★ 0 · 걸음 1칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-jars","w":2,"h":2,"class":"prop","upperTiles":[[2197,2198],[2213,2214]],"walk":["XF","XX"]}
+```
+
+### jb-jukbyeok · 죽벽 1×1 · 1×1 · 분류 prop
+막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-jukbyeok","w":1,"h":1,"class":"prop","upperTiles":[[2853]],"walk":["X"]}
+```
 
 ### jb-lantern · 석등 1×2 · 1×2 · 분류 prop
 막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
@@ -85,9 +103,9 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 ```
 
 ### jb-palace_gate_side_3 · 궁문 side_3 3×8 · 3×8 · 분류 prop
-막힘 10 · 걸음★ 0 · 걸음 10칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+막힘 10 · 걸음★ 0 · 걸음 14칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-palace_gate_side_3","w":3,"h":8,"class":"prop","upperTiles":[[5013,5014,5015],[5029,5030,5031],[5045,5046,5047],[5061,5062,5063],[-1,5078,5079],[-1,5094,5095],[-1,5110,5111],[-1,5126,5127]],"walk":["FXF","XXX","XXX","XXX",".FF",".FF",".FF",".FF"]}
+{"kit":"kit:joseon_baram/jb-palace_gate_side_3","w":3,"h":8,"class":"prop","upperTiles":[[5077,5078,5079],[5093,5094,5095],[5109,5110,5111],[5125,5126,5127],[5141,5142,5143],[5157,5158,5159],[5173,5174,5175],[5189,5190,5191]],"walk":["FXF","XXX","XXX","XXX","FFF","FFF","FFF","FFF"]}
 ```
 
 ### jb-palace_haetae · 궁궐 haetae 2×2 · 2×2 · 분류 prop
@@ -118,22 +136,4 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 막힘 6 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
 {"kit":"kit:joseon_baram/jb-pyeongsang","w":3,"h":2,"class":"prop","upperTiles":[[2793,2794,2795],[2809,2810,2811]],"walk":["XXX","XXX"]}
-```
-
-### jb-reeds · 갈대 1×2 · 1×2 · 분류 prop
-막힘 0 · 걸음★ 2 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-reeds","w":1,"h":2,"class":"prop","upperTiles":[[2149],[2165]],"walk":["C","C"]}
-```
-
-### jb-rocks · 바위 1×1 · 1×1 · 분류 prop
-막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-rocks","w":1,"h":1,"class":"prop","upperTiles":[[2150]],"walk":["X"]}
-```
-
-### jb-sarip · 사립문 2×1 · 2×1 · 분류 prop
-막힘 0 · 걸음★ 0 · 걸음 2칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-sarip","w":2,"h":1,"class":"prop","upperTiles":[[1155,1156]],"walk":["FF"]}
 ```

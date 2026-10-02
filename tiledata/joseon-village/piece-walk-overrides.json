@@ -38,15 +38,18 @@
    "all": "F"
   },
   "sarip": {
-   "all": "F"
+   "all": "F",
+   "cross": "v"
   },
   "gn_sarip_mud": {
-   "all": "F"
+   "all": "F",
+   "cross": "v"
   },
   "gn_sarip_stone": {
    "grid": [
     "XFX"
-   ]
+   ],
+   "cross": "v"
   },
   "hongsalmun": {
    "grid": [
@@ -68,14 +71,16 @@
     "CCCC",
     "CCCC",
     "XFFX"
-   ]
+   ],
+   "cross": "v"
   },
   "gn_samun_mud": {
    "grid": [
     "CCCCC",
     "CCCCC",
     "XFFFX"
-   ]
+   ],
+   "cross": "v"
   },
   "gate_pyeong": {
    "passage": {
@@ -521,11 +526,13 @@
    "connect": [
     "slab",
     "slab_edge16",
-    "road16",
-    "yard16",
+    "road64",
+    "yard64",
     "diamond",
     "water47g",
-    "water_deep"
+    "water_deep",
+    "palace_court",
+    "palace_court16"
    ],
    "edgeConnects": true
   },
@@ -567,7 +574,39 @@
    ],
    "connect": [
     "palace_court",
-    "palace_court16"
+    "palace_court16",
+    "slab",
+    "slab_edge16"
+   ],
+   "edgeConnects": false
+  },
+  "grass8": {
+   "name": "조선 풀 (8변형)",
+   "walk": true
+  },
+  "road64": {
+   "kind": "mask16",
+   "name": "조선 흙길 (4변형)",
+   "walk": true,
+   "connect": [
+    "road64",
+    "yard64",
+    "diamond",
+    "slab",
+    "slab_edge16"
+   ],
+   "edgeConnects": true
+  },
+  "yard64": {
+   "kind": "mask16",
+   "name": "조선 마당 (4변형)",
+   "walk": true,
+   "connect": [
+    "road64",
+    "yard64",
+    "diamond",
+    "slab",
+    "slab_edge16"
    ],
    "edgeConnects": false
   }

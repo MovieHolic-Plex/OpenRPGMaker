@@ -226,8 +226,8 @@ for gname, g in groups.items():
     terrain_spec[gname] = spec
     for k, t in enumerate(g["tiles"]):
         tile_terrain[t] = (gname, k)
-    if spec["kind"] == "mask16" and len(g["tiles"]) != 16:
-        raise SystemExit(f"{gname}: mask16 인데 칸이 {len(g['tiles'])}개")
+    if spec["kind"] == "mask16" and len(g["tiles"]) % 16:
+        raise SystemExit(f"{gname}: mask16 인데 칸이 {len(g['tiles'])}개(16의 배수여야 한다 — 변형 묶음은 16칸씩 이어 붙인다)")
     if spec["kind"] == "blob47" and len(g["tiles"]) % 47:
         raise SystemExit(f"{gname}: blob47 인데 칸이 {len(g['tiles'])}개")
 
@@ -377,7 +377,7 @@ def terrain_label(gname, k):
     sp = terrain_spec[gname]
     n = len(sp["tiles"])
     if sp["kind"] == "mask16":
-        return f"{sp['name']} · 이웃 마스크 {k}"
+        return f"{sp['name']} · 이웃 마스크 {k % 16}" + (f" 변형 {k // 16}" if n > 16 else "")
     if sp["kind"] == "blob47":
         return f"{sp['name']} · 블롭 {k % 47}" + (f" 변형 {k // 47}" if n > 47 else "")
     return f"{sp['name']} {k}" if n > 1 else sp["name"]
@@ -449,10 +449,11 @@ for gname, sp in terrain_spec.items():
                                 placementRules="아래층 한 칸 채우기. " + ("걸어 다닐 수 있다." if sp["walk"] else "지나갈 수 없다.")))
         continue
     if kind == "mask16":
+        # 16칸 × 변형 수. 엔진은 변형 0 의 칸을 고르고 나머지 변형은 같은 모양의 다른 무늬라 같은 칸으로 본다.
         vmap = {str(m): tiles[m & 15] for m in range(256)}
         order = [tiles[15]] + [tiles[m] for m in range(15)]
         members = list(tiles)
-        eq = {t: t for t in tiles}
+        eq = {t: tiles[k % 16] for k, t in enumerate(tiles)}
         # fold: 몸통(마스크 15)을 평면 변형 여러 장으로 흩어 깐 묶음(석판·궁궐 바닥) — 그 칸들은 몸통과 같은 칸으로 본다
         for fname in sp.get("fold", []):
             if fname not in terrain_spec:
@@ -618,14 +619,14 @@ for m in maps_out:
                 continue
             axis = ovp.get("cross")
             if axis == "h":
-                lines = [j for j, row in enumerate(wk["rows"]) if set(row) <= set("F.") and "F" in row]
+                lines = [j for j, row in enumerate(wk["rows"]) if set(row) <= set("F.")]
                 if lines:
                     crossings.append(dict(piece=pl["name"], axis="h", x=pl["x"], y=pl["y"], w=pl["w"], h=pl["h"], lines=[pl["y"] + j for j in lines]))
             elif axis == "v":
                 if "passage" in ovp:
                     lines = list(ovp["passage"]["cols"])
                 else:
-                    lines = [i for i in range(wk["w"]) if all(wk["rows"][j][i] in "F." for j in range(wk["h"])) and any(wk["rows"][j][i] == "F" for j in range(wk["h"]))]
+                    lines = [i for i in range(wk["w"]) if all(wk["rows"][j][i] in "F." for j in range(wk["h"]))]
                 if lines:
                     crossings.append(dict(piece=pl["name"], axis="v", x=pl["x"], y=pl["y"], w=pl["w"], h=pl["h"], lines=[pl["x"] + i for i in lines]))
             if "front" in ovp:
