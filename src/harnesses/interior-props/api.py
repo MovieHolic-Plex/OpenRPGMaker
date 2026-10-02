@@ -18,6 +18,7 @@ import store  # noqa: E402
 import harness  # noqa: E402
 from common import CAND, WORKER_RE, geom, objects_by_id, slug, objects_by_slug  # noqa: E402
 import picks_db  # noqa: E402
+import outline_select  # noqa: E402
 
 SPEC = os.path.join(ROOT, 'src/assets/handInteriorSpec.json')
 SHEET = os.path.join(ROOT, 'public/assets/atlas-interior/interior-chipset.png')
@@ -131,7 +132,8 @@ def thumb(s):
 
 
 def _exists(item, c):
-    return bool(WORKER_RE.match(str(c) + '.pxg')) and os.path.exists(os.path.join(CAND, slug(item), str(c) + '.pxg'))
+    b = outline_select.split(str(c))[0]   # `h12-C.sel` = 같은 후보의 「테두리 꼭 필요한 곳만」 벌
+    return bool(WORKER_RE.match(b + '.pxg')) and os.path.exists(os.path.join(CAND, slug(item), b + '.pxg'))
 
 
 def _record_rejects(item, rnd, rejects, note=''):

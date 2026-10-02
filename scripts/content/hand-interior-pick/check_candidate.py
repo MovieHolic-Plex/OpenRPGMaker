@@ -146,6 +146,10 @@ def check(pxg, quiet=False):
     full_note = open(note, encoding='utf-8').read() if os.path.exists(note) else ''
     res['hard'] += top_claim_check(a[pad:], o, full_note, res)
     if o['kind'] not in ('flat',): res['hard'] += line_check(base, res)
+    if o['kind'] not in ('flat',) and not res['hard']:   # 고르는 화면의 「테두리 꼭 필요한 곳만」 벌을 미리 만든다(참고 — 실패해도 검사는 그대로)
+        try:
+            import outline_select; outline_select.ensure_png(d, os.path.basename(base), o)
+        except (Exception, SystemExit) as e: res['warn'].append(f'sel: 테두리 둘째 벌을 못 만들었다 {e!r}'[:200])
     return finish(res, base, quiet)
 
 LINE_THICK_MAX, LINE_NONE_MAX = 0.15, 0.15   # 고른 작은 기물 위 ¼ 경계(2026-10-02 실측: 두께 2칸+ p75 0.16 · 테 없음 p75 0.15)

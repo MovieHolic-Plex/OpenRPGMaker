@@ -25,6 +25,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *  # noqa
 import picks_db
+import outline_select
 
 WEB = os.path.join(HERE, 'web')
 PICKS = os.path.join(PICK, 'picks.json')
@@ -141,11 +142,15 @@ def ctx_png(s, cand):
     if cand == 'v5':
         src, v = None, 'v5'
     else:
-        base = os.path.join(CAND, s, cand)
-        png = base + '.png'
-        if not os.path.exists(png):
-            sys.path.insert(0, PXGRID); import pxgrid
-            pxgrid.render(base + '.pxg', png)
+        b, sel = outline_select.split(cand)
+        if sel:
+            with CTX_LOCK: png = outline_select.ensure_png(os.path.join(CAND, s), b, o)
+        else:
+            base = os.path.join(CAND, s, cand)
+            png = base + '.png'
+            if not os.path.exists(png):
+                sys.path.insert(0, PXGRID); import pxgrid
+                pxgrid.render(base + '.pxg', png)
         src = png; v = str(int(os.path.getmtime(png)))
     cp = os.path.join(CACHE, s, f'{cand}-{v}.png')
     if not os.path.exists(cp):
@@ -186,10 +191,14 @@ class H(BaseHTTPRequestHandler):
                 q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
                 return self.send(200, json.dumps({'events': picks_db.history(q.get('id', [''])[0])}, ensure_ascii=False))
             if parts[0] == 'c' and len(parts) == 3 and SAFE.match(parts[1]) and SAFE_FILE.match(parts[2]) and parts[2].endswith('.png'):
+                b, sel = outline_select.split(parts[2][:-4])
+                if sel:   # 「테두리 꼭 필요한 곳만」 둘째 벌 — 처음 부를 때 만든다
+                    if not WORKER_RE.match(b + '.pxg') or parts[1] not in objects_by_slug(): return self.send(404, '{}')
+                    with CTX_LOCK: outline_select.ensure_png(os.path.join(CAND, parts[1]), b, objects_by_slug()[parts[1]])
                 return self.file(os.path.join(CAND, parts[1], parts[2]), 'image/png')
             if parts[0] == 'ctx' and len(parts) == 3 and SAFE.match(parts[1]) and parts[2].endswith('.png'):
                 cand = parts[2][:-4]
-                if cand != 'v5' and not WORKER_RE.match(cand + '.pxg'): return self.send(404, '{}')
+                if cand != 'v5' and not WORKER_RE.match(outline_select.split(cand)[0] + '.pxg'): return self.send(404, '{}')
                 if parts[1] not in objects_by_slug(): return self.send(404, '{}')
                 return self.send(200, ctx_png(parts[1], cand), 'image/png')
             if parts[0] == 'out' and len(parts) >= 2 and all(SAFE_FILE.match(x) for x in parts[1:]):
