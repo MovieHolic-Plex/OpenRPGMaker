@@ -1,3 +1,4 @@
+import { beginEnemyCollapse } from "@/player/battleEnemyCollapse";
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { PartyPixelCell, PixelEnemyCell } from "@/assets/pixelEnemySheets";
@@ -183,7 +184,10 @@ export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, 
     if (node.dataset.pixelParty && feedback.miss) { transientPose(node, "evade", 240); return; }
     if (feedback.healing || feedback.miss || feedback.amount <= 0) return;
     // 맞은 칸을 잠깐 보이고, 막타면 그 뒤 녹아내린 칸(dead)으로 넘어간다.
-    if (lethal) node.classList.add("defeated");
+    if (lethal) {
+      node.classList.add("defeated");
+      if (node.classList.contains("battle-enemy")) beginEnemyCollapse(node);
+    }
     transientPose(node, "hit", lethal ? 200 : 380);
     return;
   }
@@ -200,6 +204,7 @@ export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, 
   if (lethal && node.classList.contains("battle-enemy")) {
     // 원장의 syncEnemyNode가 기본 파편을 생성하기 전에 격파 상태를 예약한다.
     node.classList.add("defeated");
+    beginEnemyCollapse(node);
     return;
   }
   if (!node.classList.contains("battle-actor")) return;
@@ -730,7 +735,9 @@ export interface RetroEnemyReach {
 /** 지금 그릴 도트 적 칸. 격파 → 맞은 칸을 잠깐 보인 뒤 녹은 칸, 피격 → hit, 행동 중 → 비트가 고른 칸. */
 export function retroPixelEnemyCell(node: HTMLElement): PixelEnemyCell | "idle" {
   const transient = node.dataset.retroTransient;
-  if (node.classList.contains("defeated")) return transient === "hit" ? "hit" : "dead";
+  // 저작한 쓰러짐 연출(data-collapse)이 있는 적은 녹은 칸(dead)으로 가지 않는다 — 그 칸이 0.8초 보였다가 연출이 서 있는
+  // 모습부터 다시 시작해 「죽었다 살아나 다시 죽는」 것처럼 읽혔다(2026-10-02 영상). 연출 캔버스가 그림을 숨길 때까지 맞은 칸.
+  if (node.classList.contains("defeated")) return transient === "hit" || node.dataset.collapse ? "hit" : "dead";
   if (transient === "hit") return "hit";
   const cell = node.dataset.retroBeat ? node.dataset.retroPixelCell : undefined;
   return (cell as PixelEnemyCell | undefined) ?? "idle";

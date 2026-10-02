@@ -14,6 +14,7 @@ import {
 } from "@/project/actorModel";
 import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
+import { normalizeDisplayFilter } from "@/project/displayFilter";
 import { normalizeBattleLook } from "@/project/battleLook";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
@@ -258,6 +259,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL
       ? { battleHitFeel: system.battleHitFeel }
       : {}),
+    ...(normalizeDisplayFilter(system.displayFilter) ? { displayFilter: normalizeDisplayFilter(system.displayFilter) } : {}),
     // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
     ...(normalizeBattleLook(system.battleLook) ? { battleLook: normalizeBattleLook(system.battleLook) } : {}),
     // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.

@@ -3,6 +3,7 @@ import { renderEnemyStudio } from "@/editor/panels/databaseEnemyStudio";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
+import { ENEMY_COLLAPSE_EFFECTS, ENEMY_COLLAPSE_LABELS, normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
 import { databaseFieldSupport, databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
@@ -687,6 +688,13 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     sliderStepperField("전투 표시 크기 (%)", "db-field-enemy-battle-scale", record.battleScalePercent ?? 100, (battleScalePercent) =>
       updateDatabaseRecord("enemies", record.id, { battleScalePercent }),
       { min: 10, max: 300, step: 1, unit: "%" }
+    ),
+    selectField(
+      "쓰러지는 연출",
+      "db-field-enemy-collapse",
+      record.collapseEffect ?? "dissolve",
+      ENEMY_COLLAPSE_EFFECTS.map((id) => ({ id, name: ENEMY_COLLAPSE_LABELS[id] })),
+      (value) => updateDatabaseRecord("enemies", record.id, { collapseEffect: normalizeEnemyCollapseEffect(value) })
     ),
     el("div", {
       class: "db-enemy-graphic-actions",

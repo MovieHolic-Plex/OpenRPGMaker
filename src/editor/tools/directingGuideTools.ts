@@ -61,13 +61,26 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 - 파티클 효과 m2-224-particle-effect fields{preset,target:"player"|"this-event"|"event"|"tile",eventId,x,y,durationMs,wait}.
 - 모습 효과 m2-225-sprite-look fields{target:"player"|"this-event"|"event",eventId,reset,pose:"keep"|자세,tint:"keep"|"none"|색 이름,tintHex,tintFill/flip/afterimage:"keep"|"on"|"off",angle,opacity(%)}.
 - 이벤트 그림 자체를 늘 빛나게(불꽃·유령·마법진 이벤트): 페이지 graphic.blendMode:"add" (곱하기 그림자는 "multiply").
+
+## 전투 연출 (DB 도구)
+- 적이 쓰러지는 모습 upsert_enemy collapseEffect: 잡몹 "pixelBreak"(FF6 보랏빛 픽셀 분해) 또는 "flash"(하얀 세 번 점멸),
+  보스 "bossSink"(떨며 붉게 깜빡이고 땅속으로 가라앉음, 1.8초), 환영·소환수 "instant". 생략 = 스킨 기본 소멸.
+- 전투마다 분위기 upsert_troop backdropLayers(최대 4): 동굴 fog, 하늘 성 clouds, 늪 mist, 폭풍 전야 rain, 설원 snow,
+  화산·불타는 성 embers, 밤 stars, 성당 lightRays. 앞 장막은 front:true + opacity 50 이하(숫자가 가려지지 않게).
+  backdropAnimation(배경 한 장 흐르기)은 도트 측면 스킨(기본)에서 지형 겹 배경에 가려 안 보인다 — 분위기는 backdropLayers 로.
+- 상태가 몸에 보이게 upsert_state battleAura: sleep-zzz(Z) · paralyze-spark(전기) · silence-mute(…) · confuse-stars(별) ·
+  charm-heart(하트) · burn-ember(불티) · poison-bubble · freeze-grey · petrify-still · regen-sparkle · dark-fog · berserk-pulse.
+  기본 상태(수면·마비·침묵·독·석화 …)는 자동이라 새로 만든 상태에만 준다.
+- 빛·불·번개 마법 이펙트 upsert_battle_animation blendMode:"add" — 배틀러·배경이 함께 밝아진다. 어둠·저주는 "multiply".
+- 게임 전체를 옛 TV 로 set_project_settings displayFilter:"scanlines"(가로줄) | "crt"(가로줄+색 결+가장자리 어둡게).
 `;
 
 const readDirectingGuide: ToolDefinition = {
   name: "read_directing_guide",
   description:
     "컷신 연출 지침을 읽는다: 장면별 비트 조합 레시피(놀람·폭발·지진·기절·유령·순간이동·마법·회상·수중·빛기둥), 오래 남는 효과를 되돌리는 법, " +
-    "레터박스·파티클·모습 효과(포즈·색·잔상)·감정 말풍선·화면 왜곡·겹치기·카메라 곡선의 쓰임, 컷신 밖 이벤트 명령 id 와 필드. " +
+    "레터박스·파티클·모습 효과(포즈·색·잔상)·감정 말풍선·화면 왜곡·겹치기·카메라 곡선의 쓰임, 컷신 밖 이벤트 명령 id 와 필드, " +
+    "전투 연출(적 쓰러짐 collapseEffect·전투 배경 겹 backdropLayers·상태 오라 battleAura·이펙트 겹치기·화면 필터). " +
     "크로노 트리거·FF6 풍의 연출이 필요한 컷신을 쓰기 전에 한 번 읽는다(고정 텍스트라 반복 호출하지 않는다).",
   mode: "read",
   parameters: { type: "object", properties: {} },

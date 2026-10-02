@@ -2,6 +2,7 @@ import { DEFAULT_ELEMENT_RATE_LABELS } from "@/project/actorModel";
 import { normalizeEnemyActionProfile } from "@/project/actionCombat";
 import { normalizeStealItems } from "@/battle/battleSpecialEffects";
 import { normalizeBattleBackdropAnimation } from "@/project/battleBackdropAnimation";
+import { normalizeBattleBackdropLayers } from "@/project/battleBackdropLayers";
 import { normalizeTroopAfterBattle } from "@/project/troopAfterBattle";
 import type {
   EnemyActionCondition,
@@ -18,6 +19,7 @@ import type {
   TroopMemberRecord,
   TroopRecord,
 } from "@/project/types";
+import { normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
 
 export function normalizeEnemyRecord(
   record: Partial<Omit<EnemyRecord, "actions">> & { actions?: readonly Partial<EnemyActionPattern>[] } & Pick<EnemyRecord, "id" | "name">,
@@ -63,6 +65,7 @@ export function normalizeEnemyRecord(
       const stealItems = normalizeStealItems(record.stealItems);
       return stealItems.length > 0 ? { stealItems } : {};
     })(),
+    ...(normalizeEnemyCollapseEffect(record.collapseEffect) ? { collapseEffect: normalizeEnemyCollapseEffect(record.collapseEffect) } : {}),
   };
 }
 
@@ -107,6 +110,10 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     ...(() => {
       const backdropAnimation = normalizeBattleBackdropAnimation(record.backdropAnimation);
       return backdropAnimation ? { backdropAnimation } : {};
+    })(),
+    ...(() => {
+      const backdropLayers = normalizeBattleBackdropLayers(record.backdropLayers);
+      return backdropLayers ? { backdropLayers } : {};
     })(),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),

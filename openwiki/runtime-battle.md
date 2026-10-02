@@ -1,5 +1,35 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## SNES 식 전투 연출 — 쓰러짐·배경 겹·상태 몸 표시·이펙트 겹치기·화면 필터 (2026-10-02)
+
+- **적 쓰러짐** `EnemyRecord.collapseEffect`(project/enemyCollapse.ts): pixelBreak(FF6 보랏빛 픽셀 분해 0.9s) · bossSink(떨며 붉게 깜빡이고
+  가라앉음 1.8s) · flash(하얀 점멸 0.56s) · instant. 생략 = 스킨 기본 소멸. 런타임 `player/battleEnemyCollapse.ts` 는 쓰러지는 순간의 그림을
+  캔버스에 떠서(`player/battleSpriteSnapshot.ts` — 정적 img·도트 시트 배경·확장 배틀러 셋 다) 원래 그림은 인라인 `visibility:hidden`,
+  캔버스만 움직인다 — 격파 CSS 가 스킨마다 특정도 높게 얽혀 있어 CSS 로 덮지 않는다. 시작점은 둘: 도트 측면 스킨은 막타 순간
+  `retroDamage`, 그 밖은 `syncEnemyNode` 의 격파 전이. 한 노드에 한 번(`data-collapse-state`).
+  - 함정 1: 계산 스타일·상자는 **await 전에** 뜬다. 도트 적은 막타 직후 dead 칸(녹은 웅덩이)으로 바뀌어, 이미지 로드 뒤 읽으면 쓰러진 칸이 분해됐다.
+  - 함정 2: 캔버스 자리는 `getBoundingClientRect` 로 잰다. 스킨이 그림을 transform 으로 세워 offsetLeft/Top 은 70~300px 어긋났다.
+  - 함정 3: 도트 적은 격파 칸이 녹은 웅덩이(dead)라, 연출이 있는 적은 `retroPixelEnemyCell` 이 dead 대신 맞은 칸(hit)을 고른다 —
+    아니면 웅덩이 0.8초 → 서 있는 모습으로 연출 시작 = 「죽었다 살아나 다시 죽음」으로 보였다.
+  - 결판 막타면 시퀀서가 `collapseHoldMs`(= `remainingEnemyCollapseMs`, 최대 2.2초)만큼 결과 도장·패널을 미룬다 — 보스 가라앉기(1.8초)가
+    「승리」 띠에 덮였다. 시작 시각은 `data-collapse-ends-at` 에 동기로 적는다.
+- **배경 겹** `TroopRecord.backdropLayers`(project/battleBackdropLayers.ts, 최대 4): fog·clouds·mist·rain·snow·embers·stars·lightRays 프리셋
+  (그림 없이 CSS 그라디언트) 또는 저자 그림. 뒤 겹은 `.battle-backdrop` 안 z 1(겹 배경 지형 카메라 위), 앞 겹(front)은 필드 z 25(배틀러 앞, 색조 층 30 아래).
+  `backdropAnimation` 은 겹 배경 스킨(기본 retro2003 등 도트 측면)에서 지형이 덮어 안 보이지만 겹은 모든 스킨에서 보인다.
+- **상태 몸 표시**: 오라에 sleep-zzz · paralyze-spark · silence-mute · confuse-stars · charm-heart · burn-ember 추가, 기본 상태 id 와
+  몬스터 주 상태(gen1MajorStatus)로 자동. 입자 층은 이제 **모든 스킨**(몸 색 필터는 retro 만). 층은 노드가 아니라 그림의 **불투명 픽셀 상자**에
+  맞춘다(`fitAuraLayerToSprite`) — 도트 칸은 144px 중 아래 ⅓ 만 몸이라 노드 기준 top% 에 둔 Z 가 허공에 떴다.
+- **이펙트 셀** `BattleAnimationCell.rotation`·`mirror`, 레코드 `BattleAnimationRecord.blendMode`. 섞기는 셀이 아니라 레코드에 —
+  `.battle-animation-layer` 가 z-index 로 자기 스태킹 컨텍스트라 노드에만 걸면 투명한 층과 섞여 아무 일도 없다(실측). battleDom 의
+  MutationObserver 가 섞는 이펙트가 든 동안 층 자체에 mix-blend-mode 를 건다(그동안 같은 층 다른 이펙트도 같이 섞임).
+- **화면 필터** `system.displayFilter`(project/displayFilter.ts): scanlines · crt. `createPlaySurface` 가 `.play-stage` 맨 끝에 층을 두고
+  직계 자식이 바뀌면 다시 끝으로 옮긴다(전투·메뉴가 나중에 붙는다). 깜빡임 없음.
+- 캡처: `node scripts/qa/runtime/battle-fx.capture.mjs --out /tmp/battle-fx [--skin rm2000] [--filter scanlines]` — 오라 판은 스크린샷,
+  쓰러짐·이펙트 판은 영상(webm, swiftshader 스크린샷은 장당 0.5s 라 0.9s 연출을 못 따라간다). 전투 이벤트 페이지는 **행동 뒤**에 검사되므로
+  상태를 거는 시험은 한 명이 한 번 행동해야 한다.
+- 조수: `read_directing_guide` 의 「전투 연출」 절, 능력 색인 `battle-presentation`, 도구 칸 upsert_enemy.collapseEffect ·
+  upsert_troop.backdropLayers · upsert_state.battleAura · upsert_battle_animation.blendMode · set_project_settings.displayFilter.
+
 ## 포켓몬 참고 스킨과 실제 뒷모습 (2026-09-20)
 
 - `20-pokemon-skin.css`의 Reference 블록은 민트 줄무늬 필드, 타원 발판, 좌상 적/우하 아군 상태창, 2×2 색상 명령창을 소유한다. 몬스터 루트만 `.battle-pokemon-root`로 표시해 일반 액터 명령과 강제 교체의 스크롤 계약을 보존한다.

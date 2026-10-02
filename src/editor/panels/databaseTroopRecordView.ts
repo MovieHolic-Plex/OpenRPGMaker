@@ -40,8 +40,15 @@ import {
 } from "@/editor/panels/databaseWorkspace";
 import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
-import type { BattleBackdropAnimation, EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
+import type { BattleBackdropAnimation, BattleBackdropLayer, EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
 import { BATTLE_BACKDROP_ANIMATION_LIMITS, type BattleBackdropAnimationKey } from "@/project/battleBackdropAnimation";
+import {
+  BATTLE_BACKDROP_LAYER_LABELS,
+  BATTLE_BACKDROP_LAYER_LIMIT,
+  BATTLE_BACKDROP_LAYER_PRESETS,
+  resolvedBattleBackdropLayer,
+} from "@/project/battleBackdropLayers";
+import { BLEND_MODE_LABELS, BLEND_MODE_NAMES, normalizeBlendMode } from "@/project/blendMode";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { classicEnemyFormation } from "@/battle/battleBattlers";
@@ -318,6 +325,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
       }),
       backdropField(record, rerender),
       backdropAnimationField(record, rerender),
+      backdropLayersField(record, rerender),
       el("div", {
         class: "db-troop-check-row",
         children: [trainerBattleField(record, rerender), uncapturableField(record, rerender)],
@@ -901,6 +909,65 @@ function backdropAnimationField(record: TroopRecord, rerender: () => void): HTML
       el("small", {
         class: "db-ws-usage",
         text: hasMotion ? "전투 배경이 움직입니다. 움직임 줄이기 설정에서는 멈춥니다." : "모두 0이면 정지 배경입니다.",
+      }),
+    ],
+  });
+}
+
+/** 배경 겹 — 안개·구름·비·눈·불티·별·빛줄기(그림 없이 그린다). 앞 겹은 배틀러 앞에 깔린다. 최대 4. */
+function backdropLayersField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const current = (): BattleBackdropLayer[] =>
+    [...(store.getCurrent().database.troops.find((troop) => troop.id === record.id)?.backdropLayers ?? [])];
+  const save = (layers: BattleBackdropLayer[]): void => {
+    // 정규화(normalizeTroopRecord)가 빈 겹·범위 밖 값을 거르고, 남는 게 없으면 키를 지운다.
+    updateDatabaseRecord("troops", record.id, { backdropLayers: layers.length ? layers : undefined });
+    rerender();
+  };
+  const patch = (index: number, next: Partial<BattleBackdropLayer>): void =>
+    save(current().map((layer, i) => (i === index ? { ...layer, ...next } : layer)));
+  const layers = current();
+  const rows = layers.map((layer, index) => {
+    const resolved = resolvedBattleBackdropLayer(layer);
+    const label = layer.resourceId ? `그림 ${layer.resourceId}` : BATTLE_BACKDROP_LAYER_LABELS[layer.preset ?? "fog"];
+    return el("div", {
+      class: "db-troop-config-grid",
+      dataset: { testid: `db-troop-layer-${index}` },
+      children: [
+        layer.resourceId
+          ? el("span", { class: "db-troop-field-label", text: label })
+          : selectField("겹", `db-troop-layer-preset-${index}`, layer.preset ?? "fog",
+            BATTLE_BACKDROP_LAYER_PRESETS.map((id) => ({ id, name: BATTLE_BACKDROP_LAYER_LABELS[id] })),
+            (preset) => patch(index, { preset: preset as BattleBackdropLayer["preset"] })),
+        checkboxField("배틀러 앞", `db-troop-layer-front-${index}`, layer.front === true, (front) => patch(index, { front: front || undefined })),
+        numberField("불투명도 (%)", `db-troop-layer-opacity-${index}`, resolved.opacity, (opacity) => patch(index, { opacity }), { min: 0, max: 100, step: 5 }),
+        numberField("가로 흐름 (px/초)", `db-troop-layer-scrollx-${index}`, resolved.scrollX, (scrollX) => patch(index, { scrollX }), { min: -1200, max: 1200, step: 5 }),
+        numberField("세로 흐름 (px/초)", `db-troop-layer-scrolly-${index}`, resolved.scrollY, (scrollY) => patch(index, { scrollY }), { min: -1200, max: 1200, step: 5 }),
+        selectField("겹치기", `db-troop-layer-blend-${index}`, resolved.blendMode,
+          BLEND_MODE_NAMES.map((id) => ({ id, name: BLEND_MODE_LABELS[id] })),
+          (blend) => patch(index, { blendMode: normalizeBlendMode(blend) })),
+        el("button", {
+          class: "btn btn-mini",
+          text: "빼기",
+          attrs: { type: "button" },
+          dataset: { testid: `db-troop-layer-delete-${index}` },
+          on: { click: () => save(current().filter((_, i) => i !== index)) },
+        }),
+      ],
+    });
+  });
+  return el("div", {
+    class: "db-troop-backdrop-motion",
+    dataset: { testid: "db-troop-backdrop-layers" },
+    attrs: { title: "모든 전투 스킨에서 보입니다. 움직임 줄이기를 켠 플레이어에게는 흐르지 않습니다." },
+    children: [
+      el("span", { class: "db-troop-field-label", text: "배경 겹 (안개·구름·비·눈…)" }),
+      ...rows,
+      el("button", {
+        class: "btn btn-mini",
+        text: "겹 추가",
+        attrs: { type: "button", ...(layers.length >= BATTLE_BACKDROP_LAYER_LIMIT ? { disabled: "true" } : {}) },
+        dataset: { testid: "db-troop-layer-add" },
+        on: { click: () => save([...current(), { preset: "fog" }]) },
       }),
     ],
   });

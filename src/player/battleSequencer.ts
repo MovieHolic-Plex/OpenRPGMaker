@@ -50,6 +50,8 @@ export const BATTLE_RESOLVE_MS = 260;
 export const BATTLE_LOG_MS = 520;
 export const BATTLE_RESULT_STAGE_MS = 450;
 export const BATTLE_RESULT_HOLD_MS = 900;
+/** 쓰러짐 연출을 기다리는 최대 시간 — 연출이 멈춰도 결과가 영영 안 뜨지 않게. */
+export const BATTLE_COLLAPSE_HOLD_MAX_MS = 2200;
 
 export interface DamageFeedback {
   readonly targetId: string;
@@ -103,6 +105,8 @@ export interface BattleSequencerHooks {
   /** 결과가 정해진 뒤 결과 패널이 뜨기 전(BATTLE_RESULT_HOLD_MS) 한 번. 이 홀드는 예전엔 빈 필드만
    *  보이는 정적 구간이었다 — 표시 계층이 승리/전멸 도장을 찍는다. */
   readonly onResultPending?: (result: NonNullable<BattleSnapshot["result"]>) => void;
+  /** 결판 막타 뒤 남은 적 쓰러짐 연출 시간(ms, EnemyRecord.collapseEffect). 결과 도장·패널을 그만큼 미뤄 보스 가라앉기가 가려지지 않게 한다. */
+  readonly collapseHoldMs?: () => number;
   /** 아군 행동의 접근(approach) 비트 길이를 표시 계층이 정한다(도트 측면 전투: 적 앞까지 걷는 거리에 비례).
    *  undefined 를 돌려주면 BATTLE_ACTING_MS 그대로 — 이 훅이 없는 스킨의 시간은 바뀌지 않는다. */
   readonly actorApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
@@ -554,8 +558,14 @@ export function createBattleSequencer(
         hooks.onActionMotion?.(undefined);
         hooks.onDirectorState({ step: "impact", lines: [killLine], targetId: entry.targetId });
         hooks.onSyncView();
-        if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
-        delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : BATTLE_KILL_LINE_MS);
+        // 저작한 쓰러짐 연출(보스 가라앉기 1.8초 등)이 아직 돌면 결과 도장이 그 위를 덮는다 — 끝날 때까지 미룬다.
+        const hold = decisive ? Math.min(BATTLE_COLLAPSE_HOLD_MAX_MS, Math.max(0, hooks.collapseHoldMs?.() ?? 0)) : 0;
+        const stampAndContinue = (): void => {
+          if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
+          delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : BATTLE_KILL_LINE_MS);
+        };
+        if (hold > 0) delay(stampAndContinue, hold);
+        else stampAndContinue();
       }
       : support?.failLine
         ? (): void => {
