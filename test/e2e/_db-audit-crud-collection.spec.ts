@@ -129,7 +129,7 @@ const ADAPTERS: readonly CollectionAdapter[] = [
     rowPrefix: "db-monster-species-row-",
     hasSearch: false,
     hasGallery: false,
-    numericFields: ["db-monster-species-hp", "db-monster-species-capture-rate", "db-monster-species-hue"],
+    numericFields: ["db-monster-species-hp", "db-monster-species-capture-rate"],
     emptyOnFresh: false,
   },
   {

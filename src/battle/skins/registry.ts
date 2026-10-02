@@ -67,7 +67,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   // 서서 서로 마주 본다. 창 크롬은 유리 카드(family: glass).
   // 배경은 정면과 같은 하늘 배경을 쓴다(측면 구도 전용 배경은 아직 없다).
   rm2003: {
-    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "도트 측면 · 유리 창", layout: "sideview", showAllySprites: true,
+    id: "rm2003", deprecated: true, defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "도트 측면 · 유리 창", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "wipe-blue", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "rgba(14,18,34,.96)",
@@ -86,7 +86,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   octopath: {
-    id: "octopath", defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "도트 측면 · 먹빛 창", layout: "sideview", showAllySprites: true,
+    id: "octopath", deprecated: true, defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "도트 측면 · 먹빛 창", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "focus-blur", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#0a1020",
@@ -105,7 +105,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   chrono: {
-    id: "chrono", defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "도트 측면 · 청람 창", layout: "sideview", showAllySprites: true,
+    id: "chrono", deprecated: true, defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "도트 측면 · 청람 창", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "sweep-cyan", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#071a33",
@@ -124,7 +124,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   bravely: {
-    id: "bravely", defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "도트 측면 · 세피아 창", layout: "sideview", showAllySprites: true,
+    id: "bravely", deprecated: true, defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "도트 측면 · 세피아 창", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "brave-shift", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#1a1206",
@@ -143,7 +143,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   ff: {
-    id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "도트 측면 · 코발트 창", layout: "sideview", showAllySprites: true,
+    id: "ff", deprecated: true, defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "도트 측면 · 코발트 창", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "wipe-blue", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#0f1e7a",
@@ -162,7 +162,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   goldensun: {
-    id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "도트 측면 · 금갈색 창", layout: "sideview", showAllySprites: true,
+    id: "goldensun", deprecated: true, defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "도트 측면 · 금갈색 창", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "sweep-cyan", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#1a0f02",
@@ -214,13 +214,13 @@ export function listBattleSkinIds(): BattleSkinId[] {
 }
 
 /**
- * 새 저작 UI 가 노출하는 스킨 — 도트 측면 일곱 + 포켓몬(2026-10-02). 순서는 드롭다운 순서다.
+ * 새로 고를 수 있는 스킨 = 전투 방식 둘(2026-10-02): 도트 측면(retro2003)·몬스터 대치(pokemon).
+ * 창 색만 다르던 측면 여섯(rm2003·ff·goldensun·chrono·octopath·bravely)은 deprecated — 저장된 프로젝트는 그대로 그려지고
+ * 새로 고르지는 못한다. 창 색은 전투 화면 꾸미기(system.battleLook.window)가 맡는다. project/battleMethod.ts 참조.
  */
-export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = [
-  "retro2003", "rm2003", "ff", "goldensun", "chrono", "octopath", "bravely", "pokemon",
-];
+export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = ["retro2003", "pokemon"];
 
-/** 드롭다운 순서의 활성 스킨. deprecated 표식이 붙은 스킨은 빠진다(지금은 없다). */
+/** 새로 고를 수 있는 스킨. deprecated 표식이 붙은 스킨은 빠진다. */
 export function listActiveBattleSkinIds(): BattleSkinId[] {
   return ACTIVE_BATTLE_SKIN_IDS.filter((id) => !BATTLE_SKINS[id].deprecated);
 }

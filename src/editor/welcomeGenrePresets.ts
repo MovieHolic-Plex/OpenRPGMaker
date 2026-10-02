@@ -318,7 +318,7 @@ export function welcomeBattleLookLine(): string {
   const sideSkins = listActiveBattleSkinIds().filter((id) => BATTLE_SKINS[id].motionStyle === "retro");
   return "전투 화면: 턴제 전투가 있으면 기획 톤에 맞는 전투 화면 프리셋을 set_project_settings 의 battle.look.preset 으로 고르세요. "
     + "기본 pixel 은 고전 레트로·향수를 노린 게임에만 그대로 둡니다. "
-    + `꾸밈은 도트 측면 전투 스킨(battle.uiStyle: ${sideSkins.join("·")})에서만 보입니다 — 정면 스킨이면 측면 스킨으로 바꾼 뒤 고르세요. `
+    + `꾸밈은 도트 측면 전투(battle.uiStyle: ${sideSkins.join("·")}, 기본)에서만 보이고 몬스터 대치(pokemon)에는 보이지 않습니다. `
     + `분위기 안내: ${battleLookMoodGuide()}. `
     + "프리셋 위에 accent(#rrggbb 강조색)·party·command 칸을 덧바꿔 게임 색을 맞춰도 됩니다.";
 }

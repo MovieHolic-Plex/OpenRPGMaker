@@ -1,5 +1,22 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 자료집 전투 정리 — 전투 방식 두 가지·전투 화면 탭·안 쓰는 칸 삭제 (2026-10-02)
+
+사용자 결정: 전투는 도트 측면(RM2003식)이 주축, 포켓몬식만 예외. 자료집에서 그에 안 맞는 칸을 걷어냈다. **저장값은 하나도 지우지 않는다** — 화면에서만 뺐다.
+
+- **전투 화면 탭**(`databaseBattleScreenTab.ts`, 옛 `databaseUtilityRecordViews.ts` `renderBattleScreenTab` 대체): 카드 셋.
+  - 「전투 방식」(`db-battle-method-card`): `db-battle-method-side` 도트 측면 / `db-battle-method-monster` 몬스터 대치. 방식 하나가 화면(`system.battleUiStyle`)과 규칙(`system.battleModel`)을 같이 정한다 — `src/project/battleMethod.ts` `applyBattleMethod`(측면 = 두 키 삭제 → retro2003 + RM 규칙, 몬스터 = `pokemon` + `gen1`). 조수 `set_project_settings battle.uiStyle` 도 같은 함수를 탄다(`projectTools.ts`, 허용 값은 `listActiveBattleSkinIds()` = retro2003·pokemon).
+  - 옛 색 스킨 여섯(rm2003·ff·goldensun·chrono·octopath·bravely)은 레지스트리에 `deprecated: true` — 저장된 프로젝트는 그 색으로 계속 그려지고 이 카드가 `db-battle-method-legacy-skin` 안내만 띄운다. 화면·규칙이 어긋난 옛 저장(예: retro2003 + gen1)은 `db-battle-method-rules-mismatch`.
+  - 「타격감」(`db-battle-hit-feel-card`, `db-field-system-battle-hit-feel`)과 「전투 화면 꾸미기」(`db-battle-look-card`, `battleLookFields`)는 시스템 탭에서 옮겨 왔다. CSS 스코프도 `.db-system-form` → `.db-battle-screen-studio`(`system-studio.css`).
+  - 지운 것: 적 그림을 사선으로 늘어놓던 가짜 무대 미리보기·적 그룹 띠·「시스템 › 시작 설정 열기」 링크(`db-battle-screen-*`), 「전투 시스템 리소스」(`db-field-battle-system-resource` — 런타임은 아무도 읽지 않는 CSS 변수 `--runtime-battle-system2` 만 썼다).
+- **시스템 › 시작 설정**: 전투 UI 스타일(`db-field-system-battle-ui-style`)·규칙 모델(`db-field-system-battle-model`) 칸 삭제. 전투 흐름·참전 수는 여기 한 곳에만 남는다(전투 화면 탭에 겹쳐 있던 사본 삭제). 「전투 화면 탭으로」 이동 버튼은 `switchToBattleScreenTab`.
+- **적·종족**: 투명(`db-field-enemy-transparent`)·비행(`-flying`)·색조(`db-monster-species-hue`, 적 그래픽 대화의 색조)·몬스터 리소스 ID 글칸(`db-field-enemy-monster-resource`)·적 미리보기 일시정지(`db-enemy-preview-pause`) 삭제. 런타임은 `transparent`/`flying`/`graphicHue` 를 읽지 않는다(아래 authoringOnly 공시는 그대로). 그림은 「그래픽 바꾸기」 대화로만 고른다.
+- **아이템**: 옛 장비 프로필·사용 메시지 UI 는 이미 없었고 남은 죽은 코드만 지웠다(`databaseItemRecordView.ts`).
+- **전투 애니메이션**: 레일 칸 `db-tab-animations` 삭제 → 도트 연출(`retroChoreographies`)의 하위 보기 「옛 전투 애니메이션 (대체용)」(`PARTY_SUBVIEW_PARENT.animations`, 하위 내비 `db-subview-retro-choreographies`·`db-subview-animations`). 도트 측면 전투는 스킬에 도트 연출이 있으면 셀 애니메이션을 그리지 않으므로(`battleDom.ts`) 연출 없는 스킬의 대체용·몬스터 대치 전용이다. 탭 검색 「전투 애니메이션」「animations」는 도트 연출에 걸린다(`LEGACY_TAB_SEARCH`). 전투 스튜디오 내비의 애니메이션 칸도 도트 연출로 바뀌었다.
+- **소재 고르기**: 은퇴한 전투 배경은 고르기 목록에서 숨긴다(`resourceOptions.ts`). 이미 고른 값은 그대로 보인다.
+- 남긴 것: 파티 정면 스프라이트 `bskin-party-*-front`(살아 있는 폴백), 런타임의 `battleSystemResourceId` 처리 코드(옛 저장 호환).
+- 시험(실행 안 함): `test/battleSystemDeprecation.test.ts`·`databaseBattleStudio.test.ts`·`battleLook.test.ts`·`battleSkinRegistry.test.ts`. 화면 증거 `verify-shots/db-battle-cleanup/{before,after}/`(`capture.mjs`).
+
 ## 레트로 전투 기믹 편집 칸 (2026-09-30)
 
 retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있게 했다. 증거·캡처 목록은 `verify-shots/retro-editable/SHOTS.md`.

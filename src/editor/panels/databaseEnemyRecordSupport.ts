@@ -17,9 +17,6 @@ export function enemyGraphicVisual(record: EnemyRecord): HTMLElement {
     ? el("img", { attrs: { alt: `${record.name} 미리보기`, src: url } })
     : el("span", { class: "db-enemy-empty-graphic", text: "(없음)" });
   if (image instanceof HTMLImageElement) {
-    image.style.filter = `hue-rotate(${record.graphicHue}deg)`;
-    image.style.opacity = record.transparent ? "0.58" : "1";
-    image.classList.toggle("flying", record.flying);
     image.addEventListener("error", () => {
       image.replaceWith(el("span", { class: "db-enemy-empty-graphic", text: "(그래픽 없음)" }));
     }, { once: true });

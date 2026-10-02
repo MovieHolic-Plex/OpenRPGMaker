@@ -77,12 +77,8 @@ function actorThumbnail(record: ActorRecord, project: Project, size: number): HT
 }
 
 function enemyThumbnail(record: EnemyRecord, project: Project, size: number): HTMLElement {
-  const thumb = imageThumbnail(record.monsterResourceId, project, `${record.name} 썸네일`, size);
-  if (record.graphicHue && thumb.classList.contains("db-list-thumb-image")) {
-    const image = thumb.querySelector("img");
-    if (image) image.style.filter = `hue-rotate(${record.graphicHue}deg)`;
-  }
-  return thumb;
+  // 색조는 전투가 읽지 않으므로(2026-10-02) 미리보기도 원래 색으로 그린다.
+  return imageThumbnail(record.monsterResourceId, project, `${record.name} 썸네일`, size);
 }
 
 function classThumbnail(record: ClassRecord, project: Project, size: number): HTMLElement {

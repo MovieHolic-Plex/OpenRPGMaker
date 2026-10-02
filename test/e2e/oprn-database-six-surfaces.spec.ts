@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { applyDatabaseChanges, exportedProject, openDatabase } from "./oprn-database-helpers";
+import { applyDatabaseChanges, exportedProject, openAnimationsSubview, openDatabase } from "./oprn-database-helpers";
 
 test.setTimeout(120_000);
 
@@ -33,14 +33,14 @@ test("database six surfaces persist real edits through project export", async ({
   }
   expect(classAfter.at(-1)).toBe("교체");
 
-  // (1) 전투 화면
-  await page.getByTestId("db-tab-battle-screen").click();
-  await page.getByTestId("db-field-battle-system-resource").fill("easyrpg-system2-system2-a");
-  await page.getByTestId("db-field-battle-screen-flow").selectOption("strict");
-  await page.getByTestId("db-field-battle-screen-active-slots").fill("3");
+  // (1) 전투 규칙 — 전투 흐름·참전 수는 2026-10-02부터 시스템 › 시작 설정에 있다.
+  await page.getByTestId("db-tab-system").click();
+  await page.getByTestId("db-system-nav-startup").click();
+  await page.getByTestId("db-field-system-battle-flow").selectOption("strict");
+  await page.getByTestId("db-field-system-active-slots").fill("3");
 
   // (3) 전투 애니메이션 셀 일괄
-  await page.getByTestId("db-tab-animations").click();
+  await openAnimationsSubview(page);
   await expect(page.getByTestId("db-animation-cell-batch")).toBeEnabled();
   await page.getByTestId("db-animation-cell-batch").click();
   await expect(page.getByTestId("db-animation-cell-batch-dialog")).toBeVisible();
@@ -92,13 +92,11 @@ test("database six surfaces persist real edits through project export", async ({
   await applyDatabaseChanges(page);
   const project = await exportedProject(page);
   const system = project.system as {
-    battleSystemResourceId?: string;
     battleFlow?: string;
     activeSlots?: number;
   };
 
   expect(project.database.elements?.length).toBe(afterElements);
-  expect(system.battleSystemResourceId).toBe("easyrpg-system2-system2-a");
   expect(system.battleFlow).toBe("strict");
   expect(system.activeSlots).toBe(3);
 

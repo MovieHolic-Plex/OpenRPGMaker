@@ -1,11 +1,11 @@
 /** @vitest-environment happy-dom */
 /**
  * 전투 화면 꾸미기(2026-10-01): system.battleLook = { preset?, 칸별 덮어쓰기 } (project/battleLook.ts).
- * 저장 계약(pixel 프리셋 그대로면 생략·프리셋과 같은 칸은 지움·무효값 버림), 자료집 시스템 탭, AI set_project_settings battle.look 을 묶는다.
+ * 저장 계약(pixel 프리셋 그대로면 생략·프리셋과 같은 칸은 지움·무효값 버림), 자료집 전투 화면 탭(2026-10-02 시스템 탭에서 옮김), AI set_project_settings battle.look 을 묶는다.
  * 화면 증거는 verify-shots/battle-look/<프리셋>/(player.html 프로브).
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import { renderBattleScreenTab } from "@/editor/panels/databaseBattleScreenTab";
 import { runTool } from "@/editor/tools";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
@@ -57,7 +57,7 @@ describe("system.battleLook — 저장 계약", () => {
   });
 });
 
-describe("자료집 시스템 탭 — 전투 화면 꾸미기", () => {
+describe("자료집 전투 화면 탭 — 전투 화면 꾸미기", () => {
   beforeEach(() => {
     store.replace(createBlankProject());
   });
@@ -68,11 +68,7 @@ describe("자료집 시스템 탭 — 전투 화면 꾸미기", () => {
   function renderSystem(): HTMLElement {
     const host = document.createElement("div");
     document.body.append(host);
-    const rerender = (): void => {
-      host.replaceChildren();
-      renderSystemTab(host, rerender);
-    };
-    rerender();
+    renderBattleScreenTab(host);
     return host;
   }
 

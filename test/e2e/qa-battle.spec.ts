@@ -243,38 +243,34 @@ test.describe("QA explore — battle tabs (animations / battler / screen / comma
     await switchDatabaseTab(page, SCREEN_TAB);
     await page.screenshot({ path: ".superpowers/sdd/qa-shots/battle-screen-01-initial.png" });
 
-    await page.getByTestId("db-field-battle-system-resource").fill("qa-전투-시스템-리소스");
-    await page.getByTestId("db-field-battle-screen-flow").selectOption("strict");
-    await page.getByTestId("db-field-battle-screen-active-slots").fill("-3"); // boundary
-    await page.getByTestId("db-field-battle-screen-active-slots").fill("4");
-    const troopPicker = page.getByTestId("db-picker-battle-initial-troop");
-    const troopOptions = await troopPicker.locator("option").count();
-    console.log("TROOP_OPTIONS", troopOptions);
-    if (troopOptions > 1) await troopPicker.selectOption({ index: 1 });
+    // 2026-10-02: 전투 화면 탭은 전투 방식·타격감·꾸미기만 남았다.
+    // 전투 시스템 리소스는 지워졌고, 전투 흐름·참전 수·초기 적 그룹은 시스템 › 시작 설정으로 옮겨졌다.
+    await page.getByTestId("db-battle-method-monster").click();
+    await expect(page.getByTestId("db-battle-method-monster")).toHaveAttribute("aria-checked", "true");
+    await page.getByTestId("db-field-system-battle-hit-feel").selectOption("calm");
     await page.screenshot({ path: ".superpowers/sdd/qa-shots/battle-screen-02-edited.png" });
 
     // round-trip + export (system fields live outside typed helper -> raw read)
     await switchDatabaseTab(page, COMMANDS_TAB);
     await switchDatabaseTab(page, SCREEN_TAB);
-    await expect(page.getByTestId("db-field-battle-system-resource")).toHaveValue("qa-전투-시스템-리소스");
-    await expect(page.getByTestId("db-field-battle-screen-flow")).toHaveValue("strict");
-    await expect(page.getByTestId("db-field-battle-screen-active-slots")).toHaveValue("4");
+    await expect(page.getByTestId("db-battle-method-monster")).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByTestId("db-field-system-battle-hit-feel")).toHaveValue("calm");
     const raw = await page.evaluate(() => document.querySelector("[data-testid='project-export-json']")?.textContent ?? "{}");
     const sys = (JSON.parse(raw) as { project?: { system?: Record<string, unknown> } }).project?.system ?? {};
-    console.log("SYSTEM_EXPORT", JSON.stringify({ battleSystemResourceId: sys.battleSystemResourceId, battleFlow: sys.battleFlow, activeSlots: sys.activeSlots, initialTroopId: sys.initialTroopId }));
-    expect(sys.battleSystemResourceId).toBe("qa-전투-시스템-리소스");
-    expect(sys.battleFlow).toBe("strict");
-    expect(sys.activeSlots).toBe(4);
+    console.log("SYSTEM_EXPORT", JSON.stringify({ battleUiStyle: sys.battleUiStyle, battleModel: sys.battleModel, battleHitFeel: sys.battleHitFeel }));
+    expect(sys.battleUiStyle).toBe("pokemon");
+    expect(sys.battleModel).toBe("gen1");
+    expect(sys.battleHitFeel).toBe("calm");
 
-    // undo on flow (project snapshot): make flow change the last mutation, then Ctrl+Z
-    await page.getByTestId("db-field-battle-screen-flow").selectOption("gauge");
+    // undo on hit feel (project snapshot): make it the last mutation, then Ctrl+Z
+    await page.getByTestId("db-field-system-battle-hit-feel").selectOption("light");
     await page.keyboard.press("Control+z");
     await page.waitForTimeout(400);
     const raw2 = await page.evaluate(() => document.querySelector("[data-testid='project-export-json']")?.textContent ?? "{}");
     const sys2 = (JSON.parse(raw2) as { project?: { system?: Record<string, unknown> } }).project?.system ?? {};
-    console.log("SYSTEM_AFTER_UNDO", JSON.stringify({ battleFlow: sys2.battleFlow, activeSlots: sys2.activeSlots, initialTroopId: sys2.initialTroopId }));
-    const flowFieldAfterUndo = await page.getByTestId("db-field-battle-screen-flow").inputValue();
-    console.log("FLOW_FIELD_AFTER_UNDO", flowFieldAfterUndo);
+    console.log("SYSTEM_AFTER_UNDO", JSON.stringify({ battleUiStyle: sys2.battleUiStyle, battleModel: sys2.battleModel, battleHitFeel: sys2.battleHitFeel }));
+    const hitFeelAfterUndo = await page.getByTestId("db-field-system-battle-hit-feel").inputValue();
+    console.log("HIT_FEEL_FIELD_AFTER_UNDO", hitFeelAfterUndo);
     console.log("CONSOLE_ERRORS_SCREEN", JSON.stringify(consoleErrors));
   });
 
