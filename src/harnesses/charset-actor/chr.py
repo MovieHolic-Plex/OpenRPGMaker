@@ -184,7 +184,10 @@ LIMITS = dict(max_colors=48, area_min=120, area_max=480, bbox_w_max=24, bbox_h_m
               area_vs_base=(0.7, 1.5), dark_edge_drop=0.15, walk_motion_vs_base=0.6, changed_min=0.20,
               # 2026-10-02 사용자 판정 34개: 받은 11개 중앙값 47px(8개 ≤86), 버린 23개 중 19개 >140(무기·모자·날개·지팡이를 더한 것).
               # 「무기나 모자 추가는 별로」 → 실루엣은 뼈대 그대로가 원칙. 12프레임 합 150px 초과는 불합격.
-              silhouette_max=150)
+              silhouette_max=150,
+              # 그 뒤 「너무 비슷하다, 약간 더 바꾸되」 → 실루엣 변화 총량 대신 **뼈대 실루엣+2px 밖으로 튀어나온 픽셀**로 소지품을 잡는다.
+              # 판정 55개: 받은 21개는 프레임당 최대 ≤9·합 ≤48, 소지품을 더해 버린 것은 11~42. 머리 볼륨·옷깃은 허용된다.
+              protrude_margin=2, protrude_frame_max=10, protrude_sum_max=60)
 
 
 def _lum(c):
@@ -301,8 +304,13 @@ def gate(pal, frames, base=None, check_changed=True):
         m['silhouette_changed_px'] = sil
         if chg / max(tot, 1) < L['changed_min']:
             fails.append(f'뼈대 원본과 {chg / max(tot, 1):.0%} 만 다르다 — 새 캐릭터가 아니라 복사에 가깝다(≥{L["changed_min"]:.0%})')
-        if sil > L['silhouette_max']:
-            fails.append(f'실루엣이 뼈대와 {sil}px 다르다(12프레임 합, ≤{L["silhouette_max"]}) — 소지품·모자·날개를 더하지 말고 뼈대 실루엣 안에서 바꿔라')
+        pr = protrusion(bframes, frames, L['protrude_margin'])
+        m['protrusion_max'], m['protrusion_sum'] = max(pr.values()), sum(pr.values())
+        if m['protrusion_max'] > L['protrude_frame_max'] or m['protrusion_sum'] > L['protrude_sum_max']:
+            worst = max(pr, key=pr.get)
+            fails.append(f'뼈대 실루엣 밖(+{L["protrude_margin"]}px)으로 튀어나온 픽셀 프레임당 최대 {m["protrusion_max"]}'
+                         f'({DIR_KO[worst[0]]} {worst[1]})·합 {m["protrusion_sum"]} (≤{L["protrude_frame_max"]}·≤{L["protrude_sum_max"]})'
+                         ' — 무기·모자·날개 같은 소지품을 더하지 말 것')
     return dict(ok=not fails, fails=fails, warns=warns, metrics=m)
 
 
@@ -521,3 +529,114 @@ def face_gate(pal, rows, base=None):
         if chg / FACE / FACE < 0.15:
             fails.append(f'뼈대 얼굴과 {chg / FACE / FACE:.0%} 만 다르다 — 새 캐릭터의 얼굴이 아니다(≥15%)')
     return dict(ok=not fails, fails=fails, warns=warns, metrics=m)
+
+
+# ─────────────────────────────── 걸음 전파 ───────────────────────────────
+# 2026-10-02 사용자: 「너무 비슷하다, 약간 더 바꾸되 걷는 게 어색하지 않아야」. 작업자가 걸음 프레임까지 손으로 고치면
+# 바뀐 부위(머리 모양·옷 무늬)가 프레임마다 어긋나 깜빡인다 → 작업자는 서 있는 자세(frame * 1)만 고치고,
+# 걸음 0·2 는 하네스가 뼈대의 움직임을 그대로 따라 만든다.
+#   뼈대 걸음 프레임의 픽셀 p 마다, 뼈대 서 있는 자세에서 그 픽셀이 온 자리 q 를 3×3 무늬 대조로 찾는다(±3px, 출렁임 우선).
+#   새 걸음 프레임[p] = 새 서 있는 자세[q]. 뼈대에 없던 새 픽셀(머리 볼륨 등)은 출렁임만큼 내려서 옮긴다.
+def _shift_rows(rows, dy):
+    return [rows[y - dy] if 0 <= y - dy < FH else TRANSPARENT * FW for y in range(FH)]
+
+
+def bob_of(b1, bf):
+    """뼈대 걸음 프레임이 서 있는 자세보다 몇 px 내려갔나(같은 픽셀이 가장 많은 dy)."""
+    best = None
+    for dy in (-2, -1, 0, 1, 2):
+        s = _shift_rows(b1, dy)
+        same = sum(bf[y][x] == s[y][x] and bf[y][x] != TRANSPARENT for y in range(FH) for x in range(FW))
+        if best is None or same > best[1]:
+            best = (dy, same)
+    return best[0]
+
+
+def correspondence(b1, bf, R=3):
+    """뼈대 걸음 프레임 bf 의 불투명 픽셀 → 서 있는 자세 b1 의 출발 자리. {(x,y): (qx,qy)}"""
+    bob = bob_of(b1, bf)
+
+    def at(rows, x, y):
+        return rows[y][x] if 0 <= x < FW and 0 <= y < FH else TRANSPARENT
+    corr = {}
+    for y in range(FH):
+        for x in range(FW):
+            c = bf[y][x]
+            if c == TRANSPARENT:
+                continue
+            best = None
+            for dy in range(-R, R + 1):
+                for dx in range(-R, R + 1):
+                    qx, qy = x + dx, y - bob + dy
+                    if at(b1, qx, qy) != c:
+                        continue
+                    sc = sum(at(bf, x + i, y + j) == at(b1, qx + i, qy + j) for i in (-1, 0, 1) for j in (-1, 0, 1))
+                    key = (sc, -(abs(dx) + abs(dy)))
+                    if best is None or key > best[0]:
+                        best = (key, (qx, qy))
+            corr[(x, y)] = best[1] if best else None   # None = 근처에 같은 색이 없다(걸음에만 있는 그림자 등) → 색 대응표로
+    return corr, bob
+
+
+def color_map(base_frames, new_frames):
+    """뼈대 색 → 새 색: 서 있는 자세 4장에서 같은 자리끼리 가장 많이 겹친 색."""
+    from collections import Counter
+    cnt = {}
+    for d in DIRS:
+        b1, n1 = base_frames[(d, 1)], new_frames[(d, 1)]
+        for y in range(FH):
+            for x in range(FW):
+                if b1[y][x] != TRANSPARENT:
+                    cnt.setdefault(b1[y][x], Counter())[n1[y][x]] += 1
+    return {c: k.most_common(1)[0][0] for c, k in cnt.items()}
+
+
+
+
+def propagate(base_frames, new_frames, base_pal=None, new_pal=None):
+    """new_frames 의 서 있는 자세(* 1)에서 걸음 0·2 를 다시 만든다 → 새 frames dict.
+    팔레트를 주면 색 대응표가 새 팔레트에 없는 글자를 내지 않게 가장 가까운 새 색으로 바꾼다."""
+    out = dict(new_frames)
+    cmap = color_map(base_frames, new_frames)
+    if base_pal and new_pal:
+        cols = [(c, v) for c, v in new_pal.items() if v is not None]
+        for bc in {c for rows in base_frames.values() for r in rows for c in r} - {TRANSPARENT}:
+            if cmap.get(bc) not in new_pal or cmap.get(bc) == TRANSPARENT:
+                bv = base_pal[bc]
+                cmap[bc] = min(cols, key=lambda cv: sum((a - b) ** 2 for a, b in zip(cv[1], bv)))[0]
+    for d in DIRS:
+        b1, n1 = base_frames[(d, 1)], new_frames[(d, 1)]
+        for f in (0, 2):
+            bf = base_frames[(d, f)]
+            corr, bob = correspondence(b1, bf)
+            rows = [[TRANSPARENT] * FW for _ in range(FH)]
+            for (x, y), q in corr.items():
+                if q is None:
+                    rows[y][x] = cmap.get(bf[y][x], bf[y][x])
+                elif 0 <= q[0] < FW and 0 <= q[1] < FH:
+                    rows[y][x] = n1[q[1]][q[0]]
+            # 뼈대에 없던 새 픽셀(서 있는 자세에서 뼈대는 투명, 새 그림은 불투명) → 출렁임만큼 내려 옮긴다
+            for y in range(FH):
+                for x in range(FW):
+                    sy = y - bob
+                    if 0 <= sy < FH and b1[sy][x] == TRANSPARENT and n1[sy][x] != TRANSPARENT and rows[y][x] == TRANSPARENT \
+                            and bf[y][x] == TRANSPARENT:
+                        rows[y][x] = n1[sy][x]
+            out[(d, f)] = [''.join(r) for r in rows]
+    return out
+
+
+def protrusion(base_frames, frames, margin=2):
+    """뼈대 실루엣을 margin px 넓힌 밖으로 튀어나온 픽셀 수(프레임별). 무기·모자·날개를 잡는다."""
+    res = {}
+    for k, rows in frames.items():
+        b = base_frames[k]
+        inside = set()
+        for y in range(FH):
+            for x in range(FW):
+                if b[y][x] != TRANSPARENT:
+                    for j in range(-margin, margin + 1):
+                        for i in range(-margin, margin + 1):
+                            inside.add((x + i, y + j))
+        res[k] = sum(rows[y][x] != TRANSPARENT and (x, y) not in inside for y in range(FH) for x in range(FW))
+    return res

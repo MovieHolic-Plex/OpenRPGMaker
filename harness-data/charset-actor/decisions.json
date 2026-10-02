@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T12:40:40+00:00",
+ "updated": "2026-10-02T13:27:52+00:00",
  "decisions": [
   {
    "id": "20261002-1142-sonnet-batch/f-archer__sonnet-r1",
@@ -272,6 +272,150 @@
    "note": "",
    "client": "web",
    "at": "2026-10-02T12:40:40+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-blue-turban__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:25:33+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-chapel-boy__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:25:38+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-dark-lady__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:25:47+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-earth-farmer__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:25:53+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-green-page__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:26:00+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-green-scholar__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:26:04+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-green-veil__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:26:11+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-market-woman__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:26:19+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-navy-twintail__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:26:24+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-noble-lady__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:26:29+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-old-gardener__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:27:14+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-pink-dancer__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:27:29+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-red-apprentice__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:27:34+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-red-sage__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:27:38+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-silver-sorceress__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:27:43+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-silver-warrior__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:27:47+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-teal-lady__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:27:50+00:00"
+  },
+  {
+   "id": "20261002-2144-recolor/c-young-trader__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T13:27:52+00:00"
   }
  ]
 }

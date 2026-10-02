@@ -122,6 +122,24 @@ def cmd_base(a):
     print(a.out)
 
 
+def propagate_file(file, base_key, keep_worker=True):
+    """out.chr.txt 의 걸음 0·2 를 서 있는 자세에서 다시 만든다(chr.propagate). 작업자 원본은 out.worker.chr.txt 로 남긴다."""
+    file = Path(file)
+    pal, notes, frames = C.load(file)
+    bp, bf = base_of(base_key)
+    if keep_worker:
+        shutil.copy(file, file.with_name(file.name.replace('.chr.txt', '.worker.chr.txt')))
+    new = C.propagate(bf, frames, bp, pal)
+    file.write_text(C.dump(pal, notes, new, header='걸음 0·2 는 하네스가 서 있는 자세에서 전파했다(chr.propagate)'), encoding='utf-8')
+    return new
+
+
+def cmd_propagate(a):
+    propagate_file(a.file, a.base, keep_worker=not a.no_keep)
+    pal, _, frames = C.load(a.file)
+    print(json.dumps(C.gate(pal, frames, base_of(a.base)), ensure_ascii=False, indent=1))
+
+
 def cmd_check(a):
     pal, _, frames = C.load(a.file)
     r = C.gate(pal, frames, base_of(a.base) if a.base is not None else None)
@@ -269,7 +287,7 @@ def _wait(p):
     p.wait()
 
 
-def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True):
+def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True, propagate=True):
     prev = None
     for r in range(1, rounds + 1):
         w = run_dir(run) / f'{brief}__{drawer}-r{r}'
@@ -282,6 +300,12 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True
         if not (w / 'out.chr.txt').exists():
             log(f'{brief} r{r}: 결과 없음 — 멈춤')
             return
+        if propagate:
+            try:
+                propagate_file(w / 'out.chr.txt', briefs()[brief]['base'])
+                log(f'{brief} r{r}: 걸음 0·2 전파')
+            except Exception as e:  # noqa: BLE001
+                log(f'{brief} r{r}: 전파 실패 {e!r}'[:300])
         make_views(w / 'out.chr.txt', w / 'views', norm_base(briefs()[brief]['base']))
         rp = start_review(w, reviewer)
         log(f'{brief} r{r}: {reviewer} 검수 시작 pid={rp.pid}')
@@ -325,7 +349,7 @@ def cmd_loop(a):
     from concurrent.futures import ThreadPoolExecutor
     names = list(briefs()) if a.briefs == ['all'] else a.briefs
     with ThreadPoolExecutor(max_workers=a.par) as ex:  # codex 동시 실행 수 제한
-        for f in [ex.submit(run_loop, b, run, a.drawer, a.reviewer, a.rounds, log, a.face or None, not a.no_gen_face) for b in names]:
+        for f in [ex.submit(run_loop, b, run, a.drawer, a.reviewer, a.rounds, log, a.face or None, not a.no_gen_face, not a.no_propagate) for b in names]:
             try:
                 f.result()
             except Exception as e:  # noqa: BLE001 — 한 캐릭터가 죽어도 나머지는 계속
@@ -782,6 +806,11 @@ def main():
     p.add_argument('file')
     p.add_argument('--base', help='Actor2:3 처럼 (정수는 Actor1)')
     p.set_defaults(fn=cmd_check)
+    p = sp.add_parser('propagate', help='걸음 0·2 를 서 있는 자세에서 다시 만든다')
+    p.add_argument('file')
+    p.add_argument('--base', required=True)
+    p.add_argument('--no-keep', action='store_true', help='작업자 원본(out.worker.chr.txt)을 남기지 않는다')
+    p.set_defaults(fn=cmd_propagate)
     p = sp.add_parser('views')
     p.add_argument('file')
     p.add_argument('out')
@@ -810,7 +839,8 @@ def main():
     p.add_argument('--par', type=int, default=6)
     p.add_argument('--rounds', type=int, default=1)
     p.add_argument('--face', default='sonnet', help='칩이 끝나면 짝 얼굴을 붙일 엔진(빈 문자열이면 안 붙임)')
-    p.add_argument('--no-gen-face', action='store_true', help='손 도트 얼굴 뒤 생성 얼굴(v3)을 건너뛴다')  # 2026-10-02 사용자 판단: 원샷이 제일 낫다 — 반복 고치기는 명시할 때만
+    p.add_argument('--no-gen-face', action='store_true', help='손 도트 얼굴 뒤 생성 얼굴(v3)을 건너뛴다')
+    p.add_argument('--no-propagate', action='store_true', help='걸음 0·2 를 작업자가 그린 그대로 둔다')  # 2026-10-02 사용자 판단: 원샷이 제일 낫다 — 반복 고치기는 명시할 때만
     p.set_defaults(fn=cmd_loop)
     p = sp.add_parser('serve', help='받기/버리기 화면')
     p.add_argument('--port', type=int, default=18314)

@@ -150,7 +150,7 @@ You may change freely: hair colour, face shape, eyes, eyebrows, nose, mouth, exp
 clothing colours and patterns, background colour. Make it look like a different person who matches the description.
 Do NOT add headwear, hats, hoods, helmets, weapons, jewellery or other accessories that the reference does not already have,
 and do NOT remove headwear the reference has (helmet, hood, veil, turban stay — only their colours may change).
-Keep the hair silhouette (length and outline) as in the reference.
+The hair style may change to match the description (length, fringe, tied or loose), but keep it close to the head as in the reference.
 
 HARD LOCK — the camera and the head pose must stay exactly as in the reference:
 - the same direction the head is turned (the same side of the face toward the viewer) and the same amount of turn,
