@@ -1,3 +1,4 @@
+import type { CharacterMotionSettings, CharacterMotionStyle } from "@/battle/characterMotion";
 import type {
   ActorId,
   BattleAnimationId,
@@ -33,6 +34,8 @@ export interface CharacterAppearanceRecord {
 }
 
 export interface ActorRecord {
+  /** Optional overrides over the bundled class/body motion. */
+  battleMotion?: CharacterMotionSettings;
   id: ActorId;
   name: string;
   nickname: string;
@@ -488,6 +491,8 @@ export interface ItemEquipmentEffectFlags {
 }
 
 export interface EquipmentRecord {
+  /** Explicit battle movement family; does not replace a baked sprite weapon. */
+  battleMotionStyle?: CharacterMotionStyle;
   id: EquipmentId;
   name: string;
   imageResourceId?: string;

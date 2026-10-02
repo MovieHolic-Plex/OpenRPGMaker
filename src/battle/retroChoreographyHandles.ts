@@ -1,4 +1,8 @@
 import {
+  characterMotionProgram,
+  characterMotionTracks,
+} from "@/battle/characterMotion";
+import {
   buildBattleMotionTracks,
   type MotionContext,
   type MotionTrack,
@@ -118,7 +122,13 @@ export function applyChoreographyHandles(
       ...(record?.movement ? { movement: record.movement } : {}),
     };
   if (!hasChoreographyHandles(record)) return timeline;
-  const rec = record!;
+  const rec =
+    record!.movement && context.character
+      ? {
+          ...record!,
+          movement: characterMotionProgram(record!.movement, context.character),
+        }
+      : record!;
   let events: RetroTimelineEvent[] = [...timeline.events];
   let durationMs = timeline.durationMs;
   let representativeMs = timeline.representativeMs;
@@ -147,7 +157,7 @@ export function applyChoreographyHandles(
         who: "target",
       };
       const layers = events.filter(
-        (e) =>
+        (e): e is Extract<RetroTimelineEvent, { kind: "fx" }> =>
           e.kind === "fx" && e.anchor !== "user" && e.anchor !== "allAllies",
       );
       const repeated = layers.filter((e) => e.layer === layers[0]?.layer);
@@ -230,6 +240,14 @@ export function applyChoreographyHandles(
       contacts.length ? contacts : [contact],
       context,
     );
+    if (context.character)
+      actors = characterMotionTracks(
+        actors,
+        context.character,
+        contacts,
+        !!rec.movement.tracks?.length,
+        context.casting && rec.movement.pattern === "stationary",
+      );
     const projectile = events.find((e) => e.kind === "projectile");
     if (projectile?.kind === "projectile") {
       const first = contacts[0] ?? contact,

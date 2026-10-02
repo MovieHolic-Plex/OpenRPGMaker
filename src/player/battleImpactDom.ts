@@ -46,7 +46,7 @@ export function createBattleImpactController(field: HTMLElement) {
     if (contacts.get(target) === contact) contacts.delete(target);
   };
   return {
-    strike(target: HTMLElement, intensity: BattleHitIntensity): void {
+    strike(target: HTMLElement, intensity: BattleHitIntensity, reactionScale=1): void {
       const previous = contacts.get(target);
       if (previous) remove(target, previous);
       const sprite = battlerSpriteNode(target);
@@ -67,7 +67,7 @@ export function createBattleImpactController(field: HTMLElement) {
       drawContact(burst, 0, strength);
       const { knockbackPx, squash } = HIT_INTENSITY_STYLE[intensity];
       const direction = Number.parseFloat(getComputedStyle(target).getPropertyValue("--hit-dir-x")) || (target.classList.contains("battle-enemy") ? -1 : 1);
-      const distance = Math.round(knockbackPx * 0.65) * direction;
+      const distance = Math.round(knockbackPx * 0.65 * reactionScale) * direction;
       const recoil = sprite.animate?.([
         { translate: `${Math.round(distance * 0.25)}px 0px`, scale: `${1 + squash} ${1 - squash}`, offset: 0 },
         { translate: `${distance}px -2px`, scale: `${1 + squash} ${1 - squash}`, offset: 0.16 },

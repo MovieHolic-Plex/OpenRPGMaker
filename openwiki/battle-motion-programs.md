@@ -1,5 +1,8 @@
 # 공용 전투 동작과 턴 전투 기믹 (2026-10-02)
 
+캐릭터별 실행 차이(공용 136종, 11계열, 현재 장비/직업, 접촉점 실측)는
+[캐릭터 전투 동작](character-battle-motion.md)을 함께 읽는다.
+
 ## 진입점
 
 - `src/assets/battleMotionCatalog.ts`: 공용 연출 32개와 기본 스킬 32개. 새 프로젝트 기본 DB, 기존 프로젝트 `ensureRetroRosterRecords`, 공용 연출 목록이 함께 읽는다. 기존 같은 id의 저작 레코드는 덮지 않는다.

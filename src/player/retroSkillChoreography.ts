@@ -1,3 +1,6 @@
+import { battleContactBounds } from "@/battle/battleContactGeometry";
+import { battleCharacterMotion } from "@/player/battleMotionContext";
+import { defaultCharacterProgram, type CharacterMotionProfile } from "@/battle/characterMotion";
 import { motionPositionAt, type MotionAnchors } from "@/battle/battleMotionProgram";
 import type { CastType, ExtendedBattlerPose } from "@/battle/battlePose";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
@@ -109,10 +112,11 @@ export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "eleme
       : skill.effect.kind === "damage" ? RETRO_SKILL_RECIPES[skill.effect.statistic === "attack" ? "skill_sword_slash" : "skill_arcane_bolt"] : undefined;
 }
 
-export function retroSkillForEntry(entry: BattleTimelineEntrySnapshot | undefined): RetroSkillRecipe | undefined {
+export function retroSkillForEntry(entry: BattleTimelineEntrySnapshot | undefined,field?:HTMLElement): RetroSkillRecipe | undefined {
   if (!entry || entry.side !== "actor" || entry.commandKind !== "skill") return undefined;
   const record = battleEntrySkillRecord(entry);
-  return record ? retroSkillRecipe(record) : undefined;
+  const recipe=record?retroSkillRecipe(record):undefined,profile=field?battleCharacterMotion(field,entry.userRecordId??entry.userId):undefined;
+  return recipe&&profile?{...recipe,approachMs:Math.round(recipe.approachMs*(profile.anticipation*0.4+profile.travel*0.6)),recoverMs:Math.round(recipe.recoverMs*profile.recovery)}:recipe;
 }
 
 /** Exact identity wins; old snapshots fall back to authored ownership/name. */
@@ -129,7 +133,7 @@ const entries = new WeakMap<HTMLElement, BattleTimelineEntrySnapshot>();
 const effects = new WeakMap<HTMLElement, Set<HTMLElement>>();
 const activeFx = new WeakMap<HTMLElement, HTMLElement>();
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-export function currentRetroSkill(field: HTMLElement): RetroSkillRecipe | undefined { return retroSkillForEntry(entries.get(field)); }
+export function currentRetroSkill(field: HTMLElement): RetroSkillRecipe | undefined { return retroSkillForEntry(entries.get(field),field); }
 export function clearRetroSkillFx(field: HTMLElement): void {
   for (const node of effects.get(field) ?? []) node.remove();
   effects.delete(field);
@@ -204,7 +208,7 @@ function screenFx(field: HTMLElement, recipe: RetroSkillRecipe, length: number):
 
 /** Called with real (speed-adjusted) beats. Recover owns the strip clock, including zero-length healing impacts. */
 export function animateRetroSkillFx(field: HTMLElement, user: HTMLElement, beat: BattleActionBeat): void {
-  const entry = entries.get(field), recipe = retroSkillForEntry(entry);
+  const entry = entries.get(field), recipe = retroSkillForEntry(entry,field);
   if (!recipe || !user.classList.contains("battle-actor")) return;
   if (beat.kind === "approach") {
     if (recipe.fx === "arcane" && !reduced()) sequence(sprite(field, user, recipe, true), [0, 1, 2], beat.durationMs * 0.9);
@@ -262,6 +266,7 @@ interface PlayableSkill {
 }
 
 interface ClassPlan {
+  readonly character?:CharacterMotionProfile;
   readonly skill: PlayableSkill;
   readonly record: SkillRecord;
   readonly timeline: RetroSkillTimeline;
@@ -399,7 +404,7 @@ function plannedHitTimes(timeline: RetroSkillTimeline, firstHit: number, group: 
   });
 }
 
-function buildPlan(skill: PlayableSkill, record: SkillRecord, group: readonly BattleTimelineEntrySnapshot[], monster = false): ClassPlan {
+function buildPlan(skill: PlayableSkill, record: SkillRecord, group: readonly BattleTimelineEntrySnapshot[], monster = false, character?:CharacterMotionProfile): ClassPlan {
   const resolved = resolveSkillChoreography(record, choreographyRecords());
   const kind = resolved?.origin === "project" ? (monster ? "monster" : "class") : resolved?.kind;
   const contract = kind === "monster" ? skill as RetroMonsterSkill : undefined;
@@ -408,19 +413,19 @@ function buildPlan(skill: PlayableSkill, record: SkillRecord, group: readonly Ba
   // 층 옵션이 없는 계약은 이 값이 타임라인에 영향을 주지 않는다.
   const perTarget = new Map<string, number>();
   for (const row of group) perTarget.set(row.targetId ?? "", (perTarget.get(row.targetId ?? "") ?? 0) + 1);
-  const hits = resolved?.record?.movement ? group.length : Math.max(1, ...perTarget.values());
+  const hits = resolved?.record?.movement || character ? group.length : Math.max(1, ...perTarget.values());
   const base = contract ? retroMonsterSkillTimeline(contract, { hits, side }) : retroClassSkillTimeline(skill as RetroClassSkill, { side, hits });
   // 프로젝트 연출 레코드의 손잡이(speed·tint·screen·weight). 계약 연출이나 손잡이 없는 레코드는 같은 객체를 돌려받는다.
-  const originalHandles = resolved?.record;
+  const originalHandles = character ? {...resolved?.record,movement:resolved?.record?.movement??defaultCharacterProgram(skill.motion,character.style)} : resolved?.record;
   const counterContact=record.battleGimmick&&["cover","counter"].includes(record.battleGimmick.pattern)&&group.some(e=>e.kind==="damage");
   const handles=counterContact&&originalHandles?.movement?{...originalHandles,movement:{...originalHandles.movement,pattern:"counter" as const}}:originalHandles;
   const condition=group.find(e=>e.gimmick)?.gimmick;
-  const timeline = applyChoreographyHandles(base, handles,{contactHits:group.map(e=>e.hit!==false),primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
+  const timeline = applyChoreographyHandles(base, handles,{character,casting:["cast","buff","breath"].includes(skill.motion),contactHits:group.map(e=>e.hit!==false),primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;
   const sequences = group.map((row) => row.sequence);
-  return { skill, record, timeline, side, monster, sequences, outcomes: group, hits: plannedHitTimes(timeline, firstHit, group), ...(handles?.weight ? { weight: handles.weight } : {}) };
+  return { character, skill, record, timeline, side, monster, sequences, outcomes: group, hits: plannedHitTimes(timeline, firstHit, group), ...(handles?.weight ? { weight: handles.weight } : {}) };
 }
 
 /** 대가·흡수 엔트리(aside)는 시전자 자신에게 붙는 부수 숫자다 — 연출의 대상·타수가 아니다. */
@@ -469,7 +474,7 @@ function planFor(field: HTMLElement, entry: BattleTimelineEntrySnapshot, timelin
   // 대가만 있고 친 엔트리가 없으면(빗나감 없이 대상 0) 그 엔트리로라도 연출을 튼다.
   const group = hitsOnly.length ? hitsOnly : [entry];
   const periodic=group.some(e=>e.gimmick?.source==="periodic") || found.record.effect.kind==="support"&&group.some(e=>e.kind==="damage");
-  const plan = buildPlan(found.skill, periodic?{...found.record,scope:"enemy",effect:{kind:"damage",statistic:"mind",affects:"hp"}}:found.record, group, monster);
+  const plan = buildPlan(found.skill, periodic?{...found.record,scope:"enemy",effect:{kind:"damage",statistic:"mind",affects:"hp"}}:found.record, group, monster,battleCharacterMotion(field,entry.userRecordId));
   for (const row of members) cache.set(row.sequence, plan);
   cache.set(entry.sequence, plan);
   return plan;
@@ -637,11 +642,14 @@ function measureMonsterPlaces(field: HTMLElement, user: HTMLElement, primary: HT
 }
 
 /** 시전자가 서는 자리(노드 translate 단위). 제자리 = 0,0. 재생 시작 때 한 번 잰다. */
-function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLElement | undefined, behind = false): Record<RetroStagePlace, Point> {
+function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLElement | undefined, behind = false, contactPose:"strike"|"attack"|false="strike"): Record<RetroStagePlace, Point> {
   const scale = scaleOf(user);
   const rect = user.getBoundingClientRect();
   const now = currentTranslate(user);
   const baseX = rect.left + rect.width / 2 - now.x * scale;
+  const sprite=battlerImage(user),spriteRect=sprite.getBoundingClientRect();
+  const strikeBounds=contactPose?battleContactBounds(sprite.dataset.battlerSheetUrl??sprite.style.backgroundImage,contactPose):undefined;
+  const strikeEdge=strikeBounds?spriteRect.left+spriteRect.width*strikeBounds[0]-now.x*scale:undefined;
   // 파티원 몬스터 시트는 발 기준선이 y=cell−4 다(사람 전투 시트는 45/48).
   const userCell = user.dataset.pixelParty ? pixelCellOf(battlerImage(user)) : 0;
   const baseFeet = rect.top + rect.height * (userCell ? (userCell - 4) / userCell : 45 / 48) - now.y * scale;
@@ -653,7 +661,7 @@ function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLEleme
     const pixel = image.dataset.pixelSheet !== undefined;
     const cell = pixelCellOf(image);
     return {
-      front: pixel ? box.left + box.width * ((cell - 12) / cell) : box.right - box.width * 0.15,
+      front: box.left+box.width*((contactPose?battleContactBounds(image.style.getPropertyValue("--pixel-enemy-url")||image.style.backgroundImage||image.getAttribute("src")||undefined,"idle")?.[2]:undefined)??(pixel?(cell-12)/cell:0.85)),
       back: pixel ? box.left + box.width * (12 / cell) : box.left + box.width * 0.15,
       center: box.left + box.width / 2,
       feet: pixel ? box.top + box.height * ((cell - 4) / cell) : box.bottom,
@@ -665,7 +673,7 @@ function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLEleme
     // 등 뒤: 적 그림 왼쪽 가장자리보다 26px 더 왼쪽(아군은 왼쪽을 보므로 이때 좌우를 뒤집는다).
     front = behind
       ? { x: Math.round((e.back - 26 * scale - baseX) / scale), y: Math.round((e.feet - baseFeet) / scale + 2) }
-      : { x: Math.round((e.front + 26 * scale - baseX) / scale), y: Math.round((e.feet - baseFeet) / scale + 2) };
+      : { x: Math.round(strikeEdge!==undefined?(e.front-strikeEdge)/scale-1:(e.front + 26 * scale - baseX) / scale), y: Math.round((e.feet - baseFeet) / scale + 2) };
   }
   let center: Point = { x: front.x - 20, y: front.y };
   if (enemies.length > 0) {
@@ -1086,7 +1094,7 @@ function programAnchors(
     target2: targets[0] ? footPoint(field, targets[0]) : target,
     target3: targets[1] ? footPoint(field, targets[1]) : target,
     front: {
-      x: home.x + player.places.front.x,
+      x: home.x + player.places.front.x + Math.sign(home.x-target.x)*(player.plan.timeline.movement?.tracks?.length?0:battleContactBounds(battlerImage(player.user).dataset.battlerSheetUrl??battlerImage(player.user).style.backgroundImage)?player.plan.character?.contactOffset??0:player.plan.character?.reach??0),
       y: home.y + player.places.front.y,
     },
     target,
@@ -1227,7 +1235,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
   const primary = targetNode(field, primaryId);
   const player: ClassPlayer = {
     plan, user, primaryId, clock: Math.max(0.1, clock), paint, nodes: new Set(), animations: [], playback: new BattlePlaybackClock(), restores:new Map(),
-    places: plan.monster ? measureMonsterPlaces(field, user, primary) : measurePlaces(field, user, primary, !plan.timeline.actors && plan.skill.motion === "blink-strike"),
+    places: plan.monster ? measureMonsterPlaces(field, user, primary) : measurePlaces(field, user, primary, !plan.timeline.actors && plan.skill.motion === "blink-strike",plan.timeline.movement?.tracks?.length?false:plan.character?.style==="lancer"?"attack":"strike"),
     last: currentTranslate(user), behind: false, done: false,
   };
   players.set(field, player);
@@ -1302,7 +1310,7 @@ export function startRetroSpecialSkill(field: HTMLElement, entry: BattleTimeline
   const skill = skillForCaster(record, entry.side === "enemy");
   const user = [...field.querySelectorAll<HTMLElement>(entry.side === "enemy" ? ".battle-enemy" : ".battle-actor")].find((node) => node.dataset.recordId === entry.userRecordId);
   if (!skill || !record || !user) return false;
-  startPlayer(field, user, buildPlan(skill, record, [entry], entry.side === "enemy"), entry.targetId, 1 / Math.max(0.2, speed), paint);
+  startPlayer(field, user, buildPlan(skill, record, [entry], entry.side === "enemy",battleCharacterMotion(field,entry.userRecordId)), entry.targetId, 1 / Math.max(0.2, speed), paint);
   return true;
 }
 

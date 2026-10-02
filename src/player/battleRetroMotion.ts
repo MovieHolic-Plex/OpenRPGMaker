@@ -1,3 +1,7 @@
+import { battleContactBounds } from "@/battle/battleContactGeometry";
+import { battleCharacterMotion, setBattleMotionContext } from "@/player/battleMotionContext";
+import type { CharacterMotionProfile } from "@/battle/characterMotion";
+const characterProfiles=new WeakMap<HTMLElement,CharacterMotionProfile>();
 import { sampleBasicMotion } from "@/battle/battleMotionProgram";
 import { beginEnemyCollapse } from "@/player/battleEnemyCollapse";
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
@@ -69,12 +73,14 @@ export function retroCastFrameFor(node: HTMLElement, pose: Pose): { readonly typ
 
 /** 시퀀서가 실제로 소비하는 시각 엔트리만 따라간다. 마지막 결과는 이미 다음 행동일 수 있다. */
 export function initRetroMotion(field: HTMLElement, snapshot: BattleSnapshot): void {
+  setBattleMotionContext(field,snapshot);
   cursors.set(field, snapshot.timeline.at(-1)?.sequence ?? -1);
   preloadRetroSkillFx();
   preloadRetroClassSkillFx();
 }
 
 export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined, snapshot: BattleSnapshot): void {
+  setBattleMotionContext(field,snapshot);
   if (!beat) clearRetroSkillFx(field);
   const nodes = [...field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")];
   const matchesUser = (node: HTMLElement) => node.dataset.recordId === beat?.userId || node.dataset.testid === beat?.userId
@@ -124,9 +130,11 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     const entry = currentEntries.get(field) ?? snapshot.timeline.find((item) => item.sequence > (cursors.get(field) ?? -1)
       && visualKinds.has(item.kind) && (item.userRecordId === beat.userId || item.userId === beat.userId));
     if (entry) cursors.set(field, entry.sequence);
+    const character=battleCharacterMotion(field,entry?.userRecordId??user.dataset.recordId);
+    if(character){characterProfiles.set(user,character);user.dataset.characterMotion=character.style;}
     const skill = entry?.commandKind === "skill"
       ? battleEntrySkillRecord(entry) : undefined;
-    const recipe = user.classList.contains("battle-actor") ? retroSkillForEntry(entry) : undefined;
+    const recipe = user.classList.contains("battle-actor") ? retroSkillForEntry(entry,field) : undefined;
     if (recipe) { actorRecipes.set(user, recipe); user.dataset.retroSkill = recipe.fx; }
     else { actorRecipes.delete(user); delete user.dataset.retroSkill; }
     user.dataset.retroFinisher = String(Boolean(skill?.limitSkill || (skill?.power ?? 0) >= 100));
@@ -153,8 +161,9 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       : ["cast", "item"].includes(user.dataset.retroAction) ? "-16px"
         : `${-(walk?.distance ?? 72)}px`);
     // 근접은 직업별 접근(질주·도약·순간이동·섬광). 거리를 못 쟀으면(감속 모드 등) 예전 걷기 키프레임.
-    if (walk) user.dataset.retroStyle = recipe && recipe.approach !== "still" ? recipe.approach : retroApproachStyle(entry?.userRecordId ?? user.dataset.recordId);
+    if (walk && walk.distance!==0) user.dataset.retroStyle = recipe && recipe.approach !== "still" ? recipe.approach : character ? characterApproachStyle(character) : retroApproachStyle(entry?.userRecordId ?? user.dataset.recordId);
     else delete user.dataset.retroStyle;
+    if(character?.style==="ranged"&&entry?.commandKind==="attack"&&!user.dataset.pixelParty){user.dataset.retroAction="cast";user.style.setProperty("--retro-travel","0px");}
     if (user.dataset.pixelParty && entry) {
       // 파티원 몬스터 시트: 걷기 칩용 접근 방식(질주·도약·순간이동)이 아니라 적 도트와 같은 이동(hop·swoop·stomp·dash·float)을 쓴다.
       // 대상 적 앞까지의 거리(retroWalk)를 그대로 쓰되 가로는 왼쪽 방향이다(animatePixelEnemyBeat 가 뒤집는다).
@@ -253,6 +262,7 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
   const generation = (beatGenerations.get(node) ?? 0) + 1;
   beatGenerations.set(node, generation);
   const length = Math.max(0, beat.durationMs);
+  const character=characterProfiles.get(node);
   const action = node.dataset.retroAction;
   const finisher = node.dataset.retroFinisher === "true";
   // 접근 경로(Web Animations, fill forwards)는 CSS 키프레임보다 위에 쌓인다 — 착탄부터는 CSS(retro-thrust/return)에 넘긴다.
@@ -316,6 +326,12 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
     }
   } else if (beat.kind === "impact") frames = [[0, "attack"]];
   else frames = [[0, "attack_follow"], [0.18, "evade"], [0.86, "idle"]];
+  if(beat.kind==="recover"&&action==="attack"&&!recipe&&character&&character.returnMode!=="hop"&&!reduced()&&length>0&&node.animate){
+    const dx=Number.parseFloat(node.style.getPropertyValue("--retro-travel"))||0,dy=Number.parseFloat(node.style.getPropertyValue("--retro-travel-y"))||0;
+    approachAnimations.get(node)?.cancel();
+    approachAnimations.set(node,node.animate([{translate:`${dx}px ${dy}px`},{translate:"0px 0px"}],{duration:length,easing:character.returnMode==="step"?"linear":"cubic-bezier(.25,.1,.25,1)",fill:"forwards"}));
+    frames=character.returnMode==="step"?[[0,"walk_a"],[0.25,"walk_b"],[0.5,"walk_c"],[0.75,"walk_b"],[0.95,"idle"]]:[[0,"evade"],[0.95,"idle"]];
+  }
   // 감속 모드와 길이 0 비트에서는 대표 칸만 내보내고 뒤늦은 칸 전환을 예약하지 않는다.
   if (reduced() || length === 0) {
     frames = [[0, recipe ? (beat.kind === "recover" ? "idle" : recipe.release) : action === "defend" ? "defend" : action === "item" ? "item"
@@ -512,13 +528,14 @@ const approachAnimations = new WeakMap<HTMLElement, Animation>();
  */
 function animateMeleeApproach(node: HTMLElement, length: number): readonly [number, Pose][] {
   const style = (node.dataset.retroStyle ?? "dash") as RetroApproachStyle;
-  const dx = Number.parseFloat(node.style.getPropertyValue("--retro-travel")) || -72;
+  const dx = Number.parseFloat(node.style.getPropertyValue("--retro-travel") || "-72");
   const dy = Number.parseFloat(node.style.getPropertyValue("--retro-travel-y")) || 0;
   const start = Number.parseFloat(node.style.getPropertyValue("--retro-start")) || 0;
-  const swing = Math.min(0.42, 200 / Math.max(1, length));
+  const character=characterProfiles.get(node);
+  const swing = Math.min(0.48, 200*(character?.anticipation??1) / Math.max(1, length));
   const arrive = 1 - swing;
   type Key = { offset: number; translate: string; opacity?: number; filter?: string; easing?: string };
-  const at = (fx: number, fy: number, lift = 0) => `${Math.round(start + (dx - start) * fx)}px ${Math.round(dy * fy - lift)}px`;
+  const at = (fx: number, fy: number, lift = 0) => `${Math.round(start + (dx - start) * fx)}px ${Math.round(dy * fy - lift*(character?.jump??1))}px`;
   let keys: Key[];
   let frames: [number, Pose][];
   if (style === "leap") {
@@ -555,7 +572,7 @@ function animateMeleeApproach(node: HTMLElement, length: number): readonly [numb
     ];
     frames = [[0, "attack_windup"], [ready, "walk_c"], [hit, "attack_strike"]];
   } else {
-    const lean = Math.min(0.24, 110 / Math.max(1, length));
+    const lean = Math.min(0.38, 110*(character?.anticipation??1) / Math.max(1, length));
     keys = [
       { offset: 0, translate: at(0, 0) },
       { offset: lean, translate: at(-0.05, 0, -1), easing: "cubic-bezier(.5,0,.2,1)" },
@@ -658,12 +675,15 @@ export function retroWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot
 function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroWalk | undefined {
   if (!isMeleeEntry(entry) || reduced()) return undefined;
   const userId = entry.userRecordId ?? entry.userId;
+  const character=battleCharacterMotion(field,userId);
   const user = [...field.querySelectorAll<HTMLElement>(".battle-actor")].find((node) => node.dataset.recordId === userId);
   const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy:not(.defeated)")];
   // 같은 종족이 여럿이면 recordId 가 겹친다 — 전투 id(testid) 로 먼저 고르고, 없을 때만 recordId.
   const target = enemies.find((node) => node.dataset.testid === entry.targetId)
     ?? enemies.find((node) => node.dataset.recordId === entry.targetId) ?? enemies[0];
   if (!user || !target) return undefined;
+  if(character)characterProfiles.set(user,character);
+  if(character?.style==="ranged"&&!user.dataset.pixelParty)return {distance:0,dy:0,approachMs:Math.round(420*character.anticipation),recoverMs:Math.round(300*character.recovery)};
   const userRect = user.getBoundingClientRect();
   // 화면 px → 배틀러 translate 단위. 무대 배율(--battle-stage-scale) 위에 필드 zoom 이 한 번 더 걸려 있어
   // 변수 하나로는 모자란다(실측: 걸음이 1.6배 넘쳐 화면 밖으로 나갔다). 노드 자신의 레이아웃 폭 대비 화면 폭으로 잰다.
@@ -686,10 +706,14 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   const enemyFeet = (pixel ? enemyRect.top + enemyRect.height * ((cell - 4) / cell) : enemyRect.bottom) / scale;
   // 아군 셀(48px 원본)의 발 마지막 행은 y=44.
   const userFeet = (userRect.top + userRect.height * (partyCell ? (partyCell - 4) / partyCell : 45 / 48)) / scale - currentY;
-  const distance = Math.round(bodyFront - enemyFront - WALK_GAP_PX);
+  const sprite=user.querySelector<HTMLElement>(".battle-actor-sprite")??user,spriteRect=sprite.getBoundingClientRect();
+  const contact=battleContactBounds(sprite.dataset.battlerSheetUrl??sprite.style.backgroundImage,"attack");
+  const targetContact=battleContactBounds(image.style.getPropertyValue("--pixel-enemy-url")||image.style.backgroundImage||image.getAttribute("src")||undefined,"idle");
+  const actualTarget=targetContact?(enemyRect.left+enemyRect.width*targetContact[2])/scale:enemyFront;
+  const distance = Math.round(contact?(spriteRect.left+spriteRect.width*contact[0])/scale-current-actualTarget+1-(character?.contactOffset??0):bodyFront-enemyFront-WALK_GAP_PX-(character?.reach??0));
   // 적보다 조금 앞(화면 아래)에 서야 적 그림을 가리지 않고 맞붙어 보인다.
   const dy = Math.round(enemyFeet - userFeet + 2);
-  if (!Number.isFinite(distance) || !Number.isFinite(dy) || distance < 24) return undefined;
+  if (!Number.isFinite(distance) || !Number.isFinite(dy)) return undefined;
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
   const path = Math.hypot(distance, dy);
   if (partyCell) {
@@ -701,17 +725,17 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
     return {
       distance,
       dy,
-      approachMs: ENEMY_HOLD_MS + clamp(path / speed, motion === "stomp" ? 440 : 300, 900),
-      recoverMs: clamp(160 + path / (motion === "stomp" ? 0.38 : motion === "dash" ? 0.7 : 0.42), 420, 900),
+      approachMs: Math.round(ENEMY_HOLD_MS*(character?.anticipation??1) + clamp(path / speed, motion === "stomp" ? 440 : 300, 900)*(character?.travel??1)),
+      recoverMs: Math.round(clamp(160 + path / (motion === "stomp" ? 0.38 : motion === "dash" ? 0.7 : 0.42), 420, 900)*(character?.recovery??1)),
     };
   }
-  const style = retroApproachStyle(userId);
+  const style = character ? characterApproachStyle(character) : retroApproachStyle(userId);
   return {
     distance,
     dy,
-    approachMs: approachMsFor(style, path),
+    approachMs: Math.round(approachMsFor(style, path)*((character?.anticipation??1)*0.35+(character?.travel??1)*0.65)),
     // 돌아갈 때는 뒤로 공중제비하듯 튀어 돌아간다(retro-return). 순간이동은 다시 사라졌다 나타난다.
-    recoverMs: style === "blink" ? 340 : clamp(path / RETURN_PX_PER_MS, 280, 480),
+    recoverMs: Math.round((style === "blink" ? 340 : clamp(path / RETURN_PX_PER_MS, 280, 480))*(character?.recovery??1)),
   };
 }
 
@@ -960,4 +984,8 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
     if (fraction === 0) draw();
     else scheduleBattleTimer(() => { if (node.isConnected) draw(); }, Math.min(length - 1, Math.round(length * fraction)));
   }
+}
+
+function characterApproachStyle(profile:CharacterMotionProfile):RetroApproachStyle {
+ return profile.style==="agile"?"flash":profile.style==="lancer"||profile.style==="beast"?"leap":"dash";
 }

@@ -1,3 +1,4 @@
+import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
@@ -673,6 +674,7 @@ const actorRecordSchema = objectSchema({
   expCurve: expCurveSchema,
   initialEquipment: actorInitialEquipmentSchema,
   unarmedAnimationId: stringSchema(),
+  battleMotion: objectSchema({style:{type:"string",enum:[...CHARACTER_MOTION_STYLES]},anticipation:{type:"number",minimum:0.4,maximum:2},travel:{type:"number",minimum:0.4,maximum:2},recovery:{type:"number",minimum:0.4,maximum:2},jump:{type:"number",minimum:0.4,maximum:2},reach:{type:"number",minimum:-20,maximum:24},recoil:{type:"number",minimum:0,maximum:2}}),
   options: actorOptionsSchema,
   learnedSkills: arrayOf(actorLearnedSkillSchema),
   skillIds: stringArraySchema("legacy alias for learnedSkills"),
@@ -793,6 +795,7 @@ const skillRecordSchema = objectSchema({
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
+  battleMotionStyle: {type:"string",enum:[...CHARACTER_MOTION_STYLES]},
   id: stringSchema(),
   name: stringSchema(),
   imageResourceId: stringSchema(),

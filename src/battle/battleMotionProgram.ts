@@ -1,3 +1,4 @@
+import type { CharacterMotionProfile } from "@/battle/characterMotion";
 /** Saved motion programs, shared by editor, runtime and authoring tools. Coordinates are stage anchors, never fixed screen pixels. */
 import {
   EXTENDED_POSE_FRAME,
@@ -130,6 +131,8 @@ export interface MotionTrack {
   points: readonly MotionPoint[];
 }
 export interface MotionContext {
+  character?: CharacterMotionProfile;
+  casting?: boolean;
   hit?: boolean;
   /** Actual contact facts, in timeline order (including mixed hit/miss actions). */
   contactHits?: readonly boolean[];

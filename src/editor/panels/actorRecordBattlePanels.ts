@@ -1,3 +1,6 @@
+import { CHARACTER_MOTION_STYLES, CHARACTER_MOTION_LABELS, normalizeCharacterMotion } from "@/battle/characterMotion";
+import { resolveCharacterMotion } from "@/assets/characterMotionCatalog";
+import { numberField, selectField } from "@/editor/panels/databaseControls";
 import { equipmentSlots } from "@/project/equipmentSlots";
 import { equipmentSlotAccepts } from "@/project/equipmentRules";
 import { DEFAULT_ELEMENT_RATE_LABELS, stateRatePercentage } from "@/project/actorModel";
@@ -38,6 +41,7 @@ export function battlePanel(actor: ActorRecord, rerender: () => void, refreshBui
     selectRecord("무기 없이 공격할 때 효과", "db-picker-unarmed-animation", actor.unarmedAnimationId ?? "", store.getCurrent().database.battleAnimations, (unarmedAnimationId) =>
       updateDatabaseRecord("actors", actor.id, { unarmedAnimationId: emptyToUndefined(unarmedAnimationId) })
     ),
+    characterMotionPanel(actor, rerender),
     optionsPanel(actor),
     learnedSkillsPanel(actor, rerender),
   ]);
@@ -189,4 +193,31 @@ function stateRateRow(id: string, label: string, value: ActorRateGrade, onChange
       select,
     ],
   });
+}
+
+function characterMotionPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
+  const profile = resolveCharacterMotion(actor);
+  const save = (patch: NonNullable<ActorRecord["battleMotion"]>) =>
+    updateDatabaseRecord("actors", actor.id, {
+      battleMotion: normalizeCharacterMotion({ ...currentActor(actor).battleMotion, ...patch }),
+    });
+  const style = selectField("움직임", "db-actor-motion-style", actor.battleMotion?.style ?? "",
+    CHARACTER_MOTION_STYLES.map(id => ({ id, name: CHARACTER_MOTION_LABELS[id] })),
+    value => { save({ style: (value || undefined) as typeof profile.style }); rerender(); });
+  style.querySelector("option")!.textContent = "직업 기본 · " + CHARACTER_MOTION_LABELS[
+    resolveCharacterMotion({ ...actor, battleMotion: undefined }).style];
+  return actorPanel("전투 동작", "actor-motion", [
+    style,
+    ...([
+      ["anticipation", "준비 시간"], ["travel", "이동 시간"], ["recovery", "복귀 시간"],
+      ["jump", "도약 높이"], ["recoil", "피격 반동"], ["reach", "접촉 위치 보정"],
+    ] as const).map(([key, label]) => numberField(
+      label + (key === "reach" ? " (px)" : " (배율)"), "db-actor-motion-" + key,
+      actor.battleMotion?.[key] ?? (key === "reach" ? 0 : profile[key]), value => save({ [key]: value }),
+      { min: key === "reach" ? -20 : key === "recoil" ? 0 : 0.4, max: key === "reach" ? 24 : 2, step: key === "reach" ? 1 : 0.05 },
+    )),
+    el("button", { attrs: { type: "button" }, text: "직업 기본으로 되돌리기", on: { click: () => {
+      updateDatabaseRecord("actors", actor.id, { battleMotion: undefined }); rerender();
+    } } }),
+  ]);
 }

@@ -124,6 +124,7 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("equippableClassIds" in patch && patch.equippableClassIds !== undefined) record.equippableClassIds = patch.equippableClassIds;
   if ("cursed" in patch && patch.cursed !== undefined) record.cursed = patch.cursed;
   if ("twoHanded" in patch && patch.twoHanded !== undefined) record.twoHanded = patch.twoHanded;
+  if ("battleMotionStyle" in patch) record.battleMotionStyle = patch.battleMotionStyle;
   if ("accuracy" in patch && patch.accuracy !== undefined) record.accuracy = patch.accuracy;
   if ("criticalRate" in patch && patch.criticalRate !== undefined) record.criticalRate = patch.criticalRate;
   if ("usableAsItemSkillId" in patch) record.usableAsItemSkillId = patch.usableAsItemSkillId;

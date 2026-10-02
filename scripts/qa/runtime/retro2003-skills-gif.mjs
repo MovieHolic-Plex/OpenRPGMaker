@@ -247,7 +247,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
           const cell = node.querySelector('.battle-actor-sprite')?.dataset.pixelCell;
           if (cell && window.__partyCells.at(-1) !== cell) window.__partyCells.push(cell);
         }
-        const users = document.querySelectorAll('.battle-actor[data-retro-class-skill], .battle-actor[data-retro-skill]');
+        const users = document.querySelectorAll('.battle-actor[data-retro-class-skill], .battle-actor[data-retro-skill], .battle-actor[data-character-motion]');
         for (const user of users) {
           const pose = user.dataset.retroFrame;
           if (pose && window.__skillPoses.at(-1)?.pose !== pose) window.__skillPoses.push({ at: Math.round(performance.now()), actor: user.dataset.recordId, pose, flip: user.classList.contains('retro-skill-flip') });
@@ -358,7 +358,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       if (!completed) row.problems.push('did not complete');
       if (values['impact-audit'] && !values.reduced) {
         const choreographyId=defaults.skills.find(s=>s.id===skill)?.retroChoreographyId;
-        const held = detail.impactFrames.filter(f => f.held && (f.skill === skill || f.skill === choreographyId));
+        const held = detail.impactFrames.filter(f => f.held && (attackTask || f.skill === skill || f.skill === choreographyId));
         if (detail.hitStops.some(s => s.on) && !held.length) row.problems.push('no observed held frames');
         for (let i = 1; i < held.length; i++) {
           const prev = held[i-1], next = held[i];
@@ -374,14 +374,18 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         if (values.speed === '1.8' && detail.impactFrames.some(f => f.speed !== '1.8')) row.problems.push('requested speed not applied');
         if (detail.remainingFx) row.problems.push('FX leaked after action');
       }
-      if (attackTask) {
+      if (attackTask && contract.get(skill)?.human) {
+        const poses = detail.poses.filter(p => p.actor === contract.get(skill).actorId).map(p => p.pose);
+        if (!poses.some(p => p.startsWith('attack') || p.startsWith('cast'))) row.problems.push('human attack/release pose missing');
+        if (new Set(poses).size < 3) row.problems.push('human attack has fewer than 3 poses');
+      } else if (attackTask) {
         // 통상 공격: windup·move·attack·recover 가 순서대로 보여야 한다(몬스터 9칸 시트 이동·칸 매핑).
         const seenCells = new Set(detail.cells);
         for (const want of ['windup', 'attack']) if (!seenCells.has(want)) row.problems.push('party cell ' + want + ' not shown (' + detail.cells.join('>') + ')');
         if (seenCells.size < 3) row.problems.push('only ' + seenCells.size + ' distinct cells');
       }
       if (detail.remainingFx) row.problems.push(detail.remainingFx + ' fx left');
-      if (detail.legacyLayers) row.problems.push('legacy animation layer shown');
+      if (!attackTask && detail.legacyLayers) row.problems.push('legacy animation layer shown');
       if (values.set !== 'legacy' && !attackTask) {
         const missing = [...new Set(contract.get(skill).layers)].filter((key) => !row.layerKeys.includes(key));
         if (missing.length && !values.reduced) row.problems.push('missing layers ' + missing.join(','));

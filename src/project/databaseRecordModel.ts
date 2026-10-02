@@ -1,3 +1,4 @@
+import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
@@ -759,6 +760,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
 
 export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">): EquipmentRecord {
   return {
+    ...(record.battleMotionStyle && CHARACTER_MOTION_STYLES.includes(record.battleMotionStyle) ? {battleMotionStyle:record.battleMotionStyle} : {}),
     id: record.id,
     name: record.name,
     imageResourceId: cleanOptionalId(record.imageResourceId),

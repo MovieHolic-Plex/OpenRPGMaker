@@ -1,3 +1,4 @@
+import { setBattleMotionContext, battleTargetRecoil } from "@/player/battleMotionContext";
 import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
@@ -425,6 +426,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
+      setBattleMotionContext(field, options.runtime.snapshot());
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (retroMotion) retroTimelineEntry(field, entry);
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
@@ -472,9 +474,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const maxHp = vitalsBefore?.maxHp ?? battlerMaxHp(options.runtime.snapshot(), feedback.targetId);
         const intensity = hitIntensity(feedback, maxHp, lethal);
         applyHitIntensity(root, targetNode, intensity);
+        const recoil=retroMotion&&targetNode?battleTargetRecoil(field,targetNode):1;
+        if(targetNode&&intensity){const px=Number.parseFloat(targetNode.style.getPropertyValue("--hit-knockback"));if(Number.isFinite(px))targetNode.style.setProperty("--hit-knockback",`${px*recoil}px`);}
         if (retroMotion) retroDamage(targetNode, feedback, lethal);
         if (retroMotion && hitFeel === "impact" && intensity && targetNode && !prefersReducedMotion()) {
-          impactContact.strike(targetNode, intensity);
+          impactContact.strike(targetNode, intensity, recoil);
         }
         // 타격/급소/회복/빗나감 효과음 — 사건 1개에 소리 1개. emitBattleJuice 안의
         // playBattleCue 가 샘플→합성 폴백을 단일 경로로 처리한다. 여기서 합성 보이스를
@@ -535,6 +539,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else root.classList.remove("battle-hit-stop-critical");
     },
     onActionMotion(beat) {
+      setBattleMotionContext(field, options.runtime.snapshot());
       if (retroMotion) {
         // 시퀀서의 배속으로 실제 비트 길이를 맞춰 칸 전환이 다음 비트에 넘어가지 않게 한다.
         const timed = beat && beat.durationMs > 0
@@ -575,17 +580,17 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.
-      actorApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline, weight)
-        ?? retroSkillForEntry(entry)?.approachMs ?? retroWalk(field, entry)?.approachMs,
-      actorRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline, weight)
-        ?? retroSkillForEntry(entry)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
+      actorApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "approach", options.runtime.snapshot().timeline, weight)
+        ?? retroSkillForEntry(entry,field)?.approachMs ?? retroWalk(field, entry)?.approachMs,
+      actorRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "recover", options.runtime.snapshot().timeline, weight)
+        ?? retroSkillForEntry(entry,field)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
       // 몬스터 스킬 42종은 같은 타임라인 훅(첫 착탄·대상별 간격·남은 연출). 그 밖의 도트 적 근접은 대상 아군 앞까지 뛰어/날아간다.
-      enemyApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline, weight)
+      enemyApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "approach", options.runtime.snapshot().timeline, weight)
         ?? retroEnemyReach(field, entry)?.approachMs,
-      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline, weight)
+      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "recover", options.runtime.snapshot().timeline, weight)
         ?? retroEnemyReach(field, entry)?.recoverMs,
       // 연출 레코드의 무게 손잡이(light/normal/heavy) — 접근·멈춤·회복 배율이 같이 바뀐다.
-      actionWeight: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => retroClassSkillWeight(field, entry, base, options.runtime.snapshot().timeline),
+      actionWeight: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => retroClassSkillWeight((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, base, options.runtime.snapshot().timeline),
     } : {}),
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.
@@ -1084,6 +1089,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function syncView(): void {
+    setBattleMotionContext(field, options.runtime.snapshot());
     if (destroyed) return;
     const snapshot = options.runtime.snapshot();
     const showingResult = Boolean(snapshot.result) && directorState.step === "result";
