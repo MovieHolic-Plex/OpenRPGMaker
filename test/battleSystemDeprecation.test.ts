@@ -33,15 +33,15 @@ describe("battle skin registry — 전투 방식 둘 (2026-10-02)", () => {
     expect(listActiveBattleSkinIds()).toEqual(["retro2003", "pokemon"]);
   });
 
-  it("창 색만 다른 측면 스킨 여섯은 deprecated 지만 저장된 값은 그대로 풀린다", () => {
+  it("창 색만 다르던 측면 스킨 여섯은 지웠고 저장된 값은 retro2003 으로 풀린다", () => {
     for (const id of SIDEVIEW_WINDOW_IDS) {
-      expect(isDeprecatedBattleSkin(id), id).toBe(true);
-      expect(resolveSkinId(id), id).toBe(id);
+      expect(listBattleSkinIds() as string[], id).not.toContain(id);
+      expect(resolveSkinId(id), id).toBe("retro2003");
     }
   });
 
-  it("8종 등록, 지운 정면 스킨 저장값은 retro2003 으로 풀린다(저장된 프로젝트 보존)", () => {
-    expect(listBattleSkinIds()).toHaveLength(8);
+  it("2종 등록, 지운 정면 스킨 저장값은 retro2003 으로 풀린다(저장된 프로젝트 보존)", () => {
+    expect(listBattleSkinIds()).toHaveLength(2);
     expect(resolveSkinId("vxace")).toBe("retro2003");
     expect(resolveSkinId("rm2000")).toBe("retro2003");
     expect(isDeprecatedBattleSkin("retro2003")).toBe(false);
@@ -65,7 +65,6 @@ describe("자료집 전투 화면 탭 — 전투 방식", () => {
     const host = renderBattleScreen();
     expect(findByTestId(host, "db-battle-method-side")?.attrs["aria-checked"]).toBe("true");
     expect(findByTestId(host, "db-battle-method-monster")?.attrs["aria-checked"]).toBe("false");
-    expect(findByTestId(host, "db-battle-method-legacy-skin")).toBeNull();
   });
 
   it("몬스터 대치를 누르면 화면과 규칙이 같이 바뀌고, 도트 측면을 누르면 둘 다 기본으로 돌아간다", () => {
@@ -76,15 +75,6 @@ describe("자료집 전투 화면 탭 — 전투 방식", () => {
     findByTestId(host, "db-battle-method-side")!.click();
     expect(store.getCurrent().system.battleUiStyle).toBeUndefined();
     expect(store.getCurrent().system.battleModel).toBeUndefined();
-  });
-
-  it("옛 색 스킨이 저장돼 있으면 도트 측면으로 보이고 안내를 띄운다", () => {
-    store.update((draft) => {
-      draft.system.battleUiStyle = "octopath";
-    });
-    const host = renderBattleScreen();
-    expect(findByTestId(host, "db-battle-method-side")?.attrs["aria-checked"]).toBe("true");
-    expect(findByTestId(host, "db-battle-method-legacy-skin")?.textContent).toContain("먹빛");
   });
 });
 

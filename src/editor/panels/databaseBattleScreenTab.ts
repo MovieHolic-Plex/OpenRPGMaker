@@ -3,13 +3,12 @@
  *
  * - 전투 방식: 도트 측면(RM2003식, retro2003 + RM 규칙) / 몬스터 대치(포켓몬식, pokemon + Gen1 규칙) 둘뿐이다.
  *   방식 하나가 화면(system.battleUiStyle)과 규칙(system.battleModel)을 같이 정한다 — 따로 고르면 어긋난 조합이 됐다.
- *   창 색만 다르던 측면 스킨 여섯(rm2003·ff·goldensun·chrono·octopath·bravely)은 새로 고를 수 없다.
- *   이미 저장된 프로젝트는 그대로 그 색으로 그려지고, 여기서는 「옛 색 스킨」으로 표시만 한다. 창 색은 아래 꾸미기에서 고른다.
+ *   창 색만 다르던 측면 스킨 여섯(rm2003·ff·goldensun·chrono·octopath·bravely)은 지웠다 — 저장값은 로드 때 retro2003 이 되고
+ *   창 색은 꾸미기 창(battleLook.window)으로 옮겨진다. 창 색은 아래 꾸미기에서 고른다.
  * - 타격감, 전투 화면 꾸미기(프리셋·칸별 덮어쓰기·전투 테스트).
  * 전투 흐름·참전 수·초기 적 그룹 같은 규칙은 시스템 › 시작 설정에 있다.
  * 예전 이 탭의 가짜 무대 미리보기(적 그림을 사선으로 늘어놓기)와 쓰이지 않는 「전투 시스템 리소스」는 지웠다.
  */
-import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, resolveSkinId } from "@/battle/skins/registry";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { battleLookFields } from "@/editor/panels/databaseBattleLook";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
@@ -33,8 +32,6 @@ function updateSystem(mutator: (draft: Project) => void): void {
 
 function battleMethodCard(project: Project, rerender: () => void): HTMLElement {
   const current = battleMethodOf(project);
-  const skinId = resolveSkinId(project.system.battleUiStyle);
-  const legacyColor = current === "side" && skinId !== DEFAULT_BATTLE_SKIN_ID ? BATTLE_SKINS[skinId].label : undefined;
   const rulesMismatch = (current === "monster") !== (project.system.battleModel === "gen1");
   const options = (Object.keys(BATTLE_METHOD_LABELS) as BattleMethod[]).map((method) => el("button", {
     class: `db-battle-method-option${method === current ? " active" : ""}`,
@@ -46,20 +43,13 @@ function battleMethodCard(project: Project, rerender: () => void): HTMLElement {
     ],
     on: {
       click: () => {
-        if (method === current && !legacyColor && !rulesMismatch) return;
+        if (method === current && !rulesMismatch) return;
         updateSystem((draft) => applyBattleMethod(draft, method));
         rerender();
       },
     },
   }));
   const notes: HTMLElement[] = [];
-  if (legacyColor) {
-    notes.push(el("p", {
-      class: "db-ws-usage",
-      dataset: { testid: "db-battle-method-legacy-skin" },
-      text: `지금 그려지는 스킨: 「${legacyColor}」 (더는 고를 수 없는 옛 색 스킨). 창 색은 아래 꾸미기의 「창」에서 고르세요. 「도트 측면」을 다시 누르면 기본 청색 창이 됩니다.`,
-    }));
-  }
   if (rulesMismatch) {
     notes.push(el("p", {
       class: "db-ws-usage",

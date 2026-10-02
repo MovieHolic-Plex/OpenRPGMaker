@@ -278,14 +278,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return value;
   };
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "strict";
-  // B: skin-driven ATB haste — chrono fast, dq/mother slow, octopath subtle
-  const skinHasteMultiplier = (() => {
-    try {
-      const skinId = resolveSkinId((options.project as unknown as { system?: { battleUiStyle?: string } }).system?.battleUiStyle) as BattleSkinId;
-      const map: Record<string, number> = { chrono: 1.18, bravely: 1.08, octopath: 1.06, ff: 1.04, rm2000: 1.02, dragonquest: 0.92, mother: 0.88 };
-      return (map[skinId] ?? 1) * atbSpeedMultiplier(options.project.system.atbSpeed);
-    } catch { return 1; }
-  })();
+  // 스킨별 ATB 가속(청람·세피아·먹빛·코발트 창)은 2026-10-02 그 스킨들과 함께 지웠다 — 속도는 atbSpeed 하나가 정한다.
+  const skinHasteMultiplier = atbSpeedMultiplier(options.project.system.atbSpeed);
   // Active ATB: gauge 흐름에서만 의미가 있다. strict 는 라운드제라 메뉴가 시간을 멈추지 않는다.
   const activeAtb = battleFlow === "gauge" && options.project.system.atbMode === "active";
 

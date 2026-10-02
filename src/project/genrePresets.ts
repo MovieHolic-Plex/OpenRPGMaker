@@ -53,7 +53,7 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
       // 파티 모험 JRPG 의 결정론 기본값(2026-09-26). 예전엔 장르 라벨만 박혀 ⚙(AI 없이) 결과가
       // 빈 프로젝트와 같았다. 열린 프로젝트에 적용될 때 저작자가 고른 값은 덮지 않는다(??=).
       system.battleParty ??= "actors";
-      system.battleUiStyle ??= "ff"; // 측면 전투 · 아군 스프라이트 표시 — 파티가 보이는 고전 JRPG
+      // 전투 화면은 기본 도트 측면(retro2003, 저장하지 않음) — 2026-10-02 측면 스킨을 하나로 줄였다.
       system.menuUiStyle ??= "party-first";
       system.companions ??= { maxCompanions: 3, formation: "line" };
       break;
