@@ -7,7 +7,7 @@
  */
 import { el } from "@/util/dom";
 import { field } from "@/editor/panels/databaseControls";
-import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_SKINS, resolveSkinId, sideSkinForBattleLook } from "@/battle/skins/registry";
 import {
   BATTLE_LOOK_COMMAND_IDS,
   BATTLE_LOOK_COMMAND_LABELS,
@@ -44,11 +44,14 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
   const look = resolveBattleLook(project.system.battleLook);
   const saved: BattleLookSettings = project.system.battleLook ?? {};
   // 새 값은 렌더 시점 값이 아니라 지금 저장값(draft) 위에서 만든다 — 다시 그리기 전 연속 변경이 서로를 지우지 않게.
+  // 꾸밈은 도트 측면 전투에만 그려진다 — 정면 스킨에서 고르면 측면 스킨으로 같이 갈아탄다(조수 set_project_settings 와 같은 규칙).
   const commit = (next: (current: BattleLookSettings | undefined) => BattleLookSettings | undefined): void => {
     updateSystem((draft) => {
       const value = next(draft.system.battleLook);
       if (value) draft.system.battleLook = value;
       else delete draft.system.battleLook;
+      const side = value ? sideSkinForBattleLook(draft.system.battleUiStyle) : undefined;
+      if (side) draft.system.battleUiStyle = side;
     });
     rerender();
   };
@@ -57,6 +60,7 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
   const presetAxes = BATTLE_LOOK_PRESETS[look.preset].axes;
 
   const skin = BATTLE_SKINS[resolveSkinId(project.system.battleUiStyle)];
+  const side = sideSkinForBattleLook(project.system.battleUiStyle);
   const notes: HTMLElement[] = [
     el("p", {
       class: "db-system-help",
@@ -67,7 +71,18 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
     notes.push(el("p", {
       class: "db-system-help db-battle-look-warning",
       dataset: { testid: "db-battle-look-skin-warning" },
-      text: "지금 전투 UI 스타일은 도트 측면 전투가 아니어서 이 꾸밈이 보이지 않습니다.",
+      children: side
+        ? [
+            `지금 전투 UI 스타일(${skin?.label ?? "정면"})은 정면이라 이 꾸밈이 보이지 않습니다. 프리셋을 고르면 「${BATTLE_SKINS[side].label}」로 바뀝니다.`,
+            el("button", {
+              class: "btn",
+              text: "측면 스킨으로 바꾸기",
+              attrs: { type: "button" },
+              dataset: { testid: "db-battle-look-switch-side" },
+              on: { click: () => { updateSystem((draft) => { draft.system.battleUiStyle = side; }); rerender(); } },
+            }),
+          ]
+        : ["지금 전투 UI 스타일은 몬스터 대치라 이 꾸밈이 보이지 않습니다."],
     }));
   }
 
