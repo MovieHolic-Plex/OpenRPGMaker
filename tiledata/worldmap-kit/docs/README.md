@@ -255,4 +255,34 @@ pins 없이 해시로 고른 결과가 결정적인지, 입력 오류(역할 없
 | prehistoric | primeval | alien | alien |
 | steampunk | industrial | | |
 
-남은 것(검수자가 짚었고 테마 층 밖이라 안 고친 것): 군도는 땅 모양을 못 바꿔 색만 열대다. 지형 쪽 계단 늪·산 사슬·직선 하구, 스팀펑크 아이콘(청록 화산·보라 수정·형광 천공섬)과 아이콘 연기의 파란 테. 외계 협곡 위 길 대비, SF 소품이 촘촘한 것은 「고치면 가능」 수준으로 남았다.
+남은 것: 지형 쪽 계단 늪·산 사슬·직선 하구, 스팀펑크 아이콘(청록 화산·보라 수정·형광 천공섬)과 아이콘 연기의 파란 테(아이콘은 하네스에서 사용자가 고른다).
+고친 것(2026-10-03 4차): 군도는 아래 ⑥ 지형 편집으로 실제 섬나라가 됐다. 외계 길은 띠 안쪽을 길 색으로(`force_road_band`, 장소로 들어가는 막다른 팔 포함),
+SF 시가지 바깥 고리는 빈 광장 42%, 성운 종류 경계는 크게 휜 좌표(±32px/46px)로 고른다.
+
+## ⑥ 지형 편집 `terrains/<id>.json` (`worldmap-terrain/1`, 2026-10-03)
+
+공용 지형(shared-v9) 위에 작업(ops)을 얹는다. 정본 문법은 `kit/lib/kit_terrain.py` 머리 주석.
+
+```bash
+python3 kit/build_world.py --theme sea-isles --journey fantasy-5act --out out/ --terrain archipelago        # 이름 붙은 지형
+python3 kit/build_world.py --theme fantasy   --journey fantasy-5act --out out/ --terrain my.json --preview  # 칸 배열만(1~3초)
+```
+
+| 작업 | 인자 | 하는 일 |
+|---|---|---|
+| `land` | poly, ground? | 땅을 더한다(바다 위에도) |
+| `sea` | poly | 바다로 자른다 — 대륙 가르기·만 파기. 장소가 물이 되면 오류 |
+| `island` | x, y, rx, ry, ground? | 타원 섬 |
+| `biome` | poly, ground | 바닥을 바꾼다 |
+| `ridge` / `pass` | line, kind?, width?, peak? / x, y, r? | 산줄기 / 고개 |
+| `river` | line, widen? | 강(바다로 끝낸다) |
+| `forest` / `clear` | poly, kind?, density? / poly, what? | 숲 / 숲·산 걷기 |
+| `plateau` | poly, level?, ground? | 고원(가장자리 절벽) |
+| `move_place` | id, x, y | 여정 장소 옮기기 |
+
+- 다각형은 같은 노이즈로 휘어 그려 손 지형과 결이 같다. 오류는 문장으로(`KitError`): 장소가 물 위, 길을 낼 수 없음, 바다 장벽이 좁음.
+- `--preview` 는 `schematic.png`·`terrain.txt`(첫 줄 범례 글자 지도)·`world.json`(walk 행 포함)·여정 검사.
+- 테마의 `"terrain": "<id>"` 는 그 지형을 깔고, `--terrain` 은 그 위에 얹는다(`kit_terrain.merge`).
+- 지형 서명별 캐시 `cache/terrain-<sig12>`. 숲이 다각형의 35% 미만에만 먹으면 「지형 경고」.
+- 편집기 조수 도구 `read_world_terrain`·`edit_world_terrain` 이 이 경로를 쓴다 — `openwiki/worldmap-terrain-editing.md`.
+- `terrains/archipelago.json`(군도): 남쪽 사막섬·북쪽 설원섬·동대륙을 해협(다리 걸친 강)으로 가르고 섬 5개를 더한다.

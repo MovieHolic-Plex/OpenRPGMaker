@@ -2546,3 +2546,9 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 - `place_savepoint {heal?:boolean}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다.
 - `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 두 게이트 전이 앞에 흰 `Flash Screen` 을 넣고 페이드를 white 로 바꾼다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다.
 - 명령 보장 표: `setEventGraphicPattern`·`cutsceneControl`·`checkpointSave`·`triggerEnding`·`setSelfSwitch` 는 맵/공통에서 `full` 이다(전투는 종전 유지). 저작 길은 그대로라 `indirectAuthoring` 로 선택창 행 요구를 면제한다. 도구 요약의 「미지원 커맨드 N건」은 「런타임 제한 커맨드 N건」이 되었다.
+
+## 세계 지도 지형 도구 (2026-10-03)
+
+`read_world_terrain`(읽기)·`edit_world_terrain`(쓰기, 도메인 world). 세계 지도는 타일을 찍지 않고 지형 작업(ops)을 월드맵 키트가 다시 그린다.
+prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기다리고 run 은 결과를 맵·타일셋·로케이션으로 쓴다. 도구 결과에 지도 그림(미리보기는 도식)을 붙인다.
+흐름·계약·함정: `openwiki/worldmap-terrain-editing.md`.

@@ -1,5 +1,13 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
+
+`edit_world_terrain` 이 만든 맵만 갖는다: `{ theme, ops, terrainId?, palette? }`.
+`ops` 는 `worldmap-terrain/1` 작업 목록(테마 자체 지형 아래 깔림은 빼고 조수가 얹은 것만). 이 필드가 있으면
+그 맵은 「지도 그림 = 타일셋 `worldmap_<mapId>`(칸마다 한 타일, 통행은 키트 걷기 표)」이고, 다시 빌드하면 통째로 갈린다.
+없는 맵은 키트 지도가 아니며 도구가 덮어쓰지 않는다. 런타임은 이 필드를 읽지 않는다(편집 원본일 뿐).
+자세한 흐름: `openwiki/worldmap-terrain-editing.md`.
+
 ## 퀘스트 프리셋 메타 (2026-10-01)
 
 단계형 `QuestDef`의 선택 `presetId`는 `quest/questPresetIds.ts`의 28개 ID가 정본이다.
