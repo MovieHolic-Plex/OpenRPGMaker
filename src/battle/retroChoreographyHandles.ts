@@ -114,6 +114,34 @@ export function applyChoreographyHandles(
           (rec.movement.travelMs ?? 180) +
           120,
       );
+    const authoredHits = events.filter((e) => e.kind === "hit");
+    const requestedHits = Math.min(
+      16,
+      Math.max(1, timeline.hitCount ?? authoredHits.length),
+    );
+    if (
+      authoredHits.length < requestedHits &&
+      (authoredHits.length > 0 || timeline.hitCount !== undefined)
+    ) {
+      const lead: RetroTimelineEvent = authoredHits[0] ?? {
+        kind: "hit",
+        at: original,
+        who: "target",
+      };
+      const layers = events.filter(
+        (e) =>
+          e.kind === "fx" && e.anchor !== "user" && e.anchor !== "allAllies",
+      );
+      const repeated = layers.filter((e) => e.layer === layers[0]?.layer);
+      events = events.filter((e) => e.kind !== "hit");
+      for (let i = 0; i < requestedHits; i++) {
+        const offset =
+          repeated[i] && repeated[0]
+            ? repeated[i]!.at - repeated[0]!.at
+            : i * 160;
+        events.push({ ...lead, at: lead.at + offset });
+      }
+    }
     const oldContacts = [
       ...new Set(events.filter((e) => e.kind === "hit").map((e) => e.at)),
     ].sort((a, b) => a - b);

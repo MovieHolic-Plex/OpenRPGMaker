@@ -52,6 +52,8 @@ export type RetroTimelineEvent =
   | { readonly kind: "sound"; readonly at: number; readonly id: string };
 
 export interface RetroSkillTimeline {
+  /** Requested contacts for an authored multi-hit motion program. */
+  readonly hitCount?: number;
   readonly actors?: readonly MotionTrack[];
   readonly movement?: BattleMotionProgram;
   readonly durationMs: number;
@@ -253,7 +255,7 @@ class TimelineBuilder {
   build(castType: CastType, side: RetroTimelineSide, tailMs = TAIL_MS): RetroSkillTimeline {
     const events = [...this.events].sort((a, b) => a.at - b.at);
     const durationMs = Math.round(this.end + tailMs);
-    return { durationMs, castType, side, representativeMs: this.firstImpactMid >= 0 ? this.firstImpactMid : Math.round(this.end / 2), events };
+    return { durationMs, castType, side, representativeMs: this.firstImpactMid >= 0 ? this.firstImpactMid : Math.round(this.end / 2), events, ...(this.hitCount > 1 ? {hitCount:this.hitCount} : {}) };
   }
 }
 

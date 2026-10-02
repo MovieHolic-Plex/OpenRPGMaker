@@ -60,6 +60,7 @@ flow는 단조 Hermite 접선으로 접촉을 통과할 때의 속도를 연결�
 ## 확인 근거
 
 - `verify-shots/battle-motion/rules-audit.json`: 브라우저에서 실제 엔진 32종 × 명중/빗나감, 저장 재로드, 반격·흡수 속성 일치/불일치·3갈래 방출·표식 요구·기폭/회피·지원 지속/해제·처치 환급·엄호 분기.
+- `verify-shots/battle-motion/multihit/SUMMARY.md`: 다단 접촉 수 보정 뒤 10종 재녹화. 기본 timeline의 `hitCount`를 이동 손잡이가 읽어 반복 FX의 접촉을 별도 시각으로 만든다.
 - `verify-shots/battle-motion/player-final/SUMMARY.md`: `player.html` 출하 shim 경로 32종 녹화. 조건에 따라 준비/취소 장면도 포함한다.
 - `verify-shots/battle-motion/swap/SUMMARY.md`: 활성 2자리+예비 배우가 있는 실제 교대 녹화.
 - `verify-shots/battle-motion/editor-audit.json`: 실제 편집기 공용 복제, 숫자/직접 경로 편집, JSON 정규화 재로드, AI 도구 수정.

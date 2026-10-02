@@ -195,6 +195,12 @@ try {
           c,
           { hit: !miss },
         );
+        if (record.effect.kind === "damage" || record.hitSequence?.length)
+          assert(
+            tl.events.filter((e) => e.kind === "hit").length >=
+              (record.hitSequence?.length ?? 1),
+            record.id + " separate authored contacts",
+          );
         for (let t = 0; t <= tl.durationMs; t += 20)
           for (const track of tl.actors ?? []) {
             const pos = motion.motionPositionAt(
