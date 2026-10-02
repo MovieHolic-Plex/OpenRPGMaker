@@ -1,0 +1,31 @@
+// E: 비스듬한 두루마리 위아래로 가로 묶음을 엇갈려 얹고 말린 끝과 갈색 끈을 드러낸 더미; 꼭대기 윗면 4행(y=0~3).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a linen 1
+@mat b linen 2
+@mat c linen 3
+@mat d linen 4
+@mat e linen 5
+@mat f linen 6
+@mat s pine 1
+@mat t pine 2
+@mat u pine 3
+@layer body
+@mblock 0 0
+...bdddtbb......
+..dfffuteedb....
+.befeeutdeeedb..
+.beeedstcdeecdb.
+..dcccsbccdbacb.
+...bbbbsbbbcb...
+...beddfetdb....
+..defeutddcb....
+..eefutddcb.....
+..deutcbddtbb...
+..ddtsdeffuteedb
+.bdeedeffeutdeec
+.defeeceeedstddc
+.edbacedddsscccb
+.dcbedcbbbbbbbb.
+..bccbb.........

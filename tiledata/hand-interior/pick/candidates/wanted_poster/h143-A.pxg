@@ -1,0 +1,31 @@
+// 누런 수배지에 제목 획, 얼굴 초상과 금화 보상 표시; 꼭대기 윗면 0행(y=해당 없음), 평평한 벽면 걸이.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat e pine 2
+@mat p pine 5
+@mat h pine 6
+@mat s pine 4
+@mat d dwood 1
+@mat f pine 3
+@mat g gold 4
+@mat l gold 6
+@mat c gold 2
+@layer paper
+@mblock 0 0
+...eeeeeeeeee...
+..ehhhhhhhhpe...
+..ehddpddpddse..
+..ehppppppppse..
+..ehppddddppse..
+..ehpddffddpse..
+..ehpdfhfdppse..
+..ehpfdhdfppse..
+..ehppfhffppse..
+..ehppfddfppse..
+..ehpddddddpse..
+..ehppppppppse..
+..ehpcpphddpse..
+..ehclgpdddpse..
+..eppcppspppse..
+...eeeeeeeeee...

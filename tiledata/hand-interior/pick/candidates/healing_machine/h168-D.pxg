@@ -1,0 +1,58 @@
+// D: 흰 회복 장치에 금장 테·화면 장식, 여섯 붉은 흰 구슬; 꼭대기 윗면 8행(y=4~11)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A white 0
+@mat B white 2
+@mat C white 3
+@mat D white 4
+@mat E white 5
+@mat F white 6
+@mat g gold 2
+@mat h gold 4
+@mat j gold 5
+@mat k gold 6
+@mat i iron 2
+@mat n iron 3
+@mat o iron 4
+@mat r red 3
+@mat s red 4
+@mat t red 5
+@mat u green 1
+@mat v green 3
+@mat w green 4
+@mat z green 6
+@layer machine
+@mblock 0 0
+................................
+................................
+................................
+................................
+...AhjjjjjjjjjjjjjjjjjjjjjjgA...
+..AkEEotsrEEEEotsrEEEEotsrEhgA..
+..AjEoEECBoEEoEECBoEEoEECBoDgA..
+..AjEEonnnEEEEonnnEEEEonnnEDgA..
+..AjEEEEEEEEEEEEEEEEEEEEEEEDgA..
+..AjEEotsrEEEEotsrEEEEotsrEDgA..
+..AjEoEECBoEEoEECBoEEoEECBoDgA..
+..AjDDonnnDDDDonnnDDDDonnnDDgA..
+.AEkjjjjjjjjjjjjjjjjjjjjjjjjghA.
+.ADhggggggggggggggggggggggggggA.
+.AEjEEDDDDDDDDDDDDDDDDDDDDChgBA.
+.AEjEDDDDghhhhhhhhhhhgDDDDChgBA.
+.AEjEDDDDhizzzzzzzvvvihDDDChgBA.
+.AEjEDDDDhiwwwwwwvvvvihDDDChgBA.
+.AEjEDDDDhivvvvzvvvvvihDDDChgBA.
+.AEjEDDDDhivvvzzzzvvvihDDDChgBA.
+.AEjEDDDDhivzzzvvzzvvihDDDChgBA.
+.AEjEDDDDghhhhhhhhhhhgDDDDChgBA.
+.AEjEDDDDDDDDDDDDDDDDDDDDDChgBA.
+.AEjEDDDDDDDjjDDjjDDDDDDDDChgBA.
+.AEjEDDDDDDDhjkkjhDDDDDDDDChgBA.
+.AEjEDDDDDDDDhjjhDDDDDDDDDChgBA.
+.AEjECCCCCCCCChhCCCCCCCCCCChgBA.
+.AEjECCCCCCCCCCCCCCCCCCCCCChgBA.
+.ADkjjjjjjjjjjjjjjjjjjjjjjjjhgA.
+.ABhggggggggggggggggggggggggggA.
+.ABCCCCCCCCCCCCCCCCCCCCCCCCCBBA.
+..AAAAAAAAAAAAAAAAAAAAAAAAAAAA..

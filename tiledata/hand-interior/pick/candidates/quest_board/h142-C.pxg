@@ -1,0 +1,31 @@
+// C: 넓은 나무 테와 큰 쪽지 여섯 장, 붉은 핀과 한 줄 글씨로 단순하고 또렷하게. 꼭대기 윗면 3행(y=0~2).
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 6
+@mat d wood 4
+@mat e wood 5
+@mat p linen 5
+@mat q linen 6
+@mat s linen 3
+@mat r red 4
+@layer board
+@mblock 0 0
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+bcccccccccccccccccccccccccccccab
+bcceeeeeeeeeeeeeeeeeeeeeeeeeeaab
+bceddddddddddddddddddddddddddaab
+bcedqqqrqqqdpqqrqqpddpqqrqqqdaab
+bcedqqqqqqqdpppppppddpqqqqqqdaab
+bcedqsssqqqdpssspppddpqssqqqdaab
+bcedpppppppdpppppppddpppppppdaab
+bceddddddddddddddddddddddddddaab
+bcedpqqrqqpdqqqrqqqddpqqrqqqdaab
+bcedpppppppdqqqqqqqddpqqqqqqdaab
+bcedppsssppdqssqqqqddpqsssqqdaab
+bcedpppppppdpppppppddpppppppdaab
+bceddddddddddddddddddddddddddaab
+bcbbbbbbbbbbbbbbbbbbbbbbbbbbbaab
+.baaaaaaaaaaaaaaaaaaaaaaaaaaaaa.

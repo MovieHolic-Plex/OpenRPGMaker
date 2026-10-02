@@ -1,0 +1,110 @@
+// D: 검은 돌 뿔 왕좌에 금장 관과 불꽃 문양, 해골 팔걸이, 깊은 붉은 좌판.
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a black 1
+@mat b black 2
+@mat c black 3
+@mat d black 4
+@mat e black 5
+@mat f black 6
+@mat g gold 1
+@mat h gold 2
+@mat i gold 3
+@mat j gold 4
+@mat k gold 5
+@mat l gold 6
+@mat m red 0
+@mat n red 1
+@mat o red 2
+@mat p red 3
+@mat q red 4
+@mat r red 5
+@mat s linen 2
+@mat t linen 3
+@mat u linen 4
+@mat v linen 5
+@mat w linen 6
+@layer throne
+@mblock 4 0
+.edd..............ddc.
+.fed..............edc.
+.fed..............edc.
+.eddc............ddcb.
+..edcbeeeeeeeeeeeedcba.
+..eddcfdddddddddeddcba.
+..edcbedddddddddbdccba.
+..eddbeeeeedddddbdccba.
+..edcjjjjjjjjjjjhccba.
+..edkjhnnnnnnnnnhidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+..edjhoooooooooohidcba.
+@mblock 6 24
+edjhoooooooooohidcba
+edjhoooooooooohidcba
+edjhoooooooooohidcba
+edjhoooooooooohidcba
+edjhoooooooooohidcba
+edjhmmmmmmmmmmhidcba
+edkjjjjjjjjjjjidcba
+edddddddddddddccba
+@mblock 2 25
+..uvvu................uttu..
+.wvvvut..............vuutts.
+.wuuuut..............vuttss.
+.vtabat..............utabss.
+.uuaaut..............ttasst.
+..utt................tsts..
+..djjh..............dihg...
+.eddjh..............cdhgba.
+.eddjhkkrrrrrrqqjjjicdhgba.
+.eddjhrrqqqqqqppqqhicdhgba.
+.eddjhqqpppppppppohicdhgba.
+.eddjhqppppppppppohicdhgba.
+.eddjhqpppppppppoohicdhgba.
+.eddjhppppppppoooohicdhgba.
+.eddjhjiiiiiiiiiihhicdhgba.
+.eddcjjjjjjjjjjjjhhdccbaa.
+.eddcddddddddddddccdccbaa.
+.eddbccccccccccccbbdccbaa.
+.eddbchhhhhhhhhhgcbddcbaa.
+.eddbchjjjjjjjjhgcbddcbaa.
+.eddbccccccccccccbbddcbaa.
+.eddbba..........abbccbaa.
+.edjjha..........abihgaa.
+@layer ornament
+@mblock 12 13
+j......h
+jj....hh
+.jj..hh.
+..jkkh..
+..jkkh..
+...ji...
+..jjii..
+.jj..ii.
+jj....ii
+@tblock 12 13 gold
+4......2
+44....22
+.44..22.
+..4552..
+..4552..
+...43...
+..4433..
+.44..33.
+44....33
+@mblock 14 42
+jkkh
+.jh.

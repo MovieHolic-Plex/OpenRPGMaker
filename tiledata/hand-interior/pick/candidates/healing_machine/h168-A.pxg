@@ -1,0 +1,81 @@
+// 흰 회복 장치: 8행 윗면의 여섯 구슬 홈, 초록 화면, 높이 28px.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a white 0
+@mat b white 1
+@mat c white 2
+@mat d white 3
+@mat e white 4
+@mat f white 5
+@mat W white 6
+@mat h iron 3
+@mat i iron 2
+@mat r red 3
+@mat R red 5
+@mat s red 1
+@mat p iron 1
+@mat g green 0
+@mat j green 2
+@mat k green 3
+@mat l green 5
+@mat m green 6
+@layer machine
+@mblock 0 4
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+..bffffffffffffffffffffffffffe..
+.bfWWfffffffffffffffffffffffeec.
+.bfWffffffffffffffffffffffffeec.
+.bffffffffffffffffffffffffffedc.
+.bffffffffffffffffffffffffffedc.
+.bffffffffffffffffffffffffffedc.
+.bffffffffffffffffffffffffffedc.
+.beeeeeeeeeeeeeeeeeeeeeeeeeedcc.
+.abdddddddddddddddddddddddddcca.
+..besssssssssssssssssssssssscb..
+..bfrrrrrrrrrrrrrrrrrrrrrrrrcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..bfedddddddddddddddddddddddcb..
+..beccccccccccccccccccccccccbb..
+..abbbbbbbbbbbbbbbbbbbbbbbbbba..
+...iiiii................iiiii...
+@layer wells
+@mblock 5 5
+hRRrhfffhRRrhfffhRRrh
+rRprifffrRprifffrRpri
+hWWchfffhWWchfffhWWch
+.hhh.fff.hhh.fff.hhh.
+@mblock 5 9
+hRRrhfffhRRrhfffhRRrh
+rRprifffrRprifffrRpri
+hWWchfffhWWchfffhWWch
+.hhh.fff.hhh.fff.hhh.
+@layer controls
+@mblock 9 17
+bbbbbbbbbbbbbb
+bgjjjjjjjjjjgb
+bglkkkkkkkjjgb
+bgkkkmkkkmkjgb
+bgmmmkmmmkmlgb
+bgjkkkkkkkjjgb
+bggggggggggggb
+cccccccccccccc
+@mblock 6 26
+cbbbcbbbcbbb
+cdddcdddcddd
+@mblock 24 26
+srr
+src
+@mblock 24 29
+bcc

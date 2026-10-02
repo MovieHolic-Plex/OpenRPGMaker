@@ -1,0 +1,27 @@
+// B: 그물과 같은 1px 바랜 실, 모서리 부채꼴 거미줄과 매달린 작은 갈색 거미; 꼭대기 윗면 0행(y=해당없음, 평평한 벽면 걸이).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat h linen 5
+@mat e linen 4
+@mat s linen 3
+@mat a dwood 1
+@mat b dwood 3
+@mat c dwood 5
+@layer web
+// 천장과 왼 벽에 붙은 실
+@px 0 0 linen:5 1 0 linen:5 2 0 linen:3 3 0 linen:5 4 0 linen:3 5 0 linen:3 6 0 linen:5 7 0 linen:3 8 0 linen:3 9 0 linen:3 10 0 linen:3 11 0 linen:2 12 0 linen:3 13 0 linen:2 14 0 linen:2
+@px 0 1 linen:5 0 2 linen:3 0 3 linen:3 0 4 linen:5 0 5 linen:3 0 6 linen:3 0 7 linen:2 0 8 linen:3 0 9 linen:3 0 10 linen:2 0 11 linen:3 0 12 linen:2 0 13 linen:2 0 14 linen:2
+// 허브에서 뻗은 세 가닥
+@px 1 1 linen:5 2 2 linen:5 3 3 linen:3 4 4 linen:5 5 5 linen:3 6 6 linen:3 7 7 linen:3 8 8 linen:2 9 9 linen:3 10 10 linen:2
+@px 2 1 linen:5 3 1 linen:3 4 1 linen:3 5 2 linen:3 6 2 linen:5 7 2 linen:3 8 3 linen:3 9 3 linen:3 10 3 linen:2 11 4 linen:3 12 4 linen:2 13 4 linen:2
+@px 1 2 linen:3 1 3 linen:5 1 4 linen:3 2 5 linen:3 2 6 linen:3 2 7 linen:3 3 8 linen:3 3 9 linen:2 3 10 linen:3 4 11 linen:2 4 12 linen:3 4 13 linen:2
+// 서로 다른 간격으로 처진 연결 실
+@px 4 2 linen:3 3 3 linen:3 2 4 linen:5
+@px 9 1 linen:3 9 2 linen:2 8 4 linen:3 7 5 linen:3 6 5 linen:2 5 6 linen:3 5 7 linen:2 4 8 linen:3 2 9 linen:3 1 9 linen:2
+@px 14 1 linen:2 14 2 linen:3 13 3 linen:3 12 5 linen:3 12 6 linen:2 11 7 linen:3 10 8 linen:3 10 9 linen:2 9 10 linen:3 8 11 linen:2 7 11 linen:3 6 12 linen:2 5 12 linen:3 3 14 linen:2 2 14 linen:3 1 14 linen:2
+// 거미의 매달린 실
+@px 10 11 linen:2 10 12 linen:3
+@layer spider
+@px 10 13 dwood:3 10 14 dwood:5 11 14 dwood:3 10 15 dwood:1
+@px 9 13 dwood:1 11 13 dwood:1 8 12 dwood:3 12 12 dwood:3 9 14 dwood:1 12 14 dwood:1 8 15 dwood:3 12 15 dwood:3

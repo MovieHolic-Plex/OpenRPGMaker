@@ -1,0 +1,35 @@
+// E: 엇갈린 작은 씨앗 자루 셋, 모은 천 입구와 작물 그림 표; 꼭대기 윗면 3행(y=0~2).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 1
+@mat b straw 3
+@mat c straw 5
+@mat d straw 4
+@mat e straw 2
+@mat f linen 1
+@mat g linen 3
+@mat h linen 5
+@mat i linen 4
+@mat j green 2
+@mat k clay 3
+@mat l linen 2
+@mat m yellow 2
+@mat n linen 6
+@mblock 0 0
+......abca......
+.....acddba.....
+......adba......
+.......aa.......
+......acbba.....
+.....acihibe....
+..fhfadjhjbe....
+.fhigfbijhbeaca.
+..figfbdbbeccdba
+...ff.aeee..dba.
+..fihgfaa...aa..
+.fihiglf..acdbba
+fihhhiglfacihibe
+fihkhiglfcchmhbe
+fighigllfccihbea
+.fggllff.aeeeaa.

@@ -1,0 +1,99 @@
+// 전형적인 선장 해도 탁자: 8행 윗면, 펼친 해도·황동 컴퍼스·망원경, 두꺼운 목재 다리.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat w pine 4
+@mat d dwood 3
+@mat p linen 5
+@mat q linen 4
+@mat r linen 3
+@mat s teal 2
+@mat a teal 3
+@mat c brass 4
+@mat h brass 5
+@mat b brass 2
+@mat k brass 0
+@mat i iron 2
+@mat j iron 4
+@mat R red 4
+@layer timber
+@mblock 1 6
+.wwwwwwwwwwwwwwwwwwwwwwwwwwww.
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wddddddddddddddddddddddddddddw
+.dddddddddddddddddddddddddddd.
+@tblock 1 6 pine
+.5555555555555555555555555555.
+354444444444444444444444444442
+354443334444444444444433344442
+354444444444444444444444444442
+354444444444444444444444444442
+354444444444444444444444444442
+354444444444444444444444444442
+354444444444444444444444444442
+354443334444444444433334444442
+355555555555555555555555555552
+344444444444444444444444444442
+3............................2
+..............................
+@tblock 2 17 dwood
+4444444333333333333333333333
+3333333332222222222222222222
+@mblock 3 19
+wwww..................wwww
+wwww..................wwww
+wwww..................wwww
+wwww..................wwww
+wwww..................wwww
+wwww..................wwww
+wwww..................wwww
+wwwwddddddddddddddddddwwww
+wwwwddddddddddddddddddwwww
+wwww..................wwww
+wwww..................wwww
+wwww..................wwww
+wwww..................wwww
+@tblock 3 19 pine
+3432..................3321
+3432..................3321
+3432..................3321
+3432..................3321
+3432..................3321
+3432..................3321
+3432..................3321
+3432..................3321
+3432..................3321
+3432..................3321
+3442..................3331
+3442..................3331
+2221..................2221
+@tblock 7 26 dwood
+444443333333333333
+222222222222222222
+@layer chart
+@mblock 4 8
+rppppppppppppppq
+qppssppppppppqqq
+qppsasppqrpssppq
+qpppasprppssappq
+qppppprpppppappr
+rqqqqqqqqqqqqqr.
+@layer instruments
+@mblock 20 7
+.bhhchhhhbi.
+bhcccccccijb
+.bbbbbbbiib.
+@mblock 23 10
+.bhhb.
+bhppcb
+bcRkcb
+.bbbb.

@@ -1,0 +1,55 @@
+// C: 세 표본을 큰 병 덩어리로 구분하고 결을 줄임; 꼭대기 윗면 3행(y=0~2)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat e wood 5
+@mat f wood 6
+@mat h fish 1
+@mat i fish 2
+@mat j fish 3
+@mat k fish 4
+@mat l fish 5
+@mat m linen 5
+@mat n linen 6
+@mat o black 3
+@mat p red 4
+@mat q linen 3
+@mat r brass 3
+@mat s brass 4
+@layer shelf
+@mblock 0 0
+.eeeeeeeeeeeeee.
+effffeeeeeeffeee
+effeeeeeeeeeeeee
+ffffffffffffffea
+ccccccccccccccca
+febbbbbbbbbbbbea
+febsssbbbbsssbea
+febrrrbbbbrrrbea
+fehlllhbbhlllhea
+fekiiihbbhkqihea
+feknnnhbbhkqmhea
+feknonhbbhkmmhea
+feknnnhbbhkmihea
+fejiiihbbhjiihea
+feejjjeeeejjjeea
+feeeeeeeeeeeeeea
+ffffffffffffffea
+ccccccccccccccca
+febbbbbbbbbbbbea
+febbbbbbbbbbbbea
+febbbssssssbbbea
+febbbrrrrrrbbbea
+febbhllllllhbbea
+febbhkppppihbbea
+febbhpppppphbbea
+febbhkiqqiihbbea
+febbhkimmiihbbea
+febbhkimmiihbbea
+febbhjiiiijhbbea
+feeeejjjjjjeeeea
+feeeeeeeeeeeeeea
+ccccccccccccccca

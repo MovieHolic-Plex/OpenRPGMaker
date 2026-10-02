@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dark_altar/h161-D.pxg",
+ "id": "dark altar",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  6,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "촛대 접시 아래 테를 y=14로 내리고 기둥 1행 단축, 잔 입구 3행·앞면 1행 단축, 받침의 밝은 윗면과 남쪽 테 분리; 상판 8행(y=16~23)·높이 26px·불꽃·금장·붉은 문양 유지; 꼭대기 윗면 3행(y=11~13), 잔 입구 3행(y=12~14).",
+ "ok": true
+}

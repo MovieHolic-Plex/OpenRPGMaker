@@ -1,0 +1,62 @@
+// E: 넓은 목제 걸이판에 괭이·초승달 낫·금속 물뿌리개를 분리해 건 디자인; 꼭대기 윗면 3행(y=0~2)
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a pine 2
+@mat b pine 3
+@mat c pine 4
+@mat d pine 5
+@mat e wood 3
+@mat f wood 5
+@mat g wood 6
+@mat h iron 2
+@mat i iron 3
+@mat j iron 4
+@mat k iron 5
+@layer board
+@mblock 2 0
+.aaaaaaaaaaaaaaaaaaaaaaaaaa.
+acddddddddccddddddddddddccca
+accccccccccccccccccccccccba
+bbjbbbbbbbbbbjbbbbbbbbbbjba
+abbbbbbaabbbbbbbbbbaabbbbba
+.aaaaaaaaaaaaaaaaaaaaaaaaaa.
+@layer tools
+// 괭이: 가로 쇳날, 긴 나무 자루
+@mblock 3 5
+jjkkjjh
+jjjiihh
+.hhhfe.
+....ge.
+....fe.
+....fe.
+....ge.
+....fe.
+....fe.
+....fe.
+....ee.
+// 낫: 오른쪽으로 휘어 돌아오는 날과 아래 손잡이
+@mblock 12 5
+...jkk.
+..ji.jh
+.....jh
+....ji.
+..jji..
+.hih...
+.gf....
+.gf....
+.fe....
+.fe....
+.ee....
+// 물뿌리개: 위 고리 손잡이와 열린 주입구, 왼쪽 주둥이
+@mblock 19 6
+.....jjjj...
+....ji..ih..
+....j...ih..
+.jh.j.jjjjh.
+jkih.jkiijjh
+.hjijjkkjjih
+..hijjkjjjih
+....hjjjjjih
+....hijjiiih
+.....hhhhhh.

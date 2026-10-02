@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/map_rolls/h148-B.pxg",
+ "id": "map rolls",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  2,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "무기 통의 갈색 통널·회색 쇠테와 두루마리 선반의 종이색을 따라 높이가 다른 지도 세 개와 내려다보이는 통 입구를 손 도트로 새로 그림; 꼭대기 윗면 3행(y=2~4)",
+ "ok": true
+}

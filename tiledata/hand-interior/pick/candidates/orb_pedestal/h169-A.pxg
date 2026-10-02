@@ -1,0 +1,51 @@
+// A: 흰 받침 윗판 위 붉은·흰 포획 구슬 하나, 정수리 빛과 휘어진 이음띠, 꼭대기 윗면 5행(y=11~15).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat r red 2
+@mat R red 3
+@mat H red 4
+@mat P red 5
+@mat h red 6
+@mat d iron 1
+@mat b iron 2
+@mat w white 4
+@mat W white 5
+@mat L white 6
+@mat s white 2
+@mat t white 3
+@mat o white 1
+@layer object
+@mblock 0 0
+......rrrr......
+....rrHHHHrr....
+...rHhhPHHRRr...
+..rHhhPHHRRRRr..
+..rHPPHHHRRRRr..
+..bHHHHRRRRRRb..
+..dbbRRRRRRbbd..
+..sWWbbddbbtsb..
+..sLWWbWWbttsb..
+...sWWbbbbtsb...
+..ooWtWWwtsboo..
+.oWWWWssssWWwso.
+oLWWWWWWWWWWwwso
+oLLWWWWWWWWwwtso
+oWWWWWWWWwwwttso
+.owwwwwwwwtttso.
+.owwwwwttttttso.
+..osssssssssso..
+...oWWwwwttso...
+...oLWwwwttso...
+...oLWwwwttso...
+...oLWwwwttso...
+...oLWwwwttso...
+...oLWwwwttso...
+...oLWwwwttso...
+...oWWwwwttso...
+..otWWwwwtttso..
+.oWWWWwwwwtttso.
+oLWWWWWWwwwwttso
+oWWwwwwwwttttsso
+.osssssssssssoo.
+..oooooooooooo..

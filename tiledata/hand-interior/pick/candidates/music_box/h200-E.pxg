@@ -1,0 +1,44 @@
+// E: 모서리를 깎은 호두나무 보석함형 오르골, 은빛 거울·아이보리 무희·장밋빛 안감. 꼭대기 윗면 3행(y=0~2), 상자 윗면 5행(y=8~12).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat i iron 4
+@mat l linen 5
+@mat r pink 1
+@mat b brass 3
+@layer body
+@mblock 0 0
+...wwwwwwwwww...
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwiiiiiiiiww..
+..wwiiiiiiiiww..
+..wwiiiilliiww..
+..wwiiiililiww..
+..wwilllliliww..
+.wwrrrrllrrrrww.
+wwrrrrllllrrrrww
+wwrrrrrrlrrrrrww
+.wwrrrrbbbrrrww.
+..wwwwwwwwwwww..
+.wwwwwwbbwwwwww.
+..wwwwwwwwwwww..
+..ww........ww..
+@tblock 0 0
+...5555555553...
+..677655666553..
+..766666655553..
+..635665444433..
+..635644444433..
+..635444654433..
+..634444546433..
+..633655546433..
+.67122255111153.
+6712226665111143
+6612222241111133
+.65111145411143.
+..766666665553..
+.65554444544443.
+..544444444433..
+..32........23..

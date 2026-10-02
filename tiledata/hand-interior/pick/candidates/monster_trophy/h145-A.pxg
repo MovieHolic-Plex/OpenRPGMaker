@@ -1,0 +1,78 @@
+// 방패꼴 목판 위에 두 상아 뿔과 초록 용의 눈썹·주둥이·송곳니를 손으로 찍음; 정수리 윗면 3행(y=3~5).
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat m wood 3
+@mat w wood 4
+@mat h wood 5
+@mat H wood 6
+@mat a green 0
+@mat b green 1
+@mat c green 2
+@mat d green 3
+@mat e green 4
+@mat f green 5
+@mat l linen 1
+@mat n linen 3
+@mat N linen 5
+@mat j brass 5
+@layer plaque
+@mblock 7 1
+..oooooooooooooo..
+.oHHhhhhhhhhhhmmo.
+oHhwwwwwwwwwwwwmmo
+oHhwwwwwwwwwwwwmmo
+oHwwwwwmwwwwwwwmmo
+oHwwwwwmwwwwwwwmmo
+ohwwwwwwwwwwwwwmmo
+ohwwmmwwwwwwwwwmmo
+ohwwwwwwwwwmwwwmmo
+ohwwmmwwwwwwmwwmmo
+.ohwwwwwwwwwwwmmo.
+..ohwwwwwwwwwmmo..
+...ohwwwwwwwmmo...
+....ommwwwmmmo....
+......oooooo......
+@layer dragon
+@mblock 9 3
+....bbbbbb....
+..bbeeeeddbb..
+.beeeffedddcb.
+beeeedddddddcb
+beebbcdddbbcb.
+bbjacdddajabb.
+.bccdeeedccb..
+.bcdaeeadccb..
+.beeeeddddcb..
+..baNaaaNab...
+...baaaab....
+....bbbb.....
+@layer ears
+@mblock 5 6
+bb...
+bedbb
+.bcdd
+..bbc
+@mblock 22 6
+...bb
+bbdcb
+ccccb
+cbb..
+@layer horns
+@mblock 5 0
+.ll....
+lNnl...
+.lNnl..
+..lNnl.
+...lNnl
+....lnl
+.....bb
+@mblock 20 0
+....ll.
+...lNnl
+..lNnl.
+.lNnl..
+lnNnl..
+lnl....
+bb.....

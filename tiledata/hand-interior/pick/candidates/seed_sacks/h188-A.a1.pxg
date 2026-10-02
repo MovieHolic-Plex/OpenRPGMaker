@@ -1,0 +1,28 @@
+// A: 그림 표 붙은 씨앗 자루 셋, 묶인 입구의 윗면과 왼쪽 위 빛을 손 도트로 표현.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 1
+@mat b straw 2
+@mat c straw 3
+@mat d straw 4
+@mat e straw 5
+@mat h linen 5
+@mat g leaf 2
+@mblock 0 0
+......cddc......
+.....cdaedb.....
+.....bcddcb.....
+......baab......
+.....cddccb.....
+.cdedbhghbcdddb.
+.deadbhhgbdeadb.
+..bccbhghabccb..
+..baabccbbbaab..
+.cdddcbbbcdddcb.
+cdeddcb..cdeddcb
+cdhghcb..cdhghcb
+cdhhgcb..cdhhgcb
+cdhghbb..cdhghbb
+bcddcbb..bcddcbb
+.bbaab....bbaab.

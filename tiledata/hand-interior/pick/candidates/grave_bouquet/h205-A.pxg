@@ -1,0 +1,46 @@
+// A: 재시도 지시에 따라 묘비 윗면 설명을 2행→3행으로 정정(최소 3행 시점 규칙 유지); 전체 높이 16px(y=16~31), 회색 돌 묘비·흰 꽃다발의 화소·색·형태·접지선 유지; 꼭대기 윗면 3행(y=16~18)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a stone 1
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat e stone 5
+@mat u white 1
+@mat v white 3
+@mat w white 5
+@mat W white 6
+@mat l leaf 2
+@mat L leaf 3
+@mat r linen 4
+@mat R linen 5
+@layer stone
+@mblock 0 16
+.....dddddd.....
+....deeeeedd....
+...deeeedddda...
+...eddcccccca...
+...edccbbccba...
+...edccbdccba...
+...edbbbbbcba...
+...edccbdccba...
+...edccbdccba...
+..bddddcccccb...
+..deddccccccba..
+.bdddcccccccba..
+.bccccccbbbbaa..
+.bcccccbbbbbaa..
+..bbbbbbbaaaa...
+...aaaaaaaaa....
+@layer bouquet
+@mblock 0 23
+..........uwwu..
+.........uWWwvu.
+......uwwuvwrvu.
+.....uWWwvluvu..
+.....uwrvvLuwu..
+......uvvlwWWvu.
+.......lLluwrvu.
+......LlRrluvu..
+.....LlRrll.....

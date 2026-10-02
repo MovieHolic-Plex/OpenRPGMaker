@@ -1,0 +1,114 @@
+// D: 금장 접수대 유지, 칸막이·잉크병 뚜껑·도장 머리 윗면을 각 3행으로 수정. 꼭대기 윗면 3행(y=6~8).
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 2
+@mat C wood 3
+@mat D wood 4
+@mat E wood 5
+@mat F wood 6
+@mat G wood 7
+@mat H gold 1
+@mat I gold 2
+@mat J gold 3
+@mat K gold 4
+@mat L gold 5
+@mat M linen 2
+@mat N linen 4
+@mat O linen 5
+@mat P linen 6
+@mat Q iron 1
+@mat R iron 2
+@mat S iron 3
+@mat T iron 4
+@mat U iron 5
+@mat V red 1
+@mat W red 2
+@mat X red 4
+@layer counter
+@mblock 0 11
+= 48A
+= 1A 46G 1C
+= 1A 46F 1C
+= 1A 6F 6E 14F 9E 11F 1C
+= 1A 4F 7E 16F 7E 12F 1C
+= 1A 46F 1C
+= 1A 15F 7E 24F 1C
+= 1A 30K 16J 1B
+= 1A 46C 1A
+= 1A 14F 1C 15F 1C 14F 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 1F 13D 1C 1F 14D 1C 1F 13D 1C 1A
+= 1A 14E 1C 15E 1C 14D 1C 1A
+= 48B
+@layer gold_inlay
+@mblock 4 22
+KKKKKKKK
+K......J
+K......J
+........
+........
+I......I
+.JJJJJJ.
+@mblock 36 22
+JJJJJJJJ
+K......I
+K......I
+........
+........
+I......I
+.JJJJJJ.
+@mblock 20 22
+.KLLLLJ.
+.KDDDDJ.
+.KDKKDJ.
+.KDKKDJ.
+..KDDJ..
+...KJ...
+@layer divider
+@mblock 23 6
+CGGC
+CGGC
+CGGC
+CFFC
+CEFC
+CEFC
+AKJB
+AECB
+ABCB
+ABBA
+@layer paperwork
+@mblock 5 9
+.MMMMMMMMM.
+.MPPPPPPPN.
+.MPMMMOOPN.
+.MPPPPPPPN.
+.MNNNNNNNM.
+.MOOOOOOOM.
+MMMMMMMMMM.
+@layer ink
+@mblock 32 9
+..STTS..
+..SUUS..
+..STTS..
+.RTSSRQ.
+.RTSSRQ.
+.RSSRRQ.
+..QQQQ..
+@layer stamp
+@mblock 41 10
+.NOO.
+.NPO.
+.NOO.
+.CDC.
+.CDC.
+VXXXV
+VWWWV

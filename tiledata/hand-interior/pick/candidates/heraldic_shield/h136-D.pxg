@@ -1,0 +1,33 @@
+// D: 파랑·금 사분 문장에 큰 사자와 밝은 금장 테를 더한 벽걸이 방패.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o gold 1
+@mat h gold 5
+@mat g gold 4
+@mat d gold 2
+@mat b blue 2
+@mat c blue 1
+@mat u blue 3
+@mat f gold 3
+@mat t gold 4
+@mat l gold 5
+@mat m gold 2
+@layer shield
+@mblock 0 0
+.ohhhhhhhhhhhdo.
+.ohggggggggggdo.
+.ohuuubbbtttfdo.
+.ohubllbbtttfdo.
+.ohulllbbtttfdo.
+.ohubglgbtttfdo.
+.ohulgggbtttfdo.
+.ohubggbbtttfdo.
+.ohulgbgbtttfdo.
+..ogttttbbccdo..
+..ogttttbbccdo..
+...ogtttbbcco...
+....ogttbcdo....
+.....ogbcdo.....
+......ogdo......
+.......oo.......

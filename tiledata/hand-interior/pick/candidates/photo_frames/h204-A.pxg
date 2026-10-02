@@ -1,0 +1,77 @@
+// A: 16px 협탁, 윗판 5행, 금테 초상과 나무테 사진 둘을 기대 세운 전형적인 SFC 실내 기물.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A wood 3
+@mat B wood 4
+@mat C wood 5
+@mat D wood 6
+@mat E wood 7
+@mat F brass 2
+@mat G brass 4
+@mat H brass 5
+@mat I linen 4
+@mat J linen 5
+@mat K dwood 2
+@mat L clay 4
+@mat M blue 2
+@mat N blue 4
+@mat O green 2
+@mat P linen 2
+@mat Q red 1
+@layer furniture
+// 협탁: 윗면 y16~20, 앞 모서리 y21, 접지 y31.
+@mblock 1 16
+EDDDDDDDDDDCCA
+EDDDCCDDDDDCCA
+EDDDDDDDDDDCCA
+EDDDDDCCDDDCCA
+DDDDDDDDCCCCCA
+BBBBBBBBBBBBBA
+ACDDDDDDCCCCBA
+ACCCCCGGCCCCBA
+ACBBBCCCCBBBBA
+ACCCCCCCCCCBBA
+ABBAAAAAAAABBA
+ABB........BBA
+ABB........BBA
+ABB........BBA
+ABB........BBA
+AAA........AAA
+// 중앙 금테 초상: 윗테의 윗면 y3~5.
+@mblock 5 3
+GGGGGF
+HHHGGF
+HGGGFF
+GJJJJF
+GJKKJF
+GJKLJF
+GJLLJF
+GJQQJF
+GQQQQF
+GQQQQF
+GGGGGF
+FFFFFA
+// 왼쪽 나무테 풍경 사진: 윗면 y8~10.
+@mblock 1 8
+EDDDA
+EDDCA
+DCCBA
+DNNNA
+DNJNA
+DOONA
+DOOBA
+DCCBA
+DCCBA
+AAAAB
+// 오른쪽 나무테 흑백 초상: 윗면 y9~11.
+@mblock 10 9
+DDDCA
+EDDCA
+DCCBA
+DJKJA
+DJIJA
+DPPPA
+DPPPA
+DCCBA
+AAAAB

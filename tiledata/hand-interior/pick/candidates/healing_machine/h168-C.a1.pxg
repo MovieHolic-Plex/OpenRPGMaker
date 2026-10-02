@@ -1,0 +1,102 @@
+// C: 넓은 흰 윗판에 여섯 구슬, 큰 초록 화면과 조용한 몸체; 꼭대기 윗면 8행(y=5~12).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a white 0
+@mat b white 1
+@mat c white 2
+@mat d white 3
+@mat e white 4
+@mat f white 5
+@mat g white 6
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@mat r red 3
+@mat s red 4
+@mat t red 2
+@mat u green 1
+@mat v green 3
+@mat w green 4
+@mat z green 5
+@mblock 0 0
+................................
+................................
+................................
+................................
+....bbbbbbbbbbbbbbbbbbbbbbbb....
+...bggffffffffffffffffffffddb...
+..bfgfffffffffffffffffffffddab..
+..bfgfffffffffffffffffffffddab..
+..bfgfffffffffffffffffffffddab..
+..bfgfffffffffffffffffffffddab..
+..bfgfffffffffffffffffffffddab..
+..bfgfffffffffffffffffffffddab..
+..bfgfffffffffffffffffffffddab..
+..bfggggggggggggggggggggggedab..
+..beeeeeeeeeeeeeeeeeeeeeeedcab..
+..bfeeeeeeeeeeeeeeeeeeeeeedcab..
+..bfeeeiiiiiiiiiiiiiiiieeedcab..
+..bfeeeizzzzzzzzzwwwwwieeedcab..
+..bfeeeizwwwwwwwwwwwwvieeedcab..
+..bfeeeizwwwwwwwwwwwwvieeedcab..
+..bfeeeizwwwwwwwwwwwwvieeedcab..
+..bfeeeivvvvvvvvvvvvvvieeedcab..
+..bfeeeiuuuuuuuuuuuuuuieeedcab..
+..bfeeeiiiiiiiiiiiiiiiieeedcab..
+..bfeeeeeeeeeeeeeeeeeeeeeedcab..
+..bfeeeeeeeeeeeeeeeeeeeeeedcab..
+..bfeeeeeeeeeeeeeeeeeeeeeedcab..
+..bfeeeeeeeeeeeeeeeeeeeeeedcab..
+..bfeeeeeeeeeeeeeeeeeeeeeedcab..
+..bdcccccccccccccccccccccccbab..
+..abbbbbbbbbbbbbbbbbbbbbbbbbba..
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+@mblock 6 6
+fisif
+isrti
+fgddf
+@mblock 14 6
+fisif
+isrti
+fgddf
+@mblock 22 6
+fisif
+isrti
+fgddf
+@mblock 6 10
+fisif
+isrti
+fgddf
+@mblock 14 10
+fisif
+isrti
+fgddf
+@mblock 22 10
+fisif
+isrti
+fgddf
+@tblock 6 6
+52425
+24322
+56445
+@tblock 14 6
+52425
+24322
+56445
+@tblock 22 6
+52425
+24322
+56445
+@tblock 6 10
+52425
+24322
+56445
+@tblock 14 10
+52425
+24322
+56445
+@tblock 22 10
+52425
+24322
+56445

@@ -1,0 +1,79 @@
+// C: 검은 돌 등받이와 굵은 뿔, 해골 팔걸이, 넓은 붉은 좌판을 큰 덩어리로 정리; 꼭대기 윗면 3행(y=0~2), 등받이 윗면 4행(y=6~9).
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a black 1
+@mat b black 2
+@mat c black 3
+@mat d black 4
+@mat e black 5
+@mat u red 1
+@mat r red 2
+@mat s red 3
+@mat t red 4
+@mat i linen 2
+@mat j linen 3
+@mat k linen 4
+@mat l linen 5
+@layer throne
+@mblock 0 0
+= 4. 4d 16. 4c 4.
+= 4. 1d 3e 16. 1d 3c 4.
+= 4. 1d 2e 1d 16. 1d 3c 4.
+= 4. 1a 2d 1c 16. 1c 2b 1a 4.
+= 5. 1a 2d 1c 14. 1c 2b 1a 5.
+= 5. 1a 1c 2d 1c 12. 1c 2b 2a 5.
+= 6. 1a 2c 14d 2b 1a 6.
+= 7. 1a 1e 12d 2c 1b 1a 7.
+= 7. 1a 1e 12d 2c 1b 1a 7.
+= 7. 1a 13d 2c 1b 1a 7.
+= 6. 1a 2d 14c 2b 1a 6.
+= 6. 1a 2d 1c 12b 1c 2b 1a 6.
+= 6. 1a 1d 1c 1b 12c 1b 2b 1a 6. *18
+= 6. 1a 1d 17b 1a 6.
+= 5. 1a 2d 16u 2b 1a 5.
+= 4. 1a 2d 18r 2b 1a 4.
+= 3. 1a 2d 1c 18t 1b 2b 1a 3.
+= 3. 1a 2d 1c 4t 14s 1b 2b 1a 3.
+= 3. 1a 2d 1c 18s 1b 2b 1a 3.
+= 3. 1a 2d 1c 15s 3r 1b 2b 1a 3.
+= 3. 1a 2d 1c 18r 1b 2b 1a 3.
+= 3. 1a 2c 1b 18u 1b 2b 1a 3.
+= 3. 1a 2c 22b 1a 3.
+= 3. 1a 24c 1a 3.
+= 3. 1a 1d 22c 1b 1a 3.
+= 3. 1a 2c 22b 1a 3.
+= 4. 1a 4c 1a 12. 1a 4b 1a 4.
+= 4. 1a 1d 3c 1a 12. 1a 4b 1a 4.
+= 4. 1a 1d 3c 1a 12. 1a 4b 1a 4.
+= 3. 1a 2d 4c 1a 10. 1a 6b 1a 3.
+= 3. 8a 10. 8a 3.
+@layer arms
+@mblock 1 25
+..kkkk..
+.kllllk.
+.kllkkk.
+.ljajai.
+.kjijii.
+..jiji..
+.addcba.
+.addcba.
+.adccba.
+.adccba.
+.accbba.
+.acbbba.
+.abbbba.
+@mblock 23 25
+..jjjj..
+.jkkkkj.
+.jkkjjj.
+.kjaiai.
+.jjijii.
+..jiji..
+.acccba.
+.acccba.
+.acccba.
+.acccba.
+.accbba.
+.acbbba.
+.abbbba.

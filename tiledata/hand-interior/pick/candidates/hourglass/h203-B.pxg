@@ -1,0 +1,51 @@
+// B: 괘종시계의 갈색 목재 덩이와 드문 결, 둥근 유리와 금모래; 꼭대기 윗면 4행(y=1~4).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g glass 1
+@mat h iron 3
+@mat i glass 4
+@mat j glass 5
+@mat k gold 2
+@mat l gold 3
+@mat m gold 4
+@mat n gold 5
+@mblock 0 0
+....bbbbbbbb....
+..beddccccddbb..
+.bedddccddddccb.
+.beddccdddccdbb.
+..beddddddddcb..
+..ccecccccccca..
+...baaaaaaaab...
+..ec..hhhg..cb..
+..ec.hjiihg.cb..
+..ec.jigggghcb..
+..ec.jgnnnmgcb..
+..ec.ignmmlgcb..
+..dc..inmlg.cb..
+..dc..hmlg..cb..
+..ec...img..cb..
+..ec...hmg..cb..
+..ec...hmg..cb..
+..dc..himg..cb..
+..dc..ijggh.cb..
+..ec.jigggghcb..
+..ec.jigggghcb..
+..ec.jignmghcb..
+..ec.ignnmlgcb..
+..dc.immmlkgcb..
+..dc..hkkgh.cb..
+..ec...hhh..cb..
+..ecddddddcccb..
+.beddccdddddccb.
+.beddddccdddccb.
+.ccecccccccccca.
+..ccbbbbbbbbba..
+..baaaaaaaaaab..

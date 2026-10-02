@@ -1,0 +1,88 @@
+// 큰 검은 돌판·촛대 둘·해골 잔·붉은 인장만 남겨 또렷하게; 꼭대기 윗면 8행(y=14~21)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a black 1
+@mat b black 2
+@mat c black 3
+@mat d black 4
+@mat e black 5
+@mat k iron 2
+@mat l iron 4
+@mat p purple 2
+@mat q purple 3
+@mat r purple 4
+@mat s purple 5
+@mat t purple 6
+@mat L linen 2
+@mat M linen 3
+@mat N linen 4
+@mat O linen 5
+@mat u red 1
+@mat v red 2
+@mat w red 3
+@mat x red 4
+@layer altar
+@mblock 0 14
+= 2. 27d 1c 2.
+= 1. 1e 28d 1c 1.
+= 1. 2e 26d 2c 1.
+= 1. 1e 27d 2c 1.
+= 1. 1e 5d 3c 19d 2c 1.
+= 1. 1e 27d 2c 1.
+= 1. 1e 20d 3c 4d 2c 1.
+= 1. 28d 2c 1.
+= 1. 28c 2a 1.
+= 2. 2d 23b 3a 2.
+= 2. 1d 1c 23b 3a 2.
+= 2. 1d 1c 23b 3a 2.
+= 2. 1d 1c 23b 3a 2.
+= 2. 2c 23b 3a 2.
+= 2. 1c 24b 3a 2.
+= 1. 2d 26c 2a 1.
+= 1. 1c 26b 3a 1.
+= 1. 28a 2a 1.
+@layer emblem
+@mblock 12 24
+.w...v.
+.xw.vw.
+..xww..
+.wvuvv.
+..wvw..
+@layer offerings
+// 두 불꽃: 밝은 중심은 왼쪽, 쇠 촛대 밑받침의 윗면도 보인다.
+@mblock 5 6
+..r..
+..sr.
+.rsqr
+.rtpq
+..l..
+..l..
+..k..
+..k..
+.lllk
+.lkkk
+..aa.
+@mblock 23 6
+..q..
+..rq.
+.qspr
+.rtqp
+..l..
+..l..
+..k..
+..k..
+.lllk
+.lkkk
+..aa.
+// 해골 잔: 입구 3행, 눈구멍 두 덩이, 짧은 잔 다리.
+@mblock 12 10
+..NNN..
+.NLbbMN
+.OLbbMN
+.ONNNML
+.OaNaML
+..NMML.
+...k...
+..lkk..
+..aaa..

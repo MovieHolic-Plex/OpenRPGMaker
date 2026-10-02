@@ -1,0 +1,119 @@
+// D: 검은 책장에 금장 처마·모서리와 황금 봉인 자물쇠, X 쇠사슬; 꼭대기 윗면 4행(y=1~4)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a black 1
+@mat b black 2
+@mat c black 3
+@mat d black 4
+@mat e black 5
+@mat i iron 2
+@mat j iron 4
+@mat k iron 5
+@mat g gold 2
+@mat h gold 4
+@mat f gold 5
+@mat r red 2
+@mat R red 3
+@mat p purple 2
+@mat P purple 3
+@mat t teal 2
+@mat T teal 3
+@mat l linen 3
+@mat L linen 4
+@layer bookcase
+@mblock 0 0
+.bbbbbbbbbbbbbb.
+bhddddddddddddgb
+bhdeeeedddddddgb
+bddddddddcccddcb
+bddddddddddddccb
+bhhhhhhhhhhhhhgb
+bggccccggccccggb
+bcccchhddhhcccbb
+bdccchgggghcccbb
+bdcaaaaaaaaaacbb
+bhcRRaLLapTTacgb
+bhcRRrLLapTTacgb
+bdcRRrLLapTTacbb
+bdcRRrLLaPTTacbb
+bdcRRrLLaPTTacbb
+bdcRRrLLaPTTacbb
+bdcRRrLLaPTTacbb
+bdcRRrLLaPTTacbb
+bdcrrrllappttcbb
+bdeeeeeedddddcbb
+bhhhhhhhhhhhhggb
+bgcccccccccccbbb
+bdcaaaaaaaaaacbb
+bdcTTapPPaRRacbb
+bdcTTapPPaRRacbb
+bdcTTapPPaRRacbb
+bdcTtapPPaRRacbb
+bdcTtapPPaRRacbb
+bdcTtapPPaRRacbb
+bdcTtapPPaRRacbb
+bdcttappparracbb
+bdeeeeeedddddcbb
+bhhhhhhhhhhhhggb
+bgcccccccccccbbb
+bdcaaaaaaaaaacbb
+bdcLLaRRRapPacbb
+bdcLLaRRRapPacbb
+bdcLLaRRRapPacbb
+bdcLLaRRRapPacbb
+bdcLLaRRRapPacbb
+bdcLLaRRRapPacbb
+bdcllaRRRapPacbb
+bdcllarrrappacbb
+bdeeeeeddddddcbb
+bhhhhhhhhhhhhggb
+bgcccccccccccbbb
+.bhccbbbbbbcgba.
+.bcccaaaaaaccba.
+@layer chain
+@mblock 2 10
+ji........ij
+ij........ji
+ji........ij
+.ji......ij.
+.ij......ji.
+.ji......ij.
+..ji....ij..
+..ij....ji..
+..ji....ij..
+...ji..ij...
+...ij..ji...
+...ji..ij...
+....jiij....
+....ijji....
+....jiij....
+.....jj.....
+.....ii.....
+.....jj.....
+....ijji....
+....jiij....
+....ijji....
+...ij..ji...
+...ji..ij...
+...ij..ji...
+..ij....ji..
+..ji....ij..
+..ij....ji..
+.ij......ji.
+.ji......ij.
+.ij......ji.
+ij........ji
+ji........ij
+ij........ji
+@layer seal
+@mblock 5 22
+..jj..
+.jbbj.
+.jbbj.
+hffffg
+hfhfhg
+hfhbhg
+hhgbhg
+ghhhhg
+.gggg.

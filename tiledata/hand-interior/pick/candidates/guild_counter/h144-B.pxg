@@ -1,0 +1,71 @@
+// 칸막이·잉크병 뚜껑·도장 머리의 윗면을 3행으로 수정, 받침 윗면과 남쪽 면 분리; 기존 상판 6행·높이 26px·세 칸 앞판 유지. 꼭대기 윗면 3행(y=6~8).
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat w wood 6
+@mat h wood 7
+@mat a wood 5
+@mat f wood 4
+@mat d wood 3
+@mat o wood 2
+@mat l linen 5
+@mat s linen 3
+@mat c linen 6
+@mat b linen 2
+@mat i iron 2
+@mat j iron 4
+@mat k iron 5
+@mat t dwood 3
+@mat r red 2
+@layer furniture
+@mblock 0 6
+...................dhhhhhhhhod..................
+...................dwwwaaaawod..................
+...................dwwwwwwwawd..................
+......sssssssss....dhhhhhhhhod..................
+.....scccccccccs...dwwwwwwwwd.....jjjj..........
+.....sclllssllls...dwwaaawwad....jkkii..........
+dddddscllllllllsddddwwwwwwwadwwwwjkjiiwwwwwwwwdd
+dhhhhslllllllllswwwdddddddddwwwwwjiiiiwwwwwwwwod
+dwwwwsbbbbbbbbbswwwwwwwwwwwwwwwwdiiiidwwwwwwwwod
+dwwwwdsssssssssdwwwaaawwwwwwwwwwwddddwwtttwwwwod
+dwwwwwwwwwwwwwwwaaaawwwwwwawwwwwwwwwwwthtwwwwwod
+dwwwwwwaaaawwwwwwwwwwwwwwwaaaawwwwwwwtttttwwwwod
+dhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhood
+daaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaoood
+oooooooooooooooooooooooooooooooooooooooooooooooo
+odhhhhhhhhhhhhhodhhhhhhhhhhhhhodhhhhhhhhhhhhhodo
+odwfffffffffffwodwfffffffffffwodwfffffffffffwodo
+odwfafffffffffwodwffffffaffffwodwfffffffffffwodo
+odwffaffffffffwodwfffffffffffwodwfffafffffffwodo
+odwfffffffffffwodwfffffffffffwodwffffaffffffwodo
+odwfffffffffffwodwfffafffffffwodwfffffffffffwodo
+odwffffffaffffwodwffffaffffffwodwfffffffffffwodo
+odwffffffaffffwodwfffffffffffwodwffffffaffffwodo
+odwfffffffffffwodwfffffffffffwodwffffffaffffwodo
+odaaaaaaaaaaaaaodaaaaaaaaaaaaaodaaaaaaaaaaaaaodo
+oooooooooooooooooooooooooooooooooooooooooooooooo
+@mat q iron 3
+@mat v dwood 5
+@mat e dwood 4
+@layer details
+@mblock 19 6
+dhhhhhhhhod
+dhwwaawwhod
+dhhhhhhhhod
+daaaaaaaaod
+dfffffffffd
+dffaaaffffd
+dffffffffad
+@mblock 33 8
+.kjj.
+jkkji
+jjjji
+@mblock 38 12
+.ve.
+vvee
+veee
+wetw
+@mblock 37 16
+vveet
+ttttt

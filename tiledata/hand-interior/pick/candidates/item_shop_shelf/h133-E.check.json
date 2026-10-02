@@ -2,9 +2,7 @@
  "file": "tiledata/hand-interior/pick/candidates/item_shop_shelf/h133-E.pxg",
  "id": "item shop shelf",
  "hard": [],
- "warn": [
-  "메모 없음: <후보>.note 에 한 줄"
- ],
+ "warn": [],
  "new": true,
  "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
  "refmap": {
@@ -24,6 +22,6 @@
   31
  ],
  "v5_bbox": null,
- "note": "",
+ "note": "폭이 다른 수납칸의 2단 잡화 선반으로 재해석하고 물약·약초·밧줄·횃불을 나눠 배치, 두꺼운 윗판과 선반 윗면으로 깊이 표현; 꼭대기 윗면 4행(y=2~5).",
  "ok": true
 }

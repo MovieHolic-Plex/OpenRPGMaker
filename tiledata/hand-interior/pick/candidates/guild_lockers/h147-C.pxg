@@ -1,0 +1,47 @@
+// C: 큰 나무문 여섯 칸, 작은 번호와 쇠 손잡이만 남김; 꼭대기 윗면 4행(y=3~6).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat h iron 2
+@mat j iron 4
+@mat k iron 5
+@layer cabinet
+@mblock 0 0
+................................
+................................
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+.bfeeeeeeeeeeeeeeeeeeeeeeeeeeeb.
+.beeeeeddddeeeeeeeeeeeeeeeeeeeb.
+.beeeeeeeeeeeeeeeeedddeeeeeeeeb.
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeeb.
+.bffffffffffffffffffffffffffffb.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.beeeeeeeeebeeeeeeeebeeeeeeeeaa.
+.beedddfdddbeddfffddbeddfffddaa.
+.beeddffdddbeddddfddbeddddfddaa.
+.beedddfdddbeddfffddbeddfffddaa.
+.beedddfdddbeddfddddbeddddfddaa.
+.beeddfffddbeddfffddbeddfffddaa.
+.beedddddddbedddddddbedddddddaa.
+.beeddddkjdbeddddkjdbeddddkjdaa.
+.beeddddhhdbeddddhhdbeddddhhdaa.
+.beccccccccbccccccccbccccccccaa.
+.beeeeeeeeebeeeeeeeebeeeeeeeeaa.
+.beedddddddbedddddddbedddddddaa.
+.beeddfdfddbeddfffddbeddfffddaa.
+.beeddfdfddbeddfddddbeddfddddaa.
+.beeddfffddbeddfffddbeddfffddaa.
+.beeddddfddbeddddfddbeddfdfddaa.
+.beeddddfddbeddfffddbeddfffddaa.
+.beedddddddbedddddddbedddddddaa.
+.beeddddkjdbeddddkjdbeddddkjdaa.
+.beeddddhhdbeddddhhdbeddddhhdaa.
+.beccccccccbccccccccbccccccccaa.
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeaa.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.

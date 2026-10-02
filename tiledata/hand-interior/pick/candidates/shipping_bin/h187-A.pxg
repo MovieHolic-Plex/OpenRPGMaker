@@ -1,0 +1,38 @@
+// 넓은 경첩 뚜껑과 앞 가로 판자의 전형적인 농가 출하 상자; 높이 24px, 꼭대기 윗면 9행(y=9~17).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g iron 3
+@mat h iron 4
+@layer bin
+@mblock 0 8
+= 2. 28a 2.
+= 1. 1a 1e 4f 2h 14f 2h 4f 1e 1a 1.
+= 1. 1a 5e 2g 14e 2g 5e 1a 1.
+= 1. 1a 9e 4d 15e 1a 1.
+= 1. 1a 1e 26d 1e 1a 1.
+= 1. 1a 20e 4d 4e 1a 1.
+= 1. 1a 5e 4d 19e 1a 1.
+= 1. 1a 1e 26d 1e 1a 1.
+= 1. 1a 13e 3d 12e 1a 1.
+= 1. 1a 1e 26f 1e 1a 1.
+= 1. 1a 1b 25c 2b 1a 1.
+= 1. 1a 27b 2a 1.
+= 1. 1a 1e 26d 1c 1a 1.
+= 1. 1a 1e 3e 23d 1c 1a 1.
+= 1. 1a 1e 3d 3c 20d 1c 1a 1.
+= 1. 1a 1e 26d 1c 1a 1.
+= 1. 1a 1e 1c 24b 2c 1a 1.
+= 1. 1a 1e 26d 1c 1a 1.
+= 1. 1a 1e 12d 4c 10d 1c 1a 1.
+= 1. 1a 1e 4d 4e 18d 1c 1a 1.
+= 1. 1a 1e 1c 24b 2c 1a 1.
+= 1. 1a 1e 26d 1c 1a 1.
+= 1. 1a 1e 5e 21d 1c 1a 1.
+= 1. 30a 1.

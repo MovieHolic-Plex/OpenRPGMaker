@@ -2,9 +2,7 @@
  "file": "tiledata/hand-interior/pick/candidates/heraldic_shield/h136-A.pxg",
  "id": "heraldic shield",
  "hard": [],
- "warn": [
-  "메모 없음: <후보>.note 에 한 줄"
- ],
+ "warn": [],
  "new": true,
  "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
  "refmap": {
@@ -24,6 +22,6 @@
   15
  ],
  "v5_bbox": null,
- "note": "",
+ "note": "금 테두리의 뾰족한 방패에 파랑·금 사분 문장과 치켜선 사자 무늬를 새로 그림; 꼭대기 윗면 0행(y=해당 없음, brief의 벽면 걸이 시점 예외).",
  "ok": true
 }

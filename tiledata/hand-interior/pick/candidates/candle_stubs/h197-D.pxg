@@ -1,0 +1,35 @@
+// D: 녹은 초 세 개에 금장 띠와 따뜻한 불꽃, 높은 초 윗면 3행(y=5~7)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat H linen 6
+@mat L linen 5
+@mat W linen 4
+@mat S linen 3
+@mat D linen 2
+@mat a gold 4
+@mat b gold 3
+@mat c gold 2
+@mat f yellow 6
+@mat g yellow 5
+@mat o orange 3
+@mat r orange 2
+@mat k black 2
+@layer candles
+@mblock 0 0
+......g.........
+......fg........
+.....offo.......
+......or........
+......k.........
+.....LLL........
+....LHkLW.......
+....HLLWS.......
+....HLWSD..LL...
+....aabbc.LHkW..
+.LL.aWbbc.HLWS..
+LHkWHLWSD.abcc..
+HLLWLHWSSSLWSD..
+.HLWLLLLLLWSSS..
+..LLLLLWWWSSSD..
+...WWSSSSSD.....

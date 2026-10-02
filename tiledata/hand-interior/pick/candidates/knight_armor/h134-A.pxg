@@ -1,4 +1,4 @@
-// A: 창을 쥔 판금 기사 갑옷, 투구·어깨 윗면과 돌 받침을 손 도트로 신작. 꼭대기 윗면 3행(y=4~6).
+// A: 다리 8행 축소, 몸통·어깨·투구와 창끝 8행 하강; 금속 명암·발·돌판 유지. 꼭대기 윗면 3행(y=12~14).
 @size 16 48
 @cell 16
 @palette palette.pal
@@ -16,50 +16,50 @@
 @mat p pine 1
 @layer armor
 @mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
 .............c..
 ............cec.
 ............fed.
 ............edb.
 .....cddc...edb.
-....ceeedb...db..
-....efeddc...wp..
-....dedccb...wp..
-....daaaab...wp..
-....edcdcb...wp..
-.....dccb....wp..
-.....bdb.....wp..
-..cddbddcdd..wp..
-.ceeddeddedd.wp..
-.efdddeddddc.wp..
-.ddccdeedcb.wp..
-.bdccdeedcb.wp..
-.bdccdedccb.wp..
-.cdbcdedccb.wp..
-.cdbcdedccb.wp..
-.cdbcdedccbcwp..
+....ceeedb...db.
+....efeddc...wp.
+....dedccb...wp.
+....daaaab...wp.
+....edcdcb...wp.
+.....dccb....wp.
+.....bdb.....wp.
+..cddbddcdd..wp.
+.ceeddeddedd.wp.
+.efdddeddddc.wp.
+.ddccdeedcb..wp.
+.bdccdeedcb..wp.
+.bdccdedccb..wp.
+.cdbcdedccb..wp.
+.cdbcdedccb..wp.
+.cdbcdedccbcdwp.
 .cdbbddccbcdedp.
-.cdc.cddc.bedbp.
+.cdc.cddc.bedwp.
 .bdc.bccb..bcwp.
-..bb.ceecb...wp..
-...cdddccb...wp..
-...deccdc....wp..
-...ddbcdb....wp..
-...ed.bcdb...wp..
-...ed.bcdb...wp..
-...dd.bcdb...wp..
-...cd.bccb...wp..
-...bc.bccb...wp..
-...de.bddb...wp..
-...ed.bcdb...wp..
-...bc.bccb...wp..
-...ed.bddb...wp..
-...ed.bddb...wp..
-...ed.bcdb...wp..
-...dd.bcdb...wp..
-...dc.bccb...wp..
-..ced.bcdcb..wp..
-.ceddb.cddcb.wp..
-.bcccb.bcccb.wp..
+..bb.ceecb...wp.
+...cdddccb...wp.
+...deccdc....wp.
+...edb.dcb...wp.
+...cdb.ccb...wp.
+...dee.ddc...wp.
+...edb.dcb...wp.
+...edb.dcb...wp.
+...dcb.ccb...wp.
+..ced.bcdcb..wp.
+.ceddb.cddcb.wp.
+.bcccb.bcccb.wp.
 ..uvvvuvuuuuuw..
 .vvvuuuuvuuutts.
 .uttttttttttsss.
