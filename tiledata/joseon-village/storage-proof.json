@@ -1,0 +1,201 @@
+{
+ "projectId": "32a6aa0e-2b72-4f74-b850-d213e9ded3bb",
+ "projectDir": "/tmp/oprn-joseon-baram-proof",
+ "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
+ "revision": 1,
+ "sha256": "f334dc859e3484f7b1338fa168cd8c90311453deb6d914bebb969411936b8874",
+ "saved": true,
+ "reopened": true,
+ "deepEqual": {
+  "project": false,
+  "maps": true,
+  "tileset": true
+ },
+ "outsideMapsAndTilesetsFirstDiff": "project.database.actors.6.characterIndex: undefined != 0",
+ "tileset": {
+  "id": "joseon_baram",
+  "family": "oprn-joseon",
+  "count": 7872,
+  "tilesPerRow": 64,
+  "image": {
+   "type": "bundled",
+   "id": "tex_joseon_baram"
+  },
+  "structureKits": 242,
+  "tileGroups": 251,
+  "autotileGroups": [
+   "jb_road16_autotile",
+   "jb_yard16_autotile",
+   "jb_water47_autotile",
+   "jb_paddy16_autotile",
+   "jb_rice16_autotile"
+  ],
+  "referenceDocuments": []
+ },
+ "maps": {
+  "joseon_v20": {
+   "size": [
+    64,
+    56
+   ],
+   "lower": 3584,
+   "upper": 1698,
+   "npcs": 20
+  }
+ },
+ "engineChecks": {
+  "joseon_v20": {
+   "walk": {
+    "cells": 3584,
+    "same": 3584,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 2177
+   },
+   "reach": {
+    "start": [
+     31,
+     28
+    ],
+    "reachable": 2168,
+    "walkable": 2177,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 306,
+     "mismatch": 6,
+     "edgeConnects": true,
+     "samples": [
+      [
+       45,
+       25
+      ],
+      [
+       45,
+       26
+      ],
+      [
+       40,
+       28
+      ],
+      [
+       45,
+       28
+      ],
+      [
+       40,
+       29
+      ],
+      [
+       45,
+       29
+      ]
+     ]
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 408,
+     "mismatch": 65,
+     "edgeConnects": false,
+     "samples": [
+      [
+       50,
+       7
+      ],
+      [
+       51,
+       7
+      ],
+      [
+       52,
+       7
+      ],
+      [
+       53,
+       7
+      ],
+      [
+       57,
+       7
+      ],
+      [
+       58,
+       7
+      ],
+      [
+       59,
+       7
+      ],
+      [
+       3,
+       8
+      ],
+      [
+       4,
+       8
+      ],
+      [
+       34,
+       9
+      ],
+      [
+       35,
+       9
+      ],
+      [
+       36,
+       9
+      ]
+     ]
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 374,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 100,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    }
+   ]
+  }
+ },
+ "existingProjectEnsure": {
+  "missingTilesetRestored": true,
+  "oldShortCopyRestored": true,
+  "sameCountReferencesRestored": true,
+  "sameCountKitMergedAuthorKept": true,
+  "idempotent": true
+ },
+ "walkAfterReload": {
+  "joseon_v20": {
+   "cells": 3584,
+   "same": 3584,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 2177
+  }
+ }
+}

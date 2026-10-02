@@ -1,0 +1,54 @@
+{
+ "tileset": "joseon_baram",
+ "textureKey": "tex_joseon_baram",
+ "sourceSheet": "tiledata/joseon-village20/joseon-village20-chipset.png",
+ "sourceCells": 7808,
+ "tailCopies": 13,
+ "tailByClass": {
+  "X": 4,
+  "C": 3,
+  "F": 6
+ },
+ "count": 7872,
+ "tilesPerRow": 64,
+ "sheetPx": [
+  1024,
+  1968
+ ],
+ "pieces": 242,
+ "terrainGroups": 9,
+ "autotileGroups": 5,
+ "structureKits": 242,
+ "tileGroups": 251,
+ "overlapCells": 229,
+ "overlapByClass": {
+  "X": 142,
+  "C": 49,
+  "F": 38
+ },
+ "pieceWalkSource": {
+  "auto": 203,
+  "override": 39
+ },
+ "maps": {
+  "joseon_v20": {
+   "size": [
+    64,
+    56
+   ],
+   "objectCells": 1698,
+   "walkable": 2177,
+   "doors": 21,
+   "passages": 1,
+   "people": 20,
+   "start": [
+    31,
+    28
+   ],
+   "shadowOnlyCells": 0,
+   "groundKindMismatch": 0,
+   "groundKindMismatchSamples": []
+  }
+ },
+ "warnings": []
+}
