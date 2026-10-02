@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { getHarness, workshopHarnesses } from "@/harnesses/_core/registry";
 import { makePalette, renderGrid } from "@/harnesses/_core/workshop/grid";
-import type { Grid, Verdict } from "@/harnesses/_core/workshop/types";
+import type { DrawContext, Grid, Verdict, WorkshopEnv } from "@/harnesses/_core/workshop/types";
 import { interiorGate, interiorHardCheck, parseInteriorVerdict, TOP_MIN } from "@/harnesses/interior-props/editor/checks";
 import { cropCells, itemFromDefinition, itemFromSpec, newItemKey, specObjects, VIEW_FAIL } from "@/harnesses/interior-props/editor/items";
+import { DIRECTIONS, NEW_DIRECTIONS, drawBrief, reviewBrief } from "@/harnesses/interior-props/editor/prompts";
+import { createInteriorRunner } from "@/harnesses/interior-props/editor/runner";
 import { basePaletteEntries, INTERIOR_SHADOWS, paletteForItem, V5_RAMPS } from "@/harnesses/interior-props/editor/palette";
 
 const sheet = (columns: number, rows: number, fill: (tile: number) => [number, number, number, number]) => {
@@ -98,5 +100,86 @@ describe("깨짐 검사·꼭대기 면 판정", () => {
     expect(parseInteriorVerdict('```json\n{"verdict":"pass","codes":[],"top":"윗판 4행","top_rows":4,"reasons":"ok","fix":"","worse":false}\n```'))
       .toMatchObject({ verdict: "PASS", topRows: 4 });
     expect(parseInteriorVerdict("모르겠어요")).toMatchObject({ verdict: "FAIL", codes: ["READ"], reasons: expect.stringContaining("검수 답") });
+  });
+});
+
+const fakeEnv = (): WorkshopEnv & { loaded: string[] } => {
+  const loaded: string[] = [];
+  return {
+    loaded,
+    loadImage: async (url) => {
+      loaded.push(url);
+      if (url.includes("interior-chipset")) return sheet(48, 131, (tile) => (tile % 7 === 0 ? [0x9a, 0x54, 0x35, 255] : [0, 0, 0, 0]));
+      return { width: 16, height: 16, data: new Uint8ClampedArray(16 * 16 * 4).fill(200) };
+    },
+    encodePng: (image) => `data:image/png;fake,${image.width}x${image.height}`,
+    assetUrl: (path) => `/${path}`,
+  };
+};
+
+describe("interior-props 실행기", () => {
+  it("방향: 있는 기물은 DIRECTIONS, 새 기물은 NEW_DIRECTIONS, 5장", async () => {
+    const runner = createInteriorRunner();
+    const env = fakeEnv();
+    await runner.prepare(env);
+    await runner.prepare(env);
+    expect(env.loaded.filter((u) => u.includes("interior-chipset")).length).toBe(1);
+    const items = runner.items([{ key: "new:herb", title: "약초 걸이", description: "말린 약초", tilesW: 1, tilesH: 1, rise: 16, kind: "wall", category: "약방", use: [], refs: ["bookshelf"] }]);
+    expect(items.length).toBe(415);
+    const existing = items.find((i) => i.key === "crate:cabbage")!;
+    const fresh = items.find((i) => i.key === "new:herb")!;
+    expect(runner.directions(existing)).toEqual(DIRECTIONS);
+    expect(runner.directions(fresh)).toEqual(NEW_DIRECTIONS);
+    expect(runner.candidates).toBe(5);
+    expect(runner.currentGrid(fresh)).toBeNull();
+  });
+
+  it("기준 그림: 가구에는 벽면 걸이·바닥 무늬와 3/4 위반 원본을 주지 않는다", async () => {
+    const runner = createInteriorRunner();
+    await runner.prepare(fakeEnv());
+    const items = runner.items([]);
+    const floorItem = items.find((i) => i.kind === "floor")!;
+    const anchors = runner.anchors(floorItem, []);
+    const kindOf = new Map(items.map((i) => [i.key, i.kind]));
+    expect(anchors.length).toBeGreaterThan(0);
+    expect(anchors.length).toBeLessThanOrEqual(4);
+    expect(anchors.every((a) => kindOf.get(a.itemKey) !== "hang" && kindOf.get(a.itemKey) !== "flat")).toBe(true);
+    expect(anchors.some((a) => VIEW_FAIL.has(a.itemKey))).toBe(false);
+    expect(anchors.some((a) => a.itemKey === floorItem.key)).toBe(false);
+  });
+
+  it("그리기 지시문: 캔버스·방향·꼭대기 면 규칙·지난 판정·답 형식", async () => {
+    const runner = createInteriorRunner();
+    const env = fakeEnv();
+    await runner.prepare(env);
+    const item = runner.items([]).find((i) => i.key === "crate:cabbage")!;
+    const ctx: DrawContext = {
+      item, palette: runner.palette(item), direction: DIRECTIONS[2], roundNote: "더 밝은 나무", redrawNote: "", attempt: 2, maxAttempts: 3,
+      previousGrid: runner.currentGrid(item), lastVerdict: { verdict: "FAIL", codes: ["FRONT"], top: "윗판 1행", topRows: 1, reasons: "납작", fix: "윗판 3행으로", worse: false },
+      current: runner.currentGrid(item), anchors: [], rejected: [], notes: [],
+    };
+    const brief = drawBrief(ctx);
+    expect(brief).toContain(`캔버스 ${item.width}×${item.height}px`);
+    expect(brief).toContain("방향 C");
+    expect(brief).toContain("3행 이상");
+    expect(brief).toContain("윗판 3행으로");
+    expect(brief).toContain("더 밝은 나무");
+    expect(brief).toContain('"legend"');
+    const messages = await runner.drawMessages(ctx, env);
+    const parts = messages[1].content as { type: string }[];
+    expect(parts.filter((p) => p.type === "image_url").length).toBeGreaterThanOrEqual(10);
+  });
+
+  it("검수 지시문: 꼭대기 면을 먼저 재고 JSON 하나로", async () => {
+    const runner = createInteriorRunner();
+    const env = fakeEnv();
+    await runner.prepare(env);
+    const item = runner.items([]).find((i) => i.key === "crate:cabbage")!;
+    const grid = runner.currentGrid(item)!;
+    const text = reviewBrief({ item, palette: runner.palette(item), direction: DIRECTIONS[0], attempt: 1, maxAttempts: 3, candidate: grid, current: grid, anchors: [], previousVerdict: null });
+    expect(text).toContain("꼭대기 면");
+    expect(text).toContain("top_rows");
+    const messages = await runner.reviewMessages({ item, palette: runner.palette(item), direction: DIRECTIONS[0], attempt: 1, maxAttempts: 3, candidate: grid, current: grid, anchors: [], previousVerdict: null }, env);
+    expect((messages[1].content as { type: string }[]).some((p) => p.type === "image_url")).toBe(true);
   });
 });
