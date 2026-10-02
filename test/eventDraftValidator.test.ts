@@ -724,6 +724,23 @@ describe("common event call graph warnings", () => {
     )).toBe(false);
   });
 
+  it("handles heavily repeated calls without expanding every execution path", () => {
+    const { project, event } = scenario(Array.from({ length: 9 }, (_, i) =>
+      i < 8 ? Array.from({ length: 10 }, () => `ce-${i + 1}`) : []));
+    const issues = validateEventDraftBody(project, project.startMapId, event).issues;
+    expect(issues.filter((issue) => issue.code === "callCommonEvent.recursionDepth")).toHaveLength(1);
+  });
+
+  it("finds calls inside nested common-event branches", () => {
+    const { project, event } = scenario([[]]);
+    project.commonEvents[0]!.commands = [{
+      kind: "loop", body: [{ kind: "callCommonEvent", commonEventId: "ce-0" }],
+    }];
+    expect(validateEventDraftBody(project, project.startMapId, event).issues).toContainEqual(
+      expect.objectContaining({ code: "callCommonEvent.cycle", commandPath: [0] }),
+    );
+  });
+
   it("does not warn about unrelated cycles or repeated nonrecursive calls", () => {
     const { project, event } = scenario([["ce-1", "ce-1"], [], ["ce-2"]]);
     expect(validateEventDraftBody(project, project.startMapId, event).issues.some(

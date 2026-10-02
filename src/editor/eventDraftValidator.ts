@@ -81,11 +81,15 @@ type CommandVisit = {
 function checkCallDepth(project: Project, pages: readonly EventPage[], issues: EventDraftIssue[]): void {
   const maxDepth = 8;
   const commonEvents = new Map(project.commonEvents.map((event) => [event.id, event]));
+  const calls = new Map(project.commonEvents.map((event) => [event.id, [...new Set(
+    walkCommands(event.commands).flatMap(({ command }) => command.kind === "callCommonEvent" ? [command.commonEventId] : []),
+  )]]));
   for (const page of pages) {
     for (const root of walkCommands(page.commands ?? [])) {
       if (root.command.kind !== "callCommonEvent") continue;
       const visiting = new Set<string>();
       const reported = new Set<string>();
+      const completed = new Set<string>();
       const warn = (code: string, message: string): void => {
         if (reported.has(code)) return;
         reported.add(code);
@@ -102,11 +106,12 @@ function checkCallDepth(project: Project, pages: readonly EventPage[], issues: E
           warn("callCommonEvent.recursionDepth", `호출 깊이가 ${maxDepth}를 넘었습니다.`);
           return;
         }
+        const key = `${depth}:${id}`;
+        if (completed.has(key)) return;
         visiting.add(id);
-        for (const nested of walkCommands(commonEvent.commands)) {
-          if (nested.command.kind === "callCommonEvent") visit(nested.command.commonEventId, depth + 1);
-        }
+        for (const calledId of calls.get(id) ?? []) visit(calledId, depth + 1);
         visiting.delete(id);
+        completed.add(key);
       };
       visit(root.command.commonEventId, 1);
     }
