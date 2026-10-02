@@ -22,7 +22,8 @@ export type GeneratedAssetProvenance = {
   // "grok" = Grok CLI 의 image_gen(2026-08-29 추가). 마젠타 배경 1024px 을 받아
   // scripts/asset-gen/spriteProcess.mjs 로 크로마키한다. 출처를 뭉개면 어느 백엔드가
   // 만든 그림인지 추적이 끊기므로 "imagegen" 으로 뭉치지 않고 별도 값으로 둔다.
-  readonly generator: "agy" | "imagegen" | "grok";
+  // native-pixel: editable final-grid drawing; rawPath is the native pose sheet.
+  readonly generator: "agy" | "imagegen" | "grok" | "native-pixel";
   readonly mode: "dry-run" | "fake" | "live";
   readonly promptVersion: string;
   readonly createdAt: string;
@@ -189,7 +190,7 @@ function validateProvenance(entry: GeneratedAssetManifestEntryInput, entryId: st
   if (provenance === undefined) return [issue(entryId, "provenance", "provenance is required")];
   const issues: ManifestIssue[] = [];
   if (!isProvenanceGenerator(provenance.generator)) {
-    issues.push(issue(entryId, "provenance.generator", "generator must be agy, imagegen or grok"));
+    issues.push(issue(entryId, "provenance.generator", "generator must be agy, imagegen, grok or native-pixel"));
   }
   if (provenance.mode !== "dry-run" && provenance.mode !== "fake" && provenance.mode !== "live") {
     issues.push(issue(entryId, "provenance.mode", "mode must be dry-run, fake, or live"));
@@ -249,7 +250,7 @@ function isGeneratedAssetTarget(value: string | undefined): value is GeneratedAs
 }
 
 function isProvenanceGenerator(value: string | undefined): value is GeneratedAssetProvenance["generator"] {
-  return value === "agy" || value === "imagegen" || value === "grok";
+  return value === "agy" || value === "imagegen" || value === "grok" || value === "native-pixel";
 }
 
 function isGenerationStatus(value: string | undefined): value is GenerationStatus {

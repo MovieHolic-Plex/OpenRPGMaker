@@ -33,7 +33,6 @@ export {
   resolveManualFrontalRow,
   resolveSkinEnemyPosition,
   resolveSkinEnemyPositions,
-  RM2000_PARTY_SLOTS,
   type BattlerPartyFacing,
 } from "@/battle/battlerPlacements";
 import type { DamageFeedback } from "@/player/battleSequencer";
@@ -151,6 +150,8 @@ function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string |
  * 칸 선택은 applyBattlerPose → retroPixelEnemyCell 이 맡는다. 대기 칸은 CSS 루프가 돈다.
  */
 function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resourceId: string | undefined): void {
+  // A project upload owns its pixels even when it reuses a bundled resource ID.
+  if (resourceId && Object.hasOwn(store.getCurrent().assets.uploaded, resourceId)) return;
   const sheet = pixelEnemySheet(resourceId);
   if (!sheet) return;
   const url = pixelEnemySheetUrl(sheet);
@@ -922,11 +923,8 @@ function appendEffectsLayer(field: HTMLElement): HTMLElement {
   return layer;
 }
 
-/** 유리 뼈대의 정면 구도(rm2000 과 그 변형)는 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터
- *  PNG 알파를 반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
+/** 전투 배경 그림 위에 옅은 스크림을 얹는다(정면 유리 스킨 예외는 2026-10-02 스킨과 함께 지웠다). */
 function battleBackdropImage(url: string): string {
-  const skin = activeSkin();
-  if (skin.family === "glass" && skin.layout === "frontview") return `url("${url}")`;
   return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
 }
 
@@ -1094,9 +1092,7 @@ function enemyButton(
   if (url) {
     const image = document.createElement("img");
     image.className = "battle-enemy-image";
-    // 필드 적은 정적 원본만 그린다. idle 스트립은 영상 키드 프레임이라 반투명 픽셀이
-    // 섞여 있고, CSS 가 `object-position` 으로 src 를 밀어 그 스트립만 보여 몬스터가
-    // 반투명해 보였다(실측: 정적 원본 mid-alpha 0%, idle 스트립 골렘 1.23%).
+    // 일반 스킨은 한 칸의 native 초상을, 도트 측면 스킨은 아래의 포즈 시트를 그린다.
     image.alt = `${enemy.name} 몬스터`;
     image.src = url;
     // CSS 숨쉬기(_battlers.css battler-breathe)의 위상을 적마다 어긋나게 — 같이 부풀면 한 덩이로 보인다.
@@ -1265,7 +1261,7 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
-    const pixelParty = partyPixelSheet(resourceId);
+    const pixelParty = Object.hasOwn(store.getCurrent().assets.uploaded, resourceId) ? undefined : partyPixelSheet(resourceId);
     if (pixelParty) {
       // 사람형이 아닌 파티원(짐승·탈것·몬스터 칩): 24포즈 걷기 칩 시트 대신 몬스터 9칸 시트로 선다. battlerExtended 는 켜지 않는다.
       node.dataset.pixelParty = pixelParty.motion;

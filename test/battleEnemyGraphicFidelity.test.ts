@@ -30,11 +30,11 @@ describe("전투 적 그래픽 정합성", () => {
       field.querySelector<HTMLImageElement>(
         '[data-record-id="enemy_stone_golem"] .battle-enemy-image',
       )?.src,
-    ).toContain("monster-golem-01.png");
+    ).toContain("pixel-enemy-portraits/golem.png");
     expect(
       field.querySelector<HTMLImageElement>(
         '[data-record-id="enemy_cave_bat"] .battle-enemy-image',
       )?.src,
-    ).toContain("monster-bat-01.png");
+    ).toContain("pixel-enemy-portraits/bat.png");
   });
 });

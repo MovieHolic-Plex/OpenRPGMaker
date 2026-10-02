@@ -33,7 +33,6 @@ const KIND_PROMPT_PREFIX: Record<AiImageGenerateKind, string> = {
   faceset: "2D JRPG portrait bust, front view, clean thick outline, flat saturated colors, no text. ",
   title: "2D JRPG title screen background art, wide landscape composition, no text, no logo. ",
   backdrop: "2D JRPG battle background art, wide landscape composition, no characters, no text. ",
-  monster: "2D JRPG battle monster sprite, full body, centered, front view, clean thick outline, flat saturated colors, no text, no ground shadow. ",
 };
 
 const KIND_PLACEHOLDER: Record<AiImageGenerateKind, string> = {
@@ -41,7 +40,6 @@ const KIND_PLACEHOLDER: Record<AiImageGenerateKind, string> = {
   faceset: "빨간 머리 소녀 검사",
   title: "달빛 호숫가 마을",
   backdrop: "불타는 화산 동굴",
-  monster: "이빨 달린 푸른 슬라임",
 };
 
 export function aiImagePromptPrefix(kind: AiImageGenerateKind): string {

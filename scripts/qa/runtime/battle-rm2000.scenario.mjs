@@ -4,8 +4,8 @@
 // 여기서는 전투 전용 픽스처를 쓴다(test/fixtures/projects/battle-v3.json, 실물에서 읽음):
 //   startMapId = map_battle (2×1), startPos = (0,0)
 //   이벤트 battle-start@(1,0), trigger=action, commands=[battleProcessing troop_slime]
-//   system.battleUiStyle 미설정 → resolveSkinId 가 기본 스킨 rm2000 으로 떨어진다.
-//     즉 이 시나리오는 **지원 유지되는 RM식 전투 화면**을 그대로 통과한다.
+//   system.battleUiStyle 미설정 → resolveSkinId 가 기본 스킨으로 떨어진다. 2026-10-02 정면 rm2000 을 지워
+//     기본은 도트 측면 retro2003 이다 — 시나리오 id 의 「rm2000」은 옛 이름일 뿐 지금은 기본 전투 화면을 통과한다.
 //
 // 편집기 셸을 태우는 test/e2e/oprn-battle-layout-ux.spec.ts 계열은 test-play-window 가
 // 열리지 않아 main 에서도 실패한다(실측 2026-08-28: main 7fbc7fc8 에서 3/3 실패).

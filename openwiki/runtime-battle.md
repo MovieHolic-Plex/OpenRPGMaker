@@ -1,5 +1,25 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 전투는 전부 도트 측면 — 정면 스킨 다섯·몬스터 그림 생성 삭제 (2026-10-02)
+
+사용자 결정(「정면그림들을 아예 배제, 공격적으로. 이제 전투는 전부 RM2003 식」). 예외는 포켓몬풍 몬스터 수집(`pokemon` 스킨) 하나.
+**이 절보다 아래에 나오는 `rm2000`·`dragonquest`·`mother`·`mv`·`vxace` 정면 스킨 서술(유리 정면 필드·뒷모습 파티·`RM2000_PARTY_SLOTS`·박스/링 HUD)은 이력이다.**
+
+- **스킨**: 위 다섯(+옛 별칭 `classic`)을 레지스트리·타입(`BattleSkinId`·`BattleUiStyle`)·배치(`BATTLER_PLACEMENTS`)·전환(psychedelic·curtain-dq·fade)·
+  CSS(`_glass-variants.css` 의 boxes·ring·minimal HUD, `05-poses-motion.css` 정면 돌진)에서 지웠다. 남은 스킨: 도트 측면 일곱
+  (`retro2003` 기본·`rm2003`·`ff`·`goldensun`·`chrono`·`octopath`·`bravely`) + `pokemon`.
+- **미설정 기본이 `rm2000` → `retro2003`**. 스킨을 저장하지 않은 옛 프로젝트(대부분의 fixture·장소 저장본)도 도트 측면으로 열린다 —
+  아래 「도트 측면 전투 스킨 retro2003」 절의 「미설정 문서는 rm2000 호환값 유지」 계약을 이것이 대체한다.
+  저장된 옛 id 는 `resolveSkinId` 가 `retro2003` 으로 풀고(`LEGACY_SKIN_ALIASES`, `isRetiredBattleSkinId`), `normalizeSystem` 이 로드 때 지운다.
+  `data-battle-ui-style="classic"` 은 이 별칭이 아니라 유리 뼈대 표식이라 남는다. CSS 파일 `_rm2000.css` 도 남은 측면 스킨 모두의 유리 뼈대라 그대로다(이름만 옛것).
+- **스킨 공용 정면 적 그림**(`battle-skins/sprites/enemy-*.png` 10장) 삭제. `bskin-enemy-<스킨>` 옛 id 는 참조 검증
+  (`builtinGeneratedResourceIds` → `resourceReferenceValidation` assert) 때문에 남기고 도트 슬라임 초상으로 푼다.
+- **몬스터 그림 생성 제거**: 자료집 적 「AI로 만들기」 칸, 소재 고르기 대화의 몬스터 생성 칸, `generate_image_asset` kind `monster`.
+  자료집 「AI로 생성」(적)은 그림을 만들지 않고 LLM 이 도트 몬스터 140종 중 `monsterResourceId` 를 고른다(목록 밖 id → 이름 조각 → 슬라임,
+  `aiDatabaseGeneration.ts` `pickPixelMonsterId`). 몬스터 그림 자체(옛 정면 그림 폐기·140종 도트 시트)는 [공용 몬스터 폐기](native-enemy-retirement.md).
+- 지운 QA: `battle-frontview` 런타임 시나리오, e2e `battle-rm2000-pixel-qa`·`_rm2000-probe`·`_vxace-shots`. 경계 계약 시험: `test/sideOnlyBattle.test.ts`.
+- 증거: player.html 캡처 — `battleUiStyle: "rm2000"` 으로 저장된 프로젝트가 도트 측면으로 열리고 적이 시트로 그려진다. pokemon 은 그대로.
+
 ## SNES 식 전투 연출 — 쓰러짐·배경 겹·상태 몸 표시·이펙트 겹치기·화면 필터 (2026-10-02)
 
 - **적 쓰러짐** `EnemyRecord.collapseEffect`(project/enemyCollapse.ts): pixelBreak(FF6 보랏빛 픽셀 분해 0.9s) · bossSink(떨며 붉게 깜빡이고
@@ -24,7 +44,7 @@
   MutationObserver 가 섞는 이펙트가 든 동안 층 자체에 mix-blend-mode 를 건다(그동안 같은 층 다른 이펙트도 같이 섞임).
 - **화면 필터** `system.displayFilter`(project/displayFilter.ts): scanlines · crt. `createPlaySurface` 가 `.play-stage` 맨 끝에 층을 두고
   직계 자식이 바뀌면 다시 끝으로 옮긴다(전투·메뉴가 나중에 붙는다). 깜빡임 없음.
-- 캡처: `node scripts/qa/runtime/battle-fx.capture.mjs --out /tmp/battle-fx [--skin rm2000] [--filter scanlines]` — 오라 판은 스크린샷,
+- 캡처: `node scripts/qa/runtime/battle-fx.capture.mjs --out /tmp/battle-fx [--skin rm2003] [--filter scanlines]` — 오라 판은 스크린샷,
   쓰러짐·이펙트 판은 영상(webm, swiftshader 스크린샷은 장당 0.5s 라 0.9s 연출을 못 따라간다). 전투 이벤트 페이지는 **행동 뒤**에 검사되므로
   상태를 거는 시험은 한 명이 한 번 행동해야 한다.
 - 조수: `read_directing_guide` 의 「전투 연출」 절, 능력 색인 `battle-presentation`, 도구 칸 upsert_enemy.collapseEffect ·
@@ -137,7 +157,7 @@
 ## 도트 측면 전투 스킨 retro2003 (2026-09-28)
 
 13번째 스킨. 자료집 → 시스템 → 전투 UI 스타일 「레트로 2003 · 측면 도트 전투 (기본)」(드롭다운 첫 번째), AI `set_project_settings battle.uiStyle: "retro2003"`.
-규칙 엔진은 건드리지 않는다 — 표현만이고 `battleFlow: "gauge"` 와 함께 쓰면 시간 게이지 전투가 된다. 기존 미설정 문서는 `resolveSkinId(undefined)` / `DEFAULT_BATTLE_SKIN_ID`의 rm2000 호환값을 유지한다. 새 프로젝트·템플릿의 `defaultSystem(true)`과 새 데모 생성은 retro2003을 명시하며 정규화에서도 생략하지 않는다. v1/v2 이관의 인자 없는 `defaultSystem()`은 스킨을 추가하지 않아 옛 화면을 보존한다
+규칙 엔진은 건드리지 않는다 — 표현만이고 `battleFlow: "gauge"` 와 함께 쓰면 시간 게이지 전투가 된다. (2026-10-02 대체: 미설정도 retro2003 — 맨 위 「전투는 전부 도트 측면」 절.) 기존 미설정 문서는 `resolveSkinId(undefined)` / `DEFAULT_BATTLE_SKIN_ID`의 rm2000 호환값을 유지했었다. 새 프로젝트·템플릿의 `defaultSystem(true)`과 새 데모 생성은 retro2003을 명시하며 정규화에서도 생략하지 않는다. v1/v2 이관의 인자 없는 `defaultSystem()`은 스킨을 추가하지 않아 옛 화면을 보존한다
 (모션 CSS는 retro2003 스코프, 확장 시트의 정수 배율 규칙은 그 시트를 쓰는 측면 스킨 공통).
 
 - **레지스트리 필드 두 개**(`src/battle/skins/types.ts`): `motionStyle: "retro"` 가 연출을, `scenery: "layered"` 가 겹 배경을 켠다. 다른 스킨이 같은 연출을 원하면 이 값만 붙이면 된다(CSS 스코프는 스킨 id 라 그 CSS 도 넓혀야 한다).
@@ -169,7 +189,7 @@
   - 바깥 배틀러 노드의 개별 `translate` 속성이 이동을, 안쪽 스프라이트가 피격 진동(`vibrateStruck`)을 갖는다 — 둘을 같은 요소에 걸면 서로 덮는다.
   - **걸어가서 때리기**: 통상 공격과 `effect.statistic === "attack"` 피해 스킬은 대상 적 바로 앞까지 걷는다. `retroWalk` 가 DOM 사각형으로 거리를 재고(화면 px ÷ `rect.width/offsetWidth` — 무대 배율 위에 필드 zoom 이 한 번 더 걸려 변수 하나로는 1.6배 넘쳤다), 시퀀서 훅 `actorApproachMs`/`actorRecoverMs` 가 비트 길이를 걸음에 맞춘다(0.26px/ms, 420~1100ms). approach 앞부분은 walk_a→b→c→b, 마지막 240ms 에 attack_windup→attack_strike, impact 에서 attack, recover 에서 뛰어 돌아온다(`retro-walk-up`/`retro-return`).
   - **마법별 시전 도트**: 마법(제자리 스킬)은 `castTypeForSkill`(속성 → 이름 낱말 → 효과 종류, 기본 arcane) 로 fire/ice/thunder/heal/dark/arcane/support 중 하나를 고르고, 시전 시트 `charset-battlers/cast/<id>.png`(3단계 × 7종) 의 칸을 cast_charge/raise/release 자리에 그린다. 날아가는 화살·투사체 애니메이션(`isTravellingEffect`)은 이 스킨에서 띄우지 않는다. limitSkill 또는 power≥100은 착탄 때 skill. 아이템은 item, 방어는 defend 유지. 옛 시트는 기존 6포즈 분기를 유지한다.
-  - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 기존 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)와 아래 추가 8종은 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(48·64·96px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 다른 스킨은 같은 id 로 기존 통짜 그림을 그대로 쓴다.
+  - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 기존 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)와 아래 추가 8종은 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(48·64·96px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 2026-10-02부터 일반 이미지 소비자는 같은 id의 native idle_a 초상을 쓴다. 옛 통짜 그림은 폐기했다([공용 몬스터 폐기](native-enemy-retirement.md)).
     `<img>` 는 src 를 유지하고 배경으로 칸을 그린다(`data-pixel-sheet`, cell×2 px 상자, 대기는 CSS a→b→c→b 루프). 노드 `data-pixel-enemy`가 모션 7종을 고른다(아래 확장 설명). 근접(통상 공격·공격력 기술)은 `retroEnemyReach` 가 대상 아군까지의 dx/dy 를 재고 시퀀서 훅 `enemyApproachMs`/`enemyRecoverMs` 가 비트를 늘린다. 이동은 Web Animations 의 `translate` 경로(슬라임 두 번 도약, 박쥐 치켜들기→급강하), 칸은 windup→move→attack→recover. 그 밖의 기술은 제자리에서 당겼다 나선다. 피격 hit 칸 380ms, 막타는 hit→dead 칸 뒤 네 번 깜빡여 사라진다. 시트를 못 읽으면 표시를 걷어 원본 그림이 보인다.
   - **손도트 적 8종 추가(2026-09-28, rb-monster):** 기존 슬라임·박쥐에 golem(64px/stomp), dragon(96px/breath), skeleton-archer(shoot), wolf-grey·spider-cave(dash), wisp-blue(float), slime-red(hop), zombie-rot(stomp)를 추가했다(나머지는 48px). 종별 Python 좌표 원본과 README는 `scripts/asset-gen/pixel-enemy/`·`tiledata/pixel-enemies/`, 공통 검토 출력은 `pe_lib.py`. 시트는 3×3, ≤16색, 알파 0/255, 모든 크기에서 같은 정수 2배. `applyPixelEnemySheet`가 인라인 base-width/height=cell×2와 `data-pixel-enemy-cell`을 심고, 로딩 실패 시 원래 치수를 복구한다.
     - `measureEnemyReach`는 적의 앞=cell−6·발=cell−4·부유 중심=cell/2−4로 계산하고 아군 48px 기준은 유지한다. 같은 종 여러 마리의 공격자를 전투 id로 먼저 고른다. 가까워서 dx가 0이어도 근접 모션을 유지한다.
@@ -293,7 +313,7 @@
   - 크기: 64셀 리치·철 골렘은 아군의 약 1.8~1.9배, 96셀 트롤 2.6·미노타우로스 3.2·마왕 3.4배다. 2배 정수 배율 규칙을 지키려고 **표시 배율은 바꾸지 않았다** — 줄이려면 그림을 다시 찍는다.
 - **녹화**
   - 스킬: `node scripts/qa/runtime/retro2003-skills-gif.mjs --set new`(확장 48) · `--set old`(기존 48) · 기본 `class`(96). 확장 배우·직업·장비는 기본 DB 에서 녹화 사본에 합치고, 조 (사무라이·닌자·무도가)·(음유시인·드루이드·마녀)로 찍는다.
-  - 몬스터: `node scripts/qa/runtime/retro2003-monsters-gif.mjs [--monsters a,b]` → `monster-<slug>.gif`·`SUMMARY.md`. `PIXEL_ENEMY_SHEETS` 40종마다 한 마리 트룹을 녹화 사본에 만들고, 전투 이벤트를 `troopSource: variable`(숫자 = troops 1부터 번호, 기존 `__oprnDebug.setVariable`)로 바꿔 말을 건다. 적은 통상 공격만·민첩 999, 전투마다 player.html 을 다시 연다. 시트 PNG 가 없으면 건너뛰고 적는다.
+  - 몬스터: `node scripts/qa/runtime/retro2003-monsters-gif.mjs [--monsters a,b]` → `monster-<slug>.gif`·`SUMMARY.md`. `PIXEL_ENEMY_SHEETS` 140종마다 한 마리 트룹을 녹화 사본에 만들고, 전투 이벤트를 `troopSource: variable`(숫자 = troops 1부터 번호, 기존 `__oprnDebug.setVariable`)로 바꿔 말을 건다. 적은 통상 공격만·민첩 999, 전투마다 player.html 을 다시 연다. 시트 PNG 가 없으면 건너뛰고 적는다.
     기본 DB 적 행을 데모 사본에 옮길 때 사본에 없는 참조(speciesId·드롭·훔치기)는 걷는다 — 두면 로드 검증에서 타이틀이 안 뜬다(실측).
   - 이 작업 결과: 몬스터 40/40 통과(칸 순서·셀·모션·시트 적용 계측), 미리보기 `.omo/retro-monsters/all/preview-big.png`(식충 식물 제자리 수정 전 녹화).
     확장 스킬 48/48 통과(레이어 누락·칸 이동·상자 크기 불일치·잔류 노드 0, 브라우저 오류 0), 미리보기 `.omo/retro-skills/new-1/preview.png`.
@@ -909,7 +929,10 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   ② `_rm2000.css` 의 명령 목록은 4행 스크롤포트(`max-height: 4*행`)라 루트 명령을 세로 한 줄로 세우면 다섯째가 잘린다 — 코너 밖 배치는 루트에만 `max-height:none`.
   ③ `화면 끝까지`(field full)는 배틀러 기하를 건드리지 않으려고 배경·배틀러 무리 높이는 1행 그대로 두고 배경을 `-webkit-box-reflect` 로 아래에 비춘 뒤
   흐림·어둠 판(`.battle-field::before`)으로 덮는다. 명령 화살표 이동은 원래 기하 기반(`moveMenuCursor`)이라 마름모·아이콘 줄에서도 그대로 맞는다.
-  **도트 측면 전투(`motionStyle: "retro"`)에만 걸린다** — 정면 유리 HUD 는 아직 꾸밈을 안 받는다(자료집이 경고를 띄운다).
+  **도트 측면 전투(`motionStyle: "retro"`)에만 걸린다** — 정면 유리 HUD 는 꾸밈을 안 받는다(_battle-look.css 의 선택자 364개가 전부 측면 배치 DOM 기준).
+  (같은 날 정면 스킨 삭제로 아래 갈아타기 규칙도 지웠다 — 꾸밈이 안 보이는 스킨은 이제 pokemon 뿐이고 경고 한 줄만 남는다.) 옛 규칙: 정면 스킨 위에서 꾸밈을 고르면 측면 스킨으로 같이 갈아탄다(2026-10-02, `sideSkinForBattleLook` — rm2000·미설정 → rm2003, 다른 정면 → retro2003,
+  측면·pokemon 은 그대로): 자료집 프리셋 카드·칸 변경, 경고 줄의 「측면 스킨으로 바꾸기」 버튼, 조수 `set_project_settings`(같은 호출에서 `uiStyle` 을
+  직접 주면 그 정면 스킨을 두고 요약에 「주의」만 남긴다). 회귀 `test/battleLookFrontSkin.test.ts`, 화면 `verify-shots/battle-look/front-switch/`.
   편집: 자료집 시스템 탭 「시작 설정 → 전투 화면 꾸미기」(`editor/panels/databaseBattleLook.ts`) — 프리셋 갤러리(그림은 `public/assets/battle-look/<id>.jpg`,
   실제 런타임 프로브 축소판이라 **칸을 바꾼 결과는 그림에 안 나온다** → 「전투 테스트」 버튼이 시작 적 그룹/아무 적 그룹으로 실제 전투를 연다),
   칸별 선택(프리셋 값엔 「· 프리셋」 꼬리), 「사용자 설정」 배지와 되돌리기. 조수: `set_project_settings` 의 `battle.look`(preset 을 주면 바꾼 칸을 버리고
@@ -928,9 +951,12 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   두 CSS 결함을 드러냈다: ① 양피지 창(parch) 선택 줄 글씨를 강조색으로 칠해 밝은 강조색(#ffcc44)이면 「공격」이 안 보였다 → 글씨는 늘 `--look-text`,
   강조색은 선택 줄 바탕(26% 섞음)·마름모에만. ② 영화 띠 아래 장이 z 30 이라 줄 목록 파티의 마지막 줄을 덮었다 → 아래 띠만 `z-index: 2`(창 밑), 위 띠는 그대로.
   계획→실행 이음매에서 실행 턴이 0편집으로 끝나던 중단은 `src/ai/piAgent/planExecution.ts` — `openwiki/editor-ai-panel.md` 참조.
+  **함정 — 분위기 글에 「현대·모던」 금지.** 분위기 짝은 첫 제작 지시(task)에 그대로 실리는데, `requestsModernMap`(src/ai/modernTilesetPolicy.ts)이 task 전체에서
+  「현대」를 찾아 PAW 전용 게이트를 켠다. veil·soft·pop 분위기에 「현대」가 있던 동안 판타지 JRPG 첫 제작 24판 중 22판에서 맵 타일 쓰기가 2~7번씩 거절됐다
+  (「현대 맵 '토끼 마을'에는 … Pixel Art World 칩셋만」). 회귀: `test/battleLookAssistant.test.ts` 의 현대 맵 판정 칸.
 
-- 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
-- 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
+- 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **도트 측면**(`retro2003` 기본 + 창 모양만 다른 측면 스킨 여섯)과 **몬스터 대치**(`pokemon`)다(2026-10-02, 정면 `rm2000` 삭제). 규칙 모델과 표시 스킨은 별개다.
+- **(2026-10-02 삭제됨 — 정면 스킨 없음, 기본은 retro2003. `battle-frontview` 시나리오도 지웠다.)** 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
 - **스킨 id 이력 (2026-09-03):** 기존 정면 스킨 `rm2003`을 `rm2000`으로 개명한 뒤, 같은 날 `rm2003`을 별도 측면 스킨으로 되살렸다. 현재 `resolveSkinId("rm2003") === "rm2003"`이며 옛 별칭 `classic`만 `rm2000`으로 간다. 등록 스킨은 12종이다. 두 스킨은 `_rm2000.css`의 유리 HUD를 `family: "glass"`로 공유하고 측면 배치는 `_rm2003.css`가 담당한다. 사용자 노출 라벨은 「유리 창 · 정면 필드」와 「유리 창 · 측면 필드」이며 타사 제품명은 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`).
 - **스킨 12종 전부 활성 (2026-09-25).** 2026-08-28 에 지원 종료였던 9종(`octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`)은
   각자 CSS 파일을 버리고 **유리 뼈대(family glass)의 변형**으로 되살렸다. 이유: 전투 개선이 활성 3종에만 들어가, 2026-09-25 출하 player 촬영에서
@@ -1215,12 +1241,14 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - Browser regression evidence is split by behavior: `battle-keyboard-input.spec.ts` must drive the real test-play window with keyboard only and prove root cursor/focus movement, submenu confirm/cancel, and target confirm/cancel without pointer clicks. `battle-skins-visual-qa.spec.ts` covers layout: command phase asserts no command/party rectangle intersection and zero visible command/status text intersections; target phase uses `document.elementFromPoint()` at the enemy center and requires the hit to be the enemy or its descendant. `qa-pokemon-dom.spec.ts` uses the current Scarloxy starter species, proves a complete monster-party attack changes HP and returns to actor command, and checks root-command label intersections at 375/768/1280 widths. At widths up to 480px the Pokemon surface hides the keyboard-only hint; pointer-capable commands remain available. These focused Playwright tests must pass in addition to overflow checks.
 
 ## 배틀러 idle 애니메이션 (2026-08-30)
-- 전투 화면에서 움직이는 것이 이펙트·플래시·셰이크뿐이라 아무 일도 없는 동안 배틀러가 정지 그림이었다. 이제 **카탈로그에 등록된 배틀러만** 제자리 idle 애니메이션이 돈다. 정본은 `src/assets/battlerIdleAnimations.ts` 하나다. 등록되지 않은 리소스 id 는 지금까지의 정적 렌더 그대로다 — 몬스터 그래픽이 140여 종이라 옵트인이 아니면 유지 비용이 폭발한다. **필드 적(`.battle-enemy-image`)은 idle 스트립을 쓰지 않는다.** 스트립은 영상에서 키잉한 프레임이라 반투명 픽셀이 섞이고, CSS 가 `object-position: -99999px` 로 정적 `src`(원본은 mid-alpha 0%)를 밀어 그 스트립만 보여 몬스터가 반투명해 보였다. 파티 몬스터·액터 시트 idle 은 그대로다.
+
+2026-10-02 정정: 옛 painted 몬스터 idle 3장은 폐기했다. native 적 140종의 9포즈와 대기 루프는 `pixelEnemySheets.ts`가 소유한다. 아래 영상 idle 경로는 액터용이다. 자세한 현재 자산/호환성 계약은 [공용 몬스터 폐기](native-enemy-retirement.md).
+
+- 전투 화면에서 움직이는 것이 이펙트·플래시·셰이크뿐이라 아무 일도 없는 동안 배틀러가 정지 그림이었다. 이제 **카탈로그에 등록된 배틀러만** 제자리 idle 애니메이션이 돈다. 정본은 `src/assets/battlerIdleAnimations.ts` 하나다. 등록되지 않은 리소스 id 는 지금까지의 정적 렌더 그대로다 — 몬스터 그래픽이 140여 종이라 옵트인이 아니면 유지 비용이 폭발한다. **필드 적(`.battle-enemy-image`)은 idle 스트립을 쓰지 않는다.** 스트립은 영상에서 키잉한 프레임이라 반투명 픽셀이 섞이고, CSS 가 `object-position: -99999px` 로 정적 `src`(원본은 mid-alpha 0%)를 밀어 그 스트립만 보여 몬스터가 반투명해 보였다. 액터 시트와 후면 액터 idle은 그대로다. 일반 이미지 몬스터는 native 초상을 쓴다.
 - **두 티어.** 성질이 다른 두 배틀러 경로를 각자의 좌표계로 돌린다.
 
   | 티어 | 대상 | 셀 | 좌표 | 소스 |
   |---|---|---|---|---|
-  | `image-strip` | 적·파티 몬스터 (`<img>`) | 192px 정사각 | 백분율 | 영상 클립에서 프레임 추출 |
   | `image-strip` | 후면 액터 (`<img>`) | 290×280 (표시 상자 비율) | 백분율 | 영상 클립에서 프레임 추출 |
   | `sheet-cell` | 정면 액터 전투 캐릭터셋 (`.battle-actor-sprite`) — 2026-09-03 부터 **192px 고해상도 짝**(`starter/hires/idle/`) | 192px(원본 48px 를 xBR 4배) | px | 절차 생성 + 결정적 업스케일 |
 
@@ -1451,3 +1479,7 @@ Completed runtime timelines persist into bounded session reports accessible from
   `effectFlags.halfMpCost`를 MP 계산이 실제로 소비하고, `ItemUpgradeRule.target: "equipment"`는 끼운 장비를 그 자리에서 강화한다.
 
 검증: `test/mgL3{BattleGauges,BattleGaugeHud,BattleEmotion,BattleResourceEditor,EquipmentGrants}.test.ts`, 화면은 `masterpiece-battle`(게이지 비트).
+
+## 공용 몬스터 옛 그림 폐기 (2026-10-02)
+
+[현재 공용 140종 · 343장 폐기 · ID 호환성 · 실제 RM2003 스킬 비교](native-enemy-retirement.md). 새 자산을 카탈로그와 초상 생성기 양쪽에 등록하고, 퇴역한 폴백/영상 idle을 되살리지 않는다.

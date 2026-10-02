@@ -37,6 +37,10 @@
 // scenery "layered") 위의 창 모양으로 옮겼다. 도트 연출·배치·겹 배경·상태 오라는 스킨 id 가 아니라 루트
 // `data-battle-motion="retro"` 에 걸리고(26~28 CSS·_retro2003.css), 창 색만 `_retro-themes.css` 가 스킨 id 로 바꾼다.
 // 그래서 측면 스킨을 골라도 도트 연출이 빠지지 않는다. HUD 는 줄(rows) 하나 — 링·카드·얇은 줄 HUD 는 정면 스킨만 쓴다.
+//
+// 2026-10-02: **정면 스킨 다섯(rm2000·dragonquest·mother·mv·vxace)을 지웠다** — 전투는 전부 도트 측면(RM2003 식)이다.
+// 정면 구도는 포켓몬풍 몬스터 수집(pokemon)만 예외로 남는다. 저장된 옛 id 는 resolveSkinId 가 retro2003 으로 푼다.
+// 유리 뼈대 CSS 파일 이름(_rm2000.css)은 남은 측면 스킨 모두가 쓰므로 그대로 둔다.
 import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 
 export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
@@ -59,32 +63,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
       "--battle-backdrop-filter": "saturate(1.08) contrast(1.04)",
     },
   },
-  // 정면 전투(아군 스프라이트 없음, 하단 유리 카드 HUD). 배경 리소스 id 는 저장 데이터가
-  // 참조하는 식별자라 개명하지 않는다(그림 파일도 rm2003-backdrop.png 그대로).
-  // 강조색은 따뜻한 호박색 하나다 — 커서 · 차례 액터 · ATB · 확인 버튼이 전부 이 색을 쓴다.
-  // 남색 유리 표면(런타임 공용 토큰) 위에서 남보라 강조는 "AI 보라 그라데이션" 으로 읽혔고(디자인
-  // 감사), 밤 숲·초록 몬스터 위에서도 대비가 약했다. HP(민트)·MP(하늘)는 의미색이라 별개다.
-  rm2000: {
-    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 정면 필드", layout: "frontview", showAllySprites: false,
-    hudTemplate: "rows", transition: "wipe-blue", family: "glass",
-    themeVars: {
-      "--battle-window-bg": "rgba(14,18,34,.96)",
-      "--battle-window-edge": "rgba(154,170,226,.32)",
-      "--battle-window-inner": "rgba(4,6,16,.66)",
-      "--battle-text": "#eef1fb",
-      "--battle-text-muted": "#9aa4c4",
-      "--battle-accent": "#f2c063",
-      "--battle-accent-soft": "rgba(242,192,99,.22)",
-      "--battle-hp-high": "#3ddc97",
-      "--battle-hp-mid": "#ffc857",
-      "--battle-hp-low": "#ff5f6d",
-      "--battle-shadow": "0 8px 24px rgba(3,5,14,.55)",
-      "--battle-cursor": "#f2c063",
-      "--battle-backdrop-filter": "saturate(1.04) contrast(1.06)",
-    },
-  },
   // 측면 전투(rm2003): 적은 필드 왼쪽 두 줄, 아군은 오른쪽 사선 열에 전투 시트(48px 셀, 고해상도 짝)로
-  // 서서 서로 마주 본다. 창 크롬은 rm2000 과 같은 유리 카드(family: glass) — 구도만 다르고 HUD 는 같다.
+  // 서서 서로 마주 본다. 창 크롬은 유리 카드(family: glass).
   // 배경은 정면과 같은 하늘 배경을 쓴다(측면 구도 전용 배경은 아직 없다).
   rm2003: {
     id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "도트 측면 · 유리 창", layout: "sideview", showAllySprites: true,
@@ -162,25 +142,6 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
       "--battle-backdrop-filter": "sepia(.18) saturate(1.1) brightness(1.03)",
     },
   },
-  dragonquest: {
-    id: "dragonquest", defaultBackdropResourceId: "battle-skin-dragonquest-backdrop", label: "검은 창 · 정면 · 흰 테두리", layout: "frontview", showAllySprites: false,
-    hudTemplate: "rows", transition: "curtain-dq", family: "glass",
-    themeVars: {
-      "--battle-window-bg": "#000810",
-      "--battle-window-edge": "#ffffff",
-      "--battle-window-inner": "#0a0a0a",
-      "--battle-text": "#ffffff",
-      "--battle-text-muted": "#a0a0a0",
-      "--battle-accent": "#ffd700",
-      "--battle-accent-soft": "rgba(255,215,0,.14)",
-      "--battle-hp-high": "#ffffff",
-      "--battle-hp-mid": "#ffd700",
-      "--battle-hp-low": "#ff4444",
-      "--battle-shadow": "0 0 0 2px #fff, 0 8px 20px rgba(0,0,0,.6)",
-      "--battle-cursor": "#ffd700",
-      "--battle-backdrop-filter": "brightness(.45) contrast(1.2) saturate(.6)",
-    },
-  },
   ff: {
     id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "도트 측면 · 코발트 창", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "wipe-blue", family: "glass", motionStyle: "retro", scenery: "layered",
@@ -200,25 +161,6 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
       "--battle-backdrop-filter": "saturate(1.08) brightness(1.05)",
     },
   },
-  mother: {
-    id: "mother", defaultBackdropResourceId: "battle-skin-mother-backdrop", label: "암전 창 · 정면 · 형광 분홍", layout: "frontview", showAllySprites: false,
-    hudTemplate: "rows", transition: "psychedelic", family: "glass",
-    themeVars: {
-      "--battle-window-bg": "#0a0a0a",
-      "--battle-window-edge": "#ffffff",
-      "--battle-window-inner": "#1a1a1a",
-      "--battle-text": "#ffffff",
-      "--battle-text-muted": "#ff99e0",
-      "--battle-accent": "#ff3bd8",
-      "--battle-accent-soft": "rgba(255,59,216,.18)",
-      "--battle-hp-high": "#ff3bd8",
-      "--battle-hp-mid": "#7b68ee",
-      "--battle-hp-low": "#00ff88",
-      "--battle-shadow": "0 0 20px rgba(255,59,216,.25), 0 8px 20px rgba(0,0,0,.5)",
-      "--battle-cursor": "#ff3bd8",
-      "--battle-backdrop-filter": "hue-rotate(0deg) saturate(1.8) contrast(1.3)",
-    },
-  },
   goldensun: {
     id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "도트 측면 · 금갈색 창", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "sweep-cyan", family: "glass", motionStyle: "retro", scenery: "layered",
@@ -236,44 +178,6 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
       "--battle-shadow": "0 0 28px rgba(255,154,26,.22), 0 8px 20px rgba(0,0,0,.45)",
       "--battle-cursor": "#ff9a1a",
       "--battle-backdrop-filter": "sepia(.22) saturate(1.25) brightness(1.08) contrast(1.06)",
-    },
-  },
-  mv: {
-    id: "mv", defaultBackdropResourceId: "battle-skin-mv-backdrop", label: "밝은 창 · 정면 필드", layout: "frontview", showAllySprites: false,
-    hudTemplate: "rows", transition: "fade", family: "glass",
-    themeVars: {
-      "--battle-window-bg": "#f0f0f8",
-      "--battle-window-edge": "#2a3a6a",
-      "--battle-window-inner": "#ffffff",
-      "--battle-text": "#1a1a3a",
-      "--battle-text-muted": "#6a7ab0",
-      "--battle-accent": "#3b82f6",
-      "--battle-accent-soft": "rgba(59,130,246,.12)",
-      "--battle-hp-high": "#22c55e",
-      "--battle-hp-mid": "#f59e0b",
-      "--battle-hp-low": "#ef4444",
-      "--battle-shadow": "0 4px 16px rgba(42,58,106,.15)",
-      "--battle-cursor": "#3b82f6",
-      "--battle-backdrop-filter": "saturate(1.02) brightness(1.02)",
-    },
-  },
-  vxace: {
-    id: "vxace", defaultBackdropResourceId: "battle-skin-vxace-backdrop", label: "심야 창 · 정면 · 얼굴 카드", layout: "frontview", showAllySprites: false,
-    hudTemplate: "boxes", transition: "fade", family: "glass",
-    themeVars: {
-      "--battle-window-bg": "#0a0f24",
-      "--battle-window-edge": "#3a4a6a",
-      "--battle-window-inner": "#141c38",
-      "--battle-text": "#e8ecff",
-      "--battle-text-muted": "#8a9ac0",
-      "--battle-accent": "#60a5fa",
-      "--battle-accent-soft": "rgba(96,165,250,.14)",
-      "--battle-hp-high": "#4ade80",
-      "--battle-hp-mid": "#facc15",
-      "--battle-hp-low": "#f87171",
-      "--battle-shadow": "0 6px 20px rgba(0,0,0,.4)",
-      "--battle-cursor": "#60a5fa",
-      "--battle-backdrop-filter": "saturate(1.04) brightness(1.0)",
     },
   },
   // 도트 측면 전투(2026-09-28): 청색 그라데이션 픽셀 창, 겹 배경(scenery), 전진 걸음·적 점멸 연출(motionStyle).
@@ -310,15 +214,10 @@ export function listBattleSkinIds(): BattleSkinId[] {
 }
 
 /**
- * 새 저작 UI 가 노출하는 스킨 — 12종 전부(2026-09-25).
- * 9종은 2026-08-28 에 지원 종료였다가, 각자 CSS 를 버리고 유리 뼈대(family glass: 정면 rm2000 ·
- * 측면 rm2003 의 배치·HUD·연출) 위의 **색 + HUD 변형**으로 흡수해 되살렸다. 순서는 드롭다운 순서다 —
- * 기본 셋을 앞에 두고, 그 뒤는 정면 → 측면.
+ * 새 저작 UI 가 노출하는 스킨 — 도트 측면 일곱 + 포켓몬(2026-10-02). 순서는 드롭다운 순서다.
  */
 export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = [
-  "retro2003", "rm2000", "rm2003", "pokemon",
-  "vxace", "dragonquest", "mother", "mv",
-  "ff", "goldensun", "chrono", "octopath", "bravely",
+  "retro2003", "rm2003", "ff", "goldensun", "chrono", "octopath", "bravely", "pokemon",
 ];
 
 /** 드롭다운 순서의 활성 스킨. deprecated 표식이 붙은 스킨은 빠진다(지금은 없다). */
@@ -336,16 +235,27 @@ export function battleSkinFamily(id: BattleSkinId): string {
 }
 
 /** 미설정/미지의 값이 떨어지는 기본 스킨. */
-export const DEFAULT_BATTLE_SKIN_ID: BattleSkinId = "rm2000";
+export const DEFAULT_BATTLE_SKIN_ID: BattleSkinId = "retro2003";
 
 /** 저장 데이터에 남아 있을 수 있는 옛 정면 전투 스킨 id → 현재 id.
  *  `rm2003` 은 2026-09-03 오전에 rm2000 으로 풀렸지만 같은 날 측면 스킨으로 되살아나 여기서 빠졌다. */
 const LEGACY_SKIN_ALIASES: Readonly<Record<string, BattleSkinId>> = {
-  classic: "rm2000", // 2026-08 이전 별칭
+  // 2026-10-02 정면 스킨 다섯을 지웠다 — 저장된 값은 기본 도트 측면 전투로 푼다.
+  classic: "retro2003",
+  rm2000: "retro2003",
+  dragonquest: "retro2003",
+  mother: "retro2003",
+  mv: "retro2003",
+  vxace: "retro2003",
 };
 
-/** legacy(`classic`/`pokemon`/undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다.
- *  미설정(undefined)은 기본 스킨(rm2000)으로, legacy `classic` 은 rm2000 으로 푼다. */
+/** 지운 정면 스킨 id 인가(저장 데이터 정리용). */
+export function isRetiredBattleSkinId(value: unknown): boolean {
+  return typeof value === "string" && value !== "retro2003" && LEGACY_SKIN_ALIASES[value] !== undefined;
+}
+
+/** legacy(`classic`·지운 정면 스킨·undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다.
+ *  미설정(undefined)·지운 스킨은 기본 스킨(retro2003)으로 푼다. */
 export function resolveSkinId(legacy: string | undefined): BattleSkinId {
   if (legacy === "pokemon") return "pokemon";
   if (!legacy) return DEFAULT_BATTLE_SKIN_ID;

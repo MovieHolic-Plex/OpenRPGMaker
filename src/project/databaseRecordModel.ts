@@ -12,7 +12,7 @@ import {
   clampLevel,
   normalizeActorRecord,
 } from "@/project/actorModel";
-import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
+import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId } from "@/battle/skins/registry";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
 import { normalizeBattleLook } from "@/project/battleLook";
@@ -248,12 +248,12 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { escapeBonusPercent: clampInteger(system.escapeBonusPercent, 0, 100) }
       : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
-    // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
+    // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = retro2003)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
-    // (기본이 vxace 였던 시절 실제로 그랬다). 옛 id(rm2003·classic)도 여기서는 손대지 않고
-    // 렌더 시점의 resolveSkinId 가 rm2000 으로 푼다.
-    ...(system.battleUiStyle && system.battleUiStyle !== DEFAULT_BATTLE_SKIN_ID
-      ? { battleUiStyle: system.battleUiStyle }
+    // (기본이 vxace 였던 시절 실제로 그랬다). 지운 정면 스킨(rm2000·classic 등)과 모르는 값은
+    // resolveSkinId 가 기본으로 풀어 여기서 지워진다(2026-10-02).
+    ...(system.battleUiStyle && resolveSkinId(system.battleUiStyle) !== DEFAULT_BATTLE_SKIN_ID
+      ? { battleUiStyle: resolveSkinId(system.battleUiStyle) }
       : {}),
     // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
     ...(isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL

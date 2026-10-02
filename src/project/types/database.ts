@@ -150,15 +150,14 @@ export type BattleFlow = "gauge" | "strict";
 /** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
 export type BattleAtbMode = "active" | "wait";
 
-/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 11-스킨 union + legacy 별칭 2종.
- *  "rm2003" 은 정면 전투 스킨의 옛 id(2026-09-03 개명 전) 이고 "classic" 은 그보다 앞선 별칭이다.
- *  둘 다 resolveSkinId 가 rm2000 으로 매핑한다 — 저장된 프로젝트가 깨지지 않게 타입에는 남긴다. */
+/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 BattleSkinId(도트 측면 일곱 + pokemon).
+ *  2026-10-02 정면 스킨(rm2000·dragonquest·mother·mv·vxace·classic)을 지웠다. 저장된 옛 값은 로드 때
+ *  normalizeSystem 이 지우고(→ 기본 retro2003), 렌더 때도 resolveSkinId 가 retro2003 으로 푼다. */
 export type BattleUiStyle =
-  | "pokemon" | "rm2000" | "octopath" | "chrono"
-  | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace"
-  | "rm2003" // 측면 전투(2026-09-03 되살림 — 그 전 몇 시간은 rm2000 의 옛 id 였다)
-  | "retro2003" // 도트 측면 전투(2026-09-28): 청색 픽셀 창 · 겹 배경 · 전진 걸음 연출
-  | "classic"; // legacy alias, remapped by resolveSkinId → rm2000
+  | "pokemon" | "octopath" | "chrono"
+  | "bravely" | "ff" | "goldensun"
+  | "rm2003" // 측면 전투 · 유리 창
+  | "retro2003"; // 도트 측면 전투(기본): 청색 픽셀 창 · 겹 배경 · 전진 걸음 연출
 
 /** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로
  *  id 를 함부로 바꾸지 않는다. 미설정·미지값은 resolveMenuSkinId 가 workbench 로 푼다. */

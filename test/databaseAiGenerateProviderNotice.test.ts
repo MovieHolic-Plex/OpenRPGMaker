@@ -12,7 +12,7 @@ describe("database image provider notice", () => {
     { providerId: "openai-codex", imageProviderId: undefined, expected: ["google-antigravity", "openai-codex"] },
   ])("renders selected image provider before chat provider: $providerId / $imageProviderId", ({ providerId, imageProviderId, expected }) => {
     const overlay = openDatabaseAiGenerateDialog({
-      kind: "enemy", rerender: () => undefined,
+      kind: "item", rerender: () => undefined,
       deps: { loadConfig: () => ({ ...defaultAiConfig(), providerId, imageProviderId }) },
     });
     const notice = overlay.querySelector('[data-testid="db-ai-generate-provider-notice"]');

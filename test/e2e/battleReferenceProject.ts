@@ -77,7 +77,7 @@ export async function seedLayoutResultBattleProject(
 }
 
 export function prepareReferenceBattleProject(project: BattleProject): void {
-  project.system.battleUiStyle = "classic";
+  project.system.battleUiStyle = "retro2003";
   project.meta.terms = {
     ...project.meta.terms,
     attack: "공격",

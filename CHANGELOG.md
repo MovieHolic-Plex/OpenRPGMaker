@@ -5,6 +5,59 @@
 
 <!-- releases -->
 
+## 0.72.1 — 2026-10-02
+
+### 수정
+
+- **ai** — 전투 화면 분위기 글의 「현대」가 판타지 첫 제작을 PAW 전용 현대 맵으로 잠그던 것을 고친다 (`d592a55`)
+
+## 0.72.0 — 2026-10-02
+
+### 기능
+
+- replace arcane legacy enemy art with editable pixel sheets (`c596d06`)
+- replace organic legacy enemies with articulated native pixel sheets (`805c566`)
+- add original humanoid and boss enemy pixel sheets (`20f09e6`)
+
+### 수정
+
+- retire deprecated monster art with 100 native replacements (#1872) (`f9edf69`)
+- retire legacy monster paintings and preserve native enemy catalog (`4428a19`)
+
+## 0.71.0 — 2026-10-02
+
+### 기능
+
+- **harness** — redo — 안 고른 판을 지우고 새 지시서로 다시 뽑기, 화면 편의 (`05b4ccb`)
+- **harness** — 미믹 새 지시서 시험 판 h132 — 열린 보물상자 h26-D 에서 출발 (`2b5903d`)
+- **harness** — 후보마다 그린 쪽(Codex·Sonnet) 표시와 거르기 (`330d520`)
+- **harness** — 소품 하네스 엔진을 Codex CLI(gpt-6.1-sol medium)로 — 그리기·검수 모두 (`8f4d7d4`)
+- **interior** — 새 기물 2차 102종 명세 + 둘째 상태(다른 기물의 고른 그림에서 출발) (`23bf078`)
+- **interior** — 가구 쓰임·방향·상태 짝 + 소품 하네스 새 기물 모드 + JRPG 장치 11종 명세 (`b5bc998`)
+- **content** — 소품 하네스 — 검수 탈락 시 다시 그린다 (`4fe8037`)
+- **content** — 실내 소품 하네스 — Sonnet 다섯 명이 찍고 사용자가 고른다 (`c75c696`)
+
+### 수정
+
+- **harness** — 작업지시서가 정면도를 허락하던 것 — 시점 절 숫자화, 예시 그림, 기준 그림 거르기 (`fe9c9f3`)
+- **harness** — 검수가 윗판 없는 정면도를 통과시키던 것 — 꼭대기 면 규칙 (`06bb217`)
+- **harness** — 새 기물 썸네일 자리 표시 (`f72ba41`)
+
+### 성능
+
+- **harness** — 작업자 세션을 가볍게 — 저장소 밖 작업 폴더·도구 넷·플러그인·MCP 없음 (`e1fed52`)
+- **harness** — 소품 하네스 동시 작업자 5 → 16 (`25f81e4`)
+
+### 문서
+
+- **interior** — 쓰임·상태 짝·새 기물 하네스 모드·칸 번호 밀림 함정 (`e611ad3`)
+
+### 잡무
+
+- **harness** — 새 지시서 다시 뽑기 판 h133~h208 후보와 사용자가 고른 것 (`53c342f`)
+- **harness** — Codex 판 h62~h128 후보 그림(335장, 검수 통과 332) (`64e4ba9`)
+- **harness** — Codex 동시 작업자 16 명 — 12 명은 약 3.3시간 (`8cce5cf`)
+
 ## 0.70.1 — 2026-10-02
 
 ### 수정

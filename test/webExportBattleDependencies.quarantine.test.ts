@@ -13,7 +13,7 @@ import { prepareWebExport } from "@/project/webExport";
 const backIdle = BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.resourceId.endsWith("-back"));
 const backPaths = backIdle.flatMap((entry) => [entry.path.replace("/idle/", "/"), entry.path]);
 
-function renderedPartyPaths(skin: "rm2000" | "pokemon") {
+function renderedPartyPaths(skin: "pokemon") {
   const project = createBlankProject();
   project.system.battleUiStyle = skin;
   store.replace(project);
@@ -34,7 +34,8 @@ function renderedPartyPaths(skin: "rm2000" | "pokemon") {
 }
 
 describe("export runtime-selected party battle dependencies", () => {
-  it.each(["rm2000", "pokemon"] as const)("ships the static and idle URLs actually rendered by %s", (skin) => {
+  // 뒷모습 파티는 포켓몬 스킨뿐이다(정면 유리 스킨 rm2000 은 2026-10-02 에 지웠다).
+  it.each(["pokemon"] as const)("ships the static and idle URLs actually rendered by %s", (skin) => {
     const { project, paths } = renderedPartyPaths(skin);
     expect(paths).toEqual(expect.arrayContaining(backPaths));
     const exported = new Set(collectWebExportAssets(project).map((asset) => asset.zipPath));
@@ -68,7 +69,7 @@ describe("export runtime-selected party battle dependencies", () => {
   });
 
   it("embeds actual party render dependencies in the standalone asset table", async () => {
-    const { project, paths } = renderedPartyPaths("rm2000");
+    const { project, paths } = renderedPartyPaths("pokemon");
     const result = await createStandaloneHtmlExport(project, { fetchBytes: async (path) => new TextEncoder().encode(path) });
     const html = document.createElement("div");
     html.innerHTML = await result.blob.text();
