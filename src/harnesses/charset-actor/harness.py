@@ -450,35 +450,56 @@ def start_face(w, engine='sonnet'):
     return p
 
 
-def gen_face_one(w):
-    """생성 얼굴: w/face_gen/{ref.png, raw.png, face.png, face_x4.png, compare.png, meta.json}"""
+POSE_MIN = 0.65   # 생성 얼굴이 뼈대 얼굴 골격과 맞는 정도(gen_face.pose_score). v1 18명은 -0.01~0.47, v2 시험 0.71·0.79
+
+
+def gen_face_one(w, tries=3):
+    """생성 얼굴(v2 고정): 손 도트 얼굴(face/out.face.txt)을 참고로 「손질만」 → 각도 점수 POSE_MIN 넘을 때까지 최대 tries 번, 가장 잘 맞는 것.
+    결과 w/face_gen/{ref.png, raw-<k>.png, face.png, face_x4.png, compare.png, meta.json}"""
     import gen_face as G
     meta = json.loads((w / 'meta.json').read_text())
     b = briefs()[meta['brief']]
+    if not (w / 'face' / 'out.face.txt').exists():
+        raise RuntimeError('손 도트 얼굴이 먼저 있어야 한다(faces)')
     gd = w / 'face_gen'
-    gd.mkdir(exist_ok=True)
+    if gd.exists():
+        shutil.rmtree(gd)
+    gd.mkdir()
     bp, brows = base_face(b['base'])
     base_im = C.face_rgba(bp, brows)
-    ref = G.reference(base_im, w / 'out.chr.txt')
+    hp, _, hrows = C.parse_face((w / 'face' / 'out.face.txt').read_text(encoding='utf-8'))
+    hand_im = C.face_rgba(hp, hrows)
+    mask = G.kept_mask(brows, hrows, bp, hp)
+    ref = G.reference_lock(hand_im)
     ref.save(gd / 'ref.png')
     t0 = time.time()
-    raw, engine, dur = G.generate(ref, b['brief'])
-    raw.save(gd / 'raw.png')
-    face = G.to_face(raw)
+    best, engine, scores = None, None, []
+    for k in range(tries):
+        raw, engine, _ = G.generate_lock(ref, b['brief'])
+        raw.save(gd / f'raw-{k}.png')
+        face = G.to_face(raw)
+        sc = round(G.pose_score(face, base_im, mask), 3)
+        scores.append(sc)
+        if best is None or sc > best[0]:
+            best = (sc, face, k)
+        if sc >= POSE_MIN:
+            break
+    sc, face, k = best
     face.save(gd / 'face.png')
     C.up(face, 4).save(gd / 'face_x4.png')
     cp, _, cf = C.load(w / 'out.chr.txt')
-    parts = [C.up(base_im, 4), C.up(face.convert('RGBA'), 4), C.up(C.frame_rgba(cp, cf[('down', 1)]), 6)]
-    W = sum(p.width for p in parts) + 32
+    parts = [C.up(base_im, 4), C.up(hand_im, 4), C.up(face.convert('RGBA'), 4), C.up(C.frame_rgba(cp, cf[('down', 1)]), 6)]
+    W = sum(p.width for p in parts) + 16 * (len(parts) - 1)
     cmp_ = Image.new('RGBA', (W, max(p.height for p in parts)), C.KEY + (255,))
     x = 0
     for p in parts:
         cmp_.alpha_composite(p, (x, 0))
         x += p.width + 16
     cmp_.convert('RGB').save(gd / 'compare.png')
-    (gd / 'meta.json').write_text(json.dumps(dict(engine=engine, duration=dur, wall=round(time.time() - t0), at=now()),
+    (gd / 'meta.json').write_text(json.dumps(dict(version='v2-lock', engine=engine, pose=sc, pose_min=POSE_MIN, scores=scores,
+                                                  chosen=k, ok=sc >= POSE_MIN, wall=round(time.time() - t0), at=now()),
                                              ensure_ascii=False), encoding='utf-8')
-    return engine
+    return f'{engine} 각도 {sc} 시도 {scores}'
 
 
 def cmd_gen_faces(a):
@@ -549,8 +570,15 @@ def _items():
                             gender=b.get('gender', ''), brief_text=b.get('brief', ''), base=m['base'], label=m['label'],
                             status='running' if _alive(m['pid']) else ('done' if has else 'failed'),  # 작업자도 views 를 만들므로 살아 있으면 아직 그리는 중
                             gate=gate, review=read_verdict(w) if has else None,
-                            face=_face_state(w), face_gen=(w / 'face_gen' / 'face_x4.png').exists()))
+                            face=_face_state(w), face_gen=_gen_meta(w)))
     return out
+
+
+def _gen_meta(w):
+    try:
+        return json.loads((w / 'face_gen' / 'meta.json').read_text()) if (w / 'face_gen' / 'face_x4.png').exists() else None
+    except (OSError, ValueError):
+        return None
 
 
 def _face_state(w):

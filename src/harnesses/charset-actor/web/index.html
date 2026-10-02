@@ -138,7 +138,7 @@ let lastMain = '';
 function renderMain() {
   const it = S.items.find((i) => i.id === sel);
   // 주기 새로고침이 GIF 를 처음부터 다시 돌리거나 고르던 이유를 지우지 않게, 바뀐 게 없으면 그대로 둔다
-  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score, it && it.face, it && it.face_gen]);
+  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score, it && it.face, it && it.face_gen && it.face_gen.at]);
   if (key === lastMain) return;
   lastMain = key;
   if (!it) { $('main').innerHTML = '<p class="cur">고를 것이 없습니다.</p>'; $('decide').hidden = true; return; }
@@ -168,7 +168,7 @@ function renderMain() {
           <figure><img src="${fu(it, 'views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
           <figure><img src="${fu(it, 'views/turn.gif')}"><figcaption>돌기</figcaption></figure>
           <figure><img src="${fu(it, 'views/sheet.png')}" class="x2"><figcaption>시트 (2배)</figcaption></figure>
-          ${it.face_gen ? `<figure><img src="${fu(it, 'face_gen/face_x4.png')}" class="fx"><figcaption>얼굴 (생성)</figcaption></figure>` : '<figure><div class="fx wait">생성 얼굴 만드는 중…</div></figure>'}
+          ${it.face_gen ? `<figure><img src="${fu(it, 'face_gen/face_x4.png') + '&v=' + encodeURIComponent(it.face_gen.at || '')}" class="fx"><figcaption>얼굴 (생성 ${esc(it.face_gen.version || 'v1')}${it.face_gen.pose != null ? ` · 각도 일치 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.pose}</b>` : ''})</figcaption></figure>` : '<figure><div class="fx wait">생성 얼굴 만드는 중…</div></figure>'}
           ${it.face === 'done' ? `<figure><img src="${fu(it, 'face/views/face_x4.png')}" class="fs"><figcaption>얼굴 (손 도트)</figcaption></figure>` : ''}
         </div></div>
     </div>
