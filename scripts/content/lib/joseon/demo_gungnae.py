@@ -180,14 +180,14 @@ def wall_ring():
     for yb, cl, cr in ((YN, 'gungnae_wall_corner_nw', 'gungnae_wall_corner_ne'), (YS, 'gungnae_wall_corner_sw', 'gungnae_wall_corner_se')):
         Pb(cl, XW, yb, 'foot'); Pb(cr, XE, yb, 'foot')
         for x in range(XW + 3, XE):                # 성벽은 대문 밑까지 이어 깐다(문 기단의 기울어진 옆면 뒤로 돌이 비친다)
-            Pb(H3[(x * 5 + (yb % 7)) % 3], x, yb)
+            Pb(H3[hsh(x, yb, 7) % 3], x, yb)
         Pb('gungnae_gate_great_12', GX, yb, None)
         for xx in list(range(GX, GX + 4)) + list(range(GX + 8, GX + 12)):
             BODY.add((xx, yb))
     for y in range(YN + 1, YS):
         if GATE_Y0 <= y <= GATE_Y1:                     # 측면 문루 몸체 + 통로
             continue
-        P(V3[y % 3], XW, y, 'foot'); P(VE3[y % 3], XE, y, 'foot')
+        P(V3[hsh(y, 3, 7) % 3], XW, y, 'foot'); P(VE3[hsh(y, 5, 7) % 3], XE, y, 'foot')
     for gx in (XW - 1, XE - 1):
         P('gungnae_gate_side_5', gx, GATE_Y0, None)
         for yy in range(GATE_Y0, GAP_Y0):
@@ -271,6 +271,12 @@ for x in list(range(31, 35)) + list(range(52, 57)):
     WATER.discard((x, MY0 + 4))
 for x in list(range(42, 45)) + list(range(33, 36)) + list(range(52, 58)):
     WATER.discard((x, MY1 - 4))
+# 남안 건물 뒤뜰: 건물이 서는 구간(x 27..36 · 56..72)의 맨 아래 물 행을 풀로 물려 건물과 물 사이에 뒤뜰 한 줄을 둔다
+for x in list(range(27, 38)) + list(range(55, 73)):
+    WATER.discard((x, MY1))
+for y in range(MY1 + 1, MY1 + 4):
+    for x in range(27, 74):
+        WATER.discard((x, y))
 # 서쪽 연못(좌성황 섬): 해자에서 떨어진 못
 w_ell(25, 40, 5.0, 4.2)
 # 동쪽 큰 호수(감옥 섬 · 도사의 길 섬): 해자 동변과 이어져 한 덩이 물이 된다
@@ -466,18 +472,18 @@ def jumak(x0, y0, ramp_front=('gn_jm_row_room_4', 'gn_jm_daemun_6'), wall='gn_mu
 
 
 # --- 서쪽(x 12..27): 상점은 크기를 섞고 사이를 벌려 듬성듬성 — 큰길(행 46..49)은 비워 둔다
-building('gn_shop_armory', 12, 17, 4)                                               # 9×7
+building('gn_shop_armory', 12, 17, 6)                                               # 9×7
 building('gn_shop_cloth', 19, 26, 4)                                                # 8×7, 위 상점과 두 줄 떨어뜨림
-building('gn_shop_smithy', 12, 35, 3)                                               # 8×7
+building('gn_shop_smithy', 12, 35, 6)                                               # 8×7
 building('giwa_house_3', 23, 18, 2)                                                 # 상점 옆 기와 민가(두 칸 띄움)
 jumak(12, 54)                                                                       # 서남 ㅁ자 주막(담 포함 x 12..27, y 54..71)
-building('gn_thatch_b', 13, 74, 2)                                                  # 서남 초가(문 앞은 장터)
+building('gn_thatch_b', 13, 74, 3)                                                  # 서남 초가(문 앞은 장터)
 paint('yard', 20, 72, 27, 80)                                                       # 서남 주막 앞 큰 맨 흙 마당(장터)
 for nm, x, y in (('market_stall_cloth', 21, 76), ('market_stall_pots', 25, 76), ('haystack', 22, 79), ('jars', 26, 79), ('well', 24, 73)):
     P(nm, x, y, 'foot')
 P('seonangdang', 24, 39, 'foot')                                                    # 좌성황 섬 사당
 # --- 동쪽(x 68..83)
-building('giwa_house_3', 69, 37, 2); building('giwa_sadang', 75, 38, 2); building('thatch_hut_2', 80, 38, 2)   # 기와 민가 · 우성황 · 초가(한 칸씩 띄움)
+building('giwa_house_3', 69, 37, 2); building('giwa_sadang', 75, 38, 1); building('thatch_hut_2', 80, 38, 1)   # 기와 민가 · 우성황 · 초가(한 칸씩 띄움)
 P('gwanah_5', 72, 55, 'body')                                                       # 감옥(섬 위)
 DOORS.append({'x': 75, 'y': 61, 'piece': 'gwanah_5'})
 for xx in range(73, 78):
@@ -486,10 +492,10 @@ building('tower_yesik_7', 72, 66, 5, solid='foot', apron=False)                 
 paint('field', 68, 66, 71, 70); P('scarecrow', 70, 69)                              # 예식장 서쪽 텃밭
 paint('diamond', 68, 80, 83, 82)                                                    # 예식장 앞 마름모 무늬 마당
 # --- 남쪽 띠(해자 아래, 행 72..81)
-building('gn_l_giwa_6', 28, 72, 4)                                                  # 남서 ㄱ자 기와
+building('gn_l_giwa_6', 28, 73, 2)                                                  # 남서 ㄱ자 기와
 building('giwa_house_3', 37, 74, 2)                                                 # 남문 서쪽 민가
-building('thatch_hut_2', 67, 72, 2)                                                 # 예식장 서쪽 초가
-building('gn_g2_inn_6', 57, 72, 3)                                                  # 남문 동쪽 객주
+building('thatch_hut_2', 67, 73, 1)                                                 # 예식장 서쪽 초가
+building('gn_g2_inn_6', 57, 72, 5)                                                  # 남문 동쪽 객주
 
 
 def fenced(name, bx, by, tag, gate_piece='gn_sarip_mud', gate_dx=None, door=None, extra=()):
@@ -523,7 +529,7 @@ def fenced(name, bx, by, tag, gate_piece='gn_sarip_mud', gate_dx=None, door=None
 # --- 담으로 두른 집: 술사의 길 탑 구획
 fenced('tower_sulsa_5', 71, 18, 'gn_stone', 'gn_sarip_stone', extra=())             # x 70..80, y 17..33
 # --- 밭·논(북쪽 띠) + 허수아비
-for (x0, y0, x1, y1, kd) in ((40, 17, 43, 20, 'field'), (52, 17, 57, 20, 'paddy'), (62, 17, 66, 20, 'paddy')):
+for (x0, y0, x1, y1, kd) in ((40, 17, 43, 20, 'field'), (52, 17, 55, 20, 'paddy'), (62, 17, 66, 20, 'paddy')):
     paint(kd, x0, y0, x1, y1)
 P('scarecrow', 44, 18); P('scarecrow', 67, 18)
 # --- 전사의 길(정원형): 북쪽 띠 서쪽 칸 — 돌길 + 대나무숲 + 석등
@@ -545,6 +551,13 @@ def prop(name, x, yb, kinds=(None,), force=False):
     for xx in range(x, x + w):
         if not inb(xx, yb) or KG[yb][xx] not in kinds or (xx, yb) in BODY or (xx, yb) in doorc:
             return False
+    for (bn, bx, by, bw, bh) in placed:                      # 소품이 건물(지붕 포함) 칸 위·뒤에 서지 않는다
+        if bn.startswith(_SHADOWED) and bh >= 3 and bx < x + w and x < bx + bw and by - 1 <= yb < by + bh:
+            return False
+    if name in ('reeds', 'rocks'):                           # 갈대·바위: 모든 칸이 물에 닿아야 한다
+        for xx in range(x, x + w):
+            if not any(inb(xx + dx, yb + dy) and KG[yb + dy][xx + dx] == 'water' for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                return False
     P(name, x, yb + 1 - h, 'foot')
     return True
 
@@ -584,7 +597,7 @@ _last = []
 for (x, y) in _shore:
     if any(abs(x - a) + abs(y - b) < 6 for a, b in _last):
         continue
-    if prop('reeds' if (x + y) % 2 == 0 else 'rocks', x, y):
+    if prop('reeds' if _rng0.random() < 0.55 else 'rocks', x, y):
         _last.append((x, y))
     if len(_last) >= 26:
         break
@@ -715,6 +728,7 @@ NONTREE_RECTS = []            # 건물류(나무 수관이 문·앞마당을 가
 for (nm, x, y, w, h) in placed:
     if nm.split('_')[0] not in ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'rocks', 'reeds', 'jars', 'well', 'lantern', 'scarecrow', 'stepping', 'flower', 'sotdae'):
         NONTREE_RECTS.append((x, y, w, h))
+BLDG_RECTS = [(x, y, w, h) for (nm, x, y, w, h) in placed if nm.startswith(_SHADOWED) and h >= 3 and w >= 2]
 BIG = [('zelkova_' + c, 4, 5) for c in 'abcde'] + [('pine_' + c, 4, 5) for c in 'abcd']
 MID = [('persimmon_' + c, 3, 4) for c in 'abc'] + [('small_z_a', 2, 3), ('small_z_b', 2, 3), ('small_p', 2, 3)]
 BUSH = [('bush_a', 2, 2), ('bush_b', 2, 2), ('bush_c', 2, 2), ('bush_l_a', 3, 2), ('bush_l_b', 3, 2), ('bush_s_a', 2, 1), ('bush_s_b', 2, 1)]
@@ -730,6 +744,18 @@ def near_kind(x, y, kinds, d=1):
 
 
 _DIRT = ('road', 'yard', 'slab', 'paving', 'diamond', 'bridge', 'wall', 'water', 'paddy', 'field')
+
+
+def crown_overlap(x, yb, w, h):
+    """새 나무 수관 사각형이 이미 선 나무 수관과 겹치는 칸 수."""
+    y = yb + 1 - h
+    n = 0
+    for (_n, tx, tyb, tw, th) in TREEPOS:
+        ox = min(x + w, tx + tw) - max(x, tx)
+        oy = min(yb + 1, tyb + 1) - max(y, tyb + 1 - th)
+        if ox > 0 and oy > 0:
+            n += ox * oy
+    return n
 
 
 def tree_ok(name, w, h, x, yb, dist):
@@ -749,17 +775,23 @@ def tree_ok(name, w, h, x, yb, dist):
     for yy in (yb, ):                                       # 발 옆 한 칸이 길이면 뿌리가 길에 닿는다 → 큰 나무만 금지
         if h >= 4 and any(inb(xx, yy) and KG[yy][xx] in ('road', 'yard', 'slab', 'diamond') for xx in (x - 1, x + w)):
             return False
-    for (rx, ry, rw, rh) in NONTREE_RECTS:                 # 수관이 건물을 가리는 자리 금지(건물 뒤쪽 발 행은 허용)
+    for (rx, ry, rw, rh) in NONTREE_RECTS:                 # 수관이 건물 위 2행·좌우 1칸까지 가리는 자리 금지(지붕 뒤 나무·지붕에 박힌 줄기)
         if x < rx + rw and rx < x + w and y < ry + rh and ry < yb + 1:
             if yb >= ry + 2:
                 return False
+    for (rx, ry, rw, rh) in BLDG_RECTS:                    # 건물류: 지붕 뒤 줄기·지붕에 박힌 나무 금지(위 1행·좌우 1칸 여유)
+        m_ = 1 if h >= 3 else 0
+        if x < rx + rw + m_ and rx - m_ < x + w and ry - 1 <= yb < ry + rh:
+            return False
+    if crown_overlap(x, yb, w, h) > (8 if h >= 4 else 4):
+        return False
     for xx in range(x - dist, x + w + dist):
         for yy in range(yb - dist, yb + dist + 1):
             if (xx, yy) in OCC:
                 return False
-    if not name.startswith('bush'):
-        if any(n == name and abs(x - tx) <= 6 and abs(yb - ty) <= 6 for (n, tx, ty, _, _) in TREEPOS):
-            return False
+    rr = 3 if name.startswith('bush') else 6
+    if any(n == name and abs(x - tx) <= rr and abs(yb - ty) <= rr for (n, tx, ty, _, _) in TREEPOS):
+        return False
     return True
 
 
@@ -808,9 +840,11 @@ def band_ok(name, w, h, x, yb, region):
         for yy in (yb - 1, yb):
             if (xx, yy) in OCC:
                 return False
-    if not name.startswith('bush'):
-        if any(n == name and abs(x - tx) <= 6 and abs(yb - ty) <= 6 for (n, tx, ty, _, _) in TREEPOS):
-            return False
+    if crown_overlap(x, yb, w, h) > (5 if h >= 4 else 2):   # 수관끼리 겹침은 2칸 이하(줄기가 다른 수관 밑으로 지나가는 뭉침 방지)
+        return False
+    rr = 3 if name.startswith('bush') else 6
+    if any(n == name and abs(x - tx) <= rr and abs(yb - ty) <= rr for (n, tx, ty, _, _) in TREEPOS):
+        return False
     return True
 
 
@@ -818,7 +852,7 @@ def forest_band2():
     """성벽 밖 숲띠: 격자·한 줄 대신, 후보 칸을 무작위로 돌며 큰 나무·중간 나무·덤불을 섞어 2~3겹으로 심는다(간격·크기·종류가 들쭉날쭉)."""
     rg = _rand.Random(41)
     # (x 범위, 발 행 범위)
-    regions = [((2, 93), (7, 9)), ((2, 93), (4, 8)), ((2, 93), (89, 93)), ((2, 93), (90, 93)), ((2, 6), (12, 86)), ((89, 93), (12, 86)), ((2, 6), (12, 86)), ((89, 93), (12, 86))]
+    regions = [((2, 93), (6, 8)), ((2, 93), (4, 7)), ((2, 93), (89, 93)), ((2, 93), (90, 93)), ((2, 6), (12, 86)), ((89, 93), (12, 86))]
     for (xa, xb), (ya, yb_) in regions:
         cells = [(x, y) for y in range(ya, yb_ + 1) for x in range(xa, xb + 1)]
         rg.shuffle(cells)
@@ -845,11 +879,38 @@ def forest_band2():
 
 _n0 = len(TREEPOS)
 forest_band2()
+forest_band2()
 print('숲띠 나무', len(TREEPOS) - _n0)
 _n0 = len(TREEPOS)
 fill_trees(2, 3)
 fill_trees(1, 3, (0.25, 0.4, 0.35))
 fill_trees(1, 4, (0.05, 0.3, 0.65))
+fill_trees(0, 4, (0.0, 0.25, 0.75))
+
+
+_DBG = {}
+
+
+def _why(name, w, h, x, yb, dist):
+    y = yb + 1 - h
+    if x < IN_X0 - 1 or x + w > IN_X1 + 2 or yb < IN_Y0 or yb > IN_Y1: return 'range'
+    for xx in range(x, x + w):
+        if not inb(xx, yb) or KG[yb][xx] is not None or (xx, yb) in BODY: return 'foot'
+        for (nx, ny, nw, nh) in NOTREE:
+            if nx <= xx < nx + nw and ny <= yb < ny + nh: return 'notree'
+    for yy in range(max(0, y), yb):
+        for xx in range(x, x + w):
+            if inb(xx, yy) and KG[yy][xx] in _DIRT: return 'dirt'
+    if h >= 4 and any(inb(xx, yb) and KG[yb][xx] in ('road', 'yard', 'slab', 'diamond') for xx in (x - 1, x + w)): return 'roadside'
+    for (rx, ry, rw, rh) in NONTREE_RECTS:
+        if x < rx + rw and rx < x + w and y < ry + rh and ry < yb + 1 and yb >= ry + 2: return 'bldg'
+    for (rx, ry, rw, rh) in BLDG_RECTS:
+        if x < rx + rw + 1 and rx - 1 < x + w and ry - 1 <= yb < ry + rh: return 'bldg2'
+    if crown_overlap(x, yb, w, h) > (8 if h >= 4 else 4): return 'crown'
+    for xx in range(x - dist, x + w + dist):
+        for yy in range(yb - dist, yb + dist + 1):
+            if (xx, yy) in OCC: return 'occ'
+    return 'same'
 
 
 def top_up(x0, y0, x1, y1, want, seed=3):
@@ -861,9 +922,10 @@ def top_up(x0, y0, x1, y1, want, seed=3):
     for (cx, cy) in cells:
         if n >= want:
             break
-        pool = rg.choice([MID, MID, BUSH])
+        pool = rg.choice([MID, BUSH, BUSH])
         name, w, h = rg.choice(pool)
         x = cx - w // 2
+        if not tree_ok(name, w, h, x, cy, 0): _DBG[_why(name, w, h, x, cy, 0)] = _DBG.get(_why(name, w, h, x, cy, 0), 0) + 1
         if tree_ok(name, w, h, x, cy, 0 if not name.startswith('bush') else 0) :
             Tf(name, x, cy); n += 1
             for xx in range(x, x + w):
@@ -871,9 +933,49 @@ def top_up(x0, y0, x1, y1, want, seed=3):
                     OCC.add((xx, yy))
 
 
-for (_a, _b, _c, _d, _w) in ((63, 31, 83, 45, 14), (36, 58, 58, 78, 12), (60, 62, 85, 80, 12), (10, 36, 27, 44, 6), (60, 28, 69, 40, 6), (28, 72, 36, 80, 4), (68, 40, 85, 56, 8), (10, 19, 28, 34, 8)):
-    top_up(_a, _b, _c, _d, _w)
-print('채움 나무', len(TREEPOS) - _n0)
+
+
+def dress(x0, y0, x1, y1, names, want, seed=1):
+    """맨 풀 칸에 낮은 소품(벤치·화단·장작·짚단·디딤돌 등)을 놓는다: 문 앞(NOTREE)·건물 몸체·길 옆 칸·이미 선 나무 수관은 피한다."""
+    rg = _rand.Random(seed)
+    cells = [(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1) if KG[y][x] is None]
+    rg.shuffle(cells)
+    n = 0
+    for (cx, cy) in cells:
+        if n >= want:
+            break
+        nm = rg.choice(names)
+        w, h = objects[nm].w // T, objects[nm].h // T
+        if any(abs(dd['x'] - (cx + w // 2)) <= 2 and -1 <= cy - dd['y'] <= 4 for dd in DOORS):
+            continue
+        if any(rx <= cx + w - 1 and cx < rx + rw and ry - 1 <= cy < ry + rh for (rx, ry, rw, rh) in BLDG_RECTS):
+            continue
+        if crown_overlap(cx, cy, w, h) > 0 or any((xx, yy) in OCC for xx in range(cx, cx + w) for yy in range(cy - h + 1, cy + 1)):
+            continue
+        if any(abs(cx - a) + abs(cy - b) < 2 for (a, b) in _DRESSED):
+            continue
+        if any(n == nm and abs(cx - tx) <= 6 and abs(cy - ty) <= 6 for (n, tx, ty, _, _) in TREEPOS) or any(n == nm and abs(cx - px) <= 6 and abs(cy - py) <= 6 for (n, px, py) in _DNAMES):
+            continue
+        _okp = prop(nm, cx, cy)
+        if _okp: _DNAMES.append((nm, cx, cy))
+        _RS[_okp] = _RS.get(_okp, 0) + 1
+        if _okp:
+            _DRESSED.append((cx, cy)); n += 1
+
+
+_RS = {}
+_DNAMES = []
+_DRESSED = []
+DRESS = [((63, 31, 83, 45), ['bench', 'flower_bed', 'firewood', 'haystack', 'stepping_stones', 'millstone', 'bush_a', 'bush_c', 'small_z_a'], 14), ((62, 62, 86, 80), ['bench', 'flower_bed', 'haystack', 'stepping_stones', 'bush_b', 'small_p'], 8), ((50, 62, 68, 70), ['flower_bed', 'bush_c', 'small_z_b', 'stepping_stones'], 4), ((62, 28, 85, 36), ['bush_a', 'bush_b', 'bush_l_a', 'small_z_a', 'small_p', 'flower_bed', 'stepping_stones'], 22), ((62, 36, 70, 47), ['bush_c', 'bush_s_a', 'bush_s_b', 'flower_bed'], 14), ((66, 32, 69, 47), ['lantern', 'sotdae', 'rocks', 'jangseung_m', 'dolmadam'], 5), ((78, 33, 84, 47), ['bush_c', 'bush_a', 'small_p', 'small_z_a', 'flower_bed', 'bush_s_a'], 12), ((79, 62, 86, 80), ['bush_c', 'bush_b', 'small_p', 'small_z_b', 'flower_bed', 'bush_s_b', 'stepping_stones'], 14), ((70, 76, 80, 80), ['bush_a', 'flower_bed', 'bush_s_a'], 5), ((82, 60, 85, 78), ['bush_s_a', 'bush_s_b', 'bush_a', 'bush_c', 'small_p', 'small_z_a'], 12), ((72, 62, 84, 65), ['bush_a', 'bush_b', 'bush_l_a', 'small_z_b', 'stepping_stones'], 8), ((36, 62, 60, 67), ['flower_bed', 'stepping_stones', 'bench', 'bush_s_a', 'bush_c'], 9), ((52, 62, 68, 70), ['bush_s_b', 'bush_a', 'flower_bed'], 8), ((2, 20, 7, 30), ['stepping_stones'], 1)]
+for (_a, _b, _c, _d, _w) in ((63, 31, 83, 45, 14), (36, 58, 58, 78, 12), (60, 62, 85, 80, 12), (10, 36, 27, 44, 6), (60, 28, 69, 40, 6), (28, 72, 36, 80, 4), (68, 40, 85, 56, 8), (10, 19, 28, 34, 8), (34, 63, 62, 67, 10), (36, 72, 58, 82, 10), (60, 30, 84, 46, 10), (2, 2, 10, 40, 10), (68, 30, 84, 37, 8), (12, 25, 27, 34, 6)):
+    _t0 = len(TREEPOS); top_up(_a, _b, _c, _d, _w); print('top_up', (_a, _b, _c, _d), _w, '->', len(TREEPOS) - _t0)
+for _i, (_r, _nm, _n) in enumerate(DRESS):
+    dress(*_r, _nm, _n, seed=_i + 1); print('dress', _r, len(_DRESSED), _RS)
+for _nm, _x, _y in (('bush_a', 72, 72), ('small_p', 72, 69), ('bush_s_a', 73, 74), ('small_z_a', 81, 72), ('bush_c', 82, 69), ('bush_s_b', 82, 74), ('bush_l_b', 81, 67)):
+    _w, _h = objects[_nm].w // T, objects[_nm].h // T
+    if all(inb(xx, _y) and KG[_y][xx] is None and (xx, _y) not in BODY for xx in range(_x, _x + _w)) and not any(n == _nm and abs(_x - tx) <= 6 and abs(_y - ty) <= 6 for (n, tx, ty, _, _) in TREEPOS) and not any(n == _nm and abs(_x - px) <= 6 and abs(_y - py) <= 6 for (n, px, py) in _DNAMES):
+        Tf(_nm, _x, _y)
+print('채움 나무', len(TREEPOS) - _n0, _DBG)
 # ================================================================ ==== PIPELINE (맨 아래 고정) ====
 def finish(tag='stage'):
     """바닥 칸 번호 계산 → 물체 층 합성 → 시트 재조립 → 게이트 → 파일. 단계 확인용으로 tag 이름의 미리보기도 /tmp 에 낸다."""
@@ -980,6 +1082,11 @@ def _people_filter(people):
             print('사람 자리 거절(길 아님):', p); continue
         if any(bx <= x < bx + bw and by + bh // 3 <= y < by + bh for (bx, by, bw, bh) in bodyf):
             print('사람 자리 거절(건물 몸체):', p); continue
+        if any(nm.startswith(('gungnae_gate', 'palace_gate')) and bx <= x < bx + bw and by <= y < by + bh - 3 for (nm, bx, by, bw, bh) in placed):
+            print('사람 자리 거절(문루 지붕):', p); continue
+        _wk = lambda xx, yy: inb(xx, yy) and KG[yy][xx] in ('road', 'yard', 'slab', 'paving', 'diamond', 'bridge')
+        if (_wk(x - 1, y) and _wk(x + 1, y) and not _wk(x, y - 1) and not _wk(x, y + 1)) or (_wk(x, y - 1) and _wk(x, y + 1) and not _wk(x - 1, y) and not _wk(x + 1, y)):
+            print('사람 자리 거절(좁은 길):', p); continue
         out.append(p)
     return out
 
@@ -1150,15 +1257,15 @@ def bake():
 
 from people import UP, RIGHT, FRONT, LEFT
 PEOPLE_LIST = [
-    (48, 20, 0, FRONT, 1), (47, 29, 3, UP, 0),                       # 북 대로 · 궁 앞 길
-    (48, 52, 5, FRONT, 1), (45, 56, 2, RIGHT, 2), (54, 49, 6, LEFT, 0),  # 궁 마당(포장)
+    (48, 20, 0, FRONT, 1), (46, 28, 3, UP, 0),                       # 북 대로 · 다리 앞 착지
+    (48, 54, 5, FRONT, 1), (43, 55, 2, RIGHT, 2), (54, 49, 6, LEFT, 0),  # 궁 마당(포장)
     (18, 47, 4, RIGHT, 1), (25, 48, 7, LEFT, 2),                     # 서쪽 큰길(행 46..49)
-    (16, 24, 1, FRONT, 1), (24, 33, 6, FRONT, 2), (15, 44, 3, FRONT, 0),  # 상점 앞 · 큰길 곁
-    (20, 72, 0, FRONT, 1), (22, 63, 7, FRONT, 1),                    # 서남 주막 앞마당 · 안마당
-    (77, 47, 2, FRONT, 1), (73, 48, 4, RIGHT, 0),                    # 동쪽 큰길
-    (76, 36, 5, LEFT, 1), (58, 82, 3, FRONT, 1), (66, 81, 1, RIGHT, 2),    # 술사의 길 앞 · 남 고리 길 · 예식장 앞
-    (48, 74, 6, UP, 0), (75, 82, 0, LEFT, 1), (11, 70, 7, UP, 1),    # 남 대로 · 예식장 앞 · 서쪽 고리 길
-    (88, 47, 2, LEFT, 1),                                            # 성 밖 동쪽 길
+    (11, 22, 1, RIGHT, 1), (10, 34, 6, RIGHT, 2), (12, 48, 3, FRONT, 0),  # 상점 앞 · 큰길 곁
+    (22, 73, 0, FRONT, 1), (22, 63, 7, FRONT, 1),                    # 서남 주막 정문 앞 · 안마당
+    (84, 46, 2, LEFT, 1), (84, 49, 4, LEFT, 0),                      # 동문 안쪽 양옆 경비
+    (80, 47, 5, LEFT, 1), (60, 82, 3, FRONT, 1), (66, 81, 1, RIGHT, 2),    # 술사의 길 앞 · 남 고리 길 · 예식장 앞
+    (47, 74, 6, UP, 0), (75, 81, 0, LEFT, 1), (10, 70, 7, UP, 1),    # 남 대로 · 예식장 앞 · 서쪽 고리 길
+    (92, 47, 2, LEFT, 1),                                            # 성 밖 동쪽 길
 ]
 if __name__ == '__main__':
     bake()
