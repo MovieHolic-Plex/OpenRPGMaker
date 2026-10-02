@@ -9,6 +9,7 @@ const out = resolve("verify-shots/workshop");
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
+page.setDefaultTimeout(120_000); // 콜드 Vite 부팅이 느리다
 const errors = [];
 const shots = [];
 page.on("pageerror", (error) => errors.push(error.message));
