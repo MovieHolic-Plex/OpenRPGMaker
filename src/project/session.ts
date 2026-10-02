@@ -1,3 +1,4 @@
+import type { BlendModeName } from "@/project/blendMode";
 import type { EasingName } from "@/project/easing";
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { initialDifficultyId } from "@/project/difficulty";
@@ -71,6 +72,8 @@ export type PictureState = {
   readonly durationMs?: number;
   /** 전환 곡선(생략 = 일정하게). */
   readonly easing?: EasingName;
+  /** 아래 화면과 섞는 방식(생략 = 보통). */
+  readonly blendMode?: Exclude<BlendModeName, "normal">;
 };
 
 const pendingPictureTransitions = new WeakSet<PictureState>();

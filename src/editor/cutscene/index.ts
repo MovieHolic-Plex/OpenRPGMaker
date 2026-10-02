@@ -1,4 +1,5 @@
 import { normalizeEasing, type EasingName } from "@/project/easing";
+import { normalizeBlendMode, type BlendModeName } from "@/project/blendMode";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { MAP_BACKGROUND_FLOW_PERCENT_LIMIT } from "@/project/mapBackground";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -81,6 +82,8 @@ export type CutscenePictureBeat = {
   readonly durationMs?: number;
   /** 이동 곡선(생략 = 일정하게). */
   readonly easing?: EasingName;
+  /** 겹치기(생략 = 보통). 빛기둥·유령은 add, 그림자는 multiply. */
+  readonly blendMode?: BlendModeName;
   readonly wait?: boolean;
   readonly waitForPicture?: boolean;
 };
@@ -233,6 +236,7 @@ type FinalPictureState = {
   readonly scale?: number;
   readonly opacity?: number;
   readonly rotation?: number;
+  readonly blendMode?: BlendModeName;
 };
 
 type FinalCameraState = {
@@ -553,6 +557,7 @@ function compilePictureBeat(beat: CutscenePictureBeat, state: CompileState, forc
       rotation: beat.rotation,
       durationMs: beat.durationMs,
       easing: normalizeEasing(beat.easing),
+      blendMode: normalizeBlendMode(beat.blendMode),
       waitForPicture: forceNonBlocking ? false : beat.waitForPicture ?? beat.wait,
     }) as Command;
     updateFinalPicture(state, pictureId, beat);
@@ -569,6 +574,7 @@ function compilePictureBeat(beat: CutscenePictureBeat, state: CompileState, forc
     rotation: beat.rotation,
     durationMs: beat.durationMs,
     easing: normalizeEasing(beat.easing),
+    blendMode: beat.blendMode,
     wait,
     waitForPicture: wait,
   });
@@ -586,6 +592,8 @@ function updateFinalPicture(state: CompileState, pictureId: string, beat: Cutsce
     scale: beat.scale ?? previous?.scale,
     opacity: beat.opacity ?? previous?.opacity,
     rotation: beat.rotation ?? previous?.rotation,
+    // 표시(show)는 그림을 새로 거는 것이라 생략 = 보통. 이동(move)은 생략하면 앞의 겹치기를 잇는다.
+    blendMode: beat.action === "show" ? normalizeBlendMode(beat.blendMode) : beat.blendMode ?? previous?.blendMode,
   });
 }
 
@@ -761,6 +769,7 @@ function cleanupCommands(state: CompileState): Command[] {
       scale: picture.scale,
       opacity: picture.opacity,
       rotation: picture.rotation,
+      blendMode: normalizeBlendMode(picture.blendMode),
       durationMs: 0,
       waitForPicture: false,
     }) as Command);

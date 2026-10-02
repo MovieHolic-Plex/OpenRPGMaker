@@ -2,6 +2,7 @@
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { EASING_LABELS, EASING_NAMES, normalizeEasing } from "@/project/easing";
+import { BLEND_MODE_LABELS, BLEND_MODE_NAMES, normalizeBlendMode } from "@/project/blendMode";
 import { galleryMenuLabel } from "@/project/gallery";
 import { store } from "@/project/store";
 import type { Command, WeatherKind } from "@/project/types";
@@ -1132,6 +1133,13 @@ export function showPictureBody(
     children: EASING_NAMES.map((name) => el("option", { attrs: { value: name }, text: EASING_LABELS[name] })),
   }) as HTMLSelectElement;
   easing.value = cmd.easing ?? "linear";
+  // 겹치기. 불투명도만으로는 빛이 밝아지지 않는다 — 빛기둥·유령은 더하기, 그림자는 곱하기.
+  const blendMode = el("select", {
+    attrs: { "aria-label": "겹치기" },
+    dataset: { testid: "show-picture-blend-select" },
+    children: BLEND_MODE_NAMES.map((name) => el("option", { attrs: { value: name }, text: BLEND_MODE_LABELS[name] })),
+  }) as HTMLSelectElement;
+  blendMode.value = cmd.blendMode ?? "normal";
   const recordInGallery = el("input", {
     attrs: { type: "checkbox" },
     dataset: { testid: "show-picture-gallery" },
@@ -1170,6 +1178,7 @@ export function showPictureBody(
       rotation: parseInt(rotation.value, 10) || 0,
       durationMs: intInRange(durationMs, 0, 0, 60_000),
       ...(normalizeEasing(easing.value) ? { easing: normalizeEasing(easing.value) } : {}),
+      ...(normalizeBlendMode(blendMode.value) ? { blendMode: normalizeBlendMode(blendMode.value) } : {}),
       // 폼에 칸이 없는 필드는 그대로 실어 보낸다 — 다른 칸을 고쳤다고 대기 설정이 사라지면 안 된다.
       ...(cmd.waitForPicture === true ? { waitForPicture: true } : {}),
       ...(recordInGallery.checked ? { recordInGallery: true } : {}),
@@ -1242,6 +1251,7 @@ export function showPictureBody(
   }
   recordInGallery.addEventListener("change", commit);
   easing.addEventListener("change", commit);
+  blendMode.addEventListener("change", commit);
 
   for (const preset of [
     { id: "center", label: "중앙", x: 160, y: 120 },
@@ -1340,6 +1350,7 @@ export function showPictureBody(
               "크기 · 불투명도",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [scale, opacity] })
             ),
+            fieldBlock("겹치기", blendMode),
             el("details", {
               class: "page3-more-fields",
               attrs: {

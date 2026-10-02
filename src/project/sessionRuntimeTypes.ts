@@ -2,6 +2,7 @@
 // 플레이어 쪽 공용 타입. 인터프리터가 요구하는 세션 인터페이스 등.
 // v2: switches/variables/timers/commonEvents 포함.
 
+import type { BlendModeName } from "@/project/blendMode";
 import type { EasingName } from "@/project/easing";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
 import type { RelationshipState } from "./relationshipState";
@@ -27,6 +28,7 @@ export type RuntimePictureState = {
   readonly rotation?: number;
   readonly durationMs?: number;
   readonly easing?: EasingName;
+  readonly blendMode?: Exclude<BlendModeName, "normal">;
 };
 
 export type M2RecordedFallback = {

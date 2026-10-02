@@ -1,3 +1,4 @@
+import { normalizeBlendMode } from "@/project/blendMode";
 import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
 import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
@@ -693,6 +694,7 @@ export function executeCommand(
         rotation: command.rotation,
         durationMs: command.durationMs,
         ...(command.easing ? { easing: command.easing } : {}),
+        ...(normalizeBlendMode(command.blendMode) ? { blendMode: normalizeBlendMode(command.blendMode) } : {}),
         waitForPicture: command.waitForPicture,
       });
     case "erasePicture":

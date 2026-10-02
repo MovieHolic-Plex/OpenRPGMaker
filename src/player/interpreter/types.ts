@@ -1,3 +1,4 @@
+import type { BlendModeName } from "@/project/blendMode";
 import type { EasingName } from "@/project/easing";
 import type { EmoteKind } from "@/project/emotes";
 import type { AudioChannel, AudioTrackState } from "@/project/session";
@@ -124,6 +125,7 @@ export type StepResult =
       rotation?: number;
       durationMs?: number;
       easing?: EasingName;
+      blendMode?: Exclude<BlendModeName, "normal">;
       waitForPicture?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
