@@ -51,7 +51,8 @@ export function createInteriorRunner(): WorkshopRunner {
     harnessId: "interior-props",
     candidates: 5,
     prepare(env) {
-      prepared ??= (async () => {
+      if (prepared) return prepared;
+      const attempt = (async () => {
         const sheet = await env.loadImage(env.assetUrl(SHEET_PATH));
         specItems = specObjects().map(([key, object]) => {
           const current = cropCells(sheet, object.cells);
@@ -63,7 +64,10 @@ export function createInteriorRunner(): WorkshopRunner {
           examples.set(example.file, env.encodePng(scaleImage(onBackground(picture, BACKGROUND), 8)));
         }
       })();
-      return prepared;
+      prepared = attempt;
+      // 실패한 약속을 굳히지 않는다 — 다음 prepare 가 처음부터 다시 시도한다.
+      attempt.catch(() => { if (prepared === attempt) prepared = null; });
+      return attempt;
     },
     items(defs) {
       if (defs !== lastDefs || allItems.length === 0) {

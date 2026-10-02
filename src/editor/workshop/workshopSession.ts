@@ -105,6 +105,7 @@ async function createSession(harnessId: string, projectKey: string): Promise<Wor
     harnessId, projectKey, runner, store, env,
     engine: createWorkshopEngine({
       runner, env, store, projectKey, chat: createWorkshopChat(), concurrency: savedConcurrency(),
+      onStatus: notify,
       onChange: (round) => {
         const index = session.rounds.findIndex((r) => r.id === round.id);
         if (index >= 0) session.rounds[index] = round;

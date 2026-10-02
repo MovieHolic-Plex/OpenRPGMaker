@@ -33,6 +33,8 @@ export type WorkshopEngineOptions = {
   now?: () => number;
   newId?: () => string;
   onChange?: (round: WorkshopRound) => void;
+  /** running·queued·blocked 같은 실행 상태가 바뀐 뒤(실행이 running 에서 빠진 직후 등)에 부른다. */
+  onStatus?: () => void;
 };
 
 export interface WorkshopEngine {
@@ -106,6 +108,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         running.delete(runKey(next.roundId, next.letter));
         pump();
         settleIdle();
+        options.onStatus?.();
       });
     }
     settleIdle();
@@ -299,6 +302,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       }
       await save(round);
       settleIdle();
+      options.onStatus?.();
     },
     async resume() {
       let count = 0;
@@ -325,6 +329,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     setConcurrency(n) {
       concurrency = clampConcurrency(n);
       pump();
+      options.onStatus?.();
     },
     status: () => ({ running: running.size, queued: queue.length, concurrency, blocked }),
     idle: () => new Promise<void>((resolve) => {

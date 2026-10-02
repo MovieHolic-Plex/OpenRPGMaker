@@ -59,6 +59,22 @@ describe("공방 엔진", () => {
     expect(saved.runs[0].grid).toEqual({ width: 2, height: 2, cells: ["k", "k", "k", "k"] });
   });
 
+  it("onStatus 는 마지막 실행이 running 에서 빠진 뒤에 불린다", async () => {
+    const store = createMemoryWorkshopStore();
+    const runningAtStatus: number[] = [];
+    let engineRef: ReturnType<typeof createWorkshopEngine> | null = null;
+    const engine = createWorkshopEngine({
+      runner: fakeRunner(), env: { loadImage: async () => ({ width: 0, height: 0, data: new Uint8ClampedArray() }), encodePng: () => "data:", assetUrl: (p) => p },
+      chat: scriptedChat({}), store, projectKey: "p", sleep: async () => {}, now: () => 1000,
+      onStatus: () => { runningAtStatus.push(engineRef!.status().running); },
+    });
+    engineRef = engine;
+    await engine.startRound(item);
+    await engine.idle();
+    expect(runningAtStatus.length).toBeGreaterThan(0);
+    expect(runningAtStatus[runningAtStatus.length - 1]).toBe(0);
+  });
+
   it("검수 FAIL 이면 판정을 들고 다시 그린다", async () => {
     const seen: DrawContext[] = [];
     const { engine, store } = engineWith(scriptedChat({ "workshop-review": [failVerdict] }), fakeRunner(seen));

@@ -184,7 +184,9 @@ function onKeydown(event: KeyboardEvent): void {
   if (!host || !session) return;
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   const target = event.target as HTMLElement | null;
-  if (target && (target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT")) return;
+  const typing = !!target && (target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT");
+  // 글 쓰는 중에도 Esc 는 닫기(또는 반려 입력 취소)로 통한다. 나머지 키는 입력창의 것이다.
+  if (typing && event.key !== "Escape") return;
   if (event.key === "Escape") {
     if (view.rejectFor) { view.rejectFor = null; render(true); } else closeWorkshop();
     event.preventDefault();

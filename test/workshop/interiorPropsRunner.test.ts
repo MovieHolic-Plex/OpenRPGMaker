@@ -127,6 +127,19 @@ const fakeEnv = (): WorkshopEnv & { loaded: string[] } => {
 };
 
 describe("interior-props 실행기", () => {
+  it("prepare 가 한 번 실패해도 다음 호출은 다시 시도한다(거부된 약속을 굳히지 않는다)", async () => {
+    const runner = createInteriorRunner();
+    const env = fakeEnv();
+    let failures = 1;
+    const base = env.loadImage;
+    env.loadImage = async (url) => {
+      if (failures > 0) { failures -= 1; throw new Error("네트워크"); }
+      return base(url);
+    };
+    await expect(runner.prepare(env)).rejects.toThrow("네트워크");
+    await expect(runner.prepare(env)).resolves.toBeUndefined();
+  });
+
   it("방향: 있는 기물은 DIRECTIONS, 새 기물은 NEW_DIRECTIONS, 5장", async () => {
     const runner = createInteriorRunner();
     const env = fakeEnv();
