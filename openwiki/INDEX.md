@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **117쪽 / 4229KB / 약 1,220,289 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **119쪽 / 4243KB / 약 1,224,655 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,14 +17,14 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 561KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3432 | ~162,821 |
 | `openwiki/editor-ai-tools.md` | 305KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2549 | ~87,847 |
-| `openwiki/editor-database.md` | 389KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2298 | ~113,742 |
+| `openwiki/editor-database.md` | 389KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2303 | ~113,847 |
 | `openwiki/editor-event-authoring.md` | 165KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 960 | ~47,991 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
 | `openwiki/editor-pre-edit-routing.md` | 180KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1131 | ~52,844 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 519 | ~20,470 |
-| `openwiki/runtime-battle.md` | 279KB | 32KB | 1460 | ~81,197 |
+| `openwiki/runtime-battle.md` | 279KB | 32KB | 1469 | ~81,435 |
 | `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 781 | ~32,382 |
 | `openwiki/runtime-project-schema.md` | 201KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1430 | ~55,958 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
@@ -56,6 +56,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/PROJECT_WIKI.md` | 2 | `.part-N.css`, `src/styles/editor/core.part-1.css` |
 | `openwiki/ai-workflow.md` | 5 | `20260709000000_ai_activity_logs.sql`, `src/ai/plannerSkip.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
+| `openwiki/battle-impact-contact.md` | 3 | `battleImpactDom.ts`, `styles/runtime/battle/29-impact-contact.css`, `verify-shots/battle-impact/README.md` |
 | `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/castle-map.md` | 12 | `.oprn.json`, `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json`, `scripts/build-castle-2.mts`, `scripts/build-castle-map.mts`, `scripts/build-second-castle.mts`, `scripts/observe-castle-keep.mts`, `scripts/remove-castle-reference-bridge.mjs` |
@@ -79,7 +80,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/large-village-generation.md` | 6 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `scripts/force-save-large-village.mts`, `scripts/force-save-village-50.mts`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
-| `openwiki/native-enemy-retirement.md` | 3 | `pixelEnemyPortraits.ts`, `prepare-pixel-enemy-portraits.mts`, `scripts/generate-monster-images.mts` |
+| `openwiki/native-enemy-retirement.md` | 1 | `scripts/generate-monster-images.mts` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/opening-still-pack.md` | 4 | `artifacts/stills-library-plan.json`, `queue-status.json`, `review/index.html`, `run-status.json` |
 | `openwiki/pixel-art-world-facility-complements.md` | 4 | `current-portable.json`, `library.json`, `preparation-proof.json`, `preparation-seal.json` |
@@ -124,18 +125,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 14KB · 164줄 · ~3,761 토큰
+### `openwiki/PROJECT_WIKI.md` — 14KB · 167줄 · ~3,841 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
-- `L63` Project identity
-- `L72` Main ownership boundaries
-- `L107` Authored tile placement references
-- `L113` How an AI should use this wiki
-- `L124` 프로젝트 정본 저장 (see root `AGENTS.md`)
-- `L132` Desktop UI integration truth (2026-08-11)
-- `L145` Per-project wiki structure
-- `L161` Staleness rule
+- `L64` Project identity
+- `L73` Main ownership boundaries
+- `L108` Authored tile placement references
+- `L114` How an AI should use this wiki
+- `L125` 프로젝트 정본 저장 (see root `AGENTS.md`)
+- `L133` Desktop UI integration truth (2026-08-11)
+- `L146` Per-project wiki structure
+- `L162` Staleness rule
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -246,6 +247,22 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L173` 실내 천장 기본 등록과 쿼터 합성 (2026-09-18)
 - `L181` Pixel Art World XP 사용자 원본 (2026-09-24)
   - `L207` XP 공용 로컬 설치와 조립 표본
+
+### `openwiki/battle-impact-contact.md` — 6KB · 68줄 · ~1,865 토큰
+
+- `L7` 참고한 개발자의 설명
+- `L17` 실측과 원인
+- `L27` 구현 소유와 계약
+- `L50` 검증·재현
+
+### `openwiki/battle-motion-programs.md` — 7KB · 69줄 · ~2,078 토큰
+
+- `L3` 진입점
+- `L14` 저장과 호환
+- `L30` 동작 목록
+- `L39` 판정 계약
+- `L53` 편집
+- `L60` 확인 근거
 
 ### `openwiki/battler-idle-playbook.md` — 11KB · 176줄 · ~3,490 토큰
 
@@ -572,7 +589,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2534` 타이틀 오프닝 효과 도구 (2026-09-25)
 - `L2540` 크로노 트리거식 필드 도구 인자 (2026-09-26)
 
-### `openwiki/editor-database.md` — 389KB · 2298줄 · ~113,742 토큰 · 통째읽기 잘림 · 깨진 줄 8
+### `openwiki/editor-database.md` — 389KB · 2303줄 · ~113,847 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
 - `L3` 레트로 전투 기믹 편집 칸 (2026-09-30)
 - `L11` 도트 연출 탭 · 애니메이션 갤러리 (2026-09-30, A2)
@@ -700,6 +717,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L2251` 세계 개요 스프레드 헤드 삭제 (2026-09-22 v6)
   - `L2260` 세계관 본문 AI 도움 — 초안·이어쓰기 (2026-09-22 v7)
 - `L2271` 공용 아이템 1,000종과 통일 도트 작업 (2026-10-01)
+  - `L2299` 도트 연출의 이동·가속도·배우 경로 (2026-10-02)
 
 ### `openwiki/editor-event-authoring.md` — 165KB · 960줄 · ~47,991 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -1315,7 +1333,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 279KB · 1460줄 · ~81,197 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 279KB · 1469줄 · ~81,435 토큰 · 통째읽기 잘림
 
 - `L3` SNES 식 전투 연출 — 쓰러짐·배경 겹·상태 몸 표시·이펙트 겹치기·화면 필터 (2026-10-02)
 - `L33` 포켓몬 참고 스킨과 실제 뒷모습 (2026-09-20)
@@ -1335,51 +1353,52 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L302` 몬스터 스킬 42종 (2026-09-28, mrt)
   - `L317` 2차 로스터 통합 — 걷기 칩 전부 직업·스킬, 몬스터도 파티원 (2026-09-29)
 - `L384` 타격감 층 (2026-09-25)
-- `L437` 진입 · 결판 · 복귀 연출 (2026-09-25)
-- `L471` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
-- `L497` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
-- `L522` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
-- `L544` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L615` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
-- `L626` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
-- `L671` Native event battle admission (2026-09-08)
-- `L717` Supported action authoring (2026-09-07)
-- `L729` 적별 전투 표시 크기 (2026-09-06)
-- `L739` Capture-only victory (2026-09-08)
-- `L750` Event friendship and live level changes (2026-09-06)
-- `L769` Sequential battle event completion (2026-09-08)
-- `L804` Battle-event continuation and cancellation (2026-09-06)
-- `L847` 전투 명령 custom CSS (2026-09-05)
-- `L851` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L868` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L886` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
-- `L951` Roguelike run boundary (2026-08-24)
-- `L956` 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
-- `L975` 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
-- `L998` Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
-- `L1041` Battle rules & runtime
-  - `L1056` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L1081` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L1097` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L1101` Gen 1(포켓몬식) 규칙 모델
-  - `L1109` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L1128` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L1167` Starter hero battle sheets (2026-08-29)
-- `L1188` Per-actor back battlers (2026-08-29)
-- `L1206` Battle input and visibility P0 contract (2026-07-30)
-- `L1217` 배틀러 idle 애니메이션 (2026-08-30)
-- `L1345` 필드 아이템 상태 부여 복구 (2026-09-05)
-- `L1349` Authored combat rules (feature16, 2026-09-21)
-- `L1363` Battle reports and physical formation (2026-09-21)
-- `L1367` Combat correctness hardening (2026-09-21)
-- `L1375` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
-- `L1385` 트레이너 전투의 도입 문구 (2026-09-24)
-- `L1392` 포획 불가 전투의 가방 목록 (2026-09-25)
-- `L1403` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
-- `L1417` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
-- `L1427` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
-- `L1444` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
-- `L1457` 공용 몬스터 옛 그림 폐기 (2026-10-02)
+- `L441` 진입 · 결판 · 복귀 연출 (2026-09-25)
+- `L475` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
+- `L501` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
+- `L526` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
+- `L548` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
+- `L619` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
+- `L630` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+- `L675` Native event battle admission (2026-09-08)
+- `L721` Supported action authoring (2026-09-07)
+- `L733` 적별 전투 표시 크기 (2026-09-06)
+- `L743` Capture-only victory (2026-09-08)
+- `L754` Event friendship and live level changes (2026-09-06)
+- `L773` Sequential battle event completion (2026-09-08)
+- `L808` Battle-event continuation and cancellation (2026-09-06)
+- `L851` 전투 명령 custom CSS (2026-09-05)
+- `L855` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L872` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L890` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
+- `L955` Roguelike run boundary (2026-08-24)
+- `L960` 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
+- `L979` 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
+- `L1002` Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
+- `L1045` Battle rules & runtime
+  - `L1060` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L1085` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L1101` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L1105` Gen 1(포켓몬식) 규칙 모델
+  - `L1113` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L1132` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L1171` Starter hero battle sheets (2026-08-29)
+- `L1192` Per-actor back battlers (2026-08-29)
+- `L1210` Battle input and visibility P0 contract (2026-07-30)
+- `L1221` 배틀러 idle 애니메이션 (2026-08-30)
+- `L1349` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L1353` Authored combat rules (feature16, 2026-09-21)
+- `L1367` Battle reports and physical formation (2026-09-21)
+- `L1371` Combat correctness hardening (2026-09-21)
+- `L1379` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+- `L1389` 트레이너 전투의 도입 문구 (2026-09-24)
+- `L1396` 포획 불가 전투의 가방 목록 (2026-09-25)
+- `L1407` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+- `L1421` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+- `L1431` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+- `L1448` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+- `L1461` 공용 몬스터 옛 그림 폐기 (2026-10-02)
+  - `L1465` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 46KB · 305줄 · ~12,541 토큰
 

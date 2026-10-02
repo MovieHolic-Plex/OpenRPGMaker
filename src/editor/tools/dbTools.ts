@@ -1,3 +1,5 @@
+import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
+import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
 import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
 import { PARTY_PIXEL_SHEETS, partyPixelSheet } from "@/assets/partyPixelSheets";
@@ -682,7 +684,10 @@ const skillRecordSchema = objectSchema({
   ...authoredSkillProperties,
   id: stringSchema(),
   name: stringSchema(),
-  scope: { type: "string", enum: ["self", "ally", "allAllies", "enemy", "allEnemies"] },
+  scope: {
+    type: "string",
+    enum: ["self", "ally", "allAllies", "enemy", "allEnemies"],
+  },
   power: integerSchema(),
   animationId: stringSchema(),
   description: stringSchema(),
@@ -692,30 +697,99 @@ const skillRecordSchema = objectSchema({
   variance: integerSchema(),
   hitRate: integerSchema(),
   effect: objectSchema({
-    kind: { type: "string", enum: ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"], description: "steal=적 stealItems 훔치기, scan=라이브라, learnEnemySkill=청마법 습득, randomSkillFrom=skillIds 중 무작위" },
-    statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema(),
+    kind: {
+      type: "string",
+      enum: [
+        "damage",
+        "healing",
+        "support",
+        "switch",
+        "steal",
+        "scan",
+        "learnEnemySkill",
+        "randomSkillFrom",
+      ],
+      description:
+        "steal=적 stealItems 훔치기, scan=라이브라, learnEnemySkill=청마법 습득, randomSkillFrom=skillIds 중 무작위",
+    },
+    statistic: stringSchema(),
+    affects: stringSchema(),
+    switchId: stringSchema(),
     skillIds: stringArraySchema("randomSkillFrom 후보 기술 id"),
   }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
-  movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
-  fieldCommonEventId: { type: "string", description: "필드 능력: 메뉴에서 쓰면 이 공통 이벤트를 실행(정면 이벤트 id 는 문자열 변수 fieldAbilityTarget, 좌표는 변수 fieldAbilityX/Y). 빈 문자열이면 해제" },
-  comboActorIds: stringArraySchema("연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제"),
-  area: objectSchema({
-    shape: { type: "string", enum: ["circle", "line"] },
-    radius: numberSchema("전투장 픽셀(>0). circle=주 대상에서 거리, line=주 대상과 세로 차 ≤ radius/2 인 가로 띠"),
-  }, "위치 범위기. scope enemy/ally 에서 주 대상 둘레의 같은 편도 맞힌다"),
-  resource2Cost: integerSchema("제2 자원 「기력」 소모량(system.resource2.enabled 일 때만). 0 이면 없음"),
-  limitSkill: booleanSchema("리미트 기술 — 리미트 게이지가 가득 찼을 때만 쓰고 쓰면 비운다(system.limitGauge.enabled 일 때만)"),
-  partyGaugeCost: integerSchema("추격 연계기 — 파티 공용 게이지 소모량(system.partyGauge.enabled 일 때만). 0 이면 없음"),
-  hpCostPercent: integerSchema("시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가"),
-  drainPercent: integerSchema("준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다"),
-  gaugeShift: integerSchema("게이지 밀기 -100~100(0=없음). 명중한 대상의 ATB 행동 게이지를 옮긴다 — 음수 = 늦추기(시간 화살·발 묶기), 양수 = 아군을 앞당기기(재촉). 타마다 적용. ATB(gauge) 전투 전용"),
-  chargeTurns: integerSchema("힘 모으기 1~3(0=바로 발동). 고른 차례엔 「…을 준비한다!」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 적이 쓰면 보스 대기술 예고. 한 차례를 버리므로 위력을 1.6~1.8배로"),
-  summonResourceId: stringSchema("소환 그림(retro2003 도트 연출): 파티원 도트 시트 id \"party-pixel-<칩>\"(예 party-pixel-monster2-4 흙 골렘, party-pixel-monster3-6 업화, party-pixel-animal-7 사자). 시전하면 그 몬스터가 시전자 앞에 나타나 대상에게 달려가 첫 타에 맞춰 친다. 그림만 — 위력·타수·상태는 이 스킬 값. 시전자 motion 은 cast 가 어울린다. 빈 문자열이면 해제"),
-  retroChoreographyId: stringSchema("retro2003 측면 전투에서 이 스킬이 보여 줄 도트 연출을 계약 id 로 빌린다(예: skill_knight_slash). 새·복제 스킬은 이걸 안 주면 기본 베기/불꽃으로 보인다. 후보는 list_retro_choreographies 로 찾는다. 빈 문자열이면 해제"),
+  movePriority: numberSchema(
+    "기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)",
+  ),
+  fieldCommonEventId: {
+    type: "string",
+    description:
+      "필드 능력: 메뉴에서 쓰면 이 공통 이벤트를 실행(정면 이벤트 id 는 문자열 변수 fieldAbilityTarget, 좌표는 변수 fieldAbilityX/Y). 빈 문자열이면 해제",
+  },
+  comboActorIds: stringArraySchema(
+    "연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제",
+  ),
+  area: objectSchema(
+    {
+      shape: { type: "string", enum: ["circle", "line"] },
+      radius: numberSchema(
+        "전투장 픽셀(>0). circle=주 대상에서 거리, line=주 대상과 세로 차 ≤ radius/2 인 가로 띠",
+      ),
+    },
+    "위치 범위기. scope enemy/ally 에서 주 대상 둘레의 같은 편도 맞힌다",
+  ),
+  resource2Cost: integerSchema(
+    "제2 자원 「기력」 소모량(system.resource2.enabled 일 때만). 0 이면 없음",
+  ),
+  limitSkill: booleanSchema(
+    "리미트 기술 — 리미트 게이지가 가득 찼을 때만 쓰고 쓰면 비운다(system.limitGauge.enabled 일 때만)",
+  ),
+  partyGaugeCost: integerSchema(
+    "추격 연계기 — 파티 공용 게이지 소모량(system.partyGauge.enabled 일 때만). 0 이면 없음",
+  ),
+  hpCostPercent: integerSchema(
+    "시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가",
+  ),
+  drainPercent: integerSchema(
+    "준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다",
+  ),
+  gaugeShift: integerSchema(
+    "게이지 밀기 -100~100(0=없음). 명중한 대상의 ATB 행동 게이지를 옮긴다 — 음수 = 늦추기(시간 화살·발 묶기), 양수 = 아군을 앞당기기(재촉). 타마다 적용. ATB(gauge) 전투 전용",
+  ),
+  battleGimmick: {
+    type: "object",
+    description:
+      "턴 전투 기믹. pattern은 list_retro_choreographies에서 고른 32 동작 id. durationTurns(1~6), markKey, maxStacks(1~9), consumeMarks, requiredMark, followOnHit, allyActorId, elementId, resourceId, radius(16~800), triggerChance(0~100), powerMultiplier(.1~3), killRefundPercent(0~100). 피해는 전투 규칙만 계산한다.",
+    properties: {
+      pattern: { type: "string", enum: [...BATTLE_MOTION_PATTERNS] },
+      durationTurns: { type: "number" },
+      markKey: { type: "string" },
+      maxStacks: { type: "number" },
+      consumeMarks: { type: "boolean" },
+      requiredMark: { type: "boolean" },
+      followOnHit: { type: "boolean" },
+      allyActorId: { type: "string" },
+      elementId: { type: "string" },
+      resourceId: { type: "string" },
+      radius: { type: "number" },
+      triggerChance: { type: "number" },
+      powerMultiplier: { type: "number" },
+      killRefundPercent: { type: "number" },
+    },
+    required: ["pattern"],
+  },
+  chargeTurns: integerSchema(
+    "힘 모으기 1~3(0=바로 발동). 고른 차례엔 「…을 준비한다!」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 적이 쓰면 보스 대기술 예고. 한 차례를 버리므로 위력을 1.6~1.8배로",
+  ),
+  summonResourceId: stringSchema(
+    '소환 그림(retro2003 도트 연출): 파티원 도트 시트 id "party-pixel-<칩>"(예 party-pixel-monster2-4 흙 골렘, party-pixel-monster3-6 업화, party-pixel-animal-7 사자). 시전하면 그 몬스터가 시전자 앞에 나타나 대상에게 달려가 첫 타에 맞춰 친다. 그림만 — 위력·타수·상태는 이 스킬 값. 시전자 motion 은 cast 가 어울린다. 빈 문자열이면 해제',
+  ),
+  retroChoreographyId: stringSchema(
+    "retro2003 측면 전투에서 이 스킬이 보여 줄 도트 연출을 계약 id 로 빌린다(예: skill_knight_slash). 새·복제 스킬은 이걸 안 주면 기본 베기/불꽃으로 보인다. 후보는 list_retro_choreographies 로 찾는다. 빈 문자열이면 해제",
+  ),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
@@ -1177,6 +1251,10 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
  */
 function validateSkillRetroPatch(draft: Project, patch: unknown): void {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
+  const gimmick=(patch as Record<string,unknown>).battleGimmick;
+  if(gimmick!==undefined&&!normalizeBattleGimmick(gimmick))throw new ToolError("battleGimmick.pattern 은 32종 동작 중 하나여야 합니다.",{code:"invalid-battle-gimmick"});
+  const gimmickResource=normalizeBattleGimmick(gimmick)?.resourceId;
+  if(gimmickResource&&!partyPixelSheet(gimmickResource))throw new ToolError(`존재하지 않는 기믹 그림: ${gimmickResource}`,{code:"summon-sheet-not-found"});
   const summon = (patch as Record<string, unknown>).summonResourceId;
   if (typeof summon === "string" && summon.trim() && !partyPixelSheet(summon.trim())) {
     const chip = summon.trim().replace(/^party-pixel-/, "");

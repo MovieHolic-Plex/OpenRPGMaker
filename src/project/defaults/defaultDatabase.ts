@@ -76,9 +76,12 @@ export function ensureRetroRosterRecords(project: {
   const wantedClassIds = new Set<string>([...RETRO_EXTENSION_CLASS_IDS, ...rosterClassIds()]);
   const party = defaultPartyRecords();
   const skills = defaultSkillRecords();
+  const commonMotionIds=new Set(db.skills.map(r=>r.id));
+  const missingMotions=skills.filter(r=>r.id.startsWith("skill_motion_")&&!commonMotionIds.has(r.id));
+  db.skills.push(...missingMotions);
   const states = defaultStateRecords();
   const added: Parameters<typeof appendRetroRosterDependencies>[2] = [];
-  let changed = false;
+  let changed = missingMotions.length>0;
   const classIds = new Set(db.classes.map((record) => record.id));
   for (const record of party.classes) {
     if (!wantedClassIds.has(record.id) || classIds.has(record.id)) continue;
@@ -116,7 +119,7 @@ export function ensureRetroRosterRecords(project: {
     stateIds.add(record.id);
     changed = true;
   }
-  if (added.length === 0) return false;
+  if (added.length === 0) return changed;
   return appendRetroRosterDependencies(db, {
     actors: party.actors, classes: party.classes, equipment: party.equipment,
     skills, states,

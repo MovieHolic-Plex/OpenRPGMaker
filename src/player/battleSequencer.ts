@@ -109,13 +109,13 @@ export interface BattleSequencerHooks {
   readonly collapseHoldMs?: () => number;
   /** 아군 행동의 접근(approach) 비트 길이를 표시 계층이 정한다(도트 측면 전투: 적 앞까지 걷는 거리에 비례).
    *  undefined 를 돌려주면 BATTLE_ACTING_MS 그대로 — 이 훅이 없는 스킨의 시간은 바뀌지 않는다. */
-  readonly actorApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  readonly actorApproachMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
   /** 아군 행동의 회복(recover) 비트 최소 길이(걸어간 거리만큼 뛰어 돌아오는 시간). */
-  readonly actorRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  readonly actorRecoverMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
   /** 적 행동의 예고(approach) 비트 길이. 도트 측면 전투에서 적이 아군 앞까지 뛰어/날아가는 시간. undefined 면 BATTLE_ENEMY_WINDUP_MS. */
-  readonly enemyApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  readonly enemyApproachMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
   /** 적 행동의 회복(recover) 비트 최소 길이(제자리로 돌아가는 시간). */
-  readonly enemyRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  readonly enemyRecoverMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
   /** 표시 계층이 행동의 무게를 바꾼다(도트 연출 레코드의 weight 손잡이). undefined 면 피드백에서 정한 무게 그대로. */
   readonly actionWeight?: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => BattleActionWeight | undefined;
 }
@@ -516,20 +516,20 @@ export function createBattleSequencer(
           hitStopMs: BATTLE_HITSTOP_MS,
           // 연출 재생기(retro2003)가 시각을 정한 엔트리는 그 값을 그대로 쓴다 — 다단·광역의 타 사이를 최소 비트(400ms)로
           // 벌리면 연출이 끝난 뒤에야 숫자가 하나씩 떴다(2026-10-01 실측, 플레슈 5타).
-          impactMs: hooks.enemyRecoverMs?.(entry)
-            ?? recoverMsForAnimation(entry.animation?.durationMs, hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+          impactMs: hooks.enemyRecoverMs?.(entry, weight)
+            ?? recoverMsForAnimation(entry.animation?.durationMs, hooks.enemyApproachMs?.(entry, weight) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
-          windupMs: hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS,
+          windupMs: hooks.enemyApproachMs?.(entry, weight) ?? BATTLE_ENEMY_WINDUP_MS,
         })
       : planActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "actor",
           targetId: entry.targetId,
           feedback,
-          actingMs: Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs),
+          actingMs: Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicMs),
           hitStopMs: BATTLE_HITSTOP_MS,
           // 후속 애니메이션(연기·잔광)이 비트보다 길면 recover 를 늘려 잘리지 않게 한다.
-          impactMs: hooks.actorRecoverMs?.(entry)
-            ?? recoverMsForAnimation(entry.animation?.durationMs, Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+          impactMs: hooks.actorRecoverMs?.(entry, weight)
+            ?? recoverMsForAnimation(entry.animation?.durationMs, Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
         });
     // 이펙트 마운트 시점: 착탄 프레임이 임팩트 비트와 같은 순간에 오도록 approach 길이에서

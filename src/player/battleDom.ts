@@ -1,6 +1,6 @@
 import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
-import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
@@ -44,6 +44,7 @@ import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
 import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
+import { createBattleImpactController } from "@/player/battleImpactDom";
 import { resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
@@ -196,6 +197,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let shiftCombined = false;
 
   const field = battleField(initialSnapshot);
+  const impactContact = createBattleImpactController(field);
   field.dataset.testid = "battle-field";
   // 롤링 HP(system.battleRollingHp): 아군 HP 표시가 미터처럼 굴러간다. 규칙 엔진은 건드리지 않고,
   // 결과 확정 때 applyRollingHpSurvival 이 미터에 남은 HP 로 결산한다.
@@ -471,6 +473,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const intensity = hitIntensity(feedback, maxHp, lethal);
         applyHitIntensity(root, targetNode, intensity);
         if (retroMotion) retroDamage(targetNode, feedback, lethal);
+        if (retroMotion && hitFeel === "impact" && intensity && targetNode && !prefersReducedMotion()) {
+          impactContact.strike(targetNode, intensity);
+        }
         // 타격/급소/회복/빗나감 효과음 — 사건 1개에 소리 1개. emitBattleJuice 안의
         // playBattleCue 가 샘플→합성 폴백을 단일 경로로 처리한다. 여기서 합성 보이스를
         // 따로 부르면 한 타격에 소리가 겹친다(예전 결함).
@@ -493,17 +498,19 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
             playBattleCue("faint");
           }, 260);
         }
-        if (!feedback.healing && !feedback.miss) {
+        if (intensity) {
           const hurt = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
           flashBattleField(root, feedback.critical ? "critical" : "hit", hurt ? hurtShakeIntensity(hitFeel, intensity) : intensity, { hurt });
           // 타격음 아래 저음 한 겹 — 샘플은 사건 1개 = 소리 1개(battleJuice) 그대로다. 이 저음은 그 위의 별도 층이다.
           if (hitFeel === "impact" && intensity) playBattleSfx("thud");
           // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
-          if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
+          if (intensity && targetNode && !lethal && !(retroMotion && hitFeel === "impact")) spawnHitSparks(targetNode, intensity);
         }
       }
     },
     onHitFeel(active, feedback) {
+      if (retroMotion) holdRetroSkillPlayback(field, active);
+      impactContact.hold(active);
       // 정지(히트스톱)가 풀리는 순간 맞은 쪽이 세 번 깜빡인다. 정지 중에는 22-hit-feel.css 가
       // 대상을 흰 실루엣으로 붙잡고 있으므로, 점멸은 그 뒤의 "반응" 이다.
       if (active) hitStopFeedback = feedback;
@@ -515,7 +522,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         else if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
       }
       // 히트스톱이 걸리는 순간 맞은 쪽이 떨기 시작한다(impact). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
-      if (active && hitFeel === "impact" && feedback && !prefersReducedMotion()) {
+      if (active && !retroMotion && hitFeel === "impact" && feedback && !prefersReducedMotion()) {
         const node = findBattlerNode(field, feedback.targetId);
         const strength = node?.dataset.hitIntensity;
         if (node && (strength === "graze" || strength === "normal" || strength === "heavy" || strength === "crushing")) {
@@ -568,14 +575,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.
-      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline)
+      actorApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline, weight)
         ?? retroSkillForEntry(entry)?.approachMs ?? retroWalk(field, entry)?.approachMs,
-      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
+      actorRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline, weight)
         ?? retroSkillForEntry(entry)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
       // 몬스터 스킬 42종은 같은 타임라인 훅(첫 착탄·대상별 간격·남은 연출). 그 밖의 도트 적 근접은 대상 아군 앞까지 뛰어/날아간다.
-      enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline)
+      enemyApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline, weight)
         ?? retroEnemyReach(field, entry)?.approachMs,
-      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
+      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline, weight)
         ?? retroEnemyReach(field, entry)?.recoverMs,
       // 연출 레코드의 무게 손잡이(light/normal/heavy) — 접근·멈춤·회복 배율이 같이 바뀐다.
       actionWeight: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => retroClassSkillWeight(field, entry, base, options.runtime.snapshot().timeline),
@@ -1589,6 +1596,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (destroyed) return;
       destroyed = true;
       animationBlendObserver.disconnect();
+      stopRetroClassSkill(field);
+      impactContact.destroy();
       clearBattleTimerScope();
       rollingHpTicker?.stop();
       choiceController?.abort();

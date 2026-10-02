@@ -1,3 +1,4 @@
+import { sampleBasicMotion } from "@/battle/battleMotionProgram";
 import { beginEnemyCollapse } from "@/player/battleEnemyCollapse";
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
@@ -565,7 +566,8 @@ function animateMeleeApproach(node: HTMLElement, length: number): readonly [numb
     frames = [[0, "attack_windup"], [lean, "walk_a"], [lean + (arrive - lean) * 0.4, "walk_c"], [arrive - 0.06, "attack_strike"]];
   }
   approachAnimations.get(node)?.cancel();
-  const animation = node.animate(keys, { duration: Math.max(1, length), fill: "forwards" });
+  const sampled=style==="blink"?keys:Array.from({length:Math.max(2,Math.ceil(length/16)+1)},(_,i)=>{const u=i/(Math.max(2,Math.ceil(length/16)+1)-1),p=sampleBasicMotion(keys,u,style);return {offset:u,translate:`${p.x}px ${p.y}px`};});
+  const animation = node.animate(sampled, { duration: Math.max(1, length), fill: "forwards",easing:"linear" });
   approachAnimations.set(node, animation);
   // 이동 효과음: 출발 순간에 한 번(도약은 착지에 한 번 더). 순간이동은 사라지는 순간.
   const departAt = keys[1]?.offset ?? 0;
@@ -584,9 +586,6 @@ function spawnAfterimages(node: HTMLElement, keys: readonly { offset: number; tr
   if (!sprite || !parent) return;
   const from = keys[1]!;
   const to = keys[keys.length - 2]!;
-  const parse = (value: string) => value.split(" ").map((part) => Number.parseFloat(part) || 0);
-  const [x0, y0] = parse(from.translate);
-  const [x1, y1] = parse(to.translate);
   for (let i = 0; i < count; i += 1) {
     const t = (i + 1) / (count + 1);
     const delay = Math.round(length * (from.offset + (to.offset - from.offset) * t));
@@ -602,7 +601,7 @@ function spawnAfterimages(node: HTMLElement, keys: readonly { offset: number; tr
       copy.removeAttribute("role");
       copy.removeAttribute("aria-label");
       ghost.append(copy);
-      ghost.style.translate = `${Math.round(x0 + (x1 - x0) * t)}px ${Math.round(y0 + (y1 - y0) * t)}px`;
+      ghost.style.translate = getComputedStyle(node).translate;
       parent.append(ghost);
       scheduleBattleTimer(() => ghost.remove(), 220);
     }, delay);

@@ -309,7 +309,7 @@ function presentedForm(battler: BattleBattlerSnapshot, presentation: BattleField
     const id = states.find((state) => state.id === stateId)?.runtimeEffects?.transformResourceId?.trim();
     if (id) form = id;
   }
-  return form;
+  return form ?? battler.gimmicks?.find((status) => status.kind === "transform")?.resourceId;
 }
 
 /** 롤링 미터가 있으면 아군 HP 표시값과 「쓰러지는 중」 여부를 미터에서 얻는다. */
@@ -625,6 +625,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
     syncBattleAura(node, presented.defeated ? [] : presentedStateIds(actor, presentation));
     syncChargeMark(node, presented.defeated ? undefined : actor.charging);
+    syncGimmickMarks(node,presented.defeated?[]:actor.gimmicks??[]);
   }
 }
 
@@ -683,6 +684,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation) });
   syncBattleAura(node, presented.defeated ? [] : presentedStateIds(enemy, presentation));
   syncChargeMark(node, presented.defeated ? undefined : enemy.charging);
+  syncGimmickMarks(node,presented.defeated?[]:enemy.gimmicks??[]);
 }
 
 /**
@@ -1844,6 +1846,15 @@ function fitAuraLayerToSprite(node: HTMLElement, layer: HTMLElement): void {
 }
 
 /** 힘 모으기(SkillRecord.chargeTurns) 예고 표식: 몸이 빛나고(CSS) 머리 위에 「기술 · 남은 차례」 띠가 뜬다. */
+function syncGimmickMarks(node:HTMLElement,statuses:NonNullable<BattleBattlerSnapshot["gimmicks"]>):void {
+  const key=JSON.stringify(statuses);if(node.dataset.gimmicks===key)return;node.dataset.gimmicks=key;
+  node.querySelector(":scope > .battle-gimmick-marks")?.remove();if(!statuses.length)return;
+  const host=document.createElement("span");host.className="battle-gimmick-marks";
+  const labels={mark:"표식",airborne:"공중",trap:"설치",zone:"장판",summon:"지원",counter:"반격",cover:"엄호",absorb:"흡수",transform:"변신"};
+  for(const s of statuses){const tag=document.createElement("span");tag.textContent=`${labels[s.kind]} ${s.kind==="mark"?s.stacks:s.kind==="absorb"?s.stored:s.turnsLeft}`;host.append(tag);
+    if(s.kind==="summon"){const sheet=partyPixelSheet(s.resourceId??"party-pixel-animal-7");if(sheet){const sprite=document.createElement("span");sprite.className="battle-gimmick-summon";Object.assign(sprite.style,{backgroundImage:`url("${partyPixelSheetUrl(sheet)}")`,backgroundSize:`300% ${sheet.rows*100}%`,backgroundPosition:partyPixelBackgroundPosition(sheet,"idle_a")});host.append(sprite);}}
+  }node.append(host);
+}
 function syncChargeMark(node: HTMLElement, charging: BattleBattlerSnapshot["charging"]): void {
   const key = charging ? `${charging.skillName} · ${charging.turnsLeft}` : "";
   if ((node.dataset.charging ?? "") === key) return;

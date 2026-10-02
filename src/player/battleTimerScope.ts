@@ -20,6 +20,12 @@ export function scheduleBattleTimer(callback: () => void, ms: number): number {
   return id;
 }
 
+/** Remove a rescheduled playback timer from the scene's ownership set too. */
+export function cancelBattleTimer(id: number): void {
+  window.clearTimeout(id);
+  active?.delete(id);
+}
+
 /** 전투 마운트가 스코프를 연다. 이전 스코프가 남아 있으면 먼저 끊는다. */
 export function openBattleTimerScope(): void {
   clearBattleTimerScope();

@@ -1,8 +1,9 @@
+import type { MotionTrack, BattleMotionProgram } from "@/battle/battleMotionProgram";
 // retro2003 스킬 연출의 **순수 타임라인** — 레시피(계약 motion + layers, 또는 런타임 RETRO_SKILL_RECIPES 형식)를
 // [ms, 무엇을, 어디에, 몇 번째 칸] 사건 목록으로 풀고, 임의 시각 t 의 무대 상태를 계산한다.
 //
 // DOM·타이머·스토어를 모른다. 편집기 스킬 탭 미리보기(databaseSkillRetroStage)가 쓰고,
-// 런타임(src/player/retroSkillChoreography)도 같은 함수로 옮겨 오면 두 화면이 같은 순서로 움직인다.
+// 런타임(src/player/retroSkillChoreography)과 미리보기가 같은 함수로 움직인다.
 //
 // 레이어 배치 규칙(계약의 "재생 순서대로"를 anchor 의 뜻과 함께 읽는다):
 //   user        시전자 몸 — 모션의 준비 순간(충전·질주 시작)에 시작하고 시전자를 따라간다.
@@ -38,6 +39,7 @@ export type RetroTimelineEvent =
     /** 겨누는 대상 번호(대상 편 목록 기준). -1 = 대상 편 가운데. */
     readonly aim: number;
     readonly filter?: string;
+    readonly trajectory?: MotionTrack;
   }
   | {
     readonly kind: "screen"; readonly at: number; readonly durationMs: number; readonly effect: RetroScreenEffect;
@@ -50,6 +52,8 @@ export type RetroTimelineEvent =
   | { readonly kind: "sound"; readonly at: number; readonly id: string };
 
 export interface RetroSkillTimeline {
+  readonly actors?: readonly MotionTrack[];
+  readonly movement?: BattleMotionProgram;
   readonly durationMs: number;
   readonly castType: CastType;
   readonly side: RetroTimelineSide;
@@ -200,6 +204,7 @@ class TimelineBuilder {
   readonly events: RetroTimelineEvent[] = [];
   end = 0;
   firstImpactMid = -1;
+  side: RetroTimelineSide = "enemies";
   /** 이번 행동의 타수(hitSequence 수). onHit:"each" 층이 이만큼 반복한다. 기본 1. */
   hitCount = 1;
   private touch(at: number): void { this.end = Math.max(this.end, at); }
@@ -270,7 +275,9 @@ function playImpact(b: TimelineBuilder, start: number, layers: readonly IndexedL
     if (b.firstImpactMid < 0) b.firstImpactMid = Math.round(layerAt + length * 0.45);
     const who = layer.anchor === "target" ? "target" : "allTargets";
     for (let i = 0; i < hitsPerLayer; i += 1) b.hit(Math.round(layerAt + length * (0.25 + (0.5 * i) / Math.max(1, hitsPerLayer))), who);
-    for (const [turn, turnAt] of placed.starts.entries()) if (turn === 0 || layer.onHit === "each") b.sound(turnAt, layer.se ?? retroSoundForLayer(layer.key));
+    // Impact audio belongs to contact, not the quiet opening cells of the layer.
+    const contactLead = b.side === "enemies" ? Math.round(length * 0.25) : 0;
+    for (const [turn, turnAt] of placed.starts.entries()) if (turn === 0 || layer.onHit === "each") b.sound(turnAt + contactLead, layer.se ?? retroSoundForLayer(layer.key));
     end = Math.max(end, layerEnd);
     at = Math.round(at + length * OVERLAP);
   }
@@ -341,6 +348,7 @@ export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { re
   b.hitCount = Math.max(1, Math.round(options.hits ?? 1));
   const castType = retroCastTypeFor(skill);
   const side = options.side ?? retroDefaultSide(skill);
+  b.side = side;
   const { user, projectile, aim, impact } = partition(skill.layers);
   const playUser = (at: number): void => { for (const { index, layer } of user) b.layerFx(at, index, layer, false); };
   const multiShot = /multi/.test(skill.layers.map((layer) => layer.key).join(" ")) || /연사/.test(skill.name ?? "");
@@ -351,8 +359,10 @@ export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { re
     case "dash-strike": {
       b.pose(0, "idle"); b.pose(50, "attack_windup"); playUser(50);
       b.sound(90, SOUND.dash); b.pose(100, "walk_b"); b.move(100, 130, "front", -6);
-      b.pose(230, "attack_windup"); b.pose(260, "attack_strike"); b.pose(310, "attack");
+      b.pose(230, "attack_windup");
       const end = playImpact(b, 275, impact);
+      const contact = b.events.find(event => event.kind === "hit")?.at ?? 350;
+      b.pose(Math.max(240, contact - 60), "attack_strike"); b.pose(contact, "attack");
       // 칸이 10장 이상인 베기(십자베기 등)는 두 번째 휘두름이 보이게 한다.
       const second = impact[0] && impact[0].layer.frames >= 10 ? 275 + Math.round(impact[0].layer.frames * 60 * 0.45) : -1;
       if (second > 0) { b.pose(second - 60, "attack_windup"); b.pose(second, "attack_strike"); b.pose(second + 60, "attack_follow"); b.sound(second, SOUND.swing); }
@@ -406,8 +416,8 @@ export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { re
     }
     case "cast": {
       b.pose(0, "idle"); b.pose(60, "cast_charge"); playUser(60);
-      b.pose(360, "cast_raise");
-      let release = 680;
+      b.pose(240, "cast_raise");
+      let release = 480;
       if (aim.length > 0) { for (const entry of aim) release = Math.max(release, b.fx(200, entry.index, entry.layer) + 40); }
       b.pose(release, "cast_release"); b.sound(release, CAST_SOUND[castType]);
       const land = projectile.length > 0 ? launch(b, release + 40, projectile, impact, multiShot) : release + 60;
@@ -610,6 +620,7 @@ export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill, opti
   b.hitCount = Math.max(1, Math.round(options.hits ?? 1));
   const castType = ELEMENT_CAST[skill.element ?? ""] ?? (skill.motion === "buff" ? "support" : "arcane");
   const side = options?.side ?? retroMonsterSide(skill);
+  b.side = side;
   const { user, projectile, aim, impact } = partition(skill.layers);
   const playUser = (at: number): void => { for (const { index, layer } of user) b.layerFx(at, index, layer, false); };
   let tail = MONSTER_TAIL_MS;
@@ -701,7 +712,7 @@ export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill, opti
 // ---- 시각 t 의 무대 상태 ----
 
 export interface RetroFxState { readonly event: number; readonly layer: number; readonly key: string; readonly anchor: Exclude<RetroFxAnchor, "projectile">; readonly frame: number; readonly cell: number; readonly filter?: string }
-export interface RetroProjectileState { readonly event: number; readonly layer: number; readonly key: string; readonly frame: number; readonly cell: number; readonly progress: number; readonly path: RetroProjectilePath; readonly aim: number; readonly filter?: string }
+export interface RetroProjectileState { readonly event: number; readonly layer: number; readonly key: string; readonly frame: number; readonly cell: number; readonly progress: number; readonly path: RetroProjectilePath; readonly aim: number; readonly filter?: string; readonly trajectory?: MotionTrack; readonly at?:number }
 export interface RetroStageState {
   readonly pose: ExtendedBattlerPose;
   readonly flip: boolean;
@@ -761,6 +772,7 @@ export function retroTimelineStateAt(timeline: RetroSkillTimeline, t: number): R
         const elapsed = t - event.at;
         if (elapsed < event.durationMs) projectiles.push({
           event: index, layer: event.layer, key: event.key, frame: event.frame,
+          ...(event.trajectory ? {trajectory:event.trajectory,at:t} : {}),
           cell: Math.floor(elapsed / Math.max(1, event.frameMs)) % event.frames, progress: elapsed / event.durationMs, path: event.path, aim: event.aim,
           ...(event.filter && event.filter !== "none" ? { filter: event.filter } : {}),
         });

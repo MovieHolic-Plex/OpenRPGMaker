@@ -1,3 +1,4 @@
+import { BATTLE_MOTION_PATTERNS, normalizeBattleMotionProgram } from "@/battle/battleMotionProgram";
 // editor/tools/retroChoreographyTools.ts
 // list_retro_choreographies: retro2003 측면 전투의 계약 도트 연출(직업 96+로스터, 몬스터)을 찾아 준다.
 // 새 스킬은 여기서 고른 id 를 upsert_skill 의 retroChoreographyId 로 넣어 연출을 빌려 쓴다.
@@ -138,7 +139,7 @@ function checkRange(label: string, value: unknown, [min, max]: readonly [number,
 /** 색조로 받는 값 — 저장 정규화(skillChoreographyRecords tintValue)와 같은 집합. 복제한 층의 프리셋을 그대로 되돌려 보내도 통과한다. */
 const TINT_HINT = `#rrggbb · 프리셋 ${RETRO_TINT_PRESETS.map((preset) => preset.id).join("·")} · original(층만 원본색)`;
 /** upsert_choreography 의 clear — 이 필드들을 레코드에서 지운다(원래 값으로 되돌리기). */
-const CLEARABLE = ["description", "speed", "weight", "tint", "screen", "tags"] as const;
+const CLEARABLE = ["description", "speed", "weight", "tint", "screen", "tags", "movement"] as const;
 
 function checkLayer(raw: unknown, index: number): SkillChoreographyLayer {
   const label = `layers[${index}]`;
@@ -212,6 +213,21 @@ const layerItemSchema = {
   required: ["sheet", "anchor"],
 } as const;
 
+const motionProgramSchema = {
+  type:"object",description:"미리보기·실제 전투가 공유하는 이동 설계. pattern 32종, 속도 곡선과 배우별 경로.",
+  properties:{
+    pattern:{type:"string",enum:[...BATTLE_MOTION_PATTERNS]},
+    anticipationMs:{type:"number"},travelMs:{type:"number"},recoveryMs:{type:"number"},jumpHeight:{type:"number"},apexMs:{type:"number"},acceleration:{type:"number"},
+    tracks:{type:"array",description:"최대 6 배우/48 지점. 시각 ms, 상대 자리, 오프셋 px. 지점은 시간순으로 정렬된다.",items:{
+      type:"object",properties:{
+        role:{type:"string",enum:["user","target","ally","cloneA","cloneB","summon"]},
+        points:{type:"array",items:{type:"object",properties:{
+          at:{type:"number"},anchor:{type:"string",enum:["home","front","target","target2","target3","ally","left","right","top"]},x:{type:"number"},y:{type:"number"},curve:{type:"string",enum:["linear","pull","burst","walk","rise","fall","settle","flow"]},pose:{type:"string"},alpha:{type:"number"},flip:{type:"boolean"}
+        },required:["at","anchor"]}}
+      },required:["role","points"]
+    }}
+  },required:["pattern"]
+} as const;
 const upsertChoreography: ToolDefinition = {
   name: "upsert_choreography",
   description:
@@ -230,6 +246,7 @@ const upsertChoreography: ToolDefinition = {
       description: { type: "string", description: "한 줄 설명(선택)" },
       motion: { type: "string", enum: MOTIONS, description: "동작 종류(새로 만들 때 필수)" },
       layers: { type: "array", items: layerItemSchema, description: "이펙트 층 목록(새로 만들 때 필수). 주면 층 전체를 교체" },
+      movement: motionProgramSchema,
       speed: { type: "number", description: `재생 속도 배율(${SPEED_MIN}~${SPEED_MAX}, 선택)` },
       weight: { type: "string", enum: [...SKILL_CHOREOGRAPHY_WEIGHTS], description: "무게감(선택)" },
       tint: { type: "string", description: "전체 색조(선택): #rrggbb 또는 프리셋 id(fire ice thunder …)" },
@@ -288,11 +305,13 @@ const upsertChoreography: ToolDefinition = {
       checkRange("screen.shake", args.screen.shake, SKILL_CHOREOGRAPHY_RANGES.shake);
       if (args.screen.flash !== undefined && !(typeof args.screen.flash === "string" && /^#[0-9a-fA-F]{6}$/.test(args.screen.flash))) fail("screen.flash 는 #rrggbb 색이어야 합니다.", "invalid-choreography");
     }
+    if(args.movement!==undefined && !normalizeBattleMotionProgram(args.movement))fail("movement.pattern 은 32종 동작 중 하나여야 합니다.","invalid-choreography");
     const tags = isObject(args.tags) ? { ...existing?.tags, ...(text(args.tags.family) ? { family: text(args.tags.family) } : {}), ...(text(args.tags.element) ? { element: text(args.tags.element) } : {}) } : existing?.tags;
     const draftRecord: Record<string, unknown> = {
       ...existing,
       id: existing?.id ?? freshChoreographyId(records, name),
       name, motion, layers,
+      ...(args.movement!==undefined?{movement:normalizeBattleMotionProgram(args.movement)}:{}),
       ...(text(args.description) ? { description: text(args.description) } : {}),
       ...(speed !== undefined ? { speed } : {}),
       ...(args.weight !== undefined ? { weight: args.weight } : {}),
@@ -430,7 +449,7 @@ const previewChoreography: ToolDefinition = {
     }));
     return {
       summary: `연출 「${resolved.skill.name}」(${resolved.origin === "project" ? "프로젝트" : "기본"}, ${resolved.motion}) 층 ${layers.length}개 — 층별 프레임 그림을 확인하세요.`,
-      data: { id: resolved.id, name: resolved.skill.name, origin: resolved.origin, kind: resolved.kind, motion: resolved.motion, layers },
+      data: { id: resolved.id, name: resolved.skill.name, origin: resolved.origin, kind: resolved.kind, motion: resolved.motion, movement:resolved.record?.movement, layers },
     };
   },
 };

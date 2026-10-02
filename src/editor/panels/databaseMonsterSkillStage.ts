@@ -1,3 +1,7 @@
+import {partyPixelSheet,partyPixelSheetUrl,partyPixelFrame} from "@/assets/partyPixelSheets";
+import { applyChoreographyHandles } from "@/battle/retroChoreographyHandles";
+import { motionPositionAt, type MotionAnchors } from "@/battle/battleMotionProgram";
+import type { SkillChoreographyRecord } from "@/project/types/database";
 // retro2003 **몬스터 스킬** 미리보기 — 편집기 전용 순수 타임라인 + 레이어 그리기 + 스킬 탭 반전 무대.
 //
 // 계약: src/assets/retroMonsterSkills.ts(스킬 42개 · slug → 스킬 목록). 레코드(skill_mon_*)가 없어도 계약만으로 돈다.
@@ -26,6 +30,7 @@ import {
   retroSoundsBetween,
   retroTimelineSounds,
   retroTimelineStateAt,
+  retroMonsterSkillTimeline,
   type RetroProjectilePath,
   type RetroScreenEffect,
   type RetroSkillTimeline,
@@ -284,6 +289,8 @@ export type MonsterFxGeometry = {
   readonly allies: readonly Point[];
   readonly stageW: number;
   readonly stageH: number;
+  readonly programAnchors?:MotionAnchors;
+  readonly acceleration?:number;
 };
 
 /** 레이어 한 칸의 논리 크기. 대상·전원 위 128 칸은 절반(화면 1배), 화면 128 은 무대 높이 × 1.25. */
@@ -353,9 +360,10 @@ export function createMonsterFxPainter(
       // 몬스터 앞쪽(오른쪽) 몸 가운데에서 떠나 왼→오로 난다.
       const from = { x: g.caster.x + g.casterCell * 0.3, y: g.caster.y - g.casterCell * 0.45 };
       const p = shot.progress;
-      const point = shot.path === "fall"
+      let point = shot.path === "fall"
         ? { x: lerp(to.x - 46, to.x, p), y: lerp(-20, to.y, p) }
         : { x: lerp(from.x, to.x, p), y: lerp(from.y, to.y, p) - 14 * 4 * p * (1 - p) };
+      if(shot.trajectory&&g.programAnchors)point=motionPositionAt(shot.trajectory,shot.at??0,g.programAnchors,g.acceleration);
       place(shot.event * 10 + 9, shot.layer, shot.cell, point, false, used, g.stageH);
     }
     for (const [id, node] of nodes) node.hidden = !used.has(id);
@@ -402,9 +410,12 @@ export type MonsterSkillStage = { readonly element: HTMLElement; readonly stop: 
  * 스킬 탭 몬스터 스킬 무대. 몬스터(그 스킬을 가진 첫 slug 의 도트 시트)가 왼쪽에서 시전하고
  * 오른쪽 아군 셋이 대상이다. 이름은 레코드 이름 → 계약 이름.
  */
-export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string): MonsterSkillStage {
-  const timeline = monsterSkillTimeline(skill);
-  const caster = monsterCasterFor(skill.id);
+export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,record?:SkillChoreographyRecord,hits?:number): MonsterSkillStage {
+  const baseTimeline=record?.movement?retroMonsterSkillTimeline(skill,{hits}):monsterSkillTimeline(skill);
+  let timeline = applyChoreographyHandles(baseTimeline,record);
+  let previewHit=true,previewTriggered=true;
+  const extraNodes=new Map<string,HTMLElement>();
+  const caster = monsterCasterFor(skill.id) ?? (record?.movement ? {slug:"slime",sheet:PIXEL_ENEMY_SHEETS.find(s=>s.resourceId==="generated-enemy-slime-01")} : undefined);
   const sheet = caster?.sheet;
   const cell = sheet ? pixelEnemyCell(sheet) : CELL;
   const grow = Math.max(0, cell - CELL);
@@ -465,18 +476,24 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string)
   const counter = el("span", { class: "db-skill-animation-chip db-skill-retro-time", dataset: { testid: "db-skill-mon-time" } });
 
   function draw(): void {
-    const state = retroTimelineStateAt(timeline, now);
+    let state = retroTimelineStateAt(timeline, now);
+    if(!previewHit||!previewTriggered)state={...state,hitTarget:0,hitAll:0};
     world.style.setProperty("--retro-shake-x", state.shake.x + "px");
     world.style.setProperty("--retro-shake-y", state.shake.y + "px");
     dimVeil.style.opacity = String(Math.round(state.dim * 72) / 100);
     flashVeil.style.opacity = String(Math.round(state.flash * 80) / 100);
-    const point = monsterMovePoint(state, home, front);
-    const beat = monsterCellForPose(state.pose) ?? idleCells[Math.floor(clock / (sheet?.idleFrameMs ?? 220)) % 4]!;
+    const anchors:MotionAnchors={home,front,target,target2:party[0]!.home,target3:party[2]!.home,ally:home,left:{x:-96,y:home.y},right:{x:STAGE_W+96,y:home.y},top:{x:target.x,y:-160}};
+    const track=timeline.actors?.find(a=>a.role==="user");
+    const programmed=track?motionPositionAt(track,now,anchors,timeline.movement?.acceleration):undefined;
+    const point = programmed??monsterMovePoint(state, home, front);
+    const beat = monsterCellForPose(programmed?.pose??state.pose) ?? idleCells[Math.floor(clock / (sheet?.idleFrameMs ?? 220)) % 4]!;
     const pos = PIXEL_ENEMY_FRAME[beat];
     monster.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     // 시트 계약: 바닥 기준선 y = cell − 4.
     monster.style.left = Math.round(point.x - cell / 2) + "px";
     monster.style.top = Math.round(point.y - (cell - 4)) + "px";
+    monster.style.opacity=String(programmed?.alpha??1);
+    monster.style.scale=programmed?.flip?"-1 1":"";
     monster.style.zIndex = point.x > home.x + 1 ? "40" : baseZ;
     const selfGlow = timeline.side !== "enemies" && state.fx.some((fx) => fx.anchor === "user" || fx.anchor === "allAllies") ? 0.6 : 0;
     monster.style.setProperty("--retro-hit", String(selfGlow * 0.3));
@@ -487,13 +504,25 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string)
       member.node.style.backgroundPosition = -pose.col * CELL + "px " + -pose.row * CELL + "px";
       // 아군은 오른쪽으로 밀려난다.
       const knock = struck > 0 ? Math.round(5 * struck) + (Math.floor(clock / 40) % 2 === 0 ? 1 : -1) : 0;
-      member.node.style.left = Math.round(member.home.x - CELL / 2 + knock) + "px";
-      member.node.style.top = Math.round(member.home.y - 45) + "px";
+      const targetTrack=index===FRONT_ALLY?timeline.actors?.find(a=>a.role==="target"):undefined;
+      const at=targetTrack?motionPositionAt(targetTrack,now,anchors,timeline.movement?.acceleration):member.home;
+      member.node.style.left = Math.round(at.x - CELL / 2 + knock) + "px";
+      member.node.style.top = Math.round(at.y - 45) + "px";
       member.node.style.setProperty("--retro-glow", "0");
       member.node.style.setProperty("--retro-dim", String(Math.round(state.dim * 100) / 100));
     });
+    const usedRoles=new Set<string>();
+    for(const track of timeline.actors??[]){if(["user","target"].includes(track.role))continue;
+      usedRoles.add(track.role);let node=extraNodes.get(track.role);if(!node){node=monster.cloneNode(false) as HTMLElement;world.append(node);extraNodes.set(track.role,node);}
+      const p=motionPositionAt(track,now,anchors,timeline.movement?.acceleration);node.hidden=false;node.style.opacity=String(p.alpha);node.style.scale=p.flip?"-1 1":"";
+      const summon=track.role==="summon"?partyPixelSheet("party-pixel-animal-7"):undefined,c=summon?.cell??cell;
+      const f=summon?partyPixelFrame(summon,p.pose==="attack"?"attack":"idle_a"):PIXEL_ENEMY_FRAME[monsterCellForPose(p.pose??"idle")??"idle_a"];
+      Object.assign(node.style,{left:`${p.x-c/2}px`,top:`${p.y-c+4}px`,width:`${c}px`,height:`${c}px`,backgroundSize:`${c*3}px ${c*(summon?.rows??3)}px`,backgroundPosition:`${-f.col*c}px ${-f.row*c}px`,zIndex:"42"});
+      if(summon)node.style.backgroundImage=`url("${partyPixelSheetUrl(summon)}")`;
+    }
+    for(const [role,node]of extraNodes)node.hidden=!usedRoles.has(role);
     painter.paint(state, {
-      caster: point, casterCell: cell, target, targets: party.map((entry) => entry.home), allies: [point], stageW: STAGE_W, stageH: STAGE_H,
+      caster: point, casterCell: cell, target, targets: party.map((entry) => entry.home), allies: [point], stageW: STAGE_W, stageH: STAGE_H,programAnchors:anchors,acceleration:timeline.movement?.acceleration,
     });
     stage.dataset.retroTime = String(Math.round(now));
     stage.dataset.pixelCell = beat;
@@ -528,7 +557,9 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string)
       el("span", { text: "시전 몬스터" }), " ", el("code", { class: "notranslate", attrs: { translate: "no" }, text: caster.slug }),
     ] })] : []),
   ] });
-  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter] });
+  const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"조건 불충족"})]}) as HTMLSelectElement;
+  outcome.addEventListener("change",()=>{previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement)timeline=applyChoreographyHandles(baseTimeline,record,{hit:previewHit,triggered:previewTriggered,ally:previewTriggered});now=0;draw();});
+  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview db-skill-mon-preview", dataset: { testid: "db-skill-mon-preview", skill: skill.id }, children: [caption, stage, controls, chips] });
   if (typeof ResizeObserver === "function") {
     new ResizeObserver((entries) => {

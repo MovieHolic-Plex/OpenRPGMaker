@@ -1,3 +1,4 @@
+import { defaultBattleMotionSkills } from "@/assets/battleMotionCatalog";
 import type {
   BattleAnimationFlash,
   BattleAnimationPosition,
@@ -123,6 +124,7 @@ export function defaultSkillRecords(): SkillRecord[] {
     // retro2003 몬스터 스킬 42개(계약 src/assets/retroMonsterSkills.ts). 도트 적 행동이 쓴다(defaultBattleRecords).
     ...retroMonsterSkillRecords(),
     ...defaultSharedItemBattleSkills(),
+    ...defaultBattleMotionSkills(),
   ];
   applyGeneratedBattleEffectSkillBindings(records);
   return records;
