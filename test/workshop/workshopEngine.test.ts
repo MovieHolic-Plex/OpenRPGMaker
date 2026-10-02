@@ -143,12 +143,14 @@ describe("공방 엔진", () => {
     const store = createMemoryWorkshopStore();
     await store.putRound({
       id: "r9", projectKey: "p", harnessId: "fake", itemKey: "box", note: "", created: 1,
-      runs: [{ letter: "A", direction: "가", status: "drawing", attempt: 1, attempts: [], grid: null, note: "", topRows: null, verdict: null, error: null, calls: 1, redrawNote: "", startedAt: 1, finishedAt: null }],
+      runs: [{ letter: "A", direction: "가", status: "drawing", attempt: 1, attempts: [{ attempt: 1, hard: [], verdict: null, grid: null }], grid: null, note: "", topRows: null, verdict: null, error: null, calls: 1, redrawNote: "", startedAt: 1, finishedAt: null }],
     });
     const { engine } = engineWith(scriptedChat({}), fakeRunner(), store);
     expect(await engine.resume()).toBe(1);
     await engine.idle();
-    expect((await store.getRound("r9"))!.runs[0].status).toBe("done");
+    const resumed = (await store.getRound("r9"))!.runs[0];
+    expect(resumed.status).toBe("done");
+    expect(resumed.attempts.map((a) => a.attempt)).toEqual([1]);
   });
 
   it("redrawRun 은 한 장만 메모를 붙여 처음부터 다시 그린다", async () => {
@@ -163,5 +165,39 @@ describe("공방 엔진", () => {
     expect(b.redrawNote).toBe("더 밝게");
     expect(seen.at(-1)?.redrawNote).toBe("더 밝게");
     expect(seen.at(-1)?.previousGrid).not.toBeNull();
+  });
+
+  it("redrawRun 은 같은 글자가 진행 중이면 아무것도 하지 않는다", async () => {
+    let open: () => void = () => {};
+    const gate = new Promise<void>((resolve) => { open = resolve; });
+    const drawA: string[] = [];
+    const chat: ChatFn = async (surface, request) => {
+      const first = request.messages[0]?.content;
+      if (surface === "workshop-draw" && typeof first === "string" && first.startsWith("draw A")) drawA.push(first);
+      await gate;
+      return surface === "workshop-draw" ? GOOD : pass;
+    };
+    const { engine, store } = engineWith(chat);
+    const round = await engine.startRound(item);
+    expect(engine.status().running).toBe(2);
+    await engine.redrawRun(round.id, "A", "또");
+    expect(engine.status()).toMatchObject({ running: 2, queued: 0 });
+    open();
+    await engine.idle();
+    const runs = (await store.getRound(round.id))!.runs;
+    expect(runs.map((r) => r.status)).toEqual(["done", "done"]);
+    expect(runs[0].redrawNote).toBe("");
+    expect(drawA).toHaveLength(2);
+  });
+
+  it("검수 답을 못 읽으면 그 시도는 불통과로 적고 다음 시도로 간다", async () => {
+    const { engine, store } = engineWith(scriptedChat({ "workshop-review": ["not json"] }));
+    const round = await engine.startRound(item);
+    await engine.idle();
+    const runs = (await store.getRound(round.id))!.runs;
+    expect(runs.every((r) => r.status === "done" && r.verdict?.verdict === "PASS")).toBe(true);
+    const retried = runs.find((r) => r.attempt === 2)!;
+    expect(retried.attempts[0].verdict?.codes).toEqual(["READ"]);
+    expect(retried.attempts.map((a) => a.verdict?.verdict)).toEqual(["FAIL", "PASS"]);
   });
 });

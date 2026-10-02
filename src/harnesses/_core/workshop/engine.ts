@@ -223,7 +223,13 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
           item, palette: ctx.palette, direction: ctx.direction, attempt, maxAttempts: MAX_ATTEMPTS,
           candidate: drawn.grid, current: ctx.current, anchors: ctx.anchors, previousVerdict: lastVerdict,
         }, env), run, round, signal);
-        const verdict = runner.gate(item, runner.parseVerdict(reviewText));
+        let parsed: Verdict;
+        try {
+          parsed = runner.parseVerdict(reviewText);
+        } catch {
+          parsed = { verdict: "FAIL", codes: ["READ"], top: "", topRows: null, reasons: "검수 답을 읽지 못했다", fix: "", worse: false };
+        }
+        const verdict = runner.gate(item, parsed);
         run.verdict = verdict;
         run.attempts.push({ attempt, hard: [], verdict, grid: drawn.grid });
         if (verdict.verdict === "PASS") break;
@@ -272,6 +278,8 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     async redrawRun(roundId, letter, note) {
       const round = rounds.get(roundId) ?? (await store.getRound(roundId));
       if (!round) throw new Error(`판 ${roundId} 가 없다`);
+      // 같은 글자가 진행 중이거나 줄 서 있으면 겹쳐 돌리지 않는다(두 번째 실행이 첫 실행의 취소 줄을 지운다).
+      if (running.has(runKey(roundId, letter)) || queue.some((q) => q.roundId === roundId && q.letter === letter)) return;
       const old = runOf(round, letter);
       const run = { ...freshRun(letter, old.direction), grid: old.grid, verdict: old.verdict, redrawNote: note };
       round.runs = round.runs.map((r) => (r.letter === letter ? run : r));
@@ -296,13 +304,20 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       let count = 0;
       for (const round of await store.listRounds(projectKey)) {
         if (round.harnessId !== runner.harnessId) continue;
-        for (const run of round.runs) {
-          if (!PENDING.has(run.status) || running.has(runKey(round.id, run.letter))) continue;
+        const target = rounds.get(round.id) ?? round;
+        let requeued = 0;
+        for (const run of target.runs) {
+          if (!PENDING.has(run.status) || running.has(runKey(target.id, run.letter))) continue;
+          // 지난 시도 기록은 비운다(격자·판정은 남겨 previousGrid·lastVerdict 로 이어진다).
           run.status = "queued";
-          enqueue(rounds.get(round.id) ?? round, run.letter);
-          count += 1;
+          run.attempts = [];
+          run.attempt = 0;
+          run.error = null;
+          enqueue(target, run.letter);
+          requeued += 1;
         }
-        if (count > 0) await save(rounds.get(round.id) ?? round);
+        count += requeued;
+        if (requeued > 0) await save(target);
       }
       pump();
       return count;
