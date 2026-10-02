@@ -1,0 +1,522 @@
+{
+ "iconset": "fantasy",
+ "journey": "fantasy-5act",
+ "terrain_seconds": 0.0,
+ "role_purity": 0.8447237367983218,
+ "palettes": {
+  "original": {
+   "file": "fantasy-original.png",
+   "icon_tint": 0.25,
+   "terrain_metrics": {
+    "steps": {
+     "sea": 8,
+     "river": 7,
+     "lava": 7,
+     "toxic": 6,
+     "grass": 8,
+     "farm": 4,
+     "savanna": 4,
+     "sand": 8,
+     "badlands": 10,
+     "ash": 10,
+     "swamp": 11,
+     "tundra": 4,
+     "snow": 4,
+     "forest": 13,
+     "deadwood": 6,
+     "mount": 7,
+     "volcano": 8,
+     "rock": 9,
+     "road": 7
+    },
+    "min_pairs": [
+     [
+      "ash/volcano",
+      0.01724901497521595
+     ],
+     [
+      "road/rock",
+      0.035905383670942544
+     ],
+     [
+      "deadwood/swamp",
+      0.03680967884377523
+     ],
+     [
+      "badlands/rock",
+      0.0374744744923628
+     ],
+     [
+      "mount/road",
+      0.03922496755440902
+     ],
+     [
+      "mount/rock",
+      0.04115087740923487
+     ]
+    ],
+    "median_pair": 0.16180940740154787,
+    "key_min_pair": [
+     "badlands/rock",
+     0.0374744744923628
+    ],
+    "key_min_steps": [
+     "savanna",
+     4
+    ]
+   },
+   "icon_metrics": {
+    "min": [
+     "화염 요새",
+     0.6692913385826772
+    ],
+    "median": 0.9452054794520548,
+    "lowest": [
+     [
+      "화염 요새",
+      0.6692913385826772
+     ],
+     [
+      "협곡 폐허",
+      0.6821192052980133
+     ],
+     [
+      "사막 신전",
+      0.7163009404388715
+     ]
+    ]
+   },
+   "levels": null
+  },
+  "ruin": {
+   "file": "fantasy-ruin.png",
+   "icon_tint": 0.25,
+   "terrain_metrics": {
+    "steps": {
+     "sea": 8,
+     "river": 6,
+     "lava": 7,
+     "toxic": 6,
+     "grass": 8,
+     "farm": 4,
+     "savanna": 4,
+     "sand": 8,
+     "badlands": 10,
+     "ash": 10,
+     "swamp": 11,
+     "tundra": 4,
+     "snow": 3,
+     "forest": 12,
+     "deadwood": 6,
+     "mount": 7,
+     "volcano": 8,
+     "rock": 8,
+     "road": 7
+    },
+    "min_pairs": [
+     [
+      "deadwood/mount",
+      0.02085505209705829
+     ],
+     [
+      "farm/grass",
+      0.026094328016406248
+     ],
+     [
+      "ash/volcano",
+      0.02690926542480631
+     ],
+     [
+      "sea/swamp",
+      0.028411484320093557
+     ],
+     [
+      "farm/savanna",
+      0.030097884857360948
+     ],
+     [
+      "grass/savanna",
+      0.03018298355658611
+     ]
+    ],
+    "median_pair": 0.13512087375549,
+    "key_min_pair": [
+     "sea/swamp",
+     0.028411484320093557
+    ],
+    "key_min_steps": [
+     "snow",
+     3
+    ]
+   },
+   "icon_metrics": {
+    "min": [
+     "사막 폐허",
+     0.7300319488817891
+    ],
+    "median": 0.917910447761194,
+    "lowest": [
+     [
+      "사막 폐허",
+      0.7300319488817891
+     ],
+     [
+      "섬 탑",
+      0.7534246575342466
+     ],
+     [
+      "협곡 폐허",
+      0.7615894039735099
+     ]
+    ]
+   },
+   "levels": null
+  },
+  "dusk": {
+   "file": "fantasy-dusk.png",
+   "icon_tint": 0.25,
+   "terrain_metrics": {
+    "steps": {
+     "sea": 8,
+     "river": 7,
+     "lava": 7,
+     "toxic": 6,
+     "grass": 6,
+     "farm": 4,
+     "savanna": 4,
+     "sand": 5,
+     "badlands": 7,
+     "ash": 7,
+     "swamp": 6,
+     "tundra": 4,
+     "snow": 4,
+     "forest": 8,
+     "deadwood": 5,
+     "mount": 7,
+     "volcano": 7,
+     "rock": 6,
+     "road": 7
+    },
+    "min_pairs": [
+     [
+      "ash/volcano",
+      0.006004370939244059
+     ],
+     [
+      "forest/swamp",
+      0.04102258356501214
+     ],
+     [
+      "deadwood/rock",
+      0.04530967461609409
+     ],
+     [
+      "farm/grass",
+      0.05302962926385308
+     ],
+     [
+      "forest/toxic",
+      0.055728984443967414
+     ],
+     [
+      "road/rock",
+      0.05908734842038393
+     ]
+    ],
+    "median_pair": 0.17628669733064845,
+    "key_min_pair": [
+     "forest/swamp",
+     0.04102258356501214
+    ],
+    "key_min_steps": [
+     "savanna",
+     4
+    ]
+   },
+   "icon_metrics": {
+    "min": [
+     "화염 요새",
+     0.7079455977093773
+    ],
+    "median": 0.9475177304964539,
+    "lowest": [
+     [
+      "화염 요새",
+      0.7079455977093773
+     ],
+     [
+      "섬 탑",
+      0.7479452054794521
+     ],
+     [
+      "고갯길 요새",
+      0.750403442711135
+     ]
+    ]
+   },
+   "levels": null
+  },
+  "winter": {
+   "file": "fantasy-winter.png",
+   "icon_tint": 0.25,
+   "terrain_metrics": {
+    "steps": {
+     "sea": 9,
+     "river": 7,
+     "lava": 7,
+     "toxic": 6,
+     "grass": 6,
+     "farm": 4,
+     "savanna": 4,
+     "sand": 5,
+     "badlands": 6,
+     "ash": 7,
+     "swamp": 7,
+     "tundra": 4,
+     "snow": 3,
+     "forest": 9,
+     "deadwood": 5,
+     "mount": 7,
+     "volcano": 8,
+     "rock": 6,
+     "road": 7
+    },
+    "min_pairs": [
+     [
+      "deadwood/swamp",
+      0.023337538848888048
+     ],
+     [
+      "ash/volcano",
+      0.03111047087470014
+     ],
+     [
+      "deadwood/rock",
+      0.03643473819419652
+     ],
+     [
+      "rock/swamp",
+      0.04372474422957648
+     ],
+     [
+      "grass/savanna",
+      0.0446659117871039
+     ],
+     [
+      "deadwood/road",
+      0.05074947340837027
+     ]
+    ],
+    "median_pair": 0.1915768314334887,
+    "key_min_pair": [
+     "rock/swamp",
+     0.04372474422957648
+    ],
+    "key_min_steps": [
+     "snow",
+     3
+    ]
+   },
+   "icon_metrics": {
+    "min": [
+     "화염 요새",
+     0.6692913385826772
+    ],
+    "median": 0.9527010804321728,
+    "lowest": [
+     [
+      "화염 요새",
+      0.6692913385826772
+     ],
+     [
+      "섬 폐허",
+      0.6934931506849316
+     ],
+     [
+      "사막 폐허",
+      0.7184466019417476
+     ]
+    ]
+   },
+   "levels": null
+  },
+  "ashfall": {
+   "file": "fantasy-ashfall.png",
+   "icon_tint": 0.25,
+   "terrain_metrics": {
+    "steps": {
+     "sea": 8,
+     "river": 7,
+     "lava": 7,
+     "toxic": 6,
+     "grass": 6,
+     "farm": 4,
+     "savanna": 4,
+     "sand": 5,
+     "badlands": 6,
+     "ash": 5,
+     "swamp": 6,
+     "tundra": 4,
+     "snow": 5,
+     "forest": 7,
+     "deadwood": 5,
+     "mount": 7,
+     "volcano": 7,
+     "rock": 6,
+     "road": 8
+    },
+    "min_pairs": [
+     [
+      "ash/volcano",
+      0.02072501084926907
+     ],
+     [
+      "deadwood/road",
+      0.0340268989067963
+     ],
+     [
+      "deadwood/swamp",
+      0.04173731508209578
+     ],
+     [
+      "sand/snow",
+      0.04263731875532121
+     ],
+     [
+      "ash/swamp",
+      0.04314575524585159
+     ],
+     [
+      "road/rock",
+      0.04456937623289589
+     ]
+    ],
+    "median_pair": 0.15021365538469605,
+    "key_min_pair": [
+     "sand/snow",
+     0.04263731875532121
+    ],
+    "key_min_steps": [
+     "savanna",
+     4
+    ]
+   },
+   "icon_metrics": {
+    "min": [
+     "화염 요새",
+     0.7079455977093773
+    ],
+    "median": 0.8974358974358975,
+    "lowest": [
+     [
+      "화염 요새",
+      0.7079455977093773
+     ],
+     [
+      "북섬 촌락",
+      0.7266081871345029
+     ],
+     [
+      "고갯길 요새",
+      0.727810650887574
+     ]
+    ]
+   },
+   "levels": null
+  },
+  "regional": {
+   "file": "fantasy-regional.png",
+   "icon_tint": 0.25,
+   "terrain_metrics": {
+    "steps": {
+     "sea": 9,
+     "river": 10,
+     "lava": 7,
+     "toxic": 9,
+     "grass": 4,
+     "farm": 7,
+     "savanna": 6,
+     "sand": 9,
+     "badlands": 12,
+     "ash": 9,
+     "swamp": 11,
+     "tundra": 4,
+     "snow": 5,
+     "forest": 17,
+     "deadwood": 10,
+     "mount": 13,
+     "volcano": 8,
+     "rock": 9,
+     "road": 8
+    },
+    "min_pairs": [
+     [
+      "deadwood/swamp",
+      0.01732754278859451
+     ],
+     [
+      "farm/savanna",
+      0.019206694179774785
+     ],
+     [
+      "ash/volcano",
+      0.026652475587117752
+     ],
+     [
+      "road/rock",
+      0.027698947035568768
+     ],
+     [
+      "mount/rock",
+      0.02907651349517227
+     ],
+     [
+      "deadwood/mount",
+      0.04251477102686408
+     ]
+    ],
+    "median_pair": 0.1557456469917135,
+    "key_min_pair": [
+     "mount/rock",
+     0.02907651349517227
+    ],
+    "key_min_steps": [
+     "grass",
+     4
+    ]
+   },
+   "icon_metrics": {
+    "min": [
+     "사막 신전",
+     0.7311912225705329
+    ],
+    "median": 0.9219957835558679,
+    "lowest": [
+     [
+      "사막 신전",
+      0.7311912225705329
+     ],
+     [
+      "협곡 폐허",
+      0.7615894039735099
+     ],
+     [
+      "화염 요새",
+      0.7616320687186829
+     ]
+    ]
+   },
+   "levels": [
+    1107167,
+    161703,
+    120627,
+    120480,
+    259495
+   ]
+  }
+ },
+ "journey_check": {
+  "ok": true,
+  "bad": []
+ }
+}

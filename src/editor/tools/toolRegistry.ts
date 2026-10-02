@@ -17,6 +17,7 @@ import { TIME_GATE_TOOLS } from "./timeGateTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
+import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -27,6 +28,9 @@ import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
+import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
+import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
+import { CUTSCENE_PREVIEW_TOOLS } from "./cutscenePreviewTools";
 import { LIFE_FLOWER_TOOLS } from "./lifeFlowerTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
@@ -235,6 +239,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
+  ...withDomain(CUTSCENE_ART_TOOLS, "event"),
+  ...withDomain(IMPACT_CUTSCENE_TOOLS, "event"),
+  ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
+  ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),

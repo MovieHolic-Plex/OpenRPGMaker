@@ -28,8 +28,8 @@
     안개 층 위치는 매 프레임 옮긴다.
   - 남은 후보(고치지 않음): 자동저장은 동기다(큰 세션에서 스냅샷 약 17–28ms, stringify 약 3ms). `maybeAutosave` 가
     곧바로 true 를 내고 복제 실패를 동기로 던지는 계약(`test/autosave.test.ts`)이 있어 미루지 않았다.
-    맵 이동 때 타일 층 전체 재생성은 그대로다 — Phaser Container 는 자식을 깊이로 정렬하지 않고 넣은 순서가 그리는
-    순서라 칸 단위 부분 갱신은 위험하다. 칸당 비용을 줄이는 쪽으로 풀었다.
+    맵 타일 표시는 아래 「화면 주변 타일 유지」로 바뀌었다(2026-10-01). Phaser Container 는 자식을 깊이로 정렬하지
+    않으므로, 칸을 추가한 뒤 원래 행/칸/조각 순서와 농지·설치물의 마지막 순서를 복원해야 한다.
   - **3차(서브에이전트 5명 조사 + 적대적 리뷰, `test/runtimeLagFixes2.test.ts` "3차" 절):**
     - 명령 이력 배열(`m2Runtime.expressions/debug/screenEffects/pathfinding/waits/checkpoints/dialogue/fallbacks`)은
       `pushM2History` 로만 넣는다. 상한 `M2_HISTORY_LIMIT`(64). 상한이 없어서 오래 플레이하면 세션을 복제하는 모든
@@ -749,3 +749,32 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 수정 전과 같은 날씨 입자 실패 4건, 앱 typecheck exit 0. 프레임 예산 준수 또는 모든 맵의 개선을 주장하지 않는다.
 최초 /tmp 증거 소실 후 허용된 새 사본으로 다시 측정해 원시 JSON/PNG를 저장소 증거 폴더에 보존했다.
 백업/로그는 `/home/main/.cache/a5a8-r8/mapload/`에 둔다.
+
+## 화면 주변 타일 유지 (2026-10-01)
+
+`playSceneMapRuntime.renderTiles`의 실제 런타임 경로는 `RuntimeTileWindow`로 카메라 주변
+칸만 유지한다. 여유는 4칸이며 겹치는 칸의 객체는 재사용하고, 창에서 나간 칸의 컨테이너/루트
+객체는 파괴한다. 논리 맵 배열·충돌·NPC 시뮬레이션은 전역 상태를 그대로 사용한다.
+농지/설치물은 기존 전역 렌더링을 유지한다. 줌을 멀리 빼면 표시 객체 수도 보이는 칸 수에 따라 늘어난다.
+
+- 타일 이미지/스프라이트는 `scene.make.*({add:false})`로 만든 뒤 공식 `Container.add(array)`로
+  일괄 등록한다. `list.push`로 대체하면 부모/파괴 리스너/Sprite UpdateList 계약이 사라진다.
+  솔리드 upper만 `addToDisplayList`로 루트에 올린다.
+- 칸 저장소는 수명만 소유한다. 청크 컨테이너로 묶지 않는다. 평평한 컨테이너 목록을 기존
+  행→칸→조각 순서로 정렬하고, 농지/설치물은 마지막에 유지한다. 루트 upper는 depth와 동률 순서를
+  복원해 캐릭터와 섞는다. `rootYSortTiles`는 Set이며 퇴거 때 삭제해 파괴된 가구를 붙잡지 않는다.
+- 이동/점프/줌/리사이즈는 `PlayScene.update`에서 컬링 전에 동기화한다. `worldView`는 Phaser가
+  렌더 단계에서 갱신하므로 `runtimeCameraTileView`는 최신 scroll/zoom으로 뷰를 계산한다.
+  낡은 worldView만 사용하면 순간이동 첫 프레임에 도착 타일이 없다.
+- 새 물 스프라이트는 남아 있는 동일 애니메이션의 프레임과 누적 시간을 이어받는다.
+  표시 객체 추적 목록도 현재 칸으로 다시 만들어 여행 거리만큼 커지지 않는다.
+- 타일/밭/설치물 변경은 기존 입력 서명으로 표시 창을 재생성한다. 화면 밖의 변경은 돌아올 때
+  전체 논리 배열에서 읽는다. 씬 shutdown/destroy는 `releaseRuntimeTileWindow`로 참조를 정리한다.
+- 카메라 없는 최소 렌더 컨텍스트는 기존 전체 맵 경로를 유지한다. 이것을 차등 렌더 오라클로 쓴다.
+  편집기의 lazy/chunk 렌더와 공유 컬링 계약은 바꾸지 않는다.
+
+검증: `test/runtimeTileWindow.test.ts`(512/1024 맵의 화면 객체 유지 상한/겹침 재사용/긴 이동/순서/16·32px/줌/
+제자리 변경/물 위상/해제), 기존 컬링·NPC 재사용·지형/호수 테스트. 실제 내보내기 플레이어의
+픽셀 대조는 `scripts/qa/runtime-tile-window.mjs`, 크기별 전후 실측은
+`scripts/qa/map-size-benchmark.mjs`와 `verify-shots/map-size-optimized-20261001/` 참조.
+공식 1024 확장 뒤 같은 조건의 512/1024 비교는 `verify-shots/map-size-1024-20261001/`다.

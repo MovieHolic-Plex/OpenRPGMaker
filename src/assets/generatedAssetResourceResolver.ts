@@ -17,6 +17,7 @@ import { resolveOgaBackdropAssetUrl } from "./ogaBackdropAssets";
 import { resolveOgaCraftpixAssetUrl } from "./ogaCraftpixBackgrounds";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
+import { SHARED_PORTRAIT_ASSETS, resolveSharedPortraitUrl } from "@/assets/sharedPortraitAssets";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import type { Project } from "@/project/types";
 
@@ -303,6 +304,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // 생성 얼굴 낱장 32장(hero-01-face / hero-02-face × 16). 분할 산출물 목록에서 펼쳐 넣는다 —
   // 그래야 builtinGeneratedResourceIds() 에도 실려 collectResourceIds 가 알아본다.
   ...generatedFacesetFaceUrls(),
+  // 공용 표정 세트 76종의 흉상·전신 760장(sharedPortraitAssets.ts). 같은 이유로 여기 싣는다.
+  ...Object.fromEntries(SHARED_PORTRAIT_ASSETS.map((asset) => [asset.id, `/${asset.path}`])),
 };
 
 function generatedFacesetFaceUrls(): Record<string, string> {
@@ -338,6 +341,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     LEGACY_PACKAGED_RESOURCE_URLS[resourceId] ??
     resolveEasyRpgRuntimeAssetUrl(resourceId) ??
     resolveFacesetFaceAssetUrl(resourceId) ??
+    resolveSharedPortraitUrl(resourceId) ??
     resolveScarloxyAssetUrl(resourceId) ??
     resolveGeneratedEffectAssetUrl(resourceId) ??
     resolveFarmingAssetUrl(resourceId) ??

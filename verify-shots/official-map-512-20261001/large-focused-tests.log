@@ -1,0 +1,179 @@
+
+> oprn@0.60.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/mapSizeGuard.test.ts test/mapEdgeGrow.test.ts test/mapCreateSpec.test.ts test/spatialSchema.test.ts test/spatialBindingProjection.test.ts test/runtimeTileWindow.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/320d/rpg-zzu
+
+ ✓ test/spatialSchema.test.ts (60 tests) 89761ms
+   ✓ spatial authoring IO contract > roundtrips an authored 512×512 space without truncating its dimensions  2189ms
+   ✓ spatial authoring IO contract > rejects unsupported rotation when a route point carries transform geometry  1181ms
+   ✓ spatial authoring IO contract > rejects unsupported scale when a route point carries transform geometry  1227ms
+   ✓ spatial authoring IO contract > preserves the complete hierarchy or disjoint owned bindings when serializer roundtrips  2145ms
+   ✓ spatial authoring IO contract > preserves the complete hierarchy or disjoint owned bindings when serializer roundtrips  1954ms
+   ✓ spatial authoring IO contract > rejects binding 'overlap' when loading owned map references  1392ms
+   ✓ spatial authoring IO contract > rejects binding 'missing map' when loading owned map references  1288ms
+   ✓ spatial authoring IO contract > rejects binding 'missing event' when loading owned map references  1336ms
+   ✓ spatial authoring IO contract > rejects binding 'foreign port' when loading owned map references  1269ms
+   ✓ spatial authoring IO contract > rejects binding 'missing connection' when loading owned map references  1258ms
+   ✓ spatial authoring IO contract > rejects binding 'out of bounds' when loading owned map references  1255ms
+   ✓ spatial authoring IO contract > rejects region-kind when a hierarchy reference breaks  1263ms
+   ✓ spatial authoring IO contract > rejects world-kind when a hierarchy reference breaks  1209ms
+   ✓ spatial authoring IO contract > rejects entry-port when a hierarchy reference breaks  1374ms
+   ✓ spatial authoring IO contract > rejects route-port when a hierarchy reference breaks  1330ms
+   ✓ spatial authoring IO contract > rejects fifth-floor when a hierarchy reference breaks  1466ms
+   ✓ spatial authoring IO contract > rejects occurrence cycles when three same-kind parents form a loop  1312ms
+   ✓ spatial authoring IO contract > rejects an unresolved exterior when a frozen place snapshot omits its kit cells  1296ms
+   ✓ spatial authoring IO contract > preserves one parent with two independent room occurrences when loading containment  1942ms
+   ✓ spatial authoring IO contract > rejects 'unsupported version' with its record path when loading wire data  1362ms
+   ✓ spatial authoring IO contract > rejects 'future envelope' with its record path when loading wire data  1389ms
+   ✓ spatial authoring IO contract > rejects 'missing collection' with its record path when loading wire data  1360ms
+   ✓ spatial authoring IO contract > rejects 'duplicate design id' with its record path when loading wire data  1685ms
+   ✓ spatial authoring IO contract > rejects 'key/id mismatch' with its record path when loading wire data  1510ms
+   ✓ spatial authoring IO contract > rejects 'zero revision' with its record path when loading wire data  1379ms
+   ✓ spatial authoring IO contract > rejects 'missing object' with its record path when loading wire data  1513ms
+   ✓ spatial authoring IO contract > rejects 'inherited object name' with its record path when loading wire data  1712ms
+   ✓ spatial authoring IO contract > rejects 'missing kit' with its record path when loading wire data  1617ms
+   ✓ spatial authoring IO contract > rejects 'inherited tileset' with its record path when loading wire data  1722ms
+   ✓ spatial authoring IO contract > rejects 'self cycle' with its record path when loading wire data  1639ms
+   ✓ spatial authoring IO contract > rejects 'three-node cycle' with its record path when loading wire data  1751ms
+   ✓ spatial authoring IO contract > rejects 'illegal kind edge' with its record path when loading wire data  1546ms
+   ✓ spatial authoring IO contract > rejects 'zero size' with its record path when loading wire data  1719ms
+   ✓ spatial authoring IO contract > rejects 'unbounded size' with its record path when loading wire data  1468ms
+   ✓ spatial authoring IO contract > rejects 'fractional slot geometry' with its record path when loading wire data  1363ms
+   ✓ spatial authoring IO contract > rejects 'NaN wire geometry' with its record path when loading wire data  1402ms
+   ✓ spatial authoring IO contract > rejects 'fractional occurrence geometry' with its record path when loading wire data  1490ms
+   ✓ spatial authoring IO contract > rejects 'multiple occurrence parents' with its record path when loading wire data  1516ms
+   ✓ spatial authoring IO contract > rejects 'root also contained' with its record path when loading wire data  1554ms
+   ✓ spatial authoring IO contract > rejects 'missing parent' with its record path when loading wire data  1659ms
+   ✓ spatial authoring IO contract > rejects 'duplicate root' with its record path when loading wire data  1623ms
+   ✓ spatial authoring IO contract > rejects 'omitted root' with its record path when loading wire data  1767ms
+   ✓ spatial authoring IO contract > rejects 'missing occurrence' with its record path when loading wire data  1483ms
+   ✓ spatial authoring IO contract > rejects 'foreign port' with its record path when loading wire data  1524ms
+   ✓ spatial authoring IO contract > rejects 'inherited occurrence' with its record path when loading wire data  1440ms
+   ✓ spatial authoring IO contract > rejects 'unresolved snapshot object' with its record path when loading wire data  1542ms
+   ✓ spatial authoring IO contract > rejects 'malformed backup encoding' with its record path when loading wire data  1488ms
+   ✓ spatial authoring IO contract > rejects 'malformed digest' with its record path when loading wire data  1337ms
+   ✓ spatial authoring IO contract > rejects 'nested active backup' with its record path when loading wire data  1354ms
+   ✓ spatial authoring IO contract > preserves repeated design references and distinct occurrences when the real serializer roundtrips  2153ms
+   ✓ spatial authoring IO contract > accepts navigation cycles when three independent occurrences form a loop  1284ms
+   ✓ spatial authoring IO contract > preserves an empty canonical document and opaque archive bytes when pretty serialization roundtrips  2204ms
+   ✓ spatial authoring IO contract > leaves canonical authoring absent when a legacy project loads  1280ms
+   ✓ spatial authoring IO contract > retains historical snapshots when their live source designs and kits have been deleted  1237ms
+   ✓ spatial authoring IO contract > preserves opaque own ID __proto__ when a dictionary roundtrips  2152ms
+   ✓ spatial authoring IO contract > preserves opaque own ID constructor when a dictionary roundtrips  1938ms
+   ✓ spatial authoring IO contract > preserves opaque own ID toString when a dictionary roundtrips  2012ms
+   ✓ spatial authoring IO contract > rejects nonfinite number NaN before JSON cloning at the actual IO shape boundary  616ms
+   ✓ spatial authoring IO contract > rejects nonfinite number Infinity before JSON cloning at the actual IO shape boundary  616ms
+   ✓ spatial authoring IO contract > rejects nonfinite number -Infinity before JSON cloning at the actual IO shape boundary  650ms
+ ✓ test/spatialBindingProjection.test.ts (38 tests) 79190ms
+   ✓ non-owning compiled projections > retains authored coincident coordinates when full-space ownership and child projection roundtrip  3171ms
+   ✓ non-owning compiled projections > retains authored coincident coordinates when full-space ownership and child projection roundtrip  3346ms
+   ✓ non-owning compiled projections > rejects coincident owned rectangles when the child still claims raster ownership  2206ms
+   ✓ non-owning compiled projections > accepts two logical projections at one cell when neither owns raster  2217ms
+   ✓ non-owning compiled projections > retains a bounded placement extent when the frozen object has no anchors  2145ms
+   ✓ non-owning compiled projections > rejects 'foreign concrete port' when parsing a projection boundary  2848ms
+   ✓ non-owning compiled projections > rejects 'port outside extent' when parsing a projection boundary  2699ms
+   ✓ non-owning compiled projections > rejects 'missing map' when parsing a projection boundary  2595ms
+   ✓ non-owning compiled projections > rejects 'extent outside map' when parsing a projection boundary  3032ms
+   ✓ non-owning compiled projections > rejects 'extent crosses map edge' when parsing a projection boundary  2892ms
+   ✓ non-owning compiled projections > rejects 'negative extent' when parsing a projection boundary  2907ms
+   ✓ non-owning compiled projections > rejects 'zero extent' when parsing a projection boundary  1457ms
+   ✓ non-owning compiled projections > rejects 'oversized extent' when parsing a projection boundary  1465ms
+   ✓ non-owning compiled projections > rejects 'fractional extent' when parsing a projection boundary  1406ms
+   ✓ non-owning compiled projections > rejects 'nonfinite extent' when parsing a projection boundary  1395ms
+   ✓ non-owning compiled projections > rejects 'unknown kind' when parsing a projection boundary  1359ms
+   ✓ non-owning compiled projections > rejects 'null kind' when parsing a projection boundary  1496ms
+   ✓ non-owning compiled projections > rejects 'numeric kind' when parsing a projection boundary  1500ms
+   ✓ non-owning compiled projections > rejects 'present undefined kind' when parsing a projection boundary  1336ms
+   ✓ non-owning compiled projections > rejects 'event authority' when parsing a projection boundary  1294ms
+   ✓ non-owning compiled projections > rejects 'connection authority' when parsing a projection boundary  1708ms
+   ✓ non-owning compiled projections > rejects 'digest authority' when parsing a projection boundary  1364ms
+   ✓ non-owning compiled projections > rejects 'undefined event authority' when parsing a projection boundary  1401ms
+   ✓ non-owning compiled projections > rejects 'unknown field' when parsing a projection boundary  1396ms
+   ✓ non-owning compiled projections > rejects missing kind when a projection is incomplete  2138ms
+   ✓ non-owning compiled projections > rejects missing mapId when a projection is incomplete  1925ms
+   ✓ non-owning compiled projections > rejects missing rect when a projection is incomplete  1896ms
+   ✓ non-owning compiled projections > rejects missing ports when a projection is incomplete  1863ms
+   ✓ non-owning compiled projections > rejects duplicate concrete binding when order is owned-first  2151ms
+   ✓ non-owning compiled projections > rejects duplicate concrete binding when order is projection-first  1979ms
+   ✓ non-owning compiled projections > rejects duplicate concrete binding when order is projection-only  2184ms
+   ✓ non-owning compiled projections > preserves old untagged binding values when legacy IO roundtrips  1976ms
+   ✓ non-owning compiled projections > preserves old untagged binding values when legacy IO roundtrips  2556ms
+   ✓ non-owning compiled projections > separates projection metadata from erasable artifacts when inspecting subtree deletion  1363ms
+   ✓ non-owning compiled projections > prunes only owned link bookkeeping when deleting a projected child without its live source  3005ms
+   ✓ non-owning compiled projections > rejects deletion with external navigation when removal was not authorized  1356ms
+   ✓ non-owning compiled projections > clears both variants when detaching without a live source  3062ms
+   ✓ non-owning compiled projections > clears copied bindings and remaps logical connections when duplicating without a live source  3090ms
+ ✓ test/mapSizeGuard.test.ts (26 tests) 35084ms
+   ✓ build_world 맵 크기 상한 > 512×512 노드는 만든다  1276ms
+   ✓ build_world 맵 크기 상한 > 513×513 노드는 셀 할당 전에 거부한다  734ms
+   ✓ build_world 맵 크기 상한 > size:{w,h} 별칭으로 우회할 수 없다  684ms
+   ✓ build_world 맵 크기 상한 > 초대형 노드 하나가 섞이면 같은 요청의 정상 노드도 만들지 않는다  702ms
+   ✓ plan_world 크기 힌트 상한 > build_world 가 그대로 읽는 초대형 힌트는 계획 단계에서 거부한다  695ms
+   ✓ plan_world 크기 힌트 상한 > 512 힌트는 계획으로 등록한다  996ms
+   ✓ 나머지 조수 생성/크기변경 경로 > official 512×512 maps retain the edge cells through export and reload  2775ms
+   ✓ 나머지 조수 생성/크기변경 경로 > create_map { name: '경계', width: 512, height: 512, id: 'map_edge' } → ok:true  1006ms
+   ✓ 나머지 조수 생성/크기변경 경로 > create_map { name: '초과', width: 513, height: 513, id: 'map_edge' } → ok:false  720ms
+   ✓ 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 512, height: 512, id: 'map_edge' } → ok:true  1782ms
+   ✓ 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 513, height: 513, id: 'map_edge' } → ok:false  828ms
+   ✓ 나머지 조수 생성/크기변경 경로 > resize_map 은 지원 상한까지 늘리고 초과는 거부한다  1676ms
+   ✓ 나머지 조수 생성/크기변경 경로 > start_dungeon_room_session 은 초대형 방을 거부한다  725ms
+   ✓ 나머지 조수 생성/크기변경 경로 > start_interior_room_session 은 초대형 실내를 거부한다  719ms
+   ✓ 나머지 조수 생성/크기변경 경로 > author_village 는 초대형 새 맵 대상을 거부한다  626ms
+   ✓ 나머지 조수 생성/크기변경 경로 > build_village/build_castle 은 상한을 넘는 맵을 만들지 않는다  762ms
+   ✓ 사람 생성/크기변경 경로 > addMap 은 초대형 요청으로 맵을 만들지 않는다  1725ms
+   ✓ 사람 생성/크기변경 경로 > addChildMap 도 초대형 요청으로 맵을 만들지 않는다  1079ms
+   ✓ 사람 생성/크기변경 경로 > addMap 은 지원 상한을 그대로 만든다  1240ms
+   ✓ 사람 생성/크기변경 경로 > resizeMap 은 초대형 크기로 바꾸지 않는다  1199ms
+   ✓ 사람 생성/크기변경 경로 > createMapFromSpec 은 상한 밖 스펙으로 초대형 맵을 남기지 않는다  1081ms
+   ✓ lint 계약이 생성 계약과 일치한다 > 513 맵은 error 로 보고한다(warning-only 미지원 상태 금지)  1431ms
+   ✓ lint 계약이 생성 계약과 일치한다 > 512 맵은 보고하지 않는다  1557ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 선재 초대형 맵이 무관한 편집을 막지 않는다  1239ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 조수 경로에서도 렌더 없이 삭제할 수 있다  4135ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 캔버스를 열지 않고도 식별하고 지울 수 있다  3682ms
+ ✓ test/mapCreateSpec.test.ts (8 tests) 7776ms
+   ✓ resolveMapCreateDefaults > starts a new project and a new blank map on the generated default (beodeul_city)  748ms
+   ✓ resolveMapCreateDefaults > create_map fills beodeul_city with its plain grass, not the combined-town number  1084ms
+   ✓ resolveMapCreateDefaults > inherits parent size and tileset  667ms
+   ✓ resolveMapCreateDefaults > creates a legacy easyrpg interior map filled with its wood floor  1819ms
+   ✓ resolveMapCreateDefaults > creates a hand-pixel v5 interior as a walled room shell, not a flat fill  1012ms
+   ✓ resolveMapCreateDefaults > uses the hand-pixel v5 interior tileset and a room size for the interior preset  622ms
+   ✓ parent-child transfer pair > adds reciprocal transfer events on free cells  1162ms
+   ✓ map test-play start > chooses a passable event-free interior cell instead of an empty outer wall  659ms
+ ✓ test/runtimeTileWindow.test.ts (7 tests) 7982ms
+   ✓ runtime viewport tile residency > uses a teleported or zoomed camera immediately, before worldView refreshes  349ms
+   ✓ runtime viewport tile residency > keeps only the camera neighborhood even on a 512 map, reuses overlap, evicts roots and containers  1193ms
+   ✓ runtime viewport tile residency > matches complete-map draw order, quarters, four layers, shadows and root depths at tile size 16  2154ms
+   ✓ runtime viewport tile residency > matches complete-map draw order, quarters, four layers, shadows and root depths at tile size 32  2043ms
+   ✓ runtime viewport tile residency > recreates changed tiles on return and resets resident cells on tile refresh  1048ms
+   ✓ runtime viewport tile residency > new water sprites inherit the retained visible animation frame and fractional time  1174ms
+ ✓ test/mapEdgeGrow.test.ts (9 tests) 8ms
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  6 passed (6)
+      Tests  148 passed (148)
+     Errors  2 errors
+   Start at  20:26:36
+   Duration  261.20s (transform 15.83s, setup 0ms, collect 38.03s, tests 219.80s, environment 1ms, prepare 481ms)

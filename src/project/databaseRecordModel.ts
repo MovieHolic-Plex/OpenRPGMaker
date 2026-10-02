@@ -14,12 +14,14 @@ import {
 } from "@/project/actorModel";
 import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
+import { normalizeDisplayFilter } from "@/project/displayFilter";
+import { normalizeBattleLook } from "@/project/battleLook";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeSystemFontConfig } from "@/project/fontRegistry";
-import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, isDialogueStyleId } from "@/project/dialogueStyles";
+import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, isDialogueStyleId, normalizeDialogueFullPortraitSettings } from "@/project/dialogueStyles";
 import { isFontFamilyId } from "@/project/fontRegistry";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
@@ -257,6 +259,9 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL
       ? { battleHitFeel: system.battleHitFeel }
       : {}),
+    ...(normalizeDisplayFilter(system.displayFilter) ? { displayFilter: normalizeDisplayFilter(system.displayFilter) } : {}),
+    // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
+    ...(normalizeBattleLook(system.battleLook) ? { battleLook: normalizeBattleLook(system.battleLook) } : {}),
     // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
     ...(isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID
       ? { menuUiStyle: system.menuUiStyle }
@@ -270,6 +275,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { dialogueSpeed: Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100 }
       : {}),
     ...(system.dialoguePunctuationPause === false ? { dialoguePunctuationPause: false } : {}),
+    ...(() => {
+      const fullPortrait = normalizeDialogueFullPortraitSettings(system.dialogueFullPortrait);
+      return fullPortrait ? { dialogueFullPortrait: fullPortrait } : {};
+    })(),
     // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
     ...(system.battleParty === "monsters" ? { battleParty: "monsters" as const } : {}),
     // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).

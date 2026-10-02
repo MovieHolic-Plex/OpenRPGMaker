@@ -7,6 +7,7 @@ import type { ReachabilitySpec } from "@/project/lint/reachability";
 import { createEmberQuestProject, EMBER_MAP } from "@/project/defaults/emberQuestGame";
 import { createBlankProject, createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
+import { MAX_TOOL_MAP_DIMENSION } from '@/project/mapSizeLimits';
 
 const TILE_FLOOR_IMPASSABLE = 342; // TILE.FLOOR — 통행 불가.
 
@@ -309,9 +310,9 @@ describe("projectLint", () => {
 
   // OPRN-OUT-018: 생성 계약이 256을 넘는 맵을 만들지 않으므로 남아 있는 초과 맵은 지원 밖
   // 상태다. warning 이던 동안 build_world 가 만든 257 맵이 프로젝트에 그대로 남을 수 있었다.
-  it("256x256 초과 맵을 error로 보고한다", () => {
+  it("지원 상한 초과 맵을 error로 보고한다", () => {
     const project = cloneProject(createBlankProject());
-    const huge = createBlankMap("임포트 초대형", 257, 12);
+    const huge = createBlankMap("임포트 초대형", MAX_TOOL_MAP_DIMENSION + 1, 12);
     project.maps[huge.id] = huge;
     project.mapTree.children.push({ mapId: huge.id, children: [] });
 

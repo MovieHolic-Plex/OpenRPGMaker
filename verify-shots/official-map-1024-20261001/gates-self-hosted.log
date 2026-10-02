@@ -1,0 +1,5 @@
+
+> oprn@0.61.0 gates:self-hosted
+> node scripts/check-self-hosted-workflows.mjs
+
+self-hosted 계약 통과: 워크플로 4개 / runs-on 10곳 (호스티드 허용: mac-onboarding.yml)

@@ -4,19 +4,24 @@
 // 기본값(glass)은 저장에서 지운다 — normalizeSystemRecords 와 같은 계약.
 // 화자별 모양·목소리는 캐릭터 탭 「대화」 카드, 한 줄 단위는 대사 명령의 「대사 종류」가 맡는다.
 
-import { field, numberField, toggleSwitch } from "@/editor/panels/databaseControls";
+import { field, numberField, sliderStepperField, toggleSwitch } from "@/editor/panels/databaseControls";
 import { renderDialogueLookSample } from "@/editor/panels/eventEditor/commandPreview";
+import { FULL_PORTRAIT_SAMPLE_RESOURCE_ID, renderFullPortraitStage } from "@/editor/panels/fullPortraitStagePreview";
 import {
   DEFAULT_DIALOGUE_STYLE_ID,
   DIALOGUE_CONTAINER_DESCRIPTIONS,
   DIALOGUE_CONTAINER_IDS,
   DIALOGUE_CONTAINER_LABELS,
   DIALOGUE_CONTEXTS,
+  DIALOGUE_FULL_PORTRAIT_DEFAULTS,
+  DIALOGUE_FULL_PORTRAIT_LIMITS,
   DIALOGUE_INLINE_TAGS,
   DIALOGUE_PROJECT_SPEED_LIMITS,
   DIALOGUE_STYLE_IDS,
   DIALOGUE_STYLES,
+  normalizeDialogueFullPortraitSettings,
   recommendedDialogueStyleForPreset,
+  resolveDialogueFullPortraitLayout,
   resolveDialogueLook,
   resolveDialogueStyleId,
   type DialogueContextId,
@@ -61,7 +66,8 @@ export function dialogueStyleSection(project: Project, deps: DialogueStyleSectio
   };
   const gallery = dialogueStyleGallery(project, deps, (style) => refresh({ dialogueStyle: style }));
   const settings = dialogueTextSettings(project, deps, refresh);
-  return [gallery, settings, showcase, extras];
+  const fullPortrait = dialogueFullPortraitSettings(project, deps);
+  return [gallery, settings, fullPortrait, showcase, extras];
 }
 
 /** 글꼴·기본 말 빠르기·구두점 쉼 — 스타일과 따로 정하는 프로젝트 기본. 인물 프로필이 다시 덮을 수 있다. */
@@ -106,6 +112,53 @@ function dialogueTextSettings(
       });
       refresh({ dialoguePunctuationPause: on ? undefined : false });
     }),
+  ]);
+}
+
+/**
+ * 하단 대사창 뒤에 서는 전신 초상의 크기·내림. 슬라이더를 움직이면 견본 화면이 바로 따라온다.
+ * 얼굴 표시 명령의 「장면 크기」가 장면마다 이 값에 한 번 더 곱해진다.
+ */
+function dialogueFullPortraitSettings(project: Project, deps: DialogueStyleSectionDeps): HTMLElement {
+  let settings = normalizeDialogueFullPortraitSettings(project.system.dialogueFullPortrait) ?? {};
+  const stageHost = el("div", { class: "db-system-dialogue-full-stage", dataset: { testid: "db-system-dialogue-full-stage" } });
+  const redraw = (): void => {
+    stageHost.replaceChildren(renderFullPortraitStage({
+      resourceId: FULL_PORTRAIT_SAMPLE_RESOURCE_ID,
+      layout: resolveDialogueFullPortraitLayout(settings),
+      width: 320,
+    }));
+  };
+  const save = (patch: { readonly height?: number; readonly drop?: number }): void => {
+    settings = normalizeDialogueFullPortraitSettings({ ...DIALOGUE_FULL_PORTRAIT_DEFAULTS, ...settings, ...patch }) ?? {};
+    const next = settings;
+    deps.updateSystem((draft) => {
+      if (Object.keys(next).length > 0) draft.system.dialogueFullPortrait = { ...next };
+      else delete draft.system.dialogueFullPortrait;
+    });
+    redraw();
+  };
+  redraw();
+  return deps.fieldset("전신 초상", [
+    deps.help(
+      "얼굴 표시를 전신으로 하면 하단 대사창 뒤에 인물이 크게 섭니다. 크기는 게임 화면 높이 기준이고, "
+        + "「아래로 내리기」는 초상 아래쪽을 화면 밖으로 얼마나 내려 자를지입니다. 장면마다 얼굴 표시 명령의 「장면 크기」로 더 키우거나 줄일 수 있습니다.",
+    ),
+    sliderStepperField(
+      "크기 (화면 높이 %)",
+      "db-system-dialogue-full-height",
+      settings.height ?? DIALOGUE_FULL_PORTRAIT_DEFAULTS.height,
+      (height) => save({ height }),
+      { ...DIALOGUE_FULL_PORTRAIT_LIMITS.height, step: 5, unit: "%" },
+    ),
+    sliderStepperField(
+      "아래로 내리기 (%)",
+      "db-system-dialogue-full-drop",
+      settings.drop ?? DIALOGUE_FULL_PORTRAIT_DEFAULTS.drop,
+      (drop) => save({ drop }),
+      { ...DIALOGUE_FULL_PORTRAIT_LIMITS.drop, step: 1, unit: "%" },
+    ),
+    stageHost,
   ]);
 }
 

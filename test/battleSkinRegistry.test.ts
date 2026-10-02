@@ -32,11 +32,19 @@ describe("battle skin registry", () => {
     }
   });
 
-  it("전용 배치를 가진 retro2003 외에는 같은 구도의 배치를 공유한다", () => {
+  it("같은 구도의 스킨은 배치를 공유한다 — 측면은 도트 측면 뼈대(retro2003), 정면은 rm2000", () => {
     for (const id of listBattleSkinIds()) {
-      if (id === "pokemon" || id === "retro2003") continue;
-      const base = getBattleSkin(id).layout === "sideview" ? "rm2003" : "rm2000";
+      if (id === "pokemon") continue;
+      const base = getBattleSkin(id).layout === "sideview" ? "retro2003" : "rm2000";
       expect(BATTLER_PLACEMENTS[id], id).toBe(BATTLER_PLACEMENTS[base]);
+    }
+  });
+
+  it("측면 스킨은 모두 도트 측면 전투 뼈대 위의 창 모양이다(2026-10-01)", () => {
+    for (const id of listBattleSkinIds()) {
+      const skin = getBattleSkin(id);
+      if (skin.layout !== "sideview") continue;
+      expect(skin, id).toMatchObject({ motionStyle: "retro", scenery: "layered", hudTemplate: "rows" });
     }
   });
 
@@ -46,13 +54,11 @@ describe("battle skin registry", () => {
     expect(getBattleSkin("retro2003")).toMatchObject({
       layout: "sideview", showAllySprites: true, motionStyle: "retro", scenery: "layered",
     });
-    // 전용 RETRO_SIDEVIEW는 스킨 구현에서 제공한다. 기존 측면 배치와 공유하면 안 된다.
-    expect(BATTLER_PLACEMENTS.retro2003).not.toBe(BATTLER_PLACEMENTS.rm2003);
   });
 
-  it("얼굴 카드·링·얇은 HUD 변형이 한 번씩은 쓰인다", () => {
+  it("HUD 변형: 측면이 도트 뼈대로 옮겨 간 뒤 링·얇은 줄은 쓰는 스킨이 없다(정면 얼굴 카드·줄만)", () => {
     const huds = new Set(listBattleSkinIds().filter((id) => id !== "pokemon").map((id) => getBattleSkin(id).hudTemplate));
-    expect([...huds].sort()).toEqual(["boxes", "minimal", "ring", "rows"]);
+    expect([...huds].sort()).toEqual(["boxes", "rows"]);
   });
 
   it("mv 스킨이 등록되어 있고 기존 9종은 그대로 유지된다", () => {

@@ -118,7 +118,7 @@ export function createDatabaseCinematicPreview(options: {
           stop();
           return false;
         }
-        surface = createPlaySurface(resolvePlayResolution(project.system), "fit");
+        surface = createPlaySurface(resolvePlayResolution(project.system), "fit", project.system.displayFilter);
         host.append(surface.viewport);
         surface.sync();
         if (gameOver) {

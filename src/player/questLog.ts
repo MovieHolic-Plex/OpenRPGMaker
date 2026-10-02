@@ -36,6 +36,7 @@ export interface QuestLogEntry {
 }
 
 function stepLabel(step: QuestStep, index: number): string {
+  if (step.label) return `${index + 1}. ${step.label}`;
   switch (step.kind) {
     case "talk":
       return `${index + 1}. 대화`;
@@ -45,6 +46,11 @@ function stepLabel(step: QuestStep, index: number): string {
       return `${index + 1}. 전투`;
     case "reach":
       return `${index + 1}. 목적지 도달`;
+    case 'inspect': return `${index + 1}. 단서 조사`;
+    case 'deliver': return `${index + 1}. 납품: ${step.itemId} ×${step.count}`;
+    case 'choice': return `${index + 1}. 해결 방법 선택`;
+    case 'escort': return `${index + 1}. 인물과 동행`;
+    case 'craft': return `${index + 1}. 제작`;
   }
 }
 

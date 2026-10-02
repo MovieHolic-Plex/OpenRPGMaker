@@ -8,7 +8,7 @@ import {
   type MapCreatePreset,
   type MapCreateRequest,
 } from "@/project/mapCreateSpec";
-import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
+import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { findParentMapId, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
@@ -30,12 +30,12 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         dataset: { testid: "map-create-name" },
       }) as HTMLInputElement;
       const width = el("input", {
-        attrs: { type: "number", min: "4", max: "256", "aria-label": "가로" },
+        attrs: { type: "number", min: "4", max: String(MAX_TOOL_MAP_DIMENSION), "aria-label": "가로" },
         value: spec.width,
         dataset: { testid: "map-create-width" },
       }) as HTMLInputElement;
       const height = el("input", {
-        attrs: { type: "number", min: "4", max: "256", "aria-label": "세로" },
+        attrs: { type: "number", min: "4", max: String(MAX_TOOL_MAP_DIMENSION), "aria-label": "세로" },
         value: spec.height,
         dataset: { testid: "map-create-height" },
       }) as HTMLInputElement;

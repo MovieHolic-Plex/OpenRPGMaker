@@ -20,7 +20,7 @@ import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 export type AiActionMenuVariant = "header" | "composer";
 
 export interface AiActionMenuActions {
-  readonly openAuthoring?: (tab: "library" | "dialogue" | "inspector") => void;
+  readonly openAuthoring?: (tab: "quests" | "library" | "dialogue" | "inspector") => void;
   readonly exportAudit: () => void;
   /** 사용 로그(src/ai/activityLog.ts)를 .txt 로 바로 내려받는다. */
   readonly downloadUsageLog: () => void;
@@ -168,7 +168,7 @@ export function createAiActionMenuItems(options: {
     setAcceptanceState,
     items: [
       compact, instructions,
-      ...(options.actions.openAuthoring ? ([['library', '프롬프트 라이브러리'], ['dialogue', '대사 목록·문체 검토'], ['inspector', '프롬프트 검사기']] as const).map(([tab, label]) => build({
+      ...(options.actions.openAuthoring ? ([['quests', '퀘스트 프리셋'], ['library', '프롬프트 라이브러리'], ['dialogue', '대사 목록·문체 검토'], ['inspector', '프롬프트 검사기']] as const).map(([tab, label]) => build({
         key: 'tools', icon: 'book', label, testid: `feature16-open-${tab}-${options.variant}`,
         run: () => options.actions.openAuthoring?.(tab),
       })) : []),

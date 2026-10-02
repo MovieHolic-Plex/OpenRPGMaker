@@ -1,0 +1,56 @@
+
+> oprn@0.60.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/mapSizeGuard.test.ts test/mapEdgeGrow.test.ts test/mapCreateSpec.test.ts test/runtimeTileWindow.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/320d/rpg-zzu
+
+ ✓ test/mapSizeGuard.test.ts (26 tests) 34765ms
+   ✓ build_world 맵 크기 상한 > 512×512 노드는 만든다  1138ms
+   ✓ build_world 맵 크기 상한 > 513×513 노드는 셀 할당 전에 거부한다  677ms
+   ✓ build_world 맵 크기 상한 > size:{w,h} 별칭으로 우회할 수 없다  783ms
+   ✓ build_world 맵 크기 상한 > 초대형 노드 하나가 섞이면 같은 요청의 정상 노드도 만들지 않는다  806ms
+   ✓ plan_world 크기 힌트 상한 > build_world 가 그대로 읽는 초대형 힌트는 계획 단계에서 거부한다  756ms
+   ✓ plan_world 크기 힌트 상한 > 512 힌트는 계획으로 등록한다  1065ms
+   ✓ 나머지 조수 생성/크기변경 경로 > official 512×512 maps retain the edge cells through export and reload  2795ms
+   ✓ 나머지 조수 생성/크기변경 경로 > create_map { name: '경계', width: 512, height: 512, id: 'map_edge' } → ok:true  995ms
+   ✓ 나머지 조수 생성/크기변경 경로 > create_map { name: '초과', width: 513, height: 513, id: 'map_edge' } → ok:false  704ms
+   ✓ 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 512, height: 512, id: 'map_edge' } → ok:true  1445ms
+   ✓ 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 513, height: 513, id: 'map_edge' } → ok:false  665ms
+   ✓ 나머지 조수 생성/크기변경 경로 > resize_map 은 지원 상한까지 늘리고 초과는 거부한다  1627ms
+   ✓ 나머지 조수 생성/크기변경 경로 > start_dungeon_room_session 은 초대형 방을 거부한다  727ms
+   ✓ 나머지 조수 생성/크기변경 경로 > start_interior_room_session 은 초대형 실내를 거부한다  751ms
+   ✓ 나머지 조수 생성/크기변경 경로 > author_village 는 초대형 새 맵 대상을 거부한다  722ms
+   ✓ 나머지 조수 생성/크기변경 경로 > build_village/build_castle 은 상한을 넘는 맵을 만들지 않는다  757ms
+   ✓ 사람 생성/크기변경 경로 > addMap 은 초대형 요청으로 맵을 만들지 않는다  1752ms
+   ✓ 사람 생성/크기변경 경로 > addChildMap 도 초대형 요청으로 맵을 만들지 않는다  1009ms
+   ✓ 사람 생성/크기변경 경로 > addMap 은 지원 상한을 그대로 만든다  1289ms
+   ✓ 사람 생성/크기변경 경로 > resizeMap 은 초대형 크기로 바꾸지 않는다  1116ms
+   ✓ 사람 생성/크기변경 경로 > createMapFromSpec 은 상한 밖 스펙으로 초대형 맵을 남기지 않는다  1113ms
+   ✓ lint 계약이 생성 계약과 일치한다 > 513 맵은 error 로 보고한다(warning-only 미지원 상태 금지)  1611ms
+   ✓ lint 계약이 생성 계약과 일치한다 > 512 맵은 보고하지 않는다  1715ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 선재 초대형 맵이 무관한 편집을 막지 않는다  1090ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 조수 경로에서도 렌더 없이 삭제할 수 있다  3838ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 캔버스를 열지 않고도 식별하고 지울 수 있다  3809ms
+ ✓ test/runtimeTileWindow.test.ts (7 tests) 7510ms
+   ✓ runtime viewport tile residency > uses a teleported or zoomed camera immediately, before worldView refreshes  331ms
+   ✓ runtime viewport tile residency > keeps only the camera neighborhood even on a 512 map, reuses overlap, evicts roots and containers  1130ms
+   ✓ runtime viewport tile residency > matches complete-map draw order, quarters, four layers, shadows and root depths at tile size 16  2101ms
+   ✓ runtime viewport tile residency > matches complete-map draw order, quarters, four layers, shadows and root depths at tile size 32  2037ms
+   ✓ runtime viewport tile residency > recreates changed tiles on return and resets resident cells on tile refresh  967ms
+   ✓ runtime viewport tile residency > new water sprites inherit the retained visible animation frame and fractional time  925ms
+ ✓ test/mapCreateSpec.test.ts (8 tests) 7603ms
+   ✓ resolveMapCreateDefaults > starts a new project and a new blank map on the generated default (beodeul_city)  811ms
+   ✓ resolveMapCreateDefaults > create_map fills beodeul_city with its plain grass, not the combined-town number  1123ms
+   ✓ resolveMapCreateDefaults > inherits parent size and tileset  666ms
+   ✓ resolveMapCreateDefaults > creates a legacy easyrpg interior map filled with its wood floor  1698ms
+   ✓ resolveMapCreateDefaults > creates a hand-pixel v5 interior as a walled room shell, not a flat fill  986ms
+   ✓ resolveMapCreateDefaults > uses the hand-pixel v5 interior tileset and a room size for the interior preset  671ms
+   ✓ parent-child transfer pair > adds reciprocal transfer events on free cells  1018ms
+   ✓ map test-play start > chooses a passable event-free interior cell instead of an empty outer wall  627ms
+ ✓ test/mapEdgeGrow.test.ts (9 tests) 6ms
+
+ Test Files  4 passed (4)
+      Tests  50 passed (50)
+   Start at  20:32:09
+   Duration  84.28s (transform 15.49s, setup 0ms, collect 32.23s, tests 49.88s, environment 1ms, prepare 302ms)

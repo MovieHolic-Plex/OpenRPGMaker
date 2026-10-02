@@ -1,3 +1,4 @@
+import { spriteReliefLiftPx } from "@/player/playSceneRelief";
 import Phaser from "phaser";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -46,9 +47,9 @@ function hostSprite(
  * 머리 위 기준점. 스프라이트 원점은 발밑(characterSpriteY)이므로 키만큼 올려야 정수리다.
  * 타일 크기로 고정하면 24px 캐릭셋(EasyRPG charset)의 머리를 4px 파고든다(실측) — 실제 표시 높이를 쓴다.
  */
-function anchorY(sprite: Phaser.GameObjects.Sprite): number {
+function anchorY(scene: PlaySceneContext, sprite: Phaser.GameObjects.Sprite): number {
   const height = sprite.displayHeight > 0 ? sprite.displayHeight : TILE_SIZE;
-  return sprite.y - height * sprite.originY - EMOTE_HEAD_GAP_PX;
+  return sprite.y - height * sprite.originY - EMOTE_HEAD_GAP_PX - spriteReliefLiftPx(scene.map, sprite);
 }
 
 export function showSceneEmote(
@@ -62,7 +63,7 @@ export function showSceneEmote(
 
   clearSceneEmote(scene, target);
 
-  const sprite = scene.add.sprite(host.x, anchorY(host), EMOTE_TEXTURE_KEY, emoteFrameIndex(emote));
+  const sprite = scene.add.sprite(host.x, anchorY(scene, host), EMOTE_TEXTURE_KEY, emoteFrameIndex(emote));
   sprite.setDepth(EMOTE_DEPTH);
   sprite.setScrollFactor(1);
   // 타일 크기가 기준과 다른 맵에서도 말풍선이 캐릭터와 같은 비율로 보이게 세계 배율을 곱한다.
@@ -116,7 +117,7 @@ export function syncSceneEmotes(scene: PlaySceneContext): void {
       continue;
     }
     entry.sprite.x = host.x;
-    entry.sprite.y = anchorY(host) + entry.lift.value;
+    entry.sprite.y = anchorY(scene, host) + entry.lift.value;
   }
 }
 

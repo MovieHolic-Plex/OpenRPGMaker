@@ -1,0 +1,5277 @@
+{
+  "version": 1,
+  "method": "Visual inspection of final 32px assets enlarged 3x with nearest-neighbour sampling",
+  "entries": {
+    "cc0-jetrel-potion-red": {
+      "sha256": "85907a607809cda104105f64e4c827767055cacddaae33fc18e9e09ec6b075fb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-bronze-sword": {
+      "sha256": "2e9032055dd12982b62de1efb25dd191c15a617a0aaf0d75d1c717390ea588c2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-leather-armor": {
+      "sha256": "5659eceeba204e787db701df659a373b734c6dfb565c7a22629b12d434fe5da1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-apple": {
+      "sha256": "44634cd00e06102c2317bb9d0488458e1e2f1736846ae365ec2a3910dba2dd61",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-book-magic": {
+      "sha256": "42c90b49add60bb7ac20de64c0829c506b1373f5417e835edd85458e5bc75a46",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-old-key": {
+      "sha256": "5821ec27d27adaee7267f4c8499049e3b792ac9dffe347221aa03c1f11b57fee",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-iron-ore": {
+      "sha256": "1fd7b0e2cc7e69cc17f9a40696d0b1797ef1857f8da8ef0828e08d1c67cb3f6e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-ring": {
+      "sha256": "ac4daba3c4e1f892d329069c94fdef8a28f2aa35f103cd2a168ed0248458e627",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-ether-blue": {
+      "sha256": "406413aead987e4e8395ecb88c4791168b7fedf1306290d5cca7bcd50d4b732b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-antidote-green": {
+      "sha256": "25036d7dd31e49b80203cce50c6d2b2ac76bbf4e6c06cd8de07505e158646029",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-mage-staff": {
+      "sha256": "fb95f4fc18b9a839c1234179dd84dbf34077d5147d1d8e97cc8b75166e8bcbde",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-mystic-robe": {
+      "sha256": "516281b557c62da266d7cfc39777287fff167aba0c1ec59323cb0cd8f53e0d0d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-oak-shield": {
+      "sha256": "5d4638dc94abc7537fdb31bb46133bb458ce0750a7620dbc59128fa3e0fa6fa7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-wake-herb": {
+      "sha256": "7c6dcc6f36da220b182d0704f675700605d236ecde7a6d7f0e0d320aa4eaa0ba",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-focus-charm": {
+      "sha256": "2838ad0f0da1252fe651c610aa879c8fd0cc7e65c1ea9b6c85f068ecc56eb2ca",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-scout-dagger": {
+      "sha256": "7192a4d80b86d685e026ab7919a92287423d220205874ef5f907214310b4e57c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-ale": {
+      "sha256": "5634252b8dfda4bc9f82b5d50885672378b564035f3ddc7084efe74e7d7c14cb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-mugwort-1": {
+      "sha256": "cd50e27f9a4c7fb7e226306b4eff3c0e7a8451bea2aebd00461c265ef523e86e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-moon-1": {
+      "sha256": "60b3f56a609e9b1cae17a4a3313221bb2750cde32b436ea77542363d5bb06371",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-dawn-1": {
+      "sha256": "0448377d0db02d0bc510d1613b7afdb302c45879ec0e31be0df17eb9c70c66e0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-poison-1": {
+      "sha256": "522d69b6fc0ae431375238558d33a8fd22b4c5f3fea1e2b1e238675d2db470ff",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-valor-1": {
+      "sha256": "f1caf639fb621c615190759557ff8932523e3486a0889aec4319fac6067424e7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-phoenix-1": {
+      "sha256": "cbd133080b3fb7dffbe2a2e9bcee2a7a6322b0b289fae20769f6b8b42073d314",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-riceball-1": {
+      "sha256": "f6f2228d523c1b36443025d2ab8ea78890bc3418f44253f38245cee6560364ff",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-valor-1": {
+      "sha256": "2da80ef62a10877f442dc789091037e37e5f84b4e1a1fb3bce233a0258d854cd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-hero_cross_slash": {
+      "sha256": "092dcea30069eb1b5e87889d199007f72f35dd20d10a23700145fc42fc56a2c2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-fire-1": {
+      "sha256": "c2744e3f4e81274c0f4d34fc18853b5445f0016e47c5f76b3dad26af7181b579",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-field-1": {
+      "sha256": "49d8d04753a4639b82f6b58bb20f807f82ca74bbdf4a0778d026d3d27bcad261",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-oat-1": {
+      "sha256": "850d81b5c12a68699f615554c7275a20e3bd2e7a93e53c5fc08d5c963dbcaa45",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-ball-1": {
+      "sha256": "8e9bd652d350f04d3c14cbd5a6ee5207038f44d4762280f3d1f8f390311011e6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-wheat-1": {
+      "sha256": "f5e5d6b49a13129a694b1616a0ffc8faad1980ec2b30644e91ae1745e3d284bb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-copper-1": {
+      "sha256": "87f0c846ba1b4f0a0d3c144b4989af8ba7bce9980f02f0d4d1ac9afd57d5e71a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-wire-1": {
+      "sha256": "d3c37690be20fd30410cf4caa1edb1caa06740744d20ae8182a61fd4c1d015a2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-relay-sun": {
+      "sha256": "9a66cbc415f56fe928d5bad45c17b364a73237ee8e6de942c11a0f11122b2d29",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-mugwort-2": {
+      "sha256": "e6658df19588be2fb400720f531229d9beace1937c5edf541b30ab8be2d246bc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-antidote-plus": {
+      "sha256": "b1102295e1e28b3e7f988e138b572218cb06aafaf2769e4f36598cc50da6ee00",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-mugwort-3": {
+      "sha256": "8ef62e68ca574dd214daf265594686d832ec08deec4efcc4725f1a127c30629d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-moon-2": {
+      "sha256": "8a2a5e825607b0c989799b38d7f9fc761e6afe62c06cb631f4797d6452f6e4eb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-dawn-2": {
+      "sha256": "1b64abc471d84c371c7e8157a3db5ef52366aac56c0babcac1b469fd878b8005",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-poison-2": {
+      "sha256": "d65abb9712b25e37fe6dea70bf67fc0a73142c3bfd5fbc43840d8d8e8ecaa051",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-valor-2": {
+      "sha256": "2c17cb7b0b526a7b25aa392f90430a9b364cccb369f4ab95dbf6f22d4444ff3f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-phoenix-2": {
+      "sha256": "8a3774de023b3dbf758f425a98f15d051bb2bed6c061375f4caf78feb60ecaa0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-riceball-2": {
+      "sha256": "273cb192d67bae25d43a5df51be96497c1aa9cee6ea2bb9450cb5c1d3d54084c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-valor-2": {
+      "sha256": "c400148b8a0997c4b9137a1df529e9b22fd5855d2680f4b697d222ed23dee046",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-hero_rush_pierce": {
+      "sha256": "06ce209b9fc7158b4030d200c5cc16f98f31fe0501465522fe6534c3b2a32498",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-fire-2": {
+      "sha256": "6435b9b58b0e313da519cf5a51f80a8ce8ee86fe77f67967e3dec63a3622942c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-field-2": {
+      "sha256": "054c70a01d21874e548b569f75c7784017b9fde029dcff1012df9da5fc74237f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-oat-2": {
+      "sha256": "cdbcba1273cf90bd78deee4e950c57f019044acc32af682d34fb166514e436b5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-ball-2": {
+      "sha256": "55fbfdf6aad913ea9e2de389e45b4f8d68d05094942365807bca8c676091b22e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-wheat-2": {
+      "sha256": "270d49e8a28ec33ea2526516172e82a83ad9af729292732482bf0973d07881a3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-copper-2": {
+      "sha256": "fe403aeb63f3ccb13f6e1f9310bd0d49f6dfbd0769e8b0d420d42a7fa52a823e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-arrow-bundle": {
+      "sha256": "c26559fef10718be09ed812fc6c1957417b687c67f672344b6c67a7221918eee",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-mugwort-4": {
+      "sha256": "055ec888fe0c56cd8504cda2739379d6c5c4e0ebb8e1e34396f84e45a8dfb481",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-moon-3": {
+      "sha256": "c52eaa085636d0ea9779f36025e0da40265250d1b65e0fbbfb7d219880e0dcaf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-dawn-3": {
+      "sha256": "71661525eaa839a21ff9608ff809aa554b358ed9046575de74fc19b70eacbf7a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-poison-3": {
+      "sha256": "09461f8b72fd02a2a251cb64b7471e4bc4d02d1c0b5fc09726b5e6cffe1b6f82",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-valor-3": {
+      "sha256": "7e9f9e1b6910ea1bf0d3c559bfcc423987d1884ca3e9868bd27c79e4a1b00620",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-phoenix-3": {
+      "sha256": "9caa3ad4914c7a0615c6e234134fe0ffc18b21c83b41d5c8c1a3fd3e34e6ee4f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-riceball-3": {
+      "sha256": "5570ad857b99a0ba9ee2b54d2e5a9c10bab94b49183cc0dac06d35d53bee9665",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-valor-3": {
+      "sha256": "4d53eee76bce9fbe7dde0932ad8b60b7feb7e3040c0f4ce3bc075518fcea2ae6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-hero_rising_blade": {
+      "sha256": "b93f9b8438ac7dd4bb6b69f11229f1f7af0cc8ee7d9aeeb4c526944805cea9b7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-fire-3": {
+      "sha256": "26f32a32cb50ab6bb01dc7a0aa95283f9edc4aef33fc169af7c654f9267d4f64",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-field-3": {
+      "sha256": "e2da2fd3ef4fe5c5e17bb12ee08b5af3a0ccd3dc92fc8bd0d20ea8e942bf99f5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-fish-1": {
+      "sha256": "4a1dc898c03ac2e661a978df966e34f4ad1fea36f530b6f4d7804dd041df914d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-rope-1": {
+      "sha256": "b4419d4c7ec629f4886b84b741fb63a3c362b8978406595a518f61b3d013397d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-wheat-3": {
+      "sha256": "f863ac6931ad55e3578fc072632cb209687624e787e2e2dead4fa90eaa80ac3c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-copper-3": {
+      "sha256": "3ab0f271984a9805b43430ca187665458eb4279aa77c364c36f7768d39237578",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-harbor-1": {
+      "sha256": "dd76d308dba148c7a9e800ae8daf8fdf165e12611cbc8d71f5d522bf2d0eee85",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-worm-1": {
+      "sha256": "41a57c9d428351418dc03b7f2d6959eb5a116a82dc715ffd7c1d28291099b099",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-ruby-1": {
+      "sha256": "6301501e1f0cb717869e2ade3a9599800d5e36a87331ca4f18a2df7995ee9288",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-wire-2": {
+      "sha256": "f1a5ad950974003aa39043f6501f0fb8cad04416f7a3a13d08f03c2c3dd9edb0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-relay-moon": {
+      "sha256": "be030c087604705d9e49ee4933726b5e30b6ae6ec1e2c2dc3bcf5d87b53470f5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-badge": {
+      "sha256": "84e1fc3db816544f3dcb554f6dd99134c773a05d58bbd75d96d9d83b344c25d7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-mugwort-5": {
+      "sha256": "9e2810544a72895198b41edad440e2548b86920e2dc8124cb69ae98cb1dbe007",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-moon-4": {
+      "sha256": "ac3505b908dadc6d64b905c43d9f148561c1a58dd797b0797703034436783883",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-dawn-4": {
+      "sha256": "00654a1d2edb56d971aa09ae08aec6f5d87de03d92df3b58d2adcab1bec64367",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-poison-4": {
+      "sha256": "59c40310b508846c542925426457f99f46e89046a6c30f0b37240d612409a980",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-valor-4": {
+      "sha256": "6d627a245dbbe0d318fc0c5529ca3b25cb73757977f7c8677cce1e3210c94f78",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-phoenix-4": {
+      "sha256": "1efe93cebe19b5c2bf106e41375e032bf8aefcf40dadf08d0b06cce13749c53f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-riceball-4": {
+      "sha256": "c795c81d52d1438417bc7405236a429c226084048e6c95e877449390935155b8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-valor-4": {
+      "sha256": "a1dddbc27c00245e5d4efc231b0150e7188e77f6683cb112ef7920bcb8dc7f04",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-hero_flame_sword": {
+      "sha256": "eff456fa6ea9acc87c5153e3440cc30a4a9f3c209928a4e4cb20463c659c5fc2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-hoe-1": {
+      "sha256": "51fa9bd1d806b26d6bd137e447d1a85aac6652b111ed4dc27fac79078881c977",
+      "subject": "accepted",
+      "style": "accepted",
+      "note": "Corrected perpendicular bent hoe head; inspected again at native size and nearest-neighbour enlargement."
+    },
+    "cc0-jetrel-bandages": {
+      "sha256": "ae9c167e2a17e65bd4e999c5b01c3fccfcbc38f262fda446374e0709411b1e2b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-mugwort-6": {
+      "sha256": "16f8b0ac77ec0b1d9430cb43094cc7106d70b11c36f6c7692ced0a291b522242",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-moon-5": {
+      "sha256": "3e567faf77323d4e4d61ec569643f5692f47bc690fb632f78de5bb8313e18e04",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-dawn-5": {
+      "sha256": "2c7cc62a3fb98c1063a9ae0c6bb38fc5298297445b5a1374fa2069785c4d40b6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-sleep-1": {
+      "sha256": "35a258778c7ac779be8c89ab645762589f824bfd185fafb95cbdada013c22073",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-valor-5": {
+      "sha256": "6dcf4264ac275ffe19d5c2a57215dc9a2d75fe356f4c5eac6dda1ed87d688e99",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-dove-1": {
+      "sha256": "243a9c05c61394eabd698d80d64785d6a2914343583479fac3cd4873222a04e5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-bread-1": {
+      "sha256": "5ce3881a9a5ac48b3a818be4a24acc1a27e16015a47c88558c2e74d843e85903",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-valor-5": {
+      "sha256": "6a12aad5f6478b8f6befa3134d3491ccc867be7d4eae8faef39f8744b16e4ca8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-hero_whirlwind": {
+      "sha256": "fb6b31846d35ce13b63b8af8566375b665a5e6e636d754a186771a35a3e6ff4f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-fire-4": {
+      "sha256": "f1b3e310c408695e5ccee68fa33830a956c071216fd239454b55300dcea54a69",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-field-4": {
+      "sha256": "992ef382be4b21860f6debbba1786859e7769cf64fdbc2ddab1c99df4c052301",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-fish-2": {
+      "sha256": "72cc261395674b70273a9cb7be09b3a1098fcbbbd465c82e65579257492c25cf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-rope-2": {
+      "sha256": "ff4845eb0525f448d886be09f6a48d33c99b5c59eaaacdc8b22c3801155bc889",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-rice-1": {
+      "sha256": "82dbddcfb154c5ef991d8e491ef4e70fde21eb5d488c0e194d41b4243047566f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-copper-4": {
+      "sha256": "6b363628abe92bb655113cfeba93d690c14850e4410bfcf44be3ebaf9ebc1a85",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-harbor-2": {
+      "sha256": "a6ec020b1946addb4c2b50f830f7bb9109318246bb576fb64e22501a5db5a94d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-worm-2": {
+      "sha256": "df80663f00881e3f1b3aaf0b1e90aea706d5bfaec7025f5b97f8e4273a087c3a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-ruby-2": {
+      "sha256": "86b64918c7df28b96284cf2e11ae58f49d92460c6b9bb6cc6b814b3a3369bd84",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-wire-3": {
+      "sha256": "a8fde8c416ae392a7950bc577a1533a2376162fe0a68961e03997ea030936ca0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-relay-tide": {
+      "sha256": "60328ead9caaf6fc6f2a70d3fbfbaf355e18b54d6cce3ce7a636df6184663b27",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-battery": {
+      "sha256": "a9c55ae8d205df7c67ca7e3a819d1631bb3a79992c332392495f03b5a4710f53",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-hoe-2": {
+      "sha256": "312a4ee19f31c03f298cc13e957b93f1a4e04e63ed730bf6497e89cb6ab6da94",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-mugwort-7": {
+      "sha256": "0b0b672e28083541391014fd3837739bd8e70c0010fc6f914883521329075ff7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-moon-6": {
+      "sha256": "4605a6a2b84f046a3b8a236d5b009976b65ae2d81ba25687990ebfb633470c2b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-dawn-6": {
+      "sha256": "9eef6fc1d60b19d6515aa849b31d94342eec950a98b550d987fb5db00514aa08",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-sleep-2": {
+      "sha256": "4d913bed7b9d6b6ec9e3a6fa12eb182925fce945bb7dd37aed7d1172109d94d6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-valor-6": {
+      "sha256": "22f764202c06c2909040ed0680a9d093813a2ae9d7c634b22dcc8aa5e9f8a9b9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-dove-2": {
+      "sha256": "c31978011875674be6acb33bea2c356cdbd5b8dfafea74d62968db84310d1a54",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-bread-2": {
+      "sha256": "4e4f2c98c5538add4f7966dec255ee2ce4afefce463f8faa79caa767e2e46fd3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-valor-6": {
+      "sha256": "895aebf2ab27d1e0f0f928a82c8296c4e9f92dfaad372720be89d46a620af304",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-hero_war_cry": {
+      "sha256": "ba4a97dc1e609ed82d0870b066c716d4ab13fc280b683b4f1e56c8e0ee3b26ac",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-bell": {
+      "sha256": "9fa60c42ed7b5e36b13c9eb9284fae5713f5876b730c7dd8ede895a14863e71a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-mugwort-8": {
+      "sha256": "b1c56a2d219980c18f149de2e8271bacc21f0b9003ea5ae5a0ac8133f7cd9963",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-moon-7": {
+      "sha256": "149f0767b794b8198d9fadbf2c21b22bb0d8d8caa079c5556f910bee3f705808",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-dawn-7": {
+      "sha256": "7b5814ad2ef219825adbd4989638d4c58bfd4cb70ec92d6d4104e9673341b8e9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-sleep-3": {
+      "sha256": "fbeaf12256301681ccffa9822691f271b7bcdde73e2149e0a74bc038f152598c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-valor-7": {
+      "sha256": "3d45ab17d765ef5c1836a1a953f05c1e55803f1080dea8de0d2e8178b18d1786",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-dove-3": {
+      "sha256": "76221766cd5eca868d1c146c77fad10d824685fcea0651535dafa3e28499991e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-bread-3": {
+      "sha256": "dcb678b2b4f458da21169573a4176b00102e7937966f92affc383b02e5f63a10",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-valor-7": {
+      "sha256": "c1105d24289f8e716cab7b20cc88b961c3fd73ceddcc7f98856cf6eabf858f17",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-hero_meteor_drop": {
+      "sha256": "c119231ffbab746bfcb0989eee96b5753409e774d7dfd991152656af4bbcf7fb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-fire-5": {
+      "sha256": "905154cef3124c1c9f300b13cd1e61722d954440d22b1a0d24783d36388aa16d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-field-5": {
+      "sha256": "8754a7e721d9e2156638940b7149e89bfba0116526e4b9fa28acb839bbc391ad",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-beef-1": {
+      "sha256": "71f90e9a64c1406cdddc479d0e2a4e0b924be711788d34b26f87ec4d705cd648",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-bell-1": {
+      "sha256": "96141224c2936122a8ef4dac0b2f7d04606192f2485ea3e6ae28d9faed3b0fbe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-rice-2": {
+      "sha256": "b97265ba0d63a4dd3fac87c488f9d6d522dccafb56657e1745b7be64a8793467",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-silver-1": {
+      "sha256": "dcad2a2e1e505066272ca638240d686a969261c668812ca8cd1d52cdf8da33fa",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-tower-1": {
+      "sha256": "341cd4e23c603a74b18f77240c48b3eb004471f73a654acd080eedaabc9d6f3b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-hoe-3": {
+      "sha256": "3ef717e3d802bbeb536daad7a0a5096e41c1c56ae56da27913730a8f308ac71b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-worm-3": {
+      "sha256": "ef835d6ff8123cc77af812c58ffbcddf96da8c6b81cc5b314644c1db5755194b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-ruby-3": {
+      "sha256": "232b2537c822962deee9fa6276b41f294e7a68e63cb286d40aeaf811b7c37721",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-buckle-1": {
+      "sha256": "e6c4c52b8bb5a1c33519cf9949941026aaf99fdf2495dbea539252a4c29f4208",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-relay-earth": {
+      "sha256": "0dcbd9c6f4019a9d38883c47826a680f076946b0fef0338b725a2a7ff57a0c5d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-bomb": {
+      "sha256": "5733e3a914109ea908d37e72221eed0089909459eff8329c78612cfd3e233123",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-rose-1": {
+      "sha256": "9820da9783205f4e202da7ee3e0d6ada82b304b53826879f214835f70aa4e21c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-moon-8": {
+      "sha256": "2d3d027391e0e59446ed5ca92672ceb621f688d322da9ac4205237e0dbd0ebcc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-dawn-8": {
+      "sha256": "0ef75aad38a2b028ce71e969938c8052bdf6d4c833e777450a0f7bc59ba97f79",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-sleep-4": {
+      "sha256": "60f534a8c8c22aa0024ba698fa788bedf30d8bda399a2a83c5b94203395244d7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-valor-8": {
+      "sha256": "9213d363c302c70e7578fc196e032527a7b5a2f04be53647ed89db39b1e00be0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-dove-4": {
+      "sha256": "422396d6d4d98b0f92fe401e3790a34ba6b18522cb7050f298b66bfc1c276b06",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-bread-4": {
+      "sha256": "e6423e46e5f2966e231a4f942292901104a125b7ac6b7d0694c1e3cd3f9dc4d5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-valor-8": {
+      "sha256": "9a43b8dcb4ac9aa6cc18843311506ff34408dbbf77049709ddf39be1eab29f64",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-hero_brave_blade": {
+      "sha256": "cabade7e880f843fec8ce64734e714993a3e9498ac20b02f0cbac8aa96585bc3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-bone": {
+      "sha256": "4e8e39fc67f146aea0aabdabc937e7a716a6850cce468ecb0c5cff1edcaa831b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-rose-2": {
+      "sha256": "6591ec10ee45591c3682f7cddabe343d37c854c01af06e8fdde375804cb6555c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-azure-1": {
+      "sha256": "9623afc98c37c75cab9e411159fffe87ba8e979fddb6191b72f0f192cbceee27",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-forest-1": {
+      "sha256": "dd1c9e01023a674060b99b9e3b0703c1bd6a45e79f16ff2cf84b7a15d8d3031a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-paralysis-1": {
+      "sha256": "d083798040144fd5ff63c64341994a8c7e354926a7552d4106ae91703537e81a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-bastion-1": {
+      "sha256": "d408e653a20b4b315762ce54134cabaa80ffb709f6ee684a0cc0ad3b5b5a03b4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-crane-1": {
+      "sha256": "9766c26148891986c61109722540968740515fbcc921a46801262cb5af23c167",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-sandwich-1": {
+      "sha256": "cc5fff823afae85cf44422af1f70604ccbea4639503b61ede4a2acfb3c74a0ee",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-insight-1": {
+      "sha256": "eec0f07ab9486323e98f8c674e5ead472f37386ac83e8c13f0eb35dbc4f1890a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-guard_shield_bash": {
+      "sha256": "a17d15b4c3e354d829251b408ad52f5effb799bfc9468ba16ff61a8c554df7cb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-fire-6": {
+      "sha256": "2ac23a13165cd7f93ba011c332b0402ccbb1532269095b5f32202ffc024e03ae",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-field-6": {
+      "sha256": "9a4fdf8818bb908086c680f192e76f14d624913090a3b85fc573b1e62b4df517",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-beef-2": {
+      "sha256": "066ebf9aa0aaeb3daca2992e0aaa18f8904100b42b6d21a65dc0c2626c900bfe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-bell-2": {
+      "sha256": "3a362c8af99c90803b4f1a6358c77e34f8eb5183634bca35e3badd91a6e74da8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-rice-3": {
+      "sha256": "064cc7d2c5116dc3650f53c9b9c1526d0dcd2c23f9864eece7441eb22ee84f09",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-silver-2": {
+      "sha256": "22370619c9948e962012804f6e8d6efdf280c690ca1cd28af80188d38136cdc9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-tower-2": {
+      "sha256": "952038d2809bfe1e65560d66e9c7b8df16e56a08db2a22ff1d26d175fa0a0353",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-hoe-4": {
+      "sha256": "d6e5eb6212ff63d87ef0a0b4e2b6aa93052e6bf04bf771fc6419361368e6d2ff",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-shrimp-1": {
+      "sha256": "2336a17a1627a1beb3a7e506c587c9b101a881d5b9901c517a3d92608bfb59e9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-ruby-4": {
+      "sha256": "b2855677bed17585739c97fc23553f861d87cc411d71c40b75a0306ecc2d1e98",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-buckle-2": {
+      "sha256": "81602ef2d825df46ac114a3657fbbd60673dfa01b0f565b5e3e4dbd6b6e5008c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-book-sword": {
+      "sha256": "f4e637ced9b0bc51b1e6325629f5f7bd86392608a81c5a39e082ec005203f69e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-rose-3": {
+      "sha256": "5631d88f6a0272fc21c1e459244acec349a653411bd152ecbf87837772d43c6f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-azure-2": {
+      "sha256": "83ef9b1d33944c11759c9fc740b0ae3e63bfe8d17296f3a2c24adaa24aace7b4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-forest-2": {
+      "sha256": "697043eb4284ece693ddb6ca83393057bfd19752c004602b0a7561d51d800dec",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-paralysis-2": {
+      "sha256": "3d037c36876028cd81f7a4f358f3bd384e65ab93eb00b65c83091a8638712dca",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-bastion-2": {
+      "sha256": "b15cf0f60a8153b3e2bb8ed25390c8fda25d1d564d450b94b202b6aa1bd3efed",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-crane-2": {
+      "sha256": "796fe633be3e02c72bd9fb1f5d430cd8cb735c9dd13344ff644b736aa27b7888",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-sandwich-2": {
+      "sha256": "ac186937278c104a0562f4926f7c1e905933f092dcd86dd893b0b3620b4ce182",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-insight-2": {
+      "sha256": "bfaecf5bcc9f1a06a555abed54a7dc1c92a98237e4a52d1900463eca684eb43b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-guard_taunt": {
+      "sha256": "6bb27269daa46f2573358951a4c9aa8a3053f6b779dd934af71aab4ce05895b0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-fire-7": {
+      "sha256": "243209fd14f589fa7fce9b0d8efd45e39953fbc844d33d6753b5508ee4347212",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-boots": {
+      "sha256": "ad15fa9a674b7f4009c7b4b89d667dc9bbd83670f98478424b63f313b0a61db2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-rose-4": {
+      "sha256": "505a985adb28de251bc189382762062302a9fc6370dfd9732c9c2f0bbc2802de",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-azure-3": {
+      "sha256": "c1f2c25c95a3082a18d890d2cf99584af6192bb144a90e36e291872ce1edacf4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-forest-3": {
+      "sha256": "f9a54d1612933042d914c21c05a3da878ddadf3fae68710232b7151b94f2f2b8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-paralysis-3": {
+      "sha256": "373740d79c66c477bf1a5f71c79d779b83708a6a9fc310c16b1cb9f9ec86581f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-bastion-3": {
+      "sha256": "7fa25914d243037fd0f461d2595213883678a1f3b08172a2ccf04587d80693ed",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-crane-3": {
+      "sha256": "0e23fc3e7b9df0e077334e48b6cc15066fd2386e3d91106ab657385c7159628a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-sandwich-3": {
+      "sha256": "4614288727bcbdbea751199afe213142de97856a74427eb505e38f6e9545170f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-insight-3": {
+      "sha256": "a324489cfb814f417bf197d0160eea615d16a47179f7bf530df207c8a06770f7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-guard_iron_wall": {
+      "sha256": "5cdad1b0c68a71d7e8cf4bccd59c9a5eac094531f928b9ca1589fe3462843116",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-fire-8": {
+      "sha256": "b4943d787fee4db0559ad2304231ee6e43bc6b4a546b42c7c1348d973c16e34a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-field-7": {
+      "sha256": "00b9f23c32ccd05c6a6451668b4f434baa0f36efdbfae428d889fade5b3ac87f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-berry-1": {
+      "sha256": "3897b21b2a0545521f1ff38c4eef0f99ef6a075899af876e8a3719a0a1b81b59",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-disc-1": {
+      "sha256": "b3bb968e3d32b6b7516ed83c0483ca7e3eda82c4bf4d2d3307cb504d3a20c455",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-corn-1": {
+      "sha256": "951a201c2564298f374781590ba4cf6823e029de53d6f09cc5286d45a176c519",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-silver-3": {
+      "sha256": "92ea678996b3f7006276c0e7eabfb7a1e8885bb66b25a0b505e1541cfc514b44",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-mine-1": {
+      "sha256": "2a7192116ccb9100e06713d86779703b6eff0b384e661b5f99496af2cdc70a8a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-wateringCan-1": {
+      "sha256": "8cdf34cf2aef763176905da787e0f01eaf5e2bf175c668ca44865274ba218202",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-shrimp-2": {
+      "sha256": "e1bae5519199fb19c36611c357380acdc943e780d1fde2a15dde0fd3e14b1c2c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-sapphire-1": {
+      "sha256": "d6c03fdb05de13671c5f7ec3ac137de8e5fc9bf928a4fe913c81b4d755ae88eb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-buckle-3": {
+      "sha256": "8253893bd6c236b392dcc5fe939fe8105d0b17d3137c2a989ffeea13df91a36f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-bread": {
+      "sha256": "398823703c2e63d82a8e5d2275f03133ec3608961f88874562fb25200b7b540f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-rose-5": {
+      "sha256": "0076790a19f1a267b6751cdc9eef3eafaaaa1801bd6624e12b699602e10a05a9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-azure-4": {
+      "sha256": "e8730b9b49b0ef54f5314529f026f9b1b912e2e2c21c3aac6d8e635ec9cc6033",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-forest-4": {
+      "sha256": "6664963bf63f5b6d65caad87c11e4b5c135bca3ebc1223ab54d740287a956400",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-paralysis-4": {
+      "sha256": "49ce72accaf3f4ffac5ce3d0c0bb36a654b84c10c196c7a6325919350c278826",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-bastion-4": {
+      "sha256": "6574fb33472b1dfbcaeee21e9135278bf1dcd7a5842584be4d5397121fcd024d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-crane-4": {
+      "sha256": "cee7660c4699ca1e7df267750d4360986ea66748d46c12cf065638b6a723f2b8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-sandwich-4": {
+      "sha256": "5c6107c0d447bfdf69b87782289b2802b1836810562b951acefe70b0f2b6ac1e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-insight-4": {
+      "sha256": "644985580a6074d658109624076796ffccca3102b2cb18abf132172570d817c0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-guard_counter": {
+      "sha256": "e6a3259c09698168645065aef89426af5852bffcba101a80e7e71469194cab4e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-ice-1": {
+      "sha256": "7794acc14dad04279c7e30d66f1267cbb30348d01f1ede110fcc5e7c9d34cc21",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-field-8": {
+      "sha256": "7a8b1d0405470b72b85e3a4a2c8111da2fb95811ad161801b26f6082e9e9455a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-berry-2": {
+      "sha256": "893e9d967b10580d337777cbefe86e58641e1ad4f451996104dd391bbbdcc6a6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-disc-2": {
+      "sha256": "84414440c9a88e4ade6a40b7595d4a0a25289335d45c0b9ea8baa4fb4fe4d3a3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-corn-2": {
+      "sha256": "03208b0893a613824f873a5414c2efabbdfe5d8f3c585f4b1b458359fef9fbef",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-silver-4": {
+      "sha256": "2f729bde820275faf950856a83c9ccd2fb6984f129413543c95254a924d234d4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-mine-2": {
+      "sha256": "64d870f8b50e11ea3af1524b12daecb7ffa79d03e2f4217a141faa125830e1aa",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-wateringCan-2": {
+      "sha256": "d323d0dd84060595976808f4bfed00e9f2c5f44cd496a825d14f7a6a294ed7ea",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-shrimp-3": {
+      "sha256": "416c80f8d24d852033cb4a856fae1105b50ab33a9acf913c0f42a4e9b551145c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-sapphire-2": {
+      "sha256": "a11672eac8babeed17fac053ffe07883e7455c02db59fcc1dc74a184d51c3170",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-thread-1": {
+      "sha256": "e93162cc9fff608b697141f8a336db17eb5d17e5d4eddbd8919e3390b6e3563b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-bullet": {
+      "sha256": "2ea44d96c6231766a973e932d25f402d71c5af87a8843d37c248d3012d91dd5c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-rose-6": {
+      "sha256": "e20921fad98cd7a1da328dd16cc4b0ac8f5464c955e105fb47e982740352c5e9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-azure-5": {
+      "sha256": "dcc2cb30ac654bf0a30d281cd9d326aa8ebce46ab3cac95710e8135852e9f553",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-forest-5": {
+      "sha256": "93ae3ac1ee94f68144a1f20ed44c659a143346c45a166e92a8059fb8c8b1c6ee",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-venom-1": {
+      "sha256": "2544bdb0cd1604ca1123acffc718074f2b33532f26f200ef3d51b2f36427d635",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-bastion-5": {
+      "sha256": "16ba9188682b54c561ddaa79d53213eecaba7549aaa3c687a30c1e8a4907646e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-sunbird-1": {
+      "sha256": "a8a456b4e3c914a427d6be1be0d5bb463a0c87e98c0857f7a19ccc5ae34d4f22",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-pie-1": {
+      "sha256": "40035cef7959b85cc7cd3e816267b2334f3a6981608249e7685601d01a8033ee",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-insight-5": {
+      "sha256": "af2a4b9dc9329bbc40a511ccec55587f99f96f525c3f1dfe89e18e55a612e6b9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-guard_charge": {
+      "sha256": "408a209d55ac07ff160a81ee2ad0b7c0b88b24718b111b24d9d733db84350693",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-ice-2": {
+      "sha256": "c4060dd14eaa6590dbb38ec42f862ffca48f41fc10a1a245e4fb6d99fe568ba8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-river-1": {
+      "sha256": "c9a81f8c1a5e4332cb4681b01f56a835b1343082bf315ea4b1f6fa39d8af72e0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-milk-1": {
+      "sha256": "0dc1cc393f8ccf629b24505564757a90baff40872cbc7dff55d8edb70b0e7291",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-mouse-1": {
+      "sha256": "c263c11a507b95798bbad9655becb99f9fdac61eda3ddeef2925d1d7985656a6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-corn-3": {
+      "sha256": "531d1c3ef822d8971d1be5d51a9819889b0f064daadac5a992ad96fa6b6c4a16",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-gold-1": {
+      "sha256": "a743be781b8ba0124ce8c17c1d7c4a2a0958a913ae4bbb6d261619fcb5ee1013",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-garden-1": {
+      "sha256": "aac4b5cc49d1fa133d9163caeadc56859aa64fef563a641a31072edba2bee219",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-wateringCan-3": {
+      "sha256": "12f43176e74b12df077e61410b987eb4e48ac18d92d4e996072cde57e11d51e7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-dough-1": {
+      "sha256": "852b1a7b97f6d2cdea5f424a05046f602922e78eb93934d395b10c5f09941252",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-sapphire-3": {
+      "sha256": "fe915d1dd3af7e376a5477f5d25adf833ab46f67c5606096d6fcb7fb10d6f128",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-thread-2": {
+      "sha256": "fc8a8c82d5359ef8907eb7c50801061c303e56eff5431368c3871b5ff8239ac6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-camera": {
+      "sha256": "f8cabc4020b0e60ad31f89c2ad58d81a03e8ead0ee1f27293792cf18067e6964",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-candle": {
+      "sha256": "40dcda71c4bb88080f2ddaa3e417bc838b73b86c4d79a5eb563bdacd298557bf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-rose-7": {
+      "sha256": "d3b6b3b10e118ebf65178ef33f839d312f52ce3bd5ad14c566e434b268dccc35",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-azure-6": {
+      "sha256": "a8db2ba4bc542cbd9f7bae813086edffedaeaa70ce8cbefd566ea55729a9cda9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-forest-6": {
+      "sha256": "460acf0d4dd5f8d363e3d9b22f1c8457ff69f2429a2bccc158cdaa87c15ce9d4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-venom-2": {
+      "sha256": "d631eb3fa9f8ff4c72438ee3c9da5d15612a4f38bf15069ab68b0397cbc6b7b2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-bastion-6": {
+      "sha256": "bd98c62628a3bb7a02aad199e02a55ca00ad30fceac3f7342aee68f272cf4047",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-sunbird-2": {
+      "sha256": "dec3acea37d6ff9a22e3d5535e15b839f5d780a82ad38c4f99bb81474c72985e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-pie-2": {
+      "sha256": "8209feb0b3127c944d0631432e1def5e9c9a9907333816c4b024a36d526e320c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-insight-6": {
+      "sha256": "6e49f6453356e9611fb76796e5a4aad5ea67bc845c78c2fa46762ea604ad5ef7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-guard_holy_shield": {
+      "sha256": "55022b81526010aa719580b5aa9c9f75ebc529b90060fe6cc6b32465e2a634df",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-ice-3": {
+      "sha256": "76e9fe6ed34fca38eea58b4972709230c13d84df168d778d2306aa0ade0ea912",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-river-2": {
+      "sha256": "a6ff9148cde58155ae516c023c679adfaec450b5be1bb73616504d23c4173dc6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-milk-2": {
+      "sha256": "ba4057fde1e0dc9b45acdc22be174436c564e94f5b019158e8b8d89b55aa56d9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-mouse-2": {
+      "sha256": "7bbff8f884f813753accd5fe9f1fd097425b384e9f0bf691b78ca8a504dd267f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-bean-1": {
+      "sha256": "8271353e664f85381df90697ee7f5c5b2db1af0e66313affe4e57897d2b562ea",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-gold-2": {
+      "sha256": "c1eec36a3797f16763c4a49b0f501a48d18e25e11f4fdcbd96a82320c579c68d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-garden-2": {
+      "sha256": "fff947055c9e7640bfc020afa0df479f740c094ee31f789b8f8c7024322b8f80",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-wateringCan-4": {
+      "sha256": "79638059c7a054669fd21315dda5522312ae8d02569a457e830e412d7f76175a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-dough-2": {
+      "sha256": "b6ffa81a310b793279d3f7277c4dd36d670287d9bd208877a796bcc7d3570d75",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-sapphire-4": {
+      "sha256": "f4bea995324bc44303fdd9d35492f92b92fa3b2112fea2aa97d8c6ff6d456b19",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-thread-3": {
+      "sha256": "92175949374f0be610ec4b9039ba11e13fd03f1712011f20e9d8c7142db73e6d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-candy": {
+      "sha256": "ce5c29de5fb2fa70a9fc884774e9392ebbc65b7a3d425439fa7dddb677dd1559",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-rose-8": {
+      "sha256": "51d8b87ac872f1ce7a3f59bac673780c3eac023471b28e066044c1d92fefb179",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-azure-7": {
+      "sha256": "4be912aefeff6e0a859c0033bd2b2468c653e1da96f549d149f1ecc3d290e438",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-forest-7": {
+      "sha256": "ef0c05975435e83fa55e762cf20d84203a7d55dc09495df5e3a4456cd18922e0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-venom-3": {
+      "sha256": "6c65340616f5e23fdfd80088473b1a3bb1ab7d8239ce139e9bf95d51b9b9e6f3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-bastion-7": {
+      "sha256": "52764ebebb5ac138fb869fcefc3d26260747a609ea6c4bda9d3307b68b7678d0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-sunbird-3": {
+      "sha256": "ca6206929a50b616c4d4046ed559b5585232bcf77ab5bb179bd2552f9d10c5a2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-pie-3": {
+      "sha256": "8655c84d6cd432edb1a3c524609e8ac6947ded5e433d7edaf6ab0234a5d54374",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-insight-7": {
+      "sha256": "9dee0e01ef067b00dd33d6d31740b6cfef5c9113bd251525ac8a9a22df3ca577",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-guard_quake": {
+      "sha256": "15e5653b25b798e37ec7c62a52bbb9e7850758a6da732b37be5dc1965d9e2d00",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-ice-4": {
+      "sha256": "58ba360f87503223cf71aafce2948a399518a4f2b53b46997b92997897048a90",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-river-3": {
+      "sha256": "98fb64a6a9b78ac519f681a0b248aba8a7c07a63bb825d6d455e109376a518d8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-nut-1": {
+      "sha256": "57b8726c9b3525b0d69b5d5d17a303330bfb5d755de60564992e467c5046da88",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-rattle-1": {
+      "sha256": "eb9a7ea37c9b8f28f5472d88970d64d818a1449a22054cc056ea4e23b8fc8bc8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-bean-2": {
+      "sha256": "7eb9dc7ce947fe6fb61582aebe63a2601b3ca3ecff418248333b2dc017b1d5ba",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-gold-3": {
+      "sha256": "afa9e402dda42847f023053479303c990b6f5ac1af2fe95a7308718d5d5ce900",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-library-1": {
+      "sha256": "a5d15c816c690bdd95d533e381ec274e708bfaf190b8a6702f6d15b2fb154e57",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-axe-1": {
+      "sha256": "efc62fc31ef4546df593b46dadad43d02b8609f962f4f4a169c863b106853d35",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-dough-3": {
+      "sha256": "2f460834064301f35876c9e7df6a6433ce6183e9ad42b54d8f0483907324d1a1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-emerald-1": {
+      "sha256": "9ca174103e300b328e67587320f381db25ac98a2d33a3c5092bbee83eadd6275",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-glue-1": {
+      "sha256": "ccc896e2b1e8916486be666c18461d23ddb47b429f6f7b585d9ea9edd437ed34",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-ginseng-1": {
+      "sha256": "3bc4ad89b08dc17066ad34e3a516994a9106a3ac1fc35bde7fe834c976f98839",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-azure-8": {
+      "sha256": "148f27e23902a93cb3b4ac3ca11c2016aa27a09b1d5dc8384ac45d589de07883",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-forest-8": {
+      "sha256": "8f3e8f93322031fd8e476ff926bad89b61142d409fec453d1e3ed66f6ea5f154",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-venom-4": {
+      "sha256": "d958fce13ea89fdd4cedb8536deb811b51096c8958af80557deb4d671fc9f07c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-bastion-8": {
+      "sha256": "99a79589301aa25efc5c23cbd27965f0bd843c50481eb52d626919b1881a30d3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-revival-sunbird-4": {
+      "sha256": "94bbe6aec65b710e0eb2e5fe55e275dc36eb3306f3e0a285128b501b61ad626e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-pie-4": {
+      "sha256": "81cee74c688ae7f1125fe6708398bde57ebed88d614b5dcf8e8018d66736f541",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-insight-8": {
+      "sha256": "6016609dc4a1fc47ee23d57bd64096e115c5ebcf2b93224025ab13b8dd599ea4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-guard_fortress": {
+      "sha256": "9a2ce7172e28588581d8258934d2b5b2cb6921740d6a8319ff5ba15502e53c03",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-ice-5": {
+      "sha256": "42054491645c5009fc2578a965cb89816162400eecfab66a49c711cd37b2512d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-river-4": {
+      "sha256": "4cdd2050b25ceebc4a07f73442fb93d83c1cc1ab7eb515ddb7d89db8fac012fa",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-nut-2": {
+      "sha256": "264df394cc521ef9d410569a76cbdfe297d151c837010e2158910c16ccdb078c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-rattle-2": {
+      "sha256": "f76c249178d92a29d97821ee8b5ba2b0b0aa29457c20cfc0cb0f12235c90de78",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-bean-3": {
+      "sha256": "d90396bd18c6268992c129e8bb5a5b7be7e8363b39d88b259c8163759d9dbdbc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-gold-4": {
+      "sha256": "b7836116b9152d4a81d161b92be16dba5c90f47fd8f1769bfe1169115d1e9b27",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-library-2": {
+      "sha256": "76f785bc74ebc11f6e0897a23d946a5e4f555a1d4dbf0c3aebbb57acb3b7ed21",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-axe-2": {
+      "sha256": "607ec984d60dc08ac1b7070951b8a55a28b4b5945718596f7698290ff9e8e0a2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-fly-1": {
+      "sha256": "13ec1105da5528f774d7ba010b47b1ce3b68a89069568d2725cd6905e770c498",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-emerald-2": {
+      "sha256": "819d9da57b80bd85a561a75b3b97f6d12f677ff3ccd1a709dbad9d7aefd4a935",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-glue-2": {
+      "sha256": "34aab0065322ed967e4050d0be617312ef412c8492d695efda5ac1693da18952",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-cheese": {
+      "sha256": "2308eb9ea0808b5657ed66830197920d7c347d0fca7085687bf59dd92818753f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-ginseng-2": {
+      "sha256": "3a269061d37e3dd703d2d30a864deadb55cc363724c6beafb9c3d285c9959574",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-violet-1": {
+      "sha256": "36333e4d85500774468e164f18a0679c8d582391c490360a1a777e96ef94deef",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-twilight-1": {
+      "sha256": "a1cf4a87ccb534b11fcd7bccdef4c5ef2fac439605d5e1b6a84d497dd20adce9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-silence-1": {
+      "sha256": "0de70c868ed5ea1e5fd9a74ea7f8e41ff26992bc322d2c4efaa3d3c50c192a34",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-haste-1": {
+      "sha256": "b7d6ec843e6dd3acc930ffe07a55033e991a4c5d9d54b7821896d3b12ca3601b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-stew-1": {
+      "sha256": "38ee3db6b6acf359650391b2bfb435a45cc6a8842982d92f8db1857bb2951d9d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-attack-1": {
+      "sha256": "60f1d930186de950261a7c33db20573540335a5ecba14662cfee0b4db45e7f0c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-mage_fireball": {
+      "sha256": "8e75708ca4bdeb6aa402277f9f4f1508fddb5c004882d3fb4b1eece59dba64d0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-ice-6": {
+      "sha256": "d2fdb5e378d62de0c12ab0502c1ec669292f3577dd6d24ba2080f07568289988",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-river-5": {
+      "sha256": "e95769a1ff06ffb8a151f56f32f28a01e5b75bb7244fb0c404e314f128e37d67",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-herb-1": {
+      "sha256": "c0f6d2ec2f6ba19a8921efa56440fd0d0fb9e41efa8c52eac5e643459d6d3be2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-bone-1": {
+      "sha256": "5773e6bed71f88531b5e329c2e61cf859b4f1a5187dc0f45f58e3cba83df52c0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-carrot-1": {
+      "sha256": "dabb986d9d4ecea3b849b4cc7b5e235a63689b76b84010fde94e4a39cfccb86f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-iron-1": {
+      "sha256": "5ed28d811df152365fc0661e57c640ce31e8c3e5f0914e0b413647a8a04def64",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-cellar-1": {
+      "sha256": "4bfd70260fe6f3d0e4acb8b4603107685cfb917f86e33f9c04a73fdbaed6a9c2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-axe-3": {
+      "sha256": "b84ec549912514e0355f3841673f843ef6f904b6a83be601c30607b6962e6d5a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-fly-2": {
+      "sha256": "86ca472651bf2a70c38e61c4dc66bf9ef0ea0628c102a46092eedbdfc42126ae",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-emerald-3": {
+      "sha256": "3d4a60650b33b8c4538b219d01d31fb3c8814740686db6dd6a1385ced43f6baa",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-glue-3": {
+      "sha256": "8122955b463edfb73fe29a3c630282e3a386c48e67c6b30f18715142fe5b283f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-claw": {
+      "sha256": "2d67d4f3e9ee15014e37b4e5b710ac917f15d64a88fc15ac32618ce4c146b540",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-ginseng-3": {
+      "sha256": "c4fe39b5e9ea5567b332e41f8d9c7106fd287e338a3c75e84bd4873820c21391",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-violet-2": {
+      "sha256": "251132fbbba1bc5c7ff1b22efefb5a9e216d3e6a3cab0b4358a726e90763301a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-twilight-2": {
+      "sha256": "69fa81ed9b469598e8814856f596e433c29b995773990c19a6b95505b6c45ee6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-silence-2": {
+      "sha256": "bf720932b0fc3d9ef321bc18eedcad0881e9e05925293293dd7ecd5f9745f458",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-haste-2": {
+      "sha256": "fc6c7ba064904f5cd946d1fa2e0f29a606bbe325411b2d14e8eac809a257d9d2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-stew-2": {
+      "sha256": "1de08bce398601f24aacefb8467249dbd1c847431d995efe25de5ca828ef2b55",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-attack-2": {
+      "sha256": "637cea9aa91ff0ede8f46e20cc38abf34f34f2dc72902bff7c0a5155f6efd911",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-mage_magic_missile": {
+      "sha256": "239a42bb0d4b7016ad004b199757eaf07d6c2540fee1bd0d8d5779e8317a3574",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-ice-7": {
+      "sha256": "05d4c5ef34c3d5a1dfba7cd5bdf58de40e0cf20ae0455be82c6cb927b0313250",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-river-6": {
+      "sha256": "d2617d458da9354dcc7fd8a53cf534b181f674c33ae270e8d70836ba9879eef2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-herb-2": {
+      "sha256": "e8d0a9d455677027f981adc346baa8e3e5cd889ec2866a84ab7c4f250648fa14",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-bone-2": {
+      "sha256": "15d78079bb287eb8f1ac027139f422e49ce819c095493d555482c52fa88af807",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-capture-orb": {
+      "sha256": "e83aaae9bdf679e9b49b41aece4fcb8b0b6d044bb0f4a29ed783e6521a6b1a28",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-cloak": {
+      "sha256": "38ebe3d632eddf1890d0aa5f79f0ac7c924ccd98e2d8351f1f7041a0e9f257a4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-ginseng-4": {
+      "sha256": "78c91ec0e3dfdab3383394286d16921e41cf8b56ae0a98fc0bbbb4441f9b768b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-violet-3": {
+      "sha256": "d9f1a68aa66dc2a3cfacf8519d1d4124e5b3d8c3ca8af462ce2a76e049c6e490",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-twilight-3": {
+      "sha256": "e7912fdb3b901f7fc9cd4e2f094c3caeca53e7fabe86f3f55f6531b9d5d4285e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-silence-3": {
+      "sha256": "938696181a815d1f0f3f2664f9a06f19bfcafcd574a172bb1248ca7f997d99cd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-haste-3": {
+      "sha256": "09327a269995d4f4c05d91bd6bc1d4881c2aa0f71f3bcee4f413738dd39cdc2c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-stew-3": {
+      "sha256": "12edf29a25c349ec9414cd91d9f17a8cae494bfd1bff48f2c8e9ae25b1c3dce3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-attack-3": {
+      "sha256": "da2ad10c0341fcb4438fc3f1747da72d7ff836f52562c17530f302b45deebfb3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-mage_blizzard": {
+      "sha256": "60f1cde0dd60167b2b5947b8f7731021999a75b1d40ea88b3dd4930398620351",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-ice-8": {
+      "sha256": "82ef684801c97e85b72482f1c727ad29a6ef7450b480a51bad2af5da86396296",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-river-7": {
+      "sha256": "1a3e02a09be2eca8b88065be6eee394b8ccadee88a023a4d155c57061c4a9788",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-honey-1": {
+      "sha256": "dc8c59eb4af4ae17c775f2bd3468f89240e5e99a8c18d669e85da67aa620ca84",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-feather-1": {
+      "sha256": "ed4ded4a138563af220053d2e5439d0c6e96a4b113411f3f729b09dad8b72366",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-carrot-2": {
+      "sha256": "bfd339dd002028973120bc8ac25e568a5ea92946639320ec7725ba505bb86ac0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-iron-2": {
+      "sha256": "44592ea47921b73c0d173340ebff69069cf5b25d6e9de4f3869415e6eed98c59",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-cellar-2": {
+      "sha256": "14bda52bedb0478b12d1cbd444e7df9dcaf8c6e10dafe67bf1e09c7675ed9bca",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-axe-4": {
+      "sha256": "3353cf38b8ac231527bb6f328d447a783f4647e960825048ac7f05273f27e1bb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-fly-3": {
+      "sha256": "bd6ff68186315eda589c717fe22268e0a9402fe5715472dcb0a225bfa800a534",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-emerald-4": {
+      "sha256": "7320ec782ee457a9ba7d42ead74a9e38ec7cebcf23586943258ed3fb6000a16e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-oil-1": {
+      "sha256": "e7947693e553f09a7ca1b9f5b595bc6a2130819249a04a2a2ad46f5e2a4bc3fb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-clock": {
+      "sha256": "6508fe125ee5b924ffcf648da23e1ad9997a6ef0dc3ba9d66ead7c0b87676279",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-ginseng-5": {
+      "sha256": "6227f9f77da9bd2f3b94beb2c922d2b009dfbad8e8e3d9c722ffd43573935b92",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-violet-4": {
+      "sha256": "dc9ef288d5b14667d38ce3f6ba922756c0e04e0be3f2d4b08019e7999d1dd68f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-twilight-4": {
+      "sha256": "73913e62fe2ae97e6a02d275546b71cbf85e6387054c4e271fee4c40f335edb2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-silence-4": {
+      "sha256": "9f900a9f9541101037ed3a1fd47de5ec6a61557115485bed541271592f783556",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-haste-4": {
+      "sha256": "873dc66f08961fded4dc36c373180a8d832fc8da71e10ffabe6f7ad499851888",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-stew-4": {
+      "sha256": "f885afe3007b0509ea7bdb3e7e4ac8992b94e0c7fdef72be3aeb0013be660a97",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-attack-4": {
+      "sha256": "e097e57648dff77aa20749503358c42c157a0d5ca9175a1d02db79d96ac44513",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-mage_chain_lightning": {
+      "sha256": "40d5d7eb1ca66a7bab395e8c12b70b4b366abd38e587f755c6cdd22a7ebbeb74",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-thunder-1": {
+      "sha256": "d1bbb65739ff3b31d27b313b5eac0bc842245955311c6a2189be0c28ec054673",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-river-8": {
+      "sha256": "62d39d81d4095bfc6fcbe433ac8e38021b8f216200102fe77ae673fe6028aa9e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-feed-honey-2": {
+      "sha256": "97580491c46f3c2579b1e03fa91c500d948513ad8e010139530c4e7a1e7defdf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-toy-feather-2": {
+      "sha256": "450cea3eb22e520606c6e5c0fe4daa8d6e0116902ec5d0ab3d05e98a748b3e68",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-carrot-3": {
+      "sha256": "e46bf09022dfd7a0015c0d8715b76da9bedd2701527b4c171640b23e1af58feb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-iron-3": {
+      "sha256": "8874aaf58f6083b3003705672284c5f7ed15d6751dee24c7aa3ce0c86c44da51",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-castle-1": {
+      "sha256": "fe1d4db311ad7f233116de443360e09bb0f3cb4816c0774278052aaeb0d2c389",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-pickaxe-1": {
+      "sha256": "1d2915b34f1a448017275bf2a1fa340284bbfba14cac90c10b552ab9740867a3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-spinner-1": {
+      "sha256": "92b6a766ec44685261850b4f1a433483800e674bf1dcbb683d8012ade868eda8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-topaz-1": {
+      "sha256": "3d82e87f49ead8b8909a1dc1647704ec21f0acdb91db6ae38c85e808d7e27b9b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-oil-2": {
+      "sha256": "d05b199a22350a42490260d0353fad2aedb7a1601f1d4e3a1d3d20dfb2fcc92b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-coal": {
+      "sha256": "2b6c182df2f4b297406dae53e9e8bb15e8100f36d6d6c8e4ccf7140b956d29e7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-ginseng-6": {
+      "sha256": "7e29d97c8f5b86d86b60cfb5158227ac4ca2fca5bc9af318e3aed49427e54243",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-violet-5": {
+      "sha256": "f7049b9d6fb7d5df9aeabd0f5e8726e3f3bb459e541f9dd71d5c10180025b453",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-twilight-5": {
+      "sha256": "4036532fd64d5c5d66139491e9ca9ff9c6281bc8b06949c3bedd06900f1f4579",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-blind-1": {
+      "sha256": "14243f767b953047405a0e2cd932c3a7d213aea05a8588fcf459f67499132fc4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-haste-5": {
+      "sha256": "7a265eb8ffcccb3f990f911f33050f9f6d5c43b8146aab625f1b8b1aff696e37",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-skewer-1": {
+      "sha256": "1ab72571ea24071ce67d3c86d76032809cc63024b00f2b504d9be2a0dcbd4320",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-attack-5": {
+      "sha256": "77808b3c6921f5b81078bf7101dfa4f2dea9833489e161f928342ddaacdcd1c8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-mage_gravity": {
+      "sha256": "528d87e2e396136a7c26b91d1f5d5da37f11e731fe312a64c00f7181ef25489d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-thunder-2": {
+      "sha256": "280aa1da50dab63e9489e66e536e45e7ff6d7d63cbef16bff52284fc3c926722",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-peak-1": {
+      "sha256": "6a9547d47b4070755abe8030012e47b5319a08eec4f9850eaddc066438f0751e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-onion-1": {
+      "sha256": "dd3fe145c3433ffa9b808c0923dfad23cf4f44523d64c1f87c8702b2bd2a3416",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-iron-4": {
+      "sha256": "04c112cbe7236dc349ff760706756cb88f47fd015c12b2b47744ca9724ab0c40",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-castle-2": {
+      "sha256": "c216126bf060ea1e71a223af54ce7d197a776093f39f2ef467bc9036c6aa3332",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-pickaxe-2": {
+      "sha256": "8c4d2fd027da46b4c42132b539a252c7377a7a457b773243db238ee8a11d0c75",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-spinner-2": {
+      "sha256": "4a16fbb5a6314822909a4c3ca3e82dcf6463d723c8b8393a31c641b740bc6a8c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-topaz-2": {
+      "sha256": "e8bf92125b69b58db39d9b91c41cbf587b5b0a4cba9b15d11874be9a28a1f261",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-oil-3": {
+      "sha256": "96da9a251efeb43e8d16a51fe8f28bcb362d0b60ec6bf501eed8c5e910df4dcc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-coffee": {
+      "sha256": "c3fe791ca961def95893714e57480b39f883fa397dc6faed40dc16d3f1fdcddb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-ginseng-7": {
+      "sha256": "878fc1a2d0ba5d95d43bf6bbbc6ff0299740db66e9356991db7ec78f1a85eda7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-violet-6": {
+      "sha256": "181d4001b9a1ef24987263b209c21d87f1be6feef12aef81caa854f02bf637c8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-twilight-6": {
+      "sha256": "02fe1f0e461b3c82f13ccc8614ed0315ee0b990b57f674923332b6181ea2d7c5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-blind-2": {
+      "sha256": "ae98fc03ae7eba26b535c4f7c1ca740b96fb9d7cb3650ae314293249b13c3070",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-haste-6": {
+      "sha256": "90403e5b2534c3b35a1913fd3a5fdbb8f67182a8f174ac0050ec4a5a3254e6ca",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-skewer-2": {
+      "sha256": "ba5d3a723a658bd1ac9ff850c0d8f44207eb3e16c5a479f1090b2df5905535a9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-attack-6": {
+      "sha256": "9a8a36aa1ee17aba4fd3510ebed5d45a9c3946177415f6ed3854e4f447c5988d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-mage_mana_shield": {
+      "sha256": "a6e2629f8c2e5637f5b1b926968ae96beeb77f1dd30a091aa1bbca6eb3d0757c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-thunder-3": {
+      "sha256": "e6ff5d5857c737b52eb73e5508dadce3641bb514590cb971a6f40e5b4f35fc21",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-peak-2": {
+      "sha256": "c2aa04e350523f99dd010e0654727cce7e06b05cec3efcc6c566dc4be5f95952",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-onion-2": {
+      "sha256": "39c3bc94b8aceeb8952a29641fc566776e8668562367602c0b8bc447fce68680",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-mithril-1": {
+      "sha256": "352c18992245651522b2cefc09b9dca6b7ba9b51f530b5d4cf9eaaae70eecc8b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-shrine-1": {
+      "sha256": "fb209fb105dc8ff102b6acb134cbc6d0366a1c18c302296ec0cc58ea42293e81",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-pickaxe-3": {
+      "sha256": "025cd05d6723036bba787b801ee76262e0566595cbe18853065a855c1114ce7f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-spinner-3": {
+      "sha256": "0010f2361da940195862cecd06d63c24b53bae0f80768eb5aecfeb1e6b3cc5dc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-topaz-3": {
+      "sha256": "4dfd2d1dc97bfce64fd2626e157115a9eb01dbbe2c71332d2b8fa105a8d12777",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-hinge-1": {
+      "sha256": "c6292e3ecc082930941cd248c6d142957b55486c5028daccf8bb2f39069146c4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-coin-pouch": {
+      "sha256": "79f4373cf09cf71b1b9d15d19cc50f56ed93e55a44636c78298213b8b1c92818",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-ginseng-8": {
+      "sha256": "239661ca54d794941b6841b65baeec1443ad9043ccc560f6857e7b09ad3fea01",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-violet-7": {
+      "sha256": "20370589cd14505c25d0824cec5c6a4967456294edf982b047a505604afda8eb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-twilight-7": {
+      "sha256": "9429e735345fd4ae454d6d7b4c42e864d016ee21b5045bc1c4ca51aed4315501",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-blind-3": {
+      "sha256": "bdadff22c6f7320a864617f024c2b563b2355a40cadb0b455c8c0fcd2ab5dd5e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-haste-7": {
+      "sha256": "81989909ed48f350452645f5e8bea0d40b827810a62ce8b05a02acf15901a47b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-skewer-3": {
+      "sha256": "6d0e4b2fe37db2231fa98dd402fa971730c8200b508caa756ad51d251fba5c55",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-attack-7": {
+      "sha256": "cd649bc32c8c572bb33f9f29092aac5f1b1f8b7ad4fef8c5c444b801f25e76eb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-mage_meteor": {
+      "sha256": "82a919b35af51f946a573844f659c20348e0fe5c753ba583928684298a53d7cb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-thunder-4": {
+      "sha256": "e2a2d0bb2f0a5cd6ab37a8349f9ce87cb8fb7a61636f92a80ef1a4d6ebc94bcd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-peak-3": {
+      "sha256": "af9f8ecab1cd1bb822333377d0af8012c01a30e31446f0405575f6d435ef6333",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-onion-3": {
+      "sha256": "98877e18f0431c0329db53a3df0d626b54f72da14c4c6ce5770b561b5f8848c7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-mithril-2": {
+      "sha256": "4c24d07f8ad56500020af3a608919d03076a22aa23b69921711957bc9f5a0451",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-shrine-2": {
+      "sha256": "045e29d1c3abaf7f6ba1f413a5de4a29d9dba279947f6ad06816bed1c966c9a4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tool-pickaxe-4": {
+      "sha256": "2711bf2b35c8fafba2e731a22e36da6a03f9523f1ad19b5f0e52c4b4e275b24a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-frog-1": {
+      "sha256": "51b85b7a46b8be957ebb794df80a40522961f8ab7312c83eaa3e5c1a471a9e28",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-topaz-4": {
+      "sha256": "04c71820aa959515eb8a970f8456184468515b40c7a37dc03676e5f029707e2e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-hinge-2": {
+      "sha256": "5fca2a3a05704cc2a349eb3ea753d772d527ab6398383632ba5248a14e3c1490",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-compass": {
+      "sha256": "75087af664a639587ef906af9da510a1b9f1aa3328801387920e55aeff27d845",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-aloe-1": {
+      "sha256": "fcca8ea637d58dbf6a54fefaa8470b3c51bc8deb398a21ae32b711dc232932ed",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-cookie": {
+      "sha256": "aa35a18b85fde6de226ad3e182b79603f9e8b2423eeb14cc2ef405d03c105f77",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-aloe-2": {
+      "sha256": "7b9bfb7914771a6458034115e4c9f4ffa53293135966b8b35455160980766f5b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-violet-8": {
+      "sha256": "7eab2b5547cd7671c6252a20b477290f44e35478ae1af7ff04bed91dbb75fbd2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-twilight-8": {
+      "sha256": "c7e7f2232eaa645c6eb73219158c24655bfb97475734fd39060010b59e26b6c7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-blind-4": {
+      "sha256": "d436bb24492737fb486704739e589ee3112dab2afce48a411cd4b8a8f1c6edc6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-haste-8": {
+      "sha256": "61e3aa0f3607b1315ddd97f83be681cfb02ff2d396e58c2a1595f463f4582c9b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-skewer-4": {
+      "sha256": "450374f13eb3f8c9737e5832d869f39fd148e5fd9022da628fce49f34b2b867d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-attack-8": {
+      "sha256": "572dd3363deebb41063be5e3119d80338223c3c2cfe473441de95faac4dbe431",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-mage_starfall": {
+      "sha256": "cd7299e02aa488a42ce6facb00bfcc9aa852c7fbb9ee29a0e4ebdd2eb4970b3a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-thunder-5": {
+      "sha256": "389d086e0f1412304275ba37bf76b8f122d737ed73f9c47e2fec4eed944a3392",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-peak-4": {
+      "sha256": "cf3be3b6e5a58be95fe13de813dfc7f7ff93c482e6cd9c1e0be002d5bb08b33d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-turnip-1": {
+      "sha256": "36611e399669335eff7b70f82e5688f30d4223d8b2365395f9b920ac12299e8f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-mithril-3": {
+      "sha256": "fae33a39c1834e9a126f8f76fd656a4a4135a358a623452ef8b5e1ce121527c4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-vault-1": {
+      "sha256": "45be7449e6e5444cedf484a500dd807d9b5352449a0ceeb33b36634d8ac8fba0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-frog-2": {
+      "sha256": "4641891d098c88ef8b972af99c792bb259b8c8027c8f17455f8d2b1093826b39",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-amethyst-1": {
+      "sha256": "e0e3d09d18a14f1478e3d6c8f25064b6b4bb353f5a8acebc2ddf11b7d876f18c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-hinge-3": {
+      "sha256": "ed0153e771b63c8f18ffb944466d4fdd6de496794786e6629eac85cf0f5c6033",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-corn": {
+      "sha256": "bd0a3725d051e01929a92cd19bb230c145b74ac2b93feea09cab8955e0909137",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-aloe-3": {
+      "sha256": "3f778fc21ff37553f06dceff3bf56d1aef89d322bf5bf95cf80f813be6753864",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-dew-1": {
+      "sha256": "992d505cea934d03169c71dd504424b40c93d2a20d424cb20d718e8f65d8d550",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-starlight-1": {
+      "sha256": "8b1f90231213c52c4bb19dddc1e071c3c1919900ce50ce0edfe09f2dc191d69a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-stop-1": {
+      "sha256": "72db9bea2e0f3ddc6f82b860047ab03d5141b811c65cca30ea8bfa0ed8a69249",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-renewal-1": {
+      "sha256": "26e574b1a59afda79029dfe6fe813fe545e706a9d9d949557d5da084736cd418",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-dumpling-1": {
+      "sha256": "034aacea71ac7d19db4e709b1d64dbbe19a1afdad4e62dfcd2b8d408a7dae7c7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-defense-1": {
+      "sha256": "8fc90fe11f745618def321d57eaf194683aec884389cbbfaa33e7af210b985db",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-scout_twin_strike": {
+      "sha256": "25632c1e73dd3c8286b6c505079c9ea7ac3f964e735c7459a6a9f4c0aac16b6a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-thunder-6": {
+      "sha256": "20ffa44d41970fddbeffb8745606e40292b5127ca00fde43fcecda631dd76404",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-peak-5": {
+      "sha256": "c03c0983432bd9359681df8f4b9432aa2eadd9d1e4fcc1175ed50d47e8d93d58",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-turnip-2": {
+      "sha256": "79924f9bc8507927eab001fe72e65ef5e5961979f3853cf1e5bba4b389086c7b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-mithril-4": {
+      "sha256": "2441daaa7d43db3a113bc9c7c39a4b960eb1399b7c872f5c1941df2dfbef7558",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-vault-2": {
+      "sha256": "5efa69a21702efb5b5d903d9fe499a062676ae2194dccf14d7a0d862de133e0a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-frog-3": {
+      "sha256": "5b1e56aa8328f9b31a17f2058b2f3587b71caa1afe25795523f897a79e3c63e6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-amethyst-2": {
+      "sha256": "a832d0ba52d5a428cb34a259bb9ceab115da1a76f19b438c84554ea6c6bd794c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-spring-1": {
+      "sha256": "ef4662a38c6e716c75285e39abc1ae60c23beb541c9deef62c4223e37b5ac34c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-crystal": {
+      "sha256": "0d5806cd49a51ef583e84c4163b19d516af19fd8d8a93c953f6972fed8ea7664",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-aloe-4": {
+      "sha256": "d242bd01fd78aef8ad94ddbd846bbded3e24f046f69e4ed3607a44ec11a51800",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-dew-2": {
+      "sha256": "70c820d645545c8b93b76f913f3119cc9921c9e3190bbb92920ba5cd95ef7f90",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-starlight-2": {
+      "sha256": "1d0ad3381b482be8fd925d76f95b955359d393dd32a2ebcc3e755040f2d12c97",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-stop-2": {
+      "sha256": "767d8186d221e3c54b09988b6155978edca28c60b6d57cee6f67e8f0ec1ecbf8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-renewal-2": {
+      "sha256": "1f523a4077d955db07972127f72228d8506aa8d9af880103f51237e2a49262ea",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-dumpling-2": {
+      "sha256": "a4f1182697444be079e23ce23163d7bd2b4850469332b68e80e157c599e2daf8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-defense-2": {
+      "sha256": "4d536088b5e6778a4c301e8114464a5c7d35a944d5dfa01c3a7ada576b0ee8ed",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-scout_venom_blade": {
+      "sha256": "92c20e06ce786746495b4cff6facec30865604eae8bdab4130ea885ea4837181",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-thunder-7": {
+      "sha256": "4a5a3d8e2188fa47271989f25ec0389361400f9305e59000693e304fcaa7af17",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-peak-6": {
+      "sha256": "f6997b4dfd04ca18f8afb051211b0e0da28364ff3f3e34821217a01164a36679",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-turnip-3": {
+      "sha256": "98dc2ed7ecef4481d37c555bf12dace4a3708099b86f25f57d17635c480aa1ee",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-oak-1": {
+      "sha256": "bda1c9d608d54e12e125f1b6e0895ae0091a40aec43fa3630dfbfb833a060f3c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-observatory-1": {
+      "sha256": "3f882eaaaf3915007d3903acfc63c778896459062032e43d9b570bc7c4c3a48d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-minnow-1": {
+      "sha256": "84d94b199d1a1df198e0d197baa0464e576bb98f908bcbef05c15fea62bfbbb4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-amethyst-3": {
+      "sha256": "827cd82f181010c2decc652ec8a2f8650cd820a159021ffdb0917a954bb2f6b1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-spring-2": {
+      "sha256": "399a793bb49f13ccb793b0e9b85701bafa9b51ba5e34130c8c3a9441f41660d4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-earth-ore": {
+      "sha256": "e822f9a2c29f9d555f76809798f6cf8c74ff84dc0e4eb3a70c9137bd4ef17368",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-aloe-5": {
+      "sha256": "5e3717e79445d4d842407e21a2bf63e90a3a5014b3d3c2acd58e9cdd8e6c7188",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-dew-3": {
+      "sha256": "c5adf89a2bb6b4642f99f3eed91a1e79e0ee674c053a889d448b3051ed0f0246",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-starlight-3": {
+      "sha256": "e6ab4acb653e73beb8f89cceb938a9e7ad52b19a9399d3c67b56c0af8b0e53fc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-stop-3": {
+      "sha256": "5290510f46e6f975f9bc3ef48c3e0f31eae44e447c7b17c059e3a1cc62cce927",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-renewal-3": {
+      "sha256": "818ba4a2ee27e55be23f9a359ceaae2a466ec263129afe540406a77058badbfe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-dumpling-3": {
+      "sha256": "4f167280b22cd4e958992ddc6bf6f932363651ba0f05ba19c8f1c22b44e652aa",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-defense-3": {
+      "sha256": "0e7649f531328756a65e321f33caad6192aab3d0bce7d88035aae5bb95632ed1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-scout_shadow_step": {
+      "sha256": "2bfbe67ac52d650c4a30e15d0451b90fdd2f7368612050378e57aa8b6e544361",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-thunder-8": {
+      "sha256": "35165b37e06c6d11f0f9b47181f8d181e61bf1d69ba812ccf5b389c5231ccd64",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-peak-7": {
+      "sha256": "38459ad45a00c1b8169b8a4927d01ec9f6b8e7cedc1069705adaa1a1d0ebde2b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pumpkin-1": {
+      "sha256": "69b5bfb8c2476c2fd0a8470d824d5370345d999cd7783f5d82fcf8fb51669a87",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-oak-2": {
+      "sha256": "19033354edd548c3c77deb43ef3df3626509dea53e78a2248cdd4e15d24c95ad",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-observatory-2": {
+      "sha256": "5c2d4d33907818a3429a6e3db2e491acd41ccd4625421c7869a1478175128e51",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-minnow-2": {
+      "sha256": "52024e6ea1de18e69f4469d5b8811e10e4300bce9f77e13416680dbd32fef19a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-amethyst-4": {
+      "sha256": "54b8be8c52396e55c5a4f884ba28453d8868b436f6821397d1a97109a87d0378",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-spring-3": {
+      "sha256": "f09769a77ab71e105793a7dd6c7fb6eae1bbf3fb031b3c523d31491517af357e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-egg": {
+      "sha256": "cda4c4f7befcc6b2e7a5ef65378f0e9210112223e0887445cd16b3b7d3c88029",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-aloe-6": {
+      "sha256": "84b72d8bc839401da8b616c1f1b6547103edc9ada9858361d1d935149c31b5e4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-dew-4": {
+      "sha256": "423b906e30eb0004e3e3b0e887e7d822bea035efc932b50453dd04b2cf3be8b0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-starlight-4": {
+      "sha256": "c295f4eb4f71dd9de1c0c384881f910e5f5d6922cdc4253c58f2f7585fe45306",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-stop-4": {
+      "sha256": "8404805101c50fe54f048e63690a49a0abfdf3ef21bbe86b7f59ecfadfda39f3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-renewal-4": {
+      "sha256": "92e98cdb612928f19d94053bfe37df3a914a9ae945fef897180f448adf573ac8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-dumpling-4": {
+      "sha256": "234e281c32ff8705eb2b82aca55252d99eed4700cb854d5254cbef354b714463",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-defense-4": {
+      "sha256": "b2d1d05ae87d0dd1ba380ce6db227039a5180be27907f4ad747f98f671ca971a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-scout_smoke_bomb": {
+      "sha256": "294640cda1bcea0df42b77ed3c62bc74e7d3bfe47e4bbe5ade9b4047f91719bf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-earth-1": {
+      "sha256": "b1631164844a55f4efca70416e0ef9b4c3e039a913277c96d94b2b262036d584",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pumpkin-2": {
+      "sha256": "1f77061ff7eb1efb43c4b2e51b4193573009e7dc79836732ea51ad07da66275c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-oak-3": {
+      "sha256": "8c57bb982f4cecaeee457e68e7932462e263f40f30c4a7effa36391513d2c310",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-mill-1": {
+      "sha256": "2b84e002b559a896d5b2b006f248aa0cdecdd496ad1b26f8da50f08fd9a9b6d2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-minnow-3": {
+      "sha256": "6acda8f2bba46e83beccb0910bd0a8753e0be1971fd20e715e0db8d70de7ecee",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-opal-1": {
+      "sha256": "b1ac668e99cf3f6e530d28f5081fea2a0d4f88fcbf4fa855e3f37aaddb5a23e6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-gear-1": {
+      "sha256": "6329de6eb0f2eaf63481c735f1062e650e4009a97de6c59e79f226001e4a950c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-elixir": {
+      "sha256": "8c1f221fb00e52b9552f3f1adbd73615d8c5778b4a972d0940206d911c470c57",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-aloe-7": {
+      "sha256": "a2ab72b6303fbc6edcb0362a6416a1f4862820d78b2eaf51dbcdb7617eaacb67",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-dew-5": {
+      "sha256": "8a42bfa96124571dc197f0de2b2ef9c19ded366bfacbaf0cc37aadfe7a2683f4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-starlight-5": {
+      "sha256": "c5905d9816be7e21cf477e606e3309c4d427ffa95468201f5eca2d29aa77e44a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-petrify-1": {
+      "sha256": "214ed754598bc957a502c7bff9014e46170faa54e7761a9c4d52034ad50f987a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-renewal-5": {
+      "sha256": "fc58f739a0808bae236abab9c4bd11ec33ca0c2454b94fd7de51a9efe1909695",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-fish-1": {
+      "sha256": "3a96ab392414024096b82a1b84fa386aa7a6088bbf6c26056f9657131ce8e78b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-defense-5": {
+      "sha256": "de35b5ba4e27d1f8e0092f12dcbba0c5454ef2f57fcf4c391de7768af301feb7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-scout_steal": {
+      "sha256": "412c92b40ca95e370450fc373157c5308530f2b349cafd824595f823c491443a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-earth-2": {
+      "sha256": "d6eb96946e18752ae8f73600353e8870ed93b6f823a2601c2dab155db67fbb6f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-forest-1": {
+      "sha256": "62429afcc9e2a6f761afdc6609bf6e7814867935cbe0c8ec9a9b785d391cc7f3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pumpkin-3": {
+      "sha256": "7290e900627067d50c2d8c14c8cc56738e4d6fdfdc96cf4d28ba373911de437d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-oak-4": {
+      "sha256": "d9cc953941fa7ed22948b85de76c298da2022a419abd52691d1de65e87468333",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-mill-2": {
+      "sha256": "6219439b70c5067f1d2c5885deaa8b42cc7565398489e526c5fe5d3cb8e1da28",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-spoon-1": {
+      "sha256": "9cbed205f71d20a1557187190c5797a3f03dadb34f17b692b7b122949b27d5af",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-opal-2": {
+      "sha256": "922db0cce8ae219d8d10cfadd47b6a3aea20f1781f671b4bf6817cf9cee776b8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-gear-2": {
+      "sha256": "c4acee27a5b4084c4adba78ae36b927c6b9c2bfb3815e5a55517d685844eb2c1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-eye-drops": {
+      "sha256": "f5d72be9ea21b038ec4a5502de1101de10e7a96958c8ac5b916b600b03bc82f0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-aloe-8": {
+      "sha256": "da158f1025658e07e7a65aec8c135f934759c1115fb2aca613430b796af52fdc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-dew-6": {
+      "sha256": "4272972a6ab235d477e09010f43c973018f29d671817a1fc77d8969312ff75ba",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-starlight-6": {
+      "sha256": "974bd472e5cd8d7c7a9af713454be49b4175d4e772bf7e9ca1c53ca1713a47b4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-petrify-2": {
+      "sha256": "1023fbe7164506dbe25578f37f78bd6172734521355af0e5a0fd9d6a77e32688",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-renewal-6": {
+      "sha256": "dc49b9c250cecadc808f971dd3112539edd9c5c7c8e64e16c825436e99df41d7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-fish-2": {
+      "sha256": "4e6c19edf832409c7acd55038adc612ac10610be8b4d4efbbbd620a0618ecf3f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-defense-6": {
+      "sha256": "baf057e9f70a67552e18668721b02f5f3c7fcd105c18c08786408abc86014f1e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-scout_evasion": {
+      "sha256": "d923c1339d57de0250ea918f0307bba21fd84c03ad613bd9ca024fd3a02e6734",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-earth-3": {
+      "sha256": "c7acd7ae7e2cb55da16c17e7beac8d6fda7b4475dd2442d75585fc56d77ff6d6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-forest-2": {
+      "sha256": "05263a5bd8f7e96711049f56434d8fb8c142127aa7316666f2aa35d59d7bb7c7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-tomato-1": {
+      "sha256": "1565ddedc5d98583bdbefef446d869a00a01d5e0294240a0f869e15a74197425",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-pine-1": {
+      "sha256": "d30291154305875f58e7cc62db9c56298a774026663f7c66d744aa2e7f5c60b2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-workshop-1": {
+      "sha256": "bf1e023d4a9441e654923679ad7b9f78fbbcb9a973babe1988ce61e7c3ef170f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-spoon-2": {
+      "sha256": "bc0d8fc2f9393c6028a7950765c5664058201c7a1717b25f67225bff3217ad24",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-opal-3": {
+      "sha256": "f93657daf8342c32b12e34836afe7f291625e9a3b2dde32d2cc18325e2821924",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-component-gear-3": {
+      "sha256": "76d48040c727504768906a58e5820bf2af4b3a6e2fb4bb30a88244453cc0c045",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-fang": {
+      "sha256": "fd9fded3abd6f3200bc9d8ef09a0e7b853277c7cbee9de1a454c35d898673c29",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-hibiscus-1": {
+      "sha256": "9df76b2082fda3373ef8e4b955cc58af18f010116d05d098915c745cd1ac5d3e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-dew-7": {
+      "sha256": "05f39fd7f421c488e522234d87cfd914321de020b698101227f4db36601ac227",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-starlight-7": {
+      "sha256": "4e61ad64eb282b25ec8bb0a27b59f58a515069978b1614d45cada88ad2b1594c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-petrify-3": {
+      "sha256": "bb16023aacfc844c5ab7aacab424bfa6c09e70171d435cd1b4a6c36588086ab4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-renewal-7": {
+      "sha256": "53fe7177ee31de16611523b1096bef4f4da8e37c2e6978157bf6752f0581e7bd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-fish-3": {
+      "sha256": "2df203e1b831e0233bb926e24b9403437af0b1cd875695112bc3ec92af3e2c32",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-defense-7": {
+      "sha256": "84d4c52fe01478bfb02136a4f37c18a2b860deb9dc8b7776e6a9a12ac111c31a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-scout_knife_storm": {
+      "sha256": "b02159f467c252cfa0d9cf7fca96b1c00222edf3e8eb9a13893fce51b21308f4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-peak-8": {
+      "sha256": "0a196896808f8db673d2ed022671bd7e7ba89b5e5f1cf80bc44aaf1a5fa199ec",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-fire-bomb": {
+      "sha256": "8b7f0303de5ad4f75955ceb7f8beab5e83f80f3ad7c64a69092b4625c70fb64e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-hibiscus-2": {
+      "sha256": "2fd31a3b486e8d9a8a5d49688a413bf72d726c23d3440c2f3fc6fcb41320ac74",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-dew-8": {
+      "sha256": "39f728aac161a4417617151e391c6623f9a86059a0417a3737bcee336a1dba52",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-elixir-starlight-8": {
+      "sha256": "84c8e61ba68c08e7c7861dc2c4d6a23a1816165b464eb81b14576bc58713561e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-remedy-petrify-4": {
+      "sha256": "3a2f67e0badeb9dbaf951ce01a6ab6d66a0ad5b0ab435835db9a199b99118ba1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-tonic-renewal-8": {
+      "sha256": "9a3f49a0f05035d8a6e52ec483ddfd038eaaa4b2cc9b34b52ff3b46c694886b0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-fish-4": {
+      "sha256": "7fc71417689b0f32dadaad6798c9ecddfd350ddd488efab09eb9482037680de5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-defense-8": {
+      "sha256": "27c720a381cd91f4a6143da5203f1b964a5bdb50d3f0385a47e742d9dec3ca12",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-scout_assassinate": {
+      "sha256": "8227e788b1bd9e111355fcdb789ec8691f2700bf2d2cb8e2a4bc7423ab2fdf0d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-earth-4": {
+      "sha256": "359debfaaa463c2205980aceee069153c80cf31fd2b094784989b13bd86786df",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-forest-3": {
+      "sha256": "d727754c2fbd31275faa2cc408b7437676bd27f01f8c04287c41a738a9061628",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-tomato-2": {
+      "sha256": "2b0f677023a5892eded12dc0e0be2f0dcd36c976b840e66f10cd4c693ffb4071",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-pine-2": {
+      "sha256": "6c26c63ca5e801fa5d6fc0f05d05b053e23f7e39b9b133b3ff3cd4e47459b2f3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-workshop-2": {
+      "sha256": "3da1736f2577b3c1d94ad5e0009cc5d8c3ca65771a64fa783a99da4a041923bc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-fishing-spoon-3": {
+      "sha256": "f971e2bcbe9adb34cdb6a7bac0c7b5e8d642492eb13a517b854c66565bea9426",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-opal-4": {
+      "sha256": "f5d454e3d84e2731f050ce783311b2e897f024731b211bf9770343ac7da1cfab",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-fish": {
+      "sha256": "e877a43ad2f626b486237b22052b34f697eb0d6225e5dea9ca791875b6344fc3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-hibiscus-3": {
+      "sha256": "f3aee550c08314e64321c604f4ac56eefe8ef208a34e25e277ae1f51f39a47bc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-cobalt-1": {
+      "sha256": "bf7ed0834370668427a4d923b5336a627812517e7ef869f4fe81ec8e90e6b739",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-potato-1": {
+      "sha256": "9a234c0ad85c2e2d0279d3c2a9ed2bdeececd725d1307676b19b1f02032450db",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-mind-1": {
+      "sha256": "b88e7710f12b2efb2bd7517d1b8aaebdaf727de17f31ca26390935913a94c6c9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-samurai_iai": {
+      "sha256": "456f1a5b5821347c2d4ad29cd72f97c4721b9cda053b597ed4db19bd9e45544a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-earth-5": {
+      "sha256": "d081f80b4e8c6ce1108433affe7bcd329d39df526098c514a198df4053fc6731",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-forest-4": {
+      "sha256": "bbb629fcdcbc605bf4599cd6939d07e86693b5992355838ef3e888b1958081f2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-tomato-3": {
+      "sha256": "aa36fe29c369b997188fef0c72e3bf8d8d0721d025c0051a88b0440618cd87bc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-pine-3": {
+      "sha256": "4585f7c41b284f1ab39f2002d2cc6d3a509caffe52a55710715eb931f522bb07",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-canal-1": {
+      "sha256": "68814a5ce931afc8b9bd6a741c3fe7e6e8006818680e0a87f9597901db176cf9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-garnet-1": {
+      "sha256": "16a011bc691c1397ab81afe804d5d1bf63b7ee72d31363bc29a92298b6618dfa",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-fishing-rod": {
+      "sha256": "481ca9ec37fa852266f62c56c10b212e1a3d687669124e6c6a2664e877fdc520",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-hibiscus-4": {
+      "sha256": "1aaa279c79fc76d2f46d7f77fec9cb1cdbe11b93e839c278f955517740a61516",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-cobalt-2": {
+      "sha256": "11bb8e97cfb668ecfbb42c865bf2c64731175c71f2ddbb115d81b7c2e296f25e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-potato-2": {
+      "sha256": "b254f725aba1e643b2f7f5f791686e28d80f35886a564891bd1d17ceec6b8b4c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-mind-2": {
+      "sha256": "dd8381d730dda63d928aa56c3eeeef2dec9a611497cbf20efcbc902da36a0dc8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-samurai_twin_moon": {
+      "sha256": "b21bd4777d8a2d6d39d42ed01efccc79c5319ce939d3336190e03b6368c61442",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-earth-6": {
+      "sha256": "8f6ada11b890d248dfd7cba954fad3a10a01b17beb693725be011b98d110a139",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-forest-5": {
+      "sha256": "0541b0dc5dcd53a5fe61f90e11e7f1b8eb2c8c2f999434006b166cd9d8897a7a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pepper-1": {
+      "sha256": "fb8186ebfcc2048df824a4263d7b719e024abc26ef085b7a215753ba86ed28cd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-pine-4": {
+      "sha256": "efd9ff4334f59fbe6d7e201b31100b17812205f6277bececc5d51991b04d9efe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-canal-2": {
+      "sha256": "5ca3483ac5a1d7e3af9a3dab4eef02300bf2cf8ddb584c9ff314a874f356c715",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-garnet-2": {
+      "sha256": "ec8ddf5d1c47c7fe5be138e98e65106c131dee11a037993414aca089c0aebe89",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-flute": {
+      "sha256": "8dabfec38266ac1c586788a6d522aad0785ae7582e70e12a89ee452b6af0f832",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-hibiscus-5": {
+      "sha256": "928834b9fb40070a94e7a2caa0b4b531341761e2ad22c3c2a53d3a319f6a6c77",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-cobalt-3": {
+      "sha256": "71e86973b23ae15b0bfd862200c0e3f2695ae674dfc74587ccdfc326666c1f61",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-potato-3": {
+      "sha256": "cac3151397b30358732abe7f13433b71ddfc83e5e6876f357b35a91182dbb286",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-mind-3": {
+      "sha256": "0f6983b8d4b119f8602d7e4039c637f86ddcd69cdfb23c1aa219ddcd2780abfb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-samurai_wind_cut": {
+      "sha256": "98b677674a80de286d3803d415c7a537bd84cf6150ecda24ce1e534e14fe33e9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-earth-7": {
+      "sha256": "c5fb5ea6db1c6df7e69eebe973c26b58f3358edc760a0e7d8405452c5f186387",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-forest-6": {
+      "sha256": "05e360e7e75472fa6e60893a23a95eabf04e424e18c5527e4ec534329cc47ad0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pepper-2": {
+      "sha256": "01f33001cca3a2b7b5b03069a052133a607ffcddfbf8d6da38811dd875d5948b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-cloth-1": {
+      "sha256": "b9f5a6b6b1c5e2a3c6a3ef520663ed4aa97a96e1a12a7308c68266188fa21508",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-crypt-1": {
+      "sha256": "96ca5af660a12e0b33531fc8fdd944e7e28e75958914249264edb31f11fd23db",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-garnet-3": {
+      "sha256": "03d1c4c19462edf04a2589a40f6faa3f7cdcc37f7f88f87e70fc331d1950a066",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-focus-ring": {
+      "sha256": "86b2b2d2e408021284f3dd9ddb8569795c4872db13d35b62c8b3d73ef6a9a2bd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-hibiscus-6": {
+      "sha256": "7e4aabb9f27903eb4863e1bd9a3ee54b974dd09c55c0f37130d8623b5d07ce20",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-cobalt-4": {
+      "sha256": "9835bb55095fb8f37a524b26e6141c6026baf2f8c0a29ff9e2940f459223608a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-potato-4": {
+      "sha256": "1f9e56504c7c5ab4d4e34da444be974ee24d6d115680357ce01b6dba41f704af",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-mind-4": {
+      "sha256": "e16c33f53de654ad6fd3669e7be548d34349f2a597464cae2610d1670ad8f806",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-samurai_mind_eye": {
+      "sha256": "d8b558a54e6ec7f9134e289e1a14ee059c3cbfa721a259d3cdfe872082ef7884",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-earth-8": {
+      "sha256": "7b69f0b6c09a2b4382b5a5e4d0bbb152980e12e01594dbb3e4e31af333681e9b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-forest-7": {
+      "sha256": "b096fb75fe0c27a8e4e745cbb0e3fd9d678962cf81c9ac813f7b29ea60b29d96",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pepper-3": {
+      "sha256": "21ba96fd9eb7355e7b4dd92a4dc53264a44cb9e063d9c721e03ff1b7c279f64f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-cloth-2": {
+      "sha256": "bceb4e97786df7844616770bda2ece88e5de8d309f489dc5453b0ba27c3b8d83",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-crypt-2": {
+      "sha256": "7267a59f837a1d633bdeb134431508d157f3127912bcbe1575b73a59dabb0a0d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-garnet-4": {
+      "sha256": "826734674353293235642cb30002d108dcb794ce4382db9a44d28670632c2c7d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gear": {
+      "sha256": "d2cf2c9a2ca26e62f202b9a8cba61dd0976db21f112861298aaa208969c439fe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-hibiscus-7": {
+      "sha256": "7838a5abaf2835f2bd3da211ec308f81dde128c074ae27f895fde0bada3a432b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-cobalt-5": {
+      "sha256": "1bfae7145224c05b0db83f70e2261e4340d58dc2fe128661bca3830b2caf0f3a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-salad-1": {
+      "sha256": "488fde5eb964870e02982801d2d0fb5de552ce999e60a2c6933821438e38cd73",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-mind-5": {
+      "sha256": "cb6cc4fd0ce466a524221f068c907fda077a871569e325b28421fb707c46aadf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-samurai_cherry": {
+      "sha256": "c0eab47acebfd0601105bade4c2046c864a3bfdd8e15a87fca16d427f2049ced",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-wind-1": {
+      "sha256": "cc12ef18c9e5a9fc43ab59543f63f333b9309849b1a79e2865a018fd46fd79ac",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-capture-forest-8": {
+      "sha256": "a39a95587ddee13a33e6e9e92bc2bed204c13eda88ea2ad4c05d45654a0cad2f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-eggplant-1": {
+      "sha256": "eccc50c2c567fb7cf43e446fbd81ab14025dc9bbb9eca3df546f7c18cb7d025d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-cloth-3": {
+      "sha256": "d5a19abb038bbac18a78db838c20f704fcae8ea39b8d417e5a1317c252abef9e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-sanctum-1": {
+      "sha256": "42b3912ce74dd94a5f864f5d04d840df4756f80de30bd9b17de7c7876c9ee43c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-aquamarine-1": {
+      "sha256": "4995ef1a120e14d9c55053a4ef0e923d863f41898f4fbc40298fbe4b7c5e3074",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gem-emerald": {
+      "sha256": "dbb51376d9dfc0e958a9728e57431cbe0ccd0594d2cff7bbb299c35a1207d4b7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-hibiscus-8": {
+      "sha256": "ae638a86cf76d27d19aeef15bbeb2bd2ff45170da330412f0ccc6809d4671ebe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-cobalt-6": {
+      "sha256": "30f11801204c0bb928212d5bec4c8a9b9c2e6ba58a10ba3048517733f5e90cf0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-salad-2": {
+      "sha256": "8ad3cacfba8400877384494b8010ab257782dfa75c215ad8aac3daedacd0f749",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-mind-6": {
+      "sha256": "71956c438fc1efaa862624ca7223c5816dd2e001319d33c3ddd4517b10215f86",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-samurai_thunder_draw": {
+      "sha256": "8a1505e4bbe60d34d6814758fc75b30ef1bf4e5c075ae888585bc49556826c32",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-wind-2": {
+      "sha256": "9b2626b9826e016e144531e5b5b5d22016e0b206791fea5253c2042493552796",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-eggplant-2": {
+      "sha256": "113615b373d1f944262a461ab417340106e2baabd76cadc93f76cdee1fd6f1d2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-cloth-4": {
+      "sha256": "66a256a358e879edbf3a4686f04490f0a953de3bb8bf8989bdbc935cd61df6f8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-sanctum-2": {
+      "sha256": "5d7a6e2d969cf9ac6a394151566d4c73054b752eb6d0288407595e4c0fa1302e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-aquamarine-2": {
+      "sha256": "f1c949bfe1d74242d8b4a7c93d4b1274dab65d5aebafbcb2c37af13cbe5e7635",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gem-ruby": {
+      "sha256": "560b6bb55618c169a8a8b94f6e9a68e6567a21396172afb666341ad68d2d99b3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-camomile-1": {
+      "sha256": "a950d45bc140350c2576f44e7a63503a6e70acaab0c5b92163d8b915442bd04b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-cobalt-7": {
+      "sha256": "982279d51870f32f985c861ace39e52bf5e522b42e2723763284f25832bc57c3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-salad-3": {
+      "sha256": "d6b44e655bc27e4b602aa9c960567b7a48e3b0d07a1a2cd290e14d10f6761b36",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-mind-7": {
+      "sha256": "8769c525f409035fa1a2d16048dddf421f1272f79b20ea30967f7fb4d14a73c2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-samurai_blood_moon": {
+      "sha256": "9dde25c4a7dc49746f9080c572f990e9b1e3e443296f7ad8ef909c4345530008",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-wind-3": {
+      "sha256": "9d28a81fefd5ac2f3b07184600b160deb335aa6b52a10fbd5c629baf11afab74",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-eggplant-3": {
+      "sha256": "afcb41aa1ba6e96bd4de109d78737e2cf4e012b525c4a5d2e6489a3edbab0e51",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-silk-1": {
+      "sha256": "d8c5eab9854884429a5041bcdcbac0b4dd8fcad639556ca024e8b875d9a70ea0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-treasury-1": {
+      "sha256": "62075635d8a7455ff541ec446b15814eb42243c03a60977347c65ba525c8fea4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-aquamarine-3": {
+      "sha256": "8909ef6acd07ff1befaa62ecc1efb93b51ebe26eeee626bfb457e3be66c0c77d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gem-sapphire": {
+      "sha256": "eee351053f1c64686b8be4641655c513114d490b92e64f18f1f7c067c17ffdf1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-camomile-2": {
+      "sha256": "cd8544a256f87abba7a2809a5d2d453bc01fe7f0283636bd18341df8fb52e108",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-cobalt-8": {
+      "sha256": "5f6c37327ccb2bfd7e2b7974545f89ae166f6e5922b549212b9fdfcb164c2eb0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-salad-4": {
+      "sha256": "214fa1b8c3876c24c9a76611e9c03c8c41d7021752d19ce1724aa7c04721f439",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-mind-8": {
+      "sha256": "48b00fcda59ff23a744e058d1f5c5c5620326428a10e8594accf47c76ef813d3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-samurai_final_cut": {
+      "sha256": "d15fe86cdc345de64e24edb22dd521008958612b4b56e5a3dd3e2c868893b44a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-wind-4": {
+      "sha256": "aa28208a3fd803f170cf8641138e025bb7433c80ad42677ff40ee7afd463af49",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-cabbage-1": {
+      "sha256": "f646251927bb3f744c3fd4cf2c35e2915f56eb669385bce989e7396eaf770dc9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-silk-2": {
+      "sha256": "aade0a2451d268356e55a5fcd15d762c0afeda0e95e883a17247062a35fefb73",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-key-treasury-2": {
+      "sha256": "7a60c54658d214b0f1db4554de4745956746dc57b8f4ea90e11ff2d3acdc9fc0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-treasure-aquamarine-4": {
+      "sha256": "53f76a9d83dba694719f0f79b772852de23c42704514987b7ed2bb2c53fcc316",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gloves": {
+      "sha256": "67ffb90c59190eca609ed29182d0c31e5b1c6e4d978b3be314b684c9b6c634da",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-camomile-3": {
+      "sha256": "1c2054f5a4535f7c23c89b0b2bf467c7f7d426cad90f58c5d2257ceac7fb3ed7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-lavender-1": {
+      "sha256": "633501674eaa7b00eb5d294e961b3d250160f8ab06a790263fb8d1f2266b632f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-porridge-1": {
+      "sha256": "a637344e2392c80464c1adf372d4c769f5e3ac3d9f793af89f8e3c829583f4d3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-agility-1": {
+      "sha256": "8860d6c66f68ece70d65de694522109f469eaef8a367c04192f88eb94ac5045d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-priest_monk_chant": {
+      "sha256": "a737040e037589d7ac2d08ef3776d9dece47847e3d2216a8c028117cc06e7a57",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-wind-5": {
+      "sha256": "93031f8066e43c51185c5aaefb852308e2bba02f84cecd3285b543c37e91a879",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-cabbage-2": {
+      "sha256": "e172ab73aa31680d525ad0bcfd6c738287932c5da17e84cbf8d3a771a53bb8c6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-silk-3": {
+      "sha256": "5353e16d2b5d6dc5985632a76f2d4ea95ae3a550c2052c4d4ff9dc24416d29f8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gold-bar": {
+      "sha256": "f436203c98ce7b18f50f4198d2c98b57f947a1fcb7a74b148dfb04cf82acff98",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-camomile-4": {
+      "sha256": "9be6183d13e242e67b7bf6699398568cd4f81bf9bd6ab50941436ec31a454f92",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-lavender-2": {
+      "sha256": "46de368c3af94a872ef342244da9a629d3aaae0ddfc6e75e01311f23e2565acb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-porridge-2": {
+      "sha256": "ad95cf3e6dd59b11bbdac2ee27f496c8420743b1dda14b67e10cd40074ea0d6d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-agility-2": {
+      "sha256": "c0f62c1f828635a858f617addb0f580a33393c09d52ae4fac6abbf0767e56c1a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-priest_monk_staff_strike": {
+      "sha256": "8587883a1dd0aad80a44a10e5519f6c3c07c4e96728d1926f03088338dd31a94",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-wind-6": {
+      "sha256": "055386c4a8e4175dbaa441fd52d59d24b289e99819252d244b2a674131b329c5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-cabbage-3": {
+      "sha256": "dd386cd004b4cc807523da6bf18609cbc55ff6e815f6b4c1708e7b99af8a41a8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-silk-4": {
+      "sha256": "36152e94147a09d4547c5aebb368fdc1e2e48beffaea4c09bfe7be5b4c7a2a75",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-herb-blue": {
+      "sha256": "213c750b35cda6114dc0a4350bb8ff1894e6d4cf870cae813d344b172a97fb0e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-herb-green": {
+      "sha256": "1cf53c3e7f41a4c2a11239230b4d43a6dc56d08eabd6e9aae640d2bd83168b0e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-camomile-5": {
+      "sha256": "c211582811414a699928a262a710afc4e152dcd298168c03b6108f774eb56393",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-lavender-3": {
+      "sha256": "3208f94b8c68a5eb9de66963fba3acf4a51a95995e69805060d47bdca7adfeca",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-porridge-3": {
+      "sha256": "8d476103e1aacb3fb7376f145c61c99708d2520f2c6f118edb80575b98d49359",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-agility-3": {
+      "sha256": "20cdf76bad67f64403dcb47ef19020c0e180b18b4168c62acae8f62621400476",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-priest_monk_vajra": {
+      "sha256": "ada20ad8e0550b8c3bffce5417229ae19a3356f9bba43e941e6151a38fb8e72f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-wind-7": {
+      "sha256": "b12c4ec240039fbcd1c107ca1e2263e50d67e4f093459638f534e0397b8bf26c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-grape-1": {
+      "sha256": "3c869edf99029e33915bb3de74432df380ffbf0cdd7adb0b6fcb9c3c81a49b81",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-leather-1": {
+      "sha256": "ebda6ec4ef821079595004566423c4d1656bb7a615d1e8755b47d28609c43dcb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-hi-potion": {
+      "sha256": "5826faa62274fd4f5869c5f124befa92143a4bd81e19a271c42100ba9e2fe51a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-camomile-6": {
+      "sha256": "0e84c100571cc9daa3b50d6eac709be0889b37faebd639eb381cc3924888bff7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-lavender-4": {
+      "sha256": "eb7934a9b54571f186a89c0d0d42924799c7b7adf22c9298caf652825c6c2573",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-porridge-4": {
+      "sha256": "25c863fedb4359a7b6c01e256d166ff83bba857916c8c323ba82ccae370a1ebf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-agility-4": {
+      "sha256": "f04f992ff40270a47c2215af0cf47ddb0cfcd227b889da872c8e5e1374aa306a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-priest_monk_bead_toss": {
+      "sha256": "e9c912d890bea63b2e17893c2e549970914e9dbc67d10e5b7b9eafecea428659",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-wind-8": {
+      "sha256": "f80a6509412c8eccb902cb7819bd1099737befb4a7f35ba433c35cf991ece36f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-grape-2": {
+      "sha256": "be7f6b1141929dd71dad2887213d2c12a9520ce6fe051c4205d8c166c1ad1365",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-leather-2": {
+      "sha256": "d2fed5234b5eba5285775bf20ed2c6a39ad920878a7b487833480ba729ebdca1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-hide": {
+      "sha256": "6573e261e42f336168c133cf01dad4bb32b52c5a1016d634ae47e361ddf9844c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-camomile-7": {
+      "sha256": "bc9768fcaf3817da05fcd67bc9b25c861730621d43bb624b87e401e84bb8b0f6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-lavender-5": {
+      "sha256": "3704bf09f43fc1e084ad5bf6f6f19889d444465e933a2e2d995c164a3ea5a4ed",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-noodle-1": {
+      "sha256": "2bf764cce3e7168e4b93778578c363d81c7fcd83c20e7338ef763582abc8bd93",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-agility-5": {
+      "sha256": "3c760f118df9d64001b143d7c550352a9d5ee3e3243b3941e7de73249e6f8fc2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-priest_monk_purify": {
+      "sha256": "4db3f447c3726b0d8a1f101f9fb45ee4cd3d60820a096c3e703a39722e5da277",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-dark-1": {
+      "sha256": "52aebe386de2a7f5e1cbfa99de9f4039d73a77c1d2969cebdb2e34718b7ea39a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-grape-3": {
+      "sha256": "203d532ca8169df70cfcefb8860e33d15e23b8c1580fd436b75efe4a9d385ea8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-leather-3": {
+      "sha256": "813b5dc799526b2f37f63a8cee6cc9ee5b88f1950913d88e1361ee6bc2eb15b8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-hoe": {
+      "sha256": "dac7f2a567b698f9973d4755d884926813c9cc34f3e35a80827a50361d51896d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-camomile-8": {
+      "sha256": "3c4f714b2ecd81fd1d05fa27edc86a17e531220cb3d8d855db33aacbb4791f40",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-lavender-6": {
+      "sha256": "69a261ca6b4c02f3d36867c4a7dcc7f859a3117119d251f337726e501d7dfb04",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-noodle-2": {
+      "sha256": "33ba32062f98c879f715f0264a95bfe8d28bc3969fde2e5b4f80277784056ae0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-agility-6": {
+      "sha256": "b4cc4532e7dd97c256f065437d69bfe27148b30cdafda1be4251779836e818b5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-priest_monk_palm": {
+      "sha256": "98096230e68ff4527b2a657ee5852a0089ff18f00d31434cee5ff97c464b87fc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-dark-2": {
+      "sha256": "33414417ff2640fbd67b7c89d538fd5dcaec68f822f4732ca0b7f44f23f26231",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pear-1": {
+      "sha256": "1262e3980874b68124afc5a657682bc6387aca080362f8bf4d05a347c21e17f0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-leather-4": {
+      "sha256": "a50c657156e8b378e1326fdd4994d72dca7501e1ae1a36079d1dae84437eb16e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-holy-water": {
+      "sha256": "7fe537551ebb1fc243acf3a7244f1b93eca6408c8731b25ada04491f870a7195",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-lotus-1": {
+      "sha256": "588a43be8c762f1e26ada9eeacdf37ee83af8bc3acdcf31c5cd62ca0eb161250",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-lavender-7": {
+      "sha256": "dfdb2d4424cb1ec7a6466bce0d5c35dc5ec393731027429e2e4e3c0397716c54",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-noodle-3": {
+      "sha256": "225b968b2b7c421be6d557ba259b47e22d47fcb9bf56d9e999b757e7d1751407",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-agility-7": {
+      "sha256": "02d5826099cebbbae2451ea4de09e6d91665d20c7a2ac054066fe8974b5047fe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-priest_monk_bell": {
+      "sha256": "86ca0792ea8c783bdbf966c7d9d12af462929c2b82a432b7f66d6ce3acaff5b3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-dark-3": {
+      "sha256": "f87c1f399d2aea46ccfed9bac9312d2553cb9e28cfea392f0c56e63205fe369e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pear-2": {
+      "sha256": "730a2ae4da053e904215a72fe35e8d4f4f2f004cbdde6babca9df826f705afff",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-bone-1": {
+      "sha256": "bd85f824f3170cdff6d1074d479b32e5eb299640b36538ff3e0ad2abf0099503",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-honey": {
+      "sha256": "c1bd2cbe4ed83df84bf3fc3c7619a8b9edb9bcbfe12538274ae156c5661e1d4f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-lotus-2": {
+      "sha256": "371b2222ca5ef0c989cd9f7f6f6c76fe2aa973087c08d16d625d700fee93b55a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-mana-lavender-8": {
+      "sha256": "00991327ea96fa6f7a7d9383c692b479c6e9fd0e5ea0b9d9dee883757a7c3f7e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-noodle-4": {
+      "sha256": "83b4cf6d0416be2cf36d8c48e4d83ac4696cc5dc0bf2a03304fb17ace493668a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-growth-agility-8": {
+      "sha256": "9f438a5b3d789a73c67e840334aeb91d487f078e0d855bc6b9f3490ed0741a22",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-manual-priest_monk_nirvana": {
+      "sha256": "05e25928e1bd05a39410ff60fb499486e91584a020bf1aeb9e754a2aab62d2b2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-dark-4": {
+      "sha256": "cca91ff0c53906ac3a90193fed8ba2103830126f74b3cb776edc7420a8f05ebe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-pear-3": {
+      "sha256": "957554c83855f815d3f91b3e1a812f60c37d18e4b74d1d1af2b48c8a56f5db91",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-bone-2": {
+      "sha256": "79a9f62e86ea0126918378641d13028b8957c3909dc2b473e428090f6eff2f4a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-ice-shard": {
+      "sha256": "3bb57f53514b194f04e9922ccb29a583934c1e015b9846e16216398053dc8589",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-lotus-3": {
+      "sha256": "303e69d3b70d36f2bf5dce0cd1320da42c64e4529393d56a7fe5f05e629f682b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cookie-1": {
+      "sha256": "780c247bc023531eb542c00afc5873e857514efef63303b1c6059e51eb4db3ce",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-dark-5": {
+      "sha256": "61683662273ffb452b26c6dc875b4d963917a1a0cc27f104f5bc67a6d3b56edb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-peach-1": {
+      "sha256": "1ba2c3591a8d1c29800963879efa180dbced51b2b92a9dd47c6df99003183370",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-bone-3": {
+      "sha256": "a46daeee9e024863c4c0f21fc9a7a97735fbe12cf540a5500ac8cbe11b8a7622",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-ink": {
+      "sha256": "ca32937ebfbc68b682edb46dffae0f878a1200b1fb1badb48a6ff784b817f191",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-lotus-4": {
+      "sha256": "a9306e5c5f5db0d47850df18c06d373edf9b683ab65b0c495f3451d6b8085813",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cookie-2": {
+      "sha256": "81af39ee1e6fd62b92814f3ec726fd79f5c698287509f90fbef5089838604083",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-dark-6": {
+      "sha256": "c961a1b0564f8f29c3a530387b77f901cbe86b5068d41ebf1e98edf816e14894",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-peach-2": {
+      "sha256": "488171257cdf7c1ee505218936b5357d6551494d64dcc3d985fd76e34314d8bf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-bone-4": {
+      "sha256": "2b8b97d3f3d9337ea65463a7fe853ca72fa7851347409cbf23053626ce81dbda",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-iron-shield": {
+      "sha256": "e56bd80f7c836a8fb9df3f851fbe54d2594ad25e2488284cffce39104313c83d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-lotus-5": {
+      "sha256": "84462470a6895ca50e2b00dab8c6ead8aed651718cb62ade7d67bd3b062c3e45",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cookie-3": {
+      "sha256": "09dd030503f7a8a39e413fbee9d7238d6661546d92de9db7bdf24c9030a6ae27",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-dark-7": {
+      "sha256": "5ae2f9edfc2bc54b1a3e1e524d9b5a0fb5d03c09e4d805641290f7a0bd544fd6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-peach-3": {
+      "sha256": "7932254fc8a13d2fb5b977b66fd8753774f6fa66b63f7cab72043c8c3f61dd92",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-fang-1": {
+      "sha256": "dd7cdbbff05f57d401d4858dc059c4605dced7cf6f07b22c180cf91022df75c7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-iron-sword": {
+      "sha256": "2da96d64b60851d3e7278d0549303081bad583fc8fec587af62d41cb4ad329b9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-lotus-6": {
+      "sha256": "e801784d721952a16e40ccb78311b266cfb1f03be41c8fd441180b9be4eca126",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cookie-4": {
+      "sha256": "08be2f01bbbea95ae980cbf1b4e210aa91c96f94256368b25d20f5459b578b34",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-battle-dark-8": {
+      "sha256": "8862397de7309a19f013da7e714c6831c9b350beee18c6982f686cb4fb73a95d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-radish-1": {
+      "sha256": "5dce238dc7d7a001f6237d75ef4d557caf94fb4b1f0356b41f7cd08e83ba922a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-fang-2": {
+      "sha256": "1a8ad95dd0f0e0013c021ae060b97b21d0ca19e219dc3b0217632239f19d7a99",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-lantern": {
+      "sha256": "03b37f6e2d9f9fbf76d8d24cb06f9aea735564682a0b4738c5f53ccb64515700",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-lotus-7": {
+      "sha256": "0ecae7225541f8dd7957232c96c8bbb05bfb8e0a652babbb5a2fb34fe7544268",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cake-1": {
+      "sha256": "cad1bc88f9e87d804ae722d6b5a42ce12904efef34729f2cbb5b149a1c6f22f2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-radish-2": {
+      "sha256": "9253f3c6cc8ca0e719706ebc3339c3655407df9edd6543cc52c9712d53fe3175",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-fang-3": {
+      "sha256": "5c976061f6e9c2483b159f7eaba15399d973dc8341608152cf2e458e2aac8936",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-leather-patch": {
+      "sha256": "411e965a814350467c8e18992118f027cd8f3d61c4d6ac4c4b4b85822b5c0244",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-lotus-8": {
+      "sha256": "ce52065b6f193d0cf31fea316fa8c2fd032476153903b9eada5df4b64ef96bfd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cake-2": {
+      "sha256": "9212d400b9a2cb34df6ae7a79eb828a15067911f0277e5cd5ab5b4a0dfeaed11",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-produce-radish-3": {
+      "sha256": "07cd3d1a42709ab3b086b58451103922f53e2b7a13bd9d7a5eaabfb1ace8984b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-fang-4": {
+      "sha256": "712a07f80e2fae21bc4e953b28481aea9e8c0655e47307b2c9f90b6002cfa3cc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-letter": {
+      "sha256": "301a3675fe74d6be6cb2583a14b42d0305808975c9a4469b9ed46816d7ca73e8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-juniper-1": {
+      "sha256": "03ef9dcbfce116e9f6cb3f47c8fa2b662bdd50504b0696c42e366738fec89ff9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cake-3": {
+      "sha256": "d8fe699ed3f4e520842325b2479b23c0f5bcb0817c670395359b6ebca1c768ea",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-claw-1": {
+      "sha256": "05b934f6445a575bb98b50ac0053084f41fb66de55dcaa9c9c3842bc7f7d6b6a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-lucky-charm": {
+      "sha256": "156dda82ef01618a49465dff2833be0abb4cf34554af4c59b7b6f6842d59c871",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-juniper-2": {
+      "sha256": "762bfb40efb9896e81a6bb6675538e00541a4ad1841794df310054a8700cbd08",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cake-4": {
+      "sha256": "e5ed52100dc27d9c98ee7325e2f17f670c2c9b05ef3a751c4b3f430966556a51",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-claw-2": {
+      "sha256": "92ff07e4f733a8de1dc926585f8f1bc48617df00ed0217452e8ae3052ef09d14",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-mage-hat": {
+      "sha256": "c30b7fcdc8811da1e915960c8dafbccad8a4bbadd3b393af1ffc56d9129cd445",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-juniper-3": {
+      "sha256": "c22a2475cbee4eb459cf5adbeb27c51f7478f2e55decec2e73c2fe69d60c371f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-soup-1": {
+      "sha256": "6cd4266b40a5b12fec22470811bc2244cf1089b841e53d186ffbe1ee1370a4ad",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-claw-3": {
+      "sha256": "5724fa6d18ce5cc1732478f15e79394df968be856b5ecd4644743597b99e5210",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-mana-tea": {
+      "sha256": "27a553985f7466d01d4a2e0c8027a395424ac34d1edf3c49559c8211ea6a2ac1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-juniper-4": {
+      "sha256": "429af261789c3a1381e1699f9f7313e72607279ecf7640c13fc5422c0322e755",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-soup-2": {
+      "sha256": "7dcb7814ac965d50f85b77b5f9086617dc2c9c411e4f06df368a2f6bc2808bbc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-claw-4": {
+      "sha256": "8925a01fb445222f43aa58fa994785948dfef6304b53e6d57de72c9af7f2ded1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-map": {
+      "sha256": "e8eea15f1feabf565f26b1046aa8d01362cc7e5ab3d0ab1a15528e053f119d12",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-juniper-5": {
+      "sha256": "47291e1c707027a0dcf02b06faaab0ab4463b7133a520d0887e95aa9c6f2fa00",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-soup-3": {
+      "sha256": "b2b0f7147379dd519f33802eb30a01f9067e7592c9b2b01331c723e1d307957c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-scale-1": {
+      "sha256": "656c49bf0514cd23de5c16f39aaea5a8d5e444320fe649a00f680e869fe9c5e0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-meat": {
+      "sha256": "830924da3a31e6eab1e72c92473a2533ac77a8208de3242ec2ddb5eb48187b89",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-juniper-6": {
+      "sha256": "d13610d15f27c8977bdaf2eb369d4fe1b70c81e34d43acda10fbd9813b760bd6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-soup-4": {
+      "sha256": "0d78ee5ca7f8fb305cd850054428915b7e26c0abf64ee91cc1f40cdbd0a7929b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-scale-2": {
+      "sha256": "f114dac8641ce2b99ee77e8fa778f47be5fbeda9b36f19fab5dea37fee458633",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-medal": {
+      "sha256": "104594e16fd51dcc039e5fdc8a67a79017b5597106f70aa973af67a6172b192e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-juniper-7": {
+      "sha256": "6d227175c90e8965cffba62e8845f66eceddd03d89664903e4a9eb210d51da36",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-egg-1": {
+      "sha256": "c6fb21cb65ad670490f628a04050e690b325554bcc067340aebf30bd3372416b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-scale-3": {
+      "sha256": "22dd850aba4065a8cc89d79b6cce08fa87973a73295016ef5c81bc31210ea018",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-milk": {
+      "sha256": "bf94e5e6e593bb55fbe7919ea06f572f1ce3f4efb707d880e1a19115d30e5fe3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-healing-juniper-8": {
+      "sha256": "1cc94b1a29a346b07b7ee399aaff1e4924db41ba78bf20eee4733d7648d6fc6a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-egg-2": {
+      "sha256": "00c393eea06168d16af634c70cc3a40bdc9e730847d34f2ffa42a63e82ae5f96",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-scale-4": {
+      "sha256": "ade90d729268c315466efb3da60a4114a756d3ad6ad1c1e30048a61d8e6dbbe8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-mirror": {
+      "sha256": "6345c698af294b90b3f98648a976ddae71013bd617413ee3f86de16ae91b1a3f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-egg-3": {
+      "sha256": "455f568f8c72d791318edf5d952e75019fefb7620c59e9b400c70e58e3d06161",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-resin-1": {
+      "sha256": "69f9f493b85a7557493b0779511c2214603f135a0252625823e50de63572ce63",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-mushroom": {
+      "sha256": "b16d22e4874fef11d8dbf28efce4480fd4bff0faa61e83ad5d596552f3ba74a6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-egg-4": {
+      "sha256": "0f612fa683784d0c23d75fab20b18886ac211138d1ad33e6894ad22a5eca55db",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-resin-2": {
+      "sha256": "9b6183636e1b9ea87f4a5c3d6b460b32ce026ee97e32f1924adf9daae869199b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-mystic-cloth": {
+      "sha256": "ca13f3707de18da7b86aae148fc7a144724b468ef7c431880f4c3c9df48e01d2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-jerky-1": {
+      "sha256": "e15796b10db3a7ce24e6508e259d36528068f14e87c630b357c51fcfd627f130",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-necklace": {
+      "sha256": "c377301d79ddecf50b8fad8e1cbc67d6885c2b8ba49145b5b7280c631c3e6bd1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-jerky-2": {
+      "sha256": "6a535a1f42578120500dbbe3328ab34784962e10cd750105a2381d6ce6e8ff3e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-resin-3": {
+      "sha256": "f39d42a282706dab716ca1984291179d64ee84c05e5e02a4fd1772bd95a043c2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-net": {
+      "sha256": "d1d8611ed3d808703fb32a4fb5c79e02403a3f3365a5825c199138174e88f16e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-jerky-3": {
+      "sha256": "49a0b9860228afba1bc5570967cda47cf7a7e0ee63ba7662c580f5613f669444",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-resin-4": {
+      "sha256": "6cf88d941dbc329b8641a5bd779f67c01f8e1bb157c8f189e48c3e2b94cff0a9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-notebook": {
+      "sha256": "99917c89eaf0089008058b425541fabc78ec8ca51ab4a3af528add228d03df37",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-jerky-4": {
+      "sha256": "b4939522fb200c4b5f1474a425f43c4bfa344c7a5b90abc14f061bfa87e4db22",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-coal-1": {
+      "sha256": "f50ee4b94a789289f164fb74be82334a91d47aaa68008118569a06d462137289",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-oil": {
+      "sha256": "d5a7505ac9575241c80e803032c3b5761ffac97e66a0d39cfef2e4c06ad4ccb2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-jam-1": {
+      "sha256": "c2ca3cfa4ce1a134c306b36fd68ff918fc3877042e18b20ac83da79b919e75d2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-coal-2": {
+      "sha256": "132c6d79e7b66dc26a6106cbe91ba606e9a0a46f6b4253034b900d15c838690a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-old-key-scroll": {
+      "sha256": "a038458d5e14b5c1498f70206d63bd9919c5f2c73bfbadb55052b10f1d09e688",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-jam-2": {
+      "sha256": "c2f65039f6b7d9fc84624178ad9adae481ccbef2aebbaf158f3664975a9692db",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-coal-3": {
+      "sha256": "bff72c9ec447708d4fd3c885598936ec3085ca772c867b3d40073488700abe8c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-panacea": {
+      "sha256": "da0ba1773a1751cda9fbb8850f136c7e462119aec179db1d95d146f1ed95e6be",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-jam-3": {
+      "sha256": "8098a0c8d52ffc7fe234403cf54043edd51327eb61bbb5b5f741196aadc07bfe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-coal-4": {
+      "sha256": "b87faf5bbb0af5d63fe051007cb347df9e195fa0d47a2d2dac93d4b8f0fc259c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-pass": {
+      "sha256": "b10df721c1b0cf9b2396d28f7c254017d044ba9901c245432dc91a37cda64b26",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-jam-4": {
+      "sha256": "e73a212660627247a4900288599623047c4b14971d6cbecc80a80273715a1190",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-salt-1": {
+      "sha256": "1ebe5e9735ee6d700b584cfb92e135473a14b9014d847f1121c162d0e975bac7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-pearl": {
+      "sha256": "5dfe916c50d571e2a0c1b50ae2e9667d251fac743a6bdf1b56a393045595df09",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cheese-1": {
+      "sha256": "f689b5cc2e3cf5d5d6c03f5bed4c2da132cdb35c867b356d98f99b147cfc3686",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-salt-2": {
+      "sha256": "2883b6e3a5b12befd89b3d8e911afd2e775cf8084e0a2345a35fec2f4c27e41b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-phoenix-down": {
+      "sha256": "2b0f285f28aa8353530ca38b5400317e3ce8290d550893100dd29a7a3a466264",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cheese-2": {
+      "sha256": "bc15fe4e09bc452443b7895bbbb765ed6e2b6c29cd61c34165d46b7741d14f20",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-salt-3": {
+      "sha256": "daaff6e97ffcc626b889715a4c83194817e9dab0bf99749c703d73a3f545849e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-pickaxe": {
+      "sha256": "94f2802707148bc90785470a85a265a918a47870baeddb6b3f2c2424784f4804",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cheese-3": {
+      "sha256": "75f52685b0cff931b0cdf3b7b40d1548656ab38ebbdd8bad076f0fe4a76cbbd2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-salt-4": {
+      "sha256": "eb1fee9b9e20deda0bc27fb42b10a5a5413bccde324335b38ed943357ed7d351",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-poison-dart": {
+      "sha256": "3f802f6b9f2c1594630ac90715c12d01f51bb172d0872e2942237e91b5533aa5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-cheese-4": {
+      "sha256": "aa173d4fcf0054fe616f82e7967c5fed4505a175b6eb14d9112d2ab2a5747bd7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-clay-1": {
+      "sha256": "8d25063e5457b6e7d4de552d4881ea8cde9279d18123483bc6f7de31fe342e3d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-poison-vial": {
+      "sha256": "771d69d9951303b2b52f0d08233dd3130888d80ab6013e15b97436f20c1e0c01",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-tea-1": {
+      "sha256": "25576b043d17a021e6de14f2a2f347c16308ab3141f63b61992e70954546f6cc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-clay-2": {
+      "sha256": "7a9ec36da3925d04643d2cd72aaba54dbb8f0f0e6192606861a2f23e76164732",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-potato": {
+      "sha256": "a205663555f8aef8bd2d116868f1ce562ea8020b16f0a4bf4e3f48efc0cf056f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-tea-2": {
+      "sha256": "e44fdde332a0baaa3ba136c8ad71da11fe3e994e6cf95440d59abec4ef59aeb7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-clay-3": {
+      "sha256": "023cec72b4bbb5d3f99deb93fb54652474cdb61c067d5775b95b40da3b5a6b41",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-quill": {
+      "sha256": "8636f3de069ae4d198f8acc809f7b1021da716e71f7bac03e5a3c8b1c9288dbc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-tea-3": {
+      "sha256": "3d8f4182218da72c3649881169288defef0f44895f66b7f764fa63242e9f8411",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-clay-4": {
+      "sha256": "4d6ad0ac050f1423552c5eb1429e110c0c2b28c42ba786e8e054770d3f07a404",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-radio": {
+      "sha256": "bcd90a7d4ed2f84ab2674a251ba180dc0745644032c6592b8b5299100c35cc17",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-food-tea-4": {
+      "sha256": "127dde08003e79bd870566f91ddb31866df9eecbccba8132953fc44f51a8316c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-obsidian-1": {
+      "sha256": "da4f118f78c98733394ca4f03e551812c20475f47f8dedb41ef2444bf38c0dcd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-repair-kit": {
+      "sha256": "d5502477e19adec3a4a14d92dfe1bacf05bd92bf3f806227cc73474267c9cbf3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-obsidian-2": {
+      "sha256": "12f5b5c891f19df96b0360a0c2bff9547773425c3fbc97d7967809c8b403bdec",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-rice-ball": {
+      "sha256": "a4591e83684498775971598be939805c1061ed3abc6e6c0129d28f233475471e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-obsidian-3": {
+      "sha256": "926c4f135af67d58e1325d0c97fc565aa0ed5ecd618dd691ddb626534d81dbcf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-rope": {
+      "sha256": "65e2a084bed83ad64eb4a9ca9903dcf51db8da4810e8548aa8aea11fd4fa4d36",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-obsidian-4": {
+      "sha256": "2f825c4677a2d910e1607b281b994cc969bd4d3700dae15af8db6ed736bceb0b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-scale": {
+      "sha256": "e57d366979e249d8f33f97c3134fe5420fa87fa92ba6b24aa1204573982412da",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-quartz-1": {
+      "sha256": "b2939cba4b6e1b83b0ddb7a782c16664f66e5bbc51dc5dc70c3c0fc6dbb9b9db",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-screw": {
+      "sha256": "a6a8acd979c4dbd21b26d7689b3c57dba78149ecc39960782c84c45dea459472",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-quartz-2": {
+      "sha256": "76cfe27f40c0bd1c8a6e74dc3b674595bb05745eaa44f04c546cd6c183f16773",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-scroll": {
+      "sha256": "8f319d6279e17b019e78578993d7af0a8ac8ef030ed67192440eaeff03d7bfee",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-quartz-3": {
+      "sha256": "18e7ff4256ff1a781d79a1a41b74b41373c69a6fbb5e97ad55597f430ceec508",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-seed-bag": {
+      "sha256": "8b7644910a7e1af4cfe378e05d2ea9fd60947273e2c43d64a3f3754fcd4a6e84",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "oprn-item-material-quartz-4": {
+      "sha256": "43832c93c03dd774955520fbb58f067bb83ab7d5f0e04b779243c0fd699120e6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-shell": {
+      "sha256": "31abd65b14141361c9dd17e3f71c42a252f4668e7471fe31ffb317a303636209",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-skill-book": {
+      "sha256": "6deb19c803a98e3f76eb12f6a0e7d800e471bcd1c2c971f7e98002c50e0ed3aa",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-sleeping-powder": {
+      "sha256": "233cb2b3c6f8367a0129e44894424cf7416b089faa378a7354ed101e19aee495",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-smelling-salts": {
+      "sha256": "f855f26e57bada41c18a43808e74510e0c7aa7eae96f8d7c5762881f08f4d755",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-smoke-bomb": {
+      "sha256": "a094e0de44f3c4b9ddf07230a2f43a79f26377265dee0f2a2f27fc3b6de1e7cb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-soap": {
+      "sha256": "0b579a965cb6fbb46224d06373d5eca265aed919b366a6dfa60fd85d821c0225",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-soup": {
+      "sha256": "f5d42b5699d5fa7ccfc028c1c6279eb34cae83ba56a952c37ba57bdb18e64e78",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-stamina-drink": {
+      "sha256": "31afebb7cb3c8e2dcb302f57765895b4c6731524ddfa2bafc7996c964a70d76b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-steel-armor": {
+      "sha256": "2fa79f9ac944541e9e6da25756eac80db2c456eac102212037db3b0468aaa327",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-steel-sword": {
+      "sha256": "db13ff1fb6a31de888e5e569b822d4ec5cd5b3f56c289a7f67698baecee3b7b0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-stew": {
+      "sha256": "11d0b335173c22f55d5edef6c3771a2887eb2c66443be748c34c4d9a0baa1d2d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-strawberry": {
+      "sha256": "785b48fa684671fa98e2207691cf153b187d28c26a8742e6e2e081f804d2b258",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-talisman": {
+      "sha256": "19e5b10d7104a483519796a2680dbd0000690974bc077722387636c4b9cb6252",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-tea": {
+      "sha256": "bea2c8fdb71f8c019fa2ef6628d32b7588bf35c38fa4e4d155ed546b8fd0c8d9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-throwing-knife": {
+      "sha256": "0b00ed4ab273cd5d0fea281b37e809258b07f96129848baa29fe9d44e0887818",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-thunder-stone": {
+      "sha256": "4cc03f3b75bb1e28b5dcfcc37b170effc74e56f137a67a95e153a5f0924d47cb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-ticket": {
+      "sha256": "2e81c74551caf9c4d21a27cbc5b5352ea2b6e9048385ca13069edb912dda2596",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-tomato": {
+      "sha256": "ad36ca55be120cbb7565331a0b026fc9a06f52fc9740c430ee2681c4095c6355",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-torch": {
+      "sha256": "3f19ba1c022b790a30e3ee960f5814f738799a3a18aea40e084b2234c09eb088",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-traveler-badge": {
+      "sha256": "3e3b4d69062c4dab6b0b8c88e11d399382455752b0e66779d0581274aeefdcf8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-traveler-hat": {
+      "sha256": "ae05edebe04b1908be2a94f9def8a36812c2b61c61187e839c64a2f74276afa0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-trophy": {
+      "sha256": "08c61c52c6238444bd9f62ce10e418f808fbe314540a373c797b91b48e249ec7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-warp-scroll": {
+      "sha256": "909b93c8ce1fafbab51546373df75e7a6f3383963a47de779e6067fac153286b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-water-flask": {
+      "sha256": "b5e1e1900d4cc48b82bf92cc2a33c1c260fb6c4c56c8ec1e2255918b19c5d726",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-watering-can": {
+      "sha256": "48e101424895e57a333a70dda7015d65e8e719ed3d92f5058cb87e1d66da30ce",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-wind-feather": {
+      "sha256": "8fbcdd8b48a992420c89dc8d82511fb2f856a8fab26a3f6e3b3ac93cca8b9762",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-wine": {
+      "sha256": "22d93d652dcce82088256b717c811cabaa7734909f28077b0634c6efeee68a31",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-wood": {
+      "sha256": "de9c7ba67eab8f2b5bd144fa3b833ba813718bd90fc5c4e491f72a2cb9c2c4a3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-potion-small": {
+      "sha256": "e11375ec9ca19007b007ef21a7aaacdb49b1be2bbafae04a6d4a5a05e0c83b80",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-potion-large": {
+      "sha256": "5edb0eeeeb59c3e4156708b133b13c4daaa3dc9dd676fda54509aa67bd7b26b9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ether-vial": {
+      "sha256": "8e47de50d0a632fae76b6fba10273a922655da3a6a8db679fe32cacac4e274f0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ether-grand": {
+      "sha256": "9a127338abd69919ea0dd08b10a44d97216e5e11dee25a2da4836f6a709f25fe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-elixir-gold": {
+      "sha256": "8393f4d35548ad9ebe95ad0d77b5553afb6810e8d4c1ee7e2328cbd6f61eb147",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-panacea-jar": {
+      "sha256": "61b96bb28e9e7312851eaecd216417500e3b5f203b01f25ab5306971e44df9ab",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-antidote-leaf": {
+      "sha256": "2cc848d5e591fdcb3b1bc1ac8de5782bcd20cd3556561e23db5bf379fd672ca5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-eyedrops": {
+      "sha256": "01547dc725fea47bfe0db8e62af7487f1bbf934d9b3b0c04acd1ca227067b45b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-echo-bell": {
+      "sha256": "e6c03095f6d8ccb58b52021d7b624372184e4830a3ea5279c7813dd1a0251601",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-revive-feather": {
+      "sha256": "b9704bbd75feb7b304e27f28a2abb8162ee24d7974c14d43060667acc17dd345",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-phoenix-ash": {
+      "sha256": "812a766aaf3119faca43936630407295da6ad7fecab3e2606ce5d9e750df202e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-bandage-roll": {
+      "sha256": "af8a9a96de3eb038935a1502fecd1f5fe08710d4b16a18df6b692b00340d4ae4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-herb-bundle": {
+      "sha256": "78771e8b601f17a359d6d36fe80bf6007e6cc0c62dbe6929134e2aebe203bf76",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-honey-jar": {
+      "sha256": "708e7f7e48ea277ebc8300b095ce67b4969e87e8bf165e8b79f37c334de74325",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-milk-bottle": {
+      "sha256": "a50d77d8a192be8d493508ccd36682b82e80c8eae42fe36db8898fbef9c0543d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-fire-bomb": {
+      "sha256": "5ee921be5fdf2cd541d75e05982a65d15a6a79f33c597283af72b8e342a0ea65",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ice-shard": {
+      "sha256": "edda124d4d6d1a2ab2b0b8618d55c0bccb97489e2bd375e88446159e50db4549",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-thunder-rod": {
+      "sha256": "f171bd5dbfaa94c90dc1b994318fdfbbeecba92c7427c63862ae74aa1456d693",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-poison-flask": {
+      "sha256": "c1c7796d1171a43c1824b2d853eaee98b167e461d391b6be6ed5ed3b7085f835",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-smoke-ball": {
+      "sha256": "315b27a9f44ce79951c46d694b6ab506cc948e59f95b8d4f2b50d1b3df59a3a0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-throwing-knife": {
+      "sha256": "1607d0bce921222315d8c09b8fa329a0d0fba05b42593076b2b68d1a5e76ba68",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-shuriken": {
+      "sha256": "3fe0a63592dea728174faa43271ddb02f0b553fb1e67a179d9dc097f4c8c508d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-holy-water": {
+      "sha256": "932e226d3f057fdc0cef2a3fad823a15ff62c7dba3c41cc75fff20be10974694",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-net-trap": {
+      "sha256": "9399e3a3a6bbd71e97d9265246e9f58fea25784f4acf7dcc6bd5a2f43f00d092",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-sword-bronze": {
+      "sha256": "655692991a573892fca1f56b76fdb118ead9eed58b60444a9b0825bc48f152f6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-sword-iron": {
+      "sha256": "d8ab80701f8c0a82f625919d6a07b801b0b5f69ef691334b315478e022ba0a11",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-sword-steel": {
+      "sha256": "67624d71536e3ac705cbfd517b11aa71fbc27757f6d6bafb3fd742268a0d2af2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-sword-flame": {
+      "sha256": "95ccb14e8537430b24e4fade60f767a232be6723ae901e7b1290561375d2f959",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-sword-frost": {
+      "sha256": "c790543ba75659216c4f302551f1ced5970bb2fd2fc4945fbe3b97216b17f6d2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-dagger-scout": {
+      "sha256": "7adfd72ed1442e879e007f0f9cb5b06de3a53904a4b70f9c9ed2ff1440eb6fb1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-rapier-noble": {
+      "sha256": "a2c6f0754478aa1395102f02d7908c545e6bcff5f6b87c540edd71d020351548",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-axe-battle": {
+      "sha256": "f506aef1b601495bd38b1e7b2c4b17af6cfe98c97aaa7afad314e39ad75a4d62",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-axe-great": {
+      "sha256": "9064a67d37cdb5e88c865f202b1e7a8b092cfd0e5c3a3b7b4af4d252f84abcf8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-spear-iron": {
+      "sha256": "cacde981adc092cc97aa89497d8d67ba30a4599f29fe42cd3ff42b251c17cbd5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-halberd-guard": {
+      "sha256": "7fdc5285b02fca18fc573018efa2ce52aeb6949cb6642b0db2e0c5a80032fa0c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-mace-heavy": {
+      "sha256": "8932eeb861432b0455c5a5decb43889b17137de3fec68d5c8e05250d09b59cbd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-hammer-war": {
+      "sha256": "862daee86776bc23f32c286a8de1676b51dca458dde9dd0ddcfd3e6805a5df95",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-bow-short": {
+      "sha256": "02ac889075f18619c6c02b1c72f7bb1427872e384b6c5c44e141c2d164373a77",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-bow-long": {
+      "sha256": "79eaa51de10a8468d47c6b4bc9bcfa4737aaadd9406ae9fea130f96fc802fd3f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-crossbow-hand": {
+      "sha256": "d0fd9e382b922bfe18b13f3792f3060c068456a9f8fbb4fa68f671acd212a2fd",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-staff-oak": {
+      "sha256": "83ad508379c086a53aecebb240e29269d057fe05b25332417e632b490170c1e1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-staff-crystal": {
+      "sha256": "d1f3d7efa6d6b5196c273605d2c37b1c216ebb9a7f0d98166c8d954821c6ca7e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-wand-spark": {
+      "sha256": "6b6d17caf6f06a6463daece58f66d0c210af814096a95d3dfca42c85c9fbf99b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-katana-east": {
+      "sha256": "e2aca46af30ae73079c356c490c0f336f232249e4c6c6ec88e0b524524038fff",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-claw-beast": {
+      "sha256": "10bf2da44eb8d065c26f6ee010dfe10f7368a4b16339e51fca7ade8d83fe285d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-whip-leather": {
+      "sha256": "0ac95eac4723fcfd7786f4f5d9096120e5883a8bd50d09a17d9cc56a0e69a5c3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-scythe-reaper": {
+      "sha256": "673a40a5589bfcb3147b846d2a01246b9a06a328767ef1bf534989fd4640f220",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-gun-flint": {
+      "sha256": "eac95f82ba50ebe79a542c54d4ad6a7e5670da0efc8df17645de1ebc1300fdda",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-boomerang-wood": {
+      "sha256": "9fc0c1c9f6226ffb72fbea5ade9617e8960d1121aec8caea332b874235b909a9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-shield-wood": {
+      "sha256": "df2ce16f683a644105db6d73e78f380853426cf17915815c52b26195b1036407",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-shield-iron": {
+      "sha256": "94e5a664472eeef82cf4d40ee3be408d3d9f49937896e6419ba0c977ea389b81",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-shield-tower": {
+      "sha256": "491c1921a1e52a9ede655ce976b258afb2b77159c323a3e238a53180a8c54a1d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-shield-mirror": {
+      "sha256": "5bef1d3d3520040cc94bd5fa12007f7e0b0da8794a3d5bb4e84ba70458bc6a07",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-armor-leather": {
+      "sha256": "1a74f80d0ca8177ab76f257e7c41ae5dcea7403049bb739e16bd8c3676d98f9f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-armor-chain": {
+      "sha256": "be3c0a5600bc63476ffc9d8ec1060e04915a15c63cb46a16377b0e9b863f04e8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-armor-plate": {
+      "sha256": "7d95d0c221d48825cd220edc879e2817f13484572138c5e45bd7acf1c5aa0af6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-armor-mythril": {
+      "sha256": "95e86cd575ac2f490aeb54158d269f7567f92c857b254628e83e3f33a278fc6a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-robe-cloth": {
+      "sha256": "5cfa6601c87f82e0d7f2e826d0b23dc77c1d92fbb9fc2f5029bbc67db3247ac0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-robe-mage": {
+      "sha256": "daf4c021bc85a03ce2ec7d4dfbfaadd712a881266e8a88c19d6cf6d6e680308e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-helm-leather": {
+      "sha256": "d31d8cb85b176a21df70daaa6e9ef62cfba53bd15cee069c0572d7b174592c87",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-helm-iron": {
+      "sha256": "b0af62096ad1b79d1b1f7e2a8feb29e69cf354c3e00d354c1162e9ac7acd58ce",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-helm-horned": {
+      "sha256": "1cafeada0a7f109df7547d1ae93176a26f40a6fb67ccfb7e9d74c709df0b872d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-hat-traveler": {
+      "sha256": "79a6049b8b8dcf2bfcbb75c889435abbbf11a22fa87a2e285ba1b4de3c2f3ebf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-hat-witch": {
+      "sha256": "d4c6c8a306f9604614e65fde7ccbd364b3b93deac94993dfd6062ddd7415553d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-boots-leather": {
+      "sha256": "1be06d95d080dd12b9011f9c559394fb12ef8baf42aec14cd5392813a7ba5b38",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-boots-swift": {
+      "sha256": "c6d1c0ddd304af0e522593d1b46e9085a7551d1099b1a5efbc8d77fbecfc6175",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-gloves-iron": {
+      "sha256": "4ddb02b04acf664e407b96a8321dfe95a9a47820a3f88047324560386dcbf35e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-cloak-shadow": {
+      "sha256": "35f60175dd17273a12eda07943fac1b3d57039342a0acbebe0f7ab65b46cd761",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-belt-champion": {
+      "sha256": "caa03f9315eb37e24e8fc08ed79a85e5b4afdbdbdbd4782acc2b40fb70354728",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ring-silver": {
+      "sha256": "4e350f9d0d363d0000205b9d4e03c7f176be933779d67e563a3bb37e997ad6d0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ring-power": {
+      "sha256": "0ba209e20cac76215c2c95cbcc10241e9b3b986fccb5b22b97becb2f7c50d6dc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-amulet-moon": {
+      "sha256": "fdd87abad0ac77519d8a139f0b848ddf24ce7c039cf218cbac2fe9764860bb96",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-amulet-sun": {
+      "sha256": "8592799aaf75252ab802ab6e6d04e5fd957a0795d7fe83e9d51aebc116a39efe",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-brooch-rose": {
+      "sha256": "ab952baec1010de6257bc092b96f4e413047c829e3b59784cbc736a01909bcea",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-earring-jade": {
+      "sha256": "53accd52436fb8dea4b3b6a5ac6e247a348871782e032d89baab615f5519bf1b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-charm-luck": {
+      "sha256": "5acd15aa215986ac30bf8879fd38f762d8d72137b41bacf3e0f12dd8e544b495",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-orb-mana": {
+      "sha256": "0a91013e94b91785155739eac1c4a5115e400ba7afe0cc046508704d40f16916",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-badge-guard": {
+      "sha256": "cec04b4bf2252a161618fbc86d136ef00aacbdf9dfc26dfa8a59430ccb840292",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-mask-fox": {
+      "sha256": "37ee6316e36f8c202c7a05bfb0ced548e49b8e3ef09242c80ef3308451bff2e7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ore-copper": {
+      "sha256": "7f3a718b0afca4e7047f31ddda813a217badae5e66c350abeff9d252c5293c73",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ore-iron": {
+      "sha256": "b7c317bde9a04ea40670f602d24094821208c914b1cc9cb4f7c37046304e90c9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ore-mythril": {
+      "sha256": "4517ae3d9bf086d54cc5c0361373740cbad34fa476d261cc65af898d706a5c60",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-ingot-gold": {
+      "sha256": "a44b2b89f31d5e3c5a3745cebbd24a39ae4ae45700faecd145aad33ef34aba55",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-gem-ruby": {
+      "sha256": "105367f0eb833e5d0aad28e7b7c1a4f8e33d07c62766f5ab97cd6776c7868868",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-gem-sapphire": {
+      "sha256": "0311507f1b1cd2fc8b67c7e782ba4a7b15f24cd87ab02f79187577b5fdb39f7c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-gem-emerald": {
+      "sha256": "130fa0e55fd8383c82b405feb6dc710b6958eeb04169cec7d18789d9b6934c60",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-pelt-wolf": {
+      "sha256": "26a7a955a30a17d3d9279ce2198b3621cbba49762b38121c2990d6d0ebc4e80b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-fang-beast": {
+      "sha256": "a00ffb9fb7ae679a7fed7492fb6f165ad22cb41fe5b3c132508fc07eec6e3af9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-scale-dragon": {
+      "sha256": "bb2f71d69c14ed256a8d7359ec5bd5d52943423d64516c1406c1a9be00fb0fe1",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-feather-raven": {
+      "sha256": "bb46fe006fcb25caf1d456102033060a656685819afe89e6758aa2f424b6b9e3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-thread-silk": {
+      "sha256": "75fe61d9d37790413f751f8840bae800388657b65b929292a95bf174d081c909",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-plank-oak": {
+      "sha256": "412550a0e6309e7c9e6b623053cfed3772d3052117b8827ffbea1611f2c15a80",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-slime-jelly": {
+      "sha256": "95705982a4aa62eac08eacbb7a303e1df4e0aecd09c83120f200fceca848c3cf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-mushroom-cave": {
+      "sha256": "476536c28d2351c2d4bd72bf0a08aaac7bcb75f5020716cafd581b5f6201ab1c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-key-rusty": {
+      "sha256": "e86304c0d3296cd0c40862c376c368285a0ab6336ef66121654a7ce4f660216d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-key-gold": {
+      "sha256": "7380c74d3c332b18b714a66ed0393d922bace9589d1708d77ec407e8bda66829",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-map-scroll": {
+      "sha256": "ac109d9431515a216f88aa2a56e2aa8f3296759ef1710ce3c8db1a568ca8ff3f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-letter-sealed": {
+      "sha256": "3dd8edb5b6b8fa502e779e7f4842941ef9f32a7a80de2dab5bc17d132fe098a6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-lamp-oil": {
+      "sha256": "181df0a9faf250aa6f1fa6a6a53cd2ddfdc2cd4508e5d197c3d7c408d90cbd8b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-war-draught": {
+      "sha256": "3ae3e7feb7ce2810781f2819a6269cd29f57f542f7ab4aa33b378c25d1bd0f65",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-stone-salve": {
+      "sha256": "d936ba9f203ef8a3d712d5fff9d67ad893d61708087a39ed13d202e7319b9a8e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-swift-incense": {
+      "sha256": "e02806ecf34eddc0c80df0eaaffc98a5551afe273f35661049ba1f3ab28c5c6a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-life-dew": {
+      "sha256": "1e08e151abe6fd9c43131308aa4ac24161547d109ce8061c40586c41a83508c8",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-nerve-tonic": {
+      "sha256": "acd82b2d9c6885ab07ca9169fbc9514887687f51e89073ee56a675be87f53c05",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-purifying-serum": {
+      "sha256": "53cc06017044ae0faa2aa95270411543059184f993515f88f98aa1d20cda55c6",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-voice-lozenge": {
+      "sha256": "17f80a4b707b771b99385929beca823cdc0d0b29a227b1ee74829b86d8bf9b28",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-courage-tea": {
+      "sha256": "498084996058b06154e6b3ab3b368c944290b9b14ea648eeead30543c7e18acb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-party-potion": {
+      "sha256": "fb4726681d693a6fe8810c08413fa61520c9be78172f8baa32b81cf87da1e274",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-party-ether": {
+      "sha256": "649e2a63ba2d66726df4f3240a387edcda86af945450fff93de8cecfc7ff0b25",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-party-elixir": {
+      "sha256": "2bd01f204f38b1b6ed4dbed8b15e913070a0e275e76f46706d6c5cce812732fc",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-party-cleanse": {
+      "sha256": "04c1e3cba60f99dc38032ca976275717fb11ea5cfa6cf2ca92fc71a4351e4622",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-monster-kibble": {
+      "sha256": "3882c06688a0898972dee648185f9e88afe1087e84c98ced4a3a30a27ff3a484",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-monster-feast": {
+      "sha256": "7872d58f1a685441f5bed398264386beaaac17aaf5eab2ae8c7104b2e6c6d7e3",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-growth-feed": {
+      "sha256": "27575839829377e779c3ca25a87a5b0d4b555f86253b30d5432f2ab38481b6c4",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-rope-toy": {
+      "sha256": "ebc673b0234a1673681e3dad091af9a4d5ed8869a2de014e72d98bb747200182",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-rattle-ball": {
+      "sha256": "99a28ac0a32a54e9143c7b1c71f4e6b59e16e756ff9933d340243b47b569ee3c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-training-frisbee": {
+      "sha256": "79eaa8f8db67dcd9bb49d8c9418bc21a9fc4e75e9d6ac5085e3bb72583ce3211",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-turnip-seed": {
+      "sha256": "7433c991a28a2cd7647ac8c96dcac1a1934e0167f5c68ba2d19331d5dd8c9f21",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-moonbean-seed": {
+      "sha256": "bd15fd1bea76eb8b6953eb7486278b5f42c2589757ea634a616e06695aefc3d5",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-firepepper-seed": {
+      "sha256": "988cfc198ddafd415a8379c7be9be3cbcfae022ef1c5a49ef1084cc9c33f1251",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-stargrain-seed": {
+      "sha256": "7fdcf5b93aecff21710576c5f2167ccca4d925aec4f0d572b5baa02e024e5f74",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-might-seed": {
+      "sha256": "5a76d7a7881bbbb73d32da32d4cc3e6c8b82a4ae21055126de05903d3916fe20",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-guard-seed": {
+      "sha256": "5989ad7d1e7db033399f114eba36316fc74e329d73928a35165a338e182c61fb",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-wisdom-seed": {
+      "sha256": "4d3cf06e60bb418f94ab09f109786c1e6858f679139025cc1d454f9b635ed145",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-haste-seed": {
+      "sha256": "a0bec52b2781cbdef7d0804ca4d788e292eab36933f77b5904bf127369d287d0",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-sun-relay": {
+      "sha256": "f6c612e552a24ef9db74e58a77726eb94abf4851da6a2bb4229d9642a87c795a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-moon-relay": {
+      "sha256": "9be57558eeb2e6dcae1f8201432483d45a349a9775dfbaba5aa8d7bcf0cac99a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-bridge-relay": {
+      "sha256": "ff6365cee2f3bc24bd420c54dfada15fce322aa3c50ec5611d26f3c379ce122d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-seal-relay": {
+      "sha256": "8f4fd9ab1002cbe6f80c1b2f86e23bae4e0915a0859c6decb617c647790b8511",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-frost-vial": {
+      "sha256": "b322b50d16c959216295900edc1507ee3505f61a6ccffcdb2fe85f4d8d47f069",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-quake-stone": {
+      "sha256": "33e5ea155a631f6ea4165e40a1992a611cf0f47f7958105952e5da9204e30243",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-gale-fan": {
+      "sha256": "24c8fb1137c87eb953d916b2bc1a184b620a5192071f10841cb577d3d790e89a",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-shadow-dust": {
+      "sha256": "85ae84512d5255b495e9b421531cb3899e3c54a1f57f6d263419c9810f0130a7",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-venom-ampoule": {
+      "sha256": "e3a110f1203a02e6cfb266eac8169c6b4b58cb59ca65b461351f3dfef64dfb7f",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-paralysis-coil": {
+      "sha256": "1196311068e1133989e722e67acaec4a3747fb8f9ca83ed49ad2e7a1d5b3691e",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-twin-dose-kit": {
+      "sha256": "81577d01072647b0e033ae61b04a94104f455a9f5044276366d0e84c46a4a123",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-triple-aegis": {
+      "sha256": "27781b5262ed22510e00c1b693bf0b4bc72ad0f83247ceb8d5542e279c459a71",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-five-spark-core": {
+      "sha256": "1d392dfba0ad42b88d2faba48b2aff7d6c4ab73d853995fec74e7a59200adab2",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-moonsilver-wire": {
+      "sha256": "b1f5c8fc8e26c902141000252a351662e02ba83a1e2354db597672685d2d62b9",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-frostglass-shard": {
+      "sha256": "771acc59e4843573b7cf1cbb2b74eefe3002526166f6eda9c16db7f129e0a318",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-storm-sailcloth": {
+      "sha256": "26c48e340f79acd60436b0c9e91403dc4b15776395615e1c350c18a4a7d4b495",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-shadow-resin": {
+      "sha256": "854004bfeccccc250d1342e9be4495a0b00eb5f8d60962572eeb7e2a6de7e4bf",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-golem-core": {
+      "sha256": "b9c53d5a81278048bc61f0624915f9c9594fd4749266063077fb4196fdd8ab4b",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-alchemist-seal": {
+      "sha256": "62b4f1cec0872d7e2f0fab2ba880e4f0a6f7ec209fdebacf308cdf3d7d8b4604",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-sluice-key": {
+      "sha256": "eda374c037f46aacb7b173ee2d484a2e854a7a00ce7ae514b052f864a9f7eced",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-observatory-gear": {
+      "sha256": "765dc929e29beb0b1974cd922350ad2137cf1ee45f1332617b38b2f5f6d6cd8c",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen2-dragonbone-clasp": {
+      "sha256": "e3df73e9102ea65b5407e9128467934bb08b7abe9967231bde2ba825632f471d",
+      "subject": "accepted",
+      "style": "accepted"
+    },
+    "cc0-jetrel-gen-capture-sphere": {
+      "sha256": "9b5ff6e0c690a4913b8afa57427aaab4c0a27a3e1784c20d4cf6d26fb208a903",
+      "subject": "accepted",
+      "style": "accepted"
+    }
+  }
+}

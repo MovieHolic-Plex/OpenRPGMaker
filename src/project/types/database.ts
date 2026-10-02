@@ -28,6 +28,8 @@ export interface CharacterAppearanceRecord {
   charset?: { resourceId: string; characterIndex: number };
   face?: { resourceId: string };
   bust?: { resourceId: string };
+  /** 대사 창 뒤에 크게 서는 전신(선택). 없으면 흉상, 그것도 없으면 얼굴. */
+  full?: { resourceId: string };
 }
 
 export interface ActorRecord {
@@ -558,6 +560,8 @@ export interface EnemyRecord {
   reactions?: EnemyReaction[];
   /** 훔치기 표. rate 0~100. 생략 = 훔칠 것 없음. */
   stealItems?: EnemyStealItem[];
+  /** 쓰러지는 연출(project/enemyCollapse.ts). 생략 = 스킨 기본 소멸. */
+  collapseEffect?: "pixelBreak" | "bossSink" | "flash" | "instant";
 }
 
 export interface EnemyStealItem {
@@ -765,6 +769,8 @@ export interface TroopRecord {
   previewBackgroundResourceId?: string;
   /** 전투 배경 움직임(스크롤·물결·색 순환). 생략 = 정지 배경(기존). project/battleBackdropAnimation.ts 가 정규화한다. */
   backdropAnimation?: BattleBackdropAnimation;
+  /** 배경 겹(안개·구름·비·눈·불티·별·빛줄기·저자 그림), 최대 4. project/battleBackdropLayers.ts. 모든 스킨에서 보인다. */
+  backdropLayers?: BattleBackdropLayer[];
   battleFlow?: BattleFlow;
   activeSlots?: number;
   battleEventPages: BattleEventPageRecord[];
@@ -795,6 +801,21 @@ export interface BattleBackdropAnimation {
   waveFrequency?: number;
   /** 색 순환 주기(초, 0~60). 0 = 끔. 주기마다 색상이 한 바퀴(hue-rotate 360°) 돈다. */
   paletteCycleSeconds?: number;
+}
+
+export interface BattleBackdropLayer {
+  /** 그림 없이 그리는 프리셋. resourceId 가 있으면 그림이 먼저다. */
+  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays";
+  /** 바둑판으로 깔 그림(투명 PNG 권장). */
+  resourceId?: string;
+  /** true = 배틀러·이펙트 앞(덤불·안개 장막). 생략 = 배경 바로 위. */
+  front?: boolean;
+  /** 흐르는 속도 px/초(-1200~1200). 생략 = 프리셋 기본. */
+  scrollX?: number;
+  scrollY?: number;
+  /** 불투명도 %(0~100). 생략 = 프리셋 기본. */
+  opacity?: number;
+  blendMode?: "add" | "screen" | "multiply";
 }
 
 export interface StateRecord {
@@ -907,6 +928,12 @@ export interface BattleAnimationRecord {
    * 전체 길이는 본체와 후속의 끝 중 늦은 쪽이고, 시퀀서가 그만큼 recover 비트를 늘린다.
    */
   followUps?: BattleAnimationFollowUp[];
+  /**
+   * 겹치기 방식(2026-10-02). 마법 빛·불꽃은 "add"(더하기)로 아래 배틀러·배경을 밝힌다. 생략 = 보통.
+   * 셀마다가 아니라 레코드 하나에 거는 이유: 전투 이펙트 노드는 transform·z-index 로 스태킹 컨텍스트를
+   * 만들어서, 안쪽 셀에 섞기를 걸면 투명한 자기 상자와만 섞인다. 노드 자체에 걸어야 무대와 섞인다.
+   */
+  blendMode?: "add" | "screen" | "multiply";
 }
 
 export interface BattleAnimationFollowUp {
@@ -944,6 +971,10 @@ export interface BattleAnimationCell {
   opacity: number;
   visible: boolean;
   tone?: BattleAnimationTone;
+  /** 회전(도, 시계 방향, -360~360). 생략 = 0. 칼 궤적·회오리처럼 한 장을 돌려 쓰는 셀. */
+  rotation?: number;
+  /** 좌우 뒤집기. 생략 = false. 한 시트로 왼쪽·오른쪽 베기를 함께 낸다. */
+  mirror?: boolean;
 }
 
 export interface BattleAnimationTone {
@@ -1561,6 +1592,10 @@ export interface SystemRecords {
   battleUiStyle?: BattleUiStyle;
   /** 전투 타격감 프리셋(project/battleHitFeel.ts). 생략 = impact(묵직하게). 스킨과 별개 축이다. */
   battleHitFeel?: import("@/project/battleHitFeel").BattleHitFeel;
+  /** 전투 화면 꾸미기(project/battleLook.ts) — 프리셋 + 바꾼 칸. 생략 = 「도트 창」 프리셋. 스킨(전투 방식)과 별개 축이다. */
+  battleLook?: import("@/project/battleLook").BattleLookSettings;
+  /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
+  displayFilter?: "scanlines" | "crt";
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
   /** 대화창 스타일(project/dialogueStyles.ts). 생략 = glass(지금까지의 유리 창). */
@@ -1571,6 +1606,8 @@ export interface SystemRecords {
   dialogueSpeed?: number;
   /** false 면 구두점 뒤에 쉬지 않는다. 생략 = 쉰다. */
   dialoguePunctuationPause?: boolean;
+  /** 하단 대사창 뒤 전신 초상의 크기·내림(%). 생략 = 높이 125·내림 20. */
+  dialogueFullPortrait?: import("@/project/dialogueStyles").DialogueFullPortraitSettings;
   fieldHud?: import("../fieldHud").FieldHudConfig;
   /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
   battleCommandCss?: string;

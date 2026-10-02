@@ -1,5 +1,35 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## SNES 식 전투 연출 — 쓰러짐·배경 겹·상태 몸 표시·이펙트 겹치기·화면 필터 (2026-10-02)
+
+- **적 쓰러짐** `EnemyRecord.collapseEffect`(project/enemyCollapse.ts): pixelBreak(FF6 보랏빛 픽셀 분해 0.9s) · bossSink(떨며 붉게 깜빡이고
+  가라앉음 1.8s) · flash(하얀 점멸 0.56s) · instant. 생략 = 스킨 기본 소멸. 런타임 `player/battleEnemyCollapse.ts` 는 쓰러지는 순간의 그림을
+  캔버스에 떠서(`player/battleSpriteSnapshot.ts` — 정적 img·도트 시트 배경·확장 배틀러 셋 다) 원래 그림은 인라인 `visibility:hidden`,
+  캔버스만 움직인다 — 격파 CSS 가 스킨마다 특정도 높게 얽혀 있어 CSS 로 덮지 않는다. 시작점은 둘: 도트 측면 스킨은 막타 순간
+  `retroDamage`, 그 밖은 `syncEnemyNode` 의 격파 전이. 한 노드에 한 번(`data-collapse-state`).
+  - 함정 1: 계산 스타일·상자는 **await 전에** 뜬다. 도트 적은 막타 직후 dead 칸(녹은 웅덩이)으로 바뀌어, 이미지 로드 뒤 읽으면 쓰러진 칸이 분해됐다.
+  - 함정 2: 캔버스 자리는 `getBoundingClientRect` 로 잰다. 스킨이 그림을 transform 으로 세워 offsetLeft/Top 은 70~300px 어긋났다.
+  - 함정 3: 도트 적은 격파 칸이 녹은 웅덩이(dead)라, 연출이 있는 적은 `retroPixelEnemyCell` 이 dead 대신 맞은 칸(hit)을 고른다 —
+    아니면 웅덩이 0.8초 → 서 있는 모습으로 연출 시작 = 「죽었다 살아나 다시 죽음」으로 보였다.
+  - 결판 막타면 시퀀서가 `collapseHoldMs`(= `remainingEnemyCollapseMs`, 최대 2.2초)만큼 결과 도장·패널을 미룬다 — 보스 가라앉기(1.8초)가
+    「승리」 띠에 덮였다. 시작 시각은 `data-collapse-ends-at` 에 동기로 적는다.
+- **배경 겹** `TroopRecord.backdropLayers`(project/battleBackdropLayers.ts, 최대 4): fog·clouds·mist·rain·snow·embers·stars·lightRays 프리셋
+  (그림 없이 CSS 그라디언트) 또는 저자 그림. 뒤 겹은 `.battle-backdrop` 안 z 1(겹 배경 지형 카메라 위), 앞 겹(front)은 필드 z 25(배틀러 앞, 색조 층 30 아래).
+  `backdropAnimation` 은 겹 배경 스킨(기본 retro2003 등 도트 측면)에서 지형이 덮어 안 보이지만 겹은 모든 스킨에서 보인다.
+- **상태 몸 표시**: 오라에 sleep-zzz · paralyze-spark · silence-mute · confuse-stars · charm-heart · burn-ember 추가, 기본 상태 id 와
+  몬스터 주 상태(gen1MajorStatus)로 자동. 입자 층은 이제 **모든 스킨**(몸 색 필터는 retro 만). 층은 노드가 아니라 그림의 **불투명 픽셀 상자**에
+  맞춘다(`fitAuraLayerToSprite`) — 도트 칸은 144px 중 아래 ⅓ 만 몸이라 노드 기준 top% 에 둔 Z 가 허공에 떴다.
+- **이펙트 셀** `BattleAnimationCell.rotation`·`mirror`, 레코드 `BattleAnimationRecord.blendMode`. 섞기는 셀이 아니라 레코드에 —
+  `.battle-animation-layer` 가 z-index 로 자기 스태킹 컨텍스트라 노드에만 걸면 투명한 층과 섞여 아무 일도 없다(실측). battleDom 의
+  MutationObserver 가 섞는 이펙트가 든 동안 층 자체에 mix-blend-mode 를 건다(그동안 같은 층 다른 이펙트도 같이 섞임).
+- **화면 필터** `system.displayFilter`(project/displayFilter.ts): scanlines · crt. `createPlaySurface` 가 `.play-stage` 맨 끝에 층을 두고
+  직계 자식이 바뀌면 다시 끝으로 옮긴다(전투·메뉴가 나중에 붙는다). 깜빡임 없음.
+- 캡처: `node scripts/qa/runtime/battle-fx.capture.mjs --out /tmp/battle-fx [--skin rm2000] [--filter scanlines]` — 오라 판은 스크린샷,
+  쓰러짐·이펙트 판은 영상(webm, swiftshader 스크린샷은 장당 0.5s 라 0.9s 연출을 못 따라간다). 전투 이벤트 페이지는 **행동 뒤**에 검사되므로
+  상태를 거는 시험은 한 명이 한 번 행동해야 한다.
+- 조수: `read_directing_guide` 의 「전투 연출」 절, 능력 색인 `battle-presentation`, 도구 칸 upsert_enemy.collapseEffect ·
+  upsert_troop.backdropLayers · upsert_state.battleAura · upsert_battle_animation.blendMode · set_project_settings.displayFilter.
+
 ## 포켓몬 참고 스킨과 실제 뒷모습 (2026-09-20)
 
 - `20-pokemon-skin.css`의 Reference 블록은 민트 줄무늬 필드, 타원 발판, 좌상 적/우하 아군 상태창, 2×2 색상 명령창을 소유한다. 몬스터 루트만 `.battle-pokemon-root`로 표시해 일반 액터 명령과 강제 교체의 스크롤 계약을 보존한다.
@@ -112,6 +142,7 @@
 
 - **레지스트리 필드 두 개**(`src/battle/skins/types.ts`): `motionStyle: "retro"` 가 연출을, `scenery: "layered"` 가 겹 배경을 켠다. 다른 스킨이 같은 연출을 원하면 이 값만 붙이면 된다(CSS 스코프는 스킨 id 라 그 CSS 도 넓혀야 한다).
 - **창·HUD** `battle-skins/_retro2003.css`: 청색 세로 그라데이션 창 + 2px 각진 베벨, 도트 글꼴(`--runtime-pixel-font`), 얼굴 없이 이름·HP·MP·ATB 줄, 텍스트 명령 목록과 맥동 막대 커서, 위쪽 한 줄 메시지, 대상 선택은 ▼ 손가락 커서. HUD 128px, 무대 상단 inset 48px.
+  - **아래 칸 배치 (2026-10-01):** RM2003 원작처럼 **왼쪽 38fr = 적 이름 창, 내 차례엔 같은 칸에 명령 창(z 14)이 덮인다 · 오른쪽 62fr = 파티 상태 창**. 유리 묶음은 연출 단계(intro·acting·impact·result)에 1열을 0 으로 접고 `.battle-enemy-list-panel` 을 끄지만, 이 스킨은 두 열을 고정하고 적 이름 창을 다시 켠다 — 접힌 1열 대신 빈 남색 판이 남던 결함이었다. 적 이름 창은 이름만(HP·막대·타입 배지 숨김), 쓰러진 적은 빠지고 5마리 이상이면 2열. 파티 행은 위에서부터(`align-content: start`), 이름은 배지 앞에서 말줄임. 실측 프로브 `verify-shots/battle-ui-default/probe.mjs --skin retro2003`(출하 player.html, 4인 파티).
   재생 상태 칩은 메시지 창(최대 두 줄) 아래 `top: 84px` 에 둔다 — 52px 에서는 둘째 줄 위에 얹혔다(프레임 실측).
 - **배치** `battlerPlacements.ts` `RETRO_SIDEVIEW` (2026-09-28 반전): 적은 **왼쪽**(x 40~136, 한 마리 88, 발 y 128/140, 스킨 분기에서 x 32~150 으로 접음), 아군은 **오른쪽** `(222+24i, 82+18i)` 사선 계단. 걷기 칩 전투 시트는 원래 왼쪽을 보도록 그렸으므로 뒤집지 않는다(옛 `scaleX(-1)` 제거). 확장 아군 시트는 48px 셀을 BATTLE_ASSET_PIXEL_SCALE(2)로 한 번 확대해 96px로 그린다.
   수동 트룹 좌표는 이 스킨에서만 접지 구간으로 접고(`resolveSkinEnemyPosition`), 접은 결과가 뭉치면 트룹 전체를 자동 진형으로 세운다. `battleEnemyFeetRatios.json` 의 retro2003 항목은 아직 rm2003 사본이다 — 감독 실측으로 갱신할 것.
@@ -853,6 +884,50 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 감소 모션에서는 눌림·먼지가 함께 빠지므로 이 경로 자체가 없다.
 
 ## 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
+
+- **측면 스킨 = 도트 측면 뼈대 위의 창 모양 (2026-10-01).** 측면 스킨 여섯(`rm2003` 유리 · `octopath` 먹빛 · `chrono` 청람 · `bravely` 세피아 · `ff` 코발트 · `goldensun` 금갈색)이
+  retro2003 과 같은 `motionStyle: "retro"` · `scenery: "layered"` · `hudTemplate: "rows"` · 배치 `RETRO_SIDEVIEW` 를 쓴다. 도트 연출·겹 배경·상태 오라·HUD 칸 CSS
+  (26~28·`_retro2003.css`)는 스킨 id 대신 루트 `data-battle-motion="retro"` 에 걸리고, TS 분기(`battleFieldDom` 배지·적 chrome·파티 시트, `webExportAssets`,
+  `battlerPlacements` 의 적 구역·수동 진형)도 `motionStyle === "retro"` 로 판정한다. 창 색은 `_retro2003.css` 루트의 `--retro-*` 변수(기본 청색)이고
+  `_retro-themes.css` 가 스킨 id 마다 그 변수만 바꾼다. 그래서 측면 스킨을 골라도 도트 연출이 빠지지 않는다. 링·얇은 줄 HUD(`_glass-variants.css`)는 이제
+  쓰는 스킨이 없다(정면은 줄·얼굴 카드). 옛 측면 배치 `SIDEVIEW` 와 측면 수동 배치의 「x>150 → 고전 진형」 규칙은 등록 스킨에서 더 타지 않는다.
+  새 창 색을 더하려면 레지스트리에 측면 스킨을 넣고 `_retro-themes.css` 에 변수 블록 하나를 쓴다. 증거: `verify-shots/battle-ui-default/themes.sh`.
+- **전투 화면 꾸미기 `system.battleLook` = 스킨과 별개 축 (2026-10-01).** 색만 바꾸는 스킨으로는 「파란 각진 판」에서 벗어날 수 없어서(사용자 불만)
+  화면 **모양**을 따로 뗐다. 정본 `src/project/battleLook.ts`. 저장 모양은 `{ preset?, 칸… }` — 프리셋 12종(`pixel` 기본·생략 · `line` · `teal` ·
+  `pattern` · `ink` · `gold` · `parch` · `icons` · `veil` · `soft` · `pop` · `cinema`) 위에 칸별 덮어쓰기. 칸: 파티 `party`(rows·compact·cards·
+  boxesTop·boxesBottom·mini·tilt) · 명령 `command`(corner·actor·top·fan·keys·icons) · 전장 `field`(band·full) · 창 `window`(고전 창 pixel·line·teal·pattern /
+  현대 창 ink·gold·parch·veil·soft·pop·bare) · `font`(생략 = 창 꾸밈 기본 글꼴, 고전 창은 프로젝트 픽셀 글꼴) · `accent`(#rrggbb) · `turnOrder` ·
+  `enemyNames` · `letterbox` · `light`·`dust`·`vignette`·`blur`(0~2) · `grade`. **정규화가 프리셋과 같은 칸을 지운다**(`normalizeBattleLook`) —
+  그래서 프리셋을 바꾸면 그 프리셋 값이 따라오고, 편집자가 바꾼 칸만 남는다(`patchBattleLook` · `battleLookForPreset`).
+  DOM: `battleDom.ts` → `player/battleLookDom.ts` 의 `applyBattleLook` 가 루트에 `data-battle-window` · `data-battle-window-family`(retro|modern) ·
+  `data-look-party|command|field|turns|names|letterbox` 와 `--battle-look-font` · `--battle-look-accent` · `--look-*` 를 심고, CSS 만으로 못 만드는 겹을 붙인다:
+  필드 안 `.battle-look-fx`(빛내림·먼지 18개·가장자리·위아래 흐림, z 1 = 배틀러 아래), 루트의 영화 띠 두 장, 차례 순서 줄 `.battle-turn-order`
+  (`syncBattleTurnOrder` — 살아 있는 배틀러를 게이지/민첩 순으로 정렬한 **지금 값**이지 규칙 엔진 예측이 아니다). 모양은 전부
+  `battle-skins/_battle-look.css`(같은 DOM·격자를 속성 하나 더 많은 선택자로 덮는다). 처음엔 임시 생성기로 펼쳤지만 생성기는 저장소에 없다 — 이 CSS 가 정본이니 손으로 고친다.
+  **함정 셋:** ① 루트가 grid 라 `position:absolute` 자식의 포함 블록은 **그 자식의 grid-area** 다 — 옮기는 창·명령·차례 줄은 `grid-area: 1/1/-1/-1` 를
+  줘야 무대 좌표로 놓인다(안 주면 명령 창이 2행 기준으로 화면 밖에 나갔다). abspos 도 grid 정렬을 받으므로 `align-self:start` 없이는 세로로 늘어난다.
+  ② `_rm2000.css` 의 명령 목록은 4행 스크롤포트(`max-height: 4*행`)라 루트 명령을 세로 한 줄로 세우면 다섯째가 잘린다 — 코너 밖 배치는 루트에만 `max-height:none`.
+  ③ `화면 끝까지`(field full)는 배틀러 기하를 건드리지 않으려고 배경·배틀러 무리 높이는 1행 그대로 두고 배경을 `-webkit-box-reflect` 로 아래에 비춘 뒤
+  흐림·어둠 판(`.battle-field::before`)으로 덮는다. 명령 화살표 이동은 원래 기하 기반(`moveMenuCursor`)이라 마름모·아이콘 줄에서도 그대로 맞는다.
+  **도트 측면 전투(`motionStyle: "retro"`)에만 걸린다** — 정면 유리 HUD 는 아직 꾸밈을 안 받는다(자료집이 경고를 띄운다).
+  편집: 자료집 시스템 탭 「시작 설정 → 전투 화면 꾸미기」(`editor/panels/databaseBattleLook.ts`) — 프리셋 갤러리(그림은 `public/assets/battle-look/<id>.jpg`,
+  실제 런타임 프로브 축소판이라 **칸을 바꾼 결과는 그림에 안 나온다** → 「전투 테스트」 버튼이 시작 적 그룹/아무 적 그룹으로 실제 전투를 연다),
+  칸별 선택(프리셋 값엔 「· 프리셋」 꼬리), 「사용자 설정」 배지와 되돌리기. 조수: `set_project_settings` 의 `battle.look`(preset 을 주면 바꾼 칸을 버리고
+  갈아탐, 칸만 주면 덮음, 틀린 값은 거절). 명조 `myeongjo`·둥근 고딕 `rounded` 는 번들이 아니라 시스템 글꼴을 차례로 찾는다(없으면 serif/sans 로 떨어짐).
+  비치는 창에서 명령 창 밑 적 이름 창이 보이던 것 → 대상 고르기(`director-step="target"`)에도 숨기고, 명령이 코너 밖이면 늘 숨긴다.
+  증거: `verify-shots/battle-look/sheet-*.jpg`(12종 × 명령·스킬 목록·대상·행동 4장면, `probe.mjs --skin retro2003 --system '{"battleLook":{"preset":"gold"}}' --out verify-shots/battle-look/gold`), 편집기 `verify-shots/battle-look/editor/`.
+  썸네일 재생성: 프로브 `t1500.png` 를 (32,24)-(992,744) 로 잘라 256×192 JPEG. 회귀: `test/battleLook.test.ts`.
+  **조수가 스스로 고르게 하기 (2026-10-02):** 처음엔 도구 한 줄 설명·첫 제작 지시 어디에도 이 칸이 없어 조수가 어떤 게임이든 기본 「도트 창」으로 두었다.
+  ① 프리셋마다 `mood`(어울리는 분위기)를 두고 `battleLookMoodGuide()` 가 `id(라벨)=분위기` 한 줄을 만든다 — `battle.look.preset` 설명과 첫 제작 지시가 같은 글을 쓴다.
+  ② `set_project_settings` 한 줄 설명에 「전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI …)」를 넣어 자연어 승격(`capabilityEscalation`, 낱말 일치 20점)이
+  「전투 화면 바꿔줘」「전투창 디자인」「전투 화면을 화려하게」에 이 도구를 붙인다. ③ `welcomeBattleLookLine()`(editor/welcomeGenrePresets.ts)이 모험 JRPG 첫 제작
+  (기획 있음·없음)과 턴제 전투를 말하는 자유 문장에 「톤에 맞는 프리셋을 고르고, 정면 스킨이면 측면 스킨으로 바꾼 뒤 고르라」를 붙인다(측면 스킨 id 는 레지스트리에서 뽑는다).
+  몬스터 대치 장르(정면 `pokemon`)에는 붙이지 않는다. 회귀: `test/battleLookAssistant.test.ts`. 실측(qa:game gen, gemini-3.8-flash, 각 1회): 고치기 전 main 에서 영웅 광산 JRPG·어두운 복수극은 꾸미기를 안 건드렸고
+  동화풍은 「화려한 금테」(톤 불일치)를 골랐다. 고친 뒤 영웅 광산 → gold(+붉은 강조색), 어두운 복수극 → ink(+금색 강조색), 동화풍 → parch. 셋 다 측면 스킨 retro2003.
+  각 4판 확장(2026-10-02): 고치기 전 12판 중 2판만 꾸밈을 건드림 → 고친 뒤 끝까지 간 판 거의 전부가 톤 맞는 프리셋. 같은 시험에서 조수가 고른 강조색이
+  두 CSS 결함을 드러냈다: ① 양피지 창(parch) 선택 줄 글씨를 강조색으로 칠해 밝은 강조색(#ffcc44)이면 「공격」이 안 보였다 → 글씨는 늘 `--look-text`,
+  강조색은 선택 줄 바탕(26% 섞음)·마름모에만. ② 영화 띠 아래 장이 z 30 이라 줄 목록 파티의 마지막 줄을 덮었다 → 아래 띠만 `z-index: 2`(창 밑), 위 띠는 그대로.
+  계획→실행 이음매에서 실행 턴이 0편집으로 끝나던 중단은 `src/ai/piAgent/planExecution.ts` — `openwiki/editor-ai-panel.md` 참조.
 
 - 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
 - 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.

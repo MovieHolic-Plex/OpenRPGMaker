@@ -25,6 +25,7 @@ import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { resolveVillageContract, type VillageContract } from "./villageContract";
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
+import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
 
 /**
  * 계획 턴의 지시문 머리. Pi 에는 세션 플래너가 없으므로 «실행하지 말고 계획만» 을 말로 만든다 —
@@ -211,9 +212,9 @@ export function prefersCallerThinking(stored: RoleModel | undefined, derived: Ro
     && stored.thinkingLevel === derived.thinkingLevel;
 }
 
-/** 실행 턴이 읽는 지시문 = 모델 지시 + Ultrabrain 계획. */
+/** 실행 턴이 읽는 지시문 = 모델 지시 + 「지금은 실행 턴」 + Ultrabrain 계획(planExecution.ts). */
 export function withUltrabrainPlan(modelTask: string, plan: string): string {
-  return `${modelTask}\n\nUltrabrain 실행 계획:\n${plan}`;
+  return `${modelTask}\n\n${PLAN_EXECUTION_PREAMBLE}\n\n${ULTRABRAIN_PLAN_HEADING}\n${plan}`;
 }
 
 /** 실행 턴(또는 계획 전용 턴) 요청. */

@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "style": {
+    "reference": "Pokemon Black and White (Nintendo DS, 2010)",
+    "maxColors": 20,
+    "canvas": 112,
+    "avoid": ["Bulbasaur", "Ivysaur", "Charmander", "Charmeleon", "Squirtle", "Leafeon", "Eevee"]
+  },
+  "species": [
+    {
+      "id": "sparkit",
+      "name": "스파킷",
+      "types": ["fire"],
+      "stage": 1,
+      "starterSet": "first-region",
+      "design": "A young fire newt starter on four legs, low and agile like a lizard: ember-orange back with darker red stripe markings, cream belly, a small crisp pixel flame (drawn with flat pixel colors and a dark outline, not glowing) at the tail tip, head raised alert.",
+      "palette": "ember orange, dark red stripes, cream"
+    },
+    {
+      "id": "aqualing",
+      "name": "아쿠아링",
+      "types": ["water"],
+      "stage": 1,
+      "starterSet": "first-region",
+      "design": "A water axolotl starter standing on four short legs: blue body, pale belly, three feathery external gill fronds on each side of the head in coral pink, a flat paddle tail with a fin along it.",
+      "palette": "blue, pale cream, coral pink"
+    },
+    {
+      "id": "leafling",
+      "name": "리프링",
+      "types": ["grass"],
+      "stage": 1,
+      "starterSet": "first-region",
+      "design": "A grass starter inspired by a sprouting acorn and a small fox: four legs, brown seed-shell cap on the head, two large leaves growing from the head like ears, green body with cream chest fur, leafy tail.",
+      "palette": "leaf green, cream, acorn brown"
+    }
+  ]
+}

@@ -79,6 +79,9 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   author_story_arc: people("이야기 짜기", "book"),
   script_cutscene: people("연출 쓰기", "book"),
   script_cutscene_preset: people("연출 프리셋", "book"),
+  script_cutscene_impact: people("충돌 연출", "book"),
+  generate_cutscene_art: build("컷신 그림 만들기", "spark"),
+  preview_cutscene: inspect("컷신 미리보기", "eye"),
   upsert_event: people("이벤트 쓰기", "flag"),
   event_command_assist: people("이벤트 명령 만들기", "flag"),
   move_event: people("이벤트 옮기기", "flag"),
@@ -311,6 +314,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   list_ai_docs: inspect("AI 문서 목록", "book"),
   list_retro_choreographies: inspect("도트 연출 찾기", "spark"),
   read_retro_skill_guide: inspect("스킬 설계 지침 읽기", "book"),
+  read_directing_guide: inspect("연출 지침 읽기", "book"),
   read_ai_doc: inspect("AI 문서 읽기", "book"),
   generate_character_appearance: build("캐릭터 그림 만들기", "user"),
 };

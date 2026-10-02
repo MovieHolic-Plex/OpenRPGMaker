@@ -1,3 +1,4 @@
+import { letterboxPercentFromValue } from "@/project/eventCommands/cinematicStaging";
 /**
  * 모던 `Screen Effect` 커맨드의 옵션을 **이미 존재하는 화면효과 경로**로 옮기는 매핑.
  *
@@ -11,6 +12,7 @@
  *   - 지속형(tint/fade) → `runtime.screen.tint` + `tintDurationMs` (DOM 오버레이가 rAF 트윈)
  *   - 일회형(flash)     → `flashScreen` StepResult (Phaser 카메라 API)
  *   - 날씨              → `runtime.screen.weather` (Phaser weather 레이어)
+ *   - 왜곡(물결·모자이크·기울기) → `runtime.screen.distortion` (카메라 후처리)
  * 대응 경로가 없는 옵션은 조용히 삼키지 않고 `unsupported` 로 돌려 fallback 에 기록한다.
  */
 
@@ -29,6 +31,14 @@ export type ScreenEffectPlan =
     }
   | { readonly kind: "flash"; readonly color: string; readonly durationMs: number }
   | { readonly kind: "weather"; readonly weather: string }
+  | {
+      readonly kind: "distortion";
+      readonly effect: "wave" | "mosaic" | "rotate" | "clearDistortion";
+      readonly value: string;
+      readonly durationMs: number;
+    }
+  /** 위아래 검은 띠. percent = 띠 하나의 두께(화면 높이 %), 0 = 걷기. */
+  | { readonly kind: "letterbox"; readonly percent: number; readonly durationMs: number }
   | { readonly kind: "unsupported"; readonly effect: string };
 
 /**
@@ -56,6 +66,16 @@ export function planScreenEffect(effect: string, value: string, durationMs: numb
       return { kind: "flash", color: trimmed || "white", durationMs: duration };
     case "weather":
       return { kind: "weather", weather: trimmed || "none" };
+    // 화면 그림 자체를 비트는 지속형 효과 — 카메라 후처리(playSceneScreenDistortion)가 그린다.
+    case "wave":
+    case "mosaic":
+    case "rotate":
+    case "clearDistortion":
+      return { kind: "distortion", effect, value: trimmed, durationMs: duration };
+    case "letterbox":
+      return { kind: "letterbox", percent: letterboxPercentFromValue(trimmed), durationMs: duration };
+    case "clearLetterbox":
+      return { kind: "letterbox", percent: 0, durationMs: duration };
     default:
       // blur 등 렌더러가 없는 옵션. 삼키지 말고 기록해서 감독이 알 수 있게 한다.
       return { kind: "unsupported", effect };

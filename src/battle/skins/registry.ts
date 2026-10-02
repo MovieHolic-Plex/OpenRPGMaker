@@ -32,6 +32,11 @@
 //   코발트 창·청록 강조 / 암전 창·형광 분홍 / 금갈색 창·박스 HUD /
 //   밝은 창·정면 / 심야 창·박스 HUD
 // 새 스킨을 추가할 때도 같은 규칙을 따를 것 — 스펙이 라벨을 검사한다.
+//
+// 2026-10-01: 측면 스킨 여섯(유리·먹빛·청람·세피아·코발트·금갈색)을 **도트 측면 전투 뼈대**(motionStyle "retro" +
+// scenery "layered") 위의 창 모양으로 옮겼다. 도트 연출·배치·겹 배경·상태 오라는 스킨 id 가 아니라 루트
+// `data-battle-motion="retro"` 에 걸리고(26~28 CSS·_retro2003.css), 창 색만 `_retro-themes.css` 가 스킨 id 로 바꾼다.
+// 그래서 측면 스킨을 골라도 도트 연출이 빠지지 않는다. HUD 는 줄(rows) 하나 — 링·카드·얇은 줄 HUD 는 정면 스킨만 쓴다.
 import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 
 export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
@@ -82,8 +87,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   // 서서 서로 마주 본다. 창 크롬은 rm2000 과 같은 유리 카드(family: glass) — 구도만 다르고 HUD 는 같다.
   // 배경은 정면과 같은 하늘 배경을 쓴다(측면 구도 전용 배경은 아직 없다).
   rm2003: {
-    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 측면 필드", layout: "sideview", showAllySprites: true,
-    hudTemplate: "rows", transition: "wipe-blue", family: "glass",
+    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "도트 측면 · 유리 창", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "wipe-blue", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "rgba(14,18,34,.96)",
       "--battle-window-edge": "rgba(154,170,226,.32)",
@@ -101,8 +106,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   octopath: {
-    id: "octopath", defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "먹빛 창 · 측면 · 얇은 HUD", layout: "sideview", showAllySprites: true,
-    hudTemplate: "minimal", transition: "focus-blur", family: "glass",
+    id: "octopath", defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "도트 측면 · 먹빛 창", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "focus-blur", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#0a1020",
       "--battle-window-edge": "#c9a24a",
@@ -120,8 +125,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   chrono: {
-    id: "chrono", defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "청람 창 · 측면 · 링 게이지", layout: "sideview", showAllySprites: true,
-    hudTemplate: "ring", transition: "sweep-cyan", family: "glass",
+    id: "chrono", defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "도트 측면 · 청람 창", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "sweep-cyan", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#071a33",
       "--battle-window-edge": "#2ec4ff",
@@ -139,8 +144,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   bravely: {
-    id: "bravely", defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "세피아 창 · 측면 · 얇은 HUD", layout: "sideview", showAllySprites: true,
-    hudTemplate: "minimal", transition: "brave-shift", family: "glass",
+    id: "bravely", defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "도트 측면 · 세피아 창", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "brave-shift", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#1a1206",
       "--battle-window-edge": "#c49a5a",
@@ -177,8 +182,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   ff: {
-    id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "코발트 창 · 측면 · 흰 테두리", layout: "sideview", showAllySprites: true,
-    hudTemplate: "rows", transition: "wipe-blue", family: "glass",
+    id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "도트 측면 · 코발트 창", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "wipe-blue", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#0f1e7a",
       "--battle-window-edge": "#e8e8e8",
@@ -215,8 +220,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   goldensun: {
-    id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "금갈색 창 · 측면 · 얼굴 카드", layout: "sideview", showAllySprites: true,
-    hudTemplate: "boxes", transition: "sweep-cyan", family: "glass",
+    id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "도트 측면 · 금갈색 창", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "sweep-cyan", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#1a0f02",
       "--battle-window-edge": "#ff9a1a",
@@ -274,7 +279,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   // 도트 측면 전투(2026-09-28): 청색 그라데이션 픽셀 창, 겹 배경(scenery), 전진 걸음·적 점멸 연출(motionStyle).
   // 창 크롬은 유리 뼈대(family glass)의 배치 계약을 그대로 쓰고 모양만 _retro2003.css 가 덮는다.
   retro2003: {
-    id: "retro2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "레트로 2003 · 측면 도트 전투 (기본)", layout: "sideview", showAllySprites: true,
+    id: "retro2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "도트 측면 · 청색 창 (기본)", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "shatter-2003", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#18248c",

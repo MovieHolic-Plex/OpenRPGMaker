@@ -1,3 +1,5 @@
+import { cssMixBlendMode, type BlendModeName } from "@/project/blendMode";
+import type { EasingName } from "@/project/easing";
 import { TILE_SIZE } from "@/assets/bundled";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import type { BattleResult } from "@/battle/runtime";
@@ -9,6 +11,7 @@ import type { RuntimeMoverSnapshot } from "@/player/runtimeMoverSnapshots";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import {
+  easedTweenProgress,
   interpolatePictureTransform,
   pictureCssOpacity,
   pictureCssTransform,
@@ -36,6 +39,7 @@ type PictureSlot = {
   to: PictureTransform;
   startedAt: number;
   durationMs: number;
+  easing?: EasingName;
 };
 
 function nowMs(): number {
@@ -509,18 +513,13 @@ export class RuntimeDomOverlay {
   syncPictureLayer(pictures: Record<string, PictureState>): void {
     const host = this.host();
     if (!host) return;
-    const existing = host.querySelector("[data-testid='picture-layer']");
-    const layer = existing instanceof HTMLElement ? existing : document.createElement("div");
-    if (!existing) {
-      layer.className = "picture-layer";
-      layer.dataset.testid = "picture-layer";
-      host.append(layer);
-    }
+    const layer = pictureLayerFor(host, undefined);
     const project = safeProject();
     const present = new Set<string>();
     for (const picture of Object.values(pictures)) {
       present.add(picture.pictureId);
-      this.syncPictureSlot(layer, picture, project);
+      // 섞기 방식이 있는 그림은 방식별 형제 층에 둔다 — 아래 pictureLayerFor 주석.
+      this.syncPictureSlot(picture.blendMode ? pictureLayerFor(host, picture.blendMode) : layer, picture, project);
     }
     for (const [id, slot] of this.pictureSlots) {
       if (present.has(id)) continue;
@@ -564,6 +563,8 @@ export class RuntimeDomOverlay {
       };
       this.pictureSlots.set(picture.pictureId, slot);
     }
+    // 섞기 방식이 바뀌면 그 방식의 층으로 옮긴다(슬롯·트윈 상태는 그대로).
+    if (slot.container.parentElement !== layer) layer.append(slot.container);
     this.syncPictureMedia(slot, picture, project);
     slot.container.style.zIndex = String(20 + pictureZIndex(picture.pictureId));
     const duration = picture.durationMs ?? 0;
@@ -574,6 +575,7 @@ export class RuntimeDomOverlay {
       slot.to = target;
       slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
+      slot.easing = picture.easing;
       slot.displayed = from;
       applyPictureTransform(slot.container, from);
     } else if (duration > 0 && transitionRequested && !pictureTransformsEqual(slot.to, target)) {
@@ -581,6 +583,7 @@ export class RuntimeDomOverlay {
       slot.to = target;
       slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
+      slot.easing = picture.easing;
     } else if (created || !pictureTransformsEqual(slot.to, target) || (duration <= 0 && slot.durationMs > 0)) {
       // 정지한 픽처는 목표가 같으면 스타일을 다시 쓰지 않는다(매 프레임 불리는 경로다).
       slot.from = target;
@@ -647,7 +650,7 @@ export class RuntimeDomOverlay {
     for (const slot of this.pictureSlots.values()) {
       if (slot.durationMs <= 0) continue;
       const progress = tweenProgress(now - slot.startedAt, slot.durationMs);
-      slot.displayed = interpolatePictureTransform(slot.from, slot.to, progress);
+      slot.displayed = interpolatePictureTransform(slot.from, slot.to, easedTweenProgress(progress, slot.easing));
       applyPictureTransform(slot.container, slot.displayed);
       if (progress >= 1) {
         slot.durationMs = 0;
@@ -742,6 +745,30 @@ function safeProject(): RuntimeAssetProject | undefined {
 }
 
 // 픽처 변환값을 컨테이너 DOM 스타일에 적용한다. 위치는 left/top, 크기/회전은 transform, 투명도는 opacity.
+/**
+ * 그림 층. 보통 그림은 `picture-layer` 하나, 섞기 방식이 있는 그림은 방식마다 형제 층
+ * (`picture-layer-add` 등)이며 **층 자체**에 `mix-blend-mode` 를 건다.
+ *
+ * 왜 층 단위인가: `.picture-layer` 는 z-index 로 자기 스태킹 컨텍스트를 만든다(대화창 위로 새지
+ * 않게 가두는 장치 — tabs-b-status-menu-main.css). 그 안의 그림에 섞기를 걸면 같은 층 안의
+ * 투명한 배경과만 섞여 게임 화면에는 아무 일도 없다. 층을 형제로 빼면 층 전체가 아래 게임 화면과 섞인다.
+ * 대가: 섞기 층은 보통 층 위에 그려진다(그림 번호 순서는 같은 층 안에서만 지켜진다).
+ */
+function pictureLayerFor(host: HTMLElement, blendMode: BlendModeName | undefined): HTMLElement {
+  const testid = blendMode && blendMode !== "normal" ? `picture-layer-${blendMode}` : "picture-layer";
+  const existing = host.querySelector(`[data-testid='${testid}']`);
+  if (existing instanceof HTMLElement) return existing;
+  const layer = document.createElement("div");
+  layer.className = "picture-layer";
+  layer.dataset.testid = testid;
+  if (testid !== "picture-layer") {
+    layer.dataset.blend = blendMode;
+    layer.style.mixBlendMode = cssMixBlendMode(blendMode);
+  }
+  host.append(layer);
+  return layer;
+}
+
 function applyPictureTransform(container: HTMLElement, transform: PictureTransform): void {
   container.style.left = `${transform.x}px`;
   container.style.top = `${transform.y}px`;

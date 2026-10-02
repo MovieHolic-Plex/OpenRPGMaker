@@ -1,0 +1,133 @@
+{
+  "path": "player.html; export store shim",
+  "fixture": "64×64, native Combined Town 16px / Slates 32px, four layers, quarter terrain/water, shadows, NPC, farm and placeable",
+  "comparisons": [
+    {
+      "id": "start16",
+      "mapId": "qa16",
+      "residentObjects": 1547,
+      "inView": 547,
+      "view": {
+        "x": 168,
+        "y": 216,
+        "width": 320,
+        "height": 240
+      },
+      "tileSize": 16,
+      "changedPixels": 0,
+      "totalPixels": 307200
+    },
+    {
+      "id": "front16",
+      "mapId": "qa16",
+      "residentObjects": 1394,
+      "inView": 457,
+      "view": {
+        "x": 168,
+        "y": 248,
+        "width": 320,
+        "height": 240
+      },
+      "tileSize": 16,
+      "changedPixels": 0,
+      "totalPixels": 307200
+    },
+    {
+      "id": "pan16",
+      "mapId": "qa16",
+      "residentObjects": 1597,
+      "inView": 581,
+      "view": {
+        "x": 232,
+        "y": 216,
+        "width": 320,
+        "height": 240
+      },
+      "tileSize": 16,
+      "changedPixels": 0,
+      "totalPixels": 307200
+    },
+    {
+      "id": "jump16",
+      "mapId": "qa16",
+      "residentObjects": 1065,
+      "inView": 429,
+      "view": {
+        "x": 616,
+        "y": 664,
+        "width": 320,
+        "height": 240
+      },
+      "tileSize": 16,
+      "changedPixels": 0,
+      "totalPixels": 307200
+    },
+    {
+      "id": "return16",
+      "mapId": "qa16",
+      "residentObjects": 1547,
+      "inView": 547,
+      "view": {
+        "x": 168,
+        "y": 216,
+        "width": 320,
+        "height": 240
+      },
+      "tileSize": 16,
+      "changedPixels": 0,
+      "totalPixels": 307200
+    },
+    {
+      "id": "transfer32",
+      "mapId": "qa32",
+      "residentObjects": 898,
+      "inView": 304,
+      "view": {
+        "x": 336,
+        "y": 432,
+        "width": 640,
+        "height": 480
+      },
+      "tileSize": 32,
+      "changedPixels": 0,
+      "totalPixels": 307200
+    },
+    {
+      "id": "zoom32",
+      "mapId": "qa32",
+      "residentObjects": 1242,
+      "inView": 536,
+      "view": {
+        "x": 230,
+        "y": 352,
+        "width": 853,
+        "height": 640
+      },
+      "tileSize": 32,
+      "changedPixels": 0,
+      "totalPixels": 307200
+    },
+    {
+      "id": "changed32",
+      "mapId": "qa32",
+      "residentObjects": 1242,
+      "inView": 536,
+      "view": {
+        "x": 230,
+        "y": 352,
+        "width": 853,
+        "height": 640
+      },
+      "tileSize": 32,
+      "changedPixels": 0,
+      "totalPixels": 307200
+    }
+  ],
+  "errors": [],
+  "waterAnimation": {
+    "before": "tile_30_nw",
+    "after": "tile_31_nw",
+    "frames": 4,
+    "deltaMs": 100
+  }
+}

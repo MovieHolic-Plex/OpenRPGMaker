@@ -43,6 +43,7 @@ import {
 } from "@/editor/content/townShowcaseMaps";
 import { createMarketTownMap, marketTownStartPos } from "./marketTownMap";
 import { createProjectWithMaps, ensureSwitchVariableSlots } from "./blankProject";
+import { ensureBundledResourceProfiles } from "./defaultAssets";
 // 가벼운 핵심은 blankProject.ts 에 있다. 옛 import 경로를 유지하려고 여기서 다시 내보낸다.
 export { createBlankProject, ensureSwitchVariableSlots } from "./blankProject";
 // 샘플 데모 export. 이 파일의 database.items / database.equipment 는 **파생물**이다 —
@@ -56,6 +57,8 @@ const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
 /** 예제 데모: 《이슬 마을의 종》 — 에디터 작성 export fixture. 별등 마을 코드 생성기는 제거됨. */
 export function createSampleAdventureProject(): Project {
   const project = structuredClone(dewVillageDemoFixture as unknown as Project);
+  // 새 예제도 공용 아이템 그림과 실제 32px 크기 정보를 모두 갖고 시작한다.
+  ensureBundledResourceProfiles(project);
   // 새 데모도 새 프로젝트의 전투 기본값을 사용한다. 기존 저장 문서는 바꾸지 않는다.
   project.system.battleUiStyle = "retro2003";
   const starterGraphics = defaultPartyRecords().actors;

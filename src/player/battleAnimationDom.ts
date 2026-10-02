@@ -1,3 +1,4 @@
+import { cssMixBlendMode } from "@/project/blendMode";
 import type { BattleSnapshot } from "@/battle/runtime";
 import { activeTimingEffects, type ActiveTimingEffects } from "@/battle/animationTiming";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -106,6 +107,12 @@ export function mountBattleAnimationPlayback(
 
   const timers = new Set<number>();
   const url = resolveAssetResourceUrl(record?.resourceId, { project: store.getCurrent() });
+  if (record?.blendMode) {
+    // 노드 자체에 건다 — 이 노드가 스태킹 컨텍스트라 안쪽 셀에 걸면 무대와 섞이지 않는다(타입 주석).
+    // 후속(followUps)은 이 노드 안에 중첩되므로 본체의 섞기를 함께 탄다.
+    element.dataset.blend = record.blendMode;
+    element.style.mixBlendMode = cssMixBlendMode(record.blendMode);
+  }
   if (url && record?.sheet && record.frames && record.frames.length > 0) {
     element.dataset.renderedFrameCount = String(record.frames.length);
     const sheet = animationSheet(record, url);
@@ -494,7 +501,11 @@ function animationCell(
   canvas.style.left = `calc(50% + ${cell.x * assetScale}px)`;
   canvas.style.top = `calc(50% + ${cell.y * assetScale}px)`;
   canvas.style.opacity = String(Math.max(0, Math.min(255, cell.opacity)) / 255);
-  canvas.style.transform = `translate(-50%, -50%) scale(${Math.max(1, cell.zoom) / 100})`;
+  const zoom = Math.max(1, cell.zoom) / 100;
+  // 뒤집기는 scale 의 x 부호로, 회전은 그 뒤에 — 뒤집힌 그림이 저작한 방향(시계)으로 돈다.
+  canvas.style.transform = `translate(-50%, -50%) rotate(${cell.rotation ?? 0}deg) scale(${cell.mirror ? -zoom : zoom}, ${zoom})`;
+  if (cell.rotation) canvas.dataset.rotation = String(cell.rotation);
+  if (cell.mirror) canvas.dataset.mirror = "true";
 
   const column = cell.pattern % record.sheet.columns;
   const row = Math.floor(cell.pattern / record.sheet.columns);

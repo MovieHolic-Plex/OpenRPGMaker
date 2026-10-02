@@ -99,7 +99,7 @@ export function parseConstructionDeclaration(raw: unknown): ConstructionDeclarat
 /**
  * 선언된 시공 규모 → 권장 맵 크기(마을 한 판). 코드가 아는 사실 — 호출자는 이 숫자를 그대로 쓴다.
  * 집 수=선언 수량(없으면 크기어 기본, 그것도 없으면 기본) → 열=√(수×1.5) 6:4, 슬롯 10×12+여백,
- * 20~256 클램프. 선언에 construction이 없으면 기본 12채 — 모델이 수량을 몰라도 진행한다(원큐 원칙).
+ * 20~공통 맵 상한 클램프. 선언에 construction이 없으면 기본 12채 — 모델이 수량을 몰라도 진행한다(원큐 원칙).
  */
 export function estimateVillageSize(input: ConstructionDeclaration | null | undefined = {}): EstimatedVillageSize {
   const declared = positiveInt(input?.houseCount);

@@ -1,3 +1,5 @@
+import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
+import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
@@ -43,6 +45,8 @@ import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom"
 import { hitIntensity } from "@/player/battleHitIntensity";
 import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
 import { resolveBattleHitFeel } from "@/project/battleHitFeel";
+import { resolveBattleLook } from "@/project/battleLook";
+import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleSfx } from "@/player/battleSfx";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
@@ -212,6 +216,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const animationLayer = document.createElement("div");
   animationLayer.className = "battle-animation-layer";
   animationLayer.dataset.testid = "battle-animation-layer";
+  // 이펙트 겹치기(BattleAnimationRecord.blendMode): 이펙트 노드는 이 층 안에서만 섞인다 — 층이 z-index 로 자기
+  // 스태킹 컨텍스트라 노드에만 걸면 투명한 층과 섞여 아무 일도 없다(2026-10-02 실측). 섞는 이펙트가 들어 있는 동안
+  // 층 자체에 같은 방식을 걸어 필드(배경·배틀러)와 섞는다. 대가: 그동안 같은 층의 다른 이펙트도 같이 섞인다(드묾).
+  const animationBlendObserver = new MutationObserver(() => {
+    const blended = animationLayer.querySelector<HTMLElement>(":scope > .battle-animation[data-blend]")?.dataset.blend;
+    animationLayer.style.mixBlendMode = isBlendModeName(blended) ? cssMixBlendMode(blended) : "";
+    if (isBlendModeName(blended)) animationLayer.dataset.blend = blended;
+    else delete animationLayer.dataset.blend;
+  });
+  animationBlendObserver.observe(animationLayer, { childList: true });
   const messageWindow = battleMessageWindow(directorState);
   const enemyPanel = enemyListPanel(initialSnapshot);
   const partyPanel = battlePartyStatus(initialSnapshot);
@@ -233,6 +247,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   playbackStatus.setAttribute("aria-live", "polite");
   playbackStatus.setAttribute("aria-atomic", "true");
   root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost, playbackStatus);
+  // 전투 화면 꾸미기(project/battleLook.ts) — 도트 측면 전투에만. 칸 값은 루트 data·CSS 변수, 연출 겹은 필드 안.
+  const battleLook = retroMotion ? resolveBattleLook(store.getCurrent().system.battleLook) : undefined;
+  if (battleLook) applyBattleLook(root, field, battleLook);
   if (retroMotion) {
     initRetroMotion(field, initialSnapshot);
     preloadRetroMotionSe();
@@ -547,6 +564,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (retroMotion && result === "victory") retroVictory(field);
       showFinaleStamp(result);
     },
+    collapseHoldMs: () => remainingEnemyCollapseMs(field),
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.
@@ -1097,6 +1115,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
     }
     syncBattleParty(partyPanel, snapshot, fieldPresentation);
+    if (battleLook?.turnOrder) syncBattleTurnOrder(root, snapshot);
     rollingHpTicker?.kick();
     // 전투 이벤트의 Tint Screen(색조·채도·흑백·세피아).
     syncBattleScreenFilter(field, snapshot.eventState.screen);
@@ -1569,6 +1588,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
       if (destroyed) return;
       destroyed = true;
+      animationBlendObserver.disconnect();
       clearBattleTimerScope();
       rollingHpTicker?.stop();
       choiceController?.abort();

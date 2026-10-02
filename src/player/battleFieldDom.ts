@@ -1,3 +1,5 @@
+import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyCollapse";
+import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
 import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
@@ -44,6 +46,7 @@ import { store } from "@/project/store";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { LIMIT_GAUGE_MAX, limitGaugeConfig, partyGaugeConfig, partyGaugeMax, resource2Config, resource2Max } from "@/battle/battleGauges";
 import { applyBattleBackdropMotion, clearBattleBackdropMotion } from "@/player/battleBackdropMotion";
+import { syncBattleBackdropLayers } from "@/player/battleBackdropLayersDom";
 import type { RollingHpMeter } from "@/player/rollingHp";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
@@ -98,13 +101,13 @@ function activeSkin(): BattleSkin {
 function partyStatusRowsCarryIcons(): boolean {
   // retro2003 은 필드에 아군을 그리지만 배지는 파티 창 이름 옆에 단다(FF6·크로노 트리거 관례).
   // 필드 노드 머리 위 배지는 이웃 배우 사이에 떠서 누구 것인지 읽히지 않았다(2026-09-29 실측).
-  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden" || activeSkin().id === "retro2003";
+  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden" || activeSkin().motionStyle === "retro";
 }
 
 /** retro2003 은 적 chrome(이름·HUD)을 대상 선택 때만 펼친다 — 그 안의 배지도 함께 숨었다.
  *  이 스킨에서는 배지를 적 노드 직계로 달아 스프라이트 위에 늘 보이게 한다. */
 function enemyIconsOutsideChrome(): boolean {
-  return activeSkin().id === "retro2003";
+  return activeSkin().motionStyle === "retro";
 }
 
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
@@ -263,6 +266,9 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
       });
     }
   } else applyBattleBackdropMotion(backdrop, troopBackdropAnimation(snapshot.troopId));
+  // 배경 겹(안개·구름·비 …)은 스킨과 무관하게 깐다 — 겹 배경 스킨에서도 지형 카메라 위(z 1)에 놓인다.
+  const troop = project.database.troops.find((entry) => entry.id === snapshot.troopId);
+  syncBattleBackdropLayers(field, troop?.backdropLayers, project);
   return field;
 }
 
@@ -627,7 +633,12 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   node.classList.toggle("battle-target-candidate", targetable);
   node.classList.toggle("battle-target-selected", selected);
   // 쓰러지는 순간(살아 있음 → 격파) 조각을 한 번 뿌린다. 이후 동기화에서는 다시 뿌리지 않는다.
-  if (presented.defeated && !node.classList.contains("defeated")) spawnDeathShards(node);
+  // 저작한 쓰러짐 연출(collapseEffect)이 있으면 그것이 조각을 대신한다. 도트 측면 스킨은 막타 순간에 이미
+  // defeated 를 달아 두므로(retroDamage) 클래스가 있어도 연출 시작은 다시 묻는다 — 한 번만 시작한다.
+  if (presented.defeated) {
+    const authored = beginEnemyCollapse(node);
+    if (!authored && !node.classList.contains("defeated")) spawnDeathShards(node);
+  }
   node.classList.toggle("defeated", presented.defeated);
   applyBattlerPose(node, presented.pose);
   node.dataset.battleTargetable = targetable ? "true" : "false";
@@ -1079,6 +1090,7 @@ function enemyButton(
   const skinUrl = skinEnemySpriteUrl();
   const url = perEnemyUrl ?? skinUrl;
   if (resourceId) enemyNode.dataset.monsterResourceId = resourceId;
+  if (record?.collapseEffect) enemyNode.dataset.collapse = record.collapseEffect;
   if (url) {
     const image = document.createElement("img");
     image.className = "battle-enemy-image";
@@ -1113,7 +1125,10 @@ function enemyButton(
     brackets.setAttribute("aria-hidden", "true");
     enemyNode.append(brackets);
   }
-  if (enemy.defeated) enemyNode.classList.add("defeated");
+  if (enemy.defeated) {
+    enemyNode.classList.add("defeated");
+    markEnemyCollapsed(enemyNode);
+  }
   enemyNode.disabled = enemy.defeated || snapshot.targetSelection?.side !== "enemy" || !snapshot.targetSelection.targetIds.includes(enemy.id);
   return enemyNode;
 }
@@ -1246,7 +1261,7 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   }
   // 정면 사이드뷰에서는 배우가 저작한 전투 시트를 최우선으로 쓴다. 스킨 공용 전사/마법사를
   // 먼저 쓰면 모든 짝수 배우와 홀수 배우가 각각 같은 사람으로 보이고 faceset과도 어긋난다.
-  const resourceId = place.partyFacing === "front" ? resolvePartyBattleCharset(actor, activeSkin().id === "retro2003") : undefined;
+  const resourceId = place.partyFacing === "front" ? resolvePartyBattleCharset(actor, activeSkin().motionStyle === "retro") : undefined;
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
@@ -1799,6 +1814,33 @@ function syncBattleAura(node: HTMLElement, stateIds: readonly string[]): void {
     layer.append(part);
   }
   node.append(layer);
+  requestAnimationFrame(() => fitAuraLayerToSprite(node, layer));
+}
+
+/**
+ * 오라 층을 노드가 아니라 **보이는 몸**(불투명 픽셀 상자)에 맞춘다. 도트 측면 스킨의 적 노드·그림 칸은 몸보다 훨씬 커서
+ * (144px 칸의 아래 ⅓ 이 슬라임), 노드 기준 top 2% 에 둔 Z·말풍선이 몸에서 한 뼘 위 허공에 떴다(2026-10-02 실측).
+ * 그림을 한 번 떠서 잰다 — 못 재면(배치 전·교차 출처) 노드 전체로 둔다.
+ */
+function fitAuraLayerToSprite(node: HTMLElement, layer: HTMLElement): void {
+  const sprite = battlerSpriteNode(node);
+  if (sprite === node || !layer.isConnected) return;
+  void snapshotSprite(node, sprite, 1).then((snapshot) => {
+    if (!snapshot || !layer.isConnected) return;
+    const bounds = opaqueBounds(snapshot.source);
+    if (!bounds) return;
+    const { box } = snapshot;
+    // 뒤집혀 그려진 그림은 가로 비율도 뒤집힌다.
+    const left = snapshot.mirrored ? 1 - bounds.right : bounds.left;
+    const right = snapshot.mirrored ? 1 - bounds.left : bounds.right;
+    Object.assign(layer.style, {
+      inset: "auto",
+      left: `${box.left + box.width * left}px`,
+      top: `${box.top + box.height * bounds.top}px`,
+      width: `${box.width * (right - left)}px`,
+      height: `${box.height * (bounds.bottom - bounds.top)}px`,
+    });
+  });
 }
 
 /** 힘 모으기(SkillRecord.chargeTurns) 예고 표식: 몸이 빛나고(CSS) 머리 위에 「기술 · 남은 차례」 띠가 뜬다. */
