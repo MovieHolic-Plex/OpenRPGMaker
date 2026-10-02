@@ -19,6 +19,9 @@ header h1 { font-size:16px; margin:0 6px 0 0; white-space:nowrap; }
 .pool .live { color:var(--ok); }
 .wrap { display:flex; height:calc(100vh - 50px); }
 nav { width:250px; flex:none; overflow:auto; border-right:1px solid var(--line); background:#1f1d23; }
+button.chip { border:0; cursor:pointer; font:inherit; font-size:12px; }
+nav h3.fold { cursor:pointer; }
+nav h3.fold:hover { color:var(--text); }
 nav h3 { margin:0; padding:10px 12px 4px; font-size:12px; color:var(--dim); font-weight:600; letter-spacing:.02em; }
 nav .it { display:flex; gap:8px; align-items:center; padding:6px 10px; cursor:pointer; border-left:3px solid transparent; }
 nav .it:hover { background:var(--panel2); }
@@ -142,7 +145,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
   <button class="tab" data-v="objs">기물 골라 새로 뽑기</button>
   <span class="chip">고를 차례 <b id="cReady">0</b></span>
   <span class="chip">그리는·검수 중 <b id="cDraw">0</b></span>
-  <span class="chip">끝남 <b id="cDone">0</b></span>
+  <button class="chip" id="cDoneBtn" title="끝난 기물(이미 고른 것)은 목록에서 접어 둔다 — 눌러서 펼치기/접기">끝남 <b id="cDone">0</b></button>
   <span class="chip" id="cEng" title="마지막으로 그린 쪽 — 다시 그린 후보는 마지막 그림의 엔진"></span>
   <span class="pool" id="pool"></span>
 </header>
@@ -155,7 +158,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 <script>
 const ENG = {codex:'Codex', claude:'Sonnet'};
 const ENG_FULL = {codex:'Codex gpt-6.1-sol', claude:'Claude Sonnet 5.5'};
-const S = { eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'both', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
+const S = { showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'both', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
             objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -209,6 +212,8 @@ async function load(keep) {
   clearTimeout(S._poll); S._poll = setTimeout(() => load(true), (p.alive || its.some(i => i.status === 'drawing')) ? 3000 : 15000);
 }
 
+function toggleDone() { S.showDone = !S.showDone; renderNav(); }
+
 function renderNav() {
   const g = {ready:'고를 차례', drawing:'그리는·검수 중', done:'끝남'};
   const engOf = i => [...new Set(i.rounds.at(-1).runs.map(r => r.engine).filter(Boolean))];
@@ -216,7 +221,8 @@ function renderNav() {
   let h = `<div class="engf">그린 쪽 <span class="seg">${[['all', '전체'], ['codex', 'Codex'], ['claude', 'Sonnet']].map(([k, v]) => `<button data-eng="${k}" class="${S.eng === k ? 'on' : ''}">${v}</button>`).join('')}</span></div>`;
   for (const k of ['ready', 'drawing', 'done']) {
     const L = its.filter(i => i.status === k); if (!L.length) continue;
-    h += `<h3>${g[k]} · ${L.length}</h3>`;
+    if (k === 'done') { if (!its.some(i => i.status !== 'done')) h += '<div class="empty" style="padding:14px 12px">고를 차례인 기물이 없다.<br>새로 뽑으려면 위 「기물 골라 새로 뽑기」.</div>'; h += `<h3 class="fold" data-fold>${g[k]} · ${L.length} ${S.showDone ? '▾ 접기' : '▸ 펼치기'}</h3>`; if (!S.showDone) continue; }
+    else h += `<h3>${g[k]} · ${L.length}</h3>`;
     for (const i of L) {
       const b = k === 'drawing' ? `${i.rounds.at(-1).runs.length - i.busy}/${i.rounds.at(-1).runs.length}` : k === 'ready' ? `${i.readyCount}장` : '✓';
       h += `<div class="it ${i.id === S.cur ? 'cur' : ''}" data-id="${esc(i.id)}"><span class="th"><img src="/api/harness/thumb/${i.slug}.png" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'nb',textContent:'새'}))"></span>
@@ -224,6 +230,7 @@ function renderNav() {
     }
   }
   $('#nav').innerHTML = h || '<div class="empty" style="padding:20px">아직 판이 없다.<br>위 「기물 골라 새로 뽑기」에서 시작.</div>';
+  $('#nav').querySelectorAll('[data-fold]').forEach(b => b.onclick = toggleDone);
   $('#nav').querySelectorAll('[data-eng]').forEach(b => b.onclick = () => { S.eng = b.dataset.eng; renderNav(); });
   $('#nav').querySelectorAll('.it').forEach(e => e.onclick = () => { S.waitNext = false; S.cur = e.dataset.id; S.round = null; S.sel = null; S.rej = {}; S.memo = ''; renderNav(); renderPick(); });
 }
@@ -419,6 +426,7 @@ document.addEventListener('keydown', e => {
   }
 });
 document.addEventListener('keyup', e => { if (e.key === ' ' && S.flip) { S.flip = false; const b = document.getElementById('cmpB'); if (b && b.dataset.o) b.src = b.dataset.o; } });
+$('#cDoneBtn').onclick = toggleDone;
 load();
 </script>
 </body>
