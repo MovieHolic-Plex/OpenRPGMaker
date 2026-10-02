@@ -572,55 +572,37 @@ def gate_small(bays=6, pass_w=32):
     return c
 
 
-def gate_side(bays=5, rows=10, ramp='teal', seed=3, pier=None, plaster=False):
-    """측면 문루 (동·서문용): 세로 성벽을 가로질러 길이 동서로 뚫린 문. 3/4 시점에서 위에서 본 모습 — 용마루가 남북으로 달리는 맞배 지붕이
-    벽 위를 타고 앉아 길 위를 덮고(길은 지붕 밑으로 들어가 반대편으로 나온다), 남쪽 끝은 박공 + 기둥몸(벽 끝)이다.
-    폭 bays 칸(벽 3칸 + 양쪽 처마 1칸씩 = 5), 높이 rows 칸. 위 쪽 기둥몸 · 가운데 통로 4칸 · 아래 3칸 기둥몸(앞면). 정면 문루(gate_small)와 달리 아치가 정면을 향하지 않는다.
-    pier = (x0, x1) 기둥몸 앞면 폭(px, 기본 = 지붕보다 양쪽 4px 안쪽). plaster=True 면 회벽 + 돌 기초(궁 담 문), 아니면 장대석 쌓기(성벽 문)."""
+def gate_side(bays=5, rows=11, ramp='teal', seed=3, post=(16, 64), plaster=False):
+    """측면 문루 (동·서문용): 세로 성벽을 가로질러 길이 동서로 뚫린 열린 문루. 3/4 시점에서 용마루가 남북으로 달리는 맞배 지붕이 벽 위에 높이 얹히고
+    (화면에서는 실제 자리보다 3칸 위에 그려진다), 지붕 아래 맨 아래 4행은 비어 있어 길(석판)이 지붕 밑을 가로질러 보인다. 남쪽 처마 밑 양끝에 기둥, 길 위에는 처마 그늘.
+    폭 bays 칸, 높이 rows 칸(위 rows-4 행 = 지붕, 아래 4행 = 통로). post = 기둥 x 범위(px). plaster 면 회벽 박공 + 갈색 기둥(궁 담 문), 아니면 돌 기둥(성벽 문).
+    통행: 맨 아래 4행. 지붕 행은 막힘."""
     import gungnae_houses as GH
     W, H = bays * T, rows * T
     c = Cv(W, H)
     x0, x1 = 2, W - 2
-    stone_h = 48
-    y_e = H - stone_h
+    y_e = (rows - 4) * T
     half = (x1 - x0) / 2.0
     rise = int(max(8, min(22, half * 0.52)))
     yb = y_e - rise - 2
     G = GH.RAMPS[ramp]
-    px0, px1 = pier if pier else (6, W - 6)
-    GH.gable_band(c, x0, x1, 6, yb, y_e, G, 'tile', 'cap', 'gable', wall=(px0 + 2, px1 - 2), seed=seed)
-    if plaster:
-        P = RGB['plaster']
-        for y in range(y_e, H):                                         # 회벽 몸체 + 돌 기초
-            for x in range(px0, px1):
-                f = (x - px0) / max(1, px1 - px0 - 1)
-                t = 5 if f < 0.3 else (4 if f < 0.75 else 3)
-                if y >= H - 12:
-                    t = S[5 if f < 0.3 else (4 if f < 0.75 else 3)] and 0
-                    c.put(x, y, S[(5 if f < 0.3 else (4 if f < 0.75 else 3)) if (y - (H - 12)) % 6 else 6])
-                else:
-                    c.put(x, y, P[t if rnd(x, y, 19) > 0.1 else t - 1])
-        for x in range(px0, px1):
-            c.put(x, y_e, S[2]); c.put(x, y_e + 1, S[6])
+    GH.gable_band(c, x0, x1, 6, yb, y_e, G, 'tile', 'cap', 'gable', wall=(post[0] - 2, post[1] + 6), seed=seed)
+    Wd = RGB['wood']
+    px0, px1 = post
+    for xp in (px0 - 2, px1 - 4):                                       # 남쪽 처마 밑 기둥(통로 양끝, 아래 4행 높이)
         for y in range(y_e, H):
-            c.put(px0, y, S[6]); c.put(px1 - 1, y, S[3])
-    else:
-        for y in range(y_e, H):
-            for x in range(px0, px1):
-                c.put(x, y, S[4])
-        ashlar_face(c, px0, y_e, px1, H, seed=seed, ch=6, bw=8)
-        for x in range(px0, px1):
-            c.put(x, y_e, S[2]); c.put(x, y_e + 1, S[6]); c.put(x, y_e + 2, S[5])
-        for y in range(y_e, H):
-            for k, xx in enumerate(range(px0, px0 + 4)):
-                c.put(xx, y, S[6 if k == 0 else (5 if k == 1 else 4)])
-            for k, xx in enumerate(range(px1 - 4, px1)):
-                c.put(xx, y, S[3 if k < 3 else 2])
-        _plaque(c, (px0 + px1) // 2, y_e + 12, w=18 if px1 - px0 >= 40 else 12)
+            for k in range(6):
+                if plaster or True:
+                    t = (5, 4, 4, 3, 3, 2)[k] if not plaster else (5, 4, 4, 3, 2, 1)[k]
+                    c.put(xp + k, y, S[t] if not plaster else Wd[t])
+        for k in range(8):                                              # 주춧돌
+            c.put(xp - 1 + k, H - 2, S[6]); c.put(xp - 1 + k, H - 1, S[3])
+    for y in range(y_e, y_e + 6):                                       # 지붕 밑 처마 그늘(길 위, 반투명)
+        for x in range(px0 + 4, px1 - 2):
+            c.put(x, y, SHADOW, 120 - (y - y_e) * 18)
     outline(c)
-    ground_shadow(c, (px0 + px1) // 2 + 4, H - 2, max(6, (px1 - px0) // 2 - 4), 3, 70)
-    PASSAGE[f'gungnae_gate_side_{bays}'] = {'cols': (0, bays), 'rows': (rows - 7, rows - 3),
-                                            'note': '가운데 4행이 동서로 걷는 통로(위 쪽 기둥몸 제외, 아래 3행 기둥몸 제외). 지붕은 캐릭터 위에 그린다.'}
+    PASSAGE[f'gungnae_gate_side_{bays}'] = {'cols': (0, bays), 'rows': (rows - 4, rows),
+                                            'note': '맨 아래 4행이 동서로 걷는 통로(길이 지붕 밑을 지난다). 위 행은 지붕이라 막힘, 지붕은 캐릭터 위에 그린다.'}
     return c
 
 
@@ -1038,8 +1020,8 @@ def objects():
     d['gungnae_gate_great_12'] = gate_great(12, 64)
     d['gungnae_gate_great_8'] = gate_great(8, 32, variant=2)
     d['gungnae_gate_small_6'] = gate_small(6, 32)
-    d['gungnae_gate_side_5'] = gate_side(5, 10)
-    d['palace_gate_side_3'] = gate_side(3, 9, ramp='giwa', seed=5, pier=(16, 32), plaster=True)
+    d['gungnae_gate_side_5'] = gate_side(5, 11)
+    d['palace_gate_side_3'] = gate_side(3, 11, ramp='giwa', seed=5, post=(14, 36), plaster=True)
     d['gungnae_tower_corner_5'] = tower_corner(5)
     d['gungnae_tower_corner_4'] = tower_corner(4)
     d['gungnae_bridge_h4'] = stone_bridge_h(4, 3, 0)

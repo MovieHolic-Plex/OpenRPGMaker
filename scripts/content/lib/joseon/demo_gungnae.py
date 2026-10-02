@@ -146,7 +146,7 @@ paint('slab', 46, 2, 49, YN)                                                   #
 paint('slab', 46, YN + 1, 49, 28)                                              # 북문 → 해자 다리 앞(다리 데크가 21..27 을 덮는다)
 paint('slab', 46, YS - 12, 49, YS + 6)                                         # 남문(그림 덮음)·성 안 앞·성 밖 대로
 # --- 동·서 측면 문루 통로(성벽을 동서로 가로지르는 길, 폭 4: 행 46..49 = 궁 가운데 축)
-GATE_Y0, GATE_Y1 = 43, 52                          # 측면 문루 그림이 덮는 행(위 돌 3 · 통로 4 · 아래 돌 3)
+GATE_Y0, GATE_Y1 = 39, 49                          # 측면 문루 그림이 덮는 행(위 지붕 7 · 통로 4)
 GAP_Y0, GAP_Y1 = 46, 49
 paint('road', 0, GAP_Y0, 27, GAP_Y1); paint('road', 68, GAP_Y0, MW - 1, GAP_Y1)
 paint('slab', XW - 1, GAP_Y0, XW + 3, GAP_Y1); paint('slab', XE - 1, GAP_Y0, XE + 3, GAP_Y1)
@@ -170,7 +170,7 @@ def wall_ring():
         P(V3[y % 3], XW, y, 'foot'); P(VE3[y % 3], XE, y, 'foot')
     for gx in (XW - 1, XE - 1):
         P('gungnae_gate_side_5', gx, GATE_Y0, None)
-        for yy in list(range(GATE_Y0, GAP_Y0)) + list(range(GAP_Y1 + 1, GATE_Y1 + 1)):
+        for yy in range(GATE_Y0, GAP_Y0):
             for xx in range(gx + 1, gx + 4):
                 BODY.add((xx, yy))
     # 모서리 망루(폭 4: 성벽 바깥으로 한 칸 나온다)
@@ -244,7 +244,7 @@ for x in list(range(42, 45)) + list(range(33, 36)) + list(range(52, 58)):
 # 서쪽 연못(좌성황 섬): 해자에서 떨어진 못
 w_ell(25, 40, 5.0, 4.2)
 # 동쪽 큰 호수(감옥 섬 · 도사의 길 섬): 해자 동변과 이어져 한 덩이 물이 된다
-w_ell(75, 59, 8.2, 6.6)
+w_ell(75, 58.5, 8.6, 7.0)
 w_clean()
 # --- 섬(연못 안 땅): 좌성황 섬 · 감옥 섬 · 도사의 길 섬
 ISLANDS = []
@@ -256,7 +256,7 @@ def island(cx, cy, rx, ry):
 
 
 island(25, 40, 2.0, 1.7)
-island(75, 58, 4.4, 3.8)
+island(75, 57.5, 4.5, 3.8)
 island(80.5, 54.5, 1.9, 1.5)
 w_clean(2)
 for (x, y) in WATER:
@@ -335,12 +335,12 @@ def palace():
     P('palace_wall_nw', PX0_, PY0_); P('palace_wall_ne', PX1_, PY0_)
     P('palace_wall_sw', PX0_, PY1_ - 2); P('palace_wall_se', PX1_, PY1_ - 2)
     for y in range(PY0_ + 2, PY1_ - 2):
-        if 44 <= y <= 52:                                # 서·동 측면 궁문 자리
+        if 39 <= y <= 49:                                # 서·동 측면 궁문 자리
             continue
         P('palace_wall_v', PX0_, y); P('palace_wall_v_e', PX1_, y)
     for gx in (PX0_ - 1, PX1_ - 1):                      # 서·동 궁문: 담을 가로질러 길이 동서로 지난다(행 46..49)
-        P('palace_gate_side_3', gx, 44, None)
-        for yy in (44, 45, 50, 51, 52):
+        P('palace_gate_side_3', gx, 39, None)
+        for yy in range(39, 46):
             BODY.add((gx + 1, yy))
     for gy in (PY0_ - 3, PY1_ - 5):                      # 북·남 궁문(담이 문 기둥 곁까지 이어진다: 문 뒤로 담을 깐다)
         P('palace_gate_4', 45, gy, None)
@@ -429,6 +429,7 @@ def jumak(x0, y0, ramp_front=('gn_jm_row_room_4', 'gn_jm_daemun_6'), wall='gn_mu
 building('gn_shop_armory', 12, 17, 4)                                               # 9×7
 building('gn_shop_cloth', 19, 26, 4)                                                # 8×7, 위 상점과 두 줄 떨어뜨림
 building('gn_shop_smithy', 12, 35, 3)                                               # 8×7
+building('giwa_house_3', 23, 18, 2)                                                 # 상점 옆 기와 민가(두 칸 띄움)
 jumak(12, 54)                                                                       # 서남 ㅁ자 주막(담 포함 x 12..27, y 54..71)
 building('gn_thatch_b', 13, 74, 2)                                                  # 서남 초가(문 앞은 장터)
 paint('yard', 20, 72, 27, 80)                                                       # 서남 주막 앞 큰 맨 흙 마당(장터)
@@ -436,16 +437,18 @@ for nm, x, y in (('market_stall_cloth', 21, 76), ('market_stall_pots', 25, 76), 
     P(nm, x, y, 'foot')
 P('seonangdang', 24, 39, 'foot')                                                    # 좌성황 섬 사당
 # --- 동쪽(x 68..83)
-building('giwa_sadang', 73, 38, 2); building('gn_thatch_b', 78, 38, 2)              # 우성황 · 초가
+building('giwa_house_3', 69, 37, 2); building('giwa_sadang', 75, 38, 2); building('thatch_hut_2', 80, 38, 2)   # 기와 민가 · 우성황 · 초가(한 칸씩 띄움)
 P('gwanah_5', 72, 55, 'body')                                                       # 감옥(섬 위)
 DOORS.append({'x': 75, 'y': 61, 'piece': 'gwanah_5'})
 for xx in range(73, 78):
     KG[61][xx] = 'yard'                                                             # 섬 남쪽 가장자리 길
 building('tower_yesik_7', 72, 66, 5, solid='foot', apron=False)                     # 예식장(호수 남쪽, 고리 길 앞)
+paint('field', 68, 66, 71, 70); P('scarecrow', 70, 69)                              # 예식장 서쪽 텃밭
 paint('diamond', 68, 80, 83, 82)                                                    # 예식장 앞 마름모 무늬 마당
 # --- 남쪽 띠(해자 아래, 행 72..81)
-building('gn_l_giwa_6', 30, 72, 4)                                                  # 남서 ㄱ자 기와
-building('gn_shop_butcher', 37, 73, 3)                                              # 남문 서쪽 상점
+building('gn_l_giwa_6', 28, 72, 4)                                                  # 남서 ㄱ자 기와
+building('giwa_house_3', 37, 74, 2)                                                 # 남문 서쪽 민가
+building('thatch_hut_2', 67, 72, 2)                                                 # 예식장 서쪽 초가
 building('gn_g2_inn_6', 57, 72, 3)                                                  # 남문 동쪽 객주
 
 
@@ -520,7 +523,7 @@ def beside(bname, cands, side='LR'):
 
 
 beside('gn_thatch_b', ['jangdokdae']); beside('gn_l_giwa_6', ['jars'])
-beside('giwa_sadang', ['stele', 'sotdae'])
+beside('giwa_sadang', ['stele', 'sotdae']); beside('giwa_house_3', ['jars', 'jangdokdae'])
 beside('gn_g2_inn_6', ['jars', 'jangdokdae'], 'R'); beside('gn_shop_butcher', ['firewood'], 'L')
 beside('tower_sulsa_5', ['stone_pagoda', 'lantern'], 'L'); beside('tower_yesik_7', ['lantern', 'sotdae'], 'L')
 beside('gn_shop_cloth', ['firewood'], 'R')
@@ -663,7 +666,7 @@ def forest_band():
             Tf(band_pick(i, 3 if side == 'W' else 4, xs[i % 2], yb), xs[i % 2], yb)
 
 
-forest_band()
+# (바깥 숲띠는 아래 forest_band2 가 불규칙하게 심는다)
 
 # --- 나무 채움: 풀밭마다 3~5칸당 하나(큰 나무·작은 나무·덤불 섞기, 같은 그림 6칸 안 반복 금지)
 import random as _rand
@@ -748,9 +751,88 @@ def fill_trees(target_dist=2, tries=1, weights=(0.45, 0.33, 0.22)):
                     break
 
 
+def band_ok(name, w, h, x, yb, region):
+    """바깥 숲띠 후보: 풀 칸 위, 다른 나무와 겹치지 않고(1칸 여유), 같은 그림이 6칸 안에 또 서지 않으며, 성벽·망루·문·길 위에 수관이 얹히지 않는다."""
+    y = yb + 1 - h
+    for xx in range(x, x + w):
+        if not inb(xx, yb) or KG[yb][xx] is not None or (xx, yb) in BODY:
+            return False
+    for yy in range(max(0, y), yb):
+        for xx in range(x, x + w):
+            if inb(xx, yy) and KG[yy][xx] in _DIRT:
+                return False
+    for (rx, ry, rw, rh) in NONTREE_RECTS:
+        if x < rx + rw and rx < x + w and y < ry + rh and ry < yb + 1:
+            return False
+    for xx in range(x + 1, x + w - 1):
+        for yy in (yb - 1, yb):
+            if (xx, yy) in OCC:
+                return False
+    if not name.startswith('bush'):
+        if any(n == name and abs(x - tx) <= 6 and abs(yb - ty) <= 6 for (n, tx, ty, _, _) in TREEPOS):
+            return False
+    return True
+
+
+def forest_band2():
+    """성벽 밖 숲띠: 격자·한 줄 대신, 후보 칸을 무작위로 돌며 큰 나무·중간 나무·덤불을 섞어 2~3겹으로 심는다(간격·크기·종류가 들쭉날쭉)."""
+    rg = _rand.Random(41)
+    # (x 범위, 발 행 범위)
+    regions = [((2, 93), (7, 9)), ((2, 93), (4, 8)), ((2, 93), (89, 93)), ((2, 93), (90, 93)), ((2, 6), (12, 86)), ((89, 93), (12, 86)), ((2, 6), (12, 86)), ((89, 93), (12, 86))]
+    for (xa, xb), (ya, yb_) in regions:
+        cells = [(x, y) for y in range(ya, yb_ + 1) for x in range(xa, xb + 1)]
+        rg.shuffle(cells)
+        for (cx, cy) in cells:
+            if (cx, cy) in OCC:
+                continue
+            pool = rg.choices([BIG, MID, BUSH], weights=(0.6, 0.32, 0.08), k=1)[0]
+            cand = list(pool); rg.shuffle(cand)
+            for name, w, h in cand[:3]:
+                x = cx - w // 2
+                if xa == 2 and xb == 6 and x + w - 1 > 6:
+                    x = 7 - w
+                if xa == 89 and x < 89:
+                    x = 89
+                if x < 2 or x + w - 1 > 93:
+                    continue
+                if band_ok(name, w, h, x, cy, ((xa, xb), (ya, yb_))):
+                    Tf(name, x, cy)
+                    for xx in range(x, x + w):
+                        for yy in range(cy - 1, cy + 1):
+                            OCC.add((xx, yy))
+                    break
+
+
+_n0 = len(TREEPOS)
+forest_band2()
+print('숲띠 나무', len(TREEPOS) - _n0)
 _n0 = len(TREEPOS)
 fill_trees(2, 3)
 fill_trees(1, 3, (0.25, 0.4, 0.35))
+fill_trees(1, 4, (0.05, 0.3, 0.65))
+
+
+def top_up(x0, y0, x1, y1, want, seed=3):
+    """맨 잔디가 넓은 창(M1)을 채운다: 해당 사각형 풀 칸에 중간 나무·덤불을 간격 0 으로 심는다."""
+    rg = _rand.Random(seed)
+    cells = [(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1) if KG[y][x] is None]
+    rg.shuffle(cells)
+    n = 0
+    for (cx, cy) in cells:
+        if n >= want:
+            break
+        pool = rg.choice([MID, MID, BUSH])
+        name, w, h = rg.choice(pool)
+        x = cx - w // 2
+        if tree_ok(name, w, h, x, cy, 0 if not name.startswith('bush') else 0) :
+            Tf(name, x, cy); n += 1
+            for xx in range(x, x + w):
+                for yy in range(cy - 1, cy + 1):
+                    OCC.add((xx, yy))
+
+
+for (_a, _b, _c, _d, _w) in ((63, 31, 83, 45, 14), (36, 58, 58, 78, 12), (60, 62, 85, 80, 12), (10, 36, 27, 44, 6), (60, 28, 69, 40, 6), (28, 72, 36, 80, 4)):
+    top_up(_a, _b, _c, _d, _w)
 print('채움 나무', len(TREEPOS) - _n0)
 # ================================================================ ==== PIPELINE (맨 아래 고정) ====
 def finish(tag='stage'):
