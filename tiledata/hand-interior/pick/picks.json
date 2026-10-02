@@ -274,6 +274,11 @@
   "choice": "v5",
   "note": ""
  },
+ "billiard table": {
+  "at": "2026-10-02T22:39:04+09:00",
+  "choice": "h240-A",
+  "note": ""
+ },
  "birdcage": {
   "at": "2026-10-01T15:07:38+09:00",
   "choice": "w73-A",
@@ -322,6 +327,11 @@
  "bow rack": {
   "at": "2026-10-01T15:07:38+09:00",
   "choice": "w70-A",
+  "note": ""
+ },
+ "boxcar": {
+  "at": "2026-10-02T22:36:59+09:00",
+  "choice": "h234-E",
   "note": ""
  },
  "bread oven": {
@@ -514,9 +524,19 @@
   "choice": "w42-A",
   "note": ""
  },
+ "clock gears": {
+  "at": "2026-10-02T22:35:22+09:00",
+  "choice": "h228-A",
+  "note": ""
+ },
  "coal bin": {
   "at": "2026-09-30T05:05:45+09:00",
   "choice": "w10-B",
+  "note": ""
+ },
+ "coal tender": {
+  "at": "2026-10-02T22:36:51+09:00",
+  "choice": "h233-B",
   "note": ""
  },
  "coal wagon": {
@@ -772,6 +792,16 @@
   "choice": "w6-B",
   "note": ""
  },
+ "dragon nest": {
+  "at": "2026-10-02T22:37:58+09:00",
+  "choice": "h238-C",
+  "note": ""
+ },
+ "dragon skeleton": {
+  "at": "2026-10-02T22:35:13+09:00",
+  "choice": "h227-A",
+  "note": ""
+ },
  "drain grate": {
   "at": "2026-09-30T05:15:13+09:00",
   "choice": "v5",
@@ -869,6 +899,11 @@
   "choice": "w7-B",
   "note": ""
  },
+ "giant crystal": {
+  "at": "2026-10-02T22:38:54+09:00",
+  "choice": "h242-C",
+  "note": ""
+ },
  "gilded wardrobe": {
   "at": "2026-10-02T07:38:53+09:00",
   "choice": "h141-B",
@@ -877,6 +912,16 @@
  "globe": {
   "at": "2026-10-01T15:07:38+09:00",
   "choice": "w71-A",
+  "note": ""
+ },
+ "grand aquarium": {
+  "at": "2026-10-02T22:35:32+09:00",
+  "choice": "h229-A",
+  "note": ""
+ },
+ "grand piano": {
+  "at": "2026-10-02T22:37:29+09:00",
+  "choice": "h236-A",
   "note": ""
  },
  "grave bouquet": {
@@ -1092,6 +1137,11 @@
  "knight armor": {
   "at": "2026-10-02T07:17:19+09:00",
   "choice": "h134-E",
+  "note": ""
+ },
+ "knight colossus": {
+  "at": "2026-10-02T22:35:56+09:00",
+  "choice": "h230-D",
   "note": ""
  },
  "lab bench": {
@@ -1476,6 +1526,11 @@
   "choice": "w4-C",
   "note": ""
  },
+ "royal bed": {
+  "at": "2026-10-02T22:39:19+09:00",
+  "choice": "h241-E",
+  "note": ""
+ },
  "royal chest": {
   "at": "2026-10-01T13:58:50+09:00",
   "choice": "w42-A",
@@ -1813,6 +1868,11 @@
  "statue": {
   "at": "2026-10-01T15:07:40+09:00",
   "choice": "w74-A",
+  "note": ""
+ },
+ "steam boiler": {
+  "at": "2026-10-02T22:36:44+09:00",
+  "choice": "h232-E",
   "note": ""
  },
  "steam locomotive": {
