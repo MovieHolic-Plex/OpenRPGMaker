@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import { BACKDROP_SCROLL_TILE_PX, battleBackdropMotion } from "@/battle/battleBackdrop";
 import { createBattleRuntime } from "@/battle/runtime";
 import { normalizeBattleBackdropAnimation } from "@/project/battleBackdropAnimation";
+import { applyBattleMethod } from "@/project/battleMethod";
 import { normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
@@ -185,7 +186,19 @@ describe("troop editor exposes backdrop motion", () => {
   beforeEach(() => { store.replace(createBlankProject()); });
   afterEach(() => { restore?.(); restore = undefined; });
 
+  // 그림 한 장을 움직이는 효과라 그림을 그대로 까는 몬스터 대치에서만 칸을 보인다(2026-10-02).
+  it("hides the motion fields in the default side-view battle", () => {
+    const troop = store.getCurrent().database.troops[0]!;
+    const form = document.createElement("section");
+    document.body.append(form);
+    renderTroopRecordForm(form, troop, () => undefined);
+    expect(form.querySelector("[data-testid='db-troop-backdrop-motion']")).toBeNull();
+    expect(form.querySelector("[data-testid='db-troop-scenery-scenery']")).not.toBeNull();
+    form.remove();
+  });
+
   it("writes scroll/wave/palette values that survive save and load", () => {
+    store.update((project) => applyBattleMethod(project, "monster"));
     const troop = store.getCurrent().database.troops[0]!;
     const form = document.createElement("section");
     document.body.append(form);

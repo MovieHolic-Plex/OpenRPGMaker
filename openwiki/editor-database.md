@@ -10,12 +10,26 @@
   - 「타격감」(`db-battle-hit-feel-card`, `db-field-system-battle-hit-feel`)과 「전투 화면 꾸미기」(`db-battle-look-card`, `battleLookFields`)는 시스템 탭에서 옮겨 왔다. CSS 스코프도 `.db-system-form` → `.db-battle-screen-studio`(`system-studio.css`).
   - 지운 것: 적 그림을 사선으로 늘어놓던 가짜 무대 미리보기·적 그룹 띠·「시스템 › 시작 설정 열기」 링크(`db-battle-screen-*`), 「전투 시스템 리소스」(`db-field-battle-system-resource` — 런타임은 아무도 읽지 않는 CSS 변수 `--runtime-battle-system2` 만 썼다).
 - **시스템 › 시작 설정**: 전투 UI 스타일(`db-field-system-battle-ui-style`)·규칙 모델(`db-field-system-battle-model`) 칸 삭제. 전투 흐름·참전 수는 여기 한 곳에만 남는다(전투 화면 탭에 겹쳐 있던 사본 삭제). 「전투 화면 탭으로」 이동 버튼은 `switchToBattleScreenTab`.
-- **적·종족**: 투명(`db-field-enemy-transparent`)·비행(`-flying`)·색조(`db-monster-species-hue`, 적 그래픽 대화의 색조)·몬스터 리소스 ID 글칸(`db-field-enemy-monster-resource`)·적 미리보기 일시정지(`db-enemy-preview-pause`) 삭제. 런타임은 `transparent`/`flying`/`graphicHue` 를 읽지 않는다(아래 authoringOnly 공시는 그대로). 그림은 「그래픽 바꾸기」 대화로만 고른다. 종족과의 「그래픽이 종족과 다름」 표시는 그림(`monsterResourceId`)만 비교한다 — 지운 칸 차이로 고칠 데 없는 경고가 뜨지 않게. 조수 `upsert` 스키마(`dbTools.ts`)와 `set_project_settings resources`(`battleSystemResourceId`)에서도 이 칸들을 뺐다(저장·변경 함수는 옛 데이터 호환으로 남김).
+- **적·종족**: 투명(`db-field-enemy-transparent`)·비행(`-flying`)·색조(`db-monster-species-hue`, 적 그래픽 대화의 색조)·몬스터 리소스 ID 글칸(`db-field-enemy-monster-resource`)·적 미리보기 일시정지(`db-enemy-preview-pause`) 삭제. 런타임은 `transparent`/`flying`/`graphicHue` 를 읽지 않는다(authoringOnly 공시도 같이 지웠다 — 아래 잔여 정리). 그림은 「그래픽 바꾸기」 대화로만 고른다. 종족과의 「그래픽이 종족과 다름」 표시는 그림(`monsterResourceId`)만 비교한다 — 지운 칸 차이로 고칠 데 없는 경고가 뜨지 않게. 조수 `upsert` 스키마(`dbTools.ts`)와 `set_project_settings resources`(`battleSystemResourceId`)에서도 이 칸들을 뺐다(저장·변경 함수는 옛 데이터 호환으로 남김).
 - **아이템**: 옛 장비 프로필·사용 메시지 UI 는 이미 없었고 남은 죽은 코드만 지웠다(`databaseItemRecordView.ts`).
 - **전투 애니메이션**: 레일 칸 `db-tab-animations` 삭제 → 도트 연출(`retroChoreographies`)의 하위 보기 「옛 전투 애니메이션 (대체용)」(`PARTY_SUBVIEW_PARENT.animations`, 하위 내비 `db-subview-retro-choreographies`·`db-subview-animations`). 도트 측면 전투는 스킬에 도트 연출이 있으면 셀 애니메이션을 그리지 않으므로(`battleDom.ts`) 연출 없는 스킬의 대체용·몬스터 대치 전용이다. 탭 검색 「전투 애니메이션」「animations」는 도트 연출에 걸린다(`LEGACY_TAB_SEARCH`). 전투 스튜디오 내비의 애니메이션 칸도 도트 연출로 바뀌었다.
 - **소재 고르기**: 은퇴한 전투 배경은 고르기 목록에서 숨긴다(`resourceOptions.ts`). 이미 고른 값은 그대로 보인다.
 - 남긴 것: 파티 정면 스프라이트 `bskin-party-*-front`(살아 있는 폴백), 런타임의 `battleSystemResourceId` 처리 코드(옛 저장 호환).
+- 잔여 정리: 「전투 스킨」「전투 UI 스타일」 문구를 「전투 방식」으로(전투 꾸미기·명령 CSS 「기본 모양으로」·조수 도구 설명, en/ja/zh 카탈로그 포함). 조수 활동 카드·리소스 고르기 창의 적 색조(`allowHue` 슬라이더·`hue-rotate`)와 `--enemy-pixel-hue` 필터, `databaseFieldSupport.ts` 의 투명·비행·색조 공시, 적 대기 스트립·재생 단추·`.flying` CSS, 몬스터 AI 생성의 그림 단계(그림은 아이템 아이콘만)를 지웠다. `battleSystemResourceId` 는 더 이상 리소스 삭제를 막지 않고 삭제 때 비운다(`resourceManager.ts` — 남기면 참조 검증이 프로젝트를 못 연다). 장르 프리셋 monster-collect 는 `applyBattleMethod(project, "monster")` 를 탄다. 리소스 관리자 「시스템 2」 분류는 남겼다 — 이벤트 「시스템 그림 바꾸기」가 system2 를 고르므로.
 - 시험(실행 안 함): `test/battleSystemDeprecation.test.ts`·`databaseBattleStudio.test.ts`·`battleLook.test.ts`·`battleSkinRegistry.test.ts`. 화면 증거 `verify-shots/db-battle-cleanup/{before,after}/`(`capture.mjs`).
+
+## 전투 배경은 종류로 고른다 — 도트 측면 (2026-10-03)
+
+사용자 결정 「(가) 배경 종류로」. 도트 측면(retro2003)은 배경 그림을 그대로 깔지 않고 `resolveSceneryBiome`(`src/assets/battleSceneryCatalog.ts`)이 겹 배경 다섯 종류(풀밭·숲·동굴·설원·사막) 중 하나로 풀어 네 장 겹 배경을 깐다. 이스턴 RPG 기본 배경·옛 스킨 배경은 이름 규칙으로 **전부 풀밭**이 되어, 그림 목록에서 무엇을 골라도 풀밭이었다.
+
+- `src/editor/panels/battleSceneryPicker.ts` `battleSceneryField`: 자동 + 종류 다섯 카드(`<testid>-auto`·`-plains`…, role radio). 저장값은 `battle-scenery-<종류>`, 자동은 키 삭제. 옛 그림이면 「…은 「풀밭」으로 보입니다」(`-legacy`, 기본 숲 레퍼런스는 안내 생략), 업로드 그림(종류로 안 풀리는 id)은 그대로 깔린다(`-custom`).
+- 「직접 그림」: 기존 그림 고르기를 그 아래 둔다(업로드·AI 생성용). 종류·옛 그림일 때는 빈 칸으로 보인다(`customPickerResourceId`) — 입력칸 testid(`db-field-troop-backdrop`·`db-field-terrain-backdrop-N`)와 fill 계약은 그대로.
+- 쓰는 곳: 적 그룹 설정 카드(`db-troop-scenery-*`, 「배경 변경」은 종류를 차례로 넘김 `nextBattleScenery`), 지형 효과 「전투 · 표시」(`db-terrain-scenery-N-*`). 몬스터 대치(pokemon)는 그림을 그대로 쓰므로 예전 그림 고르기가 그대로 나온다.
+- 「배경 움직임」(스크롤·물결·색 순환)은 그림 한 장을 움직이는 효과라 몬스터 대치에서만 보인다 — 측면에서는 칸을 숨긴다.
+- 미리보기·목록 썸네일은 `battleBackdropPreviewUrl` 로 실제 전투에 보이는 그림(종류의 `preview.png`)을 쓴다. `battle-scenery-*` id 의 단일 그림도 땅 겹 → 합친 미리보기(`BATTLE_SCENERY_CATALOG[].preview`)로 바꿨고 웹 내보내기에 다섯 장을 싣는다.
+- 조수: 적 그룹·지형·맵 전투 배경 칸 설명이 `BATTLE_BACKDROP_ID_HINT`(종류 id 쓰라)를 공유한다. 천공의 계단 층 배경도 종류 id 로 바꿨다(층 일곱 → 종류 넷).
+- 소재 고르기에서 지운 측면 스킨 다섯(ff·chrono·octopath·bravely·goldensun) 배경도 숨긴다(`RETIRED_PICKER_IDS`, rm2003 은 retro2003 기본 배경이라 남김).
+- 시험(실행 안 함): `test/battleSceneryPicker.test.ts`, `mgL5bvisBackdropMotion.test.ts`, `skyStairGame.test.ts`, e2e `qa-troops`·`sky-stair-multi-enemy-battle`. 증거 `verify-shots/battle-scenery-picker/{before,after}/`.
 
 ## 레트로 전투 기믹 편집 칸 (2026-09-30)
 
@@ -990,7 +1004,7 @@ Database tabs, record views, battle database records, utility records, reference
   - 전투 진형 좌표의 단일 권위자는 `classicEnemyFormation(index)`(`src/battle/battleBattlers.ts`) 다. 적 그룹 뷰의 `DEFAULT_MEMBER`/`positionedMember`/`arrangeMembers`/예시 멤버가 모두 이 함수를 쓴다 — 에디터 좌표가 런타임 재배치(`x>150`)에 걸리지 않게 하는 유일한 방법이다. 미리보기는 `x/320`·`y/240`(모델 클램프와 일치), `x=150` 안내선(`db-troop-preview-recenter-line`), 아군 마커(`db-troop-preview-party-marker-N`, `battleX 252 / battleY 96+36i`)를 그린다.
   - 전투 이벤트 조건은 런타임이 전부 AND 로 평가한다. 조건 편집은 **첫 조건만** 교체하고 나머지를 보존해야 한다(`setFreshCondition`). `kindOfBattleEventCondition` 은 전용 폼이 없는 종류(selfSwitch/gold/timer/item/actorTurn/enemyTurn 등)에 `undefined` 를 반환하고, UI 는 경고 칩 + `조건 교체` 버튼만 보여 값 파괴를 막는다.
   - 숫자 필드 bounds 는 normalize 의 clamp 범위와 숫자까지 일치시킨다(권위: `databaseEnemyTroopRecordModel.ts`, `actionCombat.ts`, `monsterCollection.ts`). `enemy.level`(`db-field-enemy-level`)은 보상 레벨갭·포획 시작 레벨에 쓰이므로 `updateEnemyRecord` 패치 경로도 함께 유지한다.
-  - 적 `transparent`/`flying`/`graphicHue` 는 `databaseFieldSupport.ts` 에 `owner:"enemy"` authoringOnly 로 공시한다(런타임 소비자 없음). 액션 전투 `aggroRange`/`moveIntervalMs`/`knockbackResist` 는 저작 가능하다.
+  - 적 `transparent`/`flying`/`graphicHue` 는 런타임 소비자가 없고 화면 칸도 지웠다(2026-10-02, 공시도 삭제). 액션 전투 `aggroRange`/`moveIntervalMs`/`knockbackResist` 는 저작 가능하다.
   - 공격 패턴 표: 유령 행 없음(0액션 → `db-enemy-actions-empty`), 행 추가/복사/제거 버튼(`db-enemy-action-add|duplicate|delete`), 우선도 내림차순 표시 + 원본 인덱스 편집(`dataset.actionIndex`), 삭제된 스킬은 `삭제된 스킬(id)` + `is-dangling`. **버튼 라벨에 "복제"/"삭제" 를 쓰지 말 것** — 레코드 툴바 버튼과 e2e `hasText` 가 충돌한다(그래서 `행 복사`/`행 제거`).
   - 속성 유효도 행은 `database.elements` 에서 만들고, 목록에 없는 잔여 키는 `is-dangling` 행 + 삭제 버튼으로 정리한다. 상태 행의 `state_death` 는 데이터에 없어도 런타임이 인정하는 **암묵 상태**이므로 항상 렌더한다(`references.ts` `isKnownStateId`, `commandCatalog.ts`).
   - 진화 사이클/자기 진화는 `monsterEvolutionCycleSpeciesIds` + `validateMonsterSpeciesRecords` 의 **하드 에러**다(로드를 막는다). 반면 상성표 미등록 타입과 "수집 OFF + 종족 데이터" 는 출하 기본 프로젝트가 그 상태로 실려 있어 lint 경고로 올리면 전 프로젝트 노이즈가 된다 — 각각 종족 탭 칩(`db-monster-species-type-warn`)과 수집 탭 배너(`db-collection-gate-warn`)가 맥락 안에서 담당한다.

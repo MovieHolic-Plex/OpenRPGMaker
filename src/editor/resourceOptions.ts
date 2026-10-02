@@ -66,11 +66,12 @@ export function prettyId(id: string): string {
 }
 
 /**
- * 지운 정면 스킨(rm2000·dragonquest·mother·mv·vxace)의 배경. id 는 이미 저장한 적 그룹이 쓸 수 있어 리졸버에 남기고,
- * 새로 고르는 목록에서만 뺀다(2026-10-02).
+ * 지운 스킨의 배경 — 정면 다섯(rm2000·dragonquest·mother·mv·vxace)과 창 색만 다르던 측면 다섯(ff·chrono·octopath·bravely·goldensun).
+ * id 는 이미 저장한 적 그룹이 쓸 수 있어 리졸버에 남기고, 새로 고르는 목록에서만 뺀다(2026-10-02).
+ * rm2003 배경은 retro2003 의 기본 배경 id 라 남긴다.
  */
 const RETIRED_PICKER_IDS: ReadonlySet<string> = new Set(
-  ["rm2000", "dragonquest", "mother", "mv", "vxace"].map((skin) => `battle-skin-${skin}-backdrop`),
+  ["rm2000", "dragonquest", "mother", "mv", "vxace", "ff", "chrono", "octopath", "bravely", "goldensun"].map((skin) => `battle-skin-${skin}-backdrop`),
 );
 
 /**

@@ -37,7 +37,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // 파티원 몬스터 9칸 시트(2차 로스터). 배우 battleCharacterResourceId 로 참조한다.
   ...Object.fromEntries(PARTY_PIXEL_SHEETS.map((entry) => [entry.resourceId, `/${entry.path}`])),
   // 미설치 팩도 id 는 유지한다. 파일 실패는 전투 배경의 네 장 로드 가드가 처리한다.
-  ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.layers.ground}`])),
+  // 단일 그림으로 풀 때는 네 겹을 합친 미리보기 한 장이다(예전엔 땅 겹만이라 썸네일·몬스터 대치에서 하늘이 비었다).
+  ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.preview}`])),
   hero: "/assets/generated/starter/hero-01-battle.png",
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",

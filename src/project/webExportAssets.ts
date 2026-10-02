@@ -42,6 +42,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
       }
     }
   }
+  // 종류 id(battle-scenery-*)의 단일 그림 — 몬스터 대치에서 이 id 를 고르면 이 한 장을 깐다(다섯 장 약 35KB).
+  for (const entry of BATTLE_SCENERY_CATALOG) {
+    assets.set(entry.preview, { kind: "public", sourcePath: entry.preview, zipPath: entry.preview });
+  }
   for (const asset of BUNDLED_IMAGE_ASSETS) {
     if (asset.textureKey === TEX_TILESET || asset.textureKey === TEX_DIALOGUE_FRAME || ids.has(asset.textureKey)) {
       assets.set(asset.path, {

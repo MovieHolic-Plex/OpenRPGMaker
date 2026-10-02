@@ -136,12 +136,11 @@ export function buildRecordPrompt(
   ];
 }
 
-export function artworkPromptFor(kind: AiDatabaseKind, name: string, brief: string): string {
+// 그림은 아이템 아이콘만 만든다 — 몬스터는 고른 도트 몬스터를 쓰므로 몬스터 그림 문장은 지웠다(2026-10-02).
+export function artworkPromptFor(_kind: "item", name: string, brief: string): string {
   const subject = `${name} — ${brief}`;
-  return kind === "item"
-    ? `A single 2D JRPG inventory item icon of ${subject}. Centered, front view, clean thick outline,`
-      + ` flat saturated colors, no text, no frame, no shadow, on a pure flat white background.`
-    : `A pixel side-view battle monster of ${subject}.`; // 몬스터 그림은 생성하지 않는다(호환용 문장).
+  return `A single 2D JRPG inventory item icon of ${subject}. Centered, front view, clean thick outline,`
+    + ` flat saturated colors, no text, no frame, no shadow, on a pure flat white background.`;
 }
 
 function stripFence(text: string): string {
@@ -222,20 +221,20 @@ export function toolCallsForGeneration(input: {
 }): { name: string; args: Record<string, unknown> }[] {
   const calls: { name: string; args: Record<string, unknown> }[] = [];
   const record: Record<string, unknown> = { ...input.patch, id: input.recordId };
-  if (input.artwork) {
+  // 그림은 아이템 아이콘에만 붙는다 — 몬스터는 고른 도트 몬스터 id(monsterResourceId)를 patch 로 받는다.
+  if (input.artwork && input.kind === "item") {
     calls.push({
       name: "upsert_resource",
       args: {
         resource: {
           id: input.artwork.resourceId,
           name: `${String(input.patch.name)} (AI)`,
-          kind: input.kind === "item" ? "picture" : "monster",
+          kind: "picture",
           dataUrl: input.artwork.dataUrl,
         },
       },
     });
-    if (input.kind === "item") record.iconResourceId = input.artwork.resourceId;
-    else record.monsterResourceId = input.artwork.resourceId;
+    record.iconResourceId = input.artwork.resourceId;
   }
   calls.push(
     input.kind === "item"
@@ -285,7 +284,7 @@ export async function generateDatabaseRecordWithAi(
   if (input.withArtwork && input.kind === "item") {
     notify("artwork");
     const generateImage = deps.generateImage ?? ((request) => generateAiImage(request));
-    const image = await generateImage({ prompt: artworkPromptFor(input.kind, name, brief), signal: input.signal });
+    const image = await generateImage({ prompt: artworkPromptFor("item", name, brief), signal: input.signal });
     const flattened = deps.flattenArtwork ? await deps.flattenArtwork(image.dataUrl) : image.dataUrl;
     artwork = { resourceId: `${recordId}_art`, dataUrl: flattened };
     artworkModel = image.model;

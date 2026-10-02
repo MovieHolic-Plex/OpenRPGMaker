@@ -497,51 +497,7 @@
   width: 220px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-idle-frame {
-  flex: 0 1 220px;
-  max-height: 100%;
-  overflow: hidden;
-  position: relative;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media .flying {
-  translate: 0 -8px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-idle-frame .db-enemy-idle-strip {
-  animation: enemy-studio-idle var(--enemy-idle-duration) steps(var(--enemy-idle-frames)) infinite;
-  display: block;
-  height: 100%;
-  image-rendering: pixelated;
-  max-height: none;
-  max-width: none;
-  object-fit: fill;
-  width: calc(var(--enemy-idle-frames) * 100%);
-}
-
-@keyframes enemy-studio-idle {
-  to { transform: translateX(-100%); }
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media.is-paused .db-enemy-idle-strip {
-  animation-play-state: paused;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-control {
-  background: transparent;
-  border: 1px solid var(--db-studio-text-3);
-  border-radius: 5px;
-  color: var(--db-studio-on-accent);
-  cursor: pointer;
-  font: 500 12px/1.4 var(--font-ui);
-  min-height: 32px;
-  padding: 6px 10px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-control:disabled {
-  cursor: default;
-  opacity: 0.5;
-}
+/* 대기 애니메이션 스트립·재생 단추·비행 띄움 규칙은 #1872 와 비행 칸 삭제(2026-10-02)로 발행처가 없어 지웠다. */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-inspector {
   background: var(--db-studio-surface);
@@ -834,7 +790,6 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-sprite {
   background-repeat: no-repeat;
-  filter: hue-rotate(var(--enemy-pixel-hue, 0deg));
   image-rendering: pixelated;
   position: absolute;
 }
@@ -854,7 +809,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-sprite.is-hit {
-  filter: hue-rotate(var(--enemy-pixel-hue, 0deg)) brightness(1.7) saturate(0.4);
+  filter: brightness(1.7) saturate(0.4);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-controls {
@@ -914,7 +869,6 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cell-pic {
   background-repeat: no-repeat;
-  filter: hue-rotate(var(--enemy-pixel-hue, 0deg));
   height: 36px;
   image-rendering: pixelated;
   width: 36px;

@@ -126,7 +126,7 @@ test("3인 전투에서 아군 4명이 함께 그려진다", async ({ page }) =>
 test("전투 배경이 층의 것으로 바뀐다", async ({ page }) => {
   await openBattle(page, SKY_TROOP.scarecrow);
 
-  // 황금 밀밭의 battleBackground(노을)가 실제로 전투 화면에 붙었는지 본다.
+  // 황금 밀밭의 battleBackground(겹 배경 「풀밭」)가 실제로 전투 화면에 붙었는지 본다.
   const backdrop = await page.evaluate(() => {
     const scene = document.querySelector("[data-testid='battle-scene']") as HTMLElement | null;
     if (!scene) return null;
@@ -140,5 +140,5 @@ test("전투 배경이 층의 것으로 바뀐다", async ({ page }) => {
     return null;
   });
   expect(backdrop, "전투 배경 이미지가 화면에 없다").toBeTruthy();
-  expect(backdrop, `전투 배경이 밀밭 것이 아니다: ${backdrop}`).toMatch(/sunset|backdrop/i);
+  expect(backdrop, `전투 배경이 밀밭 것이 아니다: ${backdrop}`).toMatch(/battle-scenery\/plains/i);
 });
