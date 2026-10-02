@@ -94,12 +94,32 @@ KEEP = set()               # 나무·덤불이 가리면 안 되는 칸(문 앞�
 DOORS = []                 # {'x','y','piece'}
 
 
+def qa(a):
+    """그림자 투명도를 3단(14·28·44)으로 끊는다: 땅과 섞여 생기는 색 수를 줄이고 도트 띠 느낌을 낸다."""
+    return 0 if a < 9 else (20 if a < 26 else (36 if a < 44 else 54))
+
+
+_SHADOWED = ('gn_shop', 'gn_thatch', 'gn_l_giwa', 'gn_g2', 'giwa_', 'thatch_', 'tower_', 'gwanah', 'palace_hall', 'palace_haenggak', 'palace_jeongak', 'seonangdang', 'gn_jm_')
+
+
 def P(name, x, y, solid='foot', tag=None):
     """조각 왼쪽 위 칸 (x, y) 에 놓는다. solid: 'foot'(맨 아래 행만 막힘) · 'body'(아래 2/3) · 'all'(전체) · None."""
     cv = objects[name]
     w, h = cv.w // T, cv.h // T
     placed.append((name, x, y, w, h))
     items.append((y + h, h, x, name, cv))
+    if name.startswith(_SHADOWED) and h >= 3 and w >= 2:        # 건물·전각: 오른쪽·아래로 드리운 땅 그림자(나무와 같은 방향)
+        bw, bh = w * T, h * T
+        sc = Cv(bw + 12, bh + 6)
+        for yy in range(int(bh * 0.55), bh):
+            fade = max(0.0, min(1.0, (yy - bh * 0.55) / 10.0))
+            for i in range(12):
+                sc.put(bw + i, yy, SHADOW, qa(int(96 * fade * (1 - i / 12.0))))
+        for yy in range(bh - 1, bh + 6):
+            for xx in range(5, bw + 8):
+                al = qa(int(84 * (1 - (yy - (bh - 1)) / 7.0) * min(1.0, (bw + 8 - xx) / 8.0 + 0.2)))
+                if al > 0: sc.put(xx, yy, SHADOW, al)
+        items.append((y + sc.h / T - 0.01, 0, x, 'shadow', sc))
     if solid == 'all':
         rows = range(y, y + h)
     elif solid == 'body':
@@ -177,7 +197,7 @@ def wall_ring():
     shv = Cv(T, 12)
     for yy, al in enumerate((74, 66, 56, 46, 36, 28, 20, 14, 9, 5, 3, 1)):
         for xx in range(T):
-            shv.put(xx, yy, SHADOW, al)
+            if qa(al): shv.put(xx, yy, SHADOW, max(20, qa(al)))
     for yb in (YN, YS):
         for x in range(XW + 3, XE):
             if GX <= x < GX + 12:
@@ -239,7 +259,7 @@ w_rect(MX0, MY0, MX1, MY0 + 4); w_rect(MX0, MY1 - 4, MX1, MY1)
 w_rect(MX0, MY0, MX0 + 4, MY1); w_rect(MX1 - 4, MY0, MX1, MY1)
 # 바깥 기슭 불룩(다리 자리 x 35..40 · 45..50 · 57..62, 서·동 다리 행 44..51 은 피한다)
 for (cx, cy, rx, ry) in ((29, 36, 3.6, 4.6), (30, 60, 2.8, 3.8), (29, 29, 2.4, 2.6),
-                         (41.5, 22.5, 3.2, 1.9), (54, 23, 3.4, 2.2), (66, 30, 2.4, 3.4), (66.5, 62, 2.6, 3.6),
+                         (42.6, 22.5, 3.0, 1.9), (52.6, 23, 3.0, 2.2), (66, 30, 2.4, 3.4), (66.5, 62, 2.6, 3.6),
                          (38, 70.5, 3.6, 2.6), (56, 70.5, 3.4, 2.6), (65, 67, 2.4, 2.4)):
     w_ell(cx, cy, rx, ry)
 # 안쪽 기슭 물러남(폭 4): 서·동 x=32/63 열, 북·남 y=28/67 행
@@ -308,7 +328,7 @@ def bridge_h(x_water0, y, size='5'):
 bridge_v(46, MY0)                                   # 북: 물 22..26 → 데크 21..26, 앞면 27
 bridge_v(46, MY1 - 4)                               # 남: 물 64..68 → 데크 63..68, 앞면 69
 # 북·남 보조 다리(폭 3 → v5 대신 v6 폭 4 도 쓴다)
-bridge_v(36, MY0); bridge_v(58, MY0)
+bridge_v(36, MY0); bridge_v(56, MY0)
 # 서·동 다리
 bridge_h(MX0, 45, '6'); bridge_h(MX1 - 4, 45, '6')    # 서·동 중앙 다리(폭 4): 걷는 행 46..49 = 궁 가운데 축
 
@@ -331,7 +351,7 @@ paint('paving', PV0, PH0, PV1, PH1)
 # 안쪽 고리 길(해자 안 땅): 담 둘레 한 칸
 paint('road', 33, 31, 62, 31); paint('road', 33, 31, 33, 63); paint('road', 62, 31, 62, 63); paint('road', 33, 63, 62, 63)
 # 북·남 보조 다리 앞 샛길
-paint('road', 36, 27, 39, 30); paint('road', 58, 27, 61, 30)
+paint('road', 36, 27, 39, 30); paint('road', 56, 27, 59, 30)
 paint('slab', 46, 27, 49, 36)                           # 북 대로 → 궁 북문
 paint('slab', 46, 37, 49, 43); paint('slab', 46, 59, 49, 69)                           # 궁 남문 → 남쪽 해자 다리
 paint('slab', PX0_, 46, PV0 - 1, 49); paint('slab', PV1 + 1, 46, PX1_, 49)     # 서·동 궁문 안쪽 길(문 → 포장 마당)
@@ -342,6 +362,15 @@ def palace():
     pw = ['palace_wall_h', 'palace_wall_h1', 'palace_wall_h2']
     for x in range(PX0_ + 1, PX1_):
         P(pw[x % 3], x, PY0_, 'foot'); P(pw[(x + 1) % 3], x, PY1_ - 2, 'foot')
+    shp = Cv(T, 10)                                      # 궁 담 밑 땅 그림자(남·북 담: 오른쪽 아래, 부드럽게)
+    for yy, al in enumerate((60, 50, 40, 30, 22, 15, 9, 5, 3, 1)):
+        for xx in range(T):
+            if qa(al): shp.put(xx, yy, SHADOW, qa(al))
+    for yb in (PY0_ + 2, PY1_):
+        for x in range(PX0_ + 1, PX1_):
+            if 45 <= x <= 50:
+                continue
+            items.append((yb + 10 / T, 0, x, 'shadow', shp))
     P('palace_wall_nw', PX0_, PY0_); P('palace_wall_ne', PX1_, PY0_)
     P('palace_wall_sw', PX0_, PY1_ - 2); P('palace_wall_se', PX1_, PY1_ - 2)
     for y in range(PY0_ + 2, PY1_ - 2):
@@ -381,7 +410,7 @@ paint('road', 10, 15, 85, 16); paint('road', 10, 81, 85, 82)            # 성 �
 paint('road', 10, 15, 11, 82); paint('road', 84, 15, 85, 82)
 paint('road', 10, GAP_Y0, 27, GAP_Y1); paint('road', 68, GAP_Y0, 85, GAP_Y1)  # 동서 큰길(폭 4) → 해자 다리
 paint('slab', 46, 17, 49, 28)                                            # 북 대로가 안쪽 고리를 가로지른다
-paint('road', 36, 17, 39, 20); paint('road', 58, 17, 61, 20)             # 북 보조 다리 앞 샛길(바깥 고리 길 → 다리)
+paint('road', 36, 17, 39, 20); paint('road', 56, 17, 59, 20)             # 북 보조 다리 앞 샛길(바깥 고리 길 → 다리)
 paint('slab', 46, 70, 49, YS - 12)                                       # 남 대로
 # 석판 대로·측면 문 앞 석판을 맨 마지막에 다시 깐다(안쪽 고리 길이 문 아치와 대로 사이를 끊지 않는다)
 paint('slab', 46, 2, 49, YN); paint('slab', 46, YN + 1, 49, 36); paint('slab', 46, 59, 49, YS + 6)
