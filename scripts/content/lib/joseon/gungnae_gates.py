@@ -134,6 +134,8 @@ def wall_h(var=0):
     통행: 없음(막힘). 걸을 수 있는 건 위 걷는 길 면뿐이고 칸으로는 막힌다."""
     c = Cv(T, WH)
     walkway(c, 0, Y_WALK0, T, Y_FACE - 2, seed=var)
+    for x in range(T):                                                      # 성가퀴 사이 뒤 머릿돌 띠(틈으로 풀이 비치지 않게)
+        c.put(x, 2, S[5]); c.put(x, 3, S[4]); c.put(x, 4, S[4]); c.put(x, 5, S[4]); c.put(x, 6, S[5]); c.put(x, 7, S[3])
     for (mx, mw, sl) in _MER[var]:
         _merlon(c, mx, Y_BACK, mw, fh=6, slit=sl)
     for x in range(T):                                                      # 걷는 길 앞 가장자리 턱(코니스) + 그늘
@@ -171,8 +173,9 @@ def wall_end(side='l', var=0):
 
 
 # ---------------------------------------------------------------- 세로 성벽 (동서 변)
-VW = 48            # 폭 3칸: 서쪽 옆면 12px + 윗면 28px + 오른쪽 땅 그림자 8px
-FACE_W, TOP_X0, TOP_X1 = 12, 12, 40
+VW = 48            # 폭 3칸: 왼쪽 여백 4 + 서쪽 옆면 12px + 윗면 28px(몸체 가운데 = 칸 가운데 24) + 오른쪽 땅 그림자 4px
+OX = 4
+FACE_W, TOP_X0, TOP_X1 = 12, 16, 44
 
 
 def _vwall_cols(c, y0, y1, seed, shadow=True, face=True):
@@ -181,17 +184,17 @@ def _vwall_cols(c, y0, y1, seed, shadow=True, face=True):
     옆면: 12px = 돌 줄 3(4px씩)이 세로로 달리고 줄눈은 가로 틱. 성가퀴는 10줄 + 틈 6줄 주기(16)라 칸 위아래로 이어진다."""
     for y in range(y0, y1):
         if face:
-            for x in range(0, FACE_W):                                       # 옆면
-                cidx = x // 4
+            for x in range(OX, OX + FACE_W):                                 # 옆면
+                cidx = (x - OX) // 4
                 blk = 16 if hsh(cidx, seed, 17) % 2 else 8
                 off = (cidx * 5 + seed * 3) % blk
                 t = (4, 5, 5)[cidx]
                 if (y + off) % blk == 0: t = 2                                # 가로 줄눈
                 elif (y + off) % blk == 1: t = min(6, t + 1)                  # 줄눈 아래 밝은 모서리
-                elif x % 4 == 0 and cidx > 0: t = max(2, t - 1)               # 줄 사이 세로 틈
-                elif x % 4 == 1: t = min(6, t + 1)                            # 돌 왼쪽 밝은 각
+                elif (x - OX) % 4 == 0 and cidx > 0: t = max(2, t - 1)        # 줄 사이 세로 틈
+                elif (x - OX) % 4 == 1: t = min(6, t + 1)                            # 돌 왼쪽 밝은 각
                 elif rnd(x, y, 70 + seed) > 0.92: t = max(2, t - 1)
-                if x == FACE_W - 1: t = 3                                     # 윗면과 만나는 아래 그늘선
+                if x == OX + FACE_W - 1: t = 3                                # 윗면과 만나는 아래 그늘선
                 c.put(x, y, S[t])
         for x in range(TOP_X0 + 7, TOP_X0 + 21):                              # 걷는 길
             t = 5 if x < TOP_X0 + 14 else 4
@@ -205,16 +208,17 @@ def _vwall_cols(c, y0, y1, seed, shadow=True, face=True):
                 u = x - ax
                 if m < 10:
                     if u == 0: t = 6
-                    elif u < 4: t = 5 if left else 4
-                    else: t = 3 if left else 2
-                    if m == 0: t = min(6, t + 1)
-                    if m == 9: t = max(2, t - 1)
+                    elif u < 4: t = 6 if left else 5
+                    else: t = 4 if left else 3
+                    if m == 0: t = 6
+                    if m == 9: t = max(2, t - 2)
                     if m in (4, 5) and u == 3 and seed % 2: t = 1
                 else:
-                    t = 4 if left else 3                                      # 성가퀴 사이 한 단 낮은 턱
+                    t = 3 if left else 2                                      # 성가퀴 사이 낮은 턱(어두워 이빨이 도드라진다)
+                    if u == 0: t = 4 if left else 3
                 c.put(x, y, S[t])
         if shadow:                                                            # 오른쪽 땅 그림자(아래로 갈수록 옅다)
-            for i, al in enumerate((78, 70, 60, 50, 38, 28, 18, 8)):
+            for i, al in enumerate((80, 62, 42, 22)):
                 c.put(TOP_X1 + i, y, SHADOW, al)
 
 
@@ -258,7 +262,7 @@ def wall_corner(kind):
         copy_hz(0, VW, 0, Y_WALK0)                         # 위 가장자리: 뒤 성가퀴 줄
         copy_hz(ax0, ax1, Y_WALK0, Y_FACE)                 # 열린 쪽: 걷는 길 + 앞 성가퀴
         # 열린 쪽 아래 가로 성벽 앞면(성벽이 가로로 이어지는 쪽)
-        fx0, fx1 = (TOP_X1, VW) if east else (0, FACE_W)
+        fx0, fx1 = (TOP_X1, VW) if east else (0, OX + FACE_W)
         copy_hz(fx0, fx1, Y_FACE, WH)
     else:
         copy_arm(0, VW, 0, Y_FACE, arm)                    # 위에서 내려오는 세로 성벽
@@ -301,16 +305,15 @@ def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True):
             if not outer:
                 continue
             if inner:
-                if y >= ybot - 6:                                           # 석판 바닥(밝은 줄)
-                    t = 3 if ((x // 5 + (y - (ybot - 6)) // 3) % 2) else 2
+                if y >= ybot - 4:                                           # 문턱 석판(길과 같은 결, 밝은 줄)
+                    t = 5 if (y - (ybot - 4)) < 1 else 4
+                    if (x // 8) % 2 and (y - (ybot - 4)) == 2: t = 3
                     c.put(x, y, S[t]); continue
                 tt = (y - top) / max(1.0, (ybot - top))
                 col = S[0] if tt < 0.7 else S[1]
                 if bars:
-                    if x % 4 == 0: col = S[2]                              # 어두운 창살(세로)
-                    elif x % 4 == 1: col = S[1]
-                    if (y - top) % 6 == 5: col = S[2]                     # 가로 살
-                    if tt > 0.65 and (x + y) % 4 == 0: col = S[2]
+                    if tt > 0.55: col = S[1] if (x + y) % 5 else S[2]       # 열린 문: 안쪽이 깊어 어두워진다(창살 없음)
+                    elif tt > 0.3 and x % 7 == 0: col = S[1]
                 c.put(x, y, col)
             else:
                 # 쐐기돌 띠: 각도마다 돌 한 개씩 번갈아 밝게
@@ -331,15 +334,26 @@ def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True):
     return top
 
 
-def _plaque(c, cx, y, w=22):
-    """아치 위 작은 나무 현판(어두운 판 + 금빛 글자 점)."""
+_GLYPHS = (("####", "#..#", "#..#", "#..#", "####"), (".##.", "#..#", ".##.", "#..#", ".##."), ("####", "..#.", ".#..", "#...", "####"),
+           ("#..#", "####", "#..#", "####", "#..#"), (".#..", "####", ".#..", "####", "..#."), ("####", "#..#", "####", "#..#", "#..#"),
+           ("##.#", ".#.#", "####", ".#..", "##.."), ("####", "..#.", "####", ".#..", "#.##"))
+
+
+def _plaque(c, cx, y, w=22, seed=0):
+    """아치 위 작은 나무 현판(어두운 판 + 금빛 글자 모양 4x5 획). 문마다 글자 조합이 다르다(seed)."""
     x0 = cx - w // 2
     for yy in range(y, y + 7):
         for xx in range(x0, x0 + w):
             edge = yy in (y, y + 6) or xx in (x0, x0 + w - 1)
             c.put(xx, yy, RGB['wood'][5] if edge else RGB['wood'][1])
-    for gx in range(x0 + 3, x0 + w - 3, 4):
-        c.put(gx, y + 2, RGB['straw'][5]); c.put(gx + 1, y + 3, RGB['straw'][4]); c.put(gx, y + 4, RGB['straw'][3])
+    n = max(2, (w - 3) // 5)
+    gx0 = x0 + 1 + (w - 2 - (n * 5 - 1)) // 2
+    for i in range(n):
+        g = _GLYPHS[(seed * 3 + i * 5 + hsh(i, seed, 41)) % len(_GLYPHS)]
+        for gy, row in enumerate(g):
+            for gx, ch in enumerate(row):
+                if ch == '#':
+                    c.put(gx0 + i * 5 + gx, y + 1 + gy, RGB['straw'][5] if gx < 2 else RGB['straw'][4])
 
 
 def _dancheong_column(c, x, y0, y1, w=7):
@@ -535,7 +549,7 @@ def gate_great(bays=12, pass_w=64, variant=0):
         _merlon(c, xm, fy0 - 8, 10, fh=4)
     _base_front(c, W, H, fy0, lo, hi, variant)
     top = _arch_passage(c, W // 2, H, pass_w, sh=24 if pass_w >= 48 else 18, ring=6)
-    _plaque(c, W // 2, max(fy0 + 3, top - 10), w=26 if pass_w >= 48 else 20)
+    _plaque(c, W // 2, max(fy0 + 3, top - 10), w=26 if pass_w >= 48 else 20, seed=variant + bays)
     outline(c)
     cx0 = (W // 2 - pass_w // 2) // T
     PASSAGE[f'gungnae_gate_great_{bays}'] = {'cols': (cx0, cx0 + pass_w // T), 'rows': ((H - 2 * T) // T, H // T), 'note': '아치 통로 바닥 2칸 높이를 걷는다. 그 위(아치 윗부분·기단·누각)는 캐릭터 위에 그린다.'}
@@ -565,43 +579,51 @@ def gate_small(bays=6, pass_w=32):
         _merlon(c, xm, fy0 - 8, 9, fh=4)
     _base_front(c, W, H, fy0, lo, hi, 3)
     top = _arch_passage(c, W // 2, H, pass_w, sh=14, ring=5)
-    _plaque(c, W // 2, max(fy0 + 3, top - 9), w=18)
+    _plaque(c, W // 2, max(fy0 + 3, top - 9), w=18, seed=bays + 11)
     outline(c)
     PASSAGE[f'gungnae_gate_small_{bays}'] = {'cols': ((W // 2 - pass_w // 2) // T, (W // 2 + pass_w // 2) // T),
                                              'rows': ((H - 2 * T) // T, H // T), 'note': '아치 통로 바닥 2칸 높이.'}
     return c
 
 
-def gate_side(bays=5, rows=11, ramp='teal', seed=3, post=(16, 64), plaster=False):
-    """측면 문루 (동·서문용): 세로 성벽을 가로질러 길이 동서로 뚫린 열린 문루. 3/4 시점에서 용마루가 남북으로 달리는 맞배 지붕이 벽 위에 높이 얹히고
-    (화면에서는 실제 자리보다 3칸 위에 그려진다), 지붕 아래 맨 아래 4행은 비어 있어 길(석판)이 지붕 밑을 가로질러 보인다. 남쪽 처마 밑 양끝에 기둥, 길 위에는 처마 그늘.
-    폭 bays 칸, 높이 rows 칸(위 rows-4 행 = 지붕, 아래 4행 = 통로). post = 기둥 x 범위(px). plaster 면 회벽 박공 + 갈색 기둥(궁 담 문), 아니면 돌 기둥(성벽 문).
-    통행: 맨 아래 4행. 지붕 행은 막힘."""
+def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(20, 60), pw=6, roof=(10, 70), wall=None, wall_x=16, plaster=False):
+    """측면 문루 (동·서문용): 세로 성벽 한 줄을 동서로 가로지르는 열린 문루. 통로(맨 아래 4행)를 기준으로 짠다.
+    3/4 시점에서 용마루가 남북(성벽 방향)으로 달리는 맞배 지붕이 통로 바로 위에 얹히고(rows-4 행), 지붕 밑 남쪽 처마 아래 양끝(=벽 몸체 양끝)에 기둥,
+    기둥 사이로 통로 바닥(길)이 보인다. 지붕·기둥은 같은 중심선을 쓰고 기둥 바깥 끝 = 성벽 몸체 바깥 끝. 위쪽에는 wall(성벽 한 칸 그림)을 붙여
+    지붕 뒤로 성벽이 이어지게 한다. post = (왼쪽 기둥 x, 오른쪽 기둥 바깥 끝 x), pw = 기둥 굵기, roof = 지붕 x 범위.
+    통행: 맨 아래 4행. 지붕 행(위 rows-4)은 막힘."""
     import gungnae_houses as GH
     W, H = bays * T, rows * T
     c = Cv(W, H)
-    x0, x1 = 2, W - 2
+    if wall is not None:
+        c.paste(wall, wall_x, 0)
+    x0, x1 = roof
     y_e = (rows - 4) * T
     half = (x1 - x0) / 2.0
     rise = int(max(8, min(22, half * 0.52)))
     yb = y_e - rise - 2
     G = GH.RAMPS[ramp]
-    GH.gable_band(c, x0, x1, 6, yb, y_e, G, 'tile', 'cap', 'gable', wall=(post[0] - 2, post[1] + 6), seed=seed)
-    Wd = RGB['wood']
     px0, px1 = post
-    for xp in (px0 - 2, px1 - 4):                                       # 남쪽 처마 밑 기둥(통로 양끝, 아래 4행 높이)
+    wl = wall if False else (px0 - 1, px1 + 1)
+    GH.gable_band(c, x0, x1, 8, yb, y_e, G, 'tile', 'cap', 'gable', wall=wl, seed=seed)
+    Wd = RGB['wood']
+    k0 = (5, 4, 4, 3, 3, 2) if not plaster else (5, 4, 4, 3, 2, 1)
+    for xp in (px0, px1 - pw):                                          # 남쪽 처마 밑 기둥(통로 양끝, 아래 4행 높이)
         for y in range(y_e, H):
-            for k in range(6):
-                if plaster or True:
-                    t = (5, 4, 4, 3, 3, 2)[k] if not plaster else (5, 4, 4, 3, 2, 1)[k]
-                    c.put(xp + k, y, S[t] if not plaster else Wd[t])
-        for k in range(8):                                              # 주춧돌
+            for k in range(pw):
+                kk = min(5, k * 6 // pw)
+                c.put(xp + k, y, S[k0[kk]] if not plaster else Wd[k0[kk]])
+        for k in range(pw + 2):                                         # 주춧돌
             c.put(xp - 1 + k, H - 2, S[6]); c.put(xp - 1 + k, H - 1, S[3])
     for y in range(y_e, y_e + 6):                                       # 지붕 밑 처마 그늘(길 위, 반투명)
-        for x in range(px0 + 4, px1 - 2):
+        for x in range(px0 + pw, px1 - pw):
             c.put(x, y, SHADOW, 120 - (y - y_e) * 18)
+    for y in range(y_e + 3, H - 1):                                     # 기둥 오른쪽 땅 그림자(기둥·벽이 오른쪽 아래로 드리운다)
+        for i in range(pw + 4):
+            if c.a[y, px1 + i, 3] == 0:
+                c.put(px1 + i, y, SHADOW, max(10, 74 - i * 9))
     outline(c)
-    PASSAGE[f'gungnae_gate_side_{bays}'] = {'cols': (0, bays), 'rows': (rows - 4, rows),
+    PASSAGE[f'gungnae_gate_side_{bays}' if not plaster else f'palace_gate_side_{bays}'] = {'cols': (0, bays), 'rows': (rows - 4, rows),
                                             'note': '맨 아래 4행이 동서로 걷는 통로(길이 지붕 밑을 지난다). 위 행은 지붕이라 막힘, 지붕은 캐릭터 위에 그린다.'}
     return c
 
@@ -610,7 +632,7 @@ def tower_corner(bays=5):
     """모서리 망루 (성벽 코너 위 2층 누각, 회색 돌 기단): 돌 기단 + 1층(어두운 살창 벽) + 가운데 처마 + 2층 열린 누각 + 청록 큰 지붕.
     폭 bays 칸, 통행 불가(성벽 모서리 장애물). 가로·세로 성벽이 아래 좌우로 붙는다."""
     W = bays * T
-    face_h, plat, f1, mid_h, f2, roof_h = 64, 10, 22, 30, 24, 44
+    face_h, plat, f1, mid_h, f2, roof_h = 76, 10, 22, 30, 24, 44
     top0 = -plat
     top1 = top0 - f1                          # 1층 윗끝
     ymid = top1 + 5 - mid_h + 1               # 가운데 처마 지붕 윗끝
@@ -703,7 +725,7 @@ def _arch_water(x, y, y0):
     return Wt[3] if (x * 7 + y * 3) % 11 == 0 else Wt[2]
 
 
-def stone_bridge_h(length=5, width=3, style=0):
+def stone_bridge_h(length=5, width=3, style=0, water=None):
     """돌다리 가로형(동서로 건넌다): 길이 length 칸 × 폭 width 칸 + 위 1칸(난간·기둥 머리) + 아래 1칸(앞 돌벽·아치 그림자).
     위부터: 뒤 난간(기둥 두공) → 상판(width 칸) → 앞 낮은 난간 → 앞면 돌벽(홍예 구멍으로 물이 비친다) → 물 그림자.
     통행: 상판 width 칸 전부(앞·뒤 난간 칸 포함 가장자리 6px 는 난간이 겹침). 위 1칸·아래 1칸은 막힘."""
@@ -723,7 +745,6 @@ def stone_bridge_h(length=5, width=3, style=0):
         _post(c, x, y_deck1 + 2, h=14)
     # 앞면 돌벽: 홍예 구멍
     fy0, fy1 = y_deck1 + 2, y_deck1 + 15
-    narch = 1 if length <= 4 else (2 if length == 5 else 3)
     for y in range(fy0, fy1):
         for x in range(0, W):
             row = (y - fy0) // 4
@@ -733,9 +754,11 @@ def stone_bridge_h(length=5, width=3, style=0):
             elif (y - fy0) % 4 == 3: t = 3
             if y == fy0: t = 6
             c.put(x, y, S[max(1, t)])
-    span = (W - 12) / float(narch)
+    wx0, wx1 = water if water else (0, W)                                  # 홍예는 물 위 구간에만 둔다(둑 위에는 구멍을 내지 않는다)
+    narch = 1 if (wx1 - wx0) <= 4 * T else (2 if (wx1 - wx0) <= 6 * T else 3)
+    span = (wx1 - wx0 - 12) / float(narch)
     for k in range(narch):
-        cx = 6 + span * (k + 0.5)
+        cx = wx0 + 6 + span * (k + 0.5)
         rx = min(span * 0.36, 17)
         for y in range(fy0 + 3, fy1 + 1):
             for x in range(int(cx - rx) - 1, int(cx + rx) + 2):
@@ -753,16 +776,17 @@ def stone_bridge_h(length=5, width=3, style=0):
     return c
 
 
-def stone_bridge_v(length=5, width=3, style=0):
+def stone_bridge_v(length=5, width=3, style=0, landing=True):
     """돌다리 세로형(남북으로 건넌다): 길이 length 칸(세로) × 폭 width 칸 + 오른쪽 1칸(물 그림자) + 아래 1칸(남쪽 끝 돌벽·그림자).
     위에서 본 상판 + 양쪽 난간(윗돌 띠 + 옆면)과 네 모서리 기둥(두공 한 쌍씩). 남쪽 끝은 앞면 돌벽이 보이고 물에 그림자가 진다.
     통행: 상판 width 칸 × length 칸 전부. 맨 오른쪽 열과 맨 아래 행은 막힘."""
     W = (width + 1) * T
     H = (length + 1) * T
-    DB = length * T                                  # 상판 남쪽 끝 y
+    DB0 = length * T                                 # 물 위 상판 남쪽 끝 y
+    DB = H if landing else DB0                       # landing: 남쪽 끝은 물이 아니라 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다
     c = Cv(W, H)
     dx0, dx1 = 5, width * T - 5                    # 상판 x 범위(양쪽 난간 5px 안쪽까지)
-    for y in range(4, DB):
+    for y in range(0 if landing else 4, DB):
         row = y // 12
         for x in range(dx0, dx1):
             off = 10 if row % 2 else 0
@@ -778,7 +802,7 @@ def stone_bridge_v(length=5, width=3, style=0):
             c.put(mx - 1, y, S[6] if y % 5 else S[5]); c.put(mx, y, S[5]); c.put(mx + 1, y, S[3])
     # 남쪽 끝 돌벽(앞면) — 홍예 구멍으로 물이 비친다
     nar = 1 if width <= 3 else 2
-    for y in range(DB, DB + 11):
+    for y in range(DB, DB + 11 if not landing else DB):
         for x in range(0, width * T):
             row = (y - DB) // 4
             off = 6 if row % 2 else 0
@@ -788,7 +812,7 @@ def stone_bridge_v(length=5, width=3, style=0):
             if y == DB: t = 6
             c.put(x, y, S[max(1, t)])
     span = (width * T - 10) / float(nar)
-    for k in range(nar):
+    for k in range(0 if landing else nar):
         cx = 5 + span * (k + 0.5)
         rx = min(span * 0.34, 12)
         for y in range(DB + 3, DB + 12):
@@ -808,16 +832,16 @@ def stone_bridge_v(length=5, width=3, style=0):
                     t = 5 if i < 2 else (4 if i < 5 else 2)
                 if y % 8 in (0, 1) and i in (2, 3, 4): t = max(2, t - 1)
                 c.put(rx0 + i, y, S[t])
-    for (xx, yb, hh) in ((0, 20, 20), (width * T - 9, 20, 20), (0, DB + 4, 22), (width * T - 9, DB + 4, 22)):
+    for (xx, yb, hh) in ((0, 20, 20), (width * T - 9, 20, 20), (0, DB + (-2 if landing else 4), 22), (width * T - 9, DB + (-2 if landing else 4), 22)):
         _post(c, xx, yb, h=hh, w=9)
-    for y in range(26, DB - 2):                                               # 물 그림자(오른쪽 열): 물 위(데크 가운데~아래 구간)에만, 위쪽 둑 위에는 드리우지 않는다
-        edge = min(y - 26, DB - 3 - y) + 2
+    for y in range(26, DB0 - 2):                                              # 물 그림자(오른쪽 열): 물 위(데크 가운데~아래 구간)에만, 위쪽 둑 위에는 드리우지 않는다
+        edge = min(y - 26, DB0 - 3 - y) + 2
         for x in range(width * T, W):
             if c.a[y, x, 3] == 0:
                 al = (84 if x < width * T + 6 else 36) if edge > 3 else (40 if x < width * T + 6 else 14)
                 c.put(x, y, SHADOW, al)
     outline(c)
-    PASSAGE[f'gungnae_bridge_v{length}'] = {'cols': (0, width), 'rows': (0, length), 'note': '상판 전체를 걷는다. 맨 오른쪽 열(물 그림자)·맨 아래 행(남쪽 끝 돌벽)은 막힘.'}
+    PASSAGE[f'gungnae_bridge_v{length}'] = {'cols': (0, width), 'rows': (0, length + (1 if landing else 0)), 'note': '상판 전체를 걷는다. 맨 오른쪽 열(물 그림자)은 막힘. landing 이면 맨 아래 행도 상판(둑에 닿는 끝)이다.'}
     return c
 
 
@@ -1020,13 +1044,14 @@ def objects():
     d['gungnae_gate_great_12'] = gate_great(12, 64)
     d['gungnae_gate_great_8'] = gate_great(8, 32, variant=2)
     d['gungnae_gate_small_6'] = gate_small(6, 32)
-    d['gungnae_gate_side_5'] = gate_side(5, 11)
-    d['palace_gate_side_3'] = gate_side(3, 11, ramp='giwa', seed=5, post=(14, 36), plaster=True)
+    d['gungnae_gate_side_5'] = gate_side(5, 8, wall=wall_v(1))
+    import gungnae_palace as _gp
+    d['palace_gate_side_3'] = gate_side(3, 8, ramp='brown', seed=5, post=(18, 30), pw=4, roof=(12, 36), wall=_gp.pwall_v(False), wall_x=16, plaster=True)
     d['gungnae_tower_corner_5'] = tower_corner(5)
     d['gungnae_tower_corner_4'] = tower_corner(4)
     d['gungnae_bridge_h4'] = stone_bridge_h(4, 3, 0)
     d['gungnae_bridge_h5'] = stone_bridge_h(5, 3, 1)
-    d['gungnae_bridge_h6'] = stone_bridge_h(6, 4, 0)
+    d['gungnae_bridge_h6'] = stone_bridge_h(6, 4, 0, water=(T, 6 * T))
     d['gungnae_bridge_v4'] = stone_bridge_v(4, 3, 0)
     d['gungnae_bridge_v5'] = stone_bridge_v(5, 3, 1)
     d['gungnae_bridge_v6'] = stone_bridge_v(6, 4, 0)

@@ -503,18 +503,20 @@ def _cap(c, x0, x1, y0=0, round_l=False, round_r=False, groove=4):
 
 
 def _body(c, x0, x1, y0, y1, seed=0):
-    """회벽(흰 회반죽) 담 몸통: 가로 층 줄눈 + 한 칸 단위 얼룩. 어두운 기와 갓과 짝을 이룬다(황토색이면 길·밭으로 읽힌다)."""
+    """회벽 담 몸통: 한 켜 6px 의 벽돌 쌓기(가로 줄눈 + 8px 간격 엇갈린 세로 줄눈, 벽돌마다 톤이 한 단씩 다르다). 성벽 돌 쌓기와 같은 문법의 따뜻한 회벽.
+    16px 주기라 이어 붙여도 이음이 없다."""
     R_ = RGB['plaster']
     for y in range(y0, y1):
         layer = (y - y0) // 6
         ry = (y - y0) % 6
+        off = 4 if layer % 2 else 0
         for x in range(x0, x1):
-            t = 4
-            q = rnd(x // 2 + layer * 3, y // 2, seed + 11)
-            if q > 0.82: t = 5
-            elif q < 0.15: t = 3
-            if ry == 0: t += 1                       # 층 윗머리
-            if ry == 5: t = max(2, t - 2)            # 층 아래 그늘
+            bi = ((x + off) % T) // 8
+            q = hsh(bi + layer * 5, seed, 61) % 7
+            t = 4 + (1 if q == 0 else (-1 if q in (1, 2) else 0))
+            if ry == 0: t += 1                       # 층 윗머리(빛)
+            if ry == 5: t = 2                        # 가로 줄눈
+            elif (x + off) % 8 == 0: t = 3           # 세로 줄눈
             c.put(x, y, R_[max(2, min(6, t))])
 
 
@@ -526,7 +528,7 @@ def pwall_h(seed=0):
         c.put(x, 9, RGB['plaster'][2]); c.put(x, 10, RGB['plaster'][2])
     _cap(c, 0, T, 0, groove=(0, 2, 1)[seed % 3])
     for x in range(T):
-        c.put(x, 30, RGB['plaster'][2]); c.put(x, 31, SHADOW, 80)
+        c.put(x, 30, RGB['plaster'][2])
     for x in range(0, T, 8):                          # 받침 돌 한 줄
         pass
     return c
@@ -579,7 +581,7 @@ def pwall_corner(kind):
     else:
         _pband(c, 0, 9, east=True, face=False)
     for x in range(hx0, hx1):
-        c.put(x, 30, R_[2]); c.put(x, 31, SHADOW, 80)
+        c.put(x, 30, R_[2])
     return c
 
 
@@ -589,7 +591,7 @@ def palace_gate(bays=4):
     ku = 'l' + 'o' * (bays // 2 - 1) + 'q' + 'o' * (bays - bays // 2 - 2) + 'r'
     kb = ku
     pas = tuple(range(1, bays - 1))
-    t = tier(bays, 3, 'giwa', 22, ku, kb, 'persimmon', 'plaster', 'paper', dan=False, trim=True, base=True, floor='stone', nobase=pas)
+    t = tier(bays, 3, 'wood', 22, ku, kb, 'persimmon', 'plaster', 'paper', dan=False, trim=True, base=True, floor='stone', nobase=pas)
     cv = Cv(t.w, t.h + T)
     cv.paste(t, 0, 0)
     L = lib()
