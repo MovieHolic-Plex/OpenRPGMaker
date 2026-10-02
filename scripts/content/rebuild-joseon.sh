@@ -25,3 +25,20 @@ python3 scripts/content/prepare-joseon-baram-references.py
 rm -rf "${JOSEON_SAVE_DIR:-/tmp/oprn-joseon-baram-proof}"
 JOSEON_EXPORT_RELOADED="$RELOADED" NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=7000}" node scripts/content/save-joseon-baram.mjs
 node scripts/content/prepare-joseon-regions.mjs "$RELOADED"
+# 목록 축소본(catalog-thumbs) — 없으면 장소·칩셋 목록이 원본으로 넘어가며 오류 로그를 남긴다. build-catalog-thumbs.py 와 같은 함수를 쓴다.
+python3 - <<'PY'
+from importlib.machinery import SourceFileLoader
+from pathlib import Path
+from PIL import Image
+m = SourceFileLoader("bct", "scripts/content/build-catalog-thumbs.py").load_module()
+for n in ("joseon-v20", "gungnae"):
+    with Image.open(f"public/assets/region-references/{n}.png") as im:
+        m.write_long_edge(im, Path(f"public/assets/catalog-thumbs/region-references/{n}.png"))
+dest = Path("public/assets/catalog-thumbs/sheets/joseon-baram/joseon-baram-chipset.png")
+dest.parent.mkdir(parents=True, exist_ok=True)
+with Image.open("public/assets/joseon-baram/joseon-baram-chipset.png") as im:
+    f = im.convert("RGBA")
+    c = f.crop((0, 0, min(48, f.width), min(64, f.height)))
+    c.thumbnail((32, 40), Image.Resampling.BOX)
+    c.save(dest, "PNG", optimize=True)
+PY
