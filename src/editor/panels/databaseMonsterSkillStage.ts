@@ -500,11 +500,12 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     monster.style.setProperty("--retro-dim", String(Math.round(state.dim * 100) / 100));
     party.forEach((member, index) => {
       const struck = timeline.side === "enemies" ? Math.max(state.hitAll, index === FRONT_ALLY ? state.hitTarget : 0) : 0;
-      const pose = EXTENDED_POSE_FRAME[struck > 0.3 ? "hit" : "idle"];
+      const targetTrack=index===FRONT_ALLY?timeline.actors?.find(a=>a.role==="target"):undefined;
+      const targetPose=targetTrack?motionPositionAt(targetTrack,now,anchors,timeline.movement?.acceleration).pose:undefined;
+      const pose = EXTENDED_POSE_FRAME[targetPose??(struck > 0.3 ? "hit" : "idle")];
       member.node.style.backgroundPosition = -pose.col * CELL + "px " + -pose.row * CELL + "px";
       // 아군은 오른쪽으로 밀려난다.
       const knock = struck > 0 ? Math.round(5 * struck) + (Math.floor(clock / 40) % 2 === 0 ? 1 : -1) : 0;
-      const targetTrack=index===FRONT_ALLY?timeline.actors?.find(a=>a.role==="target"):undefined;
       const at=targetTrack?motionPositionAt(targetTrack,now,anchors,timeline.movement?.acceleration):member.home;
       member.node.style.left = Math.round(at.x - CELL / 2 + knock) + "px";
       member.node.style.top = Math.round(at.y - 45) + "px";
@@ -521,8 +522,10 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
       if(summon)node.style.backgroundImage=`url("${partyPixelSheetUrl(summon)}")`;
     }
     for(const [role,node]of extraNodes)node.hidden=!usedRoles.has(role);
+    const targetMotion=timeline.actors?.find(a=>a.role==="target");
+    const movingTarget=targetMotion?motionPositionAt(targetMotion,now,anchors,timeline.movement?.acceleration):target;
     painter.paint(state, {
-      caster: point, casterCell: cell, target, targets: party.map((entry) => entry.home), allies: [point], stageW: STAGE_W, stageH: STAGE_H,programAnchors:anchors,acceleration:timeline.movement?.acceleration,
+      caster: point, casterCell: cell, target:movingTarget, targets: party.map((entry,index) => index===FRONT_ALLY?movingTarget:entry.home), allies: [point], stageW: STAGE_W, stageH: STAGE_H,programAnchors:anchors,acceleration:timeline.movement?.acceleration,
     });
     stage.dataset.retroTime = String(Math.round(now));
     stage.dataset.pixelCell = beat;

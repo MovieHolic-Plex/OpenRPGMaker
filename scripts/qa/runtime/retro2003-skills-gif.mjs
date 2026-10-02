@@ -357,7 +357,8 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       const row = { skill, group: groupIndex, completed, ...detail, layerKeys: [...new Set(detail.effects.map((e) => e.fx))], problems: [] };
       if (!completed) row.problems.push('did not complete');
       if (values['impact-audit'] && !values.reduced) {
-        const held = detail.impactFrames.filter(f => f.held && f.skill === skill);
+        const choreographyId=defaults.skills.find(s=>s.id===skill)?.retroChoreographyId;
+        const held = detail.impactFrames.filter(f => f.held && (f.skill === skill || f.skill === choreographyId));
         if (detail.hitStops.some(s => s.on) && !held.length) row.problems.push('no observed held frames');
         for (let i = 1; i < held.length; i++) {
           const prev = held[i-1], next = held[i];

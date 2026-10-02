@@ -516,7 +516,9 @@ export function retroMonsterCellForPose(pose: ExtendedBattlerPose): PixelEnemyCe
   if (pose === "idle") return undefined;
   if (pose === "attack_windup" || pose === "cast_charge" || pose === "cast_raise" || pose === "defend") return "windup";
   if (pose === "walk_a" || pose === "walk_b" || pose === "walk_c") return "move";
-  if (pose === "evade" || pose === "hit") return "recover";
+  if (pose === "hit" || pose === "guard_hit") return "hit";
+  if (pose === "dead" || pose === "dying") return "dead";
+  if (pose === "evade" || pose === "attack_follow" || pose === "weak" || pose === "revive") return "recover";
   return "attack";
 }
 

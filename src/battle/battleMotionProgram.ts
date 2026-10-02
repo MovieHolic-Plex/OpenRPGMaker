@@ -91,7 +91,14 @@ export type MotionAnchor =
   | "right"
   | "top"
   | "target2"
-  | "target3";
+  | "target3"
+  | "midpoint"
+  | "aboveHome"
+  | "behind"
+  | "exit"
+  | "caught"
+  | "knockback"
+  | "throwMidpoint";
 export type MotionCurve =
   | "linear"
   | "pull"
@@ -127,6 +134,8 @@ export interface MotionContext {
   ally?: boolean;
   triggered?: boolean;
   preparing?: boolean;
+  /** Collateral contacts do not postpone the primary actor landing. */
+  primaryContacts?: number;
 }
 export interface MotionPosition {
   x: number;
@@ -136,7 +145,19 @@ export interface MotionPosition {
   flip: boolean;
 }
 export type MotionAnchors = Readonly<
-  Record<MotionAnchor, { x: number; y: number }>
+  Record<
+    Exclude<
+      MotionAnchor,
+      | "midpoint"
+      | "aboveHome"
+      | "behind"
+      | "exit"
+      | "caught"
+      | "knockback"
+      | "throwMidpoint"
+    >,
+    { x: number; y: number }
+  >
 >;
 export function normalizeBattleMotionProgram(
   raw: unknown,
@@ -173,6 +194,13 @@ export function normalizeBattleMotionProgram(
         "top",
         "target2",
         "target3",
+        "midpoint",
+        "aboveHome",
+        "behind",
+        "exit",
+        "caught",
+        "knockback",
+        "throwMidpoint",
       ],
       curves = [
         "linear",
@@ -286,10 +314,45 @@ export function motionPositionAt(
       ? 1
       : motionProgress(b.curve, (t - a.at) / (b.at - a.at), acceleration);
   const coordinate = (axis: "x" | "y"): number => {
-    const value = (p: MotionPoint) => anchors[p.anchor][axis] + (p[axis] ?? 0);
+    const anchor = (name: MotionAnchor): { x: number; y: number } => {
+      const direction = Math.sign(anchors.target.x - anchors.home.x) || -1;
+      switch (name) {
+        case "midpoint":
+          return {
+            x: (anchors.home.x + anchors.front.x) / 2,
+            y: (anchors.home.y + anchors.front.y) / 2,
+          };
+        case "aboveHome":
+          return { x: anchors.home.x, y: anchors.top.y };
+        case "behind":
+          return {
+            x: 2 * anchors.target.x - anchors.front.x,
+            y: anchors.target.y,
+          };
+        case "exit":
+          return direction < 0 ? anchors.left : anchors.right;
+        case "caught":
+          return {
+            x: anchors.home.x + (anchors.target.x - anchors.home.x) * 0.28,
+            y: anchors.home.y,
+          };
+        case "throwMidpoint":
+          return { x: anchors.target.x + direction * 28, y: anchors.target.y };
+        case "knockback":
+          return { x: anchors.target.x + direction * 56, y: anchors.target.y };
+        default:
+          return anchors[name];
+      }
+    };
+    const value = (p: MotionPoint) => anchor(p.anchor)[axis] + (p[axis] ?? 0);
     const av = value(a),
       bv = value(b);
-    if (b.curve !== "flow" || a === b) return av + (bv - av) * u;
+    // Gravity affects height, not horizontal velocity. The apex must not stop forward travel.
+    const progress =
+      axis === "x" && (b.curve === "rise" || b.curve === "fall")
+        ? Math.max(0, Math.min(1, (t - a.at) / Math.max(1, b.at - a.at)))
+        : u;
+    if (b.curve !== "flow" || a === b) return av + (bv - av) * progress;
     const prev = points[Math.max(0, i - 1)]!,
       next = points[Math.min(points.length - 1, i + 2)]!,
       span = b.at - a.at;
@@ -311,7 +374,12 @@ export function motionPositionAt(
     x: coordinate("x"),
     y: coordinate("y"),
     alpha: a.alpha ?? 1,
-    pose: a.pose,
+    pose:
+      a.pose === "walk_a" && a !== b
+        ? (["walk_a", "walk_b", "walk_c", "walk_b"] as const)[
+            Math.floor(Math.max(0, t - a.at) / 85) % 4
+          ]
+        : a.pose,
     flip: a.flip === true,
   };
 }
@@ -323,58 +391,74 @@ export function buildBattleMotionTracks(
 ): readonly MotionTrack[] {
   if (program.tracks?.length)
     return normalizeBattleMotionProgram(program)?.tracks ?? program.tracks;
-  const h = contacts[0] ?? 600,
-    last = contacts.at(-1) ?? h,
+  const primary = contacts.slice(0, context.primaryContacts ?? contacts.length);
+  const beats = primary.length ? primary : [600];
+  const h = beats[0]!,
+    last = beats.at(-1)!,
     wind = program.anticipationMs ?? 140,
     travel = program.travelMs ?? 180,
     recover = program.recoveryMs ?? 300,
-    height = program.jumpHeight ?? 100,
-    apex = program.apexMs ?? 80;
+    height = program.jumpHeight ?? 100;
   const start = Math.max(0, h - travel - wind),
-    go = Math.max(start + 40, h - travel),
-    end = last + recover + 180;
+    go = Math.max(start + 40, h - travel);
+  const end = last + recover + 180;
   const tracks: MotionTrack[] = [];
   const pt = (
     at: number,
     anchor: MotionAnchor,
     pose: ExtendedBattlerPose = "idle",
     extra: Partial<MotionPoint> = {},
-  ): MotionPoint => ({ at: Math.max(0, at), anchor, pose, ...extra });
+  ): MotionPoint => ({
+    at: Math.max(0, Math.round(at)),
+    anchor,
+    pose,
+    ...extra,
+  });
   const add = (role: MotionRole, points: MotionPoint[]) => {
-    points.sort((a, b) => a.at - b.at);
-    tracks.push({ role, points });
+    // Last authored pose wins at a shared timestamp (zero-duration anticipation etc.).
+    const sorted = [...new Map(points.map((p) => [p.at, p])).values()].sort(
+      (a, b) => a.at - b.at,
+    );
+    tracks.push({ role, points: sorted });
   };
   const idle = pt(0, "home"),
-    ready = pt(start, "home", "attack_windup"),
-    back = pt(end, "home", "idle", { curve: "settle" });
-  const dash = [
-    idle,
-    ready,
-    pt(go, "home", "front", { x: 8, curve: "pull" }),
-    pt(h, "front", "attack", { curve: "burst" }),
-    pt(last + 70, "front", "attack", { x: -10 }),
-    back,
-  ];
-  const leap = [
-    idle,
-    ready,
-    pt(go, "home", "front", { y: 3 }),
-    pt(Math.max(go, h - travel * 0.48 - apex), "front", "front", {
-      y: -height,
+    ready = pt(start, "home", "attack_windup");
+  const strikes = (
+    anchor: MotionAnchor,
+    times: readonly number[] = beats,
+    y = 0,
+  ) =>
+    times.flatMap((at, i) => [
+      ...(i ? [pt(at - 65, anchor, "attack_windup", { y })] : []),
+      pt(at, anchor, "attack_strike", { y }),
+      ...(i === times.length - 1
+        ? [pt(at + 55, anchor, "attack_follow", { y })]
+        : []),
+    ]);
+  // A readable landing, then a short backward hop: never slide home holding the strike cell.
+  const recoverFromFront = (after = last): MotionPoint[] => [
+    pt(after + 100, "front", "evade"),
+    pt(after + 100 + (end - after - 145) / 2, "midpoint", "evade", {
+      y: -18,
       curve: "rise",
     }),
-    pt(Math.max(go, h - travel * 0.48), "front", "front", { y: -height }),
-    pt(h, "front", "attack", { curve: "fall" }),
-    pt(h + 100, "front", "attack"),
-    back,
+    pt(end - 45, "home", "defend", { curve: "fall" }),
+    pt(end, "home"),
   ];
+  const approach = [
+    idle,
+    ready,
+    pt(go, "home", "walk_b"),
+    pt(h - 45, "front", "attack_windup", { curve: "burst" }),
+  ];
+  const dash = [...approach, ...strikes("front"), ...recoverFromFront()];
   const stationary = [
     idle,
     pt(start, "home", "cast_charge"),
     pt(go, "home", "cast_raise"),
     pt(h, "home", "cast_release"),
-    pt(last + 160, "home"),
-    back,
+    pt(last + 120, "home"),
+    pt(end, "home"),
   ];
   const p = program.pattern,
     hit = context.hit !== false,
@@ -382,79 +466,73 @@ export function buildBattleMotionTracks(
     trigger = context.triggered !== false;
   switch (p) {
     case "stationary":
-      add("user", [
-        idle,
-        ready,
-        pt(h, "home", "attack_strike"),
-        pt(h + 65, "home", "attack"),
-        back,
-      ]);
-      break;
     case "mark":
     case "marked-spear":
       add("user", [
         idle,
         ready,
-        ...contacts.map((at) => pt(at, "home", "attack")),
-        back,
+        ...strikes("home"),
+        pt(last + 120, "home"),
+        pt(end, "home"),
       ]);
       break;
-    case "walk":
+    case "walk": {
+      const arrival = h - 90,
+        points = [idle, pt(go, "home", "walk_a")];
+      // Explicit footsteps are shared by player, previews and exported custom paths.
+      points.push(
+        pt(arrival, "front", "attack_windup", { curve: "walk" }),
+        ...strikes("front"),
+        pt(last + 120, "front", "walk_a", { flip: true }),
+        pt(end - 40, "home", "idle", { curve: "walk" }),
+        pt(end, "home"),
+      );
+      add("user", points);
+      break;
+    }
+    case "jump": {
+      const hold = Math.min(program.apexMs ?? 0, (h - go) * 0.25),
+        apexAt = go + (h - go - hold) * 0.5;
       add("user", [
         idle,
-        ready,
-        pt(go, "home", "front"),
-        pt(h, "front", "attack", { curve: "walk" }),
-        back,
+        pt(start, "home", "defend"),
+        pt(go, "home", "evade"),
+        pt(apexAt, "midpoint", "attack_windup", { y: -height, curve: "rise" }),
+        ...(hold
+          ? [pt(apexAt + hold, "midpoint", "attack_windup", { y: -height })]
+          : []),
+        pt(h, "front", "attack_strike", { curve: "fall" }),
+        ...strikes("front").slice(1),
+        ...recoverFromFront(),
       ]);
       break;
-    case "dash":
-    case "sacrifice":
-      add("user", dash);
-      break;
-    case "jump":
-      add("user", leap);
-      break;
-    case "sky-crush":
-      add(
-        "user",
-        hit && contacts.length > 1
-          ? [
-              ...dash.slice(0, 4),
-              pt(h + 140, "front", "front"),
-              pt(last - 140 - apex, "top", "front", {
-                alpha: 0,
-                curve: "rise",
-              }),
-              pt(last - 140, "top", "attack", { alpha: 1 }),
-              pt(last, "front", "attack", { curve: "fall" }),
-              back,
-            ]
-          : dash,
-      );
-      break;
+    }
     case "sky":
       add("user", [
         idle,
-        ready,
-        pt(go, "home", "front"),
-        pt(Math.max(go + 20, h - 160 - apex), "top", "front", {
+        pt(start, "home", "defend"),
+        pt(go, "home", "evade"),
+        pt(go + (h - go) * 0.35, "aboveHome", "evade", {
           alpha: 0,
           curve: "rise",
         }),
-        pt(h - 160, "top", "attack", { alpha: 1 }),
-        pt(h, "front", "attack", { curve: "fall" }),
-        back,
+        pt(h - Math.min(180, (h - go) * 0.4), "top", "attack_windup", {
+          alpha: 1,
+        }),
+        ...strikes("front").map((q, i) =>
+          i === 0 ? { ...q, curve: "fall" as const } : q,
+        ),
+        ...recoverFromFront(),
       ]);
       break;
     case "blink":
       add("user", [
         idle,
         ready,
-        pt(go, "home", "front", { alpha: 0 }),
-        pt(h - 60, "target", "attack_windup", { x: -32, alpha: 1, flip: true }),
-        pt(h, "target", "attack", { x: -32, flip: true }),
-        pt(last + 120, "target", "attack", { x: -32, alpha: 0 }),
+        pt(go, "home", "evade", { alpha: 0 }),
+        pt(h - 70, "behind", "attack_windup", { flip: true }),
+        ...strikes("behind").map((q) => ({ ...q, flip: true })),
+        pt(last + 130, "behind", "evade", { alpha: 0, flip: true }),
         pt(end, "home"),
       ]);
       break;
@@ -462,44 +540,70 @@ export function buildBattleMotionTracks(
       add("user", [
         idle,
         ready,
-        pt(go, "home", "front", { x: 8 }),
-        pt(h, "front", "attack", { curve: "burst" }),
-        pt(h + 220, "left", "attack", { alpha: 0, curve: "linear" }),
+        pt(go, "home", "walk_b"),
+        pt(h, "front", "attack_strike", { curve: "burst" }),
+        pt(h + 180, "exit", "attack_follow", { alpha: 0 }),
+        pt(end - 90, "home", "evade", { alpha: 0 }),
         pt(end, "home"),
       ]);
       break;
     case "clones":
       add("user", stationary);
-      for (const [n, role] of (["cloneA", "cloneB"] as const).entries())
+      for (const [n, role] of (["cloneA", "cloneB"] as const).entries()) {
+        const own = beats.filter((_, i) => i % 2 === n),
+          anchor = n ? "behind" : "front";
+        if (!own.length) continue;
+        const first = own[0]!,
+          final = own.at(-1)!;
         add(role, [
           pt(0, "home", "idle", { alpha: 0 }),
-          pt(go, "home", "front", { y: (n ? 1 : -1) * 24, alpha: 0.55 }),
-          pt(h + n * 70, "target", "attack", {
-            x: n ? -30 : 30,
-            y: 0,
+          pt(first - 170, "home", "walk_b", { alpha: 0.7 }),
+          pt(first - 40, anchor, "attack_windup", {
             curve: "burst",
             flip: !!n,
           }),
-          pt(last + 120, "target", "idle", { alpha: 0 }),
-          pt(end, "home", "idle", { alpha: 0 }),
+          ...strikes(anchor, own).map((q) => ({ ...q, alpha: 0.7, flip: !!n })),
+          pt(final + 110, anchor, "evade", { alpha: 0, flip: !!n }),
+          pt(end, anchor, "idle", { alpha: 0 }),
         ]);
+      }
       break;
     case "air-chase":
-      add(
-        "user",
-        hit
-          ? [
-              ...dash.slice(0, 4),
-              pt(h + 160, "front", "attack", { y: -height, curve: "rise" }),
-              pt(Math.max(last, h + 320), "front", "attack", { curve: "fall" }),
-              back,
-            ]
-          : dash,
-      );
+    case "sky-crush": {
+      if (!hit || beats.length < 2) {
+        add("user", dash);
+        break;
+      }
+      const second = beats[1]!,
+        land = p === "sky-crush" && beats.length > 2 ? last : last + 180;
+      const airHits = beats.slice(1).filter((at) => at < land);
+      const lift = second - h;
+      add("user", [
+        ...approach,
+        ...strikes("front", [h]),
+        pt(h + Math.min(80, lift * 0.25), "front", "evade"),
+        pt(second - 60, "front", "attack_windup", {
+          y: -height,
+          curve: "rise",
+        }),
+        ...strikes("front", airHits, -height),
+        pt(land - 80, "front", "attack_windup", { y: -height }),
+        pt(land, "front", land === last ? "attack_strike" : "defend", {
+          curve: "fall",
+        }),
+        ...recoverFromFront(land),
+      ]);
+      add("target", [
+        pt(0, "target"),
+        pt(h, "target", "hit"),
+        pt(second - 60, "target", "hit", { y: -height, curve: "rise" }),
+        pt(land - 80, "target", "hit", { y: -height }),
+        pt(land, "target", "hit", { curve: "fall" }),
+        pt(land + 120, "target", "idle"),
+        pt(end, "target"),
+      ]);
       break;
-    case "throw":
-      add("user", dash);
-      break;
+    }
     case "counter":
     case "mirror-counter":
       add(
@@ -510,66 +614,70 @@ export function buildBattleMotionTracks(
             ? [
                 idle,
                 pt(start, "home", "defend"),
-                pt(go, "home", "attack_windup"),
-                pt(h, "front", "attack", { curve: "burst" }),
-                back,
+                ...approach.slice(2),
+                ...strikes("front"),
+                ...recoverFromFront(),
               ]
-            : [idle, pt(h, "home", "hit"), back],
+            : [
+                idle,
+                pt(h, "home", "hit"),
+                pt(h + 120, "home"),
+                pt(end, "home"),
+              ],
       );
       break;
     case "cover":
       add(
         "user",
         context.preparing
-          ? [idle, pt(start, "home", "defend"), back]
+          ? [idle, pt(start, "home", "defend"), pt(end, "home")]
           : trigger
             ? [
                 idle,
-                pt(go, "home", "defend"),
-                pt(h, "ally", "defend", { x: -24, curve: "burst" }),
-                back,
+                pt(go, "home", "walk_b"),
+                pt(h, "ally", "defend", { curve: "burst" }),
+                pt(last + 120, "ally", "walk_a", { flip: true }),
+                pt(end, "home", "idle", { curve: "walk" }),
               ]
             : stationary,
       );
       break;
     case "swap":
     case "relay":
-      add("user", dash);
-      if (ally && hit)
+      add("user", [
+        ...approach,
+        ...strikes("front", [h]),
+        ...recoverFromFront(h),
+      ]);
+      if (ally && hit && beats.length > 1)
         add("ally", [
           pt(0, "ally"),
-          pt(h, "ally", "front"),
-          pt(last, "front", "attack", { curve: "burst" }),
-          pt(end, "ally"),
+          pt(h + 60, "ally", "walk_b"),
+          pt(beats[1]! - 50, "front", "attack_windup", { curve: "burst" }),
+          ...strikes("front", beats.slice(1)),
+          pt(last + 120, "front", "walk_a", { flip: true }),
+          pt(end, "ally", "idle", { curve: "walk" }),
         ]);
       break;
     case "summon":
     case "blood-summon":
-      add("user", p === "blood-summon" ? dash : stationary);
+      add("user", stationary);
       if (trigger)
         add("summon", [
           pt(0, "home", "idle", { alpha: 0 }),
-          pt(go, "home", "front", { x: -36, alpha: 1 }),
-          pt(h, "front", "attack", { curve: "burst" }),
-          pt(end, "home", "idle", { x: -36 }),
+          pt(go, "home", "walk_b"),
+          pt(h - 50, "front", "attack_windup", { curve: "burst" }),
+          ...strikes("front"),
+          pt(last + 120, "front", "evade", { alpha: 0 }),
+          pt(end, "home", "idle", { alpha: 0 }),
         ]);
-      break;
-    case "freeze":
-      add("user", [
-        idle,
-        ready,
-        ...contacts.map((at, i) =>
-          pt(at, "front", i % 2 ? "attack_strike" : "attack"),
-        ),
-        back,
-      ]);
       break;
     case "transform":
       add("user", [
         idle,
         pt(start, "home", "cast_charge"),
         pt(h, "home", "victory"),
-        back,
+        pt(end, "home"),
       ]);
       break;
     case "trap":
@@ -577,44 +685,48 @@ export function buildBattleMotionTracks(
         idle,
         pt(go, "home", "item"),
         pt(h, "home", "defend"),
-        back,
+        pt(end, "home"),
       ]);
+      break;
+    case "dash":
+    case "sacrifice":
+    case "throw":
+    case "freeze":
+      add("user", dash);
       break;
     default:
       add("user", stationary);
   }
   if (hit) {
-    let target: MotionPoint[] | undefined;
     if (p === "pull")
-      target = [
+      add("target", [
         pt(0, "target"),
-        pt(go, "target"),
-        pt(h, "front", "hit", { x: -24, curve: "pull" }),
-        pt(end, "target", "idle", { curve: "settle" }),
-      ];
-    if (["air-chase", "sky-crush"].includes(p))
-      target = [
+        pt(go, "target", "hit"),
+        pt(h, "caught", "hit", { curve: "pull" }),
+        pt(last + 100, "caught", "evade"),
+        pt(end, "target", "idle", { curve: "walk" }),
+      ]);
+    if (p === "throw") {
+      const land = beats[1] ?? h + 260;
+      add("target", [
         pt(0, "target"),
         pt(h, "target", "hit"),
-        pt(h + 160, "target", "hit", { y: -height, curve: "rise" }),
-        pt(Math.max(last, h + 320), "target", "hit", { curve: "fall" }),
-        pt(end, "target"),
-      ];
-    if (p === "throw")
-      target = [
-        pt(0, "target"),
-        pt(h, "front", "hit", { x: -24 }),
-        pt(Math.max(last, h + 220), "target", "hit", { x: -90, y: -12, curve: "burst" }),
-        pt(end, "target", "idle", { curve: "settle" }),
-      ];
+        pt(h + (land - h) * 0.5, "throwMidpoint", "hit", {
+          y: -height * 0.6,
+          curve: "rise",
+        }),
+        pt(land, "knockback", "hit", { curve: "fall" }),
+        pt(land + 110, "knockback", "evade"),
+        pt(end, "target", "idle", { curve: "walk" }),
+      ]);
+    }
     if (p === "freeze")
-      target = [
+      add("target", [
         pt(0, "target"),
         pt(h, "target", "hit"),
         pt(last + 100, "target", "hit"),
         pt(end, "target"),
-      ];
-    if (target) add("target", target);
+      ]);
   }
   return tracks;
 }

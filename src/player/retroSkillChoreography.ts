@@ -415,7 +415,7 @@ function buildPlan(skill: PlayableSkill, record: SkillRecord, group: readonly Ba
   const counterContact=record.battleGimmick&&["cover","counter"].includes(record.battleGimmick.pattern)&&group.some(e=>e.kind==="damage");
   const handles=counterContact&&originalHandles?.movement?{...originalHandles,movement:{...originalHandles.movement,pattern:"counter" as const}}:originalHandles;
   const condition=group.find(e=>e.gimmick)?.gimmick;
-  const timeline = applyChoreographyHandles(base, handles,{hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
+  const timeline = applyChoreographyHandles(base, handles,{primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;
@@ -522,6 +522,7 @@ interface ClassPlayer {
   readonly playback: BattlePlaybackClock;
   readonly restores: Map<HTMLElement,{translate:string;opacity:string;zIndex:string}>;
   readonly places: Readonly<Record<RetroStagePlace, Point>>;
+  anchors?: MotionAnchors;
   last: Point;
   /** blink-strike: 대상 등 뒤(적의 왼쪽)에 나타나 오른쪽을 보고 친다. */
   behind: boolean;
@@ -549,7 +550,7 @@ export function holdRetroSkillPlayback(field: HTMLElement, held: boolean): void 
     const bodyAnimations = [...field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")]
       .flatMap(node => node.getAnimations?.({ subtree: true }) ?? []);
     for (const animation of [...bodyAnimations, ...(player?.animations ?? []), ...(player?.move ? [player.move] : [])]) {
-      if ((animation.effect as KeyframeEffect | null)?.target === field) continue;
+      if ((animation.effect as KeyframeEffect | null)?.target === field || player?.playback.ownsAnimation(animation)) continue;
       if (animation.playState !== "running" && !animation.pending) continue;
       paused.add(animation);
       animation.pause();
@@ -794,10 +795,14 @@ function playFx(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTim
     classFrame(node, event.cells[0] ?? 0);
     event.cells.slice(1).forEach((cell, i) => player.playback.schedule(() => {
       if (!node.isConnected) return;
-      // 시전자 몸 레이어는 시전자를 따라간다(질주 중 오라).
-      if (event.anchor === "user") place();
+      if (host) place();
       classFrame(node, cell);
     }, Math.round(frameMs * (i + 1))));
+    // Track moving bodies between texture changes, on the same pauseable clock as actor motion.
+    if (host && player.plan.timeline.actors) {
+      for(let ms=16;ms<frameMs*event.cells.length;ms+=16)
+        player.playback.schedule(()=>{if(node.isConnected)place();},ms);
+    }
     player.playback.schedule(() => { node.remove(); player.nodes.delete(node); }, Math.round(frameMs * event.cells.length));
   }
 }
@@ -828,7 +833,9 @@ function playProjectile(field: HTMLElement, player: ClassPlayer, event: Extract<
     const count=event.trajectory?Math.ceil(event.durationMs/16)+1:5;
     const anchors=programAnchors(field,player);
     const frames=Array.from({length:count},(_,i)=>{const u=i/(count-1);if(!event.trajectory)return {translate:at(u)};const p=motionPositionAt(event.trajectory,event.at+event.durationMs*u,anchors,player.plan.timeline.movement?.acceleration);return {translate:`calc(-50% + ${p.x-end.x}px) calc(-50% + ${p.y-end.y}px)`};});
-    player.animations.push(node.animate(frames, { duration, fill: "forwards",easing:"linear" }));
+    const animation=node.animate(frames, { duration, fill: "forwards",easing:"linear" });
+    player.animations.push(animation);
+    if(event.trajectory)player.playback.trackAnimation(animation,event.at*player.clock);
   }
   classFrame(node, 0);
   const frameMs = Math.max(16, event.frameMs * player.clock);
@@ -969,6 +976,7 @@ export function stopRetroClassSkill(field: HTMLElement): void {
 /** 포즈 사건을 시전자에 그린다. 몬스터는 도트 시트 9칸(windup·move·attack·recover)으로 옮긴다. */
 function drawPose(player: ClassPlayer, pose: ExtendedBattlerPose, flip: boolean): void {
   const user = player.user;
+  user.classList.toggle("retro-skill-flip", flip || player.behind);
   if (player.plan.monster) {
     const cell = retroMonsterCellForPose(pose);
     if (cell) user.dataset.retroPixelCell = cell;
@@ -1057,50 +1065,159 @@ function playSummon(field: HTMLElement, player: ClassPlayer, still: boolean): vo
   later(hit + 520, () => { node.remove(); player.nodes.delete(node); });
 }
 
-function programAnchors(field:HTMLElement,player:ClassPlayer):MotionAnchors {
-  const home=footPoint(field,player.user),primary=targetNode(field,player.primaryId),target=primary?footPoint(field,primary):stageCenter(field);
-  const allyId=player.plan.outcomes.find(e=>e.gimmick?.allyId)?.gimmick?.allyId;
-  const ally=targetNode(field,allyId)??casterSideNodes(field,player,"allies").find(n=>n!==player.user);
-  const targets=casterSideNodes(field,player,player.plan.side);
-  return {home,target2:targets[1]?footPoint(field,targets[1]):target,target3:targets[2]?footPoint(field,targets[2]):target,front:{x:home.x+player.places.front.x,y:home.y+player.places.front.y},target,ally:ally?footPoint(field,ally):home,left:{x:-96,y:home.y},right:{x:field.clientWidth+96,y:home.y},top:{x:target.x,y:-160}};
+function programAnchors(
+  field: HTMLElement,
+  player: ClassPlayer,
+): MotionAnchors {
+  if (player.anchors) return player.anchors;
+  const home = footPoint(field, player.user),
+    primary = targetNode(field, player.primaryId),
+    target = primary ? footPoint(field, primary) : stageCenter(field);
+  const allyId = player.plan.outcomes.find((e) => e.gimmick?.allyId)?.gimmick
+    ?.allyId;
+  const ally =
+    targetNode(field, allyId) ??
+    casterSideNodes(field, player, "allies").find((n) => n !== player.user);
+  const targets = casterSideNodes(field, player, player.plan.side).filter(
+    (n) => n !== primary,
+  );
+  player.anchors = {
+    home,
+    target2: targets[0] ? footPoint(field, targets[0]) : target,
+    target3: targets[1] ? footPoint(field, targets[1]) : target,
+    front: {
+      x: home.x + player.places.front.x,
+      y: home.y + player.places.front.y,
+    },
+    target,
+    ally: ally ? footPoint(field, ally) : home,
+    left: { x: -96, y: home.y },
+    right: { x: field.clientWidth + 96, y: home.y },
+    top: { x: target.x, y: -160 },
+  };
+  return player.anchors;
 }
-function playMotionProgram(field:HTMLElement,player:ClassPlayer):void {
-  const tracks=player.plan.timeline.actors;if(!tracks)return;
-  const anchors=programAnchors(field,player),duration=player.plan.timeline.durationMs;
-  for(const track of tracks){
-    let node=track.role==="user"?player.user:track.role==="target"?targetNode(field,player.primaryId):track.role==="ally"?targetNode(field,player.plan.outcomes.find(e=>e.gimmick?.allyId)?.gimmick?.allyId):undefined;
-    let summonSheet:ReturnType<typeof partyPixelSheet>;
-    if(track.role==="cloneA"||track.role==="cloneB"){
-      node=player.user.cloneNode(true) as HTMLElement;node.classList.add("retro-afterimage");delete node.dataset.recordId;delete node.dataset.testid;node.setAttribute("aria-hidden","true");player.user.parentElement?.append(node);player.nodes.add(node);
+function playMotionProgram(field: HTMLElement, player: ClassPlayer): void {
+  const tracks = player.plan.timeline.actors;
+  if (!tracks) return;
+  const anchors = programAnchors(field, player),
+    duration = player.plan.timeline.durationMs;
+  for (const track of tracks) {
+    let node =
+      track.role === "user"
+        ? player.user
+        : track.role === "target"
+          ? targetNode(field, player.primaryId)
+          : track.role === "ally"
+            ? targetNode(
+                field,
+                player.plan.outcomes.find((e) => e.gimmick?.allyId)?.gimmick
+                  ?.allyId,
+              )
+            : undefined;
+    let summonSheet: ReturnType<typeof partyPixelSheet>;
+    if (track.role === "cloneA" || track.role === "cloneB") {
+      node = player.user.cloneNode(true) as HTMLElement;
+      node.classList.add("retro-afterimage");
+      delete node.dataset.recordId;
+      delete node.dataset.testid;
+      node.setAttribute("aria-hidden", "true");
+      player.user.parentElement?.append(node);
+      player.nodes.add(node);
     }
-    if(track.role==="summon"){
-      summonSheet=partyPixelSheet(player.plan.record.battleGimmick?.resourceId??player.plan.record.summonResourceId??"party-pixel-animal-7");
-      if(!summonSheet)continue;
-      node=document.createElement("span");node.className="retro-summon";node.setAttribute("aria-hidden","true");
-      Object.assign(node.style,{width:`${summonSheet.box}px`,height:`${summonSheet.box}px`,left:`${anchors.home.x}px`,top:`${anchors.home.y+4}px`,backgroundImage:`url("${partyPixelSheetUrl(summonSheet)}")`,backgroundSize:`300% ${summonSheet.rows*100}%`});
-      field.append(node);player.nodes.add(node);
+    if (track.role === "summon") {
+      summonSheet = partyPixelSheet(
+        player.plan.record.battleGimmick?.resourceId ??
+          player.plan.record.summonResourceId ??
+          "party-pixel-animal-7",
+      );
+      if (!summonSheet) continue;
+      node = document.createElement("span");
+      node.className = "retro-summon";
+      node.setAttribute("aria-hidden", "true");
+      Object.assign(node.style, {
+        width: `${summonSheet.box}px`,
+        height: `${summonSheet.box}px`,
+        left: `${anchors.home.x}px`,
+        top: `${anchors.home.y + 4}px`,
+        backgroundImage: `url("${partyPixelSheetUrl(summonSheet)}")`,
+        backgroundSize: `300% ${summonSheet.rows * 100}%`,
+      });
+      field.append(node);
+      player.nodes.add(node);
     }
-    if(!node)continue;
-    const body=node,base=track.role==="summon"?anchors.home:footPoint(field,body);
-    player.restores.set(body,{translate:body.style.translate,opacity:body.style.opacity,zIndex:body.style.zIndex});
-    body.style.zIndex="42";
-    const times=new Set([0,duration,...track.points.map(p=>p.at)]);
-    for(let t=16;t<duration;t+=16)times.add(t);
-    const frames=[...times].sort((a,b)=>a-b).map(t=>{
-      const p=motionPositionAt(track,t,anchors,player.plan.timeline.movement?.acceleration);
-      return {offset:Math.min(1,t/duration),translate:`${p.x-base.x}px ${p.y-base.y}px`,opacity:p.alpha};
+    if (!node) continue;
+    const body = node,
+      base = track.role === "summon" ? anchors.home : footPoint(field, body);
+    player.restores.set(body, {
+      translate: body.style.translate,
+      opacity: body.style.opacity,
+      zIndex: body.style.zIndex,
     });
-    if(body.animate)player.animations.push(body.animate(frames,{duration:duration*player.clock,fill:"forwards",easing:"linear"}));
-    for(const point of track.points){
-      player.playback.schedule(()=>{if(!alive(field,player))return;
-        if(summonSheet){const cell=retroPartyPixelCellForPose(point.pose??"idle")??"idle_a";body.style.backgroundPosition=partyPixelBackgroundPosition(summonSheet,cell);}
-        else if(track.role!=="target")drawPose({...player,user:body,behind:false,plan:{...player.plan,monster:body.classList.contains("battle-enemy")}},point.pose??"idle",point.flip===true);
-        else body.dataset.retroPixelCell=point.pose==="hit"?"hit":"idle_a";
-      },point.at*player.clock);
+    body.style.zIndex = "42";
+    const times = new Set([0, duration, ...track.points.map((p) => p.at)]);
+    for (let t = 16; t < duration; t += 16) times.add(t);
+    const frames = [...times]
+      .sort((a, b) => a - b)
+      .map((t) => {
+        const p = motionPositionAt(
+          track,
+          t,
+          anchors,
+          player.plan.timeline.movement?.acceleration,
+        );
+        return {
+          offset: Math.min(1, t / duration),
+          translate: `${p.x - base.x}px ${p.y - base.y}px`,
+          opacity: p.alpha,
+        };
+      });
+    if (body.animate) {
+      const animation = body.animate(frames, {
+        duration: duration * player.clock,
+        fill: "forwards",
+        easing: "linear",
+      });
+      player.animations.push(animation);
+      player.playback.trackAnimation(animation, 0);
     }
-    if(player.plan.timeline.movement?.pattern==="walk"&&track.role==="user"){
-      const contact=player.plan.hits[0]??600;
-      for(let t=140;t<contact;t+=90)player.playback.schedule(()=>{if(alive(field,player))drawPose(player,Math.floor(t/90)%2?"walk_a":"walk_b",false);},t*player.clock);
+    const poseTimes = new Set(track.points.map((p) => p.at));
+    track.points.forEach((p, i) => {
+      if (p.pose !== "walk_a") return;
+      const until = track.points[i + 1]?.at ?? duration;
+      for (let at = p.at + 85; at < until; at += 85) poseTimes.add(at);
+    });
+    for (const at of poseTimes) {
+      player.playback.schedule(() => {
+        if (!alive(field, player)) return;
+        const point = motionPositionAt(
+          track,
+          at,
+          anchors,
+          player.plan.timeline.movement?.acceleration,
+        );
+        if (summonSheet) {
+          const cell =
+            retroPartyPixelCellForPose(point.pose ?? "idle") ?? "idle_a";
+          body.style.backgroundPosition = partyPixelBackgroundPosition(
+            summonSheet,
+            cell,
+          );
+        } else
+          drawPose(
+            {
+              ...player,
+              user: body,
+              behind: false,
+              plan: {
+                ...player.plan,
+                monster: body.classList.contains("battle-enemy"),
+              },
+            },
+            point.pose ?? "idle",
+            point.flip,
+          );
+      }, at * player.clock);
     }
   }
 }
@@ -1110,7 +1227,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
   const primary = targetNode(field, primaryId);
   const player: ClassPlayer = {
     plan, user, primaryId, clock: Math.max(0.1, clock), paint, nodes: new Set(), animations: [], playback: new BattlePlaybackClock(), restores:new Map(),
-    places: plan.monster ? measureMonsterPlaces(field, user, primary) : measurePlaces(field, user, primary, plan.skill.motion === "blink-strike"),
+    places: plan.monster ? measureMonsterPlaces(field, user, primary) : measurePlaces(field, user, primary, !plan.timeline.actors && plan.skill.motion === "blink-strike"),
     last: currentTranslate(user), behind: false, done: false,
   };
   players.set(field, player);

@@ -165,6 +165,45 @@ export function applyChoreographyHandles(
     const contacts = [
       ...new Set(events.filter((e) => e.kind === "hit").map((e) => e.at)),
     ].sort((a, b) => a - b);
+    // Repeated impact sheets are tied to contacts, not the legacy flurry's 90ms spacing.
+    // Shorten each sheet so consecutive strikes remain readable instead of stacking three crosses.
+    const impactLayers = new Map<
+      number,
+      Extract<RetroTimelineEvent, { kind: "fx" }>[]
+    >();
+    for (const event of events)
+      if (event.kind === "fx" && event.anchor === "target") {
+        const group = impactLayers.get(event.layer) ?? [];
+        group.push(event);
+        impactLayers.set(event.layer, group);
+      }
+    events = events.map((event) => {
+      if (event.kind !== "fx" || event.anchor !== "target" || !contacts.length)
+        return event;
+      const group = impactLayers.get(event.layer)!,
+        index = group.indexOf(event),
+        first = group[0]!;
+      const frameMs = Math.min(
+        event.frameMs,
+        40,
+        contacts.length > 1 ? (spacing * 0.9) / event.cells.length : Infinity,
+      );
+      const contactFrame = Math.max(
+        0,
+        Math.min(first.cells.length - 1, (contact - first.at) / first.frameMs),
+      );
+      return {
+        ...event,
+        at: Math.max(
+          0,
+          Math.round(
+            (contacts[Math.min(index, contacts.length - 1)] ?? contact) -
+              contactFrame * frameMs,
+          ),
+        ),
+        frameMs,
+      };
+    });
     actors = buildBattleMotionTracks(
       rec.movement,
       contacts.length ? contacts : [contact],
@@ -195,10 +234,10 @@ export function applyChoreographyHandles(
             ? [
                 { at: projectile.at, anchor: "home", y: -25 },
                 { at: first, anchor: "target", y: -22, curve: "flow" },
-                { at: first + 140, anchor: "left", y: -22, curve: "flow" },
+                { at: first + 140, anchor: "exit", y: -22, curve: "flow" },
                 {
                   at: Math.max(first + 280, last - 140),
-                  anchor: "left",
+                  anchor: "exit",
                   y: -22,
                 },
                 {

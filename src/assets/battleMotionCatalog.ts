@@ -49,7 +49,7 @@ export const BATTLE_MOTION_DESCRIPTIONS: Readonly<
   stationary: "제자리에서 검풍을 보낸다. 이동 없이 짧은 준비와 회수.",
   walk: "등속 구간 전후로 부드럽게 출발·제동하며 접근한다.",
   dash: "뒤로 준비한 뒤 가속해 접촉하고 관성으로 조금 더 나아간다.",
-  jump: "상승은 감속, 정점은 잠깐 체류, 낙하는 가속한다.",
+  jump: "가로 이동을 이어 가며 솟았다가 가속해 착지하고, 뒤로 짧게 뛰어 복귀한다.",
   blink: "사라져 대상 뒤에 나타나 베고 원래 자리로 돌아온다.",
   fire: "제자리에서 준비한 뒤 가속 투사체를 발사한다.",
   sky: "화면 위로 완전히 빠져나갔다가 대상에게 강하한다.",
@@ -104,10 +104,19 @@ export const BUNDLED_BATTLE_MOTIONS: readonly SkillChoreographyRecord[] =
       movement: {
         pattern,
         anticipationMs: 140,
-        travelMs: MELEE.has(pattern) ? 180 : 320,
+        travelMs:
+          pattern === "sky"
+            ? 640
+            : pattern === "jump"
+              ? 420
+              : pattern === "walk"
+                ? 520
+                : MELEE.has(pattern)
+                  ? 180
+                  : 320,
         recoveryMs: 320,
         jumpHeight: LEAP.has(pattern) ? 140 : 90,
-        apexMs: 70,
+        apexMs: 0,
         acceleration: 1,
       },
       weight: LEAP.has(pattern) || pattern === "sacrifice" ? "heavy" : "normal",

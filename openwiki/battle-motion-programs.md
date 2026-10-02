@@ -67,3 +67,32 @@ flow는 단조 Hermite 접선으로 접촉을 통과할 때의 속도를 연결�
 - `verify-shots/battle-motion/SUMMARY.md`: 전체 확인 범위·결과와 한계, 실제 플레이어 GIF 축소 사본.
 - 이 작업은 엔진/편집기/공용 번들 코드다. QA 사본과 freshProject는 정본 저장 근거가 아니다. 사용자 SQLite 프로젝트를 수정하지 않았다.
 - gates/vitest/전체 typecheck는 세션 hard rule에 따라 실행하지 않았다. 해당 변경 진입점의 번들 컴파일과 브라우저 확인만 했다.
+
+## 동작의 적대적 검토 (2026-10-02)
+
+기존 녹화의 FX 존재/유한 좌표/피해 판정 통과는 동작 품질의 근거가 아니었다. 검토에서 다음 결함을 수정했다.
+
+- 정면(`front`) 칸으로 돌진하고, 공격 칸을 유지한 채 뒤로 미끄러져 돌아갔다. 접근은 이동 칸, 접촉은 windup→strike→follow, 복귀는 짧은 후방 도약→착지→대기로 나눈다. 보행은 경로 시계에서 85ms 간격으로 walk_a/b/c/b를 고르며, 복귀할 때 진행 방향으로 돌아선다.
+- 점프 정점에 이미 목표 X에 도착해 수직 낙하했다. `midpoint`를 경유하며 rise/fall은 높이에만 중력 곡선을 적용하고 가로 속도는 이어 간다. 기본 도약 420ms, 화면 밖 강하 640ms, 보행 520ms. `apexMs`를 명시한 저작 경로는 정점 정지를 유지하며 공용 기본은 0이다.
+- 공중 추격의 공격자/대상 높이와 접촉 시각을 맞춘다. 압살의 부수 피해가 주 대상의 착지를 늦추지 않도록 `MotionContext.primaryContacts`를 전달한다. 던지기는 첫 명중 전 대상이 움직이지 않는다. 분신은 실제 홀수/짝수 타격을 나눠 맡는다.
+- 대상 FX가 옛 지면 자리에 남았다. 플레이어는 몸 위치를 같은 pauseable clock으로 16ms마다 따라가며, 사람/몬스터 편집기 미리보기도 이동 대상 좌표를 쓴다. 피격 포즈는 데이터 속성만 쓰지 않고 실제 paint를 호출한다.
+- 반복 FX가 옛 flurry의 90ms 간격에 남아 몸동작을 가렸다. 연출 손잡이가 각 접촉에 FX를 붙이고 재생 길이를 줄여 연타를 구분한다.
+- 프로그램 시작 때 앵커를 한 번 측정한다. 이동 중 투사체가 출발해도 앵커를 다시 측정하지 않는다. 주 대상을 제외한 적을 target2/target3로 선택한다.
+- 파생 자리 `midpoint/aboveHome/behind/exit/caught/knockback/throwMidpoint`는 실제 홈·대상의 방향으로 계산한다. 뒤잡기, 관통, 귀환 투사체, 던지기에 고정 왼쪽 좌표를 쓰지 않는다. 경로 펼치기/정규화/UI/AI 도구가 같은 자리 이름을 지원한다.
+- 최대 16회 연타를 펼쳐도 48지점 제한 안에서 복귀를 유지한다. 중간 연타는 strike→windup, 마지막 타격에 follow를 둔다.
+
+전용 검토: `node scripts/qa/runtime/battle-motion-adversarial.mjs`. 32종 × 명중/빗나감 × 1/3/16 접촉에서 좌우 반전, 접촉 전 대상 정지, 접촉 높이, 종료 위치, 정규화 후 경로 보존을 확인한다. 결과는 `verify-shots/battle-motion/adversarial/trajectory-review.json`. 샘플 수는 시각적 완성도 점수가 아니다.
+실제 플레이어의 고속 연속 캡처는 `retro2003-skills-gif.mjs --set motion --fps 20 --impact-audit`를 사용한다.
+공용 스킬은 스킬 id와 연출 id가 다르므로 히트스톱 관측은 `retroChoreographyId`도 대조한다.
+
+### 히트스톱 뒤 위치/자세 시계가 벌어지는 결함
+
+12종 기능 녹화는 통과했지만 접촉 프레임을 열자 압살의 3번째 타격 자세가 나온 뒤에도 몸은 공중에 남았다.
+타이머는 다음 접촉 260ms를 지켰지만 WAAPI의 자체 재개 시각이 반복 정지마다 늦어졌다(그 녹화에서 위치 시각 약 600→800→1017ms).
+`BattlePlaybackClock.trackAnimation`은 WAAPI를 정지된 샘플러로 두고 위치 `currentTime`을 같은 `elapsedMs`로 구동한다.
+히트스톱 진입과 자세 콜백 직전에 위치를 동기화하며, 재개는 별도 WAAPI play를 호출하지 않는다. 종료 시 rAF와 소유 애니메이션을 취소한다.
+`battle-motion-clock-review.mjs`는 실제 브라우저에서 4회 정지/재개, 메인 스레드 지연, 양쪽 배우 시각, 자세 콜백, 종료 정리를 확인한다.
+기존 자유 재생 CSS/통상 공격의 pause/play 경로는 유지한다. `trackAnimation`에 등록한 프로그램 배우/투사체만 공통 시계를 사용한다.
+순간이동은 프로그램이 있을 때 기존 `measurePlaces(...behind)`를 끄며, 새 `behind` 앵커에서 한 번만 등 뒤를 계산한다.
+
+몬스터 포즈 매핑도 함께 수정했다: hit/guard_hit→hit, attack_follow/evade→recover, dead/dying→dead. 타격받은 대상이 회수 칸으로 나오거나 후속 자세가 다시 공격 칸이 되는 결함을 막는다.

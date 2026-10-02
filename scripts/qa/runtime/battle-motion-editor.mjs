@@ -16,7 +16,8 @@ try {
   await page.goto(
     (process.env.EDITOR_QA_URL ?? "http://127.0.0.1:9835") + "/?freshProject=1",
   );
-  await page.getByTestId("edit-canvas").waitFor({ timeout: 90000 });
+  // This review owns the database UI; a map canvas is not its readiness gate.
+  await page.getByTestId("toolbar-database").waitFor({ timeout: 90000 });
   await page.getByTestId("toolbar-database").click();
   await page.getByTestId("database-modal").waitFor();
   await page

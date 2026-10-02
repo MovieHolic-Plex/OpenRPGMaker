@@ -1,0 +1,104 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "monster victim uses the hit cell"
+    },
+    {
+      "ok": true,
+      "name": "monster follow-through uses recovery cell"
+    },
+    {
+      "ok": true,
+      "name": "monster defeat uses the dead cell"
+    },
+    {
+      "ok": true,
+      "name": "contact position uses presentation time 0",
+      "detail": {
+        "held": 150.10000002384186,
+        "time": 150.10000002384186
+      }
+    },
+    {
+      "ok": true,
+      "name": "attacker and victim share time 0"
+    },
+    {
+      "ok": true,
+      "name": "hold freezes position and clock 0"
+    },
+    {
+      "ok": true,
+      "name": "pose callback sees synchronized position 0"
+    },
+    {
+      "ok": true,
+      "name": "contact position uses presentation time 1",
+      "detail": {
+        "held": 295.80000001192093,
+        "time": 295.80000001192093
+      }
+    },
+    {
+      "ok": true,
+      "name": "attacker and victim share time 1"
+    },
+    {
+      "ok": true,
+      "name": "hold freezes position and clock 1"
+    },
+    {
+      "ok": true,
+      "name": "pose callback sees synchronized position 1"
+    },
+    {
+      "ok": true,
+      "name": "contact position uses presentation time 2",
+      "detail": {
+        "held": 441.50000005960464,
+        "time": 441.50000005960464
+      }
+    },
+    {
+      "ok": true,
+      "name": "attacker and victim share time 2"
+    },
+    {
+      "ok": true,
+      "name": "hold freezes position and clock 2"
+    },
+    {
+      "ok": true,
+      "name": "pose callback sees synchronized position 2"
+    },
+    {
+      "ok": true,
+      "name": "contact position uses presentation time 3",
+      "detail": {
+        "held": 587.0000000596046,
+        "time": 587.0000000596046
+      }
+    },
+    {
+      "ok": true,
+      "name": "attacker and victim share time 3"
+    },
+    {
+      "ok": true,
+      "name": "hold freezes position and clock 3"
+    },
+    {
+      "ok": true,
+      "name": "pose callback sees synchronized position 3"
+    },
+    {
+      "ok": true,
+      "name": "teardown cancels owned motion"
+    },
+    {
+      "ok": true,
+      "name": "no animation survives disposal"
+    }
+  ]
+}

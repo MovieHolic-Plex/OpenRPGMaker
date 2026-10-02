@@ -608,7 +608,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       const footPad = size >= 128 ? (fx.anchor === "target" ? 24 : 10) : 6;
       if (fx.anchor === "screen") drawFx(fx.event * 10, fx.layer, fx.cell, { x: STAGE_W / 2, y: STAGE_H / 2 }, false, used, SCREEN_FX_SCALE, fx.filter);
       else if (fx.anchor === "user") drawFx(fx.event * 10, fx.layer, fx.cell, feet(casterPoint(state), footPad), true, used, 1, fx.filter);
-      else if (fx.anchor === "target") drawFx(fx.event * 10, fx.layer, fx.cell, feet(singleTarget(), footPad), true, used, 1, fx.filter);
+      else if (fx.anchor === "target") drawFx(fx.event * 10, fx.layer, fx.cell, feet(motionSample("target")??singleTarget(), footPad), true, used, 1, fx.filter);
       else {
         const group = fx.anchor === "allAllies" ? party.map((entry) => entry.home) : targets;
         group.forEach((point, index) => drawFx(fx.event * 10 + index + 1, fx.layer, fx.cell, feet(point, footPad), true, used, 1, fx.filter));
@@ -660,7 +660,6 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     const point = casterPoint(state);
     const programmed=motionSample("user");
     if(programmed){state={...state,pose:programmed.pose??state.pose,flip:programmed.flip,hidden:programmed.alpha===0};}
-    if(timeline.movement?.pattern==="walk"&&now>140&&now<(timeline.events.find(e=>e.kind==="hit")?.at??600))state={...state,pose:Math.floor(now/90)%2?"walk_a":"walk_b"};
     const node = caster.node;
     const step = castStep(state.pose);
     if (caster.pixel) {
@@ -701,10 +700,10 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       const struck = side === "enemies" ? Math.max(state.hitAll, index === FRONT_ENEMY ? state.hitTarget : 0) : 0;
       // 종마다 시트 계약의 대기 한 칸 길이로 돈다(박쥐 110ms · 골렘 300ms …).
       const idle = idleCells[Math.floor(clock / enemy.idleMs) % 4]!;
-      placeCell(enemy.node, PIXEL_ENEMY_FRAME[struck > 0.3 ? "hit" : idle], enemy.cell);
+      const movement=index===FRONT_ENEMY?motionSample("target"):undefined;
+      placeCell(enemy.node, PIXEL_ENEMY_FRAME[movement?.pose==="hit"||struck>0.3?"hit":idle], enemy.cell);
       const knock = struck > 0 ? Math.round(-5 * struck) + (Math.floor(clock / 40) % 2 === 0 ? 1 : -1) : 0;
       // 시트 계약: 바닥 기준선 y = cell − 4.
-      const movement=index===FRONT_ENEMY?motionSample("target"):undefined;
       placeSprite(enemy.node, movement??{ x: enemy.home.x + knock, y: enemy.home.y }, enemy.cell, enemy.cell - 4);
       enemy.node.style.setProperty("--retro-hit", String(Math.round(struck * 100) / 100));
       enemy.node.style.setProperty("--retro-dim", String(Math.round(state.dim * 100) / 100));

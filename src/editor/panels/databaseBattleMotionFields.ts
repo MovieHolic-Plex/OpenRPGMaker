@@ -101,7 +101,7 @@ export function battleMotionFields(
           "front",
           "target",
           "target2",
-          "target3",
+          "target3", "midpoint", "aboveHome", "behind", "exit", "caught", "knockback", "throwMidpoint",
           "ally",
           "left",
           "right",

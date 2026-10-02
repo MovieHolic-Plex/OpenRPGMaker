@@ -222,7 +222,7 @@ const motionProgramSchema = {
       type:"object",properties:{
         role:{type:"string",enum:["user","target","ally","cloneA","cloneB","summon"]},
         points:{type:"array",items:{type:"object",properties:{
-          at:{type:"number"},anchor:{type:"string",enum:["home","front","target","target2","target3","ally","left","right","top"]},x:{type:"number"},y:{type:"number"},curve:{type:"string",enum:["linear","pull","burst","walk","rise","fall","settle","flow"]},pose:{type:"string"},alpha:{type:"number"},flip:{type:"boolean"}
+          at:{type:"number"},anchor:{type:"string",enum:["home","front","target","target2","target3", "midpoint", "aboveHome", "behind", "exit", "caught", "knockback", "throwMidpoint","ally","left","right","top"]},x:{type:"number"},y:{type:"number"},curve:{type:"string",enum:["linear","pull","burst","walk","rise","fall","settle","flow"]},pose:{type:"string"},alpha:{type:"number"},flip:{type:"boolean"}
         },required:["at","anchor"]}}
       },required:["role","points"]
     }}
