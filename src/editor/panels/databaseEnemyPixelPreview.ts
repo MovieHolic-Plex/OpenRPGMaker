@@ -138,7 +138,7 @@ export function enemyPixelListBadge(resourceId: string | undefined, size = 16): 
 
 export type EnemyPixelPreview = { readonly element: HTMLElement; readonly stop: () => void };
 
-/** 몬스터 도트 미리보기 카드. 시트가 없는 리소스면 null. hue·투명은 전투 화면과 같게 반영한다. */
+/** 몬스터 도트 미리보기 카드. 시트가 없는 리소스면 null. 전투처럼 색조·투명 없이 시트 원래 모습 그대로 그린다. */
 export function renderEnemyPixelPreview(
   record: { readonly name: string; readonly monsterResourceId?: string },
 ): EnemyPixelPreview | null {

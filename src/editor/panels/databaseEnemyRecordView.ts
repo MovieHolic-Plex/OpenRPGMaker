@@ -544,7 +544,7 @@ function speciesNavActions(record: EnemyRecord, rerender: () => void): HTMLEleme
       class: "db-ws-card-hint",
       text: "생성: 이 몬스터의 이름·외형·능력치 → 새 종족의 이름·외형·종족값으로 한 번 복사. 같은 레벨의 전투 수치는 달라질 수 있습니다.",
     }),
-    ...(species ? [el("small", { class: "db-ws-card-hint", text: "연결 교체 시 기존 종족은 남습니다. 외형 복사는 종족 → 이 몬스터의 리소스·색조·투명·비행만 바꿉니다." })] : []),
+    ...(species ? [el("small", { class: "db-ws-card-hint", text: "연결 교체 시 기존 종족은 남습니다. 외형 복사는 종족 → 이 몬스터의 그림만 바꿉니다." })] : []),
   ];
 }
 

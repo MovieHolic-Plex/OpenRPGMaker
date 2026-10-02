@@ -26,10 +26,11 @@ import {
   textField,
   toggleSwitch,
 } from "@/editor/panels/databaseControls";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { attachCatalogPlacement, battleCommandPlacement } from "./databaseBattleCommandStudio";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { battleBackdropPreviewUrl, battleSceneryField, customPickerResourceId } from "@/editor/panels/battleSceneryPicker";
+import { battleMethodOf } from "@/project/battleMethod";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 export { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
 import {
@@ -237,26 +238,42 @@ function terrainBasicsCard(terrain: DatabaseTerrainRecord, index: number): HTMLE
 }
 
 function terrainSceneCard(terrain: DatabaseTerrainRecord, index: number, rerender: () => void): HTMLElement {
+  const project = store.getCurrent();
+  const side = battleMethodOf(project) === "side";
+  const writeBackdrop = (resourceId: string | undefined): void => {
+    selectUtilityRecord("terrain", index);
+    recordCoalescedSnapshot(`db-utility:terrain:${index}:backdrop`);
+    writeTerrain(index, (target) => {
+      target.battleBackgroundResourceId = resourceId;
+    });
+  };
+  const picker = resourcePickerControl({
+    label: side ? "직접 그림" : "전투 배경",
+    resourceId: side ? customPickerResourceId(project, terrain.battleBackgroundResourceId) : terrain.battleBackgroundResourceId,
+    kind: "backdrop",
+    testid: `db-field-terrain-backdrop-${index}`,
+    allowClear: true,
+    dialogTitle: "전투 배경",
+    onChange: (result) => writeBackdrop(emptyToUndefined(result.resourceId)),
+    rerender,
+  });
   return sectionCard({
     title: "전투 · 표시",
-    hint: "적 그룹이 배경을 지정하지 않으면 이 배경이 쓰입니다. 우선순위: 적 그룹 → 지형 → 기본 전장",
+    hint: side
+      ? "적 그룹이 배경을 정하지 않으면 이 종류가 쓰입니다. 우선순위: 적 그룹 → 지형 → 기후 → 숲"
+      : "적 그룹이 배경을 지정하지 않으면 이 배경이 쓰입니다. 우선순위: 적 그룹 → 지형 → 기본 전장",
     children: [
-      resourcePickerControl({
-        label: "전투 배경",
-        resourceId: terrain.battleBackgroundResourceId,
-        kind: "backdrop",
-        testid: `db-field-terrain-backdrop-${index}`,
-        allowClear: true,
-        dialogTitle: "전투 배경",
-        onChange: (result) => {
-          selectUtilityRecord("terrain", index);
-          recordCoalescedSnapshot(`db-utility:terrain:${index}:backdrop`);
-          writeTerrain(index, (target) => {
-            target.battleBackgroundResourceId = emptyToUndefined(result.resourceId);
-          });
-        },
-        rerender,
-      }),
+      // 도트 측면은 그림이 아니라 배경 종류를 고른다(battleSceneryPicker.ts, 2026-10-02).
+      side
+        ? battleSceneryField({
+          project,
+          resourceId: terrain.battleBackgroundResourceId,
+          testid: `db-terrain-scenery-${index}`,
+          autoHint: "맵 기후를 따릅니다(눈이면 설원). 없으면 숲.",
+          onChange: (resourceId) => { writeBackdrop(resourceId); rerender(); },
+          customPicker: picker,
+        })
+        : picker,
       resourcePickerControl({
         label: "발소리",
         resourceId: terrain.footstepSoundResourceId,
@@ -396,7 +413,7 @@ function terrainPreviewStage(terrain: DatabaseTerrainRecord): HTMLElement {
       }),
     ],
   });
-  const url = resolveAssetResourceUrl(terrain.battleBackgroundResourceId, { project: store.getCurrent() });
+  const url = battleBackdropPreviewUrl(store.getCurrent(), terrain.battleBackgroundResourceId, { showAuto: true });
   if (url) stage.style.backgroundImage = `linear-gradient(180deg, rgba(23, 27, 31, 0.05), rgba(23, 27, 31, 0.42)), ${cssBackground(url)}`;
   return stage;
 }
@@ -807,7 +824,7 @@ function battleCommandSkillRow(command: DatabaseBattleCommandRecord, index: numb
 function backdropThumb(resourceId: string | undefined): HTMLElement {
   // listRow 가 .db-list-thumb 를 붙인다(24px 고정, studio-theme.css).
   const thumb = el("span", { attrs: { "aria-hidden": "true" } });
-  const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const url = battleBackdropPreviewUrl(store.getCurrent(), resourceId);
   if (url) {
     thumb.style.backgroundImage = cssBackground(url);
     thumb.style.backgroundSize = "cover";

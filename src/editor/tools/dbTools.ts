@@ -81,6 +81,7 @@ import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
+import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
@@ -272,7 +273,7 @@ const utilityRecordSchema: JsonSchema = {
     damageMultipliers: { type: "object", properties: { A: { type: "number" }, B: { type: "number" }, C: { type: "number" }, D: { type: "number" }, E: { type: "number" } }, additionalProperties: false },
     damage: { type: "integer" },
     encounterRatePercent: { type: "integer" },
-    battleBackgroundResourceId: { type: "string" },
+    battleBackgroundResourceId: { type: "string", description: BATTLE_BACKDROP_ID_HINT },
     footstepSoundResourceId: { type: "string" },
     characterDisplay: { type: "string", enum: ["normal", "transparent"] },
     vehiclePassage: { type: "object", properties: { boat: { type: "boolean" }, ship: { type: "boolean" }, airshipLand: { type: "boolean" } }, additionalProperties: false },
@@ -582,14 +583,14 @@ const troopRecordSchema = objectSchema({
   autoAlign: booleanSchema(),
   uncapturable: booleanSchema(),
   trainerBattle: booleanSchema(),
-  previewBackgroundResourceId: stringSchema(),
+  previewBackgroundResourceId: stringSchema(BATTLE_BACKDROP_ID_HINT),
   backdropAnimation: objectSchema({
     scrollX: { type: "number", minimum: -400, maximum: 400, description: "가로 스크롤 px/초(양수 = 오른쪽)" },
     scrollY: { type: "number", minimum: -400, maximum: 400, description: "세로 스크롤 px/초(양수 = 아래)" },
     waveAmplitude: { type: "number", minimum: 0, maximum: 24, description: "물결 왜곡 진폭 px" },
     waveFrequency: { type: "number", minimum: 0, maximum: 8, description: "물결 흔들림 횟수/초" },
     paletteCycleSeconds: { type: "number", minimum: 0, maximum: 60, description: "색 순환 한 바퀴 초(0 = 끔)" },
-  }, "움직이는 전투 배경(마더식) — 배경 그림 한 장을 움직인다. 0/생략 = 그 효과 끔. 도트 측면 스킨(기본 retro2003·chrono·ff 등 겹 배경 스킨)에서는 지형 겹 배경이 덮어 보이지 않는다 — 그때는 backdropLayers 를 쓴다"),
+  }, "움직이는 전투 배경(마더식) — 배경 그림 한 장을 움직인다. 0/생략 = 그 효과 끔. 도트 측면 전투(기본)에서는 겹 배경에 가려 보이지 않는다 — 몬스터 대치에서만 보인다. 도트 측면 분위기는 backdropLayers 를 쓴다"),
   backdropLayers: arrayOf(objectSchema({
     preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기" },
     resourceId: stringSchema("바둑판으로 깔 그림 리소스(투명 PNG). 주면 preset 보다 먼저"),
