@@ -622,8 +622,28 @@ def propagate(base_frames, new_frames, base_pal=None, new_pal=None):
                     if 0 <= sy < FH and b1[sy][x] == TRANSPARENT and n1[sy][x] != TRANSPARENT and rows[y][x] == TRANSPARENT \
                             and bf[y][x] == TRANSPARENT:
                         rows[y][x] = n1[sy][x]
+            _tidy(rows, bf)
             out[(d, f)] = [''.join(r) for r in rows]
     return out
+
+
+def _tidy(rows, bf):
+    """전파 뒤 정리 — 뼈대 걸음 프레임 bf 에는 없던 결함만 고친다(원본의 의도된 점·틈은 둔다):
+    상하좌우에 불투명 이웃이 없는 외톨이 점(뼈대 그 자리는 외톨이가 아니었다)은 지우고,
+    상하좌우가 모두 불투명인 1px 구멍(뼈대 그 자리는 불투명)은 이웃 중 가장 많은 색으로 메운다."""
+    from collections import Counter
+    nb = ((1, 0), (-1, 0), (0, 1), (0, -1))
+
+    def around(rs, x, y):
+        return [rs[y + j][x + i] if 0 <= x + i < FW and 0 <= y + j < FH else TRANSPARENT for i, j in nb]
+    for y in range(FH):
+        for x in range(FW):
+            opaque = [c for c in around(rows, x, y) if c != TRANSPARENT]
+            if rows[y][x] != TRANSPARENT and not opaque:
+                if bf[y][x] == TRANSPARENT or any(c != TRANSPARENT for c in around(bf, x, y)):
+                    rows[y][x] = TRANSPARENT
+            elif rows[y][x] == TRANSPARENT and len(opaque) == 4 and bf[y][x] != TRANSPARENT:
+                rows[y][x] = Counter(opaque).most_common(1)[0][0]
 
 
 def protrusion(base_frames, frames, margin=2):
