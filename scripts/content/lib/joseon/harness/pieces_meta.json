@@ -1041,5 +1041,24 @@
    "planter_round"
   ],
   "thin_ok": "말뚝"
+ },
+ "thatch_bangatgan": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jc',…)"
+ },
+ "pavilion_5g": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "forum.stoa",
+   "forum.temple"
+  ],
+  "kit": "blocks.house('pv',5,…,dan)"
  }
 }

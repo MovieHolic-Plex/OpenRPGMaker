@@ -154,3 +154,18 @@ def toldam():
             c.put(x, y, S[max(1, tone)])
     outline(c)
     return c
+
+
+def bangatgan():
+    """방앗간: 앞이 트인 초가 헛간 — 열린 마루칸에 곡식 자루 더미와 맷돌, 오른쪽 벽에 키·체가 걸린다. 마당 쪽 처마가 길다."""
+    def post(cv):
+        K.thatch_baram(cv, 3)
+        P = RGB['plaster']; S = RGB['straw']; St = RGB['stone']; Wd = RGB['wood']
+        for (x0, w, h) in ((22, 12, 9), (35, 12, 7), (28, 12, 6)):
+            box(cv, x0, 76, w, 3, h, P, (6, 5), (5, 4, 3, 2))                  # 곡식 자루(흰 천)
+            cv.hl(x0 + 2, x0 + w - 2, 76 - h + 3, S[4])
+        cyl(cv, 58, 66, 8, 4, St, (6, 5), (5, 4, 3, 2))                          # 맷돌
+        cv.put(58, 65, St[2]); cv.put(57, 65, St[2])
+        for y in range(52, 62): cv.put(76, y, Wd[4]); cv.put(77, y, Wd[2])        # 벽에 걸린 키
+        ell(cv, 78, 63, 3.2, 2.6, lambda x, y, u, v: S[5] if u < 0 else S[3])
+    return K.assemble(K.house('jc', 5, 'looor', 'looor', steps=(), hip=True, chimi=False), _lib(), post=post)

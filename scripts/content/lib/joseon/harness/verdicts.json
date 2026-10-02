@@ -990,5 +990,21 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
+ },
+ "thatch_bangatgan": {
+  "hash": "81048fca23c1",
+  "status": "note",
+  "line": "열린 마루칸 초가 + 곡식 자루·맷돌 — 초가 블록 문법 동일",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pavilion_5g": {
+  "hash": "d5373636fd2f",
+  "status": "note",
+  "line": "기존 pavilion_5 와 같고 지붕만 회청 기와",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
  }
 }
