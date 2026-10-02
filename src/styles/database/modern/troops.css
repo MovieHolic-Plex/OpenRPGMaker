@@ -326,6 +326,27 @@
   min-width: 0;
 }
 
+/* 전투 배경 겹 — 겹마다 카드 한 장. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layer-card {
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin: 6px 0;
+  padding: 8px 10px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layer-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layer-head strong {
+  font: 600 12px/1.4 var(--font-ui);
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-radio-group {
   display: grid;
   gap: 4px;

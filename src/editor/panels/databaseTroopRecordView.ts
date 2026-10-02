@@ -929,28 +929,40 @@ function backdropLayersField(record: TroopRecord, rerender: () => void): HTMLEle
   const rows = layers.map((layer, index) => {
     const resolved = resolvedBattleBackdropLayer(layer);
     const label = layer.resourceId ? `그림 ${layer.resourceId}` : BATTLE_BACKDROP_LAYER_LABELS[layer.preset ?? "fog"];
+    // 겹마다 카드 한 장 — 머리(번호·종류 이름·빼기) + 칸. 카드 없이 늘어놓으면 두 겹이 한 양식으로 이어져 보였다(실측 캡처).
     return el("div", {
-      class: "db-troop-config-grid",
+      class: "db-troop-layer-card",
       dataset: { testid: `db-troop-layer-${index}` },
       children: [
-        layer.resourceId
-          ? el("span", { class: "db-troop-field-label", text: label })
-          : selectField("겹", `db-troop-layer-preset-${index}`, layer.preset ?? "fog",
-            BATTLE_BACKDROP_LAYER_PRESETS.map((id) => ({ id, name: BATTLE_BACKDROP_LAYER_LABELS[id] })),
-            (preset) => patch(index, { preset: preset as BattleBackdropLayer["preset"] })),
-        checkboxField("배틀러 앞", `db-troop-layer-front-${index}`, layer.front === true, (front) => patch(index, { front: front || undefined })),
-        numberField("불투명도 (%)", `db-troop-layer-opacity-${index}`, resolved.opacity, (opacity) => patch(index, { opacity }), { min: 0, max: 100, step: 5 }),
-        numberField("가로 흐름 (px/초)", `db-troop-layer-scrollx-${index}`, resolved.scrollX, (scrollX) => patch(index, { scrollX }), { min: -1200, max: 1200, step: 5 }),
-        numberField("세로 흐름 (px/초)", `db-troop-layer-scrolly-${index}`, resolved.scrollY, (scrollY) => patch(index, { scrollY }), { min: -1200, max: 1200, step: 5 }),
-        selectField("겹치기", `db-troop-layer-blend-${index}`, resolved.blendMode,
-          BLEND_MODE_NAMES.map((id) => ({ id, name: BLEND_MODE_LABELS[id] })),
-          (blend) => patch(index, { blendMode: normalizeBlendMode(blend) })),
-        el("button", {
-          class: "btn btn-mini",
-          text: "빼기",
-          attrs: { type: "button" },
-          dataset: { testid: `db-troop-layer-delete-${index}` },
-          on: { click: () => save(current().filter((_, i) => i !== index)) },
+        el("div", {
+          class: "db-troop-layer-head",
+          children: [
+            el("strong", { text: `겹 ${index + 1} · ${label}${layer.front ? " (앞)" : ""}` }),
+            el("button", {
+              class: "btn btn-mini",
+              text: "빼기",
+              attrs: { type: "button", "aria-label": `겹 ${index + 1} 빼기` },
+              dataset: { testid: `db-troop-layer-delete-${index}` },
+              on: { click: () => save(current().filter((_, i) => i !== index)) },
+            }),
+          ],
+        }),
+        el("div", {
+          class: "db-troop-config-grid",
+          children: [
+            layer.resourceId
+              ? el("span", { class: "db-troop-field-label", text: label })
+              : selectField("종류", `db-troop-layer-preset-${index}`, layer.preset ?? "fog",
+                BATTLE_BACKDROP_LAYER_PRESETS.map((id) => ({ id, name: BATTLE_BACKDROP_LAYER_LABELS[id] })),
+                (preset) => patch(index, { preset: preset as BattleBackdropLayer["preset"] })),
+            checkboxField("배틀러 앞", `db-troop-layer-front-${index}`, layer.front === true, (front) => patch(index, { front: front || undefined })),
+            numberField("불투명도 (%)", `db-troop-layer-opacity-${index}`, resolved.opacity, (opacity) => patch(index, { opacity }), { min: 0, max: 100, step: 5 }),
+            selectField("겹치기", `db-troop-layer-blend-${index}`, resolved.blendMode,
+              BLEND_MODE_NAMES.map((id) => ({ id, name: BLEND_MODE_LABELS[id] })),
+              (blend) => patch(index, { blendMode: normalizeBlendMode(blend) })),
+            numberField("가로 흐름 (px/초)", `db-troop-layer-scrollx-${index}`, resolved.scrollX, (scrollX) => patch(index, { scrollX }), { min: -1200, max: 1200, step: 5 }),
+            numberField("세로 흐름 (px/초)", `db-troop-layer-scrolly-${index}`, resolved.scrollY, (scrollY) => patch(index, { scrollY }), { min: -1200, max: 1200, step: 5 }),
+          ],
         }),
       ],
     });
