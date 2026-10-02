@@ -735,7 +735,9 @@ export interface RetroEnemyReach {
 /** 지금 그릴 도트 적 칸. 격파 → 맞은 칸을 잠깐 보인 뒤 녹은 칸, 피격 → hit, 행동 중 → 비트가 고른 칸. */
 export function retroPixelEnemyCell(node: HTMLElement): PixelEnemyCell | "idle" {
   const transient = node.dataset.retroTransient;
-  if (node.classList.contains("defeated")) return transient === "hit" ? "hit" : "dead";
+  // 저작한 쓰러짐 연출(data-collapse)이 있는 적은 녹은 칸(dead)으로 가지 않는다 — 그 칸이 0.8초 보였다가 연출이 서 있는
+  // 모습부터 다시 시작해 「죽었다 살아나 다시 죽는」 것처럼 읽혔다(2026-10-02 영상). 연출 캔버스가 그림을 숨길 때까지 맞은 칸.
+  if (node.classList.contains("defeated")) return transient === "hit" || node.dataset.collapse ? "hit" : "dead";
   if (transient === "hit") return "hit";
   const cell = node.dataset.retroBeat ? node.dataset.retroPixelCell : undefined;
   return (cell as PixelEnemyCell | undefined) ?? "idle";

@@ -1,4 +1,5 @@
 import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
+import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
@@ -563,6 +564,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (retroMotion && result === "victory") retroVictory(field);
       showFinaleStamp(result);
     },
+    collapseHoldMs: () => remainingEnemyCollapseMs(field),
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.

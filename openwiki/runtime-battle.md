@@ -9,6 +9,10 @@
   `retroDamage`, 그 밖은 `syncEnemyNode` 의 격파 전이. 한 노드에 한 번(`data-collapse-state`).
   - 함정 1: 계산 스타일·상자는 **await 전에** 뜬다. 도트 적은 막타 직후 dead 칸(녹은 웅덩이)으로 바뀌어, 이미지 로드 뒤 읽으면 쓰러진 칸이 분해됐다.
   - 함정 2: 캔버스 자리는 `getBoundingClientRect` 로 잰다. 스킨이 그림을 transform 으로 세워 offsetLeft/Top 은 70~300px 어긋났다.
+  - 함정 3: 도트 적은 격파 칸이 녹은 웅덩이(dead)라, 연출이 있는 적은 `retroPixelEnemyCell` 이 dead 대신 맞은 칸(hit)을 고른다 —
+    아니면 웅덩이 0.8초 → 서 있는 모습으로 연출 시작 = 「죽었다 살아나 다시 죽음」으로 보였다.
+  - 결판 막타면 시퀀서가 `collapseHoldMs`(= `remainingEnemyCollapseMs`, 최대 2.2초)만큼 결과 도장·패널을 미룬다 — 보스 가라앉기(1.8초)가
+    「승리」 띠에 덮였다. 시작 시각은 `data-collapse-ends-at` 에 동기로 적는다.
 - **배경 겹** `TroopRecord.backdropLayers`(project/battleBackdropLayers.ts, 최대 4): fog·clouds·mist·rain·snow·embers·stars·lightRays 프리셋
   (그림 없이 CSS 그라디언트) 또는 저자 그림. 뒤 겹은 `.battle-backdrop` 안 z 1(겹 배경 지형 카메라 위), 앞 겹(front)은 필드 z 25(배틀러 앞, 색조 층 30 아래).
   `backdropAnimation` 은 겹 배경 스킨(기본 retro2003 등 도트 측면)에서 지형이 덮어 안 보이지만 겹은 모든 스킨에서 보인다.

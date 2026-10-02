@@ -199,7 +199,8 @@
 
 /* ── 2026-10-02 추가 입자: 수면 Z · 마비 불꽃 · 침묵 말풍선 · 혼란 별 · 매혹 하트 · 화상 불티 ──
    글자 입자(Z·★·♥·…)는 ::before/::after 두 개가 반 박자 어긋나 돈다. 층은 몸의 불투명 픽셀 상자에 맞춰져 있어
-   (battleFieldDom.fitAuraLayerToSprite) 윗변이 곧 정수리다 — 말풍선·별은 그 위(bottom: 100%·음수 top)에 뜬다. */
+   (battleFieldDom.fitAuraLayerToSprite) 윗변이 곧 정수리다. 정수리 바로 위는 상태 배지(CNF·SIL …) 자리라 말풍선은 머리 오른쪽,
+   별은 정수리 높이에서 돈다(2026-10-02 실측: 위로 올리면 배지에 가렸다). */
 .battle-aura[data-aura="sleep-zzz"]::before,
 .battle-aura[data-aura="sleep-zzz"]::after,
 .battle-aura[data-aura="charm-heart"]::before,
@@ -250,22 +251,20 @@
   color: #1a2350;
   content: "…";
   font: bold 13px/14px "Galmuri11", "NeoDunggeunmo", monospace;
-  bottom: calc(100% + 4px);
-  left: 50%;
+  left: calc(100% - 6px);
   padding: 0 6px 2px;
   position: absolute;
-  translate: -50% 0;
+  top: -6px;
 }
 .battle-aura[data-aura="silence-mute"]::after {
   animation: aura-bob 1.4s ease-in-out infinite alternate;
   background: #e83a3a;
   content: "";
   height: 3px;
-  left: 50%;
+  left: calc(100% - 4px);
   position: absolute;
-  bottom: calc(100% + 12px);
+  top: 2px;
   transform: rotate(-28deg);
-  translate: -50% 0;
   width: 30px;
 }
 @keyframes aura-bob {
@@ -282,7 +281,7 @@
   left: calc(50% - 7px);
   position: absolute;
   text-shadow: 1px 1px #5a4300, -1px 0 #5a4300;
-  top: -16px;
+  top: 0;
 }
 .battle-aura[data-aura="confuse-stars"]::after { animation-delay: -0.6s; color: #fff6b0; }
 @keyframes aura-orbit {

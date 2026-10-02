@@ -23,6 +23,8 @@ export function beginEnemyCollapse(node: HTMLElement): boolean {
   const sprite = node.querySelector<HTMLElement>(SPRITE_SELECTOR);
   if (!sprite) return true;
   node.dataset.collapseState = "playing";
+  // 끝나는 시각을 바로 적는다 — 시퀀서가 결과 도장을 그때까지 미룬다(remainingEnemyCollapseMs). 그림 뜨기(await)도 조금 먹는다.
+  node.dataset.collapseEndsAt = String(performance.now() + ENEMY_COLLAPSE_DURATION_MS[effect] + 120);
   if (effect === "instant" || prefersReducedMotion()) {
     hideSprite(sprite);
     node.dataset.collapseState = "done";
@@ -41,6 +43,16 @@ export function beginEnemyCollapse(node: HTMLElement): boolean {
     });
   });
   return true;
+}
+
+/** 지금 돌고 있는 쓰러짐 연출이 끝나기까지 남은 시간(ms). 없으면 0. */
+export function remainingEnemyCollapseMs(root: ParentNode): number {
+  const now = performance.now();
+  let remaining = 0;
+  for (const node of root.querySelectorAll<HTMLElement>(".battle-enemy[data-collapse-state='playing']")) {
+    remaining = Math.max(remaining, Number(node.dataset.collapseEndsAt ?? 0) - now);
+  }
+  return Math.max(0, Math.round(remaining));
 }
 
 /** 이미 쓰러진 채로 다시 그려진 노드 — 연출 없이 숨긴다. */
