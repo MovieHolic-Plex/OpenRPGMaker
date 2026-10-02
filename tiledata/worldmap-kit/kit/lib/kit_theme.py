@@ -94,12 +94,26 @@ class Ctx:
             m[y, x] = True
         return m
 
+    road_px = None                                   # 옛 흙길 테두리 화소(지도 크기 bool) — 있으면 발자국 쪽 연결을 그 흔적으로 가린다
+
+    def _entered(self, X, Y, d):
+        """옛 길이 발자국 칸 (X, Y) 으로 실제로 들어갔는가 — 맞닿은 가장자리 4줄의 띠 안에 옛 길 테두리 화소가 있는가."""
+        if self.road_px is None:
+            return True
+        t = self.road_px[Y * TS:(Y + 1) * TS, X * TS:(X + 1) * TS]
+        strip = {'S': t[0:4, B0 - 1:B1 + 1], 'N': t[TS - 4:TS, B0 - 1:B1 + 1], 'E': t[B0 - 1:B1 + 1, 0:4], 'W': t[B0 - 1:B1 + 1, TS - 4:TS]}[d]
+        return bool(strip.any())
+
     def links(self, x, y):
-        """길 칸이 이어지는 방향(길·다리·발자국·경사로 쪽)."""
+        """길 칸이 이어지는 방향(길·다리·경사로 쪽, 그리고 옛 길이 실제로 들어간 발자국 쪽)."""
         out = []
         for d, (dx, dy) in DIRS.items():
             X, Y = x + dx, y + dy
-            if 0 <= X < self.W and 0 <= Y < self.H and (self.road[Y, X] or self.foot[Y, X] or (X, Y) in self.bridge or self.ramp[Y, X]):
+            if not (0 <= X < self.W and 0 <= Y < self.H):
+                continue
+            if self.road[Y, X] and not self.foot[Y, X] or (X, Y) in self.bridge or self.ramp[Y, X]:
+                out.append(d)
+            elif self.foot[Y, X] and self._entered(X, Y, d):
                 out.append(d)
         return out
 
@@ -132,33 +146,33 @@ def _dilate(m):
     return d
 
 
-def _fill_from_known(tile, unknown):
-    """unknown 화소를 가장 가까운 known 화소의 색으로 채운다(평균 없이 복사 — 팔레트 유지)."""
-    t = tile.copy()
-    unk = unknown.copy()
-    for _ in range(TS):
+def fill_global(img, dirty, blocked):
+    """dirty 화소를 가장 가까운 깨끗한 화소(dirty·blocked 아닌 곳)의 색으로 메운다 — 지도 전체를 한 번에(8방 번짐).
+    칸마다 따로 메우면 이웃 칸의 아직 안 지운 흙을 재료로 집어 왔다(실측: 굽이 아래 흙 삼각형)."""
+    out = img.copy()
+    unk = dirty.copy()
+    src = ~dirty & ~blocked
+    H, W = unk.shape
+    for _ in range(3 * TS):
         if not unk.any():
             break
-        done = []
-        for y, x in zip(*np.nonzero(unk)):
-            for dy, dx in ((0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (1, 1), (-1, 1), (1, -1)):
-                Y, X = y + dy, x + dx
-                if 0 <= Y < TS and 0 <= X < TS and not unk[Y, X]:
-                    t[y, x] = t[Y, X]
-                    done.append((y, x))
-                    break
-        for y, x in done:
-            unk[y, x] = False
-    return t
-
-
-def clear_old_road(img, x, y, links, road_role_px):
-    """옛 흙길 테두리 중 새 띠 밖으로 나간 화소를 옆 바닥으로 메운다. 반환: 새 띠 마스크."""
-    sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
-    band = band_mask(links)
-    unknown = (_dilate(band) | road_role_px[sl]) & ~band
-    img[sl] = _fill_from_known(img[sl], unknown)
-    return band
+        got = np.zeros_like(unk)
+        for dy, dx in ((0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (1, 1), (-1, 1), (1, -1)):
+            ys = slice(max(0, -dy), H - max(0, dy))
+            yd = slice(max(0, dy), H - max(0, -dy))
+            xs = slice(max(0, -dx), W - max(0, dx))
+            xd = slice(max(0, dx), W - max(0, -dx))
+            # 목적지 (y, x) 가 unknown 이고 원천 (y-dy, x-dx) 가 깨끗하면 복사
+            m = unk[yd, xd] & src[ys, xs] & ~got[yd, xd]
+            if m.any():
+                o = out[yd, xd]
+                o[m] = out[ys, xs][m]
+                got[yd, xd] |= m
+        if not got.any():
+            break
+        unk &= ~got
+        src |= got
+    return out
 
 
 def _edge(band, links):
@@ -350,13 +364,50 @@ def draw_truss_bridge(t, d, x, y):
     return t
 
 
+def road_interior_colors(img, ctx, road_role_px):
+    """옛 흙길 띠 안쪽 색(곧은 길 칸의 가운데 줄에서 센다) — 띠 밖·발자국 안에 남은 옛 길 바닥을 찾는 데 쓴다."""
+    from collections import Counter
+    cnt = Counter()
+    for (x, y) in ctx.path_cells()[:400]:
+        tile = img[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
+        rp = road_role_px[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
+        for yy in range(B0 + 2, B1 - 2):
+            for xx in range(B0 + 2, B1 - 2):
+                if not rp[yy, xx]:
+                    cnt[tuple(int(v) for v in tile[yy, xx])] += 1
+    tot = sum(cnt.values()) or 1
+    return {c for c, n in cnt.items() if n / tot > .003}
+
+
 def overlay_roads(img, ctx, style, road_role_px):
-    out = img.copy()
+    """흙길 → 아스팔트/철길. ① 지울 화소(옛 테두리·띠 안쪽 색, 띠 밖과 길에 맞닿은 발자국 칸)를 지도 전체에서 먼저 모으고
+    ② 한 번에 바닥으로 메운 뒤 ③ 새 띠를 그린다."""
+    ctx.road_px = road_role_px
+    colors = road_interior_colors(img, ctx, road_role_px)
+    H, W = img.shape[:2]
+    cmatch = np.zeros((H, W), bool)
+    for c in colors:
+        cmatch |= np.all(img == np.array(c, np.uint8), -1)
+    dirty = np.zeros((H, W), bool)
+    bands = np.zeros((H, W), bool)
+    cells = []
     for (x, y) in ctx.path_cells():
+        sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
         if (x, y) in ctx.bridge:
+            bands[sl] = True
             continue
         links = ctx.links(x, y)
-        band = clear_old_road(out, x, y, links, road_role_px)
+        band = band_mask(links)
+        bands[sl] |= band
+        dirty[sl] |= (_dilate(band) | road_role_px[sl] | cmatch[sl]) & ~band
+        cells.append((x, y, links, band))
+    for y, x in zip(*np.nonzero(ctx.foot)):
+        if any(0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.road[y + dy, x + dx] and not ctx.foot[y + dy, x + dx]
+               for dx, dy in DIRS.values()):
+            sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
+            dirty[sl] |= road_role_px[sl] | cmatch[sl]
+    out = fill_global(img, dirty & ~bands, bands)
+    for x, y, links, band in cells:
         sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
         tile = out[sl].copy()
         out[sl] = draw_asphalt(tile, band, links, x, y) if style == 'paved' else draw_rail(tile, band, links, x, y)
@@ -738,8 +789,9 @@ def _neb_class(ctx):
     return cls
 
 
-def render_space(ctx, seed=11):
+def render_space(ctx, seed=11, road_px=None):
     """땅 대신 우주 지도를 처음부터 그린다. 칸 배열(바닥·물체·사구·길)을 그대로 읽어 같은 여정·같은 장벽 자리를 지킨다."""
+    ctx.road_px = road_px
     H, W = ctx.H * TS, ctx.W * TS
     img = np.empty((H, W, 3), np.uint8)
     cls = _neb_class(ctx)

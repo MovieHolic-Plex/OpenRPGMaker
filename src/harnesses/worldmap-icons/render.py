@@ -42,11 +42,11 @@ def themed_terrain(set_id, t):
     tp = K.WM / 'themes' / (set_id + '.json')
     theme = KT.load_theme(tp) if tp.exists() else None
     pal = KP.load_palette(K.WM / 'palettes' / ((theme['palette'] if theme else PALETTE) + '.json'), K.WM / 'palettes')
+    road_px = t['role'][np.searchsorted(t['ukeys'], KP.key_of(t['C']))] == KP.GID['road']
     if theme and theme['kind'] == 'space':
-        return KT.render_space(KT.Ctx(t['world'])), pal, 0.0
+        return KT.render_space(KT.Ctx(t['world']), road_px=road_px), pal, 0.0
     img, _extra = KP.recolor_terrain(t['C'], t['ukeys'], t['role'], pal, t['G'])
     if theme and theme['overlays']:
-        road_px = t['role'][np.searchsorted(t['ukeys'], KP.key_of(t['C']))] == KP.GID['road']
         img, _rep = KT.apply_land(img, t['world'], theme, road_px)
     return img, pal, pal.get('icon_tint', 0.25)
 

@@ -188,13 +188,13 @@ def main():
     files = {}
     for pal in palettes:
         tint = a.tint_icons if a.tint_icons is not None else pal.get('icon_tint', 0.25)
+        road_px = t['role'][np.searchsorted(t['ukeys'], KP.key_of(t['C']))] == KP.GID['road'] if theme else None
         if theme and theme['kind'] == 'space':
-            img, extra = KT.render_space(KT.Ctx(world)), {}
+            img, extra = KT.render_space(KT.Ctx(world), road_px=road_px), {}
             tint = 0.0
         else:
             img, extra = KP.recolor_terrain(t['C'], t['ukeys'], t['role'], pal, t['G'])
             if theme:
-                road_px = t['role'][np.searchsorted(t['ukeys'], KP.key_of(t['C']))] == KP.GID['road']
                 img, extra['overlays'] = KT.apply_land(img, world, theme, road_px)
         final = W.paste_icons(img, ic, sky_site, iconset, assign, lambda arr: KP.tint_icon(arr, pal, tint, iconset.key, iconset.shadow_key))
         fn = ('%s-%s.png' % (theme['id'], pal['id'])) if theme else ('%s-%s.png' % (iconset.id, pal['id']))
