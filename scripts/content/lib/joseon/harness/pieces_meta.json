@@ -1336,5 +1336,529 @@
    "gate_4"
   ],
   "kit": "palace.tower(tier x3)"
+ },
+ "gungnae_wall_h": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_h1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_h2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_v": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_v_e": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_v1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_v1_e": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_v2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_v2_e": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_corner_nw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_corner_ne": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_corner_sw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_corner_se": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_end_l": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_wall_end_r": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽)"
+  }
+ },
+ "gungnae_gate_great_12": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ],
+  "passage": {
+   "cols": [
+    4,
+    8
+   ],
+   "rows": [
+    11,
+    13
+   ],
+   "note": "아치 통로 바닥 2칸 높이를 걷는다. 그 위(아치 윗부분·기단·누각)는 캐릭터 위에 그린다."
+  }
+ },
+ "gungnae_gate_great_8": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ],
+  "passage": {
+   "cols": [
+    3,
+    5
+   ],
+   "rows": [
+    11,
+    13
+   ],
+   "note": "아치 통로 바닥 2칸 높이를 걷는다. 그 위(아치 윗부분·기단·누각)는 캐릭터 위에 그린다."
+  }
+ },
+ "gungnae_gate_small_6": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ],
+  "passage": {
+   "cols": [
+    2,
+    4
+   ],
+   "rows": [
+    7,
+    9
+   ],
+   "note": "아치 통로 바닥 2칸 높이."
+  }
+ },
+ "gungnae_tower_corner_5": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "castle.bailey",
+   "forum.gate"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽 모서리 장애물)."
+  }
+ },
+ "gungnae_tower_corner_4": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "castle.bailey",
+   "forum.gate"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    0
+   ],
+   "rows": [
+    0,
+    0
+   ],
+   "note": "통행 불가(성벽 모서리 장애물)."
+  }
+ },
+ "gungnae_bridge_h4": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    4
+   ],
+   "rows": [
+    1,
+    4
+   ],
+   "note": "상판 전체를 걷는다. 위 1행(뒤 난간 윗부분)·아래 1행(앞면 돌벽)은 걸을 수 없다."
+  }
+ },
+ "gungnae_bridge_h5": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    5
+   ],
+   "rows": [
+    1,
+    4
+   ],
+   "note": "상판 전체를 걷는다. 위 1행(뒤 난간 윗부분)·아래 1행(앞면 돌벽)은 걸을 수 없다."
+  }
+ },
+ "gungnae_bridge_h6": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    6
+   ],
+   "rows": [
+    1,
+    5
+   ],
+   "note": "상판 전체를 걷는다. 위 1행(뒤 난간 윗부분)·아래 1행(앞면 돌벽)은 걸을 수 없다."
+  }
+ },
+ "gungnae_bridge_v4": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    3
+   ],
+   "rows": [
+    0,
+    4
+   ],
+   "note": "상판 전체를 걷는다. 맨 오른쪽 열(물 그림자)·맨 아래 행(남쪽 끝 돌벽)은 막힘."
+  }
+ },
+ "gungnae_bridge_v5": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    3
+   ],
+   "rows": [
+    0,
+    5
+   ],
+   "note": "상판 전체를 걷는다. 맨 오른쪽 열(물 그림자)·맨 아래 행(남쪽 끝 돌벽)은 막힘."
+  }
+ },
+ "gungnae_bridge_v6": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    4
+   ],
+   "rows": [
+    0,
+    6
+   ],
+   "note": "상판 전체를 걷는다. 맨 오른쪽 열(물 그림자)·맨 아래 행(남쪽 끝 돌벽)은 막힘."
+  }
+ },
+ "gungnae_bridge_narrow_h": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    4
+   ],
+   "rows": [
+    1,
+    2
+   ],
+   "note": "폭 1칸 상판만 걷는다."
+  }
+ },
+ "gungnae_bridge_narrow_v": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    1
+   ],
+   "rows": [
+    0,
+    4
+   ],
+   "note": "폭 1칸만 걷는다."
+  }
  }
 }
