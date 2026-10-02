@@ -1271,16 +1271,17 @@ def draw_ion_storm(img, ctx, cy, cx):
     yy, xx = np.mgrid[0:H, 0:W]
     w = (np.sin(xx * .22 + np.sin(yy * .09 + xx * .03) * 2.0 + yy * .07) * .6
          + np.sin(xx * .07 - yy * .19 + vnoise(H, W, 30, 33) * 6) * .5 + (vnoise(H, W, 16, 31) - .5) * 1.4)
-    cloud = vnoise(H, W, 26, 35) > .7                    # 밝은 폭풍 구름 덩이
+    cloud = vnoise(H, W, 26, 35) > .78                   # 밝은 폭풍 구름 덩이
     img[m & cloud & (bayer(H, W) < .5)] = hx('3a1e66')
     a, b, c = hx('2a1450').astype(np.float32), hx('4a2680'), hx('9a62e8')
     img[m] = (img[m] * .45 + a * .55).astype(np.uint8)          # 아래 성운이 비치는 보라 막
-    s = m & (w > .78)
+    I = vnoise(H, W, 72, 37)                              # 폭풍 세기: 잔잔한 눈과 거센 띠가 섞여 고른 무늬가 되지 않게(QA 3차 「물방울 카펫」)
+    s = m & (w > 1.15 - .8 * I)
     img[s] = b
-    img[s & (w > 1.05) & (bayer(H, W) < .3)] = c
+    img[s & (w > 1.35 - .7 * I) & (bayer(H, W) < .35)] = c
     for y, x in zip(*np.nonzero(ctx.dune)):
         h = h32('zap', int(x), int(y))
-        if h % 15:
+        if I[min(H - 1, y * TS + 8), min(W - 1, x * TS + 8)] < .58 or h % 5:
             continue
         X, Y = x * TS + 2 + h % 12, y * TS + (h >> 5) % 6     # 갈래 번개: 길이·꺾임 간격·가지 수·방향이 칸마다 다르다
         L = 9 + (h >> 9) % 14
