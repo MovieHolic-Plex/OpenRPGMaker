@@ -58,7 +58,7 @@ const createQuestFlags: ToolDefinition = {
 
 const createQuest: ToolDefinition = {
   name: "create_quest",
-  description: "선언적 QuestDef로 퀘스트 이벤트·진행 플래그·단계 메타를 함께 만든다. talk는 target, collect는 sources, kill은 at가 필수. 생성 후 같은 ID로 define_quest를 호출하지 마세요. 그래프를 저장하는 도구는 define_quest이고 create_quest는 단계 정의를 보존한다. 단계형 자동 완주 검증은 현재 지원하지 않는다.",
+  description: "선언적 QuestDef로 플레이 가능한 퀘스트 이벤트·진행 플래그·목표 메타를 만든다. 27종 프리셋과 custom 조합을 지원. 목표 9종: talk,collect,kill,reach,inspect,deliver,choice,escort,craft. 여러 단계 프리셋은 order:sequence 필수. deliver는 실제 수량을 확인하고 소비, choice는 cost/troopId/effects와 오답(completes:false), escort는 실제 동행 후 destination 도착, craft는 실제 recipeId 성공만 완료한다. repeatable은 완료 후 재수락, requiresQuestKeys는 선행 의뢰, worldChanges는 보고 후 기존 NPC 대사 변화. def.dialogue/step.label로 이야기와 목표를 저작. 프리셋별 구조는 요청의 blueprint와 스키마를 지켜라. 생성 후 같은 ID로 define_quest를 호출하지 마세요. define_quest는 그래프 메타용. 실제 자동 완주 증거 없이는 검증 완료라고 보고하지 마세요.",
   mode: "write",
   invalidArgsExample: QUEST_DEF_EXAMPLE,
   invalidArgsHint: QUEST_DEF_HINT,

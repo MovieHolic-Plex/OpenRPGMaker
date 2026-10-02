@@ -7,7 +7,7 @@
 // 한계: 높이는 그림(절벽 벽면)만 바꾼다. 칩셋과 무관하게 같은 렌더러가 그리고, 윗단 위 타일·이벤트·통행은 그대로다.
 
 import { checkRelief, reliefMatrixText } from "@/project/relief/check";
-import { emptyRelief, reliefIsFlat } from "@/project/relief/edit";
+import { carryReliefExtras, emptyRelief, reliefIsFlat } from "@/project/relief/edit";
 import { buildReliefOps, RELIEF_OPS_SPEC, type ReliefOpsSpec } from "@/project/relief/ops";
 import { gridFromRelief, reliefFromGrid, RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import type { GameMap } from "@/project/types";
@@ -77,7 +77,8 @@ const sculptRelief: ToolDefinition = {
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 1;
     const base = args.reset === true ? gridFromRelief(emptyRelief(map.width, map.height)) : reliefGrid(map);
     const { h, log } = buildReliefOps({ seed, ops: ops as ReliefOpsSpec["ops"] }, base);
-    map.relief = reliefFromGrid(h);
+    // reset 이면 경사로·벽면 장식은 버리고 양식만 잇는다. 아니면 단이 안 바뀐 칸의 경사로·장식도 잇는다.
+    map.relief = carryReliefExtras(args.reset === true ? (map.relief?.style ? { ...emptyRelief(map.width, map.height), style: map.relief.style } : undefined) : map.relief, reliefFromGrid(h));
     if (reliefIsFlat(map.relief)) delete map.relief;
     const check = checkRelief(h);
     const warnings = log.length ? log : undefined;

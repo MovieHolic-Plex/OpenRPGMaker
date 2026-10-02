@@ -13,6 +13,8 @@ import { repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { invalidateCullingWindow, resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, MapId } from "@/project/types";
+import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { reliefPaintsCell } from "@/project/relief/screen";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
 type CameraFocus = {
@@ -41,6 +43,12 @@ export interface EditSceneRenderContext {
    * 없으면(작은 맵·테스트) 기존처럼 레이어 컨테이너에 곧장 붙인다.
    */
   readonly tileChunks?: Map<string, Phaser.GameObjects.Container>;
+  /**
+   * 높이 지형 컨테이너(lower 와 upper 사이). 절벽 띠와 **들린 칸의 하층 타일**이 줄 depth 로 섞여 있고
+   * 넣을 때마다 depth 로 정렬한다 — 남쪽 절벽이 북쪽 고지대 타일을 가리는 순서가 여기서 나온다.
+   * 줄 Y 의 depth = Y × {@link EDIT_RELIEF_ROW_DEPTH} + 줄 안 순서(윗면 0 < 타일 1~3 < 벽 7 < 벽면 장식 8).
+   */
+  readonly reliefLayer?: Phaser.GameObjects.Container;
   readonly overlayLayer: Phaser.GameObjects.Container;
   readonly gridGraphics: Phaser.GameObjects.Graphics;
   readonly mapId: MapId;
@@ -159,6 +167,9 @@ export type EditSceneRenderStats = {
   readonly tileObjectsUpdated: number;
 };
 
+export const EDIT_RELIEF_ROW_DEPTH = 10;
+export const RELIEF_STRIP_NAME = "relief-strip";
+
 export function renderEditScene(context: EditSceneRenderContext): EditSceneRenderStats {
   const map = store.getCurrent().maps[context.mapId];
   if (!map) return { tileObjectsUpdated: 0 };
@@ -170,6 +181,8 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   resetCullableTiles(context.scene);
   context.tileLayer.removeAll(true);
   context.upperTileLayer.removeAll(true);
+  // 절벽 띠(이름 RELIEF_STRIP_NAME)는 EditScene 이 relief 가 바뀔 때만 다시 만든다 — 타일만 버린다.
+  for (const child of [...(context.reliefLayer?.list ?? [])]) if (child.name !== RELIEF_STRIP_NAME) context.reliefLayer?.remove(child, true);
   context.tileChunks?.clear();
   context.tileIndex?.clear();
   context.overlayLayer.removeAll(true);
@@ -177,6 +190,7 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
 
   if (context.resetCamera) applyCameraView(context.scene, map, context.preserveCameraLookAt === true);
   const tileObjectsUpdated = renderTiles(context, map, mapOnlyCapture);
+  if (map.relief) context.reliefLayer?.sort("depth");
   if (mapOnlyCapture) return { tileObjectsUpdated };
   renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]));
   if (state.tool === "collision") renderCollisionOverlay(context, map);
@@ -240,6 +254,7 @@ export function renderEditSceneTileCells(
   // 컬링이 안 걸리므로, 적용 창을 무효화해 다음 update() 가 강제 재계산하게 한다.
   // 새 타일이 없으면 무효화할 필요가 없다 — 파괴된 타일은 active===false 가드가 처리한다.
   if (tileObjectsUpdated > 0) invalidateCullingWindow(context.scene);
+  if (tileObjectsUpdated > 0 && map.relief) context.reliefLayer?.sort("depth");
   return { tileObjectsUpdated };
 }
 
@@ -312,12 +327,13 @@ function renderTileCellLayer(
     // event 에서도 0.62 로 내린다 — 이벤트 배지만 선명하면 배지가 어디에 떠 있는지가 즉시 읽힌다.
     const lowerAlpha = activeLayer === "upper" ? 0.58 : activeLayer === "event" ? 0.62 : 1;
     const lower = map.lowerTiles[i];
-    if (lower >= 0) {
+    // 경사로 도트가 있는 바이옴의 경사로 칸은 relief 경사로 도트가 바닥을 칠한다(게임과 같게) — 타일은 그리지 않는다
+    if (lower >= 0 && !reliefPaintsCell(map.relief, x, y)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
       lowerTile.setAlpha(lowerAlpha);
       if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
       addTileObject(context, objects, lowerTile, 0, "lower", x, y);
-    } else {
+    } else if (lower < 0) {
       addTileObject(context, objects, createEmptyTile(context.scene, x, y, tileSize, context.backgroundPreview === true), 0, "lower", x, y);
     }
     for (const stackedLower of tileStackAt(map, "lower", i)) {
@@ -377,6 +393,10 @@ function destroyTrackedTile(
   x: number,
   y: number,
 ): void {
+  if (context.reliefLayer && object.parentContainer === context.reliefLayer) {
+    context.reliefLayer.remove(object, true);
+    return;
+  }
   const chunk = context.tileChunks?.get(chunkKey(chunkCoord(x), chunkCoord(y)));
   if (chunk) {
     chunk.remove(object, true);
@@ -395,6 +415,21 @@ function addTileObject(
   x: number,
   y: number
 ): void {
+  const map = store.getCurrent().maps[context.mapId];
+  const tileSize = map ? mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]) : 0;
+  const liftPx = map ? reliefCellLiftPx(map.relief, x, y, tileSize) : 0;
+  if (liftPx > 0 && "y" in object && typeof object.y === "number") {
+    // 높이 지형: 칸 윗면으로 올린다. 하층은 절벽 띠와 같은 컨테이너에서 줄 depth 로 섞이고,
+    // 상층은 upper 컨테이너 그대로(절벽 위에 뜬다 — 게임의 ★ 수관과 같은 자리).
+    object.y -= liftPx;
+    if (layer === "lower" && context.reliefLayer) {
+      if ("setDepth" in object && typeof object.setDepth === "function") object.setDepth(y * EDIT_RELIEF_ROW_DEPTH + 1 + depth);
+      context.reliefLayer.add(object);
+      trackCullableTile(context.scene, object, x, y - Math.floor(liftPx / tileSize));
+      objects.push(object);
+      return;
+    }
+  }
   if ("setDepth" in object && typeof object.setDepth === "function") object.setDepth(depth);
   const parent = layer === "lower" ? context.tileLayer : context.upperTileLayer;
   // 레이어별 컨테이너로 간다 — 부모 list 순서(lower 컨테이너 → upper 컨테이너)가 곧

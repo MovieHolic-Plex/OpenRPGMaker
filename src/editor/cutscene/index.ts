@@ -1,3 +1,5 @@
+import { normalizeEasing, type EasingName } from "@/project/easing";
+import { normalizeBlendMode, type BlendModeName } from "@/project/blendMode";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { MAP_BACKGROUND_FLOW_PERCENT_LIMIT } from "@/project/mapBackground";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -12,6 +14,7 @@ export type CutsceneBeat =
   | CutsceneMusicBeat
   | CutsceneFadeBeat
   | CutsceneTintBeat
+  | CutsceneDistortBeat
   | CutsceneBackgroundBeat
   | CutsceneFlashBeat
   | CutsceneShakeBeat
@@ -61,6 +64,8 @@ export type CutsceneCameraBeat = {
   readonly offsetX?: number;
   readonly offsetY?: number;
   readonly zoom?: number;
+  /** 팬 곡선(생략 = 일정하게). */
+  readonly easing?: EasingName;
 };
 
 export type CutscenePictureBeat = {
@@ -75,6 +80,10 @@ export type CutscenePictureBeat = {
   readonly opacity?: number;
   readonly rotation?: number;
   readonly durationMs?: number;
+  /** 이동 곡선(생략 = 일정하게). */
+  readonly easing?: EasingName;
+  /** 겹치기(생략 = 보통). 빛기둥·유령은 add, 그림자는 multiply. */
+  readonly blendMode?: BlendModeName;
   readonly wait?: boolean;
   readonly waitForPicture?: boolean;
 };
@@ -98,6 +107,19 @@ export type CutsceneTintBeat = {
   readonly kind: "tint";
   readonly color?: string;
   readonly value?: string;
+  readonly durationMs?: number;
+  readonly wait?: boolean;
+};
+
+/**
+ * 화면 왜곡 비트 — 이벤트 명령 「화면 효과」 의 물결·모자이크·기울기(지속형)로 컴파일된다.
+ * 수중·꿈·시간 왜곡·회상 진입. 컷신이 끝나도(건너뛰어도) 마지막 상태가 남는다 — 끄려면 effect "clear".
+ */
+export type CutsceneDistortBeat = {
+  readonly kind: "distort";
+  readonly effect: "wave" | "mosaic" | "rotate" | "clear";
+  /** 세기 — 물결 px(0~16)·모자이크 블록 px(0~32)·기울기 도(-180~180). 생략하면 기본 세기, 0 은 그 효과만 끄기. */
+  readonly amount?: number;
   readonly durationMs?: number;
   readonly wait?: boolean;
 };
@@ -214,6 +236,7 @@ type FinalPictureState = {
   readonly scale?: number;
   readonly opacity?: number;
   readonly rotation?: number;
+  readonly blendMode?: BlendModeName;
 };
 
 type FinalCameraState = {
@@ -236,6 +259,8 @@ type CompileState = {
   camera?: FinalCameraState;
   tint?: FinalTintState;
   background?: { readonly resourceId: string; readonly flowPercent: number };
+  /** 왜곡 비트의 끝 상태. clear 뒤에 다시 건 축만 axes 에 남는다. */
+  distort?: { readonly clear: boolean; readonly axes: Partial<Record<"wave" | "mosaic" | "rotate", number | undefined>> };
 };
 
 /**
@@ -374,6 +399,8 @@ function compileBeat(
       return compileFadeBeat(beat, options.forceNonBlocking);
     case "tint":
       return compileTintBeat(beat, state, options.forceNonBlocking);
+    case "distort":
+      return compileDistortBeat(beat, state, options.forceNonBlocking);
     case "background":
       return compileBackgroundBeat(beat, state, options.forceNonBlocking);
     case "flash":
@@ -508,6 +535,7 @@ function cameraFields(beat: CutsceneCameraBeat, forceNonBlocking: boolean): M2Co
     offsetX: beat.offsetX,
     offsetY: beat.offsetY,
     zoom: beat.zoom,
+    easing: normalizeEasing(beat.easing),
   });
 }
 
@@ -528,6 +556,8 @@ function compilePictureBeat(beat: CutscenePictureBeat, state: CompileState, forc
       opacity: beat.opacity,
       rotation: beat.rotation,
       durationMs: beat.durationMs,
+      easing: normalizeEasing(beat.easing),
+      blendMode: normalizeBlendMode(beat.blendMode),
       waitForPicture: forceNonBlocking ? false : beat.waitForPicture ?? beat.wait,
     }) as Command;
     updateFinalPicture(state, pictureId, beat);
@@ -543,6 +573,8 @@ function compilePictureBeat(beat: CutscenePictureBeat, state: CompileState, forc
     opacity: beat.opacity,
     rotation: beat.rotation,
     durationMs: beat.durationMs,
+    easing: normalizeEasing(beat.easing),
+    blendMode: beat.blendMode,
     wait,
     waitForPicture: wait,
   });
@@ -560,12 +592,24 @@ function updateFinalPicture(state: CompileState, pictureId: string, beat: Cutsce
     scale: beat.scale ?? previous?.scale,
     opacity: beat.opacity ?? previous?.opacity,
     rotation: beat.rotation ?? previous?.rotation,
+    // 표시(show)는 그림을 새로 거는 것이라 생략 = 보통. 이동(move)은 생략하면 앞의 겹치기를 잇는다.
+    blendMode: beat.action === "show" ? normalizeBlendMode(beat.blendMode) : beat.blendMode ?? previous?.blendMode,
   });
 }
 
+/**
+ * action 을 빼고 resourceId 만 준 music beat 는 효과음 채널의 비반복 재생이 됐다 — 조수가 고른 BGM(cc0-bgm-…)이
+ * 한 번 울리고 끝났다(2026-10-02 도그푸딩). 리소스 id 에 bgm/music 이 있으면 BGM 으로 본다.
+ */
+function musicActionOf(beat: CutsceneMusicBeat): CutsceneMusicBeat["action"] {
+  if (beat.action) return beat.action;
+  return /(^|[-_:])(bgm|music)([-_:]|$)/iu.test(beat.resourceId ?? "") ? "bgm" : "se";
+}
+
 function compileMusicBeat(beat: CutsceneMusicBeat): Command[] {
-  if (beat.action === "stop" || beat.action === "fade") return [{ kind: "stopAudio" }];
-  return [{ kind: "playAudio", resourceId: beat.resourceId ?? "", loop: beat.action === "bgm" ? true : beat.loop ?? false }];
+  const action = musicActionOf(beat);
+  if (action === "stop" || action === "fade") return [{ kind: "stopAudio" }];
+  return [{ kind: "playAudio", resourceId: beat.resourceId ?? "", loop: action === "bgm" ? true : beat.loop ?? false }];
 }
 
 function compileFadeBeat(beat: CutsceneFadeBeat, forceNonBlocking: boolean): Command[] {
@@ -606,6 +650,25 @@ function compileTintBeat(beat: CutsceneTintBeat, state: CompileState, forceNonBl
   if (!forceNonBlocking && beat.wait === true && durationMs(beat.durationMs, 0) > 0) {
     commands.push({ kind: "wait", ms: durationMs(beat.durationMs, 0) });
   }
+  return commands;
+}
+
+function distortFields(effect: CutsceneDistortBeat["effect"], amount: number | undefined, ms: number): M2CommandFields {
+  return m2Fields({
+    effect: effect === "clear" ? "clearDistortion" : effect,
+    value: effect === "clear" || amount === undefined || !Number.isFinite(amount) ? "" : String(amount),
+    durationMs: ms,
+  });
+}
+
+function compileDistortBeat(beat: CutsceneDistortBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
+  const ms = durationMs(beat.durationMs, 0);
+  const effect = beat.effect;
+  // 정리 단계가 다시 걸 수 있게 축별 마지막 값을 적어 둔다(clear 는 전부 지운다).
+  if (effect === "clear") state.distort = { clear: true, axes: {} };
+  else state.distort = { clear: state.distort?.clear ?? false, axes: { ...state.distort?.axes, [effect]: beat.amount } };
+  const commands: Command[] = [m2Command("Screen Effect", distortFields(effect, beat.amount, ms))];
+  if (!forceNonBlocking && beat.wait === true && ms > 0) commands.push({ kind: "wait", ms });
   return commands;
 }
 
@@ -657,6 +720,7 @@ function parallelWaitMs(beat: CutsceneBeat): number {
   if (beat.kind === "camera" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "fade" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "tint" && beat.wait === true) return durationMs(beat.durationMs, 0);
+  if (beat.kind === "distort" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "background" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "wait") return waitBeatMs(beat);
   if (beat.kind === "parallel") return Math.max(0, ...beat.beats.map(parallelWaitMs));
@@ -675,6 +739,13 @@ function cleanupCommands(state: CompileState): Command[] {
   }
   if (state.tint) {
     commands.push(m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", durationMs: 0 }));
+  }
+  if (state.distort) {
+    // 건너뛰어도 끝 상태가 같아야 한다 — 전환 없이 마지막 왜곡을 다시 건다.
+    if (state.distort.clear) commands.push(m2Command("Screen Effect", distortFields("clear", undefined, 0)));
+    for (const [axis, amount] of Object.entries(state.distort.axes)) {
+      commands.push(m2Command("Screen Effect", distortFields(axis as "wave" | "mosaic" | "rotate", amount, 0)));
+    }
   }
   if (state.background) {
     // 건너뛰어도 끝 상태는 같아야 한다 — 전환 없이 마지막 흐름·그림을 다시 건다.
@@ -698,6 +769,7 @@ function cleanupCommands(state: CompileState): Command[] {
       scale: picture.scale,
       opacity: picture.opacity,
       rotation: picture.rotation,
+      blendMode: normalizeBlendMode(picture.blendMode),
       durationMs: 0,
       waitForPicture: false,
     }) as Command);
@@ -719,6 +791,17 @@ function validateKnownBeat(beat: CutsceneBeat, path: string, errors: string[]): 
   }
   if (!KNOWN_BEAT_KINDS.has(beat.kind)) {
     errors.push(`${path}.kind: 알 수 없는 컷신 beat 종류 '${beat.kind}'입니다.`);
+  }
+  // beats 없는 parallel 은 검증을 통과한 뒤 compileBeats 에서 TypeError 로 죽었다(2026-10-02 도그푸딩: 조수의 첫 script_cutscene 호출).
+  if (beat.kind === "parallel" && (!Array.isArray(beat.beats) || beat.beats.length === 0)) {
+    errors.push(`${path}.beats: parallel 비트에는 함께 실행할 beat 배열이 필요합니다(예: {kind:'parallel',beats:[{kind:'picture',action:'move',…},{kind:'shake'}]}). 함께 할 일이 없으면 parallel 을 빼세요.`);
+  }
+  // fade 는 색을 못 고른다(검정뿐). 모델이 tint/fade/color 로 흰색을 요청하면 조용히 검정이 됐다.
+  if (beat.kind === "fade") {
+    const stray = (["color", "tint", "fade"] as const).filter((key) => (beat as Record<string, unknown>)[key] !== undefined);
+    if (stray.length > 0) {
+      errors.push(`${path}: fade 비트는 색을 지정할 수 없습니다(${stray.join("/")} 무시됨 — 항상 검정으로 어두워집니다). 흰 화면은 flash 비트나 script_cutscene_impact 를 쓰세요.`);
+    }
   }
 }
 
@@ -868,6 +951,7 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "music",
   "fade",
   "tint",
+  "distort",
   "background",
   "flash",
   "shake",

@@ -1,3 +1,5 @@
+import { normalizeBlendMode } from "@/project/blendMode";
+import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
 import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
 import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
@@ -505,13 +507,21 @@ export function executeCommand(
     case "changeFace": {
       if (command.appearanceId !== undefined) {
         const face = state.project ? resolveAppearancePortrait(state.project, command.appearanceId, command.presentation ?? "face") : undefined;
-        state.currentFace = face ? { ...face, position: command.position, flipHorizontally: command.flipHorizontally } : undefined;
+        state.currentFace = face
+          ? {
+              ...face,
+              ...(command.fullScale !== undefined ? { fullScale: command.fullScale } : {}),
+              position: command.position,
+              flipHorizontally: command.flipHorizontally,
+            }
+          : undefined;
         return resumeNext(frame);
       }
       state.currentFace = command.resourceId
         ? {
             resourceId: command.resourceId,
             ...(command.presentation ? { presentation: command.presentation } : {}),
+            ...(command.fullScale !== undefined ? { fullScale: command.fullScale } : {}),
             position: command.position,
             flipHorizontally: command.flipHorizontally,
           }
@@ -683,6 +693,8 @@ export function executeCommand(
         opacity: command.opacity,
         rotation: command.rotation,
         durationMs: command.durationMs,
+        ...(command.easing ? { easing: command.easing } : {}),
+        ...(normalizeBlendMode(command.blendMode) ? { blendMode: normalizeBlendMode(command.blendMode) } : {}),
         waitForPicture: command.waitForPicture,
       });
     case "erasePicture":
@@ -1147,6 +1159,7 @@ function cameraControlStep(
     offsetX: optionalNumberField(fields, "offsetX"),
     offsetY: optionalNumberField(fields, "offsetY"),
     zoom: optionalNumberField(fields, "zoom"),
+    ...(normalizeEasing(fields.easing) ? { easing: normalizeEasing(fields.easing) } : {}),
   };
 }
 

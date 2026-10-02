@@ -100,7 +100,7 @@ export type NewVillageTarget = {
   readonly name: string;
   /**
    * 선택 — 생략하면 파사드가 estimateVillageSize(houseCount)로 채운다(2026-09-11: 「마을 만들어」에서
-   * 크기를 결정하는 주체가 없던 결함). 주면 20~256 범위만 검사한다 — Construction size 섹션의
+   * 크기를 결정하는 주체가 없던 결함). 주면 20~공통 맵 상한 범위만 검사한다 — Construction size 섹션의
    * 코드 계산값을 모델이 그대로 쓰므로, 이중 계산보다 모델 값 신뢰가 낫다.
    */
   readonly width?: number;

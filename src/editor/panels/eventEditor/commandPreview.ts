@@ -1604,6 +1604,13 @@ type ScreenEffectPreviewModel = {
   readonly error?: string;
 };
 
+const DISTORTION_NOTES: Record<string, string> = {
+  wave: "물결 왜곡 — 게임 화면에서 확인",
+  mosaic: "모자이크 — 게임 화면에서 확인",
+  rotate: "화면 기울기 — 게임 화면에서 확인",
+  clearDistortion: "왜곡 모두 끄기",
+};
+
 function screenEffectPreviewModel(effect: string, value: string, durationMs: number): ScreenEffectPreviewModel {
   const plan = planScreenEffect(effect, value, durationMs);
   const error = screenEffectValueError(effect, value);
@@ -1640,6 +1647,9 @@ function screenEffectPreviewModel(effect: string, value: string, durationMs: num
     }
     case "weather":
       return { background: "rgba(120,150,190,0.45)", fromOpacity: 0, restOpacity: 1, note: plan.weather };
+    case "distortion":
+      // 물결·모자이크·기울기는 게임 화면 자체를 비트는 카메라 후처리라 미리보기 덮개로 흉내 내지 않는다.
+      return { background: "rgba(15,23,42,0)", fromOpacity: 0, restOpacity: 0, note: DISTORTION_NOTES[plan.effect] ?? "화면 왜곡" };
     case "unsupported":
       return { background: "rgba(15,23,42,0.35)", fromOpacity: 0, restOpacity: 1 };
   }

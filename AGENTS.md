@@ -14,6 +14,23 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 2. **`openwiki/INDEX.md`** — 위키 절 좌표(생성 파일, `npm run openwiki:index`). 위키는 41쪽 약 1MB(약 27만 토큰)이고
    7쪽은 읽기 도구 상한 50KB 를 넘어 **통째로 읽으면 조용히 잘린다**. 필요한 절만 줄 번호로 잘라 읽어라.
 
+## 하네스 (hard rule)
+
+아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
+구조 규칙은 `openwiki/harnesses/README.md`.
+
+- **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
+  → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
+  → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
+  → 후보는 사람이 고른다. JRPG 일반 적 그림에는 쓰지 않는다.
+- **modern3 현대 거리 칩셋의 기물 도트(현재 탈것: 자동차·버스·트럭·열차)를 그릴 때** (3/4 시점: 윗면이 면으로 보여야 한다)
+  → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
+  → `npm run harness -- modern-chipset <단계>` · 문서 `openwiki/harnesses/modern-chipset.md`
+  → 기준 = 프로젝트의 modern-city-atlas 경찰차. 후보는 Sonnet 5명이 pxgrid 로 찍고 사람이 고른다. 직접 그리지 말 것.
+
+새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
+`npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
+
 그다음에 아래 순서로 간다.
 
 1. `openwiki/PROJECT_WIKI.md` - the current project-specific AI map.
@@ -35,6 +52,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
    - 편집기 다국어 (ko/en/ja/zh 언어 결정 순서·DOM 번역 계층·화면 글자 역참조 금지 계약·카탈로그 추가 절차): `openwiki/i18n.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
+   - **월드맵 아이콘은 하네스를 거친다:** `src/harnesses/worldmap-icons/README.md` — 검수자(시점 계약: 윗면+정면 벽, 옆면 금지)가 판정하고 사용자가 http://mdc-server:18313/ 에서 받기/버리기. 결정 `harness-data/worldmap-icons/decisions.json`. 감독이 대신 고르거나 바로 번들·지도에 넣지 않는다.
    - **실내는 손 도트 v5 하나 (hard rule, 2026-09-29):** 공용 실내 `atlas_biome_interior` = 손 도트 실내 v5 전용 시트(옛 Tibo·EasyRPG 실내·LPC 가구 칩셋은 폐기, 조수에게 안 보이고 거부된다), 배·던전은 `atlas_biome_dungeon`. 도구 `build_hand_interior_room`, 스킬 원본 `assistant-skills/interior-room-authoring/SKILL.md`, 편집기 「새 맵 → 실내」 기본도 이 칩셋: `openwiki/atlas-biome-interior.md`
    - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
@@ -47,6 +65,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
    - State system (authored definition, ontology, runtime application, editor surface): `openwiki/state-system.md`
+   - 높이 지형 relief (단·경사로·벽면 장식 — 편집기 붓·절벽 띠·들린 타일, 게임 걷기·들림·depth, 성능 계약, 알려진 한계): `openwiki/relief-terrain.md`
    - `openwiki/runtime-and-data.md` is now a slim index linking to the above topic pages.
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.

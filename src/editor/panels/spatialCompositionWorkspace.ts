@@ -11,6 +11,7 @@ import { randomUuid } from "@/util/id";
 import { designNode, spatialId } from "@/project/spatial/domain";
 import { COMPOSITION_KINDS, paintComposition } from "@/project/spatial/composition";
 import type { SpatialComposition, SpatialDesignReference, SpatialKind, SpatialPoint } from "@/project/spatial/types";
+import { SPATIAL_SIZE_MAX } from "@/project/spatial/types";
 import { visibleAuthoringProject } from "./spatialAuthoringAccess";
 import { spatialProjectKey, pushSpatialBreadcrumb, openSpatialDestination, patchSpatialSession, type SpatialAuthoringSession } from "./spatialAuthoringSession";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "./spatialCatalog";
@@ -191,7 +192,7 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
     ...[0.5,1,2].map(zoom => button(`${zoom * 100}%`, () => { state.zoom = zoom; rerender(); }, undefined, state.zoom === zoom)),
   ] });
   const camera = el("div", { class: "spatial-mixed-camera", children: [el("div", { attrs: { style: `width:${composition.width * PX * state.zoom}px;height:${composition.height * PX * state.zoom}px` }, children: [el("div", { attrs: { style: `transform:scale(${state.zoom});transform-origin:top left` }, children: [board] })] })] });
-  const size = el("div", { class: "spatial-mixed-size", children: (["width", "height"] as const).map(axis => el("label", { children: [el("span", { text: axis === "width" ? "캔버스 너비" : "캔버스 높이" }), el("input", { value: String(composition[axis]), attrs: { type: "number", min: "1", max: "256" }, dataset: { testid: `composition-${axis}` }, on: { change: event => {
+  const size = el("div", { class: "spatial-mixed-size", children: (["width", "height"] as const).map(axis => el("label", { children: [el("span", { text: axis === "width" ? "캔버스 너비" : "캔버스 높이" }), el("input", { value: String(composition[axis]), attrs: { type: "number", min: "1", max: String(SPATIAL_SIZE_MAX) }, dataset: { testid: `composition-${axis}` }, on: { change: event => {
     const value = Number((event.currentTarget as HTMLInputElement).value); set(current => ({ ...current, [axis]: value }));
   } } })] })) });
   const atlasSelect = el("select", { attrs: { "aria-label": "캔버스 타일셋", ...(source.kind === "space" || visualMembers.length || composition.tiles.length || composition.members.length ? { disabled: "" } : {}) }, children: Object.values(project.tilesets).map(atlas => el("option", { text: atlas.name, attrs: { value: atlas.id, ...(atlas.id === composition.tilesetId ? { selected: "" } : {}) } })), on: { change: event => set(value => ({ ...value, tilesetId: (event.currentTarget as HTMLSelectElement).value })) } });

@@ -1,3 +1,4 @@
+import { EASING_OPTIONS } from "./easingOptions";
 import type { M2CommandFieldOption, M2CommandFieldSpec } from "./m2Catalog";
 
 const CAMERA_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
@@ -26,6 +27,11 @@ export const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
   // 조용한 실패가 난다 — 목록에서 내린다. 기존 프로젝트에 남아 있는 값은
   // planScreenEffect 가 unsupported 로 돌려 fallbacks 에 기록된다.
   { value: "weather", label: "날씨" },
+  // 화면 그림 자체를 비튼다(카메라 후처리). 값 = 세기(비우면 기본), 0 = 그 효과만 끄기.
+  { value: "wave", label: "물결 왜곡" },
+  { value: "mosaic", label: "모자이크" },
+  { value: "rotate", label: "화면 기울기" },
+  { value: "clearDistortion", label: "왜곡 모두 끄기" },
 ];
 
 // OPRN-OUT-013: 좌표 목적지 이동. 저장 형태·기본값의 정본 주석은
@@ -110,6 +116,7 @@ const DEBUG_LEVEL_OPTIONS: readonly M2CommandFieldOption[] = [
 const DATA_QUERY_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "gold", label: "소지금" },
   { value: "itemCount", label: "아이템 수" },
+  { value: 'followerPresent', label: '이름으로 동행자 확인' },
   { value: "playerX", label: "주인공 X" },
   { value: "playerY", label: "주인공 Y" },
   { value: "switch", label: "스위치" },
@@ -170,6 +177,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
         { key: "zoom", label: "줌", type: "number", defaultValue: 1, min: 0.25, max: 6, step: 0.25 },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
+        { key: "easing", label: "움직임 곡선", type: "select", defaultValue: "linear", options: EASING_OPTIONS },
       ];
     case "Screen Effect":
       return [

@@ -1,0 +1,8 @@
+{
+ "schema": "worldmap-palette/1",
+ "id": "original",
+ "name": "원본",
+ "desc": "색을 바꾸지 않는다(항등). v9-final3 지형 그림 그대로.",
+ "roles": {},
+ "light": {}
+}

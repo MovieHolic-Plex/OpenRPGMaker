@@ -108,7 +108,7 @@
 | 도구 | 인자 | 동작 |
 |---|---|---|
 | `read_relief` (읽기) | `mapId` | `data.matrix` 36진수 행렬(한 줄=한 행, 0~9·a=10…e=14) + `data.check` 검사 글. relief 없는 맵은 전부 0 |
-| `sculpt_relief` (쓰기) | `mapId`, `ops[]`, `seed?`, `reset?` | ops DSL(`src/project/relief/ops.ts` `RELIEF_OPS_SPEC` — fill·rect·plateau·mountain·ridge·canyon·terraces·rough·smooth)을 **지금 높이 위에** 차례로 적용(`reset:true` 면 0단에서). 모르는 op 은 `warnings`. 결과가 평지면 `relief` 삭제. 절벽은 칩셋과 무관하게 렌더러 그림이다(타일 층 불변). 검사 글을 `data.check` 로 돌려준다 |
+| `sculpt_relief` (쓰기) | `mapId`, `ops[]`, `seed?`, `reset?` | ops DSL(`src/project/relief/ops.ts` `RELIEF_OPS_SPEC` — fill·rect·plateau·mountain·ridge·canyon·terraces·rough·smooth)을 **지금 높이 위에** 차례로 적용(`reset:true` 면 0단에서). 모르는 op 은 `warnings`. 결과가 평지면 `relief` 삭제. 경사로(`ramps`)·벽면 장식·양식은 `carryReliefExtras` 로 이어 붙인다(단이 바뀐 칸의 경사로·장식은 버리고, `reset:true` 면 양식만 남긴다). 절벽은 칩셋과 무관하게 렌더러 그림이다(타일 층 불변). 검사 글을 `data.check` 로 돌려준다 |
 | `check_relief` (읽기) | `mapId` | 규칙에 깎인 칸·남쪽 땅에 가려진 구역·12칸 이상 일직선 벽 + 고칠 방향 |
 
 - `ops` 가 `{op:string}` 객체 배열이 아니면 `ToolError` `invalid-args`(예시 포함).
@@ -1646,7 +1646,24 @@ Primary regressions: `houseProtectionFill`, `houseProtectionForest`,
 
 ## 퀘스트 입력과 완주 증거 계약 (2026-09-05)
 
-`create_quest`는 `QuestDef`의 단계 정의와 이벤트/플래그를 만들며 graph를 만들지 않는다. `questToolSchemas.ts`가 giver/target의 `{mapId,eventId}` 또는 `{create:{mapId,x,y,name}}`, collect의 `itemId/count/sources`, kill의 `troopId/at`, reach의 `mapId/x/y`를 모델 스키마에 모두 노출한다. 공통 runner의 검사는 얕으므로 `parseQuestDef`가 실제 kind별 중첩 구조를 컴파일 전에 검증한다. 오류에는 `def.steps[0].at.mapId` 같은 경로와 올바른 형태를 싣는다. provider용 키 합집합 때문에 공통 좌표 정규화가 reach/talk에도 `at`를 합성할 수 있어, 단계 파서는 해당 kind의 필드만 검증한다.
+프리셋 확장(2026-10-01): 공용 고정 구성 27종 + `custom` 직접 조합.
+`questPresets.questPresetIssue`가 프리셋/blueprint와 실제 목표 순서를 대조한다.
+`questValidation`은 맵·이벤트·아이템·부대·배우·제작법과 목표 수량을 적용 전에 검사한다.
+목표는 9종(talk/collect/kill/reach/inspect/deliver/choice/escort/craft), 최대 12단계.
+여러 단계 프리셋은 `order:sequence`; 수락·미완료·앞 단계·시간 조건으로 단계 건너뛰기와 재계수를 막는다.
+
+물품은 실제 소지 수량을 네이티브 data-query로 확인한 후 소비하고, gather/lost_item/repeatable_contract는
+보고할 때 납품한다. choice는 비용·전투·결과 플래그·오답 재시도를 지원. escort는 실제 follower,
+craft는 실제 제작법의 성공 결과다. worldChanges는 보고 후 기존 이벤트 페이지,
+requiresQuestKeys는 앞선 단계 퀘스트의 완료, repeatable은 회차별 목표와 수집원 초기화다.
+`def.dialogue`는 의뢰인 대사, `step.label`은 플레이어 목표 문구.
+컴파일러가 생성한 내부 진행 ID를 결과 effects로 덮을 수 없다.
+같은 key의 재컴파일이나 목표 인물을 보고 의뢰인 이벤트와 겹치는 입력은 거절한다.
+
+자세한 조사·구조·한계·재현은 [퀘스트 프리셋 조사](quest-preset-research.md).
+단계형 자동 완주 검증의 기존 한계는 그대로이며, fixture 인터프리터 확인과 실제 플레이를 구분한다.
+
+`create_quest`는 `QuestDef`의 단계 정의와 이벤트/플래그를 만들며 graph를 만들지 않는다. `questToolSchemas.ts`가 giver/target의 `{mapId,eventId}` 또는 `{create:{mapId,x,y,name}}`, collect의 `itemId/count/sources`, kill의 `troopId/at`, reach의 `mapId/x/y`, inspect의 `at/lines`, deliver의 `target/itemId/count/gives`, choice의 `target/prompt/options`, escort의 `target/destination`, craft의 `recipeId/at`를 모델 스키마에 모두 노출한다. 공통 runner의 검사는 얕으므로 `parseQuestDef`가 실제 kind별 중첩 구조를 컴파일 전에 검증한다. 오류에는 `def.steps[0].at.mapId` 같은 경로와 올바른 형태를 싣는다. provider용 키 합집합 때문에 공통 좌표 정규화가 reach/talk에도 `at`를 합성할 수 있어, 단계 파서는 해당 kind의 필드만 검증한다.
 
 `define_quest.completesWhen`은 이벤트용 `CONDITION_SCHEMA`와 다르다. **switch/variable/storyFlag 3종**과 `{all:[조건,...]}`만 모델에 노출한다. gold/item/selfSwitch 또는 `{kind:"all",conditions:[...]}`는 지원하지 않는다. 아이템 획득이나 전투 결과를 조건으로 쓰려면 이벤트가 switch/variable에 기록한 값을 참조한다. 같은 ID의 단계 정의를 graph로 교체하는 호출은 `quest-kind-conflict`로 거부한다. 성공을 만들기 위해 원래 단계 메타를 지울 수 없다.
 

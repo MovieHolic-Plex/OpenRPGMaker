@@ -575,6 +575,13 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   워커가 쓰기 툴을 주지 않고(`readOnlyTools` + 시스템 프롬프트 한 줄), 계획 턴은 지시문 머리에 계획
   지시가 붙는다(`PLAN_ONLY_PREFIX`). 바뀐 것이 없으면 그 턴의 **답·계획 본문**을 assistant 말풍선으로
   남긴다 — 보드의 220자 한 줄이 답이 되면 질문 모드가 쓸 수 없다.
+- **계획 → 실행 이음매 (2026-10-02, `src/ai/piAgent/planExecution.ts`):** 계획 턴은 자기 답 첫 줄에 「이번 실행은 읽기 전용
+  단계이므로 프로젝트를 수정하지 않으며…」를 자주 적고(실측 22판 중 15판), 그 답이 `withUltrabrainPlan` 으로 실행 턴 지시문에 그대로 붙는다.
+  실행 모델이 그 말을 지금 턴 얘기로 읽고 읽기만 한 뒤 계획을 다시 써서 끝낸 판이 있었다(qa:game 복수극 6판 중 2판, 쓰기 0건).
+  ① `withUltrabrainPlan` 이 계획 앞에 `PLAN_EXECUTION_PREAMBLE`(「지금은 실행 턴, 계획 속 읽기 전용은 앞선 턴 기록」)을 못 박고
+  제목을 「Ultrabrain 실행 계획(앞선 계획 턴의 기록):」으로 바꿨다. ② 동반 런타임(`scripts/lib/piAgentRuntime.ts`)은 지시문에 그 제목이 있는데
+  첫 프롬프트가 바뀐 것 0으로 끝나면 `PLAN_EXECUTION_REKICK` 로 **한 번만** 되민다(`execution_status` `plan_execution_rekick`).
+  계획 없는 턴(질문·짧은 수정)은 건드리지 않는다. 회귀: `test/piPlanExecutionRekick.bun.test.ts`. 세션 경로의 `zero-change-rekick` 과 같은 자리다.
 - **do 레벨의 질문 발화는 의도 선언이 읽기 전용으로 승격한다 (2026-09-12 복원):** `plainPiTurn` 이
   다이얼이 쓰기를 허용할 때만 `declareIntentCached(createLlmIntentDeclarer())` 를 부르고
   `intent.mode === "question"` 이면 `plan.readOnly = true` 로 덮어 Pi 를 단독·읽기 전용으로 돌린다.
@@ -3059,6 +3066,38 @@ Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 �
 맵 확장 회귀 재현: `node scripts/qa/ai-map-resize.mjs`는 로컬 전용 편집기에서 구형 설정 전환과 새 review 선택 보존을 확인하고, 실제 `resize_map` → `createPiPublication`으로 20×15 → 28×21 즉시 반영을 확인한다. 외부 LLM/원격 저장은 사용하지 않는다. Vite HMR 직후 직접 동적 import로 store를 읽는 QA는 timestamp가 붙은 앱 모듈과 별도 인스턴스를 만들 수 있으므로 서버를 새로 시작해서 실행한다.
 
 ## Feature16 — 프롬프트 라이브러리·대사 검토·실제 요청 검사기 (2026-09-21)
+
+### 퀘스트 프리셋 (2026-10-01)
+
+- AI 더보기(컴포저/헤더 공용 메뉴) → **퀘스트 프리셋** → 전용 「퀘스트 만들기」 창.
+  `aiAuthoring/modal.ts`가 `quests` 진입에서 다른 저작 도구의 탭을 제외하고,
+  `quests.ts`가 왼쪽 유형 선택 / 가운데 이야기와 보상 / 오른쪽 구성 미리보기를 소유한다.
+  27종 고정 프리셋과 직접 조합 한 종을 검색·6개 분류로 찾는다. 왼쪽 목록은 독립 스크롤이다.
+  각 유형은 독립된 이야기·보상·단계 초안을 창을 닫을 때까지 보존한다. 유형별 두 예시를
+  편집 가능한 실제 입력값으로 제공하고, 0/100/300G 빠른 선택과 직접 입력을 지원한다.
+  「단계 직접 구성」은 9종 목표를 추가·삭제·재정렬(1~12개)하고 custom blueprint로 요청한다.
+  소재·보상·단계 변경은 미리보기에 즉시 반영한다. 현재 맵 이름은 store 구독으로 갱신하며
+  대상 맵이 없어지면 적용을 막는다. 「요청 확인하기」는 입력창에 덧붙이기이며 자동 전송하지 않는다.
+- 카탈로그/요청/컴파일 검사 정본은 `src/project/quest/questPresets.ts`.
+  프리셋을 쓰는 AI는 `create_quest.def.presetId`를 지정한다. UI 미리보기는 구성 설명이며
+  모델이 실제 프로젝트를 조회하여 NPC/위치를 결정한다.
+- 확장 증거: `quest-library-ui.mjs`(28개 선택·검색·분류·단계 변경·요청 전달·1024px),
+  `quest-library.mjs`(등록된 생성 도구·플레이어 인터프리터·불가능한 입력 거절),
+  `quest-library-persistence.mjs`(작업 전용 SQLite 종료 후 재로드),
+  `qa:runtime --scenario quest-library`(출하 플레이어에서 실제 이동과 상호작용).
+  근거 정본은 `verify-shots/quest-library/SUMMARY.md`, 조사 출처와 범위는
+  [퀘스트 프리셋 조사](quest-preset-research.md). LLM의 생성 품질을 모의 응답으로 주장하지 않는다.
+- 브라우저 증거: `node scripts/qa/quest-presets.mjs <이 워크트리의 dev URL>`.
+  실제 메뉴 클릭, 세 선택, 소재/보상 전달, 잘못된 보상 거부, 1024px 컨트롤 범위,
+  등록된 도구 생성/잘못된 프리셋 거부/직렬화 왕복을 확인하고 `verify-shots/quest-presets/`에 남긴다.
+  LLM 생성 성공을 모의 응답으로 주장하지 않는다. 전체 gates/vitest 실행 권한은 AGENTS가 우선한다.
+- UI 개편 증거: `node scripts/qa/quest-presets-ui.mjs <dev URL>` →
+  `verify-shots/quest-presets-redesign/`. 전용 창, 실제 예시 선택, 유형별 초안 보존,
+  소재·보상 미리보기, 잘못된 보상 차단, 입력창 전달과 포커스 복원,
+  지원하는 데스크톱 폭(1440/1024px)의 배치·하단 액션·Escape 닫기를 확인한다.
+- 실측 증거: 세 프리셋의 이벤트 실행기 계약 31항목, `quest-presets-persistence.mjs`의 별도
+  QA SQLite 저장→연결 종료→재로드 대조, `qa:runtime --scenario quest-presets`의 출하 플레이어
+  심부름 수락→전달→보고→중복 보상 차단 7비트가 확인됐다. 실제 LLM 생성 품질은 미검증이다.
 
 - 진입: AI 컴포저 「더보기」 → 「프롬프트 라이브러리」 / 「대사 목록·문체 검토」 /
   「프롬프트 검사기」. 헤더의 공용 작업 메뉴에도 같은 세 항목이 있다.

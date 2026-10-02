@@ -43,6 +43,8 @@ import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom"
 import { hitIntensity } from "@/player/battleHitIntensity";
 import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
 import { resolveBattleHitFeel } from "@/project/battleHitFeel";
+import { resolveBattleLook } from "@/project/battleLook";
+import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleSfx } from "@/player/battleSfx";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
@@ -233,6 +235,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   playbackStatus.setAttribute("aria-live", "polite");
   playbackStatus.setAttribute("aria-atomic", "true");
   root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost, playbackStatus);
+  // 전투 화면 꾸미기(project/battleLook.ts) — 도트 측면 전투에만. 칸 값은 루트 data·CSS 변수, 연출 겹은 필드 안.
+  const battleLook = retroMotion ? resolveBattleLook(store.getCurrent().system.battleLook) : undefined;
+  if (battleLook) applyBattleLook(root, field, battleLook);
   if (retroMotion) {
     initRetroMotion(field, initialSnapshot);
     preloadRetroMotionSe();
@@ -1097,6 +1102,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
     }
     syncBattleParty(partyPanel, snapshot, fieldPresentation);
+    if (battleLook?.turnOrder) syncBattleTurnOrder(root, snapshot);
     rollingHpTicker?.kick();
     // 전투 이벤트의 Tint Screen(색조·채도·흑백·세피아).
     syncBattleScreenFilter(field, snapshot.eventState.screen);

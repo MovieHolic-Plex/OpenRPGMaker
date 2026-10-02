@@ -50,6 +50,12 @@ import {
   SHARED_PORTRAIT_EXPRESSIONS, SHARED_PORTRAIT_EXPRESSION_LABELS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId,
   type SharedPortraitExpression, type SharedPortraitMode,
 } from "@/assets/sharedPortraitAssets";
+import {
+  DIALOGUE_FULL_PORTRAIT_LIMITS,
+  normalizeDialogueFullScale,
+  resolveDialogueFullPortraitLayout,
+} from "@/project/dialogueStyles";
+import { renderFullPortraitStage } from "@/editor/panels/fullPortraitStagePreview";
 
 const MESSAGE_WINDOW_FORMAT_OPTIONS = [
   { value: "normal", label: "일반" },
@@ -695,11 +701,46 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   position.classList.add("event-command-face-position-select");
   const flip = checkboxControl(cmd.flipHorizontally, "event-command-face-flip-horizontal");
   flip.classList.add("event-command-face-flip-checkbox");
+  // 전신 장면 크기(%) — 자료집 「대화창 → 전신 초상」 크기에 곱한다. 100 은 저장하지 않는다.
+  const scaleLimits = DIALOGUE_FULL_PORTRAIT_LIMITS.scale;
+  const initialScale = String(normalizeDialogueFullScale(cmd.fullScale) ?? 100);
+  const fullScaleRange = el("input", {
+    class: "event-command-face-full-scale-range",
+    attrs: { type: "range", min: String(scaleLimits.min), max: String(scaleLimits.max), step: "5", "aria-label": "장면 크기 슬라이더" },
+    value: initialScale,
+    dataset: { testid: "event-command-face-full-scale-slider" },
+  }) as HTMLInputElement;
+  const fullScaleInput = el("input", {
+    class: "event-command-face-full-scale-input",
+    attrs: { type: "number", min: String(scaleLimits.min), max: String(scaleLimits.max), step: "1", "aria-label": "장면 크기 (%)" },
+    value: initialScale,
+    dataset: { testid: "event-command-face-full-scale" },
+  }) as HTMLInputElement;
+  const fullStageHost = el("div", {
+    class: "event-command-face-full-stage",
+    dataset: { testid: "event-command-face-full-stage" },
+  });
+  const fullScaleSection = el("div", {
+    class: "event-command-face-full-scale",
+    dataset: { testid: "event-command-face-full-scale-section" },
+    children: [
+      el("div", { class: "event-command-face-section-label", text: "전신 크기" }),
+      fieldControl("장면 크기 (%)", el("span", { class: "event-command-face-full-scale-pair", children: [fullScaleRange, fullScaleInput] })),
+      el("p", {
+        class: "event-command-face-hint",
+        text: "100% 는 자료집 → 시스템 → 대화창 「전신 초상」 크기 그대로입니다. 이 얼굴 표시 뒤의 대사에만 곱해집니다.",
+      }),
+      fullStageHost,
+    ],
+  });
 
+  const readFullScale = (): number | undefined =>
+    fullScaleInput.value.trim() === "" ? undefined : normalizeDialogueFullScale(Number(fullScaleInput.value));
   const readDraft = (): Extract<Command, { kind: "changeFace" }> => ({
     kind: "changeFace",
     ...(appearanceId ? { appearanceId, presentation: presentation.value === "bust" || presentation.value === "full" ? presentation.value : "face" } : {}),
     resourceId: resource.value.trim(),
+    ...(readFullScale() !== undefined ? { fullScale: readFullScale() } : {}),
     position: position.value === "right" ? "right" : "left",
     flipHorizontally: flip.checked,
   });
@@ -719,6 +760,23 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
         displaySize: 96,
       })
     );
+    refreshFullStage(draft.appearanceId ? resolved?.resourceId ?? "" : draft.resourceId);
+  };
+
+  // 전신일 때만 크기 칸과 무대 견본을 보인다. 견본은 런타임과 같은 배치 계산을 쓴다.
+  const refreshFullStage = (resourceId: string): void => {
+    const isFull = Boolean(resourceId) && faceDisplayModeOf(resourceId) === "full";
+    fullScaleSection.hidden = !isFull;
+    clearChildren(fullStageHost);
+    if (!isFull) return;
+    fullStageHost.append(renderFullPortraitStage({
+      resourceId,
+      layout: resolveDialogueFullPortraitLayout(store.getCurrent().system.dialogueFullPortrait, readFullScale()),
+      position: position.value === "right" ? "right" : "left",
+      flipHorizontally: flip.checked,
+      width: 280,
+      testid: "event-command-face-full-stage-preview",
+    }));
   };
 
   // 갤러리는 한 번만 짓고 이후엔 선택 강조만 갱신한다 — 낱장 수백 장을 매 입력마다 다시 만들지 않는다.
@@ -793,6 +851,18 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
   position.addEventListener("change", apply);
   presentation.addEventListener("change", apply);
   flip.addEventListener("change", apply);
+  // 슬라이더는 끄는 동안 견본만 따라오고, 놓을 때 저장한다.
+  fullScaleRange.addEventListener("input", () => {
+    fullScaleInput.value = fullScaleRange.value;
+    refreshPreview();
+  });
+  fullScaleRange.addEventListener("change", apply);
+  fullScaleInput.addEventListener("change", () => {
+    const value = readFullScale() ?? 100;
+    fullScaleInput.value = String(value);
+    fullScaleRange.value = String(value);
+    apply();
+  });
 
   const openPicker = (): void => {
     const draft = readDraft();
@@ -913,6 +983,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     appearance,
     fieldControl("공유 외형 표시", presentation),
     selectedCard,
+    fullScaleSection,
     el("div", {
       class: "event-command-face-grid-section",
       dataset: { testid: "event-command-face-grid-section" },

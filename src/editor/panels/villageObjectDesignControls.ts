@@ -3,6 +3,7 @@ import type { VillageDesign } from "@/project/types/village";
 import { el } from "@/util/dom";
 import { numberField, selectField } from "./databaseControls";
 import { sectionCard } from "./databaseWorkspace";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 
 /** Edits the same saved object contract consumed by preview and author_village. */
 export function villageObjectDesignControls(project: Project, design: VillageDesign,
@@ -27,7 +28,7 @@ export function villageObjectDesignControls(project: Project, design: VillageDes
     selectField("집 사이 배치", "db-village-house-clustering", profile.clustering,
       [{ id: "tight", name: "가까운 주택군과 좁은 골목" }, { id: "balanced", name: "마을 전체에 고르게" }], clustering => set({ clustering: clustering as typeof profile.clustering })),
     ...(["width", "height"] as const).map(key => numberField(`기준 맵 ${key === "width" ? "너비" : "높이"}`, `db-village-reference-${key}`, profile.previewSize[key],
-      n => set({ previewSize: { ...profile.previewSize, [key]: n } }), { min: 20, max: 256, step: 1 })),
+      n => set({ previewSize: { ...profile.previewSize, [key]: n } }), { min: 20, max: MAX_TOOL_MAP_DIMENSION, step: 1 })),
     el("p", { text: "기준 크기는 미리보기와 크기를 생략한 새 맵에 적용됩니다. 다른 크기나 지역에도 같은 집 구성 규칙을 사용합니다." }),
     el("div", { class: "db-village-design-stories", children: choices }),
   ] })];

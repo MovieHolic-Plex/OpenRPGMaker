@@ -49,6 +49,9 @@ function caseFor(option: { value: string; label: string }): ProbeCase {
       return { ...base, value: "rain,0.9" };
     case "fadeIn":
       return { ...base, value: "", primeWith: "fadeOut" };
+    // 왜곡 끄기도 되돌리는 효과다 — 모자이크를 먼저 걸어 두고 걷히는 변화를 잰다.
+    case "clearDistortion":
+      return { ...base, value: "", primeWith: "mosaic" };
     default:
       return { ...base, value: "" };
   }

@@ -178,7 +178,7 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     kind: {
       type: "string",
       // text·narrate 는 say 의 별칭 — 받아서 say 로 옮긴다(이벤트 명령 모양 {kind:"text",body} 가 enum 에서 통째로 튕기던 문제).
-      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "background", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
+      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
     },
     // 진행 비트: switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId}
     switchId: { type: "string", description: "switch 비트: 켤 전역 스위치 id" },
@@ -220,6 +220,26 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     },
     offsetX: { type: "integer" },
     offsetY: { type: "integer" },
+    // 화면 왜곡 비트 — 수중·꿈·시간 왜곡·회상 진입. 끄려면 effect "clear".
+    effect: {
+      type: "string",
+      enum: ["wave", "mosaic", "rotate", "clear"],
+      description: "distort 비트 전용: wave=줄마다 흔들리는 물결, mosaic=모자이크 블록, rotate=화면 기울기, clear=왜곡 모두 끄기. 컷신이 끝나도 남으므로 끝에 clear 를 넣을지 정한다.",
+    },
+    amount: {
+      type: "number",
+      description: "distort 비트 전용 세기: wave px 0~16(기본 4), mosaic 블록 px 0~32(기본 8), rotate 도 -180~180(기본 8). 0 이면 그 효과만 끈다.",
+    },
+    blendMode: {
+      type: "string",
+      enum: ["normal", "add", "screen", "multiply"],
+      description: "picture 비트의 겹치기: add=빛기둥·불꽃·유령(밝게 더함), screen=부드러운 빛, multiply=그림자·핏빛 물들임. 생략=normal.",
+    },
+    easing: {
+      type: "string",
+      enum: ["linear", "easeIn", "easeOut", "easeInOut"],
+      description: "camera·picture 비트의 움직임 곡선. 생략=일정하게. 카메라가 인물로 다가가 멈출 때 easeOut, 무게 있는 팬은 easeInOut.",
+    },
     // 먼 배경(파노라마) 비트 — 회상·꿈에서 구름을 서서히 멈추기. 맵 배경 저작은 set_map_properties.background.
     flowPercent: {
       type: "number",
@@ -306,6 +326,11 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
         },
         transparent: { type: "boolean" },
         scale: { type: "number" },
+        blendMode: {
+          type: "string",
+          enum: ["normal", "add", "screen", "multiply"],
+          description: "아래 화면과 섞는 법. add=불꽃·빛기둥·유령·마법진처럼 밝게, screen=부드러운 빛, multiply=그림자·물들임. 생략=normal.",
+        },
       },
     },
     priority: { type: "string", enum: ["below", "same", "above"] },

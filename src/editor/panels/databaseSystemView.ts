@@ -5,6 +5,7 @@ import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import { BATTLE_HIT_FEEL_DESCRIPTIONS, BATTLE_HIT_FEEL_IDS, BATTLE_HIT_FEEL_LABELS, DEFAULT_BATTLE_HIT_FEEL, resolveBattleHitFeel } from "@/project/battleHitFeel";
+import { battleLookFields } from "@/editor/panels/databaseBattleLook";
 import {
   emptyToUndefined,
   field,
@@ -521,6 +522,7 @@ function systemSectionNodes(
         ),
       ]),
       battleResourcesFieldset(project),
+      rm2k3Fieldset("전투 화면 꾸미기", battleLookFields(project, updateSystem, () => rerender())),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({
           label: "기본 BGM",
