@@ -8,6 +8,7 @@ import { CALLS_PER_CANDIDATE_ESTIMATE } from "@/harnesses/_core/workshop/engine"
 import type { WorkshopItem, WorkshopRun } from "@/harnesses/_core/workshop/types";
 import { REJECT_REASONS } from "@/harnesses/interior-props/editor/prompts";
 import { el } from "@/util/dom";
+import { WORKSHOP_MODEL_ADVICE } from "./chat";
 import { gridDataUrl } from "./pixels";
 import type { WorkshopSession } from "./workshopSession";
 import { latestRound, roundProgress } from "./workshopStatus";
@@ -86,6 +87,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
         text: `후보 ${session.runner.candidates}장 뽑기 (모델 호출 약 ${session.runner.candidates * CALLS_PER_CANDIDATE_ESTIMATE}번)`,
         on: { click: () => act(() => startRound(noteText())) },
       }),
+      el("p", { class: "workshop-item-meta", dataset: { testid: "workshop-model-advice" }, text: WORKSHOP_MODEL_ADVICE }),
     ],
   });
 

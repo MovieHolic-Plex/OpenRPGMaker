@@ -9,6 +9,8 @@ import type { ChatFn } from "@/harnesses/_core/workshop/types";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 
 export const WORKSHOP_FAKE_CHAT_KEY = "__oprnWorkshopChat";
+/** 에셋 만들기 권장 모델 안내(사용자 결정 2026-10-02). 약한 모델은 3/4 시점·격자 크기를 자주 틀린다. */
+export const WORKSHOP_MODEL_ADVICE = "에셋 만들기는 GPT-6.1 Sol(medium) 또는 Claude Sonnet 5.5 이상을 권장합니다. 더 약한 모델은 3/4 시점과 격자를 자주 틀립니다.";
 
 function fakeChat(): ChatFn | null {
   if (!import.meta.env.DEV) return null;

@@ -6,7 +6,7 @@ import "@/styles/database/workshop/index.css";
  */
 import { workshopHarnesses } from "@/harnesses/_core/registry";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
-import { workshopAiReady } from "@/editor/workshop/chat";
+import { WORKSHOP_MODEL_ADVICE, workshopAiReady } from "@/editor/workshop/chat";
 import { peekWorkshopSession, WORKSHOP_CHANGED_EVENT } from "@/editor/workshop/workshopSession";
 import { itemState } from "@/editor/workshop/workshopStatus";
 import { openWorkshop } from "@/editor/workshop/workshopWorkspace";
@@ -21,6 +21,7 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
     root.append(
       el("h2", { class: "left-workshop-title", text: "공방" }),
       el("p", { class: "left-workshop-lead", text: "AI 가 그림 후보를 여러 장 그리고, 고르는 건 직접 합니다. 결과는 이 프로젝트에만 남습니다." }),
+      el("p", { class: "left-workshop-lead", dataset: { testid: "left-workshop-model-advice" }, text: WORKSHOP_MODEL_ADVICE }),
     );
     if (!workshopAiReady()) {
       root.append(el("button", {
