@@ -2350,3 +2350,7 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 
 기존 「도트 연출」 복제/수정 흐름에 32종 공용 이동 프로그램과 배우별 직접 경로를 붙였다.
 스킬 「전투 규칙」의 실제 기믹과 조수 도구의 movement/battleGimmick 필드는 [battle-motion-programs.md](battle-motion-programs.md)를 따른다.
+
+## 저장 결과를 구분하는 적용 피드백 (2026-10-02)
+
+`databaseModalPersistence.applyDatabaseChanges`는 `saved-local`이라도 `written: false`이면 성공으로 처리하지 않는다. 임시 세션에서 기록하지 않았음을 알리고 `false`를 반환하므로 모달의 `markClean`/저장 후 닫기 경로가 실행되지 않는다. 실제 브라우저 저장은 기존 성공 경로를 유지한다. `saved`는 SQLite 폴더·호스트도 사용하는 결과이므로 「온라인」이라고 단정하지 않는 저장 완료 문구를 쓴다. 회귀 소스는 `test/databaseModalPersistence.test.ts`이며 이번 세션에서 실행하지 않았다.
