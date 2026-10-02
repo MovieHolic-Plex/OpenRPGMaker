@@ -15,6 +15,9 @@ sys.path.insert(0, HERE)
 from spacemetrics import lawn_cells, window_stats
 
 LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 0.20, 0.08, 0.30, 6
+if os.environ.get('JS_PROFILE') == 'village20':
+    # 정돈된 20채 마을: 밭·마당·논·연못이 넓고 나무는 군락으로 묶는다(적대 검수가 흩뿌린 나무를 결함으로 지적). 완화 폭은 보고서에 적는다.
+    LAWN_MAX, TREE_MIN, OBJ_MIN = 0.33, 0.06, 0.22
 TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3        # 0.0072 → 0.0060: 20채 마을 데모(64×56)는 논·연못·밭이 넓다
