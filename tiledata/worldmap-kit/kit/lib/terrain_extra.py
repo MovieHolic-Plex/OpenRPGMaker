@@ -155,7 +155,8 @@ def plan_roads(t, icon_cells, routes, block=None):
                 pass
             p = route(t, road, fb, starts, tg)
             if p is None:
-                raise RuntimeError('no route ' + name)
+                from kit_common import KitError
+                raise KitError('길을 낼 수 없다: %s (%s → %s) — 산·사구·절벽·물에 막혔다. 고개(pass)를 내거나 장소를 옮기거나 그 사이 땅을 이어라' % (name, va, vb))
             full += p if not full else p[1:]
         # 강 건널목 표시
         for i, (x, y) in enumerate(full):

@@ -35,9 +35,11 @@ KEY_ROLES = ('grass', 'savanna', 'sand', 'tundra', 'snow', 'forest', 'mount', 'r
 PALETTE_ORDER = ['original', 'ruin', 'dusk', 'winter', 'ashfall', 'regional']
 
 
-def signature(journey_id, roles_data):
+def signature(journey_id, roles_data, terrain=None):
     h = hashlib.sha1()
     h.update((K.WM / 'journeys' / (journey_id + '.json')).read_bytes())
+    if terrain is not None:                          # 지형 편집 작업도 지형 모양을 바꾼다
+        h.update(json.dumps(terrain, sort_keys=True, ensure_ascii=False).encode())
     h.update(json.dumps(roles_data['roles'], sort_keys=True).encode())
     for f in sorted(K.LIB.glob('*.py')):
         if f.name.startswith(('kit_palette', 'kit_common', 'kit_theme')):      # 팔레트·입력 검사·테마 덧칠 코드는 지형에 영향이 없다
@@ -47,11 +49,11 @@ def signature(journey_id, roles_data):
     return h.hexdigest()
 
 
-def build_terrain(journey, roles, roles_data, iconset, assign, cache):
+def build_terrain(journey, roles, roles_data, iconset, assign, cache, terrain=None):
     """지형 그림 C(아이콘 없음)·색 표·세계 JSON. 캐시가 맞으면 읽는다."""
-    sig = signature(journey['id'], roles_data)
+    sig = signature(journey['id'], roles_data, terrain)
     if cache:
-        cache = Path(cache)
+        cache = Path(cache) / ('terrain-' + sig[:12] if terrain else '')     # 지형마다 따로 — 하나로 두면 테마를 오갈 때마다 100초 렌더
         cj, cn = cache / 'terrain.json', cache / 'terrain.npz'
         if cj.exists() and cn.exists():
             meta = json.loads(cj.read_text())
@@ -63,10 +65,12 @@ def build_terrain(journey, roles, roles_data, iconset, assign, cache):
     t0 = time.time()
     W.install(journey, roles, iconset, assign)
     w = W.make_world()
+    _warn_terrain()
     C, info, paths_same = W.render_terrain(w)
     ukeys, role, grp_t, _cnt = KP.build_roles(C, w.M, info)
     purity = KP.role_purity(C, ukeys, role, grp_t)
     world = W.world_dict(w, journey, assign)
+    world['terrain'] = terrain['id'] if terrain else 'shared-v9'
     out = dict(C=C, ukeys=ukeys, role=role, G=w.M.G.copy(), grp_t=grp_t, world=world, paths_same=bool(paths_same), purity=purity, cached=False, seconds=time.time() - t0)
     if cache:
         cache.mkdir(parents=True, exist_ok=True)
@@ -129,6 +133,79 @@ def icon_metrics(terrain, final, ic, sky_site):
     return dict(min=vals[0], median=float(np.median([v for _, v in vals])), lowest=vals[:3])
 
 
+def _warn_terrain():
+    import make_map_v4 as M4
+    for m in M4.WARN:
+        print('지형 경고: ' + m)
+
+
+GLYPH = {0: '~', 1: 'r', 2: 'L', 3: 'x', 10: '.', 11: 'f', 12: 'v', 13: 's', 14: 'd', 15: 'D', 16: 'b', 17: 'a', 18: 'B', 19: 'w', 20: 'm',
+         21: 't', 22: 'n', 23: 'g', 24: 'j', 25: 'c', 26: 'o', 27: 'p'}
+SCHEMA_RGB = {0: (40, 80, 160), 1: (70, 130, 220), 2: (230, 80, 30), 3: (150, 90, 190), 10: (110, 180, 80), 11: (220, 200, 90), 12: (200, 190, 110),
+              13: (235, 215, 150), 14: (245, 225, 165), 15: (160, 130, 90), 16: (190, 100, 70), 17: (90, 85, 85), 18: (60, 55, 60), 19: (80, 120, 90),
+              20: (110, 80, 140), 21: (170, 180, 160), 22: (240, 245, 250), 23: (200, 230, 245), 24: (60, 140, 70), 25: (40, 30, 30),
+              26: (120, 40, 30), 27: (120, 190, 90)}
+
+
+def ascii_map(world):
+    """칸 글자 지도. 물체가 있으면 물체 글자(^ 산, * 숲, M 메사, V 화산), 장소는 @, 길은 =, 경사로는 /."""
+    G, O = world['ground'], world['object']
+    rows = [[GLYPH.get(G[y][x], '?') for x in range(len(G[0]))] for y in range(len(G))]
+    for y in range(len(G)):
+        for x in range(len(G[0])):
+            o = O[y][x]
+            if o in (6, 7):
+                rows[y][x] = '^'
+            elif o == 9:
+                rows[y][x] = 'M'
+            elif o == 8:
+                rows[y][x] = 'V'
+            elif o:
+                rows[y][x] = '*'
+    for x, y in world['road_cells']:
+        rows[y][x] = '='
+    for x, y in world['ramp']:
+        rows[y][x] = '/'
+    for p in world['places']:
+        for yy in range(p['y'], p['y'] + p['h']):
+            for xx in range(p['x'], p['x'] + p['w']):
+                rows[yy][xx] = '@'
+    head = '    ' + ''.join(str(x // 10) if x % 10 == 0 else ' ' for x in range(len(G[0])))
+    return '\n'.join([head] + ['%02d  %s' % (y, ''.join(r)) for y, r in enumerate(rows)])
+
+
+def schematic(world, scale=8):
+    """지형 칸 배열의 빠른 도식 그림(렌더 없이 몇 초) — 바닥 색 + 산 ▲ 숲 점 + 길 + 장소 테두리."""
+    from PIL import ImageDraw
+    G, O = np.array(world['ground']), np.array(world['object'])
+    Hh = np.array(world['height_level'])
+    h, w = G.shape
+    rgb = np.zeros((h, w, 3), np.uint8)
+    for g, c in SCHEMA_RGB.items():
+        rgb[G == g] = c
+    rgb = (rgb.astype(np.float32) * (1 - .12 * Hh[..., None])).astype(np.uint8)
+    im = Image.fromarray(rgb).resize((w * scale, h * scale), Image.NEAREST)
+    d = ImageDraw.Draw(im)
+    for y in range(h):
+        for x in range(w):
+            o = O[y, x]
+            cx, cy = x * scale, y * scale
+            if o in (6, 7, 9, 8):
+                d.polygon([(cx + scale / 2, cy + 1), (cx + scale - 1, cy + scale - 1), (cx + 1, cy + scale - 1)],
+                          fill=(120, 95, 70) if o != 8 else (200, 60, 30), outline=(40, 30, 25))
+            elif o:
+                d.ellipse([cx + 1, cy + 1, cx + scale - 2, cy + scale - 2], fill=(30, 90, 40))
+    for x, y in world['road_cells']:
+        d.rectangle([x * scale + scale // 3, y * scale + scale // 3, x * scale + scale * 2 // 3, y * scale + scale * 2 // 3], fill=(150, 100, 50))
+    for p in world['places']:
+        d.rectangle([p['x'] * scale, p['y'] * scale, (p['x'] + p['w']) * scale - 1, (p['y'] + p['h']) * scale - 1], outline=(255, 40, 40), width=2)
+    for x in range(0, w, 10):
+        d.line([(x * scale, 0), (x * scale, 4)], fill=(255, 255, 255))
+    for y in range(0, h, 10):
+        d.line([(0, y * scale), (4, y * scale)], fill=(255, 255, 255))
+    return im
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--theme', help='themes/<id> — 아이콘 세트·팔레트·지형 덧칠(포장도로·철길·시가지·그을음·우주)을 한 번에 고른다')
@@ -139,6 +216,8 @@ def main():
     ap.add_argument('--tint-icons', type=float, default=None, help='아이콘 색을 팔레트 빛으로 옮기는 정도 0..1 (기본 0.25, 팔레트 icon_tint 가 있으면 그 값)')
     ap.add_argument('--cache', help='지형 캐시 폴더')
     ap.add_argument('--no-check', action='store_true', help='여정 도달성 검사를 건너뛴다')
+    ap.add_argument('--terrain', help='terrains/<id> 또는 지형 편집 JSON 경로 — 공용 지형(shared-v9) 위에 작업(ops)을 얹는다')
+    ap.add_argument('--preview', action='store_true', help='픽셀 렌더 없이 칸 배열만(몇 초): schematic.png · terrain.txt · world.json · 여정 검사')
     a = ap.parse_args()
     theme = None
     try:
@@ -153,10 +232,17 @@ def main():
                 raise K.KitError(str(e))
             a.iconset = a.iconset or theme['iconset']
             a.palette = a.palette or theme['palette']
+            a.terrain = a.terrain or theme.get('terrain')
         if not a.iconset or not a.palette:
             raise K.KitError('--theme 이 없으면 --iconset 과 --palette 가 필요하다')
         roles, roles_data = K.load_roles()
         journey = K.load_journey(a.journey)
+        import kit_terrain as KTer
+        try:
+            terrain = KTer.load(a.terrain, K.WM)
+            journey = KTer.apply(terrain, journey)
+        except KTer.TerrainError as e:
+            raise K.KitError('지형 편집: ' + str(e))
         iconset = K.IconSet(a.iconset)
         assign = K.assign_icons(roles, journey, iconset)          # 역할 채움 검사 포함(모자라면 여기서 KitError)
         pdir = K.WM / 'palettes'
@@ -172,7 +258,9 @@ def main():
         if a.tint_icons is not None and not 0 <= a.tint_icons <= 1:
             raise K.KitError('--tint-icons 는 0..1')
         out = Path(a.out)
-        t = build_terrain(journey, roles, roles_data, iconset, assign, a.cache)
+        if a.preview:
+            return preview(journey, roles, iconset, assign, out, a.no_check, terrain)
+        t = build_terrain(journey, roles, roles_data, iconset, assign, a.cache, terrain)
     except K.KitError as e:
         print('입력 오류:\n' + str(e), file=sys.stderr)
         sys.exit(2)
@@ -216,6 +304,34 @@ def main():
         from check_journey import run_check
         jw = W2.MapWorld(world)
         bad, info, txt = run_check(journey, jw, out_path=out / 'journey-check.txt', verbose=False)
+        report['journey_check'] = dict(ok=not bad, bad=bad)
+        print('여정 검사: %s' % ('통과' if not bad else '불일치 %d건 — %s' % (len(bad), '; '.join(bad[:3]))))
+    (out / 'build-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))
+
+
+def preview(journey, roles, iconset, assign, out, no_check, terrain):
+    """픽셀 렌더를 건너뛰고 칸 배열·길·장소만 만든다 — 지형 편집을 몇 초 만에 확인한다."""
+    import kit_world as W
+    t0 = time.time()
+    try:
+        W.install(journey, roles, iconset, assign)
+        w = W.make_world()
+    except K.KitError as e:
+        print('입력 오류:\n' + str(e), file=sys.stderr)
+        sys.exit(2)
+    _warn_terrain()
+    world = W.world_dict(w, journey, assign)
+    world['terrain'] = terrain['id'] if terrain else 'shared-v9'
+    out.mkdir(parents=True, exist_ok=True)
+    (out / 'world.json').write_text(json.dumps(world, ensure_ascii=False))
+    (out / 'terrain.txt').write_text(ascii_map(world) + '\n')
+    schematic(world).save(out / 'schematic.png')
+    import make_map_v4 as M4
+    report = dict(preview=True, terrain=world['terrain'], seconds=round(time.time() - t0, 1), warnings=list(M4.WARN))
+    print('미리보기 %.1f초 → %s' % (report['seconds'], out / 'schematic.png'))
+    if not no_check:
+        from check_journey import run_check
+        bad, info, txt = run_check(journey, W.MapWorld(world), out_path=out / 'journey-check.txt', verbose=False)
         report['journey_check'] = dict(ok=not bad, bad=bad)
         print('여정 검사: %s' % ('통과' if not bad else '불일치 %d건 — %s' % (len(bad), '; '.join(bad[:3]))))
     (out / 'build-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))

@@ -56,6 +56,7 @@ def load_theme(path):
         if k not in d:
             raise ValueError('테마 %s: %s 가 없다' % (path, k))
     d.setdefault('overlays', [])
+    d.setdefault('terrain', None)                    # terrains/<id> — 지형 모양 편집(없으면 공용 지형)
     d.setdefault('kind', 'land')
     if d['kind'] not in ('land', 'space'):
         raise ValueError('테마 %s: kind 는 land | space' % d['id'])

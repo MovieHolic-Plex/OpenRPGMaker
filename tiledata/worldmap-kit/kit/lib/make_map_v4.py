@@ -270,6 +270,13 @@ FORESTS = [
     ([(20, 12), (46, 12), (46, 24), (20, 24)], BROAD, .84, 42),
 ]
 
+# 지형 편집(kit_terrain.apply 가 채운다 — terrains/<id>.json 의 ops). 기본 지형에서는 모두 비어 있다.
+EXTRA_LAND = []      # (다각형, 바닥 또는 None, warp)           땅을 더한다(안쪽 바다 자르기 뒤)
+EXTRA_SEA = []       # (다각형, warp)                          바다로 자른다(마지막)
+EXTRA_BIOMES = []    # (다각형, 바닥, warp)                     모든 땅 위에 바닥을 덮는다(기본 바이옴 뒤)
+CLEAR = []           # (다각형, 'forest'|'mount'|'all')        물체를 걷는다(숲·산 뒤, 장소 정리 전)
+WARN = []            # 빌드 중 경고(경사로 자리 없음 등) — 오류가 아니라 보고용
+
 # 장소: (이름, 출처, 지정, x, y, 밑 바닥(None=그대로), 종류, 설명)
 SITES = [
     ('대성', 'ext', 'castle_dark_grand', 26, 22, GRASS, 'castle', '서대륙 중앙 평야'),
@@ -345,15 +352,27 @@ def build():
     for m in isles.values():
         land |= m
     land &= ~inl
+    extra = []
+    for i, (poly, g, w) in enumerate(EXTRA_LAND):
+        m = polymask(poly, w, 700 + i, minsize=3)
+        land |= m
+        extra.append((m, g))
+    for i, (poly, w) in enumerate(EXTRA_SEA):
+        land &= ~polymask(poly, w, 760 + i, minsize=2)
     G[land] = GRASS
     G[landB & land] = SAVANNA
     for k, m in isles.items():
-        G[m & land] = ISLE_GROUND[k]
+        G[m & land] = ISLE_GROUND.get(k, GRASS)
+    for m, g in extra:
+        if g is not None:
+            G[m & land] = g
     # 2. 바이옴
     for i, (poly, g, w) in enumerate(BIOMES_A):
         G[polymask(poly, w, 200 + i) & landA & land] = g
     for i, (poly, g, w) in enumerate(BIOMES_B):
         G[polymask(poly, w, 300 + i) & landB & land] = g
+    for i, (poly, g, w) in enumerate(EXTRA_BIOMES):
+        G[polymask(poly, w, 800 + i) & land] = g
     # 3. 물
     water = np.zeros((H, W), bool)
     for name, pts, wide, salt in RIVERS:
@@ -436,6 +455,10 @@ def build():
         for x in range(W):
             if vm[y, x] and not vm2[y, x] and land[y, x] and (G[y, x] >= 10) and rnd(x, y, 77) > .12:
                 O[y, x] = VOLC
+    for i, (poly, what) in enumerate(CLEAR):
+        cm_ = polymask(poly, .8, 860 + i, minsize=1)
+        kill = {'forest': np.isin(O, FORESTS), 'mount': np.isin(O, (MOUNT, SMOUNT, MESA)), 'all': O > 0}[what]
+        O[cm_ & kill] = 0
     global _DBG
     _DBG = (land.copy(), G.copy(), Hh.copy(), O.copy())
     # 8. 장소 밑 정리
@@ -454,9 +477,14 @@ def build():
             BAD.append(('높이', name, x, y, hv.tolist()))
     Hh[G < 10] = 0
     if BAD:
-        print('BAD', BAD)
-        dump(land, G, icon_cells)
-        raise SystemExit(1)
+        from kit_common import KitError
+        msg = []
+        for b in BAD:
+            if b[0] == '물':
+                msg.append('장소 %s 의 발자국(%d,%d)이 물 위다 — move_place 로 땅으로 옮기거나 그 자리에 땅을 더하라' % (b[1], b[2], b[3]))
+            else:
+                msg.append('장소 %s 의 발자국(%d,%d)이 높이가 다른 칸에 걸쳤다(고원 가장자리) — 옮기거나 고원 다각형을 고쳐라' % (b[1], b[2], b[3]))
+        raise KitError('지형 오류:\n' + '\n'.join(msg))
     # 9. 경사로 2패스
     M = Map4(G, O, Hh)
     RAMP = np.zeros((H, W), bool)
@@ -466,7 +494,8 @@ def build():
             if x in (xc, xc + 1) and j == 0 and y >= ymin and Hh[y - 1, x] == lvl:
                 bands.append((y, x))
         if not bands:
-            raise RuntimeError('경사로 자리 없음 ' + name)
+            WARN.append('경사로 자리 없음: %s(%d열) — 고원 절벽이 그 열에 없다. 그 고원은 걸어 오를 수 없을 수 있다' % (name, xc))
+            continue
         ytop = min(y for y, x in bands)
         for x in (xc, xc + 1):
             for (yy, xx) in [(y, x_) for y, x_ in bands if y == ytop and x_ == x]:
