@@ -218,3 +218,14 @@ def objects():
     d = _objects_before_houses()
     d.update(GH.objects())
     return d
+
+
+# --- 국내성 원작 규모 맵(gungnae_full_pieces.py): 맨 끝에 덧붙인다.
+_objects_before_gnf = objects
+
+
+def objects():
+    import gungnae_full_pieces as _GF
+    d = _objects_before_gnf()
+    d.update(_GF.objects())
+    return d

@@ -2508,5 +2508,15 @@
    "h104_0"
   ],
   "kit": "palace.tier(blk…) 단층 팔작(R=2) + 돌 기단 — 정전과 같은 기와 어휘"
+ },
+ "gnf_palace_hall_wide_14": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_7",
+   "giwa_house_6",
+   "gate_4"
+  ],
+  "kit": "palace.palace_hall_wide(14) — 정전 폭 가변 인자(bays=14, 18칸). palace.tier('gw',…) 아래 팔작 + 위 낮은 지붕 + wolde3"
  }
 }

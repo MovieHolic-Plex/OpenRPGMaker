@@ -2246,5 +2246,13 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-03"
+ },
+ "gnf_palace_hall_wide_14": {
+  "hash": "72f963dcbeac",
+  "status": "pass",
+  "line": "palace_hall_wide(8) 와 같은 문법(아래 큰 팔작+위 낮은 지붕+3단 월대)을 폭 18칸으로 키움. 뒷사면 밝고 앞사면 어두움, 윗면 보임, 기준 gwanah_7·giwa_house_6 과 같은 처마·기와 결",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
  }
 }
