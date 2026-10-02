@@ -52,7 +52,7 @@
   .ba { display:flex; flex-direction:column; gap:12px; }
   .ba .col { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:8px 12px; }
   .ba .lbl { color:var(--dim); font-size:12px; margin-bottom:6px; }
-  img.x2 { width:144px; height:256px; } img.fx { width:192px; height:192px; }
+  img.x2 { width:144px; height:256px; } img.fx { width:192px; height:192px; } img.fs { width:96px; height:96px; opacity:.85; }
   div.fx.wait { width:192px; height:192px; display:flex; align-items:center; justify-content:center; color:var(--dim); border:1px dashed var(--line); border-radius:4px; }
 </style>
 </head>
@@ -138,7 +138,7 @@ let lastMain = '';
 function renderMain() {
   const it = S.items.find((i) => i.id === sel);
   // 주기 새로고침이 GIF 를 처음부터 다시 돌리거나 고르던 이유를 지우지 않게, 바뀐 게 없으면 그대로 둔다
-  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score, it && it.face]);
+  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score, it && it.face, it && it.face_gen]);
   if (key === lastMain) return;
   lastMain = key;
   if (!it) { $('main').innerHTML = '<p class="cur">고를 것이 없습니다.</p>'; $('decide').hidden = true; return; }
@@ -168,8 +168,8 @@ function renderMain() {
           <figure><img src="${fu(it, 'views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
           <figure><img src="${fu(it, 'views/turn.gif')}"><figcaption>돌기</figcaption></figure>
           <figure><img src="${fu(it, 'views/sheet.png')}" class="x2"><figcaption>시트 (2배)</figcaption></figure>
-          ${it.face === 'done' ? `<figure><img src="${fu(it, 'face/views/face_x4.png')}" class="fx"><figcaption>얼굴</figcaption></figure>`
-            : it.face === 'running' ? '<figure><div class="fx wait">얼굴 그리는 중…</div></figure>' : ''}
+          ${it.face_gen ? `<figure><img src="${fu(it, 'face_gen/face_x4.png')}" class="fx"><figcaption>얼굴 (생성)</figcaption></figure>` : '<figure><div class="fx wait">생성 얼굴 만드는 중…</div></figure>'}
+          ${it.face === 'done' ? `<figure><img src="${fu(it, 'face/views/face_x4.png')}" class="fs"><figcaption>얼굴 (손 도트)</figcaption></figure>` : ''}
         </div></div>
     </div>
     <div class="views" style="margin-top:14px">

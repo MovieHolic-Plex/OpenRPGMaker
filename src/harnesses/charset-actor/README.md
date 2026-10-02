@@ -36,6 +36,11 @@ r2..: 불합격이면 직전 판의 out.chr.txt 에서 시작해 검수자 지�
 결과 `<작업 폴더>/face/out.face.txt`·`face/views/{face,face_x4,compare}.png`. 기계 검수: 48×48, 색 ≤90, 뼈대 얼굴과 ≥15% 다름.
 흉상·전신은 아직 없다 — 공용 흉상·전신(`public/assets/shared/portraits/`)은 1000px 생성 그림이라 뼈대로 쓸 수 없다(생성 이미지 금지).
 
+**얼굴은 생성으로 (2026-10-02 사용자 결정 — 칩은 계속 손 도트, 얼굴만 예외)** `gen-faces --run R`:
+참고 그림 [Actor1 원본 얼굴 | 새 칩 정면·오른쪽]을 흉상·전신 파이프라인과 같은 API(`MDC_IMAGE_API`, god-tibo-imagen)로 편집 생성 →
+1024 정사각을 48×48 LANCZOS 축소 + 96색(`gen_face.py`). 결과 `<작업 폴더>/face_gen/{ref,raw,face,face_x4,compare}.png`.
+첫 시험(선원·성직자)에서 손 도트 얼굴보다 확실히 나았다. 화면은 생성 얼굴을 크게, 손 도트 얼굴을 작게 함께 보여 준다.
+
 ## 받기/버리기 화면 (`serve`, 18314)
 http://mdc-server:18314/ — 비포(Actor1 원본 걷기·돌기·시트·얼굴)와 애프터를 위아래로 나란히. 모든 실행의 완성본을 걷기·돌기·칸 위 걷기 GIF, Actor1 옆에 세운 그림, 검수자 판정(참고용)과 함께 보여 준다.
 `A` 받기 · `R` 버리기(이유 칩 + 메모, `Enter`) · `↑↓` 이동. 결정의 정본은 `~/.local/share/oprn/charset-actor-harness/decisions.jsonl`(추가만),
@@ -74,7 +79,8 @@ python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0
 | `harness.py` | 명령들, 작업자 실행(`claude -p` / `codex exec`), 비교 화면, 받기/버리기 서버 |
 | `web/index.html` | 받기/버리기 화면 |
 | `reviewer.md` | 검수자 지시문 틀 |
-| `face.md` | 얼굴 작업자 지시문 틀 |
+| `face.md` | 얼굴 작업자 지시문 틀(손 도트) |
+| `gen_face.py` | 생성 얼굴 — 참고 그림·프롬프트·48×48 축소 |
 | `chr.py` | `.chr.txt` 읽기·쓰기, Actor1 → 격자, 기계 검수, 시트·필름 띠·GIF 3종 |
 | `worker.md` | 작업자 지시문 틀(절대 규칙: 생성 이미지·외부 그림 금지, 모양은 격자를 직접 고쳐서) |
 | `fixer.md` | 수정 작업 덧붙임 — `draw --src <다른 작업 폴더> --fix-notes <감독 지적>` 이면 그 결과에서 시작해 지적을 고친다 |

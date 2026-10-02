@@ -450,6 +450,56 @@ def start_face(w, engine='sonnet'):
     return p
 
 
+def gen_face_one(w):
+    """생성 얼굴: w/face_gen/{ref.png, raw.png, face.png, face_x4.png, compare.png, meta.json}"""
+    import gen_face as G
+    meta = json.loads((w / 'meta.json').read_text())
+    b = briefs()[meta['brief']]
+    gd = w / 'face_gen'
+    gd.mkdir(exist_ok=True)
+    bp, brows = base_face(b['base'])
+    base_im = C.face_rgba(bp, brows)
+    ref = G.reference(base_im, w / 'out.chr.txt')
+    ref.save(gd / 'ref.png')
+    t0 = time.time()
+    raw, engine, dur = G.generate(ref, b['brief'])
+    raw.save(gd / 'raw.png')
+    face = G.to_face(raw)
+    face.save(gd / 'face.png')
+    C.up(face, 4).save(gd / 'face_x4.png')
+    cp, _, cf = C.load(w / 'out.chr.txt')
+    parts = [C.up(base_im, 4), C.up(face.convert('RGBA'), 4), C.up(C.frame_rgba(cp, cf[('down', 1)]), 6)]
+    W = sum(p.width for p in parts) + 32
+    cmp_ = Image.new('RGBA', (W, max(p.height for p in parts)), C.KEY + (255,))
+    x = 0
+    for p in parts:
+        cmp_.alpha_composite(p, (x, 0))
+        x += p.width + 16
+    cmp_.convert('RGB').save(gd / 'compare.png')
+    (gd / 'meta.json').write_text(json.dumps(dict(engine=engine, duration=dur, wall=round(time.time() - t0), at=now()),
+                                             ensure_ascii=False), encoding='utf-8')
+    return engine
+
+
+def cmd_gen_faces(a):
+    """완성된 칩마다 생성 얼굴을 만든다(동시 a.par). 이미 있으면 --redo 때만 다시."""
+    from concurrent.futures import ThreadPoolExecutor
+    ws = [w for w in sorted(run_dir(a.run).glob('*__*')) if (w / 'out.chr.txt').exists()
+          and (a.redo or not (w / 'face_gen' / 'face.png').exists()) and (not a.only or w.name.split('__')[0] in a.only.split(','))]
+
+    def one(w):
+        for k in range(3):
+            try:
+                e = gen_face_one(w)
+                print(f'{datetime.now():%H:%M:%S} {w.name} 생성 얼굴 끝 ({e})', flush=True)
+                return
+            except Exception as ex:  # noqa: BLE001 — API 실패는 재시도
+                print(f'{datetime.now():%H:%M:%S} {w.name} 실패 {k + 1}/3: {ex!r}'[:300], flush=True)
+    with ThreadPoolExecutor(max_workers=a.par) as ex:
+        list(ex.map(one, ws))
+    print('끝', flush=True)
+
+
 def finish_face(w):
     fd = w / 'face'
     if (fd / 'out.face.txt').exists():
@@ -499,7 +549,7 @@ def _items():
                             gender=b.get('gender', ''), brief_text=b.get('brief', ''), base=m['base'], label=m['label'],
                             status='running' if _alive(m['pid']) else ('done' if has else 'failed'),  # 작업자도 views 를 만들므로 살아 있으면 아직 그리는 중
                             gate=gate, review=read_verdict(w) if has else None,
-                            face=_face_state(w)))
+                            face=_face_state(w), face_gen=(w / 'face_gen' / 'face_x4.png').exists()))
     return out
 
 
@@ -668,6 +718,12 @@ def main():
     p.add_argument('--par', type=int, default=6)
     p.add_argument('--redo', action='store_true')
     p.set_defaults(fn=cmd_faces)
+    p = sp.add_parser('gen-faces', help='얼굴을 이미지 생성으로(칩은 손 도트 그대로)')
+    p.add_argument('--run', required=True)
+    p.add_argument('--par', type=int, default=6)
+    p.add_argument('--only', help='brief 이름 쉼표 목록')
+    p.add_argument('--redo', action='store_true')
+    p.set_defaults(fn=cmd_gen_faces)
     sp.add_parser('export', help='결정을 harness-data/charset-actor/decisions.json·accepted/ 로').set_defaults(
         fn=lambda a: export_decisions())
     a = ap.parse_args()
