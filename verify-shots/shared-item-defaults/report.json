@@ -1,0 +1,27 @@
+{
+  "base": "http://127.0.0.1:9835",
+  "total": 1086,
+  "items": 1000,
+  "selected": "맑은 쑥 회복액",
+  "images": [
+    {
+      "src": "/assets/items/shared/healing-mugwort-1.png",
+      "width": 32,
+      "height": 32,
+      "loaded": true
+    },
+    {
+      "src": "/assets/items/shared/healing-mugwort-1.png",
+      "width": 32,
+      "height": 32,
+      "loaded": true
+    }
+  ],
+  "errors": [],
+  "artworkStillInProgress": false,
+  "artworkLoads": {
+    "checked": 1054,
+    "expected": 1054,
+    "failed": []
+  }
+}

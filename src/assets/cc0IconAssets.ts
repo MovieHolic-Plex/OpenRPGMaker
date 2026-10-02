@@ -1,4 +1,5 @@
-import { PRODUCT_BRAND, PRODUCT_SLUG } from "@/brand";
+import { PRODUCT_BRAND } from "@/brand";
+import sharedIconAssets from "./sharedItemIconAssets.json";
 
 export type Cc0IconAsset = {
   readonly id: string;
@@ -7,19 +8,20 @@ export type Cc0IconAsset = {
   readonly sourceName: string;
   readonly sourceUrl: string;
   readonly license: "CC0-1.0" | "generated";
+  readonly imageWidth: number;
+  readonly imageHeight: number;
 };
 
-const JETREL_SOURCE_URL = "https://opengameart.org/content/16x16-rpg-items";
-const JETREL_SOURCE_NAME = "Jetrel 16x16 RPG items";
 const GENERATED_SOURCE_NAME = `${PRODUCT_BRAND} generated item icons`;
-const GENERATED_SOURCE_URL = `https://github.com/local/${PRODUCT_SLUG}`;
+const GENERATED_SOURCE_URL = "https://github.com/MovieHolic-Plex/rpg-zzu";
 
 function jetrelIcon(id: string, fileName: string, name: string): Cc0IconAsset {
-  return { id, name, path: `assets/cc0/jetrel/icons/${fileName}`, sourceName: JETREL_SOURCE_NAME, sourceUrl: JETREL_SOURCE_URL, license: "CC0-1.0" };
+  // Keep historical IDs; the replacement illustrations are generated, not Jetrel art.
+  return generatedIcon(id, fileName, name);
 }
 
 function generatedIcon(id: string, fileName: string, name: string): Cc0IconAsset {
-  return { id, name, path: `assets/cc0/jetrel/icons/${fileName}`, sourceName: GENERATED_SOURCE_NAME, sourceUrl: GENERATED_SOURCE_URL, license: "generated" };
+  return { id, name, path: `assets/cc0/jetrel/icons/${fileName}`, sourceName: GENERATED_SOURCE_NAME, sourceUrl: GENERATED_SOURCE_URL, license: "generated", imageWidth: 32, imageHeight: 32 };
 }
 
 export const CC0_ICON_ASSETS = [
@@ -314,6 +316,12 @@ export const CC0_ICON_ASSETS = [
   generatedIcon("cc0-jetrel-gen2-sluice-key", "gen2-sluice-key.png", "수문 열쇠"),
   generatedIcon("cc0-jetrel-gen2-observatory-gear", "gen2-observatory-gear.png", "천문대 톱니"),
   generatedIcon("cc0-jetrel-gen2-dragonbone-clasp", "gen2-dragonbone-clasp.png", "용골 죔쇠"),
+  ...sharedIconAssets.map((asset): Cc0IconAsset => ({
+    ...asset,
+    sourceName: GENERATED_SOURCE_NAME,
+    sourceUrl: GENERATED_SOURCE_URL,
+    license: "generated",
+  })),
 ] as const satisfies readonly Cc0IconAsset[];
 
 export function resolveCc0IconAssetUrl(resourceId: string): string | null {

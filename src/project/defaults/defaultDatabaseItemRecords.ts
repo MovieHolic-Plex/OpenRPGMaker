@@ -6,6 +6,7 @@ import { expandedDefaultItemRecords } from "./defaultExpandedItemRecords";
 import { defaultFeatureItemRecords } from "./defaultFeatureItemRecords";
 import { defaultCatalogFillItemRecords } from "./defaultCatalogFillItems";
 import { applyGeneratedBattleEffectItemBindings } from "./generatedBattleEffectBindings";
+import { expandDefaultItemCatalog } from "./sharedItemCatalog";
 
 export function defaultItemRecords(): ItemRecord[] {
   const records = [
@@ -325,7 +326,7 @@ export function defaultItemRecords(): ItemRecord[] {
     ...generatedItemRecords(),
   ];
   applyGeneratedBattleEffectItemBindings(records);
-  return dedupeById(records);
+  return expandDefaultItemCatalog(dedupeById(records));
 }
 
 /**

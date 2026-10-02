@@ -1,0 +1,141 @@
+{
+  "art": {
+    "total": 1054,
+    "completed": 1054,
+    "pending": 0,
+    "reviewed": 1054,
+    "unreviewed": [],
+    "issues": [],
+    "complete": true
+  },
+  "defaults": {
+    "blank": {
+      "items": 1000,
+      "equipment": 86,
+      "uniqueIds": 1000,
+      "uniqueNames": 1000,
+      "shared": 772,
+      "unresolved": [],
+      "growthSeeds": 48,
+      "effectlessSeeds": [],
+      "revivalItems": 16,
+      "misleadingBattleSettings": [],
+      "misleadingFieldSettings": [],
+      "normalizedReloadCount": 1000,
+      "normalizedReloadEqual": true,
+      "iconProfiles": 1054,
+      "incorrectIconDimensions": []
+    },
+    "example": {
+      "items": 1000,
+      "equipment": 86,
+      "uniqueIds": 1000,
+      "uniqueNames": 1000,
+      "shared": 772,
+      "unresolved": [],
+      "growthSeeds": 48,
+      "effectlessSeeds": [],
+      "revivalItems": 16,
+      "misleadingBattleSettings": [],
+      "misleadingFieldSettings": [],
+      "normalizedReloadCount": 1000,
+      "normalizedReloadEqual": true,
+      "iconProfiles": 1054,
+      "incorrectIconDimensions": []
+    },
+    "genres": {
+      "adventure-jrpg": 1000,
+      "monster-collect": 1000,
+      "horror-chase": 1000,
+      "story-cutscene": 1000,
+      "farm-life": 1000,
+      "action-rpg": 1000
+    },
+    "wireRoundtrip": {
+      "bytes": 44601598,
+      "items": 1000,
+      "itemsEqual": true
+    },
+    "deletedItemRemainsAbsentAfterWireReload": true,
+    "deletedItemRemainsAbsent": true,
+    "artwork": {
+      "total": 1054,
+      "completed": 1054,
+      "unfinished": 0
+    },
+    "artGenerationComplete": true
+  },
+  "export": {
+    "items": 1000,
+    "registeredIcons": 1054,
+    "exportedIcons": 1054,
+    "unresolvedIcons": [],
+    "missingExportPaths": [],
+    "generatedFiles": 1054,
+    "generatedBytes": 1235714,
+    "pendingArtwork": 0
+  },
+  "browser": {
+    "base": "http://127.0.0.1:9835",
+    "total": 1086,
+    "items": 1000,
+    "selected": "맑은 쑥 회복액",
+    "images": [
+      {
+        "src": "/assets/items/shared/healing-mugwort-1.png",
+        "width": 32,
+        "height": 32,
+        "loaded": true
+      },
+      {
+        "src": "/assets/items/shared/healing-mugwort-1.png",
+        "width": 32,
+        "height": 32,
+        "loaded": true
+      }
+    ],
+    "errors": [],
+    "artworkStillInProgress": false,
+    "artworkLoads": {
+      "checked": 1054,
+      "expected": 1054,
+      "failed": []
+    }
+  },
+  "coverage": {
+    "items": {
+      "records": 1000,
+      "uniqueImages": 981,
+      "recordsWithoutImages": [],
+      "unregisteredImages": [],
+      "unfinishedImages": 0
+    },
+    "equipment": {
+      "records": 86,
+      "uniqueImages": 74,
+      "recordsWithoutImages": [],
+      "unregisteredImages": [],
+      "unfinishedImages": 0
+    },
+    "descriptionsAndPrices": {
+      "missingNames": [],
+      "missingDescriptions": [],
+      "negativePrices": []
+    }
+  },
+  "evidenceFiles": {
+    "art": "output/item-catalog/art-inspection.json",
+    "defaults": "output/item-catalog/default-factory-report.json",
+    "export": "output/item-catalog/export-assets-report.json",
+    "browser": "verify-shots/shared-item-defaults/report.json",
+    "coverage": "output/item-catalog/inventory-image-coverage.json"
+  },
+  "sourceHashes": {
+    "assets/item-catalog/generation-manifest.json": "c31c90eb11ad04d41d3b0a6e7d9040c7f89e0ed578e80e83bf4109ae31b184d2",
+    "assets/item-catalog/visual-review.json": "6696bedb715141e793e74f5bebca768cb95670a25a3af9b1cb2c37b05ccc7845",
+    "assets/item-catalog/art-requests.json": "e1db1fbf616deb2d6e2815a928cd860e43a6c68b1efa0b26289b81f0909c7405",
+    "src/project/defaults/sharedItemCatalog.json": "72970b1ba27c3bccc417e716d102c74316cd0c3e95eaba0f21b58125c61528eb",
+    "src/assets/sharedItemIconAssets.json": "e611711e7fd260a19eeb4c8626364b377c64a22bfadab5bef05ba1fc7840f154"
+  },
+  "complete": true
+}

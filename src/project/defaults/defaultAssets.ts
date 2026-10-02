@@ -486,8 +486,8 @@ export function defaultResourceProfiles(): ResourceProfile[] {
     profiles.push({
       kind: "picture",
       name: asset.name,
-      imageWidth: 16,
-      imageHeight: 16,
+      imageWidth: asset.imageWidth,
+      imageHeight: asset.imageHeight,
       assetId: asset.id,
     });
   }
@@ -541,6 +541,15 @@ export function ensureBundledResourceProfiles(project: { resourceProfiles: Resou
         && (staleFaceSheetIds.has(profile.assetId) || GENERATED_FACESET_FACE_IDS.has(profile.assetId)))
   );
   let changed = nextResourceProfiles.length !== project.resourceProfiles.length;
+  const itemIconAssets = new Map(CC0_ICON_ASSETS.map((asset) => [asset.id, asset]));
+  for (const profile of nextResourceProfiles) {
+    const asset = profile.assetId ? itemIconAssets.get(profile.assetId) : undefined;
+    if (!asset || profile.kind !== "picture") continue;
+    if (profile.imageWidth === asset.imageWidth && profile.imageHeight === asset.imageHeight) continue;
+    profile.imageWidth = asset.imageWidth;
+    profile.imageHeight = asset.imageHeight;
+    changed = true;
+  }
   project.resourceProfiles = nextResourceProfiles;
   const existingAssetIds = new Set(project.resourceProfiles.map((profile) => profile.assetId).filter((assetId) => assetId !== undefined));
   for (const profile of defaultResourceProfiles()) {
