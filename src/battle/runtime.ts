@@ -1203,6 +1203,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         return !(gen1 && actor.skillIds.some((skillId) => battleSkillUseFailure(options.project, actor, skillId) === undefined));
       case "defend":
         return true;
+      case "commonEvent":
+        return options.project.commonEvents.some((entry) => entry.id === command.commonEventId);
       case "escape":
         return options.canEscape;
       case "switch":
@@ -1227,11 +1229,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function isValidActorCommand(actor: MutableBattler, command: ActorCommand): boolean {
     if (!actorCommandLegality(actor, command)) return false;
-    // 대상 해결 검사는 대상을 쓰는 명령에만 — defend/escape/switch 는 적법성만으로 결정된다.
+    // 대상 해결 검사는 대상을 쓰는 명령에만 — defend/escape/switch/commonEvent 는 적법성만으로 결정된다.
     switch (command.kind) {
       case "defend":
       case "escape":
       case "switch":
+      case "commonEvent":
         return true;
       default: {
         const resolution = resolvedCommandTargets(actor, command);
@@ -1301,12 +1304,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "switch":
         switchActiveActor(actor.recordId, command.targetActorId);
         break;
+      case "commonEvent":
+        // 실행은 이 행동 뒤 트룹 이벤트 흐름(applyTroopEvents) 앞머리에서 — 문장·선택지가 같은 정지·재개를 탄다.
+        battleEvents.queueCommonEvent(command.commonEventId);
+        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "commonEvent" });
+        break;
     }
   }
 
   function applyActorAttack(actor: MutableBattler, command: Extract<ActorCommand, { kind: "attack" }>): void {
     const targets = resolvedCommandTargets(actor, command).targets;
-    const attackCount = actor.equipmentEffects?.doubleAttack ? 2 : 1;
+    const attackCount = actor.equipmentEffects?.attackHits ?? (actor.equipmentEffects?.doubleAttack ? 2 : 1);
     for (let index = 0; index < attackCount; index += 1) {
       for (const target of targets) {
         if (target.hp > 0) applySingleActorAttack(actor, target);
@@ -1523,6 +1531,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "defend":
       case "escape":
       case "switch":
+      case "commonEvent":
         performActorCommand(command);
         return;
       case "attack":

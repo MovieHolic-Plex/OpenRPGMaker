@@ -857,11 +857,12 @@ function normalizeBattleCommands(commands: readonly Partial<ClassBattleCommand>[
     kind: normalizeBattleCommandKind(command.kind),
     skillSubsetName: cleanOptionalId(command.skillSubsetName),
     skillId: cleanOptionalId(command.skillId),
+    ...(cleanOptionalId(command.commonEventId) ? { commonEventId: cleanOptionalId(command.commonEventId) } : {}),
   }));
 }
 
 function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined): ClassBattleCommand["kind"] {
-  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event"
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event" || kind === "commonEvent"
     ? kind
     : "attack";
 }
