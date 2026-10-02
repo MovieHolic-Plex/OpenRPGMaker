@@ -258,47 +258,57 @@ def wall_h2(seed=0):  # seed 0~2 = 돌 배열 변형
     return c
 
 
-_BX0, _BX1 = 4, 12          # 세로 담 덮개 띠가 차지하는 칸 안 x 범위(4..11)
+_BX0, _BX1 = 2, 14          # 세로 담이 차지하는 칸 안 x 범위(2..13): 덮개 6px + 돌 옆면 6px
 
 
-def _vband(c, y0, y1):
-    """세로로 달리는 담 덮개를 위에서 본 띠(8px): 왼쪽 사면(밝음) · 용마루 한 줄 · 오른쪽 사면(어두움) · 처마 끝. 기와 이음이 4줄마다 가로로 지난다."""
-    Wd = RGB['wood']
+def _vband(c, y0, y1, face=True):
+    """세로로 달리는 담: 왼쪽 덮개(위에서 본 기와 사면, 용마루 한 줄) + 오른쪽 돌 옆면(막돌 줄눈). 가로 담과 같은 재료·같은 덮개 색."""
+    Wd = RGB['wood']; S = RGB['stone']
+    cap = (Wd[6], Wd[6], Wd[6], Wd[5], Wd[5], Wd[4])
     for y in range(y0, y1):
-        for x in range(_BX0, _BX1):
-            lx = x - _BX0
-            col = (Wd[5], Wd[5], Wd[6], Wd[4], Wd[3], Wd[3], Wd[3], Wd[2])[lx]
-            if y % 4 == 3 and lx not in (2,): col = Wd[max(1, [5, 5, 6, 4, 3, 3, 3, 2][lx] - 1)]
-            c.put(x, y, col)
+        for lx in range(6):
+            col = cap[lx]
+            if y % 4 == 3 and lx in (3, 4): col = Wd[2]
+            c.put(_BX0 + lx, y, col)
+        if face:
+            for lx in range(6, 12):
+                row = y // 5; ry = y % 5
+                x = _BX0 + lx
+                bw = 6; off = (row % 2) * 3
+                bx = (lx - 6 + off) % bw
+                tone = 4 if lx < 8 else 3
+                if ry == 0: tone += 1
+                if ry == 4: tone = 1
+                if bx == 0: tone = max(1, tone - 2)
+                if lx > 9: tone = max(1, tone - 1)
+                c.put(x, y, S[tone])
 
 
 def wall_v2():
-    """세로 담 16×16: 위에서 본 덮개 띠(가운데 8px) + 오른쪽 땅 그림자. 위아래로 이음 없이 이어진다."""
+    """세로 담 16×16: 덮개(왼쪽) + 돌 옆면(오른쪽) + 오른쪽 땅 그림자. 위아래로 이음 없이 이어진다."""
     c = Cv(T, T)
     _vband(c, 0, T)
     for y in range(T):
-        c.put(_BX1, y, SHADOW, 70); c.put(_BX1 + 1, y, SHADOW, 50); c.put(_BX1 + 2, y, SHADOW, 28)
+        c.put(_BX1, y, SHADOW, 70); c.put(_BX1 + 1, y, SHADOW, 45)
     return c
 
 
 def wall_corner4(kind):
-    """담 모서리 16×32. kind NW/NE = 북쪽 모서리(가로 담이 한쪽으로, 세로 담이 아래로 이어진다), SW/SE = 남쪽 모서리(세로 담이 덮개 높이에서 가로 담에 만난다).
-    세로 담 덮개 띠(x 4..11)가 가로 담 덮개 줄과 같은 높이에서 이어지고, 북쪽 모서리에서는 띠가 돌담 앞면 위로 그대로 내려온다."""
+    """담 모서리 16×32. NW/NE = 북쪽 모서리(가로 담이 한쪽으로, 세로 담이 아래로 이어진다), SW/SE = 남쪽 모서리.
+    세로 담 띠(x 2..13)가 가로 담 덮개 줄과 이어져 한 덩어리로 보인다."""
     c = Cv(T, 2 * T)
     S = RGB['stone']
     east = kind[1] == 'W'            # NW·SW: 가로 담이 오른쪽(동)으로 뻗는다
-    x0, x1 = (_BX0, T) if east else (0, _BX1)
+    x0, x1 = (_BX0 + 4, T) if east else (0, _BX1 - 2)
     _rubble(c, x0, x1, 9, 30, 1 if east else 2)
     for x in range(x0, x1): c.put(x, 8, S[1]); c.put(x, 9, S[1])
-    _cap_rows(c, x0, x1, round_l=east, round_r=not east)
+    _cap_rows(c, _BX0 if east else 0, x1 if east else _BX1, round_l=False, round_r=False)
     if kind[0] == 'N':
-        _vband(c, 0, 2 * T - 2)
-        for y in range(0, 2 * T - 2): c.put(_BX1, y, SHADOW, 60) if c.a[y, _BX1, 3] == 0 else None
+        _vband(c, 8, 2 * T)
+        for y in range(8, 2 * T): c.put(_BX1, y, SHADOW, 60); c.put(_BX1 + 1, y, SHADOW, 40)
     else:
-        _vband(c, 0, 8)
+        _vband(c, 0, 9, face=False)
     for x in range(x0, x1): c.put(x, 30, S[1]); c.put(x, 31, SHADOW, 80)
-    if kind[0] == 'N':
-        for x in range(_BX0, _BX1): c.put(x, 30, RGB['wood'][1]); c.put(x, 31, SHADOW, 80)
     return c
 
 

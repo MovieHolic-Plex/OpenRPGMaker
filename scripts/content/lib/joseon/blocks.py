@@ -545,10 +545,10 @@ def finish_house(cv):
             if cv.a[y, x, 3] != 255:
                 continue
             t = (x - xa) / max(1, xb - xa)
-            f = 0.78 if t > 0.86 else 0.88 if t > 0.62 else 1.0
-            if f < 1.0:
+            f = 1.0 - 0.24 * max(0.0, (t - 0.45) / 0.55) ** 1.4
+            if f < 0.985:
                 c = tuple(int(v) for v in cv.a[y, x, :3])
-                k = (c, f)
+                k = (c, round(f, 2))
                 if k not in cache:
                     cache[k] = _snap_dark(tuple(int(v * f) for v in c))
                 cv.put(x, y, cache[k])
