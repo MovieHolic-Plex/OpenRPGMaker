@@ -489,6 +489,18 @@
   높이 1.12→0.82배(`emitBattleJuice(..., shape)` → `playBattleSample(id, volume, rate)`). 사건 1개 = 소리 1개 원칙은 그대로다. 착탄 별은 번짐 없는 4겹 별
   (어두운 테 · 기술 색 · 노랑 · 흰색)을 `steps(1, end)` 로 바꾼다 — 그라데이션 + drop-shadow 는 도트 몬스터 옆에서 혼자 매끈했다.
   카메라 킥 하한 4px, 넉백 배율 발사체·범위 0.95 · 현장 발생 0.8.
+- **포켓몬 효과음 타이밍 (2026-10-02):** 신고 「소리 나오는 타이밍이 매우 이상하다」. 녹화 소리 악보에 호출 스택을 남겨(`audio-score.js` 의 `who`) 쟀다.
+  타격 샘플·아래층은 착탄 ±10ms 로 맞았는데 **저작 이펙트의 타이밍 효과음이 착탄 뒤 160~420ms 에 한 번 더** 났다 —
+  안무가 이펙트를 착탄 순간에 마운트하는데(`animationImpactMs` = 1) 재생은 프레임 0부터라, 효과음이 걸린 프레임까지 그만큼 늦었다
+  (몸통박치기 +174 · 물대포 +272 · 불꽃 +220 · 번개 +159ms). 첫 재생 소리가 디코드 캐시에 없으면 `new Audio` 로 물러나 더 늦었다(Fog1 +421ms).
+  또 확정 순간 휘두름(attack1)이 착탄 280ms 전에 불꽃·번개에도 울렸다. 지금: ① 포켓몬 안무면 씬 루트에
+  `data-battle-animation-start-at-impact` 를 달고 `mountBattleAnimationPlayback` 이 착탄 프레임(효과음·섬광·흔들림이 걸린 첫 프레임)부터 재생한다 —
+  앞 프레임은 건너뛰고 후속(followUps) 시작도 그만큼 당긴다. ② 행동 엔트리 순간 `preloadBattleAnimationSounds(animationId)` 가 본체·후속의 타이밍 소리를
+  미리 디코드한다. ③ 휘두름은 접촉 기술만, 착탄 160ms 전(기존 무장 경로) — 발사체·현장 발생·범위 기술은 휘두름을 내지 않는다.
+  ④ 회복은 `hit-heal` 신호와 회복 애니메이션 타이밍 소리가 같은 Recovery5 라 5~95ms 차로 두 번 울렸다 — `playBattleSample` 은 같은 샘플이
+  80ms 안에 다시 시작되면 한 번으로 친다(true 를 돌려 요소 폴백도 막는다). 결과(같은 시드 재녹화): 효과음이 타격음과 −22~−34ms 로 붙는다.
+  남은 것: 고르기 확인음(Decision1, 크게 들리는 길이 약 0.5초)이 착탄 약 0.29초 전에 나서 꼬리가 타격과 겹친다 — 메뉴→행동 박자 문제라 손대지 않았다.
+  단위 테스트 `test/battleAnimationFollowUps.test.ts` 「착탄 프레임부터 재생」, `test/battleSeSamples.test.ts` 같은 샘플 병합(작성만, 미실행).
 - **발사체는 「입·손」 자리에서 나간다 (`spriteEmitPoint`).** 그림 몸 위쪽 60% 안에서 상대 방향으로 가장 튀어나온 칸(가로 위주, 세로 0.35배).
   런타임은 그림 픽셀을 캔버스로 읽어 캐시한다(가로 스트립은 `data-strip-frames` 첫 칸만). 그림에 `data-emit-x/y`(칸 좌표)가 있으면 그것을 쓴다 —
   몬스터 하네스 `anim.json` 의 `emit` 이 같은 함수로 구한 값이고, 시드 `emit` 으로 손 고칠 수 있다(`openwiki/harnesses/monster-collect-species.md`).

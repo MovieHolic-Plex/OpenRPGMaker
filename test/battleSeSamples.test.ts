@@ -7,6 +7,7 @@ class FakeAudioContext {
   readonly decoded: ArrayBuffer[] = [];
   readonly started: StartedSource[] = [];
   readonly destination = { destination: true };
+  currentTime = 0;
   decodeAudioState: "ok" | "fail" = "ok";
 
   decodeAudioData(bytes: ArrayBuffer): Promise<AudioBuffer> {
@@ -74,10 +75,26 @@ describe("battleSeSamples", () => {
 
     await samples.loadBattleSample("easyrpg-sound-attack1");
     expect(samples.playBattleSample("easyrpg-sound-attack1", 0.4)).toBe(true);
+    context.currentTime = 0.5;
     expect(samples.playBattleSample("easyrpg-sound-attack1", 0.4)).toBe(true);
     expect(context.started).toHaveLength(2);
     expect((context.started[0]?.buffer as { fake?: boolean }).fake).toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("merges the same sample restarted within 80ms into one start (heal cue + heal animation)", async () => {
+    const samples = await importFreshModule(context);
+    await Promise.all([samples.loadBattleSample("easyrpg-sound-recovery5"), samples.loadBattleSample("easyrpg-sound-damage2")]);
+    context.currentTime = 1;
+    expect(samples.playBattleSample("easyrpg-sound-recovery5", 0.4)).toBe(true);
+    context.currentTime = 1.005;
+    // 이미 울리고 있으므로 true(호출부가 요소 폴백으로 또 내지 않게) — 시작은 한 번.
+    expect(samples.playBattleSample("easyrpg-sound-recovery5", 0.4)).toBe(true);
+    expect(samples.playBattleSample("easyrpg-sound-damage2", 0.4)).toBe(true); // 다른 샘플은 그대로
+    expect(context.started).toHaveLength(2);
+    context.currentTime = 1.2;
+    expect(samples.playBattleSample("easyrpg-sound-recovery5", 0.4)).toBe(true);
+    expect(context.started).toHaveLength(3);
   });
 
   it("preloads the listed ids once each", async () => {

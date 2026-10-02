@@ -20,7 +20,7 @@ import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
-import { battleAnimationImpactMs, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
+import { battleAnimationImpactMs, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
@@ -142,6 +142,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   if (motionTempo !== 1) root.dataset.battleMotionTempo = String(motionTempo);
   // 포켓몬 스킨은 돌진·착탄·넉백을 그림 단위 안무(battlePokemonMotion)로 그린다.
   const pokemonMotion = root.dataset.battleUiStyle === "pokemon" && !retroMotion;
+  // 포켓몬 안무는 기술 이펙트를 착탄 순간에 올린다(animationImpactMs) — 이펙트는 자기 착탄 프레임부터 돌아야 효과음이 타격과 맞는다.
+  if (pokemonMotion) root.dataset.battleAnimationStartAtImpact = "true";
   // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
   let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
   if (retroMotion) root.dataset.battleMotion = "retro";
@@ -441,6 +443,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         pokemonMove = { motion: pokemonMoveMotion(skill), color: pokemonMoveColor(skill), fromBelow: pokemonStrikeFromBelow(skill), actionId: entry.actionId };
         // QA·스타일 훅: 지금 엔트리의 움직임 종류
         root.dataset.battleMoveMotion = pokemonMove.motion;
+        // 이펙트는 착탄 순간에 마운트된다 — 그때 디코딩하면 첫 효과음이 늦는다. 행동이 시작될 때 미리.
+        preloadBattleAnimationSounds(entry.animation?.animationId);
       }
       if (retroMotion) retroTimelineEntry(field, entry);
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
@@ -1421,8 +1425,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (command.kind === "attack" || command.kind === "skill") {
       // impact 의 평타는 휘두름 소리를 착탄 직전(onActionMotion)으로 옮기고 베기 궤적을 같이 긋는다. 여기서도
       // 울면 한 행동에 두 번 운다. 스킬은 자기 애니메이션이 있어 예전 자리(확정 순간)를 지킨다.
-      swingArmed = hitFeel === "impact" && command.kind === "attack";
-      if (!swingArmed) emitBattleJuice("attack-swing", actorNode ?? undefined);
+      // 포켓몬 스킨: 확정 순간의 휘두름 소리는 착탄 0.28초 전, 아직 웅크리는 중에 났고 화염·낙뢰에도 칼 바람 소리가 났다
+      // (2026-10-02 소리 악보). 몸으로 치는 기술만 돌진 직전에 울리고, 쏘거나 부르는 기술은 자기 이펙트 소리만 낸다.
+      const pokemonRanged = pokemonMotion && command.kind === "skill" && pokemonMoveMotion(skillRecord) !== "contact";
+      swingArmed = hitFeel === "impact" && !pokemonRanged && (command.kind === "attack" || pokemonMotion);
+      if (!swingArmed && !pokemonRanged) emitBattleJuice("attack-swing", actorNode ?? undefined);
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);
     }

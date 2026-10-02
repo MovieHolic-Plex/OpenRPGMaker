@@ -16,6 +16,9 @@ import { battleAudioContext } from "@/player/battleSfx";
 
 const buffers = new Map<string, AudioBuffer | null>();
 const pending = new Map<string, Promise<AudioBuffer | null>>();
+/** 같은 샘플이 이 간격 안에 다시 시작되면 한 번으로 친다(ms, AudioContext 시계). */
+const SAME_SAMPLE_MERGE_MS = 80;
+const lastStartedAt = new Map<string, number>();
 
 function resolveSampleUrl(resourceId: string): string | null {
   return resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
@@ -72,6 +75,14 @@ export function playBattleSample(resourceId: string, volume: number, rate = 1): 
   }
   const context = battleAudioContext();
   if (!context) return false;
+  // 회복 기술은 hit-heal 신호와 회복 애니메이션 타이밍 소리가 같은 Recovery5 다 — 둘이 5~95ms 차로 겹쳐
+  // 위상이 엇갈린 한 소리(또는 메아리)로 들렸다(2026-10-02 녹화). 같은 샘플이 붙어 오면 먼저 온 것만 낸다.
+  const now = context.currentTime * 1000;
+  const last = lastStartedAt.get(resourceId);
+  if (Number.isFinite(now)) {
+    if (last !== undefined && now - last >= 0 && now - last < SAME_SAMPLE_MERGE_MS) return true;
+    lastStartedAt.set(resourceId, now);
+  }
   const source = context.createBufferSource();
   source.buffer = buffer;
   if (rate !== 1) source.playbackRate.value = rate;

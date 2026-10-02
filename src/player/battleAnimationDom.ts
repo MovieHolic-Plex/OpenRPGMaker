@@ -118,9 +118,13 @@ export function mountBattleAnimationPlayback(
     const sheet = animationSheet(record, url);
     element.append(sheet);
     const primary: PlaybackHost = { element, frames: frameNodes(sheet), pending: 0 };
-    scheduleFollowUps(primary, record, timers, context);
-    setActiveAnimationFrame(primary, record, 0, context);
-    startPlayback(primary, record, timers, context);
+    // 착탄 프레임부터 재생(씬 루트 data-battle-animation-start-at-impact, 포켓몬 스킨) — 시퀀서가 착탄 순간에 마운트하므로
+    // 0번부터 돌면 착탄 프레임의 효과음이 그 앞 프레임 수만큼 늦게 났다(타격음 뒤 160~270ms 에 한 번 더). 앞 프레임은 건너뛴다.
+    const skip = sceneRoot?.dataset.battleAnimationStartAtImpact === "true" ? Math.min(record.frames.length - 1, impactFrameIndex(record) ?? 0) : 0;
+    element.dataset.startFrame = String(skip);
+    scheduleFollowUps(primary, record, timers, context, skip);
+    setActiveAnimationFrame(primary, record, skip, context);
+    startPlayback(primary, record, timers, context, skip);
   }
 
   return {
@@ -295,12 +299,33 @@ function battleAnimationRecord(animationId: string): BattleAnimationRecord | und
  */
 export function battleAnimationImpactMs(animationId: string): number {
   const record = battleAnimationRecord(animationId);
-  if (!record?.timings?.length) return 0;
-  const impact = record.timings
+  const impact = record ? impactFrameIndex(record) : undefined;
+  if (!record || impact === undefined) return 0;
+  return impact * battleAnimationFrameDurationMs(record);
+}
+
+/** 착탄 프레임 — 효과음·섬광·흔들림이 처음 붙은 프레임. 없으면 undefined. */
+function impactFrameIndex(record: BattleAnimationRecord): number | undefined {
+  return (record.timings ?? [])
     .filter((timing) => timing.soundResourceId || timing.flash || timing.screenShake)
     .reduce<number | undefined>((min, timing) => (min === undefined ? timing.frameIndex : Math.min(min, timing.frameIndex)), undefined);
-  if (impact === undefined) return 0;
-  return impact * battleAnimationFrameDurationMs(record);
+}
+
+/**
+ * 이펙트(후속 포함)의 효과음을 행동이 시작될 때 미리 디코딩한다. 마운트 순간에 하면 착탄 프레임부터 재생하는
+ * 경로(포켓몬 스킨)에서는 디코딩이 끝나기 전에 첫 소리가 나야 해서, 요소 재생으로 떨어져 0.4초 늦게 났다
+ * (2026-10-02 소리 악보: 화염의 Fog1.wav 착탄 +421ms).
+ */
+export function preloadBattleAnimationSounds(animationId: string | undefined): void {
+  if (!animationId) return;
+  const records = store.getCurrent().database.battleAnimations;
+  const record = records.find((entry) => entry.id === animationId);
+  if (!record) return;
+  const ids = new Set<string>();
+  for (const one of [record, ...(record.followUps ?? []).map((followUp) => records.find((entry) => entry.id === followUp.animationId))]) {
+    for (const timing of one?.timings ?? []) if (timing.soundResourceId) ids.add(timing.soundResourceId);
+  }
+  preloadBattleSamples([...ids]);
 }
 
 /**
@@ -349,7 +374,8 @@ function scheduleFollowUps(
   primary: PlaybackHost,
   record: BattleAnimationRecord,
   timers: Set<number>,
-  context: AnimationRenderContext
+  context: AnimationRenderContext,
+  skipFrames = 0
 ): void {
   const followUps = record.followUps ?? [];
   if (followUps.length === 0) return;
@@ -385,14 +411,15 @@ function scheduleFollowUps(
       setActiveAnimationFrame(host, follow, 0, context);
       startPlayback(host, follow, timers, context);
     };
-    if (followUp.startFrame <= 0) {
+    const startFrame = followUp.startFrame - skipFrames;
+    if (startFrame <= 0) {
       start();
       continue;
     }
     const timer = window.setTimeout(() => {
       timers.delete(timer);
       start();
-    }, followUp.startFrame * frameMs);
+    }, startFrame * frameMs);
     timers.add(timer);
   }
 }
@@ -401,7 +428,8 @@ function startPlayback(
   host: PlaybackHost,
   record: BattleAnimationRecord,
   timers: Set<number>,
-  context: AnimationRenderContext
+  context: AnimationRenderContext,
+  startIndex = 0
 ): void {
   const frames = record.frames ?? [];
   if (frames.length <= 1) {
@@ -415,7 +443,7 @@ function startPlayback(
     }
     return;
   }
-  let index = 0;
+  let index = startIndex;
   const timer = window.setInterval(() => {
     index += 1;
     if (index >= frames.length) {

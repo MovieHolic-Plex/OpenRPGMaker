@@ -161,3 +161,65 @@ describe("DOM 재생", () => {
     expect(element.querySelector<HTMLElement>(".battle-animation-followup")?.dataset.playbackFinished).toBe("true");
   });
 });
+
+describe("착탄 프레임부터 재생 (battleAnimationStartAtImpact)", () => {
+  // 포켓몬 안무는 이펙트를 착탄 순간에 올린다. 프레임 0부터 돌리면 첫 효과음 프레임까지 늦어져
+  // 소리가 타격보다 160~420ms 뒤에 났다(2026-10-02 실측). 장면 표식이 있으면 착탄 프레임부터 돈다.
+  const TARGET = "enemy_1";
+  beforeEach(() => {
+    vi.useFakeTimers();
+    document.body.innerHTML = "";
+    const project = createBlankProject();
+    project.database.battleAnimations = [
+      record("main", 6, { timings: [{ frameIndex: 3, soundResourceId: "se-test" }], followUps: [{ animationId: "tail", startFrame: 4 }] } as Partial<BattleAnimationRecord>),
+      record("tail", 3),
+    ];
+    store.replace(project);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  function mount(startAtImpact: boolean): HTMLElement {
+    const scene = document.createElement("section");
+    if (startAtImpact) scene.dataset.battleAnimationStartAtImpact = "true";
+    const target = document.createElement("div");
+    target.dataset.testid = TARGET;
+    scene.append(target);
+    document.body.append(scene);
+    const playback = mountBattleAnimationPlayback(
+      { lastAnimation: { animationId: "main", targetId: TARGET, name: "main", soundResourceIds: ["se-test"], flashTargets: [], screenShake: false, frameCount: 6 } } as never,
+      scene
+    );
+    if (!playback) throw new Error("재생 엘리먼트가 없다");
+    scene.append(playback.element);
+    return playback.element;
+  }
+
+  const visibleMain = (element: HTMLElement) =>
+    [...element.querySelectorAll<HTMLElement>(":scope > .battle-animation-sheet > .battle-animation-frame")].filter((f) => !f.hidden).map((f) => f.dataset.frameIndex);
+
+  it("표식이 있으면 첫 효과음 프레임에서 시작하고 그 프레임의 소리가 마운트 즉시 걸린다", () => {
+    const element = mount(true);
+    expect(element.dataset.startFrame).toBe("3");
+    expect(visibleMain(element)).toEqual(["3"]);
+    expect(element.dataset.activeSoundResourceId).toBe("se-test");
+    vi.advanceTimersByTime(120);
+    expect(visibleMain(element)).toEqual(["4"]);
+  });
+
+  it("후속은 건너뛴 프레임만큼 당겨진다", () => {
+    const element = mount(true);
+    // 후속 startFrame 4 − 건너뜀 3 = 1프레임(120ms) 뒤.
+    vi.advanceTimersByTime(119);
+    expect(element.querySelector(".battle-animation-followup")).toBeNull();
+    vi.advanceTimersByTime(1);
+    expect(element.querySelector<HTMLElement>(".battle-animation-followup")?.dataset.animationId).toBe("tail");
+  });
+
+  it("표식이 없으면 기존대로 프레임 0부터 돈다", () => {
+    const element = mount(false);
+    expect(element.dataset.startFrame).toBe("0");
+    expect(visibleMain(element)).toEqual(["0"]);
+  });
+});
