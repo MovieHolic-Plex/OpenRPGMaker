@@ -251,7 +251,7 @@ def draw_concrete_bridge(t, d, x, y):
 
 
 # ──────────────────────────────── 철길 ────────────────────────────────
-RAIL = dict(bal_d=hx('4a4038'), bal=hx('5e544a'), bal_l=hx('766a5e'), tie=hx('7a5232'), tie_l=hx('a0744a'),
+RAIL = dict(bal_d=hx('3e352e'), bal=hx('544a42'), bal_l=hx('6e6258'), tie=hx('8a5a34'), tie_l=hx('b88450'),
             rail=hx('c8ccd4'), rail_d=hx('4a4e58'), stop=hx('c2452f'))
 
 
@@ -407,12 +407,19 @@ def overlay_roads(img, ctx, style, road_role_px):
     dirty = np.zeros((H, W), bool)
     bands = np.zeros((H, W), bool)
     cells = []
-    for (x, y) in ctx.path_cells():
+    g = lane_graph(ctx)
+    for (x, y), d in ctx.bridge.items():             # 다리 칸 밑을 옆 물 칸 그림으로 — 옛 나무 다리가 칸 폭 전체라 지우면 모래가 비쳤다(QA (84,37–40))
+        side = [(1, 0), (-1, 0)] if d == 'v' else [(0, 1), (0, -1)]
+        for dx, dy in side + [(2 * a, 2 * b) for a, b in side]:
+            X, Y = x + dx, y + dy
+            if 0 <= X < ctx.W and 0 <= Y < ctx.H and ctx.G[Y, X] in (0, 1) and (X, Y) not in ctx.bridge:
+                img[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS] = img[Y * TS:(Y + 1) * TS, X * TS:(X + 1) * TS]
+                break
+    for (x, y), links in sorted(g.items(), key=lambda kv: (kv[0][1], kv[0][0])):
         sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
         if (x, y) in ctx.bridge:
             bands[sl] = True
             continue
-        links = ctx.links(x, y)
         band = band_mask(links)
         if style == 'erase':                         # 길을 지운다(원시 세계) — 띠까지 바닥으로
             dirty[sl] |= _dilate(_dilate(band)) | road_role_px[sl] | cmatch[sl]
@@ -420,6 +427,10 @@ def overlay_roads(img, ctx, style, road_role_px):
         bands[sl] |= band
         dirty[sl] |= (_dilate(_dilate(band)) | road_role_px[sl] | cmatch[sl]) & ~band
         cells.append((x, y, links, band))
+    for y, x in zip(*np.nonzero(ctx.ramp & ~ctx.occupied)):     # 그물에서 걸러진 경사로 칸의 옛 흙길도 지운다
+        if (int(x), int(y)) not in g:
+            sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
+            dirty[sl] |= road_role_px[sl]
     for y, x in zip(*np.nonzero(ctx.occupied)):
         if any(0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.road[y + dy, x + dx] and not ctx.occupied[y + dy, x + dx]
                for dx, dy in DIRS.values()):
@@ -446,7 +457,7 @@ SPRITE_COLORS = {
         'K': '2a2632', 'r': 'c8483a', 'R': 'e0705a', 'q': '8e2f28', 'b': '3f6fb8', 'B': '6a98d8', 'p': '2b4c86',
         'w': 'd9cdb4', 'W': 'f2ead8', 'v': 'a89c86', 'i': '3c4a66', 'g': '8fc0e8', 'G': 'cfe6f7', 'd': '5a4636', 'y': 'f0d070',
         's': 'a7abb4', 'S': 'c9ccd3', 't': '7c808a', 'a': '4b4e5a', 'L': 'dfe3ea', 'c': '3a7a3a', 'C': '5aa04a', 'n': '2e5a2e',
-        'o': 'd8a040', 'm': '6d7180', 'M': '8d919b', 'e': 'e65a4a',
+        'o': 'd8a040', 'm': '6d7180', 'M': '8d919b', 'e': 'e65a4a', 'Y': '6ef0f4', 'u': '2a8a9a', 'U': '1c5a68',
     },
     'steam': {
         'K': '231c1c', 'h': '7a3a2c', 'H': 'a0533a', 'j': '5a2a22', 'l': '3e3f4c', 'L': '5e6072', 'u': '2a2b36',
@@ -545,6 +556,78 @@ SPRITES = {
             '....KbbdbbKz....',
             '....KKKKKKKz....',
             '.....zzzzzzz....',
+            '................',
+        ],
+        'spire': [
+            '.......KK.......',
+            '......KYYK......',
+            '......KSSK......',
+            '......KSsKz.....',
+            '.....KKSsKKz....',
+            '.....KGSsgKz....',
+            '.....KGSsgKz....',
+            '....KKGSsgKKz...',
+            '....KgGSsguKz...',
+            '....KgGSsguKz...',
+            '...KKgGSsguKKz..',
+            '...KSSSSsssstKz.',
+            '...KaaaYaaYaaKz.',
+            '...KKKKKKKKKKKz.',
+            '....zzzzzzzzzzz.',
+            '................',
+        ],
+        'dome': [
+            '................',
+            '................',
+            '................',
+            '.....KKKKKK.....',
+            '...KKGGgggUKK...',
+            '..KGGLGgggUUuK..',
+            '..KGLGggguUuuKz.',
+            '.KGGGgggguUuuUKz',
+            '.KGGgggguuUuuUKz',
+            '.KSSSSSSSssssttK',
+            '.KaYaaYaaYaaYaaK',
+            '.KaaaaaaaaaaaaaK',
+            '.KKKKKKKKKKKKKKz',
+            '..zzzzzzzzzzzzzz',
+            '................',
+            '................',
+        ],
+        'pods': [
+            '................',
+            '..KKK.....KKK...',
+            '.KSSSK...KSSSK..',
+            '.KYYsK...KYYsK..',
+            '.KSSsKz..KSSsKz.',
+            '.KsstKz..KsstKz.',
+            '.KYYtKz..KYYtKz.',
+            '.KaaaKz..KaaaKz.',
+            '..KKKzzKKKKKzz..',
+            '..zzzzKSSSSSK...',
+            '......KYYYYsKz..',
+            '......KSSSsstKz.',
+            '......KYYYYtKz..',
+            '......KaaaaaaKz.',
+            '......KKKKKKKz..',
+            '.......zzzzzzz..',
+        ],
+        'pad': [
+            '................',
+            '................',
+            '..KKKKKKKKKKKK..',
+            '.KMMMMMMMMMMMMK.',
+            '.KMyyyyyyyyyyMK.',
+            '.KMyMMMMMMMMyMK.',
+            '.KMyMyMMMMyMyMK.',
+            '.KMyMyyyyyyMyMK.',
+            '.KMyMyMMMMyMyMK.',
+            '.KMyMMMMMMMMyMK.',
+            '.KMyyyyyyyyyyMK.',
+            '.KmmmmmmmmmmmmK.',
+            '.KaYaaaaaaaaYaKz',
+            '.KKKKKKKKKKKKKKz',
+            '..zzzzzzzzzzzzzz',
             '................',
         ],
     },
@@ -727,7 +810,7 @@ def draw_district_ground(img, cells, style, ctx):
 
 POOLS = {   # (도심 고리 1, 그 밖)
     'modern': (['apartment', 'office', 'apartment', 'lot', 'office'], ['suburb', 'suburb', 'suburb', 'lot', 'apartment']),
-    'sf': (['tower', 'office', 'tower', 'apartment', 'lot'], ['office', 'apartment', 'tower', 'lot', 'apartment']),
+    'sf': (['tower', 'spire', 'dome', 'tower', 'pods', 'pad'], ['pods', 'dome', 'spire', 'pad', 'tower', 'pods']),
     'steam': (['factory', 'rowhouse', 'gasometer', 'rowhouse', 'yard'], ['rowhouse', 'rowhouse', 'yard', 'factory', 'rowhouse']),
 }
 
@@ -791,11 +874,11 @@ def overlay_smog(img, ctx):
         if p['role'] not in ('capital', 'fort_city', 'harbor_city', 'large_town'):
             continue
         cx, cy = (p['x'] + p['w'] / 2) * TS, (p['y'] + p['h'] / 2) * TS
-        r = (8 if p['role'] == 'capital' else 5.5) * TS
+        r = (9 if p['role'] == 'capital' else 6.5) * TS
         field = np.maximum(field, np.clip(1 - np.hypot(xx - cx, yy - cy) / r, 0, 1))
     lv = np.clip(np.floor(field * 4 + bayer(H, W)) / 4.0, 0, 1)[..., None]
-    soot = np.array([70, 60, 52], np.float32)
-    out = out * (1 - .45 * lv) + soot * (.45 * lv)
+    soot = np.array([52, 44, 38], np.float32)
+    out = out * (1 - .55 * lv) + soot * (.55 * lv)
     return np.clip(out, 0, 255).astype(np.uint8)
 
 
@@ -966,11 +1049,18 @@ def render_space(ctx, seed=11, road_px=None):
     lvl = np.where((lvl == 0) & wisp, 1, lvl)
     lvl = np.where((lvl == 0) & (d > .2) & (d <= .32) & (bayer(H, W) < (d - .2) / .12 * .5), 1, lvl)   # 끝자락 디더 한 단
     P = near[cy, cx]
+    wx2 = (vnoise(H, W, 22, seed + 21) - .5) * 30
+    wy2 = (vnoise(H, W, 22, seed + 22) - .5) * 30
+    P2 = near[np.clip(((yy + wy2) // TS).astype(int), 0, ctx.H - 1), np.clip(((xx + wx2) // TS).astype(int), 0, ctx.W - 1)]
+    mix = (P2 != P) & (bayer(H, W) < .5)                 # 성운 종류 경계는 2~3칸 폭으로 섞인다(QA: 칸 계단)
+    P = np.where(mix, P2, P)
     img = np.empty((H, W, 3), np.uint8)
     img[:] = SPACE['void']
     img[vnoise(H, W, 50, seed + 2) + (bayer(H, W) - .5) * .08 > .68] = SPACE['void2']
     m = lvl > 0
     img[m] = NEB_RGB[P[m], lvl[m] - 1]
+    cool = (lvl == 1) & (din < .2)                       # 바깥 가스 실·끝자락은 공허 쪽 푸른빛으로 — 사막 성운 실이 갈색 뿌리처럼 보였다(QA)
+    img[cool] = (img[cool].astype(np.float32) * .5 + hx('16204a').astype(np.float32) * .5).astype(np.uint8)
 
     # 별 — 성운 단이 높을수록 많다
     rng = np.random.default_rng(seed + 7)
@@ -992,9 +1082,9 @@ def render_space(ctx, seed=11, road_px=None):
     # 소행성대 먼지 띠(산·절벽 칸, 휜 좌표) → 이온 폭풍 → 성단 → 거성 → 소행성
     rockcell = np.isin(ctx.O, (6, 7, 9)) | ctx.face
     belt = rockcell[cy, cx]
-    belt_d = _boxblur(belt.astype(np.float32), 5)
+    belt_d = _boxblur(_boxblur(belt.astype(np.float32), 6), 6) * (.55 + .9 * vnoise(H, W, 11, seed + 14))
     D = bayer(H, W)
-    dz = (belt_d > .25) & (D < belt_d * .7)
+    dz = (belt_d > .3) & (D < np.clip(belt_d - .2, 0, .75))
     img[dz] = np.where((vnoise(H, W, 7, seed + 13)[dz] > .55)[:, None], SPACE['dust_l'], SPACE['dust'])
     draw_ion_storm(img, ctx, cy, cx)
     for y, x in zip(*np.nonzero(np.isin(ctx.O, (1, 2, 3, 5)))):
@@ -1111,7 +1201,10 @@ def draw_ion_storm(img, ctx, cy, cx):
     H, W = img.shape[:2]
     m = ctx.dune[cy, cx]
     yy, xx = np.mgrid[0:H, 0:W]
-    w = np.sin(xx * .22 + np.sin(yy * .09 + xx * .03) * 2.0 + yy * .07) + (vnoise(H, W, 20, 31) - .5) * 1.2
+    w = (np.sin(xx * .22 + np.sin(yy * .09 + xx * .03) * 2.0 + yy * .07) * .6
+         + np.sin(xx * .07 - yy * .19 + vnoise(H, W, 30, 33) * 6) * .5 + (vnoise(H, W, 16, 31) - .5) * 1.4)
+    cloud = vnoise(H, W, 26, 35) > .62                    # 밝은 폭풍 구름 덩이
+    img[m & cloud & (bayer(H, W) < .5)] = hx('3a1e66')
     a, b, c = hx('2a1450').astype(np.float32), hx('4a2680'), hx('9a62e8')
     img[m] = (img[m] * .45 + a * .55).astype(np.uint8)          # 아래 성운이 비치는 보라 막
     s = m & (w > .78)
@@ -1119,7 +1212,7 @@ def draw_ion_storm(img, ctx, cy, cx):
     img[s & (w > 1.05) & (bayer(H, W) < .3)] = c
     for y, x in zip(*np.nonzero(ctx.dune)):
         h = h32('zap', int(x), int(y))
-        if h % 23:
+        if h % 13:
             continue
         X, Y = x * TS + 4 + h % 8, y * TS + 1                  # 갈래 번개: 아래로 지그재그 18px + 옆가지 하나, 둘레 보라 빛
         pts = []
@@ -1142,23 +1235,61 @@ def draw_ion_storm(img, ctx, cy, cx):
 def lane_graph(ctx):
     """항로 칸과 이어지는 방향. 길 칸 + 경사로 칸(장소 밖) + 다리 칸이 한 그물. 장소 쪽은 끝 칸에서만 한 팔."""
     S = {(x, y) for x, y in ctx.path_cells()} | set(ctx.bridge)
+    if getattr(ctx, '_lanes', None) is not None:
+        return ctx._lanes
     base = set(S)
     R = {(int(x), int(y)) for y, x in zip(*np.nonzero(ctx.ramp & ~ctx.occupied))}
     S |= R
 
+    def free(c):
+        return 0 <= c[0] < ctx.W and 0 <= c[1] < ctx.H and not ctx.occupied[c[1], c[0]] and c not in S
+
+    def deg(c):
+        return sum((c[0] + dx, c[1] + dy) in S for dx, dy in DIRS.values())
+
     def nb(c):
         return [(c[0] + dx, c[1] + dy) for dx, dy in DIRS.values() if (c[0] + dx, c[1] + dy) in S]
+
+    def blocks():
+        return [[(x + ax + i, y + ay + j) for i in (0, 1) for j in (0, 1)] for (x, y) in S for ax in (-1, 0) for ay in (-1, 0)
+                if all((x + ax + i, y + ay + j) in S for i in (0, 1) for j in (0, 1))]
+    while True:                                      # 경사로 2x2 덩이: 덩이 밖 이웃이 가장 적은 경사로부터 걷는다(줄 위의 칸은 남는다)
+        bl = blocks()
+        if not bl:
+            break
+        blk = bl[0]
+        cand = [c for c in blk if c in R and c not in base]
+        if not cand:
+            break
+        S.discard(min(cand, key=lambda c: (sum(q not in blk for q in nb(c)), -c[0], -c[1])))
     changed = True
-    while changed:                                   # 경사로 칸 다듬기: 2x2 덩이를 풀고, 장소로 안 가는 막다른 경사로를 걷는다
+    while changed:                                   # 장소로 안 가는 막다른 경사로를 걷는다
         changed = False
-        for c in sorted(R & S):
+        for c in sorted((R - base) & S):
             x, y = c
-            block = any(all(q in S for q in ((x + ax, y + ay), (x + ax + 1, y + ay), (x + ax, y + ay + 1), (x + ax + 1, y + ay + 1)))
-                        for ax in (-1, 0) for ay in (-1, 0))
             occ_nb = any(0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.occupied[y + dy, x + dx] for dx, dy in DIRS.values())
-            if (block and sum(q in base for q in nb(c)) <= 1) or (len(nb(c)) <= 1 and not occ_nb) or not nb(c):
+            if (len(nb(c)) <= 1 and not occ_nb) or not nb(c):
                 S.discard(c)
                 changed = True
+    # 한 칸 틈 메우기: 지형이 길을 한 칸 끊어 놓은 곳(실측 (17,25) 곧은 틈, (71,42)-(70,43) 대각 틈) — 양쪽이 막다른 끝일 때만
+    for c in sorted(S):
+        x, y = c
+        if deg(c) > 1:
+            continue
+        for dx, dy in ((0, 2), (2, 0)):
+            o, mid = (x + dx, y + dy), (x + dx // 2, y + dy // 2)
+            if o in S and deg(o) <= 1 and free(mid):
+                S.add(mid)
+                ctx.road[mid[1], mid[0]] = True
+        for dx, dy in ((1, 1), (-1, 1)):
+            o = (x + dx, y + dy)
+            if o in S and deg(o) <= 1 and deg(c) <= 1:
+                mids = [m for m in ((x + dx, y), (x, y + dy)) if free(m)]
+                if len(mids) == 2:
+                    m = max(mids, key=lambda q: (ctx.road_px is not None and ctx.road_px[q[1] * TS:(q[1] + 1) * TS, q[0] * TS:(q[0] + 1) * TS].any(), ctx.G[q[1], q[0]] != 0))
+                    S.add(m)
+                    ctx.road[m[1], m[0]] = True
+
     out = {}
     for (x, y) in S:
         ls, side = [], []
@@ -1172,6 +1303,7 @@ def lane_graph(ctx):
             ls.append(min(side)[1])
         if ls:
             out[(x, y)] = ls
+    ctx._lanes = out
     return out
 
 
@@ -1208,6 +1340,9 @@ def draw_hyperlanes(img, ctx):
         else:
             for d in ls:
                 ex, ey = edge[d]
+                dx, dy = DIRS[d]
+                if 0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.occupied[y + dy, x + dx]:
+                    ex, ey = ex + dx * 8, ey + dy * 8          # 장소로 들어가는 팔은 발자국 안 8px 까지(아이콘이 덮는다)
                 seg(ox + 7, oy + 7, ox + ex, oy + ey)
             seg(ox + 7, oy + 7, ox + 7, oy + 7)
     # 워프 구간
@@ -1240,11 +1375,16 @@ def draw_hyperlanes(img, ctx):
     img[g2] = np.maximum(img[g2], (img[g2] * .65 + G * .35).astype(np.uint8))
     img[core] = SPACE['lane']
     img[core & ((xx_global(H, W) + yy_global(H, W)) % 8 == 0)] = SPACE['lane_n']
-    for (bx, by) in beacons:                               # 막다른 끝 → 항로 표지(마름모)
-        for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
-            img[by + dy, bx + dx] = SPACE['lane_n'] if (dx, dy) == (0, 0) else SPACE['lane']
-        for dx, dy in ((2, 0), (-2, 0), (0, 2), (0, -2), (1, 1), (-1, -1), (1, -1), (-1, 1)):
-            img[by + dy, bx + dx] = SPACE['lane_g']
+    for (bx, by) in beacons:                               # 막다른 끝 → 항로 표지(7px 마름모 고리 + 흰 핵)
+        for dy in range(-3, 4):
+            for dx in range(-3, 4):
+                r = abs(dx) + abs(dy)
+                if r == 3:
+                    img[by + dy, bx + dx] = SPACE['lane']
+                elif r == 2:
+                    img[by + dy, bx + dx] = SPACE['rift']
+                elif r <= 1:
+                    img[by + dy, bx + dx] = SPACE['lane_n'] if r == 0 else SPACE['lane']
     for (rx, ry) in rings:                                 # 금색 고리 r=4, 가운데 검게
         for dy in range(-5, 6):
             for dx in range(-5, 6):
@@ -1273,12 +1413,12 @@ def apply_land(img, world, theme, road_role_px):
     """팔레트를 입힌 지형 그림에 테마 덧칠을 차례로 적용한다. 반환 (그림, 덧칠별 개수 보고)."""
     ctx = Ctx(world)
     rep = {}
-    out = img
+    out = img.copy()
     for o in theme['overlays']:
         base, _, arg = o.partition(':')
         if base in ('paved_roads', 'rail', 'erase_roads'):
             out = overlay_roads(out, ctx, {'paved_roads': 'paved', 'rail': 'rail', 'erase_roads': 'erase'}[base], road_role_px)
-            rep[o] = len(ctx.path_cells())
+            rep[o] = len(lane_graph(ctx))
         elif base == 'sprawl':
             out, placed = overlay_sprawl(out, ctx, arg or 'modern')
             rep[o] = len(placed)

@@ -35,7 +35,8 @@ tiledata/worldmap-kit/
     ref/                      selftest 기준(design-1x-final3.png·map-v9-final3.json·journey-check-final3.txt)
     tools/                    한 번 돌린 변환 기록(fantasy 자산·문서 표 생성)
   iconsets/fantasy/           manifest.json + sheet.png   ← 다른 세트는 같은 이름 규약으로 옆에 둔다
-  palettes/                   original ruin dusk winter ashfall regional
+  palettes/                   original ruin dusk winter ashfall regional + 세계관 팔레트(alien gothic industrial north eastasia wuxia classical primeval desert desert-east)
+  themes/                     세계관 테마 17개 — 아이콘 세트 + 팔레트 + 지형 덧칠(kit/lib/kit_theme.py)
   journeys/fantasy-5act.json
   docs/                       이 문서 · role-mapping.md · palette-schema.md
   out/                        fantasy-<팔레트>.png ×6 · world.json · build-report.json · journey-check.txt
@@ -111,6 +112,7 @@ main_line[] { place, event } · leg_stage[] · entries{ship,skiff} · checks{mus
 
 ```bash
 python3 kit/build_world.py --iconset fantasy --palette all --journey fantasy-5act --out tiledata/worldmap-kit/out --cache /tmp/wmk-cache
+python3 kit/build_world.py --theme steampunk --journey fantasy-5act --out /tmp/wm --cache /tmp/wmk-cache   # 테마 = 세트·팔레트·덧칠을 한 번에
 #   --palette original | winter,dusk | all    --tint-icons 0.4    --no-check    --cache <dir>
 ```
 
@@ -204,3 +206,38 @@ pins 없이 해시로 고른 결과가 결정적인지, 입력 오류(역할 없
 정면 카메라 세트(manifest `camera.kx == 0`)는 하네스가 `FRONT3D_RULE` 을 검수 지시에 넣는다. 첫 검수에서 FAIL 의 대부분(147건)이 `SIDE` 였는데,
 원통·원뿔·모임지붕 끝의 오른쪽 명암을 옆면으로 읽은 것이었다(평평한 옆벽은 시선과 직각이라 0px). 규칙을 넣은 재검수는 `READ`(1배에서 안 읽힘)·`STYLE` 만 남긴다.
 검수 결과는 참고일 뿐이고 받기/버리기는 사용자가 하네스(http://mdc-server:18313/)에서 한다.
+
+## ⑤ 세계관 테마 `themes/<id>.json` (`worldmap-theme/1`, 2026-10-03)
+
+팔레트는 색만 바꾼다. 현대 도시의 아스팔트, 스팀펑크의 철길, 우주의 성운은 색으로는 안 된다 — 그래서 **테마 층**을 두었다.
+테마 = 아이콘 세트 + 팔레트 + 덧칠 목록. 덧칠은 팔레트를 입힌 지형 그림(아이콘 없음) 위에서 아이콘을 붙이기 전에 돈다.
+지형 모양·장소 발자국·여정은 그대로라 도달성 검사 결과가 같다. 그림은 전부 `kit/lib/kit_theme.py` 안의 좌표·문자 지도 도트다(생성 이미지 없음).
+
+```json
+{ "schema": "worldmap-theme/1", "id": "steampunk", "name": "스팀펑크·마도", "iconset": "steampunk",
+  "palette": "industrial", "overlays": ["rail", "sprawl:steam", "smog"], "kind": "land" }
+```
+
+| 덧칠 | 하는 일 |
+|---|---|
+| `paved_roads` | 흙길 → 아스팔트(연석·아래 연석 그늘·노란 가운데 점선, 전역 좌표로 이어짐). 나무 다리 → 콘크리트 다리(난간·교각·그림자) |
+| `rail` | 흙길 → 철길(자갈 바닥·침목·두 레일, 갈림 칸은 판, 끝 칸은 붉은 차막이). 다리 → 트러스 철교 |
+| `sprawl:modern\|sf\|steam` | 수도·요새도시·항구도시 둘레 2칸, 큰 마을 둘레 1칸을 시가지 구역으로: 구역 바닥 + 칸마다 건물(같은 건물이 왼쪽·위에 붙지 않게). steam 은 굴뚝 연기 |
+| `smog` | 공업 도시 둘레를 그을음 빛으로 4단 디더(수도 8칸·도시 5.5칸) |
+| `erase_roads` | 흙길을 옆 바닥으로 지운다(선사) |
+| `kind: space` | 땅 대신 우주를 처음부터 그린다(아래) |
+
+**길 다시 그리기의 함정(실측).** 옛 흙길 띠는 칸 x 4~11 에 바깥 테두리가 ±1 흔들린다. 새 띠를 칸마다 같은 자리(4~11)에 반듯하게 찍고,
+옛 테두리·흙 화소는 지도 전체에서 깨끗한 화소로부터 8방향 전파(`fill_global`)로 메운다 — 칸마다 따로 메우면 아직 안 지운 옆 칸 흙을 베껴 왔다.
+장소 쪽 팔은 「옛 길 흔적이 그 가장자리 4줄에 있는가」(`_entered`)로만, 그리고 길이 거기서 끝나는 칸에서만 낸다 — 아니면 장소 옆을 지나는 길마다 빗살 팔이 돋는다.
+장소 = 실제 발자국(`occupied`)이다. `world.foot_cells` 에는 장소 밖 길 칸도 섞여 있어 그것을 장소로 치면 선로가 경사로 앞에서 끊긴다.
+
+**우주(`render_space`).** 칸 배열을 그대로 읽어 같은 장벽 자리를 지킨다.
+- 성운 = 밀도장: 휜 좌표(±12px/28px + ±4px/9px)로 읽은 땅 마스크를 흐려 밀도를 얻는다. 안쪽은 노이즈로 4단 밝기와 빈 구멍, 바깥은 2~3칸에 걸쳐 옅어지며 가스 실이 뻗는다.
+  색은 가장 가까운 땅의 바닥 종류(10종, 사막 = 호박·금빛, 늪 = 청록). 3x3 다수결 2번 + 6칸 미만 덩이 흡수로 밭·강 조각 네모를 지운다.
+- 산·절벽 = 소행성대(먼지 띠 + 6가지 배치), 화산 = 2칸 안쪽 무리마다 붉은 거성 하나(크기 3단 + 빛무리), 숲 = 성단(빛무리 + 십자 별), 사구 바다 = 보라 이온 폭풍(비치는 막 + 줄무늬 + 갈래 번개).
+- 길 = 초공간 항로(1px + 2px 빛무리, 꺾임은 4분원, 막다른 끝은 마름모 표지). 경사로 칸도 항로 그물에 넣되 2x2 덩이·막다른 경사로는 걷는다. 다리 줄 = 워프 구간(검은 균열 + 점선 + 줄 양끝 금색 고리).
+- 장소 발자국 밑은 흐린 밀도로 2단 어둡게 해 아이콘이 성운에 묻히지 않게 한다.
+
+캐시 서명에서 `kit_theme`·`kit_palette`·`kit_common` 은 뺀다(지형에 영향이 없다) — 덧칠을 고칠 때마다 100초 지형 렌더를 다시 하지 않는다.
+하네스(`src/harnesses/worldmap-icons/render.py` `themed_terrain`)도 같은 테마로 지도 자리 그림을 만든다.
