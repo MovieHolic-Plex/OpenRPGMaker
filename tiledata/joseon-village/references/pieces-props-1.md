@@ -1,6 +1,6 @@
 # 나무·소품·담·다리 조각 사전 1/8
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **7872칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 7808 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9344칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9215 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
@@ -21,19 +21,19 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 ### jb-palace_pine_a · 궁궐 pine_a 4×6 · 4×6 · 분류 tree
 막힘 4 · 걸음★ 18 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-palace_pine_a","w":4,"h":6,"class":"tree","upperTiles":[[3754,3755,3756,-1],[3770,3771,3772,3773],[3786,3787,3788,3789],[3802,3803,3804,-1],[3818,3819,3820,3821],[3834,3835,3836,3837]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
+{"kit":"kit:joseon_baram/jb-palace_pine_a","w":4,"h":6,"class":"tree","upperTiles":[[3952,3953,3954,-1],[3968,3969,3970,3971],[3984,3985,3986,3987],[4000,4001,4002,-1],[4016,4017,4018,4019],[4032,4033,4034,4035]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
 ```
 
 ### jb-palace_pine_b · 궁궐 pine_b 4×6 · 4×6 · 분류 tree
 막힘 4 · 걸음★ 18 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-palace_pine_b","w":4,"h":6,"class":"tree","upperTiles":[[3840,3841,3842,-1],[3856,3857,3858,3859],[3872,3873,3874,3875],[3888,3889,3890,-1],[3904,3905,3906,3907],[3920,3921,3922,3923]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
+{"kit":"kit:joseon_baram/jb-palace_pine_b","w":4,"h":6,"class":"tree","upperTiles":[[3956,3957,3958,-1],[3972,3973,3974,3975],[3988,3989,3990,3991],[4004,4005,4006,-1],[4020,4021,4022,4023],[4036,4037,4038,4039]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
 ```
 
 ### jb-palace_pine_c · 궁궐 pine_c 4×6 · 4×6 · 분류 tree
 막힘 4 · 걸음★ 18 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-palace_pine_c","w":4,"h":6,"class":"tree","upperTiles":[[3844,3845,3846,-1],[3860,3861,3862,3863],[3876,3877,3878,3879],[3892,3893,3894,-1],[3908,3909,3910,3911],[3924,3925,3926,3927]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
+{"kit":"kit:joseon_baram/jb-palace_pine_c","w":4,"h":6,"class":"tree","upperTiles":[[3960,3961,3962,-1],[3976,3977,3978,3979],[3992,3993,3994,3995],[4008,4009,4010,-1],[4024,4025,4026,4027],[4040,4041,4042,4043]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
 ```
 
 ### jb-persimmon_a · 감나무 a 3×4 · 3×4 · 분류 tree

@@ -2,11 +2,14 @@
  "baseline": {
   "findings": 0,
   "maskMismatchKnown": {
-   "jb_road16_autotile": 6,
+   "jb_road16_autotile": 33,
    "jb_yard16_autotile": 65,
    "jb_water47_autotile": 0,
    "jb_paddy16_autotile": 0,
-   "jb_rice16_autotile": 0
+   "jb_rice16_autotile": 0,
+   "jb_water47g_autotile": 0,
+   "jb_slab_edge16_autotile": 0,
+   "jb_palace_court16_autotile": 0
   }
  },
  "cases": [

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **120쪽 / 4275KB / 약 1,234,145 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **120쪽 / 4282KB / 약 1,236,169 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -78,6 +78,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
+| `openwiki/joseon-baram.md` | 2 | `map-from-sheet.png`, `walk-overlay-gungnae.png` |
 | `openwiki/large-village-generation.md` | 6 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `scripts/force-save-large-village.mts`, `scripts/force-save-village-50.mts`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
 | `openwiki/native-enemy-retirement.md` | 1 | `scripts/generate-monster-images.mts` |
@@ -1058,14 +1059,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L144` 안티-게이밍 규칙
 - `L154` 이 페이지를 갱신해야 하는 변경
 
-### `openwiki/joseon-baram.md` — 9KB · 81줄 · ~2,562 토큰
+### `openwiki/joseon-baram.md` — 15KB · 111줄 · ~4,586 토큰
 
-- `L15` 만드는 길 (전부 스크립트, 손으로 고치지 않는다)
-- `L30` 통행 (X/C/F)
-- `L45` 등록 배선 (한 곳이라도 빠지면 어느 프로젝트에선가 빈 화면)
-- `L55` 참고문서 (번들 소유, AI-REFERENCE-CONTRACT 8항목)
-- `L61` 검증 (실측, 임시 폴더 프로젝트)
-- `L75` 알려진 한계 · 다음 일
+- `L15` 재실행 한 줄 (국내성 맵이 다시 바뀌면)
+- `L28` 변환기와 시트 합치기
+  - `L34` 두 시트를 한 시트로 (칸 번호 불변 규칙)
+- `L48` 통행 (X/C/F)
+- `L67` 등록 배선 (한 곳이라도 빠지면 어느 프로젝트에선가 빈 화면)
+- `L77` 참고문서 (번들 소유, AI-REFERENCE-CONTRACT 8항목)
+- `L83` 검증 (실측, 임시 폴더 프로젝트, 두 맵 합친 판)
+- `L100` 새 판이 오면 손볼 곳
+- `L105` 한계
 
 ### `openwiki/large-village-generation.md` — 35KB · 594줄 · ~10,229 토큰
 

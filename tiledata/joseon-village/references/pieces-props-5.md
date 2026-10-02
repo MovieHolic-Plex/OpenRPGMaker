@@ -1,6 +1,6 @@
 # 나무·소품·담·다리 조각 사전 5/8
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **7872칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 7808 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9344칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9215 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
@@ -135,5 +135,5 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 ### jb-gungnae_bridge_h4 · 국내성 돌다리 h4 4×5 · 4×5 · 분류 prop
 막힘 8 · 걸음★ 0 · 걸음 12칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-gungnae_bridge_h4","w":4,"h":5,"class":"prop","upperTiles":[[4889,4890,4891,4892],[4905,4906,4907,4908],[4921,4922,4923,4924],[4937,4938,4939,4940],[4953,4954,4955,4956]],"walk":["XXXX","FFFF","FFFF","FFFF","XXXX"]}
+{"kit":"kit:joseon_baram/jb-gungnae_bridge_h4","w":4,"h":5,"class":"prop","upperTiles":[[5188,5189,5190,5191],[5204,5205,5206,5207],[5220,5221,5222,5223],[5236,5237,5238,5239],[5252,5253,5254,5255]],"walk":["XXXX","FFFF","FFFF","FFFF","XXXX"]}
 ```

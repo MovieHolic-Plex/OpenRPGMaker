@@ -1,9 +1,9 @@
 {
- "projectId": "c8bb4971-a8b0-4b00-8a52-302ebdfe4247",
+ "projectId": "a37392ac-9965-42ef-bc72-deaeea94d4de",
  "projectDir": "/tmp/oprn-joseon-baram-proof",
  "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
  "revision": 1,
- "sha256": "1191a7545c3735fd3dae137f26b598e55fae5c3131e7b1baf71a1332d6b35e49",
+ "sha256": "07363bded654bf93a15f73392e515a6921d7028179d4aeef1883504fa8cf8f59",
  "saved": true,
  "reopened": true,
  "deepEqual": {
@@ -15,20 +15,23 @@
  "tileset": {
   "id": "joseon_baram",
   "family": "oprn-joseon",
-  "count": 7872,
+  "count": 9344,
   "tilesPerRow": 64,
   "image": {
    "type": "bundled",
    "id": "tex_joseon_baram"
   },
-  "structureKits": 242,
-  "tileGroups": 251,
+  "structureKits": 248,
+  "tileGroups": 265,
   "autotileGroups": [
    "jb_road16_autotile",
    "jb_yard16_autotile",
    "jb_water47_autotile",
    "jb_paddy16_autotile",
-   "jb_rice16_autotile"
+   "jb_rice16_autotile",
+   "jb_water47g_autotile",
+   "jb_slab_edge16_autotile",
+   "jb_palace_court16_autotile"
   ],
   "referenceDocuments": [
    {
@@ -39,7 +42,7 @@
    {
     "id": "joseon-baram-terrain",
     "docs": 2,
-    "images": 4
+    "images": 7
    },
    {
     "id": "joseon-baram-buildings",
@@ -64,6 +67,15 @@
   ]
  },
  "maps": {
+  "gungnae": {
+   "size": [
+    96,
+    96
+   ],
+   "lower": 9216,
+   "upper": 5406,
+   "npcs": 17
+  },
   "joseon_v20": {
    "size": [
     64,
@@ -75,27 +87,153 @@
   }
  },
  "engineChecks": {
+  "gungnae": {
+   "walk": {
+    "cells": 9216,
+    "same": 9216,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 5055
+   },
+   "reach": {
+    "crossLines": 56,
+    "crossLinesBlockedEnd": 4,
+    "exemptCrossings": [
+     {
+      "piece": "gungnae_bridge_narrow_h5",
+      "x": 19,
+      "y": 39,
+      "why": "좁은 다리 (19,39): 서쪽 끝 (18,40)은 대장간 벽, 동쪽 끝 (24,40)은 서낭당(24,39)이 막아 양끝이 모두 막힌 장식 다리다(국내성 맵 빌더 쪽 결함 — 빌더 수정 라운드에서 확인)."
+     }
+    ],
+    "exemptPeople": [
+     {
+      "x": 54,
+      "y": 49,
+      "why": "주민 (54,49) 가 드므(palace_deumeu, 54,48 1×2) 칸 안에 서 있어 걸어 닿지 못한다(국내성 맵 빌더 쪽 결함)."
+     }
+    ],
+    "crossings": 17,
+    "fronts": 1,
+    "waterOpenBare": 0,
+    "waterUnderObject": 171,
+    "start": [
+     52,
+     48
+    ],
+    "reachable": 4962,
+    "walkable": 5055,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 1600,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 839,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 44,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 975,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 303,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 494,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    }
+   ]
+  },
   "joseon_v20": {
    "walk": {
     "cells": 3584,
     "same": 3584,
     "mismatch": 0,
     "samples": [],
-    "walkable": 2177
+    "walkable": 2175
    },
    "reach": {
+    "crossLines": 6,
+    "crossLinesBlockedEnd": 2,
+    "exemptCrossings": [
+     {
+      "piece": "bridge",
+      "x": 40,
+      "y": 24,
+      "why": "두 번째 다리 (40,24): 서쪽 끝 (39,25)(39,26)이 빨래터(38,25)에 막힌 막다른 다리다(마을 20호 원본 배치). 동쪽 끝만 건널목 길 (45,25)로 이어진다."
+     }
+    ],
+    "exemptPeople": [],
+    "crossings": 3,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 21,
     "start": [
      31,
      28
     ],
-    "reachable": 2168,
-    "walkable": 2177,
+    "reachable": 2166,
+    "walkable": 2175,
     "missed": {
      "doorFront": [],
      "doorStep": [],
      "passageFront": [],
      "passageBehind": [],
-     "people": []
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": []
     },
     "missedCount": 0,
     "wallAboveDoorOpen": 0
@@ -104,32 +242,56 @@
     {
      "group": "jb_road16_autotile",
      "cells": 306,
-     "mismatch": 6,
+     "mismatch": 33,
      "edgeConnects": true,
      "samples": [
       [
-       45,
+       47,
+       7
+      ],
+      [
+       6,
+       8
+      ],
+      [
+       31,
+       9
+      ],
+      [
+       47,
+       14
+      ],
+      [
+       6,
+       15
+      ],
+      [
+       31,
+       16
+      ],
+      [
+       47,
+       21
+      ],
+      [
+       6,
+       22
+      ],
+      [
+       31,
+       23
+      ],
+      [
+       31,
+       24
+      ],
+      [
+       31,
        25
       ],
       [
        45,
-       26
-      ],
-      [
-       40,
-       28
-      ],
-      [
-       45,
-       28
-      ],
-      [
-       40,
-       29
-      ],
-      [
-       45,
-       29
+       25
       ]
      ]
     },
@@ -209,6 +371,27 @@
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
     }
    ]
   }
@@ -221,12 +404,19 @@
   "idempotent": true
  },
  "walkAfterReload": {
+  "gungnae": {
+   "cells": 9216,
+   "same": 9216,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 5055
+  },
   "joseon_v20": {
    "cells": 3584,
    "same": 3584,
    "mismatch": 0,
    "samples": [],
-   "walkable": 2177
+   "walkable": 2175
   }
  }
 }
