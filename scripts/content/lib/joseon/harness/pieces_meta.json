@@ -91,20 +91,6 @@
   ],
   "thin_ok": "위에서 본 세로 담의 덮개 띠"
  },
- "wall_corner_l": {
-  "cls": "wall",
-  "refs": [
-   "castle.wall_h",
-   "castle.wall_v"
-  ]
- },
- "wall_corner_r": {
-  "cls": "wall",
-  "refs": [
-   "castle.wall_h",
-   "castle.wall_v"
-  ]
- },
  "giwa_house_6": {
   "cls": "built",
   "sym": true,
@@ -658,6 +644,34 @@
    "castle.wall_h",
    "estate.wall",
    "hedge"
+  ]
+ },
+ "wall_corner_nw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "castle.wall_v"
+  ]
+ },
+ "wall_corner_ne": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "castle.wall_v"
+  ]
+ },
+ "wall_corner_sw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "castle.wall_v"
+  ]
+ },
+ "wall_corner_se": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "castle.wall_v"
   ]
  }
 }

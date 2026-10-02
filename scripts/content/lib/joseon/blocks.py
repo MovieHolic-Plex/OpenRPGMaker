@@ -208,6 +208,12 @@ def thatch_wall_block(half, kind):
             for y in range(7, 11):
                 for x in range(T): c.put(x, y, W[6] if y == 7 else (W[5] if (x // 5 + y) % 2 else W[4]))
             c.hl(0, T, 11, W[6]); c.hl(0, T, 12, W[3]); c.hl(0, T, 13, W[1])
+    if kind == 'g':                                   # 널문(외짝): 세로 널 + 가로 띠 둘 + 문고리
+        y0, y1 = (7, 16) if half == 'u' else (0, 14)
+        c.rect(4, y0, 14, y1, W[3])
+        for xx in range(5, 13): c.vl(xx, y0 + 1, y1 - (3 if half == 'b' else 0), W[4] if xx % 2 else W[3])
+        for yy in (y0 + 3, y1 - (5 if half == 'b' else 3)): c.hl(5, 13, yy, W[2])
+        c.put(11, y0 + 5, RGB['straw'][5])
     if kind == 'd':                                   # 한지 바른 격자 미닫이(외짝): 세로 살 셋 + 가로대, 손잡이 없음
         y0, y1 = (7, 16) if half == 'u' else (0, 14)
         c.rect(4, y0, 14, y1, W[3])

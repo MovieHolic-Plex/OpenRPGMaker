@@ -89,9 +89,9 @@ def fort_gate():
     ground_shadow(c, W // 2 + 6, H - 3, W // 2 - 4, 3, 70)
     # 윗면(걷는 길)
     for y in range(66, FY):
-        for x in range(6, W - 6):
+        for x in range(0, W):
             c.put(x, y, S[5] if (x // 6 + y) % 5 else S[4])
-    c.hl(6, W - 6, 66, S[6])
+    c.hl(0, W, 66, S[6])
     for y in range(70, 78):                                            # 누상 바닥(밝은 윗면) — 기둥발이 여기에 붙는다
         for x in range(10, W - 10):
             c.put(x, y, S[6] if y == 70 else S[5])
@@ -99,9 +99,9 @@ def fort_gate():
     pav_rows = K.house('pv', 5, 'ooooo', 'kkkkk', rows=3, dan=False, steps=(), hip=True)[:-1]
     pav = K.assemble(pav_rows, K.library(), post=lambda cv: (K.roof_baram(cv, 3, 'giwa', wing=24), K.pavilion_open(cv, 5)), finish=False)
     c.paste(pav, (W - pav.w) // 2, 0)
-    merlons(c, 6, W - 6, 77, step=14, w=10)
+    merlons(c, 3, W - 3, 77, step=16, w=10)
     # 앞면: 아래가 넓은 사다리꼴
-    inset = 9
+    inset = 0
     lo = lambda y: int(round(inset * (1 - (y - FY) / (H - FY))))
     hi = lambda y: W - lo(y)
     stone_courses(c, 0, FY, W, H, seed=5, ch=8, lo=lo, hi=hi)
@@ -121,28 +121,27 @@ def fort_gate():
 
 
 def fort_wall_h(var=0):
-    """성벽 한 칸(16×32): 걷는 길 윗면(앞쪽이 밝다, 줄눈 한 줄) + 앞 가장자리 여장 직육면체 + 앞 돌 쌓기. 변형(var) 셋을 번갈아 쓴다."""
-    c = Cv(T, 2 * T)
+    """성벽 한 칸(16×80): 문루 받침과 같은 높이로 이어 붙는다 — 걷는 길 윗면(앞쪽 밝음) + 여장 직육면체 + 앞 돌 쌓기. 변형(var) 셋을 번갈아 쓴다.
+    좌표는 fort_gate 의 (y-64)와 같다: 윗면 2..19, 여장 윗면 11..12·앞면 13..19, 앞 돌면 20..79."""
+    c = Cv(T, 5 * T)
     S = RGB['stone']
-    for y in range(0, 11):                                             # 윗면: 뒤(위)는 어둡고 앞(아래)이 밝다
+    for y in range(2, 20):
         for x in range(T):
-            tone = 4 if y < 3 else (5 if y < 8 else 6)
-            if y == 5 and x % 8 < 5: tone -= 1                         # 길 돌 줄눈
-            c.put(x, y, S[tone])
-    mx = (2, 4, 1)[var % 3]
-    box(c, mx, 14, 10, 3, 3, S, (6, 5), (5, 4, 3, 2))                  # 여장(윗면 3 + 앞면 3)
-    for x in range(T):
-        if not (mx <= x < mx + 10): c.put(x, 11, S[3]); c.put(x, 12, S[2]); c.put(x, 13, S[2])   # 여장 사이 빈틈 그늘
-    stone_courses(c, 0, 17, T, 2 * T - 2, seed=11 + 7 * var, ch=5)
-    for x in range(T): c.put(x, 2 * T - 2, S[2]); c.put(x, 2 * T - 1, SHADOW, 80)
+            c.put(x, y, S[5] if ((x + 16 * var) // 6 + y) % 5 else S[4])
+    c.hl(0, T, 2, S[6])
+    slab(c, 3, 13, 10, 5, 2, S, (6, 5), (5, 4, 3, 2))
+    for y in range(20, 22):
+        for x in range(T): c.put(x, y, S[6] if y == 20 else S[2])
+    stone_courses(c, 0, 20, T, 5 * T, seed=5 + 3 * var, ch=8)
+    for x in range(T): c.put(x, 5 * T - 1, SHADOW, 90)
     return c
 
 
 def fort_wall_end(side='l'):
-    """성벽 끝(성문 옆으로 붙는 쪽): 바깥 모서리가 안으로 기운다."""
+    """성벽 끝(개울·성문 옆에서 끊기는 쪽): 앞 돌면이 아래로 갈수록 바깥으로 벌어진 비탈."""
     c = fort_wall_h(0)
     for y in range(c.h):
-        cut = max(0, 4 - (y - 12) // 5) if y >= 12 else 0
+        cut = 4 if y < 20 else max(0, 4 - (y - 20) // 12)
         for k in range(cut):
             x = k if side == 'l' else T - 1 - k
             c.a[y, x, 3] = 0

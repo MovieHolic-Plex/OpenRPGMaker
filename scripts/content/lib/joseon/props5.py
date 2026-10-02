@@ -258,49 +258,47 @@ def wall_h2(seed=0):  # seed 0~2 = 돌 배열 변형
     return c
 
 
-def wall_v2():
-    """세로 담 16×16: 위에서 본 덮개 띠 — 세로로 길게 이어지는 밝은 윗면(왼쪽)·용마루·어두운 앞사면(오른쪽).
-    오른쪽에 돌쌓기 옆면 4px(어두운 단색 + 블록선), 땅 그림자."""
-    c = Cv(T, T)
-    Wd = RGB['wood']; S = RGB['stone']
-    for y in range(T):
-        for x in range(2, 11):
-            if x == 2: col = Wd[5]
-            elif x < 6: col = Wd[6]
-            elif x == 6: col = Wd[5]
-            elif x < 9: col = Wd[4]
-            elif x == 9: col = Wd[3]
-            else: col = Wd[2]
-            if x in (4, 8) and y % 8 == 7: col = Wd[5] if x == 4 else Wd[3]
+_BX0, _BX1 = 4, 12          # 세로 담 덮개 띠가 차지하는 칸 안 x 범위(4..11)
+
+
+def _vband(c, y0, y1):
+    """세로로 달리는 담 덮개를 위에서 본 띠(8px): 왼쪽 사면(밝음) · 용마루 한 줄 · 오른쪽 사면(어두움) · 처마 끝. 기와 이음이 4줄마다 가로로 지난다."""
+    Wd = RGB['wood']
+    for y in range(y0, y1):
+        for x in range(_BX0, _BX1):
+            lx = x - _BX0
+            col = (Wd[5], Wd[5], Wd[6], Wd[4], Wd[3], Wd[3], Wd[3], Wd[2])[lx]
+            if y % 4 == 3 and lx not in (2,): col = Wd[max(1, [5, 5, 6, 4, 3, 3, 3, 2][lx] - 1)]
             c.put(x, y, col)
-        for x in range(11, 15):
-            tone = 2 if x < 13 else 1
-            if y in (5, 11): tone = 1
-            c.put(x, y, S[tone])
-        c.put(15, y, SHADOW, 75)
+
+
+def wall_v2():
+    """세로 담 16×16: 위에서 본 덮개 띠(가운데 8px) + 오른쪽 땅 그림자. 위아래로 이음 없이 이어진다."""
+    c = Cv(T, T)
+    _vband(c, 0, T)
+    for y in range(T):
+        c.put(_BX1, y, SHADOW, 70); c.put(_BX1 + 1, y, SHADOW, 50); c.put(_BX1 + 2, y, SHADOW, 28)
     return c
 
 
-def wall_corner2(side):
-    """모서리 16×32: 담 끝 돌기둥과 한 단 내민 덮개. L = 왼쪽 끝(오른쪽으로 이어짐), R = 오른쪽 끝(왼쪽으로 이어짐)."""
+def wall_corner4(kind):
+    """담 모서리 16×32. kind NW/NE = 북쪽 모서리(가로 담이 한쪽으로, 세로 담이 아래로 이어진다), SW/SE = 남쪽 모서리(세로 담이 덮개 높이에서 가로 담에 만난다).
+    세로 담 덮개 띠(x 4..11)가 가로 담 덮개 줄과 같은 높이에서 이어지고, 북쪽 모서리에서는 띠가 돌담 앞면 위로 그대로 내려온다."""
     c = Cv(T, 2 * T)
     S = RGB['stone']
-    W_ = RGB['wood']
-    if side == 'L':
-        _rubble(c, 2, T, 9, 30, 1)
-        for x in range(2, T): c.put(x, 8, S[1]); c.put(x, 9, S[1])
-        _cap_rows(c, 2, T, round_l=True)
-        for y in range(10, 30):                                      # 끝 돌기둥(짙게 + 왼쪽 반사)
-            for x in range(2, 8): c.put(x, y, S[6] if x == 2 else (S[4] if x < 6 else S[3]))
-        for x in range(1, 9): c.put(x, 8, W_[3]); c.put(x, 9, W_[5] if x < 5 else W_[3])
+    east = kind[1] == 'W'            # NW·SW: 가로 담이 오른쪽(동)으로 뻗는다
+    x0, x1 = (_BX0, T) if east else (0, _BX1)
+    _rubble(c, x0, x1, 9, 30, 1 if east else 2)
+    for x in range(x0, x1): c.put(x, 8, S[1]); c.put(x, 9, S[1])
+    _cap_rows(c, x0, x1, round_l=east, round_r=not east)
+    if kind[0] == 'N':
+        _vband(c, 0, 2 * T - 2)
+        for y in range(0, 2 * T - 2): c.put(_BX1, y, SHADOW, 60) if c.a[y, _BX1, 3] == 0 else None
     else:
-        _rubble(c, 0, 15, 9, 30, 2)
-        for x in range(0, 15): c.put(x, 8, S[1]); c.put(x, 9, S[1])
-        _cap_rows(c, 0, 15, round_r=True)
-        for y in range(10, 30):
-            for x in range(8, 14): c.put(x, y, S[5] if x == 8 else (S[4] if x < 12 else S[3]))
-        for x in range(7, 15): c.put(x, 8, W_[3]); c.put(x, 9, W_[5] if x < 11 else W_[2])
-    for x in range(T): c.put(x, 30, S[1]); c.put(x, 31, SHADOW, 80)
+        _vband(c, 0, 8)
+    for x in range(x0, x1): c.put(x, 30, S[1]); c.put(x, 31, SHADOW, 80)
+    if kind[0] == 'N':
+        for x in range(_BX0, _BX1): c.put(x, 30, RGB['wood'][1]); c.put(x, 31, SHADOW, 80)
     return c
 
 
