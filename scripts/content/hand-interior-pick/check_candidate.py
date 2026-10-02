@@ -143,7 +143,45 @@ def check(pxg, quiet=False):
     note = base + '.note'
     res['note'] = open(note, encoding='utf-8').read().strip().split('\n')[0] if os.path.exists(note) else ''
     if not res['note']: res['warn'].append('메모 없음: <후보>.note 에 한 줄')
+    full_note = open(note, encoding='utf-8').read() if os.path.exists(note) else ''
+    res['hard'] += top_claim_check(a[pad:], o, full_note, res)
     return finish(res, base, quiet)
+
+EDGE_T, EDGE_ROW, COVER_MIN = 40, 0.75, 0.5   # 가로 윤곽선 = 위 줄과 밝기가 40 넘게 다른 칸이 75% 이상인 줄 · 띠 평균 채움 50%
+
+def band_profile(a):
+    """줄마다 (채움 = 불투명 폭 / 물건 폭, 가로 윤곽 = 위 줄과 밝기가 크게 다른 칸 비율)."""
+    A = a[..., 3] > 0; L = 0.299 * a[..., 0] + 0.587 * a[..., 1] + 0.114 * a[..., 2]
+    xs = np.where(A.any(0))[0]; w = max(1, xs.max() - xs.min() + 1) if len(xs) else 1
+    out = []
+    for y in range(a.shape[0]):
+        both = A[y] & A[y - 1] if y else np.zeros_like(A[y])
+        e = (np.abs(L[y] - L[y - 1]) >= EDGE_T) & both if y else both
+        out.append((A[y].sum() / w, e.sum() / max(1, both.sum())))
+    return out
+
+def top_claim_check(a, o, note, res):
+    """꼭대기 면 결정적 검사(2026-10-02). 바닥·벽 앞 기물은 메모에 `꼭대기 윗면 N행(y=a~b)` 를 적어야 하고,
+    N ≥ 규칙(common.top_min), N = b−a+1, 그 띠가 한 덩이 면이어야 한다(평균 채움 50% 이상, 띠 안을 가로지르는 윤곽선 없음).
+    옆모습 기차(지붕 2~4행 + 옆면)를 「윗면 14행」이라 적으면 띠가 지붕 밑 윤곽선을 가로지른다 → 불합격.
+    무엇이 윗면인지는 검수(따로 잰 top_y)가 맞대어 본다 — 이 검사는 거짓 범위를 거르는 문이다."""
+    need = top_min(o)
+    if need is None: return []
+    claim = parse_top_claim(note)
+    if not claim: return [f'top: 메모에 `꼭대기 윗면 N행(y=a~b)` 가 없다 — 이 기물은 {need}행 이상({top_rule_text(o)})']
+    n, y0, y1 = claim; H = a.shape[0]; errs = []
+    res['topClaim'] = dict(rows=n, y=[y0, y1], need=need)
+    if y1 < y0 or y1 >= H: return [f'top: 메모의 범위 y={y0}~{y1} 가 캔버스(0~{H - 1}) 밖이거나 거꾸로다']
+    if abs((y1 - y0 + 1) - n) > 1: errs.append(f'top: 메모의 {n}행과 범위 y={y0}~{y1}({y1 - y0 + 1}행)이 다르다')
+    if y1 - y0 + 1 < need: errs.append(f'top: 꼭대기 윗면 {y1 - y0 + 1}행 < {need}행 — {top_rule_text(o)}')
+    p = band_profile(a)
+    cover = sum(p[y][0] for y in range(y0, y1 + 1)) / (y1 - y0 + 1)
+    if cover < COVER_MIN: errs.append(f'top: 메모의 윗면 y={y0}~{y1} 가 비어 있다(평균 채움 {cover:.0%} < {COVER_MIN:.0%}) — 면이 아니라 허공·장식이다')
+    cuts = [y for y in range(y0 + 2, y1) if p[y][0] >= COVER_MIN and p[y][1] >= EDGE_ROW]
+    if cuts: errs.append(f'top: 메모의 윗면 y={y0}~{y1} 를 가로 윤곽선 y={cuts[0]} 이 가로지른다 — 그 아래는 옆면이다(옆모습을 윗면이라 적었다)')
+    res['topBand'] = dict(cover=round(cover, 2), cuts=cuts[:6])
+    return errs
+
 
 def finish(res, base, quiet):
     res['ok'] = not res['hard']
