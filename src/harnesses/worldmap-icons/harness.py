@@ -39,7 +39,10 @@ CODEX_MODEL = os.environ.get('WMI_HARNESS_CODEX_MODEL', 'gpt-6.1-sol')
 EFFORT = os.environ.get('WMI_HARNESS_EFFORT', 'medium')
 PAR = int(os.environ.get('WMI_HARNESS_PAR', '12'))
 TIMEOUT_S = int(os.environ.get('WMI_HARNESS_TIMEOUT', str(20 * 60)))
-SETS = ('fantasy', 'desert-east', 'modern-sf')
+# 세트 = iconsets/<id>/manifest.json 이 있는 폴더(_ 로 시작하는 공용 폴더 제외). 앞 셋은 처음부터 있던 세트라 순서를 고정한다.
+_FIRST = ('fantasy', 'desert-east', 'modern-sf')
+_ALL = sorted(p.parent.name for p in (ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets').glob('*/manifest.json') if not p.parent.name.startswith('_'))
+SETS = tuple(s for s in _FIRST if s in _ALL) + tuple(s for s in _ALL if s not in _FIRST)
 REASONS = ['옆면 보임(아이소)', '시점 이상', '안 읽힘', '화풍 다름', '크기·비례', '지저분함', '원래(v9)가 나음']
 
 
@@ -98,6 +101,8 @@ def role_names():
 
 # 세트별 예외(사용자 결정). 빈 문자열이면 계약 그대로.
 SET_RULES = {
+    'starmap': ('- **성계 지도 세트:** 아이콘은 땅이 아니라 검은 우주 배경에 놓인다(ctx 는 임시 별 바탕). 행성·소행성·성운은 자연물처럼 `SIDE` 를 면제하고 '
+                '땅 그림자가 없는 게 정상이다. 정거장·함선은 윗면+정면 계약을 따른다. 대신 `READ`(우주에서 무엇인지 읽히는가)와 `STYLE` 을 본다.'),
     'desert-east': ('- **사막·동양풍 세트 예외 (사용자 결정, 2026-10-02):** 이 세트는 3D 장면을 비스듬한 카메라로 찍은 원래 그림이 더 낫다는 사용자 판단이다 — '
                     '**옆면이 약간 보이는 것은 괜찮다**, 옆면만으로 `SIDE` 를 주지 않는다. 옆면이 정면보다 넓어 마름모로 보일 때만 `SIDE`, '
                     '윗면 전체가 평행사변형으로 크게 기울면 `DIAG`. 대신 `READ`(무엇인지 읽히는가)와 `STYLE` 을 본다.'),

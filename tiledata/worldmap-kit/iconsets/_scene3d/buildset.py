@@ -145,8 +145,9 @@ def main(build_file, only=None):
         'license': {'note': meta.get('license', '지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 '
                                                  '_scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다.')},
     }
-    if meta.get('extends'):
-        manifest['extends'] = meta['extends']
+    for k in ('extends', 'kind'):           # extends: 부분 세트의 바탕 세트 · kind: 'space' 면 땅 대신 우주 배경(성계 지도)
+        if meta.get(k):
+            manifest[k] = meta[k]
     (set_dir / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + '\n')
     pv = set_dir / 'preview'
     pv.mkdir(exist_ok=True)
