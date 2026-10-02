@@ -197,3 +197,35 @@ def judge_angle(workdir, base_png, cand_png, out_json, model='claude-sonnet-5-5'
         return json.loads(Path(out_json).read_text(encoding='utf-8'))
     except (OSError, ValueError):
         return None
+
+
+def align_crop(raw, base_rgba, mask, colors=96):
+    """생성 그림은 줌아웃돼 머리가 작게 나오기 쉽다(v3 첫 18명 중 9명이 「머리가 작다·어깨가 더 보인다」로 감점).
+    원본 얼굴과 골격 상관(pose_score)이 가장 높은 정사각 자르기(확대 1.0~1.6, 위치 ±18%)를 찾아 48×48 로 만든다.
+    → (face48, dict(zoom, dx, dy, pose))"""
+    w, h = raw.size
+    S = min(w, h)
+    sq = raw.crop(((w - S) // 2, (h - S) // 2, (w - S) // 2 + S, (h - S) // 2 + S)).resize((384, 384), Image.LANCZOS)
+    best = None
+    for z in (1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6):
+        side = 384 / z
+        room = (384 - side) / 2
+        steps = [-0.18, -0.12, -0.06, 0, 0.06, 0.12, 0.18]
+        for fx in steps:
+            for fy in steps:
+                cx, cy = 192 + fx * 384, 192 + fy * 384
+                x0, y0 = cx - side / 2, cy - side / 2
+                if x0 < 0 or y0 < 0 or x0 + side > 384 or y0 + side > 384:
+                    continue
+                f = sq.crop((round(x0), round(y0), round(x0 + side), round(y0 + side))).resize((C.FACE, C.FACE), Image.LANCZOS)
+                sc = pose_score(f, base_rgba, mask)
+                if best is None or sc > best[0]:
+                    best = (sc, (x0, y0, side), dict(zoom=z, dx=fx, dy=fy))
+    sc, (x0, y0, side), info = best
+    k = S / 384
+    box = (round((w - S) // 2 + x0 * k), round((h - S) // 2 + y0 * k), round((w - S) // 2 + (x0 + side) * k),
+           round((h - S) // 2 + (y0 + side) * k))
+    small = raw.crop(box).resize((C.FACE, C.FACE), Image.LANCZOS)
+    face = small.quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).convert('RGB')
+    info['pose'] = round(pose_score(face, base_rgba, mask), 3)
+    return face, info

@@ -454,9 +454,11 @@ POSE_MIN = 0.65   # v2 의 골격 점수 기준(지금은 참고로만 기록)
 ANGLE_MIN = 7     # v3 각도 검수자 점수 기준(0-10) + 같은 방향
 
 
-def gen_face_one(w, tries=3):
+def gen_face_one(w, tries=3, reuse=False):
     """생성 얼굴 v3(각도만 고정): 손 도트 얼굴을 참고로 생김새·머리·옷은 자유롭게, 고개 방향·기울기·시선·구도만 잠근다.
-    각도 검수자(Sonnet)가 원본 얼굴과 비교해 같은 방향·ANGLE_MIN 이상일 때까지 최대 tries 번, 가장 높은 것.
+    생성 그림은 원본 구도에 맞춰 확대·위치를 찾아 자른다(gen_face.align_crop — 생성은 줌아웃되기 쉽다).
+    각도 검수자(Sonnet)가 같은 방향·ANGLE_MIN 이상이라고 할 때까지, 가장 높은 것.
+    reuse=True 면 face_gen/raw-*.png(이미 뽑은 것)를 먼저 다시 자르고 다시 판정하고, 모자라면 tries 번까지 새로 뽑는다.
     결과 w/face_gen/{ref.png, raw-<k>.png, cand-<k>_x4.png, angle-<k>.json, face.png, face_x4.png, compare.png, meta.json}"""
     import gen_face as G
     meta = json.loads((w / 'meta.json').read_text())
@@ -464,12 +466,13 @@ def gen_face_one(w, tries=3):
     if not (w / 'face' / 'out.face.txt').exists():
         raise RuntimeError('손 도트 얼굴이 먼저 있어야 한다(faces)')
     gd = w / 'face_gen'
-    if gd.exists():
+    raws = sorted(gd.glob('raw-*.png'), key=lambda p: int(p.stem.split('-')[1])) if reuse and gd.exists() else []
+    if gd.exists() and not reuse:
         old = w / f'face_gen_{_gen_meta(w).get("version", "v1") if _gen_meta(w) else "old"}'
         if old.exists():
             shutil.rmtree(old)
         gd.rename(old)   # 이전 판은 비교용으로 남긴다
-    gd.mkdir()
+    gd.mkdir(exist_ok=True)
     bp, brows = base_face(b['base'])
     base_im = C.face_rgba(bp, brows)
     C.up(base_im, 4).save(gd / 'base_x4.png')
@@ -479,21 +482,31 @@ def gen_face_one(w, tries=3):
     ref = G.reference_lock(hand_im)
     ref.save(gd / 'ref.png')
     t0 = time.time()
-    best, engine, tried = None, None, []
-    for k in range(tries):
-        raw, engine, _ = G.generate_free(ref, b['brief'])
-        raw.save(gd / f'raw-{k}.png')
-        face = G.to_face(raw)
+    best, engine, tried = None, (_gen_meta(w) or {}).get('engine'), []
+
+    def judge(k, raw):
+        face, info = G.align_crop(raw, base_im, mask)
         C.up(face, 4).save(gd / f'cand-{k}_x4.png')
         j = G.judge_angle(gd, gd / 'base_x4.png', gd / f'cand-{k}_x4.png', gd / f'angle-{k}.json') or {}
-        sc = float(j.get('score') or 0)
-        same = bool(j.get('same_direction'))
-        tried.append(dict(k=k, angle=sc, same=same, issues=j.get('issues', []), pose=round(G.pose_score(face, base_im, mask), 3)))
-        key = (same, sc)
+        sc, same = float(j.get('score') or 0), bool(j.get('same_direction'))
+        tried.append(dict(k=k, angle=sc, same=same, issues=j.get('issues', []), **info))
+        return (same, sc), face
+
+    n = 0
+    for p in raws:
+        key, face = judge(int(p.stem.split('-')[1]), Image.open(p).convert('RGB'))
         if best is None or key > best[0]:
-            best = (key, face, k)
-        if same and sc >= ANGLE_MIN:
-            break
+            best = (key, face, tried[-1]['k'])
+        n = max(n, tried[-1]['k'] + 1)
+    new = 0
+    while not (best and best[0][0] and best[0][1] >= ANGLE_MIN) and new < tries:
+        raw, engine, _ = G.generate_free(ref, b['brief'])
+        raw.save(gd / f'raw-{n}.png')
+        key, face = judge(n, raw)
+        if best is None or key > best[0]:
+            best = (key, face, n)
+        n += 1
+        new += 1
     (same, sc), face, k = best
     face.save(gd / 'face.png')
     C.up(face, 4).save(gd / 'face_x4.png')
@@ -508,20 +521,21 @@ def gen_face_one(w, tries=3):
     cmp_.convert('RGB').save(gd / 'compare.png')
     (gd / 'meta.json').write_text(json.dumps(dict(version='v3-angle', engine=engine, angle=sc, same_direction=same,
                                                   angle_min=ANGLE_MIN, ok=same and sc >= ANGLE_MIN, tried=tried, chosen=k,
-                                                  wall=round(time.time() - t0), at=now()), ensure_ascii=False), encoding='utf-8')
-    return f'{engine} 각도 {sc} 같은방향 {same} 시도 {[(t["angle"], t["same"]) for t in tried]}'
+                                                  generated_now=new, wall=round(time.time() - t0), at=now()),
+                                             ensure_ascii=False), encoding='utf-8')
+    return f'각도 {sc} 같은방향 {same} 새로 뽑음 {new} 시도 {[(t["k"], t["angle"], t["same"], t["zoom"]) for t in tried]}'
 
 
 def cmd_gen_faces(a):
     """완성된 칩마다 생성 얼굴을 만든다(동시 a.par). 이미 있으면 --redo 때만 다시."""
     from concurrent.futures import ThreadPoolExecutor
     ws = [w for w in sorted(run_dir(a.run).glob('*__*')) if (w / 'out.chr.txt').exists()
-          and (a.redo or not (w / 'face_gen' / 'face.png').exists()) and (not a.only or w.name.split('__')[0] in a.only.split(','))]
+          and (a.redo or a.reuse or not (w / 'face_gen' / 'face.png').exists()) and (not a.only or w.name.split('__')[0] in a.only.split(','))]
 
     def one(w):
         for k in range(3):
             try:
-                e = gen_face_one(w)
+                e = gen_face_one(w, reuse=a.reuse)
                 print(f'{datetime.now():%H:%M:%S} {w.name} 생성 얼굴 끝 ({e})', flush=True)
                 return
             except Exception as ex:  # noqa: BLE001 — API 실패는 재시도
@@ -761,6 +775,7 @@ def main():
     p.add_argument('--par', type=int, default=6)
     p.add_argument('--only', help='brief 이름 쉼표 목록')
     p.add_argument('--redo', action='store_true')
+    p.add_argument('--reuse', action='store_true', help='이미 뽑은 raw 를 다시 자르고 다시 판정, 모자라면 새로 뽑기')
     p.set_defaults(fn=cmd_gen_faces)
     sp.add_parser('export', help='결정을 harness-data/charset-actor/decisions.json·accepted/ 로').set_defaults(
         fn=lambda a: export_decisions())
