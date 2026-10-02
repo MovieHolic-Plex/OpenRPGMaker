@@ -1,7 +1,9 @@
 // src/editor/workshop/workshopSession.ts
 /**
  * 프로젝트 하나 × 하네스 하나의 공방 묶음(실행기·엔진·저장소). 화면을 닫아도 엔진은 계속 돈다.
- * 프로젝트가 바뀌면 옛 묶음을 dispose 한다 — 돌던 장은 저장소에 queued 로 남아 그 프로젝트를 다시 열면 resume 된다.
+ * 프로젝트가 바뀌면 옛 묶음을 dispose 한다. 프로젝트 스토어는 매 그리기마다 알리므로 구독하지 않고,
+ * 프로젝트를 바꾼 뒤 공방을 다음에 열 때(get)·들여다볼 때(peek) 하네스를 가리지 않고 한꺼번에 정리한다.
+ * dispose 된 장은 저장소에 queued 로 남아, 그 프로젝트의 공방을 다시 열면 resume 된다.
  */
 import { conversationScopeKey } from "@/ai/conversationStore";
 import { getHarness } from "@/harnesses/_core/registry";
@@ -52,25 +54,38 @@ export function saveConcurrency(n: number): void {
   try { localStorage.setItem(CONCURRENCY_KEY, String(n)); } catch { /* restricted storage */ }
 }
 
+/** 지금 프로젝트가 아닌 모든 묶음(하네스 무관, 만드는 중인 것 포함)을 dispose 하고 맵에서 지운다. */
+function disposeStaleSessions(): void {
+  const suffix = `|${currentWorkshopProjectKey()}`;
+  for (const key of [...new Set([...sessions.keys(), ...ready.keys()])]) {
+    if (key.endsWith(suffix)) continue;
+    const live = ready.get(key);
+    const pending = sessions.get(key);
+    ready.delete(key);
+    sessions.delete(key);
+    if (live) live.engine.dispose();
+    else pending?.then((session) => session.engine.dispose(), () => undefined);
+  }
+}
+
 export function peekWorkshopSession(harnessId: string): WorkshopSession | null {
+  disposeStaleSessions();
   return ready.get(`${harnessId}|${currentWorkshopProjectKey()}`) ?? null;
 }
 
 export function getWorkshopSession(harnessId: string): Promise<WorkshopSession> {
+  disposeStaleSessions();
   const projectKey = currentWorkshopProjectKey();
   const id = `${harnessId}|${projectKey}`;
-  for (const [key, session] of ready) {
-    if (key.startsWith(`${harnessId}|`) && key !== id) {
-      session.engine.dispose();
-      ready.delete(key);
-      sessions.delete(key);
-    }
-  }
   let pending = sessions.get(id);
   if (!pending) {
-    pending = createSession(harnessId, projectKey);
-    sessions.set(id, pending);
-    pending.then((session) => ready.set(id, session), () => sessions.delete(id));
+    const created = createSession(harnessId, projectKey);
+    pending = created;
+    sessions.set(id, created);
+    created.then(
+      (session) => { if (sessions.get(id) === created) ready.set(id, session); },
+      () => { if (sessions.get(id) === created) sessions.delete(id); },
+    );
   }
   return pending;
 }
@@ -112,6 +127,10 @@ async function createSession(harnessId: string, projectKey: string): Promise<Wor
     },
   };
   await session.reload();
+  if (currentWorkshopProjectKey() !== projectKey) {
+    session.engine.dispose();
+    throw new Error("공방을 여는 동안 프로젝트가 바뀌었습니다");
+  }
   await session.engine.resume();
   return session;
 }
