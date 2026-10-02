@@ -15,7 +15,7 @@ if _fails:
     print("게이트 FAIL %d — 굽지 않는다. python3 harness/gate.py 로 확인 (후보 굽기: --candidate = 적대 리뷰 A 만 건너뜀)" % _fails); sys.exit(1)
 from PIL import Image
 
-OUT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'tiledata', 'joseon-village20'))
+OUT = os.environ.get('JS_OUT') or os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'tiledata', 'joseon-village20'))
 MW, MH = 64, 56
 N, E, S, W = G.N, G.E, G.S, G.W
 
@@ -616,6 +616,20 @@ json.dump({'tile': T, 'cols': COLS, 'rows': sheet_rows, 'tileCount': len(grid), 
            'overlapTiles': {'start': base, 'count': len(extra)}},
           open(os.path.join(OUT, 'pieces.json'), 'w'), ensure_ascii=False, indent=1)
 json.dump({'width': MW, 'height': MH, 'ground': gr, 'object': obj_ids}, open(os.path.join(OUT, 'map.json'), 'w'))
+# ---------- extra.json: 에디터 변환기(build-joseon-tileset.py) 공용 계약 (/tmp/vqa20/extra_format.md 와 같은 형식) ----------
+_KIND = {None: 'grass', 'road': 'road', 'yard': 'yard', 'paving': 'paving', 'water': 'water', 'paddy': 'paddy', 'field': 'field'}
+_DIRN = {_pp.UP: 'up', _pp.RIGHT: 'right', _pp.FRONT: 'down', _pp.LEFT: 'left'}
+_doors = []
+for _n, _x, _y in BUILDINGS:
+    if _n.startswith('pavilion'): continue
+    _w, _h = bsize[_n]
+    _doors.append({'x': _x + DOOR.get(_n, _w // 2), 'y': _y + _h, 'piece': _n})
+json.dump({'width': MW, 'height': MH,
+           'placed': [{'name': n, 'x': x, 'y': y, 'w': w, 'h': h} for (n, x, y, w, h) in placed],
+           'groundKind': [[_KIND.get(ground_kind[y][x], 'other') for x in range(MW)] for y in range(MH)],
+           'doors': _doors,
+           'people': [{'x': p[0], 'y': p[1], 'char': p[2], 'dir': _DIRN[p[3]], 'frame': p[4]} for p in _pp.VILLAGE]},
+          open(os.path.join(OUT, 'extra.json'), 'w'), ensure_ascii=False)
 colors = set(map(tuple, SHEET.a.reshape(-1, 4)[SHEET.a.reshape(-1, 4)[:, 3] == 255][:, :3]))
 print(json.dumps({'sheet': f'{COLS}x{sheet_rows} tiles', 'pixelDiffMapVsSheet': diff, 'overlapTiles': len(extra),
                   'uniqueOpaqueColors': len(colors)}))
