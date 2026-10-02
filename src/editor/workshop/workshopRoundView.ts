@@ -18,6 +18,14 @@ const BACKGROUND = [150, 120, 90, 255] as const;
 const RUN_STATUS: Readonly<Record<WorkshopRun["status"], string>> = {
   queued: "기다리는 중", drawing: "그리는 중", reviewing: "검수 중", done: "다 그림", failed: "못 그림", cancelled: "취소됨",
 };
+/** 판 메모 — 다시 그려도 지워지지 않게 기물별로 모듈에 둔다 */
+const notes = new Map<string, string>();
+let lastError: { itemKey: string; message: string } | null = null;
+
+/** 버려진 약속에서 오류가 사라지지 않게 잡아 보여 준다. 화면 쪽 표시 방법은 onError 가 정한다. */
+export function runAction(work: () => Promise<void>, onError: (message: string) => void): void {
+  work().catch((error: unknown) => onError(error instanceof Error ? error.message : String(error)));
+}
 const newId = () => `f${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 function keyButton(action: string, text: string, onClick: () => void, extra: Record<string, string> = {}): HTMLButtonElement {
@@ -30,6 +38,16 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
   const current = session.runner.currentGrid(item);
   const pick = session.picks.find((p) => p.itemKey === item.key);
   const scale = state.zoom === "big" ? 8 : 4;
+
+  const noteText = () => (notes.get(item.key) ?? "").trim();
+  function act(work: () => Promise<void>): void {
+    runAction(async () => {
+      await work();
+      if (lastError) { lastError = null; rerender(); }
+    }, (message) => { lastError = { itemKey: item.key, message }; rerender(); });
+  }
+  const errorLine = (): HTMLElement[] => (lastError?.itemKey === item.key
+    ? [el("p", { class: "workshop-blocked", attrs: { role: "alert" }, text: `작업이 실패했습니다: ${lastError.message}` })] : []);
 
   async function startRound(note: string): Promise<void> {
     await session.engine.startRound(item, { note });
@@ -53,7 +71,9 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     rerender();
   }
 
-  const note = el("textarea", { attrs: { placeholder: "그릴 때 지킬 말(선택) — 예: 나무를 더 밝게, 윗판을 두껍게", "aria-label": "판 메모" } }) as HTMLTextAreaElement;
+  const note = el("textarea", { class: "workshop-note", attrs: { placeholder: "그릴 때 지킬 말(선택) — 예: 나무를 더 밝게, 윗판을 두껍게", "aria-label": "판 메모" } }) as HTMLTextAreaElement;
+  note.value = notes.get(item.key) ?? "";
+  note.addEventListener("input", () => { notes.set(item.key, note.value); });
   const startBlock = el("div", {
     class: "workshop-start",
     children: [
@@ -61,7 +81,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       el("button", {
         attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
         text: `후보 ${session.runner.candidates}장 뽑기 (모델 호출 약 ${session.runner.candidates * CALLS_PER_CANDIDATE_ESTIMATE}번)`,
-        on: { click: () => { void startRound(note.value.trim()); } },
+        on: { click: () => act(() => startRound(noteText())) },
       }),
     ],
   });
@@ -78,7 +98,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     ],
   });
 
-  if (!round) return el("div", { children: [head, startBlock, ...(current ? [compare(null)] : [])] });
+  if (!round) return el("div", { children: [...errorLine(), head, startBlock, ...(current ? [compare(null)] : [])] });
 
   const runs = round.runs;
   state.selected = Math.max(0, Math.min(runs.length - 1, state.selected));
@@ -108,15 +128,15 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
         el("div", {
           class: "workshop-card-actions",
           children: run.grid ? [
-            el("button", { text: picked ? "고름 ✓" : "고르기", attrs: { type: "button" }, dataset: { testid: "workshop-pick" }, on: { click: (e) => { e.stopPropagation(); void choose(run); } } }),
+            el("button", { text: picked ? "고름 ✓" : "고르기", attrs: { type: "button" }, dataset: { testid: "workshop-pick" }, on: { click: (e) => { e.stopPropagation(); act(() => choose(run)); } } }),
             el("button", { text: "버리기", attrs: { type: "button" }, dataset: { testid: "workshop-reject" }, on: { click: (e) => { e.stopPropagation(); state.rejectFor = run.letter; rerender(); } } }),
-            el("button", { text: "이 장 다시", attrs: { type: "button" }, on: { click: (e) => { e.stopPropagation(); void session.engine.redrawRun(round!.id, run.letter, note.value.trim()); } } }),
+            el("button", { text: "이 장 다시", attrs: { type: "button" }, on: { click: (e) => { e.stopPropagation(); act(() => session.engine.redrawRun(round!.id, run.letter, noteText())); } } }),
           ] : [],
         }),
         ...(rejected ? [el("div", {
           class: "workshop-reasons",
           children: Object.entries(REJECT_REASONS).map(([code, labelText]) => el("button", {
-            text: labelText, attrs: { type: "button" }, on: { click: (e) => { e.stopPropagation(); void reject(run, [code]); } },
+            text: labelText, attrs: { type: "button" }, on: { click: (e) => { e.stopPropagation(); act(() => reject(run, [code])); } },
           })),
         })] : []),
       ],
@@ -134,10 +154,10 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     attrs: { hidden: "" },
     children: [
       ...runs.map((_, index) => keyButton(String(index + 1), "", () => { state.selected = index; rerender(); })),
-      keyButton("enter", "", () => { if (selectedRun?.grid) void choose(selectedRun); }),
+      keyButton("enter", "", () => { if (selectedRun?.grid) act(() => choose(selectedRun)); }),
       keyButton("x", "", () => { if (selectedRun?.grid) { state.rejectFor = selectedRun.letter; rerender(); } }),
-      keyButton("0", "", () => { void reject(null, ["worse"], "지금 그림이 낫다"); }),
-      keyButton("r", "", () => { if (selectedRun) void session.engine.redrawRun(round.id, selectedRun.letter, note.value.trim()); }),
+      keyButton("0", "", () => { act(() => reject(null, ["worse"], "지금 그림이 낫다")); }),
+      keyButton("r", "", () => { if (selectedRun) act(() => session.engine.redrawRun(round.id, selectedRun.letter, noteText())); }),
       keyButton("f", "", () => { state.zoom = state.zoom === "fit" ? "big" : "fit"; rerender(); }),
     ],
   });
@@ -145,12 +165,13 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
   const pending = runs.some((run) => run.status === "queued" || run.status === "drawing" || run.status === "reviewing");
   return el("div", {
     children: [
+      ...errorLine(),
       head,
       el("p", { class: "workshop-item-meta", text: "1~5 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요." }),
       el("div", { class: "workshop-cards", children: runs.map(card) }),
       compare(selectedRun ?? null),
       pending
-        ? el("button", { attrs: { type: "button" }, text: "이 판 그만 그리기", on: { click: () => { void session.engine.cancelRound(round.id); } } })
+        ? el("button", { attrs: { type: "button" }, text: "이 판 그만 그리기", on: { click: () => act(() => session.engine.cancelRound(round.id)) } })
         : startBlock,
       hidden,
     ],

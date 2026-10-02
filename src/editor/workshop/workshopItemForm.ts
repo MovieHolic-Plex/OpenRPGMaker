@@ -3,6 +3,7 @@
 import type { ItemDefinition } from "@/harnesses/_core/workshop/types";
 import { KIND_LABELS, newItemKey } from "@/harnesses/interior-props/editor/items";
 import { el } from "@/util/dom";
+import { runAction } from "./workshopRoundView";
 import type { WorkshopSession } from "./workshopSession";
 
 export function renderItemForm(session: WorkshopSession, onSaved: (key: string) => void, onCancel: () => void): HTMLElement {
@@ -47,7 +48,7 @@ export function renderItemForm(session: WorkshopSession, onSaved: (key: string) 
 
   return el("form", {
     class: "workshop-form", dataset: { testid: "workshop-item-form" },
-    on: { submit: (event) => { event.preventDefault(); void save(); } },
+    on: { submit: (event) => { event.preventDefault(); runAction(save, (message) => { error.textContent = `저장하지 못했습니다: ${message}`; }); } },
     children: [
       el("h3", { text: "새 기물 정의" }),
       field("이름", title),

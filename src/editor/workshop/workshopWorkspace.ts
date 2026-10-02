@@ -36,16 +36,21 @@ export async function openWorkshop(harnessId: string): Promise<void> {
     on: { click: (event) => { if (event.target === host) closeWorkshop(); } },
   });
   host.append(el("div", { class: "workshop-loading", text: "공방을 여는 중…" }));
-  document.body.append(host);
+  const myHost = host;
+  document.body.append(myHost);
   document.addEventListener("keydown", onKeydown);
+  let opened: WorkshopSession;
   try {
-    session = await getWorkshopSession(harnessId);
+    opened = await getWorkshopSession(harnessId);
   } catch (error) {
-    clearChildren(host);
-    host.append(el("div", { class: "workshop-loading", text: `공방을 열지 못했습니다: ${(error as Error).message}` }));
+    if (host !== myHost) return; // 기다리는 동안 닫혔거나 다시 열렸다 — 지금 화면을 건드리지 않는다
+    clearChildren(myHost);
+    myHost.append(el("div", { class: "workshop-loading", text: `공방을 열지 못했습니다: ${(error as Error).message}` }));
     return;
   }
-  unsubscribe = session.subscribe(() => render(false));
+  if (host !== myHost) return;
+  session = opened;
+  unsubscribe = opened.subscribe(() => render(false));
   render(true);
 }
 
@@ -89,6 +94,12 @@ function render(force: boolean): void {
   const eta = etaMinutes(s.rounds, status.concurrency);
   const selected = s.items().find((item) => item.key === selectedKey) ?? null;
   const scrollTop = host.querySelector(".workshop-items")?.scrollTop ?? 0;
+  // 입력 중이던 칸(검색·판 메모)은 다시 그리면 새 요소가 되므로 포커스와 커서를 되살린다
+  const active = document.activeElement;
+  const focusClass = active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement
+    ? (["workshop-search", "workshop-note"].find((c) => active.classList.contains(c)) ?? null) : null;
+  const caret = focusClass && (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement)
+    ? { start: active.selectionStart, end: active.selectionEnd } : null;
   clearChildren(host);
   host.append(el("section", {
     class: "workshop", attrs: { role: "dialog", "aria-modal": "true", "aria-label": "공방" }, dataset: { testid: "workshop" },
@@ -160,12 +171,20 @@ function render(force: boolean): void {
   }));
   const list = host.querySelector(".workshop-items");
   if (list) list.scrollTop = scrollTop;
+  if (focusClass) {
+    const input = host.querySelector<HTMLInputElement | HTMLTextAreaElement>(`.${focusClass}`);
+    if (input) {
+      input.focus();
+      if (caret && caret.start !== null && caret.end !== null) input.setSelectionRange(caret.start, caret.end);
+    }
+  }
 }
 
 function onKeydown(event: KeyboardEvent): void {
   if (!host || !session) return;
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
   const target = event.target as HTMLElement | null;
-  if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT")) return;
+  if (target && (target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT")) return;
   if (event.key === "Escape") {
     if (view.rejectFor) { view.rejectFor = null; render(true); } else closeWorkshop();
     event.preventDefault();
@@ -179,5 +198,7 @@ function onKeydown(event: KeyboardEvent): void {
     event.preventDefault();
     return;
   }
+  // 포커스된 버튼·링크에서의 Enter 는 그 버튼이 처리한다(숨은 「고르기」가 가로채면 안 된다)
+  if (event.key === "Enter" && target && (target.tagName === "BUTTON" || target.tagName === "A")) return;
   host.querySelector<HTMLElement>(`[data-key-action="${event.key.toLowerCase()}"]`)?.click();
 }
