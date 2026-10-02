@@ -154,6 +154,15 @@ def _dilate(m):
     return d
 
 
+def _erode4(m):
+    e = m.copy()
+    e[1:] &= m[:-1]
+    e[:-1] &= m[1:]
+    e[:, 1:] &= m[:, :-1]
+    e[:, :-1] &= m[:, 1:]
+    return e
+
+
 def fill_global(img, dirty, blocked):
     """dirty 화소를 가장 가까운 깨끗한 화소(dirty·blocked 아닌 곳)의 색으로 메운다 — 지도 전체를 한 번에(8방 번짐).
     칸마다 따로 메우면 이웃 칸의 아직 안 지운 흙을 재료로 집어 왔다(실측: 굽이 아래 흙 삼각형)."""
@@ -872,6 +881,10 @@ POOLS = {   # (도심 고리 1, 그 밖)
 }
 
 
+# 빈 광장 비율(도심 고리 1, 그 밖) — SF 는 탑·돔이 칸을 꽉 채워 소품 무늬로 읽혔다(QA 4차): 바깥을 성기게
+PLAZA = {'modern': (16, 16), 'sf': (18, 42), 'steam': (16, 16)}
+
+
 def overlay_sprawl(img, ctx, style):
     out = img.copy()
     art = 'modern' if style == 'sf' else style
@@ -889,9 +902,10 @@ def overlay_sprawl(img, ctx, style):
     sprs = {n: sprite(art, n) for n in SPRITES[art]}
     placed, name_at = [], {}
     for (x, y), (ring, role) in sorted(cells.items(), key=lambda kv: (kv[0][1], kv[0][0])):   # 위 줄부터 — 아래 건물이 위 건물 그림자를 덮는다
-        if h32('plaza', x, y) % 100 < 16:            # 열에 하나쯤은 빈 광장·마당 — 칸마다 건물이 박히면 무늬 타일처럼 읽혔다(QA 3차)
+        core = ring == 1 and role in ('capital', 'fort_city', 'harbor_city')
+        if h32('plaza', x, y) % 100 < PLAZA[style][0 if core else 1]:   # 빈 광장·마당 — 칸마다 건물이 박히면 무늬 타일처럼 읽혔다(QA 3차)
             continue
-        pool = inner if (ring == 1 and role in ('capital', 'fort_city', 'harbor_city')) else outer
+        pool = inner if core else outer
         k = h32('kind', x, y) % len(pool)
         for _ in range(len(pool)):                   # 왼쪽·위 이웃과 같은 건물은 피한다
             if pool[k] not in (name_at.get((x - 1, y)), name_at.get((x, y - 1))):
@@ -1107,7 +1121,10 @@ def render_space(ctx, seed=11, road_px=None):
     lvl = np.select([Bd > .95, Bd > .68, Bd > .4, Bd > .1], [4, 3, 2, 1], 0)
     lvl = np.where((lvl == 0) & wisp, 1, lvl)
     lvl = np.where((lvl == 0) & (d > .2) & (d <= .32) & (bayer(H, W) < (d - .2) / .12 * .5), 1, lvl)   # 끝자락 디더 한 단
-    P = near[cy, cx]
+    # 성운 종류는 크게 휜 좌표로 고른다 — 바닥 다각형의 곧은 변이 성운 경계에 그대로 남아 세로 직선이 됐다(QA 4차, (68,18~22))
+    wx3 = (vnoise(H, W, 46, seed + 31) - .5) * 64 + (vnoise(H, W, 15, seed + 32) - .5) * 14
+    wy3 = (vnoise(H, W, 46, seed + 33) - .5) * 64 + (vnoise(H, W, 15, seed + 34) - .5) * 14
+    P = near[np.clip(((yy + wy3) // TS).astype(int), 0, ctx.H - 1), np.clip(((xx + wx3) // TS).astype(int), 0, ctx.W - 1)]
     wx2 = (vnoise(H, W, 22, seed + 21) - .5) * 30
     wy2 = (vnoise(H, W, 22, seed + 22) - .5) * 30
     P2 = near[np.clip(((yy + wy2) // TS).astype(int), 0, ctx.H - 1), np.clip(((xx + wx2) // TS).astype(int), 0, ctx.W - 1)]
@@ -1564,7 +1581,18 @@ def force_road_band(img, world, C, ukeys, role, pal, road_px):
         e[:, 1:] &= b[:, :-1]
         e[:, :-1] &= b[:, 1:]
         sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
-        m[sl] = e if (x, y) not in ctx._gaps else False
+        if (x, y) in ctx._gaps:
+            continue
+        if len(ls) <= 1:                             # 장소로 들어가는 막다른 팔: 옛 길 화소가 바닥 색으로 잡혀 links 가 못 본다(외계 (79,16)·(65,12) 분홍 토막)
+            keys = KP.key_of(C[sl])
+            core = set(np.unique(keys[e]).tolist())
+            for d, (dx, dy) in DIRS.items():
+                X, Y = x + dx, y + dy
+                if d in ls or not (0 <= X < ctx.W and 0 <= Y < ctx.H and ctx.occupied[Y, X]):
+                    continue
+                arm = _erode4(band_mask([d])) & ~band_mask([])
+                e = e | (arm & np.isin(keys, list(core)))
+        m[sl] = e
     if not m.any():
         return img
     rr, _ = KP.recolor_terrain(C, ukeys, np.full_like(role, KP.GID['road']), pal, ctx.G)
