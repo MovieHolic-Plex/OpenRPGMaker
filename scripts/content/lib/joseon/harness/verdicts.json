@@ -1248,17 +1248,17 @@
   "date": "2026-10-02"
  },
  "tower_sulsa_5": {
-  "hash": "233ee157554b",
+  "hash": "1ad80dad14ec",
   "status": "note",
-  "line": "3층 탑형 남색 지붕·상륜, 주황 포장 마당. 기준 문법 동일, 위층일수록 벽이 작아 창이 거의 안 보임.",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "tower_yesik_7": {
-  "hash": "d936ee3f382c",
+  "hash": "8e2b7ef57c77",
   "status": "note",
-  "line": "7칸 넓은 탑(예식장형), 회색 포장 마당.",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1288,7 +1288,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_v": {
-  "hash": "42193b1410f3",
+  "hash": "797c8f70ca1a",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1296,7 +1296,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_v_e": {
-  "hash": "f3382e81aee0",
+  "hash": "c0eb42ca265d",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1304,7 +1304,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_v1": {
-  "hash": "fd17654b33b5",
+  "hash": "d1f3368324bd",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1312,7 +1312,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_v1_e": {
-  "hash": "cba815231428",
+  "hash": "ac6e0612390c",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1320,7 +1320,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_v2": {
-  "hash": "4318d30e4460",
+  "hash": "678fb2b2791a",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1328,7 +1328,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_v2_e": {
-  "hash": "2dac4136806b",
+  "hash": "c5d8a6ec5143",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1336,7 +1336,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_corner_nw": {
-  "hash": "2d7be1f42746",
+  "hash": "b2f8499759c2",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1344,7 +1344,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_corner_ne": {
-  "hash": "b465fc79c435",
+  "hash": "d1acc76a173a",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1352,7 +1352,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_corner_sw": {
-  "hash": "7c50383ed1d9",
+  "hash": "a243eca52509",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1360,7 +1360,7 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_corner_se": {
-  "hash": "c0347148c171",
+  "hash": "d3038e1585b4",
   "status": "note",
   "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길, 몸체 가운데=칸 가운데)+오른쪽 땅 그림자. 성가퀴 이빨을 어두운 틈으로 도드라지게. 가로 성벽 앞면과 같은 돌 문법",
   "reviewer": "claude",
@@ -1424,23 +1424,23 @@
   "date": "2026-10-02"
  },
  "gungnae_bridge_h4": {
-  "hash": "5adc850fd6a3",
+  "hash": "c3c932220a48",
   "status": "pass",
-  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
+  "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_bridge_h5": {
-  "hash": "ac01b4f5a788",
+  "hash": "db61dfca5321",
   "status": "pass",
-  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
+  "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_bridge_h6": {
-  "hash": "af54a792c40a",
+  "hash": "d3c972b2e7a7",
   "status": "pass",
   "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
   "reviewer": "claude",
@@ -1448,7 +1448,7 @@
   "date": "2026-10-02"
  },
  "gungnae_bridge_v4": {
-  "hash": "db768f252606",
+  "hash": "1434f114abff",
   "status": "pass",
   "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
   "reviewer": "claude",
@@ -1456,7 +1456,7 @@
   "date": "2026-10-02"
  },
  "gungnae_bridge_v5": {
-  "hash": "21e861cffa9f",
+  "hash": "e87230c59336",
   "status": "pass",
   "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
   "reviewer": "claude",
@@ -1464,7 +1464,7 @@
   "date": "2026-10-02"
  },
  "gungnae_bridge_v6": {
-  "hash": "f2f4bc4fd9b5",
+  "hash": "cd378dad0cd4",
   "status": "pass",
   "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
   "reviewer": "claude",
@@ -1472,9 +1472,9 @@
   "date": "2026-10-02"
  },
  "gungnae_bridge_narrow_h": {
-  "hash": "8c548019dc86",
-  "status": "note",
-  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "hash": "57fdb5b48a68",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1944,17 +1944,17 @@
   "date": "2026-10-02"
  },
  "gn_sarip_mud": {
-  "hash": "213676009ce5",
+  "hash": "ed9ff85fa99a",
   "status": "note",
-  "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gn_sarip_stone": {
-  "hash": "ed412f06cbd7",
+  "hash": "071e1f4f3364",
   "status": "note",
-  "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1976,7 +1976,7 @@
   "date": "2026-10-02"
  },
  "water47g": {
-  "hash": "3dbdb0bfe7f0",
+  "hash": "1ad1783a883e",
   "status": "pass",
   "line": "청색 섞은 물 3/4 윗면 기슭(북쪽 둑 앞면 어둡게) — 국내성용, 깊은 물 변형 8종으로 격자 무늬 방지",
   "reviewer": "claude",
@@ -1992,7 +1992,7 @@
   "date": "2026-10-02"
  },
  "palace_hall_wide_8": {
-  "hash": "bc1ed422cce0",
+  "hash": "0033af020f63",
   "status": "pass",
   "line": "넓은 단층 정전: 아래 큰 팔작 + 낮은 위 지붕 + 낮은 3단 월대, 위에서 본 지붕+앞 벽 기준 건물과 같은 문법",
   "reviewer": "claude",
@@ -2008,7 +2008,7 @@
   "date": "2026-10-02"
  },
  "gungnae_gate_side_5": {
-  "hash": "251f45f1923f",
+  "hash": "0080ed70d513",
   "status": "note",
   "line": "측면 문루(통로 기준 재조립): 지붕 폭·기둥·벽 몸체가 같은 중심선, 지붕 뒤로 성벽이 이어짐, 아래 4행이 동서 통로, 기둥 오른쪽 땅 그림자. 궁문은 회벽 담에 맞춘 작은 협문",
   "reviewer": "claude",
@@ -2016,7 +2016,7 @@
   "date": "2026-10-02"
  },
  "palace_gate_side_3": {
-  "hash": "82b07f082708",
+  "hash": "69857796caec",
   "status": "note",
   "line": "측면 문루(통로 기준 재조립): 지붕 폭·기둥·벽 몸체가 같은 중심선, 지붕 뒤로 성벽이 이어짐, 아래 4행이 동서 통로, 기둥 오른쪽 땅 그림자. 궁문은 회벽 담에 맞춘 작은 협문",
   "reviewer": "claude",
@@ -2024,17 +2024,41 @@
   "date": "2026-10-02"
  },
  "gungnae_bridge_narrow_h5": {
-  "hash": "4cede6e8ccd3",
+  "hash": "ab2ccbd7889e",
   "status": "pass",
-  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
+  "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_bridge_narrow_h6": {
-  "hash": "db2548e7ea9a",
+  "hash": "b88fbbb3bd17",
   "status": "pass",
-  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
+  "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_h3": {
+  "hash": "5ad801b35c96",
+  "status": "note",
+  "line": "",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_h4": {
+  "hash": "36931380491d",
+  "status": "note",
+  "line": "",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_h5": {
+  "hash": "6c47ed8b8034",
+  "status": "note",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

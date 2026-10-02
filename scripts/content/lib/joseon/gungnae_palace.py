@@ -320,8 +320,8 @@ def wolde3(c, x0, x1, ytop, stair_w=48):
             c.put(x, y + 13, S[1])
         y += 14
     # 계단: 세 단을 가로질러 내려간다(맨 윗단 면은 3칸 높이 9px 이므로 2단씩)
-    yy0 = ytop + 5
-    _stairs(c, cx, yy0, stair_w, 6, 3, 2, 14)
+    yy0 = ytop + 2
+    _stairs(c, cx, yy0, stair_w, 8, 3, 2, 14)                          # 맨 아랫단 면 끝(ytop+42)까지 내려와 가로 벽돌 띠가 계단을 가로막지 않는다
     # 맨 윗단 난간(계단 자리는 비운다) + 모서리 기둥
     a, b = tiers[0]
     ry = ytop
@@ -962,10 +962,13 @@ def _court_floor(cv, x0, x1, y0, y1, kind='orange'):
                 col = P[3] if q > 0.15 else P[2]
                 if q > 0.93: col = P[4]
                 if (y - y0) % 8 == 0 or (x - x0 + ((y - y0) // 8) * 8) % 16 == 0: col = P[2] if q > 0.5 else P[1]
-            else:
-                col = S[4] if q > 0.16 else S[3]
-                if q > 0.9: col = S[5]
-                if (y - y0) % 8 == 0 or (x - x0 + ((y - y0) // 8) * 8) % 16 == 0: col = S[3]
+            else:                                                       # 정사각 판석 포장(어긋난 벽돌 쌓기가 아니라 바닥으로 읽히게 16px 격자, 판마다 톤이 다르다)
+                sx, sy = (x - x0) // 16, (y - y0) // 16
+                tone = rnd(sx, sy, 41)
+                base_t = 5 if tone > 0.55 else 4
+                col = S[base_t] if q > 0.14 else S[base_t - 1]
+                if q > 0.94: col = S[min(6, base_t + 1)]
+                if (y - y0) % 16 == 0 or (x - x0) % 16 == 0: col = S[2]
             cv.put(x, y, col)
     if kind == 'gray':                                                  # 마름모 무늬
         mx = (x0 + x1) // 2
@@ -1016,7 +1019,7 @@ def tower(bays=5, ramp='dblue', col='red', glass='paper', court_kind='orange', t
     _courses(cv, 10, base_bottom, PW - 10, base_bottom + 9, 4, 8)
     for x in range(10, PW - 10):
         cv.put(x, base_bottom + 8, S[1])
-    _stairs(cv, PW // 2, base_bottom + 9, 36, 3, 3, 3, 12)
+    _stairs(cv, PW // 2, base_bottom + 9, 36, max(3, (H - 4 - (base_bottom + 9)) // 6), 3, 3, 12)   # 계단은 마당 맨 아래(땅)까지 내려온다
     for i in range(tiers):
         cv.paste(ts[i], (PW - ts[i].w) // 2, ys[i])
     _spire(cv, PW // 2, 0)
