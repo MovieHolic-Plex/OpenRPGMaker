@@ -103,7 +103,7 @@ def pyeong_daemun():
 
 def thatch_hut_2():
     """오두막 초가 (2칸): 한 칸 방 + 부엌 — 폭 4칸 캔버스의 작은 집."""
-    return K.assemble(K.house('jc', 2, 'wr', 'fr', steps=(0,), hip=True, chimi=False), _lib(), post=lambda cv: K.thatch_baram(cv, 3))
+    return K.assemble(K.house('jc', 2, 'gr', 'gr', steps=(0,), hip=True, chimi=False), _lib(), post=lambda cv: K.thatch_baram(cv, 3))
 
 
 def thatch_house_4k():

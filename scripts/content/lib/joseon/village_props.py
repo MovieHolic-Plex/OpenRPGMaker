@@ -345,3 +345,21 @@ def paddy_edge_rice(mask):
             (x0, y0), (x1, y1), (x2, y2) = sl[0](i), sl[1](i), sl[2](i)
             c.put(x0, y0, e[5] if rnd(i, bit, 3) > 0.3 else e[4]); c.put(x1, y1, e[4]); c.put(x2, y2, e[3])
     return c
+
+
+def dock():
+    """선착장 16×32: 물가에서 물 위로 내민 널 다리 — 가로 널 일곱 줄, 양옆 말뚝 둘, 끝에 밧줄 묶는 말뚝."""
+    c = Cv(T, 2 * T)
+    Wd = RGB['wood']
+    for y in range(0, 26):
+        for x in range(2, 14):
+            tone = 6 if (y % 4 == 0) else (5 if y % 4 in (1, 2) else 3)
+            if x in (2, 13): tone = 3 if x == 2 else 2
+            c.put(x, y, Wd[tone])
+    for y in range(26, 29):
+        for x in range(2, 14): c.put(x, y, Wd[4] if y == 26 else Wd[2])
+    for px in (0, 13):
+        for y in range(8, 31): c.put(px, y, Wd[5]); c.put(px + 1, y, Wd[3]) if px else c.put(px + 1, y, Wd[4])
+        c.put(px, 7, Wd[6])
+    outline(c)
+    return c

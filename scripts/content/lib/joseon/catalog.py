@@ -145,6 +145,7 @@ def objects():
         'geumjul_altar': VPR.geumjul_altar(),
         'stepping_stones': VPR.stepping_stones(),
         'boat': VPR.boat(),
+        'dock': VPR.dock(),
         'stele': VPR.stele(),
         'stove_pot': VPR.stove_pot(),
     }

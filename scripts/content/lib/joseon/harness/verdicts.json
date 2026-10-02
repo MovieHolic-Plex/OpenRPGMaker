@@ -792,9 +792,9 @@
   "date": "2026-10-02"
  },
  "thatch_hut_2": {
-  "hash": "5b35f4f6a0a1",
+  "hash": "141e18f0151d",
   "status": "note",
-  "line": "초가 방석 지붕 3단 윗면+정면 벽 — 기존 thatch_house_3 과 같은 블록 문법, 칸 수·문 종류만 다름",
+  "line": "문(널문)을 단 오두막 — 초가 블록 문법 동일",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -979,6 +979,14 @@
   "hash": "9ba70f00a8ab",
   "status": "user",
   "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "dock": {
+  "hash": "af2fe80355ab",
+  "status": "user",
+  "line": "소품: 물 위로 내민 널 선착장",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

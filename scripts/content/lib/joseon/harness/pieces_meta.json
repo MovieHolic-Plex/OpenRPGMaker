@@ -1032,5 +1032,14 @@
    "door_pots",
    "planter_round"
   ]
+ },
+ "dock": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "말뚝"
  }
 }

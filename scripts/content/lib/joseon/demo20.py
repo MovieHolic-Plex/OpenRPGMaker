@@ -215,7 +215,7 @@ def tail_target(n, x, y):
 
 yard = set()
 for n, x, y in BUILDINGS:
-    if n.startswith('pavilion') or n == 'gate_solseul' or y < 3 and x < 27 and False:
+    if n.startswith('pavilion') or n == 'gate_solseul' or (8 <= x <= 26 and y <= 22):
         continue
     dx, r, xl = tail_target(n, x, y)
     if xl is None:
@@ -243,7 +243,7 @@ for (x0, y0, x1, y1) in ((10, 34, 15, 39), (16, 34, 21, 39), (10, 40, 15, 45), (
     plot = {(x, y) for y in range(y0, y1) for x in range(x0, x1)}
     for (x, y) in plot:
         setg(x, y, PADDY + mask_of(plot, x, y, wrap=False), 'paddy')
-for rect, sd in (((9, 33, 22, 46), 9), ((48, 41, 64, 51), 11), ((38, 1, 41, 20), 15), ((60, 0, 64, 29), 20), ((30, 40, 40, 48), 13), ((56, 8, 60, 14), 21)):
+for rect, sd in (((48, 41, 64, 51), 11), ((38, 1, 41, 20), 15), ((60, 0, 64, 29), 20), ((30, 40, 40, 48), 13), ((56, 8, 60, 14), 21)):
     x0, y0, x1, y1 = rect
     for y in range(y0, min(y1, MH)):
         for x in range(x0, min(x1, MW)):
@@ -341,7 +341,7 @@ for y in range(3, 22):
 BODY += [(8, 1, 19, 2), (8, 3, 1, 19), (26, 3, 1, 19), (8, 22, 19, 2)]
 
 # 양반댁 안: 우물 · 장독대 · 굴뚝 · 석등 한 쌍 · 사랑채 앞 평상 · 정원수
-for nm, x, y in (('lantern', 15, 9), ('lantern', 18, 9), ('well', 22, 4), ('jangdokdae', 9, 3), ('chimney', 12, 3), ('pyeongsang', 17, 14), ('stove_pot', 24, 16)):
+for nm, x, y in (('lantern', 15, 9), ('lantern', 18, 9), ('well', 22, 4), ('jangdokdae', 9, 3), ('chimney', 12, 3), ('pyeongsang', 17, 14)):
     put_obj(nm, x, y, True)
 for nm, x, y in (('persimmon_a', 22, 17), ('pine_c', 10, 6), ('bush_b', 23, 2), ('bamboo', 9, 8), ('small_z_a', 23, 7)):
     put_obj(nm, x, y, True)
@@ -381,10 +381,10 @@ for nm, x, y in (('yeonja_mill', 36, 38), ('haystack', 32, 38), ('millstone', 34
                  ('pyeongsang', 49, 38), ('jangdokdae', 53, 37), ('laundry', 57, 33),
                  ('firewood', 24, 36), ('gochu_mat', 26, 37)):
     put_obj(nm, x, y)
-for nm, x, y in (('scarecrow', 16, 40), ('scarecrow', 56, 44), ('scarecrow', 58, 11), ('scarecrow', 39, 8), ('scarecrow', 61, 14)):
+for nm, x, y in (('scarecrow', 56, 44), ('scarecrow', 58, 11)):
     put_obj(nm, x, y)
 # 연못 선착장: 샛길 끝에서 물가로, 배 한 척
-put_obj('boat', 7, 43, True)
+put_obj('dock', 8, 41, True); put_obj('boat', 5, 44, True)
 # 연못 둘레: 남쪽 기슭에 갈대 · 바위
 _shore = sorted([(x, y) for (x, y) in pond if (x, y + 1) not in water and 3 <= x <= 8])
 for k, (x, y) in enumerate(_shore[::2][:4]):
@@ -397,8 +397,9 @@ for r, yy in enumerate((48, 52)):
     for c, xx in enumerate(range(12 + 2 * r, 36, 6)):
         put_obj(('persimmon_a', 'persimmon_b', 'persimmon_c')[(c + 2 * r) % 3], xx, yy)
 # 배산: 북쪽 소나무·바위 띠
-for k, x in enumerate(range(27, 63, 3)):
-    put_obj('rocks', x + (k * 2) % 3, 1)
+put_obj('stele', 6, 1, True); put_obj('pyeongsang', 30, 1, True)
+for x in (34, 41, 53, 58):
+    put_obj('rocks', x, 1)
 # 숲띠(뒷산)
 for nm, x, y in (('zelkova_a', 0, -4), ('pine_a', 4, -4), ('zelkova_b', 9, -5), ('pine_b', 14, -5), ('zelkova_c', 19, -5), ('pine_c', 23, -4), ('zelkova_e', 28, -4), ('pine_d', 33, -4),
                  ('zelkova_e', 37, -4), ('pine_a', 45, -4), ('zelkova_c', 50, -4), ('pine_d', 55, -4), ('zelkova_b', 60, -4),
