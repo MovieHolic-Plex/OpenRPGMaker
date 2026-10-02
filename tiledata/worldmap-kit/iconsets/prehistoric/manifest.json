@@ -1,0 +1,256 @@
+{
+ "id": "prehistoric",
+ "name": "선사·원시",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "부족 대마을",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "매머드 엄니 대문·목책 둘레·불 광장을 둘러싼 움집 무리·족장의 큰 움집"
+  },
+  {
+   "role": "fort_city",
+   "name": "목책 부락",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "말뚝 목책·통나무 문과 두개골·망대 둘·안쪽 움집 넷"
+  },
+  {
+   "role": "harbor_city",
+   "name": "호숫가 수상 부락",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "호수 위 말뚝 움집 셋·잔교·통나무 배 둘·뒤 기슭 마을"
+  },
+  {
+   "role": "castle",
+   "name": "공룡족 둥지 요새",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "바위 탑 셋과 뼈 가시·짚 둥지의 알·두개골 문"
+  },
+  {
+   "role": "castle",
+   "name": "매머드 뼈 전당",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "가죽 돔을 엄니 갈비가 감싸고 매머드 두개골 문"
+  },
+  {
+   "role": "large_town",
+   "name": "움집 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "짚·가죽 지붕 움집 여섯과 모닥불·고사리"
+  },
+  {
+   "role": "village",
+   "name": "동굴 집 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "바위 언덕의 구멍 집 셋·사다리·모닥불"
+  },
+  {
+   "role": "village",
+   "name": "나무 위 부락",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 6,
+   "desc": "거목 두 그루 위 판자 마루 움집·줄사다리"
+  },
+  {
+   "role": "camp",
+   "name": "사냥 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 6,
+   "desc": "가죽 천막 둘·모닥불 고기 꼬치·세워 둔 창"
+  },
+  {
+   "role": "tower_small",
+   "name": "토템 기둥",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 23,
+   "row": 6,
+   "desc": "얼굴 새긴 통나무 셋·날개 판·뿔 두개골"
+  },
+  {
+   "role": "tower_great",
+   "name": "거대 바위 기둥",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "층층 사암 기둥·꼭대기 움집과 사다리"
+  },
+  {
+   "role": "cave",
+   "name": "벽화 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 6,
+   "desc": "바위 언덕의 큰 입구·붉은 손자국 벽화·횃불"
+  },
+  {
+   "role": "ruin",
+   "name": "공룡 화석",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 6,
+   "desc": "반쯤 묻힌 거대 뼈대(등뼈·갈비·두개골)"
+  },
+  {
+   "role": "ruin_city",
+   "name": "운석 충돌구",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "바위 둑·탄 운석의 붉은 금·연기·깨진 지층"
+  },
+  {
+   "role": "shrine",
+   "name": "태양 제단",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "세 단 돌 계단 단·금빛 해 원반·선돌·불 그릇"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "거대 고사리 숲",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "키 다른 나무고사리 다섯"
+  },
+  {
+   "role": "circle",
+   "name": "선돌 원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 6,
+   "desc": "선돌 고리와 들보를 얹은 문 돌"
+  },
+  {
+   "role": "volcano",
+   "name": "화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 6,
+   "desc": "검은 원뿔·흘러내리는 용암 줄기 둘·연기"
+  },
+  {
+   "role": "floating",
+   "name": "떠 있는 바위섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "거꾸로 선 바위·움집·고사리·폭포·덩굴"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}
