@@ -1,0 +1,55 @@
+// 금장 액자 상단 윗면만 1행 확장; 꼭대기 윗면 가운데 3행(y=3~5), 왼쪽 3행(y=8~10), 오른쪽 3행(y=9~11); 협탁 상판·사진·배치 유지
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat i gold 2
+@mat j gold 3
+@mat k gold 4
+@mat l gold 5
+@mat n linen 2
+@mat o linen 4
+@mat q pine 4
+@mat r pine 5
+@mat s blue 2
+@mat t blue 4
+@mat u red 2
+@layer furniture
+@mblock 0 0
+................
+................
+................
+......iiiiii....
+......illlki....
+......illlki....
+......lkkkkj....
+......lnnnnj....
+.iiiiiloqqnj....
+.illkiloqrnjiii.
+.illkilnrrnjlki.
+.lkkkjlnttnjlki.
+.lonnjlsttnjkkj.
+.loqnjlsttsjoqj.
+.lqrnjlnnnnjqrj.
+.lssnjikkkijsuj.
+.lssnjcccccsujc.
+.ikkijfggggnnjc.
+.gggggfffggikkj.
+.ggggfffffeeeec.
+.gggggffffeeeec.
+.fkkkkkkkkkkkec.
+.cddddddddddddb.
+..cgfffkffedcb..
+..cgffkkkfedcb..
+..cffffkfeedcb..
+..cddddddddddb..
+..cccccccccccb..
+..cfb......cdb..
+..cfb......cdb..
+..ceb......ccb..
+..cbb......cbb..

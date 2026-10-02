@@ -1,0 +1,85 @@
+// B — 방패 진열의 쇠테·갈색과 붉은 면, 뒤로 교차하는 은회색 검 두 자루.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat D iron 1
+@mat I iron 2
+@mat L iron 4
+@mat H iron 5
+@mat W wood 4
+@mat V wood 5
+@mat U wood 6
+@mat R red 2
+@mat S red 3
+@mat b brass 2
+@mat g brass 3
+@mat G brass 4
+@mat Y brass 5
+@mat t dwood 2
+@mat v dwood 4
+@layer blades
+@mblock 5 0
+H
+LHI
+.LHLI
+...LHLI
+....LHLI
+......LHLI
+.......LHLI
+.........LHLI
+..........LHLI
+............LHLI
+.............LHLI
+...............LHI
+@mblock 22 0
+....L
+..HLI
+.HLI
+HLI
+@mblock 16 4
+....HLI
+..HLI
+.HLI
+HLI
+@mblock 10 8
+....HLI
+..HLI
+.HLI
+HLI
+@layer hilts
+@mblock 8 10
+HLI
+@mblock 7 11
+HLI
+@mblock 22 10
+LHI
+@mblock 23 11
+LHI
+@mblock 5 10
+..Y
+.YG
+Ygb
+.btv
+tv.G
+vb
+@mblock 21 10
+..G
+...Gb
+....gb
+..Gvt
+...vt
+....bv
+@layer shield
+@mblock 10 3
+..LLLLLLII
+.LHHHLLLIII
+LHUUVVWRRRLI
+LHUUVVYSSSLI
+LHUUVGYSSSLI
+LHVVGGGSSSLI
+LHVWGGGRRRLI
+.LVWWgRRRLI
+.ILWWgRRRII
+..ILWgRRII
+...ILgRII
+....IIII

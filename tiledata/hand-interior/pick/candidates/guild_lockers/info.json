@@ -1,0 +1,36 @@
+{
+ "id": "guild lockers",
+ "slug": "guild_lockers",
+ "name_ko": "개인 보관함",
+ "category": "모험가 길드",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "번호 붙은 나무 칸 여섯 개 보관함(2칸) — 윗면 처마 3~4행, 칸마다 쇠 손잡이. 전체 높이 28~30px.",
+ "where": "전체 높이 28~30px.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "tavern"
+}

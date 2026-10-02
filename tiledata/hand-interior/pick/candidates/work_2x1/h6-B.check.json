@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/work_2x1/h6-B.pxg",
+ "id": "work 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "v5 그대로 두고 윗면 오른쪽 그늘(빛 반대쪽)을 한 단 넓히고 오른쪽 다리의 밝은 줄을 그늘로 바꿔 빛 방향을 맞춤",
+ "ok": true
+}

@@ -1,0 +1,11 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/axe_mace_wall",
+ "id": null,
+ "hard": [
+  "폴더 이름 candidates 이 v5 기물·새 기물(new/items.json) slug 가 아니다"
+ ],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): axe_mace_wall"
+ ],
+ "ok": false
+}

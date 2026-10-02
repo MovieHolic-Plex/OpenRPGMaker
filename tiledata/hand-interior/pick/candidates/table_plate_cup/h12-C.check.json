@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_plate_cup/h12-C.pxg",
+ "id": "table:plate+cup",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.131
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  2,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "윗면을 수평 8줄(뒤 테·접시·찻잔 받침이 윗면 위)로, 앞은 천 4줄(주름·밑단) — 찻상/책상 anchors 의 윗면 대 앞면 비율·굵은 윤곽(linen:1)",
+ "ok": true
+}

@@ -20,6 +20,12 @@ interface SpecObject {
   readonly surface?: readonly number[]; readonly animated?: boolean; readonly stairs?: "up" | "down";
   /** 조수용 메모(tiledata/hand-interior/v5/notes6.py): 무엇인지 한 줄 · 쓰는 방 태그 · 놓는 곳 · 짝 소품 id. */
   readonly desc?: string; readonly tags?: readonly string[]; readonly place?: string; readonly pair?: readonly string[];
+  /** 쓰임(tiledata/hand-interior/v5/use6.py USE_KO): sit·sleep·open·search·read·counter·travel·light·save·heal·switch·push·trap·key·gate·seal·walk·block. */
+  readonly use?: readonly string[];
+  /** 바라보는 쪽. 없으면 남쪽(카메라 쪽). */
+  readonly facing?: "N" | "S" | "E" | "W";
+  /** 같은 물건의 다른 상태 그림 — 이벤트 쪽(page)마다 그림을 바꿀 때. others = {상태: 가구 id}. */
+  readonly states?: { readonly group: string; readonly state: string; readonly others: Readonly<Record<string, string>> };
 }
 /** 방 종류 표: 예제 26맵을 방 단위로 나눈 결과. examples = [맵 id, 건물 id, 방 종류, [[가구 id, 개수]]]. */
 export interface HandInteriorRoomTable {

@@ -1,0 +1,72 @@
+// B: 방 가구처럼 얇은 검은 테·덩이 반사광·갈색 받침, 금과 붉은 눈 하나; 꼭대기 윗면 3행(y=0~2)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat i iron 2
+@mat j iron 3
+@mat k iron 1
+@mat l iron 4
+@mat g glass 1
+@mat h glass 2
+@mat b glass 4
+@mat c glass 5
+@mat d glass 6
+@mat r red 2
+@mat s red 4
+@mat t red 5
+@mat n black 1
+@mat o black 2
+@mat p black 3
+@mat w dwood 2
+@mat v dwood 4
+@mat u dwood 3
+@layer mirror
+@mblock 0 0
+...jjjjjjjjjj...
+..jlllljjjjjjk..
+..jlljjjjijjjk..
+..iooooooooopn..
+..ijggggggggkn..
+..ijdbbhhhhgkn..
+..ijcdbbhkhgkn..
+..ijccdbhkhgkn..
+..ijbccbkhhgkn..
+..ijhbckhhhgkn..
+..ijhbhkhhhgkn..
+..ijhhbhkhhgkn..
+..ijhhhbkhhgkn..
+..ijhhhkhhhgkn..
+..ijhhhkhhhgkn..
+..ijhhkhhhhgkn..
+..ijhhkhhhhgkn..
+..ijhhhkhhhgkn..
+..ijhhhkhhhgkn..
+..ijhhhrssrgkn..
+..ijhhrsntsrkn..
+..ijhhhrssrgkn..
+..ijhhhkhhhgkn..
+..ijhhkhhhhgkn..
+..ijhhkhhhhgkn..
+..ijhkhhbhhgkn..
+..ijhkhhbbhgkn..
+..ijkhhbbbhgkn..
+..ijkhbbchhgkn..
+..ijhkbchhhgkn..
+..ijhbkhhhhgkn..
+..ijhbkhhhhgkn..
+..ijhhhkhhhgkn..
+..ijhhhkhhhgkn..
+..ijhhghkhhgkn..
+..ijhhghkhhgkn..
+..ijhhgghkhgkn..
+..ijhhgggkhgkn..
+..ijggggggggkn..
+..ijiiiiiiiikn..
+..iooooooooonn..
+..jiiiiiikkknn..
+...kppppppnn....
+...kvvuvvuwk....
+..uvvvuvuuuwk...
+..uvuuuuuuwwk...
+..uwwwwwwwwwk...
+..wwwwwwwwwwk...

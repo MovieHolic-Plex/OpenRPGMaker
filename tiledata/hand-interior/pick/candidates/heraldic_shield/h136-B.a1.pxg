@@ -1,0 +1,33 @@
+// B: 기존 방패의 얇은 쇠테와 좌상단 빛, 파랑·금 사분 문장에 사자 두 마리. 벽걸이 꼭대기 윗면 0행(해당 없음).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat S iron 2
+@mat R iron 3
+@mat I iron 4
+@mat H iron 5
+@mat b blue 1
+@mat c blue 2
+@mat d blue 3
+@mat G gold 2
+@mat g gold 3
+@mat j gold 4
+@mat k gold 5
+@layer shield
+@mblock 0 0
+...IIIIIIIRRS...
+..IHHHHIIIIRRS..
+..IHddddjjggRS..
+..IHddkjjjggRS..
+..IHdkkdjjggRS..
+..IHkdkdjjggRS..
+..IHdkkdjjggRS..
+..IHkdkdjjggRS..
+..IHjjggccccRS..
+...IjgggcckcS...
+...IjgggckkcS...
+....IggGkckS....
+....IggGckkS....
+.....IgGckS.....
+......IGcS......
+.......SS.......

@@ -1,0 +1,84 @@
+// E: 흰 도자 상판과 목제 쌍서랍 받침, 황동 현미경을 둔 연구 책상; 상판 윗면 8행(y=14~21), 현미경 머리 윗면 3행(y=7~9).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a white 0
+@mat b white 1
+@mat c white 2
+@mat d white 3
+@mat e white 4
+@mat f white 5
+@mat g linen 6
+@mat h linen 4
+@mat i linen 2
+@mat j pine 2
+@mat k pine 3
+@mat l pine 4
+@mat m pine 5
+@mat n dwood 2
+@mat o dwood 3
+@mat p iron 1
+@mat q iron 2
+@mat r iron 3
+@mat s iron 4
+@mat t iron 5
+@mat u brass 2
+@mat v brass 3
+@mat w brass 4
+@mat x brass 5
+@mat z red 2
+@mat R red 3
+@mat S red 4
+@mat T red 5
+@layer bench
+@mblock 1 14
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+bffffffffffffffffffffeeeeeeeeb
+bfffffffffffffffffffffeeeeeeeb
+bfffffffffffffffffffffeeeeeeeb
+bffffffffffffffffffffffeeeeeeb
+bffffffffffeffffffffffeeeeeeeb
+bffffffffffeeeeeeeeeeeeeeeeeeb
+bddddddddddddddddddddddddddddb
+bccccccccccccccccccccccccccccb
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.ollkkkkkkkoooooooooookkkklljo.
+.olmmmmlllkonnnnnnnnnokmmmlljo.
+.olkkkhhkkjonnnnnnnnnokkhhkkjo.
+.ojjjjjjjjj..........ojjjjjjo.
+.olkkkkkkjj..........okkkkljo.
+.olllkkkljj..........okkkkljo.
+.ojjjjjjjjo..........ojjjjjjo.
+.ooooooo..............oooooo..
+@layer microscope
+@mblock 3 7
+...uwwwu..
+...wxxxw..
+...wxxww..
+..pqvvq...
+..qsvqp...
+.qtsqp.vu.
+.qrqp..wv.
+..pq...wv.
+...prrrvp.
+...qsssvq.
+......wvq.
+.pqssswvq.
+pstttssrqp
+.pqqqqqqp.
+@layer papers
+@mblock 14 16
+.hhhhhhh.
+hgggggghi
+hgghhhghi
+hgggggghi
+.iiiiiii.
+@layer capture-orb
+@mblock 24 12
+..zzzz..
+.zTTSSz.
+zTSSSSRz
+zSSRRRRz
+pccfcccp
+.qedddq.
+..qqqq..

@@ -1,0 +1,52 @@
+// E: 기존 흰 칠·금장 두 문 유지, 반복 세로 구간 16행 압축하여 높이 32px, 받침 y=26~31; 꼭대기 윗면 4행(y=1~4).
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a gold 1
+@mat b gold 2
+@mat c gold 3
+@mat d gold 4
+@mat e gold 5
+@mat f gold 6
+@mat h linen 1
+@mat i linen 2
+@mat j linen 3
+@mat k linen 4
+@mat l linen 5
+@mat m linen 6
+@layer cabinet
+@mblock 1 0
+.bddddddddddddddddddddddddddb.
+bemmmmmmmmmmmmmmmmmmmmmmmllldb
+bemlllllllllllllllllllllllkldb
+bekllllllllllkkllllllllllkkldb
+bekkkkkkkkkkkkkkkkkkkkkkkkjjdb
+cffffffffeeeeeeeeeeeeeeeeeedcb
+deeeeeeeeeeeeeeeeeeeeeeedddcba
+bkkkkkkkkkkkkkkkkkkkkkkkkjjiba
+.bjjjjjjjjjjjjjjjjjjjjjjjjjih.
+@mblock 3 9
+elmlllllllllhhkkkkkkkkjjca
+edcddddddddbhhbddddddddcjca
+elkllleeellkhhjkdddlkkjjca
+elklledcdelkhhjkdcbdkkjjca
+elkleclllelkhhjkclldkkjjca
+elkldmlllfdkhhjkfelcdkjjca
+elkldmllfedkhhjkeflcdkjjca
+elkldmllldckhhjkcllcdkjjca
+elklecllledkhhjkdllbdkjjca
+elklledddelkhhjkddcdkkjjca
+elklllkkkllkhhjkkkkkkkjjca
+elklddddddbkhhjkddddbkjjca
+elkledddddckhhjkdddcckjjca
+elkllllllllkhhjkkkkkkkjjca
+edcddddddddbhhbddddddddcjca
+elklllllllllhhkkkkkkkkjjca
+bjjjjjjjjjjjhhiiiiiiiiiiha
+@mblock 1 26
+.beeeeeeeeeeeeeeeeeeeeeeedcba.
+bemllllllllllllllllllllkkjjcba
+bekkkkkkkkkkkkkkkkkkkkkjjjicba
+.bcccccccccccccccccccccccccaa.
+..belcb................bdcah..
+..bcchh................bcahh..

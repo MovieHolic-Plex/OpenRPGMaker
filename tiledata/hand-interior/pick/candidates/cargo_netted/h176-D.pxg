@@ -1,0 +1,75 @@
+// 금장 모서리와 봉인 문양을 두른 나무 화물 두 상자, 굵은 마름모 그물과 윗면 4행.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g brass 2
+@mat h brass 4
+@mat i brass 5
+@mat r pine 3
+@mat s pine 4
+@mat t pine 5
+@layer crates
+@mblock 1 18
+.abbbbbbbbbbbbbbbbbbbbbbbbbba.
+aeeeeeeedddddddddddeeeeeeeeeba
+aedddddeeeeeeeeddddddeeeeeedba
+aeddddddddddddddddddeeeeeeedba
+afffffffffffffffffffffffffffba
+ahheccccccccccccccccccccccehga
+ahgdcddddddddddbcddddddddcdhga
+aedccddddddddddbcddddddddccdba
+aedccdddccccdddbcddccccddccdba
+aedccddddddddddbcddddddddccdba
+aedccddddddddddbcddddddddccdba
+aedccccccccccccbcccccccccccdba
+ahgddddddddddddbdddddddddddhga
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+@mblock 6 6
+.abbbbbbbbbbbbbba.
+aeeeeeeeeeeeeeeeba
+aeddddeeeeeeddddba
+aeddddddddddddddba
+aeeeeeeeeeeeeeeeba
+ahiffffffffffffhga
+ahgdddddddddddchga
+aedccdddddddddcdba
+aedccddghgddddcdba
+aedccddhihddddcdba
+aedccddghgddddcdba
+aedccddddccdddcdba
+ahgdddddddddddchga
+.aaaaaaaaaaaaaaaa.
+@layer net
+// 낮은 윗면 위 그물은 넓게 벌어지고, 앞면에서 아래로 처진다.
+@mblock 6 7
+...t.......t......
+....s.....s.......
+.....s...s........
+......stt.........
+.....s...s........
+....s.....s.......
+...s.......s......
+..s.........s.....
+.ss.........ss....
+s..s.......s..s...
+....s.....s....s..
+.....s...s......s.
+@mblock 2 19
+.s....s.....st....s.....s....
+..s..s.....s..s....s...s.....
+...tt.....s....s....tt......
+..s..s...s......s..s..s.....
+.s....s.s........ss....s....
+s......ss........ss.....s...
+.s....s..s......s..s.....s..
+..s..s....s....s....s...s...
+...ss......s..s......sss....
+..s..s......ss......s...s...
+.s....s....s..s....s.....s..
+s......s..s....s..s.......s.

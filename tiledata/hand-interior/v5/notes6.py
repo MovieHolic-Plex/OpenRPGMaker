@@ -7,6 +7,7 @@
 # 설명 = 무엇인지(summary, 60자 안팎) + 어느 방의 어디에, 무엇 옆에, 몇 개(where). 그림은 interior-atlas.png 좌표로 잘라 확인했다.
 import re
 from collections import Counter, defaultdict
+import use6  # 가구별 쓰임·방향·상태 짝·보강 설명
 
 # 상품 이름 빠진 것(원래 'grain 자루'·'해골·crystal 벽 선반'으로 나왔다)
 GK_FIX = {'grain': '곡식', 'flour': '밀가루', 'crystal': '수정'}
@@ -461,7 +462,11 @@ def spec_notes(meta, objects_in_spec, tables, lines, daises):
         for _j, rid in jac:
             if len(pair) >= 3: break
             if rid not in pair and objs[rid].get('variantGroup') != o.get('variantGroup'): pair.append(rid)
-        notes[oid] = {'desc': short(o.get('summary') or o['description'], 60), 'tags': o['tags'][:4], 'place': short(o.get('where') or '', 60), 'pair': pair[:3]}
+        use, facing, states, desc = use6.notes_for(oid, o, o['kind'])
+        notes[oid] = {'desc': short(desc, 110) if desc else short(o.get('summary') or o['description'], 60), 'tags': o['tags'][:4],
+                      'place': short(o.get('where') or o.get('place') or '', 60), 'pair': (pair or list(o.get('pair') or []))[:3], 'use': use}
+        if facing: notes[oid]['facing'] = facing
+        if states: notes[oid]['states'] = states
     # 예제 방 목록: [맵 id, 건물 id, 방 종류, [[가구 id, 개수], ...]] — 방 종류·건물별 모음은 도구가 이것으로 센다
     examples = [[mid, bid, key, [[i, n] for i, n in sorted(cnt.items(), key=lambda t: (-t[1], t[0]))]] for mid, bid, key, cnt in rooms]
     names = {b['id']: b['name_ko'] for b in buildings}

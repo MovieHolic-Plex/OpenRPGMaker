@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tea_2x1/h5-A.pxg",
+ "id": "tea 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.064
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "윗면 아래 가장자리·앞 천 위 밝은 줄(B)을 어두운 천 단(E)으로 바꿔 윗면과 앞 드리운 천이 갈라지게 함(2줄 외 그대로)",
+ "ok": true
+}

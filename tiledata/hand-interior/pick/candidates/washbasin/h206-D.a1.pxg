@@ -1,0 +1,43 @@
+// D: 기준 책상의 나무 몰딩과 문짝 비례를 다듬은 수건 없는 대야 받침장
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat C white 5
+@mat A white 4
+@mat F white 2
+@mat S white 1
+@mat D water 1
+@mat E water 3
+@mat W water 4
+@mat V water 5
+@mat h pine 0
+@mat k pine 1
+@mat l pine 2
+@mat m pine 3
+@mat n pine 4
+@mat b brass 4
+@mblock 0 8
+....CCCCCCCC....
+..CCDDDDDDDDAF..
+.CDVVEEEEEEEDAF.
+.CDWWWEEEEEEESF.
+.CAEEEEEEEEESFF.
+..CAAAAAAAAFFF..
+.nmCAAAAAFFFFmk.
+.nmmFFFFFFFmmmk.
+.nmmmmkkkkmmmlk.
+.nnnnnnnmmmmmlk.
+.lmmmmmmmmmmmlk.
+..knmmmmmmmlmk..
+..knlllllllkmk..
+..knlmmmmmlkmk..
+..knlmmmlmlkmk..
+..knlmmlmmlkmk..
+..knlmmmlmbkmk..
+..knlmmmmmlkmk..
+..knlmmmmmlkmk..
+..knlllllllkmk..
+..kmmmmmmmmmmk..
+..knnnmmmmmmmk..
+..knk......klk..
+..klk......khk..

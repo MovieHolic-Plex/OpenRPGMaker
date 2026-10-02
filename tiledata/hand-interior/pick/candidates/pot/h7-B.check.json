@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pot/h7-B.pxg",
+ "id": "pot",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "v5 모양 그대로, 목·어깨·몸통 오른쪽·아래에 그늘 단(C)을 한 칸씩 더해 왼쪽 위 빛 구조를 또렷하게",
+ "ok": true
+}

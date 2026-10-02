@@ -1,0 +1,21 @@
+// h10-B 최소 수정: 바퀴 좌우·아래 윤곽을 어두운 한 단으로 닫고 오른쪽 그늘을 한 단 깊게, 받침·손잡이 모양은 그대로
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....ABBCCA.....
+....ABBBCCCA....
+....ABBBDDCAEEE.
+...ABBBBDDCAE.E.
+...ABBBFFDDCA.E.
+...ABCDDDDDDA...
+...ACCDDDDCCA...
+....ACDDDDCA....
+.EEEEEEEEEEEEEE.
+.GHHHHHHHHHHHHE.
+.GHIIIJJJIIIJJE.
+.EHHHHHHHHHHHHE.
+.KGGGGGGGGGGGGK.
+.KLJJJJJJJJJJGK.
+.KKJGKKKKKKKJGK.

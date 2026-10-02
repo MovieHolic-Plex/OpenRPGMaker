@@ -1,0 +1,53 @@
+// A: 설명 충실 — 짙은 나무 카운터(윗면 6행)+숙박부+놋쇠 종+판자 앞판 두 짝
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a dwood 0
+@mat b dwood 1
+@mat c dwood 2
+@mat d dwood 3
+@mat e dwood 4
+@mat f dwood 5
+@mat g dwood 6
+@mat l brass 0
+@mat h brass 2
+@mat i brass 3
+@mat j brass 5
+@mat k brass 6
+@mat p linen 1
+@mat m linen 2
+@mat n linen 4
+@mat o linen 6
+@mblock 0 0
+................................
+................................
+................................
+.......................ll.......
+......................lkil......
+.....................ljiihl.....
+aaaaaaaaaaaaaaaaaaaaaljiihlaaaaa
+afffooooooooooofffffljiiihhlfffa
+aeeenppnpmnppnneeeeeelllllleeeea
+aeeennpnmmnppnneeeeeeeddddddeeea
+adddcccccccccccdddddddddddddddda
+agggggggggggggggggggggggggggggga
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+adcccccccccccccabcccccccccccccba
+adceeeceeeceeecabceeeceefceeecba
+adcefecefeceeecabcfeeceeeceeecba
+adceeeceeecefecabceeecefeceefcba
+adceeeceefceeecabceeeceeeceeecba
+adcfeeceeeceeecabcefecefeceeecba
+adceeecefeceefcabceeeceeecefecba
+adceeeceeeceeecabceeeceefceeecba
+adcefecefeceeecabcfeeceeeceeecba
+adceeeceeecefecabceeecefeceefcba
+adceeeceefceeecabceeeceeeceeecba
+adcfeeceeeceeecabcefecefeceeecba
+adceeecefeceefcabceeeceeecefecba
+adceeeceeeceeecabceeeceefceeecba
+adcefecefeceeecabcfeeceeeceeecba
+adcccccccccccccabcccccccccccccba
+acccccccccccccccccccccccccccccca
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

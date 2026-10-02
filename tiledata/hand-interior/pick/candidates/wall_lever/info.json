@@ -1,0 +1,34 @@
+{
+ "id": "wall lever",
+ "slug": "wall_lever",
+ "name_ko": "벽 레버",
+ "category": "JRPG 장치",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "벽에 박힌 쇠 레버(끔 — 손잡이가 아래로 내려감). 네모 쇠판에 박힌 축과 둥근 손잡이. 던전 퍼즐 방 벽면 윗줄. 당기면 문·다리·함정이 바뀐다.",
+ "where": "네모 쇠판에 박힌 축과 둥근 손잡이. 던전 퍼즐 방 벽면 윗줄. 당기면 문·다리·함정이 바뀐다.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "dungeon"
+}

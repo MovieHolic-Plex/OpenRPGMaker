@@ -1,0 +1,128 @@
+// C: 굵은 붉은 원·오망성, 다섯 룬과 꼭짓점 초로 단순하고 또렷하게.
+@size 48 48
+@cell 16
+@palette palette.pal
+@mat r red 4
+@mat s red 2
+@mat h red 5
+@mat c linen 4
+@mat l linen 6
+@mat d linen 2
+@mat f orange 4
+@mat F yellow 6
+@mat b brass 2
+@layer circle
+@mblock 0 6
+= 17. 14r
+= 13. 22r
+= 10. 7r 14. 7r
+= 8. 5r 22. 5r
+= 6. 4r 28. 4r
+= 5. 3r 32. 3r
+= 4. 3r 34. 3r
+= 3. 3r 36. 3r
+= 3. 2r 38. 2r
+= 2. 3r 38. 3r
+= 2. 2r 40. 2r
+= 1. 3r 40. 3r
+= 1. 2r 42. 2r
+= 1. 2r 42. 2r
+= 2r 44. 2r
+= 2r 44. 2r
+= 2r 44. 2r
+= 2r 44. 2r
+= 2r 44. 2r
+= 2r 44. 2r
+= 2s 44. 2r
+= 2s 44. 2r
+= 2s 44. 2r
+= 2s 44. 2r
+= 2s 44. 2r
+= 2s 44. 2r
+= 2s 44. 2r
+= 2s 44. 2r
+= 1. 2s 42. 2r
+= 1. 2s 42. 2r
+= 1. 3s 40. 3r
+= 2. 2s 40. 2r
+= 2. 3s 38. 3r
+= 3. 2s 38. 2r
+= 3. 3s 36. 3r
+= 4. 3s 34. 3r
+= 5. 3s 32. 3r
+= 6. 4s 28. 4r
+= 8. 5s 22. 5r
+= 10. 7s 14. 7r
+= 13. 22s
+= 17. 14s
+@layer star
+@mblock 0 11
+= 23. 2r
+= 22. 4r
+= 22. 2r 2. 2r
+= 21. 2r 4. 2r
+= 21. 2r 4. 2r
+= 20. 2r 6. 2r
+= 20. 2r 6. 2r
+= 19. 2r 8. 2r
+= 19. 2r 8. 2r
+= 18. 2r 10. 2r
+= 18. 2r 10. 2r
+= 6. 36r
+= 7. 34r
+= 8. 3r 6. 2r 10. 2r 6. 3r
+= 10. 3r 3. 2r 12. 2r 3. 3r
+= 12. 3r 1. 2r 12. 2r 1. 3r
+= 14. 4r 12. 4r
+= 15. 5r 8. 5r
+= 15. 2r 1. 4r 4. 4r 1. 2r
+= 14. 2r 4. 8r 4. 2r
+= 14. 2r 6. 4r 6. 2r
+= 13. 2r 6. 6r 6. 2r
+= 13. 2r 4. 4r 2. 4r 4. 2r
+= 12. 2r 3. 4r 6. 4r 3. 2r
+= 12. 2r 1. 4r 10. 4r 1. 2r
+= 11. 6r 14. 6r
+= 11. 4r 18. 4r
+= 10. 4r 20. 4r
+= 10. 2r 24. 2r
+@layer runes
+@mblock 13 10
+rrr
+r..
+rr.
+@mblock 32 10
+rrr
+..r
+.rr
+@mblock 4 29
+rrr
+.r.
+.rr
+@mblock 40 29
+rrr
+.r.
+rr.
+@mblock 21 42
+rr...r
+.r...r
+.rrrrr
+...r..
+@layer candles
+@def candle
+..f..
+.fF..
+.FFf.
+..F..
+.lll.
+llcld
+lcccd
+lcddd
+.bbb.
+bbbbb
+@end
+@mstamp candle 21 0
+@mstamp candle 3 13
+@mstamp candle 40 13
+@mstamp candle 8 32
+@mstamp candle 35 32

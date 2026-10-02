@@ -1,0 +1,39 @@
+// 눌린 압력판 E: 판이 바닥보다 낮은 오목 — 둘레 돌 테는 바닥 높이로 남고, 안쪽은 위·왼 그늘(0)·아래·오른 빛(4), 가운데 더 어두운 눌린 자리
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+................
+................
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+................
+................
+.11111111111111.
+.13333333333321.
+.13000000000021.
+.13033333333421.
+.13033333333421.
+.13033222233421.
+.13033222233421.
+.13033333333421.
+.13033333333421.
+.13444444444421.
+.12222222222221.
+.11111111111111.
+0000000000000000

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/water_jar/h8-E.pxg",
+ "id": "water jar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  0,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "입구를 위에서 보이는 넓은 타원(뒤 입술·물 두 줄·앞 입술)으로 새로 짜고 목을 잘록하게, 어깨-배-굽 곡선을 다시 그림",
+ "ok": true
+}

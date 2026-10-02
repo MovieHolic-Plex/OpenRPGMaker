@@ -1,0 +1,53 @@
+// C: 넓은 금테와 큰 귀부인 덩이, 얼굴에 두 칼자국만 또렷하게.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a gold 0
+@mat b gold 2
+@mat c gold 4
+@mat d gold 6
+@mat e blue 1
+@mat f blue 0
+@mat h iron 0
+@mat i iron 1
+@mat j clay 3
+@mat k clay 4
+@mat l linen 4
+@mat m red 1
+@mat n red 2
+@mat o red 4
+@mat p linen 2
+@layer portrait
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.acddddddddddddddddddddddddddca.
+.acccccccccccccccccccccccccccba.
+.acbeeeeeeeeeeeeeeeeeeeeeeeebba.
+.acbeeeeeeeeeeeeeeeeeeeeeeeebba.
+.acbeeeeeeeeeiiiiiiieeeeeeeebba.
+.acbeeeeeeeiiihhhhhhieeeeeeebba.
+.acbeeeeeeiiihhhhhhhhiieeeeebba.
+.acbeeeeeeihhkkkkjhhhhheeeeebba.
+.acbeeeeeihhkkkkjjjhhhheeeeebba.
+.acbeeeeeihhpkjjjjjphhheeeeebba.
+.acbeeeeeihhkhkjjjhpjhheeeeebba.
+.acbeeeeeihhkkhkjhpjjhheeeeebba.
+.acbeeeeeihhkkkhhpjjjhheeeeebba.
+.acbeeeeeeihkkjhhpjjhieeeeeebba.
+.acbeeeeeeehkkhpjhjjheeeeeeebba.
+.acbeeeeeeehkhpjjjhjheeeeeeebba.
+.acbeeeeeeehpjjjjjjhheeeeeeebba.
+.acbeeeeeeeekkkjjjjjeeeeeeeebba.
+.acbeeeeeeeeelllllleeeeeeeeebba.
+.acbeeeeeennnllllllmmmeeeeeebba.
+.acbeeeennnnnllllllmmmmmeeeebba.
+.acbeeeonnnnnllllllmmmmmmmeebba.
+.acbeeoonnnnnnllllmmmmmmmmeebba.
+.acbeoooonnnnnnllmmmmmmmmmnebba.
+.acbooooonnnnnnnnmmmmmmmmmnebba.
+.acbooooonnnnnnnnmmmmmmmmnnebba.
+.acboooonnnnnnnnnmmmmmmmmnnebba.
+.acbccccccccccccccccccccccccbba.
+.acbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..

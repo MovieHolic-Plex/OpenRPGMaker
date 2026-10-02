@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/coffin_open/h32-B.pxg",
+ "id": "coffin open",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  30
+ ],
+ "v5_bbox": null,
+ "note": "뚜껑을 남쪽으로 밀어 머리 쪽 윗면이 열림: 어두운 속(dwood)+붉은 천, 뚜껑 윗선은 오른쪽이 높게 비스듬. 크기·윤곽·접지선은 관 그대로",
+ "ok": true
+}

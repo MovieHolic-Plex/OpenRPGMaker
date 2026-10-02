@@ -1,0 +1,52 @@
+// C: 중앙을 타원 입구와 뒤·앞 테로 수정, 아래 테를 2행 연장해 금관 높이 16행; 꼭대기 윗면 5행(y=5~9).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat H gold 5
+@mat J gold 4
+@mat K gold 3
+@mat L gold 2
+@mat N gold 1
+@mat M gold 0
+@mat R red 1
+@mat S red 3
+@mat T red 4
+@mat U red 2
+@mat a stone 1
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat e stone 5
+@mblock 0 0
+.......NN.......
+...NN..HJ..NN...
+...HJ.NHJN.HJ...
+..NHJNHJJKNJKN..
+..NHJJHHJJJJKN..
+..NHJHHHHHJJKN..
+..NHJLMMMMLJKN..
+..NHJMMMMMMJKN..
+..NHHHMMMMJJKN..
+...HHHHHHJJKN...
+...NHJJJJJKKN...
+...NHJJJJJKKN...
+...NJJJJJJLKN...
+...NHJJJJJLKN...
+...NHJJJJJKKN...
+..RNNLLLLLLNNR..
+.RTTTSSSSSSSSUR.
+.RTTSSSSSSSSUUR.
+..RSSSSSSSSUUR..
+..aeeeeedddddba.
+.aeddddddddddbba
+.adddddddddcbbba
+..accccccccbba..
+...adcccccbba...
+...adcccccbba...
+...adcccccbba...
+...adcccccbba...
+...adcccccbba...
+...adcccccbba...
+..adddccccccbba.
+.addddddccccbbba
+.aaaaaaaaaaaaaa.

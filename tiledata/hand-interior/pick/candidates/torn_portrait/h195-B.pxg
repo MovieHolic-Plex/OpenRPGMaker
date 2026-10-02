@@ -1,0 +1,69 @@
+// B: 큰 초상화와 같은 금테·남색 바탕·붉은 옷의 귀부인, 얼굴에 해진 X 칼자국. 벽면 걸이라 윗면 없음.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a gold 0
+@mat b gold 1
+@mat c gold 2
+@mat d gold 4
+@mat e gold 5
+@mat f gold 6
+@mat g blue 1
+@mat h blue 2
+@mat i blue 0
+@mat j black 1
+@mat k black 2
+@mat l black 4
+@mat m clay 3
+@mat n clay 4
+@mat o clay 5
+@mat p clay 2
+@mat q linen 4
+@mat r linen 5
+@mat s red 1
+@mat t red 2
+@mat u red 4
+@mat v dwood 0
+@mat w linen 3
+@layer portrait
+@mblock 0 0
+= 1. 30a 1.
+= 1a 1f 8e 1d 17e 2f 1b 1a
+= 1a 1e 27d 1c 1b 1a
+= 1a 1e 1d 26c 1b 1a 1.
+@mblock 0 4
+.aed
+.aed *23
+@mblock 28 4
+cba.
+cba. *23
+@mblock 4 4
+hhhhhhhhhhkkkkhhhhgggggg
+hhhhhhhhhkjjlkjhhhgggggg
+hhhhhhhhkkjllkjkhhgggggg
+hhhhhhhkkjjjjjjkkggggggg
+hhhhhhkklljjjjjjjkgggggg
+hhhhhhkljjooonnjjkgggggg
+hhhhhhkjvoooonnwvjgggggg
+hhhhhhjjwvonnnwvpjgggggg
+hhhhhhjjowvoowvmpjgggggg
+hhhhhhjkonnvvnmpjjgggggg
+hhhhhhhkonnvvnmpjggggggg
+hhhhhhhhonvwmvmpgggggggg
+hhhhhhhhhvommwvpgggggggg
+hhhhhhhhvpmmmpwvgggggggg
+hhhhhhgggpoompgggggggggg
+hhhhhhggggoomggggggggggg
+hhhhhgggqqoomqqggggggggg
+hhhhggssqrqqrrqssggggggg
+hhhggsstqqrrqqttssgggggg
+hhggsstuuqrqqttttssggggg
+hggsstuuuuttuuttttssgggg
+ggsstuuuuuttuutttttssggg
+gsstuuuuutttuuttttttssgg
+sstuuuuuttttuutttttttssg
+@mblock 0 28
+= 1a 1e 28d 1b 1a
+= 1a 1d 28c 1b 1a
+= 1a 1c 28b 1b 1a
+= 1. 30a 1.

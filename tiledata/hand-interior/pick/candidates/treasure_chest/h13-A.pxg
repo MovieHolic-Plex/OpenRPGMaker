@@ -1,0 +1,40 @@
+// h13-A 설명 충실: 둥근 나무 뚜껑 윗면 + 금빛 쇠테 둘 + 앞면 가운데 자물쇠, SFC 보물상자
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood
+@mat b brass
+@mblock 0 0
+................
+................
+....wwwwwwww....
+...wwwwwwwwww...
+..wwbwwwwwwbww..
+..wwbwwwwwwbww..
+..wwbwwwwwwbww..
+..bbbbbbbbbbbb..
+..wwbwbbbbwbww..
+..wwbwbbbbwbww..
+..wwbwwbbwwbww..
+..wwbwwwwwwbww..
+..wwbwwwwwwbww..
+..wwbwwwwwwbww..
+..bbbbbbbbbbbb..
+..wwwwwwwwwwww..
+@tblock 0 0
+................
+................
+....22222222....
+...2666666663...
+..246666666543..
+..246666666543..
+..245555555443..
+..255555555553..
+..244355555341..
+..244344444341..
+..243334333341..
+..243333333341..
+..243333333341..
+..243333333341..
+..244444444441..
+..211111111111..

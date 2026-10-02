@@ -1,0 +1,65 @@
+// 가로 나무 2층 침대: 흰 이불 두 윗면과 오른쪽 사다리, 꼭대기 윗면 3행(y=0~2)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat g dwood 2
+@mat h linen 2
+@mat i linen 3
+@mat j linen 4
+@mat k linen 5
+@mat l linen 6
+@layer bed
+@mblock 0 0
+.ddddddddddda...
+.eccdddcdddca...
+.dcccccccccca...
+cbgggggggggba...
+cdllljkkkkkba...
+cdllljllllkba...
+cdkkjklllkba....
+cdjjkklljkba....
+cdkkkkjjjkba....
+cdjjjjjjjiba....
+cbiiiiiiihba....
+cbjjjjjjiiba....
+ceddddddddcbaddd
+cdcccdcccccbac.a
+cbaaaaaaaaabac.a
+cb.........bac.a
+cb.........bac.a
+cb.........bac.a
+cb.........bacda
+cb.........bac.a
+cb.........bac.a
+cb.........bac.a
+cb.........bac.a
+cb.........bac.a
+cb.........bacda
+cb.........bac.a
+cb.........bac.a
+cb.........bac.a
+cb.........bac.a
+cb.........bac.a
+cb.........bacda
+cdddddddddcbac.a
+cdcccccccccbac.a
+cdllljkkkkkbac.a
+cdllljllllkbac.a
+cdkkjklllkbac.a.
+cdjjkklljkbacda.
+cdkkkkjjjkbac.a.
+cdjjjjjjjiiac.a.
+cbiiiiiiihiac.a.
+cbjjjjjjiibac.a.
+cbjjjjiiihbac.a.
+cdddddddddcbacda
+cdcccdcccccbac.a
+cbaaaaaaaaabac.a
+cb.........bac.a
+cb.........bac.a
+aa.........aaa.a

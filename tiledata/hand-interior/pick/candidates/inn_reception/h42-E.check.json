@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/inn_reception/h42-E.pxg",
+ "id": "inn reception",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 23,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  4,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "짙은 나무 3칸 판자 접수대: 기둥 사이 판자 앞판, 숙박부·잉크병·깃펜, 놋쇠 종(조명 윗면 6행)",
+ "ok": true
+}

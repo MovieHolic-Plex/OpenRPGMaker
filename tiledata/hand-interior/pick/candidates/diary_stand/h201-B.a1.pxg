@@ -1,0 +1,53 @@
+// 성경대의 황갈색 목재·짙은 앞 모서리와 종이 명암을 따른 펼친 일기장 받침; 꼭대기 윗면 6행(y=10~15)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat h linen 6
+@mat j linen 5
+@mat k linen 4
+@mat l linen 3
+@mat m linen 2
+@mat n iron 1
+@mat p iron 3
+@mat q iron 5
+@layer furniture
+@mblock 0 0
+.............j..
+............hjk.
+............hjk.
+...........hjjk.
+...........hjlk.
+...........jlk..
+..........hjlk..
+..........jlk...
+..........jl....
+..bfffffffmlbb..
+.bgjjjjlkkkkfgb.
+.bghhhjlkkkjfpb.
+.bgjmmjlkmmlpqn.
+.bgjjjjlkkkjnnp.
+.bgjmmjlkmmlnnn.
+.bgkjjjlkkkkfdb.
+.bggfffffgfffdb.
+.bffffffffffddb.
+.addddcdddddcaa.
+..aaaaaaaaaaaa..
+......gfca......
+......gfca......
+......gfca......
+......geca......
+......geca......
+......gfca......
+......gfca......
+.....bgfcab.....
+...bbgfffabb....
+..bgggggggfffab.
+..bffffffdddcab.
+..aaaaaaaaaaaa..

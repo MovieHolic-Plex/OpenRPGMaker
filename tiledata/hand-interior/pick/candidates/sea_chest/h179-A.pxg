@@ -1,0 +1,41 @@
+// A: 파란 칠 선원 궤짝, 5행 뚜껑 윗면과 밧줄 손잡이, 앞 쇠테와 잠금쇠.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat b blue 2
+@mat i iron 3
+@mat r pine 3
+@mblock 0 0
+................
+................
+...bbbbbbbbbb...
+..bibbbbbbbbib..
+..bibbbbbbbbib..
+..bibbbbbbbbib..
+..bibbbbbbbbib..
+..bibbbbbbbbib..
+..biiiiiiiiiib..
+..bibbbiibbbib..
+rrbibbbiibbbibrr
+r.bibbbiibbbibr.
+rrbibbbbbbbbibrr
+..bibbbbbbbbib..
+..biiiiiiiiiib..
+...bbbbbbbbbb...
+@tblock 0 0
+................
+................
+...1111111111...
+..154444444431..
+..153333334331..
+..153332233331..
+..153333333331..
+..153333223331..
+..144444444331..
+..143224452231..
+5514322342223133
+5.1432213222313.
+3314322222223133
+..132222222231..
+..123333333221..
+...1111111111...

@@ -1,0 +1,36 @@
+// h52-A 설명 충실: 입구 윗면 3행에 칼자루·도끼 손잡이, 철띠 상자 정면
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 6
+@mat j iron 5
+@mat k iron 3
+@mat g gold 5
+@mat c gold 4
+@mat h gold 3
+@mat p wood 7
+@mat q wood 6
+@mat r wood 5
+@mat s wood 4
+@mat t wood 3
+@mat u wood 2
+@mat v wood 1
+@mat n black 3
+@mat o black 1
+@mblock 0 0
+....g.....rij...
+....c.....rjk...
+....h.....rjk...
+...ijk....rk....
+..vppppppppppv..
+..vnrnnnnnrnnv..
+..vnrooojoroov..
+..vppppppppppv..
+..vjrrrrrrrrkv..
+..vjrrrcgrrrkv..
+..vjrrrhhrrrkv..
+..vjrrrrrrrrkv..
+..vjrrrrrrrrkv..
+..vjsssssssskv..
+..vjttttttttkv..
+..vuuuuuuuuuuv..

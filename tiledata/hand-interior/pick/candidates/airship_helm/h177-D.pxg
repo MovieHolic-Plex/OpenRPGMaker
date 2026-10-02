@@ -1,0 +1,98 @@
+// 놋쇠 경사 계기판, 금테 조타륜과 앞판의 큰 날개 문양; 꼭대기 윗면 6행(y=2~7)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a brass 1
+@mat b brass 2
+@mat c brass 3
+@mat d brass 4
+@mat e brass 5
+@mat f brass 6
+@mat W dwood 1
+@mat X dwood 2
+@mat Y dwood 3
+@mat Z dwood 4
+@mat O dwood 5
+@mat i iron 1
+@mat j iron 3
+@mat k iron 5
+@mat g glass 2
+@mat h glass 4
+@mat t glass 5
+@mat r wood 5
+@mat s wood 6
+@mat v wood 7
+@layer body
+@mblock 2 2
+....bbbbbbbbbbbbbbbbbbbb....
+.bbbeeeeeeeeeeeeeeddddddbbb.
+bfeeedddddddddddddddddddddcb
+beedddddddddddddddddddddddcb
+bedddbaaaabddddddbaaaabdddcb
+beddbkttggabddddbkttggabddcb
+beddbthhggabddddbthhggabddcb
+bedddbggaabddddddbggaabdddcb
+beddddddddddddddddddddddddcb
+beedddddddddddddddddddddddcb
+beeeeeeeddddddddddddddddddcb
+bcddddddddccccccccccccccccab
+abbbbbbbbbbbbbbbbbbbbbbbbbba
+aZZZZZZZZZZZZZZZZZZYYYYYYYYa
+aZOOOOOOOZZZZZZZZYYYYYYYYYYa
+aZOZZZZZOZZZZZZZZYYYYYYYYYYa
+aZOZeddZZZZZZZZZZYYddeZYYYYa
+aZOeZZddZZZZZZZZYYddZZdYYYYa
+aZedZZZddZZZZZZYYddZZZdYYYYa
+aZeZZZZZdZZZZZZYYdZZZZdYYYYa
+aZedZZZddZZZZZZYYddZZZdYYYYa
+aZOeeddZZZZZZZZZZYYdddcYYYYa
+aZZZZZZZZZZZZZZZZYYYYYYYYYYa
+aZZZZZZZZZZZZZZZZYYYYYYYYYYa
+abddddddddddddccccccccccccba
+abbbbbbbbbbbbbbbbbbbbbbbbbaa
+.aZZZXa..............aYYXaa.
+.aZZZXa..............aYYXaa.
+.abddba..............abccaa.
+.aaaaaa..............aaaaaa.
+@layer levers
+@mblock 2 9
+kk
+kj
+.j
+.j
+.jb
+abba
+@mblock 28 10
+kk
+kj
+j.
+j.
+bja
+aba
+@layer wheel
+@mblock 9 8
+......ee......
+......dc......
+....bbddbb....
+..bbeessddbb..
+.beerXssXXccb.
+.erXvXssXvXcb.
+edXXXvssvXXXcb
+edssssedsssscb
+edrrrrdcrrrrcb
+bcXXXsYYsXXXba
+.cYXsXYYXsYba.
+.bcYsXYYsYba..
+..bccrsscba...
+....bccccb....
+......ca......
+......ca......
+@mblock 14 24
+bdcb
+bdcb
+bdcb
+bdcb
+bccb
+acca
+aaaa
+aaaa

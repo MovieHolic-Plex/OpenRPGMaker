@@ -1,0 +1,66 @@
+// A: 벽 사이 처진 줄, 집게로 널린 흰 칼라 셔츠와 양말 한 쌍; 전형적인 SFC 살림 기물.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a white 1
+@mat b white 2
+@mat c white 4
+@mat d white 5
+@mat p pine 2
+@mat q pine 4
+@mat i iron 3
+@mat j iron 5
+@layer rope
+@mblock 0 0
+..j..........................j..
+.ip..........................pi.
+.pqqqq....................qqqqp.
+......qqqqq..........qqqqq.......
+...........qqqqqqqqqq...........
+@mblock 24 3
+p
+q
+@mblock 29 3
+p
+q
+@layer laundry
+@mblock 4 4
+...bc..bc.....
+..cddbbddc....
+.cddddcdddc...
+bcddddbddddcb.
+bcdddcbdcddcb.
+.abbddbddba...
+...cddbddb....
+...cddbddb....
+...cddcddb....
+...cddcddb....
+...cccccb....
+...abbbba.....
+@mblock 20 5
+..bccb
+..cddb
+..cddb
+..cdcb
+..cdcb
+.cddcb
+cdddcb
+bcccba
+.aaaa.
+@mblock 27 5
+.bccb
+.cddb
+.cddb
+.cdcb
+.cdcb
+.cddc
+cdddc
+bccba
+.aaa.
+@layer pegs
+@mblock 7 3
+q....q
+p....p
+@mblock 24 4
+q....q
+p....p

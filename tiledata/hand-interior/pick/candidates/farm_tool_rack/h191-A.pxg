@@ -1,0 +1,35 @@
+// 괭이·낫·물뿌리개를 두 칸 나무 걸이에 건 전형적인 농가 벽걸이; 꼭대기 윗면 3행(y=0~2).
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b pine 2
+@mat c pine 3
+@mat d pine 4
+@mat e dwood 3
+@mat f iron 2
+@mat g iron 3
+@mat h iron 4
+@mat i iron 5
+@mat j iron 6
+@mat k wood 2
+@mat l wood 3
+@mat m wood 5
+@layer rack_and_tools
+@mblock 0 0
+.dddddddddddddddddddddddddddddd.
+.dccccccccccccccccccccccccccccb.
+.ccccbcccccccccccbccccccccccccb.
+.bbfbbbbbbbbbbfbbbbbbbbbbbbbfba.
+.aaaaaaaaaaaaaaeaaaaaaaaaaaaaaa.
+..jiiiif......f.hiiif.....ghhf..
+..ihhhgf......f....ghi...g...gf.
+..fgggmk......ml....ghf..g...gf.
+......mk......ml....ghf...fhhf..
+......mk......ml...ihf...jiiihf.
+......mk......ml..ihf.hi.ihhhgf.
+......mk......ml.fgf...hiihhhgf.
+......mk......ml.......fgihhhgf.
+......mk......ml.........ighggf.
+......lk......lk..........fggf..
+......kk......kk................

@@ -1,0 +1,113 @@
+// E: 세운 책 윗부분만 3행 윗면으로 재배분 — 꼭대기 윗면 4행(y=0~3)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A black 1
+@mat B black 2
+@mat C black 3
+@mat D black 4
+@mat E black 5
+@mat I iron 2
+@mat J iron 3
+@mat K iron 4
+@mat L iron 5
+@mat U brass 2
+@mat V brass 4
+@mat W brass 5
+@mat r red 1
+@mat s red 2
+@mat t red 3
+@mat p purple 1
+@mat q purple 2
+@mat b blue 1
+@mat c blue 2
+@mat n linen 2
+@mat o linen 4
+@mat d dwood 2
+@mat e dwood 3
+@mat f dwood 4
+@layer cabinet
+@mblock 0 0
+.CCCCCCCCCCCCCC.
+CDDDDEDDDDDDDDCB
+CDEDDDDCCDDDDDCB
+CDDDDDDDDDDDCCCB
+CEEEEEDEDDDDDDCB
+BCCCCCCCCCCCCBBA
+BCBBBBBBBBBBBBAA
+BDAddddddddddBAA
+BDAAooAqnAoonBAA
+BDAAooAqoAoonBAA
+BDAAooAqqAoonBAA
+BDAAonAqpAnnnBAA
+BDAAonAqpAoonBAA
+BDAAonAqpAnnnBAA
+BDAAonAqpAnnnBAA
+BDAAonAqpAnnnBAA
+BDAAonAppAnnnBAA
+BDAccccccccddBAA
+BDDDCDDDDDDDDCCA
+BCCCBCCCCCCCCBBA
+BCAAAAAAAAAAABAA
+BDAddddddddddBAA
+BDAstAoonnnnnBAA
+BDAsoAnnnnnnnBAA
+BDAstArrrrrrrBAA
+BDAsrAsssssssBAA
+BDAsrAssrssssBAA
+BDAsrAoonnnnnBAA
+BDAsrAnnnnnnnBAA
+BDAsrAnnnnnnnBAA
+BDArArAddddddBAA
+BDAccccccccddBAA
+BDDDDDCDDDDDDCCA
+BCCCCCBCCCCCCBBA
+BCAAAAAAAAAAABAA
+BDAddddddddddBAA
+BDAoonAcnAqnABAA
+BDAoonAcoAqoABAA
+BDAoonAccAqqABAA
+BDAnnnAcbAqpABAA
+BDAoonAcbAqpABAA
+BDAnnnAcbAqpABAA
+BDAnnnAcbAppABAA
+BDAddddddddddBAA
+BDDDDDDDCDDDDCCA
+BCCCCCCCBCCCCBBA
+BCBBBBBBBBBBBBAA
+.BBBAAAAAAAABBBA
+@layer chain
+@mblock 0 8
+..KI........KI..
+..JK........LJ..
+..IK........KI..
+...KI......KI...
+...JK......LJ...
+...IK......KI...
+....KI....KI....
+....JK....LJ....
+....IK....KI....
+.....KI..KI.....
+.....JK..LJ.....
+.....IK..KI.....
+......KIKI......
+......JLLJ......
+......IKKI......
+.......KK.......
+......KJJK......
+......KVVK......
+......VWVU......
+......VVAV......
+......UVUU......
+.....KI..KI.....
+.....JK..LJ.....
+.....IK..KI.....
+....KI....KI....
+....JK....LJ....
+....IK....KI....
+...KI......KI...
+...JK......LJ...
+...IK......KI...
+..KI........KI..
+..JK........LJ..
+..IK........KI..

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mimic/h36-C.pxg",
+ "id": "mimic",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "C: 뚜껑 젖힌 상자 입 — 붉은 입 속에 송곳니 네 개와 큰 혀, 앞판은 보물상자 금 띠, 덩이 크게·세부 최소",
+ "ok": true
+}

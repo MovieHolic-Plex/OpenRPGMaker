@@ -1,0 +1,47 @@
+// D 효과: 뚜껑 면 3행, 입구 테의 이빨과 붉은 속그늘, 앞판으로 흐르는 혀; 꼭대기 윗면 3행(y=2~4)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat i wood 3
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mat t linen 5
+@mat r red 0
+@mat p meat 3
+@mblock 0 0
+................
+...ooooooooooo..
+...oiggiiiggio..
+...oiggiiiggio..
+..oiggiiiggioio.
+..ogttrrrrttrgo.
+..ogrrrrrrrrrgo.
+..oggtrpprrtggo.
+..odttdpppdttdo.
+..odggdpppdggdo.
+..odggdgppdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+...11111111111..
+...15445554431..
+...14334443321..
+..1433444332121.
+..1455000055141.
+..1400000000011.
+..1445012305411.
+..1555634535540.
+..1454635433330.
+..1454353333330.
+..1454344333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................

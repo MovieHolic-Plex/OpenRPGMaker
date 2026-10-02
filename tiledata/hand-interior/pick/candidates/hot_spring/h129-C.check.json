@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hot_spring/h129-C.pxg",
+ "id": "hot spring",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.072
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "C: 오토타일 바닥 느낌의 낮은 큰 돌 테두리와 23행 하늘색 수면, 두 줄기 김·최소 물결로 단순하고 또렷하게 구성.",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/work_2x1/h6-E.pxg",
+ "id": "work 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "윗면 이음 한 줄·옹이 둘, 앞턱 아래 서랍 면(F, 가운데 칸막이·손잡이 둘)과 짧은 다리로 작업대 느낌을 키움; 팔레트·접지선·윗면 사각형 유지",
+ "ok": true
+}

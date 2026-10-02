@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/candle_stubs/h197-B.pxg",
+ "id": "candle stubs",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "세 초의 남쪽 윗면 테두리만 정리해 몸통과 구분; 불꽃·촛농 외곽·색감 유지. 꼭대기 윗면 3행(y=4~6), 왼쪽 3행(y=8~10), 오른쪽 3행(y=9~11).",
+ "ok": true
+}

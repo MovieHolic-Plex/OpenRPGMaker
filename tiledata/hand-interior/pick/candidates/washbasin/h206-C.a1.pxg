@@ -1,0 +1,41 @@
+// C: 수건 제거, 기준 기물의 갈색 윤곽과 성긴 결로 나무 받침장 정리, 대야 윗면 5행
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat Q pine 1
+@mat W pine 2
+@mat E pine 3
+@mat R pine 4
+@mat q water 1
+@mat w water 2
+@mat e water 3
+@mat r water 4
+@mat t water 5
+@mat u white 2
+@mat i white 3
+@mat o white 4
+@mblock 1 8
+...oooooooo...
+..oowwwweeoo..
+.oitrreeeeeiu.
+.oirrrreeeeiu.
+..ioooooooiu..
+..iweeeewwu..
+QRRiwewwwuEEEQ
+QRRRiuuuuEEEEQ
+QREEERRREEEEWQ
+QEEWWEEEWWEWQ
+QWWWWWWWWWWWQ
+QREEEEEEEEEWQ
+QRWWWWWWWWRWQ
+QRWEEEWEEWRWQ
+QRWEWWEEEWRWQ
+QRWEEEEEEWRWQ
+QRWEEEEWEWRWQ
+QRWWEEEEEWRWQ
+QRWEEEEEEWRWQ
+QRWWWWWWWWRWQ
+QREEEEEEEEEWQ
+QWWWWWWWWWWWQ
+.QW........WQ.
+.QQ........QQ.

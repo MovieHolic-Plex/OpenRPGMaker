@@ -1,0 +1,94 @@
+// E: 모서리를 깎은 길드 접수대, 중앙 서류 가림판과 황동 문장; 상판 6행, 가림판 꼭대기 3행.
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat P linen 2
+@mat Q linen 3
+@mat R linen 4
+@mat S linen 5
+@mat T linen 6
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat U brass 2
+@mat V brass 3
+@mat W brass 4
+@mat z red 2
+@layer counter
+@mblock 0 13
+= 2. 1b 42f 1c 2.
+= 1. 1b 18g 12f 14g 1a 1.
+= 1b 1g 8f 5e 12f 4e 15f 1c 1a
+= 1b 1g 12f 6e 19f 5e 2f 1c 1a
+= 1b 1f 19f 7e 18f 1c 1a
+= 1b 1f 5e 24f 8e 7f 1c 1a
+= 1b 45g 1d 1a
+= 1b 45c 2a
+= 1b 1f 12e 1c 1b 15e 1c 1b 12e 1c 2a
+= 1b 1g 1e 10d 1c 1a 1b 1f 13d 1b 1a 1b 1f 10d 1b 2a
+= 1b 1g 1e 10d 1c 1a 1b 1f 13d 1b 1a 1b 1f 10d 1b 2a
+= 1b 1f 1e 10d 1c 1a 1b 1f 13d 1b 1a 1b 1e 10d 1b 2a
+= 1b 1f 1e 10d 1c 1a 1b 1e 13d 1b 1a 1b 1e 10d 1b 2a
+= 1b 1f 1e 10d 1c 1a 1b 1e 13d 1b 1a 1b 1e 10d 1b 2a
+= 1b 1f 1e 10d 1c 1a 1b 1e 13d 1b 1a 1b 1e 10d 1b 2a
+= 1b 1f 1e 10d 1c 1a 1b 1e 13d 1b 1a 1b 1e 10d 1b 2a
+= 1b 1f 12c 1b 1a 1b 14c 1b 1a 1b 11c 1b 2a
+= 1b 13e 1b 1a 1b 14e 1b 1a 1b 11d 1b 2a
+= 1. 46a 1.
+@layer fittings
+// 가림판의 3행 윗면과 낮은 남쪽 면
+@mblock 18 6
+bbbbbbbbbbbb
+bggggggggffc
+bffffffffeec
+bffffeeeefec
+bgdddeeddcca
+bedddddcccca
+bccccccccbba
+// 왼쪽 서류 더미: 종이 윗면, 글줄, 겹친 앞단
+@mblock 5 10
+.PPPPPPPP.
+.PTTTTSSP.
+.PSRRRSSP.
+.PSSSSSSP.
+PQRQQQQQP.
+PRSSSSSRP.
+.PQQQQQQP.
+// 오른쪽 잉크병: 입구와 어깨가 위에서 보인다
+@mblock 34 9
+.kkk.
+klilk
+kljjk
+.jjj.
+kljjj
+kljjj
+.iii.
+// 도장 손잡이의 윗면과 넓은 받침
+@mblock 40 12
+.WW.
+WVU.
+.VU.
+.VU.
+zzzz
+.UUU
+// 앞판 황동 길드 문장
+@mblock 22 23
+.UU.
+UWWU
+UWVU
+.UV.
+.UU.
+// 손으로 놓은 긴 나뭇결 두 덩이
+@mblock 5 25
+ccc
+..ccc
+@mblock 37 27
+cccc

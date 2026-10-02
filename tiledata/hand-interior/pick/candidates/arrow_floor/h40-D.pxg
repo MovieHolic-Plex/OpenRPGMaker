@@ -1,0 +1,32 @@
+// 장식 D: 돌판 모서리에 금 징, 파란 화살표에 밝은 왼쪽·어두운 밑면 (압력판 크기감)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat O stone 1
+@mat a stone 2
+@mat s stone 3
+@mat t stone 4
+@mat g gold 5
+@mat h gold 3
+@mat b blue 4
+@mat c blue 5
+@mat d blue 6
+@mat e blue 3
+@mat f blue 2
+@mblock 0 0
+OOOOOOOOOOOOOOOO
+OttttttttttttttO
+OtgsssssssssssgO
+OtsssssdbsssssaO
+OtssssdbbessssaO
+OtsssdbbbbesssaO
+OtssdbbbbbbessaO
+OtsseedbbeeessaO
+OtssssdbbessssaO
+OtssssdbbessssaO
+OtssssdbbessssaO
+OtssssdbbessssaO
+OtssssceefssssaO
+OtgsssssssssssgO
+OtaaaaaaaaaaaaaO
+OOOOOOOOOOOOOOOO

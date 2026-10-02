@@ -1,0 +1,54 @@
+// C: 큰 흰 셔츠와 양말 두 짝, 넓은 밝은 면과 최소 주름으로 읽히는 벽면 빨랫줄.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat b linen 3
+@mat c linen 4
+@mat d linen 5
+@mat e linen 6
+@mat r pine 2
+@mat p pine 3
+@layer line
+@mblock 0 1
+p..............................p
+rrrrrr....................rrrrrr
+......rrrrrrrrrrrrrrrrrrrr......
+@layer clothes
+@mblock 3 4
+...bdd..ddb...
+..beddbbdddb..
+.beddddddddcb.
+bedddddddddccb
+beddcddddcdccb
+.bbbcddddcbbb.
+...bdddddcb...
+...beddddcb...
+...beddddcb...
+...bdddddcb...
+...bdddddcb...
+...bbbbbbbb...
+@mblock 20 5
+bddb
+bedb
+bedb
+bddb
+bddb
+bddb
+@mblock 18 11
+.bdddb
+bedddb
+.bbbbb
+@mblock 26 5
+bddb
+bedb
+bedb
+bddb
+bddb
+@mblock 24 10
+.bdddb
+bedddb
+.bbbbb
+@layer pegs
+@mblock 6 3
+p......p.......p.....p
+p......p.......p.....p

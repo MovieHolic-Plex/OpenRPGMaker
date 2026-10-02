@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/locked_door/h35-E.pxg",
+ "id": "locked door",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "가로 판자 문+위아래 넓은 쇠 경첩띠+가운데 큰 놋 자물쇠(쇠고리 걸림), 돌 문틀 윗면 2행 — 세로판자 후보들과 다른 해석",
+ "ok": true
+}

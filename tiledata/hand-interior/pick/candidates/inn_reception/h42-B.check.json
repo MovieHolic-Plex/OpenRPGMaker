@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/inn_reception/h42-B.pxg",
+ "id": "inn reception",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  7,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "카운터 2×1 결(밝은 윗테·앞 판넬 두 짝)을 따라 윗면 7행으로 늘리고 숙박부(린넨, 가운데 제본)와 놋쇠 종을 얹음",
+ "ok": true
+}

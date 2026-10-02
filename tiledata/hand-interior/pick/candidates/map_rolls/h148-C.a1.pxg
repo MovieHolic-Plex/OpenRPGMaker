@@ -1,0 +1,52 @@
+// C: 큰 두루마리 세 덩이와 넓은 통 입구, 최소 결; 꼭대기 윗면 3행(y=2~4)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat L linen 1
+@mat M linen 3
+@mat N linen 4
+@mat P linen 5
+@mat Q linen 6
+@mat i iron 2
+@mat j iron 4
+@layer object
+@mblock 0 0
+................
+................
+.......QQQ......
+......QNLNQ.....
+......NPPPN.....
+......QPPNM.....
+......QPPNM.....
+......QPPNM.....
+..QQQ.QPPNM.....
+.QNLNQQPPNM.....
+.NPPPNQPPNM.....
+.QPPNMQPPNMQQQ..
+.QPPNMQPPNQNLNQ.
+.QPPNMQPPNNPPPN.
+.QPPNMceeedPPNM.
+.QPPNMQPPNQPPNM.
+.QPPNMQPPNQPPNM.
+.QPPNMQPPNQPPNM.
+.QPPNMQPPNQPPNM.
+.gPPNMQPPNQPPNc.
+.ggPNMbabaQPPNc.
+.ggbbbbaabQPPNc.
+.cgggeeeeeeeddc.
+.cfeeeeeeedddbc.
+.cfeeeeededddbc.
+.cfeeeeededddbc.
+.cfeeeeededddbc.
+.cjjjjjjjjjjjic.
+.ciiiiiiiiiiiic.
+.cfeeeeededddbc.
+..ceeeeeedddbc..
+...ccbbbbbbcc...

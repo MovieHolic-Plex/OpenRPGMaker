@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hint_tablet/h38-A.pxg",
+ "id": "hint tablet",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  5,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "석판 몸을 9행으로 줄여 받침 윗면(4행, 6/5단) 위에 올리고 석판 윗머리를 두 줄 밝은 단으로 두껍게",
+ "ok": true
+}

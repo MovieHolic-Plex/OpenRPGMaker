@@ -1,0 +1,43 @@
+// 접힌 마대 둘 + 밤색 가죽 동전 주머니; 꼭대기 윗면 3행(y=0~2)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 3
+@mat p pine 2
+@mat c clay 3
+@mat g gold 4
+@layer sacks
+@mblock 0 0
+...aaaa.........
+..aaaaaa........
+...aaaa.........
+...pppp....aaa..
+..paaaa...aaaaa.
+.aaaaaaa...aaa..
+.aaaaaaaa..ppp..
+aaaaaaaaa.aaaaa.
+aaaaaaaaaaaaaaaa
+aaaaaaaacgggcaaa
+aaaaaaacgggggcaa
+aaaaaaaccggcccaa
+aaaaaaccccccccaa
+.aaaaaccccccccaa
+..aaaacccccccca.
+...aaaacccccc...
+@tblock 0 0
+...3442.........
+..452231........
+...3442.........
+...1412....342..
+..23542...45231.
+.3554432...332..
+.35544332..242..
+245544332.35432.
+2455443323454332
+2454433225652432
+2443432256452222
+2434332325422122
+2334332454433122
+.233322454333122
+..2221243332112.
+...1111221111...

@@ -1,0 +1,40 @@
+// E: 곁결정의 윗면 앞 행만 밝게 보정; 꼭대기 윗면 중앙 4행(y=16~19), 왼쪽 3행(y=21~23), 오른쪽 3행(y=23~25)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a glass 1
+@mat b glass 2
+@mat c glass 3
+@mat d glass 4
+@mat e glass 5
+@mat f glass 6
+@mat h ice 4
+@mat s stone 2
+@mat t stone 3
+@mat u stone 4
+@mat v stone 5
+@layer crystal
+@mblock 0 16
+.......eee......
+......efhhe.....
+.....efhhhdb....
+.....ehhddcb....
+.....edccbab....
+..f..edccbab....
+.fef.edccbab....
+.ehebedccba..e..
+.dedbedccba.ehe.
+.dccbeddcba.ehe.
+..dcb.edcba.dcb.
+..dcb.edcba.dcb.
+..udtbddcbatdba.
+.tuvutddbtuttsa.
+.tuuttbbstttss..
+..tttssssssss...
+@layer glints
+@mblock 1 18
+e
+@mblock 14 20
+f
+@mblock 0 27
+e

@@ -1,0 +1,45 @@
+// B 상태만 바꾸기(3): 뚜껑 안쪽 밝은 갈색 3~5, 입구 속을 단으로 나눔(y6 테두리·y7~8 뒷벽·y9~10 빈 바닥+금화 3쌍·y11 그림자), 앞면 금 띠·자물쇠 그대로
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mat i wood 1
+@mat c gold 8
+@mblock 0 0
+................
+....ooooooooo...
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+..owwwwwwwwwwwo.
+..owwwwwwwwwwwo.
+..owwwwwwwwwwwo.
+..owwggwwwggwwo.
+..owwwwggwwwwwo.
+..owwwwwwwwwwwo.
+..ogggggggggggo.
+..odggdgkgdggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+....111111111...
+...15432322320..
+...15455555320..
+...14344444210..
+...13233333110..
+..1433333333320.
+..1333333333320.
+..1322222222210.
+..1214411144110.
+..1211155111110.
+..1200000000010.
+..1456666666540.
+..1454350433330.
+..0000000000000.
+................

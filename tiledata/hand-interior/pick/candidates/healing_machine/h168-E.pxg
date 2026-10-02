@@ -1,0 +1,52 @@
+// E: 둥근 양끝의 흰 회복 콘솔, 여섯 구슬 홈과 붉은 전면 띠; 꼭대기 윗면 8행(y=6~13).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A white 0
+@mat B white 1
+@mat C white 2
+@mat D white 3
+@mat E white 4
+@mat F white 5
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat r red 2
+@mat s red 3
+@mat t red 4
+@mat u red 5
+@mat g green 1
+@mat h green 3
+@mat n green 4
+@mat o green 5
+@layer console
+@mblock 0 5
+.....BBBBBBBBBBBBBBBBBBBBBB.....
+...BBFFFFFFFFFFFFFFFFFFFFEEBB...
+..BFFFFEkukEFFFEkukEFFFEkukECB..
+..BFFFEjuutkFFFjuutkFFFjuutkCB..
+..BFFFEjFEDjFFFjFEDjFFFjFEDjCB..
+..BFFFEEkkkFFFFFkkkFFFFFkkkECB..
+..BFFFFEkukEFFFEkukEFFFEkukECB..
+..BFFFEjuutkFFFjuutkFFFjuutkCB..
+..BEEEDjFEDjEEEjFEDjEEEjFEDjCB..
+..BDDDDDkkkDDDDDkkkDDDDDkkkDCB..
+..BFEEEEEEEEEEEEEEEEEEEEEEEDCB..
+..BEtttttttttttttttttttttttsrB..
+..BEtssssssssssssssssssssssrrB..
+..BFEEEEEEEEEEEEEEEEEEEEEEEDCB..
+..BFEEEiiiiiiiiiiEEEDDDDDDDDCB..
+..BFEEEiggggggggiEEEDBBBBBDDCB..
+..BFEEEighohhhhgiEEEDBBBBBDDCB..
+..BFEEEignonnnngiEEEDDDDDDDDCB..
+..BFEEEighhhoggiEEEDDBBBBBDDCB..
+..BFEEEiggggggggiEEEDBBBBBDDCB..
+..BFEEEiiiiiiiiiiEEEDDDDDDDDCB..
+..BFEEDDDDDDDDDDDDDDDDDDDDDDCB..
+..BEEDDDDDDDDDDDDDDDDDDDDDCCCB..
+...BCDDDDDDDDDDDDDDDDDDDDDCCB...
+...ABCCCCCCCCCCCCCCCCCCCCCCBA...
+....AABBBBBBBBBBBBBBBBBBBBAA....
+....iiiii..............iiiii....

@@ -1,0 +1,44 @@
+// 다섯 권을 엇갈려 쌓고 붉은 윗표지에 금장 테와 연결 문양을 더함; 꼭대기 윗면 3행(y=1~3).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat r red 1
+@mat R red 2
+@mat H red 4
+@mat g gold 2
+@mat G gold 4
+@mat L gold 5
+@mat b blue 1
+@mat B blue 2
+@mat C blue 3
+@mat e green 1
+@mat E green 2
+@mat F green 3
+@mat v purple 1
+@mat V purple 2
+@mat W purple 3
+@mat o brass 1
+@mat O brass 3
+@mat Q brass 4
+@mat p linen 3
+@mat P linen 4
+@mat h linen 5
+@mat s dwood 1
+@layer books
+@mblock 0 0
+....rrrrrrrrrr..
+...rLGGGGGGGRr..
+..rGHHHLLRRGgr..
+..rGRRRGGRRGgr..
+..rGGGGGGGGgr...
+..rhhhPPPPppr...
+..rrrrrrrrrrr...
+....bCCCCCCBBbb.
+....bhhhPPPPpb..
+.eFFFFEEEEEEee..
+.ehhhPPPPPPppe..
+...vWWVVVVVVvv..
+...vhhhPPPPppv..
+...vvvvvvvvvvv..
+.oQQQOOOOOOOOoo.
+.ohhhPPPPpppooo.

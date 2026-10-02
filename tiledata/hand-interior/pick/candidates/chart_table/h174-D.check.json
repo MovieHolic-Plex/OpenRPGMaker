@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chart_table/h174-D.pxg",
+ "id": "chart table",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 19,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  7,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "금장 테두리·앞판 항해 문양을 더하고 바다 해도·금테 컴퍼스·망원경을 배치, 전체 높이 25px; 꼭대기 윗면 8행(y=9~16)",
+ "ok": true
+}

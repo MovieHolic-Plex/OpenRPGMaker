@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cracked_wall/h37-C.pxg",
+ "id": "cracked wall",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 5,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "단순·또렷: 벽 윗줄을 위아래로 가르는 굵은 금 한 줄(속 어둡게·왼 그늘·오른 밝은 모서리)에 짧은 가지 하나, 바닥에 부스러기 둘",
+ "ok": true
+}

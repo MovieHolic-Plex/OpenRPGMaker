@@ -1,0 +1,75 @@
+// 세 판의 윗면만 깊이 3행으로 확장; 나무색·윤곽·나사·치즈 유지; 꼭대기 윗면 3행(y=1~3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat d dwood 3
+@mat i iron 3
+@mat c cheese 4
+@layer press
+@mblock 0 0
+..dddddddddddd..
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.dddddddddddddd.
+..www..dd..wwd..
+..wwd..dd..wwd..
+..wwd..dd..wwd..
+..wwd.dddd.wwd..
+..wwddddddwwwd..
+..wwd..dd..wwd..
+..wwd..dd..wwd..
+..wwd.wddw.wwd..
+..wwdwwddwwwwd..
+..wwd.wwww.wwd..
+..wwdwwwwwwwwd..
+..wwdddddddwwd..
+..wwd.cccc.wwd..
+..wwdccccccwwd..
+..wwdcccccwwwd..
+..wwdccccccwwd..
+.wwwwccccccwwwd.
+.wwwwdccccdwwwd.
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.dddddddddddddd.
+..wwd......wwd..
+..wwd......wwd..
+..wwd......wwd..
+..ddd......ddd..
+@tblock 0 0
+..222222222222..
+.77777677777762.
+.77777677776662.
+.76677777777662.
+.65555555555542.
+.22222222222211.
+..752..54..642..
+..652..35..542..
+..652..53..542..
+..652.2442.542..
+..653445433542..
+..652..35..542..
+..652..53..542..
+..652.7357.542..
+..652764376542..
+..652.7666.542..
+..652766665542..
+..652222222542..
+..652.5554.542..
+..652565544542..
+..652555445542..
+..652444433542..
+.77674433336662.
+.76762333326762.
+.77777677777762.
+.76666666566652.
+.65555555555542.
+.22222222222211.
+..652......542..
+..652......542..
+..542......432..
+..221......211..

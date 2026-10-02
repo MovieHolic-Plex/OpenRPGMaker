@@ -1,0 +1,90 @@
+// A: 바닥형 온천 — 넓은 하늘색 수면, 낮은 자연석 둘레 윗면, 세 가닥 김.
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a stone 1
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat e stone 5
+@mat f stone 6
+@mat v water 3
+@mat w water 4
+@mat u water 5
+@mat t water 6
+@mat s ice 4
+@mat h ice 5
+@layer pool
+@mblock 0 0
+= 2. 6c 1b 8c 1b 9c 1b 8c 1b 9c 2.
+= 1. 2c 5e 1c 1b 7e 1c 1b 8e 1c 1b 7d 1c 1b 7d 2c 1.
+= 1c 2e 4f 2d 1b 6f 2d 1b 7f 2d 1b 6e 2c 1b 6e 3c
+= 1c 6e 2c 1b 7d 2c 1b 8d 2c 1b 7d 2b 6d 2c
+= 1c 3e 1d 3b 7v 9w 8v 9w 3b 3d 1c
+= 1c 2e 1d 1b 10w 14u 14w 1b 2d 1c
+= 1c 2e 1d 1b 5w 27u 6w 1b 2d 1c
+= 1c 2d 1c 1b 2w 33u 3w 1b 2d 1c
+= 1b 3c 1b 1w 34u 3w 1b 2c 1b
+= 1c 2e 1d 1b 35u 3w 1b 2d 1c
+= 1c 2e 1d 1b 36u 2w 1b 2d 1c
+= 1c 2d 1c 1b 36u 2w 1b 2c 1b
+= 1c 2d 1c 1b 32u 4w 2u 1b 2c 1b
+= 1b 3c 1b 30u 5w 3u 1b 2d 1c
+= 1c 2e 1d 1b 38u 1b 2d 1c
+= 1c 2e 1d 1b 38u 1b 2d 1c
+= 1c 2d 1c 1b 1w 37u 1b 2c 1b
+= 1c 2d 1c 1b 2w 36u 1b 2c 1b
+= 1b 3c 1b 3w 35u 1b 2d 1c
+= 1c 2e 1d 1b 2w 36u 1b 2d 1c
+= 1c 2e 1d 1b 1w 37u 1b 2d 1c
+= 1c 2d 1c 1b 33u 5w 1b 2c 1b
+= 1c 2d 1c 1b 29u 9w 1b 2c 1b
+= 1b 3c 1b 1w 31u 6w 1b 2d 1c
+= 1c 2e 1d 1b 4w 25u 9w 1b 2d 1c
+= 1c 2e 2d 2b 34w 3b 2d 1c
+= 1c 3e 2d 1b 2c 1d 4e 2d 1b 2c 7e 2d 1b 2c 5e 2d 1b 2c 3e 3c
+= 1c 4e 2d 1b 1c 2e 3f 3d 1b 1c 3e 4f 3d 1b 1c 2e 3f 3d 1b 1c 3e 2d 1c
+= 1c 4d 2c 1b 1c 6e 2d 1b 1c 7e 3d 1b 1c 6e 2d 1b 1c 3d 2c 1b
+= 1c 5d 2c 1b 7d 2c 1b 9d 2c 1b 7d 2c 1b 4d 2c 1b
+= 1. 6c 2b 8c 2b 10c 2b 8c 2b 6c 1.
+= 2. 44b 2.
+@layer ripples
+@mblock 7 7
+.uuuttuu
+@mblock 27 9
+.uuttuuu
+@mblock 7 15
+.uuttuu
+@mblock 30 19
+uuuttuu.
+@mblock 13 23
+uuuttuuu
+@layer steam
+@mblock 12 7
+.ss..
+ss...
+sh...
+.hh..
+..hh.
+..sh.
+.ss..
+ss...
+s....
+@mblock 25 12
+..ss.
+.ss..
+.sh..
+..hh.
+...h.
+..sh.
+.ss..
+.s...
+@mblock 35 4
+.ss..
+ss...
+sh...
+.hh..
+..hs.
+..ss.
+.ss..
+.s...

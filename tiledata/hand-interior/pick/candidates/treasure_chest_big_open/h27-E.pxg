@@ -1,0 +1,52 @@
+// h27-E 열린 큰 보물상자: 앞판(y18~) 그대로, 입구 틈 1행+안쪽 붉은 천 바닥 6행+뒤로 젖힌 뚜껑 안쪽면(y4~10)+금 윗날
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o red 0
+@mat d red 1
+@mat m red 2
+@mat r red 3
+@mat l red 4
+@mat h red 5
+@mat G gold 1
+@mat y gold 2
+@mat Y gold 3
+@mat Z gold 4
+@mat W gold 5
+@mat b blue 3
+@mat B blue 5
+@mat v blue 6
+@mat n iron 0
+@mblock 0 0
+= 32.
+= 32.
+= 32.
+= 32.
+= 7. 18o 7.
+= 5. 1o 1Z 18Y 1Z 1o 5.
+= 4. 1o 1Y 20m 1Y 1o 4.
+= 3. 1o 1Z 22m 1Z 1o 3.
+= 3. 1o 1Z 22m 1Z 1o 3.
+= 2. 1o 1Y 24d 1Y 1o 2.
+= 2. 1o 1Y 24o 1Y 1o 2.
+= 1. 1o 1Y 1y 24d 1y 1Y 1o 1.
+= 1. 1o 1Y 1y 24d 1y 1Y 1o 1.
+= 1. 1o 1Y 1y 24m 1y 1Y 1o 1.
+= 1. 1o 1Y 1y 24m 1y 1Y 1o 1.
+= 1. 1o 1Y 1y 24m 1y 1Y 1o 1.
+= 1. 1o 1Y 1y 24m 1y 1Y 1o 1.
+= 1. 1o 1Y 1y 24o 1y 1Y 1o 1.
+= 1. 1o 1W 24Z 3y 1o 1.
+= 1. 1o 1Y 24y 3G 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 10Y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1W 1y 1r 1y 1r 1Z 4W 1y 1m 1y 1m 1Z 1W 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 1Y 1v 1B 1Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 1Y 2b 1Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 1Y 2n 1Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 1Y 2n 1Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 4Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1W 1y 1r 1y 1r 1y 4y 1G 1m 1y 1m 1Z 1W 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 10y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 5r 1Z 1Y 1y 12m 1Z 1Y 1y 5d 1o 1.
+= 1. 1o 5m 3G 12d 3G 5d 1o 1.
+= 1. 30o 1.

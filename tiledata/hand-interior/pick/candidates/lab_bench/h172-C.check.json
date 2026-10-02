@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/lab_bench/h172-C.pxg",
+ "id": "lab bench",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 21,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  6,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "현미경 재물대 뒤 테두리를 y=13으로 올리고 받침 남쪽 면을 y=21로 내려 각각 윗면 3행 확보; 꼭대기 윗면 3행(y=6~8), 재물대 3행(y=14~16), 받침 3행(y=18~20), 흰 상판 8행·전체 높이 26px·나머지 유지.",
+ "ok": true
+}

@@ -1,0 +1,62 @@
+// C: 가로 흰 침상 두 덩이와 굵은 나무 틀, 단순한 옆 사다리. 꼭대기 윗면 6행(y=1~6).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f linen 3
+@mat g linen 4
+@mat h linen 5
+@mat i linen 6
+@mblock 0 0
+.dddddddddddddd.
+deiiiiiiiiiiiidb
+ddiiiihhhhhhhgdb
+ddiiiihhhhhhhgdb
+ddhhgghhhhhhhgdb
+ddhhhghhhhhhhgdb
+ddgggghhhhhgggdb
+ddffffgggggggfdb
+ddfffffffffffbdb
+ddbbbbbbbbbbbbdb
+deddddddddddeddb
+dcbbbbbbbbbbbbba
+dcaaaaaaaaaaaaba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........dedda
+dc.........cbbba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........dedda
+dc.........cbbba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........dedda
+dc.........cbbba
+dcddddddddddbdbb
+deiiiiiiiiihbdbb
+ddiiiihhhhhhbdbb
+ddiiiihhhhhhbdbb
+ddhhgghhhhhhedda
+ddhhhghhhhhhcbbb
+ddgggghhhhhgbdbb
+ddffffggggggbdbb
+ddffffffffffbdbb
+deddddddddddbdbb
+dcbbbbbbbbbdedda
+dcaaaaaaaaaacbba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........dedda
+.a.........ba.a.

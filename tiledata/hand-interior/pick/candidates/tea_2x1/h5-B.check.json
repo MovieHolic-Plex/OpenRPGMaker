@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tea_2x1/h5-B.pxg",
+ "id": "tea 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "앞 가장자리 밝은 줄을 오른쪽 절반에서 한 단 낮춰 왼쪽 위 빛 방향 명암만 더함. 모양·크기·색 그대로",
+ "ok": true
+}

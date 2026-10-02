@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crown_pedestal/h135-D.pxg",
+ "id": "crown pedestal",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "돌 윗판을 1행 늘리고 금장 앞면·기둥을 1행 아래로 이동, 기둥 하단 1행을 줄여 바닥판·접지선 유지; 왕관·방석 유지; 꼭대기 윗면 3행(y=15~17).",
+ "ok": true
+}

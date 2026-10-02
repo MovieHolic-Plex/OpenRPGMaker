@@ -1,0 +1,73 @@
+// E: 날개형 어깨판과 황동 테의 의장 갑옷, 적갈색 허리천; 투구 정수리 윗면 4행(y=0~3).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat n iron 6
+@mat a stone 2
+@mat b stone 3
+@mat c stone 4
+@mat d stone 5
+@mat e stone 6
+@mat p brass 2
+@mat q brass 4
+@mat r brass 5
+@mat s red 1
+@mat t red 2
+@mat u red 3
+@mat v wood 3
+@mat w wood 5
+@layer armor
+@mblock 0 0
+......klk.....k.
+.....kmmlk...mlk
+....kmnnmlj..mlj
+....lmmllkj..lkj
+....lmjjjjj...j.
+....mjiijlj...w.
+....klmmllj...w.
+.....klklj....w.
+.....prqpj....w.
+..klkmlklkkl..w.
+.kmnmlmlklmlj.w.
+.lmmllmlllmkj.w.
+.klljmnmlklkj.w.
+..kjlmnmlkjk..w.
+..ljlmnmlkllj.w.
+..mjlmmlkjlkj.w.
+..mjjlmlkj.lj.w.
+..ljjlmlkj.lj.w.
+..kljlmlkj.lj.w.
+..lkjprqpjjmlmw.
+..mjjqpppj.kllw.
+..lkjlllki..jjw.
+...jjmllkj....w.
+....lmlklj....w.
+...klmlklkj...w.
+...lmljklkj...w.
+...kljstsjk...w.
+....jutusj....w.
+....luutlk....w.
+....lmtlkj....w.
+....lmk.lkj...w.
+....lmk.lkj...w.
+....lmj.lkj...w.
+....mlj.lkj...w.
+....nlk.mlk...w.
+....mlj.llj...w.
+....lmk.lkj...w.
+....mlk.lkj...w.
+....mlj.lkj...w.
+....mlj.lkj...w.
+....mlj.lkj...w.
+...kmml.klkj..w.
+..klmml.klklj.w.
+..jllkj.jkkjj.w.
+.bcddecccccccb..
+bddeedcccccccbba
+bccccbbbbbbbabaa
+.aaaaaaaaaaaaaa.
