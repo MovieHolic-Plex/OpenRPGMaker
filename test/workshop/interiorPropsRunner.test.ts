@@ -172,6 +172,7 @@ describe("interior-props 실행기", () => {
     expect(brief).toContain("방향 C");
     expect(brief).toContain("3행 이상");
     expect(brief).toContain("윗판 3행으로");
+    expect(brief).toContain("생물·조각상·가는 막대는 꼭대기 면 규칙 대신 받침대 윗면만 지킨다");
     expect(brief).toContain("더 밝은 나무");
     expect(brief).toContain('"legend"');
     const messages = await runner.drawMessages(ctx, env);
@@ -188,6 +189,7 @@ describe("interior-props 실행기", () => {
     const text = reviewBrief({ item, palette: runner.palette(item), direction: DIRECTIONS[0], attempt: 1, maxAttempts: 3, candidate: grid, current: grid, anchors: [], previousVerdict: null });
     expect(text).toContain("꼭대기 면");
     expect(text).toContain("top_rows");
+    expect(text).toContain("생물·조각상·가는 막대는 시점 판정을 면제하되(받침대 윗면은 본다) WORSE·READ 는 본다.");
     const messages = await runner.reviewMessages({ item, palette: runner.palette(item), direction: DIRECTIONS[0], attempt: 1, maxAttempts: 3, candidate: grid, current: grid, anchors: [], previousVerdict: null }, env);
     expect((messages[1].content as { type: string }[]).some((p) => p.type === "image_url")).toBe(true);
   });
