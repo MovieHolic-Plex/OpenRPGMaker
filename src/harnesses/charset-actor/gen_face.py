@@ -138,3 +138,62 @@ def generate_lock(ref, brief, timeout=1200):
     if not j.get('ok') or not j.get('image_b64'):
         raise RuntimeError(json.dumps(j, ensure_ascii=False)[:300])
     return Image.open(io.BytesIO(base64.b64decode(j['image_b64']))).convert('RGB'), j.get('engine'), j.get('duration_sec')
+
+
+# ─────────────────────────────── 각도만 고정(v3) ───────────────────────────────
+# 사용자(2026-10-02): 「얼굴은 생성으로 많이 바꿔도 괜찮다, 보는 각도만 유지한다면」. v2 는 눈코입 위치까지 잠가서 손 도트를 다듬는 데 그쳤다.
+# v3 은 생김새·머리·표정·옷은 자유, 고개 방향·회전량·기울기·시선·구도만 잠근다. 판정은 각도 전용 검수자(judge_angle).
+PROMPT_FREE = """Redraw this RPG Maker 2000 dialogue face portrait (48x48, enlarged) as a fully finished NEW character: {brief}
+Style: the same 16-bit SNES / RPG Maker 2000 anime portrait style, soft cel shading, clean line art.
+
+You may change freely: hair style and colour, face shape, eyes, eyebrows, nose, mouth, expression, apparent age, skin tone,
+headwear, accessories, clothing, background colour. Make it look like a different person who matches the description.
+
+HARD LOCK — the camera and the head pose must stay exactly as in the reference:
+- the same direction the head is turned (the same side of the face toward the viewer) and the same amount of turn,
+- the same head tilt and the same up/down angle,
+- the same gaze direction,
+- the same framing: head and shoulders, the head the same size and in the same place in the square, cut off at the same edges.
+Output ONE square portrait, no text, no border, no second panel. It will be downscaled to 48x48, so keep shapes bold."""
+
+JUDGE = """You judge ONLY the head pose of two RPG Maker dialogue face portraits. Ignore identity, hair, colours, clothing, expression, style.
+Open both images with the Read tool:
+- {BASE}: the original portrait (reference pose).
+- {CAND}: a new portrait that must keep the reference pose.
+Compare: (1) which way the head is turned and how much (yaw), (2) head tilt (roll), (3) up/down angle (pitch), (4) gaze direction,
+(5) framing — head size and position in the square, where the shoulders are cut.
+Write the file {OUT} (JSON only) with:
+{{"same_direction": true|false, "score": 0-10, "yaw": "same|more|less|opposite", "issues": ["short note", ...]}}
+score 10 = the pose and framing are the same; 7 = small differences a player would not notice; 4 or below = clearly a different angle or framing.
+"same_direction" is false if the face turns to the other side or faces front while the reference is three-quarter (or the reverse).
+Do not write anything else anywhere."""
+
+
+def generate_free(ref, brief, timeout=1200):
+    body = json.dumps({'prompt': PROMPT_FREE.format(brief=brief), 'reference_b64': _b64(ref), 'fallback': True, 'priority': 0,
+                       'size': '1024x1024', 'return_base64': True}).encode()
+    req = urllib.request.Request(API, body, {'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        j = json.load(r)
+    if not j.get('ok') or not j.get('image_b64'):
+        raise RuntimeError(json.dumps(j, ensure_ascii=False)[:300])
+    return Image.open(io.BytesIO(base64.b64decode(j['image_b64']))).convert('RGB'), j.get('engine'), j.get('duration_sec')
+
+
+def judge_angle(workdir, base_png, cand_png, out_json, model='claude-sonnet-5-5', effort='medium', timeout=600):
+    """각도 전용 검수자(Claude). → dict 또는 None. 그림 두 장만 보고 고개 방향·회전·기울기·시선·구도를 비교한다."""
+    import shutil
+    import subprocess
+    workdir = Path(workdir)
+    prompt = JUDGE.format(BASE=base_png, CAND=cand_png, OUT=out_json)
+    try:
+        Path(out_json).unlink()
+    except OSError:
+        pass
+    subprocess.run(['timeout', str(timeout), shutil.which('claude') or 'claude', '-p', '--model', model, '--effort', effort,
+                    '--dangerously-skip-permissions', '--output-format', 'text'], input=prompt.encode(), cwd=workdir,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        return json.loads(Path(out_json).read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return None

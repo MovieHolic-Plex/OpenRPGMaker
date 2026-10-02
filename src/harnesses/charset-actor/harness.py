@@ -450,12 +450,14 @@ def start_face(w, engine='sonnet'):
     return p
 
 
-POSE_MIN = 0.65   # 생성 얼굴이 뼈대 얼굴 골격과 맞는 정도(gen_face.pose_score). v1 18명은 -0.01~0.47, v2 시험 0.71·0.79
+POSE_MIN = 0.65   # v2 의 골격 점수 기준(지금은 참고로만 기록)
+ANGLE_MIN = 7     # v3 각도 검수자 점수 기준(0-10) + 같은 방향
 
 
 def gen_face_one(w, tries=3):
-    """생성 얼굴(v2 고정): 손 도트 얼굴(face/out.face.txt)을 참고로 「손질만」 → 각도 점수 POSE_MIN 넘을 때까지 최대 tries 번, 가장 잘 맞는 것.
-    결과 w/face_gen/{ref.png, raw-<k>.png, face.png, face_x4.png, compare.png, meta.json}"""
+    """생성 얼굴 v3(각도만 고정): 손 도트 얼굴을 참고로 생김새·머리·옷은 자유롭게, 고개 방향·기울기·시선·구도만 잠근다.
+    각도 검수자(Sonnet)가 원본 얼굴과 비교해 같은 방향·ANGLE_MIN 이상일 때까지 최대 tries 번, 가장 높은 것.
+    결과 w/face_gen/{ref.png, raw-<k>.png, cand-<k>_x4.png, angle-<k>.json, face.png, face_x4.png, compare.png, meta.json}"""
     import gen_face as G
     meta = json.loads((w / 'meta.json').read_text())
     b = briefs()[meta['brief']]
@@ -463,28 +465,36 @@ def gen_face_one(w, tries=3):
         raise RuntimeError('손 도트 얼굴이 먼저 있어야 한다(faces)')
     gd = w / 'face_gen'
     if gd.exists():
-        shutil.rmtree(gd)
+        old = w / f'face_gen_{_gen_meta(w).get("version", "v1") if _gen_meta(w) else "old"}'
+        if old.exists():
+            shutil.rmtree(old)
+        gd.rename(old)   # 이전 판은 비교용으로 남긴다
     gd.mkdir()
     bp, brows = base_face(b['base'])
     base_im = C.face_rgba(bp, brows)
+    C.up(base_im, 4).save(gd / 'base_x4.png')
     hp, _, hrows = C.parse_face((w / 'face' / 'out.face.txt').read_text(encoding='utf-8'))
     hand_im = C.face_rgba(hp, hrows)
     mask = G.kept_mask(brows, hrows, bp, hp)
     ref = G.reference_lock(hand_im)
     ref.save(gd / 'ref.png')
     t0 = time.time()
-    best, engine, scores = None, None, []
+    best, engine, tried = None, None, []
     for k in range(tries):
-        raw, engine, _ = G.generate_lock(ref, b['brief'])
+        raw, engine, _ = G.generate_free(ref, b['brief'])
         raw.save(gd / f'raw-{k}.png')
         face = G.to_face(raw)
-        sc = round(G.pose_score(face, base_im, mask), 3)
-        scores.append(sc)
-        if best is None or sc > best[0]:
-            best = (sc, face, k)
-        if sc >= POSE_MIN:
+        C.up(face, 4).save(gd / f'cand-{k}_x4.png')
+        j = G.judge_angle(gd, gd / 'base_x4.png', gd / f'cand-{k}_x4.png', gd / f'angle-{k}.json') or {}
+        sc = float(j.get('score') or 0)
+        same = bool(j.get('same_direction'))
+        tried.append(dict(k=k, angle=sc, same=same, issues=j.get('issues', []), pose=round(G.pose_score(face, base_im, mask), 3)))
+        key = (same, sc)
+        if best is None or key > best[0]:
+            best = (key, face, k)
+        if same and sc >= ANGLE_MIN:
             break
-    sc, face, k = best
+    (same, sc), face, k = best
     face.save(gd / 'face.png')
     C.up(face, 4).save(gd / 'face_x4.png')
     cp, _, cf = C.load(w / 'out.chr.txt')
@@ -496,10 +506,10 @@ def gen_face_one(w, tries=3):
         cmp_.alpha_composite(p, (x, 0))
         x += p.width + 16
     cmp_.convert('RGB').save(gd / 'compare.png')
-    (gd / 'meta.json').write_text(json.dumps(dict(version='v2-lock', engine=engine, pose=sc, pose_min=POSE_MIN, scores=scores,
-                                                  chosen=k, ok=sc >= POSE_MIN, wall=round(time.time() - t0), at=now()),
-                                             ensure_ascii=False), encoding='utf-8')
-    return f'{engine} 각도 {sc} 시도 {scores}'
+    (gd / 'meta.json').write_text(json.dumps(dict(version='v3-angle', engine=engine, angle=sc, same_direction=same,
+                                                  angle_min=ANGLE_MIN, ok=same and sc >= ANGLE_MIN, tried=tried, chosen=k,
+                                                  wall=round(time.time() - t0), at=now()), ensure_ascii=False), encoding='utf-8')
+    return f'{engine} 각도 {sc} 같은방향 {same} 시도 {[(t["angle"], t["same"]) for t in tried]}'
 
 
 def cmd_gen_faces(a):
