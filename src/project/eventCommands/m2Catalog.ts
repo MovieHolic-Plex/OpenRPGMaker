@@ -10,7 +10,7 @@ import {
   type M2CommandDeprecation,
   type M2PdfCommandRow,
 } from "./m2CatalogData";
-import { modernFieldsFor } from "./m2ModernCatalog";
+import { modernFieldsFor, SHAKE_DIRECTION_OPTIONS } from "./m2ModernCatalog";
 import {
   pickerGroupForM2Command,
   pickerPageForM2Command,
@@ -494,6 +494,7 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
         { key: "value", label: "강도(값)", type: "number", defaultValue: 3 },
         { key: "intensity", label: "강도", type: "select", defaultValue: "3", options: SHAKE_INTENSITY_OPTIONS },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 400 },
+        { key: "direction", label: "방향", type: "select", defaultValue: "both", options: SHAKE_DIRECTION_OPTIONS },
       ];
     case "Scroll Map":
       return [

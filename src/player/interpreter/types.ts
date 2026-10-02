@@ -1,4 +1,5 @@
 import type { BlendModeName } from "@/project/blendMode";
+import type { ParticlePreset, ShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import type { EasingName } from "@/project/easing";
 import type { EmoteKind } from "@/project/emotes";
 import type { AudioChannel, AudioTrackState } from "@/project/session";
@@ -23,6 +24,12 @@ import type {
 } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
+
+/** 연출이 붙을 대상 — 주인공·이벤트·맵 칸. */
+export type StagingTarget =
+  | { readonly kind: "player" }
+  | { readonly kind: "event"; readonly eventId: string }
+  | { readonly kind: "tile"; readonly x: number; readonly y: number };
 
 export type StepResult =
   | { kind: "done" }
@@ -137,7 +144,11 @@ export type StepResult =
   | { kind: "showEmote"; target: EmoteTarget; emote: EmoteKind; durationMs: number }
   | { kind: "playMovie"; resourceId: string; wait: boolean; skippable: boolean }
   | { kind: "flashScreen"; red: number; green: number; blue: number; durationMs: number }
-  | { kind: "shakeScreen"; intensity: number; durationMs: number }
+  | { kind: "shakeScreen"; intensity: number; durationMs: number; direction?: ShakeDirection }
+  /** 한 자리·한 인물에 터지는 파티클. wait 가 아니면 흐름을 막지 않는다. */
+  | { kind: "particleEffect"; preset: ParticlePreset; target: StagingTarget; durationMs: number; wait: boolean }
+  /** 캐릭터 모습 효과. 장면이 세션(m2Runtime.screen.spriteLooks)에 써서 매 프레임 그린다. */
+  | { kind: "spriteLook"; target: Exclude<StagingTarget, { kind: "tile" }>; fields: Readonly<Record<string, unknown>> }
   | {
       kind: "scrollMap";
       direction: "down" | "left" | "right" | "up";

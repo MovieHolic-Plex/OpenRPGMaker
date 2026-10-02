@@ -1,6 +1,6 @@
 import { validateEndingPresentation } from "@/project/io/shapeDatabaseFields";
 import type { EndingPresentation } from "@/project/cinematicSettings";
-import { canonicalizeSayBeatAliases, compileCutscene, CutsceneValidationError, SAY_BEAT_ALIAS_WARNING, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
+import { BEAT_KIND_INFERRED_WARNING, canonicalizeSayBeatAliases, compileCutscene, CutsceneValidationError, SAY_BEAT_ALIAS_WARNING, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
 import { collectEndingWarnings } from "@/project/endings";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -260,6 +260,7 @@ function parseEpilogue(project: Project, value: unknown, warnings: string[] = []
   if (!Array.isArray(value)) throw new ToolError("epilogue는 beat 배열이어야 합니다.", { code: "ending-epilogue" });
   const aliased = canonicalizeSayBeatAliases(value);
   if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
+  if (aliased.inferred > 0) warnings.push(BEAT_KIND_INFERRED_WARNING(aliased.inferred));
   const raw = (aliased.beats as unknown[]).map((entry, index) => {
     if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
       throw new ToolError(`epilogue[${index}]는 객체여야 합니다.`, { code: "ending-epilogue-beat" });

@@ -1,3 +1,4 @@
+import type { SpriteLook } from "@/project/eventCommands/cinematicStaging";
 // player/types.ts
 // 플레이어 쪽 공용 타입. 인터프리터가 요구하는 세션 인터페이스 등.
 // v2: switches/variables/timers/commonEvents 포함.
@@ -52,6 +53,15 @@ export type M2ScreenRuntimeState = {
   distortion?: { wave: number; mosaic: number; rotate: number };
   /** 왜곡 전환 시간(ms). 0/미지정 = 즉시. */
   distortionDurationMs?: number;
+  /** 레터박스 띠 두께(화면 높이 %, 띠 하나). 미지정 = 없음. `@/project/eventCommands/cinematicStaging`. */
+  letterbox?: number;
+  /** 레터박스 전환 시간(ms). */
+  letterboxDurationMs?: number;
+  /**
+   * 캐릭터 모습 효과(색·뒤집기·기울기·포즈·잔상). 키 = "player" 또는 "<mapId>/<eventId>"
+   * (`spriteLookKey`). 화면에 보이는 지속 상태라 세이브에 함께 남는다.
+   */
+  spriteLooks?: Record<string, SpriteLook>;
   weather?: string;
 };
 

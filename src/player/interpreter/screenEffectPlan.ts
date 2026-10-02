@@ -1,3 +1,4 @@
+import { letterboxPercentFromValue } from "@/project/eventCommands/cinematicStaging";
 /**
  * 모던 `Screen Effect` 커맨드의 옵션을 **이미 존재하는 화면효과 경로**로 옮기는 매핑.
  *
@@ -36,6 +37,8 @@ export type ScreenEffectPlan =
       readonly value: string;
       readonly durationMs: number;
     }
+  /** 위아래 검은 띠. percent = 띠 하나의 두께(화면 높이 %), 0 = 걷기. */
+  | { readonly kind: "letterbox"; readonly percent: number; readonly durationMs: number }
   | { readonly kind: "unsupported"; readonly effect: string };
 
 /**
@@ -69,6 +72,10 @@ export function planScreenEffect(effect: string, value: string, durationMs: numb
     case "rotate":
     case "clearDistortion":
       return { kind: "distortion", effect, value: trimmed, durationMs: duration };
+    case "letterbox":
+      return { kind: "letterbox", percent: letterboxPercentFromValue(trimmed), durationMs: duration };
+    case "clearLetterbox":
+      return { kind: "letterbox", percent: 0, durationMs: duration };
     default:
       // blur 등 렌더러가 없는 옵션. 삼키지 말고 기록해서 감독이 알 수 있게 한다.
       return { kind: "unsupported", effect };

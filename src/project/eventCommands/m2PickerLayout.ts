@@ -216,6 +216,8 @@ const DETAILED_MAP_PRESENTATION_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Call Event",
   "Camera Control",
   "Screen Effect",
+  "Particle Effect",
+  "Sprite Look",
   "Cutscene Control",
   "Spawn Event",
   "Remove Event",
@@ -279,6 +281,8 @@ const MAP_SCREEN_STAGING_TITLES: ReadonlySet<string> = new Set([
   "Show Animation",
   "Play Movie",
   "Screen Effect",
+  "Particle Effect",
+  "Sprite Look",
   "Camera Control",
   "Cutscene Control",
 ]);
@@ -439,6 +443,8 @@ function isScreenPresentationCommand(title: string): boolean {
     title === "Play Movie" ||
     title === "Camera Control" ||
     title === "Screen Effect" ||
+    title === "Particle Effect" ||
+    title === "Sprite Look" ||
     title === "Cutscene Control"
   );
 }
