@@ -17,7 +17,7 @@
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 깃대 옆에 천막들이 모인 작은 야영지로 보인다."
+    "reads_as": "지도 1배에서 깃대와 천막들이 모인 작은 야영지로 보인다."
    }
   },
   "desert-east/게르 야영": {
@@ -35,7 +35,7 @@
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 흰 둥근 천막 두 동이 모인 작은 야영지로 보인다."
+    "reads_as": "지도 1배에서 흰 둥근 천막 두 채가 모인 작은 야영지로 보인다."
    }
   },
   "desert-east/궁성 도시": {
@@ -45,20 +45,15 @@
     6
    ],
    "sha": "511b118d6249",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:01:42+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:19:36+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE",
-     "DIAG"
-    ],
-    "reads_as": "지도 1배에서 기와 전각을 성벽으로 두른 궁성이나 요새 도시로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 여러 기와 문루와 큰 전각을 성벽으로 둘러싼 동양풍 궁성으로 보인다."
    }
   },
   "desert-east/산성 누각": {
@@ -68,19 +63,15 @@
     3
    ],
    "sha": "89c05ce59d9c",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:01:42+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:19:37+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 흙 마당과 석축 위에 선 다층 누각 요새로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 석축 성벽으로 둘러싼 흙 언덕 위 동양식 다층 누각으로 보인다."
    }
   },
   "desert-east/산성 요새": {
@@ -90,17 +81,15 @@
     3
    ],
    "sha": "4c6ccb4cfde5",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:01:42+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:19:39+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 양쪽 망루와 중앙 성문이 있는 석축 요새로 보인다."
+    "reads_as": "지도 1배에서 중앙 성문과 양쪽 망루를 갖춘 석축 요새로 보인다."
    }
   },
   "desert-east/석굴 사원": {
@@ -110,17 +99,15 @@
     2
    ],
    "sha": "b5ff42febe7c",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:01:42+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:08+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 사암 바위에 처마와 문틀을 붙인 동굴 입구로 보인다."
+    "reads_as": "사암 바위에 어두운 입구와 회색 처마가 붙은 석굴로 보인다."
    }
   },
   "desert-east/석등과 선돌": {
@@ -130,17 +117,15 @@
     2
    ],
    "sha": "a5b2703cbf29",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:01:42+00:00",
-   "picked": null,
+   "decision": "pick",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:24+00:00",
+   "picked": "r15/C",
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "선돌에 둘러싸인 작은 석등 또는 돌 제단으로 보인다."
+    "reads_as": "지도 1배에서 석등을 가운데 둔 선돌 무리로 보인다."
    }
   },
   "desert-east/신선의 섬": {
@@ -150,17 +135,15 @@
     4
    ],
    "sha": "0ca173c9e027",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:30+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:42+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 구름 위에 떠 있는 초록 섬과 옥색 지붕의 전각 하나로 보인다."
+    "reads_as": "지도 1배에서 흰 구름 위에 떠 있는 초록 섬과 옥색 지붕 전각 하나로 보인다."
    }
   },
   "desert-east/읍성": {
@@ -170,20 +153,15 @@
     4
    ],
    "sha": "3a1eab2dcd7e",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:30+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:44+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE",
-     "DIAG"
-    ],
-    "reads_as": "지도 1배에서 문루와 내부 큰 건물을 갖춘 성곽 도시로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 문루와 내부 전각을 성벽으로 둘러싼 동양풍 성곽 도시로 보인다."
    }
   },
   "desert-east/항구 읍성": {
@@ -193,20 +171,15 @@
     4
    ],
    "sha": "6358b90c46f9",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:30+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:45+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE",
-     "DIAG"
-    ],
-    "reads_as": "지도 1배에서는 나무 부두가 앞에 붙은 성벽 도시로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 성벽과 탑으로 둘러싸인 해안 읍성, 앞쪽 나무 부두와 작은 붉은 돛으로 보인다."
    }
   },
   "desert-east/사막 바오바브": {
@@ -216,17 +189,15 @@
     3
    ],
    "sha": "e16ccc060f4b",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:30+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 납작한 초록 수관과 불룩한 갈색 줄기의 큰 나무로 보인다."
+    "reads_as": "지도 1배에서 납작하고 넓은 수관과 불룩한 줄기를 가진 큰 나무로 읽힌다."
    }
   },
   "desert-east/신목": {
@@ -236,17 +207,15 @@
     3
    ],
    "sha": "fd168973b419",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:30+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:29:34+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 붉은 띠와 늘어진 장식을 두른 큰 나무로 보인다."
+    "reads_as": "지도 1배에서 붉은 띠와 장식을 두른 큰 나무로 보인다."
    }
   },
   "desert-east/기와집 마을": {
@@ -256,17 +225,15 @@
     3
    ],
    "sha": "cc63e0ea6ed6",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:30+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:29:43+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 회청색 기와집들이 두 줄로 밀집한 마을로 보인다."
+    "reads_as": "회청색 기와지붕 집들이 두 줄로 모인 큰 마을로 보인다."
    }
   },
   "desert-east/오아시스 마을": {
@@ -276,19 +243,15 @@
     3
    ],
    "sha": "8ab9f98a513b",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:30+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:29:58+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서는 흙집 한 채와 돔 건물, 높은 첨탑이 모인 작은 마을로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "흙집과 돔 사원, 첨탑이 모인 사막풍 마을."
    }
   },
   "desert-east/무너진 석탑": {
@@ -298,17 +261,15 @@
     2
    ],
    "sha": "49c2005d715a",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:00+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 낮게 무너진 석조 구조물과 주변에 흩어진 돌로 보인다."
+    "reads_as": "지도 1배에서 층이 일부 무너진 낮은 석탑 밑동과 주변 돌무더기로 보인다."
    }
   },
   "desert-east/모래에 묻힌 성채": {
@@ -318,17 +279,15 @@
     3
    ],
    "sha": "c7249db5f897",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:03+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 모래에 하부가 묻힌 성벽과 문루의 폐허로 보인다."
+    "reads_as": "모래에 하단이 묻힌 성벽과 문루의 폐허로 보인다."
    }
   },
   "desert-east/대사원": {
@@ -338,17 +297,15 @@
     3
    ],
    "sha": "f8206908bd61",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:05+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 옥색 기와의 2층 전각과 중앙 계단이 있는 사원으로 보인다."
+    "reads_as": "지도 1배에서 중앙 계단과 높은 석조 기단 위에 옥색 기와를 얹은 2층 사원 전각으로 보인다."
    }
   },
   "desert-east/9층 팔각탑": {
@@ -358,17 +315,15 @@
     4
    ],
    "sha": "e1032d354c34",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:06+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 처마가 여러 층 겹친 높고 큰 석탑으로 보인다."
+    "reads_as": "지도 1배에서 처마가 여러 층 겹쳐진 높고 큰 전탑으로 보인다."
    }
   },
   "desert-east/3층 전탑": {
@@ -378,17 +333,15 @@
     2
    ],
    "sha": "5810025e0685",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:08+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 처마가 세 겹인 가늘고 작은 탑으로 보인다."
+    "reads_as": "지도 1배에서 층마다 처마가 있는 가늘고 높은 3층 탑으로 보인다."
    }
   },
   "desert-east/사막 흙벽 마을": {
@@ -398,19 +351,15 @@
     2
    ],
    "sha": "6539b1897a35",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:10+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 야자 옆에 흙집들이 모인 작은 사막 촌락으로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 야자가 곁에 선 황토색 흙집 촌락으로 보인다."
    }
   },
   "desert-east/초가 촌락": {
@@ -420,17 +369,15 @@
     2
    ],
    "sha": "bec81ff23bbd",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:12+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 누런 초가 지붕이 모인 작은 촌락으로 보인다."
+    "reads_as": "지도 1배에서 누런 초가지붕 집들이 모인 작은 촌락으로 보인다."
    }
   },
   "desert-east/화산 제단": {
@@ -440,17 +387,17 @@
     2
    ],
    "sha": "2f04496bee2b",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
+   "decision": "pick",
+   "reasons": [],
    "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
-   "picked": null,
+   "decided_at": "2026-10-02T05:25:50+00:00",
+   "picked": "r30/B",
    "review": {
-    "verdict": "PASS",
-    "codes": [],
-    "reads_as": "지도 1배에서 붉은 용암이 드러난 회색 화산과 왼쪽 아래 작은 주황색 구조물로 보인다."
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 꼭대기와 왼쪽 아래에 용암이 있는 회색 화산으로 보인다."
    }
   },
   "fantasy/oasis_camp": {
@@ -478,11 +425,11 @@
     2
    ],
    "sha": "e4a29d7129a5",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T03:38:53+00:00",
+   "picked": "r2/E",
    "review": {
     "verdict": "PASS",
     "codes": [],
@@ -552,11 +499,11 @@
     3
    ],
    "sha": "b799f905ed06",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T01:48:02+00:00",
+   "picked": "r4/B",
    "review": {
     "verdict": "FAIL",
     "codes": [
@@ -572,11 +519,11 @@
     3
    ],
    "sha": "caac856e0120",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T01:48:20+00:00",
+   "picked": "r5/A",
    "review": {
     "verdict": "PASS",
     "codes": [],
@@ -608,11 +555,11 @@
     2
    ],
    "sha": "8872ac667c85",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T01:48:32+00:00",
+   "picked": "r6/D",
    "review": {
     "verdict": "PASS",
     "codes": [],
@@ -626,11 +573,11 @@
     2
    ],
    "sha": "506f781c88ec",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T01:48:43+00:00",
+   "picked": "r7/F",
    "review": {
     "verdict": "PASS",
     "codes": [],
@@ -932,10 +879,10 @@
     4
    ],
    "sha": "1033b6317b3d",
-   "decision": null,
+   "decision": "accept",
    "reasons": [],
    "note": "",
-   "decided_at": null,
+   "decided_at": "2026-10-02T01:49:57+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
@@ -1007,7 +954,7 @@
    "decision": "accept",
    "reasons": [],
    "note": "",
-   "decided_at": "2026-10-01T23:51:05+00:00",
+   "decided_at": "2026-10-02T01:50:03+00:00",
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1179,17 +1126,15 @@
     2
    ],
    "sha": "a335074138e2",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:15+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 조명 기둥 옆에 작은 텐트들이 모인 야영지로 보인다."
+    "reads_as": "지도 1배에서 조명 기둥 옆에 여러 돔 텐트가 모인 작은 야영지로 보인다."
    }
   },
   "modern-sf/camp_b": {
@@ -1199,17 +1144,15 @@
     2
    ],
    "sha": "14720c4def19",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:16+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 작은 천막들이 모여 있고 안테나가 선 야영지로 보인다."
+    "reads_as": "지도 1배에서 여러 천막과 높은 안테나가 모인 작은 야영지로 보인다."
    }
   },
   "modern-sf/capital": {
@@ -1219,20 +1162,15 @@
     6
    ],
    "sha": "4631ef03834e",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:17+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE",
-     "DIAG"
-    ],
-    "reads_as": "지도 1배에서 중앙 광장과 첨탑을 둘러싼 고층 빌딩 군의 대도시로 읽힌다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 중앙 광장과 첨탑을 둘러싼 고층 빌딩 군의 대도시로 보인다."
    }
   },
   "modern-sf/castle_a": {
@@ -1242,19 +1180,15 @@
     3
    ],
    "sha": "1db83bd61595",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:18+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서는 높은 레이더 탑과 철문이 있는 방벽형 군사 시설로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 높은 관측·레이더 타워와 방벽, 중앙 철문을 갖춘 군사 기지로 보인다."
    }
   },
   "modern-sf/castle_b": {
@@ -1264,19 +1198,15 @@
     3
    ],
    "sha": "8454a9f732c8",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:19+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 네 포탑과 푸른 사령동, 철문이 있는 군사 요새로 읽힌다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 네 포탑과 중앙 고층동, 앞쪽 문루를 갖춘 SF 군사 기지·요새로 보인다."
    }
   },
   "modern-sf/cave": {
@@ -1286,19 +1216,15 @@
     2
    ],
    "sha": "fd097ab68de4",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:22+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 흙 둔덕에 붙은 철문이 있는 지하 벙커 입구로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 철문과 환기구가 있는 작은 콘크리트 벙커 입구로 보인다."
    }
   },
   "modern-sf/circle": {
@@ -1308,20 +1234,15 @@
     2
    ],
    "sha": "8737e1a12bb1",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:25+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE",
-     "DIAG"
-    ],
-    "reads_as": "지도 1배에서 접시 안테나 세 개가 놓인 어레이로 읽힌다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 접시 안테나 세 개가 모인 위성 통신 시설로 보인다."
    }
   },
   "modern-sf/floating": {
@@ -1331,19 +1252,17 @@
     4
    ],
    "sha": "a664c8cf1e4a",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:28+00:00",
    "picked": null,
    "review": {
     "verdict": "FAIL",
     "codes": [
-     "SIDE"
+     "STYLE"
     ],
-    "reads_as": "지도 1배에서 고층 건물과 돔을 얹고 공중에 떠 있는 도시 원판으로 읽힌다."
+    "reads_as": "고층 건물과 돔이 올라간 부유 원판 도시이며, 아래에 선명한 분홍색 타원이 보인다."
    }
   },
   "modern-sf/fort_city": {
@@ -1353,20 +1272,15 @@
     4
    ],
    "sha": "1a36d8e14f27",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:29+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE",
-     "DIAG"
-    ],
-    "reads_as": "지도 1배에서 앞문과 감시탑을 갖춘 고층 방벽 도시로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 앞 문루와 네 모서리 탑이 고층 빌딩을 둘러싼 SF 방벽 도시로 보인다."
    }
   },
   "modern-sf/harbor_city": {
@@ -1376,19 +1290,15 @@
     4
    ],
    "sha": "07e9fc4c1228",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:30+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 크레인·컨테이너 더미·화물선·고층 건물이 모인 항구로 읽힌다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 화물선과 컨테이너 더미, 고층 건물이 모인 항구 도시로 보인다."
    }
   },
   "modern-sf/landmark_nature": {
@@ -1398,19 +1308,15 @@
     3
    ],
    "sha": "f2ea2b2bf9be",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:32+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "파란 태양광 패널이 여러 줄 늘어서고 오른쪽 아래에 작은 관리동이 있는 시설로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "푸른 태양광 패널이 여러 줄로 늘어서고 오른쪽 아래에 작은 관리동이 붙은 태양광 발전 단지."
    }
   },
   "modern-sf/large_town_a": {
@@ -1420,19 +1326,15 @@
     3
    ],
    "sha": "233bed255a68",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:33+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서는 붉은색·보라색 지붕의 주택이 모인 마을로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 낮은 주택들이 두 줄로 모인 교외 주택가로 보인다."
    }
   },
   "modern-sf/large_town_b": {
@@ -1442,20 +1344,15 @@
     3
    ],
    "sha": "7c0034dfe669",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:36+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE",
-     "DIAG"
-    ],
-    "reads_as": "지도 1배에서는 평지붕 주택 여섯 동이 모인 주택가로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 낮은 평지붕 주택 여섯 동이 모인 교외 주택가로 보인다."
    }
   },
   "modern-sf/ruin": {
@@ -1465,19 +1362,15 @@
     2
    ],
    "sha": "5cb9a1cfe62d",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:37+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 앞벽이 뜯긴 회색 고층 건물의 폐허와 옆에 쌓인 잔해로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 벽이 뜯긴 회색 건물과 낮게 무너진 잔해가 있는 폐허로 보인다."
    }
   },
   "modern-sf/ruin_city": {
@@ -1487,19 +1380,15 @@
     3
    ],
    "sha": "3128776e918a",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:38+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 구멍 난 고층 건물과 잔해가 모인 폐허 도시로 읽힌다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 벽이 뚫리고 지붕이 무너진 고층 건물군과 잔해가 있는 폐허 도시로 보인다."
    }
   },
   "modern-sf/shrine": {
@@ -1509,19 +1398,15 @@
     3
    ],
    "sha": "e57744ee550c",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:39+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "원형 관측 돔과 부속동이 있는 연구·관측 시설로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 큰 관측 돔과 부속 건물이 있는 SF 관측·연구 시설로 보인다."
    }
   },
   "modern-sf/tower_great": {
@@ -1531,19 +1416,15 @@
     4
    ],
    "sha": "99d75667ccc8",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:40+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 전망 고리와 긴 안테나가 달린 높은 미래형 탑으로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "넓은 기단 위에 전망 고리와 안테나가 달린 높은 SF 탑."
    }
   },
   "modern-sf/tower_small_a": {
@@ -1553,17 +1434,15 @@
     2
    ],
    "sha": "3f251818850d",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:41+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 적백 줄무늬 몸통과 꼭대기 안테나가 있는 작은 탑으로 보인다."
+    "reads_as": "지도 1배에서 적백 줄무늬 몸통과 꼭대기 안테나가 있는 작은 송신탑으로 보인다."
    }
   },
   "modern-sf/tower_small_b": {
@@ -1573,17 +1452,15 @@
     2
    ],
    "sha": "ac761673c26b",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:42+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
     "codes": [],
-    "reads_as": "지도 1배에서 긴 흰 기둥과 세 갈래 날개가 있는 풍력 터빈으로 보인다."
+    "reads_as": "지도 1배에서 흰 기둥 위에 세 날개가 달린 작은 풍력 터빈으로 보인다."
    }
   },
   "modern-sf/village_a": {
@@ -1593,19 +1470,15 @@
     2
    ],
    "sha": "2e7335783238",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:43+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서는 탑 옆에 색깔이 다른 상자형 집들이 모인 작은 촌락으로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "색이 다른 상자형 집들과 탑이 모인 작은 촌락."
    }
   },
   "modern-sf/village_b": {
@@ -1615,19 +1488,15 @@
     2
    ],
    "sha": "a177fa729397",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:45+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 붉은 헛간과 사일로, 작은 집이 모인 농가로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "붉은 헛간과 사일로, 작은 살림집이 모인 농가로 보인다."
    }
   },
   "modern-sf/volcano": {
@@ -1637,19 +1506,15 @@
     2
    ],
    "sha": "7b78ebf53516",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:48+00:00",
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "증기를 내뿜는 냉각탑과 낮은 건물이 붙은 발전 시설로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 증기를 내뿜는 냉각탑과 낮은 건물이 붙은 발전 시설로 보인다."
    }
   }
  }

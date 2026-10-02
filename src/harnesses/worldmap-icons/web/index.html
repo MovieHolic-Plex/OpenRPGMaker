@@ -186,12 +186,14 @@ async function loadRounds(id) {
     <div class="cands">${rd.cands.filter((c) => c.status !== 'discarded' && c.status !== 'broken').map((c) => {
       const busy = !['done', 'broken', 'discarded'].includes(c.status);
       const img = (f) => `/c/${c.path}/${f}?t=${c.status}${c.attempt}`;
-      const v = c.verdict === 'PASS' ? '<b style="color:var(--ok)">검수 ✓</b>' : c.verdict ? `<b style="color:var(--bad)">검수 ✗ ${esc(c.codes.join(','))}</b>` : '';
+      const v = (c.verdict === 'PASS' ? '<b style="color:var(--ok)">검수 ✓</b>' : c.verdict ? `<b style="color:var(--bad)">검수 ✗ ${esc(c.codes.join(','))}</b>` : '')
+        + ((c.engine || '').startsWith('render:') ? ' <span class="cur">원래 3D 장면을 정면 카메라로 다시 렌더 — 옆면은 투영상 0px, 검수 ✗ 는 참고</span>' : '')
+        + ((c.engine || '').startsWith('hand:') ? ' <span class="cur">감독(Claude)이 원래 화소로 직접 고친 것 — 검수 ✗ 는 참고</span>' : '');
       return `<div class="cand ${picked === c.key ? 'picked' : ''} ${c.mark === 'drop' ? 'dropped' : ''}">
         <div class="imgs">${c.has_img ? `<img src="${img('icon-x8.png')}" alt=""><img class="ctx1" src="${img('ctx-x1.png')}" alt="">` : `<span class="cur">${busy ? '…' : '그림 없음'}</span>`}</div>
         <div class="st"><b>${c.letter}</b> ${busy ? `<span class="spin">${ST[c.status] || c.status}</span>` : ''} ${v} <span class="cur">시도 ${c.attempt}</span>${picked === c.key ? ' <b style="color:var(--ok)">← 고름</b>' : ''}${c.mark === 'drop' ? ' <span class="cur">버림</span>' : ''}</div>
         <div class="why">${esc(c.direction.split(' — ')[0])}${c.body?.reads_as ? ' · ' + esc(c.body.reads_as) : ''}${c.check && !c.check.ok ? ' · 깨짐: ' + esc(c.check.problems.join('; ')) : ''}</div>
-        ${c.has_img && !busy && c.verdict === 'PASS' ? `<div class="btns"><button class="pk" data-pick="${c.key}">이걸로</button><button class="dp" data-drop="${c.key}">✕ 버림</button><button data-base="${c.key}">이걸로 다시 그리기</button></div>` : ''}
+        ${c.has_img && !busy && (c.verdict === 'PASS' || /^(render|hand):/.test(c.engine || '')) ? `<div class="btns"><button class="pk" data-pick="${c.key}">이걸로</button><button class="dp" data-drop="${c.key}">✕ 버림</button><button data-base="${c.key}">이걸로 다시 그리기</button></div>` : ''}
       </div>`; }).join('')}</div>${rd.cands.some((c) => c.status === 'discarded' || c.status === 'broken') ? `<div class="cur" style="margin-top:6px">시점 위반으로 자동 폐기 ${rd.cands.filter((c) => c.status === 'discarded' || c.status === 'broken').length}장 — 고를 수 없고, 판 안에서 새 후보로 다시 그린다.</div>` : ''}</div>`).join('') || '<p class="cur" style="margin-top:10px">아직 다시 그린 판이 없다.</p>';
   $('rounds').querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => candDecide(id, 'pick', b.dataset.pick));
   $('rounds').querySelectorAll('[data-drop]').forEach((b) => b.onclick = () => candDecide(id, 'drop', b.dataset.drop));
