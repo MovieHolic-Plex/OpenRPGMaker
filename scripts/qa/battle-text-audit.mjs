@@ -36,8 +36,8 @@ const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 
 /** 프로젝트에 저장되는 스킨 id 11종 (src/battle/skins/registry.ts). */
 const ALL_SKINS = [
-  "rm2000", "pokemon", "mother", "ff", "chrono",
-  "dragonquest", "goldensun", "octopath", "bravely", "mv", "vxace",
+  "retro2003", "rm2003", "pokemon", "ff", "chrono",
+  "goldensun", "octopath", "bravely",
 ];
 
 /** 긴 한글 라벨 스트레스용 — 실제 저작에서 나올 수 있는 길이의 상한을 잡는다. */
