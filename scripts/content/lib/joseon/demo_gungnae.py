@@ -175,8 +175,8 @@ paint('slab', XW, GAP_Y0, XW + 2, GAP_Y1); paint('slab', XE, GAP_Y0, XE + 2, GAP
 def wall_ring():
     """네 변 성벽 + 모서리 망루 + 대문루(북·남) + 측면 문루(동·서)."""
     H3 = ['gungnae_wall_h', 'gungnae_wall_h1', 'gungnae_wall_h2', 'gungnae_wall_h3', 'gungnae_wall_h4', 'gungnae_wall_h5']
-    V3 = ['gungnae_wall_v', 'gungnae_wall_v1', 'gungnae_wall_v2']
-    VE3 = ['gungnae_wall_v_e', 'gungnae_wall_v1_e', 'gungnae_wall_v2_e']
+    V3 = ['gungnae_wall_v'] + [f'gungnae_wall_v{i}' for i in range(1, 6)]
+    VE3 = ['gungnae_wall_v_e'] + [f'gungnae_wall_v{i}_e' for i in range(1, 6)]
     for yb, cl, cr in ((YN, 'gungnae_wall_corner_nw', 'gungnae_wall_corner_ne'), (YS, 'gungnae_wall_corner_sw', 'gungnae_wall_corner_se')):
         Pb(cl, XW, yb, 'foot'); Pb(cr, XE, yb, 'foot')
         for x in range(XW + 3, XE):                # 성벽은 대문 밑까지 이어 깐다(문 기단의 기울어진 옆면 뒤로 돌이 비친다)
@@ -187,7 +187,7 @@ def wall_ring():
     for y in range(YN + 1, YS):
         if GATE_Y0 <= y <= GATE_Y1:                     # 측면 문루 몸체 + 통로
             continue
-        P(V3[hsh(y, 3, 7) % 3], XW, y, 'foot'); P(VE3[hsh(y, 5, 7) % 3], XE, y, 'foot')
+        P(V3[hsh(y, 3, 7) % 6], XW, y, 'foot'); P(VE3[hsh(y, 5, 7) % 6], XE, y, 'foot')
     for gx in (XW - 1, XE - 1):
         P('gungnae_gate_side_5', gx, GATE_Y0, None)
         for yy in range(GATE_Y0, GAP_Y0):
@@ -480,6 +480,7 @@ def jumak(x0, y0, ramp_front=('gn_jm_row_room_4', 'gn_jm_daemun_6'), wall='gn_mu
 building('gn_shop_armory', 12, 17, 6)                                               # 9×7
 building('gn_shop_cloth', 19, 26, 4)                                                # 8×7, 위 상점과 두 줄 떨어뜨림
 building('gn_shop_smithy', 12, 35, 6)                                               # 8×7
+paint('road', 18, 41, 18, 41)                                                    # 건물 그림 맨 아래 한 줄은 비어 있다: 계단과 앞 샛길 사이 풀 틈을 흙길로 잇는다
 building('giwa_house_3', 23, 18, 2)                                                 # 상점 옆 기와 민가(두 칸 띄움)
 jumak(12, 54)                                                                       # 서남 ㅁ자 주막(담 포함 x 12..27, y 54..71)
 building('gn_thatch_b', 13, 74, 3)                                                  # 서남 초가(문 앞은 장터)
@@ -677,8 +678,8 @@ def carve_lanes():
 carve_lanes()
 
 # --- 바깥 숲띠: 줄 맞춰 심은 나무(성벽 밖 6~8칸)
-ZEL = ['zelkova_a', 'zelkova_b', 'zelkova_c', 'zelkova_d', 'zelkova_e']
-PIN = ['pine_a', 'pine_b', 'pine_c', 'pine_d']
+ZEL = ['zelkova_' + c for c in 'abcdefghij']
+PIN = ['pine_' + c for c in 'abcdef']
 TREEPOS = []                 # (이름, x, 발 행, w, h) — 나무·덤불만
 
 
@@ -691,7 +692,7 @@ def Tf(name, x, yb):
     TREEPOS.append((name, x, yb, w, h))
 
 
-_CYC = ['zelkova_a', 'pine_a', 'zelkova_b', 'pine_b', 'zelkova_c', 'pine_c', 'zelkova_d', 'pine_d', 'zelkova_e']
+_CYC = ['zelkova_a', 'pine_a', 'zelkova_f', 'pine_b', 'zelkova_b', 'pine_e', 'zelkova_g', 'pine_c', 'zelkova_c', 'zelkova_h', 'pine_d', 'zelkova_d', 'zelkova_i', 'pine_f', 'zelkova_e', 'zelkova_j']
 
 
 def band_pick(i, j, x=0, yb=0):
@@ -734,9 +735,9 @@ for (nm, x, y, w, h) in placed:
     if nm.split('_')[0] not in ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'rocks', 'reeds', 'jars', 'well', 'lantern', 'scarecrow', 'stepping', 'flower', 'sotdae'):
         NONTREE_RECTS.append((x, y, w, h))
 BLDG_RECTS = [(x, y, w, h) for (nm, x, y, w, h) in placed if nm.startswith(_SHADOWED) and h >= 3 and w >= 2]
-BIG = [('zelkova_' + c, 4, 5) for c in 'abcde'] + [('pine_' + c, 4, 5) for c in 'abcd']
-MID = [('persimmon_' + c, 3, 4) for c in 'abc'] + [('small_z_a', 2, 3), ('small_z_b', 2, 3), ('small_p', 2, 3)]
-BUSH = [('bush_a', 2, 2), ('bush_b', 2, 2), ('bush_c', 2, 2), ('bush_l_a', 3, 2), ('bush_l_b', 3, 2), ('bush_s_a', 2, 1), ('bush_s_b', 2, 1)]
+BIG = [('zelkova_' + c, 4, 5) for c in 'abcdefghij'] + [('pine_' + c, 4, 5) for c in 'abcdef']
+MID = [('persimmon_' + c, 3, 4) for c in 'abcdef'] + [('small_z_a', 2, 3), ('small_z_b', 2, 3), ('small_p', 2, 3)]
+BUSH = [('bush_a', 2, 2), ('bush_b', 2, 2), ('bush_c', 2, 2), ('bush_l_a', 3, 2), ('bush_l_b', 3, 2), ('bush_s_a', 2, 1), ('bush_s_b', 2, 1), ('bush_d', 2, 2), ('bush_e', 2, 2), ('bush_f', 2, 2), ('bush_l_c', 3, 2), ('bush_l_d', 3, 2), ('bush_s_c', 2, 1), ('bush_s_d', 2, 1)]
 OCC = set()
 for (nm, x, yb, w, h) in TREEPOS:
     for xx in range(x, x + w):

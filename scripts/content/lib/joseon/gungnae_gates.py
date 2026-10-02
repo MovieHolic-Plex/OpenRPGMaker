@@ -215,16 +215,17 @@ def _vwall_cols(c, y0, y1, seed, shadow=False, face=True):
             elif x == TOP_X0 + BAND: t = 6
             elif rnd(x, y, 80 + seed) > 0.93: t = min(6, t + 1)
             c.put(x, y, S[t])
-        m = (y + seed * 4) % 16
+        m = (y + (0, 4, 8, 12, 2, 6, 10, 14, 1, 5, 9, 13)[seed % 12]) % 16
+        mlen = (10, 9, 11, 8, 10, 9, 11, 8, 9, 10, 8, 11)[seed % 12]
         for (ax, bx, left) in ((TOP_X0, TOP_X0 + BAND, True), (TOP_X0 + BAND + WALK, TOP_X1, False)):    # 성가퀴 띠
             for x in range(ax, bx):
                 u = x - ax
-                if m < 10:
+                if m < mlen:
                     if u == 0: t = 6
                     elif u < 5: t = 6 if left else 5
                     else: t = 4 if left else 3
                     if m == 0: t = 6
-                    if m == 9: t = max(2, t - 2)
+                    if m == mlen - 1: t = max(2, t - 2)
                     if m in (4, 5) and u == 4 and seed % 2: t = 1
                 else:
                     t = 3 if left else 2                                      # 성가퀴 사이 낮은 턱(어두워 이빨이 도드라진다)
@@ -239,7 +240,13 @@ def wall_v(var=0, face='r'):
     """세로 성벽 48×16 (동·서 변): 서쪽 옆면(돌 쌓기) + 윗면(성가퀴·걷는 길) + 오른쪽 땅 그림자. 위아래 이음 없이 이어지고 변형 3종은 섞어 쓴다.
     face='l' 은 줄눈·성가퀴 위상만 다른 짝(같은 문법). 통행: 없음(막힘)."""
     c = Cv(VW, T)
-    _vwall_cols(c, 0, T, var + (3 if face == 'l' else 0))
+    _vwall_cols(c, 0, T, var + (6 if face == 'l' else 0))
+    if var >= 3:                                                            # 오래된 윗면 변형: 걷는 길 석판 한 장을 갈아 끼운 자리 + 성가퀴 한 개 이 빠짐
+        gx = TOP_X0 + BAND + 3 + (var % 3) * 4
+        gy = 3 + (var * 5) % 8
+        for yy in range(gy, gy + 4):
+            for xx in range(gx, gx + 6):
+                c.put(xx, yy, S[3 if (xx + yy) % 3 else 4])
     return c
 
 
@@ -522,6 +529,11 @@ def _base_front(c, W, H, fy0, lo, hi, seed):
     for y in range(fy0, fy0 + 2):
         for x in range(lo(y), hi(y)):
             c.put(x, y, S[6] if y == fy0 else S[2])
+    rb = H - 34                                                          # 아래 34px 는 성벽(wall_h)과 같은 큰 막돌 — 기단과 성벽의 줄·톤이 이어진다
+    if rb > fy0 + 10:
+        rubble_face(c, 0, rb, W, H, seed=seed * 5 + 1, lo=lo, hi=hi)
+        for x in range(lo(rb), hi(rb)):
+            c.put(x, rb - 1, S[2])
     for y in range(fy0, H):
         c.put(lo(y), y, S[6]); c.put(lo(y) + 1, y, S[5]); c.put(hi(y) - 1, y, S[3])
 
@@ -620,21 +632,41 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8,
     GH.gable_band(c, x0, x1, 8, yb, y_e, G, 'tile', 'cap', 'gable', wall=wl, seed=seed)
     Wd = RGB['persimmon'] if plaster else RGB['wood']                    # 궁문 기둥은 주황(정면 소문루와 같은 단청 기둥)
     k0 = (5, 4, 4, 3, 3, 2) if not plaster else (6, 5, 4, 4, 3, 2)
-    for xp in (px0, px1 - pw):                                          # 남쪽 처마 밑 기둥(통로 양끝, 아래 4행 높이)
-        for y in range(y_e, H):
+    PH = 24                                                             # 남쪽 문설주 높이(px). 위쪽 긴 띠는 설주를 잇는 상인방(들보)을 위에서 본 면이지 기둥이 아니다
+    yp0 = H - 2 - PH
+    for xp in (px0, px1 - pw):
+        for y in range(y_e, yp0):                                       # 상인방: 기둥보다 한 톤 어둡고 가는 면 + 윗모서리 밝은 선
+            for k in range(pw):
+                kk = min(5, k * 6 // pw)
+                t = max(1, k0[kk] - 1)
+                if k in (0, pw - 1): t = max(1, t - 1)
+                c.put(xp + k, y, S[t] if not plaster else Wd[t])
+            if y % 6 == 0:
+                c.put(xp + 1, y, S[2] if not plaster else Wd[2])
+        for y in range(yp0, H - 2):                                     # 문설주(통짜 기둥)
             for k in range(pw):
                 kk = min(5, k * 6 // pw)
                 c.put(xp + k, y, S[k0[kk]] if not plaster else Wd[k0[kk]])
-        for k in range(pw + 2):                                         # 주춧돌
-            c.put(xp - 1 + k, H - 2, S[6]); c.put(xp - 1 + k, H - 1, S[3])
-    for x in range(px0 - 1, px1 + 1):                                   # 기둥 머리를 잇는 문틀 보(도리): 두 기둥이 한 문틀로 읽히게 한다
-        for k, t in enumerate((6, 5, 4, 3, 2)):
+        for k in range(pw + 4):                                         # 설주 머리 받침(두공 한 단) — 상인방이 설주 위에 얹힌 것으로 읽힌다
+            c.put(xp - 2 + k, yp0 - 1, S[6] if not plaster else Wd[6]); c.put(xp - 2 + k, yp0, S[4] if not plaster else Wd[4]); c.put(xp - 2 + k, yp0 + 1, S[2] if not plaster else Wd[2])
+        for k in range(pw + 4):                                         # 주춧돌
+            c.put(xp - 2 + k, H - 3, S[6]); c.put(xp - 2 + k, H - 2, S[5]); c.put(xp - 2 + k, H - 1, S[3])
+    BH = 9                                                              # 문틀 보(창방·상인방): 기둥 머리를 잇는 굵은 가로 들보 + 단청 마디
+    for x in range(px0 - 2, px1 + 2):
+        for k in range(BH):
+            t = (6, 5, 5, 4, 4, 3, 3, 2, 1)[k]
             c.put(x, y_e + k, Wd[t] if plaster else S[t])
-        if (x - px0) % 6 == 2:
-            c.put(x, y_e + 5, Wd[2] if plaster else S[2])
-    for y in range(y_e, y_e + 6):                                       # 지붕 밑 처마 그늘(길 위, 반투명)
+        if (x - px0) % 8 in (3, 4):
+            c.put(x, y_e + 2, RGB['red'][5]); c.put(x, y_e + 3, RGB['red'][4]); c.put(x, y_e + 5, RGB['dblue'][4] if 'dblue' in RGB else S[3])
+    for xp in (px0, px1 - pw):                                          # 기둥 머리(주두) — 보 밑에서 한 단 넓어진다
+        for k in range(pw + 4):
+            c.put(xp - 2 + k, y_e + BH, S[6] if not plaster else Wd[6]); c.put(xp - 2 + k, y_e + BH + 1, S[3] if not plaster else Wd[3])
+    yin1 = H - 5                                                        # 기둥 사이 지붕 밑 안쪽: 위는 어둡고 바닥 쪽으로 밝아진다(통로가 뚫려 있다)
+    for y in range(y_e + BH + 2, yin1):
+        u = (y - (y_e + BH + 2)) / float(max(1, yin1 - (y_e + BH + 2)))
+        al = int(120 * (1 - u) ** 2)
         for x in range(px0 + pw, px1 - pw):
-            c.put(x, y, SHADOW, 120 - (y - y_e) * 18)
+            if al > 6: c.put(x, y, SHADOW, al)
     for y in range(y_e + 3, H - 1):                                     # 기둥 오른쪽 땅 그림자(기둥·벽이 오른쪽 아래로 드리운다)
         for i in range(pw + 4):
             if c.a[y, px1 + i, 3] == 0:
@@ -1088,7 +1120,7 @@ def objects():
     d = {}
     for v in range(6):
         d['gungnae_wall_h' + ('' if v == 0 else str(v))] = wall_h(v)
-    for v in range(3):
+    for v in range(6):
         d['gungnae_wall_v' + ('' if v == 0 else str(v))] = wall_v(v)
         d['gungnae_wall_v' + ('' if v == 0 else str(v)) + '_e'] = wall_v(v, 'l')
     for k in ('NW', 'NE', 'SW', 'SE'):

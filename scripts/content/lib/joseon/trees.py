@@ -161,17 +161,27 @@ def scatter(c, cx, cy, rx, ry, n, rmin=4.0, rmax=6.0, flat=0.0, seed=0, dark_bel
         k += 1
 
 # ---------------------------------------------------------------- 나무 종류
-def zelkova(seed=0, shift=0):
-    """느티나무(당산나무) 64×80: 수관이 몸집의 3/4, 줄기는 짧고 굵게 퍼진 뿌리, 잎 사이로 굵은 가지가 갈라져 보인다."""
+def zelkova(seed=0, shift=0, shape=0):
+    """느티나무(당산나무) 64×80: 수관이 몸집의 3/4, 줄기는 짧고 굵게 퍼진 뿌리, 잎 사이로 굵은 가지가 갈라져 보인다.
+    shape 0=기본 둥근 수관, 1=키 큰 타원(줄기 길게), 2=넓고 낮은 수관, 3=두 덩이로 갈라진 비대칭 수관."""
     W, H = 64, 80
     cv = Cv(W, H)
     ground_shadow(cv, 32, 76, 24, 4)
-    trunk(cv, 31, 50, 77, 10, flare=7, lean=0.03 * (-1) ** seed, seed=seed)
-    bark_line(cv, [(31, 52), (22, 42), (14, 36)], 5, 3, seed)
-    bark_line(cv, [(32, 52), (42, 41), (50, 35)], 5, 3, seed)
-    bark_line(cv, [(31, 48), (31, 34), (28, 24)], 5, 3, seed)
+    ty = {0: 50, 1: 54, 2: 46, 3: 52}[shape]
+    trunk(cv, 31 + (2 if shape == 3 else 0), ty, 77, 10 if shape != 1 else 8, flare=7, lean=0.03 * (-1) ** seed + (0.05 if shape == 3 else 0), seed=seed)
+    bark_line(cv, [(31, ty + 2), (22, ty - 8), (14, ty - 14)], 5, 3, seed)
+    bark_line(cv, [(32, ty + 2), (42, ty - 9), (50, ty - 15)], 5, 3, seed)
+    bark_line(cv, [(31, ty - 2), (31, ty - 16), (28, ty - 26)], 5, 3, seed)
     c = Crown(W, H, seed, shift=shift + 1)
-    scatter(c, 32, 29, 31, 27, 78, 5.0, 8.0, flat=0.12, seed=seed, dark_below=44)
+    if shape == 0:
+        scatter(c, 32, 29, 31, 27, 78, 5.0, 8.0, flat=0.12, seed=seed, dark_below=44)
+    elif shape == 1:
+        scatter(c, 32, 31, 25, 29, 70, 5.0, 7.6, flat=0.1, seed=seed, dark_below=48)
+    elif shape == 2:
+        scatter(c, 32, 33, 31, 21, 64, 5.0, 8.0, flat=0.16, seed=seed, dark_below=44)
+    else:
+        scatter(c, 21, 33, 19, 22, 44, 4.8, 7.4, flat=0.12, seed=seed, dark_below=46)
+        scatter(c, 42, 26, 20, 24, 50, 4.8, 7.6, flat=0.1, seed=seed + 7, dark_below=44)
     c.paint()
     c.edge_dark()
     c.bake(cv)
@@ -183,7 +193,7 @@ def zelkova(seed=0, shift=0):
     return cv
 
 
-def pine(seed=0, shift=0):
+def pine(seed=0, shift=0, shape=0):
     """소나무 64×80: 붉은 비늘 껍질 줄기가 S 자로 꺾여 올라가고, 한쪽으로 뻗은 가지 끝에 납작한 솔잎 층이 구름처럼 얹힌다."""
     W, H = 64, 80
     cv = Cv(W, H)
@@ -191,6 +201,8 @@ def pine(seed=0, shift=0):
     bk = (5, 4, 3, 2)
     # S 자 줄기
     pts = [(28, 76), (29, 66), (33, 56), (30, 46), (27, 38), (31, 28)]
+    if shape == 1:
+        pts = [(32, 76), (31, 66), (27, 56), (30, 46), (34, 38), (30, 28)]
     for k in range(len(pts) - 1):
         (xa, ya), (xb, yb) = pts[k], pts[k + 1]
         for y in range(yb, ya + 1):
@@ -210,12 +222,18 @@ def pine(seed=0, shift=0):
             cv.put(28 + side * (5 + k), 76 - k // 3, WOOD[4 if side < 0 else 2])
             cv.put(28 + side * (5 + k), 77 - k // 3, WOOD[2 if side < 0 else 1])
     # 가지: 줄기에서 수관 층으로
-    bark_line(cv, [(30, 50), (20, 46), (12, 42)], 3, 2, seed)
-    bark_line(cv, [(30, 40), (42, 34), (52, 30)], 3, 2, seed)
-    bark_line(cv, [(29, 32), (24, 26), (18, 22)], 3, 2, seed)
+    if shape == 1:
+        bark_line(cv, [(30, 50), (40, 46), (50, 41)], 3, 2, seed)
+        bark_line(cv, [(32, 40), (22, 34), (12, 30)], 3, 2, seed)
+        bark_line(cv, [(31, 32), (36, 26), (42, 22)], 3, 2, seed)
+    else:
+        bark_line(cv, [(30, 50), (20, 46), (12, 42)], 3, 2, seed)
+        bark_line(cv, [(30, 40), (42, 34), (52, 30)], 3, 2, seed)
+        bark_line(cv, [(29, 32), (24, 26), (18, 22)], 3, 2, seed)
     c = Crown(W, H, seed, shift=shift + 0)
     # 납작한 구름 층 셋(가지 끝). 각 층은 가로로 넓고 아래가 평평한 솔잎 덩이들.
-    for (cx, cy, rx, ry) in ((14, 42, 16, 8), (46, 29, 17, 9), (23, 17, 17, 8.5)):
+    layers = ((14, 42, 16, 8), (46, 29, 17, 9), (23, 17, 17, 8.5)) if shape == 0 else ((50, 40, 15, 8), (17, 27, 16, 9), (42, 16, 16, 8.5))
+    for (cx, cy, rx, ry) in layers:
         scatter(c, cx, cy, rx, ry, 24, 4.4, 6.6, flat=0.1, seed=seed + cx)
     c.paint()
     c.edge_dark()
