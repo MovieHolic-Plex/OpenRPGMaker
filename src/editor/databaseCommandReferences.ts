@@ -1,3 +1,4 @@
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
@@ -284,30 +285,14 @@ function commandListResourceReferences(commands: readonly Command[], resourceId:
 }
 
 function commandResourceReferences(command: Command, resourceId: string): boolean {
+  if (eventCommandBranches(command).some((branch) => commandListResourceReferences(branch.commands, resourceId))) return true;
   switch (command.kind) {
     case "changeFace":
-      return command.resourceId === resourceId;
-    case "choices":
-      return command.options.some((option) => commandListResourceReferences(option.branch, resourceId)) || commandListResourceReferences(command.cancelBranch ?? [], resourceId);
-    case "presentItem":
-      return presentItemBranchLists(command).some((branch) => commandListResourceReferences(branch, resourceId));
-    case "fork":
-      return commandListResourceReferences(command.then, resourceId) || commandListResourceReferences(command.else ?? [], resourceId);
-    case "loop":
-      return commandListResourceReferences(command.body, resourceId);
-    case "moveEvent":
-      return moveRouteResourceReferences(command.route.moves, resourceId);
-    case "shop":
-      return commandListResourceReferences(command.transactionBranch ?? [], resourceId);
-    case "inn":
-      return commandListResourceReferences(command.notEnoughBranch ?? [], resourceId);
-    case "promoteActor":
-      return commandListResourceReferences(command.successBranch ?? [], resourceId) || commandListResourceReferences(command.failureBranch ?? [], resourceId);
-    case "evolveMonster":
-      return commandListResourceReferences(command.successBranch ?? [], resourceId) || commandListResourceReferences(command.failureBranch ?? [], resourceId);
     case "showPicture":
     case "playAudio":
       return command.resourceId === resourceId;
+    case "moveEvent":
+      return moveRouteResourceReferences(command.route.moves, resourceId);
     default:
       return false;
   }
@@ -338,7 +323,8 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
       return commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.defeatBranch ?? [], kind, id);
     case "battleProcessing":
-      return commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
+      return (kind === "variable" && command.troopVariableId === id)
+        || commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.defeatBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.escapeBranch ?? [], kind, id);
     case "inn":

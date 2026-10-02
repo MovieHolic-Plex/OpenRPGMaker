@@ -3,7 +3,7 @@ import type { DatabaseCollection } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import { namedReferenceMessage, commandLocationMessage, projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "./databaseRecordReferences";
 import type { Command, ItemRecord, SkillRecord } from "@/project/types";
-import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 export function databaseReferenceMessage(collection: DatabaseCollection, id: string): string | null {
@@ -100,24 +100,8 @@ function commandListReferencesCommonEvent(commands: readonly Command[], id: stri
 }
 
 function commandReferencesCommonEvent(command: Command, id: string): boolean {
-  switch (command.kind) {
-    case "callCommonEvent":
-      return command.commonEventId === id;
-    case "choices":
-      return command.options.some((option) => commandListReferencesCommonEvent(option.branch, id)) || commandListReferencesCommonEvent(command.cancelBranch ?? [], id);
-    case "presentItem":
-      return presentItemBranchLists(command).some((branch) => commandListReferencesCommonEvent(branch, id));
-    case "fork":
-      return commandListReferencesCommonEvent(command.then, id) || commandListReferencesCommonEvent(command.else ?? [], id);
-    case "loop":
-      return commandListReferencesCommonEvent(command.body, id);
-    case "shop":
-      return commandListReferencesCommonEvent(command.transactionBranch ?? [], id);
-    case "inn":
-      return commandListReferencesCommonEvent(command.notEnoughBranch ?? [], id);
-    default:
-      return false;
-  }
+  return (command.kind === "callCommonEvent" && command.commonEventId === id)
+    || eventCommandBranches(command).some((branch) => commandListReferencesCommonEvent(branch.commands, id));
 }
 
 export function resourceReferenceMessage(resourceId: string): string | null {
