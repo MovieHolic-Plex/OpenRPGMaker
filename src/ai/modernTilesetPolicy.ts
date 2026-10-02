@@ -60,7 +60,7 @@ export function modernTilesetViolation(before: Project, after: Project, policy: 
       || !sameSheet(a, b);
     if (!changed) continue;
     if (!a || !policy.sheets.some(s => s.image === a.image && s.tileSize === a.tileSize && s.columns === a.columns && s.count === a.count)) {
-      return `현대 맵 '${map.name}'에는 설치된 Pixel Art World 칩셋만 사용할 수 있습니다. '${map.tilesetId}' 사용/혼합 변경은 적용하지 않았습니다. PAW 타일셋을 조회해 선택하세요. 없으면 자료집 → 맵 → 타일 → 외부 타일셋 다운로드에서 원본 PNG 다운로드/가져오기를 안내하세요.`;
+      return `현대 맵 '${map.name}'에는 설치된 Pixel Art World 칩셋만 사용할 수 있습니다. '${map.tilesetId}' 사용/혼합 변경은 적용하지 않았습니다. PAW 타일셋을 조회해 선택하세요. 없으면 자료집 → 맵 → 타일 → 외부 타일셋 다운로드에서 원본 PNG 다운로드/가져오기를 안내하세요. 현대 거리·실내 «장면» 하나만 필요한 컷신이면 새 맵을 만들지 말고 generate_cutscene_art(role:'backdrop') 배경 그림 + script_cutscene_staged(backdropResourceId) 로 만든 뒤 기존 맵에서 이어 가세요.`;
     }
   }
   // 위반이 없으면 undefined — noImplicitReturns 아래에서는 암묵 종료가 오류다.

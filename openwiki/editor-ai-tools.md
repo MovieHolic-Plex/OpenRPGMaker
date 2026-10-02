@@ -228,6 +228,16 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 남은 1·3층 전용 표면: `show_tile_grid`.
 회귀: `test/mzLayerVision.test.ts`, `test/qaGameRender.test.ts`(업로드 그림판·층 순서·못 찾음), `test/mzLayerGhostAccounting.test.ts`(증분 왕복·옛 맵 불변·집계·고스트 칸·뷰포트 재료).
 
+## 그림 연출 — script_cutscene_staged · generate_cutscene_art · 대화창 위치 (2026-10-02)
+
+트럭에 치여 이세계로 가는 식의 «그림·인물이 화면에서 움직이는 연출»을 조수가 짜게 하는 경로. 헤드리스 시험은 `npm run qa:game -- gen --brief scripts/qa-game/briefs/truck-isekai-pokemon.json --seed-project <project.json>`(그림 생성이 Google 429 면 `QA_IMAGE_PROVIDER=codex`).
+
+- **`script_cutscene_staged`**(`src/editor/tools/cutsceneStageTools.ts`, 컴파일러 `src/editor/cutsceneStage/compile.ts`): 배우 + 관계 + 타이밍을 선언하면 좌표를 도구가 계산해 `script_cutscene` beat 로 내린다. 배우 종류 — `character`(Actor1~4 걷기 프레임, `hero:true` 면 맵 위 주인공 그래픽도 같은 칸으로 맞춤) · `resourceId`(생성 그림 또는 번들 그림, 예 `scarloxy-monster-*`) · `ghost`+`tile`(맵 위 주인공) · `event`(맵 위 NPC·몬스터 이벤트). 단계 — show/hide/move/enter/exit/pose/fling/say/wait/flash(color)/shake/se/bgm/whiteout/dewhite/clear/transfer/fade/turn/animate/expect. `expect touching` 이 접촉을 못 박고 어긋나면 고칠 방법을 돌려준다. 충돌 전용 `script_cutscene_impact` 는 deprecated(→ staged) — 두 도구를 두면 모델이 전용 쪽만 쓰고 일반 도구를 외면했다.
+- **소재 규칙**: 몬스터·동물은 게임에 이미 있는 도트, 사람은 Actor1, 공격 이펙트는 `animate`(게임 전투 애니메이션), 효과음·BGM 은 목록에서. 생성(`generate_cutscene_art`, `style:game|illustration`)은 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만.
+- **`script_cutscene` 방어**: 생성 그림·캐릭터 조각·몬스터 도트를 `picture move` 로 손수 움직이면 거부하고 staged 로 안내(`rejectHandMovedActorPictures`, 내부 호출은 `_composedByStageTool`). 암전(fade out)으로 끝나 화면이 검게 남는 컷신도 거부. 새 beat `animation`(게임 전투 애니메이션 재생).
+- **대화창 위치(주인공을 가리는 문제)**: 대사 명령 `text.position`(`auto`·`top`·`center`·`bottom`, 비우면 «문장 표시 설정» displayTextSettings). 이벤트 편집기 대사 편집기에 «대화창 위치» 칸, 컷신 `say` beat·staged `say` 단계·AI 스키마에 같은 필드. `auto` = 화면 속 주인공을 가리지 않는 쪽. 런타임 가림 회피(`effectivePosition`)는 이제 **카메라를 거친 화면 속 높이**(`playerScreenY`)로 판정한다 — 타일 위치로 재던 때는 카메라가 맵 가장자리에 걸리면 어긋났다. staged 의 `say` 는 기본 auto 로 지금 화면의 배우와 덜 겹치는 위/아래를 고른다.
+- 미검증: vitest·게이트(이 세션 규칙상 미실행). 소리는 요청·로드 로그까지만 확인.
+
 ## 충격 연출 (2026-09-22)
 
 이벤트 명령 조수(`buildEventAssistPrompt`)와 스튜디오 조수(시스템 프롬프트 고정 블록)는 같은 순서를 본다. 함정·피격·마법·폭발·사망은 대사로 시작하지 않는다. `playAudio`(효과음, `loop:false`)와 `showAnimation`(`wait:true`)이 먼저고, 그 다음 HP·스위치·이동·`killPlayer`, 마지막이 설명 대사다. 마법학교처럼 화면을 덮는 컨셉이면 단발 타격이 아니라 화면을 덮는 애니메이션 id(목록에 «화면을 덮음»)를 쓴다. 게임오버 그림·제목은 `get_game_over` / `set_game_over` / `generate_game_over_image` 다. `killPlayer.message` 는 그 순간의 한 줄이다.
