@@ -15,8 +15,8 @@
    강제 플래그 없음(특정도는 클래스를 겹쳐 올린다: `.battle-party.battle-party`). 이 파일은 `_rm2003.css` 뒤에 로드된다. */
 
 /* ---- 색: 스킨 테마 변수 → 유리 뼈대 별칭 ------------------------------------------------
-   rm2000·rm2003 은 런타임 공용 유리 토큰(메뉴·대화와 같은 표면)을 그대로 쓴다. 나머지는 자기 창 색을 쓴다. */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="rm2003"]) {
+   유리 묶음 스킨은 자기 창 색을 쓴다(:not(pokemon) 은 구체도를 옛 :not(rm2003) 과 같게 두려는 것 — pokemon 은 유리 묶음이 아니다). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="pokemon"]) {
   --rm-floor: var(--battle-window-bg);
   --rm-hud-surface: color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 92%, transparent);
   --rm-card: color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 84%, transparent);
@@ -29,23 +29,15 @@
   --rm-track: color-mix(in srgb, var(--battle-text) 16%, transparent);
   --rm-shadow-lift: var(--battle-shadow, 0 8px 24px rgba(0, 0, 0, 0.45));
 }
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="rm2003"])::before {
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="pokemon"])::before {
   background-image: linear-gradient(180deg, color-mix(in srgb, var(--rm-floor) 42%, transparent), color-mix(in srgb, var(--rm-floor) 70%, transparent)), var(--battle-backdrop-url, none);
 }
 /* 필드 바닥 페이드도 창 색으로 — 뼈대는 남색 바닥으로 녹여 내린다. */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="rm2003"]) .battle-field::before {
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="pokemon"]) .battle-field::before {
   background: linear-gradient(180deg, transparent 58%, color-mix(in srgb, var(--rm-floor) 50%, transparent) 84%, color-mix(in srgb, var(--rm-floor) 92%, transparent) 100%);
 }
 /* 배경 그림 보정(스킨 테마의 --battle-backdrop-filter: 검은 창은 어둡게, 암전 창은 채도를 올린다). */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="rm2003"]) .battle-backdrop {
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="pokemon"]) .battle-backdrop {
   filter: var(--battle-backdrop-filter, none);
 }
 
-/* 흰 테두리 창(코발트 창): 옛 창처럼 모서리가 덜 둥글고 테두리가 또렷하다. */
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-skin="ff"] {
-  --rm-frame: 0 0 0 2px var(--battle-window-edge), inset 0 0 0 2px color-mix(in srgb, var(--battle-window-edge) 18%, transparent);
-  --rm-frame-strong: 0 0 0 2px var(--battle-window-edge), inset 0 0 0 2px color-mix(in srgb, var(--battle-window-edge) 30%, transparent);
-}
-.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-skin="ff"] :is(.battle-command-panel, .battle-party, .battle-message-window, .battle-result-panel) {
-  border-radius: 4px;
-}

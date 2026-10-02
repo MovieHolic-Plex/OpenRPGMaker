@@ -151,13 +151,12 @@ export type BattleFlow = "gauge" | "strict";
 /** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
 export type BattleAtbMode = "active" | "wait";
 
-/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 BattleSkinId(도트 측면 일곱 + pokemon).
- *  2026-10-02 정면 스킨(rm2000·dragonquest·mother·mv·vxace·classic)을 지웠다. 저장된 옛 값은 로드 때
- *  normalizeSystem 이 지우고(→ 기본 retro2003), 렌더 때도 resolveSkinId 가 retro2003 으로 푼다. */
+/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 BattleSkinId(도트 측면 retro2003 + pokemon).
+ *  2026-10-02 정면 스킨(rm2000·dragonquest·mother·mv·vxace·classic)과 창 색만 다르던 측면 스킨
+ *  (rm2003·octopath·chrono·bravely·ff·goldensun)을 지웠다. 저장된 옛 값은 로드 때 normalizeSystem 이 지우고
+ *  (→ 기본 retro2003, 창 색은 battleLook.window 로), 렌더 때도 resolveSkinId 가 retro2003 으로 푼다. */
 export type BattleUiStyle =
-  | "pokemon" | "octopath" | "chrono"
-  | "bravely" | "ff" | "goldensun"
-  | "rm2003" // 측면 전투 · 유리 창
+  | "pokemon"
   | "retro2003"; // 도트 측면 전투(기본): 청색 픽셀 창 · 겹 배경 · 전진 걸음 연출
 
 /** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로

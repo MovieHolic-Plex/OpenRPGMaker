@@ -1,7 +1,4 @@
-export type BattleSkinId =
-  | "pokemon" | "rm2003" | "octopath" | "chrono"
-  | "bravely" | "ff" | "goldensun"
-  | "retro2003";
+export type BattleSkinId = "pokemon" | "retro2003";
 
 /** 같은 창 크롬(CSS 파일)을 나눠 쓰는 스킨 묶음. battleDom 이 `data-battle-skin-family` 로 루트에 심고,
  *  `_rm2000.css` 의 유리 HUD 규칙은 이 속성으로 스코프한다 — 정면(rm2000)·측면(rm2003) 이 한 파일을 공유한다. */
@@ -12,11 +9,7 @@ export type HudTemplate = "boxes" | "rows" | "ring" | "minimal";
 export type BattleTransition =
   | "shatter-2003"
   | "flash-white"
-  | "wipe-blue"
   | "wipe-black"
-  | "focus-blur"
-  | "sweep-cyan"
-  | "brave-shift"
   | "slide-pokemon";
 
 /** 12 CSS vars that every skin must author. 4 legacy vars keep rendering compat. */

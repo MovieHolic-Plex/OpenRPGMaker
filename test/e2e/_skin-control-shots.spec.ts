@@ -33,7 +33,3 @@ async function shoot(page: Page, skin: string): Promise<void> {
 test("retro2003 대조", async ({ page }) => {
   await shoot(page, "retro2003");
 });
-
-test("rm2003 대조", async ({ page }) => {
-  await shoot(page, "rm2003");
-});

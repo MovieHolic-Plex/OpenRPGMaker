@@ -1,9 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
-## 전투 방식은 둘 — 도트 측면 / 몬스터 대치, 색 스킨 여섯은 고를 수 없음 (2026-10-02, 자료집 정리)
+## 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
 
-- 새로 고를 수 있는 스킨은 `ACTIVE_BATTLE_SKIN_IDS = ["retro2003", "pokemon"]`(`src/battle/skins/registry.ts`, `listActiveBattleSkinIds()`).
-  `rm2003`·`ff`·`goldensun`·`chrono`·`octopath`·`bravely` 는 `deprecated: true` — 렌더·`resolveSkinId` 는 그대로라 저장된 프로젝트는 그 색으로 계속 싸운다. 창 색은 `system.battleLook` 으로 고른다.
+- 등록 스킨은 `retro2003`·`pokemon` 둘(`BattleSkinId`·`BattleUiStyle` 도 둘). 창 색만 다르던 측면 여섯
+  `rm2003`(유리)·`octopath`(먹빛)·`chrono`(청람)·`bravely`(세피아)·`ff`(코발트)·`goldensun`(금갈색)을 **지웠다** —
+  레지스트리·배치·`_retro-themes.css`(파일 삭제)·`_glass-variants.css` 코발트 테두리·전환 넷(wipe-blue·focus-blur·sweep-cyan·brave-shift)·
+  스킨별 ATB 가속(`runtime.ts`, 이제 `atbSpeed` 하나)·모험 JRPG 장르 기본(`genrePresets.ts` 의 `battleUiStyle ??= "ff"`).
+- 저장된 옛 id 는 `resolveSkinId` 가 `retro2003` 으로 풀고 `normalizeSystem` 이 지운다. 이때 꾸밈을 안 건드린 프로젝트(battleLook 에
+  preset·window 가 없음)는 옛 창 색을 가장 가까운 꾸밈 창으로 옮긴다 — `retiredSkinLookWindow`: 먹빛 → ink, 청람 → teal, 세피아 → parch,
+  금갈색 → gold, 유리 → veil, 코발트 → 옮기지 않음(기본 청색 창과 같다). 회귀 `test/battleSkinRegistry.test.ts` · `test/sideOnlyBattle.test.ts`.
+- `_glass-variants.css` 의 `:not([data-battle-skin="rm2003"])` 는 `:not([data-battle-skin="pokemon"])` 로 바꿨다 — 매칭은 같고(pokemon 은 유리 묶음이 아님)
+  구체도를 그대로 두려는 것. 자료집 전투 화면 탭의 「옛 색 스킨」 안내(`db-battle-method-legacy-skin`)는 지웠다.
+- 다른 게임 규칙 칸(리밋 게이지·두 번째 자원·감정 순환 등)과 꾸밈 프리셋 12종은 이번 정리에서 남겼다(사용자 선택).
 - 화면과 규칙은 한 쌍이다: `src/project/battleMethod.ts` `applyBattleMethod` — 측면 = `battleUiStyle`·`battleModel` 둘 다 삭제(retro2003 + RM 규칙), 몬스터 = `pokemon` + `gen1`. 자료집 전투 화면 탭과 조수 `set_project_settings battle.uiStyle` 이 이 함수만 쓴다.
 - 런타임 코드는 바꾸지 않았다. `battleSystemResourceId` 는 자료집에서 칸만 지웠고 런타임은 여전히 옛 값을 CSS 변수로 옮긴다(소비자 없음). 자료집 쪽 내역은 [editor-database.md](editor-database.md) 맨 위 절.
 

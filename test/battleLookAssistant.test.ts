@@ -35,7 +35,7 @@ describe("전투 화면 꾸미기 — 조수 지시", () => {
       expect(prompt).toContain("battle.look.preset");
       expect(prompt).toContain(battleLookMoodGuide());
     }
-    expect(welcomeBattleLookLine()).toMatch(/battle\.uiStyle: [a-z0-9·]*ff/u);
+    expect(welcomeBattleLookLine()).toMatch(/battle\.uiStyle: retro2003/u);
   });
 
   it("몬스터 대치(측면 아님) 장르에는 붙이지 않는다", () => {
