@@ -62,6 +62,14 @@ describe("전투 배경 겹", () => {
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
     expect(ctx.project.database.troops.find((entry) => entry.id === "troop_fx")?.backdropLayers).toHaveLength(2);
   });
+
+  it("members 만 준 새 트룹도 받는다(enemyIds 는 members 에서)", () => {
+    const ctx = { project: createBlankProject() };
+    runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_fx", name: "까마귀", stats: { maxHp: 30, attack: 10 } } });
+    const result = runTool(ctx, "upsert_troop", { troop: { id: "troop_members", name: "배치만", members: [{ enemyId: "enemy_fx", x: 120, y: 140 }, { enemyId: "enemy_fx", x: 200, y: 150 }] } });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(ctx.project.database.troops.find((entry) => entry.id === "troop_members")?.enemyIds).toEqual(["enemy_fx", "enemy_fx"]);
+  });
 });
 
 describe("상태 오라", () => {

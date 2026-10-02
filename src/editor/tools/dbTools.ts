@@ -1328,6 +1328,20 @@ const upsertEnemy: ToolDefinition = {
   },
 };
 
+/**
+ * members(배치 좌표)만 준 새 트룹은 enemyIds 를 members 에서 채운다 — 정규화도 members 를 정본으로 enemyIds 를 다시 만든다.
+ * 실측(2026-10-02 조수 시험): 모델이 members 만 보내 「enemyIds 필요」로 세 번 연달아 실패했다.
+ */
+function withEnemyIdsFromMembers(troop: unknown): unknown {
+  if (!troop || typeof troop !== "object" || Array.isArray(troop)) return troop;
+  const record = troop as Record<string, unknown>;
+  if (record.enemyIds !== undefined || !Array.isArray(record.members)) return troop;
+  const enemyIds = record.members
+    .map((member) => (member && typeof member === "object" ? (member as { enemyId?: unknown }).enemyId : undefined))
+    .filter((enemyId): enemyId is string => typeof enemyId === "string" && enemyId.length > 0);
+  return enemyIds.length > 0 ? { ...record, enemyIds } : troop;
+}
+
 const upsertTroop: ToolDefinition = {
   name: "upsert_troop",
   description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1344,8 +1358,9 @@ const upsertTroop: ToolDefinition = {
         { code: "use-battle-page-tool" },
       );
     }
-    const merged = mergeRecord(draft.database.troops, args.troop, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
-    const patch = args.troop as Partial<TroopRecord>;
+    const troopArg = withEnemyIdsFromMembers(args.troop);
+    const merged = mergeRecord(draft.database.troops, troopArg, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
+    const patch = troopArg as Partial<TroopRecord>;
     // An explicit legacy roster replaces the roster. Do not let inherited members
     // silently override it; unrelated patches still preserve authored placements.
     if (patch.enemyIds !== undefined && patch.members === undefined) delete merged.members;
