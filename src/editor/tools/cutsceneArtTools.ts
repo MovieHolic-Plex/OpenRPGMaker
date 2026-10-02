@@ -83,6 +83,7 @@ interface PreparedArt {
   readonly name: string;
 }
 
+const MONSTER_WORDS = /monster|creature|beast|pok[eé]mon|kitten|\bfox\b|dragon|slime|몬스터|괴물|짐승|포켓몬|여우|슬라임|드래곤|고양이/iu;
 const prepared = new Map<string, PreparedArt>();
 
 export function cutsceneArtKey(args: Record<string, unknown>): string {
@@ -139,6 +140,15 @@ const generateCutsceneArt: ToolDefinition = {
     const parsed = parseArgs(args);
     const key = cutsceneArtKey(args);
     if (prepared.get(key)?.art) return;
+    // 몬스터·동물은 게임에 이미 있는 도트(list_monster_resources)를 쓴다 — 생성하면 맵·전투와 화풍이 어긋난다(2026-10-02 조수 시험: 엠버킷을 새로 생성).
+    if (parsed.role === "sprite" && MONSTER_WORDS.test(`${parsed.name} ${parsed.prompt}`)) {
+      prepared.set(key, {
+        error: "몬스터·동물·괴물 그림은 생성하지 않습니다 — 게임에 이미 있는 도트를 쓰세요: list_monster_resources(query:'불꽃 여우' 같은 말)로 찾아 그 resourceId(scarloxy-monster-… 등)를 script_cutscene_staged 배우의 resourceId 로 넣습니다. 생성은 게임에 없는 소품(탈것·건물 조각)에만 씁니다.",
+        role: parsed.role,
+        name: parsed.name,
+      });
+      return;
+    }
     try {
       const viewport = DEFAULT_PLAY_RESOLUTION;
       const image = await generate({ prompt: cutsceneArtPrompt(parsed.role, parsed.prompt, parsed.style) });

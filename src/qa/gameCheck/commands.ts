@@ -26,6 +26,8 @@ const EXTRA_FIELDS: Readonly<Record<string, readonly string[]>> = {
   // x·y·rotation 은 런타임이 읽는 위치·회전 필드다(player/interpreter showPictureState) — 폼의 `at` 위젯이 대신할 뿐이다.
   // 빠져 있으면 그림 컷신의 showPicture 마다 경고가 났다(2026-10-02 충돌 컷신 시험: 경고 19건 전부 이것).
   showPicture: ["recordInGallery", "x", "y", "rotation"],
+  // target(player 또는 {eventId})은 런타임이 읽는 애니메이션 대상이다(player/interpreter ShowAnimationTarget) — 폼이 위젯을 안 둘 뿐이다.
+  showAnimation: ["target"],
   choices: ["prompt", "options", "cancelBehavior", "cancelBranch"],
   presentItem: ["prompt", "itemIds", "options", "otherwiseBranch", "cancelBranch", "consume"],
   fork: ["condition", "then", "else"],
