@@ -54,7 +54,10 @@ function storeOver(backend: Backend, kind: WorkshopStore["backend"]): WorkshopSt
       .sort((a, b) => a.at - b.at || a.id.localeCompare(b.id)),
     addFeedback: (entry) => backend.put("feedback", entry),
     listItemDefs: async (projectKey) => (await backend.all<ItemRow>("items", projectKey)).map((row) => row.def),
-    putItemDef: (projectKey, def) => backend.put("items", { id: pickId(projectKey, def.key), projectKey, def }),
+    putItemDef: (projectKey, def) => {
+      const row: ItemRow = { id: pickId(projectKey, def.key), projectKey, def };
+      return backend.put("items", row);
+    },
   };
 }
 
