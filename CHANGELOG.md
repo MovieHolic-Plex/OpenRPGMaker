@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.69.0 — 2026-10-02
+
+### 기능
+
+- **staging** — 레터박스·흔들기 방향·파티클·모습 효과(포즈·색·잔상) + 컷신 비트·연출 지침 (`7111254`)
+- **items** — diversify effects and balance the shared item economy (`4029d2a`)
+- **items** — seed 1000 shared items and regenerate unified pixel icons (`7d70caa`)
+
+### 수정
+
+- **ts** — JSON 선언 파일을 읽도록 allowArbitraryExtensions를 켠다 (`e4a2905`)
+- **items** — bound TypeScript inference for shared item data (`f13b557`)
+- **staging** — 조수 gen 실측 반영 — kind 짐작·화면 효과 full 판정·모자이크는 전환에만 (`35d8f0f`)
+- **staging** — 따라가는 파티클 이미터를 원점에 만든다 + 위키·캡처·연출 기획 브리프 (`eac5b98`)
+
 ## 0.68.0 — 2026-10-02
 
 ### 기능
