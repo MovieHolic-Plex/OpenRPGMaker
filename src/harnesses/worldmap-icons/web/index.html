@@ -98,6 +98,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 let SETNAME = { 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
 const img = (it, f) => `/f/${encodeURIComponent(it.set)}/${encodeURIComponent(it.name)}/${f}?v=${it.sha}`;
 
+let lastBulk = [];
 async function load(keep) {
   const r = await fetch('/api/state'); S = await r.json();
   if (!keep || !S.items.find((x) => x.id === sel)) sel = (visible()[0] || S.items[0] || {}).id;
@@ -123,6 +124,23 @@ function renderFilters() {
   const shows = [['all', '모두'], ['todo', '안 정함'], ['fail', '검수 ✗'], ['pass', '검수 ✓'], ['acc', '받음'], ['rej', '버림']];
   $('filters').innerHTML = sets.map(([k, l]) => `<button class="chip ${F.set === k ? 'on' : ''}" data-set="${k}">${l}</button>`).join('') +
     '<span style="flex-basis:100%"></span>' + shows.map(([k, l]) => `<button class="chip ${F.show === k ? 'on' : ''}" data-show="${k}">${l}</button>`).join('');
+  const bulk = S.items.filter((it) => (F.set === 'all' || it.set === F.set) && !it.decision && verdictOf(it) === 'PASS');
+  const scope = F.set === 'all' ? '전체' : (SETNAME[F.set] || F.set);
+  $('filters').insertAdjacentHTML('beforeend', '<span style="flex-basis:100%"></span>' +
+    `<button class="chip" id="bBulk" ${bulk.length ? '' : 'disabled'}>${esc(scope)} · 검수 ✓ 안 정한 것 ${bulk.length}장 일괄 받기</button>` +
+    (lastBulk.length ? `<button class="chip" id="bUndo">방금 일괄 받기 ${lastBulk.length}장 되돌리기</button>` : ''));
+  $('bBulk').onclick = async () => {
+    if (!bulk.length || !confirm(`${scope}에서 검수 ✓ 이고 아직 안 정한 ${bulk.length}장을 받는다. 검수 ✗ 와 이미 정한 것은 건드리지 않는다.`)) return;
+    const ids = bulk.map((it) => it.id);
+    const r = await fetch('/api/decide_bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids, decision: 'accept' }) });
+    if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
+    lastBulk = ids; await load(true);
+  };
+  if ($('bUndo')) $('bUndo').onclick = async () => {
+    const r = await fetch('/api/decide_bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: lastBulk, decision: 'clear' }) });
+    if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
+    lastBulk = []; await load(true);
+  };
   $('filters').querySelectorAll('[data-set]').forEach((b) => b.onclick = () => { F.set = b.dataset.set; render(); });
   $('filters').querySelectorAll('[data-show]').forEach((b) => b.onclick = () => { F.show = b.dataset.show; render(); });
 }

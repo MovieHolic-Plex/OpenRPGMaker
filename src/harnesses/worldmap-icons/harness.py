@@ -360,6 +360,23 @@ class H(BaseHTTPRequestHandler):
                 return self._send(200, json.dumps({'ok': True, 'round': rid}))
             except (ValueError, KeyError) as e:
                 return self._send(400, json.dumps({'error': str(e)}, ensure_ascii=False))
+        if self.path == '/api/decide_bulk':
+            # 사용자가 화면에서 누른 일괄 받기/되돌리기. ids 는 화면이 고른 목록(검수 ✓ · 안 정함) — 서버는 그대로 적는다.
+            try:
+                d = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))) or b'{}')
+                if d.get('decision') not in ('accept', 'clear') or not isinstance(d.get('ids'), list):
+                    raise ValueError('decision/ids')
+                c = db()
+                sha = {r['id']: r['sha'] for r in c.execute('select id, sha from items')}
+                ids = [i for i in d['ids'] if i in sha]
+                note = '일괄 받기' if d['decision'] == 'accept' else '일괄 받기 되돌림'
+                c.executemany('insert into decisions(item,sha,decision,reasons,note,client,at) values(?,?,?,?,?,?,?)',
+                              [(i, sha[i], d['decision'], '[]', note, 'web', now()) for i in ids])
+                c.commit()
+                export()
+                return self._send(200, json.dumps({'ok': True, 'n': len(ids)}))
+            except (ValueError, KeyError) as e:
+                return self._send(400, json.dumps({'error': str(e)}))
         if self.path != '/api/decide':
             return self._send(404, '{"error":"not found"}')
         try:
