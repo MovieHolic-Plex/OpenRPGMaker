@@ -230,6 +230,11 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
       type: "number",
       description: "distort 비트 전용 세기: wave px 0~16(기본 4), mosaic 블록 px 0~32(기본 8), rotate 도 -180~180(기본 8). 0 이면 그 효과만 끈다.",
     },
+    blendMode: {
+      type: "string",
+      enum: ["normal", "add", "screen", "multiply"],
+      description: "picture 비트의 겹치기: add=빛기둥·불꽃·유령(밝게 더함), screen=부드러운 빛, multiply=그림자·핏빛 물들임. 생략=normal.",
+    },
     easing: {
       type: "string",
       enum: ["linear", "easeIn", "easeOut", "easeInOut"],
@@ -321,6 +326,11 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
         },
         transparent: { type: "boolean" },
         scale: { type: "number" },
+        blendMode: {
+          type: "string",
+          enum: ["normal", "add", "screen", "multiply"],
+          description: "아래 화면과 섞는 법. add=불꽃·빛기둥·유령·마법진처럼 밝게, screen=부드러운 빛, multiply=그림자·물들임. 생략=normal.",
+        },
       },
     },
     priority: { type: "string", enum: ["below", "same", "above"] },
