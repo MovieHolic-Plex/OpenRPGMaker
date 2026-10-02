@@ -1014,5 +1014,253 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
+ },
+ "palace_hall_5": {
+  "hash": "45ddad509cc8",
+  "status": "note",
+  "line": "2층 팔작 이중 처마, 지붕 앞사면 어둡고 뒷사면 밝아 사면 둘 다 보임. 기준(gwanah_7)과 같은 지붕·벽 문법, 위층 처마가 아래 용마루를 가려 아래 용마루는 안 보임(의도). 월대 윗면 8px 보임.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_hall_7": {
+  "hash": "805b36ad817a",
+  "status": "note",
+  "line": "hall_5 와 같은 문법 7칸. 월대 폭만 넓어짐.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_hall_5g": {
+  "hash": "144d24ee590e",
+  "status": "note",
+  "line": "청록 지붕·주황 기둥·청록 창살 변형. 문법 동일.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_jeongak_a": {
+  "hash": "b2263495ab6c",
+  "status": "pass",
+  "line": "단층 팔작, 윗면(뒷사면)·앞사면·막새 모두 보임. gwanah_5 와 같은 문법, 갈색 지붕·청록 창살.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_jeongak_b": {
+  "hash": "1adef6b10c51",
+  "status": "pass",
+  "line": "청록 지붕·단청 띠·주황 기둥 4칸. 기준 문법 동일.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_jeongak_c": {
+  "hash": "fd942218e970",
+  "status": "pass",
+  "line": "회색 지붕, 가운데 열린 칸(안쪽 그늘). 기준 문법 동일.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_haengnak_6": {
+  "hash": "0f373d36c91e",
+  "status": "note",
+  "line": "맞배 낭하, 뒷사면·앞사면·막새·열린 기둥 칸. 팔작 날개가 없는 긴 지붕이라 기준 집과 실루엣이 다르나 haengnang 과 같은 칸 조립.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_haengnak_mid_4": {
+  "hash": "d448251af6a6",
+  "status": "note",
+  "line": "이어 붙이는 가운데 토막(풍판 없음). 지붕 이음이 맞는다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_h": {
+  "hash": "a8711424beea",
+  "status": "pass",
+  "line": "기와 덮개 9줄(윗면 밝음→처마 그늘)+황토 몸통, 기준 castle.wall_h 보다 낮은 흙담. 이어 붙임 이음 없음.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_h1": {
+  "hash": "9b3e1a54e4ee",
+  "status": "pass",
+  "line": "wall_h 변형(덮개 골 어긋남).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_h2": {
+  "hash": "f8b10d3d8ee8",
+  "status": "pass",
+  "line": "wall_h 변형.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_v": {
+  "hash": "0cc22b577331",
+  "status": "pass",
+  "line": "세로 담: 덮개 위에서 본 띠+황토 옆면, 오른쪽 땅 그림자.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_v_e": {
+  "hash": "7e11ef854f2c",
+  "status": "pass",
+  "line": "세로 담 동쪽(덮개가 바깥).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_nw": {
+  "hash": "32b4380e787a",
+  "status": "pass",
+  "line": "북서 모서리, 가로·세로 덮개가 이어짐.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_ne": {
+  "hash": "d25bdc033d7d",
+  "status": "pass",
+  "line": "북동 모서리.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_sw": {
+  "hash": "ec0d32583900",
+  "status": "pass",
+  "line": "남서 모서리.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_wall_se": {
+  "hash": "3b79b16f0645",
+  "status": "pass",
+  "line": "남동 모서리.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_gate_4": {
+  "hash": "ac0c26378978",
+  "status": "pass",
+  "line": "소문루: 회색 지붕 사면 둘 다 보임, 주황 기둥, 가운데 열린 통로(기둥 없는 한 칸)가 포장까지 이어짐, 처마 밑 현판.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_eodo": {
+  "hash": "a05c231fe8c0",
+  "status": "user",
+  "line": "위에서 본 3×1 돌길 조각이라 3/4 윗면 판정은 사용자에게(양옆보다 한 단 높고 오른쪽 그림자).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_eodo_end": {
+  "hash": "f31de9e56d93",
+  "status": "user",
+  "line": "어도 계단 쪽 끝. 3/4 윗면 판정 사용자.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_pond_4": {
+  "hash": "9a8443017ac8",
+  "status": "pass",
+  "line": "돌 난간 연못: 뒤 턱 윗면·안벽 그늘·물·앞 턱 윗면과 앞면 모두 보임. 물색은 stream 램프(water[2..5]).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_pond_6": {
+  "hash": "b966480ebd15",
+  "status": "pass",
+  "line": "연못 6칸 변형.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_pine_a": {
+  "hash": "963e0c903077",
+  "status": "pass",
+  "line": "기존 pine 위 화단: 돌 경계 윗면+앞면이 보이는 3/4.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_pine_b": {
+  "hash": "27fec8af59f8",
+  "status": "pass",
+  "line": "소나무 변형 b.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_pine_c": {
+  "hash": "80e4e9fa3fbc",
+  "status": "pass",
+  "line": "둥근 돌 화단 변형.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_lantern": {
+  "hash": "b944d2b7e810",
+  "status": "user",
+  "line": "정면 소품(석등): 지대석·하대석 윗면은 보이나 화사석은 정면. 사용자 판정.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_haetae": {
+  "hash": "380bb4ed7338",
+  "status": "user",
+  "line": "해태: 대좌 윗면만 보이고 몸은 정면 사자꼴. 사용자 판정.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_deumeu": {
+  "hash": "699731c5831a",
+  "status": "user",
+  "line": "드므: 입 타원이 보이는 3/4. 사용자 판정(청동 대신 청록 단청 램프).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_censer": {
+  "hash": "c36fd28b7593",
+  "status": "user",
+  "line": "향로: 원통 윗면과 연기. 사용자 판정.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "tower_sulsa_5": {
+  "hash": "233ee157554b",
+  "status": "note",
+  "line": "3층 탑형 남색 지붕·상륜, 주황 포장 마당. 기준 문법 동일, 위층일수록 벽이 작아 창이 거의 안 보임.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "tower_yesik_7": {
+  "hash": "d936ee3f382c",
+  "status": "note",
+  "line": "7칸 넓은 탑(예식장형), 회색 포장 마당.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
  }
 }
