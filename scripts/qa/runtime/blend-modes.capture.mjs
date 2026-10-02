@@ -39,7 +39,7 @@ async function buildProject(withBlend) {
   }));
   const pictures = MODES.map((mode, index) => ({
     kind: "showPicture", pictureId: `pic${index + 1}`, resourceId: "easyrpg-faceset-actor1-07",
-    x: PICTURE_X(index), y: 16, scale: 100, opacity: 255, rotation: 0,
+    x: PICTURE_X(index), y: 164, scale: 100, opacity: 255, rotation: 0,
     ...(withBlend && mode !== "normal" ? { blendMode: mode } : {}),
   }));
   const director = {
