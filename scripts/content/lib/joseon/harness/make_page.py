@@ -46,16 +46,18 @@ html = f'''<!doctype html><meta charset=utf-8><title>조선 칩셋 데모 v7 —
 h1{{font-size:22px;margin:0 0 4px}}h2{{font-size:16px;margin:30px 0 8px;color:#e0b66a}}p{{margin:4px 0;color:#c9bca3}}
 img{{image-rendering:pixelated;display:block;border:1px solid #4a3d2c;background:#000;margin:6px 0}}table{{border-collapse:collapse;font-size:13px}}td,th{{border:1px solid #3b2f20;padding:2px 8px;text-align:left}}
 .ok{{color:#9ad06a}}.warn{{color:#e0b66a}}.bad{{color:#e0654a}}.tag{{display:inline-block;background:#3b2f20;border-radius:4px;padding:1px 8px;margin-right:6px;font-size:13px}}.row{{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}}</style>
-<h1>조선 칩셋 데모 v7 — 바람의나라 팔레트로 교체 (후보, 확정 아님)</h1>
-<p><b>현재 상태:</b> 팔레트 잠금을 버들항 267색에서 <b>바람의나라 스크린샷에서 뽑은 소재별 램프 94색</b>으로 바꿨습니다(기와 회청·문루 청록·초가 주황 갈색·붉은 기둥·따뜻한 회색 돌·올리브 땅). 옛 잠금은 palette_beodeul.json 에 보존. 형태는 그대로이고 색만 바뀌었습니다. <b>독립 적대 리뷰는 아직 안 돌렸습니다.</b></p>
+<h1>조선 칩셋 데모 v8 — 밝은 팔레트 + Actor1 캐릭터 (후보, 확정 아님)</h1>
+<p><b>이번 판:</b> 땅·잎·물·돌은 버들항의 밝은 램프, 건물 소재(기와·단청·나무·초가)는 바람의나라 램프. 지도를 48×46으로 늘려 성문 밖 길과 수문 성벽을 넣었고, 담·대문·골목·누각 계단·홍살문 축·시장을 고쳤습니다. 아래 2번 그림에는 <b>Actor1 캐릭터 22명</b>을 올렸습니다(칩셋 시트에는 넣지 않은 확인용 합성). <b>이번 판은 독립 적대 리뷰를 아직 안 돌렸습니다.</b></p>
 <p><span class=tag>허용 {len(pal['allowed'])}색 잠금</span><span class=tag>게이트 {summ}</span><span class=tag>지도 = 시트 칸 재조립 0화소 차이</span></p>
 <h2>1. 같은 문법 비교 — 왼쪽 버들항(h2 격자) / 오른쪽 조선 한옥(16px 격자)</h2>
 <div class=row>{bdimg}<img src="{uri_im(gim)}"></div>
 <p>조선 조립표(위→아래): 치미 달린 ridge 행 → front → eave → 벽 위행 u → 벽 아래행 b → 석축 plinth → 계단 step. 지붕은 벽보다 좌우 한 칸씩 넓고(깊은 처마), 팔작 쐐기는 hip_cut.</p>
-<h2>2a. 직전 팔레트(버들항 267색) 지도 — 비교용</h2>
-<img src="{uri('/tmp/bp/map_before.png')}" style="width:1536px">
-<h2>2. 데모 마을 48×42 — 바람의나라 팔레트 (시트 칸 번호만으로 조립)</h2>
+<h2>2. 데모 마을 48×46 — 밝은 팔레트 + Actor1 캐릭터 (확인용)</h2>
+<img src="{uri(os.path.join(ROOT, 'tiledata/joseon-demo/joseon-demo-map-people.png'))}" style="width:1536px">
+<h2>2b. 같은 지도, 캐릭터 없음 (시트 칸 번호만으로 조립)</h2>
 <img src="{uri(os.path.join(ROOT, 'tiledata/joseon-demo/joseon-demo-map.png'))}" style="width:1536px">
+<h2>2c. 직전 판(어두운 바람의나라 팔레트, 48×42) — 비교용</h2>
+<img src="{uri('/tmp/bp/map_dark.png')}" style="width:1536px">
 <h2>3. 검수 시트 — 버들항 기준 조각 옆에서 같은 배율</h2>
 {rev}
 <h2>4. 조각별 판정</h2>

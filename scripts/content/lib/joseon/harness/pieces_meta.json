@@ -673,5 +673,29 @@
    "castle.wall_h",
    "castle.wall_v"
   ]
+ },
+ "market_stall_cloth": {
+  "cls": "prop",
+  "refs": [
+   "stall_veg",
+   "stall_herb_flower",
+   "stall_jug_bottle"
+  ]
+ },
+ "market_stall_pots": {
+  "cls": "prop",
+  "refs": [
+   "stall_veg",
+   "stall_herb_flower",
+   "stall_jug_bottle"
+  ]
+ },
+ "fort_wall_sluice": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ]
  }
 }

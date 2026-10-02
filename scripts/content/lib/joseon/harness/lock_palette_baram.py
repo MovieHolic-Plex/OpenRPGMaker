@@ -31,9 +31,20 @@ RAMPS = {
     'thatch8':   ['#4a2108', '#653819', '#7d3711', '#974f22', '#af632e', '#c6773b', '#df9050', '#eba86a'],
 }
 SHADOW = '#0c1110'
+# 밝은 판(2026-10-02, 사용자: 「밝은 색 맵이 더 나은 것 같다」): 땅·잎·물·돌만 버들항의 밝은 램프로, 건물 소재(기와·단청·나무·초가)는 바람의나라 그대로.
+BRIGHT = {
+    'leaf':  ['#071528', '#143a27', '#205030', '#4b8232', '#58a035', '#73b83e', '#8fd24a'],
+    'pine':  ['#0c231a', '#133120', '#183f1a', '#285725', '#2f6e24', '#3b6a2d', '#4b8232'],
+    'water': ['#071528', '#143a27', '#1c4a44', '#21584e', '#3fa2ae', '#7d98a2', '#a7d4db'],
+    'earth': ['#2a1a0f', '#452a17', '#5e4c38', '#816a56', '#947c5c', '#c89a66', '#dcb680'],
+    'stone': ['#1c2626', '#2b3934', '#3e403d', '#595b58', '#929491', '#c4c6c3', '#dee0dd'],
+}
 
 
 def main():
+    import sys
+    if '--bright' in sys.argv:
+        RAMPS.update(BRIGHT)
     allowed = sorted({c for v in RAMPS.values() for c in v} | {SHADOW})
     out = {
         'source': '바람의나라 스크린샷(gate·village·thatch·thatch2) k-means 군집 → 소재 램프',

@@ -16,7 +16,7 @@ if _fails:
 from PIL import Image
 
 OUT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'tiledata', 'joseon-demo'))
-MW, MH = 48, 42
+MW, MH = 48, 46
 N, E, S, W = G.N, G.E, G.S, G.W
 
 # ---------- 시트 ----------
@@ -114,17 +114,18 @@ import random as _rand
 
 
 def river_dx(y):
+    y = min(y, 34)                       # 성벽 아래로는 곧게 흐른다(수문 폭에 맞춘다)
     k = max(0.0, min(1.0, (abs(y - 25.5) - 3.5) / 4.0))
     return int(round(3.2 * math.sin((y - 25.5) / 5.2) * k))
 
 
 def river_w(y):
-    return 4 if (7 <= y <= 13 or 36 <= y <= 41) else 3
+    return 4 if (7 <= y <= 13 or 36 <= y <= 45) else 3
 
 
 water = {(x + river_dx(y), y) for y in range(MH) for x in range(30, 30 + river_w(y))}
 pond = {(x, y) for y in range(26, 41) for x in range(0, 16)
-        if ((x - 7.5) / 7.2) ** 2 + ((y - 33.5) / 5.6) ** 2 + (rnd(x, y, 61) - 0.5) * 0.35 <= 1.0}
+        if ((x - 7.5 + 1.6 * math.sin(y * 0.9)) / (7.2 + 1.2 * math.sin(x * 0.7))) ** 2 + ((y - 33.5 + 1.1 * math.sin(x * 0.8)) / 5.6) ** 2 + (rnd(x, y, 61) - 0.5) * 0.3 <= 1.0}
 water |= pond
 
 
@@ -145,11 +146,11 @@ for (x, y) in water:
 RY = (25, 26)
 road = {(x, y) for y in RY for x in range(MW) if (x, y) not in water and not 29 <= x <= 33}
 road |= {(x, y) for x in (13, 14) for y in (23, 24)}                     # 양반댁 대문 앞길
-road |= {(6, y) for y in range(0, 25)} | {(22, y) for y in range(0, 15)}   # 서쪽·동쪽 골목(집 앞 흙길이 여기로 모인다)
+road |= {(6, y) for y in range(0, 25)} | {(22, y) for y in range(0, 25)}   # 서쪽·동쪽 골목(집 앞 흙길이 여기로 모인다)
 road |= {(24, y) for y in range(22, 25)}                                   # 동쪽 끝 집 앞 → 큰길
-road |= {(x, y) for x in (38, 39) for y in range(16, 25)}                  # 누각 계단 → 큰길(다리 건너)
+road |= {(x, y) for x in (37, 38, 39) for y in range(16, 25)}              # 누각 계단 → 큰길(다리 건너, 석등·청사초롱 문 사이)
 road |= {(42, y) for y in range(12, 25)}                                   # 관아 마당 → 큰길 샛길
-road |= {(x, y) for x in (42, 43) for y in range(27, 42)}
+road |= {(x, y) for x in (42, 43) for y in range(27, 46)}
 for (x, y) in road:
     m = mask_of(road, x, y)
     if x == 28 and y in RY: m |= E
@@ -163,7 +164,7 @@ BUILDINGS = [
     ('giwa_house_3', 23, 1, 1), ('thatch_house_3', 23, 8, 1), ('thatch_house_3b', 23, 15, 1),   # 동쪽 골목
     ('nugak', 34, 8, 0), ('thatch_house_3', 36, 1, 1), ('gwanah_5', 41, 2, 2),                # 개울 건너: 누각 · 관아
     ('giwa_house_3', 43, 19, 0), ('thatch_house_3', 43, 12, 1),
-    ('fort_gate', 38, 33, 0),
+    ('fort_gate', 38, 34, 0), ('thatch_house_3b', 16, 39, 1),
 ]
 bsize = {n: (objects[n].w // T, objects[n].h // T) for n in {b[0] for b in BUILDINGS}}
 yard = set()
@@ -180,8 +181,8 @@ for n, x, y, dep in BUILDINGS:                                                  
     lane = 6 if x < 8 else 22
     for xx in range(min(x + 2, lane), max(x + 2, lane) + 1):
         yard.add((xx, y + h))
-yard |= {(x, y) for y in range(7, 12) for x in range(41, 47)} | {(x, 18) for x in range(42, 46)} | {(8, 27), (9, 27)}                                            # 관아 앞 마당
-yard |= {(x, y) for y in (30, 31) for x in range(34, 42)} | {(x, 30) for x in range(44, 48)}              # 시장 마당
+yard |= {(x, y) for y in range(7, 12) for x in range(41, 47)} | {(x, 18) for x in range(42, 46)} | {(8, 27), (9, 27), (8, 28), (9, 28)}                                            # 관아 앞 마당
+yard |= {(x, y) for y in (30, 31, 32) for x in range(34, 42)} | {(x, y) for y in (30, 31) for x in range(44, 48)}              # 시장 마당
 yard -= water
 ysets = yard | road
 for (x, y) in yard:
@@ -197,7 +198,7 @@ for (x0, y0, x1, y1) in ((17, 28, 22, 32), (23, 28, 28, 32), (17, 33, 22, 37), (
     plot = {(x, y) for y in range(y0, y1) for x in range(x0, x1)}
     for (x, y) in plot:
         setg(x, y, PADDY + mask_of(plot, x, y, wrap=False), 'paddy')
-for rect, sd in (((16, 27, 29, 40), 9), ((38, 36, 48, 41), 11), ((7, 23, 12, 25), 13), ((16, 23, 21, 25), 14)):
+for rect, sd in (((16, 27, 29, 38), 9), ((7, 23, 12, 25), 13), ((16, 23, 21, 25), 14)):
     x0, y0, x1, y1 = rect
     for y in range(y0, min(y1, MH)):
         for x in range(x0, min(x1, MW)):
@@ -279,11 +280,14 @@ put_obj('wall_corner_sw', 7, 20, True); put_obj('wall_corner_se', 21, 20, True)
 for y in range(3, 20):
     put_obj('wall_v', 7, y, True); put_obj('wall_v', 21, y, True)
 BODY += [(7, 1, 15, 2), (7, 3, 1, 17), (21, 3, 1, 17), (7, 20, 15, 2)]     # 담 자리 — 나무·소품이 담 몸체에 서지 못한다
-# 성벽: 문루 받침과 같은 높이로 개울 둑에서 문루까지
-put_obj('fort_wall_end_l', 36, 37, True)
-put_obj('fort_wall_h', 37, 37, True)
-BODY += [(36, 37, 2, 5)]
-BODY += [(42, 9, 4, 3), (36, 19, 5, 4)]
+# 성벽: 문루 받침과 같은 높이로 문루에서 서쪽으로, 개울 위는 수문(홍예)으로 건넌다
+WY = 38
+SX = 30 + river_dx(40)                       # 수문 왼쪽 칸 = 개울 왼쪽 가장자리
+put_obj('fort_wall_end_l', 22, WY, True)
+for x in range(23, SX): put_obj(('fort_wall_h', 'fort_wall_h1', 'fort_wall_h2')[x % 3], x, WY, True)
+put_obj('fort_wall_sluice', SX, WY, True)
+for x in range(SX + 4, 38): put_obj(('fort_wall_h', 'fort_wall_h1', 'fort_wall_h2')[x % 3], x, WY, True)
+BODY += [(22, WY, 16, 5)]
 
 # 숲띠: 큰 나무·어린 나무·덤불을 크기 섞어 겹치게(맵 밖으로 이어지는 뒷숲 포함)
 for nm, x, y in (('zelkova_a', 0, -3), ('pine_a', 3, -3), ('zelkova_b', 8, -7), ('zelkova_e', 24, -3), ('pine_d', 27, -2),
@@ -305,11 +309,12 @@ put_obj('jangseung_m', 4, 23); put_obj('jangseung_f', 7, 23); put_obj('sotdae', 
 put_obj('bridge', 29, 24)
 put_obj('willow', 27, 5)
 put_obj('lantern', 36, 16); put_obj('lantern', 40, 16); put_obj('deungrong_mun', 36, 19, True)
+BODY += [(42, 9, 5, 3), (36, 19, 4, 4)]
 put_obj('hongsalmun', 42, 9, True)
 put_obj('stone_pagoda', 33, 16)
-for nm, x, y in (('market_stall', 34, 27), ('market_stall_thatch', 37, 27), ('market_stall_thatch', 45, 27)):
+for nm, x, y in (('market_stall', 34, 27), ('market_stall_cloth', 37, 27), ('market_stall_pots', 45, 27)):
     put_obj(nm, x, y)
-for (x, y) in ((27, 37), (15, 36), (46, 29)):
+for (x, y) in ((18, 40), (24, 43), (46, 29)):
     if put_obj('wondumak', x, y): break
 # 연못 둘레: 갈대·돌·버드나무
 for nm, x, y in (('reeds', 1, 29), ('reeds', 10, 27), ('reeds', 13, 29), ('rocks', 2, 31), ('rocks', 14, 31), ('reeds', 3, 37), ('rocks', 11, 39), ('reeds', 9, 40),
@@ -320,7 +325,7 @@ for nm, x, y in (('reeds', 29, 12), ('reeds', 33, 33), ('rocks', 34, 30), ('reed
     put_obj(nm, x, y)
 # 논밭 둘레 나무
 for nm, x, y in (
-                 ('bamboo', 45, 37), ('zelkova_c', 40, 36), ('small_p', 42, 39), ('bush_c', 46, 36), ('small_z_a', 33, 38), ('haystack', 30, 38)):
+                 ('bamboo', 46, 36), ('small_p', 45, 43), ('bush_c', 46, 44), ('small_z_a', 33, 44), ('haystack', 28, 36)):
     put_obj(nm, x, y)
 # 길가·마당 가장자리 덤불·어린 나무(크기 섞어 무리로)
 for nm, x, y in (('bush_b', 9, 23), ('bush_c', 10, 22), ('bush_a', 17, 23), ('bush_b', 19, 22), ('small_z_a', 28, 9), ('bush_b', 20, 14),
@@ -365,7 +370,7 @@ def tiles_by_id(i):
 # ---------- 빈 잔디 채우기: 맨 잔디 창이 가장 큰 곳에 덤불·어린 나무·화단을 놓는다(같은 그림 6칸 안 반복 금지) ----------
 import random as _rand
 _POOL = ['bush_l_a', 'bush_l_b', 'bush_s_a', 'bush_s_b', 'pine_c', 'pine_d', 'pine_a', 'bamboo_grove', 'bush_a', 'bush_b', 'bush_c', 'small_z_a', 'small_z_b', 'small_p', 'flower_bed', 'bush_a', 'bush_b', 'bush_c', 'jars', 'persimmon_b', 'persimmon_c']
-_rng = _rand.Random(int(os.environ.get('JS_SEED', '11')))
+_rng = _rand.Random(int(os.environ.get('JS_SEED', '3')))
 
 
 def _lawn_grid():
@@ -464,6 +469,8 @@ for y in range(MH):
 diff = int((direct.a != re.a).any(axis=2).sum())
 
 os.makedirs(OUT, exist_ok=True)
+import people as _pp
+_pp.overlay(direct.img()).save(os.path.join(OUT, 'joseon-demo-map-people.png'))
 SHEET.img().save(os.path.join(OUT, 'joseon-demo-chipset.png'))
 direct.img().save(os.path.join(OUT, 'joseon-demo-map.png'))
 re.img().save(os.path.join(OUT, 'joseon-demo-map-from-sheet.png'))
