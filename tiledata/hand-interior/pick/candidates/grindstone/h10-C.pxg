@@ -1,0 +1,21 @@
+// h10-C: 검정 윤곽을 나무 어두운 단(E)으로, 바퀴 좌우·아래에 돌 윤곽(A), 윗판 앞 가장자리 한 단 어둡게, 앞면 윤곽 E. 모양·크기 그대로.
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....ABBCCA.....
+....ABBBCCCA....
+...ABBBBDDCCEEE.
+...ABBBBDDCCE.E.
+...ABBBFFDDCAE..
+...ACDDDDDDCA...
+...ACCDDDDCCA...
+....ACDDDDCA....
+.EEEEEEEEEEEEEE.
+.GHHHHHHHHHHHHE.
+.GHIIIJJJIIIJJE.
+.EIIIIIIIIIIIIE.
+.EGGGGGGGGGGGGE.
+.ELJJJJJJJJJJGE.
+.EEJGEEEEEEEJGE.

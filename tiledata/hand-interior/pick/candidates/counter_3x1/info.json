@@ -1,0 +1,52 @@
+{
+ "id": "counter 3x1",
+ "slug": "counter_3x1",
+ "name_ko": "카운터 3×1",
+ "category": "상점",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  48,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 48,
+  "h": 24
+ },
+ "footprint": {
+  "w": 3,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": {
+  "rect_px": [
+   2,
+   2,
+   45,
+   5
+  ],
+  "capacity": 6,
+  "note": "탁상 물건의 밑변을 윗면 안에 둔다"
+ },
+ "description": "3칸 가게 카운터. 빵집·대장간·재단사·카지노 창구에 1개. 뒤 벽에 선반·진열장.",
+ "where": "빵집·대장간·재단사·카지노 창구에 1개. 뒤 벽에 선반·진열장.",
+ "placement": [
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다",
+  "윗면에 탁상 물건(goods:*)을 올린다. 비워 두지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  31
+ ],
+ "v5_colors": 8,
+ "material": "wood",
+ "related": [
+  "goods:cashbox",
+  "goods:bell",
+  "bread shelf"
+ ]
+}

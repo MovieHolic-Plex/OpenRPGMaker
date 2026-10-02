@@ -1,0 +1,32 @@
+// A: 금 테두리의 파랑·금 사분 방패와 중앙의 치켜선 사자 문장. 벽걸이 윗면 0행.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o gold 1
+@mat r gold 2
+@mat g gold 4
+@mat h gold 5
+@mat b blue 2
+@mat c blue 3
+@mat d blue 1
+@mat f gold 3
+@mat t gold 4
+@mat k dwood 1
+@mat s gold 5
+@mblock 0 0
+..rrrrrrrrrrro..
+..rhhhhhhhhgro..
+..rhccccffffgo..
+..rhccccffffgo..
+..rhcccckssfgo..
+..rhckccksffgo..
+..rhckckskskgo..
+..rhccksskkfgo..
+..rhtttkskbdgo..
+...rhttkskbdro..
+...rhtkkkbbdro..
+....rhktskbro...
+.....rhtbbro....
+......rggro.....
+.......gro......
+.......oo.......

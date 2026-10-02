@@ -1,0 +1,74 @@
+// E 자유 해석: 검은 호두색 궤에 놋 띠 두 줄·정수리 파란 보석 판·큰 놋 자물쇠 (붉은 칠 아님)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat d dwood 4
+@mat b brass 4
+@mat g blue 4
+@mat i iron 2
+@mblock 0 0
+................................
+................................
+................................
+........dddddddddddddddd........
+.....dddddddddddddddddddddd.....
+...dddddddddddddddddddddddddd...
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddbbggbbddddbbbdddd..
+..ddddbbbddddbbbbbbddddbbbdddd..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..ddddbbbdddbbbbbbbbdddbbbdddd..
+..ddddbbbdddbbbbbbbbdddbbbdddd..
+..ddddbbbdddbbbbbbbbdddbbbdddd..
+..ddddbbbdddbbbiibbbdddbbbdddd..
+..ddddbbbdddbbbiibbbdddbbbdddd..
+..ddddbbbdddbbbbbbbbdddbbbdddd..
+..ddddbbbdddbbbbbbbbdddbbbdddd..
+..ddddbbbdddbbbbbbbbdddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..ddddbbbddddddddddddddbbbdddd..
+..dddddddddddddddddddddddddddd..
+@tblock 0 0
+................................
+................................
+................................
+........0000000000000000........
+.....0665555555555555555440.....
+...06655555555555555555555440...
+..0665450555555555555545044440..
+..0665450555545222455545044440..
+..0665450555542222255545044440..
+..0566666666666666666666666620..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0566666666666666666666666620..
+..0443450334555555542334504420..
+..0443450334555555542334504420..
+..0443450334544444542334504420..
+..0443450334543003542334504420..
+..0443450334543003542334504420..
+..0443450334544444542334504420..
+..0443450334522222222334504420..
+..0443450334333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0443450333333333333334504420..
+..0111111111111111111111111110..

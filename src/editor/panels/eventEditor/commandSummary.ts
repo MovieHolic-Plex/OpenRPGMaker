@@ -1,3 +1,4 @@
+import { PARTICLE_PRESET_LABELS, SPRITE_POSE_LABELS, type ParticlePreset, type SpritePose } from "@/project/eventCommands/cinematicStaging";
 import { actorQueryConditionSummary } from "./actorQueryConditionForm";
 import { gameOverName } from "@/project/gameOverLibrary";
 import { equipmentSlotLabel as catalogSlotLabel } from "@/project/equipmentSlots";
@@ -899,12 +900,48 @@ function page3M2SummaryParts(
     case "Shake Screen": {
       const intensity = str("intensity") || str("value") || "3";
       const duration = str("durationMs") || str("duration") || "400";
+      const direction = str("direction");
       return commandLine(
         labelOf("화면 흔들기"),
         plainPart("강도 "),
         valuePart(intensity),
         plainPart(" · "),
-        valuePart(`${duration}ms`)
+        valuePart(`${duration}ms`),
+        ...(direction === "horizontal" || direction === "vertical"
+          ? [plainPart(" · "), valuePart(direction === "horizontal" ? "가로" : "세로")]
+          : [])
+      );
+    }
+    case "Particle Effect": {
+      const preset = str("preset") || "sparkle";
+      const label = PARTICLE_PRESET_LABELS[preset as ParticlePreset] ?? preset;
+      return commandLine(
+        labelOf("파티클"),
+        valuePart(label.split(" (")[0] ?? label),
+        plainPart(" · "),
+        valuePart(stagingTargetLabel(str("target"), str("eventId"), str("x"), str("y"))),
+        plainPart(" · "),
+        valuePart(`${str("durationMs") || "1200"}ms`)
+      );
+    }
+    case "Sprite Look": {
+      const parts: string[] = [];
+      if (str("reset") === "true") parts.push("원래 모습");
+      const pose = str("pose");
+      if (pose && pose !== "keep") parts.push((SPRITE_POSE_LABELS[pose as SpritePose] ?? pose).split(" (")[0] ?? pose);
+      const tint = str("tintHex") || str("tint");
+      if (tint && tint !== "keep") parts.push(tint === "none" ? "원래 색" : `색 ${tint}`);
+      for (const [key, label] of [["flip", "뒤집기"], ["afterimage", "잔상"], ["tintFill", "칠하기"]] as const) {
+        const value = str(key);
+        if (value === "on" || value === "off") parts.push(`${label} ${value === "on" ? "켬" : "끔"}`);
+      }
+      if (str("angle")) parts.push(`${str("angle")}°`);
+      if (str("opacity")) parts.push(`불투명 ${str("opacity")}%`);
+      return commandLine(
+        labelOf("모습 효과"),
+        valuePart(stagingTargetLabel(str("target"), str("eventId"))),
+        plainPart(" · "),
+        valuePart(parts.length > 0 ? parts.join(", ") : "변화 없음")
       );
     }
     case "Scroll Map": {
@@ -1414,4 +1451,12 @@ function textEmotionLabel(emotion: string): string {
     default:
       return emotion;
   }
+}
+
+/** 파티클·모습 효과의 대상 한 줄. */
+function stagingTargetLabel(target: string, eventId: string, x?: string, y?: string): string {
+  if (target === "player") return "주인공";
+  if (target === "event") return eventId ? `이벤트 ${eventId}` : "이벤트(미지정)";
+  if (target === "tile") return `칸 (${x || "0"}, ${y || "0"})`;
+  return "이 이벤트";
 }

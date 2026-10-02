@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wall_lever/h17-D.pxg",
+ "id": "wall lever",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  4,
+  1,
+  11,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "황동 테두리 쇠판 + 황동 중심 보스 + 놋 목깃 + 붉은 알 손잡이(끔=아래), 덩이 크게",
+ "ok": true
+}

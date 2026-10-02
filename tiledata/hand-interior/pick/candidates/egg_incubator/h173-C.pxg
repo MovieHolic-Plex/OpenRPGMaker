@@ -1,0 +1,75 @@
+// C: 큰 점박이 알 하나, 넓은 돔 윗면 반사광과 단순한 놋쇠 받침; 꼭대기 윗면 4행(y=1~4).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat g fish 3
+@mat e linen 4
+@mat s clay 2
+@mat b brass 3
+@layer body
+@mblock 0 0
+......gggg......
+....gggggggg....
+...gggggggggg...
+..gggggggggggg..
+..gggggggggggg..
+.gggggggggggggg.
+.gggggggggggggg.
+.gggggggggggggg.
+.gggggggggggggg.
+.gggggggggggggg.
+.ggggggeegggggg.
+.gggggeeeeggggg.
+.ggggeeeeeegggg.
+.ggggeeeeeegggg.
+.gggeeeeeeeeggg.
+.gggeesseeeeggg.
+.gggeesseeeeggg.
+.gggeeeeeeeeggg.
+.gggeeeeeeeeggg.
+.gggeeeeesssggg.
+.gggeeeeesssggg.
+.ggggeeeeeegggg.
+.ggggeeeeeegggg.
+.gggggeeeeggggg.
+..bbbbbbbbbbbb..
+.bbbbbbbbbbbbbb.
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+.bbbbbbbbbbbbbb.
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+...bbbbbbbbbb...
+@tblock 0 0
+......2222......
+....34555432....
+...4566654432...
+..456655444332..
+..455444443332..
+.35443333333321.
+.36543333333321.
+.36543333333321.
+.36543333333321.
+.35543333333321.
+.35543345333321.
+.35443665433321.
+.35436665433321.
+.35436655433321.
+.35466555433321.
+.35465355433321.
+.35465355433321.
+.35466555433321.
+.35465554433321.
+.35465554322321.
+.35465544322321.
+.35445544333321.
+.35444443333321.
+.34333443333221.
+..345554443322..
+.34555544443321.
+2456555444333210
+2455544333322210
+.34444333222110.
+..244433322210..
+..234433322110..
+...1222221100...

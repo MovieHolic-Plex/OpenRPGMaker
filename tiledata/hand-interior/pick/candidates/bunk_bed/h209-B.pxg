@@ -1,0 +1,65 @@
+// B: 방의 감방 침상과 같은 갈색 목재, 가로 흰 침상 둘과 오른쪽 사다리; 꼭대기 윗면 3행(y=0~2)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat p linen 2
+@mat q linen 3
+@mat r linen 4
+@mat s linen 5
+@mat t linen 6
+@layer bed
+@mblock 0 0
+.beeeeeeeeeeedb.
+.beddeedddedddb.
+.bddddddddddddb.
+.bccccccccccccb.
+.ecbbbbbbbbbbca.
+.ec..........ca.
+.ecttqsssssssra.
+.ecttqsssssssra.
+.ecssqsssssssra.
+.ecqqqssssssrqa.
+.ecrrsssssssrqa.
+.ecrrssssssrqqa.
+.ecqqrrrrrrrqqa.
+.ecppqqqqqqqpba.
+.eeeeeeeeccceca.
+.edddcddddcccba.
+.ccbbbbbbbbbbba.
+.ecaaaaaaaaaaba.
+.ec.........d.ca
+.ec.........d.ca
+.dc.........d.ca
+.dc.........d.ca
+.dc.........eeca
+.ec.........cbba
+.ec.........d.ca
+.ec.........d.ca
+.ec.........d.ca
+.ec.........d.ca
+.ec.........eeca
+.dc.........cbba
+.dc.........d.ca
+.eceeeeeeeeeddca
+.ecddddddddccdca
+.ecbbbbbbbbbbdca
+.ecttqssssssd.ca
+.ecttqssssssd.ca
+.ecssqsssssseeca
+.ecqqqsssssscbba
+.ecrrssssssrd.ca
+.ecrrsssssqqd.ca
+.ecqqrrrrrqqd.ca
+.ecppqqqqqppd.ca
+.eeeeeeecceedeca
+.edddcdddccccbba
+.ccbbbbbbbbbd.ca
+.ec.........d.ca
+.dc.........d.ca
+.ba.........b.ba

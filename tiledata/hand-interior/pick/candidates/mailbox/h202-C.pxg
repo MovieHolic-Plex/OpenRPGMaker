@@ -1,0 +1,40 @@
+// C: 넓은 나무 몸통·편지 한 통·결 최소화; 꼭대기 윗면 3행(y=3~5).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat l linen 5
+@mblock 0 0
+................
+................
+................
+...wwwwwwwwww...
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwllllllwww..
+..wwwllllllwww..
+..wwwllllllwww..
+..wwwllllllwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+@tblock 0 0
+................
+................
+................
+...7777777763...
+..766666666653..
+..655555555533..
+..165666666531..
+..165535535531..
+..165553355531..
+..163555555331..
+..163111111331..
+..165555555531..
+..165555555531..
+..165555555531..
+..135555553331..
+..133333333311..

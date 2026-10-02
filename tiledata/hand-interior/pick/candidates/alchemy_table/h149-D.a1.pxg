@@ -1,0 +1,107 @@
+// 금장 상판 테와 서랍 문양, 청록 플라스크·금관·버너 불빛; 꼭대기 윗면 8행(y=16~23)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f pine 4
+@mat h pine 5
+@mat g brass 2
+@mat j brass 4
+@mat k brass 5
+@mat l brass 6
+@mat i iron 2
+@mat m iron 4
+@mat n iron 5
+@mat p glass 1
+@mat q glass 3
+@mat r glass 4
+@mat s glass 5
+@mat t glass 6
+@mat u teal 2
+@mat v teal 3
+@mat w teal 4
+@mat z teal 5
+@mat o orange 3
+@mat F yellow 5
+@layer wood
+@mblock 1 16
+effffffffffffffffffffffffffffb
+ehhhhhhhhhhhhhhhhhhhhhhhhhhhfb
+efdddddddddddeeeeeeeeeeeeeeefb
+efdddddddddddeeeeddddeeeeeeefb
+efdddddddeeeeeeeeeeeeeedddddefb
+efeeeeeeeeeeeeeeeeeeeeeeeeeefb
+efeeeeeeeeeeeeeeeeeeeeeeeeeefb
+beeeeeeeeeeeeeeeeeeeeeeeeeeeeb
+@mblock 2 24
+eeeeeeeeeeeeeeeeeeeeeeeeeeee
+bccccccccccccbbccccccccccccab
+bfddddddddddcbbfddddddddddcab
+bfddccccddddcbbfddccccddddcab
+bcddddddddddcbbccdddddddddcab
+baaaaaaaaaaaaaaaaaaaaaaaaaab
+@mblock 3 30
+efba
+edba
+@mblock 25 30
+edba
+cdba
+@layer gilding
+@mblock 2 17
+jkgg....................ggkj
+j..g....................g.j
+@mblock 2 21
+j..g....................g.j
+jjjgggggggggggggggggggggjjj
+@mblock 7 26
+.gjjg.........gjjg
+..kk...........kk
+@px 3 25 brass:4 4 25 brass:2 27 25 brass:2 28 25 brass:3
+@layer apparatus
+// 플라스크의 열린 목: 타원 입구와 3행 깊이의 유리 윗면
+@mblock 8 4
+.gkkg
+jpppj
+.grrg
+..sq
+..sq
+.prsrqp
+prtsrrqp
+prtsrrrqp
+prszwwvqp
+przwwwvup
+.pwwvvup
+..puuup
+...iii
+// 금관은 플라스크 목에서 오른쪽 수집병으로 이어짐
+@mblock 13 7
+.gkkkkkkkkkg
+.jggggggggjg
+..........jg
+..........jg
+..........jg
+..........jg
+..........jg
+// 작은 수집병 입구도 타원 윗면을 보임
+@mblock 21 14
+..gkkg
+..gppg
+..grrg
+.prsrqp
+prszwvqp
+przwwvup
+.puvvup
+..pppp
+@layer burner
+@mblock 8 16
+..oo
+.oFFo
+.oFFo
+..og
+.gkkg
+jnnmmj
+.iiii

@@ -32,8 +32,8 @@ describe("imageGenerationQueue", () => {
     });
     const seen: string[][] = [];
     queue.subscribe((snapshot) => seen.push(snapshot.jobs.map((job) => job.status)));
-    const first = queue.enqueue({ prompt: "슬라임", kind: "monster" });
-    const second = queue.enqueue({ prompt: "고블린", kind: "monster" });
+    const first = queue.enqueue({ prompt: "슬라임", kind: "backdrop" });
+    const second = queue.enqueue({ prompt: "고블린", kind: "backdrop" });
     await vi.waitFor(() => {
       expect(queue.getSnapshot().jobs.every((job) => job.status === "done")).toBe(true);
     });

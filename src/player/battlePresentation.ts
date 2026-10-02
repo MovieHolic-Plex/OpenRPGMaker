@@ -17,6 +17,9 @@ export interface BattlePresentationLedger {
   /** 적 id·아군 배틀러 id·recordId 중 무엇으로든 조회 가능. */
   vitalsFor(idOrRecordId: string | undefined): PresentedVitals | undefined;
   applyFeedback(feedback: DamageFeedback): void;
+  /** 쓰러짐 표시만 잠시 미룬다(HP 는 0 그대로). 포켓몬 스킨은 HP 바가 다 줄어든 **뒤에** 쓰러진다 — 막타 순간
+   *  defeated 가 서면 쓰러짐 연출·HP 행 숨김이 바가 줄기도 전에 돌았다. 돌려준 함수가 풀어 준다(두 번 불러도 안전). */
+  deferDefeat(idOrRecordId: string): () => void;
 }
 
 export function createPresentationLedger(before: BattleSnapshot): BattlePresentationLedger {
@@ -28,6 +31,7 @@ export function createPresentationLedger(before: BattleSnapshot): BattlePresenta
   };
   for (const enemy of before.enemies) register(enemy);
   for (const actor of before.actors) register(actor);
+  const deferred = new Set<PresentedVitals>();
 
   return {
     vitalsFor(idOrRecordId) {
@@ -43,8 +47,22 @@ export function createPresentationLedger(before: BattleSnapshot): BattlePresenta
       if (feedback.resource === "mp") return;
       const delta = feedback.healing ? feedback.amount : -feedback.amount;
       vitals.hp = Math.max(0, Math.min(vitals.maxHp, vitals.hp + delta));
-      if (vitals.hp <= 0) vitals.defeated = true;
-      else if (feedback.healing && vitals.hp > 0) vitals.defeated = false;
+      if (vitals.hp <= 0) {
+        if (!deferred.has(vitals)) vitals.defeated = true;
+      } else if (feedback.healing && vitals.hp > 0) {
+        deferred.delete(vitals);
+        vitals.defeated = false;
+      }
+    },
+    deferDefeat(idOrRecordId) {
+      const vitals = byKey.get(idOrRecordId);
+      if (!vitals?.defeated) return () => undefined;
+      vitals.defeated = false;
+      deferred.add(vitals);
+      return () => {
+        if (!deferred.delete(vitals)) return;
+        if (vitals.hp <= 0) vitals.defeated = true;
+      };
     },
   };
 }

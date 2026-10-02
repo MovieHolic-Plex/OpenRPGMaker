@@ -1,0 +1,32 @@
+// h43-A 설명 충실: 나무 판 + 놋쇠 열쇠 다섯 개(고리 못·손잡이·날) + 밑에 번호 패 다섯, 위 윤곽 밝게·아래 윤곽 어둡게
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat f pine 3
+@mat h pine 5
+@mat s pine 2
+@mat o dwood 2
+@mat O dwood 0
+@mat b brass 4
+@mat B brass 5
+@mat d brass 2
+@mat l linen 4
+@mat m dwood 1
+@mat k linen 2
+@mblock 0 0
+................................
+.oooooooooooooooooooooooooooooo.
+.ohhhhhhhhhhhhhhhhhhhhhhhhhhhsO.
+.ohffbbfffbbfffbbfffbbfffbbffsO.
+.ohffBbfffBbfffBbfffBbfffBbffsO.
+.ohffbdfffbdfffbdfffbdfffbdffsO.
+.ohffbfffffbfffffbfffffbfffffsO.
+.ohffbdfffbdfffbdfffbdfffbdffsO.
+.ohffbfffffbfffffbfffffbfffffsO.
+.ohffbdfffbdfffbdfffbdfffbdffsO.
+.ohffffffffffffffffffffffffffsO.
+.ohfllllfllllfllllfllllfllllfsO.
+.ohflmmlflmmlflmmlflmmlflmmlfsO.
+.ohfkkkkfkkkkfkkkkfkkkkfkkkkfsO.
+.ossssssssssssssssssssssssssssO.
+.OOOOOOOOOOOOOOOOOOOOOOOOOOOOOO.

@@ -1,4 +1,4 @@
-// 전투 방식 3종(정면 rm2000 · 측면 rm2003 · 몬스터 대치 pokemon)이 자료집 시스템 탭에서 골라지고,
+// 전투 방식(도트 측면 스킨들 · 몬스터 대치 pokemon — 정면 rm2000 은 2026-10-02 삭제)이 자료집 시스템 탭에서 골라지고,
 // 고른 대로 전투 화면이 뜬다 — 감독 지시(2026-09-03): "자료집에서 설정 가능하게, 세 방식으로".
 // 사진은 verify-shots/battle-skin-trio/ 에 남긴다(PR 증거).
 import { expect, test, type Page } from "@playwright/test";

@@ -1,0 +1,33 @@
+// B: 두 파랑 구역의 금색 사자를 돌출 머리·몸통·벌린 발·굽은 꼬리의 연결 실루엣으로 수정. 꼭대기 윗면 0행(y=해당 없음), 벽걸이.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat S iron 2
+@mat R iron 3
+@mat I iron 4
+@mat H iron 5
+@mat b blue 1
+@mat c blue 2
+@mat d blue 3
+@mat G gold 2
+@mat g gold 3
+@mat j gold 4
+@mat k gold 5
+@layer shield
+@mblock 0 0
+...IIIIIIIRRS...
+..IHHHHIIIIRRS..
+..IHkkdkjjggRS..
+..IHdkkjjjggRS..
+..IHkkdkjjggRS..
+..IHdkkkjjggRS..
+..IHdkkdjjggRS..
+..IHkdkdjjggRS..
+..IHjjggkkckRS..
+...IjgggckckS...
+...IjgggkkckS...
+....IggGckkS....
+....IggGcckS....
+.....IgGkkS.....
+......IGkS......
+.......SS.......

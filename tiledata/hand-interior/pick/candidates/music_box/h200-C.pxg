@@ -1,0 +1,36 @@
+// C: 뚜껑 상단 목재 단면만 2행에서 3행으로 확장; 거울·인형·상자 내부·앞판 유지. 꼭대기 윗면 3행(y=0~2).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat d wood 3
+@mat w wood 5
+@mat a wood 6
+@mat h wood 7
+@mat p pine 4
+@mat q pine 3
+@mat s iron 4
+@mat m iron 5
+@mat l iron 6
+@mat c linen 5
+@mat f linen 6
+@mat r pink 3
+@mat t pink 4
+@mat b brass 5
+@mblock 0 0
+...dppppppppd...
+..dpppppqqqqwd..
+..apppppqqqqwd..
+..awllmmmmsswd..
+..awllmmmmsswd..
+..awmmmmfcsswd..
+..awmmmmcssswd..
+..dddddffcdddd..
+.dhhhhcfffcwwwd.
+.ahpppptrtpppwd.
+.ahppptttrrqpwd.
+.ahppppcpcqqpwd.
+.ahhhhbbbbwwwdd.
+.dawwwwwwwwwwdd.
+.dawwwwbbwwdddd.
+..oddddddddddo..

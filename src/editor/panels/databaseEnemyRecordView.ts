@@ -3,11 +3,11 @@ import { renderEnemyStudio } from "@/editor/panels/databaseEnemyStudio";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
+import { ENEMY_COLLAPSE_EFFECTS, ENEMY_COLLAPSE_LABELS, normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
 import { databaseFieldSupport, databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
-import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
 import { monsterResourceSummary } from "@/editor/panels/monsterResourcePresentation";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
@@ -688,6 +688,13 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
       updateDatabaseRecord("enemies", record.id, { battleScalePercent }),
       { min: 10, max: 300, step: 1, unit: "%" }
     ),
+    selectField(
+      "쓰러지는 연출",
+      "db-field-enemy-collapse",
+      record.collapseEffect ?? "dissolve",
+      ENEMY_COLLAPSE_EFFECTS.map((id) => ({ id, name: ENEMY_COLLAPSE_LABELS[id] })),
+      (value) => updateDatabaseRecord("enemies", record.id, { collapseEffect: normalizeEnemyCollapseEffect(value) })
+    ),
     el("div", {
       class: "db-enemy-graphic-actions",
       children: [
@@ -726,15 +733,6 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     textField("리소스 ID", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
       updateDatabaseRecord("enemies", record.id, { monsterResourceId: emptyToUndefined(monsterResourceId) })
     ),
-    aiImageGenerateField({
-      kind: "monster",
-      testidPrefix: "db-enemy-graphic-ai",
-      queueKey: `enemy-graphic:${record.id}`,
-      onInserted: (resourceId) => {
-        updateDatabaseRecord("enemies", record.id, { monsterResourceId: resourceId });
-        rerender();
-      },
-    }),
     enemyGraphicSupportNotice(),
   ];
 }

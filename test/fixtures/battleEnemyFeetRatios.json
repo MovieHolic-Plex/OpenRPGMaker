@@ -26,27 +26,6 @@
         ]
       }
     },
-    "rm2000": {
-      "authoredY": [
-        104,
-        112,
-        104
-      ],
-      "measured": {
-        "fieldTop": 24,
-        "fieldHeight": 420,
-        "feetRatio": [
-          0.636,
-          0.636,
-          0.91
-        ],
-        "topRatio": [
-          0.136,
-          0.136,
-          0.41
-        ]
-      }
-    },
     "rm2003": {
       "authoredY": [
         128,
@@ -131,27 +110,6 @@
         ]
       }
     },
-    "dragonquest": {
-      "authoredY": [
-        104,
-        112,
-        104
-      ],
-      "measured": {
-        "fieldTop": 24,
-        "fieldHeight": 420,
-        "feetRatio": [
-          0.636,
-          0.636,
-          0.91
-        ],
-        "topRatio": [
-          0.136,
-          0.136,
-          0.41
-        ]
-      }
-    },
     "ff": {
       "authoredY": [
         128,
@@ -173,27 +131,6 @@
         ]
       }
     },
-    "mother": {
-      "authoredY": [
-        104,
-        112,
-        104
-      ],
-      "measured": {
-        "fieldTop": 24,
-        "fieldHeight": 420,
-        "feetRatio": [
-          0.636,
-          0.636,
-          0.91
-        ],
-        "topRatio": [
-          0.136,
-          0.136,
-          0.41
-        ]
-      }
-    },
     "goldensun": {
       "authoredY": [
         128,
@@ -212,48 +149,6 @@
           0.466,
           0.528,
           0.468
-        ]
-      }
-    },
-    "mv": {
-      "authoredY": [
-        104,
-        112,
-        104
-      ],
-      "measured": {
-        "fieldTop": 24,
-        "fieldHeight": 420,
-        "feetRatio": [
-          0.636,
-          0.636,
-          0.91
-        ],
-        "topRatio": [
-          0.136,
-          0.136,
-          0.41
-        ]
-      }
-    },
-    "vxace": {
-      "authoredY": [
-        104,
-        112,
-        104
-      ],
-      "measured": {
-        "fieldTop": 24,
-        "fieldHeight": 420,
-        "feetRatio": [
-          0.636,
-          0.636,
-          0.91
-        ],
-        "topRatio": [
-          0.136,
-          0.136,
-          0.41
         ]
       }
     },

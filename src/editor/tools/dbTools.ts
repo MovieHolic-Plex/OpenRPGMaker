@@ -1,3 +1,4 @@
+import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
 import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
 import { PARTY_PIXEL_SHEETS, partyPixelSheet } from "@/assets/partyPixelSheets";
 import { actionSkillClearProperties, authoredSkillProperties, combatConditionSchema, conditionalDropsSchema } from "./combatAuthoringSchemas";
@@ -543,6 +544,11 @@ const enemyRecordSchema = objectSchema({
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
+  collapseEffect: {
+    type: "string",
+    enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
+    description: "쓰러지는 연출. dissolve 기본 소멸 · pixelBreak FF6 식 보랏빛 픽셀 분해(잡몹) · bossSink 떨며 땅속으로 가라앉음(보스) · flash 하얀 세 번 점멸 · instant 즉시 사라짐(환영·소환수).",
+  },
   graphicHue: integerSchema(),
   transparent: booleanSchema(),
   flying: booleanSchema(),
@@ -578,7 +584,16 @@ const troopRecordSchema = objectSchema({
     waveAmplitude: { type: "number", minimum: 0, maximum: 24, description: "물결 왜곡 진폭 px" },
     waveFrequency: { type: "number", minimum: 0, maximum: 8, description: "물결 흔들림 횟수/초" },
     paletteCycleSeconds: { type: "number", minimum: 0, maximum: 60, description: "색 순환 한 바퀴 초(0 = 끔)" },
-  }, "움직이는 전투 배경(마더식). 0/생략 = 그 효과 끔. 움직임 줄이기 설정이면 정지 배경"),
+  }, "움직이는 전투 배경(마더식) — 배경 그림 한 장을 움직인다. 0/생략 = 그 효과 끔. 도트 측면 스킨(기본 retro2003·chrono·ff 등 겹 배경 스킨)에서는 지형 겹 배경이 덮어 보이지 않는다 — 그때는 backdropLayers 를 쓴다"),
+  backdropLayers: arrayOf(objectSchema({
+    preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기" },
+    resourceId: stringSchema("바둑판으로 깔 그림 리소스(투명 PNG). 주면 preset 보다 먼저"),
+    front: booleanSchema("true = 배틀러·이펙트 앞(앞 덤불·안개 장막, 불투명도 50 이하 권장). 생략 = 배경 바로 위"),
+    scrollX: { type: "number", minimum: -1200, maximum: 1200, description: "가로 흐름 px/초. 생략 = 프리셋 기본(구름 22·비 -180)" },
+    scrollY: { type: "number", minimum: -1200, maximum: 1200, description: "세로 흐름 px/초(양수 = 아래). 생략 = 프리셋 기본(비 900·눈 60·불티 -50)" },
+    opacity: { type: "number", minimum: 0, maximum: 100, description: "불투명도 %. 생략 = 프리셋 기본" },
+    blendMode: { type: "string", enum: ["normal", "add", "screen", "multiply"], description: "겹치기. 생략 = 프리셋 기본(불티 add·별/빛줄기 screen)" },
+  }, "배경 겹 하나")),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
   // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면
@@ -792,7 +807,7 @@ const stateRecordSchema = objectSchema({
   lockedParameters: stringArraySchema(),
   runtimeEffects: stateRuntimeEffectsSchema,
   disablesEquipSlot: stringSchema("부위 손실: 이 상태인 동안 이 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다"),
-  battleAura: stringSchema("전투 지속 오라(retro2003): 상태가 걸려 있는 동안 몸 위에 남는 표시. freeze-grey|berserk-pulse|shield-shimmer|wet-drip|poison-bubble|dark-fog|petrify-still|regen-sparkle, none=끔. 비우면 기본 상태(독·스톱·버서크·프로텍트·실드·젖음·암흑·석화·재생)만 자동"),
+  battleAura: stringSchema("전투 지속 오라: 상태가 걸려 있는 동안 몸 위에 남는 표시. freeze-grey|berserk-pulse|shield-shimmer|wet-drip|poison-bubble|dark-fog|petrify-still|regen-sparkle|sleep-zzz(Z 가 떠오름)|paralyze-spark(전기 불꽃)|silence-mute(말풍선 …)|confuse-stars(머리 위 별)|charm-heart(하트)|burn-ember(불티), none=끔. 비우면 기본 상태(독·스톱·버서크·프로텍트·실드·젖음·암흑·석화·재생·수면·마비·침묵·혼란·매혹·화상)와 몬스터 주 상태는 자동"),
 }) as RecordSchema;
 
 function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {
@@ -1313,6 +1328,20 @@ const upsertEnemy: ToolDefinition = {
   },
 };
 
+/**
+ * members(배치 좌표)만 준 새 트룹은 enemyIds 를 members 에서 채운다 — 정규화도 members 를 정본으로 enemyIds 를 다시 만든다.
+ * 실측(2026-10-02 조수 시험): 모델이 members 만 보내 「enemyIds 필요」로 세 번 연달아 실패했다.
+ */
+function withEnemyIdsFromMembers(troop: unknown): unknown {
+  if (!troop || typeof troop !== "object" || Array.isArray(troop)) return troop;
+  const record = troop as Record<string, unknown>;
+  if (record.enemyIds !== undefined || !Array.isArray(record.members)) return troop;
+  const enemyIds = record.members
+    .map((member) => (member && typeof member === "object" ? (member as { enemyId?: unknown }).enemyId : undefined))
+    .filter((enemyId): enemyId is string => typeof enemyId === "string" && enemyId.length > 0);
+  return enemyIds.length > 0 ? { ...record, enemyIds } : troop;
+}
+
 const upsertTroop: ToolDefinition = {
   name: "upsert_troop",
   description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1329,8 +1358,9 @@ const upsertTroop: ToolDefinition = {
         { code: "use-battle-page-tool" },
       );
     }
-    const merged = mergeRecord(draft.database.troops, args.troop, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
-    const patch = args.troop as Partial<TroopRecord>;
+    const troopArg = withEnemyIdsFromMembers(args.troop);
+    const merged = mergeRecord(draft.database.troops, troopArg, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
+    const patch = troopArg as Partial<TroopRecord>;
     // An explicit legacy roster replaces the roster. Do not let inherited members
     // silently override it; unrelated patches still preserve authored placements.
     if (patch.enemyIds !== undefined && patch.members === undefined) delete merged.members;
@@ -2374,7 +2404,7 @@ export function mergeSessionInventory(project: Project, inventory: Record<string
 
 const upsertBattleAnimation: ToolDefinition = {
   name: "upsert_battle_animation",
-  description: "전투 애니메이션 레코드를 등록/수정한다. Database 애니메이션 탭과 같은 저작 데이터.",
+  description: "전투 애니메이션 레코드를 등록/수정한다. Database 애니메이션 탭과 같은 저작 데이터. 기존 이펙트의 겹치기(blendMode)만 바꿀 때도 id·name 과 함께 부른다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2388,6 +2418,11 @@ const upsertBattleAnimation: ToolDefinition = {
           scope: { type: "string", enum: ["singleTarget", "allTargets", "screen"] },
           position: { type: "string", enum: ["head", "center", "feet", "screen"] },
           large: { type: "boolean" },
+          blendMode: {
+            type: "string",
+            enum: ["normal", "add", "screen", "multiply"],
+            description: "겹치기. 마법 빛·불꽃·번개는 add(아래 배틀러·배경을 밝힌다), 부드러운 빛은 screen, 어둠·저주는 multiply.",
+          },
         },
         required: ["id", "name"],
         additionalProperties: false,
@@ -2419,6 +2454,11 @@ const upsertBattleAnimation: ToolDefinition = {
         : {}),
       ...(typeof record.large === "boolean" ? { large: record.large } : {}),
     };
+    if (isBlendModeName(record.blendMode)) {
+      const blendMode = normalizeBlendMode(record.blendMode);
+      if (blendMode) animation.blendMode = blendMode;
+      else delete animation.blendMode;
+    }
     const outcome = upsertById(draft.database.battleAnimations, animation);
     return { summary: `전투 애니메이션 '${name}' ${outcome === "added" ? "추가" : "수정"}`, data: animation };
   },

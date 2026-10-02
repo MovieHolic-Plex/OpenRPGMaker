@@ -1,0 +1,35 @@
+{
+ "id": "save crystal",
+ "slug": "save_crystal",
+ "name_ko": "세이브 수정",
+ "category": "JRPG 장치",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  48
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 48
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 32,
+ "surface": null,
+ "description": "세이브 지점 — 빛나는 원판 받침 위에 떠 있는 푸른 팔면체 수정(32px 솟음). 받침 윗면의 둥근 빛 고리가 위에서 보인다. 던전 입구·보스 방 앞·여관 2층.",
+ "where": "받침 윗면의 둥근 빛 고리가 위에서 보인다. 던전 입구·보스 방 앞·여관 2층.",
+ "placement": [
+  "그림이 발밑 칸 위로 32px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "tower"
+}

@@ -1,0 +1,67 @@
+// 기존 명암·창·받침을 유지하고 정강이 2행을 줄여 갑옷 높이 32px; 투구 정수리 3행.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a iron 1
+@mat b iron 2
+@mat c iron 3
+@mat d iron 4
+@mat e iron 5
+@mat f iron 6
+@mat g marble 1
+@mat h marble 2
+@mat j marble 3
+@mat k marble 4
+@mat l marble 5
+@mat p wood 3
+@mat q wood 5
+@layer armor
+@mblock 0 0
+.............c..
+............ed..
+............edb.
+............edb.
+............dcb.
+.............b..
+.............q..
+.............q..
+.............q..
+.............q..
+......cdd....q..
+.....deeed...q..
+....cefeedb..q..
+....cedddcb..q..
+....cbaaaab..q..
+....cdedccb..q..
+.....bdddba..q..
+......bbb....q..
+....cdddc....q..
+..cdeedddeec.q..
+.befeddddeedcq..
+.bedcdeeddcdbq..
+.bdcceeeddbbcq..
+.cdcdeeddb.cdq..
+.cdbdeeddb.bep..
+.cdbddddcb.cdp..
+.becbddcb.bedp..
+.bedccccc.bcbq..
+..bbcdddcb...q..
+....cddccb...q..
+....edcddc...q..
+....edbbdc...q..
+....ec..dc...q..
+....ec..dc...q..
+....dc..cb...q..
+....eb..dc...q..
+....ec..dc...q..
+....dc..cb...q..
+....ec..dc...q..
+....ed..dd...q..
+...cedb.cddb.q..
+...bddd.bddb.q..
+..hkkjjjjjhh.q..
+.hlkjjjjjhhhgq..
+.hlkkkkjjjjhhg..
+.hjjjjjjjjhhhg..
+.hjjhjjjjjhhhg..
+..ggggggggggg...

@@ -49,7 +49,7 @@ test("BM101-BM104 Enemies tab exposes Korean RPG Maker-style editable enemy sett
   await page.getByTestId("db-enemy-graphic-set").click();
   await expect(page.getByTestId("db-enemy-graphic-dialog")).toBeVisible();
   await page.getByTestId("db-enemy-graphic-hue").fill("120");
-  await page.getByTestId("db-enemy-graphic-option-generated-enemy-ontology-8da61312").click();
+  await page.getByTestId("db-enemy-graphic-option-generated-enemy-slime-red").click();
   await page.getByTestId("db-enemy-graphic-ok").click();
   await expect(page.getByTestId("db-enemy-graphic-dialog")).toBeHidden();
 
@@ -77,7 +77,7 @@ test("BM101-BM104 Enemies tab exposes Korean RPG Maker-style editable enemy sett
   await page.getByTestId("database-modal").screenshot({ path: testInfo.outputPath("bm101-enemies-tab.png") });
   const project = await exportedProject(page);
   const enemy = project.database.enemies.find((record) => record.name === "테스트 슬라임");
-  expect(enemy?.monsterResourceId).toBe("generated-enemy-ontology-8da61312");
+  expect(enemy?.monsterResourceId).toBe("generated-enemy-slime-red");
   expect(enemy?.transparent).toBe(true);
   expect(enemy?.flying).toBe(true);
   expect(enemy?.stats).toMatchObject({ maxHp: 321, maxMp: 12, attack: 33, defense: 22, mind: 11, agility: 44 });

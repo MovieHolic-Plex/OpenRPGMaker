@@ -1,0 +1,60 @@
+// 눈알·뿔·버섯 표본 병을 두 단 목제 선반에 진열; 꼭대기 윗면 3행(y=1~3).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat W wood 6
+@mat H wood 7
+@mat M wood 5
+@mat B wood 3
+@mat D wood 2
+@mat s dwood 2
+@mat p wood 4
+@mat g glass 2
+@mat G glass 4
+@mat L glass 5
+@mat F glass 1
+@mat C clay 5
+@mat c clay 3
+@mat E white 5
+@mat e white 3
+@mat R red 3
+@mat K red 0
+@mat N linen 5
+@mat n linen 3
+@mat U red 4
+@mat u red 2
+@mat T linen 4
+@layer shelf
+@mblock 0 0
+.BBBBBBBBBBBBBB.
+.HWWWWWWWWWWWWM.
+.HWWWMMWWWWWMWM.
+.HWWWWWWWWWWWWM.
+.WMMMMMMMMMMMMB.
+.BDDDDDDDDDDDDB.
+.WBsCCCsssCCCsB.
+.WBCCCCcsCCCCcB.
+.WBFLLgFsFLLgFB.
+.WBFEEeFsFLgNFB.
+.WBFERKFsFLgNFB.
+.WBFEEeFsFLNnFB.
+.WBFLggFsFLNnFB.
+.WBFgggFsFgggFB.
+.WBFFFFFsFFFFFB.
+.WBsssssssssssB.
+.WHHWWWWWWWWWMB.
+.WWWMMWWWWWMMMB.
+.WWWWWWWWWWWMMB.
+.WMMMMMMMMMMMMB.
+.BDDDDDDDDDDDDB.
+.WBsssCCCCssssB.
+.WBssCGGGgcCssB.
+.WBssFgLLgFsssB.
+.WBssFLUUuFsssB.
+.WBssFUUuuFsssB.
+.WBssFLTNnFsssB.
+.WBssFggggFsssB.
+.WHHWWFFFFWWWMB.
+.WWWWMMWWWMMMMB.
+.WMMMMMMMMMMMMB.
+.BBDDDDDDDDDDBB.

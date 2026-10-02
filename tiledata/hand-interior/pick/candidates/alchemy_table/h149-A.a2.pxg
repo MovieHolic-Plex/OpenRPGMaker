@@ -1,0 +1,71 @@
+// A 재시도: 두 병 입구와 버너 받침을 3행 타원 윗면으로 수정; 상판·서랍·관·높이 유지.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a pine 1
+@mat b pine 2
+@mat c pine 3
+@mat d pine 4
+@mat e pine 5
+@mat f pine 6
+@mat u dwood 1
+@mat v dwood 2
+@mat G glass 1
+@mat H glass 2
+@mat I glass 3
+@mat J glass 4
+@mat K glass 5
+@mat L glass 6
+@mat m brass 1
+@mat n brass 2
+@mat o brass 3
+@mat p brass 4
+@mat q brass 5
+@mat r green 2
+@mat s green 4
+@mat t orange 3
+@mat Y yellow 5
+@mat Z yellow 6
+@mat h iron 1
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@layer table
+@mblock 0 16
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.aeeeeeeeeeeeeeeeeeeeeeeeeeeeda.
+.afeddddddcddddddedddddddddddda.
+.afeddddddccdddddedddcccdddddda.
+.afeddddddddddddeddddddddddddda.
+.afedddccdddddddedddddddcddddda.
+.afeddddddddddddedddddddccdddda.
+.aeeeeeeeeeeeeeeeeeeeeeeeeeedca.
+.abccccccccccccccccccccccccccba.
+.auvvvvvvvvvvvvvvvvvvvvvvvvvvua.
+..becbbbbbbbbbbabecbbbbbbbbbba..
+..beccccccccccbabecccccccccbba..
+..becccqpnccccbabecccpqncccbba..
+..abbbbbbbbbbbbaabbbbbbbbbbbba..
+..adba....................abba..
+..abba....................avva..
+@layer apparatus
+@mblock 0 4
+..........mqqqqqqqqqqqqm........
+.........mqpnnnnnnnnnnnqm.......
+.........HKKH..........oqm......
+........KLGGJH..........oqm.....
+.........HJJH...........oqm.....
+........GKLJHG..........opm.....
+.......GKLLJJIG.........opm.....
+......GKLKJJJIIG........opm.....
+......GKJJIJJIHG........HKKH....
+......GJJIJJIIHG.......KLGGJH...
+......GJsssssrHG........HJJH....
+.......GsssssrG.......GKLJJIHG..
+........GHHHHG........GJsssrHG..
+..........tY..........GJsssrHG..
+..........tZt..........GrrrrG...
+.........kYtj...........GHHG....
+........hkkjih..................
+.........hjjh...................
+.........hhhh...................

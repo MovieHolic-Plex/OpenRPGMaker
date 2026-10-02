@@ -1,0 +1,39 @@
+// 눌린 판 E2: 둘레 홈을 가장 어둡게 넓히고(윗 2줄·왼·오른), 판 위·왼 밝은 테를 중간 회색으로 낮춰 바닥 높이로 가라앉은 모양. 안쪽 L자 그늘·눌린 자리 유지
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+................
+................
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+0000000000000000
+0000000000000000
+0111111111111110
+0122222222222210
+0120000000000210
+0120333333334210
+0120333333334210
+0120332222334210
+0120332222334210
+0120333333334210
+0120333333334210
+0124444444444210
+0122222222222210
+0111111111111110
+0000000000000000

@@ -9,7 +9,7 @@ export function battleEventStateRepairsProject() {
     project.system.titleScreen = { ...project.system.titleScreen, title: project.meta.title };
   }
   project.system.battleFlow = "gauge";
-  project.system.battleUiStyle = "vxace";
+  project.system.battleUiStyle = "retro2003";
   project.system.startActorIds = ["actor_hero"];
   project.startPos = { x: 3, y: 6 };
   const hero = project.database.actors.find(actor => actor.id === "actor_hero");

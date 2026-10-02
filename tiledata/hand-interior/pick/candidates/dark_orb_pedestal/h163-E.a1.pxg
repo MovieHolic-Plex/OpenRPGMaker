@@ -1,0 +1,51 @@
+// E: 검보라 구슬과 보라 봉인 홈을 새긴 각진 돌 받침; 꼭대기 윗면 3행(y=14~16)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A purple 0
+@mat B purple 1
+@mat C purple 2
+@mat D purple 3
+@mat E purple 4
+@mat G black 2
+@mat H black 3
+@mat I black 4
+@mat J stone 0
+@mat K stone 1
+@mat L stone 2
+@mat M stone 3
+@mat N stone 4
+@layer body
+@mblock 0 0
+......BBBB......
+....BCCDCCBB....
+...BCEEDCCGAB...
+..BCECHHHGGGAB..
+..BCCHHHHGGGAB..
+.BDCHIIHHGGGGAB.
+.BCHIIHHHGGGGAB.
+.BCHHHHHGGGGGAB.
+.BCHHHGGGGGGGAB.
+..BCHGGGGGGGAB..
+..BCGGGGGGGGAB..
+...BCGGGGGGAB...
+....BCGGGAAB....
+.....BBAABB.....
+...KNNMMMMKKK...
+.KNMMMMLMMMMLKK.
+.KNMLMMMMMMLLKK.
+.KMLLLLLLLLLKKK.
+..KLLLLLLLLKKK..
+...KMLLLLKKKK...
+...KMLLLLKKKK...
+...KMLLBCLKKK...
+...KMLLCCLKKK...
+...KMLLBCLKKK...
+...KMLLLLKKKK...
+...KMLLLLKKKK...
+...KMLLLLLKKK...
+..KNMMLLLLLKKK..
+.KNMMMMMLLLLLKK.
+.KMLLLLLLLLLLKK.
+.KLLLLLLLLLKKKK.
+..KKKKKKKKKKKK..

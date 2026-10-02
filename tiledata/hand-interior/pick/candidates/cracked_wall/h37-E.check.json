@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cracked_wall/h37-E.pxg",
+ "id": "cracked wall",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "돌덩이 쌓은 벽 한 조각 + 위에서 아래로 갈라진 큰 금(가운데가 벌어진 틈), 돌 사이 모르타르줄",
+ "ok": true
+}

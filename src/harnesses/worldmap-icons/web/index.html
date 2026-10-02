@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>월드맵 아이콘 하네스 — 받기 / 버리기</title>
+<style>
+  :root { --bg:#17161b; --panel:#201f26; --line:#34323d; --text:#e8e6ef; --dim:#9a97a8; --ok:#5fbf77; --bad:#e0605a; --warn:#d9b45a; --acc:#7aa8ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Noto Sans KR", sans-serif; display:grid; grid-template-columns:300px 1fr; height:100vh; }
+  aside { border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0; }
+  header { padding:12px 14px; border-bottom:1px solid var(--line); }
+  header h1 { font-size:15px; margin:0 0 6px; }
+  .prog { color:var(--dim); font-size:12px; }
+  .bar { height:4px; background:var(--line); border-radius:2px; margin-top:6px; overflow:hidden; display:flex; }
+  .bar i { display:block; height:100%; }
+  .filters { padding:8px 14px; display:flex; flex-wrap:wrap; gap:6px; border-bottom:1px solid var(--line); }
+  .chip { border:1px solid var(--line); background:transparent; color:var(--dim); border-radius:12px; padding:2px 9px; font-size:12px; cursor:pointer; }
+  .chip.on { color:var(--text); border-color:var(--acc); background:#2a3350; }
+  ul { list-style:none; margin:0; padding:0; overflow:auto; flex:1; }
+  li.grp { padding:8px 14px 4px; color:var(--dim); font-size:11px; letter-spacing:.04em; position:sticky; top:0; background:var(--bg); }
+  li.it { display:flex; align-items:center; gap:8px; padding:5px 14px; cursor:pointer; border-left:3px solid transparent; }
+  li.it:hover { background:#1f1e25; }
+  li.it.sel { background:#262533; border-left-color:var(--acc); }
+  li.it img { width:32px; height:32px; image-rendering:pixelated; object-fit:contain; background:#26252c; border-radius:3px; }
+  li.it .nm { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  li.it .nm small { color:var(--dim); display:block; font-size:11px; }
+  .tag { font-size:10px; padding:1px 5px; border-radius:3px; white-space:nowrap; }
+  .t-pass { color:var(--ok); border:1px solid #2f5a3a; } .t-fail { color:var(--bad); border:1px solid #6a2f2c; } .t-wait { color:var(--dim); border:1px solid var(--line); }
+  .d-accept { background:var(--ok); color:#0d1a10; } .d-reject { background:var(--bad); color:#1d0b0a; }
+  main { overflow:auto; padding:18px 22px 120px; }
+  .head { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .head h2 { margin:0; font-size:20px; }
+  .head .meta { color:var(--dim); }
+  .desc { color:var(--dim); margin:4px 0 14px; max-width:900px; }
+  .views { display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap; }
+  figure { margin:0; }
+  figure img { image-rendering:pixelated; display:block; border:1px solid var(--line); border-radius:4px; }
+  figcaption { color:var(--dim); font-size:12px; margin-top:4px; }
+  .review { margin:16px 0; padding:12px 14px; background:var(--panel); border:1px solid var(--line); border-radius:6px; max-width:900px; }
+  .review b.v-pass { color:var(--ok); } .review b.v-fail { color:var(--bad); }
+  .review p { margin:4px 0; } .review .k { color:var(--dim); display:inline-block; min-width:72px; }
+  .decide { position:fixed; left:300px; right:0; bottom:0; background:#1b1a21f0; border-top:1px solid var(--line); padding:10px 22px; display:flex; flex-direction:column; gap:8px; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  button.big { font-size:15px; padding:7px 18px; border-radius:6px; border:1px solid var(--line); cursor:pointer; color:var(--text); background:#2a2933; }
+  button.acc { background:#244a2f; border-color:#3c7a4c; } button.rej { background:#4a2826; border-color:#7a3c38; }
+  button.big:disabled { opacity:.4; cursor:default; }
+  .reasons .chip.on { border-color:var(--bad); background:#3a2322; }
+  input.note { flex:1; min-width:240px; background:#15141a; border:1px solid var(--line); color:var(--text); border-radius:5px; padding:6px 9px; font:inherit; }
+  .cur { color:var(--dim); font-size:13px; }
+  kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:0 4px; font-size:11px; color:var(--dim); }
+  details { margin-top:14px; } summary { cursor:pointer; color:var(--dim); }
+  .redraw { margin:18px 0; padding:12px 14px; background:var(--panel); border:1px solid var(--line); border-radius:6px; }
+  .redraw h3 { margin:0 0 8px; font-size:15px; }
+  .redraw textarea { width:100%; min-height:52px; background:#15141a; border:1px solid var(--line); color:var(--text); border-radius:5px; padding:6px 9px; font:inherit; }
+  .round { margin-top:14px; border-top:1px solid var(--line); padding-top:10px; }
+  .round .rh { color:var(--dim); font-size:12px; margin-bottom:8px; }
+  .cands { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; }
+  .cand { width:280px; background:#1a1920; border:1px solid var(--line); border-radius:6px; padding:8px; }
+  .cand.picked { border-color:var(--ok); box-shadow:0 0 0 2px #2f5a3a; } .cand.dropped { opacity:.45; }
+  .cand .imgs { display:flex; gap:6px; align-items:flex-end; min-height:120px; }
+  .cand .imgs img { image-rendering:pixelated; max-width:180px; max-height:220px; border:1px solid var(--line); border-radius:3px; }
+  .cand .imgs img.ctx1 { max-width:84px; }
+  .cand .st { font-size:12px; margin:6px 0 4px; } .cand .why { font-size:12px; color:var(--dim); max-height:5.6em; overflow:auto; }
+  .cand .btns { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+  .cand button { font-size:12px; padding:3px 9px; border-radius:4px; border:1px solid var(--line); background:#2a2933; color:var(--text); cursor:pointer; }
+  .cand button.pk { background:#244a2f; border-color:#3c7a4c; } .cand button.dp { background:#4a2826; border-color:#7a3c38; }
+  .spin { color:var(--warn); }
+</style>
+</head>
+<body>
+<aside>
+  <header>
+    <h1>월드맵 아이콘 — 받기 / 버리기</h1>
+    <div class="prog" id="prog"></div>
+    <div class="bar" id="bar"></div>
+  </header>
+  <div class="filters" id="filters"></div>
+  <ul id="list"></ul>
+</aside>
+<main id="main"><p class="cur">불러오는 중…</p></main>
+<div class="decide" id="decide" hidden>
+  <div class="row">
+    <button class="big acc" id="bAcc">받기 <kbd>A</kbd></button>
+    <button class="big rej" id="bRej">버리기 <kbd>R</kbd></button>
+    <button class="big" id="bClr">결정 지우기</button>
+    <span class="cur" id="curDec"></span>
+    <span class="cur" style="margin-left:auto"><kbd>↑</kbd><kbd>↓</kbd> 이동 · 버리기는 이유를 누르고 <kbd>Enter</kbd></span>
+  </div>
+  <div class="row reasons" id="reasons"></div>
+  <div class="row"><input class="note" id="note" placeholder="메모(선택) — 버린 이유를 자세히 적으면 다시 그릴 때 작업지시서에 들어간다"></div>
+</div>
+<script>
+let S = { items: [], reasons: [], sets: [] }, sel = null, rej = new Set();
+const F = { set: 'all', show: 'all' };
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let SETNAME = { 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
+const img = (it, f) => `/f/${encodeURIComponent(it.set)}/${encodeURIComponent(it.name)}/${f}?v=${it.sha}`;
+
+let lastBulk = [];
+async function load(keep) {
+  const r = await fetch('/api/state'); S = await r.json();
+  if (!keep || !S.items.find((x) => x.id === sel)) sel = (visible()[0] || S.items[0] || {}).id;
+  render();
+}
+function verdictOf(it) { return it.review && it.review.status === 'done' ? it.review.verdict : null; }
+function visible() {
+  return S.items.filter((it) => (F.set === 'all' || it.set === F.set) &&
+    (F.show === 'all' || (F.show === 'todo' && !it.decision) || (F.show === 'fail' && verdictOf(it) === 'FAIL') ||
+     (F.show === 'pass' && verdictOf(it) === 'PASS') || (F.show === 'acc' && it.decision?.decision === 'accept') ||
+     (F.show === 'rej' && it.decision?.decision === 'reject')));
+}
+function render() { renderFilters(); renderList(); renderMain(); renderProg(); }
+function renderProg() {
+  const n = S.items.length, a = S.items.filter((x) => ['accept', 'pick'].includes(x.decision?.decision)).length, j = S.items.filter((x) => x.decision?.decision === 'reject').length;
+  const rv = S.items.filter((x) => verdictOf(x)).length, fail = S.items.filter((x) => verdictOf(x) === 'FAIL').length;
+  $('prog').textContent = `${n}장 · 받기 ${a} · 버리기 ${j} · 남음 ${n - a - j}  |  검수 ${rv}/${n} (불합격 ${fail})`;
+  $('bar').innerHTML = `<i style="width:${a / n * 100}%;background:var(--ok)"></i><i style="width:${j / n * 100}%;background:var(--bad)"></i>`;
+}
+function renderFilters() {
+  SETNAME = { ...(S.set_names || {}), 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
+  const sets = [['all', '전체'], ...S.sets.map((s) => [s, SETNAME[s] || s])];
+  const shows = [['all', '모두'], ['todo', '안 정함'], ['fail', '검수 ✗'], ['pass', '검수 ✓'], ['acc', '받음'], ['rej', '버림']];
+  $('filters').innerHTML = sets.map(([k, l]) => `<button class="chip ${F.set === k ? 'on' : ''}" data-set="${k}">${l}</button>`).join('') +
+    '<span style="flex-basis:100%"></span>' + shows.map(([k, l]) => `<button class="chip ${F.show === k ? 'on' : ''}" data-show="${k}">${l}</button>`).join('');
+  const bulk = S.items.filter((it) => (F.set === 'all' || it.set === F.set) && !it.decision && verdictOf(it) === 'PASS');
+  const scope = F.set === 'all' ? '전체' : (SETNAME[F.set] || F.set);
+  $('filters').insertAdjacentHTML('beforeend', '<span style="flex-basis:100%"></span>' +
+    `<button class="chip" id="bBulk" ${bulk.length ? '' : 'disabled'}>${esc(scope)} · 검수 ✓ 안 정한 것 ${bulk.length}장 일괄 받기</button>` +
+    (lastBulk.length ? `<button class="chip" id="bUndo">방금 일괄 받기 ${lastBulk.length}장 되돌리기</button>` : ''));
+  $('bBulk').onclick = async () => {
+    if (!bulk.length || !confirm(`${scope}에서 검수 ✓ 이고 아직 안 정한 ${bulk.length}장을 받는다. 검수 ✗ 와 이미 정한 것은 건드리지 않는다.`)) return;
+    const ids = bulk.map((it) => it.id);
+    const r = await fetch('/api/decide_bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids, decision: 'accept' }) });
+    if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
+    lastBulk = ids; await load(true);
+  };
+  if ($('bUndo')) $('bUndo').onclick = async () => {
+    const r = await fetch('/api/decide_bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: lastBulk, decision: 'clear' }) });
+    if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
+    lastBulk = []; await load(true);
+  };
+  $('filters').querySelectorAll('[data-set]').forEach((b) => b.onclick = () => { F.set = b.dataset.set; render(); });
+  $('filters').querySelectorAll('[data-show]').forEach((b) => b.onclick = () => { F.show = b.dataset.show; render(); });
+}
+function tagFor(it) {
+  const v = verdictOf(it);
+  const t = v === 'PASS' ? '<span class="tag t-pass">검수 ✓</span>' : v === 'FAIL' ? `<span class="tag t-fail">✗ ${esc((it.review.codes || []).join(','))}</span>` :
+    `<span class="tag t-wait">${it.review?.status === 'running' ? '검수 중' : '검수 전'}</span>`;
+  const d = it.decision ? `<span class="tag d-${it.decision.decision === 'pick' ? 'accept' : it.decision.decision}">${it.decision.decision === 'accept' ? '받음' : it.decision.decision === 'pick' ? '새 그림' : '버림'}</span>` : '';
+  return t + d;
+}
+function renderList() {
+  let html = '', last = '';
+  for (const it of visible()) {
+    if (it.set !== last) { html += `<li class="grp">${esc(SETNAME[it.set] || it.set)}</li>`; last = it.set; }
+    html += `<li class="it ${it.id === sel ? 'sel' : ''}" data-id="${esc(it.id)}"><img src="${img(it, 'icon.png')}" alt=""><span class="nm">${esc(it.name)}<small>${esc(it.role_name)} ${it.cells.join('×')}</small></span>${tagFor(it)}</li>`;
+  }
+  $('list').innerHTML = html || '<li class="grp">해당 없음</li>';
+  $('list').querySelectorAll('li.it').forEach((li) => li.onclick = () => { sel = li.dataset.id; rej.clear(); render(); });
+  $('list').querySelector('li.sel')?.scrollIntoView({ block: 'nearest' });
+}
+function renderMain() {
+  const it = S.items.find((x) => x.id === sel);
+  if (!it) { $('main').innerHTML = '<p class="cur">아이콘이 없다.</p>'; $('decide').hidden = true; return; }
+  const b = it.review?.body, v = verdictOf(it);
+  $('main').innerHTML = `
+    <div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(SETNAME[it.set] || it.set)} · ${esc(it.role_name)} (${esc(it.role)}) · ${it.cells.join('×')} 칸${it.place ? ` · 지도 자리: ${esc(it.place)}${it.used ? '' : ' (빌린 자리 — 지도에 안 쓰이는 변형)'}` : ' · 지도 자리 없음'}</span></div>
+    <p class="desc">${esc(it.desc)}</p>
+    <div class="views">
+      <figure><img src="${img(it, 'icon-x8.png')}" alt=""><figcaption>단품 8배</figcaption></figure>
+      ${it.place ? `<figure><img src="${img(it, 'ctx-x3.png')}" alt=""><figcaption>지도 자리 3배</figcaption></figure>
+      <figure><img src="${img(it, 'ctx-x1.png')}" alt="" style="width:auto"><figcaption>1배(게임 크기)</figcaption></figure>` : ''}
+    </div>
+    <div class="review">${v ? `<p><b class="v-${v.toLowerCase()}">검수 ${v === 'PASS' ? '✓ 합격' : '✗ 불합격'}</b> ${esc((it.review.codes || []).join(' · '))} <span class="cur">— 독립 검수자(${esc(it.review.engine)}) 참고 판정, 결정은 사용자가 한다</span></p>
+      <p><span class="k">보이는 것</span>${esc(b?.reads_as)}</p><p><span class="k">근거</span>${esc(b?.reasons)}</p>
+      ${b?.doubt ? `<p><span class="k">애매한 점</span>${esc(b.doubt)}</p>` : ''}${b?.fix ? `<p><span class="k">고칠 것</span>${esc(b.fix)}</p>` : ''}`
+      : `<p class="cur">${it.review?.status === 'running' ? '검수 중…' : it.review?.status === 'failed' ? '검수 실패(다시 돌려야 함)' : '아직 검수 전'}</p>`}</div>
+    <div class="redraw"><h3>다시 그리기 — 정면 3/4 후보</h3>
+      <p class="cur" style="margin:0 0 6px">작업자 여럿이 방향을 나눠(A 최소 수정 · B EasyRPG 기준 맞추기 · C 단순·또렷 · D 설명 충실 · E 자유) 다시 그리고, 검수자가 시점을 본 뒤 여기에 후보가 뜬다. 고르는 건 사용자.</p>
+      <textarea id="rdNote" placeholder="그릴 사람에게 할 말(선택) — 예: 탑 둘만 남기고 정면 성문을 크게"></textarea>
+      <div class="row" style="margin-top:6px"><button class="big" id="rdGo">후보 <select id="rdN" onclick="event.stopPropagation()"><option>5</option><option>3</option><option>1</option></select>장 다시 그리기</button>
+      <span class="cur" id="rdMsg"></span></div>
+      <div id="rounds"></div></div>
+    <details><summary>시점 기준 — 원본 EasyRPG 월드 시트(정면에서 내려다본 3/4: 윗면 + 정면 벽, 옆면 없음)</summary><img src="/ref.png" style="image-rendering:pixelated;margin-top:8px;border:1px solid var(--line)" alt=""></details>`;
+  $('decide').hidden = false;
+  $('curDec').textContent = it.decision ? `지금: ${it.decision.decision === 'accept' ? '받음' : it.decision.decision === 'pick' ? '다시 그린 후보 ' + it.decision.cand + ' 를 고름' : '버림'}${it.decision.reasons?.length ? ' — ' + it.decision.reasons.join(', ') : ''}${it.decision.note ? ' / ' + it.decision.note : ''}` : '지금: 안 정함';
+  if (!rej.size && it.decision?.decision === 'reject') it.decision.reasons.forEach((r) => rej.add(r));
+  $('reasons').innerHTML = '<span class="cur">버리는 이유:</span>' + S.reasons.map((r) => `<button class="chip ${rej.has(r) ? 'on' : ''}" data-r="${esc(r)}">${esc(r)}</button>`).join('');
+  $('reasons').querySelectorAll('[data-r]').forEach((c) => c.onclick = () => { rej.has(c.dataset.r) ? rej.delete(c.dataset.r) : rej.add(c.dataset.r); c.classList.toggle('on'); });
+  $('note').value = it.decision?.note || '';
+  $('rdGo').onclick = () => openRound(it.id, '');
+  loadRounds(it.id);
+}
+let roundsTimer = null, roundsFor = null;
+async function loadRounds(id) {
+  roundsFor = id;
+  const r = await fetch('/api/rounds/' + encodeURIComponent(id)); const rounds = await r.json();
+  if (roundsFor !== id || !$('rounds')) return;
+  const it = S.items.find((x) => x.id === id);
+  const picked = it?.decision?.decision === 'pick' ? it.decision.cand : null;
+  const ST = { queued: '그리기 대기', drawing: '그리는 중', review_queued: '엄격 검수 대기', reviewing: '엄격 검수 중', done: '끝', broken: '깨짐', discarded: '폐기' };
+  $('rounds').innerHTML = rounds.map((rd) => `<div class="round"><div class="rh">판 ${rd.id}${rd.base ? ` · ${esc(rd.base)} 에서 출발` : ' · 지금 그림에서 출발'}${rd.note ? ` · 메모: ${esc(rd.note)}` : ''}</div>
+    <div class="cands">${rd.cands.filter((c) => c.status !== 'discarded' && c.status !== 'broken').map((c) => {
+      const busy = !['done', 'broken', 'discarded'].includes(c.status);
+      const img = (f) => `/c/${c.path}/${f}?t=${c.status}${c.attempt}`;
+      const v = (c.verdict === 'PASS' ? '<b style="color:var(--ok)">검수 ✓</b>' : c.verdict ? `<b style="color:var(--bad)">검수 ✗ ${esc(c.codes.join(','))}</b>` : '')
+        + ((c.engine || '').startsWith('render:') ? ' <span class="cur">원래 3D 장면을 정면 카메라로 다시 렌더 — 옆면은 투영상 0px, 검수 ✗ 는 참고</span>' : '')
+        + ((c.engine || '').startsWith('hand:') ? ' <span class="cur">감독(Claude)이 원래 화소로 직접 고친 것 — 검수 ✗ 는 참고</span>' : '');
+      return `<div class="cand ${picked === c.key ? 'picked' : ''} ${c.mark === 'drop' ? 'dropped' : ''}">
+        <div class="imgs">${c.has_img ? `<img src="${img('icon-x8.png')}" alt=""><img class="ctx1" src="${img('ctx-x1.png')}" alt="">` : `<span class="cur">${busy ? '…' : '그림 없음'}</span>`}</div>
+        <div class="st"><b>${c.letter}</b> ${busy ? `<span class="spin">${ST[c.status] || c.status}</span>` : ''} ${v} <span class="cur">시도 ${c.attempt}</span>${picked === c.key ? ' <b style="color:var(--ok)">← 고름</b>' : ''}${c.mark === 'drop' ? ' <span class="cur">버림</span>' : ''}</div>
+        <div class="why">${esc(c.direction.split(' — ')[0])}${c.body?.reads_as ? ' · ' + esc(c.body.reads_as) : ''}${c.check && !c.check.ok ? ' · 깨짐: ' + esc(c.check.problems.join('; ')) : ''}</div>
+        ${c.has_img && !busy && (c.verdict === 'PASS' || /^(render|hand):/.test(c.engine || '')) ? `<div class="btns"><button class="pk" data-pick="${c.key}">이걸로</button><button class="dp" data-drop="${c.key}">✕ 버림</button><button data-base="${c.key}">이걸로 다시 그리기</button></div>` : ''}
+      </div>`; }).join('')}</div>${rd.cands.some((c) => c.status === 'discarded' || c.status === 'broken') ? `<div class="cur" style="margin-top:6px">시점 위반으로 자동 폐기 ${rd.cands.filter((c) => c.status === 'discarded' || c.status === 'broken').length}장 — 고를 수 없고, 판 안에서 새 후보로 다시 그린다.</div>` : ''}</div>`).join('') || '<p class="cur" style="margin-top:10px">아직 다시 그린 판이 없다.</p>';
+  $('rounds').querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => candDecide(id, 'pick', b.dataset.pick));
+  $('rounds').querySelectorAll('[data-drop]').forEach((b) => b.onclick = () => candDecide(id, 'drop', b.dataset.drop));
+  $('rounds').querySelectorAll('[data-base]').forEach((b) => b.onclick = () => openRound(id, b.dataset.base));
+  clearTimeout(roundsTimer);
+  if (rounds.some((rd) => rd.cands.some((c) => !['done', 'broken', 'discarded'].includes(c.status)))) roundsTimer = setTimeout(() => loadRounds(id), 5000);
+}
+async function openRound(id, base) {
+  const note = $('rdNote').value.trim(), n = +$('rdN').value;
+  $('rdMsg').textContent = '판 여는 중…';
+  const r = await fetch('/api/draw', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, note, base, n }) });
+  const d = await r.json();
+  $('rdMsg').textContent = r.ok ? `판 ${d.round} 시작 — 한 장에 몇 분 걸린다` : '실패: ' + (d.error || r.status);
+  $('rdNote').value = ''; loadRounds(id);
+}
+async function candDecide(id, decision, cand) {
+  if (decision === 'drop' && !rej.size && !$('note').value.trim()) { $('reasons').animate([{ opacity: .3 }, { opacity: 1 }], 400); $('reasons').scrollIntoView({ block: 'nearest' }); return; }
+  const r = await fetch('/api/decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, decision, cand, reasons: decision === 'drop' ? [...rej] : [], note: $('note').value.trim() }) });
+  if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
+  rej.clear(); await load(true);
+}
+async function decide(decision) {
+  const it = S.items.find((x) => x.id === sel); if (!it) return;
+  if (decision === 'reject' && !rej.size && !$('note').value.trim()) { $('reasons').animate([{ opacity: .3 }, { opacity: 1 }], 400); return; }
+  const r = await fetch('/api/decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: it.id, decision, reasons: decision === 'reject' ? [...rej] : [], note: $('note').value.trim() }) });
+  if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
+  rej.clear();
+  const vis = visible(), i = vis.findIndex((x) => x.id === sel);
+  const next = decision === 'clear' ? sel : (vis.slice(i + 1).find((x) => !x.decision) || vis[i + 1] || vis[i] || {}).id;
+  sel = next; await load(true);
+}
+function move(d) { const vis = visible(), i = vis.findIndex((x) => x.id === sel); const n = vis[Math.max(0, Math.min(vis.length - 1, i + d))]; if (n) { sel = n.id; rej.clear(); render(); } }
+$('bAcc').onclick = () => decide('accept');
+$('bRej').onclick = () => decide('reject');
+$('bClr').onclick = () => decide('clear');
+document.addEventListener('keydown', (e) => {
+  if (e.target === $('note')) { if (e.key === 'Enter') decide('reject'); return; }
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+  if (e.key === 'ArrowDown' || e.key === 'j') { move(1); e.preventDefault(); }
+  else if (e.key === 'ArrowUp' || e.key === 'k') { move(-1); e.preventDefault(); }
+  else if (e.key === 'a' || e.key === 'A') decide('accept');
+  else if (e.key === 'r' || e.key === 'R') $('reasons').scrollIntoView();
+  else if (e.key === 'Enter') decide('reject');
+});
+setInterval(() => { const a = document.activeElement; if (a !== $('note') && a !== $('rdNote') && !($('rdNote')?.value)) load(true); }, 15000);
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+// C: 넓은 은테 거울과 큰 보라 소용돌이, 닫힌 덮개 윗면 3행(y=0~2).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a iron 2
+@mat b iron 3
+@mat c iron 4
+@mat d iron 5
+@mat e iron 6
+@mat f purple 1
+@mat g purple 2
+@mat h purple 4
+@mat i purple 5
+@layer mirror
+@mblock 0 0
+...cccccccccc...
+..deeeedddddcc..
+.cddddddddddcca.
+.cbbbbbbbbbbbaa.
+.ceddddddddccba.
+.ceggggggggffba.
+.cehgggggggffba.
+.cehgggggggffba.
+.cehgggggggffba.
+.ceggggggggffba.
+.ceggggggggffba.
+.ceggggggggffba.
+.ceggggggggffba.
+.ceggghhhhggfba.
+.cegghiiiihgfba.
+.ceghhiigghhfba.
+.ceghiigggghfba.
+.cehiiggggghhba.
+.cehiggggggihba.
+.cehiggggggihba.
+.cehigghhggihba.
+.cehigghiigihba.
+.cehiggghiihhba.
+.cehhggghiihgba.
+.ceghhgggihhgba.
+.cegghhhhihgfba.
+.cegggiiiihgfba.
+.cegggggihggfba.
+.ceggggihhggfba.
+.cegggihhggffba.
+.ceggihhgggffba.
+.ceghhhggggffba.
+.ceghhgggggffba.
+.ceghggggggffba.
+.ceggggggggffba.
+.cegggggggfffba.
+.ceggggggffffba.
+.cegggggfffffba.
+.cddddddccccbba.
+.cbbbbbbbbbbbaa.
+..abcccccbbbaa..
+.....bccba......
+.....bccba......
+...ccddddccc....
+..cdeedddddcb...
+.cddddddccccbba.
+.cbbbbbbbbbbbaa.
+.aaaaaaaaaaaaaa.

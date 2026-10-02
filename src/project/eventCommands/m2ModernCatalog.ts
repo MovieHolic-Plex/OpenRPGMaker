@@ -1,3 +1,12 @@
+import { EASING_OPTIONS } from "./easingOptions";
+import {
+  PARTICLE_PRESET_LABELS,
+  PARTICLE_PRESETS,
+  SHAKE_DIRECTION_LABELS,
+  SHAKE_DIRECTIONS,
+  SPRITE_POSE_LABELS,
+  SPRITE_POSES,
+} from "./cinematicStaging";
 import type { M2CommandFieldOption, M2CommandFieldSpec } from "./m2Catalog";
 
 const CAMERA_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
@@ -26,6 +35,60 @@ export const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
   // 조용한 실패가 난다 — 목록에서 내린다. 기존 프로젝트에 남아 있는 값은
   // planScreenEffect 가 unsupported 로 돌려 fallbacks 에 기록된다.
   { value: "weather", label: "날씨" },
+  // 화면 그림 자체를 비튼다(카메라 후처리). 값 = 세기(비우면 기본), 0 = 그 효과만 끄기.
+  { value: "wave", label: "물결 왜곡" },
+  { value: "mosaic", label: "모자이크" },
+  { value: "rotate", label: "화면 기울기" },
+  { value: "clearDistortion", label: "왜곡 모두 끄기" },
+  // 영화식 위아래 검은 띠. 값 = 띠 두께(화면 높이 %, 비우면 12), 0 = 걷기.
+  { value: "letterbox", label: "레터박스 (위아래 검은 띠)" },
+  { value: "clearLetterbox", label: "레터박스 걷기" },
+];
+
+export const SHAKE_DIRECTION_OPTIONS: readonly M2CommandFieldOption[] = SHAKE_DIRECTIONS.map((value) => ({
+  value,
+  label: SHAKE_DIRECTION_LABELS[value],
+}));
+
+export const PARTICLE_PRESET_OPTIONS: readonly M2CommandFieldOption[] = PARTICLE_PRESETS.map((value) => ({
+  value,
+  label: PARTICLE_PRESET_LABELS[value],
+}));
+
+/** 파티클·모습 효과가 붙을 대상. event 면 eventId 칸을 쓴다. */
+const STAGING_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "player", label: "주인공" },
+  { value: "this-event", label: "이 이벤트" },
+  { value: "event", label: "특정 이벤트" },
+];
+
+const PARTICLE_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
+  ...STAGING_TARGET_OPTIONS,
+  { value: "tile", label: "맵 좌표" },
+];
+
+const SPRITE_POSE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "keep", label: "그대로" },
+  ...SPRITE_POSES.map((value) => ({ value, label: SPRITE_POSE_LABELS[value] })),
+];
+
+const SPRITE_TINT_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "keep", label: "그대로" },
+  { value: "none", label: "원래 색" },
+  { value: "red", label: "빨강 (독·분노·피격)" },
+  { value: "blue", label: "파랑 (한기·밤·슬픔)" },
+  { value: "green", label: "초록 (독·병)" },
+  { value: "yellow", label: "노랑 (번개·황금)" },
+  { value: "purple", label: "보라 (저주·마력)" },
+  { value: "gray", label: "회색 (석화·기억)" },
+  { value: "black", label: "검정 (실루엣)" },
+  { value: "white", label: "흰색 (번쩍임 — 칠하기와 함께)" },
+];
+
+const KEEP_ON_OFF_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "keep", label: "그대로" },
+  { value: "on", label: "켜기" },
+  { value: "off", label: "끄기" },
 ];
 
 // OPRN-OUT-013: 좌표 목적지 이동. 저장 형태·기본값의 정본 주석은
@@ -171,6 +234,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
         { key: "zoom", label: "줌", type: "number", defaultValue: 1, min: 0.25, max: 6, step: 0.25 },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 300 },
+        { key: "easing", label: "움직임 곡선", type: "select", defaultValue: "linear", options: EASING_OPTIONS },
       ];
     case "Screen Effect":
       return [
@@ -284,6 +348,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
       return [
         { key: "intensity", label: "강도", type: "select", defaultValue: "3", options: SHAKE_INTENSITY_OPTIONS },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 400 },
+        { key: "direction", label: "방향", type: "select", defaultValue: "both", options: SHAKE_DIRECTION_OPTIONS },
       ];
     case "Tint Screen":
       return [
@@ -333,6 +398,30 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "prompt", label: "질문", type: "text", defaultValue: "어디로 갈까요?" },
         { key: "resultVariableId", label: "결과 변수(고른 번호, 취소 0, 금지 -1)", type: "text", defaultValue: "" },
         { key: "transfer", label: "고르면 바로 이동", type: "boolean", defaultValue: true },
+      ];
+    case "Particle Effect":
+      return [
+        { key: "preset", label: "종류", type: "select", defaultValue: "sparkle", options: PARTICLE_PRESET_OPTIONS },
+        { key: "target", label: "어디에", type: "select", defaultValue: "this-event", options: PARTICLE_TARGET_OPTIONS },
+        { key: "eventId", label: "이벤트(특정 이벤트일 때)", type: "text", defaultValue: "" },
+        { key: "x", label: "X(맵 좌표일 때)", type: "number", defaultValue: 0 },
+        { key: "y", label: "Y(맵 좌표일 때)", type: "number", defaultValue: 0 },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 1200, min: 100, max: 60000, step: 100 },
+        { key: "wait", label: "끝날 때까지 대기", type: "boolean", defaultValue: false },
+      ];
+    case "Sprite Look":
+      return [
+        { key: "target", label: "누구", type: "select", defaultValue: "this-event", options: STAGING_TARGET_OPTIONS },
+        { key: "eventId", label: "이벤트(특정 이벤트일 때)", type: "text", defaultValue: "" },
+        { key: "reset", label: "먼저 원래 모습으로", type: "boolean", defaultValue: false },
+        { key: "pose", label: "자세", type: "select", defaultValue: "keep", options: SPRITE_POSE_OPTIONS },
+        { key: "tint", label: "색", type: "select", defaultValue: "keep", options: SPRITE_TINT_OPTIONS },
+        { key: "tintHex", label: "직접 색(#rrggbb, 비우면 위 선택)", type: "text", defaultValue: "" },
+        { key: "tintFill", label: "색으로 통째로 칠하기", type: "select", defaultValue: "keep", options: KEEP_ON_OFF_OPTIONS },
+        { key: "flip", label: "좌우 뒤집기", type: "select", defaultValue: "keep", options: KEEP_ON_OFF_OPTIONS },
+        { key: "afterimage", label: "잔상", type: "select", defaultValue: "keep", options: KEEP_ON_OFF_OPTIONS },
+        { key: "angle", label: "기울기(도, 비우면 그대로)", type: "text", defaultValue: "" },
+        { key: "opacity", label: "불투명도(%, 비우면 그대로)", type: "text", defaultValue: "" },
       ];
     case "Data Query":
       return [

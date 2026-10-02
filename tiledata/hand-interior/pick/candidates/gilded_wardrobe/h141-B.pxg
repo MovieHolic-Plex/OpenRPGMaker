@@ -1,0 +1,49 @@
+// 문 몸통 반복 16행 제거, 손잡이 중앙·받침과 발 16px 위로 이동; 꼭대기 윗면 5행(y=1~5)
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a white 1
+@mat b white 2
+@mat c white 3
+@mat d white 4
+@mat e white 5
+@mat f white 6
+@mat g gold 2
+@mat h gold 3
+@mat i gold 4
+@mat j gold 5
+@mat k gold 1
+@layer wardrobe
+@mblock 0 0
+= 1. 30i 1.
+= 1. 1j 28e 1h 1.
+= 1. 1j 6e 2d 20e 1h 1.
+= 1. 1j 20e 4d 4e 1h 1.
+= 1. 1j 28e 1h 1.
+= 1. 1j 28d 1h 1.
+= 1. 30j 1.
+= 1. 1i 28h 1g 1.
+= 2. 28g 2.
+= 2. 28b 2.
+= 1. 1c 1f 26e 1c 1a 1.
+= 1. 1c 1f 1e 11i 1c 1b 11h 1c 1a 1.
+= 1. 1c 1f 1e 1j 9d 1g 1c 1b 1i 9c 1g 1c 1a 1.
+= 1. 1c 1f 1e 1j 9c 1g 1c 1b 1i 9b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 1c 1e 4d 2e 1c 1g 1c 1b 1h 1b 1d 6c 1b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 1c 1e 5d 1e 1c 1g 1c 1b 1h 1b 1d 6c 1b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 1c 1e 5d 1j 1h 1g 1c 1b 1h 1j 1h 6c 1b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 1c 1e 5d 1j 1h 1g 1c 1b 1h 1j 1h 6c 1b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 1c 1e 5d 1i 1g 1g 1c 1b 1h 1i 1g 6c 1b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 1c 1e 5d 1h 1g 1g 1c 1b 1h 1h 1g 6c 1b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 1c 1e 6d 1c 1g 1c 1b 1h 1b 1d 3c 2b 1c 1b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 1c 1e 6d 1c 1g 1c 1b 1h 1b 1d 4c 1b 1c 1b 1g 1c 1a 1.
+= 1. 1c 1f 1e 1i 9e 1g 1c 1b 1h 9d 1g 1c 1a 1.
+= 1. 1c 1f 1e 11h 1c 1b 11g 1c 1a 1.
+= 1. 1c 1f 26d 1c 1a 1.
+= 1. 1c 28i 1g 1.
+= 1. 1i 28e 1h 1.
+= 1. 1h 28d 1g 1.
+= 1. 30g 1.
+= 2. 28b 2.
+= 2. 1c 3d 1b 18. 1c 3c 1a 2.
+= 2. 1g 3h 1k 18. 1g 3g 1k 2.

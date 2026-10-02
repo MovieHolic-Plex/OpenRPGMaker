@@ -202,7 +202,7 @@ const cases = ACTORS.filter((a) => !only || a.slug === only).map((a) => ({
 }));
 // 대조군: 같은 액터를 정면 스킨으로. 뒷모습이 정면 경로에 끼어들지 않는지 눈으로 본다.
 if (!only || only === "hero-01") {
-  cases.push({ id: "rm2000-hero-01", lead: "actor_hero", skin: "rm2000", note: "대조 · 정면 전투 — 저작 시트가 그대로 서야 한다" });
+  cases.push({ id: "retro2003-hero-01", lead: "actor_hero", skin: "retro2003", note: "대조 · 도트 측면 전투 — 저작 시트가 그대로 서야 한다(정면 rm2000 은 2026-10-02 삭제)" });
   // 뒷모습이 없는 액터 — 예전 공용 스프라이트로 떨어진다. 크기·잘림 비교의 기준선이다.
   cases.push({ id: "pokemon-fallback-shared", lead: "actor_hero", skin: "pokemon", breakBackSlug: true, note: "대조 · 뒷모습 없음 → 예전 공용 ally-creature-back" });
 }

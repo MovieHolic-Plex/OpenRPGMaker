@@ -1,0 +1,80 @@
+// E: 엇갈린 세 궤짝을 낮은 운반 받침에 묶은 성긴 밧줄 그물; 꼭대기 윗면 5행(y=8~12).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g dwood 2
+@mat h dwood 4
+@mat r pine 2
+@mat s pine 4
+@mat t pine 5
+@layer crates
+@mblock 6 7
+.aaaaaaaaaaaaaaaa.
+abfffffffffffeeeba
+abeeeeeedeeeeeedba
+abeddddeeeeeeeedba
+abeeeeeeeddeeeedba
+abddddddddddddddba
+abfffffffffffffeba
+abcddddddddddddcba
+abceeeebeeeeeeccba
+abcdddebddddddccba
+abcdddcbdddcddccba
+abceeeebeeeeeeccba
+abcddddbddddddccba
+abcccccbcccccccbba
+.aaaaaaaaaaaaaaaa.
+@mblock 2 19
+.aaaa.................aaaaa.
+abfee.................effeba
+abeee.................eeedba
+abdddaaaaaaaaaaaaaaaaaedddba
+abfffffffffebaabfffffffeeeba
+abcdddddeddcbaabdddeeddddccba
+abceedddddecbaabddddeeddccba
+abcdddbdddccbaabccccbdddccba
+abcdddbdddccbaabddddbddcccba
+abceeedeeeccbaabddddbddcccba
+abcccccccccbbaabcccccccccbba
+.aaaaaaaaaaaaaaaaaaaaaaaaaa.
+@mblock 1 29
+.gggggggggggggggggggggggggggg.
+ghdddddhhhhhdddddhhhhhdddddhg
+gggggggggggggggggggggggggggggg
+@layer net
+@mblock 7 8
+..s.....s.....s..
+.s.s...s.s...s.s.
+t...s.t...s.t...s
+.s.s...s.s...s.s.
+..s.....s.....s..
+..r.....r.....r..
+..s.....s.....s..
+.s.s...s.s...s.s.
+s...s.s...s.s...s
+.....t.....t....
+s...s.s...s.s...s
+.s.s...s.s...s.s.
+..s.....s.....s..
+@mblock 3 20
+..s.....................s.
+.s.s...................s.s
+s...s.................s...
+.....s...............s....
+......t.....s.......t.....
+.....s.s...s.s.....s.s....
+....s...s.s...s...s...s...
+...t.....t.....s.s.....t..
+..s.s...s.s.....t.....s.s.
+.s...s.s...s...s.s...s...s
+r.....r.....r.....r.....r.
+@mblock 9 21
+s.....s.....s
+r.....r.....r
+s.....s......s

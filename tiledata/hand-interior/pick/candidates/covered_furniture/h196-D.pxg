@@ -1,0 +1,40 @@
+// 흰 천 덮인 소파에 금빛 자수 테두리와 중앙 마름모 문양; 꼭대기 윗면 4행(y=9~12)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a linen 1
+@mat b linen 2
+@mat c linen 3
+@mat d linen 4
+@mat e linen 5
+@mat f linen 6
+@mat g gold 2
+@mat h gold 3
+@mat i gold 4
+@mat j gold 5
+@layer cloth
+@mblock 0 8
+.....cccccccccccccccccccccc.....
+....ceeeeeeeeeeeeeeeeeeeeeec....
+...ceffffffffffeeeeeeeeeeeedc...
+...ceffffffffffeeeeeeeeeeeddc...
+...ceeeeeeeeeeeeeeeeeeeeddddc...
+...cdddddddddddddddddddddddbc...
+...cedddddddddcddddddddddddbc...
+...ceddddddddcdddddddddddddbc...
+...cedddddddccdddddddddddddbc...
+...ceddddddcdddddddddddddddbc...
+..ceeeddddcdddddddddddddddeeeb..
+.ceffeeeedcdddddddddddddeeeeebc.
+.cefffeeeeeeeeeeeeeeeeeeeeeddbc.
+.ceffeeeeeeeffffffeeeeeeeeddcbc.
+.cedcdeeeeeeeeeeeeeeeeedddcbcbc.
+.cedcdddeeeeeeeeeeeeeeddddcbcbc.
+.cedcdddddddddddddddddddddcbcbc.
+.cedcddddcdddddddddcddddddcbcbc.
+.cedcddddcddddiiiddcddddddcbcbc.
+.cedcddddcddddijhjiddcdddddcbbc.
+.ceijjjjjjjjjihdhijjjjjjjjiibbc.
+.ceihhhhhhhhhhihihhhhhhhhhiibbc.
+.cchggggggggggggigggggggggghbbc.
+..ccccbbbbbbbbbccccbbbbbbbbccc..

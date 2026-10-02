@@ -1,0 +1,21 @@
+// h9-D: 바퀴 아래를 둥글게, 받침 윗면에 바퀴 접지 그림자 줄 + 결, 앞 가장자리 어둡게
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....ABBCCA.....
+....ABBBBCCA....
+...ABBBBDDCCEEE.
+...ABBBBDDCCE.E.
+...BBBBFFDDCC.E.
+...CCDDDDDDCC...
+...ACCDDDDCCA...
+....ACCDDCCA....
+.EEEEEEEEEEEEEE.
+.GHGGGGGGGGGGHE.
+.GHHIHHHHIHHHHE.
+.EIIIIIIIIIIIIE.
+.KGGGGGGGGGGGGK.
+.KLJJJJJJJJJJGK.
+.KKJGKKKKKKKJGK.

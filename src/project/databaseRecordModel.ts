@@ -12,8 +12,10 @@ import {
   clampLevel,
   normalizeActorRecord,
 } from "@/project/actorModel";
-import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
+import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId } from "@/battle/skins/registry";
+import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
+import { normalizeDisplayFilter } from "@/project/displayFilter";
 import { normalizeBattleLook } from "@/project/battleLook";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
@@ -247,17 +249,18 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { escapeBonusPercent: clampInteger(system.escapeBonusPercent, 0, 100) }
       : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
-    // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
+    // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = retro2003)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
-    // (기본이 vxace 였던 시절 실제로 그랬다). 옛 id(rm2003·classic)도 여기서는 손대지 않고
-    // 렌더 시점의 resolveSkinId 가 rm2000 으로 푼다.
-    ...(system.battleUiStyle && system.battleUiStyle !== DEFAULT_BATTLE_SKIN_ID
-      ? { battleUiStyle: system.battleUiStyle }
+    // (기본이 vxace 였던 시절 실제로 그랬다). 지운 정면 스킨(rm2000·classic 등)과 모르는 값은
+    // resolveSkinId 가 기본으로 풀어 여기서 지워진다(2026-10-02).
+    ...(system.battleUiStyle && resolveSkinId(system.battleUiStyle) !== DEFAULT_BATTLE_SKIN_ID
+      ? { battleUiStyle: resolveSkinId(system.battleUiStyle) }
       : {}),
     // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
     ...(isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL
       ? { battleHitFeel: system.battleHitFeel }
       : {}),
+    ...(normalizeDisplayFilter(system.displayFilter) ? { displayFilter: normalizeDisplayFilter(system.displayFilter) } : {}),
     // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
     ...(normalizeBattleLook(system.battleLook) ? { battleLook: normalizeBattleLook(system.battleLook) } : {}),
     // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
@@ -673,6 +676,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(Number.isFinite(record.chargeTurns) && record.chargeTurns! > 0 ? { chargeTurns: clampInteger(record.chargeTurns!, 1, 3) } : {}),
     ...(typeof record.summonResourceId === "string" && record.summonResourceId.trim() ? { summonResourceId: record.summonResourceId.trim().slice(0, 96) } : {}),
     ...(typeof record.retroChoreographyId === "string" && record.retroChoreographyId.trim() ? { retroChoreographyId: record.retroChoreographyId.trim().slice(0, 96) } : {}),
+    ...(isPokemonMoveMotion(record.moveMotion) ? { moveMotion: record.moveMotion } : {}),
     ...(Array.isArray(record.hitSequence) && record.hitSequence.length ? { hitSequence: record.hitSequence.slice(0, 16).map(value => Number.isFinite(value) ? Math.max(0, Math.min(10, value)) : 1) } : {}),
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,

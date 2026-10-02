@@ -1373,6 +1373,8 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "inn":
       case "flashScreen":
       case "shakeScreen":
+      case "particleEffect":
+      case "spriteLook":
         step = interp.resume(undefined);
         break;
       case "shop":

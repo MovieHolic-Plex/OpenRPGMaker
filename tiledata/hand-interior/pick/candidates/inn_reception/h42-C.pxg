@@ -1,0 +1,84 @@
+// h42 C: 단순·또렷 — 짙은 나무 접수대. 윗면 6행에 숙박부(접힌 쪽)와 놋쇠 종, 앞판은 큼직한 판자 두 칸 + 가운데 기둥.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat d dwood 4
+@mat p linen 5
+@mat b brass 5
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+ddddppppppppppppddddddddbbdddddd
+ddddppppppppppppdddddddbbbbddddd
+ddddppppppppppppdddddddbbbbddddd
+ddddppppppppppppdddddddbbbbddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+@tblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+00000000000000000000000000000000
+05555555555555555555555555555550
+0555............55555555..555550
+0555............5555555....55550
+0555............5555555....55550
+0555............5555555....55550
+04444444444444444444444444444440
+06666666666666666666666666666660
+02222222222222222222222222222220
+04444444444444444444444444444430
+04422222222222244222222222222430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04423333323333344233333233333430
+04444444444444444444444444444430
+04444444444444444444444444444430
+01111111111111111111111111111110
+00000000000000000000000000000000
+@tblock 4 8 linen
+555556555555
+533335655333
+555556555555
+533335655333
+@tblock 24 8 brass
+65..
+@tblock 23 9 brass
+6543
+6543
+4333

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/desk_2x1/h4-C.pxg",
+ "id": "desk 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "윤곽 B→A 한 겹, 윗면 잔 얼룩을 길고 드문 결 줄 셋으로, 앞 두께 B/F 섞임을 F 한 색으로, 앞 모서리 C 줄; 모양·크기·색 그대로",
+ "ok": true
+}

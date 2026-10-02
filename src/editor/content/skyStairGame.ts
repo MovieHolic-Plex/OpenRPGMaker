@@ -132,7 +132,7 @@ export const SKY_TROOP = {
 
 /**
  * 몬스터 25종. 층마다 4종 + 천공 5종(보스 포함).
- * `sprite` 는 public/assets/generated/starter/monster-<sprite>.png 에 실제로 있는 파일만 골랐고,
+ * `sprite` 는 generated-enemy-<sprite> 공용 ID이고, native 초상/포즈 시트로 해석한다.
  * **25종이 서로 다른 스프라이트**다 — 이름만 다르고 같아 보이는 적을 만들지 않는다.
  *
  * 스탯 스케일 근거: 주인공 레벨1 이 HP 514 / 공 45 / 방 59 이고 데미지가
@@ -239,7 +239,7 @@ export function createSkyStairProject(): Project {
   system.startActorIds = [...STARTER_ACTOR_IDS];
   system.initialTroopId = SKY_TROOP.fieldPests;
   // 출하 콘텐츠는 지원하는 두 스킨(rm2000 / pokemon)만 저작한다. ff는 지원 종료됐지만 기존 저장 프로젝트에서는 계속 로드된다.
-  system.battleUiStyle = "rm2000";
+  system.battleUiStyle = "retro2003";
   system.battleBgmResourceId = "cc0-bgm-battle";
   system.defaultBgmResourceId = SKY_BGM.harbor;
   system.titleScreen = {

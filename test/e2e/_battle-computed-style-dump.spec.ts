@@ -82,9 +82,9 @@ function pokemonProject(): Project {
   p.system.battleUiStyle = "pokemon";
   return p;
 }
-function rm2000Project(): Project {
+function retro2003Project(): Project {
   const p = createBlankProject();
-  p.system.battleUiStyle = "rm2000";
+  p.system.battleUiStyle = "retro2003";
   return p;
 }
 
@@ -94,6 +94,6 @@ test("pokemon 계산 스타일 덤프", async ({ page }) => {
 test("genre 계산 스타일 덤프", async ({ page }) => {
   await dump(page, "genre", createScarloxyPokemonDemoProject());
 });
-test("rm2000 계산 스타일 덤프", async ({ page }) => {
-  await dump(page, "rm2000", rm2000Project());
+test("retro2003 계산 스타일 덤프", async ({ page }) => {
+  await dump(page, "retro2003", retro2003Project());
 });

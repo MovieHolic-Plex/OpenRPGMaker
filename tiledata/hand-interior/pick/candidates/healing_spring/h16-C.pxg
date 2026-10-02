@@ -1,0 +1,49 @@
+// h16-C 회복의 샘: 단순·또렷 — 넓은 타원 돌 테두리(윗면 3줄) + 하늘색 물 한 덩어리 + 낮은 앞면 5줄
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat O stone 1
+@mat o stone 0
+@mat r stone 5
+@mat R stone 4
+@mat c stone 2
+@mat F stone 3
+@mat f stone 2
+@mat d water 2
+@mat w water 3
+@mat W water 4
+@mat v water 5
+@mat Y water 6
+@mblock 0 0
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 9. 14O 9.
+= 6. O 12r 6R O 6.
+= 4. O 15r 7R O 4.
+= 3. O 7r 10c 7R O 3.
+= 2. O 4r c 16w c 4R O 2.
+= O 3r c w W 2v 15W w c 3R O
+= O 2r c w W 3v 16W w c 2R O
+= O 2r c w W v 2Y v 15W w c 2R O
+= O 2r c w W 3v 16W w c 2R O
+= O 2r c w 16W 2v 2W w c 2R O
+= O 3r c w 18W w c 3R O
+= O 5r c w 14W w c 5R O
+= O 8r 10c 8R O
+= O 2F 2c 12r 8R 2c 2f O
+= O 4F 3c 8r 6R 3c 4f O
+= O 7F 14c 7f O
+= 1. O 13F 13f O 1.
+= 2. O 12F 12f O 2.
+= 3. O 10F 12f O 3.
+= 5. O 8F 10f O 5.
+= 8. 14o 8.

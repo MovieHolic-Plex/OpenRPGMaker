@@ -1,0 +1,34 @@
+{
+ "id": "arrow floor",
+ "slug": "arrow_floor",
+ "name_ko": "화살표 바닥",
+ "category": "JRPG 장치",
+ "kind": "flat",
+ "kind_ko": "바닥 무늬(밟을 수 있음)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "화살표가 새겨진 밀어내는 바닥 판 — 밝은 파란 화살표(북쪽).",
+ "where": "",
+ "placement": [
+  "밟을 수 있다. 다른 기물 밑에 먼저 깐다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "dungeon"
+}

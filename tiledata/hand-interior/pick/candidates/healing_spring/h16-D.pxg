@@ -1,0 +1,53 @@
+// 장식: A 와 같은 모양에 금 징 셋(위·좌·우)·앞면 금띠와 문양점·물 반짝임
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat O stone 1
+@mat o stone 0
+@mat R stone 4
+@mat r stone 5
+@mat c stone 2
+@mat F stone 3
+@mat f stone 2
+@mat W glass 3
+@mat w glass 2
+@mat v glass 4
+@mat V glass 5
+@mat Y glass 6
+@mat G gold 4
+@mat g gold 3
+@mat h gold 5
+@mat k gold 1
+@mblock 0 0
+................................
+................................
+...........OOOOOOOOOO...........
+........OOOrrrrhhrrrrOOO........
+......OOrrrrrrrGGRRRRRRROO......
+....OOrrrrrrrrrrRRRRRRRRRROO....
+...OrrrgggRRccccccccRRRRRRRRO...
+..OrrrRRRcccwwwwwwwwcccRRRRRRO..
+..OrrRRccwwwWWWWWWWWwwwccRRRRO..
+.OrrRRcwwWWWWWvvvvvvvvWwwcRRRRO.
+OrrRRcwWWWWvvvWWWWWWWWvvvwcRRRRO
+OrRRcwWWYvvWWWWWWWWWWWWWWWwcRRRO
+OrhGwWWWWWWWWWWWWWvvWWWWWWWwhGRO
+OrGcwWWWWWWWWWWWWvVYVvWWWWWwcGRO
+OrRwWWWWWWWWWWWvVYYYYVvWWWWWwRRO
+OrRwWWWWWWWWWWWWvVYYVvWVWWWWwRRO
+OrRwWWWWWWWWWWWWWvVVvWWWWWWWwRRO
+OrRRwWWWWWWWWWWWWWWWWWWWWWWwRRRO
+OrRRwWWWWvvvVWWWWWWWWWWWWWWwRRRO
+OrRRRwWWWvvvWWWWWWWWvvvWWWwRRRRO
+OFrRRRwWWWWWvvvvvvvvWWWWWwRRRRfo
+OFrRRRRwWWWWWWWWWWWWWWGGGRRRRRfo
+OFFrRRRRRwWWWWWWWWWWWWwRRRRRRffo
+OFFFrRRRRRRRwwwwwwwwRRRRRRRRfffo
+.OFFFFRRRRRRRRRRRRRRRRRRRRffffo.
+..OFFFFFRRRRRRRRRRRRRRRRfffffo..
+..OFFFFFFgGgGgGgGgGgGgGffffffo..
+...OFFFFFcFFFFFkkFffffOfffffo...
+....OFFFFFFhFcFhhFffhffffOfo....
+......OFFFcFFFFFFFffOffffo......
+........OFFFFFFFFffffffo........
+...........oooooooooo...........

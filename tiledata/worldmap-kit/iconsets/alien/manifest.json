@@ -1,0 +1,277 @@
+{
+ "id": "alien",
+ "name": "외계 행성",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [
+  "0d2147",
+  "0f4a52",
+  "1f8a88",
+  "2a1240",
+  "2ae0d8",
+  "2c3440",
+  "3b6a9c",
+  "3fc8b8",
+  "4a5668",
+  "4e2272",
+  "6e7c90",
+  "7a3aa0",
+  "8fc0e4",
+  "9aa8ba",
+  "a45cc8",
+  "c6d2de",
+  "cc8ee6",
+  "f0a030",
+  "ff6ad0",
+  "ffe28a"
+ ],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "이주민 돔 도시",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "큰 유리 돔·관측탑·착륙장과 착륙선·작은 돔과 통로·보라 식물"
+  },
+  {
+   "role": "fort_city",
+   "name": "방어 기지",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "콘크리트 방벽·강철 문·네 귀 포탑·유리 돔·레이더 접시"
+  },
+  {
+   "role": "harbor_city",
+   "name": "우주항",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "로켓 발사탑·연료 탱크·격납고·착륙장의 착륙선 둘"
+  },
+  {
+   "role": "castle",
+   "name": "여왕 둥지",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "휘어진 키틴 첨탑 다발·알주머니·발광 입구"
+  },
+  {
+   "role": "castle",
+   "name": "군 전초기지",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "사령동·감시탑·방벽과 강철 문·접시 안테나·깃발"
+  },
+  {
+   "role": "large_town",
+   "name": "버섯 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "거대 버섯 집 셋(문·불빛 창)과 작은 버섯"
+  },
+  {
+   "role": "village",
+   "name": "캡슐 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "누운 캡슐 주거 셋·급수탑"
+  },
+  {
+   "role": "village",
+   "name": "수정 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 6,
+   "desc": "주황 바위 움집과 지붕에 박힌 청록 수정"
+  },
+  {
+   "role": "camp",
+   "name": "조사 캠프",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 6,
+   "desc": "돔 텐트 둘·6륜 탐사차·작은 접시"
+  },
+  {
+   "role": "tower_small",
+   "name": "통신 안테나",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 23,
+   "row": 6,
+   "desc": "줄무늬 격자탑·접시·표지등"
+  },
+  {
+   "role": "tower_great",
+   "name": "고대 오벨리스크",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "계단 기단·청록 문양이 빛나는 검은 첨탑·꼭대기 수정"
+  },
+  {
+   "role": "cave",
+   "name": "수정 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 6,
+   "desc": "주황 바위 언덕 입구와 둘레의 청록 수정"
+  },
+  {
+   "role": "ruin",
+   "name": "추락한 우주선",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 6,
+   "desc": "비스듬히 박힌 선체·꺾인 날개·연기·파편"
+  },
+  {
+   "role": "ruin_city",
+   "name": "고대 문명 유적",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "휘어진 기둥 열·무너진 아치·문양 판·수정"
+  },
+  {
+   "role": "shrine",
+   "name": "외계 신전",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "계단 기단·수정 기둥·떠 있는 고리·빛 구슬"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "촉수 나무",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "굵은 줄기와 휘어 늘어진 촉수 가지·발광 구슬"
+  },
+  {
+   "role": "circle",
+   "name": "공명석 원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 6,
+   "desc": "둥글게 선 검은 돌과 가운데 수정·바닥 빛 고리"
+  },
+  {
+   "role": "volcano",
+   "name": "얼음 화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 6,
+   "desc": "얼음 원뿔과 청록 분출"
+  },
+  {
+   "role": "floating",
+   "name": "중력 이상 부유섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "거꾸로 선 바위섬·보라 숲·관측 돔·떠도는 조각"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}

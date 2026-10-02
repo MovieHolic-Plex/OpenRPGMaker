@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/leather_armor_stand/h48-E.pxg",
+ "id": "leather armor stand",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "십자 막대에 어깨를 걸친 가죽 흉갑: 둥근 꼭지·가운데 꿰맨 선·황동 버클·갈라진 치마 띠, 넓은 십자발 받침",
+ "ok": true
+}

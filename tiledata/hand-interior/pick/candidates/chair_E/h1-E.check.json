@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_E/h1-E.pxg",
+ "id": "chair E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "v5 L자 옆모습 그대로 두고 검정 윤곽을 wood:1 로, 등 윗날 둥글림, 좌판 윗면 3단+밝은 앞날+앞면 2단, 앞뒤 다리·접지 그림자 추가",
+ "ok": true
+}

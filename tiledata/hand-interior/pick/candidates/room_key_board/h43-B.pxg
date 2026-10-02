@@ -1,0 +1,32 @@
+// h43-B 같은 방 화풍: 통나무 벽 결(dwood 램프)·놋쇠 열쇠 5개·번호 패, 윗면 한 줄 밝게·앞 두께 3줄
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat h dwood 6
+@mat f dwood 5
+@mat g dwood 4
+@mat d dwood 3
+@mat e dwood 2
+@mat k dwood 1
+@mat B brass 5
+@mat b brass 4
+@mat c brass 2
+@mat p pine 5
+@mat q pine 3
+@mblock 0 0
+.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.
+gffffffffffffffffffffffffffffffe
+gffffcffffcfggfcffffcfggfcffggfe
+gfffBcbggBcbffBcbffBcbffBcbffffe
+gfffbBbffbBbffbBbffbBbffbBbffffe
+gffffBffffBffffBffffBffffBfffffe
+gggffBbfffBbfffBbfffBbfffBbffffe
+gffffbbfffbbfffbbfffbbfffbbffffe
+gffffcffffcffffcfggfcffffcfffffe
+gfffpqpggpqpffpqpffpqpffpqpggffe
+gfffqqqffqqqffqqqffqqqffqqqffffe
+gffffffffffffffffffffffffffffffe
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk

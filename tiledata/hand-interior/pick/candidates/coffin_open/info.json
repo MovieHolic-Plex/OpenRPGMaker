@@ -1,0 +1,34 @@
+{
+ "id": "coffin open",
+ "slug": "coffin_open",
+ "name_ko": "열린 관",
+ "category": "지하묘지",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 32
+ },
+ "footprint": {
+  "w": 1,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "열린 관(남북 1×2) — 관(w103-A)과 같은 관, 뚜껑이 비스듬히 옆으로 밀려 안의 붉은 천과 빈 속이 위에서 보인다. 높이·폭은 닫힌 관과 같다.",
+ "where": "높이·폭은 닫힌 관과 같다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "chapel"
+}

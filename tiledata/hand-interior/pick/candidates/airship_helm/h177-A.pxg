@@ -1,0 +1,114 @@
+// A: 중앙 손잡이와 양옆 레버 머리만 밝은 3행 윗판으로 고치고 아래 앞면을 어둡게 분리.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a brass 0
+@mat b brass 1
+@mat c brass 2
+@mat d brass 3
+@mat e brass 4
+@mat f brass 5
+@mat g brass 6
+@mat h wood 1
+@mat i wood 3
+@mat j wood 4
+@mat k wood 6
+@mat l wood 7
+@mat m iron 1
+@mat n iron 2
+@mat o iron 3
+@mat p iron 4
+@mat q iron 5
+@mat r iron 6
+@mat s linen 3
+@mat t linen 5
+@mat u red 3
+@layer cabinet
+@mblock 0 9
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+.bfffffffffffffffffffffffffffb.
+.bfeeeeeeeeeeeeeeeeeeeeeeeeecb.
+.bfeeeeeeeeeeeeeeeeeeeeeeeeecb.
+.bfeeeeeeeeeeeeeeeeeeeeeeeedcb.
+.bfeeeeeeeeeeeeeeeeeeeeeeeedcb.
+.bfeeeeeeeeeeeeeeeeeeeeeeedccb.
+.bffeeeeeeeeeeeeeeeeeeeeedcccb.
+.bffffffffffffffffffffffedcccb.
+.bddddddddddddddddddddddddcccb.
+.bedddddddddddddddddddddddcccb.
+.bedccccccdbddddddddbdcccccccb.
+.bedccccccdbddddddddbdcccccccb.
+.bedccccccdbddddddddbdcccccccb.
+.bedccccccdbddddddddbdcccccccb.
+.bedccccccdbddddddddbdcccccccb.
+.bedccccccdbddddddddbdcccccccb.
+.bedccccccdbddddddddbdcccccccb.
+.beddddddddbddddddddbdddddddcb.
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+...beeeeeeeeeeeeeeeeeeeeeeecb...
+...bdddddddddddddddddddddddcb...
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+@layer controls
+@mblock 3 11
+.mmmmm.
+mpqqpm
+mqtstm
+.moom.
+@mblock 23 11
+.mmmmm.
+mpqqpm
+mqsttm
+.moom.
+@mblock 4 16
+bgcb
+@mblock 24 16
+bgcb
+@mblock 1 6
+.effe.
+bfggeb
+.effe.
+.bdcb.
+..bc
+..mn
+@mblock 26 6
+.effe.
+bfffeb
+.effe.
+.bdcb.
+..bc
+..mn
+@layer wheel
+@mblock 8 0
+......kllk......
+.....kllllk.....
+.....kllkkk.....
+......hiih......
+....hllllkkh....
+..hlljjiiikkjh..
+.hlkih....hikjh.
+hlkih.jhhi.hikjh
+hlkh..hkih..hijh
+hljh...ki...hijh
+hhkih..ki..hijhh
+hllkkjbegbjkkjjh
+hiijjibfgbijjiih
+hljhiibecbiihijh
+hkjh..hbbh..hijh
+.hkjh..ki..hijh.
+..hkjhhkihhijh..
+...hkjjjjiijh...
+.....hiiiih.....
+......hkih......
+......hkih......
+.......hh.......
+@layer hubstand
+@mblock 13 22
+.bffeb
+.bffeb
+.bffeb
+.bedcb
+.bedcb
+.bedcb
+.bedcb
+.bddcb
+.aaaa.

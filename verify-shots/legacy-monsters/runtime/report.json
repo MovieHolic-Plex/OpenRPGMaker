@@ -1,0 +1,752 @@
+{
+  "route": "player.html + exportProjectStoreShim",
+  "fixtureOnly": true,
+  "cases": [
+    {
+      "mode": "retro2003",
+      "displayed": [
+        {
+          "id": "enemy_native_0",
+          "resourceId": "generated-enemy-spider-01",
+          "pixelEnemy": "dash",
+          "cell": "64",
+          "source": "/assets/generated/pixel-enemy-portraits/spider-01.png",
+          "naturalSize": [
+            64,
+            64
+          ],
+          "background": "url(\"http://127.0.0.1:43561/assets/generated/pixel-enemies/spider-01.png\")",
+          "box": [
+            39,
+            246.4453125,
+            192,
+            192
+          ]
+        },
+        {
+          "id": "enemy_native_1",
+          "resourceId": "generated-enemy-ghost-01",
+          "pixelEnemy": "float",
+          "cell": "48",
+          "source": "/assets/generated/pixel-enemy-portraits/ghost-01.png",
+          "naturalSize": [
+            48,
+            48
+          ],
+          "background": "url(\"http://127.0.0.1:43561/assets/generated/pixel-enemies/ghost-01.png\")",
+          "box": [
+            195,
+            179.6953125,
+            144,
+            144
+          ]
+        },
+        {
+          "id": "enemy_native_2",
+          "resourceId": "generated-enemy-hydra-three",
+          "pixelEnemy": "breath",
+          "cell": "96",
+          "source": "/assets/generated/pixel-enemy-portraits/hydra-three.png",
+          "naturalSize": [
+            96,
+            96
+          ],
+          "background": "url(\"http://127.0.0.1:43561/assets/generated/pixel-enemies/hydra-three.png\")",
+          "box": [
+            273,
+            153,
+            288,
+            288
+          ]
+        }
+      ],
+      "retiredRequests": [],
+      "screenshot": "retro2003.png"
+    },
+    {
+      "mode": "rm2000",
+      "displayed": [
+        {
+          "id": "enemy_native_0",
+          "resourceId": "generated-enemy-spider-01",
+          "pixelEnemy": null,
+          "cell": null,
+          "source": "/assets/generated/pixel-enemy-portraits/spider-01.png",
+          "naturalSize": [
+            64,
+            64
+          ],
+          "background": "none",
+          "box": [
+            248.64004516601562,
+            107.41017150878906,
+            240.71994018554688,
+            268.78515625
+          ]
+        },
+        {
+          "id": "enemy_native_1",
+          "resourceId": "generated-enemy-ghost-01",
+          "pixelEnemy": null,
+          "cell": null,
+          "source": "/assets/generated/pixel-enemy-portraits/ghost-01.png",
+          "naturalSize": [
+            48,
+            48
+          ],
+          "background": "none",
+          "box": [
+            458.86309814453125,
+            130.04803466796875,
+            240.2738037109375,
+            269.53790283203125
+          ]
+        },
+        {
+          "id": "enemy_native_2",
+          "resourceId": "generated-enemy-hydra-three",
+          "pixelEnemy": null,
+          "cell": null,
+          "source": "/assets/generated/pixel-enemy-portraits/hydra-three.png",
+          "naturalSize": [
+            96,
+            96
+          ],
+          "background": "none",
+          "box": [
+            667.7072143554688,
+            110.55839538574219,
+            242.58551025390625,
+            265.63690185546875
+          ]
+        }
+      ],
+      "retiredRequests": [],
+      "screenshot": "rm2000.png"
+    },
+    {
+      "mode": "uploaded",
+      "displayed": [
+        {
+          "id": "enemy_native_0",
+          "resourceId": "generated-enemy-spider-01",
+          "pixelEnemy": null,
+          "cell": null,
+          "source": "project upload",
+          "naturalSize": [
+            64,
+            64
+          ],
+          "background": "none",
+          "box": [
+            56.65419006347656,
+            247.72215270996094,
+            156.69163513183594,
+            190.72315979003906
+          ]
+        },
+        {
+          "id": "enemy_native_1",
+          "resourceId": "generated-enemy-ghost-01",
+          "pixelEnemy": "float",
+          "cell": "48",
+          "source": "/assets/generated/pixel-enemy-portraits/ghost-01.png",
+          "naturalSize": [
+            48,
+            48
+          ],
+          "background": "url(\"http://127.0.0.1:43561/assets/generated/pixel-enemies/ghost-01.png\")",
+          "box": [
+            195,
+            179.6953125,
+            144,
+            144
+          ]
+        },
+        {
+          "id": "enemy_native_2",
+          "resourceId": "generated-enemy-hydra-three",
+          "pixelEnemy": "breath",
+          "cell": "96",
+          "source": "/assets/generated/pixel-enemy-portraits/hydra-three.png",
+          "naturalSize": [
+            96,
+            96
+          ],
+          "background": "url(\"http://127.0.0.1:43561/assets/generated/pixel-enemies/hydra-three.png\")",
+          "box": [
+            273,
+            153,
+            288,
+            288
+          ]
+        }
+      ],
+      "retiredRequests": [],
+      "screenshot": "uploaded.png"
+    }
+  ],
+  "errors": [],
+  "allNativeBrowserLoads": [
+    {
+      "id": "generated-enemy-slime-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-bat-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-golem-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-dragon-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-skeleton-archer",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-wolf-grey",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spider-cave",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-wisp-blue",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-slime-red",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-zombie-rot",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-bat-vampire",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-bee-giant",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-scorpion-sand",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-mantis-blade",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-boar-tusk",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-bear-brown",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-snake-viper",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-crab-rock",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-hound-hell",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-plant-carnivore",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-skeleton-knight",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ghost-pale",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-lich-frost",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-mummy-bandage",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spirit-fire",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spirit-water",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-golem-iron",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-armor-living",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-mimic-chest",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-eye-floating",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-goblin-scout",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-orc-warrior",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-orc-shaman",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-bandit-mask",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-lizardman-spear",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-harpy-cliff",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-minotaur-maze",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-troll-cave",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-gargoyle-stone",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-demon-lord",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-crab-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spider-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-snake-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-scorpion-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-wolf-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-centipede-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-horse-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-unicorn-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-cat-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-cockatrice-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-parasite-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-mantis-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-fish-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-bat-cave",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spider-widow",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-beetle-horn",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-centipede-fire",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-moth-dust",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-worm-sand",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ant-soldier",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-wolf-dire",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-tiger-saber",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-rat-giant",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-bird-hawk",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-cat-shadow",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-goat-mountain",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ape-stone",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-deer-forest",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-fish-piranha",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-squid-deep",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-shark-land",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-eel-electric",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-leaf-fox",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-fire-pup",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ontology-8da61312",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-sylph-hornet",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-skeleton-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ghost-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-plant-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-carbuncle-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-jackolantern-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spirit-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ghoul-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-specter-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-lemora-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-sylph-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-king-slime-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-slime-blue",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-slime-green",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-slime-metal",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-slime-king",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-slime-cube",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ooze-black",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ooze-acid",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-skeleton-bone",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ghoul-grave",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-wraith-dark",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-banshee-wail",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-revenant-vengeful",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-bonepile-crawler",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spirit-wind",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spirit-light",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spirit-dark",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-sylph-air",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-undine-sea",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-golem-stone",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-golem-clay",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-golem-crystal",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-sword-flying",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-scarecrow-field",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-puppet-string",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-totem-cursed",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-spirit-earth",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-zombie-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-orc-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-harpy-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-salamander-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-kappa-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-leafling-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-sparkit-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-aqualing-01",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-salamander-flame",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-goblin-brute",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-kobold-digger",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-mage-rogue",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-knight-fallen",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-centaur-plains",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-ogre-club",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-imp-mischief",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-griffin-sky",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-wyvern-cliff",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-roc-giant",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-phoenix-rebirth",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-dragon-whelp",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-dragon-red",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-dragon-blue",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-dragon-bone",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-hydra-three",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-behemoth-horn",
+      "loaded": true
+    },
+    {
+      "id": "generated-enemy-angel-fallen",
+      "loaded": true
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/washbasin/h206-B.pxg",
+ "id": "washbasin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 14,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "note": "왼쪽 x=1~3, y=17~23의 수건·파란 줄무늬만 원본대로 복원, 대야 입구 3행과 받침 크기 유지; 꼭대기 윗면 4행(y=11~14)",
+ "ok": true
+}

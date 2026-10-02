@@ -119,7 +119,7 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
         ], "db-state-panel-part-loss"),
         panel("전투 오라", [
           selectField("걸려 있는 동안 몸에 남는 표시", "db-state-battle-aura", normalizeBattleAura(state.battleAura) ?? "", [
-            { id: "", name: resolveStateAura(state.id) ? `자동 — ${BATTLE_AURA_LABELS[resolveStateAura(state.id)!]}` : "자동 (없음)" },
+            { id: "", name: autoAuraLabel(state) },
             { id: "none", name: "끔" },
             ...BATTLE_AURA_IDS.map((id) => ({ id, name: BATTLE_AURA_LABELS[id] })),
           ], (aura) => update({ battleAura: aura || undefined })),
@@ -380,4 +380,10 @@ function retroGimmickControls(
 /** 변신 그림 고르기: 파티원 9칸 시트(짐승·몬스터 칩) 목록. 조수가 넣은 다른 id(적 몬스터 그림 등)도 그대로 보인다. */
 function transformControl(current: string | undefined, onChange: (resourceId: string) => void): HTMLElement {
   return selectField("변신 — 이 상태인 동안 전투 그림", "db-state-rt-transform", current ?? "", partyPixelChoices("변신 안 함", current), onChange);
+}
+
+/** 자동 오라 이름 — 저자 지정(battleAura)을 빼고 id·몬스터 주 상태로 고른 것. */
+function autoAuraLabel(state: { readonly id: string; readonly gen1MajorStatus?: string }): string {
+  const aura = resolveStateAura(state.id, { gen1MajorStatus: state.gen1MajorStatus });
+  return aura ? `자동 — ${BATTLE_AURA_LABELS[aura]}` : "자동 (없음)";
 }

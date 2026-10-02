@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/grindstone/h9-E.pxg",
+ "id": "grindstone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  1,
+  15,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "바퀴를 둥글게 키우고 허브·오른쪽 크랭크 손잡이·좌우 틀 기둥을 더해 숫돌 장치로 읽히게; 받침은 v5 그대로",
+ "ok": true
+}

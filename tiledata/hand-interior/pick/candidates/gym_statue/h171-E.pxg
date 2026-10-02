@@ -1,0 +1,164 @@
+// E: 작은 받침 윗면을 y=29~31의 3행으로 연결하고 앞면 그림자를 y=32로 이동.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat s marble 3
+@mat b brass 3
+@layer statue
+@mblock 0 0
+......ssss......
+.....ssssss.....
+.....ssssss.....
+....ssssssss....
+....ssssssss....
+....ssssssss....
+.....ssssss.....
+.s...ssssss...s.
+.ss...ssss...ss.
+.sss..ssss..sss.
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+.ssssssssssssss.
+.ssssssssssssss.
+..ssssssssssss..
+..ssssssssssss..
+...ssssssssss...
+...ssssssssss...
+....ssssssss....
+....ssssssss....
+....ssssssss....
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+..ssssssssssss..
+..ssss.ss.ssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+.ssssssssssssss.
+.ssssssssssssss.
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssbbbbbbbbss..
+..ssbbbbbbbbss..
+..ssbbbbbbbbss..
+..ssbbbbbbbbss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 marble
+......3442......
+.....455432.....
+.....555432.....
+....45544332....
+....35332221....
+....43243221....
+.....544321.....
+.3...443221...2.
+.53...4321...32.
+.543..4321..332.
+3543244332134321
+4543325443234321
+4534325443233221
+4534325433232321
+4534325433232321
+4434325433222321
+.43432543323221.
+.43432543323221.
+..343254332321..
+..343254332321..
+...3325433231...
+...3325433321...
+....32543321....
+....35443321....
+....45443221....
+...4544433221...
+...4543323321...
+...4432213321...
+..443232133211..
+..4543.32.3321..
+..554333333321..
+..454333333321..
+..443222222211..
+.45554444443332.
+.54444333333221.
+..433333333321..
+..443333333321..
+..443333333321..
+..43........21..
+..43........21..
+..43........21..
+..43........21..
+..443333333321..
+..443333333221..
+..433333332221..
+.45544444333332.
+.54333333332221.
+.32222222221111.
+@tblock 4 38 brass
+22222221
+25544431
+24434331
+11111111
+
+// 날개의 기울어진 깃 덩이와 그리핀의 왼쪽 부리.
+@block 0 13
+_.............._
+_.............._
+_.............._
+__............__
+__............__
+___..........___
+___..........___
+____........____
+____........____
+@mblock 3 5
+s
+ss
+s
+@tblock 3 5 marble
+4
+54
+2
+@tblock 7 5 marble
+132
+@tblock 0 10 marble
+3543
+4543
+4533
+.453
+.443
+.343
+..43
+..43
+...3
+@tblock 12 10 marble
+3431
+3431
+3331
+332.
+322.
+232.
+32..
+22..
+2...
+@tblock 2 12 marble
+544
+454
+344
+434
+343
+@tblock 10 12 marble
+323
+332
+323
+232
+322

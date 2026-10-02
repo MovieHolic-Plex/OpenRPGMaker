@@ -9,7 +9,7 @@ test("battle reference scene uses equivalent enemy, party, portrait, and icon as
   // `startReferenceBattle` uses the expert classic toolbar's `mode-play` control.
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await mkdir(evidenceDir, { recursive: true });
-  await seedLayoutResultBattleProject(page, { battleUiStyle: "rm2000" });
+  await seedLayoutResultBattleProject(page, { battleUiStyle: "retro2003" });
   await startReferenceBattle(page);
   await page.screenshot({ path: `${evidenceDir}/01-command-assets.png`, fullPage: true });
 
@@ -17,7 +17,7 @@ test("battle reference scene uses equivalent enemy, party, portrait, and icon as
   await writeFile(`${evidenceDir}/01-command-assets.json`, `${JSON.stringify(commandMetrics, null, 2)}\n`, "utf8");
 
   expect(commandMetrics.enemyResourceIds).toEqual(["generated-enemy-sylph-hornet"]);
-  expect(commandMetrics.enemyImageSources[0]).toContain("sylph-hornet-transparent.png");
+  expect(commandMetrics.enemyImageSources[0]).toContain("pixel-enemy-portraits/sylph-hornet-transparent.png");
   expect(commandMetrics.actorResourceIds).toEqual([
     "generated-actor-hero-01-battle",
     "generated-actor-hero-02-battle",

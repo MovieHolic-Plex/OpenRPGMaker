@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/alchemy_table/h149-E.pxg",
+ "id": "alchemy table",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 30,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  4,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "E 자유 해석: 비대칭 서랍의 약제장형 나무 실험대에 녹색 둥근 플라스크·황동 연결관·받는 병·불 켠 버너를 배치, 전체 높이 28px; 꼭대기 윗면 8행(y=15~22), 가장 높은 플라스크 입구 윗면 3행(y=4~6).",
+ "ok": true
+}

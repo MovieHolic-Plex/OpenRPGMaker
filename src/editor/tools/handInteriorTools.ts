@@ -23,6 +23,8 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
     + "① room(방 종류 또는 건물: 빵집·bakery·여관 객실·부엌·침실·서재·선술집·예배당·대장간 등) → 예제 26맵에서 그 방에 실제로 쓰인 가구를 종류별(floor 바닥 가구 막힘 · wall 북쪽 벽 앞 · hang 벽면 윗줄 걸이 · flat 밟는 무늬 · table 탁자 자동 타일 · line 줄 자동 타일 · dais 단)로, 쓰인 방 수·개수와 함께 준다. 건물이면 방마다 가구 목록도 준다. "
     + "② query(여러 낱말 가능, 예: \"여관 벽\"·\"침실 바닥\"·bed·화덕) → id·이름·분류·태그·설명을 모두 찾아 모든 낱말이 맞는 것부터 준다. 결과가 적으면(12 이하) 행마다 desc·tags·place·pair, 많으면 desc 한 줄만 — 좁히려면 낱말을 더하거나 category 를 준다. "
     + "③ 인자 없이 → 바닥·벽면·천장·탁자·줄·단·탁상 물건 목록, 가구 분류, 방 종류·건물 id. "
+    + "행의 use = 게임에서의 쓰임(sit 앉기 · sleep 자기 · open 열기(아이템 이벤트) · search 조사 · read 읽기 · counter 카운터 너머 대화 · travel 이동 · light 불빛 · save 저장 · heal 회복 · switch 켬/끔 장치 · push 밀기 · trap 함정 · key 열쇠·보물 받침 · gate 여닫는 문 · seal 봉인 · walk 밟음 · block 장식), "
+    + "facing = 바라보는 쪽(앉는 가구는 탁자·제단 쪽을 보게 놓는다), states = 같은 물건의 다른 상태 그림(닫힘↔열림 등 — 이벤트 1쪽과 2쪽 그림). use 가 open·search·read·save·heal·switch·key 면 그 칸에 이벤트를 붙일 자리다. "
     + "결과 id 는 build_hand_interior_room 의 objects[].id 에 그대로 넣는다.",
   parameters: {
     type: "object",

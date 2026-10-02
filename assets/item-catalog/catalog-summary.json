@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "baseItems": 228,
+  "expandedItems": 772,
+  "totalItems": 1000,
+  "imageSize": 32,
+  "categories": {
+    "healing": 64,
+    "mana": 48,
+    "elixir": 32,
+    "remedy": 32,
+    "tonic": 32,
+    "revival": 16,
+    "food": 80,
+    "growth": 48,
+    "manual": 48,
+    "battle": 48,
+    "capture": 32,
+    "feed": 16,
+    "toy": 16,
+    "produce": 48,
+    "material": 80,
+    "key": 32,
+    "tool": 16,
+    "fishing": 24,
+    "treasure": 32,
+    "component": 24,
+    "relay": 4
+  }
+}

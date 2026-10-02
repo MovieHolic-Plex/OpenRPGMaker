@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/treasure_chest/h13-C.pxg",
+ "id": "treasure chest",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "단순화: 둥근 뚜껑 윗면·앞면·몸통 세 덩이, 황동 세로띠 둘+가로 테+가운데 자물쇠만(잔 세부 없음)",
+ "ok": true
+}

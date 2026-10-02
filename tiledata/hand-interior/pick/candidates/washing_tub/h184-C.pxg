@@ -1,0 +1,42 @@
+// C: 넓은 물 윗면과 낮은 나무 통, 홈 두 줄의 굵은 빨래판으로 단순하게 읽힌다.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat p pine 3
+@mat a fish 3
+@mat i iron 3
+@mblock 0 0
+........ppppp...
+.......pppppp...
+.......pppppp...
+.......pppppp...
+....wwwpppppww..
+...wwaapppppaww.
+..wwaappppppaaww
+..waaappppppaaaw
+..waaaapppppaaaw
+..wwaaaaaaaaaaww
+..wwwwwwwwwwwwww
+..wiiiiiiiiiiiiw
+...wwwwwwwwwwww.
+...wwwwwwwwwwww.
+....wwwwwwwwww..
+.....wwwwwwww...
+@tblock 0 0
+........44443...
+.......455543...
+.......444333...
+.......422222...
+....6653553263..
+...653422222432.
+..65343533323321
+..65443555323321
+..65444333223321
+..66444333333321
+..76666665554421
+..54444443333221
+...665655443321.
+...654655443321.
+....5455543321..
+.....33333211...

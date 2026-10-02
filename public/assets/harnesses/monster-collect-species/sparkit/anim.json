@@ -1,0 +1,45 @@
+{
+  "canvas": 112,
+  "direction": {
+    "front": {
+      "x": -1,
+      "y": 1
+    },
+    "back": {
+      "x": 1,
+      "y": -1
+    }
+  },
+  "sides": {
+    "front": {
+      "idle": {
+        "path": "anim/front-idle.png",
+        "frames": 4,
+        "frameMs": 220,
+        "loop": true,
+        "source": "idle-shift"
+      }
+    },
+    "back": {
+      "idle": {
+        "path": "anim/back-idle.png",
+        "frames": 4,
+        "frameMs": 220,
+        "loop": true,
+        "source": "idle-shift"
+      }
+    }
+  },
+  "emit": {
+    "front": {
+      "x": 5,
+      "y": 65,
+      "source": "auto"
+    },
+    "back": {
+      "x": 93,
+      "y": 54,
+      "source": "auto"
+    }
+  }
+}

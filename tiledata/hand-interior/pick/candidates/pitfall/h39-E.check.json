@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pitfall/h39-E.pxg",
+ "id": "pitfall",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.104
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "네모 테 대신 바닥이 깨져 꺼진 불규칙한 구멍(왼쪽 위 밝은 테·오른쪽 아래 어두운 테), 북쪽 안벽 한 줄, 가장자리에서 뻗는 금과 부스러기",
+ "ok": true
+}

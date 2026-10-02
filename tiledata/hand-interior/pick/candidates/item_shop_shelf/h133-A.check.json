@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/item_shop_shelf/h133-A.pxg",
+ "id": "item shop shelf",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 38,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  2,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "두 병 마개만 3·5·3칸 타원 윗면 3행(y=9~11)으로 고치고 어두운 앞 테두리(y=12)·병목(y=13)을 구분; 꼭대기 윗면 4행(y=3~6), 나머지 화소 유지.",
+ "ok": true
+}

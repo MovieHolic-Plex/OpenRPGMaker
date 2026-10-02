@@ -1,0 +1,36 @@
+// 같은 방 화풍: 대장간 통(w4)·궤짝 결로 — 어두운 윤곽 v, 나무 q/r/s, 열린 입구 윗면에 칼자루·도끼·자루 셋
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 6
+@mat j iron 5
+@mat k iron 4
+@mat l iron 3
+@mat g gold 5
+@mat h gold 3
+@mat p wood 7
+@mat q wood 6
+@mat r wood 5
+@mat s wood 4
+@mat t wood 3
+@mat u wood 2
+@mat v wood 1
+@mat n black 3
+@mat o black 1
+@mblock 0 0
+................
+....h...j.......
+....s...qjk.....
+....s...qkl.....
+....s...q...g...
+...lil..q...s...
+..vvsvvvqvvvsv..
+..vpnnnnqnnnsv..
+..vpnnnnqnnnsv..
+..vpnnnnnnnnsv..
+..vpooooooooov..
+..vppppppppppv..
+..vqqqqqqqqqtv..
+..vsrrrgrrrrtv..
+..vsttthtttttv..
+..vuuuuuuuuuuv..

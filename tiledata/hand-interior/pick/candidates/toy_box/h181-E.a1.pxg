@@ -1,0 +1,38 @@
+// E: 파란 별무늬 궤짝, 뒤로 젖힌 뚜껑과 공·인형·나무칼; 꼭대기 윗면 3행(y=1~3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 3
+@mat t wood 6
+@mat h wood 7
+@mat i dwood 1
+@mat d dwood 2
+@mat b blue 1
+@mat c blue 2
+@mat l blue 4
+@mat n linen 4
+@mat H linen 6
+@mat p pine 3
+@mat P pine 5
+@mat r red 2
+@mat R red 4
+@mat Y yellow 5
+@mat g gold 4
+@mblock 0 0
+................
+..whhhhhhhhhtw..
+..hlllccllcctw..
+..tllccccccltw..
+..owwwwwwwwwwo..
+..thddddppddiP..
+.thdRRrdpHnniPi.
+.hdRYYRdpnnniPi.
+.tdRYRrdpcbPPPi.
+.tddrrddpcbddpi.
+.tddddddddddddi.
+.thhhhhtttttttw.
+.tlccccYcccccbw.
+.tccccYYYccccbw.
+.wbccccYccccbbw.
+..ooooowoooooo..

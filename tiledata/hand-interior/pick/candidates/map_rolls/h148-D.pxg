@@ -1,0 +1,54 @@
+// 금장 입구와 아래 띠, 앞면 길드 문양; 말린 지도 세 개의 윗면을 드러냄.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A dwood 1
+@mat B wood 2
+@mat C wood 4
+@mat D wood 5
+@mat E wood 6
+@mat F wood 7
+@mat g brass 2
+@mat h brass 3
+@mat i brass 4
+@mat j brass 5
+@mat k brass 6
+@mat l linen 2
+@mat m linen 3
+@mat n linen 4
+@mat o linen 5
+@mat p linen 6
+@layer prop
+@mblock 0 0
+...nnn..........
+..oppon.........
+..pllln.........
+..nnnmm.........
+..oonml.........
+..oonml...nnn...
+..oonml..oppon..
+..oonml..pllln..
+..oonml..nnnmm..
+..oonml..oonml..
+..oonmnnnoonml..
+..oonoppononml..
+..oonplllnonml..
+..oonnnnmnonml..
+..oonoonmnonml..
+..oonoonmnonml..
+..AijoonmniihA..
+.AjBCoonmnABhiA.
+.jDBBoonmnBBBgi.
+.jEBBoonmnBBCgi.
+.AjiDDonnmDDihA.
+.AEjjiDDDiiihBA.
+.AFEEDDDDCCBBBA.
+.AFEEDDiDCCBBBA.
+.AFEEDjkiCCBBBA.
+.AFEEDikjCCBBBA.
+.AFEEDDhDCCBBBA.
+.AFEEDDDDCCBBBA.
+.AFEEDDCDCCBBBA.
+.AkjjiiiiiiihgA.
+..AjjiiiiiiihA..
+...ABBBBBBBA....

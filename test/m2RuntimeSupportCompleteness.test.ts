@@ -24,7 +24,7 @@ describe("M2 persisted runtime classification completeness", () => {
 
     // Then: the union is exactly the 126 catalog IDs, with no duplicate membership.
     expect(new Set(classifiedIds)).toEqual(new Set(catalogIds));
-    expect(classifiedIds).toHaveLength(131);
+    expect(classifiedIds).toHaveLength(133);
     expect([...membershipCounts].filter(([, count]) => count > 1)).toEqual([]);
   });
 
@@ -162,7 +162,8 @@ describe("M2 persisted runtime classification completeness", () => {
       (commandId) => !M2_MAP_COMMON_FULL_IDS.some((fullId) => fullId === commandId)
     );
     // 54: m2-218 move-enemy(전투 전용) 가 들어와 55 가 됐고, m2-069(먼 배경) 승격으로 다시 54(2026-09-27).
-    expect(demotedIds).toHaveLength(54);
+    // 53: 화면 효과(m2-202) 승격(2026-10-02). 파티클·모습 효과(m2-224·225)는 처음부터 map/common full.
+    expect(demotedIds).toHaveLength(53);
 
     for (const commandId of demotedIds) {
       // When: 피커/리스트가 카탈로그 행을 map 컨텍스트로 판정한다.
@@ -174,7 +175,8 @@ describe("M2 persisted runtime classification completeness", () => {
     }
 
     // 31 + m2-069(맵 배경 흐름) + 명작 공백 미니게임 키트·순간이동 메뉴(m2-219~223).
-    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(37);
+    // + 화면 효과 m2-202 + 파티클·모습 효과 m2-224·225 (2026-10-02).
+    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(40);
     for (const commandId of M2_MAP_COMMON_FULL_IDS) {
       expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-full");
     }

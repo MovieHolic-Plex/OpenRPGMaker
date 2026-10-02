@@ -1,0 +1,103 @@
+// E: 모서리를 깎은 팔각 야전 작전탁자, 넓은 지도와 붉은 말·단검; 꼭대기 윗면 16행(y=4~19)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat e dwood 3
+@mat d pine 2
+@mat v pine 3
+@mat w pine 4
+@mat h pine 5
+@mat b brass 3
+@mat g brass 4
+@mat l linen 4
+@mat L linen 5
+@mat n linen 3
+@mat c linen 2
+@mat t teal 1
+@mat s teal 2
+@mat R red 2
+@mat r red 4
+@mat q red 1
+@mat i iron 3
+@mat j iron 5
+@mat k iron 2
+@layer table
+@mblock 0 4
+.....dddddddddddddddddddddd.....
+...ddhhhhhhhhhhhhhhhhhhhhhhdd...
+..dhhwwwwwwwwwwwwwwwwwwwwwwvdd..
+.dhhwwwwwwwwwwwwwwwwwwwwwwwwvdd.
+dhhwwwwwwwwwwwwwwwwwwwwwwwwwwvde
+dhwwwwwwwwwwwwwwwwwwwwwwwwwwwvde
+dhwwvvwwwwwwwwwwwwwwwwwwwwwwwvde
+dhwwwwwwwwwwwwwwwwwwwwwwvvwwwvde
+dhwwwwwwwwwwwwwwwwwwwwwwwwwwwvde
+dhwwwwwwwwwwwwwwwwwwwwwwwwwwwvde
+dhwwwwwwwwwwwwwwwwwwwwwwwwwwwvde
+dhwwwvvwwwwwwwwwwwwwwwwwwwwwwvde
+dhwwwwwwwwwwwwwwwwwwwwwwwwwwwvde
+.dhwwwwwwwwwwwwwwwwwwwwwwwwwvde.
+..dhwwwwwwwwwwwwwwwwwwwwwwwvde..
+...ddddvvvvvvvvvvvvvvvvvvvvde...
+...evvvvvvvvvvvvvvvvvvvvvvvee...
+....evvvvvvvvvvvvvvvvvvvvvee....
+.....eeeeeeeeeeeeeeeeeeeeee.....
+......oooooooooooooooooooo......
+......dvve.............dvve......
+......dwve.............dvve......
+......dwve.............dvve......
+......dwve.............dvve......
+......dwve.............dvve......
+.....ddwvee...........ddvvee.....
+....dvwwvee...........dvvveee....
+....ooooooo...........oooooo....
+@layer map
+@mblock 6 7
+.LLLLLLLLLLLLLLLLL.
+LLlllllllllllllllLl
+LlwwlllllllslllllLn
+LlwvvlllllsllllllLn
+LlllwwllllsllllllLn
+LllllllllssllllllLn
+LllllllllslllwwllLn
+Llllllllsllllwvvlln
+Lllllllsslllllllnnn
+Lllllllslllllllllln
+.nnnnnnnnnnnnnnnnn.
+@layer pieces
+// 붉은 말 두 개: 밝은 2x2 정수리, 목과 넓은 받침
+@mblock 9 8
+rr
+rR
+.R
+rRR
+.qq
+@mblock 18 12
+rr
+rR
+.R
+rRR
+.qq
+// 단검: 비스듬한 강철 날, 황동 가드와 짙은 손잡이
+@mblock 24 11
+....j
+...ji
+..jik
+.jik
+.gb
+.be
+..e
+// 모서리 금속 보호대: 윗면의 밝은 덩이와 앞면 그늘
+@mblock 3 6
+ggh
+gbw
+@mblock 26 6
+hgg
+wbb
+@mblock 3 17
+gb
+.bg
+@mblock 27 17
+bg
+g.

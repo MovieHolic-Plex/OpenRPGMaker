@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/boarded_window/h198-B.pxg",
+ "id": "boarded window",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "기준 창의 따뜻한 갈색 창틀과 방 가구의 절제된 나무결에 맞춰 비스듬한 판자 세 장·철못·어두운 유리 틈을 새로 그림; 꼭대기 윗면 0행(y=해당 없음, 지시서의 벽면 걸이 평면 예외).",
+ "ok": true
+}

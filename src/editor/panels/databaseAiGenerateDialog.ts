@@ -358,7 +358,7 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
     result.hidden = true;
     setPhase("text", PHASE_TEXT[kind].text);
     void generate(
-      { kind, brief: text, config, withArtwork: artworkToggle.checked, signal },
+      { kind, brief: text, config, withArtwork: kind === "item" && artworkToggle.checked, signal },
       {
         flattenArtwork: flattenGeneratedArtwork,
         onPhase: (next) => {
@@ -428,7 +428,8 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
             el("label", { class: "db-ai-generate-label", text: `어떤 ${label}인가요?`, attrs: { for: briefId } }),
             brief,
             examples,
-            artworkOption,
+            // 몬스터는 그림을 만들지 않고 도트 몬스터를 고른다(2026-10-02).
+            ...(kind === "item" ? [artworkOption] : []),
             status,
             result,
           ],

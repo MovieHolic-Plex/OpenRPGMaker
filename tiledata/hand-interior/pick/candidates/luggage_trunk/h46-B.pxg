@@ -1,0 +1,41 @@
+// B 같은 방 화풍: 상자(chest) 결 — 어두운 윤곽, 뚜껑 윗면 4행, 가죽 띠 둘, 가운데 놋쇠 걸쇠
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat d dwood 3
+@mat b brass 4
+@mblock 0 0
+................
+................
+................
+................
+..dddddddddddd..
+.dwwddwwwwddwwd.
+.dwwddwwwwddwwd.
+.dwwddwwwwddwwd.
+.ddddddbbdddddd.
+.dwwddwbbwddwwd.
+.dwwddwbbwddwwd.
+.dwwddwwwwddwwd.
+.dwwddwwwwddwwd.
+.dwwddwwwwddwwd.
+.dwwddwwwwddwwd.
+.dddddddddddddd.
+@tblock 0 0
+................
+................
+................
+................
+..222222222222..
+.27744777744661.
+.26644666644551.
+.25533555533441.
+.21111155111110.
+.25433455322330.
+.25433433322330.
+.25433444322330.
+.25433444322330.
+.25433444322330.
+.24322333211220.
+.11111111111110.

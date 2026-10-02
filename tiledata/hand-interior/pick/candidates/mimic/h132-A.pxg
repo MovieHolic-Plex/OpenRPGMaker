@@ -1,0 +1,76 @@
+// A 상태: 열린 상자 원형 유지, 입구 윗면 둘레에 위아래 송곳니와 속에서 앞판으로 늘어지는 혀; 꼭대기 윗면 5행(y=4~8)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat i wood 3
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+...ooooooooooo..
+...oiggiiiggio..
+...oiggiiiggio..
+..oiiiiiiiiiiio.
+..oiiigiiigiiio.
+..ogggggggggggo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+...11111111111..
+...15445554431..
+...14334443321..
+..1000000000001.
+..1000000000001.
+..1100000000011.
+..1110103010111.
+..1565666666540.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................
+@mat t linen 5
+@mat u meat 3
+@layer mimic-state
+// 뒤 입구 테에 박힌 윗니: 밑으로 짧게 내려오는 끝
+@mblock 4 4
+tt..t..tt
+t...t...t
+@tblock 4 4 linen
+56..6..45
+4...4...3
+// 입구의 남쪽 윗날에서 안쪽으로 솟은 아랫니
+@mblock 4 6
+.t.....t.
+.tt....tt
+@tblock 4 6 linen
+.5.....4.
+.45....43
+// 혀는 입속 y6에서 시작해 앞판 위 y11까지 굽힌다
+@mblock 7 6
+uu
+uuu
+uuu
+.uu
+.uuu
+..uu
+@tblock 7 6 meat
+32
+443
+543
+.43
+.443
+..32

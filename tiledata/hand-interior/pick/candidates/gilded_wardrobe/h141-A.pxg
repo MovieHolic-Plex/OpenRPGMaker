@@ -1,0 +1,44 @@
+// A: 반복 문 패널 16행만 삭제해 높이 32px, 접지선 y=47 유지; 꼭대기 윗면 5행(y=17~21).
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat A white 1
+@mat B white 2
+@mat C white 3
+@mat D white 4
+@mat E white 5
+@mat g gold 1
+@mat h gold 2
+@mat i gold 3
+@mat j gold 4
+@mat k gold 5
+@mat l gold 6
+@mblock 0 16
+= 2. 28h 2.
+= 1. 1h 28D 1h 1.
+= 1. 1h 1E 26D 1C 1h 1. *2
+= 1. 1h 1E 7D 3C 16D 1C 1h 1.
+= 1. 1h 1E 26D 1C 1h 1.
+= 1. 1h 28k 1h 1.
+= 1. 1g 28i 1g 1.
+= 2. 28A 2.
+= 2. 1h 1E 24D 1B 1g 2.
+= 2. 1h 1E 10j 1C 2A 1E 10j 1B 1g 2.
+= 2. 1h 1E 1k 8E 1h 1C 2A 1E 1j 8D 1h 1B 1g 2.
+= 2. 1h 1E 1j 1E 6D 1C 1h 1C 2A 1E 1i 1D 6C 1B 1h 1B 1g 2. *3
+= 2. 1h 1D 1j 1E 6D 1C 1h 1C 2A 1D 1i 1D 6C 1B 1h 1B 1g 2.
+= 2. 1h 1D 1j 8C 1h 1C 2A 1D 1i 8B 1h 1B 1g 2.
+= 2. 1h 1D 10h 1C 2A 1D 10h 1B 1g 2.
+= 2. 1h 1D 9D 1k 1h 2A 1k 1h 9C 1B 1g 2.
+= 2. 1h 1D 9D 1l 1i 2A 1k 1h 9C 1B 1g 2. *2
+= 2. 1h 1D 9D 1i 1h 2A 1i 1g 9C 1B 1g 2.
+= 2. 1h 1D 10D 1C 2A 1D 10C 1B 1g 2.
+= 2. 1h 1D 10j 1C 2A 1D 10i 1B 1g 2.
+= 2. 1h 1D 1j 8E 1h 1C 2A 1D 1i 8D 1h 1B 1g 2.
+= 2. 1h 1D 1j 8C 1h 1C 2A 1D 1i 8B 1h 1B 1g 2.
+= 2. 1h 1D 10h 1C 2A 1D 10h 1B 1g 2.
+= 2. 1h 1D 24C 1B 1g 2.
+= 1. 1h 28j 1g 1.
+= 1. 1g 28h 1g 1.
+= 2. 1h 3C 1A 18. 1h 3B 1g 2.
+= 2. 5g 18. 5g 2.

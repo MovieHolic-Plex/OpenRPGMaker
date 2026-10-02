@@ -1,0 +1,31 @@
+// A: 전형적인 길드 나무 게시판, 쪽지 8장마다 붉은 핀과 글 줄; 닫힌 꼭대기 윗면 3행(y=1~3).
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 5
+@mat e wood 6
+@mat p linen 6
+@mat q linen 5
+@mat s linen 4
+@mat t linen 2
+@mat r red 4
+@mblock 0 0
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.beeeeeeeedeeeeeeeeeedeeeeeeeba.
+.bdddddddddddddddddddddddddddba.
+.bdddcddddddddddcddddddddddddba.
+.becbbbbbbbbbbbbbbbbbbbbbbbcbba.
+.beprppsbcpprpsbcpprpsbcprppsba.
+.beptppsbcqtqqsbcpqtqsbcpqtqsba.
+.bepttpsbcqttqsbcpqttsbcpqttsba.
+.beqssssbcqssssbcqssssbcqssssba.
+.bedccbcccbccbcccbccbcccbccccba.
+.beqrqqsbcpprpsbcprppsbcpprpsba.
+.beptqqsbcqtqqsbcpqtqsbcptqqsba.
+.bepttqsbcpqttsbcpqttsbcpqttsba.
+.beqssssbcqssssbcqssssbcqssssba.
+.bdddddcddddddddcdddddddcddddba.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.

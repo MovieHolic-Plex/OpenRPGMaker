@@ -575,6 +575,13 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   워커가 쓰기 툴을 주지 않고(`readOnlyTools` + 시스템 프롬프트 한 줄), 계획 턴은 지시문 머리에 계획
   지시가 붙는다(`PLAN_ONLY_PREFIX`). 바뀐 것이 없으면 그 턴의 **답·계획 본문**을 assistant 말풍선으로
   남긴다 — 보드의 220자 한 줄이 답이 되면 질문 모드가 쓸 수 없다.
+- **계획 → 실행 이음매 (2026-10-02, `src/ai/piAgent/planExecution.ts`):** 계획 턴은 자기 답 첫 줄에 「이번 실행은 읽기 전용
+  단계이므로 프로젝트를 수정하지 않으며…」를 자주 적고(실측 22판 중 15판), 그 답이 `withUltrabrainPlan` 으로 실행 턴 지시문에 그대로 붙는다.
+  실행 모델이 그 말을 지금 턴 얘기로 읽고 읽기만 한 뒤 계획을 다시 써서 끝낸 판이 있었다(qa:game 복수극 6판 중 2판, 쓰기 0건).
+  ① `withUltrabrainPlan` 이 계획 앞에 `PLAN_EXECUTION_PREAMBLE`(「지금은 실행 턴, 계획 속 읽기 전용은 앞선 턴 기록」)을 못 박고
+  제목을 「Ultrabrain 실행 계획(앞선 계획 턴의 기록):」으로 바꿨다. ② 동반 런타임(`scripts/lib/piAgentRuntime.ts`)은 지시문에 그 제목이 있는데
+  첫 프롬프트가 바뀐 것 0으로 끝나면 `PLAN_EXECUTION_REKICK` 로 **한 번만** 되민다(`execution_status` `plan_execution_rekick`).
+  계획 없는 턴(질문·짧은 수정)은 건드리지 않는다. 회귀: `test/piPlanExecutionRekick.bun.test.ts`. 세션 경로의 `zero-change-rekick` 과 같은 자리다.
 - **do 레벨의 질문 발화는 의도 선언이 읽기 전용으로 승격한다 (2026-09-12 복원):** `plainPiTurn` 이
   다이얼이 쓰기를 허용할 때만 `declareIntentCached(createLlmIntentDeclarer())` 를 부르고
   `intent.mode === "question"` 이면 `plan.readOnly = true` 로 덮어 Pi 를 단독·읽기 전용으로 돌린다.

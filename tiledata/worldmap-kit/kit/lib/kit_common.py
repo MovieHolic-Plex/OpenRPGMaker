@@ -70,11 +70,21 @@ class IconSet:
             w, h = ic['cells']
             if (ic['col'] + w) * 16 > self.sheet.shape[1] or (ic['row'] + h) * 16 > self.sheet.shape[0]:
                 raise KitError('iconsets/%s: 아이콘 %s 가 시트 밖이다' % (sid, ic['name']))
-            self.icons[ic['name']] = ic
+            self.icons[ic['name']] = dict(ic, _own=True)
         self.pins = dict(m.get('pins', {}))
+        self.kind = m.get('kind', 'land')
+        # 부분 세트(extends): 바탕 세트의 아이콘을 함께 가진다 — 이 세트에 없는 역할도 지도에 놓을 수 있게.
+        # 바탕 아이콘은 바탕 시트에서 잘라 온다(_base). 이름이 겹치면 이 세트 것이 이긴다.
+        self.base = IconSet(m['extends']) if m.get('extends') else None
+        if self.base:
+            for n, ic in self.base.icons.items():
+                if n not in self.icons:
+                    self.icons[n] = dict(ic, _own=False)
 
     def array(self, name):
         ic = self.icons[name]
+        if not ic.get('_own', True) and self.base:
+            return self.base.array(name)
         w, h = ic['cells']
         return self.sheet[ic['row'] * 16:(ic['row'] + h) * 16, ic['col'] * 16:(ic['col'] + w) * 16]
 

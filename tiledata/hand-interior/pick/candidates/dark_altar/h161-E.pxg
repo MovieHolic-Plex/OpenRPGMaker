@@ -1,0 +1,93 @@
+// E: 깎인 검은 석관형 제단, 은철 촛대 둘과 해골 잔, 붉은 봉인 문양; 윗면 8행 y16~23.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a black 1
+@mat b black 2
+@mat c black 3
+@mat d black 4
+@mat e black 5
+@mat f black 6
+@mat i iron 2
+@mat j iron 4
+@mat k iron 5
+@mat p purple 3
+@mat q purple 4
+@mat r purple 5
+@mat s purple 6
+@mat u linen 3
+@mat v linen 4
+@mat w linen 5
+@mat R red 2
+@mat S red 3
+@mat T red 4
+@layer altar
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+....eeeeeeeeedddddddddddddda....
+..eedddddddddddddddddddddddcaa..
+.eddddddddedddddddddddddddddcba.
+.eddddeedddddddddddddddccddddba.
+.eddddddddddddddddddddccdddddba.
+.edddddddddddddddeeddddddddddba.
+.eddddddddddddddddddddddddddba.
+.eeeeeeeedddddddddddddddddddca.
+.acccccccccccccccccccccccccbba.
+..acccccbbbcccccccccbbbcccbbaa..
+..accdcbbbbbbcccccbbbbbbcbbaa..
+..accdcbbbbbbcccccbbbbbbcbbaa..
+..accdcbbbbbbcccccbbbbbbcbbaa..
+..acccccbbbcccccccccbbbcccbbaa..
+.aedddddcccccccccccccccccccbba.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbaa.
+@layer seal
+@mblock 11 24
+..R....R..
+...RTTR...
+....SS....
+...RSSR...
+..RR..RR..
+@layer vessels
+@mblock 4 6
+...q...................p...
+..qr..................pq..
+..qsq.................qrq.
+.pqrq................pqrq.
+..pp..................pp..
+..kj..................ji..
+..kj..................ji..
+..kj..................ji..
+..kj..................ji..
+..kj..................ji..
+..kj..................ji..
+..kj..................ji..
+.kkji................jjii.
+kjjjii..............jjiiii
+.iiii................iiii.
+@mblock 12 12
+..uvvu..
+.uwbbvu.
+uwbbbbvu
+uvbbbbvu
+.wwvvvu.
+.wbvvbu.
+..vbbv..
+..uvvu..
+...vi...
+..uvvi..
+...ii...

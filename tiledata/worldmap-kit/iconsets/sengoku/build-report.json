@@ -1,0 +1,286 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "교토풍 수도",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "해자 두른 큰 축대 위 대천수각·소천수·망루, 앞에 성하 마을 두 줄, 옆 오층탑",
+   "fill": "94x89",
+   "side_px": 148,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "성하 마을",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "돌 축대 위 4층 천수각과 흰 담, 둘레 마치야 줄",
+   "fill": "63x57",
+   "side_px": 63,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "나가사키풍 무역항",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "돌 안벽·잔교에 아타케부네와 작은 배, 뒤에 흰 창고 줄과 상관",
+   "fill": "79x40",
+   "side_px": 15,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "천수각 성",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "경사 돌 축대 + 천수대 위 5층 천수각, 앞 흰 담과 망루 둘",
+   "fill": "42x47",
+   "side_px": 16,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "산성",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "숲 언덕 위 목책·나무 망루 둘·목문, 산꼭대기 본채",
+   "fill": "48x37",
+   "side_px": 96,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "역참 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "마치야 두 줄 사이 큰 2층 여관(붉은 등), 소나무와 길 표지",
+   "fill": "47x23",
+   "side_px": 8,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "농촌",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "초가 농가 둘, 둑으로 나뉜 논, 물레방아",
+   "fill": "32x20",
+   "side_px": 17,
+   "col": 12,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "닌자 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "삼나무 숲 속 초가 지붕과 망보는 나무 대",
+   "fill": "31x28",
+   "side_px": 119,
+   "col": 14,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "전장 진지",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "검은 띠 흰 장막을 둘러치고 노보리 깃발 줄, 대장 걸상",
+   "fill": "32x23",
+   "side_px": 1,
+   "col": 16,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "망루",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "작은 돌 축대 위 2층 흰 야구라",
+   "fill": "15x24",
+   "side_px": 9,
+   "col": 26,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "오층탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "붉은 나무 몸과 넓은 회흑 처마 다섯 층, 금색 상륜",
+   "fill": "32x55",
+   "side_px": 10,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "산속 동굴 사당",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "바위산 동굴 입구에 금줄, 앞에 작은 도리이와 석등",
+   "fill": "31x29",
+   "side_px": 142,
+   "col": 18,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "무너진 성 축대",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "이가 빠진 돌 축대, 굴러떨어진 돌, 그을린 기둥",
+   "fill": "29x25",
+   "side_px": 32,
+   "col": 20,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "불탄 성하 마을",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "숯 기둥·내려앉은 지붕·그을린 벽과 연기, 뒤에 무너진 축대",
+   "fill": "63x44",
+   "side_px": 58,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "신사",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "큰 붉은 도리이·석등, 붉은 기둥 배전과 뒤 본전(치기·가쓰오기)",
+   "fill": "47x34",
+   "side_px": 74,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "벚나무 거목",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "금줄 두른 굵은 줄기와 분홍 꽃 구름",
+   "fill": "47x44",
+   "side_px": 236,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "후지풍 설산",
+   "id": "landmark_fuji",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "넓은 청회 원뿔과 눈 덮인 꼭대기, 허리 구름",
+   "fill": "48x47",
+   "side_px": 15,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "도리이 길",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "참배길을 따라 줄지어 선 작은 붉은 도리이, 양옆 석등",
+   "fill": "31x28",
+   "side_px": 60,
+   "col": 22,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "검은 비탈 화구의 용암과 회색 분연",
+   "fill": "23x31",
+   "side_px": 31,
+   "col": 24,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "신의 섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "구름 위 바위섬에 붉은 도리이·본전·석등·벚나무",
+   "fill": "75x48",
+   "side_px": 133,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 6
+}

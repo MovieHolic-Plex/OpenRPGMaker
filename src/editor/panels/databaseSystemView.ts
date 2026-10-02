@@ -104,6 +104,7 @@ import {
   resolvePlayResolution,
 } from "@/project/playResolution";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
+import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
 import type { PlayResolution, SystemRecords } from "@/project/types";
 
 type SystemRefresh = (kind?: "values" | "effects") => void;
@@ -883,6 +884,25 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
     }),
     playResolutionDiagnostics(project, resolution),
     cameraZoomField(rerender),
+    displayFilterField(project),
+  ]);
+}
+
+/** 화면 표시 필터(주사선·브라운관) — 맵·전투·대화를 한꺼번에 덮는다. 다음 플레이부터 보인다. */
+function displayFilterField(project: Project): HTMLElement {
+  const select = el("select", { dataset: { testid: "db-field-system-display-filter" } }) as HTMLSelectElement;
+  for (const id of DISPLAY_FILTERS) select.append(el("option", { text: DISPLAY_FILTER_LABELS[id], attrs: { value: id } }));
+  select.value = project.system.displayFilter ?? "none";
+  select.addEventListener("change", () => {
+    updateSystem((draft) => {
+      const next = normalizeDisplayFilter(select.value);
+      if (next) draft.system.displayFilter = next;
+      else delete draft.system.displayFilter;
+    }, "system:display-filter");
+  });
+  return rm2k3Fieldset("화면 필터", [
+    el("p", { class: "db-system-resolution-help", text: "옛 TV 느낌. 맵·전투·대화·메뉴 위에 한 겹으로 깔립니다. 다음에 플레이를 시작할 때 적용됩니다." }),
+    field("필터", select),
   ]);
 }
 

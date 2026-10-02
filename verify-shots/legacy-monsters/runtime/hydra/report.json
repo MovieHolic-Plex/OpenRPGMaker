@@ -1,0 +1,38 @@
+{
+  "clips": [
+    {
+      "slug": "hydra-three",
+      "start": 10.24,
+      "duration": 1.3599999999999999,
+      "file": "/home/main/.codex/worktrees/7fd5/rpg-zzu/output/legacy-monster-retirement/hydra/monster-hydra-three.gif",
+      "bytes": 652331
+    }
+  ],
+  "skipped": [],
+  "errors": [],
+  "evidence": [
+    {
+      "slug": "hydra-three",
+      "motion": "breath",
+      "cell": "96",
+      "enemy": "enemy_hydra_three",
+      "beats": [
+        "approach",
+        "impact",
+        "recover"
+      ],
+      "frames": [
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "idle_b"
+      ],
+      "reach": "ranged",
+      "sheet": "generated-enemy-hydra-three",
+      "pixel": "breath",
+      "problems": []
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,60 @@
+// E: 약국 표본 진열장 — 눈알·뿔 큰 병 둘, 아래 버섯 병 하나; 꼭대기 윗면 3행(y=0~2)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 4
+@mat c wood 6
+@mat d wood 7
+@mat e wood 5
+@mat f dwood 2
+@mat g dwood 3
+@mat i glass 0
+@mat j glass 2
+@mat k glass 3
+@mat l glass 4
+@mat m glass 5
+@mat n iron 2
+@mat o iron 4
+@mat p iron 5
+@mat q linen 3
+@mat r linen 5
+@mat s linen 6
+@mat t red 2
+@mat u red 4
+@mat v brass 3
+@mat w brass 5
+@layer cabinet
+@mblock 0 0
+.bddddddddddddb.
+.dccecccccccecb.
+.dccccceeeccccb.
+.bbbbbbbbbbbbba.
+.afffffffffffa.
+.cbffoppffoppba.
+.cbfoovnfovvnba.
+.cbfilmifilmiba.
+.cblmkjilmqkjba.
+.cblrrkilmrkjba.
+.cblstsilmqkjba.
+.cblqrqilmqrjba.
+.cblmkjilmqqjba.
+.cbikkjiikkjiba.
+.cbfiijffiiifba.
+.cdeccccceeeecb.
+.ddcccccccccccb.
+.bbbbbbbbbbbbba.
+.afffffffffffa.
+.cbffffooofffba.
+.cbfffopwvfffba.
+.cbffilmkkiffba.
+.cbfflmuujjffba.
+.cbffluuutjffba.
+.cbfflmqqkjffba.
+.cbfflmqrkjffba.
+.cbffilkkjiffba.
+.cbfffiijifffba.
+.cdeccccceeeecb.
+.ddcccccccccccb.
+.bbbbbbbbbbbbba.
+.abba......abba.

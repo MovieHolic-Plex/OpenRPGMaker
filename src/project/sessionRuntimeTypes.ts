@@ -1,7 +1,10 @@
+import type { SpriteLook } from "@/project/eventCommands/cinematicStaging";
 // player/types.ts
 // 플레이어 쪽 공용 타입. 인터프리터가 요구하는 세션 인터페이스 등.
 // v2: switches/variables/timers/commonEvents 포함.
 
+import type { BlendModeName } from "@/project/blendMode";
+import type { EasingName } from "@/project/easing";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
 import type { RelationshipState } from "./relationshipState";
 import type { FactionStanceOverrides } from "@/project/factionRuntime";
@@ -25,6 +28,8 @@ export type RuntimePictureState = {
   readonly opacity?: number;
   readonly rotation?: number;
   readonly durationMs?: number;
+  readonly easing?: EasingName;
+  readonly blendMode?: Exclude<BlendModeName, "normal">;
 };
 
 export type M2RecordedFallback = {
@@ -44,6 +49,19 @@ export type M2ScreenRuntimeState = {
   tintDurationMs?: number;
   /** Tint Screen 의 색 필터(채도·흑백·세피아, %). 미지정 = 필터 없음. 전환은 tintDurationMs 를 따른다. */
   filter?: { saturation: number; grayscale: number; sepia: number };
+  /** 화면 왜곡(물결·모자이크·기울기). 미지정 = 없음. `@/project/eventCommands/screenDistortion`. */
+  distortion?: { wave: number; mosaic: number; rotate: number };
+  /** 왜곡 전환 시간(ms). 0/미지정 = 즉시. */
+  distortionDurationMs?: number;
+  /** 레터박스 띠 두께(화면 높이 %, 띠 하나). 미지정 = 없음. `@/project/eventCommands/cinematicStaging`. */
+  letterbox?: number;
+  /** 레터박스 전환 시간(ms). */
+  letterboxDurationMs?: number;
+  /**
+   * 캐릭터 모습 효과(색·뒤집기·기울기·포즈·잔상). 키 = "player" 또는 "<mapId>/<eventId>"
+   * (`spriteLookKey`). 화면에 보이는 지속 상태라 세이브에 함께 남는다.
+   */
+  spriteLooks?: Record<string, SpriteLook>;
   weather?: string;
 };
 

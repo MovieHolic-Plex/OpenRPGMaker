@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **112쪽 / 4175KB / 약 1,204,336 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **119쪽 / 4266KB / 약 1,231,583 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,16 +15,16 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 560KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3425 | ~162,472 |
-| `openwiki/editor-ai-tools.md` | 304KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2548 | ~87,517 |
-| `openwiki/editor-database.md` | 382KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2268 | ~111,485 |
+| `openwiki/editor-ai-panel.md` | 561KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3432 | ~162,821 |
+| `openwiki/editor-ai-tools.md` | 305KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2549 | ~87,847 |
+| `openwiki/editor-database.md` | 389KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2303 | ~113,923 |
 | `openwiki/editor-event-authoring.md` | 165KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 960 | ~47,991 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
 | `openwiki/editor-pre-edit-routing.md` | 180KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1131 | ~52,844 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 519 | ~20,470 |
-| `openwiki/runtime-battle.md` | 272KB | 31KB | 1413 | ~79,082 |
+| `openwiki/runtime-battle.md` | 302KB | 32KB | 1598 | ~88,225 |
 | `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 781 | ~32,382 |
 | `openwiki/runtime-project-schema.md` | 201KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1430 | ~55,958 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
@@ -37,9 +37,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/editor-ai-panel.md` | 25 | 2463, 2464, 2465, 2466, 2467, 2468, 2482, 2492 |
-| `openwiki/editor-ai-tools.md` | 6 | 1788, 1789, 1793, 1795, 1797, 1985 |
-| `openwiki/editor-database.md` | 8 | 949, 953, 954, 956, 957, 966, 992, 995 |
+| `openwiki/editor-ai-panel.md` | 25 | 2470, 2471, 2472, 2473, 2474, 2475, 2489, 2499 |
+| `openwiki/editor-ai-tools.md` | 6 | 1789, 1790, 1794, 1796, 1798, 1986 |
+| `openwiki/editor-database.md` | 8 | 951, 955, 956, 958, 959, 968, 994, 997 |
 | `openwiki/editor-event-authoring.md` | 16 | 429, 430, 433, 438, 439, 440, 441, 442 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 127, 140, 141, 143, 146, 147 |
@@ -79,6 +79,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/large-village-generation.md` | 6 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `scripts/force-save-large-village.mts`, `scripts/force-save-village-50.mts`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
+| `openwiki/native-enemy-retirement.md` | 1 | `scripts/generate-monster-images.mts` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/opening-still-pack.md` | 4 | `artifacts/stills-library-plan.json`, `queue-status.json`, `review/index.html`, `run-status.json` |
 | `openwiki/pixel-art-world-facility-complements.md` | 4 | `current-portable.json`, `library.json`, `preparation-proof.json`, `preparation-seal.json` |
@@ -91,8 +92,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
 | `openwiki/refmap-town-outside.md` | 2 | `D_REFMAP_Interior_Extra.png`, `preset.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
-| `openwiki/runtime-battle.md` | 19 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `assets/generated/charset-battlers/actorN-k.png`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
-| `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
+| `openwiki/runtime-battle.md` | 21 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `assets/generated/charset-battlers/actorN-k.png`, `audio-score.js`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png`, `test/battleLookFrontSkin.test.ts` |
+| `openwiki/runtime-m2-flow-controls.md` | 4 | `scripts/capture/capture-parallax-easing.mjs`, `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 29 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `phaser.min.js`, `render-relief-maps.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 4 | `output/evidence/stardew/stardew-legacyDb.json`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
@@ -123,18 +124,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 14KB · 163줄 · ~3,723 토큰
+### `openwiki/PROJECT_WIKI.md` — 14KB · 164줄 · ~3,761 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
-- `L62` Project identity
-- `L71` Main ownership boundaries
-- `L106` Authored tile placement references
-- `L112` How an AI should use this wiki
-- `L123` 프로젝트 정본 저장 (see root `AGENTS.md`)
-- `L131` Desktop UI integration truth (2026-08-11)
-- `L144` Per-project wiki structure
-- `L160` Staleness rule
+- `L63` Project identity
+- `L72` Main ownership boundaries
+- `L107` Authored tile placement references
+- `L113` How an AI should use this wiki
+- `L124` 프로젝트 정본 저장 (see root `AGENTS.md`)
+- `L132` Desktop UI integration truth (2026-08-11)
+- `L145` Per-project wiki structure
+- `L161` Staleness rule
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -215,7 +216,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/atlas-biome-interior.md` — 19KB · 132줄 · ~5,610 토큰
+### `openwiki/atlas-biome-interior.md` — 23KB · 144줄 · ~6,859 토큰
 
 - `L8` 원본과 칸
 - `L37` 코드
@@ -227,7 +228,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L92` 남은 것
 - `L99` 편집기 「새 맵 → 실내」 기본 (2026-10-01)
 - `L107` 고른 후보 반영 (2026-10-01)
-- `L123` 새 기물 길 (2026-10-01)
+- `L124` 새 기물 길 (2026-10-01)
+- `L137` 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
 
 ### `openwiki/autotiles.md` — 23KB · 217줄 · ~6,795 토큰
 
@@ -363,7 +365,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L55` 설치 지점
 - `L61` 테스트
 
-### `openwiki/editor-ai-panel.md` — 560KB · 3425줄 · ~162,472 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 561KB · 3432줄 · ~162,821 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L5` 도구 사용량 (2026-09-25)
 - `L12` 새 프로젝트 게임 기획 전달 (2026-09-22)
@@ -389,188 +391,188 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L504` 결과 보고서 모달 — 변경 지점마다 before/after 한 쌍 (2026-09-15, P2)
 - `L525` 조수 데크 「대화|작업」 탭 + 스튜디오 상세 — 팀원이 어디서 일하는지 한 곳 (2026-09-14, A안)
 - `L559` 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
-- `L644` 단독 작업은 결과 중심으로 표시한다 (2026-09-14)
-- `L664` 바로 깔기 (2026-09-25)
-  - `L707` 연속 주문 대기열 (2026-09-28)
-- `L744` 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
-- `L772` Five model roles and whole-map harmony review (2026-09-14)
-  - `L820` 검수 응답 재시도와 정직한 보고 (2026-09-16)
-- `L870` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
-- `L911` Run outcome line: four independent axes (2026-09-09)
-- `L962` P3 run retirement and stale drafts (2026-09-07)
-- `L1042` Map-scoped conversation archive (2026-09-08)
-  - `L1102` Editor history surface
-- `L1144` Independent result review and repair (2026-09-06)
-- `L1247` Combined P2 and independent-review ownership (2026-09-07)
-- `L1281` P2 run outcomes and user scope actions (2026-09-06)
-  - `L1337` Canonical requirements and genuine user actions
-- `L1409` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
-- `L1446` Live large-world QA: plan repair and final audit (2026-09-07)
-- `L1535` Assistant control audit fixes (2026-09-07)
-- `L1546` World structure activity labels (2026-09-06)
-- `L1555` Multi-map construction specifications (2026-09-06)
-- `L1622` Plan authoring has no small-plan quota (2026-09-06)
-- `L1641` Acceptance sticky note (2026-09-07)
-  - `L1691` Session-owned acceptance contract
-- `L2029` 자동 프로젝트 위키 (2026-09-07)
-- `L2061` Independent image generation settings (2026-09-07)
-- `L2062` Independent image generation settings (2026-09-08)
-- `L2100` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
-- `L2107` Map-targeted work outcomes (2026-09-06)
-- `L2122` 계획 항목의 연속 실행 증거 (2026-09-05)
-- `L2128` 계획 규모와 선언 자세 (2026-09-09)
-- `L2138` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
-- `L2147` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
-- `L2157` 조수의 맵 전환은 크로스페이드다 — 하드컷 금지 (2026-09-15)
-- `L2243` 패널 셸 · 도크 · 접기 · 컴포저
-- `L2391` 세션 수명 · 대화 컨텍스트
-- `L2408` 제안 적용 · 복구 · 완성도 린트
-- `L2496` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
-- `L2557` 영역 작업 · 시공 · 실내/집 파이프라인
-- `L2581` 툴 노출 · 프롬프트 · 의도 판정 · NPC
-- `L2595` 타일셋 이해 · 검토 위저드 (T1a/T1b)
-- `L2621` 저장 · 내보내기 · 프로젝트 생성
-- `L2629` 제공자 · OAuth · 동반 서비스
-  - `L2631` 첫 연결과 실제 작업 계정 (2026-10-01)
-- `L2697` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
-- `L2740` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
-- `L2773` 배치 의존성과 완료 멱등성 (2026-09-06)
-- `L2781` 모험 완료와 실제 적용 횟수 (2026-09-05)
-- `L2786` Assistant clean conversation — Phase 1 (2026-09-06)
-- `L2823` Assistant deck width resize (2026-09-07)
-  - `L2835` Legacy AI contract verification (2026-09-08)
-- `L2857` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
-- `L2874` 동반 서비스 자격: OMP 로그인 재사용과 명시적 해제 (2026-09-19)
-- `L2893` 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
-- `L2922` 스튜디오 3분할 — 가운데는 맵, 왼쪽은 실시간 조수·채팅, 오른쪽은 지금 보는 채팅 (2026-09-16)
-- `L2938` 하단 덱 → 오버레이 드로워 (2026-09-16)
-- `L2952` 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
-- `L2970` 조수 턴 예산 확대 (2026-09-18)
-- `L2978` 결과 본문과 접힌 작업 과정 (2026-09-18)
-- `L2988` 팀원 작업 예산 버튼 (2026-09-18)
-- `L3000` 왼쪽 팀 운영 메뉴 (2026-09-18)
-- `L3022` 다섯 적용 모드와 실제 맵 증분 반영 (2026-09-18)
-- `L3061` Feature16 — 프롬프트 라이브러리·대사 검토·실제 요청 검사기 (2026-09-21)
-  - `L3063` 퀘스트 프리셋 (2026-10-01)
-- `L3135` Pi 단일 마을 요청 계약 (2026-09-21)
-- `L3191` Pi 시공 연출과 공간 밑그림 복구 (2026-09-21)
-- `L3222` 실시간 맵 연출 헤드리스 (2026-09-22)
-- `L3232` 조수 적용은 바뀐 칸만 다시 그린다 (2026-09-22)
-- `L3293` 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
-- `L3301` 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
-- `L3312` 체크포인트 적용 권위는 노드 요약으로 비교한다 (2026-09-25)
-- `L3334` 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
-- `L3352` 턴 단계 계측과 실행 추론 강도 (2026-09-26)
-  - `L3357` 기록은 어디서 만들고 어디에 쓰이나
-  - `L3374` 다이얼이 실행 루프의 사고 강도를 정한다
-  - `L3382` 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
-- `L3395` AI 패널 렌더 비용 (2026-09-28)
-  - `L3417` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
+- `L651` 단독 작업은 결과 중심으로 표시한다 (2026-09-14)
+- `L671` 바로 깔기 (2026-09-25)
+  - `L714` 연속 주문 대기열 (2026-09-28)
+- `L751` 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
+- `L779` Five model roles and whole-map harmony review (2026-09-14)
+  - `L827` 검수 응답 재시도와 정직한 보고 (2026-09-16)
+- `L877` Retained map planning items and explicit reuse (2026-09-10, OPRN-019)
+- `L918` Run outcome line: four independent axes (2026-09-09)
+- `L969` P3 run retirement and stale drafts (2026-09-07)
+- `L1049` Map-scoped conversation archive (2026-09-08)
+  - `L1109` Editor history surface
+- `L1151` Independent result review and repair (2026-09-06)
+- `L1254` Combined P2 and independent-review ownership (2026-09-07)
+- `L1288` P2 run outcomes and user scope actions (2026-09-06)
+  - `L1344` Canonical requirements and genuine user actions
+- `L1416` User-confirmed interaction approach correction (CR-P7-1, 2026-09-08)
+- `L1453` Live large-world QA: plan repair and final audit (2026-09-07)
+- `L1542` Assistant control audit fixes (2026-09-07)
+- `L1553` World structure activity labels (2026-09-06)
+- `L1562` Multi-map construction specifications (2026-09-06)
+- `L1629` Plan authoring has no small-plan quota (2026-09-06)
+- `L1648` Acceptance sticky note (2026-09-07)
+  - `L1698` Session-owned acceptance contract
+- `L2036` 자동 프로젝트 위키 (2026-09-07)
+- `L2068` Independent image generation settings (2026-09-07)
+- `L2069` Independent image generation settings (2026-09-08)
+- `L2107` 브라우저 포커스와 도구 실행 대기 (2026-09-05)
+- `L2114` Map-targeted work outcomes (2026-09-06)
+- `L2129` 계획 항목의 연속 실행 증거 (2026-09-05)
+- `L2135` 계획 규모와 선언 자세 (2026-09-09)
+- `L2145` 조회 선행·계획 완료와 실행 종료 (2026-09-05)
+- `L2154` 조수 카메라 이동 수명·부드러운 줌 (2026-09-05)
+- `L2164` 조수의 맵 전환은 크로스페이드다 — 하드컷 금지 (2026-09-15)
+- `L2250` 패널 셸 · 도크 · 접기 · 컴포저
+- `L2398` 세션 수명 · 대화 컨텍스트
+- `L2415` 제안 적용 · 복구 · 완성도 린트
+- `L2503` 고스트 미리보기 · 활동 표시 · 청사진 · 카메라
+- `L2564` 영역 작업 · 시공 · 실내/집 파이프라인
+- `L2588` 툴 노출 · 프롬프트 · 의도 판정 · NPC
+- `L2602` 타일셋 이해 · 검토 위저드 (T1a/T1b)
+- `L2628` 저장 · 내보내기 · 프로젝트 생성
+- `L2636` 제공자 · OAuth · 동반 서비스
+  - `L2638` 첫 연결과 실제 작업 계정 (2026-10-01)
+- `L2704` Autonomous run mode (autonomous-ai-rpg, todos 1-6)
+- `L2747` 분리 브랜치 마일스톤 회계 복구 (2026-09-05)
+- `L2780` 배치 의존성과 완료 멱등성 (2026-09-06)
+- `L2788` 모험 완료와 실제 적용 횟수 (2026-09-05)
+- `L2793` Assistant clean conversation — Phase 1 (2026-09-06)
+- `L2830` Assistant deck width resize (2026-09-07)
+  - `L2842` Legacy AI contract verification (2026-09-08)
+- `L2864` 의도 선언과 커버리지 감사는 각자 예산을 쓴다 (2026-09-16)
+- `L2881` 동반 서비스 자격: OMP 로그인 재사용과 명시적 해제 (2026-09-19)
+- `L2900` 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
+- `L2929` 스튜디오 3분할 — 가운데는 맵, 왼쪽은 실시간 조수·채팅, 오른쪽은 지금 보는 채팅 (2026-09-16)
+- `L2945` 하단 덱 → 오버레이 드로워 (2026-09-16)
+- `L2959` 수용 기준: DB 레코드 값과 지연 적용의 런 수명 (2026-09-16)
+- `L2977` 조수 턴 예산 확대 (2026-09-18)
+- `L2985` 결과 본문과 접힌 작업 과정 (2026-09-18)
+- `L2995` 팀원 작업 예산 버튼 (2026-09-18)
+- `L3007` 왼쪽 팀 운영 메뉴 (2026-09-18)
+- `L3029` 다섯 적용 모드와 실제 맵 증분 반영 (2026-09-18)
+- `L3068` Feature16 — 프롬프트 라이브러리·대사 검토·실제 요청 검사기 (2026-09-21)
+  - `L3070` 퀘스트 프리셋 (2026-10-01)
+- `L3142` Pi 단일 마을 요청 계약 (2026-09-21)
+- `L3198` Pi 시공 연출과 공간 밑그림 복구 (2026-09-21)
+- `L3229` 실시간 맵 연출 헤드리스 (2026-09-22)
+- `L3239` 조수 적용은 바뀐 칸만 다시 그린다 (2026-09-22)
+- `L3300` 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
+- `L3308` 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
+- `L3319` 체크포인트 적용 권위는 노드 요약으로 비교한다 (2026-09-25)
+- `L3341` 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
+- `L3359` 턴 단계 계측과 실행 추론 강도 (2026-09-26)
+  - `L3364` 기록은 어디서 만들고 어디에 쓰이나
+  - `L3381` 다이얼이 실행 루프의 사고 강도를 정한다
+  - `L3389` 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
+- `L3402` AI 패널 렌더 비용 (2026-09-28)
+  - `L3424` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
 
-### `openwiki/editor-ai-tools.md` — 304KB · 2548줄 · ~87,517 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 305KB · 2549줄 · ~87,847 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
-- `L13` 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
-- `L31` 마을 시공도 완성 마을 사례를 본다 (2026-09-28)
-- `L63` 배치 매칭은 대체하지 않고 거절한다 (2026-09-27 전수 조사)
-- `L75` 탈것 배치 도구 — place_vehicle (2026-09-26)
-- `L88` 보수·단계 요청 전용 도구 — repair_fence, improve_title_screen (2026-09-26)
-- `L103` 절벽 높이 도구 — read_relief · sculpt_relief · check_relief (2026-09-26)
-- `L119` 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
-  - `L161` 실행기 계약 — 업로드 타일셋 칩셋 바꿔치기 거부 (2026-09-25)
-  - `L181` 실행기 계약 — 칩셋 계열 검사 `tileset-family-change` 와 `ask_tileset_change` (2026-09-25)
-  - `L197` 남은 일 (네 층)
-- `L207` 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
-- `L230` 충격 연출 (2026-09-22)
-- `L236` 단독 조수의 병렬 도구 실행 (2026-09-21)
-  - `L259` 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
-- `L260` AI 새 야외·마을의 기본 칩셋 (2026-09-21, 2026-10-01 갱신)
-- `L301` 숲 나무 물체 산포 — 수관이 빠지던 문제 (2026-09-27)
-- `L318` 나무 밑 그림자 (2026-09-27)
-- `L341` 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
-- `L383` 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
-  - `L396` 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
-  - `L404` 검증
-- `L412` 조수 웹 검색 도구 (2026-09-21)
-- `L436` 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
-- `L444` 전투 저작 입력 수정 (2026-09-20)
-- `L446` 이벤트 명령 AI 공용 도구 (2026-09-20)
-- `L496` 전투 저작 입력 수정 (2026-09-20)
-- `L507` NPC 공용 얼굴 매핑 연결 (2026-09-18)
-  - `L518` 얼굴 짝 전수 교정 (2026-09-28)
-- `L544` 이식 타일 최초 검수 준비 대기 (2026-09-18)
-- `L556` paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
-- `L575` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
-- `L612` 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
-- `L647` 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
-  - `L672` 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
-  - `L689` 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
-- `L709` 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
-- `L741` 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
-- `L768` 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
-- `L788` 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
-- `L853` 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
-- `L892` Exact project values and sourced declarations (2026-09-08)
-- `L920` Measured zero-prop rejection diagnostics (2026-09-07)
-- `L1017` Logical walkthrough versus real player traversal (2026-09-07)
-- `L1025` Tile-query selector and filter boundaries (2026-09-07)
-- `L1034` Action enemy profile edits (2026-09-07)
-- `L1052` Explicit field-spawn mutations (2026-09-07)
-- `L1078` Monster resource discovery and AI appearance evidence (2026-09-07)
-- `L1155` House-site tree clearance before ownership (2026-09-07)
-- `L1166` Flower-yard material in house lots (2026-09-07)
-- `L1179` Pre-write original grounding (2026-09-06)
-- `L1254` Hybrid native tool exposure (2026-09-19)
-- `L1293` Review approval lifetime (R3, 2026-09-06)
-- `L1311` Audio description tools and event candidates
-  - `L1331` Search pages and full detail
-  - `L1345` Event prompt projection is not ID authority
-- `L1379` list_resources picture 검색 (2026-09-21)
-- `L1391` P3 captured proposal base (2026-09-07)
-- `L1463` Project wiki application ownership (2026-09-07)
-- `L1476` Character appearance image candidates v1 (2026-09-06)
-- `L1534` Completed-house transaction protection - Phase 1 (2026-09-05)
-- `L1608` Completed-house construction protection - Phase 2 (2026-09-06)
-- `L1647` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
-- `L1674` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
-- `L1815` P2 requirement and exact-verdict inputs (2026-09-06)
-- `L1890` Project-wide quality evaluation
-- `L1904` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L1940` Action controls guide (2026-09-07)
-- `L1983` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L2014` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L2029` 마을 설계서 (2026-09-05)
-- `L2033` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L2072` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L2079` 모험 저작 완료와 재시도 (2026-09-05)
-- `L2109` 실제 이미지 입력 보존 (2026-09-07)
-- `L2123` Physical tile passage exposure (2026-09-08)
-- `L2147` NPC 자율 이동 아키타입 추론 (2026-09-17)
-- `L2177` Full RPG first-turn foundation (2026-09-19)
-- `L2195` Party, actor appearance, and event-linked inventory tools (2026-09-19)
-- `L2215` Opening, game-over, and audio discovery tools (2026-09-19)
-- `L2248` 범용 이미지 에셋 생성 (2026-09-19)
-- `L2260` Feature16 combat and climate authoring tools (2026-09-21)
-- `L2270` 마을 시공 후 완료 계약 (2026-09-21)
-- `L2292` 타일 참고문서 선행 조회 (2026-09-21)
-  - `L2299` 저장된 AI 계획 본문 조회 (2026-09-23)
-  - `L2303` 호스트 공용 DB 참고문서 갱신 (2026-09-23)
-- `L2325` 실제 타일 규칙 수정 도구 노출 (2026-09-23)
-  - `L2330` 타일셋별 맵 의미 조회 (2026-09-23)
-- `L2334` Pi 완성 맵 이미지 반환 경로 (2026-09-23)
-- `L2364` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
-  - `L2387` 공용 저작 장면 → 명시적인 복사 요청 (2026-09-25)
-  - `L2411` 실내 직접 배치와 읽기 전용 검사 (2026-09-25)
-  - `L2430` 현대 맵의 PAW 전용 소재 선택 (2026-09-25)
-  - `L2459` 실내 요구조건과 같은 실행 안의 재검사 (2026-09-25 후속)
-- `L2490` Isaiah 물 태그 판정 보완 (2026-09-24)
-- `L2494` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
-- `L2504` Monster follower graphic authoring (2026-09-25)
-- `L2520` 기존 서사 플래그의 설명 수정 (2026-09-25)
-- `L2533` 타이틀 오프닝 효과 도구 (2026-09-25)
-- `L2539` 크로노 트리거식 필드 도구 인자 (2026-09-26)
+- `L14` 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
+- `L32` 마을 시공도 완성 마을 사례를 본다 (2026-09-28)
+- `L64` 배치 매칭은 대체하지 않고 거절한다 (2026-09-27 전수 조사)
+- `L76` 탈것 배치 도구 — place_vehicle (2026-09-26)
+- `L89` 보수·단계 요청 전용 도구 — repair_fence, improve_title_screen (2026-09-26)
+- `L104` 절벽 높이 도구 — read_relief · sculpt_relief · check_relief (2026-09-26)
+- `L120` 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
+  - `L162` 실행기 계약 — 업로드 타일셋 칩셋 바꿔치기 거부 (2026-09-25)
+  - `L182` 실행기 계약 — 칩셋 계열 검사 `tileset-family-change` 와 `ask_tileset_change` (2026-09-25)
+  - `L198` 남은 일 (네 층)
+- `L208` 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
+- `L231` 충격 연출 (2026-09-22)
+- `L237` 단독 조수의 병렬 도구 실행 (2026-09-21)
+  - `L260` 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+- `L261` AI 새 야외·마을의 기본 칩셋 (2026-09-21, 2026-10-01 갱신)
+- `L302` 숲 나무 물체 산포 — 수관이 빠지던 문제 (2026-09-27)
+- `L319` 나무 밑 그림자 (2026-09-27)
+- `L342` 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
+- `L384` 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
+  - `L397` 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
+  - `L405` 검증
+- `L413` 조수 웹 검색 도구 (2026-09-21)
+- `L437` 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
+- `L445` 전투 저작 입력 수정 (2026-09-20)
+- `L447` 이벤트 명령 AI 공용 도구 (2026-09-20)
+- `L497` 전투 저작 입력 수정 (2026-09-20)
+- `L508` NPC 공용 얼굴 매핑 연결 (2026-09-18)
+  - `L519` 얼굴 짝 전수 교정 (2026-09-28)
+- `L545` 이식 타일 최초 검수 준비 대기 (2026-09-18)
+- `L557` paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
+- `L576` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
+- `L613` 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
+- `L648` 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
+  - `L673` 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
+  - `L690` 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
+- `L710` 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
+- `L742` 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
+- `L769` 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
+- `L789` 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
+- `L854` 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
+- `L893` Exact project values and sourced declarations (2026-09-08)
+- `L921` Measured zero-prop rejection diagnostics (2026-09-07)
+- `L1018` Logical walkthrough versus real player traversal (2026-09-07)
+- `L1026` Tile-query selector and filter boundaries (2026-09-07)
+- `L1035` Action enemy profile edits (2026-09-07)
+- `L1053` Explicit field-spawn mutations (2026-09-07)
+- `L1079` Monster resource discovery and AI appearance evidence (2026-09-07)
+- `L1156` House-site tree clearance before ownership (2026-09-07)
+- `L1167` Flower-yard material in house lots (2026-09-07)
+- `L1180` Pre-write original grounding (2026-09-06)
+- `L1255` Hybrid native tool exposure (2026-09-19)
+- `L1294` Review approval lifetime (R3, 2026-09-06)
+- `L1312` Audio description tools and event candidates
+  - `L1332` Search pages and full detail
+  - `L1346` Event prompt projection is not ID authority
+- `L1380` list_resources picture 검색 (2026-09-21)
+- `L1392` P3 captured proposal base (2026-09-07)
+- `L1464` Project wiki application ownership (2026-09-07)
+- `L1477` Character appearance image candidates v1 (2026-09-06)
+- `L1535` Completed-house transaction protection - Phase 1 (2026-09-05)
+- `L1609` Completed-house construction protection - Phase 2 (2026-09-06)
+- `L1648` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+- `L1675` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+- `L1816` P2 requirement and exact-verdict inputs (2026-09-06)
+- `L1891` Project-wide quality evaluation
+- `L1905` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L1941` Action controls guide (2026-09-07)
+- `L1984` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L2015` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L2030` 마을 설계서 (2026-09-05)
+- `L2034` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L2073` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L2080` 모험 저작 완료와 재시도 (2026-09-05)
+- `L2110` 실제 이미지 입력 보존 (2026-09-07)
+- `L2124` Physical tile passage exposure (2026-09-08)
+- `L2148` NPC 자율 이동 아키타입 추론 (2026-09-17)
+- `L2178` Full RPG first-turn foundation (2026-09-19)
+- `L2196` Party, actor appearance, and event-linked inventory tools (2026-09-19)
+- `L2216` Opening, game-over, and audio discovery tools (2026-09-19)
+- `L2249` 범용 이미지 에셋 생성 (2026-09-19)
+- `L2261` Feature16 combat and climate authoring tools (2026-09-21)
+- `L2271` 마을 시공 후 완료 계약 (2026-09-21)
+- `L2293` 타일 참고문서 선행 조회 (2026-09-21)
+  - `L2300` 저장된 AI 계획 본문 조회 (2026-09-23)
+  - `L2304` 호스트 공용 DB 참고문서 갱신 (2026-09-23)
+- `L2326` 실제 타일 규칙 수정 도구 노출 (2026-09-23)
+  - `L2331` 타일셋별 맵 의미 조회 (2026-09-23)
+- `L2335` Pi 완성 맵 이미지 반환 경로 (2026-09-23)
+- `L2365` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
+  - `L2388` 공용 저작 장면 → 명시적인 복사 요청 (2026-09-25)
+  - `L2412` 실내 직접 배치와 읽기 전용 검사 (2026-09-25)
+  - `L2431` 현대 맵의 PAW 전용 소재 선택 (2026-09-25)
+  - `L2460` 실내 요구조건과 같은 실행 안의 재검사 (2026-09-25 후속)
+- `L2491` Isaiah 물 태그 판정 보완 (2026-09-24)
+- `L2495` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
+- `L2505` Monster follower graphic authoring (2026-09-25)
+- `L2521` 기존 서사 플래그의 설명 수정 (2026-09-25)
+- `L2534` 타이틀 오프닝 효과 도구 (2026-09-25)
+- `L2540` 크로노 트리거식 필드 도구 인자 (2026-09-26)
 
-### `openwiki/editor-database.md` — 382KB · 2268줄 · ~111,485 토큰 · 통째읽기 잘림 · 깨진 줄 8
+### `openwiki/editor-database.md` — 389KB · 2303줄 · ~113,923 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
 - `L3` 레트로 전투 기믹 편집 칸 (2026-09-30)
 - `L11` 도트 연출 탭 · 애니메이션 갤러리 (2026-09-30, A2)
@@ -594,109 +596,110 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L325` 복합 공간 편집기 (2026-09-13)
 - `L349` Placed-place child proposal adapter (2026-09-08)
 - `L354` Monster resource metadata worksheet (2026-09-07)
-- `L360` Shared database CSS ownership (2026-09-06)
-- `L401` 전투 몬스터 표시 크기 (2026-09-06)
-- `L408` 전투 명령 배치 스튜디오 (2026-09-05)
-- `L425` 캐릭터·얼굴 메타데이터 (2026-09-06)
-- `L432` Character appearance catalog v1 (2026-09-06)
-- `L476` Concept navigation integration (2026-09-06)
-- `L490` Opening still media, sequence music and AI generation (2026-09-14)
-  - `L492` 새 프로젝트 기본 오프닝 (2026-09-21)
-- `L517` Opening and game-over authoring (2026-09-06)
-- `L573` Cinematic media preparation boundary (2026-09-06)
-- `L592` System settings workspace (2026-09-06)
-- `L653` Graphic 칩 사용자 교정 29건 (2026-09-05)
-- `L669` Custom equipment slot authoring (2026-09-05)
-- `L677` 통합 아이템·장비 카탈로그 (2026-09-05)
-- `L685` 아이템·장비 저작 신뢰성 (2026-09-05)
-- `L696` 전투 몬스터와 포획·성장 종족 (Phase 1)
-  - `L706` 종족 검색과 관련 레코드 노출 (Phase 2)
-- `L716` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
-  - `L741` Monster action input trust (Phase 1, 2026-09-05)
-  - `L750` Monster numeric caption activation (Phase 2, 2026-09-05)
-  - `L757` Monster nested dialog focus (Phase 2, 2026-09-05)
-- `L763` 몬스터 그룹 저작 신뢰성 (2026-09-05)
-- `L778` Database Studio chrome (2026-08-24)
-  - `L793` Actor data-table slice (2026-08-25)
-- `L803` 프로젝트 위키 출처와 수동 편집 (2026-09-07)
-- `L815` 세계관 그룹 — 세계 개요 · 설정집 (2026-09-18)
-  - `L837` 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
-- `L849` '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
-- `L857` P2 낚시·채집·박물관 저작 표면 (2026-08-25)
-- `L862` 생활 저작 경계와 자동 화자 (task14, 2026-09-06)
-- `L871` 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
-- `L884` 생활 기술·제작 저작 표면 (2026-08-24)
-- `L903` Database Editor
-- `L1000` Beginner-centric adversarial review (2026-08)
-- `L1004` DB UI modernization (2026-08)
-- `L1040` P2 spatial authoring (2026-08-25)
-- `L1052` 맵 그룹 — 개념 우선 탐색 Phase 1 (2026-09-05)
-- `L1074` 오브젝트·공간 수정 복구 (2026-09-13)
-- `L1096` 오브젝트 브라우저와 공간 배치 작업대 (2026-09-13)
-- `L1117` 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
-- `L1161` 타일 작업대 — 공간 셸 안 레이아웃 계약 (2026-09-13)
-- `L1192` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
-- `L1213` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
-- `L1232` 맵 → 개념 꾸러미 (2026-09-02 시작, 2026-09-05 개념 우선 Phase 1)
-- `L1263` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
-- `L1276` '구조물' 편집기와 파일 입출력 (2026-08-29)
-- `L1295` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
-- `L1315` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
-  - `L1330` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
-  - `L1338` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
-  - `L1350` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
-  - `L1401` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
-- `L1423` Battle-animation editor autoplay (2026-09-05)
-- `L1430` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
-  - `L1441` retro2003 도트 전투 미리보기 (2026-09-28)
-  - `L1458` 적 탭 도트 미리보기 카드 (2026-09-28 mx-ed)
-  - `L1466` 몬스터 스킬 미리보기 (2026-09-28 med)
-- `L1475` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
-  - `L1490` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
-  - `L1568` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
-  - `L1582` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
-  - `L1625` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
-- `L1634` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
-  - `L1658` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
-- `L1701` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
-  - `L1712` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
-- `L1720` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
-  - `L1736` AI로 몬스터·아이템 생성 (2026-08-30)
-  - `L1757` AI 검토 오버레이 — 레코드 카드로 before → after 를 보고 적용한다 (2026-09-15)
-  - `L1851` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
-- `L1867` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
-- `L1944` 직업 승급 트리 · 스킬 트리 (2026-09-05)
-- `L1950` 미회수 편집 후속 통합 (2026-09-05)
-- `L1954` 마을 설계서 (2026-09-05)
-- `L1959` 구조물 증분 메타 정정 (2026-09-05)
-- `L1967` 개념 회수 UI 직접 렌더 QA (2026-09-05)
-- `L1971` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
-- `L1978` 검토한 실내 기본값의 원격 반영 (2026-09-05)
-- `L1982` 특정 꾸러미의 명시적 교체 (2026-09-06)
-- `L1986` 생성 아이템 아트에 dry-run 가짜가 섞여 들어갔다 (2026-09-16)
-- `L2004` 배·항구 공통 기본 장소 (2026-09-17)
-- `L2017` Game menu design options (2026-09-18)
-- `L2046` 캐릭터·얼굴 연결 검토 개선 (2026-09-18)
-- `L2056` 얼굴 대응표 실물 대조와 추천 제외 (2026-09-18 후속)
-  - `L2064` 캐릭터·얼굴 화면 레이아웃 보정 (2026-09-18)
-- `L2072` 캐릭터·얼굴은 프로젝트 밖 공용 자료 (2026-09-18 저장 범위 수정)
-  - `L2083` 공용 기본 매핑 재저작 (2026-09-18)
-- `L2091` Feature16 climate and action forms (2026-09-21)
-- `L2110` Combat authoring studio (feature16, 2026-09-21)
-- `L2117` Troop intent and weakness authoring (2026-09-21)
-- `L2121` 인게임 HUD 구성 편집기 (2026-09-21)
-  - `L2131` 장르별 HUD와 글꼴 (2026-09-21 후속)
-- `L2142` 숲·마을·동굴 공통 기본 장소 13종 (2026-09-21)
-- `L2167` 타일셋 참고문서 (2026-09-21)
-  - `L2171` 숲마을 공용 소품 및 장소 (2026-09-21)
-  - `L2194` 세계 개요 스프레드 뷰 (2026-09-22)
-  - `L2203` 세계 개요 탭 구조 — 문서 / 조수 전달 (2026-09-22 v2)
-  - `L2212` 세계 개요 본문 우선 — 도화지 첫 화면 (2026-09-22 v3)
-  - `L2221` 세계 개요 헤드 압축 + 세계 설정 평문 폼 (2026-09-22 v4)
-  - `L2230` 세계 개요 헤드 v5 + 법칙 대화상자 토큰 스코프 수정 (2026-09-22)
-  - `L2238` 세계 설정 = AI 문답 인터뷰 (2026-09-22 v6)
-  - `L2249` 세계 개요 스프레드 헤드 삭제 (2026-09-22 v6)
-  - `L2258` 세계관 본문 AI 도움 — 초안·이어쓰기 (2026-09-22 v7)
+- `L362` Shared database CSS ownership (2026-09-06)
+- `L403` 전투 몬스터 표시 크기 (2026-09-06)
+- `L410` 전투 명령 배치 스튜디오 (2026-09-05)
+- `L427` 캐릭터·얼굴 메타데이터 (2026-09-06)
+- `L434` Character appearance catalog v1 (2026-09-06)
+- `L478` Concept navigation integration (2026-09-06)
+- `L492` Opening still media, sequence music and AI generation (2026-09-14)
+  - `L494` 새 프로젝트 기본 오프닝 (2026-09-21)
+- `L519` Opening and game-over authoring (2026-09-06)
+- `L575` Cinematic media preparation boundary (2026-09-06)
+- `L594` System settings workspace (2026-09-06)
+- `L655` Graphic 칩 사용자 교정 29건 (2026-09-05)
+- `L671` Custom equipment slot authoring (2026-09-05)
+- `L679` 통합 아이템·장비 카탈로그 (2026-09-05)
+- `L687` 아이템·장비 저작 신뢰성 (2026-09-05)
+- `L698` 전투 몬스터와 포획·성장 종족 (Phase 1)
+  - `L708` 종족 검색과 관련 레코드 노출 (Phase 2)
+- `L718` 몬스터 작업실 — 미리보기 · 행동 · 속성 (2026-09-05)
+  - `L743` Monster action input trust (Phase 1, 2026-09-05)
+  - `L752` Monster numeric caption activation (Phase 2, 2026-09-05)
+  - `L759` Monster nested dialog focus (Phase 2, 2026-09-05)
+- `L765` 몬스터 그룹 저작 신뢰성 (2026-09-05)
+- `L780` Database Studio chrome (2026-08-24)
+  - `L795` Actor data-table slice (2026-08-25)
+- `L805` 프로젝트 위키 출처와 수동 편집 (2026-09-07)
+- `L817` 세계관 그룹 — 세계 개요 · 설정집 (2026-09-18)
+  - `L839` 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
+- `L851` '생성 규칙' 탭 — AI 마을 생성의 물·숲·길 (2026-08-30)
+- `L859` P2 낚시·채집·박물관 저작 표면 (2026-08-25)
+- `L864` 생활 저작 경계와 자동 화자 (task14, 2026-09-06)
+- `L873` 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
+- `L886` 생활 기술·제작 저작 표면 (2026-08-24)
+- `L905` Database Editor
+- `L1002` Beginner-centric adversarial review (2026-08)
+- `L1006` DB UI modernization (2026-08)
+- `L1042` P2 spatial authoring (2026-08-25)
+- `L1054` 맵 그룹 — 개념 우선 탐색 Phase 1 (2026-09-05)
+- `L1076` 오브젝트·공간 수정 복구 (2026-09-13)
+- `L1098` 오브젝트 브라우저와 공간 배치 작업대 (2026-09-13)
+- `L1119` 맵 그룹 — 공간 저작 셸 UX 계약 (2026-09-12)
+- `L1163` 타일 작업대 — 공간 셸 안 레이아웃 계약 (2026-09-13)
+- `L1194` 오토타일 설정 — 9칸/11칸/커스텀 카드 (2026-09-01)
+- `L1215` 공간 종류와 구조물은 다른 면이다 (2026-09-01)
+- `L1234` 맵 → 개념 꾸러미 (2026-09-02 시작, 2026-09-05 개념 우선 Phase 1)
+- `L1265` '구조물' 탭 — 두 출처 앨범 + 방 종류 문법 (2026-08-28)
+- `L1278` '구조물' 편집기와 파일 입출력 (2026-08-29)
+- `L1297` 삭제 가드는 묶음 조건(all/any/not) 안까지 본다 (2026-08-29 실측 결함 수정)
+- `L1317` '진영' 탭과 몬스터 소속 진영 (2026-08-29)
+  - `L1332` 몬스터 폼의 소속 진영 (`databaseEnemyRecordView.ts`)
+  - `L1340` 다 만들어 놓고 못 쓰던 이유 — `[편집]` 이 화면 밖 67px 에 있었다 (2026-08-29 실측)
+  - `L1352` 구조물 어휘 — 역할·레이어·테마·증분 축·칸 힌트 (2026-08-30)
+  - `L1403` 편집기를 맵 타일 편집기 수준으로 (2026-08-30 실측)
+- `L1425` Battle-animation editor autoplay (2026-09-05)
+- `L1432` 스킬 탭 `연출` 카드 = 살아 있는 애니메이션 스테이지 (2026-08-30)
+  - `L1443` retro2003 도트 전투 미리보기 (2026-09-28)
+  - `L1460` 적 탭 도트 미리보기 카드 (2026-09-28 mx-ed)
+  - `L1468` 몬스터 스킬 미리보기 (2026-09-28 med)
+- `L1477` 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
+  - `L1492` 헤더는 설명문이 아니라 아이콘 칩 한 줄이다
+  - `L1570` 숫자 입력은 스테퍼를 먼저 붙이고 그다음 스피너를 지운다
+  - `L1584` 줄상자 바닥은 1.35 다 (1.25 는 큰 한글 제목에서 깎인다)
+  - `L1627` 이미지 실패는 빈 상자가 아니라 라벨 붙은 자리표시자다
+- `L1636` '마을' 탭 — 마을 하네스 값을 사람이 저작한다 (2026-08-30)
+  - `L1660` 붓을 고르면 화면이 흔들렸다 — 재부모가 스크롤·포커스를 지운다 (2026-08-30 실측)
+- `L1703` 날개마다 층수를 정한다 — 계단식 2층 (2026-09-11)
+  - `L1714` 지붕 가장자리 판정은 "다른 지붕면인가"다 (2026-09-11 실측 결함)
+- `L1722` '마을' 탭 — 숫자칸을 그림으로 바꾼다 (2026-08-31)
+  - `L1738` AI로 몬스터·아이템 생성 (2026-08-30)
+  - `L1764` AI 검토 오버레이 — 레코드 카드로 before → after 를 보고 적용한다 (2026-09-15)
+  - `L1858` AI로 몬스터·아이템 생성 — 대화상자 재작성 (2026-09-03)
+- `L1874` Database Studio v2 — 30탭 셸·폼 문법 통일 (2026-09-03)
+- `L1951` 직업 승급 트리 · 스킬 트리 (2026-09-05)
+- `L1957` 미회수 편집 후속 통합 (2026-09-05)
+- `L1961` 마을 설계서 (2026-09-05)
+- `L1966` 구조물 증분 메타 정정 (2026-09-05)
+- `L1974` 개념 회수 UI 직접 렌더 QA (2026-09-05)
+- `L1978` Battle-animation preview-first graphic controls (Phase 2, 2026-09-05)
+- `L1985` 검토한 실내 기본값의 원격 반영 (2026-09-05)
+- `L1989` 특정 꾸러미의 명시적 교체 (2026-09-06)
+- `L1993` 생성 아이템 아트에 dry-run 가짜가 섞여 들어갔다 (2026-09-16)
+- `L2011` 배·항구 공통 기본 장소 (2026-09-17)
+- `L2024` Game menu design options (2026-09-18)
+- `L2053` 캐릭터·얼굴 연결 검토 개선 (2026-09-18)
+- `L2063` 얼굴 대응표 실물 대조와 추천 제외 (2026-09-18 후속)
+  - `L2071` 캐릭터·얼굴 화면 레이아웃 보정 (2026-09-18)
+- `L2079` 캐릭터·얼굴은 프로젝트 밖 공용 자료 (2026-09-18 저장 범위 수정)
+  - `L2090` 공용 기본 매핑 재저작 (2026-09-18)
+- `L2098` Feature16 climate and action forms (2026-09-21)
+- `L2117` Combat authoring studio (feature16, 2026-09-21)
+- `L2124` Troop intent and weakness authoring (2026-09-21)
+- `L2128` 인게임 HUD 구성 편집기 (2026-09-21)
+  - `L2138` 장르별 HUD와 글꼴 (2026-09-21 후속)
+- `L2149` 숲·마을·동굴 공통 기본 장소 13종 (2026-09-21)
+- `L2174` 타일셋 참고문서 (2026-09-21)
+  - `L2178` 숲마을 공용 소품 및 장소 (2026-09-21)
+  - `L2201` 세계 개요 스프레드 뷰 (2026-09-22)
+  - `L2210` 세계 개요 탭 구조 — 문서 / 조수 전달 (2026-09-22 v2)
+  - `L2219` 세계 개요 본문 우선 — 도화지 첫 화면 (2026-09-22 v3)
+  - `L2228` 세계 개요 헤드 압축 + 세계 설정 평문 폼 (2026-09-22 v4)
+  - `L2237` 세계 개요 헤드 v5 + 법칙 대화상자 토큰 스코프 수정 (2026-09-22)
+  - `L2245` 세계 설정 = AI 문답 인터뷰 (2026-09-22 v6)
+  - `L2256` 세계 개요 스프레드 헤드 삭제 (2026-09-22 v6)
+  - `L2265` 세계관 본문 AI 도움 — 초안·이어쓰기 (2026-09-22 v7)
+- `L2276` 공용 아이템 1,000종과 통일 도트 작업 (2026-10-01)
 
 ### `openwiki/editor-event-authoring.md` — 165KB · 960줄 · ~47,991 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -946,6 +949,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
+### `openwiki/editor-workshop.md` — 2KB · 12줄 · ~699 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
 ### `openwiki/emerald-fields.md` — 23KB · 208줄 · ~7,314 토큰
 
 - `L17` 95% 이상 유사도 요청에 따른 계곡 개정
@@ -981,6 +988,39 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L168` 통합 API
 - `L192` 연결 프리셋과 그래프 (2026-09-06)
 - `L226` 검증
+
+### `openwiki/harnesses/README.md` — 4KB · 45줄 · ~1,082 토큰
+
+- `L6` 위치 (저장소 루트 기준)
+- `L26` 규칙
+- `L36` 기존 것과의 관계 (2026-10-01 실측)
+- `L42` 하네스 목록
+
+### `openwiki/harnesses/interior-props.md` — 1KB · 11줄 · ~366 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/harnesses/modern-chipset.md` — 3KB · 38줄 · ~846 토큰
+
+- `L8` 왜 만들었나 (2026-10-01)
+- `L14` 흐름
+- `L24` 파일
+- `L34` 함정
+
+### `openwiki/harnesses/monster-collect-species.md` — 17KB · 152줄 · ~5,055 토큰
+
+- `L8` 빠른 시작
+- `L29` 파일
+- `L51` 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
+- `L60` 애니메이션 — 대기는 움직이고, 큰 동작은 한 줄로 생성한다 (2026-10-01 비교 시험)
+  - `L76` 공격 방향 계약 (`animation.direction`)
+  - `L87` 엔진 비트 → 프레임 (`actions.*.keys`)
+  - `L94` 입·손 자리 (`anim.json` 의 `emit`)
+  - `L101` 스킬별 공격 = 자세 몇 가지 × 스킬 매핑 (`anim/poses.ts`)
+- `L114` 검사 (`build` · `check`)
+- `L131` 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
+- `L137` 시험
+- `L146` 아직 없는 것
 
 ### `openwiki/horror-authoring.md` — 18KB · 186줄 · ~5,583 토큰
 
@@ -1070,6 +1110,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L19` State and mutation contract
 - `L49` Resource Manager monster tab (2026-09-12)
 - `L64` Verification
+
+### `openwiki/native-enemy-retirement.md` — 6KB · 43줄 · ~1,739 토큰
+
+- `L5` 공용 자산과 표시 계약
+- `L14` 폐기와 호환성
+- `L22` 기존 RM2003 스킬과 새 시안의 비교
+- `L35` 원본·근거·재생성
 
 ### `openwiki/night-monster.md` — 9KB · 122줄 · ~2,882 토큰
 
@@ -1203,7 +1250,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L56` 한계와 완료 근거의 구분
 - `L73` 재현
 
-### `openwiki/quickstart.md` — 19KB · 193줄 · ~5,548 토큰
+### `openwiki/quickstart.md` — 19KB · 195줄 · ~5,655 토큰
 
 - `L6` 0. 여기서 에이전트가 실제로 헤매는 이유 (실측 2026-08-30)
 - `L17` 1. 환경 — 여기가 틀리면 이후 전부 헛수고
@@ -1213,8 +1260,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L93` 1c. 오프닝 이미지 팩
 - `L100` 2. 검증 — 무엇이 진짜 게이트인가
 - `L127` 3. 어디를 고치나 — 기능 → 진입 파일
-- `L175` 4. 위키를 읽는 법
-- `L187` 5. 끝났다고 말할 수 있는 조건
+- `L177` 4. 위키를 읽는 법
+- `L189` 5. 끝났다고 말할 수 있는 조건
 
 ### `openwiki/refmap-town-outside.md` — 19KB · 156줄 · ~5,746 토큰
 
@@ -1281,86 +1328,89 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 272KB · 1413줄 · ~79,082 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 302KB · 1598줄 · ~88,225 토큰 · 통째읽기 잘림
 
-- `L3` 포켓몬 참고 스킨과 실제 뒷모습 (2026-09-20)
-- `L13` 전투 적대 리뷰 후속 수정 (2026-09-30)
-- `L29` 레트로 기믹 편집 가능화 (2026-09-30)
-- `L33` 로스터 전 묶음 기믹 (2026-10-01)
-- `L40` 힘 모으기 · 게이지 밀기 · 변신 · 소환 (2026-10-01, B)
-- `L54` 반응·표적 상태 7종 — 반격·도발·감싸기·회피·리플렉·리레이즈·선고 (2026-10-01)
-- `L72` 스킬이 계약 도트 연출을 빌린다 — retroChoreographyId (2026-09-30)
-- `L76` 프로젝트 연출 레코드 — skillChoreographies (2026-09-30, A1)
-- `L85` 연출 손잡이 · 자동 추천 · 상태 오라 (2026-09-30, B)
-- `L92` 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
-- `L107` 도트 측면 전투 스킨 retro2003 (2026-09-28)
-  - `L168` 스킬별 도트 연출 (2026-09-28)
-  - `L204` 직업 스킬 48종 (2026-09-28, sk-rt)
-  - `L232` 확장: 새 주인공 6명·스킬 48개·몬스터 30종 (2026-09-28, mx-rt)
-  - `L272` 몬스터 스킬 42종 (2026-09-28, mrt)
-  - `L287` 2차 로스터 통합 — 걷기 칩 전부 직업·스킬, 몬스터도 파티원 (2026-09-29)
-- `L354` 타격감 층 (2026-09-25)
-- `L407` 진입 · 결판 · 복귀 연출 (2026-09-25)
-- `L441` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
-- `L467` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
-- `L492` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
-- `L514` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L585` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
-- `L596` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
-- `L641` Native event battle admission (2026-09-08)
-- `L687` Supported action authoring (2026-09-07)
-- `L699` 적별 전투 표시 크기 (2026-09-06)
-- `L709` Capture-only victory (2026-09-08)
-- `L720` Event friendship and live level changes (2026-09-06)
-- `L739` Sequential battle event completion (2026-09-08)
-- `L774` Battle-event continuation and cancellation (2026-09-06)
-- `L817` 전투 명령 custom CSS (2026-09-05)
-- `L821` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L838` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L856` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
-- `L910` Roguelike run boundary (2026-08-24)
-- `L915` 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
-- `L934` 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
-- `L957` Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
-- `L1000` Battle rules & runtime
-  - `L1015` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L1040` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L1056` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L1060` Gen 1(포켓몬식) 규칙 모델
-  - `L1068` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L1087` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L1126` Starter hero battle sheets (2026-08-29)
-- `L1147` Per-actor back battlers (2026-08-29)
-- `L1165` Battle input and visibility P0 contract (2026-07-30)
-- `L1176` 배틀러 idle 애니메이션 (2026-08-30)
-- `L1302` 필드 아이템 상태 부여 복구 (2026-09-05)
-- `L1306` Authored combat rules (feature16, 2026-09-21)
-- `L1320` Battle reports and physical formation (2026-09-21)
-- `L1324` Combat correctness hardening (2026-09-21)
-- `L1332` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
-- `L1342` 트레이너 전투의 도입 문구 (2026-09-24)
-- `L1349` 포획 불가 전투의 가방 목록 (2026-09-25)
-- `L1360` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
-- `L1374` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
-- `L1384` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
-- `L1401` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+- `L3` 전투는 전부 도트 측면 — 정면 스킨 다섯·몬스터 그림 생성 삭제 (2026-10-02)
+- `L23` SNES 식 전투 연출 — 쓰러짐·배경 겹·상태 몸 표시·이펙트 겹치기·화면 필터 (2026-10-02)
+- `L53` 포켓몬 참고 스킨과 실제 뒷모습 (2026-09-20)
+- `L63` 전투 적대 리뷰 후속 수정 (2026-09-30)
+- `L79` 레트로 기믹 편집 가능화 (2026-09-30)
+- `L83` 로스터 전 묶음 기믹 (2026-10-01)
+- `L90` 힘 모으기 · 게이지 밀기 · 변신 · 소환 (2026-10-01, B)
+- `L104` 반응·표적 상태 7종 — 반격·도발·감싸기·회피·리플렉·리레이즈·선고 (2026-10-01)
+- `L122` 스킬이 계약 도트 연출을 빌린다 — retroChoreographyId (2026-09-30)
+- `L126` 프로젝트 연출 레코드 — skillChoreographies (2026-09-30, A1)
+- `L135` 연출 손잡이 · 자동 추천 · 상태 오라 (2026-09-30, B)
+- `L142` 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
+- `L157` 도트 측면 전투 스킨 retro2003 (2026-09-28)
+  - `L218` 스킬별 도트 연출 (2026-09-28)
+  - `L254` 직업 스킬 48종 (2026-09-28, sk-rt)
+  - `L282` 확장: 새 주인공 6명·스킬 48개·몬스터 30종 (2026-09-28, mx-rt)
+  - `L322` 몬스터 스킬 42종 (2026-09-28, mrt)
+  - `L337` 2차 로스터 통합 — 걷기 칩 전부 직업·스킬, 몬스터도 파티원 (2026-09-29)
+- `L404` 타격감 층 (2026-09-25)
+- `L569` 진입 · 결판 · 복귀 연출 (2026-09-25)
+- `L603` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
+- `L629` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
+- `L654` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
+- `L676` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
+- `L747` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
+- `L758` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+- `L803` Native event battle admission (2026-09-08)
+- `L849` Supported action authoring (2026-09-07)
+- `L861` 적별 전투 표시 크기 (2026-09-06)
+- `L871` Capture-only victory (2026-09-08)
+- `L882` Event friendship and live level changes (2026-09-06)
+- `L901` Sequential battle event completion (2026-09-08)
+- `L936` Battle-event continuation and cancellation (2026-09-06)
+- `L979` 전투 명령 custom CSS (2026-09-05)
+- `L983` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L1000` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L1018` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
+- `L1089` Roguelike run boundary (2026-08-24)
+- `L1094` 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
+- `L1113` 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
+- `L1136` Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
+- `L1179` Battle rules & runtime
+  - `L1194` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L1219` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L1235` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L1239` Gen 1(포켓몬식) 규칙 모델
+  - `L1247` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L1266` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L1305` Starter hero battle sheets (2026-08-29)
+- `L1326` Per-actor back battlers (2026-08-29)
+- `L1344` Battle input and visibility P0 contract (2026-07-30)
+- `L1355` 배틀러 idle 애니메이션 (2026-08-30)
+- `L1483` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L1487` Authored combat rules (feature16, 2026-09-21)
+- `L1501` Battle reports and physical formation (2026-09-21)
+- `L1505` Combat correctness hardening (2026-09-21)
+- `L1513` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+- `L1523` 트레이너 전투의 도입 문구 (2026-09-24)
+- `L1530` 포획 불가 전투의 가방 목록 (2026-09-25)
+- `L1541` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+- `L1555` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+- `L1565` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+- `L1582` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+- `L1595` 공용 몬스터 옛 그림 폐기 (2026-10-02)
 
-### `openwiki/runtime-m2-flow-controls.md` — 39KB · 295줄 · ~10,751 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 46KB · 305줄 · ~12,541 토큰
 
 - `L5` Quest companion presence query (2026-10-01)
 - `L15` Map-effect repair boundary (2026-09-06)
 - `L22` Sound Layer audio controls (2026-09-06)
 - `L29` M2 Runtime Flow Controls
-- `L59` Storage chest authoring
-- `L65` Page 3 location/vehicle compatibility (2026-07-30)
-- `L69` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
-- `L82` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
-  - `L141` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
-  - `L148` 맵 위를 흐르는 구름 그림자 (2026-09-14)
-  - `L222` Weather sound (2026-09-21)
-  - `L236` Map-wide atmosphere presets (2026-09-21)
-  - `L257` Genre ambience presets and sound pairing (2026-09-21)
-  - `L281` Thirty audiovisual presets — evidence (2026-09-21)
+- `L69` Storage chest authoring
+- `L75` Page 3 location/vehicle compatibility (2026-07-30)
+- `L79` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
+- `L92` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
+  - `L151` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
+  - `L158` 맵 위를 흐르는 구름 그림자 (2026-09-14)
+  - `L232` Weather sound (2026-09-21)
+  - `L246` Map-wide atmosphere presets (2026-09-21)
+  - `L267` Genre ambience presets and sound pairing (2026-09-21)
+  - `L291` Thirty audiovisual presets — evidence (2026-09-21)
 
 ### `openwiki/runtime-pre-edit-routing.md` — 108KB · 781줄 · ~32,382 토큰 · 통째읽기 잘림
 
@@ -1507,6 +1557,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L198` How authors reach the sounds
 - `L215` Project sound descriptions
 - `L242` Traps
+
+### `openwiki/shared-item-balance.md` — 6KB · 58줄 · ~2,016 토큰
+
+- `L5` 소유 경로
+- `L12` 효과 역할
+- `L30` 가격 기준
+- `L40` 확인 근거
+- `L53` 큰 JSON의 타입 경계
 
 ### `openwiki/slates-agent-entry.md` — 4KB · 40줄 · ~1,099 토큰
 

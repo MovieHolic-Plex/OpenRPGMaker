@@ -1,0 +1,29 @@
+// C: 큰 사선 판자 세 장과 어두운 창 속, 결 없이 못만 남겨 또렷하게. 벽면 걸이 윗면 0행.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat O dwood 1
+@mat F wood 3
+@mat H wood 5
+@mat D glass 0
+@mat T pine 4
+@mat B pine 3
+@mat S pine 1
+@mat N iron 2
+@mblock 0 0
+................
+...OOOOOOOOOO...
+..OHHHHHHHHHHO..
+.TTTTFDDDDDDFO..
+.SBNBTTTTDDDFO..
+.SSSSBBBBTTTTO..
+..HFDSSSSBBBNS..
+.TTTTFDDDSSSSS..
+.SBNBTTTTDDDFO..
+.SSSSBBBBTTTTO..
+..HFDSSSSBBBNS..
+.TTTTFDDDSSSSS..
+.SBNBTTTTDDDFO..
+.SSSSBBBBTTTTO..
+..OHHSSSSBBBNS..
+..OOOOOOOSSSSS..

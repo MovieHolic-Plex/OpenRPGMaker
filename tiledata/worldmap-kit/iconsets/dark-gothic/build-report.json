@@ -1,0 +1,286 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "검은 왕도",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "쌍첨탑 대성당·높은 성벽·원탑·빽빽한 검은 지붕 집·교수대 광장",
+   "fill": "95x90",
+   "side_px": 357,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "피깃발 성채 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "높은 돌성벽·네모 망루 넷·성문 위 핏빛 깃발·아성",
+   "fill": "60x61",
+   "side_px": 23,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "늪 항구",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "나무 말뚝 부두·검은 범선·창고·등불",
+   "fill": "80x61",
+   "side_px": 47,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "흡혈귀 성",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "뾰족탑 셋·붉은 창·핏빛 휘장",
+   "fill": "44x47",
+   "side_px": 288,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "마녀 사냥꾼 요새",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "흉벽 두른 각진 망루·깃발·화형대",
+   "fill": "47x47",
+   "side_px": 2,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "역병 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "기운 집·까마귀·묘지 울타리와 묘비",
+   "fill": "43x39",
+   "side_px": 25,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "늪 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "말뚝 위 오두막·갈대",
+   "fill": "31x25",
+   "side_px": 0,
+   "col": 12,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "숯쟁이 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "흙 숯가마 둘과 연기·오두막·장작",
+   "fill": "28x26",
+   "side_px": 87,
+   "col": 14,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "사냥꾼 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "가죽 천막·모닥불·짐승 가죽 걸이",
+   "fill": "32x22",
+   "side_px": 6,
+   "col": 16,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "마법사의 탑",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "기운 이끼 돌탑·보라 창·보라 고깔",
+   "fill": "16x30",
+   "side_px": 71,
+   "col": 26,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "해골 첨탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "검은 단탑·해골 장식·종루의 종·긴 첨탑",
+   "fill": "32x60",
+   "side_px": 18,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "괴물 소굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "이빨 달린 동굴 입구·흩어진 뼈",
+   "fill": "31x29",
+   "side_px": 154,
+   "col": 18,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "엘프 유적",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "덩굴 감긴 흰 아치·부러진 기둥",
+   "fill": "29x27",
+   "side_px": 111,
+   "col": 20,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "전쟁 폐허",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "불탄 집·부서진 성벽·연기·불씨",
+   "fill": "63x39",
+   "side_px": 66,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "버려진 수도원",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "고딕 아치 창 회당·종탑·무너진 회랑",
+   "fill": "46x42",
+   "side_px": 21,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "교수목",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "죽은 거목·밧줄 올가미·까마귀",
+   "fill": "47x43",
+   "side_px": 183,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "마녀 오두막",
+   "id": "landmark_witch",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "닭다리 오두막·보라 연기·해골 말뚝·솥",
+   "fill": "46x46",
+   "side_px": 30,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "마녀의 돌원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "기운 검은 선돌·붉은 불",
+   "fill": "32x23",
+   "side_px": 23,
+   "col": 22,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "잿빛 화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "잿빛 원뿔·검은 화구·붉은 용암 한 줄",
+   "fill": "28x28",
+   "side_px": 4,
+   "col": 24,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "저주받은 떠 있는 성",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "검은 바위 섬·첨탑 성·아래 안개",
+   "fill": "69x61",
+   "side_px": 104,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 4
+}

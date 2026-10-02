@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wanted_poster/h143-E.pxg",
+ "id": "wanted poster",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "E 자유 해석: 말린 누런 양피지에 수염 난 수배범 얼굴·금화 보상·짧은 인쇄선을 손 도트로 구성, 벽걸이 기준의 평면과 16×16 캔버스 유지; 꼭대기 윗면 0행(y=해당 없음, brief의 벽면 걸이 예외).",
+ "ok": true
+}

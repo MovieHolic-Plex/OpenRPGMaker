@@ -1,0 +1,55 @@
+// 방의 수정구·찻잔 결에 맞춘 유리 돔과 점박이 알, 낮은 놋쇠 받침; 꼭대기 윗면 4행(y=3~6)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat d iron 2
+@mat i iron 3
+@mat j iron 4
+@mat g glass 2
+@mat G glass 4
+@mat H glass 5
+@mat W glass 6
+@mat e linen 4
+@mat f linen 5
+@mat h linen 6
+@mat n linen 3
+@mat s brass 2
+@mat q brass 3
+@mat b brass 4
+@mat B brass 5
+@mat c brass 1
+@mat a brass 0
+@layer body
+@mblock 0 0
+................
+................
+......gggg......
+....gGHHGGgg....
+...gHWWWHGGig...
+..gHWWWGGGjiig..
+..gHHHGGGjiidg..
+.gGHHjiiiididdg.
+.gGHjiiiiiiiddg.
+.gHHjiiinnniidg.
+.gHWjiineeenidg.
+.gHWjinfffeenid.
+.gHjjinfffeenid.
+.gHjjinffssenid.
+.gGjinfhfsseenid.
+.gGjinfffeeeenid.
+.gijinfsfeeeenid.
+.gijinssfeeennd.
+.gijinffeeesnnd.
+.gijinffeeessnd.
+.gijinfeeeeennd.
+.gijinfeeeennid.
+..gjjinneennid..
+..gjiiinnnnidg..
+...gbBBbbbsdg...
+..bBBBBbbbsqqc..
+.bBBbbbsqqqqqcc.
+.bbbbsqqqqqsscc.
+..bqqqqqssssscc.
+...bqqssssssca..
+...cqqsssscca...
+....ccccaaaa....

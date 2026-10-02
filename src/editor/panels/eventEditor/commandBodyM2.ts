@@ -107,7 +107,29 @@ function renderM2CommandBodyInner(context: CommandEditContext, cmd: Extract<Comm
     wrap.append(fieldRow(fieldLabelForSpec(cmd.commandId, entry.title, spec), controlForField({ context, cmd, spec, title: entry.title, value: cmd.fields[spec.key] ?? spec.defaultValue })));
   }
   if (entry.title === "Screen Effect") decorateScreenEffectBody(wrap);
+  if (entry.title === "Particle Effect" || entry.title === "Sprite Look") decorateStagingTargetBody(wrap);
   return wrap;
+}
+
+/**
+ * 파티클·모습 효과의 「어디에/누구」 — 고른 대상이 읽는 칸만 보인다. 이벤트 칸은 「특정 이벤트」, X·Y 는 「맵 좌표」일 때만.
+ * 실측 캡처(2026-10-02): 「이 이벤트」인데 이벤트 선택과 X·Y 가 늘 떠 있어 무엇을 채워야 하는지 헷갈렸다.
+ */
+function decorateStagingTargetBody(wrap: HTMLElement): void {
+  const targetSelect = wrap.querySelector<HTMLSelectElement>('[data-testid="m2-command-target-option-select"]');
+  if (!targetSelect) return;
+  const rowOf = (selector: string): HTMLElement | null => {
+    const row = wrap.querySelector<HTMLElement>(selector)?.closest(".field");
+    return row instanceof HTMLElement ? row : null;
+  };
+  const eventRow = rowOf('[data-testid^="m2-command-eventId-"]');
+  const tileRows = [rowOf('[data-testid="m2-command-x-input"]'), rowOf('[data-testid="m2-command-y-input"]')];
+  const sync = (): void => {
+    if (eventRow) eventRow.hidden = targetSelect.value !== "event";
+    for (const row of tileRows) if (row) row.hidden = targetSelect.value !== "tile";
+  };
+  targetSelect.addEventListener("change", sync);
+  sync();
 }
 
 /**
@@ -187,7 +209,14 @@ const SCREEN_EFFECT_DURATION_PRESETS = [
  * fadeIn/fadeOut 은 도착 색이 고정(투명/검정)이라 값을 보지 않는다 — 입력을 보여주면
  * 감독은 "여기에 뭘 넣어야 하나" 를 고민하고, 넣어도 아무 일도 일어나지 않는다(D9).
  */
-const SCREEN_EFFECT_VALUE_USERS: ReadonlySet<string> = new Set(["tint", "flash", "weather"]);
+const SCREEN_EFFECT_VALUE_USERS: ReadonlySet<string> = new Set(["tint", "flash", "weather", "wave", "mosaic", "rotate", "letterbox"]);
+/** 값이 색이 아니라 숫자(세기·두께)인 효과 — 색 피커·견본을 숨기고 자리표시를 바꾼다. */
+const SCREEN_EFFECT_NUMBER_VALUES: Readonly<Record<string, string>> = {
+  wave: "물결 세기 px 0~16 (비우면 4)",
+  mosaic: "모자이크 칸 px 0~32 (비우면 8)",
+  rotate: "기울기 도 -180~180 (비우면 8)",
+  letterbox: "띠 두께 % 0~25 (비우면 12)",
+};
 
 /**
  * 화면 효과 폼에 의도 카드와 시간 프리셋을 얹고, 쓰이지 않는 `값` 행을 숨긴다(D6/D9).
@@ -219,6 +248,12 @@ function decorateScreenEffectBody(wrap: HTMLElement): void {
     const value = wrap.querySelector<HTMLInputElement>('[data-testid="m2-command-value-input"]')?.value ?? "";
     const durationMs = clampScreenEffectMs(Number(durationInput.value));
     valueRow.hidden = !SCREEN_EFFECT_VALUE_USERS.has(effect);
+    const numberHint = SCREEN_EFFECT_NUMBER_VALUES[effect];
+    for (const colorOnly of valueRow.querySelectorAll<HTMLElement>(".m2-screen-color-picker, .m2-screen-color-swatches")) {
+      colorOnly.hidden = numberHint !== undefined;
+    }
+    const valueInput = valueRow.querySelector<HTMLInputElement>('[data-testid="m2-command-value-input"]');
+    if (valueInput) valueInput.placeholder = numberHint ?? "#rrggbb / red / 128,64,32,0.5";
     intentTitle.textContent = screenEffectIntentTitle(effect);
     intentCopy.textContent = screenEffectIntentCopy(effect, value, durationMs);
     for (const chip of presets.children) {
@@ -267,6 +302,12 @@ function screenEffectIntentTitle(effect: string): string {
     case "flash": return "플래시";
     case "tint": return "색조";
     case "weather": return "날씨";
+    case "wave": return "물결 왜곡";
+    case "mosaic": return "모자이크";
+    case "rotate": return "화면 기울기";
+    case "clearDistortion": return "왜곡 모두 끄기";
+    case "letterbox": return "레터박스";
+    case "clearLetterbox": return "레터박스 걷기";
     default: return effect;
   }
 }
@@ -287,6 +328,18 @@ function screenEffectIntentCopy(effect: string, value: string, durationMs: numbe
         : `값이 비어 있어 ${durationMs}ms 동안 색조를 지운다(원래 색으로 되돌림).`;
     case "weather":
       return `날씨 레이어를 '${color || "none"}' 로 바꾼다. 날씨는 즉시 바뀌어 시간(${durationMs}ms)을 쓰지 않는다.`;
+    case "wave":
+      return `게임 화면이 줄마다 물결처럼 흔들린다(세기 ${color || "4"}px). ${durationMs}ms 동안 차오르고, 끌 때까지 남는다(세이브 포함).`;
+    case "mosaic":
+      return `게임 화면이 ${color || "8"}px 모자이크 칸으로 뭉개진다. ${durationMs}ms 동안 바뀌고, 끌 때까지 남는다.`;
+    case "rotate":
+      return `게임 화면이 ${color || "8"}° 기운다. ${durationMs}ms 동안 기울고, 끌 때까지 남는다.`;
+    case "clearDistortion":
+      return `물결·모자이크·기울기를 ${durationMs}ms 동안 모두 거둔다.`;
+    case "letterbox":
+      return `화면 위아래에 ${color || "12"}% 두께 검은 띠가 ${durationMs}ms 동안 들어온다. 대화창은 띠 위에 그대로 뜬다. 걷을 때까지 남는다.`;
+    case "clearLetterbox":
+      return `위아래 검은 띠를 ${durationMs}ms 동안 걷는다.`;
     default:
       return `'${effect}' 는 런타임에 렌더러가 없어 실행되지 않는다(${durationMs}ms 도 무시된다).`;
   }

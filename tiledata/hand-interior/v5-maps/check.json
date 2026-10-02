@@ -87,7 +87,7 @@
   "unreached": [],
   "reachable": 241,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.8629
+  "sameAsUnfoldedOriginal": 0.863
  },
  {
   "map": "scholar",
@@ -162,7 +162,7 @@
   "unreached": [],
   "reachable": 163,
   "cellsOver2": 0,
-  "sameAsUnfoldedOriginal": 0.9079
+  "sameAsUnfoldedOriginal": 0.9082
  },
  {
   "map": "hobbit",

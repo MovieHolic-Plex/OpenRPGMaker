@@ -177,8 +177,8 @@ describe("천공의 계단 — 비주얼 정체성", () => {
     expect(project.system.startActorIds).toHaveLength(4);
     const battlers = project.database.actors.map((actor) => actor.battleCharacterResourceId);
     expect(new Set(battlers).size, `중복 전투 스프라이트: ${JSON.stringify(battlers)}`).toBe(4);
-    // 아군 스프라이트를 그리는 스킨이어야 4인 파티가 화면에 보인다.
-    expect(project.system.battleUiStyle).toBe("rm2000");
+    // 아군 스프라이트를 그리는 스킨이어야 4인 파티가 화면에 보인다 — 기본 도트 측면 전투.
+    expect(project.system.battleUiStyle).toBe("retro2003");
   });
 });
 

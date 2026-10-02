@@ -44,6 +44,7 @@ import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
 import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
+import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
@@ -657,6 +658,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   try {
     await promptResuming(request.task);
+    // 계획을 받은 실행 턴이 쓰기 0건으로 끝나면 한 번만 되민다(planExecution.ts — 계획 턴의 「읽기 전용」 자기소개를
+    // 지금 턴 얘기로 읽고 계획만 다시 써서 끝낸 실측). 계획 없는 턴(질문·짧은 수정)은 건드리지 않는다.
+    if (!fatal && !rejected && !request.readOnly && !options.readOnlyTools && request.task.includes(ULTRABRAIN_PLAN_HEADING)
+      && changedProjectKeys(base, ctx.project).length === 0 && turns < maxTurns && !options.signal?.aborted) {
+      emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
+      await promptResuming(PLAN_EXECUTION_REKICK);
+    }
     // One repair owner, one turn/time budget; unchanged failures stop immediately.
     let previousIssues = "";
     for (let attempt = 0; !fatal && !rejected && (contract || villageMapIds.size) && attempt < 2; attempt++) {

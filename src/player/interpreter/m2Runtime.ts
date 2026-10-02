@@ -1,3 +1,5 @@
+import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
+import { normalizeEasing, type EasingName } from "@/project/easing";
 import { recordTeleportPoint } from "@/project/teleportPoints";
 import { formatActorGraphicOverride, parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
@@ -332,6 +334,13 @@ function upsertPicture(session: PlaySessionLike, fields: M2CommandFields): void 
       ? Math.max(0, Math.round(fieldNumber(fields, "durationMs", 0)))
       : toDurationMs(fieldNumber(fields, "duration", 0));
   }
+  const easing = normalizeEasing(fields.easing);
+  if (easing) (picture as { easing?: EasingName }).easing = easing;
+  // 그림 이동은 섞기 방식을 바꾸지 않으면 앞 그림의 방식을 이어받는다.
+  // 겹치기 이름이 왔을 때만 바꾼다. 「그대로」(keep)·빈 값·생략은 앞 그림의 겹치기를 잇는다 —
+  // 그림 이동마다 빛기둥이 보통으로 돌아가면 안 된다.
+  const blendMode = isBlendModeName(fields.blendMode) ? normalizeBlendMode(fields.blendMode) : previous?.blendMode;
+  if (blendMode) (picture as { blendMode?: string }).blendMode = blendMode;
   session.pictures ??= {};
   showPictureState(session as { pictures: Record<string, RuntimePictureState> }, picture);
 }
