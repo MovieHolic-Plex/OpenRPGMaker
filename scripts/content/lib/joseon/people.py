@@ -46,7 +46,7 @@ def overlay(img, people=PEOPLE, T=16):
 
 
 VILLAGE = [
-    (17, 27, 0, FRONT, 1), (13, 18, 3, FRONT, 1), (21, 15, 6, LEFT, 2), (6, 12, 2, RIGHT, 0), (6, 21, 5, FRONT, 1),
+    (17, 27, 0, FRONT, 1), (10, 19, 3, FRONT, 1), (21, 15, 6, LEFT, 2), (6, 12, 2, RIGHT, 0), (6, 21, 5, FRONT, 1),
     (14, 29, 1, RIGHT, 1), (33, 29, 7, LEFT, 0), (36, 28, 4, FRONT, 1), (50, 29, 3, RIGHT, 2), (29, 11, 6, FRONT, 1),
     (29, 33, 2, UP, 0), (46, 10, 4, FRONT, 1), (46, 22, 7, LEFT, 2), (59, 11, 5, FRONT, 1), (8, 34, 1, RIGHT, 1),
     (34, 38, 0, FRONT, 2), (52, 38, 3, FRONT, 1), (4, 37, 6, FRONT, 0),
