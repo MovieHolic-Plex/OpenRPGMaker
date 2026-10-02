@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.84.1 — 2026-10-03
+
+### 수정
+
+- protect committed event draft references during database deletion (`e35b8a3`)
+- preserve event drag ownership and legacy page behavior (`40c193b`)
+- bound repeated common event graph traversal (`6afe31d`)
+- preserve nested event references when deleting database records (`135de86`)
+- protect database skill and actor references on deletion (`1d83e6b`)
+- report actual database saves and common event recursion (`85489fb`)
+
+### 문서
+
+- record database and event editor audit findings (`9a20d46`)
+
 ## 0.84.0 — 2026-10-03
 
 ### 기능
