@@ -151,3 +151,15 @@ def objects():
         'stele': VPR.stele(),
         'stove_pot': VPR.stove_pot(),
     }
+
+
+# --- 국내성식 집 변형 세트(gungnae_houses.py): 맨 끝에 덧붙인다.
+_objects_before_gungnae = objects
+objects_base = _objects_before_gungnae          # 국내성 조각을 더하기 전의 목록(조합 예가 기존 소품을 가져다 쓴다)
+
+
+def objects():
+    import gungnae_houses as GH
+    d = _objects_before_gungnae()
+    d.update(GH.objects())
+    return d
