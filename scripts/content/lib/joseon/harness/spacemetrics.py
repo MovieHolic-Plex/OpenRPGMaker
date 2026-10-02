@@ -40,9 +40,14 @@ def tree_metrics(a):
 
 
 def lawn_mask(rgb):
-    """잔디색 대역: 초록이 주도하고 밝기 140..175 (버들항 잔디 램프 안쪽). 잎·나무 그늘은 대역 밖."""
-    r = rgb[:, :, 0].astype(int); g = rgb[:, :, 1].astype(int); b = rgb[:, :, 2].astype(int)
-    return (g - r >= 40) & (g - b >= 70) & (g >= 122) & (g <= 190) & (r <= 125)
+    """잔디색: 팔레트 leaf 램프의 잔디 톤(3~6)과 정확히 같은 화소. (바람의나라 올리브 팔레트는 색 대역이 아니라 램프 색 집합으로 판정)"""
+    import json, os
+    pal = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'palette.json')))
+    tones = [tuple(int(c[i:i + 2], 16) for i in (1, 3, 5)) for c in pal['ramps']['leaf'][3:7]]
+    m = np.zeros(rgb.shape[:2], bool)
+    for t in tones:
+        m |= (rgb[:, :, 0] == t[0]) & (rgb[:, :, 1] == t[1]) & (rgb[:, :, 2] == t[2])
+    return m
 
 
 def lawn_cells(rgb, cell, lawn=None):

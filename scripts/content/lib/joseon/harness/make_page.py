@@ -13,7 +13,7 @@ def uri_im(im):
     b = io.BytesIO(); im.save(b, 'PNG'); return 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()
 
 pal = json.load(open(os.path.join(HERE, 'palette.json')))
-names = ['giwa', 'earth', 'straw', 'dgreen', 'dblue', 'persimmon', 'pine', 'wood', 'stone', 'water', 'leaf', 'plaster', 'red']
+names = ['giwa', 'dgreen', 'dblue', 'red', 'wood', 'earth', 'plaster', 'stone', 'straw', 'persimmon', 'leaf', 'pine', 'water']
 S = 26; sw = Image.new('RGB', (7 * S + 110, len(names) * S), (26, 22, 18)); d = ImageDraw.Draw(sw)
 for r, n in enumerate(names):
     d.text((4, r * S + 7), n, fill=(233, 220, 195))
@@ -25,7 +25,7 @@ bd = Image.open('/tmp/j8city/h0.png') if os.path.exists('/tmp/j8city/h0.png') el
 L = K.library()
 rows = K.house('jo', 6, 'lwddwr', 'lfddfr', steps=(2, 3), hip=True)
 house = K.assemble(rows, L, post=lambda cv: K.hip_cut(cv, 0, 3, 'jo'))
-bg = Cv(house.w + 16, house.h + 16); bg.rect(0, 0, bg.w, bg.h, hx('#58a035')); bg.paste(house, 8, 8)
+bg = Cv(house.w + 16, house.h + 16); bg.rect(0, 0, bg.w, bg.h, hx(pal['ramps']['leaf'][4])); bg.paste(house, 8, 8)
 gim = bg.img().resize((bg.w * 3, bg.h * 3), Image.NEAREST); gd = ImageDraw.Draw(gim)
 for x in range(8 * 3, gim.width - 8 * 3 + 1, 48): gd.line([(x, 24), (x, gim.height - 24)], fill=(255, 255, 255, 80))
 for y in range(8 * 3, gim.height - 8 * 3 + 1, 48): gd.line([(24, y), (gim.width - 24, y)], fill=(255, 255, 255, 80))
@@ -41,18 +41,20 @@ pc = json.load(open(os.path.join(ROOT, 'tiledata/joseon-demo/pieces.json')))
 R = os.path.join(ROOT, 'tiledata/joseon-demo/review/')
 rev = ''.join('<img src="%s">' % uri(R + n + '.png') for n in ('giwa_house_6', 'thatch_house_5', 'pavilion_5', 'gate_4'))
 bdimg = '<img src="%s">' % uri('/tmp/j8city/h2.png') if os.path.exists('/tmp/j8city/h2.png') else ''
-html = f'''<!doctype html><meta charset=utf-8><title>조선 칩셋 데모 v6 — 바람의나라 구조물 확장</title>
+html = f'''<!doctype html><meta charset=utf-8><title>조선 칩셋 데모 v7 — 바람의나라 팔레트</title>
 <style>body{{background:#1a1612;color:#e9dcc3;font:15px/1.6 system-ui,'Noto Sans KR',sans-serif;margin:0;padding:24px;max-width:1320px;margin:auto}}
 h1{{font-size:22px;margin:0 0 4px}}h2{{font-size:16px;margin:30px 0 8px;color:#e0b66a}}p{{margin:4px 0;color:#c9bca3}}
 img{{image-rendering:pixelated;display:block;border:1px solid #4a3d2c;background:#000;margin:6px 0}}table{{border-collapse:collapse;font-size:13px}}td,th{{border:1px solid #3b2f20;padding:2px 8px;text-align:left}}
 .ok{{color:#9ad06a}}.warn{{color:#e0b66a}}.bad{{color:#e0654a}}.tag{{display:inline-block;background:#3b2f20;border-radius:4px;padding:1px 8px;margin-right:6px;font-size:13px}}.row{{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}}</style>
-<h1>조선 칩셋 데모 v6 — 초가 재설계 + 바람의나라 구조물 확장 (후보, 확정 아님)</h1>
-<p><b>현재 상태:</b> 초가는 바람의나라 기준(낮고 넓은 방석 지붕, 가는 세로 짚결, 열린 마루칸 변형)으로 다시 그렸고, 새 구조물을 더했습니다: 관아(붉은 기둥+단청 띠+주황 처마선) 3종, 성문(홍예문+누각+여장)·성벽 조각, 누각(석축 단+돌계단), 홍살문, 청사초롱 문, 삼층 석탑, 장터 차일, 원두막. <b>모두 아직 독립 적대 리뷰를 받지 않았습니다</b>(A·V 가 FAIL 로 남은 이유).</p>
+<h1>조선 칩셋 데모 v7 — 바람의나라 팔레트로 교체 (후보, 확정 아님)</h1>
+<p><b>현재 상태:</b> 팔레트 잠금을 버들항 267색에서 <b>바람의나라 스크린샷에서 뽑은 소재별 램프 94색</b>으로 바꿨습니다(기와 회청·문루 청록·초가 주황 갈색·붉은 기둥·따뜻한 회색 돌·올리브 땅). 옛 잠금은 palette_beodeul.json 에 보존. 형태는 그대로이고 색만 바뀌었습니다. <b>독립 적대 리뷰는 아직 안 돌렸습니다.</b></p>
 <p><span class=tag>허용 {len(pal['allowed'])}색 잠금</span><span class=tag>게이트 {summ}</span><span class=tag>지도 = 시트 칸 재조립 0화소 차이</span></p>
 <h2>1. 같은 문법 비교 — 왼쪽 버들항(h2 격자) / 오른쪽 조선 한옥(16px 격자)</h2>
 <div class=row>{bdimg}<img src="{uri_im(gim)}"></div>
 <p>조선 조립표(위→아래): 치미 달린 ridge 행 → front → eave → 벽 위행 u → 벽 아래행 b → 석축 plinth → 계단 step. 지붕은 벽보다 좌우 한 칸씩 넓고(깊은 처마), 팔작 쐐기는 hip_cut.</p>
-<h2>2. 데모 마을 48×42 (시트 칸 번호만으로 조립)</h2>
+<h2>2a. 직전 팔레트(버들항 267색) 지도 — 비교용</h2>
+<img src="{uri('/tmp/bp/map_before.png')}" style="width:1536px">
+<h2>2. 데모 마을 48×42 — 바람의나라 팔레트 (시트 칸 번호만으로 조립)</h2>
 <img src="{uri(os.path.join(ROOT, 'tiledata/joseon-demo/joseon-demo-map.png'))}" style="width:1536px">
 <h2>3. 검수 시트 — 버들항 기준 조각 옆에서 같은 배율</h2>
 {rev}
@@ -62,9 +64,12 @@ img{{image-rendering:pixelated;display:block;border:1px solid #4a3d2c;background
 <h2>5. 자동 게이트</h2>
 <table><tr><th>조각</th><th>분류</th><th>결과</th></tr>{trs}</table>
 <p>P 팔레트 · E 외곽선 · T 1px 줄 · L 빛 · S 그림자 · <b>K 건물은 블록 조립</b> · V 판정. 통과선은 버들항 객체 112개 실측. 계약: harness/CONTRACT.md</p>
+<h2>0. 바람의나라 원본에서 뽑은 군집 색 vs 우리 램프</h2>
+<p>위 = 원본 영역별 k-means 군집(어두움→밝음), 아래 6번 = 우리가 잠근 램프.</p>
+<img src="{uri('/tmp/bp/swatch.png')}">
 <h2>6. 팔레트 (잠금)</h2>
 <img src="{uri_im(sw)}">
 <h2>7. 칩셋 시트 ({pc['cols']}×{pc['rows']}칸)</h2>
-<img src="{uri(os.path.join(ROOT, 'tiledata/joseon-demo/joseon-demo-chipset.png'))}" style="width:768px;background:#58a035">'''
+<img src="{uri(os.path.join(ROOT, 'tiledata/joseon-demo/joseon-demo-chipset.png'))}" style="width:768px;background:#75793b">'''
 open(os.path.expanduser('~/claude-viz/joseon-demo.html'), 'w').write(html)
 print(len(html) // 1024, 'KB')

@@ -281,14 +281,14 @@ def jangseung(female=False):
     for x in range(5, 11): cv.put(x, 2, wd[3]); cv.put(x, 1, wd[4])
     # 얼굴
     cv.rect(5, 7, 11, 12, wd[5])
-    cv.put(5, 8, hx('#f7fdff')); cv.put(6, 8, hx('#f7fdff')); cv.put(9, 8, hx('#f7fdff')); cv.put(10, 8, hx('#f7fdff'))
+    cv.put(5, 8, RGB['plaster'][6]); cv.put(6, 8, RGB['plaster'][6]); cv.put(9, 8, RGB['plaster'][6]); cv.put(10, 8, RGB['plaster'][6])
     cv.put(6, 9, wd[0]); cv.put(9, 9, wd[0]); cv.put(5, 7, wd[1]); cv.put(10, 7, wd[1])
     cv.vl(7, 9, 11, wd[2]); cv.vl(8, 9, 11, wd[2])
     cv.hl(5, 11, 12, wd[1])
     if female:
         cv.put(6, 12, rd[5]); cv.put(7, 12, rd[5]); cv.put(8, 12, rd[5]); cv.put(9, 12, rd[5])
     else:
-        cv.put(6, 12, hx('#f7fdff')); cv.put(7, 12, wd[0]); cv.put(8, 12, wd[0]); cv.put(9, 12, hx('#f7fdff'))
+        cv.put(6, 12, RGB['plaster'][6]); cv.put(7, 12, wd[0]); cv.put(8, 12, wd[0]); cv.put(9, 12, RGB['plaster'][6])
     # 글씨
     for y in range(15, 27, 3):
         cv.put(7, y, rd[4]); cv.put(8, y, rd[4]); cv.put(7, y + 1, rd[3]); cv.put(8, y + 1, rd[5])
@@ -324,7 +324,7 @@ def lantern():
     band(3, 13, 28, 32); band(5, 11, 25, 28); band(7, 9, 17, 25)
     band(3, 13, 14, 18, 5)
     band(4, 12, 18, 25)
-    cv.rect(6, 19, 10, 24, hx('#2a1a0f')); cv.rect(7, 20, 9, 23, RGB['orange'][5]); cv.put(7, 20, RGB['orange'][6])
+    cv.rect(6, 19, 10, 24, RGB['earth'][0]); cv.rect(7, 20, 9, 23, RGB['orange'][5]); cv.put(7, 20, RGB['orange'][6])
     # 지붕(지붕돌)
     for y in range(8, 14):
         w = 4 + (y - 8)
@@ -487,7 +487,7 @@ def _bridge():
     # 물 위 그림자
     for y in range(40, 47):
         for x in range(4, W - 4):
-            cv.put(x, y, hx('#071528'), 110 - (y - 40) * 12)
+            cv.put(x, y, RGB['dblue'][0], 110 - (y - 40) * 12)
     # 널(세로로 깐 판)
     for y in range(14, 40):
         for x in range(2, W - 2):

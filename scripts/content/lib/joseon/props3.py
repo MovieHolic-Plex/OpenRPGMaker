@@ -135,7 +135,7 @@ def flower_bed():
         c.put(1, y, S[5]); c.put(30, y, S[3])
     for k in range(14):
         x = 3 + int(rnd(k, 1, 51) * 25); y = 5 + int(rnd(k, 2, 52) * 6)
-        c.put(x, y + 1, G[3]); c.put(x, y, [R[4], Y[5], hx('#f7fdff')][k % 3])
+        c.put(x, y + 1, G[3]); c.put(x, y, [R[4], Y[5], RGB['plaster'][6]][k % 3])
         c.put(x + 1, y, [R[3], Y[4], hx('#d8e4e8')][k % 3] if False else G[4])
     for x in range(1, 31): c.put(x, 14, SHADOW, 80)
     return c
@@ -162,7 +162,7 @@ def bank_stairs():
 
 
 # ---- 바람의나라 연구형 담: 주황 갈색 기와·흙 덮개 + 어두운 막돌 ----
-_CAP = [(61, 34, 12), (113, 66, 16), (136, 90, 38), (162, 110, 54), (194, 117, 54), (198, 146, 80), (220, 170, 76)]
+_CAP = [RGB['wood'][1], RGB['wood'][2], RGB['wood'][3], RGB['wood'][4], RGB['wood'][5], RGB['wood'][6], RGB['straw'][5]]
 
 
 def _rubble(c, x0, x1, y0, y1, seed):

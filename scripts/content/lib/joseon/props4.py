@@ -76,15 +76,15 @@ def jangseung(female=False):
     for x in range(4, 12): c.put(x, 5, hat[3]); c.put(x, 6, hat[2])
     for x in range(5, 11): c.put(x, 4, hat[5])
     # 얼굴: 눈 둘(흰자+눈동자), 코 능선, 입
-    for x in (5, 6): c.put(x, 8, hx('#f7fdff')); c.put(x, 9, hx('#f7fdff'))
-    for x in (9, 10): c.put(x, 8, hx('#f7fdff')); c.put(x, 9, hx('#f7fdff'))
+    for x in (5, 6): c.put(x, 8, RGB['plaster'][6]); c.put(x, 9, RGB['plaster'][6])
+    for x in (9, 10): c.put(x, 8, RGB['plaster'][6]); c.put(x, 9, RGB['plaster'][6])
     c.put(6, 9, W[0]); c.put(9, 9, W[0]); c.put(5, 7, W[1]); c.put(6, 7, W[1]); c.put(9, 7, W[1]); c.put(10, 7, W[1])
     c.vl(7, 9, 12, W[6]); c.vl(8, 9, 12, W[3])
     if female:
         for x in (6, 7, 8, 9): c.put(x, 12, R[3])
     else:
         for x in range(5, 11): c.put(x, 12, W[0])
-        c.put(6, 12, hx('#f7fdff')); c.put(9, 12, hx('#f7fdff'))
+        c.put(6, 12, RGB['plaster'][6]); c.put(9, 12, RGB['plaster'][6])
     # 명문: 붉은 세로 글자 한 줄(획 2×3 두 칸)
     for gy in (15, 20, 25):
         c.hl(7, 10, gy, R[3]); c.vl(8, gy, gy + 3, R[3]); c.put(7, gy + 2, R[2]); c.put(9, gy + 2, R[2])

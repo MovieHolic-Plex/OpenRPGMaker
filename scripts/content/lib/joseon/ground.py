@@ -25,10 +25,10 @@ def grass(v, base=None):
         c.put(x, y, r[5]); c.put(x, y + 1, r[3])
     if v == 1:   # 들꽃
         for x, y in ((4, 5), (11, 11)):
-            c.put(x, y, hx('#f7fdff')); c.put(x + 1, y, hx('#ecdb95'))
+            c.put(x, y, RGB['plaster'][6]); c.put(x + 1, y, RGB['persimmon'][6])
     if v == 3:
         for x, y in ((9, 3),):
-            c.put(x, y, hx('#e0482a')); c.put(x + 1, y + 1, hx('#ecdb95'))
+            c.put(x, y, RGB['red'][5]); c.put(x + 1, y + 1, RGB['persimmon'][6])
     return c
 
 

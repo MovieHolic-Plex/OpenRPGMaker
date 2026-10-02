@@ -143,7 +143,7 @@ def lattice(cv, x0, y0, x1, y1, door=False, seed=0):
     for y in range(y0, y1):
         for x in range(x0, x1):
             q = rnd(x, y, 50 + seed)
-            cv.put(x, y, hx('#f7fdff') if q > 0.93 else (p[5] if q > 0.12 else p[4]))
+            cv.put(x, y, RGB['plaster'][6] if q > 0.93 else (p[5] if q > 0.12 else p[4]))
     cv.rect(x0, y0, x1, y0 + 1, w[3]); cv.rect(x0, y1 - 1, x1, y1, w[2])
     cv.rect(x0, y0, x0 + 1, y1, w[4]); cv.rect(x1 - 1, y0, x1, y1, w[2])
     step = 3 if door else 4

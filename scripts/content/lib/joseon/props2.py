@@ -154,8 +154,8 @@ def jangseung(female=False):
     for y in range(7, 14):
         for x in range(4, 12): c.put(x, y, W[5])
     # 부릅뜬 눈: 큰 흰 눈 + 검은 눈동자 + 굵은 눈썹
-    for x in (4, 5, 6): c.put(x, 8, hx('#f7fdff')); c.put(x, 9, hx('#f7fdff'))
-    for x in (9, 10, 11): c.put(x, 8, hx('#f7fdff')); c.put(x, 9, hx('#f7fdff'))
+    for x in (4, 5, 6): c.put(x, 8, RGB['plaster'][6]); c.put(x, 9, RGB['plaster'][6])
+    for x in (9, 10, 11): c.put(x, 8, RGB['plaster'][6]); c.put(x, 9, RGB['plaster'][6])
     c.put(5, 9, W[0]); c.put(10, 9, W[0]); c.put(5, 8, W[0]); c.put(10, 8, W[0])
     for x in (3, 4, 5, 6): c.put(x, 7, W[1])
     for x in (9, 10, 11, 12): c.put(x, 7, W[1])
@@ -166,7 +166,7 @@ def jangseung(female=False):
         c.put(4, 7, W[0]); c.put(11, 7, W[0])
     else:
         for x in range(5, 11): c.put(x, 13, W[0])
-        c.put(6, 13, hx('#f7fdff')); c.put(7, 13, hx('#f7fdff')); c.put(9, 13, hx('#f7fdff'))
+        c.put(6, 13, RGB['plaster'][6]); c.put(7, 13, RGB['plaster'][6]); c.put(9, 13, RGB['plaster'][6])
     # 세로 명문: 붉은 글자 칸 4개(획처럼 보이는 2×3 점)
     for gy in (15, 19, 23):
         c.hl(6, 10, gy, R[3]); c.vl(7, gy, gy + 3, R[3]); c.vl(9, gy, gy + 3, R[2]); c.put(8, gy + 1, R[3]); c.put(6, gy + 2, R[2]); c.put(10, gy + 2, R[2])
