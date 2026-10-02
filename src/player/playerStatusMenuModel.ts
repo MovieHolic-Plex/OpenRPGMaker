@@ -3,6 +3,7 @@ import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import { isGalleryEnabled, galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
+import { monsterCampaign, monsterJournalEntry } from "@/project/monsterJournal";
 import { currentChapterLabel } from "@/project/newGamePlus";
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
@@ -23,6 +24,9 @@ export const STATUS_MENU_COMMAND_IDS = [
   "status",
   "row",
   "formation",
+  "monster-dex",
+  "region-map",
+  "campaign-progress",
   "battle-reports",
   "quests",
   "relationships",
@@ -48,7 +52,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 }[] = [
   { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["battle-reports", "quests", "relationships", "gallery", "life-ledger"] },
+  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "battle-reports", "quests", "relationships", "gallery", "life-ledger"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
   { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "options", "to-title"] },
 ];
@@ -233,6 +237,7 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   const saveDisabled = session.m2Runtime?.access?.save === false;
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
   return STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds).filter((id) => {
+    if (id === "monster-dex" || id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
     if (id === "relationships") return showRelationships;
     if (id === "gallery") return isGalleryEnabled(project);
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
@@ -334,6 +339,9 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "skills": return "스킬";
     case "equipment": return "장비";
     case "monsters": return "몬스터";
+    case "monster-dex": return "몬스터 도감";
+    case "region-map": return "지역 지도";
+    case "campaign-progress": return "배지·목표";
     case "save": return "저장";
     case "load": return "로드";
     case "status": return "상태";
@@ -403,6 +411,15 @@ export function statusMenuCommandSummary(
       return `${party}명`;
     case "monsters":
       return `${session.monsterParty.length}마리`;
+    case "monster-dex": {
+      const ids = monsterCampaign(project)?.speciesIds ?? [];
+      return `${ids.filter((id) => monsterJournalEntry(session, id).caught).length}/${ids.length}종`;
+    }
+    case "region-map": return project.maps[session.currentMapId]?.name ?? "";
+    case "campaign-progress": {
+      const badges = monsterCampaign(project)?.badges ?? [];
+      return `${badges.filter((badge) => session.switches[badge.switchId] === true).length}/${badges.length}배지`;
+    }
     case "battle-reports":
       return `${session.battleReports?.length ?? 0}전투`;
     case "quests":

@@ -71,6 +71,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
   let battleReportIndex: number | undefined;
+  let campaignSpeciesId: string | undefined;
   let monsterView: "party" | "box" = "party";
   let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
@@ -100,6 +101,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentSlotId = undefined;
     formationActorId = undefined;
     battleReportIndex = undefined;
+    campaignSpeciesId = undefined;
     monsterView = "party";
     lifeLedgerTab = undefined;
     confirmSaveSlot = undefined;
@@ -148,6 +150,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       equipmentSlotId,
       formationActorId,
       battleReportIndex,
+      campaignSpeciesId,
       monsterView,
       lifeLedgerTab,
       readLive: createLifePlacementLiveReader(
@@ -252,6 +255,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "formation"));
         },
         onMoveFormationActor: moveFormationActor,
+        onSelectCampaignSpecies: (speciesId) => {
+          if (speciesId) rememberDetailCursorFromTestId(`campaign-dex-${speciesId}`);
+          campaignSpeciesId = speciesId;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monster-dex"));
+        },
         onToggleMonsterView: toggleMonsterView,
         onMoveMonster: moveMonsterFromMenu,
         onReplacePendingMonsterSkill: replaceMonsterSkillFromMenu,
@@ -673,6 +681,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "skills":
       case "equipment":
       case "monsters":
+      case "monster-dex":
+      case "region-map":
+      case "campaign-progress":
       case "options":
       case "load":
       case "status":
@@ -774,6 +785,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           return true;
         }
         return false;
+      case "monster-dex":
+        if (campaignSpeciesId) { campaignSpeciesId = undefined; return true; }
+        return false;
+      case "region-map":
+      case "campaign-progress":
       case "monsters":
         return false;
       case "battle-reports":
@@ -916,6 +932,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return `equipment:${equipmentActorId}:${equipmentSlotId}:choices`;
       case "formation":
         return formationActorId ? `formation:${formationActorId}:moving` : "formation:list";
+      case "monster-dex": return `monster-dex:${campaignSpeciesId ?? "list"}`;
+      case "region-map": return "region-map";
+      case "campaign-progress": return "campaign-progress";
       case "monsters":
         return `monsters:${monsterView}`;
       case "battle-reports":

@@ -639,3 +639,12 @@ fade에는 별도 `--cinematic-fade-ms`(최대 600ms, 더 짧은 장면은 해�
 한국어 시네마틱 자막은 `word-break: keep-all`로 단어 사이에서 줄을 바꾸고,
 한 단어 자체가 무대보다 길 때는 기존 `overflow-wrap:anywhere`로 넘침을 피한다.
 24.5초 도입의 초대 문장에서 “기다린/다”로 갈라지던 실제960×720 화면을 근거로 수정했다.
+
+## Original monster campaign journal and field menus (2026-10-03)
+
+Optional `system.monsterCampaign` exposes ESC → 기록 → 몬스터 도감 / 지역 지도 / 배지·목표.
+Journal seen/caught receipts persist in the existing session switches, remain after
+boxing/release/evolution, and use actual revealed enemies and committed captures.
+The map follows authored coordinates and real transfer connections; badges and
+next objectives read live switches. Unknown species hide name and art. Ownership,
+source routing and bounded browser evidence: [monster-campaign-menu.md](monster-campaign-menu.md).

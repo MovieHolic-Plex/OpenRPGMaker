@@ -74,6 +74,7 @@ export interface BattleDomOptions {
   readonly host: HTMLElement;
   readonly runtime: BattleRuntime;
   readonly audioContext?: BattleAudioContext;
+  readonly onSnapshot?: (snapshot: BattleSnapshot) => void;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
   readonly introHold?: boolean;
   readonly showEventText?: (request: Extract<BattleEventPauseSnapshot, { kind: "text" }>, signal: AbortSignal) => Promise<void>;
@@ -194,6 +195,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   openBattleTimerScope();
 
   const initialSnapshot = options.runtime.snapshot();
+  options.onSnapshot?.(initialSnapshot);
   let destroyed = false;
   /** 포켓몬 피해 박자: 대상별로 돌고 있는 박자의 마무리(숫자 끝값·HP 지연 해제·쓰러짐 보류 해제).
    *  같은 대상의 다음 피드백과 배속 전환이 먼저 부른다(finishPokemonPhase). setSpeed 가 마운트 중에도 불리므로 위에 둔다. */
@@ -1191,6 +1193,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     setBattleMotionContext(field, options.runtime.snapshot());
     if (destroyed) return;
     const snapshot = options.runtime.snapshot();
+    options.onSnapshot?.(snapshot);
     const showingResult = Boolean(snapshot.result) && directorState.step === "result";
     if (showingResult) {
       directorState = resultDirectorState(snapshot, directorState);

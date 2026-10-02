@@ -68,7 +68,8 @@ export type StatusMenuDetail = {
   readonly emptyLabel?: string;
   readonly hint?: string;
   /** gallery: 고른 그림을 목록 위에 크게 둔다. */
-  readonly layout?: "gallery";
+  readonly layout?: "gallery" | "campaign-dex" | "campaign-map" | "campaign-progress";
+  readonly regionMap?: import("@/player/playerMonsterCampaignMenu").CampaignRegionMap;
   readonly artwork?: { readonly src: string; readonly alt: string };
   readonly tabs?: readonly {
     readonly id: string;
@@ -98,6 +99,8 @@ export type StatusMenuDetailOptions = {
   readonly formationActorId?: string;
   readonly battleReportIndex?: number;
   readonly onSelectBattleReport?: (index: number | undefined) => void;
+  readonly campaignSpeciesId?: string;
+  readonly onSelectCampaignSpecies?: (speciesId: string | undefined) => void;
   readonly monsterView?: "party" | "box";
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly confirmToTitle?: boolean;

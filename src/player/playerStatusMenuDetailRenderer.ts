@@ -1,3 +1,4 @@
+import { renderCampaignRegionMap } from "@/player/playerMonsterCampaignMenu";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact } from "@/player/playerStatusMenuDetails";
 import type { Project } from "@/project/types";
@@ -43,12 +44,17 @@ export function renderStatusMenuDetailPanel(
   });
   detailContexts.set(panel, { project, detail, showcase: options.showcase ?? false });
   if (detail.tabs?.length) panel.classList.add("life-ledger-detail");
+  if (detail.layout?.startsWith("campaign-")) {
+    panel.classList.add("campaign-menu-detail");
+    panel.dataset.campaignPage = detail.layout.slice("campaign-".length);
+  }
   if (detail.layout === "gallery") panel.classList.add("is-gallery");
   panel.append(el("h2", {
     class: "status-menu-detail-title",
     text: detail.title,
     dataset: { testid: "status-menu-detail-title" },
   }));
+  if (detail.regionMap) panel.append(renderCampaignRegionMap(detail.regionMap));
   if (detail.artwork) {
     panel.append(el("figure", {
       class: "life-ledger-artwork",
@@ -162,7 +168,7 @@ function renderDetailEntry(options: {
   // 조작 가능한 행(아이템/스킬/장비 후보)의 설명은 푸터가 대신 보여준다 → 행을 1줄로 압축해
   // 리스트가 잘린 글자로 끝나는 문제를 없앤다. 정보성 행(상태 화면 등)은 설명을 그대로 붙인다
   // — 그쪽은 푸터로 옮길 대상이 여러 개 동시에 필요해서 대체가 안 된다.
-  const inlineDescription = Boolean(entry.description) && !entry.onActivate;
+  const inlineDescription = Boolean(entry.description) && (!entry.onActivate || entry.attributes?.["data-campaign-information"] === "true");
   const rowClasses = [
     "status-menu-detail-row",
     inlineDescription ? "has-description" : "",

@@ -1,3 +1,4 @@
+import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
 import { inventoryViewEntries } from '@/player/playerInventoryView';
 import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
 import { battleReportDetail } from "@/player/playerBattleReportDetail";
@@ -62,6 +63,9 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "skills": return skillDetail(options);
     case "equipment": return equipmentDetail(options);
     case "monsters": return monsterDetail(options);
+    case "monster-dex":
+    case "region-map":
+    case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
     case "load": return loadDetail(options.slots, options.onLoadSlot);
     case "status": return statusDetail(options.project, options.session);
@@ -106,6 +110,9 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
 }
 
 const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> = {
+  "monster-dex": "발견·포획한 몬스터의 생태와 기술을 봅니다.",
+  "region-map": "현재 위치와 섬의 길을 봅니다.",
+  "campaign-progress": "모은 배지와 다음 원정 목표를 봅니다.",
   "battle-reports": "최근 전투 결과와 실제 행동 기록을 읽습니다.",
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",

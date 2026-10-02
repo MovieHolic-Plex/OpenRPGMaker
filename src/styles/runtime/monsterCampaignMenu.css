@@ -1,0 +1,103 @@
+/* Campaign pages share the shipped 320×240 pixel windows. */
+.oprn-status-menu .campaign-menu-detail {
+  --campaign-sea: #133c67;
+  --campaign-land: #376f60;
+  --campaign-road: #f2d89b;
+  --campaign-mark: #ffe5a2;
+  gap: 3px;
+}
+.oprn-status-menu .campaign-menu-detail .status-menu-detail-title {
+  white-space: normal;
+  line-height: 1.3;
+}
+.oprn-status-menu .campaign-menu-detail[data-campaign-page="map"] {
+  grid-template-rows: auto 108px minmax(0, 1fr);
+}
+.oprn-status-menu .campaign-region-map {
+  background: var(--campaign-sea);
+  border: 1px solid var(--px-ink-dim, #b3cce2);
+  border-radius: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.oprn-status-menu .campaign-region-map svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+.oprn-status-menu .campaign-region-map figcaption {
+  color: #f8edc5;
+  font: 400 6.5px/1.4 var(--runtime-pixel-font);
+  padding: 2px 4px;
+}
+.oprn-status-menu .campaign-region-island {
+  fill: var(--campaign-land);
+  stroke: #73a487;
+  stroke-width: 2;
+  shape-rendering: crispEdges;
+}
+.oprn-status-menu .campaign-region-road {
+  fill: none;
+  stroke: var(--campaign-road);
+  stroke-width: 2;
+  shape-rendering: crispEdges;
+}
+.oprn-status-menu .campaign-region-node {
+  fill: #faefce;
+  stroke: #172e45;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.oprn-status-menu .campaign-region-node.is-route { fill: #96d8a4; }
+.oprn-status-menu .campaign-region-node.is-dungeon { fill: #a896d5; }
+.oprn-status-menu .campaign-region-node.is-league { fill: #f3c654; }
+.oprn-status-menu .campaign-region-current { fill: var(--campaign-mark); stroke: #1e2d43; stroke-width: 1; }
+.oprn-status-menu .campaign-menu-detail[data-campaign-page="dex"]:has(.life-ledger-artwork) {
+  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  column-gap: 5px;
+}
+.oprn-status-menu .campaign-menu-detail[data-campaign-page="dex"]:has(.life-ledger-artwork) > .status-menu-detail-title {
+  grid-column: 1 / -1;
+}
+.oprn-status-menu .campaign-menu-detail .life-ledger-artwork {
+  align-self: start;
+  background: #cee2cb;
+  border: 1px solid #eef7d9;
+  display: grid;
+  margin: 1px 0 0;
+  padding: 3px;
+  place-items: center;
+}
+.oprn-status-menu .campaign-menu-detail .life-ledger-artwork img {
+  height: 64px;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 64px;
+}
+.oprn-status-menu .campaign-menu-detail .status-menu-detail-list { scroll-snap-type: none; }
+.oprn-status-menu .campaign-menu-detail .status-menu-detail-row {
+  min-width: 0;
+  scroll-margin: 2px;
+}
+.oprn-status-menu .campaign-menu-detail .status-menu-detail-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.oprn-status-menu .campaign-menu-detail .status-menu-detail-description {
+  color: var(--px-ink-dim, #d4dfeb);
+  overflow: visible;
+  white-space: normal;
+}
+.oprn-status-menu .campaign-menu-detail [data-dex-seen="false"] { color: #adbbcb; }
+.oprn-status-menu .campaign-menu-detail [data-dex-caught="true"] .status-menu-detail-value,
+.oprn-status-menu .campaign-menu-detail [data-badge-acquired="true"] .status-menu-detail-value { color: #ffe5a2; }
+.oprn-status-menu .campaign-menu-detail [data-badge-acquired="false"] .status-menu-detail-value { color: #91a5bf; }
+.oprn-status-menu .campaign-menu-detail [data-testid="campaign-next-objective"] {
+  border-bottom: 1px solid var(--px-ink-dim, #b3cce2);
+  padding-bottom: 4px;
+}
+.oprn-status-menu .campaign-menu-detail > .status-menu-detail-hint { display: none; }

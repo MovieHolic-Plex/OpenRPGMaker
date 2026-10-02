@@ -88,6 +88,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     formationActorId: options.formationActorId,
     battleReportIndex: options.battleReportIndex,
     onSelectBattleReport: options.actions.onSelectBattleReport,
+    campaignSpeciesId: options.campaignSpeciesId,
+    onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
     monsterView: options.monsterView,
     lifeLedgerTab: options.lifeLedgerTab,
     confirmSaveSlot: options.confirmSaveSlot,
@@ -133,14 +135,14 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
-  const needsFullDetail = selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
   const sideParty = skin.sideParty && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
     // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
+    showcase: !detail.layout?.startsWith("campaign-") && selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
     side: sideParty,
   });
   detailPanel.dataset.statusMenuPresentation = presentation;
@@ -291,6 +293,9 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "row": return "↔";
     case "formation": return "◆";
     case "monsters": return "♢";
+    case "monster-dex": return "▣";
+    case "region-map": return "▧";
+    case "campaign-progress": return "◆";
     case "battle-reports": return "▤";
     case "quests": return "✓";
     case "relationships": return "∞";
@@ -319,6 +324,9 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "row": return "next";
     case "formation": return "shield";
     case "monsters": return "shard";
+    case "monster-dex": return "book-magic";
+    case "region-map": return "map";
+    case "campaign-progress": return "shield";
     case "battle-reports": return "book-magic";
     case "quests": return "map";
     case "relationships": return "world";
@@ -350,6 +358,9 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "skills":
     case "equipment":
     case "monsters":
+    case "monster-dex":
+    case "region-map":
+    case "campaign-progress":
     case "save":
     case "load":
     case "status":
