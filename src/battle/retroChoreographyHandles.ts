@@ -100,6 +100,23 @@ export function applyChoreographyHandles(
   record: HandleRecord | undefined,
   context: MotionContext = {},
 ): RetroSkillTimeline {
+  if (context.actionBlocked)
+    return {
+      ...timeline,
+      durationMs: 500,
+      representativeMs: 250,
+      events: [],
+      actors: [
+        {
+          role: "user",
+          points: [
+            { at: 0, anchor: "home", pose: "idle" },
+            { at: 500, anchor: "home", pose: "idle" },
+          ],
+        },
+      ],
+      ...(record?.movement ? { movement: record.movement } : {}),
+    };
   if (!hasChoreographyHandles(record)) return timeline;
   const rec = record!;
   let events: RetroTimelineEvent[] = [...timeline.events];
@@ -120,12 +137,13 @@ export function applyChoreographyHandles(
       Math.max(1, timeline.hitCount ?? authoredHits.length),
     );
     if (
-      authoredHits.length < requestedHits &&
+      authoredHits.length !== requestedHits &&
       (authoredHits.length > 0 || timeline.hitCount !== undefined)
     ) {
       const lead: RetroTimelineEvent = authoredHits[0] ?? {
         kind: "hit",
         at: original,
+        durationMs: 180,
         who: "target",
       };
       const layers = events.filter(
@@ -177,12 +195,13 @@ export function applyChoreographyHandles(
         group.push(event);
         impactLayers.set(event.layer, group);
       }
-    events = events.map((event) => {
+    events = events.flatMap((event): RetroTimelineEvent[] => {
       if (event.kind !== "fx" || event.anchor !== "target" || !contacts.length)
-        return event;
+        return [event];
       const group = impactLayers.get(event.layer)!,
         index = group.indexOf(event),
         first = group[0]!;
+      if (index >= contacts.length) return [];
       const frameMs = Math.min(
         event.frameMs,
         40,
@@ -192,17 +211,19 @@ export function applyChoreographyHandles(
         0,
         Math.min(first.cells.length - 1, (contact - first.at) / first.frameMs),
       );
-      return {
-        ...event,
-        at: Math.max(
-          0,
-          Math.round(
-            (contacts[Math.min(index, contacts.length - 1)] ?? contact) -
-              contactFrame * frameMs,
+      return [
+        {
+          ...event,
+          at: Math.max(
+            0,
+            Math.round(
+              (contacts[Math.min(index, contacts.length - 1)] ?? contact) -
+                contactFrame * frameMs,
+            ),
           ),
-        ),
-        frameMs,
-      };
+          frameMs,
+        },
+      ];
     });
     actors = buildBattleMotionTracks(
       rec.movement,
@@ -351,6 +372,46 @@ export function applyChoreographyHandles(
         ? { ...event, filter }
         : event,
     );
+  }
+  if (
+    rec.movement &&
+    (context.hit === false || context.contactHits || context.preparing)
+  ) {
+    const contacts = events
+      .filter(
+        (e): e is Extract<RetroTimelineEvent, { kind: "hit" }> =>
+          e.kind === "hit",
+      )
+      .sort((a, b) => a.at - b.at);
+    const landed = contacts.map(
+      (_, i) =>
+        !context.preparing &&
+        (context.contactHits
+          ? context.contactHits[i] === true
+          : (context.hit ?? true)),
+    );
+    const layerIndices = new Map<number, number>();
+    events = events.flatMap((event): RetroTimelineEvent[] => {
+      if (event.kind === "hit")
+        return [{ ...event, landed: landed[contacts.indexOf(event)] ?? false }];
+      if (
+        event.kind === "fx" &&
+        (event.anchor === "target" || event.anchor === "allTargets")
+      ) {
+        const i = layerIndices.get(event.layer) ?? 0;
+        layerIndices.set(event.layer, i + 1);
+        return (landed[Math.min(i, landed.length - 1)] ?? false) ? [event] : [];
+      }
+      // Cast auras and flying weapons remain visible. Contact flashes/shakes require a hit.
+      if (
+        !landed.some(Boolean) &&
+        !context.preparing &&
+        event.kind === "screen" &&
+        (event.effect === "shake" || event.effect === "flash")
+      )
+        return [];
+      return [event];
+    });
   }
   const speed = speedOf(rec);
   if (speed !== 1) {

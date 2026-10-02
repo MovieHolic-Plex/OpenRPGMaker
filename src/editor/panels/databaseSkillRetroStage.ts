@@ -1,3 +1,4 @@
+import { buildBattleMotionPreview } from "@/battle/battleMotionPreview";
 import { motionPositionAt, type MotionContext, type MotionAnchors } from "@/battle/battleMotionProgram";
 // 스킬 탭 「연출」 카드의 **도트 전투 미리보기 스테이지**(retro2003).
 //
@@ -179,7 +180,12 @@ function stageSource(record: SkillRecord, project: Project, context:MotionContex
   if (contract) {
     // 계약 연출은 계약의 편을 쓴다(레코드 scope 가 계약과 어긋나도 그림은 계약대로 — 어긋남은 스킬 설정의 문제다).
     // 프로젝트 연출 레코드의 손잡이(speed·tint·screen)는 런타임과 같은 함수로 얹는다 — 손잡이가 없으면 같은 객체.
-    const timeline = applyChoreographyHandles(retroClassSkillTimeline(contract, { hits: record.hitSequence?.length,...(resolved?.record?.movement?{side}:{}) }), resolved?.record,context);
+    const timeline = resolved?.record?.movement
+      ? buildBattleMotionPreview(resolved.record,hits=>retroClassSkillTimeline(contract,{hits,side}),{
+          hits:record.hitSequence?.length, outcome:context.actionBlocked?"cancel":context.hit===false?"miss":"hit",
+          followOnHit:record.battleGimmick?.followOnHit, preparing:record.effect.kind==="support",
+        })
+      : applyChoreographyHandles(retroClassSkillTimeline(contract,{hits:record.hitSequence?.length}),resolved?.record,context);
     return {
       name: record.name || contract.name, timeline, actorId: contract.actorId || learnerActorId(record, project), contract, recipe: undefined,
       sheets: contract.layers.map((layer) => ({ key: layer.key, url: fxUrl(layer.key), frame: layer.frame, frames: layer.frames, anchor: layer.anchor })),
@@ -787,8 +793,9 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     el("span", { class: "db-skill-animation-chip", dataset: { testid: "db-skill-retro-motion" }, text: motionLabel }),
     ...(source.contract ? [el("span", { class: "db-skill-animation-chip", text: "Lv " + source.contract.level })] : []),
   ] });
-  const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"조건 불충족"})]}) as HTMLSelectElement;
-  outcome.addEventListener("change",()=>{previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement){timeline=stageSource(record,project,{hit:previewHit,triggered:previewTriggered,ally:previewTriggered})!.timeline;}now=0;draw();});
+  const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"발동불가"})]}) as HTMLSelectElement;
+  if(record.effect.kind==="support"){outcome.options[0]!.text="발동";outcome.options[1]!.disabled=true;}
+  outcome.addEventListener("change",()=>{stop();previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement){timeline=stageSource(record,project,{hit:previewHit,actionBlocked:outcome.value==="cancel"})!.timeline;}now=timeline.representativeMs;draw();});
   const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview", dataset: { testid: "db-skill-retro-preview" }, children: [caption, stage, controls, chips] });
   // 무대 폭에 맞춰 배율을 정한다. 기본 2배(480px), 카드가 좁으면 줄인다 — 도트는 nearest 라 흐려지지 않는다.

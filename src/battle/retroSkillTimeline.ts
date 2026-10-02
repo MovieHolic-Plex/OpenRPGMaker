@@ -48,7 +48,7 @@ export type RetroTimelineEvent =
     /** 번쩍임 색(#rrggbb) — 연출 레코드 screen.flash. */
     readonly color?: string;
   }
-  | { readonly kind: "hit"; readonly at: number; readonly durationMs: number; readonly who: "target" | "allTargets" }
+  | { readonly kind: "hit"; readonly landed?: boolean; readonly at: number; readonly durationMs: number; readonly who: "target" | "allTargets" }
   | { readonly kind: "sound"; readonly at: number; readonly id: string };
 
 export interface RetroSkillTimeline {
@@ -801,6 +801,7 @@ export function retroTimelineStateAt(timeline: RetroSkillTimeline, t: number): R
         break;
       }
       case "hit": {
+        if (event.landed === false) break;
         if (t >= event.at + event.durationMs) break;
         const strength = 1 - (t - event.at) / event.durationMs;
         if (event.who === "target") hitTarget = Math.max(hitTarget, strength); else hitAll = Math.max(hitAll, strength);

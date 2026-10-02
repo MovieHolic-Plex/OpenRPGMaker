@@ -131,6 +131,10 @@ export interface MotionTrack {
 }
 export interface MotionContext {
   hit?: boolean;
+  /** Actual contact facts, in timeline order (including mixed hit/miss actions). */
+  contactHits?: readonly boolean[];
+  /** The action could not start. Separate from an optional gimmick failing to trigger. */
+  actionBlocked?: boolean;
   ally?: boolean;
   triggered?: boolean;
   preparing?: boolean;
@@ -389,6 +393,16 @@ export function buildBattleMotionTracks(
   contacts: readonly number[],
   context: MotionContext = {},
 ): readonly MotionTrack[] {
+  if (context.actionBlocked)
+    return [
+      {
+        role: "user",
+        points: [
+          { at: 0, anchor: "home", pose: "idle" },
+          { at: 500, anchor: "home", pose: "idle" },
+        ],
+      },
+    ];
   if (program.tracks?.length)
     return normalizeBattleMotionProgram(program)?.tracks ?? program.tracks;
   const primary = contacts.slice(0, context.primaryContacts ?? contacts.length);
@@ -432,7 +446,14 @@ export function buildBattleMotionTracks(
       ...(i ? [pt(at - 65, anchor, "attack_windup", { y })] : []),
       pt(at, anchor, "attack_strike", { y }),
       ...(i === times.length - 1
-        ? [pt(at + 55, anchor, "attack_follow", { y })]
+        ? [
+            pt(
+              at + 55,
+              anchor,
+              context.hit === false ? "evade" : "attack_follow",
+              { y },
+            ),
+          ]
         : []),
     ]);
   // A readable landing, then a short backward hop: never slide home holding the strike cell.

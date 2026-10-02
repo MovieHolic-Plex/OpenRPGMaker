@@ -415,7 +415,7 @@ function buildPlan(skill: PlayableSkill, record: SkillRecord, group: readonly Ba
   const counterContact=record.battleGimmick&&["cover","counter"].includes(record.battleGimmick.pattern)&&group.some(e=>e.kind==="damage");
   const handles=counterContact&&originalHandles?.movement?{...originalHandles,movement:{...originalHandles.movement,pattern:"counter" as const}}:originalHandles;
   const condition=group.find(e=>e.gimmick)?.gimmick;
-  const timeline = applyChoreographyHandles(base, handles,{primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
+  const timeline = applyChoreographyHandles(base, handles,{contactHits:group.map(e=>e.hit!==false),primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;

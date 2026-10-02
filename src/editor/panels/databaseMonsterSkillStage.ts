@@ -1,3 +1,4 @@
+import { buildBattleMotionPreview, type BattleMotionPreviewOutcome } from "@/battle/battleMotionPreview";
 import {partyPixelSheet,partyPixelSheetUrl,partyPixelFrame} from "@/assets/partyPixelSheets";
 import { applyChoreographyHandles } from "@/battle/retroChoreographyHandles";
 import { motionPositionAt, type MotionAnchors } from "@/battle/battleMotionProgram";
@@ -412,7 +413,9 @@ export type MonsterSkillStage = { readonly element: HTMLElement; readonly stop: 
  */
 export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,record?:SkillChoreographyRecord,hits?:number): MonsterSkillStage {
   const baseTimeline=record?.movement?retroMonsterSkillTimeline(skill,{hits}):monsterSkillTimeline(skill);
-  let timeline = applyChoreographyHandles(baseTimeline,record);
+  let timeline = record?.movement
+    ? buildBattleMotionPreview(record,count=>retroMonsterSkillTimeline(skill,{hits:count}),{hits,preparing:record.motion==="buff"})
+    : applyChoreographyHandles(baseTimeline,record);
   let previewHit=true,previewTriggered=true;
   const extraNodes=new Map<string,HTMLElement>();
   const caster = monsterCasterFor(skill.id) ?? (record?.movement ? {slug:"slime",sheet:PIXEL_ENEMY_SHEETS.find(s=>s.resourceId==="generated-enemy-slime-01")} : undefined);
@@ -560,8 +563,9 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
       el("span", { text: "시전 몬스터" }), " ", el("code", { class: "notranslate", attrs: { translate: "no" }, text: caster.slug }),
     ] })] : []),
   ] });
-  const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"조건 불충족"})]}) as HTMLSelectElement;
-  outcome.addEventListener("change",()=>{previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement)timeline=applyChoreographyHandles(baseTimeline,record,{hit:previewHit,triggered:previewTriggered,ally:previewTriggered});now=0;draw();});
+  const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"발동불가"})]}) as HTMLSelectElement;
+  if(record?.motion==="buff"){outcome.options[0]!.text="발동";outcome.options[1]!.disabled=true;}
+  outcome.addEventListener("change",()=>{stop();previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement)timeline=buildBattleMotionPreview(record,count=>retroMonsterSkillTimeline(skill,{hits:count}),{hits:baseTimeline.hitCount,outcome:outcome.value as BattleMotionPreviewOutcome,preparing:record?.motion==="buff"});now=timeline.representativeMs;draw();});
   const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview db-skill-mon-preview", dataset: { testid: "db-skill-mon-preview", skill: skill.id }, children: [caption, stage, controls, chips] });
   if (typeof ResizeObserver === "function") {

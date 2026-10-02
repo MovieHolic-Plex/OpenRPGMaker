@@ -96,3 +96,16 @@ flow는 단조 Hermite 접선으로 접촉을 통과할 때의 속도를 연결�
 순간이동은 프로그램이 있을 때 기존 `measurePlaces(...behind)`를 끄며, 새 `behind` 앵커에서 한 번만 등 뒤를 계산한다.
 
 몬스터 포즈 매핑도 함께 수정했다: hit/guard_hit→hit, attack_follow/evade→recover, dead/dying→dead. 타격받은 대상이 회수 칸으로 나오거나 후속 자세가 다시 공격 칸이 되는 결함을 막는다.
+
+## 결과 선택은 재생 분기다 (2026-10-02 정정)
+
+기존 미리보기의 `조건 불충족`은 `triggered:false`만 전달했다. 이 값은 부수 기믹의 발동 여부이고, 일반 점프/돌진을 취소하지 않는다. UI 선택을 이제 **명중 / 빗나감 / 발동불가**로 정의한다.
+
+- `battleMotionPreview.ts`의 `buildBattleMotionPreview`를 사람/몬스터 편집기와 대화 미리보기가 함께 쓴다. 원본 스킬에 명중 후속 조건이 있으면 빗나감 때 기본 타임라인의 요청 타수부터 1로 줄인다.
+- `MotionContext.actionBlocked`는 행동 자체가 시작하지 못한 경우다. 사용자 대기 경로만 남기고 이동·타격·이펙트·소리 사건을 모두 비운다. `triggered:false`(반격 대기 등)와 혼동하지 않는다.
+- 빗나감은 공격 시도를 유지한다. 타격 시각 마커는 실제 플레이어의 순서 계산에 필요하므로 지우지 않고 `RetroTimelineEvent.hit.landed=false`를 붙인다. `retroTimelineStateAt`은 이 마커로 피격을 그리지 않는다. 대상 타격 시트, 명중용 흔들림/번쩍임은 제거하고 사용자 시전/투사체는 유지한다.
+- 런타임은 `contactHits`로 실제 결과를 타격별로 전달한다. 명중→실패→명중을 첫 타격의 결과 하나로 덮지 않는다. 기본 flurry의 4타가 요청한 3타보다 많을 때도 접촉 수와 반복 시트를 줄여 가짜 4번째 명중을 막는다.
+- 강화/준비 스킬의 미리보기에는 명중 대신 `발동`을 표시하고 의미 없는 `빗나감` 선택을 끈다. 준비 사건은 대상 피해 반응을 만들지 않는다.
+- 결과를 고르면 재생을 멈추고 대표 순간을 즉시 표시한다. 이후 재생 버튼을 누르면 처음부터 재생한다.
+
+확인: `scripts/qa/runtime/battle-motion-outcomes.mjs` (32종 × 사람/몬스터, 취소 전체 구간 제자리·미명중 FX 없음·후속 취소·혼합 결과), `battle-motion-outcomes-editor.mjs` (실제 자료집의 세 결과 화면), `verify-shots/battle-motion/outcomes/`. gates/vitest/전체 typecheck는 실행하지 않았다.
