@@ -156,3 +156,42 @@ def apply(spec, journey):
                 raise TerrainError('작업 %d: 장소 %r 이 여정에 없다 (있는 것: %s)' % (i, o['id'], ', '.join(places)))
             places[o['id']]['x'], places[o['id']]['y'] = int(o['x']), int(o['y'])
     return j
+
+
+def _inside(poly, x, y):
+    """칸 가운데 (x+.5, y+.5) 가 다각형 안인가(왜곡 전 좌표)."""
+    px, py, hit = x + .5, y + .5, False
+    for (x0, y0), (x1, y1) in zip(poly, poly[1:] + poly[:1]):
+        if (y0 > py) != (y1 > py) and px < x0 + (py - y0) * (x1 - x0) / (y1 - y0):
+            hit = not hit
+    return hit
+
+
+GROUND_NAME = {10: 'grass', 11: 'farm', 27: 'crop', 12: 'savanna', 13: 'sand', 14: 'dune', 15: 'dirt', 16: 'badlands', 17: 'ash',
+               18: 'basalt', 19: 'swamp', 20: 'marsh', 21: 'tundra', 22: 'snow', 23: 'glacier', 24: 'jungle', 0: 'sea', 1: 'river'}
+
+
+def coverage(spec, world):
+    """작업이 실제로 얼마나 먹었는지 — 숲은 사막·모래언덕·물·길·장소 둘레에 안 자라서, 다각형 대부분이 그런 바닥이면 거의 안 보인다.
+    조수가 「숲을 놨는데 왜 없냐」를 스스로 알게 경고 문장으로 돌려준다."""
+    if not spec:
+        return []
+    G, O = world['ground'], world['object']
+    out = []
+    for i, o in enumerate(spec['ops']):
+        if o['op'] != 'forest':
+            continue
+        poly = [tuple(p) for p in o['poly']]
+        cells = [(x, y) for y in range(H) for x in range(W) if _inside(poly, x, y)]
+        if not cells:
+            continue
+        got = sum(1 for x, y in cells if O[y][x] in (1, 2, 3, 4, 5))
+        if got < .35 * len(cells):
+            seen = {}
+            for x, y in cells:
+                n = GROUND_NAME.get(G[y][x], str(G[y][x]))
+                seen[n] = seen.get(n, 0) + 1
+            top = ', '.join('%s %d' % kv for kv in sorted(seen.items(), key=lambda kv: -kv[1])[:4])
+            out.append('작업 %d(forest): 칸 %d 중 %d 칸만 숲이 됐다 — 바닥 %s. 숲은 sand·dune·물·길·장소 둘레에는 안 자란다. '
+                       '먼저 biome 으로 바닥을 바꾸거나 다각형을 옮겨라' % (i, len(cells), got, top))
+    return out

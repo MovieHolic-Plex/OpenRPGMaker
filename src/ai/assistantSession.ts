@@ -5327,7 +5327,7 @@ export class AssistantSession {
                 ? this.specGate(name, args)
                 : { warnings: [] };
               if (isSpecGatePass(gate)) {
-                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args));
+                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args, this.ctx.project));
                 const before = this.ctx.project;
                 toolResult = name === EVENT_COMMAND_ASSIST_TOOL
                   ? await operation.wait(runToolAsync(this.ctx, name, args, {

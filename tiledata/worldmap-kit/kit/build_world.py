@@ -59,18 +59,19 @@ def build_terrain(journey, roles, roles_data, iconset, assign, cache, terrain=No
             meta = json.loads(cj.read_text())
             if meta.get('sig') == sig:
                 z = np.load(cn)
+                _emit_warnings(meta['world'])
                 return dict(C=z['C'], ukeys=z['ukeys'], role=z['role'], G=z['G'], grp_t=z['grp_t'], world=meta['world'], paths_same=meta['paths_same'],
                             purity=meta['purity'], cached=True, seconds=0.0)
     import kit_world as W
     t0 = time.time()
     W.install(journey, roles, iconset, assign)
     w = W.make_world()
-    _warn_terrain()
     C, info, paths_same = W.render_terrain(w)
     ukeys, role, grp_t, _cnt = KP.build_roles(C, w.M, info)
     purity = KP.role_purity(C, ukeys, role, grp_t)
     world = W.world_dict(w, journey, assign)
     world['terrain'] = terrain['id'] if terrain else 'shared-v9'
+    _collect_warnings(world, terrain)
     out = dict(C=C, ukeys=ukeys, role=role, G=w.M.G.copy(), grp_t=grp_t, world=world, paths_same=bool(paths_same), purity=purity, cached=False, seconds=time.time() - t0)
     if cache:
         cache.mkdir(parents=True, exist_ok=True)
@@ -140,9 +141,16 @@ def walk_rows(world):
     return [''.join('1' if v else '0' for v in row) for row in w0]
 
 
-def _warn_terrain():
+def _collect_warnings(world, terrain):
+    """키트 경고(경사로 면 없음 등) + 작업이 덜 먹은 곳(숲이 사막 위) — 세계 JSON 에 남겨 캐시로 읽을 때도 다시 알린다."""
     import make_map_v4 as M4
-    for m in M4.WARN:
+    import kit_terrain as KTer
+    world['warnings'] = list(M4.WARN) + KTer.coverage(terrain, world)
+    _emit_warnings(world)
+
+
+def _emit_warnings(world):
+    for m in world.get('warnings', []):
         print('지형 경고: ' + m)
 
 
@@ -152,6 +160,10 @@ SCHEMA_RGB = {0: (40, 80, 160), 1: (70, 130, 220), 2: (230, 80, 30), 3: (150, 90
               13: (235, 215, 150), 14: (245, 225, 165), 15: (160, 130, 90), 16: (190, 100, 70), 17: (90, 85, 85), 18: (60, 55, 60), 19: (80, 120, 90),
               20: (110, 80, 140), 21: (170, 180, 160), 22: (240, 245, 250), 23: (200, 230, 245), 24: (60, 140, 70), 25: (40, 30, 30),
               26: (120, 40, 30), 27: (120, 190, 90)}
+
+
+LEGEND = ('범례: ~ 바다 r 강 L 용암 x 독늪 . 초원 f 밭 p 곡식밭 v 사바나 s 사막 d 모래언덕 D 흙 b 협곡토 a 화산재 B 현무암 w 늪 m 습지 c 균열 o 분화구 '
+          't 툰드라 n 설원 g 빙하 j 정글 | ^ 산 M 메사 V 화산 * 숲 = 길 / 경사로 @ 장소. 첫 줄은 x 의 10 자리, 줄 머리는 y')
 
 
 def ascii_map(world):
@@ -178,7 +190,7 @@ def ascii_map(world):
             for xx in range(p['x'], p['x'] + p['w']):
                 rows[yy][xx] = '@'
     head = '    ' + ''.join(str(x // 10) if x % 10 == 0 else ' ' for x in range(len(G[0])))
-    return '\n'.join([head] + ['%02d  %s' % (y, ''.join(r)) for y, r in enumerate(rows)])
+    return '\n'.join([LEGEND, head] + ['%02d  %s' % (y, ''.join(r)) for y, r in enumerate(rows)])
 
 
 def schematic(world, scale=8):
@@ -329,16 +341,16 @@ def preview(journey, roles, iconset, assign, out, no_check, terrain):
     except K.KitError as e:
         print('입력 오류:\n' + str(e), file=sys.stderr)
         sys.exit(2)
-    _warn_terrain()
     world = W.world_dict(w, journey, assign)
     world['terrain'] = terrain['id'] if terrain else 'shared-v9'
+    _collect_warnings(world, terrain)
     world['walk'] = walk_rows(world)
     out.mkdir(parents=True, exist_ok=True)
     (out / 'world.json').write_text(json.dumps(world, ensure_ascii=False))
     (out / 'terrain.txt').write_text(ascii_map(world) + '\n')
     schematic(world).save(out / 'schematic.png')
     import make_map_v4 as M4
-    report = dict(preview=True, terrain=world['terrain'], seconds=round(time.time() - t0, 1), warnings=list(M4.WARN))
+    report = dict(preview=True, terrain=world['terrain'], seconds=round(time.time() - t0, 1), warnings=list(world['warnings']))
     print('미리보기 %.1f초 → %s' % (report['seconds'], out / 'schematic.png'))
     if not no_check:
         from check_journey import run_check

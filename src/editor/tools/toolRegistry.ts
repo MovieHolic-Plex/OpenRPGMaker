@@ -29,6 +29,7 @@ import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
+import { WORLD_TERRAIN_TOOLS } from "./worldTerrainTools";
 import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
 import { CUTSCENE_PREVIEW_TOOLS } from "./cutscenePreviewTools";
 import { LIFE_FLOWER_TOOLS } from "./lifeFlowerTools";
@@ -240,6 +241,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
   ...withDomain(CUTSCENE_ART_TOOLS, "event"),
+  ...withDomain(WORLD_TERRAIN_TOOLS, "world"),
   ...withDomain(IMPACT_CUTSCENE_TOOLS, "event"),
   ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
   ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
