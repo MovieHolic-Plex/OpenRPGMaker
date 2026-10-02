@@ -22,10 +22,14 @@ if os.environ.get('JS_PROFILE') == 'gungnae':
     # 국내성형(96×96): 해자·성벽·궁 포장·큰 흙 마당이 넓고 건물은 듬성듬성한 대형 경관(조사 §⑧). 완화 폭은 최소로 둔다.
     LAWN_MAX, TREE_MIN, OBJ_MIN = 0.25, 0.07, 0.30
 TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
-BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort', 'gn', 'tower', 'palace', 'gungnae')
+BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3        # 0.0072 → 0.0060: 20채 마을 데모(64×56)는 논·연못·밭이 넓다
-if os.environ.get('JS_PROFILE') == 'gungnae':
-    BLD_MIN = 0.0060                    # 건물 밀도: 국내성은 건물이 듬성듬성(조사 §⑧) — 96×96 에 56채(키트 조각 포함 집계) 이상이면 통과
+_GN = os.environ.get('JS_PROFILE') == 'gungnae'
+if _GN:
+    # 국내성형: 새 조각 이름(gn_·palace_·tower_·gungnae_)도 건물로 센다. 담·문·소품은 세지 않는다(정규식은 건물 몸체 조각만).
+    import re
+    _BLD_RE = re.compile(r'^(giwa|thatch|gate|pavilion|gwanah|nugak|fort)_|^gn_(shop|l|u|g2|g3|thatch|jm_(corner|anchae|daemun|row))|^palace_(hall|jeongak|haengnak|gate)|^tower_|^gungnae_(gate|tower)')
+    BLD_MIN = 0.0045                    # 0.0060 → 0.0045: 해자·성벽·궁 포장·밭이 넓고 건물은 듬성듬성한 대형 경관(조사 §⑧). 96×96=9216칸에 건물 몸체 조각 42개 이상.
 
 
 def check(placed, direct, objlayer, T=16):
@@ -60,7 +64,7 @@ def check(placed, direct, objlayer, T=16):
     if dup:
         fails.append(f"M4 같은 나무가 6칸 안에 {len(dup)}쌍: {dup}")
 
-    nb = sum(1 for p in placed if p[0].split('_')[0] in BUILDINGS and 'wall' not in p[0])
+    nb = sum(1 for p in placed if ((_BLD_RE.match(p[0]) is not None) if _GN else (p[0].split('_')[0] in BUILDINGS and 'wall' not in p[0])))
     rep['buildings'] = nb
     rep['building_density'] = round(nb / (direct.w // T * (direct.h // T)), 4)
     if rep['building_density'] < BLD_MIN:
