@@ -206,7 +206,7 @@ def wall_v2():
     c = Cv(T, T)
     for y in range(T):
         for x in range(4, 12):
-            col = _CAP[5] if x < 6 else (_CAP[4] if x < 9 else (_CAP[2] if x < 11 else _CAP[1]))
+            col = _CAP[5] if x < 6 else (_CAP[4] if x < 10 else _CAP[3])
             if y % 4 == 3: col = _CAP[2] if x < 11 else _CAP[1]            # 가로 기와 마디
             c.put(x, y, col)
         c.put(3, y, _CAP[1]); c.put(12, y, _CAP[1])

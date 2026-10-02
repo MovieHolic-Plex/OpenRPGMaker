@@ -32,17 +32,17 @@
   "date": "2026-10-02"
  },
  "bridge": {
-  "hash": "3433ff81283c",
-  "status": "pass",
-  "line": "널 갑판 윗면+앞 보 두께, 판재 난간",
+  "hash": "d9afbbbe72b9",
+  "status": "note",
+  "line": "앞 난간 낮춤·갑판 밝힘 / 가운데 독 입 윗면 / 담 윗면 띠 단순화. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "jars": {
-  "hash": "98da893d3dda",
-  "status": "pass",
-  "line": "옹기 둥근 어깨+돔 뚜껑, 장독대 판",
+  "hash": "083396a25229",
+  "status": "note",
+  "line": "앞 난간 낮춤·갑판 밝힘 / 가운데 독 입 윗면 / 담 윗면 띠 단순화. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -104,9 +104,9 @@
   "date": "2026-10-02"
  },
  "wall_v": {
-  "hash": "9a198bd0cd65",
-  "status": "pass",
-  "line": "주황 갈색 덮개 띠(바람의나라 담)",
+  "hash": "f4febd2ac173",
+  "status": "note",
+  "line": "앞 난간 낮춤·갑판 밝힘 / 가운데 독 입 윗면 / 담 윗면 띠 단순화. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -128,33 +128,33 @@
   "date": "2026-10-02"
  },
  "giwa_house_6": {
-  "hash": "44fe02901c84",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "47f6195e18b0",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "thatch_house_5": {
-  "hash": "dbb83489bb22",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "64975c0bc37d",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gate_4": {
-  "hash": "838d89762452",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "807165beb0a7",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "pavilion_5": {
-  "hash": "d6b1d2d14f0e",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "26a075031eb7",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -264,17 +264,17 @@
   "date": "2026-10-02"
  },
  "thatch_house_4": {
-  "hash": "1a38b81d9a84",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "b884a611decc",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_5": {
-  "hash": "ecb4feafa03e",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "e734e096e404",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -329,32 +329,32 @@
  },
  "thatch_house_3": {
   "hash": "a0ba0dd36293",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "thatch_house_3b": {
   "hash": "d31931dc4a5f",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_4": {
-  "hash": "49d5f4677ef4",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "c40a9d6c847b",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_3": {
-  "hash": "ec8f103f71bf",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "faa0deac6a49",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -464,9 +464,9 @@
   "date": "2026-10-02"
  },
  "giwa_house_5b": {
-  "hash": "7db18a943139",
-  "status": "pass",
-  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
+  "hash": "615bb2de998d",
+  "status": "note",
+  "line": "처마 밑 서까래 그늘 채움, 벽에 얹힘. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

@@ -393,10 +393,12 @@ def eave_fill(cv, roof_h=48, thatch=False):
     wall_cols = [x for x in range(cv.w) if cv.a[roof_h + 6, x, 3] == 255]
     wx0, wx1 = (min(wall_cols), max(wall_cols)) if wall_cols else (0, cv.w - 1)
     for x in range(cv.w):
-        ys = [y for y in range(0, roof_h + 4) if cv.a[y, x, 3] == 255 and y < roof_h + 1]
-        if not ys:
+        first = next((y for y in range(0, roof_h) if cv.a[y, x, 3] == 255), None)
+        if first is None:
             continue
-        last = max(ys)
+        last = first                      # 지붕의 첫 연속 구간 끝(벽 윗줄은 포함하지 않는다)
+        while last + 1 < roof_h and cv.a[last + 1, x, 3] == 255:
+            last += 1
         in_wall = wx0 <= x <= wx1
         y_end = roof_h + 1
         for y in range(last + 1, y_end + 1):

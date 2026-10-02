@@ -98,6 +98,9 @@ def jars():
             c.hl(int(cx - w * ww), int(cx + w * ww) + 1, top - 3 - k, E[5 - k] if k < 2 else E[6])
     c.rect(1, 13, 31, 16, St[4]); c.hl(1, 31, 13, St[6]); c.hl(1, 31, 15, St[2])
     jar(8, 13, 11, 9); jar(19, 13, 9, 7); jar(27, 13, 7, 6)
+    for k, (a, b2, col) in enumerate(((15, 24, E[2]), (16, 23, E[1]))):     # 가운데 독은 뚜껑을 열어 입 윗면(어두운 타원)이 보이게
+        c.hl(a, b2, 3 + k, col)
+    c.hl(15, 24, 2, E[6])
     outline(c)
     return c
 
@@ -265,7 +268,7 @@ def bridge():
     for y in range(top, bot):
         for x in range(2, W - 2):
             k = (x - 2) % 6
-            col = Wd[5] if k < 4 else Wd[2]
+            col = Wd[6] if k < 4 else Wd[3]
             if y - top < 2: col = Wd[6] if k < 4 else Wd[3]
             c.put(x, y, col)
     for x in range(2, W - 2): c.put(x, bot, Wd[3]); c.put(x, bot + 1, Wd[2]); c.put(x, bot + 2, Wd[1])      # 앞 보(두께)
@@ -274,9 +277,9 @@ def bridge():
         c.hl(2, W - 2, y, col)
     for x in range(8, W - 8, 14): c.rect(x, 11, x + 4, top, Wd[3]); c.vl(x, 11, top, Wd[5])
     # 앞 난간: 갑판 앞가장자리에 낮고 두툼하게 (판재 5px)
-    for y, col in ((31, Wd[6]), (32, Wd[5]), (33, Wd[5]), (34, Wd[4]), (35, Wd[2])):
+    for y, col in ((33, Wd[6]), (34, Wd[5]), (35, Wd[3])):
         c.hl(2, W - 2, y, col)
-    for x in range(8, W - 8, 14): c.rect(x, 35, x + 4, bot + 2, Wd[3]); c.vl(x, 35, bot + 2, Wd[5]); c.vl(x + 3, 35, bot + 2, Wd[1])
+    for x in range(8, W - 8, 14): c.rect(x, 33, x + 4, bot + 2, Wd[3]); c.vl(x, 33, bot + 2, Wd[5]); c.vl(x + 3, 33, bot + 2, Wd[1])
     # 막돌 교대: 갑판보다 낮게, 어두운 틈과 은은한 면 구분만
     for (a, b2) in ((0, 7), (W - 7, W)):
         for y in range(top + 3, bot + 3):
