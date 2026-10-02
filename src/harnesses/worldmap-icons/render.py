@@ -46,6 +46,8 @@ def themed_terrain(set_id, t):
     if theme and theme['kind'] == 'space':
         return KT.render_space(KT.Ctx(t['world']), road_px=road_px), pal, 0.0
     img, _extra = KP.recolor_terrain(t['C'], t['ukeys'], t['role'], pal, t['G'])
+    if theme:
+        img = KT.force_road_band(img, t['world'], t['C'], t['ukeys'], t['role'], pal, road_px)
     if theme and theme['overlays']:
         img, _rep = KT.apply_land(img, t['world'], theme, road_px)
     return img, pal, pal.get('icon_tint', 0.25)

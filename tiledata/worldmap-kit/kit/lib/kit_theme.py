@@ -1540,6 +1540,37 @@ def yy_global(H, W):
 
 
 # ──────────────────────────────── 적용 ────────────────────────────────
+def force_road_band(img, world, C, ukeys, role, pal, road_px):
+    """흙길 띠 안쪽 화소를 길 색으로 다시 칠한다. 길 화소 중 바닥(협곡·사막)과 같은 색인 것은 색 표에서 그 바닥 role 로 잡혀
+    팔레트가 바닥 색으로 칠했다 — 외계 협곡 위에서 길이 자주색으로 묻히고 한 길 안에서 색이 바뀌었다(QA 3차).
+    띠는 칸 x 4~11 이고 테두리가 ±1 흔들리므로 1px 깎은 안쪽만 바꾼다."""
+    import kit_palette as KP
+    if KP.is_identity(pal) or 'road' not in pal.get('roles', {}):
+        return img
+    ctx = Ctx(world)
+    ctx.road_px = road_px
+    g = lane_graph(ctx)
+    H, W = img.shape[:2]
+    m = np.zeros((H, W), bool)
+    for (x, y), ls in g.items():
+        if (x, y) in ctx.bridge or ctx.ramp[y, x] or ctx.occupied[y, x]:
+            continue
+        b = band_mask(ls)
+        e = b.copy()
+        e[1:] &= b[:-1]
+        e[:-1] &= b[1:]
+        e[:, 1:] &= b[:, :-1]
+        e[:, :-1] &= b[:, 1:]
+        sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
+        m[sl] = e if (x, y) not in ctx._gaps else False
+    if not m.any():
+        return img
+    rr, _ = KP.recolor_terrain(C, ukeys, np.full_like(role, KP.GID['road']), pal, ctx.G)
+    out = img.copy()
+    out[m] = rr[m]
+    return out
+
+
 def apply_land(img, world, theme, road_role_px):
     """팔레트를 입힌 지형 그림에 테마 덧칠을 차례로 적용한다. 반환 (그림, 덧칠별 개수 보고)."""
     ctx = Ctx(world)

@@ -195,6 +195,7 @@ def main():
         else:
             img, extra = KP.recolor_terrain(t['C'], t['ukeys'], t['role'], pal, t['G'])
             if theme:
+                img = KT.force_road_band(img, world, t['C'], t['ukeys'], t['role'], pal, road_px)
                 img, extra['overlays'] = KT.apply_land(img, world, theme, road_px)
         final = W.paste_icons(img, ic, sky_site, iconset, assign, lambda arr: KP.tint_icon(arr, pal, tint, iconset.key, iconset.shadow_key))
         fn = ('%s-%s.png' % (theme['id'], pal['id'])) if theme else ('%s-%s.png' % (iconset.id, pal['id']))
