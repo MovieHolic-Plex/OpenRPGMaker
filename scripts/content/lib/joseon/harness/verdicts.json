@@ -720,9 +720,9 @@
   "date": "2026-10-02"
  },
  "thatch_jumak": {
-  "hash": "50f9ec427a06",
+  "hash": "98635649e699",
   "status": "note",
-  "line": "2026-10-02 마을 20채용 신규 조각: 미리보기 확인(윗면·앞면·오른쪽 그림자 유지). 소품은 작은 크기라 형태 단순",
+  "line": "깃발 천에 술병(호리병) 그림 추가, 지붕·벽은 기존 초가 블록 그대로(윗면 방석 3단)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -771,6 +771,214 @@
   "hash": "933cb2e813ef",
   "status": "note",
   "line": "2026-10-02 마을 20채용 신규 조각: 미리보기 확인(윗면·앞면·오른쪽 그림자 유지). 소품은 작은 크기라 형태 단순",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gate_solseul": {
+  "hash": "5511c0d42e6b",
+  "status": "note",
+  "line": "열린 통로(안마당이 비침)+문짝+문턱+문 앞 흙 포장. 지붕 윗면은 기존 기와 블록 문법. 솟을지붕은 가운데 4행으로 한 단 높음. 3/4 규칙은 집 블록과 동일",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gate_pyeong": {
+  "hash": "c758725b56bb",
+  "status": "note",
+  "line": "열린 통로(안마당이 비침)+문짝+문턱+문 앞 흙 포장. 지붕 윗면은 기존 기와 블록 문법. 솟을지붕은 가운데 4행으로 한 단 높음. 3/4 규칙은 집 블록과 동일",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_hut_2": {
+  "hash": "5b35f4f6a0a1",
+  "status": "note",
+  "line": "초가 방석 지붕 3단 윗면+정면 벽 — 기존 thatch_house_3 과 같은 블록 문법, 칸 수·문 종류만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_house_4k": {
+  "hash": "3754f81a6305",
+  "status": "note",
+  "line": "초가 방석 지붕 3단 윗면+정면 벽 — 기존 thatch_house_3 과 같은 블록 문법, 칸 수·문 종류만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_house_6": {
+  "hash": "6de317f1b2cd",
+  "status": "note",
+  "line": "초가 방석 지붕 3단 윗면+정면 벽 — 기존 thatch_house_3 과 같은 블록 문법, 칸 수·문 종류만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_gotgan": {
+  "hash": "f4dc4e55eb6a",
+  "status": "note",
+  "line": "초가 방석 지붕 3단 윗면+정면 벽 — 기존 thatch_house_3 과 같은 블록 문법, 칸 수·문 종류만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_maguan": {
+  "hash": "420188c32138",
+  "status": "note",
+  "line": "초가 방석 지붕 3단 윗면+정면 벽 — 기존 thatch_house_3 과 같은 블록 문법, 칸 수·문 종류만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_house_4w": {
+  "hash": "fe944c7d87cd",
+  "status": "note",
+  "line": "기와 지붕 윗면(roof3d)+정면 벽 — 기존 giwa_house 와 같은 블록 문법, 칸 수·문·난간만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_numa": {
+  "hash": "06b91b2014e4",
+  "status": "note",
+  "line": "기와 지붕 윗면(roof3d)+정면 벽 — 기존 giwa_house 와 같은 블록 문법, 칸 수·문·난간만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_seowon": {
+  "hash": "43b023d2a471",
+  "status": "note",
+  "line": "기와 지붕 윗면(roof3d)+정면 벽 — 기존 giwa_house 와 같은 블록 문법, 칸 수·문·난간만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "giwa_sadang": {
+  "hash": "567c4f9ad888",
+  "status": "note",
+  "line": "기와 지붕 윗면(roof3d)+정면 벽 — 기존 giwa_house 와 같은 블록 문법, 칸 수·문·난간만 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "waterwheel": {
+  "hash": "cee048a24cab",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "dilbang": {
+  "hash": "0cf9dbd0d578",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "millstone": {
+  "hash": "04a624354ecf",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "pyeongsang": {
+  "hash": "4563bc4deac7",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "jangdokdae": {
+  "hash": "0bb2b934c6c8",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "scarecrow": {
+  "hash": "6ce066c42831",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "firewood": {
+  "hash": "9a9e2355224a",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gochu_mat": {
+  "hash": "ee492ae1ae24",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "dolmadam": {
+  "hash": "056ef117257e",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "jukbyeok": {
+  "hash": "de55abc10fa3",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "geumjul_altar": {
+  "hash": "40625736ea07",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "stepping_stones": {
+  "hash": "a311163c1c5e",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "boat": {
+  "hash": "8dbf83eb08f0",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "stele": {
+  "hash": "c06479a12eb9",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "stove_pot": {
+  "hash": "9ba70f00a8ab",
+  "status": "user",
+  "line": "소품: 정면 소품이라 사용자 판정 필요(윗면+앞면+오른쪽 아래 그림자는 props5 도구 사용)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

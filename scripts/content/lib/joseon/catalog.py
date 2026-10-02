@@ -1,5 +1,5 @@
 """조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
-import village_pieces as VP, props5 as P5, structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
+import village_pieces as VP, village_gates as VG, village_props as VPR, props5 as P5, structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
 _L = None
 
 
@@ -21,6 +21,7 @@ def terrain():
         'yard16': [G.yard_edge(m) for m in range(16)],
         'stream16': [G.stream(m) for m in range(16)],
         'paddy16': [G.paddy_edge(m) for m in range(16)],
+        'rice16': [VPR.paddy_edge_rice(m) for m in range(16)],
     }
 
 
@@ -119,4 +120,31 @@ def objects():
         'wall_corner_ne': P5.wall_corner4('NE'),
         'wall_corner_sw': P5.wall_corner4('SW'),
         'wall_corner_se': P5.wall_corner4('SE'),
+        # --- 2차: 문·집 변형·생활 소품
+        'gate_solseul': VG.solseul_daemun(),
+        'gate_pyeong': VG.pyeong_daemun(),
+        'thatch_hut_2': VG.thatch_hut_2(),
+        'thatch_house_4k': VG.thatch_house_4k(),
+        'thatch_house_6': VG.thatch_house_6(),
+        'giwa_house_4w': VG.giwa_house_4w(),
+        'giwa_numa': VG.giwa_numa(),
+        'giwa_seowon': VG.seowon_hall(),
+        'thatch_gotgan': VG.gotgan(),
+        'thatch_maguan': VG.maguan(),
+        'giwa_sadang': VPR.sadang(),
+        'waterwheel': VPR.waterwheel(),
+        'dilbang': VPR.dilbang(),
+        'millstone': VPR.millstone(),
+        'pyeongsang': VPR.pyeongsang(),
+        'jangdokdae': VPR.jangdokdae(),
+        'scarecrow': VPR.scarecrow(),
+        'firewood': VPR.firewood(),
+        'gochu_mat': VPR.gochu_mat(),
+        'dolmadam': VPR.dolmadam(),
+        'jukbyeok': VPR.jukbyeok(),
+        'geumjul_altar': VPR.geumjul_altar(),
+        'stepping_stones': VPR.stepping_stones(),
+        'boat': VPR.boat(),
+        'stele': VPR.stele(),
+        'stove_pot': VPR.stove_pot(),
     }

@@ -799,5 +799,238 @@
    "planter_round"
   ],
   "thin_ok": "싸리 막대 사이 틈"
+ },
+ "gate_solseul": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "gate_pyeong": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "thatch_hut_2": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "thatch_house_4k": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "thatch_house_6": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "giwa_house_4w": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "giwa_numa": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "giwa_seowon": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "thatch_gotgan": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "thatch_maguan": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "giwa_sadang": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',…)"
+ },
+ "waterwheel": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바퀴살·테·홈통은 원래 가는 선"
+ },
+ "dilbang": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "front_only": true,
+  "front_only_why": "긴 방앗대가 왼쪽 밟는 판 쪽으로 낮아 왼쪽 반이 어둡다(돌확은 오른쪽) — 가로로 긴 지렛대 구조"
+ },
+ "millstone": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "pyeongsang": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "jangdokdae": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "scarecrow": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "십자 막대와 장대는 원래 가는 선"
+ },
+ "firewood": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "dolmadam": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "jukbyeok": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "대나무 살은 폭 1~2px 세로 줄"
+ },
+ "geumjul_altar": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "stepping_stones": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "boat": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "stele": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "stove_pot": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "gochu_mat": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
  }
 }

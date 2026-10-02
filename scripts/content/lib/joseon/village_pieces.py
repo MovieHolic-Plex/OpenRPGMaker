@@ -40,8 +40,11 @@ def jumak():
             tone = 5 if f < 0.3 else (4 if f < 0.7 else 3)
             if y > 35: tone -= 1
             c.put(x, y, P[tone])
-    for y in range(22, 27):
+    for y in range(17, 20):                                            # 깃발 윗단 붉은 띠
         for x in range(px - 9, px): c.put(x, y, R[4] if x > px - 6 else R[3])
+    ell(c, px - 4.5, 25, 1.9, 1.9, lambda x, y, u, v: R[5] if u < 0 else R[4])          # 술병(호리병): 작은 윗 원 + 큰 아랫 원
+    ell(c, px - 4.5, 30, 3.4, 3.6, lambda x, y, u, v: R[5] if (u < -0.2 and v < 0) else (R[4] if u < 0.4 else R[3]))
+    c.put(px - 5, 27, R[3]); c.put(px - 4, 27, R[3])
     c.hl(px - 9, px, 16, Wd[3])
     lx, ly = 22, 52                                                   # 처마 밑 붉은 등롱
     c.vl(lx, 49, 52, Wd[2])
