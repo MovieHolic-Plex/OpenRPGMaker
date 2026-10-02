@@ -5297,6 +5297,96 @@
     ],
     "cover": 0.7
    }
+  },
+  {
+   "id": "great telescope",
+   "name_ko": "거대 망원경",
+   "name_en": "great telescope",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "돌림 받침 위에 놓인 놋쇠 거대 망원경(3×2칸, 32px 솟음). 받침의 **꼭대기 윗면 18행(밑그림 y=34~51)** — 위에서 본 둥근 나무 돌림판(가장자리 놋쇠 테, 눈금 홈)과 그 가운데 쇠 축받이. 그 아래 남쪽 면 밑그림 y=52~63: 돌림판 옆두께와 세 다리. 받침 위로 놋쇠 경통이 북동쪽 하늘로 비스듬히 솟는다(경통 윗면이 밝고 아랫면이 어둡다, 끝의 렌즈 테, 작은 보조 망원경과 접안부가 남서쪽 아래로). 옆모습 금지.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑",
+    "천문대",
+    "관측실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "마법사의 탑 꼭대기 관측실·천문대 가운데.",
+   "pair": [
+    "telescope",
+    "star chart"
+   ],
+   "refs": [
+    "telescope"
+   ],
+   "blockout": {
+    "top": [
+     34,
+     51
+    ],
+    "front": [
+     52,
+     63
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "weaving loom",
+   "name_ko": "베틀",
+   "name_en": "weaving loom",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "나무 베틀(3×2칸, 16px 솟음), 짜는 사람이 남쪽에 앉는다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 22행(밑그림 y=6~27) — 위에서 본 네모난 나무 틀 안에 북쪽→남쪽으로 팽팽히 걸린 날실(밝은 실 여러 줄), 남쪽 끝에 감긴 붉은 천 두루마리와 북(배 모양 나무)이 날실 위에 얹혀 있다. 그 아래 남쪽 면 밑그림 y=28~47: 앞 가로대·발판 둘·네 다리. 옆모습 금지.",
+   "contextRoom": "mead",
+   "tags": [
+    "농가",
+    "살림",
+    "상점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "농가·여관 안채·직물 상점 구석.",
+   "pair": [
+    "spinning wheel"
+   ],
+   "refs": [
+    "spinning wheel",
+    "work 2x1"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     27
+    ],
+    "front": [
+     28,
+     47
+    ],
+    "cover": 0.6
+   }
   }
  ]
 }
