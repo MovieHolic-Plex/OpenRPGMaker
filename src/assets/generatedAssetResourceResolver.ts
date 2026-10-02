@@ -23,6 +23,8 @@ import { SHARED_PORTRAIT_ASSETS, resolveSharedPortraitUrl } from "@/assets/share
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import type { Project } from "@/project/types";
 
+const FALLBACK_SKIN_ENEMY_URL = PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"]!;
+
 // 타이틀 리소스 id 개명(2026-08-21) — 새 id 를 정본으로 쓰고, 구 id 는 **별칭으로
 // 남긴다**. 이 값은 프로젝트 파일의 titleResourceId/backgroundResourceId 에 저장되므로
 // 구 id 를 지우면 사용자가 만든 기존 프로젝트의 타이틀 화면이 빈 화면이 된다.
@@ -126,18 +128,19 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "battle-skin-goldensun-backdrop": "/assets/generated/battle-skins/goldensun-backdrop.png",
   "battle-skin-demo-battler": "/assets/generated/battle-skins/demo-battler-alpha.png",
   // Per-skin battler sprites (chroma-keyed #00FF00 -> alpha) — themed enemy + party (front/back).
+  // 스킨 공용 정면 적 그림은 2026-10-02 지웠다 — 옛 id 는 남겨 두고(참조 검증) 도트 슬라임 초상으로 돌린다.
   "bskin-enemy-pokemon": "/assets/scarloxy/scarloxy-monster-larvea.png",
   "generated-enemy-reference-cocoon": "/assets/generated/battle-skins/sprites/reference-cocoon-front.png",
   "generated-enemy-reference-seed-back": "/assets/generated/battle-skins/sprites/reference-seed-back.png",
-  "bskin-enemy-rm2003": "/assets/generated/battle-skins/sprites/enemy-rm2003.png",
-  "bskin-enemy-rm2000": "/assets/generated/battle-skins/sprites/enemy-rm2000.png",
-  "bskin-enemy-octopath": "/assets/generated/battle-skins/sprites/enemy-octopath.png",
-  "bskin-enemy-chrono": "/assets/generated/battle-skins/sprites/enemy-chrono.png",
-  "bskin-enemy-bravely": "/assets/generated/battle-skins/sprites/enemy-bravely.png",
-  "bskin-enemy-dragonquest": "/assets/generated/battle-skins/sprites/enemy-dragonquest.png",
-  "bskin-enemy-ff": "/assets/generated/battle-skins/sprites/enemy-ff.png",
-  "bskin-enemy-mother": "/assets/generated/battle-skins/sprites/enemy-mother.png",
-  "bskin-enemy-goldensun": "/assets/generated/battle-skins/sprites/enemy-goldensun.png",
+  "bskin-enemy-rm2003": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-rm2000": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-octopath": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-chrono": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-bravely": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-dragonquest": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-ff": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-mother": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-goldensun": FALLBACK_SKIN_ENEMY_URL,
   "bskin-party-warrior-front": "/assets/generated/battle-skins/sprites/party-warrior-front.png",
   "bskin-party-warrior-back": "/assets/generated/battle-skins/sprites/party-warrior-back.png",
   "bskin-party-mage-front": "/assets/generated/battle-skins/sprites/party-mage-front.png",
