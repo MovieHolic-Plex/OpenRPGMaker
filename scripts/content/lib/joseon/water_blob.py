@@ -77,11 +77,13 @@ def _dist(px, py, m, right, bottom):
     return CAP
 
 
-def water47(mask8, v=0):
-    """mask8 의 이웃 8칸으로 정해지는 물 한 칸(16×16 불투명)."""
+def water47(mask8, v=0, tone='teal'):
+    """mask8 의 이웃 8칸으로 정해지는 물 한 칸(16×16 불투명). tone='blue' 는 깊은 물을 청색(dblue)으로 섞는 국내성용(옛 지도는 teal 그대로)."""
     m = canon(mask8)
     c = Cv(T, T)
     w, e, st, g = RGB['water'], RGB['earth'], RGB['stone'], RGB['leaf']
+    bl = RGB['dblue']
+    blue = tone == 'blue'
     tt = [[0.0] * T for _ in range(T)]
     face = [[False] * T for _ in range(T)]       # 북쪽 둑(앞면이 보이는 둑)
     shade = [[False] * T for _ in range(T)]      # 빛이 왼쪽 위 → 북·서쪽 둑이 물에 그림자
@@ -125,6 +127,7 @@ def water47(mask8, v=0):
                 if shade[y][x] and sd < 3.2:                                         # 북·서쪽 둑 밑: 그늘 진 얕은 물
                     col = w[3] if (sd < 1.4 or bay > 0.5) else w[2]
                     if q > 0.95: col = w[2]
+                    if blue and sd >= 1.4 and bay <= 0.5: col = bl[3]
                 elif sd < 2.0:
                     col = w[4] if q > 0.12 else w[3]                                  # 얕은 물(가장 밝음)
                     if q > 0.97: col = w[5]
@@ -132,22 +135,52 @@ def water47(mask8, v=0):
                     col = w[4] if bay > (sd - 2.0) / 1.2 else w[3]                    # 밝음 → 중간
                 elif sd < 4.0:
                     col = w[3] if q > 0.1 else w[2]
+                    if blue and sd > 3.5 and bay > 0.5: col = bl[3]
                 elif sd < 4.6:
                     col = w[3] if bay > (sd - 4.0) / 0.6 else w[2]                    # 중간 → 깊음
+                    if blue: col = bl[4] if bay > (sd - 4.0) / 0.6 and q > 0.5 else (bl[3] if bay > (sd - 4.0) / 0.6 else w[3])
                 else:
                     col = w[2] if q > 0.2 else w[3]
                     if q > 0.985: col = w[1]
+                    if blue: col = bl[4] if q > 0.7 else (bl[3] if q > 0.18 else bl[2])   # 깊은 물: 청색 바탕에 밝은·어두운 얼룩
             c.put(x, y, col)
     for y in range(T):                           # 자갈: 2×1 돌 한 쌍(밝은 위, 어두운 아래)
         for x in range(T - 1):
             if pb[y][x]:
                 c.put(x, y, st[5]); c.put(x + 1, y, st[4])
                 if y + 1 < T and tt[y + 1][x] < B_SAND: c.put(x, y + 1, st[3]); c.put(x + 1, y + 1, st[3])
-    for k in range(2):                           # 잔물결: 가로 3px (중간·깊은 물에만)
+    for k in range(2 if not blue else 3):       # 잔물결: 가로 3px (중간·깊은 물에만). blue 는 변형마다 자리·길이가 다르다
         x, y = 1 + hsh(k, m, v + 11) % 11, 2 + hsh(m, k, v + 13) % 12
-        if all(tt[y][x + i] >= B_SAND + 3.5 for i in range(3)):
-            c.put(x, y, w[4]); c.put(x + 1, y, w[4]); c.put(x + 2, y, w[5])
+        ln = 3 if not blue else 2 + hsh(k, v, 5) % 3
+        if x + ln <= T and all(tt[y][x + i] >= B_SAND + 3.5 for i in range(ln)):
+            for i in range(ln):
+                c.put(x + i, y, (bl[5] if blue else w[4]) if i < ln - 1 else (bl[5] if blue else w[5]))
+            if blue and ln > 2: c.put(x + 1, y, w[4])
     return c
+
+
+DEEP_MASK = 255
+
+
+def water_deep_set(n=8):
+    """깊은 물(이웃 8칸이 전부 물) 한 칸의 변형 n 종: 물결 자리·길이·방향이 모두 달라 같은 무늬가 격자로 반복되지 않는다. 가장자리가 없어 이웃 칸과 항상 이어진다."""
+    out = []
+    bl = RGB['dblue']; w = RGB['water']
+    for v in range(n):
+        c = water47(DEEP_MASK, 100 + v, 'blue')
+        # 추가 물결: 변형마다 다른 곳에 짧은 가로 줄과 어두운 얼룩 덩이
+        for k in range(1 + v % 3):
+            x, y = 1 + hsh(k, v, 61) % 11, 1 + hsh(v, k, 67) % 13
+            ln = 2 + hsh(k, v, 71) % 4
+            for i in range(ln):
+                if x + i < T:
+                    c.put(x + i, y, bl[5] if i % 2 == 0 or ln < 4 else w[4])
+        if v % 2:
+            x, y = 3 + hsh(v, 3, 73) % 8, 4 + hsh(v, 5, 79) % 8
+            for dx, dy in ((0, 0), (1, 0), (2, 0), (1, 1)):
+                c.put(x + dx, y + dy, bl[1])
+        out.append(c)
+    return out
 
 
 def water47_set(variants=2):
