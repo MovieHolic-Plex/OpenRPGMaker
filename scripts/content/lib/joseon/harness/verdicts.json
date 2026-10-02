@@ -48,9 +48,9 @@
   "date": "2026-10-02"
  },
  "bench": {
-  "hash": "59ddb78219b5",
+  "hash": "20a822f24762",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -96,33 +96,33 @@
   "date": "2026-10-02"
  },
  "wall_h": {
-  "hash": "492560f68068",
+  "hash": "e80b11124d28",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "wall_v": {
-  "hash": "3dde6ca515e5",
+  "hash": "e0f3510f0e90",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "wall_corner_l": {
-  "hash": "8e94c2180735",
+  "hash": "4c446dc396e1",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "wall_corner_r": {
-  "hash": "9c5ed0f4614f",
+  "hash": "72da0691b345",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -256,9 +256,9 @@
   "date": "2026-10-02"
  },
  "haystack": {
-  "hash": "8cfcb2219714",
+  "hash": "e56ca3494215",
   "status": "note",
-  "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -611,6 +611,22 @@
   "hash": "760e4a48b13a",
   "status": "note",
   "line": "3/4 리뷰 지적(바닥 호·윗면·그림자·담 캡 분리) 반영, 확대 확인. 독립 재리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "wall_h1": {
+  "hash": "6c3308f093b1",
+  "status": "note",
+  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "wall_h2": {
+  "hash": "02bc85f71620",
+  "status": "note",
+  "line": "3/4 재리뷰(2차) 지적 반영, 확대 확인. 독립 재리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

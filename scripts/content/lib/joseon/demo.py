@@ -241,8 +241,8 @@ for n, x, y, dep in BUILDINGS[3:]:
     put_obj('fence_h', x, y + h); put_obj('fence_h', x + w - 1, y + h)
     if (x + y) % 3 == 0: put_obj('jars', x + w, y + h - 1)
 # 양반댁: 토석담 + 석축 둑(후원은 한 단 높다)
-for x in (6, 7, 8): put_obj('wall_h', x, 21, True)
-for x in (15, 16, 17, 18): put_obj('wall_h', x, 21, True)
+for x in (6, 7, 8): put_obj(('wall_h', 'wall_h1', 'wall_h2')[x % 3], x, 21, True)
+for x in (15, 16, 17, 18): put_obj(('wall_h', 'wall_h1', 'wall_h2')[x % 3], x, 21, True)
 put_obj('wall_corner_l', 5, 21, True); put_obj('wall_corner_r', 19, 21, True)
 for y in range(5, 21):
     put_obj('wall_v', 5, y, True); put_obj('wall_v', 19, y, True)

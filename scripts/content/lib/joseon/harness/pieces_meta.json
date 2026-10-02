@@ -643,5 +643,21 @@
    "stall_herb_flower",
    "stall_jug_bottle"
   ]
+ },
+ "wall_h1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "wall_h2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
  }
 }

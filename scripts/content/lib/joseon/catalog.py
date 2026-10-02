@@ -98,6 +98,8 @@ def objects():
         'sotdae': P4.sotdae(),
         'lantern': P4.lantern(),
         'wall_h': P5.wall_h2(0),
+        'wall_h1': P5.wall_h2(1),
+        'wall_h2': P5.wall_h2(2),
         'wall_v': P5.wall_v2(),
         'wall_corner_l': P5.wall_corner2('L'),
         'wall_corner_r': P5.wall_corner2('R'),

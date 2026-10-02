@@ -2,7 +2,7 @@
  "tile": 16,
  "cols": 16,
  "rows": 129,
- "tileCount": 1650,
+ "tileCount": 1654,
  "pieces": {
   "grass": {
    "id": 0,
@@ -2389,7 +2389,7 @@
     ]
    ]
   },
-  "wall_v": {
+  "wall_h1": {
    "id": 1682,
    "w": 1,
    "h": 1,
@@ -2399,7 +2399,7 @@
     ]
    ]
   },
-  "wall_corner_l": {
+  "wall_h2": {
    "id": 1683,
    "w": 1,
    "h": 1,
@@ -2409,7 +2409,7 @@
     ]
    ]
   },
-  "wall_corner_r": {
+  "wall_v": {
    "id": 1684,
    "w": 1,
    "h": 1,
@@ -2418,10 +2418,30 @@
      1684
     ]
    ]
+  },
+  "wall_corner_l": {
+   "id": 1685,
+   "w": 1,
+   "h": 1,
+   "tiles": [
+    [
+     1685
+    ]
+   ]
+  },
+  "wall_corner_r": {
+   "id": 1686,
+   "w": 1,
+   "h": 1,
+   "tiles": [
+    [
+     1686
+    ]
+   ]
   }
  },
  "overlapTiles": {
   "start": 1712,
-  "count": 340
+  "count": 342
  }
 }
