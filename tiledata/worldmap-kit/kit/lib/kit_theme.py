@@ -888,6 +888,8 @@ def overlay_sprawl(img, ctx, style):
     sprs = {n: sprite(art, n) for n in SPRITES[art]}
     placed, name_at = [], {}
     for (x, y), (ring, role) in sorted(cells.items(), key=lambda kv: (kv[0][1], kv[0][0])):   # 위 줄부터 — 아래 건물이 위 건물 그림자를 덮는다
+        if h32('plaza', x, y) % 100 < 16:            # 열에 하나쯤은 빈 광장·마당 — 칸마다 건물이 박히면 무늬 타일처럼 읽혔다(QA 3차)
+            continue
         pool = inner if (ring == 1 and role in ('capital', 'fort_city', 'harbor_city')) else outer
         k = h32('kind', x, y) % len(pool)
         for _ in range(len(pool)):                   # 왼쪽·위 이웃과 같은 건물은 피한다
@@ -1137,7 +1139,9 @@ def render_space(ctx, seed=11, road_px=None):
 
     # 소행성대 먼지 띠(산·절벽 칸, 휜 좌표) → 이온 폭풍 → 성단 → 거성 → 소행성
     rockcell = np.isin(ctx.O, (6, 7, 9)) | ctx.face
-    belt = rockcell[cy, cx]
+    bwx = np.clip(((xx + wx + (vnoise(H, W, 13, seed + 41) - .5) * 20) // TS).astype(int), 0, ctx.W - 1)
+    bwy = np.clip(((yy + wy + (vnoise(H, W, 13, seed + 42) - .5) * 20) // TS).astype(int), 0, ctx.H - 1)
+    belt = rockcell[bwy, bwx]
     belt_d = _boxblur(_boxblur(belt.astype(np.float32), 6), 6) * (.55 + .9 * vnoise(H, W, 11, seed + 14))
     D = bayer(H, W)
     dz = (belt_d > .3) & (D < np.clip(belt_d - .2, 0, .75))
@@ -1267,7 +1271,7 @@ def draw_ion_storm(img, ctx, cy, cx):
     yy, xx = np.mgrid[0:H, 0:W]
     w = (np.sin(xx * .22 + np.sin(yy * .09 + xx * .03) * 2.0 + yy * .07) * .6
          + np.sin(xx * .07 - yy * .19 + vnoise(H, W, 30, 33) * 6) * .5 + (vnoise(H, W, 16, 31) - .5) * 1.4)
-    cloud = vnoise(H, W, 26, 35) > .62                    # 밝은 폭풍 구름 덩이
+    cloud = vnoise(H, W, 26, 35) > .7                    # 밝은 폭풍 구름 덩이
     img[m & cloud & (bayer(H, W) < .5)] = hx('3a1e66')
     a, b, c = hx('2a1450').astype(np.float32), hx('4a2680'), hx('9a62e8')
     img[m] = (img[m] * .45 + a * .55).astype(np.uint8)          # 아래 성운이 비치는 보라 막
@@ -1276,17 +1280,22 @@ def draw_ion_storm(img, ctx, cy, cx):
     img[s & (w > 1.05) & (bayer(H, W) < .3)] = c
     for y, x in zip(*np.nonzero(ctx.dune)):
         h = h32('zap', int(x), int(y))
-        if h % 13:
+        if h % 15:
             continue
-        X, Y = x * TS + 4 + h % 8, y * TS + 1                  # 갈래 번개: 아래로 지그재그 18px + 옆가지 하나, 둘레 보라 빛
+        X, Y = x * TS + 2 + h % 12, y * TS + (h >> 5) % 6     # 갈래 번개: 길이·꺾임 간격·가지 수·방향이 칸마다 다르다
+        L = 9 + (h >> 9) % 14
+        step = 2 + (h >> 13) % 3
+        lean = 1 if (h >> 15) & 1 else -1
+        forks = [(h >> 17) % L, (h >> 21) % L][:1 + (h >> 25) % 2]
         pts = []
-        for k in range(18):
-            X += (1 if (h >> (k % 16)) & 1 else -1) if k % 3 == 0 else 0
+        for k in range(L):
+            if k % step == 0:
+                X += lean if (h >> (k % 20)) & 1 else -lean
             pts.append((X, Y + k))
-            if k == 8:
-                bx = X
-                for j in range(1, 6):
-                    pts.append((bx + j, Y + k + j))
+            if k in forks and k > 2:
+                fx, sgn = X, (1 if (h >> (k + 3)) & 1 else -1)
+                for j in range(1, 3 + (h >> (k + 5)) % 4):
+                    pts.append((fx + sgn * j, Y + k + j))
         for X2, Y2 in pts:
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 if 0 <= Y2 + dy < H and 0 <= X2 + dx < W and (X2 + dx, Y2 + dy) not in pts:
@@ -1335,6 +1344,7 @@ def lane_graph(ctx):
             if (len(nb(c)) <= 1 and not occ_nb) or not nb(c):
                 S.discard(c)
                 changed = True
+    gaps = set()
     # 한 칸 틈 메우기: 지형이 길을 한 칸 끊어 놓은 곳(실측 (17,25) 곧은 틈, (71,42)-(70,43) 대각 틈) — 양쪽이 막다른 끝일 때만
     for c in sorted(S):
         x, y = c
@@ -1344,6 +1354,7 @@ def lane_graph(ctx):
             o, mid = (x + dx, y + dy), (x + dx // 2, y + dy // 2)
             if o in S and deg(o) <= 1 and free(mid):
                 S.add(mid)
+                gaps.add(mid)
                 ctx.road[mid[1], mid[0]] = True
         for dx, dy in ((1, 1), (-1, 1)):
             o = (x + dx, y + dy)
@@ -1352,6 +1363,7 @@ def lane_graph(ctx):
                 if len(mids) == 2:
                     m = max(mids, key=lambda q: (ctx.road_px is not None and ctx.road_px[q[1] * TS:(q[1] + 1) * TS, q[0] * TS:(q[0] + 1) * TS].any(), ctx.G[q[1], q[0]] != 0))
                     S.add(m)
+                    gaps.add(m)
                     ctx.road[m[1], m[0]] = True
 
     out = {}
@@ -1368,6 +1380,61 @@ def lane_graph(ctx):
         if ls:
             out[(x, y)] = ls
     ctx._lanes = out
+    ctx._gaps = gaps
+    return out
+
+
+def mend_roads(img, ctx, road_role_px):
+    """길을 다시 그리지 않는 테마(흙길 그대로)에서 공용 지형의 한 칸 틈을 메운다: 틈 칸과 그 이웃 길 칸을
+    지도 안에서 같은 바닥·같은 연결 모양을 가진 다른 흙길 칸 그림으로 바꾼다(QA 3차: (17,25)·(15,29) 가 모든 판타지 계열에서 끊김)."""
+    ctx.road_px = road_role_px
+    g = lane_graph(ctx)
+
+    def painted(x, y):                               # 옛 흙길이 실제로 칸의 어느 가장자리까지 그려져 있나
+        s = road_role_px[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
+        e = {'N': s[0:3, B0:B1], 'S': s[TS - 3:TS, B0:B1], 'W': s[B0:B1, 0:3], 'E': s[B0:B1, TS - 3:TS]}
+        return {d for d, m in e.items() if m.sum() >= 3}
+    gaps = set(ctx._gaps)
+
+    def flat(x, y):                                  # 높이가 같은 칸 사이의 경사로 = 계단 그림이 없는 평지 칸
+        return all(not (0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H) or ctx.Hh[y + dy, x + dx] == ctx.Hh[y, x] for dx, dy in DIRS.values())
+
+    def mismatch(x, y):
+        occ = {d for d in DIRS if 0 <= y + DIRS[d][1] < ctx.H and 0 <= x + DIRS[d][0] < ctx.W and ctx.occupied[y + DIRS[d][1], x + DIRS[d][0]]}
+        return set(g[(x, y)]) - occ != painted(x, y) - occ
+
+    def ok(c):
+        x, y = c
+        return c in g and c not in ctx.bridge and not ctx.face[y, x] and (not ctx.ramp[y, x] or flat(x, y))
+    core = {c for c in g if ok(c) and (c in gaps or (ctx.ramp[c[1], c[0]] and mismatch(*c)))}
+    todo = set(core)
+    for (x, y) in core:                              # 틈에 맞닿은 끝 칸(막다른 모양으로 그려져 있다)도 새 모양으로
+        for dx, dy in DIRS.values():
+            c = (x + dx, y + dy)
+            if ok(c) and mismatch(*c):
+                todo.add(c)
+    ctx._gaps = todo
+    if not todo:
+        return img
+    out = img.copy()
+    shape = {c: tuple(sorted(ls)) for c, ls in g.items()}
+    for (x, y) in sorted(todo):
+        want = shape.get((x, y))
+        best = None
+        for (X, Y), s in shape.items():
+            if s != want or (X, Y) in todo or (X, Y) in ctx.bridge or ctx.ramp[Y, X] or ctx.face[Y, X] or ctx.occupied[Y, X]:
+                continue
+            if ctx.G[Y, X] != ctx.G[y, x] or ctx.O[Y, X] != 0:
+                continue
+            d = (X - x) ** 2 + (Y - y) ** 2 + 400 * sum(
+                (0 <= x + a < ctx.W and 0 <= y + b < ctx.H and ctx.G[y + b, x + a] != ctx.G[y, x]) !=
+                (0 <= X + a < ctx.W and 0 <= Y + b < ctx.H and ctx.G[Y + b, X + a] != ctx.G[Y, X])
+                for a in (-1, 0, 1) for b in (-1, 0, 1))
+            if best is None or d < best[0]:
+                best = (d, X, Y)
+        if best:
+            _, X, Y = best
+            out[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS] = img[Y * TS:(Y + 1) * TS, X * TS:(X + 1) * TS]
     return out
 
 
@@ -1406,7 +1473,7 @@ def draw_hyperlanes(img, ctx):
                 ex, ey = edge[d]
                 dx, dy = DIRS[d]
                 if 0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.occupied[y + dy, x + dx]:
-                    ex, ey = ex + dx * 8, ey + dy * 8          # 장소로 들어가는 팔은 발자국 안 8px 까지(아이콘이 덮는다)
+                    ex, ey = ex + dx * 14, ey + dy * 14        # 장소로 들어가는 팔은 발자국 안 14px 까지(아이콘이 덮는다, 고리 행성처럼 위가 빈 아이콘도 닿게)
                 seg(ox + 7, oy + 7, ox + ex, oy + ey)
             seg(ox + 7, oy + 7, ox + 7, oy + 7)
     # 워프 구간
@@ -1478,6 +1545,9 @@ def apply_land(img, world, theme, road_role_px):
     ctx = Ctx(world)
     rep = {}
     out = img.copy()
+    if not any(o.split(':')[0] in ('paved_roads', 'rail', 'erase_roads') for o in theme['overlays']):
+        out = mend_roads(out, ctx, road_role_px)
+        rep['mend_roads'] = len(ctx._gaps)
     for o in theme['overlays']:
         base, _, arg = o.partition(':')
         if base in ('paved_roads', 'rail', 'erase_roads'):
