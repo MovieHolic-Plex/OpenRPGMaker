@@ -5,7 +5,7 @@
 KX = 0 이면 카메라가 정남쪽에 서서 옆면이 0px 이 되고, 장면·재질·명암·색표는 그대로라 결이 남는다(2026-10-02, 사용자가 읍성으로 확인).
 현대·SF 는 하지 않는다 — 빌딩은 정면만으로는 납작해져 사용자가 기존(옆면 약간)이 낫다고 했다.
 
-후보는 그 아이콘의 열린 판에 글자 R 로 들어가고(engine=render:front-kx0), 검수자(review.md)를 거친다. 떨어지면 다시 그리지 않고 버린다.
+후보는 그 아이콘의 열린 판에 글자 R·S… 로 들어가고(engine=render:front-kx0-light), 검수자(review.md)를 거친다. 떨어지면 다시 그리지 않고 버린다.
 """
 import importlib
 import json
@@ -15,8 +15,8 @@ from pathlib import Path
 import harness as H
 
 FRONT_SETS = ('desert-east',)
-ENGINE = 'render:front-kx0'
-DIRECTION = '정면 카메라 — 원래 3D 장면을 카메라만 정남쪽으로 옮겨 다시 찍음(KX .28 → 0). 그림·재질·명암·색은 원래 그대로'
+ENGINE = 'render:front-kx0-light'   # v1 'render:front-kx0' 은 원래 빛(왼쪽 위) — 오른쪽 그늘이 옆면으로 읽혔다
+DIRECTION = '정면 카메라 — 원래 3D 장면을 카메라와 빛만 정남쪽으로 옮겨 다시 찍음(KX .28 → 0, 빛 정면 위). 그림·재질·색은 원래 그대로'
 KEY = (255, 103, 139)
 SHADOW = (254, 103, 139)
 _LIBMODS = ('oblique', 'east', 'scenes_a', 'scenes_b', 'icons_v9_lib', 'show')
@@ -38,8 +38,10 @@ def _center(a):
     return o
 
 
-def render_set(iset, kx=0.0):
-    """세트의 장면을 KX=kx 로 다시 찍는다 → {아이콘 이름: RGB 배열}."""
+def render_set(iset, kx=0.0, light=(0.0, -.35, .8), sun=(0.0, .55, 1.0)):
+    """세트의 장면을 KX=kx 로 다시 찍는다 → {아이콘 이름: RGB 배열}.
+    정면 카메라에서는 빛도 정면 위에서 온다(light·sun 의 x=0). 원래 빛(왼쪽 위)은 팔각·원통 탑의 오른쪽 면과 땅 그림자를 오른쪽으로
+    몰아 검수자가 「오른쪽 옆면」으로 읽었다(2026-10-02, 정면 렌더 20장 중 14장 SIDE). light=None 이면 원래 빛."""
     import numpy as np
     sdir = H.ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets' / iset
     for m in _LIBMODS:
@@ -49,6 +51,10 @@ def render_set(iset, kx=0.0):
         ob = importlib.import_module('oblique')
         ob.KX = kx
         ob.D_VIEW = np.array([-kx, 1.0, -ob.KY])
+        if light is not None:
+            L = np.array(light, float)
+            ob.LIGHT = L / np.linalg.norm(L)
+            ob.D_SUN = np.array(sun, float)
         importlib.import_module('east')
         reg = {**importlib.import_module('scenes_a').ICONS, **importlib.import_module('scenes_b').ICONS}
         out = {}
@@ -82,6 +88,9 @@ def add_candidates(sets=FRONT_SETS):
             rnd = row['id'] if row else R.open_round(it['id'], '정면 카메라 후보', '', 0, [])
             if c.execute('select 1 from cands where round=? and engine=?', (rnd, ENGINE)).fetchone():
                 continue
+            # 옛 판 렌더 후보는 버린다 — 같은 장면이라 둘 다 둘 이유가 없다
+            c.execute("update cands set status='discarded', finished=? where round=? and engine like 'render:%' and engine != ?",
+                      (H.now(), rnd, ENGINE))
             used = {x['letter'] for x in c.execute('select letter from cands where round=?', (rnd,))}
             L = next(ch for ch in 'RSTUVWXYZ' if ch not in used)
             out = R.attempt_dir(rnd, L, 1)

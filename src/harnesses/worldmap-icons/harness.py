@@ -13,6 +13,7 @@
 import argparse
 import hashlib
 import json
+import re
 import os
 import shutil
 import sqlite3
@@ -99,7 +100,8 @@ def role_names():
 SET_RULES = {
     'modern-sf': ('- **현대·SF 세트 예외 (사용자 결정, 2026-10-02):** 고층 빌딩은 정면만으로는 판때기처럼 납작해지므로 '
                   '**옆면이 약간 보이는 것은 괜찮다** — 옆면만으로 `SIDE` 를 주지 않는다. 옆면이 정면보다 넓어 건물이 마름모로 보일 때만 `SIDE`, '
-                  '윗면 전체가 평행사변형으로 크게 기울면 `DIAG`.'),
+                  '윗면 전체가 평행사변형으로 크게 기울면 `DIAG`. 원래 세트 그림(경사 투영, 오른쪽 옆면 약간)은 이 세트의 정상 시점이다 — '
+                  '그것만으로는 `SIDE`·`DIAG` 가 아니다. 대신 `READ`(무엇인지 읽히는가)와 `STYLE` 을 본다.'),
 }
 
 
@@ -109,6 +111,10 @@ def set_rule(iset):
 
 def _prompt(it):
     t = (HERE / 'review.md').read_text(encoding='utf-8')
+    if it['iset'] in SET_RULES:
+        # 예외 세트는 「공격적으로 떨어뜨린다」 절을 뺀다 — 절이 남아 있으면 예외 한 줄을 넣어도 검수자가 SIDE 를 줬다(현대·SF 22장 중 21장).
+        t = re.sub(r'## 판정 태도.*?(?=## verdict\.json)', '## 판정 태도 — 이 세트의 예외\n{SET_RULE}\n\n', t, flags=re.S)
+        t = t.replace('**이번 검수에서 가장 중요하다.**', '')
     w, h = json.loads(it['cells'])
     rep = {'{SET}': it['iset'], '{NAME}': it['name'], '{ROLE}': it['role'], '{ROLE_NAME}': role_names().get(it['role'], it['role']),
            '{W}': str(w), '{H}': str(h), '{DESC}': it['descr'] or '(설명 없음)', '{DIR}': str(item_dir(it['id'])), '{REF}': str(REF), '{SET_RULE}': set_rule(it['iset'])}

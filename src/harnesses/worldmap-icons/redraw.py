@@ -303,8 +303,9 @@ def _after_review(c, cand):
 
 def _retry_or_finish(c, cand, problem, fail_status):
     if (cand.get('engine') or '').startswith('render:'):
-        # 렌더러가 찍은 후보(front.py)는 작업자가 없다 — 떨어지면 다시 그리지 않고 버리기만 한다
-        c.execute('update cands set status=?, finished=? where id=?', ('discarded', H.now(), cand['id']))
+        # 렌더러가 찍은 후보(front.py)는 작업자가 없고, 옆면은 투영 규칙상 0px 이다(KX=0). 검수자가 떨어뜨려도 숨기지 않고
+        # ✗ 와 이유를 달아 사용자가 고르게 둔다 — 실측: 「의심되면 FAIL」 검수자가 우진각 지붕 끝 경사면을 옆면으로 읽었다.
+        c.execute('update cands set status=?, finished=? where id=?', ('done', H.now(), cand['id']))
         return
     if cand['attempt'] < ATTEMPTS:
         if problem:   # 깨짐 검사 실패도 다음 시도의 「지난 검수」로 넘긴다

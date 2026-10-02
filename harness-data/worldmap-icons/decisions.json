@@ -1185,9 +1185,11 @@
    "decided_at": null,
    "picked": null,
    "review": {
-    "verdict": "PASS",
-    "codes": [],
-    "reads_as": "지도 1배에서 조명 기둥 옆에 작은 텐트들이 모인 야영지로 보인다."
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서는 투광등 옆에 색색의 텐트가 모인 작은 야영지로 보인다."
    }
   },
   "modern-sf/camp_b": {
@@ -1203,9 +1205,11 @@
    "decided_at": null,
    "picked": null,
    "review": {
-    "verdict": "PASS",
-    "codes": [],
-    "reads_as": "지도 1배에서 작은 천막들이 모여 있고 안테나가 선 야영지로 보인다."
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서는 색이 다른 천막들이 안테나 옆에 모인 작은 야영지로 보인다."
    }
   },
   "modern-sf/capital": {
@@ -1223,10 +1227,9 @@
    "review": {
     "verdict": "FAIL",
     "codes": [
-     "SIDE",
      "DIAG"
     ],
-    "reads_as": "지도 1배에서 중앙 광장과 첨탑을 둘러싼 고층 빌딩 군의 대도시로 읽힌다."
+    "reads_as": "지도 1배에서 중앙 광장과 첨탑을 둔 고층 빌딩 밀집 도시로 읽힌다."
    }
   },
   "modern-sf/castle_a": {
@@ -1246,7 +1249,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "지도 1배에서는 높은 레이더 탑과 철문이 있는 방벽형 군사 시설로 보인다."
+    "reads_as": "지도 1배에서는 레이더 타워와 철문이 있는 회색 군사 기지로 읽힌다."
    }
   },
   "modern-sf/castle_b": {
@@ -1266,7 +1269,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "지도 1배에서 네 포탑과 푸른 사령동, 철문이 있는 군사 요새로 읽힌다."
+    "reads_as": "지도 1배에서 네 포탑과 중앙 청색 사령동, 정문을 갖춘 SF 군사 요새로 읽힌다."
    }
   },
   "modern-sf/cave": {
@@ -1286,7 +1289,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "지도 1배에서 흙 둔덕에 붙은 철문이 있는 지하 벙커 입구로 보인다."
+    "reads_as": "지도 1배에서 철문과 환기구가 있는 작은 지하 벙커 입구로 읽힌다."
    }
   },
   "modern-sf/circle": {
@@ -1307,7 +1310,7 @@
      "SIDE",
      "DIAG"
     ],
-    "reads_as": "지도 1배에서 접시 안테나 세 개가 놓인 어레이로 읽힌다."
+    "reads_as": "지도 1배에서 접시 안테나 세 개가 모인 위성 안테나 시설로 보인다."
    }
   },
   "modern-sf/floating": {
@@ -1325,9 +1328,10 @@
    "review": {
     "verdict": "FAIL",
     "codes": [
-     "SIDE"
+     "SIDE",
+     "DIAG"
     ],
-    "reads_as": "지도 1배에서 고층 건물과 돔을 얹고 공중에 떠 있는 도시 원판으로 읽힌다."
+    "reads_as": "지도 1배에서는 빌딩들이 올라선 공중 플랫폼과 아래 추진기로 보여 부유 도시로 읽힌다."
    }
   },
   "modern-sf/fort_city": {
@@ -1348,7 +1352,7 @@
      "SIDE",
      "DIAG"
     ],
-    "reads_as": "지도 1배에서 앞문과 감시탑을 갖춘 고층 방벽 도시로 보인다."
+    "reads_as": "지도 1배에서는 고층 빌딩을 감싼 방벽과 앞문이 있는 현대 성곽 도시로 읽힌다."
    }
   },
   "modern-sf/harbor_city": {
@@ -1368,7 +1372,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "지도 1배에서 크레인·컨테이너 더미·화물선·고층 건물이 모인 항구로 읽힌다."
+    "reads_as": "지도 1배에서 크레인·컨테이너·화물선·고층 건물이 있는 항구로 읽힌다."
    }
   },
   "modern-sf/landmark_nature": {
@@ -1386,9 +1390,10 @@
    "review": {
     "verdict": "FAIL",
     "codes": [
-     "SIDE"
+     "SIDE",
+     "DIAG"
     ],
-    "reads_as": "파란 태양광 패널이 여러 줄 늘어서고 오른쪽 아래에 작은 관리동이 있는 시설로 보인다."
+    "reads_as": "지도 1배에서 파란 태양광 패널 여러 열과 작은 관리동이 있는 발전 시설로 읽힌다."
    }
   },
   "modern-sf/large_town_a": {
@@ -1406,9 +1411,10 @@
    "review": {
     "verdict": "FAIL",
     "codes": [
-     "SIDE"
+     "SIDE",
+     "DIAG"
     ],
-    "reads_as": "지도 1배에서는 붉은색·보라색 지붕의 주택이 모인 마을로 보인다."
+    "reads_as": "지도 1배에서는 빨강·회색 지붕의 주택 여섯 동이 모인 작은 주택가로 보인다."
    }
   },
   "modern-sf/large_town_b": {
@@ -1429,7 +1435,7 @@
      "SIDE",
      "DIAG"
     ],
-    "reads_as": "지도 1배에서는 평지붕 주택 여섯 동이 모인 주택가로 보인다."
+    "reads_as": "지도 1배에서는 평지붕 주택 여섯 동이 모인 작은 주택단지로 보인다."
    }
   },
   "modern-sf/ruin": {
@@ -1449,7 +1455,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "지도 1배에서 앞벽이 뜯긴 회색 고층 건물의 폐허와 옆에 쌓인 잔해로 보인다."
+    "reads_as": "지도 1배에서 창문이 남은 무너진 빌딩과 잔해로 읽힌다."
    }
   },
   "modern-sf/ruin_city": {
@@ -1467,7 +1473,7 @@
    "review": {
     "verdict": "FAIL",
     "codes": [
-     "SIDE"
+     "DIAG"
     ],
     "reads_as": "지도 1배에서 구멍 난 고층 건물과 잔해가 모인 폐허 도시로 읽힌다."
    }
@@ -1489,7 +1495,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "원형 관측 돔과 부속동이 있는 연구·관측 시설로 보인다."
+    "reads_as": "지도 1배에서는 큰 접시 안테나와 부속동이 있는 관측·연구 시설로 보인다."
    }
   },
   "modern-sf/tower_great": {
@@ -1505,11 +1511,9 @@
    "decided_at": null,
    "picked": null,
    "review": {
-    "verdict": "FAIL",
-    "codes": [
-     "SIDE"
-    ],
-    "reads_as": "지도 1배에서 전망 고리와 긴 안테나가 달린 높은 미래형 탑으로 보인다."
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 넓은 기단 위에 전망 고리와 긴 안테나를 올린 SF 거대 탑으로 보인다."
    }
   },
   "modern-sf/tower_small_a": {
@@ -1525,9 +1529,11 @@
    "decided_at": null,
    "picked": null,
    "review": {
-    "verdict": "PASS",
-    "codes": [],
-    "reads_as": "지도 1배에서 적백 줄무늬 몸통과 꼭대기 안테나가 있는 작은 탑으로 보인다."
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 적백 줄무늬 몸통과 상단 안테나가 있는 작은 송신탑으로 보인다."
    }
   },
   "modern-sf/tower_small_b": {
@@ -1543,9 +1549,11 @@
    "decided_at": null,
    "picked": null,
    "review": {
-    "verdict": "PASS",
-    "codes": [],
-    "reads_as": "지도 1배에서 긴 흰 기둥과 세 갈래 날개가 있는 풍력 터빈으로 보인다."
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 세 날개가 달린 풍력 터빈으로 읽힌다."
    }
   },
   "modern-sf/village_a": {
@@ -1565,7 +1573,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "지도 1배에서는 탑 옆에 색깔이 다른 상자형 집들이 모인 작은 촌락으로 보인다."
+    "reads_as": "지도 1배에서는 급수탑 옆에 색이 다른 네모 집들이 모인 작은 촌락으로 보인다."
    }
   },
   "modern-sf/village_b": {
@@ -1585,7 +1593,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "지도 1배에서 붉은 헛간과 사일로, 작은 집이 모인 농가로 보인다."
+    "reads_as": "지도 1배에서는 붉은 헛간과 사일로, 작은 살림집이 모인 농가로 읽힌다."
    }
   },
   "modern-sf/volcano": {
@@ -1605,7 +1613,7 @@
     "codes": [
      "SIDE"
     ],
-    "reads_as": "증기를 내뿜는 냉각탑과 낮은 건물이 붙은 발전 시설로 보인다."
+    "reads_as": "지도 1배에서 증기를 뿜는 냉각탑과 낮은 공장동이 있는 발전 시설로 보인다."
    }
   }
  }
