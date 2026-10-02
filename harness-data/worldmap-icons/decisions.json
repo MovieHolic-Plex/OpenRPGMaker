@@ -552,11 +552,11 @@
     3
    ],
    "sha": "b799f905ed06",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T01:48:02+00:00",
+   "picked": "r4/B",
    "review": {
     "verdict": "FAIL",
     "codes": [
@@ -572,11 +572,11 @@
     3
    ],
    "sha": "caac856e0120",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T01:48:20+00:00",
+   "picked": "r5/A",
    "review": {
     "verdict": "PASS",
     "codes": [],
@@ -608,11 +608,11 @@
     2
    ],
    "sha": "8872ac667c85",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T01:48:32+00:00",
+   "picked": "r6/D",
    "review": {
     "verdict": "PASS",
     "codes": [],
@@ -626,11 +626,11 @@
     2
    ],
    "sha": "506f781c88ec",
-   "decision": null,
+   "decision": "pick",
    "reasons": [],
    "note": "",
-   "decided_at": null,
-   "picked": null,
+   "decided_at": "2026-10-02T01:48:43+00:00",
+   "picked": "r7/F",
    "review": {
     "verdict": "PASS",
     "codes": [],
@@ -932,10 +932,10 @@
     4
    ],
    "sha": "1033b6317b3d",
-   "decision": null,
+   "decision": "accept",
    "reasons": [],
    "note": "",
-   "decided_at": null,
+   "decided_at": "2026-10-02T01:49:57+00:00",
    "picked": null,
    "review": {
     "verdict": "PASS",
@@ -1007,7 +1007,7 @@
    "decision": "accept",
    "reasons": [],
    "note": "",
-   "decided_at": "2026-10-01T23:51:05+00:00",
+   "decided_at": "2026-10-02T01:50:03+00:00",
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1179,12 +1179,10 @@
     2
    ],
    "sha": "a335074138e2",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "PASS",
@@ -1199,12 +1197,10 @@
     2
    ],
    "sha": "14720c4def19",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "PASS",
@@ -1219,12 +1215,10 @@
     6
    ],
    "sha": "4631ef03834e",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1242,12 +1236,10 @@
     3
    ],
    "sha": "1db83bd61595",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1264,12 +1256,10 @@
     3
    ],
    "sha": "8454a9f732c8",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1286,12 +1276,10 @@
     2
    ],
    "sha": "fd097ab68de4",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1308,12 +1296,10 @@
     2
    ],
    "sha": "8737e1a12bb1",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1331,12 +1317,10 @@
     4
    ],
    "sha": "a664c8cf1e4a",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1353,12 +1337,10 @@
     4
    ],
    "sha": "1a36d8e14f27",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1376,12 +1358,10 @@
     4
    ],
    "sha": "07e9fc4c1228",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1398,12 +1378,10 @@
     3
    ],
    "sha": "f2ea2b2bf9be",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:31+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1420,12 +1398,10 @@
     3
    ],
    "sha": "233bed255a68",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1442,12 +1418,10 @@
     3
    ],
    "sha": "7c0034dfe669",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1465,12 +1439,10 @@
     2
    ],
    "sha": "5cb9a1cfe62d",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1487,12 +1459,10 @@
     3
    ],
    "sha": "3128776e918a",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1509,12 +1479,10 @@
     3
    ],
    "sha": "e57744ee550c",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1531,12 +1499,10 @@
     4
    ],
    "sha": "99d75667ccc8",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1553,12 +1519,10 @@
     2
    ],
    "sha": "3f251818850d",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "PASS",
@@ -1573,12 +1537,10 @@
     2
    ],
    "sha": "ac761673c26b",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "PASS",
@@ -1593,12 +1555,10 @@
     2
    ],
    "sha": "2e7335783238",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1615,12 +1575,10 @@
     2
    ],
    "sha": "a177fa729397",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",
@@ -1637,12 +1595,10 @@
     2
    ],
    "sha": "7b78ebf53516",
-   "decision": "reject",
-   "reasons": [
-    "옆면 보임(아이소)"
-   ],
-   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
-   "decided_at": "2026-10-02T00:02:32+00:00",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
    "picked": null,
    "review": {
     "verdict": "FAIL",

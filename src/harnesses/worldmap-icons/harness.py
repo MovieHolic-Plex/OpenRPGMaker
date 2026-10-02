@@ -95,11 +95,23 @@ def role_names():
     return {r['id']: r['name'] for r in d['roles']}
 
 
+# 세트별 예외(사용자 결정). 빈 문자열이면 계약 그대로.
+SET_RULES = {
+    'modern-sf': ('- **현대·SF 세트 예외 (사용자 결정, 2026-10-02):** 고층 빌딩은 정면만으로는 판때기처럼 납작해지므로 '
+                  '**옆면이 약간 보이는 것은 괜찮다** — 옆면만으로 `SIDE` 를 주지 않는다. 옆면이 정면보다 넓어 건물이 마름모로 보일 때만 `SIDE`, '
+                  '윗면 전체가 평행사변형으로 크게 기울면 `DIAG`.'),
+}
+
+
+def set_rule(iset):
+    return SET_RULES.get(iset, '')
+
+
 def _prompt(it):
     t = (HERE / 'review.md').read_text(encoding='utf-8')
     w, h = json.loads(it['cells'])
     rep = {'{SET}': it['iset'], '{NAME}': it['name'], '{ROLE}': it['role'], '{ROLE_NAME}': role_names().get(it['role'], it['role']),
-           '{W}': str(w), '{H}': str(h), '{DESC}': it['descr'] or '(설명 없음)', '{DIR}': str(item_dir(it['id'])), '{REF}': str(REF)}
+           '{W}': str(w), '{H}': str(h), '{DESC}': it['descr'] or '(설명 없음)', '{DIR}': str(item_dir(it['id'])), '{REF}': str(REF), '{SET_RULE}': set_rule(it['iset'])}
     for k, v in rep.items():
         t = t.replace(k, v)
     return t
@@ -212,6 +224,25 @@ def _latest_reviews(c):
         out[r['item']] = dict(status=r['status'], verdict=r['verdict'], codes=json.loads(r['codes'] or '[]'),
                               body=json.loads(r['body']) if r['body'] else None, engine=r['engine'])
     return out
+
+
+def unstrict(sets):
+    """감독이 엄격 기준으로 일괄로 적은 버림(client=harness-strict)을 clear 로 덮는다. 사용자가 직접 정한 것은 건드리지 않는다."""
+    c = db()
+    last = {}
+    for r in c.execute('select * from decisions order by id'):
+        if r['decision'] != 'drop':
+            last[r['item']] = r
+    done = []
+    for it in c.execute('select * from items'):
+        r = last.get(it['id'])
+        if it['iset'] in sets and r and r['client'] == 'harness-strict' and r['decision'] == 'reject':
+            c.execute('insert into decisions(item,sha,decision,reasons,note,client,at) values(?,?,?,?,?,?,?)',
+                      (it['id'], it['sha'], 'clear', '[]', '세트 예외(사용자 2026-10-02): 옆면 약간 허용 — 엄격 일괄 버림 취소', 'harness-strict', now()))
+            done.append(it['id'])
+    c.commit()
+    export()
+    return done
 
 
 def export():
@@ -333,6 +364,8 @@ def main():
     a = sub.add_parser('restrict', help='끝난 합격 후보에 엄격 검수를 다시 적용(떨어지면 다시 그림·끝내 폐기)'); a.add_argument('--round', type=int, action='append')
     a = sub.add_parser('purge', help='사용자 미결정 아이콘 중 투영 세트·엄격 불합격을 버리고 다시 그리기 판을 연다'); a.add_argument('--set', action='append', choices=SETS)
     a.add_argument('-n', type=int, default=3)
+    a = sub.add_parser('front', help='투영 렌더러 세트를 같은 3D 장면 그대로 정면 카메라로 다시 찍어 후보(R)로 올린다'); a.add_argument('--set', action='append')
+    a = sub.add_parser('unstrict', help='감독이 엄격 기준으로 적은 버림(client=harness-strict)을 지운다 — 사용자 결정 전으로'); a.add_argument('--set', action='append', required=True)
     a = sub.add_parser('preview', help='작업자 자가 확인: <폴더>/cand.png → 8배·지도 자리·check.json'); a.add_argument('out'); a.add_argument('--item')
     a = sub.add_parser('serve'); a.add_argument('--port', type=int, default=18313); a.add_argument('--host', default='0.0.0.0')
     a = ap.parse_args()
@@ -356,6 +389,12 @@ def main():
         print(f'버림 {len(rej)} · 새 판 {len(op)}')
         for x in rej:
             print(' ', x)
+    elif a.cmd == 'front':
+        import front
+        for x in front.add_candidates(tuple(a.set) if a.set else front.FRONT_SETS):
+            print(' ', *x)
+    elif a.cmd == 'unstrict':
+        print('지움', len(unstrict(a.set)))
     elif a.cmd == 'pool':
         import redraw
         redraw.pool()

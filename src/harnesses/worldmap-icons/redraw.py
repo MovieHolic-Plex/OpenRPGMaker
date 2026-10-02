@@ -139,7 +139,8 @@ def _draw_prompt(c, cand):
            '{LETTER}': L, '{DIRECTION}': cand['direction'], '{OUT}': str(out), '{REF}': str(H.REF),
            '{BASE_X8}': str(base_x8), '{BASE_PNG}': str(base_png), '{BASE_CTX}': str(base_ctx),
            '{ANCHORS}': _anchors(c, it), '{FEEDBACK}': _feedback(c, it['id'], rnd, L, att),
-           '{PALETTE}': str(_palette_file(it['iset'])), '{HARNESS}': str(H.HERE / 'harness.py')}
+           '{PALETTE}': str(_palette_file(it['iset'])), '{HARNESS}': str(H.HERE / 'harness.py'),
+           '{SET_RULE}': H.set_rule(it['iset'])}
     t = (H.HERE / 'draw.md').read_text(encoding='utf-8')
     for k, v in rep.items():
         t = t.replace(k, v)
@@ -301,6 +302,10 @@ def _after_review(c, cand):
 
 
 def _retry_or_finish(c, cand, problem, fail_status):
+    if (cand.get('engine') or '').startswith('render:'):
+        # 렌더러가 찍은 후보(front.py)는 작업자가 없다 — 떨어지면 다시 그리지 않고 버리기만 한다
+        c.execute('update cands set status=?, finished=? where id=?', ('discarded', H.now(), cand['id']))
+        return
     if cand['attempt'] < ATTEMPTS:
         if problem:   # 깨짐 검사 실패도 다음 시도의 「지난 검수」로 넘긴다
             d = attempt_dir(cand['round'], cand['letter'], cand['attempt'])
@@ -374,7 +379,8 @@ def purge(sets, n=3, letters=('A', 'B', 'C')):
     return rejected, opened
 
 
-PROJECTION_SETS = ('desert-east', 'modern-sf')
+# 현대·SF 는 빠졌다: 사용자가 「현대는 옆면이 약간 보여도 괜찮다」고 했다(2026-10-02, SET_RULES 참고).
+PROJECTION_SETS = ('desert-east',)
 
 
 def _alive(pid):
