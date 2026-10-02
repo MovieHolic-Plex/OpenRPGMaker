@@ -107,7 +107,29 @@ function renderM2CommandBodyInner(context: CommandEditContext, cmd: Extract<Comm
     wrap.append(fieldRow(fieldLabelForSpec(cmd.commandId, entry.title, spec), controlForField({ context, cmd, spec, title: entry.title, value: cmd.fields[spec.key] ?? spec.defaultValue })));
   }
   if (entry.title === "Screen Effect") decorateScreenEffectBody(wrap);
+  if (entry.title === "Particle Effect" || entry.title === "Sprite Look") decorateStagingTargetBody(wrap);
   return wrap;
+}
+
+/**
+ * 파티클·모습 효과의 「어디에/누구」 — 고른 대상이 읽는 칸만 보인다. 이벤트 칸은 「특정 이벤트」, X·Y 는 「맵 좌표」일 때만.
+ * 실측 캡처(2026-10-02): 「이 이벤트」인데 이벤트 선택과 X·Y 가 늘 떠 있어 무엇을 채워야 하는지 헷갈렸다.
+ */
+function decorateStagingTargetBody(wrap: HTMLElement): void {
+  const targetSelect = wrap.querySelector<HTMLSelectElement>('[data-testid="m2-command-target-option-select"]');
+  if (!targetSelect) return;
+  const rowOf = (selector: string): HTMLElement | null => {
+    const row = wrap.querySelector<HTMLElement>(selector)?.closest(".field");
+    return row instanceof HTMLElement ? row : null;
+  };
+  const eventRow = rowOf('[data-testid^="m2-command-eventId-"]');
+  const tileRows = [rowOf('[data-testid="m2-command-x-input"]'), rowOf('[data-testid="m2-command-y-input"]')];
+  const sync = (): void => {
+    if (eventRow) eventRow.hidden = targetSelect.value !== "event";
+    for (const row of tileRows) if (row) row.hidden = targetSelect.value !== "tile";
+  };
+  targetSelect.addEventListener("change", sync);
+  sync();
 }
 
 /**

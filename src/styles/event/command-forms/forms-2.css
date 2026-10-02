@@ -922,6 +922,12 @@
   gap: var(--space-1);
 }
 
+/* 숫자 값 효과(물결·모자이크·기울기·레터박스)는 색 견본을 숨긴다 — display:flex 가 [hidden] 을 이겨 견본이 남아 있었다. */
+.m2-screen-color-swatches[hidden],
+.m2-screen-color-picker[hidden] {
+  display: none;
+}
+
 .m2-screen-color-swatch {
   display: inline-flex;
   align-items: center;
