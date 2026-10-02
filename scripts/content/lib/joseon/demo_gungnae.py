@@ -225,7 +225,7 @@ w_ell(29, 37, 3.4, 4.5); w_ell(31, 60, 2.6, 3.6)
 # 동쪽: 같은 식으로 어긋나게
 w_ell(66, 33, 3.4, 4.5)
 # 서쪽 연못(좌성황 섬): 해자에서 가지 물길로 이어진다
-w_ell(22, 40, 5.6, 4.2); w_rect(22, 43, MX0, 45)
+w_ell(25, 40, 4.4, 3.8)
 # 동쪽 연못(감옥 섬): 가지 물길이 해자에서 호수로
 w_ell(75, 60, 7, 6.2)
 w_clean()
@@ -238,7 +238,7 @@ def island(cx, cy, rx, ry):
     ISLANDS.append((cx, cy, rx, ry))
 
 
-island(22, 40, 2.4, 1.6)
+island(25, 40, 1.9, 1.6)
 island(75, 60, 3.6, 3.4)
 w_clean(2)
 for (x, y) in WATER:
@@ -293,7 +293,7 @@ def bridge_narrow_h(x, y):
         KG[y + 1][xx] = 'bridge'
 
 
-bridge_narrow_h(17, 39)        # 서쪽 연못: 서안 → 좌성황 섬
+bridge_narrow_h(20, 39)        # 서쪽 연못: 서안 → 좌성황 섬
 bridge_narrow_h(79, 59)        # 동쪽 호수: 동안(바깥 고리 길) → 감옥 섬
 
 # ================================================================ 3단계: 중앙 왕궁 구역(담 + 정전 + 전각 + 행각 + 궁문 + 연못 + 소나무 + 석등)
@@ -394,7 +394,7 @@ building('gn_shop_armory', 12, 17, 4); building('gn_shop_butcher', 21, 17, 3)   
 building('gn_shop_smithy', 12, 25, 3); building('gn_shop_cloth', 20, 25, 4)         # 상점 줄 B (8+8)
 jumak(12, 54)                                                                       # 서남 ㅁ자 주막(담 포함 x 12..27, y 54..71)
 building('gn_u_thatch_6', 12, 73, 1); building('gn_thatch_d', 20, 75, 3)            # 주막 아래 집 둘(문 앞은 고리 길)
-P('seonangdang', 21, 39, 'foot')                                                    # 좌성황 섬 사당
+P('seonangdang', 24, 39, 'foot')                                                    # 좌성황 섬 사당
 # --- 동쪽
 jumak(68, 17)                                                                       # 동북 ㅁ자 주막(x 68..83, y 17..34)
 building('tower_sulsa_5', 71, 36, 4, solid='foot')                                   # 술사의 길 탑
@@ -403,8 +403,52 @@ P('gwanah_5', 72, 57, 'body')                                                   
 DOORS.append({'x': 75, 'y': 63, 'piece': 'gwanah_5'})
 building('tower_yesik_7', 70, 67, 5, solid='foot', apron=False)                     # 예식장(남쪽 고리 길 앞)
 # --- 남쪽 띠
-building('gn_l_giwa_6', 29, 71, 1); building('thatch_house_3', 38, 74, 2)
-building('gn_g2_inn_6', 54, 70, 3); building('gn_g2_nugak_5', 62, 70, 3)
+building('gn_g2_inn_6', 54, 70, 3); building('gn_g2_nugak_5', 63, 70, 3)
+
+
+def fenced(name, bx, by, tag, gate_piece='gn_sarip_mud', gate_dx=None, door=None, extra=()):
+    """담(구획 담 세트)으로 두른 집: 건물 (bx, by) 를 둘러 폭 w+2, 높이 h+3 담. 앞(남) 담 가운데에 사립문, 안은 yard."""
+    cv = objects[name]
+    w, h = cv.w // T, cv.h // T
+    x0, y0, W_, H_ = bx - 1, by - 1, w + 2, h + 3
+    paint('yard', x0, y0, x0 + W_ - 1, y0 + H_ - 1)
+    gw = 3 if 'stone' in gate_piece else 2
+    gx = x0 + (W_ // 2 - gw // 2 if gate_dx is None else gate_dx)
+    for x in range(x0 + 1, x0 + W_ - 1):
+        P(f'{tag}_h{x % 3}', x, y0, 'foot')
+        if not (gx <= x < gx + gw):
+            P(f'{tag}_h{(x + 1) % 3}', x, y0 + H_ - 1, 'foot')
+    P(f'{tag}_c_nw', x0, y0); P(f'{tag}_c_ne', x0 + W_ - 1, y0)
+    P(f'{tag}_c_sw', x0, y0 + H_ - 1); P(f'{tag}_c_se', x0 + W_ - 1, y0 + H_ - 1)
+    for y in range(y0 + 1, y0 + H_ - 1):
+        P(f'{tag}_v', x0, y); P(f'{tag}_v1', x0 + W_ - 1, y)
+    P(name, bx, by, 'body')
+    P(gate_piece, gx, y0 + H_ - 1, 'foot')
+    for (nm, dx, dy) in extra:
+        P(nm, bx + dx, by + dy)
+    NOTREE.append((x0 - 1, y0 - 1, W_ + 2, H_ + 3))
+    DOORS.append({'x': gx, 'y': y0 + H_, 'piece': name})
+    for xx in range(x0, x0 + W_):
+        if inb(xx, y0 + H_) and KG[y0 + H_][xx] is None:
+            KG[y0 + H_][xx] = 'yard'
+    return x0, y0, W_, H_
+
+
+# --- 담으로 두른 집 둘
+fenced('gn_thatch_c', 13, 37, 'gn_mud', 'gn_sarip_mud', extra=(('jars', 7, 3),))                     # 서쪽 중간(연못 서안): 흙담 초가
+fenced('gn_l_giwa_6', 30, 71, 'gn_stone', 'gn_sarip_stone', extra=())                               # 남서: 돌담 ㄱ자 기와
+building('thatch_hut_2', 39, 74, 2)
+# --- 밭·논(북쪽 띠와 남서 모퉁이) + 허수아비
+for (x0, y0, x1, y1, kd) in ((30, 18, 43, 21, 'field'), (52, 18, 66, 21, 'paddy'), (39, 70, 41, 72, 'field')):
+    paint(kd, x0, y0, x1, y1)
+P('scarecrow', 44, 19); P('scarecrow', 67, 19); P('scarecrow', 41, 73)
+# --- 전사의 길(정원형): 서쪽 큰길 위 띠에 대나무숲 + 돌길
+for x in range(13, 27):
+    KG[49][x] = 'slab' if 13 <= x <= 26 else KG[49][x]
+KG[50][13] = 'slab'; KG[50][26] = 'slab'
+for nm, x, y in (('bamboo_grove', 12, 45), ('bamboo_grove', 17, 46), ('bamboo_grove', 22, 45)):
+    P(nm, x, y)
+P('stepping_stones', 15, 47); P('lantern', 20, 47); P('rocks', 25, 48); P('flower_bed', 14, 50)
 
 # ================================================================ ==== PIPELINE (맨 아래 고정) ====
 def finish(tag='stage'):
