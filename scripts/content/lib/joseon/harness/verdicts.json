@@ -1006,5 +1006,229 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
+ },
+ "gungnae_wall_h": {
+  "hash": "956b83097d8c",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_h1": {
+  "hash": "82e57ff4a4b8",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_h2": {
+  "hash": "84471b4fea9b",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_v": {
+  "hash": "4c86015c027e",
+  "status": "note",
+  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_v_e": {
+  "hash": "53bd8bdb6de0",
+  "status": "note",
+  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_v1": {
+  "hash": "576cf8bae83e",
+  "status": "note",
+  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_v1_e": {
+  "hash": "c20d824ad704",
+  "status": "note",
+  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_v2": {
+  "hash": "97ef5fa147e8",
+  "status": "note",
+  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_v2_e": {
+  "hash": "58d4118b7b2d",
+  "status": "note",
+  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_corner_nw": {
+  "hash": "7c1cdb7d8b1e",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_corner_ne": {
+  "hash": "a3d035fa884d",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_corner_sw": {
+  "hash": "9eb8211b8fd9",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_corner_se": {
+  "hash": "f9f1b9b9adb7",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_end_l": {
+  "hash": "201859373cb0",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_end_r": {
+  "hash": "747e290914f0",
+  "status": "pass",
+  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_gate_great_12": {
+  "hash": "4afb101a10c4",
+  "status": "note",
+  "line": "정면 기단(앞면 전체)+마루 윗면 14px+청록 지붕 앞사면이 보여 기준 문루와 같은 3/4 문법. 기준보다 지붕이 크고 청록(국내성 의도)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_gate_great_8": {
+  "hash": "fb2f9f4709b1",
+  "status": "note",
+  "line": "정면 기단(앞면 전체)+마루 윗면 14px+청록 지붕 앞사면이 보여 기준 문루와 같은 3/4 문법. 기준보다 지붕이 크고 청록(국내성 의도)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_gate_small_6": {
+  "hash": "b69c51adb2f6",
+  "status": "note",
+  "line": "정면 기단(앞면 전체)+마루 윗면 14px+청록 지붕 앞사면이 보여 기준 문루와 같은 3/4 문법. 기준보다 지붕이 크고 청록(국내성 의도)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_tower_corner_5": {
+  "hash": "79e213ade100",
+  "status": "note",
+  "line": "정면 기단(앞면 전체)+마루 윗면 14px+청록 지붕 앞사면이 보여 기준 문루와 같은 3/4 문법. 기준보다 지붕이 크고 청록(국내성 의도)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_tower_corner_4": {
+  "hash": "5bd68349c8bd",
+  "status": "note",
+  "line": "정면 기단(앞면 전체)+마루 윗면 14px+청록 지붕 앞사면이 보여 기준 문루와 같은 3/4 문법. 기준보다 지붕이 크고 청록(국내성 의도)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_h4": {
+  "hash": "d89140b65657",
+  "status": "note",
+  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_h5": {
+  "hash": "dd113152f990",
+  "status": "note",
+  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_h6": {
+  "hash": "42c6b6794ea3",
+  "status": "note",
+  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_v4": {
+  "hash": "0fccc761b881",
+  "status": "note",
+  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_v5": {
+  "hash": "f05da407a950",
+  "status": "note",
+  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_v6": {
+  "hash": "5574b5bab16f",
+  "status": "note",
+  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_narrow_h": {
+  "hash": "8c548019dc86",
+  "status": "note",
+  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_narrow_v": {
+  "hash": "179d96300b3e",
+  "status": "note",
+  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
  }
 }

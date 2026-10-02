@@ -151,3 +151,20 @@ def objects():
         'stele': VPR.stele(),
         'stove_pot': VPR.stove_pot(),
     }
+
+
+# --- 국내성 성벽·성문·다리·석판 지형 (gungnae_gates.py). 기존 키는 건드리지 않고 덧붙인다.
+import gungnae_gates as _GG
+_terrain_before_gungnae, _objects_before_gungnae = terrain, objects
+
+
+def terrain():
+    d = _terrain_before_gungnae()
+    d.update(_GG.terrain_tiles())
+    return d
+
+
+def objects():
+    d = _objects_before_gungnae()
+    d.update(_GG.objects())
+    return d
