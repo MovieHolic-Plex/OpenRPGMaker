@@ -23,7 +23,7 @@ ENGINE = os.environ.get('PROP_HARNESS_ENGINE', 'codex')
 CODEX_MODEL = os.environ.get('PROP_HARNESS_CODEX_MODEL', 'gpt-6.1-sol')
 MODEL = os.environ.get('PROP_HARNESS_MODEL', CODEX_MODEL if ENGINE == 'codex' else 'claude-sonnet-5-5')
 EFFORT = os.environ.get('PROP_HARNESS_EFFORT', 'medium')
-MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '16'))   # codex 16 명(2026-10-01, 4시간 안에 335장 목표 — 12 명은 약 3.3시간, 429 0건). Claude 는 8 명에서 429 0건
+MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '32'))   # codex 32 명(2026-10-03 사용자 「32개로 높이고」). 그 전 16 명(2026-10-01, 4시간 안에 335장 목표 — 12 명은 약 3.3시간, 429 0건). Claude 는 8 명에서 429 0건
 TIMEOUT_S = int(os.environ.get('PROP_HARNESS_TIMEOUT', str(40 * 60)))
 REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'medium' if ENGINE == 'codex' else 'high')
 MAX_ATTEMPTS = int(os.environ.get('PROP_HARNESS_ATTEMPTS', '3'))   # 한 장 = 그리기 최대 3번(처음 + 다시 그리기 2번)
