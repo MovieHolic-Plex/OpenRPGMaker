@@ -446,12 +446,41 @@ function compileEmoteBeat(beat: CutsceneEmoteBeat, forceNonBlocking: boolean): C
  */
 const SAY_KIND_ALIASES: ReadonlySet<string> = new Set(["text", "narrate", "narration", "dialogue", "message"]);
 const SAY_TEXT_ALIASES = ["body", "message", "content", "line"] as const;
-export function canonicalizeSayBeatAliases(beats: unknown): { beats: unknown; moved: number } {
+/**
+ * kind 를 빠뜨린 비트의 kind 를 그 비트만 쓰는 칸으로 짐작한다. 2026-10-02 연출 기획 gen: 조수가
+ * 대사·이동·모습 비트 10개에서 kind 를 빼고 보내(`{speaker,text}`, `{target,moves}`, `{look:"ev_orvan",pose}`)
+ * script_cutscene 한 번이 통째로 거절됐다. 짐작할 칸이 없으면 그대로 두어 검증이 거절하게 한다.
+ */
+function inferBeatKind(entry: Record<string, unknown>): Record<string, unknown> | undefined {
+  if (Array.isArray(entry.moves) || isRecord(entry.route)) return { ...entry, kind: "moveActor" };
+  if (typeof entry.preset === "string") return { ...entry, kind: "particles" };
+  if (typeof entry.emote === "string") return { ...entry, kind: "emote" };
+  if (typeof entry.weather === "string") return { ...entry, kind: "weather" };
+  const lookKeys = ["pose", "tint", "tintFill", "flip", "afterimage", "alpha", "reset", "look"];
+  if (lookKeys.some((key) => entry[key] !== undefined)) {
+    // `look:"<대상>"` 을 대상 칸으로 쓴 모양도 받는다.
+    const { look, ...rest } = entry;
+    return { ...rest, kind: "look", ...(typeof look === "string" && rest.target === undefined ? { target: look } : {}) };
+  }
+  if (typeof entry.text === "string" || Array.isArray(entry.lines) || typeof entry.speaker === "string") return { ...entry, kind: "say" };
+  if (typeof entry.ms === "number") return { ...entry, kind: "wait" };
+  return undefined;
+}
+
+export function canonicalizeSayBeatAliases(beats: unknown): { beats: unknown; moved: number; inferred: number } {
   let moved = 0;
+  let inferred = 0;
   const visit = (list: unknown): unknown => {
     if (!Array.isArray(list)) return list;
-    return list.map((entry) => {
-      if (!isRecord(entry)) return entry;
+    return list.map((raw) => {
+      if (!isRecord(raw)) return raw;
+      let entry = raw;
+      if (entry.kind === undefined || entry.kind === "") {
+        const guessed = inferBeatKind(entry);
+        if (!guessed) return entry;
+        inferred += 1;
+        entry = guessed;
+      }
       if (entry.kind === "parallel" && Array.isArray(entry.beats)) return { ...entry, beats: visit(entry.beats) };
       if (typeof entry.kind !== "string" || !SAY_KIND_ALIASES.has(entry.kind)) return entry;
       const next: Record<string, unknown> = { ...entry, kind: "say" };
@@ -464,8 +493,11 @@ export function canonicalizeSayBeatAliases(beats: unknown): { beats: unknown; mo
     });
   };
   const out = visit(beats);
-  return { beats: out, moved };
+  return { beats: out, moved, inferred };
 }
+
+export const BEAT_KIND_INFERRED_WARNING = (count: number): string =>
+  `kind 가 빠진 비트 ${count}개의 종류를 칸으로 짐작해 채웠습니다 — 비트마다 kind 를 꼭 쓰세요(say·moveActor·look·particles·emote …).`;
 
 export const SAY_BEAT_ALIAS_WARNING = (moved: number): string =>
   `대사 비트 ${moved}개를 say 로 옮겼습니다 — 컷신·에필로그의 대사는 {kind:"say",speaker?,text} 입니다({kind:"text",body} 는 이벤트 명령 모양).`;

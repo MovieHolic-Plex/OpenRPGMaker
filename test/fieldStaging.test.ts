@@ -124,6 +124,21 @@ describe("컷신 연출 비트", () => {
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
   });
 
+  it("kind 를 빠뜨린 비트는 칸으로 종류를 짐작해 채우고 경고한다", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "script_cutscene", {
+      mapId: ctx.project.startMapId, x: 3, y: 3,
+      beats: [
+        { speaker: "레아", text: "스승님!" },
+        { target: "player", moves: [{ kind: "turn", dir: "up" }] },
+        { look: "player", pose: "fallen" },
+        { preset: "sparkle", target: "player" },
+      ],
+    });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(JSON.stringify(result.warnings)).toContain("kind 가 빠진 비트 4개");
+  });
+
   it("연출 지침 도구가 등록돼 있다", () => {
     const result = runTool({ project: createBlankProject() }, "read_directing_guide", {});
     expect(result.ok).toBe(true);

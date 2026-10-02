@@ -27,6 +27,7 @@ import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
+  BEAT_KIND_INFERRED_WARNING,
   compileCutscene,
   CutsceneValidationError,
   SAY_BEAT_ALIAS_WARNING,
@@ -3714,7 +3715,7 @@ const scriptCutscene: ToolDefinition = {
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
     "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
-    "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.layerSet), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환·기억 흐림은 mosaic, 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
+    "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.layerSet), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환은 mosaic(전환에만 — 켠 채 대사를 잇지 말고 곧 clear), 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
     "letterbox{show,size?,durationMs}(영화식 위아래 검은 띠 — 중요한 장면 시작에 넣는다. 컷신 끝에 자동으로 걷힘, 남기려면 keep:true), " +
     "particles{preset:'sparkle|magic|heal|fire|smoke|dust|explosion|splash',target:'player'|이벤트 id|생략+x,y,durationMs,wait}(한 인물·한 칸에서 터지는 효과 — 보물=sparkle, 주문=magic, 회복=heal, 사라짐=smoke, 착지=dust, 폭발=explosion), " +
     "look{target,pose:'normal|fallen|fallenLeft|crouch|float',tint:'red|blue|green|yellow|purple|gray|black|white|none|#rrggbb',tintFill,flip,angle,afterimage,alpha,reset}(인물 모습 — 기절·잠=fallen, 숨기=crouch, 유령=float+alpha 0.6, 독=tint green, 실루엣=tint black+tintFill, 빠른 이동 잔상=afterimage. 컷신 뒤에도 남으니 되돌릴 땐 {reset:true}), " +
@@ -3761,6 +3762,7 @@ const scriptCutscene: ToolDefinition = {
     const warnings: string[] = [];
     const aliased = canonicalizeSayBeatAliases(args.beats);
     if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
+    if (aliased.inferred > 0) warnings.push(BEAT_KIND_INFERRED_WARNING(aliased.inferred));
     const beats = reconcileCutsceneSayFaces(draft, map,
       resolveCutsceneActorTargets(map, resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings), warnings), warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");

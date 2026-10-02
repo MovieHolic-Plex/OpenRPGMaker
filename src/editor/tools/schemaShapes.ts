@@ -297,7 +297,8 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     },
     imageId: { type: "string", description: "background 비트 전용: 첫 장 배경 그림을 이것으로 바꾼다(생략하면 그림 유지)." },
   },
-  required: ["kind"],
+  // kind 는 필수로 두지 않는다 — 스키마 검사가 run 전에 호출을 통째로 거절해, 칸으로 짐작해 고칠 기회가 없었다
+  // (canonicalizeSayBeatAliases 가 채우고 경고한다. 짐작할 칸이 없으면 validateCutscene 이 거절).
   additionalProperties: true,
 };
 

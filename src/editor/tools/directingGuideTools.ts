@@ -11,10 +11,11 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 
 ## 원칙
 1. 한 박자에 한 감정. 큰 순간은 parallel 로 2~3개를 동시에 겹친다(소리 + 화면 + 인물).
-2. 오래 남는 효과(distort·look·weather·background)는 컷신 뒤에도 남는다. 장면이 끝나면 되돌린다:
+2. 화면을 가리는 효과(모자이크·큰 기울기·통째 칠하기)는 대사 동안 켜 두지 않는다 — 플레이어가 읽고 볼 수 있어야 한다.
+3. 오래 남는 효과(distort·look·weather·background)는 컷신 뒤에도 남는다. 장면이 끝나면 되돌린다:
    distort{effect:"clear"}, look{target,reset:true}, weather{weather:"none"}. letterbox 는 자동으로 걷힌다.
-3. 카메라는 멈출 때 easing:"easeOut", 무게 있는 이동은 "easeInOut". 일정한 속도(생략)는 기계적으로 보인다.
-4. 인물 대상(target)은 "player", 이 맵 이벤트 id, 또는 이벤트 이름. 맵 칸이면 target 을 비우고 x,y.
+4. 카메라는 멈출 때 easing:"easeOut", 무게 있는 이동은 "easeInOut". 일정한 속도(생략)는 기계적으로 보인다.
+5. 인물 대상(target)은 "player", 이 맵 이벤트 id, 또는 이벤트 이름. 맵 칸이면 target 을 비우고 x,y.
 
 ## 장면 레시피
 - 중요한 장면 시작: letterbox{size:12,durationMs:500} → camera{mode:"pan",target:인물,durationMs:900,easing:"easeOut"}.
@@ -30,7 +31,10 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 - 마법 시전: particles{preset:"magic",target:시전자,durationMs:1200} → flash{color:"#a070ff"} → 대상에 particles{preset:"heal"|"explosion"}.
 - 보물·축복·변신: particles{preset:"sparkle",target,durationMs:1500} (+ music se).
 - 물에 빠짐·분수: particles{preset:"splash"}. 착지·멈춰 섬: particles{preset:"dust"}. 불·분노: particles{preset:"fire"}.
-- 수중·꿈: distort{effect:"wave",amount:4,durationMs:1500}. 회상 진입: distort{effect:"mosaic",amount:12,durationMs:600} → tint{color:"sepia"} → distort{effect:"clear"}.
+- 수중·꿈: distort{effect:"wave",amount:4,durationMs:1500} — 물결은 장면 내내 켜 둬도 읽힌다.
+- 회상 진입·복귀(모자이크는 **전환에만**): distort{effect:"mosaic",amount:12,durationMs:500,wait:true} → tint{color:"sepia",durationMs:0}
+  → distort{effect:"clear",durationMs:500,wait:true} → 그다음 회상 대사. 모자이크를 켠 채 대사를 이어 가면 화면이 몇 초씩 뭉개져
+  인물이 안 보인다(2026-10-02 실측). 돌아올 때도 mosaic → tint{color:"neutral"} → clear.
 - 시간 왜곡·현기증: distort{effect:"rotate",amount:8,durationMs:1200} (+ wave).
 - 빛기둥·영혼·마법진 그림: picture{action:"show",…,blendMode:"add"}. 그림자·핏빛 물들임: blendMode:"multiply".
 - 비 오는 이별·폭풍 전야: weather{weather:"rain",intensity:0.6} / weather{weather:"storm"}. 회상에서 돌아오면 weather{weather:"none"}.
