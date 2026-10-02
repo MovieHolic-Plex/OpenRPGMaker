@@ -1248,17 +1248,17 @@
   "date": "2026-10-02"
  },
  "tower_sulsa_5": {
-  "hash": "233ee157554b",
+  "hash": "1ad80dad14ec",
   "status": "note",
-  "line": "3층 탑형 남색 지붕·상륜, 주황 포장 마당. 기준 문법 동일, 위층일수록 벽이 작아 창이 거의 안 보임.",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "tower_yesik_7": {
-  "hash": "d936ee3f382c",
+  "hash": "8e2b7ef57c77",
   "status": "note",
-  "line": "7칸 넓은 탑(예식장형), 회색 포장 마당.",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1944,17 +1944,17 @@
   "date": "2026-10-02"
  },
  "gn_sarip_mud": {
-  "hash": "213676009ce5",
+  "hash": "ed9ff85fa99a",
   "status": "note",
-  "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gn_sarip_stone": {
-  "hash": "ed412f06cbd7",
+  "hash": "071e1f4f3364",
   "status": "note",
-  "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1992,7 +1992,7 @@
   "date": "2026-10-02"
  },
  "palace_hall_wide_8": {
-  "hash": "bc1ed422cce0",
+  "hash": "0033af020f63",
   "status": "pass",
   "line": "넓은 단층 정전: 아래 큰 팔작 + 낮은 위 지붕 + 낮은 3단 월대, 위에서 본 지붕+앞 벽 기준 건물과 같은 문법",
   "reviewer": "claude",
@@ -2016,7 +2016,7 @@
   "date": "2026-10-02"
  },
  "palace_gate_side_3": {
-  "hash": "4d76b4fd8b84",
+  "hash": "69857796caec",
   "status": "note",
   "line": "측면 문루(통로 기준 재조립): 지붕 폭·기둥·벽 몸체가 같은 중심선, 지붕 뒤로 성벽이 이어짐, 아래 4행이 동서 통로, 기둥 오른쪽 땅 그림자. 궁문은 회벽 담에 맞춘 작은 협문",
   "reviewer": "claude",
@@ -2035,6 +2035,30 @@
   "hash": "b88fbbb3bd17",
   "status": "pass",
   "line": "돌다리 윗면 상판+난간. 세로 다리는 남단이 둑(땅)에 닿으므로 앞면 돌벽·홍예 없이 상판이 끝까지 간다(landing). 가로 다리 홍예는 물 위 구간에만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_h3": {
+  "hash": "5ad801b35c96",
+  "status": "note",
+  "line": "",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_h4": {
+  "hash": "36931380491d",
+  "status": "note",
+  "line": "",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_wall_h5": {
+  "hash": "6c47ed8b8034",
+  "status": "note",
+  "line": "",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

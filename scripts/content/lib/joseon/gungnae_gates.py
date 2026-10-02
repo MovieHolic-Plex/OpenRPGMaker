@@ -125,7 +125,8 @@ def walkway(c, x0, y0, x1, y1, seed=0):
 WH = 80            # 성벽 조각 높이(px)
 Y_BACK, Y_WALK0, Y_WALK1 = 0, 8, 21     # 뒤 성가퀴 / 걷는 길 / 앞 성가퀴 시작
 Y_FACE = 25                              # 앞 돌 쌓기 면이 시작하는 y
-_MER = {0: [(3, 10, False)], 1: [(2, 11, True)], 2: [(1, 6, False), (9, 6, False)]}
+_MER = {0: [(3, 10, False)], 1: [(2, 11, True)], 2: [(1, 6, False), (9, 6, False)],
+        3: [(2, 5, False), (9, 5, True)], 4: [(4, 8, True)], 5: [(1, 4, False), (6, 4, True), (11, 4, False)]}
 
 
 def wall_h(var=0):
@@ -142,6 +143,17 @@ def wall_h(var=0):
         c.put(x, Y_FACE - 2, S[6]); c.put(x, Y_FACE - 1, S[5]); c.put(x, Y_FACE, S[2])
     ashlar_face(c, 0, Y_FACE + 1, T, 46, seed=var * 3, ch=6, bw=8)
     rubble_face(c, 0, 46, T, WH, seed=var * 5 + 1)
+    if var >= 3:                                                            # 오래된 성벽 변형: 보수한 돌(톤이 다른 돌 한두 장) · 틈 이끼
+        ry = Y_FACE + 8 + (var - 3) * 6
+        rx = 3 + (var * 5) % 7
+        for y in range(ry, ry + 5):
+            for x in range(rx, rx + 8):
+                c.put(x, y, S[3 if (x * 3 + y) % 7 else 4])             # 새로 갈아 끼운 어두운 돌 한 장
+        for x in range(rx, rx + 8):
+            c.put(x, ry + 5, S[2])
+        for k in range(5):                                                  # 아래 막돌 사이 이끼 점
+            mx, my = (var * 7 + k * 5) % T, 52 + (k * 9 + var) % 20
+            c.put(mx, my, RGB['leaf'][3]); c.put((mx + 1) % T, my, RGB['leaf'][2])
     return c
 
 
@@ -606,8 +618,8 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8,
     px0, px1 = post
     wl = wall if False else (px0 - 1, px1 + 1)
     GH.gable_band(c, x0, x1, 8, yb, y_e, G, 'tile', 'cap', 'gable', wall=wl, seed=seed)
-    Wd = RGB['wood']
-    k0 = (5, 4, 4, 3, 3, 2) if not plaster else (5, 4, 4, 3, 2, 1)
+    Wd = RGB['persimmon'] if plaster else RGB['wood']                    # 궁문 기둥은 주황(정면 소문루와 같은 단청 기둥)
+    k0 = (5, 4, 4, 3, 3, 2) if not plaster else (6, 5, 4, 4, 3, 2)
     for xp in (px0, px1 - pw):                                          # 남쪽 처마 밑 기둥(통로 양끝, 아래 4행 높이)
         for y in range(y_e, H):
             for k in range(pw):
@@ -1074,7 +1086,7 @@ def terrain_tiles():
 
 def objects():
     d = {}
-    for v in range(3):
+    for v in range(6):
         d['gungnae_wall_h' + ('' if v == 0 else str(v))] = wall_h(v)
     for v in range(3):
         d['gungnae_wall_v' + ('' if v == 0 else str(v))] = wall_v(v)
@@ -1088,7 +1100,7 @@ def objects():
     d['gungnae_gate_small_6'] = gate_small(6, 32)
     d['gungnae_gate_side_5'] = gate_side(5, 8, wall=wall_v(1))
     import gungnae_palace as _gp
-    d['palace_gate_side_3'] = gate_side(3, 8, ramp='brown', seed=5, post=(18, 30), pw=4, roof=(12, 36), wall=_gp.pwall_v(False), wall_x=16, plaster=True)
+    d['palace_gate_side_3'] = gate_side(3, 8, ramp='giwa', seed=5, post=(15, 33), pw=6, roof=(9, 39), wall=_gp.pwall_v(False), wall_x=16, plaster=True)
     d['gungnae_tower_corner_5'] = tower_corner(5)
     d['gungnae_tower_corner_4'] = tower_corner(4)
     d['gungnae_bridge_h4'] = stone_bridge_h(4, 3, 0)

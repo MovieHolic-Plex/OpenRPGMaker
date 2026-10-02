@@ -174,13 +174,13 @@ paint('slab', XW, GAP_Y0, XW + 2, GAP_Y1); paint('slab', XE, GAP_Y0, XE + 2, GAP
 
 def wall_ring():
     """네 변 성벽 + 모서리 망루 + 대문루(북·남) + 측면 문루(동·서)."""
-    H3 = ['gungnae_wall_h', 'gungnae_wall_h1', 'gungnae_wall_h2']
+    H3 = ['gungnae_wall_h', 'gungnae_wall_h1', 'gungnae_wall_h2', 'gungnae_wall_h3', 'gungnae_wall_h4', 'gungnae_wall_h5']
     V3 = ['gungnae_wall_v', 'gungnae_wall_v1', 'gungnae_wall_v2']
     VE3 = ['gungnae_wall_v_e', 'gungnae_wall_v1_e', 'gungnae_wall_v2_e']
     for yb, cl, cr in ((YN, 'gungnae_wall_corner_nw', 'gungnae_wall_corner_ne'), (YS, 'gungnae_wall_corner_sw', 'gungnae_wall_corner_se')):
         Pb(cl, XW, yb, 'foot'); Pb(cr, XE, yb, 'foot')
         for x in range(XW + 3, XE):                # 성벽은 대문 밑까지 이어 깐다(문 기단의 기울어진 옆면 뒤로 돌이 비친다)
-            Pb(H3[hsh(x, yb, 7) % 3], x, yb)
+            Pb(H3[hsh(x, yb, 7) % 6], x, yb)
         Pb('gungnae_gate_great_12', GX, yb, None)
         for xx in list(range(GX, GX + 4)) + list(range(GX + 8, GX + 12)):
             BODY.add((xx, yb))
@@ -1263,7 +1263,7 @@ def bake():
 from people import UP, RIGHT, FRONT, LEFT
 PEOPLE_LIST = [
     (48, 20, 0, FRONT, 1), (46, 28, 3, UP, 0),                       # 북 대로 · 다리 앞 착지
-    (48, 54, 5, FRONT, 1), (43, 55, 2, RIGHT, 2), (54, 49, 6, LEFT, 0),  # 궁 마당(포장)
+    (48, 54, 5, FRONT, 1), (45, 57, 2, RIGHT, 2), (54, 49, 6, LEFT, 0),  # 궁 마당(포장)
     (18, 47, 4, RIGHT, 1), (25, 48, 7, LEFT, 2),                     # 서쪽 큰길(행 46..49)
     (11, 22, 1, RIGHT, 1), (10, 34, 6, RIGHT, 2), (12, 48, 3, FRONT, 0),  # 상점 앞 · 큰길 곁
     (22, 73, 0, FRONT, 1), (22, 63, 7, FRONT, 1),                    # 서남 주막 정문 앞 · 안마당

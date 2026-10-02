@@ -1386,21 +1386,20 @@ def wall_pier(mat='mud', cap=None):
 
 
 def sarip_gate(n=2, mat='mud', open_=True):
-    """사립문 n×16: 두 담 기둥 사이에 가는 가지를 엮은 문짝(한쪽을 열어 비스듬히)."""
+    """사립문 n×16: 두 담 기둥 사이가 훤히 열려 있다(문짝은 한쪽 기둥에 붙여 활짝 젖힌 가는 널 한 짝, 문간 바닥은 길/마당 그대로).
+    기둥을 가장자리로 밀어 열린 폭 = n×16 - 20px 이상."""
     W = Cv(n * T, T)
     p = wall_pier(mat)
-    W.paste(p, -2 + 0, 0); W.paste(p.hflip(), n * T - T + 2, 0)
+    W.paste(p, -3, 0); W.paste(p.hflip(), n * T - T + 3, 0)
     Wd = RGB['wood']; S = RGB['straw']
-    x0, x1 = 12, n * T - 12
-    for x in range(x0, x1):
-        top = 5 + ((x - x0) * 3 // max(1, (x1 - x0))) if open_ else 5
-        for y in range(top, 14):
-            col = S[5] if x % 2 else S[3]
-            if (y - top) % 5 == 4: col = Wd[3]
+    x0 = 10
+    for x in range(x0, x0 + 3):                                           # 젖혀진 문짝: 기둥 안쪽에 붙은 얇은 널(모서리가 보인다)
+        for y in range(5, 14):
+            col = S[5] if x == x0 else (S[4] if x == x0 + 1 else Wd[3])
+            if (y - 5) % 4 == 3: col = Wd[3]
             W.put(x, y, col)
-    for yy in (7, 11):
-        W.hl(x0, x1, yy, Wd[4]); 
-    for x in range(x0, x1): W.put(x, 14, RGB['earth'][2]); W.put(x, 15, SHADOW, 70)
+    for y in range(5, 14):
+        W.put(x0 + 3, y, SHADOW, 60)
     return W
 
 
