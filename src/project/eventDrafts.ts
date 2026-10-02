@@ -216,7 +216,9 @@ export function discardEventDraft(project: Project, mapId: MapId, eventId: strin
   const index = map.events.findIndex((event) => event.id === eventId);
   const event = map.events[index];
   if (index < 0 || !event?.draft) return false;
-  if (event.draft.kind === "new") {
+  if (event.draft.kind === "new" || event.draft.conflict?.kind === "remote-delete") {
+    // Discard accepts the canonical deletion; restoring the stale original
+    // would resurrect an event that committedEvents deliberately excludes.
     map.events.splice(index, 1);
     return true;
   }

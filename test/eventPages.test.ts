@@ -28,6 +28,29 @@ beforeEach(() => {
 });
 
 describe("event pages", () => {
+  it("preserves a legacy event's behavior when pasting its first page", () => {
+    const mapId = store.getCurrent().startMapId;
+    const sourceId = addEvent(mapId, 2, 2);
+    const sourcePage = store.getCurrent().maps[mapId]!.events.find(event => event.id === sourceId)!.pages![0]!;
+    copyEventPageToClipboard(mapId, sourceId, sourcePage.id);
+    const legacyId = addEvent(mapId, 3, 3);
+    store.update(project => {
+      const legacy = project.maps[mapId]!.events.find(event => event.id === legacyId)!;
+      delete legacy.pages;
+      legacy.commands = [{ kind: "text", body: "Keep the original dialogue" }];
+      legacy.trigger = { kind: "touch" };
+    });
+
+    const pastedId = pasteEventPage(mapId, legacyId);
+
+    const legacy = store.getCurrent().maps[mapId]!.events.find(event => event.id === legacyId)!;
+    expect(legacy.pages).toHaveLength(2);
+    expect(legacy.pages![0]!.id).toBe(pastedId);
+    const winner = resolveEventPage(legacy, { switches: {}, variables: {}, inventory: {}, partyActorIds: [] });
+    expect(winner?.commands).toEqual([{ kind: "text", body: "Keep the original dialogue" }]);
+    expect(winner?.trigger).toEqual({ kind: "touch" });
+  });
+
   it("기지 id 가 사라진 붙여넣기는 맨 앞(낮은 우선순위)에 넣고 승자가 되지 않는다", () => {
     // 맵 단위 되돌리기·원격 리로드가 페이지를 지워도 editorState 는 재조정되지 않는다 —
     // 그 낡은 id 로 끝에 붙이면 붙여넣기가 가장 높은 우선순위를 얻는다(막으려는 바로 그 역전).

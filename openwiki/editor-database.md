@@ -167,6 +167,19 @@ QA fixture는 메모리 전용이며 정본 프로젝트 저장 증거로 취급
 
 종족 그래픽 영역의 `전투 뒷모습` 리소스 선택기는 `graphic.backResourceId`를 편집한다. monster 리소스를 선택하거나 지울 수 있으며 기존 `currentSpecies`/`updateSpecies` 경로를 사용한다. 별도 필드 그래픽이나 정면 그래픽을 덮어쓰지 않는다. QA 선택자는 `db-monster-species-back-resource`. 후면 전투 방향에서만 적용하며 없으면 기존 그래픽을 사용한다.
 
+## 이벤트 초안 원본의 삭제 참조 (2026-10-02)
+
+`databaseEventReferences.eventReferenceMatches`는 이벤트 작업본과 `edit` 초안의 저장 원본을 함께 검사한다. DB 레코드·스위치/변수·리소스·공통 이벤트 삭제 가드에 공통 적용하며, 페이지 조건·명령·그래픽 및 기존 메타데이터 검사 범위를 원본에도 그대로 적용한다. 작업본에서 참조를 지운 것만으로는 삭제할 수 없고 이벤트를 적용한 뒤 삭제한다. 같은 이벤트의 작업본과 원본이 둘 다 참조해도 위치는 한 건이다.
+
+새 초안의 생성 기준본과 `remote-delete` 충돌의 원본은 정본 저장 대상이 아니므로 검사하지 않는다. 현재 작업본의 참조는 두 경우 모두 보호한다. `project/eventDrafts.discardEventDraft`도 `remote-delete` 취소 시 이벤트를 제거하여 오래된 원본을 부활시키지 않는다. 저장 투영·vault·취소가 같은 삭제 계약을 따른다. 회귀 소스는 `databaseDraftReferenceGuards.test.ts`, `eventDraftVault.test.ts`; 테스트 실행은 별도 승인 범위다.
+
+## DB 삭제의 스킬·주인공 권한 참조 (2026-10-02)
+
+- 스킬 삭제는 아이템의 `skillId` 외에 `learnedSkillId`(스킬북), `activateSkillId`(발동 효과), 직업 `battleCommands[].skillId`도 차단한다. 습득 목록에 없는 전투 명령 전용 스킬도 참조다.
+- 주인공 삭제는 시작·현재 파티 외에 직업 `equipmentPermissions.actorIds`, 장비 `equippableActorIds`, 아이템 `usableActorIds`와 레거시 `equipmentProfile.equippableActorIds`를 검사한다.
+- 이 필드들은 `io/references.ts`가 저장본 로드 시 검사하는 외래 키다. 현재 아이템 종류에서 숨겨진 필드도 저작값으로 보존되므로 삭제 가드에서 제외하지 않는다. 참조를 자동 삭제하지 않고 소유 레코드 이름을 안내한다.
+- 공용 검사 `projectDatabaseReferenceMessage`를 UI와 AI 삭제가 함께 사용한다. 회귀 소스: `test/databaseDirectReferenceDeletion.test.ts`(차단 후 데이터·undo 불변, 연결 해제 후 삭제·직렬화 왕복). 이 변경 세션에서는 테스트/게이트를 실행하지 않았다.
+
 ## 감사 후속: 참조를 보존하는 삭제 경로 (2026-09-20)
 
 - 기본 DB 9종의 삭제 검사는 `databaseRecordReferences.ts`의 `projectDatabaseReferenceMessage(project, collection, id)`가 소유한다. `databaseReferences.ts`는 현재 store를 전달하는 UI 어댑터다. AI 삭제는 자기 draft를 전달한다. store를 AI 도구에 import하지 않는다.
@@ -2337,3 +2350,7 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 
 기존 「도트 연출」 복제/수정 흐름에 32종 공용 이동 프로그램과 배우별 직접 경로를 붙였다.
 스킬 「전투 규칙」의 실제 기믹과 조수 도구의 movement/battleGimmick 필드는 [battle-motion-programs.md](battle-motion-programs.md)를 따른다.
+
+## 저장 결과를 구분하는 적용 피드백 (2026-10-02)
+
+`databaseModalPersistence.applyDatabaseChanges`는 `saved-local`이라도 `written: false`이면 성공으로 처리하지 않는다. 임시 세션에서 기록하지 않았음을 알리고 `false`를 반환하므로 모달의 `markClean`/저장 후 닫기 경로가 실행되지 않는다. 실제 브라우저 저장은 기존 성공 경로를 유지한다. `saved`는 SQLite 폴더·호스트도 사용하는 결과이므로 「온라인」이라고 단정하지 않는 저장 완료 문구를 쓴다. 회귀 소스는 `test/databaseModalPersistence.test.ts`이며 이번 세션에서 실행하지 않았다.
