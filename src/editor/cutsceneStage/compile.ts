@@ -37,6 +37,10 @@ export type StageStep =
   | { readonly do: "whiteout"; readonly ms?: number }
   /** whiteout 로 덮은 흰 화면을 걷어 낸다(새 장소에서 «눈을 뜨는» 연출). */
   | { readonly do: "dewhite"; readonly ms?: number }
+  /** ghost 배우(맵 위 실제 인물)가 그쪽을 바라본다. */
+  | { readonly do: "turn"; readonly actor: string; readonly dir: "up" | "down" | "left" | "right"; readonly wait?: boolean }
+  /** 게임의 전투 애니메이션(화염·폭발…)을 ghost 배우 위에서 재생한다. ms 는 재생을 기다리는 시간. */
+  | { readonly do: "animate"; readonly actor: string; readonly animationId: string; readonly ms?: number }
   /** 화면의 모든 그림(배경·배우·흰 막)을 지운다 — 장소를 옮기기 전에. */
   | { readonly do: "clear" }
   | { readonly do: "transfer"; readonly mapId: string; readonly x: number; readonly y: number; readonly facing?: "up" | "down" | "left" | "right"; readonly fade?: "black" | "white" | "none" }
@@ -320,6 +324,19 @@ export function compileStage(input: StageInput): StageResult {
           events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "move", pictureId: "pic90", x: 0, y: 0, scale, opacity: 0, durationMs: ms } });
           events.push({ t: ms, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic90" } });
           end(ms);
+          break;
+        }
+        case "turn": {
+          const a = actorOf(step.actor, index);
+          if (!a.spec.ghost) throw new StageError(`turn 은 맵 위 실제 인물(ghost 배우)에만 쓴다 — '${a.spec.name}' 는 그림 배우입니다(그림 배우는 pose 로 방향 그림을 바꾸세요).`, index);
+          events.push({ t: 0, order: order.n++, beat: { kind: "moveActor", target: "player", moves: [{ kind: "turn", dir: step.dir }], wait: step.wait !== false } });
+          break;
+        }
+        case "animate": {
+          const a = actorOf(step.actor, index);
+          if (!a.spec.ghost) throw new StageError(`animate 는 맵 위 실제 인물(ghost 배우)에만 쓴다 — '${a.spec.name}' 는 그림 배우입니다.`, index);
+          events.push({ t: 0, order: order.n++, beat: { kind: "animation", target: "player", animationId: step.animationId, wait: false } });
+          end(step.ms ?? 900);
           break;
         }
         case "clear": {

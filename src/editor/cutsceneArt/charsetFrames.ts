@@ -29,7 +29,7 @@ export function setCutsceneAssetFetcher(fetcher: AssetFetcher | undefined): void
   fetcherOverride = fetcher;
 }
 
-async function fetchDataUrl(url: string): Promise<string> {
+export async function fetchPictureDataUrl(url: string): Promise<string> {
   if (url.startsWith("data:")) return url;
   if (fetcherOverride) return fetcherOverride(url);
   const blob = await (await fetch(url)).blob();
@@ -63,7 +63,7 @@ export function charsetPictureId(resourceId: string, characterIndex: number, rol
 export async function cropCharsetFrames(project: Project | undefined, resourceId: string, characterIndex: number, roles: readonly CharsetAnyRole[] = CHARSET_FRAME_ROLES): Promise<CharsetFramePictures> {
   const url = resolveAssetResourceUrl(resourceId, project ? { project } : {});
   if (!url) throw new Error(`캐릭터셋 '${resourceId}' 의 그림을 찾을 수 없습니다.`);
-  const sheet = keyOutCharset(await decodeImage(await fetchDataUrl(url)));
+  const sheet = keyOutCharset(await decodeImage(await fetchPictureDataUrl(url)));
   const frames: Record<string, { id: string; dataUrl: string }> = {};
   let width = 24, height = 32;
   for (const role of roles) {

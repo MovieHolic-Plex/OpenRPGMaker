@@ -14,6 +14,7 @@ export type CutsceneBeat =
   | CutsceneTintBeat
   | CutsceneBackgroundBeat
   | CutsceneFlashBeat
+  | CutsceneAnimationBeat
   | CutsceneShakeBeat
   | CutsceneWaitBeat
   | CutsceneParallelBeat
@@ -113,6 +114,15 @@ export type CutsceneBackgroundBeat = {
   /** 0~400, 100 = 맵에 저작한 흐름 속도. 생략하면 100. */
   readonly flowPercent?: number;
   readonly durationMs?: number;
+  readonly wait?: boolean;
+};
+
+/** 게임에 등록된 전투 애니메이션(화염·폭발·할퀴기…)을 맵 위 인물·이벤트 위에서 재생한다. 그림을 새로 만들지 않고 게임 소재로 공격을 보여 줄 때. */
+export type CutsceneAnimationBeat = {
+  readonly kind: "animation";
+  readonly animationId: string;
+  /** "player"(기본) 또는 이벤트 id. */
+  readonly target?: string;
   readonly wait?: boolean;
 };
 
@@ -376,6 +386,8 @@ function compileBeat(
       return compileTintBeat(beat, state, options.forceNonBlocking);
     case "background":
       return compileBackgroundBeat(beat, state, options.forceNonBlocking);
+    case "animation":
+      return [{ kind: "showAnimation", target: !beat.target || beat.target === "player" ? "player" : { eventId: beat.target }, animationId: beat.animationId, wait: options.forceNonBlocking ? false : beat.wait ?? true } as Command];
     case "flash":
       return [m2Command("Flash Screen", { color: beat.color ?? "white", durationMs: durationMs(beat.durationMs, 300) })];
     case "shake":
@@ -891,6 +903,7 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "tint",
   "background",
   "flash",
+  "animation",
   "shake",
   "wait",
   "parallel",

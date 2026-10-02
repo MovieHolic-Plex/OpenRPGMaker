@@ -1,8 +1,9 @@
 // script_cutscene_staged — 연출을 «배우 + 관계 + 타이밍» 으로 선언한다. 전용 도구 없이도 충돌·횡단·등장·퇴장·날아감을 쓴다.
 // 컴파일(좌표·접촉·시각표)은 src/editor/cutsceneStage/compile.ts 가 하고, 결과는 기존 script_cutscene beat 로 들어가
 // 같은 검증·커밋 게이트를 지난다. 조수는 JSON 만 쓰고, 임의 코드는 실행되지 않는다.
-import { cropCharsetFrames, type CharsetAnyRole } from "@/editor/cutsceneArt/charsetFrames";
-import { pictureSize } from "@/editor/cutsceneArt/pictureSize";
+import { cropCharsetFrames, fetchPictureDataUrl, type CharsetAnyRole } from "@/editor/cutsceneArt/charsetFrames";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { pictureSize, pngSize } from "@/editor/cutsceneArt/pictureSize";
 import { compileStage, StageError, type StageActor, type TimedStep } from "@/editor/cutsceneStage/compile";
 import { DEFAULT_PLAY_RESOLUTION } from "@/project/playResolution";
 import { CUTSCENE_WHITE_RESOURCE_ID } from "./impactCutsceneTools";
@@ -34,19 +35,21 @@ const STEP_SCHEMA: JsonSchema = {
   additionalProperties: false,
   required: ["do"],
   properties: {
-    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "clear", "transfer", "fade", "expect"] },
+    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect"] },
     withPrevious: { type: "boolean", description: "앞 단계와 같은 때에 시작(동시 진행). say 는 불가." },
     actor: { type: "string" }, to: PLACE_SCHEMA,
     from: { type: "string", enum: ["left", "right", "top", "bottom"], description: "enter: 들어오는 화면 가장자리" },
     exitTo: { type: "string", enum: ["left", "right", "top", "bottom"], description: "exit: 나가는 가장자리" },
     ms: { type: "number", minimum: 0 }, ease: { type: "string", enum: ["linear", "in", "out", "inout"] }, anim: { type: "string", enum: ["walk"], description: "walk: 캐릭터셋 걷기 프레임 교체" },
-    pose: { type: "string" }, dir: { type: "string", enum: ["left", "right", "top", "bottom"], description: "fling: 날아가는 방향" }, spin: { type: "number" }, intensity: { type: "number" },
+    pose: { type: "string" }, spin: { type: "number" }, intensity: { type: "number" },
     speaker: { type: "string" }, text: { type: "string" }, context: { type: "string", enum: ["speech", "narration", "thought", "whisper", "shout"] }, autoAdvance: { type: "boolean" },
     resourceId: { type: "string", description: "se/bgm 리소스 id" },
     color: { type: "string", enum: ["white", "red", "green", "blue", "yellow", "purple", "black"], description: "flash 색" },
     mapId: { type: "string", description: "transfer: 옮겨 갈 맵" }, x: { type: "integer", description: "transfer: 도착 칸 x" }, y: { type: "integer", description: "transfer: 도착 칸 y" },
     faceDir: { type: "string", enum: ["up", "down", "left", "right"], description: "transfer: 도착 뒤 바라보는 방향" },
     fadeColor: { type: "string", enum: ["black", "white", "none"], description: "transfer: 화면 전환 색(기본 black)" },
+    dir: { type: "string", enum: ["left", "right", "top", "bottom", "up", "down"], description: "fling: 날아가는 방향 / turn: 바라볼 방향(up·down·left·right)" },
+    animationId: { type: "string", description: "animate: 게임의 전투 애니메이션 id(database.battleAnimations, 예: anim_scarloxy_fire)" },
     direction: { type: "string", enum: ["in", "out"], description: "fade: 검정으로 사라짐(out)/나타남(in)" },
     touching: { type: "array", items: { type: "string" }, description: "expect: 이 시점에 몸이 닿아야 하는 두 배우" }, min: { type: "number", minimum: 0, maximum: 1 },
   },
@@ -69,6 +72,8 @@ const ACTOR_SCHEMA: JsonSchema = {
 };
 
 type Raw = Record<string, unknown>;
+/** 게임에 번들된 그림(몬스터 도트 등)의 크기 — 업로드 자산이 아니라 파일에서 읽어 prepare 때 채운다. */
+const bundledSizes = new Map<string, { width: number; height: number }>();
 const preparedActors = new Map<string, Awaited<ReturnType<typeof cropCharsetFrames>> | { readonly error: string }>();
 const charKey = (resourceId: string, index: number): string => `${resourceId}:${index}`;
 
@@ -91,6 +96,11 @@ function normalizeSteps(raw: unknown): TimedStep[] {
     if (step.do === "exit" && typeof step.to !== "string") throw new ToolError(`steps[${index}] exit 에는 exitTo(left/right/top/bottom)가 필요합니다.`, { code: "invalid-args" });
     if ((step.do === "enter") && typeof step.from !== "string") throw new ToolError(`steps[${index}] enter 에는 from(들어오는 가장자리)이 필요합니다.`, { code: "invalid-args" });
     if ((step.do === "move" || step.do === "enter") && (!step.to || typeof step.to !== "object")) throw new ToolError(`steps[${index}] ${String(step.do)} 에는 to(위치 관계)가 필요합니다.`, { code: "invalid-args" });
+    if (step.do === "fling" && (step.dir === "up" || step.dir === "down")) step.dir = step.dir === "up" ? "top" : "bottom";
+    if (step.do === "turn" && step.dir === "top") step.dir = "up";
+    if (step.do === "turn" && step.dir === "bottom") step.dir = "down";
+    if (step.do === "turn" && typeof step.dir !== "string") throw new ToolError(`steps[${index}] turn 에는 dir(up/down/left/right)이 필요합니다.`, { code: "invalid-args" });
+    if (step.do === "animate" && typeof step.animationId !== "string") throw new ToolError(`steps[${index}] animate 에는 animationId 가 필요합니다.`, { code: "invalid-args" });
     if (step.do === "transfer") {
       if (typeof step.mapId !== "string" || typeof step.x !== "number" || typeof step.y !== "number") throw new ToolError(`steps[${index}] transfer 에는 mapId, x, y 가 필요합니다.`, { code: "invalid-args" });
       if (typeof step.faceDir === "string") step.facing = step.faceDir;
@@ -133,6 +143,15 @@ const scriptCutsceneStaged: ToolDefinition = {
   async prepare(args): Promise<void> {
     const actors = Array.isArray(args.actors) ? (args.actors as Raw[]) : [];
     for (const actor of actors) {
+      const picIds = [actor.resourceId, ...(Array.isArray(actor.poses) ? (actor.poses as Raw[]).map((p) => p.resourceId) : [])].filter((id): id is string => typeof id === "string" && id.trim().length > 0);
+      for (const id of picIds) {
+        if (bundledSizes.has(id)) continue;
+        try {
+          const url = resolveAssetResourceUrl(id, {});
+          const size = url ? pngSize(await fetchPictureDataUrl(url)) : null;
+          if (size) bundledSizes.set(id, size);
+        } catch { /* 번들 그림이 아니면 run 이 업로드 자산으로 찾는다 */ }
+      }
       const character = characterOf(actor);
       if (!character) continue;
       const key = charKey(character.resourceId, character.characterIndex);
@@ -168,7 +187,8 @@ const scriptCutsceneStaged: ToolDefinition = {
         const trio = (d: string): readonly [string, string, string] => [f(`walk${d}0`), f(`walk${d}1`), f(`walk${d}2`)];
         return {
           name, width: prepared.width, height: prepared.height, facing: raw.facing === "left" ? "left" : "right",
-          poses: { default: f("walkDown1"), ...Object.fromEntries((Array.isArray(raw.poses) ? (raw.poses as Raw[]) : []).map((p) => [String(p.name), String(p.resourceId)])) },
+          // 방향 정지 포즈 — pose 단계로 «트럭 쪽을 돌아본다» 같은 연출을 한다.
+          poses: { default: f("walkDown1"), down: f("walkDown1"), up: f("walkUp1"), left: f("walkLeft1"), right: f("walkRight1"), ...Object.fromEntries((Array.isArray(raw.poses) ? (raw.poses as Raw[]) : []).map((p) => [String(p.name), String(p.resourceId)])) },
           walk: { down: trio("Down"), up: trio("Up"), left: trio("Left"), right: trio("Right") },
           ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}),
         };
@@ -178,12 +198,12 @@ const scriptCutsceneStaged: ToolDefinition = {
         return { name, width: 24, height: 32, facing: raw.facing === "left" ? "left" : "right", poses: { default: "" }, ghost: true, at, ...(z !== undefined ? { z } : {}) };
       }
       const resourceId = typeof raw.resourceId === "string" ? raw.resourceId.trim() : "";
-      if (!resourceId || !draft.assets.uploaded[resourceId]) throw new ToolError(`배우 '${name}' 에는 character 또는 등록된 resourceId(generate_cutscene_art 결과)가 필요합니다.`, { code: "unknown-resource" });
-      const size = pictureSize(draft, resourceId, { width: 48, height: 48 });
+      if (!resourceId || (!draft.assets.uploaded[resourceId] && !bundledSizes.has(resourceId))) throw new ToolError(`배우 '${name}' 에는 character, 게임에 있는 그림 resourceId(예: 몬스터 scarloxy-monster-*), 또는 등록된 생성 그림(generate_cutscene_art 결과)이 필요합니다.`, { code: "unknown-resource" });
+      const size = draft.assets.uploaded[resourceId] ? pictureSize(draft, resourceId, { width: 48, height: 48 }) : bundledSizes.get(resourceId)!;
       const poses: Record<string, string> = { default: resourceId };
       for (const p of Array.isArray(raw.poses) ? (raw.poses as Raw[]) : []) {
         const id = String(p.resourceId);
-        if (!draft.assets.uploaded[id]) throw new ToolError(`배우 '${name}' 포즈 '${String(p.name)}' 의 resourceId '${id}' 가 등록된 그림이 아닙니다.`, { code: "unknown-resource" });
+        if (!draft.assets.uploaded[id] && !bundledSizes.has(id)) throw new ToolError(`배우 '${name}' 포즈 '${String(p.name)}' 의 resourceId '${id}' 가 등록된 그림이 아닙니다.`, { code: "unknown-resource" });
         poses[String(p.name)] = id;
       }
       return { name, width: size.width, height: size.height, facing: raw.facing === "right" ? "right" : "left", poses, ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
@@ -196,6 +216,12 @@ const scriptCutsceneStaged: ToolDefinition = {
     }
     if (!draft.assets.uploaded[CUTSCENE_WHITE_RESOURCE_ID]) {
       draft.assets.uploaded[CUTSCENE_WHITE_RESOURCE_ID] = { id: CUTSCENE_WHITE_RESOURCE_ID, name: "컷신 흰 화면", kind: "picture", dataUrl: WHITE_PIXEL_DATA_URL, meta: { width: 2, height: 2 } };
+    }
+    const knownAnimations = new Set((draft.database.battleAnimations ?? []).map((record) => record.id));
+    for (const step of normalizeSteps(args.steps)) {
+      if (step.do === "animate" && !knownAnimations.has(step.animationId)) {
+        throw new ToolError(`animate: 전투 애니메이션 '${step.animationId}' 가 없습니다 — get_database_records(collection:"battleAnimations") 로 id 를 조회하세요(예: ${[...knownAnimations].slice(0, 4).join(", ")}).`, { code: "unknown-animation" });
+      }
     }
     let result: ReturnType<typeof compileStage>;
     try {

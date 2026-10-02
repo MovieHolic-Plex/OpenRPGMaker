@@ -16,7 +16,7 @@ import { cutscenePreviewImages } from "../../src/editor/tools/cutscenePreviewToo
 const [inDir, outDir] = process.argv.slice(2);
 if (!inDir || !outDir) throw new Error("usage: isekai-game-build.mts <inDir> <outDir>");
 mkdirSync(outDir, { recursive: true });
-const FILES: Record<string, string> = { XBACKDROPX: "backdrop.png", XTRUCKX: "vehicle.png", XFOXX: "fox_magenta.png" };
+const FILES: Record<string, string> = { XBACKDROPX: "backdrop.png", XTRUCKX: "vehicle.png" };
 setCutsceneArtGenerator(async (request) => {
   const tag = Object.keys(FILES).find((key) => request.prompt.includes(key));
   if (!tag) return headlessGenerateImage(request);
@@ -65,8 +65,13 @@ const camX = Math.max(0, Math.min(route.width * T - VW, HERO_TILE.x * T + T / 2 
 const camY = Math.max(0, Math.min(route.height * T - VH, HERO_TILE.y * T + T / 2 - VH / 2));
 const heroScreen = { x: Math.round(HERO_TILE.x * T + T / 2 - camX), y: Math.round((HERO_TILE.y + 1) * T - camY) };
 
-// ① 횡단보도 장면(맵 + 그림)
-// 컷신 전용 무대 — 그림이 화면을 덮으므로 바닥은 통행 가능하기만 하면 된다(초원 맵 사본에서 이벤트를 걷어 낸다).
+// 주인공 = Actor1 의 한 명(게임 속 인물과 컷신 속 인물이 같다)
+const HERO = { resourceId: "easyrpg-charset-actor1", characterIndex: 0 };
+const heroActor = ctx.project.database.actors.find((actor) => actor.id === "actor_hero") ?? ctx.project.database.actors[0]!;
+heroActor.characterResourceId = HERO.resourceId;
+heroActor.characterIndex = HERO.characterIndex;
+
+// ① 횡단보도 장면(컷신 전용 무대 + 그림)
 const crossMapId = "map_isekai_crosswalk";
 ctx.project.maps[crossMapId] = { ...structuredClone(route), id: crossMapId, name: "퇴근길 횡단보도", events: [] } as typeof route;
 ctx.project.mapTree = { ...ctx.project.mapTree, children: [...(ctx.project.mapTree.children ?? []), { mapId: crossMapId, children: [] }] } as typeof ctx.project.mapTree;
@@ -74,23 +79,25 @@ ctx.project.startMapId = crossMapId;
 ctx.project.startPos = { x: 10, y: 8 };
 const backdrop = await call("generate_cutscene_art", { role: "backdrop", prompt: "XBACKDROPX empty city street at dusk with crosswalk", name: "횡단보도 거리" });
 const truck = await call("generate_cutscene_art", { role: "sprite", prompt: "XTRUCKX white box delivery truck facing left", name: "트럭", tiles: 6 });
-const HERO = { resourceId: "scarloxy-charset-people1", characterIndex: 0 };
+// 횡단보도 줄무늬는 화면 가로 가운데(약 51%)를 세로로 가른다 → 아래 인도에서 위로 건넌다.
 const truckCut = await call("script_cutscene_staged", {
   mapId: crossMapId, backdropResourceId: backdrop.resourceId, eventId: "ev_isekai_truck",
   actors: [
-    { name: "인물", character: HERO, at: { fx: 0.14, fy: 0.68 } },
+    { name: "인물", character: HERO, at: { fx: 0.51, fy: 0.97 } },
     { name: "트럭", resourceId: truck.resourceId, facing: "left" },
   ],
   steps: [
     { do: "bgm", resourceId: BGM.street },
     { do: "say", speaker: "", text: "신제품 아이스크림 나왔다고? 퇴근길에 사 가야지.", context: "thought" },
-    { do: "move", actor: "인물", to: { fx: 0.5, fy: 0.68 }, ms: 1900, anim: "walk" },
+    { do: "move", actor: "인물", to: { fx: 0.51, fy: 0.84 }, ms: 1300, anim: "walk" },
     { do: "se", resourceId: SE.step, withPrevious: true },
-    { do: "wait", ms: 500 },
+    { do: "move", actor: "인물", to: { fx: 0.51, fy: 0.68 }, ms: 1300, anim: "walk" },
+    { do: "wait", ms: 250 },
     { do: "se", resourceId: SE.horn },
+    { do: "pose", actor: "인물", pose: "right" },
     { do: "wait", ms: 450 },
     { do: "se", resourceId: SE.whoosh },
-    { do: "enter", actor: "트럭", from: "right", to: { touch: "인물", overlap: 0.35, dy: 6 }, ms: 520, withPrevious: true },
+    { do: "enter", actor: "트럭", from: "right", to: { touch: "인물", overlap: 0.35, dy: 6 }, ms: 520 },
     { do: "expect", touching: ["트럭", "인물"] },
     { do: "se", resourceId: SE.hit },
     { do: "se", resourceId: SE.boom, withPrevious: true },
@@ -109,15 +116,13 @@ const truckCut = await call("script_cutscene_staged", {
 const truckPreview = await cutscenePreviewImages(ctx.project, { mapId: crossMapId, eventId: truckCut.eventId });
 if (truckPreview[0]) writeFileSync(join(outDir, "preview-truck.png"), Buffer.from(truckPreview[0].dataUrl.split(",")[1]!, "base64"));
 
-// ② 새 세계 — 어리둥절, 그리고 불여우
-const fox = await call("generate_cutscene_art", { role: "sprite", prompt: "XFOXX orange fox monster with a flame tail", name: "엠버킷", tiles: 4 });
-const fireball = await call("generate_cutscene_art", { role: "sprite", style: "game", prompt: "a single round orange fireball with a short flame trail pointing right, bright yellow core, red-orange outer flame, facing left toward the target, compact shape", name: "불꽃", tiles: 2 });
+// ② 새 세계 — 사방을 둘러보고, 풀숲에서 불 몬스터(게임에 있는 도트)가 튀어나와 화염을 쏜다. 새로 그리는 그림은 없다.
+const MONSTER = "scarloxy-monster-charmadillo";
 const fieldCut = await call("script_cutscene_staged", {
   mapId: ROUTE, eventId: "ev_isekai_ember", x: HERO_TILE.x, y: HERO_TILE.y + 2,
   actors: [
     { name: "인물", ghost: true, at: { x: heroScreen.x, y: heroScreen.y } },
-    { name: "엠버킷", resourceId: fox.resourceId, facing: "left" },
-    { name: "불꽃", resourceId: fireball.resourceId, facing: "left" },
+    { name: "몬스터", resourceId: MONSTER, facing: "left" },
   ],
   steps: [
     { do: "whiteout", ms: 0 },
@@ -126,32 +131,39 @@ const fieldCut = await call("script_cutscene_staged", {
     { do: "dewhite", ms: 1800 },
     { do: "say", speaker: "", text: "……으윽. 머리가…… 트럭은…… 어떻게 된 거지?", context: "thought" },
     { do: "se", resourceId: SE.grass },
-    { do: "wait", ms: 400 },
-    { do: "say", speaker: "", text: "하늘이 너무 파랗다. 풀 냄새도 진짜 같아. 저 나무들은…… 게임에서 본 것 같은데?", context: "thought" },
+    { do: "turn", actor: "인물", dir: "up" },
+    { do: "wait", ms: 350 },
+    { do: "say", speaker: "", text: "( 위: 하늘이 너무 파랗다. 구름 한 점 없어. )", context: "thought" },
+    { do: "turn", actor: "인물", dir: "left" },
+    { do: "wait", ms: 350 },
+    { do: "say", speaker: "", text: "( 왼쪽: 끝없는 풀밭. 아스팔트도, 건물도 없네. )", context: "thought" },
+    { do: "turn", actor: "인물", dir: "right" },
+    { do: "wait", ms: 350 },
+    { do: "say", speaker: "", text: "( 오른쪽: 나무뿐이야. 이 나무들, 게임에서 본 것 같은데……? )", context: "thought" },
+    { do: "turn", actor: "인물", dir: "down" },
+    { do: "wait", ms: 350 },
     { do: "say", speaker: "", text: "여긴 어디야? 분명 횡단보도였는데!", context: "speech" },
     { do: "se", resourceId: SE.whoosh },
     { do: "shake", intensity: 3, ms: 700 },
+    { do: "turn", actor: "인물", dir: "right" },
     { do: "say", speaker: "", text: "……방금 풀숲에서 소리가 났나?", context: "thought" },
     { do: "bgm", resourceId: BGM.danger },
     { do: "se", resourceId: SE.roar },
-    { do: "enter", actor: "엠버킷", from: "right", to: { at: "인물", side: "right", gap: 36 }, ms: 420, ease: "out" },
+    { do: "enter", actor: "몬스터", from: "right", to: { at: "인물", side: "right", gap: 24 }, ms: 420, ease: "out" },
     { do: "shake", intensity: 5, ms: 400, withPrevious: true },
-    { do: "say", speaker: "", text: "여, 여우?! 꼬리에 불이 붙어 있어!", context: "shout" },
+    { do: "say", speaker: "", text: "도, 도마뱀?! 몸에서 불이 나고 있어!", context: "shout" },
     { do: "se", resourceId: SE.fireInhale },
     { do: "wait", ms: 700 },
-    { do: "show", actor: "불꽃", to: { at: "엠버킷", side: "left", gap: 0 } },
     { do: "se", resourceId: SE.fireBurst },
-    { do: "move", actor: "불꽃", to: { touch: "인물", overlap: 0.4, dy: -6 }, ms: 380, ease: "in" },
-    { do: "expect", touching: ["불꽃", "인물"] },
-    { do: "hide", actor: "불꽃" },
+    { do: "animate", actor: "인물", animationId: "anim_scarloxy_fire", ms: 1000 },
     { do: "se", resourceId: SE.boom },
     { do: "se", resourceId: SE.burn, withPrevious: true },
     { do: "flash", color: "red", ms: 700, withPrevious: true },
     { do: "shake", intensity: 14, ms: 900, withPrevious: true },
     { do: "say", speaker: "", text: "으아아악——!!", context: "shout" },
     { do: "fade", direction: "out", ms: 900 },
-    { do: "hide", actor: "엠버킷" },
-    { do: "say", speaker: "", text: "트럭 다음은 불여우라니. 이세계, 너무 거칠다.", context: "narration" },
+    { do: "hide", actor: "몬스터" },
+    { do: "say", speaker: "", text: "트럭 다음은 불 뿜는 몬스터라니. 이세계, 너무 거칠다.", context: "narration" },
     { do: "fade", direction: "in", ms: 700 },
   ],
 });
