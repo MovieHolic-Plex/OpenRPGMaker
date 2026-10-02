@@ -7,3 +7,5 @@ export { isPassable, canMove } from "@/project/collision";
 export { autotileVariantForCell, autotileLayerView } from "@/project/defaults/autotileEngine";
 export { tilesetFamily } from "@/project/tilesetFamily";
 export { passageMarkForTile } from "@/project/tilesetPassage";
+export { validateTilesetReferences } from "@/project/tilesetReferences";
+export { isBundledReferenceImage } from "@/project/bundledReferenceImagePath";

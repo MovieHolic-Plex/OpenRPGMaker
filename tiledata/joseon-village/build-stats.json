@@ -32,6 +32,8 @@
  },
  "maps": {
   "joseon_v20": {
+   "source": "tiledata/joseon-village20/map.json",
+   "extra": "tiledata/joseon-village20/extra.json",
    "size": [
     64,
     56

@@ -1,9 +1,9 @@
 {
- "projectId": "32a6aa0e-2b72-4f74-b850-d213e9ded3bb",
+ "projectId": "80a03497-b6d6-408c-99cd-7eeae0f26a93",
  "projectDir": "/tmp/oprn-joseon-baram-proof",
  "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
  "revision": 1,
- "sha256": "f334dc859e3484f7b1338fa168cd8c90311453deb6d914bebb969411936b8874",
+ "sha256": "9974a7c384743a70d887019730c6cd915378b719d30340eec959ea07d0adaed4",
  "saved": true,
  "reopened": true,
  "deepEqual": {
@@ -30,7 +30,38 @@
    "jb_paddy16_autotile",
    "jb_rice16_autotile"
   ],
-  "referenceDocuments": []
+  "referenceDocuments": [
+   {
+    "id": "joseon-baram-guide",
+    "docs": 2,
+    "images": 2
+   },
+   {
+    "id": "joseon-baram-terrain",
+    "docs": 2,
+    "images": 4
+   },
+   {
+    "id": "joseon-baram-buildings",
+    "docs": 6,
+    "images": 4
+   },
+   {
+    "id": "joseon-baram-props",
+    "docs": 8,
+    "images": 5
+   },
+   {
+    "id": "joseon-baram-examples",
+    "docs": 4,
+    "images": 4
+   },
+   {
+    "id": "joseon-baram-qa",
+    "docs": 1,
+    "images": 4
+   }
+  ]
  },
  "maps": {
   "joseon_v20": {

@@ -93,6 +93,15 @@ const project = await withTsModule("scripts/content/lib/joseon-baram-entry.ts", 
   assert.equal(api.tilesetFamily(p, ts.id), "oprn-joseon");
   assert.equal(ts.passability.length, ts.count);
   assert.equal(ts.tileMeta.length, ts.count);
+  // 참고문서: 프로젝트 저장 검증기(validateTilesetReferences)를 통과하고, 그림은 /assets 경로뿐이며(바이트 0), 파일이 실제로 있다.
+  api.validateTilesetReferences(ts.referenceDocuments);
+  const refImages = ts.referenceDocuments.flatMap(c => c.images);
+  assert(ts.referenceDocuments.length >= 6 && refImages.length > 0, "참고문서 용도 6개 이상");
+  for (const img of refImages) {
+    assert(api.isBundledReferenceImage(img.dataUrl), `번들 경로가 아닌 그림: ${img.name}`);
+    assert(fs.existsSync(path.join("public", img.dataUrl)), `그림 파일 없음: ${img.dataUrl}`);
+  }
+  console.log(`references ok: ${ts.referenceDocuments.length} categories, ${ts.referenceDocuments.reduce((n, c) => n + c.documents.length, 0)} docs, ${refImages.length} images (paths only)`);
   // 기존 프로젝트 보강: 타일셋이 없거나, 옛(칸이 적은) 사본이거나, 참고문서·부품이 비었을 때 ensureBundledTilesets 가 번들 것으로 채우는가
   const fresh = api.createJoseonBaramTileset();
   const ensureProof = {};

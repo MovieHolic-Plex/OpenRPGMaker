@@ -209,7 +209,7 @@ for spec in args.maps:
             nt = resolve(t, need)
             upper.append(nt)
             cls_grid[y][x] = need
-    maps_out.append(dict(id=mid, name=mname, width=Wd, height=Ht, lower=lower, upper=upper, cls=cls_grid, ex=ex,
+    maps_out.append(dict(id=mid, name=mname, extra_path=epath, map_path=mpath, width=Wd, height=Ht, lower=lower, upper=upper, cls=cls_grid, ex=ex,
                          shadow_only=shadow_only))
 
 # 사용되지 않은 겹침 칸의 클래스
@@ -477,7 +477,7 @@ for m in maps_out:
     out = dict(id=m["id"], name=m["name"], width=Wd, height=Ht, tilesetId=args.id, lowerTiles=m["lower"], upperTiles=m["upper"],
                walk=exp, doors=doors, passages=passages, people=people, start=start)
     (OUT / "maps" / f"{m['id']}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
-    stats_maps[m["id"]] = dict(size=[Wd, Ht], objectCells=sum(1 for t in m["upper"] if t >= 0),
+    stats_maps[m["id"]] = dict(source=m["map_path"], extra=m["extra_path"], size=[Wd, Ht], objectCells=sum(1 for t in m["upper"] if t >= 0),
                                walkable=sum(r.count("1") for r in exp), doors=len(doors), passages=len(passages), people=len(people),
                                start=start, shadowOnlyCells=m["shadow_only"], groundKindMismatch=len(bad_ground),
                                groundKindMismatchSamples=bad_ground[:10])
