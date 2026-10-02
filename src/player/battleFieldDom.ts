@@ -33,7 +33,6 @@ export {
   resolveManualFrontalRow,
   resolveSkinEnemyPosition,
   resolveSkinEnemyPositions,
-  RM2000_PARTY_SLOTS,
   type BattlerPartyFacing,
 } from "@/battle/battlerPlacements";
 import type { DamageFeedback } from "@/player/battleSequencer";
@@ -924,11 +923,8 @@ function appendEffectsLayer(field: HTMLElement): HTMLElement {
   return layer;
 }
 
-/** 유리 뼈대의 정면 구도(rm2000 과 그 변형)는 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터
- *  PNG 알파를 반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
+/** 전투 배경 그림 위에 옅은 스크림을 얹는다(정면 유리 스킨 예외는 2026-10-02 스킨과 함께 지웠다). */
 function battleBackdropImage(url: string): string {
-  const skin = activeSkin();
-  if (skin.family === "glass" && skin.layout === "frontview") return `url("${url}")`;
   return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
 }
 

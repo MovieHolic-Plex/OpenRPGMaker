@@ -155,12 +155,9 @@ const SKIN_TRANSITION_CLASS: Record<string, string> = {
   "focus-blur": "battle-transition--focus-blur",
   "sweep-cyan": "battle-transition--sweep-cyan",
   "brave-shift": "battle-transition--brave-shift",
-  "psychedelic": "battle-transition--psychedelic",
-  "curtain-dq": "battle-transition--curtain-dq",
   "wipe-blue": "battle-transition--wipe-blue",
   "wipe-black": "battle-transition--wipe-black",
   "flash-white": "battle-transition--flash-white",
-  "fade": "battle-transition--fade",
 };
 
 export function createSkinBattleTransition(
