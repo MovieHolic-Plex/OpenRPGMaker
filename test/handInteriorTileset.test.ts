@@ -20,7 +20,7 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     expect(t.family).toBe("oprn-atlas");
     expect(t.count).toBe(ATLAS_BIOME_INTERIOR_COUNT);
     expect(t.tilesPerRow).toBe(48);
-    expect(t.structureKits!.length).toBe(414);   // v5 381 + 함께 쓰기 변형 5 + 새 기물 28(new/items.json)
+    expect(t.structureKits!.length).toBe(527);   // v5 381 + 함께 쓰기 변형 5 + 고른 새 기물(new/items.json)
     expect(t.structureKits!.every((k) => k.id.startsWith("hand-interior:"))).toBe(true);
     expect(t.referenceDocuments!.map((c) => c.id)).toContain("hand-interior-v5");
     // strips are 12 frames and never cross a sheet row
@@ -54,6 +54,26 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     ensureBundledTilesets(p);
     expect(p.tilesets.atlas_biome_interior).toEqual(again);
     expect(atlasBiomeInteriorReplacementWarnings.length).toBe(n + 1);
+  });
+
+  it("an older v5 build (fewer tiles, older dictionary) is refreshed in place: maps keep their ids, no warning", () => {
+    const p = createBlankProject();
+    const cur = p.tilesets.atlas_biome_interior!;
+    const n0 = cur.count - 100;
+    p.tilesets.atlas_biome_interior = { ...cur, count: n0, passability: cur.passability.slice(0, n0), priority: cur.priority.slice(0, n0),
+      terrain: cur.terrain.slice(0, n0), tileMeta: cur.tileMeta!.slice(0, n0), structureKits: cur.structureKits!.slice(0, 400),
+      referenceDocuments: [{ ...cur.referenceDocuments!.find((c) => c.id === "hand-interior-v5")!, documents: [] }, { id: "mine", name: "", description: "", documents: [], images: [] }] };
+    const map = { id: "m", name: "방", width: 2, height: 1, tilesetId: "atlas_biome_interior", tileSize: 16, lowerTiles: [5, 6], upperTiles: [-1, 3300], events: [] };
+    p.maps.m = structuredClone(map) as never;
+    const n = atlasBiomeInteriorReplacementWarnings.length;
+    expect(ensureBundledTilesets(p)).toBe(true);
+    const t = p.tilesets.atlas_biome_interior!;
+    expect(t.count).toBe(ATLAS_BIOME_INTERIOR_COUNT);
+    expect(t.structureKits!.length).toBe(cur.structureKits!.length);
+    expect(t.referenceDocuments!.find((c) => c.id === "hand-interior-v5")!.documents.length).toBeGreaterThan(0);
+    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine"]);
+    expect(p.maps.m).toEqual(map);
+    expect(atlasBiomeInteriorReplacementWarnings.length).toBe(n);
   });
 
   it("the builder's structure layer equals the bundled example maps (the room2.render rule)", () => {
