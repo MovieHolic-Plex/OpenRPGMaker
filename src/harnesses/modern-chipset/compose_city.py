@@ -11,8 +11,12 @@ ACTOR1 = os.path.expanduser('~/gv3-work/chipset/Actor1.png')   # RPG Maker 캐�
 W, H = 26, 30
 RN0 = 11                                     # 동서 도로 첫 행
 
+SOURCES = os.path.join(ROOT, 'tiledata/modern-city/sources')            # 합격 후보 사본(qa-runs 는 gitignore 라 사라질 수 있다)
+
 def load(spec):
-    rid, letter = spec.split(':'); return Image.open(os.path.join(RUNS, rid, letter + '.png')).convert('RGBA')
+    rid, letter = spec.split(':'); p = os.path.join(RUNS, rid, letter + '.png')
+    if not os.path.exists(p): p = os.path.join(SOURCES, f'{rid}_{letter}.png')
+    return Image.open(p).convert('RGBA')
 
 def cell(sheet, idx, cols=8): return sheet.crop(((idx % cols) * 16, (idx // cols) * 16, (idx % cols) * 16 + 16, (idx // cols) * 16 + 16))
 
