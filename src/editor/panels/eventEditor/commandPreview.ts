@@ -1640,6 +1640,13 @@ function screenEffectPreviewModel(effect: string, value: string, durationMs: num
     }
     case "weather":
       return { background: "rgba(120,150,190,0.45)", fromOpacity: 0, restOpacity: 1, note: plan.weather };
+    case "distortion":
+      return {
+        background: "rgba(15,23,42,0.28)",
+        fromOpacity: 0,
+        restOpacity: 1,
+        note: plan.effect === "clearDistortion" ? "왜곡 제거" : plan.effect,
+      };
     case "unsupported":
       return { background: "rgba(15,23,42,0.35)", fromOpacity: 0, restOpacity: 1 };
   }
