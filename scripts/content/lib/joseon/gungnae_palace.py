@@ -302,6 +302,74 @@ def palace_hall(bays=5, roof='wood', glass='paper', col='red'):
     return cv
 
 
+# ---------------------------------------------------------------- 정전(넓은 단층 대전 + 낮은 3단 월대)
+def wolde3(c, x0, x1, ytop, stair_w=48):
+    """낮은 월대 3단. 단마다 면 9px + 윗면 5px(난간 기둥은 맨 윗단 모서리만), 가운데 계단(어도 비탈)이 세 단을 내려간다. ytop = 건물 아랫선. 돌려주는 값 = 아래 끝 y.
+    좌우 폭이 단마다 한 칸(16px)씩 넓어진다(위 단이 가장 좁다)."""
+    S = RGB['stone']
+    cx = (x0 + x1) // 2
+    y = ytop
+    tiers = ((x0 + 32, x1 - 32), (x0 + 16, x1 - 16), (x0, x1))
+    for k, (a, b) in enumerate(tiers):
+        for yy in range(y, y + 5):                                         # 윗면
+            for x in range(a, b):
+                t = S[6] if yy == y else (S[5] if rnd(x, yy, 5 + k) > 0.12 else S[4])
+                c.put(x, yy, t)
+        _courses(c, a, y + 5, b, y + 14, k + 1, 5)                        # 면
+        for x in range(a, b):
+            c.put(x, y + 13, S[1])
+        y += 14
+    # 계단: 세 단을 가로질러 내려간다(맨 윗단 면은 3칸 높이 9px 이므로 2단씩)
+    yy0 = ytop + 5
+    _stairs(c, cx, yy0, stair_w, 6, 3, 2, 14)
+    # 맨 윗단 난간(계단 자리는 비운다) + 모서리 기둥
+    a, b = tiers[0]
+    ry = ytop
+    _rail(c, a + 2, b - 2, ry + 2, skip=[(cx - stair_w // 2 - 2, cx + stair_w // 2 + 2)])
+    for xp in (a + 1, b - 6, cx - stair_w // 2 - 6, cx + stair_w // 2 + 2):
+        _post(c, xp, ry - 5, 8)
+    return ytop + 3 * 14
+
+
+def palace_hall_wide(bays=8, roof='wood', glass='paper', col='red'):
+    """넓은 단층 정전(원작 비율): 아래 큰 팔작 지붕 + 그 용마루께에 얹힌 낮은 위 지붕(이중 처마, 위 벽은 한 줄뿐) + 낮은 3단 월대.
+    폭 = bays + 4 칸(가운데가 칸 경계 = 축), 높이 10 칸. 가운데 칸들은 열 수 있는 문."""
+    ku = 'l' + 'wd' + 'dd' + 'dw' + 'r' if bays == 8 else 'l' + 'w' * (bays - 2) + 'r'
+    ku = ku[:bays]
+    kb = ku.replace('w', 'f')
+    ub = bays - 3
+    up_u = 'l' + 'w' * (ub - 2) + 'r'
+    up_b = up_u.replace('w', 'f')
+    low = tier(bays, 3, roof, 38, ku, kb, col, 'plaster', glass, dan=True, trim=True, base=True)
+    up = tier(ub, 2, roof, 22, up_u, up_b, col, 'plaster', glass, dan=True, trim=True, base=False, rows='u')
+    PW = (bays + 4) * T
+    y_up = 0
+    y_low = up.h - 14
+    cv = Cv(PW, 10 * T)
+    cv.paste(low, (PW - low.w) // 2, y_low)
+    cv.paste(up, (PW - up.w) // 2, y_up)
+    yb = wolde3(cv, 0, PW, y_low + low.h)
+    outline(cv)
+    ground_shadow(cv, PW // 2 + 6, min(cv.h - 3, yb + 1), PW // 2 - 6, 2, 70)
+    return cv
+
+
+# ---------------------------------------------------------------- 행각(마당 둘레 낮은 건물: 정전과 같은 기와 어휘)
+def haenggak(bays=4, variant=0):
+    """좌우 행각: 단층 팔작(정전·전각과 같은 곡선 처마·기와 지붕) + 낮은 돌 기단. 폭 bays+2 칸, 높이 5 칸. variant 는 문 칸 위치만 바꾼다."""
+    ku = ['w'] * bays; kb = ['f'] * bays
+    ku[0] = 'l'; kb[0] = 'l'; ku[-1] = 'r'; kb[-1] = 'r'
+    m = bays // 2
+    ku[m] = 'd'; kb[m] = 'd'
+    t = tier(bays, 2, 'wood', 20, ku, kb, 'red', 'plaster', 'paper', dan=True, trim=True, base=True)
+    W = t.w
+    cv = Cv(W, t.h)
+    cv.paste(t, 0, 0)
+    outline(cv)
+    ground_shadow(cv, W // 2 + 4, cv.h - 3, W // 2 - 8, 2, 70)
+    return cv
+
+
 # ---------------------------------------------------------------- 전각(작은 단층)
 def jeongak(bays=5, variant=0):
     """좌우 전각: 단층 기와 + 낮은 돌 기단 + 계단. variant 0 = 갈색 지붕·붉은 기둥·청록 창살, 1 = 청록 지붕·주황 기둥, 2 = 회색 지붕·붉은 기둥·열린 가운데 칸."""
@@ -435,19 +503,19 @@ def _cap(c, x0, x1, y0=0, round_l=False, round_r=False, groove=4):
 
 
 def _body(c, x0, x1, y0, y1, seed=0):
-    """황토 흙담 몸통: 판축 층(가로 줄눈) + 왼쪽 밝음/오른쪽 어두움 한 칸 단위 얼룩."""
-    R_ = RGB['straw']
+    """회벽(흰 회반죽) 담 몸통: 가로 층 줄눈 + 한 칸 단위 얼룩. 어두운 기와 갓과 짝을 이룬다(황토색이면 길·밭으로 읽힌다)."""
+    R_ = RGB['plaster']
     for y in range(y0, y1):
         layer = (y - y0) // 6
         ry = (y - y0) % 6
         for x in range(x0, x1):
-            t = 3
+            t = 4
             q = rnd(x // 2 + layer * 3, y // 2, seed + 11)
-            if q > 0.8: t = 4
-            elif q < 0.15: t = 2
+            if q > 0.82: t = 5
+            elif q < 0.15: t = 3
             if ry == 0: t += 1                       # 층 윗머리
-            if ry == 5: t = max(1, t - 1)            # 층 아래 그늘
-            c.put(x, y, R_[max(1, min(5, t))])
+            if ry == 5: t = max(2, t - 2)            # 층 아래 그늘
+            c.put(x, y, R_[max(2, min(6, t))])
 
 
 def pwall_h(seed=0):
@@ -455,10 +523,10 @@ def pwall_h(seed=0):
     c = Cv(T, 2 * T)
     _body(c, 0, T, 9, 30, seed)
     for x in range(T):
-        c.put(x, 9, RGB['straw'][1]); c.put(x, 10, RGB['straw'][1])
+        c.put(x, 9, RGB['plaster'][2]); c.put(x, 10, RGB['plaster'][2])
     _cap(c, 0, T, 0, groove=(0, 2, 1)[seed % 3])
     for x in range(T):
-        c.put(x, 30, RGB['straw'][1]); c.put(x, 31, SHADOW, 80)
+        c.put(x, 30, RGB['plaster'][2]); c.put(x, 31, SHADOW, 80)
     for x in range(0, T, 8):                          # 받침 돌 한 줄
         pass
     return c
@@ -468,7 +536,7 @@ _PX0, _PX1 = 2, 14
 
 
 def _pband(c, y0, y1, east=False, face=True):
-    S = RGB['giwa']; R_ = RGB['straw']
+    S = RGB['giwa']; R_ = RGB['plaster']
     cx0, sx0 = (_PX1 - 6, _PX0) if east else (_PX0, _PX0 + 6)
     cap = (S[6], S[6], S[5], S[5], S[4], S[4]) if not east else (S[4], S[4], S[3], S[3], S[2], S[2])[::-1]
     for y in range(y0, y1):
@@ -479,39 +547,39 @@ def _pband(c, y0, y1, east=False, face=True):
         if face:
             for lx in range(6):
                 layer = y // 6; ry = y % 6
-                t = (3 if lx < 3 else 2) if not east else (4 if lx < 3 else 3)
+                t = (5 if lx < 3 else 4) if not east else (4 if lx < 3 else 3)
                 if ry == 0: t += 1
-                if ry == 5: t = 1
-                if rnd(lx, y, 21) > 0.9: t = min(5, t + 1)
-                c.put(sx0 + lx, y, R_[max(1, t)])
+                if ry == 5: t = 2
+                if rnd(lx, y, 21) > 0.9: t = min(6, t + 1)
+                c.put(sx0 + lx, y, R_[max(2, t)])
 
 
 def pwall_v(east=False):
+    """궁 담 세로(동·서): 3/4 시점에서 왼쪽에 회벽 옆면(빛), 오른쪽에 기와 갓 윗면, 땅 그림자는 오른쪽. 동·서 모두 같은 문법(성벽과 같다)."""
     c = Cv(T, T)
-    _pband(c, 0, T, east)
+    _pband(c, 0, T, True)
     for y in range(T):
-        if east: c.put(_PX1, y, SHADOW, 70); c.put(_PX1 + 1, y, SHADOW, 45)
-        else: c.put(_PX0 - 1, y, SHADOW, 55)
+        c.put(_PX1, y, SHADOW, 70); c.put(_PX1 + 1, y, SHADOW, 45)
     return c
 
 
 def pwall_corner(kind):
     c = Cv(T, 2 * T)
-    R_ = RGB['straw']
+    R_ = RGB['plaster']
     west = kind[1] == 'W'
     hx0, hx1 = (_PX0, T) if west else (0, _PX1)
     _body(c, hx0, hx1, 9, 30, 1 if west else 2)
     for x in range(hx0, hx1):
-        c.put(x, 9, R_[1]); c.put(x, 10, R_[1])
+        c.put(x, 9, R_[2]); c.put(x, 10, R_[2])
     _cap(c, hx0, hx1, 0, round_l=west, round_r=not west)
     if kind[0] == 'N':
-        _pband(c, 8, 2 * T, east=not west)
+        _pband(c, 8, 2 * T, east=True)
         for y in range(8, 2 * T):
-            if not west: c.put(_PX1, y, SHADOW, 60); c.put(_PX1 + 1, y, SHADOW, 40)
+            c.put(_PX1, y, SHADOW, 60); c.put(_PX1 + 1, y, SHADOW, 40)
     else:
-        _pband(c, 0, 9, east=not west, face=False)
+        _pband(c, 0, 9, east=True, face=False)
     for x in range(hx0, hx1):
-        c.put(x, 30, R_[1]); c.put(x, 31, SHADOW, 80)
+        c.put(x, 30, R_[2]); c.put(x, 31, SHADOW, 80)
     return c
 
 
@@ -521,7 +589,7 @@ def palace_gate(bays=4):
     ku = 'l' + 'o' * (bays // 2 - 1) + 'q' + 'o' * (bays - bays // 2 - 2) + 'r'
     kb = ku
     pas = tuple(range(1, bays - 1))
-    t = tier(bays, 3, 'giwa', 22, ku, kb, 'persimmon', 'straw', 'paper', dan=False, trim=True, base=True, floor='stone', nobase=pas)
+    t = tier(bays, 3, 'giwa', 22, ku, kb, 'persimmon', 'plaster', 'paper', dan=False, trim=True, base=True, floor='stone', nobase=pas)
     cv = Cv(t.w, t.h + T)
     cv.paste(t, 0, 0)
     L = lib()
@@ -537,26 +605,24 @@ def palace_gate(bays=4):
 
 # ---------------------------------------------------------------- 마당 바닥
 def court(v=0):
-    """궁 마당 포장: 큰 직사각 판석을 어긋나게 깔고 작은 점무늬. 이음 없는 한 칸."""
+    """궁 마당 포장: 큰 정방형 판석(한 칸 = 판석 하나), 줄눈은 위·왼쪽 1px 만 약하게. 잡음을 줄여 지붕 그림과 결이 같다. 이음 없는 한 칸."""
     c = Cv(T, T)
     s = RGB['stone']
+    tone = (4, 4, 5)[v % 3]
     for y in range(T):
         for x in range(T):
             q = rnd(x, y, 880 + v)
-            col = s[4]
-            if q < 0.16: col = s[3]
-            elif q > 0.9: col = s[5]
+            col = s[tone]
+            if q < 0.05: col = s[tone - 1]
+            elif q > 0.96: col = s[min(6, tone + 1)]
             c.put(x, y, col)
-    off = (0, 5, 10)[v % 3]
-    for r, y0 in enumerate((0, 8)):
-        o = (off + r * 6) % 16
-        c.hl(0, T, y0, s[3])
-        c.vl(o, y0, y0 + 8, s[3])
-        c.vl((o + 11) % T, y0, y0 + 8, s[3]) if r == 1 else None
-        c.hl(0, T, y0 + 1, s[5])
-    for k in range(3):                                # 점무늬
-        x, y = 1 + hsh(k, v, 41) % 13, 2 + hsh(v, k, 43) % 12
-        c.put(x, y, s[6]); c.put(x + 1, y, s[6]) if v == 1 else None
+    for k in range(T):
+        c.put(k, 0, s[3]); c.put(0, k, s[3])
+        if k > 0:
+            c.put(k, 1, s[5]); c.put(1, k, s[5])
+    for k in range(2):                                # 판석마다 다른 작은 흠
+        x, y = 4 + hsh(k, v, 41) % 9, 4 + hsh(v, k, 43) % 9
+        c.put(x, y, s[3]); c.put(x + 1, y, s[3])
     return c
 
 
@@ -572,7 +638,7 @@ def court_edge(mask):
                 col = tuple(int(v) for v in base.a[y, x, :3])
             elif d == 1: col = s[3]
             elif d == 2: col = e[4] if rnd(x, y, 5) > 0.3 else e[3]
-            else: col = g[4] if rnd(x, y, 100) > 0.2 else g[3]
+            else: col = e[4] if rnd(x, y, 100) > 0.2 else e[3]       # 풀 대신 맨 흙(바깥 마당 흙과 이어진다)
             c.put(x, y, col)
     # 경계석 윗면 밝은 선: 포장 바로 안쪽
     for y in range(T):
@@ -586,27 +652,27 @@ def court_edge(mask):
 
 
 def eodo(kind='v'):
-    """어도(御道) 3×1: 가운데 돌길(밝은 판석, 새김 선)이 양옆 포장보다 한 단 높고, 오른쪽에 그림자. kind v=가운데 토막, end=계단 쪽 끝(아래로 둥글게 내려앉음)."""
-    c = Cv(3 * T, T)
+    """어도(御道) 4×1(가운데 돌길 3칸 = 48px): 밝은 판석 길이 양옆 포장보다 한 단 높고 오른쪽에 그림자. 가운데 x 는 칸 경계(축 x=48)에 놓인다.
+    kind v=가운데 토막, end=계단 쪽 끝(아래로 둥글게 내려앉음)."""
+    c = Cv(4 * T, T)
     s = RGB['stone']
-    base = [court(0), court(1), court(2)]
-    for i in range(3):
-        c.paste(base[i], i * T, 0)
-    x0, x1 = 10, 38
+    for i in range(4):
+        c.paste(court(i % 3), i * T, 0)
+    x0, x1 = 8, 56
     for y in range(T):
         for x in range(x0, x1):
             q = rnd(x, y, 907)
-            col = s[6] if x < x0 + 2 else (s[5] if q > 0.12 else s[4])
+            col = s[6] if x < x0 + 2 else (s[5] if q > 0.1 else s[4])
             if x >= x1 - 3: col = s[4]
             if x == x1 - 1: col = s[3]
             c.put(x, y, col)
         if y % 8 == 0:
             for x in range(x0 + 2, x1 - 3):
                 c.put(x, y, s[4])
-    for x in (x0 + 12, x0 + 13):
+    for xc in (x0 + 15, x0 + 16, x0 + 31, x0 + 32):      # 세로 새김 두 줄
         for y in range(T):
             if (y // 4) % 2 == 0:
-                c.put(x, y, s[4])
+                c.put(xc, y, s[4])
     for y in range(T):                                # 양옆 그림자
         c.put(x1, y, SHADOW, 90); c.put(x1 + 1, y, SHADOW, 55); c.put(x1 + 2, y, SHADOW, 25)
     for y in range(T):
@@ -802,7 +868,7 @@ def haetae():
 def deumeu():
     """드므(큰 청동 항아리) 16×32: 낮은 돌 받침 위에 넓은 입 청동 독, 물 담긴 입, 양쪽 고리."""
     c = Cv(T, 2 * T)
-    S = RGB['stone']; B = RGB['dgreen']; Wt = RGB['water']; P = RGB['persimmon']
+    S = RGB['stone']; B = RGB['wood']; Wt = RGB['water']; P = RGB['persimmon']
     ground_shadow(c, 9, 30, 7, 1.8, 70)
     slab(c, 2, 26, 12, 3, 2, S, (6, 5), (5, 4, 3, 2))
     # 독 몸통: 아래로 좁아지는 둥근 배
@@ -968,6 +1034,8 @@ def terrain():
 def objects():
     return {
         'palace_hall_5': palace_hall(5),
+        'palace_hall_wide_8': palace_hall_wide(8),
+        'palace_haenggak_3': haenggak(3),
         'palace_hall_7': palace_hall(7),
         'palace_hall_5g': palace_hall(5, 'dgreen', 'teal', 'persimmon'),
         'palace_jeongak_a': jeongak(5, 0),

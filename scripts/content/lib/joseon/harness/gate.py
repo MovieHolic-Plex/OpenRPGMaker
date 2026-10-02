@@ -36,7 +36,7 @@ def piece_hash(cv):
     return hashlib.sha1(cv.a.tobytes()).hexdigest()[:12]
 
 
-TERRAIN_VERDICT = ('water47',)
+TERRAIN_VERDICT = ('water47', 'water47g', 'water_deep')
 
 
 def group_hash(tiles):

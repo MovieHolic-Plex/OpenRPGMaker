@@ -2414,5 +2414,99 @@
    "h101_0"
   ],
   "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gungnae_bridge_narrow_h5": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    4
+   ],
+   "rows": [
+    1,
+    2
+   ],
+   "note": "폭 1칸 상판만 걷는다."
+  }
+ },
+ "gungnae_bridge_narrow_h6": {
+  "cls": "prop",
+  "refs": [
+   "castle.drawbridge",
+   "bench_wood"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    4
+   ],
+   "rows": [
+    1,
+    2
+   ],
+   "note": "폭 1칸 상판만 걷는다."
+  }
+ },
+ "gungnae_gate_side_5": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    5
+   ],
+   "rows": [
+    7,
+    11
+   ],
+   "note": "맨 아래 4행이 동서 통로"
+  }
+ },
+ "palace_hall_wide_8": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_7",
+   "giwa_house_6",
+   "gate_4"
+  ],
+  "kit": "palace.tier('gw',…) 아래 팔작 + 위 낮은 지붕(rows=u) + wolde3(낮은 3단 월대)"
+ },
+ "palace_gate_side_3": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    3
+   ],
+   "rows": [
+    7,
+    11
+   ],
+   "note": "맨 아래 4행이 동서 통로"
+  }
+ },
+ "palace_haenggak_3": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_5",
+   "gate_4",
+   "h104_0"
+  ],
+  "kit": "palace.tier(blk…) 단층 팔작(R=2) + 돌 기단 — 정전과 같은 기와 어휘"
  }
 }

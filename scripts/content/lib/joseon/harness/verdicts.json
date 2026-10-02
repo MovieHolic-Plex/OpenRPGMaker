@@ -1080,97 +1080,97 @@
   "date": "2026-10-02"
  },
  "palace_wall_h": {
-  "hash": "a8711424beea",
-  "status": "pass",
-  "line": "기와 덮개 9줄(윗면 밝음→처마 그늘)+황토 몸통, 기준 castle.wall_h 보다 낮은 흙담. 이어 붙임 이음 없음.",
+  "hash": "dff4249579f6",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_wall_h1": {
-  "hash": "9b3e1a54e4ee",
-  "status": "pass",
-  "line": "wall_h 변형(덮개 골 어긋남).",
+  "hash": "a3fd026e847e",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_wall_h2": {
-  "hash": "f8b10d3d8ee8",
-  "status": "pass",
-  "line": "wall_h 변형.",
+  "hash": "740270dc07f3",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_wall_v": {
-  "hash": "0cc22b577331",
-  "status": "pass",
-  "line": "세로 담: 덮개 위에서 본 띠+황토 옆면, 오른쪽 땅 그림자.",
+  "hash": "e74a1ff6fc50",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_wall_v_e": {
-  "hash": "7e11ef854f2c",
-  "status": "pass",
-  "line": "세로 담 동쪽(덮개가 바깥).",
+  "hash": "e74a1ff6fc50",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_wall_nw": {
-  "hash": "32b4380e787a",
-  "status": "pass",
-  "line": "북서 모서리, 가로·세로 덮개가 이어짐.",
+  "hash": "d5190a88559e",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_wall_ne": {
-  "hash": "d25bdc033d7d",
-  "status": "pass",
-  "line": "북동 모서리.",
+  "hash": "fa6fe16b192f",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_wall_sw": {
-  "hash": "ec0d32583900",
-  "status": "pass",
-  "line": "남서 모서리.",
+  "hash": "5f5410046917",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_wall_se": {
-  "hash": "3b79b16f0645",
-  "status": "pass",
-  "line": "남동 모서리.",
+  "hash": "6a8eddd419a1",
+  "status": "note",
+  "line": "회벽 담: 왼쪽 옆면(밝음)+기와 갓 윗면, 그림자 오른쪽. 동·서 같은 문법",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_gate_4": {
-  "hash": "ac0c26378978",
+  "hash": "b38ca95f26d3",
   "status": "pass",
-  "line": "소문루: 회색 지붕 사면 둘 다 보임, 주황 기둥, 가운데 열린 통로(기둥 없는 한 칸)가 포장까지 이어짐, 처마 밑 현판.",
+  "line": "주황 기둥 회색 지붕 소문루, 양끝 회벽",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_eodo": {
-  "hash": "a05c231fe8c0",
+  "hash": "826586793572",
   "status": "user",
-  "line": "위에서 본 3×1 돌길 조각이라 3/4 윗면 판정은 사용자에게(양옆보다 한 단 높고 오른쪽 그림자).",
+  "line": "정면 소품: 어도 4칸(가운데 돌길 3칸), 판석 포장 위에 한 단 높은 길",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "palace_eodo_end": {
-  "hash": "f31de9e56d93",
+  "hash": "5587a27832a9",
   "status": "user",
-  "line": "어도 계단 쪽 끝. 3/4 윗면 판정 사용자.",
+  "line": "정면 소품: 어도 4칸(가운데 돌길 3칸), 판석 포장 위에 한 단 높은 길",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1232,9 +1232,9 @@
   "date": "2026-10-02"
  },
  "palace_deumeu": {
-  "hash": "699731c5831a",
+  "hash": "e76d79e70621",
   "status": "user",
-  "line": "드므: 입 타원이 보이는 3/4. 사용자 판정(청동 대신 청록 단청 램프).",
+  "line": "정면 소품: 청동 독(드므) 갈색 램프",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1288,81 +1288,81 @@
   "date": "2026-10-02"
  },
  "gungnae_wall_v": {
-  "hash": "4c86015c027e",
+  "hash": "140b1f0bf1b6",
   "status": "note",
-  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_v_e": {
-  "hash": "53bd8bdb6de0",
+  "hash": "c72a72becbbb",
   "status": "note",
-  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_v1": {
-  "hash": "576cf8bae83e",
+  "hash": "f929415acc12",
   "status": "note",
-  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_v1_e": {
-  "hash": "c20d824ad704",
+  "hash": "d96cbae92e79",
   "status": "note",
-  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_v2": {
-  "hash": "97ef5fa147e8",
+  "hash": "9dfdf259c9d8",
   "status": "note",
-  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_v2_e": {
-  "hash": "58d4118b7b2d",
+  "hash": "098742e58ac3",
   "status": "note",
-  "line": "위에서 본 폭 2칸 띠(윗면만 보임, 세로 벽은 옆면이 모서리에서만 보임). 1px 선 없음",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_corner_nw": {
-  "hash": "7c1cdb7d8b1e",
-  "status": "pass",
-  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "hash": "71c529c62360",
+  "status": "note",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_corner_ne": {
-  "hash": "a3d035fa884d",
-  "status": "pass",
-  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "hash": "a22305319bad",
+  "status": "note",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_corner_sw": {
-  "hash": "9eb8211b8fd9",
-  "status": "pass",
-  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "hash": "6aabdce0fb72",
+  "status": "note",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_wall_corner_se": {
-  "hash": "f9f1b9b9adb7",
-  "status": "pass",
-  "line": "성벽 윗면(걷는 길 15px)+성가퀴 톱니+앞 돌 쌓기 55px로 윗면·앞면 모두 보임, 빛 왼쪽 위",
+  "hash": "0aec794f1820",
+  "status": "note",
+  "line": "세로 성벽: 서쪽 옆면(돌 쌓기, 빛)+윗면(성가퀴 띠·걷는 길)+오른쪽 땅 그림자 폭 3칸. 가로 성벽 앞면과 같은 돌 문법, 윗면 비율은 가로 벽과 다르다(투영 차이 감수)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1424,49 +1424,49 @@
   "date": "2026-10-02"
  },
  "gungnae_bridge_h4": {
-  "hash": "d89140b65657",
-  "status": "note",
-  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "hash": "5adc850fd6a3",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_bridge_h5": {
-  "hash": "dd113152f990",
-  "status": "note",
-  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "hash": "ac01b4f5a788",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_bridge_h6": {
-  "hash": "42c6b6794ea3",
-  "status": "note",
-  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "hash": "07832abc0497",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_bridge_v4": {
-  "hash": "0fccc761b881",
-  "status": "note",
-  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "hash": "1ff2beeb15d9",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_bridge_v5": {
-  "hash": "f05da407a950",
-  "status": "note",
-  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "hash": "cea1e58dab0e",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gungnae_bridge_v6": {
-  "hash": "5574b5bab16f",
-  "status": "note",
-  "line": "가로형은 상판 윗면 3~4칸+뒤 난간 앞면+앞 돌벽, 세로형은 상판 윗면+난간 윗돌 띠. 기준(나무 도개교)과 재질이 다른 돌다리",
+  "hash": "de4628cfb475",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -1971,6 +1971,70 @@
   "hash": "5a751a122cb1",
   "status": "note",
   "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "water47g": {
+  "hash": "3dbdb0bfe7f0",
+  "status": "pass",
+  "line": "청색 섞은 물 3/4 윗면 기슭(북쪽 둑 앞면 어둡게) — 국내성용, 깊은 물 변형 8종으로 격자 무늬 방지",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "water_deep": {
+  "hash": "330cc1a0d43f",
+  "status": "pass",
+  "line": "청색 섞은 물 3/4 윗면 기슭(북쪽 둑 앞면 어둡게) — 국내성용, 깊은 물 변형 8종으로 격자 무늬 방지",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_hall_wide_8": {
+  "hash": "bc1ed422cce0",
+  "status": "pass",
+  "line": "넓은 단층 정전: 아래 큰 팔작 + 낮은 위 지붕 + 낮은 3단 월대, 위에서 본 지붕+앞 벽 기준 건물과 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_haenggak_3": {
+  "hash": "e8dd8b2f67e3",
+  "status": "pass",
+  "line": "단층 팔작 행각, 정전·전각과 같은 기와 어휘",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_gate_side_5": {
+  "hash": "097f1f47b2c2",
+  "status": "note",
+  "line": "측면 문루: 용마루 남북 맞배 지붕이 벽 위에 높이 얹히고 아래 4행은 열려 길이 지붕 밑을 지남, 처마 밑 기둥+그늘. 지붕 윗면 위주(위에서 본 모습)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "palace_gate_side_3": {
+  "hash": "f1fc084e2cf4",
+  "status": "note",
+  "line": "측면 문루: 용마루 남북 맞배 지붕이 벽 위에 높이 얹히고 아래 4행은 열려 길이 지붕 밑을 지남, 처마 밑 기둥+그늘. 지붕 윗면 위주(위에서 본 모습)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_narrow_h5": {
+  "hash": "4cede6e8ccd3",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gungnae_bridge_narrow_h6": {
+  "hash": "db2548e7ea9a",
+  "status": "pass",
+  "line": "돌다리 윗면 상판+난간+앞면 돌벽, 홍예 안은 그늘진 물색(풀 비침 없음), 상판 디더 줄 제거",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
