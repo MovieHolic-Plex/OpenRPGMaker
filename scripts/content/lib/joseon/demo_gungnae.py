@@ -158,7 +158,9 @@ def wall_ring():
         for x in range(XW + 2, GX - 1):
             Pb(H3[(x * 5 + (yb % 7)) % 3], x, yb)
         Pb('gungnae_wall_end_r', GX - 1, yb)
-        Pb('gungnae_gate_great_12', GX, yb)
+        Pb('gungnae_gate_great_12', GX, yb, None)
+        for xx in list(range(GX, GX + 4)) + list(range(GX + 8, GX + 12)):
+            BODY.add((xx, yb))
         Pb('gungnae_wall_end_l', GX + 12, yb)
         for x in range(GX + 13, XE):
             Pb(H3[(x * 5 + 1 + (yb % 7)) % 3], x, yb)
@@ -320,7 +322,10 @@ def palace():
     P('palace_wall_sw', PX0_, PY1_ - 2); P('palace_wall_se', PX1_, PY1_ - 2)
     for y in range(PY0_ + 2, PY1_ - 2):
         P('palace_wall_v', PX0_, y); P('palace_wall_v_e', PX1_, y)
-    P('palace_gate_4', 45, PY0_ - 3, 'foot'); P('palace_gate_4', 45, PY1_ - 5, 'foot')
+    for gy in (PY0_ - 3, PY1_ - 5):
+        P('palace_gate_4', 45, gy, None)
+        for xx in (45, 46, 49, 50):
+            BODY.add((xx, gy + 5))
     P('palace_hall_5', 43, 37, 'body')
     for y in range(49, 59):
         P('palace_eodo', 47, y, None)
@@ -358,7 +363,7 @@ def building(name, x, y, door=None, apron=True, solid='body', notree=True):
     d = (w // 2) if door is None else door
     DOORS.append({'x': x + d, 'y': y + h, 'piece': name})
     if notree:
-        NOTREE.append((x - 1, y, w + 2, h + 2))
+        NOTREE.append((x - 1, y + h - 1, w + 2, 4))
     return w, h
 
 
@@ -381,7 +386,7 @@ def jumak(x0, y0, ramp_front=('gn_jm_row_room_4', 'gn_jm_daemun_6'), wall='gn_mu
     P('gn_sarip_mud', x0 + 10, y0 + H_ - 1, 'foot')
     # 마당 소품: 뒤 담 쪽 장독대와 우물
     P('jars', bx + 5, by + 6); P('well', bx + 7, by + 6); P('pyeongsang', x0 + 6, by + 8, 'foot')
-    NOTREE.append((x0 - 1, y0 - 1, W_ + 2, H_ + 3))
+    NOTREE.append((x0 - 1, y0 + H_ - 2, W_ + 2, 5))
     DOORS.append({'x': x0 + 10, 'y': y0 + H_, 'piece': 'gn_jm_daemun_6'})
     DOORS.append({'x': x0 + 11, 'y': y0 + H_, 'piece': 'gn_jm_daemun_6'})
     for xx in range(x0, x0 + W_):                        # 담 앞 한 줄: 큰 맨 흙 앞마당
@@ -426,7 +431,7 @@ def fenced(name, bx, by, tag, gate_piece='gn_sarip_mud', gate_dx=None, door=None
     P(gate_piece, gx, y0 + H_ - 1, 'foot')
     for (nm, dx, dy) in extra:
         P(nm, bx + dx, by + dy)
-    NOTREE.append((x0 - 1, y0 - 1, W_ + 2, H_ + 3))
+    NOTREE.append((x0 - 1, y0 + H_ - 2, W_ + 2, 5))
     DOORS.append({'x': gx, 'y': y0 + H_, 'piece': name})
     for xx in range(x0, x0 + W_):
         if inb(xx, y0 + H_) and KG[y0 + H_][xx] is None:
@@ -446,10 +451,212 @@ P('scarecrow', 44, 19); P('scarecrow', 67, 19); P('scarecrow', 41, 73)
 for x in range(13, 27):
     KG[49][x] = 'slab' if 13 <= x <= 26 else KG[49][x]
 KG[50][13] = 'slab'; KG[50][26] = 'slab'
-for nm, x, y in (('bamboo_grove', 12, 45), ('bamboo_grove', 17, 46), ('bamboo_grove', 22, 45)):
+for nm, x, y in (('bamboo_grove', 12, 45), ('bamboo', 18, 46), ('bush_l_a', 21, 46), ('bamboo', 25, 45)):
     P(nm, x, y)
 P('stepping_stones', 15, 47); P('lantern', 20, 47); P('rocks', 25, 48); P('flower_bed', 14, 50)
 
+
+# ================================================================ 5단계: 길 이음(문 앞 → 길망) + 숲띠 + 나무 채움 + 소품
+from collections import deque
+WALKK = ('road', 'yard', 'slab', 'paving', 'bridge', 'diamond')
+
+
+def walk_ok(x, y, door=None):
+    if not inb(x, y):
+        return False
+    k = KG[y][x]
+    if k in ('water', 'wall'):
+        return False
+    if (x, y) in BODY and (x, y) != door:
+        return False
+    return True
+
+
+def network():
+    """바깥 고리 길 (0,0) 에서 길·마당·석판·다리 칸으로 이어지는 연결 성분."""
+    seen = {(0, 0)}
+    dq = deque([(0, 0)])
+    while dq:
+        x, y = dq.popleft()
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + dx, y + dy)
+            if n in seen or not inb(*n):
+                continue
+            if KG[n[1]][n[0]] in WALKK and (n not in BODY or KG[n[1]][n[0]] == 'bridge'):
+                seen.add(n); dq.append(n)
+    return seen
+
+
+def carve_lanes():
+    """네트워크에 안 닿는 문 앞 칸마다 가장 가까운 네트워크 칸까지 1칸 폭 샛길(흙)을 낸다."""
+    net = network()
+    carved = 0
+    for d in DOORS:
+        c = (d['x'], d['y'])
+        if not inb(*c):
+            continue
+        if c in net:
+            continue
+        # 문 앞 칸에서 풀·마당을 건너 net 에 닿는 최단 경로
+        prev = {c: None}
+        dq = deque([c])
+        goal = None
+        while dq and goal is None:
+            x, y = dq.popleft()
+            for dx, dy in ((0, 1), (1, 0), (-1, 0), (0, -1)):
+                n = (x + dx, y + dy)
+                if n in prev or not walk_ok(n[0], n[1]):
+                    continue
+                prev[n] = (x, y)
+                if n in net:
+                    goal = n; break
+                dq.append(n)
+        if goal is None:
+            continue
+        cur = prev[goal]
+        while cur is not None:
+            if KG[cur[1]][cur[0]] is None:
+                KG[cur[1]][cur[0]] = 'road'
+            cur = prev[cur]
+        carved += 1
+        net = network()
+    return carved
+
+
+carve_lanes()
+
+# --- 바깥 숲띠: 줄 맞춰 심은 나무(성벽 밖 6~8칸)
+ZEL = ['zelkova_a', 'zelkova_b', 'zelkova_c', 'zelkova_d', 'zelkova_e']
+PIN = ['pine_a', 'pine_b', 'pine_c', 'pine_d']
+TREEPOS = []                 # (이름, x, 발 행, w, h) — 나무·덤불만
+
+
+def Tf(name, x, yb):
+    cv = objects[name]
+    w, h = cv.w // T, cv.h // T
+    placed.append((name, x, yb + 1 - h, w, h))
+    SH(x, yb + 1 - h, w, h) if name.split('_')[0] in ('zelkova', 'pine', 'persimmon', 'willow', 'small') else None
+    items.append((yb + 1, h, x, name, cv))
+    TREEPOS.append((name, x, yb, w, h))
+
+
+_CYC = ['zelkova_a', 'pine_a', 'zelkova_b', 'pine_b', 'zelkova_c', 'pine_c', 'zelkova_d', 'pine_d', 'zelkova_e']
+
+
+def band_pick(i, j):
+    return _CYC[(i + 4 * j) % len(_CYC)]
+
+
+def forest_band():
+    # 북: 발 행 6 · 9 두 줄(엇갈림). 대문루(42..53)·망루(7..10, 85..88) 자리는 비운다.
+    for j, (yb, off) in enumerate(((6, -1), (9, 1))):
+        for i, x in enumerate(range(off, MW, 4)):
+            if 40 <= x <= 53 or (5 <= x <= 11 and yb < 15) or (84 <= x <= 90 and yb < 15):
+                continue
+            Tf(band_pick(i, j), x, yb)
+    # 남: 발 행 90(작은 감나무) · 93(큰 나무)
+    for j, (yb, off, pool) in enumerate(((93, 0, None), (90, 2, 'p'))):
+        for i, x in enumerate(range(off, MW, 4 if pool is None else 5)):
+            if 41 <= x <= 52 or (5 <= x <= 11) or (84 <= x <= 90):
+                continue
+            Tf(band_pick(i, j + 1) if pool is None else ('persimmon_a', 'persimmon_b', 'persimmon_c')[i % 3], x, yb)
+    # 서·동: 두 줄 지그재그(발 행 2칸 간격). 소문루(6..11 · 84..89) 앞 큰길 구간(발 행 49..55)은 비운다.
+    for side, xs in (('W', (2, 3)), ('E', (89, 90))):
+        for i, yb in enumerate(range(17, 87, 2)):
+            if 48 <= yb <= 56:
+                continue
+            Tf(band_pick(i, 3 if side == 'W' else 4), xs[i % 2], yb)
+
+
+forest_band()
+
+# --- 나무 채움: 풀밭마다 3~5칸당 하나(큰 나무·작은 나무·덤불 섞기, 같은 그림 6칸 안 반복 금지)
+import random as _rand
+_rng = _rand.Random(int(os.environ.get('JS_SEED', '7')))
+NONTREE_RECTS = []            # 건물류(나무 수관이 문·앞마당을 가리면 안 되는 사각형)
+for (nm, x, y, w, h) in placed:
+    if nm.split('_')[0] not in ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'rocks', 'reeds', 'jars', 'well', 'lantern', 'scarecrow', 'stepping', 'flower', 'sotdae'):
+        NONTREE_RECTS.append((x, y, w, h))
+BIG = [('zelkova_' + c, 4, 5) for c in 'abcde'] + [('pine_' + c, 4, 5) for c in 'abcd']
+MID = [('persimmon_' + c, 3, 4) for c in 'abc'] + [('small_z_a', 2, 3), ('small_z_b', 2, 3), ('small_p', 2, 3)]
+BUSH = [('bush_a', 2, 2), ('bush_b', 2, 2), ('bush_c', 2, 2), ('bush_l_a', 3, 2), ('bush_l_b', 3, 2), ('bush_s_a', 2, 1), ('bush_s_b', 2, 1)]
+OCC = set()
+for (nm, x, yb, w, h) in TREEPOS:
+    for xx in range(x, x + w):
+        for yy in range(yb - 1, yb + 1):
+            OCC.add((xx, yy))
+
+
+def near_kind(x, y, kinds, d=1):
+    return any(inb(x + i, y + j) and KG[y + j][x + i] in kinds for i in range(-d, d + 1) for j in range(-d, d + 1))
+
+
+_DIRT = ('road', 'yard', 'slab', 'paving', 'diamond', 'bridge', 'wall', 'water', 'paddy', 'field')
+
+
+def tree_ok(name, w, h, x, yb, dist):
+    y = yb + 1 - h
+    if x < IN_X0 - 1 or x + w > IN_X1 + 2 or yb < IN_Y0 or yb > IN_Y1:
+        return False
+    for xx in range(x, x + w):                              # 발 밑은 풀·건물 밖
+        if not inb(xx, yb) or KG[yb][xx] is not None or (xx, yb) in BODY:
+            return False
+        for (nx, ny, nw, nh) in NOTREE:
+            if nx <= xx < nx + nw and ny <= yb < ny + nh:
+                return False
+    for yy in range(max(0, y), yb):                         # 수관 구역이 길·물·다리를 가리지 않는다
+        for xx in range(x, x + w):
+            if inb(xx, yy) and KG[yy][xx] in _DIRT:
+                return False
+    for yy in (yb, ):                                       # 발 옆 한 칸이 길이면 뿌리가 길에 닿는다 → 큰 나무만 금지
+        if h >= 4 and any(inb(xx, yy) and KG[yy][xx] in ('road', 'yard', 'slab', 'diamond') for xx in (x - 1, x + w)):
+            return False
+    for (rx, ry, rw, rh) in NONTREE_RECTS:                 # 수관이 건물을 가리는 자리 금지(건물 뒤쪽 발 행은 허용)
+        if x < rx + rw and rx < x + w and y < ry + rh and ry < yb + 1:
+            if yb >= ry + 2:
+                return False
+    for xx in range(x - dist, x + w + dist):
+        for yy in range(yb - dist, yb + dist + 1):
+            if (xx, yy) in OCC:
+                return False
+    if not name.startswith('bush'):
+        if any(n == name and abs(x - tx) <= 6 and abs(yb - ty) <= 6 for (n, tx, ty, _, _) in TREEPOS):
+            return False
+    return True
+
+
+def fill_trees(target_dist=2, tries=1, weights=(0.45, 0.33, 0.22)):
+    cells = [(x, y) for y in range(IN_Y0, IN_Y1 + 1) for x in range(IN_X0 - 1, IN_X1 + 2) if KG[y][x] is None]
+    for _ in range(tries):
+        _rng.shuffle(cells)
+        for (cx, cy) in cells:
+            if KG[cy][cx] is not None or (cx, cy) in OCC:
+                continue
+            order = _rng.choices([BIG, MID, BUSH], weights=weights, k=3)
+            seen_p = []
+            for pool in order:
+                if pool in seen_p:
+                    continue
+                seen_p.append(pool)
+                cand = list(pool); _rng.shuffle(cand)
+                ok = False
+                for name, w, h in cand[:4]:
+                    x = cx - w // 2
+                    if tree_ok(name, w, h, x, cy, target_dist if not name.startswith('bush') else 1):
+                        Tf(name, x, cy)
+                        for xx in range(x, x + w):
+                            for yy in range(cy - 1, cy + 1):
+                                OCC.add((xx, yy))
+                        ok = True
+                        break
+                if ok:
+                    break
+
+
+_n0 = len(TREEPOS)
+fill_trees(2, 3)
+fill_trees(1, 2)
+print('채움 나무', len(TREEPOS) - _n0)
 # ================================================================ ==== PIPELINE (맨 아래 고정) ====
 def finish(tag='stage'):
     """바닥 칸 번호 계산 → 물체 층 합성 → 시트 재조립 → 게이트 → 파일. 단계 확인용으로 tag 이름의 미리보기도 /tmp 에 낸다."""
@@ -543,6 +750,137 @@ def crops(direct, prefix='/tmp/vqa20/gn_', scale=3):
         c.resize((c.width * scale, c.height * scale), Image.NEAREST).save(prefix + nm + '.png')
 
 
-if __name__ == '__main__':
+def _people_filter(people):
+    bodyf = [(x, y, w, h) for (nm, x, y, w, h) in placed if nm.split('_')[0] not in ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'rocks', 'reeds', 'stepping', 'flower', 'jars', 'lantern', 'scarecrow')]
+    out = []
+    for p in people:
+        x, y = p[0], p[1]
+        if not inb(x, y) or KG[y][x] not in ('road', 'yard', 'slab', 'paving', 'diamond'):
+            print('사람 자리 거절(길 아님):', p); continue
+        if any(bx <= x < bx + bw and by + bh // 3 <= y < by + bh for (bx, by, bw, bh) in bodyf):
+            print('사람 자리 거절(건물 몸체):', p); continue
+        out.append(p)
+    return out
+
+
+def bake():
     gr, OBJ, direct = finish('s1')
-    Image.fromarray(direct, 'RGBA').resize((MW * 4, MH * 4), Image.NEAREST).save('/tmp/vqa20/gn_s1_small.png')
+    # ---- 지도 게이트
+    import mapgate as _mg
+    cvD = Cv(MW * T, MH * T); cvD.a = direct
+    cvO = Cv(MW * T, MH * T); cvO.a = OBJ
+    mf, mrep = _mg.check(placed, cvD, cvO)
+    print('지도 게이트', json.dumps(mrep, ensure_ascii=False))
+    if mf:
+        print('지도 게이트 FAIL:\n  ' + '\n  '.join(mf))
+        if not os.environ.get('JS_FORCE'):
+            sys.exit(1)
+    # ---- 시트: 지형 + 쓴 조각만
+    grid = {}
+    for i, c in enumerate(tiles):
+        grid[(i % COLS, i // COLS)] = c.a
+    rows_used = (len(tiles) + COLS - 1) // COLS
+    cur_x, cur_y, row_h = 0, rows_used, 0
+    used = []
+    for (nm, x, y, w, h) in placed:
+        if nm not in used:
+            used.append(nm)
+    for name in used:
+        cv = objects[name]
+        w, h = cv.w // T, cv.h // T
+        if cur_x + w > COLS:
+            cur_x, cur_y, row_h = 0, cur_y + row_h, 0
+        ids = []
+        for ty in range(h):
+            r = []
+            for tx in range(w):
+                grid[(cur_x + tx, cur_y + ty)] = cv.a[ty * T:(ty + 1) * T, tx * T:(tx + 1) * T].copy()
+                r.append((cur_y + ty) * COLS + cur_x + tx)
+            ids.append(r)
+        pieces[name] = {'id': ids[0][0], 'w': w, 'h': h, 'tiles': ids}
+        cur_x += w
+        row_h = max(row_h, h)
+    sheet_rows = cur_y + row_h
+    lookup = {}
+    for (cx, cy), a in grid.items():
+        if a[:, :, 3].max() > 0:
+            lookup.setdefault(a.tobytes(), cy * COLS + cx)
+    extra = []
+    obj_ids = [[-1] * MW for _ in range(MH)]
+    for y in range(MH):
+        for x in range(MW):
+            sub = OBJ[y * T:(y + 1) * T, x * T:(x + 1) * T]
+            if sub[:, :, 3].max() == 0:
+                continue
+            key = sub.tobytes()
+            if key not in lookup:
+                extra.append(sub.copy())
+                lookup[key] = -2 - len(extra)
+            obj_ids[y][x] = lookup[key]
+    base = sheet_rows * COLS
+    for k, a in enumerate(extra):
+        grid[((base + k) % COLS, (base + k) // COLS)] = a
+    for y in range(MH):
+        for x in range(MW):
+            if obj_ids[y][x] <= -3:
+                obj_ids[y][x] = base + (-obj_ids[y][x] - 3)
+    if extra:
+        sheet_rows = (base + len(extra) + COLS - 1) // COLS
+    SHEET = np.zeros((sheet_rows * T, COLS * T, 4), np.uint8)
+    for (cx, cy), a in grid.items():
+        SHEET[cy * T:(cy + 1) * T, cx * T:(cx + 1) * T] = a
+    # ---- 시트 칸 번호만으로 재조립
+    def tile_by_id(i):
+        return grid[(i % COLS, i // COLS)]
+    re = np.zeros((MH * T, MW * T, 4), np.uint8)
+    for y in range(MH):
+        for x in range(MW):
+            re[y * T:(y + 1) * T, x * T:(x + 1) * T] = TARR[gr[y][x]]
+    for y in range(MH):
+        for x in range(MW):
+            if obj_ids[y][x] >= 0:
+                t = tile_by_id(obj_ids[y][x])
+                d = re[y * T:(y + 1) * T, x * T:(x + 1) * T]
+                a = t[:, :, 3:4].astype(np.float32) / 255.0
+                full = t[:, :, 3] == 255
+                blend = (d[:, :, :3] * (1 - a) + t[:, :, :3] * a).astype(np.uint8)
+                d[:, :, :3] = np.where(full[:, :, None], t[:, :, :3], np.where((t[:, :, 3] > 0)[:, :, None], blend, d[:, :, :3]))
+                d[:, :, 3] = np.maximum(d[:, :, 3], t[:, :, 3])
+    diff = int((direct != re).any(axis=2).sum())
+    # ---- 문 → 길망 도달(BFS)
+    net = network()
+    reach = [d for d in DOORS if (d['x'], d['y']) in net]
+    # ---- 파일
+    os.makedirs(OUT, exist_ok=True)
+    import people as _pp
+    ppl = _people_filter(PEOPLE_LIST)
+    Image.fromarray(direct, 'RGBA').save(os.path.join(OUT, 'joseon-gungnae-map.png'))
+    _pp.overlay(Image.fromarray(direct, 'RGBA'), ppl).save(os.path.join(OUT, 'joseon-gungnae-map-people.png'))
+    Image.fromarray(SHEET, 'RGBA').save(os.path.join(OUT, 'joseon-gungnae-chipset.png'))
+    Image.fromarray(re, 'RGBA').save(os.path.join(OUT, 'joseon-gungnae-map-from-sheet.png'))
+    json.dump({'tile': T, 'cols': COLS, 'rows': sheet_rows, 'tileCount': len(grid), 'pieces': pieces,
+               'overlapTiles': {'start': base, 'count': len(extra)}}, open(os.path.join(OUT, 'pieces.json'), 'w'), ensure_ascii=False, indent=1)
+    json.dump({'width': MW, 'height': MH, 'ground': gr, 'object': obj_ids}, open(os.path.join(OUT, 'map.json'), 'w'))
+    KIND = {None: 'grass', 'wall': 'wall', 'diamond': 'yard'}
+    gk = [[KIND.get(KG[y][x], KG[y][x]) for x in range(MW)] for y in range(MH)]
+    json.dump({'width': MW, 'height': MH,
+               'placed': [{'name': n, 'x': x, 'y': y, 'w': w, 'h': h} for (n, x, y, w, h) in placed],
+               'groundKind': gk,
+               'doors': [{'x': d['x'], 'y': d['y'], 'piece': d['piece']} for d in DOORS],
+               'people': [{'x': p[0], 'y': p[1], 'char': p[2], 'dir': ['up', 'right', 'down', 'left'][p[3]], 'frame': p[4]} for p in ppl]},
+              open(os.path.join(OUT, 'extra.json'), 'w'), ensure_ascii=False)
+    colors = set(map(tuple, SHEET.reshape(-1, 4)[SHEET.reshape(-1, 4)[:, 3] == 255][:, :3]))
+    bn = [p for p in placed if p[0].split('_')[0] in ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort', 'gn', 'tower', 'palace', 'gungnae') and not any(k in p[0] for k in ('wall', 'bridge', 'sarip', 'samun', 'pine', 'pond', 'lantern', 'haetae', 'deumeu', 'censer', 'eodo', 'jm_', 'mud', 'stone_'))]
+    print(json.dumps({'sheet': f'{COLS}x{sheet_rows} tiles', 'pixelDiffMapVsSheet': diff, 'overlapTiles': len(extra), 'uniqueOpaqueColors': len(colors),
+                      'doors': len(DOORS), 'doorsReachable': len(reach), 'placed': len(placed), 'people': len(ppl)}, ensure_ascii=False))
+    for d in DOORS:
+        if (d['x'], d['y']) not in net:
+            print('길 안 닿는 문:', d)
+    crops(direct)
+    Image.fromarray(direct, 'RGBA').resize((MW * 16 // 3, MH * 16 // 3), Image.LANCZOS).save('/tmp/vqa20/gn_full.png')
+    return diff
+
+
+PEOPLE_LIST = []
+if __name__ == '__main__':
+    bake()
