@@ -1060,5 +1060,281 @@
    "forum.temple"
   ],
   "kit": "blocks.house('pv',5,…,dan)"
+ },
+ "palace_hall_5": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_7",
+   "giwa_house_6",
+   "gate_4"
+  ],
+  "kit": "palace.tier('gw',…)x2 + wolde"
+ },
+ "palace_hall_7": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_7",
+   "giwa_house_6",
+   "gate_4"
+  ],
+  "kit": "palace.tier('gw',…)x2 + wolde"
+ },
+ "palace_hall_5g": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_7",
+   "giwa_house_6",
+   "gate_4"
+  ],
+  "kit": "palace.tier('gw',…)x2 + wolde"
+ },
+ "palace_jeongak_a": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_5",
+   "gate_4",
+   "h104_0"
+  ],
+  "kit": "palace.tier(blk…)+plinth"
+ },
+ "palace_jeongak_b": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_5",
+   "gate_4",
+   "h104_0"
+  ],
+  "kit": "palace.tier(blk…)+plinth"
+ },
+ "palace_jeongak_c": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_5",
+   "gate_4",
+   "h104_0"
+  ],
+  "kit": "palace.tier(blk…)+plinth"
+ },
+ "palace_haengnak_6": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_5",
+   "gate_4",
+   "h104_0"
+  ],
+  "kit": "palace.haengnak(flat roof blocks + blk o)"
+ },
+ "palace_haengnak_mid_4": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "gwanah_5",
+   "gate_4",
+   "h104_0"
+  ],
+  "kit": "palace.haengnak(flat roof blocks + blk o)"
+ },
+ "palace_gate_4": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_5",
+   "gate_4",
+   "h104_0"
+  ],
+  "kit": "palace.tier(blk…)+plinth/court"
+ },
+ "tower_sulsa_5": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_7",
+   "giwa_house_6",
+   "gate_4"
+  ],
+  "kit": "palace.tower(tier x3)"
+ },
+ "palace_wall_h": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "palace_wall_h1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "palace_wall_h2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "palace_wall_v": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ],
+  "thin_ok": "위에서 본 세로 담의 덮개 띠"
+ },
+ "palace_wall_v_e": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ],
+  "thin_ok": "위에서 본 세로 담의 덮개 띠"
+ },
+ "palace_wall_nw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "palace_wall_ne": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "palace_wall_sw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "palace_wall_se": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "palace_pond_4": {
+  "cls": "prop",
+  "refs": [
+   "forum.fountain",
+   "planter_round",
+   "castle.drawbridge"
+  ]
+ },
+ "palace_pond_6": {
+  "cls": "prop",
+  "refs": [
+   "forum.fountain",
+   "planter_round",
+   "castle.drawbridge"
+  ]
+ },
+ "palace_eodo": {
+  "cls": "prop",
+  "refs": [
+   "forum.fountain",
+   "planter_round",
+   "castle.drawbridge"
+  ]
+ },
+ "palace_eodo_end": {
+  "cls": "prop",
+  "refs": [
+   "forum.fountain",
+   "planter_round",
+   "castle.drawbridge"
+  ]
+ },
+ "palace_pine_a": {
+  "cls": "tree",
+  "refs": [
+   "pine_a",
+   "zelkova_a",
+   "planter_round"
+  ]
+ },
+ "palace_pine_b": {
+  "cls": "tree",
+  "refs": [
+   "pine_a",
+   "zelkova_a",
+   "planter_round"
+  ]
+ },
+ "palace_pine_c": {
+  "cls": "tree",
+  "refs": [
+   "pine_a",
+   "zelkova_a",
+   "planter_round"
+  ]
+ },
+ "palace_lantern": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "lamp_crook",
+   "column_monument"
+  ],
+  "front_only": true
+ },
+ "palace_haetae": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "lamp_crook",
+   "column_monument"
+  ],
+  "front_only": true
+ },
+ "palace_censer": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "lamp_crook",
+   "column_monument"
+  ],
+  "front_only": true
+ },
+ "palace_deumeu": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "lamp_crook",
+   "column_monument"
+  ],
+  "front_only": true
+ },
+ "tower_yesik_7": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "gwanah_7",
+   "giwa_house_6",
+   "gate_4"
+  ],
+  "kit": "palace.tower(tier x3)"
  }
 }

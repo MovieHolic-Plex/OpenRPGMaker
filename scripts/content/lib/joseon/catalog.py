@@ -151,3 +151,21 @@ def objects():
         'stele': VPR.stele(),
         'stove_pot': VPR.stove_pot(),
     }
+
+
+# --- 국내성 왕궁 구역(gungnae_palace.py) — 맨 끝에 덧붙임
+import gungnae_palace as _GP
+_objects_before_palace = objects
+_terrain_before_palace = terrain
+
+
+def objects():
+    d = _objects_before_palace()
+    d.update(_GP.objects())
+    return d
+
+
+def terrain():
+    d = _terrain_before_palace()
+    d.update(_GP.terrain())
+    return d
