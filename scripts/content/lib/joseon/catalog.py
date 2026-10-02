@@ -1,5 +1,5 @@
 """조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
-import structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
+import props5 as P5, structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
 _L = None
 
 
@@ -78,7 +78,7 @@ def objects():
         'wondumak': ST.wondumak(),
         'nugak': ST.nugak(),
         'laundry': P4.laundry(),
-        'flower_bed': P3.flower_bed(),
+        'flower_bed': P5.flower_bed(),
         'bank_stairs': P3.bank_stairs(),
         'small_z_a': TR.small_tree('z', 0),
         'small_z_b': TR.small_tree('z', 1),
@@ -86,19 +86,19 @@ def objects():
         'stone_bank': P3.stone_bank(),
         'reeds': P3.reeds(),
         'rocks': P3.rocks(),
-        'fence_h': P4.fence_h(),
-        'haystack': P3.haystack(),
-        'well': Q.well(),
+        'fence_h': P5.fence_h(),
+        'haystack': P5.haystack(),
+        'well': P5.well(),
         'bridge': Q.bridge(),
-        'jars': Q.jars(),
-        'bench': Q.bench(),
-        'mat_peppers': Q.mat_peppers(),
+        'jars': P5.jars(),
+        'bench': P5.bench(),
+        'mat_peppers': P5.mat_peppers(),
         'jangseung_m': P4.jangseung(False),
         'jangseung_f': P4.jangseung(True),
         'sotdae': P4.sotdae(),
         'lantern': P4.lantern(),
-        'wall_h': P3.wall_h2(0),
-        'wall_v': P3.wall_v2(),
-        'wall_corner_l': P3.wall_corner2('L'),
-        'wall_corner_r': P3.wall_corner2('R'),
+        'wall_h': P5.wall_h2(0),
+        'wall_v': P5.wall_v2(),
+        'wall_corner_l': P5.wall_corner2('L'),
+        'wall_corner_r': P5.wall_corner2('R'),
     }
