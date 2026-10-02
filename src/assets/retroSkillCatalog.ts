@@ -1,3 +1,4 @@
+import { BUNDLED_BATTLE_MOTIONS } from "@/assets/battleMotionCatalog";
 // retro2003 직업 스킬 **공용 조회 한 곳** — 기존 12직업 계약(retroClassSkills.ts)과 2차 로스터 묶음(retroRosterSkills/*)을 합친다.
 // 런타임 재생기·편집기 스킬 탭·기본 DB 생성기가 모두 여기서 읽는다. 계약 파일은 읽기 전용이라 합치는 자리를 따로 둔다.
 import { RETRO_CLASS_SKILLS, retroClassSkill as baseClassSkill, type RetroClassSkill, type RetroFxAnchor, type RetroFxLayer, type RetroSkillMotion } from "@/assets/retroClassSkills";
@@ -128,6 +129,8 @@ export function resolveSkillChoreography(
     if (monsterSkill) return want === "class" ? undefined : { origin: "default", id: monsterSkill.id, kind: "monster", motion: monsterSkill.motion, skill: monsterSkill };
     return undefined;
   };
+  const bundled=BUNDLED_BATTLE_MOTIONS.find(r=>r.id===ref.retroChoreographyId || !ref.retroChoreographyId && `skill_motion_${r.movement!.pattern}`===ref.id);
+  if(bundled){const kind=want??"class",skill=synthesizeRecord(bundled,kind);return {origin:"default",id:bundled.id,kind,motion:skill.motion,skill,record:bundled};}
   const own = contract(ref.id);
   // A request for the other kind cannot replace an existing own contract with a borrowed one.
   if (retroChoreographyKind(ref.id)) return own;
@@ -250,7 +253,8 @@ export function retroChoreographyEntries(): readonly RetroChoreographyEntry[] {
       anchors: [...new Set(skill.layers.map((layer) => layer.anchor))], layerSummary: summarizeLayers(skill.layers), layerKeys,
     };
   });
-  return entryCache = [...classEntries, ...monsterEntries];
+  const motionEntries=BUNDLED_BATTLE_MOTIONS.map((r):RetroChoreographyEntry=>({origin:"default",id:r.id,name:r.name,kind:"class",family:"base",motion:r.motion,description:r.description??"",anchors:r.layers.map(l=>l.anchor),layerKeys:r.layers.map(l=>l.sheet),layerSummary:r.layers.map(l=>`${l.anchor}:${l.sheet}`).join(" → ")}));
+  return entryCache = [...motionEntries,...classEntries, ...monsterEntries];
 }
 
 export interface RetroChoreographyFilter {

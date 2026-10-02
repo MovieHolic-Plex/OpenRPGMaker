@@ -1,3 +1,4 @@
+import { normalizeCharacterMotion, type CharacterMotionSettings } from "@/battle/characterMotion";
 import { normalizeLoadoutSlots } from "@/project/skillLoadout";
 import type {
   ActorCritical,
@@ -81,6 +82,7 @@ type ActorResourceDefaults = {
 };
 
 type LegacyActorRecord = {
+  readonly battleMotion?: CharacterMotionSettings;
   readonly appearanceId?: string;
   readonly id: string;
   readonly name: string;
@@ -150,6 +152,7 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
   const characterResourceId = cleanOptionalId(actor.characterResourceId) ?? defaultActorCharacterResourceId(actor);
   return {
     id: actor.id,
+    ...(normalizeCharacterMotion(actor.battleMotion) ? {battleMotion:normalizeCharacterMotion(actor.battleMotion)} : {}),
     ...(actor.appearanceId !== undefined ? { appearanceId: actor.appearanceId } : {}),
     name: actor.name,
     nickname: actor.nickname ?? "None",
@@ -228,6 +231,7 @@ export function normalizeActorPatch(patch: Partial<ActorRecord>): Partial<ActorR
   if (patch.critical !== undefined) normalized.critical = normalizeCritical(patch.critical);
   if (patch.parameterCurves !== undefined) normalized.parameterCurves = normalizeParameterCurves(patch.parameterCurves);
   if (patch.expCurve !== undefined) normalized.expCurve = normalizeExpCurve(patch.expCurve);
+  if ("battleMotion" in patch) normalized.battleMotion = normalizeCharacterMotion(patch.battleMotion);
   if (patch.initialEquipment !== undefined) normalized.initialEquipment = normalizeInitialEquipment(patch.initialEquipment);
   if (patch.options !== undefined) normalized.options = normalizeOptions(patch.options);
   if (patch.learnedSkills !== undefined) normalized.learnedSkills = normalizeLearnedSkills(patch.learnedSkills);

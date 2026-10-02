@@ -1,5 +1,11 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 캐릭터별 전투 동작 (2026-10-03)
+
+공용 배우 136종의 11계열 프로필, 현재 직업/무기 반영, 편집 설정과 시트 접촉점 277개는
+[캐릭터 전투 동작](character-battle-motion.md)을 따른다. 공용 연출과 통상 공격이 같은 프로필을 읽으며
+기존 마법 영창과 직접 저작 경로를 보존한다.
+
 ## 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
 
 - 등록 스킨은 `retro2003`·`pokemon` 둘(`BattleSkinId`·`BattleUiStyle` 도 둘). 창 색만 다르던 측면 여섯
@@ -417,6 +423,10 @@
   배지는 스냅샷이 아니라 **재생된 타임라인** 기준 — `stateView` 가 아직 재생 안 한 stateAdded/Removed 를 되감아 「걸렸다!」 비트에 붙는다.
 
 ## 타격감 층 (2026-09-25)
+
+**2026-10-02 측면 전투 수정:** 도트 계약의 타이머와 WAAPI까지 멈추는 표시 시계, 실제 검 포즈/착탄음 정렬,
+픽셀 접촉 섬광/반동/숫자, 도트 CSS의 정지 우선순위는 [battle-impact-contact.md](battle-impact-contact.md)가 정본이다.
+아래의 "CSS만으로 진짜 정지" 및 recover에서 110ms를 빼는 옛 계약은 도트 재생기에는 적용되지 않는다.
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:
 히트스톱은 무대 1.2% 맥동뿐 아무것도 멈추지 않았고, 30% 미만 피해는 흔들림 0px, 필드 플래시는
@@ -1614,3 +1624,8 @@ Completed runtime timelines persist into bounded session reports accessible from
 ## 공용 몬스터 옛 그림 폐기 (2026-10-02)
 
 [현재 공용 140종 · 343장 폐기 · ID 호환성 · 실제 RM2003 스킬 비교](native-enemy-retirement.md). 새 자산을 카탈로그와 초상 생성기 양쪽에 등록하고, 퇴역한 폴백/영상 idle을 되살리지 않는다.
+
+### 공용 이동 설계·32종 전투 기믹 (2026-10-02)
+
+기존 도트 연출 레코드에 `movement`, 스킬에 `battleGimmick`을 추가했다. 미리보기·실전의 순수 이동 계산,
+배우별 경로, 전투 장부와 조건 분기, 공용 기본 데이터와 편집/조수 저작은 [battle-motion-programs.md](battle-motion-programs.md)를 따른다.

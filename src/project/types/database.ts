@@ -1,3 +1,4 @@
+import type { CharacterMotionSettings, CharacterMotionStyle } from "@/battle/characterMotion";
 import type {
   ActorId,
   BattleAnimationId,
@@ -34,6 +35,8 @@ export interface CharacterAppearanceRecord {
 }
 
 export interface ActorRecord {
+  /** Optional overrides over the bundled class/body motion. */
+  battleMotion?: CharacterMotionSettings;
   id: ActorId;
   name: string;
   nickname: string;
@@ -238,6 +241,8 @@ export interface ClassEquipmentPermissions {
 }
 
 export interface SkillRecord {
+  /** Native turn battle gimmick. Omitted keeps the original skill rules. */
+  battleGimmick?: import("@/battle/battleGimmickRules").BattleGimmick;
   id: SkillId;
   name: string;
   scope: "self" | "ally" | "allAllies" | "enemy" | "allEnemies";
@@ -500,6 +505,8 @@ export interface ItemEquipmentEffectFlags {
 }
 
 export interface EquipmentRecord {
+  /** Explicit battle movement family; does not replace a baked sprite weapon. */
+  battleMotionStyle?: CharacterMotionStyle;
   id: EquipmentId;
   name: string;
   imageResourceId?: string;
@@ -1225,6 +1232,8 @@ export interface SkillChoreographyLayer {
 
 /** 프로젝트가 소유하는 스킬 도트 연출. 기본 연출(계약 카탈로그 약 1,130개)은 복사하지 않고 읽기 전용으로 남는다. id 는 chor_<slug>. */
 export interface SkillChoreographyRecord {
+  /** Shared motion program used in preview and exported player. */
+  movement?: import("@/battle/battleMotionProgram").BattleMotionProgram;
   id: string;
   name: string;
   description?: string;

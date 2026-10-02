@@ -1,0 +1,11 @@
+{
+  "customPathReload": true,
+  "acceleration": 2,
+  "aiTool": true,
+  "monsterPreview": {
+    "program": "sky-crush",
+    "caster": "generated-enemy-slime-01"
+  },
+  "errors": [],
+  "canonicalSave": false
+}
