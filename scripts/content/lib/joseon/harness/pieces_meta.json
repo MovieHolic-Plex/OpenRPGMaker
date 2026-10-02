@@ -2518,5 +2518,56 @@
    "gate_4"
   ],
   "kit": "palace.palace_hall_wide(14) — 정전 폭 가변 인자(bays=14, 18칸). palace.tier('gw',…) 아래 팔작 + 위 낮은 지붕 + wolde3"
+ },
+ "bamboo_b": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bamboo_c": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bamboo_d": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "bamboo_grove_b": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ],
+  "thin_ok": "대 줄기 폭 2~3px"
+ },
+ "bamboo_grove_c": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ],
+  "thin_ok": "대 줄기 폭 2~3px"
+ },
+ "bamboo_grove_d": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ],
+  "thin_ok": "대 줄기 폭 2~3px"
  }
 }

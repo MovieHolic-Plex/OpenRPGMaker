@@ -2254,5 +2254,53 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-03"
+ },
+ "bamboo_b": {
+  "hash": "8ef98d8a7a0e",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_c": {
+  "hash": "13ff631828b5",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_d": {
+  "hash": "6b3b53a0495c",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_grove_b": {
+  "hash": "9c9f03bd8c25",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_grove_c": {
+  "hash": "ce3b0e048fd5",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_grove_d": {
+  "hash": "655313caa913",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
  }
 }

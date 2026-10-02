@@ -884,9 +884,9 @@ for _cx, _cy in ((73, 45), (157, 166)):
 
 # --- 구획 건물: (이름, x, 바닥 행(원작), 문 칸 번호, 허용 이동 반경)
 for (nm, x, yb, dr, R) in (
-        ('gn_shop_cloth', 18, 15, 4, 6), ('gwanah_5', 84, 50, 3, 9), ('pavilion_5', 60, 64, 3, 6), ('giwa_house_5b', 28, 60, 3, 6),
-        ('gn_shop_smithy', 50, 114, 4, 8), ('gn_shop_butcher', 34, 127, 3, 8), ('giwa_house_4', 64, 137, 3, 6), ('gn_shop_cloth', 67, 152, 4, 5),
-        ('gn_shop_armory', 52, 160, 6, 4), ('gn_u_giwa_7', 63, 181, 4, 6), ('giwa_house_3', 60, 190, 2, 14),
+        ('gn_shop_cloth', 30, 24, 4, 22), ('gwanah_5', 84, 50, 3, 9), ('pavilion_5', 60, 64, 3, 6), ('giwa_house_5b', 28, 60, 3, 6),
+        ('gn_shop_smithy', 50, 114, 4, 8), ('gn_shop_butcher', 34, 127, 3, 8), ('giwa_house_4', 64, 137, 3, 6), ('gn_shop_cloth', 78, 152, 4, 4),
+        ('gn_shop_armory', 66, 160, 6, 5), ('gn_u_giwa_7', 63, 181, 4, 6), ('giwa_house_3', 60, 190, 2, 14),
         ('giwa_haengnang_7', 108, 166, 4, 6), ('gwanah_7', 132, 150, 4, 4), ('tower_yesik_7', 131, 180, 5, 4), ('giwa_house_3b', 155, 160, 2, 6),
         ('giwa_house_5', 176, 190, 3, 14), ('giwa_house_4w', 114, 190, 3, 14),
         ('thatch_house_4k', 14, 189, 3, 6), ('thatch_hut_2', 20, 190, 1, 6), ('thatch_house_3', 23, 186, 2, 6)):
@@ -1131,7 +1131,7 @@ def tree_row(x, ys, names, jit=0, seed=0):
         w, h = objects[nm].w // T, objects[nm].h // T
         xx = x + (rg.randint(-jit, jit) if jit else 0)
         yy = yb + (rg.randint(0, 1) if jit else 0)
-        if tree_ok(nm, w, h, xx, yy, 0, 8, 4, False, 3):
+        if tree_ok(nm, w, h, xx, yy, 0, 8, 4, False, 6):
             Tf(nm, xx, yy)
 
 
@@ -1142,7 +1142,7 @@ def tree_row_h(y, xs, names, jit=0, seed=0):
         w, h = objects[nm].w // T, objects[nm].h // T
         xx = x + (rg.randint(-jit, jit) if jit else 0)
         yy = y + (rg.randint(0, 1) if jit else 0)
-        if tree_ok(nm, w, h, xx, yy, 0, 8, 4, False, 3):
+        if tree_ok(nm, w, h, xx, yy, 0, 8, 4, False, 6):
             Tf(nm, xx, yy)
 
 
@@ -1156,7 +1156,19 @@ build_masks()
 _gard = [('bamboo_grove', 39, 42), ('bamboo_grove', 39, 47), ('bamboo_grove', 51, 42), ('bamboo_grove', 51, 47), ('bamboo_grove', 43 - 4, 51),
          ('bamboo_grove', 55, 45), ('bamboo', 41, 39), ('bamboo', 49, 39), ('bamboo', 37, 44), ('bamboo', 53, 40), ('bamboo', 48, 51), ('bamboo', 42, 45),
          ('bamboo', 49, 45), ('bamboo_grove', 35, 44), ('bamboo', 55, 50), ('bamboo', 38, 50)]
+def _bamboo_name(base, x, yb):
+    """같은 그림이 6칸 안에 겹치지 않는 변형(base, _b, _c, _d)을 고른다(지도 게이트 M4)."""
+    for suf in ('', '_b', '_c', '_d'):
+        nm = base + suf
+        if not any(n == nm and abs(tx - x) <= 6 and abs(ty - yb) <= 6 for (n, tx, ty, _, _) in TREEPOS):
+            return nm
+    return None
+
+
 for (_nm, _x, _yb) in _gard:
+    _nm = _bamboo_name(_nm, _x, _yb)
+    if _nm is None:
+        continue
     _w, _h = objects[_nm].w // T, objects[_nm].h // T
     if all(inb(_xx, _yb) and FREE[_yb, _xx] and not OCC[_yb, _xx] for _xx in range(_x, _x + _w)):
         Tf(_nm, _x, _yb)
@@ -1437,21 +1449,22 @@ def _people_filter(people):
     for p in people:
         x, y = p[0], p[1]
         if not inb(x, y) or KG[y][x] not in ('road', 'yard', 'slab', 'paving', 'diamond'):
-            print('사람 자리 거절(길 아님):', p); continue
-        if any(bx <= x < bx + bw and by + bh // 3 <= y < by + bh for (bx, by, bw, bh) in bodyf):
-            print('사람 자리 거절(건물 몸체):', p); continue
+            continue
+        if any(bx <= x < bx + bw and by <= y < by + bh for (bx, by, bw, bh) in bodyf):
+            continue
         if any(nm.startswith(('gungnae_gate', 'palace_gate')) and bx <= x < bx + bw and by <= y < by + bh - 3 for (nm, bx, by, bw, bh) in placed):
-            print('사람 자리 거절(문루 지붕):', p); continue
+            continue
         _wk = lambda xx, yy: inb(xx, yy) and KG[yy][xx] in ('road', 'yard', 'slab', 'paving', 'diamond', 'bridge')
         if (_wk(x - 1, y) and _wk(x + 1, y) and not _wk(x, y - 1) and not _wk(x, y + 1)) or (_wk(x, y - 1) and _wk(x, y + 1) and not _wk(x - 1, y) and not _wk(x + 1, y)):
-            print('사람 자리 거절(좁은 길):', p); continue
+            continue
         if any(OCC[yy, xx] for yy in (y,) for xx in (x,)):
-            print('사람 자리 거절(소품 위):', p); continue
+            continue
         out.append(p)
     return out
 
 
 def make_people(n_target=40, seed=5):
+    # 후보를 먼저 거르고(_people_filter) 목표 수를 채운다 — 거절된 자리가 목표를 깎지 않게.
     rg = random.Random(seed)
     net = network()
     doorc = {(d['x'], d['y']) for d in DOORS}
@@ -1474,20 +1487,22 @@ def make_people(n_target=40, seed=5):
                 cand.append((1, x, y, rg.choice((UP, FRONT, LEFT, RIGHT))))
             elif k == 'slab' and (x in (96, 97, 102, 103) or y in (97, 98, 101, 102)) and (x + y) % 7 == 0:
                 cand.append((2, x, y, rg.choice((UP, FRONT))))
-            elif k == 'yard' and (x * 3 + y) % 11 == 0:
+            elif k == 'yard' and (x * 3 + y) % 7 == 0:
                 cand.append((3, x, y, rg.choice((UP, FRONT, LEFT, RIGHT))))
-            elif k == 'road' and (x * 7 + y * 3) % 23 == 0 and 14 <= x <= 186 and 18 <= y <= 196:
+            elif k == 'road' and (x * 7 + y * 3) % 9 == 0 and 14 <= x <= 186 and 18 <= y <= 196:
                 cand.append((4, x, y, rg.choice((UP, FRONT))))
     cand.sort(key=lambda c: (c[0], rg.random()))
     chosen = []
     for (_, x, y, d) in cand:
         if len(chosen) >= n_target:
             break
-        dmin = 5 if _ == 0 else 11
+        dmin = 5 if _ == 0 else 9
         if any(abs(x - c[0]) + abs(y - c[1]) < dmin for c in chosen):
             continue
-        chosen.append((x, y, rg.randrange(8), d, rg.randrange(3)))
-    return _people_filter(chosen)
+        q = _people_filter([(x, y, rg.randrange(8), d, rg.randrange(3))])
+        if q:
+            chosen.append(q[0])
+    return chosen
 
 
 PEOPLE_LIST = make_people()
