@@ -6,7 +6,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
-import { BATTLE_SKINS, listActiveBattleSkinIds, listBattleSkinIds } from "@/battle/skins/registry";
+import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { applyBattleMethod } from "@/project/battleMethod";
 import {
   BATTLE_LOOK_COMMAND_IDS,
@@ -185,7 +185,7 @@ const setProjectSettings: ToolDefinition = {
       resources: {
         type: "object",
         properties: {
-          titleResourceId: { type: "string" }, systemResourceId: { type: "string" }, battleSystemResourceId: { type: "string" },
+          titleResourceId: { type: "string" }, systemResourceId: { type: "string" },
           defaultBgmResourceId: { type: "string" }, battleBgmResourceId: { type: "string" },
           battleVictoryMeResourceId: { type: "string" }, battleDefeatSeResourceId: { type: "string" }, battleEscapeSeResourceId: { type: "string" },
         },
@@ -386,7 +386,7 @@ const setProjectSettings: ToolDefinition = {
     }
     if (args.resources && typeof args.resources === "object" && !Array.isArray(args.resources)) {
       const resources = args.resources as Record<string, unknown>;
-      for (const key of ["titleResourceId", "systemResourceId", "battleSystemResourceId", "defaultBgmResourceId", "battleBgmResourceId", "battleVictoryMeResourceId", "battleDefeatSeResourceId", "battleEscapeSeResourceId"] as const) {
+      for (const key of ["titleResourceId", "systemResourceId", "defaultBgmResourceId", "battleBgmResourceId", "battleVictoryMeResourceId", "battleDefeatSeResourceId", "battleEscapeSeResourceId"] as const) {
         if (typeof resources[key] === "string") draft.system[key] = resources[key];
       }
       changed.push("리소스");
@@ -396,7 +396,7 @@ const setProjectSettings: ToolDefinition = {
       if (battle.flow === "gauge" || battle.flow === "strict") draft.system.battleFlow = battle.flow;
       if (typeof battle.uiStyle === "string") {
         if (!(listActiveBattleSkinIds() as readonly string[]).includes(battle.uiStyle)) {
-          const retired = (listBattleSkinIds() as readonly string[]).includes(battle.uiStyle) ? " 창 색만 다르던 옛 측면 스킨은 고를 수 없다 — retro2003 에 look.window 로 창 색을 고른다." : "";
+          const retired = isRetiredBattleSkinId(battle.uiStyle) ? " 지운 옛 스킨이다 — 도트 측면은 retro2003 이고 창 색은 look.window 로 고른다." : "";
           throw new ToolError(`알 수 없는 전투 스킨입니다: ${battle.uiStyle}. 가능: ${listActiveBattleSkinIds().join(", ")}.${retired}`, { code: "invalid-args" });
         }
         // 방식 하나가 화면과 규칙을 같이 정한다(자료집 「전투 방식」과 같은 규칙, project/battleMethod.ts).

@@ -549,9 +549,6 @@ const enemyRecordSchema = objectSchema({
     enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
     description: "쓰러지는 연출. dissolve 기본 소멸 · pixelBreak FF6 식 보랏빛 픽셀 분해(잡몹) · bossSink 떨며 땅속으로 가라앉음(보스) · flash 하얀 세 번 점멸 · instant 즉시 사라짐(환영·소환수).",
   },
-  graphicHue: integerSchema(),
-  transparent: booleanSchema(),
-  flying: booleanSchema(),
   criticalHit: objectSchema({ enabled: booleanSchema(), oneIn: integerSchema() }),
   attackOptions: objectSchema({ normalAttacksMiss: booleanSchema() }),
   skillIds: stringArraySchema(),
@@ -617,9 +614,6 @@ const monsterSpeciesGraphicSchema = objectSchema({
     scale: { type: "number", minimum: CHARACTER_SCALE_MIN, maximum: CHARACTER_SCALE_MAX },
     scaleMode: { type: "string", enum: ["auto", "manual"] },
   }, "동행용 EventPageGraphic. 기존 종은 {scale:0.5}처럼 부분 수정해도 sprite와 나머지 설정을 보존합니다. 전투 그림에는 영향을 주지 않습니다."),
-  graphicHue: integerSchema(),
-  transparent: booleanSchema(),
-  flying: booleanSchema(),
 });
 
 const monsterSpeciesRecordSchema = objectSchema({

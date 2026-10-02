@@ -20,14 +20,18 @@ describe("configure_game_systems", () => {
     const result = runTool(ctx, "configure_game_systems", { battleModel: "gen1" });
     expect(result.ok, result.summary).toBe(true);
     expect(ctx.project.system.battleModel).toBe("gen1");
+    // 규칙과 화면은 한 쌍이다(전투 방식, 2026-10-02) — gen1 은 몬스터 대치 화면까지 맞춘다.
+    expect(ctx.project.system.battleUiStyle).toBe("pokemon");
   });
 
   it("battleModel rm2k3 은 기본값이므로 필드를 지운다(UI 계약과 동일)", () => {
     const ctx = context();
     ctx.project.system.battleModel = "gen1";
+    ctx.project.system.battleUiStyle = "pokemon";
     const result = runTool(ctx, "configure_game_systems", { battleModel: "rm2k3" });
     expect(result.ok, result.summary).toBe(true);
     expect(ctx.project.system.battleModel).toBeUndefined();
+    expect(ctx.project.system.battleUiStyle).toBeUndefined();
   });
 
   it("giftSystem·rewardPolicy·skillSystem 을 각 필드에 쓴다", () => {

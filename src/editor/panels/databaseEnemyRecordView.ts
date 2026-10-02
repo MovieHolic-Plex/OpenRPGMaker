@@ -463,12 +463,8 @@ function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
   if (species && !speciesId) {
     fields.push(speciesStatusChip("info", "db-enemy-species-legacy", `${species.name} · 같은 ID 호환 연결 (저장된 종족 ID 없음)`));
   }
-  if (species && (
-    (current.monsterResourceId ?? "") !== (species.graphic.monsterResourceId ?? "")
-    || current.graphicHue !== species.graphic.graphicHue
-    || current.transparent !== species.graphic.transparent
-    || current.flying !== species.graphic.flying
-  )) {
+  // 그림만 비교한다 — 색조·투명·비행은 화면에서 지운 칸이라(2026-10-02) 그 차이로 경고를 띄우면 고칠 데가 없다.
+  if (species && (current.monsterResourceId ?? "") !== (species.graphic.monsterResourceId ?? "")) {
     fields.push(el("div", {
       class: "db-enemy-species-mismatch-row",
       children: [
@@ -476,7 +472,7 @@ function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
         el("button", {
           class: "db-ws-btn db-ws-btn-ghost",
           text: "종족 외형을 이 몬스터로 복사",
-          attrs: { type: "button", title: "종족의 리소스·색조·투명·비행을 이 몬스터에 한 번 복사합니다. 능력치는 바뀌지 않습니다." },
+          attrs: { type: "button", title: "종족의 그림을 이 몬스터에 한 번 복사합니다. 능력치는 바뀌지 않습니다." },
           dataset: { testid: "db-enemy-species-copy-graphic" },
           on: { click: () => { copySpeciesGraphicToEnemy(record); rerender(); } },
         }),
