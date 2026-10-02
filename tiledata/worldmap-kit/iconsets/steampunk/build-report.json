@@ -1,0 +1,286 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "마도 제국 수도",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "시계탑·공장 굴뚝·비행선 정박탑·놋쇠 돔 관청·철판 성벽",
+   "fill": "94x93",
+   "side_px": 430,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "공업 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "톱날 지붕 벽돌 공장·굴뚝 넷·가스 탱크·구리 증기관·철문",
+   "fill": "63x61",
+   "side_px": 258,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "증기선 항구",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "외륜 증기선·놋쇠 크레인·벽돌 창고·나무 부두",
+   "fill": "77x57",
+   "side_px": 146,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "마도 요새",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "리벳 철판 성벽·대포 포탑·톱니 문장 문·굴뚝 본루",
+   "fill": "46x45",
+   "side_px": 155,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "비행선 기지",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "철골 계류탑·묶인 비행선·반원통 격납고·철책",
+   "fill": "43x40",
+   "side_px": 34,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "탄광 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "갱도 입구·권양탑 바퀴·광차 레일·함석 오두막",
+   "fill": "47x44",
+   "side_px": 130,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "철도역 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "시계 단 작은 역사·선로·증기 기관차",
+   "fill": "32x23",
+   "side_px": 12,
+   "col": 12,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "풍차 공방 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "벽돌 풍차·톱니 공방·굴뚝",
+   "fill": "32x28",
+   "side_px": 44,
+   "col": 14,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "조사단 캠프",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "범포 천막 둘·증기 기관 발전기·상자",
+   "fill": "32x22",
+   "side_px": 11,
+   "col": 16,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "증기 굴뚝 탑",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "놋쇠 띠 벽돌 굴뚝탑과 증기",
+   "fill": "13x31",
+   "side_px": 92,
+   "col": 26,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "거대 시계탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "3단 벽돌 탑·큰 시계판·톱니·구리 돔 첨탑",
+   "fill": "29x58",
+   "side_px": 29,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "광산 갱도",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "바위산·버팀목 갱도·레일·광차·등불",
+   "fill": "31x31",
+   "side_px": 255,
+   "col": 18,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "추락한 비행선",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "꺾인 갈비뼈·찢긴 기낭·기운 곤돌라·연기",
+   "fill": "32x23",
+   "side_px": 51,
+   "col": 20,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "폭주 공장 지대",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "무너진 공장·쓰러진 굴뚝·꺾인 관·터져 나온 마석",
+   "fill": "61x38",
+   "side_px": 25,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "마도 연구소",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "벽돌 연구동·유리 돔·테슬라 코일",
+   "fill": "45x36",
+   "side_px": 90,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "톱니 유적 바위산",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "바위산에 반쯤 묻힌 거대 녹슨 톱니",
+   "fill": "43x44",
+   "side_px": 437,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "마석 수정 언덕",
+   "id": "landmark_magi",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "바위 언덕을 뚫은 보랏빛 마석 결정 무리",
+   "fill": "45x36",
+   "side_px": 96,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "마석 원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "놋쇠 받침의 수정 기둥 다섯·떠 있는 마석",
+   "fill": "28x25",
+   "side_px": 48,
+   "col": 22,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "지열 증기 화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "화구에 꽂힌 구리 관·증기·펌프 오두막",
+   "fill": "29x31",
+   "side_px": 28,
+   "col": 24,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "부유 대륙",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "바위섬·마석 부유석·프로펠러·벽돌 마을과 시계탑",
+   "fill": "70x58",
+   "side_px": 120,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 14
+}
