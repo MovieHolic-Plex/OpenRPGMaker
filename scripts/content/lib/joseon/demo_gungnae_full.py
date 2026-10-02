@@ -494,9 +494,9 @@ def bridge_narrow_h(xh, yrow, tag=''):
     ln = 4 if L <= 4 else (5 if L == 5 else 6)
     xs = xa - ((ln - L) // 2)
     nm = 'gungnae_bridge_narrow_h' + ('' if ln == 4 else str(ln))
-    for xx in range(xs, xs + ln):             # 물 폭을 다리 길이에 맞춘다
+    for xx in range(xa, xb + 1):              # 물 폭이 다리보다 길면 남는 칸은 뭍(착지판)으로 바꾼다
         WATER.discard((xx, yrow))
-        KG[yrow][xx] = 'bridge'
+        KG[yrow][xx] = 'bridge' if xs <= xx < xs + ln else None
     P(nm, xs, yrow - 1, solid=None)
     BRIDGES.append(('nh', xs, yrow - 1, ln, 3))
     ENDS.append({'x': xs - 1, 'y': yrow}); ENDS.append({'x': xs + ln, 'y': yrow})
@@ -526,13 +526,13 @@ def place_bridges():
     # 서·동 큰 운하를 가로지르는 다리(동서)
     for (xo, yo) in ((26, 30), (26, 99), (26, 131), (54, 95), (111, 136), (165, 100), (165, 123), (34, 182)):
         bridge_h(xo, OY(yo))
-    bridge_narrow_h(22, OY(59))              # 흉가 가는 길
-    bridge_narrow_h(25, OY(87))              # 좌성황 서쪽
 
 
 place_bridges()
 w_clean(2)
 apply_water()
+bridge_narrow_h(22, OY(59))              # 흉가 가는 길(물 닫기 뒤에 놓는다: 남는 물 칸을 뭍으로 바꿀 때 w_clean 이 되메우지 않게)
+bridge_narrow_h(25, OY(87))              # 좌성황 서쪽
 for (_k, _x, _y, _w, _h) in BRIDGES:         # 다리 칸은 다리 종류로 다시 표시(w_clean·apply_water 가 덮지 않게)
     if _k == 'v':
         for yy in range(_y, _y + _h):
@@ -677,6 +677,7 @@ for (x0, y0, x1, y1) in ((14, 70, 22, 100), (14, 100, 27, 112), (11, 168, 27, 19
                          (93, 22, 108, 26)):
     seg(x0, y0, x1, y1, 'yard')
 seg(95, 173, 106, 184, 'diamond')
+segy(131, 166, 143, 171, 'yard')         # 예식장 뒤 섬 마당(탑 꼭대기 옆 빈 터를 흙마당으로: 지붕 뒤라 나무를 못 심는다)
 # --- 남중앙 밭(원작: 초록 밭 + 청록 논칸): 4×4 판
 for _j in range(4):
     for _i in range(4):
@@ -768,20 +769,26 @@ def walled(x0, y0, W_, H_, tag='gn_stone', gate='gn_sarip_stone', gate_dx=None, 
     paint(ground, x0, y0, x0 + W_ - 1, y0 + H_ - 1)
     gw = 3 if 'stone' in gate else 2
     gx = x0 + (W_ // 2 - gw // 2 if gate_dx is None else gate_dx)
+    gy_ = y0 if gate_side == 'N' else y0 + H_ - 1
     for x in range(x0 + 1, x0 + W_ - 1):
-        P(f'{tag}_h{x % 3}', x, y0, 'foot')
-        if not (gx <= x < gx + gw):
+        if not (gate_side == 'N' and gx <= x < gx + gw):
+            P(f'{tag}_h{x % 3}', x, y0, 'foot')
+        if not (gate_side != 'N' and gx <= x < gx + gw):
             P(f'{tag}_h{(x + 1) % 3}', x, y0 + H_ - 1, 'foot')
     P(f'{tag}_c_nw', x0, y0); P(f'{tag}_c_ne', x0 + W_ - 1, y0)
     P(f'{tag}_c_sw', x0, y0 + H_ - 1); P(f'{tag}_c_se', x0 + W_ - 1, y0 + H_ - 1)
     for y in range(y0 + 1, y0 + H_ - 1):
         P(f'{tag}_v', x0, y); P(f'{tag}_v1', x0 + W_ - 1, y)
-    P(gate, gx, y0 + H_ - 1, None)
+    P(gate, gx, gy_, None)
     NOTREE.append((x0 - 1, y0 - 1, W_ + 2, H_ + 5))
-    DOORS.append({'x': gx, 'y': y0 + H_, 'piece': gate})
-    for xx in range(x0, x0 + W_):
-        if inb(xx, y0 + H_) and KG[y0 + H_][xx] is None:
-            KG[y0 + H_][xx] = 'yard'
+    if gate_side == 'N':
+        DOORS.append({'x': gx, 'y': y0 - 1, 'piece': gate})
+        KEEP.update({(xx, yy) for xx in range(gx - 1, gx + gw + 1) for yy in (y0 - 1, y0 + 1)})
+    else:
+        DOORS.append({'x': gx, 'y': y0 + H_, 'piece': gate})
+        for xx in range(x0, x0 + W_):
+            if inb(xx, y0 + H_) and KG[y0 + H_][xx] is None:
+                KG[y0 + H_][xx] = 'yard'
     for yy in range(y0 - 1, y0 + H_ + 2):
         for xx in range(x0 - 1, x0 + W_ + 1):
             USED.add((xx, yy))
@@ -835,7 +842,7 @@ _g = walled(37, OY(77), 11, 15, 'gn_stone', 'gn_sarip_stone')
 P('seonangdang', 41, OY(77) + 3, 'foot'); P('lantern', 39, OY(77) + 9, 'foot'); P('lantern', 45, OY(77) + 9, 'foot')
 _g = walled(172, OY(83), 11, 15, 'gn_stone', 'gn_sarip_stone')
 P('seonangdang', 176, OY(83) + 3, 'foot'); P('lantern', 174, OY(83) + 9, 'foot'); P('lantern', 180, OY(83) + 9, 'foot')
-_g = walled(143, OY(50), 25, 27, 'gn_stone', 'gn_sarip_stone')
+_g = walled(143, OY(50), 25, 27, 'gn_stone', 'gn_sarip_stone', gate_dx=22, gate_side='N')
 P('tower_sulsa_5', 143 + 8, OY(50) + 5, 'body'); DOORS.append({'x': 143 + 8 + 4, 'y': OY(50) + 5 + 14, 'piece': 'tower_sulsa_5'})
 P('stone_pagoda', 146, OY(50) + 21, 'foot'); P('lantern', 160, OY(50) + 22, 'foot'); P('stele', 164, OY(50) + 22, 'foot')
 _g = walled(161, OY(21), 22, 18, 'gn_stone', 'gn_sarip_stone')
@@ -864,11 +871,22 @@ def causeway_v(x, y_top, y_bot):
     ENDS.append({'x': x, 'y': y_bot + 1})
 
 
+# --- 섬 집 둘을 뭍과 좁은 나무다리로 잇는다(원작 사마귀굴 섬·감옥 곁 섬): 물 구간 둘레 4행
+for _cx, _cy in ((73, 45), (157, 166)):
+    _rr = _run_v(_cx, _cy, 4)
+    if _rr is None:
+        print('섬 다리 물 없음', _cx, _cy)
+    else:
+        _ya, _yb = _rr
+        print('섬 다리', _cx, _rr, 'L', _yb - _ya + 1)
+        causeway_v(_cx, _ya - 1, _yb + 1)
+        KEEP.update({(xx, yy) for xx in range(_cx - 1, _cx + 3) for yy in (_ya - 2, _yb + 2)})
+
 # --- 구획 건물: (이름, x, 바닥 행(원작), 문 칸 번호, 허용 이동 반경)
 for (nm, x, yb, dr, R) in (
         ('gn_shop_cloth', 18, 15, 4, 6), ('gwanah_5', 84, 50, 3, 9), ('pavilion_5', 60, 64, 3, 6), ('giwa_house_5b', 28, 60, 3, 6),
         ('gn_shop_smithy', 50, 114, 4, 8), ('gn_shop_butcher', 34, 127, 3, 8), ('giwa_house_4', 64, 137, 3, 6), ('gn_shop_cloth', 67, 152, 4, 5),
-        ('gn_shop_armory', 66, 160, 6, 5), ('gn_u_giwa_7', 63, 181, 4, 6), ('giwa_house_3', 60, 190, 2, 14),
+        ('gn_shop_armory', 52, 160, 6, 4), ('gn_u_giwa_7', 63, 181, 4, 6), ('giwa_house_3', 60, 190, 2, 14),
         ('giwa_haengnang_7', 108, 166, 4, 6), ('gwanah_7', 132, 150, 4, 4), ('tower_yesik_7', 131, 180, 5, 4), ('giwa_house_3b', 155, 160, 2, 6),
         ('giwa_house_5', 176, 190, 3, 14), ('giwa_house_4w', 114, 190, 3, 14),
         ('thatch_house_4k', 14, 189, 3, 6), ('thatch_hut_2', 20, 190, 1, 6), ('thatch_house_3', 23, 186, 2, 6)):
@@ -972,6 +990,18 @@ _TG = ENDS + [{'x': d['x'], 'y': d['y']} for d in ENDS]
 carve_lanes(DOORS + ENDS); carve_lanes(DOORS + ENDS)
 print('막다른 길 지움', prune_deadends())
 carve_lanes(DOORS + ENDS)
+
+# 길망에서 떨어진 흙길·마당 조각(물에 갈려 나간 터, 뜬 길)은 풀로 되돌린다 — 어디로도 이어지지 않는 길을 만들지 않는다.
+def drop_orphans():
+    net = network()
+    rest = {(x, y) for y in range(MH) for x in range(MW) if KG[y][x] in ('road', 'yard', 'diamond') and (x, y) not in net and (x, y) not in BODY}
+    n = 0
+    for c in rest:
+        KG[c[1]][c[0]] = None; n += 1
+    return n
+
+
+print('뜬 길·마당 칸 지움', drop_orphans())
 
 # ---------------------------------------------------------------- 나무 엔진(칸 배열 + 구역 색인: 큰 맵에서도 빠르게)
 ZEL = ['zelkova_' + c for c in 'abcdefghij']
@@ -1116,6 +1146,24 @@ def tree_row_h(y, xs, names, jit=0, seed=0):
             Tf(nm, xx, yy)
 
 
+# --- 전사의 길(원작 북서 반도: 대나무숲 + 돌길 정원). 다리 북단(x 44..47, y 53)에서 북쪽으로 폭 2 돌길, 양옆 대나무 숲.
+for _yy in range(38, 54):
+    for _xx in (45, 46):
+        if inb(_xx, _yy) and KG[_yy][_xx] is None and (_xx, _yy) not in BODY:
+            KG[_yy][_xx] = 'slab'
+NOTREE.append((43, 37, 6, 17))
+build_masks()
+_gard = [('bamboo_grove', 39, 42), ('bamboo_grove', 39, 47), ('bamboo_grove', 51, 42), ('bamboo_grove', 51, 47), ('bamboo_grove', 43 - 4, 51),
+         ('bamboo_grove', 55, 45), ('bamboo', 41, 39), ('bamboo', 49, 39), ('bamboo', 37, 44), ('bamboo', 53, 40), ('bamboo', 48, 51), ('bamboo', 42, 45),
+         ('bamboo', 49, 45), ('bamboo_grove', 35, 44), ('bamboo', 55, 50), ('bamboo', 38, 50)]
+for (_nm, _x, _yb) in _gard:
+    _w, _h = objects[_nm].w // T, objects[_nm].h // T
+    if all(inb(_xx, _yb) and FREE[_yb, _xx] and not OCC[_yb, _xx] for _xx in range(_x, _x + _w)):
+        Tf(_nm, _x, _yb)
+for _nm, _x, _yb in (('lantern', 44, 40), ('lantern', 47, 40), ('lantern', 44, 47), ('lantern', 47, 47), ('stepping_stones', 48, 44), ('rocks', 43, 50)):
+    if inb(_x, _yb) and KG[_yb][_x] is None and not OCC[_yb, _x] and (_x, _yb) not in BODY:
+        _h = objects[_nm].h // T
+        P(_nm, _x, _yb + 1 - _h, 'foot'); OCC[_yb, _x] = True
 build_masks()
 # --- 바깥 숲띠: 성벽 밖 5~8칸(줄 맞춘 나무 + 불규칙 덩이). 대문루·망루·바깥 길 자리는 비운다.
 _n0 = len(TREEPOS)
@@ -1209,13 +1257,11 @@ for (x, y) in _shore:
         break
 print('기슭 소품', len(_last))
 
-# 궁 마당 둘레 흙띠에도 작은 나무(원작: 담 안쪽 흙띠에 소나무)
+# 궁 마당 둘레 흙띠: 담 안쪽 석등을 일정 간격으로(나무 수관이 길을 덮지 않게 석등으로 한다)
 for yb in range(78, 112, 6):
     for xx in (74, 124):
-        nm = ['small_p', 'small_z_a', 'persimmon_a'][(yb // 6) % 3]
-        w_, h_ = objects[nm].w // T, objects[nm].h // T
-        if all(KG[yb][x_] == 'yard' for x_ in range(xx, xx + w_)) and not any((x_, yb) in BODY for x_ in range(xx, xx + w_)):
-            Tf(nm, xx, yb)
+        if KG[yb][xx] == 'yard' and (xx, yb) not in BODY and not OCC[yb, xx]:
+            P('palace_lantern', xx, yb + 1 - objects['palace_lantern'].h // T, 'foot'); OCC[yb, xx] = True
 
 if STAGE <= 5:
     d_ = _stage_png('s%d' % STAGE)
@@ -1241,7 +1287,7 @@ def composite():
 LOWPROPS = ['bench', 'flower_bed', 'haystack', 'firewood', 'stepping_stones', 'millstone', 'jars', 'mat_peppers']
 
 
-def fill_lawn(rounds=3, thr=0.10, seed=100):
+def fill_lawn(rounds=3, thr=0.10, seed=100, ovs=4, rng_t=6, wts=(0.45, 0.4, 0.15)):
     """맨 잔디(칸의 90% 이상이 잔디색)가 20×15칸 창의 thr 를 넘는 곳에 중간 나무·덤불·낮은 소품을 심는다."""
     rg = random.Random(seed)
     for r in range(rounds):
@@ -1263,17 +1309,17 @@ def fill_lawn(rounds=3, thr=0.10, seed=100):
         for (cx, cy) in cand:
             if OCC[cy, cx] or not FREE[cy, cx]:
                 continue
-            pool = rg.choices([MID, BUSH, 'prop'], weights=(0.45, 0.4, 0.15), k=1)[0]
+            pool = rg.choices([MID, BUSH, 'prop'], weights=wts, k=1)[0]
             if pool == 'prop':
                 nm = rg.choice(LOWPROPS)
                 w_, h_ = objects[nm].w // T, objects[nm].h // T
-                if not any(abs(dd['x'] - (cx + w_ // 2)) <= 2 and -1 <= cy - dd['y'] <= 4 for dd in DOORS) and prop(nm, cx, cy):
+                if not any(abs(dd['x'] - (cx + w_ // 2)) <= 2 and -1 <= cy - dd['y'] <= 4 for dd in DOORS) and (prop(nm, cx, cy) or prop(nm, cx - 1, cy)):
                     n += 1
                 continue
             cands = list(pool); rg.shuffle(cands)
             for name, w, h in cands[:3]:
                 x = cx - w // 2
-                if tree_ok(name, w, h, x, cy, 0, 8, 4, False, 6):
+                if tree_ok(name, w, h, x, cy, 0, 8, ovs, False, rng_t):
                     Tf(name, x, cy); n += 1
                     break
         print('잔디 채움', r, '최악 창', round(worst, 3), '+', n)
@@ -1282,12 +1328,299 @@ def fill_lawn(rounds=3, thr=0.10, seed=100):
     return worst
 
 
-# --- 문 앞·마당 소품: 주막 마당·서남 상점가 장터·도적의 길 마당
-for nm, x, y in (('market_stall_cloth', 23, 160), ('market_stall_pots', 28, 160), ('haystack', 24, 164), ('jars', 30, 164)):
-    pass
+# --- 마당 소품(원작: 도적의 길 장터·서쪽 흙 띠·주막 곁 큰 마당·동쪽 터): 풀이 아니라 흙마당 위에 드문드문
+_rgp = random.Random(77)
+_STALLS = ['market_stall_cloth', 'market_stall_pots', 'market_stall', 'market_stall_thatch']
+_LOWY = ['haystack', 'jars', 'firewood', 'millstone', 'well', 'pyeongsang', 'jangdokdae', 'gochu_mat', 'laundry']
+_yard_props = 0
+for (xa, xb, ya, yb_, nst, nlo) in ((12, 26, 170, 190, 5, 7), (14, 21, 72, 98, 0, 6), (42, 90, 159, 165, 6, 8), (151, 159, 113, 125, 2, 4),
+                                    (114, 121, 132, 144, 0, 3), (114, 127, 147, 157, 0, 4), (180, 186, 98, 109, 0, 2)):
+    for kind_, cnt in ((_STALLS, nst), (_LOWY, nlo)):
+        for _t in range(cnt * 6):
+            if cnt <= 0:
+                break
+            nm = _rgp.choice(kind_)
+            cx_, cy_ = _rgp.randint(xa, xb), _rgp.randint(ya, yb_)
+            if prop(nm, cx_, cy_, kinds=('yard',)):
+                _yard_props += 1
+                cnt -= 1
+print('마당 소품', _yard_props)
 fill_lawn(rounds=3, thr=0.10)
+fill_lawn(rounds=4, thr=0.15, seed=200, ovs=8, rng_t=3, wts=(0.15, 0.35, 0.5))
+
 
 if STAGE <= 6:
     d_ = _stage_png('s%d' % STAGE)
     print('stage', STAGE, 'placed', len(placed), 'trees', len(TREEPOS))
     sys.exit(0)
+
+
+# ================================================================ 7단계: 점검(문·다리 끝·성문 도달, 막다른 길, 건물 겹침)
+def audit():
+    import re
+    bre = re.compile(r'^(giwa|thatch|gate|pavilion|gwanah|nugak)_|^gn_(shop|l_|u_|g2|g3|thatch|jm_(corner|anchae|daemun|row))|^palace_(hall|jeongak|haengnak|gate)|^tower_|^gungnae_(gate|tower)')
+    bl = [(n, x, y, w, h) for (n, x, y, w, h) in placed if bre.match(n)]
+    ov = []
+    for i, a in enumerate(bl):
+        for b in bl[i + 1:]:
+            if a[1] < b[1] + b[3] and b[1] < a[1] + a[3] and a[2] + 1 < b[2] + b[4] - 1 and b[2] + 1 < a[2] + a[4] - 1:
+                if a[0].startswith('gungnae_') or b[0].startswith('gungnae_'):
+                    continue
+                ov.append((a[0], a[1], a[2], b[0], b[1], b[2]))
+    print('건물 몸체 겹침', len(ov), ov[:8])
+    crown = []
+    for (nm, x, yb, w, h) in TREEPOS:
+        hit = False
+        for yy in range(yb + 1 - h, yb):
+            for xx in range(x, x + w):
+                if inb(xx, yy) and KG[yy][xx] in ('road', 'yard', 'slab', 'bridge', 'paving', 'diamond') and 12 <= xx <= 188 and 15 <= yy <= 198:
+                    hit = True; break
+            if hit:
+                break
+        if hit:
+            crown.append((nm, x, yb))
+    print('수관이 길·다리를 가리는 나무', len(crown), crown[:10])
+    net = network()
+    walk = {(x, y) for y in range(MH) for x in range(MW) if KG[y][x] in WALKK and ((x, y) not in BODY or KG[y][x] == 'bridge')}
+    rest = set(walk) - net
+    comps = []
+    while rest:
+        c0 = next(iter(rest)); st = [c0]; seen = {c0}
+        while st:
+            x, y = st.pop()
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                n = (x + dx, y + dy)
+                if n in rest and n not in seen:
+                    seen.add(n); st.append(n)
+        rest -= seen; comps.append(sorted(seen)[:3] + [len(seen)])
+    print('외톨이 길 조각', len(comps), comps[:8])
+    bad_d = [d for d in DOORS if (d['x'], d['y']) not in net]
+    bad_e = [d for d in ENDS if (d['x'], d['y']) not in net]
+    print('길 안 닿는 문', len(bad_d), bad_d[:8])
+    print('길 안 닿는 다리 끝·성문 앞', len(bad_e), bad_e[:8])
+    wset = {(x, y) for y in range(MH) for x in range(MW) if KG[y][x] in ('water', 'bridge')}
+    # 해자 닫힘: 해자 둘레(북·남 가로선, 서·동 세로선)가 한 줄로 이어지는지 — 궁 둘레 고리 하나가 물 칸으로 이어지는가
+    seen = set(); st = [next(iter(wset))]; seen.add(st[0])
+    while st:
+        x, y = st.pop()
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + dx, y + dy)
+            if n in wset and n not in seen:
+                seen.add(n); st.append(n)
+    print('물 연결 성분 최대', len(seen), '/', len(wset))
+    # 다리 끝 착지: 다리 칸 한 칸마다 물이 아닌 걷는 칸(또는 다리)이 반대편으로 이어지는지는 BFS 로 확인했다(위).
+    pd = [(x, y) for y in range(MH) for x in range(MW) if KG[y][x] == 'palace_yard']
+    return len(ov), len(crown), len(comps), len(bad_d), len(bad_e)
+
+
+audit_res = audit()
+if os.environ.get('JS_DBG'):
+    exec(open(os.environ['JS_DBG']).read())
+if STAGE <= 7:
+    _stage_png('s7')
+    print('stage 7 audit', audit_res)
+    sys.exit(0)
+
+# ================================================================ 8단계: 사람(Actor1) — 건물 앞·큰길·궁 마당에 가만히 서 있게
+from people import UP, RIGHT, FRONT, LEFT
+import people as _pp
+
+
+def _walk_cell(x, y):
+    return inb(x, y) and KG[y][x] in ('road', 'yard', 'slab', 'paving', 'diamond') and (x, y) not in BODY
+
+
+def _people_filter(people):
+    _BP = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'tower', 'fort', 'gn_shop', 'gn_l_', 'gn_u_', 'gn_g2', 'gn_g3', 'gn_thatch', 'gn_jm', 'palace_hall', 'palace_jeongak', 'palace_haengnak', 'palace_gate', 'gungnae_gate', 'gungnae_tower', 'gungnae_wall')
+    bodyf = [(x, y, w, h) for (nm, x, y, w, h) in placed if nm.startswith(_BP)]
+    out = []
+    for p in people:
+        x, y = p[0], p[1]
+        if not inb(x, y) or KG[y][x] not in ('road', 'yard', 'slab', 'paving', 'diamond'):
+            print('사람 자리 거절(길 아님):', p); continue
+        if any(bx <= x < bx + bw and by + bh // 3 <= y < by + bh for (bx, by, bw, bh) in bodyf):
+            print('사람 자리 거절(건물 몸체):', p); continue
+        if any(nm.startswith(('gungnae_gate', 'palace_gate')) and bx <= x < bx + bw and by <= y < by + bh - 3 for (nm, bx, by, bw, bh) in placed):
+            print('사람 자리 거절(문루 지붕):', p); continue
+        _wk = lambda xx, yy: inb(xx, yy) and KG[yy][xx] in ('road', 'yard', 'slab', 'paving', 'diamond', 'bridge')
+        if (_wk(x - 1, y) and _wk(x + 1, y) and not _wk(x, y - 1) and not _wk(x, y + 1)) or (_wk(x, y - 1) and _wk(x, y + 1) and not _wk(x - 1, y) and not _wk(x + 1, y)):
+            print('사람 자리 거절(좁은 길):', p); continue
+        if any(OCC[yy, xx] for yy in (y,) for xx in (x,)):
+            print('사람 자리 거절(소품 위):', p); continue
+        out.append(p)
+    return out
+
+
+def make_people(n_target=40, seed=5):
+    rg = random.Random(seed)
+    net = network()
+    doorc = {(d['x'], d['y']) for d in DOORS}
+    cand = []                                        # (우선순위, x, y, 방향)
+    for d in DOORS:                                  # 문 앞 양옆 한 칸(문 칸 자체는 비운다)
+        for dx in (-1, 1, -2, 2):
+            x, y = d['x'] + dx, d['y']
+            if _walk_cell(x, y) and (x, y) in net and (x, y) not in doorc and (x, y) not in {(a['x'], a['y']) for a in ENDS}:
+                cand.append((0, x, y, UP if dx else FRONT))
+                break
+    # 큰길·궁 마당·마름모 광장·큰 마당
+    for y in range(MH):
+        for x in range(MW):
+            k = KG[y][x]
+            if (x, y) not in net or (x, y) in doorc or (x, y) in BODY:
+                continue
+            if k == 'paving' and (x + y) % 5 == 0:
+                cand.append((2, x, y, rg.choice((UP, FRONT, LEFT, RIGHT))))
+            elif k == 'diamond' and (x + y) % 3 == 0:
+                cand.append((1, x, y, rg.choice((UP, FRONT, LEFT, RIGHT))))
+            elif k == 'slab' and (x in (96, 97, 102, 103) or y in (97, 98, 101, 102)) and (x + y) % 7 == 0:
+                cand.append((2, x, y, rg.choice((UP, FRONT))))
+            elif k == 'yard' and (x * 3 + y) % 11 == 0:
+                cand.append((3, x, y, rg.choice((UP, FRONT, LEFT, RIGHT))))
+            elif k == 'road' and (x * 7 + y * 3) % 23 == 0 and 14 <= x <= 186 and 18 <= y <= 196:
+                cand.append((4, x, y, rg.choice((UP, FRONT))))
+    cand.sort(key=lambda c: (c[0], rg.random()))
+    chosen = []
+    for (_, x, y, d) in cand:
+        if len(chosen) >= n_target:
+            break
+        dmin = 5 if _ == 0 else 11
+        if any(abs(x - c[0]) + abs(y - c[1]) < dmin for c in chosen):
+            continue
+        chosen.append((x, y, rg.randrange(8), d, rg.randrange(3)))
+    return _people_filter(chosen)
+
+
+PEOPLE_LIST = make_people()
+print('사람', len(PEOPLE_LIST))
+if STAGE <= 8:
+    d_ = _stage_png('s8')
+    _pp.overlay(Image.fromarray(d_, 'RGBA'), PEOPLE_LIST).save('%s/gnf_stage_s8_people.png' % TMP)
+    sys.exit(0)
+
+
+# ================================================================ 9단계: 굽기(시트 재조립 pixelDiff 0 · 게이트 · 파일)
+def bake():
+    gr, OBJ, direct = composite()
+    import mapgate as _mg
+    cvD = Cv(MW * T, MH * T); cvD.a = direct
+    cvO = Cv(MW * T, MH * T); cvO.a = OBJ
+    mf, mrep = _mg.check(placed, cvD, cvO)
+    print('지도 게이트', json.dumps(mrep, ensure_ascii=False))
+    if mf:
+        print('지도 게이트 FAIL:\n  ' + '\n  '.join(mf))
+        if not os.environ.get('JS_FORCE'):
+            sys.exit(1)
+    grid = {}
+    for i, c in enumerate(tiles):
+        grid[(i % COLS, i // COLS)] = c.a
+    rows_used = (len(tiles) + COLS - 1) // COLS
+    cur_x, cur_y, row_h = 0, rows_used, 0
+    used = []
+    for (nm, x, y, w, h) in placed:
+        if nm not in used:
+            used.append(nm)
+    for name in used:
+        cv = objects[name]
+        w, h = cv.w // T, cv.h // T
+        if cur_x + w > COLS:
+            cur_x, cur_y, row_h = 0, cur_y + row_h, 0
+        ids = []
+        for ty in range(h):
+            r = []
+            for tx in range(w):
+                grid[(cur_x + tx, cur_y + ty)] = cv.a[ty * T:(ty + 1) * T, tx * T:(tx + 1) * T].copy()
+                r.append((cur_y + ty) * COLS + cur_x + tx)
+            ids.append(r)
+        pieces[name] = {'id': ids[0][0], 'w': w, 'h': h, 'tiles': ids}
+        cur_x += w
+        row_h = max(row_h, h)
+    sheet_rows = cur_y + row_h
+    lookup = {}
+    for (cx, cy), a in grid.items():
+        if a[:, :, 3].max() > 0:
+            lookup.setdefault(a.tobytes(), cy * COLS + cx)
+    extra = []
+    obj_ids = [[-1] * MW for _ in range(MH)]
+    for y in range(MH):
+        for x in range(MW):
+            sub = OBJ[y * T:(y + 1) * T, x * T:(x + 1) * T]
+            if sub[:, :, 3].max() == 0:
+                continue
+            key = sub.tobytes()
+            if key not in lookup:
+                extra.append(sub.copy())
+                lookup[key] = -2 - len(extra)
+            obj_ids[y][x] = lookup[key]
+    base = sheet_rows * COLS
+    for k, a in enumerate(extra):
+        grid[((base + k) % COLS, (base + k) // COLS)] = a
+    for y in range(MH):
+        for x in range(MW):
+            if obj_ids[y][x] <= -3:
+                obj_ids[y][x] = base + (-obj_ids[y][x] - 3)
+    if extra:
+        sheet_rows = (base + len(extra) + COLS - 1) // COLS
+    SHEET = np.zeros((sheet_rows * T, COLS * T, 4), np.uint8)
+    for (cx, cy), a in grid.items():
+        SHEET[cy * T:(cy + 1) * T, cx * T:(cx + 1) * T] = a
+    re_ = np.zeros((MH * T, MW * T, 4), np.uint8)
+    for y in range(MH):
+        for x in range(MW):
+            re_[y * T:(y + 1) * T, x * T:(x + 1) * T] = TARR[gr[y][x]]
+    for y in range(MH):
+        for x in range(MW):
+            if obj_ids[y][x] >= 0:
+                t = grid[(obj_ids[y][x] % COLS, obj_ids[y][x] // COLS)]
+                d = re_[y * T:(y + 1) * T, x * T:(x + 1) * T]
+                a = t[:, :, 3:4].astype(np.float32) / 255.0
+                full = t[:, :, 3] == 255
+                blend = (d[:, :, :3] * (1 - a) + t[:, :, :3] * a).astype(np.uint8)
+                d[:, :, :3] = np.where(full[:, :, None], t[:, :, :3], np.where((t[:, :, 3] > 0)[:, :, None], blend, d[:, :, :3]))
+                d[:, :, 3] = np.maximum(d[:, :, 3], t[:, :, 3])
+    diff = int((direct != re_).any(axis=2).sum())
+    net = network()
+    reach = [d for d in DOORS if (d['x'], d['y']) in net]
+    reach_e = [d for d in ENDS if (d['x'], d['y']) in net]
+    os.makedirs(OUT, exist_ok=True)
+    ppl = PEOPLE_LIST
+    Image.fromarray(direct, 'RGBA').save(os.path.join(OUT, 'joseon-gungnae-full-map.png'))
+    _pp.overlay(Image.fromarray(direct, 'RGBA'), ppl).save(os.path.join(OUT, 'joseon-gungnae-full-map-people.png'))
+    Image.fromarray(SHEET, 'RGBA').save(os.path.join(OUT, 'joseon-gungnae-full-chipset.png'))
+    Image.fromarray(re_, 'RGBA').save(os.path.join(OUT, 'joseon-gungnae-full-map-from-sheet.png'))
+    json.dump({'tile': T, 'cols': COLS, 'rows': sheet_rows, 'tileCount': len(grid), 'pieces': pieces,
+               'overlapTiles': {'start': base, 'count': len(extra)}}, open(os.path.join(OUT, 'pieces.json'), 'w'), ensure_ascii=False, indent=1)
+    json.dump({'width': MW, 'height': MH, 'ground': gr, 'object': obj_ids}, open(os.path.join(OUT, 'map.json'), 'w'))
+    KIND = {None: 'grass', 'wall': 'wall', 'diamond': 'yard'}
+    gk = [[KIND.get(KG[y][x], KG[y][x]) for x in range(MW)] for y in range(MH)]
+    json.dump({'width': MW, 'height': MH,
+               'placed': [{'name': n, 'x': x, 'y': y, 'w': w, 'h': h} for (n, x, y, w, h) in placed],
+               'groundKind': gk,
+               'doors': [{'x': d['x'], 'y': d['y'], 'piece': d['piece']} for d in DOORS],
+               'people': [{'x': p[0], 'y': p[1], 'char': p[2], 'dir': ['up', 'right', 'down', 'left'][p[3]], 'frame': p[4]} for p in ppl]},
+              open(os.path.join(OUT, 'extra.json'), 'w'), ensure_ascii=False)
+    colors = set(map(tuple, SHEET.reshape(-1, 4)[SHEET.reshape(-1, 4)[:, 3] == 255][:, :3]))
+    import re as _re
+    bre = _re.compile(r'^(giwa|thatch|gate|pavilion|gwanah|nugak|fort)_|^gn_(shop|l|u|g2|g3|thatch|jm_(corner|anchae|daemun|row))|^palace_(hall|jeongak|haeng(nak|gak)|gate)|^tower_|^gungnae_(gate|tower)')
+    nb = sum(1 for p in placed if bre.match(p[0]))
+    print(json.dumps({'sheet': f'{COLS}x{sheet_rows} tiles', 'pixelDiffMapVsSheet': diff, 'overlapTiles': len(extra), 'uniqueOpaqueColors': len(colors),
+                      'doors': len(DOORS), 'doorsReachable': len(reach), 'ends': len(ENDS), 'endsReachable': len(reach_e), 'placed': len(placed),
+                      'buildingBodies': nb, 'people': len(ppl)}, ensure_ascii=False))
+    audit()
+    # 확인 그림: 전체 축소 + 원작 나란히
+    full = Image.fromarray(_pp.overlay(Image.fromarray(direct, 'RGBA'), ppl).convert('RGBA'))
+    sm = full.resize((MW * 16 // 3, MH * 16 // 3), Image.LANCZOS)
+    sm.save(TMP + '/gnf_full.png')
+    ref = Image.open(TMP + '/gungnae/gungnae_map.png').convert('RGB')
+    ref = ref.resize((int(ref.width * sm.height / ref.height), sm.height), Image.LANCZOS)
+    vs = Image.new('RGB', (sm.width + ref.width + 16, sm.height), (30, 30, 30))
+    vs.paste(sm.convert('RGB'), (0, 0)); vs.paste(ref, (sm.width + 16, 0))
+    vs.save(TMP + '/gnf_vs_ref.png')
+    W_, H_ = full.size
+    for i in range(4):
+        for j in range(4):
+            full.crop((j * W_ // 4, i * H_ // 4, (j + 1) * W_ // 4, (i + 1) * H_ // 4)).save('%s/gnf_sec_%d%d.png' % (TMP, i, j))
+    return diff
+
+
+if __name__ == '__main__':
+    bake()
