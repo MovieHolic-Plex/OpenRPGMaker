@@ -5,6 +5,64 @@
 
 <!-- releases -->
 
+## 0.73.0 — 2026-10-02
+
+### 깨지는 변경
+
+- **monsters** — 몬스터 그림 생성(AI로 만들기·generate_image_asset monster) 제거, 스킨 공용 정면 적 그림 삭제 (`d1a722c`)
+- **battle** — 정면 전투 스킨 다섯(rm2000·dragonquest·mother·mv·vxace) 삭제 — 기본은 도트 측면 (`841f2fe`)
+
+### 기능
+
+- **workshop** — 에셋 만들기 권장 모델 안내(GPT-6.1 Sol medium · Claude Sonnet 5.5 이상) (`dedcf78`)
+- **battle** — 정면 스킨에서 전투 화면 꾸미기를 고르면 측면 스킨으로 같이 갈아탄다 (`d4098ee`)
+- **workshop** — 왼쪽 「공방」 판·공방 화면·판 화면·새 기물 폼 (`20eb77f`)
+- **workshop** — 에디터 어댑터(그림·채팅·세션) (`b0c7f35`)
+- **workshop** — 실내 기물 실행기(방향·그리기·자기 점검·검수 지시문) (`b78ebeb`)
+- **workshop** — interior-props 매니페스트·팔레트·기물 사전·깨짐 검사 (`d2ab87f`)
+- **workshop** — AI 표면 workshop-draw·workshop-review (`0e252ea`)
+- **workshop** — 공방 실행기(큐·시도·자기 점검·검수·재개·429) (`a6584a3`)
+- **workshop** — 공방 저장소(IndexedDB + 메모리 폴백) (`bb7d330`)
+- **workshop** — 공방 공용 타입과 팔레트 키 격자 (`2211426`)
+
+### 수정
+
+- **workshop** — F 확대가 눈에 보이게 (정수 배율 + 크게 2배, 비교 8/16) (`a370cca`)
+- **workshop** — prepare 실패 재시도, 실행 상태 알림, 공방 단축키 격리 (`17dd92e`)
+- **workshop** — 공방 CSS 를 실제 토큰으로 교체하고 화면 캡처를 남긴다 (`4c5ad19`)
+- **workshop** — 검색·메모 입력 보존, 오류 표시, 열기 경쟁, 단축키 가드 (`82853f4`)
+- **workshop** — 프로젝트가 바뀌면 다른 프로젝트 공방 세션 정리 (`266afdc`)
+- **workshop** — 검수·그리기 지시문에 생물·조각상·가는 막대 면제 (`6176fed`)
+- **workshop** — 시트 자르기에서 반투명 그림자 색 보존 (`a65c606`)
+- **workshop** — 엔진 다시 그리기 중복·재개 시도 기록·검수 답 예외 (`cf03965`)
+- **interior-props** — 2층 침대를 가로(2×1, 32×48)로 — 머리판 서쪽·사다리 동쪽 (`8e67f12`)
+
+### 정리
+
+- **monsters** — 몬스터 그림 생성(AI로 만들기·generate_image_asset monster) 제거, 스킨 공용 정면 적 그림 삭제 (`d1a722c`)
+- **battle** — 정면 전투 스킨 다섯(rm2000·dragonquest·mother·mv·vxace) 삭제 — 기본은 도트 측면 (`841f2fe`)
+
+### 문서
+
+- **openwiki** — INDEX 재생성 (`19512a5`)
+- **workshop** — 공방 문서와 모델 없는 화면 캡처 스크립트 (`180f1f7`)
+- **workshop** — 공방 1단계 구현 계획 + 저장을 IndexedDB 로 바꾼 설계 갱신 (`ebfc5ca`)
+- **workshop** — 에디터 「공방」 1단계 설계 — 하네스를 사용자 계정으로 에디터 안에서 (`b14dc28`)
+
+### 테스트
+
+- **workshop** — 캡처의 가짜 검수가 B 1회차를 확정적으로 불통과, QA 메모 추가 (`2ceae9b`)
+
+### 잡무
+
+- **interior-props** — 2층 침대 가로 캔버스 폴더·후보 h210 (`c783c66`)
+- **qa** — 조수 전투 화면 선택 A/B 4단계 증거와 블라인드 판정 (`41dccc0`)
+- **scripts** — 지운 정면 스킨을 가리키던 QA 스크립트를 retro2003 으로, battle-frontview 시나리오 삭제 (`26f9717`)
+
+### 기타
+
+- test+docs: 정면 스킨·몬스터 그림 생성 삭제에 맞춘 시험 갱신, sideOnlyBattle 계약 시험, openwiki 절 (`96d1c93`)
+
 ## 0.72.1 — 2026-10-02
 
 ### 수정
