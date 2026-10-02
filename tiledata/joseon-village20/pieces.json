@@ -1,8 +1,8 @@
 {
  "tile": 16,
  "cols": 16,
- "rows": 188,
- "tileCount": 2341,
+ "rows": 190,
+ "tileCount": 2374,
  "pieces": {
   "grass": {
    "id": 0,
@@ -3861,6 +3861,6 @@
  },
  "overlapTiles": {
   "start": 2752,
-  "count": 246
+  "count": 279
  }
 }
