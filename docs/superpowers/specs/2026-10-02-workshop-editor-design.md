@@ -26,7 +26,7 @@
   `pruneUnused(referenced)` 는 목록에 없는 자산을 지우므로 후보 sha 를 참조 목록에 넣어야 한다. 내보내기 제외 표시는 없다.
 - 하네스 레지스트리: `src/harnesses/_core/{manifest,registry}.ts`. 에디터에서 읽는 코드는 아직 없다. 규칙: 에디터 코어는 레지스트리로만 찾는다,
   `node/` 밖 코드만 브라우저가 쓴다, `entrypoints` 는 정직하게.
-- 실내 기물 하네스는 지금 파이썬(PR #1828, 미머지). 작업자는 Codex CLI 가 파일을 고치고 스크립트를 돌린다.
+- 실내 기물 하네스는 지금 파이썬(PR #1828 → #1870 으로 main 에 머지됨). 작업자는 Codex CLI 가 파일을 고치고 스크립트를 돌린다.
 
 ## 구성
 
@@ -41,7 +41,7 @@
    큐(동시 N) · 시도 3번 · 취소 · 재개           └ interior-props/editor/ (1단계 유일 입주)
                  │
                  ▼
-[저장] project.workshop(메타, 내보내기 제외) + 후보 PNG = assets.put sha (메모리 저장소면 dataURL)
+[저장] 이 기기의 IndexedDB `oprn-workshop` (프로젝트 범위 키별 판·후보 격자·고른 것·버린 이유)
 ```
 
 ### 1. 공방 판과 화면 (`src/editor/panels/leftWorkshopPane.ts`, `src/editor/workshop/`)
@@ -89,15 +89,16 @@ interface WorkshopRunner {
   새 기물은 사용자가 정의한다. 기준 그림(anchors) 고르기 = `brief.anchors` 규칙(걸이·바닥 무늬 제외, 위반 원본 제외).
 - 예시 그림 9장(`examples/`)은 `public/assets/harnesses/interior-props/examples/` 로 옮겨 번들한다.
 
-### 4. 저장 (`project.workshop`)
-```ts
-project.workshop = { version: 1, rounds: [{ id, harnessId, itemKey, itemDef?, created, note, base?,
-  runs: [{ letter, direction, status, attempt, history, review, grid, png: AssetRef | dataUrl }] }],
-  picks: { [itemKey]: { round, cand, at } }, feedback: [...] }
-```
-- 메타는 문서 안(작다), 후보 그림은 `assets.put`(16~48px PNG 라 한 장 1KB 안팎). 메모리 저장소면 dataURL.
-- 웹·단독 내보내기에서 `workshop` 을 뺀다(`webExport.ts` 가 참고문서를 빼는 자리). 자산 정리 참조 목록에 후보 sha 를 넣는다.
-- 정본 저장 규칙: 고른 것은 저장 후 다시 불러 확인한다(AGENTS 「프로젝트 정본 저장」).
+### 4. 저장 — 이 기기의 IndexedDB (2026-10-02 계획 단계에서 바꿈)
+처음 안은 `project.workshop` 문서 필드 + `assets.put` 이었다. 계획을 짜며 실측해 보니 문서 최상위 필드 하나를 더하면
+변경 영역·스토어 델타·제안 안전성·diff 집계를 모두 건드려야 하고, 후보는 고르기 전까지 프로젝트 정본이 아니다.
+그래서 1단계 후보는 **기기 저장소**에 둔다. 프로젝트 정본에 들어가는 것은 2단계의 「칩셋에 굽기」 결과뿐이다.
+
+- DB `oprn-workshop` v1, 저장소 `rounds`(판 하나 = 후보 N장의 격자·시도·검수), `picks`(기물별 고른 후보), `feedback`(버린 이유·메모), `items`(사용자가 정의한 새 기물).
+- 범위 키 = 조수 대화와 같은 `conversationScopeKey(projectIdentity, project)` — 같은 프로젝트를 다시 열면 같은 판이 보인다.
+- 그림은 저장하지 않는다. 팔레트 키 격자(16~48px, 한 장 수백 바이트)만 두고 화면이 그때그때 그린다.
+- IndexedDB 가 없으면(일부 프라이빗 모드·노드 테스트) 메모리로 산다 — 화면에 「새로 고침하면 사라집니다」를 띄운다.
+- 내보내기·웹 출판과 무관하다(문서 밖). 자산 정리(`pruneUnused`)와도 무관하다.
 
 ## 오류·한계
 - 연결 안 됨 / 401 → 판을 시작하지 않고 AI 설정으로 안내. 429 → 큐가 동시 수를 하나 줄이고 기다렸다 다시.
@@ -108,11 +109,11 @@ project.workshop = { version: 1, rounds: [{ id, harnessId, itemKey, itemDef?, cr
 
 ## 시험
 - 단위: 격자 렌더·깨짐 검사, 답 해석(코드 펜스·여분 글), `gate`, 실행기 상태 기계(가짜 chatCompletion 으로 FAIL→다시 그리기→PASS, 취소, 재개),
-  `project.workshop` 저장·불러오기·내보내기 제외.
+  IndexedDB 저장소(fake-indexeddb)와 메모리 폴백.
 - 화면: 모델 없이 로컬 응답(동반 서비스 모의, 메모리 「모델 없이 레인 실화면」 방식)으로 판·카드·고르기를 찍어 `verify-shots/workshop/` 에.
 - 실측: 실제 계정으로 실내 기물 3개 × 5장을 뽑아 시간·호출 수·검수 결과와 화면을 보고한다.
 - AGENTS 규칙대로 테스트·게이트 실행은 사용자가 시킬 때만.
 
 ## 순서·의존
-- PR #1828(파이썬 실내 하네스·예시 그림)을 먼저 머지하거나, 이 브랜치가 그 위에서 시작한다.
+- 파이썬 실내 하네스·예시 그림은 #1870 으로 main 에 있다. 이 브랜치는 그 위(780290ccc)에서 시작한다.
 - `src/harnesses/_core` 는 다른 스레드(몬스터·modern3·월드맵 아이콘)도 쓴다 — 매니페스트 형식은 덧붙이기만 한다.
