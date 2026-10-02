@@ -167,6 +167,13 @@ QA fixture는 메모리 전용이며 정본 프로젝트 저장 증거로 취급
 
 종족 그래픽 영역의 `전투 뒷모습` 리소스 선택기는 `graphic.backResourceId`를 편집한다. monster 리소스를 선택하거나 지울 수 있으며 기존 `currentSpecies`/`updateSpecies` 경로를 사용한다. 별도 필드 그래픽이나 정면 그래픽을 덮어쓰지 않는다. QA 선택자는 `db-monster-species-back-resource`. 후면 전투 방향에서만 적용하며 없으면 기존 그래픽을 사용한다.
 
+## DB 삭제의 스킬·주인공 권한 참조 (2026-10-02)
+
+- 스킬 삭제는 아이템의 `skillId` 외에 `learnedSkillId`(스킬북), `activateSkillId`(발동 효과), 직업 `battleCommands[].skillId`도 차단한다. 습득 목록에 없는 전투 명령 전용 스킬도 참조다.
+- 주인공 삭제는 시작·현재 파티 외에 직업 `equipmentPermissions.actorIds`, 장비 `equippableActorIds`, 아이템 `usableActorIds`와 레거시 `equipmentProfile.equippableActorIds`를 검사한다.
+- 이 필드들은 `io/references.ts`가 저장본 로드 시 검사하는 외래 키다. 현재 아이템 종류에서 숨겨진 필드도 저작값으로 보존되므로 삭제 가드에서 제외하지 않는다. 참조를 자동 삭제하지 않고 소유 레코드 이름을 안내한다.
+- 공용 검사 `projectDatabaseReferenceMessage`를 UI와 AI 삭제가 함께 사용한다. 회귀 소스: `test/databaseDirectReferenceDeletion.test.ts`(차단 후 데이터·undo 불변, 연결 해제 후 삭제·직렬화 왕복). 이 변경 세션에서는 테스트/게이트를 실행하지 않았다.
+
 ## 감사 후속: 참조를 보존하는 삭제 경로 (2026-09-20)
 
 - 기본 DB 9종의 삭제 검사는 `databaseRecordReferences.ts`의 `projectDatabaseReferenceMessage(project, collection, id)`가 소유한다. `databaseReferences.ts`는 현재 store를 전달하는 UI 어댑터다. AI 삭제는 자기 draft를 전달한다. store를 AI 도구에 import하지 않는다.
