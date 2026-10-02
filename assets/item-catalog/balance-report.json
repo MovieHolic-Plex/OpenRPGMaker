@@ -1,0 +1,424 @@
+{
+  "items": 1000,
+  "economy": {
+    "referenceHp": 5200,
+    "referenceMp": 450,
+    "hpGold": 0.9,
+    "mpGold": 4,
+    "fieldDiscount": 0.65,
+    "partyMultiplier": 3.5,
+    "permanentPointGold": 900
+  },
+  "baselineCommit": "7d70caa77",
+  "before": {
+    "functionalItems": 660,
+    "uniqueEffects": 404,
+    "partyMedicines": 4,
+    "percentageMedicines": 21,
+    "statusMedicines": 84
+  },
+  "after": {
+    "functionalItems": 708,
+    "uniqueEffects": 627,
+    "partyMedicines": 50,
+    "percentageMedicines": 45,
+    "statusMedicines": 156
+  },
+  "itemOnlySkills": 48,
+  "battleRoles": {
+    "singleDamage": 30,
+    "allEnemyDamage": 12,
+    "debuffs": 6
+  },
+  "professionRestrictedManuals": 48,
+  "inconsistentEquivalentPrices": [],
+  "dominatedPureHeals": [],
+  "growthProbeHpCount": 1202,
+  "phases": [
+    {
+      "level": 1,
+      "starterActors": [
+        {
+          "id": "actor_hero",
+          "hp": 514,
+          "mp": 43
+        },
+        {
+          "id": "actor_guardian",
+          "hp": 514,
+          "mp": 43
+        },
+        {
+          "id": "actor_mage",
+          "hp": 514,
+          "mp": 43
+        },
+        {
+          "id": "actor_scout",
+          "hp": 514,
+          "mp": 43
+        }
+      ]
+    },
+    {
+      "level": 10,
+      "starterActors": [
+        {
+          "id": "actor_hero",
+          "hp": 553,
+          "mp": 46
+        },
+        {
+          "id": "actor_guardian",
+          "hp": 553,
+          "mp": 46
+        },
+        {
+          "id": "actor_mage",
+          "hp": 553,
+          "mp": 46
+        },
+        {
+          "id": "actor_scout",
+          "hp": 553,
+          "mp": 46
+        }
+      ]
+    },
+    {
+      "level": 20,
+      "starterActors": [
+        {
+          "id": "actor_hero",
+          "hp": 688,
+          "mp": 58
+        },
+        {
+          "id": "actor_guardian",
+          "hp": 688,
+          "mp": 58
+        },
+        {
+          "id": "actor_mage",
+          "hp": 688,
+          "mp": 58
+        },
+        {
+          "id": "actor_scout",
+          "hp": 688,
+          "mp": 58
+        }
+      ]
+    },
+    {
+      "level": 40,
+      "starterActors": [
+        {
+          "id": "actor_hero",
+          "hp": 1247,
+          "mp": 104
+        },
+        {
+          "id": "actor_guardian",
+          "hp": 1247,
+          "mp": 104
+        },
+        {
+          "id": "actor_mage",
+          "hp": 1247,
+          "mp": 104
+        },
+        {
+          "id": "actor_scout",
+          "hp": 1247,
+          "mp": 104
+        }
+      ]
+    },
+    {
+      "level": 60,
+      "starterActors": [
+        {
+          "id": "actor_hero",
+          "hp": 2191,
+          "mp": 183
+        },
+        {
+          "id": "actor_guardian",
+          "hp": 2191,
+          "mp": 183
+        },
+        {
+          "id": "actor_mage",
+          "hp": 2191,
+          "mp": 183
+        },
+        {
+          "id": "actor_scout",
+          "hp": 2191,
+          "mp": 183
+        }
+      ]
+    },
+    {
+      "level": 80,
+      "starterActors": [
+        {
+          "id": "actor_hero",
+          "hp": 3520,
+          "mp": 294
+        },
+        {
+          "id": "actor_guardian",
+          "hp": 3520,
+          "mp": 294
+        },
+        {
+          "id": "actor_mage",
+          "hp": 3520,
+          "mp": 294
+        },
+        {
+          "id": "actor_scout",
+          "hp": 3520,
+          "mp": 294
+        }
+      ]
+    },
+    {
+      "level": 99,
+      "starterActors": [
+        {
+          "id": "actor_hero",
+          "hp": 5140,
+          "mp": 430
+        },
+        {
+          "id": "actor_guardian",
+          "hp": 5140,
+          "mp": 430
+        },
+        {
+          "id": "actor_mage",
+          "hp": 5140,
+          "mp": 430
+        },
+        {
+          "id": "actor_scout",
+          "hp": 5140,
+          "mp": 430
+        }
+      ]
+    }
+  ],
+  "combatBudgets": [
+    {
+      "level": 1,
+      "enemyId": "enemy_slime",
+      "enemyHp": 324,
+      "enemyGold": 30,
+      "previews": [
+        {
+          "itemId": "item_shared_battle_fire-1",
+          "price": 145,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 51,
+          "goldPerUse": 145
+        },
+        {
+          "itemId": "item_shared_battle_fire-3",
+          "price": 185,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 75,
+          "goldPerUse": 185
+        },
+        {
+          "itemId": "item_shared_battle_fire-4",
+          "price": 370,
+          "uses": 1,
+          "scope": "allEnemies",
+          "neutralDamagePerTarget": 57,
+          "goldPerUse": 370
+        },
+        {
+          "itemId": "item_shared_battle_fire-6",
+          "price": 250,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 115,
+          "goldPerUse": 250
+        },
+        {
+          "itemId": "item_shared_battle_fire-7",
+          "price": 915,
+          "uses": 2,
+          "scope": "allEnemies",
+          "neutralDamagePerTarget": 83,
+          "goldPerUse": 457.5
+        }
+      ]
+    },
+    {
+      "level": 20,
+      "enemyId": "enemy_mine_skel_archer",
+      "enemyHp": 256,
+      "enemyGold": 68,
+      "previews": [
+        {
+          "itemId": "item_shared_battle_fire-1",
+          "price": 145,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 51,
+          "goldPerUse": 145
+        },
+        {
+          "itemId": "item_shared_battle_fire-3",
+          "price": 185,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 75,
+          "goldPerUse": 185
+        },
+        {
+          "itemId": "item_shared_battle_fire-4",
+          "price": 370,
+          "uses": 1,
+          "scope": "allEnemies",
+          "neutralDamagePerTarget": 57,
+          "goldPerUse": 370
+        },
+        {
+          "itemId": "item_shared_battle_fire-6",
+          "price": 250,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 115,
+          "goldPerUse": 250
+        },
+        {
+          "itemId": "item_shared_battle_fire-7",
+          "price": 915,
+          "uses": 2,
+          "scope": "allEnemies",
+          "neutralDamagePerTarget": 83,
+          "goldPerUse": 457.5
+        }
+      ]
+    },
+    {
+      "level": 40,
+      "enemyId": "enemy_dragon",
+      "enemyHp": 1176,
+      "enemyGold": 222,
+      "previews": [
+        {
+          "itemId": "item_shared_battle_fire-1",
+          "price": 145,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 61,
+          "goldPerUse": 145
+        },
+        {
+          "itemId": "item_shared_battle_fire-3",
+          "price": 185,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 85,
+          "goldPerUse": 185
+        },
+        {
+          "itemId": "item_shared_battle_fire-4",
+          "price": 370,
+          "uses": 1,
+          "scope": "allEnemies",
+          "neutralDamagePerTarget": 67,
+          "goldPerUse": 370
+        },
+        {
+          "itemId": "item_shared_battle_fire-6",
+          "price": 250,
+          "uses": 1,
+          "scope": "enemy",
+          "neutralDamagePerTarget": 125,
+          "goldPerUse": 250
+        },
+        {
+          "itemId": "item_shared_battle_fire-7",
+          "price": 915,
+          "uses": 2,
+          "scope": "allEnemies",
+          "neutralDamagePerTarget": 93,
+          "goldPerUse": 457.5
+        }
+      ]
+    }
+  ],
+  "examples": [
+    {
+      "id": "item_potion",
+      "name": "회복약",
+      "price": 60,
+      "description": "아군 하나의 HP를 50 회복합니다."
+    },
+    {
+      "id": "item_ether",
+      "name": "마력약",
+      "price": 135,
+      "description": "아군 하나의 MP를 30 회복합니다."
+    },
+    {
+      "id": "item_elixir",
+      "name": "엘릭서",
+      "price": 7275,
+      "description": "아군 하나의 HP와 MP를 모두 크게 회복하는 귀한 약입니다."
+    },
+    {
+      "id": "item_shared_healing_rose-1",
+      "name": "맑은 장미 회복액",
+      "price": 395,
+      "description": "체력이 높은 동료에게 맞춘 장미 약입니다. 맑은 장미 회복액을 사용하면 아군 하나에게 HP 최대치의 8% + 5 회복 효과를 줍니다."
+    },
+    {
+      "id": "item_shared_healing_hibiscus-8",
+      "name": "축복받은 히비스커스 회복액",
+      "price": 2995,
+      "description": "파티용 히비스커스 회복액입니다. 축복받은 히비스커스 회복액을 사용하면 생존 중인 아군 전체에게 HP 945 회복 효과를 줍니다."
+    },
+    {
+      "id": "item_shared_growth_attack-1",
+      "name": "맑은 완력 씨앗",
+      "price": 915,
+      "description": "선택한 아군의 공격 1을 영구적으로 올립니다. 필드에서 소모하는 희귀 성장품입니다."
+    },
+    {
+      "id": "item_shared_growth_attack-8",
+      "name": "축복받은 완력 씨앗",
+      "price": 14280,
+      "description": "선택한 아군의 공격 10을 영구적으로 올립니다. 필드에서 소모하는 희귀 성장품입니다."
+    },
+    {
+      "id": "item_shared_battle_fire-4",
+      "name": "숙성한 화염 투척물",
+      "price": 370,
+      "description": "저위력 적 전체 공격을 발동하는 숙성한 화염 투척물입니다. 한 번 사용하면 소모됩니다."
+    },
+    {
+      "id": "item_shared_battle_fire-7",
+      "name": "비전의 화염 투척물",
+      "price": 915,
+      "description": "적 전체 공격을 발동하는 비전의 화염 투척물입니다. 한 물건으로 2회 사용한 뒤 소모됩니다."
+    }
+  ],
+  "sourceHashes": {
+    "src/project/defaults/sharedItemCatalog.json": "ad3b122dd77cf342b12999f20ed6718775f6a4fd4b005498499a157e73429f8a",
+    "src/project/defaults/defaultItemBalance.ts": "f5ceabe35f608cea26ed0405b5bd18ac36b19603640a0fa5f45d38786897bc4a",
+    "src/project/defaults/defaultSharedItemSkills.ts": "1103320ac6473ba6ed69f9800cb3d6d8f7f61375667494d72c5f2cf16c223760",
+    "scripts/content/lib/shared-item-effects.mjs": "05336ab23db3c77a57ed7ce2bcd0afaa16b168bc7eb7dc01dd4fa005d6abe517"
+  },
+  "issues": [],
+  "complete": true
+}

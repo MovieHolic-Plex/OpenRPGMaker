@@ -2265,3 +2265,31 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - AI 미연결이면 상태줄에 연결 안내가 뜨고 버튼이 되살아난다.
 - 검증: `test/worldCanonInterview.test.ts` 12케이스(본문 초안 파싱·클램프·펜스 내성·합성 규칙·컨텍스트 주입·표면 렌더 포함) + 세계관 계약 11파일 = **73케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v6/` 4장.
 
+
+## 공용 아이템 1,000종과 통일 도트 작업 (2026-10-01)
+
+사용자 요청의 대상은 특정 프로젝트 행이 아니라 **모든 새 프로젝트의 기본 데이터**다. 기존 228종을 보존하고 `sharedItemCatalog.json`의 772종을 `defaultItemRecords`에서 정규화해 합친다. 장비 86종은 별도 컬렉션이다. 빈 프로젝트·장르 프로젝트는 `createProjectWithMaps → defaultDatabase` 경로로, 기본 예제는 `fixture:sync`로 동기화한 픽스처로 1,000종을 받는다. 예제 생성 시 `ensureBundledResourceProfiles`로 새 그림 및 실제 크기 정보도 연결한다.
+
+약·음식·상태 치료·전투 소모품·기술서·성장 씨앗·포획·돌봄·재료·열쇠·농사 도구 등은 기존 엔진 필드만 쓴다. 성장 씨앗의 영구 성장 필드는 공격·방어·정신·민첩 네 가지다. HP/MP 영구 성장은 지원하지 않으므로 그 효과를 설명에 쓰지 않는다. 일반 재료·미끼·열쇠 설명은 별도의 제작·낚시·문 열기 이벤트가 자동 실행된다고 주장하지 않는다.
+
+그림 계약은 사용자 승인 시안에 맞춘 32×32, 투명 배경, 이진 알파, 최대 32색, 중앙 정렬·긴 변 최대 26픽셀이다. 기존 `cc0-jetrel-*` ID/경로는 참조 호환용으로 유지하며 새 그림의 출처는 `generated`다. 기존 저장 프로필의 16/128px 오표기는 등록된 실제 크기 32px로 수렴한다. 아이템 행 자체는 로드에서 재주입하지 않으며 저자가 삭제한 항목을 복구하지 않는다.
+
+저작 입력·프롬프트·완료 SHA는 `assets/item-catalog/`에서 관리한다. 등록된 그림 1,054종 모두 생성·저장·시각 검토를 마쳤다. `generation-manifest.json`의 SHA와 실제 PNG가 맞고 시각 검토를 마친 뒤에만 전체 교체 완료로 보고한다. 자세한 절차: `assets/item-catalog/README.md`.
+
+공용 시드 화면 확인: `node scripts/content/capture-shared-item-defaults.mjs`는 격리 dev 서버의 `?blankProject=1`에서 실제 자료집을 열어 전체 1,086행·아이템 필터 1,000행을 읽는다. 신규 「맑은 쑥 회복액」 검색·상세 HP 115·가격 120과 32×32 그림 로드를 확인했고 pageerror 0건이었다. `verify-shots/shared-item-defaults/`에 실제 편집기 화면과 결과 JSON을 남긴다. 이 화면은 공용 생성 경로를 증명하는 저장 없는 QA이며 특정 사용자 프로젝트 정본 저장의 증거로 쓰지 않는다. 전체 그림 생성 완료 여부는 별도로 `assets/item-catalog/generation-manifest.json`·`visual-review.json`·실제 PNG를 대조한다.
+
+`scripts/content/inspect-shared-item-defaults.mts`는 공용 빈 프로젝트를 프로덕션 `serialize`로 파일에 내보낸 뒤 실제 파일을 다시 읽고 `deserialize`로 재로드한다. 확인 결과 아이템 1,000종이 동일했고 삭제한 신규 행도 재로드 후 부활하지 않았다. 이는 공용 기본값의 저장 형식 계약 확인이며 별도의 사용자 SQLite 프로젝트에 쓰지 않는다. 이미지 생성의 완료 판단은 이 데이터 재로드 결과로 대신하지 않는다.
+
+신규 부활 깃털 16종은 `onlyEffectiveOnDeadActors`가 설정된 약이다. 엔진의 `itemAllowsBattle`은 이 조건을 전투 사용에서 제외하므로 저작 `occasion`도 `field`로 맞추고 설명에 필드 사용을 명시했다(2026-10-02). 기존 불사조 깃도 같은 계약이다. `scripts/content/inspect-shared-item-defaults.mts`는 신규 772종의 저작 필드/전투 사용 설정과 실제 사용 허용 함수 사이의 불일치도 보고하며, 빈 프로젝트와 기본 예제 모두 불일치 0개를 확인했다. 픽스처는 부활 16종만 갱신됐고 총 1,000종과 다른 파생 테이블은 유지됐다.
+
+공용 아이콘은 새 `oprn-item-*` ID도 기존 이미지 리소스 해석기를 거쳐 게임 내보내기에 포함된다. `scripts/content/inspect-shared-item-export.mts`는 위에서 저장한 새 프로젝트 파일을 읽어 프로덕션 `collectWebExportAssets`를 호출한다. 2026-10-02 확인에서 등록 아이콘 1,054개의 리소스 ID와 실제 내보내기 경로가 모두 일치했고 누락 0개였다. 생성된 파일 수·바이트와 미생성 그림 수는 별도로 집계한다. 경로가 내보내기에 등록됐다는 사실만으로 미생성 그림까지 완료라고 보고하지 않는다.
+
+이미지 도구가 독립 요청 여러 개를 돌려줘도 정규화와 완료 명세 쓰기는 직렬로 한다. `scripts/content/save-shared-item-art-batch.mjs`는 각 요청의 실제 반환 `source`와 원문 프롬프트를 함께 보관한 뒤 `scripts/content/normalize-shared-item-icon.mjs`를 한 파일씩 호출한다. 완료 명세는 임시 파일에 전체 JSON을 쓰고 원자적으로 교체해 검토 중인 독자가 잘린 문서를 읽지 않게 한다. 생성의 동시 처리와 명세의 동시 쓰기를 혼동하지 말 것. 완료 판단은 여전히 실제 PNG·SHA·시각 검토의 대조이며, 배치 상태 파일만으로 대신하지 않는다.
+
+`scripts/content/inspect-shared-item-art.mjs`는 실제 PNG를 디코드해 SHA·캔버스·이진 알파·색 수·외곽 범위·중앙 정렬을 확인하고 중복 요청 ID/경로와 예상 밖 완료 명세 항목을 거부한다. 시각 검토는 같은 SHA뿐 아니라 `subject`와 `style` 모두 `accepted`여야 완료 수에 포함된다. 이전 수정 사유는 별도 `note`에 남긴다.
+
+위 이미지 검사에서 전체 완료를 확인한 뒤 `scripts/content/capture-shared-item-defaults.mjs`를 실행하면, 새 프로젝트 자료집 화면과 함께 완료 명세의 모든 그림 URL을 32개씩 실제 브라우저에서 로드한다. 현재 SHA를 캐시 키에 넣고 `artworkLoads.checked`·실패 ID·실제 32×32 크기를 보고한다. 이미지가 미완성이면 이 전체 로드 확인은 보류하고 `artworkStillInProgress`를 참으로 남긴다.
+
+최종 완료 근거는 `assets/item-catalog/completion-report.json`에 소스 SHA와 함께 보관했다. 실제 PNG 검사 1,054/1,054·미완료/미검토/문제 0개, 새 프로젝트 자료집 아이템 1,000종·이미지 URL 1,054개 모두 32×32 로드·pageerror 0건, 내보내기 경로 1,054개·누락 0개를 확인했다. 빈 프로젝트와 예제·6장르 모두 1,000종이고 프로덕션 직렬화 재로드에서 전 항목이 같으며 삭제한 행도 복원되지 않았다. 아이템 1,000종과 장비 86종 모두 등록된 완료 그림을 갖고 이름·설명·가격 누락도 없다. 그림 파일 합계는 1,235,714바이트다.
+
+공용 효과·가격 재조정(2026-10-02): [공용 아이템 밸런스](shared-item-balance.md). 효과 조합 404→627, 파티 약 4→50, 아이템 전용 스킬 48종, 직업 한정 비전서 48종. 실제 기본 배우 성장 곡선과 충전 횟수를 가격에 반영한다. 새 프로젝트에서만 적용하고 저장된 저작 데이터는 수렴시키지 않는다.

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **115쪽 / 4194KB / 약 1,209,946 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **116쪽 / 4211KB / 약 1,215,103 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 561KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3432 | ~162,821 |
 | `openwiki/editor-ai-tools.md` | 304KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2548 | ~87,517 |
-| `openwiki/editor-database.md` | 382KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2268 | ~111,485 |
+| `openwiki/editor-database.md` | 389KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2296 | ~113,651 |
 | `openwiki/editor-event-authoring.md` | 165KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 960 | ~47,991 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
@@ -92,7 +92,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/refmap-town-outside.md` | 2 | `D_REFMAP_Interior_Extra.png`, `preset.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
 | `openwiki/runtime-battle.md` | 19 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `assets/generated/charset-battlers/actorN-k.png`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
-| `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
+| `openwiki/runtime-m2-flow-controls.md` | 4 | `scripts/capture/capture-parallax-easing.mjs`, `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 29 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `phaser.min.js`, `render-relief-maps.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 4 | `output/evidence/stardew/stardew-legacyDb.json`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
@@ -570,7 +570,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2533` 타이틀 오프닝 효과 도구 (2026-09-25)
 - `L2539` 크로노 트리거식 필드 도구 인자 (2026-09-26)
 
-### `openwiki/editor-database.md` — 382KB · 2268줄 · ~111,485 토큰 · 통째읽기 잘림 · 깨진 줄 8
+### `openwiki/editor-database.md` — 389KB · 2296줄 · ~113,651 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
 - `L3` 레트로 전투 기믹 편집 칸 (2026-09-30)
 - `L11` 도트 연출 탭 · 애니메이션 갤러리 (2026-09-30, A2)
@@ -697,6 +697,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L2238` 세계 설정 = AI 문답 인터뷰 (2026-09-22 v6)
   - `L2249` 세계 개요 스프레드 헤드 삭제 (2026-09-22 v6)
   - `L2258` 세계관 본문 AI 도움 — 초안·이어쓰기 (2026-09-22 v7)
+- `L2269` 공용 아이템 1,000종과 통일 도트 작업 (2026-10-01)
 
 ### `openwiki/editor-event-authoring.md` — 165KB · 960줄 · ~47,991 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
@@ -1369,22 +1370,22 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1395` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
 - `L1412` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
 
-### `openwiki/runtime-m2-flow-controls.md` — 39KB · 295줄 · ~10,751 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 43KB · 298줄 · ~11,726 토큰
 
 - `L5` Quest companion presence query (2026-10-01)
 - `L15` Map-effect repair boundary (2026-09-06)
 - `L22` Sound Layer audio controls (2026-09-06)
 - `L29` M2 Runtime Flow Controls
-- `L59` Storage chest authoring
-- `L65` Page 3 location/vehicle compatibility (2026-07-30)
-- `L69` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
-- `L82` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
-  - `L141` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
-  - `L148` 맵 위를 흐르는 구름 그림자 (2026-09-14)
-  - `L222` Weather sound (2026-09-21)
-  - `L236` Map-wide atmosphere presets (2026-09-21)
-  - `L257` Genre ambience presets and sound pairing (2026-09-21)
-  - `L281` Thirty audiovisual presets — evidence (2026-09-21)
+- `L62` Storage chest authoring
+- `L68` Page 3 location/vehicle compatibility (2026-07-30)
+- `L72` 저장된 M2 명령 실행 연결 복구 (2026-09-05)
+- `L85` 좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10)
+  - `L144` 이동 중 경로 재지정 — 2026-09-05 브라우저 적대적 QA
+  - `L151` 맵 위를 흐르는 구름 그림자 (2026-09-14)
+  - `L225` Weather sound (2026-09-21)
+  - `L239` Map-wide atmosphere presets (2026-09-21)
+  - `L260` Genre ambience presets and sound pairing (2026-09-21)
+  - `L284` Thirty audiovisual presets — evidence (2026-09-21)
 
 ### `openwiki/runtime-pre-edit-routing.md` — 108KB · 781줄 · ~32,382 토큰 · 통째읽기 잘림
 
@@ -1531,6 +1532,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L198` How authors reach the sounds
 - `L215` Project sound descriptions
 - `L242` Traps
+
+### `openwiki/shared-item-balance.md` — 6KB · 58줄 · ~2,016 토큰
+
+- `L5` 소유 경로
+- `L12` 효과 역할
+- `L30` 가격 기준
+- `L40` 확인 근거
+- `L53` 큰 JSON의 타입 경계
 
 ### `openwiki/slates-agent-entry.md` — 4KB · 40줄 · ~1,099 토큰
 
