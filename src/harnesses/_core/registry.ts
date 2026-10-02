@@ -6,10 +6,12 @@ import type { GenrePackId } from "../../project/genrePackId";
 import { harnessAppliesTo, type HarnessManifest } from "./manifest";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../monster-collect-species/harness";
 import { MODERN_CHIPSET_HARNESS } from "../modern-chipset/harness";
+import { INTERIOR_PROPS_HARNESS } from "../interior-props/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
   MODERN_CHIPSET_HARNESS,
+  INTERIOR_PROPS_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {
@@ -18,4 +20,9 @@ export function getHarness(id: string): HarnessManifest | undefined {
 
 export function harnessesForGenre(genre: GenrePackId | null | undefined): HarnessManifest[] {
   return HARNESSES.filter((harness) => harnessAppliesTo(harness, genre));
+}
+
+/** 에디터 「공방」에 보일 하네스 — 에디터 화면이 있고 실행기가 있고 장르가 맞는 것. */
+export function workshopHarnesses(genre: GenrePackId | null | undefined): HarnessManifest[] {
+  return harnessesForGenre(genre).filter((harness) => harness.entrypoints.editorUi && harness.workshop !== undefined);
 }

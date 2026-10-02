@@ -43,6 +43,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
+   - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
    - Editor validation: `openwiki/editor-validation.md`
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
    - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 에 출처를 커밋하고 `scripts/content/prepare-*-references.mjs` 로 `src/assets/*References.json` 번들을 만들어 타일셋 정의와 `ensureBundledTilesets` 에 배선한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **117쪽 / 4234KB / 약 1,221,722 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **119쪽 / 4237KB / 약 1,222,787 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -949,6 +949,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
+### `openwiki/editor-workshop.md` — 2KB · 12줄 · ~699 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
 ### `openwiki/emerald-fields.md` — 23KB · 208줄 · ~7,314 토큰
 
 - `L17` 95% 이상 유사도 요청에 따른 계곡 개정
@@ -991,6 +995,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L26` 규칙
 - `L36` 기존 것과의 관계 (2026-10-01 실측)
 - `L42` 하네스 목록
+
+### `openwiki/harnesses/interior-props.md` — 1KB · 11줄 · ~366 토큰
+
+절 제목 없음 (평면 목록 페이지).
 
 ### `openwiki/harnesses/modern-chipset.md` — 3KB · 38줄 · ~846 토큰
 

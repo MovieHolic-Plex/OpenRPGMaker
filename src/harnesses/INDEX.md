@@ -7,6 +7,7 @@
 |---|---|---|---|---|
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
 | `modern-chipset` | 현대 칩셋 도트 (modern3) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
+| `interior-props` | 손 도트 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -47,3 +48,19 @@ modern3 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 - `reject` — 버리기: 사용자가 버린 후보와 이유를 기록한다(다음 판의 '하지 말 것').
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## interior-props — 손 도트 실내 기물 (16px)
+
+실내 칩셋(interior-chipset, 48칸 폭)의 가구·소품을 3/4 시점(꼭대기 윗면 3행 이상 + 남쪽 면)으로 다시 찍거나 새로 정의한다. 후보 5장을 다른 방향으로 그리고 기계 검사 → 자기 점검 → 독립 검수(꼭대기 면 규칙) → 최대 3번 다시 그린 뒤 사람이 고른다.
+
+**이럴 때 쓴다:**
+- 실내 맵의 가구·소품(책장·옷장·벽난로·진열장·궤짝…)이 정면도라 3/4 로 안 읽힌다는 지적이 있을 때
+- 실내 칩셋에 없는 기물을 새로 만들어야 할 때(이름·설명·칸 수를 정의)
+- 에디터 사용자가 자기 AI 계정으로 기물 후보를 뽑아 고르고 싶을 때(왼쪽 막대 「공방」)
+
+**단계** (`npm run harness -- interior-props <단계>`):
+- `draw` — 후보 그리기: 기물 하나에 후보 5장(방향 A~E). 깨지면 고치기 2번, 자기 점검 1번.
+- `review` — 독립 검수: 다른 대화의 vision 모델이 3/4·「지금보다 나빠졌나」를 본다. 가구는 꼭대기 윗면 3행 미만이면 FRONT.
+- `pick` — 고르기: 사람이 고르거나 이유를 붙여 버린다. 버린 이유는 다음 판의 「하지 말 것」이 된다.
+
+**들어오는 길:** CLI 아직 없음 · 에디터 화면 있음 · 조수 도구 아직 없음
