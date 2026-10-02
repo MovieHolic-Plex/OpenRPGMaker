@@ -6,8 +6,8 @@
  "palette": "industrial",
  "overlays": [
   "rail",
-  "smog",
-  "sprawl:steam"
+  "sprawl:steam",
+  "smog"
  ],
  "kind": "land"
 }

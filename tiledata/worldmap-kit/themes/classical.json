@@ -3,7 +3,7 @@
  "id": "classical",
  "name": "고대 그리스·로마",
  "iconset": "classical",
- "palette": "original",
+ "palette": "classical",
  "overlays": [],
  "kind": "land"
 }

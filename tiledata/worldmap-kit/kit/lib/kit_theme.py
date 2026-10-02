@@ -11,6 +11,7 @@
   rail             흙길 → 철길(자갈 바닥 + 침목 + 두 줄 레일), 나무 다리 → 철교(트러스)
   sprawl:<style>   도시 둘레를 시가지 구역으로: 구역 바닥(modern = 콘크리트 보도, steam = 자갈 포장) + 칸마다 건물
                    (modern = 주택·아파트·사무동·주차장 / steam = 벽돌 연립·공장·가스탱크·석탄장, 굴뚝 연기)
+  erase_roads      흙길을 지운다(옆 바닥으로 메움) — 문명 이전 세계
   smog             공업 도시 둘레를 그을음 빛으로 디더(거리에 따라 4단)
   kind=space       땅 대신 우주: 바다 = 공허, 땅 = 성운 구역(바닥 종류별 색, 경계는 노이즈로 휜다), 산·절벽 = 소행성대,
                    화산 = 붉은 거성, 숲 = 성단, 사구 바다 = 이온 폭풍, 길 = 초공간 항로, 다리 = 워프 게이트
@@ -105,20 +106,26 @@ class Ctx:
         return bool(strip.any())
 
     def links(self, x, y):
-        """길 칸이 이어지는 방향(길·다리·경사로 쪽, 그리고 옛 길이 실제로 들어간 발자국 쪽)."""
-        out = []
+        """길 칸이 이어지는 방향. 길·다리는 그대로, 경사로·장소 쪽은 옛 길 흔적이 그쪽 가장자리에 있을 때만.
+        장소 쪽은 길이 거기서 끝나는 칸(장소 아닌 연결이 하나 이하)에서만 — 길이 장소 옆을 지나가며 빗살 팔을 돋우지 않게(QA 2026-10-02).
+        장소 = 실제 아이콘 발자국(occupied). world 의 foot 칸에는 장소 밖 길 칸도 섞여 있어 그것을 장소로 치면 선로가 경사로 앞에서 끊겼다."""
+        out, side = [], []
         for d, (dx, dy) in DIRS.items():
             X, Y = x + dx, y + dy
             if not (0 <= X < self.W and 0 <= Y < self.H):
                 continue
-            if self.road[Y, X] and not self.foot[Y, X] or (X, Y) in self.bridge or self.ramp[Y, X]:
+            if (self.road[Y, X] and not self.occupied[Y, X]) or (X, Y) in self.bridge:
                 out.append(d)
-            elif self.foot[Y, X] and self._entered(X, Y, d):
+            elif self.ramp[Y, X] and self._entered(X, Y, d):
                 out.append(d)
+            elif self.occupied[Y, X] and self._entered(X, Y, d):
+                side.append(d)
+        if len(out) <= 1 and side:
+            out.append(side[0])
         return out
 
     def path_cells(self):
-        return [(int(x), int(y)) for y, x in zip(*np.nonzero(self.road)) if not self.foot[y, x]]
+        return [(int(x), int(y)) for y, x in zip(*np.nonzero(self.road)) if not self.occupied[y, x]]
 
 
 def band_mask(links):
@@ -217,23 +224,26 @@ def draw_asphalt(t, band, links, x, y):
 
 
 def draw_concrete_bridge(t, d, x, y):
+    """콘크리트 다리 — 차도 폭은 길과 같은 8px(띠 4~11), 바깥 1px 난간, 물 위로 그림자 2px + 4px 마다 교각."""
+    rail_l, rail_d, shade = hx('d3d6dc'), hx('6f727c'), (t.astype(np.float32) * .55).astype(np.uint8)
     if d == 'h':
-        t[B0 - 1:B1 + 1, :] = ASPH['mid']
-        t[B0 - 2, :] = hx('7c808a')
-        t[B0 - 1, :] = hx('c9ccd3')
-        t[B1, :] = hx('8d919b')
-        t[B1 + 1, :] = hx('3a3d46')
-        for xx in range(0, TS, 4):
-            t[B0 - 2, xx] = hx('e3e6ec')
+        t[B1 + 1:B1 + 3, :] = shade[B1 + 1:B1 + 3, :]
         for xx in range(TS):
+            if (x * TS + xx) % 8 in (2, 3):
+                t[B1 + 1:B1 + 4, xx] = hx('8d919b')
+        t[B0:B1, :] = ASPH['mid']
+        t[B0 - 1, :] = rail_l
+        t[B1, :] = rail_d
+        for xx in range(TS):
+            if (x * TS + xx) % 4 == 0:
+                t[B0 - 2, xx] = rail_l
             if (x * TS + xx) // 3 % 2 == 0:
                 t[7, xx] = ASPH['line']
     else:
-        t[:, B0 - 1:B1 + 1] = ASPH['mid']
-        t[:, B0 - 2] = hx('7c808a')
-        t[:, B0 - 1] = hx('c9ccd3')
-        t[:, B1] = hx('8d919b')
-        t[:, B1 + 1] = hx('3a3d46')
+        t[:, B1 + 1:B1 + 3] = shade[:, B1 + 1:B1 + 3]
+        t[:, B0:B1] = ASPH['mid']
+        t[:, B0 - 1] = rail_l
+        t[:, B1] = rail_d
         for yy in range(TS):
             if (y * TS + yy) // 3 % 2 == 0:
                 t[yy, 7] = ASPH['line']
@@ -241,7 +251,7 @@ def draw_concrete_bridge(t, d, x, y):
 
 
 # ──────────────────────────────── 철길 ────────────────────────────────
-RAIL = dict(bal_d=hx('4a4038'), bal=hx('62584e'), bal_l=hx('7e7266'), tie=hx('3e2a1c'), tie_l=hx('6b4a33'),
+RAIL = dict(bal_d=hx('4a4038'), bal=hx('5e544a'), bal_l=hx('766a5e'), tie=hx('7a5232'), tie_l=hx('a0744a'),
             rail=hx('c8ccd4'), rail_d=hx('4a4e58'), stop=hx('c2452f'))
 
 
@@ -255,17 +265,17 @@ def draw_rail(t, band, links, x, y):
     lk = set(links)
     r1, r2 = B0 + 1, B1 - 3                          # 레일 두 줄: 5, 9 (+ 그림자 1px)
 
-    def ties_h(x0, x1):          # 가로 선로의 침목(세로 막대)
+    def ties_h(x0, x1):          # 가로 선로의 침목(세로 막대, 띠 끝까지 — 레일 밖으로 내밀어 1배에서도 철길로 읽힌다)
         for xx in range(x0, x1):
             if (x * TS + xx) % 3 == 0:
-                t[B0 + 1:B1 - 1, xx] = RAIL['tie']
-                t[B0 + 1, xx] = RAIL['tie_l']
+                t[B0:B1, xx] = RAIL['tie']
+                t[B0, xx] = RAIL['tie_l']
 
     def ties_v(y0, y1):
         for yy in range(y0, y1):
             if (y * TS + yy) % 3 == 0:
-                t[yy, B0 + 1:B1 - 1] = RAIL['tie']
-                t[yy, B0 + 1] = RAIL['tie_l']
+                t[yy, B0:B1] = RAIL['tie']
+                t[yy, B0] = RAIL['tie_l']
 
     def rail_h(yy, x0, x1):
         t[yy, x0:x1] = RAIL['rail']
@@ -304,8 +314,7 @@ def draw_rail(t, band, links, x, y):
         else:
             rail_h(oy, 0, ox + 2)
             rail_h(iy, 0, ix + 2)
-    else:                                            # 갈림(3·4갈래): 각 팔을 가운데까지 + 가운데 전철기 판
-        t[B0 + 1:B1 - 1, B0 + 1:B1 - 1] = RAIL['tie']
+    else:                                            # 갈림(3·4갈래): 각 팔을 가운데까지 + 가운데 전철기 판(레일 위에)
         for d in lk:
             if d == 'E':
                 ties_h(B1, TS)
@@ -323,6 +332,10 @@ def draw_rail(t, band, links, x, y):
                 ties_v(B1, TS)
                 rail_v(r1, B0, TS)
                 rail_v(r2, B0, TS)
+    if len(lk) >= 3:
+        t[B0 + 1:B1 - 1, B0 + 1:B1 - 1] = hx('4a3a2c')
+        t[B0 + 1, B0 + 1:B1 - 1] = RAIL['tie_l']
+        t[B0 + 3:B1 - 3, B0 + 3:B1 - 3] = RAIL['rail']
     if len(lk) == 1:                                 # 끝: 차막이
         d = next(iter(lk))
         if d in 'EW':
@@ -333,34 +346,37 @@ def draw_rail(t, band, links, x, y):
 
 
 def draw_truss_bridge(t, d, x, y):
-    iron, iron_d, iron_l = hx('4b4f5c'), hx('2c2f38'), hx('8a90a2')
+    """철교 — 선로 양옆에 현재(위·아래 보) + X 자 사재가 이어지는 트러스(4px 마다 칸)."""
+    iron, iron_d, iron_l = hx('4b4f5c'), hx('22252c'), hx('9aa0b2')
+    shade = (t.astype(np.float32) * .55).astype(np.uint8)
+    def truss_strip(get, n0):              # 3줄짜리 트러스 띠: 위 현재 · X 사재 · 아래 현재
+        for k in range(TS):
+            g = (n0 + k) % 4
+            get(0, k, iron_l)
+            get(2, k, iron_d)
+            get(1, k, iron_l if g in (0, 2) else iron)
     if d == 'h':
-        t[B0 - 1:B1 + 1, :] = RAIL['bal_d']
+        t[B1 + 3:B1 + 4, :] = shade[B1 + 3:B1 + 4, :]
+        t[B0:B1, :] = RAIL['bal_d']
         for xx in range(TS):
             if (x * TS + xx) % 3 == 0:
-                t[B0 + 1:B1 - 1, xx] = RAIL['tie']
+                t[B0:B1, xx] = RAIL['tie']
         for r in (B0 + 1, B1 - 3):
             t[r, :] = RAIL['rail']
             t[r + 1, :] = RAIL['rail_d']
-        t[B0 - 3, :] = iron_d
-        t[B0 - 2, :] = iron_l
-        t[B1 + 1, :] = iron
-        t[B1 + 2, :] = iron_d
-        for xx in range(TS):                         # 트러스 기둥
-            if (x * TS + xx) % 4 == 0:
-                t[B0 - 3:B0, xx] = iron_l
+        for top in (B0 - 3, B1):
+            truss_strip(lambda i, k, c, top=top: t.__setitem__((top + i, k), c), x * TS)
     else:
-        t[:, B0 - 1:B1 + 1] = RAIL['bal_d']
+        t[:, B1 + 3:B1 + 4] = shade[:, B1 + 3:B1 + 4]
+        t[:, B0:B1] = RAIL['bal_d']
         for yy in range(TS):
             if (y * TS + yy) % 3 == 0:
-                t[yy, B0 + 1:B1 - 1] = RAIL['tie']
+                t[yy, B0:B1] = RAIL['tie']
         for r in (B0 + 1, B1 - 3):
             t[:, r] = RAIL['rail']
             t[:, r + 1] = RAIL['rail_d']
-        t[:, B0 - 3] = iron_d
-        t[:, B0 - 2] = iron_l
-        t[:, B1 + 1] = iron
-        t[:, B1 + 2] = iron_d
+        for left in (B0 - 3, B1):
+            truss_strip(lambda i, k, c, left=left: t.__setitem__((k, left + i), c), y * TS)
     return t
 
 
@@ -398,15 +414,20 @@ def overlay_roads(img, ctx, style, road_role_px):
             continue
         links = ctx.links(x, y)
         band = band_mask(links)
+        if style == 'erase':                         # 길을 지운다(원시 세계) — 띠까지 바닥으로
+            dirty[sl] |= _dilate(_dilate(band)) | road_role_px[sl] | cmatch[sl]
+            continue
         bands[sl] |= band
-        dirty[sl] |= (_dilate(band) | road_role_px[sl] | cmatch[sl]) & ~band
+        dirty[sl] |= (_dilate(_dilate(band)) | road_role_px[sl] | cmatch[sl]) & ~band
         cells.append((x, y, links, band))
-    for y, x in zip(*np.nonzero(ctx.foot)):
-        if any(0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.road[y + dy, x + dx] and not ctx.foot[y + dy, x + dx]
+    for y, x in zip(*np.nonzero(ctx.occupied)):
+        if any(0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.road[y + dy, x + dx] and not ctx.occupied[y + dy, x + dx]
                for dx, dy in DIRS.values()):
             sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
             dirty[sl] |= road_role_px[sl] | cmatch[sl]
     out = fill_global(img, dirty & ~bands, bands)
+    if style == 'erase':
+        return out
     for x, y, links, band in cells:
         sl = np.s_[y * TS:(y + 1) * TS, x * TS:(x + 1) * TS]
         tile = out[sl].copy()
@@ -472,40 +493,58 @@ SPRITES = {
             '...zzzzzzzzzzzz.',
             '................',
         ],
-        'office': [                                  # 유리 사무동 + 낮은 상가
+        'office': [                                  # 유리 사무동(세로 창 띠) + 낮은 상가
             '....KKKKK.......',
             '....KSSSK.......',
             '....KsssK.......',
             '....KKKKKz......',
             '....KGgGKz......',
-            '....KgGgKz......',
             '....KGgGKz......',
-            '....KgGgKKKKKKK.',
+            '....KGgGKz......',
+            '....KGgGKKKKKKK.',
             '....KGgGKKoooooK',
-            '....KgGgKKKKKKKz',
+            '....KGgGKKKKKKKz',
             '....KGgGKKwWwWwK',
-            '....KgGgKKwdwwwK',
+            '....KGgGKKwdwwwK',
             '....KbdbKKvdvvvK',
             '....KKKKKKKKKKKz',
             '.....zzzzzzzzzzz',
             '................',
         ],
-        'lot': [                                     # 주차장(흰 칸선 + 차 셋) — 테두리는 연석 회색
+        'lot': [                                     # 주차장(흰 칸선 + 차 셋: 지붕·앞유리·바퀴)
             '................',
             '................',
             '.tttttttttttttt.',
             '.taaaaaaaaaaaat.',
-            '.taLaaLaaLaaLat.',
-            '.taLaaLaaLaaLat.',
-            '.taLKKLaaLKKLKt.',
-            '.taKeeKaaKBBKbt.',
-            '.taKeeKaaKbbKbt.',
-            '.taKKKKaaKKKKKt.',
+            '.taLaaaLaaaLaat.',
+            '.taLKKKLKKKLaat.',
+            '.taLKeKLKBKLaat.',
+            '.taLKGKLKGKLaat.',
+            '.taLKeKLKbKLaat.',
+            '.taLnKnLnKnLaat.',
             '.taaaaaaaaaaaat.',
             '.taaaaaaaaaaaat.',
             '.ttttttttttttttz',
             '..zzzzzzzzzzzzzz',
             '................',
+            '................',
+        ],
+        'tower': [                                   # 고층 빌딩(현대·SF 도심용)
+            '.....KKKKK......',
+            '.....KSSSK......',
+            '.....KKKKK......',
+            '....KKKKKKK.....',
+            '....KGgGgGKz....',
+            '....KGgGgGKz....',
+            '....KGgGgGKz....',
+            '....KGgGgGKz....',
+            '....KGgGgGKz....',
+            '....KGgGgGKz....',
+            '....KGgGgGKz....',
+            '....KGgGgGKz....',
+            '....KbbdbbKz....',
+            '....KKKKKKKz....',
+            '.....zzzzzzz....',
             '................',
         ],
     },
@@ -589,6 +628,7 @@ DISTRICT = {      # 구역 바닥: (바탕, 어두운 점, 밝은 점, 바깥 �
     'modern': ('aca89c', '989488', 'bdb9ad', '6f6b62'),
     'steam': ('5e544a', '4c443a', '70665a', '362e28'),
 }
+DISTRICT['sf'] = DISTRICT['modern']
 SMOKE = ['dcd8d0', 'b8b4ac', '908c86']
 
 
@@ -650,7 +690,7 @@ def sprawl_cells(ctx):
                     if ring >= 2:
                         if not any(cand.get((x + dx, y + dy), (9,))[0] < ring for dx, dy in DIRS.values()):
                             continue
-                        if h32('sprawl', x, y) % 100 >= 60:
+                        if h32('sprawl', x, y) % 100 >= 85:
                             continue
                     if (x, y) not in cand or cand[(x, y)][0] > ring:
                         cand[(x, y)] = (ring, p['role'])
@@ -685,24 +725,41 @@ def draw_district_ground(img, cells, style, ctx):
                 t[:, TS - 1] = rim
 
 
+POOLS = {   # (도심 고리 1, 그 밖)
+    'modern': (['apartment', 'office', 'apartment', 'lot', 'office'], ['suburb', 'suburb', 'suburb', 'lot', 'apartment']),
+    'sf': (['tower', 'office', 'tower', 'apartment', 'lot'], ['office', 'apartment', 'tower', 'lot', 'apartment']),
+    'steam': (['factory', 'rowhouse', 'gasometer', 'rowhouse', 'yard'], ['rowhouse', 'rowhouse', 'yard', 'factory', 'rowhouse']),
+}
+
+
 def overlay_sprawl(img, ctx, style):
     out = img.copy()
+    art = 'modern' if style == 'sf' else style
     cells = sprawl_cells(ctx)
-    draw_district_ground(out, cells, style, ctx)
-    if style == 'modern':
-        inner = ['apartment', 'office', 'apartment', 'lot', 'office']
-        outer = ['suburb', 'suburb', 'suburb', 'lot', 'apartment']
-    else:
-        inner = ['factory', 'rowhouse', 'gasometer', 'rowhouse', 'yard']
-        outer = ['rowhouse', 'rowhouse', 'yard', 'factory', 'rowhouse']
-    sprs = {n: sprite(style, n) for n in SPRITES[style]}
-    placed = []
+    # 도시 발자국 안도 구역 바닥으로 — 아이콘의 투명한 자리에 풀밭이 비치면 「도심이 풀밭, 바깥이 포장」이 된다(QA)
+    feet = set()
+    for p in ctx.places:
+        if p['role'] in CITY_RING:
+            for y in range(p['y'], p['y'] + p['h']):
+                for x in range(p['x'], p['x'] + p['w']):
+                    if not ctx.road[y, x] or ctx.foot[y, x]:
+                        feet.add((x, y))
+    draw_district_ground(out, set(cells) | feet, art, ctx)
+    inner, outer = POOLS[style]
+    sprs = {n: sprite(art, n) for n in SPRITES[art]}
+    placed, name_at = [], {}
     for (x, y), (ring, role) in sorted(cells.items(), key=lambda kv: (kv[0][1], kv[0][0])):   # 위 줄부터 — 아래 건물이 위 건물 그림자를 덮는다
         pool = inner if (ring == 1 and role in ('capital', 'fort_city', 'harbor_city')) else outer
-        name = pool[h32('kind', x, y) % len(pool)]
+        k = h32('kind', x, y) % len(pool)
+        for _ in range(len(pool)):                   # 왼쪽·위 이웃과 같은 건물은 피한다
+            if pool[k] not in (name_at.get((x - 1, y)), name_at.get((x, y - 1))):
+                break
+            k = (k + 1) % len(pool)
+        name = pool[k]
+        name_at[(x, y)] = name
         stamp(out, x, y, sprs[name], flip=(name == 'suburb' and h32('flip', x, y) % 2 == 0))
         placed.append((x, y, name))
-    if style == 'steam':
+    if art == 'steam':
         for x, y, name in placed:
             tops = {'factory': [(11, 0)], 'rowhouse': [(2, 0), (9, 0)]}.get(name, [])
             for k, (cx, cy) in enumerate(tops):
@@ -720,7 +777,7 @@ def draw_smoke(img, gx, gy, h):
                 if (w == 3 and hh == 3) and (xx, yy) in ((0, 0), (2, 0), (0, 2), (2, 2)):
                     continue                          # 3x3 은 모서리를 깎아 둥글게
                 X, Y = gx + dx + xx, gy + dy + yy
-                if 0 <= X < img.shape[1] and 0 <= Y < img.shape[0]:
+                if 0 <= X < img.shape[1] and 0 <= Y < img.shape[0] and (i == 0 or (X + Y) % 2 == 0 or (xx, yy) == (1, 1)):
                     img[Y, X] = c
 
 
@@ -734,11 +791,11 @@ def overlay_smog(img, ctx):
         if p['role'] not in ('capital', 'fort_city', 'harbor_city', 'large_town'):
             continue
         cx, cy = (p['x'] + p['w'] / 2) * TS, (p['y'] + p['h'] / 2) * TS
-        r = (6 if p['role'] == 'capital' else 4) * TS
+        r = (8 if p['role'] == 'capital' else 5.5) * TS
         field = np.maximum(field, np.clip(1 - np.hypot(xx - cx, yy - cy) / r, 0, 1))
     lv = np.clip(np.floor(field * 4 + bayer(H, W)) / 4.0, 0, 1)[..., None]
     soot = np.array([70, 60, 52], np.float32)
-    out = out * (1 - .32 * lv) + soot * (.32 * lv)
+    out = out * (1 - .45 * lv) + soot * (.45 * lv)
     return np.clip(out, 0, 255).astype(np.uint8)
 
 
@@ -953,8 +1010,8 @@ def apply_land(img, world, theme, road_role_px):
     out = img
     for o in theme['overlays']:
         base, _, arg = o.partition(':')
-        if base in ('paved_roads', 'rail'):
-            out = overlay_roads(out, ctx, 'paved' if base == 'paved_roads' else 'rail', road_role_px)
+        if base in ('paved_roads', 'rail', 'erase_roads'):
+            out = overlay_roads(out, ctx, {'paved_roads': 'paved', 'rail': 'rail', 'erase_roads': 'erase'}[base], road_role_px)
             rep[o] = len(ctx.path_cells())
         elif base == 'sprawl':
             out, placed = overlay_sprawl(out, ctx, arg or 'modern')
@@ -965,4 +1022,4 @@ def apply_land(img, world, theme, road_role_px):
     return out, rep
 
 
-OVERLAYS = {'paved_roads', 'rail', 'sprawl', 'smog'}
+OVERLAYS = {'paved_roads', 'rail', 'erase_roads', 'sprawl', 'smog'}

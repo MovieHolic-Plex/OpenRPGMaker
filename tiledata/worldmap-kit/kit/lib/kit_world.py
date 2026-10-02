@@ -147,7 +147,9 @@ def paste_icons(img, ic, sky_site, iconset, assign, tint_icon):
     sname, sx, sy, sw, sh = sky_site
     sky_icon = tint_icon(iconset.array(assign[sname]))
     dst = img[sy * 16:(sy + sh) * 16, sx * 16:(sx + sw) * 16]
-    solid = ~np.all(sky_icon == np.array(KEY, np.uint8), axis=2)
+    shd = np.all(sky_icon == np.array(iconset.shadow_key, np.uint8), axis=2)
+    solid = ~np.all(sky_icon == np.array(KEY, np.uint8), axis=2) & ~shd
+    dst[shd] = (dst[shd].astype(np.float32) * P.SHADOW_MUL).astype(np.uint8)   # 그림자 키는 밑을 어둡게 — 그대로 붙이면 분홍 덩이(QA 2026-10-02, 12개 테마)
     dst[solid] = sky_icon[solid]
     for name, (x, y, ww, hh) in ic.items():
         if name.endswith('경사로') or name not in assign:

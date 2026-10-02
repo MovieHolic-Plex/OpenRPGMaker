@@ -6,7 +6,7 @@
  "palette": "original",
  "overlays": [
   "paved_roads",
-  "sprawl:modern"
+  "sprawl:sf"
  ],
  "kind": "land"
 }

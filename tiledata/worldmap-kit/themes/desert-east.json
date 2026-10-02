@@ -3,7 +3,7 @@
  "id": "desert-east",
  "name": "사막·동양풍",
  "iconset": "desert-east",
- "palette": "original",
+ "palette": "desert-east",
  "overlays": [],
  "kind": "land"
 }

@@ -4,8 +4,6 @@
  "name": "몬스터 수집",
  "iconset": "monster",
  "palette": "original",
- "overlays": [
-  "paved_roads"
- ],
+ "overlays": [],
  "kind": "land"
 }

@@ -3,7 +3,7 @@
  "id": "joseon",
  "name": "조선",
  "iconset": "joseon",
- "palette": "original",
+ "palette": "eastasia",
  "overlays": [],
  "kind": "land"
 }

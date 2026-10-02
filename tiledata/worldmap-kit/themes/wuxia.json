@@ -3,7 +3,7 @@
  "id": "wuxia",
  "name": "무협 중국",
  "iconset": "wuxia",
- "palette": "original",
+ "palette": "wuxia",
  "overlays": [],
  "kind": "land"
 }

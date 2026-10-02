@@ -3,7 +3,7 @@
  "id": "snow-north",
  "name": "설원·북방",
  "iconset": "snow-north",
- "palette": "winter",
+ "palette": "north",
  "overlays": [],
  "kind": "land"
 }
