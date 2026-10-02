@@ -369,8 +369,9 @@ def roof_baram(cv, R=3, style='giwa', wing=24):
     import roof3d
     H = R * T
     cv.a[:H, :, :] = 0
-    r = roof3d.roof(cv.w, H, style, wing=wing)
-    cv.paste(r, 0, 0)
+    r = roof3d.roof(cv.w - 16, H, style, wing=max(14, wing - 7))
+    cv.paste(r, 8, 0)
+    eave_fill(cv, H)
     dither_under(cv, H, 4)
 
 
@@ -380,8 +381,52 @@ def thatch_baram(cv, R=3, over=0):
     H = R * T
     cv.a[:H, :, :] = 0
     hd = max(32, min(48, int((cv.w + over) * 0.46)))
-    cv.paste(thatch3d.dome(cv.w + over, hd, seed=cv.w), 0, 51 - hd)
+    cv.paste(thatch3d.dome(cv.w - 8 + over, hd, seed=cv.w), 4, 51 - hd)
+    eave_fill(cv, H, thatch=True)
     dither_under(cv, H, 4)
+
+
+def eave_fill(cv, roof_h=48, thatch=False):
+    """처마 밑 서까래 그늘: 지붕 아랫선과 벽 윗선 사이·날개 아래의 빈 곳을 어두운 서까래(세로 살)로 채워 지붕이 벽에 얹혀 보이게 한다.
+    벽이 없는 날개 아래는 한 칸 더 내려 처마가 허공에 뜨지 않게 하고, 벽 모서리에 처마를 받치는 짧은 기둥머리를 둔다."""
+    W_ = RGB['wood']; E_ = RGB['earth']
+    wall_cols = [x for x in range(cv.w) if cv.a[roof_h + 6, x, 3] == 255]
+    wx0, wx1 = (min(wall_cols), max(wall_cols)) if wall_cols else (0, cv.w - 1)
+    for x in range(cv.w):
+        ys = [y for y in range(0, roof_h + 4) if cv.a[y, x, 3] == 255 and y < roof_h + 1]
+        if not ys:
+            continue
+        last = max(ys)
+        in_wall = wx0 <= x <= wx1
+        y_end = roof_h + 1
+        for y in range(last + 1, y_end + 1):
+            if cv.a[y, x, 3] == 255:
+                continue
+            k = y - last
+            rafter = (x % 3 == 1)
+            if thatch:
+                col = RGB['straw'][1] if rafter else RGB['straw'][0]
+            else:
+                col = W_[3] if rafter and k > 1 else (W_[1] if k > 1 else W_[2])
+            if not in_wall and k > 3:
+                col = W_[1] if rafter else E_[0]
+            cv.put(x, y, col)
+
+
+def ground_shadow_house(cv, plinth_y, drop=5, lean=7):
+    """건물 오른쪽·아래로 떨어지는 그림자(빛은 왼쪽 위). 기단 바로 밑 한 줄 + 오른쪽 옆 세로 띠."""
+    cols = [x for x in range(cv.w) if cv.a[plinth_y, x, 3] == 255]
+    if not cols:
+        return
+    x0, x1 = min(cols), max(cols)
+    for y in range(plinth_y + 1, min(cv.h, plinth_y + 1 + drop)):
+        for x in range(x0 + lean * (y - plinth_y) // drop, x1 + lean + 1):
+            if cv.a[y, x, 3] == 0:
+                cv.put(x, y, SHADOW, 90 - 12 * (y - plinth_y))
+    for x in range(x1 + 1, min(cv.w, x1 + 1 + lean)):
+        for y in range(plinth_y - 26, plinth_y + 1):
+            if cv.a[y, x, 3] == 0:
+                cv.put(x, y, SHADOW, 70)
 
 
 def dither_under(cv, y0, rows=4):

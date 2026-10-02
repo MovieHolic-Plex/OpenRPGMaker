@@ -64,33 +64,33 @@
   "date": "2026-10-02"
  },
  "jangseung_m": {
-  "hash": "292aabb691b5",
-  "status": "user",
-  "line": "정면 소품(윗면 안 보임): 사용자 판정 대기",
+  "hash": "c702b5207ff6",
+  "status": "pass",
+  "line": "3/4: 머리·흙무더기 윗면이 보임, 원통 몸통 좌우 명암",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "jangseung_f": {
-  "hash": "d8c3212063f2",
-  "status": "user",
-  "line": "정면 소품(윗면 안 보임): 사용자 판정 대기",
+  "hash": "69c3d35c6c72",
+  "status": "pass",
+  "line": "3/4: 머리·흙무더기 윗면이 보임, 원통 몸통 좌우 명암",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "sotdae": {
-  "hash": "fa5ffae21c6a",
-  "status": "user",
-  "line": "정면 소품(윗면 안 보임): 사용자 판정 대기",
+  "hash": "bd1ce34b6714",
+  "status": "pass",
+  "line": "3/4: 머리·흙무더기 윗면이 보임, 원통 몸통 좌우 명암",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "lantern": {
-  "hash": "67904f11a633",
-  "status": "user",
-  "line": "정면 소품(윗면 안 보임): 사용자 판정 대기",
+  "hash": "9bae74f54445",
+  "status": "pass",
+  "line": "3/4: 단마다 윗면(밝음)+앞면(좌 밝음 우 어두움), 땅 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -128,33 +128,33 @@
   "date": "2026-10-02"
  },
  "giwa_house_6": {
-  "hash": "2739d496cdaf",
+  "hash": "44fe02901c84",
   "status": "pass",
-  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "thatch_house_5": {
-  "hash": "729d1fffc110",
+  "hash": "dbb83489bb22",
   "status": "pass",
-  "line": "지붕 높이 폭의 0.46: 기준 사진 알약 비율과 두께 절충",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "gate_4": {
-  "hash": "54bf5cf83150",
+  "hash": "838d89762452",
   "status": "pass",
-  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "pavilion_5": {
-  "hash": "155454261c7e",
+  "hash": "d6b1d2d14f0e",
   "status": "pass",
-  "line": "단청 기둥 사이 개방, 어두운 안쪽·마루 윗면·난간, 청록 지붕",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -248,9 +248,9 @@
   "date": "2026-10-02"
  },
  "fence_h": {
-  "hash": "093af854ca2e",
+  "hash": "8aec0207ed7e",
   "status": "pass",
-  "line": "싸리울 막대 2px 폭+묶음 띠, 앞면 낮음. 소품 크기",
+  "line": "3/4: 단마다 윗면(밝음)+앞면(좌 밝음 우 어두움), 땅 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -264,17 +264,17 @@
   "date": "2026-10-02"
  },
  "thatch_house_4": {
-  "hash": "e2fe03ccb0b1",
+  "hash": "1a38b81d9a84",
   "status": "pass",
-  "line": "지붕 높이 폭의 0.46: 기준 사진 알약 비율과 두께 절충",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_5": {
-  "hash": "00c431b04c80",
+  "hash": "ecb4feafa03e",
   "status": "pass",
-  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -328,41 +328,41 @@
   "date": "2026-10-02"
  },
  "thatch_house_3": {
-  "hash": "601879ba3686",
+  "hash": "a0ba0dd36293",
   "status": "pass",
-  "line": "지붕 높이 폭의 0.46: 기준 사진 알약 비율과 두께 절충",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "thatch_house_3b": {
-  "hash": "0d01095fea10",
+  "hash": "d31931dc4a5f",
   "status": "pass",
-  "line": "지붕 높이 폭의 0.46: 기준 사진 알약 비율과 두께 절충",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_4": {
-  "hash": "8dea4fe9b41e",
+  "hash": "49d5f4677ef4",
   "status": "pass",
-  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "giwa_house_3": {
-  "hash": "5254fbc71657",
+  "hash": "ec8f103f71bf",
   "status": "pass",
-  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "laundry": {
-  "hash": "6a968ed9fb86",
+  "hash": "10b31a54a9d1",
   "status": "pass",
-  "line": "기둥 둘+줄+흰·청·적 옷, 왼쪽 밝음",
+  "line": "3/4: 단마다 윗면(밝음)+앞면(좌 밝음 우 어두움), 땅 그림자",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -464,9 +464,9 @@
   "date": "2026-10-02"
  },
  "giwa_house_5b": {
-  "hash": "df22a1161898",
+  "hash": "7db18a943139",
   "status": "pass",
-  "line": "바람의나라 연구형 지붕(기왓골+날개+곡선 처마 / 초가 방석)+블록 벽, 처마 디더 그림자",
+  "line": "지붕 폭을 벽 모서리에 얹히게 줄이고 처마 밑 서까래 그늘로 채움(떠 보이지 않음)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

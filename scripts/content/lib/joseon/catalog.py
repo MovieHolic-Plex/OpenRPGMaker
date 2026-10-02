@@ -1,5 +1,5 @@
 """조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
-import ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3
+import ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
 _L = None
 
 
@@ -59,7 +59,7 @@ def objects():
         'thatch_house_3b': K.assemble(K.house('jc', 3, 'lwr', 'lfr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
         'giwa_house_4': K.assemble(K.house('jo', 4, 'lwdr', 'lfdr', steps=(2,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=22)),
         'giwa_house_3': K.assemble(K.house('jo', 3, 'ldr', 'ldr', steps=(1,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=20)),
-        'laundry': P3.laundry(),
+        'laundry': P4.laundry(),
         'flower_bed': P3.flower_bed(),
         'bank_stairs': P3.bank_stairs(),
         'small_z_a': TR.small_tree('z', 0),
@@ -68,17 +68,17 @@ def objects():
         'stone_bank': P3.stone_bank(),
         'reeds': P3.reeds(),
         'rocks': P3.rocks(),
-        'fence_h': P3.fence_h(),
+        'fence_h': P4.fence_h(),
         'haystack': P3.haystack(),
         'well': Q.well(),
         'bridge': Q.bridge(),
         'jars': Q.jars(),
         'bench': Q.bench(),
         'mat_peppers': Q.mat_peppers(),
-        'jangseung_m': Q.jangseung(False),
-        'jangseung_f': Q.jangseung(True),
-        'sotdae': Q.sotdae(),
-        'lantern': Q.lantern(),
+        'jangseung_m': P4.jangseung(False),
+        'jangseung_f': P4.jangseung(True),
+        'sotdae': P4.sotdae(),
+        'lantern': P4.lantern(),
         'wall_h': P3.wall_h2(0),
         'wall_v': P3.wall_v2(),
         'wall_corner_l': P3.wall_corner2('L'),
