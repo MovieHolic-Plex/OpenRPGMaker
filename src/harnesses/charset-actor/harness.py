@@ -30,8 +30,10 @@ sys.path.insert(0, str(HERE))
 import chr as C  # noqa: E402
 from PIL import Image  # noqa: E402
 
-ACTOR1 = ROOT / 'public' / 'assets' / 'easyrpg' / 'charset' / 'Actor1.png'
-ACTOR1_FACE = ROOT / 'public' / 'assets' / 'easyrpg' / 'faceset' / 'Actor1.png'   # 칩 n번 ↔ 얼굴 n번 (sharedCharacterGraphics.json)
+RTP = ROOT / 'public' / 'assets' / 'easyrpg'
+ACTOR1 = RTP / 'charset' / 'Actor1.png'
+GRAPHICS = ROOT / 'src' / 'assets' / 'sharedCharacterGraphics.json'   # 칩 ↔ 얼굴 짝 정본
+BASE_SHEETS = ('Actor1', 'Actor2', 'Actor3', 'Actor4', 'People1', 'People2', 'People3', 'People4', 'People5')
 HDATA = ROOT / 'harness-data' / 'charset-actor'
 LAWN = HDATA / 'lawn16.png'
 DATA = Path(os.environ.get('CHR_HARNESS_DATA', os.path.expanduser('~/.local/share/oprn/charset-actor-harness')))
@@ -55,25 +57,67 @@ def briefs():
     return json.loads((HDATA / 'briefs.json').read_text(encoding='utf-8'))
 
 
-def base_of(n):
-    pal, _, frames = C.from_actor(ACTOR1, int(n))
+def norm_base(x):
+    """뼈대 키 → 'Actor2:3'. 옛 지시·기록의 정수는 Actor1 번호다."""
+    if isinstance(x, int) or (isinstance(x, str) and x.isdigit()):
+        return f'Actor1:{int(x)}'
+    sheet, n = str(x).split(':')
+    if sheet not in BASE_SHEETS:
+        raise SystemExit(f'뼈대 칩셋 {sheet!r} 은 {BASE_SHEETS} 중 하나여야 한다')
+    return f'{sheet}:{int(n)}'
+
+
+def base_sheet(key):
+    sheet, n = norm_base(key).split(':')
+    return RTP / 'charset' / f'{sheet}.png', int(n)
+
+
+def base_label(key):
+    sheet, n = norm_base(key).split(':')
+    return f'{sheet} {int(n) + 1}번'
+
+
+def base_of(key):
+    png, n = base_sheet(key)
+    pal, _, frames = C.from_actor(png, n)
     return pal, frames
+
+
+def face_ref(key):
+    """칩 뼈대의 짝 얼굴 → (FaceSet png, 번호) 또는 None. 정본 sharedCharacterGraphics.json 에서 RTP 얼굴(easyrpg-faceset-*)만 쓴다
+    — 생성 얼굴(generated-faceset-*)이 짝인 칩은 얼굴 뼈대가 없다."""
+    sheet, n = norm_base(key).split(':')
+    tk = f'tex_easyrpg_charset_{sheet.lower()}'
+    for m in json.loads(GRAPHICS.read_text(encoding='utf-8'))['mappings']:
+        if m.get('textureKey') == tk and m.get('characterIndex') == int(n):
+            fid = m.get('faceResourceId') or ''
+            mm = __import__('re').fullmatch(r'easyrpg-faceset-([a-z]+\d*)-(\d+)', fid)
+            if not mm:
+                return None
+            name = mm.group(1).capitalize()
+            png = RTP / 'faceset' / f'{name}.png'
+            return (png, int(mm.group(2))) if png.exists() else None
+    return None
 
 
 # ─────────────────────────────── 명령 ───────────────────────────────
 def cmd_calibrate(_):
+    """RTP 원본 72명(Actor1~4·People1~5)이 자기 자신을 뼈대로 했을 때 전부 통과해야 한다(새 캐릭터 여부 검사는 끔)."""
     bad = 0
-    for i in range(8):
-        pal, _, frames = C.from_actor(ACTOR1, i)
-        r = C.gate(pal, frames)
-        print(i, 'OK' if r['ok'] else 'FAIL', r['fails'], r['metrics'].get('colors'), r['metrics'].get('dark_edge_min'))
-        bad += not r['ok']
+    for sh in BASE_SHEETS:
+        for i in range(8):
+            pal, frames = base_of(f'{sh}:{i}')
+            r = C.gate(pal, frames, (pal, frames), check_changed=False)
+            if not r['ok']:
+                print(sh, i, 'FAIL', r['fails'][:3])
+            bad += not r['ok']
+    print(f'{len(BASE_SHEETS) * 8 - bad}/{len(BASE_SHEETS) * 8} 통과')
     sys.exit(1 if bad else 0)
 
 
 def cmd_base(a):
-    pal, notes, frames = C.from_actor(ACTOR1, a.n)
-    Path(a.out).write_text(C.dump(pal, notes, frames, header=f'Actor1 {a.n}번 캐릭터 (뼈대). 색 글자는 어두운 것부터 a,b,c…'),
+    pal, frames = base_of(a.n)
+    Path(a.out).write_text(C.dump(pal, {}, frames, header=f'{base_label(a.n)} 캐릭터 (뼈대). 색 글자는 어두운 것부터 a,b,c…'),
                            encoding='utf-8')
     print(a.out)
 
@@ -99,7 +143,8 @@ def make_views(file, out, base_n=None):
     C.gif_walk(pal, frames, out / 'walk.gif', 4, LAWN)
     C.gif_turn(pal, frames, out / 'turn.gif', 4, LAWN)
     C.gif_stroll(pal, frames, out / 'stroll.gif', 3, LAWN)
-    C.context(pal, frames, ACTOR1, 3, LAWN).save(out / 'context.png')
+    png = base_sheet(base_n)[0] if base_n is not None else ACTOR1
+    C.context(pal, frames, png, 3, LAWN).save(out / 'context.png')
     r = C.gate(pal, frames, base)
     (out / 'gate.json').write_text(json.dumps(r, ensure_ascii=False, indent=1), encoding='utf-8')
     return r
@@ -121,26 +166,27 @@ def start_draw(brief, engine, run, w, src=None, fix_text=None):
     eng = ENGINES[engine]
     w.mkdir(parents=True, exist_ok=True)
     base_txt = w / 'base.chr.txt'
-    pal, notes, frames = C.from_actor(ACTOR1, b['base'])
-    base_txt.write_text(C.dump(pal, notes, frames, header=f'Actor1 {b["base"]}번 캐릭터 (뼈대) — 고치지 말 것, 복사해서 쓴다'),
+    bk = norm_base(b['base'])
+    pal, frames = base_of(bk)
+    base_txt.write_text(C.dump(pal, {}, frames, header=f'{base_label(bk)} 캐릭터 (뼈대) — 고치지 말 것, 복사해서 쓴다'),
                         encoding='utf-8')
-    make_views(base_txt, w / 'base-views')
+    make_views(base_txt, w / 'base-views', bk)
     tool = f'python3 {HERE / "harness.py"}'
     t = (HERE / 'worker.md').read_text(encoding='utf-8')
-    rep = {'{TOOL}': tool, '{DIR}': str(w), '{BASE_N}': str(b['base']), '{NAME}': b['name'], '{BRIEF}': b['brief'],
-           '{KEEP}': b.get('keep', DEFAULT_KEEP), '{ACTOR1}': str(ACTOR1)}
+    rep = {'{TOOL}': tool, '{DIR}': str(w), '{BASE_N}': bk, '{BASE_LABEL}': base_label(bk), '{NAME}': b['name'],
+           '{BRIEF}': b['brief'], '{KEEP}': b.get('keep', DEFAULT_KEEP), '{SHEET_PNG}': str(base_sheet(bk)[0])}
     for k, v in rep.items():
         t = t.replace(k, v)
     if src:
         # 수정 작업: 다른 작업자(또는 이전 판)의 결과에서 시작한다. 지적은 감독·검수자가 쓴 글을 그대로 붙인다.
         shutil.copy(src / 'out.chr.txt', w / 'start.chr.txt')
-        make_views(w / 'start.chr.txt', w / 'start-views', b['base'])
+        make_views(w / 'start.chr.txt', w / 'start-views', bk)
         t += (HERE / 'fixer.md').read_text(encoding='utf-8').replace('{FIX}', fix_text or '(지적 없음 — 스스로 찾아 고친다)') \
             .replace('{SRC}', str(src))
     (w / 'prompt.md').write_text(t, encoding='utf-8')
     p = _spawn(engine, w, w / 'prompt.md', w / 'worker.log')
     meta = dict(run=run, brief=brief, engine=engine, label=eng['label'], model=eng['model'], effort=eng['effort'],
-                pid=p.pid, started=now(), dir=str(w), base=b['base'], src=str(src) if src else None)
+                pid=p.pid, started=now(), dir=str(w), base=bk, src=str(src) if src else None)
     if src:
         meta['label'] += f' — {json.loads((src / "meta.json").read_text())["label"]} 결과를 수정'
     (w / 'meta.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')
@@ -182,13 +228,13 @@ def start_review(w, engine='sonnet'):
         shutil.rmtree(rv)
     rv.mkdir()
     v = w / 'views'
-    make_views(w / 'out.chr.txt', v, b['base'])
+    make_views(w / 'out.chr.txt', v, norm_base(b['base']))
     for n in ('strip.png', 'sheet_x8.png', 'context.png', 'gate.json'):
         shutil.copy(v / n, rv / n)
     shutil.copy(w / 'base-views' / 'strip.png', rv / 'base_strip.png')
     t = (HERE / 'reviewer.md').read_text(encoding='utf-8')
     for k, val in {'{NAME}': b['name'], '{BRIEF}': b['brief'], '{KEEP}': b.get('keep', DEFAULT_KEEP), '{DIR}': str(rv),
-                   '{BASE_N}': str(b['base'])}.items():
+                   '{BASE_N}': norm_base(b['base']), '{BASE_LABEL}': base_label(b['base'])}.items():
         t = t.replace(k, val)
     (rv / 'prompt.md').write_text(t, encoding='utf-8')
     return _spawn(engine, rv, rv / 'prompt.md', rv / 'review.log')
@@ -223,7 +269,7 @@ def _wait(p):
     p.wait()
 
 
-def run_loop(brief, run, drawer, reviewer, rounds, log, face=None):
+def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True):
     prev = None
     for r in range(1, rounds + 1):
         w = run_dir(run) / f'{brief}__{drawer}-r{r}'
@@ -236,7 +282,7 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None):
         if not (w / 'out.chr.txt').exists():
             log(f'{brief} r{r}: 결과 없음 — 멈춤')
             return
-        make_views(w / 'out.chr.txt', w / 'views', briefs()[brief]['base'])
+        make_views(w / 'out.chr.txt', w / 'views', norm_base(briefs()[brief]['base']))
         rp = start_review(w, reviewer)
         log(f'{brief} r{r}: {reviewer} 검수 시작 pid={rp.pid}')
         _wait(rp)
@@ -246,12 +292,19 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None):
             return
         log(f'{brief} r{r}: {v["verdict"]} 점수 {v.get("score")} 지적 {len(v.get("issues", []))}개')
         if v['verdict'] == 'PASS' or r == rounds:
-            if face:
+            if face and face_ref(briefs()[brief]['base']) is None:
+                log(f'{brief} r{r}: 짝 얼굴 뼈대 없음(생성 얼굴이 짝) — 얼굴 건너뜀')
+            elif face:
                 fp = start_face(w, face)
                 log(f'{brief} r{r}: {face} 얼굴 시작 pid={fp.pid}')
                 fp.wait()
                 fr = finish_face(w)
                 log(f'{brief} r{r}: 얼굴 {"통과" if fr and fr["ok"] else "불통과/없음"}')
+                if gen_face and (w / 'face' / 'out.face.txt').exists():
+                    try:
+                        log(f'{brief} r{r}: 생성 얼굴 {gen_face_one(w)}')
+                    except Exception as e:  # noqa: BLE001
+                        log(f'{brief} r{r}: 생성 얼굴 실패 {e!r}'[:300])
             return
         prev = w
 
@@ -272,7 +325,7 @@ def cmd_loop(a):
     from concurrent.futures import ThreadPoolExecutor
     names = list(briefs()) if a.briefs == ['all'] else a.briefs
     with ThreadPoolExecutor(max_workers=a.par) as ex:  # codex 동시 실행 수 제한
-        for f in [ex.submit(run_loop, b, run, a.drawer, a.reviewer, a.rounds, log, a.face or None) for b in names]:
+        for f in [ex.submit(run_loop, b, run, a.drawer, a.reviewer, a.rounds, log, a.face or None, not a.no_gen_face) for b in names]:
             try:
                 f.result()
             except Exception as e:  # noqa: BLE001 — 한 캐릭터가 죽어도 나머지는 계속
@@ -310,16 +363,16 @@ def cmd_page(a):
     ws = sorted(rd.glob('*__*'), key=lambda w: ('-fix-' in w.name, w.name))  # 처음부터 그린 것 먼저, 수정본은 뒤에
     for w in ws:
         m = json.loads((w / 'meta.json').read_text())
-        if m['base'] not in base_done:
-            base_done.add(m['base'])
+        if norm_base(m['base']) not in base_done:
+            base_done.add(norm_base(m['base']))
             bv = w / 'base-views'
-            cards.append(dict(title=f'뼈대 — Actor1 {m["base"]}번 (원본)', views=bv, gate=None, notes='', base=True))
+            cards.append(dict(title=f'뼈대 — {base_label(m["base"])} (원본)', views=bv, gate=None, notes='', base=True))
         out = w / 'out.chr.txt'
         if not out.exists():
             cards.append(dict(title=m['label'] + ' · ' + w.name.split('__')[-1], views=None, gate=None, notes='(아직 그리는 중)', base=False))
             continue
         v = w / 'views'
-        r = make_views(out, v, m['base'])
+        r = make_views(out, v, norm_base(m['base']))
         notes = (w / 'notes.md').read_text(encoding='utf-8') if (w / 'notes.md').exists() else ''
         rv = read_verdict(w)
         title = m['label'] + (f' · {w.name.rsplit("-", 1)[-1]}' if w.name.split('__')[-1].count('-r') else '')
@@ -378,8 +431,11 @@ summary{{cursor:pointer;color:#9cc;margin-top:8px}}</style>
 
 
 # ─────────────────────────────── 얼굴 ───────────────────────────────
-def base_face(n):
-    pal, _, rows = C.from_faceset(ACTOR1_FACE, int(n))
+def base_face(key):
+    fr = face_ref(key)
+    if fr is None:
+        return None
+    pal, _, rows = C.from_faceset(fr[0], fr[1])
     return pal, rows
 
 
@@ -432,15 +488,16 @@ def start_face(w, engine='sonnet'):
     fd.mkdir(exist_ok=True)
     ref = fd / 'ref'
     ref.mkdir(exist_ok=True)
-    make_views(w / 'out.chr.txt', w / 'views', b['base'])
+    bk = norm_base(b['base'])
+    make_views(w / 'out.chr.txt', w / 'views', bk)
     shutil.copy(w / 'views' / 'strip.png', ref / 'chip_strip.png')
     shutil.copy(w / 'views' / 'sheet_x8.png', ref / 'chip_x8.png')
-    bp, brows = base_face(b['base'])
+    bp, brows = base_face(bk)
     C.up(C.face_rgba(bp, brows), 4).save(ref / 'base_face_x4.png')
-    (fd / 'base.face.txt').write_text(C.dump_face(bp, {}, brows, header=f'Actor1 얼굴 {b["base"]}번 (뼈대, 64색으로 줄임) — 고치지 말 것'),
+    (fd / 'base.face.txt').write_text(C.dump_face(bp, {}, brows, header=f'{base_label(bk)} 의 짝 얼굴 (뼈대, 64색으로 줄임) — 고치지 말 것'),
                                       encoding='utf-8')
     t = (HERE / 'face.md').read_text(encoding='utf-8')
-    for k, v in {'{NAME}': b['name'], '{BRIEF}': b['brief'], '{BASE_N}': str(b['base']), '{DIR}': str(fd),
+    for k, v in {'{NAME}': b['name'], '{BRIEF}': b['brief'], '{BASE_N}': bk, '{BASE_LABEL}': base_label(bk), '{DIR}': str(fd),
                  '{TOOL}': f'python3 {HERE / "harness.py"}'}.items():
         t = t.replace(k, v)
     (fd / 'prompt.md').write_text(t, encoding='utf-8')
@@ -548,7 +605,7 @@ def cmd_gen_faces(a):
 def finish_face(w):
     fd = w / 'face'
     if (fd / 'out.face.txt').exists():
-        b = json.loads((w / 'meta.json').read_text())['base']
+        b = norm_base(json.loads((w / 'meta.json').read_text())['base'])
         return make_face_views(fd / 'out.face.txt', fd / 'views', b, w)
     return None
 
@@ -557,6 +614,7 @@ def cmd_faces(a):
     """완성된 칩 중 얼굴이 없는 것에 얼굴 작업자를 붙인다(동시 a.par)."""
     from concurrent.futures import ThreadPoolExecutor
     ws = [w for w in sorted(run_dir(a.run).glob('*__*')) if (w / 'out.chr.txt').exists()
+          and face_ref(json.loads((w / 'meta.json').read_text())['base']) is not None
           and (a.redo or not (w / 'face' / 'out.face.txt').exists())]
 
     def one(w):
@@ -591,7 +649,8 @@ def _items():
             if has and (w / 'views' / 'gate.json').exists():
                 gate = json.loads((w / 'views' / 'gate.json').read_text())
             out.append(dict(id=f'{rd.name}/{w.name}', run=rd.name, dir=w.name, brief=m['brief'], name=b.get('name', m['brief']),
-                            gender=b.get('gender', ''), brief_text=b.get('brief', ''), base=m['base'], label=m['label'],
+                            gender=b.get('gender', ''), brief_text=b.get('brief', ''), base=norm_base(m['base']), base_label=base_label(m['base']),
+                            has_face=face_ref(m['base']) is not None, label=m['label'],
                             status='running' if _alive(m['pid']) else ('done' if has else 'failed'),  # 작업자도 views 를 만들므로 살아 있으면 아직 그리는 중
                             gate=gate, review=read_verdict(w) if has else None,
                             face=_face_state(w), face_gen=_gen_meta(w)))
@@ -716,17 +775,17 @@ def main():
     sp = ap.add_subparsers(dest='cmd', required=True)
     sp.add_parser('calibrate').set_defaults(fn=cmd_calibrate)
     p = sp.add_parser('base')
-    p.add_argument('n', type=int)
+    p.add_argument('n', help='Actor2:3 처럼 (정수는 Actor1)')
     p.add_argument('out')
     p.set_defaults(fn=cmd_base)
     p = sp.add_parser('check')
     p.add_argument('file')
-    p.add_argument('--base', type=int)
+    p.add_argument('--base', help='Actor2:3 처럼 (정수는 Actor1)')
     p.set_defaults(fn=cmd_check)
     p = sp.add_parser('views')
     p.add_argument('file')
     p.add_argument('out')
-    p.add_argument('--base', type=int)
+    p.add_argument('--base', help='Actor2:3 처럼 (정수는 Actor1)')
     p.set_defaults(fn=cmd_views)
     p = sp.add_parser('draw')
     p.add_argument('brief')
@@ -750,19 +809,20 @@ def main():
     p.add_argument('--reviewer', default='sonnet', choices=list(ENGINES))
     p.add_argument('--par', type=int, default=6)
     p.add_argument('--rounds', type=int, default=1)
-    p.add_argument('--face', default='sonnet', help='칩이 끝나면 짝 얼굴을 붙일 엔진(빈 문자열이면 안 붙임)')  # 2026-10-02 사용자 판단: 원샷이 제일 낫다 — 반복 고치기는 명시할 때만
+    p.add_argument('--face', default='sonnet', help='칩이 끝나면 짝 얼굴을 붙일 엔진(빈 문자열이면 안 붙임)')
+    p.add_argument('--no-gen-face', action='store_true', help='손 도트 얼굴 뒤 생성 얼굴(v3)을 건너뛴다')  # 2026-10-02 사용자 판단: 원샷이 제일 낫다 — 반복 고치기는 명시할 때만
     p.set_defaults(fn=cmd_loop)
     p = sp.add_parser('serve', help='받기/버리기 화면')
     p.add_argument('--port', type=int, default=18314)
     p.set_defaults(fn=cmd_serve)
     p = sp.add_parser('face-check')
     p.add_argument('file')
-    p.add_argument('--base', type=int, required=True)
+    p.add_argument('--base', required=True)
     p.set_defaults(fn=cmd_face_check)
     p = sp.add_parser('face-views')
     p.add_argument('file')
     p.add_argument('out')
-    p.add_argument('--base', type=int, required=True)
+    p.add_argument('--base', required=True)
     p.set_defaults(fn=cmd_face_views)
     p = sp.add_parser('faces', help='완성된 칩에 짝 얼굴(48×48)을 붙인다')
     p.add_argument('--run', required=True)

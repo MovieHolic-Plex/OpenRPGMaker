@@ -153,10 +153,10 @@ function renderMain() {
       ${rv.good && rv.good.length ? `<div class="m">잘 된 점: ${esc(rv.good.join(' / '))}</div>` : ''}</div>` : '';
   const gHtml = `<div class="box">기계 검수 <b class="${g.ok ? 'v-pass' : 'v-fail'}">${g.ok ? '통과' : '불통과'}</b>
       ${g.fails.map((x) => `<div class="f">✗ ${esc(x)}</div>`).join('')}${g.warns.map((x) => `<div class="w">△ ${esc(x)}</div>`).join('')}</div>`;
-  $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.gender)} · 뼈대 Actor1 ${it.base + 1}번 · ${esc(it.label)} · ${esc(it.run)}</span></div>
+  $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.gender)} · 뼈대 ${esc(it.base_label)} · ${esc(it.label)} · ${esc(it.run)}</span></div>
     <div class="desc">${esc(it.brief_text)}</div>
     <div class="ba">
-      <div class="col"><div class="lbl">비포 — Actor1 ${it.base + 1}번 원본</div>
+      <div class="col"><div class="lbl">비포 — ${esc(it.base_label)} 원본</div>
         <div class="views">
           <figure><img src="${fu(it, 'base-views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
           <figure><img src="${fu(it, 'base-views/turn.gif')}"><figcaption>돌기</figcaption></figure>
@@ -168,12 +168,12 @@ function renderMain() {
           <figure><img src="${fu(it, 'views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
           <figure><img src="${fu(it, 'views/turn.gif')}"><figcaption>돌기</figcaption></figure>
           <figure><img src="${fu(it, 'views/sheet.png')}" class="x2"><figcaption>시트 (2배)</figcaption></figure>
-          ${it.face_gen ? `<figure><img src="${fu(it, 'face_gen/face_x4.png') + '&v=' + encodeURIComponent(it.face_gen.at || '')}" class="fx"><figcaption>얼굴 (생성 ${esc(it.face_gen.version || 'v1')}${it.face_gen.angle != null ? ` · 각도 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.angle}/10</b>` : it.face_gen.pose != null ? ` · 골격 일치 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.pose}</b>` : ''})</figcaption></figure>` : '<figure><div class="fx wait">생성 얼굴 만드는 중…</div></figure>'}
+          ${!it.has_face ? '<figure><div class="fx wait">짝 얼굴 뼈대 없음</div></figure>' : it.face_gen ? `<figure><img src="${fu(it, 'face_gen/face_x4.png') + '&v=' + encodeURIComponent(it.face_gen.at || '')}" class="fx"><figcaption>얼굴 (생성 ${esc(it.face_gen.version || 'v1')}${it.face_gen.angle != null ? ` · 각도 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.angle}/10</b>` : it.face_gen.pose != null ? ` · 골격 일치 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.pose}</b>` : ''})</figcaption></figure>` : '<figure><div class="fx wait">생성 얼굴 만드는 중…</div></figure>'}
           ${it.face === 'done' ? `<figure><img src="${fu(it, 'face/views/face_x4.png')}" class="fs"><figcaption>얼굴 (손 도트)</figcaption></figure>` : ''}
         </div></div>
     </div>
     <div class="views" style="margin-top:14px">
-      <figure><img src="${fu(it, 'views/context.png')}"><figcaption>Actor1 네 명 옆에 세움 (3배)</figcaption></figure>
+      <figure><img src="${fu(it, 'views/context.png')}"><figcaption>같은 칩셋 원본 네 명 옆에 세움 (3배)</figcaption></figure>
       <figure><img src="${fu(it, 'views/stroll.gif')}"><figcaption>칸 위를 걷기 (3배)</figcaption></figure>
     </div>
     ${rvHtml}${gHtml}

@@ -173,21 +173,48 @@ def from_actor(png, index):
 
 
 # ─────────────────────────────── 기계 검수 ───────────────────────────────
-# 기준은 Actor1 8명에서 쟀다(`harness.py calibrate` 가 8명 전원 통과를 확인한다).
-#   머리 높이 출렁임 = 방향마다 정확히 1px, 윤곽 픽셀 중 어두운 것 83~96 %, 색 22~32 개, 실루엣 217~390 px,
-#   걸음 0↔2 프레임 전체에서 다른 픽셀 79~279 (팔·다리·옷자락이 다 움직인다). 2026-10-02 첫 실행에서 Sonnet 이
-#   몸을 1px 내리고 발끝만 바꾼 걸음(16~26px)을 냈는데 옛 검수를 통과했다 — 그래서 walk_motion 을 넣었다.
-LIMITS = dict(max_colors=32, top_jitter_max=1, area_min=190, area_max=420, bbox_w_max=23, bbox_h_max=30,
-              dark_edge_min=0.75, dark_luma=70, leg_diff_min=6, walk_motion_min=70, walk_motion_vs_base=0.6,
-              changed_min=0.20)
+# 처음 기준은 Actor1 8명에서 쟀다(출렁임 정확히 1px, 어두운 윤곽 83~96 %, 색 22~32 …). 2026-10-02 Actor2~4·People1~5 원본
+# 64명에 대 보니 44명이 원본인데도 불합격했다(색 있는 윤곽선, 47색, 2px 출렁임, 아이 몸 182px).
+# → 절대 기준은 「RTP 원본 72명이 모두 통과하는 넓은 울타리」만 남기고, 나머지는 **뼈대 원본 대비**로 잰다.
+#   `harness.py calibrate` 가 72명 전원 통과(뼈대 = 자기 자신)를 확인한다.
+# 걸음 동작량(walk_motion)은 2026-10-02 첫 실행에서 Sonnet 이 몸을 1px 내리고 발끝만 바꾼 걸음(16~26px)을 내서 넣었다.
+LIMITS = dict(max_colors=48, area_min=120, area_max=480, bbox_w_max=24, bbox_h_max=31, top_jitter_max=2,
+              walk_motion_min=50, leg_diff_min=6, dark_luma=70,
+              # 뼈대 대비
+              area_vs_base=(0.7, 1.5), dark_edge_drop=0.15, walk_motion_vs_base=0.6, changed_min=0.20)
 
 
 def _lum(c):
     return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
 
 
-def gate(pal, frames, base=None):
-    """→ dict(ok, fails[], warns[], metrics{}). base 가 있으면 「뼈대만 남기고 새 캐릭터인가」도 잰다."""
+def stats(pal, frames):
+    """방향·걸음마다 실루엣 크기·윤곽 어두움·머리 높이, 방향마다 걸음 동작량."""
+    st = dict(area={}, dark={}, top={}, bottom={}, bbox={}, motion={}, leg={}, jitter={})
+    for d in DIRS:
+        for f in range(3):
+            rows = frames[(d, f)]
+            op = [(x, y) for y, r in enumerate(rows) for x, c in enumerate(r) if c != TRANSPARENT]
+            k = (d, f)
+            if not op:
+                continue
+            xs, ys = [p[0] for p in op], [p[1] for p in op]
+            st['area'][k] = len(op)
+            st['top'][k], st['bottom'][k] = min(ys), max(ys)
+            st['bbox'][k] = (max(xs) - min(xs) + 1, max(ys) - min(ys) + 1)
+            S = set(op)
+            edge = [(x, y) for x, y in op if any((x + dx, y + dy) not in S for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+            st['dark'][k] = sum(_lum(pal[rows[y][x]]) < LIMITS['dark_luma'] for x, y in edge) / len(edge)
+        a, b = frames[(d, 0)], frames[(d, 2)]
+        st['motion'][d] = sum(a[y][x] != b[y][x] for y in range(FH) for x in range(FW))
+        st['leg'][d] = sum(a[y][x] != b[y][x] for y in range(FH - 10, FH) for x in range(FW))
+        tops = [st['top'][(d, f)] for f in range(3) if (d, f) in st['top']]
+        st['jitter'][d] = max(tops) - min(tops) if len(tops) == 3 else 0
+    return st
+
+
+def gate(pal, frames, base=None, check_changed=True):
+    """→ dict(ok, fails[], warns[], metrics{}). base=(pal, frames) 가 있으면 뼈대 대비 기준과 「새 캐릭터인가」도 잰다."""
     L = LIMITS
     fails, warns, m = [], [], {}
     se = structural_errors(pal, frames)
@@ -201,74 +228,59 @@ def gate(pal, frames, base=None):
                     used.setdefault(c, set()).add(k)
     m['colors'] = len(used)
     if len(used) > L['max_colors']:
-        fails.append(f'색 {len(used)}개 > {L["max_colors"]} (Actor1 은 22~32)')
+        fails.append(f'색 {len(used)}개 > {L["max_colors"]} (RTP 원본 최대 47)')
     once = sorted(c for c, ks in used.items() if len(ks) == 1)
     if once:
         warns.append(f'한 프레임에만 나오는 색 {"".join(once)} — 걸을 때 깜빡일 수 있다')
     unused = sorted(c for c in pal if c != TRANSPARENT and c not in used)
     if unused:
         warns.append(f'팔레트에 있지만 안 쓴 색 {"".join(unused)}')
-
-    def ops(rows):
-        return [(x, y) for y, r in enumerate(rows) for x, c in enumerate(r) if c != TRANSPARENT]
-
-    areas, darks, bottoms = {}, {}, {}
+    st = stats(pal, frames)
+    bs = stats(*base) if base is not None else None
     for d in DIRS:
-        tops = []
         for f in range(3):
-            rows = frames[(d, f)]
-            op = ops(rows)
-            k = f'{d}{f}'
-            if not op:
+            k = (d, f)
+            if k not in st['area']:
                 fails.append(f'{DIR_KO[d]} {f}: 빈 프레임')
                 continue
-            xs, ys = [p[0] for p in op], [p[1] for p in op]
-            tops.append(min(ys))
-            bottoms[k] = max(ys)
-            areas[k] = len(op)
-            w, h = max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
-            if not (L['area_min'] <= len(op) <= L['area_max']):
-                fails.append(f'{DIR_KO[d]} {f}: 실루엣 {len(op)}px — Actor1 범위({L["area_min"]}~{L["area_max"]}) 밖')
+            ar = st['area'][k]
+            if not (L['area_min'] <= ar <= L['area_max']):
+                fails.append(f'{DIR_KO[d]} {f}: 실루엣 {ar}px — RTP 범위({L["area_min"]}~{L["area_max"]}) 밖')
+            w, h = st['bbox'][k]
             if w > L['bbox_w_max'] or h > L['bbox_h_max']:
                 fails.append(f'{DIR_KO[d]} {f}: 크기 {w}×{h} — 칸 가장자리까지 찼다(≤{L["bbox_w_max"]}×{L["bbox_h_max"]})')
-            S = set(op)
-            edge = [(x, y) for x, y in op if any((x + dx, y + dy) not in S for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
-            dk = sum(_lum(pal[rows[y][x]]) < L['dark_luma'] for x, y in edge) / len(edge)
-            darks[k] = round(dk, 3)
-            if dk < L['dark_edge_min']:
-                fails.append(f'{DIR_KO[d]} {f}: 윤곽 픽셀 중 어두운 것 {dk:.0%} < {L["dark_edge_min"]:.0%} (윤곽선이 끊겼다)')
-        if len(tops) == 3:
-            j = max(tops) - min(tops)
-            m[f'top_jitter_{d}'] = j
-            if j > L['top_jitter_max']:
-                fails.append(f'{DIR_KO[d]}: 걸음 프레임 사이 머리 높이 {j}px 출렁임 (Actor1 은 정확히 1px)')
-        # 다리가 실제로 움직이는가: 아래 10줄에서 0 과 2 가 달라야 한다
-        a, b = frames[(d, 0)], frames[(d, 2)]
-        leg = sum(a[y][x] != b[y][x] for y in range(FH - 10, FH) for x in range(FW))
-        m[f'leg_diff_{d}'] = leg
-        if leg < L['leg_diff_min']:
-            fails.append(f'{DIR_KO[d]}: 걸음 0·2 의 다리가 거의 같다({leg}px) — 걷는 것처럼 안 보인다')
-        motion = sum(a[y][x] != b[y][x] for y in range(FH) for x in range(FW))
-        m[f'walk_motion_{d}'] = motion
-        if motion < L['walk_motion_min']:
-            fails.append(f'{DIR_KO[d]}: 걸음 0↔2 에서 바뀐 픽셀 {motion} < {L["walk_motion_min"]} (Actor1 최소 79) — 팔·다리가 거의 안 움직인다')
-        if base is not None:
-            bf = base[1]
-            bm = sum(bf[(d, 0)][y][x] != bf[(d, 2)][y][x] for y in range(FH) for x in range(FW))
-            if motion < bm * L['walk_motion_vs_base']:
-                fails.append(f'{DIR_KO[d]}: 걸음 동작이 뼈대의 {motion / bm:.0%} 뿐이다(뼈대 {bm}px) — 뼈대의 걸음을 따르지 않았다')
-        idle = frames[(d, 1)]
+            if bs and k in bs['area']:
+                lo, hi = L['area_vs_base']
+                if not (lo * bs['area'][k] <= ar <= hi * bs['area'][k]):
+                    fails.append(f'{DIR_KO[d]} {f}: 실루엣 {ar}px — 뼈대({bs["area"][k]}px)의 {ar / bs["area"][k]:.0%} (허용 {lo:.0%}~{hi:.0%})')
+                if st['dark'][k] < bs['dark'][k] - L['dark_edge_drop']:
+                    fails.append(f'{DIR_KO[d]} {f}: 윤곽 픽셀 중 어두운 것 {st["dark"][k]:.0%} — 뼈대({bs["dark"][k]:.0%})보다 '
+                                 f'{L["dark_edge_drop"]:.0%}p 넘게 밝다(윤곽선이 끊겼다)')
+        j = st['jitter'][d]
+        m[f'top_jitter_{d}'] = j
+        jmax = max(1, bs['jitter'][d]) if bs else L['top_jitter_max']
+        if j > jmax:
+            fails.append(f'{DIR_KO[d]}: 걸음 프레임 사이 머리 높이 {j}px 출렁임 (뼈대 {bs["jitter"][d] if bs else "-"}px)')
+        m[f'leg_diff_{d}'] = st['leg'][d]
+        if st['leg'][d] < L['leg_diff_min']:
+            fails.append(f'{DIR_KO[d]}: 걸음 0·2 의 다리가 거의 같다({st["leg"][d]}px) — 걷는 것처럼 안 보인다')
+        mo = st['motion'][d]
+        m[f'walk_motion_{d}'] = mo
+        if mo < L['walk_motion_min']:
+            fails.append(f'{DIR_KO[d]}: 걸음 0↔2 에서 바뀐 픽셀 {mo} < {L["walk_motion_min"]} — 팔·다리가 거의 안 움직인다')
+        if bs and mo < bs['motion'][d] * L['walk_motion_vs_base']:
+            fails.append(f'{DIR_KO[d]}: 걸음 동작이 뼈대의 {mo / bs["motion"][d]:.0%} 뿐이다(뼈대 {bs["motion"][d]}px) — 뼈대의 걸음을 따르지 않았다')
+        a, b, idle = frames[(d, 0)], frames[(d, 2)], frames[(d, 1)]
         if a == idle or b == idle:
             fails.append(f'{DIR_KO[d]}: 걸음 프레임이 서 있는 자세와 똑같다')
-    if len(set(bottoms.values())) > 2:
-        warns.append(f'발끝 줄이 프레임마다 다르다 {sorted(set(bottoms.values()))} — 땅에서 뜰 수 있다')
-    m['area'] = [min(areas.values(), default=0), max(areas.values(), default=0)]
-    m['dark_edge_min'] = min(darks.values(), default=0)
-    # 왼쪽 가운데 프레임 vs 오른쪽 가운데 거울
+    if len(set(st['bottom'].values())) > 2:
+        warns.append(f'발끝 줄이 프레임마다 다르다 {sorted(set(st["bottom"].values()))} — 땅에서 뜰 수 있다')
+    m['area'] = [min(st['area'].values(), default=0), max(st['area'].values(), default=0)]
+    m['dark_edge_min'] = round(min(st['dark'].values(), default=0), 3)
     r1, l1 = frames[('right', 1)], frames[('left', 1)]
     m['left_vs_mirror_right_px'] = sum(l1[y][x] != r1[y][FW - 1 - x] for y in range(FH) for x in range(FW))
 
-    if base is not None:
+    if base is not None and check_changed:
         bpal, bframes = base
         tot = chg = sil = 0
         for k in frames:
@@ -398,7 +410,7 @@ def sheet_big(pal, frames, scale=8):
 
 
 def context(pal, frames, actor_png, scale=3, lawn=None, others=(0, 1, 3, 6)):
-    """게임 속 크기 감각: 잔디 위에 Actor1 캐릭터 몇 명(서 있는 자세, 아래 방향)과 새 캐릭터 네 방향을 같은 배율로."""
+    """게임 속 크기 감각: 잔디 위에 뼈대 칩셋의 캐릭터 몇 명(서 있는 자세, 아래 방향)과 새 캐릭터 네 방향을 같은 배율로."""
     n = len(others)
     W, H = (n + 4) * (FW + 4) + 12, FH + 8
     bg = _bg(W, H, lawn)
