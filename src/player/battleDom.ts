@@ -49,7 +49,7 @@ import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleImpactLayer, playBattleSfx } from "@/player/battleSfx";
-import { pokemonActionMotion, pokemonHeavyShake, pokemonHitPower, pokemonHudJolt, preloadPokemonMotionSounds, type PokemonMoveContext } from "@/player/battlePokemonMotion";
+import { pokemonActionMotion, pokemonDamageBlink, pokemonHitPower, pokemonHudBuzz, preloadPokemonMotionSounds, type PokemonMoveContext } from "@/player/battlePokemonMotion";
 import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
@@ -109,6 +109,17 @@ function isTextInputTarget(target: EventTarget | null): boolean {
 
 /** host에 마운트된 전투 컨트롤러를 정리한다. 플레이어 teardown 등에서 호출해
  *  전투가 끝나기 전에 플레이를 닫아도 틱·리스너가 새지 않게 한다(결함 1c). */
+/** 포켓몬 피해 박자 뒤 다음 행동까지의 여유 */
+const POKEMON_DAMAGE_TAIL_MS = 90;
+/** 결과 문장을 읽는 박자(3세대 waitmessage 64프레임의 약 2/3) — 문장이 HP 가 다 준 **뒤**에 나오므로 그만큼 머문다. */
+const POKEMON_RESULT_READ_FRAMES = 40;
+/** 상성별 타격음 모양 — 3세대 SE_KOUKA_L/M/H 를 같은 타격 샘플의 크기·높이로 옮겼다. */
+const POKEMON_EFFECTIVENESS_SHAPE: Readonly<Record<"weak" | "normal" | "super", BattleCueShape>> = {
+  weak: { volume: 0.6, rate: 1.22 },
+  normal: { volume: 1, rate: 1 },
+  super: { volume: 1.3, rate: 0.88 },
+};
+
 export function destroyBattleSceneOnHost(host: HTMLElement): void {
   activeBattleControllers.get(host)?.destroy();
   activeBattleControllers.delete(host);
@@ -489,17 +500,22 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (feedback) {
         const vitalsBefore = presentation?.vitalsFor(feedback.targetId);
         const wasAlive = !vitalsBefore?.defeated;
+        // 원장 객체는 applyFeedback 이 제자리에서 고친다 — 맞기 전 HP 는 지금 떠 둔다.
+        const hpBefore = vitalsBefore?.hp;
         presentation?.applyFeedback(feedback);
-        const targetNode =
-          field.querySelector<HTMLElement>(`[data-testid="${feedback.targetId}"]`)
-          ?? field.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${feedback.targetId}"]`)
-          ?? field.querySelector<HTMLElement>(`[data-testid="battle-actor-${feedback.targetId}"]`);
+        // 파티 몬스터는 런타임 id(mon:…)로 맞는다 — 직접 조회하면 null 이라 내 몬스터가 맞을 때 깜빡임·넉백이 빠졌다(2026-10-02 실측).
+        const targetNode = findBattlerNode(field, feedback.targetId);
         // 타격 세기 — 대상 최대 HP 대비 피해 비율(+급소·막타)로 넉백·찌그러짐·무대 펀치·흔들림을 차등한다.
         const lethal = wasAlive && Boolean(presentation?.vitalsFor(feedback.targetId)?.defeated);
         const maxHp = vitalsBefore?.maxHp ?? battlerMaxHp(options.runtime.snapshot(), feedback.targetId);
         const intensity = hitIntensity(feedback, maxHp, lethal);
         applyHitIntensity(root, targetNode, intensity);
         if (retroMotion) retroDamage(targetNode, feedback, lethal);
+        // 포켓몬 스킨의 피해는 기술 연출(착탄 떨림·별) 뒤에 따로 온다(3세대 순서) — 아래 일반 경로를 타지 않는다.
+        if (pokemonMotion && !feedback.miss && !feedback.healing && !feedback.blocked && feedback.amount > 0) {
+          playPokemonDamagePhase(feedback, targetNode, maxHp, lethal, hpBefore, presentation?.vitalsFor(feedback.targetId)?.hp);
+          return;
+        }
         // 타격/급소/회복/빗나감 효과음 — 사건 1개에 소리 1개. emitBattleJuice 안의
         // playBattleCue 가 샘플→합성 폴백을 단일 경로로 처리한다. 여기서 합성 보이스를
         // 따로 부르면 한 타격에 소리가 겹친다(예전 결함).
@@ -513,9 +529,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
                 : "hit-damage",
           targetNode,
           // 포켓몬 스킨: 같은 타격 샘플도 세기에 따라 크기·높이가 다르다(약하면 작고 높게, 세면 크고 낮게)
-          pokemonMotion && !feedback.miss && !feedback.healing
-            ? (() => { const p = pokemonHitPower(feedback.amount, maxHp, feedback.critical); return { volume: 0.75 + p * 0.55, rate: 1.12 - p * 0.3 }; })()
-            : undefined,
         );
         // 이 타격으로 쓰러졌다면 기절음이 잠시 뒤따른다. 그 사이 전투가 닫힐 수 있으므로
         // id 를 보관해 destroy 가 끊는다 — 예전에는 익명 타이머라 씬이 사라진 뒤에도 살아
@@ -537,15 +550,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           }
           // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
           if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
-          if (pokemonMotion && (feedback.critical || lethal || intensity === "heavy" || intensity === "crushing")) pokemonHeavyShake(field);
-          // HP 상자는 맞는 순간(흰 잔상이 생기는 순간) 흔들린다 — 아군은 파티 상자, 적은 자기 노드의 HUD.
-          if (pokemonMotion) {
-            const actor = options.runtime.snapshot().actors.find((one) => one.id === feedback.targetId || one.recordId === feedback.targetId);
-            const hud = actor
-              ? root.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`)
-              : targetNode?.querySelector<HTMLElement>(".battle-enemy-hud");
-            pokemonHudJolt(hud, { power: pokemonHitPower(feedback.amount, maxHp, feedback.critical), critical: Boolean(feedback.critical) });
-          }
         }
       }
     },
@@ -623,6 +627,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
       return battleAnimationImpactMs(animation.animationId);
     },
+    impactPresentationMs(_entry, feedback) {
+      if (!pokemonMotion || !feedback || feedback.miss || feedback.healing || feedback.blocked || feedback.amount <= 0) return 0;
+      const plan = pokemonDamagePlan(feedback, battlerMaxHp(options.runtime.snapshot(), feedback.targetId));
+      return plan.delayMs + plan.blinkMs + plan.drainMs + POKEMON_DAMAGE_TAIL_MS + plan.readMs;
+    },
     // 건너뛴 앞 프레임만큼 이펙트가 짧게 돈다 — 시퀀서가 recover 를 실제 끝에 맞춘다.
     animationRemainingMs(animation) {
       if (!pokemonMotion || !animation.durationMs) return undefined;
@@ -643,6 +652,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     collapseHoldMs: () => remainingEnemyCollapseMs(field),
     motionTempo: () => motionTempo,
+    describeEffectiveness: pokemonMotion,
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.
@@ -1440,6 +1450,84 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     panelOptions.submenu = null;
     presentation = createPresentationLedger(before);
     sequencer.runAfterActorCommand(command, before, afterCommand);
+  }
+
+  /** 포켓몬 3세대 피해 박자(pokeemerald: attackanimation → effectivenesssound + hitanimation → healthbarupdate).
+   *  기술 연출이 끝난 뒤(13프레임) 상성 타격음과 함께 맞은 쪽이 8번 깜빡이고 HP 상자가 떨며, 깜빡임이 끝나야 HP 가
+   *  일정 속도(바 전체 48프레임)로 준다. 동작 템포(1.5배)만큼 줄인다. */
+  function pokemonDamagePlan(feedback: DamageFeedback, maxHp: number): { delayMs: number; blinkMs: number; drainMs: number; readMs: number; frameMs: number } {
+    const frame = 1000 / 60 / (motionTempo > 0 ? motionTempo : 1);
+    const share = Math.min(1, feedback.amount / Math.max(1, maxHp));
+    return {
+      delayMs: 13 * frame,
+      blinkMs: 32 * frame,
+      drainMs: Math.max(frame, Math.round(share * 48) * frame),
+      readMs: POKEMON_RESULT_READ_FRAMES * frame,
+      frameMs: frame,
+    };
+  }
+
+  /** 3세대는 HP 숫자도 바와 같이 센다(MoveBattleBar → UpdateHpTextInHealthbox). 예전엔 숫자가 착탄 순간 바로 바뀌고
+   *  바는 0.5초 뒤에 줄어 서로 어긋났다. 세는 동안 battleFieldDom.setVitalNode 는 data-hp-countdown 을 보고 숫자를 건드리지 않는다. */
+  function countPokemonHp(hud: HTMLElement | null | undefined, from: number, to: number, startMs: number, drainMs: number, frameMs: number): void {
+    const value = hud?.querySelector<HTMLElement>(".battle-actor-hp .battle-vital-value");
+    if (!value || !(from > to)) return;
+    const token = String((Number(value.dataset.hpCountdown) || 0) + 1);
+    value.dataset.hpCountdown = token;
+    value.textContent = ` ${from}`;
+    const ticks = Math.max(1, Math.round(drainMs / frameMs));
+    for (let k = 1; k <= ticks; k += 1) {
+      const shown = Math.round(from - (from - to) * (k / ticks));
+      scheduleBattleTimer(() => {
+        if (value.dataset.hpCountdown !== token) return;
+        value.textContent = ` ${shown}`;
+        if (k === ticks) delete value.dataset.hpCountdown;
+      }, startMs + k * (drainMs / ticks));
+    }
+  }
+
+  function playPokemonDamagePhase(feedback: DamageFeedback, targetNode: HTMLElement | null, maxHp: number, lethal: boolean, hpBefore: number | undefined, hpAfter: number | undefined): void {
+    const plan = pokemonDamagePlan(feedback, maxHp);
+    const drainAt = plan.delayMs + plan.blinkMs;
+    // 결과 문장(「…에게 5 피해!」·상성)은 HP 가 다 준 뒤에 — 3세대 순서는 기술 → 맞음 → HP 감소 → resultmessage 다.
+    // 예전엔 피해 숫자가 착탄 순간 먼저 나와서, 바가 줄기도 전에 결과를 읽어 버렸다. 20-pokemon-skin.css ⑦ 이 둘째 줄을 숨긴다.
+    const holdToken = String((Number(root.dataset.pkmnResultHold) || 0) + 1);
+    root.dataset.pkmnResultHold = holdToken;
+    // 바 전환은 스타일이 다시 계산되는 다음 프레임에 시작해 타이머보다 한 프레임쯤 늦다 — 문장은 두 프레임 더 기다린다.
+    scheduleBattleTimer(() => { if (root.dataset.pkmnResultHold === holdToken) delete root.dataset.pkmnResultHold; }, drainAt + plan.drainMs + 2 * plan.frameMs);
+    const actor = options.runtime.snapshot().actors.find((one) => one.id === feedback.targetId || one.recordId === feedback.targetId);
+    // 포켓몬 스킨에서 화면에 보이는 적 HP 상자는 필드의 .battle-enemy-hud(숨김)가 아니라 정보 패널의 행이다.
+    // 예전엔 숨은 HUD 를 잡아서 적 HP 가 착탄 순간 바로 줄고 상자도 떨지 않았다(2026-10-02 실측).
+    const enemyRow = actor ? null : root.querySelector<HTMLElement>(`.battle-enemy-list-row[data-enemy-id="${targetNode?.dataset.testid ?? feedback.targetId}"]`);
+    const hud = actor
+      ? root.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`)
+      : enemyRow ?? targetNode?.querySelector<HTMLElement>(".battle-enemy-hud");
+    // 떨리는 건 상자 전체(3세대 healthbox) — 적이 하나면 패널이 곧 상자다.
+    const enemyPanel = enemyRow?.closest<HTMLElement>(".battle-enemy-list-panel");
+    const buzzBox = enemyPanel && enemyPanel.querySelectorAll(".battle-enemy-list-row").length === 1 ? enemyPanel : hud;
+    // HP 바는 깜빡임이 끝난 뒤 일정 속도로 — 20-pokemon-skin.css 의 HP 전환이 이 변수를 읽는다.
+    if (hud) {
+      hud.style.setProperty("--pkmn-hp-drain-delay", `${Math.round(drainAt)}ms`);
+      hud.style.setProperty("--pkmn-hp-drain-ms", `${Math.round(plan.drainMs)}ms`);
+      scheduleBattleTimer(() => {
+        hud.style.removeProperty("--pkmn-hp-drain-delay");
+        hud.style.removeProperty("--pkmn-hp-drain-ms");
+      }, drainAt + plan.drainMs + 120);
+    }
+    if (actor && hpBefore !== undefined) countPokemonHp(hud, hpBefore, hpAfter ?? Math.max(0, hpBefore - feedback.amount), drainAt, plan.drainMs, plan.frameMs);
+    const tier = (feedback.effectiveness ?? 1) > 1 ? "super" : (feedback.effectiveness ?? 1) < 1 ? "weak" : "normal";
+    root.dataset.battleLastEffectiveness = tier;
+    scheduleBattleTimer(() => {
+      if (destroyed) return;
+      // 상성별 타격음(3세대 SE_KOUKA_L/M/H): 별로 = 작고 높게, 보통, 굉장 = 크고 낮게 + 한 번 더(「빠-밤」).
+      emitBattleJuice("hit-damage", targetNode, POKEMON_EFFECTIVENESS_SHAPE[tier]);
+      if (tier === "super") scheduleBattleTimer(() => { if (!destroyed) emitBattleJuice("hit-damage", targetNode, { volume: 0.9, rate: 0.78 }); }, 55);
+      if (hitFeel === "impact" && tier !== "weak") playBattleImpactLayer(pokemonHitPower(feedback.amount, maxHp, feedback.critical), feedback.critical);
+      pokemonDamageBlink(targetNode, motionTempo);
+      pokemonHudBuzz(buzzBox, motionTempo);
+    }, plan.delayMs);
+    // 기절음은 HP 가 다 준 뒤(3세대 tryfaintmon 은 메시지 뒤) — 예전엔 맞은 뒤 260ms, HP 가 줄기도 전에 났다.
+    if (lethal) scheduleBattleTimer(() => { if (!destroyed) playBattleCue("faint"); }, drainAt + plan.drainMs + 80);
   }
 
   function emitSwingJuice(command: ActorCommand | TargetedActorCommand, snapshot: BattleSnapshot): void {

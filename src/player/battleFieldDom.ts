@@ -1499,8 +1499,10 @@ function setVitalNode(node: Element, kind: "hp" | "mp", value: number, max: numb
     node.textContent = `${kind === "hp" ? "HP" : "MP"} ${value}/${max}`;
     return;
   }
-  valueNode.textContent = ` ${value}`;
   maxNode.textContent = `/${max}`;
+  // 포켓몬 피해 박자가 HP 숫자를 바와 같이 세는 중이면 건드리지 않는다(battleDom.countPokemonHp).
+  if (kind === "hp" && (valueNode as HTMLElement).dataset?.hpCountdown) return;
+  valueNode.textContent = ` ${value}`;
 }
 
 function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot["battleFlow"]): HTMLElement {

@@ -1537,6 +1537,20 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-stat-bar-hp, .battle-enemy-list-bar)::before {
   transition: width 260ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
+/* ⑥ 3세대 HP 감소(2026-10-02 조사, pokeemerald MoveBattleBar): 피해 순간의 깜빡임이 끝난 뒤 **일정 속도**로 준다(바 전체 48프레임).
+   피해 박자(battleDom.playPokemonDamagePhase)가 HP 상자에 --pkmn-hp-drain-delay·--pkmn-hp-drain-ms 를 걸 때만 — 회복은 위 전환 그대로.
+   흰 잔상은 채움과 같이 움직여 보이지 않는다(3세대에는 잔상이 없다). */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] [style*="--pkmn-hp-drain-ms"] :is(.battle-stat-bar-hp, .battle-enemy-list-bar) {
+  transition: --pkmn-hp-ghost var(--pkmn-hp-drain-ms) linear var(--pkmn-hp-drain-delay);
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] [style*="--pkmn-hp-drain-ms"] :is(.battle-stat-bar-hp, .battle-enemy-list-bar)::before {
+  transition: width var(--pkmn-hp-drain-ms) linear var(--pkmn-hp-drain-delay);
+}
+/* ⑦ 결과 문장은 HP 가 다 준 뒤에(3세대 resultmessage 순서) — 피해 박자(battleDom.playPokemonDamagePhase)가 붙이는
+   data-pkmn-result-hold 동안 행동 문장(첫 줄)만 보인다. 명령 입력 같은 다른 단계의 둘째 줄은 숨기지 않는다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-pkmn-result-hold] .battle-message-window:is([data-battle-director-step="impact"], [data-battle-director-step="acting"]) .battle-message-line + .battle-message-line {
+  visibility: hidden;
+}
 /* ④ 정지 중 필드 전체 밝기 올림(05-poses-motion: contrast 1.08 · brightness 1.05)도 끈다 — 하늘·발판까지 옅어져
    맞는 순간이 또 안개로 읽혔다(2026-10-02 픽셀 측정: 하늘 217→234). 정지는 맞은 그림의 번쩍임·진동이 말한다. */
 .battle-scene[data-battle-ui-style="pokemon"][data-battle-skin]:is(.battle-hit-stop, .battle-hit-stop-critical) .battle-field {
@@ -1546,7 +1560,7 @@
 /* ⑤ 차례 표시의 「한 걸음 나섬」(06 .battle-acting: oprn-actor-step 0.3s margin-left −16px + 밝기 1.2)을 HP 상자와 몬스터 노드에서 끈다 —
    맞은 뒤 0.4초, 다음 차례가 오는 순간 HP 상자가 24px 밀렸다 돌아와 「한 박자 늦은 피격 흔들림」으로, 방금 맞은 몬스터는 한 번 더
    미끄러져 「피한 모션」으로 읽혔다(2026-10-02 사용자 리뷰, 기하 탐침). 포켓몬은 차례를 몸짓으로 알리지 않는다.
-   피격 흔들림은 맞는 순간 안무(pokemonHudJolt·releaseTarget)가 낸다. */
+   피격 반응은 3세대 피해 박자(battleDom.playPokemonDamagePhase — 깜빡임·HP 상자 떨림)가 낸다. */
 .battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-actor-status, .battle-actor, .battle-enemy).battle-acting {
   animation: none;
   filter: none;

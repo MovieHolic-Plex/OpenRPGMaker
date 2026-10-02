@@ -64,6 +64,8 @@ export interface DamageFeedback {
   readonly miss?: boolean;
   /** 명중했지만 피해가 0 인 타격(완전 방어·무효). 화면에 반드시 표시한다. */
   readonly blocked?: boolean;
+  /** 상성 배율(엔트리 effectiveness). 1 이면 생략. */
+  readonly effectiveness?: number;
   /** 숫자 대신 띄울 글자(상태 부여 「스톱」 등). 있으면 HP 원장·타격 연출·효과음을 건드리지 않는
    *  **표시 전용** 팝업이다(battleDom.onDamageFeedback 이 일찍 돌아간다). */
   readonly label?: string;
@@ -104,6 +106,9 @@ export interface BattleSequencerHooks {
   /** 마운트 뒤 이펙트(후속 포함)가 실제로 도는 ms(템포 적용 전) — 앞 프레임을 건너뛰는 표시 계층만 구현한다.
    *  있으면 recover 비트를 이 끝 시각에 맞춘다. animationImpactMs 다음에 불린다. */
   readonly animationRemainingMs?: (animation: BattleAnimationSnapshot) => number | undefined;
+  /** 피해 연출이 impact 비트 시작부터 끝나기까지 필요한 ms(템포 적용 후). recover 비트를 이만큼은 늘린다 —
+   *  포켓몬 스킨은 기술 연출 뒤에 깜빡임·HP 감소가 따로 오므로(3세대 순서) 다음 행동이 그 위로 올라오면 안 된다. */
+  readonly impactPresentationMs?: (entry: BattleTimelineEntrySnapshot, feedback: DamageFeedback | undefined) => number;
   /** 도주 시도의 결과가 화면에 도달하는 순간. 도주음·BGM 정지는 성공이 확정된 뒤에만 울려야 한다. */
   readonly onEscapeOutcome?: (success: boolean) => void;
   /** 결과가 정해진 뒤 결과 패널이 뜨기 전(BATTLE_RESULT_HOLD_MS) 한 번. 이 홀드는 예전엔 빈 필드만
@@ -125,6 +130,8 @@ export interface BattleSequencerHooks {
   /** 스킨의 동작 템포. 행동 비트(예고·돌진·회복)와 이펙트 착탄 오프셋만 이 배율로 줄인다 — 히트스톱과
    *  대사 읽기 시간은 그대로다. 배속(speedMultiplier)과 곱해진다. undefined·1 이면 옛 길이 그대로. */
   readonly motionTempo?: () => number;
+  /** 피해 문장에 상성(「효과가 굉장했다!」·「효과가 별로인 듯하다…」)을 붙인다 — 포켓몬 스킨만. */
+  readonly describeEffectiveness?: boolean;
 }
 
 /** 히트스톱 비트를 뺀 행동 비트를 템포로 줄인다. 히트스톱을 같이 줄이면 타격이 가벼워진다. */
@@ -273,6 +280,7 @@ export function createBattleSequencer(
       critical: Boolean(entry.critical),
       healing,
       resource: entry.resource ?? "hp",
+      ...(entry.effectiveness !== undefined && !healing ? { effectiveness: entry.effectiveness } : {}),
     };
   }
 
@@ -286,6 +294,7 @@ export function createBattleSequencer(
       critical: Boolean(entry.critical),
       skillName: entry.skillName,
       ...(entry.skillId ? { skillId: entry.skillId } : {}),
+      ...(hooks.describeEffectiveness && entry.effectiveness !== undefined ? { effectiveness: entry.effectiveness } : {}),
     };
   }
 
@@ -564,6 +573,12 @@ export function createBattleSequencer(
     if (remainingMs !== undefined && hooks.actorRecoverMs === undefined && hooks.enemyRecoverMs === undefined) {
       beats = planBeats(Math.max(0, animationOffsetMs * (tempo > 0 ? tempo : 1) + remainingMs));
     }
+    const presentationMs = hooks.impactPresentationMs?.(entry, feedback) ?? 0;
+    if (presentationMs > 0) {
+      const impactBeatMs = beats.find((beat) => beat.kind === "impact")?.durationMs ?? 0;
+      const needed = Math.round(presentationMs - impactBeatMs);
+      beats = beats.map((beat) => (beat.kind === "recover" && beat.durationMs < needed ? { ...beat, durationMs: needed } : beat));
+    }
     if (entry.animation && animationOffsetMs > 0) {
       hooks.onEntryAnimation?.(undefined);
       delay(() => hooks.onEntryAnimation?.(entry.animation), animationOffsetMs);
@@ -784,7 +799,7 @@ export function createBattleSequencer(
       const commandStart = Math.max(consumedTimeline, before.timeline.length);
       const commandEntries = after.timeline.slice(commandStart);
       consumedTimeline = after.timeline.length;
-      const actingState = actorCommandDirectorState(command, before, after);
+      const actingState = actorCommandDirectorState(command, before, after, { describeEffectiveness: hooks.describeEffectiveness });
       // 이 명령을 내린 액터의 첫 엔트리를 찾는다 — strict 라운드에서 민첩이 빠른 적이
       // 먼저 움직이면 commandEntries 앞쪽은 적의 행동이다. 대사는 액터 엔트리에 붙인다.
       const commandActorId = before.activeActorId;

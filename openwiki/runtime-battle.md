@@ -510,11 +510,33 @@
   단위 테스트 `test/battleAnimationFollowUps.test.ts` 「앞 프레임 건너뛰기」, `test/battleSeSamples.test.ts` 병합·출처(작성만, 미실행).
 - **피격 반응 리뷰 반영 (2026-10-02, 사용자 전달 리뷰):** 「충격음이 아니라 피 차거나 피한 소리」·「HP 상자 흔들림이 한 박자 늦다」·
   「맞는 게 아니라 피한 모션, 공이 도착 안 했는데 시작」·「2 깎인 작은 공에 크게 밀린다」. 기하 탐침(`qa-runs/battle-moves/anim.js` `__geoLog`)으로 쟀다:
-  HP 상자는 맞는 순간 가만히 있다가 **+414ms 다음 차례 표시(`.battle-acting` 의 oprn-actor-step)로 24px 밀렸다 돌아왔다** — 늦은 흔들림의 정체.
-  아군 그림은 정지 뒤 곡선으로 90px 미끄러졌다 용수철처럼 출렁이며 돌아왔다(2/18 피해). 물대포 꼬리 구슬은 28ms 씩 늦게 떠나 착탄 뒤 112ms 까지 날아왔다.
-  지금: HP 상자와 몬스터 노드에서 차례 걸음을 끄고(20-pokemon-skin ⑤ — 방금 맞은 몬스터도 +450ms 에 한 번 더 미끄러졌다) **맞는 순간** `pokemonHudJolt`(2~9px, 끊어 흔들기, 더하기 합성). 풀림(`releaseTarget`)은 끊어 움직인다 —
-  한 프레임에 밀린 자리로 튀고 경직(좌우 떨림 40ms 간격) → 계단 세 번으로 복귀 → 두 번 깜빡. 거리 `KNOCK·k·max(0, p−0.1)·1.4`(작은 타격은 밀림보다 떨림), 정지 중 밀림도 `0.45+0.75p` 배.
-  발사체 꼬리 구슬은 늦게 떠나 더 빨리 날아 모두 착탄에 함께 닿고, 떠나는 순간 「슈웅」(Wind8 0.22·1.25배속). 아픈 표정은 그림이 필요하다 — 몬스터 하네스 후보로.
+  HP 상자와 방금 맞은 몬스터가 **+414ms 다음 차례 표시(`.battle-acting` 의 oprn-actor-step, margin-left −16px)로 밀렸다 돌아왔다** — 늦은 흔들림의 정체.
+  물대포 꼬리 구슬은 28ms 씩 늦게 떠나 착탄 뒤 112ms 까지 날아왔다. 지금: 포켓몬 스킨에서 차례 걸음을 끄고(20-pokemon-skin ⑤), 꼬리 구슬은 늦게 떠나
+  더 빨리 날아 모두 착탄에 함께 닿고, 떠나는 순간 「슈웅」(Wind8 0.22·1.25배속). 피격 반응 자체는 아래 3세대 박자로 바꿨다.
+- **포켓몬 3세대 타격 박자 (2026-10-02, pokeemerald 디컴파일 조사):** 「아직 부족하다, 포켓몬 타격감을 연구하라」. 출처(pret/pokeemerald):
+  `data/battle_scripts_1.s` BattleScript_HitFromAtkAnimation = `attackanimation → waitanimation → effectivenesssound + hitanimation → waitstate →
+  healthbarupdate → datahpupdate → critmessage → resultmessage` — **타격은 두 박자**다(기술 연출의 접촉 → 연출이 끝난 뒤 피해).
+  접촉: 몸통박치기(`battle_anim_scripts.s` Move_TACKLE) = 공격자 4프레임에 16px 직선 전진·복귀, 6프레임에 타격 스플랫(고정 크기, **8프레임 뒤 사라짐**) +
+  `AnimTask_ShakeMon 3,0,6,1`(2프레임마다 0↔+3px, 12프레임) + 기술 효과음. 피해에 비례하는 떨림은 `AnimTask_ShakeTargetBasedOnMovePowerOrDmg`(피해/12, 1~16px,
+  +⌈a/2⌉/−⌊a/2⌋). 물대포는 접촉에서 ±1px 16프레임 + 물 튐 효과음 3번(10프레임 간격). **밀림·흰 번쩍임·카메라 흔들림은 없다.**
+  피해: `Cmd_effectivenesssound` 가 SE_KOUKA_L/M/H(별로/보통/굉장, 급소와 무관) + `DoHitAnimBlinkSpriteEffect`(4프레임마다 invisible 토글, 32프레임 = 8번 ≈ 0.53초) +
+  `SpriteCB_HitAnimHealthoxEffect`(pokeball.c — HP 상자 y 를 매 프레임 ±1px, 21프레임). 그 뒤 `MoveBattleBar` 로 HP 가 일정 속도(최대 HP<48 이면 1px/프레임,
+  바 48px). 색 문턱 50%·20%(9px 이하 빨강). 지금 포켓몬 스킨: 접촉 = 제자리 좌우 떨림(진폭 1+7p GBA px × 1.8 로컬, 2프레임 6번) + 고정 착탄 별 8프레임,
+  피해 = 13프레임 뒤 상성 타격음(같은 타격 샘플을 별로 0.6배·높게 / 보통 / 굉장 1.3배·낮게 + 55ms 뒤 한 번 더) + `pokemonDamageBlink`(8번) + `pokemonHudBuzz`,
+  HP 는 깜빡임 뒤 일정 속도로(`--pkmn-hp-drain-delay/-ms`, 잔상 없음), 기절음은 HP 가 다 준 뒤. 모든 프레임 수는 동작 템포(1.5)로 나눈다.
+  시퀀서 `impactPresentationMs` 훅이 recover 를 피해 박자 + 결과 문장 읽는 박자(40프레임)까지 늘린다.
+  **결과 문장은 HP 가 다 준 뒤에**(3세대 resultmessage 자리): 피해 박자가 루트에 `data-pkmn-result-hold` 를 걸면 20-pokemon-skin.css ⑦ 이
+  메시지 둘째 줄을 숨긴다 — 예전엔 착탄 순간 피해 숫자가 먼저 나와 바가 줄기 전에 결과를 읽었다. 상성 문장이 있으면 둘째 줄은
+  **그 문장만**(「효과가 굉장했다!」, 급소면 「급소에 맞았다! 효과가 굉장했다!」) — 피해 숫자를 붙이면 창 한 줄을 넘어 셋째 줄이 잘렸다(3세대도 숫자는 말하지 않는다).
+  **HP 숫자도 바와 같이 센다**(`countPokemonHp`; 세는 동안 `data-hp-countdown` 이 `setVitalNode` 의 덮어쓰기를 막는다).
+  상성 배율은 타임라인 `effectiveness`(1 이면 생략)로 싣는다 — 일반 경로는 `battleEffectivenessMultiplier`, **몬스터 전투는 Gen1 경로**
+  (`applyGen1Skill` → `applyExactGen1Damage` 가 `typeFactors` 곱을 돌려준다)라 둘 다 배선해야 한다. 문장 배율은 **자속 보정(STAB)을 뺀다** —
+  넣으면 물 몬스터의 물 기술이 늘 「굉장」이 된다. `describeEffectiveness`(포켓몬 스킨)일 때만 문장을 붙인다. 테스트 `test/battleEffectivenessMessage.test.ts`.
+  함정(실측): ① 적 HP 상자는 필드의 `.battle-enemy-hud`(포켓몬 스킨에서 숨김)가 아니라 정보 패널 `.battle-enemy-list-row` — 숨은 HUD 를 잡으면 적 HP 가
+  착탄 순간 줄고 상자도 안 떤다. ② 아군 몬스터는 런타임 id(`mon:…`)로 맞으므로 대상 노드는 반드시 `findBattlerNode` 로(직접 조회하면 null → 깜빡임 없음).
+  ③ 표시 원장 `vitalsFor` 는 `applyFeedback` 이 제자리에서 고치는 객체 — 맞기 전 HP 는 그 전에 떠 둘 것. ④ 바 전환은 타이머보다 한 프레임쯤 늦게 시작한다.
+  QA: `qa-runs/battle-moves/geoscore.py <run>`(깜빡임·상자 떨림·HP 감소 구간), 탐침에 `eff=`(피해 박자가 본 상성)·`msg=`(메시지 창)가 있다.
+  남은 것: 아픈 표정 그림(몬스터 하네스 후보), 타격음 후보 선택(monster-hit-review).
 - **발사체는 「입·손」 자리에서 나간다 (`spriteEmitPoint`).** 그림 몸 위쪽 60% 안에서 상대 방향으로 가장 튀어나온 칸(가로 위주, 세로 0.35배).
   런타임은 그림 픽셀을 캔버스로 읽어 캐시한다(가로 스트립은 `data-strip-frames` 첫 칸만). 그림에 `data-emit-x/y`(칸 좌표)가 있으면 그것을 쓴다 —
   몬스터 하네스 `anim.json` 의 `emit` 이 같은 함수로 구한 값이고, 시드 `emit` 으로 손 고칠 수 있다(`openwiki/harnesses/monster-collect-species.md`).
