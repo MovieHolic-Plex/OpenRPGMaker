@@ -401,7 +401,7 @@ def main():
     p.add_argument('--run')
     p.add_argument('--drawer', default='gpt', choices=list(ENGINES))
     p.add_argument('--reviewer', default='sonnet', choices=list(ENGINES))
-    p.add_argument('--rounds', type=int, default=4)
+    p.add_argument('--rounds', type=int, default=1)  # 2026-10-02 사용자 판단: 원샷이 제일 낫다 — 반복 고치기는 명시할 때만
     p.set_defaults(fn=cmd_loop)
     a = ap.parse_args()
     a.fn(a)

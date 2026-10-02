@@ -22,8 +22,11 @@ page ── 엔진별 결과를 뼈대 원본과 나란히: 걷기 GIF·돌기 G
 ```
 r1: drawer(기본 gpt) 가 뼈대에서 그린다 → reviewer(기본 sonnet medium) 가 판정 → verdict.json
 r2..: 불합격이면 직전 판의 out.chr.txt 에서 시작해 검수자 지적(issues·good)을 고친다 → 다시 판정
-멈춤: 검수 PASS(high·mid 지적 0, 점수 ≥8) 또는 --rounds(기본 4)
+멈춤: 검수 PASS(high·mid 지적 0, 점수 ≥8) 또는 --rounds(기본 1)
 ```
+**기본은 원샷(1판)이다.** 2026-10-02 남·여 4판 실험(기사 5→6점, 약초사 4→5점, 8판 전부 FAIL) 뒤 사용자 판단:
+「원샷에 바꿔놓는 게 제일 낫다」. 고치기 판은 같은 지적을 국소 수정으로 반복할 뿐 핵심 형태를 못 바꿨다.
+검수자는 그대로 돌려 판정·지적을 화면에 붙인다(사용자 판단 자료). 반복이 필요하면 `--rounds N` 을 명시한다.
 검수자는 작업자의 notes.md 를 받지 않는다(그림·기계 검수·지시만). 기계 검수가 막으면 검수자 판정과 상관없이 FAIL.
 검수자 지시문 `reviewer.md`, 검수자가 보는 그림 `strip.png`·`base_strip.png`·`sheet_x8.png`·`context.png`(Actor1 네 명 옆에 세움).
 
@@ -44,7 +47,7 @@ python3 $H calibrate                                 # 기계 검수가 Actor1 8
 python3 $H draw hunter --engine sonnet --run R       # 백그라운드 작업자(최대 60분, CHR_HARNESS_TIMEOUT)
 python3 $H draw hunter --engine gpt --run R
 python3 $H status --run R
-python3 $H loop knight-boy herbalist-girl --run R --rounds 4   # 그리기→검수→고치기 반복(캐릭터마다 병렬)
+python3 $H loop knight-boy herbalist-girl --run R   # 원샷 그리기 + 검수(캐릭터마다 병렬). 반복은 --rounds N
 python3 $H page --run R                              # 비교 화면
 python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0
 ```
