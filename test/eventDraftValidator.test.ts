@@ -692,3 +692,42 @@ describe("always-true / always-false condition traps", () => {
   });
 });
 
+
+describe("common event call graph warnings", () => {
+  function scenario(chain: string[][]) {
+    const project = createBlankProject();
+    project.commonEvents = chain.map((calls, index) => ({
+      id: `ce-${index}`, name: `Common ${index}`, trigger: "none" as const,
+      commands: calls.map((commonEventId) => ({ kind: "callCommonEvent" as const, commonEventId })),
+    }));
+    const event = gameEvent(page({ commands: [{ kind: "callCommonEvent", commonEventId: "ce-0" }] }));
+    project.maps[project.startMapId].events = [event];
+    return { project, event };
+  }
+
+  it("finds indirect cycles in common-event commands and locates the caller", () => {
+    const { project, event } = scenario([["ce-1"], ["ce-0"]]);
+    const result = validateEventDraftBody(project, project.startMapId, event);
+    expect(result.issues).toContainEqual(expect.objectContaining({
+      code: "callCommonEvent.cycle", pageId: "page-1", commandPath: [0], severity: "warning",
+    }));
+  });
+
+  it("warns only when reachable call depth exceeds eight", () => {
+    const { project, event } = scenario(Array.from({ length: 9 }, (_, i) => i < 8 ? [`ce-${i + 1}`] : []));
+    expect(validateEventDraftBody(project, project.startMapId, event).issues).toContainEqual(
+      expect.objectContaining({ code: "callCommonEvent.recursionDepth" }),
+    );
+    project.commonEvents[7]!.commands = [];
+    expect(validateEventDraftBody(project, project.startMapId, event).issues.some(
+      (issue) => issue.code.startsWith("callCommonEvent."),
+    )).toBe(false);
+  });
+
+  it("does not warn about unrelated cycles or repeated nonrecursive calls", () => {
+    const { project, event } = scenario([["ce-1", "ce-1"], [], ["ce-2"]]);
+    expect(validateEventDraftBody(project, project.startMapId, event).issues.some(
+      (issue) => issue.code.startsWith("callCommonEvent."),
+    )).toBe(false);
+  });
+});
