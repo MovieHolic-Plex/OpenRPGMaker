@@ -3743,7 +3743,8 @@ function rejectCharsetMonsterAttack(rawBeats: unknown): void {
       const b = beat as Record<string, unknown>;
       if (b.kind === "parallel") { visit(b.beats); continue; }
       if (b.kind === "animation") animates = true;
-      if (b.kind === "moveActor" && typeof b.target === "string" && b.target !== "player" && b.target !== "this-event" && b.target !== "screen") movesOtherActor = true;
+      const mover = b.target ?? b.eventId ?? b.actorId;
+      if (b.kind === "moveActor" && typeof mover === "string" && mover !== "player" && mover !== "@player" && mover !== "this-event" && mover !== "screen") movesOtherActor = true;
     }
   };
   visit(rawBeats);
