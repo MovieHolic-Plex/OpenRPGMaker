@@ -281,7 +281,7 @@ flat_rows = []
 for g in TS["tileGroups"]:
     if g["id"].startswith("jb:") and g["defaultLayer"] == "lower" and "오토타일" not in g["name"]:
         flat_rows.append(f"| `{g['id']}` | {g['name']} | {g['tileIds'][0]}~{g['tileIds'][-1]} ({len(g['tileIds'])}칸) |")
-exp_lines = "\n".join(f"- **{gid}**: {v['max']}칸 이내 — {v['why']}" for gid, v in EXPECT.items())
+exp_lines = "\n".join(f"- **{gid}**: {v['max']}칸 이내 — {v['why']}" for gid, v in EXPECT.items() if not gid.startswith("_"))
 auto_md = f"""# 땅 오토타일 — 흙길·마당·강/연못·논 (마스크 비트와 변형 표)
 
 {HEAD}
@@ -304,11 +304,14 @@ auto_md = f"""# 땅 오토타일 — 흙길·마당·강/연못·논 (마스크 
 {chr(10).join(flat_rows)}
 
 ## 재료별 규칙
-- **흙길(`jb_road16_autotile`)**: 맵 밖을 이어짐으로 본다 → 맵 가장자리에서 끝나는 길은 끝막음이 안 생긴다. 폭 1~2칸. 다리 갑판·마당과 닿는 쪽도 이어진다.
-- **마당(`jb_yard16_autotile`)**: 마당 + 흙길을 이웃으로 센다(길과 마당이 자연스럽게 이어진다). 맵 가장자리는 가장자리 모양.
+- **흙길(`jb_road16_autotile`)**: 맵 밖을 이어짐으로 본다 → 맵 가장자리에서 끝나는 길은 끝막음이 안 생긴다. 마당·석판 길·마름모 마당도 이어진 것으로 센다(길이 마당·석판으로 끊김 없이 이어진다). 폭 1~2칸.
+- **마당(`jb_yard16_autotile`)**: 흙길·마당·석판·마름모 마당을 이웃으로 센다. 맵 가장자리는 가장자리 모양.
+- **석판 길(`jb_slab_edge16_autotile`, 국내성 대로)**: 몸통은 평면 석판 3변형(`jb:slab`)을 섞어 깔고, 석판이 아닌 땅(풀·밭·궁궐 마당)에 닿는 변만 가장자리 모양이 붙는다. 길·마당·해자 물·다리도 이어진 것으로 센다. 칠하면 몸통 변형은 같은 칸으로 본다.
+- **궁궐 마당(`jb_palace_court16_autotile`)**: 평면 3변형(`jb:palace_court`) 몸통 + 가장자리 16종. 같은 재료끼리만 이어진다(맵 가장자리는 가장자리 모양).
 - **강·연못(`jb_water47_autotile`)**: 지나갈 수 없다. 강은 맵 위·아래 가장자리를 가로지르므로 가장자리 밖을 물로 본다(`edgeConnects`). 연못이 맵 왼쪽 끝(x=0)에 닿으면 구운 마스크와 엔진 마스크가 한 칸 어긋날 수 있다 — 연못은 x≥1 에 둔다.
+- **해자·못 푸른 물(`jb_water47g_autotile`)**: 국내성 해자용 푸른 물 47종 블롭(변형 2종). 사방이 물인 안쪽 칸은 깊은 물 변형 8종(`jb:water_deep`, 같은 칸으로 본다)이 깔린다. 지나갈 수 없고 맵 가장자리 밖은 물이 아니다. 다리(갑판 조각)가 위를 덮는다.
 - **논(`jb_rice16_autotile` 모 논 / `jb_paddy16_autotile` 빈 논)**: 지나갈 수 없다(물 댄 논). 논두렁 길은 마당 칸으로 이미 깔려 있다. 칠한 직사각형 둘레에 둑(가장자리)이 붙는다.
-- **밭이랑**(평면 2변형)·**풀**(평면 4변형)·**판석**(평면 2변형)은 걸을 수 있다.
+- **밭이랑**(평면 2변형)·**풀**(평면 4변형)·**판석**(평면 2변형)·**마름모 마당**(평면 2변형)은 걸을 수 있다.
 
 ## 알려진 마스크 불일치 (구운 마을 20호, 엔진 대조 결과)
 {exp_lines}
@@ -328,22 +331,23 @@ def grid_image(tiles, cols, labels=None, zoom=3):
     return im
 
 
-for aid in ("jb_road16_autotile", "jb_yard16_autotile", "jb_rice16_autotile"):
+for aid in ("jb_road16_autotile", "jb_yard16_autotile", "jb_rice16_autotile", "jb_slab_edge16_autotile", "jb_palace_court16_autotile"):
     a = AT.get(aid)
     if not a:
         continue
     tiles = [a["variantMap"][str(m)] for m in range(16)]
     images.append(save(f"at-{aid.split('_')[1]}", grid_image(tiles, 8, [f"m{m}" for m in range(16)]),
                        f"`{aid}` ({a['name']}) 마스크 16변형 — 위 글자 = 마스크(N=1 E=2 S=4 W=8, 이어진 방향의 합). m15 = 사방이 이어진 몸통, m0 = 외딴 한 칸."))
-wa = AT.get("jb_water47_autotile")
-if wa:
-    tl, lab = [], []
-    for m in range(256):
-        t = wa["variantMap"][str(m)]
-        if t not in tl:
-            tl.append(t); lab.append(f"{m}")
-    images.append(save("at-water47", grid_image(tl, 8, lab, 2),
-                       "`jb_water47_autotile` 블롭 47종 — 위 글자 = 그 칸을 고르는 대표 마스크(8비트). 둑·물가·깊은 물이 이웃에 따라 둥글게 이어진다."))
+for waid in ("jb_water47_autotile", "jb_water47g_autotile"):
+    wa = AT.get(waid)
+    if wa:
+        tl, lab = [], []
+        for m in range(256):
+            t = wa["variantMap"][str(m)]
+            if t not in tl:
+                tl.append(t); lab.append(f"{m}")
+        images.append(save("at-" + waid.split("_")[1], grid_image(tl, 8, lab, 2),
+                           f"`{waid}` ({wa['name']}) 블롭 47종 — 위 글자 = 그 칸을 고르는 대표 마스크(8비트). 둑·물가·깊은 물이 이웃에 따라 둥글게 이어진다."))
 add_doc(docs, "autotile-howto", "오토타일 칠하는 법", f"""# 오토타일 칠하는 법과 검사
 
 {HEAD}

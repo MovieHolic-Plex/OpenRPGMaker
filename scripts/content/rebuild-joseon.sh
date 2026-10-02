@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# 조선 칩셋 전체 재생성 한 줄: 마을 20호 + 국내성 → 번들 시트·타일셋 → 참고문서 → 임시 폴더 저장·재로드 증명 → 장소 카드.
+#   bash scripts/content/rebuild-joseon.sh                       # 기본 입력 위치
+#   GUNGNAE_DIR=/다른/경로/tiledata/joseon-gungnae bash scripts/content/rebuild-joseon.sh
+#   JOSEON_REPORT_ONLY=1 bash scripts/content/rebuild-joseon.sh  # 새 국내성 맵을 처음 합칠 때: 실패를 멈춤 없이 전부 보고
+# 입력(맵 빌더 산출): tiledata/joseon-village20/{chipset.png,pieces.json,map.json,extra.json}, $GUNGNAE_DIR/{joseon-gungnae-chipset.png,pieces.json,map.json,extra.json}
+# 사용자의 실제 프로젝트 폴더·LegacyDb/Supabase·공용 DB 에는 쓰지 않는다. gates/vitest 를 돌리지 않는다.
+set -euo pipefail
+cd "$(dirname "$0")/../.."
+V=tiledata/joseon-village20
+G="${GUNGNAE_DIR:-tiledata/joseon-gungnae}"
+RELOADED="${JOSEON_EXPORT_RELOADED:-/tmp/joseon-reloaded.json}"
+python3 scripts/content/build-joseon-tileset.py \
+  --sheet "$V/joseon-village20-chipset.png" --pieces "$V/pieces.json" \
+  --sheet "$G/joseon-gungnae-chipset.png" --pieces "$G/pieces.json" \
+  --map "joseon_v20:$V/map.json:$V/extra.json:조선 마을 20호:0" \
+  --map "gungnae:$G/map.json:$G/extra.json:국내성:1"
+python3 scripts/content/prepare-joseon-baram-references.py
+rm -rf "${JOSEON_SAVE_DIR:-/tmp/oprn-joseon-baram-proof}"
+JOSEON_EXPORT_RELOADED="$RELOADED" NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=7000}" node scripts/content/save-joseon-baram.mjs
+node scripts/content/prepare-joseon-regions.mjs "$RELOADED"

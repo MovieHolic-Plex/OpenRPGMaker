@@ -1,443 +1,575 @@
 {
-  "_doc": "조선 조각 통행 자동 규칙(scripts/content/lib/joseon_tileset/walk.py)이 틀리는 곳만 적는다. 문자: X 막힘 / C 걸음★(사람 위에 그림) / F 걸음(바닥) / . 그림 없음. pieces 키: all(전부 이 문자) · grid(통째) · passage{cols,from,above}(통로: from 줄부터 F, 위는 above) · set[[줄,열,문자]]. terrain 은 pieces.json 의 칸 묶음(지형)별 통행·오토타일 정의. 새 조각·새 묶음(국내성)이 오면 여기에 한 줄씩 보태고 build-joseon-tileset.py 를 다시 돌린다.",
-  "pieces": {
-    "bridge": {
-      "grid": [
-        "XXXXX",
-        "FFFFF",
-        "FFFFF",
-        "....."
-      ]
-    },
-    "dock": {
-      "all": "F"
-    },
-    "bank_stairs": {
-      "all": "F"
-    },
-    "stepping_stones": {
-      "all": "F"
-    },
-    "flower_bed": {
-      "all": "F"
-    },
-    "reeds": {
-      "all": "F"
-    },
-    "mat_peppers": {
-      "all": "F"
-    },
-    "gochu_mat": {
-      "all": "F"
-    },
-    "palace_eodo": {
-      "all": "F"
-    },
-    "palace_eodo_end": {
-      "all": "F"
-    },
-    "sarip": {
-      "all": "F"
-    },
-    "gn_sarip_mud": {
-      "all": "F"
-    },
-    "gn_sarip_stone": {
-      "grid": [
-        "XFX"
-      ]
-    },
-    "hongsalmun": {
-      "grid": [
-        "CCCCC",
-        "CCCCC",
-        "FFFFF"
-      ]
-    },
-    "deungrong_mun": {
-      "grid": [
-        "X..X",
-        "XCCX",
-        "XCCX",
-        "XFFX"
-      ]
-    },
-    "gn_samun_stone": {
-      "grid": [
-        "CCCC",
-        "CCCC",
-        "XFFX"
-      ]
-    },
-    "gn_samun_mud": {
-      "grid": [
-        "CCCCC",
-        "CCCCC",
-        "XFFFX"
-      ]
-    },
-    "gate_pyeong": {
-      "passage": {
-        "cols": [
-          1,
-          2
-        ],
-        "from": 3
-      }
-    },
-    "gate_solseul": {
-      "passage": {
-        "cols": [
-          4,
-          5
-        ],
-        "from": 4
-      }
-    },
-    "palace_gate_4": {
-      "passage": {
-        "cols": [
-          2,
-          3
-        ],
-        "from": 3
-      }
-    },
-    "gn_jm_daemun_6": {
-      "passage": {
-        "cols": [
-          3,
-          4
-        ],
-        "from": 3
-      }
-    },
-    "fort_gate": {
-      "passage": {
-        "cols": [
-          4,
-          5
-        ],
-        "from": 7
-      }
-    },
-    "gungnae_gate_great_12": {
-      "passage": {
-        "cols": [
-          4,
-          5,
-          6,
-          7
-        ],
-        "from": 10
-      }
-    },
-    "gungnae_gate_great_8": {
-      "passage": {
-        "cols": [
-          3,
-          4
-        ],
-        "from": 11
-      }
-    },
-    "gungnae_gate_small_6": {
-      "passage": {
-        "cols": [
-          2,
-          3
-        ],
-        "from": 7
-      }
-    },
-    "gungnae_bridge_h4": {
-      "grid": [
-        "XXXX",
-        "FFFF",
-        "FFFF",
-        "FFFF",
-        "XXXX"
-      ]
-    },
-    "gungnae_bridge_h5": {
-      "grid": [
-        "XXXXX",
-        "FFFFF",
-        "FFFFF",
-        "FFFFF",
-        "XXXXX"
-      ]
-    },
-    "gungnae_bridge_h6": {
-      "grid": [
-        "XXXXXX",
-        "FFFFFF",
-        "FFFFFF",
-        "FFFFFF",
-        "FFFFFF",
-        "XXXXXX"
-      ]
-    },
-    "gungnae_bridge_v4": {
-      "all": "F"
-    },
-    "gungnae_bridge_v5": {
-      "all": "F"
-    },
-    "gungnae_bridge_v6": {
-      "all": "F"
-    },
-    "gungnae_bridge_narrow_h": {
-      "grid": [
-        "CCCC",
-        "FFFF",
-        "XFFX"
-      ]
-    },
-    "gungnae_bridge_narrow_v": {
-      "grid": [
-        "FC",
-        "FC",
-        "FC",
-        "FC"
-      ]
-    },
-    "palace_hall_5": {
-      "rect": [
-        [
-          9,
-          0,
-          10,
-          2,
-          "X"
-        ],
-        [
-          9,
-          6,
-          10,
-          8,
-          "X"
-        ],
-        [
-          9,
-          3,
-          11,
-          5,
-          "F"
-        ]
-      ]
-    },
-    "palace_hall_5g": {
-      "rect": [
-        [
-          9,
-          0,
-          10,
-          2,
-          "X"
-        ],
-        [
-          9,
-          6,
-          10,
-          8,
-          "X"
-        ],
-        [
-          9,
-          3,
-          11,
-          5,
-          "F"
-        ]
-      ]
-    },
-    "palace_hall_7": {
-      "rect": [
-        [
-          9,
-          0,
-          10,
-          3,
-          "X"
-        ],
-        [
-          9,
-          7,
-          10,
-          10,
-          "X"
-        ],
-        [
-          9,
-          4,
-          11,
-          6,
-          "F"
-        ]
-      ]
-    },
-    "tower_sulsa_5": {
-      "rect": [
-        [
-          9,
-          0,
-          9,
-          2,
-          "X"
-        ],
-        [
-          9,
-          6,
-          9,
-          8,
-          "X"
-        ],
-        [
-          9,
-          3,
-          9,
-          5,
-          "F"
-        ],
-        [
-          10,
-          0,
-          13,
-          8,
-          "F"
-        ]
-      ]
-    },
-    "tower_yesik_7": {
-      "rect": [
-        [
-          9,
-          0,
-          9,
-          3,
-          "X"
-        ],
-        [
-          9,
-          7,
-          9,
-          10,
-          "X"
-        ],
-        [
-          9,
-          4,
-          9,
-          6,
-          "F"
-        ],
-        [
-          10,
-          0,
-          13,
-          10,
-          "F"
-        ]
-      ]
-    },
-    "nugak": {
-      "rect": [
-        [
-          6,
-          3,
-          7,
-          4,
-          "F"
-        ]
-      ]
-    }
+ "_doc": "조선 조각 통행 자동 규칙(scripts/content/lib/joseon_tileset/walk.py)이 틀리는 곳만 적는다. 문자: X 막힘 / C 걸음★(사람 위에 그림) / F 걸음(바닥) / . 그림 없음. pieces 키: all(전부 이 문자) · grid(통째) · passage{cols,from,above}(통로: from 줄부터 F, 위는 above) · set[[줄,열,문자]]. terrain 은 pieces.json 의 칸 묶음(지형)별 통행·오토타일 정의. 새 조각·새 묶음(국내성)이 오면 여기에 한 줄씩 보태고 build-joseon-tileset.py 를 다시 돌린다.",
+ "pieces": {
+  "bridge": {
+   "grid": [
+    "XXXXX",
+    "FFFFF",
+    "FFFFF",
+    "....."
+   ],
+   "cross": "h"
   },
-  "terrain": {
-    "grass": {
-      "name": "조선 풀",
-      "walk": true
-    },
-    "yard": {
-      "name": "조선 마당 흙",
-      "walk": true
-    },
-    "paving": {
-      "name": "조선 판석",
-      "walk": true
-    },
-    "field": {
-      "name": "조선 밭이랑",
-      "walk": true
-    },
-    "road16": {
-      "kind": "mask16",
-      "name": "조선 흙길",
-      "walk": true,
-      "connect": [
-        "road16"
-      ],
-      "edgeConnects": true
-    },
-    "yard16": {
-      "kind": "mask16",
-      "name": "조선 마당",
-      "walk": true,
-      "connect": [
-        "yard16",
-        "road16"
-      ],
-      "edgeConnects": false
-    },
-    "water47": {
-      "kind": "blob47",
-      "name": "조선 강·연못",
-      "walk": false,
-      "role": "water",
-      "connect": [
-        "water47"
-      ],
-      "edgeConnects": true
-    },
-    "paddy16": {
-      "kind": "mask16",
-      "name": "조선 빈 논",
-      "walk": false,
-      "connect": [
-        "paddy16"
-      ],
-      "edgeConnects": false
-    },
-    "rice16": {
-      "kind": "mask16",
-      "name": "조선 모 논",
-      "walk": false,
-      "connect": [
-        "rice16"
-      ],
-      "edgeConnects": false
-    },
-    "slab": {
-      "name": "국내성 석판 길",
-      "walk": true
-    },
-    "slab_edge16": {
-      "kind": "mask16",
-      "name": "국내성 석판 길 가장자리",
-      "walk": true,
-      "connect": [
-        "slab",
-        "slab_edge16"
-      ],
-      "edgeConnects": false
-    },
-    "slab_dirt": {
-      "name": "석판-흙길 전환",
-      "walk": true
-    },
-    "diamond": {
-      "name": "마름모 무늬 광장",
-      "walk": true
-    }
+  "dock": {
+   "all": "F"
+  },
+  "bank_stairs": {
+   "all": "F"
+  },
+  "stepping_stones": {
+   "all": "F"
+  },
+  "flower_bed": {
+   "all": "F"
+  },
+  "reeds": {
+   "all": "C"
+  },
+  "mat_peppers": {
+   "all": "F"
+  },
+  "gochu_mat": {
+   "all": "F"
+  },
+  "palace_eodo": {
+   "all": "F"
+  },
+  "palace_eodo_end": {
+   "all": "F"
+  },
+  "sarip": {
+   "all": "F"
+  },
+  "gn_sarip_mud": {
+   "all": "F"
+  },
+  "gn_sarip_stone": {
+   "grid": [
+    "XFX"
+   ]
+  },
+  "hongsalmun": {
+   "grid": [
+    "CCCCC",
+    "CCCCC",
+    "FFFFF"
+   ]
+  },
+  "deungrong_mun": {
+   "grid": [
+    "X..X",
+    "XCCX",
+    "XCCX",
+    "XFFX"
+   ]
+  },
+  "gn_samun_stone": {
+   "grid": [
+    "CCCC",
+    "CCCC",
+    "XFFX"
+   ]
+  },
+  "gn_samun_mud": {
+   "grid": [
+    "CCCCC",
+    "CCCCC",
+    "XFFFX"
+   ]
+  },
+  "gate_pyeong": {
+   "passage": {
+    "cols": [
+     1,
+     2
+    ],
+    "from": 3
+   }
+  },
+  "gate_solseul": {
+   "passage": {
+    "cols": [
+     4,
+     5
+    ],
+    "from": 4
+   },
+   "cross": "v"
+  },
+  "palace_gate_4": {
+   "passage": {
+    "cols": [
+     2,
+     3
+    ],
+    "from": 3
+   },
+   "cross": "v"
+  },
+  "gn_jm_daemun_6": {
+   "passage": {
+    "cols": [
+     3,
+     4
+    ],
+    "from": 3
+   },
+   "cross": "v"
+  },
+  "fort_gate": {
+   "passage": {
+    "cols": [
+     4,
+     5
+    ],
+    "from": 7
+   },
+   "cross": "v"
+  },
+  "gungnae_gate_great_12": {
+   "passage": {
+    "cols": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "from": 10
+   },
+   "cross": "v"
+  },
+  "gungnae_gate_great_8": {
+   "passage": {
+    "cols": [
+     3,
+     4
+    ],
+    "from": 11
+   },
+   "cross": "v"
+  },
+  "gungnae_gate_small_6": {
+   "passage": {
+    "cols": [
+     2,
+     3
+    ],
+    "from": 7
+   },
+   "cross": "v"
+  },
+  "gungnae_bridge_h4": {
+   "grid": [
+    "XXXX",
+    "FFFF",
+    "FFFF",
+    "FFFF",
+    "XXXX"
+   ],
+   "cross": "h"
+  },
+  "gungnae_bridge_h5": {
+   "grid": [
+    "XXXXX",
+    "FFFFF",
+    "FFFFF",
+    "FFFFF",
+    "XXXXX"
+   ],
+   "cross": "h"
+  },
+  "gungnae_bridge_h6": {
+   "grid": [
+    "XXXXXX",
+    "FFFFFF",
+    "FFFFFF",
+    "FFFFFF",
+    "FFFFFF",
+    "XXXXXX"
+   ],
+   "cross": "h"
+  },
+  "gungnae_bridge_v4": {
+   "grid": [
+    "FFF.",
+    "FFFC",
+    "FFFC",
+    "FFFC",
+    "FFF."
+   ],
+   "cross": "v"
+  },
+  "gungnae_bridge_v5": {
+   "grid": [
+    "FFF.",
+    "FFFC",
+    "FFFC",
+    "FFFC",
+    "FFFC",
+    "FFF."
+   ],
+   "cross": "v"
+  },
+  "gungnae_bridge_v6": {
+   "grid": [
+    "FFFF.",
+    "FFFFC",
+    "FFFFC",
+    "FFFFC",
+    "FFFFC",
+    "FFFFC",
+    "FFFF."
+   ],
+   "cross": "v"
+  },
+  "gungnae_bridge_narrow_h": {
+   "grid": [
+    "CCCC",
+    "FFFF",
+    "XCCX"
+   ],
+   "cross": "h"
+  },
+  "gungnae_bridge_narrow_v": {
+   "grid": [
+    "FC",
+    "FC",
+    "FC",
+    "FC"
+   ],
+   "cross": "v"
+  },
+  "palace_hall_5": {
+   "rect": [
+    [
+     9,
+     0,
+     10,
+     2,
+     "X"
+    ],
+    [
+     9,
+     6,
+     10,
+     8,
+     "X"
+    ],
+    [
+     9,
+     3,
+     11,
+     5,
+     "F"
+    ]
+   ]
+  },
+  "palace_hall_5g": {
+   "rect": [
+    [
+     9,
+     0,
+     10,
+     2,
+     "X"
+    ],
+    [
+     9,
+     6,
+     10,
+     8,
+     "X"
+    ],
+    [
+     9,
+     3,
+     11,
+     5,
+     "F"
+    ]
+   ]
+  },
+  "palace_hall_7": {
+   "rect": [
+    [
+     9,
+     0,
+     10,
+     3,
+     "X"
+    ],
+    [
+     9,
+     7,
+     10,
+     10,
+     "X"
+    ],
+    [
+     9,
+     4,
+     11,
+     6,
+     "F"
+    ]
+   ]
+  },
+  "tower_sulsa_5": {
+   "rect": [
+    [
+     9,
+     0,
+     9,
+     2,
+     "X"
+    ],
+    [
+     9,
+     6,
+     9,
+     8,
+     "X"
+    ],
+    [
+     9,
+     3,
+     9,
+     5,
+     "F"
+    ],
+    [
+     10,
+     0,
+     13,
+     8,
+     "F"
+    ]
+   ]
+  },
+  "tower_yesik_7": {
+   "rect": [
+    [
+     9,
+     0,
+     9,
+     3,
+     "X"
+    ],
+    [
+     9,
+     7,
+     9,
+     10,
+     "X"
+    ],
+    [
+     9,
+     4,
+     9,
+     6,
+     "F"
+    ],
+    [
+     10,
+     0,
+     13,
+     10,
+     "F"
+    ]
+   ]
+  },
+  "nugak": {
+   "rect": [
+    [
+     6,
+     3,
+     7,
+     4,
+     "F"
+    ]
+   ]
+  },
+  "gungnae_bridge_narrow_h5": {
+   "grid": [
+    "CCCCC",
+    "FFFFF",
+    "XCCCX"
+   ],
+   "cross": "h"
+  },
+  "gungnae_bridge_narrow_h6": {
+   "grid": [
+    "CCCCCC",
+    "FFFFFF",
+    "XCCCCX"
+   ],
+   "cross": "h"
+  },
+  "gungnae_gate_side_5": {
+   "rect": [
+    [
+     7,
+     0,
+     10,
+     4,
+     "F"
+    ]
+   ],
+   "cross": "h"
+  },
+  "palace_gate_side_3": {
+   "rect": [
+    [
+     7,
+     0,
+     10,
+     2,
+     "F"
+    ]
+   ],
+   "cross": "h"
+  },
+  "palace_hall_wide_8": {
+   "front": [
+    5,
+    6
+   ]
   }
+ },
+ "terrain": {
+  "grass": {
+   "name": "조선 풀",
+   "walk": true
+  },
+  "yard": {
+   "name": "조선 마당 흙",
+   "walk": true
+  },
+  "paving": {
+   "name": "조선 판석",
+   "walk": true
+  },
+  "field": {
+   "name": "조선 밭이랑",
+   "walk": true
+  },
+  "road16": {
+   "kind": "mask16",
+   "name": "조선 흙길",
+   "walk": true,
+   "connect": [
+    "road16",
+    "yard16",
+    "diamond",
+    "slab",
+    "slab_edge16"
+   ],
+   "edgeConnects": true
+  },
+  "yard16": {
+   "kind": "mask16",
+   "name": "조선 마당",
+   "walk": true,
+   "connect": [
+    "road16",
+    "yard16",
+    "diamond",
+    "slab",
+    "slab_edge16"
+   ],
+   "edgeConnects": false
+  },
+  "water47": {
+   "kind": "blob47",
+   "name": "조선 강·연못",
+   "walk": false,
+   "role": "water",
+   "connect": [
+    "water47"
+   ],
+   "edgeConnects": true
+  },
+  "paddy16": {
+   "kind": "mask16",
+   "name": "조선 빈 논",
+   "walk": false,
+   "connect": [
+    "paddy16"
+   ],
+   "edgeConnects": false
+  },
+  "rice16": {
+   "kind": "mask16",
+   "name": "조선 모 논",
+   "walk": false,
+   "connect": [
+    "rice16"
+   ],
+   "edgeConnects": false
+  },
+  "slab": {
+   "name": "국내성 석판 길",
+   "walk": true
+  },
+  "slab_edge16": {
+   "kind": "mask16",
+   "name": "국내성 석판 길 (오토타일)",
+   "walk": true,
+   "fold": [
+    "slab"
+   ],
+   "connect": [
+    "slab",
+    "slab_edge16",
+    "road16",
+    "yard16",
+    "diamond",
+    "water47g",
+    "water_deep"
+   ],
+   "edgeConnects": true
+  },
+  "slab_dirt": {
+   "name": "석판-흙길 전환",
+   "walk": true
+  },
+  "diamond": {
+   "name": "마름모 무늬 광장",
+   "walk": true
+  },
+  "water47g": {
+   "kind": "blob47",
+   "name": "국내성 해자·못 (푸른 물)",
+   "walk": false,
+   "role": "water",
+   "deep": "water_deep",
+   "connect": [
+    "water47g",
+    "water_deep"
+   ],
+   "edgeConnects": false
+  },
+  "water_deep": {
+   "name": "국내성 깊은 물",
+   "walk": false,
+   "role": "water"
+  },
+  "palace_court": {
+   "name": "궁궐 마당 바닥 (평면)",
+   "walk": true
+  },
+  "palace_court16": {
+   "kind": "mask16",
+   "name": "궁궐 마당 (오토타일)",
+   "walk": true,
+   "fold": [
+    "palace_court"
+   ],
+   "connect": [
+    "palace_court",
+    "palace_court16"
+   ],
+   "edgeConnects": false
+  }
+ }
 }

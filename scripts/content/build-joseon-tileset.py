@@ -9,7 +9,11 @@
 #
 # 입력 계약
 #   --sheet    조각 시트 PNG(16px 칸, 칸 번호 = 행*열수+열).  --pieces  시트의 pieces.json({tile,cols,rows,pieces,overlapTiles}).
-#   --map      ID:map.json[:extra.json[:이름]] (여러 번). map.json = {width,height,ground[H][W],object[H][W]} 칸 번호 격자(-1=빈칸).
+#              ★ 시트는 여러 장 줄 수 있다(--sheet A --pieces A.json --sheet B --pieces B.json …, 짝은 순서). 첫 시트가 기준이고 칸 번호가 절대 바뀌지 않는다.
+#              다음 시트는 같은 이름·같은 모양·같은 그림(불투명 화소 RGB 와 알파가 같음, 반투명 가장자리 RGB 차이는 허용)의 조각/지형 묶음을 기준 시트 칸으로 합치고,
+#              새 조각·묶음·겹침 칸은 기준 시트 뒤에 덧붙인다. 이름은 같은데 모양/그림이 다르면 `<이름>__s<순번>` 변형으로 따로 두고(경고) 그 맵의 extra 이름도 바꾼다.
+#   --map      ID:map.json[:extra.json[:이름[:시트순번]]] (여러 번). map.json = {width,height,ground[H][W],object[H][W]} 칸 번호 격자(-1=빈칸).
+#              시트순번 = 그 맵 칸 번호가 속한 시트(0부터). 생략하면 맵 순서와 같은 번호의 시트(없으면 0).
 #              extra.json = {width,height,placed[{name,x,y,w,h}],groundKind[H][W],doors[{x,y,piece}],people[{x,y,char,dir,frame}]}.
 #   --meta     조각 분류(harness/pieces_meta.json).  --overrides  통행 보정·지형 묶음 정의(piece-walk-overrides.json).
 # 출력
@@ -38,8 +42,8 @@ SHUT = dict(up=False, down=False, left=False, right=False)
 MAX_SHEET_H = 4096        # GPU 텍스처 한계에 닿지 않게 시트 세로 픽셀 상한
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--sheet", default="tiledata/joseon-village20/joseon-village20-chipset.png")
-ap.add_argument("--pieces", default="tiledata/joseon-village20/pieces.json")
+ap.add_argument("--sheet", action="append", dest="sheets", default=None)
+ap.add_argument("--pieces", action="append", dest="pieces_list", default=None)
 ap.add_argument("--map", action="append", dest="maps", default=None)
 ap.add_argument("--meta", default="scripts/content/lib/joseon/harness/pieces_meta.json")
 ap.add_argument("--overrides", default="tiledata/joseon-village/piece-walk-overrides.json")
@@ -54,6 +58,11 @@ ap.add_argument("--public-png", default="public/assets/joseon-baram/joseon-baram
 ap.add_argument("--def-json", default="src/assets/joseonBaramTileset.json")
 ap.add_argument("--sheet-json", default="src/assets/joseonBaramSheet.json")
 args = ap.parse_args()
+if not args.sheets:
+    args.sheets = ["tiledata/joseon-village20/joseon-village20-chipset.png"]
+if not args.pieces_list:
+    args.pieces_list = ["tiledata/joseon-village20/pieces.json"]
+assert len(args.sheets) == len(args.pieces_list), "--sheet 와 --pieces 개수가 같아야 한다(순서대로 짝)"
 if not args.maps:
     args.maps = ["joseon_v20:tiledata/joseon-village20/map.json:tiledata/joseon-village20/extra.json:조선 마을 20호"]
 
@@ -73,26 +82,112 @@ def warn(msg):
     print("경고:", msg)
 
 
-# ---------------------------------------------------------------- 입력
-sheet = np.array(Image.open(P(args.sheet)).convert("RGBA"))
-pj = json.loads(P(args.pieces).read_text())
-COLS0 = pj["cols"]
-count0 = (sheet.shape[0] // T) * COLS0
-assert sheet.shape[1] == COLS0 * T, f"시트 폭 {sheet.shape[1]} != cols {COLS0}*16"
-assert pj["tileCount"] <= count0
+# ---------------------------------------------------------------- 입력(시트 여러 장 → 한 시트)
+SRC = []
+for sp, pp in zip(args.sheets, args.pieces_list):
+    img = np.array(Image.open(P(sp)).convert("RGBA"))
+    pjk = json.loads(P(pp).read_text())
+    colsk = pjk["cols"]
+    assert img.shape[1] == colsk * T, f"{sp}: 시트 폭 {img.shape[1]} != cols {colsk}*16"
+    assert pjk["tileCount"] <= (img.shape[0] // T) * colsk
+    SRC.append(dict(img=img, cols=colsk, pj=pjk, count=(img.shape[0] // T) * colsk, path=sp))
+COLS0 = SRC[0]["cols"]
 meta = json.loads(P(args.meta).read_text()) if P(args.meta).exists() else {}
 overrides = json.loads(P(args.overrides).read_text()) if P(args.overrides).exists() else {}
 OV_TERRAIN = overrides.get("terrain", {})
-ov_range = pj.get("overlapTiles") or {"start": count0, "count": 0}
-OVL0, OVL1 = ov_range["start"], ov_range["start"] + ov_range["count"]
+
+
+def src_cell(k, i):
+    sk = SRC[k]
+    x, y = (i % sk["cols"]) * T, (i // sk["cols"]) * T
+    return sk["img"][y:y + T, x:x + T]
+
+
+CELLS = [src_cell(0, i).copy() for i in range(SRC[0]["count"])]     # 기준 시트: 칸 번호 불변
+ov0 = SRC[0]["pj"].get("overlapTiles") or {"start": SRC[0]["count"], "count": 0}
+OVL = set(range(ov0["start"], ov0["start"] + ov0["count"]))        # 겹침 칸(어느 한 조각의 칸이 아닌 합성 칸)
+pieces = {n: dict(v) for n, v in SRC[0]["pj"]["pieces"].items()}
+REMAP = [None] * len(SRC)         # 시트순번 → {원래 칸 → 합친 칸}
+RENAME = [dict() for _ in SRC]    # 시트순번 → {원래 조각 이름 → 변형 이름}
+merge_report = dict(sheets=[s_["path"] for s_ in SRC], merged=[], appended=[], variants=[], softDiff={})
+
+
+def flat_tiles(v):
+    t = v["tiles"]
+    return [x for r in t for x in r] if t and isinstance(t[0], list) else list(t)
+
+
+def cell_equiv(a, b):
+    """알파가 같고 불투명(255) 화소의 RGB 가 같으면 같은 그림. 반투명 화소의 RGB(배경 섞임)만 다르면 같다고 본다."""
+    if not np.array_equal(a[..., 3], b[..., 3]):
+        return False
+    o = a[..., 3] == 255
+    return bool(np.array_equal(a[..., :3][o], b[..., :3][o]))
+
+
+_hash_ovl = {CELLS[i].tobytes(): i for i in sorted(OVL) if i < len(CELLS)}
+for k in range(1, len(SRC)):
+    remap, rename = {}, {}
+    REMAP[k], RENAME[k] = remap, rename
+    sk = SRC[k]
+
+    def add_cell(b, k=k, remap=remap):
+        if b in remap:
+            return remap[b]
+        CELLS.append(src_cell(k, b).copy())
+        remap[b] = len(CELLS) - 1
+        return remap[b]
+
+    for name, v in sk["pj"]["pieces"].items():
+        is_obj = "w" in v
+        fl = flat_tiles(v)
+        ex = pieces.get(name)
+        target = name
+        if ex is not None:
+            efl = flat_tiles(ex)
+            same_shape = (("w" in ex) == is_obj and (not is_obj or (ex["w"], ex["h"]) == (v["w"], v["h"])) and len(efl) == len(fl))
+            if same_shape and all(cell_equiv(CELLS[a], src_cell(k, b)) for a, b in zip(efl, fl)):
+                for a, b in zip(efl, fl):
+                    remap.setdefault(b, a)
+                    d = np.abs(CELLS[a].astype(int) - src_cell(k, b).astype(int))[..., :3].max()
+                    if d:
+                        sd = merge_report["softDiff"]
+                        sd["cells"] = sd.get("cells", 0) + 1
+                        sd["maxRgbDelta"] = max(sd.get("maxRgbDelta", 0), int(d))
+                merge_report["merged"].append(name)
+                continue
+            target = f"{name}__s{k}"
+            rename[name] = target
+            merge_report["variants"].append(target)
+            print(f"경고: 시트 {k} 의 {name} 은 기준과 모양/그림이 달라 {target} 변형으로 둔다")
+        nv = dict(v)
+        nt = [add_cell(b) for b in fl]
+        if is_obj:
+            nv["tiles"] = [nt[j * v["w"]:(j + 1) * v["w"]] for j in range(v["h"])]
+        else:
+            nv["tiles"] = nt
+            nv["id"] = nt[0]
+        pieces[target] = nv
+        merge_report["appended"].append(target)
+    ovk = sk["pj"].get("overlapTiles") or {"start": 0, "count": 0}
+    for b in range(ovk["start"], ovk["start"] + ovk["count"]):
+        if b in remap:
+            continue
+        key = src_cell(k, b).tobytes()
+        if key in _hash_ovl:
+            remap[b] = _hash_ovl[key]
+            continue
+        remap[b] = add_cell(b)
+        OVL.add(remap[b])
+        _hash_ovl[key] = remap[b]
+
+count0 = len(CELLS)
 
 
 def cell(i):
-    x, y = (i % COLS0) * T, (i // COLS0) * T
-    return sheet[y:y + T, x:x + T]
+    return CELLS[i]
 
 
-pieces = pj["pieces"]
 groups = {n: v for n, v in pieces.items() if "count" in v and "w" not in v}     # 지형 묶음(평면 줄)
 objects = {n: v for n, v in pieces.items() if "w" in v}                         # 물체 조각(칸 격자)
 
@@ -115,6 +210,8 @@ assert len(ALL47) == 47
 terrain_spec = {}       # 묶음 이름 → 정의
 tile_terrain = {}       # 칸 번호 → (묶음 이름, 묶음 안 순번)
 for gname, g in groups.items():
+    if gname not in OV_TERRAIN:
+        warn(f"지형 묶음 {gname} 이 piece-walk-overrides.json 의 terrain 에 없어 걸을 수 있는 평면으로 둔다 — 물·논이면 막힘으로 정의해야 한다")
     spec = dict(OV_TERRAIN.get(gname, {}))
     spec.setdefault("name", gname)
     spec.setdefault("walk", True)
@@ -150,7 +247,7 @@ overlap_class = {}       # 겹침 칸 번호 → 첫 사용 클래스
 def resolve(t, need):
     """맵의 물체 칸 t 가 need 통행으로 쓰일 때의 최종 칸 번호."""
     base = piece_cell_class.get(t)
-    if base is None and OVL0 <= t < OVL1:
+    if base is None and t in OVL:
         base = overlap_class.setdefault(t, need)
     if base == need:
         return t
@@ -162,13 +259,28 @@ def resolve(t, need):
 
 
 maps_out = []
-for spec in args.maps:
+for mi, spec in enumerate(args.maps):
     parts = spec.split(":")
     mid, mpath = parts[0], parts[1]
     epath = parts[2] if len(parts) > 2 and parts[2] else None
-    mname = parts[3] if len(parts) > 3 else mid
+    mname = parts[3] if len(parts) > 3 and parts[3] else mid
+    sk = int(parts[4]) if len(parts) > 4 and parts[4] else (mi if mi < len(SRC) else 0)
+    assert 0 <= sk < len(SRC), f"{mid}: 시트순번 {sk} 이 없다"
     mj = json.loads(P(mpath).read_text())
     ex = json.loads(P(epath).read_text()) if epath and P(epath).exists() else None
+    if sk > 0:
+        rm, rn = REMAP[sk], RENAME[sk]
+
+        def tr(t, rm=rm, mid=mid):
+            if t < 0:
+                return t
+            if t not in rm:
+                raise SystemExit(f"{mid}: 칸 {t} 이 시트 {sk} 의 조각·지형·겹침 칸에 없어 합칠 수 없다")
+            return rm[t]
+        mj = dict(mj, ground=[[tr(t) for t in r] for r in mj["ground"]], object=[[tr(t) for t in r] for r in mj["object"]])
+        if ex and rn:
+            ex = dict(ex, placed=[dict(pl, name=rn.get(pl["name"], pl["name"])) for pl in ex["placed"]],
+                      doors=[dict(d, piece=rn.get(d["piece"], d["piece"])) for d in ex["doors"]])
     Wd, Ht = mj["width"], mj["height"]
     cover = {}
     if ex:
@@ -182,7 +294,8 @@ for spec in args.maps:
                 for i in range(wk["w"]):
                     ch = wk["rows"][j][i]
                     if ch != ".":
-                        cover.setdefault((pl["x"] + i, pl["y"] + j), []).append(ch)
+                        pcols = overrides.get("pieces", {}).get(pl["name"], {}).get("passage", {}).get("cols", [])
+                        cover.setdefault((pl["x"] + i, pl["y"] + j), []).append((ch, objects[pl["name"]]["tiles"][j][i], i in pcols))
     else:
         warn(f"{mid}: extra.json 이 없어 겹침 칸 통행을 짐작(F)한다")
     ground = mj["ground"]
@@ -201,7 +314,11 @@ for spec in args.maps:
             if t < 0:
                 upper.append(-1)
                 continue
-            need = W.merge_chars(cover.get((x, y), []))
+            cv = cover.get((x, y), [])
+            # 통로(대문·성문 아치)로 선언된 열은 그 위에 숨은 다른 조각(예: 대문 밑에 겹쳐 놓인 성벽 칸)이 막지 않는다.
+            # 그 밖의 겹침 칸은 덮는 조각 전부의 보수적 합(X>F>C) — 가려진 물체도 막는다.
+            pas = [c for c, tt, is_pas in cv if is_pas]
+            need = W.merge_chars(pas if pas else [c for c, _, _ in cv])
             if need is None:
                 if ex and t not in piece_cell_class:
                     shadow_only += 1
@@ -213,7 +330,7 @@ for spec in args.maps:
                          shadow_only=shadow_only))
 
 # 사용되지 않은 겹침 칸의 클래스
-for t in range(OVL0, OVL1):
+for t in sorted(OVL):
     overlap_class.setdefault(t, "F")
     piece_cell_class.setdefault(t, overlap_class[t])
 
@@ -329,12 +446,31 @@ for gname, sp in terrain_spec.items():
         order = [tiles[15]] + [tiles[m] for m in range(15)]
         members = list(tiles)
         eq = {t: t for t in tiles}
+        # fold: 몸통(마스크 15)을 평면 변형 여러 장으로 흩어 깐 묶음(석판·궁궐 바닥) — 그 칸들은 몸통과 같은 칸으로 본다
+        for fname in sp.get("fold", []):
+            if fname not in terrain_spec:
+                continue
+            for t in terrain_spec[fname]["tiles"]:
+                members.append(t)
+                eq[t] = tiles[15]
     elif kind == "blob47":
         base = tiles[:47]
         vmap = {str(m): base[INDEX47[canon(m)]] for m in range(256)}
         order = [base[INDEX47[255]]] + [t for t in base if t != base[INDEX47[255]]]
         members = list(tiles)
         eq = {t: base[k % 47] for k, t in enumerate(tiles)}
+        # deep: 사방이 물인 칸(정규화 255)은 깊은 물 변형을 해시로 흩어 깐다 — 엔진은 첫 변형을 고르고 나머지는 같은 칸으로 본다
+        dname = sp.get("deep")
+        if dname in terrain_spec:
+            dt = terrain_spec[dname]["tiles"]
+            for m in range(256):
+                if canon(m) == 255:
+                    vmap[str(m)] = dt[0]
+            order = [dt[0]] + [t for t in order if t != base[INDEX47[255]]]
+            for t in dt:
+                members.append(t)
+                eq[t] = dt[0]
+            eq[base[INDEX47[255]]] = dt[0]
     else:
         raise SystemExit(f"{gname}: 알 수 없는 kind {kind}")
     connect = sorted({t for c in sp.get("connect", [gname]) if c in terrain_spec for t in terrain_spec[c]["tiles"]})
@@ -438,7 +574,7 @@ for m in maps_out:
             row += "1" if w_ else "0"
             if ex and g:
                 gk = ex["groundKind"][y][x]
-                want = gk not in ("water", "paddy")
+                want = gk not in ("water", "paddy", "bridge")
                 if gw != want:
                     bad_ground.append([x, y, gk, g[0]])
         exp.append(row)
@@ -465,6 +601,28 @@ for m in maps_out:
                 for c in ovr["passage"]["cols"][:1]:
                     passages.append(dict(piece=pl["name"], x=pl["x"] + c, front=pl["y"] + pl["h"], behind=pl["y"] - 1,
                                          cols=[pl["x"] + cc for cc in ovr["passage"]["cols"]]))
+    # 건너는 곳(다리·측면 성문·대문 통로)과 정면(궁 정전 앞): 저장 스크립트가 엔진 canMove 로 실제로 건너가지는지/닿는지 센다.
+    crossings, fronts = [], []
+    if ex:
+        for pl in ex["placed"]:
+            ovp = overrides.get("pieces", {}).get(pl["name"], {})
+            wk = walk.get(pl["name"])
+            if not wk:
+                continue
+            axis = ovp.get("cross")
+            if axis == "h":
+                lines = [j for j, row in enumerate(wk["rows"]) if set(row) <= set("F.") and "F" in row]
+                if lines:
+                    crossings.append(dict(piece=pl["name"], axis="h", x=pl["x"], y=pl["y"], w=pl["w"], h=pl["h"], lines=[pl["y"] + j for j in lines]))
+            elif axis == "v":
+                if "passage" in ovp:
+                    lines = list(ovp["passage"]["cols"])
+                else:
+                    lines = [i for i in range(wk["w"]) if all(wk["rows"][j][i] in "F." for j in range(wk["h"])) and any(wk["rows"][j][i] == "F" for j in range(wk["h"]))]
+                if lines:
+                    crossings.append(dict(piece=pl["name"], axis="v", x=pl["x"], y=pl["y"], w=pl["w"], h=pl["h"], lines=[pl["x"] + i for i in lines]))
+            if "front" in ovp:
+                fronts.append(dict(piece=pl["name"], cells=[[pl["x"] + c, pl["y"] + pl["h"]] for c in ovp["front"]]))
     # 시작 칸: 지도 가운데에서 가장 가까운 길 칸(없으면 첫 문 앞)
     start = None
     if ex:
@@ -475,10 +633,10 @@ for m in maps_out:
     if start is None:
         start = [Wd // 2, Ht // 2]
     out = dict(id=m["id"], name=m["name"], width=Wd, height=Ht, tilesetId=args.id, lowerTiles=m["lower"], upperTiles=m["upper"],
-               walk=exp, doors=doors, passages=passages, people=people, start=start)
+               walk=exp, doors=doors, passages=passages, crossings=crossings, fronts=fronts, people=people, start=start)
     (OUT / "maps" / f"{m['id']}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     stats_maps[m["id"]] = dict(source=m["map_path"], extra=m["extra_path"], size=[Wd, Ht], objectCells=sum(1 for t in m["upper"] if t >= 0),
-                               walkable=sum(r.count("1") for r in exp), doors=len(doors), passages=len(passages), people=len(people),
+                               walkable=sum(r.count("1") for r in exp), doors=len(doors), passages=len(passages), crossings=len(crossings), fronts=len(fronts), people=len(people),
                                start=start, shadowOnlyCells=m["shadow_only"], groundKindMismatch=len(bad_ground),
                                groundKindMismatchSamples=bad_ground[:10])
 
@@ -489,13 +647,13 @@ dist = {c: sum(1 for t in range(count) if t in piece_cell_class and piece_cell_c
     _doc="조각별 칸 통행 격자 — 자동 규칙(lib/joseon_tileset/walk.py) + piece-walk-overrides.json. X 막힘 / C 걸음★(사람 위) / F 걸음(바닥) / . 그림 없음. build-joseon-tileset.py 가 매번 다시 쓴다(손 수정은 overrides 에).",
     pieces=walk), ensure_ascii=False, indent=0))
 
-stats = dict(tileset=args.id, textureKey=args.texture, sourceSheet=str(P(args.sheet).relative_to(ROOT)), sourceCells=count0,
+stats = dict(tileset=args.id, textureKey=args.texture, sourceSheet=args.sheets[0], sourceSheets=args.sheets, sourceCells=count0, baseSheetCells=SRC[0]["count"],
              tailCopies=len(tail), tailByClass={c: sum(1 for _, n in tail if n == c) for c in "XCF"}, count=count, tilesPerRow=cols_out,
              sheetPx=[cols_out * T, rows_out * T], pieces=len(objects), terrainGroups=len(groups), autotileGroups=len(autotiles),
-             structureKits=len(KITS), tileGroups=len(tile_groups), overlapCells=ov_range["count"], overlapByClass=dict(
-                 (c, sum(1 for t in range(OVL0, OVL1) if overlap_class[t] == c)) for c in "XCF"),
+             structureKits=len(KITS), tileGroups=len(tile_groups), overlapCells=len(OVL), overlapByClass=dict(
+                 (c, sum(1 for t in sorted(OVL) if overlap_class[t] == c)) for c in "XCF"),
              pieceWalkSource=dict((s, sum(1 for v in walk.values() if v["source"] == s)) for s in ("auto", "override")),
-             maps=stats_maps, warnings=warnings)
+             maps=stats_maps, sheetMerge=merge_report, warnings=warnings)
 (OUT / "build-stats.json").write_text(json.dumps(stats, ensure_ascii=False, indent=1) + "\n")
 
 # ---------------------------------------------------------------- 검토용 그림

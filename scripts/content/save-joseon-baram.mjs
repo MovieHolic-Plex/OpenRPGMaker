@@ -22,6 +22,10 @@ const DIRS = { up: "up", right: "right", down: "down", left: "left" };
 const LINES = ["어서 오시게. 큰길 건너 강을 따라 올라가면 방앗간이 있네.", "양반댁 대문은 늘 닫혀 있지. 사랑채에는 훈장님이 계시네.", "다리 위에서 보는 강이 제일 곱지.",
   "논에 물을 대려면 연못 쪽 도랑을 열어야 하오.", "주막 평상에서 국밥이나 한 그릇 하시구려.", "장승 앞을 지나거든 허리를 숙이게."];
 
+// 새 맵을 처음 합칠 때는 JOSEON_REPORT_ONLY=1 로 실패를 멈춤 없이 전부 보고받는다(저장·재로드 증명은 그대로 이어진다)
+const REPORT_ONLY = process.env.JOSEON_REPORT_ONLY === "1";
+function must(cond, msg) { if (cond) return; if (REPORT_ONLY) console.log("FAIL", msg); else assert.fail(msg); }
+
 const NPC_SHEET = "tex_easyrpg_charset_actor1";
 
 function checkWalk(api, p, map, src) {
@@ -33,20 +37,20 @@ function checkWalk(api, p, map, src) {
   return { cells: src.width * src.height, same, mismatch: diff.length, samples: diff.slice(0, 10), walkable: src.walk.join("").split("1").length - 1 };
 }
 
-function reach(api, p, map, start) {
+function reach(api, p, map, start, box) {
   const seen = new Set([start.join(",")]); const q = [start];
   for (let i = 0; i < q.length; i += 1) {
     const [x, y] = q[i];
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
       const nx = x + dx, ny = y + dy, k = nx + "," + ny;
-      if (seen.has(k) || !api.canMove(p, map, x, y, nx, ny)) continue;
+      if (seen.has(k) || (box && (nx < box.x0 || nx > box.x1 || ny < box.y0 || ny > box.y1)) || !api.canMove(p, map, x, y, nx, ny)) continue;
       seen.add(k); q.push([nx, ny]);
     }
   }
   return seen;
 }
 
-function checkReach(api, p, map, src) {
+function checkReach(api, p, map, src, waterMembers) {
   const seen = reach(api, p, map, src.start), at = (x, y) => seen.has(x + "," + y);
   const miss = { doorFront: [], doorStep: [], passageFront: [], passageBehind: [], people: [] };
   for (const d of src.doors) {
@@ -60,11 +64,44 @@ function checkReach(api, p, map, src) {
     }
   }
   for (const n of src.people) if (!at(n.x, n.y)) miss.people.push([n.x, n.y]);
+  // 건너는 곳(다리·측면 성문·대문 통로): 조각 둘레 상자 안에서만 걸어 한쪽 끝에서 반대쪽 끝에 닿아야 한다(다른 길로 돌아가는 것은 인정하지 않는다)
+  miss.crossEnd = []; miss.crossing = []; miss.front = [];
+  let crossLines = 0, crossLinesBlockedEnd = 0;
+  const exempt = allowedMismatch[src.id]?._crossings || [];
+  const info = { exemptCrossings: [], exemptPeople: [] };
+  for (const c of src.crossings || []) {
+    // 줄마다 양끝 칸이 걸을 수 있으면 조각 둘레 상자 안에서만 걸어 반대쪽 끝에 닿아야 한다(다른 길로 돌아가는 것은 인정하지 않는다).
+    // 양끝 중 한쪽이 막힌 줄(기둥·벽에 닿은 가장자리 줄)은 세지 않되, 건너는 곳 하나에 건널 수 있는 줄이 하나도 없으면 실패다.
+    let okLines = 0, tested = 0;
+    for (const ln of c.lines) {
+      const a = c.axis === "h" ? [c.x - 1, ln] : [ln, c.y + c.h], b = c.axis === "h" ? [c.x + c.w, ln] : [ln, c.y - 1];
+      const box = c.axis === "h" ? { x0: c.x - 1, x1: c.x + c.w, y0: c.y, y1: c.y + c.h - 1 } : { x0: c.x, x1: c.x + c.w - 1, y0: c.y - 1, y1: c.y + c.h };
+      crossLines += 1;
+      if (!api.isPassable(p, map, a[0], a[1]) || !api.isPassable(p, map, b[0], b[1])) { crossLinesBlockedEnd += 1; continue; }
+      tested += 1;
+      if (reach(api, p, map, a, box).has(b.join(","))) okLines += 1;
+      else miss.crossing.push([c.piece, c.axis, ln, a.join(","), b.join(",")]);
+    }
+    if (okLines === 0) {
+      const ex = exempt.find((e) => e.piece === c.piece && e.y === c.y);
+      if (ex) { info.exemptCrossings.push({ piece: c.piece, x: c.x, y: c.y, why: ex.why }); miss.crossing = miss.crossing.filter((m) => !(m[0] === c.piece)); }
+      else miss.crossEnd.push([c.piece, c.axis, c.x, c.y, tested ? "건널 수 없음" : "양끝이 모두 막힘"]);
+    }
+  }
+  const okPeople = allowedMismatch[src.id]?._people || [];
+  miss.people = miss.people.filter(([px, py]) => { const e = okPeople.find((q) => q.x === px && q.y === py); if (e) info.exemptPeople.push({ x: px, y: py, why: e.why }); return !e; });
+  for (const f of src.fronts || []) for (const [fx, fy] of f.cells) if (!at(fx, fy)) miss.front.push([f.piece, fx, fy]);
   // negative control: a wall cell of every door's building (row above the step) must stay blocked
   const gatePieces = new Set(src.passages.map((g) => g.piece));
   const wallOpen = src.doors.filter((d) => d.step && !gatePieces.has(d.piece) && api.canMove(p, map, d.step[0], d.step[1] - 1, d.step[0], d.step[1] - 2)).length;
   const walkableTotal = src.walk.join("").split("1").length - 1;
-  return { start: src.start, reachable: seen.size, walkable: walkableTotal, missed: miss, missedCount: Object.values(miss).reduce((a, b) => a + b.length, 0), wallAboveDoorOpen: wallOpen };
+  const waterTiles = new Set(waterMembers || []);
+  let waterOpenBare = 0, waterUnderObject = 0;
+  for (let i = 0; i < map.lowerTiles.length; i += 1) if (waterTiles.has(map.lowerTiles[i])) {
+    const x = i % map.width, y = Math.floor(i / map.width), pass = api.isPassable(p, map, x, y);
+    if (map.upperTiles[i] < 0) { if (pass) waterOpenBare += 1; } else if (pass) waterUnderObject += 1;
+  }
+  return { crossLines, crossLinesBlockedEnd, ...info, crossings: (src.crossings || []).length, fronts: (src.fronts || []).length, waterOpenBare, waterUnderObject, start: src.start, reachable: seen.size, walkable: walkableTotal, missed: miss, missedCount: Object.values(miss).reduce((a, b) => a + b.length, 0), wallAboveDoorOpen: wallOpen };
 }
 
 function checkMasks(api, p, map, ts) {
@@ -133,19 +170,21 @@ const project = await withTsModule("scripts/content/lib/joseon-baram-entry.ts", 
     p.maps[src.id] = { id: src.id, name: src.name, width: src.width, height: src.height, tilesetId: ts.id, tileSize: 16, lowerTiles: src.lowerTiles, upperTiles: src.upperTiles, events };
     if (src.id !== srcMaps[0].id) p.mapTree.children.push({ mapId: src.id, children: [] });
     const map = p.maps[src.id];
-    checks[src.id] = { walk: checkWalk(api, p, map, src), reach: checkReach(api, p, map, src), masks: checkMasks(api, p, map, ts) };
+    const waterMembers = ts.autotileGroups.filter((g) => ts.tileGroups.some((tg) => tg.role === "water" && tg.tileIds.some((t) => g.memberTileIds.includes(t)))).flatMap((g) => g.memberTileIds);
+    checks[src.id] = { walk: checkWalk(api, p, map, src), reach: checkReach(api, p, map, src, waterMembers), masks: checkMasks(api, p, map, ts) };
   }
   p.startMapId = srcMaps[0].id; p.startPos = { x: srcMaps[0].start[0], y: srcMaps[0].start[1] };
   p.meta.title = "조선 칩셋 증명 프로젝트 (임시)";
   verify = checks; verify.__ensure = ensureProof; delete checks.__ensure;
   verify = { ...checks, __ensure: ensureProof };
   for (const [mid, c] of Object.entries(checks).filter(([k]) => k !== "__ensure")) {
-    assert.equal(c.walk.mismatch, 0, `${mid}: 엔진 통행이 구운 정답과 다르다`);
-    assert.equal(c.reach.missedCount, 0, `${mid}: 도달하지 못하는 문 앞·디딤돌·통로·주민 칸이 있다: ${JSON.stringify(c.reach.missed)}`);
-    assert.equal(c.reach.wallAboveDoorOpen, 0, `${mid}: 문 위 벽이 열려 있다`);
+    must(c.walk.mismatch === 0, `${mid}: 엔진 통행이 구운 정답과 다르다 ${c.walk.mismatch}칸 ${JSON.stringify(c.walk.samples)}`);
+    must(c.reach.missedCount === 0, `${mid}: 도달하지 못하는 문 앞·디딤돌·통로·건너는 곳·주민 칸이 있다: ${JSON.stringify(c.reach.missed)}`);
+    must(c.reach.wallAboveDoorOpen === 0, `${mid}: 문 위 벽이 열려 있다`);
+    must(c.reach.waterOpenBare === 0, `${mid}: 물 위에 아무것도 없는 걷는 칸이 ${c.reach.waterOpenBare}개`);
     for (const m of c.masks) {
       const max = allowedMismatch[mid]?.[m.group]?.max ?? 0;
-      assert(m.mismatch <= max, `${mid}: ${m.group} 마스크 불일치 ${m.mismatch} > 허용 ${max}: ${JSON.stringify(m.samples)}`);
+      must(m.mismatch <= max, `${mid}: ${m.group} 마스크 불일치 ${m.mismatch} > 허용 ${max}: ${JSON.stringify(m.samples)}`);
     }
   }
   return JSON.parse(JSON.stringify(p));
