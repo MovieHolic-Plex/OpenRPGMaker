@@ -63,5 +63,24 @@ const added = await call("edit_world_terrain", { mapId, ops: [{ op: "forest", po
 save("map-2.png", "edit_world_terrain");
 console.log(`  누적 작업 ${ctx.project.maps[mapId]!.worldmapSource?.ops.length} (기대 ${ops1.length + 1}), created=${added.created}`);
 
+// 런타임 확인용: 수도 옆 걸을 수 있는 칸에서 시작한다(scripts/qa/runtime/worldmap-terrain.scenario.mjs).
+{
+  const m = ctx.project.maps[mapId]!;
+  const ts = ctx.project.tilesets[m.tilesetId]!;
+  const capital = m.locations!.find(l => l.tags?.includes("capital"))!;
+  const openAt = (x: number, y: number) => x >= 0 && y >= 0 && x < m.width && y < m.height && ts.passability[y * m.width + x]!.up;
+  let start: { x: number; y: number } | null = null;
+  for (let r = 1; r < 6 && !start; r += 1) {
+    for (let y = capital.y - r; y <= capital.y + capital.h - 1 + r && !start; y += 1) {
+      for (let x = capital.x - r; x <= capital.x + capital.w - 1 + r && !start; x += 1) {
+        if (openAt(x, y) && openAt(x + 1, y) && openAt(x + 2, y)) start = { x, y };
+      }
+    }
+  }
+  ctx.project.startMapId = mapId;
+  ctx.project.startPos = start!;
+  console.log(`  시작 ${mapId} ${start!.x},${start!.y} (수도 ${capital.name} ${capital.x},${capital.y})`);
+}
+// 프로젝트 JSON 은 수십 MB(번들 자산 포함) — 커밋하지 않는다.
 writeFileSync(join(outDir, "project.json"), serialize(ctx.project));
 writeFileSync(join(outDir, "tool-results.json"), JSON.stringify(log, null, 2));

@@ -293,6 +293,7 @@ dist-packages/
 /verify-shots/slates*/project.json
 /verify-shots/slates*/reloaded-project.json
 /verify-shots/slates*/runtime-project.json
+/verify-shots/worldmap-terrain/*/project.json
 /test/fixtures/feature16-world/generated.json
 
 # Private local project selection
