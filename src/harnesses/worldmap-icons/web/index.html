@@ -181,23 +181,23 @@ async function loadRounds(id) {
   if (roundsFor !== id || !$('rounds')) return;
   const it = S.items.find((x) => x.id === id);
   const picked = it?.decision?.decision === 'pick' ? it.decision.cand : null;
-  const ST = { queued: '그리기 대기', drawing: '그리는 중', review_queued: '검수 대기', reviewing: '검수 중', done: '끝', broken: '깨짐' };
+  const ST = { queued: '그리기 대기', drawing: '그리는 중', review_queued: '엄격 검수 대기', reviewing: '엄격 검수 중', done: '끝', broken: '깨짐', discarded: '폐기' };
   $('rounds').innerHTML = rounds.map((rd) => `<div class="round"><div class="rh">판 ${rd.id}${rd.base ? ` · ${esc(rd.base)} 에서 출발` : ' · 지금 그림에서 출발'}${rd.note ? ` · 메모: ${esc(rd.note)}` : ''}</div>
-    <div class="cands">${rd.cands.map((c) => {
-      const busy = c.status !== 'done' && c.status !== 'broken';
+    <div class="cands">${rd.cands.filter((c) => c.status !== 'discarded' && c.status !== 'broken').map((c) => {
+      const busy = !['done', 'broken', 'discarded'].includes(c.status);
       const img = (f) => `/c/${c.path}/${f}?t=${c.status}${c.attempt}`;
       const v = c.verdict === 'PASS' ? '<b style="color:var(--ok)">검수 ✓</b>' : c.verdict ? `<b style="color:var(--bad)">검수 ✗ ${esc(c.codes.join(','))}</b>` : '';
       return `<div class="cand ${picked === c.key ? 'picked' : ''} ${c.mark === 'drop' ? 'dropped' : ''}">
         <div class="imgs">${c.has_img ? `<img src="${img('icon-x8.png')}" alt=""><img class="ctx1" src="${img('ctx-x1.png')}" alt="">` : `<span class="cur">${busy ? '…' : '그림 없음'}</span>`}</div>
         <div class="st"><b>${c.letter}</b> ${busy ? `<span class="spin">${ST[c.status] || c.status}</span>` : ''} ${v} <span class="cur">시도 ${c.attempt}</span>${picked === c.key ? ' <b style="color:var(--ok)">← 고름</b>' : ''}${c.mark === 'drop' ? ' <span class="cur">버림</span>' : ''}</div>
         <div class="why">${esc(c.direction.split(' — ')[0])}${c.body?.reads_as ? ' · ' + esc(c.body.reads_as) : ''}${c.check && !c.check.ok ? ' · 깨짐: ' + esc(c.check.problems.join('; ')) : ''}</div>
-        ${c.has_img && !busy ? `<div class="btns"><button class="pk" data-pick="${c.key}">이걸로</button><button class="dp" data-drop="${c.key}">✕ 버림</button><button data-base="${c.key}">이걸로 다시 그리기</button></div>` : ''}
-      </div>`; }).join('')}</div></div>`).join('') || '<p class="cur" style="margin-top:10px">아직 다시 그린 판이 없다.</p>';
+        ${c.has_img && !busy && c.verdict === 'PASS' ? `<div class="btns"><button class="pk" data-pick="${c.key}">이걸로</button><button class="dp" data-drop="${c.key}">✕ 버림</button><button data-base="${c.key}">이걸로 다시 그리기</button></div>` : ''}
+      </div>`; }).join('')}</div>${rd.cands.some((c) => c.status === 'discarded' || c.status === 'broken') ? `<div class="cur" style="margin-top:6px">시점 위반으로 자동 폐기 ${rd.cands.filter((c) => c.status === 'discarded' || c.status === 'broken').length}장 — 고를 수 없고, 판 안에서 새 후보로 다시 그린다.</div>` : ''}</div>`).join('') || '<p class="cur" style="margin-top:10px">아직 다시 그린 판이 없다.</p>';
   $('rounds').querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => candDecide(id, 'pick', b.dataset.pick));
   $('rounds').querySelectorAll('[data-drop]').forEach((b) => b.onclick = () => candDecide(id, 'drop', b.dataset.drop));
   $('rounds').querySelectorAll('[data-base]').forEach((b) => b.onclick = () => openRound(id, b.dataset.base));
   clearTimeout(roundsTimer);
-  if (rounds.some((rd) => rd.cands.some((c) => c.status !== 'done' && c.status !== 'broken'))) roundsTimer = setTimeout(() => loadRounds(id), 5000);
+  if (rounds.some((rd) => rd.cands.some((c) => !['done', 'broken', 'discarded'].includes(c.status)))) roundsTimer = setTimeout(() => loadRounds(id), 5000);
 }
 async function openRound(id, base) {
   const note = $('rdNote').value.trim(), n = +$('rdN').value;
