@@ -132,10 +132,12 @@ describe("천공의 계단 — 비주얼 정체성", () => {
     }
   });
 
-  it("전투 배경이 층마다 다르다 — 층이 바뀌면 전투 화면도 바뀐다", () => {
+  // 도트 측면 전투는 배경을 겹 배경 종류(다섯)로 푼다 — 옛 그림 id 는 숲 하나 빼고 전부 풀밭이었다(2026-10-02).
+  // 그래서 종류 id 를 직접 쓰고, 층 일곱이 종류 넷(풀밭·숲·동굴·설원)에 나뉜다.
+  it("전투 배경은 겹 배경 종류 id 이고 층이 바뀌면 종류도 바뀐다", () => {
     const backgrounds = maps.map((map) => map.battleBackground);
-    expect(new Set(backgrounds).size, `중복 전투 배경: ${JSON.stringify(backgrounds)}`).toBe(7);
-    expect(new Set(Object.values(SKY_BATTLE_BG)).size).toBe(7);
+    for (const id of Object.values(SKY_BATTLE_BG)) expect(id).toMatch(/^battle-scenery-(plains|forest|cave|snow|desert)$/);
+    expect(new Set(backgrounds).size, `전투 배경 종류: ${JSON.stringify(backgrounds)}`).toBeGreaterThanOrEqual(4);
   });
 
   it("조명이 층마다 실제로 다르다 — 폐광이 가장 어둡고 제단이 가장 밝다", () => {

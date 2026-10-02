@@ -60,7 +60,7 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
   const notes: HTMLElement[] = [
     el("p", {
       class: "db-system-help",
-      text: "프리셋을 고른 뒤 아래 칸을 바꾸면 그 칸만 따로 저장됩니다. 도트 측면 전투 스킨에 적용됩니다.",
+      text: "프리셋을 고른 뒤 아래 칸을 바꾸면 그 칸만 따로 저장됩니다. 도트 측면 전투에만 적용됩니다.",
     }),
   ];
   if (skin?.motionStyle !== "retro") {
@@ -68,7 +68,7 @@ export function battleLookFields(project: Project, updateSystem: SystemUpdate, r
       class: "db-system-help db-battle-look-warning",
       dataset: { testid: "db-battle-look-skin-warning" },
       // 정면 스킨은 2026-10-02 지웠다 — 도트 측면이 아닌 스킨은 몬스터 대치(pokemon)뿐이다.
-      text: "지금 전투 UI 스타일은 몬스터 대치라 이 꾸밈이 보이지 않습니다.",
+      text: "지금 전투 방식은 몬스터 대치라 이 꾸밈이 보이지 않습니다.",
     }));
   }
 
