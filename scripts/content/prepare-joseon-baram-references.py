@@ -651,6 +651,13 @@ cats.append(dict(id="joseon-baram-qa", name="조선 · 오류 교훈(실제 변�
                  description="문 앞 막힘·수관 아래층·반대 방향 둑·다리 갑판 막힘을 실제로 변조한 오류/정답 그림과 검출 코드·맵 좌표. 검사 범위와 레이어 정정(신규).",
                  documents=docs, images=images))
 
+# ============================================================ 장소 카드용 완성 그림(모든 맵, 원본 해상도 · 팔레트 256색)
+CARD = DATA / "images"; CARD.mkdir(parents=True, exist_ok=True)
+for mid in STATS["maps"]:
+    mj = json.loads((DATA / "maps" / f"{mid}.json").read_text())
+    im = draw(mj["lowerTiles"], mj["upperTiles"], mj["width"], mj["height"]).convert("RGB").quantize(colors=256, method=Image.Quantize.MEDIANCUT)
+    im.save(CARD / f"{mid}.png", optimize=True)
+
 # ============================================================ 쓰기
 out = ROOT / "src/assets/joseonBaramReferences.json"
 out.write_text(json.dumps(cats, ensure_ascii=False, separators=(",", ":")))

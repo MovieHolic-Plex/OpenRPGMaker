@@ -7,6 +7,7 @@ import { RPG_DUNGEON_PLACE_REFERENCES } from "./rpgDungeonPlaceReferences";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import { ELF_TREETOP_PLACE_REFERENCES } from "./elfTreetopPlaceReferences";
+import { JOSEON_PLACE_REFERENCES } from "./joseonPlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
 import { cropExtraLayers } from "./mapLayers";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
@@ -68,6 +69,7 @@ const DUNGEON_FILE: SnapshotFile = () => import("./regionReferences/rpg-dungeons
 const CLIMATE_FILE: SnapshotFile = () => import("./regionReferences/climate-villages.json");
 const FIELD_FILE: SnapshotFile = () => import("./regionReferences/field-routes.json");
 const ELF_FILE: SnapshotFile = () => import("./regionReferences/elf-treetop.json");
+const JOSEON_FILE: SnapshotFile = () => import("./regionReferences/joseon-village.json");
 const SHIPS_FILE: SnapshotFile = () => import("./regionReferences/ships.json");
 const SHIP_MAP_IDS: Record<string, string> = {
   "bluewave-ship": "map_bluewave_ship",
@@ -103,6 +105,8 @@ function snapshotSource(id: string): SnapshotSource | undefined {
   if (field) return fromMaps(FIELD_FILE, field.sourceMapId);
   const elf = ELF_TREETOP_PLACE_REFERENCES.find(entry => entry.id === id);
   if (elf) return fromMaps(ELF_FILE, elf.sourceMapId);
+  const joseon = JOSEON_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (joseon) return fromMaps(JOSEON_FILE, joseon.sourceMapId);
   const shipMapId = SHIP_MAP_IDS[id];
   return shipMapId ? fromMaps(SHIPS_FILE, shipMapId) : undefined;
 }
@@ -135,7 +139,7 @@ export async function preloadRegionReference(id: string): Promise<void> {
 
 /** Every snapshot chunk — for sweeps over all references (tests, capture scripts). */
 export async function preloadAllRegionReferences(): Promise<void> {
-  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, INTERIOR_FILE, DUNGEON_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE].map(load));
+  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, INTERIOR_FILE, DUNGEON_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE, ELF_FILE, JOSEON_FILE].map(load));
 }
 
 function snapshotFor(id: string): PlaceSnapshot | undefined {

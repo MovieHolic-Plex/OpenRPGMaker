@@ -1,9 +1,9 @@
 {
- "projectId": "80a03497-b6d6-408c-99cd-7eeae0f26a93",
+ "projectId": "c8bb4971-a8b0-4b00-8a52-302ebdfe4247",
  "projectDir": "/tmp/oprn-joseon-baram-proof",
  "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
  "revision": 1,
- "sha256": "9974a7c384743a70d887019730c6cd915378b719d30340eec959ea07d0adaed4",
+ "sha256": "1191a7545c3735fd3dae137f26b598e55fae5c3131e7b1baf71a1332d6b35e49",
  "saved": true,
  "reopened": true,
  "deepEqual": {

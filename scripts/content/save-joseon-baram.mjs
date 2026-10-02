@@ -170,6 +170,8 @@ await withTsModule("electron/local-store/store.ts", "joseon-store.mjs", async (a
     const outsideDiff = walkDiff(strip(reloaded), strip(project), "project");
     const projectEqual = isDeepStrictEqual(reloaded, project);
     const ts = reloaded.tilesets.joseon_baram;
+    // 장소 카드 준비(prepare-joseon-regions.mjs)가 읽을 재로드본. 저장소가 돌려준 프로젝트 그대로다.
+    if (process.env.JOSEON_EXPORT_RELOADED) fs.writeFileSync(process.env.JOSEON_EXPORT_RELOADED, JSON.stringify(reloaded));
     for (const m of srcMaps) assert(isDeepStrictEqual(reloaded.maps[m.id], project.maps[m.id]), "map differs: " + m.id);
     assert(isDeepStrictEqual(ts, project.tilesets.joseon_baram));
     // re-run the walk check on the RELOADED project through the engine
