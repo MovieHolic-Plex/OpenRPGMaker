@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **115쪽 / 4205KB / 약 1,212,969 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **116쪽 / 4210KB / 약 1,214,796 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,7 +17,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 561KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3432 | ~162,821 |
 | `openwiki/editor-ai-tools.md` | 304KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2548 | ~87,517 |
-| `openwiki/editor-database.md` | 388KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2294 | ~113,533 |
+| `openwiki/editor-database.md` | 389KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 2296 | ~113,651 |
 | `openwiki/editor-event-authoring.md` | 165KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 960 | ~47,991 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
@@ -570,7 +570,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2533` 타이틀 오프닝 효과 도구 (2026-09-25)
 - `L2539` 크로노 트리거식 필드 도구 인자 (2026-09-26)
 
-### `openwiki/editor-database.md` — 388KB · 2294줄 · ~113,533 토큰 · 통째읽기 잘림 · 깨진 줄 8
+### `openwiki/editor-database.md` — 389KB · 2296줄 · ~113,651 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
 - `L3` 레트로 전투 기믹 편집 칸 (2026-09-30)
 - `L11` 도트 연출 탭 · 애니메이션 갤러리 (2026-09-30, A2)
@@ -1532,6 +1532,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L198` How authors reach the sounds
 - `L215` Project sound descriptions
 - `L242` Traps
+
+### `openwiki/shared-item-balance.md` — 5KB · 52줄 · ~1,709 토큰
+
+- `L5` 소유 경로
+- `L12` 효과 역할
+- `L30` 가격 기준
+- `L40` 확인 근거
 
 ### `openwiki/slates-agent-entry.md` — 4KB · 40줄 · ~1,099 토큰
 

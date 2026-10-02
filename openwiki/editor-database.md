@@ -2276,7 +2276,7 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 
 저작 입력·프롬프트·완료 SHA는 `assets/item-catalog/`에서 관리한다. 등록된 그림 1,054종 모두 생성·저장·시각 검토를 마쳤다. `generation-manifest.json`의 SHA와 실제 PNG가 맞고 시각 검토를 마친 뒤에만 전체 교체 완료로 보고한다. 자세한 절차: `assets/item-catalog/README.md`.
 
-공용 시드 화면 확인: `node scripts/content/capture-shared-item-defaults.mjs`는 격리 dev 서버의 `?blankProject=1`에서 실제 자료집을 열어 전체 1,086행·아이템 필터 1,000행을 읽는다. 신규 「맑은 쑥 회복액」 검색·상세 HP 40·가격 58과 32×32 그림 로드를 확인했고 pageerror 0건이었다. `verify-shots/shared-item-defaults/`에 실제 편집기 화면과 결과 JSON을 남긴다. 이 화면은 공용 생성 경로를 증명하는 저장 없는 QA이며 특정 사용자 프로젝트 정본 저장의 증거로 쓰지 않는다. 전체 그림 생성 완료 여부는 별도로 `assets/item-catalog/generation-manifest.json`·`visual-review.json`·실제 PNG를 대조한다.
+공용 시드 화면 확인: `node scripts/content/capture-shared-item-defaults.mjs`는 격리 dev 서버의 `?blankProject=1`에서 실제 자료집을 열어 전체 1,086행·아이템 필터 1,000행을 읽는다. 신규 「맑은 쑥 회복액」 검색·상세 HP 115·가격 120과 32×32 그림 로드를 확인했고 pageerror 0건이었다. `verify-shots/shared-item-defaults/`에 실제 편집기 화면과 결과 JSON을 남긴다. 이 화면은 공용 생성 경로를 증명하는 저장 없는 QA이며 특정 사용자 프로젝트 정본 저장의 증거로 쓰지 않는다. 전체 그림 생성 완료 여부는 별도로 `assets/item-catalog/generation-manifest.json`·`visual-review.json`·실제 PNG를 대조한다.
 
 `scripts/content/inspect-shared-item-defaults.mts`는 공용 빈 프로젝트를 프로덕션 `serialize`로 파일에 내보낸 뒤 실제 파일을 다시 읽고 `deserialize`로 재로드한다. 확인 결과 아이템 1,000종이 동일했고 삭제한 신규 행도 재로드 후 부활하지 않았다. 이는 공용 기본값의 저장 형식 계약 확인이며 별도의 사용자 SQLite 프로젝트에 쓰지 않는다. 이미지 생성의 완료 판단은 이 데이터 재로드 결과로 대신하지 않는다.
 
@@ -2291,3 +2291,5 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 위 이미지 검사에서 전체 완료를 확인한 뒤 `scripts/content/capture-shared-item-defaults.mjs`를 실행하면, 새 프로젝트 자료집 화면과 함께 완료 명세의 모든 그림 URL을 32개씩 실제 브라우저에서 로드한다. 현재 SHA를 캐시 키에 넣고 `artworkLoads.checked`·실패 ID·실제 32×32 크기를 보고한다. 이미지가 미완성이면 이 전체 로드 확인은 보류하고 `artworkStillInProgress`를 참으로 남긴다.
 
 최종 완료 근거는 `assets/item-catalog/completion-report.json`에 소스 SHA와 함께 보관했다. 실제 PNG 검사 1,054/1,054·미완료/미검토/문제 0개, 새 프로젝트 자료집 아이템 1,000종·이미지 URL 1,054개 모두 32×32 로드·pageerror 0건, 내보내기 경로 1,054개·누락 0개를 확인했다. 빈 프로젝트와 예제·6장르 모두 1,000종이고 프로덕션 직렬화 재로드에서 전 항목이 같으며 삭제한 행도 복원되지 않았다. 아이템 1,000종과 장비 86종 모두 등록된 완료 그림을 갖고 이름·설명·가격 누락도 없다. 그림 파일 합계는 1,235,714바이트다.
+
+공용 효과·가격 재조정(2026-10-02): [공용 아이템 밸런스](shared-item-balance.md). 효과 조합 404→627, 파티 약 4→50, 아이템 전용 스킬 48종, 직업 한정 비전서 48종. 실제 기본 배우 성장 곡선과 충전 횟수를 가격에 반영한다. 새 프로젝트에서만 적용하고 저장된 저작 데이터는 수렴시키지 않는다.

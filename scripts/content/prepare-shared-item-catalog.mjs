@@ -1,5 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { authorSharedItemEffects } from './lib/shared-item-effects.mjs';
 
 // Authored families, not placeholder numbered records. Effects use existing engine fields.
 const records = [];
@@ -113,10 +115,13 @@ for(const [family,label,color] of [['sun','태양','gold'],['moon','달','silver
 
 if(records.length!==772 || new Set(records.map(x=>x.id)).size!==772 || new Set(records.map(x=>x.name)).size!==772) throw new Error(`Invalid authored expansion: ${records.length} rows`);
 for(const record of records) if(!record.description || !Number.isFinite(record.price)) throw new Error(`Incomplete item ${record.id}`);
+authorSharedItemEffects(records);
 async function json(relative,data) { const file=resolve(relative);await mkdir(dirname(file),{recursive:true});await writeFile(file,JSON.stringify(data,null,2)+'\n'); }
 await json('src/project/defaults/sharedItemCatalog.json',records);
 await json('src/assets/sharedItemIconAssets.json',assets);
 const legacyRequests = JSON.parse(await readFile('assets/item-catalog/legacy-art-requests.json', 'utf8'));
 await json('assets/item-catalog/art-requests.json',[...legacyRequests,...requests]);
 await json('assets/item-catalog/catalog-summary.json',{version:1,baseItems:228,expandedItems:772,totalItems:1000,imageSize:32,categories:totals});
+const prices = spawnSync(process.execPath, [resolve('node_modules/vite-node/vite-node.mjs'), '--script', 'scripts/content/prepare-shared-item-prices.mts'], { encoding: 'utf8' });
+if (prices.status !== 0) throw new Error(`Could not prepare shared item prices: ${prices.stderr}\n${prices.stdout}`);
 console.log(JSON.stringify({items:records.length,categories:totals,assets:assets.length}));

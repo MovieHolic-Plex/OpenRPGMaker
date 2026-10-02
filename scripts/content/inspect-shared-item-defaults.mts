@@ -48,7 +48,9 @@ await mkdir("output/item-catalog", { recursive: true });
 await writeFile("output/item-catalog/new-project-export.json", serializedBlank);
 const reloadedBlank = deserialize(await readFile("output/item-catalog/new-project-export.json", "utf8"));
 const wireRoundtrip = { bytes: Buffer.byteLength(serializedBlank), items: reloadedBlank.database.items.length, itemsEqual: JSON.stringify(reloadedBlank.database.items) === JSON.stringify(blank.database.items) };
-const exampleSummary = summarize(createSampleAdventureProject());
+const example = createSampleAdventureProject();
+const exampleSummary = summarize(example);
+const exampleItemsEqual = JSON.stringify(example.database.items) === JSON.stringify(reloadedBlank.database.items);
 const genres = Object.fromEntries(GENRE_PACK_IDS.map((id) => { applyGenrePreset(blank, id); return [id, blank.database.items.length]; }));
 // Asset convergence must not restore item records removed by an author.
 blank.database.items = blank.database.items.filter((r) => r.id !== "item_shared_healing_mugwort-1");
@@ -64,7 +66,7 @@ for (const asset of CC0_ICON_ASSETS) {
   } catch { unfinishedArt.push(asset.id); }
 }
 const deletedReload = deserialize(serialize(blank));
-const report = { blank: blankSummary, example: exampleSummary, genres, wireRoundtrip,
+const report = { blank: blankSummary, example: exampleSummary, exampleItemsEqual, genres, wireRoundtrip,
   deletedItemRemainsAbsentAfterWireReload: !deletedReload.database.items.some((r) => r.id === "item_shared_healing_mugwort-1"),
   deletedItemRemainsAbsent: !blank.database.items.some((r) => r.id === "item_shared_healing_mugwort-1"),
   artwork: { total: CC0_ICON_ASSETS.length, completed: CC0_ICON_ASSETS.length - unfinishedArt.length, unfinished: unfinishedArt.length },
@@ -72,3 +74,7 @@ const report = { blank: blankSummary, example: exampleSummary, genres, wireRound
 await mkdir("output/item-catalog", { recursive: true });
 await writeFile("output/item-catalog/default-factory-report.json", JSON.stringify(report, null, 2) + "\n");
 console.log(JSON.stringify(report));
+if (!exampleItemsEqual || !wireRoundtrip.itemsEqual || !report.deletedItemRemainsAbsentAfterWireReload || !report.deletedItemRemainsAbsent
+  || Object.values(genres).some(count => count !== 1000)
+  || [blankSummary, exampleSummary].some(s => s.items !== 1000 || s.uniqueIds !== 1000 || s.unresolved.length || s.effectlessSeeds.length
+    || s.misleadingBattleSettings.length || s.misleadingFieldSettings.length || s.incorrectIconDimensions.length || !s.normalizedReloadEqual)) process.exitCode = 1;
