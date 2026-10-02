@@ -112,6 +112,21 @@ SET_RULES = {
                   '그것만으로는 `SIDE`·`DIAG` 가 아니다. 대신 `READ`(무엇인지 읽히는가)와 `STYLE` 을 본다.'),
 }
 
+# 정면 카메라 장면 세트(_scene3d, camera.kx == 0). 시선이 동·서 벽과 직각이라 평평한 옆벽은 0px 다.
+# 원래 빛(왼쪽 위) 때문에 원통·원뿔·모임지붕 끝·둥근 바위의 오른쪽이 어둡고, 검수자가 그 명암을 옆면으로 읽었다
+# (2026-10-02, 새 세트 13개 첫 검수 FAIL 의 147건이 SIDE). 다른 코드는 엄격하게 둔다.
+FRONT3D_RULE = ('- **정면 카메라 3D 장면 세트:** 이 그림은 3D 장면을 정남쪽 카메라(KX=0)로 레이캐스트한 것이라 **평평한 동·서 옆벽은 수학적으로 0px** 이다. '
+                '빛이 왼쪽 위에서 오므로 원통 탑·원뿔·모임지붕(사방 경사 지붕)의 끝 경사·둥근 바위·돔의 **오른쪽이 왼쪽보다 어두운 것은 명암이지 옆면이 아니다** — '
+                '그것만으로 `SIDE` 를 주지 않는다. `SIDE` 는 정면 벽 옆에 **위 모서리가 사선으로 뒤로 물러나는 별도의 세로 벽 평면**(상자의 옆면)이 실제로 보일 때만. '
+                '`DIAG`·`FRONT`·`READ`·`STYLE` 은 엄격하게 본다 — 1배 지도에서 무엇인지 안 읽히거나, 정면 벽이 없어 순수 평면도로 보이거나, 칩셋 결과 다르면 떨어뜨린다.')
+for _s in SETS:
+    try:
+        _cam = json.loads((ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets' / _s / 'manifest.json').read_text()).get('camera') or {}
+    except (OSError, ValueError):
+        continue
+    if _cam.get('kx', None) == 0:
+        SET_RULES[_s] = FRONT3D_RULE + ('\n' + SET_RULES[_s] if _s in SET_RULES else '')
+
 
 def set_rule(iset):
     return SET_RULES.get(iset, '')
