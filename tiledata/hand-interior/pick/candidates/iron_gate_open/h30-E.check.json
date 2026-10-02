@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/iron_gate_open/h30-E.pxg",
+ "id": "iron gate open",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "위 가로 보 밑으로 창살 끝만 매달린 문틀, 옆 기둥 2px 로 좁히고 맨 아래 문턱줄 유지",
+ "ok": true
+}

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/key_pedestal/h22-E.pxg",
+ "id": "key pedestal",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.071
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  11,
+  13,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "윗판 닫힌 틀·붉은 방석 제거: 돌 윗면 5행+앞두께 3행으로 나누고 금 열쇠(고리 3×3·자루 6·톱니 2)를 눕혀 놓음. 목·밑단 그대로",
+ "ok": true
+}

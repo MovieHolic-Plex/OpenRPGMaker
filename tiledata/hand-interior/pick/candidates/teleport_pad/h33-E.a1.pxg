@@ -1,0 +1,47 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o stone 0
+@mat k stone 1
+@mat d stone 2
+@mat s stone 3
+@mat h stone 4
+@mat n blue 1
+@mat m blue 2
+@mat b blue 3
+@mat c blue 4
+@mat f blue 5
+@mat g blue 6
+@mblock 0 0
+................................
+........oooooooooooooooo........
+.....ohhhhhhhhhhssssssssso......
+...ohhhhhhhhhhhhssssssssssso....
+..ohhhhhhhhhhhhhssssssssssssso..
+.ohhhhhhhhhhhhhhsssssssssssssso.
+ohhhkkkkkkkkkkkkkkkkkkkkkkksssso
+ohhknnnnnnnnnnnnnnnnnnnnnnnkssso
+ohhknmmmmmmmmmmbbmmmmmmmmmmkssso
+ohhknmmmmmmmmmmbbmmmmmmmmmmkssso
+ohhknmmmmmmmmmbccbmmmmmmmmmkssso
+ohhknmmmmmmmmbcffcbmmmmmmmmkssso
+ohhknmmmmmmmbcffffcbmmmmmmmkssso
+ohhknmmmmmmbcffggffcbmmmmmmkssso
+ohhknbbmmmbcffggggffcbmmmbbkssso
+ohhknbbmmmbcffggggffcbmmmbbkssso
+ohhknmmmmmmbcffggffcbmmmmmmkssso
+ohhknmmmmmmmbcffffcbmmmmmmmkssso
+ohhknmmmmmmmmbcffcbmmmmmmmmkssso
+ohhknmmmmmmmmmbccbmmmmmmmmmkssso
+ohhknmmmmmmmmmmbbmmmmmmmmmmkssso
+ohhknmmmmmmmmmmbbmmmmmmmmmmkssso
+ohhssssssssssssssssssssssssssddo
+oooooooooooooooooooooooooooooooo
+ossdddddddddddddddddddddddddkkko
+.ossdddddddddddddddddddddddkkko.
+..ossdddddddddddddddddddddkkko..
+...ossdddddddddddddddddddkkko...
+....osddddddddddddddddddkkko....
+......odddddddddddddkkkkko......
+.........okkkkkkkkkkkko.........
+..........oooooooooooo..........

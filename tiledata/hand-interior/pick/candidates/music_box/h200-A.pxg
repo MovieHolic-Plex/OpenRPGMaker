@@ -1,0 +1,39 @@
+// A: 열린 나무 뚜껑과 은빛 거울, 분홍 치마의 춤추는 인형; 상자 윗면 5행, 뚜껑 꼭대기 윗면 3행(y=0~2).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f iron 3
+@mat g iron 4
+@mat h iron 5
+@mat i iron 6
+@mat j linen 4
+@mat k linen 6
+@mat l pink 2
+@mat m pink 4
+@mat n pink 5
+@mat o brass 2
+@mat p brass 5
+@mat q linen 2
+@mat t linen 3
+@mblock 0 0
+....bbbbbbbb....
+...beddddcdca...
+...bdddccddca...
+...bdffffffba...
+...bdhiihgfba...
+...bdihhgbfba...
+...bdhhgfkjba...
+...bcbbbbkjba...
+..bedddkjmjdda..
+..edtqttmmmtca..
+..edtqtnmmlqca..
+..edtqttjkqtca..
+..bedddddcccca..
+..bdcccopbccba..
+..bcccbbobccba..
+..abbbbbbbbbba..

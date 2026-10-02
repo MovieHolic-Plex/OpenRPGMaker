@@ -1,0 +1,40 @@
+// D 장식: 금장 모서리·띠·문장, 자루 끝 금 장식, 붉은 감개
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 6
+@mat j iron 5
+@mat k iron 4
+@mat l iron 3
+@mat g gold 5
+@mat h gold 3
+@mat c gold 4
+@mat d gold 2
+@mat e red 3
+@mat f red 2
+@mat p wood 7
+@mat q wood 6
+@mat r wood 5
+@mat s wood 4
+@mat t wood 3
+@mat u wood 2
+@mat v wood 1
+@mat n black 3
+@mat o black 1
+@mblock 0 0
+...gh...........
+...ef...ij..gh..
+...ef..ijkl.ef..
+..gcch..jkl.ef..
+...il...qs.gcch.
+...il...qs..il..
+...il...qs..il..
+.vpilpppqsppilv.
+.vnilnnnqsnnilv.
+.vonnnnnnnnnnov.
+.voooooooooooov.
+.vppppppppppppv.
+.vgcccccccccchv.
+.vgqrsqgcqrsqgv.
+.vhqrsqchqrsqhv.
+.vdttttttttttdv.

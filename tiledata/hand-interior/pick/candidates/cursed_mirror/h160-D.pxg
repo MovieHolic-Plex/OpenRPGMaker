@@ -1,0 +1,56 @@
+// D: 상단 y=18~19를 수평 금장 윗면으로 수정, 정면 문양 y=20에 축약; 꼭대기 윗면 3행(y=17~19)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a black 1
+@mat b black 2
+@mat c black 3
+@mat d black 4
+@mat e iron 3
+@mat f gold 1
+@mat g gold 2
+@mat h gold 3
+@mat i gold 4
+@mat j gold 5
+@mat k glass 0
+@mat l glass 1
+@mat m glass 2
+@mat n iron 2
+@mat p red 1
+@mat q red 2
+@mat r red 3
+@mat s red 4
+@mat t red 5
+@mblock 0 16
+...aaaaaaaaaa...
+..adjjiiiiiddb..
+..adiiiiiiiicb..
+..adiiiiiiiicb..
+..adhiiggihhcb..
+..abbbbbbbbbba..
+..aghiiggiihga..
+..ahgabbbbagfa..
+..adgbllllbgba..
+..adlmmllllkba..
+..adlmnnlllkba..
+..adlllnkknkba..
+..adlkkkkkknba..
+..adkkppppkkba..
+..adkprrrrqkba..
+..adqstaatsqba..
+..adqrsaasrqba..
+..adkqrrrqpkba..
+..adkkppppkkba..
+..adknkkkkknba..
+..adgkkkkkkgba..
+..ahgkkkkkkgfa..
+..aghiiggiihga..
+..abbbbbbbbbba..
+..adcccccccbba..
+..adcccccccbba..
+..adgghiiggfba..
+..adgfhjjhgaba..
+..adccghgfcbba..
+..abbbffbbbbba..
+..acccccccccba..
+..abbbbbbbbbba..

@@ -1,0 +1,41 @@
+// h43-D: 어두운 판에 금빛 레일(반짝)·놋쇠 열쇠 다섯·솔송 번호패 — 한 단계 화려하게
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat d dwood 3
+@mat b brass 4
+@mat p pine 4
+@mblock 0 0
+.dddddddddddddddddddddddddddddd.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.dddddddddddddddddddddddddddddd.
+.dbbbdddbbbdddbbbdddbbbdddbbbdd.
+.dbdbdddbdbdddbdbdddbdbdddbdbdd.
+.ddbdddddbdddddbdddddbdddddbddd.
+.ddbbddddbbddddbbddddbbddddbbdd.
+.ddbbddddbbddddbbddddbbddddbbdd.
+.ddbbbdddbbbdddbbbdddbbbdddbbbd.
+.ddbdddddbdddddbdddddbdddddbddd.
+.pppppdpppppdpppppdpppppdpppppd.
+.ppdppdppdppdppdppdppdppdppdppd.
+.pppppdpppppdpppppdpppppdpppppd.
+.dddddddddddddddddddddddddddddd.
+.dddddddddddddddddddddddddddddd.
+.dddddddddddddddddddddddddddddd.
+@tblock 0 0
+.555555555555555555555555555553.
+.364454446445444644544464454443.
+.422222222222222222222222222221.
+.455533355533355533355533355531.
+.450333350333350333350333350331.
+.435333335333335333335333335331.
+.435333335333335333335333335331.
+.434333334333334333334333334331.
+.434323334323334323334323334321.
+.433333333333333333333333333331.
+.655553655553655553655553655551.
+.440443440443440443440443440441.
+.333223333223333223333223333221.
+.433133333133333133333133333131.
+.422222222222222222222222222221.
+.111111111111111111111111111111.

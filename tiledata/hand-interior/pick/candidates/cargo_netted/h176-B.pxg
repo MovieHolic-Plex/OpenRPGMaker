@@ -1,0 +1,85 @@
+// B: 같은 방 궤짝의 갈색 테·평평한 목재 덩이, 닫힌 윗판 위로 이어지는 마대 그물. 꼭대기 윗면 5행(y=7~11).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat O dwood 2
+@mat D wood 3
+@mat c wood 4
+@mat b wood 5
+@mat a wood 6
+@mat h wood 7
+@mat r pine 4
+@mat s pine 3
+@mat k pine 5
+@layer crates
+@mblock 1 19
+.OOOOOOOOOOOOO.
+OhaaaaaaaaaaabO
+OhaaaabaaaaaabO
+OhaaaaaaaaaaabO
+OhhhhhhaaaahhbO
+ObbbbbbbbbbbbDO
+ObDccccccccDbDO
+ObDcbbcccccDbDO
+ObDccccccccDbDO
+ObDccccbbccDbDO
+ObDDDDDDDDDDbDO
+ObbbbbbbbbbbbDO
+OOOOOOOOOOOOOOO
+@mblock 16 19
+.OOOOOOOOOOOOO.
+OhaaaaaaaaaaabO
+OhaaaaaabaaaabO
+OhaaaaaaaaaaabO
+OhhhhaaaaahhhbO
+ObbbbbbbbbbbbDO
+ObDccccccccDbDO
+ObDcccbbcccDbDO
+ObDccccccccDbDO
+ObDccbbccccDbDO
+ObDDDDDDDDDDbDO
+ObbbbbbbbbbbbDO
+OOOOOOOOOOOOOOO
+@mblock 6 6
+.OOOOOOOOOOOOOOOO.
+OhaaaaaaaaaaaaaabO
+OhaaaaabaaaaaaaabO
+OhaaaaaaaaaaaaaabO
+OhaaaaaaaaaaaaaabO
+OhhhhhhaaaaahhhhbO
+ObbbbbbbbbbbbbbbDO
+ObDcccccccccccDbDO
+ObDccbbcccccccDbDO
+ObDcccccccccccDbDO
+ObDccccccbbcccDbDO
+ObDcccccccccccDbDO
+ObDDDDDDDDDDDDDbDO
+ObbbbbbbbbbbbbbbDO
+OOOOOOOOOOOOOOOOOO
+@layer net
+@mblock 0 0
+@px 10 6 pine:3 19 6 pine:3
+@px 11 7 pine:4 18 7 pine:4 9 8 pine:4 12 8 pine:4 17 8 pine:4 20 8 pine:4
+@px 10 9 pine:4 13 9 pine:4 16 9 pine:4 19 9 pine:4
+@px 11 10 pine:4 14 10 pine:5 15 10 pine:4 18 10 pine:4
+@px 12 11 pine:4 13 11 pine:4 16 11 pine:4 17 11 pine:4
+@px 12 12 pine:4 17 12 pine:4
+@px 11 13 pine:4 13 13 pine:4 16 13 pine:4 18 13 pine:4
+@px 10 14 pine:4 14 14 pine:4 15 14 pine:4 19 14 pine:4
+@px 9 15 pine:4 15 15 pine:5 20 15 pine:4
+@px 8 16 pine:4 14 16 pine:4 16 16 pine:4 21 16 pine:4
+@px 7 17 pine:4 13 17 pine:4 17 17 pine:4 22 17 pine:4
+@px 7 18 pine:3 12 18 pine:4 18 18 pine:4 22 18 pine:3
+@px 8 19 pine:4 11 19 pine:4 19 19 pine:4 21 19 pine:4 3 20 pine:4 28 20 pine:4
+@px 9 20 pine:5 10 20 pine:4 20 20 pine:5 5 21 pine:4 26 21 pine:4
+@px 8 21 pine:4 11 21 pine:4 19 21 pine:4 21 21 pine:4
+@px 7 22 pine:4 12 22 pine:4 18 22 pine:4 22 22 pine:4 6 22 pine:4 25 22 pine:4
+@px 5 23 pine:5 8 23 pine:4 11 23 pine:4 14 23 pine:3 17 23 pine:3 19 23 pine:4 22 23 pine:4 26 23 pine:5
+@px 4 24 pine:4 6 24 pine:4 9 24 pine:4 10 24 pine:4 18 24 pine:4 20 24 pine:4 23 24 pine:4 25 24 pine:4 27 24 pine:4
+@px 3 25 pine:3 7 25 pine:4 10 25 pine:5 19 25 pine:5 24 25 pine:4 28 25 pine:3
+@px 2 26 pine:3 8 26 pine:4 9 26 pine:4 11 26 pine:4 18 26 pine:4 20 26 pine:4 23 26 pine:4 29 26 pine:3
+@px 3 27 pine:3 9 27 pine:5 12 27 pine:4 17 27 pine:4 21 27 pine:4 22 27 pine:4 28 27 pine:3
+@px 4 28 pine:4 8 28 pine:4 10 28 pine:4 13 28 pine:3 16 28 pine:3 22 28 pine:5 27 28 pine:4
+@px 5 29 pine:4 7 29 pine:4 11 29 pine:4 14 29 pine:3 21 29 pine:4 23 29 pine:4 26 29 pine:4
+@px 6 30 pine:5 12 30 pine:4 20 30 pine:4 24 30 pine:4 25 30 pine:5
+@px 6 31 pine:3 13 31 pine:3 19 31 pine:3 25 31 pine:3

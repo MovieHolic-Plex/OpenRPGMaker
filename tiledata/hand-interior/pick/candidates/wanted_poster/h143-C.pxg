@@ -1,0 +1,32 @@
+// C: 큰 누런 종이와 얼굴 덩어리·금화 하나로 또렷한 수배지; 벽면 걸이 윗면 없음.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat e straw 2
+@mat q straw 4
+@mat p straw 5
+@mat r straw 6
+@mat d dwood 2
+@mat f pine 5
+@mat s pine 3
+@mat g gold 4
+@mat b gold 1
+@mat l gold 6
+@layer poster
+@mblock 0 0
+...eeeeeeeeee...
+..errpppppppqe..
+..erppddddppqe..
+..erppppppppqe..
+..eppddddddpqe..
+..eppdffffdpqe..
+..eppddfdfdpqe..
+..eppdffffdpqe..
+..eppppfsfppqe..
+..eppddddddpqe..
+..eppddddddpqe..
+..epppppppppqe..
+..eppdddppbgqe..
+..eppppppblgqe..
+..epppppppbbqe..
+...eeeeeeeeee...

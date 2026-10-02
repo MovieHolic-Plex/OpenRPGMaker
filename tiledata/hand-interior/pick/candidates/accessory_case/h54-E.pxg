@@ -1,0 +1,56 @@
+// 장신구 진열장 E — 자유 해석: 유리 윗면(7행) 속 벨벳 위 반지·보석·목걸이, 앞 유리창, 서랍 달린 낮은 장, 가는 다리
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat x dwood 2
+@mat e dwood 3
+@mat c dwood 4
+@mat f dwood 5
+@mat d dwood 6
+@mat k glass 2
+@mat i glass 3
+@mat h glass 4
+@mat g glass 5
+@mat j glass 6
+@mat m purple 2
+@mat n purple 3
+@mat r red 4
+@mat s red 5
+@mat t blue 4
+@mat u gold 4
+@mat v gold 6
+@mat w teal 4
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+.kkkkkkkkkkkkkk.
+kjggggggggggghhk
+kgmnnnnnnnnnnmmk
+kgmnrrnuunttnnmk
+kgmnrsnuvnttnwmk
+kgmnnnnnnnnnnnmk
+khmmmmmmmmmmmmhk
+khhmmmmmmmmmmhhk
+dddddddddddddddd
+xjiiiiiiiiiiiihx
+xjhiiiiiiiiiiiix
+xhiiiiiiiiiiihhx
+xmmmmmmmmmmmmmmx
+xmnnnnuvunnnnmmx
+cccccccccccccccc
+aeeeeeeeeeeeeeea
+acccccccccccccea
+acaaaaaaaaaaaaca
+acaffffffffffaca
+acaffffuuffffaca
+acaeeeeeeeeeeaca
+aaaaaaaaaaaaaaaa
+.ace........ace.
+.ace........ace.
+.ace........ace.
+.aaa........aaa.

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/guild_counter/h144-C.pxg",
+ "id": "guild counter",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 23,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  6,
+  47,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "잉크병·도장 손잡이·받침 윗면만 3행으로 늘리고 아래 남쪽 면 유지; 꼭대기 윗면 6행(y=13~18), 칸막이 3행(y=6~8), 서류 4행(y=10~13), 잉크병 3행(y=9~11), 도장 손잡이 3행(y=10~12)·받침 3행(y=14~16); 세 칸 앞판·전체 높이 26px 유지",
+ "ok": true
+}

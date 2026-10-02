@@ -1,0 +1,39 @@
+// 눌린 압력판: h18-B 와 같은 돌판·같은 크기, 판 위 밝은 테(5)를 없애고 둘레 홈을 2줄 어둡게 넓힘, 앞면 두 단→얇은 한 줄(바닥 높이로 가라앉음)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+................
+................
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+................
+................
+.11111111111111.
+.10000000000001.
+.10333333333301.
+.10344444444301.
+.10343333334301.
+.10343333334301.
+.10343333334301.
+.10343333334301.
+.10344444444301.
+.10333333333301.
+.10222222222201.
+.11111111111111.
+.00000000000000.

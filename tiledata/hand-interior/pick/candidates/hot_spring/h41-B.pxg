@@ -1,0 +1,60 @@
+// B 같은 방 화풍: 달빛 못과 같은 타원 돌테 + 앞 두께 3줄, 하늘색 물 + 김 세 가닥
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat 1 stone 1
+@mat 2 stone 2
+@mat 3 stone 3
+@mat 4 stone 4
+@mat 5 stone 5
+@mat 6 stone 6
+@mat a water 3
+@mat b glass 3
+@mat c glass 4
+@mat d glass 5
+@mat e glass 6
+@mblock 0 0
+= 48.
+= 17. 141 17.
+= 13. 41 146 41 13.
+= 10. 31 116 115 31 10.
+= 8. 21 46 75 6a 114 21 8.
+= 6. 21 36 45 18a 74 21 6.
+= 5. 21 16 45 1a 22b 1a 54 21 5.
+= 4. 21 16 35 1a 26b 1a 44 21 4.
+= 3. 21 16 25 1a 30b 1a 34 21 3.
+= 2. 21 16 15 1a 34b 1a 24 21 2.
+= 1. 11 16 25 1a 36b 1a 34 11 1.
+= 1. 11 16 25 1a 36b 1a 34 11 1.
+= 11 16 25 1a 38b 1a 34 11
+= 11 16 25 1a 38b 1a 34 11
+= 11 16 25 1a 38b 1a 34 11
+= 11 16 25 1a 38b 1a 34 11
+= 11 16 25 1a 38b 1a 34 11
+= 11 16 25 1a 38b 1a 34 11
+= 11 16 35 1a 36b 1a 44 11
+= 11 16 35 1a 36b 1a 44 11
+= 11 14 16 35 1a 34b 1a 44 12 11
+= 1. 11 14 16 45 1a 30b 1a 54 12 11 1.
+= 1. 11 24 16 55 1a 26b 1a 64 22 11 1.
+= 2. 11 24 16 65 1a 22b 1a 74 22 11 2.
+= 3. 11 24 16 85 1a 16b 1a 94 22 11 3.
+= 4. 11 34 16 125 6b 134 32 11 4.
+= 5. 11 44 185 104 42 11 5.
+= 6. 11 44 23 145 84 62 11 6.
+= 8. 11 54 33 95 54 82 11 8.
+= 10. 11 94 12 93 72 11 10.
+= 13. 11 53 12 103 42 11 13.
+= 17. 141 17.
+// 김: 물 위로 굽이치며 오르는 세 가닥
+@px 22 15 glass:5  23 14 glass:6  23 13 glass:6  22 12 glass:5  22 11 glass:6  23 10 glass:5  24 9 glass:5
+@px 31 17 glass:5  31 16 glass:6  32 15 glass:6  32 14 glass:5  31 13 glass:6  31 12 glass:5  32 11 glass:5
+@px 13 16 glass:5  14 15 glass:6  14 14 glass:6  13 13 glass:5  13 12 glass:6  14 11 glass:5
+// 물결과 빛
+@px 12 8 glass:4  13 8 glass:4  14 8 glass:4  15 8 glass:4  10 9 glass:4  11 9 glass:4  26 8 glass:4  27 8 glass:4  28 8 glass:4
+@px 36 12 glass:4  37 12 glass:4  38 12 glass:4  39 12 glass:4  8 19 glass:4  9 19 glass:4  10 19 glass:4  11 19 glass:4
+@px 28 20 glass:4  29 20 glass:4  30 20 glass:4  31 20 glass:4  32 20 glass:4  17 22 glass:4  18 22 glass:4  19 22 glass:4  20 22 glass:4  21 22 glass:4  22 22 glass:4
+@px 36 17 glass:4  37 17 glass:4  38 17 glass:4  18 15 glass:4  19 15 glass:4  20 15 glass:4  26 18 glass:4  27 18 glass:4
+@px 23 23 glass:4  24 23 glass:4  25 23 glass:4  26 23 glass:4  22 24 glass:4  23 24 glass:4
+// 돌 결: 앞 두께 이음, 테 위 갈라진 틈
+@px 22 29 stone:2  23 29 stone:2  26 30 stone:2  4 14 stone:3  5 20 stone:3  44 9 stone:3

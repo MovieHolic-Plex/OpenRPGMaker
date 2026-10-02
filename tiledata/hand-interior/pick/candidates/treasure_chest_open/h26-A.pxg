@@ -1,0 +1,43 @@
+// A 상태만 바꾸기(2): 몸통 y8~14 그대로, 뚜껑 안쪽면 y2~3(한 단 어둡게)+아주 어두운 빈 속 y4~6+밝은 입구 테두리 y7
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+...ooooooooooo..
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+..ooooooooooooo.
+..ooooooooooooo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+................
+...1111111111...
+...1433222231...
+...1000000001...
+..1000000000010.
+..1000000000010.
+..1555444444430.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................

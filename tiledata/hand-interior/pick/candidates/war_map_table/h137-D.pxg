@@ -1,0 +1,78 @@
+// D: 넓은 작전 지도와 말·단검, 금장 모서리 및 앞면 문양; 꼭대기 윗면 15행(y=9~23)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat d dwood 3
+@mat u pine 2
+@mat v pine 3
+@mat w pine 4
+@mat W pine 5
+@mat g brass 4
+@mat G brass 5
+@mat h brass 2
+@mat p linen 5
+@mat P linen 6
+@mat q linen 3
+@mat k pine 2
+@mat r red 2
+@mat R red 4
+@mat j iron 2
+@mat i iron 4
+@mat I iron 5
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+...dddddddddddddddddddddddddd...
+..dGGWWWWWWWWWWWWWWWWWWWWWWggd..
+.dGGgwwwwwwwwwwwwwwwwwwwwwghhvd.
+.dGgwwppppppppppppppppppppwwhvd.
+.dwWwPPPPPPPPPPPPPPPPPPPPpqwvvd.
+.dwWwPppppppppppppppppppppqwvvd.
+.dwWwPppppkkkpppppppppppppqwvvd.
+.dwWwPpppkkkkkppppkkppppppqwvvd.
+.dwWwPpppkkkkppppkkkkpppppqwvvd.
+.dwWwPppppkkppppkkkkkkppppqwvvd.
+.dwWwPppppppppppppkkkpppppqwvvd.
+.dwWwPppppppppppppppppppppqwvvd.
+.dwWwPppppppppppppppppppppqwvvd.
+.dwWwwqqqqqqqqqqqqqqqqqqqqwwvvd.
+.dGGgwwwwwwwwwwwwwwwwwwwwwghhvd.
+..dggvvvvvvvvvvvvvvvvvvvvvvhhd..
+..dGGgggggggggggggggggggggghhd..
+..dvvvvvvvvvvgGGgvvvvvvvvvvvvd..
+..duuuuuuuuuughhguuuuuuuuuuuud..
+...oddddddduuuuuuuuuddddddddo...
+....dgvd............dvhd........
+....dgvd............dvhd........
+....dvud............duud........
+....oddo............oddo........
+@layer pieces
+// 말은 밝은 정수리와 넓은 받침, 단검은 윗면을 보는 비스듬한 칼날.
+@mblock 7 11
+.GG
+Ggg
+.hd
+Gghh
+@mblock 9 17
+.RR
+Rrr
+.rd
+rrdd
+@mblock 24 12
+...II
+..IIj
+.IIj
+IIj
+Ij
+@mblock 23 17
+.gg
+.gGg
+..jh
+...h

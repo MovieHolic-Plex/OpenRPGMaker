@@ -1,0 +1,52 @@
+// h27-A 열린 큰 보물상자(3차): 뚜껑을 y3~10 으로 올려 어두운 안쪽면+경첩 띠, 입구 y11~17 에 그림자·붉은 천 5행, 앞 띠 y18 이하 그대로
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o red 0
+@mat d red 1
+@mat m red 2
+@mat r red 3
+@mat l red 4
+@mat h red 5
+@mat G gold 1
+@mat y gold 2
+@mat Y gold 3
+@mat Z gold 4
+@mat W gold 5
+@mat b blue 3
+@mat B blue 5
+@mat v blue 6
+@mat n iron 0
+@mblock 0 0
+= 32.
+= 32.
+= 32.
+= 4. 24o 4.
+= 3. 1o 1Z 1Y 1y 18d 1Z 1Y 1y 1o 3.
+= 3. 1o 1Z 1Y 1y 8d 2Y 8d 1Z 1Y 1y 1o 3.
+= 3. 1o 1Z 1Y 1y 8d 2y 8d 1Z 1Y 1y 1o 3.
+= 3. 1o 1Z 1Y 1y 18d 1Z 1Y 1y 1o 3.
+= 3. 1o 1Z 1Y 1y 18d 1Z 1Y 1y 1o 3.
+= 3. 1o 1Z 1Y 1y 18m 1Z 1Y 1y 1o 3.
+= 3. 1o 1Z 1Y 1y 18o 1Z 1Y 1y 1o 3.
+= 1. 1o 2d 1Z 1Y 1y 18d 1Z 1Y 1y 2d 1o 1.
+= 1. 1o 2d 1Z 1Y 1y 18r 1Z 1Y 1y 2d 1o 1.
+= 1. 1o 2d 1Z 1Y 1y 5r 2l 4r 2l 5r 1Z 1Y 1y 2d 1o 1.
+= 1. 1o 2d 1Z 1Y 1y 3r 1h 6r 1h 5r 1h 1r 1Z 1Y 1y 2d 1o 1.
+= 1. 1o 2d 1Z 1Y 1y 8r 2l 8r 1Z 1Y 1y 2d 1o 1.
+= 1. 1o 2d 1Z 1Y 1y 18m 1Z 1Y 1y 2d 1o 1.
+= 1. 1o 2d 1Z 1Y 1y 18d 1Z 1Y 1y 2d 1o 1.
+= 1. 1o 2d 1Z 1Y 1y 6r 2l 4r 2l 2r 1Z 1Y 1y 2d 1o 1.
+= 1. 1o 1Y 24y 3G 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 10Y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1W 1y 1r 1y 1r 1Z 4W 1y 1m 1y 1m 1Z 1W 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 1Y 1v 1B 1Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 1Y 2b 1Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 1Y 2n 1Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 1Y 2n 1Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 1y 1r 1Z 4Y 1y 1m 1y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1W 1y 1r 1y 1r 1y 4y 1G 1m 1y 1m 1Z 1W 1y 2m 3d 1o 1.
+= 1. 1o 1h 4l 1Z 1Y 1y 1r 10y 1m 1Z 1Y 1y 2m 3d 1o 1.
+= 1. 1o 5r 1Z 1Y 1y 12m 1Z 1Y 1y 5d 1o 1.
+= 1. 1o 5m 3G 12d 3G 5d 1o 1.
+= 1. 30o 1.

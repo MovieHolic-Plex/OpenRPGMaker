@@ -1,0 +1,108 @@
+// E: 세로 문 여섯 개를 3열×2단으로, 숫자와 쇠 고리 손잡이; 꼭대기 윗면 4행(y=3~6)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat h iron 2
+@mat i iron 3
+@mat j iron 4
+@mat k iron 5
+@layer cabinet
+@mblock 0 2
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.gfffffffffffffffffffffffffffeb.
+.gffeeeefffffffffeeffffffeeffeb.
+.gfffffffffeeffffffffffffffffeb.
+.gfffffffeeffffffffffeeffffffeb.
+.ggggggggggggggggggggggggggggdb.
+.eeeeeeeeeeeeeeeeeeeeeeeeeeeedb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feeeeeeeeeeeeeeeeeeeeeeeeeeedb.
+.cbbbbbbbbbcbbbbbbbbbcbbbbbbbbb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feaaaaaaaacaaaaaaaaacaaaaaaadb.
+.feeeeeeeeeeeeeeeeeeeeeeeeeeedb.
+.cbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.cb........................bba..
+@layer doors
+@mblock 3 9
+feeeeeed
+feekeeed
+feekeeec
+feekeeec
+feeeeeec
+feeeejkc
+feeeejhc
+feeedeec
+eccccccb
+@mblock 12 9
+feeeeeed
+fekkeeed
+feekeeec
+feekkeec
+feeeeeec
+feeeejkc
+feeeejhc
+feedeeec
+eccccccb
+@mblock 21 9
+feeeeeed
+fekkeeed
+feekkeec
+fekkeeec
+feeeeeec
+feeeejkc
+feeeejhc
+feedeeec
+eccccccb
+@mblock 3 20
+feeeeeed
+fekekeed
+fekkkeec
+feeekeec
+feeeeeec
+feeeejkc
+feeeejhc
+feedeeec
+eccccccb
+@mblock 12 20
+feeeeeed
+feekkeed
+fekkeeec
+feekkeec
+feeeeeec
+feeeejkc
+feeeejhc
+feeeeedd
+eccccccb
+@mblock 21 20
+feeeeeed
+feekkeed
+fekeeeec
+fekkkeec
+feeeeeec
+feeeejkc
+feeeejhc
+feedeeec
+eccccccb

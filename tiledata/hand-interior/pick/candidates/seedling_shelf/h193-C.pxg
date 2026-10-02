@@ -1,0 +1,67 @@
+// C: 굵은 두 단 선반과 넓은 흙 상자, 세 포기씩 큰 새싹 덩이; 꼭대기 윗면 3행(y=4~6)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat b dwood 2
+@mat p pine 3
+@mat g leaf 4
+@layer furniture
+@mblock 2 4
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwbbbbbbbbbbbbbbbbbbbbbbwww
+wwwbbggbggbbggbggbbggbggbwww
+wwwbbbgggbbbbgggbbbbgggbbwww
+wwwppbbgbbbbbbbgbbbbbbgbpwww
+wwwppbbbbbbbbbbbbbbbbbbppwww
+wwwppppppppppppppppppppppwww
+wwwppppppppppppppppppppppwww
+wwwppppppppppppppppppppppwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwbbbbbbbbbbbbbbbbbbbbbbwww
+wwwbbggbggbbggbggbbggbggbwww
+wwwbbbgggbbbbgggbbbbgggbbwww
+wwwppbbgbbbbbbbgbbbbbbgbpwww
+wwwppbbbbbbbbbbbbbbbbbbppwww
+wwwppppppppppppppppppppppwww
+wwwppppppppppppppppppppppwww
+wwwppppppppppppppppppppppwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+www......................www
+@tblock 2 4
+7777777777777777777777777776
+6666666556666666666666666664
+6666666666666666666556666664
+6555555555555555555555555542
+4222222222222222222222222222
+2641111111111111111111111422
+2641154145115414511541451422
+2641113331111333111133311422
+2644433333333333333333333422
+2644433333333333333333334422
+2645555555555555555555555422
+2644433333333333333333333422
+2643322222222222222222222422
+6777777777777777777777777764
+6555555555555555555555555542
+4222222222222222222222222222
+2641111111111111111111111422
+2641154145115414511541451422
+2641113331111333111133311422
+2644433333333333333333333422
+2644433333333333333333334422
+2645555555555555555555555422
+2644433333333333333333333422
+2643322222222222222222222422
+6777777777777777777777777764
+6555555555555555555555555542
+4222222222222222222222222222
+242......................222

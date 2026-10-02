@@ -1,0 +1,67 @@
+// E — 꼭대기 목재판 y=3을 윗면으로 확장, y=4 앞면·y=5 아래 그림자와 침구·사다리 유지. 꼭대기 윗면 3행(y=1~3).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat l linen 2
+@mat m linen 3
+@mat n linen 4
+@mat o linen 5
+@mat p linen 6
+@mat s dwood 1
+@mat t dwood 2
+@layer body
+@mblock 0 0
+.dddddddddddddd.
+.effeeeeeefeeed.
+.eeeeeeedeeeeed.
+.eeeeeeeeeeeeed.
+.cccccccccccccb.
+.baaaaaaaaaaaab.
+.dc.........cb.
+.dcmmmmmmmmmmcb.
+.dcnpppoooooocb.
+.dcnpppoooooocb.
+.dcnnnnoooonocb.
+.dcmooooooonncb.
+.dcnooooonnnncb.
+.dcnnnnnnnnmmcb.
+.dcmmmmmmmmllcb.
+.edddddddddddcb.
+.dcccccacccecdb.
+.cbaaaaaaaaccdb.
+.dc........dcdb.
+.dc........d..b.
+.dc........d..b.
+.dc........d..b.
+.dc........effb.
+.dc........cddb.
+.dc........d..b.
+.dc........d..b.
+.dc........d..b.
+.dc........effb.
+.dc........cddb.
+.dc........d..b.
+.dc........d..b.
+.dc........d..b.
+.dctttttttteffb.
+.dcmmmmmmmmcddb.
+.dcnpppooooodnb.
+.dcnpppooooodnb.
+.dcnnnnoooondmb.
+.dcmoooooonndmb.
+.dcnooooonnneffb.
+.dcnnnnnnnncddb.
+.dcmmmmmmmmldlb.
+.eddddddddddddb.
+.dcccccacccecdb.
+.cbaaaaaaaaccdb.
+.dc........effb.
+.dc........cddb.
+.db........d..b.
+.ab........b..a.

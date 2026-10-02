@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/room_key_board/h43-C.pxg",
+ "id": "room key board",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "단순·또렷: 판을 짙은 나무 한 면으로, 놋쇠 열쇠 5개(고리+구멍·몸·이빨)와 밑에 소나무 번호 패, 접지는 아래 윤곽",
+ "ok": true
+}

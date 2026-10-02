@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/arrow_barrel/h50-B.pxg",
+ "id": "arrow barrel",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  1,
+  13,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "같은 방 무기 통 결로 새로 그림: 입구 타원 3줄·쇠테 둘·왼쪽 밝고 오른쪽 어두운 통널, 깃 달린 화살 4대(높이 다름)",
+ "ok": true
+}

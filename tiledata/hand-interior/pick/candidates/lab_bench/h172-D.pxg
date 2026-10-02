@@ -1,0 +1,79 @@
+// D 재검수 수정: 현미경 지지대를 줄여 재물대·받침 윗면 각각 3행, 남쪽 테두리 유지; 접안부 윗면 3행(y=6~8).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat W white 5
+@mat V white 4
+@mat U white 3
+@mat S white 2
+@mat G gold 5
+@mat g gold 4
+@mat o gold 2
+@mat d gold 1
+@mat P pine 4
+@mat p pine 2
+@mat b dwood 2
+@mat I iron 5
+@mat i iron 4
+@mat j iron 2
+@mat k iron 1
+@mat R red 4
+@mat r red 2
+@mat H red 5
+@mat T teal 5
+@mat t teal 3
+@mat L linen 5
+@mat l linen 3
+@layer bench
+@mblock 0 13
+..oooooooooooooooooooooooooooo..
+.oWWWWWWWWWWWWWWWWWWWWWWWWWWWVo.
+.oWWWWWWWWWWWWWWWWWWWWWWWWWWWVo.
+oWWWWWWWWWWWWWWWWWWWWWWWWWWVVVVo
+oWWWWWWWWWWWWWWWWWWWWWWWWWVVVVVo
+oWWWWWWWWWWWWWWWWWWWWWWWWVVVVVVo
+oWWWWWWWWWWWWWWWWWWWWWWVVVVVVVVo
+oWWWWWWWWWWWWWWWWWWWWVVVVVVVVVVo
+oVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVo
+oGGGGGGGGGGGGGGGGGGGGggggggggggo
+.dddddddddddddddddddddddddddddd.
+.bPogggggggggggoboggggggggggoPb.
+.bPoVVVVVVVVVVVoboUUUUUUUUUUoPb.
+.bPoVogGGgoVVVVoboUUogGGgoUUoPb.
+.bPoVVoggoVVVVVoboUUUoggoUUUoPb.
+.bPoooooooooooooddoooooooooooPb.
+.bPPpppppppppppppppppppppppppPb.
+.bPpb......................bppb.
+.bbbb......................bbbb.
+@layer equipment
+@mblock 5 6
+.oooooo
+ogGGGgo
+oGGgggo
+.jjjjj.
+...Ij..
+...Iij.
+...Iijj
+..gGGgjj
+..gGGg.j
+..gGGg.j
+..oooo.j
+.gGGgg.j
+.gGGggjj
+.gGGggjj
+.ooooooo
+@mblock 23 10
+..oooo..
+.oHHRro.
+oHHHRRro
+oHHRRRro
+oUUWWUko
+.kkIIkk.
+.oVVUoo.
+..oooo..
+@mblock 16 16
+.llllll
+lLLLLLl
+lLLllLl
+lLLLLLl
+.llllll

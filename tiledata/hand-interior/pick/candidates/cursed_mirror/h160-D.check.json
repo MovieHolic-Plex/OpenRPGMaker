@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cursed_mirror/h160-D.pxg",
+ "id": "cursed mirror",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  16,
+  13,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "상단 y=18~19를 연속된 수평 금장 윗면으로 바꾸고 정면 금장 문양은 y=20에 축약, y=21 처마 그림자·32px 높이·검은 테·거울의 금·붉은 눈 유지; 꼭대기 윗면 3행(y=17~19)",
+ "ok": true
+}

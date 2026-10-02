@@ -1,0 +1,65 @@
+// 흰 두 문 옷장에 금장 처마·잎 문양·중앙 장식, 꼭대기 윗면 5행(y=1~5)
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a gold 1
+@mat b gold 2
+@mat c gold 3
+@mat d gold 4
+@mat e gold 5
+@mat f gold 6
+@mat K white 0
+@mat M white 2
+@mat N white 3
+@mat O white 4
+@mat P white 5
+@layer wardrobe
+@mblock 1 0
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+efffffffffffffffffffffffffffeb
+ePPPPPPPPPPPPPPPPPPPPPPPPPPPOb
+ePPOOOOOOOOOOOOOOOOOOOOOOOOOOb
+ePPOOOOOOOOOOOOOOOOOOOOOOOOOOb
+eOOOOOOOOOOOOOOOOOOOOOOOOOOOdb
+ffffffffffffffffffffffffffffed
+deeeeeeeeeeeeeeeeeeeeeeeeeeecb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbaa
+dPeeeeeeeeeedbaKdeeeeeeeeedbca
+dPePPPPPPPPPNbaKeOOOOOOOOOMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOddOOddONbaKeONccNNccNMbca
+dPePedOOOOdeNbaKeOdccNNccdMbca
+dPePeOOOOOOeNbaKeOdNNNNNNdMbca
+dPePOOOeeOOONbaKeONNNddNNNMbca
+dPePOOeffeOONbaKeONNdeedNNMbca
+dPePOedffdeONbaKeONcdeedcNMbca
+dPePOOeddeOONbaKeONNccdcNNMbca
+dPePOOOddOOONbaKeONNNccNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOefNbaKeffNNNNNNNMbca
+dPePOOOOOOedNbaKedcNNNNNNNMbca
+dPePOOOOOOcbNbaKecbNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePeeeeeeeedbaKeeddddddddcbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOddOOddONbaKeONccNNccNMbca
+dPePOdOOOOdONbaKeONcNNNNcNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOOOOOOOONbaKeONNNNNNNNMbca
+dPePOddOOddONbaKeONccNNccNMbca
+dPePddddddddcbaKedccccccccbbca
+dPdcccccccccbaaKcbbbbbbbbbaaca
+eeeeeeeeeeeeeeeeeeeeeeeeeeeedb
+ddddddddddddddddddddddddddddba
+.bbbba..................abbb..
+.dPMba..................aNcb..
+.cbbaa..................aaba..

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pitfall/h39-C.pxg",
+ "id": "pitfall",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.115
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "단순 C: 큰 검정 구멍 + 북쪽 안벽 한 줄 + 남쪽 테 윗면, 둥근 돌 테두리를 한 단 낮춰 가장자리를 부숨(A보다 구멍이 크고 덩어리 3개)",
+ "ok": true
+}

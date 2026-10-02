@@ -1,0 +1,41 @@
+// C 단순·또렷: 나무 테 + 검은 판 + 흰 분필 줄 넷(제목 1·메뉴 2·짧은 1), 게시판과 같은 14x13 크기
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat f wood
+@mat k black
+@mat c white
+@mblock 0 0
+................
+.ffffffffffffff.
+.ffffffffffffff.
+.ffkkkkkkkkkkff.
+.ffkkcccccckkff.
+.ffkkkkkkkkkkff.
+.ffkcccccckcckff.
+.ffkkkkkkkkkkff.
+.ffkcccccckcckff.
+.ffkkkkkkkkkkff.
+.ffkccccckkkkkff.
+.ffkkkkkkkkkkff.
+.ffffffffffffff.
+.ffffffffffffff.
+................
+................
+@tblock 0 0
+................
+.22222222222222.
+.26666666666664.
+.26111111111164.
+.26122666666264.
+.26122222222264.
+.26126666662664.
+.26122222222264.
+.26126666662664.
+.26122222222264.
+.26126666622264.
+.26122222222264.
+.24444444444441.
+.11111111111111.
+................
+................

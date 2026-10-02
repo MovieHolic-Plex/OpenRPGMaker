@@ -1,0 +1,44 @@
+// C 또렷하게: 뚜껑이 뒤로 젖혀 서서 안쪽 면(금 띠)이 보이고, 어두운 빈 속이 위에서 보이며, 앞 몸통·자물쇠는 닫힌 상자 그대로
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mat i wood 2
+@mblock 0 0
+................
+................
+...ooooooooooo..
+...odggdddggdo..
+...odggdddggdo..
+...odggdddggdo..
+..owwggwwwggwwo.
+..oiiiiiiiiiiio.
+..oiiiiiiiiiiio.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+................
+...11111111111..
+...14564435430..
+...14564435430..
+...13453335320..
+..1676677766750.
+..1332222222210.
+..1221111111110.
+..1666666665540.
+..1454333333330.
+..1454655433330.
+..1454350433330.
+..1343222222220.
+..0000000000000.
+................

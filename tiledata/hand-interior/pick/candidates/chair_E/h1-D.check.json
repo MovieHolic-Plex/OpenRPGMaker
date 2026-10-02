@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_E/h1-D.pxg",
+ "id": "chair E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.101
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "v5 그대로 두고 좌판 윗날 왼쪽 앞을 한 단 밝게(빛 방향), 오른발 옆 접지 그림자 2px",
+ "ok": true
+}

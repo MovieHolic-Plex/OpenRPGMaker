@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dark_altar/h161-B.pxg",
+ "id": "dark altar",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.219
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 19,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  6,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "방의 기존 제단처럼 넓은 검은 돌판과 간결한 명암·돌결로 새로 그려 보라 불꽃 촛대 둘, 입구가 보이는 해골 잔과 붉은 문양을 얹음; 전체 높이 26px, 꼭대기 윗면 8행(y=14~21).",
+ "ok": true
+}

@@ -1,0 +1,54 @@
+// B: 공구 걸이의 갈색 걸쇠와 회색 쇠 덩이 명암을 따른 전투 도끼·철퇴.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat A iron 2
+@mat B iron 3
+@mat C iron 4
+@mat D iron 5
+@mat E iron 6
+@mat a wood 3
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat e dwood 2
+@layer rack
+@mblock 1 3
+cddddccddddddccccddddddcddddddc
+bbbbcbbbbbbbbbbcbbbbbbbbcbbbba
+aaabaaaaabaaaaaaaaabaaaaaaaaaa
+@layer weapons
+@mblock 4 0
+.......ca..
+..DD...ca..
+.DEDCCBDDA.
+DEDDCCCDCB.
+DDCCCCBCBA.
+DCCCBABBA..
+.CCB...ca..
+..B....ca..
+.......ca..
+.......ca..
+.......ba..
+.......ba..
+.......cb..
+.......ba..
+.......ca..
+.......aa..
+@mblock 21 0
+...BC...
+..CDDB..
+.BDEDCB.
+CDDCCBBA
+.CDCCBA.
+.BCCBA..
+..ABB...
+...CB...
+...ca...
+...ca...
+...ba...
+...ba...
+...cb...
+...ba...
+...ca...
+...aa...

@@ -1,0 +1,66 @@
+// A: 창을 쥔 판금 기사 갑옷, 투구·어깨 윗면과 돌 받침을 손 도트로 신작. 꼭대기 윗면 3행(y=4~6).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a iron 1
+@mat b iron 2
+@mat c iron 3
+@mat d iron 4
+@mat e iron 5
+@mat f iron 6
+@mat s stone 2
+@mat t stone 3
+@mat u stone 4
+@mat v stone 5
+@mat w pine 3
+@mat p pine 1
+@layer armor
+@mblock 0 0
+.............c..
+............cec.
+............fed.
+............edb.
+.....cddc...edb.
+....ceeedb...db.
+....efeddc...wp.
+....dedccb...wp.
+....daaaab...wp.
+....edcdcb...wp.
+.....dccb....wp.
+.....bdb.....wp.
+..cddbddcdd..wp.
+.ceeddeddedd.wp.
+.efdddeddddc.wp.
+.ddccdeedcb..wp.
+.bdccdeedcb..wp.
+.bdccdedccb..wp.
+.cdbcdedccb..wp.
+.cdbcdedccb..wp.
+.cdbcdedccbcdwp.
+.cdbbddccbcdedp.
+.cdc.cddc.bedwp.
+.bdc.bccb..bcwp.
+..bb.ceecb...wp.
+...cdddccb...wp.
+...deccdc....wp.
+...ddbcdb....wp.
+...edb.dcb...wp.
+...edb.ddb...wp.
+...ddb.dcb...wp.
+...cdb.ccb...wp.
+...bcb.bcb...wp.
+...dee.ddc...wp.
+...edb.dcb...wp.
+...bcb.bcb...wp.
+...edb.ddb...wp.
+...edb.ddb...wp.
+...edb.dcb...wp.
+...ddb.dcb...wp.
+...dcb.ccb...wp.
+..ced.bcdcb..wp.
+.ceddb.cddcb.wp.
+.bcccb.bcccb.wp.
+..uvvvuvuuuuuw..
+.vvvuuuuvuuutts.
+.uttttttttttsss.
+.ssssssssssssss.

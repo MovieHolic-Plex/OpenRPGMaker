@@ -1,0 +1,53 @@
+// h47-C 단순·또렷: 어두운 판 안에 침대(왼)·별(오른) 큼직한 덩이 둘, 쇠사슬 둘, 나무 테. 세부 최소.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat b wood 4
+@mat l wood 6
+@mat d wood 3
+@mat p dwood 2
+@mat i iron 4
+@mat c iron 2
+@mat n linen 5
+@mat r red 3
+@mat R red 2
+@mat g gold 5
+@mat G gold 3
+@mblock 0 0
+................................
+................................
+................................
+.oooooooooooooooooooooooooooooo.
+ollllllllllllllllllllllllllllllo
+obbbbbbbbbbbbbbbbbbbbbbbbbbbbbbo
+obbpppppppppppppppppppppppppbbo
+obbpppppppppppppppppppppppppbbo
+obbpppppppppppppppppppppppppbbo
+obbpppppppppppppppppppppppppbbo
+obbpppppppppppppppppppppppppbbo
+obbpppppppppppppppppppppppppbbo
+obbpppppppppppppppppppppppppbbo
+obbpppppppppppppppppppppppppbbo
+odddddddddddddddddddddddddddddo
+.oooooooooooooooooooooooooooooo.
+@mblock 6 0
+i
+c
+i
+@mblock 25 0
+i
+c
+i
+@mblock 4 8
+ll.........
+ll.........
+llnnn......
+llrrrrrrrrl
+llRRRRRRRRl
+@mblock 20 7
+...g...
+ggggggg
+.ggggg.
+..ggG..
+.gG.Gg.

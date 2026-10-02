@@ -1,0 +1,35 @@
+{
+ "id": "inn reception",
+ "slug": "inn_reception",
+ "name_ko": "여관 접수대",
+ "category": "여관",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "여관 접수대(2칸) — 짙은 나무 카운터 상판(윗면 6행)에 펼친 숙박부와 놋쇠 종, 앞판에 판자 무늬. 전체 높이 24~26px. 주인은 북쪽 뒤에 선다.",
+ "where": "전체 높이 24~26px. 주인은 북쪽 뒤에 선다.",
+ "placement": [
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "inn"
+}

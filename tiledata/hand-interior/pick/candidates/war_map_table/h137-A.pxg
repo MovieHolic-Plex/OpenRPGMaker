@@ -1,0 +1,96 @@
+// A: 넓은 나무 상판에 펼친 지형 지도, 두 진영 말 조각과 단검, 짧은 다리. 꼭대기 윗면 15행(y=6~20).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat p linen 5
+@mat q linen 4
+@mat r linen 3
+@mat s linen 2
+@mat t pine 3
+@mat u pine 2
+@mat v teal 1
+@mat f red 2
+@mat g red 4
+@mat h brass 3
+@mat j brass 5
+@mat k iron 2
+@mat l iron 4
+@mat m iron 5
+@mat n iron 6
+@layer table
+@mblock 0 6
+...bbbbbbbbbbbbbbbbbbbbbbbbbb...
+..beeeeeeeeeeeeeeeeeeeeeeeeedb..
+.bedddddddddddddddddddddddddcba.
+.bdddddddddcdddddddddddddddddca.
+.bddddddddddddddddddddddddddca.
+.bddddddddddddddddddddddddddca.
+.bddddddddddddddddddddddddddca.
+.bddddddddddddddddddddddddddca.
+.bddddddddddddddddddddddddddca.
+.bddddddddddddddddddddddddddca.
+.bddddddddddddddddddddddddddca.
+.bdcdddddddddddddddddddddddddca.
+.bddddddddddddddddddddddddddca.
+.bcdddddddddddddddddddddddddcca.
+..bccccccccccccccccccccccccba..
+..bddddddddddddddddddddddddcba..
+..bccccccccccccccccccccccccbba..
+..bccccccbbccccccccccccccbbbba..
+...bbbbbbbbbbbbbbbbbbbbbbbbba..
+...aaaaaaaaaaaaaaaaaaaaaaaaa...
+....bdba................bcba....
+....bdba................bcba....
+....bcba................bbba....
+....bcba................bbba....
+....bbba................baba....
+....aaaa................aaaa....
+@layer map
+@mblock 5 9
+rrppppppppppppppppppqr
+rpppppttpppppppppppppq
+ppppptttuppvpppppppppq
+ppppttuppppvvppppppppq
+ppppppppppppvppppppppq
+ppppppppppppvvpppttppq
+pppppttppppppvvptttuqq
+pppptttuqpppppvppuuqqq
+qppppuuqqqqpppvppppqqr
+rrqqqqqqqqqqqqqqqqqqrs
+@layer pieces
+// Two red standards: light caps, dark stems, low broad bases.
+@mblock 9 10
+gg.
+gf.
+.f.
+fff
+@mblock 7 14
+gg.
+gf.
+.f.
+fff
+// Opposing brass pieces with visible upper surfaces.
+@mblock 20 11
+jj.
+jh.
+.h.
+hhh
+@mblock 23 15
+jj.
+jh.
+.h.
+hhh
+// Diagonal dagger, silver blade up-left, brass crossguard, wooden grip.
+@mblock 16 15
+n......
+nm.....
+.ml....
+..ml.j.
+...jh..
+...hbc.
+.....ba

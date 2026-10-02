@@ -1,0 +1,38 @@
+// 금장 묘비·흰 꽃다발과 전체 높이 16px(y=16~31) 유지, 윗면 2행 설명을 실제 3행으로 정정(화소 변경 없음); 꼭대기 윗면 3행(y=17~19)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A marble 0
+@mat B marble 1
+@mat C marble 2
+@mat D marble 3
+@mat h gold 4
+@mat i gold 5
+@mat g gold 2
+@mat l leaf 1
+@mat m leaf 2
+@mat n leaf 3
+@mat p white 2
+@mat q white 4
+@mat r white 5
+@mat s white 6
+@mat t linen 2
+@mat u linen 4
+@layer prop
+@mblock 0 16
+.....CCCCCC.....
+....CDDDDDCB....
+...CDDDDDCCBB...
+...DDDDDDCCBB...
+...ChhhhhhhhA...
+...CBBAhhABBA...
+...CBBAiiABBA...
+...CBhhiiiiBA...
+...CBBAhhABBA...
+...qrrqBBBqrrq..
+..lqssqBqrrssql.
+..lmqqpqssrqpl..
+...lnnmqrrqmmA..
+...CBlnmhhmlBA..
+..CBBBliigltBBA.
+..BAAAlugtlAAAA.

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/seedling_shelf/h193-A.pxg",
+ "id": "seedling shelf",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  4,
+  29,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "높이 28px의 전형적인 SFC풍 목제 2단 선반에 단마다 흙 윗면이 보이는 상자와 새싹 4포기를 배치하고 뒤 테두리·줄기를 정리함; 꼭대기 윗면 3행(y=4~6)",
+ "ok": true
+}

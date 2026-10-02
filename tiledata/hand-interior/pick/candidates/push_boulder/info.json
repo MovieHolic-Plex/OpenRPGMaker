@@ -1,0 +1,35 @@
+{
+ "id": "push boulder",
+ "slug": "push_boulder",
+ "name_ko": "밀 수 있는 바위",
+ "category": "JRPG 장치",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 32
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "밀어서 옮기는 둥근 회색 바위(1칸, 16px 솟음) — 둥근 윗면이 위에서 보이고 바닥에 끌린 자국. 던전·동굴 퍼즐. 압력판 위로 밀어 올린다.",
+ "where": "던전·동굴 퍼즐. 압력판 위로 밀어 올린다.",
+ "placement": [
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "mine"
+}

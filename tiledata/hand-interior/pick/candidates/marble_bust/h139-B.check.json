@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/marble_bust/h139-B.pxg",
+ "id": "marble bust",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "머리·흰색 회보라 대리석 결을 유지하고 목·어깨·가슴을 y=0~15의 16행으로 정리, 양쪽으로 드러난 네모 받침 윗판과 y=21~28 앞면 분리; 꼭대기 윗면 3행(y=16~18).",
+ "ok": true
+}

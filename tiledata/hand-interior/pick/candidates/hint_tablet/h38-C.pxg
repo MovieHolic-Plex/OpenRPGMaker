@@ -1,0 +1,71 @@
+// hint tablet C: 단순·또렷 — 큰 돌판 하나, 기운 면에 글 줄 넷, 아래 받침
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+...ssssssssss...
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+..ssssssssssss..
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+................
+................
+................
+................
+................
+................
+................
+...0000000000...
+..066666666660..
+..055555555550..
+..144444444441..
+..143333333321..
+..141111111321..
+..143333333321..
+..141111133321..
+..143333333321..
+..141111333321..
+..143333333321..
+..141111113321..
+..143333333321..
+..143333333321..
+..022222222220..
+.06666666666660.
+.14333333333220.
+.14333333433220.
+.14333233333220.
+.14333333333220.
+.14333333333220.
+.14333333333220.
+.14333333333220.
+.00000000000000.

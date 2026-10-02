@@ -1,0 +1,56 @@
+// D: 대야와 나무 받침장을 유지하고 왼쪽 앞에 흰 수건과 접힘 명암 복원
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat C white 5
+@mat A white 4
+@mat F white 2
+@mat S white 1
+@mat D water 1
+@mat E water 3
+@mat W water 4
+@mat V water 5
+@mat h pine 0
+@mat k pine 1
+@mat l pine 2
+@mat m pine 3
+@mat n pine 4
+@mat b brass 4
+@mblock 0 8
+....CCCCCCCC....
+..CCDDDDDDDDAF..
+.CDVVEEEEEEEDAF.
+.CDWWWEEEEEEESF.
+.CAEEEEEEEEESFF.
+..CAAAAAAAAFFF..
+.nmCAAAAAFFFFmk.
+.nmmFFFFFFFmmmk.
+.nmmmmkkkkmmmlk.
+.nnnnnnnmmmmmlk.
+.lmmmmmmmmmmmlk.
+..knmmmmmmmlmk..
+..knlllllllkmk..
+..knlmmmmmlkmk..
+..knlmmmlmlkmk..
+..knlmmlmmlkmk..
+..knlmmmlmbkmk..
+..knlmmmmmlkmk..
+..knlmmmmmlkmk..
+..knlllllllkmk..
+..kmmmmmmmmmmk..
+..knnnmmmmmmmk..
+..knk......klk..
+..klk......khk..
+@mat T linen 5
+@mat U linen 4
+@mat R linen 3
+@mblock 1 15
+TTU
+TTU
+TTU
+TTU
+TTU
+TUU
+TUR
+UUR
+UUR

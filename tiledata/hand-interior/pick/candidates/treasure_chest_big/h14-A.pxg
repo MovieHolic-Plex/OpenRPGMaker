@@ -1,0 +1,50 @@
+// A: 설명 충실 — 걸쇠 가로선을 몸통 안으로, 앞판 줄 폭 맞춤
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o red 0
+@mat d red 1
+@mat m red 2
+@mat r red 3
+@mat l red 4
+@mat h red 5
+@mat G gold 1
+@mat y gold 2
+@mat Y gold 3
+@mat Z gold 4
+@mat W gold 5
+@mat b blue 3
+@mat B blue 5
+@mat v blue 6
+@mat n iron 0
+@mblock 0 0
+= 32.
+= 32.
+= 32.
+= 32.
+= 9. 14o 9.
+= 6. 1o 1Z 1Y 1y 2h 8l 2r 1Y 1y 1G 1o 6.
+= 4. 1o 1h 1l 1Z 1Y 1y 2h 8l 2r 1Y 1y 1G 1r 1m 1o 4.
+= 3. 1o 1h 2l 1Z 1Y 1y 1h 9l 2r 1Y 1y 1G 2r 1m 1o 3.
+= 2. 1o 2h 2l 1Z 1Y 1y 1h 3l 1y 2Z 1y 2l 2r 1Y 1y 1G 1l 2r 1m 1o 2.
+= 2. 1o 2h 2l 1Z 1Y 1y 1h 3l 1Z 1v 1B 1Z 2l 2r 1Y 1y 1G 1l 2r 1m 1o 2.
+= 2. 1o 1l 3r 1Z 1Y 1y 4r 1Z 2b 1Z 4r 1Y 1y 1G 3r 1m 1o 2.
+= 2. 1o 1l 3r 1Z 1Y 1y 4r 1G 2y 1G 4r 1Y 1y 1G 3r 1m 1o 2.
+= 2. 1o 1l 3r 1Z 1Y 1y 3r 1y 4Z 1y 3r 1Y 1y 1G 3r 1m 1o 2.
+= 2. 1o 1r 3m 1Z 1Y 1y 3m 1y 1Z 1W 2Y 1G 3m 1Y 1y 1G 3m 1m 1o 2.
+= 2. 1o 1r 3m 1Z 1Y 1y 3m 1y 1Z 1W 2Y 1G 3m 1Y 1y 1G 3m 1m 1o 2.
+= 2. 1o 26Z 1o 2.
+= 2. 1o 4d 1Z 1Y 1y 3d 1y 2Z 1Y 1y 1G 3d 1Y 1y 1G 4d 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1Y 1y 2r 1m 1y 1Z 2n 1Y 1G 3r 1Y 1y 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1W 1y 2r 1m 1y 1Y 2n 1y 1G 3r 1Y 1Z 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1Y 1y 2r 1m 1G 4y 1G 3r 1Y 1y 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1Y 1y 2r 1m 6r 3r 1Y 1y 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1Y 1y 2r 1m 6r 3r 1Y 1y 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1W 1y 2r 1m 6r 3r 1Y 1Z 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1Y 1y 2r 1m 6r 3r 1Y 1y 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1Y 1y 2r 1m 6r 3r 1Y 1y 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1W 1y 2r 1m 6r 3r 1Y 1Z 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1Y 1y 2r 1m 6r 3r 1Y 1y 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 1l 1r 1m 1r 1Z 1Y 1y 2r 1m 6r 3r 1Y 1y 1G 1r 1m 1r 1m 1o 2.
+= 2. 1o 4m 1y 1Y 1G 3m 6m 3m 1G 1y 1G 4m 1o 2.
+= 2. 28o 2.

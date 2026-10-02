@@ -1,0 +1,34 @@
+{
+ "id": "teleport pad",
+ "slug": "teleport_pad",
+ "name_ko": "순간이동 진",
+ "category": "JRPG 장치",
+ "kind": "flat",
+ "kind_ko": "바닥 무늬(밟을 수 있음)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "바닥의 둥근 푸른 빛 원판(2×2, 밟을 수 있음) — 가운데 별 무늬, 둘레 돌 테.",
+ "where": "",
+ "placement": [
+  "밟을 수 있다. 다른 기물 밑에 먼저 깐다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "tower"
+}

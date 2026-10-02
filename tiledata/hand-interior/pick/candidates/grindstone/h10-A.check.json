@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/grindstone/h10-A.pxg",
+ "id": "grindstone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "v5 그대로, 바퀴 밑 윗면(10줄)에 접지 그늘 한 줄을 넣어 바퀴가 윗면 위에 올라앉아 보이게",
+ "ok": true
+}

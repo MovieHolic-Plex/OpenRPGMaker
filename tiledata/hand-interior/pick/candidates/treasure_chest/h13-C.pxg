@@ -1,0 +1,40 @@
+// 보물상자 C: 단순·또렷 — 큰 덩이 3개(둥근 뚜껑 윗면 / 앞면 / 몸통), 황동 띠 둘과 가운데 자물쇠만
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood
+@mat b brass
+@mblock 0 0
+................
+................
+................
+..wwwwwwwwwwww..
+.wwbbwwwwwwbbww.
+.wwbbwwwwwwbbww.
+.wwbbwwwwwwbbww.
+.wwbbwwwwwwbbww.
+.bbbbbbbbbbbbbb.
+.wwbbwwbbwwbbww.
+.wwbbwwbbwwbbww.
+.wwbbwwbbwwbbww.
+.wwbbwwwwwwbbww.
+.wwbbwwwwwwbbww.
+.wwbbwwwwwwbbww.
+.wwwwwwwwwwwwww.
+@tblock 0 0
+................
+................
+................
+..111111111111..
+.17557776664441.
+.16556665554431.
+.15545554444331.
+.14434443333321.
+.15555444433321.
+.16546565444331.
+.16546541444331.
+.16545432333331.
+.16546555554331.
+.15435444443221.
+.14323333332221.
+.11111111111111.

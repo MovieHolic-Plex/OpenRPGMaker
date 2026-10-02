@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/knight_armor/h134-B.pxg",
+ "id": "knight armor",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "정강이 반복 2행(기존 y=35·37)을 줄이고 투구·상체를 2행 내려 갑옷 높이 32px(y=10~41)로 수정, 기존 명암·창을 쥔 형태·어깨 윗면 2행(y=19~20)·발끝 y=41·받침 y=42~47 유지; 꼭대기 윗면 3행(y=10~12).",
+ "ok": true
+}

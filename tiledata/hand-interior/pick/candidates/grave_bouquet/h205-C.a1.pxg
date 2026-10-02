@@ -1,0 +1,33 @@
+// C: 낮은 묘비의 넓은 윗면과 흰 꽃 세 덩이, 잎과 줄기는 최소화. 꼭대기 윗면 3행(y=16~18).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat s black 3
+@mat o black 4
+@mat m white 0
+@mat h white 1
+@mat t white 2
+@mat g green 1
+@mat l green 2
+@mat f white 5
+@mat w white 6
+@mat e white 3
+@mat r linen 3
+@layer object
+@mblock 0 16
+....hhhhhhhh....
+...httttthhhh...
+..hhtthhhhhhmo..
+..smmmmmmmmmos..
+..shmmmmmmmoos..
+..shmmommmmoos..
+..shmooommmoos..
+..shmmommmmoos..
+..shmmmmmmmoos..
+..shmwwmmwwmos..
+..sgwffewffes..
+.gllffewwfeogs..
+.gglgewffelglg..
+..oggfffeellgo..
+..shooeeggrros..
+...ssssssssss...

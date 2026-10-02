@@ -1,0 +1,28 @@
+// h39 C: 구멍 함정 — 단순·또렷: 큰 검정 구멍 + 북쪽 안벽 한 줄 + 남쪽 테 윗면, 부서진 곳은 왼쪽 한 칸·오른쪽 조각 하나
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat e stone 1
+@mat d stone 0
+@mat f stone 2
+@mat g stone 3
+@mat h stone 4
+@mat K black 1
+@mat k black 0
+@mblock 0 0
+....eeeeeeee....
+..eeghhhhhhgee..
+.eghhhhhhhhhhge.
+.eghddddddddgge.
+.ehdffffffffdgf.
+ehdKKKKKKKKKKdf.
+ehKKKKKKKKKKKKdf
+ehdKkkkkkkkkKKdf
+.edKkkkkkkkkKdgf
+.ehdKkkkkkkKKdgf
+.ehdKKKKKKKKdgfe
+.eghdKKKKKKdgfe.
+.eghhdddddddgfe.
+..eegggghhggfe..
+...effffffffe...
+....eeeeeeee....

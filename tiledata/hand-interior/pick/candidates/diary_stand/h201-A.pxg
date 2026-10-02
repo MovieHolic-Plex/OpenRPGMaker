@@ -1,0 +1,42 @@
+// 책 윗면·색·윤곽을 유지하고 깃펜·지지대를 줄여 접지선 위 16행으로 압축.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat l linen 5
+@mat r red 1
+@layer stand
+@mblock 0 16
+............lll.
+...........lll..
+..wwwwwwwwwlww..
+.wwlllllllllwww.
+.wllllllllllwww.
+.wllllllllllwww.
+.wllllllllllwww.
+.wllllllllllwww.
+.wwlllllllllwww.
+.wwrrrrrrrrrwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+......wwww......
+...wwwwwwwwww...
+..wwwwwwwwwwww..
+...wwwwwwwwww...
+@tblock 0 16
+............654.
+...........653..
+..333333333337..
+.77665456554753.
+.76666545655753.
+.76552545225653.
+.76666545655653.
+.76552545225653.
+.75666545654653.
+.65111111111253.
+.77776666666663.
+.44444444444442.
+......3752......
+...3377666533...
+..377666655553..
+...3333332222...

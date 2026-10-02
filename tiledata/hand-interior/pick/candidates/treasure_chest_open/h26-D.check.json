@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/treasure_chest_open/h26-D.pxg",
+ "id": "treasure chest open",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.077
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": null,
+ "note": "속 바닥 y4~7 을 어두운 입구로 넓히고 닫힌 뚜껑 앞면 띠를 지워 앞벽 윗날 한 줄만 남김; 뒷판·자물쇠·윤곽 불변",
+ "ok": true
+}

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/staff_rack/h51-B.pxg",
+ "id": "staff rack",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 24,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "창꽂이와 같은 통 걸이: 윗면 구멍 3(입구 3줄)+앞면 통판 7줄+황동띠, 지팡이 3개 높이 엇갈린 보석 머리(청·자·적)",
+ "ok": true
+}

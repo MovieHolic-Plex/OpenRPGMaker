@@ -1,0 +1,62 @@
+// C: 최상단 목재 가로틀 윗면을 3행으로 늘리고 남쪽 앞면과 이불 위 그림자 분리. 꼭대기 윗면 3행(y=0~2).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f linen 3
+@mat g linen 4
+@mat h linen 5
+@mat i linen 6
+@mblock 0 0
+.dddddddddddddd.
+dedddddddddddedb
+dddddddddddddddb
+dbbbbbbbbbbbbbbb
+dcggggggggggggdb
+ddhhhghhhhhhhgdb
+ddgggghhhhhgggdb
+ddffffgggggggfdb
+ddfffffffffffbdb
+ddbbbbbbbbbbbbdb
+deddddddddddeddb
+dcbbbbbbbbbbbbba
+dcaaaaaaaaaaaaba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........dedda
+dc.........cbbba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........dedda
+dc.........cbbba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........dedda
+dc.........cbbba
+dcddddddddddbdbb
+deiiiiiiiiihbdbb
+ddiiiihhhhhhbdbb
+ddiiiihhhhhhbdbb
+ddhhgghhhhhhedda
+ddhhhghhhhhhcbbb
+ddgggghhhhhgbdbb
+ddffffggggggbdbb
+ddffffffffffbdbb
+deddddddddddbdbb
+dcbbbbbbbbbdedda
+dcaaaaaaaaaacbba
+dc.........db.ba
+dc.........db.ba
+dc.........db.ba
+dc.........dedda
+.a.........ba.a.

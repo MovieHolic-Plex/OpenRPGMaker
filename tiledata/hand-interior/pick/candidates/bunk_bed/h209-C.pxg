@@ -1,0 +1,63 @@
+// C: 가로 침상 두 덩이, 넓은 흰 이불과 오른쪽 사다리; 꼭대기 윗면 6행(y=0~5)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat d wood 1
+@mat s wood 3
+@mat w wood 5
+@mat h wood 6
+@mat g wood 7
+@mat b linen 5
+@mat p linen 6
+@mat l linen 4
+@mat t linen 3
+@layer bed
+@mblock 0 0
+.hppplbbbbblhs..
+hwppplbbbbbbls..
+hwppplbbbbbbls..
+hwppplbbbbbbls..
+hwlllbbbbbbbls..
+hwbbbbbbbbbblls..
+hwllllllllllls..
+hwllllllllllts..
+hwttttttttttts..
+hghhhhhhhhhwws..
+hwwwwwwwwwwwss..
+wsssssssssssssd.
+ws..........hsws
+ws..........hs.s
+ws..........hwws
+ws..........hsss
+ws..........hs.s
+ws..........hs.s
+ws..........hs.s
+ws..........hs.s
+ws..........hwws
+ws..........hsss
+ws..........hs.s
+ws..........hs.s
+ws..........hs.s
+ws..........hs.s
+ws..........hwws
+ws..........hsss
+ws..........hs.s
+ws..........hs.s
+wshhhhhhhhhwhs.s
+hwppplbbbbbbls.s
+hwppplbbbbbhwws
+hwppplbbbbbhsss
+hwlllbbbbbbbls.s
+hwbbbbbbbbbbls.s
+hwbbbbbbblllls.s
+hwbbbbllllllts.s
+hwlllllllllthwws
+hwtttttttttthsss
+hghhhhhhhhhwhs.s
+hwwwwwwwwwwwhs.s
+wssssssssssshs.s
+ws..........hs.s
+ws..........hwws
+ws..........hsss
+ws..........hs.s
+ss..........ss.s

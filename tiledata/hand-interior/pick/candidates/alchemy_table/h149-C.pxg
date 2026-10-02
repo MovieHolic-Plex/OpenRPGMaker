@@ -1,0 +1,63 @@
+// C: 넓은 8행 상판과 큰 플라스크·버너, 연결관 하나와 서랍 하나로 단순화
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a pine 5
+@mat b pine 4
+@mat c pine 3
+@mat d pine 2
+@mat e dwood 1
+@mat f dwood 3
+@mat g dwood 5
+@mat h brass 4
+@mat i brass 2
+@mat j iron 2
+@mat k iron 4
+@mat l iron 5
+@mat m glass 1
+@mat n glass 3
+@mat o glass 5
+@mat p glass 6
+@mat q green 3
+@mat r green 4
+@mat s orange 3
+@mat t yellow 5
+@mat u yellow 6
+@layer table
+@mblock 1 14
+dccccccccccccccccccccccccccccd
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbc
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+abbbbbbbbcccbbbbbbbbbbbbbbbbbc
+abbbbbbbbbbbbbbbbbbbbbcccbbbbc
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbc
+cccccccccccccccccccccccccccccd
+ddddddddddddddddddddddddddddde
+.gffffffffffffffffffffffffffe
+.gfcccccccccccccccccccccccfefe
+.gfggggggggghhgggggggggggfefe
+.gffffffffffffffffffffffffefe
+.gddddddddddddddddddddddddefee
+.gcfe....................gcfee
+.gcfe....................gcfee
+.ddfe....................ddfee
+@layer apparatus
+@mblock 5 4
+...ooo
+..opmpo
+..mooom
+...onm
+...onmhhhhhhhhhhhi
+..moonm.........hi
+.mpoonnm.......hi
+mpooonnnm.......hi
+mpooonnnm.......hi
+morrrqqnm.......ooo
+.mrrrqqm.......opmpo
+..mqqqm........mooom
+...jjj.........mrrqm
+...jsj..........mqm
+..jstsj.........jjj
+.jklkkjj

@@ -1,0 +1,30 @@
+// C: 몸통·금화 유지, 두 묶은 입구 앞 테와 천 주름을 한 행 늘려 윗면 각각 3행.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 1
+@mat b straw 2
+@mat c straw 3
+@mat d straw 4
+@mat e straw 5
+@mat f gold 2
+@mat g gold 4
+@mat h gold 5
+@mat i gold 6
+@mblock 0 0
+....cc..........
+...dedb.........
+...bccb.........
+....ab.....cc...
+...bddb...dedb..
+..bdedcb..bccb..
+.bdeeddcb..ab...
+.bdeeddcb.bddcb.
+bdeeedccbbdddcb.
+bdeeddccabdddccb
+bddddcca..fhf.cb
+bddddcab.fihgfcb
+.bcccab.bghgfbcb
+..baaa.bdddcbaa.
+.......bddcba...
+........baaa....

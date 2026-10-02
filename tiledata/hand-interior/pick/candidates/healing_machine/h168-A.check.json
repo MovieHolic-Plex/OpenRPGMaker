@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/healing_machine/h168-A.pxg",
+ "id": "healing machine",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  4,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "높이 28px 흰 회복 장치를 새로 찍고 둥근 홈 여섯 개의 붉은·흰 구슬과 앞면 초록 맥박 화면을 배치; 꼭대기 윗면 8행(y=5~12)",
+ "ok": true
+}

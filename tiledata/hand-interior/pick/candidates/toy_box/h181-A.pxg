@@ -1,0 +1,58 @@
+// A: 열린 뚜껑 꼭대기 윗면만 1행에서 3행(y=1~3)으로 확장; 입구·앞판·장난감 유지.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 2
+@mat a wood 7
+@mat w wood 5
+@mat d dwood 2
+@mat c dwood 3
+@mat b blue 1
+@mat B blue 2
+@mat h blue 3
+@mat T teal 2
+@mat l teal 4
+@mat r red 3
+@mat R red 5
+@mat f linen 5
+@mat n pine 4
+@mat N pine 6
+@mat k pine 2
+@mat g green 2
+@mat G green 4
+@mblock 0 0
+...oooooooooo...
+..oaaaaaaaaaao..
+..oaaaaaaaawwo..
+..oaaaaaawaawo..
+..owTTTTTTTTwo..
+.oaaccccccccwwo.
+.oadccccccccdwo.
+.oadccccccccdwo.
+.oadccccccccdwo.
+.oadccccccccdwo.
+.oaaaaaaaaaawwo.
+.ohhhhhBBBBBBbo.
+.ohBBBBBBBBBBbo.
+.oBBBBbBBBBBBbo.
+.obbbbbbbbbbbbo.
+..oooooooooooo..
+@mblock 3 6
+.rr.
+rRfr
+rffr
+.rr.
+@mblock 7 3
+.nN.
+nNdk
+.nf.
+nGGn
+.GG.
+.gg.
+@mblock 11 2
+..N.
+.NNk
+.Nk.
+Nk..
+kNk.
+.k..

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/push_boulder/h19-A.pxg",
+ "id": "push boulder",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  15,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "회색 돌 덩이: 윗면 밝게·앞면 두 단 어둡게·금 한 줄·맨 아래 줄에 끌린 자국",
+ "ok": true
+}

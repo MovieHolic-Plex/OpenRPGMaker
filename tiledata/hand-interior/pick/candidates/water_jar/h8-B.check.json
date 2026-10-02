@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/water_jar/h8-B.pxg",
+ "id": "water jar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "note": "입구 테 오른쪽을 한 단 어둡게·왼쪽을 한 단 밝게(빛 방향), 모양·크기 그대로",
+ "ok": true
+}

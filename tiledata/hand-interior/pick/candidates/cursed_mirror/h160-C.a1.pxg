@@ -1,0 +1,117 @@
+// 넓은 거울 면과 두꺼운 검은 테, 큰 붉은 눈 하나와 갈라진 금으로 단순화; 꼭대기 윗면 3행(y=1~3)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat b black 2
+@mat i iron 3
+@mat r red 3
+@layer mirror
+@mblock 0 0
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbiiiiiiiibbb.
+.bbbiiiiiiiibbb.
+.bbbiiiiiiiibbb.
+.bbbiiiiiiiibbb.
+.bbbiiiiiiiibbb.
+.bbbbiiiiiiibbb.
+.bbbibiiiiiibbb.
+.bbbibiiiiiibbb.
+.bbbiibiiiiibbb.
+.bbbiiibiiiibbb.
+.bbbiiiibiiibbb.
+.bbbiiiibiiibbb.
+.bbbiiiiibiibbb.
+.bbbiiiiiiiibbb.
+.bbbiiirrriibbb.
+.bbbirrrbrrrbbb.
+.bbbirrrbrrrbbb.
+.bbbiiirrriibbb.
+.bbbiiiiibiibbb.
+.bbbiiiibiiibbb.
+.bbbiiiibiiibbb.
+.bbbiiibiiiibbb.
+.bbbiibiiiiibbb.
+.bbbiibiiiiibbb.
+.bbbibiiiiiibbb.
+.bbbibiiiiiibbb.
+.bbbibiiiiiibbb.
+.bbbbiiiiiiibbb.
+.bbbiiiiiiiibbb.
+.bbbiiiiiiiibbb.
+.bbbiiiiiiiibbb.
+.bbbiiiiiiiibbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+..bbbbbbbbbbbb..
+...bb......bb...
+...bb......bb...
+..bbbbbbbbbbbb..
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+@tblock 0 0
+..111111111111..
+..455555444443..
+..444444444433..
+..344444333332..
+.23333333333321.
+.24444433333311.
+.24355444443111.
+.24355444443111.
+.24355544443111.
+.24355554443111.
+.24345554443111.
+.24244554443111.
+.24324444443111.
+.24342444443111.
+.24344244443111.
+.24344424443111.
+.24344442443111.
+.24344442443111.
+.24344444243111.
+.24344444443111.
+.24344234343111.
+.24323402432311.
+.24323302332311.
+.24344222343111.
+.24344444243111.
+.24344442443111.
+.24344442443111.
+.24344424443111.
+.24344244443111.
+.24344244443111.
+.24342444443111.
+.24342444443111.
+.24342444443111.
+.24244444443111.
+.24344444443111.
+.24344444443111.
+.24344444443111.
+.24333333333111.
+.23333333333311.
+.23333322222211.
+..222222111111..
+...32......21...
+...32......21...
+..333333333332..
+.24444433333321.
+.23333333333311.
+.22222222222211.
+.11111111111111.
+// 붉은 눈: 위쪽 밝은 눈꺼풀과 세로 동공, 아래쪽은 어둡게
+@mblock 5 20
+iirrrii
+rrrbrrr
+rrrbrrr
+iirrrii
+@tblock 5 20
+4444444
+3451453
+2331332
+4422244

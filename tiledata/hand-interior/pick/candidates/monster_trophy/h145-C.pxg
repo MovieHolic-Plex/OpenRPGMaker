@@ -1,0 +1,36 @@
+// C: 큰 초록 용 머리와 밝은 뿔, 단순한 방패 판; 정수리 윗면 3행(y=3~5).
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 6
+@mat d wood 4
+@mat g green 0
+@mat h green 1
+@mat i green 2
+@mat j green 3
+@mat k green 4
+@mat l green 5
+@mat r linen 2
+@mat s linen 4
+@mat t linen 5
+@mat e yellow 4
+@layer trophy
+@mblock 5 0
+..rt..............tr..
+...st............ts...
+...rst..........tsr...
+..aastggkkkkkkggtsaa..
+..acrstkllkkkkjtsrba..
+..acdgkkkjjjjjkkgbba..
+..acgghejggjehhggbba..
+..acbhjjjjjjjjihbbba..
+..acbhjkkjjjjjihbbba..
+..acbbgjkkgkgjihbbba..
+...abbbgjjjjjjhbbba...
+...abbbgihhhhhgbbba...
+....abbbggggggbbba....
+.....abdddbbbbbba.....
+......abddbbbbba......
+........aaaaaa........

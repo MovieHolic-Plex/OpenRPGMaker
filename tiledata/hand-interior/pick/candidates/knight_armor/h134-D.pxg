@@ -1,0 +1,52 @@
+// 금장 투구·어깨 테와 가슴 십자 문양을 더한 의장 갑옷; 꼭대기 윗면 3행(y=18~20)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat F iron 1
+@mat A iron 2
+@mat B iron 3
+@mat C iron 4
+@mat D iron 5
+@mat E iron 6
+@mat g gold 2
+@mat h gold 3
+@mat j gold 4
+@mat k gold 5
+@mat s stone 2
+@mat t stone 3
+@mat u stone 4
+@mat v stone 5
+@layer armor
+@mblock 0 16
+..............C.
+.............DCA
+......DDCC...DCA
+.....BDEECC..DCA
+.....BDDCCC...g.
+.....jkkjjg...h.
+.....BFFFFg...h.
+.....BDCBBA...h.
+......DCBA....h.
+...DDCCAAACC..h.
+..BDEDCADCCBA.h.
+..jkkjgDDCjjg.h.
+..BCCBDkCBBAA.h.
+..BDCDEkCC.BA.h.
+..BDCDkkkC.BC.h.
+..BDCDjkCB.CDkh.
+..BCCDDkCB.Bjgh.
+..BjgBDCCB..AAh.
+...AAjkjjg....h.
+.....DDCBA....h.
+....BDCBBCB...h.
+....DDCAACB...h.
+....DDC..CB...h.
+....jjg..jg...h.
+....DCA..CB...h.
+....DCA..CB...h.
+...BDCA..CCBA.h.
+...DDCA..CDBA.h.
+..uvvvvvuuuuuuh.
+.vvvvuuuuuutttt.
+.suuuuttstttsss.
+.ssstttssssssss.

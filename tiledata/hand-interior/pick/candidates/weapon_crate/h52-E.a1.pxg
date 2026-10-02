@@ -1,0 +1,35 @@
+// weapon crate E: 입구를 크게 연 나무 상자, 칼자루·도끼가 꽂힘, 앞면 쇠 걸쇠
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat p wood 7
+@mat q wood 6
+@mat r wood 5
+@mat s wood 4
+@mat t wood 3
+@mat u wood 2
+@mat v wood 1
+@mat n black 3
+@mat o black 1
+@mat c gold 4
+@mat g gold 3
+@mat j iron 5
+@mat k iron 3
+@mat l iron 2
+@mblock 0 0
+................
+................
+....c.....jjk...
+...ggg....qjl...
+....q.....q.....
+....s.....q.....
+....s..j..s.....
+..uqqqqqqqqu....
+..tnqnnnnqnns...
+..vppppppppppv..
+..vqrrrjkrrrtv..
+..vqrrrkkrrrtv..
+..vqrsqrsqrstv..
+..vqrsqrsqrstv..
+..vrsrsrsrsrtv..
+..vuuuuuuuuuuv..

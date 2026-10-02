@@ -11,7 +11,7 @@ PAL_DIR = os.path.join(PICK, 'palette')
 SHARED_PAL = os.path.join(PAL_DIR, 'v5.pal')
 PXGRID = os.path.join(ROOT, 'scripts/content/pixel-harness/pxgrid')
 HARNESS = os.path.join(ROOT, 'scripts/content/pixel-harness')
-WORKER_RE = re.compile(r'^(w[0-9]{1,2}|pilot)-([A-Z])\.pxg$')   # 작업자 id(w1…w99, pilot) + 방향 글자
+WORKER_RE = re.compile(r'^(w[0-9]{1,3}|h[0-9]{1,4}|pilot)-([A-Z])\.pxg$')   # 작업자 id(w1…w999, 소품 하네스 판 h1…, pilot) + 방향 글자
 
 def slug(i):
     return re.sub(r'[^A-Za-z0-9]+', '_', i).strip('_')
@@ -45,7 +45,8 @@ def new_item_object(it):
             'cells': {'floor': rows, 'overlayRowsAbove': over}, 'placement': rules, 'related': [], 'variantGroup': i,
             'atlas': {'x': -1, 'y': -1, 'w': w, 'h': h, 'frames': 1, 'padTop': 0},
             'summary': (head + '.') if sep else desc, 'where': tail, 'since': 'v6 새 기물',
-            'new': True, 'contextRoom': it.get('contextRoom')}
+            'new': True, 'contextRoom': it.get('contextRoom'),
+            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs') if it.get(k)}}
 
 def load_new_items(v5_ids=None):
     """tiledata/hand-interior/new/items.json → 가짜 객체 목록. v5 id·slug 와 겹치면 에러."""

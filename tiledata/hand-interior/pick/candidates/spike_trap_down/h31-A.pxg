@@ -1,0 +1,39 @@
+// A 상태만 바꾸기: 가시를 구멍 속으로 접어 넣음 — 가시 솟음(위 3개·줄기)을 지우고 구멍마다 어두운 점 두 칸
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 3
+@mblock 0 0
+................
+................
+................
+................
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+@tblock 0 0
+................
+................
+................
+................
+.11111111111111.
+.14444444444441.
+.14300330033001.
+.14333333333331.
+.14333333333321.
+.14333333333321.
+.14333003300321.
+.14333333333321.
+.14333333333321.
+.14333333333321.
+.12222222222221.
+.11111111111111.

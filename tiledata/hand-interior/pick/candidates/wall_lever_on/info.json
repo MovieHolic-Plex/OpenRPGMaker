@@ -1,0 +1,34 @@
+{
+ "id": "wall lever on",
+ "slug": "wall_lever_on",
+ "name_ko": "벽 레버(켬)",
+ "category": "JRPG 장치",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "벽 레버(켬) — 꺼진 벽 레버(h17-A)와 같은 쇠판·축, 손잡이만 위로 올라갔다. 축 옆에 작은 초록 불빛 한 점.",
+ "where": "축 옆에 작은 초록 불빛 한 점.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "dungeon"
+}

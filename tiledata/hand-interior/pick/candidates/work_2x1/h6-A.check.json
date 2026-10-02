@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/work_2x1/h6-A.pxg",
+ "id": "work 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "앞 가장자리 두 줄 순서 교정: 어두운 E 띠+밝은 C 선(앞면이 빛남) → 윗면 D 가 끝까지 이어지고 앞턱 E 로 한 단 어둡게. 나머지 화소 그대로",
+ "ok": true
+}

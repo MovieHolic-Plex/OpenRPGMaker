@@ -1,0 +1,44 @@
+// E 열린 상자: 닫힌 h13-D 와 같은 몸통·금 띠·자물쇠, 뚜껑은 뒤로 서서 안쪽 면이 보이고 그 앞에 어두운 속이 두 줄
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat i wood 2
+@mat k gold 0
+@mblock 0 0
+................
+................
+...ooooooooooo..
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+..owggwwwwwggwo.
+..oggiiiiiiiggo.
+..oggiiigiiiggo.
+..owggwwwwwggwo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+................
+...1111111111...
+...1565444432...
+...1565444432...
+...1565444432...
+...1454333321...
+..1756777774360.
+..1454222222120.
+..1454212422120.
+..1656666554350.
+..1454333333330.
+..1454655433330.
+..1454350433330.
+..0000000000000.
+................

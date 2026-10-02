@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mana_crystal/h151-C.pxg",
+ "id": "mana crystal",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  13,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "큰 하늘색 주결정과 낮은 보조 결정 두 개로 덩어리를 단순화하고, 밝은 윗면·좌측 면·어두운 남쪽 면과 둘레 빛 점 두 개로 또렷하게 신작; 주결정 솟음 16px, 바닥 접지 y=31; 꼭대기 윗면 4행(y=15~18)",
+ "ok": true
+}

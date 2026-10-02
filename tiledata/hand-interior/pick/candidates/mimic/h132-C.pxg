@@ -1,0 +1,68 @@
+// C 또렷하게: 원본 상자의 뚜껑·앞판·쇠테 유지, 깊은 입구 둘레의 큰 송곳니와 앞판으로 흐르는 긴 혀; 꼭대기 윗면 4행(y=4~7)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat i wood 3
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+...ooooooooooo..
+...oiggiiiggio..
+...oiggiiiggio..
+..oiiiiiiiiiiio.
+..oiiigiiigiiio.
+..ogggggggggggo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+...11111111111..
+...15445554431..
+...14334443321..
+..1000000000001.
+..1000000000001.
+..1100000000011.
+..1110103010111.
+..1565666666540.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................
+@mat b linen 5
+@mat r red 1
+@mat t pink 3
+// 입구 윗면의 뒤·옆·앞 테에 박힌 송곳니, 중앙 혀
+@mblock 3 4
+rbbrrbrrbbr
+rrbrrrrrbrk
+rbrrtttrrbk
+rbbrtttrbbk
+@mblock 7 8
+ttt
+ttt
+ttt
+.ttt
+@tblock 3 4
+15511511551
+10400000400
+15002320440
+14402321440
+@tblock 7 8
+432
+432
+432
+.321
