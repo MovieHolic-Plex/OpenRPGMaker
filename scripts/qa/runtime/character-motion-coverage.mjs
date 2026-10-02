@@ -22,7 +22,7 @@ try {
       { resolveSkillChoreography },
       { retroClassSkillTimeline },
       { buildBattleMotionPreview },
-      { characterMotionProgram, characterMotionTracks, defaultCharacterProgram },
+      { characterMotionProgram, characterMotionTracks, defaultCharacterProgram, characterCasting, characterMotionRecipe },
       { battleContactBounds },
       { registerInlineAssets },
     ] = await Promise.all([
@@ -185,6 +185,19 @@ try {
       "standalone export retains contact geometry");
     registerInlineAssets(null);
     check(battleContactBounds("blob:uploaded") === undefined, "uploaded geometry falls back");
+    check(characterCasting("finisher", "caster"), "caster finisher retains spell semantics");
+    check(!characterCasting("finisher", "heavy"), "physical finisher retains physical semantics");
+    const poses = [[0, "attack_windup"], [.4, "attack_strike"], [.62, "attack_strike"], [.9, "attack"]];
+    const recipe = { approachMs: 920, recoverMs: 840, poses, approach: "dash" };
+    const scaled = characterMotionRecipe(recipe, rows.find(r => r.id === "actor_guardian").profile);
+    check(scaled.poses === poses && scaled.approach === "dash" && scaled.approachMs > recipe.approachMs,
+      "legacy recipe retains combo and approach while scaling timing");
+    const legacyMiss = buildBattleMotionPreview(undefined,
+      hits => retroClassSkillTimeline(resolveSkillChoreography(skills[0]).skill, { hits, side: "enemies" }),
+      { outcome: "miss" });
+    check(!legacyMiss.events.some(e => (e.kind === "hit" && e.landed !== false) ||
+      (e.kind === "fx" && ["target", "allTargets"].includes(e.anchor))),
+      "legacy preview miss removes contact feedback without replacing poses");
     const skill = skills.find((s) => s.id === "skill_motion_dash");
     const contract = rows.map((row) => ({
       id: "skill_character_" + row.id,

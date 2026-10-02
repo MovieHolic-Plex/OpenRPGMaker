@@ -3487,7 +3487,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       if (firstHit && ["summon", "blood-summon"].includes(g.pattern))
         gimmicks.set(gimmickStatus(user, user, skill, "summon"));
       if (hpBeforeCast > 0 && target.hp <= 0) refundGimmickKill(user, skill);
-      const latest = timeline.findLast(
+      const latest = [...timeline].reverse().find(
         (e) =>
           e.actionId === currentActionId && e.skillId === skill.id && !e.aside,
       );

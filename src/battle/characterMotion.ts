@@ -294,6 +294,20 @@ export function characterMotionTracks(
 }
 
 /** Legacy skill motion remains the semantic choice; a profile supplies execution style. */
+export function characterCasting(motion: string, style?: CharacterMotionStyle): boolean {
+  return ["cast", "buff", "breath"].includes(motion) || (motion === "finisher" && style === "caster");
+}
+
+/** Keep the legacy recipe's poses and combo; both surfaces scale its existing clock. */
+export function characterMotionRecipe<T extends { approachMs: number; recoverMs: number }>(
+  recipe: T, profile?: CharacterMotionProfile,
+): T {
+  return profile ? { ...recipe,
+    approachMs: Math.round(recipe.approachMs * (profile.anticipation * 0.4 + profile.travel * 0.6)),
+    recoverMs: Math.round(recipe.recoverMs * profile.recovery),
+  } : recipe;
+}
+
 export function defaultCharacterProgram(
   motion: string,
   style: CharacterMotionStyle,

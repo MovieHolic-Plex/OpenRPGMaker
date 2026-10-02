@@ -1,0 +1,97 @@
+{
+  "skills": [],
+  "states": [],
+  "classes": [],
+  "actors": [],
+  "equipment": [],
+  "contract": [
+    {
+      "id": "attack:hero",
+      "actorId": "actor_hero",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": true
+    },
+    {
+      "id": "attack:guardian",
+      "actorId": "actor_guardian",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": true
+    },
+    {
+      "id": "attack:thief",
+      "actorId": "actor_thief",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": true
+    },
+    {
+      "id": "attack:valkyrie",
+      "actorId": "actor_valkyrie",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": true
+    },
+    {
+      "id": "attack:monk",
+      "actorId": "actor_monk",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": true
+    },
+    {
+      "id": "attack:ranger",
+      "actorId": "actor_ranger",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": true
+    },
+    {
+      "id": "attack:mage",
+      "actorId": "actor_mage",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": true
+    },
+    {
+      "id": "attack:dog",
+      "actorId": "actor_dog",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": false
+    },
+    {
+      "id": "attack:ghost_pal",
+      "actorId": "actor_ghost_pal",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": false
+    },
+    {
+      "id": "attack:tank",
+      "actorId": "actor_tank",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": false
+    },
+    {
+      "id": "attack:slime_pal",
+      "actorId": "actor_slime_pal",
+      "motion": "attack",
+      "layers": [],
+      "attack": true,
+      "human": false
+    }
+  ]
+}

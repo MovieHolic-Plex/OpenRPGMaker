@@ -1,0 +1,2012 @@
+{
+  "clips": 136,
+  "errors": [],
+  "source": "all-actors-final/report.json",
+  "rows": [
+    {
+      "actor": "actor_hero",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_guardian",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_mage",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_scout",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_cleric",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_ranger",
+      "style": "ranged",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_samurai",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_ninja",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_monk",
+      "style": "martial",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_bard",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_druid",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_witch",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_valkyrie",
+      "style": "lancer",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_paladin",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_red_mage",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_dark_knight",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_chronomancer",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_thief",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_beast_tamer",
+      "style": "ranged",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_pirate",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_sorceress",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_elf_archer",
+      "style": "ranged",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_hunter",
+      "style": "ranged",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_brawler",
+      "style": "martial",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_martial_artist",
+      "style": "martial",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_general",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_prince",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_berserker",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_gunner",
+      "style": "ranged",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_dancer",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_alchemist",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_summoner",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_squire",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_flower_girl",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_swordsman",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_scholar",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_miner",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_farmer",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_elder",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_grandma",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_gunslinger",
+      "style": "ranged",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_butler",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_priest_monk",
+      "style": "martial",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_gypsy",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_sword_dancer",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_gambler",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_seraph",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_fairy",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_king",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_merchant",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_noble",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_princess",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_archmage",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_heavy_knight",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_mercenary",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_dragoon",
+      "style": "lancer",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_villager",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_tribal",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_fortune_teller",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_sailor",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_monk_elder",
+      "style": "martial",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_noblewoman",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_nomad",
+      "style": "ranged",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_nun",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_jester",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_girl_alchemist",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_ronin",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_shrine_maiden",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_desert_warrior",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_maid",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_hermit",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_old_warrior",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_dog",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_cat",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_rooster",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_sheep",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_cow",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_horse",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_tiger",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_lion",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_skiff",
+      "style": "vehicle",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_galleon",
+      "style": "vehicle",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_gunboat",
+      "style": "vehicle",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_balloon",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_drill",
+      "style": "vehicle",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_tank",
+      "style": "vehicle",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_airship",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_ufo",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_slime_pal",
+      "style": "soft",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_demon",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_ogre_kid",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_ghost_pal",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_skeleton_pal",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_zombie_pal",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_reaper",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_minotaur_pal",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_harpy_pal",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_gargoyle_pal",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_vampire",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_demon_knight",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_golem_pal",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_dragonewt",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_oni_warrior",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_dark_lord",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_siren",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_lamia",
+      "style": "soft",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_wraith_mage",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_succubus",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_mound",
+      "style": "soft",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_red_dragon_pal",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_flame_spirit",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_demon_general",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_treant",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_mushroom",
+      "style": "soft",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_kappa",
+      "style": "martial",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_kitsune",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_tanuki",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_golem_moss",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": [
+        "no observed held frames"
+      ]
+    },
+    {
+      "actor": "actor_sprite_ice",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_mandrake",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_mimic_pal",
+      "style": "soft",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_living_armor",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_lantern_ghost",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_doll",
+      "style": "agile",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_book_demon",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_scarecrow",
+      "style": "balanced",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_clockwork",
+      "style": "ranged",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_candle_imp",
+      "style": "soft",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_yeti",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_merfolk",
+      "style": "lancer",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_cyclops",
+      "style": "heavy",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_mothman",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_basilisk",
+      "style": "caster",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "walk_a",
+        "walk_c"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_djinn",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_chimera",
+      "style": "beast",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "walk_b",
+        "attack_strike",
+        "attack_follow",
+        "evade",
+        "defend"
+      ],
+      "problems": []
+    },
+    {
+      "actor": "actor_dark_angel",
+      "style": "floating",
+      "completed": true,
+      "poses": [
+        "idle",
+        "attack_windup",
+        "evade",
+        "attack_strike",
+        "attack_follow"
+      ],
+      "problems": []
+    }
+  ],
+  "rechecks": [
+    {
+      "actor": "actor_golem_moss",
+      "clips": 1,
+      "errors": [],
+      "problems": [],
+      "source": "golem-recheck/report.json"
+    }
+  ]
+}

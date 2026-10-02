@@ -1,3 +1,4 @@
+import { characterCasting, characterMotionRecipe } from "@/battle/characterMotion";
 import { battleContactBounds } from "@/battle/battleContactGeometry";
 import { resolveCharacterMotion } from "@/assets/characterMotionCatalog";
 import { CHARACTER_MOTION_LABELS, defaultCharacterProgram } from "@/battle/characterMotion";
@@ -190,7 +191,7 @@ function stageSource(record: SkillRecord, project: Project, context:MotionContex
     // 프로젝트 연출 레코드의 손잡이(speed·tint·screen)는 런타임과 같은 함수로 얹는다 — 손잡이가 없으면 같은 객체.
     const timeline = choreography?.movement
       ? buildBattleMotionPreview(choreography,hits=>retroClassSkillTimeline(contract,{hits,side}),{
-          character,casting:["cast","buff"].includes(contract.motion),hits:record.hitSequence?.length, outcome:context.actionBlocked?"cancel":context.hit===false?"miss":"hit",
+          character,casting:characterCasting(contract.motion,character?.style),hits:record.hitSequence?.length, outcome:context.actionBlocked?"cancel":context.hit===false?"miss":"hit",
           followOnHit:record.battleGimmick?.followOnHit, preparing:record.effect.kind==="support",
         })
       : applyChoreographyHandles(retroClassSkillTimeline(contract,{hits:record.hitSequence?.length}),resolved?.record,context);
@@ -204,7 +205,10 @@ function stageSource(record: SkillRecord, project: Project, context:MotionContex
   const actorId=selectedActorId??learnerActorId(record,project);
   const actor=project.database.actors.find(a=>a.id===actorId);
   const character=actor?resolveCharacterMotion(actor,project.database.equipment.find(e=>e.id===(weaponId??actor.initialEquipment.weapon))):undefined;
-  const timeline = buildBattleMotionPreview({movement:defaultCharacterProgram(recipe.approach==="still"?"cast":"dash-strike",character?.style??"balanced")},hits=>({...retroRecipeTimeline(recipe,{side:record.effect.kind==="healing"?"allies":side}),hitCount:hits}),{character,casting:recipe.approach==="still",outcome:context.actionBlocked?"cancel":context.hit===false?"miss":"hit",hits:record.hitSequence?.length});
+  const scaledRecipe = characterMotionRecipe(recipe, character);
+  const timeline = buildBattleMotionPreview(undefined,
+    () => retroRecipeTimeline(scaledRecipe, { side: record.effect.kind === "healing" ? "allies" : side }),
+    { outcome: context.actionBlocked ? "cancel" : context.hit === false ? "miss" : "hit" });
   return {
     name: record.name || record.id, timeline, actorId, character, contract: undefined, recipe,
     sheets: [{ key: recipe.fx, url: fxUrl(recipe.fx), frame: 64, frames: 8, anchor: "target" }],
@@ -564,7 +568,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
   const placePoint = (place: RetroStagePlace): Point => {
     const front = side === "enemies" ? enemies[FRONT_ENEMY]!.home : singleTarget();
     // 큰 적 앞에 설 때는 그 몸 폭만큼 더 떨어져 선다(48px 적 = +38).
-    const actorBounds=timeline.movement?.tracks?.length?undefined:battleContactBounds(caster.sheet,source.character?.style==="lancer"?"attack":"strike"),enemy=enemies[FRONT_ENEMY]!;
+    const actorBounds=timeline.movement?.tracks?.length?undefined:battleContactBounds(caster.sheet,source.character?.style==="lancer"||source.recipe?.release==="attack"?"attack":"strike"),enemy=enemies[FRONT_ENEMY]!;
     const targetBounds=battleContactBounds(enemy.node.style.backgroundImage,"idle");
     const casterWidth=caster.pixel?(caster.pixel.box===caster.pixel.cell?caster.pixel.cell/2:caster.pixel.cell):CELL;
     const measured=actorBounds&&targetBounds?enemy.cell*(targetBounds[2]-0.5)+casterWidth*(0.5-actorBounds[0])-1:undefined;

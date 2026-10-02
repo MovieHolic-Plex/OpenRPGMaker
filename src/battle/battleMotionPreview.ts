@@ -35,5 +35,14 @@ export function buildBattleMotionPreview(
       (outcome === "miss" && options.preparing === true),
     preparing: options.preparing,
   };
-  return applyChoreographyHandles(buildBase(count), record, context);
+  let base = buildBase(count);
+  if (!record?.movement && outcome === "miss") {
+    base = { ...base, events: base.events.flatMap((event): RetroSkillTimeline["events"][number][] => {
+      if (event.kind === "hit") return [{ ...event, landed: false }];
+      if (event.kind === "fx" && ["target", "allTargets"].includes(event.anchor)) return [];
+      if (event.kind === "screen" && ["shake", "flash"].includes(event.effect)) return [];
+      return [event];
+    }) };
+  }
+  return applyChoreographyHandles(base, record, context);
 }

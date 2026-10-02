@@ -1,3 +1,4 @@
+import { characterCasting, characterMotionRecipe } from "@/battle/characterMotion";
 import { battleContactBounds } from "@/battle/battleContactGeometry";
 import { battleCharacterMotion } from "@/player/battleMotionContext";
 import { defaultCharacterProgram, type CharacterMotionProfile } from "@/battle/characterMotion";
@@ -116,7 +117,7 @@ export function retroSkillForEntry(entry: BattleTimelineEntrySnapshot | undefine
   if (!entry || entry.side !== "actor" || entry.commandKind !== "skill") return undefined;
   const record = battleEntrySkillRecord(entry);
   const recipe=record?retroSkillRecipe(record):undefined,profile=field?battleCharacterMotion(field,entry.userRecordId??entry.userId):undefined;
-  return recipe&&profile?{...recipe,approachMs:Math.round(recipe.approachMs*(profile.anticipation*0.4+profile.travel*0.6)),recoverMs:Math.round(recipe.recoverMs*profile.recovery)}:recipe;
+  return recipe ? characterMotionRecipe(recipe, profile) : undefined;
 }
 
 /** Exact identity wins; old snapshots fall back to authored ownership/name. */
@@ -420,7 +421,7 @@ function buildPlan(skill: PlayableSkill, record: SkillRecord, group: readonly Ba
   const counterContact=record.battleGimmick&&["cover","counter"].includes(record.battleGimmick.pattern)&&group.some(e=>e.kind==="damage");
   const handles=counterContact&&originalHandles?.movement?{...originalHandles,movement:{...originalHandles.movement,pattern:"counter" as const}}:originalHandles;
   const condition=group.find(e=>e.gimmick)?.gimmick;
-  const timeline = applyChoreographyHandles(base, handles,{character,casting:["cast","buff","breath"].includes(skill.motion),contactHits:group.map(e=>e.hit!==false),primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
+  const timeline = applyChoreographyHandles(base, handles,{character,casting:characterCasting(skill.motion,character?.style),contactHits:group.map(e=>e.hit!==false),primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;
