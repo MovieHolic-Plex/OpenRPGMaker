@@ -74,7 +74,11 @@ def render_set(set_id, dest, cache):
     places = {p['id']: p for p in journey['places']}
     tint_fn = lambda arr: KP.tint_icon(arr, pal, tint, iconset.key, iconset.shadow_key)  # noqa: E731
     rows = []
+    if getattr(iconset, 'kind', 'land') == 'space':
+        return _render_space_set(iconset, dest)
     for name, meta in iconset.icons.items():
+        if not meta.get('_own', True):      # 부분 세트(extends)의 바탕 아이콘은 이 세트 항목이 아니다
+            continue
         cells = tuple(meta['cells'])
         own = [p for p, n in assign.items() if n == name]
         same = [p for p, pl in places.items() if pl.get('role') == meta['role'] and p in ic and tuple(ic[p][2:]) == cells]
@@ -102,6 +106,44 @@ def render_set(set_id, dest, cache):
     return rows
 
 
+def starfield(wc, hc, seed=7):
+    """성계 지도 바탕(감독 임시): 짙은 남색 + 흩뿌린 별. 성계 지형층이 생기면 그것으로 바꾼다."""
+    rng = np.random.default_rng(seed)
+    a = np.zeros((hc * 16, wc * 16, 3), np.uint8)
+    a[:] = (12, 14, 30)
+    n = a.shape[0] * a.shape[1] // 90
+    ys, xs = rng.integers(0, a.shape[0], n), rng.integers(0, a.shape[1], n)
+    lum = rng.choice([90, 140, 200, 255], n, p=[.5, .3, .15, .05])
+    a[ys, xs] = np.stack([lum, lum, np.minimum(255, lum + 20)], 1)
+    return a
+
+
+def _paste_space(arr, key, shadow_key, wc, hc):
+    bg = starfield(wc + 2 * MARGIN, hc + 2 * MARGIN)
+    k = np.all(arr == np.array(key), -1) | np.all(arr == np.array(shadow_key), -1)
+    y0, x0 = MARGIN * 16, MARGIN * 16
+    reg = bg[y0:y0 + arr.shape[0], x0:x0 + arr.shape[1]]
+    reg[~k] = arr[~k]
+    return bg
+
+
+def _render_space_set(iconset, dest):
+    rows = []
+    for name, meta in iconset.icons.items():
+        w, h = meta['cells']
+        d = Path(dest) / name
+        d.mkdir(parents=True, exist_ok=True)
+        arr = iconset.array(name)
+        icon = icon_rgba(arr, iconset.key, iconset.shadow_key)
+        on_bg(icon, 8).save(d / 'icon-x8.png')
+        icon.save(d / 'icon.png')
+        crop = Image.fromarray(_paste_space(arr, iconset.key, iconset.shadow_key, w, h))
+        crop.save(d / 'ctx-x1.png')
+        crop.resize((crop.width * 3, crop.height * 3), Image.NEAREST).save(d / 'ctx-x3.png')
+        rows.append(dict(name=name, role=meta['role'], cells=[w, h], desc=meta.get('desc', ''), place='space', used=True))
+    return rows
+
+
 _CTX = {}
 
 
@@ -113,6 +155,9 @@ def _set_context(set_id, cache):
     roles, roles_data = K.load_roles()
     journey = K.load_journey(JOURNEY)
     iconset = K.IconSet(set_id)
+    if getattr(iconset, 'kind', 'land') == 'space':
+        _CTX[set_id] = dict(iconset=iconset)
+        return _CTX[set_id]
     assign = K.assign_icons(roles, journey, iconset)
     t = B.build_terrain(journey, roles, roles_data, iconset, assign, str(cache))
     pal = KP.load_palette(K.WM / 'palettes' / (PALETTE + '.json'), K.WM / 'palettes')
@@ -129,6 +174,16 @@ def render_candidate(set_id, name, place, png, out_dir, cache):
     c = _set_context(set_id, cache)
     iconset = c['iconset']
     arr = np.array(Image.open(png).convert('RGB'))
+    if getattr(iconset, 'kind', 'land') == 'space':
+        out = Path(out_dir)
+        out.mkdir(parents=True, exist_ok=True)
+        icon = icon_rgba(arr, iconset.key, iconset.shadow_key)
+        on_bg(icon, 8).save(out / 'icon-x8.png')
+        icon.save(out / 'icon.png')
+        crop = Image.fromarray(_paste_space(arr, iconset.key, iconset.shadow_key, arr.shape[1] // 16, arr.shape[0] // 16))
+        crop.save(out / 'ctx-x1.png')
+        crop.resize((crop.width * 3, crop.height * 3), Image.NEAREST).save(out / 'ctx-x3.png')
+        return
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     icon = icon_rgba(arr, iconset.key, iconset.shadow_key)

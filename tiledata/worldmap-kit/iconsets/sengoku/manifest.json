@@ -1,0 +1,275 @@
+{
+ "id": "sengoku",
+ "name": "일본 전국",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [
+  "5a2238",
+  "8c3a52",
+  "b9587a",
+  "d9849e",
+  "eeb0c2",
+  "fad6e0"
+ ],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "교토풍 수도",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "해자 두른 큰 축대 위 대천수각·소천수·망루, 앞에 성하 마을 두 줄, 옆 오층탑"
+  },
+  {
+   "role": "fort_city",
+   "name": "성하 마을",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "돌 축대 위 4층 천수각과 흰 담, 둘레 마치야 줄"
+  },
+  {
+   "role": "harbor_city",
+   "name": "나가사키풍 무역항",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "돌 안벽·잔교에 아타케부네와 작은 배, 뒤에 흰 창고 줄과 상관"
+  },
+  {
+   "role": "castle",
+   "name": "천수각 성",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "경사 돌 축대 + 천수대 위 5층 천수각, 앞 흰 담과 망루 둘"
+  },
+  {
+   "role": "castle",
+   "name": "산성",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "숲 언덕 위 목책·나무 망루 둘·목문, 산꼭대기 본채"
+  },
+  {
+   "role": "large_town",
+   "name": "역참 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "마치야 두 줄 사이 큰 2층 여관(붉은 등), 소나무와 길 표지"
+  },
+  {
+   "role": "village",
+   "name": "농촌",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 12,
+   "row": 6,
+   "desc": "초가 농가 둘, 둑으로 나뉜 논, 물레방아"
+  },
+  {
+   "role": "village",
+   "name": "닌자 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 14,
+   "row": 6,
+   "desc": "삼나무 숲 속 초가 지붕과 망보는 나무 대"
+  },
+  {
+   "role": "camp",
+   "name": "전장 진지",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 16,
+   "row": 6,
+   "desc": "검은 띠 흰 장막을 둘러치고 노보리 깃발 줄, 대장 걸상"
+  },
+  {
+   "role": "tower_small",
+   "name": "망루",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 26,
+   "row": 6,
+   "desc": "작은 돌 축대 위 2층 흰 야구라"
+  },
+  {
+   "role": "tower_great",
+   "name": "오층탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "붉은 나무 몸과 넓은 회흑 처마 다섯 층, 금색 상륜"
+  },
+  {
+   "role": "cave",
+   "name": "산속 동굴 사당",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 18,
+   "row": 6,
+   "desc": "바위산 동굴 입구에 금줄, 앞에 작은 도리이와 석등"
+  },
+  {
+   "role": "ruin",
+   "name": "무너진 성 축대",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 20,
+   "row": 6,
+   "desc": "이가 빠진 돌 축대, 굴러떨어진 돌, 그을린 기둥"
+  },
+  {
+   "role": "ruin_city",
+   "name": "불탄 성하 마을",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "숯 기둥·내려앉은 지붕·그을린 벽과 연기, 뒤에 무너진 축대"
+  },
+  {
+   "role": "shrine",
+   "name": "신사",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "큰 붉은 도리이·석등, 붉은 기둥 배전과 뒤 본전(치기·가쓰오기)"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "벚나무 거목",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "금줄 두른 굵은 줄기와 분홍 꽃 구름"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "후지풍 설산",
+   "id": "landmark_fuji",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "넓은 청회 원뿔과 눈 덮인 꼭대기, 허리 구름"
+  },
+  {
+   "role": "circle",
+   "name": "도리이 길",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 22,
+   "row": 6,
+   "desc": "참배길을 따라 줄지어 선 작은 붉은 도리이, 양옆 석등"
+  },
+  {
+   "role": "volcano",
+   "name": "화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 24,
+   "row": 6,
+   "desc": "검은 비탈 화구의 용암과 회색 분연"
+  },
+  {
+   "role": "floating",
+   "name": "신의 섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "구름 위 바위섬에 붉은 도리이·본전·석등·벚나무"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}

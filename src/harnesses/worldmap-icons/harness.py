@@ -39,7 +39,10 @@ CODEX_MODEL = os.environ.get('WMI_HARNESS_CODEX_MODEL', 'gpt-6.1-sol')
 EFFORT = os.environ.get('WMI_HARNESS_EFFORT', 'medium')
 PAR = int(os.environ.get('WMI_HARNESS_PAR', '12'))
 TIMEOUT_S = int(os.environ.get('WMI_HARNESS_TIMEOUT', str(20 * 60)))
-SETS = ('fantasy', 'desert-east', 'modern-sf')
+# 세트 = iconsets/<id>/manifest.json 이 있는 폴더(_ 로 시작하는 공용 폴더 제외). 앞 셋은 처음부터 있던 세트라 순서를 고정한다.
+_FIRST = ('fantasy', 'desert-east', 'modern-sf')
+_ALL = sorted(p.parent.name for p in (ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets').glob('*/manifest.json') if not p.parent.name.startswith('_'))
+SETS = tuple(s for s in _FIRST if s in _ALL) + tuple(s for s in _ALL if s not in _FIRST)
 REASONS = ['옆면 보임(아이소)', '시점 이상', '안 읽힘', '화풍 다름', '크기·비례', '지저분함', '원래(v9)가 나음']
 
 
@@ -98,6 +101,8 @@ def role_names():
 
 # 세트별 예외(사용자 결정). 빈 문자열이면 계약 그대로.
 SET_RULES = {
+    'starmap': ('- **성계 지도 세트:** 아이콘은 땅이 아니라 검은 우주 배경에 놓인다(ctx 는 임시 별 바탕). 행성·소행성·성운은 자연물처럼 `SIDE` 를 면제하고 '
+                '땅 그림자가 없는 게 정상이다. 정거장·함선은 윗면+정면 계약을 따른다. 대신 `READ`(우주에서 무엇인지 읽히는가)와 `STYLE` 을 본다.'),
     'desert-east': ('- **사막·동양풍 세트 예외 (사용자 결정, 2026-10-02):** 이 세트는 3D 장면을 비스듬한 카메라로 찍은 원래 그림이 더 낫다는 사용자 판단이다 — '
                     '**옆면이 약간 보이는 것은 괜찮다**, 옆면만으로 `SIDE` 를 주지 않는다. 옆면이 정면보다 넓어 마름모로 보일 때만 `SIDE`, '
                     '윗면 전체가 평행사변형으로 크게 기울면 `DIAG`. 대신 `READ`(무엇인지 읽히는가)와 `STYLE` 을 본다.'),
@@ -106,6 +111,32 @@ SET_RULES = {
                   '윗면 전체가 평행사변형으로 크게 기울면 `DIAG`. 원래 세트 그림(경사 투영, 오른쪽 옆면 약간)은 이 세트의 정상 시점이다 — '
                   '그것만으로는 `SIDE`·`DIAG` 가 아니다. 대신 `READ`(무엇인지 읽히는가)와 `STYLE` 을 본다.'),
 }
+
+# 정면 카메라 장면 세트(_scene3d, camera.kx == 0). 시선이 동·서 벽과 직각이라 평평한 옆벽은 0px 다.
+# 원래 빛(왼쪽 위) 때문에 원통·원뿔·모임지붕 끝·둥근 바위의 오른쪽이 어둡고, 검수자가 그 명암을 옆면으로 읽었다
+# (2026-10-02, 새 세트 13개 첫 검수 FAIL 의 147건이 SIDE). 다른 코드는 엄격하게 둔다.
+FRONT3D_RULE = ('- **정면 카메라 3D 장면 세트:** 이 그림은 3D 장면을 정남쪽 카메라(KX=0)로 레이캐스트한 것이라 **평평한 동·서 옆벽은 수학적으로 0px** 이다. '
+                '빛이 왼쪽 위에서 오므로 원통 탑·원뿔·모임지붕(사방 경사 지붕)의 끝 경사·둥근 바위·돔의 **오른쪽이 왼쪽보다 어두운 것은 명암이지 옆면이 아니다** — '
+                '그것만으로 `SIDE` 를 주지 않는다. `SIDE` 는 정면 벽 옆에 **위 모서리가 사선으로 뒤로 물러나는 별도의 세로 벽 평면**(상자의 옆면)이 실제로 보일 때만. '
+                '`DIAG`·`FRONT`·`READ`·`STYLE` 은 엄격하게 본다 — 1배 지도에서 무엇인지 안 읽히거나, 정면 벽이 없어 순수 평면도로 보이거나, 칩셋 결과 다르면 떨어뜨린다.')
+for _s in SETS:
+    try:
+        _cam = json.loads((ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets' / _s / 'manifest.json').read_text()).get('camera') or {}
+    except (OSError, ValueError):
+        continue
+    if _cam.get('kx', None) == 0:
+        SET_RULES[_s] = FRONT3D_RULE + ('\n' + SET_RULES[_s] if _s in SET_RULES else '')
+
+
+def set_names():
+    """세트 id → manifest 의 이름(화면 탭용)."""
+    out = {}
+    for s in SETS:
+        try:
+            out[s] = json.loads((ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets' / s / 'manifest.json').read_text())['name']
+        except (OSError, ValueError, KeyError):
+            pass
+    return out
 
 
 def set_rule(iset):
@@ -299,7 +330,7 @@ class H(BaseHTTPRequestHandler):
                 items.append(dict(id=r['id'], set=r['iset'], name=r['name'], role=r['role'], role_name=rn.get(r['role'], r['role']),
                                   cells=json.loads(r['cells']), desc=r['descr'], place=r['place'], used=bool(r['used']), sha=r['sha'],
                                   review=rv.get(r['id']), decision=dec.get(r['id'])))
-            return self._send(200, json.dumps(dict(items=items, reasons=REASONS, sets=list(SETS)), ensure_ascii=False))
+            return self._send(200, json.dumps(dict(items=items, reasons=REASONS, sets=list(SETS), set_names=set_names()), ensure_ascii=False))
         if p == '/ref.png':
             return self._send(200, REF.read_bytes(), 'image/png')
         if p.startswith('/api/rounds/'):
@@ -329,6 +360,23 @@ class H(BaseHTTPRequestHandler):
                 return self._send(200, json.dumps({'ok': True, 'round': rid}))
             except (ValueError, KeyError) as e:
                 return self._send(400, json.dumps({'error': str(e)}, ensure_ascii=False))
+        if self.path == '/api/decide_bulk':
+            # 사용자가 화면에서 누른 일괄 받기/되돌리기. ids 는 화면이 고른 목록(검수 ✓ · 안 정함) — 서버는 그대로 적는다.
+            try:
+                d = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))) or b'{}')
+                if d.get('decision') not in ('accept', 'clear') or not isinstance(d.get('ids'), list):
+                    raise ValueError('decision/ids')
+                c = db()
+                sha = {r['id']: r['sha'] for r in c.execute('select id, sha from items')}
+                ids = [i for i in d['ids'] if i in sha]
+                note = '일괄 받기' if d['decision'] == 'accept' else '일괄 받기 되돌림'
+                c.executemany('insert into decisions(item,sha,decision,reasons,note,client,at) values(?,?,?,?,?,?,?)',
+                              [(i, sha[i], d['decision'], '[]', note, 'web', now()) for i in ids])
+                c.commit()
+                export()
+                return self._send(200, json.dumps({'ok': True, 'n': len(ids)}))
+            except (ValueError, KeyError) as e:
+                return self._send(400, json.dumps({'error': str(e)}))
         if self.path != '/api/decide':
             return self._send(404, '{"error":"not found"}')
         try:
