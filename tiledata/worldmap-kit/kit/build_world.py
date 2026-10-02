@@ -133,6 +133,13 @@ def icon_metrics(terrain, final, ic, sky_site):
     return dict(min=vals[0], median=float(np.median([v for _, v in vals])), lowest=vals[:3])
 
 
+def walk_rows(world):
+    """걸을 수 있는 칸(관문 열림·다리·경사로·장소 발자국 포함) — 게임 맵의 통행 표로 쓴다. 행마다 '0'/'1' 문자열."""
+    import kit_world as W
+    w0 = W.MapWorld(world).walk0
+    return [''.join('1' if v else '0' for v in row) for row in w0]
+
+
 def _warn_terrain():
     import make_map_v4 as M4
     for m in M4.WARN:
@@ -220,6 +227,7 @@ def main():
     ap.add_argument('--preview', action='store_true', help='픽셀 렌더 없이 칸 배열만(몇 초): schematic.png · terrain.txt · world.json · 여정 검사')
     a = ap.parse_args()
     theme = None
+    theme_terrain = None
     try:
         if a.theme:
             import kit_theme as KT
@@ -232,14 +240,14 @@ def main():
                 raise K.KitError(str(e))
             a.iconset = a.iconset or theme['iconset']
             a.palette = a.palette or theme['palette']
-            a.terrain = a.terrain or theme.get('terrain')
+            theme_terrain = theme.get('terrain')
         if not a.iconset or not a.palette:
             raise K.KitError('--theme 이 없으면 --iconset 과 --palette 가 필요하다')
         roles, roles_data = K.load_roles()
         journey = K.load_journey(a.journey)
         import kit_terrain as KTer
         try:
-            terrain = KTer.load(a.terrain, K.WM)
+            terrain = KTer.merge(KTer.load(theme_terrain, K.WM), KTer.load(a.terrain, K.WM))   # 테마 지형 위에 편집을 얹는다
             journey = KTer.apply(terrain, journey)
         except KTer.TerrainError as e:
             raise K.KitError('지형 편집: ' + str(e))
@@ -298,6 +306,8 @@ def main():
     world.update(iconset=iconset.id, icons_used=sorted(set(assign.values())), palettes=[p['id'] for p in palettes], images=files)
     if len(palettes) == 1:
         world['palette'] = palettes[0]['id']
+    world['walk'] = walk_rows(world)
+    (out / 'terrain.txt').write_text(ascii_map(world) + '\n')
     (out / 'world.json').write_text(json.dumps(world, ensure_ascii=False))
     if not a.no_check:
         import kit_world as W2
@@ -322,6 +332,7 @@ def preview(journey, roles, iconset, assign, out, no_check, terrain):
     _warn_terrain()
     world = W.world_dict(w, journey, assign)
     world['terrain'] = terrain['id'] if terrain else 'shared-v9'
+    world['walk'] = walk_rows(world)
     out.mkdir(parents=True, exist_ok=True)
     (out / 'world.json').write_text(json.dumps(world, ensure_ascii=False))
     (out / 'terrain.txt').write_text(ascii_map(world) + '\n')

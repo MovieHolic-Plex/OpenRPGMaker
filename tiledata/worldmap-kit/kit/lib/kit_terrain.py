@@ -104,6 +104,16 @@ def load(ref, wm_dir):
     return validate(spec)
 
 
+def merge(base, edit):
+    """테마 지형(base) 위에 편집(edit)의 작업을 잇는다. 둘 중 하나가 없으면 다른 하나."""
+    if base is None or edit is None:
+        return base if edit is None else edit
+    out = dict(edit)
+    out['id'] = '%s+%s' % (base['id'], edit.get('id', 'edit'))
+    out['ops'] = list(base.get('ops', [])) + list(edit.get('ops', []))
+    return validate(out)
+
+
 def apply(spec, journey):
     """make_map_v4 의 목록에 작업을 얹고, move_place 를 반영한 여정 사본을 돌려준다. 프로세스당 한 번(빌드 전)."""
     if spec is None:
