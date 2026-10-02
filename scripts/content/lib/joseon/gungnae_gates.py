@@ -910,7 +910,8 @@ def slab(v=0):
     """회색 석판 길(큰 직사각 돌을 어긋나게 쌓고 작은 점무늬가 박힌 포장). 16×16, 변형 3종은 이음 없이 섞어 깐다.
     줄눈은 한 톤 어두운 줄, 돌마다 위·왼쪽 1px 밝은 각, 아래·오른쪽 그늘. 돌 크기가 변형마다 다르다."""
     c = Cv(T, T)
-    layout = {0: [(0, 8, (0, 10)), (8, 8, (5,))], 1: [(0, 8, (4,)), (8, 8, (0, 9))], 2: [(0, 8, (0,)), (8, 8, (0, 8))]}[v % 3]
+    layout = {0: [(0, 8, (0, 10)), (8, 8, (5,))], 1: [(0, 8, (4,)), (8, 8, (0, 9))], 2: [(0, 8, (0,)), (8, 8, (0, 8))],
+              3: [(0, 8, (2, 11)), (8, 8, (7,))], 4: [(0, 8, (6,)), (8, 8, (1, 12))]}[v % 5]
     for (ry0, rh, cuts) in layout:
         bounds = list(cuts) + [cuts[0] + T]
         for i in range(len(cuts)):
@@ -1018,14 +1019,52 @@ def diamond(v=0):
     return c
 
 
+def road_v(mask, v=0, ruts=True):
+    """흙길(ground.road 와 같은 문법) + 변형 v: 알갱이 시드·자갈 위치·바퀴 자국 위상이 변형마다 다르다."""
+    import ground as _G
+    ruts = ruts and v == 0                                               # 바퀴 자국은 변형 0 에만(칸마다 같은 줄이 이어지면 벽지 격자가 된다)
+    c = Cv(T, T)
+    e = RGB['earth']; g = RGB['leaf']
+    for y in range(T):
+        for x in range(T):
+            q = rnd(x, y, 200 + v)
+            col = e[5]
+            if q < 0.16: col = e[4]
+            elif q > 0.93: col = e[6]
+            if ruts and (mask & (_G.E | _G.W)) and y in (6, 9) and rnd(x, y, 5 + v) < 0.55: col = e[4]
+            if ruts and (mask & (_G.N | _G.S)) and x in (6, 9) and rnd(x, y, 6 + v) < 0.55: col = e[4]
+            d = _G._edge_depth(mask, x, y)
+            if d > 0:
+                if d == 1: col = e[3]
+                elif d == 2: col = g[2]
+                else: col = g[4] if rnd(x, y, 100) > 0.2 else g[3]
+            c.put(x, y, col)
+    for k in range(2 + (v % 2)):
+        x, y = 2 + hsh(k, mask + 19 * v, 3) % 11, 2 + hsh(mask + 19 * v, k, 4) % 11
+        if _G._edge_depth(mask, x, y) == 0 and _G._edge_depth(mask, x + 1, y) == 0:
+            c.put(x, y, S[4]); c.put(x + 1, y, S[3])
+    return c
+
+
+def _grass_v(v):
+    """풀 8종: 0~5 는 꽃 없는 풀(풀잎 점 위치만 다름), 6·7 은 들꽃 한두 송이. 꽃 칸은 드물게 섞어 1칸 격자 무늬를 없앤다."""
+    import ground as _G
+    if v < 6:
+        return _G.grass((0, 2, 4, 5, 6, 7)[v])
+    return _G.grass((1, 3)[v - 6])
+
+
 def terrain_tiles():
     """catalog.terrain() 에 덧붙일 국내성 지형 키."""
     return {
-        'slab': [slab(v) for v in range(3)],
+        'slab': [slab(v) for v in range(5)],
         'slab_edge16': [slab_edge(m) for m in range(16)],
         'slab_dirt': [slab_dirt(s) for s in range(4)],
         'diamond': [diamond(v) for v in range(2)],
-        'water47g': [_WB.water47(m, v, 'blue') for v in range(2) for m in _WB.ALL47],   # 국내성용 청색 섞은 물(47종 × 2변형)
+        'water47g': [_WB.water47(m, v, 'blue') for v in range(4) for m in _WB.ALL47],   # 국내성용 청색 섞은 물(47종 × 4변형)
+        'road64': [road_v(m, v) for v in range(4) for m in range(16)],                    # 흙길 16마스크 × 4변형(자갈·알갱이 위치가 다르다)
+        'yard64': [road_v(m, 3 + v, ruts=False) for v in range(4) for m in range(16)],
+        'grass8': [_grass_v(v) for v in range(8)],
         'water_deep': _WB.water_deep_set(8),                                              # 깊은 물 한 칸의 변형 8종(무늬 격자 방지)
     }
 

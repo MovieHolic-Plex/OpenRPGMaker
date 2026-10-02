@@ -51,14 +51,14 @@ def pad_row():
         tiles.append(Cv(T, T))
 
 
-for _k in ('grass', 'yard', 'paving', 'field'):
+for _k in ('grass8', 'yard', 'paving', 'field'):
     add_group(_k, terr[_k])
 pad_row()
-for _k in ('road16', 'yard16', 'water47g', 'water_deep', 'rice16', 'slab', 'slab_edge16', 'slab_dirt', 'diamond', 'palace_court', 'palace_court16'):
+for _k in ('road64', 'yard64', 'water47g', 'water_deep', 'rice16', 'slab', 'slab_edge16', 'slab_dirt', 'diamond', 'palace_court', 'palace_court16'):
     add_group(_k, terr[_k])
     pad_row()
 TID = {k: pieces[k]['id'] for k in pieces}
-GRASS, YARD, ROAD, YARD16, STREAM, PADDY = TID['grass'], TID['yard'], TID['road16'], TID['yard16'], TID['water47g'], TID['rice16']
+GRASS, YARD, ROAD, YARD16, STREAM, PADDY = TID['grass8'], TID['yard'], TID['road64'], TID['yard64'], TID['water47g'], TID['rice16']
 DEEP = TID['water_deep']
 SLAB, SLAB16, SLABD, DIAM, COURT, COURT16, FIELD = TID['slab'], TID['slab_edge16'], TID['slab_dirt'], TID['diamond'], TID['palace_court'], TID['palace_court16'], TID['field']
 TARR = [t.a for t in tiles]
@@ -897,9 +897,10 @@ def finish(tag='stage'):
                 m |= bit
         if WB.canon(m) == 255:
             return DEEP + hsh(x, y, 23) % 8                    # 깊은 물: 변형 8종을 해시로 흩는다(무늬 격자 방지)
-        return STREAM + WB.index47(m) + 47 * (hsh(x, y, 29) % 2)
+        return STREAM + WB.index47(m) + 47 * (hsh(x, y, 29) % 4)
 
     slabc = fams['slab']
+    wallc = cells_of('wall')
     court = fams['paving']
     paddyc = fams['paddy']
     gr = [[0] * MW for _ in range(MH)]
@@ -907,19 +908,19 @@ def finish(tag='stage'):
         for x in range(MW):
             k = KG[y][x]
             if k in (None, 'wall'):
-                gid = GRASS + hsh(x, y, 3) % 4
+                gid = GRASS + (hsh(x, y, 3) % 6 if hsh(x, y, 5) % 12 < 10 else 6 + hsh(x, y, 9) % 2)
             elif k == 'road':
-                gid = ROAD + mask_in(dirt | slabc, x, y, True)
+                gid = ROAD + 16 * (hsh(x, y, 41) % 4) + mask_in(dirt | slabc | wallc, x, y, True)
             elif k == 'yard':
-                gid = YARD16 + mask_in(dirt | slabc, x, y, False)
+                gid = YARD16 + 16 * (hsh(x, y, 43) % 4) + mask_in(dirt | slabc | wallc, x, y, False)
             elif k == 'diamond':
                 gid = DIAM + (x + y) % 2
             elif k == 'slab':
-                m = mask_in(slabc | dirt | wset, x, y, True)
-                gid = SLAB + (x * 7 + y * 3) % 3 if m == 15 else SLAB16 + m
+                m = mask_in(slabc | dirt | wset | court, x, y, True)
+                gid = SLAB + hsh(x, y, 17) % 5 if m == 15 else SLAB16 + m
             elif k == 'paving':
-                m = mask_in(court, x, y, False)
-                gid = COURT + (x * 5 + y * 3) % 3 if m == 15 else COURT16 + m
+                m = mask_in(court | slabc, x, y, False)
+                gid = COURT + hsh(x, y, 19) % 3 if m == 15 else COURT16 + m
             elif k in ('water', 'bridge'):
                 gid = water_id(x, y)
             elif k == 'paddy':
