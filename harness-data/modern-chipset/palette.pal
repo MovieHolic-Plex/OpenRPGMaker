@@ -1,0 +1,77 @@
+// modern4 팔레트 — 생성 파일(palette.py). 글자 하나 = 램프 한 단(어두운→밝은). 이 밖의 색은 못 쓴다.
+// `.` 투명/그대로, `_` 지우기, `~` 바닥 그림자(반투명)
+@ramp road a b c d e   // 도로 남색 — 아스팔트
+a #0e1720
+b #192737
+c #283d53
+d #36516a
+e #436682
+@ramp slate f g h i j   // 보도·연석 청회색
+f #2a3539
+g #3d4b51
+h #516268
+i #61767d
+j #738a90
+@ramp roof k l m n o   // 평지붕 갈회색
+k #3b3634
+l #524b49
+m #68605e
+n #7b7270
+o #8d8482
+@ramp mint p q r s t   // 건물 벽 민트
+p #5e7974
+q #73908a
+r #8ca29d
+s #a1b2ae
+t #b5c2bf
+@ramp teal u v w x y   // 청록 — 지붕 테두리·유리
+u #0c1f22
+v #17373c
+w #265359
+x #326c72
+y #3f858a
+@ramp blue z A B C D   // 파랑 — 창·간판
+z #1f3052
+A #2d436e
+B #3d578a
+C #4a6ba1
+D #5e80b2
+@ramp brick E F G H I   // 벽돌 주황빨강
+E #533020
+F #70402f
+G #8b4f3f
+H #a35f4c
+I #b27361
+@ramp wine J K L   // 적갈 — 간판 띠·처마
+J #2d010f
+K #5e0a24
+L #881438
+@ramp amber M N O P Q   // 노랑 — 차선·횡단보도·불빛
+M #c89a2b
+N #d2a54c
+O #d6b073
+P #ddbf91
+Q #e4cfae
+@ramp leaf R S T U V   // 녹색 — 수목·화단
+R #1d352c
+S #2e5042
+T #406958
+U #4f7f69
+V #5e957b
+@ramp body W X Y Z 0 1 2   // 차체·콘크리트 중립 7단 — 색 변형은 이 램프를 다른 램프로 바꿔 만든다
+W #676a77
+X #757886
+Y #848794
+Z #9496a1
+0 #a1a3ac
+1 #afb1b8
+2 #bcbdc3
+@ramp white 3 4 5   // 흰색 — 지붕 난간 테두리·하이라이트·번호판
+3 #c1cfcc
+4 #e4e9e8
+5 #f1f3f3
+@ramp ink 6 7 8   // 윤곽·타이어 — 순검정 아님
+6 #091125
+7 #0b1224
+8 #19274a
+~ #0b1224 90   // 바닥 그림자

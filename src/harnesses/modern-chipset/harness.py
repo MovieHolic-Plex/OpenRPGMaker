@@ -27,13 +27,30 @@ EFFORT = os.environ.get('VEH_HARNESS_EFFORT', 'high')
 MAX_ATTEMPTS = int(os.environ.get('VEH_HARNESS_ATTEMPTS', '3'))
 TIMEOUT = int(os.environ.get('VEH_HARNESS_TIMEOUT', str(40 * 60)))
 LETTERS = 'ABCDE'
-DIRECTIONS = {
+DIRECTIONS_VEHICLE = {
     'A': '기준차 충실 — ref 의 윗면 조각 비율·유리 띠 각도·명암 갈림을 그대로 배워 승용 세단으로 옮긴다. 가장 보수적인 안.',
     'B': '지금 차에서 출발 — old 의 형태·비례를 유지하되 윗면(지붕·보닛·트렁크)을 면으로 키우고 접힘선·유리 띠를 넣는다.',
     'C': '둥근 차체 — 보닛·트렁크 모서리를 둥글게(ref 처럼) 이어 상자 느낌을 없앤다. 차체 윤곽이 부드럽게 흐르게.',
     'D': '낮고 날렵한 차 — 지붕을 낮추고 유리 띠를 완만하게. 윗면 조각은 ref 의 70% 이상 행 수를 지킨다.',
     'E': '자유 — 위 넷과 다른 해석 하나. 단 규칙(윗면이 면으로 읽힘·유리 띠·접힘선·1px 윤곽)은 지킨다.',
 }
+
+
+DIRECTIONS_GENERIC = {
+    'A': '목표 충실 — city-target.png 의 같은 종류 그림이 가진 구조·비율·마감(굵은 윤곽·흰 하이라이트 테두리·면 분할)을 배워 가장 가깝게. 보수적인 안.',
+    'B': '큰 면 중심 — 지붕/윗면·벽면을 크고 단순하게, 디테일은 적게. 1배(원 크기)에서 덩이로 읽히는 것을 우선.',
+    'C': '디테일 풍부 — 같은 구조에서 창·문·간판·설비·이음선을 더 촘촘하게(하지만 팔레트·밀도 규칙 안에서, 잡점 금지).',
+    'D': '이웃 정합 — 같은 판의 다른 종류(바닥·소품·차)와 같은 세트로 보이도록 색 램프 선택·윤곽 굵기·하이라이트를 통일하는 데 신경 쓴다.',
+    'E': '자유 — 위 넷과 다른 해석 하나. 단 규칙(시점·팔레트·1px 윤곽)은 지킨다.',
+}
+
+
+def directions(item):
+    d = seed()['items'][item].get('directions')
+    return d or (DIRECTIONS_VEHICLE if seed()['items'][item].get('kind', 'vehicle') == 'vehicle' else DIRECTIONS_GENERIC)
+
+
+def kind_of(item): return seed()['items'][item].get('kind', 'vehicle')
 
 
 def now(): return datetime.datetime.now().isoformat(timespec='seconds')
@@ -62,8 +79,15 @@ def up8(im, k=8, bg=(150, 154, 160, 255)):
 
 
 def reference_img():
+    return _reference_img()
+
+
+def _reference_img():
     r = seed()['reference']
     return Image.open(os.path.join(ROOT, r['png'])).convert('RGBA').crop(tuple(r['box']))
+
+
+CITY_REF = os.path.expanduser('~/.local/share/oprn/modern-chipset/ref/city-target.png')
 
 
 def old_img(vehicle, view):
@@ -76,18 +100,33 @@ def anchors(vehicle, view):
 
 
 def make_brief(rid, vehicle, view, note):
-    s = seed(); v = s['vehicles'][vehicle]; vw = v['views'][view]; b = os.path.join(rdir(rid), 'brief'); os.makedirs(b, exist_ok=True)
-    ref = reference_img(); up8(ref).save(os.path.join(b, 'ref-x8.png'))
+    s = seed(); v = s['items'][vehicle]; vw = v['views'][view]; b = os.path.join(rdir(rid), 'brief'); os.makedirs(b, exist_ok=True)
+    if v.get('kind', 'vehicle') == 'vehicle': up8(reference_img()).save(os.path.join(b, 'ref-x8.png'))
     old = old_img(vehicle, view)
     if old: up8(old).save(os.path.join(b, 'old-x8.png'))
+    try:   # 사람 크기 기준(Actor1 주인공) — 8배 + 1m=16px 눈금
+        import compose_city as _cc
+        hero = _cc.actor(0, 2, 1); big = Image.new('RGBA', (hero.width * 8 + 160, hero.height * 8 + 30), (150, 154, 160, 255)); big.alpha_composite(hero.resize((hero.width * 8, hero.height * 8), Image.NEAREST), (10, 10))
+        from PIL import ImageDraw as _ID; dd = _ID.Draw(big)
+        for m in range(0, 3): dd.line([(hero.width * 8 + 40, hero.height * 8 + 8 - m * 16 * 8 // 2), (hero.width * 8 + 70, hero.height * 8 + 8 - m * 16 * 8 // 2)], fill=(0, 0, 0, 255), width=2)
+        dd.text((hero.width * 8 + 80, hero.height * 8 - 12), '1m = 16px', fill=(0, 0, 0, 255)); big.save(os.path.join(b, 'actor-scale-x8.png'))
+    except Exception as e: print('actor scale image skipped:', e)
+    if os.path.exists(CITY_REF):   # 사용자가 준 목표 도시 그림(제3자 자료, 저장소 밖) — 시점·색 덩이·밀도의 기준. 화소 복사 금지.
+        shutil.copyfile(CITY_REF, os.path.join(b, 'city-target.png'))
     an = []
     for p in anchors(vehicle, view):
         shutil.copy(p, os.path.join(b, 'anchor-' + os.path.basename(p))); up8(Image.open(p).convert('RGBA')).save(os.path.join(b, 'anchor-x8-' + os.path.basename(p))); an.append(os.path.basename(p))
+    if v.get('kind') == 'building':   # 건물 화풍 계약 + 계약을 지킨 앵커 건물(문은 표준 문으로 덮어쓴 것)
+        for p in sorted(glob.glob(os.path.join(DATA, 'anchors', 'bld_*.png'))):
+            up8(Image.open(p).convert('RGBA')).save(os.path.join(b, 'style-anchor-x8-' + os.path.basename(p))); an.append('(화풍 앵커) ' + os.path.basename(p))
     L = ledger(); rej = [r for r in L['rejects'] if r['vehicle'] == vehicle and r['view'] == view]
     md = [f'# {v["title"]} · {view} — 작업지시서', '', f'- 설명: {v["desc"]} / 시점: {vw["desc"]} / 캔버스 {vw["w"]}x{vw["h"]}', '',
           '## 그림', '- `ref-x8.png` — **기준차**(modern-city-atlas 경찰차, 8배). ' + s['reference']['note'],
+          '- `city-target.png` — **사용자가 준 목표 도시**(위에서 내려다본 시점: 지붕이 큰 면, 정면은 아래 1/3, 굵은 어두운 윤곽 + 흰 하이라이트 테두리, 색 덩이 소수). 시점·마감·밀도를 이 그림에서 읽는다. 색은 우리 팔레트로(채도 55%). 화소를 옮기지 마라. 차는 이 그림 속 차보다 훨씬 크게(1칸=16px=1m, 세단 약 70px).',
+          '- `actor-scale-x8.png` — **사람 크기 기준**(Actor1 주인공 24×32 프레임, 몸통 약 16×24px, 눈금 1m=16px). 문·소품 크기를 여기에 맞춘다.',
           '- `old-x8.png` — 지금 쓰던 차(8배). 이 시점 규칙을 못 지켜 폐기 대상. 나빠지면 안 되는 비율·디테일은 여기서 가져와도 된다.' if old else '- (이 시점은 지금 것이 없다)']
     for a in an: md.append(f'- `anchor-x8-{a}` — 사용자가 고른 같은 탈것의 다른 시점. 화풍·색 기준.')
+    if v.get('kind') == 'building': md += ['', open(os.path.join(HERE, 'style-building.md'), encoding='utf-8').read(), '- `style-anchor-x8-bld_*.png` — **화풍 앵커**: 계약을 지킨 건물 세 채. 선 두께·창·문 표현을 이대로 따른다. 문은 그림 가로 가운데에 둔다(단문 16px·이중문 24px).']
     md += ['', '## 계약'] + ['- ' + c for c in s['contract']] + ['', '## 팔레트 글자 (이 밖의 글자·색 금지)', PAL.legend(), '- `~` = 바닥 그림자(반투명, `@layer shadow` 에)']
     if rej: md += ['', '## 하지 말 것 (사용자가 버린 후보와 이유)'] + [f'- {r["why"]}' for r in rej]
     if note: md += ['', '## 사용자 메모', note]
@@ -96,12 +135,12 @@ def make_brief(rid, vehicle, view, note):
 
 
 def worker_prompt(st, letter, redraw=''):
-    s = seed(); v = s['vehicles'][st['vehicle']]; vw = v['views'][st['view']]
+    s = seed(); v = s['items'][st['vehicle']]; vw = v['views'][st['view']]
     t = open(os.path.join(HERE, 'prompt.md'), encoding='utf-8').read()
     folder = os.path.relpath(rdir(st['id']), ROOT)
     rep = dict(ROOT=ROOT, TITLE=v['title'], DESC=v['desc'], VIEW=st['view'], VIEWDESC=vw['desc'], W=vw['w'], H=vw['h'], BRIEF=os.path.join(rdir(st['id']), 'brief'),
-               LETTER=letter, DIRECTION=DIRECTIONS[letter], FOLDER=folder, OUT=letter, REDRAW=redraw,
-               PAL=os.path.relpath(os.path.join(DATA, 'vehicles.pal'), rdir(st['id'])))
+               LETTER=letter, DIRECTION=directions(st['vehicle'])[letter], FOLDER=folder, KINDNOTE=v.get('brief', ''), ITEMKIND=v.get('kind', 'vehicle'), OUT=letter, REDRAW=redraw,
+               PAL=os.path.relpath(os.path.join(DATA, 'palette.pal'), rdir(st['id'])))
     for k, val in rep.items(): t = t.replace('{' + k + '}', str(val))
     return t
 
@@ -131,9 +170,9 @@ def run_claude(prompt, log, effort, images=()):
 
 
 def check(st, letter):
-    vw = seed()['vehicles'][st['vehicle']]['views'][st['view']]
+    vw = seed()['items'][st['vehicle']]['views'][st['view']]
     base = os.path.join(rdir(st['id']), letter)
-    r = subprocess.run([sys.executable, os.path.join(HERE, 'check.py'), base + '.pxg', '--w', str(vw['w']), '--h', str(vw['h']), '--view', st['view']], cwd=ROOT, capture_output=True, text=True)
+    r = subprocess.run([sys.executable, os.path.join(HERE, 'check.py'), base + '.pxg', '--w', str(vw['w']), '--h', str(vw['h']), '--view', st['view'], '--kind', kind_of(st['vehicle']), '--seamless', ','.join(map(str, seed()['items'][st['vehicle']].get('seamless_cells', [])))], cwd=ROOT, capture_output=True, text=True)
     try: return json.load(open(base + '.check.json'))
     except Exception: return {'ok': False, 'hard': [(r.stdout + r.stderr)[-400:]], 'soft': {}}
 
@@ -141,13 +180,24 @@ def check(st, letter):
 def review_pack(st, letter, att):
     pack = os.path.join(rdir(st['id']), 'brief', 'review', f'{letter}-a{att}'); os.makedirs(pack, exist_ok=True)
     cand = Image.open(os.path.join(rdir(st['id']), letter + '.png')).convert('RGBA')
-    ref = reference_img(); old = old_img(st['vehicle'], st['view'])
-    parts = [up8(ref)] + ([up8(old)] if old else []) + [up8(cand)]
+    ref = reference_img() if kind_of(st['vehicle']) == 'vehicle' else None; old = old_img(st['vehicle'], st['view'])
+    parts = ([up8(ref)] if ref else []) + ([up8(old)] if old else []) + [up8(cand)]
     W = sum(p.width for p in parts) + 24 * (len(parts) - 1); H = max(p.height for p in parts)
     pair = Image.new('RGBA', (W, H), (150, 154, 160, 255)); x = 0
     for p in parts: pair.alpha_composite(p, (x, H - p.height)); x += p.width + 24
     pair.save(os.path.join(pack, 'pair-x8.png')); up8(cand).save(os.path.join(pack, 'cand-x8.png'))
-    row = [ref] + ([old] if old else []) + [cand]; k = 3
+    if os.path.exists(CITY_REF): shutil.copyfile(CITY_REF, os.path.join(pack, 'city-target.png'))
+    if kind_of(st['vehicle']) == 'tilesheet':   # 칸마다 4×4 반복(3배)으로 이음·반복 티를 본다
+        sc = seed()['items'][st['vehicle']].get('seamless_cells', []); cols = cand.width // 16
+        tiles = [cand.crop(((i % cols) * 16, (i // cols) * 16, (i % cols) * 16 + 16, (i // cols) * 16 + 16)) for i in sc]
+        sheet = Image.new('RGBA', (len(tiles) * 4 * 16 * 2 + 10 * len(tiles), 4 * 16 * 2 + 10), (150, 154, 160, 255))
+        for n, t in enumerate(tiles):
+            rep = Image.new('RGBA', (64, 64))
+            for yy in range(4):
+                for xx in range(4): rep.paste(t, (xx * 16, yy * 16))
+            sheet.alpha_composite(rep.resize((128, 128), Image.NEAREST), (n * 138, 5))
+        sheet.save(os.path.join(pack, 'street-x3.png')); return pack
+    row = ([ref] if ref else []) + ([old] if old else []) + [cand]; k = 3
     W = sum(i.width * k for i in row) + 30 * (len(row) + 1); H = max(i.height * k for i in row) + 60
     st_ = Image.new('RGBA', (W, H), (150, 154, 160, 255)); x = 30
     for i in row:
@@ -160,8 +210,8 @@ def review_prompt(st, letter, att, prev):
     pack = review_pack(st, letter, att)
     t = open(os.path.join(HERE, 'review.md'), encoding='utf-8').read()
     an = anchors(st['vehicle'], st['view'])
-    rep = dict(ROOT=ROOT, TITLE=seed()['vehicles'][st['vehicle']]['title'], VIEW=st['view'], CAND=os.path.join(rdir(st['id']), letter + '.png'), ATTEMPT=att, MAX=MAX_ATTEMPTS,
-               LETTER=letter, DIRECTION=DIRECTIONS[letter], PACK=pack,
+    rep = dict(ROOT=ROOT, TITLE=seed()['items'][st['vehicle']]['title'], VIEW=st['view'], CAND=os.path.join(rdir(st['id']), letter + '.png'), ATTEMPT=att, MAX=MAX_ATTEMPTS,
+               LETTER=letter, DIRECTION=directions(st['vehicle'])[letter], PACK=pack, KINDNOTE=seed()['items'][st['vehicle']].get('brief', ''), CRITERIA=open(os.path.join(HERE, 'criteria-' + kind_of(st['vehicle']) + '.md'), encoding='utf-8').read(),
                ANCHORS=('5. 사용자가 고른 같은 탈것의 다른 시점(화풍 기준): ' + ', '.join(an)) if an else '',
                PREV=('## 지난 시도의 지적 (이번에 고쳐졌나 확인)\n' + prev) if prev else '')
     for k, val in rep.items(): t = t.replace('{' + k + '}', str(val))
@@ -205,9 +255,9 @@ def do_candidate(rid, letter):
 def cmd_draw(a):
     s = seed()
     if a.backend: os.environ['VEH_HARNESS_BACKEND'] = a.backend
-    if a.vehicle not in s['vehicles'] or a.view not in s['vehicles'][a.vehicle]['views']: sys.exit('모르는 탈것/시점: ' + a.vehicle + ' ' + a.view)
+    if a.vehicle not in s['items'] or a.view not in s['items'][a.vehicle]['views']: sys.exit('모르는 탈것/시점: ' + a.vehicle + ' ' + a.view)
     rid = 'v' + datetime.datetime.now().strftime('%m%d-%H%M%S'); os.makedirs(os.path.join(rdir(rid), 'logs'), exist_ok=True)
-    PAL.write_pal(os.path.join(DATA, 'vehicles.pal'))
+    PAL.write_pal(os.path.join(DATA, 'palette.pal'))
     make_brief(rid, a.vehicle, a.view, a.note)
     letters = LETTERS[:a.n]
     json.dump(dict(id=rid, vehicle=a.vehicle, view=a.view, note=a.note, backend=os.environ.get('VEH_HARNESS_BACKEND', 'claude'), created=now(), cands={l: dict(status='queued') for l in letters}), open(state_path(rid), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
@@ -251,10 +301,10 @@ def b64(path): return 'data:image/png;base64,' + base64.b64encode(open(path, 'rb
 
 def cmd_sheet(a):
     st = load_state(a.round); rid = a.round; os.makedirs(VIZ, exist_ok=True)
-    ref = reference_img(); old = old_img(st['vehicle'], st['view'])
+    ref = reference_img() if kind_of(st['vehicle']) == 'vehicle' else None; old = old_img(st['vehicle'], st['view'])
     def img(im, k=6):
         buf = io.BytesIO(); im.resize((im.width * k, im.height * k), Image.NEAREST).save(buf, 'PNG'); return 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode()
-    cards = [('기준: modern-city-atlas 경찰차', img(ref), '')] + ([('지금 것(폐기 대상)', img(old), '')] if old else [])
+    cards = ([('기준: modern-city-atlas 경찰차', img(ref), '')] if ref else []) + ([('지금 것(폐기 대상)', img(old), '')] if old else [])
     for l, c in st['cands'].items():
         p = os.path.join(rdir(rid), l + '.png')
         if not os.path.exists(p): continue
@@ -262,7 +312,7 @@ def cmd_sheet(a):
         tag = ('✓ 검수 통과' if c.get('ok') else '✗ ' + (v.get('verdict', '미통과')) + ' ' + ','.join(v.get('codes') or []))
         why = (v.get('surfaces') or '') + (' · ' + v.get('reasons', '') if not c.get('ok') else '')
         note = open(os.path.join(rdir(rid), l + '.note'), encoding='utf-8').read().strip() if os.path.exists(os.path.join(rdir(rid), l + '.note')) else ''
-        cards.append((f'{l}  {DIRECTIONS[l].split(" — ")[0]}  [{tag}]', img(Image.open(p).convert('RGBA')), (note + '\n' + why).strip()))
+        cards.append((f'{l}  {directions(st['vehicle'])[l].split(" — ")[0]}  [{tag}]', img(Image.open(p).convert('RGBA')), (note + '\n' + why).strip()))
     html = ['<!doctype html><meta charset=utf-8><title>탈것 후보 ' + rid + '</title><style>body{background:#2a2d31;color:#eee;font:14px sans-serif;margin:16px}'
             '.r{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;background:#969aa0;padding:14px;border-radius:6px}figure{margin:0;max-width:560px}figcaption{color:#111;font-size:13px;margin:4px 0}'
             'img{image-rendering:pixelated;display:block}small{color:#222;display:block;max-width:520px}</style>',
@@ -296,7 +346,7 @@ def main():
     p = sub.add_parser('pick'); p.add_argument('round'); p.add_argument('letter'); p.add_argument('--note', default='')
     j = sub.add_parser('reject'); j.add_argument('round'); j.add_argument('letter'); j.add_argument('--why', required=True)
     a = ap.parse_args()
-    {'palette': lambda: PAL.write_pal(os.path.join(DATA, 'vehicles.pal')), 'draw': lambda: cmd_draw(a), '_run': lambda: run_round(a.round), 'status': lambda: cmd_status(a),
+    {'palette': lambda: PAL.write_pal(os.path.join(DATA, 'palette.pal')), 'draw': lambda: cmd_draw(a), '_run': lambda: run_round(a.round), 'status': lambda: cmd_status(a),
      'sheet': lambda: cmd_sheet(a), 'review': lambda: cmd_review(a), 'pick': lambda: cmd_pick(a), 'reject': lambda: cmd_reject(a)}[a.cmd]()
 
 
