@@ -1,9 +1,9 @@
 {
- "projectId": "8365b4e6-c652-45bc-9521-49a997ff435d",
+ "projectId": "3521cada-cbeb-419c-b35b-8cb5fe758722",
  "projectDir": "/tmp/oprn-joseon-baram-proof",
  "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
  "revision": 1,
- "sha256": "c144ff855f317a81304d0487519164d349842b94664c209118c5c7257b83e990",
+ "sha256": "4ab43a9a10027212569e1efc1c64160e214337fbffa79e387a2e2283c518c9ca",
  "saved": true,
  "reopened": true,
  "deepEqual": {
@@ -15,14 +15,14 @@
  "tileset": {
   "id": "joseon_baram",
   "family": "oprn-joseon",
-  "count": 9408,
+  "count": 9792,
   "tilesPerRow": 64,
   "image": {
    "type": "bundled",
    "id": "tex_joseon_baram"
   },
-  "structureKits": 251,
-  "tileGroups": 271,
+  "structureKits": 274,
+  "tileGroups": 294,
   "autotileGroups": [
    "jb_road16_autotile",
    "jb_yard16_autotile",
@@ -53,7 +53,7 @@
    },
    {
     "id": "joseon-baram-props",
-    "docs": 8,
+    "docs": 9,
     "images": 5
    },
    {
@@ -75,7 +75,7 @@
     96
    ],
    "lower": 9216,
-   "upper": 5855,
+   "upper": 5851,
    "npcs": 21
   },
   "joseon_v20": {
@@ -95,7 +95,7 @@
     "same": 9216,
     "mismatch": 0,
     "samples": [],
-    "walkable": 5103
+    "walkable": 5090
    },
    "reach": {
     "crossLines": 59,
@@ -115,6 +115,179 @@
       "why": "주민 (54,49) 가 드므(palace_deumeu, 54,48 1×2) 칸 안에 서 있어 걸어 닿지 못한다(국내성 맵 빌더 쪽 결함)."
      }
     ],
+    "crossingDetail": [
+     {
+      "piece": "gungnae_gate_great_12",
+      "axis": "v",
+      "x": 42,
+      "y": 2,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_gate_great_12",
+      "axis": "v",
+      "x": 42,
+      "y": 75,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_gate_side_5",
+      "axis": "h",
+      "x": 6,
+      "y": 42,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_gate_side_5",
+      "axis": "h",
+      "x": 85,
+      "y": 42,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 46,
+      "y": 21,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 46,
+      "y": 66,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 36,
+      "y": 21,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 56,
+      "y": 21,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 27,
+      "y": 45,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 62,
+      "y": 45,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_narrow_h5",
+      "axis": "h",
+      "x": 19,
+      "y": 39,
+      "lines": 1,
+      "tested": 0,
+      "crossed": 0
+     },
+     {
+      "piece": "gungnae_bridge_narrow_h6",
+      "axis": "h",
+      "x": 78,
+      "y": 60,
+      "lines": 1,
+      "tested": 1,
+      "crossed": 1
+     },
+     {
+      "piece": "palace_gate_side_3",
+      "axis": "h",
+      "x": 33,
+      "y": 42,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "palace_gate_side_3",
+      "axis": "h",
+      "x": 60,
+      "y": 42,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "palace_gate_4",
+      "axis": "v",
+      "x": 45,
+      "y": 30,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "palace_gate_4",
+      "axis": "v",
+      "x": 45,
+      "y": 58,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gn_jm_daemun_6",
+      "axis": "v",
+      "x": 19,
+      "y": 64,
+      "lines": 2,
+      "tested": 1,
+      "crossed": 1
+     },
+     {
+      "piece": "gn_sarip_mud",
+      "axis": "v",
+      "x": 22,
+      "y": 71,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gn_sarip_stone",
+      "axis": "v",
+      "x": 74,
+      "y": 33,
+      "lines": 1,
+      "tested": 1,
+      "crossed": 1
+     }
+    ],
     "crossings": 19,
     "fronts": 1,
     "waterOpenBare": 0,
@@ -123,8 +296,8 @@
      52,
      48
     ],
-    "reachable": 4993,
-    "walkable": 5103,
+    "reachable": 4984,
+    "walkable": 5090,
     "missed": {
      "doorFront": [],
      "doorStep": [],
@@ -176,7 +349,7 @@
     },
     {
      "group": "jb_road64_autotile",
-     "cells": 1622,
+     "cells": 1623,
      "mismatch": 252,
      "edgeConnects": true,
      "samples": [
@@ -280,6 +453,35 @@
      }
     ],
     "exemptPeople": [],
+    "crossingDetail": [
+     {
+      "piece": "gate_solseul",
+      "axis": "v",
+      "x": 12,
+      "y": 17,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "bridge",
+      "axis": "h",
+      "x": 40,
+      "y": 27,
+      "lines": 3,
+      "tested": 3,
+      "crossed": 3
+     },
+     {
+      "piece": "bridge",
+      "axis": "h",
+      "x": 40,
+      "y": 24,
+      "lines": 3,
+      "tested": 1,
+      "crossed": 0
+     }
+    ],
     "crossings": 3,
     "fronts": 0,
     "waterOpenBare": 0,
@@ -488,7 +690,7 @@
    "same": 9216,
    "mismatch": 0,
    "samples": [],
-   "walkable": 5103
+   "walkable": 5090
   },
   "joseon_v20": {
    "cells": 3584,

@@ -68,7 +68,7 @@ function checkReach(api, p, map, src, waterMembers) {
   miss.crossEnd = []; miss.crossing = []; miss.front = [];
   let crossLines = 0, crossLinesBlockedEnd = 0;
   const exempt = allowedMismatch[src.id]?._crossings || [];
-  const info = { exemptCrossings: [], exemptPeople: [] };
+  const info = { exemptCrossings: [], exemptPeople: [], crossingDetail: [] };
   for (const c of src.crossings || []) {
     // 줄마다 양끝 칸이 걸을 수 있으면 조각 둘레 상자 안에서만 걸어 반대쪽 끝에 닿아야 한다(다른 길로 돌아가는 것은 인정하지 않는다).
     // 양끝 중 한쪽이 막힌 줄(기둥·벽에 닿은 가장자리 줄)은 세지 않되, 건너는 곳 하나에 건널 수 있는 줄이 하나도 없으면 실패다.
@@ -82,6 +82,7 @@ function checkReach(api, p, map, src, waterMembers) {
       if (reach(api, p, map, a, box).has(b.join(","))) okLines += 1;
       else miss.crossing.push([c.piece, c.axis, ln, a.join(","), b.join(",")]);
     }
+    info.crossingDetail.push({ piece: c.piece, axis: c.axis, x: c.x, y: c.y, lines: c.lines.length, tested, crossed: okLines });
     if (okLines === 0) {
       const ex = exempt.find((e) => e.piece === c.piece && e.y === c.y);
       if (ex) { info.exemptCrossings.push({ piece: c.piece, x: c.x, y: c.y, why: ex.why }); miss.crossing = miss.crossing.filter((m) => !(m[0] === c.piece)); }

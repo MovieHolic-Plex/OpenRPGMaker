@@ -1,139 +1,139 @@
-# 나무·소품·담·다리 조각 사전 5/8
+# 나무·소품·담·다리 조각 사전 5/9
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9408칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9347 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9792칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9705 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
 `upperTiles` = 윗층 칸 번호(행 위→아래, -1 = 그림 없음), `walk` = 칸 통행(X 막힘 / C 걸음★ / F 걸음 / . 없음). 아래층은 -1(찍는 자리의 땅을 그대로 둔다). `door` = 디딤돌 칸(문 앞 접근칸은 그 바로 아래 칸), `passage` = 통로 열 범위.
 
-### jb-wall_corner_ne · 토석담 corner_ne 1×2 · 1×2 · 분류 wall
-막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+### jb-gungnae_wall_h4 · 국내성 성벽 h4 1×5 · 1×5 · 분류 wall
+막힘 5 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-wall_corner_ne","w":1,"h":2,"class":"wall","upperTiles":[[2261],[2277]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-gungnae_wall_h4","w":1,"h":5,"class":"wall","upperTiles":[[4479],[4495],[4511],[4527],[4543]],"walk":["X","X","X","X","X"]}
 ```
 
-### jb-wall_corner_nw · 토석담 corner_nw 1×2 · 1×2 · 분류 wall
-막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+### jb-gungnae_wall_h5 · 국내성 성벽 h5 1×5 · 1×5 · 분류 wall
+막힘 5 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-wall_corner_nw","w":1,"h":2,"class":"wall","upperTiles":[[2260],[2276]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-gungnae_wall_h5","w":1,"h":5,"class":"wall","upperTiles":[[4688],[4704],[4720],[4736],[4752]],"walk":["X","X","X","X","X"]}
 ```
 
-### jb-wall_corner_se · 토석담 corner_se 1×2 · 1×2 · 분류 wall
-막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+### jb-gungnae_wall_v · 국내성 성벽 v 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-wall_corner_se","w":1,"h":2,"class":"wall","upperTiles":[[2263],[2279]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v","w":3,"h":1,"class":"wall","upperTiles":[[4689,4690,4691]],"walk":["XXX"]}
 ```
 
-### jb-wall_corner_sw · 토석담 corner_sw 1×2 · 1×2 · 분류 wall
-막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+### jb-gungnae_wall_v1 · 국내성 성벽 v1 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-wall_corner_sw","w":1,"h":2,"class":"wall","upperTiles":[[2262],[2278]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v1","w":3,"h":1,"class":"wall","upperTiles":[[4695,4696,4697]],"walk":["XXX"]}
 ```
 
-### jb-wall_h · 토석담 h 1×2 · 1×2 · 분류 wall
-막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+### jb-gungnae_wall_v1_e · 국내성 성벽 v1_e 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-wall_h","w":1,"h":2,"class":"wall","upperTiles":[[2207],[2223]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v1_e","w":3,"h":1,"class":"wall","upperTiles":[[4698,4699,4700]],"walk":["XXX"]}
 ```
 
-### jb-wall_h1 · 토석담 h1 1×2 · 1×2 · 분류 wall
-막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+### jb-gungnae_wall_v2 · 국내성 성벽 v2 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-wall_h1","w":1,"h":2,"class":"wall","upperTiles":[[2256],[2272]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v2","w":3,"h":1,"class":"wall","upperTiles":[[4701,4702,4703]],"walk":["XXX"]}
 ```
 
-### jb-wall_h2 · 토석담 h2 1×2 · 1×2 · 분류 wall
-막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+### jb-gungnae_wall_v2_e · 국내성 성벽 v2_e 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-wall_h2","w":1,"h":2,"class":"wall","upperTiles":[[2257],[2273]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v2_e","w":3,"h":1,"class":"wall","upperTiles":[[4768,4769,4770]],"walk":["XXX"]}
 ```
 
-### jb-wall_v · 토석담 v 1×1 · 1×1 · 분류 wall
+### jb-gungnae_wall_v3 · 국내성 성벽 v3 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v3","w":3,"h":1,"class":"wall","upperTiles":[[4771,4772,4773]],"walk":["XXX"]}
+```
+
+### jb-gungnae_wall_v3_e · 국내성 성벽 v3_e 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v3_e","w":3,"h":1,"class":"wall","upperTiles":[[4774,4775,4776]],"walk":["XXX"]}
+```
+
+### jb-gungnae_wall_v4 · 국내성 성벽 v4 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v4","w":3,"h":1,"class":"wall","upperTiles":[[4777,4778,4779]],"walk":["XXX"]}
+```
+
+### jb-gungnae_wall_v4_e · 국내성 성벽 v4_e 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v4_e","w":3,"h":1,"class":"wall","upperTiles":[[4780,4781,4782]],"walk":["XXX"]}
+```
+
+### jb-gungnae_wall_v5 · 국내성 성벽 v5 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v5","w":3,"h":1,"class":"wall","upperTiles":[[4784,4785,4786]],"walk":["XXX"]}
+```
+
+### jb-gungnae_wall_v5_e · 국내성 성벽 v5_e 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v5_e","w":3,"h":1,"class":"wall","upperTiles":[[4787,4788,4789]],"walk":["XXX"]}
+```
+
+### jb-gungnae_wall_v_e · 국내성 성벽 v_e 3×1 · 3×1 · 분류 wall
+막힘 3 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-gungnae_wall_v_e","w":3,"h":1,"class":"wall","upperTiles":[[4692,4693,4694]],"walk":["XXX"]}
+```
+
+### jb-palace_wall_h · 궁 담 h 1×2 · 1×2 · 분류 wall
+막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-palace_wall_h","w":1,"h":2,"class":"wall","upperTiles":[[3914],[3930]],"walk":["X","X"]}
+```
+
+### jb-palace_wall_h1 · 궁 담 h1 1×2 · 1×2 · 분류 wall
+막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-palace_wall_h1","w":1,"h":2,"class":"wall","upperTiles":[[3915],[3931]],"walk":["X","X"]}
+```
+
+### jb-palace_wall_h2 · 궁 담 h2 1×2 · 1×2 · 분류 wall
+막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-palace_wall_h2","w":1,"h":2,"class":"wall","upperTiles":[[3916],[3932]],"walk":["X","X"]}
+```
+
+### jb-palace_wall_ne · 궁 담 ne 1×2 · 1×2 · 분류 wall
+막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-palace_wall_ne","w":1,"h":2,"class":"wall","upperTiles":[[4000],[4016]],"walk":["X","X"]}
+```
+
+### jb-palace_wall_nw · 궁 담 nw 1×2 · 1×2 · 분류 wall
+막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-palace_wall_nw","w":1,"h":2,"class":"wall","upperTiles":[[3919],[3935]],"walk":["X","X"]}
+```
+
+### jb-palace_wall_se · 궁 담 se 1×2 · 1×2 · 분류 wall
+막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-palace_wall_se","w":1,"h":2,"class":"wall","upperTiles":[[4002],[4018]],"walk":["X","X"]}
+```
+
+### jb-palace_wall_sw · 궁 담 sw 1×2 · 1×2 · 분류 wall
+막힘 2 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-palace_wall_sw","w":1,"h":2,"class":"wall","upperTiles":[[4001],[4017]],"walk":["X","X"]}
+```
+
+### jb-palace_wall_v · 궁 담 v 1×1 · 1×1 · 분류 wall
 막힘 1 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-wall_v","w":1,"h":1,"class":"wall","upperTiles":[[2258]],"walk":["X"]}
-```
-
-### jb-wall_v_e · 토석담 v_e 1×1 · 1×1 · 분류 wall
-막힘 1 · 걸음★ 0 · 걸음 0칸. 집·마당 둘레에 이어 놓는다. 전부 막힌다.
-```json
-{"kit":"kit:joseon_baram/jb-wall_v_e","w":1,"h":1,"class":"wall","upperTiles":[[2259]],"walk":["X"]}
-```
-
-### jb-bank_stairs · 물가 계단 1×2 · 1×2 · 분류 prop
-막힘 0 · 걸음★ 0 · 걸음 2칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-bank_stairs","w":1,"h":2,"class":"prop","upperTiles":[[2028],[2044]],"walk":["F","F"]}
-```
-
-### jb-bench · 벤치 2×1 · 2×1 · 분류 prop
-막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-bench","w":2,"h":1,"class":"prop","upperTiles":[[2199,2200]],"walk":["XX"]}
-```
-
-### jb-boat · 나룻배 3×2 · 3×2 · 분류 prop
-막힘 6 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-boat","w":3,"h":2,"class":"prop","upperTiles":[[2859,2860,2861],[2875,2876,2877]],"walk":["XXX","XXX"]}
-```
-
-### jb-bridge · 나무다리 5×4 · 5×4 · 분류 prop
-막힘 5 · 걸음★ 0 · 걸음 10칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-bridge","w":5,"h":4,"class":"prop","upperTiles":[[2192,2193,2194,2195,2196],[2208,2209,2210,2211,2212],[2224,2225,2226,2227,2228],[-1,-1,-1,-1,-1]],"walk":["XXXXX","FFFFF","FFFFF","....."]}
-```
-
-### jb-chimney · 굴뚝 1×2 · 1×2 · 분류 prop
-막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-chimney","w":1,"h":2,"class":"prop","upperTiles":[[1154],[1170]],"walk":["X","X"]}
-```
-
-### jb-deungrong_mun · 청사초롱 문 4×4 · 4×4 · 분류 prop
-막힘 8 · 걸음★ 4 · 걸음 2칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-deungrong_mun","w":4,"h":4,"class":"prop","upperTiles":[[1883,-1,-1,1886],[1899,1900,1901,1902],[1915,1916,1917,1918],[1931,1932,1933,1934]],"walk":["X..X","XCCX","XCCX","XFFX"]}
-```
-
-### jb-dilbang · 디딜방아 4×2 · 4×2 · 분류 prop
-막힘 5 · 걸음★ 0 · 걸음 2칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-dilbang","w":4,"h":2,"class":"prop","upperTiles":[[-1,2788,2789,2790],[2803,2804,2805,2806]],"walk":[".FXF","XXXX"]}
-```
-
-### jb-dock · 선착장 1×2 · 1×2 · 분류 prop
-막힘 0 · 걸음★ 0 · 걸음 2칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-dock","w":1,"h":2,"class":"prop","upperTiles":[[2862],[2878]],"walk":["F","F"]}
-```
-
-### jb-dolmadam · 돌기와담 1×1 · 1×1 · 분류 prop
-막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-dolmadam","w":1,"h":1,"class":"prop","upperTiles":[[2852]],"walk":["X"]}
-```
-
-### jb-fence_h · 울타리 1×1 · 1×1 · 분류 prop
-막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-fence_h","w":1,"h":1,"class":"prop","upperTiles":[[2151]],"walk":["X"]}
-```
-
-### jb-firewood · 장작더미 2×1 · 2×1 · 분류 prop
-막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-firewood","w":2,"h":1,"class":"prop","upperTiles":[[2848,2849]],"walk":["XX"]}
-```
-
-### jb-flower_bed · 화단 2×1 · 2×1 · 분류 prop
-막힘 0 · 걸음★ 0 · 걸음 2칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-flower_bed","w":2,"h":1,"class":"prop","upperTiles":[[2026,2027]],"walk":["FF"]}
-```
-
-### jb-fort_gate · 성문 10×9 · 10×9 · 분류 prop
-막힘 56 · 걸음★ 14 · 걸음 4칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-fort_gate","w":10,"h":9,"class":"prop","upperTiles":[[-1,-1,1730,1731,1732,1733,1734,1735,-1,-1],[-1,-1,1746,1747,1748,1749,1750,1751,-1,-1],[-1,-1,1762,1763,1764,1765,1766,1767,-1,-1],[-1,-1,1778,1779,1780,1781,1782,1783,-1,-1],[1792,1793,1794,1795,1796,1797,1798,1799,1800,1801],[1808,1809,1810,1811,1812,1813,1814,1815,1816,1817],[1824,1825,1826,1827,1828,1829,1830,1831,1832,1833],[1840,1841,1842,1843,1844,1845,1846,1847,1848,1849],[1856,1857,1858,1859,1860,1861,1862,1863,1864,1865]],"walk":["..XXCCXX..","..XXCCXX..","..XXCCXX..","..XXCCXX..","XXXXCCXXXX","XXXXCCXXXX","XXXXCCXXXX","XXXXFFXXXX","XXXXFFXXXX"],"passage":{"dx":4,"dy":7,"w":2,"h":2}}
+{"kit":"kit:joseon_baram/jb-palace_wall_v","w":1,"h":1,"class":"wall","upperTiles":[[3917]],"walk":["X"]}
 ```

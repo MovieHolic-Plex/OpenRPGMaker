@@ -1,6 +1,6 @@
-# 나무·소품·담·다리 조각 사전 1/8
+# 나무·소품·담·다리 조각 사전 1/9
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9408칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9347 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9792칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9705 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
@@ -9,79 +9,109 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 ### jb-bamboo · 대나무 2×4 · 2×4 · 분류 tree
 막힘 2 · 걸음★ 6 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-bamboo","w":2,"h":4,"class":"tree","upperTiles":[[730,731],[746,747],[762,763],[778,779]],"walk":["CC","CC","CC","XX"]}
+{"kit":"kit:joseon_baram/jb-bamboo","w":2,"h":4,"class":"tree","upperTiles":[[894,895],[910,911],[926,927],[942,943]],"walk":["CC","CC","CC","XX"]}
 ```
 
 ### jb-bamboo_grove · 대숲 4×4 · 4×4 · 분류 tree
 막힘 4 · 걸음★ 12 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-bamboo_grove","w":4,"h":4,"class":"tree","upperTiles":[[807,808,809,810],[823,824,825,826],[839,840,841,842],[855,856,857,858]],"walk":["CCCC","CCCC","CCCC","XXXX"]}
+{"kit":"kit:joseon_baram/jb-bamboo_grove","w":4,"h":4,"class":"tree","upperTiles":[[970,971,972,973],[986,987,988,989],[1002,1003,1004,1005],[1018,1019,1020,1021]],"walk":["CCCC","CCCC","CCCC","XXXX"]}
 ```
 
 ### jb-palace_pine_a · 궁궐 pine_a 4×6 · 4×6 · 분류 tree
 막힘 4 · 걸음★ 18 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-palace_pine_a","w":4,"h":6,"class":"tree","upperTiles":[[3952,3953,3954,-1],[3968,3969,3970,3971],[3984,3985,3986,3987],[4000,4001,4002,-1],[4016,4017,4018,4019],[4032,4033,4034,4035]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
+{"kit":"kit:joseon_baram/jb-palace_pine_a","w":4,"h":6,"class":"tree","upperTiles":[[4144,4145,4146,-1],[4160,4161,4162,4163],[4176,4177,4178,4179],[4192,4193,4194,-1],[4208,4209,4210,4211],[4224,4225,4226,4227]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
 ```
 
 ### jb-palace_pine_b · 궁궐 pine_b 4×6 · 4×6 · 분류 tree
 막힘 4 · 걸음★ 18 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-palace_pine_b","w":4,"h":6,"class":"tree","upperTiles":[[3956,3957,3958,-1],[3972,3973,3974,3975],[3988,3989,3990,3991],[4004,4005,4006,-1],[4020,4021,4022,4023],[4036,4037,4038,4039]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
+{"kit":"kit:joseon_baram/jb-palace_pine_b","w":4,"h":6,"class":"tree","upperTiles":[[4148,4149,4150,-1],[4164,4165,4166,4167],[4180,4181,4182,4183],[4196,4197,4198,-1],[4212,4213,4214,4215],[4228,4229,4230,4231]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
 ```
 
 ### jb-palace_pine_c · 궁궐 pine_c 4×6 · 4×6 · 분류 tree
 막힘 4 · 걸음★ 18 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-palace_pine_c","w":4,"h":6,"class":"tree","upperTiles":[[3960,3961,3962,-1],[3976,3977,3978,3979],[3992,3993,3994,3995],[4008,4009,4010,-1],[4024,4025,4026,4027],[4040,4041,4042,4043]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
+{"kit":"kit:joseon_baram/jb-palace_pine_c","w":4,"h":6,"class":"tree","upperTiles":[[4152,4153,4154,-1],[4168,4169,4170,4171],[4184,4185,4186,4187],[4200,4201,4202,-1],[4216,4217,4218,4219],[4232,4233,4234,4235]],"walk":["CCC.","CCCC","CCCC","CCC.","CCCC","XXXX"]}
 ```
 
 ### jb-persimmon_a · 감나무 a 3×4 · 3×4 · 분류 tree
 막힘 1 · 걸음★ 9 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-persimmon_a","w":3,"h":4,"class":"tree","upperTiles":[[720,721,722],[736,737,738],[752,753,754],[768,769,770]],"walk":["CCC","CCC","CCC","FXF"]}
+{"kit":"kit:joseon_baram/jb-persimmon_a","w":3,"h":4,"class":"tree","upperTiles":[[884,885,886],[900,901,902],[916,917,918],[932,933,934]],"walk":["CCC","CCC","CCC","FXF"]}
 ```
 
 ### jb-persimmon_b · 감나무 b 3×4 · 3×4 · 분류 tree
 막힘 1 · 걸음★ 9 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-persimmon_b","w":3,"h":4,"class":"tree","upperTiles":[[723,724,725],[739,740,741],[755,756,757],[771,772,773]],"walk":["CCC","CCC","CCC","FXF"]}
+{"kit":"kit:joseon_baram/jb-persimmon_b","w":3,"h":4,"class":"tree","upperTiles":[[887,888,889],[903,904,905],[919,920,921],[935,936,937]],"walk":["CCC","CCC","CCC","FXF"]}
 ```
 
 ### jb-persimmon_c · 감나무 c 3×4 · 3×4 · 분류 tree
 막힘 1 · 걸음★ 9 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-persimmon_c","w":3,"h":4,"class":"tree","upperTiles":[[644,645,646],[660,661,662],[676,677,678],[692,693,694]],"walk":["CCC","CCC","CCC","FXF"]}
+{"kit":"kit:joseon_baram/jb-persimmon_c","w":3,"h":4,"class":"tree","upperTiles":[[800,801,802],[816,817,818],[832,833,834],[848,849,850]],"walk":["CCC","CCC","CCC","FXF"]}
+```
+
+### jb-persimmon_d · 감나무 d 3×4 · 3×4 · 분류 tree
+막힘 1 · 걸음★ 9 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-persimmon_d","w":3,"h":4,"class":"tree","upperTiles":[[803,804,805],[819,820,821],[835,836,837],[851,852,853]],"walk":["CCC","CCC","CCC","FXF"]}
+```
+
+### jb-persimmon_e · 감나무 e 3×4 · 3×4 · 분류 tree
+막힘 1 · 걸음★ 9 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-persimmon_e","w":3,"h":4,"class":"tree","upperTiles":[[806,807,808],[822,823,824],[838,839,840],[854,855,856]],"walk":["CCC","CCC","CCC","FXF"]}
+```
+
+### jb-persimmon_f · 감나무 f 3×4 · 3×4 · 분류 tree
+막힘 1 · 걸음★ 9 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-persimmon_f","w":3,"h":4,"class":"tree","upperTiles":[[809,810,811],[825,826,827],[841,842,843],[857,858,859]],"walk":["CCC","CCC","CCC","FXF"]}
 ```
 
 ### jb-pine_a · 소나무 a 4×5 · 4×5 · 분류 tree
 막힘 1 · 걸음★ 14 · 걸음 3칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-pine_a","w":4,"h":5,"class":"tree","upperTiles":[[647,648,649,-1],[663,664,665,666],[679,680,681,682],[695,696,697,-1],[711,712,713,714]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+{"kit":"kit:joseon_baram/jb-pine_a","w":4,"h":5,"class":"tree","upperTiles":[[812,813,814,-1],[828,829,830,831],[844,845,846,847],[860,861,862,-1],[876,877,878,879]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
 ```
 
 ### jb-pine_b · 소나무 b 4×5 · 4×5 · 분류 tree
 막힘 1 · 걸음★ 14 · 걸음 3칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-pine_b","w":4,"h":5,"class":"tree","upperTiles":[[651,652,653,-1],[667,668,669,670],[683,684,685,686],[699,700,701,-1],[715,716,717,718]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+{"kit":"kit:joseon_baram/jb-pine_b","w":4,"h":5,"class":"tree","upperTiles":[[880,881,882,-1],[896,897,898,899],[912,913,914,915],[928,929,930,-1],[944,945,946,947]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
 ```
 
 ### jb-pine_c · 소나무 c 4×5 · 4×5 · 분류 tree
 막힘 1 · 걸음★ 14 · 걸음 3칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-pine_c","w":4,"h":5,"class":"tree","upperTiles":[[572,573,574,-1],[588,589,590,591],[604,605,606,607],[620,621,622,-1],[636,637,638,639]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+{"kit":"kit:joseon_baram/jb-pine_c","w":4,"h":5,"class":"tree","upperTiles":[[720,721,722,-1],[736,737,738,739],[752,753,754,755],[768,769,770,-1],[784,785,786,787]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
 ```
 
 ### jb-pine_d · 소나무 d 4×5 · 4×5 · 분류 tree
 막힘 1 · 걸음★ 14 · 걸음 3칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-pine_d","w":4,"h":5,"class":"tree","upperTiles":[[640,641,642,-1],[656,657,658,659],[672,673,674,675],[688,689,690,-1],[704,705,706,707]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+{"kit":"kit:joseon_baram/jb-pine_d","w":4,"h":5,"class":"tree","upperTiles":[[724,725,726,-1],[740,741,742,743],[756,757,758,759],[772,773,774,-1],[788,789,790,791]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+```
+
+### jb-pine_e · 소나무 e 4×5 · 4×5 · 분류 tree
+막힘 2 · 걸음★ 14 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-pine_e","w":4,"h":5,"class":"tree","upperTiles":[[-1,729,730,731],[744,745,746,747],[760,761,762,763],[-1,777,778,779],[792,793,794,795]],"walk":[".CCC","CCCC","CCCC",".CCC","FXXF"]}
+```
+
+### jb-pine_f · 소나무 f 4×5 · 4×5 · 분류 tree
+막힘 2 · 걸음★ 14 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-pine_f","w":4,"h":5,"class":"tree","upperTiles":[[-1,733,734,735],[748,749,750,751],[764,765,766,767],[-1,781,782,783],[796,797,798,799]],"walk":[".CCC","CCCC","CCCC",".CCC","FXXF"]}
 ```
 
 ### jb-willow · 버드나무 4×5 · 4×5 · 분류 tree
 막힘 2 · 걸음★ 16 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
-{"kit":"kit:joseon_baram/jb-willow","w":4,"h":5,"class":"tree","upperTiles":[[726,727,728,729],[742,743,744,745],[758,759,760,761],[774,775,776,777],[790,791,792,793]],"walk":["CCCC","CCCC","CCCC","CCCC","FXXF"]}
+{"kit":"kit:joseon_baram/jb-willow","w":4,"h":5,"class":"tree","upperTiles":[[890,891,892,893],[906,907,908,909],[922,923,924,925],[938,939,940,941],[954,955,956,957]],"walk":["CCCC","CCCC","CCCC","CCCC","FXXF"]}
 ```
 
 ### jb-zelkova_a · 느티나무 a 4×5 · 4×5 · 분류 tree
@@ -106,34 +136,4 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 막힘 2 · 걸음★ 16 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
 {"kit":"kit:joseon_baram/jb-zelkova_d","w":4,"h":5,"class":"tree","upperTiles":[[564,565,566,567],[580,581,582,583],[596,597,598,599],[612,613,614,615],[628,629,630,631]],"walk":["CCCC","CCCC","CCCC","CCCC","FXXF"]}
-```
-
-### jb-zelkova_e · 느티나무 e 4×5 · 4×5 · 분류 tree
-막힘 2 · 걸음★ 15 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
-```json
-{"kit":"kit:joseon_baram/jb-zelkova_e","w":4,"h":5,"class":"tree","upperTiles":[[568,569,570,571],[584,585,586,587],[600,601,602,603],[616,617,618,-1],[632,633,634,635]],"walk":["CCCC","CCCC","CCCC","CCC.","FXXF"]}
-```
-
-### jb-bush_a · 덤불 a 2×2 · 2×2 · 분류 bush
-막힘 2 · 걸음★ 2 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_a","w":2,"h":2,"class":"bush","upperTiles":[[811,812],[827,828]],"walk":["CC","XX"]}
-```
-
-### jb-bush_b · 덤불 b 2×2 · 2×2 · 분류 bush
-막힘 2 · 걸음★ 2 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_b","w":2,"h":2,"class":"bush","upperTiles":[[813,814],[829,830]],"walk":["CC","XX"]}
-```
-
-### jb-bush_c · 덤불 c 2×2 · 2×2 · 분류 bush
-막힘 2 · 걸음★ 2 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_c","w":2,"h":2,"class":"bush","upperTiles":[[864,865],[880,881]],"walk":["CC","XX"]}
-```
-
-### jb-bush_l_a · 덤불 l_a 3×2 · 3×2 · 분류 bush
-막힘 3 · 걸음★ 3 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_l_a","w":3,"h":2,"class":"bush","upperTiles":[[732,733,734],[748,749,750]],"walk":["CCC","XXX"]}
 ```
