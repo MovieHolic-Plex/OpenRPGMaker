@@ -716,5 +716,88 @@
    "h101_0"
   ],
   "kit": "blocks.house('jo',6,…)"
+ },
+ "giwa_haengnang_7": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',6,…)"
+ },
+ "giwa_seodang": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',6,…)"
+ },
+ "thatch_jumak": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "blocks.house('jc',5,…)"
+ },
+ "thatch_smithy": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "blocks.house('jc',5,…)"
+ },
+ "yeonja_mill": {
+  "cls": "prop",
+  "refs": [
+   "forum.fountain",
+   "planter_round",
+   "fish_barrel"
+  ]
+ },
+ "seonangdang": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ]
+ },
+ "chimney": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "굴뚝 몸통 폭 9px — 기둥 소품이라 세로 윤곽 비율이 높다"
+ },
+ "sarip": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "싸리 막대 사이 틈"
+ },
+ "toldam": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "싸리 막대 사이 틈"
  }
 }

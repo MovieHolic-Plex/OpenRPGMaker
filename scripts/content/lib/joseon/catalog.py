@@ -1,5 +1,5 @@
 """조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
-import props5 as P5, structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
+import village_pieces as VP, props5 as P5, structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
 _L = None
 
 
@@ -55,6 +55,15 @@ def objects():
         'bush_b': TR.bush('b', 6),
         'bush_c': TR.bush('c', 0),
         'giwa_house_3b': K.assemble(K.house('jo', 3, 'ldr', 'ldr', steps=(1,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'brown', wing=20)),
+        'giwa_haengnang_7': VP.haengnang(7),
+        'giwa_seodang': VP.seodang(),
+        'thatch_jumak': VP.jumak(),
+        'thatch_smithy': VP.smithy(),
+        'yeonja_mill': VP.yeonja_mill(),
+        'seonangdang': VP.seonangdang(),
+        'chimney': VP.chimney(),
+        'sarip': VP.sarip(),
+        'toldam': VP.toldam(),
         'giwa_house_5b': K.assemble(K.house('jo', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'brown', wing=24)),
         'thatch_house_3': K.assemble(K.house('jc', 3, 'ldr', 'ldr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
         'thatch_house_3b': K.assemble(K.house('jc', 3, 'lgr', 'lgr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),

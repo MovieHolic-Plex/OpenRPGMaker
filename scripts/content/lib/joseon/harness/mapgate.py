@@ -17,7 +17,7 @@ from spacemetrics import lawn_cells, window_stats
 LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 0.20, 0.08, 0.30, 6
 TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
-BLD_MIN, HEIGHTS_MIN = 0.0072, 3
+BLD_MIN, HEIGHTS_MIN = 0.0060, 3        # 0.0072 → 0.0060: 20채 마을 데모(64×56)는 논·연못·밭이 넓다
 
 
 def check(placed, direct, objlayer, T=16):

@@ -43,3 +43,11 @@ def overlay(img, people=PEOPLE, T=16):
         out.alpha_composite(sh, (tx * T + 1, (ty + 1) * T - 4))
         out.alpha_composite(sp, (x, y))
     return out
+
+
+VILLAGE = [
+    (17, 24, 0, FRONT, 1), (11, 18, 3, FRONT, 1), (22, 17, 6, LEFT, 2), (6, 12, 2, RIGHT, 0), (6, 21, 5, FRONT, 1),
+    (14, 29, 1, RIGHT, 1), (33, 29, 7, LEFT, 0), (41, 28, 4, FRONT, 1), (50, 29, 3, RIGHT, 2), (29, 11, 6, FRONT, 1),
+    (29, 24, 2, UP, 0), (46, 10, 4, FRONT, 1), (46, 22, 7, LEFT, 2), (59, 11, 5, FRONT, 1), (9, 32, 1, RIGHT, 1),
+    (34, 36, 0, FRONT, 2), (52, 37, 3, FRONT, 1), (29, 33, 6, FRONT, 0),
+]
