@@ -1,3 +1,4 @@
+import { eventReferenceMatches } from "@/editor/databaseEventReferences";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { eventDisplayName } from "@/project/eventDisplayName";
@@ -30,15 +31,16 @@ export function commandsReferenceLocations(project: Project, collection: Command
 
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      const matches =
-        conditionReferencesDatabase(event.condition, collection, id) ||
-        eventGiftPrefsReferences(event, collection, id) ||
-        commandListReferences(event.commands, collection, id) ||
-        (event.pages ?? []).some(
+      const matches = eventReferenceMatches(event, (body) =>
+        conditionReferencesDatabase(body.condition, collection, id) ||
+        eventGiftPrefsReferences(body, collection, id) ||
+        commandListReferences(body.commands, collection, id) ||
+        (body.pages ?? []).some(
           (page) =>
             page.conditions.some((condition) => conditionReferencesDatabase(condition, collection, id)) ||
             commandListReferences(page.commands, collection, id)
-        );
+        )
+      );
       if (matches) locations.push({ kind: "mapEvent", mapName: map.name, eventName: eventDisplayName(event), eventId: event.id });
     }
   }
@@ -63,12 +65,13 @@ export function commandsResourceReference(project: Project, resourceId: string):
     project.commonEvents.some((event) => commandListResourceReferences(event.commands, resourceId)) ||
     Object.values(project.maps).some((map) =>
       map.events.some(
-        (event) =>
-          event.sprite?.id === resourceId ||
-          commandListResourceReferences(event.commands, resourceId) ||
-          (event.pages ?? []).some(
+        (event) => eventReferenceMatches(event, (body) =>
+          body.sprite?.id === resourceId ||
+          commandListResourceReferences(body.commands, resourceId) ||
+          (body.pages ?? []).some(
             (page) => page.graphic.sprite?.id === resourceId || commandListResourceReferences(page.commands, resourceId)
           )
+        )
       )
     ) ||
     project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListResourceReferences(page.commands, resourceId))
@@ -98,15 +101,16 @@ export function switchVariableReferenceLocations(
 
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      const matches =
-        conditionReferencesSwitchVariable(event.condition, kind, id) ||
-        commandListReferencesSwitchVariable(event.commands, kind, id) ||
-        (event.pages ?? []).some(
+      const matches = eventReferenceMatches(event, (body) =>
+        conditionReferencesSwitchVariable(body.condition, kind, id) ||
+        commandListReferencesSwitchVariable(body.commands, kind, id) ||
+        (body.pages ?? []).some(
           (page) =>
             (kind === "switch" && page.movement.living?.destinations.some((destination) => destination.switchId === id)) ||
             page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
             commandListReferencesSwitchVariable(page.commands, kind, id)
-        );
+        )
+      );
       if (matches) locations.push({ kind: "mapEvent", mapName: map.name, eventName: eventDisplayName(event), eventId: event.id });
     }
   }
@@ -134,15 +138,16 @@ export function switchVariableReferencedInProject(project: Project, kind: "switc
     ) ||
     Object.values(project.maps).some((map) =>
       map.events.some(
-        (event) =>
-          conditionReferencesSwitchVariable(event.condition, kind, id) ||
-          commandListReferencesSwitchVariable(event.commands, kind, id) ||
-          (event.pages ?? []).some(
+        (event) => eventReferenceMatches(event, (body) =>
+          conditionReferencesSwitchVariable(body.condition, kind, id) ||
+          commandListReferencesSwitchVariable(body.commands, kind, id) ||
+          (body.pages ?? []).some(
             (page) =>
               (kind === "switch" && page.movement.living?.destinations.some((destination) => destination.switchId === id)) ||
               page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
               commandListReferencesSwitchVariable(page.commands, kind, id)
           )
+        )
       )
     ) ||
     project.database.troops.some((troop) =>

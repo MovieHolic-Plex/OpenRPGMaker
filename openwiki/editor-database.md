@@ -167,6 +167,12 @@ QA fixture는 메모리 전용이며 정본 프로젝트 저장 증거로 취급
 
 종족 그래픽 영역의 `전투 뒷모습` 리소스 선택기는 `graphic.backResourceId`를 편집한다. monster 리소스를 선택하거나 지울 수 있으며 기존 `currentSpecies`/`updateSpecies` 경로를 사용한다. 별도 필드 그래픽이나 정면 그래픽을 덮어쓰지 않는다. QA 선택자는 `db-monster-species-back-resource`. 후면 전투 방향에서만 적용하며 없으면 기존 그래픽을 사용한다.
 
+## 이벤트 초안 원본의 삭제 참조 (2026-10-02)
+
+`databaseEventReferences.eventReferenceMatches`는 이벤트 작업본과 `edit` 초안의 저장 원본을 함께 검사한다. DB 레코드·스위치/변수·리소스·공통 이벤트 삭제 가드에 공통 적용하며, 페이지 조건·명령·그래픽 및 기존 메타데이터 검사 범위를 원본에도 그대로 적용한다. 작업본에서 참조를 지운 것만으로는 삭제할 수 없고 이벤트를 적용한 뒤 삭제한다. 같은 이벤트의 작업본과 원본이 둘 다 참조해도 위치는 한 건이다.
+
+새 초안의 생성 기준본과 `remote-delete` 충돌의 원본은 정본 저장 대상이 아니므로 검사하지 않는다. 현재 작업본의 참조는 두 경우 모두 보호한다. `project/eventDrafts.discardEventDraft`도 `remote-delete` 취소 시 이벤트를 제거하여 오래된 원본을 부활시키지 않는다. 저장 투영·vault·취소가 같은 삭제 계약을 따른다. 회귀 소스는 `databaseDraftReferenceGuards.test.ts`, `eventDraftVault.test.ts`; 테스트 실행은 별도 승인 범위다.
+
 ## DB 삭제의 스킬·주인공 권한 참조 (2026-10-02)
 
 - 스킬 삭제는 아이템의 `skillId` 외에 `learnedSkillId`(스킬북), `activateSkillId`(발동 효과), 직업 `battleCommands[].skillId`도 차단한다. 습득 목록에 없는 전투 명령 전용 스킬도 참조다.

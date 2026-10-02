@@ -1,3 +1,4 @@
+import { eventReferenceMatches } from "@/editor/databaseEventReferences";
 import { commandsResourceReference } from "@/editor/databaseCommandReferences";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { store } from "@/project/store";
@@ -87,7 +88,9 @@ export function commonEventReferenceMessage(id: string): string | null {
   if (
     project.commonEvents.some((event) => event.id !== id && commandListReferencesCommonEvent(event.commands, id)) ||
     Object.values(project.maps).some((map) =>
-      map.events.some((event) => commandListReferencesCommonEvent(event.commands, id) || (event.pages ?? []).some((page) => commandListReferencesCommonEvent(page.commands, id)))
+      map.events.some((event) => eventReferenceMatches(event, (body) =>
+        commandListReferencesCommonEvent(body.commands, id) || (body.pages ?? []).some((page) => commandListReferencesCommonEvent(page.commands, id))
+      ))
     ) ||
     project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListReferencesCommonEvent(page.commands, id))
       || troopAfterBattleLists(troop).some((list) => commandListReferencesCommonEvent(list.commands, id)))
