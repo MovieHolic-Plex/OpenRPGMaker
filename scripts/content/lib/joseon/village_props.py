@@ -19,10 +19,6 @@ def waterwheel():
         c.put(px, 17, Wd[6]); c.put(px + 1, 17, Wd[5])
     for x in range(0, 48):                                           # 가로보
         c.put(x, 15, Wd[6]); c.put(x, 16, Wd[5]); c.put(x, 17, Wd[3])
-    for x in range(22, 48):                                          # 홈통: 나무 물길(옆판 + 물)이 오른쪽에서 바퀴 위로 기울어 내려온다
-        y0 = int(round(8 - (x - 22) * 0.12))
-        c.put(x, y0, Wd[6]); c.put(x, y0 + 1, Wt[5] if x % 3 else Wt[4]); c.put(x, y0 + 2, Wt[4]); c.put(x, y0 + 3, Wd[4]); c.put(x, y0 + 4, Wd[2])
-    for y in range(12, 19): c.put(23, y, Wt[5]); c.put(24, y, Wt[4])  # 물줄기
     ell(c, cx, cy, R, R, lambda x, y, u, v: Wd[1] if u * u + v * v > 0.5 else None)   # 바퀴 안쪽 그림자(속이 보임)
     for ang in range(0, 360, 30):                                    # 물받이 판 12
         a = math.radians(ang)

@@ -178,13 +178,14 @@ LANE |= path((30, 28), (30, 3)) | path((31, 28), (31, 3))        # L2 서안 안
 LANE |= path((46, 27), (46, 0)) | path((47, 27), (47, 0))        # L3 동안 안길(북쪽 고개로 나가는 유일한 출구)
 LANE |= path((46, 30), (46, 38))                                                     # 주막 샛길(폭 1)                                              # 주막 샛길
 LANE |= path((29, 31), (29, 37))                                                     # 방앗간 샛길(폭 1)                                              # 방앗간·대장간 샛길
+LANE |= path((45, 25), (45, 26))                                                                  # 두 번째 건널목(우물 마당 ↔ 동안 안길)
 LANE |= {(x, y) for x in (16, 17) for y in range(24, 30)}                                         # 양반댁 대문 앞길(폭 2)
 road |= LANE
 road -= water
 for (x, y) in road:
     m = mask_of(road, x, y)
-    if x == river_L(y) - 1 and y in (28, 29): m |= E
-    if x == river_R(y) + 1 and y in (28, 29): m |= W
+    if x == river_L(y) - 1 and y in (25, 26, 28, 29): m |= E
+    if x == river_R(y) + 1 and y in (25, 26, 28, 29): m |= W
     setg(x, y, ROAD + m, 'road')
 # 논·밭에 물 대는 도랑(물 타일): 연못→논 사이 골, 강→동쪽 밭
 DITCH = {(x, 39) for x in range(9, 22)} | {(9, 40)} | {(x, 43) for x in range(44, 48)}
@@ -243,7 +244,7 @@ for n, x, y in BUILDINGS:
     for xx in range(min(dx, xl), max(dx, xl) + 1):
         yard.add((xx, r))
     for xx in range(dx - 1, dx + 2): yard.add((xx, r))                      # 문 앞 3칸
-    for xx in range(x, x + w): yard.add((xx, r - 1))                         # 기단 밑 줄: 처마 밑 땅을 흙으로(풀띠 방지)
+    for xx in range(x, x + w): yard.add((xx, r))                             # 기단 밑 줄: 건물 폭 전체를 흙으로(풀띠 방지)
 # 양반댁 마당: 담 안 전체가 다진 흙 마당(건물이 놓이는 칸은 건물이 덮는다)
 yard |= {(x, y) for y in range(10, 22) for x in range(9, 26)}
 # 마을 우물 마당(공동우물·정자나무·빨래터) · 방앗간/대장간/주막 마당 · 정자 가는 길
@@ -299,9 +300,16 @@ def _keep_cells():
     return k
 
 
+DOORZ = []
+
+
 def put_obj(name, tx, ty, force=False):
     cv = objects[name]
     w, h = cv.w // T, cv.h // T
+    if not force and name.split('_')[0] not in ('giwa', 'thatch', 'gate', 'pavilion') and not name.startswith(('toldam', 'jukbyeok', 'dolmadam', 'sarip', 'wall', 'bridge')):
+        for (zx, zy, zw, zh) in DOORZ:
+            if tx < zx + zw and zx < tx + w and ty < zy + zh and zy < ty + h:
+                SKIPPED.append((name, tx, ty)); return False
     foot = [(tx + i, ty + h - 1) for i in range(w)]
     if not force and (tx < 0 or tx + w > MW):
         SKIPPED.append((name, tx, ty)); return False
@@ -354,6 +362,11 @@ for n, x, y in BUILDINGS:
     _w, _h = bsize[n]
     NOTREE.append((x, y, _w, _h))
     NOTREE.append((x + DOOR.get(n, _w // 2) - 1, y + _h, 3, 3))
+for _n, _x, _y in BUILDINGS:
+    _w, _h = bsize[_n]
+    if _n.startswith(('pavilion', 'gate')) or (8 <= _x <= 26 and _y <= 22): continue
+    _dx = _x + DOOR.get(_n, _w // 2)
+    DOORZ.append((_dx - 1, _y + _h - 2, 3, 4))
 NOTREE += [(8, 0, 19, 4), (7, 3, 3, 21), (25, 3, 3, 21), (8, 21, 19, 3), (0, 36, 10, 3), (0, 30, 10, 2), (13, 0, 8, 10), (32, 24, 8, 4), (7, 30, 4, 10)]
 
 # 양반댁: 네 변 같은 토석담 · 모서리 4 · 남쪽은 솟을대문 양옆으로 담이 닿는다
@@ -406,9 +419,9 @@ put_obj('bridge', RX - 1, 27, True)
 # 마을 우물 마당: 공동우물 · 평상 · 정자나무 · 빨래터
 for nm, x, y in (('well', 32, 25), ('pyeongsang', 35, 26), ('laundry', 38, 25)):
     put_obj(nm, x, y, True)
-put_obj('zelkova_c', 37, 20, True); put_obj('stepping_stones', 39, 23, True)
+put_obj('zelkova_c', 37, 20, True); put_obj('bridge', RX - 1, 24, True)
 # 방앗간: 물레방아는 시내 위, 연자방아·맷돌·낟가리 / 주막: 큰 평상 · 장독대
-put_obj('waterwheel', 40, 30, True)
+put_obj('waterwheel', 39, 30, True)
 for nm, x, y in (('yeonja_mill', 36, 38), ('haystack', 32, 38), ('millstone', 34, 38), ('zelkova_a', 33, 42),
                  ('pyeongsang', 49, 38), ('jangdokdae', 50, 36), ('laundry', 55, 38),
                  ('gochu_mat', 26, 37)):
