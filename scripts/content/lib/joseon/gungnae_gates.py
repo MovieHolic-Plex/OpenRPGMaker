@@ -135,7 +135,7 @@ def wall_h(var=0):
     c = Cv(T, WH)
     walkway(c, 0, Y_WALK0, T, Y_FACE - 2, seed=var)
     for x in range(T):                                                      # 성가퀴 사이 뒤 머릿돌 띠(틈으로 풀이 비치지 않게)
-        c.put(x, 5, S[4]); c.put(x, 6, S[5]); c.put(x, 7, S[3])
+        c.put(x, 2, S[5]); c.put(x, 3, S[4]); c.put(x, 4, S[4]); c.put(x, 5, S[4]); c.put(x, 6, S[5]); c.put(x, 7, S[3])
     for (mx, mw, sl) in _MER[var]:
         _merlon(c, mx, Y_BACK, mw, fh=6, slit=sl)
     for x in range(T):                                                      # 걷는 길 앞 가장자리 턱(코니스) + 그늘
@@ -173,8 +173,9 @@ def wall_end(side='l', var=0):
 
 
 # ---------------------------------------------------------------- 세로 성벽 (동서 변)
-VW = 48            # 폭 3칸: 서쪽 옆면 12px + 윗면 28px + 오른쪽 땅 그림자 8px
-FACE_W, TOP_X0, TOP_X1 = 12, 12, 40
+VW = 48            # 폭 3칸: 왼쪽 여백 4 + 서쪽 옆면 12px + 윗면 28px(몸체 가운데 = 칸 가운데 24) + 오른쪽 땅 그림자 4px
+OX = 4
+FACE_W, TOP_X0, TOP_X1 = 12, 16, 44
 
 
 def _vwall_cols(c, y0, y1, seed, shadow=True, face=True):
@@ -183,17 +184,17 @@ def _vwall_cols(c, y0, y1, seed, shadow=True, face=True):
     옆면: 12px = 돌 줄 3(4px씩)이 세로로 달리고 줄눈은 가로 틱. 성가퀴는 10줄 + 틈 6줄 주기(16)라 칸 위아래로 이어진다."""
     for y in range(y0, y1):
         if face:
-            for x in range(0, FACE_W):                                       # 옆면
-                cidx = x // 4
+            for x in range(OX, OX + FACE_W):                                 # 옆면
+                cidx = (x - OX) // 4
                 blk = 16 if hsh(cidx, seed, 17) % 2 else 8
                 off = (cidx * 5 + seed * 3) % blk
                 t = (4, 5, 5)[cidx]
                 if (y + off) % blk == 0: t = 2                                # 가로 줄눈
                 elif (y + off) % blk == 1: t = min(6, t + 1)                  # 줄눈 아래 밝은 모서리
-                elif x % 4 == 0 and cidx > 0: t = max(2, t - 1)               # 줄 사이 세로 틈
-                elif x % 4 == 1: t = min(6, t + 1)                            # 돌 왼쪽 밝은 각
+                elif (x - OX) % 4 == 0 and cidx > 0: t = max(2, t - 1)        # 줄 사이 세로 틈
+                elif (x - OX) % 4 == 1: t = min(6, t + 1)                            # 돌 왼쪽 밝은 각
                 elif rnd(x, y, 70 + seed) > 0.92: t = max(2, t - 1)
-                if x == FACE_W - 1: t = 3                                     # 윗면과 만나는 아래 그늘선
+                if x == OX + FACE_W - 1: t = 3                                # 윗면과 만나는 아래 그늘선
                 c.put(x, y, S[t])
         for x in range(TOP_X0 + 7, TOP_X0 + 21):                              # 걷는 길
             t = 5 if x < TOP_X0 + 14 else 4
@@ -217,7 +218,7 @@ def _vwall_cols(c, y0, y1, seed, shadow=True, face=True):
                     if u == 0: t = 4 if left else 3
                 c.put(x, y, S[t])
         if shadow:                                                            # 오른쪽 땅 그림자(아래로 갈수록 옅다)
-            for i, al in enumerate((78, 70, 60, 50, 38, 28, 18, 8)):
+            for i, al in enumerate((80, 62, 42, 22)):
                 c.put(TOP_X1 + i, y, SHADOW, al)
 
 
@@ -261,7 +262,7 @@ def wall_corner(kind):
         copy_hz(0, VW, 0, Y_WALK0)                         # 위 가장자리: 뒤 성가퀴 줄
         copy_hz(ax0, ax1, Y_WALK0, Y_FACE)                 # 열린 쪽: 걷는 길 + 앞 성가퀴
         # 열린 쪽 아래 가로 성벽 앞면(성벽이 가로로 이어지는 쪽)
-        fx0, fx1 = (TOP_X1, VW) if east else (0, FACE_W)
+        fx0, fx1 = (TOP_X1, VW) if east else (0, OX + FACE_W)
         copy_hz(fx0, fx1, Y_FACE, WH)
     else:
         copy_arm(0, VW, 0, Y_FACE, arm)                    # 위에서 내려오는 세로 성벽
@@ -333,15 +334,26 @@ def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True):
     return top
 
 
-def _plaque(c, cx, y, w=22):
-    """아치 위 작은 나무 현판(어두운 판 + 금빛 글자 점)."""
+_GLYPHS = (("####", "#..#", "#..#", "#..#", "####"), (".##.", "#..#", ".##.", "#..#", ".##."), ("####", "..#.", ".#..", "#...", "####"),
+           ("#..#", "####", "#..#", "####", "#..#"), (".#..", "####", ".#..", "####", "..#."), ("####", "#..#", "####", "#..#", "#..#"),
+           ("##.#", ".#.#", "####", ".#..", "##.."), ("####", "..#.", "####", ".#..", "#.##"))
+
+
+def _plaque(c, cx, y, w=22, seed=0):
+    """아치 위 작은 나무 현판(어두운 판 + 금빛 글자 모양 4x5 획). 문마다 글자 조합이 다르다(seed)."""
     x0 = cx - w // 2
     for yy in range(y, y + 7):
         for xx in range(x0, x0 + w):
             edge = yy in (y, y + 6) or xx in (x0, x0 + w - 1)
             c.put(xx, yy, RGB['wood'][5] if edge else RGB['wood'][1])
-    for gx in range(x0 + 3, x0 + w - 3, 4):
-        c.put(gx, y + 2, RGB['straw'][5]); c.put(gx + 1, y + 3, RGB['straw'][4]); c.put(gx, y + 4, RGB['straw'][3])
+    n = max(2, (w - 3) // 5)
+    gx0 = x0 + 1 + (w - 2 - (n * 5 - 1)) // 2
+    for i in range(n):
+        g = _GLYPHS[(seed * 3 + i * 5 + hsh(i, seed, 41)) % len(_GLYPHS)]
+        for gy, row in enumerate(g):
+            for gx, ch in enumerate(row):
+                if ch == '#':
+                    c.put(gx0 + i * 5 + gx, y + 1 + gy, RGB['straw'][5] if gx < 2 else RGB['straw'][4])
 
 
 def _dancheong_column(c, x, y0, y1, w=7):
@@ -537,7 +549,7 @@ def gate_great(bays=12, pass_w=64, variant=0):
         _merlon(c, xm, fy0 - 8, 10, fh=4)
     _base_front(c, W, H, fy0, lo, hi, variant)
     top = _arch_passage(c, W // 2, H, pass_w, sh=24 if pass_w >= 48 else 18, ring=6)
-    _plaque(c, W // 2, max(fy0 + 3, top - 10), w=26 if pass_w >= 48 else 20)
+    _plaque(c, W // 2, max(fy0 + 3, top - 10), w=26 if pass_w >= 48 else 20, seed=variant + bays)
     outline(c)
     cx0 = (W // 2 - pass_w // 2) // T
     PASSAGE[f'gungnae_gate_great_{bays}'] = {'cols': (cx0, cx0 + pass_w // T), 'rows': ((H - 2 * T) // T, H // T), 'note': '아치 통로 바닥 2칸 높이를 걷는다. 그 위(아치 윗부분·기단·누각)는 캐릭터 위에 그린다.'}
@@ -567,14 +579,14 @@ def gate_small(bays=6, pass_w=32):
         _merlon(c, xm, fy0 - 8, 9, fh=4)
     _base_front(c, W, H, fy0, lo, hi, 3)
     top = _arch_passage(c, W // 2, H, pass_w, sh=14, ring=5)
-    _plaque(c, W // 2, max(fy0 + 3, top - 9), w=18)
+    _plaque(c, W // 2, max(fy0 + 3, top - 9), w=18, seed=bays + 11)
     outline(c)
     PASSAGE[f'gungnae_gate_small_{bays}'] = {'cols': ((W // 2 - pass_w // 2) // T, (W // 2 + pass_w // 2) // T),
                                              'rows': ((H - 2 * T) // T, H // T), 'note': '아치 통로 바닥 2칸 높이.'}
     return c
 
 
-def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(16, 56), pw=6, roof=(6, 66), wall=None, wall_x=16, plaster=False):
+def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(20, 60), pw=6, roof=(10, 70), wall=None, wall_x=16, plaster=False):
     """측면 문루 (동·서문용): 세로 성벽 한 줄을 동서로 가로지르는 열린 문루. 통로(맨 아래 4행)를 기준으로 짠다.
     3/4 시점에서 용마루가 남북(성벽 방향)으로 달리는 맞배 지붕이 통로 바로 위에 얹히고(rows-4 행), 지붕 밑 남쪽 처마 아래 양끝(=벽 몸체 양끝)에 기둥,
     기둥 사이로 통로 바닥(길)이 보인다. 지붕·기둥은 같은 중심선을 쓰고 기둥 바깥 끝 = 성벽 몸체 바깥 끝. 위쪽에는 wall(성벽 한 칸 그림)을 붙여

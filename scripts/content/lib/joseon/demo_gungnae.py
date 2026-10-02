@@ -159,7 +159,7 @@ def wall_ring():
     VE3 = ['gungnae_wall_v_e', 'gungnae_wall_v1_e', 'gungnae_wall_v2_e']
     for yb, cl, cr in ((YN, 'gungnae_wall_corner_nw', 'gungnae_wall_corner_ne'), (YS, 'gungnae_wall_corner_sw', 'gungnae_wall_corner_se')):
         Pb(cl, XW, yb, 'foot'); Pb(cr, XE, yb, 'foot')
-        for x in range(XW + 3, XE):                    # 성벽은 대문 밑까지 이어 깐다(문 기단의 기울어진 옆면 뒤로 돌이 비친다)
+        for x in range(XW + 3, XE):                # 성벽은 대문 밑까지 이어 깐다(문 기단의 기울어진 옆면 뒤로 돌이 비친다)
             Pb(H3[(x * 5 + (yb % 7)) % 3], x, yb)
         Pb('gungnae_gate_great_12', GX, yb, None)
         for xx in list(range(GX, GX + 4)) + list(range(GX + 8, GX + 12)):
@@ -184,8 +184,8 @@ def wall_ring():
                 continue
             items.append((yb + 1 + 12 / T, 0, x, 'shadow', shv))
     # 모서리 망루(폭 4: 성벽 바깥으로 한 칸 나온다)
-    for (x, yb) in ((XW - 1, YN), (XE, YN), (XW - 1, YS), (XE, YS)):
-        Pb('gungnae_tower_corner_4', x, yb)
+    for (x, yb) in ((XW - 1, YN), (XE - 1, YN), (XW - 1, YS), (XE - 1, YS)):    # 망루 폭 5: 중심 = 세로 성벽 몸체 가운데(x+1.5칸)
+        Pb('gungnae_tower_corner_5', x, yb)
 
 
 wall_ring()
