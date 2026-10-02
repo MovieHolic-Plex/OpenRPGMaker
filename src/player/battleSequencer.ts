@@ -522,6 +522,8 @@ export function createBattleSequencer(
     const beats = tempoActionBeats(entry.side === "enemy"
       ? planEnemyActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
+          // 피해가 없는 기술(약화·수면)은 feedback 이 없어 대상이 비었다 — 내 쪽과 같이 엔트리 대상을 넘긴다
+          targetId: entry.targetId,
           feedback,
           hitStopMs: BATTLE_HITSTOP_MS,
           // 연출 재생기(retro2003)가 시각을 정한 엔트리는 그 값을 그대로 쓴다 — 다단·광역의 타 사이를 최소 비트(400ms)로

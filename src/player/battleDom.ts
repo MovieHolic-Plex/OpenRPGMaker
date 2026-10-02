@@ -1,6 +1,6 @@
 import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
-import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { battleEntrySkillRecord, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
@@ -49,7 +49,8 @@ import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleSfx } from "@/player/battleSfx";
-import { pokemonActionMotion, pokemonHeavyShake } from "@/player/battlePokemonMotion";
+import { pokemonActionMotion, pokemonHeavyShake, type PokemonMoveContext } from "@/player/battlePokemonMotion";
+import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
 import {
@@ -141,6 +142,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   if (motionTempo !== 1) root.dataset.battleMotionTempo = String(motionTempo);
   // 포켓몬 스킨은 돌진·착탄·넉백을 그림 단위 안무(battlePokemonMotion)로 그린다.
   const pokemonMotion = root.dataset.battleUiStyle === "pokemon" && !retroMotion;
+  // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
+  let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
   if (retroMotion) root.dataset.battleMotion = "retro";
   // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
   root.dataset.battleSkinFamily = battleSkinFamily(skinId);
@@ -433,6 +436,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onTimelineEntry(entry) {
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
+      if (pokemonMotion) {
+        const skill = entry.skillId || entry.skillName ? battleEntrySkillRecord(entry) : undefined;
+        pokemonMove = { motion: pokemonMoveMotion(skill), color: pokemonMoveColor(skill), fromBelow: pokemonStrikeFromBelow(skill), actionId: entry.actionId };
+        // QA·스타일 훅: 지금 엔트리의 움직임 종류
+        root.dataset.battleMoveMotion = pokemonMove.motion;
+      }
       if (retroMotion) retroTimelineEntry(field, entry);
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
       if (retroMotion && entry.kind === "special") {
@@ -549,7 +558,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else applyActionMotion(field, beat);
       if (pokemonMotion) {
         const lungeMs = Number.parseFloat(getComputedStyle(root).getPropertyValue("--motion-lunge-ms")) || 160;
-        pokemonActionMotion(field, beat, lungeMs);
+        pokemonActionMotion(field, beat, lungeMs, pokemonMove);
       }
       // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
       // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
@@ -566,6 +575,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
     },
     animationImpactMs(animation) {
+      // 포켓몬 스킨의 접촉 아닌 기술은 기술 이펙트를 「닿는 순간」(impact 시작)에 띄운다 — 착탄 프레임에 맞춰 일찍 띄우면
+      // 발사체가 날아가는 동안 상대 몸에서 불길이 먼저 피었다(2026-10-02 녹화). 1ms = 시퀀서 오프셋이 approach 길이가 된다.
+      if (pokemonMotion && pokemonMove.motion !== "contact") return 1;
       return battleAnimationImpactMs(animation.animationId);
     },
     onEscapeOutcome(success) {

@@ -115,7 +115,13 @@
       "stage": 1,
       "starterSet": "first-region",
       "design": "A grass starter inspired by a sprouting acorn and a small fox: four legs, brown seed-shell cap on the head, two large leaves growing from the head like ears, green body with cream chest fur, leafy tail.",
-      "palette": "leaf green, cream, acorn brown"
+      "palette": "leaf green, cream, acorn brown",
+      "emit": {
+        "back": {
+          "x": 86,
+          "y": 61
+        }
+      }
     }
   ]
 }

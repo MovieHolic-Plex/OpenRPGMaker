@@ -91,6 +91,13 @@ npm run harness -- monster-collect-species preview                      # 대기
 착탄·정지 끝까지, `recover` = 돌아가기 비트, 맞은 쪽은 `hurt.contact`(넉백 동안) → `hurt.recover`. `anim.json` 각 동작에 `keys` 가 실린다.
 2026-10-02 실제 전투 녹화는 이 규칙을 주입 스크립트(`qa-runs/battle-anim3/anim.js`)로 시연했다 — 엔진 배선 전까지 정본은 이 표다.
 
+### 입·손 자리 (`anim.json` 의 `emit`)
+
+발사체가 나가는 자리. `build` 가 면마다 0번 칸에서 `spriteEmitPoint`(`src/battle/pokemonMoveMotion.ts`, 엔진과 같은 함수)로 구해
+`emit: { front: {x,y}, back: {x,y} }` 로 적는다 — 내 몬스터(back)는 오른쪽 위, 상대(front)는 왼쪽 아래 방향. 자동 판정이 잎 끝·꼬리 끝을
+고르면 시드 `emit`(같은 모양, `SPRITE_CANVAS` 안)이 이긴다. 선례: 리프링(leafling) 뒷모습은 잎 끝이 잡혀 `{x:86,y:61}`(입)로 고쳤다.
+`check` 는 emit 3칸 안에 몸이 없으면 잡는다 — 시드 값이면 오류, 자동 값이면 경고.
+
 ### 스킬별 공격 = 자세 몇 가지 × 스킬 매핑 (`anim/poses.ts`)
 
 스킬마다 그림을 만들지 않는다. 속성 그림(불꽃·물줄기·잎)은 스킬의 전투 효과 애니메이션(`animationId`)이 그리고, 몬스터 그림은 몸의 자세만 맡는다.

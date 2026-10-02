@@ -459,6 +459,25 @@
   키프레임으로 붙든다. ③ 넉백 방향을 착탄 순간의 공격자 그림 위치로 재면 공격자가 상대 몸 안에 있어 **뒤집힌다** — 돌진 시작 때 제자리에서 잰
   단위 벡터를 쓴다. ④ 기술 애니메이션 화면 섬광(저작 0.85×2)은 포켓몬에서 0.32 한 번(140ms), 대상 섬광 tint 는 끈다. 강타·급소·막타만
   필드를 3px 흔든다(`pokemonHeavyShake`). jsdom 에는 `animate` 가 없어 단위 테스트 대신 녹화로 검증했다.
+- **포켓몬 기술 움직임 종류 (2026-10-02, `battle/pokemonMoveMotion.ts` → `battlePokemonMotion.ts`):** 기술 수백 개를 따로 연출하지 않고
+  「움직임 종류 하나 + 저작 이펙트 하나」로 조합한다. 종류 7개: 접촉 · 발사체 · 현장 발생 · 범위 · 능력 올리기 · 상태 걸기 · 회복.
+  판정 순서(`pokemonMoveMotion`): 저자 `SkillRecord.moveMotion` > 효과 healing → 회복 > 피해 없음 → 상대 대상이면 상태 걸기, 아니면 능력 올리기
+  > `allEnemies` → 범위 > 이펙트 id 가 번개·빛기둥·바위 솟음(`STRIKE_ANIMATION`) → 현장 발생 > 물리(attack) → 던지는 이펙트(`THROWN_ANIMATION`)면
+  발사체, 아니면 접촉 > 나머지 특수 → 발사체. 기술이 없으면(일반 공격·적 기본 공격) 접촉. 물대포(`water_column`)는 물줄기라 발사체다.
+  색은 속성 → 이펙트 낱말 → 흰색(`pokemonMoveColor`). 자료집 스킬 → 1세대 카드의 「움직임」(`db-field-skill-move-motion`, 「자동 (판정)」 + 7개)이
+  덮어쓴다 — 생략하면 저장하지 않는다. 모든 종류가 같은 박자다: 쓰는 쪽 준비·발동은 approach 비트 안, 비트 끝에 맞는 쪽에 닿는다.
+  **접촉이 아닌 종류는 저작 기술 이펙트를 착탄 순간에 붙인다**(`animationImpactMs` 가 1 을 돌려준다) — 그대로 두면 불꽃 폭발이 빛 덩이가
+  닿기 전에 상대 자리에서 먼저 터졌다. 보조 기술은 approach 가 가벼운 무게라 190ms 남짓이어서 그 안에 뛰면 안 읽힌다 — 부르는 동작은
+  `CALL_MS` 620ms 로 비트보다 길게 두고 제자리 복귀를 그 뒤로 미룬다(`holdUntil`). 범위기 충격파는 쓰는 쪽 발밑에서 퍼지는데 큰 뒷모습 그림이면
+  화면 아래로 잘리므로 맞는 쪽 발밑에도 고리를 하나 더 둔다. 필드 흔들림은 행동 하나(`actionId`)에 한 번.
+  능력 오름·상태 화살표는 기술 색이 아니라 관례 색(빨강 ▲·파랑 ▼)이고 흰 외곽선을 두른다 — 속성 없는 보조기는 흰색이라 밝아진 그림 위에서 사라졌고,
+  파랑 ▼는 파란 몬스터 위에서 사라졌다. `clip-path` 는 `filter` 뒤에 적용돼 외곽선까지 잘라 내므로 바깥 조각(외곽선)과 안 조각(삼각형)을 나눈다.
+  적 행동 비트(`planEnemyActionBeats`)는 2026-10-02 전에는 `targetId` 를 feedback 에서만 얻어 **피해 없는 적 기술(약화·수면)은 대상이 비었다** —
+  시퀀서가 내 쪽처럼 `entry.targetId` 를 넘긴다(단위 테스트 없음, 녹화로 확인).
+- **발사체는 「입·손」 자리에서 나간다 (`spriteEmitPoint`).** 그림 몸 위쪽 60% 안에서 상대 방향으로 가장 튀어나온 칸(가로 위주, 세로 0.35배).
+  런타임은 그림 픽셀을 캔버스로 읽어 캐시한다(가로 스트립은 `data-strip-frames` 첫 칸만). 그림에 `data-emit-x/y`(칸 좌표)가 있으면 그것을 쓴다 —
+  몬스터 하네스 `anim.json` 의 `emit` 이 같은 함수로 구한 값이고, 시드 `emit` 으로 손 고칠 수 있다(`openwiki/harnesses/monster-collect-species.md`).
+  교차 출처라 못 읽으면 그림 상자 위쪽 앞끝으로 물러난다. 엔진의 `data-emit-*` 배선은 아직 없고 QA 녹화가 주입으로 시연했다(스트립과 같은 처지).
 - **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
   `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
   AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중

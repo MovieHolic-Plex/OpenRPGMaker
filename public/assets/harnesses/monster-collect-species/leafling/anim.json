@@ -29,5 +29,17 @@
         "source": "idle-shift"
       }
     }
+  },
+  "emit": {
+    "front": {
+      "x": 25,
+      "y": 74,
+      "source": "auto"
+    },
+    "back": {
+      "x": 86,
+      "y": 61,
+      "source": "seed"
+    }
   }
 }

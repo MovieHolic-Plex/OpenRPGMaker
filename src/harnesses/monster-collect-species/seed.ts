@@ -2,7 +2,7 @@
  * 시드 — 하네스가 시작할 때 읽는 입력. 사람이 쓰는 도감 기획(seed.json)과
  * 하네스가 쓰는 진행 기록(ledger.json)을 나눈다. 둘 다 harness-data/monster-collect-species/ 에 커밋한다.
  */
-import type { SpriteSide } from "./pixel/fit";
+import { SPRITE_CANVAS, type SpriteSide } from "./pixel/fit";
 import { IDLE_PLAN, type IdleMotion } from "./anim/idle";
 
 export type StyleContract = {
@@ -65,6 +65,11 @@ export type SpeciesSeed = {
   palette?: string;
   /** 대기 애니메이션에서 따로 흔들 부위 (불꽃 꼬리 등) */
   motion?: IdleMotion;
+  /**
+   * 입·손 자리 손 고침(112px 캔버스 좌표). 발사체 기술이 여기서 나간다. 생략하면 build 가 그림에서 찾는다
+   * (몸 위쪽 60% 에서 상대 방향으로 가장 튀어나온 칸 — battle/pokemonMoveMotion.ts spriteEmitPoint, 엔진도 같은 함수).
+   */
+  emit?: Partial<Record<SpriteSide, { x: number; y: number }>>;
 };
 
 export type MonsterSeed = {
@@ -124,6 +129,12 @@ export function validateSeed(value: unknown): MonsterSeed {
     ids.add(species.id);
     if (!species.design?.trim()) throw new Error(`종 ${species.id} 에 design 설명이 없다`);
     if (![1, 2, 3].includes(species.stage)) throw new Error(`종 ${species.id} stage 는 1~3`);
+    for (const [side, point] of Object.entries(species.emit ?? {})) {
+      if (side !== "front" && side !== "back") throw new Error(`종 ${species.id} emit 의 면은 front·back: ${side}`);
+      if (!point || !Number.isInteger(point.x) || !Number.isInteger(point.y) || point.x < 0 || point.y < 0 || point.x >= SPRITE_CANVAS || point.y >= SPRITE_CANVAS) {
+        throw new Error(`종 ${species.id} emit.${side} 는 0~${SPRITE_CANVAS - 1} 정수 좌표`);
+      }
+    }
   }
   for (const species of seed.species) {
     if (species.evolvesFrom && !ids.has(species.evolvesFrom)) throw new Error(`종 ${species.id} 의 evolvesFrom ${species.evolvesFrom} 이 시드에 없다`);

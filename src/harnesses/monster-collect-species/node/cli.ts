@@ -24,7 +24,8 @@ import { actionPrompt, backPrompt, evolutionPrompt, frontPrompt } from "../promp
 import { emptyLedger, validateSeed, type ActionContract, type ActionKind, type MonsterLedger, type MonsterSeed, type SpeciesSeed } from "../seed";
 import { idleFrames } from "../anim/idle";
 import { fromStrip, rowBlockHint, rowFrames, rowReference, splitRow, toStrip } from "../anim/row";
-import { cropToInk, type RgbaImage } from "../pixel/image";
+import { cropToInk, isOpaque, type RgbaImage } from "../pixel/image";
+import { spriteEmitPoint } from "../../../battle/pokemonMoveMotion";
 import { encodePng, readPng, writePng } from "./png";
 import { generateImage, mapLimit } from "./imageSource";
 import { PATHS, relativeToRepo } from "./paths";
@@ -356,7 +357,22 @@ function pickAction(args: Args, species: SpeciesSeed, which: SpriteSide, actionI
 }
 
 type AnimEntry = { path: string; frames: number; frameMs: number; loop: boolean; source: "idle-shift" | "row-generation"; kind?: ActionKind; keys?: ActionContract["keys"] };
-type AnimManifest = { canvas: number; direction: MonsterSeed["animation"]["direction"]; sides: Partial<Record<SpriteSide, Record<string, AnimEntry>>> };
+type EmitPoint = { x: number; y: number; source: "auto" | "seed" };
+type AnimManifest = {
+  canvas: number;
+  direction: MonsterSeed["animation"]["direction"];
+  sides: Partial<Record<SpriteSide, Record<string, AnimEntry>>>;
+  /** 입·손 자리(캔버스 좌표) — 발사체 기술이 나가는 곳. 시드 emit 이 있으면 그것, 없으면 그림에서 찾은 값 */
+  emit?: Partial<Record<SpriteSide, EmitPoint>>;
+};
+
+/** 대기 그림의 입·손 자리. 엔진은 같은 함수(spriteEmitPoint)로 화면의 그림을 읽는다 — 시드에 손 고친 값이 있으면 그것을 쓴다. */
+function emitFor(species: SpeciesSeed, which: SpriteSide, sprite: RgbaImage, direction: MonsterSeed["animation"]["direction"]): EmitPoint | undefined {
+  const manual = species.emit?.[which];
+  if (manual) return { ...manual, source: "seed" };
+  const found = spriteEmitPoint(sprite.width, sprite.height, (x, y) => isOpaque(sprite, x, y), direction[which]);
+  return found ? { ...found, source: "auto" } : undefined;
+}
 
 function printIssues(label: string, issues: CheckIssue[]): number {
   for (const issue of issues) console.log(`  ${issue.level === "error" ? "✗" : "!"} ${label}: ${issue.message}`);
@@ -377,6 +393,11 @@ function stageBuild(): number {
       console.log(`${species.id} ${which}: 잉크 ${fit.ink.width}x${fit.ink.height} · 축소 ${fit.factor.toFixed(2)} · 마젠타 정리 ${fit.magentaRemoved}`);
       const manifest = (anim[species.id] ??= { canvas: SPRITE_CANVAS, direction: seed.animation.direction, sides: {} });
       const states = (manifest.sides[which] ??= {});
+      const emit = emitFor(species, which, fit.sprite, seed.animation.direction);
+      if (emit) {
+        (manifest.emit ??= {})[which] = emit;
+        console.log(`${species.id} ${which} 입·손 자리 (${emit.x}, ${emit.y}) ${emit.source === "seed" ? "시드" : "자동"}`);
+      }
       const { idle } = seed.animation;
       mkdirSync(join(PATHS.bundle, species.id, "anim"), { recursive: true });
       writePng(animPath(species.id, which, "idle"), toStrip(idleFrames(fit.sprite, which, species.motion)));
@@ -408,6 +429,18 @@ function stageCheck(): number {
     const manifestPath = join(PATHS.bundle, species.id, "anim.json");
     if (!existsSync(manifestPath)) continue;
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as AnimManifest;
+    for (const [which, point] of Object.entries(manifest.emit ?? {}) as [SpriteSide, EmitPoint][]) {
+      const base = which === "front" ? front : back;
+      if (!base) continue;
+      // 입 자리가 몸에서 3칸 넘게 떨어져 있으면 발사체가 허공에서 나간다 — 시드 emit 을 잘못 적었거나 그림이 바뀌었다
+      let near = false;
+      for (let dy = -3; dy <= 3 && !near; dy += 1) for (let dx = -3; dx <= 3 && !near; dx += 1) {
+        const x = point.x + dx;
+        const y = point.y + dy;
+        near = x >= 0 && y >= 0 && x < base.width && y < base.height && isOpaque(base, x, y);
+      }
+      if (!near) errors += printIssues(`${species.id} ${which} 입·손 자리`, [{ level: point.source === "seed" ? "error" : "warning", message: `(${point.x}, ${point.y}) 근처에 몸이 없다` }]);
+    }
     for (const [which, states] of Object.entries(manifest.sides) as [SpriteSide, NonNullable<AnimManifest["sides"][SpriteSide]>][]) {
       const base = which === "front" ? front : back;
       if (!base) { errors += printIssues(`${species.id} ${which} 애니메이션`, [{ level: "error", message: "스프라이트 없이 애니메이션만 있다" }]); continue; }
