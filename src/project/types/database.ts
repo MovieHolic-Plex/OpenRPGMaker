@@ -16,6 +16,7 @@ import type {
 } from "./base";
 import type { RetroFxAnchor, RetroSkillMotion } from "@/assets/retroClassSkills";
 import type { RetroMonsterSkillMotion } from "@/assets/retroMonsterSkills";
+import type { PokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import type { Command, Condition, EventPageGraphic, WeatherKind } from "./events";
 import type { Season, TimePhase, TimeSystemConfig } from "../gameTime";
 import type { GenrePackId } from "../genrePackId";
@@ -319,6 +320,11 @@ export interface SkillRecord {
    * 위력·비용·상태는 이 레코드 값을 쓰고 그림·움직임·소리·타수 간격만 빌린다. 생략 = 빌리지 않음.
    */
   retroChoreographyId?: string;
+  /**
+   * 포켓몬 스킨 움직임 종류(접촉·발사체·현장 발생·범위·능력 올리기·상태 걸기·회복). 생략 = 효과·계산 능력치·대상·이펙트 id 로
+   * 자동 판정(battle/pokemonMoveMotion.ts). 판정이 틀린 기술만 적는다. 그림·움직임만 바뀌고 위력·명중은 그대로다.
+   */
+  moveMotion?: PokemonMoveMotion;
 }
 
 export interface SkillArea {

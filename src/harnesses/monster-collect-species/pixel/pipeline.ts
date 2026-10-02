@@ -1,5 +1,5 @@
 /** 생성 원본 한 장 → 격자 도트(출처로 커밋하는 것) → 전투 스프라이트. 브라우저·노드 공용. */
-import { extractGrid } from "./grid";
+import { extractGrid, type GridOptions } from "./grid";
 import { tidyCells } from "./tidy";
 import { fitSprite, type FitResult, type SpriteSide } from "./fit";
 import { composeOn, cropToInk, scaleNearest, type RgbaImage } from "./image";
@@ -11,8 +11,8 @@ export type PixelizeResult = {
   colors: number;
 };
 
-export function pixelize(source: RgbaImage, maxColors = 20): PixelizeResult {
-  const { cells, block } = extractGrid(source);
+export function pixelize(source: RgbaImage, maxColors = 20, grid: GridOptions = {}): PixelizeResult {
+  const { cells, block } = extractGrid(source, grid);
   const { image, colors } = tidyCells(cells, maxColors);
   return { grid: image, block, colors };
 }

@@ -436,6 +436,118 @@
 - **HP 잔상(유리 창):** `.battle-stat-bar-hp::after` 가 같은 `--battle-stat` 폭으로 360ms 뒤 440ms 따라 빠진다. 채움은 90ms.
   포켓몬 HP 바는 `::after` 가 「체력」 라벨이라 잔상 대신 620ms 로 눈에 보이게 줄어든다.
 - **포켓몬 기절:** 흐려지는 대신 `pkmn-battler-sink`(translate 100% + 아래쪽 clip)로 발판 아래로 꺼진다.
+- **포켓몬 타격 (2026-10-02):** ① 돌진·넉백 방향은 상대 쪽 대각선(내 몬스터 +x·−y, 상대 −x·+y, `05-poses-motion.css`) — 옆 구도 부호를
+  쓰던 때는 돌진이 상대에게서 멀어졌다. ② 파티 몬스터 배틀러는 런타임 id `mon:<instanceId>` 로 맞는데 노드 testid 는 recordId 라
+  `findBattlerNode` 가 못 찾아 **적이 내 몬스터를 때려도 넉백·흰 실루엣·점멸·이펙트 위치가 하나도 안 붙었다** → 노드에
+  `data-battler-id`(= 런타임 id)를 찍고 마지막 폴백으로 찾는다. ③ 화면은 여전히 흔들지 않고, 맞은 몬스터 **그림만** `pkmn-hit-shake`
+  (300ms, 6→2px 좌우)로 떤다 — 히트스톱 동안은 ① 정지 규칙에 붙들려 흰 실루엣, 풀리면서 떤다.
+  QA 함정: 연출 중 Z 는 5배속 넘기기(`beginSkip`)라, 메시지를 Z 로 넘기는 녹화는 적 턴이 0.2초로 지나간다 — `data-battle-sequence-busy` 동안은 누르지 말 것.
+- **포켓몬 동작 템포 1.5배 (2026-10-02):** `battleDom` 의 `POKEMON_MOTION_TEMPO` → 시퀀서 훅 `motionTempo` 가 행동 비트(예고·돌진·회복)만
+  줄인다(`tempoActionBeats`). 히트스톱(110ms)과 대사 읽기 시간은 그대로 — 히트스톱까지 줄이면 타격이 가벼워진다. 이펙트 프레임은
+  `data-battle-motion-tempo` 를 `battleAnimationFrameMs` 가 배속과 곱하고, 착탄 오프셋도 같은 배율로 줄인다. CSS 전환 길이는 손으로 맞췄다:
+  돌진 `--motion-lunge-ms` 160ms(22-hit-feel ⑦, 기본 240), 포켓몬 lunge/return/knockback 95/120/80ms, `pkmn-hit-shake` 200ms.
+  실측(3대진 평균): 돌진→착탄 471→318ms, 적 공격 866→611ms, 한 차례 1.89→1.39초. 효과음은 원래 울리고 있었다(착탄 10ms 안에 타격 샘플 +
+  `thud`) — GIF 녹화에 소리가 없었을 뿐이다. 소리 포함 녹화는 실시간 MediaRecorder 가 headless 에서 ±0.15초 흔들리므로, 소리를 「악보」로
+  적어 OfflineAudioContext 로 다시 렌더한다(QA 스크래치 `qa-runs/battle-sfx/audio-score.js`).
+- **포켓몬 타격 안무 (2026-10-02, `battlePokemonMotion.ts`):** 「공격하는 느낌·맞는 느낌이 없다」 진단(25fps 칸 단위): 돌진 72px 로 상대(약 300px)에
+  닿지 않았고, 맞은 쪽은 노드 filter(밝기 1.5)·`battle-juice-hit`(밝기 1.9, 0.3초)·기술 대상 섬광이 겹쳐 **발판째** 0.36초 바랬으며, 내 몬스터는
+  반투명 점멸로 「사라지는」 것처럼 보였고, 적 돌진은 정지 비트 60ms 안에 끝났다. 지금은 그림(battlerSpriteNode) 단위 WAAPI 가
+  `translate`·`scale` 개별 속성으로: 예비(뒤로 14px 웅크림) → 상대 몸 앞끝까지 대각선 돌진(늘어남, 비트 끝 `--motion-lunge-ms` 동안) →
+  정지 비트 동안 접촉 자세(찌그러짐) → 살짝 지나쳤다 제자리. 맞은 쪽은 정지 동안 16px 밀린 흰 실루엣 → 풀리며 48px 날아갔다 떨며 복귀(380ms)
+  → 두 번 꺼졌다 켜짐. 적의 돌진도 예고 비트 끝에 같은 모양으로 온다. 함정: ① 발판이 노드 `::before` 라 노드를 옮기면 발판도 움직인다 —
+  노드 모션 클래스의 transform·filter 는 포켓몬 CSS 가 끈다. ② CSS 히트스톱(`animation-play-state: paused`)은 WAAPI 를 멈추지 않는다 — 정지는
+  키프레임으로 붙든다. ③ 넉백 방향을 착탄 순간의 공격자 그림 위치로 재면 공격자가 상대 몸 안에 있어 **뒤집힌다** — 돌진 시작 때 제자리에서 잰
+  단위 벡터를 쓴다. ④ 기술 애니메이션 화면 섬광(저작 0.85×2)은 포켓몬에서 0.32 한 번(140ms), 대상 섬광 tint 는 끈다. 강타·급소·막타만
+  필드를 3px 흔든다(`pokemonHeavyShake`). jsdom 에는 `animate` 가 없어 단위 테스트 대신 녹화로 검증했다.
+- **포켓몬 기술 움직임 종류 (2026-10-02, `battle/pokemonMoveMotion.ts` → `battlePokemonMotion.ts`):** 기술 수백 개를 따로 연출하지 않고
+  「움직임 종류 하나 + 저작 이펙트 하나」로 조합한다. 종류 7개: 접촉 · 발사체 · 현장 발생 · 범위 · 능력 올리기 · 상태 걸기 · 회복.
+  판정 순서(`pokemonMoveMotion`): 저자 `SkillRecord.moveMotion` > 효과 healing → 회복 > 피해 없음 → 상대 대상이면 상태 걸기, 아니면 능력 올리기
+  > `allEnemies` → 범위 > 이펙트 id 가 번개·빛기둥·바위 솟음(`STRIKE_ANIMATION`) → 현장 발생 > 물리(attack) → 던지는 이펙트(`THROWN_ANIMATION`)면
+  발사체, 아니면 접촉 > 나머지 특수 → 발사체. 기술이 없으면(일반 공격·적 기본 공격) 접촉. 물대포(`water_column`)는 물줄기라 발사체다.
+  색은 속성 → 이펙트 낱말 → 흰색(`pokemonMoveColor`). 자료집 스킬 → 1세대 카드의 「움직임」(`db-field-skill-move-motion`, 「자동 (판정)」 + 7개)이
+  덮어쓴다 — 생략하면 저장하지 않는다. 모든 종류가 같은 박자다: 쓰는 쪽 준비·발동은 approach 비트 안, 비트 끝에 맞는 쪽에 닿는다.
+  **접촉이 아닌 종류는 저작 기술 이펙트를 착탄 순간에 붙인다**(`animationImpactMs` 가 1 을 돌려준다) — 그대로 두면 불꽃 폭발이 빛 덩이가
+  닿기 전에 상대 자리에서 먼저 터졌다. 보조 기술은 approach 가 가벼운 무게라 190ms 남짓이어서 그 안에 뛰면 안 읽힌다 — 부르는 동작은
+  `CALL_MS` 620ms 로 비트보다 길게 두고 제자리 복귀를 그 뒤로 미룬다(`holdUntil`). 범위기 충격파는 쓰는 쪽 발밑에서 퍼지는데 큰 뒷모습 그림이면
+  화면 아래로 잘리므로 맞는 쪽 발밑에도 고리를 하나 더 둔다. 필드 흔들림은 행동 하나(`actionId`)에 한 번.
+  능력 오름·상태 화살표는 기술 색이 아니라 관례 색(빨강 ▲·파랑 ▼)이고 흰 외곽선을 두른다 — 속성 없는 보조기는 흰색이라 밝아진 그림 위에서 사라졌고,
+  파랑 ▼는 파란 몬스터 위에서 사라졌다. `clip-path` 는 `filter` 뒤에 적용돼 외곽선까지 잘라 내므로 바깥 조각(외곽선)과 안 조각(삼각형)을 나눈다.
+  적 행동 비트(`planEnemyActionBeats`)는 2026-10-02 전에는 `targetId` 를 feedback 에서만 얻어 **피해 없는 적 기술(약화·수면)은 대상이 비었다** —
+  시퀀서가 내 쪽처럼 `entry.targetId` 를 넘긴다(단위 테스트 없음, 녹화로 확인).
+- **포켓몬 타격감 2차 (2026-10-02):** 40ms 단위 녹화 진단에서 착탄 프레임이 가장 흐렸다 — 화면 섬광·정지 중 필드 밝기 올림
+  (05-poses `contrast 1.08 brightness 1.05`)·정지 내내 흰 실루엣이 겹쳐 하늘이 217→234 로 옅어졌다. 지금: ① 흰 실루엣은 한 프레임(≈45ms, 급소 70ms)만 —
+  22-hit-feel ① 의 `!important` filter 를 포켓몬 CSS 가 `var(--pkmn-hit-flash)` 로 바꾸고 안무가 그 변수를 WAAPI 로 넘긴다(`@property` 등록).
+  정지 중 필드 filter 끔, 몸으로 치는 기술의 화면 섬광 끔(나머지 0.18·100ms). ② 정지 동안 맞은 쪽 ±4~8px 진동, 때린 쪽 ±2px.
+  ③ 착탄 「팍」(`impactBurst`: 16각 별 + 맞은 방향 파편)과 카메라 킥(`cameraKick`, 2~6px + 1.2~3% 확대)이 **모든** 타격에 온다 —
+  「강타만 흔든다」 포켓몬 문법에서 벗어난 사용자 결정이다. 넉백 거리·기울기는 세기(`PokemonHit.power` = 최대 HP 대비 피해 × 2.5, 급소 ≥0.8)에 비례.
+  급소·막타·강타는 필드 한 프레임 번쩍임 + 6px 흔들림. ④ HP 잔상: 채움 260ms, 깎인 몫은 흰 잔상(`--pkmn-hp-ghost`, 트랙 배경 그라디언트 —
+  바의 `::after` 는 「체력」 글자라 못 쓴다)이 420ms 머물렀다 560ms 에 따라 빠진다. 저작 타격 이펙트는 접촉도 착탄 순간에 붙이고(별이 85ms 먼저 떴다),
+  베기 궤적은 포켓몬에서 그리지 않는다.
+  3차(같은 날 평가 후): 타격음 아래층이 세기를 따른다(`battleSfx.playBattleImpactLayer` — 저음 135→80Hz·길이 0.13→0.33초, 0.3 부터 「퍽」 잡음,
+  0.7·급소부터 62Hz 울림 + 높은 「딱」). 세기는 안무와 같은 `pokemonHitPower`. 이 층은 UI 합성음 master(0.14)가 아니라 착탄 버스(0.42)로 나간다 —
+  master 를 거치면 녹화 저음 대역 에너지가 층을 넣기 전과 같았다(샘플은 0.4 로 곧장 출력). 타격 샘플 자체도 세기에 따라 크기 0.75→1.3배·
+  높이 1.12→0.82배(`emitBattleJuice(..., shape)` → `playBattleSample(id, volume, rate)`). 사건 1개 = 소리 1개 원칙은 그대로다. 착탄 별은 번짐 없는 4겹 별
+  (어두운 테 · 기술 색 · 노랑 · 흰색)을 `steps(1, end)` 로 바꾼다 — 그라데이션 + drop-shadow 는 도트 몬스터 옆에서 혼자 매끈했다.
+  카메라 킥 하한 4px, 넉백 배율 발사체·범위 0.95 · 현장 발생 0.8.
+- **포켓몬 효과음 타이밍 (2026-10-02):** 신고 「소리 나오는 타이밍이 매우 이상하다」. 녹화 소리 악보에 호출 스택을 남겨(`audio-score.js` 의 `who`) 쟀다.
+  타격 샘플·아래층은 착탄 ±10ms 로 맞았는데 **저작 이펙트의 타이밍 효과음이 착탄 뒤 160~420ms 에 한 번 더** 났다 —
+  안무가 이펙트를 착탄 순간에 마운트하는데(`animationImpactMs` = 1) 재생은 프레임 0부터라, 효과음이 걸린 프레임까지 그만큼 늦었다
+  (몸통박치기 +174 · 물대포 +272 · 불꽃 +220 · 번개 +159ms). 첫 재생 소리가 디코드 캐시에 없으면 `new Audio` 로 물러나 더 늦었다(Fog1 +421ms).
+  또 확정 순간 휘두름(attack1)이 착탄 280ms 전에 불꽃·번개에도 울렸다. 지금:
+  ① **이펙트 재생 계획** `battleAnimationLeadPlan(animationId, availableMs)` — 착탄 프레임(효과음·섬광·흔들림이 걸린 첫 프레임) 앞 프레임 중
+  approach 안에 들어가는 만큼은 **앞당겨 틀고**(`leadMs`), 안 들어가는 맨 앞만 **건너뛴다**(`skipFrames`). 접촉·발사체는 몸·빛 덩이가 다가감을 그리므로
+  0을 넘겨 착탄 프레임부터, 현장 발생·범위·보조는 이펙트 자체가 다가감(내리꽂는 번개·솟는 가시·떨어지는 운석)이라 approach 길이를 넘긴다 —
+  처음엔 전부 건너뛰어 번개·운석의 내려오는 칸이 사라졌다(적대적 QA). battleDom 의 `animationImpactMs(animation, approachMs)` 가 계획을 세우고
+  `onEntryAnimation` 이 씬 루트 `data-battle-animation-skip-frames` 로 넘기면 `mountBattleAnimationPlayback` 이 거기서 시작한다(본체 `data-playback-start-frame`).
+  그보다 먼저 시작했어야 할 후속은 그만큼 진행된 칸부터, 이미 끝났어야 할 후속은 틀지 않는다. 시퀀서는 `animationRemainingMs` 로 recover 를 실제 끝에 맞춘다.
+  ② 전투 시작 때 `preloadAllBattleAnimationSounds()`(+ 행동 시작 때 `preloadBattleAnimationSounds`) — 3배속이면 approach 가 60~110ms 라 행동 때 받으면 늦었다.
+  ③ 휘두름은 포켓몬 스킨에서 접촉 기술만, 착탄 160ms 전 — 타격감 프리셋(light 포함)과 무관. 무장은 명령마다 새로 정한다(막힌 행동의 무장이 남아 엉뚱한 휘두름).
+  ④ 신호(cue)와 이펙트(animation)가 같은 샘플을 80ms 안에 내면 하나만 — **언제나 신호가 남는다**(이펙트가 먼저면 멈추고 신호로 바꾼다).
+  회복은 hit-heal 과 회복 이펙트가 같은 Recovery5 라 겹쳐 울렸고, 물기(damage2)·몸통박치기(blow4) 이펙트는 타격 신호와 같은 샘플이라 먼저 온 쪽을 남기면
+  세기 모양(크기·높이)이 사라졌다. 같은 출처끼리·출처 미지정(`other`)은 합치지 않는다(빠른 배속에서 매 프레임 같은 소리를 내는 저작).
+  ⑤ 고르기 확인음(Decision1, 크게 들리는 길이 약 0.5초)은 행동 approach 가 시작되면 150ms 동안 거둔다(`fadeBattleCue`) — 꼬리가 착탄과 겹쳤다.
+  결과(같은 시드 재녹화): 효과음이 타격음과 −22~−34ms 로 붙는다.
+  단위 테스트 `test/battleAnimationFollowUps.test.ts` 「앞 프레임 건너뛰기」, `test/battleSeSamples.test.ts` 병합·출처(작성만, 미실행).
+- **피격 반응 리뷰 반영 (2026-10-02, 사용자 전달 리뷰):** 「충격음이 아니라 피 차거나 피한 소리」·「HP 상자 흔들림이 한 박자 늦다」·
+  「맞는 게 아니라 피한 모션, 공이 도착 안 했는데 시작」·「2 깎인 작은 공에 크게 밀린다」. 기하 탐침(`qa-runs/battle-moves/anim.js` `__geoLog`)으로 쟀다:
+  HP 상자와 방금 맞은 몬스터가 **+414ms 다음 차례 표시(`.battle-acting` 의 oprn-actor-step, margin-left −16px)로 밀렸다 돌아왔다** — 늦은 흔들림의 정체.
+  물대포 꼬리 구슬은 28ms 씩 늦게 떠나 착탄 뒤 112ms 까지 날아왔다. 지금: 포켓몬 스킨에서 차례 걸음을 끄고(20-pokemon-skin ⑤), 꼬리 구슬은 늦게 떠나
+  더 빨리 날아 모두 착탄에 함께 닿고, 떠나는 순간 「슈웅」(Wind8 0.22·1.25배속). 피격 반응 자체는 아래 3세대 박자로 바꿨다.
+- **포켓몬 3세대 타격 박자 (2026-10-02, pokeemerald 디컴파일 조사):** 「아직 부족하다, 포켓몬 타격감을 연구하라」. 출처(pret/pokeemerald):
+  `data/battle_scripts_1.s` BattleScript_HitFromAtkAnimation = `attackanimation → waitanimation → effectivenesssound + hitanimation → waitstate →
+  healthbarupdate → datahpupdate → critmessage → resultmessage` — **타격은 두 박자**다(기술 연출의 접촉 → 연출이 끝난 뒤 피해).
+  접촉: 몸통박치기(`battle_anim_scripts.s` Move_TACKLE) = 공격자 4프레임에 16px 직선 전진·복귀, 6프레임에 타격 스플랫(고정 크기, **8프레임 뒤 사라짐**) +
+  `AnimTask_ShakeMon 3,0,6,1`(2프레임마다 0↔+3px, 12프레임) + 기술 효과음. 피해에 비례하는 떨림은 `AnimTask_ShakeTargetBasedOnMovePowerOrDmg`(피해/12, 1~16px,
+  +⌈a/2⌉/−⌊a/2⌋). 물대포는 접촉에서 ±1px 16프레임 + 물 튐 효과음 3번(10프레임 간격). **밀림·흰 번쩍임·카메라 흔들림은 없다.**
+  피해: `Cmd_effectivenesssound` 가 SE_KOUKA_L/M/H(별로/보통/굉장, 급소와 무관) + `DoHitAnimBlinkSpriteEffect`(4프레임마다 invisible 토글, 32프레임 = 8번 ≈ 0.53초) +
+  `SpriteCB_HitAnimHealthoxEffect`(pokeball.c — HP 상자 y 를 매 프레임 ±1px, 21프레임). 그 뒤 `MoveBattleBar` 로 HP 가 일정 속도(최대 HP<48 이면 1px/프레임,
+  바 48px). 색 문턱 50%·20%(9px 이하 빨강). 지금 포켓몬 스킨: 접촉 = 제자리 좌우 떨림(진폭 1+7p GBA px × 1.8 로컬, 2프레임 6번) + 고정 착탄 별 8프레임,
+  피해 = 13프레임 뒤 상성 타격음(같은 타격 샘플을 별로 0.6배·높게 / 보통 / 굉장 1.3배·낮게 + 55ms 뒤 한 번 더) + `pokemonDamageBlink`(8번) + `pokemonHudBuzz`,
+  HP 는 깜빡임 뒤 일정 속도로(`--pkmn-hp-drain-delay/-ms`, 잔상 없음), 기절음은 HP 가 다 준 뒤. 모든 프레임 수는 동작 템포(1.5)로 나눈다.
+  시퀀서 `impactPresentationMs` 훅이 recover 를 피해 박자 + 결과 문장 읽는 박자(40프레임)까지 늘린다.
+  **결과 문장은 HP 가 다 준 뒤에**(3세대 resultmessage 자리): 피해 박자가 루트에 `data-pkmn-result-hold` 를 걸면 20-pokemon-skin.css ⑦ 이
+  메시지 둘째 줄을 숨긴다 — 예전엔 착탄 순간 피해 숫자가 먼저 나와 바가 줄기 전에 결과를 읽었다. 상성 문장이 있으면 둘째 줄은
+  **그 문장만**(「효과가 굉장했다!」, 급소면 「급소에 맞았다! 효과가 굉장했다!」) — 피해 숫자를 붙이면 창 한 줄을 넘어 셋째 줄이 잘렸다(3세대도 숫자는 말하지 않는다).
+  **HP 숫자도 바와 같이 센다**(`countPokemonHp`; 세는 동안 `data-hp-countdown` 이 `setVitalNode` 의 덮어쓰기를 막는다).
+  상성 배율은 타임라인 `effectiveness`(1 이면 생략)로 싣는다 — 일반 경로는 `battleEffectivenessMultiplier`, **몬스터 전투는 Gen1 경로**
+  (`applyGen1Skill` → `applyExactGen1Damage` 가 `typeFactors` 곱을 돌려준다)라 둘 다 배선해야 한다. 문장 배율은 **자속 보정(STAB)을 뺀다** —
+  넣으면 물 몬스터의 물 기술이 늘 「굉장」이 된다. `describeEffectiveness`(포켓몬 스킨)일 때만 문장을 붙인다. 테스트 `test/battleEffectivenessMessage.test.ts`.
+  함정(실측): ① 적 HP 상자는 필드의 `.battle-enemy-hud`(포켓몬 스킨에서 숨김)가 아니라 정보 패널 `.battle-enemy-list-row` — 숨은 HUD 를 잡으면 적 HP 가
+  착탄 순간 줄고 상자도 안 떤다. ② 아군 몬스터는 런타임 id(`mon:…`)로 맞으므로 대상 노드는 반드시 `findBattlerNode` 로(직접 조회하면 null → 깜빡임 없음).
+  ③ 표시 원장 `vitalsFor` 는 `applyFeedback` 이 제자리에서 고치는 객체 — 맞기 전 HP 는 그 전에 떠 둘 것. ④ 바 전환은 타이머보다 한 프레임쯤 늦게 시작한다.
+  ⑤ 막타: 원장 `deferDefeat` 로 쓰러짐 표시(.defeated → 쓰러짐 연출·적 HP 행 숨김)를 HP 바가 다 준 뒤(기절음과 같은 순간)로 미룬다 —
+  안 미루면 맞는 순간 쓰러지기 시작하고 HP 행이 줄기도 전에 사라졌다. ⑥ 박자 길이는 동작 템포 × **배속**(1.8·3·넘기기 5)으로 줄이고,
+  배속이 바뀌거나 같은 대상이 다시 맞으면 `finishPokemonPhase` 가 남은 박자를 즉시 끝낸다(숫자 끝값·CSS 전환 finish·문장·쓰러짐) —
+  시퀀서는 남은 지연을 새 배속으로 다시 거는데 이 박자만 옛 배속이라, 넘기기 중 다음 행동이 위로 올라와 결과 문장이 묻혔다.
+  ⑦ 박자를 타는 피해 판정은 `usesPokemonDamagePhase` 하나(독 틱 label·MP 피해 제외)를 onDamageFeedback 과 impactPresentationMs 가 같이 쓴다.
+  ⑧ 바 길이는 실제로 준 HP(초과 피해 제외)로 잡는다. 감소 모션은 박자 없이 상성 타격음·기절음만. 테스트 `test/battlePresentationDeferDefeat.test.ts`.
+  QA: `qa-runs/battle-moves/geoscore.py <run>`(깜빡임·상자 떨림·HP 감소 구간), 탐침에 `eff=`(피해 박자가 본 상성)·`msg=`(메시지 창)가 있다.
+  넘기기 녹화는 `SKIP_DURING=1 cap.sh …`(연출 중 Z 연타), 막타는 기술 목록을 화염 4번으로.
+  남은 것: 아픈 표정 그림(몬스터 하네스 후보), 타격음 후보 선택(monster-hit-review).
+- **발사체는 「입·손」 자리에서 나간다 (`spriteEmitPoint`).** 그림 몸 위쪽 60% 안에서 상대 방향으로 가장 튀어나온 칸(가로 위주, 세로 0.35배).
+  런타임은 그림 픽셀을 캔버스로 읽어 캐시한다(가로 스트립은 `data-strip-frames` 첫 칸만). 그림에 `data-emit-x/y`(칸 좌표)가 있으면 그것을 쓴다 —
+  몬스터 하네스 `anim.json` 의 `emit` 이 같은 함수로 구한 값이고, 시드 `emit` 으로 손 고칠 수 있다(`openwiki/harnesses/monster-collect-species.md`).
+  교차 출처라 못 읽으면 그림 상자 위쪽 앞끝으로 물러난다. 엔진의 `data-emit-*` 배선은 아직 없고 QA 녹화가 주입으로 시연했다(스트립과 같은 처지).
 - **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
   `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
   AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중

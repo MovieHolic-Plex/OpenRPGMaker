@@ -4,22 +4,103 @@
     "reference": "Pokemon Black and White (Nintendo DS, 2010)",
     "maxColors": 20,
     "canvas": 112,
-    "avoid": ["Bulbasaur", "Ivysaur", "Charmander", "Charmeleon", "Squirtle", "Leafeon", "Eevee"]
+    "avoid": [
+      "Bulbasaur",
+      "Ivysaur",
+      "Charmander",
+      "Charmeleon",
+      "Squirtle",
+      "Leafeon",
+      "Eevee"
+    ]
+  },
+  "animation": {
+    "idle": {
+      "frames": 4,
+      "frameMs": 220,
+      "loop": true
+    },
+    "direction": {
+      "front": {
+        "x": -1,
+        "y": 1
+      },
+      "back": {
+        "x": 1,
+        "y": -1
+      }
+    },
+    "actions": {
+      "tackle": {
+        "kind": "attack",
+        "frames": 4,
+        "frameMs": 120,
+        "loop": false,
+        "action": "a physical tackle or bite: frame 1 ready stance (the reference pose), frame 2 crouch low and pull back away from the target, frame 3 lunge the head, chest and front legs far toward the target with the mouth open to bite, frame 4 recover halfway back toward the ready stance; the feet stay on the ground",
+        "keys": {
+          "anticipation": 1,
+          "contact": 2,
+          "recover": 3
+        }
+      },
+      "special": {
+        "kind": "attack",
+        "frames": 4,
+        "frameMs": 140,
+        "loop": false,
+        "action": "an elemental special move WITHOUT drawing the element: frame 1 ready stance (the reference pose), frame 2 plant the feet wide and draw the head back inhaling with the chest swelling, frame 3 thrust the head and neck toward the target with the mouth wide open as if blasting a beam out of it (draw NO fire, water, leaves, beam or particles), frame 4 hold the mouth open slightly less; the body stays in place",
+        "keys": {
+          "anticipation": 1,
+          "contact": 2,
+          "recover": 3
+        }
+      },
+      "buff": {
+        "kind": "self",
+        "frames": 4,
+        "frameMs": 140,
+        "loop": false,
+        "action": "powering up: frame 1 ready stance (the reference pose), frame 2 crouch and tense the whole body, frame 3 rear up tall with the chest puffed out and the head raised, roaring, frame 4 settle back toward the ready stance; it stays in place and keeps facing the same way",
+        "keys": {
+          "anticipation": 1,
+          "contact": 2,
+          "recover": 3
+        }
+      },
+      "hurt": {
+        "kind": "hurt",
+        "frames": 3,
+        "frameMs": 120,
+        "loop": false,
+        "action": "taking a hit: frame 1 ready stance (the reference pose), frame 2 recoil away from the attacker, the head knocked back, eyes squeezed shut and the body flinching, frame 3 recovering most of the way back toward the ready stance",
+        "keys": {
+          "contact": 1,
+          "recover": 2
+        }
+      }
+    }
   },
   "species": [
     {
       "id": "sparkit",
       "name": "스파킷",
-      "types": ["fire"],
+      "types": [
+        "fire"
+      ],
       "stage": 1,
       "starterSet": "first-region",
       "design": "A young fire newt starter on four legs, low and agile like a lizard: ember-orange back with darker red stripe markings, cream belly, a small crisp pixel flame (drawn with flat pixel colors and a dark outline, not glowing) at the tail tip, head raised alert.",
-      "palette": "ember orange, dark red stripes, cream"
+      "palette": "ember orange, dark red stripes, cream",
+      "motion": {
+        "flicker": "flame"
+      }
     },
     {
       "id": "aqualing",
       "name": "아쿠아링",
-      "types": ["water"],
+      "types": [
+        "water"
+      ],
       "stage": 1,
       "starterSet": "first-region",
       "design": "A water axolotl starter standing on four short legs: blue body, pale belly, three feathery external gill fronds on each side of the head in coral pink, a flat paddle tail with a fin along it.",
@@ -28,11 +109,19 @@
     {
       "id": "leafling",
       "name": "리프링",
-      "types": ["grass"],
+      "types": [
+        "grass"
+      ],
       "stage": 1,
       "starterSet": "first-region",
       "design": "A grass starter inspired by a sprouting acorn and a small fox: four legs, brown seed-shell cap on the head, two large leaves growing from the head like ears, green body with cream chest fur, leafy tail.",
-      "palette": "leaf green, cream, acorn brown"
+      "palette": "leaf green, cream, acorn brown",
+      "emit": {
+        "back": {
+          "x": 86,
+          "y": 61
+        }
+      }
     }
   ]
 }

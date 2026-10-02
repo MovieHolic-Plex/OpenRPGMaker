@@ -69,7 +69,10 @@ export function findBattlerNode(scope: HTMLElement | Document, targetId: string)
   return scope.querySelector<HTMLElement>(`[data-testid="${targetId}"]`)
     ?? scope.querySelector<HTMLElement>(`[data-testid="battle-actor-${targetId}"]`)
     ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]:not(.defeated)`)
-    ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]`);
+    ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]`)
+    // 파티 몬스터는 런타임 id(`mon:<instanceId>`)로 맞고, 노드 testid 는 recordId(instanceId)로 붙는다.
+    // 이 줄이 없으면 적이 내 몬스터를 때릴 때 넉백·흰 실루엣·깜빡임이 하나도 안 붙었다(2026-10-02 실측).
+    ?? scope.querySelector<HTMLElement>(`.battle-actor[data-battler-id="${targetId}"]`);
 }
 
 /**
@@ -1221,6 +1224,7 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   node.dataset.partyFacing = place.partyFacing;
   node.dataset.testid = `battle-actor-${actor.recordId}`;
   node.dataset.recordId = actor.recordId;
+  node.dataset.battlerId = actor.id;
   node.dataset.facing = "left";
   if (actor.transformResourceId) node.dataset.battleForm = actor.transformResourceId;
   node.dataset.battlerWeak = String(actor.hp > 0 && actor.hp <= actor.maxHp / 4);
@@ -1495,8 +1499,10 @@ function setVitalNode(node: Element, kind: "hp" | "mp", value: number, max: numb
     node.textContent = `${kind === "hp" ? "HP" : "MP"} ${value}/${max}`;
     return;
   }
-  valueNode.textContent = ` ${value}`;
   maxNode.textContent = `/${max}`;
+  // 포켓몬 피해 박자가 HP 숫자를 바와 같이 세는 중이면 건드리지 않는다(battleDom.countPokemonHp).
+  if (kind === "hp" && (valueNode as HTMLElement).dataset?.hpCountdown) return;
+  valueNode.textContent = ` ${value}`;
 }
 
 function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot["battleFlow"]): HTMLElement {
