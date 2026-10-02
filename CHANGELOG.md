@@ -5,6 +5,33 @@
 
 <!-- releases -->
 
+## 0.84.0 — 2026-10-03
+
+### 기능
+
+- **assistant** — 몬스터가 다가와 공격하는 컷신은 차셋 NPC 대신 staged 그림 배우로 유도 (`010a4ab`)
+- **cutscene** — 대화창 위치 옵션(줄별 position·화면 기준 회피) + staged 에 맵 배우·애니메이션·장소 이동, 충격 연출 도구를 staged 로 통합 (`32cdf8f`)
+- **assistant** — 그림 연출 소재 규칙·주인공 자동 맞춤·animation beat·암전 종료 거부 (`441580e`)
+- **cutscene** — 선언형 연출에 turn·animate(게임 전투 애니메이션)·번들 그림 배우 추가 (`5439ab4`)
+- **cutscene** — 선언형 연출에 효과음·화면 전환·ghost 배우·flash 색 추가, 이세계→포켓몬풍 데모 빌더 (`2da787a`)
+- **assistant** — 그림 생성 승격 시 선언형 연출·미리보기를 함께 얹고 도구 설명 키워드 보강 (`a3515b1`)
+- **cutscene** — 선언형 연출 script_cutscene_staged + 그림 style(game|illustration) (`9a4f411`)
+
+### 수정
+
+- **ai** — 창이 좁은 모델의 폴백에 전체 카탈로그를 보내지 않고, find_tools 가 설명 첫 문장 일치를 먼저 준다 (`5d8d300`)
+- **battle** — 이도류는 무기마다 그 무기의 공격력으로 치고, 「전투 명령 변경」은 지금 메뉴 위에서 더하고 뺀다 (`31927ac`)
+- **assistant** — 현대 맵 거부 메시지에 배경 그림+staged 대안 안내 (`774fa78`)
+- **assistant** — action 생략한 그림 beat 도 손 연출 거부 대상 (`9641f9f`)
+- **assistant** — 몬스터 공격 컷신 거부가 eventId·actorId 별칭도 잡도록 (`c50657c`)
+- **assistant** — 몬스터 그림 생성 거부(게임 도트 유도), showAnimation target 경고 제거 (`295370e`)
+- **assistant** — staged 주인공은 Actor1~4 만, 몬스터·소품 그림을 손으로 show 하는 컷신 거부 (`e0d9f01`)
+
+### 테스트
+
+- **ai** — 세션을 통째로 돌리는 툴 노출 테스트에 60초 한도 (`650f839`)
+- main 에서 원래 빨갛던 테스트를 지금 제품에 맞춘다 (`af9f68e`)
+
 ## 0.83.0 — 2026-10-03
 
 ### 기능
