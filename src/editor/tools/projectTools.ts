@@ -6,7 +6,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { BattleUiStyle, Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
-import { BATTLE_SKINS, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId, sideSkinForBattleLook } from "@/battle/skins/registry";
+import { BATTLE_SKINS, listActiveBattleSkinIds, listBattleSkinIds } from "@/battle/skins/registry";
 import {
   BATTLE_LOOK_COMMAND_IDS,
   BATTLE_LOOK_COMMAND_LABELS,
@@ -407,15 +407,6 @@ const setProjectSettings: ToolDefinition = {
         const next = applyBattleLookArgs(draft.system.battleLook, battle.look);
         if (next) draft.system.battleLook = next;
         else delete draft.system.battleLook;
-        // 꾸밈은 도트 측면 전투에만 그려진다 — 정면 스킨 위에 고르면 저장만 되고 화면은 그대로였다.
-        // 같은 호출에서 스킨을 직접 고르지 않았으면 측면 스킨으로 갈아타고, 골랐으면 그대로 두고 알린다.
-        const side = next ? sideSkinForBattleLook(draft.system.battleUiStyle) : undefined;
-        if (side && typeof battle.uiStyle !== "string") {
-          draft.system.battleUiStyle = side;
-          changed.push(`전투 스킨=${side}(${BATTLE_SKINS[side].label}) — 꾸밈은 도트 측면 전투에서만 보여 정면 스킨에서 바꿈`);
-        } else if (side) {
-          changed.push(`주의: 전투 스킨 ${battle.uiStyle}(${BATTLE_SKINS[resolveSkinId(battle.uiStyle as string)].label})은 정면이라 꾸밈(look)이 보이지 않음 — 측면 스킨(${side} 등)으로 바꿔야 보인다`);
-        }
       }
       if (typeof battle.activeSlots === "number") draft.system.activeSlots = Math.trunc(battle.activeSlots);
       // 기본값은 저장하지 않는다 — normalizeSystemRecords 와 같은 계약.

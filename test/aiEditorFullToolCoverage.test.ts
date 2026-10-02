@@ -196,7 +196,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
       terms: { attack: "타격", gold: "별가루" },
       playResolution: { width: 640, height: 360 },
       resources: { defaultBgmResourceId: previousBattleBgm, battleBgmResourceId: previousDefaultBgm },
-      battle: { flow: "strict", uiStyle: "rm2000", activeSlots: 2, initialTroopId: troopId },
+      battle: { flow: "strict", uiStyle: "rm2003", activeSlots: 2, initialTroopId: troopId },
       startActorIds: [actorId],
     });
 
@@ -207,7 +207,7 @@ describe("AI assistant editor-wide project mutation coverage", () => {
       defaultBgmResourceId: previousBattleBgm,
       battleBgmResourceId: previousDefaultBgm,
       battleFlow: "strict",
-      battleUiStyle: "rm2000",
+      battleUiStyle: "rm2003",
       activeSlots: 2,
       initialTroopId: troopId,
       startActorIds: [actorId],

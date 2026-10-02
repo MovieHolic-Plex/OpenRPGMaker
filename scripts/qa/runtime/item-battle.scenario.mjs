@@ -129,8 +129,7 @@ export const itemBattleScenario = {
         { kind: "waitFor", testid: "battle-target-prompt", state: "present" },
       ],
       expect: {
-        // rm2000 은 정면 스킨이라 아군 필드 노드(battle-actor-*)가 없다 — 아군 배지의
-        // 살림터는 하단 파티 상태 행의 battle-status-* 아이콘이다.
+        // 아군 배지는 하단 파티 상태 행의 battle-status-* 아이콘으로 본다(스킨과 무관한 살림터).
         testidPresent: ["battle-target-actor_hero"],
         // 아직 공격 상승 배지가 없어야 한다 — 사후 비트의 배지가 이 아이템 때문임을 가른다.
         testidAbsent: ["battle-status-actor_hero-atk-up"],

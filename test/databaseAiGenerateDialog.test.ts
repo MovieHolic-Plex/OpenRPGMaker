@@ -68,7 +68,10 @@ describe("openDatabaseAiGenerateDialog", () => {
     const brief = overlay.querySelector<HTMLTextAreaElement>("[data-testid='db-ai-generate-brief']")!;
     expect(document.activeElement).toBe(brief);
     expect(overlay.querySelectorAll("[data-testid^='db-ai-generate-example-']").length).toBeGreaterThanOrEqual(2);
-    expect(overlay.querySelector<HTMLInputElement>("[data-testid='db-ai-generate-artwork']")?.checked).toBe(true);
+    // 몬스터는 그림을 만들지 않고 도트 몬스터 140종에서 고른다(2026-10-02) — 그림 옵션은 아이템에만 있다.
+    expect(overlay.querySelector("[data-testid='db-ai-generate-artwork']")).toBeNull();
+    const itemOverlay = openDatabaseAiGenerateDialog({ kind: "item", rerender: () => undefined, deps: { loadConfig: config } });
+    expect(itemOverlay.querySelector<HTMLInputElement>("[data-testid='db-ai-generate-artwork']")?.checked).toBe(true);
     expect(overlay.querySelector("[data-testid='db-ai-generate-run']")?.textContent).toContain("만들기");
     expect(overlay.querySelector("[data-testid='db-ai-generate-close']")?.textContent).toContain("닫기");
     // 상태줄은 아직 비어 있다.
@@ -102,7 +105,7 @@ describe("openDatabaseAiGenerateDialog", () => {
       phaseHook = deps?.onPhase;
       expect(input.kind).toBe("enemy");
       expect(input.brief).toContain("서슬 늑대");
-      expect(input.withArtwork).toBe(true);
+      expect(input.withArtwork).toBe(false);
       return pending.promise;
     });
     const rerender = vi.fn();
@@ -129,7 +132,8 @@ describe("openDatabaseAiGenerateDialog", () => {
       kind: "enemy",
       recordId: "enemy_ai_frost-wolf",
       name: "서슬 늑대",
-      artworkDataUrl: "data:image/png;base64,AAAA",
+      resourceId: "generated-enemy-wolf-grey",
+      artworkDataUrl: "/assets/generated/pixel-enemy-portraits/wolf-grey.png",
       summary: "AI 몬스터 생성: 서슬 늑대",
     });
     await vi.waitFor(() => expect(status.dataset.phase).toBe("done"));
@@ -144,7 +148,7 @@ describe("openDatabaseAiGenerateDialog", () => {
     expect(result.textContent).toContain("48");
     const preview = overlay.querySelector<HTMLImageElement>("[data-testid='db-ai-generate-preview']")!;
     expect(preview.hidden).toBe(false);
-    expect(preview.src).toContain("data:image/png");
+    expect(preview.src).toContain("/assets/generated/pixel-enemy-portraits/wolf-grey.png");
     // 마무리 행동: 닫기 + 하나 더 만들기.
     expect(close.textContent).toContain("닫기");
     expect(run.disabled).toBe(false);
@@ -193,7 +197,7 @@ describe("openDatabaseAiGenerateDialog", () => {
 
   it("그림 제공자가 대화 제공자와 다르면 그 사실을 옵션 옆에 적는다", () => {
     const overlay = openDatabaseAiGenerateDialog({
-      kind: "enemy",
+      kind: "item",
       rerender: () => undefined,
       deps: { loadConfig: () => ({ ...config(), providerId: "openai-codex" }) },
     });

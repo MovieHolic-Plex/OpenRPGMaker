@@ -85,8 +85,8 @@ describe("resolveSkinEnemyPosition", () => {
   });
 
   it("manual frontal keeps raw authored x beyond the old recenter line", () => {
-    const fallback = BATTLER_PLACEMENTS.rm2000.enemy(0, 1);
-    const moved = resolveSkinEnemyPosition("rm2000", { x: 200, y: 80 }, 0, 1, false);
+    const fallback = BATTLER_PLACEMENTS.pokemon.enemy(0, 1);
+    const moved = resolveSkinEnemyPosition("pokemon", { x: 200, y: 80 }, 0, 1, false);
     expect(moved.y).toBe(fallback.y);
     expect(moved.x).toBe(
       Math.max(0, Math.min(320, Math.round(fallback.x + (200 - CANONICAL_SIDEVIEW_ANCHOR_X) * MANUAL_FRONTAL_DAMPING))),
@@ -105,22 +105,23 @@ describe("resolveSkinEnemyPosition", () => {
   });
 });
 
+// 정면 구도는 2026-10-02 부터 포켓몬 스킨 하나뿐이다(정면 유리 스킨 rm2000·dragonquest·mother·mv·vxace 삭제).
 describe("resolveSkinEnemyPositions", () => {
   it("manual frontal shifts the whole row uniformly from the troop mean", () => {
     const xs = [84, 128, 84, 128];
     const row = resolveSkinEnemyPositions(
-      "rm2000",
+      "pokemon",
       xs.map((x) => ({ x, y: 80 })),
       false,
     );
-    const fallback = xs.map((_, i) => BATTLER_PLACEMENTS.rm2000.enemy(i, 4));
+    const fallback = xs.map((_, i) => BATTLER_PLACEMENTS.pokemon.enemy(i, 4));
     const mean = xs.reduce((sum, x) => sum + x, 0) / xs.length;
     const shift = Math.round((mean - CANONICAL_SIDEVIEW_ANCHOR_X) * MANUAL_FRONTAL_DAMPING);
     expect(row.map((p) => p.x)).toEqual(fallback.map((seat) => seat.x + shift));
     expect(row.map((p) => p.y)).toEqual(fallback.map((seat) => seat.y));
     const sorted = row.map((p) => p.x).sort((a, b) => a - b);
     for (let i = 1; i < sorted.length; i += 1) {
-      expect(sorted[i]! - sorted[i - 1]!).toBe(70);
+      expect(sorted[i]! - sorted[i - 1]!).toBe(58);
     }
   });
 
@@ -135,19 +136,19 @@ describe("resolveSkinEnemyPositions", () => {
     });
     expect(battlers[0]!.authoredX).toBe(200);
     expect(battlers[0]!.battleX).toBeLessThanOrEqual(150);
-    const fromAuthored = resolveSkinEnemyPositions("rm2000", [{ x: battlers[0]!.authoredX, y: battlers[0]!.authoredY }], false);
-    const fromBattle = resolveSkinEnemyPositions("rm2000", [{ x: battlers[0]!.battleX, y: battlers[0]!.battleY }], false);
+    const fromAuthored = resolveSkinEnemyPositions("pokemon", [{ x: battlers[0]!.authoredX, y: battlers[0]!.authoredY }], false);
+    const fromBattle = resolveSkinEnemyPositions("pokemon", [{ x: battlers[0]!.battleX, y: battlers[0]!.battleY }], false);
     expect(fromAuthored).not.toEqual(fromBattle);
-    const preview = resolveSkinEnemyPositions("rm2000", [{ x: 200, y: 80 }], false);
+    const preview = resolveSkinEnemyPositions("pokemon", [{ x: 200, y: 80 }], false);
     expect(fromAuthored).toEqual(preview);
-    expect(preview[0]!.x).toBeGreaterThan(BATTLER_PLACEMENTS.rm2000.enemy(0, 1).x);
+    expect(preview[0]!.x).toBeGreaterThan(BATTLER_PLACEMENTS.pokemon.enemy(0, 1).x);
   });
 
   it("row helper falls back to auto seats without authored coords", () => {
-    const row = resolveManualFrontalRow("rm2000", [Number.NaN, Number.NaN]);
+    const row = resolveManualFrontalRow("pokemon", [Number.NaN, Number.NaN]);
     expect(row).toEqual([
-      BATTLER_PLACEMENTS.rm2000.enemy(0, 2).x,
-      BATTLER_PLACEMENTS.rm2000.enemy(1, 2).x,
+      BATTLER_PLACEMENTS.pokemon.enemy(0, 2).x,
+      BATTLER_PLACEMENTS.pokemon.enemy(1, 2).x,
     ]);
   });
 

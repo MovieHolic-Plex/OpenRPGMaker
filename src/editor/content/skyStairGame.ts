@@ -239,7 +239,7 @@ export function createSkyStairProject(): Project {
   system.startActorIds = [...STARTER_ACTOR_IDS];
   system.initialTroopId = SKY_TROOP.fieldPests;
   // 출하 콘텐츠는 지원하는 두 스킨(rm2000 / pokemon)만 저작한다. ff는 지원 종료됐지만 기존 저장 프로젝트에서는 계속 로드된다.
-  system.battleUiStyle = "rm2000";
+  system.battleUiStyle = "retro2003";
   system.battleBgmResourceId = "cc0-bgm-battle";
   system.defaultBgmResourceId = SKY_BGM.harbor;
   system.titleScreen = {

@@ -1,6 +1,6 @@
 export type BattleSkinId =
-  | "pokemon" | "rm2000" | "rm2003" | "octopath" | "chrono"
-  | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace"
+  | "pokemon" | "rm2003" | "octopath" | "chrono"
+  | "bravely" | "ff" | "goldensun"
   | "retro2003";
 
 /** 같은 창 크롬(CSS 파일)을 나눠 쓰는 스킨 묶음. battleDom 이 `data-battle-skin-family` 로 루트에 심고,
@@ -17,10 +17,7 @@ export type BattleTransition =
   | "focus-blur"
   | "sweep-cyan"
   | "brave-shift"
-  | "psychedelic"
-  | "fade"
-  | "slide-pokemon"
-  | "curtain-dq";
+  | "slide-pokemon";
 
 /** 12 CSS vars that every skin must author. 4 legacy vars keep rendering compat. */
 export type BattleThemeVars = {

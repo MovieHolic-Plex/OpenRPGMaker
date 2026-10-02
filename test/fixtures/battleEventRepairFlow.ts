@@ -40,7 +40,7 @@ export function buildBattleEventRepairFlowProject(flow: BattleFlow, scenario: Ba
   project.meta.title = `Battle flow QA: ${flow}/${scenario}`;
   project.system.battleFlow = flow;
   project.system.battleModel = "rm2k3";
-  project.system.battleUiStyle = "rm2000";
+  project.system.battleUiStyle = "retro2003";
   project.system.startActorIds = [actor.id];
   project.session.partyActorIds = [actor.id];
   project.session.inventory = {};

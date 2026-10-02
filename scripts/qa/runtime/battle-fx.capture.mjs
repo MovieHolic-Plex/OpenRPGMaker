@@ -5,7 +5,7 @@
 //   collapse : 적 HP 1 — 공격만 눌러 셋이 쓰러지는 동안 80ms 마다 찍는다(픽셀 분해·하얀 점멸·보스 가라앉기).
 // 스킨은 --skin(기본 retro2003). 화면 필터는 --filter(기본 crt, none 이면 끔).
 //
-// 사용: node scripts/qa/runtime/battle-fx.capture.mjs --out /tmp/battle-fx [--skin rm2000] [--filter scanlines]
+// 사용: node scripts/qa/runtime/battle-fx.capture.mjs --out /tmp/battle-fx [--skin rm2003] [--filter scanlines]
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { chromium } from "playwright";

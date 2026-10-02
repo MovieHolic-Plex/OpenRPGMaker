@@ -102,7 +102,7 @@ test("C. 메커니즘 실측", async ({ page }) => {
     // C3. 방어의 실효
     {
       const skill = project.database.skills.find((s: any) => s.id === "skill_attack");
-      report.defendValue = ["enemy_slime", "enemy_cave_bat", "enemy_wraith_dark", "enemy_demon_lord"].map((id) => {
+      report.defendValue = ["enemy_slime", "enemy_cave_bat", "enemy_ghost_pale", "enemy_demon_lord"].map((id) => {
         const e = project.database.enemies.find((x: any) => x.id === id);
         const mk = (defending: boolean) => {
           const t: any = { hp: 1e9, maxHp: 1e9, mp: 0, maxMp: 0, defense: hero.defense, mind: hero.mind, defending, stateIds: [], stateTurns: {} };
@@ -142,7 +142,7 @@ test("C. 메커니즘 실측", async ({ page }) => {
           .map((e: any) => e.id)
           .filter((id: string) => (project.system.typeChart?.types ?? []).includes(id)),
         heroTypes: tc.battlerTypes(project, hero as any),
-        sample: ["enemy_slime", "enemy_cave_bat", "enemy_wraith_dark"].map((id) => {
+        sample: ["enemy_slime", "enemy_cave_bat", "enemy_ghost_pale"].map((id) => {
           const raw = project.database.enemies.find((e: any) => e.id === id);
           return {
             id,
