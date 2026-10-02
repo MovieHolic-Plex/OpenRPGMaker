@@ -88,8 +88,14 @@ export function preloadBattleJuiceSamples(): void {
   preloadBattleSamples([...ids]);
 }
 
-export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | null, context?: BattleAudioContext): void {
-  playBattleCue(event, context);
+/** 같은 사건 소리의 크기·높이 보정(포켓몬 스킨의 타격 세기). 1 이면 원래 크기·높이다. */
+export interface BattleCueShape {
+  readonly volume?: number;
+  readonly rate?: number;
+}
+
+export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | null, context?: BattleAudioContext, shape?: BattleCueShape): void {
+  playBattleCue(event, context, shape);
   if (!target) return;
   const motion =
     event === "hit-critical"
@@ -121,7 +127,7 @@ const SE_CUE: Record<Exclude<BattleJuiceEvent, "victory">, SystemSeCue> = {
   "hit-miss": "miss", "hit-heal": "heal", faint: "faint", defend: "defend", defeat: "defeat", escape: "escape",
 };
 
-export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioContext): void {
+export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioContext, shape?: BattleCueShape): void {
   const project = context?.project ?? store.getCurrent();
   const result = event === "victory" || event === "defeat" || event === "escape";
   if (result) beginBattleResultAudio();
@@ -140,19 +146,22 @@ export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioCont
   }
   const primary = BATTLE_SFX[event];
   const fallback = SFX_FALLBACK[event];
-  if (tryPlay(primary)) return;
-  if (fallback && tryPlay(fallback)) return;
+  if (tryPlay(primary, shape)) return;
+  if (fallback && tryPlay(fallback, shape)) return;
   playSynthVoice(SYNTH_VOICE[event]);
 }
 
-function tryPlay(soundResourceId: string): boolean {
+function tryPlay(soundResourceId: string, shape?: BattleCueShape): boolean {
+  const volume = Math.max(0, Math.min(1, DEFAULT_VOLUME * (shape?.volume ?? 1)));
+  const rate = shape?.rate ?? 1;
   // 디코딩 캐시에 있으면 WebAudio 로 즉시 재생 — 요소 경로는 새 요소마다 로드를 기다리므로
   // 임팩트 발화가 그만큼 늦게 들린다. 캐시 미스면 false 로 요소 경로가 소리를 낸다.
-  if (playBattleSample(soundResourceId, DEFAULT_VOLUME)) return true;
+  if (playBattleSample(soundResourceId, volume, rate)) return true;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return false;
   const audio = new Audio(url);
-  audio.volume = DEFAULT_VOLUME;
+  audio.volume = volume;
+  audio.playbackRate = rate;
   void audio.play().catch((error: unknown) => {
     if (error instanceof DOMException) return;
     console.warn("[battle-juice] sound playback failed", error);

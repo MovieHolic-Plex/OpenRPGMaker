@@ -62,7 +62,7 @@ export function preloadBattleSamples(resourceIds: readonly string[]): void {
 }
 
 /** 캐시된 샘플을 즉시 재생한다. 준비 안 됐으면 false — 호출부가 요소 경로로 폴백한다. */
-export function playBattleSample(resourceId: string, volume: number): boolean {
+export function playBattleSample(resourceId: string, volume: number, rate = 1): boolean {
   const buffer = buffers.get(resourceId);
   if (!buffer) {
     if (buffers.get(resourceId) === undefined && !pending.has(resourceId)) {
@@ -74,6 +74,7 @@ export function playBattleSample(resourceId: string, volume: number): boolean {
   if (!context) return false;
   const source = context.createBufferSource();
   source.buffer = buffer;
+  if (rate !== 1) source.playbackRate.value = rate;
   const gain = context.createGain();
   gain.gain.value = volume;
   source.connect(gain).connect(context.destination);

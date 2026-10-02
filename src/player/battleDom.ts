@@ -39,7 +39,7 @@ import {
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
-import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleJuiceEvent } from "@/player/battleJuice";
+import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
@@ -48,8 +48,8 @@ import { resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
-import { playBattleSfx } from "@/player/battleSfx";
-import { pokemonActionMotion, pokemonHeavyShake, type PokemonMoveContext } from "@/player/battlePokemonMotion";
+import { playBattleImpactLayer, playBattleSfx } from "@/player/battleSfx";
+import { pokemonActionMotion, pokemonHeavyShake, pokemonHitPower, type PokemonMoveContext } from "@/player/battlePokemonMotion";
 import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
@@ -118,8 +118,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 블라인드 전환 동안 기본 SE 세트를 디코딩해 둔다 — 첫 임팩트부터 소리가 정시에 온다.
   preloadBattleJuiceSamples();
   const playBattleCue = (event: BattleJuiceEvent): void => playContextBattleCue(event, options.audioContext);
-  const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null): void =>
-    emitContextBattleJuice(event, target, options.audioContext);
+  const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null, shape?: BattleCueShape): void =>
+    emitContextBattleJuice(event, target, options.audioContext, shape);
   // 같은 host에 이전 컨트롤러가 살아있으면 먼저 정리한다.
   // DOM만 지우면 setInterval/window keydown/ResizeObserver가 중복으로 남는다(결함 1a).
   activeBattleControllers.get(options.host)?.destroy();
@@ -501,6 +501,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
                 ? "hit-heal"
                 : "hit-damage",
           targetNode,
+          // 포켓몬 스킨: 같은 타격 샘플도 세기에 따라 크기·높이가 다르다(약하면 작고 높게, 세면 크고 낮게)
+          pokemonMotion && !feedback.miss && !feedback.healing
+            ? (() => { const p = pokemonHitPower(feedback.amount, maxHp, feedback.critical); return { volume: 0.75 + p * 0.55, rate: 1.12 - p * 0.3 }; })()
+            : undefined,
         );
         // 이 타격으로 쓰러졌다면 기절음이 잠시 뒤따른다. 그 사이 전투가 닫힐 수 있으므로
         // id 를 보관해 destroy 가 끊는다 — 예전에는 익명 타이머라 씬이 사라진 뒤에도 살아
@@ -515,7 +519,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           const hurt = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
           flashBattleField(root, feedback.critical ? "critical" : "hit", hurt ? hurtShakeIntensity(hitFeel, intensity) : intensity, { hurt });
           // 타격음 아래 저음 한 겹 — 샘플은 사건 1개 = 소리 1개(battleJuice) 그대로다. 이 저음은 그 위의 별도 층이다.
-          if (hitFeel === "impact" && intensity) playBattleSfx("thud");
+          // 포켓몬 스킨은 저음층이 타격 세기를 따른다(4 피해와 15 피해가 같은 소리였다).
+          if (hitFeel === "impact" && intensity) {
+            if (pokemonMotion) playBattleImpactLayer(pokemonHitPower(feedback.amount, maxHp, feedback.critical), feedback.critical);
+            else playBattleSfx("thud");
+          }
           // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
           if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
           if (pokemonMotion && (feedback.critical || lethal || intensity === "heavy" || intensity === "crushing")) pokemonHeavyShake(field);
@@ -558,12 +566,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else applyActionMotion(field, beat);
       if (pokemonMotion) {
         const lungeMs = Number.parseFloat(getComputedStyle(root).getPropertyValue("--motion-lunge-ms")) || 160;
-        // 착탄 세기 = 최대 HP 대비 피해(40% 를 넘으면 1). 급소는 최소 0.8.
+        // 착탄 세기 = 최대 HP 대비 피해(pokemonHitPower)
         const hitFeedback = beat?.kind === "impact" ? beat.feedback : undefined;
         const hitMaxHp = hitFeedback ? battlerMaxHp(options.runtime.snapshot(), hitFeedback.targetId) : 0;
-        const ratio = hitFeedback && hitMaxHp > 0 ? hitFeedback.amount / hitMaxHp : 0.12;
-        const power = Math.max(0.15, Math.min(1, ratio * 2.5));
-        pokemonActionMotion(field, beat, lungeMs, pokemonMove, { power: hitFeedback?.critical ? Math.max(0.8, power) : power, critical: Boolean(hitFeedback?.critical) });
+        const power = hitFeedback ? pokemonHitPower(hitFeedback.amount, hitMaxHp, hitFeedback.critical) : 0.3;
+        pokemonActionMotion(field, beat, lungeMs, pokemonMove, { power, critical: Boolean(hitFeedback?.critical) });
       }
       // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
       // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.

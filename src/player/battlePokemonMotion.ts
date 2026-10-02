@@ -57,6 +57,13 @@ export interface PokemonHit {
   readonly critical: boolean;
 }
 
+/** 피해 → 세기(0.15..1). 급소는 최소 0.8. 안무와 타격음(battleSfx.playBattleImpactLayer)이 같은 값을 쓴다. */
+export function pokemonHitPower(amount: number, maxHp: number, critical: boolean): number {
+  const ratio = maxHp > 0 ? amount / maxHp : 0.12;
+  const power = Math.max(0.15, Math.min(1, ratio * 2.5));
+  return critical ? Math.max(0.8, power) : power;
+}
+
 const poses = new WeakMap<HTMLElement, Pose>();
 const knocked = new WeakMap<HTMLElement, Knock>();
 let shakenActionId: number | undefined;
@@ -462,27 +469,35 @@ function aura(field: HTMLElement, receiver: HTMLElement, motion: "boost" | "heal
 
 /** 착탄 「팍」 — 굵은 충격 별(2~3프레임) + 맞은 방향으로 튀는 파편. 정지 비트 동안 터진다(WAAPI 는 히트스톱에 안 멈춘다). */
 function impactBurst(field: HTMLElement, at: Vec, unit: Vec, color: string, hit: PokemonHit): void {
-  const size = Math.round(84 + hit.power * 56 + (hit.critical ? 24 : 0));
-  // clip-path 는 filter 뒤에 적용돼 외곽선까지 잘라 낸다 — 바깥 조각이 빛 테두리, 안 조각이 별
-  const burst = fx(field, at, `width:${size}px;height:${size}px;margin:${-size / 2}px 0 0 ${-size / 2}px;`
-    + `filter:drop-shadow(0 0 2px ${hit.critical ? "#ffcf4a" : "#ffffff"}) drop-shadow(0 0 6px ${color === "#ffffff" ? "#ffe27a" : color});`);
-  const star = document.createElement("span");
-  const points: string[] = [];
-  for (let i = 0; i < 16; i += 1) {
-    const r = i % 2 === 0 ? 50 : 20 + (i % 4 === 1 ? 0 : 6);
-    const a = (i / 16) * Math.PI * 2;
-    points.push(`${Math.round(50 + Math.cos(a) * r)}% ${Math.round(50 + Math.sin(a) * r)}%`);
+  // 도트 그림체에 맞춰 번짐 없는 2~3색 별을 겹쳐 쌓고, 프레임 단위(steps)로 바뀐다.
+  // 예전 방사형 그라데이션 + drop-shadow 는 가장자리가 흐려 몬스터 옆에서 혼자 매끈한 「빛 덩어리」였다.
+  // 번짐이 없으면 같은 크기도 작아 보인다 — 예전 빛 덩어리보다 1.35배
+  const size = Math.round(((84 + hit.power * 56 + (hit.critical ? 24 : 0)) * 1.35) / 4) * 4;
+  const rim = color === "#ffffff" ? "#ff9a1f" : color;
+  const burst = fx(field, at, `width:${size}px;height:${size}px;margin:${-size / 2}px 0 0 ${-size / 2}px;`);
+  const starPolygon = (inner: number, jag: number) => {
+    const points: string[] = [];
+    for (let i = 0; i < 16; i += 1) {
+      const r = i % 2 === 0 ? 50 - ((i * 7) % 3) * jag : inner;
+      const a = (i / 16) * Math.PI * 2 - Math.PI / 2;
+      points.push(`${Math.round(50 + Math.cos(a) * r)}% ${Math.round(50 + Math.sin(a) * r)}%`);
+    }
+    return `polygon(${points.join(",")})`;
+  };
+  for (const [scale, fill, inner, jag] of [[1, "#3a2410", 21, 5], [0.88, rim, 19, 5], [0.62, hit.critical ? "#ffd84a" : "#fff27a", 17, 4], [0.36, "#ffffff", 16, 3]] as const) {
+    const layer = document.createElement("span");
+    const inset = Math.round(((1 - scale) * size) / 2);
+    layer.style.cssText = `position:absolute;inset:${inset}px;background:${fill};clip-path:${starPolygon(inner, jag)};`;
+    burst.append(layer);
   }
-  star.style.cssText = `position:absolute;inset:0;clip-path:polygon(${points.join(",")});`
-    + `background:radial-gradient(circle,#ffffff 0 34%,${hit.critical ? "#ffd75a" : "#fff3b0"} 52%,${color === "#ffffff" ? "#ffb13d" : color} 78%);`;
-  burst.append(star);
   const spin = Math.round(((at.x * 7 + at.y * 13) % 40) - 20);
   play(burst, [
-    { transform: `rotate(${spin}deg) scale(0.35)`, opacity: 1 },
-    { transform: `rotate(${spin + 6}deg) scale(1.15)`, opacity: 1, offset: 0.28 },
-    { transform: `rotate(${spin + 10}deg) scale(1)`, opacity: 1, offset: 0.62 },
-    { transform: `rotate(${spin + 14}deg) scale(1.25)`, opacity: 0 },
-  ], { duration: 190, easing: "ease-out" });
+    { transform: `rotate(${spin}deg) scale(0.5)`, opacity: 1 },
+    { transform: `rotate(${spin}deg) scale(1.15)`, opacity: 1, offset: 0.2 },
+    { transform: `rotate(${spin + 12}deg) scale(1)`, opacity: 1, offset: 0.55 },
+    { transform: `rotate(${spin + 12}deg) scale(0.7)`, opacity: 1, offset: 0.82 },
+    { transform: `rotate(${spin + 12}deg) scale(0.7)`, opacity: 0 },
+  ], { duration: 200, easing: "steps(1, end)" });
   // 파편 — 맞은 방향 ±70° 부채꼴
   const count = 6 + Math.round(hit.power * 4);
   const base = Math.atan2(unit.y, unit.x);
@@ -505,8 +520,9 @@ function impactBurst(field: HTMLElement, at: Vec, unit: Vec, color: string, hit:
 /** 카메라 킥 — 모든 타격에 짧게(맞은 방향으로 밀렸다 돌아옴 + 살짝 확대). 세기에 따라 2~6px. */
 function cameraKick(field: HTMLElement, unit: Vec, hit: PokemonHit): void {
   if (typeof field.animate !== "function") return;
-  const a = 2 + hit.power * 4 + (hit.critical ? 2 : 0);
-  const zoom = 1 + 0.012 + hit.power * 0.018;
+  // 하한 4px — 2px 는 약한 타격에서 느껴지지 않았다(2026-10-02 평가)
+  const a = 4 + hit.power * 4 + (hit.critical ? 2 : 0);
+  const zoom = 1 + 0.016 + hit.power * 0.02;
   field.animate(
     [
       { translate: "0px 0px", scale: "1" },
@@ -583,7 +599,8 @@ function pushTarget(field: HTMLElement, target: HTMLElement, attacker: HTMLEleme
   }
   // 현장 발생은 내리꽂혀 아래로 눌리거나(위에서) 솟구쳐 위로 튄다(아래에서)
   if (motion === "strike") unit = fromBelow ? { x: 0, y: -1 } : { x: 0, y: 1 };
-  const k = motion === "contact" ? 1 : motion === "strike" ? 0.6 : 0.75;
+  // 발사체·범위 0.95, 현장 발생 0.8 — 0.75·0.6 이면 화염을 맞아도 거의 안 밀렸다(2026-10-02 평가)
+  const k = motion === "contact" ? 1 : motion === "strike" ? 0.8 : 0.95;
   // 범위기: 땅을 타고 온 충격이 맞는 쪽 발밑에서 한 번 더 퍼진다
   if (motion === "area" && target.parentElement) {
     const field = target.closest<HTMLElement>(".battle-field");
