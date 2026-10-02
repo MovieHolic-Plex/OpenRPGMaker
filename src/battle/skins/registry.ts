@@ -104,13 +104,9 @@ export function listBattleSkinIds(): BattleSkinId[] {
 /** 새로 고를 수 있는 스킨 = 전투 방식 둘(2026-10-02): 도트 측면(retro2003)·몬스터 대치(pokemon). project/battleMethod.ts 참조. */
 export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = ["retro2003", "pokemon"];
 
-/** 새로 고를 수 있는 스킨. deprecated 표식이 붙은 스킨은 빠진다. */
+/** 새로 고를 수 있는 스킨. */
 export function listActiveBattleSkinIds(): BattleSkinId[] {
-  return ACTIVE_BATTLE_SKIN_IDS.filter((id) => !BATTLE_SKINS[id].deprecated);
-}
-
-export function isDeprecatedBattleSkin(id: BattleSkinId): boolean {
-  return BATTLE_SKINS[id].deprecated === true;
+  return [...ACTIVE_BATTLE_SKIN_IDS];
 }
 
 /** 루트 `data-battle-skin-family` 값 — 묶음이 없는 스킨은 자기 id 다. */

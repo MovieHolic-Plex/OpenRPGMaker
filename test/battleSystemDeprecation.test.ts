@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   ACTIVE_BATTLE_SKIN_IDS,
-  isDeprecatedBattleSkin,
+  isRetiredBattleSkinId,
   listActiveBattleSkinIds,
   listBattleSkinIds,
   resolveSkinId,
@@ -44,7 +44,8 @@ describe("battle skin registry — 전투 방식 둘 (2026-10-02)", () => {
     expect(listBattleSkinIds()).toHaveLength(2);
     expect(resolveSkinId("vxace")).toBe("retro2003");
     expect(resolveSkinId("rm2000")).toBe("retro2003");
-    expect(isDeprecatedBattleSkin("retro2003")).toBe(false);
+    expect(isRetiredBattleSkinId("retro2003")).toBe(false);
+    expect(isRetiredBattleSkinId("ff")).toBe(true);
   });
 });
 
@@ -167,8 +168,8 @@ describe("shipped project battle skin authoring", () => {
       const project = factory();
       const skinId = project.system.battleUiStyle;
       expect(
-        skinId === undefined || !isDeprecatedBattleSkin(resolveSkinId(skinId)),
-        `${name} authors deprecated battle skin ${skinId}`,
+        !isRetiredBattleSkinId(skinId),
+        `${name} authors retired battle skin ${skinId}`,
       ).toBe(true);
     }
   }, 30_000);

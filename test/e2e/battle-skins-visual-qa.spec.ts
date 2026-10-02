@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { isDeprecatedBattleSkin, listBattleSkinIds } from "@/battle/skins/registry";
+import { listBattleSkinIds } from "@/battle/skins/registry";
 import {
   seedReferenceBattleProject,
   waitForActorCommand,
@@ -140,7 +140,6 @@ async function diag(page: Page): Promise<SkinDiag> {
 
 for (const skin of listBattleSkinIds()) {
   test(`battle skin visual QA — ${skin}`, async ({ page }) => {
-    test.skip(isDeprecatedBattleSkin(skin), "옛 색 스킨은 2026-10-02부터 자료집에서 고를 수 없다");
     test.setTimeout(120_000);
     const dir = `${OUT}/${skin}`;
     await mkdir(dir, { recursive: true });

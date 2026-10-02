@@ -44,8 +44,6 @@ export interface BattleSkin {
   readonly defaultBackdropResourceId?: string;
   /** 창 크롬 CSS 를 나눠 쓰는 묶음. 없으면 스킨 id 가 곧 묶음이다(`data-battle-skin-family` = id). */
   readonly family?: BattleSkinFamily;
-  /** 지원 종료 스킨 — 저장된 프로젝트에서는 계속 로드·렌더되지만 새 저작 UI에서는 숨긴다. */
-  readonly deprecated?: true;
   /** 배틀러 연출 방식. "retro" = 도트 측면 전투 연출(전진 걸음·예비동작·적 점멸·붕괴, battleRetroMotion.ts).
    *  없으면 공용 연출(05-poses-motion.css · 22-hit-feel.css)만 쓴다. */
   readonly motionStyle?: "retro";
