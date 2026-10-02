@@ -49,3 +49,9 @@
 - 연결 스킬의 실제 대상 범위·MP 0·상태·속성·애니메이션 참조, 빈 프로젝트와 예제 일치, 6장르, 직렬화 재로드, 삭제 행 유지, 내보내기, 1,054개 그림 브라우저 로드를 확인한다.
 
 데이터 확인 명령: `vite-node --script scripts/content/inspect-shared-item-balance.mts`, `inspect-shared-item-defaults.mts`, `inspect-shared-item-export.mts`. 편집기 화면은 `node scripts/content/capture-shared-item-defaults.mjs`. 테스트/게이트 실행 제한은 AGENTS.md를 따른다.
+
+## 큰 JSON의 타입 경계
+
+공용 아이템·아이콘 JSON과 확장된 예제 JSON은 옆의 `*.d.json.ts` 선언으로 각각 아이템 시드 배열·아이콘 배열·Project 계약을 제공한다. TypeScript의 실제 Bundler 모듈 해석에서 선언 파일이 선택되는 것을 확인했다. 브라우저/Vite와 콘텐츠 스크립트는 기존 JSON 경로로 실제 데이터 파일을 계속 읽으며 데이터 바이트와 로딩 동작은 바꾸지 않는다. JSON 전체의 각 행을 서로 다른 익명 타입으로 추론하지 않게 하는 경계다. 데이터 유효성은 정규화와 위 데이터 검사로 확인한다.
+
+PR CI의 앱 타입 확인은 6GB 힙 한도에서 중단됐다. 변경 전 `main`(282a04f19)의 CI도 같은 단계·한도·메모리 부족으로 실패했다. 이 선언은 이번 데이터 확장의 추가 추론 비용을 줄이며 기존 저장소 전체 메모리 문제를 해결했다고 주장하지 않는다.

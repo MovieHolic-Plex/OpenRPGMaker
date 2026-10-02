@@ -548,7 +548,36 @@
     "src/assets/sharedItemIconAssets.json": "e611711e7fd260a19eeb4c8626364b377c64a22bfadab5bef05ba1fc7840f154",
     "src/project/defaults/defaultItemBalance.ts": "f5ceabe35f608cea26ed0405b5bd18ac36b19603640a0fa5f45d38786897bc4a",
     "src/project/defaults/defaultSharedItemSkills.ts": "1103320ac6473ba6ed69f9800cb3d6d8f7f61375667494d72c5f2cf16c223760",
-    "scripts/content/lib/shared-item-effects.mjs": "05336ab23db3c77a57ed7ce2bcd0afaa16b168bc7eb7dc01dd4fa005d6abe517"
+    "scripts/content/lib/shared-item-effects.mjs": "05336ab23db3c77a57ed7ce2bcd0afaa16b168bc7eb7dc01dd4fa005d6abe517",
+    "src/project/defaults/sharedItemCatalog.d.json.ts": "8b9d83cdede2e5e2ac4367ca3e7ad359c50a8a45f70a73d1ad7bf33f57f2caca",
+    "src/project/defaults/fixtures/dew-village-demo.d.json.ts": "7981a1b27df0db7af60c5a34ebd3bffd04a4f974a167469c5646155819399b9b",
+    "src/assets/sharedItemIconAssets.d.json.ts": "7f6a0b92e596e817de1b5aa703dc6ff401346993f31a23bf39afe318d00f1e0f"
   },
-  "complete": true
+  "complete": true,
+  "typingBoundaries": [
+    {
+      "source": "src/project/defaults/sharedItemCatalog.ts",
+      "request": "./sharedItemCatalog.json",
+      "declaration": "src/project/defaults/sharedItemCatalog.d.json.ts"
+    },
+    {
+      "source": "src/project/defaults/defaultProject.ts",
+      "request": "./fixtures/dew-village-demo.json",
+      "declaration": "src/project/defaults/fixtures/dew-village-demo.d.json.ts"
+    },
+    {
+      "source": "src/assets/cc0IconAssets.ts",
+      "request": "./sharedItemIconAssets.json",
+      "declaration": "src/assets/sharedItemIconAssets.d.json.ts"
+    }
+  ],
+  "ci": {
+    "baseline": {
+      "commit": "282a04f19",
+      "run": 36947360694,
+      "reason": "App typecheck exceeded the 6 GB heap limit"
+    },
+    "initialPullRequestRun": 36949781324,
+    "reason": "Same app typecheck heap-limit failure"
+  }
 }

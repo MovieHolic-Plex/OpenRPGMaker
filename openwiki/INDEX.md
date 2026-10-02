@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **116쪽 / 4210KB / 약 1,214,796 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **116쪽 / 4211KB / 약 1,215,103 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1533,12 +1533,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L215` Project sound descriptions
 - `L242` Traps
 
-### `openwiki/shared-item-balance.md` — 5KB · 52줄 · ~1,709 토큰
+### `openwiki/shared-item-balance.md` — 6KB · 58줄 · ~2,016 토큰
 
 - `L5` 소유 경로
 - `L12` 효과 역할
 - `L30` 가격 기준
 - `L40` 확인 근거
+- `L53` 큰 JSON의 타입 경계
 
 ### `openwiki/slates-agent-entry.md` — 4KB · 40줄 · ~1,099 토큰
 
