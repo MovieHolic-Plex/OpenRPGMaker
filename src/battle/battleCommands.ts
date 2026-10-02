@@ -21,6 +21,19 @@ export const DEFAULT_RUNTIME_BATTLE_COMMANDS: readonly RuntimeBattleCommand[] = 
   { id: "cmd_escape", name: "도주", kind: "escape" },
 ];
 
+/**
+ * 이벤트로 명령을 바꾸기 전 이 배우의 메뉴 id(배우 고유 목록 > 직업 명령). 「전투 명령 변경」의 더하기·빼기는
+ * 이 목록 위에서 한다 — 빈 목록에서 시작하면 「더하기」 한 번에 공격·스킬이 모두 사라졌다(2026-10-02).
+ */
+export function baseBattleCommandIds(project: Project, actorRecordId: string, classId?: string): string[] {
+  const actor = project.database.actors.find((record) => record.id === actorRecordId);
+  const klass = project.database.classes.find((record) => record.id === (classId ?? actor?.classId));
+  const actorIds = actor?.battleCommandIds?.filter((id) =>
+    project.database.battleCommands?.some((record) => record.id === id) || klass?.battleCommands.some((entry) => entry.id === id));
+  if (actorIds?.length) return [...actorIds];
+  return (klass?.battleCommands ?? []).map((command) => command.id);
+}
+
 export function battleCommandsForActor(
   project: Project,
   actorRecordId: string | undefined,
@@ -38,8 +51,7 @@ export function battleCommandsForActor(
   const klass = actor ? project.database.classes.find((record) => record.id === (options.classId ?? actor.classId)) : undefined;
   // 우선순위: 전투 중 이벤트로 바꾼 명령 > 배우 고유 명령(ActorRecord.battleCommandIds, RM2003 배우별 명령) > 직업 명령.
   // 배우 고유 목록은 전역·직업 목록에 있는 id 만 쓴다(지운 명령이 「공격」으로 둔갑하지 않게).
-  const actorIds = actor?.battleCommandIds?.filter((id) =>
-    project.database.battleCommands?.some((record) => record.id === id) || klass?.battleCommands.some((entry) => entry.id === id));
+  const actorIds = actor?.battleCommandIds?.length ? baseBattleCommandIds(project, actor.id, klass?.id) : undefined;
   const overrideIds = options.overrideCommandIds?.length ? options.overrideCommandIds : actorIds;
   let source: readonly ClassBattleCommand[] = klass?.battleCommands ?? [];
   if (overrideIds && overrideIds.length > 0) {

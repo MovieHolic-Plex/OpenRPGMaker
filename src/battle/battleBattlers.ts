@@ -308,6 +308,12 @@ export function learnedSkillIds(
   return [...ids];
 }
 
+export interface AttackSwing {
+  readonly weaponId: string;
+  readonly attackOffset: number;
+  readonly attackElementIds: readonly string[];
+}
+
 export interface EquipmentRuntimeEffects {
   readonly doubleAttack: boolean;
   /**
@@ -315,6 +321,12 @@ export interface EquipmentRuntimeEffects {
    * 이도류로 방패 칸에 한손 무기를 든 배우는 두 무기로 각각 친다. 무기가 없으면 장비 「2회 공격」이 있을 때 2, 아니면 1.
    */
   readonly attackHits?: number;
+  /**
+   * 이도류로 무기 둘 이상을 든 배우의 타격별 무기(2026-10-02). 한 타격은 그 무기의 공격력·공격 속성만 쓴다 —
+   * 두 무기 공격력을 합친 값으로 두 번 치면 한 자루가 두 번 계산되어 이도류가 두 배로 세졌다.
+   * attackOffset = 다른 무기들의 공격력 보정 합의 음수(통상 공격 능력치에 더한다).
+   */
+  readonly attackSwings?: readonly AttackSwing[];
   readonly attackAll?: boolean;
   /** 전투당 1회 자동 부활(최대 HP %). 여러 장비면 가장 큰 값. */
   readonly autoRevive?: number;
@@ -366,6 +378,16 @@ function attackHitsFor(project: Project, equipment: ActorInitialEquipment, doubl
   return doubleAttack ? Math.max(hits, 2) : hits;
 }
 
+function attackSwingsFor(project: Project, equipment: ActorInitialEquipment): AttackSwing[] | undefined {
+  const weapons = heldWeapons(project, equipment);
+  if (weapons.length < 2) return undefined;
+  const totalBonus = weapons.reduce((sum, weapon) => sum + weapon.statBonuses.attack, 0);
+  return weapons.flatMap((weapon) => {
+    const swing: AttackSwing = { weaponId: weapon.id, attackOffset: weapon.statBonuses.attack - totalBonus, attackElementIds: [...weapon.attackElementIds] };
+    return weapon.effectFlags.doubleAttack ? [swing, swing] : [swing];
+  });
+}
+
 function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipment): EquipmentRuntimeEffects {
   const attackElementIds = new Set<string>();
   const elementalDefenseIds = new Set<string>();
@@ -405,6 +427,10 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   return {
     doubleAttack,
     attackHits: attackHitsFor(project, equipment, doubleAttack),
+    ...(() => {
+      const attackSwings = attackSwingsFor(project, equipment);
+      return attackSwings ? { attackSwings } : {};
+    })(),
     attackAll,
     ...(autoRevive > 0 ? { autoRevive } : {}),
     accuracy: Math.max(0, Math.min(100, accuracy)),

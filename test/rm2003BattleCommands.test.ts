@@ -1,11 +1,15 @@
 import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
 import { actorBattlers } from "@/battle/battleBattlers";
+import { createBattleRuntime } from "@/battle/runtime";
 import { battleCommandsForActor } from "@/battle/battleCommands";
 import { normalizeActorPatch, normalizeActorRecord } from "@/project/actorModel";
 import { normalizeDatabaseRecords, normalizeEquipmentRecord } from "@/project/databaseRecordModel";
 import { deserialize } from "@/project/io";
 import type { Project } from "@/project/types";
+import { startSession } from "@/project/session";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { ACTOR, battleCase, mark, variables } from "./battleEventRepairFlow.fixture";
 import { acknowledge, eventPause } from "./battleEventSequential.fixture";
 import strictFixture from "./fixtures/projects/battle-strict-v3.json";
@@ -125,5 +129,85 @@ for (const flow of ["gauge", "strict"] as const) describe(`공통 이벤트 전�
     runtime.performActorCommand({ kind: "commonEvent", commonEventId: "ce_missing" });
     expect(runtime.snapshot().activeActorId).toBe(before.activeActorId);
     expect(runtime.snapshot().phase).toBe("actorCommand");
+  });
+});
+
+describe("「전투 명령 변경」(m2-092) 더하기·빼기는 지금 메뉴 위에서 한다", () => {
+  const run = (project: Project, session: ReturnType<typeof startSession>, fields: Record<string, string>) =>
+    executeM2RuntimeCommand(session, m2CommandById("m2-092-change-battle-commands")!, {
+      commandId: "m2-092-change-battle-commands", fields: { target: ACTOR, slots: "", ...fields },
+    }, { project });
+
+  it("처음 더하면 직업 명령 뒤에 붙는다(공격·방어가 사라지지 않는다)", () => {
+    const project = strictProject();
+    project.database.battleCommands = [{ id: "cmd_pray", name: "기도", kind: "commonEvent", commonEventId: "ce_pray" }];
+    const session = startSession(project);
+    run(project, session, { operation: "add", value: "cmd_pray" });
+    expect(session.actorBattleCommands?.[ACTOR]).toEqual(["cmd_attack", "cmd_guard", "cmd_escape", "cmd_pray"]);
+  });
+
+  it("처음 빼면 직업 명령에서 그 명령만 빠진다", () => {
+    const project = strictProject();
+    const session = startSession(project);
+    run(project, session, { operation: "remove", value: "cmd_guard" });
+    expect(session.actorBattleCommands?.[ACTOR]).toEqual(["cmd_attack", "cmd_escape"]);
+  });
+
+  it("배우 고유 목록이 있으면 그 목록이 출발점이다", () => {
+    const project = strictProject();
+    project.database.actors.find((record) => record.id === ACTOR)!.battleCommandIds = ["cmd_escape", "cmd_attack"];
+    const session = startSession(project);
+    run(project, session, { operation: "remove", value: "cmd_attack" });
+    expect(session.actorBattleCommands?.[ACTOR]).toEqual(["cmd_escape"]);
+  });
+});
+
+describe("이도류 타격은 그 무기의 공격력으로 친다", () => {
+  function damageWith(equipment: Record<string, string>): number {
+    const project = strictProject();
+    project.database.equipment = [
+      normalizeEquipmentRecord({ id: "eq_sword", name: "검", slot: "weapon", statBonuses: { attack: 40 } as never }),
+      normalizeEquipmentRecord({ id: "eq_dagger", name: "단검", slot: "weapon", statBonuses: { attack: 4 } as never }),
+    ];
+    const actor = project.database.actors.find((record) => record.id === ACTOR)!;
+    actor.options = { ...actor.options, dualWield: true };
+    actor.initialEquipment = equipment;
+    actor.parameterCurves.agility = Array.from({ length: 99 }, () => 99);
+    const enemy = project.database.enemies.find((record) => record.id === "enemy_training_slime")!;
+    enemy.stats = { ...enemy.stats, maxHp: 9000, defense: 1, agility: 1 };
+    enemy.actions = [];
+    enemy.skillIds = [];
+    const runtime = createBattleRuntime({
+      project, troopId: "troop_strict_training", battleFlow: "strict", canEscape: false, canLose: true,
+      party: { partyActorIds: [ACTOR], levels: { [ACTOR]: 1 }, experience: {} },
+      sessionState: { switches: {}, variables: {}, inventory: {} },
+      rng: () => 0.5,
+    });
+    const before = runtime.snapshot().enemies.reduce((sum, entry) => sum + entry.hp, 0);
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: runtime.snapshot().enemies[0]!.id });
+    return before - runtime.snapshot().enemies.reduce((sum, entry) => sum + entry.hp, 0);
+  }
+
+  it("검+단검 두 타격 = 검 한 번 + 단검 한 번 (합산 공격력으로 두 번 치지 않는다)", () => {
+    const sword = damageWith({ weapon: "eq_sword" });
+    const dagger = damageWith({ weapon: "eq_dagger" });
+    const dual = damageWith({ weapon: "eq_sword", shield: "eq_dagger" });
+    expect(sword).toBeGreaterThan(dagger);
+    expect(dual).toBe(sword + dagger);
+  });
+
+  it("타격별 무기 목록을 battler 에 싣는다", () => {
+    const project = strictProject();
+    project.database.equipment = [
+      normalizeEquipmentRecord({ id: "eq_sword", name: "검", slot: "weapon", statBonuses: { attack: 40 } as never, attackElementIds: ["fire"] }),
+      normalizeEquipmentRecord({ id: "eq_dagger", name: "단검", slot: "weapon", statBonuses: { attack: 4 } as never }),
+    ];
+    const actor = project.database.actors.find((record) => record.id === ACTOR)!;
+    actor.options = { ...actor.options, dualWield: true };
+    const swings = actorBattlers(project, { partyActorIds: [ACTOR], equipment: { [ACTOR]: { weapon: "eq_sword", shield: "eq_dagger" } } })[0]!.equipmentEffects?.attackSwings;
+    expect(swings).toEqual([
+      { weaponId: "eq_sword", attackOffset: -4, attackElementIds: ["fire"] },
+      { weaponId: "eq_dagger", attackOffset: -40, attackElementIds: [] },
+    ]);
   });
 });

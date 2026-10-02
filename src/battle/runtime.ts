@@ -1317,6 +1317,25 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function applyActorAttack(actor: MutableBattler, command: Extract<ActorCommand, { kind: "attack" }>): void {
     const targets = resolvedCommandTargets(actor, command).targets;
+    const swings = actor.equipmentEffects?.attackSwings;
+    if (swings?.length) {
+      // 이도류: 타격마다 그 무기의 공격력·속성으로 친다. 계산이 끝나면 합산 능력치로 되돌린다.
+      const attackPower = actor.attackPower;
+      const effects = actor.equipmentEffects;
+      try {
+        for (const swing of swings) {
+          actor.attackPower = Math.max(1, attackPower + swing.attackOffset);
+          actor.equipmentEffects = { ...effects!, attackElementIds: swing.attackElementIds };
+          for (const target of targets) {
+            if (target.hp > 0) applySingleActorAttack(actor, target);
+          }
+        }
+      } finally {
+        actor.attackPower = attackPower;
+        actor.equipmentEffects = effects;
+      }
+      return;
+    }
     const attackCount = actor.equipmentEffects?.attackHits ?? (actor.equipmentEffects?.doubleAttack ? 2 : 1);
     for (let index = 0; index < attackCount; index += 1) {
       for (const target of targets) {
