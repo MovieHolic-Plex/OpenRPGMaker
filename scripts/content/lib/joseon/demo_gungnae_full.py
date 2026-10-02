@@ -37,7 +37,7 @@ TMP = '/tmp/vqa20'
 os.makedirs(TMP, exist_ok=True)
 MW, MH = 200, 208
 N, E, S, W = G.N, G.E, G.S, G.W
-COLS = 16
+COLS = 20          # 가장 넓은 조각(궁 대전 18칸)이 들어가야 한다
 
 
 def OY(y):
@@ -1622,7 +1622,7 @@ def bake():
                       'buildingBodies': nb, 'people': len(ppl)}, ensure_ascii=False))
     audit()
     # 확인 그림: 전체 축소 + 원작 나란히
-    full = Image.fromarray(_pp.overlay(Image.fromarray(direct, 'RGBA'), ppl).convert('RGBA'))
+    full = _pp.overlay(Image.fromarray(direct, 'RGBA'), ppl).convert('RGBA')
     sm = full.resize((MW * 16 // 3, MH * 16 // 3), Image.LANCZOS)
     sm.save(TMP + '/gnf_full.png')
     ref = Image.open(TMP + '/gungnae/gungnae_map.png').convert('RGB')
