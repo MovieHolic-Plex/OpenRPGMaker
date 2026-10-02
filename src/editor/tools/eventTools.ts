@@ -3716,7 +3716,7 @@ function rejectHandMovedActorPictures(rawBeats: unknown): void {
       const id = String(b.pictureId ?? b.id ?? "");
       if (typeof b.resourceId === "string") resourceOf.set(id, b.resourceId);
       const resource = resourceOf.get(id);
-      if ((b.action === "move" || b.action === "show") && resource && HAND_MOVED_ACTOR_PICTURE.test(resource)) offenders.add(resource);
+      if ((b.action === "move" || b.action === "show" || (b.action === undefined && typeof b.resourceId === "string")) && resource && HAND_MOVED_ACTOR_PICTURE.test(resource)) offenders.add(resource);
     }
   };
   visit(rawBeats);
