@@ -256,7 +256,7 @@ def make(rid, item, note='', base=''):
                    '- `view34/good-dining-4x2`·`good-magitek-engine-3x2`·`good-canopy-bed-2x2` 처럼 **발밑 깊이만큼 윗면이 길다**. 바퀴 달린 물건·긴 물건도 같다 — 지붕·상판을 위에서 본 긴 면으로 그리고, 남쪽 옆면은 그 아래에 붙인다.',
                    '- `view34/bad-*-side-elevation` 은 이번에 나온 틀린 그림이다: 지붕이 2~4행 띠뿐인 옆모습. 이렇게 그리면 검사·검수가 떨어뜨린다.',
                    '- 캔버스 높이 = 발밑 깊이(칸×16) + 솟는 높이. 윗면 행 수를 먼저 정하고(위 수 이상), 남은 높이를 남쪽 면에 나눈다.', '']
-            if o.get('blockout'):
+        if o.get('blockout'):
                 (t0, t1), (f0, f1) = o['blockout']['top'], o['blockout']['front']; cv = o['blockout'].get('cover', 0.7)
                 md += ['## 3/4 밑그림 — 이 띠를 채운다 (명세가 정한 자리, 검사가 잰다)', '',
                        f'`blockout-x8.png` 를 먼저 연다(8배, 16px 칸 선).',
