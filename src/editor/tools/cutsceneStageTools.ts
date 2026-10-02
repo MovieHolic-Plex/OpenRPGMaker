@@ -44,6 +44,7 @@ const STEP_SCHEMA: JsonSchema = {
     ms: { type: "number", minimum: 0 }, ease: { type: "string", enum: ["linear", "in", "out", "inout"] }, anim: { type: "string", enum: ["walk"], description: "walk: 캐릭터셋 걷기 프레임 교체" },
     pose: { type: "string" }, spin: { type: "number" }, intensity: { type: "number" },
     speaker: { type: "string" }, text: { type: "string" }, context: { type: "string", enum: ["speech", "narration", "thought", "whisper", "shout"] }, autoAdvance: { type: "boolean" },
+    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: "say 대화창 위치. 생략=auto: 지금 화면의 인물·그림을 가리지 않는 쪽(위/아래)을 도구가 고른다. 고정하려면 top·center·bottom." },
     resourceId: { type: "string", description: "se/bgm 리소스 id" },
     color: { type: "string", enum: ["white", "red", "green", "blue", "yellow", "purple", "black"], description: "flash 색" },
     mapId: { type: "string", description: "transfer: 옮겨 갈 맵" }, x: { type: "integer", description: "transfer: 도착 칸 x" }, y: { type: "integer", description: "transfer: 도착 칸 y" },
@@ -70,6 +71,7 @@ const ACTOR_SCHEMA: JsonSchema = {
     at: PLACE_SCHEMA,
     z: { type: "integer", minimum: 2, maximum: 80, description: "겹침 순서(클수록 위)" },
     ghost: { type: "boolean", description: "맵 위에 실제로 서 있는 인물(주인공)을 배우로 삼는다 — 그림은 안 그리고 touch/at/expect·turn·animate 의 기준으로만 쓴다. 화면 자리는 tile 로 주면 도구가 카메라를 계산한다(at 직접 지정도 가능)." },
+    event: { type: "string", description: "맵 위에 실제로 있는 NPC·몬스터 이벤트 id(place_npc 로 먼저 둔다) — 그림이 아니라 맵 걷기로 움직인다. move 의 to 는 {tile:{x,y}} 또는 {at:'주인공',side,gap(칸)}." },
     tile: { type: "object", additionalProperties: false, properties: { x: { type: "integer" }, y: { type: "integer" } }, description: "ghost 배우가 서 있는 맵 칸(예: transfer 의 도착 칸). 화면 위치는 도구가 맵 크기·시야로 구한다." },
   },
 };
@@ -121,7 +123,7 @@ const scriptCutsceneStaged: ToolDefinition = {
     + "배우: character(게임 캐릭터셋 인물, 걷기 프레임 포함) 또는 resourceId(generate_cutscene_art 소품). 위치 관계 예: 트럭이 오른쪽 화면 밖에서 들어와 인물 몸에 35% 파고든다 = "
     + "{do:'enter',actor:'트럭',from:'right',to:{touch:'인물',overlap:0.35,dy:6},ms:520}. 그 직후 {do:'expect',touching:['트럭','인물']} 로 닿았는지 못 박으면 어긋날 때 도구가 거부하고 고칠 방법을 알려 준다. "
     + "withPrevious:true 는 앞 단계와 동시 진행(예: flash·shake·fling·exit 를 충돌 순간에 함께). say 는 동시 진행 불가. 모든 그림은 게임 해상도 100% 배율이고, 위치는 «발 밑 가운데» 기준이다. "
-    + "소재 고르는 순서: ① 몬스터·동물은 게임에 이미 있는 도트(list_monster_resources 의 resourceId, 예 scarloxy-monster-*)를 배우 resourceId 로 그대로 쓴다 ② 사람은 캐릭터셋 Actor1(characterIndex 0~7)에서 한 명을 골라 character 로 쓰고, 맵 위 주인공 그래픽도 upsert_actor(characterResourceId·characterIndex)로 같은 칸에 맞춘다 — 컷신 속 인물과 이세계의 주인공이 같아야 한다. 몬스터는 이 그림 도트이거나 맵 NPC 캐릭터셋(EasyRPG monster·animal) 중 게임 세계에 맞는 쪽을 쓴다 ③ 공격·마법·불꽃은 그림을 만들지 말고 animate 로 게임의 전투 애니메이션(get_database_records battleAnimations, 예 anim_scarloxy_fire)을 쓴다 ④ 효과음·BGM 은 list_resources(kind:se)·recommend_bgm 으로 고른 id 를 se/bgm 단계에 넣는다 ⑤ generate_cutscene_art 는 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만 쓴다. 맵 위에 서 있는 주인공을 맞히거나 돌리려면 ghost 배우(tile 지정)를 쓴다 — turn(위·왼·오른·아래 둘러보기)·animate 대상이 된다. 새 장소로 넘어갈 땐 clear → transfer(fadeColor) 단계. 암전(fade out)으로 끝냈으면 fade in 으로 되돌려 화면을 검게 둔 채 끝내지 않는다. 끝나면 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. 이미 있는 전용 연출(트럭 충돌: script_cutscene_impact)이 맞으면 그것을 쓴다.",
+    + "소재 고르는 순서: ① 몬스터·동물은 게임에 이미 있는 도트(list_monster_resources 의 resourceId, 예 scarloxy-monster-*)를 배우 resourceId 로 그대로 쓴다 ② 사람은 캐릭터셋 Actor1(characterIndex 0~7)에서 한 명을 골라 character 로 쓰고, 맵 위 주인공 그래픽도 upsert_actor(characterResourceId·characterIndex)로 같은 칸에 맞춘다 — 컷신 속 인물과 이세계의 주인공이 같아야 한다. 몬스터는 이 그림 도트이거나 맵 NPC 캐릭터셋(EasyRPG monster·animal) 중 게임 세계에 맞는 쪽을 쓴다 ③ 공격·마법·불꽃은 그림을 만들지 말고 animate 로 게임의 전투 애니메이션(get_database_records battleAnimations, 예 anim_scarloxy_fire)을 쓴다 ④ 효과음·BGM 은 list_resources(kind:se)·recommend_bgm 으로 고른 id 를 se/bgm 단계에 넣는다 ⑤ generate_cutscene_art 는 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만 쓴다. 맵 위에 서 있는 주인공은 ghost 배우(tile 지정), 맵 위 NPC·몬스터는 event 배우(이벤트 id; place_npc 로 먼저 둔다)로 두고 move(to:{tile:{x,y}} 또는 {at:'주인공',side,gap 칸})로 걷게 한다 — turn(위·왼·오른·아래 둘러보기)·animate(전투 애니메이션을 그 배우 위에)의 대상도 된다. 새 장소로 넘어갈 땐 clear → transfer(fadeColor) 단계. 암전(fade out)으로 끝냈으면 fade in 으로 되돌려 화면을 검게 둔 채 끝내지 않는다. 끝나면 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. ",
   mode: "write",
   domains: ["event"],
   parameters: {
@@ -179,7 +181,7 @@ const scriptCutsceneStaged: ToolDefinition = {
       const at = raw.at && typeof raw.at === "object" ? (raw.at as StageActor["at"]) : undefined;
       const z = typeof raw.z === "number" ? Math.trunc(raw.z) : undefined;
       const character = characterOf(raw);
-      if (character) {
+      if (character && raw.ghost !== true) {
         const prepared = preparedActors.get(charKey(character.resourceId, character.characterIndex));
         if (!prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임이 준비되지 않았습니다 — 같은 인자로 다시 호출하세요.`, { code: "character-not-prepared" });
         if ("error" in prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임을 만들지 못했습니다: ${prepared.error}`, { code: "character-frames-failed" });
@@ -207,7 +209,13 @@ const scriptCutsceneStaged: ToolDefinition = {
           ghostAt = { x: Math.round(tile.x * T + T / 2 - camX), y: Math.round((tile.y + 1) * T - camY) };
         }
         if (!ghostAt) throw new ToolError(`배우 '${name}' 는 ghost 라서 tile(맵 칸) 또는 at(화면 자리)이 필요합니다.`, { code: "invalid-args" });
-        return { name, width: 24, height: 32, facing: raw.facing === "left" ? "left" : "right", poses: { default: "" }, ghost: true, at: ghostAt, ...(z !== undefined ? { z } : {}) };
+        return { name, width: 24, height: 32, facing: raw.facing === "left" ? "left" : "right", poses: { default: "" }, ghost: true, mapTarget: "player", ...(tile && typeof tile.x === "number" && typeof tile.y === "number" ? { tile: { x: tile.x, y: tile.y } } : {}), at: ghostAt, ...(z !== undefined ? { z } : {}) };
+      }
+      if (typeof raw.event === "string" && raw.event.trim()) {
+        const eventId = raw.event.trim();
+        const found = map.events.find((entry) => entry.id === eventId);
+        if (!found) throw new ToolError(`배우 '${name}' 의 이벤트 '${eventId}' 가 ${map.name} 에 없습니다 — place_npc/upsert_event 로 먼저 두세요(get_map_region 으로 이벤트 목록 확인).`, { code: "unknown-event" });
+        return { name, width: 24, height: 32, facing: "left", poses: { default: "" }, mapTarget: eventId, tile: { x: found.x, y: found.y }, ...(z !== undefined ? { z } : {}) };
       }
       const resourceId = typeof raw.resourceId === "string" ? raw.resourceId.trim() : "";
       if (!resourceId || (!draft.assets.uploaded[resourceId] && !bundledSizes.has(resourceId))) throw new ToolError(`배우 '${name}' 에는 character, 게임에 있는 그림 resourceId(예: 몬스터 scarloxy-monster-*), 또는 등록된 생성 그림(generate_cutscene_art 결과)이 필요합니다.`, { code: "unknown-resource" });

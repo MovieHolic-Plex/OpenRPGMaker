@@ -116,8 +116,8 @@ const generateCutsceneArt: ToolDefinition = {
     "컷신 연출용 그림 생성: 컷신에서 움직일 그림(멧돼지·몬스터·동물·트럭·환영·배경)을 이미지 모델로 만들어 picture 리소스로 등록하고 resourceId·크기를 돌려준다. style:game(기본)은 게임 화면 해상도(320×240, 16px 타일)의 16비트 도트로 바꾼다. "
     + "그림은 항상 게임과 같은 눈으로 그려진다 — SNES FF6풍 도트, 소실점 없는 3/4 탑뷰. 프롬프트에 «side view»·«perspective»·«photo»·«painting» 같은 다른 시점·화풍을 쓰지 않는다. "
     + "role=sprite: 투명 배경으로 오려 낸 소품(트럭, 자동차, 상자…). 한 장에 한 대상, 전신이 보이게 설명한다. tiles 로 현실 비례 크기를 정한다. 사람·주인공은 이 도구로 만들지 말고 script_cutscene_staged 의 character 배우(게임 캐릭터셋; 충돌만이면 script_cutscene_impact 의 victimCharacter)를 쓴다. "
-    + "role=backdrop: 인물·탈것이 없는 전체화면 빈 무대 배경(거리, 방…). 가로 도로 띠가 화면 가운데(약 40~75% 높이)를 지나게 만든다. 생성에 1분 안팎이 걸리고 호출마다 한 장만 만든다. 결과 그림이 이미지로 함께 전달되니 도로 띠의 위치를 눈으로 읽어 script_cutscene_impact 의 roadTop·roadBottom 에 넣는다. "
-    + "반환된 resourceId 는 script_cutscene_staged 의 배우(resourceId)로 넣는다(충돌 전용은 script_cutscene_impact, 그 밖의 특수한 경우만 script_cutscene 의 picture beat). 생성 그림 안에 글자·로고는 넣지 않는다. "
+    + "role=backdrop: 인물·탈것이 없는 전체화면 빈 무대 배경(거리, 방…). 가로 도로 띠가 화면 가운데(약 40~75% 높이)를 지나게 만든다. 생성에 1분 안팎이 걸리고 호출마다 한 장만 만든다. 결과 그림이 이미지로 함께 전달되니 도로 띠의 위치를 눈으로 읽어 staged 배우의 at(fx·fy 화면 비율, 발 밑 기준)에 넣는다. "
+    + "반환된 resourceId 는 script_cutscene_staged 의 배우(resourceId)로 넣는다(트럭 충돌도 staged: enter {touch:인물}+expect touching). 생성 그림 안에 글자·로고는 넣지 않는다. "
     + "게임에 이미 있는 몬스터·동물 도트(list_monster_resources)·Actor1 인물·전투 애니메이션(공격 이펙트)이 있으면 생성하지 말고 그것을 쓴다 — 이 도구는 게임에 없는 소재(트럭, 거리 배경, 회상 일러스트)에만. " + 
     "그림이 맵 타일로 없는 풍경(도로·횡단보도 등)이면 맵을 꾸미는 대신 이 도구로 배경을 만들어 컷신 전용 장면으로 쓴다.",
   mode: "write",
@@ -170,7 +170,7 @@ const generateCutsceneArt: ToolDefinition = {
     const fitScale = parsed.role === "backdrop" ? Math.round((viewport.width / entry.art.width) * 100) : 100;
     return {
       summary: `${parsed.role === "sprite" ? "소품" : "배경"} 그림 ${id}(${entry.art.width}×${entry.art.height})을 만들어 등록했습니다.`
-        + (parsed.role === "backdrop" ? ` 배경은 script_cutscene_staged 의 backdropResourceId 로 넣으면 크기를 도구가 맞춘다(raw picture beat 면 scale=${fitScale}, x=0, y=0).` : " script_cutscene_staged 의 배우(resourceId)로 넣으세요 — 등장·횡단·충돌 좌표를 도구가 계산합니다. 툴 목록에 없으면 find_tools 로 script_cutscene_staged 를 찾으세요(충돌 전용은 script_cutscene_impact)."),
+        + (parsed.role === "backdrop" ? ` 배경은 script_cutscene_staged 의 backdropResourceId 로 넣으면 크기를 도구가 맞춘다(raw picture beat 면 scale=${fitScale}, x=0, y=0).` : " script_cutscene_staged 의 배우(resourceId)로 넣으세요 — 등장·횡단·충돌 좌표를 도구가 계산합니다. 툴 목록에 없으면 find_tools 로 script_cutscene_staged 를 찾으세요."),
       data: { resourceId: id, role: parsed.role, name: parsed.name, width: entry.art.width, height: entry.art.height, ...(parsed.role === "backdrop" ? { fitScale } : {}) },
     };
   },

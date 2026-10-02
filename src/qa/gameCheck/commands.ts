@@ -22,7 +22,7 @@ const EXTRA_FIELDS: Readonly<Record<string, readonly string[]>> = {
   // style·context·container 는 런타임 타입(project/types/events.ts text)에 있는 대화 필드다 — 폼이
   // 전용 위젯을 안 두는 것뿐이다. 여기 없으면 컷신 say 가 실은 these 필드를 «모르는 필드» 로 세어
   // 경고를 터뜨린다(2026-09-24 감성 스토리 r3: 경고 75건 중 45건).
-  text: ["emotion", "style", "context", "container", "voiceResourceId"],
+  text: ["emotion", "style", "context", "container", "position", "voiceResourceId"],
   // x·y·rotation 은 런타임이 읽는 위치·회전 필드다(player/interpreter showPictureState) — 폼의 `at` 위젯이 대신할 뿐이다.
   // 빠져 있으면 그림 컷신의 showPicture 마다 경고가 났다(2026-10-02 충돌 컷신 시험: 경고 19건 전부 이것).
   showPicture: ["recordInGallery", "x", "y", "rotation"],

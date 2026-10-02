@@ -325,6 +325,11 @@ export type Command =
       context?: string;
       /** 대사 그릇(DialogueContainerId): box·balloon·bark·corner. 비우면 화자 프로필 → 상자. */
       container?: string;
+      /**
+       * 이 한 줄의 대화창 위치. 비우면 프로젝트의 「문장 표시 설정」(displayTextSettings)을 따른다.
+       * auto = 화면 속 주인공을 가리지 않는 쪽으로 자동, top·center·bottom = 고정(주인공이 가려져도 그대로).
+       */
+      position?: "auto" | "top" | "center" | "bottom";
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {

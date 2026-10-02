@@ -15,6 +15,8 @@ export interface PlaceSpec {
   readonly dx?: number; readonly dy?: number;
   /** 다른 배우 옆. side 는 그 배우의 어느 쪽인가("front" 는 그 배우가 바라보는 쪽). */
   readonly at?: string; readonly side?: Side | "front" | "back"; readonly gap?: number;
+  /** 맵 칸 위치(맵 위 배우 전용: ghost 주인공·NPC 이벤트). at 과 함께 쓰면 gap 은 «칸» 단위. */
+  readonly tile?: { readonly x: number; readonly y: number };
   /** 다른 배우와 몸이 겹치게(0~1: 상대 몸 폭 중 파고드는 비율). 움직이는 배우의 앞면이 상대 안으로 들어간다. */
   readonly touch?: string; readonly overlap?: number;
   /** 화면 밖 — 그 방향 화면 가장자리 바깥(그림이 완전히 가려지는 곳). 나머지 축은 현재 위치. */
@@ -29,7 +31,7 @@ export type StageStep =
   | { readonly do: "exit"; readonly actor: string; readonly to: Side; readonly ms?: number; readonly ease?: "linear" | "in" | "out" | "inout"; readonly anim?: "walk" }
   | { readonly do: "pose"; readonly actor: string; readonly pose: string }
   | { readonly do: "fling"; readonly actor: string; readonly dir?: Side; readonly ms?: number; readonly spin?: number }
-  | { readonly do: "say"; readonly speaker?: string; readonly text: string; readonly context?: string; readonly autoAdvance?: boolean }
+  | { readonly do: "say"; readonly speaker?: string; readonly text: string; readonly context?: string; readonly autoAdvance?: boolean; readonly position?: "auto" | "top" | "center" | "bottom" }
   | { readonly do: "wait"; readonly ms: number }
   | { readonly do: "flash"; readonly ms?: number; readonly color?: "white" | "red" | "green" | "blue" | "yellow" | "purple" | "black" }
   | { readonly do: "shake"; readonly ms?: number; readonly intensity?: number }
@@ -62,6 +64,10 @@ export interface StageActor {
   readonly z?: number;
   /** 맵 위의 실제 인물(주인공·NPC)이 서 있는 화면 자리를 표시만 한다 — 그림은 그리지 않고, touch·at·expect 의 기준으로만 쓴다. at 필수. */
   readonly ghost?: boolean;
+  /** 맵 위 실제 배우를 조종하는 대상: "player" 또는 이벤트 id. 있으면 그림이 아니라 맵 명령(moveActor·animation)으로 움직인다. */
+  readonly mapTarget?: string;
+  /** 맵 위 배우의 현재 칸. */
+  readonly tile?: { readonly x: number; readonly y: number };
 }
 
 export interface StageInput {
@@ -91,6 +97,7 @@ interface ActorState {
   readonly spec: StageActor;
   readonly pictureId: string;
   x: number; y: number;
+  tile?: { x: number; y: number };
   shown: boolean;
   pose: string;
   walkPhase: number;
@@ -111,9 +118,10 @@ const round = (n: number): number => Math.round(n);
 export function compileStage(input: StageInput): StageResult {
   const { viewport: { width: W, height: H } } = input;
   const states = new Map<string, ActorState>();
+  let whiteUp = false;
   input.actors.forEach((spec, index) => {
     if (states.has(spec.name)) throw new StageError(`배우 이름 '${spec.name}' 이 중복됩니다.`);
-    states.set(spec.name, { spec, pictureId: `pic${spec.z ?? 2 + index}`, x: W / 2, y: H / 2, shown: false, pose: "default", walkPhase: 0 });
+    states.set(spec.name, { spec, pictureId: `pic${spec.z ?? 2 + index}`, x: W / 2, y: H / 2, ...(spec.tile ? { tile: { ...spec.tile } } : {}), shown: false, pose: "default", walkPhase: 0 });
   });
   const actorOf = (name: unknown, stepIndex: number): ActorState => {
     const found = typeof name === "string" ? states.get(name) : undefined;
@@ -164,7 +172,7 @@ export function compileStage(input: StageInput): StageResult {
 
   const topLeft = (a: ActorState, x = a.x, y = a.y): { x: number; y: number } => ({ x: round(x - a.spec.width / 2), y: round(y - a.spec.height) });
   const showBeats = (a: ActorState): Record<string, unknown>[] => {
-    if (a.spec.ghost) return [];
+    if (a.spec.ghost || a.spec.mapTarget !== undefined) return [];
     const p = topLeft(a);
     return [
       ...(a.shown ? [{ kind: "picture", action: "erase", pictureId: a.pictureId }] : []),
@@ -199,6 +207,47 @@ export function compileStage(input: StageInput): StageResult {
     }
     a.x = to.x; a.y = to.y;
     return events;
+  };
+
+  /**
+   * 대화창이 화면 위·아래 약 40%를 덮는다고 보고, 지금 화면에 있는 배우(그림·맵 위 주인공)와 덜 겹치는 쪽을 고른다.
+   * 인물이 화면 아래쪽에 서 있으면 top, 위쪽이면 bottom. 명시(top·center·bottom)는 그대로 쓴다.
+   */
+  const sayPosition = (requested: "auto" | "top" | "center" | "bottom" | undefined): "top" | "center" | "bottom" => {
+    if (requested === "top" || requested === "center" || requested === "bottom") return requested;
+    const band = (y0: number, y1: number): number => {
+      let area = 0;
+      for (const a of states.values()) {
+        if (!a.shown && !a.spec.ghost) continue;
+        const b = box(a);
+        const h = Math.max(0, Math.min(b.y1, y1) - Math.max(b.y0, y0));
+        const w = Math.max(0, Math.min(b.x1, W) - Math.max(b.x0, 0));
+        area += h * w;
+      }
+      return area;
+    };
+    return band(0, H * 0.4) < band(H * 0.6, H) ? "top" : "bottom";
+  };
+
+  /** 맵 위 배우의 도착 칸. tile 절대·at 상대(gap 은 칸)·dx/dy 상대 칸. */
+  const tileTarget = (a: ActorState, spec: PlaceSpec, stepIndex: number): { x: number; y: number } => {
+    if (!a.tile) throw new StageError(`맵 위 배우 '${a.spec.name}' 의 현재 칸을 모릅니다(이벤트 id 나 tile 필요).`, stepIndex);
+    if (spec.tile) return { x: spec.tile.x, y: spec.tile.y };
+    if (spec.at !== undefined) {
+      const other = actorOf(spec.at, stepIndex);
+      if (!other.tile) throw new StageError(`'${spec.at}' 는 맵 위 배우가 아니라 칸 기준 at 을 쓸 수 없습니다.`, stepIndex);
+      const gap = Math.max(1, Math.round(spec.gap ?? 1));
+      const side = spec.side ?? "right";
+      const d = side === "left" ? { x: -gap, y: 0 } : side === "right" ? { x: gap, y: 0 } : side === "top" ? { x: 0, y: -gap } : { x: 0, y: gap };
+      return { x: other.tile.x + d.x, y: other.tile.y + d.y };
+    }
+    return { x: a.tile.x + Math.round(spec.dx ?? 0), y: a.tile.y + Math.round(spec.dy ?? 0) };
+  };
+  const tilePath = (from: { x: number; y: number }, to: { x: number; y: number }): { kind: "move"; dir: "left" | "right" | "up" | "down" }[] => {
+    const moves: { kind: "move"; dir: "left" | "right" | "up" | "down" }[] = [];
+    for (let x = from.x; x !== to.x; x += Math.sign(to.x - from.x)) moves.push({ kind: "move", dir: to.x > from.x ? "right" : "left" });
+    for (let y = from.y; y !== to.y; y += Math.sign(to.y - from.y)) moves.push({ kind: "move", dir: to.y > from.y ? "down" : "up" });
+    return moves;
   };
 
   const out: Record<string, unknown>[] = [];
@@ -248,7 +297,7 @@ export function compileStage(input: StageInput): StageResult {
       switch (step.do) {
         case "say": {
           if (group.length > 1) throw new StageError("say 는 다른 단계와 동시에(withPrevious) 할 수 없습니다 — 대사는 플레이어가 읽을 때까지 멈춥니다.", index);
-          out.push({ kind: "say", ...(step.speaker ? { speaker: step.speaker } : {}), text: step.text, context: step.context ?? "speech", ...(step.autoAdvance ? { autoAdvance: true } : {}) });
+          out.push({ kind: "say", ...(step.speaker ? { speaker: step.speaker } : {}), text: step.text, context: step.context ?? "speech", ...(step.autoAdvance ? { autoAdvance: true } : {}), position: sayPosition(step.position) });
           break;
         }
         case "wait": end(Math.max(0, step.ms)); break;
@@ -276,6 +325,15 @@ export function compileStage(input: StageInput): StageResult {
         }
         case "move": {
           const a = actorOf(step.actor, index);
+          if (a.spec.mapTarget !== undefined) {
+            if (group.length > 1) throw new StageError("맵 위 배우의 move 는 다른 단계와 동시에(withPrevious) 할 수 없습니다 — 걷기가 끝날 때까지 기다립니다.", index);
+            const target = tileTarget(a, step.to, index);
+            const moves = tilePath(a.tile!, target);
+            if (moves.length > 0) out.push({ kind: "moveActor", target: a.spec.mapTarget, moves, wait: true });
+            a.tile = target;
+            end(moves.length * 260);
+            break;
+          }
           if (!a.shown) throw new StageError(`배우 '${a.spec.name}' 가 아직 화면에 없습니다 — 먼저 show/enter 하세요.`, index);
           const ms = Math.max(0, step.ms ?? 500);
           events.push(...moveEvents(a, place(a, step.to, index), ms, step.ease ?? "linear", step.anim, 0, order));
@@ -323,29 +381,45 @@ export function compileStage(input: StageInput): StageResult {
           const scale = Math.max(W, H) * 50;
           events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "move", pictureId: "pic90", x: 0, y: 0, scale, opacity: 0, durationMs: ms } });
           events.push({ t: ms, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic90" } });
+          whiteUp = false;
           end(ms);
           break;
         }
         case "turn": {
           const a = actorOf(step.actor, index);
-          if (!a.spec.ghost) throw new StageError(`turn 은 맵 위 실제 인물(ghost 배우)에만 쓴다 — '${a.spec.name}' 는 그림 배우입니다(그림 배우는 pose 로 방향 그림을 바꾸세요).`, index);
-          events.push({ t: 0, order: order.n++, beat: { kind: "moveActor", target: "player", moves: [{ kind: "turn", dir: step.dir }], wait: step.wait !== false } });
+          if (a.spec.mapTarget === undefined) throw new StageError(`turn 은 맵 위 배우(ghost 주인공·NPC 이벤트)에만 쓴다 — '${a.spec.name}' 는 그림 배우입니다(그림 배우는 pose 로 방향 그림을 바꾸세요).`, index);
+          events.push({ t: 0, order: order.n++, beat: { kind: "moveActor", target: a.spec.mapTarget, moves: [{ kind: "turn", dir: step.dir }], wait: step.wait !== false } });
           break;
         }
         case "animate": {
           const a = actorOf(step.actor, index);
-          if (!a.spec.ghost) throw new StageError(`animate 는 맵 위 실제 인물(ghost 배우)에만 쓴다 — '${a.spec.name}' 는 그림 배우입니다.`, index);
-          events.push({ t: 0, order: order.n++, beat: { kind: "animation", target: "player", animationId: step.animationId, wait: false } });
+          if (a.spec.mapTarget === undefined) throw new StageError(`animate 는 맵 위 배우(ghost 주인공·NPC 이벤트)에만 쓴다 — '${a.spec.name}' 는 그림 배우입니다.`, index);
+          events.push({ t: 0, order: order.n++, beat: { kind: "animation", target: a.spec.mapTarget, animationId: step.animationId, wait: false } });
           end(step.ms ?? 900);
           break;
         }
         case "clear": {
-          for (const a of states.values()) { if (a.shown && !a.spec.ghost) events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: a.pictureId } }); a.shown = false; }
+          for (const a of states.values()) { if (a.shown && !a.spec.ghost && a.spec.mapTarget === undefined) events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: a.pictureId } }); a.shown = false; }
           if (input.backdrop) events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic1" } });
           events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic90" } });
+          whiteUp = false;
           break;
         }
-        case "transfer": events.push({ t: 0, order: order.n++, beat: { kind: "transfer", mapId: step.mapId, x: step.x, y: step.y, ...(step.facing ? { facing: step.facing } : {}), fade: step.fade ?? "black" } }); end(600); break;
+        case "transfer": {
+          // 화면의 그림(배경·배우)은 새 장소로 가져가지 않는다. 흰 막이 올라와 있으면 이세계에서 깨어나며 걷어 준다 —
+          // 안 그러면 새 맵이 영원히 하얗게 가려진다(2026-10-02 조수 시험: whiteout 뒤 dewhite 없이 transfer).
+          for (const a of states.values()) { if (a.shown && !a.spec.ghost && a.spec.mapTarget === undefined) events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: a.pictureId } }); a.shown = false; }
+          if (input.backdrop) events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic1" } });
+          events.push({ t: 0, order: order.n++, beat: { kind: "transfer", mapId: step.mapId, x: step.x, y: step.y, ...(step.facing ? { facing: step.facing } : {}), fade: step.fade ?? "black" } });
+          if (whiteUp) {
+            const ms = 1200;
+            events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "move", pictureId: "pic90", x: 0, y: 0, scale: Math.max(W, H) * 50, opacity: 0, durationMs: ms } });
+            events.push({ t: ms, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: "pic90" } });
+            whiteUp = false;
+            end(600 + ms);
+          } else end(600);
+          break;
+        }
         case "fade": events.push({ t: 0, order: order.n++, beat: { kind: "fade", direction: step.direction, durationMs: step.ms ?? 600, wait: true } }); end(step.ms ?? 600); break;
         case "shake": events.push({ t: 0, order: order.n++, beat: { kind: "shake", intensity: step.intensity ?? 9, durationMs: step.ms ?? 900 } }); break;
         case "se": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "se", resourceId: step.resourceId } }); break;
@@ -355,6 +429,7 @@ export function compileStage(input: StageInput): StageResult {
           const scale = Math.max(W, H) * 50;
           events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "show", pictureId: "pic90", resourceId: input.whiteResourceId, x: 0, y: 0, scale, opacity: 0 } });
           events.push({ t: 0, order: order.n++, beat: { kind: "picture", action: "move", pictureId: "pic90", x: 0, y: 0, scale, opacity: 255, durationMs: ms } });
+          whiteUp = true;
           end(ms);
           break;
         }

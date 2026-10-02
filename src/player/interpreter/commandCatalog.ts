@@ -538,6 +538,7 @@ export function executeCommand(
         ...(command.style ? { style: command.style } : {}),
         ...(command.context ? { context: command.context } : {}),
         ...(command.container ? { container: command.container } : {}),
+        ...(command.position ? { position: command.position } : {}),
         ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
       });
     case "choices":

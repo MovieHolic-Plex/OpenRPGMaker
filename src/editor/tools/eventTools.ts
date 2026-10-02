@@ -3732,7 +3732,7 @@ function rejectHandMovedActorPictures(rawBeats: unknown): void {
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
-    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다.  컷신·연출·대화 장면·회상 요청의 정본. 투더문식 회상/엔딩 프리셋은 script_cutscene_preset." +
+    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. 대사·카메라·진행(스위치·맵 이동·엔딩) 중심 컷신의 정본. 그림이나 주인공·NPC·몬스터가 화면을 걷고 달리고 부딪히고 공격하는 «움직임 연출»(트럭에 치임, 몬스터 등장·공격, 둘러보기)은 좌표를 손으로 짜지 말고 script_cutscene_staged 로 만든다. 투더문식 회상/엔딩 프리셋은 script_cutscene_preset." +
     "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +

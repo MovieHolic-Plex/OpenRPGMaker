@@ -122,7 +122,7 @@ export function buildImpactChoreography(input: ImpactChoreographyInput): ImpactC
     ...(input.bgmResourceId ? [{ kind: "music", action: "bgm", resourceId: input.bgmResourceId }] : []),
     { kind: "fade", direction: "in", durationMs: 900, wait: true },
     ...input.beforeLines.flatMap((text): RecordValue[] => [
-      { kind: "say", speaker: input.speaker, text, context: "thought" },
+      { kind: "say", speaker: input.speaker, text, context: "thought", position: "top" },
       { kind: "wait", ms: 250 },
     ]),
     ...walk,
@@ -134,7 +134,7 @@ export function buildImpactChoreography(input: ImpactChoreographyInput): ImpactC
       : []),
     { kind: "shake", intensity: 3, durationMs: 350 },
     ...(input.honkSeResourceId ? [{ kind: "music", action: "se", resourceId: input.honkSeResourceId }] : []),
-    { kind: "say", context: "shout", autoAdvance: true, text: input.honkText },
+    { kind: "say", context: "shout", autoAdvance: true, text: input.honkText, position: "top" },
     { kind: "wait", ms: 500 },
     { kind: "picture", action: "show", pictureId: "pic3", resourceId: vehicle.id, x: fromX, y: vehicleY },
     { kind: "picture", action: "move", pictureId: "pic3", x: contactX, y: vehicleY, durationMs: 520, wait: true },
