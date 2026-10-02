@@ -9,7 +9,8 @@ import { declaredIntent, fixedDeclarer } from "./intentFixture";
 const CONFIG = {
   authMode: "apiKey" as const,
   baseUrl: "x",
-  model: "stub-model",
+  // 창이 넓은 모델이어야 전체 카탈로그 폴백이 실제로 나간다(좁은 창은 sessionToolExposure 가 좁힌 목록을 유지한다).
+  model: "gemini-3.8-flash",
   liteModel: "stub-model",
   apiKey: "sk",
   maxToolCalls: 4,

@@ -287,7 +287,7 @@ const utilityRecordSchema: JsonSchema = {
 
 const upsertDatabaseUtility: ToolDefinition = {
   name: "upsert_database_utility",
-  description: "데이터베이스의 속성(elements), 지형 효과(terrains), 전투 명령(battleCommands) 레코드를 id 기준으로 등록·교체한다.",
+  description: "데이터베이스의 속성(elements), 지형 효과(terrains), 전투 명령(battleCommands) 레코드를 id 기준으로 등록·교체한다. 전투 명령 kind: skill+skillId = 스킬 하나를 바로 쓰는 명령, commonEvent+commonEventId = 고르면 공통 이벤트를 실행하는 명령(RM2003 「이벤트 연결」). 명령을 고를 때 대사·문장(\"토마는 기도했다…\")을 띄우거나 여러 효과를 차례로 내야 하면 commonEvent 를 쓴다 — 스킬에는 사용 문장 칸이 없다. 공통 이벤트를 upsert_common_event 로 먼저 만든다. 특정 배우에게만 붙이려면 upsert_actor.battleCommandIds.",
   mode: "write",
   parameters: {
     type: "object",
