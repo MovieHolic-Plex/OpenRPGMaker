@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>캐릭터 칩 하네스 — 받기 / 버리기</title>
+<style>
+  :root { --bg:#17161b; --panel:#201f26; --line:#34323d; --text:#e8e6ef; --dim:#9a97a8; --ok:#5fbf77; --bad:#e0605a; --acc:#7aa8ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Noto Sans KR", sans-serif; display:grid; grid-template-columns:290px 1fr; height:100vh; }
+  aside { border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0; }
+  header { padding:12px 14px; border-bottom:1px solid var(--line); }
+  header h1 { font-size:15px; margin:0 0 6px; }
+  .prog { color:var(--dim); font-size:12px; }
+  .bar { height:4px; background:var(--line); border-radius:2px; margin-top:6px; overflow:hidden; display:flex; }
+  .bar i { display:block; height:100%; }
+  .filters { padding:8px 14px; display:flex; flex-wrap:wrap; gap:6px; border-bottom:1px solid var(--line); }
+  .chip { border:1px solid var(--line); background:transparent; color:var(--dim); border-radius:12px; padding:2px 9px; font-size:12px; cursor:pointer; }
+  .chip.on { color:var(--text); border-color:var(--acc); background:#2a3350; }
+  ul { list-style:none; margin:0; padding:0; overflow:auto; flex:1; }
+  li.grp { padding:8px 14px 4px; color:var(--dim); font-size:11px; position:sticky; top:0; background:var(--bg); z-index:1; }
+  li.it { display:flex; align-items:center; gap:8px; padding:4px 14px; cursor:pointer; border-left:3px solid transparent; }
+  li.it:hover { background:#1f1e25; }
+  li.it.sel { background:#262533; border-left-color:var(--acc); }
+  .thumb { width:48px; height:64px; flex:none; background-color:#3d6b2f; background-repeat:no-repeat; image-rendering:pixelated; border-radius:3px;
+           background-size:144px 256px; background-position:-48px -128px; }
+  li.it .nm { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  li.it .nm small { color:var(--dim); display:block; font-size:11px; }
+  .tag { font-size:10px; padding:1px 5px; border-radius:3px; white-space:nowrap; }
+  .d-accept { background:var(--ok); color:#0d1a10; } .d-reject { background:var(--bad); color:#1d0b0a; } .t-run { color:var(--dim); border:1px solid var(--line); }
+  main { overflow:auto; padding:18px 22px 150px; }
+  .head { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .head h2 { margin:0; font-size:20px; }
+  .meta { color:var(--dim); }
+  .desc { color:#c9c6d6; margin:6px 0 14px; max-width:920px; }
+  .views { display:flex; gap:18px; align-items:flex-end; flex-wrap:wrap; }
+  figure { margin:0; }
+  figure img { image-rendering:pixelated; display:block; border:1px solid var(--line); border-radius:4px; }
+  figcaption { color:var(--dim); font-size:12px; margin-top:4px; }
+  .box { margin:14px 0; padding:10px 14px; background:var(--panel); border:1px solid var(--line); border-radius:6px; max-width:920px; }
+  .box .f { color:#ff9a9a; margin:3px 0; } .box .w { color:#e8d27a; margin:3px 0; } .box .m { color:var(--dim); font-size:12px; }
+  .v-pass { color:var(--ok); } .v-fail { color:var(--bad); }
+  .decide { position:fixed; left:290px; right:0; bottom:0; background:#1b1a21f2; border-top:1px solid var(--line); padding:10px 22px; display:flex; flex-direction:column; gap:8px; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  button.big { font-size:15px; padding:7px 18px; border-radius:6px; border:1px solid var(--line); cursor:pointer; color:var(--text); background:#2a2933; }
+  button.acc { background:#244a2f; border-color:#3c7a4c; } button.rej { background:#4a2826; border-color:#7a3c38; }
+  .reasons .chip.on { border-color:var(--bad); background:#3a2322; color:var(--text); }
+  input.note { flex:1; min-width:240px; background:#15141a; border:1px solid var(--line); color:var(--text); border-radius:5px; padding:6px 9px; font:inherit; }
+  .cur { color:var(--dim); font-size:13px; }
+  kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:0 4px; font-size:11px; color:var(--dim); }
+  details { margin-top:10px; } summary { cursor:pointer; color:var(--dim); }
+</style>
+</head>
+<body>
+<aside>
+  <header>
+    <h1>캐릭터 칩 — 받기 / 버리기</h1>
+    <div class="prog" id="prog"></div>
+    <div class="bar" id="bar"></div>
+  </header>
+  <div class="filters" id="filters"></div>
+  <ul id="list"></ul>
+</aside>
+<main id="main"><p class="cur">불러오는 중…</p></main>
+<div class="decide" id="decide" hidden>
+  <div class="row">
+    <button class="big acc" id="bAcc">받기 <kbd>A</kbd></button>
+    <button class="big rej" id="bRej">버리기 <kbd>R</kbd></button>
+    <button class="big" id="bClr">결정 지우기</button>
+    <span class="cur" id="curDec"></span>
+    <span class="cur" style="margin-left:auto"><kbd>↑</kbd><kbd>↓</kbd> 이동 · 버리기는 이유를 누르고 <kbd>Enter</kbd> (이유 없이 R 두 번도 됨)</span>
+  </div>
+  <div class="row reasons" id="reasons"></div>
+  <div class="row"><input class="note" id="note" placeholder="메모(선택) — 어디가 왜 마음에 안 드는지 적으면 다음 지시문에 반영한다"></div>
+</div>
+<script>
+let S = { items: [], reasons: [] }, sel = null, rej = new Set(), armed = false;
+const F = { show: 'todo', run: 'all' };
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const fu = (it, p) => `/f/${it.run}/${it.dir}/${p}?t=${encodeURIComponent(it.review ? it.review.score : '')}`;
+
+async function load(keep) {
+  const r = await fetch('/api/state');
+  S = await r.json();
+  if (!keep || !S.items.find((i) => i.id === sel)) sel = (visible()[0] || {}).id || null;
+  render();
+}
+function visible() {
+  return S.items.filter((it) => {
+    if (F.run !== 'all' && it.run !== F.run) return false;
+    const d = it.decision ? it.decision.decision : null;
+    if (F.show === 'todo') return it.status === 'done' && !d;
+    if (F.show === 'accept') return d === 'accept';
+    if (F.show === 'reject') return d === 'reject';
+    return true;
+  });
+}
+function render() {
+  const done = S.items.filter((i) => i.status === 'done');
+  const acc = done.filter((i) => i.decision && i.decision.decision === 'accept').length;
+  const rejn = done.filter((i) => i.decision && i.decision.decision === 'reject').length;
+  const running = S.items.filter((i) => i.status === 'running').length;
+  $('prog').textContent = `완성 ${done.length} · 받음 ${acc} · 버림 ${rejn} · 남음 ${done.length - acc - rejn}` + (running ? ` · 그리는 중 ${running}` : '');
+  const t = Math.max(done.length, 1);
+  $('bar').innerHTML = `<i style="width:${acc / t * 100}%;background:var(--ok)"></i><i style="width:${rejn / t * 100}%;background:var(--bad)"></i>`;
+  const runs = [...new Set(S.items.map((i) => i.run))];
+  const chips = [['todo', '남은 것'], ['accept', '받음'], ['reject', '버림'], ['all', '전부']]
+    .map(([k, n]) => `<button class="chip ${F.show === k ? 'on' : ''}" data-show="${k}">${n}</button>`).join('')
+    + `<button class="chip ${F.run === 'all' ? 'on' : ''}" data-run="all">모든 실행</button>`
+    + runs.map((r) => `<button class="chip ${F.run === r ? 'on' : ''}" data-run="${esc(r)}">${esc(r)}</button>`).join('');
+  $('filters').innerHTML = chips;
+  $('filters').querySelectorAll('[data-show]').forEach((b) => (b.onclick = () => { F.show = b.dataset.show; sel = (visible()[0] || {}).id; render(); }));
+  $('filters').querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => { F.run = b.dataset.run; sel = (visible()[0] || {}).id; render(); }));
+  const vis = visible();
+  let html = '', grp = null;
+  for (const it of vis) {
+    if (it.run !== grp) { grp = it.run; html += `<li class="grp">${esc(grp)}</li>`; }
+    const d = it.decision ? it.decision.decision : null;
+    const tag = it.status !== 'done' ? `<span class="tag t-run">${it.status === 'running' ? '그리는 중' : '실패'}</span>`
+      : d ? `<span class="tag d-${d}">${d === 'accept' ? '받음' : '버림'}</span>` : '';
+    const th = it.status === 'done' ? `style="background-image:url('${fu(it, 'views/sheet.png')}')"` : '';
+    html += `<li class="it ${it.id === sel ? 'sel' : ''}" data-id="${esc(it.id)}"><div class="thumb" ${th}></div>
+      <div class="nm">${esc(it.name)}<small>${esc(it.gender)} · ${esc(it.dir.split('__')[1])}</small></div>${tag}</li>`;
+  }
+  $('list').innerHTML = html || '<li class="grp">없음</li>';
+  $('list').querySelectorAll('li.it').forEach((li) => (li.onclick = () => { sel = li.dataset.id; render(); }));
+  const cur = $('list').querySelector('li.sel');
+  if (cur) cur.scrollIntoView({ block: 'nearest' });
+  renderMain();
+}
+let lastMain = '';
+function renderMain() {
+  const it = S.items.find((i) => i.id === sel);
+  // 주기 새로고침이 GIF 를 처음부터 다시 돌리거나 고르던 이유를 지우지 않게, 바뀐 게 없으면 그대로 둔다
+  const key = JSON.stringify([sel, it && it.status, it && it.decision, it && it.review && it.review.score]);
+  if (key === lastMain) return;
+  lastMain = key;
+  if (!it) { $('main').innerHTML = '<p class="cur">고를 것이 없습니다.</p>'; $('decide').hidden = true; return; }
+  if (it.status !== 'done') {
+    $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${it.status === 'running' ? '그리는 중…' : '결과 없음'}</span></div>`;
+    $('decide').hidden = true; return;
+  }
+  const g = it.gate || { ok: true, fails: [], warns: [], metrics: {} };
+  const rv = it.review;
+  const rvHtml = rv ? `<div class="box">검수자(Sonnet 5.5 medium, 참고용) <b class="${rv.verdict === 'PASS' ? 'v-pass' : 'v-fail'}">${esc(rv.verdict)}</b> · 점수 ${esc(rv.score)}
+      ${(rv.issues || []).map((i) => `<div class="${['high', 'mid'].includes(i.severity) ? 'f' : 'w'}">[${esc(i.severity)}] ${esc(i.where)} — ${esc(i.what)}</div>`).join('')}
+      ${rv.good && rv.good.length ? `<div class="m">잘 된 점: ${esc(rv.good.join(' / '))}</div>` : ''}</div>` : '';
+  const gHtml = `<div class="box">기계 검수 <b class="${g.ok ? 'v-pass' : 'v-fail'}">${g.ok ? '통과' : '불통과'}</b>
+      ${g.fails.map((x) => `<div class="f">✗ ${esc(x)}</div>`).join('')}${g.warns.map((x) => `<div class="w">△ ${esc(x)}</div>`).join('')}</div>`;
+  $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.gender)} · 뼈대 Actor1 ${it.base + 1}번 · ${esc(it.label)} · ${esc(it.run)}</span></div>
+    <div class="desc">${esc(it.brief_text)}</div>
+    <div class="views">
+      <figure><img src="${fu(it, 'views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
+      <figure><img src="${fu(it, 'views/turn.gif')}"><figcaption>돌기 (4배)</figcaption></figure>
+      <figure><img src="${fu(it, 'views/sheet.png')}"><figcaption>1배</figcaption></figure>
+    </div>
+    <div class="views" style="margin-top:14px">
+      <figure><img src="${fu(it, 'views/context.png')}"><figcaption>Actor1 네 명 옆에 세움 (3배)</figcaption></figure>
+      <figure><img src="${fu(it, 'views/stroll.gif')}"><figcaption>칸 위를 걷기 (3배)</figcaption></figure>
+    </div>
+    ${rvHtml}${gHtml}
+    <details><summary>8배 시트 · 필름 띠</summary><div class="views"><img src="${fu(it, 'views/sheet_x8.png')}" style="image-rendering:pixelated"><img src="${fu(it, 'views/strip.png')}" style="image-rendering:pixelated;max-width:640px"></div></details>`;
+  $('decide').hidden = false;
+  const d = it.decision;
+  rej = new Set(d && d.decision === 'reject' ? d.reasons : []);
+  armed = false;
+  $('note').value = d ? d.note || '' : '';
+  $('curDec').textContent = d ? `현재: ${d.decision === 'accept' ? '받음' : '버림'}${d.reasons && d.reasons.length ? ' (' + d.reasons.join(', ') + ')' : ''}` : '';
+  $('reasons').innerHTML = S.reasons.map((r) => `<button class="chip ${rej.has(r) ? 'on' : ''}">${esc(r)}</button>`).join('');
+  $('reasons').querySelectorAll('.chip').forEach((b) => (b.onclick = () => { const r = b.textContent; rej.has(r) ? rej.delete(r) : rej.add(r); b.classList.toggle('on'); armed = true; }));
+}
+async function decide(decision) {
+  const it = S.items.find((i) => i.id === sel);
+  if (!it || it.status !== 'done') return;
+  const vis = visible(), idx = vis.findIndex((i) => i.id === sel);
+  await fetch('/api/decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: it.id, decision, reasons: decision === 'reject' ? [...rej] : [], note: $('note').value }) });
+  const r = await fetch('/api/state'); S = await r.json();
+  const nv = visible();
+  sel = (nv.find((i, k) => k >= idx && i.id !== it.id) || nv[nv.length - 1] || {}).id || it.id;
+  if (F.show === 'all') sel = (vis[idx + 1] || vis[idx]).id;
+  render();
+}
+function move(k) {
+  const vis = visible(), i = vis.findIndex((x) => x.id === sel);
+  const n = vis[Math.min(vis.length - 1, Math.max(0, i + k))];
+  if (n) { sel = n.id; render(); }
+}
+$('bAcc').onclick = () => decide('accept');
+$('bRej').onclick = () => decide('reject');
+$('bClr').onclick = () => decide('clear');
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') { if (e.key === 'Enter') decide('reject'); return; }
+  if (e.key === 'ArrowDown') { move(1); e.preventDefault(); }
+  else if (e.key === 'ArrowUp') { move(-1); e.preventDefault(); }
+  else if (e.key === 'a' || e.key === 'A') decide('accept');
+  else if (e.key === 'r' || e.key === 'R') { if (armed || rej.size) decide('reject'); else { armed = true; $('curDec').textContent = '버리려면 R 한 번 더 (또는 이유를 고르고 Enter)'; } }
+  else if (e.key === 'Enter' && (armed || rej.size)) decide('reject');
+});
+load();
+setInterval(() => { if (document.activeElement.tagName !== 'INPUT' && !armed && !rej.size) load(true); }, 20000);
+</script>
+</body>
+</html>

@@ -40,6 +40,8 @@ ENGINES = {
     'opus': dict(label='Claude Opus 5.5 · high', model='claude-opus-5-5', effort='high'),
 }
 CLAUDE_ENGINES = ('sonnet', 'opus')
+DEFAULT_KEEP = ('몸 비율·머리 크기·팔다리 위치·걸음 동작(다리 모양과 1px 출렁임)은 뼈대 그대로 둔다. 바꾸는 것은 머리 모양, 옷, 색, '
+                '소지품이다. 지시한 옷·머리가 뼈대보다 크거나 길면(망토·긴 치마·큰 짐) 그 부분의 실루엣은 바뀌어도 된다.')
 TIMEOUT_S = int(os.environ.get('CHR_HARNESS_TIMEOUT', str(60 * 60)))
 
 
@@ -124,7 +126,7 @@ def start_draw(brief, engine, run, w, src=None, fix_text=None):
     tool = f'python3 {HERE / "harness.py"}'
     t = (HERE / 'worker.md').read_text(encoding='utf-8')
     rep = {'{TOOL}': tool, '{DIR}': str(w), '{BASE_N}': str(b['base']), '{NAME}': b['name'], '{BRIEF}': b['brief'],
-           '{KEEP}': b.get('keep', ''), '{ACTOR1}': str(ACTOR1)}
+           '{KEEP}': b.get('keep', DEFAULT_KEEP), '{ACTOR1}': str(ACTOR1)}
     for k, v in rep.items():
         t = t.replace(k, v)
     if src:
@@ -183,7 +185,7 @@ def start_review(w, engine='sonnet'):
         shutil.copy(v / n, rv / n)
     shutil.copy(w / 'base-views' / 'strip.png', rv / 'base_strip.png')
     t = (HERE / 'reviewer.md').read_text(encoding='utf-8')
-    for k, val in {'{NAME}': b['name'], '{BRIEF}': b['brief'], '{KEEP}': b.get('keep', ''), '{DIR}': str(rv),
+    for k, val in {'{NAME}': b['name'], '{BRIEF}': b['brief'], '{KEEP}': b.get('keep', DEFAULT_KEEP), '{DIR}': str(rv),
                    '{BASE_N}': str(b['base'])}.items():
         t = t.replace(k, val)
     (rv / 'prompt.md').write_text(t, encoding='utf-8')
@@ -259,11 +261,14 @@ def cmd_loop(a):
             print(line, flush=True)
             lf.write(line + '\n')
             lf.flush()
-    ts = [threading.Thread(target=run_loop, args=(b, run, a.drawer, a.reviewer, a.rounds, log)) for b in a.briefs]
-    for t in ts:
-        t.start()
-    for t in ts:
-        t.join()
+    from concurrent.futures import ThreadPoolExecutor
+    names = list(briefs()) if a.briefs == ['all'] else a.briefs
+    with ThreadPoolExecutor(max_workers=a.par) as ex:  # codex 동시 실행 수 제한
+        for f in [ex.submit(run_loop, b, run, a.drawer, a.reviewer, a.rounds, log) for b in names]:
+            try:
+                f.result()
+            except Exception as e:  # noqa: BLE001 — 한 캐릭터가 죽어도 나머지는 계속
+                log(f'오류: {e!r}')
     log('끝')
 
 
@@ -364,6 +369,127 @@ summary{{cursor:pointer;color:#9cc;margin-top:8px}}</style>
     print(out, f'http://mdc-server:18301/{out.name}')
 
 
+# ─────────────────────────────── 받기/버리기 화면 ───────────────────────────────
+REASONS = ['Actor1 과 화풍 다름', '지시와 다름', '1배에서 안 읽힘', '방향마다 다른 사람', '걸음 어색', '형태 뭉개짐', '색이 탁함', '잡티']
+DECISIONS = DATA / 'decisions.jsonl'          # 정본(추가만). 저장소 사본은 export_decisions 가 쓴다.
+EXPORT = HDATA / 'decisions.json'
+ACCEPTED = HDATA / 'accepted'
+
+
+def _items():
+    out = []
+    for rd in sorted((p for p in (DATA / 'runs').glob('*') if p.name != 'reviewtest'), reverse=True):
+        for w in sorted(rd.glob('*__*')):
+            try:
+                m = json.loads((w / 'meta.json').read_text())
+            except (OSError, ValueError):
+                continue
+            b = briefs().get(m['brief'], {})
+            has = (w / 'out.chr.txt').exists() and (w / 'views' / 'walk.gif').exists()
+            gate = None
+            if has and (w / 'views' / 'gate.json').exists():
+                gate = json.loads((w / 'views' / 'gate.json').read_text())
+            out.append(dict(id=f'{rd.name}/{w.name}', run=rd.name, dir=w.name, brief=m['brief'], name=b.get('name', m['brief']),
+                            gender=b.get('gender', ''), brief_text=b.get('brief', ''), base=m['base'], label=m['label'],
+                            status='running' if _alive(m['pid']) else ('done' if has else 'failed'),  # 작업자도 views 를 만들므로 살아 있으면 아직 그리는 중
+                            gate=gate, review=read_verdict(w) if has else None))
+    return out
+
+
+def _decisions():
+    cur = {}
+    if DECISIONS.exists():
+        for line in DECISIONS.read_text(encoding='utf-8').splitlines():
+            try:
+                d = json.loads(line)
+            except ValueError:
+                continue
+            if d['decision'] == 'clear':
+                cur.pop(d['id'], None)
+            else:
+                cur[d['id']] = d
+    return cur
+
+
+def export_decisions():
+    cur = _decisions()
+    EXPORT.write_text(json.dumps(dict(updated=now(), decisions=list(cur.values())), ensure_ascii=False, indent=1) + '\n',
+                      encoding='utf-8')
+    # 받은 것은 격자·1배 시트를 저장소로 옮긴다(작은 글자 파일 — 다음 단계 번들 등록의 원본)
+    ACCEPTED.mkdir(parents=True, exist_ok=True)
+    keep = set()
+    for d in cur.values():
+        if d['decision'] != 'accept':
+            continue
+        run, dname = d['id'].split('/', 1)
+        w = run_dir(run) / dname
+        stem = f'{dname}__{run}'
+        keep.add(stem)
+        if (w / 'out.chr.txt').exists():
+            shutil.copy(w / 'out.chr.txt', ACCEPTED / f'{stem}.chr.txt')
+            shutil.copy(w / 'views' / 'sheet.png', ACCEPTED / f'{stem}.png')
+    for f in ACCEPTED.glob('*'):
+        if f.name.rsplit('.', 1)[0].removesuffix('.chr') not in keep:
+            f.unlink()
+
+
+def cmd_serve(a):
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from urllib.parse import unquote
+    web = HERE / 'web' / 'index.html'
+    root = (DATA / 'runs').resolve()
+
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *x):
+            pass
+
+        def _send(self, code, body, ctype='application/json; charset=utf-8'):
+            if isinstance(body, str):
+                body = body.encode('utf-8')
+            self.send_response(code)
+            self.send_header('Content-Type', ctype)
+            self.send_header('Cache-Control', 'no-store')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_GET(self):
+            path = unquote(self.path.split('?', 1)[0])
+            if path in ('/', '/index.html'):
+                return self._send(200, web.read_bytes(), 'text/html; charset=utf-8')
+            if path == '/api/state':
+                dec = _decisions()
+                items = _items()
+                for it in items:
+                    it['decision'] = dec.get(it['id'])
+                return self._send(200, json.dumps(dict(items=items, reasons=REASONS), ensure_ascii=False))
+            if path.startswith('/f/'):
+                f = (root / path[3:]).resolve()
+                if root not in f.parents or not f.is_file():
+                    return self._send(404, 'not found', 'text/plain')
+                ct = {'.png': 'image/png', '.gif': 'image/gif', '.json': 'application/json'}.get(f.suffix, 'text/plain; charset=utf-8')
+                return self._send(200, f.read_bytes(), ct)
+            return self._send(404, 'not found', 'text/plain')
+
+        def do_POST(self):
+            if self.path != '/api/decide':
+                return self._send(404, '{}')
+            n = int(self.headers.get('Content-Length') or 0)
+            d = json.loads(self.rfile.read(n) or b'{}')
+            if d.get('decision') not in ('accept', 'reject', 'clear') or '/' not in str(d.get('id', '')):
+                return self._send(400, '{"error":"bad"}')
+            rec = dict(id=d['id'], decision=d['decision'], reasons=d.get('reasons') or [], note=d.get('note') or '',
+                       client='web', at=now())
+            DATA.mkdir(parents=True, exist_ok=True)
+            with open(DECISIONS, 'a', encoding='utf-8') as fh:
+                fh.write(json.dumps(rec, ensure_ascii=False) + '\n')
+            export_decisions()
+            return self._send(200, json.dumps(rec, ensure_ascii=False))
+
+    print(f'http://mdc-server:{a.port}/', flush=True)
+    ThreadingHTTPServer(('0.0.0.0', a.port), H).serve_forever()
+
+
 def main():
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers(dest='cmd', required=True)
@@ -401,8 +527,14 @@ def main():
     p.add_argument('--run')
     p.add_argument('--drawer', default='gpt', choices=list(ENGINES))
     p.add_argument('--reviewer', default='sonnet', choices=list(ENGINES))
+    p.add_argument('--par', type=int, default=6)
     p.add_argument('--rounds', type=int, default=1)  # 2026-10-02 사용자 판단: 원샷이 제일 낫다 — 반복 고치기는 명시할 때만
     p.set_defaults(fn=cmd_loop)
+    p = sp.add_parser('serve', help='받기/버리기 화면')
+    p.add_argument('--port', type=int, default=18314)
+    p.set_defaults(fn=cmd_serve)
+    sp.add_parser('export', help='결정을 harness-data/charset-actor/decisions.json·accepted/ 로').set_defaults(
+        fn=lambda a: export_decisions())
     a = ap.parse_args()
     a.fn(a)
 

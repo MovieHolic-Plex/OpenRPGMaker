@@ -30,6 +30,16 @@ r2..: 불합격이면 직전 판의 out.chr.txt 에서 시작해 검수자 지�
 검수자는 작업자의 notes.md 를 받지 않는다(그림·기계 검수·지시만). 기계 검수가 막으면 검수자 판정과 상관없이 FAIL.
 검수자 지시문 `reviewer.md`, 검수자가 보는 그림 `strip.png`·`base_strip.png`·`sheet_x8.png`·`context.png`(Actor1 네 명 옆에 세움).
 
+## 받기/버리기 화면 (`serve`, 18314)
+http://mdc-server:18314/ — 모든 실행의 완성본을 걷기·돌기·칸 위 걷기 GIF, Actor1 옆에 세운 그림, 검수자 판정(참고용)과 함께 보여 준다.
+`A` 받기 · `R` 버리기(이유 칩 + 메모, `Enter`) · `↑↓` 이동. 결정의 정본은 `~/.local/share/oprn/charset-actor-harness/decisions.jsonl`(추가만),
+결정마다 `harness-data/charset-actor/decisions.json` 사본과 `accepted/<폴더>__<실행>.chr.txt`·`.png`(받은 것만)를 다시 쓴다.
+서버는 사용자 유닛(transient) — 죽었으면:
+```bash
+export XDG_RUNTIME_DIR=/run/user/$(id -u) DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
+systemd-run --user --unit=charset-actor-harness -p Restart=on-failure /usr/bin/python3 <체크아웃>/src/harnesses/charset-actor/harness.py serve --port 18314
+```
+
 ## 기계 검수 (`chr.gate`) — 형식을 거르는 것이지 품질 판정이 아니다
 기준은 Actor1 8명에서 쟀고 `calibrate` 가 8명 전원 통과를 확인한다.
 색 ≤32 · 배경 키 색 금지 · 실루엣 190~420px · 칸 가장자리까지 차지 않음 · 윤곽 픽셀 중 어두운 것 ≥75% ·
@@ -55,7 +65,9 @@ python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0
 ## 파일
 | 파일 | 하는 일 |
 |---|---|
-| `harness.py` | 명령들, 작업자 실행(`claude -p` / `codex exec`), 비교 화면 |
+| `harness.py` | 명령들, 작업자 실행(`claude -p` / `codex exec`), 비교 화면, 받기/버리기 서버 |
+| `web/index.html` | 받기/버리기 화면 |
+| `reviewer.md` | 검수자 지시문 틀 |
 | `chr.py` | `.chr.txt` 읽기·쓰기, Actor1 → 격자, 기계 검수, 시트·필름 띠·GIF 3종 |
 | `worker.md` | 작업자 지시문 틀(절대 규칙: 생성 이미지·외부 그림 금지, 모양은 격자를 직접 고쳐서) |
 | `fixer.md` | 수정 작업 덧붙임 — `draw --src <다른 작업 폴더> --fix-notes <감독 지적>` 이면 그 결과에서 시작해 지적을 고친다 |
@@ -66,5 +78,5 @@ python3 $H check F.chr.txt --base 0 / views F.chr.txt OUT --base 0
 (`prompt.md`·`worker.log`·`out.chr.txt`·`notes.md`·`views/`·`base-views/`).
 
 ## 아직 없는 것
-- 받기/버리기 화면과 결정 파일, 받은 캐릭터를 번들 CharSet 에 넣는 단계.
+- 받은 캐릭터를 번들 CharSet(288×256, 8명)으로 묶어 `src/assets/bundled.ts` 에 넣는 단계.
 - 하네스 레지스트리(`src/harnesses/_core`, PR #1832) 등록.
