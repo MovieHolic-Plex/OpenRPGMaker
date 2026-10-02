@@ -41,9 +41,13 @@ def claude_bin():
 def draw(items, n=N_DEFAULT, note='', base='', start_pool=True):
     import brief
     from common import objects_by_id
+    from common import spec_top_lint
     by = objects_by_id(); out = []
     for item in items:
         if item not in by: raise SystemExit(f'모르는 기물: {item!r}')
+    errs = [e for item in items for e in spec_top_lint(by[item])]   # 명세가 옆모습을 허락하면 판을 열지 않는다(2026-10-02 기관차)
+    if errs: raise SystemExit('명세 검사 불합격 — 설명을 고친 뒤 다시:\n' + '\n'.join(errs))
+    for item in items:
         dirs = brief.directions(item, base)
         rid = store.new_round(item, n, dirs, note=note, base=base, model=MODEL, effort=EFFORT, root=ROOT)
         brief.make(rid, item, note=note, base=base)
@@ -130,13 +134,28 @@ REVIEW_REFS = ['tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png
                'tiledata/hand-interior/pick/candidates/sideboard_2x1/v5.png', 'tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png']
 
 
+SECOND_REVIEW_MODEL = os.environ.get('PROP_HARNESS_REVIEW2_MODEL', 'claude-sonnet-5-5')
+
+
+def _pack_dir(r):
+    """검수 폴더. 둘째 검수(review2 — 깊은 기물만, 다른 회사 모델)는 `-2` 를 붙여 첫 검수 결과를 덮지 않는다."""
+    att = r.get('attempt') or 1
+    return os.path.join(r['brief'], 'review', f"{r['letter']}-a{att}" + ('-2' if r.get('phase') == 'review2' else ''))
+
+
+def _is_deep(item):
+    from common import objects_by_id
+    o = objects_by_id().get(item) or {}
+    return o.get('kind') in ('floor', 'wall') and int((o.get('footprint') or {}).get('h') or 1) >= 2
+
+
 def _review_pack(r):
     """검수자가 볼 그림: 지금|후보 8배 나란히, 각각 8배, 같은 방 안(4배)."""
     from PIL import Image
     import brief, context
     from common import objects_by_id, slug
     o = objects_by_id()[r['item']]; s = slug(r['item']); cand = _out(r); att = r.get('attempt') or 1
-    pack = os.path.join(r['brief'], 'review', f"{r['letter']}-a{att}"); os.makedirs(pack, exist_ok=True)
+    pack = _pack_dir(r); os.makedirs(pack, exist_ok=True)
     cur_im = Image.open(brief.cand_png(r['item'], brief.current_choice(r['item']))).convert('RGBA')
     c_im = Image.open(os.path.join(r['root'], CANDS, s, cand + '.png')).convert('RGBA')
     a, b = _bg(cur_im, 8), _bg(c_im, 8)
@@ -144,11 +163,15 @@ def _review_pack(r):
     pair = Image.new('RGBA', (a.width + b.width + 24, max(a.height, b.height)), (40, 36, 44, 255))
     pair.alpha_composite(a, (0, pair.height - a.height)); pair.alpha_composite(b, (a.width + 24, pair.height - b.height))
     pair.save(os.path.join(pack, 'pair-x8.png'))
-    refs = [Image.open(os.path.join(r['root'], p)).convert('RGBA') for p in REVIEW_REFS]   # 칩셋 3/4 합격 가구 | 후보, 같은 배율
-    ims = [_bg(x, 8) for x in refs] + [b]
-    ref = Image.new('RGBA', (sum(x.width for x in ims) + 24 * (len(ims) - 1), max(x.height for x in ims)), (40, 36, 44, 255)); x0 = 0
-    for x in ims: ref.alpha_composite(x, (x0, ref.height - x.height)); x0 += x.width + 24
-    ref.save(os.path.join(pack, 'ref-x8.png'))
+    deep = int(o['footprint']['h']) >= 2   # 깊은 기물: 깊이만큼 윗면이 긴 칩셋 가구(ref-x8) · 옆모습 틀린 그림(side-bad-x8)
+    ex = lambda k: sorted(glob.glob(os.path.join(HERE, 'examples-deep', k + '-*.png')))
+    def strip(paths, name):   # 기준 그림들 | 후보, 같은 배율
+        ims = [_bg(Image.open(p).convert('RGBA'), 8) for p in paths] + [b]
+        im = Image.new('RGBA', (sum(x.width for x in ims) + 24 * (len(ims) - 1), max(x.height for x in ims)), (40, 36, 44, 255)); x0 = 0
+        for x in ims: im.alpha_composite(x, (x0, im.height - x.height)); x0 += x.width + 24
+        im.save(os.path.join(pack, name))
+    strip(ex('good') if deep else [os.path.join(r['root'], p) for p in REVIEW_REFS], 'ref-x8.png')
+    if deep: strip(ex('bad'), 'side-bad-x8.png')
     cur = brief.current_choice(r['item'])
     for name, im in (('ctx-current.png', None if cur == 'v5' else cur_im), ('ctx-cand.png', c_im)):
         try:
@@ -161,6 +184,7 @@ def _review_pack(r):
 
 def _review_prompt(r):
     import brief
+    from common import top_rule_text
     pack, o = _review_pack(r)
     t = open(os.path.join(HERE, 'review.md'), encoding='utf-8').read()
     fam = sorted(glob.glob(os.path.join(r['brief'], 'family', '*.png')))
@@ -176,7 +200,7 @@ def _review_prompt(r):
            '{CAND}': f"{_folder(r, absolute=True)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,
            '{FAMILY}': ', '.join(f'`{p}`' for p in fam) or '(없음)', '{ANCHORS}': ', '.join(f'`{p}`' for p in anc) or '(없음)',
-           '{NEWMODE}': NEW_REVIEW if brief.is_new(r['item']) else ''}
+           '{NEWMODE}': NEW_REVIEW if brief.is_new(r['item']) else '', '{TOPRULE}': top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).'}
     for k, v in rep.items(): t = t.replace(k, v)
     return t, pack
 
@@ -194,16 +218,19 @@ NEW_REVIEW = '''
 
 def _start(r):
     att = r.get('attempt') or 1; phase = r.get('phase') or 'draw'
-    if phase == 'review':
+    eng = ENGINE
+    if phase in ('review', 'review2'):
         prompt, pack = _review_prompt(r); effort = REVIEW_EFFORT
+        if phase == 'review2': eng = 'claude' if ENGINE == 'codex' else 'codex'; effort = 'high' if eng == 'claude' else 'medium'
         try: os.remove(os.path.join(pack, 'verdict.json'))
         except OSError: pass
     else:
         prompt, _ = _prompt(r); effort = r['effort'] or EFFORT
-    log = os.path.join(LOGS, f"{_out(r)}.a{att}{'.review' if phase == 'review' else ''}.log"); os.makedirs(LOGS, exist_ok=True)
-    store.update_run(r['id'], **{('review_engine' if phase == 'review' else 'engine'): ENGINE})   # 화면에서 Codex·Sonnet 을 가려 본다
-    if ENGINE == 'codex': return _start_codex(r, prompt, effort if phase == 'review' else EFFORT, log)
-    env = dict(os.environ, PH_PROMPT=prompt, PH_CLAUDE=claude_bin(), PH_MODEL=r['model'] or MODEL, PH_EFFORT=effort, PH_ROOT=r['root'])
+    log = os.path.join(LOGS, f"{_out(r)}.a{att}{'.' + phase if phase != 'draw' else ''}.log"); os.makedirs(LOGS, exist_ok=True)
+    if phase != 'review2': store.update_run(r['id'], **{('review_engine' if phase == 'review' else 'engine'): ENGINE})   # 화면에서 Codex·Sonnet 을 가려 본다
+    if eng == 'codex': return _start_codex(r, prompt, effort if phase != 'draw' else EFFORT, log)
+    model = SECOND_REVIEW_MODEL if phase == 'review2' else (r['model'] or MODEL)
+    env = dict(os.environ, PH_PROMPT=prompt, PH_CLAUDE=claude_bin(), PH_MODEL=model, PH_EFFORT=effort, PH_ROOT=r['root'])
     # 가벼운 세션: 작업 폴더를 저장소 밖에 두어 저장소 AGENTS.md·프로젝트 메모리·훅을 안 싣고(저장소는 --add-dir),
     # 사용자 설정(플러그인·훅)·MCP·스킬 목록을 빼고 도구를 넷만 준다. 「ok」 한 마디 기준 문맥 54k → 5k 토큰(2026-10-01 실측).
     os.makedirs(WORK, exist_ok=True)
@@ -249,26 +276,47 @@ def _again(r, entry):
     return False
 
 
-TOP_MIN = 3   # 꼭대기 면 윗면 최소 행 수(16px). 칩셋 책장 3~4·옷장 4·찬장 6
-
-
 def _top_gate(r, v):
-    """검수자가 잰 꼭대기 면 행 수가 모자라면 PASS 를 FAIL(FRONT)로 — 「읽힌다」로 넘어가는 것을 막는 마지막 문."""
-    from common import objects_by_id
-    kind = (objects_by_id().get(r['item']) or {}).get('kind')
-    n = v.get('top_rows')
-    if v['verdict'] != 'PASS' or kind not in ('floor', 'wall') or not isinstance(n, int) or n >= TOP_MIN: return
-    v['verdict'] = 'FAIL'; v['codes'] = sorted(set((v.get('codes') or []) + ['FRONT']))
-    v['reasons'] = f"꼭대기 면 윗면 {n}행 < {TOP_MIN}행(하네스 규칙). " + (v.get('reasons') or '')
-    v['fix'] = (v.get('fix') or '') + f" 꼭대기 면({v.get('top', '')}) 윗면을 {TOP_MIN}행 이상으로 — 필요하면 캔버스를 위로 키운다."
+    """꼭대기 면 마지막 문(결정적). 검수자 PASS 를 FAIL 로 바꾸는 경우:
+    - 검수자가 잰 윗면 행 수(top_rows)가 규칙(common.top_min — 깊이 1칸 3행, 2칸 이상 (깊이−1)×10행)보다 적다 → FRONT
+    - 깊은 기물(발밑 깊이 2칸 이상)인데 검수자가 행 수를 안 냈다 → FRONT (「해당 없음」은 깊이 1칸 기물만)
+    - 깊은 기물인데 검수자가 옆모습(side_elevation=true)이라 했거나 판정을 안 냈다 → FRONT
+    - 검수자가 잰 윗면 y 범위(top_y)와 작업자가 메모에 적은 범위가 반도 안 겹친다 → CLAIM (한쪽이 옆면을 윗면이라 우긴다)
+    검수자는 작업자 메모를 보지 않고 따로 잰다(review.md)."""
+    from common import objects_by_id, top_min, parse_top_claim
+    o = objects_by_id().get(r['item']) or {}
+    need = top_min(o)
+    if v['verdict'] != 'PASS' or need is None: return
+    deep = int((o.get('footprint') or {}).get('h') or 1) >= 2
+    n = v.get('top_rows'); why = None; code = 'FRONT'
+    if deep and v.get('side_elevation') is not False:
+        why = '발밑 깊이 2칸 이상인데 검수가 옆모습(side_elevation)이라 했다.' if v.get('side_elevation') else '발밑 깊이 2칸 이상인데 검수가 옆모습 여부(side_elevation)를 판정하지 않았다.'
+    elif not isinstance(n, int):
+        if deep: why = f'발밑 깊이 {o["footprint"]["h"]}칸 기물인데 꼭대기 윗면 행 수를 못 쟀다(규칙 {need}행 이상).'
+    elif n < need:
+        why = f'꼭대기 면 윗면 {n}행 < {need}행(하네스 규칙: 발밑 깊이 {o["footprint"]["h"]}칸).'
+    else:
+        ty = v.get('top_y')
+        note_p = os.path.join(_folder(r, absolute=True), _out(r) + '.note')
+        claim = parse_top_claim(open(note_p, encoding='utf-8').read()) if os.path.exists(note_p) else None
+        if claim and isinstance(ty, list) and len(ty) == 2 and all(isinstance(x, int) for x in ty):
+            a, b = sorted(ty); _, ca, cb = claim
+            inter = max(0, min(b, cb) - max(a, ca) + 1)
+            if inter * 2 < (cb - ca + 1):
+                code = 'CLAIM'; why = f'작업자가 적은 꼭대기 윗면 y={ca}~{cb} 와 검수가 잰 y={a}~{b} 가 반도 안 겹친다 — 옆면을 윗면이라 적은 것.'
+    if not why: return
+    v['verdict'] = 'FAIL'; v['codes'] = sorted(set((v.get('codes') or []) + [code]))
+    v['reasons'] = why + ' ' + (v.get('reasons') or '')
+    v['fix'] = (v.get('fix') or '') + f" 꼭대기 면({v.get('top', '')})을 위에서 내려다본 면으로 {need}행 이상 — 지붕·상판이 띠로만 보이는 옆모습이면 남쪽 면을 줄이고 윗면을 늘린다."
 
 
 def _finish(r, code):
     """그리기가 끝나면 깨짐 검사 → (통과) 검수 대기열 / (불합격) 다시 그리기.
     검수가 끝나면 PASS → 끝, FAIL → 이유를 들고 다시 그리기. 시도는 MAX_ATTEMPTS 번까지. 고르는 건 여전히 사용자."""
     base = os.path.join(r['root'], _folder(r), _out(r)); att = r.get('attempt') or 1
-    if (r.get('phase') or 'draw') == 'review':
-        pack = os.path.join(r['brief'], 'review', f"{r['letter']}-a{att}")
+    phase = r.get('phase') or 'draw'
+    if phase in ('review', 'review2'):
+        pack = _pack_dir(r)
         try:
             v = json.load(open(os.path.join(pack, 'verdict.json'), encoding='utf-8'))
             v['verdict'] = str(v.get('verdict', '')).upper()
@@ -277,11 +325,20 @@ def _finish(r, code):
             errs = sum(1 for x in _hist(r) if x['stage'] == 'review-error' and x['attempt'] == att)
             h = _hist(r) + [dict(stage='review-error', attempt=att, error=f'검수 결과 없음({code}): {e!r}'[:300])]
             if errs < 1:   # 검수자가 결과를 못 냈으면 한 번만 다시 검수
-                return store.update_run(r['id'], status='queued', phase='review', pid=None, history=json.dumps(h, ensure_ascii=False))
+                return store.update_run(r['id'], status='queued', phase=phase, pid=None, history=json.dumps(h, ensure_ascii=False))
             return store.update_run(r['id'], status='done', ended=store.now(), history=json.dumps(h, ensure_ascii=False),
                                     review=json.dumps(dict(verdict='ERROR', reasons='검수자가 결과를 못 냈다'), ensure_ascii=False))
         v['attempt'] = att; v['pack'] = pack
         _top_gate(r, v)
+        if phase == 'review' and v['verdict'] == 'PASS' and _is_deep(r['item']):
+            # 깊은 기물: 다른 회사 모델이 따로 한 번 더 본다. 둘 다 PASS 여야 통과(2026-10-02 실측: Codex 검수는 옆모습 기관차를
+            # 「윗면 16행」으로 통과시켰고 Sonnet 은 같은 판의 옆모습 하나를 FRONT·MIXED 로 잡았다).
+            h = _hist(r) + [dict(stage='review1', attempt=att, review=v, pack=pack)]
+            return store.update_run(r['id'], status='queued', phase='review2', pid=None, review=json.dumps(v, ensure_ascii=False), history=json.dumps(h, ensure_ascii=False))
+        if phase == 'review2':
+            first = next((x.get('review') for x in reversed(_hist(r)) if x.get('stage') == 'review1' and x.get('attempt') == att), None)
+            if first: v['first'] = {k: first.get(k) for k in ('verdict', 'top_rows', 'top_y', 'side_elevation', 'codes')}
+            v['reasons'] = '[둘째 검수] ' + (v.get('reasons') or '')
         store.update_run(r['id'], review=json.dumps(v, ensure_ascii=False))
         if v['verdict'] == 'FAIL' and _again(r, dict(stage='review', attempt=att, review=v, pack=pack)): return
         return store.update_run(r['id'], status='done', ended=store.now())
@@ -379,7 +436,7 @@ def _label(r):
     try: v = json.loads(r.get('review') or '{}')
     except ValueError: pass
     a = f"#{r.get('attempt') or 1}"
-    if r['status'] in ('queued', 'running'): return f"{'검수' if r.get('phase') == 'review' else '그림'}{a}:{r['status']}"
+    if r['status'] in ('queued', 'running'): return f"{ {'review': '검수', 'review2': '둘째검수'}.get(r.get('phase'), '그림')}{a}:{r['status']}"
     if r['status'] == 'failed': return f'실패{a}'
     if not r['ok']: return f'깨짐✗{a}'
     return {'PASS': '검수✓', 'FAIL': '검수✗', 'ERROR': '검수?'}.get(v.get('verdict'), '미검수') + a

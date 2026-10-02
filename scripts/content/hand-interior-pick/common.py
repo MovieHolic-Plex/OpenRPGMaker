@@ -124,3 +124,42 @@ def v5_modules():
         sys.path.insert(0, V5)
     import rooms4, room4  # noqa
     return rooms4, room4
+
+# ── 꼭대기 면 규칙(3/4 시점) — 하네스·검사·검수가 같이 쓰는 한 곳 ───────────────────────────────────────────────
+# 2026-10-02: 대형 기물(기차·마차 6×2·4×2)을 「꼭대기 윗면 4행」으로 주문했더니 25장이 전부 옆모습(측면도)으로 나왔고
+# 검수도 「4행」을 그대로 통과시켰다. 3행은 깊이 1칸 가구(책장·옷장)의 최소치다. 발밑이 남북으로 깊으면 위에서 내려다본
+# 윗면도 그만큼 길어야 한다 — 칩셋 실측: 4×2 식탁 상판 24행, 마도 기관 3×2 윗면 약 10~12행, 2×2 작전 탁자 9~10행.
+TOP_MIN_SHALLOW = 3   # 발밑 깊이 1칸(또는 벽 앞 기물)
+TOP_PER_DEPTH = 10    # 깊이 2칸 이상: (깊이 − 1) × 10 행
+TOP_CLAIM_RE = re.compile(r'꼭대기\s*윗면\s*(\d+)\s*행\s*\(\s*y\s*=\s*(\d+)\s*[~\-–]\s*(\d+)\s*\)')
+SPEC_TOP_RE = re.compile(r'꼭대기\s*윗면\s*(\d+)(?:\s*~\s*(\d+))?\s*행')
+
+def top_min(o):
+    """꼭대기 면(가장 높은 수평 면 — 지붕·상판·뚜껑·받침) 윗면 최소 행 수. 바닥 기물·벽 앞 기물만, 나머지(걸이·바닥 무늬)는 None."""
+    if o.get('kind') not in ('floor', 'wall'): return None
+    fh = int((o.get('footprint') or {}).get('h') or 1)
+    return TOP_MIN_SHALLOW if fh <= 1 else TOP_PER_DEPTH * (fh - 1)
+
+def top_rule_text(o):
+    """작업지시서·검수 지시문에 그대로 넣는 한 줄."""
+    n = top_min(o)
+    if n is None: return ''
+    fh = int((o.get('footprint') or {}).get('h') or 1)
+    if fh <= 1: return f'이 기물의 꼭대기 윗면 최소 {n}행(발밑 깊이 1칸).'
+    return (f'이 기물은 발밑이 남북으로 {fh}칸 깊다 → **꼭대기 윗면 최소 {n}행**. 위에서 내려다본 지붕·상판·받침이 긴 면으로 보여야 한다. '
+            f'지붕·상판이 몇 행짜리 띠로만 보이는 옆모습(측면도)은 무조건 떨어진다.')
+
+def parse_top_claim(note):
+    """작업자 메모의 `꼭대기 윗면 N행(y=a~b)` → (N, a, b) 또는 None."""
+    m = TOP_CLAIM_RE.search(note or '')
+    return tuple(int(g) for g in m.groups()) if m else None
+
+def spec_top_lint(o):
+    """명세(설명) 검사 — 깊은 기물(발밑 깊이 2칸 이상)은 설명에 `꼭대기 윗면 N행` 이 있어야 하고 N 이 규칙 이상이어야 한다.
+    설명이 곧 작업자 명세라, 여기서 모자라게 쓰면 작업자는 그대로 옆모습을 그린다(2026-10-02 기관차)."""
+    n = top_min(o); fh = int((o.get('footprint') or {}).get('h') or 1)
+    if n is None or fh <= 1: return []
+    got = [int(b or a) for a, b in SPEC_TOP_RE.findall(o.get('description') or '')]
+    if not got: return [f"{o['id']}: 설명에 「꼭대기 윗면 N행」이 없다 — 발밑 깊이 {fh}칸이면 {n}행 이상을 적는다"]
+    if max(got) < n: return [f"{o['id']}: 설명의 꼭대기 윗면 {max(got)}행 < {n}행(발밑 깊이 {fh}칸 규칙) — 이대로면 옆모습이 나온다"]
+    return []
