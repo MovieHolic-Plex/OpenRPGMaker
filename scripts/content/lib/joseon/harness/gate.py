@@ -36,6 +36,13 @@ def piece_hash(cv):
     return hashlib.sha1(cv.a.tobytes()).hexdigest()[:12]
 
 
+TERRAIN_VERDICT = ('water47',)
+
+
+def group_hash(tiles):
+    return hashlib.sha1(b''.join(t.a.tobytes() for t in tiles)).hexdigest()[:12]
+
+
 def palette_report(arr):
     op = arr[arr[:, :, 3] == 255][:, :3]
     bad = {}
@@ -61,8 +68,17 @@ def run(skip_a=False):
         for c in tl:
             for k, v in palette_report(c.a).items():
                 bad[k] = bad.get(k, 0) + v
-        status = 'FAIL P' if bad else 'ok'
-        if bad: fails += 1
+        why = []
+        if bad: why.append('P')
+        if name in TERRAIN_VERDICT:                      # 새 지형 조각은 눈으로 본 판정도 필요하다(현재 그림 해시에 묶임)
+            v = verd.get(name)
+            h = group_hash(tl)
+            if not v or v.get('hash') != h:
+                why.append('V 판정 없음' if not v else 'V 그림이 바뀜(판정 다시)')
+            elif v.get('status') == 'redo':
+                why.append('V 판정=다시: ' + v.get('line', ''))
+        status = 'FAIL ' + ' '.join(why) if why else 'ok'
+        if why: fails += 1
         rows.append((name, 'terrain', status, f'{sum(bad.values())}px/{len(bad)}색 밖' if bad else ''))
     for name, cv in objs.items():
         m = metrics(cv.a)
@@ -154,6 +170,49 @@ def sheets(objs):
     return out
 
 
+def water_sheet(terr):
+    """물 47종 검수 시트: 변형 0 의 47칸(4배, 번호 순) + 작은 강·연못 견본 + 옛 4방향 stream16 비교."""
+    import water_blob as WB
+    os.makedirs(OUTDIR, exist_ok=True)
+    sc, cols = 4, 12
+    tl = terr['water47']
+    old = terr['stream16']
+    rows = (47 + cols - 1) // cols
+    cw = cols * 16 * sc
+    scene = [  # 견본: 곧은 강 + 굴곡 + 연못(1 = 물)
+        '..........................', '..#####.....###...........', '..#####....#####..........', '...####....#####..####....',
+        '...####.....###..######...', '..#####.........########..', '.######.........########..', '.######..........######...',
+        '..#####...........###.....', '..........................']
+    cells = {(x, y) for y, r in enumerate(scene) for x, ch in enumerate(r) if ch == '#'}
+    SW, SH = len(scene[0]), len(scene)
+    scn = tk.Cv(SW * 16, SH * 16)
+    for y in range(SH):
+        for x in range(SW):
+            if (x, y) in cells:
+                m = 0
+                for bit, (dx, dy) in ((WB.N, (0, -1)), (WB.E, (1, 0)), (WB.S, (0, 1)), (WB.W, (-1, 0)), (WB.NE, (1, -1)), (WB.SE, (1, 1)), (WB.SW, (-1, 1)), (WB.NW, (-1, -1))):
+                    if (x + dx, y + dy) in cells: m |= bit
+                scn.paste(tl[WB.index47(m) + 47 * ((x + y) % 2)], x * 16, y * 16)
+            else:
+                import ground as G
+                scn.paste(G.grass(tk.hsh(x, y, 3) % 4), x * 16, y * 16)
+    W = max(cw, SW * 16 * 3 + 16 * 4 * 4 * 4 + 40) + 24
+    H = rows * 16 * sc + 20 + SH * 16 * 3 + 20
+    sheet = Image.new('RGBA', (W, H), (88, 160, 53, 255))
+    d = ImageDraw.Draw(sheet)
+    d.text((4, 2), 'WATER47 variant0 (index = canon(mask8) order)   |   old stream16 at right', fill=(255, 255, 255, 255))
+    for i in range(47):
+        sheet.alpha_composite(tl[i].img().resize((16 * sc, 16 * sc), Image.NEAREST), ((i % cols) * 16 * sc + 4, 16 + (i // cols) * 16 * sc))
+    y0 = 16 + rows * 16 * sc + 4
+    d.text((4, y0), 'scene x3', fill=(255, 255, 255, 255))
+    sheet.alpha_composite(scn.img().resize((SW * 16 * 3, SH * 16 * 3), Image.NEAREST), (4, y0 + 14))
+    for i in range(16):
+        sheet.alpha_composite(old[i].img().resize((16 * 3, 16 * 3), Image.NEAREST), (SW * 16 * 3 + 20 + (i % 4) * 48, y0 + 14 + (i // 4) * 48))
+    p = os.path.join(OUTDIR, 'water47.png')
+    sheet.convert('RGB').save(p)
+    return p
+
+
 if __name__ == '__main__':
     rows, fails, warns, objs = run()
     w = max(len(r[0]) for r in rows)
@@ -162,4 +221,5 @@ if __name__ == '__main__':
     print(f'\nFAIL {fails} / WARN {warns} / 전체 {len(rows)}')
     if '--sheets' in sys.argv:
         print('\n'.join(sheets(objs)))
+        print(water_sheet(catalog.terrain()))
     sys.exit(1 if fails else 0)

@@ -1,5 +1,5 @@
 """조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
-import village_pieces as VP, village_gates as VG, village_props as VPR, props5 as P5, structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
+import water_blob as WB, village_pieces as VP, village_gates as VG, village_props as VPR, props5 as P5, structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
 _L = None
 
 
@@ -20,6 +20,7 @@ def terrain():
         'road16': [G.road(m) for m in range(16)],
         'yard16': [G.yard_edge(m) for m in range(16)],
         'stream16': [G.stream(m) for m in range(16)],
+        'water47': WB.water47_set(2),
         'paddy16': [G.paddy_edge(m) for m in range(16)],
         'rice16': [VPR.paddy_edge_rice(m) for m in range(16)],
     }

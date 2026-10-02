@@ -47,12 +47,12 @@ for _k in ('grass', 'yard', 'paving'):
     add_group(_k, _terr[_k])
 add_group('field', _terr['field'])
 pad_row()
-for _k in ('road16', 'yard16', 'stream16', 'paddy16', 'rice16'):
+for _k in ('road16', 'yard16', 'water47', 'paddy16', 'rice16'):
     add_group(_k, _terr[_k])
 GRASS, YARD, PAV, FIELD = (pieces[k]['id'] for k in ('grass', 'yard', 'paving', 'field'))
 PADDY = pieces['rice16']['id']
 YARD16 = pieces['yard16']['id']
-ROAD, STREAM = pieces['road16']['id'], pieces['stream16']['id']
+ROAD, STREAM = pieces['road16']['id'], pieces['water47']['id']
 
 # 물체: 칸 블록으로 시트에 놓는다(줄 맞춰 쌓기)
 objects = catalog.objects()
@@ -116,31 +116,36 @@ import random as _rand
 RX = 41
 
 
+def _runs(spec, y):
+    """[(첫 줄, 값), ...] 구간표: y 가 속한 구간의 값."""
+    v = spec[0][1]
+    for y0, x in spec:
+        if y >= y0:
+            v = x
+    return v
+
+
+# 강: 왼쪽 둑·오른쪽 둑이 따로 한 칸씩 흔들린다(구간마다 1칸, 같은 줄에서 둘이 함께 움직이지 않음).
+# 3~8 줄은 오른쪽으로 불룩, 9~12 줄은 왼쪽으로 불룩, 36 줄부터 서쪽으로 휘었다가 47 줄부터 되돌아오며 51 줄 이후 넓어진다.
+# 다리(22~30)·물레방아(30~35) 구간은 둑을 맞춰 두어 다리 교대·물레방아와 어긋나지 않는다.
+_RL = [(0, 41), (3, 40), (9, 39), (13, 40), (19, 41), (30, 40), (36, 39), (41, 38), (47, 39), (51, 40)]
+_RR = [(0, 44), (3, 45), (9, 44), (14, 43), (21, 44), (36, 43), (41, 42), (47, 43), (51, 44)]
+
+
 def river_L(y):
-    if y < 7: return 41
-    if y < 14: return 40
-    if y < 21: return 41
-    if y < 38: return 41
-    if y < 45: return 40
-    return 41
+    return _runs(_RL, y)
 
 
 def river_R(y):
-    if y < 7: return 44
-    if y < 14: return 44
-    if y < 21: return 43
-    if y < 38: return 44
-    if y < 45: return 43
-    if y < 52: return 44
-    return 45
+    return _runs(_RR, y)
 
 
+import water_blob as WB
 water = {(x, y) for y in range(MH) for x in range(river_L(y), river_R(y) + 1)}
-pond = {(x, y) for y in range(40, 54) for x in range(0, 10)
-        if ((x - 4.6 + 0.9 * math.sin(y * 0.9)) / (4.8 + 0.7 * math.sin(x * 0.8))) ** 2 + ((y - 46.5 + 0.7 * math.sin(x * 0.9)) / 6.2) ** 2 + (rnd(x, y, 61) - 0.5) * 0.3 <= 1.0}
-_nb = lambda c, st: sum(((c[0] + dx, c[1] + dy) in st) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-for _ in range(2):
-    pond = {c for c in pond if _nb(c, pond) >= 2}
+# 연못: 가로로 두 칸씩 밀리는 둥근 윤곽(손으로 정한 행 범위). 북쪽 돌출부는 선착장 쪽, 도랑이 (9,40) 에서 이어진다.
+_POND_ROWS = {41: (8, 9), 42: (7, 9), 43: (6, 9), 44: (5, 9), 45: (4, 10), 46: (3, 10), 47: (2, 10), 48: (1, 10),
+              49: (1, 10), 50: (1, 9), 51: (2, 9), 52: (3, 8), 53: (4, 7)}
+pond = {(x, y) for y, (x0, x1) in _POND_ROWS.items() for x in range(x0, x1 + 1)}
 water |= pond
 
 
@@ -154,8 +159,20 @@ def mask_of(cells, x, y, wrap=True):
     return m
 
 
+def water_id(cells, x, y, wrap=True):
+    """물 칸의 시트 번호: 이웃 8칸 → 47종, 칸마다 물결 변형 2종(주변과 겹치지 않게 번갈아)."""
+    m = 0
+    for bit, (dx, dy) in ((WB.N, (0, -1)), (WB.E, (1, 0)), (WB.S, (0, 1)), (WB.W, (-1, 0)),
+                          (WB.NE, (1, -1)), (WB.SE, (1, 1)), (WB.SW, (-1, 1)), (WB.NW, (-1, -1))):
+        X, Y = x + dx, y + dy
+        out = not (0 <= X < MW and 0 <= Y < MH)
+        if (X, Y) in cells or (wrap and out):
+            m |= bit
+    return STREAM + WB.index47(m) + 47 * ((x // 2 + y // 3) % 2)
+
+
 for (x, y) in water:
-    setg(x, y, STREAM + mask_of(water, x, y, wrap=(x, y) not in pond), 'water')
+    setg(x, y, water_id(water, x, y), 'water')
 
 # ---- 길 체계(고증 검토 반영): 큰길(폭 2, 구간마다 한 행씩 어긋남) > 안길(폭 1, 직선 구간을 꺾어 이음) > 샛길(막다른)
 def path(*pts):
@@ -188,13 +205,12 @@ for (x, y) in road:
     if x == river_R(y) + 1 and y in (25, 26, 28, 29): m |= W
     setg(x, y, ROAD + m, 'road')
 # 논·밭에 물 대는 도랑(물 타일): 연못→논 사이 골, 강→동쪽 밭
-DITCH = {(x, 39) for x in range(9, 22)} | {(9, 40)} | {(x, 43) for x in range(44, 48)}
+DITCH = {(x, 39) for x in range(9, 22)} | {(9, 40)} | {(x, 43) for x in range(river_R(43) + 1, 49)}
 for (x, y) in DITCH:
     if (x, y) not in road:
         water.add((x, y))
-for (x, y) in DITCH:
-    if (x, y) not in road:
-        setg(x, y, STREAM + mask_of(water, x, y, wrap=False), 'water')
+for (x, y) in water:                      # 도랑이 닿은 강·연못 칸의 이웃도 바뀌므로 물 전체를 다시 매긴다
+    setg(x, y, water_id(water, x, y, wrap=(x, y) not in pond and (x, y) not in DITCH), 'water')
 
 # ---- 건물 (이름, 칸x, 칸y). 문 앞 꼬리길은 건물 아래 행(y+높이)에서 가장 가까운 길 칸으로 이어진다.
 BUILDINGS = [
@@ -435,7 +451,7 @@ _shore = sorted([(x, y) for (x, y) in pond if (x, y + 1) not in water and 3 <= x
 for k, (x, y) in enumerate(_shore[::2][:4]):
     put_obj('reeds' if k % 2 == 0 else 'rocks', x, y - (objects['reeds' if k % 2 == 0 else 'rocks'].h // T) + 2)
 # 시내 둑: 오른쪽 기슭 갈대 · 돌
-for k, yy in enumerate((9, 17, 34, 43, 50)):
+for k, yy in enumerate((4, 9, 13, 17, 21, 34, 38, 43, 50)):
     put_obj('reeds' if k % 2 == 0 else 'rocks', river_R(yy) + 1, yy - objects['reeds' if k % 2 == 0 else 'rocks'].h // T + 1)
 # 과수원(남서 쪽): 감나무를 엇갈려 줄지어 심는다
 for r, yy in enumerate((48, 52)):
@@ -455,7 +471,7 @@ for nm, x, y in (('bush_b', 5, 28), ('small_z_a', 27, 22), ('bush_a', 28, 12), (
                  ('bush_c', 47, 46), ('small_z_a', 56, 44), ('bush_b', 61, 40), ('small_z_b', 26, 46), ('bush_a', 19, 46), ('bush_c', 14, 49), ('small_p', 26, 50), ('bush_b', 38, 50),
                  ('zelkova_d', 50, 49), ('pine_a', 58, 48), ('bush_a', 44, 52), ('bamboo_grove', 20, 51)):
     put_obj(nm, x, y)
-print('빼낸 물체:', len(SKIPPED))
+print('빼낸 물체:', len(SKIPPED), [s for s in SKIPPED if s[0] in ('reeds','rocks')])
 
 items.sort(key=lambda i: (i[0], i[3], i[2]))
 for _, name, tx, ty, cv in items:
@@ -533,7 +549,7 @@ for _it in range(260):
             if put_obj(nm, tx, ty):
                 OBJ.paste(cv, tx * T, ty * T); _filled += 1; done = True; break
     if not done: break
-print('자동 채움', _filled, '개, 잔디 창 최대', round(float(best), 3))
+print('자동 채움', _filled, '개, 잔디 창 최대', round(float(best), 3), '(창 좌상단 칸', bx, by, ')')
 OBJ = Cv(MW * T, MH * T)
 items.sort(key=lambda i: (i[0], i[3], i[2]))
 for _, name, tx, ty, cv in items:
