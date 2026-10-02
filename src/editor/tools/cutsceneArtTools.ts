@@ -169,7 +169,7 @@ const generateCutsceneArt: ToolDefinition = {
     const fitScale = parsed.role === "backdrop" ? Math.round((viewport.width / entry.art.width) * 100) : 100;
     return {
       summary: `${parsed.role === "sprite" ? "소품" : "배경"} 그림 ${id}(${entry.art.width}×${entry.art.height})을 만들어 등록했습니다.`
-        + (parsed.role === "backdrop" ? ` 화면에 꽉 채우려면 picture beat 의 scale=${fitScale}, x=0, y=0.` : " script_cutscene picture beat 나 script_cutscene_impact 에 resourceId 로 넣으세요."),
+        + (parsed.role === "backdrop" ? ` 배경은 script_cutscene_staged 의 backdropResourceId 로 넣으면 크기를 도구가 맞춘다(raw picture beat 면 scale=${fitScale}, x=0, y=0).` : " script_cutscene_staged 의 배우(resourceId)로 넣으세요 — 등장·횡단·충돌 좌표를 도구가 계산합니다. 툴 목록에 없으면 find_tools 로 script_cutscene_staged 를 찾으세요(충돌 전용은 script_cutscene_impact)."),
       data: { resourceId: id, role: parsed.role, name: parsed.name, width: entry.art.width, height: entry.art.height, ...(parsed.role === "backdrop" ? { fitScale } : {}) },
     };
   },

@@ -38,6 +38,14 @@ export const ESCALATION_DENYLIST: ReadonlySet<string> = new Set([
   "remove_opening",
 ]);
 
+/**
+ * 한 툴이 승격되면 같이 얹을 짝. 그림만 만들고 움직임 도구를 못 보면 모델은 이미 노출된 raw script_cutscene 으로
+ * 좌표를 손으로 계산한다(2026-10-02 멧돼지 컷신 시험: 그림은 만들고도 3판 모두 raw beat). 승격 상한과 별개로 붙는다.
+ */
+const ESCALATION_COMPANIONS: Readonly<Record<string, readonly string[]>> = {
+  generate_cutscene_art: ["script_cutscene_staged", "preview_cutscene"],
+};
+
 function hasSearchableWord(text: string): boolean {
   return /[\p{L}\p{N}]/u.test(text);
 }
@@ -52,7 +60,7 @@ export function capabilityEscalatedToolNames(
 ): string[] {
   const text = requestText.trim();
   if (!hasSearchableWord(text)) return [];
-  return activeTools()
+  const ranked = activeTools()
     .map((tool, index) => ({ name: tool.name, index, score: matchScore(tool.name, tool.description, text) }))
     .filter((candidate) =>
       candidate.score >= MIN_CAPABILITY_MATCH_SCORE
@@ -61,6 +69,10 @@ export function capabilityEscalatedToolNames(
     .sort((left, right) => right.score - left.score || left.index - right.index)
     .slice(0, MAX_CAPABILITY_ESCALATED_TOOLS)
     .map((candidate) => candidate.name);
+  const known = new Set(activeTools().map((tool) => tool.name));
+  const companions = ranked.flatMap((name) => ESCALATION_COMPANIONS[name] ?? [])
+    .filter((name) => known.has(name) && !alreadyExposed.has(name) && !ranked.includes(name));
+  return [...ranked, ...new Set(companions)];
 }
 
 /** 위 결과를 OpenAI 스키마로. deprecated 는 toolSchemasForNames 가 걸러낸다. */
