@@ -224,8 +224,7 @@ w_rect(MX0, MY0, MX1, MY0 + 4); w_rect(MX0, MY1 - 4, MX1, MY1)
 w_rect(MX0, MY0, MX0 + 4, MY1); w_rect(MX1 - 4, MY0, MX1, MY1)
 # 서쪽: 물가가 굽이친다(바깥 둑 불룩 둘)
 w_ell(29, 37, 3.4, 4.5); w_ell(31, 60, 2.6, 3.6)
-# 동쪽: 같은 식으로 어긋나게
-w_ell(65, 38, 3.2, 4.0)
+# 동쪽: 해자는 곧게 두고 남동 큰 호수(감옥 섬)가 굽이를 대신한다
 # 서쪽 연못(좌성황 섬): 해자에서 가지 물길로 이어진다
 w_ell(25, 40, 4.4, 3.8)
 # 동쪽 연못(감옥 섬): 가지 물길이 해자에서 호수로
@@ -283,7 +282,6 @@ bridge_v(46, MY0)                                   # 북: 물 22..26 → 데크
 bridge_v(46, MY1 - 4)                               # 남: 물 64..68 → 데크 63..68, 앞면 69
 # 북·남 보조 다리(폭 3 → v5 대신 v6 폭 4 도 쓴다)
 bridge_v(36, MY0); bridge_v(58, MY0)
-bridge_v(36, MY1 - 4); bridge_v(58, MY1 - 4)
 # 서·동 다리
 bridge_h(MX0, 50); bridge_h(MX1 - 4, 50)            # 서·동 중앙 대로(석판): 물 열 30..34 / 61..65, 걷는 행 48..50
 
@@ -304,9 +302,9 @@ PV0, PV1, PH0, PH1 = 37, 58, 37, 59                     # 포장 마당(x 37..58
 paint('yard', PX0_, PY0_ + 2, PX1_, PY1_ - 1)
 paint('paving', PV0, PH0, PV1, PH1)
 # 안쪽 고리 길(해자 안 땅): 담 둘레 한 칸
-paint('road', 33, 31, 62, 31); paint('road', 33, 31, 33, 64); paint('road', 62, 31, 62, 64); paint('road', 33, 64, 62, 64)
+paint('road', 33, 31, 62, 31); paint('road', 33, 31, 33, 63); paint('road', 62, 31, 62, 63); paint('road', 33, 63, 62, 63)
 # 북·남 보조 다리 앞 샛길
-paint('road', 36, 28, 38, 30); paint('road', 58, 28, 60, 30)
+paint('road', 36, 28, 39, 30); paint('road', 58, 28, 61, 30)
 paint('slab', 46, 28, 49, 36)                           # 북 대로 → 궁 북문
 paint('slab', 46, 57, 49, 69)                           # 궁 남문 → 남쪽 해자 다리
 paint('slab', 46, 70, 49, YS - 12)                      # 다리 앞 대로(남문루까지 석판)
@@ -347,6 +345,7 @@ paint('road', 10, 15, 85, 16); paint('road', 10, 81, 85, 82)            # 성 �
 paint('road', 10, 15, 11, 82); paint('road', 84, 15, 85, 82)
 paint('road', 10, 51, 27, 53); paint('road', 68, 51, 85, 53)             # 동서 큰길(폭 3) → 해자 다리
 paint('slab', 46, 17, 49, 28)                                            # 북 대로가 안쪽 고리를 가로지른다
+paint('road', 36, 17, 39, 21); paint('road', 58, 17, 61, 21)             # 북 보조 다리 앞 샛길(바깥 고리 길 → 다리)
 paint('slab', 46, 70, 49, YS - 12)                                       # 남 대로
 NOTREE = []        # 나무가 서면 안 되는 사각형 (x, y, w, h)
 
@@ -383,7 +382,10 @@ def jumak(x0, y0, ramp_front=('gn_jm_row_room_4', 'gn_jm_daemun_6'), wall='gn_mu
     P('gn_jm_corner_l', bx, by, 'body'); P('gn_jm_anchae_4', bx + 5, by, 'body'); P('gn_jm_corner_r', bx + 9, by, 'body')
     P('gn_jm_row_v_3', bx, by + 6, 'body'); P('gn_jm_row_v_3', bx + 10, by + 6, 'body')
     P('gn_jm_row_room_4', bx, by + 9, 'body'); P('gn_jm_daemun_6', bx + 6, by + 9, 'body')
-    P('gn_sarip_mud', x0 + 10, y0 + H_ - 1, 'foot')
+    P('gn_sarip_mud', x0 + 10, y0 + H_ - 1, None)
+    for yy in range(by + 9 + 2, by + 9 + 6):                 # 대문채 가운데 통로(문간)는 걸어 지난다
+        for xx in (x0 + 10, x0 + 11):
+            BODY.discard((xx, yy))
     # 마당 소품: 뒤 담 쪽 장독대와 우물
     P('jars', bx + 5, by + 6); P('well', bx + 7, by + 6); P('pyeongsang', x0 + 6, by + 8, 'foot')
     NOTREE.append((x0 - 1, y0 + H_ - 2, W_ + 2, 5))
@@ -397,8 +399,13 @@ def jumak(x0, y0, ramp_front=('gn_jm_row_room_4', 'gn_jm_daemun_6'), wall='gn_mu
 # --- 서쪽
 building('gn_shop_armory', 12, 17, 4); building('gn_shop_butcher', 21, 17, 3)       # 서북 상점 줄 A (9+7)
 building('gn_shop_smithy', 12, 25, 3); building('gn_shop_cloth', 20, 25, 4)         # 상점 줄 B (8+8)
+building('gn_thatch_b', 13, 45, 2); building('giwa_house_3', 21, 45, 2)                  # 서쪽 큰길 위 집 둘(문 앞은 큰길)
 jumak(12, 54)                                                                       # 서남 ㅁ자 주막(담 포함 x 12..27, y 54..71)
-building('gn_u_thatch_6', 12, 73, 1); building('gn_thatch_d', 20, 75, 3)            # 주막 아래 집 둘(문 앞은 고리 길)
+building('gn_u_thatch_6', 12, 73, 1)
+paint('yard', 20, 72, 27, 80)                                                       # 서남 주막 앞 큰 맨 흙 마당(장터)
+for nm, x, y in (('market_stall_cloth', 21, 76), ('market_stall_pots', 25, 76), ('haystack', 22, 79), ('jars', 26, 79), ('well', 24, 73)):
+    P(nm, x, y, 'foot')
+           # 주막 아래 집 둘(문 앞은 고리 길)
 P('seonangdang', 24, 39, 'foot')                                                    # 좌성황 섬 사당
 # --- 동쪽
 jumak(68, 17)                                                                       # 동북 ㅁ자 주막(x 68..83, y 17..34)
@@ -434,7 +441,7 @@ def fenced(name, bx, by, tag, gate_piece='gn_sarip_mud', gate_dx=None, door=None
     for y in range(y0 + 1, y0 + H_ - 1):
         P(f'{tag}_v', x0, y); P(f'{tag}_v1', x0 + W_ - 1, y)
     P(name, bx, by, 'body')
-    P(gate_piece, gx, y0 + H_ - 1, 'foot')
+    P(gate_piece, gx, y0 + H_ - 1, None)
     for (nm, dx, dy) in extra:
         P(nm, bx + dx, by + dy)
     NOTREE.append((x0 - 1, y0 + H_ - 2, W_ + 2, 5))
@@ -450,16 +457,16 @@ fenced('gn_thatch_c', 13, 37, 'gn_mud', 'gn_sarip_mud', extra=(('jars', 7, 3),))
 fenced('gn_l_giwa_6', 30, 71, 'gn_stone', 'gn_sarip_stone', extra=())                               # 남서: 돌담 ㄱ자 기와
 building('thatch_hut_2', 39, 74, 2)
 # --- 밭·논(북쪽 띠와 남서 모퉁이) + 허수아비
-for (x0, y0, x1, y1, kd) in ((30, 18, 43, 21, 'field'), (52, 18, 66, 21, 'paddy'), (39, 70, 41, 72, 'field'), (81, 67, 83, 79, 'field'), (79, 67, 80, 68, 'field')):
+for (x0, y0, x1, y1, kd) in ((40, 18, 43, 21, 'field'), (52, 18, 57, 21, 'paddy'), (62, 18, 66, 21, 'paddy'), (39, 70, 41, 72, 'field'), (81, 67, 83, 79, 'field')):
     paint(kd, x0, y0, x1, y1)
 P('scarecrow', 44, 19); P('scarecrow', 67, 19); P('scarecrow', 41, 73); P('scarecrow', 82, 79)
-# --- 전사의 길(정원형): 서쪽 큰길 위 띠에 대나무숲 + 돌길
-for x in range(13, 27):
-    KG[49][x] = 'slab' if 13 <= x <= 26 else KG[49][x]
-KG[50][13] = 'slab'; KG[50][26] = 'slab'
-for nm, x, y in (('bamboo_grove', 12, 45), ('bamboo', 18, 46), ('bush_l_a', 21, 46), ('bamboo', 25, 45)):
-    P(nm, x, y)
-P('stepping_stones', 15, 47); P('lantern', 20, 47); P('rocks', 25, 48); P('flower_bed', 14, 50)
+# --- 전사의 길(정원형): 북쪽 띠 서쪽 칸 — 돌길 + 대나무숲 + 석등
+for xx in range(29, 36):
+    KG[17][xx] = 'slab'
+for nm, x, y in (('bamboo_grove', 29, 21), ('bamboo', 34, 21), ('lantern', 33, 19)):
+    P(nm, x, y - (objects[nm].h // T) + 1, 'foot')
+P('stepping_stones', 31, 18); P('rocks', 35, 20)
+
 
 
 
@@ -489,7 +496,7 @@ def beside(bname, cands, side='LR'):
     return None
 
 
-beside('gn_u_thatch_6', ['haystack', 'jars']); beside('gn_thatch_d', ['jangdokdae', 'firewood'])
+beside('gn_u_thatch_6', ['haystack', 'jars']); beside('gn_thatch_b', ['jangdokdae']); beside('giwa_house_3', ['jars'])
 beside('gn_thatch_c', ['jangdokdae']); beside('gn_l_giwa_6', ['jars'])
 beside('thatch_hut_2', ['firewood', 'mat_peppers']); beside('giwa_sadang', ['stele', 'sotdae'])
 beside('gn_g2_inn_6', ['jars', 'jangdokdae'], 'L'); beside('gn_g2_nugak_5', ['lantern'], 'R')
@@ -499,7 +506,7 @@ for xx, yy, nm in ((45, 20, 'palace_lantern'), (50, 20, 'palace_lantern'), (45, 
     prop(nm, xx, yy)
 for xx, nm in ((44, 'jangseung_m'), (51, 'jangseung_f')):
     prop(nm, xx, 90)                                                                 # 남문 밖
-prop('well', 13, 48); prop('laundry', 21, 44)
+
 # 해자·연못 기슭: 갈대·돌(풀 칸, 물이 바로 옆, 4칸 간격)
 _shore = []
 for y in range(IN_Y0, IN_Y1):
@@ -830,6 +837,51 @@ def _people_filter(people):
     return out
 
 
+def audit():
+    """적대 검수용 자동 점검: 건물 겹침 · 나무 수관이 길/다리/문을 가림 · 갈라진 길망 · 문 도달."""
+    import re
+    bre = re.compile(r'^(giwa|thatch|gate|pavilion|gwanah|nugak)_|^gn_(shop|l_|u_|g2|g3|thatch|jm_(corner|anchae|daemun|row))|^palace_(hall|jeongak|haengnak|gate)|^tower_|^gungnae_(gate|tower)')
+    bl = [(n, x, y, w, h) for (n, x, y, w, h) in placed if bre.match(n)]
+    ov = []
+    for i, a in enumerate(bl):
+        for b in bl[i + 1:]:
+            if a[1] < b[1] + b[3] and b[1] < a[1] + a[3] and a[2] + 1 < b[2] + b[4] - 1 and b[2] + 1 < a[2] + a[4] - 1:
+                if a[0].startswith('gungnae_') or b[0].startswith('gungnae_'):
+                    continue
+                ov.append((a[0], a[1], a[2], b[0], b[1], b[2]))
+    print('건물 몸체 겹침', len(ov), ov[:8])
+    crown = []
+    for (nm, x, yb, w, h) in TREEPOS:
+        for yy in range(yb + 1 - h, yb):
+            for xx in range(x, x + w):
+                if IN_X0 <= xx <= IN_X1 and IN_Y0 <= yy <= IN_Y1 and KG[yy][xx] in ('road', 'yard', 'slab', 'bridge', 'paving', 'diamond'):
+                    crown.append((nm, x, yb)); break
+            else:
+                continue
+            break
+    print('수관이 길·다리를 가리는 나무', len(crown), crown[:8])
+    net = network()
+    walk = {(x, y) for y in range(MH) for x in range(MW) if KG[y][x] in WALKK and ((x, y) not in BODY or KG[y][x] == 'bridge')}
+    rest = set(walk) - net
+    comps = []
+    while rest:
+        c0 = next(iter(rest)); st = [c0]; seen = {c0}
+        while st:
+            x, y = st.pop()
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                n = (x + dx, y + dy)
+                if n in rest and n not in seen:
+                    seen.add(n); st.append(n)
+        rest -= seen; comps.append(sorted(seen)[:3] + [len(seen)])
+    print('외톨이 길 조각', len(comps), comps[:6])
+    # 해자 닫힘: 물(+다리) 고리가 끊기지 않았나(해자 북·남·서·동 변 한 칸씩 확인)
+    wset = {(x, y) for y in range(MH) for x in range(MW) if KG[y][x] in ('water', 'bridge')}
+    ring_ok = all(any((x, y) in wset for y in range(MY0, MY1 + 1)) for x in (MX0 + 2, MX1 - 2)) and all(any((x, y) in wset for x in range(MX0, MX1 + 1)) for y in (MY0 + 2, MY1 - 2))
+    print('해자 고리', '닫힘' if ring_ok else '끊김')
+    # 칸이 해자 안쪽에서 바깥으로 다리로 닿는가: 바깥 길망에서 궁 마당 칸까지 도달
+    print('궁 마당 도달', (48, 45) in net or (47, 55) in net)
+
+
 def bake():
     gr, OBJ, direct = finish('s1')
     # ---- 지도 게이트
@@ -938,6 +990,7 @@ def bake():
               open(os.path.join(OUT, 'extra.json'), 'w'), ensure_ascii=False)
     colors = set(map(tuple, SHEET.reshape(-1, 4)[SHEET.reshape(-1, 4)[:, 3] == 255][:, :3]))
     bn = [p for p in placed if p[0].split('_')[0] in ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort', 'gn', 'tower', 'palace', 'gungnae') and not any(k in p[0] for k in ('wall', 'bridge', 'sarip', 'samun', 'pine', 'pond', 'lantern', 'haetae', 'deumeu', 'censer', 'eodo', 'jm_', 'mud', 'stone_'))]
+    audit()
     print(json.dumps({'sheet': f'{COLS}x{sheet_rows} tiles', 'pixelDiffMapVsSheet': diff, 'overlapTiles': len(extra), 'uniqueOpaqueColors': len(colors),
                       'doors': len(DOORS), 'doorsReachable': len(reach), 'placed': len(placed), 'people': len(ppl)}, ensure_ascii=False))
     for d in DOORS:
@@ -957,7 +1010,7 @@ PEOPLE_LIST = [
     (20, 72, 0, FRONT, 1), (22, 63, 7, FRONT, 1),                    # 서남 주막 앞마당 · 안마당
     (77, 52, 2, FRONT, 1), (73, 51, 4, RIGHT, 0),                    # 동쪽 큰길
     (76, 35, 5, LEFT, 1), (58, 80, 3, FRONT, 1), (66, 81, 1, RIGHT, 2),    # 동북 주막 앞 · 객주 앞 · 예식장 앞
-    (47, 76, 6, UP, 0), (75, 82, 0, LEFT, 1), (11, 70, 7, UP, 1),    # 남 대로 · 예식장 앞 · 서쪽 고리 길
+    (48, 72, 6, UP, 0), (75, 82, 0, LEFT, 1), (11, 70, 7, UP, 1),    # 남 대로 · 예식장 앞 · 서쪽 고리 길
 ]
 if __name__ == '__main__':
     bake()
