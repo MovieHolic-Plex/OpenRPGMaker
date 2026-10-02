@@ -119,7 +119,7 @@ test("적 스프라이트 앵커 실측 — HUD/브래킷 등장·소멸 전후 
     });
     const projectJson = JSON.stringify({
       meta: { name: "enemy-anchor-probe", terms: {} },
-      system: { battleUiStyle: "classic" },
+      system: { battleUiStyle: "retro2003" },
       database: {
         actors: [{ id: "hero", name: "용사", classId: "warrior", level: 5, hp: 100, maxHp: 100, mp: 20, maxMp: 20 }],
         classes: [{ id: "warrior", name: "전사" }],

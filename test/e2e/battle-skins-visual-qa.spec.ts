@@ -156,9 +156,8 @@ for (const skin of listBattleSkinIds()) {
 
     await waitForActorCommand(page);
     await page.screenshot({ path: `${dir}/02-command.png`, fullPage: true });
-    const commandDiag = await diag(page);
 
-    const targetDiag = await performSkinAttack(page);
+    await performSkinAttack(page);
     await page.screenshot({ path: `${dir}/04-attack-impact.png`, fullPage: true });
 
     const d = await diag(page);
@@ -166,10 +165,5 @@ for (const skin of listBattleSkinIds()) {
     expect(d.present, `${skin}: battle-scene missing`).toBe(true);
     expect(d.skin, `${skin}: skin attribute mismatch after battle`).toBe(skin);
     expect(d.clipped, `${skin}: content clipped (${d.overflowX}x${d.overflowY})`).toBe(false);
-    if (skin === "mv") {
-      expect(targetDiag.enemyPointerBlocked, "mv target: another layer blocks the enemy center").toBe(false);
-      expect(commandDiag.commandPartyOverlap, "mv command: command and party panels overlap").toBe(false);
-      expect(commandDiag.textOverlapPairs, "mv command: visible command/status labels overlap").toBe(0);
-    }
   });
 }

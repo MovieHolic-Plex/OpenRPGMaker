@@ -13,9 +13,8 @@ import { projectLint } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
-const REVIVED_IDS = [
-  "octopath", "chrono", "bravely", "dragonquest",
-  "ff", "mother", "goldensun", "mv", "vxace",
+const SIDEVIEW_WINDOW_IDS = [
+  "octopath", "chrono", "bravely", "ff", "goldensun", "rm2003",
 ] as const;
 
 function renderSystem(): FakeElement {
@@ -34,21 +33,22 @@ function skinOptions(host: FakeElement): FakeElement[] {
   return select.children.filter((child) => child.tagName === "OPTION");
 }
 
-describe("battle skin registry — 되살린 9종 (2026-09-25)", () => {
-  it("13종 전부 활성이고, retro2003이 맨 앞에 온다", () => {
+describe("battle skin registry — 정면 스킨 다섯을 지운 뒤 (2026-10-02)", () => {
+  it("8종 전부 활성이고, retro2003이 맨 앞에 온다", () => {
     expect(listActiveBattleSkinIds()).toEqual([...ACTIVE_BATTLE_SKIN_IDS]);
-    expect(listActiveBattleSkinIds()).toHaveLength(13);
-    expect(listActiveBattleSkinIds().slice(0, 4)).toEqual(["retro2003", "rm2000", "rm2003", "pokemon"]);
+    expect(listActiveBattleSkinIds()).toHaveLength(8);
+    expect(listActiveBattleSkinIds().slice(0, 3)).toEqual(["retro2003", "rm2003", "ff"]);
   });
 
-  it("2026-08-28 에 지원 종료였던 9종은 이제 deprecated 가 아니다", () => {
-    for (const id of REVIVED_IDS) expect(isDeprecatedBattleSkin(id), id).toBe(false);
+  it("도트 측면 창 모양 스킨은 deprecated 가 아니다", () => {
+    for (const id of SIDEVIEW_WINDOW_IDS) expect(isDeprecatedBattleSkin(id), id).toBe(false);
   });
 
-  it("13종 등록과 resolveSkinId 동작은 그대로 유지된다(저장된 프로젝트 보존)", () => {
-    expect(listBattleSkinIds()).toHaveLength(13);
+  it("8종 등록, 지운 정면 스킨 저장값은 retro2003 으로 풀린다(저장된 프로젝트 보존)", () => {
+    expect(listBattleSkinIds()).toHaveLength(8);
     expect(resolveSkinId("octopath")).toBe("octopath");
-    expect(resolveSkinId("vxace")).toBe("vxace");
+    expect(resolveSkinId("vxace")).toBe("retro2003");
+    expect(resolveSkinId("rm2000")).toBe("retro2003");
     expect(resolveSkinId("retro2003")).toBe("retro2003");
     expect(isDeprecatedBattleSkin("retro2003")).toBe(false);
   });
@@ -67,7 +67,7 @@ describe("editor skin dropdown", () => {
     cleanupDom = undefined;
   });
 
-  it("빈 프로젝트에서 13종을 모두 보여준다", () => {
+  it("빈 프로젝트에서 8종을 모두 보여준다", () => {
     const options = skinOptions(renderSystem());
     expect(options.map((option) => option.value)).toEqual([...ACTIVE_BATTLE_SKIN_IDS]);
     expect(options.some((option) => option.textContent.includes("지원 종료"))).toBe(false);
@@ -78,8 +78,17 @@ describe("editor skin dropdown", () => {
       draft.system.battleUiStyle = "octopath";
     });
     const host = renderSystem();
-    expect(skinOptions(host)).toHaveLength(13);
+    expect(skinOptions(host)).toHaveLength(8);
     expect(findByTestId(host, "db-field-system-battle-ui-style")?.value).toBe("octopath");
+  });
+
+  it("지운 정면 스킨이 저장돼 있으면 추가 항목 없이 retro2003 이 선택된다", () => {
+    store.update((draft) => {
+      (draft.system as { battleUiStyle?: string }).battleUiStyle = "rm2000";
+    });
+    const host = renderSystem();
+    expect(skinOptions(host)).toHaveLength(8);
+    expect(findByTestId(host, "db-field-system-battle-ui-style")?.value).toBe("retro2003");
   });
 });
 

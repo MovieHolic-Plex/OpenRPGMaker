@@ -1748,6 +1748,11 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 3. 적용은 **기존 툴만** 쓴다: `upsert_resource` → `upsert_item`/`upsert_enemy` 를
    `applyToolSequenceToStore` 로 한 undo 체크포인트에 묶는다. 새 쓰기 경로를 만들지 마라.
 
+**2026-10-02 개정 — 적은 그림을 만들지 않는다.** 전투가 전부 도트 측면이 되면서 적의 그림 옵션을 뺐다(아이템만 남음).
+enemy allowlist 에 `monsterResourceId` 를 더해 LLM 이 도트 몬스터 140종(`PIXEL_ENEMY_PORTRAIT_URLS`) 중에서 고르고,
+목록 밖이면 `pickPixelMonsterId` 가 이름 조각 → 슬라임으로 맞춘다. 결과 미리보기는 그 도트 몬스터의 정지 그림이다.
+적 그래픽 칸의 「AI로 만들기」와 소재 고르기의 몬스터 생성도 지웠다 — `runtime-battle.md` 「전투는 전부 도트 측면」.
+
 리소스 kind 는 종류마다 다르다 — 적은 `monster`, 아이템은 `picture`. 아이템 아이콘 피커
 (`kind:"icon"`)가 업로드 자산 중 `picture`/`monster`/`system` 만 목록에 올리기 때문이다
 (`databaseResourcePickerDialog.ts` `uploadedMatchesKind`). 그림은 `assets.uploaded[id].dataUrl`

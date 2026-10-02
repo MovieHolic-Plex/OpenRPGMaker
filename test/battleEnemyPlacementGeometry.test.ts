@@ -40,12 +40,12 @@ describe("적 세로 배치 기하", () => {
     });
   }
 
-  it("rm2000 정면 구도는 아군을 숨기고 기존 좌표 계약은 유지한다", () => {
-    expect(BATTLER_PLACEMENTS.rm2000.partyFacing).toBe("hidden");
-    // 4인: 가운데(적 자리)를 비우고 좌우 두 쌍, 발끝은 필드 바닥.
-    const slots = [0, 1, 2, 3].map((i) => BATTLER_PLACEMENTS.rm2000.party(i, 4));
-    expect(slots.map((s) => s.y)).toEqual([160, 160, 160, 160]);
-    expect(slots.map((s) => s.x)).toEqual([44, 116, 204, 276]);
-    expect(slots.every((s) => Math.abs(s.x - 160) >= 44)).toBe(true);
+  it("정면 유리 구도(rm2000 등)는 지웠다 — 측면 스킨은 아군을 오른쪽 사선으로 세우고, 정면은 포켓몬뿐이다", () => {
+    expect(Object.keys(BATTLER_PLACEMENTS)).not.toContain("rm2000");
+    expect(BATTLER_PLACEMENTS.retro2003.partyFacing).toBe("front");
+    const slots = [0, 1, 2, 3].map((i) => BATTLER_PLACEMENTS.retro2003.party(i, 4));
+    expect(slots.map((s) => s.x)).toEqual([222, 246, 270, 294]);
+    expect(slots.map((s) => s.y)).toEqual([82, 100, 118, 136]);
+    expect(BATTLER_PLACEMENTS.pokemon.partyFacing).toBe("back");
   });
 });

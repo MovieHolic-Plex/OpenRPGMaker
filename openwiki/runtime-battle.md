@@ -1,5 +1,25 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 전투는 전부 도트 측면 — 정면 스킨 다섯·몬스터 그림 생성 삭제 (2026-10-02)
+
+사용자 결정(「정면그림들을 아예 배제, 공격적으로. 이제 전투는 전부 RM2003 식」). 예외는 포켓몬풍 몬스터 수집(`pokemon` 스킨) 하나.
+**이 절보다 아래에 나오는 `rm2000`·`dragonquest`·`mother`·`mv`·`vxace` 정면 스킨 서술(유리 정면 필드·뒷모습 파티·`RM2000_PARTY_SLOTS`·박스/링 HUD)은 이력이다.**
+
+- **스킨**: 위 다섯(+옛 별칭 `classic`)을 레지스트리·타입(`BattleSkinId`·`BattleUiStyle`)·배치(`BATTLER_PLACEMENTS`)·전환(psychedelic·curtain-dq·fade)·
+  CSS(`_glass-variants.css` 의 boxes·ring·minimal HUD, `05-poses-motion.css` 정면 돌진)에서 지웠다. 남은 스킨: 도트 측면 일곱
+  (`retro2003` 기본·`rm2003`·`ff`·`goldensun`·`chrono`·`octopath`·`bravely`) + `pokemon`.
+- **미설정 기본이 `rm2000` → `retro2003`**. 스킨을 저장하지 않은 옛 프로젝트(대부분의 fixture·장소 저장본)도 도트 측면으로 열린다 —
+  아래 「도트 측면 전투 스킨 retro2003」 절의 「미설정 문서는 rm2000 호환값 유지」 계약을 이것이 대체한다.
+  저장된 옛 id 는 `resolveSkinId` 가 `retro2003` 으로 풀고(`LEGACY_SKIN_ALIASES`, `isRetiredBattleSkinId`), `normalizeSystem` 이 로드 때 지운다.
+  `data-battle-ui-style="classic"` 은 이 별칭이 아니라 유리 뼈대 표식이라 남는다. CSS 파일 `_rm2000.css` 도 남은 측면 스킨 모두의 유리 뼈대라 그대로다(이름만 옛것).
+- **스킨 공용 정면 적 그림**(`battle-skins/sprites/enemy-*.png` 10장) 삭제. `bskin-enemy-<스킨>` 옛 id 는 참조 검증
+  (`builtinGeneratedResourceIds` → `resourceReferenceValidation` assert) 때문에 남기고 도트 슬라임 초상으로 푼다.
+- **몬스터 그림 생성 제거**: 자료집 적 「AI로 만들기」 칸, 소재 고르기 대화의 몬스터 생성 칸, `generate_image_asset` kind `monster`.
+  자료집 「AI로 생성」(적)은 그림을 만들지 않고 LLM 이 도트 몬스터 140종 중 `monsterResourceId` 를 고른다(목록 밖 id → 이름 조각 → 슬라임,
+  `aiDatabaseGeneration.ts` `pickPixelMonsterId`). 몬스터 그림 자체(옛 정면 그림 폐기·140종 도트 시트)는 [공용 몬스터 폐기](native-enemy-retirement.md).
+- 지운 QA: `battle-frontview` 런타임 시나리오, e2e `battle-rm2000-pixel-qa`·`_rm2000-probe`·`_vxace-shots`. 경계 계약 시험: `test/sideOnlyBattle.test.ts`.
+- 증거: player.html 캡처 — `battleUiStyle: "rm2000"` 으로 저장된 프로젝트가 도트 측면으로 열리고 적이 시트로 그려진다. pokemon 은 그대로.
+
 ## SNES 식 전투 연출 — 쓰러짐·배경 겹·상태 몸 표시·이펙트 겹치기·화면 필터 (2026-10-02)
 
 - **적 쓰러짐** `EnemyRecord.collapseEffect`(project/enemyCollapse.ts): pixelBreak(FF6 보랏빛 픽셀 분해 0.9s) · bossSink(떨며 붉게 깜빡이고
@@ -24,7 +44,7 @@
   MutationObserver 가 섞는 이펙트가 든 동안 층 자체에 mix-blend-mode 를 건다(그동안 같은 층 다른 이펙트도 같이 섞임).
 - **화면 필터** `system.displayFilter`(project/displayFilter.ts): scanlines · crt. `createPlaySurface` 가 `.play-stage` 맨 끝에 층을 두고
   직계 자식이 바뀌면 다시 끝으로 옮긴다(전투·메뉴가 나중에 붙는다). 깜빡임 없음.
-- 캡처: `node scripts/qa/runtime/battle-fx.capture.mjs --out /tmp/battle-fx [--skin rm2000] [--filter scanlines]` — 오라 판은 스크린샷,
+- 캡처: `node scripts/qa/runtime/battle-fx.capture.mjs --out /tmp/battle-fx [--skin rm2003] [--filter scanlines]` — 오라 판은 스크린샷,
   쓰러짐·이펙트 판은 영상(webm, swiftshader 스크린샷은 장당 0.5s 라 0.9s 연출을 못 따라간다). 전투 이벤트 페이지는 **행동 뒤**에 검사되므로
   상태를 거는 시험은 한 명이 한 번 행동해야 한다.
 - 조수: `read_directing_guide` 의 「전투 연출」 절, 능력 색인 `battle-presentation`, 도구 칸 upsert_enemy.collapseEffect ·
@@ -137,7 +157,7 @@
 ## 도트 측면 전투 스킨 retro2003 (2026-09-28)
 
 13번째 스킨. 자료집 → 시스템 → 전투 UI 스타일 「레트로 2003 · 측면 도트 전투 (기본)」(드롭다운 첫 번째), AI `set_project_settings battle.uiStyle: "retro2003"`.
-규칙 엔진은 건드리지 않는다 — 표현만이고 `battleFlow: "gauge"` 와 함께 쓰면 시간 게이지 전투가 된다. 기존 미설정 문서는 `resolveSkinId(undefined)` / `DEFAULT_BATTLE_SKIN_ID`의 rm2000 호환값을 유지한다. 새 프로젝트·템플릿의 `defaultSystem(true)`과 새 데모 생성은 retro2003을 명시하며 정규화에서도 생략하지 않는다. v1/v2 이관의 인자 없는 `defaultSystem()`은 스킨을 추가하지 않아 옛 화면을 보존한다
+규칙 엔진은 건드리지 않는다 — 표현만이고 `battleFlow: "gauge"` 와 함께 쓰면 시간 게이지 전투가 된다. (2026-10-02 대체: 미설정도 retro2003 — 맨 위 「전투는 전부 도트 측면」 절.) 기존 미설정 문서는 `resolveSkinId(undefined)` / `DEFAULT_BATTLE_SKIN_ID`의 rm2000 호환값을 유지했었다. 새 프로젝트·템플릿의 `defaultSystem(true)`과 새 데모 생성은 retro2003을 명시하며 정규화에서도 생략하지 않는다. v1/v2 이관의 인자 없는 `defaultSystem()`은 스킨을 추가하지 않아 옛 화면을 보존한다
 (모션 CSS는 retro2003 스코프, 확장 시트의 정수 배율 규칙은 그 시트를 쓰는 측면 스킨 공통).
 
 - **레지스트리 필드 두 개**(`src/battle/skins/types.ts`): `motionStyle: "retro"` 가 연출을, `scenery: "layered"` 가 겹 배경을 켠다. 다른 스킨이 같은 연출을 원하면 이 값만 붙이면 된다(CSS 스코프는 스킨 id 라 그 CSS 도 넓혀야 한다).
@@ -932,7 +952,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   「현대」를 찾아 PAW 전용 게이트를 켠다. veil·soft·pop 분위기에 「현대」가 있던 동안 판타지 JRPG 첫 제작 24판 중 22판에서 맵 타일 쓰기가 2~7번씩 거절됐다
   (「현대 맵 '토끼 마을'에는 … Pixel Art World 칩셋만」). 회귀: `test/battleLookAssistant.test.ts` 의 현대 맵 판정 칸.
 
-- 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
+- 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **도트 측면**(`retro2003` 기본 + 창 모양만 다른 측면 스킨 여섯)과 **몬스터 대치**(`pokemon`)다(2026-10-02, 정면 `rm2000` 삭제). 규칙 모델과 표시 스킨은 별개다.
 - **(2026-10-02 삭제됨 — 정면 스킨 없음, 기본은 retro2003. `battle-frontview` 시나리오도 지웠다.)** 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
 - **스킨 id 이력 (2026-09-03):** 기존 정면 스킨 `rm2003`을 `rm2000`으로 개명한 뒤, 같은 날 `rm2003`을 별도 측면 스킨으로 되살렸다. 현재 `resolveSkinId("rm2003") === "rm2003"`이며 옛 별칭 `classic`만 `rm2000`으로 간다. 등록 스킨은 12종이다. 두 스킨은 `_rm2000.css`의 유리 HUD를 `family: "glass"`로 공유하고 측면 배치는 `_rm2003.css`가 담당한다. 사용자 노출 라벨은 「유리 창 · 정면 필드」와 「유리 창 · 측면 필드」이며 타사 제품명은 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`).
 - **스킨 12종 전부 활성 (2026-09-25).** 2026-08-28 에 지원 종료였던 9종(`octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`)은
