@@ -558,10 +558,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else applyActionMotion(field, beat);
       if (pokemonMotion) {
         const lungeMs = Number.parseFloat(getComputedStyle(root).getPropertyValue("--motion-lunge-ms")) || 160;
-        pokemonActionMotion(field, beat, lungeMs, pokemonMove);
+        // 착탄 세기 = 최대 HP 대비 피해(40% 를 넘으면 1). 급소는 최소 0.8.
+        const hitFeedback = beat?.kind === "impact" ? beat.feedback : undefined;
+        const hitMaxHp = hitFeedback ? battlerMaxHp(options.runtime.snapshot(), hitFeedback.targetId) : 0;
+        const ratio = hitFeedback && hitMaxHp > 0 ? hitFeedback.amount / hitMaxHp : 0.12;
+        const power = Math.max(0.15, Math.min(1, ratio * 2.5));
+        pokemonActionMotion(field, beat, lungeMs, pokemonMove, { power: hitFeedback?.critical ? Math.max(0.8, power) : power, critical: Boolean(hitFeedback?.critical) });
       }
       // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
       // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
+      // 포켓몬 스킨은 베기 궤적을 그리지 않는다(몬스터 몸통박치기에 칼 획이 지나갔다). 휘두름 소리는 남긴다.
       if (hitFeel === "impact" && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {
         swingArmed = false;
         const targetId = beat.targetId;
@@ -570,14 +576,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           const target = findBattlerNode(field, targetId);
           if (!target || !target.classList.contains("battle-enemy")) return;
           playBattleCue("attack-swing");
-          spawnSlashTrail(target);
+          if (!pokemonMotion) spawnSlashTrail(target);
         }, Math.max(0, beat.durationMs - SWING_LEAD_MS));
       }
     },
     animationImpactMs(animation) {
       // 포켓몬 스킨의 접촉 아닌 기술은 기술 이펙트를 「닿는 순간」(impact 시작)에 띄운다 — 착탄 프레임에 맞춰 일찍 띄우면
       // 발사체가 날아가는 동안 상대 몸에서 불길이 먼저 피었다(2026-10-02 녹화). 1ms = 시퀀서 오프셋이 approach 길이가 된다.
-      if (pokemonMotion && pokemonMove.motion !== "contact") return 1;
+      // 몸으로 치는 기술도 같다 — 저작 타격 별이 착탄 85ms 전에 먼저 떴다. 착탄 「팍」은 안무(impactBurst)가 그린다.
+      if (pokemonMotion) return 1;
       return battleAnimationImpactMs(animation.animationId);
     },
     onEscapeOutcome(success) {

@@ -47,6 +47,14 @@ interface Knock {
   k: number;
   /** 아래로 눌리는 찌그러짐(현장 발생) */
   squash: boolean;
+  /** 타격 세기 0..1 */
+  power: number;
+}
+
+/** 착탄 한 번의 세기. 피해 비율(최대 HP 대비)에서 온다 — 40% 를 넘게 깎으면 1. */
+export interface PokemonHit {
+  readonly power: number;
+  readonly critical: boolean;
 }
 
 const poses = new WeakMap<HTMLElement, Pose>();
@@ -88,6 +96,11 @@ function prepare(sprite: HTMLElement): void {
 function restRect(node: HTMLElement): DOMRect {
   const sprite = battlerSpriteNode(node);
   for (const animation of sprite.getAnimations()) if (!(animation as CSSAnimation).animationName) animation.cancel();
+  return sprite.getBoundingClientRect();
+}
+
+/** 지금 그림 상자(안무를 걷지 않는다) */
+function restRectSnapshot(sprite: HTMLElement): DOMRect {
   return sprite.getBoundingClientRect();
 }
 
@@ -447,6 +460,64 @@ function aura(field: HTMLElement, receiver: HTMLElement, motion: "boost" | "heal
   }
 }
 
+/** 착탄 「팍」 — 굵은 충격 별(2~3프레임) + 맞은 방향으로 튀는 파편. 정지 비트 동안 터진다(WAAPI 는 히트스톱에 안 멈춘다). */
+function impactBurst(field: HTMLElement, at: Vec, unit: Vec, color: string, hit: PokemonHit): void {
+  const size = Math.round(84 + hit.power * 56 + (hit.critical ? 24 : 0));
+  // clip-path 는 filter 뒤에 적용돼 외곽선까지 잘라 낸다 — 바깥 조각이 빛 테두리, 안 조각이 별
+  const burst = fx(field, at, `width:${size}px;height:${size}px;margin:${-size / 2}px 0 0 ${-size / 2}px;`
+    + `filter:drop-shadow(0 0 2px ${hit.critical ? "#ffcf4a" : "#ffffff"}) drop-shadow(0 0 6px ${color === "#ffffff" ? "#ffe27a" : color});`);
+  const star = document.createElement("span");
+  const points: string[] = [];
+  for (let i = 0; i < 16; i += 1) {
+    const r = i % 2 === 0 ? 50 : 20 + (i % 4 === 1 ? 0 : 6);
+    const a = (i / 16) * Math.PI * 2;
+    points.push(`${Math.round(50 + Math.cos(a) * r)}% ${Math.round(50 + Math.sin(a) * r)}%`);
+  }
+  star.style.cssText = `position:absolute;inset:0;clip-path:polygon(${points.join(",")});`
+    + `background:radial-gradient(circle,#ffffff 0 34%,${hit.critical ? "#ffd75a" : "#fff3b0"} 52%,${color === "#ffffff" ? "#ffb13d" : color} 78%);`;
+  burst.append(star);
+  const spin = Math.round(((at.x * 7 + at.y * 13) % 40) - 20);
+  play(burst, [
+    { transform: `rotate(${spin}deg) scale(0.35)`, opacity: 1 },
+    { transform: `rotate(${spin + 6}deg) scale(1.15)`, opacity: 1, offset: 0.28 },
+    { transform: `rotate(${spin + 10}deg) scale(1)`, opacity: 1, offset: 0.62 },
+    { transform: `rotate(${spin + 14}deg) scale(1.25)`, opacity: 0 },
+  ], { duration: 190, easing: "ease-out" });
+  // 파편 — 맞은 방향 ±70° 부채꼴
+  const count = 6 + Math.round(hit.power * 4);
+  const base = Math.atan2(unit.y, unit.x);
+  for (let i = 0; i < count; i += 1) {
+    const a = base + ((i / (count - 1)) - 0.5) * 2.4 + ((i * 37) % 7 - 3) * 0.04;
+    const far = 46 + ((i * 29) % 5) * 12 + hit.power * 40;
+    const w = 5 + ((i * 3) % 3) * 2;
+    const shard = fx(field, at, `width:${w}px;height:${w}px;margin:${-w / 2}px 0 0 ${-w / 2}px;background:${i % 3 === 0 ? "#ffffff" : color === "#ffffff" ? "#ffd56b" : color};`
+      + "box-shadow:0 0 0 1px rgba(0,0,0,.35);");
+    const dx = Math.cos(a) * far;
+    const dy = Math.sin(a) * far;
+    play(shard, [
+      { transform: "translate(0px, 0px) rotate(0deg)", opacity: 1 },
+      { transform: `translate(${Math.round(dx * 0.7)}px, ${Math.round(dy * 0.7 - 10)}px) rotate(120deg)`, opacity: 1, offset: 0.55 },
+      { transform: `translate(${Math.round(dx)}px, ${Math.round(dy + 14)}px) rotate(220deg)`, opacity: 0 },
+    ], { duration: 360 + (i % 3) * 40, easing: "cubic-bezier(0.15, 0.8, 0.35, 1)" });
+  }
+}
+
+/** 카메라 킥 — 모든 타격에 짧게(맞은 방향으로 밀렸다 돌아옴 + 살짝 확대). 세기에 따라 2~6px. */
+function cameraKick(field: HTMLElement, unit: Vec, hit: PokemonHit): void {
+  if (typeof field.animate !== "function") return;
+  const a = 2 + hit.power * 4 + (hit.critical ? 2 : 0);
+  const zoom = 1 + 0.012 + hit.power * 0.018;
+  field.animate(
+    [
+      { translate: "0px 0px", scale: "1" },
+      { translate: `${Math.round(unit.x * a)}px ${Math.round(unit.y * a)}px`, scale: String(zoom), offset: 0.18 },
+      { translate: `${Math.round(-unit.x * a * 0.5)}px ${Math.round(-unit.y * a * 0.5)}px`, scale: String(1 + (zoom - 1) * 0.4), offset: 0.5 },
+      { translate: "0px 0px", scale: "1" },
+    ],
+    { duration: 170 + hit.power * 60, easing: "ease-out" },
+  );
+}
+
 /** 착탄 정지 비트 — 접촉 자리에서 찌그러졌다 펴진다. 앞 비트에 돌진이 없었으면(예고 0) 여기서 짧게 덮친다. */
 function holdContact(user: HTMLElement, target: HTMLElement | null, durationMs: number): void {
   const sprite = battlerSpriteNode(user);
@@ -463,10 +534,15 @@ function holdContact(user: HTMLElement, target: HTMLElement | null, durationMs: 
     sprite.animate([{ translate: "0px 0px" }, { translate: px(contact) }], { duration: 60, easing: "ease-in", fill: "forwards" });
     return;
   }
+  // 때린 쪽도 정지 동안 1~2px 떤다 — 맞은 쪽만 떨면 때린 쪽이 사진처럼 붙어 보였다
+  const r = pose.rest;
   sprite.animate(
     [
-      { translate: px(pose.rest), scale: "0.9 1.08" },
-      { translate: px(pose.rest), scale: "1 1" },
+      { translate: px(r), scale: "0.9 1.08" },
+      { translate: `${r.x + 2}px ${r.y}px`, scale: "0.92 1.06", offset: 0.25 },
+      { translate: `${r.x - 2}px ${r.y}px`, scale: "0.95 1.04", offset: 0.5 },
+      { translate: `${r.x + 1}px ${r.y}px`, scale: "0.98 1.02", offset: 0.75 },
+      { translate: px(r), scale: "1 1" },
     ],
     { duration: Math.max(60, durationMs), easing: "ease-out", fill: "forwards" },
   );
@@ -497,7 +573,7 @@ function returnHome(user: HTMLElement, durationMs: number): void {
 /** 착탄 — 맞은 쪽이 밀린 채 정지 비트 동안 붙들린다(흰 실루엣은 22-hit-feel ①).
  *  방향은 approach 를 시작할 때 제자리에서 잰 값을 쓴다 — 착탄 순간의 공격자 그림은 상대 몸 안까지 들어와 있어서
  *  지금 위치로 재면 넉백이 공격자 쪽으로 뒤집혔다(2026-10-02 녹화). */
-function pushTarget(target: HTMLElement, attacker: HTMLElement | null, durationMs: number, motion: PokemonMoveMotion, fromBelow: boolean): void {
+function pushTarget(field: HTMLElement, target: HTMLElement, attacker: HTMLElement | null, durationMs: number, motion: PokemonMoveMotion, fromBelow: boolean, color: string, hit: PokemonHit): void {
   const sprite = battlerSpriteNode(target);
   let unit = attacker ? poses.get(attacker)?.unit : undefined;
   if (!unit || motion === "area") {
@@ -520,14 +596,39 @@ function pushTarget(target: HTMLElement, attacker: HTMLElement | null, durationM
   }
   const squash = motion === "strike" && !fromBelow;
   prepare(sprite);
+  // 정지 동안 밀린 자리에서 좌우로 빠르게 떤다(격투게임식 진동). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
+  const push = { x: unit.x * PUSH * k, y: unit.y * PUSH * k };
+  const amp = 4 + hit.power * 4;
+  const shake = [1, -1, 0.8, -0.8, 0.55, -0.4, 0.2];
   sprite.animate(
     [
-      { translate: px(unit, PUSH * 0.7 * k), scale: squash ? "1.12 0.86" : "0.94 1.04" },
-      { translate: px(unit, PUSH * k), scale: squash ? "1.1 0.88" : "0.96 1.03" },
+      { translate: px(push, 0.7), scale: squash ? "1.12 0.86" : "0.94 1.04" },
+      ...shake.map((f, i) => ({ translate: `${Math.round((push.x + f * amp) * 10) / 10}px ${Math.round(push.y * 10) / 10}px`, offset: (i + 1) / (shake.length + 1) })),
+      { translate: px(push), scale: squash ? "1.1 0.88" : "0.96 1.03" },
     ],
-    { duration: Math.max(60, durationMs), fill: "forwards" },
+    { duration: Math.max(60, durationMs), easing: "linear", fill: "forwards" },
   );
-  knocked.set(target, { unit, k, squash });
+  // 흰 번쩍임은 한 프레임(≈45ms)만 — 정지 내내 흰 덩어리로 두면 가장 세게 보여야 할 프레임이 가장 흐렸다.
+  // 22-hit-feel ① 의 정지 중 흰 실루엣을 포켓몬 CSS 가 이 변수로 바꿔 둔다(20-pokemon-skin.css).
+  const whiteMs = hit.critical ? 70 : 45;
+  const end = Math.max(60, durationMs);
+  sprite.animate(
+    [
+      { "--pkmn-hit-flash": "brightness(0) invert(1)", offset: 0 },
+      { "--pkmn-hit-flash": "brightness(0) invert(1)", offset: Math.min(0.9, whiteMs / end) },
+      { "--pkmn-hit-flash": "brightness(1.35) saturate(1.4)", offset: Math.min(0.92, whiteMs / end + 0.02) },
+      { "--pkmn-hit-flash": "none", offset: 1 },
+    ] as Keyframe[],
+    { duration: end, fill: "none" },
+  );
+  // 착탄 자리 — 접촉은 맞는 쪽 몸의 공격자 쪽 가장자리, 나머지는 몸 가운데
+  const rect = restRectSnapshot(sprite);
+  const c = center(rect);
+  const edge = motion === "contact" && attacker ? Math.min(rect.width, rect.height) * 0.28 : 0;
+  const at = fieldPoint(field, { x: c.x - unit.x * edge, y: c.y - unit.y * edge });
+  impactBurst(field, at, unit, color, hit);
+  cameraKick(field, unit, hit);
+  knocked.set(target, { unit, k, squash, power: hit.power });
 }
 
 /** 정지가 풀리면 날아갔다 튕겨 돌아오며 좌우로 떤다. 다 돌아온 뒤 두 번 꺼졌다 켜진다 —
@@ -536,31 +637,37 @@ function releaseTarget(target: HTMLElement): void {
   const knock = knocked.get(target);
   knocked.delete(target);
   if (!knock) return;
-  const { unit, k, squash } = knock;
+  const { unit, k, squash, power } = knock;
   const sprite = battlerSpriteNode(target);
-  const far = KNOCK * k;
+  // 세게 맞을수록 멀리 날아가고 더 기운다(약한 타격 0.8배 … 40% 넘게 깎이면 1.7배)
+  const far = KNOCK * k * (0.8 + power * 0.9);
+  const tilt = Math.round((unit.x >= 0 ? 1 : -1) * (5 + power * 9) * k);
   const shake = [7, -6, 5, -4, 2];
   const animation = sprite.animate(
     [
-      { translate: px(unit, PUSH * k), scale: squash ? "1.1 0.88" : "0.96 1.03", offset: 0 },
-      { translate: px(unit, far), scale: "1 1", offset: 0.2, easing: "cubic-bezier(0.3, 0, 0.4, 1)" },
-      ...shake.map((dx, index) => ({ translate: `${Math.round(unit.x * far * (1 - (index + 1) / 6) + dx)}px ${Math.round(unit.y * far * (1 - (index + 1) / 6))}px`, offset: 0.3 + index * 0.12 })),
-      { translate: "0px 0px", scale: "1 1", offset: 1 },
+      { translate: px(unit, PUSH * k), scale: squash ? "1.1 0.88" : "0.96 1.03", rotate: "0deg", offset: 0 },
+      { translate: px(unit, far), scale: "1 1", rotate: `${tilt}deg`, offset: 0.22, easing: "cubic-bezier(0.3, 0, 0.4, 1)" },
+      { translate: px(unit, far * 0.92), rotate: `${Math.round(tilt * 0.8)}deg`, offset: 0.34 },
+      ...shake.map((dx, index) => ({ translate: `${Math.round(unit.x * far * 0.92 * (1 - (index + 1) / 6) + dx)}px ${Math.round(unit.y * far * 0.92 * (1 - (index + 1) / 6))}px`, rotate: `${Math.round(tilt * 0.8 * (1 - (index + 1) / 6))}deg`, offset: 0.42 + index * 0.1 })),
+      { translate: "0px 0px", scale: "1 1", rotate: "0deg", offset: 1 },
     ],
-    { duration: 380, easing: "linear", fill: "forwards" },
+    { duration: 440 + Math.round(power * 120), easing: "linear", fill: "forwards" },
   );
   animation.onfinish = () => {
     if (!knocked.has(target)) for (const running of sprite.getAnimations()) if (!(running as CSSAnimation).animationName) running.cancel();
   };
-  sprite.animate([{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 340, easing: "steps(1, end)" });
+  sprite.animate([{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 420 + Math.round(power * 120), easing: "steps(1, end)" });
 }
 
 /** 강타·급소·막타만 화면을 짧게 3px 흔든다. 보통 타격은 흔들지 않는다(포켓몬 문법). */
 export function pokemonHeavyShake(field: HTMLElement): void {
   if (reduced() || typeof field.animate !== "function") return;
+  // 급소·막타·강타만 화면이 한 프레임 번쩍인다 — 끊어서 온다(서서히 빠지는 흰 막은 안개로 읽힌다)
+  const flash = fx(field, { x: 0, y: 0 }, "inset:0;left:0;top:0;width:100%;height:100%;background:#fff;");
+  play(flash, [{ opacity: 0.55 }, { opacity: 0.55, offset: 0.5 }, { opacity: 0 }], { duration: 90, easing: "steps(2, end)" });
   field.animate(
-    [{ translate: "0 0" }, { translate: "3px -2px" }, { translate: "-3px 2px" }, { translate: "2px 1px" }, { translate: "-1px -1px" }, { translate: "0 0" }],
-    { duration: 180, easing: "linear" },
+    [{ translate: "0 0" }, { translate: "6px -4px" }, { translate: "-6px 4px" }, { translate: "4px 2px" }, { translate: "-3px -2px" }, { translate: "1px 1px" }, { translate: "0 0" }],
+    { duration: 260, easing: "linear" },
   );
 }
 
@@ -569,7 +676,7 @@ export function pokemonHeavyShake(field: HTMLElement): void {
  * 비트 순서: 내 행동 approach(lunge) → impact(knockback) → recover(return),
  *            적 행동 approach(windup) → impact(lunge+knockback) → recover(return).
  */
-export function pokemonActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined, lungeMs: number, move: PokemonMoveContext): void {
+export function pokemonActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined, lungeMs: number, move: PokemonMoveContext, hit: PokemonHit = { power: 0.3, critical: false }): void {
   if (!beat || reduced() || typeof HTMLElement.prototype.animate !== "function") return;
   const user = beat.userId ? findBattlerNode(field, beat.userId) : null;
   const target = beat.targetId ? findBattlerNode(field, beat.targetId) : null;
@@ -590,7 +697,7 @@ export function pokemonActionMotion(field: HTMLElement, beat: BattleActionBeat |
     } else if (other) dash(user, other, D, lungeMs);
   } else if (beat.kind === "impact") {
     if (user && other && beat.userMotion === "lunge" && motion === "contact") holdContact(user, other, beat.durationMs);
-    if (target && beat.targetMotion === "knockback") pushTarget(target, user, beat.durationMs, motion, move.fromBelow);
+    if (target && beat.targetMotion === "knockback") pushTarget(field, target, user, beat.durationMs, motion, move.fromBelow, color, hit);
   } else if (beat.kind === "recover") {
     if (user) returnHome(user, beat.durationMs);
     if (target) releaseTarget(target);
