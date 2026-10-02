@@ -128,6 +128,17 @@ for _s in SETS:
         SET_RULES[_s] = FRONT3D_RULE + ('\n' + SET_RULES[_s] if _s in SET_RULES else '')
 
 
+def set_names():
+    """세트 id → manifest 의 이름(화면 탭용)."""
+    out = {}
+    for s in SETS:
+        try:
+            out[s] = json.loads((ROOT / 'tiledata' / 'worldmap-kit' / 'iconsets' / s / 'manifest.json').read_text())['name']
+        except (OSError, ValueError, KeyError):
+            pass
+    return out
+
+
 def set_rule(iset):
     return SET_RULES.get(iset, '')
 
@@ -319,7 +330,7 @@ class H(BaseHTTPRequestHandler):
                 items.append(dict(id=r['id'], set=r['iset'], name=r['name'], role=r['role'], role_name=rn.get(r['role'], r['role']),
                                   cells=json.loads(r['cells']), desc=r['descr'], place=r['place'], used=bool(r['used']), sha=r['sha'],
                                   review=rv.get(r['id']), decision=dec.get(r['id'])))
-            return self._send(200, json.dumps(dict(items=items, reasons=REASONS, sets=list(SETS)), ensure_ascii=False))
+            return self._send(200, json.dumps(dict(items=items, reasons=REASONS, sets=list(SETS), set_names=set_names()), ensure_ascii=False))
         if p == '/ref.png':
             return self._send(200, REF.read_bytes(), 'image/png')
         if p.startswith('/api/rounds/'):

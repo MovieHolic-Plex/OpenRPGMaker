@@ -95,7 +95,7 @@ let S = { items: [], reasons: [], sets: [] }, sel = null, rej = new Set();
 const F = { set: 'all', show: 'all' };
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const SETNAME = { 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
+let SETNAME = { 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
 const img = (it, f) => `/f/${encodeURIComponent(it.set)}/${encodeURIComponent(it.name)}/${f}?v=${it.sha}`;
 
 async function load(keep) {
@@ -118,6 +118,7 @@ function renderProg() {
   $('bar').innerHTML = `<i style="width:${a / n * 100}%;background:var(--ok)"></i><i style="width:${j / n * 100}%;background:var(--bad)"></i>`;
 }
 function renderFilters() {
+  SETNAME = { ...(S.set_names || {}), 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
   const sets = [['all', '전체'], ...S.sets.map((s) => [s, SETNAME[s] || s])];
   const shows = [['all', '모두'], ['todo', '안 정함'], ['fail', '검수 ✗'], ['pass', '검수 ✓'], ['acc', '받음'], ['rej', '버림']];
   $('filters').innerHTML = sets.map(([k, l]) => `<button class="chip ${F.set === k ? 'on' : ''}" data-set="${k}">${l}</button>`).join('') +
