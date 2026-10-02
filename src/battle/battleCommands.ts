@@ -1,7 +1,7 @@
 import type { ClassBattleCommand, ClassBattleCommandKind, Project, SkillId } from "@/project/types";
 import { resolveTerms } from "@/project/terms";
 
-export type RuntimeBattleCommandKind = "attack" | "skill" | "item" | "capture" | "defend" | "escape" | "switch";
+export type RuntimeBattleCommandKind = "attack" | "skill" | "item" | "capture" | "defend" | "escape" | "switch" | "commonEvent";
 
 export interface RuntimeBattleCommand {
   readonly id: string;
@@ -9,6 +9,8 @@ export interface RuntimeBattleCommand {
   readonly kind: RuntimeBattleCommandKind;
   readonly skillSubsetName?: string;
   readonly skillId?: SkillId;
+  /** kind "commonEvent" — 고르면 실행할 공통 이벤트. */
+  readonly commonEventId?: string;
 }
 
 export const DEFAULT_RUNTIME_BATTLE_COMMANDS: readonly RuntimeBattleCommand[] = [
@@ -34,7 +36,11 @@ export function battleCommandsForActor(
   if (options.forceSwitchOnly) return [switchCommand()];
   const actor = actorRecordId ? project.database.actors.find((record) => record.id === actorRecordId) : undefined;
   const klass = actor ? project.database.classes.find((record) => record.id === (options.classId ?? actor.classId)) : undefined;
-  const overrideIds = options.overrideCommandIds;
+  // 우선순위: 전투 중 이벤트로 바꾼 명령 > 배우 고유 명령(ActorRecord.battleCommandIds, RM2003 배우별 명령) > 직업 명령.
+  // 배우 고유 목록은 전역·직업 목록에 있는 id 만 쓴다(지운 명령이 「공격」으로 둔갑하지 않게).
+  const actorIds = actor?.battleCommandIds?.filter((id) =>
+    project.database.battleCommands?.some((record) => record.id === id) || klass?.battleCommands.some((entry) => entry.id === id));
+  const overrideIds = options.overrideCommandIds?.length ? options.overrideCommandIds : actorIds;
   let source: readonly ClassBattleCommand[] = klass?.battleCommands ?? [];
   if (overrideIds && overrideIds.length > 0) {
     source = overrideIds.map((id) => {
@@ -46,6 +52,7 @@ export function battleCommandsForActor(
         kind: fromClass?.kind ?? global?.kind ?? "attack",
         skillSubsetName: fromClass?.skillSubsetName ?? global?.skillSubsetName,
         skillId: fromClass?.skillId ?? global?.skillId,
+        commonEventId: fromClass?.commonEventId ?? global?.commonEventId,
       } satisfies ClassBattleCommand;
     });
   }
@@ -67,12 +74,16 @@ function resolveClassBattleCommand(project: Project, command: ClassBattleCommand
   const global = project.database.battleCommands?.find((record) => record.id === command.id);
   const kind = runtimeKind(command.kind, global?.kind);
   if (!kind) return undefined;
+  const commonEventId = command.commonEventId ?? global?.commonEventId;
+  // 공통 이벤트가 없거나 지워진 「이벤트 연결」 명령은 눌러도 아무 일이 없으므로 메뉴에서 뺀다.
+  if (kind === "commonEvent" && !(commonEventId && project.commonEvents.some((entry) => entry.id === commonEventId))) return undefined;
   return {
     id: command.id,
     name: command.name || global?.name || fallbackCommandName(project, kind),
     kind,
     skillSubsetName: command.skillSubsetName ?? global?.skillSubsetName,
     skillId: command.skillId ?? global?.skillId,
+    ...(kind === "commonEvent" ? { commonEventId } : {}),
   };
 }
 
@@ -99,6 +110,8 @@ function normalizeKind(kind: ClassBattleCommandKind): RuntimeBattleCommandKind |
       return "defend";
     case "event":
       return "switch";
+    case "commonEvent":
+      return "commonEvent";
   }
 }
 
@@ -126,6 +139,8 @@ function fallbackCommandName(project: Project, kind: RuntimeBattleCommandKind): 
       return terms.escape;
     case "switch":
       return "교체";
+    case "commonEvent":
+      return "특수";
   }
 }
 

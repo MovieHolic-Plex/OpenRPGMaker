@@ -1,6 +1,6 @@
 import { equipmentSlots } from "@/project/equipmentSlots";
 import { equipmentSlotAccepts } from "@/project/equipmentRules";
-import { DEFAULT_ELEMENT_RATE_LABELS, stateRatePercentage } from "@/project/actorModel";
+import { ACTOR_BATTLE_COMMAND_MAX, DEFAULT_ELEMENT_RATE_LABELS, stateRatePercentage } from "@/project/actorModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import {
   actorPanel,
@@ -39,8 +39,102 @@ export function battlePanel(actor: ActorRecord, rerender: () => void, refreshBui
       updateDatabaseRecord("actors", actor.id, { unarmedAnimationId: emptyToUndefined(unarmedAnimationId) })
     ),
     optionsPanel(actor),
+    battleCommandsPanel(actor, rerender),
     learnedSkillsPanel(actor, rerender),
   ]);
+}
+
+/** 배우가 고를 수 있는 명령 — 전역 명령 목록 + 이 배우 직업의 명령(같은 id 는 한 번). */
+function actorCommandChoices(actor: ActorRecord): readonly { readonly id: string; readonly name: string }[] {
+  const project = store.getCurrent();
+  const klass = project.database.classes.find((record) => record.id === actor.classId);
+  const choices: { id: string; name: string }[] = [];
+  for (const command of [...(project.database.battleCommands ?? []), ...(klass?.battleCommands ?? [])]) {
+    if (choices.some((choice) => choice.id === command.id)) continue;
+    choices.push({ id: command.id, name: command.name || command.id });
+  }
+  return choices;
+}
+
+/**
+ * RM2003 의 「배우별 전투 명령」. 비우면 직업 명령을 그대로 쓰고, 켜면 이 배우만 다른 메뉴를 갖는다.
+ * 우선순위는 전투 중 이벤트로 바꾼 명령 > 이 목록 > 직업 명령(battleCommandsForActor).
+ */
+function battleCommandsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
+  const choices = actorCommandChoices(actor);
+  const klass = store.getCurrent().database.classes.find((record) => record.id === actor.classId);
+  const ids = actor.battleCommandIds ?? [];
+  const custom = ids.length > 0;
+  const write = (next: readonly string[]): void => {
+    updateDatabaseRecord("actors", actor.id, { battleCommandIds: next.length > 0 ? [...next] : undefined });
+    rerender();
+  };
+  const classNames = (klass?.battleCommands ?? []).map((command) => command.name || command.id).join(" · ");
+  const rows = ids.map((id, index) => {
+    const options = choices.some((choice) => choice.id === id) ? choices : [...choices, { id, name: `${id} (없음)` }];
+    return el("div", {
+      class: "actor-skill-row actor-command-row",
+      dataset: { testid: `db-actor-command-row-${index}` },
+      children: [
+        selectInput(`db-picker-actor-command-${index}`, id, options, (nextId) =>
+          write((currentActor(actor).battleCommandIds ?? []).map((entry, entryIndex) => (entryIndex === index ? nextId : entry)))
+        ),
+        el("button", {
+          class: "btn small",
+          text: "↑",
+          attrs: { type: "button", "aria-label": "한 칸 위로", ...(index === 0 ? { disabled: "" } : {}) },
+          dataset: { testid: `db-actor-command-up-${index}` },
+          on: { click: () => write(moveEntry(currentActor(actor).battleCommandIds ?? [], index, -1)) },
+        }),
+        el("button", {
+          class: "btn small",
+          text: "↓",
+          attrs: { type: "button", "aria-label": "한 칸 아래로", ...(index === ids.length - 1 ? { disabled: "" } : {}) },
+          dataset: { testid: `db-actor-command-down-${index}` },
+          on: { click: () => write(moveEntry(currentActor(actor).battleCommandIds ?? [], index, 1)) },
+        }),
+        el("button", {
+          class: "btn small",
+          text: "삭제",
+          attrs: { type: "button" },
+          dataset: { testid: `db-actor-command-remove-${index}` },
+          on: { click: () => write((currentActor(actor).battleCommandIds ?? []).filter((_, entryIndex) => entryIndex !== index)) },
+        }),
+      ],
+    });
+  });
+  const firstUnused = choices.find((choice) => !ids.includes(choice.id))?.id;
+  return actorPanel("전투 명령", "actor-battle-commands", [
+    checkboxControl("이 배우만 다른 명령 쓰기", "db-field-actor-custom-commands", custom, (enabled) => {
+      // 켜는 순간 직업 명령을 그대로 옮겨 와서, 빈 메뉴가 되거나 처음부터 다시 고르지 않게 한다.
+      if (enabled) write((klass?.battleCommands ?? []).map((command) => command.id).slice(0, ACTOR_BATTLE_COMMAND_MAX));
+      else write([]);
+    }),
+    custom
+      ? el("div", { class: "actor-skill-list", dataset: { testid: "db-actor-command-list" }, children: rows })
+      : el("p", {
+          class: "actor-rate-manual-note",
+          dataset: { testid: "db-actor-command-class-note" },
+          text: classNames ? `직업 명령을 씁니다: ${classNames}` : "직업 명령을 씁니다.",
+        }),
+    ...(custom
+      ? [el("button", {
+          class: "btn small",
+          text: `명령 추가 (${ids.length}/${ACTOR_BATTLE_COMMAND_MAX})`,
+          attrs: { type: "button", ...(!firstUnused || ids.length >= ACTOR_BATTLE_COMMAND_MAX ? { disabled: "" } : {}) },
+          dataset: { testid: "db-add-actor-command" },
+          on: { click: () => { if (firstUnused) write([...(currentActor(actor).battleCommandIds ?? []), firstUnused]); } },
+        })]
+      : []),
+  ]);
+}
+
+function moveEntry(ids: readonly string[], index: number, delta: -1 | 1): string[] {
+  const target = index + delta;
+  if (target < 0 || target >= ids.length) return [...ids];
+  const next = [...ids];
+  [next[index], next[target]] = [next[target]!, next[index]!];
+  return next;
 }
 
 export function ratesPanel(actor: ActorRecord): HTMLElement {

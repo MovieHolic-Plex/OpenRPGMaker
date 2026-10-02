@@ -85,7 +85,9 @@ export type ActorCommandDraft =
   | TargetedActorCommand
   | { readonly kind: "defend" }
   | { readonly kind: "escape" }
-  | { readonly kind: "switch"; readonly targetActorId: ActorId };
+  | { readonly kind: "switch"; readonly targetActorId: ActorId }
+  /** RM2003 「이벤트 연결」 명령 — 고르면 행동 차례에 공통 이벤트를 실행한다(2026-10-02). */
+  | { readonly kind: "commonEvent"; readonly commonEventId: string };
 
 export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
@@ -95,7 +97,8 @@ export type ActorCommand =
   | { readonly kind: "capture"; readonly captureItemId: ItemId; readonly targetEnemyId: string }
   | { readonly kind: "defend" }
   | { readonly kind: "escape" }
-  | { readonly kind: "switch"; readonly targetActorId: ActorId };
+  | { readonly kind: "switch"; readonly targetActorId: ActorId }
+  | { readonly kind: "commonEvent"; readonly commonEventId: string };
 
 export interface BattleTargetSelectionSnapshot {
   readonly command: TargetedActorCommand;

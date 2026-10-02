@@ -64,7 +64,7 @@ import type {
 import { el } from "@/util/dom";
 
 const BATTLE_COMMAND_KINDS: readonly ClassBattleCommandKind[] = [
-  "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event",
+  "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event", "commonEvent",
 ];
 /** 종류별 한 줄 설명 — 예전의 아무 동작 없는 알약 줄(P9)을 대체한다. */
 const BATTLE_COMMAND_KIND_HELP: readonly { readonly label: string; readonly help: string }[] = [
@@ -78,6 +78,7 @@ const BATTLE_COMMAND_KIND_HELP: readonly { readonly label: string; readonly help
   { label: "도망", help: "전투 이탈 시도" },
   { label: "교체", help: "대기 중인 동료와 자리 교대" },
   { label: "교체(구형)", help: "교체와 같은 효과 — 새로 쓸 때는 교체를 고르세요" },
+  { label: "공통 이벤트 실행", help: "고른 공통 이벤트를 전투 중에 실행 — 메시지·선택지·변수 조작을 그대로 쓴다" },
 ];
 
 let terrainQuery = "";
@@ -609,9 +610,38 @@ function battleCommandCard(
         },
       }),
       battleCommandSkillRow(command, index),
+      ...(command.kind === "commonEvent" ? [battleCommandCommonEventRow(command, index)] : []),
     ],
   });
   return card;
+}
+
+function battleCommandCommonEventRow(command: DatabaseBattleCommandRecord, index: number): HTMLElement {
+  const events = store.getCurrent().commonEvents;
+  const current = command.commonEventId ?? "";
+  const options = [
+    { id: "", name: "(없음)" },
+    ...events.map((event) => ({ id: event.id, name: event.name || event.id })),
+  ];
+  if (current && !events.some((event) => event.id === current)) {
+    options.push({ id: current, name: `${current} (없음)` });
+  }
+  const select = el("select", {
+    class: "db-battle-command-skill-select",
+    dataset: { testid: `db-picker-battle-command-common-event-${index}` },
+    attrs: { "aria-label": "실행할 공통 이벤트" },
+    children: options.map((option) => el("option", { attrs: { value: option.id }, text: option.name })),
+  }) as HTMLSelectElement;
+  select.value = current;
+  select.addEventListener("focus", () => selectUtilityRecord("battleCommands", index));
+  select.addEventListener("change", () => {
+    recordProjectSnapshot();
+    writeBattleCommand(index, (target) => { target.commonEventId = emptyToUndefined(select.value); });
+  });
+  return el("label", {
+    class: "db-readonly-row",
+    children: [el("span", { text: "공통 이벤트" }), select],
+  });
 }
 
 function commandActionButton(

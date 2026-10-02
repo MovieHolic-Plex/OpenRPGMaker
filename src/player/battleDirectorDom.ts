@@ -760,6 +760,7 @@ function commandTarget(
     case "defend":
     case "escape":
     case "switch":
+    case "commonEvent":
       return undefined;
   }
 }
@@ -788,6 +789,11 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
       return `${subject} 방어 태세를 취했다.`;
     case "escape":
       return `${subject} 도망치려 한다…`;
+    case "commonEvent": {
+      // 「이벤트 연결」 명령 — 공통 이벤트 이름을 부른다. 그 안의 문장은 이벤트가 따로 띄운다.
+      const name = store.getCurrent().commonEvents.find((entry) => entry.id === command.commonEventId)?.name;
+      return name ? `${actorName}의 ${name}!` : `${actorName}의 행동!`;
+    }
     case "switch":
       return `${subject} 교체를 지시했다.`;
   }
