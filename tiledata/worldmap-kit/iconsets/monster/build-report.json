@@ -1,0 +1,272 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "대도시",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "라디오 타워·고층 백화점·체육관·회복소·광장 분수가 모인 큰 도시",
+   "fill": "92x85",
+   "side_px": 209,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "체육관 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "가운데 큰 체육관(몬스터 볼 문장) + 둘레 집 넷 + 흰 울타리",
+   "fill": "61x43",
+   "side_px": 34,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "항구 도시",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "창고·회복소·상점 + 부두의 여객선 + 방파제 끝 등대",
+   "fill": "78x41",
+   "side_px": 93,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "리그 본부",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "흰 기둥 늘어선 석조 본관·파란 지붕·금 문장 + 앞 큰 계단",
+   "fill": "45x39",
+   "side_px": 66,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "회복소 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "회복소(빨간 지붕·십자)·상점(파란 지붕)·집 둘·나무",
+   "fill": "47x26",
+   "side_px": 12,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "농장 마을",
+   "id": "large_town_b",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "붉은 헛간·풍차·살림집 + 목장 울타리·건초",
+   "fill": "47x35",
+   "side_px": 82,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "시작 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "연구소 하나와 빨강·파랑 지붕 집 둘",
+   "fill": "32x22",
+   "side_px": 0,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "숲속 오두막 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "통나무 오두막 둘 + 둘레 침엽수",
+   "fill": "31x24",
+   "side_px": 82,
+   "col": 11,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "캠핑장",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "파랑·주황 천막 둘 + 안내 간판 + 모닥불",
+   "fill": "31x22",
+   "side_px": 10,
+   "col": 13,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "등대",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "바위 위 적백 줄무늬 등대",
+   "fill": "16x30",
+   "side_px": 46,
+   "col": 23,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "방울탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "오층 목탑 + 꼭대기 금 방울",
+   "fill": "32x54",
+   "side_px": 8,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "달맞이산 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "둥근 바위산 + 아치 입구 + 사다리",
+   "fill": "31x30",
+   "side_px": 165,
+   "col": 15,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "알프 유적",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "계단식 돌 기단 + 기호 새긴 석판 셋",
+   "fill": "29x28",
+   "side_px": 0,
+   "col": 17,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "버려진 발전소",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "녹슨 톱날 지붕 공장·굴뚝 둘·탱크·송전 철탑",
+   "fill": "62x43",
+   "side_px": 162,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "전설 사당",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "둥근 돌 단 + 제단(파란 구슬) + 기둥 원 + 뒤 신목",
+   "fill": "42x47",
+   "side_px": 284,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "열매 거목",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "굵은 줄기 + 수관 덩이 + 빨강·파랑 열매",
+   "fill": "46x47",
+   "side_px": 285,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "바위 원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "둥근 큰 돌 넷 + 가운데 납작돌",
+   "fill": "30x24",
+   "side_px": 162,
+   "col": 19,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "불꽃섬 화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "용암 화구·줄기 + 연기 + 기슭 연구소",
+   "fill": "30x30",
+   "side_px": 34,
+   "col": 21,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "하늘 기둥 섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "구름 위 바위섬 + 층진 돌탑",
+   "fill": "73x62",
+   "side_px": 194,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 8
+}
