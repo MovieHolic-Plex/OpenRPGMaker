@@ -353,3 +353,14 @@ export function resolveSkinId(legacy: string | undefined): BattleSkinId {
   if (alias) return alias;
   return VALID_IDS.has(legacy as BattleSkinId) ? (legacy as BattleSkinId) : DEFAULT_BATTLE_SKIN_ID;
 }
+
+/**
+ * 전투 화면 꾸미기(system.battleLook)는 도트 측면 전투(motionStyle "retro")에만 그려진다.
+ * 꾸밈을 고르는데 지금 스킨이 정면이면 갈아탈 측면 스킨을 준다 — 유리 창 정면(rm2000, 기본)은 같은 유리 창의 측면(rm2003),
+ * 나머지 정면 스킨은 기본 측면(retro2003). 이미 측면이거나 몬스터 대치(pokemon, 규칙이 다르다)면 undefined.
+ */
+export function sideSkinForBattleLook(uiStyle: string | undefined): BattleSkinId | undefined {
+  const id = resolveSkinId(uiStyle);
+  if (id === "pokemon" || BATTLE_SKINS[id].motionStyle === "retro") return undefined;
+  return id === "rm2000" ? "rm2003" : "retro2003";
+}
