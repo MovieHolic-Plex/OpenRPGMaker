@@ -64,6 +64,11 @@ export XDG_RUNTIME_DIR=/run/user/$(id -u) DBUS_SESSION_BUS_ADDRESS=unix:path=/ru
 systemd-run --user --unit=charset-actor-harness -p Restart=on-failure /usr/bin/python3 <체크아웃>/src/harnesses/charset-actor/harness.py serve --port 18314
 ```
 
+## 지시문 쓰는 법 — 실루엣은 뼈대 그대로 (2026-10-02 사용자: 「무기나 모자 추가는 별로」)
+판정 34개를 실루엣 변화량과 맞춰 보면 받은 11개 중앙값 47px, 버린 23개 중 19개가 140px 초과(무기·모자·날개·지팡이를 더한 것).
+그래서 지시문은 **같은 실루엣의 다른 사람** — 머리색·옷 색 구성·안쪽 무늬·피부 톤만 바꾼다. 소지품·모자·두건·날개를 더하라고 쓰지 않는다.
+`worker.md` 규칙 5, 기계 검수 `silhouette_max`(12프레임 합 150px), 생성 얼굴도 모자·장신구 추가 금지(`PROMPT_FREE`). 예: briefs 의 `c-*`.
+
 ## 뼈대 칩셋 — Actor1~4 · People1~5 (2026-10-02 「actor1 말고 다른 것들도」)
 지시문 `base` 는 `"People3:7"` 처럼 칩셋:번호(0부터, 옛 정수는 Actor1). 짝 얼굴은 정본 `src/assets/sharedCharacterGraphics.json` 에서
 RTP 얼굴(`easyrpg-faceset-*`)이 짝인 경우만 쓴다 — 72명 중 59명. 짝 얼굴이 생성 그림(`generated-faceset-*`)인 13명은 얼굴 단계를 건너뛴다.

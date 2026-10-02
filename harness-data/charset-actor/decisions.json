@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T11:46:47+00:00",
+ "updated": "2026-10-02T12:40:40+00:00",
  "decisions": [
   {
    "id": "20261002-1142-sonnet-batch/f-archer__sonnet-r1",
@@ -144,6 +144,134 @@
    "note": "",
    "client": "web",
    "at": "2026-10-02T11:46:47+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/a2-fortune__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:39:09+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/a2-desert-merc__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:39:11+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/a3-assassin__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:39:20+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/a3-pirate__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:39:27+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/a4-florist__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:39:40+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/a4-ice-witch__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:39:45+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p1-baker-girl__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:39:49+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p1-old-smith__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:39:52+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p2-detective__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:40:00+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p2-phoenix__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:40:07+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p3-black-knight__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:40:11+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p3-east-emperor__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:40:16+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p4-fisher__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:40:21+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p4-spice-seller__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:40:24+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p5-herb-granny__sonnet-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:40:28+00:00"
+  },
+  {
+   "id": "20261002-2051-rtp/p5-nurse-nun__sonnet-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-02T12:40:40+00:00"
   }
  ]
 }

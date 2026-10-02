@@ -146,8 +146,10 @@ def generate_lock(ref, brief, timeout=1200):
 PROMPT_FREE = """Redraw this RPG Maker 2000 dialogue face portrait (48x48, enlarged) as a fully finished NEW character: {brief}
 Style: the same 16-bit SNES / RPG Maker 2000 anime portrait style, soft cel shading, clean line art.
 
-You may change freely: hair style and colour, face shape, eyes, eyebrows, nose, mouth, expression, apparent age, skin tone,
-headwear, accessories, clothing, background colour. Make it look like a different person who matches the description.
+You may change freely: hair colour, face shape, eyes, eyebrows, nose, mouth, expression, apparent age, skin tone,
+clothing colours and patterns, background colour. Make it look like a different person who matches the description.
+Do NOT add headwear, hats, hoods, helmets, weapons, jewellery or other accessories that the reference does not already have,
+and keep the hair silhouette (length and outline) as in the reference.
 
 HARD LOCK — the camera and the head pose must stay exactly as in the reference:
 - the same direction the head is turned (the same side of the face toward the viewer) and the same amount of turn,

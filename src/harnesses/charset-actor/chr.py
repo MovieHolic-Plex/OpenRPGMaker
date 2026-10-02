@@ -181,7 +181,10 @@ def from_actor(png, index):
 LIMITS = dict(max_colors=48, area_min=120, area_max=480, bbox_w_max=24, bbox_h_max=31, top_jitter_max=2,
               walk_motion_min=50, leg_diff_min=6, dark_luma=70,
               # 뼈대 대비
-              area_vs_base=(0.7, 1.5), dark_edge_drop=0.15, walk_motion_vs_base=0.6, changed_min=0.20)
+              area_vs_base=(0.7, 1.5), dark_edge_drop=0.15, walk_motion_vs_base=0.6, changed_min=0.20,
+              # 2026-10-02 사용자 판정 34개: 받은 11개 중앙값 47px(8개 ≤86), 버린 23개 중 19개 >140(무기·모자·날개·지팡이를 더한 것).
+              # 「무기나 모자 추가는 별로」 → 실루엣은 뼈대 그대로가 원칙. 12프레임 합 150px 초과는 불합격.
+              silhouette_max=150)
 
 
 def _lum(c):
@@ -298,8 +301,8 @@ def gate(pal, frames, base=None, check_changed=True):
         m['silhouette_changed_px'] = sil
         if chg / max(tot, 1) < L['changed_min']:
             fails.append(f'뼈대 원본과 {chg / max(tot, 1):.0%} 만 다르다 — 새 캐릭터가 아니라 복사에 가깝다(≥{L["changed_min"]:.0%})')
-        if sil == 0:
-            warns.append('실루엣이 원본과 한 픽셀도 다르지 않다 — 색만 바꾼 것')
+        if sil > L['silhouette_max']:
+            fails.append(f'실루엣이 뼈대와 {sil}px 다르다(12프레임 합, ≤{L["silhouette_max"]}) — 소지품·모자·날개를 더하지 말고 뼈대 실루엣 안에서 바꿔라')
     return dict(ok=not fails, fails=fails, warns=warns, metrics=m)
 
 
