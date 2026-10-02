@@ -40,9 +40,11 @@ jobs:
 
       - run: npm ci
 
+      # 2026-10-02 v0.84 타입체크가 old space 6136MB 에서 heap OOM(exit 134)으로 죽었다.
+      # 잡 cgroup MemoryMax 는 8GB 다. 7GB 만 연다. 그 이상이면 cgroup 이 프로세스를 죽인다.
       - name: 타입체크 (src 만)
         env:
-          NODE_OPTIONS: --max-old-space-size=6144
+          NODE_OPTIONS: --max-old-space-size=7168
         run: npm run typecheck:app
 
       # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데
