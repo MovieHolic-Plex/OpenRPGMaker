@@ -1,7 +1,7 @@
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 
-// Field sprites must use a real catalog entry. The general resource resolver also
-// guesses monster art from unknown names, which would hide a broken authored ID.
+// Field sprites must use a registered catalog entry. Native enemy portraits are
+// single idle cells; the complete pose grid is reserved for battle animation.
 const generatedMonsterIds = new Set(builtinGeneratedResourceIds().filter((id) => id.startsWith("generated-enemy-")));
 
 export function isGeneratedMonsterSprite(resourceId: string): boolean {

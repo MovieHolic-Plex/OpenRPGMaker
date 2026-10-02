@@ -1,0 +1,240 @@
+[
+  {
+    "resourceId": "generated-enemy-crab-01",
+    "path": "assets/generated/pixel-enemies/crab-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-spider-01",
+    "path": "assets/generated/pixel-enemies/spider-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-snake-01",
+    "path": "assets/generated/pixel-enemies/snake-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-scorpion-01",
+    "path": "assets/generated/pixel-enemies/scorpion-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-wolf-01",
+    "path": "assets/generated/pixel-enemies/wolf-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-centipede-01",
+    "path": "assets/generated/pixel-enemies/centipede-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-horse-01",
+    "path": "assets/generated/pixel-enemies/horse-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-unicorn-01",
+    "path": "assets/generated/pixel-enemies/unicorn-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-cat-01",
+    "path": "assets/generated/pixel-enemies/cat-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-cockatrice-01",
+    "path": "assets/generated/pixel-enemies/cockatrice-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-parasite-01",
+    "path": "assets/generated/pixel-enemies/parasite-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-mantis-01",
+    "path": "assets/generated/pixel-enemies/mantis-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-fish-01",
+    "path": "assets/generated/pixel-enemies/fish-01.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-bat-cave",
+    "path": "assets/generated/pixel-enemies/bat-cave.png",
+    "cell": 64,
+    "motion": "swoop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-spider-widow",
+    "path": "assets/generated/pixel-enemies/spider-widow.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-beetle-horn",
+    "path": "assets/generated/pixel-enemies/beetle-horn.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-centipede-fire",
+    "path": "assets/generated/pixel-enemies/centipede-fire.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-moth-dust",
+    "path": "assets/generated/pixel-enemies/moth-dust.png",
+    "cell": 64,
+    "motion": "swoop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-worm-sand",
+    "path": "assets/generated/pixel-enemies/worm-sand.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-ant-soldier",
+    "path": "assets/generated/pixel-enemies/ant-soldier.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-wolf-dire",
+    "path": "assets/generated/pixel-enemies/wolf-dire.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-tiger-saber",
+    "path": "assets/generated/pixel-enemies/tiger-saber.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-rat-giant",
+    "path": "assets/generated/pixel-enemies/rat-giant.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-bird-hawk",
+    "path": "assets/generated/pixel-enemies/bird-hawk.png",
+    "cell": 64,
+    "motion": "swoop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-cat-shadow",
+    "path": "assets/generated/pixel-enemies/cat-shadow.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-goat-mountain",
+    "path": "assets/generated/pixel-enemies/goat-mountain.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-ape-stone",
+    "path": "assets/generated/pixel-enemies/ape-stone.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-deer-forest",
+    "path": "assets/generated/pixel-enemies/deer-forest.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-fish-piranha",
+    "path": "assets/generated/pixel-enemies/fish-piranha.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-squid-deep",
+    "path": "assets/generated/pixel-enemies/squid-deep.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-shark-land",
+    "path": "assets/generated/pixel-enemies/shark-land.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-eel-electric",
+    "path": "assets/generated/pixel-enemies/eel-electric.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-leaf-fox",
+    "path": "assets/generated/pixel-enemies/leaf-fox.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-fire-pup",
+    "path": "assets/generated/pixel-enemies/fire-pup.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  }
+]

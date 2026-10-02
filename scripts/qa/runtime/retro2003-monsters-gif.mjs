@@ -1,5 +1,5 @@
 // node scripts/qa/runtime/retro2003-monsters-gif.mjs [--out DIR] [--monsters slime,bat-vampire] [--fps 12] [--width 520]
-// 도트 적 40종(기존 10 + 계약 src/assets/retroMonsterPlan.ts 30)을 한 종씩 트룹으로 세워 적의 통상 공격 한 번을 녹화하고
+// pixelEnemySheets.ts의 도트 적을 한 종씩 트룹으로 세워 적의 통상 공격 한 번을 녹화하고
 // monster-<slug>.gif 로 자른다. 출하 player.html 경로(내보내기 shim)·키보드 입력만 쓰고, 정본은 건드리지 않는다.
 // 녹화 사본만 고친다: 전투 이벤트의 트룹을 종마다 바꿔 끼우고, 적은 통상 공격만·민첩 999(먼저 행동), 아군은 방어로 차례를 넘긴다.
 // 시트 PNG 가 아직 없는 종은 건너뛰고 SUMMARY.md 에 적는다(그림 머지 뒤 감독자가 다시 돌린다).
