@@ -1155,12 +1155,20 @@ def render_space(ctx, seed=11, road_px=None):
     for y, x in zip(*np.nonzero(rockcell)):
         draw_asteroids(img, int(x), int(y))
     # 아이콘 받침: 발자국 안 성운을 공허 쪽으로 눌러 아이콘 윤곽이 묻히지 않게
-    # 네모가 보이지 않게 흐린 밀도로 2단 디더
-    occ = ctx.occupied[np.clip(yy // TS, 0, ctx.H - 1), np.clip(xx // TS, 0, ctx.W - 1)].astype(np.float32)
-    a = np.clip(_boxblur(_boxblur(occ, 5), 5) * 1.5 - .15, 0, 1)
+    # 받침은 발자국 네모가 아니라 가운데 둥근 어둠(타원, 가장자리로 갈수록 옅게 2단 디더) — 네모 받침이 1배에서 구멍처럼 보였다(QA 3차)
+    a = np.zeros((H, W), np.float32)
+    sites = [(p['x'], p['y'], p['w'], p['h']) for p in ctx.places] + [ctx.sky]
+    for (px, py, pw, ph) in sites:
+        cxp, cyp = (px + pw / 2) * TS, (py + ph / 2) * TS
+        rx, ry = pw * TS * .62, ph * TS * .62
+        y0, y1 = max(0, int(cyp - ry)), min(H, int(cyp + ry) + 1)
+        x0, x1 = max(0, int(cxp - rx)), min(W, int(cxp + rx) + 1)
+        gy, gx = np.mgrid[y0:y1, x0:x1]
+        r = np.hypot((gx - cxp) / rx, (gy - cyp) / ry)
+        a[y0:y1, x0:x1] = np.maximum(a[y0:y1, x0:x1], np.clip((1 - r) * 1.6, 0, 1))
     Dd = bayer(H, W)
-    for k, (thr, mul) in enumerate(((.25, .7), (.6, .45))):
-        mm = (a > thr) & (Dd < np.clip((a - thr) / .25, 0, 1))
+    for thr, mul in ((.15, .72), (.55, .5)):
+        mm = (a > thr) & (Dd < np.clip((a - thr) / .3, 0, 1))
         img[mm] = (img[mm].astype(np.float32) * mul + SPACE['void'].astype(np.float32) * (1 - mul)).astype(np.uint8)
     draw_hyperlanes(img, ctx)
     return img
