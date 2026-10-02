@@ -88,7 +88,7 @@ def run(skip_a=False):
         bad = palette_report(cv.a)
         if bad: why.append(f'P {len(bad)}색 {sum(bad.values())}px 밖')
         if m:
-            if m['edge_ratio'] < CAL['edge_ratio']['p5']:
+            if m['edge_ratio'] < CAL['edge_ratio']['p5'] and not meta.get('seam_open'):
                 why.append(f"E 외곽선 밝기비 {m['edge_ratio']:.2f} < {CAL['edge_ratio']['p5']:.2f}")
             lim = CAL['thin_ratio']['p95'] * 2 + 0.02
             if m['thin_ratio'] > lim and not meta.get('thin_ok'):

@@ -1860,5 +1860,559 @@
    ],
    "note": "폭 1칸만 걷는다."
   }
+ },
+ "gn_l_giwa_6": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_l_brown_5g": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_l_teal_7": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_u_giwa_7": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_u_brown_8g": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_l_thatch_5": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_u_thatch_6": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_corner_l": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_corner_r": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_anchae_4": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)",
+  "seam_open": "키트 가운데 조각: 좌우가 이웃 조각(모서리)과 이음 없이 닿는 열린 이음선이라 캔버스 가장자리에 외곽선이 없다(아래 기단선만 가장자리로 잡혀 E 중앙값이 왜곡)"
+ },
+ "gn_jm_anchae_5": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)",
+  "seam_open": "키트 가운데 조각: 좌우가 이웃 조각(모서리)과 이음 없이 닿는 열린 이음선이라 캔버스 가장자리에 외곽선이 없다(아래 기단선만 가장자리로 잡혀 E 중앙값이 왜곡)"
+ },
+ "gn_jm_daemun_6": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_row_room_4": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_row_store_5": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_row_back_6": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_row_v_3": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_row_v_end": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_jm_row_v_cap": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_shop_smithy": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_shop_butcher": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_shop_cloth": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_shop_armory": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_g2_nugak_5": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_g2_inn_6": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_g3_nugak_4t": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_thatch_a": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_thatch_b": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_thatch_c": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_thatch_d": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
+ },
+ "gn_mud_h0": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mud_h1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mud_h2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mud_v": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mud_v1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mud_c_nw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mud_c_ne": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mud_c_sw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mud_c_se": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_h0": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_h1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_h2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_v": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_v1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_c_nw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_c_ne": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_c_sw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_mudg_c_se": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_h0": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_h1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_h2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_v": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_v1": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_c_nw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_c_ne": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_c_sw": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_stone_c_se": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "hedge"
+  ]
+ },
+ "gn_sarip_mud": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "gungnae_houses.sarip_gate/samun(blocks 조립 + wall_pier)"
+ },
+ "gn_sarip_stone": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "gungnae_houses.sarip_gate/samun(blocks 조립 + wall_pier)"
+ },
+ "gn_samun_stone": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "gungnae_houses.sarip_gate/samun(blocks 조립 + wall_pier)"
+ },
+ "gn_samun_mud": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "gungnae_houses.sarip_gate/samun(blocks 조립 + wall_pier)"
+ },
+ "gn_g3_inn_7": {
+  "cls": "built",
+  "sym": false,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "gungnae_houses (blocks.house 칸 조립: house_into/hall_into)"
  }
 }

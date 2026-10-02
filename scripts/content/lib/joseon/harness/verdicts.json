@@ -1486,5 +1486,493 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
+ },
+ "gn_l_giwa_6": {
+  "hash": "7b8e49eaf14a",
+  "status": "note",
+  "line": "ㄱ자: 몸채 앞사면에서 시작한 날개 맞배 지붕(세로 기왓골·∧ 골·풍판)과 박공 벽이 앞에 서서 사선 뒤 빈칸 없음, 지붕 윗면 비율은 버들항 inn 과 같은 밝은 뒷사면/어두운 앞사면 문법. 차이: 날개 지붕 띠가 길어 탑처럼 높아 보이고 치미(맞배)는 기존 블록 그대로.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_l_brown_5g": {
+  "hash": "efe31e83ff4b",
+  "status": "note",
+  "line": "ㄱ자: 몸채 앞사면에서 시작한 날개 맞배 지붕(세로 기왓골·∧ 골·풍판)과 박공 벽이 앞에 서서 사선 뒤 빈칸 없음, 지붕 윗면 비율은 버들항 inn 과 같은 밝은 뒷사면/어두운 앞사면 문법. 차이: 날개 지붕 띠가 길어 탑처럼 높아 보이고 치미(맞배)는 기존 블록 그대로.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_l_teal_7": {
+  "hash": "d5ab6fe5ae4c",
+  "status": "note",
+  "line": "ㄱ자: 몸채 앞사면에서 시작한 날개 맞배 지붕(세로 기왓골·∧ 골·풍판)과 박공 벽이 앞에 서서 사선 뒤 빈칸 없음, 지붕 윗면 비율은 버들항 inn 과 같은 밝은 뒷사면/어두운 앞사면 문법. 차이: 날개 지붕 띠가 길어 탑처럼 높아 보이고 치미(맞배)는 기존 블록 그대로.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_u_giwa_7": {
+  "hash": "731ed2f3c586",
+  "status": "note",
+  "line": "ㄷ자: 좌우 날개 길이(2/3칸)가 달라 대칭 복제로 안 보임, 두 박공이 앞에 서고 가운데 몸채 벽·문이 마당 쪽으로 열림. 차이: 날개 사면이 뒷벽 지붕과 같은 색이라 골 선만으로 구분된다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_u_brown_8g": {
+  "hash": "b4e87f9e4ad3",
+  "status": "note",
+  "line": "ㄷ자: 좌우 날개 길이(2/3칸)가 달라 대칭 복제로 안 보임, 두 박공이 앞에 서고 가운데 몸채 벽·문이 마당 쪽으로 열림. 차이: 날개 사면이 뒷벽 지붕과 같은 색이라 골 선만으로 구분된다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_l_thatch_5": {
+  "hash": "cd0535c7461e",
+  "status": "note",
+  "line": "초가 ㄱ/ㄷ자: 몸채 방석 지붕 위에 둥근 맞배 날개 지붕(용마름 롤·짚 테두리·들쭉날쭉 처마)이 이어 붙고 박공이 앞에 선다. 차이: 날개 짚색이 몸채보다 약간 밝고 결이 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_u_thatch_6": {
+  "hash": "3a9e348a2552",
+  "status": "note",
+  "line": "초가 ㄱ/ㄷ자: 몸채 방석 지붕 위에 둥근 맞배 날개 지붕(용마름 롤·짚 테두리·들쭉날쭉 처마)이 이어 붙고 박공이 앞에 선다. 차이: 날개 짚색이 몸채보다 약간 밝고 결이 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_corner_l": {
+  "hash": "72db82f938ce",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_corner_r": {
+  "hash": "b2ee5f63bff6",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_anchae_4": {
+  "hash": "351a20cf9167",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_anchae_5": {
+  "hash": "d6b1e60eb4ec",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_daemun_6": {
+  "hash": "e64348dfb599",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_row_room_4": {
+  "hash": "ac893027c854",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_row_store_5": {
+  "hash": "9e8d23cc21ff",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_row_back_6": {
+  "hash": "277d76557403",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_row_v_3": {
+  "hash": "79a14dc79c35",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_row_v_end": {
+  "hash": "21e0c4f6614b",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_jm_row_v_cap": {
+  "hash": "4e0c1eec6a9a",
+  "status": "note",
+  "line": "주막 키트 조각: 칸 정렬이라 이어 붙이면 이음 없이 ㅁ자 한 조합(jumak_madang)이 된다. 지붕 문법은 버들항 tile 지붕(밝은 뒷사면/어두운 앞사면)과 같고, 세로 행랑은 정면에서 보이는 사면 띠+박공(옆벽은 투영상 안 보임). 차이: 기와 한 색이라 조각끼리 단조롭다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_shop_smithy": {
+  "hash": "31d524c79ba2",
+  "status": "note",
+  "line": "상점: 기와 몸채(앞면 전체 높이·윗면 지붕 짧게·왼쪽 위 빛) + 열린 앞칸 진열 + 벽 간판 + 앞 평상. 기준 inn/cafe 대비 앞면 디테일 밀도는 비슷, 진열은 작아 원경에서 색 덩이로만 읽힘.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_shop_butcher": {
+  "hash": "0a254b0787a0",
+  "status": "note",
+  "line": "상점: 기와 몸채(앞면 전체 높이·윗면 지붕 짧게·왼쪽 위 빛) + 열린 앞칸 진열 + 벽 간판 + 앞 평상. 기준 inn/cafe 대비 앞면 디테일 밀도는 비슷, 진열은 작아 원경에서 색 덩이로만 읽힘.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_shop_cloth": {
+  "hash": "1d6764f17906",
+  "status": "note",
+  "line": "상점: 기와 몸채(앞면 전체 높이·윗면 지붕 짧게·왼쪽 위 빛) + 열린 앞칸 진열 + 벽 간판 + 앞 평상. 기준 inn/cafe 대비 앞면 디테일 밀도는 비슷, 진열은 작아 원경에서 색 덩이로만 읽힘.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_shop_armory": {
+  "hash": "78e3946ae732",
+  "status": "note",
+  "line": "상점: 기와 몸채(앞면 전체 높이·윗면 지붕 짧게·왼쪽 위 빛) + 열린 앞칸 진열 + 벽 간판 + 앞 평상. 기준 inn/cafe 대비 앞면 디테일 밀도는 비슷, 진열은 작아 원경에서 색 덩이로만 읽힘.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_g2_nugak_5": {
+  "hash": "01c9375bb023",
+  "status": "note",
+  "line": "다층: 층마다 기와 부섭지붕이 앞사면을 보이고 벽 두 행씩 쌓임, 누각형 윗층은 단청 없는 목재 기둥. 차이: 부섭지붕이 양끝 풍판(맞배 .l/.r)이라 팔작 몸채 아래에선 모서리가 각져 보임.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_g2_inn_6": {
+  "hash": "2f2ef9f69a52",
+  "status": "note",
+  "line": "다층: 층마다 기와 부섭지붕이 앞사면을 보이고 벽 두 행씩 쌓임, 누각형 윗층은 단청 없는 목재 기둥. 차이: 부섭지붕이 양끝 풍판(맞배 .l/.r)이라 팔작 몸채 아래에선 모서리가 각져 보임.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_g3_nugak_4t": {
+  "hash": "76bb3900c935",
+  "status": "note",
+  "line": "다층: 층마다 기와 부섭지붕이 앞사면을 보이고 벽 두 행씩 쌓임, 누각형 윗층은 단청 없는 목재 기둥. 차이: 부섭지붕이 양끝 풍판(맞배 .l/.r)이라 팔작 몸채 아래에선 모서리가 각져 보임.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_g3_inn_7": {
+  "hash": "c0a7f2e69f7c",
+  "status": "note",
+  "line": "다층: 층마다 기와 부섭지붕이 앞사면을 보이고 벽 두 행씩 쌓임, 누각형 윗층은 단청 없는 목재 기둥. 차이: 부섭지붕이 양끝 풍판(맞배 .l/.r)이라 팔작 몸채 아래에선 모서리가 각져 보임.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_thatch_a": {
+  "hash": "fd462d379272",
+  "status": "note",
+  "line": "초가 4종: 방석 지붕/낮은 사선 새끼줄/맞배 뾰족+박공 테두리/헛간 딸림으로 실루엣이 확연히 다름. 차이: 지붕 윗면은 thatch3d 방석 그대로라 기준 초가 사진의 짚결보다 매끈함.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_thatch_b": {
+  "hash": "3bf5cf9731d3",
+  "status": "note",
+  "line": "초가 4종: 방석 지붕/낮은 사선 새끼줄/맞배 뾰족+박공 테두리/헛간 딸림으로 실루엣이 확연히 다름. 차이: 지붕 윗면은 thatch3d 방석 그대로라 기준 초가 사진의 짚결보다 매끈함.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_thatch_c": {
+  "hash": "75ab8c582fd3",
+  "status": "note",
+  "line": "초가 4종: 방석 지붕/낮은 사선 새끼줄/맞배 뾰족+박공 테두리/헛간 딸림으로 실루엣이 확연히 다름. 차이: 지붕 윗면은 thatch3d 방석 그대로라 기준 초가 사진의 짚결보다 매끈함.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_thatch_d": {
+  "hash": "dcbf155fb781",
+  "status": "note",
+  "line": "초가 4종: 방석 지붕/낮은 사선 새끼줄/맞배 뾰족+박공 테두리/헛간 딸림으로 실루엣이 확연히 다름. 차이: 지붕 윗면은 thatch3d 방석 그대로라 기준 초가 사진의 짚결보다 매끈함.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_h0": {
+  "hash": "85eddc9b6351",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_h1": {
+  "hash": "0868bc9fa58c",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_h2": {
+  "hash": "7443a1f138b2",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_v": {
+  "hash": "39f4994bd424",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_v1": {
+  "hash": "ac93cf612c6a",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_c_nw": {
+  "hash": "bbe93de3c43b",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_c_ne": {
+  "hash": "71bef30456d4",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_c_sw": {
+  "hash": "769c8ea6c74e",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mud_c_se": {
+  "hash": "663da483c3c7",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_h0": {
+  "hash": "6fd7af09cf16",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_h1": {
+  "hash": "54230e0fd1b2",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_h2": {
+  "hash": "d181069104e7",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_v": {
+  "hash": "622d0e985929",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_v1": {
+  "hash": "6fc93082305a",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_c_nw": {
+  "hash": "e3be4d47e31b",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_c_ne": {
+  "hash": "5c00d522ec1f",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_c_sw": {
+  "hash": "5c4b7bca8ce8",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_mudg_c_se": {
+  "hash": "4ca4382be297",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_h0": {
+  "hash": "bb52a851ea26",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_h1": {
+  "hash": "d9e1470706e8",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_h2": {
+  "hash": "5ead36ef4a74",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_v": {
+  "hash": "aea2b0c762d0",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_v1": {
+  "hash": "f15805752b17",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_c_nw": {
+  "hash": "17a65f4036ef",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_c_ne": {
+  "hash": "4db143c9c943",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_c_sw": {
+  "hash": "1e795e249436",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_stone_c_se": {
+  "hash": "28ba94dcfed2",
+  "status": "note",
+  "line": "구획 담 1칸: 덮개 윗면+앞 사면+앞면+기단선, 오른쪽 아래 그림자, 가로 변형 3종이 이음 없이 이어짐. 차이: 세로 담은 윗면 띠 + 옆면 3px 만 보임(정면 투영).",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_sarip_mud": {
+  "hash": "213676009ce5",
+  "status": "note",
+  "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_sarip_stone": {
+  "hash": "ed412f06cbd7",
+  "status": "note",
+  "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_samun_stone": {
+  "hash": "593fe6022b28",
+  "status": "note",
+  "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gn_samun_mud": {
+  "hash": "5a751a122cb1",
+  "status": "note",
+  "line": "문: 담 기둥 둘 사이 가지 엮은 문짝(사립문) / 낮은 맞배 기와 지붕+세 짝 판문(삼문). 차이: 삼문 지붕이 작은 팔작이라 윗면이 짧다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
  }
 }
