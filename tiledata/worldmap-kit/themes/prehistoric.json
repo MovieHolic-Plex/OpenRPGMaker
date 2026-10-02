@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "prehistoric",
+ "name": "선사·원시",
+ "iconset": "prehistoric",
+ "palette": "original",
+ "overlays": [],
+ "kind": "land"
+}

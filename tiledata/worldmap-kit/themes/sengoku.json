@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "sengoku",
+ "name": "일본 전국",
+ "iconset": "sengoku",
+ "palette": "original",
+ "overlays": [],
+ "kind": "land"
+}

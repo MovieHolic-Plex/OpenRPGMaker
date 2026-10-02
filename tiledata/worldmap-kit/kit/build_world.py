@@ -40,7 +40,7 @@ def signature(journey_id, roles_data):
     h.update((K.WM / 'journeys' / (journey_id + '.json')).read_bytes())
     h.update(json.dumps(roles_data['roles'], sort_keys=True).encode())
     for f in sorted(K.LIB.glob('*.py')):
-        if f.name.startswith(('kit_palette', 'kit_common')):      # 팔레트·입력 검사 코드는 지형에 영향이 없다
+        if f.name.startswith(('kit_palette', 'kit_common', 'kit_theme')):      # 팔레트·입력 검사·테마 덧칠 코드는 지형에 영향이 없다
             continue
         h.update(f.name.encode())
         h.update(f.read_bytes())
@@ -131,15 +131,30 @@ def icon_metrics(terrain, final, ic, sky_site):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--iconset', required=True)
-    ap.add_argument('--palette', required=True, help='palettes/<id> — 쉼표로 여러 개, all = palettes/ 전부')
+    ap.add_argument('--theme', help='themes/<id> — 아이콘 세트·팔레트·지형 덧칠(포장도로·철길·시가지·그을음·우주)을 한 번에 고른다')
+    ap.add_argument('--iconset', help='테마가 없으면 필수')
+    ap.add_argument('--palette', help='palettes/<id> — 쉼표로 여러 개, all = palettes/ 전부. 테마가 없으면 필수')
     ap.add_argument('--journey', required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--tint-icons', type=float, default=None, help='아이콘 색을 팔레트 빛으로 옮기는 정도 0..1 (기본 0.25, 팔레트 icon_tint 가 있으면 그 값)')
     ap.add_argument('--cache', help='지형 캐시 폴더')
     ap.add_argument('--no-check', action='store_true', help='여정 도달성 검사를 건너뛴다')
     a = ap.parse_args()
+    theme = None
     try:
+        if a.theme:
+            import kit_theme as KT
+            tp = K.WM / 'themes' / (a.theme + '.json')
+            if not tp.exists():
+                raise K.KitError('themes/%s.json 이 없다 (있는 것: %s)' % (a.theme, ', '.join(sorted(p.stem for p in (K.WM / 'themes').glob('*.json')))))
+            try:
+                theme = KT.load_theme(tp)
+            except ValueError as e:
+                raise K.KitError(str(e))
+            a.iconset = a.iconset or theme['iconset']
+            a.palette = a.palette or theme['palette']
+        if not a.iconset or not a.palette:
+            raise K.KitError('--theme 이 없으면 --iconset 과 --palette 가 필요하다')
         roles, roles_data = K.load_roles()
         journey = K.load_journey(a.journey)
         iconset = K.IconSet(a.iconset)
@@ -169,18 +184,25 @@ def main():
     import kit_world as W
     ic = {k: tuple(v) for k, v in world['ic'].items()}
     sky_site = tuple(world['sky_site'])
-    report = dict(iconset=iconset.id, journey=journey['id'], terrain_seconds=t['seconds'], role_purity=t['purity'], palettes={})
+    report = dict(theme=theme['id'] if theme else None, iconset=iconset.id, journey=journey['id'], terrain_seconds=t['seconds'], role_purity=t['purity'], palettes={})
     files = {}
     for pal in palettes:
         tint = a.tint_icons if a.tint_icons is not None else pal.get('icon_tint', 0.25)
-        img, extra = KP.recolor_terrain(t['C'], t['ukeys'], t['role'], pal, t['G'])
+        if theme and theme['kind'] == 'space':
+            img, extra = KT.render_space(KT.Ctx(world)), {}
+            tint = 0.0
+        else:
+            img, extra = KP.recolor_terrain(t['C'], t['ukeys'], t['role'], pal, t['G'])
+            if theme:
+                road_px = t['role'][np.searchsorted(t['ukeys'], KP.key_of(t['C']))] == KP.GID['road']
+                img, extra['overlays'] = KT.apply_land(img, world, theme, road_px)
         final = W.paste_icons(img, ic, sky_site, iconset, assign, lambda arr: KP.tint_icon(arr, pal, tint, iconset.key, iconset.shadow_key))
-        fn = '%s-%s.png' % (iconset.id, pal['id'])
+        fn = ('%s-%s.png' % (theme['id'], pal['id'])) if theme else ('%s-%s.png' % (iconset.id, pal['id']))
         Image.fromarray(final).save(out / fn, optimize=True)
         files[pal['id']] = fn
         m = separation_metrics(img, t['C'], t['ukeys'], t['role'])
         im = icon_metrics(img, final, ic, sky_site)
-        report['palettes'][pal['id']] = dict(file=fn, icon_tint=tint, terrain_metrics=m, icon_metrics=im, levels=extra.get('levels'))
+        report['palettes'][pal['id']] = dict(file=fn, icon_tint=tint, terrain_metrics=m, icon_metrics=im, levels=extra.get('levels'), overlays=extra.get('overlays'))
         print('  %-9s -> %s (icon tint %.2f)  주요 지형 최소 쌍거리 %s %.3f · 최소 명암 단 %s %d' % (
             pal['id'], fn, tint, m['key_min_pair'][0], m['key_min_pair'][1], m['key_min_steps'][0], m['key_min_steps'][1]))
         print('            아이콘 구별(둘레와 다른 화소 비율): 최저 %s %.2f · 중앙 %.2f' % (im['min'][0], im['min'][1], im['median']))

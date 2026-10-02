@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "joseon",
+ "name": "조선",
+ "iconset": "joseon",
+ "palette": "original",
+ "overlays": [],
+ "kind": "land"
+}

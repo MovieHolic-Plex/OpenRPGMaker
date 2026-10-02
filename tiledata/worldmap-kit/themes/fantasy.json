@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "fantasy",
+ "name": "판타지 (기본)",
+ "iconset": "fantasy",
+ "palette": "original",
+ "overlays": [],
+ "kind": "land"
+}
