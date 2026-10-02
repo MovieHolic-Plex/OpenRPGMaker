@@ -1,0 +1,52 @@
+// 회복의 샘 B(같은 방 화풍): 달빛 못·성수반처럼 돌 테두리 윗면(밝음)+남쪽 돌 앞면(어두움)+물 표면, 왼쪽 위 빛, 가운데 파문과 하늘색 빛
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat O stone 0
+@mat P stone 1
+@mat Q stone 2
+@mat R stone 3
+@mat S stone 4
+@mat T stone 5
+@mat U stone 6
+@mat V water 1
+@mat W water 2
+@mat X water 3
+@mat Y water 4
+@mat Z water 5
+@mat j ice 4
+@mat k ice 5
+@mat l ice 6
+@mblock 0 0
+= 32.
+= 32.
+= 32.
+= 10. 12O 10.
+= 7. 3O 6U 6T 3O 7.
+= 5. 2O 6U 6T 6S 2O 5.
+= 4. 1O 5U 8T 9S 1O 4.
+= 3. 1O 3U 4T 10P 7S 1O 3.
+= 2. 1O 2U 3T 3P 10V 3P 5S 1O 2.
+= 2. 1O 2U 2T 1P 16W 1P 4S 1O 2.
+= 1. 1O 1U 3T 1P 18X 1P 4S 1O 1.
+= 1. 1O 1U 2T 1Q 2Y 3Z 15Y 1Q 3S 1O 1.
+= 1. 1O 1U 2T 1Q 7Y 6Z 7Y 1Q 3S 1O 1.
+= 1. 1O 1U 2T 1Q 5Y 2Z 6Y 2Z 5Y 1Q 3S 1O 1.
+= 1. 1O 1U 2T 1Q 4Y 1Z 3Y 4j 3Y 1Z 4Y 1Q 3S 1O 1.
+= 1. 1O 1U 2T 1Q 4Y 1Z 2Y 1j 1k 2l 1k 1j 2Y 1Z 4Y 1Q 3S 1O 1.
+= 1. 1O 3T 1Q 4Y 1Z 2Y 1j 1k 2l 1k 1j 2Y 1Z 4Y 1Q 3S 1O 1.
+= 1. 1O 3T 1Q 4Y 1Z 3Y 4j 3Y 1Z 4Y 1Q 3S 1O 1.
+= 1. 1O 3T 1Q 5Y 2Z 6Y 2Z 5Y 1Q 3S 1O 1.
+= 1. 1O 3T 1Q 7Y 6Z 7Y 1Q 3S 1O 1.
+= 1. 1O 4T 1Q 18Y 1Q 4S 1O 1.
+= 1. 1O 5T 1S 16Y 1S 5S 1O 1.
+= 1. 1O 6T 2S 12Y 2S 6S 1O 1.
+= 1. 1O 9T 10S 9S 1O 1.
+= 1. 1O 2R 1Q 22S 1Q 2Q 1O 1.
+= 2. 1O 2R 1Q 20S 1Q 2Q 1O 2.
+= 2. 1O 4R 1Q 16S 1Q 4Q 1O 2.
+= 3. 1O 6R 12Q 6Q 1O 3.
+= 4. 1O 12R 10Q 1O 4.
+= 5. 2O 9R 9Q 2O 5.
+= 7. 3O 6R 6Q 3O 7.
+= 10. 12O 10.

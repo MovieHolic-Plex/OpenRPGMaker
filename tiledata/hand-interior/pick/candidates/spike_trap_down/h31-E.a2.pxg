@@ -1,0 +1,39 @@
+// E 자유: 가시 줄기(밝은 세로줄 5) 제거, 판을 매끈히 — 가시가 구멍 속에 들어간 상태
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 3
+@mblock 0 0
+................
+................
+................
+................
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+@tblock 0 0
+................
+................
+................
+................
+.11111111111111.
+.14444444444441.
+.14333333333331.
+.14333333333331.
+.14300330033001.
+.14333333333321.
+.14333533353321.
+.14333533353321.
+.14333003300321.
+.14333333333321.
+.12222222222221.
+.11111111111111.

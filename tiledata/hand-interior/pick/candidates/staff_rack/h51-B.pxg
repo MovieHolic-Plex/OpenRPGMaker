@@ -1,0 +1,61 @@
+// 지팡이 걸이 B(같은 방 화풍): 창꽂이(고른 그림)와 같은 나무통 걸이 결 — 윗면 구멍 3개+쇠 아닌 황동띠 앞면, 보석 머리 세 개(청·자·적) 높이 엇갈림
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 2
+@mat C wood 3
+@mat D wood 4
+@mat E wood 5
+@mat F wood 6
+@mat G wood 7
+@mat N brass 3
+@mat O brass 4
+@mat P brass 5
+@mat r blue 2
+@mat s blue 3
+@mat t blue 4
+@mat u blue 5
+@mat v blue 6
+@mat w purple 2
+@mat x purple 3
+@mat y purple 4
+@mat z purple 5
+@mat q purple 6
+@mat j red 2
+@mat k red 3
+@mat m red 5
+@mat n red 6
+@mblock 0 0
+................
+.......rr.......
+......rvur......
+......rutr......
+.......rs.......
+...ww..PN.......
+..wqzw.FC.......
+..wzyw.FC..jj...
+...wx..FC.jnmj..
+...PN..FC.jmkj..
+...FC..FC...jk..
+...FC..FC...PN..
+...FC..FC...FC..
+...FC..FC...FC..
+...FC..FC...FC..
+...FC..FC...FC..
+...FC..FC...FC..
+...FC..FC...FC..
+...FC..FC...FC..
+...FC..FC...FC..
+..AFCAAFCAAFCA..
+.AGFCGGFCGGFCGA.
+.AGBBGGBBGGBBGA.
+.AEEEEEEEEEEEEA.
+AFFEEEEEEEEEDDCA
+AFEEBEEEEBEEDDCA
+ANPOOOOOOOOOOONA
+ANNNNNNNNNNNNNNA
+AFEEBEEEEBEEDDCA
+AEEBEEEEEBEEDDCA
+ADDCCCCCCCCCCCCA
+AABBBBBBBBBBBBAA

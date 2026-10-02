@@ -187,11 +187,6 @@
    두 선언 모두 정의된 적 없는 --oprn-highlight/--oprn-light 를 읽어 통째로 폐기되고
    있었고, .db-enemy-graphic-list 는 TS 어디서도 발행하지 않는다(참조 0건). */
 
-.db-enemy-hue-field {
-  display: grid;
-  gap: 4px;
-}
-
 .db-enemy-switch-effect {
   align-items: center;
   display: grid;

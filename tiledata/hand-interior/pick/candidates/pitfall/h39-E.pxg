@@ -1,0 +1,29 @@
+// h39 E: 자유 해석 — 네모 테 대신 바닥이 깨져 꺼진 불규칙한 구멍, 가장자리에서 뻗는 금
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat e stone 1
+@mat d stone 0
+@mat f stone 2
+@mat g stone 3
+@mat h stone 4
+@mat K black 1
+@mat k black 0
+@mat m black 2
+@mblock 0 0
+................
+.....eegghge....
+..e.eghhhhhgge..
+.eeghhgdddddgge.
+.eghgddfffffdgge
+eeghdfKKKKKKdgge
+eghdKKkkkkkkKdgf
+.ghdKkkkkkkkkKgf
+.ehdKkkkmkkkkKgf
+.eedKkkkkkkkkKgf
+..edKKkkkkkKdgff
+..eggdKKKKKKdggf
+.eghhgddddddgggf
+.eefghhhhhhhgfee
+..e.efgggggfe.e.
+...e..eeeeee..e.

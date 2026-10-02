@@ -1,0 +1,55 @@
+// 탈것 전용 팔레트 — 생성 파일(harness.py palette). 글자 하나 = modern3 램프 한 단. 이 밖의 색은 맵에 못 들어간다.
+// `.` 투명/그대로, `_` 지우기, `~` 바닥 그림자(반투명)
+@ramp conc 1 2 3 4 5 6 7   // 차체(중립 회색) 7단 — 1 가장 어둠 … 7 가장 밝음. 색 변형은 이 램프를 다른 램프로 바꿔 만든다
+1 #504f5c
+2 #666775
+3 #7f8191
+4 #999dad
+5 #b4b2c7
+6 #cdc9de
+7 #e3dff2
+@ramp garasu a b c d e f g   // 유리 7단 — a 윤곽쪽 … g 반사 하이라이트
+a #1b2138
+b #293952
+c #39536b
+d #4a7387
+e #627ca3
+f #7d8ebf
+g #9eb0e0
+@ramp tekko h i j k l m n   // 검은 쇠 7단 — 아랫판·범퍼·창틀·윤곽(h,i)
+h #28272e
+i #3a3942
+j #4e4d59
+k #646473
+l #817c8c
+m #9f97a8
+n #bbb4c4
+@ramp sumi x y z   // 타이어 3단 — x 가장 검음
+x #100a1a
+y #1a1226
+z #2c2538
+@ramp shiro S T U V W   // 흰색 5단 — 번호판·전조등 하이라이트·크롬
+S #777580
+T #a3a0ad
+U #cac7d6
+V #e6e2f0
+W #f6f1fc
+@ramp aka A B C D E   // 빨강 5단 — 후미등·브레이크등
+A #4c0717
+B #801223
+C #b22430
+D #db4d4a
+E #f78175
+@ramp kii F G H I J   // 노랑 5단 — 방향등·전조등
+F #572c02
+G #8f610b
+H #c7a51c
+I #f0cd45
+J #ffe26e
+@ramp sora K L M N O   // 파랑 5단 — 사이렌·표시등
+K #0a2847
+L #164d75
+M #287ea8
+N #4f80d6
+O #7b9cf7
+~ #1c1418 90   // 바닥 그림자

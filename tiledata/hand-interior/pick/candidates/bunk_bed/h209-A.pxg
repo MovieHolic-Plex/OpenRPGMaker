@@ -1,0 +1,124 @@
+// 상단 목재 윗면을 3행으로 넓히고 기둥 머리 앞면을 구분, 위 이불·받침만 2행 내림; 꼭대기 윗면 3행(y=0~2).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat l linen 5
+@layer furniture
+@mblock 0 0
+.wwwwwwwwwwwwww.
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwllllllllllllww
+wwllllllllllllww
+wwllllllllllllww
+wwllllllllllllww
+wwllllllllllllww
+wwllllllllllllww
+wwllllllllllllww
+wwllllllllllllww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+ww.........w..ww
+ww.........wwwww
+ww.........w..ww
+ww.........w..ww
+ww.........w..ww
+ww.........w..ww
+ww.........w..ww
+ww.........wwwww
+ww.........w..ww
+ww.........w..ww
+ww.........w..ww
+ww.........w..ww
+ww.........w..ww
+ww.........wwwww
+ww.........w..ww
+ww.........w..ww
+ww.........w..ww
+ww.........w..ww
+wwwwwwwwwwwwwwww
+wwlllllllllwwwww
+wwlllllllllwllww
+wwlllllllllwllww
+wwlllllllllwllww
+wwlllllllllwllww
+wwlllllllllwllww
+wwlllllllllwwwww
+wwlllllllllwllww
+wwlllllllllwllww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+ww.........w..ww
+ww.........wwwww
+ww.........w..ww
+ww.........w..ww
+ww............ww
+@tblock 0 0 wood
+.66665566556664.
+6666655666656643
+6555566555555543
+64............32
+64............32
+65............43
+65............43
+65............43
+65............43
+65............43
+65............43
+6665556555565543
+5433333333333342
+64.........6..42
+64.........66664
+64.........5..42
+64.........5..42
+64.........5..42
+65.........5..43
+65.........5..43
+65.........66564
+65.........5..43
+65.........5..43
+65.........5..43
+64.........6..43
+64.........6..43
+64.........66664
+64.........5..43
+64.........5..43
+64.........5..43
+64.........5..43
+6666556655565543
+65.........66564
+65.........5..43
+65.........5..43
+65.........5..43
+65.........5..43
+65.........5..43
+64.........66664
+64.........5..43
+64.........5..43
+6655556555565543
+5433333333333342
+64.........5..42
+64.........66664
+64.........5..42
+64.........5..42
+43............32
+@tblock 2 3 linen
+555455555555
+666456555555
+665455555455
+443455555455
+555555554455
+555555554555
+444444344444
+333333333332
+@tblock 2 32 linen
+555455555
+666456555.55
+665455555.45
+443455555.45
+555555554.45
+555555554.55
+444444344
+444444344.44
+333333333.32

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_E/h1-C.pxg",
+ "id": "chair E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "검정 윤곽→갈색(wood:1), 좌판 윗면 밝게·앞면 어둡게 분리, 아래 테 짙게 — 모양·크기 그대로",
+ "ok": true
+}

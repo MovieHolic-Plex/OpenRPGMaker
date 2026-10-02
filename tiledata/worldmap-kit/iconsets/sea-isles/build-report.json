@@ -1,0 +1,286 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "해상 왕국 수도",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "모래섬 위 흰 성벽·푸른 돔 궁·운하와 다리·앞 부두의 범선 둘",
+   "fill": "94x77",
+   "side_px": 455,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "해안 요새 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "네 귀 다이아몬드 포대와 대포·돌 성벽·흰 집과 야자",
+   "fill": "62x42",
+   "side_px": 399,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "해적 항구",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "판자 술집과 집·나무 부두·검은 돛 해적선",
+   "fill": "79x45",
+   "side_px": 46,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "해적 요새",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "바위 언덕 위 통나무 요새·망루·해골 깃발",
+   "fill": "47x42",
+   "side_px": 93,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "해안 포대",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "돌 흉벽에 대포 다섯 문·화약 창고·원형 망루",
+   "fill": "47x32",
+   "side_px": 40,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "섬 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "모래섬 위 초가 다섯 채·야자·카누",
+   "fill": "48x35",
+   "side_px": 42,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "수상 가옥 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "얕은 물 위 말뚝 초가 셋과 판자 다리",
+   "fill": "32x21",
+   "side_px": 1,
+   "col": 12,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "어촌",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "초가 둘·그물 말리는 장대·끌어올린 작은 배",
+   "fill": "32x19",
+   "side_px": 6,
+   "col": 14,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "난파 생존자 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "돛천 천막·모닥불·부서진 배 조각",
+   "fill": "32x17",
+   "side_px": 6,
+   "col": 16,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "등대",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "바위 위 흰·빨강 띠 등대",
+   "fill": "16x29",
+   "side_px": 63,
+   "col": 26,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "큰 등대",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "돌 기단·흰 벽돌 탑·회랑·불 켜진 등실",
+   "fill": "32x59",
+   "side_px": 266,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "해적 보물 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "해식 동굴 입구와 보물 상자·금화",
+   "fill": "32x26",
+   "side_px": 93,
+   "col": 18,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "난파선",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "모래에 기운 채 박힌 배 몸통과 부러진 돛대",
+   "fill": "32x21",
+   "side_px": 3,
+   "col": 20,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "가라앉은 도시",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "물 위로 나온 돔·지붕·부러진 기둥",
+   "fill": "63x27",
+   "side_px": 146,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "바다 신전",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "흰 기둥 회랑·푸른 돔·금빛 조개 장식",
+   "fill": "47x41",
+   "side_px": 167,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "고래 뼈 해변",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "모래톱 위 늑골 아치와 두개골",
+   "fill": "46x28",
+   "side_px": 52,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "거대 산호초",
+   "id": "landmark_coral",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "얕은 물 위 가지 산호와 뇌산호",
+   "fill": "48x29",
+   "side_px": 116,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "석상 원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "돌 단 위 모아이풍 석상 셋",
+   "fill": "31x29",
+   "side_px": 8,
+   "col": 22,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "화산섬",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "모래 해변·검은 화산·붉은 화구·연기·야자",
+   "fill": "28x30",
+   "side_px": 26,
+   "col": 24,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "하늘섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "떠 있는 바위섬·초가와 야자·떨어지는 폭포·구름",
+   "fill": "74x56",
+   "side_px": 169,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 0
+}

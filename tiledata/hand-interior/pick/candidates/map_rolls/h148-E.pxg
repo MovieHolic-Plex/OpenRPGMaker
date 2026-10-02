@@ -1,0 +1,52 @@
+// E: 황동 테 타원 나무 지도통, 높이가 다른 세 두루마리와 위에서 보이는 말림 끝.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 2
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat H linen 6
+@mat I linen 5
+@mat J linen 4
+@mat K linen 3
+@mat L linen 1
+@mat m brass 2
+@mat n brass 4
+@mat p blue 1
+@mat q blue 2
+@mblock 0 0
+.......III......
+......IHLHI.....
+......JIIIJ.....
+......JHIKJ.....
+......JHIKJ.....
+..III.JHIKJ.....
+.IHLJIJHIKJ.....
+.JIIKJJHIKJ.....
+.JHIKJJHIKJ.....
+.JHIKJJHIKJ.II..
+.JHIKJJHIKJIHLJ.
+.JHIKJpqpppJIIK.
+.JHIKJJHIKJJHIK.
+.JHIKJJHIKJJHIK.
+.JHIKJJHIKJJHIK.
+.JHIKJJHIKJJHIK.
+.JHIKJJHIKJJHIK.
+.JHIKJfHIKJfHIK.
+..JIKJbHIKJbHIKb
+.efaKJaHIKJaHIKb
+bfdaKJaHIKJaHIKb
+bfeaJJaJJJaaJJab
+bdfefdaaaaabdcab
+.bdeeffeddddcab.
+.nmnmmmnnmmnmm..
+.bedbcddbdccbab.
+.bedbcddbdccbab.
+.bedbcdedbccbab.
+..edbcddbdccba..
+..nmnmnnmmmmm...
+..bdedddcccbba..
+...bbbbbbbaaa...

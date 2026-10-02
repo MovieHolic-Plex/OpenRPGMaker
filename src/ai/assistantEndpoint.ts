@@ -46,7 +46,9 @@ export type AiSurface =
   | "world-canon-interview"
   | "project-interview"
   | "world-canon-body"
-  | "tileset-analysis";
+  | "tileset-analysis"
+  | "workshop-draw"
+  | "workshop-review";
 
 /** 표면이 쓰는 모델 티어. 조수 설정의 감독 모델(supervisor) 또는 실행 모델(lite). */
 type ModelTier = "supervisor" | "lite";
@@ -82,6 +84,8 @@ export const TILESET_ANALYSIS_MAX_TOKENS = 8192;
  *   비용을 태울 자리가 아니다. `region` 만 툴콜 상한을 추가로 건다.
  * - `structure-kit`: 구조물 이름·배치 설명을 짓는 일회성 감독 판단이라 감독 모델.
  * - `tileset-analysis`: 이미지를 읽는 감독 판단이라 감독 모델 + 매핑 JSON 전용 고정 예산.
+ * - `workshop-draw`: 공방 그리기. 격자 JSON 이 길어 감독 모델 + 넉넉한 고정 예산(16384).
+ * - `workshop-review`: 공방 검수. 그림을 읽는 판단이라 vision 역할 + 고정 예산(4096).
  */
 const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
   "chat": { tier: "supervisor" },
@@ -96,6 +100,10 @@ const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
   // 세계관 본문 초안/이어쓰기: 산출물이 장문 prose 라 인터뷰보다 예산을 크게 준다.
   "world-canon-body": { tier: "supervisor", maxTokens: 8192 },
   "tileset-analysis": { tier: "supervisor", maxTokens: TILESET_ANALYSIS_MAX_TOKENS },
+  // 공방: 그리기는 격자 JSON 이 길어(48행 × 여러 번 고치기) 감독 모델 + 넉넉한 고정 예산,
+  // 검수는 그림을 읽는 판단이라 tileset-analysis 처럼 vision 역할.
+  "workshop-draw": { tier: "supervisor", maxTokens: 16384 },
+  "workshop-review": { tier: "supervisor", maxTokens: 4096 },
 };
 
 /**
@@ -110,7 +118,7 @@ export function resolveSurfaceAiConfig(surface: AiSurface, base?: AiConfig): AiC
   const source = base ?? loadAiConfig();
   const hasRoles = source.roleModels && Object.keys(source.roleModels).length > 0;
   const tiered = hasRoles
-    ? surface === "tileset-analysis" ? configForRole(source, "vision")
+    ? surface === "tileset-analysis" || surface === "workshop-review" ? configForRole(source, "vision")
       : policy.tier === "lite" ? configForRole(source, "deep")
       : { ...configForUltrabrain(source), maxTokens: source.maxTokens }
     : policy.tier === "lite" ? configForLiteModel(source) : source;

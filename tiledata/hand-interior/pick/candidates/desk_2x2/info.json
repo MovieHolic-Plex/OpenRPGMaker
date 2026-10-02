@@ -1,0 +1,54 @@
+{
+ "id": "desk 2x2",
+ "slug": "desk_2x2",
+ "name_ko": "책상 2×2",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": {
+  "rect_px": [
+   2,
+   3,
+   29,
+   24
+  ],
+  "capacity": 3,
+  "note": "탁상 물건의 밑변을 윗면 안에 둔다"
+ },
+ "description": "2×2 넓은 책상. 집무실 가운데 1개. 남쪽에 의자, 둘레에 책장.",
+ "where": "집무실 가운데 1개. 남쪽에 의자, 둘레에 책장.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다",
+  "윗면에 탁상 물건(goods:*)을 올린다. 비워 두지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  31
+ ],
+ "v5_colors": 8,
+ "material": "wood",
+ "related": [
+  "chair N",
+  "goods:globe_s",
+  "goods:candlestick",
+  "goods:papers",
+  "goods:quill",
+  "bookshelf 3w"
+ ]
+}

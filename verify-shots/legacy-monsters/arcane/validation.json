@@ -1,0 +1,4413 @@
+{
+  "species": 39,
+  "errors": [],
+  "results": [
+    {
+      "slug": "ontology-8da61312",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "ab2191a441030e6195107f2b620009531df13c3778e8cfe62f8a1670001a5279",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            9,
+            12,
+            58,
+            56
+          ],
+          "sha256": "ee05fbc01191a5f565858feb183a2b1a21ad4b8a44c40dee4645d0f005530796",
+          "occupiedBoundsSha256": "7d44c8a4f75a86a361d95adfb5f6079ef7b886939c69e6baa6a445eae35d7e5b",
+          "opaquePixels": 1065
+        },
+        "idle_b": {
+          "bbox": [
+            10,
+            11,
+            57,
+            55
+          ],
+          "sha256": "6c7fe7a1f2d9a71ba297f28bcd843040dd4e07098c7530f60a26cf7551427499",
+          "occupiedBoundsSha256": "2c8ec9ecb60e5a4f798c68e98ad41e5a2b65e1333ae580c1b36611da8c281d4d",
+          "opaquePixels": 1073
+        },
+        "idle_c": {
+          "bbox": [
+            11,
+            12,
+            59,
+            54
+          ],
+          "sha256": "3244a13f3beac1b68b5c50cfa2f5a216e65887d547895aea60155ff299d1c702",
+          "occupiedBoundsSha256": "1a81c2276588374e5fefd438c323e269395225e290ecef67028ac71b27c62eb1",
+          "opaquePixels": 1027
+        },
+        "windup": {
+          "bbox": [
+            9,
+            11,
+            60,
+            56
+          ],
+          "sha256": "be95e955baaaf99be8350385c162fdbb4c3d52d8b56802f17cf9246327421760",
+          "occupiedBoundsSha256": "1ac297e5cf3b3d20e4c63022ac4f93f621afb09ea0f612824ee8c09f39ee8082",
+          "opaquePixels": 1043
+        },
+        "move": {
+          "bbox": [
+            10,
+            12,
+            55,
+            55
+          ],
+          "sha256": "ff93d5a3f3e046cc5afd677cccfb289d77806f89f74f834af3d8b193bbcb50e9",
+          "occupiedBoundsSha256": "6dfca7d085006141cd9f3bf2ff1e531762e1ee1c829b111b0771a02d73955af8",
+          "opaquePixels": 1082
+        },
+        "attack": {
+          "bbox": [
+            10,
+            11,
+            55,
+            54
+          ],
+          "sha256": "8fdac46741d1381f8a81dbe80d3491437356a7832bf7b03dd71a2d66fb8ef9e2",
+          "occupiedBoundsSha256": "bc79b3b60740e7bef8b95b86cf21494b884f7b819fb94d1a2300c0e564190299",
+          "opaquePixels": 1054
+        },
+        "recover": {
+          "bbox": [
+            9,
+            12,
+            57,
+            56
+          ],
+          "sha256": "f408deea5a327eefce94ccf641221948b542cb5d6074f2f0b18741f9abd47ab0",
+          "occupiedBoundsSha256": "2c770bcf08bdd881c01063a743a719a7f45ff4422e6d956c70695dbe6527701d",
+          "opaquePixels": 1074
+        },
+        "hit": {
+          "bbox": [
+            10,
+            11,
+            61,
+            55
+          ],
+          "sha256": "6834a1f0130328d8ce9b8c94278d1146a2b29abf18fe6ef76554c76d3862925e",
+          "occupiedBoundsSha256": "ea2b5f3bccaf77227205bbb2b7a39ca43c96a516c2f05bbd998867bbb6b6da93",
+          "opaquePixels": 1005
+        },
+        "dead": {
+          "bbox": [
+            12,
+            53,
+            50,
+            61
+          ],
+          "sha256": "3fdf22f1b5fe3be89a36b5386204e0491b60eb834f0a4212c0b7764037938749",
+          "occupiedBoundsSha256": "f9a1cea45b35c76eea3fc3e5c390ccdbf6ef5406158d2cbaf4a2b618b3e923a8",
+          "opaquePixels": 196
+        }
+      }
+    },
+    {
+      "slug": "sylph-hornet-transparent",
+      "cell": 48,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "74d6350ae5427fb95cdf18afe1af74a3bad2666e3c579e149a26bcd363a6a059",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            4,
+            6,
+            43,
+            39
+          ],
+          "sha256": "24fc04bf506f628c5adeea0d7f9faeef72cb095b42fe4b9544d42aa1f442da48",
+          "occupiedBoundsSha256": "f3a6557068f7d02ffee8d22c232f1b9a7de2bc1c721183718b1ebaf91ae983ab",
+          "opaquePixels": 553
+        },
+        "idle_b": {
+          "bbox": [
+            4,
+            10,
+            42,
+            40
+          ],
+          "sha256": "84a58754df76bbbc281418da81406dd19adb54ab915b0eb7189c38498236fc9f",
+          "occupiedBoundsSha256": "e18ca168993510c8d7c55766417d50bebb8d7085d1303d15718ef79bc94c3dab",
+          "opaquePixels": 498
+        },
+        "idle_c": {
+          "bbox": [
+            5,
+            4,
+            43,
+            39
+          ],
+          "sha256": "029491f72a2eb20ef24c861c1059e82ab54cb22f8e20632976fe17751b03bf2d",
+          "occupiedBoundsSha256": "0f189976cad8c126a22a18f0ee3cd5b72d14842f0fa3137e483f6bc72e555422",
+          "opaquePixels": 575
+        },
+        "windup": {
+          "bbox": [
+            3,
+            8,
+            40,
+            41
+          ],
+          "sha256": "5744bf9d3879244ba9b021e174fa603204a2ff74f701848c5b16b6b3ba187057",
+          "occupiedBoundsSha256": "0bc11a91667de3c455d750503d5d5e0730180f0a0e9baa706b34fe54cc72a8b9",
+          "opaquePixels": 501
+        },
+        "move": {
+          "bbox": [
+            6,
+            3,
+            44,
+            38
+          ],
+          "sha256": "c748249f7d5931808d559f64091b0e0d8d249850dfa661516fa86df92f8047d6",
+          "occupiedBoundsSha256": "839ffe3f4fba11d06e85d7b1c05d6c5df446f0e030678dedc1f5083dc814cf69",
+          "opaquePixels": 582
+        },
+        "attack": {
+          "bbox": [
+            7,
+            10,
+            44,
+            40
+          ],
+          "sha256": "91f76d4417d42b4d058b67603c279d92d78cc25ebdb8fda847af69e28276c3cc",
+          "occupiedBoundsSha256": "64c68fc7b79c91b5f7042ede66325175bcb498dc13a2b9238c0e15e2cea6faee",
+          "opaquePixels": 510
+        },
+        "recover": {
+          "bbox": [
+            5,
+            10,
+            44,
+            41
+          ],
+          "sha256": "dde4a1bf56206f0b3421bf338d7deb6720a23f50a041cda4c7f2ac84fc1c4d8b",
+          "occupiedBoundsSha256": "7df22af1e3b28acfef751f2a6eb5e2b2b45e22e5211d039188ca3f918a589710",
+          "opaquePixels": 505
+        },
+        "hit": {
+          "bbox": [
+            2,
+            10,
+            39,
+            40
+          ],
+          "sha256": "0d24c5461a4fcf1401a99848bde6d4622d8ba948f05a6d5a33bbef913b7497ee",
+          "occupiedBoundsSha256": "3898f284522e33dd345dd0d419d7b364a9bd298a911b432e018dc649337459b5",
+          "opaquePixels": 473
+        },
+        "dead": {
+          "bbox": [
+            9,
+            36,
+            39,
+            45
+          ],
+          "sha256": "6df6c697633781d70cca2295bfae7811dec2167e3521cc6539c7799ead2a3fd3",
+          "occupiedBoundsSha256": "ba38bee465f24a8a5ea917934a3382e99c0af3f2ef96bd457268a429a9512baf",
+          "opaquePixels": 153
+        }
+      }
+    },
+    {
+      "slug": "skeleton-01",
+      "cell": 48,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "ec6bc4d202171db96ba2308335b7caf799c7d9548e75e0cf56b48d38e3b32a20",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            8,
+            34,
+            45
+          ],
+          "sha256": "40c18a4125f494e14f802385f5350069810b0303689bf8760c7546e28b8e536c",
+          "occupiedBoundsSha256": "87b4b712a33e5c9a3300903915b9f8bd80425bb3474be8715156ee3d34b88a73",
+          "opaquePixels": 504
+        },
+        "idle_b": {
+          "bbox": [
+            11,
+            10,
+            34,
+            45
+          ],
+          "sha256": "136026880cd01b603ed0f09327d5e9cab0a74811eb01e4fe34bfbefc09625714",
+          "occupiedBoundsSha256": "54f842333faee1703b68520ef1c532fe498ead6065da3cd1cb6563fc5c301579",
+          "opaquePixels": 487
+        },
+        "idle_c": {
+          "bbox": [
+            10,
+            6,
+            34,
+            45
+          ],
+          "sha256": "21014b320d7a3b3925e84ea7995375c8631416675d552446766dd948a189fe09",
+          "occupiedBoundsSha256": "2c40b42f827ffaeed3d15f0dc699167e9328b858e2bede98631280683aed79e4",
+          "opaquePixels": 516
+        },
+        "windup": {
+          "bbox": [
+            2,
+            7,
+            34,
+            45
+          ],
+          "sha256": "fee379cb90f7e1664e11347f4774d375d08dc1251118d0a1171d553abb06eed6",
+          "occupiedBoundsSha256": "99a8a8ae84db621b7299311cb33a3f38657d7adb614fe710937f735d90da198c",
+          "opaquePixels": 552
+        },
+        "move": {
+          "bbox": [
+            10,
+            8,
+            37,
+            45
+          ],
+          "sha256": "e502aac8752bac21754f9734dc499b840e7b0424ecb4f1dc5018a55373beb492",
+          "occupiedBoundsSha256": "51681ae6a83b89a074f9cd04da734034708b191c7b52271b9bc1f99f0bfb8544",
+          "opaquePixels": 517
+        },
+        "attack": {
+          "bbox": [
+            13,
+            10,
+            47,
+            45
+          ],
+          "sha256": "00a84e3896591a72cd85ed4072f72987d67a4d3286f83b090f78ac472b63bdfe",
+          "occupiedBoundsSha256": "bf72f43ee0c7bdc6a1cc57b610f6cd66262eddb17fd121ad4cbc933c311884b6",
+          "opaquePixels": 513
+        },
+        "recover": {
+          "bbox": [
+            12,
+            11,
+            38,
+            45
+          ],
+          "sha256": "ed3156aca6d73deb98fedb4f1c56e7e2fb88548b0e64242a2002575a95f9047a",
+          "occupiedBoundsSha256": "26b9acb7d0845c08b3c2250688b03d7e4e9312f14d0ae0a071f8703ee9b8e5ff",
+          "opaquePixels": 487
+        },
+        "hit": {
+          "bbox": [
+            1,
+            10,
+            35,
+            45
+          ],
+          "sha256": "93447f2e0fcdbdddf56c6f1331372fb0742e8a842de70291bf63ad55f7822a1e",
+          "occupiedBoundsSha256": "4e58d71ba8deaff83cf4e29d075eafbc5f31fd9a31218b115b08be105cdaface",
+          "opaquePixels": 497
+        },
+        "dead": {
+          "bbox": [
+            8,
+            32,
+            44,
+            45
+          ],
+          "sha256": "bc67a6b10102ffb5fd64e38ad7781e7f0f6b944219a9610ad7757b12efc6d033",
+          "occupiedBoundsSha256": "7a4ce4eb21056f33fd77d7ea6aa466ba55e06df5c697fc46385e86e63228d76b",
+          "opaquePixels": 287
+        }
+      }
+    },
+    {
+      "slug": "ghost-01",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "58fa614e3f0febd58301c440610cddb787e8e73775da0bcf7b961b6494cc0ddd",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            10,
+            37,
+            42
+          ],
+          "sha256": "5757b71dfeaca08a9d4f6c5c0ba05dd2795f9c29c7f483982c02a501d60a329f",
+          "occupiedBoundsSha256": "18d7e3da5caf6558ac3d9a0ccfa4b3cf156c9b9cfc827b59ae7153183541bfad",
+          "opaquePixels": 491
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            11,
+            37,
+            43
+          ],
+          "sha256": "9f1c975332cf687e0c52e885a584c4dd67e956cc8a15f9accf77219914d3276e",
+          "occupiedBoundsSha256": "e2f7c08aa5d4b9e4640f4a5d18ef1ae303b0dae1f2b8948f5eb4db461f782c31",
+          "opaquePixels": 495
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            10,
+            37,
+            42
+          ],
+          "sha256": "58102d293f01a5d4e7b799341d5f2516b95fff4975038674ef81094736bb6801",
+          "occupiedBoundsSha256": "d3b00c780993bae0d7b76bf2aefe4f059bb6996a1d9792839bd90f3ae21cfe14",
+          "opaquePixels": 481
+        },
+        "windup": {
+          "bbox": [
+            4,
+            10,
+            33,
+            44
+          ],
+          "sha256": "3103c5e100de31421b9546cac620ccd06a7552559af0868f64fddb0e7bd8a67c",
+          "occupiedBoundsSha256": "d9f51a8b221006682667600b7a4f112943be975bbf75eb4c83fc5f10e5fd97af",
+          "opaquePixels": 486
+        },
+        "move": {
+          "bbox": [
+            9,
+            9,
+            40,
+            41
+          ],
+          "sha256": "064dd5686f480d703264579a0db04716c38155add7ab3ba30182a42e8f808f40",
+          "occupiedBoundsSha256": "bc77437718f400b769f22103c7a916465bab2257a3aadbef7e3e582d3f603e3b",
+          "opaquePixels": 517
+        },
+        "attack": {
+          "bbox": [
+            9,
+            11,
+            45,
+            43
+          ],
+          "sha256": "c7f08632d643b4a95ba6e459b8e8800332368830434dbcef9ead9e8c8dc042b7",
+          "occupiedBoundsSha256": "4a268dbd50f197cd703014097a00b768b57e28796f523e3afbb3d6b765175a18",
+          "opaquePixels": 565
+        },
+        "recover": {
+          "bbox": [
+            10,
+            12,
+            39,
+            44
+          ],
+          "sha256": "961597044ea8caaf6758ec787cf79672ad7f355cbf3ab50e6802d1c658bda65c",
+          "occupiedBoundsSha256": "2bed5bd6f8b9931007e9ab3bdc954af4f348414c05b52981a16ad021fc017446",
+          "opaquePixels": 500
+        },
+        "hit": {
+          "bbox": [
+            2,
+            11,
+            30,
+            43
+          ],
+          "sha256": "2394e9c5b15294b4e2c7298d00e093ac5ca004d9360aec49f16e4a57dd932e06",
+          "occupiedBoundsSha256": "e9a6786f3aa7fa6eeb61776e4fa889aa45a0a7f9be5ed6d43a4d57b9f67d085e",
+          "opaquePixels": 439
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "148d95f5dfb6618eeb7102636919460006a6c2eb4cdb2ec8872cd963d2206243",
+          "occupiedBoundsSha256": "3484c537423ab6aabab48428c9cc8de773f5b5dfbcff13b813baf2c37abe58e7",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "plant-01",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "e3d921a7d40da114c1f3bddd550bc40e7fb9480b3962e34a7a7382a7c6730eb9",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            7,
+            57,
+            61
+          ],
+          "sha256": "282530b4090aa915c6145cab85496e9bb929aef5bd95e1339790b2ceada0e13c",
+          "occupiedBoundsSha256": "729a5cd1453ec6da9c7005b24988e06b141316c66f23f9b2be226fe6497886df",
+          "opaquePixels": 1288
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            8,
+            57,
+            61
+          ],
+          "sha256": "deedd9eea0ce3e9229c3ba1529deeb5d53e544ca31f8c5a810ee8ee2e1d0de38",
+          "occupiedBoundsSha256": "c29b81a2ddc4398fb81df4d4d53e391ba141c42e565718ce89ee471a3a7fd5d1",
+          "opaquePixels": 1298
+        },
+        "idle_c": {
+          "bbox": [
+            7,
+            7,
+            57,
+            61
+          ],
+          "sha256": "99428f1d5ed7cc41a27a73bc4546c9a165a08658f77ddccf7c7ac26917dc3810",
+          "occupiedBoundsSha256": "aa67354bd90c875422f7300f878acd5da797cbc7a21433055a813eae80ea59e6",
+          "opaquePixels": 1282
+        },
+        "windup": {
+          "bbox": [
+            7,
+            9,
+            57,
+            61
+          ],
+          "sha256": "e325573045864ba6cb186027a4e14f1ac8f123bde3b6db956c91793d247795d2",
+          "occupiedBoundsSha256": "c570e55d3896edf1cd642e71e92564fe0ff23ce7782f9285161e17b6df9965e7",
+          "opaquePixels": 1218
+        },
+        "move": {
+          "bbox": [
+            7,
+            6,
+            58,
+            61
+          ],
+          "sha256": "23ae6a69068d00e796ccfae3060ac07544e338e02058b6b71a8d7e62f2559ad2",
+          "occupiedBoundsSha256": "28b875ea5839c0a928f3106c4c87ee6d9036b247bd7699266472eb70bb599f7a",
+          "opaquePixels": 1335
+        },
+        "attack": {
+          "bbox": [
+            7,
+            8,
+            59,
+            61
+          ],
+          "sha256": "3f7e07622372698432f1f8acb5cf69e9d6da7372aba1fcdc995e053136dc2c59",
+          "occupiedBoundsSha256": "daf6517a6981018c942bb02e357ec27f9797ca63931d55e9a5cfbf97fce1f39b",
+          "opaquePixels": 1389
+        },
+        "recover": {
+          "bbox": [
+            7,
+            9,
+            57,
+            61
+          ],
+          "sha256": "dc8d2cb7e726c960af41f489d034b52097d5ebaec3b487598c259e0fc98d8252",
+          "occupiedBoundsSha256": "03b376b25cef98363c5408ededefdad28b17907b22bdb8860716c7e7f27d89cd",
+          "opaquePixels": 1244
+        },
+        "hit": {
+          "bbox": [
+            7,
+            8,
+            57,
+            61
+          ],
+          "sha256": "030766133ad66980a4f4c7b73a490108ac4566178f03b6644aa4593e6a436cbc",
+          "occupiedBoundsSha256": "55ad5b4543212844c2c808e90e3ff69077d660fbebfdc1d3ddd780aafb566d0b",
+          "opaquePixels": 1315
+        },
+        "dead": {
+          "bbox": [
+            9,
+            48,
+            55,
+            61
+          ],
+          "sha256": "59b703110993ae6f6e980c7a5a15447f9d6f39856db560fb3864fcbd9d55b586",
+          "occupiedBoundsSha256": "cfa5c5d210f12cb1eab734cb71cdd289f112f99696abed649295cbe6d598747c",
+          "opaquePixels": 321
+        }
+      }
+    },
+    {
+      "slug": "carbuncle-01",
+      "cell": 48,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "c30c41abef2b428fd59f9d23488a9651ebbd5e7490b19f3d18019d0d53d78f92",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            6,
+            14,
+            44,
+            45
+          ],
+          "sha256": "4004abb414348a5171d510d617f386567c2fb8e15a757599f686847ce741d265",
+          "occupiedBoundsSha256": "6af2c1ba3e4a2586fb62945af5a27a49e3297cd82d35e577d27f4b7ad3e01ffe",
+          "opaquePixels": 579
+        },
+        "idle_b": {
+          "bbox": [
+            6,
+            15,
+            44,
+            45
+          ],
+          "sha256": "fae55149229d46c53deddea689934a1c0649fe92bc1c418903c4d49060a380ce",
+          "occupiedBoundsSha256": "460ed67ea6811b9851746394168d84ac9c309d71e817c05785e0939bd4a47c89",
+          "opaquePixels": 571
+        },
+        "idle_c": {
+          "bbox": [
+            7,
+            14,
+            44,
+            45
+          ],
+          "sha256": "d0294e37a269e36a791a70ff3d6d04f5ce35686a0871931aa869a709338f9457",
+          "occupiedBoundsSha256": "3861ab89e1a4d508aa7648666dcc5574decf5bf6e8151b9a4177e7c84bd41e3a",
+          "opaquePixels": 563
+        },
+        "windup": {
+          "bbox": [
+            4,
+            18,
+            43,
+            45
+          ],
+          "sha256": "34830ff91bc1630525c75aee1108b0df07dd1d15fdc9a8552643cd59786f783b",
+          "occupiedBoundsSha256": "38f034e9ef05af836f7bbcc8caba69b36365c300a1c8ea2c21a68339961601f8",
+          "opaquePixels": 533
+        },
+        "move": {
+          "bbox": [
+            8,
+            13,
+            45,
+            45
+          ],
+          "sha256": "06a34f8a363ef45c2595dd1e299579c5e3d39f4ab3c46174d33d2f6f7cb69127",
+          "occupiedBoundsSha256": "3f26e7067425184b5b37454a508e22c66599e1a516d0d9ba0445c06ada1176a9",
+          "opaquePixels": 609
+        },
+        "attack": {
+          "bbox": [
+            9,
+            15,
+            46,
+            45
+          ],
+          "sha256": "9b744773516697ccc9b5b9f3df6d7c901c5118f8176ebd326a0bbd3be3211097",
+          "occupiedBoundsSha256": "3339528d99d405a0e36c89ddd3a267aaf6d49b5f9cacd05c72c5d08dd7d8a618",
+          "opaquePixels": 607
+        },
+        "recover": {
+          "bbox": [
+            7,
+            16,
+            44,
+            45
+          ],
+          "sha256": "44d7b1316db80fac723a9567af056ff7957020b88c1f5cec54b46d53b6082d30",
+          "occupiedBoundsSha256": "2934de3541b1cccbc5099f07b05a7465a74cc9ab932f35c9f13a0171873f764c",
+          "opaquePixels": 546
+        },
+        "hit": {
+          "bbox": [
+            3,
+            15,
+            42,
+            45
+          ],
+          "sha256": "efb7a8abce8319dc7edeaeb97d549326c2aa392db3616d6935c18f60e5e4565e",
+          "occupiedBoundsSha256": "8d188f17185f923f94f83b9125e1527c3b99c1968cc7e0b475c78a28e77ad1ba",
+          "opaquePixels": 566
+        },
+        "dead": {
+          "bbox": [
+            10,
+            35,
+            43,
+            45
+          ],
+          "sha256": "3c5ca73de324c6e494e6215688eafd2ac6ae62da69e7e51e4622964c2ce00c7f",
+          "occupiedBoundsSha256": "7687f1b74e647280d66551452cf88c07286b9ccfc61fce86654b0f28f2de0c55",
+          "opaquePixels": 219
+        }
+      }
+    },
+    {
+      "slug": "jackolantern-01",
+      "cell": 48,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "9af6fa1ecf44ff7b88e8fbb20774efd57583f748b65560ceeab727a99ef27195",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            15,
+            38,
+            45
+          ],
+          "sha256": "189081b55a0174827d6358bc62819926bd941cf8f4f0bd4e387a9c2257d5b7b5",
+          "occupiedBoundsSha256": "c7246db0ad44150813cc3a711bb503051c030b26b102819ac8578022c836eee4",
+          "opaquePixels": 587
+        },
+        "idle_b": {
+          "bbox": [
+            10,
+            16,
+            38,
+            45
+          ],
+          "sha256": "7bf7fca4c90d84415009c93157b0cfb57daa47d9eff10f2d5811aa4141c77fe6",
+          "occupiedBoundsSha256": "4fca34fd070a3669d4c88cc3ff8dbd0ae41c09399803429ead6bd9e245753c14",
+          "opaquePixels": 543
+        },
+        "idle_c": {
+          "bbox": [
+            10,
+            15,
+            38,
+            45
+          ],
+          "sha256": "a6b3406988a8e917ae84db8400c647c881f3dd6b1a2870aa57725f98051a6163",
+          "occupiedBoundsSha256": "a9d6863e4f212bd0c3149c43e2afe0eb5aefced0bc8db7c00f0ed4785aa19d60",
+          "opaquePixels": 580
+        },
+        "windup": {
+          "bbox": [
+            8,
+            16,
+            36,
+            45
+          ],
+          "sha256": "da1bbad24935c85637e10c7139ff64e1ea2e8baa0dde015ec7c60e2ebfb3e911",
+          "occupiedBoundsSha256": "f9f86f05e39f674cec3e35720bd50c987cb509ed6a332ce16466dc8a1e779259",
+          "opaquePixels": 501
+        },
+        "move": {
+          "bbox": [
+            12,
+            14,
+            40,
+            45
+          ],
+          "sha256": "217f209c43f2ce61a307bbbb72811d4fc0612e83c8228b14a9921b8149b8f266",
+          "occupiedBoundsSha256": "b660482910a90d2fb665e2feb01d52360880eb4edad591ab99095e65923dc5d1",
+          "opaquePixels": 624
+        },
+        "attack": {
+          "bbox": [
+            13,
+            16,
+            46,
+            45
+          ],
+          "sha256": "23638db8897f088f88bf52d4225eed9d023b0ece9e19e742733579041887f27e",
+          "occupiedBoundsSha256": "2ad53886e3bbc3243bffaee67aab5d950399ec72517cee6a82c0433bea26f2a2",
+          "opaquePixels": 562
+        },
+        "recover": {
+          "bbox": [
+            10,
+            16,
+            39,
+            45
+          ],
+          "sha256": "f8f9781090b205900385be12159d10bc1b4bae633b19179f90b0485e0e8d36dd",
+          "occupiedBoundsSha256": "189d5038ec330df2a0d83f5a95c189336feb93eea0c9293f4ee19425a5ed1862",
+          "opaquePixels": 517
+        },
+        "hit": {
+          "bbox": [
+            7,
+            16,
+            35,
+            45
+          ],
+          "sha256": "4ce7380f3615083bcaa37d08f22222cd2a74dac3602ee449d98359794f7efe86",
+          "occupiedBoundsSha256": "aa205941dce3b088d9b6c13835febdfbe5709011722f259fc5eef2c59b4ec806",
+          "opaquePixels": 543
+        },
+        "dead": {
+          "bbox": [
+            8,
+            38,
+            40,
+            45
+          ],
+          "sha256": "7b36431e0a0ecf9852888a119a09580df1dc9f82c6b28d386447e00f6556fd4b",
+          "occupiedBoundsSha256": "ec1e543932cb6428c23b4cce85fee601d579453d22567a7631c9dcffbfb4ddf5",
+          "opaquePixels": 148
+        }
+      }
+    },
+    {
+      "slug": "spirit-01",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "7abc88ca860ef3b3e331239a47533e70cb8da595495e4ded6b7e10405af62152",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            10,
+            37,
+            42
+          ],
+          "sha256": "4fc42329308bb1923d169bc87d0a384616b65dcbc6a2abc4e452abca62d0294d",
+          "occupiedBoundsSha256": "6ff2575ec361c939b55cd5fc17cd0a6c12dbfe0f4b1d65ae6934a41b157324cb",
+          "opaquePixels": 478
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            11,
+            37,
+            43
+          ],
+          "sha256": "8fbae405e0ba4a51b092e3f69be2a8e5eb1665b88e7c74fb970d5f3d42ac3f7e",
+          "occupiedBoundsSha256": "b3115edaa5c69097c4fd71942c13a62c82acaffd63849912198ff94768cf27f0",
+          "opaquePixels": 475
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            10,
+            37,
+            42
+          ],
+          "sha256": "81ff7ecd2e3a832142c789b855ef76842b8cb0c5b1412cae5d8633d07e5c50d5",
+          "occupiedBoundsSha256": "42a2a166d5f9157bcae24075c5a1e8b48e1c7163c2a9183d8fbfe73d290a4931",
+          "opaquePixels": 476
+        },
+        "windup": {
+          "bbox": [
+            4,
+            10,
+            33,
+            44
+          ],
+          "sha256": "0c8dbd504eaf22d8e743d5127c683e97501de23ade7bf7d1e4c386e00793ff7d",
+          "occupiedBoundsSha256": "0732e3fc2b3550842bc11c9702efd08b68c8569c9d51051956dbc338e4ad3ced",
+          "opaquePixels": 486
+        },
+        "move": {
+          "bbox": [
+            12,
+            9,
+            40,
+            41
+          ],
+          "sha256": "ef7a5a021526375b6b4e0febeb862fd77913824fd460ebe3fe38f032ad724e3c",
+          "occupiedBoundsSha256": "1bcddfc67a212dd0dac57a14c54be83e30e7bad0d6e2e51d3a47c9f0310fef0d",
+          "opaquePixels": 487
+        },
+        "attack": {
+          "bbox": [
+            13,
+            11,
+            45,
+            43
+          ],
+          "sha256": "452aaf5cae32fe4f1407ca310f6fe1d3fa5c58054315a95ecae693cde3e1c930",
+          "occupiedBoundsSha256": "0db05df613e8dc266b82c79cdcaa38c5443213e5068a69289aa01cde4287292e",
+          "opaquePixels": 525
+        },
+        "recover": {
+          "bbox": [
+            10,
+            12,
+            39,
+            44
+          ],
+          "sha256": "0685783783e82816fbb1f030e63a8968f507319a8a2cb42acf10e4b53ad5fe02",
+          "occupiedBoundsSha256": "7541a8a2f9829503992b30bd8916927d8f4a2adf7bf4de5b2528a859db0f5850",
+          "opaquePixels": 482
+        },
+        "hit": {
+          "bbox": [
+            2,
+            11,
+            30,
+            43
+          ],
+          "sha256": "65deed5c0320bacea32006d96675c58f1d38ce1d09a2fe91de091978f30e2bc9",
+          "occupiedBoundsSha256": "7c2125bc9785c05d8da0758c4a5401ff3dce3f840be103cae42fc5e8b3623594",
+          "opaquePixels": 445
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "d6ba417097ad5f417d7d137c718cd02ca6a4d78fe1291b844e6606e5e024a41b",
+          "occupiedBoundsSha256": "2c973625e200bb645a3d2d9811051da56ad0be67c73fc946080e66f014c036eb",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "ghoul-01",
+      "cell": 48,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "09f682934f195c725c5d6725194261c55ab2ea95be2b53722a7ac31e642fc740",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            13,
+            8,
+            36,
+            45
+          ],
+          "sha256": "f712c70f9c7187d1279f8639165e3758acb1e53963c143f01d9ce0b0df33709f",
+          "occupiedBoundsSha256": "59ebe519903e7fcfaba34906ee1bf74ee54d831cf996be8d9fb9ecfda253e3e4",
+          "opaquePixels": 487
+        },
+        "idle_b": {
+          "bbox": [
+            13,
+            9,
+            36,
+            45
+          ],
+          "sha256": "3a78b3c998eca5566f714790c915b48cdaea6b5d3238bc369f0d2f30cfca4cc3",
+          "occupiedBoundsSha256": "c4f837d00fb051fe865e458f059eacbb415ab3130489b35a5166eea3b3c9f1e1",
+          "opaquePixels": 481
+        },
+        "idle_c": {
+          "bbox": [
+            13,
+            8,
+            36,
+            45
+          ],
+          "sha256": "a4b85ca32eb637f071dd7dbcfb33bca004a4050bfe5520aabe76d9b2cf95eed8",
+          "occupiedBoundsSha256": "7314eb2b83950e283b5e696cc0e4afed7e282ade744ca20b90e80c1bcf9b0942",
+          "opaquePixels": 481
+        },
+        "windup": {
+          "bbox": [
+            9,
+            10,
+            34,
+            45
+          ],
+          "sha256": "e03ea224c6e3172388f7a8473f2f77faa92f1730e81ebd9ede82ec210495512e",
+          "occupiedBoundsSha256": "5bb0f35fd4d755cc7cbfe1f3d0097f379afc7bf8e2e60e1371f8779581a696e0",
+          "opaquePixels": 532
+        },
+        "move": {
+          "bbox": [
+            10,
+            7,
+            39,
+            45
+          ],
+          "sha256": "15b83c79beb1a716e2ed899714d4bdb44b1ed0ac0f2b9df8f7d45470e5256d0d",
+          "occupiedBoundsSha256": "a9fffbd5a761b5d3f54db120a7e984c6b18f25c6ea34eccd6d4c540edcb2a70e",
+          "opaquePixels": 536
+        },
+        "attack": {
+          "bbox": [
+            13,
+            9,
+            42,
+            45
+          ],
+          "sha256": "7621ceb5219b82a653bfda7c86b6dfa001b3679729f5991118d11900c0ae116e",
+          "occupiedBoundsSha256": "794f8689659f302508575d10bdd410cd0333e7ab14377e72478bcc5d2ad57882",
+          "opaquePixels": 516
+        },
+        "recover": {
+          "bbox": [
+            13,
+            10,
+            38,
+            45
+          ],
+          "sha256": "dab0228bf52d858c175e6fca751c41a41df531bccba06cfd129a9552943c05fb",
+          "occupiedBoundsSha256": "5657b52c0b1e74235129aa9cd00ba686f5741dc8555392892496ba2dcbe25daa",
+          "opaquePixels": 484
+        },
+        "hit": {
+          "bbox": [
+            5,
+            9,
+            34,
+            45
+          ],
+          "sha256": "9392803ae885d586980f0d89b822ae23f01036594d4c271034fa199fd5a2bd79",
+          "occupiedBoundsSha256": "0b8d15f215d036b22a3c7e7403f85dbc9272d43f38c1d17d4d0c08bf5f0c5365",
+          "opaquePixels": 502
+        },
+        "dead": {
+          "bbox": [
+            8,
+            32,
+            44,
+            45
+          ],
+          "sha256": "466cd9aa1f9f5b1860b639c80529bf5bc8912b18aca5acd8c84df06258f0b76a",
+          "occupiedBoundsSha256": "6018969e3a2347d79ba786865e8666bd47985bbce3fc36e34af1921fa7871899",
+          "opaquePixels": 266
+        }
+      }
+    },
+    {
+      "slug": "specter-01",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "b6c01878c781d76f6f5221cb7498c97c9b68b2c65f4307d09c4ada94c431351b",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            10,
+            37,
+            42
+          ],
+          "sha256": "39f917a3ae7c272001676c855d117bd43b54894a5ca25a74419ab95649a5c81f",
+          "occupiedBoundsSha256": "2d6dc430f48cebbc2e8504a8cbc810cf4b274dd2a7aa5440fe710255eaf1443e",
+          "opaquePixels": 505
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            11,
+            37,
+            43
+          ],
+          "sha256": "76df6ceae0e34e9d958dfbb33aaa847fe00136b4b4745218929e1100520dafc9",
+          "occupiedBoundsSha256": "bc20ad3d079fd5adf34d95220851a75215ed13b73c6161913aa142c7916641df",
+          "opaquePixels": 509
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            10,
+            37,
+            42
+          ],
+          "sha256": "25eabb0f56159243137a945affea18ada24b4a8de970361d56521b1cdf615ea0",
+          "occupiedBoundsSha256": "f164805662620c7ccea9d552c3f37835196b2f0e962f91de6d9798ab2dec95fd",
+          "opaquePixels": 495
+        },
+        "windup": {
+          "bbox": [
+            4,
+            10,
+            33,
+            44
+          ],
+          "sha256": "bb5194ed4a6892982008c371bab626b007980f0d9db1a566b9e02c8bae6d537a",
+          "occupiedBoundsSha256": "eac00650a5b9fc910ab67eaf633eb745fb9886124e1e19c18d28903cdf972c9c",
+          "opaquePixels": 500
+        },
+        "move": {
+          "bbox": [
+            9,
+            9,
+            40,
+            41
+          ],
+          "sha256": "cc60836b7460929a23c3b0c5b2be15c5ce8ae24d64825714bb69a5d46a2f42eb",
+          "occupiedBoundsSha256": "08adf29b0c9be4048784229a38b0ed3a735fa54ac725994236544b6b5c4b2261",
+          "opaquePixels": 531
+        },
+        "attack": {
+          "bbox": [
+            9,
+            11,
+            45,
+            43
+          ],
+          "sha256": "fdbf90b290bba28350b95163e308d19b52f17d97bf9f3102062eaa8e3766e4ad",
+          "occupiedBoundsSha256": "84bbd31597db50cd73f01ceee9910c1b05c8038e5e147d5e4d413f7991a27876",
+          "opaquePixels": 579
+        },
+        "recover": {
+          "bbox": [
+            10,
+            12,
+            39,
+            44
+          ],
+          "sha256": "1ddbcbba27bb4a57f66482245e80aa294715d6943fe2067577bf482d7a7657c9",
+          "occupiedBoundsSha256": "c4ae6fddf57ddeb0c937d195b73932015a5eadccf2a3d5bc7af4e1bf8f4f6ee7",
+          "opaquePixels": 514
+        },
+        "hit": {
+          "bbox": [
+            2,
+            11,
+            30,
+            43
+          ],
+          "sha256": "56b8e6c98da7f8014e8f4b0107b86851cc42c52ff3254ef2f6fda6d6dd65eed5",
+          "occupiedBoundsSha256": "bca54903db24b224004a0f963722ce32f7305fe869ccd8878fd6443c5b651ee2",
+          "opaquePixels": 453
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "25fdd3b78c0dea5e8098c421e248bcd1c7e0fd07f603ca47a1bc424fd9a951ad",
+          "occupiedBoundsSha256": "36f74e9c610947a53fd16af8ca249153d55d8544c0f3d61d50d62955c68d6dc7",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "lemora-01",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "d1bc1c6fd590bd2ce10e874ffc1f02a9e6a0c8c262d8d56ee92a18058c2d5853",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            5,
+            60,
+            61
+          ],
+          "sha256": "010fd7aeb758d6ce9570b2759fde4921244ee2146b8e147824d0c64adb0819d6",
+          "occupiedBoundsSha256": "42696cad213896f3be0eaf84d72448c0960b0a3b71c281759b38e2c5d20de348",
+          "opaquePixels": 1665
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            6,
+            60,
+            61
+          ],
+          "sha256": "51bbbc6ca7381faa573f4d4c2c6d68839b98a4e1e7eb90aff9eb80b4f8b4cd53",
+          "occupiedBoundsSha256": "6a631414829cf21a7c8c9ad8c8e99136fab2bbe173c5ea3ce978329dac0711fd",
+          "opaquePixels": 1683
+        },
+        "idle_c": {
+          "bbox": [
+            7,
+            5,
+            61,
+            61
+          ],
+          "sha256": "02bb0c1e372dd3cdb5fae8e58e10b12992dd3bf5c6ce0365be792de4a239d294",
+          "occupiedBoundsSha256": "4ec4f03d5cd9c4511a10403779e107d5df0943fb7b9a47d326383139bb3731a6",
+          "opaquePixels": 1648
+        },
+        "windup": {
+          "bbox": [
+            7,
+            7,
+            58,
+            61
+          ],
+          "sha256": "025c40efc57672621218daf19e238bdb4dd46766bec3634ab34962f4780ef234",
+          "occupiedBoundsSha256": "4e1575a271b570ba50a4f2b95fb1da1b5cd3179bea5cb6147df0e6e94f9a0f88",
+          "opaquePixels": 1557
+        },
+        "move": {
+          "bbox": [
+            7,
+            4,
+            62,
+            61
+          ],
+          "sha256": "e1c524ae050bea4b82d034827681555adf60a71fce2eb7d62628f154cd50859b",
+          "occupiedBoundsSha256": "f23c15da9e4df538ba282265c17d62507ba4e28ff171a620317f7ba0c77650a0",
+          "opaquePixels": 1748
+        },
+        "attack": {
+          "bbox": [
+            7,
+            6,
+            63,
+            61
+          ],
+          "sha256": "43783ae4c0d2a24076b714167d855578055865850948b21eb49aa9357f6e2600",
+          "occupiedBoundsSha256": "9342b56f41d9aa99806edc23e23224562f8debbc6abfa5af4cdaecf3a40e9caf",
+          "opaquePixels": 1777
+        },
+        "recover": {
+          "bbox": [
+            7,
+            7,
+            61,
+            61
+          ],
+          "sha256": "d171f51652c9d855609bf25c8cae37bfa09c339b0bb978bf943ffd12c2324cb2",
+          "occupiedBoundsSha256": "06f001ea2589797918208edd4155b9000b0c2a180026ef8f4d579aa0d2aa8e9c",
+          "opaquePixels": 1679
+        },
+        "hit": {
+          "bbox": [
+            7,
+            6,
+            57,
+            61
+          ],
+          "sha256": "d0ef2c96d8ad04e2c7718b5bdf5267fecc62966957ad8f154a33a5a06e37bc23",
+          "occupiedBoundsSha256": "30188ba39703c52ee894f8bab5b6eec0387593d0d64a27e13f680fd1ed58c8fb",
+          "opaquePixels": 1538
+        },
+        "dead": {
+          "bbox": [
+            4,
+            47,
+            60,
+            61
+          ],
+          "sha256": "8bc7b7fb2c9498949ddc36c083285d930521967b73f17d4dc2980e795ceaeaed",
+          "occupiedBoundsSha256": "9025014982fc028c3c7580a91c0de4e1c01bfe01f038c2f5418bea2a3370c453",
+          "opaquePixels": 621
+        }
+      }
+    },
+    {
+      "slug": "sylph-01",
+      "cell": 48,
+      "colors": 5,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "8490f7557aa86e09b2c720c1b64d225c4b0d4c70f2a60c5696c9eb1c30806028",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            4,
+            37,
+            42
+          ],
+          "sha256": "17e8de2f0c726297d76660d18914e2635aef21ee1afeb655b7c9218c4c6de0f3",
+          "occupiedBoundsSha256": "5996e4f773c905c208484b4bcf95679b68ab197c3f8612de5a40aed2f6ff5a19",
+          "opaquePixels": 645
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            5,
+            37,
+            43
+          ],
+          "sha256": "a1ec58f87eb51367babd65ada72ce57b0ba7566a8c0e33c315ebf2d2d06546f2",
+          "occupiedBoundsSha256": "e5a9279a0cc48bef291bd5dc819b64043bb1ee16a9bae5d656d429bbb9cc31fc",
+          "opaquePixels": 649
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            4,
+            37,
+            42
+          ],
+          "sha256": "24f4525650c005b6fbdee04459c8ff02f24ddf76b55492f73ab6b9d75efc1732",
+          "occupiedBoundsSha256": "7119d235cbd8ea91c5797f2df91afb95259b725aad0df475f7140a4481111b82",
+          "opaquePixels": 631
+        },
+        "windup": {
+          "bbox": [
+            4,
+            6,
+            33,
+            44
+          ],
+          "sha256": "9bc1d214d48e5e75b8a99adeded16968d12209b12d8d9f6ac0861bc98b94deba",
+          "occupiedBoundsSha256": "03eededd17c93f1f18424406df0822efc679ea295b9269e58d2884e45b2b2bef",
+          "opaquePixels": 608
+        },
+        "move": {
+          "bbox": [
+            9,
+            3,
+            40,
+            41
+          ],
+          "sha256": "03efa97f4f7b0609b159b7463ca285298b7a367a149c2c68b3998caea53d5750",
+          "occupiedBoundsSha256": "fc4c0c7936ebf8e104c6f7048a6ad0c71e34fcc6fc89401fbdb546f5ebf3dffb",
+          "opaquePixels": 675
+        },
+        "attack": {
+          "bbox": [
+            9,
+            5,
+            45,
+            43
+          ],
+          "sha256": "ae9ec8392d5e49860da0752dcaf050f8d4a9fa7afd7ce4f1c2d647b1943e30b1",
+          "occupiedBoundsSha256": "dab25738d354da669677fd27a57e2e318218de13b7100ed6485bd1e8b7cc3dbe",
+          "opaquePixels": 730
+        },
+        "recover": {
+          "bbox": [
+            8,
+            6,
+            39,
+            44
+          ],
+          "sha256": "b261a89b5645c35c7fe735d61720f4e8fd6d9d69be9b2a3bb39f8186f7bd7557",
+          "occupiedBoundsSha256": "a9b4a4a7a7633c696f7c154f26b438098e7aaf2df74236f24b0e954e30e5dd4a",
+          "opaquePixels": 659
+        },
+        "hit": {
+          "bbox": [
+            2,
+            5,
+            30,
+            43
+          ],
+          "sha256": "05025b1e31b7f533e8756f75679f7c2fcf717f3e3603cac98739c80f5a470da3",
+          "occupiedBoundsSha256": "2dffc26a3bc07218124fd9b669101f3f6aa3a4a10d66d1f0d8c4e95b65e7faf5",
+          "opaquePixels": 595
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "0f0f0962e49c5e7291832b745df447fb825f32ce706e3c847c3787a90d97a0b8",
+          "occupiedBoundsSha256": "fe4c72dd011d806fd4f7826348913dd73f0ec15d8d3b5c2489cb855f753105c2",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "king-slime-01",
+      "cell": 48,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "d4bdc8bd66ba7b9b8dee481ef6f176fcc972b3b6c90918d14b00f217cc777104",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            9,
+            7,
+            39,
+            45
+          ],
+          "sha256": "bdbbbd0aceb8b7009c86e75afd5b8ea7dcdc8aad8a2de5b62b968a7e76ea5855",
+          "occupiedBoundsSha256": "6e8ef8fd56d37da5067ee58333fc3b1577354aaaf628ff8923730c7209b72d86",
+          "opaquePixels": 826
+        },
+        "idle_b": {
+          "bbox": [
+            8,
+            9,
+            40,
+            45
+          ],
+          "sha256": "120fbe90b74d1f73215bc0d3c9620f60ee4fc85b9b278176db2f5e210ffc0b87",
+          "occupiedBoundsSha256": "cc8d1a27ab659c45c94660c890479bbfb6a8d628919a36608b44c9d26b636b97",
+          "opaquePixels": 822
+        },
+        "idle_c": {
+          "bbox": [
+            11,
+            5,
+            39,
+            45
+          ],
+          "sha256": "e9844811c9cc88fe21d298557ad08175663876ef1b29197f006e19c85c0d2797",
+          "occupiedBoundsSha256": "9f5fc04f27d1c7f61b3c5a146d9c45c6b0749b21f44c576d4016fe2aca694dd1",
+          "opaquePixels": 819
+        },
+        "windup": {
+          "bbox": [
+            4,
+            13,
+            38,
+            45
+          ],
+          "sha256": "d63ee8435778f1c3f26055703d7f057cf33ef39cfb45679d046ee12368f44f13",
+          "occupiedBoundsSha256": "0478f15845ec8cd973c1fac8658d3a5440dde89db492dc0e737a866489e4a680",
+          "opaquePixels": 752
+        },
+        "move": {
+          "bbox": [
+            15,
+            1,
+            39,
+            45
+          ],
+          "sha256": "7a2ca3efcd6af3e8a2172a825d120b7daf5ab0e73085ad9fc76d6505d7b82bd5",
+          "occupiedBoundsSha256": "606ffa81a51cf12090d1b9b154b2cdf7868348c8765bd0fb89854910a4c49661",
+          "opaquePixels": 768
+        },
+        "attack": {
+          "bbox": [
+            10,
+            9,
+            46,
+            45
+          ],
+          "sha256": "69e90173e1da9f28b90afb21c85815a72cdcc25db5c1ae9558c026f0a6041846",
+          "occupiedBoundsSha256": "841399592886d6f5f9e7fc2be6e73ae2977676a032ecd178af3821c0c2d71794",
+          "opaquePixels": 910
+        },
+        "recover": {
+          "bbox": [
+            9,
+            11,
+            41,
+            45
+          ],
+          "sha256": "e64c5e81b0f540262a74bc0fc5b279e2c43738bbb7fcbe198c3762706d0bd7bb",
+          "occupiedBoundsSha256": "df1d28a39bff12537bf8d0f06e73ae0239526d0c2377fd6439b90a08384dc84e",
+          "opaquePixels": 762
+        },
+        "hit": {
+          "bbox": [
+            7,
+            7,
+            35,
+            45
+          ],
+          "sha256": "de995a46c58ce0430d2fb58c1edfda98aa416524f2be16976fe6ff8c72586514",
+          "occupiedBoundsSha256": "34b08322d8127ac54119ccf0626df02f936b67150c65e20dee7fb32e999b52af",
+          "opaquePixels": 772
+        },
+        "dead": {
+          "bbox": [
+            8,
+            34,
+            40,
+            45
+          ],
+          "sha256": "97ee4f939b5b3e30fdd1be6f3cf9a819cec5750f7e2470b168e5cd3d424c4efa",
+          "occupiedBoundsSha256": "d407083676703267eaee35b1c7eefc367d3b84769f1a26468687e0cca7d3e591",
+          "opaquePixels": 174
+        }
+      }
+    },
+    {
+      "slug": "slime-blue",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "52ca84920f89a9e786c1ba8f3ee124307d90539d49e44855c1e73ea743e3876e",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            23,
+            38,
+            45
+          ],
+          "sha256": "6b57a120e8ea7362d83294c9827a6520a05f82bbdecea03fd0c9d519c2abaa5d",
+          "occupiedBoundsSha256": "8b7f39afe8458f04cc155debcced52dafffbbf127dc235730d04b52f106f7a37",
+          "opaquePixels": 508
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            25,
+            39,
+            45
+          ],
+          "sha256": "38d020cfc7744ab5fbd83ddf8875223d8ff27d633b7797c57a40f23215c9872f",
+          "occupiedBoundsSha256": "fd421b64d9aff519996735a283a9309fc6f39602264d52a153ff8366ecaf0e1b",
+          "opaquePixels": 500
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            21,
+            38,
+            45
+          ],
+          "sha256": "b7feec050698fd7a55080dbd296f17b23da7c0de5aec1eb1c653cd4df356183d",
+          "occupiedBoundsSha256": "012ab4d0092d00b24ca5f9d93ba9da763a70f2f060971f444793add39cfb1bd5",
+          "opaquePixels": 514
+        },
+        "windup": {
+          "bbox": [
+            5,
+            29,
+            37,
+            45
+          ],
+          "sha256": "ec7df66a22fcd5728fae210d3fbd11ac7c2c235eb2f69acc1a9f35b9028dafe9",
+          "occupiedBoundsSha256": "5a68c791acf6856abffbf820836358a673301afa5b6e747d78ff78477878b701",
+          "opaquePixels": 426
+        },
+        "move": {
+          "bbox": [
+            16,
+            17,
+            38,
+            45
+          ],
+          "sha256": "0a069f7f40317c252f92a68da20b47c536e9f07860bfab9a52bea547999f8f79",
+          "occupiedBoundsSha256": "dcc4b740cf74c455b93484b6413d7cc8379bb91700094fa72e72241b22f57ce8",
+          "opaquePixels": 492
+        },
+        "attack": {
+          "bbox": [
+            11,
+            25,
+            45,
+            45
+          ],
+          "sha256": "44d602181724fe82af795586030b057078f3f90e5834d62e7e2be2294304421d",
+          "occupiedBoundsSha256": "5541f19155d8e0b91730de984fa0af2a63063f718f519d1b79cc15aa6ca92c31",
+          "opaquePixels": 566
+        },
+        "recover": {
+          "bbox": [
+            10,
+            27,
+            40,
+            45
+          ],
+          "sha256": "9e4281bd6fe2fa93fa6eddee8cf5cf4fdce43a94abe32796420fd5e810e3006e",
+          "occupiedBoundsSha256": "a177d8dff74fbaa486ef2b692858acb0472be72b006be99bb62a00a05c2c7b60",
+          "opaquePixels": 448
+        },
+        "hit": {
+          "bbox": [
+            8,
+            23,
+            34,
+            45
+          ],
+          "sha256": "20ed83c309e4b0e507f688b2a5060fcdb145e9e6bfb449f0ace65db5b2a60ea6",
+          "occupiedBoundsSha256": "dc114f644bfd65cf0e028ad1835cd60af90fb96231eb50916fd0452d63315b31",
+          "opaquePixels": 472
+        },
+        "dead": {
+          "bbox": [
+            8,
+            40,
+            40,
+            45
+          ],
+          "sha256": "e39499d4b96be66f6e0ecb1d333e1ef823ceea37cd1238cd883a0bce8fb2b29c",
+          "occupiedBoundsSha256": "c5947eb1a8328a3b7c2d5be499a2b03fefbcfb3330414dbc38e4588e5e8e511e",
+          "opaquePixels": 118
+        }
+      }
+    },
+    {
+      "slug": "slime-green",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "31ba70f498dcde8ece12f3636157919f9ad1f0ac0d6af149a357fedaea67441b",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            25,
+            38,
+            45
+          ],
+          "sha256": "58b5a26dee1aa0cbbfce436b4edaad3924ea91d155d65e038875eec87eb5557b",
+          "occupiedBoundsSha256": "761a47202e5ae2d1aea928a94397e804b17ba18f29da39a58e32a26b681f3fb0",
+          "opaquePixels": 468
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            27,
+            39,
+            45
+          ],
+          "sha256": "208ff9cabf4baef30e7ec6f76bf9ee5fbaa475c15b14ae865eccca1aa37720ba",
+          "occupiedBoundsSha256": "31e21fddb1b8df7092288f76144dfd2c512b24f0c2ce031a405c349df89fccdf",
+          "opaquePixels": 448
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            23,
+            38,
+            45
+          ],
+          "sha256": "aa2fdf3c7927f061ddc07e7ef7706edef532598cbe15e0743e4366bd4bed0ac9",
+          "occupiedBoundsSha256": "891802b0a681960df9280433983a6394861019446e8d619dc0d78928c961525a",
+          "opaquePixels": 472
+        },
+        "windup": {
+          "bbox": [
+            5,
+            31,
+            37,
+            45
+          ],
+          "sha256": "2ce248902031457f9100044e50aa9ab4abf7586c6225219b4c90e1c8278bed1c",
+          "occupiedBoundsSha256": "10fc81f9456c516d3bb2287696f9c028449742f30bd840de6b77c68ba68d500d",
+          "opaquePixels": 377
+        },
+        "move": {
+          "bbox": [
+            16,
+            19,
+            38,
+            45
+          ],
+          "sha256": "0655f536df956871fb904d61f2777a47cea02d24dbdf9b37ac5cadbe7e325ef1",
+          "occupiedBoundsSha256": "f8c319ecc7e861548721326d420da4bec75ce34b9cc7b4d04601d724015f3ccf",
+          "opaquePixels": 460
+        },
+        "attack": {
+          "bbox": [
+            11,
+            27,
+            45,
+            45
+          ],
+          "sha256": "2ff706f9d9391a70eccc5e553669d22ff347cc53081c98f0cd7af6eb08cf9544",
+          "occupiedBoundsSha256": "6277217ea3fec26b1cf4fd2dbe84f5973432e10c0ca1713d5c0be4644eb8623b",
+          "opaquePixels": 516
+        },
+        "recover": {
+          "bbox": [
+            10,
+            29,
+            40,
+            45
+          ],
+          "sha256": "dffce167d4f7e60345e0a467cfd69e54f99c802aa826c9a74247cf060eadc164",
+          "occupiedBoundsSha256": "67ff96d9095117896ea20f18af90320a40312d41cf141beb4d303edfc9234bd9",
+          "opaquePixels": 396
+        },
+        "hit": {
+          "bbox": [
+            8,
+            25,
+            34,
+            45
+          ],
+          "sha256": "d89f6876d17946239ff3c02512e79c9cf207cee59de68a091b83b6c4aebceda4",
+          "occupiedBoundsSha256": "d3312ae3762e391dc330a56ea23775fe6510a6a6ef065102016ef43d72095908",
+          "opaquePixels": 428
+        },
+        "dead": {
+          "bbox": [
+            8,
+            40,
+            40,
+            45
+          ],
+          "sha256": "f104fe24b520412206fde327b109566031b2088d50d09046029e077f9e18d43c",
+          "occupiedBoundsSha256": "36b82dc737395a103593a3d36e6d85f16ce78637a672845e055cd2be40a21ca8",
+          "opaquePixels": 118
+        }
+      }
+    },
+    {
+      "slug": "slime-metal",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "497ec71f6d8e17854fef3c997268fb09bd08521bfb71a391056d51f7fe4b8fa3",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            29,
+            38,
+            45
+          ],
+          "sha256": "aa7e649073474e44bf5e71926256219b49d51c49b8b6d63e91d70b91f19264d7",
+          "occupiedBoundsSha256": "f11b8559ff58c763e1a02130378ed2e45555aef362b4c508195d602ba7acdf1e",
+          "opaquePixels": 374
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            31,
+            39,
+            45
+          ],
+          "sha256": "014b5decc2dd39dcbc17a5de034126246aa42fca6dd05178f3b47d6e0f0bc894",
+          "occupiedBoundsSha256": "b1d451c75da6bf5d448fa3fe50c7a87218c636ccb6ce02d71163aa52b6bbfb57",
+          "opaquePixels": 351
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            27,
+            38,
+            45
+          ],
+          "sha256": "4dc380ec41c2470e98663e1d5a92532d19d568a7c99ef9235ff92a0124058d8e",
+          "occupiedBoundsSha256": "68eeb16a20f1b1ed6d079ccef78fd72638128a22038b138db44aa4fbde857272",
+          "opaquePixels": 382
+        },
+        "windup": {
+          "bbox": [
+            5,
+            31,
+            37,
+            45
+          ],
+          "sha256": "2f5286c27c8ed2c1bab6fd0555bf899242596ba67838b9fafdd8b3d13b965e1c",
+          "occupiedBoundsSha256": "7ca12527adb5fdd3ceadcb6f0820cc36d037ec129213b56b175caadd88996c55",
+          "opaquePixels": 296
+        },
+        "move": {
+          "bbox": [
+            16,
+            23,
+            38,
+            45
+          ],
+          "sha256": "0a7eaedb2d0461db0e42282075de08903c1d24bbbb894fe8c7db7e5cc3759009",
+          "occupiedBoundsSha256": "4c3189b90cbcca276d3aa975e7b5459cd4b4871fa2099926030311d365e6edea",
+          "opaquePixels": 384
+        },
+        "attack": {
+          "bbox": [
+            11,
+            28,
+            45,
+            45
+          ],
+          "sha256": "8eacf45690231bc64bfb11b06995131c0fff81216ad4a7358bc72e8d92f04b20",
+          "occupiedBoundsSha256": "f566afdf80f18dfbd2c3d3101cacb794bdc5a2d63b368131f982096814ccc347",
+          "opaquePixels": 422
+        },
+        "recover": {
+          "bbox": [
+            10,
+            31,
+            40,
+            45
+          ],
+          "sha256": "9e7e90edd36fe92cfcacd796f334524f85f716314822a1d0a2fc4fe61ff1cbd8",
+          "occupiedBoundsSha256": "f14d8b635ef81238de64899f391c8ff0a5949317abea157e5f2fd9501f8a4901",
+          "opaquePixels": 318
+        },
+        "hit": {
+          "bbox": [
+            8,
+            29,
+            34,
+            45
+          ],
+          "sha256": "0f205ecec97f68322de75a6f3ed3fb8f35b6c0b626a64d7d7995a8339d5c99de",
+          "occupiedBoundsSha256": "dc9eabc743fd7ae3fca2345efcd1fabe2a3ec637b3fc8786a2898e64e590552f",
+          "opaquePixels": 342
+        },
+        "dead": {
+          "bbox": [
+            8,
+            40,
+            40,
+            45
+          ],
+          "sha256": "f21a3c1faf3dee31f580be67408aa7c9dde1942ecd3201034d8c16fdc5c1eae6",
+          "occupiedBoundsSha256": "ea42994f4b8006ef04b0c49dc7274799cccfdd50f395c2c1fbaf877772951c2b",
+          "opaquePixels": 118
+        }
+      }
+    },
+    {
+      "slug": "slime-king",
+      "cell": 48,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "66e6fda524ad0f76e300debd622e924983aad15feaf9fcde84c18d95dda589cc",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            9,
+            7,
+            39,
+            45
+          ],
+          "sha256": "db6abae3205a3a6e497bb0bb97e8f5ab5f0d170321afcdd125953d147c145897",
+          "occupiedBoundsSha256": "884f49ec3907dd136a5fc36d9b57fe89f3d5b45893695f675a50e7289d0ca50a",
+          "opaquePixels": 826
+        },
+        "idle_b": {
+          "bbox": [
+            8,
+            9,
+            40,
+            45
+          ],
+          "sha256": "768159203e9fde1a0391a33d29b278d93d17601854e45ce66ddea2077bc914ce",
+          "occupiedBoundsSha256": "57b8403b8cbe2c9100deee108454169422941e45f7f1fcedb6f33a158ecd69f7",
+          "opaquePixels": 822
+        },
+        "idle_c": {
+          "bbox": [
+            11,
+            5,
+            39,
+            45
+          ],
+          "sha256": "c978798968616c4018f867e24cb37899f01780e236e6225a0fe14415fb5bbb7c",
+          "occupiedBoundsSha256": "3f684b72c34bb2c9ac93bc77908a381f936cb07c5edc715e8656eae9b578ce40",
+          "opaquePixels": 819
+        },
+        "windup": {
+          "bbox": [
+            4,
+            13,
+            38,
+            45
+          ],
+          "sha256": "db3a6b334cb022244de8315324741dc5946e3d577fdbe6e9c00bdea84e0c3b7b",
+          "occupiedBoundsSha256": "46a5abf291c54b4898edd33421fb06a7cd3a5bc32099b7bead2f5e86fbe1c85f",
+          "opaquePixels": 752
+        },
+        "move": {
+          "bbox": [
+            15,
+            1,
+            39,
+            45
+          ],
+          "sha256": "d652865842d7470eeef17cfeff1a352447151c55e5be7dbd5a444d2290140eb3",
+          "occupiedBoundsSha256": "5a3e8746d6d4caa55f5fbc18c2316bace264f841005fbceee1c3dba6e4cd2966",
+          "opaquePixels": 768
+        },
+        "attack": {
+          "bbox": [
+            10,
+            9,
+            46,
+            45
+          ],
+          "sha256": "c1078c61b3eda0078b32f6abb060c5afc1b4cc8a2ffcc5d7b3fb0a62827bfc26",
+          "occupiedBoundsSha256": "41bc5d17ed9c2b4cd0586705161f958d76a345f72517e35aa01602d8d8a39d1c",
+          "opaquePixels": 910
+        },
+        "recover": {
+          "bbox": [
+            9,
+            11,
+            41,
+            45
+          ],
+          "sha256": "7a1fd81e180decf5900ca94cf9f65aef605773412ce41324d95ec90aacb5eb89",
+          "occupiedBoundsSha256": "832af6b7d985752d9c574d9de30d7c084208cb6d205df4428de0205d0d9e7f34",
+          "opaquePixels": 762
+        },
+        "hit": {
+          "bbox": [
+            7,
+            7,
+            35,
+            45
+          ],
+          "sha256": "82a1173f4b1ee101722d7f6fcb2db284943a0c67af7ad98fa00bce823aebf583",
+          "occupiedBoundsSha256": "7c3028e396852e3c0cbacc1c138dba951c514a5508b9b3cef826012c3c7a1b0d",
+          "opaquePixels": 772
+        },
+        "dead": {
+          "bbox": [
+            8,
+            34,
+            40,
+            45
+          ],
+          "sha256": "6485c333cb7a036e6645d3b1926249a9e103bd88f8ae53e7993f9b0c1b6e94c1",
+          "occupiedBoundsSha256": "a22fd55e95fdb1823a7beda1d197a6a9d0e312fd8d5d6e8976524bb2989bf2d2",
+          "opaquePixels": 174
+        }
+      }
+    },
+    {
+      "slug": "slime-cube",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "6280b6a59bcff532d6b0e298dffb3a82078501401aea68f1dbc1a6b6399d209a",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            11,
+            18,
+            35,
+            45
+          ],
+          "sha256": "abec0b40e5c2d69d240c524229b10a3ca88e045983765c08930260e76583fb8d",
+          "occupiedBoundsSha256": "ef53a12576553462cfb7fa3e1ae4db1d05898676f6aa66ca99bed3cd9a85d702",
+          "opaquePixels": 551
+        },
+        "idle_b": {
+          "bbox": [
+            11,
+            19,
+            35,
+            45
+          ],
+          "sha256": "bb724afdc8c6398d4a60e361ced22375fe3fcf86df924a00c05202b37b9b66a0",
+          "occupiedBoundsSha256": "71a666e18419bef3fb6d8cb286a97b7188abb7ccae981a0767567430f47235df",
+          "opaquePixels": 527
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            17,
+            35,
+            45
+          ],
+          "sha256": "ccc7ce2a0505e195daf5029e4b5282e72fe5e1c8fd83be2f2f169d11b882b648",
+          "occupiedBoundsSha256": "74fcaec55aa1d1a5874318a14aa3e71697dce4ed8c359d1fbed0ea088f4fc7fc",
+          "opaquePixels": 551
+        },
+        "windup": {
+          "bbox": [
+            9,
+            20,
+            35,
+            45
+          ],
+          "sha256": "ac29149ae9840036e872bbfd63fff885fe7c655e7df676f136b76c2a2071b892",
+          "occupiedBoundsSha256": "bb0b2145e246b46cdbc07f14a2bdb2abca5592e305448f30dcd16d9cfe13cee5",
+          "opaquePixels": 546
+        },
+        "move": {
+          "bbox": [
+            13,
+            17,
+            37,
+            45
+          ],
+          "sha256": "e668d1e8d8608c9fa52e1adf772c8f6df28c2596d8daa54c95f96d1193da7d34",
+          "occupiedBoundsSha256": "1d0f3d8dfe434b0d266bdbf74a61ce0b43fbfd6a568979496100bb48287f2f92",
+          "opaquePixels": 575
+        },
+        "attack": {
+          "bbox": [
+            14,
+            19,
+            38,
+            45
+          ],
+          "sha256": "4fdbe9646e994a64533c15530d74a674e102582d3767218776808f69c2f52589",
+          "occupiedBoundsSha256": "18860ca8a2b8a43ae96277883123084622f74cc8e117370902980ef03b0289df",
+          "opaquePixels": 527
+        },
+        "recover": {
+          "bbox": [
+            12,
+            21,
+            38,
+            45
+          ],
+          "sha256": "6bc89752490c615b11a5c593b859cc79b35438460778066646e2edc2f9b9f647",
+          "occupiedBoundsSha256": "679b34639f64df924905c4538ea82c792984c5850c9cbe90bb18353dbe01a73f",
+          "opaquePixels": 520
+        },
+        "hit": {
+          "bbox": [
+            8,
+            19,
+            34,
+            45
+          ],
+          "sha256": "4116280af7c4ea0c853f0acd6d3c6c97d5844b1fb7f334f7cc1a6135327b17f8",
+          "occupiedBoundsSha256": "7a14000d4bb4d9dbcd49743a3e4b218c36308c87950e01d7d2a3eab3d7337d4f",
+          "opaquePixels": 572
+        },
+        "dead": {
+          "bbox": [
+            8,
+            39,
+            40,
+            45
+          ],
+          "sha256": "290cbe45466dc48c319ed443781b8ad1b1404f495abbb337e59bb0d8941717e3",
+          "occupiedBoundsSha256": "716efbdd141d0b1f13ea7e0daae3bc21be5a73f1fb10df7848d553d468fcc8f8",
+          "opaquePixels": 133
+        }
+      }
+    },
+    {
+      "slug": "ooze-black",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "3ee63aa3e08afab7ed291ea3c32b1125fc07e75af72ef86f96c8933e00837aff",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            23,
+            38,
+            45
+          ],
+          "sha256": "4f349d0cb3d0d54f76379e3297a5fe1668a888172c4075c3a1747f7272ffb10e",
+          "occupiedBoundsSha256": "ce1bf0532772a1260477ff792f997cd6710713a04d037ea4572421c08f7a225a",
+          "opaquePixels": 508
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            25,
+            39,
+            45
+          ],
+          "sha256": "591092378abcdbb6f82260395f500c88da4c9570474fd1a91019300e21083317",
+          "occupiedBoundsSha256": "5a93d40c9261135042b4906accbde0fc3d4fc0c88ca42df863a99524539e39af",
+          "opaquePixels": 500
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            21,
+            38,
+            45
+          ],
+          "sha256": "5b501e9a5e07dd4ebe59aac4cb02909f8648d6f440a61ae30b1b6446bff47028",
+          "occupiedBoundsSha256": "a8831b6b4f297a3bd153e198a7e89ecb17835de7f6ede3c7a123559245ac38e3",
+          "opaquePixels": 514
+        },
+        "windup": {
+          "bbox": [
+            5,
+            29,
+            37,
+            45
+          ],
+          "sha256": "0e192d4e6c7e367e3210995b38c45779413d5095be754a3079820d067ca0757e",
+          "occupiedBoundsSha256": "ee99905f3d458293c2f53831559f735b6c7b1b1a6ce83cba29a56a61c2647dac",
+          "opaquePixels": 426
+        },
+        "move": {
+          "bbox": [
+            16,
+            17,
+            38,
+            45
+          ],
+          "sha256": "6a86ced618c9563b258bd0c96b3f1dc972ccf4164c1dcfe384ac154d254761fd",
+          "occupiedBoundsSha256": "e951ee54142c7bbf57001746d9fdbd3bd41fe7a8982032ef0a0fc6cc09990759",
+          "opaquePixels": 492
+        },
+        "attack": {
+          "bbox": [
+            11,
+            25,
+            45,
+            45
+          ],
+          "sha256": "ba8e5af0c8ef7088c2e378260f907506939153032a98add088628b4c2fbbf609",
+          "occupiedBoundsSha256": "62fa7288a9d9d9483d66ce4639ed869b0b839b06af2e1540688d0068ad6b9132",
+          "opaquePixels": 566
+        },
+        "recover": {
+          "bbox": [
+            10,
+            27,
+            40,
+            45
+          ],
+          "sha256": "b880e9de7f8e4a3b93690aeafe58d442fc3b638f58dfbb7e0e78cf43f514fcb4",
+          "occupiedBoundsSha256": "b7e46e18900fcf56d355228c09438078cbcafc013ff9d7691585051c936db0c3",
+          "opaquePixels": 448
+        },
+        "hit": {
+          "bbox": [
+            8,
+            23,
+            34,
+            45
+          ],
+          "sha256": "40836975bd65e06fb4e1c7b2f0f67273ba109a8f95239694320ff6a5a1565837",
+          "occupiedBoundsSha256": "ea42587e3f3ddc0b49664da12ebcb98c4a17a0f849b23d50a1a167762b57c411",
+          "opaquePixels": 472
+        },
+        "dead": {
+          "bbox": [
+            8,
+            40,
+            40,
+            45
+          ],
+          "sha256": "30456fc146073156d9099c2e9f7fddcb78efdd05f0c5d772b17a16f389a59389",
+          "occupiedBoundsSha256": "e2acb4fd1dc31fbb753a439a18bb25a8e2365b81eddbaa3d5b78e5407aa06405",
+          "opaquePixels": 118
+        }
+      }
+    },
+    {
+      "slug": "ooze-acid",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "c6ebd2fce0509b246dcb1ca48092a3c256b3fafce68c855c1fe7e6eff3ac24b5",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            27,
+            39,
+            45
+          ],
+          "sha256": "2d7f967d35321d2085dac91d8b61b8733a5ab86410f86d1eb53081864ad5bb69",
+          "occupiedBoundsSha256": "06bbd7d57a5c3abe10410da6660eb53126b7de8d383599dd6369a1fe18301973",
+          "opaquePixels": 463
+        },
+        "idle_b": {
+          "bbox": [
+            8,
+            29,
+            40,
+            45
+          ],
+          "sha256": "0f5ae936721dcdfdf913a14f81bb0d4beb62e4c3c38c23723495b36e17cdf68e",
+          "occupiedBoundsSha256": "8d9b906cb8bc4ef4d1d3ac726812d950ecb7f7e172698452c190c7f2c513a92d",
+          "opaquePixels": 431
+        },
+        "idle_c": {
+          "bbox": [
+            6,
+            25,
+            39,
+            45
+          ],
+          "sha256": "a8d881f1204d944da1285ed102a54b46b0797ed673f9dc8c20a57aa97599bbf4",
+          "occupiedBoundsSha256": "b5f0847050b9fc8322c1084efba5ffccfa5d884c480819c9cff16ab9b367209d",
+          "opaquePixels": 497
+        },
+        "windup": {
+          "bbox": [
+            4,
+            32,
+            38,
+            45
+          ],
+          "sha256": "2fa53742b7b8a7eccb553a5d169aad067a24e9322919ad87d7f5f5fbbd8ffcaf",
+          "occupiedBoundsSha256": "2e4c056a14390cb1fc1658856e1e7ab7f4cb414b150a21dac886b39212ab0e44",
+          "opaquePixels": 346
+        },
+        "move": {
+          "bbox": [
+            10,
+            21,
+            39,
+            45
+          ],
+          "sha256": "eeda38c3e1abfe09bb8b47ea98cc8fb5394294733c7fe31adec3251afc64a0e3",
+          "occupiedBoundsSha256": "9db331c9e70e84d09bcc4af84d0e7698329e178ca2f98990c70a117701f0ab04",
+          "opaquePixels": 520
+        },
+        "attack": {
+          "bbox": [
+            10,
+            28,
+            46,
+            45
+          ],
+          "sha256": "fcff37ddab56a9e2210c3672338ad33c75ac3229bb674a6df576e0ffebeb1264",
+          "occupiedBoundsSha256": "d7a4caa1e1a5fbcff90492080ed9c9cc11d5d18241d4acfbb13066e0b7d47bbc",
+          "opaquePixels": 494
+        },
+        "recover": {
+          "bbox": [
+            8,
+            31,
+            41,
+            45
+          ],
+          "sha256": "1b8d10fb13e85ab12c0c9015b11c7286ee859215d64d3755a362143842ff7219",
+          "occupiedBoundsSha256": "03ee92ba4ebde5b38fb8f9aae88acf7ee85226b506a360b8beb0a510078a5f18",
+          "opaquePixels": 382
+        },
+        "hit": {
+          "bbox": [
+            4,
+            27,
+            38,
+            45
+          ],
+          "sha256": "215e31addfc1df5ca43305f4c5b18280fe87042663df59369d0fb9ad2faace0b",
+          "occupiedBoundsSha256": "c4a7476f469fce986baf8eaf47407ca8ff1490c59ae229b461d531cfe6a6d824",
+          "opaquePixels": 451
+        },
+        "dead": {
+          "bbox": [
+            8,
+            40,
+            40,
+            45
+          ],
+          "sha256": "caf772d6698f65e36956a627a033c5aa2add6f9282df9c2674dbe4314f55595b",
+          "occupiedBoundsSha256": "6ef5e9958560b70cd6ba70addabb5f8ad027220662ce385ee2b64dcb72a03c50",
+          "opaquePixels": 118
+        }
+      }
+    },
+    {
+      "slug": "skeleton-bone",
+      "cell": 48,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "dd841ee100fc7adc2de4f9842347efdfa4b6ddf7ffc2632e34ce141a960abdf6",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            8,
+            33,
+            39
+          ],
+          "sha256": "91825a4d3f7754d56c78ba03574793e90e398e0538f23ad762fa3732e663d7f8",
+          "occupiedBoundsSha256": "351e94a628301177c535d54df462e7029fe04421c2605927245f9d31bc8d1712",
+          "opaquePixels": 406
+        },
+        "idle_b": {
+          "bbox": [
+            11,
+            10,
+            33,
+            40
+          ],
+          "sha256": "ee519d1ba5d90a5f77688c3ce98fc4515f21d42a5caf4ad2746523d88133898f",
+          "occupiedBoundsSha256": "8b93baf7c0cf4fc1a404f7b4b86987c719c8c1819b9a8cf2c563a809f39124be",
+          "opaquePixels": 396
+        },
+        "idle_c": {
+          "bbox": [
+            10,
+            6,
+            34,
+            39
+          ],
+          "sha256": "cc57fff66f7f59a9e42dcf2e6aa0c0e65e48b3f4cc966f361a686cf6e29b6889",
+          "occupiedBoundsSha256": "6e846b3123c1396154bf71069ff1bc198c9b7b646e4005e8b8cdc7b2cf5e99a6",
+          "opaquePixels": 414
+        },
+        "windup": {
+          "bbox": [
+            2,
+            7,
+            31,
+            41
+          ],
+          "sha256": "b919cd13846e70a8b3803b780c67185c20702bc90e2471bd16fd07d2be43eda1",
+          "occupiedBoundsSha256": "c412a159d372afae21e8d14d52660583d2024e849f8508c9d87dead1f110cced",
+          "opaquePixels": 458
+        },
+        "move": {
+          "bbox": [
+            13,
+            8,
+            35,
+            38
+          ],
+          "sha256": "a53bdc4cd73ea70600dc1ed8feb8884ff8475ce4aec83781ed3b5b3f321d08ed",
+          "occupiedBoundsSha256": "9a010321659bfd0809774db1d3081c94e2e5bb1857d4424421f6e43e3193722b",
+          "opaquePixels": 390
+        },
+        "attack": {
+          "bbox": [
+            14,
+            10,
+            47,
+            40
+          ],
+          "sha256": "774679ece22de5b0192cdaac2d792a6c5f08fcc3b20cf1494c9d2ebfe3c8eb2d",
+          "occupiedBoundsSha256": "26bcd6eb3c2e3288f41d1b9bae61f73f1360a092a89cae35a5ecfe2aa4dbeeab",
+          "opaquePixels": 416
+        },
+        "recover": {
+          "bbox": [
+            12,
+            11,
+            38,
+            42
+          ],
+          "sha256": "bb469ff67ea51ae602e171a9f756e4a7f96acb0baedefbc12d7b8fa1210035b5",
+          "occupiedBoundsSha256": "c3aca2af2c383e3ff832b9968e125a0cc73874ca8c15f51504a40dd0785fd531",
+          "opaquePixels": 400
+        },
+        "hit": {
+          "bbox": [
+            1,
+            10,
+            31,
+            40
+          ],
+          "sha256": "4af942f916e0ad81a6ff3fad8468a4a93293295a8c7aa25d7d5c2cd539a5e230",
+          "occupiedBoundsSha256": "da5733ac7f5a14b4c51a9b5da60df4dc2f2c82621ac83834cd5c30bf731571c2",
+          "opaquePixels": 399
+        },
+        "dead": {
+          "bbox": [
+            8,
+            32,
+            44,
+            45
+          ],
+          "sha256": "bc67a6b10102ffb5fd64e38ad7781e7f0f6b944219a9610ad7757b12efc6d033",
+          "occupiedBoundsSha256": "7a4ce4eb21056f33fd77d7ea6aa466ba55e06df5c697fc46385e86e63228d76b",
+          "opaquePixels": 287
+        }
+      }
+    },
+    {
+      "slug": "ghoul-grave",
+      "cell": 48,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "396999ee3c4a853675e282c115d9bd6e1328af7d9a052741e689f70f6472c654",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            13,
+            8,
+            36,
+            45
+          ],
+          "sha256": "8571b79fcf2086fbdb9fb5d1a45092225a13aa3c4d33b626207ec9f20f47dbe0",
+          "occupiedBoundsSha256": "50553b567225e8acabd0367c0f1032538278dec1875f92312af105955d83107c",
+          "opaquePixels": 491
+        },
+        "idle_b": {
+          "bbox": [
+            13,
+            9,
+            36,
+            45
+          ],
+          "sha256": "09cbd593273ae2469ef8de789e1f8ce012c1a2fb2abaed8c1ba00ef51256b6c4",
+          "occupiedBoundsSha256": "d85014b774a2c2e1c10a14707358c4d8ecc38c21c2a9e3f07478983ddbfc1360",
+          "opaquePixels": 482
+        },
+        "idle_c": {
+          "bbox": [
+            13,
+            8,
+            36,
+            45
+          ],
+          "sha256": "3715018d34294901e4ca204533801dda02b211789771d67570f5582a56092060",
+          "occupiedBoundsSha256": "26cdb89bca37a3d4e09d640d751f0e77289a9564df26b6987198a00b85993058",
+          "opaquePixels": 484
+        },
+        "windup": {
+          "bbox": [
+            9,
+            10,
+            34,
+            45
+          ],
+          "sha256": "c1a0f751eef1ebcb7b5903fede4e02b34198a1e7f7dbd23434d0db78fe41b902",
+          "occupiedBoundsSha256": "2a2f11c81665988f978d2c76f62ee53754e7b56ce35c651cc498bdef8f457933",
+          "opaquePixels": 534
+        },
+        "move": {
+          "bbox": [
+            10,
+            7,
+            39,
+            45
+          ],
+          "sha256": "337240ab722a206552d98e332a4806d45c235eaa179d6f71b10a0f3b7e6b64ec",
+          "occupiedBoundsSha256": "a54853e30a5cc2a4877e9f7204be11b27f6287f05de2915d7b176b646b3c5a4a",
+          "opaquePixels": 539
+        },
+        "attack": {
+          "bbox": [
+            13,
+            9,
+            42,
+            45
+          ],
+          "sha256": "858b3ae401752a3baf00d084cc21a4867c2cf843722710cab56f2e1b02fe16c5",
+          "occupiedBoundsSha256": "46a2d061083d6e92dc5a54038377a043074565492effd0106bcd567fb872a26d",
+          "opaquePixels": 516
+        },
+        "recover": {
+          "bbox": [
+            13,
+            10,
+            38,
+            45
+          ],
+          "sha256": "0f947ac553b583b9bbd01f5836c05c6dccef8a8962bb1d718d64499d6e7af9f5",
+          "occupiedBoundsSha256": "a25724337f97e5e18e45b298d3cc08837ce7584554fe8466beddf454c198d3f9",
+          "opaquePixels": 484
+        },
+        "hit": {
+          "bbox": [
+            5,
+            9,
+            34,
+            45
+          ],
+          "sha256": "c3f83ec75c3c8943f69febe9dd4690da63e752e5ea3fdaf5371df839cafa9d5f",
+          "occupiedBoundsSha256": "8f885e7ab9b07745178b46dc8274fbc9eeac5a56a556be00a5d9398ace718701",
+          "opaquePixels": 506
+        },
+        "dead": {
+          "bbox": [
+            8,
+            32,
+            44,
+            45
+          ],
+          "sha256": "466cd9aa1f9f5b1860b639c80529bf5bc8912b18aca5acd8c84df06258f0b76a",
+          "occupiedBoundsSha256": "6018969e3a2347d79ba786865e8666bd47985bbce3fc36e34af1921fa7871899",
+          "opaquePixels": 266
+        }
+      }
+    },
+    {
+      "slug": "wraith-dark",
+      "cell": 48,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "5837c5b9ae8950de1b06b75a4bde0539a697b4adf15d2d68e1aa5967e7cc7e94",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            9,
+            37,
+            42
+          ],
+          "sha256": "aff6d2deeb6b693036ece64e1e2dd93e791b2f39bab6df230fe6ab6dbdafe245",
+          "occupiedBoundsSha256": "699c1e9b6dc1885a0c3e61d821a5865ed46a703e2226319cf89fe5e150a01a9f",
+          "opaquePixels": 599
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            10,
+            37,
+            43
+          ],
+          "sha256": "a84d6448d3219c897a7f322cb5c77af5d201d15d23a1cd52b2d4af0c39caf52f",
+          "occupiedBoundsSha256": "d86c125e285e5fc7ceea15573ec735e61369adccbdc65e67e922352fba47557e",
+          "opaquePixels": 602
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            9,
+            37,
+            42
+          ],
+          "sha256": "ec914d0d962011982647f68c02c88f0fdfd1b7c72f8d55f4f8536b2d621ee852",
+          "occupiedBoundsSha256": "ef9f38022327361080743ba625f3e88ee8cb9db0ea28e318594e561f4bc3b784",
+          "opaquePixels": 585
+        },
+        "windup": {
+          "bbox": [
+            4,
+            10,
+            33,
+            44
+          ],
+          "sha256": "9cdc8c99861da909d7bfd23344bc7558ea0b44b30e8b0d143ce3e37d900a2c4e",
+          "occupiedBoundsSha256": "b3391c483c6fa067ea4b40e9beaf329ddab9adcde5b7a2153bb5c96bed2c54de",
+          "opaquePixels": 584
+        },
+        "move": {
+          "bbox": [
+            9,
+            8,
+            40,
+            41
+          ],
+          "sha256": "f46d83bcd94369a231fb512aa58f622f2646cbc94812285a88e3d5b73f635ce6",
+          "occupiedBoundsSha256": "290f61cad8c0f153d8a2c95b6ae01fe65f09490b0d6fb667656a1f24e796645c",
+          "opaquePixels": 621
+        },
+        "attack": {
+          "bbox": [
+            9,
+            10,
+            45,
+            43
+          ],
+          "sha256": "e49a31557ac121295d27a30fc06d83a3148b44756af249e65a766e7cd43f5d65",
+          "occupiedBoundsSha256": "491e6d522b531a81c4a67ec40a9b8809f9d16e8e467687acfd947303657f2bc7",
+          "opaquePixels": 660
+        },
+        "recover": {
+          "bbox": [
+            10,
+            11,
+            39,
+            44
+          ],
+          "sha256": "28d76eb066364996b7dc00a7f4479625cc0394adcd037b677f7252ff99f6fb75",
+          "occupiedBoundsSha256": "3def342d3a6bbae070bbda796715b7b0071c219f72b2a59da093fea203a58f48",
+          "opaquePixels": 602
+        },
+        "hit": {
+          "bbox": [
+            2,
+            10,
+            30,
+            43
+          ],
+          "sha256": "b286333e62f2c7b8a32903d74b552946d774c3c7735016880fbcf39103e95904",
+          "occupiedBoundsSha256": "6485481579a8a68cfce1b4301f8d7aaca1c0c415bee9043f4608a3e9df9038c2",
+          "opaquePixels": 531
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "825239a594c151dfc9f5a84e470b9957a1a0fac5f1009640c5b1819a68f5d3e1",
+          "occupiedBoundsSha256": "a78c8d923a14d7d47d3fc173f4ee5f312eca1c9482a00836452a44e3290949e5",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "banshee-wail",
+      "cell": 48,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "c401771c9547cc79578a50808e5986bbf61ad3ca8159885f4a5dc15dd704e376",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            9,
+            37,
+            42
+          ],
+          "sha256": "51910720b88c390e820e06bd087d98e0a3c14e814057f1c07d6c9e38aee018d5",
+          "occupiedBoundsSha256": "20698f92dccb8b93559a06376b446c52f7259b43ca1b91624f7c4b8be07332cd",
+          "opaquePixels": 610
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            10,
+            37,
+            43
+          ],
+          "sha256": "c9b8ac1944502a5434e537e0da241ca89023c24806aac683281b665af003cdd8",
+          "occupiedBoundsSha256": "bc69c041c947dd7229d5e85020d621be2f03cb9d02d882e028ce4fa33a65bd58",
+          "opaquePixels": 611
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            9,
+            37,
+            42
+          ],
+          "sha256": "d12b552665e2bf187f8f77a09856ba3db878a0840aae536f77601bf7d7d65bdf",
+          "occupiedBoundsSha256": "dd9803758049ffb4bb6e1b7cf9a4b872d603d16bfa5d39f67bb53f2e440c2a07",
+          "opaquePixels": 600
+        },
+        "windup": {
+          "bbox": [
+            4,
+            10,
+            33,
+            44
+          ],
+          "sha256": "6f41230ff6e4474cd053f8dba678c9eba8c47457d96210c70c69dc9f620f1162",
+          "occupiedBoundsSha256": "58f37e523e1e022a069b89623d792edf3dad049f942c7549390c40544eaf8d37",
+          "opaquePixels": 601
+        },
+        "move": {
+          "bbox": [
+            9,
+            8,
+            40,
+            41
+          ],
+          "sha256": "286dd75c6f2fd9be39995a588746086c133799dcdcfb75671f055735e2b718f3",
+          "occupiedBoundsSha256": "7adeee55774db2dbd90ab0e87d08dacdb9d0e187b658dcfd638b8333a02e9fba",
+          "opaquePixels": 625
+        },
+        "attack": {
+          "bbox": [
+            9,
+            10,
+            45,
+            43
+          ],
+          "sha256": "9d6dcb1ac9f35454afc4627559de09b7941073ffbcfedfec1216fb65f1d6722e",
+          "occupiedBoundsSha256": "80b16c5608b56f61034b2ab8503ce8ee5209393468fa0108ac98674c5a532ff8",
+          "opaquePixels": 662
+        },
+        "recover": {
+          "bbox": [
+            10,
+            11,
+            39,
+            44
+          ],
+          "sha256": "7f1f24a05017fe64d6e6f7c24fb35a44d1f32d2429c5b14ce363622808a36ed5",
+          "occupiedBoundsSha256": "4da7159438dc5941ac59b29fe012bee0dd70e26e7df0836d3d6d2599bfc84218",
+          "opaquePixels": 611
+        },
+        "hit": {
+          "bbox": [
+            2,
+            10,
+            30,
+            43
+          ],
+          "sha256": "52362d110a9d443bc75bc4c2ba8b99b8ddc4177c478e81c55e7886e40484a1dc",
+          "occupiedBoundsSha256": "241f300705d37990e6930f169ec0321e77791cafa8590b32635b545b35742833",
+          "opaquePixels": 551
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "34ac8d25a3aa9f445c9657ffd26cd6d2ee510de2f8d350d5c88351dd6f8c23d1",
+          "occupiedBoundsSha256": "6c44fe5ec1735984dd897c3a71047e5d8a7ea2168307bf49ad6b6b8c959d2ba9",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "revenant-vengeful",
+      "cell": 64,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "be0efc8525b79346040b734b2ecfed723fa92284bb5fdf9807eaed48262e940e",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            18,
+            16,
+            42,
+            61
+          ],
+          "sha256": "7a335788e14e87a595af65304dffaa08a1064977587b8510b8f139dadd020149",
+          "occupiedBoundsSha256": "ac8f2d203fe87d054855ca4cc06ca303692178df5c76af5a6f21fa6bf35e2a8f",
+          "opaquePixels": 643
+        },
+        "idle_b": {
+          "bbox": [
+            19,
+            18,
+            42,
+            61
+          ],
+          "sha256": "a7182d406804014ea906eca295c63e14592de6ec19c3fce8a735159fd07d36dc",
+          "occupiedBoundsSha256": "4ded09228814b00cf165c7b0a77c5e1f891a21cb5618f78baaaf571c912bf752",
+          "opaquePixels": 626
+        },
+        "idle_c": {
+          "bbox": [
+            18,
+            14,
+            42,
+            61
+          ],
+          "sha256": "3078f8faf8a5156c666c4b608396f43f9a52a50c9075e0d2727755dc9f3c242a",
+          "occupiedBoundsSha256": "e06110e15ecb7710c3ea32830d187df6def136263b73e69e90cfa5ec90f0f6de",
+          "opaquePixels": 656
+        },
+        "windup": {
+          "bbox": [
+            10,
+            15,
+            42,
+            61
+          ],
+          "sha256": "33a94398a5cdc6ac99cba1bb3fd7b0c090ac3ec1a93efa8b35e100e32044e24f",
+          "occupiedBoundsSha256": "7f5df85e62a6a652fce14d77c59e73bccd432f664f28c522b65ca7b0199f01b7",
+          "opaquePixels": 687
+        },
+        "move": {
+          "bbox": [
+            17,
+            16,
+            45,
+            61
+          ],
+          "sha256": "c60b9b17a25bfd8eaccca29c8abb8373789213aec1b55fc2a68dcf17fef40539",
+          "occupiedBoundsSha256": "5ce852a75d08091f1fa46c0099b6ff098e4959d8f244f270192617b8b42baec7",
+          "opaquePixels": 661
+        },
+        "attack": {
+          "bbox": [
+            20,
+            18,
+            63,
+            61
+          ],
+          "sha256": "aba083ff8a82440380e04eedcc42c5c7a049f7332a94bea4a32246613b70eecb",
+          "occupiedBoundsSha256": "9380d96ffc01332bdfd16ada896f429bbe25828e68b031055079691f9a4f0291",
+          "opaquePixels": 670
+        },
+        "recover": {
+          "bbox": [
+            20,
+            19,
+            46,
+            61
+          ],
+          "sha256": "50d18e78b51f5f68067ae7ba2e8e89493464f113acf5cfef8af23f1d3a736f0e",
+          "occupiedBoundsSha256": "bc25ca6c048ffd23f8a2cf8d0988245411b5dd7cc25f20084d1d5949c360e87a",
+          "opaquePixels": 615
+        },
+        "hit": {
+          "bbox": [
+            8,
+            18,
+            42,
+            61
+          ],
+          "sha256": "b716b92670176a8ace1b78681c35ce0abd361c1b28bdb31470efc9d004fbe7b6",
+          "occupiedBoundsSha256": "fd60de9f74eda7d1c0f094ee586decf3ff19a1dc25337072a4f7d802a8e2af1b",
+          "opaquePixels": 648
+        },
+        "dead": {
+          "bbox": [
+            8,
+            48,
+            44,
+            61
+          ],
+          "sha256": "f94a4924051c5bed0d94f51d213d386690a12f268a651f2c6b8413c23745967c",
+          "occupiedBoundsSha256": "6333527dd84928f9eff5ac4eac2fd837d4047ce923a2e8634f7e0842b176c7dd",
+          "opaquePixels": 287
+        }
+      }
+    },
+    {
+      "slug": "bonepile-crawler",
+      "cell": 64,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "c81390b2c2a9c930cbc4af86fd70de358a3bc06589858575e6433c8219283fba",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            25,
+            57,
+            61
+          ],
+          "sha256": "3e736f40af5a95f3f86c7fb9a22dfdac39f3ef9507b938a42f2d7cb8f0afacb0",
+          "occupiedBoundsSha256": "e5efa3658ffb69ee7accad038cf7bf90fb4155f1d1634f875e282061e43793be",
+          "opaquePixels": 854
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            26,
+            56,
+            61
+          ],
+          "sha256": "1d9c85d587d780801c48ff45b937273d743ccd57d825cbdfa186d946918e9ec5",
+          "occupiedBoundsSha256": "1754352991f752f149f30ebd2aa556f360174ede6ad2bd3689ca21860025058e",
+          "opaquePixels": 835
+        },
+        "idle_c": {
+          "bbox": [
+            9,
+            25,
+            58,
+            61
+          ],
+          "sha256": "e91bf6baa66029ab6dde99e302214a7a136bff88e3dc132350070f1952f70cd2",
+          "occupiedBoundsSha256": "d225f7c047416caaf3a9061ad91078305121c1d6b3d23d3af176739dcfeccdec",
+          "opaquePixels": 848
+        },
+        "windup": {
+          "bbox": [
+            10,
+            27,
+            59,
+            61
+          ],
+          "sha256": "60596ac78bc3d1643744a53e5616d92e9b607fc90085fd40ee955cb763ff07c2",
+          "occupiedBoundsSha256": "5d7c94bc1133999c4dccd2bcd1b6986df780106d87bde141f2d6e5cc198e0b86",
+          "opaquePixels": 866
+        },
+        "move": {
+          "bbox": [
+            5,
+            24,
+            56,
+            61
+          ],
+          "sha256": "93f034aee2d5b1096ae6054e8f152e3be9de51b426308ce0dc5df2dee9aed1c3",
+          "occupiedBoundsSha256": "4c909798fc8a663ff6ee5553659e7d36f077c7976a4ce80f4af55414694f8320",
+          "opaquePixels": 804
+        },
+        "attack": {
+          "bbox": [
+            4,
+            27,
+            61,
+            61
+          ],
+          "sha256": "fb69f757ba598e25f5266c1dacba4e8155b969bbe56fd149f65cc4d8657e2cb6",
+          "occupiedBoundsSha256": "af424e53f9e0eaacad3e3829fa090c32b3e9517c3cc0fe25b7eb6a0cd984e61e",
+          "opaquePixels": 833
+        },
+        "recover": {
+          "bbox": [
+            7,
+            27,
+            56,
+            61
+          ],
+          "sha256": "282005b312defc023eda02a9f07e957972e0051c57e4b0e43e9420f8240fd4a4",
+          "occupiedBoundsSha256": "69650d47cfeb91205bf0e7a64938d0c8dfba61fcd45a3fda36b5f6792741f8ff",
+          "opaquePixels": 825
+        },
+        "hit": {
+          "bbox": [
+            11,
+            26,
+            60,
+            61
+          ],
+          "sha256": "aae55ad6ea83e83dd3cbafbe7948fceb09d7d3a2b77fc824b13cbfd6e8e84030",
+          "occupiedBoundsSha256": "8dedc073a0966c9d5345b511858fba819e3ec138e676b7e49b3e7cf90f4c07d1",
+          "opaquePixels": 834
+        },
+        "dead": {
+          "bbox": [
+            9,
+            46,
+            54,
+            61
+          ],
+          "sha256": "049787f1eabb1936a6bd34cbd250be45f6399685b8752a4e4af265d282727fbc",
+          "occupiedBoundsSha256": "c8e1135927b6bcb5d50b0c62d8230ccd5bdff6a54b7c386415c44b66c00b2a0a",
+          "opaquePixels": 257
+        }
+      }
+    },
+    {
+      "slug": "spirit-wind",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "9d80ebca4b487f00d2e5a6291f297250d94af1f4b14db0707ba4150fc67fa9fa",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            2,
+            10,
+            36,
+            42
+          ],
+          "sha256": "623e962741ed4039a458a9edf4380d00ee3efe7c900bd66bcc1b068f5c83db82",
+          "occupiedBoundsSha256": "4dcacdba6bd64cd24367f116e0a90fe73168daf711e4ac083fe1110fa4ab5b28",
+          "opaquePixels": 507
+        },
+        "idle_b": {
+          "bbox": [
+            2,
+            11,
+            36,
+            43
+          ],
+          "sha256": "9c78c4b139988767435f81607480f05104a960d2d9a79ff3a33d0def08be9c55",
+          "occupiedBoundsSha256": "eaa62d21b383e59097122fae199e4edcfd7323edc523f3f459fbc7776375fbc2",
+          "opaquePixels": 515
+        },
+        "idle_c": {
+          "bbox": [
+            3,
+            10,
+            36,
+            42
+          ],
+          "sha256": "f4d776fd6f77dc1331e82d2a2bfe38588e599d15d8604a9457534a656e6645f8",
+          "occupiedBoundsSha256": "f7dbf82ea34d01685b0d699b29ba6598719b966931adf26c3746328dc0348762",
+          "opaquePixels": 502
+        },
+        "windup": {
+          "bbox": [
+            1,
+            10,
+            33,
+            44
+          ],
+          "sha256": "77982f90ae189dd952103a6e88536a973687b56411dbeba2388e8958cd83a326",
+          "occupiedBoundsSha256": "ec82714f9cd20336145a45a94c3eae8c4f31aa81c52da140a5a590df207d0480",
+          "opaquePixels": 500
+        },
+        "move": {
+          "bbox": [
+            4,
+            9,
+            39,
+            41
+          ],
+          "sha256": "b33215687a1f3820891e3618cb543cd402677e0ecdab1507b807574b1d0874db",
+          "occupiedBoundsSha256": "59dea1be801a7897934ca22589a214176294f5989aef429973b6f71268e8aae9",
+          "opaquePixels": 538
+        },
+        "attack": {
+          "bbox": [
+            5,
+            11,
+            45,
+            43
+          ],
+          "sha256": "d39e53230fec6b790210c436f0c8ec43000e9cf3ee45c7f12d3da50d7c257795",
+          "occupiedBoundsSha256": "169aa337b6b43c98dcbfbab4456748f1b5b9479e4d4d9d2d3427a22533e537d5",
+          "opaquePixels": 577
+        },
+        "recover": {
+          "bbox": [
+            3,
+            12,
+            38,
+            44
+          ],
+          "sha256": "6a1b182a5482e3bebddb1df2fa3ff7994ad29afd16ed8c844bd5b80af3592243",
+          "occupiedBoundsSha256": "7eedc3800b63d06c3d90334207739c4812b2310ee76ab0bb2368b44d491e3b3b",
+          "opaquePixels": 521
+        },
+        "hit": {
+          "bbox": [
+            1,
+            11,
+            30,
+            43
+          ],
+          "sha256": "d87dc148c06b764ebaa74df341168408e44545f87163752d302a3e5270efef75",
+          "occupiedBoundsSha256": "89acb456b32a5dcebfbee233a5082a65a9ac69accde01b22df1c928a5b705ee1",
+          "opaquePixels": 456
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "21a55b2c79b62ccd44991401c29a5237a22c2c9a4c717c9cd2d09f3f7b0d1400",
+          "occupiedBoundsSha256": "3844db99a1962e2b68958356a8d4bb614895f74f70fdbadee59af3eda495a362",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "spirit-light",
+      "cell": 48,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "929d20167a9dcd66e2fb4721533ad4b1662f4c4b60f3c33200ce8e062d0547a3",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            11,
+            2,
+            37,
+            41
+          ],
+          "sha256": "16b26d783392768b702a4e108ce81f8605e08aadc7689fafbd5e2a85a48a8869",
+          "occupiedBoundsSha256": "5299039c8abf53b3441bab3b2f7678731e12486628d688532049b9329dc2725e",
+          "opaquePixels": 460
+        },
+        "idle_b": {
+          "bbox": [
+            11,
+            3,
+            37,
+            43
+          ],
+          "sha256": "ebcea9ba92c5e38a1ca1eb9c4de32201ce55c1cfbb2a6742a3eefd91ad809fff",
+          "occupiedBoundsSha256": "2ee2dfd8b508081a14ba9a1fb98b26c59b2995dbc595b561c7759a67d19da7ff",
+          "opaquePixels": 468
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            2,
+            37,
+            41
+          ],
+          "sha256": "d20fe4c39596163e14381836ceb54a7bb6db3870b213a5c2ad84045cc07cbe40",
+          "occupiedBoundsSha256": "0c286d40f9c0d80db927854b0255ca9c8c2a6b925856f9db1175757770cd061f",
+          "opaquePixels": 450
+        },
+        "windup": {
+          "bbox": [
+            9,
+            4,
+            33,
+            43
+          ],
+          "sha256": "b3d5f3dee608431712c32da33a027ca909ab854ee07b931c42540c92ebedb80b",
+          "occupiedBoundsSha256": "a7a6efe3726485b67a88d7d7ef00552ac464759868957046b04e8f891468f364",
+          "opaquePixels": 454
+        },
+        "move": {
+          "bbox": [
+            13,
+            1,
+            40,
+            41
+          ],
+          "sha256": "5d733a6d444244f57fe57cf41dd7d65c20e93cc356c1fa321608e4fa438ea523",
+          "occupiedBoundsSha256": "2527be996bc537c192cb1d3c3442bceb3163c3b527777d7f5126026978fee97f",
+          "opaquePixels": 484
+        },
+        "attack": {
+          "bbox": [
+            14,
+            3,
+            45,
+            43
+          ],
+          "sha256": "9bf701d3c22330437691d80e56741bb9357861f5a4d7900a49378d9461626838",
+          "occupiedBoundsSha256": "c229d319686da0fc4f7bc79ed39abeb191179a9005c71070f2c19b763e8aee78",
+          "opaquePixels": 520
+        },
+        "recover": {
+          "bbox": [
+            12,
+            4,
+            39,
+            44
+          ],
+          "sha256": "809c78d4395a5d7c4bd4c9974dbbe609171abc0190662c6ecd27c83120d791bc",
+          "occupiedBoundsSha256": "4a66d37a9e291ec05c91bd6859695c72605e93d0cc9dc17b53a74db4352b1b42",
+          "opaquePixels": 476
+        },
+        "hit": {
+          "bbox": [
+            8,
+            3,
+            30,
+            42
+          ],
+          "sha256": "5334c67542f20dd10c0c6493b455641e2cd624db48b09b2254ebbb686db2d91a",
+          "occupiedBoundsSha256": "13c2294ff81eb7a972b263db6dfe702c85778c4cad058b567e0e09d9345b8632",
+          "opaquePixels": 408
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "9fb8a96a10b69ac7635e08f385a4bbc497503c8c214df8e9446d76ab389c9257",
+          "occupiedBoundsSha256": "251b2320626b94613f5bf292b8a80588e05bbba08cb111f6c629c808c11baf26",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "spirit-dark",
+      "cell": 48,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "dd60c52c8737e435fdeb385c981b705fe641f28c30f56b5e4f57e70757f7c433",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            7,
+            37,
+            43
+          ],
+          "sha256": "0eca9db0118c54cac9fe5f895dfae2246ca72177c1715b41cde220a284560b71",
+          "occupiedBoundsSha256": "b60d90f8ae54c54f27be5a16a32c3eb2d1979fd405ca7ce5eb3ee28269f418e1",
+          "opaquePixels": 558
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            8,
+            37,
+            44
+          ],
+          "sha256": "06933fbe3d92d105e5dad92ebf766d63acf4d3837b709ae188340bd236a538f8",
+          "occupiedBoundsSha256": "57624f8314c1353ddbb17bfa18b56eb5666fded6fb9d5fbfb743e7a109e7c4da",
+          "opaquePixels": 560
+        },
+        "idle_c": {
+          "bbox": [
+            6,
+            7,
+            37,
+            43
+          ],
+          "sha256": "babc78bbcb91aa04c9489df695b7ae613c6eb3df1b6a2fe3626fa7bc875dbd0d",
+          "occupiedBoundsSha256": "d41ace64b9b9d06c6fe6a3b3987d9fefd603cb1054cf53889796f4305e54f421",
+          "opaquePixels": 549
+        },
+        "windup": {
+          "bbox": [
+            3,
+            9,
+            33,
+            45
+          ],
+          "sha256": "66a63cb372cae60ae97cf425a8cc7d3debd0e165a24c71df0cfd0606e3cc471c",
+          "occupiedBoundsSha256": "8e7132a68c275be04f86e13dadfb8108421ccee67f476e697c3f3ea5e53cb3d1",
+          "opaquePixels": 551
+        },
+        "move": {
+          "bbox": [
+            7,
+            6,
+            40,
+            42
+          ],
+          "sha256": "d65ea3003a82d938aeb28fc3aea23008083381512c135d00c5fe79bd64e97f74",
+          "occupiedBoundsSha256": "aacf220cee79990a90672fe68ffefeb87316960b8a3ab112f6d4fb6a19d3cd78",
+          "opaquePixels": 581
+        },
+        "attack": {
+          "bbox": [
+            8,
+            8,
+            45,
+            44
+          ],
+          "sha256": "d57759f4e422cad5d27e27c4f22e75b8edc99a99d32611ffdd15ab30a9c4d832",
+          "occupiedBoundsSha256": "69adbd70b3488cbb70891c6fe3756ea48b128bb9fbb4dfed4c84882e338113ac",
+          "opaquePixels": 619
+        },
+        "recover": {
+          "bbox": [
+            6,
+            9,
+            39,
+            45
+          ],
+          "sha256": "87836e3eb8a67c2b570835a19f962bc28a6252c8b944b1f55784ef773cacb166",
+          "occupiedBoundsSha256": "e31a4bbaf1b499537c2c418d1e0e0dcfe2260e81ec64bd192cc717bfaab57d7c",
+          "opaquePixels": 567
+        },
+        "hit": {
+          "bbox": [
+            2,
+            8,
+            30,
+            44
+          ],
+          "sha256": "2fe198173ad1c9e6b4d3419ecca3aab16093b08ecde5d6622ed560d1213b0895",
+          "occupiedBoundsSha256": "d48ab908ca823b71b7a12e3136c0336aaecdb9b105a6b8421e534c7d14dd8946",
+          "opaquePixels": 512
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "8b825570dd032c4b9297f9eba356cee8b2ca9dbedf8c735b60104d25982f778a",
+          "occupiedBoundsSha256": "1b2fb2c599b8f05ef6d5721cfd4893d958f48c56534d5e1dd1016ceb88616bf4",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "sylph-air",
+      "cell": 48,
+      "colors": 5,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "8cae7844ec6706f48d55aa89896c70b8ade1ced6a6771ec842565da1ae7f07e1",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            4,
+            4,
+            37,
+            42
+          ],
+          "sha256": "4a0f03345324bebc5a5d36e3099a43051e9512653977cb62ded8955616ef9b60",
+          "occupiedBoundsSha256": "098b2c9190999bb3684a9bfd1f680364aabeb5f61154452b3e2175eea5eb2e7a",
+          "opaquePixels": 696
+        },
+        "idle_b": {
+          "bbox": [
+            4,
+            5,
+            37,
+            43
+          ],
+          "sha256": "52e89ae449c04f3b3310203c45b871dbfcc70aa90b3e3eda2f2c7e3d11eebc9c",
+          "occupiedBoundsSha256": "7df96c8a8fbc7e93c51c4c81b9b4f478d258d0b18acf7cbcb1f3bacb93bf3284",
+          "opaquePixels": 698
+        },
+        "idle_c": {
+          "bbox": [
+            5,
+            4,
+            37,
+            42
+          ],
+          "sha256": "1c695f1f850e929ed26412e25e7a8e1b346925fdcb136654dae0ce06728734ec",
+          "occupiedBoundsSha256": "eebe6e378216e210d41405d7bc947c77802733afad8f00e2c0e8f472fff432c3",
+          "opaquePixels": 685
+        },
+        "windup": {
+          "bbox": [
+            2,
+            6,
+            33,
+            44
+          ],
+          "sha256": "3ff01e4fbb0c5e8d3882c012831c62fee39b6e07af0da9e09471892cc2227a3a",
+          "occupiedBoundsSha256": "28752f5dc14ea411051167bc7276b3b846d70013578b766b910e49169c1366b7",
+          "opaquePixels": 664
+        },
+        "move": {
+          "bbox": [
+            6,
+            3,
+            40,
+            41
+          ],
+          "sha256": "7a9155eca62a9cce1690fa4f7c2d1987927c397d95115e8c86ab09c76241f3f1",
+          "occupiedBoundsSha256": "9d21c401fef541703b6e136721715ec0938dbefd57a6324d9b4a55acbd0720e8",
+          "opaquePixels": 720
+        },
+        "attack": {
+          "bbox": [
+            7,
+            5,
+            45,
+            43
+          ],
+          "sha256": "9b791840e41d2496f1dff19db657a4fae8bd3444988c34d2cfa9e9b0b797d6cd",
+          "occupiedBoundsSha256": "c8f0d74b84c1fd4169d4e9b9c2838610d8ee14459d7511d64f5ac9082a77f580",
+          "opaquePixels": 772
+        },
+        "recover": {
+          "bbox": [
+            5,
+            6,
+            39,
+            44
+          ],
+          "sha256": "24eaea42b632bcb87f7453cec795309b100eac627d56dd414d1b72caa86ce154",
+          "occupiedBoundsSha256": "54f8c9a9e426e5689cd756d1c10ec5569516e3eb4e52042b077c1ba4c42a0570",
+          "opaquePixels": 708
+        },
+        "hit": {
+          "bbox": [
+            1,
+            5,
+            30,
+            43
+          ],
+          "sha256": "725c2eb67e132a934e2fcff833012a5c3164f256e6a5450fd6488ba983a1abae",
+          "occupiedBoundsSha256": "281f3b5b656bc6554c495c31323ced2521377ea321412fe5177886d3af46c5db",
+          "opaquePixels": 653
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "637ae1fb94ce491fa545e05430c54e29c4f3e15e86ab90a0906b0c336d76314c",
+          "occupiedBoundsSha256": "3a19a5dc03f642292d525f793946f4960d8af3917004b7ecdf17ca0a9f4a71c5",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "undine-sea",
+      "cell": 48,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "23f40f97ddaf2eadcf465aba02eb6930b43f12d9358005f212d3c558341ff870",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            8,
+            37,
+            41
+          ],
+          "sha256": "7a98349834a641daf9cd0d5027f54e4d6362846b0f0c466f2c5f8b448012bc73",
+          "occupiedBoundsSha256": "247f49e186cc26aad6df6498dc6c25ea8940af0ba1f90ca683d681c24f3dbb44",
+          "opaquePixels": 615
+        },
+        "idle_b": {
+          "bbox": [
+            8,
+            9,
+            37,
+            42
+          ],
+          "sha256": "b4353f666246fbebbc7e6c39d6219d182a23869aa11f8200f086665bc04bc663",
+          "occupiedBoundsSha256": "38f0a46758ea6f856e2c1fa6af48c4b455d0df5c5a97ab6bf32174dd93840ecc",
+          "opaquePixels": 611
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            8,
+            37,
+            41
+          ],
+          "sha256": "0da5aa88725d39d60dfb3c0fc48354bad07fd7c5a95db89678fb6b8c059d10c8",
+          "occupiedBoundsSha256": "bcafe227fd07cfe20a4172ce70eced2f530798fc3f2a9392932c569646325bed",
+          "opaquePixels": 610
+        },
+        "windup": {
+          "bbox": [
+            4,
+            10,
+            33,
+            43
+          ],
+          "sha256": "6a6ee5be0b8b13b1c387bef34e46f213d926c5ca8d1fbc726808be823a3e3749",
+          "occupiedBoundsSha256": "f1ec6a2693d3d53346f176a4a25a31efcfaa9170a964eaf92194264961f8fc52",
+          "opaquePixels": 609
+        },
+        "move": {
+          "bbox": [
+            10,
+            7,
+            40,
+            40
+          ],
+          "sha256": "d469e9d205343a73ce141d4e1f17508f1340c0fb31b0e5ccda6acce43235f89c",
+          "occupiedBoundsSha256": "45185a8ac57b13a294f58730edd5cfc63a54f3263f907ab8bd11970390c414af",
+          "opaquePixels": 614
+        },
+        "attack": {
+          "bbox": [
+            10,
+            9,
+            45,
+            42
+          ],
+          "sha256": "971835232daed93afdea62259707e776657b324321dc7f8a8cf5e2c99cf2ce6e",
+          "occupiedBoundsSha256": "85cdec9e70a16abebaf55dc93150acb651c8c46b4f23f7b997cdc293f6f13267",
+          "opaquePixels": 642
+        },
+        "recover": {
+          "bbox": [
+            9,
+            10,
+            39,
+            43
+          ],
+          "sha256": "861ae21bcf9c89082f486fb6552d04467ca37d4ecfd3444c541f4ee1065ca487",
+          "occupiedBoundsSha256": "472ea0a17b094c964194534a2c3ecf9dc619ed24b9029b5e423aa62268f92cf0",
+          "opaquePixels": 611
+        },
+        "hit": {
+          "bbox": [
+            2,
+            9,
+            32,
+            42
+          ],
+          "sha256": "aaa33a1dcfde8aaa207e29ffa7fcfc6c2890dc024003c7dc7ef36979943e21ec",
+          "occupiedBoundsSha256": "0cd772f92657f2375b2dc676d1428fc1a2ab2057cf43d29501792bef54899cd0",
+          "opaquePixels": 572
+        },
+        "dead": {
+          "bbox": [
+            10,
+            32,
+            39,
+            45
+          ],
+          "sha256": "e54b6bab4bdbee2835ac5fbe901afd7b481215e20075c0465d7df09986001ccb",
+          "occupiedBoundsSha256": "7245014a7056e10103c0c1ab8b3da0bfa0ce55c56b0155398f0d35a2f114d40a",
+          "opaquePixels": 123
+        }
+      }
+    },
+    {
+      "slug": "golem-stone",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "a2f74082a1e5398c9e6a207cb8ff58d59cf94a012630da6395d0f6463cfed3ac",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            11,
+            17,
+            55,
+            61
+          ],
+          "sha256": "bdc0edc9ed8647dc6d4926a97a6f0b1db8c70598667554b597ed32a1aae24310",
+          "occupiedBoundsSha256": "a42dd2dca2b4138e3eb8365f07f1cd4c6714e76347cf65518bcb4548f7a36f92",
+          "opaquePixels": 1294
+        },
+        "idle_b": {
+          "bbox": [
+            11,
+            18,
+            55,
+            61
+          ],
+          "sha256": "96e91a27052bf2397f2955e55a40105cfb3af7709d94a1d1fa125abda727066b",
+          "occupiedBoundsSha256": "4f2f44175e3f5c9fcc404b56a3bd368e826cd7b0268be12f667aa8a705b75b57",
+          "opaquePixels": 1275
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            17,
+            56,
+            61
+          ],
+          "sha256": "4af9efbbae80b0415a46854678db5fad6d80f402a5d3b84152df9a5906e0084b",
+          "occupiedBoundsSha256": "1dbae21998633acca81a98ab6a3ff4209f5c535eb26c10a20d576952b99e936a",
+          "opaquePixels": 1297
+        },
+        "windup": {
+          "bbox": [
+            12,
+            15,
+            55,
+            61
+          ],
+          "sha256": "eeb0ed2e47abd320a271003018a35427ebeb033cca08c1c719788fb7c27c582d",
+          "occupiedBoundsSha256": "07dbce30f93bfd43947ad7e5452aca60d4a812eb4ad67cfb80f3f371f50d1367",
+          "opaquePixels": 1291
+        },
+        "move": {
+          "bbox": [
+            12,
+            16,
+            57,
+            61
+          ],
+          "sha256": "97e62df90501004145454edf6efcf5f371abad7b02d92d97b38da5225384df04",
+          "occupiedBoundsSha256": "4574e559352e5d8bb9f8f9ed769dd1cab082957e7fc43f41ce16b49af67e814e",
+          "opaquePixels": 1325
+        },
+        "attack": {
+          "bbox": [
+            15,
+            18,
+            59,
+            61
+          ],
+          "sha256": "c68cad898cac6b5103c88e1de73c0eb0ccfa3761097c2c2aa9cf11407575a841",
+          "occupiedBoundsSha256": "b60274d2c44aacec42d72d307368ea351710e498e73a3ac6635972ccdac18ba6",
+          "opaquePixels": 1282
+        },
+        "recover": {
+          "bbox": [
+            12,
+            19,
+            56,
+            61
+          ],
+          "sha256": "d0ea9be62d03d3b9b0900a70f8eed33645265d10e558ffd0d9c93d5aac85d430",
+          "occupiedBoundsSha256": "cbb35e0ce61fcebd8042ba5877d0593d3c8cd34e9a68e5a9c74dca541c84ad22",
+          "opaquePixels": 1252
+        },
+        "hit": {
+          "bbox": [
+            8,
+            18,
+            51,
+            61
+          ],
+          "sha256": "16a8ac8875f0a246de3475829b4ae2214f9708b88cd870964917d9c92e4789c1",
+          "occupiedBoundsSha256": "414913f3c219810121217f0e2839462bd53b965e44fdb74973dcc0a365e5a5dc",
+          "opaquePixels": 1226
+        },
+        "dead": {
+          "bbox": [
+            10,
+            46,
+            54,
+            61
+          ],
+          "sha256": "3255a19451cdfdc2ef3368d4e174f4cd51fad5c776d06c8363b2185f674aeef3",
+          "occupiedBoundsSha256": "b757543967297436c59927e5087f86e6ef3face99c95f2c49fe65d0dcc28a1ae",
+          "opaquePixels": 390
+        }
+      }
+    },
+    {
+      "slug": "golem-clay",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "5184a968284baa9e69ee0b20feb237ef582956f2edecf6e37cb6a31dcfb53e5e",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            11,
+            17,
+            55,
+            61
+          ],
+          "sha256": "08b5f42c3842bf2aa134fef7147b1420e3aaef27149daa003adf7f43defb221d",
+          "occupiedBoundsSha256": "e74a5f25bb5872d826e406d2d9717ff2e7fc12d60518b01e69ad01704f3c5656",
+          "opaquePixels": 1335
+        },
+        "idle_b": {
+          "bbox": [
+            11,
+            18,
+            55,
+            61
+          ],
+          "sha256": "4f428ea29e7e4d8f24cd1b833211f5ba48a54592027be8ef52c484a63e8cf030",
+          "occupiedBoundsSha256": "ceefc6f3c55db3e2f292a017ab22db5e7cadcc708d8d9da7ef15f868695f47d5",
+          "opaquePixels": 1316
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            17,
+            56,
+            61
+          ],
+          "sha256": "517525bb039811195f1d4e62547a5f69f786ce67b70f86a1d7350cdee9902b6c",
+          "occupiedBoundsSha256": "b5a4a7d67a82fecfcc9ead1b23c3ededb41afa84e16c41ff1da156628b3c4315",
+          "opaquePixels": 1338
+        },
+        "windup": {
+          "bbox": [
+            12,
+            13,
+            55,
+            61
+          ],
+          "sha256": "f4f28738bd9314fd013b2f7c3a72e3d96ee73ea3831a56d7e9d4a975910ce698",
+          "occupiedBoundsSha256": "cea3dbcb749fbad9f9334d2a9fac2f981287f104f2bdbfaf11eb5ff5cd1c6b75",
+          "opaquePixels": 1313
+        },
+        "move": {
+          "bbox": [
+            12,
+            16,
+            57,
+            61
+          ],
+          "sha256": "79d73e166948a26658862adf9c0bc880a2e18090a3ab2aac6bf12a85b2e31273",
+          "occupiedBoundsSha256": "4102b008884e1e03f8eadccdae9460b0b008d5e16e9ffdd27e4ea403e636cf5b",
+          "opaquePixels": 1364
+        },
+        "attack": {
+          "bbox": [
+            15,
+            18,
+            59,
+            61
+          ],
+          "sha256": "63dab67be75f9bef2d65d2de88f040a8c8978702042e75a8026ceab32ed1519a",
+          "occupiedBoundsSha256": "db0fde4ea859bf476346bdbad42746bdf79840a2f31fad7e5d2be12335651991",
+          "opaquePixels": 1306
+        },
+        "recover": {
+          "bbox": [
+            12,
+            19,
+            56,
+            61
+          ],
+          "sha256": "02e034aa425398a3dfea0f8def5f7bcdc034adb7f78d3ccd82a3dd57e02f7475",
+          "occupiedBoundsSha256": "15835a5747bf6441c1b760d597a3068f7bd450ace336e3ce0354d978e4628e7e",
+          "opaquePixels": 1293
+        },
+        "hit": {
+          "bbox": [
+            8,
+            18,
+            51,
+            61
+          ],
+          "sha256": "cff073d81497fb645f56f15fefb2742df74ad481aac2a2ab87cd3baf24d7596f",
+          "occupiedBoundsSha256": "e915396733b99805b750d0cb72add4b0130aeb0eae08b0ef75ef45308a4140b7",
+          "opaquePixels": 1262
+        },
+        "dead": {
+          "bbox": [
+            10,
+            46,
+            54,
+            61
+          ],
+          "sha256": "b68c51219147af92e5dfec57f492e925e5ceae11c0f3916fc669d03692329808",
+          "occupiedBoundsSha256": "8c9f843ed5810038411f8e4af1688a816a6f0b3ab57a588ee10293d376c28f28",
+          "opaquePixels": 390
+        }
+      }
+    },
+    {
+      "slug": "golem-crystal",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "c7fa15507f86d175bb6208e65f585d0402f08031896d2e91eaa0665468a2832d",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            11,
+            17,
+            55,
+            61
+          ],
+          "sha256": "9647151731eca136ce2940125f293836c93a140973edd56647027956bc2f158e",
+          "occupiedBoundsSha256": "29643cbdc3cd232248779125f7a1b24965e2e1c9d2dee57127465f491cf3233b",
+          "opaquePixels": 1294
+        },
+        "idle_b": {
+          "bbox": [
+            11,
+            18,
+            55,
+            61
+          ],
+          "sha256": "f0030f6c08f678215b063c574f0491495aa4f1b385dc1c63670a21ffecc0405b",
+          "occupiedBoundsSha256": "ce15d0661310232fc1fc907dea8bf6bf6107a13683475414cf8e96e48e33774e",
+          "opaquePixels": 1275
+        },
+        "idle_c": {
+          "bbox": [
+            12,
+            17,
+            56,
+            61
+          ],
+          "sha256": "c411e36b66e001d2620464391e5178f112edefd068c55b04227046cc67d6e479",
+          "occupiedBoundsSha256": "c2e5d5d376e8343ff24723a00116eb355ca6d391b253dc24e5a4a1465c5d21db",
+          "opaquePixels": 1297
+        },
+        "windup": {
+          "bbox": [
+            12,
+            15,
+            55,
+            61
+          ],
+          "sha256": "526fcf16132ba441d9de7f40bbb12f38dd14c6194f6d963d88bd7dd5b4b33529",
+          "occupiedBoundsSha256": "cef6daeafbbc4295f9cfc25ca888cea0f3ee6a7fcd23009833d7bd81d597906a",
+          "opaquePixels": 1291
+        },
+        "move": {
+          "bbox": [
+            12,
+            16,
+            57,
+            61
+          ],
+          "sha256": "65c87dc2bdcc2602b44dde5c7c10cde73fc5352297657ce0e88b27f5b06e3fc7",
+          "occupiedBoundsSha256": "082e05c719169438b699d015d8c527a3b154d14676fb4470fdd840518634e936",
+          "opaquePixels": 1325
+        },
+        "attack": {
+          "bbox": [
+            15,
+            18,
+            59,
+            61
+          ],
+          "sha256": "ac69a7fdd03530ca480512bc38976df1edbaa45ddd5ecd45c6cb50ee31e4eb1e",
+          "occupiedBoundsSha256": "eef59a4de221b9e41c93144a9fb897785e34be92be105c123813385a528e5c33",
+          "opaquePixels": 1280
+        },
+        "recover": {
+          "bbox": [
+            12,
+            19,
+            56,
+            61
+          ],
+          "sha256": "9f3d086b63ba8e4448b52c18600f2f45478630ff030263b50c619c27898d08f7",
+          "occupiedBoundsSha256": "11fee326cf173a18f2435e471b1cfa0ef3d9f4c087492b2378814bc35ebff6ae",
+          "opaquePixels": 1252
+        },
+        "hit": {
+          "bbox": [
+            8,
+            18,
+            51,
+            61
+          ],
+          "sha256": "96e40dd22d94a61c53bc64894a6403d71a4bbcbe6c57da17880b3fc143637a8b",
+          "occupiedBoundsSha256": "ba63a6b4d549bdff7d64bfdd7a43839c278e2d4bbf80cef93e367bbf5e30ad53",
+          "opaquePixels": 1225
+        },
+        "dead": {
+          "bbox": [
+            10,
+            46,
+            54,
+            61
+          ],
+          "sha256": "387b87a41cc1a1e03a560ebf702b0f386460ff34bb4f34d49ce996bc47549327",
+          "occupiedBoundsSha256": "2e74be155965d967b54f713dc6c4501001300fce64a910ea56fc9edbc6f3d99e",
+          "opaquePixels": 390
+        }
+      }
+    },
+    {
+      "slug": "sword-flying",
+      "cell": 48,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "cd084679abf142fcc59b33214f38673cef610aa7f684f81b138ccd8c4aa24a6d",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            16,
+            42,
+            34
+          ],
+          "sha256": "d323207008f676bfe9c49983dad346e8d12821eecd07d2aa716d455f6703084a",
+          "occupiedBoundsSha256": "b74f4527870e6cb96355a4ecb941020ede4fb9a4f8c4edcd85c54d7037aa9744",
+          "opaquePixels": 191
+        },
+        "idle_b": {
+          "bbox": [
+            6,
+            18,
+            43,
+            34
+          ],
+          "sha256": "3485dc6d41e602d299638ca72c556b3d93e7cdb602951d04ee48c729db54e657",
+          "occupiedBoundsSha256": "7cc3d36c1dee31d6a4e624d1c976a25b1c02c61793e100969a22e54f16d4a1df",
+          "opaquePixels": 185
+        },
+        "idle_c": {
+          "bbox": [
+            7,
+            15,
+            41,
+            35
+          ],
+          "sha256": "b38c2b35e165f4d728a492c827f70cf33ba7480aaf8e96e2fef6a50a1de61dc3",
+          "occupiedBoundsSha256": "6670b34ff43f12e38fd9834ca281e84892b50d8c6d50718fa55d91282ea2445a",
+          "opaquePixels": 209
+        },
+        "windup": {
+          "bbox": [
+            15,
+            6,
+            31,
+            43
+          ],
+          "sha256": "2d27ee7fee73bbf896246b3397d5f2dea9857d8ef567cbb8723abafa5f1d0b27",
+          "occupiedBoundsSha256": "dcc951a199ad1f28b0d0ee992d86769cdc247772f4f56da3986e63b326469035",
+          "opaquePixels": 185
+        },
+        "move": {
+          "bbox": [
+            6,
+            18,
+            43,
+            34
+          ],
+          "sha256": "62bd991f12caf16d79956d8302fb4c8f9cd29b40ebbfc626d661e6be9a285823",
+          "occupiedBoundsSha256": "3e531637ed0df538e42659e0088db1aa8e0ea6456129490d9433104b4998eac4",
+          "opaquePixels": 210
+        },
+        "attack": {
+          "bbox": [
+            5,
+            16,
+            44,
+            32
+          ],
+          "sha256": "fb3223d728b304fd8879ccb7d4b3dad876a5ce5f9b7a412d173e33142987ead6",
+          "occupiedBoundsSha256": "e1a9bdec9c74e222bbba24a79954fdd4b8fc91f95878f61b0aa71ba17db78b52",
+          "opaquePixels": 208
+        },
+        "recover": {
+          "bbox": [
+            7,
+            14,
+            41,
+            35
+          ],
+          "sha256": "e8e0f239e6bf8bc5b57013672c22d605b2a038df710fd720b29e667adda7c7ec",
+          "occupiedBoundsSha256": "50cd957f194eb9d4a247d5d8fb3760644a8e2e4acbc883a6d54f8ef35778af36",
+          "opaquePixels": 211
+        },
+        "hit": {
+          "bbox": [
+            10,
+            11,
+            38,
+            39
+          ],
+          "sha256": "4b4cf97d9621933b10adb0bb5237b701ca5438b5e33e71c02bd74a15398e7aca",
+          "occupiedBoundsSha256": "70090f3dd301c8b315569cafe8b8cc365ae20ced078b4ba098d058a6bc18975e",
+          "opaquePixels": 213
+        },
+        "dead": {
+          "bbox": [
+            10,
+            37,
+            43,
+            45
+          ],
+          "sha256": "bc6726d184a0501d2b772530d172973dcd82b5344b4b7aa847d7bd63c6280f5f",
+          "occupiedBoundsSha256": "5b405c9a583146ec896cd9180d6e77477be09557554937734f3f52f9c88f9d2b",
+          "opaquePixels": 124
+        }
+      }
+    },
+    {
+      "slug": "scarecrow-field",
+      "cell": 64,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "a522a20b1fc4a7582272d2e460fc9aa3825384a7912446ec8b070c833731c13c",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            6,
+            57,
+            61
+          ],
+          "sha256": "ad9f518b8e9ebf5aceda431e6a51b93ba6aecab114b98aada2f080b8188d0612",
+          "occupiedBoundsSha256": "1b75489be39c5952edf2de1fe71a5a33d95b69fad243ee81d535bbbbed18a075",
+          "opaquePixels": 942
+        },
+        "idle_b": {
+          "bbox": [
+            8,
+            7,
+            57,
+            61
+          ],
+          "sha256": "7338840c862a8e8d3bf01042d65bff12fefc6e781e1352418f441e4b94b02375",
+          "occupiedBoundsSha256": "a8f888e53bb68021274e56bfee28fd9710be7619d05d4f32e7607897500cc2d4",
+          "opaquePixels": 937
+        },
+        "idle_c": {
+          "bbox": [
+            9,
+            6,
+            58,
+            61
+          ],
+          "sha256": "d6f1611313a5c730d6dde918ce026353215d9e67dd7f45dc824582c5bfdd7339",
+          "occupiedBoundsSha256": "32455b8a08395528cb1bad2ac6cb1b5651e8edb965069362fc33422f23a50e42",
+          "opaquePixels": 941
+        },
+        "windup": {
+          "bbox": [
+            6,
+            8,
+            55,
+            61
+          ],
+          "sha256": "bc8f0d718eb91dd0098715642934ebc124e8292756944d88f222a33134357092",
+          "occupiedBoundsSha256": "e51eee4b084b353569daf4a416c7542ce8e44fc91f87bdaa0d5abadf8af3ade0",
+          "opaquePixels": 932
+        },
+        "move": {
+          "bbox": [
+            10,
+            5,
+            59,
+            61
+          ],
+          "sha256": "6ac42fcaad74f8eff523f760cd927757ea6f0027b776ab3c3187633c4d5671d0",
+          "occupiedBoundsSha256": "e0ea8df23147d2493e9a0fb8fd5291c90bf178b750b2c381d3b211ad4a1b7381",
+          "opaquePixels": 944
+        },
+        "attack": {
+          "bbox": [
+            11,
+            7,
+            60,
+            61
+          ],
+          "sha256": "2a0fa00ab21a35d45426154aeab5d4d2f4e9fbdeb0c32826a7838d1c7138e93c",
+          "occupiedBoundsSha256": "f1c4e204347671e0d77f22db3c0472512b2fa525c84ac89755e33b2d2bce7358",
+          "opaquePixels": 941
+        },
+        "recover": {
+          "bbox": [
+            9,
+            8,
+            58,
+            61
+          ],
+          "sha256": "70178ca588905d4c6820d60b9a1560897bcd6fadafd4b58c5d4c41e5dfd5df2f",
+          "occupiedBoundsSha256": "130d99c950653007fd883834f9e8229f380d3c80436769e7f8f442345a482c1e",
+          "opaquePixels": 929
+        },
+        "hit": {
+          "bbox": [
+            5,
+            7,
+            54,
+            61
+          ],
+          "sha256": "acac543b2f452c97acdab9539b7f41c8e630c8b9367ccdd325d1769827427909",
+          "occupiedBoundsSha256": "3398b1e67cb5e7bfcc3c024d7eed472c46f000719fefe119d470f0a0f3fc9b62",
+          "opaquePixels": 939
+        },
+        "dead": {
+          "bbox": [
+            11,
+            50,
+            55,
+            61
+          ],
+          "sha256": "49b1962d821138cdf89b32e646adc6b499df777e02e9268f3f41ce9320f0823d",
+          "occupiedBoundsSha256": "a0e4d31ef8e051723577846c35dec330b69f9e79c0aa438867cdaa9ee0542c27",
+          "opaquePixels": 206
+        }
+      }
+    },
+    {
+      "slug": "puppet-string",
+      "cell": 64,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "e790c1eb84d59e90694c80f563163c0d63b98af74c5caf1b45e3f08b48372863",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            4,
+            53,
+            58
+          ],
+          "sha256": "749f36cccac5e751e06e93f45602701f968136e7038f43e19ce19c1f4c5f7c2e",
+          "occupiedBoundsSha256": "0c80523203dc7bc427429610d0d54ece73373b2ec39db413701e2ff89ecec5c6",
+          "opaquePixels": 858
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            4,
+            53,
+            59
+          ],
+          "sha256": "7d195549db7594876f4a5c91c6a5544aceefe169975ce4ccc71fc6afda77eb53",
+          "occupiedBoundsSha256": "57898e8d9332800e4067185fb4f9ae813a0de3425e73539ea63e62b2ce010591",
+          "opaquePixels": 864
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            4,
+            54,
+            58
+          ],
+          "sha256": "3879372a157d00325f5bc5f92aba11a0efd63e9e9893cfbb01404d9bcc17dc38",
+          "occupiedBoundsSha256": "fa36cd8a669154f9ece0f5188618d7adc2fd1e4ca77850cf718cea3d441bd0cb",
+          "opaquePixels": 846
+        },
+        "windup": {
+          "bbox": [
+            10,
+            4,
+            51,
+            60
+          ],
+          "sha256": "fd6ac7dc61386e3e66b80739200d9a633024023dd9185cdd7a1cebbf091b39d6",
+          "occupiedBoundsSha256": "9581fe4c07fa3d8db6304d9fad94d78c9564b4262ce4da711f9fb540f74b93cc",
+          "opaquePixels": 891
+        },
+        "move": {
+          "bbox": [
+            9,
+            4,
+            55,
+            57
+          ],
+          "sha256": "b113c6e9fbba2967ae582ccc3adc32d1e9a8451c1dedee4d57521bc59398a28a",
+          "occupiedBoundsSha256": "f7e2f03a93fddd2441c904c48129f40cb1ef43b74f03ba940e5756d6116a639a",
+          "opaquePixels": 860
+        },
+        "attack": {
+          "bbox": [
+            10,
+            4,
+            58,
+            59
+          ],
+          "sha256": "db86c92866a928247b99e0bb1929caae6267785b050b8131bcc490a5cd42a133",
+          "occupiedBoundsSha256": "9e9d60561889455b5bc12a9654958b7cc5d5c6c8b45216c0f1d83cfb4693e494",
+          "opaquePixels": 868
+        },
+        "recover": {
+          "bbox": [
+            8,
+            4,
+            54,
+            60
+          ],
+          "sha256": "c05737b52a85115250c15b95fec2bfe4e56932010bce2818de9e92d1f20e688e",
+          "occupiedBoundsSha256": "70adef04d952e19073adc5d4604786a06cce8c55a22dd8495783da7ce53895e7",
+          "opaquePixels": 864
+        },
+        "hit": {
+          "bbox": [
+            4,
+            4,
+            50,
+            59
+          ],
+          "sha256": "6476927d06d2f3106806fd555da9052ae4e4bd83d0161516a4dd587699c475c0",
+          "occupiedBoundsSha256": "28795fe500b33fddfad6a68ecd3299b1ca94016071d2de61badcf03a3f914660",
+          "opaquePixels": 881
+        },
+        "dead": {
+          "bbox": [
+            8,
+            15,
+            47,
+            61
+          ],
+          "sha256": "25f2faa838fe8f290184486ff64b01ff734430c01061235903553753163187b4",
+          "occupiedBoundsSha256": "aec50cd2d7962e0d8aaa1a31af887d464e7a06e792f0fe802471fe3eeaf0c551",
+          "opaquePixels": 253
+        }
+      }
+    },
+    {
+      "slug": "totem-cursed",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "9ba48c4709590979761fc43fc1a3494fbd8ee995531174fb6413382a2a077968",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            15,
+            11,
+            43,
+            61
+          ],
+          "sha256": "9a24af4eeb7f4f270407292c4eb90e86748a9b3eb7b6241e2480cb37f2f998dd",
+          "occupiedBoundsSha256": "9e682a90a99bc97da31537d143d631d2f71646859098ff7a4596914ecde3c722",
+          "opaquePixels": 1114
+        },
+        "idle_b": {
+          "bbox": [
+            15,
+            12,
+            43,
+            61
+          ],
+          "sha256": "51cbba43c98a4b39fffbf8ba8e8cb8c0415f6c3d6e9f5e188818ff92f56590fb",
+          "occupiedBoundsSha256": "561497e462741361b336121434e922d6af373be2f5849a1adc0c962bd77a47ac",
+          "opaquePixels": 1087
+        },
+        "idle_c": {
+          "bbox": [
+            15,
+            11,
+            44,
+            61
+          ],
+          "sha256": "b264f1e4a88a21717901f0a3e6eef1a8f972cd24bb856bed3a2b4dc7c9fd157d",
+          "occupiedBoundsSha256": "c0ef12d00e853ecccc45886abb475f7461e9a0eba3a015780bc6259c7e515aef",
+          "opaquePixels": 1124
+        },
+        "windup": {
+          "bbox": [
+            15,
+            13,
+            43,
+            61
+          ],
+          "sha256": "5366bc636c54d6967dbb3b57b483a3d9bfd1c8705557dd842906ca7e4dd8f9c9",
+          "occupiedBoundsSha256": "ffbd085983d8a81c90471219517bca04b6fa98ce02e200c1dea50dd3246274e0",
+          "opaquePixels": 1073
+        },
+        "move": {
+          "bbox": [
+            15,
+            10,
+            45,
+            61
+          ],
+          "sha256": "e22d5dd436a30affc60140e7093bab06ff445a80dd5324378770018113a9425b",
+          "occupiedBoundsSha256": "c3668daa4775972e177d031490ae7d3f6cf3f7f0ccc7cf146a49fb356f8351bf",
+          "opaquePixels": 1126
+        },
+        "attack": {
+          "bbox": [
+            15,
+            11,
+            46,
+            61
+          ],
+          "sha256": "3273298fced7110c0c19d10dd3b3bf5a73ba82c5c5cdfa7984fd3463ec1f63b2",
+          "occupiedBoundsSha256": "fc6231bc6b65c9175b77d0bbe596ba03b279795c2f31d3013119f1c6fbc59be3",
+          "opaquePixels": 1097
+        },
+        "recover": {
+          "bbox": [
+            15,
+            13,
+            44,
+            61
+          ],
+          "sha256": "44eb0ba7b5fb92bb69323c08604225758619df0534f2b8ca079761f30bcb8a7f",
+          "occupiedBoundsSha256": "243bcce0f70fb8f43e628b2bc44bc918d9e4877f456d82ac0b598d95158a739c",
+          "opaquePixels": 1072
+        },
+        "hit": {
+          "bbox": [
+            14,
+            12,
+            43,
+            61
+          ],
+          "sha256": "7f4143827621f04a143d61224fb0323bfc68697064fcc5b7d8e9dde4a2093f73",
+          "occupiedBoundsSha256": "42f2859d36a12e131bc40c2f2b88e13e48daece4ee331cb251c60e41c96c0621",
+          "opaquePixels": 1081
+        },
+        "dead": {
+          "bbox": [
+            10,
+            52,
+            55,
+            61
+          ],
+          "sha256": "9f40007fa4c2703ed55617762ec6281f509f5c7aa2929e13bb3659d759a8e2d3",
+          "occupiedBoundsSha256": "20e2ca9aa32ce857cb0d7e7fb2d156bd07b8a4e1605760badcdaf1ac533b75f2",
+          "opaquePixels": 291
+        }
+      }
+    },
+    {
+      "slug": "spirit-earth",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "uniqueFrames": 9,
+      "uniqueOccupiedBoundsFrames": 9,
+      "sheetSha256": "c278dc35d4d39690b1762f6570f99fc3db7d931feb5d8fedd5e14236ce64d7f2",
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            12,
+            6,
+            51,
+            55
+          ],
+          "sha256": "25ddd3d440e1992a61502d0f66170fb1eaabdedfd15aa294d48bb42e07562169",
+          "occupiedBoundsSha256": "a8950f315b2f276f54312ec81dabf8d7d8918fb8298f55ba1eb649e3d322399d",
+          "opaquePixels": 951
+        },
+        "idle_b": {
+          "bbox": [
+            12,
+            7,
+            51,
+            56
+          ],
+          "sha256": "80cbf38aee7709251e833b263950917a877a5c65059faa6153a810a47b6372db",
+          "occupiedBoundsSha256": "a48765471c522b3b42b29b3b5122b8193497e2ad7d7729fba1ec0d139a6a4c7a",
+          "opaquePixels": 946
+        },
+        "idle_c": {
+          "bbox": [
+            13,
+            6,
+            52,
+            55
+          ],
+          "sha256": "2d7b33bdfe6feb5e66399edf1580557d27cb43ec1f39a0ff9377af96cad06a7c",
+          "occupiedBoundsSha256": "e6b71a0abb7c40f8a0f67cddce0a0ad4ec7e7b29e01116df99cbcd434d050403",
+          "opaquePixels": 944
+        },
+        "windup": {
+          "bbox": [
+            8,
+            8,
+            51,
+            57
+          ],
+          "sha256": "81da90d4a671480d7e0062000f69d95df20526e075d58888bf769343b2218833",
+          "occupiedBoundsSha256": "2c04a074028cb36989f3a75475f8831abde7145eba76ae35144aa8c997413473",
+          "opaquePixels": 1006
+        },
+        "move": {
+          "bbox": [
+            14,
+            5,
+            53,
+            54
+          ],
+          "sha256": "a43875d57589e91f1ab9e5813bc27c060ffab410b871cfa63028679ee58dae10",
+          "occupiedBoundsSha256": "ecc4a1b461d4bec782507685a0b5b0b485709845161f1a9e31ab9f3d7ce51daa",
+          "opaquePixels": 948
+        },
+        "attack": {
+          "bbox": [
+            21,
+            7,
+            62,
+            56
+          ],
+          "sha256": "020995ace514a69c62ab707f718b3181b5d8f01ea2c360e4e23f82e4fa410fed",
+          "occupiedBoundsSha256": "35903e89ba7b0d8afd4efe4fa4c7e66540298fe438c776fbb52398d21a0c5246",
+          "opaquePixels": 909
+        },
+        "recover": {
+          "bbox": [
+            12,
+            8,
+            53,
+            57
+          ],
+          "sha256": "436053ddc94436d5b463ca8b7d947657f0284c53361759b40424dea8418afeb3",
+          "occupiedBoundsSha256": "b9a8ca9e0d44161d7a0083a3de9c1401396886ba531e09fee1cc91edd1e01b55",
+          "opaquePixels": 968
+        },
+        "hit": {
+          "bbox": [
+            5,
+            7,
+            48,
+            58
+          ],
+          "sha256": "5c3fe74ae0a1b6edf1d6d2e0976c92b6c4030fcf7d2a927f83937f5288aab7e9",
+          "occupiedBoundsSha256": "f57714f00593b423f84c234d56d72db6149ad1e33c4879de32606d5d3287845f",
+          "opaquePixels": 987
+        },
+        "dead": {
+          "bbox": [
+            10,
+            52,
+            54,
+            61
+          ],
+          "sha256": "5e85b4c8a714729bca9b2a4ecd9d8f7a9c28bf1fdb149e0eab966a0a559fb8ff",
+          "occupiedBoundsSha256": "51a9325dc20f32271023e783b6e7cc8c83c84fd129f429d074bee3062a7e4cff",
+          "opaquePixels": 260
+        }
+      }
+    }
+  ]
+}

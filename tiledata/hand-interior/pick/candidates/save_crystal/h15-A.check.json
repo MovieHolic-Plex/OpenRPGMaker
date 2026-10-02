@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/save_crystal/h15-A.pxg",
+ "id": "save crystal",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  46
+ ],
+ "v5_bbox": null,
+ "note": "설명 그대로: 푸른 팔면체(허리선·좌밝음 우어둠) + 아래 빛줄기 + 원판 받침 윗면 빛 고리 + 앞면 두께",
+ "ok": true
+}

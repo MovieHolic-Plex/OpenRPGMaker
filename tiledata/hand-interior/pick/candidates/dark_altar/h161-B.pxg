@@ -1,0 +1,76 @@
+// B: 방의 제단과 같은 넓은 돌판·간결한 면 명암, 보라 촛대 둘과 해골 잔, 붉은 의식 문양.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a black 2
+@mat b black 3
+@mat c black 4
+@mat d black 5
+@mat e black 6
+@mat f black 1
+@mat g purple 2
+@mat h purple 4
+@mat i purple 5
+@mat j purple 6
+@mat k iron 2
+@mat l iron 4
+@mat m iron 5
+@mat n marble 2
+@mat o marble 4
+@mat p marble 5
+@mat q marble 6
+@mat r red 1
+@mat s red 2
+@mat t red 3
+@layer stone
+@mblock 0 14
+.dddddddddddddddddddddddddddddd.
+deeeeeeeeeeeeeeeeeeeeeeedddddddc
+ddddddddddccdddddddddddddddddddc
+ddddccddddccddddddddddddcccddddc
+ddddddddddddddddddddddddcccddddc
+dddddddddddddddddddddddddddddddc
+dddddddddddddddddddddddddddddddc
+cddddddddddddddddddddddddddddddb
+cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+cbbccccbbaaaaaaaaaaaaaabbccccbab
+cbbccccbbaaaaaaaaaaaaaabbccccbab
+cbbccccbbaaaaaaaaaaaaaabbccccbab
+cbbccccbbaaaaaaaaaaaaaabbccccbab
+cbbccccbbaaaaaaaaaaaaaabbccccbab
+cbbccccbbaaaaaaaaaaaaaabbccccbab
+cbbccccbbaaaaaaaaaaaaaabbccccbab
+cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbf.
+@layer objects
+@mblock 4 6
+...h..................h...
+..hi.................hi...
+..ijh................ijh..
+.hjig...............hjig..
+..hg.................hg...
+..ml.................ml...
+..ml.................ml...
+..lk.................lk...
+..lk.................lk...
+..lk.................lk...
+.mmlk...............mmlk..
+.klkk...............klkk..
+@layer skull
+@mblock 14 12
+.opppo.
+pqnnnpo
+onnnnno
+pppppon
+pffpffn
+.ppfpo.
+..pon..
+.nopnn.
+@layer sigil
+@mblock 12 23
+.t....t.
+.st..ts.
+..stts..
+...tt...
+..stts..
+..s..s..

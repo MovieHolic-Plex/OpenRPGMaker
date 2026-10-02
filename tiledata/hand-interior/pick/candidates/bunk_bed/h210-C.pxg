@@ -1,0 +1,99 @@
+// C: 양쪽 최고 기둥 머리 윗면을 y=0~2의 3행으로 확보; 침구와 사다리는 유지.
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 4
+@mat d wood 6
+@mat e wood 7
+@mat f linen 3
+@mat g linen 4
+@mat h linen 5
+@mat i linen 6
+@layer bed
+@mblock 0 0
+.aeeea....................aeeea.
+.aeeea....................aeeea.
+.aeeeaabddddddddddddddddbbaeeea.
+.adddaacccccccccccccccccccaddda.
+.adccaahhhhhhhhhhhhhhhhhhaadcca.
+.adccaaiiiighiiiiiiiiiiihaadcca.
+.adccaaiiiighiiiiiiiiiiihaadcca.
+.adccaaiiiighiiiiiiiiiiihaadcca.
+.adccaahhhhghiiiiiiiihhhhaadcca.
+.adccaahhhhghhhhhhhhhhhhhaadcca.
+.adccaaggggghhhhhhhhhggggaadcca.
+.adccaaggggggggggggggggggaadcca.
+.adccaaffffffffffffffffffadcca.
+.addddcddddddddddddddddddcddcca.
+.adcccccccccccccccccccccccccca.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.adcaaaaaaaaaaaaaaaaaaaaaaadca..
+.addddddddddddddddddddddddadca..
+.adcccccccccccccccccccccccadca..
+.adcaahhhhhhhhhhhhhhhhhhhhaadca..
+.adcaaiiiighiiiiiiiiiiiihaadca..
+.adcaaiiiighiiiiiiiiiiiihaadca..
+.adcaaiiiighiiiiiiiiiiiihaadca..
+.adcaahhhhghiiiiiiiiihhhhaadca..
+.adcaahhhhghhhhhhhhhhhhhaadca..
+.adcaaggggghhhhhhhhhggggaadca..
+.adcaaggggggggggggggggggaadca..
+.adcaaffffffffffffffffffaadca..
+.adddcddddddddddddddddddcddcca..
+.adccccccccccccccccccccccccca..
+.abbbbbbbbbbbbbbbbbbbbbbbbbba..
+.adca.....................adca..
+.adca.....................adca..
+.adca.....................adca..
+.abba.....................abba..
+.aaaa.....................aaaa..
+@layer ladder
+@mblock 25 14
+adc..ad
+adc..ad
+adc..ad
+adc..ad
+adc..ad
+adc..ad
+adddddd
+acccccc
+abbbbba
+adc..ad
+adc..ad
+adc..ad
+adc..ad
+adddddd
+acccccc
+abbbbba
+adc..ad
+adc..ad
+adc..ad
+adc..ad
+adddddd
+acccccc
+abbbbba
+adc..ad
+adc..ad
+adc..ad
+adc..ad
+adddddd
+acccccc
+abbbbba
+adc..ad
+adc..ad
+abb..ab
+aaa..aa

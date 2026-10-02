@@ -75,6 +75,9 @@ export interface BattleLookPreset {
   readonly summary: string;
   readonly description: string;
   readonly group: "classic" | "fantasy" | "modern";
+  /** 어울리는 게임 분위기 — 조수가 기획 톤에 맞춰 고를 때 읽는다(battleLookMoodGuide). */
+  // 「현대·모던」은 쓰지 않는다 — 이 글은 첫 제작 지시에 실려 requestsModernMap 의 PAW 전용 게이트를 켠다(2026-10-02).
+  readonly mood: string;
   readonly axes: BattleLookAxes;
 }
 
@@ -87,19 +90,24 @@ export const BATTLE_LOOK_GROUP_LABELS: Readonly<Record<BattleLookPreset["group"]
 };
 
 export const BATTLE_LOOK_PRESETS: Readonly<Record<BattleLookPresetId, BattleLookPreset>> = {
-  pixel: { group: "classic", label: "도트 창 (기본)", summary: "아래 두 창", description: "아래쪽에 명령 창과 파티 줄 목록. 청색 각진 창과 픽셀 글꼴.", axes: BASE },
-  line: { group: "classic", label: "흰 줄 상자", summary: "위쪽 파티 상자", description: "파티를 위쪽 상자 넷에, 명령과 메시지를 아래에. 검은 바탕에 흰 줄 둥근 창.", axes: { ...BASE, party: "boxesTop", window: "line" } },
-  teal: { group: "classic", label: "청람 작은 창", summary: "전장 그대로 · 작은 창", description: "전장을 화면 끝까지 쓰고 오른쪽 아래 작은 상태 창과 캐릭터 옆 명령 창. 행동 게이지가 눈에 띈다.", axes: { ...BASE, party: "compact", command: "actor", field: "full", window: "teal" } },
-  pattern: { group: "classic", label: "무늬 상자", summary: "굴러가는 숫자", description: "아래 개인 상자에 HP 를 숫자 바퀴로 보이고 명령은 위쪽 가로 줄. 무늬 바탕 창.", axes: { ...BASE, party: "boxesBottom", command: "top", window: "pattern" } },
-  ink: { group: "fantasy", label: "먹빛 금테", summary: "판 없는 어두운 띠", description: "판 없이 가장자리로 흐려지는 먹빛 띠와 가는 금선. 명조 글꼴.", axes: { ...BASE, window: "ink", vignette: 1, grade: true } },
-  gold: { group: "fantasy", label: "화려한 금테", summary: "초상 카드 · 차례 줄 · 빛", description: "초상 카드, 캐릭터 옆 명령 창, 차례 순서 줄, 적 이름표, 빛내림과 먼지. 금 장식 창.", axes: { ...BASE, party: "cards", command: "actor", field: "full", turnOrder: true, enemyNames: true, window: "gold", light: 2, dust: 2, vignette: 2, blur: 2, grade: true } },
-  parch: { group: "fantasy", label: "양피지", summary: "동화책 느낌", description: "크림색 종이 창과 갈색 글씨, 명조. 초상 카드와 차례 줄, 은은한 빛.", axes: { ...BASE, party: "cards", command: "actor", turnOrder: true, window: "parch", light: 1, vignette: 1, grade: true } },
-  icons: { group: "fantasy", label: "아이콘 줄", summary: "위 작은 상자 · 둥근 아이콘", description: "파티는 오른쪽 위 작은 상자, 명령은 아래 둥근 아이콘 줄(고른 것만 이름이 뜬다).", axes: { ...BASE, party: "mini", command: "icons", field: "full", window: "teal", font: "rounded", light: 1 } },
-  veil: { group: "modern", label: "얇은 장막", summary: "반투명 · 무대가 잘 보임", description: "반투명 판과 흰 실선만. 가장 덜 꾸민 화면.", axes: { ...BASE, window: "veil" } },
-  soft: { group: "modern", label: "버튼 네 개", summary: "부드러운 둥근 창", description: "캐릭터 옆에 버튼 네 개(마름모)와 누를 키. 둥근 창, 둥근 고딕, 초상 카드와 차례 줄.", axes: { ...BASE, party: "cards", command: "keys", field: "full", turnOrder: true, window: "soft", vignette: 1, dust: 1, grade: true } },
-  pop: { group: "modern", label: "강렬한 사선", summary: "스타일리시", description: "사선으로 쌓인 큰 명령 블록과 기울인 초상. 빨강 · 검정 · 흰색.", axes: { ...BASE, party: "tilt", command: "fan", field: "full", window: "pop", vignette: 1 } },
-  cinema: { group: "modern", label: "영화식", summary: "테 없음 · 영화 띠", description: "위아래 검은 띠, 창 테두리 없이 글자만. 흐림과 빛으로 장면을 살린다.", axes: { ...BASE, party: "compact", command: "actor", field: "full", letterbox: true, window: "bare", light: 1, vignette: 2, blur: 2, grade: true } },
+  pixel: { group: "classic", label: "도트 창 (기본)", mood: "고전 레트로·향수, 특별한 톤이 없을 때", summary: "아래 두 창", description: "아래쪽에 명령 창과 파티 줄 목록. 청색 각진 창과 픽셀 글꼴.", axes: BASE },
+  line: { group: "classic", label: "흰 줄 상자", mood: "담백한 고전 판타지·짧은 단편", summary: "위쪽 파티 상자", description: "파티를 위쪽 상자 넷에, 명령과 메시지를 아래에. 검은 바탕에 흰 줄 둥근 창.", axes: { ...BASE, party: "boxesTop", window: "line" } },
+  teal: { group: "classic", label: "청람 작은 창", mood: "밝고 경쾌한 모험·청춘물", summary: "전장 그대로 · 작은 창", description: "전장을 화면 끝까지 쓰고 오른쪽 아래 작은 상태 창과 캐릭터 옆 명령 창. 행동 게이지가 눈에 띈다.", axes: { ...BASE, party: "compact", command: "actor", field: "full", window: "teal" } },
+  pattern: { group: "classic", label: "무늬 상자", mood: "아기자기한 고전·코믹", summary: "굴러가는 숫자", description: "아래 개인 상자에 HP 를 숫자 바퀴로 보이고 명령은 위쪽 가로 줄. 무늬 바탕 창.", axes: { ...BASE, party: "boxesBottom", command: "top", window: "pattern" } },
+  ink: { group: "fantasy", label: "먹빛 금테", mood: "어둡고 진지한 판타지·복수극·동양풍", summary: "판 없는 어두운 띠", description: "판 없이 가장자리로 흐려지는 먹빛 띠와 가는 금선. 명조 글꼴.", axes: { ...BASE, window: "ink", vignette: 1, grade: true } },
+  gold: { group: "fantasy", label: "화려한 금테", mood: "웅장한 정통 판타지·왕국·영웅 서사", summary: "초상 카드 · 차례 줄 · 빛", description: "초상 카드, 캐릭터 옆 명령 창, 차례 순서 줄, 적 이름표, 빛내림과 먼지. 금 장식 창.", axes: { ...BASE, party: "cards", command: "actor", field: "full", turnOrder: true, enemyNames: true, window: "gold", light: 2, dust: 2, vignette: 2, blur: 2, grade: true } },
+  parch: { group: "fantasy", label: "양피지", mood: "동화·전설·아이·따뜻한 마을 이야기", summary: "동화책 느낌", description: "크림색 종이 창과 갈색 글씨, 명조. 초상 카드와 차례 줄, 은은한 빛.", axes: { ...BASE, party: "cards", command: "actor", turnOrder: true, window: "parch", light: 1, vignette: 1, grade: true } },
+  icons: { group: "fantasy", label: "아이콘 줄", mood: "가볍고 귀여운 모험·아동용", summary: "위 작은 상자 · 둥근 아이콘", description: "파티는 오른쪽 위 작은 상자, 명령은 아래 둥근 아이콘 줄(고른 것만 이름이 뜬다).", axes: { ...BASE, party: "mini", command: "icons", field: "full", window: "teal", font: "rounded", light: 1 } },
+  veil: { group: "modern", label: "얇은 장막", mood: "SF·미니멀, 무대 그림을 보여 주고 싶을 때", summary: "반투명 · 무대가 잘 보임", description: "반투명 판과 흰 실선만. 가장 덜 꾸민 화면.", axes: { ...BASE, window: "veil" } },
+  soft: { group: "modern", label: "버튼 네 개", mood: "학원·일상·밝은 감성 판타지", summary: "부드러운 둥근 창", description: "캐릭터 옆에 버튼 네 개(마름모)와 누를 키. 둥근 창, 둥근 고딕, 초상 카드와 차례 줄.", axes: { ...BASE, party: "cards", command: "keys", field: "full", turnOrder: true, window: "soft", vignette: 1, dust: 1, grade: true } },
+  pop: { group: "modern", label: "강렬한 사선", mood: "도시 판타지·스타일리시·반항", summary: "스타일리시", description: "사선으로 쌓인 큰 명령 블록과 기울인 초상. 빨강 · 검정 · 흰색.", axes: { ...BASE, party: "tilt", command: "fan", field: "full", window: "pop", vignette: 1 } },
+  cinema: { group: "modern", label: "영화식", mood: "영화 같은 연출·비극·느와르·여운", summary: "테 없음 · 영화 띠", description: "위아래 검은 띠, 창 테두리 없이 글자만. 흐림과 빛으로 장면을 살린다.", axes: { ...BASE, party: "compact", command: "actor", field: "full", letterbox: true, window: "bare", light: 1, vignette: 2, blur: 2, grade: true } },
 };
+
+/** 조수용 고르기 안내 한 줄 — `id(라벨)=어울리는 분위기` 를 프리셋 순서대로. */
+export function battleLookMoodGuide(): string {
+  return BATTLE_LOOK_PRESET_IDS.map((id) => `${id}(${BATTLE_LOOK_PRESETS[id].label})=${BATTLE_LOOK_PRESETS[id].mood}`).join(" · ");
+}
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 

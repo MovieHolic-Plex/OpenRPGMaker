@@ -1,3 +1,5 @@
+import type { BlendModeName } from "@/project/blendMode";
+import type { EasingName } from "@/project/easing";
 import type {
   ActorId,
   AssetRef,
@@ -485,6 +487,10 @@ export type Command =
       opacity?: number;
       rotation?: number;
       durationMs?: number;
+      /** 이동 곡선(생략 = 일정하게). 그림이 가감속하며 들어오고 멈춘다. */
+      easing?: EasingName;
+      /** 아래 화면과 섞는 방식(생략 = 보통). */
+      blendMode?: Exclude<BlendModeName, "normal">;
       waitForPicture?: boolean;
       /** 시스템이 갤러리를 켜 둔 동안, 이 그림을 한 번 보면 메뉴 목록에 남긴다. */
       recordInGallery?: boolean;
@@ -649,6 +655,8 @@ export interface EventPageGraphic {
   scale?: number;
   /** 생략 시 scale이 없으면 자동, 기존 scale이 있으면 수동(호환). */
   scaleMode?: "auto" | "manual";
+  /** 아래 화면과 섞는 방식(생략 = 보통). 빛·유령은 add, 그림자는 multiply. `@/project/blendMode`. */
+  blendMode?: Exclude<BlendModeName, "normal">;
 }
 
 export interface NpcLivingDestination {

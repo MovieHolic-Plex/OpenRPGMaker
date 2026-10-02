@@ -3,10 +3,10 @@ import { databasePanelRootFrom } from "@/editor/panels/databaseLifeUi";
 import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { el } from "@/util/dom";
 
-export type BattleStudioTab = "animations" | "battleScreen" | "battleCommands" | "terrain";
+export type BattleStudioTab = "animations" | "retroChoreographies" | "battleScreen" | "battleCommands" | "terrain";
 
 const BATTLE_STUDIO_TABS: readonly { readonly id: BattleStudioTab; readonly label: string }[] = [
-  { id: "animations", label: "애니메이션" },
+  { id: "retroChoreographies", label: "도트 연출" },
   { id: "battleScreen", label: "전투 화면" },
   { id: "battleCommands", label: "전투 명령" },
   { id: "terrain", label: "지형 효과" },

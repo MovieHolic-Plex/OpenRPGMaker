@@ -1,4 +1,5 @@
 import { el } from "@/util/dom";
+import { DISPLAY_FILTER_TESTID, syncDisplayFilter } from "@/player/displayFilterDom";
 import {
   calculatePlaySurfaceCropMetrics,
   calculatePlaySurfacePlacement,
@@ -19,6 +20,7 @@ export type PlaySurface = {
 export function createPlaySurface(
   resolution: Readonly<PlayResolution> = PLAY_RESOLUTION,
   scaleMode: PlaySurfaceScaleMode = "integer",
+  displayFilter?: unknown,
 ): PlaySurface {
   const viewport = el("div", {
     class: "play-viewport",
@@ -35,6 +37,15 @@ export function createPlaySurface(
   applyPlaySurfaceResolution(viewport, stage, phaserContainer, resolution);
   stage.append(phaserContainer);
   viewport.append(stage);
+  syncDisplayFilter(stage, displayFilter);
+  // 전투·메뉴 층이 나중에 붙어도 필터가 맨 위에 남도록 — 무대의 직계 자식이 바뀔 때 다시 끝으로 옮긴다.
+  const filterObserver = displayFilter
+    ? new MutationObserver(() => {
+        const last = stage.lastElementChild;
+        if (last instanceof HTMLElement && last.dataset.testid !== DISPLAY_FILTER_TESTID) syncDisplayFilter(stage, displayFilter);
+      })
+    : null;
+  filterObserver?.observe(stage, { childList: true });
 
   const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode));
   resizeObserver.observe(viewport);
@@ -48,6 +59,7 @@ export function createPlaySurface(
     cleanup: () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
+      filterObserver?.disconnect();
     },
   };
 }

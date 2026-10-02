@@ -49,7 +49,7 @@ function standPair(p: Project, id: string, cx: number, cy: number): { at: { x: n
 }
 
 // ── C01 전투 화면: 크로노 스킨 + 게이지(ATB) ──
-call("C01", "set_project_settings", { title: "시간의 문", battle: { flow: "gauge", uiStyle: "chrono" } });
+call("C01", "set_project_settings", { title: "시간의 문", battle: { flow: "gauge", uiStyle: "retro2003" } });
 
 // ── C02~C04 파티 3인 · 레벨 습득 기술 · 전체 공격 기술 ──
 call("C04", "upsert_skill", { skill: { id: "skill_cyclone", name: "회전베기", scope: "allEnemies", power: 24, description: "주변 적 전부를 벤다", mpCost: { flat: 2, percentMax: 0 }, elementId: "sword" } });

@@ -1,0 +1,62 @@
+// 금장 모서리·중앙 문양과 입구가 보이는 표본 병 셋; 꼭대기 윗면 3행(y=1~3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 6
+@mat e wood 7
+@mat f dwood 1
+@mat g dwood 2
+@mat j gold 2
+@mat k gold 4
+@mat l gold 5
+@mat m glass 0
+@mat n glass 1
+@mat o glass 2
+@mat p glass 4
+@mat q glass 5
+@mat r linen 2
+@mat s linen 4
+@mat t linen 6
+@mat u red 3
+@mat v black 1
+@mat w straw 3
+@mat x straw 5
+@mat y red 2
+@mat z red 4
+@layer shelf
+@mblock 0 0
+.bbbbbbbbbbbbbb.
+bleeddddddddeekb
+bkeedddccdddeekb
+bdeedddddddddcbb
+ckkkkkkllkkkkkjb
+baaaaaajjaaaaabb
+bkggggggggggggjb
+bkgglljggglljgjb
+bcgklkjggklkjgcb
+bcgmqomggmqomgcb
+bcgqsusmgqgxomcb
+bcgpsvsmgqgxomcb
+bcgpsusmgqwxomcb
+bcgnoonmgnxxnmcb
+bcgmnnmggmnnmgcb
+beeddddcddddddcb
+bddddddddddddcbb
+ckkkkkkkkkkkkkjb
+baaaaaaaaaaaaabb
+bkggggllljggggjb
+bcgggkllkjggggcb
+bcgggmqoomggggcb
+bcggqpzzzongggcb
+bcggqzzzyongggcb
+bcggqotroongggcb
+bcggqostoongggcb
+bcggqoooonmgggcb
+bcggmnnnnmggggcb
+beeddddddddddccb
+bddddddddddddcbb
+ckkkkkkkkkkkkkjb
+baaaaaaaaaaaaabb

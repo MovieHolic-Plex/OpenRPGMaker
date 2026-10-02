@@ -1,0 +1,33 @@
+// h43-E 자유 해석: 밝은 소나무 판에 놋쇠 열쇠 5개가 못에 걸리고 각 열쇠 밑에 붉은 끈 번호 패, 아래 턱 선반
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat h pine 5
+@mat l pine 4
+@mat p pine 3
+@mat s pine 2
+@mat o dwood 2
+@mat O dwood 0
+@mat B brass 5
+@mat b brass 3
+@mat c brass 1
+@mat r red 3
+@mat R red 4
+@mat w linen 5
+@mblock 0 0
+.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.
+olllllllllllllllllllllllllllllls
+opppppppppppppppppppppppppppppps
+opccppppppcppppppcppppppcppppcps
+opbBbpppppbBbpppbBbpppbBbpppbBbs
+oppBpppppppBppppppBppppppBpppBps
+opppBbppppppBbpppppBbppppppBbpps
+oppBbpppppppBbppppBppppppppBbpps
+opppppppppppppppppppppppppppppps
+opprrpppppprrpppppprrppppprrpprs
+opprwrppppprwrppppprwrpppprwrpps
+opprrpppppprrpppppprrppppprrppsp
+opppppppppppppppppppppppppppppps
+olllllllllllllllllllllllllllllll
+osssssssssssssssssssssssssssssss
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO

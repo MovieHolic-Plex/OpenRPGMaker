@@ -9,7 +9,9 @@ import {
   BATTLE_IMPACT_MS,
   BATTLE_RESULT_HOLD_MS,
   BATTLE_RESOLVE_MS,
+  tempoActionBeats,
 } from "@/player/battleSequencer";
+import { planActionBeats } from "@/player/battleActionBeats";
 import battleFixture from "./fixtures/projects/battle-v3.json";
 
 function battleRuntime() {
@@ -364,5 +366,18 @@ describe("battle sequencer", () => {
     expect(delays).toContain(BATTLE_RESULT_HOLD_MS);
     expect(lines.at(-1)).toContain("후퇴");
     expect(queue).toHaveLength(0);
+  });
+});
+
+describe("tempoActionBeats (스킨 동작 템포)", () => {
+  it("히트스톱 비트는 두고 나머지 비트만 템포로 줄인다", () => {
+    const beats = planActionBeats({
+      userId: "a", targetId: "e",
+      feedback: { targetId: "e", amount: 5, critical: false, healing: false },
+      actingMs: 400, hitStopMs: 110, impactMs: 400, weight: "normal",
+    });
+    const fast = tempoActionBeats(beats, 1.5);
+    expect(fast.map((beat) => beat.durationMs)).toEqual([267, 110, 267]);
+    expect(tempoActionBeats(beats, 1)).toBe(beats);
   });
 });

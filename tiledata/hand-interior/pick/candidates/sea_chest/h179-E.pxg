@@ -1,0 +1,33 @@
+// E: 쇠띠 두 줄을 두른 낮은 파란 여행 궤짝, 양끝 밧줄 손잡이와 앞 잠금쇠. 꼭대기 윗면 5행(y=3~7).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a blue 0
+@mat b blue 1
+@mat c blue 2
+@mat d blue 3
+@mat e blue 4
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat r pine 3
+@mat s pine 5
+@mat w dwood 2
+@mblock 0 0
+................
+................
+...bbkbbbbkbba..
+..bddlddddlddb..
+.bdeelddddldddb.
+.bdddldccdldddb.
+.bdddlddddldcdb.
+.bccckcccckcccb.
+.jlllkllllkllkj.
+.jccccblmbcccbj.
+rscccccllccccbsr
+sacccccjkccccbas
+rrccccccbccccbrr
+.jccccccbcccbaj.
+.jkjbbbbbbbbjkj.
+..wwwwwwwwwwww..

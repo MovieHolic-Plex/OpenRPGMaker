@@ -3,9 +3,8 @@ import { fieldHudEditor } from "./databaseFieldHud";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
-import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
-import { BATTLE_HIT_FEEL_DESCRIPTIONS, BATTLE_HIT_FEEL_IDS, BATTLE_HIT_FEEL_LABELS, DEFAULT_BATTLE_HIT_FEEL, resolveBattleHitFeel } from "@/project/battleHitFeel";
-import { battleLookFields } from "@/editor/panels/databaseBattleLook";
+import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { databasePanelRootFrom } from "@/editor/panels/databaseLifeUi";
 import {
   emptyToUndefined,
   field,
@@ -104,6 +103,7 @@ import {
   resolvePlayResolution,
 } from "@/project/playResolution";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
+import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
 import type { PlayResolution, SystemRecords } from "@/project/types";
 
 type SystemRefresh = (kind?: "values" | "effects") => void;
@@ -120,7 +120,6 @@ const ENEMY_HP_BAR_OPTIONS: readonly { readonly id: string; readonly name: strin
 /** 시작 파티 얼굴 칸 표시 크기(px). 낱장 얼굴 48px 을 그대로 담는다. */
 const START_PARTY_FACE_SIZE = 40;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
-const BATTLE_UI_STYLE_OPTIONS = listBattleSkinIds();
 const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies readonly TitleScreenTitleMode[];
 const TITLE_PARTICLE_PRESET_OPTIONS = ["none", "snow", "rain", "fireflies"] as const satisfies readonly ("none" | TitleParticlePreset)[];
 const TITLE_INTRO_LOGO_OPTIONS = ["none", "fadeIn", "riseIn"] as const satisfies readonly TitleIntroLogoAnimation[];
@@ -353,20 +352,6 @@ function systemSectionNodes(
           },
           rerender,
         }),
-        resourcePickerControl({
-          label: "전투 시스템 리소스",
-          resourceId: project.system.battleSystemResourceId,
-          kind: "system2",
-          testid: "db-field-battle-system-resource",
-          allowClear: true,
-          dialogTitle: "전투 시스템 그래픽",
-          onChange: (result) => {
-            updateSystem((draft) => {
-              draft.system.battleSystemResourceId = emptyToUndefined(result.resourceId);
-            });
-          },
-          rerender,
-        }),
         el("div", {
           class: "db-system-resource-actions",
           children: [
@@ -384,7 +369,7 @@ function systemSectionNodes(
     ]),
     startup: section("startup", [
       rm2k3Fieldset("전투 설정", [
-        systemHelp("초기 적 그룹은 선택 사항입니다. 기본 참전 수 0은 규칙 모델에 맞춰 자동으로 정합니다."),
+        systemHelp("초기 적 그룹은 선택 사항입니다. 기본 참전 수 0은 전투 방식에 맞춰 자동으로 정합니다(도트 측면은 파티 전원, 몬스터 대치는 1마리)."),
         selectField("초기 적 그룹", "db-picker-system-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
           updateSystem((draft) => {
             draft.system.initialTroopId = emptyToUndefined(value);
@@ -401,65 +386,13 @@ function systemSectionNodes(
             });
           },
         ),
-        field("전투 UI 스타일", (() => {
-          // literalLabel 스위치에는 스킨 라벨이 없으므로 레지스트리 라벨로 직접 빌드한다.
-          // 2026-09-25: 12종 전부 활성이다(정면·측면 유리 뼈대의 색·HUD 변형 + 몬스터 대치). deprecated 표식이 다시
-          // 생기면 저장된 그 스킨 항목만 「(지원 종료)」로 남겨 선택을 보존한다(암묵 remap 금지).
-          const select = el("select", { dataset: { testid: "db-field-system-battle-ui-style" } });
-          const savedId = resolveSkinId(project.system.battleUiStyle);
-          for (const id of listActiveBattleSkinIds()) {
-            select.append(el("option", { text: BATTLE_SKINS[id].label, attrs: { value: id } }));
-          }
-          if (isDeprecatedBattleSkin(savedId)) {
-            select.append(el("option", { text: `${BATTLE_SKINS[savedId].label} (지원 종료)`, attrs: { value: savedId } }));
-          }
-          select.value = savedId;
-          select.addEventListener("change", () => {
-            updateSystem((draft) => {
-              draft.system.battleUiStyle = select.value as (typeof BATTLE_UI_STYLE_OPTIONS)[number];
-            });
-          });
-          return select;
-        })()),
-        field("타격감", (() => {
-          const select = el("select", {
-            dataset: { testid: "db-field-system-battle-hit-feel" },
-            attrs: { title: BATTLE_HIT_FEEL_IDS.map((id) => `${BATTLE_HIT_FEEL_LABELS[id]}: ${BATTLE_HIT_FEEL_DESCRIPTIONS[id]}`).join("\n") },
-          });
-          for (const id of BATTLE_HIT_FEEL_IDS) {
-            select.append(el("option", { text: BATTLE_HIT_FEEL_LABELS[id], attrs: { value: id } }));
-          }
-          select.value = resolveBattleHitFeel(project.system.battleHitFeel);
-          select.addEventListener("change", () => {
-            updateSystem((draft) => {
-              const next = resolveBattleHitFeel(select.value);
-              if (next === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;
-              else draft.system.battleHitFeel = next;
-            });
-          });
-          return select;
-        })()),
-        field("규칙 모델", (() => {
-          // 전투 규칙 엔진 선택. rm2k3(기본/생략) 또는 gen1(포켓몬 레드 스타일).
-          // 기본은 JSON 에 생략하고 gen1 만 보존한다(normalizeSystemRecords 와 동일 계약).
-          // Both supported models route through battle/runtime.ts; skins are a separate choice.
-          const select = el("select", {
-            dataset: { testid: "db-field-system-battle-model" },
-            attrs: { title: "RM식과 Gen1은 대미지·상태·포획 규칙이 다릅니다. 전투 UI 스타일은 별도로 선택합니다." },
-          });
-          select.append(
-            el("option", { text: "RM2k3 (기본)", attrs: { value: "rm2k3" } }),
-            el("option", { text: "Gen1 (포켓몬 레드 스타일)", attrs: { value: "gen1" } }),
-          );
-          select.value = project.system.battleModel === "gen1" ? "gen1" : "rm2k3";
-          select.addEventListener("change", () => {
-            updateSystem((draft) => {
-              if (select.value === "gen1") draft.system.battleModel = "gen1";
-              else delete draft.system.battleModel;
-            });
-          });
-          return select;
-        })()),
+        el("button", {
+          class: "btn small",
+          text: "전투 방식·타격감·꾸미기는 전투 화면 탭에서",
+          attrs: { type: "button" },
+          dataset: { testid: "db-system-open-battle-screen" },
+          on: { click: (event) => switchToBattleScreenTab(event) },
+        }),
         numberField("기본 참전 수 (0 = 자동)", "db-field-system-active-slots", () => store.getCurrent().system.activeSlots ?? 0, (value) => {
           updateSystem((draft) => {
             draft.system.activeSlots = optionalPositiveInteger(value);
@@ -522,7 +455,6 @@ function systemSectionNodes(
         ),
       ]),
       battleResourcesFieldset(project),
-      rm2k3Fieldset("전투 화면 꾸미기", battleLookFields(project, updateSystem, () => rerender())),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({
           label: "기본 BGM",
@@ -670,7 +602,6 @@ function systemSectionNodes(
             systemPreviewWell("타이틀", project.system.titleResourceId),
             systemPreviewWell("시작화면", titleBackgroundResourceId),
             systemPreviewWell("시스템", project.system.systemResourceId),
-            systemPreviewWell("전투", project.system.battleSystemResourceId),
           ],
         })],
       }),
@@ -883,6 +814,25 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
     }),
     playResolutionDiagnostics(project, resolution),
     cameraZoomField(rerender),
+    displayFilterField(project),
+  ]);
+}
+
+/** 화면 표시 필터(주사선·브라운관) — 맵·전투·대화를 한꺼번에 덮는다. 다음 플레이부터 보인다. */
+function displayFilterField(project: Project): HTMLElement {
+  const select = el("select", { dataset: { testid: "db-field-system-display-filter" } }) as HTMLSelectElement;
+  for (const id of DISPLAY_FILTERS) select.append(el("option", { text: DISPLAY_FILTER_LABELS[id], attrs: { value: id } }));
+  select.value = project.system.displayFilter ?? "none";
+  select.addEventListener("change", () => {
+    updateSystem((draft) => {
+      const next = normalizeDisplayFilter(select.value);
+      if (next) draft.system.displayFilter = next;
+      else delete draft.system.displayFilter;
+    }, "system:display-filter");
+  });
+  return rm2k3Fieldset("화면 필터", [
+    el("p", { class: "db-system-resolution-help", text: "옛 TV 느낌. 맵·전투·대화·메뉴 위에 한 겹으로 깔립니다. 다음에 플레이를 시작할 때 적용됩니다." }),
+    field("필터", select),
   ]);
 }
 
@@ -1752,7 +1702,7 @@ function systemPreviewWell(label: string, resourceId: string | undefined): HTMLE
     children: [
       el("span", { class: "db-system-preview-label", text: label }),
       el("div", { class: "db-system-preview-frame", children: [preview] }),
-      el("code", { text: resourceId ? systemResourceName(label === "시스템" ? "system" : label === "전투" ? "system2" : "title", resourceId) : "선택 없음" }),
+      el("code", { text: resourceId ? systemResourceName(label === "시스템" ? "system" : "title", resourceId) : "선택 없음" }),
     ],
   });
   if (url) preview.addEventListener("error", () => markDatabaseImageFailed(preview.parentElement!, label), { once: true });
@@ -3333,7 +3283,7 @@ const SYSTEM_SECTION_HELP: Record<Exclude<SystemSectionSlug, "overview">, string
   dialogue: "NPC 대사창의 모양·글꼴·글자 소리를 고르고, 대사 종류별 모양을 확인합니다.",
   font: "화면 역할마다 글꼴을 고르고 실제 문장으로 비교합니다.",
   resources: "프로젝트에서 공유하는 그래픽을 선택합니다.",
-  startup: "전투 방식, 기본 소리, 보상, 갤러리를 정합니다.",
+  startup: "전투 규칙, 기본 소리, 보상, 갤러리를 정합니다.",
   optin: "선택 기능과 기존 프로젝트의 세부 설정을 관리합니다.",
   time: "시간 진행, 계절 길이와 하루 종료 동작을 정합니다.",
   typechart: "공격 타입과 방어 타입 사이의 배율을 편집합니다.",
@@ -3479,4 +3429,11 @@ function refreshSystemDerived(form: HTMLElement, kind: "values" | "effects"): vo
   const preset = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-resolution-preset"]');
   if (preset) preset.value = playResolutionPreset(resolvePlayResolution(project.system));
   refreshTimeSummary(form);
+}
+
+/** 전투 방식·타격감·꾸미기는 2026-10-02 「전투 화면」 탭으로 옮겼다 — 시작 설정에는 규칙만 남는다. */
+function switchToBattleScreenTab(event: Event): void {
+  const root = databasePanelRootFrom(event.currentTarget as HTMLElement | null)
+    ?? (document.querySelector(".database-modal-body") as HTMLElement | null);
+  if (root) switchDatabaseActiveTab("battleScreen", root);
 }

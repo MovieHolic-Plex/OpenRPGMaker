@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hint_tablet/h38-B.pxg",
+ "id": "hint tablet",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  8,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "룬석과 같은 stone 램프(윤곽 0·1, 밝은 윗테 5)로 윗 기운판(글 줄 6행)+앞 두께면+넓은 받침을 손으로 찍음",
+ "ok": true
+}

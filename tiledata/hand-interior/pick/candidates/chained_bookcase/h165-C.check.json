@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chained_bookcase/h165-C.pxg",
+ "id": "chained bookcase",
+ "hard": [],
+ "warn": [
+  "접지: 맨 아래 불투명 줄 y=31 — 캔버스 바닥 y=47 에서 16px 떠 있다"
+ ],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.18
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "꼭대기 y=4 한 행을 처마 앞면·그림자로 전환; 높이 32px와 책·선반·X자 쇠사슬·중앙 자물쇠 유지; 꼭대기 윗면 4행(y=0~3)",
+ "ok": true
+}

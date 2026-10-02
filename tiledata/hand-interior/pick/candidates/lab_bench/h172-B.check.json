@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/lab_bench/h172-B.pxg",
+ "id": "lab bench",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 19,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  7,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "같은 방 작업대의 따뜻한 테·짙은 하부·굵은 명암 덩이를 따른 흰 실험대에 서랍과 현미경·기록지·포획 구슬을 손 도트로 배치; 전체 높이 25px, 상판 윗면 8행(y=17~24), 꼭대기 윗면 3행(y=7~9)",
+ "ok": true
+}

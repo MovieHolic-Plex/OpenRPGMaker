@@ -6,14 +6,14 @@
 // 배경 URL 이 원본 파일이름을 그대로 포함해서, "이 배틀러가 자기 자산을 쓰고 있다" 를 재는
 // 기존 계약(`test/battleFieldAllySprite.test.ts` 의 부분및자열 단언)이 애니메이션에도 성립한다.
 //
-// 등록되지 않은 리소스 id 는 애니메이션 없이 지금까지의 정적 그림을 그대로 쓴다 — 몬스터 그래픽이
-// 140여 종이라 전량 생성은 목표가 아니고, 옵트인이라 나중에 줄만 늘리면 된다.
+// 일반 이미지의 몬스터는 native idle_a 초상을 쓴다. 도트 적의 대기 루프/공격/피격은
+// pixelEnemySheets.ts 의 3×3 포즈 계약이 소유한다. 폐기된 painted monster idle은 등록하지 않는다.
 //
 // ## 두 티어와 그 근거
 //
 // | 티어 | 대상 | 소스 | 왜 |
 // |---|---|---|---|
-// | `image-strip` | 384·712px 통짜 배틀러(적·파티 몬스터) | 영상 클립에서 프레임 추출 | 영상은 한 클립 안에서 같은 픽셀을 이어 그려 실루엣이 유지된다 |
+// | `image-strip` | 후면 액터 배틀러 | 영상 클립에서 프레임 추출 | 영상은 한 클립 안에서 같은 픽셀을 이어 그려 실루엣이 유지된다 |
 // | `sheet-cell` | 48px 전투 캐릭터셋(액터) | 절차 생성(`scripts/asset-gen/gen-battler-idle-strips.mjs`) | 48px 를 업스케일해 모델에 넣으면 캐릭터가 다른 사람이 된다 |
 //
 // 두 티어는 **재생 좌표계가 다르다**:
@@ -42,16 +42,6 @@ export type BattlerIdleAnimation = {
   readonly frameDurationMs: number;
   readonly tier: BattlerIdleAnimationTier;
 };
-
-/** 영상 클립에서 뽑은 몬스터 idle. 셀 192px = 정적 원본(384px)의 절반. */
-const MONSTER_IDLE: readonly BattlerIdleAnimation[] = [
-  // 루프 구간 30→72 프레임(1.75s) ÷ 8장 = 219ms — 슬라임이 느리게 부풀었다 가라앉는 속도.
-  monster("generated-enemy-slime-01", "monster-slime-01.png", 8, 219),
-  // 89→109(0.83s) ÷ 8 = 104ms — 날개짓 한 사이클.
-  monster("generated-enemy-bat-01", "monster-bat-01.png", 8, 104),
-  // 73→85(0.5s) ÷ 8 = 62ms — 어깨가 오르내리는 짧은 구간이라 실측대로 두면 무게감이 산다.
-  monster("generated-enemy-golem-01", "monster-golem-01.png", 8, 62),
-];
 
 /**
  * 절차 생성한 액터 숨쉬기. 2026-09-03 부터 **고해상도 짝**(`starter/hires/idle/`, 셀 192px = 48px 스트립을
@@ -125,23 +115,6 @@ function backActor(slug: string, frameDurationMs: number): BattlerIdleAnimation 
   };
 }
 
-function monster(
-  resourceId: string,
-  file: string,
-  frameCount: number,
-  frameDurationMs: number
-): BattlerIdleAnimation {
-  return {
-    resourceId,
-    path: `assets/generated/starter/idle/${file}`,
-    frameCount,
-    cellWidth: 192,
-    cellHeight: 192,
-    frameDurationMs,
-    tier: "image-strip",
-  };
-}
-
 /**
  * 레거시 별칭 `hero` — 리졸버가 `hero-01-battle.png` 로 보내는 옛 id 다
  * (`generatedAssetResourceResolver.ts:18`). 많은 기존 프로젝트·픽스처가 아직 이 id 를 쓰고
@@ -153,7 +126,6 @@ const LEGACY_HERO_IDLE: BattlerIdleAnimation = {
 };
 
 export const BATTLER_IDLE_ANIMATIONS: readonly BattlerIdleAnimation[] = [
-  ...MONSTER_IDLE,
   ...ACTOR_IDLE,
   ...BACK_IDLE,
   LEGACY_HERO_IDLE,

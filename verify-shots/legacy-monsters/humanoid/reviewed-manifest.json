@@ -1,0 +1,464 @@
+{
+  "review": "Visual inspection of every 2x pose across all three all-poses boards; focused final reinspection of changed species boards. Bounds fixes and anatomy revisions completed.",
+  "species": [
+    {
+      "slug": "zombie-01",
+      "sheetSha256": "dc017229a8bb5a0c829b061272fb27adbf170d94d2664e61651526ddbc41c627",
+      "board": "zombie-01-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Ribs visible; claws and knees flex; collapse distinct."
+    },
+    {
+      "slug": "orc-01",
+      "sheetSha256": "d555f56efae475d8da305c32ff9d67dd9c96f6194e36feb67625092c8aebf725",
+      "board": "orc-01-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Double axe survives raised and sweeping poses; tusks and ears present."
+    },
+    {
+      "slug": "harpy-01",
+      "sheetSha256": "3d0e22df4e805e5a13a681cbc7ec883d2920879ce2e8d2544d8d7747c5ce224b",
+      "board": "harpy-01-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Brown female head, feather wings and avian talons; no wing/foot clipping."
+    },
+    {
+      "slug": "salamander-01",
+      "sheetSha256": "1b2fb9b4a18c19e0b56cbba0d61a4f94a91a5822072f3ed84a897192f4b18e08",
+      "board": "salamander-01-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Black orange spotting, teeth, four legs and moving tail."
+    },
+    {
+      "slug": "kappa-01",
+      "sheetSha256": "5235e2968fc09a12609903e37d4195528b20656ef5d2021ec6d38dd03e2e3f42",
+      "board": "kappa-01-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Water dish, turtle shell, yellow beak, straw skirt present."
+    },
+    {
+      "slug": "leafling-01",
+      "sheetSha256": "05b2b379bcf806bffa660db7e3bcfe53799d1b2ecc9c5eddff800424630514e2",
+      "board": "leafling-01-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Leaf hood, woody forked arms, leaves flutter independently."
+    },
+    {
+      "slug": "sparkit-01",
+      "sheetSha256": "2d7cd0826f353c64a957e8ccf695a277a631edd49ba32bc17595567cbb299852",
+      "board": "sparkit-01-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Blue core, yellow bolt arms and lower body; strike widens arms."
+    },
+    {
+      "slug": "aqualing-01",
+      "sheetSha256": "75298ff4cd0cf1eeb0ca46a9274644c9f8f46338b903bd643c4bbf0ccdbecf63",
+      "board": "aqualing-01-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Water fish, right-facing eye, moving tail and fins."
+    },
+    {
+      "slug": "salamander-flame",
+      "sheetSha256": "1051d109d91d71d594559f0c4f02b783d6c2b078f26acf39bb25f1c8ae78e725",
+      "board": "salamander-flame-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Tall dorsal spikes differentiate the same lizard subject."
+    },
+    {
+      "slug": "goblin-brute",
+      "sheetSha256": "a631928233160f9610713247a4ba77d9e70fa18e741ca31d381cf25c85d1c335",
+      "board": "goblin-brute-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Short crouched hooked-nose club fighter; no collision with bounds."
+    },
+    {
+      "slug": "kobold-digger",
+      "sheetSha256": "5701adb15bce09e7aee9586e8f94ec5d979b407e0b77581416bfe6194ed7a46c",
+      "board": "kobold-digger-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Reptile muzzle, tail and raised/swept curved pickaxe."
+    },
+    {
+      "slug": "mage-rogue",
+      "sheetSha256": "f8121ca9dea9c8669ec3d354de07bb42b7bd88eb21f3d25c106e42e0fa7b98db",
+      "board": "mage-rogue-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Purple gem, hood and free-hand spell retained across poses."
+    },
+    {
+      "slug": "knight-fallen",
+      "sheetSha256": "f12d7d91389ff9fe8f275ac5f2efb5300d65e5c9605a8725c36ead5e9e7b616f",
+      "board": "knight-fallen-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Reclined supporting arm and bent legs, cape, plume and black armor."
+    },
+    {
+      "slug": "centaur-plains",
+      "sheetSha256": "9127919f3f18ccb08e193c096a9ca41260b6765db3abade957831cce272d99b5",
+      "board": "centaur-plains-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Horse torso/four legs and human upper body retained; spear thrust distinct."
+    },
+    {
+      "slug": "ogre-club",
+      "sheetSha256": "17abc5a3cb2008848e84597720abb0acef1199a50c34cebae3f522c3b80f0ead",
+      "board": "ogre-club-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "96px broad giant, muscular limbs, oversized head/club and large corpse."
+    },
+    {
+      "slug": "imp-mischief",
+      "sheetSha256": "8a088ccd5c9977bc33064662028a2c0b38971d3274e1aa80cb69be1c6be9fe4b",
+      "board": "imp-mischief-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Small red demon, two horns, membrane wings and lifted legs."
+    },
+    {
+      "slug": "griffin-sky",
+      "sheetSha256": "1ff0ba623f4d0728012072bc3152aafc117fce8a40f10e1bd0d0d8dae57d86b4",
+      "board": "griffin-sky-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Eagle profile/wing and lion quarters/tufted tail; wing beats and stride."
+    },
+    {
+      "slug": "wyvern-cliff",
+      "sheetSha256": "8e94ba0f7af01cd005ccba9c973539d6eca4014ca564a8633944e3329050d942",
+      "board": "wyvern-cliff-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Yellow-green four-legged flying dragon per metadata, pale smoke."
+    },
+    {
+      "slug": "roc-giant",
+      "sheetSha256": "9c229485319f38a796b48b21d0290bd9080d566a6650f9d36f60135b6281dbf6",
+      "board": "roc-giant-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Brown raptor, gold neck feathers, talons rake forward."
+    },
+    {
+      "slug": "phoenix-rebirth",
+      "sheetSha256": "ef821af3445780f503a250c414b5675c31b8d51afd10d45438a0f62a5c46c62e",
+      "board": "phoenix-rebirth-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Fire crown, red-orange feathers and long flaming tail."
+    },
+    {
+      "slug": "dragon-whelp",
+      "sheetSha256": "41756fe96719a86de7a18c35418dc679c3c1fc9af3bf7d321d1730b0ff728fb5",
+      "board": "dragon-whelp-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Compact gold dragon, smaller neck/body and four tucked flying legs."
+    },
+    {
+      "slug": "dragon-red",
+      "sheetSha256": "a0741bbe5365a5fb8a75260ec9b01780567b8d52cdd453134506ec2e83c9fc4d",
+      "board": "dragon-red-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Broad red torso, horned tall neck, dorsal spines, pale smoke."
+    },
+    {
+      "slug": "dragon-blue",
+      "sheetSha256": "8086c82100fd13fbb397ba3c6b3864856101367f5c705397d05ae5144afc965d",
+      "board": "dragon-blue-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Serpentine bent blue neck, thin body and purple smoke."
+    },
+    {
+      "slug": "dragon-bone",
+      "sheetSha256": "05349e53349f89ea911ad57b2f76d3a1c691512cfd8ad1da72171758efa4dbce",
+      "board": "dragon-bone-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Pale heavy scale plates, four legs, white smoke; metadata says gray scaled dragon."
+    },
+    {
+      "slug": "hydra-three",
+      "sheetSha256": "bf577144b87e91f993951bdc4575409070569f8528a408a016818cef4487365c",
+      "board": "hydra-three-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Exactly three horned right-facing heads with independently bending necks; three heads in death."
+    },
+    {
+      "slug": "behemoth-horn",
+      "sheetSha256": "ec536fc49bf8d888fdc73a9d43055e925aa5ecb88d5f47bc3199cc488daffc39",
+      "board": "behemoth-horn-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Brown shaggy quadruped, dorsal spines, great horns, clawed feet and articulated jaw."
+    },
+    {
+      "slug": "angel-fallen",
+      "sheetSha256": "edc9f1a49a4fee779db2b2f149afd13d5efa90ae58e85c589f15b9a533380680",
+      "board": "angel-fallen-poses.png",
+      "posesReviewed": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ],
+      "note": "Silver hair, black feather wing, dark armor and red sword guard."
+    }
+  ]
+}

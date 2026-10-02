@@ -1,0 +1,29 @@
+// h45 D: 장식 — 금장 안쪽 테와 윗머리 문장을 두른 검은 분필판, 흰 글 줄 + 거품 잔·빵 그림
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat F dwood 4
+@mat K black 2
+@mat W white 5
+@mat G gold 4
+@mat Y bread 5
+@mat B bread 3
+@mat H gold 2
+@mat D dwood 2
+@mblock 0 0
+.......GG.......
+.FFFFFGGGGFFFFF.
+.FGGGGGGGGGGGGF.
+.FGKKKKKKKKKKGF.
+.FGKKWWWWWWKKGF.
+.FGKKKKKKKKKKGF.
+.FGKWWWKWWWWKGF.
+.FGKYYYKWWWKKGF.
+.FGKYYYKKKKKKGF.
+.FGKBBBKWWWWKGF.
+.FGKBBBKWWKKKGF.
+.FGGGGGGGGGGGGF.
+.FFFFFFFFFFFFFD.
+.DDDDDDDDDDDDDD.
+................
+................

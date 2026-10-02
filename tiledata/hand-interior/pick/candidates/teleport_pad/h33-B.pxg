@@ -1,0 +1,50 @@
+// 순간이동 진 B — 같은 방 화풍: 마법진·세이브 수정처럼 어두운 돌 테(윗면 밝고 앞 두께 두 줄 어둡게) + 푸른 원판 + 오각별, 접지선=캔버스 맨 아래
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o stone 0
+@mat j stone 1
+@mat d stone 2
+@mat r stone 3
+@mat s stone 4
+@mat h stone 5
+@mat k blue 0
+@mat a blue 1
+@mat b blue 2
+@mat c blue 3
+@mat e blue 4
+@mat f blue 5
+@mat w blue 6
+@mblock 0 0
+................................
+................................
+................................
+................................
+..........oooooooooooo..........
+.......ohhhhsssssjrrrrrro.......
+.....ohhhhsssssssjsssrrrrro.....
+....ohssssskkkkkkkkkkrrrrddo....
+...ohssskbbbbbbbbbbbbbbkrrddo...
+..ohsskbbcccccccccccccccckrddo..
+..ohskbccccccccwwccccccccckrdo..
+.ohskbcccccccccffcccccccccckrdo.
+.ohskbccccccccfccfccccccccckrdo.
+.ohskbccccccccfccfccccccccckjjo.
+.ohskbccccccccfccfccccccccckrdo.
+.ojjkbcwwffffffffffffffwwcckrdo.
+.ohskbcccffccfeeeefccffcccckddo.
+.osskbcccccffeeeeeeffcccccckddo.
+.osskbccccccffeeeeffccccccckddo.
+.osskbccccccfcfeefcfccccccckddo.
+.osskbcccccfcccwwcccfcccccckddo.
+.osskbcccccfccfccfccfcccccckjjo.
+.osrkbcccccfffccccfffcccccckddo.
+.osrkbccccffccccccccffccccckddo.
+.orrkbccccwccccccccccwccccckddo.
+..orrkbccccccccccccccccccckddo..
+..orrrkbccccccccccccccccckdddo..
+...orrrdkbccccccccccccckddddo...
+....orrddddkkkkkkkkkkddddddo....
+.....orrrrrdddddjdddddddddo.....
+.......oddddddddddddjjjjo.......
+..........oooooooooooo..........

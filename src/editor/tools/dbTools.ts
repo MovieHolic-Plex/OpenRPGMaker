@@ -1,3 +1,7 @@
+import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
+import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
+import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
 import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
 import { PARTY_PIXEL_SHEETS, partyPixelSheet } from "@/assets/partyPixelSheets";
 import { actionSkillClearProperties, authoredSkillProperties, combatConditionSchema, conditionalDropsSchema } from "./combatAuthoringSchemas";
@@ -77,6 +81,7 @@ import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { expandShortParameterCurves } from "./parameterCurveInput";
+import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
@@ -263,17 +268,18 @@ const utilityRecordSchema: JsonSchema = {
   properties: {
     id: { type: "string" },
     name: { type: "string" },
-    kind: { type: "string", enum: ["physical", "magical", "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"] },
+    kind: { type: "string", enum: ["physical", "magical", "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event", "commonEvent"] },
     rateLabels: { type: "array", items: { type: "string", enum: ["A", "B", "C", "D", "E"] } },
     damageMultipliers: { type: "object", properties: { A: { type: "number" }, B: { type: "number" }, C: { type: "number" }, D: { type: "number" }, E: { type: "number" } }, additionalProperties: false },
     damage: { type: "integer" },
     encounterRatePercent: { type: "integer" },
-    battleBackgroundResourceId: { type: "string" },
+    battleBackgroundResourceId: { type: "string", description: BATTLE_BACKDROP_ID_HINT },
     footstepSoundResourceId: { type: "string" },
     characterDisplay: { type: "string", enum: ["normal", "transparent"] },
     vehiclePassage: { type: "object", properties: { boat: { type: "boolean" }, ship: { type: "boolean" }, airshipLand: { type: "boolean" } }, additionalProperties: false },
     skillSubsetName: { type: "string" },
     skillId: { type: "string" },
+    commonEventId: { type: "string", description: "battleCommands kind:commonEvent — 고르면 전투 중에 실행할 공통 이벤트 id(메시지·선택지·변수 조작을 그대로 쓴다)" },
   },
   required: ["id", "name"],
   additionalProperties: false,
@@ -281,7 +287,7 @@ const utilityRecordSchema: JsonSchema = {
 
 const upsertDatabaseUtility: ToolDefinition = {
   name: "upsert_database_utility",
-  description: "데이터베이스의 속성(elements), 지형 효과(terrains), 전투 명령(battleCommands) 레코드를 id 기준으로 등록·교체한다.",
+  description: "데이터베이스의 속성(elements), 지형 효과(terrains), 전투 명령(battleCommands) 레코드를 id 기준으로 등록·교체한다. 전투 명령 kind: skill+skillId = 스킬 하나를 바로 쓰는 명령, commonEvent+commonEventId = 고르면 공통 이벤트를 실행하는 명령(RM2003 「이벤트 연결」). 명령을 고를 때 대사·문장(\"토마는 기도했다…\")을 띄우거나 여러 효과를 차례로 내야 하면 commonEvent 를 쓴다 — 스킬에는 사용 문장 칸이 없다. 공통 이벤트를 upsert_common_event 로 먼저 만든다. 특정 배우에게만 붙이려면 upsert_actor.battleCommandIds.",
   mode: "write",
   parameters: {
     type: "object",
@@ -328,7 +334,7 @@ const upsertDatabaseUtility: ToolDefinition = {
       return { summary: `지형 효과 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
     }
     if (collection === "battleCommands") {
-      const allowed = new Set(["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"]);
+      const allowed = new Set(["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event", "commonEvent"]);
       if (typeof record.kind !== "string" || !allowed.has(record.kind)) throw new ToolError("battleCommands.record.kind가 올바르지 않습니다.", { code: "invalid-args" });
       const next = {
         id: base.id,
@@ -336,7 +342,11 @@ const upsertDatabaseUtility: ToolDefinition = {
         kind: record.kind,
         ...(typeof record.skillSubsetName === "string" ? { skillSubsetName: record.skillSubsetName } : {}),
         ...(typeof record.skillId === "string" ? { skillId: record.skillId } : {}),
+        ...(typeof record.commonEventId === "string" ? { commonEventId: record.commonEventId } : {}),
       } as NonNullable<Project["database"]["battleCommands"]>[number];
+      if (next.kind === "commonEvent" && !draft.commonEvents.some((entry) => entry.id === next.commonEventId)) {
+        throw new ToolError("battleCommands kind:commonEvent 는 있는 공통 이벤트 id(commonEventId)가 필요합니다.", { code: "invalid-args" });
+      }
       draft.database.battleCommands ??= [];
       const outcome = upsertById(draft.database.battleCommands, next);
       return { summary: `전투 명령 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
@@ -543,9 +553,11 @@ const enemyRecordSchema = objectSchema({
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
-  graphicHue: integerSchema(),
-  transparent: booleanSchema(),
-  flying: booleanSchema(),
+  collapseEffect: {
+    type: "string",
+    enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
+    description: "쓰러지는 연출. dissolve 기본 소멸 · pixelBreak FF6 식 보랏빛 픽셀 분해(잡몹) · bossSink 떨며 땅속으로 가라앉음(보스) · flash 하얀 세 번 점멸 · instant 즉시 사라짐(환영·소환수).",
+  },
   criticalHit: objectSchema({ enabled: booleanSchema(), oneIn: integerSchema() }),
   attackOptions: objectSchema({ normalAttacksMiss: booleanSchema() }),
   skillIds: stringArraySchema(),
@@ -571,14 +583,23 @@ const troopRecordSchema = objectSchema({
   autoAlign: booleanSchema(),
   uncapturable: booleanSchema(),
   trainerBattle: booleanSchema(),
-  previewBackgroundResourceId: stringSchema(),
+  previewBackgroundResourceId: stringSchema(BATTLE_BACKDROP_ID_HINT),
   backdropAnimation: objectSchema({
     scrollX: { type: "number", minimum: -400, maximum: 400, description: "가로 스크롤 px/초(양수 = 오른쪽)" },
     scrollY: { type: "number", minimum: -400, maximum: 400, description: "세로 스크롤 px/초(양수 = 아래)" },
     waveAmplitude: { type: "number", minimum: 0, maximum: 24, description: "물결 왜곡 진폭 px" },
     waveFrequency: { type: "number", minimum: 0, maximum: 8, description: "물결 흔들림 횟수/초" },
     paletteCycleSeconds: { type: "number", minimum: 0, maximum: 60, description: "색 순환 한 바퀴 초(0 = 끔)" },
-  }, "움직이는 전투 배경(마더식). 0/생략 = 그 효과 끔. 움직임 줄이기 설정이면 정지 배경"),
+  }, "움직이는 전투 배경(마더식) — 배경 그림 한 장을 움직인다. 0/생략 = 그 효과 끔. 도트 측면 전투(기본)에서는 겹 배경에 가려 보이지 않는다 — 몬스터 대치에서만 보인다. 도트 측면 분위기는 backdropLayers 를 쓴다"),
+  backdropLayers: arrayOf(objectSchema({
+    preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기" },
+    resourceId: stringSchema("바둑판으로 깔 그림 리소스(투명 PNG). 주면 preset 보다 먼저"),
+    front: booleanSchema("true = 배틀러·이펙트 앞(앞 덤불·안개 장막, 불투명도 50 이하 권장). 생략 = 배경 바로 위"),
+    scrollX: { type: "number", minimum: -1200, maximum: 1200, description: "가로 흐름 px/초. 생략 = 프리셋 기본(구름 22·비 -180)" },
+    scrollY: { type: "number", minimum: -1200, maximum: 1200, description: "세로 흐름 px/초(양수 = 아래). 생략 = 프리셋 기본(비 900·눈 60·불티 -50)" },
+    opacity: { type: "number", minimum: 0, maximum: 100, description: "불투명도 %. 생략 = 프리셋 기본" },
+    blendMode: { type: "string", enum: ["normal", "add", "screen", "multiply"], description: "겹치기. 생략 = 프리셋 기본(불티 add·별/빛줄기 screen)" },
+  }, "배경 겹 하나")),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
   // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면
@@ -602,9 +623,6 @@ const monsterSpeciesGraphicSchema = objectSchema({
     scale: { type: "number", minimum: CHARACTER_SCALE_MIN, maximum: CHARACTER_SCALE_MAX },
     scaleMode: { type: "string", enum: ["auto", "manual"] },
   }, "동행용 EventPageGraphic. 기존 종은 {scale:0.5}처럼 부분 수정해도 sprite와 나머지 설정을 보존합니다. 전투 그림에는 영향을 주지 않습니다."),
-  graphicHue: integerSchema(),
-  transparent: booleanSchema(),
-  flying: booleanSchema(),
 });
 
 const monsterSpeciesRecordSchema = objectSchema({
@@ -656,18 +674,23 @@ const actorRecordSchema = objectSchema({
   expCurve: expCurveSchema,
   initialEquipment: actorInitialEquipmentSchema,
   unarmedAnimationId: stringSchema(),
+  battleMotion: objectSchema({style:{type:"string",enum:[...CHARACTER_MOTION_STYLES]},anticipation:{type:"number",minimum:0.4,maximum:2},travel:{type:"number",minimum:0.4,maximum:2},recovery:{type:"number",minimum:0.4,maximum:2},jump:{type:"number",minimum:0.4,maximum:2},reach:{type:"number",minimum:-20,maximum:24},recoil:{type:"number",minimum:0,maximum:2}}),
   options: actorOptionsSchema,
   learnedSkills: arrayOf(actorLearnedSkillSchema),
   skillIds: stringArraySchema("legacy alias for learnedSkills"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
+  battleCommandIds: stringArraySchema("이 배우만 쓰는 전투 명령 메뉴(RM2003 배우별 명령). database.battleCommands 또는 직업 battleCommands 의 id 를 메뉴 순서대로, 7개까지. 빈 배열 = 직업 명령을 그대로"),
 }) as RecordSchema;
 
 const skillRecordSchema = objectSchema({
   ...authoredSkillProperties,
   id: stringSchema(),
   name: stringSchema(),
-  scope: { type: "string", enum: ["self", "ally", "allAllies", "enemy", "allEnemies"] },
+  scope: {
+    type: "string",
+    enum: ["self", "ally", "allAllies", "enemy", "allEnemies"],
+  },
   power: integerSchema(),
   animationId: stringSchema(),
   description: stringSchema(),
@@ -677,33 +700,103 @@ const skillRecordSchema = objectSchema({
   variance: integerSchema(),
   hitRate: integerSchema(),
   effect: objectSchema({
-    kind: { type: "string", enum: ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"], description: "steal=적 stealItems 훔치기, scan=라이브라, learnEnemySkill=청마법 습득, randomSkillFrom=skillIds 중 무작위" },
-    statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema(),
+    kind: {
+      type: "string",
+      enum: [
+        "damage",
+        "healing",
+        "support",
+        "switch",
+        "steal",
+        "scan",
+        "learnEnemySkill",
+        "randomSkillFrom",
+      ],
+      description:
+        "steal=적 stealItems 훔치기, scan=라이브라, learnEnemySkill=청마법 습득, randomSkillFrom=skillIds 중 무작위",
+    },
+    statistic: stringSchema(),
+    affects: stringSchema(),
+    switchId: stringSchema(),
     skillIds: stringArraySchema("randomSkillFrom 후보 기술 id"),
   }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
-  movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
-  fieldCommonEventId: { type: "string", description: "필드 능력: 메뉴에서 쓰면 이 공통 이벤트를 실행(정면 이벤트 id 는 문자열 변수 fieldAbilityTarget, 좌표는 변수 fieldAbilityX/Y). 빈 문자열이면 해제" },
-  comboActorIds: stringArraySchema("연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제"),
-  area: objectSchema({
-    shape: { type: "string", enum: ["circle", "line"] },
-    radius: numberSchema("전투장 픽셀(>0). circle=주 대상에서 거리, line=주 대상과 세로 차 ≤ radius/2 인 가로 띠"),
-  }, "위치 범위기. scope enemy/ally 에서 주 대상 둘레의 같은 편도 맞힌다"),
-  resource2Cost: integerSchema("제2 자원 「기력」 소모량(system.resource2.enabled 일 때만). 0 이면 없음"),
-  limitSkill: booleanSchema("리미트 기술 — 리미트 게이지가 가득 찼을 때만 쓰고 쓰면 비운다(system.limitGauge.enabled 일 때만)"),
-  partyGaugeCost: integerSchema("추격 연계기 — 파티 공용 게이지 소모량(system.partyGauge.enabled 일 때만). 0 이면 없음"),
-  hpCostPercent: integerSchema("시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가"),
-  drainPercent: integerSchema("준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다"),
-  gaugeShift: integerSchema("게이지 밀기 -100~100(0=없음). 명중한 대상의 ATB 행동 게이지를 옮긴다 — 음수 = 늦추기(시간 화살·발 묶기), 양수 = 아군을 앞당기기(재촉). 타마다 적용. ATB(gauge) 전투 전용"),
-  chargeTurns: integerSchema("힘 모으기 1~3(0=바로 발동). 고른 차례엔 「…을 준비한다!」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 적이 쓰면 보스 대기술 예고. 한 차례를 버리므로 위력을 1.6~1.8배로"),
-  summonResourceId: stringSchema("소환 그림(retro2003 도트 연출): 파티원 도트 시트 id \"party-pixel-<칩>\"(예 party-pixel-monster2-4 흙 골렘, party-pixel-monster3-6 업화, party-pixel-animal-7 사자). 시전하면 그 몬스터가 시전자 앞에 나타나 대상에게 달려가 첫 타에 맞춰 친다. 그림만 — 위력·타수·상태는 이 스킬 값. 시전자 motion 은 cast 가 어울린다. 빈 문자열이면 해제"),
-  retroChoreographyId: stringSchema("retro2003 측면 전투에서 이 스킬이 보여 줄 도트 연출을 계약 id 로 빌린다(예: skill_knight_slash). 새·복제 스킬은 이걸 안 주면 기본 베기/불꽃으로 보인다. 후보는 list_retro_choreographies 로 찾는다. 빈 문자열이면 해제"),
+  movePriority: numberSchema(
+    "기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)",
+  ),
+  fieldCommonEventId: {
+    type: "string",
+    description:
+      "필드 능력: 메뉴에서 쓰면 이 공통 이벤트를 실행(정면 이벤트 id 는 문자열 변수 fieldAbilityTarget, 좌표는 변수 fieldAbilityX/Y). 빈 문자열이면 해제",
+  },
+  comboActorIds: stringArraySchema(
+    "연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제",
+  ),
+  area: objectSchema(
+    {
+      shape: { type: "string", enum: ["circle", "line"] },
+      radius: numberSchema(
+        "전투장 픽셀(>0). circle=주 대상에서 거리, line=주 대상과 세로 차 ≤ radius/2 인 가로 띠",
+      ),
+    },
+    "위치 범위기. scope enemy/ally 에서 주 대상 둘레의 같은 편도 맞힌다",
+  ),
+  resource2Cost: integerSchema(
+    "제2 자원 「기력」 소모량(system.resource2.enabled 일 때만). 0 이면 없음",
+  ),
+  limitSkill: booleanSchema(
+    "리미트 기술 — 리미트 게이지가 가득 찼을 때만 쓰고 쓰면 비운다(system.limitGauge.enabled 일 때만)",
+  ),
+  partyGaugeCost: integerSchema(
+    "추격 연계기 — 파티 공용 게이지 소모량(system.partyGauge.enabled 일 때만). 0 이면 없음",
+  ),
+  hpCostPercent: integerSchema(
+    "시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가",
+  ),
+  drainPercent: integerSchema(
+    "준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다",
+  ),
+  gaugeShift: integerSchema(
+    "게이지 밀기 -100~100(0=없음). 명중한 대상의 ATB 행동 게이지를 옮긴다 — 음수 = 늦추기(시간 화살·발 묶기), 양수 = 아군을 앞당기기(재촉). 타마다 적용. ATB(gauge) 전투 전용",
+  ),
+  battleGimmick: {
+    type: "object",
+    description:
+      "턴 전투 기믹. pattern은 list_retro_choreographies에서 고른 32 동작 id. durationTurns(1~6), markKey, maxStacks(1~9), consumeMarks, requiredMark, followOnHit, allyActorId, elementId, resourceId, radius(16~800), triggerChance(0~100), powerMultiplier(.1~3), killRefundPercent(0~100). 피해는 전투 규칙만 계산한다.",
+    properties: {
+      pattern: { type: "string", enum: [...BATTLE_MOTION_PATTERNS] },
+      durationTurns: { type: "number" },
+      markKey: { type: "string" },
+      maxStacks: { type: "number" },
+      consumeMarks: { type: "boolean" },
+      requiredMark: { type: "boolean" },
+      followOnHit: { type: "boolean" },
+      allyActorId: { type: "string" },
+      elementId: { type: "string" },
+      resourceId: { type: "string" },
+      radius: { type: "number" },
+      triggerChance: { type: "number" },
+      powerMultiplier: { type: "number" },
+      killRefundPercent: { type: "number" },
+    },
+    required: ["pattern"],
+  },
+  chargeTurns: integerSchema(
+    "힘 모으기 1~3(0=바로 발동). 고른 차례엔 「…을 준비한다!」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 적이 쓰면 보스 대기술 예고. 한 차례를 버리므로 위력을 1.6~1.8배로",
+  ),
+  summonResourceId: stringSchema(
+    '소환 그림(retro2003 도트 연출): 파티원 도트 시트 id "party-pixel-<칩>"(예 party-pixel-monster2-4 흙 골렘, party-pixel-monster3-6 업화, party-pixel-animal-7 사자). 시전하면 그 몬스터가 시전자 앞에 나타나 대상에게 달려가 첫 타에 맞춰 친다. 그림만 — 위력·타수·상태는 이 스킬 값. 시전자 motion 은 cast 가 어울린다. 빈 문자열이면 해제',
+  ),
+  retroChoreographyId: stringSchema(
+    "retro2003 측면 전투에서 이 스킬이 보여 줄 도트 연출을 계약 id 로 빌린다(예: skill_knight_slash). 새·복제 스킬은 이걸 안 주면 기본 베기/불꽃으로 보인다. 후보는 list_retro_choreographies 로 찾는다. 빈 문자열이면 해제",
+  ),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
+  battleMotionStyle: {type:"string",enum:[...CHARACTER_MOTION_STYLES]},
   id: stringSchema(),
   name: stringSchema(),
   imageResourceId: stringSchema(),
@@ -755,7 +848,7 @@ const classRecordSchema = objectSchema({
   options: actorOptionsSchema,
   animationId: stringSchema(),
   skillIds: stringArraySchema(),
-  battleCommands: arrayOf(objectSchema({ id: stringSchema(), name: stringSchema(), kind: stringSchema(), skillSubsetName: stringSchema(), skillId: stringSchema() })),
+  battleCommands: arrayOf(objectSchema({ id: stringSchema(), name: stringSchema(), kind: stringSchema("attack·skill·skillSubset·defend·item·capture·escape·switch·commonEvent"), skillSubsetName: stringSchema(), skillId: stringSchema(), commonEventId: stringSchema("kind:commonEvent 일 때 실행할 공통 이벤트 id") })),
   learnedSkills: arrayOf(learnedSkillSchema),
   equipmentPermissions: objectSchema({ actorIds: stringArraySchema(), classIds: stringArraySchema(), equipmentIds: stringArraySchema() }),
   parameterCurves: parameterCurvesSchema,
@@ -792,7 +885,7 @@ const stateRecordSchema = objectSchema({
   lockedParameters: stringArraySchema(),
   runtimeEffects: stateRuntimeEffectsSchema,
   disablesEquipSlot: stringSchema("부위 손실: 이 상태인 동안 이 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다"),
-  battleAura: stringSchema("전투 지속 오라(retro2003): 상태가 걸려 있는 동안 몸 위에 남는 표시. freeze-grey|berserk-pulse|shield-shimmer|wet-drip|poison-bubble|dark-fog|petrify-still|regen-sparkle, none=끔. 비우면 기본 상태(독·스톱·버서크·프로텍트·실드·젖음·암흑·석화·재생)만 자동"),
+  battleAura: stringSchema("전투 지속 오라: 상태가 걸려 있는 동안 몸 위에 남는 표시. freeze-grey|berserk-pulse|shield-shimmer|wet-drip|poison-bubble|dark-fog|petrify-still|regen-sparkle|sleep-zzz(Z 가 떠오름)|paralyze-spark(전기 불꽃)|silence-mute(말풍선 …)|confuse-stars(머리 위 별)|charm-heart(하트)|burn-ember(불티), none=끔. 비우면 기본 상태(독·스톱·버서크·프로텍트·실드·젖음·암흑·석화·재생·수면·마비·침묵·혼란·매혹·화상)와 몬스터 주 상태는 자동"),
 }) as RecordSchema;
 
 function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {
@@ -1162,6 +1255,10 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
  */
 function validateSkillRetroPatch(draft: Project, patch: unknown): void {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
+  const gimmick=(patch as Record<string,unknown>).battleGimmick;
+  if(gimmick!==undefined&&!normalizeBattleGimmick(gimmick))throw new ToolError("battleGimmick.pattern 은 32종 동작 중 하나여야 합니다.",{code:"invalid-battle-gimmick"});
+  const gimmickResource=normalizeBattleGimmick(gimmick)?.resourceId;
+  if(gimmickResource&&!partyPixelSheet(gimmickResource))throw new ToolError(`존재하지 않는 기믹 그림: ${gimmickResource}`,{code:"summon-sheet-not-found"});
   const summon = (patch as Record<string, unknown>).summonResourceId;
   if (typeof summon === "string" && summon.trim() && !partyPixelSheet(summon.trim())) {
     const chip = summon.trim().replace(/^party-pixel-/, "");
@@ -1313,6 +1410,20 @@ const upsertEnemy: ToolDefinition = {
   },
 };
 
+/**
+ * members(배치 좌표)만 준 새 트룹은 enemyIds 를 members 에서 채운다 — 정규화도 members 를 정본으로 enemyIds 를 다시 만든다.
+ * 실측(2026-10-02 조수 시험): 모델이 members 만 보내 「enemyIds 필요」로 세 번 연달아 실패했다.
+ */
+function withEnemyIdsFromMembers(troop: unknown): unknown {
+  if (!troop || typeof troop !== "object" || Array.isArray(troop)) return troop;
+  const record = troop as Record<string, unknown>;
+  if (record.enemyIds !== undefined || !Array.isArray(record.members)) return troop;
+  const enemyIds = record.members
+    .map((member) => (member && typeof member === "object" ? (member as { enemyId?: unknown }).enemyId : undefined))
+    .filter((enemyId): enemyId is string => typeof enemyId === "string" && enemyId.length > 0);
+  return enemyIds.length > 0 ? { ...record, enemyIds } : troop;
+}
+
 const upsertTroop: ToolDefinition = {
   name: "upsert_troop",
   description: "적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1329,8 +1440,9 @@ const upsertTroop: ToolDefinition = {
         { code: "use-battle-page-tool" },
       );
     }
-    const merged = mergeRecord(draft.database.troops, args.troop, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
-    const patch = args.troop as Partial<TroopRecord>;
+    const troopArg = withEnemyIdsFromMembers(args.troop);
+    const merged = mergeRecord(draft.database.troops, troopArg, "troop", troopRecordSchema, { id: "troop_slime", name: "슬라임 무리", enemyIds: ["enemy_slime"] }, ["name", "enemyIds"]);
+    const patch = troopArg as Partial<TroopRecord>;
     // An explicit legacy roster replaces the roster. Do not let inherited members
     // silently override it; unrelated patches still preserve authored placements.
     if (patch.enemyIds !== undefined && patch.members === undefined) delete merged.members;
@@ -1587,6 +1699,12 @@ const upsertActor: ToolDefinition = {
     reconcileActorFace(record, actorPatch, warnings);
     validateActorTechPoints(args.actor);
     dropUnknownElementRates(draft, record, "actor", warnings);
+    if (record.battleCommandIds) {
+      const klass = draft.database.classes.find((entry) => entry.id === record.classId);
+      const unknown = record.battleCommandIds.filter((id) =>
+        !draft.database.battleCommands?.some((entry) => entry.id === id) && !klass?.battleCommands.some((entry) => entry.id === id));
+      if (unknown.length > 0) warnings.push(`battleCommandIds 중 전역·직업 명령에 없는 id 는 전투 메뉴에서 빠집니다: ${unknown.join(", ")}`);
+    }
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
     return {
       summary: `액터 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
@@ -2374,7 +2492,7 @@ export function mergeSessionInventory(project: Project, inventory: Record<string
 
 const upsertBattleAnimation: ToolDefinition = {
   name: "upsert_battle_animation",
-  description: "전투 애니메이션 레코드를 등록/수정한다. Database 애니메이션 탭과 같은 저작 데이터.",
+  description: "전투 애니메이션 레코드를 등록/수정한다. Database 애니메이션 탭과 같은 저작 데이터. 기존 이펙트의 겹치기(blendMode)만 바꿀 때도 id·name 과 함께 부른다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2388,6 +2506,11 @@ const upsertBattleAnimation: ToolDefinition = {
           scope: { type: "string", enum: ["singleTarget", "allTargets", "screen"] },
           position: { type: "string", enum: ["head", "center", "feet", "screen"] },
           large: { type: "boolean" },
+          blendMode: {
+            type: "string",
+            enum: ["normal", "add", "screen", "multiply"],
+            description: "겹치기. 마법 빛·불꽃·번개는 add(아래 배틀러·배경을 밝힌다), 부드러운 빛은 screen, 어둠·저주는 multiply.",
+          },
         },
         required: ["id", "name"],
         additionalProperties: false,
@@ -2419,6 +2542,11 @@ const upsertBattleAnimation: ToolDefinition = {
         : {}),
       ...(typeof record.large === "boolean" ? { large: record.large } : {}),
     };
+    if (isBlendModeName(record.blendMode)) {
+      const blendMode = normalizeBlendMode(record.blendMode);
+      if (blendMode) animation.blendMode = blendMode;
+      else delete animation.blendMode;
+    }
     const outcome = upsertById(draft.database.battleAnimations, animation);
     return { summary: `전투 애니메이션 '${name}' ${outcome === "added" ? "추가" : "수정"}`, data: animation };
   },

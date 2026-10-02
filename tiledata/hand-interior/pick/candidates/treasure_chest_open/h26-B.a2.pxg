@@ -1,0 +1,45 @@
+// B 상태만 바꾸기: 뚜껑 안쪽면은 한 단 어둡게, 입구 속을 y8~11 어두운 4행으로 넓히고 금화 점 3개, 앞면은 금 띠(y12)+자물쇠(y13)만 남김
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mat i wood 1
+@mat c gold 8
+@mblock 0 0
+................
+....ooooooooo...
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+..oiiiiiiiiiiio.
+..oiiiiiiiiiiio.
+..oiiiiiiiiiiio.
+..oiiggiiiiiiio.
+..oiiiiiigiiiio.
+..oiiiiiiiiiiio.
+..ogggggggggggo.
+..odggdgkgdggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+....111111111...
+...15432322320..
+...14322222210..
+...13222121110..
+...13211111110..
+..1222222222210.
+..1121111111210.
+..1121111111210.
+..1111541111210.
+..1111110411110.
+..1110000000010.
+..1456666666540.
+..1454350433330.
+..0000000000000.
+................

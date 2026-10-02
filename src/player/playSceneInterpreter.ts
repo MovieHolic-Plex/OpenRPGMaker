@@ -1,3 +1,4 @@
+import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
 import { mapTileSize } from "@/project/tileGeometry";
 import { cancelFurniturePush } from './furniturePushAnimation';
@@ -607,6 +608,14 @@ async function consumeBlockingStep(
       return resumeAfterSurface(scene, interpreter);
     case "shakeScreen":
       await scene.shakeScreen(step);
+      return resumeAfterSurface(scene, interpreter);
+    case "particleEffect": {
+      const done = playParticleEffect(scene, step, currentEventId);
+      if (step.wait) await done;
+      return resumeAfterSurface(scene, interpreter);
+    }
+    case "spriteLook":
+      applySpriteLookStep(scene, step, currentEventId);
       return resumeAfterSurface(scene, interpreter);
     case "scrollMap":
       await scene.panScreen(step);

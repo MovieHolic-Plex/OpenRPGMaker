@@ -11,6 +11,7 @@ import type {
   BattleAnimationTiming,
   BattleAnimationTone,
 } from "@/project/types";
+import { normalizeBlendMode } from "@/project/blendMode";
 
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5, assetScale: 2 };
 /** 시트 배율 허용 범위. 0.125 = 1536px 시트가 192 논리 px, 8 = 24px 시트가 192 논리 px. */
@@ -30,6 +31,7 @@ export function normalizeBattleAnimationRecord(record: Partial<BattleAnimationRe
     frames: normalizeAnimationFrames(record.frames),
     timings: normalizeAnimationTimings(record.timings),
     followUps: normalizeFollowUps(record.id, record.followUps),
+    ...(normalizeBlendMode(record.blendMode) ? { blendMode: normalizeBlendMode(record.blendMode) } : {}),
   };
 }
 
@@ -72,7 +74,19 @@ function normalizeAnimationCells(cells: readonly Partial<BattleAnimationCell>[] 
     opacity: clampInteger(cell.opacity ?? 255, 0, 255),
     visible: cell.visible ?? true,
     tone: cell.tone ? normalizeAnimationTone(cell.tone) : undefined,
+    ...cellTransformFields(cell),
   }));
+}
+
+/** 회전·뒤집기는 기본값(0·false)이면 저장하지 않는다 — 옛 JSON 바이트 유지. */
+export function cellTransformFields(cell: Partial<BattleAnimationCell>): Pick<BattleAnimationCell, "rotation" | "mirror"> {
+  const rotation = typeof cell.rotation === "number" && Number.isFinite(cell.rotation)
+    ? Math.max(-360, Math.min(360, Math.round(cell.rotation)))
+    : 0;
+  return {
+    ...(rotation !== 0 ? { rotation } : {}),
+    ...(cell.mirror === true ? { mirror: true } : {}),
+  };
 }
 
 function normalizeAnimationTimings(timings: readonly Partial<BattleAnimationTiming>[] | undefined): BattleAnimationTiming[] {

@@ -28,6 +28,11 @@ import {
 type FlashHold = { readonly color: Rgba; readonly until: number };
 const flashHolds = new WeakMap<HTMLElement, FlashHold>();
 
+/** 화면 위 DOM 층(색조·레터박스)이 붙는 무대. */
+export function screenOverlayHost(scene: PlaySceneContext): HTMLElement | undefined {
+  return overlayHost(scene);
+}
+
 function overlayHost(scene: PlaySceneContext): HTMLElement | undefined {
   const canvas = scene.game?.canvas;
   const stage = canvas instanceof HTMLElement ? canvas.closest(".play-stage") : null;

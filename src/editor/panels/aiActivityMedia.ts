@@ -59,7 +59,7 @@ async function raster(visual: ActivityVisual): Promise<Blob | undefined> {
     canvas = document.createElement("canvas"); canvas.width = Math.ceil(frame.width * scale); canvas.height = Math.ceil(frame.height * scale);
     const ctx = canvas.getContext("2d"); if (!ctx) return undefined;
     ctx.imageSmoothingEnabled = false;
-    if (visual.hue) ctx.filter = `hue-rotate(${visual.hue}deg)`;
+    // 몬스터 색조(graphicHue)는 전투가 읽지 않으므로(2026-10-02) 원래 색으로 그린다.
     ctx.drawImage(image, frame.x, frame.y, frame.width, frame.height, 0, 0, canvas.width, canvas.height);
     // Standard asset chroma key; preserve all other authored colors.
     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);

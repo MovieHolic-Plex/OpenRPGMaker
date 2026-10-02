@@ -54,7 +54,7 @@ describe("exported player asset resolution", () => {
     // Then
     expect(resolveAssetResourceUrl("easyrpg-title-title1")).toBe(`${base}assets/easyrpg/title/Title1.png`);
     expect(resolveAssetResourceUrl("easyrpg-sound-decision1")).toBe(`${base}assets/easyrpg/sound/Decision1.wav`);
-    expect(resolveAssetResourceUrl("generated-enemy-slime-01")).toBe(`${base}assets/generated/starter/monster-slime-01.png`);
+    expect(resolveAssetResourceUrl("generated-enemy-slime-01")).toBe(`${base}assets/generated/pixel-enemy-portraits/slime.png`);
     expect(normalizeWarmUrl("assets/dialogue-frame.png")).toBe(`${base}assets/dialogue-frame.png`);
   });
 

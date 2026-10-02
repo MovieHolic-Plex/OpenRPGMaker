@@ -12,7 +12,15 @@ export const BATTLE_SCENERY_CATALOG = BATTLE_SCENERY_BIOMES.map((biome) => ({
   resourceId: `battle-scenery-${biome}`,
   layers: Object.fromEntries(BATTLE_SCENERY_LAYERS.map((layer) =>
     [layer, `assets/generated/battle-scenery/${biome}/${layer}.png`])) as Record<typeof BATTLE_SCENERY_LAYERS[number], string>,
+  /** 네 겹을 합친 한 장(640×360). 편집기 종류 카드·미리보기와 단일 그림 대체에 쓴다. */
+  preview: `assets/generated/battle-scenery/${biome}/preview.png`,
 }));
+
+/** 조수 도구 설명 — 전투 배경 id 칸(적 그룹·지형·맵)이 공유한다. */
+export const BATTLE_BACKDROP_ID_HINT =
+  "전투 배경. 도트 측면 전투(기본)는 그림을 그대로 깔지 않고 겹 배경 종류로 푼다 — "
+  + BATTLE_SCENERY_BIOMES.map((biome) => `battle-scenery-${biome}`).join(" | ")
+  + " 중 하나를 쓴다(이스턴 RPG 기본 배경·옛 스킨 배경은 전부 풀밭이 된다). 업로드한 그림 id 만 그대로 깔린다. 몬스터 대치(포켓몬식)는 고른 그림을 그대로 쓴다.";
 
 export function sceneryBiomeFromResourceId(id: string | undefined): BattleSceneryBiome | undefined {
   return BATTLE_SCENERY_CATALOG.find((entry) => entry.resourceId === id)?.biome;

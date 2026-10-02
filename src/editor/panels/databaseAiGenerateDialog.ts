@@ -53,10 +53,10 @@ const EXAMPLES: Record<AiDatabaseKind, readonly { readonly label: string; readon
   ],
 };
 
-const PHASE_TEXT: Record<AiDatabaseKind, Record<AiDatabaseGenerationPhase, string>> = {
+// 몬스터는 그림을 만들지 않으므로(고른 도트 몬스터를 쓴다) 「그림」 단계 문구가 없다.
+const PHASE_TEXT: Record<AiDatabaseKind, Partial<Record<AiDatabaseGenerationPhase, string>>> = {
   enemy: {
     text: "몬스터 정보를 만드는 중…",
-    artwork: "몬스터 그림을 그리는 중… 30초 이상 걸릴 수 있어요",
     apply: "데이터베이스에 등록하는 중…",
   },
   item: {
@@ -197,7 +197,8 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
       el("span", {
         class: "db-ai-generate-option-text",
         children: [
-          el("strong", { text: kind === "item" ? "아이콘 그림도 함께 만들기" : "몬스터 그림도 함께 만들기" }),
+          // 이 선택지는 아이템에만 붙는다(몬스터는 그림을 만들지 않는다).
+          el("strong", { text: "아이콘 그림도 함께 만들기" }),
           el("small", { text: "그림은 30초 이상 걸릴 수 있어요. 끄면 정보만 몇 초 안에 만들어요." }),
           ...(otherProvider
             ? [el("small", {
@@ -356,14 +357,14 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
     const signal = controller.signal;
     setRunning(true);
     result.hidden = true;
-    setPhase("text", PHASE_TEXT[kind].text);
+    setPhase("text", PHASE_TEXT[kind].text ?? "");
     void generate(
-      { kind, brief: text, config, withArtwork: artworkToggle.checked, signal },
+      { kind, brief: text, config, withArtwork: kind === "item" && artworkToggle.checked, signal },
       {
         flattenArtwork: flattenGeneratedArtwork,
         onPhase: (next) => {
           if (signal.aborted) return;
-          setPhase(next, PHASE_TEXT[kind][next]);
+          setPhase(next, PHASE_TEXT[kind][next] ?? "");
         },
       },
     )
@@ -428,7 +429,8 @@ export function openDatabaseAiGenerateDialog(options: OpenAiGenerateDialogOption
             el("label", { class: "db-ai-generate-label", text: `어떤 ${label}인가요?`, attrs: { for: briefId } }),
             brief,
             examples,
-            artworkOption,
+            // 몬스터는 그림을 만들지 않고 도트 몬스터를 고른다(2026-10-02).
+            ...(kind === "item" ? [artworkOption] : []),
             status,
             result,
           ],

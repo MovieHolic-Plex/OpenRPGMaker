@@ -13,7 +13,7 @@ import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleComm
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import { classicEnemyFormation } from "@/battle/battlerPlacements";
-import type { TroopMemberRecord, TroopRecord } from "@/project/types/database";
+import type { EquipmentRecord, TroopMemberRecord, TroopRecord } from "@/project/types/database";
 import { effectiveActorEquipment, logicalEquipmentIds } from "@/project/equipmentRules";
 
 const CHARGE_PER_AGILITY = 0.1 / 43;
@@ -308,8 +308,25 @@ export function learnedSkillIds(
   return [...ids];
 }
 
+export interface AttackSwing {
+  readonly weaponId: string;
+  readonly attackOffset: number;
+  readonly attackElementIds: readonly string[];
+}
+
 export interface EquipmentRuntimeEffects {
   readonly doubleAttack: boolean;
+  /**
+   * 통상 공격 한 번에 몇 번 치는가(RM2003 이도류, 2026-10-02). 든 무기마다 한 번, 「2회 공격」 무기는 두 번 —
+   * 이도류로 방패 칸에 한손 무기를 든 배우는 두 무기로 각각 친다. 무기가 없으면 장비 「2회 공격」이 있을 때 2, 아니면 1.
+   */
+  readonly attackHits?: number;
+  /**
+   * 이도류로 무기 둘 이상을 든 배우의 타격별 무기(2026-10-02). 한 타격은 그 무기의 공격력·공격 속성만 쓴다 —
+   * 두 무기 공격력을 합친 값으로 두 번 치면 한 자루가 두 번 계산되어 이도류가 두 배로 세졌다.
+   * attackOffset = 다른 무기들의 공격력 보정 합의 음수(통상 공격 능력치에 더한다).
+   */
+  readonly attackSwings?: readonly AttackSwing[];
   readonly attackAll?: boolean;
   /** 전투당 1회 자동 부활(최대 HP %). 여러 장비면 가장 큰 값. */
   readonly autoRevive?: number;
@@ -340,6 +357,35 @@ function totalEquipmentBonuses(project: Project, equipment: ActorInitialEquipmen
     total.agility += record.statBonuses.agility;
   }
   return total;
+}
+
+/** 든 무기(무기 칸 + 이도류로 방패 칸에 든 한손 무기). 두손 무기가 방패 칸에 겹쳐 적힌 것은 한 자루다. */
+function heldWeapons(project: Project, equipment: ActorInitialEquipment): EquipmentRecord[] {
+  const find = (id: string | undefined) => (id ? project.database.equipment.find((entry) => entry.id === id) : undefined);
+  const main = find(equipment.weapon);
+  const off = find(equipment.shield);
+  const held: EquipmentRecord[] = [];
+  if (main?.slot === "weapon") held.push(main);
+  if (off?.slot === "weapon" && !(off.twoHanded && off.id === main?.id)) held.push(off);
+  return held;
+}
+
+function attackHitsFor(project: Project, equipment: ActorInitialEquipment, doubleAttack: boolean): number {
+  const weapons = heldWeapons(project, equipment);
+  if (weapons.length === 0) return doubleAttack ? 2 : 1;
+  const hits = weapons.reduce((sum, weapon) => sum + (weapon.effectFlags.doubleAttack ? 2 : 1), 0);
+  // 무기가 아닌 장비(장신구 등)의 「2회 공격」은 한 손 무기 한 자루일 때만 두 번으로 올린다.
+  return doubleAttack ? Math.max(hits, 2) : hits;
+}
+
+function attackSwingsFor(project: Project, equipment: ActorInitialEquipment): AttackSwing[] | undefined {
+  const weapons = heldWeapons(project, equipment);
+  if (weapons.length < 2) return undefined;
+  const totalBonus = weapons.reduce((sum, weapon) => sum + weapon.statBonuses.attack, 0);
+  return weapons.flatMap((weapon) => {
+    const swing: AttackSwing = { weaponId: weapon.id, attackOffset: weapon.statBonuses.attack - totalBonus, attackElementIds: [...weapon.attackElementIds] };
+    return weapon.effectFlags.doubleAttack ? [swing, swing] : [swing];
+  });
 }
 
 function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipment): EquipmentRuntimeEffects {
@@ -380,6 +426,11 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   }
   return {
     doubleAttack,
+    attackHits: attackHitsFor(project, equipment, doubleAttack),
+    ...(() => {
+      const attackSwings = attackSwingsFor(project, equipment);
+      return attackSwings ? { attackSwings } : {};
+    })(),
     attackAll,
     ...(autoRevive > 0 ? { autoRevive } : {}),
     accuracy: Math.max(0, Math.min(100, accuracy)),

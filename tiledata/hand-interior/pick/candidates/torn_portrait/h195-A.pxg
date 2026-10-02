@@ -1,0 +1,71 @@
+// 금테 속 귀부인의 검은 올림머리·붉은 드레스·흰 칼라, 얼굴의 X자 칼자국; 벽면 걸이의 평평한 시점.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a gold 0
+@mat b gold 2
+@mat c gold 3
+@mat d gold 5
+@mat e gold 6
+@mat f gold 4
+@mat B blue 1
+@mat C blue 2
+@mat D blue 0
+@mat h dwood 1
+@mat i dwood 3
+@mat j dwood 4
+@mat s clay 5
+@mat t clay 4
+@mat u clay 3
+@mat r red 2
+@mat v red 3
+@mat w red 4
+@mat l linen 4
+@mat m linen 5
+@mat z iron 0
+@mat q linen 2
+@layer portrait
+@mblock 0 0
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.addeeeeeeeeeeddddddddddddddcba.
+.aedccccccccccccccccccccccccfba.
+.aecbbbbbbbbbbbbbbbbbbbbbbbbcba.
+.aecbCCCCCCCCCCCCBBBBBBBBBBbcba.
+.aecbCCCCCCCCChhhhBBBBBBBBBbcba.
+.aecbCCCCCCCChhiiihhBBBBBBBbcba.
+.aecbCCCCCCChiiijjhhBBBBBBBbcba.
+.aecbCCCCCCChijjssihhBBBBBBbcba.
+.aecbCCCCCChhissssshhBBBBBBbcba.
+.aecbCCCCCChhssssstuhBBBBBBbcba.
+.aecbCCCCCChhqslsltqhBBBBBBbcba.
+.aecbCCCCCBhhzqsssqzhBBBBBBbcba.
+.aecbCCCBBBhhuzqsqzuhBBBBBBbcba.
+.aecbCCBBBBhhutqzqtuhBBBBBBbcba.
+.aecbCBBBBBhhutzzztuhBBBBBBbcba.
+.aecbBBBBBBBhtzquqztBBBBBBBbcba.
+.aecbBBBBBBBBzqtutqzBBBBBBBbcba.
+.aecbBBBBBBBzqtttuqzBBBBBBBbcba.
+.aecbBBBBBBBBBsttuBBBBBBBBBbcba.
+.aecbBBBBBBBBBlsulBBBBBBBBBbcba.
+.aecbBBBBBBrrmlslmrrBBBBBBBbcba.
+.aecbBBBBBrrrmlllmrvrBBBBBBbcba.
+.aecbBBBBrrwwrmlmrvrvrBBBBBbcba.
+.aecbBBBrrwwwrrmrrrvvrrBBBBbcba.
+.aecbBBrrwwwwrrrrrvvvvrrBBBbcba.
+.aecbBrrwwwwvrrrrrvvvvrrrBBbcba.
+.aecbrrwwwvvvrrrrrvvvvrrrrBbcba.
+.aecbbbbbbbbbbbbbbbbbbbbbbbbcba.
+.aedfffffffffffffccccccccccccba.
+.adcccccccccccccccccccccccccbaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+@layer tears
+@mblock 12 11
+hzqlstqzh
+htzqtqzth
+hutzqztuh
+hutqzttuh
+hutzqztuh
+htzquqztB
+BzqtutqzB
+@mblock 12 18
+BqtttuBBB

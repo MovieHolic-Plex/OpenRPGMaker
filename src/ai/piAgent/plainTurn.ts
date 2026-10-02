@@ -25,6 +25,7 @@ import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { resolveVillageContract, type VillageContract } from "./villageContract";
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
+import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
 
 /**
  * 계획 턴의 지시문 머리. Pi 에는 세션 플래너가 없으므로 «실행하지 말고 계획만» 을 말로 만든다 —
@@ -55,6 +56,8 @@ export interface PlainPiTurnInput {
   readonly piTeam: boolean;
   /** 선언 호출 직전 — 패널은 「의도 읽는 중…」 을 띄운다. */
   readonly onDeclaring?: () => void;
+  /** 실행 모델의 컨텍스트 창. 주면 폴백 의도라도 창에 안 들어가는 전체 카탈로그를 보내지 않는다(buildSessionRegistryTools). */
+  readonly contextWindow?: number;
 }
 
 export interface PlainPiTurnClassification {
@@ -141,7 +144,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       // This is exposure only: discovery can expand it, including full fallback.
       initialToolNames = requestsModernMap(project, text, currentMapId ? [currentMapId] : [])
         ? [...MODERN_MAP_INITIAL_TOOLS]
-        : buildSessionRegistryTools({ requestText: text, intent: declared.intent }).map(tool => tool.function.name);
+        : buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name);
     }
   }
   const team = input.piTeam && !plan.readOnly;
@@ -211,9 +214,9 @@ export function prefersCallerThinking(stored: RoleModel | undefined, derived: Ro
     && stored.thinkingLevel === derived.thinkingLevel;
 }
 
-/** 실행 턴이 읽는 지시문 = 모델 지시 + Ultrabrain 계획. */
+/** 실행 턴이 읽는 지시문 = 모델 지시 + 「지금은 실행 턴」 + Ultrabrain 계획(planExecution.ts). */
 export function withUltrabrainPlan(modelTask: string, plan: string): string {
-  return `${modelTask}\n\nUltrabrain 실행 계획:\n${plan}`;
+  return `${modelTask}\n\n${PLAN_EXECUTION_PREAMBLE}\n\n${ULTRABRAIN_PLAN_HEADING}\n${plan}`;
 }
 
 /** 실행 턴(또는 계획 전용 턴) 요청. */

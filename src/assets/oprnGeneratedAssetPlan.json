@@ -72,21 +72,21 @@
       "target": "enemyMonster",
       "resourceKind": "monster",
       "expectedDimensions": {
-        "width": 96,
-        "height": 96
+        "width": 48,
+        "height": 48
       },
-      "prompt": "Original green meadow slime as a fully opaque matte JRPG monster sprite, hard cel shading, magenta chroma-key background",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, magenta pixels in visible subject, glass gel, see-through body",
+      "prompt": "Original native pixel enemy: editable final-grid anatomy and nine articulated poses; exact idle cell for image previews.",
+      "negativePrompt": "fractional alpha, interpolation, softened edges, painted source, blurry outlines",
       "status": "promoted",
-      "rawPath": ".omo/evidence/battle-generated-magenta-20260626/raw/monster-slime-01-magenta-source.png",
-      "promotedPath": "public/assets/generated/starter/monster-slime-01.png",
+      "rawPath": "public/assets/generated/pixel-enemies/slime.png",
+      "promotedPath": "public/assets/generated/pixel-enemy-portraits/slime.png",
       "resourceId": "generated-enemy-slime-01",
-      "sha256": "22d4a49dadaf05ca84298c2ec24c4ddbd8b943594414c01b03f4bb43f9b02143",
+      "sha256": "01027b1f6858f5a303aca4b894fbfcff41b2d58cd16afd81db8df314c082b920",
       "provenance": {
-        "generator": "grok",
+        "generator": "native-pixel",
         "mode": "live",
-        "promptVersion": "battle-magenta-v2",
-        "createdAt": "2026-09-01T00:00:00.000+09:00"
+        "promptVersion": "native-enemy-idle-cell-v1",
+        "createdAt": "2026-10-02T00:00:00.000+09:00"
       }
     },
     {
@@ -226,21 +226,21 @@
       "target": "enemyMonster",
       "resourceKind": "monster",
       "expectedDimensions": {
-        "width": 96,
-        "height": 96
+        "width": 48,
+        "height": 48
       },
-      "prompt": "Original dusk cave bat monster, angular wings, readable compact silhouette, transparent background",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "prompt": "Original native pixel enemy: editable final-grid anatomy and nine articulated poses; exact idle cell for image previews.",
+      "negativePrompt": "fractional alpha, interpolation, softened edges, painted source, blurry outlines",
       "status": "promoted",
-      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/monster-bat-01-fallback.png",
-      "promotedPath": "public/assets/generated/starter/monster-bat-01.png",
+      "rawPath": "public/assets/generated/pixel-enemies/bat.png",
+      "promotedPath": "public/assets/generated/pixel-enemy-portraits/bat.png",
       "resourceId": "generated-enemy-bat-01",
-      "sha256": "df72bb9f93f3d7bc8c815a4058048cec1fbbc1f1b5053214da39d0c55f8aae72",
+      "sha256": "a17f974181df2402271ce0f992f7fde68d779569d6a25f77d7d7a2dd00eb2b11",
       "provenance": {
-        "generator": "agy",
-        "mode": "fake",
-        "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "generator": "native-pixel",
+        "mode": "live",
+        "promptVersion": "native-enemy-idle-cell-v1",
+        "createdAt": "2026-10-02T00:00:00.000+09:00"
       }
     },
     {
@@ -248,21 +248,21 @@
       "target": "enemyMonster",
       "resourceKind": "monster",
       "expectedDimensions": {
-        "width": 96,
-        "height": 96
+        "width": 64,
+        "height": 64
       },
-      "prompt": "Original cracked stone golem monster, squat heavy silhouette, moss highlights, transparent background",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "prompt": "Original native pixel enemy: editable final-grid anatomy and nine articulated poses; exact idle cell for image previews.",
+      "negativePrompt": "fractional alpha, interpolation, softened edges, painted source, blurry outlines",
       "status": "promoted",
-      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/monster-golem-01-5b9ad99c.png",
-      "promotedPath": "public/assets/generated/starter/monster-golem-01.png",
+      "rawPath": "public/assets/generated/pixel-enemies/golem.png",
+      "promotedPath": "public/assets/generated/pixel-enemy-portraits/golem.png",
       "resourceId": "generated-enemy-golem-01",
-      "sha256": "56d262a129989be7f91fc7fdbc8ea53642eb7d6fb9ee7b717b5bb12e9a2cd402",
+      "sha256": "bdb091bcbb57412e0ced2fa482a3bb3e6ed60a8aae2702329813e3565c02ab53",
       "provenance": {
-        "generator": "agy",
+        "generator": "native-pixel",
         "mode": "live",
-        "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
+        "promptVersion": "native-enemy-idle-cell-v1",
+        "createdAt": "2026-10-02T00:00:00.000+09:00"
       }
     },
     {
@@ -273,18 +273,18 @@
         "width": 96,
         "height": 96
       },
-      "prompt": "Original compact crimson-and-charcoal dragon monster generated from a green chroma-key source and promoted with alpha transparency",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, green pixels in visible subject",
+      "prompt": "Original native pixel enemy: editable final-grid anatomy and nine articulated poses; exact idle cell for image previews.",
+      "negativePrompt": "fractional alpha, interpolation, softened edges, painted source, blurry outlines",
       "status": "promoted",
-      "rawPath": ".omo/evidence/battle-implementation-readiness/raw/monster-dragon-01-chroma-source.png",
-      "promotedPath": "public/assets/generated/starter/monster-dragon-01.png",
+      "rawPath": "public/assets/generated/pixel-enemies/dragon.png",
+      "promotedPath": "public/assets/generated/pixel-enemy-portraits/dragon.png",
       "resourceId": "generated-enemy-dragon-01",
-      "sha256": "5c9a2bae2b82a18e518d1c42f558e8f5ecbb19e175816195461a8b75041e1041",
+      "sha256": "4468d553b625091c1c10a3cc1372786405b3e594b6e89b577213f1f2d3e6ca32",
       "provenance": {
-        "generator": "imagegen",
+        "generator": "native-pixel",
         "mode": "live",
-        "promptVersion": "battle-green-dragon-v1",
-        "createdAt": "2026-06-27T15:04:22.000+09:00"
+        "promptVersion": "native-enemy-idle-cell-v1",
+        "createdAt": "2026-10-02T00:00:00.000+09:00"
       }
     },
     {
@@ -295,18 +295,18 @@
         "width": 64,
         "height": 64
       },
-      "prompt": "Original sylph hornet monster, wasp-like winged sprite, readable compact silhouette, transparent background",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "prompt": "Original native pixel enemy: editable final-grid anatomy and nine articulated poses; exact idle cell for image previews.",
+      "negativePrompt": "fractional alpha, interpolation, softened edges, painted source, blurry outlines",
       "status": "promoted",
-      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/monster-sylph-hornet-fallback.png",
-      "promotedPath": "public/assets/generated/starter/sylph-hornet-transparent.png",
+      "rawPath": "public/assets/generated/pixel-enemies/sylph-hornet-transparent.png",
+      "promotedPath": "public/assets/generated/pixel-enemy-portraits/sylph-hornet-transparent.png",
       "resourceId": "generated-enemy-sylph-hornet",
-      "sha256": "0dede0b45624a89af29500c9b2dd32ae775f4f465c7cb0b7f1be381de1c45e07",
+      "sha256": "566fb8f8bae8cb89f32d0ec36270ce3b8eb4867f02dc709c1a39f6c1c934e077",
       "provenance": {
-        "generator": "agy",
-        "mode": "fake",
-        "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-29T09:06:00.000+09:00"
+        "generator": "native-pixel",
+        "mode": "live",
+        "promptVersion": "native-enemy-idle-cell-v1",
+        "createdAt": "2026-10-02T00:00:00.000+09:00"
       }
     },
     {
@@ -490,21 +490,21 @@
       "target": "troopPreview",
       "resourceKind": "monster",
       "expectedDimensions": {
-        "width": 96,
-        "height": 96
+        "width": 48,
+        "height": 48
       },
-      "prompt": "Troop preview reuses the generated green-blue slime monster promoted from the magenta chroma-key source",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, magenta pixels in visible subject",
+      "prompt": "Original native pixel enemy: editable final-grid anatomy and nine articulated poses; exact idle cell for image previews.",
+      "negativePrompt": "fractional alpha, interpolation, softened edges, painted source, blurry outlines",
       "status": "promoted",
-      "rawPath": ".omo/evidence/battle-generated-magenta-20260626/raw/monster-slime-01-magenta-source.png",
-      "promotedPath": "public/assets/generated/starter/troop-preview-slime.png",
+      "rawPath": "public/assets/generated/pixel-enemies/slime.png",
+      "promotedPath": "public/assets/generated/pixel-enemy-portraits/slime.png",
       "resourceId": "generated-troop-preview-slime",
-      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33",
+      "sha256": "01027b1f6858f5a303aca4b894fbfcff41b2d58cd16afd81db8df314c082b920",
       "provenance": {
-        "generator": "imagegen",
+        "generator": "native-pixel",
         "mode": "live",
-        "promptVersion": "battle-magenta-v2",
-        "createdAt": "2026-06-26T15:57:00.000+09:00"
+        "promptVersion": "native-enemy-idle-cell-v1",
+        "createdAt": "2026-10-02T00:00:00.000+09:00"
       }
     }
   ]

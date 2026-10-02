@@ -1,0 +1,27 @@
+// C: 높이차 있는 은빛 우유 통 둘, 큰 몸통 명암과 작은 옆손잡이로 단순·또렷하게; 뚜껑 윗면 각 3행.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a iron 2
+@mat b iron 3
+@mat c iron 4
+@mat d iron 5
+@mat e iron 6
+@layer cans
+@mblock 0 0
+...bbb..........
+..beeeb.........
+.beeedda........
+..bddda.........
+..bdcca....bbb..
+babdccca..beeeb.
+badddcca.beeedda
+bbddccca..bddda.
+bdddccca..bdccab
+bdddccca.bddccab
+bdddccca.bdddcca
+bddcccca.bdddcca
+bddcccca.bddccca
+bcccccca.bddccca
+.bccccaa.bccccaa
+..aaaa....aaaa..

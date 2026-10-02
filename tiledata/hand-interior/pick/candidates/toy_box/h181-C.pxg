@@ -1,0 +1,50 @@
+// C: 뚜껑을 비스듬히 열어 목재 윗면 3행(y=0~2), 어두운 남쪽 면 분리; 입구·앞판·장난감 유지.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 2
+@mat c wood 7
+@mat d blue 4
+@mat e wood 6
+@mat f blue 3
+@mat g blue 2
+@mat h blue 2
+@layer box
+@mblock 0 0
+..cccccccccccb..
+..ceeeeeeeeeeb..
+..ceeeeeeeeeeb..
+..bggggggggggb..
+..cbbbbbbbbbbb..
+.bcaaaaaaaaaacb.
+.caaaaaaaaaaacb.
+.caaaaaaaaaaacb.
+.caaaaaaaaaaacb.
+.caaaaaaaaaaacb.
+.cccccccccccbbb.
+.cfffffffffffgb.
+.cfffffffffffgb.
+.cfffffffffffgb.
+.chhhhhhhhhhggb.
+..bbbbbbbbbbbb..
+@mat r red 2
+@mat s red 4
+@mat t red 5
+@mat u linen 5
+@mat v linen 3
+@mat j wood 3
+@mat k pine 5
+@mat l pine 3
+@mat n pink 3
+@mat o pink 2
+@layer toys
+@mblock 2 2
+...........k
+..........kj
+......uu..kj
+..tt..uv.kj.
+.rtsrjvvjkj.
+.rssr.nnojklj
+..rr..nno.l.
+......vo..j.

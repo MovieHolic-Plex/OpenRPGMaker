@@ -1,0 +1,32 @@
+// 방의 곡식 자루 결을 따라 누런 천 자루 셋, 접힌 입구 윗면과 씨앗 그림 표
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 2
+@mat b straw 3
+@mat c straw 4
+@mat d straw 5
+@mat e wood 5
+@mat f wood 7
+@mat p linen 5
+@mat q linen 3
+@mat g green 2
+@mat h bread 2
+@layer sacks
+@mblock 0 0
+......dcdd......
+......dccdc.....
+......cbcc......
+.......eeb......
+......bccca.dcdd
+..dcddcccca.dccd
+..dccdcppba..cbc
+...cbccpgba..eeb
+...eebccbaa.bcca
+..bcccaba.bdccca
+.bdcccba.bcpppba
+.cdpppba.bcpqhba
+.cdpgpba.bcpqhba
+.bcpqqba.abccbaa
+.abccbaa..abbaa.
+..aaaaa....aaa..

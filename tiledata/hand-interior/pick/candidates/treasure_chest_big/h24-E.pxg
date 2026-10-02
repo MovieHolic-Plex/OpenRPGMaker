@@ -1,0 +1,54 @@
+// E: 자유 해석 — 어두운 쇠띠 두른 통나무색 상자, 금 모서리쇠·넓은 금 자물쇠판·보라 보석 (높이 20)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o dwood 0
+@mat d wood 1
+@mat m wood 2
+@mat r wood 3
+@mat l wood 4
+@mat h wood 5
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat q iron 4
+@mat G gold 2
+@mat y gold 3
+@mat Y gold 4
+@mat W gold 5
+@mat p purple 3
+@mat P purple 4
+@mat u purple 5
+@mblock 0 0
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+= 32.
+.....ohhqkjllllrrrrrrqkjmmo.....
+...ohhhlqkjlllrrrrrrrqkjrmmmo...
+..ohhlllqkjlllrrrrrrmqkjrmmmdo..
+.ohhhlllqkjllrrrrrrmmqkjrrmmmdo.
+.ohllllrqkjlrrrrrrmmmqkjrmmmddo.
+.ollrrrrkjirrrrrrmmmmkjimmmmddo.
+.oWYYYYYkjiYYYYYYYyyykjiyyyyyGo.
+.odddddddiiidddddddddiiiddddddo.
+.olrrrrmkjirrrrrrrmmmkjimmmmddo.
+.olrrrrmkjirrWYYYYymmkjimmmmddo.
+.olrrrrmkjirrYyuPyGmmkjimmmmddo.
+.olrrrrmkjirrYyppyGmmkjimmmmddo.
+.olrrrrmkjirrYyooyGmmkjimmmmddo.
+.olrrrrmkjirrYyyoyGmmkjimmmmddo.
+.olrrrrmkjirrGGGGGGmmkjimmmmddo.
+.olrrrrmkjirrrrrrmmmmkjimmmmddo.
+.oWYyrmmkjirrrrrmmmmmkjimmmWYyo.
+.oYyyrmmkjirrrrmmmmmmkjimmmYyyo.
+.oyGGmmkjidddddddddddkjidddyGGo.
+.oooooooooooooooooooooooooooooo.

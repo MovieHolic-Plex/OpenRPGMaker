@@ -15,23 +15,6 @@ export interface SkinBattlerPlacement {
   readonly partyScale?: number;
 }
 
-export const RM2000_PARTY_SLOTS: Readonly<Record<number, readonly number[]>> = {
-  1: [72],
-  2: [72, 248],
-  3: [56, 160, 264],
-  4: [44, 116, 204, 276],
-};
-
-/** 정면 구도(유리 뼈대): 적만 필드에 선다. */
-const FRONTVIEW: SkinBattlerPlacement = {
-  partyFacing: "hidden",
-  enemy: (i, n) => ({
-    x: Math.round(160 + (i - (n - 1) / 2) * 70),
-    y: n <= 1 ? 124 : 104 + (i % 2) * 8,
-  }),
-  party: (i, n) => ({ x: RM2000_PARTY_SLOTS[Math.min(4, Math.max(1, n))]![i] ?? 160, y: 160 }),
-};
-
 // ── 도트 측면 적 진형(retro2003) ─────────────────────────────────────────────────────────
 // 적 발 위치가 설 수 있는 구역(무대 논리 좌표 320×160). 아군은 오른쪽 x 222~294.
 // 아래 한계 142 = 아군 마지막 발(136)보다 조금 아래, HUD 위.
@@ -117,19 +100,6 @@ const RETRO_SIDEVIEW: SkinBattlerPlacement = {
 
 export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 239, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 76, y: 152 }) },
-  rm2000: FRONTVIEW,
-  // 유리 뼈대 변형(2026-09-25): 구도가 같으면 배치도 같다 — 정면은 rm2000 을 그대로 쓴다.
-  // 측면 스킨은 2026-10-01 부터 모두 도트 측면 전투 뼈대(motionStyle "retro")라 retro2003 과 같은 배치다.
-  rm2003: RETRO_SIDEVIEW,
-  octopath: RETRO_SIDEVIEW,
-  chrono: RETRO_SIDEVIEW,
-  bravely: RETRO_SIDEVIEW,
-  dragonquest: FRONTVIEW,
-  ff: RETRO_SIDEVIEW,
-  mother: FRONTVIEW,
-  goldensun: RETRO_SIDEVIEW,
-  mv: FRONTVIEW,
-  vxace: FRONTVIEW,
   // 도트 측면 전투의 독립 접지·간격 계약.
   retro2003: RETRO_SIDEVIEW,
 };

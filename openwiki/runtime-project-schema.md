@@ -1,5 +1,14 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 캐릭터별 전투 동작 (2026-10-03)
+
+`ActorRecord.battleMotion?: {style?, anticipation?, travel?, recovery?, reach?, jump?, recoil?}`와
+`EquipmentRecord.battleMotionStyle?`는 선택 필드다. 생략하면 공용 직업/신체 계열을 상속한다.
+배율은 .4~2, 반동은 0~2, 접촉 위치 보정은 -20~24px이며 NaN/Infinity/미지 스타일은 제거한다.
+배우 정규화/패치와 장비 정규화/편집 변이, 조수 DB 스키마에 연결한다. undefined 패치로 상속을 복구한다.
+기존 저장 파일은 새 필드 없이 그대로 읽히며 스키마 버전을 바꾸지 않는다.
+공용 136종 매핑, 현재 직업/장비 우선순위와 플레이어/미리보기 계약은 [캐릭터 전투 동작](character-battle-motion.md).
+
 ## 퀘스트 프리셋 메타 (2026-10-01)
 
 단계형 `QuestDef`의 선택 `presetId`는 `quest/questPresetIds.ts`의 28개 ID가 정본이다.

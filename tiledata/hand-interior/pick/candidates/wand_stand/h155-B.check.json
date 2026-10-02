@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wand_stand/h155-B.pxg",
+ "id": "wand stand",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  3,
+  7,
+  12,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "열쇠 받침대와 같은 회색 돌 명암의 작은 받침에 16px 금빛 지팡이와 방 문양을 따른 민트빛 보석을 손 도트로 신작; 꼭대기 윗면 3행(y=23~25), 보석 정수리 3행(y=7~9).",
+ "ok": true
+}

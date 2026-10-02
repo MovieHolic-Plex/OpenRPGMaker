@@ -1,0 +1,70 @@
+// B: 기존 책상의 갈색 면과 짧은 결을 따른 해도 탁자; 윗면 8행(y=8~15).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a pine 1
+@mat b pine 2
+@mat c pine 3
+@mat d pine 4
+@mat e pine 5
+@mat f dwood 2
+@mat g dwood 3
+@mat h dwood 4
+@mat i linen 3
+@mat j linen 4
+@mat k linen 5
+@mat l linen 6
+@mat m fish 2
+@mat n fish 3
+@mat o brass 1
+@mat p brass 2
+@mat q brass 3
+@mat r brass 4
+@mat s brass 5
+@mat t iron 1
+@mat u iron 3
+@mat v iron 5
+@layer furniture
+@mblock 1 8
+aaddddddddddddddddddddddddddda
+adcccccccccccccccccccccccccccb
+adcccccbbbccccccccccccbbcccccb
+adcccccccccccccccccccccccccccb
+adcccccccccccccccccccccccccccb
+adcccbbccccccccccbbbcccccccccb
+adcccccccccccccccccccccccccccb
+addddddddddddddddddddddddddddb
+abccccccccccccccccccccccccccba
+abbbbbbbbbbbbbbbbbbbbbbbbbbbba
+ahhhhhhhhhhhhhhhhhhhhhhhhhhhga
+ahhbbbhhhhhhhhhhhhbbbhhhhhhhga
+aaggggggggggggggggggggggggggaa
+@mblock 3 21
+bccb..................bcca
+bchb..................bcha
+bchb..................bcha
+bchb..................bcha
+bchb..................bcha
+bcbbhhhhhhhhhhhhhhhhhhbcha
+bcbbbbbbbbbbbbbbbbbbbbbcha
+bcgggggggggggggggggggggcha
+bchb..................bcha
+bchb..................bcha
+baaa..................baaa
+@layer tabletop
+@mblock 5 10
+jllllllllllllllj
+lkknnkkkkkkmkkki
+lknkkknnkkmmkkki
+lkkknkkknmmkkkki
+jkkkkkkkkkkkkkji
+@mblock 21 6
+...rrrss.
+..qrrrvvv
+opqqqquuu
+.ooooottt
+@mblock 23 11
+.rrr.
+rslsp
+rlqlp
+.opo.

@@ -47,9 +47,12 @@ export function isAtlasBiomeInteriorTileset(tileset: Pick<TilesetDef, "image"> |
   return tileset?.image.type === "bundled" && tileset.image.id === ATLAS_BIOME_INTERIOR_TEXTURE;
 }
 
-/** 손 도트 v5 정의인가 — 칸 수·가로 칸 수·첫 킷 id 로 가른다(옛 정의는 30칸 폭, Tibo 킷). */
+/**
+ * 손 도트 v5 정의인가 — 가로 칸 수·첫 킷 id 로 가른다(옛 정의는 30칸 폭, Tibo 킷). 칸 수는 굽기마다 끝에 붙어 늘어날 뿐
+ * 이미 있는 번호는 그대로다(scripts/content/hand-interior/pin_ids.py) — 그래서 칸 수가 번들 이하이면 같은 시트의 옛 빌드다.
+ */
 export function isHandInteriorV5Definition(tileset: TilesetDef): boolean {
-  return tileset.count === data.count && tileset.tilesPerRow === data.tilesPerRow
+  return tileset.count <= data.count && tileset.tilesPerRow === data.tilesPerRow
     && (tileset.structureKits ?? []).some((k) => k.id.startsWith("hand-interior:"));
 }
 
@@ -93,12 +96,15 @@ export function ensureAtlasBiomeInteriorCurrent(project: Pick<Project, "tilesets
   const tileset = project.tilesets[id];
   if (!tileset || !isAtlasBiomeInteriorTileset(tileset) || id !== ATLAS_BIOME_INTERIOR_ID) return false;
   if (isHandInteriorV5Definition(tileset)) {
-    // same sheet, older build of its metadata (passage/layer/labels): refresh the bundle-owned fields, keep references
-    if (layerSignature(tileset) === bundleSignature()) return ensureAtlasBiomeInteriorReferences(tileset);
+    // same sheet, older build (new tiles appended, passage/layer/labels refreshed): refresh the bundle-owned fields.
+    // Tile ids already placed on maps keep their meaning (append-only build), so maps are not touched.
+    if (tileset.count === data.count && layerSignature(tileset) === bundleSignature()) return ensureAtlasBiomeInteriorReferences(tileset);
     const fresh = createAtlasBiomeInteriorTileset();
-    for (const key of ["passability", "priority", "terrain", "tileMeta", "tileGroups", "autotileGroups", "animationStrips", "structureKits"] as const) {
+    for (const key of ["count", "passability", "priority", "terrain", "tileMeta", "tileGroups", "autotileGroups", "animationStrips", "structureKits"] as const) {
       (tileset as unknown as Record<string, unknown>)[key] = fresh[key];
     }
+    // the bundle-owned reference category (furniture dictionary, examples) follows the new build; authored categories stay
+    tileset.referenceDocuments = (tileset.referenceDocuments ?? []).map((c) => fresh.referenceDocuments!.find((f) => f.id === c.id) ?? c);
     ensureAtlasBiomeInteriorReferences(tileset);
     return true;
   }

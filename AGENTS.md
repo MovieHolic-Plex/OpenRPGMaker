@@ -14,6 +14,23 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 2. **`openwiki/INDEX.md`** — 위키 절 좌표(생성 파일, `npm run openwiki:index`). 위키는 41쪽 약 1MB(약 27만 토큰)이고
    7쪽은 읽기 도구 상한 50KB 를 넘어 **통째로 읽으면 조용히 잘린다**. 필요한 절만 줄 번호로 잘라 읽어라.
 
+## 하네스 (hard rule)
+
+아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
+구조 규칙은 `openwiki/harnesses/README.md`.
+
+- **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
+  → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
+  → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
+  → 후보는 사람이 고른다. JRPG 일반 적 그림에는 쓰지 않는다.
+- **modern3 현대 거리 칩셋의 기물 도트(현재 탈것: 자동차·버스·트럭·열차)를 그릴 때** (3/4 시점: 윗면이 면으로 보여야 한다)
+  → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
+  → `npm run harness -- modern-chipset <단계>` · 문서 `openwiki/harnesses/modern-chipset.md`
+  → 기준 = 프로젝트의 modern-city-atlas 경찰차. 후보는 Sonnet 5명이 pxgrid 로 찍고 사람이 고른다. 직접 그리지 말 것.
+
+새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
+`npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
+
 그다음에 아래 순서로 간다.
 
 1. `openwiki/PROJECT_WIKI.md` - the current project-specific AI map.
@@ -26,6 +43,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
+   - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
    - Editor validation: `openwiki/editor-validation.md`
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
    - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 에 출처를 커밋하고 `scripts/content/prepare-*-references.mjs` 로 `src/assets/*References.json` 번들을 만들어 타일셋 정의와 `ensureBundledTilesets` 에 배선한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.

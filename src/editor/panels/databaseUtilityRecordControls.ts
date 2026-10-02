@@ -80,6 +80,8 @@ function utilityOptionLabel(value: string): string {
       return "교체";
     case "event":
       return "교체(구형)";
+    case "commonEvent":
+      return "공통 이벤트 실행";
     default:
       return value;
   }
@@ -114,6 +116,6 @@ export function isTerrainDisplay(value: string): value is DatabaseTerrainCharact
 }
 
 export function isBattleCommandKind(value: string): value is ClassBattleCommandKind {
-  return value === "attack" || value === "skill" || value === "skillSubset" || value === "defend" || value === "guard" || value === "item" || value === "escape" || value === "switch" || value === "event";
+  return value === "attack" || value === "skill" || value === "skillSubset" || value === "defend" || value === "guard" || value === "item" || value === "escape" || value === "switch" || value === "event" || value === "commonEvent";
 }
 

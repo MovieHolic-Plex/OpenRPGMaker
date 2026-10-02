@@ -8,7 +8,8 @@ export class GeneratedPictureError extends Error {
   }
 }
 
-export type GeneratedPictureKind = "picture" | "faceset" | "title" | "backdrop" | "monster";
+/** 몬스터(정면 그림)는 2026-10-02 뺐다 — 전투 몬스터는 도트 측면 시트만 쓴다. */
+export type GeneratedPictureKind = "picture" | "faceset" | "title" | "backdrop";
 
 export type InsertGeneratedPictureInput = {
   readonly name: string;

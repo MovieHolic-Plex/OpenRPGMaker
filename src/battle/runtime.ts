@@ -1,3 +1,4 @@
+import { BattleGimmickLedger, type BattleGimmick, type GimmickStatus } from "@/battle/battleGimmickRules";
 import { formationDamage, formationStartRow, rollBattleFormation, type BattleRow, type BattleStartFormation } from "@/battle/battleFormation";
 import { applyDifficultyToEnemyBattlers, difficultyRate, scaleByDifficulty } from "@/project/difficulty";
 import { applySkillLoadoutsToBattlers } from "@/project/skillLoadout";
@@ -8,7 +9,7 @@ import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/
 import { damageEffectKind, firstLearnableSkill, pickRandomSkill, rollStealItem, scanMessage, weaknessElementNames } from "@/battle/battleSpecialEffects";
 import { permanentActorSkillIds } from "@/project/growth/runtime";
 import { inputSequencePowerMultiplier } from "@/battle/battleInputSequence";
-import { battleElementMultiplier } from "@/battle/battleElementModifiers";
+import { battleEffectivenessMultiplier, battleElementMultiplier } from "@/battle/battleElementModifiers";
 import { restoreSkillDrain, spendSkillHp } from "@/battle/battleSkillVitals";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
@@ -278,14 +279,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return value;
   };
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "strict";
-  // B: skin-driven ATB haste — chrono fast, dq/mother slow, octopath subtle
-  const skinHasteMultiplier = (() => {
-    try {
-      const skinId = resolveSkinId((options.project as unknown as { system?: { battleUiStyle?: string } }).system?.battleUiStyle) as BattleSkinId;
-      const map: Record<string, number> = { chrono: 1.18, bravely: 1.08, octopath: 1.06, ff: 1.04, rm2000: 1.02, dragonquest: 0.92, mother: 0.88 };
-      return (map[skinId] ?? 1) * atbSpeedMultiplier(options.project.system.atbSpeed);
-    } catch { return 1; }
-  })();
+  // 스킨별 ATB 가속(청람·세피아·먹빛·코발트 창)은 2026-10-02 그 스킨들과 함께 지웠다 — 속도는 atbSpeed 하나가 정한다.
+  const skinHasteMultiplier = atbSpeedMultiplier(options.project.system.atbSpeed);
   // Active ATB: gauge 흐름에서만 의미가 있다. strict 는 라운드제라 메뉴가 시간을 멈추지 않는다.
   const activeAtb = battleFlow === "gauge" && options.project.system.atbMode === "active";
 
@@ -405,6 +400,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // Compatibility action log plus the canonical ordered append-only timeline.
   const actionLog: BattleActionResultSnapshot[] = [];
   const timeline: BattleTimelineEntrySnapshot[] = [];
+  const gimmicks = new BattleGimmickLedger();
   // 지금 실행 중인 명령의 번호. 명령이 시작될 때 올리고, 그동안 기록되는 엔트리에 찍는다(연출 묶음의 열쇠).
   let actionCounter = 0;
   let currentActionId: number | undefined;
@@ -442,6 +438,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       critical: entry.critical,
       skillName: entry.skillName,
       ...(entry.skillId ? { skillId: entry.skillId } : {}),
+      ...(entry.effectiveness !== undefined && kind === "damage" ? { effectiveness: entry.effectiveness } : {}),
       ...(resource ? { resource } : {}),
     });
   }
@@ -601,6 +598,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function applyUpkeep(battler: MutableBattler): void {
+    advanceGimmicks(battler);
     const upkeep = runStateUpkeep(options.project, battler, rng);
     if (upkeep.doomedStateId) {
       // 선고가 다 찼다: 남은 HP 를 지속 피해로 깎는 엔트리 하나(쓰러지는 연출이 따라온다). stateId·message 가 있으면
@@ -812,7 +810,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       readonly damageFormula?: string;
       readonly affects?: "hp" | "mp";
     },
-  ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean } {
+  ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean; readonly effectiveness: number } {
     const magical = usesMagicalDefense(options.project, move.elementId);
     const unmodifiedOffense = magical ? user.mind : user.attackPower;
     const unmodifiedDefense = magical ? target.mind : target.defense;
@@ -851,11 +849,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       typeFactors: types.typeFactors,
       baseAccuracyByte: accuracyByteFromPercent(move.hitRate ?? 100),
     }, nextGen1Byte);
-    if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical };
+    // 상성 문장용 배율 — 방어 쪽 타입 배율의 곱(정수 ×10 표기를 되돌린다). 자속 보정(stab)은 넣지 않는다.
+    const effectiveness = types.typeFactors.reduce((product, factor) => product * (factor / 10), 1);
+    if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical, effectiveness };
     const resource = move.affects ?? "hp";
     const before = target[resource];
     target[resource] = Math.max(0, before - formationDamage(Math.round(resolved.damage * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage"));
-    return { hit: true, amount: before - target[resource], critical: resolved.critical };
+    return { hit: true, amount: before - target[resource], critical: resolved.critical, effectiveness };
   }
 
   function recordIncapacitated(battler: MutableBattler): void {
@@ -1206,6 +1206,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         return !(gen1 && actor.skillIds.some((skillId) => battleSkillUseFailure(options.project, actor, skillId) === undefined));
       case "defend":
         return true;
+      case "commonEvent":
+        return options.project.commonEvents.some((entry) => entry.id === command.commonEventId);
       case "escape":
         return options.canEscape;
       case "switch":
@@ -1230,11 +1232,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function isValidActorCommand(actor: MutableBattler, command: ActorCommand): boolean {
     if (!actorCommandLegality(actor, command)) return false;
-    // 대상 해결 검사는 대상을 쓰는 명령에만 — defend/escape/switch 는 적법성만으로 결정된다.
+    // 대상 해결 검사는 대상을 쓰는 명령에만 — defend/escape/switch/commonEvent 는 적법성만으로 결정된다.
     switch (command.kind) {
       case "defend":
       case "escape":
       case "switch":
+      case "commonEvent":
         return true;
       default: {
         const resolution = resolvedCommandTargets(actor, command);
@@ -1304,12 +1307,36 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "switch":
         switchActiveActor(actor.recordId, command.targetActorId);
         break;
+      case "commonEvent":
+        // 실행은 이 행동 뒤 트룹 이벤트 흐름(applyTroopEvents) 앞머리에서 — 문장·선택지가 같은 정지·재개를 탄다.
+        battleEvents.queueCommonEvent(command.commonEventId);
+        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "commonEvent" });
+        break;
     }
   }
 
   function applyActorAttack(actor: MutableBattler, command: Extract<ActorCommand, { kind: "attack" }>): void {
     const targets = resolvedCommandTargets(actor, command).targets;
-    const attackCount = actor.equipmentEffects?.doubleAttack ? 2 : 1;
+    const swings = actor.equipmentEffects?.attackSwings;
+    if (swings?.length) {
+      // 이도류: 타격마다 그 무기의 공격력·속성으로 친다. 계산이 끝나면 합산 능력치로 되돌린다.
+      const attackPower = actor.attackPower;
+      const effects = actor.equipmentEffects;
+      try {
+        for (const swing of swings) {
+          actor.attackPower = Math.max(1, attackPower + swing.attackOffset);
+          actor.equipmentEffects = { ...effects!, attackElementIds: swing.attackElementIds };
+          for (const target of targets) {
+            if (target.hp > 0) applySingleActorAttack(actor, target);
+          }
+        }
+      } finally {
+        actor.attackPower = attackPower;
+        actor.equipmentEffects = effects;
+      }
+      return;
+    }
+    const attackCount = actor.equipmentEffects?.attackHits ?? (actor.equipmentEffects?.doubleAttack ? 2 : 1);
     for (let index = 0; index < attackCount; index += 1) {
       for (const target of targets) {
         if (target.hp > 0) applySingleActorAttack(actor, target);
@@ -1327,6 +1354,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const targetMaxHpBefore = target.maxHp;
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(actor, target, {
       power: actor.attackPower,
+      hitMultiplier:gimmickDamageMultiplier(actor,target),
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(actor),
@@ -1343,7 +1371,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit && result.amount > 0) recoverHitStates(target);
     if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
-      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical },
+      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) : 1) },
       result.hit ? "damage" : "miss",
       "attack",
     );
@@ -1526,6 +1554,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "defend":
       case "escape":
       case "switch":
+      case "commonEvent":
         performActorCommand(command);
         return;
       case "attack":
@@ -2119,11 +2148,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function withCharging(battler: MutableBattler, view: BattleBattlerSnapshot): BattleBattlerSnapshot {
     const pending = pendingCharges.get(battler.id);
     const form = gen1 ? undefined : transformResourceForStates(options.project, battler);
-    if (!pending && !form) return view;
+    const gimmickView=gimmicks.snapshot(battler.id);
+    const gimmickForm=gimmicks.get(battler.id,"transform")?.config.resourceId;
+    if (!pending && !form && !gimmickView.length) return view;
     return {
       ...view,
       ...(pending ? { charging: { skillId: pending.skillId, skillName: lookupSkill(pending.skillId)?.name ?? "", turnsLeft: pending.turnsLeft } } : {}),
-      ...(form ? { transformResourceId: form } : {}),
+      ...(form || gimmickForm ? { transformResourceId: form??gimmickForm } : {}),
+      ...(gimmickView.length?{gimmicks:gimmickView}:{}),
     };
   }
 
@@ -2184,6 +2216,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const emotionMultiplier = emotionDamageMultiplier(options.project, enemy, target);
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(enemy, target, {
       power: enemy.attackPower,
+      hitMultiplier:gimmickDamageMultiplier(enemy,target),
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(enemy),
@@ -2215,27 +2248,30 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   // ── 반격·감싸기·회피·리플렉 상태(StateRuntimeEffects, 2026-10-01) ──
   // 반격 상태는 적의 reactions 와 따로 돈다: 물리 타격에 맞으면 행동이 끝난 뒤 통상 공격으로 되받아친다(타격당이 아니라 행동당 한 번).
-  const pendingStateCounters: { holder: MutableBattler; attacker: MutableBattler }[] = [];
+  const pendingStateCounters: { holder: MutableBattler; attacker: MutableBattler;skillId?:string }[] = [];
   let resolvingStateCounter = false;
 
   function queueStateCounter(attacker: MutableBattler, holder: MutableBattler): void {
     if (gen1 || resolvingStateCounter || battlerSide(attacker) === battlerSide(holder) || holder.hp <= 0) return;
     if (pendingStateCounters.some((entry) => entry.holder === holder)) return;
-    const chance = counterChanceForStates(options.project, holder);
+    const armed=gimmicks.get(holder.id,"counter");
+    const chance = armed ? 100 : counterChanceForStates(options.project, holder);
+    if(armed)gimmicks.remove(armed);
     if (chance <= 0 || !rollChance(chance, rng)) return;
-    pendingStateCounters.push({ holder, attacker });
+    pendingStateCounters.push({ holder, attacker,...(armed?{skillId:armed.skillId}:{}) });
   }
 
   function drainStateCounters(): void {
     while (pendingStateCounters.length > 0 && !result) {
-      const { holder, attacker } = pendingStateCounters.shift()!;
+      const { holder, attacker,skillId } = pendingStateCounters.shift()!;
       if (holder.hp <= 0 || attacker.hp <= 0 || holder.captured || !canBattlerAct(options.project, holder)) continue;
       const side = battlerSide(holder);
       recordTimeline({ kind: "counter", side, userRecordId: holder.recordId, userId: holder.id, targetId: attacker.id });
       resolvingStateCounter = true;
       try {
         // 아군 반격은 명령 경로를 거치지 않으므로 행동 번호를 직접 새로 뗀다(적 반격은 executeEnemyAction 이 뗀다).
-        if (side === "actor") { beginTimelineAction(); applySingleActorAttack(holder, attacker); }
+        if(skillId&&lookupSkill(skillId)){beginTimelineAction();gimmickStrike(holder,attacker,lookupSkill(skillId)!,1);}
+        else if (side === "actor") { beginTimelineAction(); applySingleActorAttack(holder, attacker); }
         // 적의 통상 공격은 기본 공격 스킬(skill_attack)을 거친다 — 적 행동 전부와 같은 경로.
         else executeEnemyAction(holder, { skillId: DEFAULT_SKILL_ID, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false }, targetIds: [attacker.id] });
       } finally {
@@ -2248,7 +2284,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 감싸기: 상대의 단일 물리 공격이 HP 1/4 이하인 동료를 노리면, 감싸기 상태의 다른 동료가 대신 맞는다. */
   function coverTarget(user: MutableBattler, target: MutableBattler): MutableBattler {
-    if (gen1 || battlerSide(user) === battlerSide(target) || target.hp <= 0 || target.hp * 4 > target.maxHp) return target;
+    if (gen1 || battlerSide(user) === battlerSide(target) || target.hp <= 0) return target;
+    const prepared=gimmicks.get(target.id,"cover");
+    const cover=prepared?[...actors,...enemies].find(b=>b.id===prepared.ownerId&&b.hp>0&&canBattlerAct(options.project,b)):undefined;
+    if(prepared&&cover){gimmicks.remove(prepared);const skill=lookupSkill(prepared.skillId);if(skill){gimmicks.set(gimmickStatus(cover,cover,skill,"counter"));gimmickAnnouncement(cover,target,skill,true,`${cover.name}의 엄호!`);}return cover;}
+    if(target.hp*4>target.maxHp)return target;
     const allies = battlerSide(target) === "actor" ? activeActors() : visibleEnemies();
     const guard = allies.find((ally) => ally !== target && ally.hp > 0 && canBattlerAct(options.project, ally) && stateFlag(options.project, ally, "cover"));
     if (!guard) return target;
@@ -2767,6 +2807,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     elementMultiplier: number,
   ): void {
     if (!hit.hit || hit.amount <= 0) return;
+    const summon=gimmicks.get(target.id,"summon");if(summon)gimmicks.remove(summon);
     const userIsActor = battlerSide(user) === "actor";
     const gain = applyBattleHitGauges(options.project, {
       user, target, amount: hit.amount, targetMaxHp, userIsActor, targetIsActor: battlerSide(target) === "actor",
@@ -2936,22 +2977,375 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
-  function applySkillCast(user: MutableBattler, targets: readonly MutableBattler[], skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill", powerMultiplier = 1, afterTarget?: (target: MutableBattler) => void): void {
+  function gimmickStatus(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: NonNullable<ReturnType<typeof lookupSkill>>,
+    kind: GimmickStatus["kind"],
+  ): GimmickStatus {
+    return {
+      kind,
+      ownerId: user.id,
+      targetId: target.id,
+      skillId: skill.id,
+      remaining: Math.round(skill.battleGimmick?.durationTurns ?? 2),
+      stacks: 0,
+      stored: 0,
+      createdAction: actionCounter,
+      config: skill.battleGimmick!,
+      x: target.battleX ?? target.authoredX,
+      y: target.battleY ?? target.authoredY,
+    };
+  }
+  function gimmickAlly(
+    user: MutableBattler,
+    config: BattleGimmick,
+    reserve = false,
+  ): MutableBattler | undefined {
+    const pool =
+      battlerSide(user) === "actor"
+        ? reserve
+          ? reserveActors()
+          : activeActors()
+        : visibleEnemies();
+    return pool.find(
+      (a) =>
+        a !== user &&
+        a.hp > 0 &&
+        canBattlerAct(options.project, a) &&
+        (!config.allyActorId || a.recordId === config.allyActorId),
+    );
+  }
+  function gimmickAnnouncement(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: NonNullable<ReturnType<typeof lookupSkill>>,
+    triggered: boolean,
+    message: string,
+    ally?: MutableBattler,
+  ): void {
+    recordSpecial(user, target, message, skill.id, "skill");
+    const latest = timeline.at(-1);
+    if (latest)
+      (latest as { gimmick: BattleTimelineEntrySnapshot["gimmick"] }).gimmick =
+        {
+          pattern: skill.battleGimmick!.pattern,
+          triggered,
+          ...(ally ? { allyId: ally.id } : {}),
+        };
+  }
+  /** Installation/defensive preparation consumes the existing command cost once. */
+  function prepareGimmickCast(
+    user: MutableBattler,
+    targets: readonly MutableBattler[],
+    skill: NonNullable<ReturnType<typeof lookupSkill>>,
+  ): boolean {
+    const g = skill.battleGimmick;
+    if (!g || gen1) return false;
+    const p = g.pattern,
+      target = targets[0] ?? user;
+    const kind =
+      p === "mirror-counter" || p === "absorb"
+        ? "absorb"
+        : p === "counter"
+          ? "counter"
+          : p === "cover"
+            ? "cover"
+            : p === "trap"
+              ? "trap"
+              : p === "transform"
+                ? "transform"
+                : undefined;
+    if (!kind) return false;
+    const stored =
+      kind === "absorb" ? gimmicks.get(user.id, "absorb") : undefined;
+    if (stored && stored.stored > 0) {
+      const opponent = target !== user ? target : randomOpponent(user);
+      if (opponent) {
+        const hits = p === "mirror-counter" ? 3 : 1;
+        const amount = Math.min(user.maxHp * 2, stored.stored);
+        for (let i = 0; i < hits; i++)
+          gimmickStrike(
+            user,
+            opponent,
+            skill,
+            1,
+            Math.floor(amount / hits) + (i === hits - 1 ? amount % hits : 0),
+          );
+      }
+      gimmicks.remove(stored);
+      return true;
+    }
+    let recipient = kind === "trap" ? target : user;
+    if (kind === "cover") recipient = gimmickAlly(user, g) ?? user;
+    if (kind === "cover" && recipient === user) {
+      gimmickAnnouncement(user, user, skill, false, "엄호할 동료가 없다.");
+      return true;
+    }
+    gimmicks.set(gimmickStatus(user, recipient, skill, kind));
+    recordAction(
+      {
+        userRecordId: user.recordId,
+        targetId: recipient.id,
+        hit: true,
+        amount: 0,
+        critical: false,
+        skillId: skill.id,
+        skillName: skill.name,
+      },
+      "action",
+      "skill",
+    );
+    const preparation = timeline.at(-1);
+    if (preparation)
+      (
+        preparation as { gimmick: BattleTimelineEntrySnapshot["gimmick"] }
+      ).gimmick = { pattern: g.pattern, triggered: false };
+    gimmickAnnouncement(
+      user,
+      recipient,
+      skill,
+      false,
+      `${skill.name}: ${kind === "trap" ? "설치" : kind === "transform" ? "변신" : "준비"}!`,
+    );
+    return true;
+  }
+  function gimmickStrike(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: NonNullable<ReturnType<typeof lookupSkill>>,
+    multiplier: number,
+    fixed?: number,
+    periodic = false,
+  ): void {
+    if (user.hp <= 0 || target.hp <= 0) return;
+    if (periodic) beginTimelineAction();
+    const before = target.hp;
+    const applied =
+      fixed === undefined
+        ? applySkillLike(user, target, {
+            power: Math.max(1, skill.power),
+            statistic:
+              skill.effect.kind === "damage"
+                ? skill.effect.statistic
+                : ["counter", "cover"].includes(skill.battleGimmick!.pattern)
+                  ? "attack"
+                  : "mind",
+            effect: "damage",
+            affects: "hp",
+            hitMultiplier: multiplier,
+            hitRate: combinedSkillHitRate(skill),
+            variance: skill.variance,
+            criticalRate: 0,
+            attackerStatMultiplier: attackMultiplierForStates(
+              options.project,
+              user,
+            ),
+            targetDefenseMultiplier: defenseMultiplierForStates(
+              options.project,
+              target,
+            ),
+            elementMultiplier: elementMultiplierFor(
+              skill.elementId,
+              user,
+              target,
+            ),
+            rng,
+          })
+        : {
+            hit: true,
+            amount: Math.min(before, Math.max(0, fixed)),
+            critical: false,
+          };
+    if (fixed !== undefined) target.hp = Math.max(0, before - applied.amount);
+    recordAction(
+      {
+        userRecordId: user.recordId,
+        targetId: target.id,
+        hit: applied.hit,
+        amount: applied.amount,
+        critical: false,
+        skillId: skill.id,
+        skillName: skill.name,
+      },
+      applied.hit ? "damage" : "miss",
+      "skill",
+      "hp",
+    );
+    const latest = timeline.at(-1);
+    if (latest)
+      (latest as { gimmick: BattleTimelineEntrySnapshot["gimmick"] }).gimmick =
+        {
+          pattern: skill.battleGimmick!.pattern,
+          triggered: applied.hit,
+          ...(periodic ? { source: "periodic" } : {}),
+        };
+    if (applied.hit && applied.amount > 0) {
+      noteDamageHit(user, target, applied, target.maxHp, 1);
+      recoverHitStates(target);
+    }
+    if (before > 0 && target.hp <= 0) refundGimmickKill(user, skill);
+  }
+  function refundGimmickKill(
+    user: MutableBattler,
+    skill: NonNullable<ReturnType<typeof lookupSkill>>,
+  ): void {
+    const percent = skill.battleGimmick?.killRefundPercent ?? 0;
+    if (percent <= 0) return;
+    const restored = Math.min(
+      user.maxHp - user.hp,
+      Math.floor((user.maxHp * percent) / 100),
+    );
+    if (restored <= 0) return;
+    user.hp += restored;
+    recordTimeline({
+      kind: "healing",
+      side: battlerSide(user),
+      userRecordId: user.recordId,
+      targetId: user.id,
+      skillId: skill.id,
+      skillName: skill.name,
+      amount: -restored,
+      resource: "hp",
+      aside: "drain",
+      hit: true,
+    });
+  }
+  function advanceGimmicks(battler: MutableBattler): void {
+    if (gen1) return;
+    for (const s of [...gimmicks.all()]) {
+      if (s.targetId !== battler.id) continue;
+      const user = [...actors, ...enemies].find((b) => b.id === s.ownerId),
+        skill = lookupSkill(s.skillId);
+      if (!user || user.hp <= 0 || !skill || battler.hp <= 0) {
+        gimmicks.remove(s);
+        continue;
+      }
+      if (s.kind === "trap") {
+        if (rollChance(s.config.triggerChance ?? 85, rng))
+          gimmickStrike(user, battler, skill, 1, undefined, true);
+        else
+          gimmickAnnouncement(user, battler, skill, false, "설치물을 피했다.");
+        gimmicks.remove(s);
+        continue;
+      }
+      if (s.kind === "summon" && canBattlerAct(options.project, user)) {
+        const opponent = randomOpponent(user);
+        if (opponent)
+          gimmickStrike(
+            user,
+            opponent,
+            skill,
+            s.config.powerMultiplier ?? 0.45,
+            undefined,
+            true,
+          );
+      }
+      if (s.kind === "zone") {
+        const x = battler.battleX ?? battler.authoredX ?? 0,
+          y = battler.battleY ?? battler.authoredY ?? 0;
+        if (
+          Math.hypot(x - (s.x ?? x), y - (s.y ?? y)) <= (s.config.radius ?? 120)
+        )
+          gimmickStrike(
+            user,
+            battler,
+            skill,
+            s.config.powerMultiplier ?? 0.35,
+            undefined,
+            true,
+          );
+      }
+      s.remaining--;
+      if (s.remaining <= 0) gimmicks.remove(s);
+    }
+  }
+  function gimmickDamageMultiplier(
+    user: MutableBattler,
+    target: MutableBattler,
+  ): number {
+    const transform = gimmicks.get(user.id, "transform");
+    const vulnerable = pendingCharges.has(target.id) ? 1.25 : 1;
+    const counter = gimmicks.get(target.id, "counter") ? 0.65 : 1;
+    return (
+      vulnerable *
+      counter *
+      (transform ? 1 + (transform.config.powerMultiplier ?? 0.35) : 1)
+    );
+  }
+  function absorbGimmickDamage(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: ReturnType<typeof lookupSkill>,
+    hpBefore: number,
+    mpBefore: number,
+    hit: { hit: boolean; amount: number; critical: boolean },
+  ): typeof hit {
+    const stored = gimmicks.get(target.id, "absorb");
+    if (
+      !stored ||
+      !hit.hit ||
+      hit.amount <= 0 ||
+      skill?.effect.kind !== "damage" ||
+      skill.effect.statistic !== "mind" ||
+      (stored.config.elementId && stored.config.elementId !== skill.elementId)
+    )
+      return hit;
+    target.hp = hpBefore;
+    target.mp = mpBefore;
+    stored.stored = Math.min(target.maxHp * 2, stored.stored + hit.amount);
+    recordSpecial(
+      target,
+      user,
+      `${target.name}: ${hit.amount} 흡수 (${stored.stored} 저장)!`,
+    );
+    return { ...hit, amount: 0 };
+  }
+
+  function applySkillCast(
+    user: MutableBattler,
+    targets: readonly MutableBattler[],
+    skillId: SkillId,
+    commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill",
+    powerMultiplier = 1,
+    afterTarget?: (target: MutableBattler) => void,
+  ): void {
     const skill = lookupSkill(skillId);
+    if (skill && prepareGimmickCast(user, targets, skill)) return;
     // 흉내·춤·슬롯: 후보 중 하나를 굴려 그 기술로 바꿔 쓴다. 자원은 원래 기술 몫만 소비했다.
     if (skill?.effect.kind === "randomSkillFrom") {
-      const picked = pickRandomSkill(options.project, skill.effect.skillIds, rng);
+      const picked = pickRandomSkill(
+        options.project,
+        skill.effect.skillIds,
+        rng,
+      );
       const primary = targets[0] ?? user;
-      recordSpecial(user, primary, picked ? `${skill.name}: ${picked.name}!` : `${skill.name}: 아무 일도 일어나지 않았다.`);
+      recordSpecial(
+        user,
+        primary,
+        picked
+          ? `${skill.name}: ${picked.name}!`
+          : `${skill.name}: 아무 일도 일어나지 않았다.`,
+      );
       if (!picked) return;
       // 뽑힌 기술의 스코프로 다시 겨눈다: 전체기는 그 편 전원, 단일기는 원래 대상(편이 다르면 자신·무작위 상대).
-      const resolve = (requestedId: string) => resolveBattleTargets({
-        scope: picked.scope, user, actors: activeActors(), enemies: visibleEnemies(), requestedTargetId: requestedId,
-        area: picked.area, includeDefeatedAllies: commandRevives({ kind: "skill", skillId: picked.id }),
-      });
+      const resolve = (requestedId: string) =>
+        resolveBattleTargets({
+          scope: picked.scope,
+          user,
+          actors: activeActors(),
+          enemies: visibleEnemies(),
+          requestedTargetId: requestedId,
+          area: picked.area,
+          includeDefeatedAllies: commandRevives({
+            kind: "skill",
+            skillId: picked.id,
+          }),
+        });
       let resolution = resolve(primary.id);
       if (resolution.targets.length === 0) {
-        const fallback = resolution.side === battlerSide(user) ? user : randomOpponent(user);
+        const fallback =
+          resolution.side === battlerSide(user) ? user : randomOpponent(user);
         if (fallback) resolution = resolve(fallback.id);
       }
       for (const pickedTarget of resolution.targets) {
@@ -2961,29 +3355,184 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     // 감싸기: 단일 대상 물리 피해 기술도 통상 공격처럼 동료가 대신 맞는다.
-    const physical = skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
-    for (const aimed of targets) {
-      const target = physical && targets.length === 1 ? coverTarget(user, aimed) : aimed;
-      applySkill(user, target, skillId, commandKind, powerMultiplier);
+    const physical =
+      skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
+    const bounce = skill?.battleGimmick?.pattern === "bounce";
+    const actualTargets = bounce
+      ? (battlerSide(user) === "actor" ? visibleEnemies() : activeActors())
+          .filter((b) => b.hp > 0)
+          .slice(0, 3)
+      : targets;
+    let bounceIndex = 0;
+    for (const aimed of actualTargets) {
+      const target =
+        physical && targets.length === 1 ? coverTarget(user, aimed) : aimed;
+      applySkill(
+        user,
+        target,
+        skillId,
+        commandKind,
+        powerMultiplier * (bounce ? 0.8 ** bounceIndex : 1),
+      );
       afterTarget?.(target);
+      if (bounce && lastActionResult?.hit === false) break;
+      bounceIndex++;
     }
   }
 
-  function applySkill(user: MutableBattler, aimed: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill", powerMultiplier = 1): void {
+  function applySkill(
+    user: MutableBattler,
+    aimed: MutableBattler,
+    skillId: SkillId,
+    commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill",
+    powerMultiplier = 1,
+  ): void {
     const skill = lookupSkill(skillId);
     const target = reflectedTarget(user, aimed, skill);
-    if (skill && (skill.effect.kind === "steal" || skill.effect.kind === "scan" || skill.effect.kind === "learnEnemySkill")) {
+    if (
+      skill &&
+      (skill.effect.kind === "steal" ||
+        skill.effect.kind === "scan" ||
+        skill.effect.kind === "learnEnemySkill")
+    ) {
       applySpecialSkill(user, target, skill, commandKind);
       return;
     }
+    const g = gen1 ? undefined : skill?.battleGimmick,
+      p = g?.pattern,
+      marked = gimmicks.get(target.id, "mark", g?.markKey ?? "motion");
+    if (g?.requiredMark && !marked) {
+      gimmickAnnouncement(
+        user,
+        target,
+        skill!,
+        false,
+        "표식이 없어 후속 공격을 취소했다.",
+      );
+      return;
+    }
+    const candidate =
+      g && ["swap", "relay"].includes(g.pattern)
+        ? gimmickAlly(user, g, g.pattern === "swap")
+        : undefined;
+    const relayReady =
+      !candidate ||
+      p !== "relay" ||
+      skill?.comboActorIds?.length ||
+      (battleFlow === "gauge"
+        ? candidate.gauge >= 100
+        : strictResolution?.actions
+            .slice(strictResolution.index)
+            .some((a) => a.side === "actor" && a.actor.id === candidate.id));
+    const ally = relayReady ? candidate : undefined;
+    const hpBeforeCast = target.hp;
+    let firstHit = true;
     gaugeShiftedTargetId = undefined;
-    for (const multiplier of skill?.hitSequence ?? [1]) {
-      if (user.hp <= 0 || (target.hp <= 0 && skill?.effect.kind === "damage")) break;
-      applySkillHit(user, target, skillId, commandKind, multiplier * powerMultiplier);
+    const sequence = skill?.hitSequence ?? [1];
+    for (let index = 0; index < sequence.length; index++) {
+      let multiplier = sequence[index]!;
+      if (index > 0 && (g?.followOnHit || p === "swap") && !firstHit) break;
+      if (index > 0 && ["swap", "relay"].includes(p ?? "") && !ally) break;
+      const last = index === sequence.length - 1;
+      const mark = gimmicks.get(target.id, "mark", g?.markKey ?? "motion");
+      if (last && g?.consumeMarks && mark)
+        multiplier *= 1 + Math.min(9, mark.stacks) * 0.18;
+      if (index > 0 && ally) {
+        if (p === "swap" && !switchActiveActor(user.recordId, ally.recordId))
+          break;
+        if (p === "relay" && !skill?.comboActorIds?.length) {
+          if (ally.mp < battleSkillMpCostFor(skill!, ally)) break;
+          consumeSkillMp(ally, skillId);
+          ally.gauge = 0;
+          if (strictResolution) {
+            const at = strictResolution.actions.findIndex(
+              (a, i) =>
+                i >= strictResolution!.index &&
+                a.side === "actor" &&
+                a.actor.id === ally.id,
+            );
+            if (at >= 0) strictResolution.actions.splice(at, 1);
+          }
+        }
+        gimmickStrike(ally, target, skill!, multiplier);
+        continue;
+      }
+      if (user.hp <= 0 || (target.hp <= 0 && skill?.effect.kind === "damage"))
+        break;
+      applySkillHit(
+        user,
+        target,
+        skillId,
+        commandKind,
+        multiplier * powerMultiplier,
+      );
+      if (index === 0) firstHit = lastActionResult?.hit === true;
+      if (last && g?.consumeMarks && mark && lastActionResult?.hit)
+        gimmicks.remove(mark);
+      if (
+        lastActionResult?.hit &&
+        g &&
+        ["mark", "marked-spear"].includes(g.pattern) &&
+        !(last && g.consumeMarks)
+      ) {
+        const status =
+          gimmicks.get(target.id, "mark", g.markKey ?? "motion") ??
+          gimmickStatus(user, target, skill!, "mark");
+        status.stacks = Math.min(g.maxStacks ?? 3, status.stacks + 1);
+        gimmicks.set(status);
+      }
+    }
+    if (skill && g) {
+      if (
+        firstHit &&
+        ["air-chase", "sky-crush"].includes(g.pattern) &&
+        target.hp > 0
+      ) {
+        gimmicks.set(gimmickStatus(user, target, skill, "airborne"));
+        shiftGauge(target, -20);
+      }
+      if (
+        firstHit &&
+        lastActionResult?.hit &&
+        ["throw", "sky-crush"].includes(g.pattern)
+      ) {
+        const other = (
+          battlerSide(user) === "actor" ? visibleEnemies() : activeActors()
+        ).find((b) => b !== target && b.hp > 0);
+        if (other) gimmickStrike(user, other, skill, 0.35);
+      }
+      if (firstHit && g.pattern === "zone")
+        gimmicks.set(gimmickStatus(user, target, skill, "zone"));
+      if (firstHit && ["summon", "blood-summon"].includes(g.pattern))
+        gimmicks.set(gimmickStatus(user, user, skill, "summon"));
+      if (hpBeforeCast > 0 && target.hp <= 0) refundGimmickKill(user, skill);
+      const latest = [...timeline].reverse().find(
+        (e) =>
+          e.actionId === currentActionId && e.skillId === skill.id && !e.aside,
+      );
+      if (latest)
+        (
+          latest as { gimmick: BattleTimelineEntrySnapshot["gimmick"] }
+        ).gimmick = {
+          pattern: g.pattern,
+          triggered:
+            firstHit && (!["swap", "relay"].includes(g.pattern) || !!ally),
+          ...(ally ? { allyId: ally.id } : {}),
+        };
     }
     // 게이지 밀기는 타마다 옮기고 문장은 대상당 한 줄.
-    if (skill?.gaugeShift && gaugeShiftedTargetId === target.id && target.hp > 0) {
-      recordSpecial(user, target, skill.gaugeShift < 0 ? `${target.name}의 행동이 늦춰졌다!` : `${target.name}의 행동이 빨라졌다!`);
+    if (
+      skill?.gaugeShift &&
+      gaugeShiftedTargetId === target.id &&
+      target.hp > 0
+    ) {
+      recordSpecial(
+        user,
+        target,
+        skill.gaugeShift < 0
+          ? `${target.name}의 행동이 늦춰졌다!`
+          : `${target.name}의 행동이 빨라졌다!`,
+      );
     }
     gaugeShiftedTargetId = undefined;
   }
@@ -3105,7 +3654,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // 회피 상태는 물리(공격력 계열) 피해 기술만 피한다.
       hitRate: effectKind === "damage" && statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
-      hitMultiplier,
+      hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target):1),
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
@@ -3116,7 +3665,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       gen1AttackerLevel: gen1AttackerLevel(user),
       rng,
     });
-    const result = effectKind === "damage" && affects !== "mp" ? redirectDamageToMp(target, hpBefore, rawResult) : rawResult;
+    const adjusted=effectKind==="damage"?absorbGimmickDamage(user,target,skill,hpBefore,mpBefore,rawResult):rawResult;
+    const result = effectKind === "damage" && affects !== "mp" ? redirectDamageToMp(target, hpBefore, adjusted) : adjusted;
     if (effectKind === "damage" && affects === "hp") noteDamageHit(user, target, result, targetMaxHpBefore, elementMultiplierFor(skill?.elementId, user, target));
     const timelineKind: BattleTimelineEntrySnapshot["kind"] = !result.hit
       ? "miss"
@@ -3126,7 +3676,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           ? "damage"
           : "action";
     recordAction(
-      { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id },
+      {
+        userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
+        ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target)) : {}),
+      },
       timelineKind,
       commandKind,
       effectKind === "healing" || effectKind === "damage" ? affects : undefined,
@@ -3187,7 +3740,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           affects,
         })
       : !accuracyHit
-        ? { hit: false, amount: 0, critical: false }
+        ? { hit: false, amount: 0, critical: false, effectiveness: 1 }
         : applySkillLike(user, target, {
             power,
             statistic,
@@ -3214,6 +3767,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       critical: applied.critical,
       skillName: skill?.name,
       skillId: skill?.id,
+      ...(effectKind === "damage" && applied.hit && "effectiveness" in applied ? effectivenessField(applied.effectiveness) : {}),
     }, timelineKind, commandKind, effectKind === "healing" || effectKind === "damage" ? affects : undefined);
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
@@ -3302,6 +3856,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return Math.max(minimumRate, Math.min(100, Math.round(rate)));
   }
 
+  /** 상성 배율을 결과·타임라인에 싣는다 — 1(보통)이면 싣지 않아 기존 결과 모양이 그대로다. */
+  function effectivenessField(multiplier: number): { effectiveness?: number } {
+    return Number.isFinite(multiplier) && multiplier !== 1 ? { effectiveness: multiplier } : {};
+  }
+
   function normalAttackElementMultiplier(user: MutableBattler, target: MutableBattler): number {
     const elementId = user.equipmentEffects?.attackElementIds?.[0];
     return elementMultiplierFor(elementId, user, target);
@@ -3372,6 +3931,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function cancel(): void {
+    gimmicks.clear();
     if (cancelled) return;
     cancelled = true;
     battleEvents.cancel();

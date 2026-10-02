@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/leather_armor_stand/h48-D.pxg",
+ "id": "leather armor stand",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.093
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 19,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  3,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "D 장식: 가죽 갑옷에 금장 깃·어깨테·가운데 끈·징·밑단·기둥 고리를 더한 십자 거치대(새 기물, 처음부터 그림).",
+ "ok": true
+}

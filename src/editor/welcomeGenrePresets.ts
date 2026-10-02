@@ -10,6 +10,8 @@ import {
 import type { GenrePackId } from "@/project/genrePackId";
 import { gameDesignBriefContext, type GameDesignBrief } from "@/project/gameDesignBrief";
 import { buildActionArenaAuthoringGuide } from "@/ai/actionArenaAuthoring";
+import { BATTLE_SKINS, listActiveBattleSkinIds } from "@/battle/skins/registry";
+import { battleLookMoodGuide } from "@/project/battleLook";
 import {
   createGenreBlankProjectSystemPresetPlan,
   type GenreBlankProjectSystemPresetPlan,
@@ -234,7 +236,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       "한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
       `게임 제목이 아직 「${UNNAMED_GAME_TITLE}」 같은 기본값이면 기획에 맞는 제목을 지어 set_project_settings({title}) 로 저장하세요(타이틀 화면에도 반영됩니다).`,
       ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
-      ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE] : []),
+      ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE, welcomeBattleLookLine()] : []),
       ...(preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
       ...(textAsksForMystery(brief.summary) ? [MYSTERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
@@ -260,6 +262,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     ...requiredTemplateBlock(preset.narrativeHorrorGenre),
     ...(preset.id === "horror-gallery" ? ["", HORROR_GALLERY_AUTHORING_GUIDE] : []),
     ...(preset.id === "school-horror" ? ["", HORROR_CHASE_AUTHORING_GUIDE] : []),
+    ...(preset.packId === "adventure-jrpg" ? ["", welcomeBattleLookLine()] : []),
     "",
     WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
@@ -307,6 +310,26 @@ export const WELCOME_DIALOGUE_LOOK_LINE =
   + "지나가는 마을 사람 잡담은 container:\"bark\"(게임을 안 멈춤), 짧은 대꾸는 balloon, 무전은 corner 로 두고, "
   + "감정이 튀는 대목은 본문 태그 [흔들]…[/]·[크게]…[/]·[쉼:0.5]·[표정:놀람] 을 아껴 쓰세요.";
 
+/**
+ * 첫 제작 때 전투 화면 꾸미기(system.battleLook)를 기획 톤에 맞춰 고르게 하는 지시. 없던 때 조수는 이 칸이 있는 줄 몰라
+ * 어떤 게임이든 기본 「도트 창」 그대로 두었다(2026-10-02). 꾸밈은 도트 측면 스킨에서만 보이므로 그 스킨 id 를 함께 준다.
+ */
+export function welcomeBattleLookLine(): string {
+  const sideSkins = listActiveBattleSkinIds().filter((id) => BATTLE_SKINS[id].motionStyle === "retro");
+  return "전투 화면: 턴제 전투가 있으면 기획 톤에 맞는 전투 화면 프리셋을 set_project_settings 의 battle.look.preset 으로 고르세요. "
+    + "기본 pixel 은 고전 레트로·향수를 노린 게임에만 그대로 둡니다. "
+    + `꾸밈은 도트 측면 전투(battle.uiStyle: ${sideSkins.join("·")}, 기본)에서만 보이고 몬스터 대치(pokemon)에는 보이지 않습니다. `
+    + `분위기 안내: ${battleLookMoodGuide()}. `
+    + "프리셋 위에 accent(#rrggbb 강조색)·party·command 칸을 덧바꿔 게임 색을 맞춰도 됩니다.";
+}
+
+const TURN_BATTLE_INTENT_RE = /전투|턴제|던전|보스|RPG|용사|모험/iu;
+
+/** 자유 문장이 턴제 전투를 시키는지(전투 화면 꾸미기 지시를 붙일지). */
+export function textAsksForTurnBattle(text: string): boolean {
+  return TURN_BATTLE_INTENT_RE.test(text);
+}
+
 /** Free text keeps the user's scope; structured intent selects a recipe later. */
 export function buildWelcomeFreeTextPrompt(userIntent: string): string {
   const intent = userIntent.trim();
@@ -317,6 +340,7 @@ export function buildWelcomeFreeTextPrompt(userIntent: string): string {
     "지금 열려 있는 프로젝트에 이어서 작업한다 — 기존 맵·이벤트·DB 를 먼저 읽고 거기에 얹는다.",
     "사용자가 요청한 범위만 실제 편집 툴로 작성하세요. 구조화된 의도에 맞는 저작 순서를 따르고, 요청하지 않은 NPC·아이템·퀘스트·상점·보스·보상·페이지 수를 할당하지 마세요.",
     ...requiredTemplateBlock(genre ?? undefined),
+    ...(textAsksForTurnBattle(intent) ? ["", welcomeBattleLookLine()] : []),
     "",
     WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",

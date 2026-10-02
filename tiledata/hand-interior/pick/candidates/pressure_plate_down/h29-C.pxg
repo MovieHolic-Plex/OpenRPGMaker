@@ -1,0 +1,39 @@
+// 눌린 압력판 C: 판이 바닥 높이로 가라앉아 앞면·밝은 테 없음, 둘레 홈이 두 줄 폭으로 어둡게 둘러싸고 판은 한 단 어둡게 평평
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+................
+................
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+................
+................
+.11111111111111.
+.10000000000001.
+.10222222222201.
+.10244444444201.
+.10243333334201.
+.10243444434201.
+.10243444434201.
+.10243444434201.
+.10243333334201.
+.10244444444201.
+.10222222222201.
+.10000000000001.
+.00000000000000.

@@ -256,14 +256,13 @@ describe("shared MP validation and target UI", () => {
   });
 
   it.each([
-    { skin: "classic", spriteCount: 0 },
-    { skin: "rm2003", spriteCount: 2 },
+    { skin: "retro2003", spriteCount: 2 },
   ] as const)("selects allies through the shared menu cursor and restores the skill submenu on cancel ($skin)", ({ skin, spriteCount }) => {
     vi.useFakeTimers();
     const project = battleProject();
     addSecondActor(project);
     addSkill(project, { id: "skill_ally_heal", scope: "ally", effect: "healing" });
-    // 대상 메뉴는 아군을 숨기는 정면식과 표시하는 측면식에서 모두 동작한다.
+    // 대상 메뉴는 기본 도트 측면(retro2003)과 창 모양만 다른 측면 스킨에서 모두 동작한다(정면 유리 스킨은 2026-10-02 삭제).
     project.system.battleUiStyle = skin;
     store.replace(project);
     const host = document.createElement("div");

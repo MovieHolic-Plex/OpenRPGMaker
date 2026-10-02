@@ -66,6 +66,15 @@ export function prettyId(id: string): string {
 }
 
 /**
+ * 지운 스킨의 배경 — 정면 다섯(rm2000·dragonquest·mother·mv·vxace)과 창 색만 다르던 측면 다섯(ff·chrono·octopath·bravely·goldensun).
+ * id 는 이미 저장한 적 그룹이 쓸 수 있어 리졸버에 남기고, 새로 고르는 목록에서만 뺀다(2026-10-02).
+ * rm2003 배경은 retro2003 의 기본 배경 id 라 남긴다.
+ */
+const RETIRED_PICKER_IDS: ReadonlySet<string> = new Set(
+  ["rm2000", "dragonquest", "mother", "mv", "vxace", "ff", "chrono", "octopath", "bravely", "goldensun"].map((skin) => `battle-skin-${skin}-backdrop`),
+);
+
+/**
  * 데이터베이스 피커와 이벤트 명령 폼, 그리고 AI 오프닝 툴이 함께 쓰는 리소스 목록의 단일 정본이다.
  * 표시 순서와 장면어 검색 태그가 저작 표면마다 어긋나지 않게 한다.
  */
@@ -157,6 +166,7 @@ export function listDatabaseResourceOptions(
     }
   }
   for (const id of builtinGeneratedResourceIds()) {
+    if (RETIRED_PICKER_IDS.has(id)) continue;
     if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? findSharedPortrait(id)?.name ?? (partyPixelSheet(id) ? partyPixelLabel(partyPixelSheet(id)!) : `${prettyId(id)} <생성>`));
   }
   for (const [id, uploaded] of Object.entries(project.assets.uploaded ?? {})) {

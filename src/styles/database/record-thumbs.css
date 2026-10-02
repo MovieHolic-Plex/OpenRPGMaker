@@ -396,8 +396,7 @@
   margin-top: 8px;
 }
 
-.db-resource-picker-index,
-.db-resource-picker-hue {
+.db-resource-picker-index {
   align-items: center;
   display: grid;
   gap: 8px;

@@ -26,10 +26,10 @@ It does not certify real combat playability.
 
 `adventure-jrpg` selects `adventure-system` (2026-09-26). Before, it applied only
 `system.genre`, so the gear (no AI) produced a blank project with a label. It now
-fills `battleParty: "actors"`, `battleUiStyle: "ff"` (side view, ally sprites),
-`menuUiStyle: "party-first"` and `companions {maxCompanions:3, formation:"line"}`
+fills `battleParty: "actors"`, `menuUiStyle: "party-first"` and `companions {maxCompanions:3, formation:"line"}`
 only when those fields are empty (`??=`), so applying the poster to an open
-project keeps an author's choice. Requirements add `battle-troops`, `lint-errors`
+project keeps an author's choice. The battle method stays the default pixel side
+view — it no longer writes `battleUiStyle` (2026-10-02). Requirements add `battle-troops`, `lint-errors`
 and `reference-integrity`. Evidence: `verify-shots/gap-fixes/c1-before.json`,
 `c1-after.json`, `c4-report.json`.
 

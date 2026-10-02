@@ -1,0 +1,39 @@
+// E: 돌덩이 쌓은 벽 조각에 위에서 아래로 지그재그로 갈라진 큰 금(벌어진 어두운 틈), 돌 사이 모르타르줄
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+..ssssssssssss..
+.sssssssssssss..
+.sssssssssssss..
+.sssssssssssss..
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+@tblock 0 0 stone
+..111111111111..
+.1344310144431..
+.1344301034431..
+.1344300134431..
+1122110011122211
+1344431001344431
+1344310013444331
+1334310001344431
+1122110010112211
+1344431000344431
+1345433100134431
+1334433310013431
+1122111211001211
+1344433310013431
+1334333100033331
+1111111100011111

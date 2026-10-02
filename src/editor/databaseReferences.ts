@@ -129,7 +129,9 @@ export function resourceReferenceMessage(resourceId: string): string | null {
   if (project.database.enemies.some((record) => record.monsterResourceId === resourceId)) return "몬스터가 이 리소스를 사용 중입니다.";
   if (project.database.troops.some((record) => record.previewBackgroundResourceId === resourceId)) return "적 그룹이 이 리소스를 사용 중입니다.";
   if (project.database.battleAnimations.some((record) => record.resourceId === resourceId)) return "전투 애니메이션이 이 리소스를 사용 중입니다.";
-  if (project.system.titleResourceId === resourceId || project.system.systemResourceId === resourceId || project.system.battleSystemResourceId === resourceId) return "시스템 설정이 이 리소스를 사용 중입니다.";
+  // battleSystemResourceId(System2)는 전투가 그림으로 쓰지 않고 고칠 화면도 없다(2026-10-02) — 삭제를 막지 않는다.
+  // 지울 때 그 칸을 비우는 쪽은 resourceManager 의 삭제다.
+  if (project.system.titleResourceId === resourceId || project.system.systemResourceId === resourceId) return "시스템 설정이 이 리소스를 사용 중입니다.";
   if (commandsResourceReference(project, resourceId)) return "이벤트 명령이 이 리소스를 사용 중입니다.";
   return null;
 }

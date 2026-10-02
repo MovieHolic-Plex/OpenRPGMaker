@@ -1,0 +1,2591 @@
+{
+  "actors": 136,
+  "motions": 32,
+  "checks": 13613,
+  "rows": [
+    {
+      "id": "actor_hero",
+      "name": "주인공",
+      "classId": "class_hero",
+      "resource": "charset-battler-actor1-0",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_hero",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_guardian",
+      "name": "수호자",
+      "classId": "class_guardian",
+      "resource": "charset-battler-actor2-0",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_guardian",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_mage",
+      "name": "마도사",
+      "classId": "class_mage",
+      "resource": "charset-battler-actor1-5",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_mage",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_scout",
+      "name": "정찰병",
+      "classId": "class_scout",
+      "resource": "charset-battler-actor4-0",
+      "profile": {
+        "anticipation": 0.5850000000000001,
+        "travel": 0.7,
+        "recovery": 0.675,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_scout",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_cleric",
+      "name": "성직자",
+      "classId": "class_cleric",
+      "resource": "charset-battler-actor1-7",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_cleric",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_ranger",
+      "name": "궁수",
+      "classId": "class_ranger",
+      "resource": "charset-battler-actor2-3",
+      "profile": {
+        "anticipation": 0.9900000000000001,
+        "travel": 1,
+        "recovery": 0.9900000000000001,
+        "reach": 0,
+        "jump": 0.7,
+        "recoil": 0.9,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "ranged",
+        "source": "class_ranger",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_samurai",
+      "name": "사무라이",
+      "classId": "class_samurai",
+      "resource": "charset-battler-actor3-0-samurai",
+      "profile": {
+        "anticipation": 0.7020000000000001,
+        "travel": 0.7,
+        "recovery": 0.81,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_samurai",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_ninja",
+      "name": "닌자",
+      "classId": "class_ninja",
+      "resource": "charset-battler-actor3-2",
+      "profile": {
+        "anticipation": 0.5850000000000001,
+        "travel": 0.7,
+        "recovery": 0.675,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_ninja",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_monk",
+      "name": "무도가",
+      "classId": "class_monk",
+      "resource": "charset-battler-actor3-5",
+      "profile": {
+        "anticipation": 0.8,
+        "travel": 0.85,
+        "recovery": 0.8,
+        "reach": -8,
+        "jump": 0.8,
+        "recoil": 0.8,
+        "acceleration": 1.25,
+        "returnMode": "step",
+        "style": "martial",
+        "source": "class_monk",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_bard",
+      "name": "음유시인",
+      "classId": "class_bard",
+      "resource": "charset-battler-actor3-6",
+      "profile": {
+        "anticipation": 1.215,
+        "travel": 1.1,
+        "recovery": 1.035,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_bard",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_druid",
+      "name": "드루이드",
+      "classId": "class_druid",
+      "resource": "charset-battler-actor3-4",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_druid",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_witch",
+      "name": "마녀",
+      "classId": "class_witch",
+      "resource": "charset-battler-actor4-7",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_witch",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_valkyrie",
+      "name": "발키리",
+      "classId": "class_valkyrie",
+      "resource": "charset-battler-actor1-1",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 0.95,
+        "recovery": 1.05,
+        "reach": 14,
+        "jump": 1.2,
+        "recoil": 0.85,
+        "acceleration": 1.2,
+        "returnMode": "step",
+        "style": "lancer",
+        "source": "class_valkyrie",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_paladin",
+      "name": "성기사",
+      "classId": "class_paladin",
+      "resource": "charset-battler-actor1-2",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_paladin",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_red_mage",
+      "name": "적마도사",
+      "classId": "class_red_mage",
+      "resource": "charset-battler-actor1-3",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_red_mage",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_dark_knight",
+      "name": "암흑기사",
+      "classId": "class_dark_knight",
+      "resource": "charset-battler-actor1-4",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_dark_knight",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_chronomancer",
+      "name": "시공술사",
+      "classId": "class_chronomancer",
+      "resource": "charset-battler-actor1-6",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_chronomancer",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_thief",
+      "name": "도적",
+      "classId": "class_thief",
+      "resource": "charset-battler-actor2-1",
+      "profile": {
+        "anticipation": 0.5850000000000001,
+        "travel": 0.7,
+        "recovery": 0.675,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_thief",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_beast_tamer",
+      "name": "야수조련사",
+      "classId": "class_beast_tamer",
+      "resource": "charset-battler-actor2-2",
+      "profile": {
+        "anticipation": 1.2100000000000002,
+        "travel": 1,
+        "recovery": 1.1550000000000002,
+        "reach": 0,
+        "jump": 0.7,
+        "recoil": 0.9,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "ranged",
+        "source": "class_beast_tamer",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_pirate",
+      "name": "해적",
+      "classId": "class_pirate",
+      "resource": "charset-battler-actor2-4",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_pirate",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_sorceress",
+      "name": "마녀술사",
+      "classId": "class_sorceress",
+      "resource": "charset-battler-actor2-5",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_sorceress",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_elf_archer",
+      "name": "엘프 궁사",
+      "classId": "class_elf_archer",
+      "resource": "charset-battler-actor2-6",
+      "profile": {
+        "anticipation": 0.9900000000000001,
+        "travel": 1,
+        "recovery": 0.9900000000000001,
+        "reach": 0,
+        "jump": 0.7,
+        "recoil": 0.9,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "ranged",
+        "source": "class_elf_archer",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_hunter",
+      "name": "사냥꾼",
+      "classId": "class_hunter",
+      "resource": "charset-battler-actor2-7",
+      "profile": {
+        "anticipation": 0.9900000000000001,
+        "travel": 1,
+        "recovery": 0.9900000000000001,
+        "reach": 0,
+        "jump": 0.7,
+        "recoil": 0.9,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "ranged",
+        "source": "class_hunter",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_brawler",
+      "name": "권투가",
+      "classId": "class_brawler",
+      "resource": "charset-battler-actor3-1",
+      "profile": {
+        "anticipation": 0.8,
+        "travel": 0.85,
+        "recovery": 0.8,
+        "reach": -8,
+        "jump": 0.8,
+        "recoil": 0.8,
+        "acceleration": 1.25,
+        "returnMode": "step",
+        "style": "martial",
+        "source": "class_brawler",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_martial_artist",
+      "name": "무술가",
+      "classId": "class_martial_artist",
+      "resource": "charset-battler-actor3-3",
+      "profile": {
+        "anticipation": 0.8,
+        "travel": 0.85,
+        "recovery": 0.8,
+        "reach": -8,
+        "jump": 0.8,
+        "recoil": 0.8,
+        "acceleration": 1.25,
+        "returnMode": "step",
+        "style": "martial",
+        "source": "class_martial_artist",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_general",
+      "name": "장군",
+      "classId": "class_general",
+      "resource": "charset-battler-actor3-7",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_general",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_prince",
+      "name": "왕자 기사",
+      "classId": "class_prince",
+      "resource": "charset-battler-actor4-1",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_prince",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_berserker",
+      "name": "광전사",
+      "classId": "class_berserker",
+      "resource": "charset-battler-actor4-2",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_berserker",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_gunner",
+      "name": "총사",
+      "classId": "class_gunner",
+      "resource": "charset-battler-actor4-3",
+      "profile": {
+        "anticipation": 0.9900000000000001,
+        "travel": 1,
+        "recovery": 0.9900000000000001,
+        "reach": 0,
+        "jump": 0.7,
+        "recoil": 0.9,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "ranged",
+        "source": "class_gunner",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_dancer",
+      "name": "무희",
+      "classId": "class_dancer",
+      "resource": "charset-battler-actor4-4",
+      "profile": {
+        "anticipation": 0.7150000000000001,
+        "travel": 0.7,
+        "recovery": 0.7875000000000001,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_dancer",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_alchemist",
+      "name": "연금술사",
+      "classId": "class_alchemist",
+      "resource": "charset-battler-actor4-5",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_alchemist",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_summoner",
+      "name": "소환사",
+      "classId": "class_summoner",
+      "resource": "charset-battler-actor4-6",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_summoner",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_squire",
+      "name": "견습 기사",
+      "classId": "class_squire",
+      "resource": "charset-battler-people1-0",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_squire",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_flower_girl",
+      "name": "꽃집 아가씨",
+      "classId": "class_flower_girl",
+      "resource": "charset-battler-people1-1",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_flower_girl",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_swordsman",
+      "name": "검객",
+      "classId": "class_swordsman",
+      "resource": "charset-battler-people1-2",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_swordsman",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_scholar",
+      "name": "학자",
+      "classId": "class_scholar",
+      "resource": "charset-battler-people1-3",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_scholar",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_miner",
+      "name": "광부",
+      "classId": "class_miner",
+      "resource": "charset-battler-people1-4",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_miner",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_farmer",
+      "name": "농부",
+      "classId": "class_farmer",
+      "resource": "charset-battler-people1-5",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_farmer",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_elder",
+      "name": "촌장",
+      "classId": "class_elder",
+      "resource": "charset-battler-people1-6",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_elder",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_grandma",
+      "name": "할머니",
+      "classId": "class_grandma",
+      "resource": "charset-battler-people1-7",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_grandma",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_gunslinger",
+      "name": "건슬링어",
+      "classId": "class_gunslinger",
+      "resource": "charset-battler-people2-0",
+      "profile": {
+        "anticipation": 0.9900000000000001,
+        "travel": 1,
+        "recovery": 0.9900000000000001,
+        "reach": 0,
+        "jump": 0.7,
+        "recoil": 0.9,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "ranged",
+        "source": "class_gunslinger",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_butler",
+      "name": "집사",
+      "classId": "class_butler",
+      "resource": "charset-battler-people2-1",
+      "profile": {
+        "anticipation": 0.5850000000000001,
+        "travel": 0.7,
+        "recovery": 0.675,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_butler",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_priest_monk",
+      "name": "승려",
+      "classId": "class_priest_monk",
+      "resource": "charset-battler-people2-2",
+      "profile": {
+        "anticipation": 0.8800000000000001,
+        "travel": 0.85,
+        "recovery": 0.8400000000000001,
+        "reach": -8,
+        "jump": 0.8,
+        "recoil": 0.8,
+        "acceleration": 1.25,
+        "returnMode": "step",
+        "style": "martial",
+        "source": "class_priest_monk",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_gypsy",
+      "name": "방랑 점술사",
+      "classId": "class_gypsy",
+      "resource": "charset-battler-people2-3",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_gypsy",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_sword_dancer",
+      "name": "검무사",
+      "classId": "class_sword_dancer",
+      "resource": "charset-battler-people2-4",
+      "profile": {
+        "anticipation": 0.65,
+        "travel": 0.7,
+        "recovery": 0.75,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_sword_dancer",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_gambler",
+      "name": "도박사",
+      "classId": "class_gambler",
+      "resource": "charset-battler-people2-5",
+      "profile": {
+        "anticipation": 0.5850000000000001,
+        "travel": 0.7,
+        "recovery": 0.675,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_gambler",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_seraph",
+      "name": "천사",
+      "classId": "class_seraph",
+      "resource": "charset-battler-people2-6",
+      "profile": {
+        "anticipation": 1.265,
+        "travel": 1.2,
+        "recovery": 1.3125,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_seraph",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_fairy",
+      "name": "요정",
+      "classId": "class_fairy",
+      "resource": "charset-battler-people2-7",
+      "profile": {
+        "anticipation": 1.265,
+        "travel": 1.2,
+        "recovery": 1.3125,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_fairy",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_king",
+      "name": "국왕",
+      "classId": "class_king",
+      "resource": "charset-battler-people3-0",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_king",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_merchant",
+      "name": "상인",
+      "classId": "class_merchant",
+      "resource": "charset-battler-people3-1",
+      "profile": {
+        "anticipation": 1.215,
+        "travel": 1.1,
+        "recovery": 1.035,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_merchant",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_noble",
+      "name": "귀족",
+      "classId": "class_noble",
+      "resource": "charset-battler-people3-2",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_noble",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_princess",
+      "name": "공주",
+      "classId": "class_princess",
+      "resource": "charset-battler-people3-3",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_princess",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_archmage",
+      "name": "대마법사",
+      "classId": "class_archmage",
+      "resource": "charset-battler-people3-4",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_archmage",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_heavy_knight",
+      "name": "중갑병",
+      "classId": "class_heavy_knight",
+      "resource": "charset-battler-people3-5",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_heavy_knight",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_mercenary",
+      "name": "용병",
+      "classId": "class_mercenary",
+      "resource": "charset-battler-people3-6",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_mercenary",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_dragoon",
+      "name": "용기사",
+      "classId": "class_dragoon",
+      "resource": "charset-battler-people3-7",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 0.95,
+        "recovery": 1.05,
+        "reach": 14,
+        "jump": 1.2,
+        "recoil": 0.85,
+        "acceleration": 1.2,
+        "returnMode": "step",
+        "style": "lancer",
+        "source": "class_dragoon",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_villager",
+      "name": "마을 청년",
+      "classId": "class_villager",
+      "resource": "charset-battler-people4-0",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_villager",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_tribal",
+      "name": "부족 전사",
+      "classId": "class_tribal",
+      "resource": "charset-battler-people4-1",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_tribal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_fortune_teller",
+      "name": "점성술사",
+      "classId": "class_fortune_teller",
+      "resource": "charset-battler-people4-2",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_fortune_teller",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_sailor",
+      "name": "뱃사람",
+      "classId": "class_sailor",
+      "resource": "charset-battler-people4-3",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_sailor",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_monk_elder",
+      "name": "노승",
+      "classId": "class_monk_elder",
+      "resource": "charset-battler-people4-4",
+      "profile": {
+        "anticipation": 0.8800000000000001,
+        "travel": 0.85,
+        "recovery": 0.8400000000000001,
+        "reach": -8,
+        "jump": 0.8,
+        "recoil": 0.8,
+        "acceleration": 1.25,
+        "returnMode": "step",
+        "style": "martial",
+        "source": "class_monk_elder",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_noblewoman",
+      "name": "귀부인",
+      "classId": "class_noblewoman",
+      "resource": "charset-battler-people4-5",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_noblewoman",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_nomad",
+      "name": "유목민",
+      "classId": "class_nomad",
+      "resource": "charset-battler-people4-6",
+      "profile": {
+        "anticipation": 0.9900000000000001,
+        "travel": 1,
+        "recovery": 0.9900000000000001,
+        "reach": 0,
+        "jump": 0.7,
+        "recoil": 0.9,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "ranged",
+        "source": "class_nomad",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_nun",
+      "name": "수녀",
+      "classId": "class_nun",
+      "resource": "charset-battler-people4-7",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_nun",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_jester",
+      "name": "광대",
+      "classId": "class_jester",
+      "resource": "charset-battler-people5-0",
+      "profile": {
+        "anticipation": 0.5850000000000001,
+        "travel": 0.7,
+        "recovery": 0.675,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_jester",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_girl_alchemist",
+      "name": "꼬마 발명가",
+      "classId": "class_girl_alchemist",
+      "resource": "charset-battler-people5-1",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_girl_alchemist",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_ronin",
+      "name": "낭인",
+      "classId": "class_ronin",
+      "resource": "charset-battler-people5-2",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_ronin",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_shrine_maiden",
+      "name": "무녀",
+      "classId": "class_shrine_maiden",
+      "resource": "charset-battler-people5-3",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_shrine_maiden",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_desert_warrior",
+      "name": "사막 전사",
+      "classId": "class_desert_warrior",
+      "resource": "charset-battler-people5-4",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_desert_warrior",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_maid",
+      "name": "메이드",
+      "classId": "class_maid",
+      "resource": "charset-battler-people5-5",
+      "profile": {
+        "anticipation": 0.5850000000000001,
+        "travel": 0.7,
+        "recovery": 0.675,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_maid",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_hermit",
+      "name": "은자",
+      "classId": "class_hermit",
+      "resource": "charset-battler-people5-6",
+      "profile": {
+        "anticipation": 1.4850000000000003,
+        "travel": 1.1,
+        "recovery": 1.2075,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_hermit",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_old_warrior",
+      "name": "노병",
+      "classId": "class_old_warrior",
+      "resource": "charset-battler-people5-7",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_old_warrior",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_dog",
+      "name": "충견",
+      "classId": "class_dog",
+      "resource": "party-pixel-animal-0",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_dog",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_cat",
+      "name": "고양이",
+      "classId": "class_cat",
+      "resource": "party-pixel-animal-1",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_cat",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_rooster",
+      "name": "수탉",
+      "classId": "class_rooster",
+      "resource": "party-pixel-animal-2",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_rooster",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_sheep",
+      "name": "양",
+      "classId": "class_sheep",
+      "resource": "party-pixel-animal-3",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_sheep",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_cow",
+      "name": "젖소",
+      "classId": "class_cow",
+      "resource": "party-pixel-animal-4",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_cow",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_horse",
+      "name": "군마",
+      "classId": "class_horse",
+      "resource": "party-pixel-animal-5",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_horse",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_tiger",
+      "name": "호랑이",
+      "classId": "class_tiger",
+      "resource": "party-pixel-animal-6",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_tiger",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_lion",
+      "name": "사자",
+      "classId": "class_lion",
+      "resource": "party-pixel-animal-7",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_lion",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_skiff",
+      "name": "쪽배",
+      "classId": "class_skiff",
+      "resource": "party-pixel-vehicles-0",
+      "profile": {
+        "anticipation": 1.25,
+        "travel": 1.4,
+        "recovery": 1.6,
+        "reach": -3,
+        "jump": 0.3,
+        "recoil": 0.25,
+        "acceleration": 0.75,
+        "returnMode": "roll",
+        "style": "vehicle",
+        "source": "class_skiff",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_galleon",
+      "name": "범선",
+      "classId": "class_galleon",
+      "resource": "party-pixel-vehicles-1",
+      "profile": {
+        "anticipation": 1.25,
+        "travel": 1.4,
+        "recovery": 1.6,
+        "reach": -3,
+        "jump": 0.3,
+        "recoil": 0.25,
+        "acceleration": 0.75,
+        "returnMode": "roll",
+        "style": "vehicle",
+        "source": "class_galleon",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_gunboat",
+      "name": "철갑선",
+      "classId": "class_gunboat",
+      "resource": "party-pixel-vehicles-2",
+      "profile": {
+        "anticipation": 1.25,
+        "travel": 1.4,
+        "recovery": 1.6,
+        "reach": -3,
+        "jump": 0.3,
+        "recoil": 0.25,
+        "acceleration": 0.75,
+        "returnMode": "roll",
+        "style": "vehicle",
+        "source": "class_gunboat",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_balloon",
+      "name": "열기구",
+      "classId": "class_balloon",
+      "resource": "party-pixel-vehicles-3",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_balloon",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_drill",
+      "name": "굴착기",
+      "classId": "class_drill",
+      "resource": "party-pixel-vehicles-4",
+      "profile": {
+        "anticipation": 1.25,
+        "travel": 1.4,
+        "recovery": 1.6,
+        "reach": -3,
+        "jump": 0.3,
+        "recoil": 0.25,
+        "acceleration": 0.75,
+        "returnMode": "roll",
+        "style": "vehicle",
+        "source": "class_drill",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_tank",
+      "name": "전차",
+      "classId": "class_tank",
+      "resource": "party-pixel-vehicles-5",
+      "profile": {
+        "anticipation": 1.25,
+        "travel": 1.4,
+        "recovery": 1.6,
+        "reach": -3,
+        "jump": 0.3,
+        "recoil": 0.25,
+        "acceleration": 0.75,
+        "returnMode": "roll",
+        "style": "vehicle",
+        "source": "class_tank",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_airship",
+      "name": "비공정",
+      "classId": "class_airship",
+      "resource": "party-pixel-vehicles-6",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_airship",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_ufo",
+      "name": "미확인 비행체",
+      "classId": "class_ufo",
+      "resource": "party-pixel-vehicles-7",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_ufo",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_slime_pal",
+      "name": "슬라임",
+      "classId": "class_slime_pal",
+      "resource": "party-pixel-monster1-0",
+      "profile": {
+        "anticipation": 1.3,
+        "travel": 0.9,
+        "recovery": 1.25,
+        "reach": -7,
+        "jump": 0.65,
+        "recoil": 1.5,
+        "acceleration": 1.3,
+        "returnMode": "hop",
+        "style": "soft",
+        "source": "class_slime_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_demon",
+      "name": "붉은 악마",
+      "classId": "class_demon",
+      "resource": "party-pixel-monster1-1",
+      "profile": {
+        "anticipation": 1.35,
+        "travel": 1.1,
+        "recovery": 1.15,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_demon",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_ogre_kid",
+      "name": "꼬마 오거",
+      "classId": "class_ogre_kid",
+      "resource": "party-pixel-monster1-2",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_ogre_kid",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_ghost_pal",
+      "name": "유령",
+      "classId": "class_ghost_pal",
+      "resource": "party-pixel-monster1-3",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_ghost_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_skeleton_pal",
+      "name": "해골병",
+      "classId": "class_skeleton_pal",
+      "resource": "party-pixel-monster1-4",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_skeleton_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_zombie_pal",
+      "name": "좀비",
+      "classId": "class_zombie_pal",
+      "resource": "party-pixel-monster1-5",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_zombie_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_reaper",
+      "name": "사신",
+      "classId": "class_reaper",
+      "resource": "party-pixel-monster1-6",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_reaper",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_minotaur_pal",
+      "name": "수인 전사",
+      "classId": "class_minotaur_pal",
+      "resource": "party-pixel-monster1-7",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_minotaur_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_harpy_pal",
+      "name": "하피",
+      "classId": "class_harpy_pal",
+      "resource": "party-pixel-monster2-0",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_harpy_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_gargoyle_pal",
+      "name": "가고일",
+      "classId": "class_gargoyle_pal",
+      "resource": "party-pixel-monster2-1",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_gargoyle_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_vampire",
+      "name": "흡혈귀",
+      "classId": "class_vampire",
+      "resource": "party-pixel-monster2-2",
+      "profile": {
+        "anticipation": 0.65,
+        "travel": 0.7,
+        "recovery": 0.75,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_vampire",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_demon_knight",
+      "name": "마기사",
+      "classId": "class_demon_knight",
+      "resource": "party-pixel-monster2-3",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_demon_knight",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_golem_pal",
+      "name": "흙 골렘",
+      "classId": "class_golem_pal",
+      "resource": "party-pixel-monster2-4",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_golem_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_dragonewt",
+      "name": "용인",
+      "classId": "class_dragonewt",
+      "resource": "party-pixel-monster2-5",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_dragonewt",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_oni_warrior",
+      "name": "오니 무사",
+      "classId": "class_oni_warrior",
+      "resource": "party-pixel-monster2-6",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_oni_warrior",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_dark_lord",
+      "name": "마족 공작",
+      "classId": "class_dark_lord",
+      "resource": "party-pixel-monster2-7",
+      "profile": {
+        "anticipation": 1.35,
+        "travel": 1.1,
+        "recovery": 1.15,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_dark_lord",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_siren",
+      "name": "세이렌",
+      "classId": "class_siren",
+      "resource": "party-pixel-monster3-0",
+      "profile": {
+        "anticipation": 1.35,
+        "travel": 1.1,
+        "recovery": 1.15,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_siren",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_lamia",
+      "name": "라미아",
+      "classId": "class_lamia",
+      "resource": "party-pixel-monster3-1",
+      "profile": {
+        "anticipation": 1.3,
+        "travel": 0.9,
+        "recovery": 1.25,
+        "reach": -7,
+        "jump": 0.65,
+        "recoil": 1.5,
+        "acceleration": 1.3,
+        "returnMode": "hop",
+        "style": "soft",
+        "source": "class_lamia",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_wraith_mage",
+      "name": "망령술사",
+      "classId": "class_wraith_mage",
+      "resource": "party-pixel-monster3-2",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_wraith_mage",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_succubus",
+      "name": "서큐버스",
+      "classId": "class_succubus",
+      "resource": "party-pixel-monster3-3",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_succubus",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_mound",
+      "name": "개미귀신",
+      "classId": "class_mound",
+      "resource": "party-pixel-monster3-4",
+      "profile": {
+        "anticipation": 1.3,
+        "travel": 0.9,
+        "recovery": 1.25,
+        "reach": -7,
+        "jump": 0.65,
+        "recoil": 1.5,
+        "acceleration": 1.3,
+        "returnMode": "hop",
+        "style": "soft",
+        "source": "class_mound",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_red_dragon_pal",
+      "name": "새끼 화룡",
+      "classId": "class_red_dragon_pal",
+      "resource": "party-pixel-monster3-5",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_red_dragon_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_flame_spirit",
+      "name": "업화",
+      "classId": "class_flame_spirit",
+      "resource": "party-pixel-monster3-6",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_flame_spirit",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_demon_general",
+      "name": "마장군",
+      "classId": "class_demon_general",
+      "resource": "party-pixel-monster3-7",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_demon_general",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_treant",
+      "name": "트렌트",
+      "classId": "class_treant",
+      "resource": "party-pixel-monster4-0",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_treant",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_mushroom",
+      "name": "버섯 요정",
+      "classId": "class_mushroom",
+      "resource": "party-pixel-monster4-1",
+      "profile": {
+        "anticipation": 1.3,
+        "travel": 0.9,
+        "recovery": 1.25,
+        "reach": -7,
+        "jump": 0.65,
+        "recoil": 1.5,
+        "acceleration": 1.3,
+        "returnMode": "hop",
+        "style": "soft",
+        "source": "class_mushroom",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_kappa",
+      "name": "갓파",
+      "classId": "class_kappa",
+      "resource": "party-pixel-monster4-2",
+      "profile": {
+        "anticipation": 0.8,
+        "travel": 0.85,
+        "recovery": 0.8,
+        "reach": -8,
+        "jump": 0.8,
+        "recoil": 0.8,
+        "acceleration": 1.25,
+        "returnMode": "step",
+        "style": "martial",
+        "source": "class_kappa",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_kitsune",
+      "name": "구미호",
+      "classId": "class_kitsune",
+      "resource": "party-pixel-monster4-3",
+      "profile": {
+        "anticipation": 1.35,
+        "travel": 1.1,
+        "recovery": 1.15,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_kitsune",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_tanuki",
+      "name": "너구리 둔갑사",
+      "classId": "class_tanuki",
+      "resource": "party-pixel-monster4-4",
+      "profile": {
+        "anticipation": 0.65,
+        "travel": 0.7,
+        "recovery": 0.75,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_tanuki",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_golem_moss",
+      "name": "이끼 골렘",
+      "classId": "class_golem_moss",
+      "resource": "party-pixel-monster4-5",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_golem_moss",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_sprite_ice",
+      "name": "얼음 요정",
+      "classId": "class_sprite_ice",
+      "resource": "party-pixel-monster4-6",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_sprite_ice",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_mandrake",
+      "name": "만드라고라",
+      "classId": "class_mandrake",
+      "resource": "party-pixel-monster4-7",
+      "profile": {
+        "anticipation": 1.35,
+        "travel": 1.1,
+        "recovery": 1.15,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_mandrake",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_mimic_pal",
+      "name": "미믹",
+      "classId": "class_mimic_pal",
+      "resource": "party-pixel-monster5-0",
+      "profile": {
+        "anticipation": 1.3,
+        "travel": 0.9,
+        "recovery": 1.25,
+        "reach": -7,
+        "jump": 0.65,
+        "recoil": 1.5,
+        "acceleration": 1.3,
+        "returnMode": "hop",
+        "style": "soft",
+        "source": "class_mimic_pal",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_living_armor",
+      "name": "살아있는 갑옷",
+      "classId": "class_living_armor",
+      "resource": "party-pixel-monster5-1",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_living_armor",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_lantern_ghost",
+      "name": "초롱 귀신",
+      "classId": "class_lantern_ghost",
+      "resource": "party-pixel-monster5-2",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_lantern_ghost",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_doll",
+      "name": "저주 인형",
+      "classId": "class_doll",
+      "resource": "party-pixel-monster5-3",
+      "profile": {
+        "anticipation": 0.65,
+        "travel": 0.7,
+        "recovery": 0.75,
+        "reach": -4,
+        "jump": 1.1,
+        "recoil": 1.25,
+        "acceleration": 1.5,
+        "returnMode": "hop",
+        "style": "agile",
+        "source": "class_doll",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_book_demon",
+      "name": "마도서",
+      "classId": "class_book_demon",
+      "resource": "party-pixel-monster5-4",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_book_demon",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_scarecrow",
+      "name": "허수아비",
+      "classId": "class_scarecrow",
+      "resource": "party-pixel-monster5-5",
+      "profile": {
+        "anticipation": 1,
+        "travel": 1,
+        "recovery": 1,
+        "reach": 0,
+        "jump": 1,
+        "recoil": 1,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "balanced",
+        "source": "class_scarecrow",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_clockwork",
+      "name": "태엽 병정",
+      "classId": "class_clockwork",
+      "resource": "party-pixel-monster5-6",
+      "profile": {
+        "anticipation": 1.1,
+        "travel": 1,
+        "recovery": 1.1,
+        "reach": 0,
+        "jump": 0.7,
+        "recoil": 0.9,
+        "acceleration": 1,
+        "returnMode": "step",
+        "style": "ranged",
+        "source": "class_clockwork",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_candle_imp",
+      "name": "촛불 임프",
+      "classId": "class_candle_imp",
+      "resource": "party-pixel-monster5-7",
+      "profile": {
+        "anticipation": 1.3,
+        "travel": 0.9,
+        "recovery": 1.25,
+        "reach": -7,
+        "jump": 0.65,
+        "recoil": 1.5,
+        "acceleration": 1.3,
+        "returnMode": "hop",
+        "style": "soft",
+        "source": "class_candle_imp",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_yeti",
+      "name": "예티",
+      "classId": "class_yeti",
+      "resource": "party-pixel-monster6-0",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_yeti",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_merfolk",
+      "name": "인어 전사",
+      "classId": "class_merfolk",
+      "resource": "party-pixel-monster6-1",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 0.95,
+        "recovery": 1.05,
+        "reach": 14,
+        "jump": 1.2,
+        "recoil": 0.85,
+        "acceleration": 1.2,
+        "returnMode": "step",
+        "style": "lancer",
+        "source": "class_merfolk",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_cyclops",
+      "name": "사이클롭스",
+      "classId": "class_cyclops",
+      "resource": "party-pixel-monster6-2",
+      "profile": {
+        "anticipation": 1.5,
+        "travel": 1.3,
+        "recovery": 1.45,
+        "reach": 2,
+        "jump": 0.6,
+        "recoil": 0.35,
+        "acceleration": 1.4,
+        "returnMode": "step",
+        "style": "heavy",
+        "source": "class_cyclops",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_mothman",
+      "name": "나방 인간",
+      "classId": "class_mothman",
+      "resource": "party-pixel-monster6-3",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_mothman",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_basilisk",
+      "name": "바실리스크",
+      "classId": "class_basilisk",
+      "resource": "party-pixel-monster6-4",
+      "profile": {
+        "anticipation": 1.35,
+        "travel": 1.1,
+        "recovery": 1.15,
+        "reach": 0,
+        "jump": 0.65,
+        "recoil": 1.1,
+        "acceleration": 0.8,
+        "returnMode": "step",
+        "style": "caster",
+        "source": "class_basilisk",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_djinn",
+      "name": "지니",
+      "classId": "class_djinn",
+      "resource": "party-pixel-monster6-5",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_djinn",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_chimera",
+      "name": "키메라",
+      "classId": "class_chimera",
+      "resource": "party-pixel-monster6-6",
+      "profile": {
+        "anticipation": 0.85,
+        "travel": 0.75,
+        "recovery": 0.9,
+        "reach": -10,
+        "jump": 0.85,
+        "recoil": 0.85,
+        "acceleration": 1.4,
+        "returnMode": "hop",
+        "style": "beast",
+        "source": "class_chimera",
+        "contactOffset": 0
+      }
+    },
+    {
+      "id": "actor_dark_angel",
+      "name": "타락 천사",
+      "classId": "class_dark_angel",
+      "resource": "party-pixel-monster6-7",
+      "profile": {
+        "anticipation": 1.15,
+        "travel": 1.2,
+        "recovery": 1.25,
+        "reach": 0,
+        "jump": 0.8,
+        "recoil": 0.6,
+        "acceleration": 0.65,
+        "returnMode": "glide",
+        "style": "floating",
+        "source": "class_dark_angel",
+        "contactOffset": 0
+      }
+    }
+  ]
+}

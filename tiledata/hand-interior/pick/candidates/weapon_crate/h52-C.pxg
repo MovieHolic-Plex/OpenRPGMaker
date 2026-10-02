@@ -1,0 +1,33 @@
+// 단순 또렷: 덩이 큰 나무 상자, 입구 윗면 3줄, 칼자루 하나와 도끼 자루 하나만 솟음
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat g gold 4
+@mat h gold 3
+@mat s black 5
+@mat t black 4
+@mat p wood 7
+@mat q wood 6
+@mat r wood 5
+@mat u wood 3
+@mat w wood 2
+@mat v wood 1
+@mat j iron 5
+@mat k iron 3
+@mblock 0 0
+................
+....g.....jj....
+....s.....jq....
+....s......q....
+....t......r....
+...ghg.....r....
+..vvvvvvvvvvvv..
+..vwwwwwwwwwwv..
+..vuwwwwwwwwwv..
+..vppppppppppv..
+..vqqqqqqqqqqv..
+..vqrqqqqrqqqv..
+..vrrrrrrrrrrv..
+..vqqqrqqqqrqv..
+..vrrrrrrrrrrv..
+..vvvvvvvvvvvv..

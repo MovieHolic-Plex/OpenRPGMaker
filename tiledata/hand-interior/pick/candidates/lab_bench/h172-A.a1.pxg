@@ -1,0 +1,78 @@
+// A 설명 충실 — 흰 상판 8행, 현미경·서류·포획 구슬과 앞 서랍을 갖춘 26px 실험대.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A white 4
+@mat B white 5
+@mat C white 3
+@mat D white 2
+@mat E white 1
+@mat a pine 1
+@mat b pine 2
+@mat c pine 3
+@mat d pine 4
+@mat e pine 5
+@mat f dwood 1
+@mat g dwood 2
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat n iron 6
+@mat p linen 5
+@mat q linen 6
+@mat r linen 3
+@mat R red 2
+@mat S red 3
+@mat T red 4
+@mat U red 6
+@layer bench
+@mblock 1 14
+.CAAAAAAAAAAAAAAAAAAAAAAAAAAC.
+CBBBBBBBBBBBBBBBBBBBBBBBBBBBBE
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBE
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBE
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBE
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBE
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBE
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBE
+ACCCCCCCCCCCCCCCCCCCCCCCCCCCDE
+.DDDDDDDDDDDDDDDDDDDDDDDDDDDE.
+.adcddddddddddagcddddddddddba.
+.adcccccccccccagcccccccccccba.
+.adcccammaccccagcccammaccccba.
+.adcccccccccccagcccccccccccba.
+.abbbbbbbbbbbbagbbbbbbbbbbbba.
+.accccccccccccaacccccccccccba.
+.acaggggggggggggggggggggggba.
+.af........................fa.
+@layer equipment
+@mblock 3 6
+.jllllj...
+.lmmnnk...
+.lmmllj...
+..jlkj....
+...jlkj...
+....jljjj.
+....jjmlk.
+..jj..mlk.
+..lmkkmlk.
+...ikkmlk.
+.....jmlk.
+.jlmmmlkj.
+jllllllkji
+.ijjjjjji.
+@mblock 15 16
+.Cqqqq.
+CqqqqqC
+CqllqqC
+.CppppC
+@mblock 24 12
+..TT..
+.TUTTR
+TUTSSR
+TSSSRR
+jjmjjj
+AAnCDj
+.CCDD.

@@ -15,7 +15,8 @@ import battleFixture from "./fixtures/projects/battle-v3.json";
 // 순서가 네 단계라 회귀가 조용히 난다 — 액터별 뒷모습이 빠져도 공용 한 장으로 "그려지긴"
 // 하므로 렌더 성공만 보는 테스트는 통과한다. 그래서 **어느 파일이 붙었는지**를 못 박는다.
 
-type Skin = "pokemon" | "rm2000" | "rm2003" | "classic";
+// "rm2000"·"classic" 은 지운 정면 스킨의 저장값이다 — resolveSkinId 가 기본(retro2003)으로 푼다.
+type Skin = "pokemon" | "rm2000" | "retro2003" | "classic";
 
 function renderField(options: {
   readonly skin?: Skin;
@@ -109,7 +110,7 @@ describe("아군 배틀러 스프라이트 선택", () => {
   });
 
   it.each([undefined, "classic", "rm2000"] as const)(
-    "기본 정면 구도(%s)는 아군을 그리지 않고 적을 유지한다",
+    "기본 도트 측면 구도(%s → retro2003)는 아군을 앞모습으로 세우고 적을 유지한다",
     (skin) => {
       const field = renderField({
         skin,
@@ -117,15 +118,14 @@ describe("아군 배틀러 스프라이트 선택", () => {
       });
 
       const group = field.querySelector<HTMLElement>(".battle-actor-group");
-      expect(group?.dataset.partyFacing).toBe("hidden");
-      expect(group?.dataset.hidden).toBe("true");
-      expect(field.querySelectorAll(".battle-actor")).toHaveLength(0);
-      expect(allyImage(field)).toBeNull();
+      expect(group?.dataset.partyFacing).toBe("front");
+      expect(group?.dataset.hidden).not.toBe("true");
+      expect(field.querySelectorAll(".battle-actor").length).toBeGreaterThan(0);
       expect(field.querySelectorAll(".battle-enemy").length).toBeGreaterThan(0);
     },
   );
 
-  it("기본 정면 구도에서도 파티 상태창의 이름과 HP/MP를 표시한다", () => {
+  it("기본 구도(미설정)에서도 파티 상태창의 이름과 HP/MP를 표시한다", () => {
     const project = deserialize(JSON.stringify(battleFixture));
     delete project.system.battleUiStyle;
     store.replace(project);
@@ -150,7 +150,7 @@ describe("아군 배틀러 스프라이트 선택", () => {
 
   it("명시적 측면 구도는 저작된 아군 전투 시트를 표시한다", () => {
     const field = renderField({
-      skin: "rm2003",
+      skin: "retro2003",
       battleCharacterResourceId: "generated-actor-hero-02-battle",
     });
     const group = field.querySelector<HTMLElement>(".battle-actor-group");

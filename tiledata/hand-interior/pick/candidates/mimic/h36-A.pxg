@@ -1,0 +1,31 @@
+// A 설명충실: 보물상자 몸통 위로 뚜껑이 뒤로 젖혀져 윗니 한 줄·벌어진 입속·분홍 혀·아랫니, 금 띠 몸통
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 5
+@mat d wood 4
+@mat i dwood 2
+@mat k red 1
+@mat r red 2
+@mat t pink 3
+@mat h white 5
+@mat g gold 4
+@mat j gold 1
+@mblock 0 0
+................
+...oooooooooo...
+..owwwwwwwwwwo..
+.ogiiiiiiiiiigo.
+.ogiirrrrrriigo.
+.ohhhhhhhhhhhho.
+.ohkhhkhhkhhkho.
+.okkkkktttkkkko.
+.okkkktttttkkko.
+.ohkhhkhhkhhkho.
+.ohhhhhhhhhhhho.
+.owwwwwwwwwwwwo.
+.ogddddddddddgo.
+.ogdddddjjdddgo.
+.ogdddddjjdddgo.
+.oooooooooooooo.

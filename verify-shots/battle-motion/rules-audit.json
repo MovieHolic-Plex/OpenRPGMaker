@@ -1,0 +1,7165 @@
+{
+  "rows": [
+    {
+      "id": "skill_motion_stationary",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "stationary",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "stationary",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_stationary",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "stationary",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "stationary",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_walk",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "walk",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "walk",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_walk",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "walk",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "walk",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_dash",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "dash",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "dash",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_dash",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "dash",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "dash",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_jump",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "jump",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "jump",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_jump",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "jump",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "jump",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_blink",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "blink",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "blink",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_blink",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "blink",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "blink",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_fire",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 48,
+          "gimmick": {
+            "pattern": "fire",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 48,
+          "gimmick": {
+            "pattern": "fire",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_fire",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "fire",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "fire",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_sky",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "sky",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "sky",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_sky",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "sky",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "sky",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_through",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "through",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "through",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_through",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "through",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "through",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_clones",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 6,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 21,
+          "gimmick": {
+            "pattern": "clones",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 21,
+          "gimmick": {
+            "pattern": "clones",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_clones",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 6,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "clones",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "clones",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_pull",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "pull",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "pull",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_pull",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "pull",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "pull",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_freeze",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 6,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 21,
+          "gimmick": {
+            "pattern": "freeze",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 21,
+          "gimmick": {
+            "pattern": "freeze",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_freeze",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 6,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "freeze",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "freeze",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_counter",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_counter",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_air-chase",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 6,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 31,
+          "gimmick": {
+            "pattern": "air-chase",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 31,
+          "gimmick": {
+            "pattern": "air-chase",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_air-chase",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "air-chase",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "air-chase",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_throw",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "throw",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "throw",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_throw",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "throw",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "throw",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_return-weapon",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 4,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 26
+        },
+        {
+          "kind": "damage",
+          "amount": 31,
+          "gimmick": {
+            "pattern": "return-weapon",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 26
+        },
+        {
+          "kind": "damage",
+          "amount": 31,
+          "gimmick": {
+            "pattern": "return-weapon",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_return-weapon",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 4,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "return-weapon",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "return-weapon",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_bounce",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 48,
+          "gimmick": {
+            "pattern": "bounce",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 48,
+          "gimmick": {
+            "pattern": "bounce",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_bounce",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "bounce",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "bounce",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_orbit",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "orbit",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "orbit",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_orbit",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "orbit",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "orbit",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_trap",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 2,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 48,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 48,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": true,
+            "source": "periodic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_trap",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 2,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false,
+            "source": "periodic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_mark",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 6,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 42,
+          "gimmick": {
+            "pattern": "mark",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 42,
+          "gimmick": {
+            "pattern": "mark",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_mark",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 6,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "mark",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "mark",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_absorb",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_absorb",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_cover",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 1,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_cover",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 1,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_swap",
+      "miss": false,
+      "commands": 1,
+      "turn": 3,
+      "hits": 2,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 29
+        },
+        {
+          "kind": "damage",
+          "amount": 32,
+          "gimmick": {
+            "pattern": "swap",
+            "triggered": true,
+            "allyId": "actor_mage"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_swap",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "swap",
+            "triggered": false,
+            "allyId": "actor_mage"
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "swap",
+            "triggered": false,
+            "allyId": "actor_mage"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_relay",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 4,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 29
+        },
+        {
+          "kind": "damage",
+          "amount": 34,
+          "gimmick": {
+            "pattern": "relay",
+            "triggered": true,
+            "allyId": "actor_guardian"
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 29
+        },
+        {
+          "kind": "damage",
+          "amount": 34,
+          "gimmick": {
+            "pattern": "relay",
+            "triggered": true,
+            "allyId": "actor_guardian"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_relay",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "relay",
+            "triggered": false,
+            "allyId": "actor_guardian"
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "relay",
+            "triggered": false,
+            "allyId": "actor_guardian"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_summon",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 3,
+      "misses": 0,
+      "periodic": 3,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 22,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 22,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 22,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true,
+            "source": "periodic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_summon",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 3,
+      "periodic": 3,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": false,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": false,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": false,
+            "source": "periodic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_transform",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_transform",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_charge",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 1,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 66,
+          "gimmick": {
+            "pattern": "charge",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_charge",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 1,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "charge",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_zone",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 5,
+      "misses": 0,
+      "periodic": 3,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 23,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 23,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 23,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true,
+            "source": "periodic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_zone",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_sacrifice",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 4,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 87,
+          "aside": "hpCost"
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "sacrifice",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 87,
+          "aside": "hpCost"
+        },
+        {
+          "kind": "damage",
+          "amount": 52,
+          "gimmick": {
+            "pattern": "sacrifice",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_sacrifice",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 87,
+          "aside": "hpCost"
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "sacrifice",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 87,
+          "aside": "hpCost"
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "sacrifice",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_sky-crush",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 6,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 31,
+          "gimmick": {
+            "pattern": "sky-crush",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 16
+        },
+        {
+          "kind": "damage",
+          "amount": 31,
+          "gimmick": {
+            "pattern": "sky-crush",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_sky-crush",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 2,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "sky-crush",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "sky-crush",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_marked-spear",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 4,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 26
+        },
+        {
+          "kind": "damage",
+          "amount": 37,
+          "gimmick": {
+            "pattern": "marked-spear",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 26
+        },
+        {
+          "kind": "damage",
+          "amount": 37,
+          "gimmick": {
+            "pattern": "marked-spear",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_marked-spear",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 4,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "marked-spear",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "marked-spear",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_mirror-counter",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_mirror-counter",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 0,
+      "misses": 0,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_blood-summon",
+      "miss": false,
+      "commands": 2,
+      "turn": 3,
+      "hits": 7,
+      "misses": 0,
+      "periodic": 1,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 87,
+          "aside": "hpCost"
+        },
+        {
+          "kind": "damage",
+          "amount": 29
+        },
+        {
+          "kind": "damage",
+          "amount": 34,
+          "gimmick": {
+            "pattern": "blood-summon",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 23,
+          "gimmick": {
+            "pattern": "blood-summon",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 87,
+          "aside": "hpCost"
+        },
+        {
+          "kind": "damage",
+          "amount": 29
+        },
+        {
+          "kind": "damage",
+          "amount": 34,
+          "gimmick": {
+            "pattern": "blood-summon",
+            "triggered": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "skill_motion_blood-summon",
+      "miss": true,
+      "commands": 2,
+      "turn": 3,
+      "hits": 2,
+      "misses": 4,
+      "periodic": 0,
+      "gimmicks": [],
+      "facts": [
+        {
+          "kind": "damage",
+          "amount": 87,
+          "aside": "hpCost"
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "blood-summon",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "damage",
+          "amount": 87,
+          "aside": "hpCost"
+        },
+        {
+          "kind": "miss",
+          "amount": 0
+        },
+        {
+          "kind": "miss",
+          "amount": 0,
+          "gimmick": {
+            "pattern": "blood-summon",
+            "triggered": false
+          }
+        }
+      ]
+    }
+  ],
+  "branches": [
+    {
+      "name": "counter contact",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "받아내기 반격",
+          "skillId": "skill_motion_counter",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "message": "받아내기 반격: 준비!",
+          "skillId": "skill_motion_counter",
+          "skillName": "받아내기 반격",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 29,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "counter",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "userId": "actor_hero",
+          "targetId": "enemy-1",
+          "actionId": 2,
+          "sequence": 3
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 52,
+          "critical": false,
+          "skillName": "받아내기 반격",
+          "skillId": "skill_motion_counter",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 4,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 4,
+          "sequence": 5
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 5,
+          "sequence": 6
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 6,
+          "sequence": 7
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 7,
+          "sequence": 8
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 8,
+          "sequence": 9
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 9,
+          "sequence": 10
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 631,
+          "maxHp": 726,
+          "mp": 51,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "hit"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99947,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "counter miss",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "받아내기 반격",
+          "skillId": "skill_motion_counter",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "message": "받아내기 반격: 준비!",
+          "skillId": "skill_motion_counter",
+          "skillName": "받아내기 반격",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 3,
+          "sequence": 3
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 4
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 5
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 6
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 7
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 8
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 51,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99999,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "matching absorption",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "흡수 반사",
+          "skillId": "skill_motion_absorb",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "message": "흡수 반사: 준비!",
+          "skillId": "skill_motion_absorb",
+          "skillName": "흡수 반사",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "message": "주인공: 47 흡수 (47 저장)!",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 3
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 47,
+          "critical": false,
+          "skillName": "흡수 반사",
+          "skillId": "skill_motion_absorb",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 4,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 47,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 6
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 23,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 8
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 23,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 9
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 633,
+          "maxHp": 726,
+          "mp": 41,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "hit"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99952,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 2
+    },
+    {
+      "name": "mismatched absorption",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "흡수 반사",
+          "skillId": "skill_motion_absorb",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "message": "흡수 반사: 준비!",
+          "skillId": "skill_motion_absorb",
+          "skillName": "흡수 반사",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 47,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "흡수 반사",
+          "skillId": "skill_motion_absorb",
+          "actionId": 3,
+          "sequence": 3,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "message": "흡수 반사: 준비!",
+          "skillId": "skill_motion_absorb",
+          "skillName": "흡수 반사",
+          "commandKind": "skill",
+          "actionId": 3,
+          "sequence": 4,
+          "gimmick": {
+            "pattern": "absorb",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 47,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 6
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 23,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 8
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 23,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 9
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 586,
+          "maxHp": 726,
+          "mp": 41,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "hit"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99999,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 2
+    },
+    {
+      "name": "mirror three returns",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "거울 반격",
+          "skillId": "skill_motion_mirror-counter",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "message": "거울 반격: 준비!",
+          "skillId": "skill_motion_mirror-counter",
+          "skillName": "거울 반격",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "message": "주인공: 47 흡수 (47 저장)!",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 3
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 15,
+          "critical": false,
+          "skillName": "거울 반격",
+          "skillId": "skill_motion_mirror-counter",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 4,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 15,
+          "critical": false,
+          "skillName": "거울 반격",
+          "skillId": "skill_motion_mirror-counter",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 5,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 17,
+          "critical": false,
+          "skillName": "거울 반격",
+          "skillId": "skill_motion_mirror-counter",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 6,
+          "gimmick": {
+            "pattern": "mirror-counter",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 47,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 8
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 23,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 9
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 10
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 23,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 11
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 633,
+          "maxHp": 726,
+          "mp": 41,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "hit"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99952,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 2
+    },
+    {
+      "name": "orbit requires mark",
+      "timeline": [
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "message": "표식이 없어 후속 공격을 취소했다.",
+          "skillId": "skill_motion_orbit",
+          "skillName": "궤도 수렴",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "orbit",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 1
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 3,
+          "sequence": 2
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 3
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 4
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 6
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 7
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 53,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99999,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "orbit marked",
+      "timeline": [
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 16,
+          "critical": false,
+          "skillName": "표식 회수",
+          "skillId": "skill_motion_mark",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 0
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 16,
+          "critical": false,
+          "skillName": "표식 회수",
+          "skillId": "skill_motion_mark",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 1
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 31,
+          "critical": false,
+          "skillName": "표식 회수",
+          "skillId": "skill_motion_mark",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 2,
+          "gimmick": {
+            "pattern": "mark",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 3
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 48,
+          "critical": false,
+          "skillName": "궤도 수렴",
+          "skillId": "skill_motion_orbit",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 4,
+          "gimmick": {
+            "pattern": "orbit",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 6
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 8
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 9
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 39,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99888,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 2
+    },
+    {
+      "name": "trap avoidance",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "설치 기폭",
+          "skillId": "skill_motion_trap",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "message": "설치 기폭: 설치!",
+          "skillId": "skill_motion_trap",
+          "skillName": "설치 기폭",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "message": "설치물을 피했다.",
+          "skillId": "skill_motion_trap",
+          "skillName": "설치 기폭",
+          "commandKind": "skill",
+          "actionId": 2,
+          "sequence": 3,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 3,
+          "sequence": 4
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 6
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 8
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 9
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 51,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99999,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "trap detonation",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "설치 기폭",
+          "skillId": "skill_motion_trap",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "message": "설치 기폭: 설치!",
+          "skillId": "skill_motion_trap",
+          "skillName": "설치 기폭",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 48,
+          "critical": false,
+          "skillName": "설치 기폭",
+          "skillId": "skill_motion_trap",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 3,
+          "gimmick": {
+            "pattern": "trap",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 4,
+          "sequence": 4
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 5,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 6,
+          "sequence": 6
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 7,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 8,
+          "sequence": 8
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 9,
+          "sequence": 9
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 51,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99951,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "summon persists",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "지속 소환",
+          "skillId": "skill_motion_summon",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 1
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "지속 소환",
+          "skillId": "skill_motion_summon",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 2,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 4,
+          "sequence": 3
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 5,
+          "sequence": 4
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "지속 소환",
+          "skillId": "skill_motion_summon",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 5,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 6
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 9,
+          "sequence": 8
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 10,
+          "sequence": 9
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 51,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99955,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "summon interrupted",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "지속 소환",
+          "skillId": "skill_motion_summon",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "summon",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 44,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 1
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 3,
+          "sequence": 2
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 3
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 4
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 6
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 7
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 616,
+          "maxHp": 726,
+          "mp": 51,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "hit"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99999,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "kill refund",
+      "timeline": [
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 87,
+          "critical": false,
+          "skillName": "대가 환급",
+          "skillId": "skill_motion_sacrifice",
+          "aside": "hpCost",
+          "actionId": 1,
+          "sequence": 0
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 52,
+          "critical": false,
+          "skillName": "대가 환급",
+          "skillId": "skill_motion_sacrifice",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "sacrifice",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "healing",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "skillId": "skill_motion_sacrifice",
+          "skillName": "대가 환급",
+          "amount": -87,
+          "resource": "hp",
+          "aside": "drain",
+          "hit": true,
+          "actionId": 1,
+          "sequence": 2
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 53,
+          "maxMp": 61,
+          "gauge": 0,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "victory"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 0,
+          "maxHp": 1,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": true,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "dead"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "no kill no refund",
+      "timeline": [
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 87,
+          "critical": false,
+          "skillName": "대가 환급",
+          "skillId": "skill_motion_sacrifice",
+          "aside": "hpCost",
+          "actionId": 1,
+          "sequence": 0
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 52,
+          "critical": false,
+          "skillName": "대가 환급",
+          "skillId": "skill_motion_sacrifice",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "sacrifice",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 3,
+          "sequence": 3
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 4
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 5
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 6
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 7
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 8
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 639,
+          "maxHp": 726,
+          "mp": 53,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99947,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "cover interception",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_guardian",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "엄호 가로채기",
+          "skillId": "skill_motion_cover",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_guardian",
+          "message": "엄호 가로채기: 준비!",
+          "skillId": "skill_motion_cover",
+          "skillName": "엄호 가로채기",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_guardian",
+          "targetId": "actor_guardian",
+          "commandKind": "defend",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_guardian",
+          "message": "주인공의 엄호!",
+          "skillId": "skill_motion_cover",
+          "skillName": "엄호 가로채기",
+          "commandKind": "skill",
+          "actionId": 3,
+          "sequence": 3,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 29,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 4
+        },
+        {
+          "kind": "counter",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "userId": "actor_hero",
+          "targetId": "enemy-1",
+          "actionId": 3,
+          "sequence": 5
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 52,
+          "critical": false,
+          "skillName": "엄호 가로채기",
+          "skillId": "skill_motion_cover",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 6,
+          "gimmick": {
+            "pattern": "cover",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_guardian",
+          "targetId": "actor_guardian",
+          "commandKind": "defend",
+          "actionId": 6,
+          "sequence": 8
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 7,
+          "sequence": 9
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 8,
+          "sequence": 10
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_guardian",
+          "targetId": "actor_guardian",
+          "commandKind": "defend",
+          "actionId": 9,
+          "sequence": 11
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 10,
+          "sequence": 12
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 11,
+          "sequence": 13
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_guardian",
+          "targetId": "actor_guardian",
+          "commandKind": "defend",
+          "actionId": 12,
+          "sequence": 14
+        },
+        {
+          "kind": "damage",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": true,
+          "amount": 22,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 13,
+          "sequence": 15
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 631,
+          "maxHp": 726,
+          "mp": 51,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "hit"
+        },
+        {
+          "id": "actor_guardian",
+          "recordId": "actor_guardian",
+          "name": "수호자",
+          "row": "front",
+          "classId": "class_guardian",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor2-00",
+          "battleCharacterResourceId": "charset-battler-actor2-0",
+          "characterResourceId": "easyrpg-charset-actor2",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 61,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 132,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99947,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "zone inside",
+      "timeline": [
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 52,
+          "critical": false,
+          "skillName": "장판",
+          "skillId": "skill_motion_zone",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 1
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 23,
+          "critical": false,
+          "skillName": "장판",
+          "skillId": "skill_motion_zone",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 2,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 4,
+          "sequence": 3
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 5,
+          "sequence": 4
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 23,
+          "critical": false,
+          "skillName": "장판",
+          "skillId": "skill_motion_zone",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 5,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true,
+            "source": "periodic"
+          }
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 6
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 7
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 9,
+          "sequence": 8
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 10,
+          "sequence": 9
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 53,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99901,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "zone leave",
+      "timeline": [
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 52,
+          "critical": false,
+          "skillName": "장판",
+          "skillId": "skill_motion_zone",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "zone",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "move",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "userId": "enemy-1",
+          "targetId": "enemy-1",
+          "actionId": 2,
+          "sequence": 1
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 3,
+          "sequence": 3
+        },
+        {
+          "kind": "move",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "userId": "enemy-1",
+          "targetId": "enemy-1",
+          "actionId": 4,
+          "sequence": 4
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 6
+        },
+        {
+          "kind": "move",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "userId": "enemy-1",
+          "targetId": "enemy-1",
+          "actionId": 6,
+          "sequence": 7
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 8
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 9
+        },
+        {
+          "kind": "move",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "userId": "enemy-1",
+          "targetId": "enemy-1",
+          "actionId": 8,
+          "sequence": 10
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 11
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 53,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99947,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 320,
+          "battleY": 240,
+          "authoredX": 320,
+          "authoredY": 240,
+          "moved": {
+            "durationMs": 400,
+            "sequence": 4
+          },
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "relay without ready ally",
+      "timeline": [
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 29,
+          "critical": false,
+          "skillName": "협공 이어받기",
+          "skillId": "skill_motion_relay",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "relay",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 1
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 3,
+          "sequence": 2
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 3
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 4
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 5
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 6
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 7
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 47,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99970,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "transform expires",
+      "timeline": [
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 0,
+          "critical": false,
+          "skillName": "변신",
+          "skillId": "skill_motion_transform",
+          "actionId": 1,
+          "sequence": 0,
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "special",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "message": "변신: 변신!",
+          "skillId": "skill_motion_transform",
+          "skillName": "변신",
+          "commandKind": "skill",
+          "actionId": 1,
+          "sequence": 1,
+          "gimmick": {
+            "pattern": "transform",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 2
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 3,
+          "sequence": 3
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 4
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 5
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 6
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 7
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 8
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 51,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99999,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack"
+        }
+      ],
+      "commands": 1
+    },
+    {
+      "name": "failed mark consumption",
+      "timeline": [
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 16,
+          "critical": false,
+          "skillName": "표식 회수",
+          "skillId": "skill_motion_mark",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 0
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 16,
+          "critical": false,
+          "skillName": "표식 회수",
+          "skillId": "skill_motion_mark",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 1
+        },
+        {
+          "kind": "damage",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": true,
+          "amount": 31,
+          "critical": false,
+          "skillName": "표식 회수",
+          "skillId": "skill_motion_mark",
+          "resource": "hp",
+          "actionId": 1,
+          "sequence": 2,
+          "gimmick": {
+            "pattern": "mark",
+            "triggered": true
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 2,
+          "sequence": 3
+        },
+        {
+          "kind": "miss",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "표식 귀환창",
+          "skillId": "skill_motion_marked-spear",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 4
+        },
+        {
+          "kind": "miss",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "enemy-1",
+          "commandKind": "skill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "표식 귀환창",
+          "skillId": "skill_motion_marked-spear",
+          "resource": "hp",
+          "actionId": 3,
+          "sequence": 5,
+          "gimmick": {
+            "pattern": "marked-spear",
+            "triggered": false
+          }
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 4,
+          "sequence": 6
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 5,
+          "sequence": 7
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 6,
+          "sequence": 8
+        },
+        {
+          "kind": "action",
+          "side": "actor",
+          "userRecordId": "actor_hero",
+          "targetId": "actor_hero",
+          "commandKind": "defend",
+          "actionId": 7,
+          "sequence": 9
+        },
+        {
+          "kind": "miss",
+          "side": "enemy",
+          "userRecordId": "enemy_slime",
+          "targetId": "actor_hero",
+          "commandKind": "enemySkill",
+          "hit": false,
+          "amount": 0,
+          "critical": false,
+          "skillName": "제자리 발사",
+          "skillId": "skill_motion_incoming",
+          "resource": "hp",
+          "actionId": 8,
+          "sequence": 10
+        }
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "recordId": "actor_hero",
+          "name": "주인공",
+          "row": "front",
+          "classId": "class_hero",
+          "level": 22,
+          "faceResourceId": "easyrpg-faceset-actor1-00",
+          "battleCharacterResourceId": "charset-battler-actor1-0",
+          "characterResourceId": "easyrpg-charset-actor1",
+          "hp": 726,
+          "maxHp": 726,
+          "mp": 33,
+          "maxMp": 61,
+          "gauge": 100,
+          "battleX": 252,
+          "battleY": 96,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_absorb",
+            "skill_motion_air-chase",
+            "skill_motion_blink",
+            "skill_motion_blood-summon",
+            "skill_motion_bounce",
+            "skill_motion_charge",
+            "skill_motion_clones",
+            "skill_motion_counter",
+            "skill_motion_cover",
+            "skill_motion_dash",
+            "skill_motion_fire",
+            "skill_motion_freeze",
+            "skill_motion_jump",
+            "skill_motion_mark",
+            "skill_motion_marked-spear",
+            "skill_motion_mirror-counter",
+            "skill_motion_orbit",
+            "skill_motion_pull",
+            "skill_motion_relay",
+            "skill_motion_return-weapon",
+            "skill_motion_sacrifice",
+            "skill_motion_sky",
+            "skill_motion_sky-crush",
+            "skill_motion_stationary",
+            "skill_motion_summon",
+            "skill_motion_swap",
+            "skill_motion_through",
+            "skill_motion_throw",
+            "skill_motion_transform",
+            "skill_motion_trap",
+            "skill_motion_walk",
+            "skill_motion_zone",
+            "skill_attack",
+            "skill_focus",
+            "skill_sword_slash"
+          ],
+          "equipmentEffects": {
+            "doubleAttack": false,
+            "attackAll": false,
+            "accuracy": 100,
+            "criticalRate": 0,
+            "attackElementIds": [],
+            "elementalDefenseIds": [],
+            "stateDefenseIds": [],
+            "stateDefenseMode": "resist",
+            "stateResistanceChance": 0
+          },
+          "effectiveStats": {
+            "attack": 70,
+            "defense": 86,
+            "mind": 62,
+            "agility": 58
+          },
+          "pose": "idle"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "enemy-1",
+          "recordId": "enemy_slime",
+          "name": "슬라임",
+          "hp": 99936,
+          "maxHp": 99999,
+          "mp": 9999,
+          "maxMp": 9999,
+          "gauge": 0,
+          "battleX": 84,
+          "battleY": 112,
+          "authoredX": 168,
+          "authoredY": 112,
+          "defeated": false,
+          "defending": false,
+          "stateIds": [],
+          "stateTurns": {},
+          "skillIds": [
+            "skill_motion_incoming"
+          ],
+          "effectiveStats": {
+            "attack": 15,
+            "defense": 7,
+            "mind": 20,
+            "agility": 1
+          },
+          "pose": "attack",
+          "gimmicks": [
+            {
+              "kind": "mark",
+              "ownerId": "actor_hero",
+              "skillId": "skill_motion_mark",
+              "turnsLeft": 2,
+              "stacks": 3,
+              "stored": 0
+            }
+          ]
+        }
+      ],
+      "commands": 2
+    }
+  ],
+  "checks": 5974,
+  "failures": [],
+  "errors": []
+}

@@ -1,0 +1,31 @@
+// 세 초 윗면의 남쪽 테두리만 정리해 3행 확보; 불꽃·몸통·촛농 유지. 꼭대기 윗면 3행(y=4~6), 왼쪽 3행(y=8~10), 오른쪽 3행(y=9~11).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a linen 3
+@mat b linen 4
+@mat c linen 5
+@mat d linen 6
+@mat e linen 2
+@mat f yellow 6
+@mat g yellow 5
+@mat h orange 3
+@mat i dwood 1
+@mat j linen 1
+@mblock 0 0
+........f.......
+.......ff.......
+.......gh.......
+........i.......
+.......cic......
+......cdabc.....
+......abbba.....
+......bdcba.....
+...cccdbcba.....
+..cdbabdcba.ccc..
+..abbabdcba.ciac.
+..bdbaaccba.abba.
+..cdbbccbcb.dbba.
+.bccdcbbbcbbbaa.
+..bccccbbbbbaae.
+...aaabaaaeeej..

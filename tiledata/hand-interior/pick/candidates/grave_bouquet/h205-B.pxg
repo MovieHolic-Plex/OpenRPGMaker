@@ -1,0 +1,80 @@
+// B: 윗면 지정 2행과 최소 3행의 충돌을 최소 3행 계약 우선으로 해소해 설명을 3행으로 확정; 전체 높이 16px(y=16~31), 흰 꽃·녹색 잎·돌의 결·모든 화소 유지; 꼭대기 윗면 3행(y=17~19)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat s black 4
+@mat f white 4
+@mat l leaf 1
+@mat r linen 3
+@layer stone
+@mblock 0 16
+....ssssssss....
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+...ssssssssss...
+..ssssssssssss..
+..ssssssssssss..
+.ssssssssssssss.
+.ssssssssssssss.
+..ssssssssssss..
+@tblock 4 16
+22222222
+@tblock 3 17
+2555555542
+2555555442
+2555544442
+2544444432
+2544444432
+2544444432
+2544444432
+2544444432
+2544444432
+2444443332
+@tblock 2 27
+255555444332
+244444333332
+@tblock 1 29
+25555544443332
+24444433333332
+@tblock 2 31
+222222222222
+@layer bouquet
+@mblock 0 22
+.....ff.........
+..ff.ffff.......
+.ffffffffff.....
+.ffffff.ffff....
+..ffffffffff....
+...fflfffll.....
+..llllfflll.....
+....lllllr......
+.....llrrll.....
+......rrll......
+@tblock 5 22
+55
+@tblock 2 23
+55.6554
+@tblock 1 24
+5654465564
+554243.5543
+@tblock 2 26
+3434455543
+@tblock 5 27
+.343
+@tblock 6 28
+23
+@tblock 2 28 leaf
+1222..211
+@tblock 4 29 leaf
+12211
+@tblock 5 30 leaf
+12..11
+@tblock 8 31 leaf
+11

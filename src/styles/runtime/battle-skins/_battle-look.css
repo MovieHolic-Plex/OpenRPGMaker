@@ -242,8 +242,9 @@
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="parch"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="parch"] .battle-command:not(:disabled).battle-target-selected {
-  background: rgba(122, 90, 46, 0.2);
-  color: var(--look-acc);
+  /* 글씨는 늘 짙은 갈색 — 강조색은 띠·마름모에만. 밝은 강조색(#ffcc44 등)을 글씨에 쓰면 크림 판 위에서 사라졌다(2026-10-02 조수 실측). */
+  background: color-mix(in srgb, var(--look-acc) 26%, transparent);
+  color: var(--look-text);
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command[data-battle-command-cursor="true"]::before,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command.battle-target-selected::before {
@@ -1403,6 +1404,8 @@
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-letterbox-bottom {
   bottom: 0;
+  /* 아래 띠는 창 밑에 깔린다 — 위에 두면 줄 목록 파티의 마지막 줄·아래쪽 명령이 가려졌다(2026-10-02 조수 실측). */
+  z-index: 2;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-letterbox="on"] .battle-message-window {
   top: 44px;

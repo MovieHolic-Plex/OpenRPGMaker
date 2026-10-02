@@ -1,0 +1,46 @@
+{
+  "rows": [
+    {
+      "outcome": "hit",
+      "left": "112px",
+      "top": "65px",
+      "cell": "-48px -144px",
+      "fx": [
+        "hero_cross"
+      ]
+    },
+    {
+      "outcome": "miss",
+      "left": "112px",
+      "top": "65px",
+      "cell": "-48px -144px",
+      "fx": []
+    },
+    {
+      "outcome": "cancel",
+      "left": "172px",
+      "top": "61px",
+      "cell": "0px 0px",
+      "fx": []
+    }
+  ],
+  "monster": [
+    {
+      "outcome": "hit",
+      "text": "0.6 / 1.7초",
+      "fx": 1
+    },
+    {
+      "outcome": "miss",
+      "text": "0.6 / 1.2초",
+      "fx": 0
+    },
+    {
+      "outcome": "cancel",
+      "text": "0.3 / 0.5초",
+      "fx": 0
+    }
+  ],
+  "errors": [],
+  "canonicalSave": false
+}

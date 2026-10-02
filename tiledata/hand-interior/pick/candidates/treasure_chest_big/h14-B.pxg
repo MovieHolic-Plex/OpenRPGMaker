@@ -1,0 +1,47 @@
+// h14-B 같은 방 화풍: 왕실 상자 붉은 칠 + 금테, 둥근 뚜껑 윗면 밝게, 자물쇠 금판, 보석
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o red 0
+@mat k red 1
+@mat d red 2
+@mat r red 3
+@mat l red 4
+@mat G gold 4
+@mat H gold 5
+@mat I gold 2
+@mat B blue 4
+@mat C blue 5
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+......oooooooooooooooooooo......
+....olllGHllllllllllllGHlllo....
+...ollllGHllllllllllllGHllllo...
+..olllllGHllllllllllllGHlllllo..
+..olllllGHllllllllllllGHlllllo..
+..orrrrrGHrrrrrCCrrrrrGHrrrrro..
+..orrrrrGHrrrrBCCBrrrrGHrrrrro..
+..orrrrrGHrrrrrBBrrrrrGHrrrrro..
+..oddddddGHdddddddddddGHdddddo..
+..oGGGGGGGGGGGGGGGGGGGGGGGGGGo..
+..oIIIIIIIIIIIIIIIIIIIIIIIIIIo..
+..odddddGHdddHHHHHHdddGHdddddo..
+..odddddGHdddGGGGGGdddGHdddddo..
+..odddddGHdddGGooGGdddGHdddddo..
+..odddddGHdddGGooGGdddGHdddddo..
+..odddddGHdddGGGGGGdddGHdddddo..
+..odddddGHdddIIIIIIdddGHdddddo..
+..odddddGHddddddddddddGHdddddo..
+..odddddGHddddddddddddGHdddddo..
+..odddddGHkkkkkkkkkkkkGHdddddo..
+..odddddGHddddddddddddGHdddddo..
+..odddddGHddddddddddddGHdddddo..
+..odddddGHddddddddddddGHdddddo..
+..okkkkkkkkkkkkkkkkkkkkkkkkkko..
+..oooooooooooooooooooooooooooo..

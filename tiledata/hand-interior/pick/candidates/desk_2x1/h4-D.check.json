@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/desk_2x1/h4-D.pxg",
+ "id": "desk 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "v5 몸통 유지, 서랍 아래 칸을 가운데 칸막이로 둘로 나누고 손잡이(밝은 2px)·아래 그림자 줄을 넣어 서랍으로 읽히게",
+ "ok": true
+}

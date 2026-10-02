@@ -112,7 +112,7 @@ describe("xBR 2배 커널", () => {
 describe("런타임 — 필드의 액터 스프라이트", () => {
   function renderField(battleCharacterResourceId: string): HTMLElement {
     const project = deserialize(JSON.stringify(battleFixture));
-    (project.system as { battleUiStyle?: string }).battleUiStyle = "ff";
+    (project.system as { battleUiStyle?: string }).battleUiStyle = "retro2003";
     store.replace(project);
     const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: true, canLose: true, rng: () => 0.5 });
     const snapshot: BattleSnapshot = runtime.snapshot();

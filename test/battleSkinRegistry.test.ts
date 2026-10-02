@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, battleSkinFamily, getBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, battleSkinFamily, getBattleSkin, isRetiredBattleSkinId, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId, retiredSkinLookWindow } from "@/battle/skins/registry";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBlankProject } from "@/project/defaults";
 import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
@@ -7,37 +7,32 @@ import { defaultSystem } from "@/project/defaults/defaultDatabase";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 
 describe("battle skin registry", () => {
-  it("기존 12종과 retro2003을 합쳐 정확히 13개 스킨을 노출한다", () => {
-    expect(listBattleSkinIds()).toHaveLength(13);
-    expect(new Set(listBattleSkinIds()).size).toBe(13);
+  it("도트 측면(retro2003)과 포켓몬, 정확히 2개 스킨만 남는다(2026-10-02 RM2003 식만 남기는 정리)", () => {
+    expect([...listBattleSkinIds()].sort()).toEqual(["pokemon", "retro2003"]);
+    expect(listActiveBattleSkinIds()).toEqual(["retro2003", "pokemon"]);
   });
 
-  it("13종 전부 활성 — 몬스터 대치를 뺀 12종은 유리 뼈대(정면·측면)의 변형이다(2026-09-25)", () => {
-    expect(listActiveBattleSkinIds()).toHaveLength(13);
-    expect(listActiveBattleSkinIds().slice(0, 4)).toEqual(["retro2003", "rm2000", "rm2003", "pokemon"]);
-    expect(getBattleSkin("rm2000").layout).toBe("frontview");
-    expect(getBattleSkin("rm2003").layout).toBe("sideview");
-    expect(getBattleSkin("rm2003").showAllySprites).toBe(true);
+  it("남은 스킨의 구도·묶음 계약", () => {
     for (const id of listBattleSkinIds()) {
       if (id === "pokemon") {
         expect(battleSkinFamily(id)).toBe("pokemon");
+        expect(getBattleSkin(id).layout).toBe("frontview");
         continue;
       }
       const skin = getBattleSkin(id);
       expect(battleSkinFamily(id), id).toBe("glass");
-      // 구도는 뼈대가 가진 둘뿐이고, 아군 스프라이트 노출은 구도가 정한다.
-      expect(["frontview", "sideview"], id).toContain(skin.layout);
-      expect(skin.showAllySprites, id).toBe(skin.layout === "sideview");
-      expect(["rows", "boxes", "ring", "minimal"], id).toContain(skin.hudTemplate);
+      expect(skin.layout, id).toBe("sideview");
+      expect(skin.showAllySprites, id).toBe(true);
+      expect(skin.hudTemplate, id).toBe("rows");
     }
   });
 
-  it("같은 구도의 스킨은 배치를 공유한다 — 측면은 도트 측면 뼈대(retro2003), 정면은 rm2000", () => {
+  it("측면 스킨은 모두 도트 측면 뼈대(retro2003)의 배치를 공유한다", () => {
     for (const id of listBattleSkinIds()) {
       if (id === "pokemon") continue;
-      const base = getBattleSkin(id).layout === "sideview" ? "retro2003" : "rm2000";
-      expect(BATTLER_PLACEMENTS[id], id).toBe(BATTLER_PLACEMENTS[base]);
+      expect(BATTLER_PLACEMENTS[id], id).toBe(BATTLER_PLACEMENTS.retro2003);
     }
+    expect(Object.keys(BATTLER_PLACEMENTS).sort()).toEqual([...listBattleSkinIds()].sort());
   });
 
   it("측면 스킨은 모두 도트 측면 전투 뼈대 위의 창 모양이다(2026-10-01)", () => {
@@ -56,48 +51,50 @@ describe("battle skin registry", () => {
     });
   });
 
-  it("HUD 변형: 측면이 도트 뼈대로 옮겨 간 뒤 링·얇은 줄은 쓰는 스킨이 없다(정면 얼굴 카드·줄만)", () => {
+  it("HUD 변형: 측면 스킨은 줄(rows)만, 박스는 포켓몬만 쓴다", () => {
     const huds = new Set(listBattleSkinIds().filter((id) => id !== "pokemon").map((id) => getBattleSkin(id).hudTemplate));
-    expect([...huds].sort()).toEqual(["boxes", "rows"]);
+    expect([...huds]).toEqual(["rows"]);
+    expect(getBattleSkin("pokemon").hudTemplate).toBe("boxes");
   });
 
-  it("mv 스킨이 등록되어 있고 기존 9종은 그대로 유지된다", () => {
-    const ids = listBattleSkinIds();
-    const legacy = [
-      "pokemon", "rm2000", "octopath", "chrono",
-      "bravely", "dragonquest", "ff", "mother", "goldensun",
-    ] as const;
-    for (const id of legacy) expect(ids).toContain(id);
-    expect(ids).toContain("mv");
-    expect(resolveSkinId("mv")).toBe("mv");
+  it("지운 정면 스킨 다섯은 등록되어 있지 않고 저장값은 retro2003 으로 풀린다", () => {
+    const ids = listBattleSkinIds() as string[];
+    for (const id of ["rm2000", "dragonquest", "mother", "mv", "vxace", "classic"]) {
+      expect(ids, id).not.toContain(id);
+      expect(resolveSkinId(id), id).toBe("retro2003");
+      expect(isRetiredBattleSkinId(id), id).toBe(true);
+    }
+    expect(isRetiredBattleSkinId("retro2003")).toBe(false);
+    expect(isRetiredBattleSkinId("pokemon")).toBe(false);
   });
 
-  it("새 프로젝트는 retro2003을 명시적으로 저장한다", () => {
+  it("창 색만 다르던 측면 스킨 여섯도 지웠다 — 저장값은 retro2003 으로 풀리고 창 색은 꾸밈 창으로 옮길 곳을 준다", () => {
+    const ids = listBattleSkinIds() as string[];
+    for (const id of ["rm2003", "octopath", "chrono", "bravely", "ff", "goldensun"]) {
+      expect(ids, id).not.toContain(id);
+      expect(resolveSkinId(id), id).toBe("retro2003");
+      expect(isRetiredBattleSkinId(id), id).toBe(true);
+    }
+    expect(retiredSkinLookWindow("octopath")).toBe("ink");
+    expect(retiredSkinLookWindow("chrono")).toBe("teal");
+    expect(retiredSkinLookWindow("bravely")).toBe("parch");
+    expect(retiredSkinLookWindow("goldensun")).toBe("gold");
+    expect(retiredSkinLookWindow("rm2003")).toBe("veil");
+    expect(retiredSkinLookWindow("ff")).toBeUndefined();
+    expect(retiredSkinLookWindow("retro2003")).toBeUndefined();
+  });
+
+  it("새 프로젝트는 retro2003 으로 열리고, 기본값이라 직렬화에서는 생략된다", () => {
     const project = createBlankProject();
     expect(project.system.battleUiStyle).toBe("retro2003");
-    expect(normalizeSystemRecords(project.system).battleUiStyle).toBe("retro2003");
+    expect(normalizeSystemRecords(project.system).battleUiStyle).toBeUndefined();
   });
 
-  it("미설정 기존 프로젝트는 rm2000으로 열린다", () => {
-    expect(DEFAULT_BATTLE_SKIN_ID).toBe("rm2000");
-    expect(resolveSkinId(undefined)).toBe("rm2000");
+  it("미설정 기존 프로젝트는 retro2003 으로 열린다", () => {
+    expect(DEFAULT_BATTLE_SKIN_ID).toBe("retro2003");
+    expect(resolveSkinId(undefined)).toBe("retro2003");
     expect(defaultSystem().battleUiStyle).toBeUndefined();
-    expect(getBattleSkin("rm2000").showAllySprites).toBe(false);
-  });
-
-  it("rm2003 은 측면 스킨 자기 자신으로 풀리고, 옛 별칭 classic 만 rm2000 으로 간다", () => {
-    expect(resolveSkinId("rm2003")).toBe("rm2003");
-    expect(resolveSkinId("classic")).toBe("rm2000");
-    expect(listBattleSkinIds()).toContain("rm2003");
-  });
-
-  it("vxace 스킨이 등록되어 있다", () => {
-    expect(listBattleSkinIds()).toContain("vxace");
-    expect(resolveSkinId("vxace")).toBe("vxace");
-    expect(getBattleSkin("vxace").layout).toBe("frontview");
-    expect(getBattleSkin("vxace").showAllySprites).toBe(false);
-    expect(getBattleSkin("rm2000").showAllySprites).toBe(false);
-    expect(getBattleSkin("rm2000").layout).toBe("frontview");
+    expect(getBattleSkin("retro2003").showAllySprites).toBe(true);
   });
 
   it("모든 스킨은 label·layout·themeVars를 갖는다", () => {
@@ -111,26 +108,26 @@ describe("battle skin registry", () => {
   });
 
   it("legacy 값을 매핑한다(back-compat)", () => {
-    // 미설정/미지의 값 → 기본 스킨(rm2000). legacy "classic" 은 rm2000 으로 풀리고, rm2003 은 측면 스킨 자신이다.
-    expect(resolveSkinId(undefined)).toBe("rm2000");
-    expect(resolveSkinId("classic")).toBe("rm2000");
-    expect(resolveSkinId("rm2003")).toBe("rm2003");
+    // 미설정/미지의 값·지운 스킨 → 기본 스킨(retro2003).
+    expect(resolveSkinId(undefined)).toBe("retro2003");
+    expect(resolveSkinId("classic")).toBe("retro2003");
+    expect(resolveSkinId("rm2000")).toBe("retro2003");
+    expect(resolveSkinId("rm2003")).toBe("retro2003");
     expect(resolveSkinId("pokemon")).toBe("pokemon");
-    expect(resolveSkinId("octopath")).toBe("octopath");
-    expect(resolveSkinId("bogus")).toBe("rm2000");
+    expect(resolveSkinId("octopath")).toBe("retro2003");
+    expect(resolveSkinId("bogus")).toBe("retro2003");
   });
 
   it("BATTLE_SKINS 키와 id가 일치한다", () => {
     for (const [key, skin] of Object.entries(BATTLE_SKINS)) expect(skin.id).toBe(key);
   });
 
-  it("mv 스킨은 기존 스킨과 동일한 themeVars 키 집합을 쓴다", () => {
-    const mvKeys = Object.keys(getBattleSkin("mv").themeVars).sort();
-    const rm2000Keys = Object.keys(getBattleSkin("rm2000").themeVars).sort();
-    expect(mvKeys).toEqual(rm2000Keys);
-    expect(getBattleSkin("mv").layout).toBe("frontview");
-    expect(getBattleSkin("mv").showAllySprites).toBe(false);
-    expect(getBattleSkin("mv").hudTemplate).toBe("rows");
+  it("측면 스킨은 모두 같은 themeVars 키 집합을 쓴다", () => {
+    const baseKeys = Object.keys(getBattleSkin("retro2003").themeVars).sort();
+    for (const id of listBattleSkinIds()) {
+      if (id === "pokemon") continue;
+      expect(Object.keys(getBattleSkin(id).themeVars).sort(), id).toEqual(baseKeys);
+    }
   });
 });
 
@@ -160,18 +157,38 @@ describe("battle skin assets", () => {
 });
 
 describe("battleUiStyle serialization", () => {
-  it.each(["octopath", "retro2003"] as const)("비-기본 스킨 %s는 그대로 보존한다", (id) => {
+  it("비-기본 스킨 pokemon 은 그대로 보존한다", () => {
     const project = createBlankProject();
-    project.system.battleUiStyle = id;
+    project.system.battleUiStyle = "pokemon";
     const out = normalizeSystemRecords(project.system) as { battleUiStyle?: string };
-    expect(out.battleUiStyle).toBe(id);
+    expect(out.battleUiStyle).toBe("pokemon");
   });
 
-  it("기본 스킨(rm2000)만 생략하고, 명시적 vxace 선택은 보존한다", () => {
+  it("기본 스킨(retro2003)과 지운 스킨은 생략한다", () => {
     const project = createBlankProject();
-    project.system.battleUiStyle = "rm2000";
+    project.system.battleUiStyle = "retro2003";
     expect((normalizeSystemRecords(project.system) as { battleUiStyle?: string }).battleUiStyle).toBeUndefined();
-    project.system.battleUiStyle = "vxace";
-    expect((normalizeSystemRecords(project.system) as { battleUiStyle?: string }).battleUiStyle).toBe("vxace");
+    for (const id of ["vxace", "rm2003", "octopath"]) {
+      (project.system as { battleUiStyle?: string }).battleUiStyle = id;
+      expect((normalizeSystemRecords(project.system) as { battleUiStyle?: string }).battleUiStyle, id).toBeUndefined();
+    }
+  });
+
+  it("지운 측면 스킨의 창 색은 꾸밈을 안 건드린 프로젝트에서만 꾸밈 창으로 옮긴다", () => {
+    const project = createBlankProject();
+    const system = project.system as { battleUiStyle?: string; battleLook?: unknown };
+    system.battleUiStyle = "octopath";
+    delete system.battleLook;
+    expect(normalizeSystemRecords(project.system).battleLook).toEqual({ window: "ink" });
+    system.battleUiStyle = "chrono";
+    system.battleLook = { accent: "#ff0000" };
+    expect(normalizeSystemRecords(project.system).battleLook).toEqual({ window: "teal", accent: "#ff0000" });
+    // 꾸밈 프리셋·창을 이미 고른 프로젝트는 그 꾸밈이 보이고 있었다 — 그대로 둔다.
+    system.battleUiStyle = "goldensun";
+    system.battleLook = { preset: "parch" };
+    expect(normalizeSystemRecords(project.system).battleLook).toEqual({ preset: "parch" });
+    system.battleUiStyle = "ff";
+    delete system.battleLook;
+    expect(normalizeSystemRecords(project.system).battleLook).toBeUndefined();
   });
 });

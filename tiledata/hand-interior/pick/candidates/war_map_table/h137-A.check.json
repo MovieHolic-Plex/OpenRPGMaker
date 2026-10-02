@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/war_map_table/h137-A.pxg",
+ "id": "war map table",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 19,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  6,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "넓은 목제 상판에 펼친 지형 지도·두 진영 말 조각·은빛 단검과 짧은 다리를 손 도트로 신작; 꼭대기 윗면 15행(y=6~20).",
+ "ok": true
+}

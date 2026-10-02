@@ -1,3 +1,21 @@
+import { normalizeEasing, type EasingName } from "@/project/easing";
+import { normalizeBlendMode, type BlendModeName } from "@/project/blendMode";
+import {
+  isParticlePreset,
+  LETTERBOX_DEFAULT_PERCENT,
+  normalizeLetterboxPercent,
+  normalizeParticleDurationMs,
+  normalizeShakeDirection,
+  PARTICLE_PRESETS,
+  SHAKE_DIRECTIONS,
+  SPRITE_POSES,
+  SPRITE_TINT_NAMES,
+  spriteTintHex,
+  type ParticlePreset,
+  type ShakeDirection,
+  type SpritePose,
+} from "@/project/eventCommands/cinematicStaging";
+import { clampEmoteDurationMs, EMOTE_KINDS, type EmoteKind } from "@/project/emotes";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { MAP_BACKGROUND_FLOW_PERCENT_LIMIT } from "@/project/mapBackground";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -12,6 +30,7 @@ export type CutsceneBeat =
   | CutsceneMusicBeat
   | CutsceneFadeBeat
   | CutsceneTintBeat
+  | CutsceneDistortBeat
   | CutsceneBackgroundBeat
   | CutsceneFlashBeat
   | CutsceneAnimationBeat
@@ -22,7 +41,12 @@ export type CutsceneBeat =
   | CutsceneJumpBeat
   | CutsceneSwitchBeat
   | CutsceneTransferBeat
-  | CutsceneEndingBeat;
+  | CutsceneEndingBeat
+  | CutsceneLetterboxBeat
+  | CutsceneParticlesBeat
+  | CutsceneLookBeat
+  | CutsceneEmoteBeat
+  | CutsceneWeatherBeat;
 
 export type CutsceneSayBeat = {
   readonly kind: "say";
@@ -64,6 +88,8 @@ export type CutsceneCameraBeat = {
   readonly offsetX?: number;
   readonly offsetY?: number;
   readonly zoom?: number;
+  /** 팬 곡선(생략 = 일정하게). */
+  readonly easing?: EasingName;
 };
 
 export type CutscenePictureBeat = {
@@ -78,6 +104,10 @@ export type CutscenePictureBeat = {
   readonly opacity?: number;
   readonly rotation?: number;
   readonly durationMs?: number;
+  /** 이동 곡선(생략 = 일정하게). */
+  readonly easing?: EasingName;
+  /** 겹치기(생략 = 보통). 빛기둥·유령은 add, 그림자는 multiply. */
+  readonly blendMode?: BlendModeName;
   readonly wait?: boolean;
   readonly waitForPicture?: boolean;
 };
@@ -101,6 +131,19 @@ export type CutsceneTintBeat = {
   readonly kind: "tint";
   readonly color?: string;
   readonly value?: string;
+  readonly durationMs?: number;
+  readonly wait?: boolean;
+};
+
+/**
+ * 화면 왜곡 비트 — 이벤트 명령 「화면 효과」 의 물결·모자이크·기울기(지속형)로 컴파일된다.
+ * 수중·꿈·시간 왜곡·회상 진입. 컷신이 끝나도(건너뛰어도) 마지막 상태가 남는다 — 끄려면 effect "clear".
+ */
+export type CutsceneDistortBeat = {
+  readonly kind: "distort";
+  readonly effect: "wave" | "mosaic" | "rotate" | "clear";
+  /** 세기 — 물결 px(0~16)·모자이크 블록 px(0~32)·기울기 도(-180~180). 생략하면 기본 세기, 0 은 그 효과만 끄기. */
+  readonly amount?: number;
   readonly durationMs?: number;
   readonly wait?: boolean;
 };
@@ -136,6 +179,75 @@ export type CutsceneFlashBeat = {
 
 export type CutsceneShakeBeat = {
   readonly kind: "shake";
+  readonly intensity?: number;
+  readonly durationMs?: number;
+  /** 흔들 축 — horizontal(부딪힘)·vertical(지진·쿵)·both(기본). */
+  readonly axis?: ShakeDirection;
+};
+
+/**
+ * 레터박스 — 영화식 위아래 검은 띠(「화면 효과」 letterbox). 컷신이 끝나면(건너뛰어도) 자동으로 걷힌다.
+ * 다음 장면까지 띠를 남기려면 keep:true.
+ */
+export type CutsceneLetterboxBeat = {
+  readonly kind: "letterbox";
+  /** false 면 띠를 걷는다. 기본 true. */
+  readonly show?: boolean;
+  /** 띠 하나의 두께(화면 높이 %, 0~25). 기본 12. */
+  readonly size?: number;
+  readonly durationMs?: number;
+  readonly wait?: boolean;
+  readonly keep?: boolean;
+};
+
+/** 파티클 — 한 인물이나 한 칸에서 터지는 반짝임·불티·연기·폭발(「파티클 효과」). 흐름을 막지 않는다(wait 면 끝까지 기다림). */
+export type CutsceneParticlesBeat = {
+  readonly kind: "particles";
+  readonly preset: ParticlePreset;
+  /** "player" · 이벤트 id · "this-event". 생략하면 x,y 칸, 그것도 없으면 이 이벤트. */
+  readonly target?: string;
+  readonly eventId?: string;
+  readonly x?: number;
+  readonly y?: number;
+  readonly durationMs?: number;
+  readonly wait?: boolean;
+};
+
+/**
+ * 캐릭터 모습 효과(「모습 효과」) — 포즈(쓰러짐·웅크림·둥실)·색·뒤집기·기울기·잔상·불투명도.
+ * 준 칸만 바꾸고 나머지는 앞 모습을 잇는다. reset:true 면 원래 모습에서 시작한다. 컷신이 끝나도 남는다.
+ */
+export type CutsceneLookBeat = {
+  readonly kind: "look";
+  readonly target?: string;
+  readonly eventId?: string;
+  readonly reset?: boolean;
+  readonly pose?: SpritePose;
+  /** red·blue·green·yellow·purple·gray·black·white 또는 #rrggbb, "none" = 원래 색. */
+  readonly tint?: string;
+  readonly tintFill?: boolean;
+  readonly flip?: boolean;
+  readonly angle?: number;
+  readonly afterimage?: boolean;
+  /** 0~1. */
+  readonly alpha?: number;
+};
+
+/** 머리 위 감정 말풍선(! ? 하트 …) — 이벤트 명령 showEmote. */
+export type CutsceneEmoteBeat = {
+  readonly kind: "emote";
+  readonly target?: string;
+  readonly eventId?: string;
+  readonly emote: EmoteKind;
+  readonly durationMs?: number;
+  readonly wait?: boolean;
+};
+
+/** 날씨 — 이벤트 명령 setWeather. 컷신이 끝나도 남는다. */
+export type CutsceneWeatherBeat = {
+  readonly kind: "weather";
+  readonly weather: "none" | "rain" | "storm" | "snow" | "fog";
+  /** 0~1. 기본 0.5. */
   readonly intensity?: number;
   readonly durationMs?: number;
 };
@@ -226,6 +338,7 @@ type FinalPictureState = {
   readonly scale?: number;
   readonly opacity?: number;
   readonly rotation?: number;
+  readonly blendMode?: BlendModeName;
 };
 
 type FinalCameraState = {
@@ -248,6 +361,14 @@ type CompileState = {
   camera?: FinalCameraState;
   tint?: FinalTintState;
   background?: { readonly resourceId: string; readonly flowPercent: number };
+  /** 왜곡 비트의 끝 상태. clear 뒤에 다시 건 축만 axes 에 남는다. */
+  distort?: { readonly clear: boolean; readonly axes: Partial<Record<"wave" | "mosaic" | "rotate", number | undefined>> };
+  /** 레터박스 끝 상태. keep 이 아니면 정리 단계가 걷는다. */
+  letterbox?: { readonly percent: number; readonly keep: boolean };
+  /** 모습 효과 명령들 — 정리 단계가 순서대로 다시 걸어 건너뛰어도 끝 모습이 같다. */
+  readonly looks: M2CommandFields[];
+  /** 마지막 날씨 — 정리 단계가 전환 없이 다시 건다. */
+  weather?: { readonly weather: CutsceneWeatherBeat["weather"]; readonly intensity: number };
 };
 
 /**
@@ -262,7 +383,72 @@ const SHAKE_INTENSITY_STEPS = [1, 3, 6, 10] as const;
 function shakeFields(beat: CutsceneShakeBeat): Record<string, string | number> {
   const raw = typeof beat.intensity === "number" && Number.isFinite(beat.intensity) ? beat.intensity : 3;
   const step = SHAKE_INTENSITY_STEPS.reduce((best, value) => (Math.abs(value - raw) < Math.abs(best - raw) ? value : best), 3);
-  return { value: step, intensity: String(step), durationMs: durationMs(beat.durationMs, 400) };
+  const axis = normalizeShakeDirection(beat.axis);
+  return { value: step, intensity: String(step), durationMs: durationMs(beat.durationMs, 400), ...(axis !== "both" ? { direction: axis } : {}) };
+}
+
+/** 대상 문자열 → 「어디에/누구」 필드. player · this-event · 이벤트 id. */
+function stagingTargetFields(target: string | undefined, eventId: string | undefined): M2CommandFields {
+  const id = (eventId ?? target ?? "").trim();
+  if (id === "player") return { target: "player" };
+  if (!id || id === "this-event") return { target: "this-event" };
+  return { target: "event", eventId: id };
+}
+
+function compileLetterboxBeat(beat: CutsceneLetterboxBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
+  const show = beat.show !== false;
+  const percent = show ? normalizeLetterboxPercent(beat.size, LETTERBOX_DEFAULT_PERCENT) : 0;
+  const ms = durationMs(beat.durationMs, 400);
+  state.letterbox = { percent, keep: beat.keep === true };
+  const commands: Command[] = [
+    m2Command("Screen Effect", percent > 0
+      ? { effect: "letterbox", value: String(percent), durationMs: ms }
+      : { effect: "clearLetterbox", value: "", durationMs: ms }),
+  ];
+  if (!forceNonBlocking && beat.wait === true && ms > 0) commands.push({ kind: "wait", ms });
+  return commands;
+}
+
+function particleFields(beat: CutsceneParticlesBeat, forceNonBlocking: boolean): M2CommandFields {
+  const onTile = beat.target === undefined && beat.eventId === undefined && beat.x !== undefined && beat.y !== undefined;
+  return m2Fields({
+    preset: isParticlePreset(beat.preset) ? beat.preset : "sparkle",
+    ...(onTile ? { target: "tile", x: Math.round(beat.x ?? 0), y: Math.round(beat.y ?? 0) } : stagingTargetFields(beat.target, beat.eventId)),
+    durationMs: normalizeParticleDurationMs(beat.durationMs),
+    wait: forceNonBlocking ? false : beat.wait === true,
+  });
+}
+
+function onOff(value: boolean | undefined): string | undefined {
+  return value === undefined ? undefined : value ? "on" : "off";
+}
+
+function lookFields(beat: CutsceneLookBeat): M2CommandFields {
+  return m2Fields({
+    ...stagingTargetFields(beat.target, beat.eventId),
+    reset: beat.reset === true ? true : undefined,
+    pose: beat.pose,
+    // 명령의 색 선택지는 이름 있는 색뿐이라 #rrggbb 는 직접 색 칸으로 보낸다.
+    ...(beat.tint !== undefined && beat.tint.trim().startsWith("#") ? { tintHex: beat.tint.trim() } : { tint: beat.tint?.trim().toLowerCase() }),
+    tintFill: onOff(beat.tintFill),
+    flip: onOff(beat.flip),
+    afterimage: onOff(beat.afterimage),
+    angle: beat.angle !== undefined && Number.isFinite(beat.angle) ? String(beat.angle) : undefined,
+    // 명령 폼은 불투명도를 % 로 받는다.
+    opacity: beat.alpha !== undefined && Number.isFinite(beat.alpha) ? String(Math.round(Math.max(0, Math.min(1, beat.alpha)) * 100)) : undefined,
+  });
+}
+
+function compileEmoteBeat(beat: CutsceneEmoteBeat, forceNonBlocking: boolean): Command[] {
+  const id = (beat.eventId ?? beat.target ?? "").trim();
+  const ms = clampEmoteDurationMs(beat.durationMs);
+  const command: Command = {
+    kind: "showEmote",
+    target: !id || id === "player" ? "player" : { eventId: id === "this-event" ? "" : id },
+    emote: (EMOTE_KINDS as readonly string[]).includes(beat.emote) ? beat.emote : "exclamation",
+    durationMs: ms,
+  };
+  return !forceNonBlocking && beat.wait === true ? [command, { kind: "wait", ms }] : [command];
 }
 
 /**
@@ -272,12 +458,41 @@ function shakeFields(beat: CutsceneShakeBeat): Record<string, string | number> {
  */
 const SAY_KIND_ALIASES: ReadonlySet<string> = new Set(["text", "narrate", "narration", "dialogue", "message"]);
 const SAY_TEXT_ALIASES = ["body", "message", "content", "line"] as const;
-export function canonicalizeSayBeatAliases(beats: unknown): { beats: unknown; moved: number } {
+/**
+ * kind 를 빠뜨린 비트의 kind 를 그 비트만 쓰는 칸으로 짐작한다. 2026-10-02 연출 기획 gen: 조수가
+ * 대사·이동·모습 비트 10개에서 kind 를 빼고 보내(`{speaker,text}`, `{target,moves}`, `{look:"ev_orvan",pose}`)
+ * script_cutscene 한 번이 통째로 거절됐다. 짐작할 칸이 없으면 그대로 두어 검증이 거절하게 한다.
+ */
+function inferBeatKind(entry: Record<string, unknown>): Record<string, unknown> | undefined {
+  if (Array.isArray(entry.moves) || isRecord(entry.route)) return { ...entry, kind: "moveActor" };
+  if (typeof entry.preset === "string") return { ...entry, kind: "particles" };
+  if (typeof entry.emote === "string") return { ...entry, kind: "emote" };
+  if (typeof entry.weather === "string") return { ...entry, kind: "weather" };
+  const lookKeys = ["pose", "tint", "tintFill", "flip", "afterimage", "alpha", "reset", "look"];
+  if (lookKeys.some((key) => entry[key] !== undefined)) {
+    // `look:"<대상>"` 을 대상 칸으로 쓴 모양도 받는다.
+    const { look, ...rest } = entry;
+    return { ...rest, kind: "look", ...(typeof look === "string" && rest.target === undefined ? { target: look } : {}) };
+  }
+  if (typeof entry.text === "string" || Array.isArray(entry.lines) || typeof entry.speaker === "string") return { ...entry, kind: "say" };
+  if (typeof entry.ms === "number") return { ...entry, kind: "wait" };
+  return undefined;
+}
+
+export function canonicalizeSayBeatAliases(beats: unknown): { beats: unknown; moved: number; inferred: number } {
   let moved = 0;
+  let inferred = 0;
   const visit = (list: unknown): unknown => {
     if (!Array.isArray(list)) return list;
-    return list.map((entry) => {
-      if (!isRecord(entry)) return entry;
+    return list.map((raw) => {
+      if (!isRecord(raw)) return raw;
+      let entry = raw;
+      if (entry.kind === undefined || entry.kind === "") {
+        const guessed = inferBeatKind(entry);
+        if (!guessed) return entry;
+        inferred += 1;
+        entry = guessed;
+      }
       if (entry.kind === "parallel" && Array.isArray(entry.beats)) return { ...entry, beats: visit(entry.beats) };
       if (typeof entry.kind !== "string" || !SAY_KIND_ALIASES.has(entry.kind)) return entry;
       const next: Record<string, unknown> = { ...entry, kind: "say" };
@@ -290,8 +505,11 @@ export function canonicalizeSayBeatAliases(beats: unknown): { beats: unknown; mo
     });
   };
   const out = visit(beats);
-  return { beats: out, moved };
+  return { beats: out, moved, inferred };
 }
+
+export const BEAT_KIND_INFERRED_WARNING = (count: number): string =>
+  `kind 가 빠진 비트 ${count}개의 종류를 칸으로 짐작해 채웠습니다 — 비트마다 kind 를 꼭 쓰세요(say·moveActor·look·particles·emote …).`;
 
 export const SAY_BEAT_ALIAS_WARNING = (moved: number): string =>
   `대사 비트 ${moved}개를 say 로 옮겼습니다 — 컷신·에필로그의 대사는 {kind:"say",speaker?,text} 입니다({kind:"text",body} 는 이벤트 명령 모양).`;
@@ -310,7 +528,7 @@ export function withoutEndingBeats(beats: readonly CutsceneBeat[]): { beats: Cut
 export function compileCutscene(beats: readonly CutsceneBeat[], options: CutsceneCompileOptions = {}): Command[] {
   const validation = validateCutscene(beats, options.context);
   if (!validation.ok) throw new CutsceneValidationError(validation.errors);
-  const state: CompileState = { pictures: new Map(), faces: new Map(), ...(options.resetFace ? { shownFace: { key: "" } } : {}) };
+  const state: CompileState = { pictures: new Map(), faces: new Map(), looks: [], ...(options.resetFace ? { shownFace: { key: "" } } : {}) };
   // 진행 비트(스위치·맵 이동·엔딩)는 건너뛰기(Esc)로도 빠지면 안 된다 — 건너뛴 플레이어가 다음 기억으로 못 가고
   // 문이 안 열린다. 그래서 마지막 맵 이동부터 끝까지와 엔딩은 건너뛰기 착지 라벨 **뒤**에 두고,
   // 그 앞에서 켠 스위치는 라벨 뒤에서 한 번 더 켠다(같은 값이라 정상 재생에서는 변화 없음).
@@ -321,7 +539,7 @@ export function compileCutscene(beats: readonly CutsceneBeat[], options: Cutscen
   const committedSwitches = head.filter((beat): beat is CutsceneSwitchBeat => beat.kind === "switch").map(compileSwitchBeat);
   const cleanup = cleanupCommands(state);
   // 옮긴 맵에서는 앞 맵의 카메라·색조·그림을 되돌릴 것이 없다 — 꼬리는 제 상태로 따로 모은다(얼굴 흐름만 이어받는다).
-  const tailState: CompileState = { pictures: new Map(), faces: state.faces, ...(state.shownFace ? { shownFace: state.shownFace } : {}) };
+  const tailState: CompileState = { pictures: new Map(), faces: state.faces, looks: [], ...(state.shownFace ? { shownFace: state.shownFace } : {}) };
   const tailBody = compileBeats(tail.filter((beat) => beat.kind !== "ending"), tailState, { forceNonBlocking: false });
   const endings = beats.filter((beat): beat is CutsceneEndingBeat => beat.kind === "ending").slice(-1).flatMap((beat) => compileBeat(beat, state, { forceNonBlocking: false }));
   return [
@@ -354,6 +572,7 @@ export function validateCutscene(
     validateResourceReferences(beat, path, context, errors);
     validatePictureLifecycle(beat, path, livePictures, errors);
     validateFlowBeat(beat, path, context, errors);
+    validateStagingBeat(beat, path, errors);
   });
   // 암전(fade out)으로 끝나고 화면을 되돌리지 않으면 컷신이 끝난 뒤에도 검은 화면에 조작만 돌아온다(2026-10-02 조수 시험:
   // 불 몬스터 컷신이 어두워진 채 끝나 게임이 «멈춘 것처럼» 보였다). 맵 이동·엔딩이 뒤따르거나 fade in 이 있으면 통과.
@@ -394,6 +613,8 @@ function compileBeat(
       return compileFadeBeat(beat, options.forceNonBlocking);
     case "tint":
       return compileTintBeat(beat, state, options.forceNonBlocking);
+    case "distort":
+      return compileDistortBeat(beat, state, options.forceNonBlocking);
     case "background":
       return compileBackgroundBeat(beat, state, options.forceNonBlocking);
     case "animation":
@@ -402,6 +623,22 @@ function compileBeat(
       return [m2Command("Flash Screen", { color: beat.color ?? "white", durationMs: durationMs(beat.durationMs, 300) })];
     case "shake":
       return [m2Command("Shake Screen", shakeFields(beat))];
+    case "letterbox":
+      return compileLetterboxBeat(beat, state, options.forceNonBlocking);
+    case "particles":
+      return [m2Command("Particle Effect", particleFields(beat, options.forceNonBlocking))];
+    case "look": {
+      const fields = lookFields(beat);
+      state.looks.push(fields);
+      return [m2Command("Sprite Look", fields)];
+    }
+    case "emote":
+      return compileEmoteBeat(beat, options.forceNonBlocking);
+    case "weather": {
+      const intensity = beat.intensity !== undefined && Number.isFinite(beat.intensity) ? Math.max(0, Math.min(1, beat.intensity)) : 0.5;
+      state.weather = { weather: beat.weather, intensity };
+      return [{ kind: "setWeather", weather: beat.weather, intensity, transitionMs: durationMs(beat.durationMs, 1000) }];
+    }
     case "wait":
       return [{ kind: "wait", ms: waitBeatMs(beat) }];
     case "parallel":
@@ -531,6 +768,7 @@ function cameraFields(beat: CutsceneCameraBeat, forceNonBlocking: boolean): M2Co
     offsetX: beat.offsetX,
     offsetY: beat.offsetY,
     zoom: beat.zoom,
+    easing: normalizeEasing(beat.easing),
   });
 }
 
@@ -551,6 +789,8 @@ function compilePictureBeat(beat: CutscenePictureBeat, state: CompileState, forc
       opacity: beat.opacity,
       rotation: beat.rotation,
       durationMs: beat.durationMs,
+      easing: normalizeEasing(beat.easing),
+      blendMode: normalizeBlendMode(beat.blendMode),
       waitForPicture: forceNonBlocking ? false : beat.waitForPicture ?? beat.wait,
     }) as Command;
     updateFinalPicture(state, pictureId, beat);
@@ -566,6 +806,8 @@ function compilePictureBeat(beat: CutscenePictureBeat, state: CompileState, forc
     opacity: beat.opacity,
     rotation: beat.rotation,
     durationMs: beat.durationMs,
+    easing: normalizeEasing(beat.easing),
+    blendMode: beat.blendMode,
     wait,
     waitForPicture: wait,
   });
@@ -583,6 +825,8 @@ function updateFinalPicture(state: CompileState, pictureId: string, beat: Cutsce
     scale: beat.scale ?? previous?.scale,
     opacity: beat.opacity ?? previous?.opacity,
     rotation: beat.rotation ?? previous?.rotation,
+    // 표시(show)는 그림을 새로 거는 것이라 생략 = 보통. 이동(move)은 생략하면 앞의 겹치기를 잇는다.
+    blendMode: beat.action === "show" ? normalizeBlendMode(beat.blendMode) : beat.blendMode ?? previous?.blendMode,
   });
 }
 
@@ -642,6 +886,25 @@ function compileTintBeat(beat: CutsceneTintBeat, state: CompileState, forceNonBl
   return commands;
 }
 
+function distortFields(effect: CutsceneDistortBeat["effect"], amount: number | undefined, ms: number): M2CommandFields {
+  return m2Fields({
+    effect: effect === "clear" ? "clearDistortion" : effect,
+    value: effect === "clear" || amount === undefined || !Number.isFinite(amount) ? "" : String(amount),
+    durationMs: ms,
+  });
+}
+
+function compileDistortBeat(beat: CutsceneDistortBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
+  const ms = durationMs(beat.durationMs, 0);
+  const effect = beat.effect;
+  // 정리 단계가 다시 걸 수 있게 축별 마지막 값을 적어 둔다(clear 는 전부 지운다).
+  if (effect === "clear") state.distort = { clear: true, axes: {} };
+  else state.distort = { clear: state.distort?.clear ?? false, axes: { ...state.distort?.axes, [effect]: beat.amount } };
+  const commands: Command[] = [m2Command("Screen Effect", distortFields(effect, beat.amount, ms))];
+  if (!forceNonBlocking && beat.wait === true && ms > 0) commands.push({ kind: "wait", ms });
+  return commands;
+}
+
 function backgroundFlowPercent(beat: CutsceneBackgroundBeat): number {
   const value = Number(beat.flowPercent ?? 100);
   return Number.isFinite(value) ? Math.min(MAP_BACKGROUND_FLOW_PERCENT_LIMIT, Math.max(0, Math.round(value))) : 100;
@@ -690,6 +953,10 @@ function parallelWaitMs(beat: CutsceneBeat): number {
   if (beat.kind === "camera" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "fade" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "tint" && beat.wait === true) return durationMs(beat.durationMs, 0);
+  if (beat.kind === "distort" && beat.wait === true) return durationMs(beat.durationMs, 0);
+  if (beat.kind === "letterbox" && beat.wait === true) return durationMs(beat.durationMs, 400);
+  if (beat.kind === "particles" && beat.wait === true) return normalizeParticleDurationMs(beat.durationMs);
+  if (beat.kind === "emote" && beat.wait === true) return clampEmoteDurationMs(beat.durationMs);
   if (beat.kind === "background" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "wait") return waitBeatMs(beat);
   if (beat.kind === "parallel") return Math.max(0, ...beat.beats.map(parallelWaitMs));
@@ -708,6 +975,24 @@ function cleanupCommands(state: CompileState): Command[] {
   }
   if (state.tint) {
     commands.push(m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", durationMs: 0 }));
+  }
+  if (state.distort) {
+    // 건너뛰어도 끝 상태가 같아야 한다 — 전환 없이 마지막 왜곡을 다시 건다.
+    if (state.distort.clear) commands.push(m2Command("Screen Effect", distortFields("clear", undefined, 0)));
+    for (const [axis, amount] of Object.entries(state.distort.axes)) {
+      commands.push(m2Command("Screen Effect", distortFields(axis as "wave" | "mosaic" | "rotate", amount, 0)));
+    }
+  }
+  if (state.letterbox) {
+    // 컷신용 띠는 컷신과 함께 걷힌다. keep 이면 끝 두께를 전환 없이 다시 건다.
+    const percent = state.letterbox.keep ? state.letterbox.percent : 0;
+    commands.push(m2Command("Screen Effect", percent > 0
+      ? { effect: "letterbox", value: String(percent), durationMs: state.letterbox.keep ? 0 : 400 }
+      : { effect: "clearLetterbox", value: "", durationMs: 400 }));
+  }
+  for (const fields of state.looks) commands.push(m2Command("Sprite Look", fields));
+  if (state.weather) {
+    commands.push({ kind: "setWeather", weather: state.weather.weather, intensity: state.weather.intensity, transitionMs: 0 });
   }
   if (state.background) {
     // 건너뛰어도 끝 상태는 같아야 한다 — 전환 없이 마지막 흐름·그림을 다시 건다.
@@ -731,6 +1016,7 @@ function cleanupCommands(state: CompileState): Command[] {
       scale: picture.scale,
       opacity: picture.opacity,
       rotation: picture.rotation,
+      blendMode: normalizeBlendMode(picture.blendMode),
       durationMs: 0,
       waitForPicture: false,
     }) as Command);
@@ -824,7 +1110,35 @@ function referencedEventIds(beat: CutsceneBeat): readonly string[] {
     if (typeof beat.target === "string" && beat.target !== "player" && beat.target !== "this-event" && beat.target !== "screen" && beat.target !== "position") return [beat.target];
     if (isCameraObjectTarget(beat.target) && typeof beat.target.eventId === "string") return [beat.target.eventId];
   }
+  if (beat.kind === "particles" || beat.kind === "look" || beat.kind === "emote") {
+    const target = beat.eventId ?? beat.target;
+    return typeof target === "string" && target && target !== "player" && target !== "this-event" ? [target] : [];
+  }
   return [];
+}
+
+const WEATHER_BEAT_KINDS: ReadonlySet<string> = new Set(["none", "rain", "storm", "snow", "fog"]);
+
+/** 연출 비트의 고정 어휘 — 틀린 이름을 컴파일러가 조용히 기본값으로 바꾸면 조수는 실패를 모른다. */
+function validateStagingBeat(beat: CutsceneBeat, path: string, errors: string[]): void {
+  if (beat.kind === "particles" && !isParticlePreset(beat.preset)) {
+    errors.push(`${path}.preset: 파티클 종류는 ${PARTICLE_PRESETS.join("·")} 중 하나입니다(받은 값 '${String(beat.preset)}').`);
+  }
+  if (beat.kind === "look" && beat.pose !== undefined && !(SPRITE_POSES as readonly string[]).includes(beat.pose)) {
+    errors.push(`${path}.pose: 자세는 ${SPRITE_POSES.join("·")} 중 하나입니다(받은 값 '${String(beat.pose)}').`);
+  }
+  if (beat.kind === "look" && beat.tint !== undefined && beat.tint !== "none" && !spriteTintHex(beat.tint)) {
+    errors.push(`${path}.tint: 색은 ${Object.keys(SPRITE_TINT_NAMES).join("·")}·none 또는 #rrggbb 입니다(받은 값 '${beat.tint}').`);
+  }
+  if (beat.kind === "emote" && !(EMOTE_KINDS as readonly string[]).includes(beat.emote)) {
+    errors.push(`${path}.emote: 감정 말풍선은 ${EMOTE_KINDS.join("·")} 중 하나입니다(받은 값 '${String(beat.emote)}').`);
+  }
+  if (beat.kind === "weather" && !WEATHER_BEAT_KINDS.has(beat.weather)) {
+    errors.push(`${path}.weather: 날씨는 none·rain·storm·snow·fog 중 하나입니다(받은 값 '${String(beat.weather)}').`);
+  }
+  if (beat.kind === "shake" && beat.axis !== undefined && !(SHAKE_DIRECTIONS as readonly string[]).includes(beat.axis)) {
+    errors.push(`${path}.axis: 흔들 축은 both·horizontal·vertical 중 하나입니다(받은 값 '${String(beat.axis)}').`);
+  }
 }
 
 function validateResourceReferences(
@@ -912,6 +1226,7 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "music",
   "fade",
   "tint",
+  "distort",
   "background",
   "flash",
   "animation",
@@ -923,6 +1238,11 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "switch",
   "transfer",
   "ending",
+  "letterbox",
+  "particles",
+  "look",
+  "emote",
+  "weather",
 ]);
 
 function isCameraObjectTarget(value: unknown): value is { readonly eventId?: string; readonly x?: number; readonly y?: number } {

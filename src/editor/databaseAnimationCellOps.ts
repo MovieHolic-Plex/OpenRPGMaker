@@ -1,3 +1,4 @@
+import { cellTransformFields } from "@/project/databaseAnimationRecordModel";
 import type { BattleAnimationCell } from "@/project/types";
 
 export type AnimationCellBatchPatch = {
@@ -49,6 +50,10 @@ export function interpolateCells(
       zoom: Math.round(lerp(a.zoom, b.zoom, amount)),
       opacity: Math.round(lerp(a.opacity, b.opacity, amount)),
       visible: amount < 0.5 ? a.visible : b.visible,
+      ...cellTransformFields({
+        rotation: lerp(a.rotation ?? 0, b.rotation ?? 0, amount),
+        mirror: amount < 0.5 ? a.mirror : b.mirror,
+      }),
       tone: a.tone && b.tone
         ? {
             red: Math.round(lerp(a.tone.red, b.tone.red, amount)),

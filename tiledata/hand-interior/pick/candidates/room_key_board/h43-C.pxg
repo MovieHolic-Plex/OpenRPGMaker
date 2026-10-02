@@ -1,0 +1,35 @@
+// C 단순·또렷: 나무 판에 놋쇠 열쇠 다섯 개(고리·몸·이빨)와 밑에 번호 패. 덩어리 크게, 세부 최소
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat z dwood 0
+@mat b dwood 4
+@mat c dwood 5
+@mat d dwood 3
+@mat g brass 4
+@mat h brass 6
+@mat e brass 2
+@mat k brass 0
+@mat p pine 5
+@mat q pine 6
+@mat r pine 3
+@mat n pine 1
+@mat w pine 0
+@mblock 0 0
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+accccccccccccccccccccccccccccccz
+acbbbbbbbbbbbbbbbbbbbbbbbbbbbbdz
+achgggbbhgggbbhgggbbhgggbbhgggdz
+acgkkebbgkkebbgkkebbgkkebbgkkedz
+aceeeebbeeeebbeeeebbeeeebbeeeedz
+acbgebbbbgebbbbgebbbbgebbbbgebdz
+acbgebbbbgebbbbgebbbbgebbbbgebdz
+acbgeebbbgeebbbgeebbbgeebbbgeedz
+acbgebbbbgebbbbgebbbbgebbbbgebdz
+acqqqqbbqqqqbbqqqqbbqqqqbbqqqqdz
+acpnnrbbpnnrbbpnnrbbpnnrbbpnnrdz
+acprrrbbprrrbbprrrbbprrrbbprrrdz
+acwwwwbbwwwwbbwwwwbbwwwwbbwwwwdz
+addddddddddddddddddddddddddddddz
+.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz.

@@ -1,0 +1,31 @@
+// h39 D: 구멍 함정 — 돌 테두리에 금장 상감(위·아래 한 쌍, 좌우 두 줄), 구덩이 바닥에 보랏빛 희미한 빛
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat e stone 1
+@mat d stone 0
+@mat f stone 2
+@mat g stone 3
+@mat h stone 4
+@mat K black 1
+@mat k black 0
+@mat p gold 2
+@mat q gold 3
+@mat n purple 2
+@mblock 0 0
+................
+....eegghgee....
+..eehhhqqgggee..
+.ehhgdddddddgge.
+.ehgdeefeefdgff.
+.eggdKeeeeeKdgf.
+.epdKKKKKKKKdpf.
+.eqdKkkkkkkKdqf.
+.eqdKkkkkkkKdqf.
+.ehdKkknnkkKdgf.
+.epdKKKKKKKKdpf.
+.ehhgdddddddggf.
+..egghhhqqhhgfe.
+..eefggggggffe..
+....eeffffee....
+.....eeeeee.....

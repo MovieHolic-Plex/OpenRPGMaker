@@ -1,0 +1,39 @@
+// B 상태만 바꾸기: 가시가 구멍 속에 잠김 — 구멍 5곳을 2x2로 키우고 안쪽 아래에 가시 끝 밝은 점 하나씩(들어간 가시 끝), 판·윤곽 그대로
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 3
+@mblock 0 0
+................
+................
+................
+................
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+@tblock 0 0
+................
+................
+................
+................
+.11111111111111.
+.14444444444441.
+.14300330033001.
+.14305330533051.
+.14333333333321.
+.14333333333321.
+.14333003300321.
+.14333053305321.
+.14333333333321.
+.14333333333321.
+.12222222222221.
+.11111111111111.

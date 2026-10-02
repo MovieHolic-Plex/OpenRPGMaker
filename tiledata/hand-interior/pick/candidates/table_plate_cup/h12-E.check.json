@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_plate_cup/h12-E.pxg",
+ "id": "table:plate+cup",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 23,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  4,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "접시·찻잔을 뒤가 아니라 천 윗면 안쪽에 올리고 윗면을 7줄로 늘려 3/4 로 읽히게 함",
+ "ok": true
+}

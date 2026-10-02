@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/helmet_shelf/h49-A.pxg",
+ "id": "helmet shelf",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 21,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "2단 나무 선반에 쇠 투구·깃 투구(윗단)와 뿔 투구(아랫단)를 설명대로 새로 그림",
+ "ok": true
+}

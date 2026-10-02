@@ -1,0 +1,67 @@
+// D: 가로 흰 침상 두 층, 금장 난간과 마름모 상감, 오른쪽 사다리; 꼭대기 윗면 4행(y=0~3)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g gold 4
+@mat h gold 5
+@mat i gold 2
+@mat l linen 4
+@mat m linen 5
+@mat n linen 6
+@mat p linen 3
+@layer bed
+@mblock 0 0
+.eeeeeeeeeeea...
+afeddddddddea...
+afeddddeeddea...
+afeeeeeeeeeea...
+aggggggggggia...
+acddddddddbca...
+adnnnlnnnnmba...
+adnnnlmmmmlba...
+adnnnlmmmmlba...
+adnnnlmmmmlba...
+adllllmmmmlba...
+adllllmmmmppa...
+adlllllllppba...
+adeeeeeeeecba...
+adgggghggggbae.b
+adcccghgcccbae.b
+abbbbgigbbbbaffb
+abaaaaaaaaaaaccb
+ad.........bae.b
+ad.........bae.b
+ad.........bae.b
+ad.........baffb
+ad.........baccb
+ad.........bae.b
+ad.........bae.b
+ad.........bae.b
+ad.........baffb
+ad.........baccb
+ad.........bae.b
+adeeeeeeeeebae.b
+acddddddddbcae.b
+adnnnlnnnnmbaefb
+adnnnlmmmmlbaccb
+adnnnlmmmmlbae.b
+adnnnlmmmmlbae.b
+adllllmmmmlbae.b
+admmmmmmlllbaffb
+adllllmmmmppaccb
+adlllllllppbae.b
+adeeeeeeeecbae.b
+adgggghggggbae.b
+adcccghgcccbaefb
+abbbbgigbbbbaccb
+abaaaaaaaaaaae.b
+ad.........bae.b
+ad.........bae.b
+ab.........bab.b
+ab.........bab..

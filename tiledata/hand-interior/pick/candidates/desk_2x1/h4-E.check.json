@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/desk_2x1/h4-E.pxg",
+ "id": "desk 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "윗면을 9줄로 넓히고 앞 두께 3줄·앞 밑 그림자 줄, 서랍 받침에 손잡이 하나 — v5 색만 사용",
+ "ok": true
+}

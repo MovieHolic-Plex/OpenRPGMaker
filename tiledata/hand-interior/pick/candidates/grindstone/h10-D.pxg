@@ -1,0 +1,21 @@
+// h10-D: 바퀴 윗머리 테두리 밝게·아래 둥글게, 받침 윗면을 밝은 판 두 줄로 두고 바퀴 밑 접지 그림자, 앞 모서리 어둡게
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....ABBCCA.....
+....ABBBBCCA....
+...ABBBBDDCCEEE.
+...ABBBBDDCCE.E.
+...BBBBFFDDCC.E.
+...CCDDDDDDCC...
+...ACCDDDDCCA...
+....ACCDDCCA....
+.EEEEEEEEEEEEEE.
+.GHHHIIIIIIHHHE.
+.GHHHHHHHHHHHHE.
+.EIIIIIIIIIIIIE.
+.KGGGGGGGGGGGGK.
+.KLJJJJJJJJJJGK.
+.KKJGKKKKKKKJGK.

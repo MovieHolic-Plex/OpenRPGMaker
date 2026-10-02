@@ -418,6 +418,10 @@ describe("포켓몬 단일 대상 자동 확정", () => {
   it("포켓몬 스킨 + gen1 아님 + 적 2마리: 대상 목록이 열린다", () => {
     const project = scarloxyProject();
     project.system.battleModel = undefined;
+    // 데모 야생 트룹은 1:1 로 줄였다(#1062) — 후보가 둘인 상황은 여기서 직접 만든다.
+    const troop = project.database.troops.find((entry) => entry.id === "troop_pkmn_new_pair")!;
+    troop.members = [...(troop.members ?? []), { enemyId: "enemy_pkmn_puddlup", x: 220, y: 132 }];
+    troop.enemyIds = troop.members.map((member) => member.enemyId);
     const rt = start(project, "troop_pkmn_new_pair");
     expect(rt.snapshot().enemies.length).toBe(2);
     const skillId = rt.snapshot().actors[0]?.skillIds[0];
@@ -429,7 +433,7 @@ describe("포켓몬 단일 대상 자동 확정", () => {
 
   it("다른 스킨은 적이 1마리여도 목록이 열린다 — 취소 경로 계약 보존", () => {
     const project = scarloxyProject();
-    project.system.battleUiStyle = "rm2000";
+    project.system.battleUiStyle = "retro2003";
     const rt = start(project, "troop_pkmn_grass_a");
     expect(rt.snapshot().enemies.length).toBe(1);
     const skillId = rt.snapshot().actors[0]?.skillIds[0];

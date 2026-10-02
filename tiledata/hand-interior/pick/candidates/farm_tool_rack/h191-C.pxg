@@ -1,0 +1,29 @@
+// C: 넓은 가로대와 큰 농기구 세 덩이, 결 최소; 꼭대기 윗면 3행(y=0~2)
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat A pine 2
+@mat B pine 4
+@mat C pine 3
+@mat D pine 1
+@mat E iron 4
+@mat F iron 5
+@mat G iron 2
+@layer rack_tools
+@mblock 0 0
+..AAAAAAAAAAAAAAAAAAAAAAAAAAAA..
+.ABBBBBBBBBBBBBBBBBBBBBBBBBBBCA.
+.ABBBBBBBBBBBBBBBBBBBBBBBBBBBCA.
+.ACCCCCCCCCCCCCCCCCCCCCCCCCCCDA.
+..DDDDDDDDDDDDDDDDDDDDDDDDDDDD..
+..EEEEEEEE.......FFFF...........
+..FFFFFFFE.....FFEEEFF...EEE....
+..GGGGGGGE....FFE...EF..EF..GE..
+......BC......FE.....F..EF..GE..
+......BC......FE........EEEEEE..
+......BC......GFF.....EFEEEEEEE.
+......BC.......GFC.....FFEEEEEGE
+......BC........BC.....GFEEEEEGE
+......BC........BC......FEEEEGE.
+......BC........BC......GGGGGG..
+......CC........CC..............

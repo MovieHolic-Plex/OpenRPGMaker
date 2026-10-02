@@ -138,9 +138,9 @@ export function enemyPixelListBadge(resourceId: string | undefined, size = 16): 
 
 export type EnemyPixelPreview = { readonly element: HTMLElement; readonly stop: () => void };
 
-/** 몬스터 도트 미리보기 카드. 시트가 없는 리소스면 null. hue·투명은 전투 화면과 같게 반영한다. */
+/** 몬스터 도트 미리보기 카드. 시트가 없는 리소스면 null. 전투처럼 색조·투명 없이 시트 원래 모습 그대로 그린다. */
 export function renderEnemyPixelPreview(
-  record: { readonly name: string; readonly monsterResourceId?: string; readonly graphicHue?: number; readonly transparent?: boolean },
+  record: { readonly name: string; readonly monsterResourceId?: string },
 ): EnemyPixelPreview | null {
   const sheet = pixelEnemySheet(record.monsterResourceId);
   if (!sheet) return null;
@@ -158,8 +158,6 @@ export function renderEnemyPixelPreview(
   sprite.style.height = cell + "px";
   sprite.style.backgroundImage = 'url("' + url + '")';
   sprite.style.backgroundSize = cell * 3 + "px " + cell * 3 + "px";
-  if (record.graphicHue) sprite.style.setProperty("--enemy-pixel-hue", record.graphicHue + "deg");
-  if (record.transparent) sprite.style.opacity = "0.58";
   const ally = el("span", { class: "db-enemy-pixel-ally" });
   const allySheet = charsetBattler("charset-battler-actor1-0");
   if (allySheet) ally.style.backgroundImage = 'url("' + withInlineAsset("/" + allySheet.path) + '")';
@@ -195,7 +193,6 @@ export function renderEnemyPixelPreview(
     pic.style.backgroundImage = 'url("' + url + '")';
     pic.style.backgroundSize = thumb * 3 + "px " + thumb * 3 + "px";
     pic.style.backgroundPosition = -frame.col * thumb + "px " + -frame.row * thumb + "px";
-    if (record.graphicHue) pic.style.setProperty("--enemy-pixel-hue", record.graphicHue + "deg");
     const button = el("button", {
       class: "db-enemy-pixel-cell",
       attrs: { type: "button", "aria-pressed": "false" },

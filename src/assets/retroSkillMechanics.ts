@@ -4,6 +4,24 @@
 
 export const RETRO_SKILL_DESIGN_GUIDE = `retro2003 스킬의 기믹 어휘와 설계 규칙. 묶음 파일(src/assets/retroRosterSkills/<묶음>.ts)의 mechanic 칸을 채울 때도,
 편집기 조수가 upsert_skill 로 스킬을 만들 때도 같은 어휘를 쓴다.
+
+공용 동작 32종(2026-10-02): list_retro_choreographies에서 chor_builtin_*를 찾는다.
+기존 도트 연출을 duplicate_choreography로 복제한 뒤 upsert_choreography의 movement를 고친다.
+movement: {pattern, anticipationMs, travelMs, recoveryMs, jumpHeight, apexMs, acceleration}.
+직접 경로는 tracks: [{role:user|target|ally|cloneA|cloneB|summon, points:[{at,anchor,x,y,curve,pose,alpha,flip}]}].
+at은 ms, x/y는 자리 기준 px. 자리: home/front/target/target2/target3/ally/left/right/top.
+곡선: linear/pull/burst/walk/rise/fall/settle/flow. 이동은 미리보기와 실제 전투가 같은 함수로 계산한다.
+규칙은 upsert_skill의 battleGimmick: {pattern,durationTurns,markKey,maxStacks,consumeMarks,requiredMark,followOnHit,
+allyActorId,elementId,resourceId,radius,triggerChance,powerMultiplier,killRefundPercent}에 따로 기록한다.
+안무만 빌리면 효과는 바뀌지 않는다. 기본 예시는 skill_motion_* 32종에 있다.
+설치는 대상의 다음 차례, 소환 지원은 시전자의 다음 자기 차례. 지속 시간은 자기 차례 수(1~6).
+소환은 시전자가 피해를 받으면 취소한다. 반격은 물리 명중 뒤 한 번, 엄호는 다음 단일 물리 공격 한 번.
+흡수는 정신력 계열 피해 중 elementId가 맞는 것만 저장한다(생략하면 모든 마법 속성). 다음 사용에 저장량을 방출.
+표식 없는 orbit, 첫 빗나감 뒤 air-chase/throw/relay/sky-crush의 후속 공격은 취소된다.
+swap은 실제 예비 배우가 있어야 교대한다. relay는 행동 가능한 준비된 동료의 MP와 차례도 소비한다.
+처치 환급은 실제로 쓰러뜨렸을 때만. HP 대가는 기존 hpCostPercent로 먼저 지불하며 빗나가도 돌려주지 않는다.
+새 스킬은 효과·타수·비용·기믹과 연출을 함께 저작한다. 지속·연계 피해 총합에 맞춰 MP와 재사용 대기를 조정한다.
+
 묶음에서는 mechanic 이 있으면 기본 DB 레코드(src/project/defaults/retroRosterRecords.ts)가 **이 칸을 우선**하고,
 적지 않은 필드만 설명 낱말 유도(deriveRosterSkillSeed: 위력·MP·속성·대상·연출)로 채운다. mechanic 이 없으면 유도만 쓴다.
 이펙트 레이어·motion·id·level 은 그림과 맞물려 있으니 기믹 때문에 바꾸지 않는다.

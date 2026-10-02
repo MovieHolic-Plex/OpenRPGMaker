@@ -1,3 +1,4 @@
+import { battleMotionFields } from "@/editor/panels/databaseBattleMotionFields";
 // 「도트 연출」 탭 — 스킬이 부르는 도트 이펙트 연출(층·시작 시각·크기)을 저작한다.
 //
 // 목록: 프로젝트 연출(chor_*) 먼저, 그 뒤 기본 연출(번들 계약 약 1,130개, 읽기 전용, 「기본」 배지).
@@ -183,7 +184,9 @@ export function renderRetroChoreographyTab(content: HTMLElement, rerender: () =>
     ? renderDetail(selectedEntry, selectedProject, { rerender, cloneSelected })
     : detailPane({ body: emptyState({ title: "연출을 골라 보세요", body: "왼쪽에서 기본 연출을 고른 뒤 「복제해서 고치기」를 누르면 층을 바꿀 수 있습니다." }) });
 
-  content.replaceChildren(workspaceShell({ list, detail, testid: "db-retro-choreo-workspace" }));
+  // 위의 보기 전환 줄(도트 연출 | 옛 전투 애니메이션, database.ts PARTY_SUBVIEWS)은 남긴다.
+  const subviews = content.querySelector<HTMLElement>(":scope > .db-party-subviews");
+  content.replaceChildren(...(subviews ? [subviews] : []), workspaceShell({ list, detail, testid: "db-retro-choreo-workspace" }));
 }
 
 interface DetailContext { readonly rerender: () => void; readonly cloneSelected: () => void }
@@ -348,6 +351,7 @@ function renderDetail(entry: RetroChoreographyEntry, project: SkillChoreographyR
     children: handleFields(editable, id, refreshLive, ctx.rerender),
     testid: "db-retro-choreo-handles",
   }));
+  cards.push(sectionCard({title:"이동·가속도·배우",testid:"db-retro-choreo-movement",children:battleMotionFields(editable.movement,next=>{recordCoalescedSnapshot(`retro-choreo:${id}:movement`,"도트 연출 이동");editRecord(id,r=>{if(next)r.movement=next;else delete r.movement;});refreshLive();})}));
   cards.push(layerCard);
   if (pickerLayer !== undefined && editable.layers[pickerLayer]) {
     const target = pickerLayer;

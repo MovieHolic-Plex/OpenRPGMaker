@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/war_map_table/h137-B.pxg",
+ "id": "war map table",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 20,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  5,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "방의 갈색 가구에 맞춘 윤곽·성긴 나뭇결로 넓은 지도 상판, 윗면이 보이는 말 조각·단검과 짧은 다리를 새로 그림; 꼭대기 윗면 16행(y=6~21).",
+ "ok": true
+}

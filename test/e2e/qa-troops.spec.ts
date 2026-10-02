@@ -136,13 +136,15 @@ test.describe("QA — troops tab", () => {
     const generated = await page.getByTestId("db-field-name").inputValue();
     expect(generated).toContain("부대");
 
-    // 배경 변경 button cycles terrain battle backgrounds into the backdrop field
+    // 배경 변경 button cycles the scenery kind (도트 측면, 2026-10-02 — 그림 칸이 아니라 종류 카드가 바뀐다)
+    const checkedScenery = (): Promise<string | null> =>
+      page.locator('[data-testid^="db-troop-scenery-"][aria-checked="true"]').first().getAttribute("data-testid");
     await page.getByTestId("db-troop-change-background").click();
-    const backdrop1 = await page.getByTestId("db-field-troop-backdrop").inputValue();
-    expect(backdrop1.length).toBeGreaterThan(0);
+    const backdrop1 = await checkedScenery();
+    expect(backdrop1).toMatch(/^db-troop-scenery-(plains|forest|cave|snow|desert)$/);
     await page.getByTestId("db-troop-change-background").click();
-    const backdrop2 = await page.getByTestId("db-field-troop-backdrop").inputValue();
-    expect(backdrop2.length).toBeGreaterThan(0);
+    const backdrop2 = await checkedScenery();
+    expect(backdrop2).toMatch(/^db-troop-scenery-(plains|forest|cave|snow|desert)$/);
     expect(backdrop2).not.toBe(backdrop1);
 
     // config: 수동 radio + 참전 수 + 포획 불가

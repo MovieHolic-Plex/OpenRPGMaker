@@ -1,0 +1,38 @@
+// 파란 선원 궤짝에 금장 띠·뚜껑 문양·쇠 걸쇠·밧줄 고리; 꼭대기 윗면 5행(y=1~5)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat B blue 0
+@mat C blue 1
+@mat D blue 2
+@mat E blue 3
+@mat F blue 4
+@mat a gold 1
+@mat b gold 2
+@mat c gold 3
+@mat d gold 4
+@mat e gold 5
+@mat R straw 2
+@mat S straw 4
+@mat T straw 5
+@mat J iron 2
+@mat K iron 4
+@mat L iron 5
+@layer chest
+@mblock 0 0
+...BBBBBBBBBB...
+..BdeFFFFFFdbB..
+.BdeFFFFeFFFdbB.
+.BdeFFFedeFFdbB.
+.BcdFFFFcFFFbcB.
+.BcdEEEEEEEEbcB.
+.BdeFFFFFFFFdbB.
+.BbbCCCCCCCCbbB.
+.BcdDDJLLJDDbcB.
+STcdDDJKKJDDbcRS
+T.BdDDDJKDDDba.R
+T.BdEEEEDDDDba.R
+.ScdEEEEDDDDbcR.
+.BbcDDDDDDCCabB.
+.BbbCCCCCCCCaaB.
+..BBBBBBBBBBBB..

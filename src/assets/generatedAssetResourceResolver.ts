@@ -1,3 +1,5 @@
+import { PIXEL_ENEMY_PORTRAIT_URLS } from "./pixelEnemyPortraits";
+import { pixelEnemySheet } from "./pixelEnemySheets";
 import { CHARSET_BATTLERS } from "./charsetBattlers";
 import { PARTY_PIXEL_SHEETS } from "./partyPixelSheets";
 import { BATTLE_SCENERY_CATALOG } from "./battleSceneryCatalog";
@@ -21,6 +23,8 @@ import { SHARED_PORTRAIT_ASSETS, resolveSharedPortraitUrl } from "@/assets/share
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import type { Project } from "@/project/types";
 
+const FALLBACK_SKIN_ENEMY_URL = PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"]!;
+
 // 타이틀 리소스 id 개명(2026-08-21) — 새 id 를 정본으로 쓰고, 구 id 는 **별칭으로
 // 남긴다**. 이 값은 프로젝트 파일의 titleResourceId/backgroundResourceId 에 저장되므로
 // 구 id 를 지우면 사용자가 만든 기존 프로젝트의 타이틀 화면이 빈 화면이 된다.
@@ -33,7 +37,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // 파티원 몬스터 9칸 시트(2차 로스터). 배우 battleCharacterResourceId 로 참조한다.
   ...Object.fromEntries(PARTY_PIXEL_SHEETS.map((entry) => [entry.resourceId, `/${entry.path}`])),
   // 미설치 팩도 id 는 유지한다. 파일 실패는 전투 배경의 네 장 로드 가드가 처리한다.
-  ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.layers.ground}`])),
+  // 단일 그림으로 풀 때는 네 겹을 합친 미리보기 한 장이다(예전엔 땅 겹만이라 썸네일·몬스터 대치에서 하늘이 비었다).
+  ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.preview}`])),
   hero: "/assets/generated/starter/hero-01-battle.png",
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
@@ -96,147 +101,6 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // 만들 때 같이 등록한다.
   "generated-actor-hero-05-battle": "/assets/generated/starter/hero-05-battle.png",
   "generated-actor-hero-06-battle": "/assets/generated/starter/hero-06-battle.png",
-  "generated-enemy-bat-01": "/assets/generated/starter/monster-bat-01.png",
-  "generated-enemy-dragon-01": "/assets/generated/starter/monster-dragon-01.png",
-  "generated-enemy-golem-01": "/assets/generated/starter/monster-golem-01.png",
-  "generated-enemy-ontology-8da61312": "/assets/generated/starter/monster-ontology-8da61312.png",
-  "generated-enemy-slime-01": "/assets/generated/starter/monster-slime-01.png",
-  "generated-enemy-sylph-hornet": "/assets/generated/starter/sylph-hornet-transparent.png",
-  "generated-enemy-zombie-01": "/assets/generated/starter/monster-zombie-01.png",
-  "generated-enemy-skeleton-01": "/assets/generated/starter/monster-skeleton-01.png",
-  "generated-enemy-orc-01": "/assets/generated/starter/monster-orc-01.png",
-  "generated-enemy-ghost-01": "/assets/generated/starter/monster-ghost-01.png",
-  "generated-enemy-crab-01": "/assets/generated/starter/monster-crab-01.png",
-  "generated-enemy-spider-01": "/assets/generated/starter/monster-spider-01.png",
-  "generated-enemy-snake-01": "/assets/generated/starter/monster-snake-01.png",
-  "generated-enemy-scorpion-01": "/assets/generated/starter/monster-scorpion-01.png",
-  "generated-enemy-wolf-01": "/assets/generated/starter/monster-wolf-01.png",
-  "generated-enemy-harpy-01": "/assets/generated/starter/monster-harpy-01.png",
-  "generated-enemy-centipede-01": "/assets/generated/starter/monster-centipede-01.png",
-  "generated-enemy-plant-01": "/assets/generated/starter/monster-plant-01.png",
-  "generated-enemy-horse-01": "/assets/generated/starter/monster-horse-01.png",
-  "generated-enemy-unicorn-01": "/assets/generated/starter/monster-unicorn-01.png",
-  "generated-enemy-salamander-01": "/assets/generated/starter/monster-salamander-01.png",
-  "generated-enemy-carbuncle-01": "/assets/generated/starter/monster-carbuncle-01.png",
-  "generated-enemy-cat-01": "/assets/generated/starter/monster-cat-01.png",
-  "generated-enemy-kappa-01": "/assets/generated/starter/monster-kappa-01.png",
-  "generated-enemy-cockatrice-01": "/assets/generated/starter/monster-cockatrice-01.png",
-  "generated-enemy-parasite-01": "/assets/generated/starter/monster-parasite-01.png",
-  "generated-enemy-mantis-01": "/assets/generated/starter/monster-mantis-01.png",
-  "generated-enemy-jackolantern-01": "/assets/generated/starter/monster-jackolantern-01.png",
-  "generated-enemy-fish-01": "/assets/generated/starter/monster-fish-01.png",
-  "generated-enemy-spirit-01": "/assets/generated/starter/monster-spirit-01.png",
-  "generated-enemy-ghoul-01": "/assets/generated/starter/monster-ghoul-01.png",
-  "generated-enemy-specter-01": "/assets/generated/starter/monster-specter-01.png",
-  "generated-enemy-lemora-01": "/assets/generated/starter/monster-lemora-01.png",
-  "generated-enemy-sylph-01": "/assets/generated/starter/monster-sylph-01.png",
-  "generated-enemy-leaf-fox": "/assets/generated/monsters/corrected/leaf-fox.png",
-  "generated-enemy-fire-pup": "/assets/generated/monsters/corrected/fire-pup.png",
-  "generated-enemy-sparkit-fire": "/assets/generated/monsters/corrected/sparkit-fire.png",
-  "generated-enemy-leafling-01": "/assets/generated/starter/monster-leafling-01.png",
-  "generated-enemy-sparkit-01": "/assets/generated/starter/monster-sparkit-01.png",
-  "generated-enemy-aqualing-01": "/assets/generated/starter/monster-aqualing-01.png",
-  "generated-enemy-king-slime-01": "/assets/generated/starter/monster-king-slime-01.png",
-  "generated-enemy-slime-blue": "/assets/generated/starter/monster-slime-blue.png",
-  "generated-enemy-slime-red": "/assets/generated/starter/monster-slime-red.png",
-  "generated-enemy-slime-green": "/assets/generated/starter/monster-slime-green.png",
-  "generated-enemy-slime-metal": "/assets/generated/starter/monster-slime-metal.png",
-  "generated-enemy-slime-king": "/assets/generated/starter/monster-slime-king.png",
-  "generated-enemy-slime-cube": "/assets/generated/starter/monster-slime-cube.png",
-  "generated-enemy-ooze-black": "/assets/generated/starter/monster-ooze-black.png",
-  "generated-enemy-ooze-acid": "/assets/generated/starter/monster-ooze-acid.png",
-  "generated-enemy-bat-cave": "/assets/generated/starter/monster-bat-cave.png",
-  "generated-enemy-bat-vampire": "/assets/generated/starter/monster-bat-vampire.png",
-  "generated-enemy-bee-giant": "/assets/generated/starter/monster-bee-giant.png",
-  "generated-enemy-spider-cave": "/assets/generated/starter/monster-spider-cave.png",
-  "generated-enemy-spider-widow": "/assets/generated/starter/monster-spider-widow.png",
-  "generated-enemy-scorpion-sand": "/assets/generated/starter/monster-scorpion-sand.png",
-  "generated-enemy-beetle-horn": "/assets/generated/starter/monster-beetle-horn.png",
-  "generated-enemy-mantis-blade": "/assets/generated/starter/monster-mantis-blade.png",
-  "generated-enemy-centipede-fire": "/assets/generated/starter/monster-centipede-fire.png",
-  "generated-enemy-moth-dust": "/assets/generated/starter/monster-moth-dust.png",
-  "generated-enemy-worm-sand": "/assets/generated/starter/monster-worm-sand.png",
-  "generated-enemy-ant-soldier": "/assets/generated/starter/monster-ant-soldier.png",
-  "generated-enemy-wolf-grey": "/assets/generated/starter/monster-wolf-grey.png",
-  "generated-enemy-wolf-dire": "/assets/generated/starter/monster-wolf-dire.png",
-  "generated-enemy-boar-tusk": "/assets/generated/starter/monster-boar-tusk.png",
-  "generated-enemy-bear-brown": "/assets/generated/starter/monster-bear-brown.png",
-  "generated-enemy-tiger-saber": "/assets/generated/starter/monster-tiger-saber.png",
-  "generated-enemy-rat-giant": "/assets/generated/starter/monster-rat-giant.png",
-  "generated-enemy-bird-hawk": "/assets/generated/starter/monster-bird-hawk.png",
-  "generated-enemy-snake-viper": "/assets/generated/starter/monster-snake-viper.png",
-  "generated-enemy-cat-shadow": "/assets/generated/starter/monster-cat-shadow.png",
-  "generated-enemy-goat-mountain": "/assets/generated/starter/monster-goat-mountain.png",
-  "generated-enemy-crab-rock": "/assets/generated/starter/monster-crab-rock.png",
-  "generated-enemy-hound-hell": "/assets/generated/starter/monster-hound-hell.png",
-  "generated-enemy-ape-stone": "/assets/generated/starter/monster-ape-stone.png",
-  "generated-enemy-deer-forest": "/assets/generated/starter/monster-deer-forest.png",
-  "generated-enemy-skeleton-bone": "/assets/generated/starter/monster-skeleton-bone.png",
-  "generated-enemy-skeleton-archer": "/assets/generated/monsters/corrected/skeleton-archer.png",
-  "generated-enemy-skeleton-knight": "/assets/generated/starter/monster-skeleton-knight.png",
-  "generated-enemy-zombie-rot": "/assets/generated/starter/monster-zombie-rot.png",
-  "generated-enemy-ghoul-grave": "/assets/generated/starter/monster-ghoul-grave.png",
-  "generated-enemy-ghost-pale": "/assets/generated/starter/monster-ghost-pale.png",
-  "generated-enemy-wraith-dark": "/assets/generated/starter/monster-wraith-dark.png",
-  "generated-enemy-lich-frost": "/assets/generated/starter/monster-lich-frost.png",
-  "generated-enemy-mummy-bandage": "/assets/generated/starter/monster-mummy-bandage.png",
-  "generated-enemy-banshee-wail": "/assets/generated/starter/monster-banshee-wail.png",
-  "generated-enemy-revenant-vengeful": "/assets/generated/starter/monster-revenant-vengeful.png",
-  "generated-enemy-bonepile-crawler": "/assets/generated/starter/monster-bonepile-crawler.png",
-  "generated-enemy-spirit-fire": "/assets/generated/monsters/corrected/spirit-fire.png",
-  "generated-enemy-spirit-water": "/assets/generated/monsters/corrected/spirit-water.png",
-  "generated-enemy-spirit-earth": "/assets/generated/monsters/corrected/spirit-earth.png",
-  "generated-enemy-spirit-wind": "/assets/generated/starter/monster-spirit-wind.png",
-  "generated-enemy-spirit-light": "/assets/generated/starter/monster-spirit-light.png",
-  "generated-enemy-spirit-dark": "/assets/generated/starter/monster-spirit-dark.png",
-  "generated-enemy-wisp-blue": "/assets/generated/monsters/corrected/wisp-blue.png",
-  "generated-enemy-sylph-air": "/assets/generated/starter/monster-sylph-air.png",
-  "generated-enemy-undine-sea": "/assets/generated/starter/monster-undine-sea.png",
-  "generated-enemy-salamander-flame": "/assets/generated/starter/monster-salamander-flame.png",
-  "generated-enemy-golem-stone": "/assets/generated/starter/monster-golem-stone.png",
-  "generated-enemy-golem-iron": "/assets/generated/starter/monster-golem-iron.png",
-  "generated-enemy-golem-clay": "/assets/generated/starter/monster-golem-clay.png",
-  "generated-enemy-golem-crystal": "/assets/generated/starter/monster-golem-crystal.png",
-  "generated-enemy-armor-living": "/assets/generated/starter/monster-armor-living.png",
-  "generated-enemy-sword-flying": "/assets/generated/starter/monster-sword-flying.png",
-  "generated-enemy-mimic-chest": "/assets/generated/starter/monster-mimic-chest.png",
-  "generated-enemy-scarecrow-field": "/assets/generated/starter/monster-scarecrow-field.png",
-  "generated-enemy-puppet-string": "/assets/generated/starter/monster-puppet-string.png",
-  "generated-enemy-totem-cursed": "/assets/generated/starter/monster-totem-cursed.png",
-  "generated-enemy-goblin-scout": "/assets/generated/starter/monster-goblin-scout.png",
-  "generated-enemy-goblin-brute": "/assets/generated/starter/monster-goblin-brute.png",
-  "generated-enemy-orc-warrior": "/assets/generated/starter/monster-orc-warrior.png",
-  "generated-enemy-orc-shaman": "/assets/generated/monsters/corrected/orc-shaman.png",
-  "generated-enemy-kobold-digger": "/assets/generated/starter/monster-kobold-digger.png",
-  "generated-enemy-bandit-mask": "/assets/generated/starter/monster-bandit-mask.png",
-  "generated-enemy-mage-rogue": "/assets/generated/starter/monster-mage-rogue.png",
-  "generated-enemy-knight-fallen": "/assets/generated/starter/monster-knight-fallen.png",
-  "generated-enemy-lizardman-spear": "/assets/generated/starter/monster-lizardman-spear.png",
-  "generated-enemy-harpy-cliff": "/assets/generated/starter/monster-harpy-cliff.png",
-  "generated-enemy-minotaur-maze": "/assets/generated/starter/monster-minotaur-maze.png",
-  "generated-enemy-centaur-plains": "/assets/generated/starter/monster-centaur-plains.png",
-  "generated-enemy-troll-cave": "/assets/generated/starter/monster-troll-cave.png",
-  "generated-enemy-ogre-club": "/assets/generated/starter/monster-ogre-club.png",
-  "generated-enemy-imp-mischief": "/assets/generated/starter/monster-imp-mischief.png",
-  "generated-enemy-fish-piranha": "/assets/generated/starter/monster-fish-piranha.png",
-  "generated-enemy-squid-deep": "/assets/generated/starter/monster-squid-deep.png",
-  "generated-enemy-shark-land": "/assets/generated/starter/monster-shark-land.png",
-  "generated-enemy-eel-electric": "/assets/generated/starter/monster-eel-electric.png",
-  "generated-enemy-griffin-sky": "/assets/generated/starter/monster-griffin-sky.png",
-  "generated-enemy-wyvern-cliff": "/assets/generated/starter/monster-wyvern-cliff.png",
-  "generated-enemy-roc-giant": "/assets/generated/starter/monster-roc-giant.png",
-  "generated-enemy-gargoyle-stone": "/assets/generated/starter/monster-gargoyle-stone.png",
-  "generated-enemy-phoenix-rebirth": "/assets/generated/starter/monster-phoenix-rebirth.png",
-  "generated-enemy-dragon-whelp": "/assets/generated/starter/monster-dragon-whelp.png",
-  "generated-enemy-dragon-red": "/assets/generated/starter/monster-dragon-red.png",
-  "generated-enemy-dragon-blue": "/assets/generated/starter/monster-dragon-blue.png",
-  "generated-enemy-dragon-bone": "/assets/generated/starter/monster-dragon-bone.png",
-  "generated-enemy-hydra-three": "/assets/generated/starter/monster-hydra-three.png",
-  "generated-enemy-behemoth-horn": "/assets/generated/starter/monster-behemoth-horn.png",
-  "generated-enemy-demon-lord": "/assets/generated/starter/monster-demon-lord.png",
-  "generated-enemy-angel-fallen": "/assets/generated/starter/monster-angel-fallen.png",
-  "generated-enemy-eye-floating": "/assets/generated/starter/monster-eye-floating.png",
-  "generated-enemy-plant-carnivore": "/assets/generated/starter/monster-plant-carnivore.png",
   "generated-equipment-bronze-sword-icon": "/assets/generated/starter/bronze-sword-icon.png",
   "generated-equipment-bronze-sword-image": "/assets/generated/starter/bronze-sword-image.png",
   "generated-equipment-oak-shield-icon": "/assets/generated/starter/oak-shield-icon.png",
@@ -245,7 +109,9 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "generated-item-ether-blue-image": "/assets/generated/starter/ether-blue-image.png",
   "generated-item-potion-red-icon": "/assets/generated/starter/potion-red-icon.png",
   "generated-item-potion-red-image": "/assets/generated/starter/potion-red-image.png",
-  "generated-troop-preview-slime": "/assets/generated/starter/troop-preview-slime.png",
+  "generated-troop-preview-slime": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"],
+  // The existing human selection from monster-collect-species/ledger.json.
+  "generated-enemy-sparkit-fire": "/assets/harnesses/monster-collect-species/sparkit/front.png",
   "battle-skin-pokemon-backdrop": "/assets/generated/battle-skins/pokemon-backdrop.png",
   // vxace 기본 배경 — 참조 스크린샷은 "푸른 하늘 + 먼 산 + 밝은 초원" 이다. 기존 12장 중
   // pokemon-backdrop 이 그 구도에 가장 가까워 별칭으로 등록한다(파일 공유는 기존 관례:
@@ -263,18 +129,19 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "battle-skin-goldensun-backdrop": "/assets/generated/battle-skins/goldensun-backdrop.png",
   "battle-skin-demo-battler": "/assets/generated/battle-skins/demo-battler-alpha.png",
   // Per-skin battler sprites (chroma-keyed #00FF00 -> alpha) — themed enemy + party (front/back).
+  // 스킨 공용 정면 적 그림은 2026-10-02 지웠다 — 옛 id 는 남겨 두고(참조 검증) 도트 슬라임 초상으로 돌린다.
   "bskin-enemy-pokemon": "/assets/scarloxy/scarloxy-monster-larvea.png",
   "generated-enemy-reference-cocoon": "/assets/generated/battle-skins/sprites/reference-cocoon-front.png",
   "generated-enemy-reference-seed-back": "/assets/generated/battle-skins/sprites/reference-seed-back.png",
-  "bskin-enemy-rm2003": "/assets/generated/battle-skins/sprites/enemy-rm2003.png",
-  "bskin-enemy-rm2000": "/assets/generated/battle-skins/sprites/enemy-rm2000.png",
-  "bskin-enemy-octopath": "/assets/generated/battle-skins/sprites/enemy-octopath.png",
-  "bskin-enemy-chrono": "/assets/generated/battle-skins/sprites/enemy-chrono.png",
-  "bskin-enemy-bravely": "/assets/generated/battle-skins/sprites/enemy-bravely.png",
-  "bskin-enemy-dragonquest": "/assets/generated/battle-skins/sprites/enemy-dragonquest.png",
-  "bskin-enemy-ff": "/assets/generated/battle-skins/sprites/enemy-ff.png",
-  "bskin-enemy-mother": "/assets/generated/battle-skins/sprites/enemy-mother.png",
-  "bskin-enemy-goldensun": "/assets/generated/battle-skins/sprites/enemy-goldensun.png",
+  "bskin-enemy-rm2003": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-rm2000": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-octopath": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-chrono": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-bravely": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-dragonquest": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-ff": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-mother": FALLBACK_SKIN_ENEMY_URL,
+  "bskin-enemy-goldensun": FALLBACK_SKIN_ENEMY_URL,
   "bskin-party-warrior-front": "/assets/generated/battle-skins/sprites/party-warrior-front.png",
   "bskin-party-warrior-back": "/assets/generated/battle-skins/sprites/party-warrior-back.png",
   "bskin-party-mage-front": "/assets/generated/battle-skins/sprites/party-mage-front.png",
@@ -303,6 +170,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "windowskin-rm2003": "/assets/ui/windowskin-default.png",
   // 생성 얼굴 낱장 32장(hero-01-face / hero-02-face × 16). 분할 산출물 목록에서 펼쳐 넣는다 —
   // 그래야 builtinGeneratedResourceIds() 에도 실려 collectResourceIds 가 알아본다.
+  ...PIXEL_ENEMY_PORTRAIT_URLS,
   ...generatedFacesetFaceUrls(),
   // 공용 표정 세트 76종의 흉상·전신 760장(sharedPortraitAssets.ts). 같은 이유로 여기 싣는다.
   ...Object.fromEntries(SHARED_PORTRAIT_ASSETS.map((asset) => [asset.id, `/${asset.path}`])),
@@ -378,28 +246,14 @@ export function resolveOpeningStillPackUrl(resourceId: string): string | null {
 }
 
 export function resolveGeneratedAssetResourceUrl(resourceId: string, manifest?: GeneratedAssetManifest): string | null {
+  // Reserved bundled enemy IDs always use the current native portrait, including stale manifests.
+  const nativeSheet = pixelEnemySheet(resourceId);
+  const portrait = nativeSheet ? PIXEL_ENEMY_PORTRAIT_URLS[nativeSheet.resourceId] : undefined;
+  if (portrait) return portrait;
   if (manifest === undefined) {
-    const direct = BUILTIN_GENERATED_RESOURCE_URLS[resourceId];
+    const direct = Object.hasOwn(BUILTIN_GENERATED_RESOURCE_URLS, resourceId) ? BUILTIN_GENERATED_RESOURCE_URLS[resourceId] : undefined;
     if (direct) return direct;
-    const numberedDefaultEnemy = resourceId.match(/(?:^|-)enemy_extra_(\d+)$/);
-    if (numberedDefaultEnemy) {
-      // 디스크 파일은 enemy-art-001 … 120(세 자리)다. 예전 프로젝트의 enemy_extra_06 같은 두 자리 id 를
-      // 그대로 붙이면 없는 경로가 되어 전투 몬스터 그림이 404 였다(실행형 HTML 빌드가 24개를 못 읽었다).
-      return `/assets/generated/monsters/enemy-art-${numberedDefaultEnemy[1].padStart(3, "0")}.png`;
-    }
-    if (resourceId.includes("meadow")) return "/assets/generated/monsters/meadow_green_slime.jpg";
-    if (resourceId.includes("slime")) return "/assets/generated/monsters/classic_blue_slime.jpg";
-    if (resourceId.includes("minotaur")) return "/assets/generated/monsters/monster_minotaur.jpg";
-    if (resourceId.includes("medusa")) return "/assets/generated/monsters/monster_medusa.jpg";
-    if (resourceId.startsWith("generated-enemy-")) {
-      for (const [key, url] of Object.entries(BUILTIN_GENERATED_RESOURCE_URLS)) {
-        if (key.startsWith("generated-enemy-")) {
-          const stem = key.replace("generated-enemy-", "").replace("-01", "");
-          if (resourceId.includes(stem)) return url;
-        }
-      }
-      return "/assets/generated/starter/monster-slime-01.png";
-    }
+    // Unknown names/numbers have no verified species mapping. Never guess a slime.
     return null;
   }
   const entry = manifest.assets.find((asset) => asset.resourceId === resourceId);
@@ -412,6 +266,14 @@ export function generatedAssetPromotedPathToUrl(promotedPath: string | null): st
   if (promotedPath === null) return null;
   const normalizedPath = promotedPath.trim().replaceAll("\\", "/");
   const runtimePath = stripPublicPrefix(stripLeadingSlash(normalizedPath));
+  // Imported manifests may still contain these retired painting paths.
+  const oldStarter = runtimePath.match(/^assets\/generated\/starter\/monster-([^/]+)\.png$/);
+  const oldCorrected = runtimePath.match(/^assets\/generated\/monsters\/corrected\/([^/]+)\.png$/);
+  const retiredSlug = oldStarter?.[1] ?? oldCorrected?.[1];
+  if (retiredSlug) return BUILTIN_GENERATED_RESOURCE_URLS[`generated-enemy-${retiredSlug}`] ?? null;
+  if (runtimePath === "assets/generated/starter/sylph-hornet-transparent.png") return PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-sylph-hornet"] ?? null;
+  if (runtimePath === "assets/generated/starter/troop-preview-slime.png") return PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"];
+  if (runtimePath.startsWith("assets/generated/monsters/") || /^assets\/generated\/starter\/idle\/monster-/.test(runtimePath)) return null;
   if (!isAllowedGeneratedRuntimePath(runtimePath)) return null;
   return `/${runtimePath}`;
 }

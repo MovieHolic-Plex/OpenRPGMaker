@@ -1,0 +1,94 @@
+// A: SFC 길드 접수 창구 — 6행 나무 상판, 서류·잉크·도장과 낮은 중앙 칸막이, 높이 26px.
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat h linen 2
+@mat i linen 3
+@mat j linen 4
+@mat k linen 5
+@mat l linen 6
+@mat m iron 1
+@mat n iron 2
+@mat o iron 3
+@mat p iron 4
+@mat q iron 5
+@mat r brass 2
+@mat s brass 4
+@mat t red 2
+@mat u red 4
+@layer counter
+@mblock 0 13
+= 1c 46g 1b
+= 1g 46f 1b
+= 1g 46f 1b
+= 1g 46f 1b
+= 1g 46f 1b
+= 1g 46f 1b
+= 1c 46e 1b
+= 1c 46d 1b
+= 48b
+= 1c 12f 1c 2b 1c 12f 1c 2b 1c 12f 1c 2b
+= 1c 1f 10d 1e 1c 2b 1c 1f 10d 1e 1c 2b 1c 1f 10d 1e 1c 2b
+= 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b
+= 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b
+= 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b
+= 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b
+= 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b
+= 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b 1c 1e 10d 1c 1c 2b
+= 1c 12e 1c 2b 1c 12e 1c 2b 1c 12e 1c 2b
+= 48b
+@layer grain
+// 길이가 다른 조용한 상판 나뭇결.
+@mblock 2 15
+ee...............eeee.................eeeee
+@mblock 18 17
+eee............ee
+@px 5 25 wood:5 6 25 wood:5 10 28 wood:3 21 27 wood:5 22 27 wood:5 27 24 wood:3 37 24 wood:5 38 24 wood:5 41 28 wood:3 42 28 wood:3
+@layer divider
+// 낮은 중앙 칸막이의 꼭대기 수평면 3행, 남쪽 세운 면 5행.
+@mblock 19 6
+cggggggggb
+gffffffeeb
+gffeeeeeeb
+ceeeeeeeeb
+cfddddddcb
+ceddddddcb
+ceddddddcb
+cbbbbbbbbb
+@layer documents
+// 종이 더미: 넓은 윗면 3행과 어긋난 종이 가장자리.
+@mblock 5 10
+.kkkkkkkkk.
+.klllllllk.
+.kliillllk.
+ikkkkkkkkh.
+.hjjjjjjjhh
+ijkkkkkkkkh
+.hiiiiiiiih
+@layer inkwell
+// 열린 잉크병의 입구도 위에서 내려다보인다.
+@mblock 32 9
+.qqq.
+.qmq.
+.npn.
+npqon
+mpoon
+mpoon
+.nnn.
+@layer stamp
+// 도장 손잡이 정수리 3행, 짧은 목과 붉은 도장 밑판.
+@mblock 40 11
+.sss.
+.ssr.
+.rrr.
+..c..
+..b..
+tuutt
+.ttt.

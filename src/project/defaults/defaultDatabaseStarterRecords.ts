@@ -1,3 +1,4 @@
+import { defaultBattleMotionSkills } from "@/assets/battleMotionCatalog";
 import type {
   BattleAnimationFlash,
   BattleAnimationPosition,
@@ -26,6 +27,7 @@ import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID, DEFAULT_STATE_ID } from "./cons
 import { retroClassSkillRecords } from "./retroClassSkillRecords";
 import { retroMonsterSkillRecords } from "./retroMonsterSkillRecords";
 import { retroRosterSkillRecords } from "./retroRosterRecords";
+import { defaultSharedItemBattleSkills } from "./defaultSharedItemSkills";
 export { defaultItemRecords } from "./defaultDatabaseItemRecords";
 
 type BattleEffectAnimationSeed = {
@@ -121,6 +123,8 @@ export function defaultSkillRecords(): SkillRecord[] {
     ...retroRosterSkillRecords(),
     // retro2003 몬스터 스킬 42개(계약 src/assets/retroMonsterSkills.ts). 도트 적 행동이 쓴다(defaultBattleRecords).
     ...retroMonsterSkillRecords(),
+    ...defaultSharedItemBattleSkills(),
+    ...defaultBattleMotionSkills(),
   ];
   applyGeneratedBattleEffectSkillBindings(records);
   return records;

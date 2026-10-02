@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wall_lever/h17-E.pxg",
+ "id": "wall lever",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  3,
+  1,
+  12,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "쇠판 위쪽 놋 축에서 쇠 막대가 오른쪽 아래로 비스듬히 내려와 나무 공 손잡이로 끝남(끔) — 곧은 붉은 손잡이 대신 사선·나무 공",
+ "ok": true
+}

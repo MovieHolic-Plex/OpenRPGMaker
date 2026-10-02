@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scroll_pile/h166-A.pxg",
+ "id": "scroll pile",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.061
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "끈 묶은 양피지 두루마리 세 개를 두 단으로 쌓고 둥근 말림 끝과 밝은 윗몸통을 드러냄; 꼭대기 윗면 5행(y=1~5)",
+ "ok": true
+}

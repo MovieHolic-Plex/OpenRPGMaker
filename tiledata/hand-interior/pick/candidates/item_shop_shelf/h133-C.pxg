@@ -1,0 +1,60 @@
+// C: 넓은 4행 윗판, 큰 병·약초·밧줄·횃불 덩이로 또렷한 2단 진열 선반
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat d wood 2
+@mat a wood 4
+@mat b wood 5
+@mat c wood 6
+@mat h wood 7
+@mat q dwood 2
+@mat k pine 2
+@mat p pine 4
+@mat B blue 2
+@mat U blue 3
+@mat V blue 4
+@mat W blue 5
+@mat R red 2
+@mat S red 3
+@mat T red 4
+@mat l leaf 2
+@mat g leaf 3
+@mat f leaf 4
+@mat j straw 3
+@mat s straw 2
+@mat t straw 3
+@mat u straw 4
+@mat v straw 5
+@layer shelf
+@mblock 1 2
+oooooooooooooooooooooooooooooo
+hccccccccccccccccccccccccccccb
+hccccbbbccccccccccccbbbccccccb
+hccccccccccccccccccccccccccccb
+hccccccccccccccccccccccccccccb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+addddddddddddddddddddddddddddd
+cboqqqpkpqqqpkpqqqqqqqqqqqqadd
+cboqqqkpkqqqkpkqqqqqffgqqqqadd
+cboqqqWBVqqqTRSqqqqffgglqqqadd
+cboqqWVUUBqTSSRRqqfggggllqqadd
+cboqqWVUUBqTSSRRqqggffgllqqadd
+cboqqWVUUBqTSSRRqqqgggllqqqadd
+cboqqWVUUBqTSSRRqqqqjjjqqqqadd
+cboqqqUBBqqqSRRqqqqqlllqqqqadd
+cbhccccccccccccccccccccccccadd
+cbhccccccccccccccccccccccccadd
+cbhccccccccccccccccccccccccadd
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+addddddddddddddddddddddddddddd
+cboqqqqqqqqqqqqqqqqqvutqqqqadd
+cboqqqvvuuutqqqqvutuutqqqqqadd
+cboqqvusssuutqqqquuttpkqqqqadd
+cboqqustttsutqqqqtpkqpkqqqqadd
+cboqquutssuutqqqqqpkqpkqqqqadd
+cboqqqtuuuutqqqqqqpkqpkqqqqadd
+cbhccccccccccccccccccccccccadd
+cbhccccccccccccccccccccccccadd
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+addddddddddddddddddddddddddddd

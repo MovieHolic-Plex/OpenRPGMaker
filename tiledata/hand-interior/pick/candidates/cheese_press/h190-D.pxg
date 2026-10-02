@@ -1,0 +1,61 @@
+// 금장 띠와 중앙 마름모 문양을 넣은 나무 나사 치즈 압착기; 꼭대기 윗면 4행(y=0~3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat h gold 1
+@mat i gold 2
+@mat j gold 3
+@mat k gold 4
+@mat l gold 5
+@mat m gold 6
+@mat n iron 1
+@mat o iron 2
+@mat p iron 3
+@mat q iron 4
+@mat r iron 5
+@mat s cheese 1
+@mat t cheese 2
+@mat u cheese 3
+@mat v cheese 4
+@mat w cheese 5
+@mat z cheese 6
+@layer press
+@mblock 0 0
+..eeeeeeeeeecc..
+.effffeeeeeedcc.
+.efeeeddeeeedcc.
+.eeeddeeeeeedcc.
+.ckkkkkllkkkjhb.
+.cdccckmljccchb.
+.abbbbhkhbbbbab.
+..fec..qp..dcb..
+..fec..rq..dcb..
+..fecjklklidcb..
+..lki..pq..kjh..
+..kjh..qr..jih..
+..fec..qp..dcb..
+..fec..rq..dcb..
+..fec..qp..dcb..
+..fec..qr..dcb..
+..feceeffeedcb..
+..feeffeeeedcb..
+..felkkkkkjdcb..
+..feabbhbbbdcb..
+..fecwwwwwvdcb..
+..fecwzzwwvdcb..
+..fecwwwwvudcb..
+..fejvvvvuudcb..
+..lkjuutuuukjh..
+..kjhuttuuijih..
+.effeeeeeeeeddc.
+.efeeedeeeedddc.
+.eeddddddddddcb.
+.ckkkkkkkkkjjhb.
+.bcccccccccbbab.
+..abbbbbbbbbba..

@@ -33,8 +33,9 @@ test("정리된 워크트리에서 에디터가 실제로 부팅되고 렌더된
         continue; // cross-origin sheet
       }
       for (const rule of Array.from(rules)) {
-        // 실제 셀렉터는 .battle-scene[...][data-battle-hud="boxes"] 이다(_glass-variants.css).
-        if (rule.cssText.includes('data-battle-hud="boxes"') || rule.cssText.includes("data-battle-hud=boxes")) return true;
+        // 실제 셀렉터는 .battle-scene[...]:not([data-battle-skin="pokemon"]) 이다(_glass-variants.css).
+        // (2026-10-02 정면 스킨과 함께 data-battle-hud="boxes" 변형을 지웠다.)
+        if (rule.cssText.includes(':not([data-battle-skin="pokemon"])')) return true;
       }
     }
     return false;

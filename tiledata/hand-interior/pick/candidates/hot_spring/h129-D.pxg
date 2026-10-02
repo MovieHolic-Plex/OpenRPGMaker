@@ -1,0 +1,83 @@
+// D — 바닥형 돌 온천: 낮은 바위 테에 금장 띠와 세 잎 문양, 넓은 하늘색 수면과 굵은 김.
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mat a stone 4
+@mat b stone 5
+@mat c stone 2
+@mat d stone 1
+@mat w water 4
+@mat u water 5
+@mat v water 6
+@mat t water 3
+@mat g gold 3
+@mat h gold 5
+@mat j gold 2
+@mat i ice 4
+@mat k ice 5
+@layer basin
+@mblock 0 0
+= 2. 9s 1c 12s 1c 10s 1c 10s 2.
+= 1. 10b 1s 12b 1s 10a 1s 11a 1.
+= 1s 2b 8h 1a 11h 1a 9g 1a 10g 3s 1c
+= 1s 2a 8g 1s 11g 1s 9j 1s 10j 3c 1d
+= 1s 2b 1c 40t 2a 1c 1d
+= 1s 2b 1t 10u 20w 10u 1t 1a 1c 1d
+= 1s 2a 1t 40u 1t 1a 1c 1d
+= 1s 1a 1c 42u 1a 1c 1d
+= 1s 1a 1t 42u 1a 1c 1d
+= 1s 1h 1t 42u 1g 1c 1d
+= 1s 1h 1t 7u 10v 25u 1g 1c 1d
+= 1s 1g 1t 42u 1j 1c 1d
+= 1s 1g 1t 32u 10w 1j 1c 1d
+= 1s 1a 1t 6u 36w 1a 1c 1d
+= 1c 1a 1t 22u 20w 1a 1c 1d
+= 1c 1b 1t 19u 23w 1a 1c 1d
+= 1s 1b 1t 13u 29w 1a 1c 1d
+= 1s 1a 1t 6u 36w 1a 1c 1d
+= 1s 1a 1t 42w 1a 1c 1d
+= 1s 1h 1t 42w 1g 1c 1d
+= 1s 1h 1t 6w 9u 27w 1g 1c 1d
+= 1s 1g 1t 8w 7u 27w 1j 1c 1d
+= 1s 1g 1t 24w 9u 9w 1j 1c 1d
+= 1s 1a 1t 26w 7u 9w 1a 1c 1d
+= 1s 1a 1c 40w 1t 1a 1c 1d
+= 1s 2a 1t 40w 1t 1a 1c 1d
+= 1s 2a 1c 40t 2a 1c 1d
+= 1s 10b 1s 12a 1s 10a 1c 11s 1d
+= 1s 2a 8h 1a 11h 1a 9g 1a 10g 3s 1d
+= 1c 2s 8g 1s 11g 1s 9j 1s 10j 3c 1d
+= 1. 10s 1c 12s 1c 10c 1d 11c 1.
+= 2. 9c 1d 12c 1d 10c 1d 10c 2.
+@layer steam
+@mblock 11 5
+..iii
+.iikk
+.iik
+..iik
+...iik
+...iik
+..iik
+.iik
+.iik
+..iiii
+...iii
+@mblock 30 9
+...iii
+..iikk
+..iik
+...iik
+....iik
+....iik
+...iik
+..iik
+..iik
+...iiii
+....iii
+@layer inlay
+@mblock 20 27
+..hh....
+.hhgghh.
+hggjjggh
+.jjggjj.

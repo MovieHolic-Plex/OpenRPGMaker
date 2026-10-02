@@ -1,0 +1,35 @@
+// weapon crate E: 윗면 5행(뒤 테두리+입구 3행), 비스듬한 뚜껑 판, 칼자루·도끼 손잡이가 입구에서 솟음
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat p wood 7
+@mat q wood 6
+@mat r wood 5
+@mat s wood 4
+@mat t wood 3
+@mat u wood 2
+@mat v wood 1
+@mat n black 3
+@mat o black 1
+@mat c gold 4
+@mat g gold 3
+@mat j iron 5
+@mat k iron 3
+@mat l iron 2
+@mblock 0 0
+................
+................
+....c.....jjk...
+...ggg.pppqjl...
+....stssssq.....
+..uqsqqqqqqu....
+..tnsnnnnqnns...
+..tnnnnjnnnns...
+..toooooooons...
+..vppppppppppv..
+..vqrrrjkrrrtv..
+..vqrrrkkrrrtv..
+..vqrsqrsqrstv..
+..vqrsqrsqrstv..
+..vrsrsrsrsrtv..
+..vuuuuuuuuuuv..

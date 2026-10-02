@@ -42,7 +42,8 @@ describe("Database actions", () => {
     const result = deleteDatabaseRecord("skills", DEFAULT_SKILL_ID);
 
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.message).toContain("스킬을 사용 중입니다");
+    // 메시지는 이제 참조처를 하나씩 적는다(예: 「몬스터 종족 '리프링'이 이 스킬을 배웁니다. (외 9건)」).
+    if (!result.ok) expect(result.message).toContain("이 스킬을");
     expect(store.getCurrent().database.skills.some((skill) => skill.id === DEFAULT_SKILL_ID)).toBe(true);
   });
 

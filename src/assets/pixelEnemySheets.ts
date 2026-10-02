@@ -7,7 +7,8 @@
 //   (0,1) windup · (1,1) move · (2,1) attack
 //   (0,2) recover · (1,2) hit · (2,2) dead
 //
-// 같은 리소스 id 를 다른 스킨은 지금까지의 통짜 그림으로 그린다 — 이 카탈로그는 retro2003 에서만 읽힌다.
+// 같은 리소스 id 의 일반 이미지/다른 스킨은 pixelEnemyPortraits.ts 의 idle_a 한 칸을 그린다.
+// 옛 통짜 그림은 폐기했다. retro2003 에서만 이 3×3 포즈 시트를 직접 읽는다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 
 export const PIXEL_ENEMY_CELL = 48;
@@ -81,6 +82,111 @@ export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
   { resourceId: "generated-enemy-troll-cave", path: "assets/generated/pixel-enemies/troll-cave.png", cell: 96, motion: "stomp", idleFrameMs: 340 },
   { resourceId: "generated-enemy-gargoyle-stone", path: "assets/generated/pixel-enemies/gargoyle-stone.png", cell: 64, motion: "swoop", idleFrameMs: 260 },
   { resourceId: "generated-enemy-demon-lord", path: "assets/generated/pixel-enemies/demon-lord.png", cell: 96, motion: "breath", idleFrameMs: 280 },
+  // 2026-10-02 폐기 그림의 원본 도트 대체: 요청한 97종 + 추가 감사의 일반 적 3종.
+  // organic: 34종 — 저작 원본과 검토 해시는 retirement/organic, verify-shots/legacy-monsters/organic.
+  { resourceId: "generated-enemy-crab-01", path: "assets/generated/pixel-enemies/crab-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-spider-01", path: "assets/generated/pixel-enemies/spider-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-snake-01", path: "assets/generated/pixel-enemies/snake-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-scorpion-01", path: "assets/generated/pixel-enemies/scorpion-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-wolf-01", path: "assets/generated/pixel-enemies/wolf-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-centipede-01", path: "assets/generated/pixel-enemies/centipede-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-horse-01", path: "assets/generated/pixel-enemies/horse-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-unicorn-01", path: "assets/generated/pixel-enemies/unicorn-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-cat-01", path: "assets/generated/pixel-enemies/cat-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-cockatrice-01", path: "assets/generated/pixel-enemies/cockatrice-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-parasite-01", path: "assets/generated/pixel-enemies/parasite-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-mantis-01", path: "assets/generated/pixel-enemies/mantis-01.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-fish-01", path: "assets/generated/pixel-enemies/fish-01.png", cell: 64, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-bat-cave", path: "assets/generated/pixel-enemies/bat-cave.png", cell: 64, motion: "swoop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-spider-widow", path: "assets/generated/pixel-enemies/spider-widow.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-beetle-horn", path: "assets/generated/pixel-enemies/beetle-horn.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-centipede-fire", path: "assets/generated/pixel-enemies/centipede-fire.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-moth-dust", path: "assets/generated/pixel-enemies/moth-dust.png", cell: 64, motion: "swoop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-worm-sand", path: "assets/generated/pixel-enemies/worm-sand.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-ant-soldier", path: "assets/generated/pixel-enemies/ant-soldier.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-wolf-dire", path: "assets/generated/pixel-enemies/wolf-dire.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-tiger-saber", path: "assets/generated/pixel-enemies/tiger-saber.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-rat-giant", path: "assets/generated/pixel-enemies/rat-giant.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-bird-hawk", path: "assets/generated/pixel-enemies/bird-hawk.png", cell: 64, motion: "swoop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-cat-shadow", path: "assets/generated/pixel-enemies/cat-shadow.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-goat-mountain", path: "assets/generated/pixel-enemies/goat-mountain.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-ape-stone", path: "assets/generated/pixel-enemies/ape-stone.png", cell: 64, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-deer-forest", path: "assets/generated/pixel-enemies/deer-forest.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-fish-piranha", path: "assets/generated/pixel-enemies/fish-piranha.png", cell: 64, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-squid-deep", path: "assets/generated/pixel-enemies/squid-deep.png", cell: 64, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-shark-land", path: "assets/generated/pixel-enemies/shark-land.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-eel-electric", path: "assets/generated/pixel-enemies/eel-electric.png", cell: 64, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-leaf-fox", path: "assets/generated/pixel-enemies/leaf-fox.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-fire-pup", path: "assets/generated/pixel-enemies/fire-pup.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  // arcane: 39종 — 저작 원본과 검토 해시는 retirement/arcane, verify-shots/legacy-monsters/arcane.
+  { resourceId: "generated-enemy-ontology-8da61312", path: "assets/generated/pixel-enemies/ontology-8da61312.png", cell: 64, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-sylph-hornet", path: "assets/generated/pixel-enemies/sylph-hornet-transparent.png", cell: 48, motion: "swoop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-skeleton-01", path: "assets/generated/pixel-enemies/skeleton-01.png", cell: 48, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-ghost-01", path: "assets/generated/pixel-enemies/ghost-01.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-plant-01", path: "assets/generated/pixel-enemies/plant-01.png", cell: 64, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-carbuncle-01", path: "assets/generated/pixel-enemies/carbuncle-01.png", cell: 48, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-jackolantern-01", path: "assets/generated/pixel-enemies/jackolantern-01.png", cell: 48, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-spirit-01", path: "assets/generated/pixel-enemies/spirit-01.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-ghoul-01", path: "assets/generated/pixel-enemies/ghoul-01.png", cell: 48, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-specter-01", path: "assets/generated/pixel-enemies/specter-01.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-lemora-01", path: "assets/generated/pixel-enemies/lemora-01.png", cell: 64, motion: "breath", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-sylph-01", path: "assets/generated/pixel-enemies/sylph-01.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-king-slime-01", path: "assets/generated/pixel-enemies/king-slime-01.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-slime-blue", path: "assets/generated/pixel-enemies/slime-blue.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-slime-green", path: "assets/generated/pixel-enemies/slime-green.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-slime-metal", path: "assets/generated/pixel-enemies/slime-metal.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-slime-king", path: "assets/generated/pixel-enemies/slime-king.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-slime-cube", path: "assets/generated/pixel-enemies/slime-cube.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-ooze-black", path: "assets/generated/pixel-enemies/ooze-black.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-ooze-acid", path: "assets/generated/pixel-enemies/ooze-acid.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-skeleton-bone", path: "assets/generated/pixel-enemies/skeleton-bone.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-ghoul-grave", path: "assets/generated/pixel-enemies/ghoul-grave.png", cell: 48, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-wraith-dark", path: "assets/generated/pixel-enemies/wraith-dark.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-banshee-wail", path: "assets/generated/pixel-enemies/banshee-wail.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-revenant-vengeful", path: "assets/generated/pixel-enemies/revenant-vengeful.png", cell: 64, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-bonepile-crawler", path: "assets/generated/pixel-enemies/bonepile-crawler.png", cell: 64, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-spirit-wind", path: "assets/generated/pixel-enemies/spirit-wind.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-spirit-light", path: "assets/generated/pixel-enemies/spirit-light.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-spirit-dark", path: "assets/generated/pixel-enemies/spirit-dark.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-sylph-air", path: "assets/generated/pixel-enemies/sylph-air.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-undine-sea", path: "assets/generated/pixel-enemies/undine-sea.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-golem-stone", path: "assets/generated/pixel-enemies/golem-stone.png", cell: 64, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-golem-clay", path: "assets/generated/pixel-enemies/golem-clay.png", cell: 64, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-golem-crystal", path: "assets/generated/pixel-enemies/golem-crystal.png", cell: 64, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-sword-flying", path: "assets/generated/pixel-enemies/sword-flying.png", cell: 48, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-scarecrow-field", path: "assets/generated/pixel-enemies/scarecrow-field.png", cell: 64, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-puppet-string", path: "assets/generated/pixel-enemies/puppet-string.png", cell: 64, motion: "float", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-totem-cursed", path: "assets/generated/pixel-enemies/totem-cursed.png", cell: 64, motion: "stomp", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-spirit-earth", path: "assets/generated/pixel-enemies/spirit-earth.png", cell: 64, motion: "float", idleFrameMs: 180 },
+  // humanoid: 27종 — 저작 원본과 검토 해시는 retirement/humanoid, verify-shots/legacy-monsters/humanoid.
+  { resourceId: "generated-enemy-zombie-01", path: "assets/generated/pixel-enemies/zombie-01.png", cell: 64, motion: "stomp", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-orc-01", path: "assets/generated/pixel-enemies/orc-01.png", cell: 64, motion: "stomp", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-harpy-01", path: "assets/generated/pixel-enemies/harpy-01.png", cell: 64, motion: "swoop", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-salamander-01", path: "assets/generated/pixel-enemies/salamander-01.png", cell: 64, motion: "dash", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-kappa-01", path: "assets/generated/pixel-enemies/kappa-01.png", cell: 64, motion: "stomp", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-leafling-01", path: "assets/generated/pixel-enemies/leafling-01.png", cell: 48, motion: "float", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-sparkit-01", path: "assets/generated/pixel-enemies/sparkit-01.png", cell: 48, motion: "float", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-aqualing-01", path: "assets/generated/pixel-enemies/aqualing-01.png", cell: 48, motion: "float", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-salamander-flame", path: "assets/generated/pixel-enemies/salamander-flame.png", cell: 64, motion: "dash", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-goblin-brute", path: "assets/generated/pixel-enemies/goblin-brute.png", cell: 64, motion: "stomp", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-kobold-digger", path: "assets/generated/pixel-enemies/kobold-digger.png", cell: 64, motion: "dash", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-mage-rogue", path: "assets/generated/pixel-enemies/mage-rogue.png", cell: 64, motion: "shoot", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-knight-fallen", path: "assets/generated/pixel-enemies/knight-fallen.png", cell: 64, motion: "stomp", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-centaur-plains", path: "assets/generated/pixel-enemies/centaur-plains.png", cell: 96, motion: "dash", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-ogre-club", path: "assets/generated/pixel-enemies/ogre-club.png", cell: 96, motion: "stomp", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-imp-mischief", path: "assets/generated/pixel-enemies/imp-mischief.png", cell: 48, motion: "swoop", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-griffin-sky", path: "assets/generated/pixel-enemies/griffin-sky.png", cell: 96, motion: "stomp", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-wyvern-cliff", path: "assets/generated/pixel-enemies/wyvern-cliff.png", cell: 96, motion: "swoop", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-roc-giant", path: "assets/generated/pixel-enemies/roc-giant.png", cell: 64, motion: "swoop", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-phoenix-rebirth", path: "assets/generated/pixel-enemies/phoenix-rebirth.png", cell: 96, motion: "swoop", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-dragon-whelp", path: "assets/generated/pixel-enemies/dragon-whelp.png", cell: 64, motion: "breath", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-dragon-red", path: "assets/generated/pixel-enemies/dragon-red.png", cell: 96, motion: "breath", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-dragon-blue", path: "assets/generated/pixel-enemies/dragon-blue.png", cell: 96, motion: "breath", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-dragon-bone", path: "assets/generated/pixel-enemies/dragon-bone.png", cell: 96, motion: "breath", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-hydra-three", path: "assets/generated/pixel-enemies/hydra-three.png", cell: 96, motion: "breath", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-behemoth-horn", path: "assets/generated/pixel-enemies/behemoth-horn.png", cell: 96, motion: "stomp", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-angel-fallen", path: "assets/generated/pixel-enemies/angel-fallen.png", cell: 64, motion: "swoop", idleFrameMs: 200 },
+
 ];
 
 export const PIXEL_ENEMY_FRAME: Readonly<Record<PixelEnemyCell, { readonly col: number; readonly row: number }>> = {
@@ -96,9 +202,18 @@ export const PIXEL_ENEMY_FRAME: Readonly<Record<PixelEnemyCell, { readonly col: 
 };
 
 const byId = new Map(PIXEL_ENEMY_SHEETS.map((entry) => [entry.resourceId, entry]));
+const legacyAliases: Readonly<Record<string, string>> = {
+  slime: "generated-enemy-slime-01",
+  classic_blue_slime: "generated-enemy-slime-blue",
+  meadow_green_slime: "generated-enemy-slime-green",
+  minotaur: "generated-enemy-minotaur-maze",
+  monster_minotaur: "generated-enemy-minotaur-maze",
+};
 
 export function pixelEnemySheet(resourceId: string | undefined): PixelEnemySheet | undefined {
-  return resourceId ? byId.get(resourceId) : undefined;
+  if (!resourceId) return undefined;
+  const namedId = resourceId.replace(/-enemy_extra_\d+$/, "");
+  return byId.get(namedId) ?? (Object.hasOwn(legacyAliases, namedId) ? byId.get(legacyAliases[namedId]) : undefined);
 }
 
 export function pixelEnemyCell(entry: PixelEnemySheet): number {

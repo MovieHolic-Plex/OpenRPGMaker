@@ -17,6 +17,7 @@ import { TIME_GATE_TOOLS } from "./timeGateTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
+import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -245,6 +246,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(IMPACT_CUTSCENE_TOOLS, "event").map((tool) => ({ ...tool, deprecated: true, supersededBy: "script_cutscene_staged" })),
   ...withDomain(CUTSCENE_STAGE_TOOLS, "event"),
   ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
+  ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),

@@ -1,0 +1,48 @@
+// 방향 A: 어두운 창에 비스듬한 판자 세 장과 양끝 쇠못, 기준 창의 목재 테두리.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o dwood 2
+@mat f wood 3
+@mat h wood 7
+@mat g glass 1
+@mat v glass 2
+@mat q glass 0
+@mat l pine 4
+@mat b pine 3
+@mat s pine 1
+@mat d pine 0
+@mat n iron 5
+@mat k iron 2
+@layer frame
+@mblock 2 1
+oooooooooooo
+ohhhhhhhhhfo
+ohvggfggggfo
+ohgggfggggfo
+ohgggfgggqfo
+ohgggfgggqfo
+offffffffffo
+ohgggfgggqfo
+ohgggfgggqfo
+ohgggfgggqfo
+ohgggfgggqfo
+ohgggfgggqfo
+ohhhhhhhhhfo
+offfffffffoo
+oooooooooooo
+@layer boards
+@mblock 0 2
+..........llllld
+......llllbbbnkd
+..llllbbbbssss..
+.lbnbbssss......
+.dskss....llllld
+......llllbbbnkd
+..llllbbbbssss..
+.lbnbbssss......
+.dskss....llllld
+......llllbbbnkd
+..llllbbbbssss..
+.lbnbbssss......
+.dskss..........
