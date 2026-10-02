@@ -371,6 +371,7 @@ def main():
     a = sub.add_parser('purge', help='사용자 미결정 아이콘 중 투영 세트·엄격 불합격을 버리고 다시 그리기 판을 연다'); a.add_argument('--set', action='append', choices=SETS)
     a.add_argument('-n', type=int, default=3)
     a = sub.add_parser('front', help='투영 렌더러 세트를 같은 3D 장면 그대로 정면 카메라로 다시 찍어 후보(R)로 올린다'); a.add_argument('--set', action='append')
+    a = sub.add_parser('hand', help='감독이 손으로 고친 그림을 후보로 올린다'); a.add_argument('item'); a.add_argument('script'); a.add_argument('--note', default='')
     a = sub.add_parser('unstrict', help='감독이 엄격 기준으로 적은 버림(client=harness-strict)을 지운다 — 사용자 결정 전으로'); a.add_argument('--set', action='append', required=True)
     a = sub.add_parser('preview', help='작업자 자가 확인: <폴더>/cand.png → 8배·지도 자리·check.json'); a.add_argument('out'); a.add_argument('--item')
     a = sub.add_parser('serve'); a.add_argument('--port', type=int, default=18313); a.add_argument('--host', default='0.0.0.0')
@@ -399,6 +400,9 @@ def main():
         import front
         for x in front.add_candidates(tuple(a.set) if a.set else front.FRONT_SETS):
             print(' ', *x)
+    elif a.cmd == 'hand':
+        import redraw
+        print(redraw.add_hand(a.item, a.script, a.note))
     elif a.cmd == 'unstrict':
         print('지움', len(unstrict(a.set)))
     elif a.cmd == 'pool':

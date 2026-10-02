@@ -19,15 +19,15 @@ ROUNDS = H.DATA / 'rounds'
 POOL_LOCK = H.DATA / 'pool.pid'
 ATTEMPTS = int(os.environ.get('WMI_HARNESS_ATTEMPTS', '3'))
 REPLACE_PER_ROUND = int(os.environ.get('WMI_HARNESS_REPLACE', '2'))   # 판의 후보 수 × 이 배수만큼 폐기분을 새 후보로 채운다
-DRAW_EFFORT = os.environ.get('WMI_HARNESS_DRAW_EFFORT', 'medium')
+DRAW_EFFORT = os.environ.get('WMI_HARNESS_DRAW_EFFORT', 'high')   # medium 은 한 바퀴로 끝내 허접했다(2026-10-02)
 ENGINE = os.environ.get('WMI_HARNESS_ENGINE', 'codex')   # codex | claude
 CLAUDE_MODEL = os.environ.get('WMI_HARNESS_CLAUDE_MODEL', 'claude-sonnet-5-5')
 DIRECTIONS = {
-    'A': '정면 새로 찍기 — 출발 그림은 무엇이 있는지(구성·색)만 참고하고, 시점은 처음부터 정면 3/4 로 다시 찍는다. 옆면이 있던 자리는 정면 벽을 넓혀 채운다',
-    'B': '기준 맞추기 — 원본 EasyRPG 월드 시트의 같은 종류 칸(마을·성·탑)과 구조·명암 단 수·윤곽을 똑같이 맞춘다',
-    'C': '단순·또렷 — 1배에서 한눈에 읽히는 큰 실루엣 하나, 세부는 줄인다',
-    'D': '설명 충실 — 설명 문장의 요소를 정면 3/4 로 빠짐없이 담되 지저분하지 않게',
-    'E': '자유 해석 — 시점 계약만 지키고 이 장소를 가장 잘 보여 줄 새 구성',
+    'A': '원본 재조립 — 출발 그림의 건물·지붕·창·덤불 화소를 조각으로 떼어 정면 3/4 자리로 옮겨 붙인다. 옆면 열은 버리고 정면 벽 열·지붕 줄을 반복해 메운다',
+    'B': '기준 맞추기 — 출발 그림의 화소를 재료로, 원본 EasyRPG 월드 시트의 같은 종류 칸(마을·성·탑)과 구조·명암 단 수·윤곽을 맞춘다',
+    'C': '단순·또렷 — 출발 그림의 화소를 재료로, 1배에서 한눈에 읽히는 큰 실루엣 하나로 정리한다(조각 수를 줄인다)',
+    'D': '설명 충실 — 출발 그림의 화소를 재료로, 설명 문장의 요소와 배치(가운데·앞뒤)를 빠짐없이 맞춘다',
+    'E': '자유 배치 — 출발 그림의 화소를 재료로, 시점 계약만 지키고 이 장소를 가장 잘 보여 줄 새 배치',
 }
 
 
@@ -156,7 +156,8 @@ def _review_prompt(c, cand):
     t = t.replace(str(H.item_dir(it['id'])), str(out))
     base_png, base_x8, _ = _base_paths(c, rnd)
     t += (f'\n\n## 다시 그린 후보다\n출발 그림 `{base_x8}` 와 비교해, 시점은 계약대로 바뀌었는지와 **같은 장소로 읽히는지**도 본다. '
-          f'출발 그림보다 1배에서 덜 읽히면 `READ` 로 떨어뜨린다.\n')
+          f'출발 그림보다 1배에서 덜 읽히면 `READ` 로 떨어뜨린다. '
+          f'출발 그림보다 **결이 거칠면**(기와 줄·벽돌 줄눈·창·명암 단이 사라졌거나, 큰 단색 사각형으로 면을 채워 블록 장난감처럼 보이면) `STYLE` 로 떨어뜨린다.\n')
     return t, out
 
 
@@ -302,7 +303,7 @@ def _after_review(c, cand):
 
 
 def _retry_or_finish(c, cand, problem, fail_status):
-    if (cand.get('engine') or '').startswith('render:'):
+    if (cand.get('engine') or '').startswith(('render:', 'hand:')):
         # 렌더러가 찍은 후보(front.py)는 작업자가 없고, 옆면은 투영 규칙상 0px 이다(KX=0). 검수자가 떨어뜨려도 숨기지 않고
         # ✗ 와 이유를 달아 사용자가 고르게 둔다 — 실측: 「의심되면 FAIL」 검수자가 우진각 지붕 끝 경사면을 옆면으로 읽었다.
         c.execute('update cands set status=?, finished=? where id=?', ('done', H.now(), cand['id']))
@@ -328,6 +329,29 @@ def _replace(c, rnd):
     base = list(DIRECTIONS.values())[(ord(letter) - ord('F')) % len(DIRECTIONS)]
     c.execute('insert into cands(round,letter,direction,status,attempt) values(?,?,?,?,?)',
               (rnd, letter, '다시 그림(앞 후보 폐기) · ' + base, 'queued', 1))
+
+
+def add_hand(item_id, script, note=''):
+    """감독이 손으로 고친 그림(hand/<이름>.py 가 <폴더>/cand.png 를 만든다)을 그 아이콘의 판에 후보 H… 로 올리고 검수에 넣는다.
+    작업자가 없으므로 떨어져도 다시 그리지 않는다 — ✗ 와 이유를 단 채 사용자가 고른다."""
+    c = H.db()
+    tables(c)
+    row = c.execute('select id from rounds where item=? order by id desc', (item_id,)).fetchone()
+    rnd = row['id'] if row else open_round(item_id, note, '', 0, [])
+    used = {x['letter'] for x in c.execute('select letter from cands where round=?', (rnd,))}
+    L = next(ch for ch in 'HIJKLMNOPQ' if ch not in used)
+    out = attempt_dir(rnd, L, 1)
+    out.mkdir(parents=True, exist_ok=True)
+    subprocess.run([sys.executable, str(script), str(out)], check=True)
+    shutil.copy(script, out / 'draw.py')
+    (out / 'note.txt').write_text(note + '\n', encoding='utf-8')
+    res = preview(out, item_id)
+    c.execute('insert into cands(round,letter,direction,status,attempt,engine,check_json,started) values(?,?,?,?,?,?,?,?)',
+              (rnd, L, '감독 손수정 · ' + note, 'review_queued' if res['ok'] else 'broken', 1, 'hand:supervisor',
+               json.dumps(res, ensure_ascii=False), H.now()))
+    c.commit()
+    ensure_pool()
+    return f'r{rnd}/{L}'
 
 
 def restrict(rounds=None):
