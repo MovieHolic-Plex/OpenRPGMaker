@@ -3729,6 +3729,34 @@ function rejectHandMovedActorPictures(rawBeats: unknown): void {
   }
 }
 
+/**
+ * 맵 NPC(차셋) 몬스터가 다가와 공격 애니메이션을 쏘는 컷신 — 차셋 시트에는 몬스터 그림이 없어 사람·동물 그림이 몬스터 행세를 한다
+ * (2026-10-02 조수 시험: 엠버킷이 사람 그림으로 나옴). 몬스터는 staged 의 그림 배우(list_monster_resources 소재)로 세운다.
+ */
+function rejectCharsetMonsterAttack(rawBeats: unknown): void {
+  let movesOtherActor = false;
+  let animates = false;
+  const visit = (beats: unknown): void => {
+    if (!Array.isArray(beats)) return;
+    for (const beat of beats) {
+      if (!beat || typeof beat !== "object") continue;
+      const b = beat as Record<string, unknown>;
+      if (b.kind === "parallel") { visit(b.beats); continue; }
+      if (b.kind === "animation") animates = true;
+      if (b.kind === "moveActor" && typeof b.target === "string" && b.target !== "player" && b.target !== "this-event" && b.target !== "screen") movesOtherActor = true;
+    }
+  };
+  visit(rawBeats);
+  if (movesOtherActor && animates) {
+    throw new ToolError(
+      "다른 NPC 를 움직여 공격 애니메이션을 쏘는 컷신은 script_cutscene 으로 만들지 않습니다 — 차셋 NPC 로는 몬스터 그림이 나오지 않아 사람·동물 그림이 몬스터 행세를 합니다. "
+      + "script_cutscene_staged 로 만드세요: actors 에 {name:'몬스터', resourceId:<list_monster_resources 의 scarloxy-monster-… 소재>}, 주인공은 {ghost:true, tile:{x,y}}, "
+      + "steps 에 enter/move → turn(주인공 방향 확인) → animate(animationId:'anim_…', actor:'주인공')·se·shake 를 선언하세요.",
+      { code: "use-staged-cutscene" },
+    );
+  }
+}
+
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
@@ -3777,7 +3805,7 @@ const scriptCutscene: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const trigger = triggerFromArg(args.trigger);
     const warnings: string[] = [];
-    if (args._composedByStageTool !== true) rejectHandMovedActorPictures(args.beats);
+    if (args._composedByStageTool !== true) { rejectHandMovedActorPictures(args.beats); rejectCharsetMonsterAttack(args.beats); }
     const aliased = canonicalizeSayBeatAliases(args.beats);
     if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
     const beats = reconcileCutsceneSayFaces(draft, map,
