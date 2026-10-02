@@ -589,7 +589,7 @@ def palace_gate(bays=4):
     ku = 'l' + 'o' * (bays // 2 - 1) + 'q' + 'o' * (bays - bays // 2 - 2) + 'r'
     kb = ku
     pas = tuple(range(1, bays - 1))
-    t = tier(bays, 3, 'giwa', 22, ku, kb, 'persimmon', 'plaster', 'paper', dan=False, trim=True, base=True, floor='stone', nobase=pas)
+    t = tier(bays, 3, 'wood', 22, ku, kb, 'persimmon', 'plaster', 'paper', dan=False, trim=True, base=True, floor='stone', nobase=pas)
     cv = Cv(t.w, t.h + T)
     cv.paste(t, 0, 0)
     L = lib()
