@@ -635,5 +635,13 @@
    "estate.wall",
    "castle.wall_v"
   ]
+ },
+ "market_stall_thatch": {
+  "cls": "prop",
+  "refs": [
+   "stall_veg",
+   "stall_herb_flower",
+   "stall_jug_bottle"
+  ]
  }
 }

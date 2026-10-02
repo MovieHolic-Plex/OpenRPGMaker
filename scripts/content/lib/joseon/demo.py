@@ -278,7 +278,7 @@ put_obj('lantern', 33, 17); put_obj('persimmon_a', 36, 5)
 put_obj('hongsalmun', 42, 9, True)
 put_obj('deungrong_mun', 24, 22, True)
 put_obj('stone_pagoda', 38, 3)
-for nm, x, y in (('market_stall', 35, 27), ('market_stall', 38, 27), ('market_stall', 45, 27)):
+for nm, x, y in (('market_stall', 35, 27), ('market_stall_thatch', 38, 27), ('market_stall_thatch', 45, 27)):
     put_obj(nm, x, y)
 for (x, y) in ((27, 37), (15, 36), (46, 29)):
     if put_obj('wondumak', x, y): break

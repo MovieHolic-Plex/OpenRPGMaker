@@ -189,17 +189,25 @@ def thatch_wall_block(half, kind):
             c.hl(5, 13, 5, W[4])
         if kind != 'o': c.hl(0, T, 14, E[3]); c.hl(0, T, 15, E[2])
         else: c.hl(0, T, 14, E[2]); c.hl(0, T, 15, E[1])
-    if kind == 'o':                                   # 열린 마루칸: 어두운 방 안, 앞에 마루 윗면과 마루 앞 널
+    if kind == 'o':                                   # 열린 마루칸: 뒤에 한지 장지문 두 짝, 밝은 마루판, 처마 그늘
         if half == 'u':
             for y in range(5, T):
-                for x in range(T): c.put(x, y, E[0] if y < 11 else E[1])
-            for x in range(3, T - 2, 5): c.vl(x, 5, T, W[1])
+                for x in range(T): c.put(x, y, E[1])
+            for y in range(7, T):                         # 장지문(한지) — 위 두 줄은 처마 그늘로 어둡게
+                for x in range(1, T - 1):
+                    paper = P[4] if y >= 9 else P[2]
+                    c.put(x, y, paper)
+            for xx in (1, 5, 8, 12): c.vl(xx, 7, T, W[3])
+            for xx in (3, 10): c.vl(xx, 9, T, W[4])
+            c.hl(1, T - 1, 9, W[3])
         else:
             for y in range(0, 7):
-                for x in range(T): c.put(x, y, E[1] if y > 1 else E[0])
+                for x in range(1, T - 1): c.put(x, y, P[4] if y < 5 else P[3])
+            for xx in (1, 5, 8, 12): c.vl(xx, 0, 7, W[3])
+            for xx in (3, 10): c.vl(xx, 0, 5, W[4])
             for y in range(7, 11):
-                for x in range(T): c.put(x, y, W[5] if y == 7 else (W[4] if (x // 5 + y) % 2 else W[3]))
-            c.hl(0, T, 11, W[5]); c.hl(0, T, 12, W[2]); c.hl(0, T, 13, W[1])
+                for x in range(T): c.put(x, y, W[6] if y == 7 else (W[5] if (x // 5 + y) % 2 else W[4]))
+            c.hl(0, T, 11, W[6]); c.hl(0, T, 12, W[3]); c.hl(0, T, 13, W[1])
     if kind == 'd':                                   # 한지 바른 격자 미닫이(외짝): 세로 살 셋 + 가로대, 손잡이 없음
         y0, y1 = (7, 16) if half == 'u' else (0, 14)
         c.rect(4, y0, 14, y1, W[3])
@@ -428,7 +436,7 @@ def thatch_baram(cv, R=3, over=0):
     hd = max(28, min(38, int((cv.w + over) * 0.34)))
     cv.paste(thatch3d.dome2(cv.w - 16 + over, hd, seed=cv.w), 8, 51 - hd)
     eave_fill(cv, H, thatch=True)
-    dither_under(cv, H, 4)
+    dither_under(cv, H, 6)
 
 
 def eave_fill(cv, roof_h=48, thatch=False):

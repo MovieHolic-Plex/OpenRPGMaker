@@ -75,7 +75,7 @@ def roof(W, H, style='giwa', wing=22, seed=0):
             if cv.a[y, xi, 3]:
                 cv.put(xi, y, line)
         # 치미: 용마루 끝에 앉은 뭉툭한 마감 기와(바깥 윗끝이 말려 오른다)
-        shape = {0: (0, 2, 'tip'), 1: (0, 4, 'hi'), 2: (0, 5, 'face'), 3: (0, 5, 'face'), 4: (0, 5, 'face'), 5: (1, 5, 'dark')}
+        shape = {0: (0, 3, 'tip'), 1: (0, 5, 'hi'), 2: (0, 6, 'face'), 3: (0, 6, 'face'), 4: (0, 6, 'face'), 5: (1, 6, 'dark')}
         for yy, (k0, k1, kind) in shape.items():
             for k in range(k0, k1):
                 xx = xi + sgn * k

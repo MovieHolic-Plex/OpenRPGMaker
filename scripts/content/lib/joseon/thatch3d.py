@@ -80,14 +80,14 @@ def dome2(W, H, seed=0):
     cv = Cv(W, H)
     cx = (W - 1) / 2.0
     r = H * 0.62                                    # 모서리 둥글기
-    ln = [6 + int(rnd(x, 5, seed + 1) * 8) for x in range(W)]
+    ln = [3 + int(rnd(x, 5, seed + 1) * 6) for x in range(W)]
     off = [int(rnd(x, 6, seed + 2) * 12) for x in range(W)]
     fr = [int(rnd(x // 2, 8, seed + 3) * 4) for x in range(W)]       # 아래 처마 짚 끝 길이 편차
     for y in range(H):
         t = y / max(1.0, H - 1)
         dy = min(y, H - 1 - y)
         yc = (y + 0.5) / H * 2 - 1                  # -1(위) .. 1(아래)
-        n = 2.5 if yc < 0 else 3.4                  # 위는 둥글게, 아래는 네모에 가깝게
+        n = 2.1 if yc < 0 else 2.7                  # 어깨를 둥글게(윗 평탄부를 줄인다)
         hw = (W / 2.0) * (1 - abs(yc) ** n) ** (1.0 / n) if abs(yc) < 1 else 0
         hw = min(hw, W / 2.0 - 0.5)
         for x in range(W):
@@ -117,6 +117,5 @@ def dome2(W, H, seed=0):
             if t > 0.74: base -= 0.7                   # 아래 앞사면은 한 톤 어둡다(처마 안쪽 그늘)
             if abs(u) < 0.6 and y in (3, 4): base -= 0.7   # 용마름: 마루를 덮은 어두운 띠 + 위 밝은 줄
             if abs(u) < 0.6 and y in (1, 2): base += 0.4
-            if 5 < y < H - 5 and ((x + y) % 16 == 0 or (x - y) % 16 == 0): base -= 0.55   # 새끼줄 격자
             cv.put(x, y, BR[max(0, min(5, int(round(base))))])
     return cv
