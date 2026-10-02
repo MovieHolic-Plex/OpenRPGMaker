@@ -336,7 +336,7 @@ def tiles_by_id(i):
 # ---------- 빈 잔디 채우기: 맨 잔디 창이 가장 큰 곳에 덤불·어린 나무·화단을 놓는다(같은 그림 6칸 안 반복 금지) ----------
 import random as _rand
 _POOL = ['bush_l_a', 'bush_l_b', 'bush_s_a', 'bush_s_b', 'pine_c', 'pine_d', 'pine_a', 'bamboo_grove', 'bush_a', 'bush_b', 'bush_c', 'small_z_a', 'small_z_b', 'small_p', 'flower_bed', 'bush_a', 'bush_b', 'bush_c', 'haystack', 'jars', 'persimmon_b', 'persimmon_c']
-_rng = _rand.Random(int(os.environ.get('JS_SEED', '13')))
+_rng = _rand.Random(int(os.environ.get('JS_SEED', '9')))
 
 
 def _lawn_grid():

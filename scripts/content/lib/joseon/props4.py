@@ -126,23 +126,26 @@ def sotdae():
 
 
 def laundry():
-    """빨랫줄 32×32, 3/4: 기둥(원통) 위에 윗면 마개, 줄은 두 점 사이 처짐, 옷은 줄에 걸려 앞면이 보이고 윗부분이 줄 위로 접힌 두께, 땅에 그림자."""
+    """빨랫줄 32×32, 3/4: 기둥 머리 윗면(밝음) + 오른쪽 어두운 면, 줄은 가운데가 처진 호, 옷은 줄 위로 접힌 두께 + 앞면, 땅 그림자는 오른쪽 아래 타원."""
     c = Cv(2 * T, 2 * T)
     W = RGB['wood']; B = RGB['dblue']; R = RGB['red']; St = RGB['stone']
-    ground_shadow(c, 16, 30, 14, 1.8, 70)
+    from props5 import shadow_ell
+    shadow_ell(c, 19, 30, 13, 1.6, 70)
     for x in (3, 28):
         for y in range(8, 30):
-            c.put(x, y, W[5]); c.put(x + 1, y, W[3])
-        c.put(x, 7, W[6]); c.put(x + 1, 7, W[5])                       # 기둥 윗면
-    for x in range(4, 28):
-        c.put(x, 9 + (1 if 10 < x < 21 else 0) + (1 if 13 < x < 18 else 0), W[2])
-    for x0, (lt, dk, top), hh in ((7, (St[6], St[5], St[4]), 11), (14, (B[5], B[4], B[3]), 9), (21, (R[4], R[3], R[2]), 10)):
-        for x in range(x0, x0 + 5):                                    # 줄 위로 접힌 윗단(두께 2줄)
-            c.put(x, 10, top); c.put(x, 11, lt if x < x0 + 3 else dk)
-        for y in range(12, 11 + hh):
+            c.put(x, y, W[5]); c.put(x + 1, y, W[3]); c.put(x + 2, y, W[2])
+        c.put(x, 6, W[6]); c.put(x + 1, 6, W[6]); c.put(x + 2, 6, W[4]); c.put(x, 7, W[5]); c.put(x + 1, 7, W[4]); c.put(x + 2, 7, W[2])   # 기둥머리 윗면
+    for x in range(5, 28):                                                  # 줄: 가운데로 처지는 호
+        u = (x - 16) / 11.5
+        c.put(x, 9 + int(round(3 * (1 - u * u))), W[2])
+    for x0, (lt, dk, top), hh in ((7, (St[6], St[5], St[4]), 10), (14, (B[5], B[4], B[3]), 8), (21, (R[4], R[3], R[2]), 9)):
+        sag = 3 * (1 - ((x0 + 2 - 16) / 11.5) ** 2)
+        y0 = 9 + int(round(sag))
+        for x in range(x0, x0 + 5):                                         # 줄 위로 접힌 윗단(두께 2줄)
+            c.put(x, y0 - 1, top); c.put(x, y0, lt if x < x0 + 3 else dk)
+        for y in range(y0 + 1, y0 + hh):
             for x in range(x0, x0 + 5):
                 c.put(x, y, lt if (x - x0) < 3 else dk)
-        for x in range(x0 + 1, x0 + 5): c.put(x, 11 + hh, SHADOW, 90)    # 옷 아래 그림자
     outline(c)
     return c
 
