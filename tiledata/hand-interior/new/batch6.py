@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""새 기물 6차 — 현대 실내 50종(2026-10-03, 사용자 「현대 기물도 이제 50개쯤 생성하게해바」).
+같은 16px 손 도트 실내 칩셋(v5.pal 팔레트·3/4 시점·선 게이트)에 현대 집·사무실·가게·학교·병원 물건을 더한다.
+MOTHER·포켓몬 실내처럼 현대 마을 RPG 가 바로 쓰는 것들. 맥락 방은 현대 방이 없어 가장 가까운 v5 방(저택·마도 공방·약방·서재·카지노)에 임시로 놓는다.
+  python3 tiledata/hand-interior/new/batch6.py   # items.json 에 덧붙인다(같은 id 는 건너뛴다)
+"""
+import os, sys
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import batch2  # noqa: E402
+import batch4  # noqa: E402
+
+batch2.CAT.update({'m_home': '현대 집', 'm_office': '현대 사무실', 'm_shop': '현대 가게', 'm_school': '현대 학교', 'm_hospital': '현대 병원'})
+BO = batch4.BO
+
+# (id, 이름, 분류, kind, 폭칸, 발밑칸, 캔버스W, H, 맥락 방, use, 설명, 놓는 곳, 짝, refs, 태그[, 밑그림])
+I = [
+ # ── 현대 집 ──
+ ('modern sofa', '천 소파', 'm_home', 'wall', 3, 1, 48, 32, 'inn', ['sit'],
+  '3인용 천 소파(3×1칸, 16px 솟음), 등받이가 북쪽. 남쪽 위에서 내려다본 3/4: 쿠션 셋으로 나뉜 좌판 윗면 6행, 그 뒤 등받이 윗면 3행, 양끝 팔걸이 윗면 3행. 남쪽 면은 좌판 앞 두께와 짧은 나무 다리.',
+  '거실 북쪽 벽 앞, 낮은 탁자 맞은편.', ['modern low table', 'crt tv stand'], ['bench'], ['현대', '거실', '집']),
+ ('modern armchair', '1인 소파', 'm_home', 'floor', 1, 1, 16, 32, 'manor', ['sit'],
+  '1인용 천 안락의자(16px 솟음), 남쪽을 본다. 좌판 윗면 5행, 등받이 윗면 3행, 양 팔걸이 윗면 2행. 같은 천 소파와 같은 색.',
+  '거실 소파 옆.', ['modern sofa'], ['armchair'], ['현대', '거실']),
+ ('crt tv stand', '브라운관 TV 장', 'm_home', 'wall', 2, 1, 32, 32, 'manor', ['read'],
+  '낮은 나무 TV 장 위에 뒤가 두툼한 브라운관 TV(16px 솟음). TV 꼭대기 윗면 3행, 화면은 남쪽을 보는 회청색 유리(반사 사선 하나), TV 앞 받침의 장 윗면 3행, 장 앞면에 유리문 둘.',
+  '거실 북쪽 벽, 소파 맞은편.', ['modern sofa'], ['sideboard 2x1'], ['현대', '거실', '집']),
+ ('modern low table', '거실 낮은 탁자', 'm_home', 'floor', 2, 1, 32, 16, 'manor', ['read'],
+  '유리 상판 낮은 거실 탁자(높이 12px) — 상판 윗면 8행(맑은 유리에 비친 밝은 사선, 리모컨 하나와 잡지 한 권), 그 아래 남쪽 면에 나무 테와 짧은 다리.',
+  '소파와 TV 사이.', ['modern sofa'], ['table'], ['현대', '거실']),
+ ('fridge', '냉장고', 'm_home', 'wall', 1, 1, 16, 32, 'bakery', ['search'],
+  '흰 2도어 냉장고(16px 솟음). 꼭대기 윗면 3행(옅은 회색), 남쪽 면은 위 냉동실 문·아래 냉장실 문, 문마다 세로 손잡이와 문 사이 가는 틈.',
+  '부엌 북쪽 벽, 싱크대 옆.', ['modern sink', 'gas stove'], ['cupboard'], ['현대', '부엌', '집']),
+ ('modern sink', '싱크대', 'm_home', 'wall', 2, 1, 32, 32, 'bakery', ['search'],
+  '스테인리스 싱크대(2칸, 16px 솟음). 조리대 윗면 6행 — 서쪽에 오목한 개수대(안쪽 그늘)와 은빛 수도꼭지, 동쪽에 도마. 남쪽 면에 여닫이 문짝 둘.',
+  '부엌 북쪽 벽.', ['fridge', 'gas stove'], ['counter 2x1'], ['현대', '부엌']),
+ ('gas stove', '가스레인지', 'm_home', 'wall', 1, 1, 16, 32, 'bakery', ['search'],
+  '가스레인지와 오븐(16px 솟음). 윗면 5행에 검은 화구 둘(쇠 받침 십자), 남쪽 면에 손잡이 달린 오븐 문과 손잡이 다이얼 줄.',
+  '부엌 북쪽 벽, 싱크대 옆.', ['modern sink'], ['oven'], ['현대', '부엌']),
+ ('washing machine', '세탁기', 'm_home', 'wall', 1, 1, 16, 32, 'manor', ['search'],
+  '흰 드럼 세탁기(16px 솟음). 꼭대기 윗면 3행(뒤쪽에 다이얼 띠), 남쪽 면 가운데 둥근 유리 문(안의 물빛 회색).',
+  '욕실·다용도실 벽.', ['modern bathtub'], ['washing tub'], ['현대', '욕실', '집']),
+ ('modern bed', '침대(현대)', 'm_home', 'wall', 2, 2, 32, 48, 'inn', ['sleep'],
+  '현대식 더블 침대(2×2칸, 16px 솟음), 머리가 북쪽. 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 26행 — 북쪽 흰 베개 둘, 그 아래 무늬 없는 하늘색 이불이 남쪽으로 덮이고 접힌 끝단. '
+  '그 위(북쪽)에 낮은 나무 머리판 윗면 3행. 남쪽 면은 매트리스 옆 두께와 나무 틀.',
+  '침실 북쪽 벽 가운데.', ['modern desk'], ['bed blue', 'double bed red'], ['현대', '침실', '집']),
+ ('modern desk', '공부 책상', 'm_home', 'wall', 2, 1, 32, 32, 'scholar', ['read'],
+  '나무 공부 책상(2칸, 16px 솟음). 상판 윗면 6행에 꺾인 스탠드 하나·펼친 공책·연필통, 남쪽 면에 서랍 셋.',
+  '아이 방 창가 북쪽 벽.', ['modern bed', 'modern bookshelf'], ['work 2x1'], ['현대', '침실']),
+ ('modern bookshelf', '책장(현대)', 'm_home', 'wall', 1, 1, 16, 32, 'scholar', ['read'],
+  '흰 칠 나무 책장(16px 솟음). 꼭대기 윗판 윗면 3행, 칸 둘마다 선반판 윗면 2행과 색색 만화책 등.',
+  '방 북쪽 벽.', ['modern desk'], ['bookshelf 3w'], ['현대', '방']),
+ ('floor lamp', '스탠드 조명', 'm_home', 'floor', 1, 1, 16, 32, 'manor', ['light'],
+  '거실 플로어 스탠드(16px 솟음). 꼭대기 천 갓의 윗면 타원 3행(안쪽 따뜻한 빛), 가는 쇠 기둥, 둥근 받침 윗면 2행.',
+  '소파 옆 구석.', ['modern sofa'], ['candle stand'], ['현대', '거실']),
+ ('modern bathtub', '욕조(현대)', 'm_home', 'wall', 2, 1, 32, 32, 'manor', ['search'],
+  '흰 법랑 욕조(2칸, 16px 솟음). 테두리 윗면과 그 안 물 면을 위에서 본 윗면 9행(물은 옅은 하늘색, 밝은 물결 한 줄), 서쪽 벽에 수도꼭지, 남쪽 면은 매끈한 흰 옆판.',
+  '욕실 북쪽 벽.', ['modern toilet', 'washing machine'], ['bathtub'], ['현대', '욕실']),
+ ('modern toilet', '양변기', 'm_home', 'wall', 1, 1, 16, 32, 'manor', ['search'],
+  '흰 양변기(16px 솟음). 뒤 물탱크 윗면 3행과 손잡이, 그 앞 닫힌 뚜껑 윗면 5행(타원), 남쪽 면은 둥근 몸통과 받침.',
+  '욕실 구석.', ['modern bathtub'], ['wooden toilet'], ['현대', '욕실']),
+ ('modern washbasin', '세면대', 'm_home', 'wall', 1, 1, 16, 32, 'manor', ['search'],
+  '흰 세면대 장(16px 솟음). 윗면 5행에 오목한 둥근 세면기와 은빛 수도꼭지, 칫솔 컵. 남쪽 면은 여닫이 문 하나.',
+  '욕실 북쪽 벽.', ['modern toilet'], ['washbasin'], ['현대', '욕실']),
+ ('shoe cabinet', '신발장', 'm_home', 'wall', 2, 1, 32, 32, 'manor', ['search'],
+  '현관 나무 신발장(2칸, 16px 솟음). 꼭대기 윗면 4행에 작은 화분과 열쇠 접시, 남쪽 면에 환기 구멍 줄이 난 문 둘. 앞 바닥에 운동화 한 켤레.',
+  '현관 안쪽 벽.', ['doormat'], ['sideboard 2x1'], ['현대', '현관', '집']),
+ ('modern dining table', '식탁(현대)', 'm_home', 'floor', 2, 2, 32, 32, 'manor', ['read'],
+  '4인용 나무 식탁(2×2칸, 다리 높이만큼 아래 열림). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 밝은 나무 상판 위에 체크 식탁보 띠·밥그릇 둘·간장병, 그 아래 남쪽 면에 상판 두께 2행과 다리 넷.',
+  '부엌 가운데.', ['fridge'], ['dining 2x2'], ['현대', '부엌', '집']),
+ ('wall clock modern', '벽시계(현대)', 'm_home', 'hang', 1, 0, 16, 16, 'manor', ['read'],
+  '둥근 흰 벽시계(벽면 윗줄) — 검은 테, 숫자 대신 굵은 눈금 넷, 바늘 둘.', '거실·교실 벽 윗줄.', [], ['wall clock'], ['현대', '거실', '교실']),
+ ('air conditioner', '벽걸이 에어컨', 'm_home', 'hang', 2, 0, 32, 16, 'manor', ['block'],
+  '흰 벽걸이 에어컨(벽면 윗줄 2칸) — 아래쪽에 비스듬한 바람 날개, 오른쪽 끝 초록 불빛 한 점, 아랫면 그늘 1행.', '방 벽 윗줄.', [], ['tapestry'], ['현대', '방']),
+ ('living rug', '거실 러그', 'm_home', 'flat', 2, 2, 32, 32, 'manor', ['walk'],
+  '거실 바닥 러그(2×2칸, 밟을 수 있음) — 베이지 바탕에 굵은 주황 테두리와 가운데 마름모 무늬, 끝에 짧은 술.', '소파 앞 바닥.', ['modern sofa'], ['green rug'], ['현대', '거실']),
+ # ── 현대 사무실 ──
+ ('office pc desk', '컴퓨터 책상', 'm_office', 'wall', 2, 1, 32, 32, 'magitek', ['read'],
+  '회색 철제 사무 책상(2칸, 16px 솟음). 상판 윗면 6행 위에 뒤가 두툼한 베이지 모니터(모니터 윗면 2행, 화면은 남쪽 — 푸른 빛), 키보드, 서류 더미. 남쪽 면에 서랍 장.',
+  '사무실 책상 줄.', ['office chair'], ['work 2x1'], ['현대', '사무실']),
+ ('office chair', '사무용 의자', 'm_office', 'floor', 1, 1, 16, 32, 'magitek', ['sit'],
+  '검은 회전 사무 의자(16px 솟음), 북쪽을 본다(등이 남쪽). 등받이 윗면 2행, 좌판 윗면 4행이 등받이 옆으로 보이고, 가운데 기둥과 바퀴 다섯 갈래 다리.',
+  '컴퓨터 책상 앞(남쪽).', ['office pc desk'], ['chair'], ['현대', '사무실']),
+ ('filing cabinet', '서류 캐비닛', 'm_office', 'wall', 1, 1, 16, 32, 'magitek', ['search'],
+  '회녹색 철제 서류 캐비닛(16px 솟음). 꼭대기 윗면 3행, 남쪽 면에 서랍 넷(서랍마다 손잡이와 이름표 칸).',
+  '사무실 벽.', ['office pc desk'], ['cabinet'], ['현대', '사무실']),
+ ('copy machine', '복사기', 'm_office', 'wall', 2, 1, 32, 32, 'magitek', ['search'],
+  '큰 복사기(2칸, 16px 솟음). 윗면 6행에 덮개(옅은 회색)와 오른쪽 버튼판(작은 초록 화면), 왼쪽에 종이 받이. 남쪽 면에 용지 서랍 둘.',
+  '사무실 구석.', ['filing cabinet'], ['press'], ['현대', '사무실']),
+ ('water cooler', '정수기', 'm_office', 'wall', 1, 1, 16, 48, 'magitek', ['search'],
+  '생수통 정수기(32px 솟음). 맨 위 뒤집힌 파란 생수통(둥근 바닥 윗면 3행, 물빛 반사), 흰 몸통에 꼭지 둘(빨강·파랑), 아래 종이컵 걸이.',
+  '사무실·병원 대기실 벽.', ['office pc desk'], ['water jar'], ['현대', '사무실', '병원']),
+ ('server rack', '서버 랙', 'm_office', 'wall', 1, 1, 16, 48, 'magitek', ['search'],
+  '검은 서버 랙(32px 솟음). 꼭대기 윗면 3행(통풍 구멍 줄), 남쪽 면은 칸칸이 쌓인 장비, 장비마다 작은 초록·주황 불빛 점.',
+  '사무실 안쪽 전산실.', ['office pc desk'], ['cabinet'], ['현대', '사무실', '연구소']),
+ ('whiteboard', '화이트보드', 'm_office', 'hang', 2, 0, 32, 16, 'scholar', ['read'],
+  '흰 화이트보드(벽면 윗줄 2칸) — 은색 테, 파란 막대그래프와 빨간 화살표, 아래 받침에 마커 둘.', '회의실·교실 벽.', ['meeting table'], ['notice board'], ['현대', '사무실']),
+ ('meeting table', '회의 탁자', 'm_office', 'floor', 3, 2, 48, 48, 'manor', ['read'],
+  '긴 회의 탁자(3×2칸, 16px 솟음). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 24행(밑그림 y=6~29) — 짙은 나무 상판을 위에서 본 넓은 면에 서류철 둘·물컵 셋·가운데 전화기. '
+  '그 아래 남쪽 면 밑그림 y=30~47: 상판 두께 2행과 판 다리 둘(검은 쇠). 옆모습 금지.',
+  '회의실 가운데, 둘레에 사무용 의자.', ['office chair', 'whiteboard'], ['dining 4x2'], ['현대', '사무실', '회의실'],
+  BO((6, 29), (30, 47), 0.85)),
+ ('office plant', '사무실 화분', 'm_office', 'floor', 1, 1, 16, 32, 'magitek', ['block'],
+  '흰 원통 화분에 키 큰 고무나무(16px 솟음). 넓은 잎 덩어리 윗면이 밝고, 화분 입구 타원 윗면 2행에 흙이 보인다.',
+  '사무실 구석·로비.', [], ['potted plant'], ['현대', '사무실', '로비']),
+ ('cork board', '코르크 게시판', 'm_office', 'hang', 2, 0, 32, 16, 'scholar', ['read'],
+  '갈색 코르크 게시판(벽면 윗줄 2칸) — 나무 테, 압정으로 꽂은 쪽지 다섯 장(흰·노랑·분홍)과 사진 한 장.', '사무실·교실 벽.', ['whiteboard'], ['notice board'], ['현대', '사무실', '교실']),
+ # ── 현대 가게 ──
+ ('store shelf', '편의점 진열대', 'm_shop', 'wall', 2, 1, 32, 48, 'tailor', ['search'],
+  '흰 철제 편의점 진열대(2칸, 32px 솟음). 꼭대기 윗판 윗면 3행, 선반 셋마다 선반판 윗면 2행과 그 위 과자 봉지·컵라면·통조림(각 상품의 윗면이 보인다).',
+  '편의점 벽 따라.', ['drink fridge', 'register counter'], ['shop shelf'], ['현대', '편의점', '가게']),
+ ('drink fridge', '음료 냉장고', 'm_shop', 'wall', 2, 1, 32, 48, 'tailor', ['search'],
+  '유리문 음료 냉장고(2칸, 32px 솟음). 꼭대기 윗면 3행(위 광고판 띠), 남쪽 면은 유리문 둘 너머 칸칸이 선 캔·병(빨강·파랑·초록), 유리 반사 사선과 세로 손잡이.',
+  '편의점 안쪽 벽.', ['store shelf'], ['cupboard'], ['현대', '편의점']),
+ ('register counter', '계산대', 'm_shop', 'floor', 2, 1, 32, 32, 'pharmacy', ['counter'],
+  '편의점 계산대(2칸, 16px 솟음). 상판 윗면 6행 위에 금전등록기(작은 초록 화면)·바코드 판·껌 진열대, 남쪽 면에 가게 띠 색 판.',
+  '편의점 입구 옆.', ['store shelf'], ['counter 2x1'], ['현대', '편의점', '가게']),
+ ('vending machine', '자판기', 'm_shop', 'wall', 1, 1, 16, 48, 'zozo', ['search'],
+  '빨간 음료 자판기(32px 솟음). 꼭대기 윗면 3행, 남쪽 면 위쪽 유리창 안 견본 캔 두 줄, 그 아래 고르는 단추 줄·동전 넣는 곳, 맨 아래 꺼내는 칸.',
+  '거리 가게 앞·복도·역.', ['store shelf'], ['cabinet'], ['현대', '가게', '역']),
+ ('magazine rack', '잡지 꽂이', 'm_shop', 'wall', 1, 1, 16, 32, 'pharmacy', ['read'],
+  '철사 잡지 꽂이(16px 솟음). 비스듬한 칸 셋에 표지 색이 다른 잡지(앞 표지가 남쪽 위로 보인다), 꼭대기 윗면 2행.',
+  '편의점 창가.', ['store shelf'], ['book stand'], ['현대', '편의점']),
+ ('ice cream freezer', '아이스크림 냉동고', 'm_shop', 'floor', 2, 1, 32, 32, 'pharmacy', ['search'],
+  '흰 가로 냉동고(2칸, 16px 솟음). 미닫이 유리 뚜껑 윗면 9행 너머 색색 아이스크림 상자가 위에서 보인다(유리 반사 사선), 남쪽 면에 상표 띠.',
+  '편의점 바닥 가운데.', ['register counter'], ['chest'], ['현대', '편의점']),
+ ('arcade cabinet', '오락기', 'm_shop', 'wall', 1, 1, 16, 48, 'casino', ['play'],
+  '세로형 오락기(32px 솟음). 꼭대기 윗면 2행과 빛나는 제목판, 남쪽을 보는 화면(푸른 빛과 작은 별), 그 아래 조작판 윗면 3행(조이스틱 하나·단추 둘), 동전 넣는 곳.',
+  '오락실 벽 따라.', ['claw machine'], ['slot machine'], ['현대', '오락실']),
+ ('claw machine', '인형 뽑기', 'm_shop', 'floor', 2, 1, 32, 48, 'casino', ['play'],
+  '인형 뽑기 기계(2칸, 32px 솟음). 꼭대기 윗면 3행(분홍 지붕), 유리 상자 안 색색 인형 더미의 윗면이 위에서 보이고 은빛 집게가 매달림, 아래 조작판 윗면 3행과 경품 구멍.',
+  '오락실·쇼핑몰.', ['arcade cabinet'], ['slot machine'], ['현대', '오락실']),
+ ('atm machine', '현금 인출기', 'm_shop', 'wall', 1, 1, 16, 32, 'zozo', ['search'],
+  '은행 현금 인출기(16px 솟음). 꼭대기 윗면 2행, 남쪽 면 위쪽 비스듬한 화면(초록 빛), 그 아래 숫자판 윗면 2행과 카드 구멍·지폐 나오는 곳.',
+  '은행·편의점 구석.', ['register counter'], ['cabinet'], ['현대', '은행', '편의점']),
+ # ── 현대 학교 ──
+ ('student desk set', '학생 책상', 'm_school', 'floor', 1, 1, 16, 32, 'scholar', ['read'],
+  '학생 책상과 의자 한 벌(16px 솟음), 남쪽에 의자. 책상 상판 윗면 5행(밝은 나무, 연필 홈), 쇠 다리, 남쪽 의자 좌판 윗면 2행과 등받이.',
+  '교실에 줄 맞춰.', ['teacher lectern', 'green chalkboard'], ['school desk', 'desk 1x1'], ['현대', '학교', '교실']),
+ ('teacher lectern', '교탁', 'm_school', 'floor', 1, 1, 16, 32, 'scholar', ['read'],
+  '나무 교탁(16px 솟음). 비스듬한 윗판 윗면 4행에 출석부와 분필 상자, 남쪽 면은 판자 앞판.',
+  '교실 칠판 앞 가운데.', ['green chalkboard', 'student desk set'], ['lectern'], ['현대', '학교', '교실']),
+ ('green chalkboard', '칠판', 'm_school', 'hang', 3, 0, 48, 16, 'tower', ['read'],
+  '초록 칠판(벽면 윗줄 3칸) — 나무 테, 흰 분필 글씨 몇 줄과 동그라미 그림, 아래 분필 받침에 지우개.', '교실 앞 벽.', ['teacher lectern'], ['notice board'], ['현대', '학교', '교실']),
+ ('school locker', '사물함', 'm_school', 'wall', 1, 1, 16, 48, 'scholar', ['search'],
+  '하늘색 철제 사물함(32px 솟음). 꼭대기 윗면 3행, 남쪽 면에 문 둘(위·아래), 문마다 환기 틈 셋과 작은 손잡이.',
+  '복도·탈의실 벽 따라.', ['student desk set'], ['cabinet'], ['현대', '학교', '복도']),
+ ('vaulting box', '뜀틀', 'm_school', 'floor', 2, 1, 32, 32, 'scholar', ['block'],
+  '체육관 나무 뜀틀(2칸, 16px 솟음). 맨 위 흰 가죽 덮개 윗면 6행, 그 아래 층층이 쌓인 나무 단 넷(층마다 손잡이 구멍).',
+  '체육관 바닥.', [], ['crate'], ['현대', '학교', '체육관']),
+ ('lab table', '실험대', 'm_school', 'floor', 2, 1, 32, 32, 'scholar', ['search'],
+  '과학실 실험대(2칸, 16px 솟음). 검은 상판 윗면 6행 위에 비커·플라스크(초록 물)·알코올 램프·현미경, 남쪽 면은 흰 수납장 문 둘.',
+  '과학실 가운데.', ['student desk set'], ['alembic'], ['현대', '학교', '연구소']),
+ # ── 현대 병원 ──
+ ('hospital bed', '병원 침대', 'm_hospital', 'floor', 1, 2, 16, 48, 'pharmacy', ['sleep'],
+  '흰 철제 병원 침대(1×2칸 남북, 16px 솟음), 머리가 북쪽. 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 26행 — 북쪽 흰 베개, 그 아래 연두빛 이불이 남쪽으로 덮인다. 머리판·발판은 은빛 쇠 난간(윗면 2행), 남쪽 면에 작은 바퀴.',
+  '병실 벽 따라 줄로.', ['iv stand', 'medicine cabinet modern'], ['prison cot'], ['현대', '병원', '병실']),
+ ('iv stand', '링거 거치대', 'm_hospital', 'floor', 1, 1, 16, 32, 'pharmacy', ['block'],
+  '은빛 링거 거치대(16px 솟음). 꼭대기 갈고리에 투명 수액 봉지(물빛), 가는 줄이 늘어지고, 아래 다섯 갈래 바퀴 받침.',
+  '병원 침대 머리 옆.', ['hospital bed'], ['coat rack'], ['현대', '병원']),
+ ('medicine cabinet modern', '약장(현대)', 'm_hospital', 'wall', 1, 1, 16, 32, 'pharmacy', ['search'],
+  '흰 철제 약장(16px 솟음). 꼭대기 윗면 3행에 빨간 십자, 남쪽 면 유리문 너머 선반의 약병·상자.',
+  '병원 진료실 벽.', ['hospital bed'], ['potion shelf'], ['현대', '병원']),
+ ('wheelchair', '휠체어', 'm_hospital', 'floor', 1, 1, 16, 32, 'pharmacy', ['sit'],
+  '휠체어(16px 솟음), 남쪽을 본다. 파란 천 좌판 윗면 4행과 등받이, 양옆 큰 바퀴(둥근 테·살), 앞 발판.',
+  '병원 복도·대기실.', ['hospital bed'], ['chair'], ['현대', '병원']),
+ ('hospital reception', '병원 접수대', 'm_hospital', 'floor', 3, 1, 48, 32, 'pharmacy', ['counter'],
+  '흰 병원 접수대(3칸, 16px 솟음). 상판 윗면 6행 위에 서류철·모니터 하나·호출 종, 남쪽 면은 연두색 띠를 두른 흰 판과 빨간 십자 표시.',
+  '병원 현관 맞은편.', ['water cooler'], ['counter 4x1'], ['현대', '병원', '로비']),
+]
+assert len({x[0] for x in I}) == len(I), '같은 id 가 둘'
+
+if __name__ == '__main__':
+    import common
+    for row in I:
+        o = dict(id=row[0], kind=row[3], footprint=dict(w=row[4], h=row[5]), description=row[10], image=dict(w=row[6], h=row[7]), **(row[15] if len(row) > 15 else {}))
+        errs = common.spec_top_lint(o)
+        if errs: raise SystemExit('\n'.join(errs))
+    batch2.I = [r if len(r) > 15 else r for r in I]
+    batch2.main()
