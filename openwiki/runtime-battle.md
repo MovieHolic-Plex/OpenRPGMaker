@@ -894,6 +894,10 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   (기획 있음·없음)과 턴제 전투를 말하는 자유 문장에 「톤에 맞는 프리셋을 고르고, 정면 스킨이면 측면 스킨으로 바꾼 뒤 고르라」를 붙인다(측면 스킨 id 는 레지스트리에서 뽑는다).
   몬스터 대치 장르(정면 `pokemon`)에는 붙이지 않는다. 회귀: `test/battleLookAssistant.test.ts`. 실측(qa:game gen, gemini-3.8-flash, 각 1회): 고치기 전 main 에서 영웅 광산 JRPG·어두운 복수극은 꾸미기를 안 건드렸고
   동화풍은 「화려한 금테」(톤 불일치)를 골랐다. 고친 뒤 영웅 광산 → gold(+붉은 강조색), 어두운 복수극 → ink(+금색 강조색), 동화풍 → parch. 셋 다 측면 스킨 retro2003.
+  각 4판 확장(2026-10-02): 고치기 전 12판 중 2판만 꾸밈을 건드림 → 고친 뒤 끝까지 간 판 거의 전부가 톤 맞는 프리셋. 같은 시험에서 조수가 고른 강조색이
+  두 CSS 결함을 드러냈다: ① 양피지 창(parch) 선택 줄 글씨를 강조색으로 칠해 밝은 강조색(#ffcc44)이면 「공격」이 안 보였다 → 글씨는 늘 `--look-text`,
+  강조색은 선택 줄 바탕(26% 섞음)·마름모에만. ② 영화 띠 아래 장이 z 30 이라 줄 목록 파티의 마지막 줄을 덮었다 → 아래 띠만 `z-index: 2`(창 밑), 위 띠는 그대로.
+  계획→실행 이음매에서 실행 턴이 0편집으로 끝나던 중단은 `src/ai/piAgent/planExecution.ts` — `openwiki/editor-ai-panel.md` 참조.
 
 - 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
 - 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
