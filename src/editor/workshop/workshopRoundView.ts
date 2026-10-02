@@ -37,7 +37,10 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
   const palette = session.runner.palette(item);
   const current = session.runner.currentGrid(item);
   const pick = session.picks.find((p) => p.itemKey === item.key);
-  const scale = state.zoom === "big" ? 8 : 4;
+  // fit = 카드 그림 상자(약 170×250)에 들어가는 가장 큰 정수 배율, big = 그 2배. CSS 로 늘리지 않는다(도트가 흐려진다).
+  const fitScale = Math.max(1, Math.floor(Math.min(170 / item.width, 250 / item.height)));
+  const scale = state.zoom === "big" ? fitScale * 2 : fitScale;
+  const compareScale = state.zoom === "big" ? 16 : 8;
 
   const noteText = () => (notes.get(item.key) ?? "").trim();
   function act(work: () => Promise<void>): void {
@@ -145,8 +148,8 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
 
   function compare(run: WorkshopRun | null): HTMLElement {
     const figures: HTMLElement[] = [];
-    if (current) figures.push(el("figure", { children: [el("img", { attrs: { src: gridDataUrl(current, palette, 8, BACKGROUND), alt: "지금 그림" } }), el("figcaption", { text: "지금 시트의 그림" })] }));
-    if (run?.grid) figures.push(el("figure", { children: [el("img", { attrs: { src: gridDataUrl(run.grid, palette, 8, BACKGROUND), alt: `후보 ${run.letter}` } }), el("figcaption", { text: `후보 ${run.letter}` })] }));
+    if (current) figures.push(el("figure", { children: [el("img", { attrs: { src: gridDataUrl(current, palette, compareScale, BACKGROUND), alt: "지금 그림" } }), el("figcaption", { text: "지금 시트의 그림" })] }));
+    if (run?.grid) figures.push(el("figure", { children: [el("img", { attrs: { src: gridDataUrl(run.grid, palette, compareScale, BACKGROUND), alt: `후보 ${run.letter}` } }), el("figcaption", { text: `후보 ${run.letter}` })] }));
     return el("div", { class: "workshop-compare", dataset: { testid: "workshop-compare" }, children: figures });
   }
 
@@ -168,7 +171,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       ...errorLine(),
       head,
       el("p", { class: "workshop-item-meta", text: "1~5 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요." }),
-      el("div", { class: "workshop-cards", children: runs.map(card) }),
+      el("div", { class: "workshop-cards" + (state.zoom === "big" ? " is-big" : ""), children: runs.map(card) }),
       compare(selectedRun ?? null),
       pending
         ? el("button", { attrs: { type: "button" }, text: "이 판 그만 그리기", on: { click: () => act(() => session.engine.cancelRound(round.id)) } })
