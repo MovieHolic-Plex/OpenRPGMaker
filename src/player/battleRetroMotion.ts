@@ -1,3 +1,4 @@
+import { beginEnemyCollapse } from "@/player/battleEnemyCollapse";
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { PartyPixelCell, PixelEnemyCell } from "@/assets/pixelEnemySheets";
@@ -183,7 +184,10 @@ export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, 
     if (node.dataset.pixelParty && feedback.miss) { transientPose(node, "evade", 240); return; }
     if (feedback.healing || feedback.miss || feedback.amount <= 0) return;
     // 맞은 칸을 잠깐 보이고, 막타면 그 뒤 녹아내린 칸(dead)으로 넘어간다.
-    if (lethal) node.classList.add("defeated");
+    if (lethal) {
+      node.classList.add("defeated");
+      if (node.classList.contains("battle-enemy")) beginEnemyCollapse(node);
+    }
     transientPose(node, "hit", lethal ? 200 : 380);
     return;
   }
@@ -200,6 +204,7 @@ export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, 
   if (lethal && node.classList.contains("battle-enemy")) {
     // 원장의 syncEnemyNode가 기본 파편을 생성하기 전에 격파 상태를 예약한다.
     node.classList.add("defeated");
+    beginEnemyCollapse(node);
     return;
   }
   if (!node.classList.contains("battle-actor")) return;
