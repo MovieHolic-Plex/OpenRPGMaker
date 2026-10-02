@@ -121,8 +121,10 @@ def render_depth_v6(M, img):
     palm = np.zeros((Hp, Wp), bool)
     for c in V.WPAL:
         palm |= np.all(img == c, axis=2)
+    # 강 어귀 칸에 섞인 바다 화소도 얕은 물빛으로 — 빼 두면 진한 바다 원색이 강 칸 안에 얼룩 네모로 남았다(QA 2026-10-03, 군도 해협)
+    mouth = palm & np.repeat(np.repeat(M.G == RIVER, 16, 0), 16, 1)
     palm &= seapx
-    shallow = palm & ~s1
+    shallow = (palm & ~s1) | mouth
     deep = palm & s2
     teal = np.array([100, 210, 214], np.float32)
     img[shallow] = (img[shallow] * .6 + teal * .4).astype(np.uint8)

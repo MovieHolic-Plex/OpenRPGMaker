@@ -552,8 +552,10 @@ def render_water(M, img):
                         fr = np.maximum(fr, np.tile(prof[None, :], (16, 1)) if dx else np.tile(prof[:, None], (1, 16)))
                 if fr.max() > 0:
                     sea = water_tile(M, x, y, SEA)
-                    bay = (BAYER[np.arange(16)[:, None] % 4, np.arange(16)[None, :] % 4] + .5) / 16
-                    use = bay < (fr ** 1.3)
+                    # 바이어 디더 대신 칸 안에서 굽이치는 한 줄 경계 — 디더는 어귀가 체크무늬 네모로 떠 보였다(QA 2026-10-03)
+                    yy, xx = np.mgrid[0:16, 0:16]
+                    wav = .5 + .13 * np.sin((yy + y * 16) / 2.6 + x * 1.7) + .09 * np.sin((xx + x * 16) / 2.1 + y * 2.3)
+                    use = fr > wav
                     tile[use] = sea[use]
             img[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = tile
     return img

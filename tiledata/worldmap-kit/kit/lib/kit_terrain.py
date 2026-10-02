@@ -114,6 +114,24 @@ def merge(base, edit):
     return validate(out)
 
 
+def blob(cx, cy, rx, ry, salt):
+    """섬 윤곽 — 타원에 2·3·5 겹 굽이를 얹은 다각형. 작은 타원은 노이즈 왜곡을 거치면 모두 같은 십자 덩이가 됐다(QA 4차)."""
+    import math
+    import make_map_v4 as M4
+    n = 18
+    p = [M4.rnd(k, salt, 31) * 6.2832 for k in range(3)]
+    amp = (.22 + .12 * M4.rnd(3, salt, 31), .14 + .08 * M4.rnd(4, salt, 31), .08)
+    tilt = (M4.rnd(5, salt, 31) - .5) * 1.2
+    out = []
+    for k in range(n):
+        a = 6.2832 * k / n
+        r = 1 + amp[0] * math.sin(2 * a + p[0]) + amp[1] * math.sin(3 * a + p[1]) + amp[2] * math.sin(5 * a + p[2])
+        r += (M4.rnd(k, salt, 37) - .5) * .16
+        x, y = math.cos(a) * rx * r, math.sin(a) * ry * r
+        out.append((cx + x * math.cos(tilt) - y * math.sin(tilt), cy + x * math.sin(tilt) + y * math.cos(tilt)))
+    return out
+
+
 def apply(spec, journey):
     """make_map_v4 의 목록에 작업을 얹고, move_place 를 반영한 여정 사본을 돌려준다. 프로세스당 한 번(빌드 전)."""
     if spec is None:
@@ -130,7 +148,7 @@ def apply(spec, journey):
             M4.EXTRA_SEA.append((_pts(o['poly'], 'poly', i, 3), 1.2))
         elif k == 'island':
             key = 'edit%d' % i
-            M4.ISLES[key] = M4.ellipse(float(o['x']), float(o['y']), float(o['rx']), float(o['ry']), 12, 900 + i)
+            M4.ISLES[key] = blob(float(o['x']), float(o['y']), float(o['rx']), float(o['ry']), 900 + i)
             M4.ISLE_GROUND[key] = g if g is not None else M4.GRASS
         elif k == 'biome':
             M4.EXTRA_BIOMES.append((_pts(o['poly'], 'poly', i, 3), g, 1.4))
