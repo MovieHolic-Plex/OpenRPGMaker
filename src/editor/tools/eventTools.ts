@@ -3697,6 +3697,38 @@ function cutsceneMoveWarnings(project: Project, map: GameMap, beats: readonly Cu
   return warnings;
 }
 
+/**
+ * 생성한 소품·캐릭터셋 조각·몬스터 도트 그림을 picture move 로 손수 움직이는 컷신은 거부한다 — 좌표를 모델이 어림하면
+ * 닿지 않거나 어긋난다(2026-10-02 트럭 시험). 같은 일을 script_cutscene_staged 가 그림 크기로 계산해 준다.
+ * 배경·정지 컷·페이드 같은 일반 picture 사용은 막지 않는다. staged/impact 도구는 내부 호출이라 _composedByStageTool 로 통과한다.
+ */
+const HAND_MOVED_ACTOR_PICTURE = /^(cutscene_sprite_|cutscene_char_|scarloxy-monster-|.*-monster-)/u;
+function rejectHandMovedActorPictures(rawBeats: unknown): void {
+  const resourceOf = new Map<string, string>();
+  const offenders = new Set<string>();
+  const visit = (beats: unknown): void => {
+    if (!Array.isArray(beats)) return;
+    for (const beat of beats) {
+      if (!beat || typeof beat !== "object") continue;
+      const b = beat as Record<string, unknown>;
+      if (b.kind === "parallel") { visit(b.beats); continue; }
+      if (b.kind !== "picture") continue;
+      const id = String(b.pictureId ?? b.id ?? "");
+      if (typeof b.resourceId === "string") resourceOf.set(id, b.resourceId);
+      const resource = resourceOf.get(id);
+      if (b.action === "move" && resource && HAND_MOVED_ACTOR_PICTURE.test(resource)) offenders.add(resource);
+    }
+  };
+  visit(rawBeats);
+  if (offenders.size > 0) {
+    throw new ToolError(
+      `그림 ${[...offenders].join(", ")} 를 picture move 로 손수 움직이는 컷신은 만들지 않습니다 — 좌표를 어림하면 닿지 않거나 어긋납니다. `
+      + "script_cutscene_staged 로 다시 만드세요: actors 에 이 그림을 배우(resourceId)로 넣고, steps 에 enter/move/exit/fling/expect touching 으로 관계를 선언하면 도구가 좌표를 계산합니다(find_tools 로 script_cutscene_staged 를 찾으세요).",
+      { code: "use-staged-cutscene" },
+    );
+  }
+}
+
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
@@ -3745,6 +3777,7 @@ const scriptCutscene: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const trigger = triggerFromArg(args.trigger);
     const warnings: string[] = [];
+    if (args._composedByStageTool !== true) rejectHandMovedActorPictures(args.beats);
     const aliased = canonicalizeSayBeatAliases(args.beats);
     if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
     const beats = reconcileCutsceneSayFaces(draft, map,

@@ -2,6 +2,7 @@
 // 조수는 배경·탈것 그림 id, 피해자 캐릭터(게임 캐릭터셋), 대사만 고른다. 어디서 출발해 어디서 닿고 어디로 튕겨 나가는지의
 // 좌표·타이밍은 여기서 계산해 script_cutscene 의 picture/flash/shake/music beat 로 컴파일한다.
 // 모든 그림은 게임 해상도(320×240, 16px 타일) 그대로 100% 배율로 놓는다 — 확대하면 도트 크기가 섞여 이질감이 난다.
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { cropCharsetFrames, CHARSET_FRAME_ROLES, type CharsetFramePictures, type CharsetFrameRole } from "@/editor/cutsceneArt/charsetFrames";
 import { pictureSize } from "@/editor/cutsceneArt/pictureSize";
 import { DEFAULT_PLAY_RESOLUTION } from "@/project/playResolution";
@@ -170,6 +171,9 @@ function characterArg(args: Record<string, unknown>): { resourceId: string; char
   if (typeof raw !== "object" || Array.isArray(raw)) throw new ToolError("victimCharacter 는 {resourceId, characterIndex} 객체여야 합니다.", { code: "invalid-args" });
   const record = raw as RecordValue;
   const resourceId = typeof record.resourceId === "string" && record.resourceId.trim() ? record.resourceId.trim() : DEFAULT_CHARSET;
+  if (!/actor[1-4]$/iu.test(resourceId)) {
+    throw new ToolError(`victimCharacter 는 캐릭터셋 Actor1~4 에서 고릅니다('${resourceId}' 아님) — 예: {resourceId:'tex_easyrpg_charset_actor1', characterIndex:0}(인물 0~7번). 선택한 인물로 맵 위 주인공 그래픽도 맞춰 줍니다.`, { code: "invalid-args" });
+  }
   const index = typeof record.characterIndex === "number" && Number.isFinite(record.characterIndex) ? Math.trunc(record.characterIndex) : 0;
   return { resourceId, characterIndex: Math.max(0, Math.min(7, index)) };
 }
@@ -181,7 +185,7 @@ const scriptCutsceneImpact: ToolDefinition = {
   description:
     "탈것이 인물에게 돌진해 부딪히는 충돌 컷신(트럭 사고 등)을 한 번에 만든다. 맵 타일·NPC 이동 없이 picture 로 처리하며 모든 그림은 게임 해상도 100% 배율이다. "
     + "먼저 generate_cutscene_art 로 배경(role:backdrop)과 탈것(role:sprite, tiles 로 크기)을 만들고 그 resourceId 를 넣는다. "
-    + "피해자는 생성하지 않고 게임 캐릭터셋의 인물을 쓴다 — victimCharacter 에 주인공 배우의 characterResourceId·characterIndex(get_database_records actors)를 넣는다(생략하면 Actor1 0번). 걷기 프레임이 진짜로 교체된다. "
+    + "피해자는 생성하지 않고 게임 캐릭터셋의 인물을 쓴다 — victimCharacter 는 캐릭터셋 Actor1~4 에서 한 명을 고른다(예 tex_easyrpg_charset_actor1 번호 0~7, 생략하면 Actor1 0번) — 고른 인물로 맵 위 주인공 그래픽도 자동으로 맞춰져 컷신 속 인물과 이세계의 주인공이 같은 사람이 된다. 걷기 프레임이 진짜로 교체된다. "
     + "도구가 좌표·타이밍을 계산한다: 인물이 보도에서 걸어 나오고 → 경적 대사 → 탈것이 달려와 닿는 순간 효과음·플래시·화면 흔들림 → 인물이 회전하며 날아가고 → 화면이 하얗게 덮이며 afterLines 내레이션. "
     + "roadTop·roadBottom 은 배경 그림에서 도로 띠의 위·아래 끝이 화면 높이의 몇 %인지(0~1)로, 생성 결과 그림을 보고 읽어 넣는다. vehicleFacing 은 탈것 그림이 바라보는 방향(left 면 오른쪽에서 들어온다). "
     + "끝난 뒤 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. 엔딩/이세계 이동 등 이후 연출은 같은 이벤트에 이어 붙이지 말고 별도 처리한다.",
@@ -293,6 +297,7 @@ const scriptCutsceneImpact: ToolDefinition = {
     }
     const trigger = args.trigger === "action" ? "action" : "auto";
     const cutsceneArgs: Record<string, unknown> = {
+      _composedByStageTool: true,
       mapId: map.id,
       beats: choreography.beats,
       skippable: args.skippable !== false,
@@ -303,8 +308,20 @@ const scriptCutsceneImpact: ToolDefinition = {
     if (typeof args.x === "number") cutsceneArgs.x = Math.trunc(args.x);
     if (typeof args.y === "number") cutsceneArgs.y = Math.trunc(args.y);
     const cut = SCRIPT_CUTSCENE.run(draft, cutsceneArgs);
+    // 컷신 속 인물과 이세계(맵)의 주인공이 같은 사람이어야 한다 — 고른 Actor 인물로 주인공 그래픽을 맞춘다.
+    let heroNote = "";
+    if (character) {
+      const hero = draft.database.actors.find((actor) => actor.id === "actor_hero") ?? draft.database.actors[0];
+      if (hero) {
+        hero.characterResourceId = character.resourceId.replace(/^tex_easyrpg_charset_/u, "easyrpg-charset-");
+        hero.characterIndex = character.characterIndex;
+        const face = reviewedFaceIdForCharset(hero.characterResourceId, character.characterIndex);
+        if (face) hero.faceResourceId = face;
+        heroNote = ` 주인공 '${hero.name}' 의 맵 그래픽도 ${hero.characterResourceId} #${character.characterIndex} 로 맞췄습니다.`;
+      }
+    }
     return {
-      summary: `${map.name}에 충돌 컷신 배치 — beat ${choreography.beats.length}개 (탈것이 x=${choreography.layout.vehicle.contactX} 에서 인물에 닿음). preview_cutscene 으로 확인하세요.`,
+      summary: `${map.name}에 충돌 컷신 배치 — beat ${choreography.beats.length}개 (탈것이 x=${choreography.layout.vehicle.contactX} 에서 인물에 닿음). preview_cutscene 으로 확인하세요.${heroNote}`,
       data: { eventId: (cut.data as { eventId?: string } | undefined)?.eventId, layout: choreography.layout, beatCount: choreography.beats.length },
       ...(cut.warnings && cut.warnings.length > 0 ? { warnings: cut.warnings } : {}),
     };

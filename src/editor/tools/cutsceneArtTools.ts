@@ -118,7 +118,8 @@ const generateCutsceneArt: ToolDefinition = {
     + "role=sprite: 투명 배경으로 오려 낸 소품(트럭, 자동차, 상자…). 한 장에 한 대상, 전신이 보이게 설명한다. tiles 로 현실 비례 크기를 정한다. 사람·주인공은 이 도구로 만들지 말고 script_cutscene_staged 의 character 배우(게임 캐릭터셋; 충돌만이면 script_cutscene_impact 의 victimCharacter)를 쓴다. "
     + "role=backdrop: 인물·탈것이 없는 전체화면 빈 무대 배경(거리, 방…). 가로 도로 띠가 화면 가운데(약 40~75% 높이)를 지나게 만든다. 생성에 1분 안팎이 걸리고 호출마다 한 장만 만든다. 결과 그림이 이미지로 함께 전달되니 도로 띠의 위치를 눈으로 읽어 script_cutscene_impact 의 roadTop·roadBottom 에 넣는다. "
     + "반환된 resourceId 는 script_cutscene_staged 의 배우(resourceId)로 넣는다(충돌 전용은 script_cutscene_impact, 그 밖의 특수한 경우만 script_cutscene 의 picture beat). 생성 그림 안에 글자·로고는 넣지 않는다. "
-    + "그림이 맵 타일로 없는 풍경(도로·횡단보도 등)이면 맵을 꾸미는 대신 이 도구로 배경을 만들어 컷신 전용 장면으로 쓴다.",
+    + "게임에 이미 있는 몬스터·동물 도트(list_monster_resources)·Actor1 인물·전투 애니메이션(공격 이펙트)이 있으면 생성하지 말고 그것을 쓴다 — 이 도구는 게임에 없는 소재(트럭, 거리 배경, 회상 일러스트)에만. " + 
+    "그림이 맵 타일로 없는 풍경(도로·횡단보도 등)이면 맵을 꾸미는 대신 이 도구로 배경을 만들어 컷신 전용 장면으로 쓴다.",
   mode: "write",
   domains: ["event"],
   parameters: {

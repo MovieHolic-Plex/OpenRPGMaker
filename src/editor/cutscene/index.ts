@@ -353,6 +353,14 @@ export function validateCutscene(
     validatePictureLifecycle(beat, path, livePictures, errors);
     validateFlowBeat(beat, path, context, errors);
   });
+  // 암전(fade out)으로 끝나고 화면을 되돌리지 않으면 컷신이 끝난 뒤에도 검은 화면에 조작만 돌아온다(2026-10-02 조수 시험:
+  // 불 몬스터 컷신이 어두워진 채 끝나 게임이 «멈춘 것처럼» 보였다). 맵 이동·엔딩이 뒤따르거나 fade in 이 있으면 통과.
+  const topKinds = beats.map((beat) => (isRecord(beat) ? beat.kind : undefined));
+  const lastFade = topKinds.lastIndexOf("fade");
+  if (lastFade >= 0 && (beats[lastFade] as { direction?: unknown }).direction === "out"
+    && !topKinds.slice(lastFade + 1).some((kind) => kind === "transfer" || kind === "ending")) {
+    errors.push(`beats[${lastFade}]: 컷신이 암전(fade out)으로 끝나 화면이 검게 남습니다 — 끝에 {kind:'fade',direction:'in'} 를 넣어 되돌리거나, 맵 이동(transfer)·엔딩으로 이어 가세요.`);
+  }
   return errors.length === 0 ? { ok: true, errors: [] } : { ok: false, errors };
 }
 

@@ -1,6 +1,7 @@
 // script_cutscene_staged — 연출을 «배우 + 관계 + 타이밍» 으로 선언한다. 전용 도구 없이도 충돌·횡단·등장·퇴장·날아감을 쓴다.
 // 컴파일(좌표·접촉·시각표)은 src/editor/cutsceneStage/compile.ts 가 하고, 결과는 기존 script_cutscene beat 로 들어가
 // 같은 검증·커밋 게이트를 지난다. 조수는 JSON 만 쓰고, 임의 코드는 실행되지 않는다.
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { cropCharsetFrames, fetchPictureDataUrl, type CharsetAnyRole } from "@/editor/cutsceneArt/charsetFrames";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { pictureSize, pngSize } from "@/editor/cutsceneArt/pictureSize";
@@ -61,13 +62,15 @@ const ACTOR_SCHEMA: JsonSchema = {
   required: ["name"],
   properties: {
     name: { type: "string" },
-    character: { type: "object", additionalProperties: false, properties: { resourceId: { type: "string" }, characterIndex: { type: "integer", minimum: 0, maximum: 7 } }, description: "게임 캐릭터셋 인물(걷기 프레임 포함)" },
+    character: { type: "object", additionalProperties: false, properties: { resourceId: { type: "string" }, characterIndex: { type: "integer", minimum: 0, maximum: 7 } }, description: "게임 캐릭터셋 인물(걷기 프레임 포함). 사람은 Actor1~4(tex_easyrpg_charset_actor1, characterIndex 0~7) 중에서 고른다. 몬스터·동물 캐릭터셋(monster1~3, animal)도 가능." },
+    hero: { type: "boolean", description: "true 면 이 인물을 주인공으로 삼아 맵 위 주인공 그래픽도 같은 캐릭터셋·번호로 맞춘다(컷신 속 인물 = 이세계의 주인공)." },
     resourceId: { type: "string", description: "생성한 소품 picture(generate_cutscene_art 결과)" },
     poses: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "resourceId"], properties: { name: { type: "string" }, resourceId: { type: "string" } } }, description: "이름 붙은 추가 그림(예: 놀란 자세)" },
     facing: { type: "string", enum: ["left", "right"], description: "그림이 바라보는 방향(기본: 캐릭터 right, 소품 left)" },
     at: PLACE_SCHEMA,
     z: { type: "integer", minimum: 2, maximum: 80, description: "겹침 순서(클수록 위)" },
-    ghost: { type: "boolean", description: "맵 위에 실제로 서 있는 인물(주인공·NPC)의 화면 자리 — 그림은 안 그리고 touch/at/expect 기준으로만 쓴다. at 필요. 맵 컷신에서 불꽃이 주인공에게 닿게 할 때." },
+    ghost: { type: "boolean", description: "맵 위에 실제로 서 있는 인물(주인공)을 배우로 삼는다 — 그림은 안 그리고 touch/at/expect·turn·animate 의 기준으로만 쓴다. 화면 자리는 tile 로 주면 도구가 카메라를 계산한다(at 직접 지정도 가능)." },
+    tile: { type: "object", additionalProperties: false, properties: { x: { type: "integer" }, y: { type: "integer" } }, description: "ghost 배우가 서 있는 맵 칸(예: transfer 의 도착 칸). 화면 위치는 도구가 맵 크기·시야로 구한다." },
   },
 };
 
@@ -118,7 +121,7 @@ const scriptCutsceneStaged: ToolDefinition = {
     + "배우: character(게임 캐릭터셋 인물, 걷기 프레임 포함) 또는 resourceId(generate_cutscene_art 소품). 위치 관계 예: 트럭이 오른쪽 화면 밖에서 들어와 인물 몸에 35% 파고든다 = "
     + "{do:'enter',actor:'트럭',from:'right',to:{touch:'인물',overlap:0.35,dy:6},ms:520}. 그 직후 {do:'expect',touching:['트럭','인물']} 로 닿았는지 못 박으면 어긋날 때 도구가 거부하고 고칠 방법을 알려 준다. "
     + "withPrevious:true 는 앞 단계와 동시 진행(예: flash·shake·fling·exit 를 충돌 순간에 함께). say 는 동시 진행 불가. 모든 그림은 게임 해상도 100% 배율이고, 위치는 «발 밑 가운데» 기준이다. "
-    + "끝나면 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. 이미 있는 전용 연출(트럭 충돌: script_cutscene_impact)이 맞으면 그것을 쓴다.",
+    + "소재 고르는 순서: ① 몬스터·동물은 게임에 이미 있는 도트(list_monster_resources 의 resourceId, 예 scarloxy-monster-*)를 배우 resourceId 로 그대로 쓴다 ② 사람은 캐릭터셋 Actor1(characterIndex 0~7)에서 한 명을 골라 character 로 쓰고, 맵 위 주인공 그래픽도 upsert_actor(characterResourceId·characterIndex)로 같은 칸에 맞춘다 — 컷신 속 인물과 이세계의 주인공이 같아야 한다. 몬스터는 이 그림 도트이거나 맵 NPC 캐릭터셋(EasyRPG monster·animal) 중 게임 세계에 맞는 쪽을 쓴다 ③ 공격·마법·불꽃은 그림을 만들지 말고 animate 로 게임의 전투 애니메이션(get_database_records battleAnimations, 예 anim_scarloxy_fire)을 쓴다 ④ 효과음·BGM 은 list_resources(kind:se)·recommend_bgm 으로 고른 id 를 se/bgm 단계에 넣는다 ⑤ generate_cutscene_art 는 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만 쓴다. 맵 위에 서 있는 주인공을 맞히거나 돌리려면 ghost 배우(tile 지정)를 쓴다 — turn(위·왼·오른·아래 둘러보기)·animate 대상이 된다. 새 장소로 넘어갈 땐 clear → transfer(fadeColor) 단계. 암전(fade out)으로 끝냈으면 fade in 으로 되돌려 화면을 검게 둔 채 끝내지 않는다. 끝나면 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. 이미 있는 전용 연출(트럭 충돌: script_cutscene_impact)이 맞으면 그것을 쓴다.",
   mode: "write",
   domains: ["event"],
   parameters: {
@@ -194,8 +197,17 @@ const scriptCutsceneStaged: ToolDefinition = {
         };
       }
       if (raw.ghost === true) {
-        if (!at) throw new ToolError(`배우 '${name}' 는 ghost 라서 at(화면 자리)이 필요합니다.`, { code: "invalid-args" });
-        return { name, width: 24, height: 32, facing: raw.facing === "left" ? "left" : "right", poses: { default: "" }, ghost: true, at, ...(z !== undefined ? { z } : {}) };
+        const tile = raw.tile && typeof raw.tile === "object" ? (raw.tile as { x?: unknown; y?: unknown }) : undefined;
+        let ghostAt = at;
+        if (!ghostAt && tile && typeof tile.x === "number" && typeof tile.y === "number") {
+          const T = map.tileSize ?? draft.tilesets[map.tilesetId]?.tileSize ?? 16;
+          const mapW = map.width * T, mapH = map.height * T;
+          const camX = mapW <= viewport.width ? (mapW - viewport.width) / 2 : Math.max(0, Math.min(mapW - viewport.width, tile.x * T + T / 2 - viewport.width / 2));
+          const camY = mapH <= viewport.height ? (mapH - viewport.height) / 2 : Math.max(0, Math.min(mapH - viewport.height, tile.y * T + T / 2 - viewport.height / 2));
+          ghostAt = { x: Math.round(tile.x * T + T / 2 - camX), y: Math.round((tile.y + 1) * T - camY) };
+        }
+        if (!ghostAt) throw new ToolError(`배우 '${name}' 는 ghost 라서 tile(맵 칸) 또는 at(화면 자리)이 필요합니다.`, { code: "invalid-args" });
+        return { name, width: 24, height: 32, facing: raw.facing === "left" ? "left" : "right", poses: { default: "" }, ghost: true, at: ghostAt, ...(z !== undefined ? { z } : {}) };
       }
       const resourceId = typeof raw.resourceId === "string" ? raw.resourceId.trim() : "";
       if (!resourceId || (!draft.assets.uploaded[resourceId] && !bundledSizes.has(resourceId))) throw new ToolError(`배우 '${name}' 에는 character, 게임에 있는 그림 resourceId(예: 몬스터 scarloxy-monster-*), 또는 등록된 생성 그림(generate_cutscene_art 결과)이 필요합니다.`, { code: "unknown-resource" });
@@ -231,14 +243,26 @@ const scriptCutsceneStaged: ToolDefinition = {
       throw error;
     }
     const trigger = args.trigger === "action" ? "action" : "auto";
-    const cutsceneArgs: Raw = { mapId: map.id, beats: result.beats, skippable: args.skippable !== false, trigger, ...(trigger === "auto" ? { once: true } : {}) };
+    const cutsceneArgs: Raw = { _composedByStageTool: true, mapId: map.id, beats: result.beats, skippable: args.skippable !== false, trigger, ...(trigger === "auto" ? { once: true } : {}) };
     if (typeof args.eventId === "string" && args.eventId.trim()) cutsceneArgs.eventId = args.eventId.trim();
     if (typeof args.x === "number") cutsceneArgs.x = Math.trunc(args.x);
     if (typeof args.y === "number") cutsceneArgs.y = Math.trunc(args.y);
     const cut = SCRIPT_CUTSCENE.run(draft, cutsceneArgs);
+    let heroNote = "";
+    for (const raw of rawActors) {
+      const character = raw.hero === true ? characterOf(raw) : undefined;
+      if (!character) continue;
+      const hero = draft.database.actors.find((actor) => actor.id === "actor_hero") ?? draft.database.actors[0];
+      if (!hero) continue;
+      hero.characterResourceId = character.resourceId.replace(/^tex_easyrpg_charset_/u, "easyrpg-charset-");
+      hero.characterIndex = character.characterIndex;
+      const face = reviewedFaceIdForCharset(hero.characterResourceId, character.characterIndex);
+      if (face) hero.faceResourceId = face;
+      heroNote = ` 주인공 '${hero.name}' 의 맵 그래픽도 ${hero.characterResourceId} #${character.characterIndex} 로 맞췄습니다.`;
+    }
     return {
       summary: `${map.name}에 연출 컷신 배치 — 배우 ${actors.length}명, 단계 ${normalizeSteps(args.steps).length}개, 약 ${(result.durationMs / 1000).toFixed(1)}초`
-        + (result.contacts.length ? `, 접촉 확인 ${result.contacts.map((c) => `${c.pair} ${Math.round(c.overlap * 100)}%`).join(", ")}` : "") + ". preview_cutscene 으로 확인하세요.",
+        + (result.contacts.length ? `, 접촉 확인 ${result.contacts.map((c) => `${c.pair} ${Math.round(c.overlap * 100)}%`).join(", ")}` : "") + `. preview_cutscene 으로 확인하세요.${heroNote}`,
       data: { eventId: (cut.data as { eventId?: string } | undefined)?.eventId, layout: result.layout, contacts: result.contacts, beatCount: result.beats.length },
       ...(cut.warnings && cut.warnings.length > 0 ? { warnings: cut.warnings } : {}),
     };
