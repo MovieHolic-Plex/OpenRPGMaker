@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.83.0 — 2026-10-03
+
+### 기능
+
+- adapt battle choreography to every bundled character and current equipment (`0bda2ad`)
+- **db** — 도트 측면 전투 배경은 종류로 고른다 + 전투 정리 잔여 (`d313d81`)
+- add 32 shared battle motion programs and native gimmick rules (`1ea47cd`)
+
+### 수정
+
+- preserve casting and legacy combos with character motion evidence (`5efdd00`)
+- branch battle previews and impact effects by action outcome (`6566f07`)
+- synchronize battle contacts and replace sliding motion recovery (`5892e2c`)
+- preserve separate contacts in multi-hit battle motion previews (`8b9a58f`)
+
 ## 0.82.0 — 2026-10-02
 
 ### 기능
