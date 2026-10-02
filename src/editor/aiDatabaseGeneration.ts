@@ -57,7 +57,7 @@ export class AiDatabaseGenerationError extends Error {
 const ITEM_FIELDS = [
   "name", "description", "price", "type", "scope", "occasion", "consumable", "hpRecovery", "mpRecovery",
 ] as const;
-const ENEMY_FIELDS = ["name", "stats", "rewards", "graphicHue", "transparent", "flying", "monsterResourceId"] as const;
+const ENEMY_FIELDS = ["name", "stats", "rewards", "monsterResourceId"] as const;
 
 const ITEM_CONTRACT = `{"name":"짧은 한국어 이름","description":"한국어 한두 문장","price":정수,`
   + `"type":"medicine|normalGoods|book|seed|special","scope":"none|ally|allAllies|enemy",`

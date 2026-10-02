@@ -168,7 +168,9 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
     expect(observers.size).toBe(1);
     expect(observers.has(observer)).toBe(true);
     expect(intervals.size).toBe(0);
-    await mutate(node(".db-body"), () => byTestId("db-tab-animations").click());
+    // 전투 애니메이션은 도트 연출의 하위 보기다(2026-10-02) — 레일 버튼이 없어 연출 탭을 거쳐 연다.
+    await mutate(node(".db-body"), () => byTestId("db-tab-retro-choreographies").click());
+    await mutate(node(".db-body"), () => byTestId("db-subview-animations").click());
     expect(node(".oprn-record-battleAnimations")).toBe(workspace);
     expect(PreviewImage.requests).toHaveLength(imageRequests);
     expectCurrentOnly();
@@ -189,7 +191,9 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
     await refreshed;
     expect(observers.size).toBe(0);
     expect(intervals.size).toBe(0);
-    await mutate(node(".db-body"), () => byTestId("db-tab-animations").click());
+    // 전투 애니메이션은 도트 연출의 하위 보기다(2026-10-02) — 레일 버튼이 없어 연출 탭을 거쳐 연다.
+    await mutate(node(".db-body"), () => byTestId("db-tab-retro-choreographies").click());
+    await mutate(node(".db-body"), () => byTestId("db-subview-animations").click());
     loadPreview();
     expectCurrentOnly();
     await close();

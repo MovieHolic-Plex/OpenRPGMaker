@@ -4,6 +4,8 @@ export type DatabaseTabSpec = {
   readonly label: string;
   readonly slug: string;
   readonly testId: string;
+  /** 레일 버튼이 아닌 하위 보기 탭이면 먼저 누를 부모 레일 탭 testid. */
+  readonly parentTestId?: string;
 };
 
 export const DATABASE_TAB_SPECS = [
@@ -17,7 +19,9 @@ export const DATABASE_TAB_SPECS = [
   { label: "Troops", slug: "troops", testId: "db-tab-troops" },
   { label: "Elements", slug: "elements", testId: "db-tab-elements" },
   { label: "States", slug: "states", testId: "db-tab-states" },
-  { label: "Animations", slug: "animations", testId: "db-tab-animations" },
+  { label: "Retro Choreographies", slug: "retro-choreographies", testId: "db-tab-retro-choreographies" },
+  // 전투 애니메이션은 2026-10-02부터 레일 탭이 아니라 도트 연출 아래 하위 보기다.
+  { label: "Animations", slug: "animations", testId: "db-subview-animations", parentTestId: "db-tab-retro-choreographies" },
   { label: "Battle Screen", slug: "battle-screen", testId: "db-tab-battle-screen" },
   { label: "Battle Commands", slug: "battle-commands", testId: "db-tab-battle-commands" },
   { label: "Terrain", slug: "terrain", testId: "db-tab-terrain" },
@@ -168,6 +172,7 @@ export type ExportedProject = {
   switches: { id: string; name: string }[];
   system: {
     battleSystemResourceId?: string;
+    battleHitFeel?: string;
     initialTroopId?: string;
     startActorIds: string[];
     systemResourceId?: string;
@@ -213,6 +218,13 @@ export async function applyDatabaseChanges(page: Page): Promise<void> {
 }
 
 export async function switchDatabaseTab(page: Page, tab: DatabaseTabSpec): Promise<void> {
+  if (tab.parentTestId) {
+    // 하위 보기 탭 — 부모 레일 탭을 연 뒤 보기 전환 줄에서 고른다.
+    const parent = page.getByTestId(tab.parentTestId);
+    if (!(await parent.isVisible())) await revealCollapsedSidebarTab(page, parent);
+    await parent.click({ force: true });
+    await expect(parent).toHaveClass(/active/);
+  }
   const button = page.getByTestId(tab.testId);
   // 사이드바는 아코디언이다 — 접힌 그룹의 탭은 사용자도 그룹을 먼저 펼쳐야 누른다.
   if (!(await button.isVisible())) await revealCollapsedSidebarTab(page, button);
@@ -233,6 +245,12 @@ async function revealCollapsedSidebarTab(page: Page, button: Locator): Promise<v
     if (await button.isVisible()) return;
   }
   throw new Error("no sidebar group revealed the requested tab");
+}
+
+/** 도트 연출 레일 탭 → 「전투 애니메이션」 하위 보기. */
+export async function openAnimationsSubview(page: Page): Promise<void> {
+  await page.getByTestId("db-tab-retro-choreographies").click();
+  await page.getByTestId("db-subview-animations").click();
 }
 
 export async function captureDatabaseShellMetrics(page: Page): Promise<DatabaseShellMetrics> {

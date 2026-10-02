@@ -1,5 +1,12 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 전투 방식은 둘 — 도트 측면 / 몬스터 대치, 색 스킨 여섯은 고를 수 없음 (2026-10-02, 자료집 정리)
+
+- 새로 고를 수 있는 스킨은 `ACTIVE_BATTLE_SKIN_IDS = ["retro2003", "pokemon"]`(`src/battle/skins/registry.ts`, `listActiveBattleSkinIds()`).
+  `rm2003`·`ff`·`goldensun`·`chrono`·`octopath`·`bravely` 는 `deprecated: true` — 렌더·`resolveSkinId` 는 그대로라 저장된 프로젝트는 그 색으로 계속 싸운다. 창 색은 `system.battleLook` 으로 고른다.
+- 화면과 규칙은 한 쌍이다: `src/project/battleMethod.ts` `applyBattleMethod` — 측면 = `battleUiStyle`·`battleModel` 둘 다 삭제(retro2003 + RM 규칙), 몬스터 = `pokemon` + `gen1`. 자료집 전투 화면 탭과 조수 `set_project_settings battle.uiStyle` 이 이 함수만 쓴다.
+- 런타임 코드는 바꾸지 않았다. `battleSystemResourceId` 는 자료집에서 칸만 지웠고 런타임은 여전히 옛 값을 CSS 변수로 옮긴다(소비자 없음). 자료집 쪽 내역은 [editor-database.md](editor-database.md) 맨 위 절.
+
 ## 전투는 전부 도트 측면 — 정면 스킨 다섯·몬스터 그림 생성 삭제 (2026-10-02)
 
 사용자 결정(「정면그림들을 아예 배제, 공격적으로. 이제 전투는 전부 RM2003 식」). 예외는 포켓몬풍 몬스터 수집(`pokemon` 스킨) 하나.

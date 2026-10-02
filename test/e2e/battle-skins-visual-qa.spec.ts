@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { listBattleSkinIds } from "@/battle/skins/registry";
+import { isDeprecatedBattleSkin, listBattleSkinIds } from "@/battle/skins/registry";
 import {
   seedReferenceBattleProject,
   waitForActorCommand,
@@ -14,7 +14,7 @@ import {
 } from "./oprn-database-helpers";
 
 const OUT = "output/evidence/battle-skins";
-const SYSTEM_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "system")!;
+const BATTLE_SCREEN_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "battle-screen")!;
 
 type SkinDiag = {
   present: boolean;
@@ -36,13 +36,14 @@ type SkinDiag = {
 
 /**
  * No browser-global store is exposed (grep for window.*store/__rpgStore found
- * nothing), so the skin is applied through the real editor UI: the DB System
- * tab's battle-UI-style select (Task 5), then Apply + OK before entering play.
+ * nothing), so the skin is applied through the real editor UI: 2026-10-02부터
+ * 전투 화면 탭의 「전투 방식」 단추(도트 측면 = retro2003, 몬스터 대치 = pokemon),
+ * then Apply + OK before entering play.
  */
 async function applySkinViaDatabase(page: Page, skin: string): Promise<void> {
   await openDatabase(page);
-  await switchDatabaseTab(page, SYSTEM_TAB);
-  await page.getByTestId("db-field-system-battle-ui-style").selectOption(skin);
+  await switchDatabaseTab(page, BATTLE_SCREEN_TAB);
+  await page.getByTestId(skin === "pokemon" ? "db-battle-method-monster" : "db-battle-method-side").click();
   await applyDatabaseChanges(page);
   await page.getByTestId("database-footer-ok").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
@@ -139,6 +140,7 @@ async function diag(page: Page): Promise<SkinDiag> {
 
 for (const skin of listBattleSkinIds()) {
   test(`battle skin visual QA — ${skin}`, async ({ page }) => {
+    test.skip(isDeprecatedBattleSkin(skin), "옛 색 스킨은 2026-10-02부터 자료집에서 고를 수 없다");
     test.setTimeout(120_000);
     const dir = `${OUT}/${skin}`;
     await mkdir(dir, { recursive: true });

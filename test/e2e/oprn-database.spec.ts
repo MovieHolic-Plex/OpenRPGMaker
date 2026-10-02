@@ -99,7 +99,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
     "db-tab-enemies",
     "db-tab-troops",
     "db-tab-states",
-    "db-tab-animations",
+    "db-subview-animations",
     "db-tab-tilesets",
     "db-tab-common-events",
     "db-tab-system",
@@ -107,6 +107,8 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
     "db-tab-switches",
     "db-tab-variables",
   ]) {
+    // 전투 애니메이션은 도트 연출 레일 탭 아래 하위 보기다.
+    if (id === "db-subview-animations") await page.getByTestId("db-tab-retro-choreographies").click();
     await page.getByTestId(id).click();
     await expect(page.getByTestId("db-detail-form")).toBeVisible();
     // generated- 임시 ID 가 UI 에 새지 않아야 한다. 예외: troops 요약 줄이 의도적으로
@@ -199,7 +201,8 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
 
   await page.getByTestId("db-tab-states").click();
   await page.getByTestId("db-field-name").fill("State QA");
-  await page.getByTestId("db-tab-animations").click();
+  await page.getByTestId("db-tab-retro-choreographies").click();
+  await page.getByTestId("db-subview-animations").click();
   await page.getByTestId("db-field-name").fill("Animation QA");
   await page.getByTestId("db-tab-system").click();
   // 타이틀 리소스 필드는 리소스 섹션에 있다(T11 섹션 내비 이후 기본 섹션은 초기 파티).

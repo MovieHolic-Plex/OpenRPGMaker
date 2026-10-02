@@ -4,7 +4,6 @@ import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
 import { ENEMY_COLLAPSE_EFFECTS, ENEMY_COLLAPSE_LABELS, normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
-import { databaseFieldSupport, databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
@@ -152,8 +151,6 @@ function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly 
     species ? `종족 ${species.name}${live.speciesId ? "" : " · 같은 ID 호환 연결"}` : live.speciesId ? `종족 ${live.speciesId} · 존재하지 않음` : "종족 미설정",
     `행동 ${live.actions.length}개`,
     enemyFactionHeroTag(factionTable, live.factionId),
-    ...(live.flying ? ["비행"] : []),
-    ...(live.transparent ? ["투명"] : []),
   ];
   const node = detailHero({
     eyebrow: "전투 몬스터",
@@ -707,49 +704,9 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
         }),
       ],
     }),
-    el("div", {
-      class: "db-enemy-graphic-flags",
-      children: [
-        // 두 필드는 런타임이 읽지 않는다(databaseFieldSupport: authoringOnly). 라벨 글자를
-        // 늘려 그 사실을 적으려다 좁은 flags 행에서 30px 넘쳐 잘렸다(적합성 게이트 clipped
-        // 1→2 로 실측). 결론은 바로 아래 안내 요약이 말하므로 라벨은 짧게 두고 툴팁만 단다.
-        withTitle(
-          checkboxField("투명", "db-field-enemy-transparent", record.transparent, (transparent) => {
-            updateDatabaseRecord("enemies", record.id, { transparent });
-            updateGraphicPreviewState(transparent, currentEnemy(record).flying);
-          }),
-          databaseFieldSupport("transparent").help,
-        ),
-        withTitle(
-          checkboxField("비행", "db-field-enemy-flying", record.flying, (flying) => {
-            updateDatabaseRecord("enemies", record.id, { flying });
-            updateGraphicPreviewState(currentEnemy(record).transparent, flying);
-          }),
-          databaseFieldSupport("flying").help,
-        ),
-      ],
-    }),
-    // 리소스 ID 직접 입력. [설정] 대화상자로도 고를 수 있다.
-    textField("리소스 ID", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
-      updateDatabaseRecord("enemies", record.id, { monsterResourceId: emptyToUndefined(monsterResourceId) })
-    ),
-    enemyGraphicSupportNotice(),
+    // 투명·비행·색조 칸과 리소스 ID 직접 입력은 2026-10-02 지웠다 — 전투·필드가 읽지 않는 칸이었고(도트 시트는 색조를 못 받는다),
+    // ID 는 위 「설정」 대화상자로 고른다. 저장된 값은 그대로 둔다.
   ];
-}
-
-/** 공용 안내(databaseFieldSupport)의 요약 줄만 쉬운 말로 바꾼다. 펼친 행의 뜻은 그대로다. */
-function enemyGraphicSupportNotice(): HTMLElement {
-  const notice = databaseFieldSupportNotice("transparent", "flying", "graphicHue");
-  const summary = notice.querySelector("summary");
-  if (summary) summary.textContent = `투명·비행·색조는 게임에는 아직 반영되지 않는 칸입니다 (${notice.dataset.inertFields ?? "3"}개) — 자세히`;
-  return notice;
-}
-
-function updateGraphicPreviewState(transparent: boolean, flying: boolean): void {
-  const image = document.querySelector<HTMLImageElement>(".db-enemy-graphic-stage img");
-  if (!image) return;
-  image.style.opacity = transparent ? "0.58" : "1";
-  image.classList.toggle("flying", flying);
 }
 
 function rewardFields(record: EnemyRecord): HTMLElement[] {

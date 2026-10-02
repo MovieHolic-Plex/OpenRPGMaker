@@ -103,7 +103,7 @@ describe("enemy 약점·저항 summary", () => {
     const host = renderEnemyForm();
     for (const id of [
       "db-enemy-card-critical", "db-enemy-card-options", "db-enemy-card-action-combat", "db-enemy-card-species",
-      "db-enemy-card-resist", "db-enemy-card-stats", "db-enemy-card-rewards", "db-field-enemy-monster-resource",
+      "db-enemy-card-resist", "db-enemy-card-stats", "db-enemy-card-rewards", "db-enemy-graphic-set",
     ]) {
       expect(findByTestId(host, id), id).not.toBeNull();
     }

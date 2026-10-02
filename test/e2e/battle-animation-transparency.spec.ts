@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
+import { DATABASE_TAB_SPECS, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
 test.setTimeout(180_000);
 test.use({ serviceWorkers: "block" });
@@ -54,7 +54,7 @@ test("DB 전투 애니메이션 미리보기: 마젠타/녹색/검은 배경 자
   expect(injected.ok).toBe(true);
 
   await openDatabase(page);
-  await switchDatabaseTab(page, { label: "Animations", slug: "animations", testId: "db-tab-animations" });
+  await switchDatabaseTab(page, DATABASE_TAB_SPECS.find((tab) => tab.slug === "animations")!);
 
   const results: Record<SheetKind, { cornerAlpha: number; contentRed: number; bgUrlIsDataUrl: boolean }> = {
     magenta: { cornerAlpha: -1, contentRed: -1, bgUrlIsDataUrl: false },

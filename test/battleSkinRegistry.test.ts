@@ -15,8 +15,12 @@ describe("battle skin registry", () => {
     );
   });
 
-  it("8종 전부 활성 — 포켓몬을 뺀 일곱은 도트 측면 유리 뼈대의 창 모양이다", () => {
-    expect(listActiveBattleSkinIds()).toEqual(["retro2003", "rm2003", "ff", "goldensun", "chrono", "octopath", "bravely", "pokemon"]);
+  it("새로 고를 수 있는 건 전투 방식 둘(retro2003·pokemon) — 창 색만 다른 측면 여섯은 deprecated 로 그려지기만 한다", () => {
+    expect(listActiveBattleSkinIds()).toEqual(["retro2003", "pokemon"]);
+    for (const id of ["rm2003", "ff", "goldensun", "chrono", "octopath", "bravely"] as const) {
+      expect(BATTLE_SKINS[id].deprecated, id).toBe(true);
+      expect(resolveSkinId(id), id).toBe(id);
+    }
     expect(getBattleSkin("rm2003").layout).toBe("sideview");
     expect(getBattleSkin("rm2003").showAllySprites).toBe(true);
     for (const id of listBattleSkinIds()) {
