@@ -57,6 +57,15 @@ describe("기물 사전", () => {
     expect(crop.data[0]).toBe(1);
     expect(crop.data[16 * 16 * 4]).toBe(49);
   });
+  it("cropCells 는 반투명 그림자 픽셀을 그대로 보존해 shadow:0 으로 읽힌다", () => {
+    const image = sheet(48, 2, () => [0, 0, 0, 0]);
+    image.data.set([28, 20, 24, 110], 16 * 4); // 칸 1 의 (0,0): 시트 x=16, y=0
+    const crop = cropCells(image, [[0, 0, 1, 3]]);
+    expect(Array.from(crop.data.slice(0, 4))).toEqual([28, 20, 24, 110]);
+    const palette = paletteForItem(crop);
+    expect(palette.byColor.get("28,20,24,110")?.key).toBe("shadow:0");
+    expect([...palette.byKey.keys()].some((key) => key.startsWith("own:"))).toBe(false);
+  });
   it("새 기물 정의: 높이는 16 배수로 올리고 남는 위를 padTop 으로", () => {
     const item = itemFromDefinition({ key: "new:herb", title: "약초 걸이", description: "말린 약초", tilesW: 2, tilesH: 1, rise: 10, kind: "wall", category: "약방", use: [], refs: [] });
     expect([item.width, item.height, item.padTop, item.isNew]).toEqual([32, 32, 6, true]);

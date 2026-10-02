@@ -41,10 +41,16 @@ export function cropCells(sheet: RgbaImage, cells: SpecObject["cells"]): RgbaIma
         const alpha = sheet.data[from + 3];
         if (alpha === 0) continue;
         const to = ((oy + y) * width + ox + x) * 4;
-        // 겹친 칸(층)은 뒤에 온 것이 위다 — 반투명(그림자)만 섞는다
-        const a = alpha / 255;
-        for (let c = 0; c < 3; c++) data[to + c] = Math.round(sheet.data[from + c] * a + data[to + c] * (1 - a));
-        data[to + 3] = Math.max(data[to + 3], alpha);
+        // 겹친 칸(층)은 뒤에 온 것이 위다. 빈 자리엔 원본 RGBA 를 그대로 둔다(반투명 그림자 색 보존),
+        // 이미 그려진 자리엔 표준 source-over 합성.
+        const backAlpha = data[to + 3];
+        if (backAlpha === 0) {
+          for (let c = 0; c < 4; c++) data[to + c] = sheet.data[from + c];
+          continue;
+        }
+        const as = alpha / 255, ad = backAlpha / 255, out = as + ad * (1 - as);
+        for (let c = 0; c < 3; c++) data[to + c] = Math.round((sheet.data[from + c] * as + data[to + c] * ad * (1 - as)) / out);
+        data[to + 3] = Math.round(out * 255);
       }
     }
   }
