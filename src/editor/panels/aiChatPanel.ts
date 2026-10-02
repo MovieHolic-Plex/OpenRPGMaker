@@ -68,6 +68,8 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
+import { resolveContextWindow } from "@/ai/contextCompaction";
+import { modelForRole } from "@/ai/modelRoles";
 import { warmHeavyWire } from "@/ai/piAgent/heavyWire";
 import { warmApplyCaches } from "@/editor/tools/applyChangesetToStore";
 import { createTurnTiming, type TurnTimingRecorder } from "@/ai/turnTiming";
@@ -2247,6 +2249,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // 프리셋 첫 생성은 설정과 무관하게 팀이다 — 읽기 전용 다이얼이면 classifyPlainPiTurn 이 여전히 단독으로 내린다.
         piTeam: turnOptions?.team === true || (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM),
         onDeclaring: () => setStatus("의도 읽는 중…"),
+        contextWindow: resolveContextWindow(modelForRole(loadAiConfig(), "deep").model),
       });
     } finally {
       // 선언이 던진 턴도 그 구간이 얼마였는지 남긴다 — 해석 실패가 그 턴의 지연 전부인 경우가 있다.

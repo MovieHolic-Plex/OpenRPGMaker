@@ -28,7 +28,16 @@ export function matchScore(name: string, description: string, query: string): nu
   if (!normalized) return 0;
   if (name === normalized) return 100;
   if (name.includes(normalized)) return 80;
-  if (description.toLocaleLowerCase().includes(normalized)) return 60;
+  const lowered = description.toLocaleLowerCase();
+  const at = lowered.indexOf(normalized);
+  if (at >= 0) {
+    // 설명에 통째로 든 툴끼리는 「그 툴이 무엇인지」 말하는 첫 문장에 든 쪽, 더 앞에 든 쪽이 먼저다.
+    // 예전엔 모두 60 동점이라 등록 순서로 6개에서 잘려 「엔딩」 검색에 define_ending 이 빠지고
+    // 설명 끝에 엔딩을 언급한 컷신 도구들이 자리를 채웠다(2026-10-02).
+    const firstSentenceEnd = lowered.search(/[.。]\s|\n/u);
+    const inFirstSentence = firstSentenceEnd < 0 || at < firstSentenceEnd;
+    return 60 + (inFirstSentence ? 15 : 0) + 4 * (1 - at / Math.max(1, lowered.length));
+  }
   const queryWords = words(normalized);
   const haystackWords = words(`${name} ${description}`);
   return queryWords.reduce((score, word) => {

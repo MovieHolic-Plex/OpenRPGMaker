@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **122쪽 / 4306KB / 약 1,243,656 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **122쪽 / 4308KB / 약 1,244,228 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 561KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3432 | ~162,821 |
-| `openwiki/editor-ai-tools.md` | 305KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2549 | ~87,847 |
+| `openwiki/editor-ai-tools.md` | 306KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2549 | ~88,089 |
 | `openwiki/editor-database.md` | 398KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2340 | ~116,597 |
 | `openwiki/editor-event-authoring.md` | 165KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 960 | ~47,991 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
 | `openwiki/editor-pre-edit-routing.md` | 180KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1131 | ~52,844 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 519 | ~20,470 |
-| `openwiki/runtime-battle.md` | 307KB | 32KB | 1632 | ~89,829 |
+| `openwiki/runtime-battle.md` | 308KB | 32KB | 1633 | ~90,159 |
 | `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 781 | ~32,382 |
 | `openwiki/runtime-project-schema.md` | 201KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1439 | ~56,191 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
@@ -497,7 +497,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3402` AI 패널 렌더 비용 (2026-09-28)
   - `L3424` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
 
-### `openwiki/editor-ai-tools.md` — 305KB · 2549줄 · ~87,847 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 306KB · 2549줄 · ~88,089 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 - `L14` 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
@@ -1359,7 +1359,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 307KB · 1632줄 · ~89,829 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 308KB · 1633줄 · ~90,159 토큰 · 통째읽기 잘림
 
 - `L3` 캐릭터별 전투 동작 (2026-10-03)
 - `L9` 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
@@ -1411,23 +1411,23 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1264` Gen 1(포켓몬식) 규칙 모델
   - `L1272` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
   - `L1291` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L1334` Starter hero battle sheets (2026-08-29)
-- `L1355` Per-actor back battlers (2026-08-29)
-- `L1373` Battle input and visibility P0 contract (2026-07-30)
-- `L1384` 배틀러 idle 애니메이션 (2026-08-30)
-- `L1512` 필드 아이템 상태 부여 복구 (2026-09-05)
-- `L1516` Authored combat rules (feature16, 2026-09-21)
-- `L1530` Battle reports and physical formation (2026-09-21)
-- `L1534` Combat correctness hardening (2026-09-21)
-- `L1542` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
-- `L1552` 트레이너 전투의 도입 문구 (2026-09-24)
-- `L1559` 포획 불가 전투의 가방 목록 (2026-09-25)
-- `L1570` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
-- `L1584` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
-- `L1594` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
-- `L1611` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
-- `L1624` 공용 몬스터 옛 그림 폐기 (2026-10-02)
-  - `L1628` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
+- `L1335` Starter hero battle sheets (2026-08-29)
+- `L1356` Per-actor back battlers (2026-08-29)
+- `L1374` Battle input and visibility P0 contract (2026-07-30)
+- `L1385` 배틀러 idle 애니메이션 (2026-08-30)
+- `L1513` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L1517` Authored combat rules (feature16, 2026-09-21)
+- `L1531` Battle reports and physical formation (2026-09-21)
+- `L1535` Combat correctness hardening (2026-09-21)
+- `L1543` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+- `L1553` 트레이너 전투의 도입 문구 (2026-09-24)
+- `L1560` 포획 불가 전투의 가방 목록 (2026-09-25)
+- `L1571` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+- `L1585` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+- `L1595` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+- `L1612` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+- `L1625` 공용 몬스터 옛 그림 폐기 (2026-10-02)
+  - `L1629` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 46KB · 305줄 · ~12,541 토큰
 
