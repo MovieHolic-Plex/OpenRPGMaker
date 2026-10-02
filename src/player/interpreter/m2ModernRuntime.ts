@@ -232,6 +232,11 @@ function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fi
       runtime.screen.distortionDurationMs = plan.durationMs;
       return true;
     }
+    case "letterbox":
+      if (plan.percent > 0) runtime.screen.letterbox = plan.percent;
+      else delete runtime.screen.letterbox;
+      runtime.screen.letterboxDurationMs = plan.durationMs;
+      return true;
     case "unsupported":
       return false;
   }

@@ -7,6 +7,8 @@
 //
 // 유니온 shape 은 `oneOf`/`anyOf` 를 쓰지 않는다 — Gemini 계열 게이트웨이가 요청 전체를 400 으로
 // 죽인다. 대신 키 합집합을 모두 선택 필드로 선언하고 required 를 비워 둔다.
+import { PARTICLE_PRESETS, SPRITE_POSES } from "@/project/eventCommands/cinematicStaging";
+import { EMOTE_KINDS } from "@/project/emotes";
 import { RELATIONSHIP_STATES } from "@/project/relationshipState";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
@@ -172,14 +174,60 @@ export const FACE_SCHEMA: JsonSchema = {
  * `CutsceneBeat` (editor/cutscene) — 13 variant 유니온. 전 variant 키를 나열하면 스키마가 비대해지므로
  * `kind` enum + 최빈 필드만 선언하고 variant 전용 필드는 `additionalProperties` 로 허용한다.
  */
-export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
+const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
   type: "object",
   properties: {
     kind: {
       type: "string",
       // text·narrate 는 say 의 별칭 — 받아서 say 로 옮긴다(이벤트 명령 모양 {kind:"text",body} 가 enum 에서 통째로 튕기던 문제).
-      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
+      enum: [
+        "say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "shake", "wait", "parallel",
+        "label", "jump", "switch", "transfer", "ending", "letterbox", "particles", "look", "emote", "weather", "text", "narrate",
+      ],
     },
+    // 선언하지 않은 칸은 일부 공급자(Gemini)가 아예 보내지 않는다 — 비트가 실제로 읽는 칸은 전부 여기 둔다(2026-10-02:
+    // shake.intensity·flash.color·picture.resourceId·parallel.beats 가 빠져 있었다).
+    action: { type: "string", description: "picture 비트: show|move|erase. music 비트: bgm|se|fade|stop." },
+    pictureId: { type: "string", description: "picture 비트: 그림 번호(같은 번호로 move·erase)" },
+    resourceId: { type: "string", description: "picture 비트: 그림 리소스 id. music 비트: 오디오 리소스 id." },
+    scale: { type: "number", description: "picture 비트: 배율 %(100=원래 크기)" },
+    opacity: { type: "number", description: "picture 비트: 불투명도 0~255" },
+    rotation: { type: "number", description: "picture 비트: 회전(도)" },
+    waitForPicture: { type: "boolean", description: "picture 비트: 이동이 끝날 때까지 기다림" },
+    loop: { type: "boolean", description: "music 비트: 반복" },
+    moves: {
+      type: "array",
+      description: "moveActor 비트: 이동 명령 [{kind:'move',dir:'up'},{kind:'turn',dir:'left'},{kind:'jump',dx,dy}]",
+      items: { type: "object", additionalProperties: true, properties: { kind: { type: "string" }, dir: { type: "string" } } },
+    },
+    actor: { type: "string", description: "moveActor 비트: target 대신 인물 이름" },
+    ms: { type: "integer", description: "wait 비트: 기다릴 밀리초" },
+    name: { type: "string", description: "label·jump 비트: 라벨 이름" },
+    color: { type: "string", description: "flash 비트: 번쩍일 색(white·red·#rrggbb). tint 비트: 색조 이름(sepia·night·neutral …)." },
+    intensity: { type: "number", description: "shake 비트: 1|3|6|10(약하게~매우 강하게, 기본 3). weather 비트: 0~1(기본 0.5)." },
+    axis: { type: "string", enum: ["both", "horizontal", "vertical"], description: "shake 비트: 흔들 축. 지진·발소리=vertical, 부딪힘=horizontal, 폭발=both(기본)." },
+    show: { type: "boolean", description: "letterbox 비트: false 면 띠를 걷는다(기본 true)." },
+    size: { type: "number", minimum: 0, maximum: 25, description: "letterbox 비트: 띠 하나의 두께 %(기본 12)." },
+    keep: { type: "boolean", description: "letterbox 비트: true 면 컷신이 끝나도 띠를 남긴다(기본은 자동으로 걷힘)." },
+    preset: {
+      type: "string",
+      enum: [...PARTICLE_PRESETS],
+      description: "particles 비트: sparkle=반짝임(보물·축복) magic=마법 기운 heal=회복 빛 fire=불티 smoke=연기(사라짐) dust=흙먼지(착지) explosion=폭발 splash=물보라.",
+    },
+    pose: {
+      type: "string",
+      enum: [...SPRITE_POSES],
+      description: "look 비트: fallen=옆으로 쓰러짐(기절·잠·사망) fallenLeft=반대로 쓰러짐 crouch=웅크림(숨기·무릎) float=둥실 뜸(유령·부양) normal=보통.",
+    },
+    tint: { type: "string", description: "look 비트: 인물 색 — red·blue·green·yellow·purple·gray·black·white·none(원래 색) 또는 #rrggbb." },
+    tintFill: { type: "boolean", description: "look 비트: true 면 tint 색으로 통째로 칠한다(black=실루엣, white=피격 번쩍임)." },
+    flip: { type: "boolean", description: "look 비트: 좌우 뒤집기" },
+    angle: { type: "number", description: "look 비트: 기울기(도)" },
+    afterimage: { type: "boolean", description: "look 비트: 움직일 때 잔상(빠른 이동·순간이동·유령)" },
+    alpha: { type: "number", minimum: 0, maximum: 1, description: "look 비트: 불투명도 0~1(유령 0.5~0.7)" },
+    reset: { type: "boolean", description: "look 비트: 먼저 원래 모습으로 되돌린 뒤 나머지 칸을 적용" },
+    emote: { type: "string", enum: [...EMOTE_KINDS], description: "emote 비트: 머리 위 말풍선. 놀람=exclamation, 의문=question, 호감=heart, 화남=anger, 당황=sweat, 침묵=ellipsis, 잠=sleep, 깨달음=idea." },
+    weather: { type: "string", enum: ["none", "rain", "storm", "snow", "fog"], description: "weather 비트: 날씨(컷신 뒤에도 남는다)" },
     // 진행 비트: switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId}
     switchId: { type: "string", description: "switch 비트: 켤 전역 스위치 id" },
     key: { type: "string", enum: ["A", "B", "C", "D"], description: "switch 비트: 이 이벤트의 셀프 스위치(switchId 대신)" },
@@ -251,6 +299,15 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
   },
   required: ["kind"],
   additionalProperties: true,
+};
+
+/** 공급자 전송은 순환 $ref 를 못 쓴다 — parallel 의 안쪽 비트는 한 단계만 같은 모양으로 펼친다. */
+export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
+  ...CUTSCENE_BEAT_BASE_SCHEMA,
+  properties: {
+    ...CUTSCENE_BEAT_BASE_SCHEMA.properties,
+    beats: { type: "array", description: "parallel 비트: 동시에 실행할 비트들(예: particles·shake·flash 를 한 번에)", items: CUTSCENE_BEAT_BASE_SCHEMA },
+  },
 };
 
 /**

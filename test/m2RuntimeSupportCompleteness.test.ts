@@ -24,7 +24,7 @@ describe("M2 persisted runtime classification completeness", () => {
 
     // Then: the union is exactly the 126 catalog IDs, with no duplicate membership.
     expect(new Set(classifiedIds)).toEqual(new Set(catalogIds));
-    expect(classifiedIds).toHaveLength(131);
+    expect(classifiedIds).toHaveLength(133);
     expect([...membershipCounts].filter(([, count]) => count > 1)).toEqual([]);
   });
 

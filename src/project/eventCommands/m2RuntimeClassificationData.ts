@@ -132,6 +132,8 @@ export const M2_PERSISTED_BEHAVIOR_IDS = {
     "m2-221-quick-time-event",
     "m2-222-high-score",
     "m2-223-teleport-menu",
+    "m2-224-particle-effect",
+    "m2-225-sprite-look",
   ],
   partial: [],
   editorOnly: [
@@ -188,6 +190,9 @@ export const M2_MAP_COMMON_FULL_IDS = [
   "m2-221-quick-time-event",
   "m2-222-high-score",
   "m2-223-teleport-menu",
+  // 필드 연출(2026-10-02) — 맵·공통 이벤트에서 그려진다. 전투 화면에는 필드 스프라이트가 없다.
+  "m2-224-particle-effect",
+  "m2-225-sprite-look",
 ] as const;
 
 export const M2_TROOP_FULL_IDS = [
