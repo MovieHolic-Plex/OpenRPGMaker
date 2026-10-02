@@ -84,7 +84,7 @@ describe("database system studio", () => {
     project.system.playResolution = { width: 640, height: 360 };
     project.system.battleFlow = "strict";
     project.system.activeSlots = 2;
-    project.system.battleUiStyle = "rm2000";
+    project.system.battleUiStyle = "retro2003";
     project.system.battleModel = "gen1";
     project.system.skillSystem = { enabled: true };
     project.system.actionCombat = { enabled: true };
@@ -94,7 +94,7 @@ describe("database system studio", () => {
     expect(findByTestId(host, "db-system-studio-card-display")?.textContent).toContain("640×360");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("턴 전투");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("2명");
-    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("유리 창 · 정면 필드");
+    expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("도트 측면 · 유리 창");
     expect(findByTestId(host, "db-system-studio-card-combat")?.textContent).toContain("Gen1");
     expect(findByTestId(host, "db-system-studio-card-features")?.textContent).toContain("생활 스킬사용");
     expect(findByTestId(host, "db-system-studio-card-features")?.textContent).toContain("액션 전투사용");

@@ -77,7 +77,7 @@ describe("applyBattlerPose background position", () => {
     const project = deserialize(JSON.stringify(battleFixture));
     // 48px 전투 시트(.battle-actor-sprite)는 **정면(front) 파티 스킨**에서만 필드에 선다. 픽스처 기본
     // 스킨(rm2000)은 뒷모습 <img> 를 쓰므로 여기서는 사이드뷰 스킨을 명시한다.
-    (project.system as { battleUiStyle?: string }).battleUiStyle = "ff";
+    (project.system as { battleUiStyle?: string }).battleUiStyle = "retro2003";
     store.replace(project);
     const runtime = createBattleRuntime({
       project,

@@ -1,0 +1,268 @@
+{
+ "id": "classical",
+ "name": "고대 그리스·로마",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "로마",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "콜로세움·판테온·카피톨리노 신전·수도교·붉은 지붕 집·우산소나무"
+  },
+  {
+   "role": "fort_city",
+   "name": "아크로폴리스",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "깎아지른 바위 언덕 위 성벽·문·파르테논, 언덕 아래 집들"
+  },
+  {
+   "role": "harbor_city",
+   "name": "지중해 항구",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "돌 부두의 갤리선, 방파제 끝 등대, 창고·신전·집"
+  },
+  {
+   "role": "castle",
+   "name": "군단 요새",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "목책 사각 진영·문루·모서리 망루·막사 줄·본부·독수리 깃발"
+  },
+  {
+   "role": "castle",
+   "name": "미노스 궁전",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "여러 층 평지붕 테라스·아래가 가는 붉은 기둥·황소 뿔 장식"
+  },
+  {
+   "role": "large_town",
+   "name": "빌라 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "안뜰 있는 붉은 지붕 도무스 둘·작은 집·올리브"
+  },
+  {
+   "role": "village",
+   "name": "흰 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "비탈에 층층이 흰 상자 집·파란 돔 교회 둘"
+  },
+  {
+   "role": "village",
+   "name": "포도밭 농가",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 6,
+   "desc": "붉은 지붕 농가·헛간·올리브·포도 덩굴 줄·항아리"
+  },
+  {
+   "role": "camp",
+   "name": "원정군 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 6,
+   "desc": "가죽 천막 줄·지휘관 붉은 천막·독수리 깃발·모닥불"
+  },
+  {
+   "role": "tower_small",
+   "name": "기념 기둥",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 23,
+   "row": 6,
+   "desc": "받침대 위 나선 부조 기둥과 꼭대기 청동상"
+  },
+  {
+   "role": "tower_small",
+   "name": "국경 감시탑",
+   "id": "tower_small_b",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 24,
+   "row": 6,
+   "desc": "돌 몸체·목조 회랑·붉은 사각뿔 지붕·횃불"
+  },
+  {
+   "role": "tower_great",
+   "name": "파로스 등대",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "사각 기단 탑·팔각 중층·기둥 등롱의 불·청동상"
+  },
+  {
+   "role": "cave",
+   "name": "신탁 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 6,
+   "desc": "바위 절벽의 굴·입구 기둥과 박공·삼발이 향로의 김"
+  },
+  {
+   "role": "ruin",
+   "name": "무너진 신전",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 6,
+   "desc": "부서진 기단·선 기둥 둘과 들보·기운 기둥·쓰러진 토막"
+  },
+  {
+   "role": "ruin_city",
+   "name": "폼페이",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "화산재에 반쯤 묻힌 지붕 없는 붉은 벽 집·광장 기둥·뒤 화산"
+  },
+  {
+   "role": "shrine",
+   "name": "파르테논",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "3단 기단·8기둥 주랑·트리글리프 띠·대리석 페디먼트·불 화로"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "올림포스 산",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "눈 덮인 세 봉우리와 허리의 구름 띠, 산기슭 작은 신전"
+  },
+  {
+   "role": "circle",
+   "name": "원형 극장",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 6,
+   "desc": "뒤로 높아지는 반원 계단 객석·원형 무대·무대 건물"
+  },
+  {
+   "role": "volcano",
+   "name": "베수비오",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 6,
+   "desc": "솜마 능선 + 원뿔 화산·화구 불·용암 줄기·연기"
+  },
+  {
+   "role": "floating",
+   "name": "신들의 하늘섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "구름 위 바위섬·금빛 지붕 신전·올리브·사이프러스"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}

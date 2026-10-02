@@ -12,7 +12,8 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
-from common import CAND, geom, objects_by_id, slug  # noqa: E402
+from check_candidate import LINE_THICK_MAX, LINE_NONE_MAX  # noqa: E402
+from common import CAND, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
 import picks_db  # noqa: E402
 import store  # noqa: E402
 
@@ -188,8 +189,16 @@ def make(rid, item, note='', base=''):
     flat = o['kind'] in FLATKINDS
     if not flat:
         os.makedirs(os.path.join(out, 'view34'), exist_ok=True)
-        for f in sorted(glob.glob(os.path.join(HERE, 'examples', '*.png'))):
+        deep = int(o['footprint']['h']) >= 2
+        for f in sorted(glob.glob(os.path.join(HERE, 'examples', '*.png'))) + (sorted(glob.glob(os.path.join(HERE, 'examples-deep', '*.png'))) if deep else []):
             _bg(Image.open(f), 8).save(os.path.join(out, 'view34', os.path.basename(f)[:-4] + '-x8.png'))
+    if o.get('blockout'): blockout_image(o).save(os.path.join(out, 'blockout-x8.png'))
+    if not flat:
+        os.makedirs(os.path.join(out, 'lines'), exist_ok=True)
+        for f in sorted(glob.glob(os.path.join(HERE, 'examples-lines', '*.png'))):
+            n = os.path.basename(f)
+            if n.startswith('good-'): _bg(Image.open(f), 8).save(os.path.join(out, 'lines', n[:-4] + '-x8.png'))
+            else: shutil.copy(f, os.path.join(out, 'lines', n))
     rej = [f for f in store.feedback(item) if f['verdict'] == 'reject' and f['cand']]
     lines_rej = []
     if rej:
@@ -231,13 +240,14 @@ def make(rid, item, note='', base=''):
            for i, _ in an] or ['- (아직 없음 — 지금 그림의 결을 따른다)']
     md += ['']
     if lines_rej: md += ['## 사용자가 버린 후보 (이렇게 하지 말 것)', ''] + lines_rej + ['']
+    need = top_min(o) or TOP_MIN_SHALLOW
     if flat:
         md += ['## 시점', '', f'- 이 물건은 {o["kind_ko"]}이다 — 평평한 게 정상이다. 칩셋의 같은 종류(anchors/)처럼 그린다.', '']
     else:
         md += ['## 시점 (3/4) — 재서 지킨다 (2026-10-02: 윗판 없는 정면도가 무더기로 나와 사용자가 지적)', '',
                '**먼저 `view34/` 그림을 연다.** `good-*` 은 칩셋의 3/4 가구, `bad-*` 은 같은 물건의 틀린 그림이다. 둘의 차이(꼭대기 윗면 행 수)를 눈에 익힌 뒤 그린다.', '',
                '- 카메라는 남쪽 위에서 내려다본다. 보이는 면 = **수평 면의 윗면 + 남쪽 면**. 순수 정면도(아이콘)는 틀린다.',
-               '- **꼭대기 면**: 가구의 가장 높은 수평 면(윗판·뚜껑·덮개·좌판·기둥 머리)의 윗면을 **3행 이상**(큰 가구 4~6행). 칩셋 책장 3~4행 · 옷장 4행 · 찬장 6행 · 벽난로 5행.',
+               f'- **꼭대기 면**: 가구의 가장 높은 수평 면(윗판·뚜껑·덮개·좌판·기둥 머리·지붕·받침)의 윗면을 **{need}행 이상**. 칩셋 책장 3~4행 · 옷장 4행 · 찬장 6행 · 벽난로 5행 · 4×2 식탁 24행. {top_rule_text(o)}',
                '  위가 뚫린 틀(기둥만 솟고 윗판이 없다)은 안 된다(`bad-helmet-shelf`).',
                '- **안쪽 판**(선반판·칸막이판)은 윗면 2~3행 + 앞 모서리 1~2행. 안쪽 판이 잘 보여도 꼭대기 판을 대신하지 못한다.',
                '- **얹힌 물건**(투구·책·단지·병·빵·화분)도 정수리·입구·뚜껑의 윗면이 보인다. 납작한 정면 아이콘으로 찍지 않는다(`good-helmet-shelf` 의 투구).',
@@ -245,7 +255,30 @@ def make(rid, item, note='', base=''):
                '- 윗면 자리가 모자라면 남쪽 면(앞면)을 줄여서 만든다. 꼭대기 윗면을 깎지 않는다.',
                '- 보이는 세운 면은 남쪽 면뿐이다. 옆을 보는 물건(동쪽을 보는 의자 등)의 남쪽 면은 그 물건의 옆모습이다 — 옆모습은 정상.',
                '- 기하 도형(원통·상자)으로 통째로 다시 만들지 마라. 손 도트 화풍(anchors/·지금 그림)을 지킨다.',
-               '- **끝내기 전에 8배 그림에서 세어 메모에 적는다**: `꼭대기 윗면 N행(y=a~b)`. 3행 미만이면 고친 뒤 끝낸다 — 검수가 이 수를 다시 재고, 3행 미만이면 무조건 떨어진다.', '']
+               f'- **끝내기 전에 8배 그림에서 세어 메모에 적는다**: `꼭대기 윗면 N행(y=a~b)` (이 꼴 그대로 — 검사가 읽는다). {need}행 미만이면 고친 뒤 끝낸다.',
+               f'  검사가 그 y 범위가 한 덩이 면인지(가로 윤곽선이 가로지르지 않는지) 재고, 검수자가 메모를 보지 않고 따로 잰 범위와 반 이상 겹쳐야 한다 — 옆면을 윗면이라 적으면 떨어진다.', '']
+        if deep:
+            md += ['## 깊은 기물 — 옆모습(측면도) 금지 (2026-10-02: 기차·마차 25장이 전부 옆모습이었다)', '',
+                   f'- {top_rule_text(o)}',
+                   '- `view34/good-dining-4x2`·`good-magitek-engine-3x2`·`good-canopy-bed-2x2` 처럼 **발밑 깊이만큼 윗면이 길다**. 바퀴 달린 물건·긴 물건도 같다 — 지붕·상판을 위에서 본 긴 면으로 그리고, 남쪽 옆면은 그 아래에 붙인다.',
+                   '- `view34/bad-*-side-elevation` 은 이번에 나온 틀린 그림이다: 지붕이 2~4행 띠뿐인 옆모습. 이렇게 그리면 검사·검수가 떨어뜨린다.',
+                   '- 캔버스 높이 = 발밑 깊이(칸×16) + 솟는 높이. 윗면 행 수를 먼저 정하고(위 수 이상), 남은 높이를 남쪽 면에 나눈다.', '']
+        if o.get('blockout'):
+                (t0, t1), (f0, f1) = o['blockout']['top'], o['blockout']['front']; cv = o['blockout'].get('cover', 0.7)
+                md += ['## 3/4 밑그림 — 이 띠를 채운다 (명세가 정한 자리, 검사가 잰다)', '',
+                       f'`blockout-x8.png` 를 먼저 연다(8배, 16px 칸 선).',
+                       f'- **윗면 띠 y={t0}~{t1}** (밝은 회색) = 위에서 내려다본 면(지붕·보일러 등·상판·받침 윗면). 이 줄들은 물건 폭의 {cv:.0%} 이상을 덮어야 한다.',
+                       f'- **남쪽 면 띠 y={f0}~{f1}** (어두운 회색) = 남쪽을 보는 세운 면(창·옆판·바퀴·다리). 50% 이상 덮는다.',
+                       f'- y<{t0} (빗금) = 굴뚝·돔·조각·날개처럼 위로 솟는 것만. 몸통을 여기로 올리지 않는다.',
+                       f'- 메모의 `꼭대기 윗면 N행(y=a~b)` 는 이 윗면 띠와 겹쳐야 한다. 띠가 비거나(옆모습) 다른 데를 적으면 검사가 떨어뜨린다.', '']
+    if not flat:
+        md += ['## 선 — 재서 지킨다 (2026-10-02: 대형 기물의 외곽이 두껍거나 없다고 사용자가 지적)', '',
+               '**먼저 `lines/` 그림을 연다.** `good-*` 은 사용자가 고른 기물(선이 깨끗한 것), `bad-*-marked` 는 왼쪽 원본 · 오른쪽 검사가 칠한 문제 칸이다.', '',
+               '- **바깥 테(실루엣 둘레)는 1칸.** 그 바로 안쪽 칸은 테보다 한 단 이상 밝다. 테가 2~3칸 겹쳐 굵어지면 떨어진다(빨강 칸).',
+               '- **테는 반드시 있다.** 둘레 칸이 안쪽보다 어둡지 않으면(밝은 테·테 없음) 떨어진다(하늘색 칸). 위·왼쪽 테도 어둡게 두르고, 빛은 그 안쪽 칸에 준다.',
+               '- 테 색은 그 재료의 가장 어두운 단이다. 검은 몸통(쇠·옻칠)은 테를 몸통보다 한 단 더 어둡게 하고, 몸통 안쪽 면에 밝은 단을 넣어 테와 몸통을 가른다(`bad-grand-piano` 처럼 묻히지 않게).',
+               '- 안쪽 선(판자 이음·문틀·서랍 테)도 1칸이 기본이다. 금테·무늬 띠처럼 일부러 넓은 띠는 괜찮다.',
+               f'- 검사 `check_candidate.py` 가 기준(두꺼운 테 ≤{int(LINE_THICK_MAX * 100)}% · 테 없음 ≤{int(LINE_NONE_MAX * 100)}%)을 재고 `<후보>-lines-x6.png` 에 문제 칸을 칠한다. **끝내기 전에 그 그림을 열어 칠해진 칸을 고친다.**', '']
     open(os.path.join(out, 'brief.md'), 'w', encoding='utf-8').write('\n'.join(md))
     store.set_brief(rid, out)
     return out

@@ -16,7 +16,7 @@ test("battle command, target, and result surfaces stay simple", async ({ page })
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1360, height: 768 });
   await mkdir(evidenceDir, { recursive: true });
-  await seedLayoutResultBattleProject(page, { battleFlow: "strict", battleUiStyle: "rm2000" });
+  await seedLayoutResultBattleProject(page, { battleFlow: "strict", battleUiStyle: "retro2003" });
   await startReferenceBattle(page);
 
   await page.screenshot({ path: `${evidenceDir}/01-command.png`, fullPage: true });

@@ -85,7 +85,9 @@ export type ActorCommandDraft =
   | TargetedActorCommand
   | { readonly kind: "defend" }
   | { readonly kind: "escape" }
-  | { readonly kind: "switch"; readonly targetActorId: ActorId };
+  | { readonly kind: "switch"; readonly targetActorId: ActorId }
+  /** RM2003 「이벤트 연결」 명령 — 고르면 행동 차례에 공통 이벤트를 실행한다(2026-10-02). */
+  | { readonly kind: "commonEvent"; readonly commonEventId: string };
 
 export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
@@ -95,7 +97,8 @@ export type ActorCommand =
   | { readonly kind: "capture"; readonly captureItemId: ItemId; readonly targetEnemyId: string }
   | { readonly kind: "defend" }
   | { readonly kind: "escape" }
-  | { readonly kind: "switch"; readonly targetActorId: ActorId };
+  | { readonly kind: "switch"; readonly targetActorId: ActorId }
+  | { readonly kind: "commonEvent"; readonly commonEventId: string };
 
 export interface BattleTargetSelectionSnapshot {
   readonly command: TargetedActorCommand;
@@ -322,6 +325,8 @@ export interface BattleActionResultSnapshot {
   readonly critical: boolean;
   readonly skillName?: string;
   readonly skillId?: SkillId;
+  /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
+  readonly effectiveness?: number;
 }
 
 export type BattleTimelineEntryKind =
@@ -363,6 +368,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly skillName?: string;
   /** Stable executed identity; skillName is presentation and legacy fallback only. */
   readonly skillId?: SkillId;
+  /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
+  readonly effectiveness?: number;
   /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
   readonly actionId?: number;
   /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */

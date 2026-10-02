@@ -263,10 +263,10 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   }
 }
 
-const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop" | "monster">> = {
+const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop">> = {
   title: "title",
   backdrop: "backdrop",
-  monster: "monster",
+  // 몬스터 생성은 2026-10-02 뺐다(도트 측면 시트만).
   // 시네마틱 스틸(오프닝·게임 오버 배경)도 전체화면 아트라 배경화 생성기를 그대로 쓴다.
   still: "backdrop",
 };

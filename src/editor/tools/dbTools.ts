@@ -267,7 +267,7 @@ const utilityRecordSchema: JsonSchema = {
   properties: {
     id: { type: "string" },
     name: { type: "string" },
-    kind: { type: "string", enum: ["physical", "magical", "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"] },
+    kind: { type: "string", enum: ["physical", "magical", "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event", "commonEvent"] },
     rateLabels: { type: "array", items: { type: "string", enum: ["A", "B", "C", "D", "E"] } },
     damageMultipliers: { type: "object", properties: { A: { type: "number" }, B: { type: "number" }, C: { type: "number" }, D: { type: "number" }, E: { type: "number" } }, additionalProperties: false },
     damage: { type: "integer" },
@@ -278,6 +278,7 @@ const utilityRecordSchema: JsonSchema = {
     vehiclePassage: { type: "object", properties: { boat: { type: "boolean" }, ship: { type: "boolean" }, airshipLand: { type: "boolean" } }, additionalProperties: false },
     skillSubsetName: { type: "string" },
     skillId: { type: "string" },
+    commonEventId: { type: "string", description: "battleCommands kind:commonEvent — 고르면 전투 중에 실행할 공통 이벤트 id(메시지·선택지·변수 조작을 그대로 쓴다)" },
   },
   required: ["id", "name"],
   additionalProperties: false,
@@ -332,7 +333,7 @@ const upsertDatabaseUtility: ToolDefinition = {
       return { summary: `지형 효과 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
     }
     if (collection === "battleCommands") {
-      const allowed = new Set(["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"]);
+      const allowed = new Set(["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event", "commonEvent"]);
       if (typeof record.kind !== "string" || !allowed.has(record.kind)) throw new ToolError("battleCommands.record.kind가 올바르지 않습니다.", { code: "invalid-args" });
       const next = {
         id: base.id,
@@ -340,7 +341,11 @@ const upsertDatabaseUtility: ToolDefinition = {
         kind: record.kind,
         ...(typeof record.skillSubsetName === "string" ? { skillSubsetName: record.skillSubsetName } : {}),
         ...(typeof record.skillId === "string" ? { skillId: record.skillId } : {}),
+        ...(typeof record.commonEventId === "string" ? { commonEventId: record.commonEventId } : {}),
       } as NonNullable<Project["database"]["battleCommands"]>[number];
+      if (next.kind === "commonEvent" && !draft.commonEvents.some((entry) => entry.id === next.commonEventId)) {
+        throw new ToolError("battleCommands kind:commonEvent 는 있는 공통 이벤트 id(commonEventId)가 필요합니다.", { code: "invalid-args" });
+      }
       draft.database.battleCommands ??= [];
       const outcome = upsertById(draft.database.battleCommands, next);
       return { summary: `전투 명령 '${next.name}' ${outcome === "added" ? "추가" : "수정"}`, data: next };
@@ -552,9 +557,6 @@ const enemyRecordSchema = objectSchema({
     enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
     description: "쓰러지는 연출. dissolve 기본 소멸 · pixelBreak FF6 식 보랏빛 픽셀 분해(잡몹) · bossSink 떨며 땅속으로 가라앉음(보스) · flash 하얀 세 번 점멸 · instant 즉시 사라짐(환영·소환수).",
   },
-  graphicHue: integerSchema(),
-  transparent: booleanSchema(),
-  flying: booleanSchema(),
   criticalHit: objectSchema({ enabled: booleanSchema(), oneIn: integerSchema() }),
   attackOptions: objectSchema({ normalAttacksMiss: booleanSchema() }),
   skillIds: stringArraySchema(),
@@ -620,9 +622,6 @@ const monsterSpeciesGraphicSchema = objectSchema({
     scale: { type: "number", minimum: CHARACTER_SCALE_MIN, maximum: CHARACTER_SCALE_MAX },
     scaleMode: { type: "string", enum: ["auto", "manual"] },
   }, "동행용 EventPageGraphic. 기존 종은 {scale:0.5}처럼 부분 수정해도 sprite와 나머지 설정을 보존합니다. 전투 그림에는 영향을 주지 않습니다."),
-  graphicHue: integerSchema(),
-  transparent: booleanSchema(),
-  flying: booleanSchema(),
 });
 
 const monsterSpeciesRecordSchema = objectSchema({
@@ -680,6 +679,7 @@ const actorRecordSchema = objectSchema({
   skillIds: stringArraySchema("legacy alias for learnedSkills"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
+  battleCommandIds: stringArraySchema("이 배우만 쓰는 전투 명령 메뉴(RM2003 배우별 명령). database.battleCommands 또는 직업 battleCommands 의 id 를 메뉴 순서대로, 7개까지. 빈 배열 = 직업 명령을 그대로"),
 }) as RecordSchema;
 
 const skillRecordSchema = objectSchema({
@@ -847,7 +847,7 @@ const classRecordSchema = objectSchema({
   options: actorOptionsSchema,
   animationId: stringSchema(),
   skillIds: stringArraySchema(),
-  battleCommands: arrayOf(objectSchema({ id: stringSchema(), name: stringSchema(), kind: stringSchema(), skillSubsetName: stringSchema(), skillId: stringSchema() })),
+  battleCommands: arrayOf(objectSchema({ id: stringSchema(), name: stringSchema(), kind: stringSchema("attack·skill·skillSubset·defend·item·capture·escape·switch·commonEvent"), skillSubsetName: stringSchema(), skillId: stringSchema(), commonEventId: stringSchema("kind:commonEvent 일 때 실행할 공통 이벤트 id") })),
   learnedSkills: arrayOf(learnedSkillSchema),
   equipmentPermissions: objectSchema({ actorIds: stringArraySchema(), classIds: stringArraySchema(), equipmentIds: stringArraySchema() }),
   parameterCurves: parameterCurvesSchema,
@@ -1698,6 +1698,12 @@ const upsertActor: ToolDefinition = {
     reconcileActorFace(record, actorPatch, warnings);
     validateActorTechPoints(args.actor);
     dropUnknownElementRates(draft, record, "actor", warnings);
+    if (record.battleCommandIds) {
+      const klass = draft.database.classes.find((entry) => entry.id === record.classId);
+      const unknown = record.battleCommandIds.filter((id) =>
+        !draft.database.battleCommands?.some((entry) => entry.id === id) && !klass?.battleCommands.some((entry) => entry.id === id));
+      if (unknown.length > 0) warnings.push(`battleCommandIds 중 전역·직업 명령에 없는 id 는 전투 메뉴에서 빠집니다: ${unknown.join(", ")}`);
+    }
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
     return {
       summary: `액터 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,

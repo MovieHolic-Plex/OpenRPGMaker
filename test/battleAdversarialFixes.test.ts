@@ -429,7 +429,7 @@ describe("포켓몬 단일 대상 자동 확정", () => {
 
   it("다른 스킨은 적이 1마리여도 목록이 열린다 — 취소 경로 계약 보존", () => {
     const project = scarloxyProject();
-    project.system.battleUiStyle = "rm2000";
+    project.system.battleUiStyle = "retro2003";
     const rt = start(project, "troop_pkmn_grass_a");
     expect(rt.snapshot().enemies.length).toBe(1);
     const skillId = rt.snapshot().actors[0]?.skillIds[0];

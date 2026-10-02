@@ -1,0 +1,256 @@
+{
+ "id": "joseon",
+ "name": "조선",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "한양 도성",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "도성 성곽·2층 숭례문·궁궐 담 안 월대 위 근정전·민가"
+  },
+  {
+   "role": "fort_city",
+   "name": "읍성",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "돌 성곽·홍예 문루·붉은 기둥 동헌·기와집·초가"
+  },
+  {
+   "role": "harbor_city",
+   "name": "포구 고을",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "성곽 일부·관아·조창 창고·선창·판옥선"
+  },
+  {
+   "role": "castle",
+   "name": "산성",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "돌산 위 석축 성벽·2층 장대·암문"
+  },
+  {
+   "role": "large_town",
+   "name": "양반 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "돌담 두른 기와집·솟을대문·연못가 정자·소나무"
+  },
+  {
+   "role": "large_town",
+   "name": "장터 마을",
+   "id": "large_town_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "초가·흰 차일 장막·주막 깃발"
+  },
+  {
+   "role": "village",
+   "name": "초가 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "초가 셋·장독대·감나무"
+  },
+  {
+   "role": "village",
+   "name": "어촌",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 6,
+   "desc": "초가·그물 덕장·작은 고깃배"
+  },
+  {
+   "role": "camp",
+   "name": "보부상 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 6,
+   "desc": "무명 천막·지게 짐·모닥불"
+  },
+  {
+   "role": "tower_small",
+   "name": "봉수대",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 23,
+   "row": 6,
+   "desc": "돌 연대 위 연기 한 줄"
+  },
+  {
+   "role": "tower_great",
+   "name": "5층 목탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "팔상전풍 5층 목탑"
+  },
+  {
+   "role": "cave",
+   "name": "석굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 6,
+   "desc": "화강암 절벽·둥근 석굴 입구·목조 처마"
+  },
+  {
+   "role": "ruin",
+   "name": "무너진 석탑",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 6,
+   "desc": "3층 석탑 밑동·흩어진 옥개석"
+  },
+  {
+   "role": "ruin_city",
+   "name": "옛 궁터",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "석축 월대·주춧돌·무너진 담·잡초"
+  },
+  {
+   "role": "shrine",
+   "name": "산사",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "대웅전·3층 석탑·일주문·소나무"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "당산나무",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "느티나무 거목·금줄·서낭당 돌무더기"
+  },
+  {
+   "role": "circle",
+   "name": "고인돌",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 6,
+   "desc": "탁자식 고인돌 두 기"
+  },
+  {
+   "role": "volcano",
+   "name": "백두산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 6,
+   "desc": "눈 덮인 화산·천지"
+  },
+  {
+   "role": "floating",
+   "name": "신선 봉우리",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "구름 위 바위 봉우리·육모정·소나무"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}

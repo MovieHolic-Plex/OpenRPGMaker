@@ -274,6 +274,11 @@
   "choice": "v5",
   "note": ""
  },
+ "billiard table": {
+  "at": "2026-10-02T22:39:04+09:00",
+  "choice": "h240-A",
+  "note": ""
+ },
  "birdcage": {
   "at": "2026-10-01T15:07:38+09:00",
   "choice": "w73-A",
@@ -324,6 +329,11 @@
   "choice": "w70-A",
   "note": ""
  },
+ "boxcar": {
+  "at": "2026-10-02T22:36:59+09:00",
+  "choice": "h234-E",
+  "note": ""
+ },
  "bread oven": {
   "at": "2026-10-01T13:58:51+09:00",
   "choice": "w56-A",
@@ -347,6 +357,11 @@
  "broom and bucket": {
   "at": "2026-09-30T05:40:14+09:00",
   "choice": "w9-C",
+  "note": ""
+ },
+ "bunk bed": {
+  "at": "2026-10-02T16:10:38+09:00",
+  "choice": "h210-D",
   "note": ""
  },
  "butter churn": {
@@ -509,9 +524,24 @@
   "choice": "w42-A",
   "note": ""
  },
+ "clock gears": {
+  "at": "2026-10-02T22:35:22+09:00",
+  "choice": "h228-A",
+  "note": ""
+ },
  "coal bin": {
   "at": "2026-09-30T05:05:45+09:00",
   "choice": "w10-B",
+  "note": ""
+ },
+ "coal tender": {
+  "at": "2026-10-02T22:36:51+09:00",
+  "choice": "h233-B",
+  "note": ""
+ },
+ "coal wagon": {
+  "at": "2026-10-02T19:19:25+09:00",
+  "choice": "h225-D",
   "note": ""
  },
  "coat rack": {
@@ -762,6 +792,16 @@
   "choice": "w6-B",
   "note": ""
  },
+ "dragon nest": {
+  "at": "2026-10-02T22:37:58+09:00",
+  "choice": "h238-C",
+  "note": ""
+ },
+ "dragon skeleton": {
+  "at": "2026-10-02T22:35:13+09:00",
+  "choice": "h227-A",
+  "note": ""
+ },
  "drain grate": {
   "at": "2026-09-30T05:15:13+09:00",
   "choice": "v5",
@@ -859,6 +899,11 @@
   "choice": "w7-B",
   "note": ""
  },
+ "giant crystal": {
+  "at": "2026-10-02T22:38:54+09:00",
+  "choice": "h242-C",
+  "note": ""
+ },
  "gilded wardrobe": {
   "at": "2026-10-02T07:38:53+09:00",
   "choice": "h141-B",
@@ -867,6 +912,16 @@
  "globe": {
   "at": "2026-10-01T15:07:38+09:00",
   "choice": "w71-A",
+  "note": ""
+ },
+ "grand aquarium": {
+  "at": "2026-10-02T22:35:32+09:00",
+  "choice": "h229-A",
+  "note": ""
+ },
+ "grand piano": {
+  "at": "2026-10-02T22:37:29+09:00",
+  "choice": "h236-A",
   "note": ""
  },
  "grave bouquet": {
@@ -994,6 +1049,11 @@
   "choice": "w7-A",
   "note": ""
  },
+ "horse carriage": {
+  "at": "2026-10-02T19:19:32+09:00",
+  "choice": "h226-A",
+  "note": ""
+ },
  "hot spring": {
   "at": "2026-10-02T07:10:25+09:00",
   "choice": "h129-E",
@@ -1077,6 +1137,11 @@
  "knight armor": {
   "at": "2026-10-02T07:17:19+09:00",
   "choice": "h134-E",
+  "note": ""
+ },
+ "knight colossus": {
+  "at": "2026-10-02T22:35:56+09:00",
+  "choice": "h230-D",
   "note": ""
  },
  "lab bench": {
@@ -1253,6 +1318,11 @@
  "ore vein": {
   "at": "2026-09-30T06:15:48+09:00",
   "choice": "w27-H",
+  "note": ""
+ },
+ "passenger coach": {
+  "at": "2026-10-02T19:19:20+09:00",
+  "choice": "h224-D",
   "note": ""
  },
  "patient bed": {
@@ -1454,6 +1524,11 @@
  "royal banner": {
   "at": "2026-09-30T05:22:51+09:00",
   "choice": "w4-C",
+  "note": ""
+ },
+ "royal bed": {
+  "at": "2026-10-02T22:39:19+09:00",
+  "choice": "h241-E",
   "note": ""
  },
  "royal chest": {
@@ -1793,6 +1868,16 @@
  "statue": {
   "at": "2026-10-01T15:07:40+09:00",
   "choice": "w74-A",
+  "note": ""
+ },
+ "steam boiler": {
+  "at": "2026-10-02T22:36:44+09:00",
+  "choice": "h232-E",
+  "note": ""
+ },
+ "steam locomotive": {
+  "at": "2026-10-02T19:19:14+09:00",
+  "choice": "h223-D",
   "note": ""
  },
  "stone throne": {

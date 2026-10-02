@@ -76,6 +76,7 @@ export interface BattleLookPreset {
   readonly description: string;
   readonly group: "classic" | "fantasy" | "modern";
   /** 어울리는 게임 분위기 — 조수가 기획 톤에 맞춰 고를 때 읽는다(battleLookMoodGuide). */
+  // 「현대·모던」은 쓰지 않는다 — 이 글은 첫 제작 지시에 실려 requestsModernMap 의 PAW 전용 게이트를 켠다(2026-10-02).
   readonly mood: string;
   readonly axes: BattleLookAxes;
 }
@@ -97,9 +98,9 @@ export const BATTLE_LOOK_PRESETS: Readonly<Record<BattleLookPresetId, BattleLook
   gold: { group: "fantasy", label: "화려한 금테", mood: "웅장한 정통 판타지·왕국·영웅 서사", summary: "초상 카드 · 차례 줄 · 빛", description: "초상 카드, 캐릭터 옆 명령 창, 차례 순서 줄, 적 이름표, 빛내림과 먼지. 금 장식 창.", axes: { ...BASE, party: "cards", command: "actor", field: "full", turnOrder: true, enemyNames: true, window: "gold", light: 2, dust: 2, vignette: 2, blur: 2, grade: true } },
   parch: { group: "fantasy", label: "양피지", mood: "동화·전설·아이·따뜻한 마을 이야기", summary: "동화책 느낌", description: "크림색 종이 창과 갈색 글씨, 명조. 초상 카드와 차례 줄, 은은한 빛.", axes: { ...BASE, party: "cards", command: "actor", turnOrder: true, window: "parch", light: 1, vignette: 1, grade: true } },
   icons: { group: "fantasy", label: "아이콘 줄", mood: "가볍고 귀여운 모험·아동용", summary: "위 작은 상자 · 둥근 아이콘", description: "파티는 오른쪽 위 작은 상자, 명령은 아래 둥근 아이콘 줄(고른 것만 이름이 뜬다).", axes: { ...BASE, party: "mini", command: "icons", field: "full", window: "teal", font: "rounded", light: 1 } },
-  veil: { group: "modern", label: "얇은 장막", mood: "현대·SF·미니멀, 무대 그림을 보여 주고 싶을 때", summary: "반투명 · 무대가 잘 보임", description: "반투명 판과 흰 실선만. 가장 덜 꾸민 화면.", axes: { ...BASE, window: "veil" } },
-  soft: { group: "modern", label: "버튼 네 개", mood: "현대 감성·학원·일상 판타지", summary: "부드러운 둥근 창", description: "캐릭터 옆에 버튼 네 개(마름모)와 누를 키. 둥근 창, 둥근 고딕, 초상 카드와 차례 줄.", axes: { ...BASE, party: "cards", command: "keys", field: "full", turnOrder: true, window: "soft", vignette: 1, dust: 1, grade: true } },
-  pop: { group: "modern", label: "강렬한 사선", mood: "도시·현대 판타지·스타일리시·반항", summary: "스타일리시", description: "사선으로 쌓인 큰 명령 블록과 기울인 초상. 빨강 · 검정 · 흰색.", axes: { ...BASE, party: "tilt", command: "fan", field: "full", window: "pop", vignette: 1 } },
+  veil: { group: "modern", label: "얇은 장막", mood: "SF·미니멀, 무대 그림을 보여 주고 싶을 때", summary: "반투명 · 무대가 잘 보임", description: "반투명 판과 흰 실선만. 가장 덜 꾸민 화면.", axes: { ...BASE, window: "veil" } },
+  soft: { group: "modern", label: "버튼 네 개", mood: "학원·일상·밝은 감성 판타지", summary: "부드러운 둥근 창", description: "캐릭터 옆에 버튼 네 개(마름모)와 누를 키. 둥근 창, 둥근 고딕, 초상 카드와 차례 줄.", axes: { ...BASE, party: "cards", command: "keys", field: "full", turnOrder: true, window: "soft", vignette: 1, dust: 1, grade: true } },
+  pop: { group: "modern", label: "강렬한 사선", mood: "도시 판타지·스타일리시·반항", summary: "스타일리시", description: "사선으로 쌓인 큰 명령 블록과 기울인 초상. 빨강 · 검정 · 흰색.", axes: { ...BASE, party: "tilt", command: "fan", field: "full", window: "pop", vignette: 1 } },
   cinema: { group: "modern", label: "영화식", mood: "영화 같은 연출·비극·느와르·여운", summary: "테 없음 · 영화 띠", description: "위아래 검은 띠, 창 테두리 없이 글자만. 흐림과 빛으로 장면을 살린다.", axes: { ...BASE, party: "compact", command: "actor", field: "full", letterbox: true, window: "bare", light: 1, vignette: 2, blur: 2, grade: true } },
 };
 

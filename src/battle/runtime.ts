@@ -9,7 +9,7 @@ import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/
 import { damageEffectKind, firstLearnableSkill, pickRandomSkill, rollStealItem, scanMessage, weaknessElementNames } from "@/battle/battleSpecialEffects";
 import { permanentActorSkillIds } from "@/project/growth/runtime";
 import { inputSequencePowerMultiplier } from "@/battle/battleInputSequence";
-import { battleElementMultiplier } from "@/battle/battleElementModifiers";
+import { battleEffectivenessMultiplier, battleElementMultiplier } from "@/battle/battleElementModifiers";
 import { restoreSkillDrain, spendSkillHp } from "@/battle/battleSkillVitals";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
@@ -279,14 +279,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return value;
   };
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "strict";
-  // B: skin-driven ATB haste — chrono fast, dq/mother slow, octopath subtle
-  const skinHasteMultiplier = (() => {
-    try {
-      const skinId = resolveSkinId((options.project as unknown as { system?: { battleUiStyle?: string } }).system?.battleUiStyle) as BattleSkinId;
-      const map: Record<string, number> = { chrono: 1.18, bravely: 1.08, octopath: 1.06, ff: 1.04, rm2000: 1.02, dragonquest: 0.92, mother: 0.88 };
-      return (map[skinId] ?? 1) * atbSpeedMultiplier(options.project.system.atbSpeed);
-    } catch { return 1; }
-  })();
+  // 스킨별 ATB 가속(청람·세피아·먹빛·코발트 창)은 2026-10-02 그 스킨들과 함께 지웠다 — 속도는 atbSpeed 하나가 정한다.
+  const skinHasteMultiplier = atbSpeedMultiplier(options.project.system.atbSpeed);
   // Active ATB: gauge 흐름에서만 의미가 있다. strict 는 라운드제라 메뉴가 시간을 멈추지 않는다.
   const activeAtb = battleFlow === "gauge" && options.project.system.atbMode === "active";
 
@@ -444,6 +438,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       critical: entry.critical,
       skillName: entry.skillName,
       ...(entry.skillId ? { skillId: entry.skillId } : {}),
+      ...(entry.effectiveness !== undefined && kind === "damage" ? { effectiveness: entry.effectiveness } : {}),
       ...(resource ? { resource } : {}),
     });
   }
@@ -815,7 +810,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       readonly damageFormula?: string;
       readonly affects?: "hp" | "mp";
     },
-  ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean } {
+  ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean; readonly effectiveness: number } {
     const magical = usesMagicalDefense(options.project, move.elementId);
     const unmodifiedOffense = magical ? user.mind : user.attackPower;
     const unmodifiedDefense = magical ? target.mind : target.defense;
@@ -854,11 +849,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       typeFactors: types.typeFactors,
       baseAccuracyByte: accuracyByteFromPercent(move.hitRate ?? 100),
     }, nextGen1Byte);
-    if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical };
+    // 상성 문장용 배율 — 방어 쪽 타입 배율의 곱(정수 ×10 표기를 되돌린다). 자속 보정(stab)은 넣지 않는다.
+    const effectiveness = types.typeFactors.reduce((product, factor) => product * (factor / 10), 1);
+    if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical, effectiveness };
     const resource = move.affects ?? "hp";
     const before = target[resource];
     target[resource] = Math.max(0, before - formationDamage(Math.round(resolved.damage * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage"));
-    return { hit: true, amount: before - target[resource], critical: resolved.critical };
+    return { hit: true, amount: before - target[resource], critical: resolved.critical, effectiveness };
   }
 
   function recordIncapacitated(battler: MutableBattler): void {
@@ -1209,6 +1206,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         return !(gen1 && actor.skillIds.some((skillId) => battleSkillUseFailure(options.project, actor, skillId) === undefined));
       case "defend":
         return true;
+      case "commonEvent":
+        return options.project.commonEvents.some((entry) => entry.id === command.commonEventId);
       case "escape":
         return options.canEscape;
       case "switch":
@@ -1233,11 +1232,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function isValidActorCommand(actor: MutableBattler, command: ActorCommand): boolean {
     if (!actorCommandLegality(actor, command)) return false;
-    // 대상 해결 검사는 대상을 쓰는 명령에만 — defend/escape/switch 는 적법성만으로 결정된다.
+    // 대상 해결 검사는 대상을 쓰는 명령에만 — defend/escape/switch/commonEvent 는 적법성만으로 결정된다.
     switch (command.kind) {
       case "defend":
       case "escape":
       case "switch":
+      case "commonEvent":
         return true;
       default: {
         const resolution = resolvedCommandTargets(actor, command);
@@ -1307,12 +1307,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "switch":
         switchActiveActor(actor.recordId, command.targetActorId);
         break;
+      case "commonEvent":
+        // 실행은 이 행동 뒤 트룹 이벤트 흐름(applyTroopEvents) 앞머리에서 — 문장·선택지가 같은 정지·재개를 탄다.
+        battleEvents.queueCommonEvent(command.commonEventId);
+        recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "commonEvent" });
+        break;
     }
   }
 
   function applyActorAttack(actor: MutableBattler, command: Extract<ActorCommand, { kind: "attack" }>): void {
     const targets = resolvedCommandTargets(actor, command).targets;
-    const attackCount = actor.equipmentEffects?.doubleAttack ? 2 : 1;
+    const attackCount = actor.equipmentEffects?.attackHits ?? (actor.equipmentEffects?.doubleAttack ? 2 : 1);
     for (let index = 0; index < attackCount; index += 1) {
       for (const target of targets) {
         if (target.hp > 0) applySingleActorAttack(actor, target);
@@ -1347,7 +1352,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (result.hit && result.amount > 0) recoverHitStates(target);
     if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
-      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical },
+      { userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, ...effectivenessField(result.hit ? battleEffectivenessMultiplier(options.project, actor.equipmentEffects?.attackElementIds?.[0], target) : 1) },
       result.hit ? "damage" : "miss",
       "attack",
     );
@@ -1530,6 +1535,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "defend":
       case "escape":
       case "switch":
+      case "commonEvent":
         performActorCommand(command);
         return;
       case "attack":
@@ -3651,7 +3657,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           ? "damage"
           : "action";
     recordAction(
-      { userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id },
+      {
+        userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name, skillId: skill?.id,
+        ...(effectKind === "damage" && result.hit ? effectivenessField(battleEffectivenessMultiplier(options.project, skill?.elementId, target)) : {}),
+      },
       timelineKind,
       commandKind,
       effectKind === "healing" || effectKind === "damage" ? affects : undefined,
@@ -3712,7 +3721,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           affects,
         })
       : !accuracyHit
-        ? { hit: false, amount: 0, critical: false }
+        ? { hit: false, amount: 0, critical: false, effectiveness: 1 }
         : applySkillLike(user, target, {
             power,
             statistic,
@@ -3739,6 +3748,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       critical: applied.critical,
       skillName: skill?.name,
       skillId: skill?.id,
+      ...(effectKind === "damage" && applied.hit && "effectiveness" in applied ? effectivenessField(applied.effectiveness) : {}),
     }, timelineKind, commandKind, effectKind === "healing" || effectKind === "damage" ? affects : undefined);
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
@@ -3825,6 +3835,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rate -= Math.max(-20, Math.min(40, (target.agility - user.agility) * 0.5));
     const minimumRate = equipmentAccuracy === 0 ? 0 : 5;
     return Math.max(minimumRate, Math.min(100, Math.round(rate)));
+  }
+
+  /** 상성 배율을 결과·타임라인에 싣는다 — 1(보통)이면 싣지 않아 기존 결과 모양이 그대로다. */
+  function effectivenessField(multiplier: number): { effectiveness?: number } {
+    return Number.isFinite(multiplier) && multiplier !== 1 ? { effectiveness: multiplier } : {};
   }
 
   function normalAttackElementMultiplier(user: MutableBattler, target: MutableBattler): number {

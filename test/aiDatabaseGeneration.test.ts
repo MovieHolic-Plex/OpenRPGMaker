@@ -32,7 +32,21 @@ describe("parseGeneratedRecord", () => {
   it("적 레코드는 적 필드만 통과시킨다", () => {
     const raw = '{"name":"서슬 늑대","stats":{"maxHp":140,"attack":22},"price":10,"description":"x"}';
 
-    expect(parseGeneratedRecord("enemy", raw)).toEqual({ name: "서슬 늑대", stats: { maxHp: 140, attack: 22 } });
+    // monsterResourceId 를 빼먹으면 이름 조각으로도 못 고르니 슬라임으로 떨어진다(도트 몬스터만, 2026-10-02).
+    expect(parseGeneratedRecord("enemy", raw)).toEqual({
+      name: "서슬 늑대", stats: { maxHp: 140, attack: 22 }, monsterResourceId: "generated-enemy-slime-01",
+    });
+  });
+
+  it("적 그림은 도트 몬스터 id 만 남긴다 — 목록 밖 id 는 가장 가까운 도트 몬스터로 옮긴다", () => {
+    expect(parseGeneratedRecord("enemy", '{"name":"늑대","monsterResourceId":"generated-enemy-wolf-grey"}').monsterResourceId)
+      .toBe("generated-enemy-wolf-grey");
+    expect(parseGeneratedRecord("enemy", '{"name":"늑대","monsterResourceId":"wolf-dire"}').monsterResourceId)
+      .toBe("generated-enemy-hound-hell");
+    expect(parseGeneratedRecord("enemy", '{"name":"늑대","monsterResourceId":"generated-enemy-frost-wolf"}').monsterResourceId)
+      .toBe("generated-enemy-wolf-grey");
+    expect(parseGeneratedRecord("enemy", '{"name":"늑대","monsterResourceId":"mystery-thing"}').monsterResourceId)
+      .toBe("generated-enemy-slime-01");
   });
 
   it("name 이 없으면 거부한다", () => {
@@ -60,26 +74,17 @@ describe("generatedRecordId", () => {
 });
 
 describe("toolCallsForGeneration", () => {
-  it("그림이 있으면 리소스를 먼저 등록하고 레코드가 그것을 가리킨다", () => {
+  it("적은 그림 리소스 없이 고른 도트 몬스터 id 를 그대로 가리킨다", () => {
     const calls = toolCallsForGeneration({
       kind: "enemy",
       recordId: "enemy_ai_slime",
-      patch: { name: "슬라임" },
-      artwork: { resourceId: "enemy_ai_slime_art", dataUrl: "data:image/png;base64,AAA" },
+      patch: { name: "슬라임", monsterResourceId: "generated-enemy-slime-01" },
     });
 
-    expect(calls.map((call) => call.name)).toEqual(["upsert_resource", "upsert_enemy"]);
-    expect(calls[0]!.args).toEqual({
-      resource: {
-        id: "enemy_ai_slime_art",
-        name: "슬라임 (AI)",
-        kind: "monster",
-        dataUrl: "data:image/png;base64,AAA",
-      },
-    });
-    expect(calls[1]!.args).toEqual({
-      enemy: { name: "슬라임", id: "enemy_ai_slime", monsterResourceId: "enemy_ai_slime_art" },
-    });
+    expect(calls).toEqual([{
+      name: "upsert_enemy",
+      args: { enemy: { name: "슬라임", monsterResourceId: "generated-enemy-slime-01", id: "enemy_ai_slime" } },
+    }]);
   });
 
   it("아이템 그림은 picture 리소스이고 iconResourceId 로 붙는다", () => {
@@ -112,10 +117,18 @@ describe("buildRecordPrompt / artworkPromptFor", () => {
     expect(messages[1]).toEqual({ role: "user", content: "회복약" });
   });
 
-  it("그림 프롬프트는 종류에 따라 아이콘/전투 스프라이트를 요구하고 흰 배경을 고정한다", () => {
+  it("그림 프롬프트는 아이템 아이콘에만 흰 배경을 고정한다 — 적 문장은 호환용이다", () => {
     expect(artworkPromptFor("item", "엘릭서", "회복")).toContain("inventory item icon");
-    expect(artworkPromptFor("enemy", "슬라임", "젤리")).toContain("battle monster sprite");
-    expect(artworkPromptFor("enemy", "슬라임", "젤리")).toContain("flat white background");
+    expect(artworkPromptFor("item", "엘릭서", "회복")).toContain("flat white background");
+    expect(artworkPromptFor("enemy", "슬라임", "젤리")).toContain("pixel side-view battle monster");
+  });
+
+  it("적 프롬프트는 도트 몬스터 목록에서 monsterResourceId 를 고르게 한다", () => {
+    const system = String(buildRecordPrompt("enemy", "늑대", [])[0]!.content);
+    expect(system).toContain("monsterResourceId");
+    expect(system).toContain("generated-enemy-wolf-grey");
+    expect(system).toContain("generated-enemy-slime-01");
+    expect(String(buildRecordPrompt("item", "회복약", [])[0]!.content)).not.toContain("generated-enemy-");
   });
 });
 
@@ -125,11 +138,11 @@ describe("generateDatabaseRecordWithAi", () => {
   it("LLM 응답과 그림을 한 묶음의 툴 호출로 적용한다", async () => {
     const applied: { calls: readonly { name: string; args: Record<string, unknown> }[]; summary: string }[] = [];
     const outcome = await generateDatabaseRecordWithAi(
-      { kind: "enemy", brief: "얼음 늑대", config: defaultAiConfig(), withArtwork: true },
+      { kind: "item", brief: "푸른 엘릭서", config: defaultAiConfig(), withArtwork: true },
       {
         currentProject: () => EMPTY,
         complete: async () => ({
-          message: { role: "assistant", content: '{"name":"서슬 늑대","stats":{"maxHp":140}}' },
+          message: { role: "assistant", content: '{"name":"푸른 엘릭서","price":300}' },
           finishReason: "stop",
         }),
         generateImage: async () => ({
@@ -146,13 +159,45 @@ describe("generateDatabaseRecordWithAi", () => {
       },
     );
 
-    expect(outcome.recordId.startsWith("enemy_ai_")).toBe(true);
-    expect(outcome.name).toBe("서슬 늑대");
+    expect(outcome.recordId.startsWith("item_ai_")).toBe(true);
+    expect(outcome.name).toBe("푸른 엘릭서");
     expect(outcome.resourceId).toBe(`${outcome.recordId}_art`);
     expect(outcome.artworkDataUrl).toBe("data:image/png;base64,FLAT");
     expect(outcome.artworkModel).toBe("gemini-3.1-flash-image");
     expect(applied).toHaveLength(1);
-    expect(applied[0]!.calls.map((call) => call.name)).toEqual(["upsert_resource", "upsert_enemy"]);
+    expect(applied[0]!.calls.map((call) => call.name)).toEqual(["upsert_resource", "upsert_item"]);
+    expect(applied[0]!.summary).toBe("AI 아이템 생성: 푸른 엘릭서");
+  });
+
+  it("적은 그림을 켜도 이미지를 만들지 않고 고른 도트 몬스터의 정지 그림을 보여 준다", async () => {
+    let imageCalls = 0;
+    const applied: { calls: readonly { name: string; args: Record<string, unknown> }[]; summary: string }[] = [];
+    const outcome = await generateDatabaseRecordWithAi(
+      { kind: "enemy", brief: "얼음 늑대", config: defaultAiConfig(), withArtwork: true },
+      {
+        currentProject: () => EMPTY,
+        complete: async () => ({
+          message: { role: "assistant", content: '{"name":"서슬 늑대","monsterResourceId":"generated-enemy-wolf-grey","stats":{"maxHp":140}}' },
+          finishReason: "stop",
+        }),
+        generateImage: async () => {
+          imageCalls += 1;
+          throw new Error("불려서는 안 된다");
+        },
+        applyCalls: (calls, options) => {
+          applied.push({ calls, summary: options.summary });
+          return calls.map(() => ok);
+        },
+      },
+    );
+
+    expect(imageCalls).toBe(0);
+    expect(outcome.recordId.startsWith("enemy_ai_")).toBe(true);
+    expect(outcome.resourceId).toBe("generated-enemy-wolf-grey");
+    expect(outcome.artworkDataUrl).toBe("/assets/generated/pixel-enemy-portraits/wolf-grey.png");
+    expect(outcome.artworkModel).toBeUndefined();
+    expect(applied[0]!.calls.map((call) => call.name)).toEqual(["upsert_enemy"]);
+    expect((applied[0]!.calls[0]!.args.enemy as { monsterResourceId?: string }).monsterResourceId).toBe("generated-enemy-wolf-grey");
     expect(applied[0]!.summary).toBe("AI 몬스터 생성: 서슬 늑대");
   });
 
@@ -218,8 +263,8 @@ describe("generateDatabaseRecordWithAi", () => {
     await expect(
       generateDatabaseRecordWithAi(
         {
-          kind: "enemy",
-          brief: "얼음 늑대",
+          kind: "item",
+          brief: "푸른 엘릭서",
           config: defaultAiConfig(),
           withArtwork: true,
           signal: controller.signal,
@@ -227,7 +272,7 @@ describe("generateDatabaseRecordWithAi", () => {
         {
           currentProject: () => EMPTY,
           complete: async () => ({
-            message: { role: "assistant", content: '{"name":"서슬 늑대"}' },
+            message: { role: "assistant", content: '{"name":"푸른 엘릭서"}' },
             finishReason: "stop",
           }),
           generateImage: async () => ({

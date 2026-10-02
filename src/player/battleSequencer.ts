@@ -64,6 +64,8 @@ export interface DamageFeedback {
   readonly miss?: boolean;
   /** 명중했지만 피해가 0 인 타격(완전 방어·무효). 화면에 반드시 표시한다. */
   readonly blocked?: boolean;
+  /** 상성 배율(엔트리 effectiveness). 1 이면 생략. */
+  readonly effectiveness?: number;
   /** 숫자 대신 띄울 글자(상태 부여 「스톱」 등). 있으면 HP 원장·타격 연출·효과음을 건드리지 않는
    *  **표시 전용** 팝업이다(battleDom.onDamageFeedback 이 일찍 돌아간다). */
   readonly label?: string;
@@ -96,10 +98,17 @@ export interface BattleSequencerHooks {
   readonly onEntryAnimation?: (animation: BattleAnimationSnapshot | undefined) => void;
   /** 포획 시네마틱(구슬 투척·흔들림)을 재생하고 소요 ms를 반환. 미구현이면 0. */
   readonly onCaptureCinematic?: (targetId: string, success: boolean) => number;
-  /** 이 애니메이션의 착탄(효과음·플래시가 걸린 첫 프레임)까지 걸리는 ms. 시퀀서는 이펙트
+  /** 이 애니메이션의 착탄(효과음·플래시가 걸린 첫 프레임)까지 걸리는 ms(템포 적용 전). 시퀀서는 이펙트
    *  마운트를 `approach − 착탄` 만큼 늦춰 착탄 프레임이 임팩트 비트(팝업·히트스톱)와 같은
-   *  순간에 오게 한다. 미구현이면 이펙트는 approach 시작과 함께 뜬다. */
-  readonly animationImpactMs?: (animation: BattleAnimationSnapshot) => number;
+   *  순간에 오게 한다. 미구현이면 이펙트는 approach 시작과 함께 뜬다. `approachMs` = 이 엔트리
+   *  approach 비트 길이(템포 적용 후) — 표시 계층이 앞당길 수 있는 한도로 쓴다. */
+  readonly animationImpactMs?: (animation: BattleAnimationSnapshot, approachMs: number) => number;
+  /** 마운트 뒤 이펙트(후속 포함)가 실제로 도는 ms(템포 적용 전) — 앞 프레임을 건너뛰는 표시 계층만 구현한다.
+   *  있으면 recover 비트를 이 끝 시각에 맞춘다. animationImpactMs 다음에 불린다. */
+  readonly animationRemainingMs?: (animation: BattleAnimationSnapshot) => number | undefined;
+  /** 피해 연출이 impact 비트 시작부터 끝나기까지 필요한 ms(템포 적용 후). recover 비트를 이만큼은 늘린다 —
+   *  포켓몬 스킨은 기술 연출 뒤에 깜빡임·HP 감소가 따로 오므로(3세대 순서) 다음 행동이 그 위로 올라오면 안 된다. */
+  readonly impactPresentationMs?: (entry: BattleTimelineEntrySnapshot, feedback: DamageFeedback | undefined) => number;
   /** 도주 시도의 결과가 화면에 도달하는 순간. 도주음·BGM 정지는 성공이 확정된 뒤에만 울려야 한다. */
   readonly onEscapeOutcome?: (success: boolean) => void;
   /** 결과가 정해진 뒤 결과 패널이 뜨기 전(BATTLE_RESULT_HOLD_MS) 한 번. 이 홀드는 예전엔 빈 필드만
@@ -118,6 +127,17 @@ export interface BattleSequencerHooks {
   readonly enemyRecoverMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
   /** 표시 계층이 행동의 무게를 바꾼다(도트 연출 레코드의 weight 손잡이). undefined 면 피드백에서 정한 무게 그대로. */
   readonly actionWeight?: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => BattleActionWeight | undefined;
+  /** 스킨의 동작 템포. 행동 비트(예고·돌진·회복)와 이펙트 착탄 오프셋만 이 배율로 줄인다 — 히트스톱과
+   *  대사 읽기 시간은 그대로다. 배속(speedMultiplier)과 곱해진다. undefined·1 이면 옛 길이 그대로. */
+  readonly motionTempo?: () => number;
+  /** 피해 문장에 상성(「효과가 굉장했다!」·「효과가 별로인 듯하다…」)을 붙인다 — 포켓몬 스킨만. */
+  readonly describeEffectiveness?: boolean;
+}
+
+/** 히트스톱 비트를 뺀 행동 비트를 템포로 줄인다. 히트스톱을 같이 줄이면 타격이 가벼워진다. */
+export function tempoActionBeats(beats: readonly BattleActionBeat[], tempo: number): readonly BattleActionBeat[] {
+  if (!(tempo > 0) || tempo === 1) return beats;
+  return beats.map((beat) => (beat.hitStop || beat.durationMs <= 0 ? beat : { ...beat, durationMs: Math.max(10, Math.round(beat.durationMs / tempo)) }));
 }
 
 export interface BattleSequencer {
@@ -260,6 +280,7 @@ export function createBattleSequencer(
       critical: Boolean(entry.critical),
       healing,
       resource: entry.resource ?? "hp",
+      ...(entry.effectiveness !== undefined && !healing ? { effectiveness: entry.effectiveness } : {}),
     };
   }
 
@@ -273,6 +294,7 @@ export function createBattleSequencer(
       critical: Boolean(entry.critical),
       skillName: entry.skillName,
       ...(entry.skillId ? { skillId: entry.skillId } : {}),
+      ...(hooks.describeEffectiveness && entry.effectiveness !== undefined ? { effectiveness: entry.effectiveness } : {}),
     };
   }
 
@@ -509,15 +531,18 @@ export function createBattleSequencer(
     // 행동의 무게 — 급소·막타는 heavy(길게 눌러 잡고), 빗나감·0 피해·회복은 light.
     const baseWeight = weightForFeedback(feedback, Boolean(killLine));
     const weight = hooks.actionWeight?.(entry, baseWeight) ?? baseWeight;
-    const beats = entry.side === "enemy"
+    const tempo = hooks.motionTempo?.() ?? 1;
+    const planBeats = (animationMs: number | undefined): readonly BattleActionBeat[] => tempoActionBeats(entry.side === "enemy"
       ? planEnemyActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
+          // 피해가 없는 기술(약화·수면)은 feedback 이 없어 대상이 비었다 — 내 쪽과 같이 엔트리 대상을 넘긴다
+          targetId: entry.targetId,
           feedback,
           hitStopMs: BATTLE_HITSTOP_MS,
           // 연출 재생기(retro2003)가 시각을 정한 엔트리는 그 값을 그대로 쓴다 — 다단·광역의 타 사이를 최소 비트(400ms)로
           // 벌리면 연출이 끝난 뒤에야 숫자가 하나씩 떴다(2026-10-01 실측, 플레슈 5타).
           impactMs: hooks.enemyRecoverMs?.(entry, weight)
-            ?? recoverMsForAnimation(entry.animation?.durationMs, hooks.enemyApproachMs?.(entry, weight) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+            ?? recoverMsForAnimation(animationMs, hooks.enemyApproachMs?.(entry, weight) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
           windupMs: hooks.enemyApproachMs?.(entry, weight) ?? BATTLE_ENEMY_WINDUP_MS,
         })
@@ -529,16 +554,31 @@ export function createBattleSequencer(
           hitStopMs: BATTLE_HITSTOP_MS,
           // 후속 애니메이션(연기·잔광)이 비트보다 길면 recover 를 늘려 잘리지 않게 한다.
           impactMs: hooks.actorRecoverMs?.(entry, weight)
-            ?? recoverMsForAnimation(entry.animation?.durationMs, Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+            ?? recoverMsForAnimation(animationMs, Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
-        });
+        }), tempo);
+    let beats = planBeats(entry.animation?.durationMs);
     // 이펙트 마운트 시점: 착탄 프레임이 임팩트 비트와 같은 순간에 오도록 approach 길이에서
     // 착탄까지의 ms 를 뺀 만큼 늦춘다. 예전엔 approach 시작에 바로 떠서 적이 하얗게 번쩍인
     // 뒤 0.3초 있다가 숫자가 뜨고 밀리는 "절정 두 번"이 됐다(2026-09-14 실측 250~300ms).
     const approachMs = beats.find((beat) => beat.kind === "approach")?.durationMs ?? 0;
-    const impactAtMs = entry.animation && hooks.animationImpactMs ? hooks.animationImpactMs(entry.animation) : 0;
+    // 이펙트 프레임도 같은 템포로 돈다(battleAnimationFrameMs 가 data-battle-motion-tempo 를 곱한다).
+    const impactAtMs = entry.animation && hooks.animationImpactMs ? hooks.animationImpactMs(entry.animation, approachMs) / (tempo > 0 ? tempo : 1) : 0;
     // 착탄 정보가 없으면(타이밍 없는 레코드·훅 미구현) 예전처럼 approach 시작과 함께 뜬다.
     const animationOffsetMs = impactAtMs > 0 ? Math.max(0, approachMs - impactAtMs) : 0;
+    // 표시 계층이 앞 프레임을 건너뛰면(포켓몬 안무) 이펙트는 approach 끝 무렵에 마운트돼 남은 프레임만 돈다.
+    // recoverMsForAnimation 은 「approach 시작에 마운트해 0번부터」를 가정하므로, 실제로 끝나는 시각(템포 전 ms)을 넘겨
+    // recover 를 다시 잰다 — 안 그러면 운석은 끝에 빈 화면이, 번개는 마지막 잔광이 잘렸다(2026-10-02 적대적 리뷰).
+    const remainingMs = entry.animation && hooks.animationRemainingMs ? hooks.animationRemainingMs(entry.animation) : undefined;
+    if (remainingMs !== undefined && hooks.actorRecoverMs === undefined && hooks.enemyRecoverMs === undefined) {
+      beats = planBeats(Math.max(0, animationOffsetMs * (tempo > 0 ? tempo : 1) + remainingMs));
+    }
+    const presentationMs = hooks.impactPresentationMs?.(entry, feedback) ?? 0;
+    if (presentationMs > 0) {
+      const impactBeatMs = beats.find((beat) => beat.kind === "impact")?.durationMs ?? 0;
+      const needed = Math.round(presentationMs - impactBeatMs);
+      beats = beats.map((beat) => (beat.kind === "recover" && beat.durationMs < needed ? { ...beat, durationMs: needed } : beat));
+    }
     if (entry.animation && animationOffsetMs > 0) {
       hooks.onEntryAnimation?.(undefined);
       delay(() => hooks.onEntryAnimation?.(entry.animation), animationOffsetMs);
@@ -759,7 +799,7 @@ export function createBattleSequencer(
       const commandStart = Math.max(consumedTimeline, before.timeline.length);
       const commandEntries = after.timeline.slice(commandStart);
       consumedTimeline = after.timeline.length;
-      const actingState = actorCommandDirectorState(command, before, after);
+      const actingState = actorCommandDirectorState(command, before, after, { describeEffectiveness: hooks.describeEffectiveness });
       // 이 명령을 내린 액터의 첫 엔트리를 찾는다 — strict 라운드에서 민첩이 빠른 적이
       // 먼저 움직이면 commandEntries 앞쪽은 적의 행동이다. 대사는 액터 엔트리에 붙인다.
       const commandActorId = before.activeActorId;

@@ -95,9 +95,10 @@ let S = { items: [], reasons: [], sets: [] }, sel = null, rej = new Set();
 const F = { set: 'all', show: 'all' };
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const SETNAME = { 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
+let SETNAME = { 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
 const img = (it, f) => `/f/${encodeURIComponent(it.set)}/${encodeURIComponent(it.name)}/${f}?v=${it.sha}`;
 
+let lastBulk = [];
 async function load(keep) {
   const r = await fetch('/api/state'); S = await r.json();
   if (!keep || !S.items.find((x) => x.id === sel)) sel = (visible()[0] || S.items[0] || {}).id;
@@ -118,10 +119,28 @@ function renderProg() {
   $('bar').innerHTML = `<i style="width:${a / n * 100}%;background:var(--ok)"></i><i style="width:${j / n * 100}%;background:var(--bad)"></i>`;
 }
 function renderFilters() {
+  SETNAME = { ...(S.set_names || {}), 'fantasy': '판타지', 'desert-east': '사막·동양풍', 'modern-sf': '현대·SF' };
   const sets = [['all', '전체'], ...S.sets.map((s) => [s, SETNAME[s] || s])];
   const shows = [['all', '모두'], ['todo', '안 정함'], ['fail', '검수 ✗'], ['pass', '검수 ✓'], ['acc', '받음'], ['rej', '버림']];
   $('filters').innerHTML = sets.map(([k, l]) => `<button class="chip ${F.set === k ? 'on' : ''}" data-set="${k}">${l}</button>`).join('') +
     '<span style="flex-basis:100%"></span>' + shows.map(([k, l]) => `<button class="chip ${F.show === k ? 'on' : ''}" data-show="${k}">${l}</button>`).join('');
+  const bulk = S.items.filter((it) => (F.set === 'all' || it.set === F.set) && !it.decision && verdictOf(it) === 'PASS');
+  const scope = F.set === 'all' ? '전체' : (SETNAME[F.set] || F.set);
+  $('filters').insertAdjacentHTML('beforeend', '<span style="flex-basis:100%"></span>' +
+    `<button class="chip" id="bBulk" ${bulk.length ? '' : 'disabled'}>${esc(scope)} · 검수 ✓ 안 정한 것 ${bulk.length}장 일괄 받기</button>` +
+    (lastBulk.length ? `<button class="chip" id="bUndo">방금 일괄 받기 ${lastBulk.length}장 되돌리기</button>` : ''));
+  $('bBulk').onclick = async () => {
+    if (!bulk.length || !confirm(`${scope}에서 검수 ✓ 이고 아직 안 정한 ${bulk.length}장을 받는다. 검수 ✗ 와 이미 정한 것은 건드리지 않는다.`)) return;
+    const ids = bulk.map((it) => it.id);
+    const r = await fetch('/api/decide_bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids, decision: 'accept' }) });
+    if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
+    lastBulk = ids; await load(true);
+  };
+  if ($('bUndo')) $('bUndo').onclick = async () => {
+    const r = await fetch('/api/decide_bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: lastBulk, decision: 'clear' }) });
+    if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
+    lastBulk = []; await load(true);
+  };
   $('filters').querySelectorAll('[data-set]').forEach((b) => b.onclick = () => { F.set = b.dataset.set; render(); });
   $('filters').querySelectorAll('[data-show]').forEach((b) => b.onclick = () => { F.show = b.dataset.show; render(); });
 }
@@ -186,12 +205,14 @@ async function loadRounds(id) {
     <div class="cands">${rd.cands.filter((c) => c.status !== 'discarded' && c.status !== 'broken').map((c) => {
       const busy = !['done', 'broken', 'discarded'].includes(c.status);
       const img = (f) => `/c/${c.path}/${f}?t=${c.status}${c.attempt}`;
-      const v = c.verdict === 'PASS' ? '<b style="color:var(--ok)">검수 ✓</b>' : c.verdict ? `<b style="color:var(--bad)">검수 ✗ ${esc(c.codes.join(','))}</b>` : '';
+      const v = (c.verdict === 'PASS' ? '<b style="color:var(--ok)">검수 ✓</b>' : c.verdict ? `<b style="color:var(--bad)">검수 ✗ ${esc(c.codes.join(','))}</b>` : '')
+        + ((c.engine || '').startsWith('render:') ? ' <span class="cur">원래 3D 장면을 정면 카메라로 다시 렌더 — 옆면은 투영상 0px, 검수 ✗ 는 참고</span>' : '')
+        + ((c.engine || '').startsWith('hand:') ? ' <span class="cur">감독(Claude)이 원래 화소로 직접 고친 것 — 검수 ✗ 는 참고</span>' : '');
       return `<div class="cand ${picked === c.key ? 'picked' : ''} ${c.mark === 'drop' ? 'dropped' : ''}">
         <div class="imgs">${c.has_img ? `<img src="${img('icon-x8.png')}" alt=""><img class="ctx1" src="${img('ctx-x1.png')}" alt="">` : `<span class="cur">${busy ? '…' : '그림 없음'}</span>`}</div>
         <div class="st"><b>${c.letter}</b> ${busy ? `<span class="spin">${ST[c.status] || c.status}</span>` : ''} ${v} <span class="cur">시도 ${c.attempt}</span>${picked === c.key ? ' <b style="color:var(--ok)">← 고름</b>' : ''}${c.mark === 'drop' ? ' <span class="cur">버림</span>' : ''}</div>
         <div class="why">${esc(c.direction.split(' — ')[0])}${c.body?.reads_as ? ' · ' + esc(c.body.reads_as) : ''}${c.check && !c.check.ok ? ' · 깨짐: ' + esc(c.check.problems.join('; ')) : ''}</div>
-        ${c.has_img && !busy && c.verdict === 'PASS' ? `<div class="btns"><button class="pk" data-pick="${c.key}">이걸로</button><button class="dp" data-drop="${c.key}">✕ 버림</button><button data-base="${c.key}">이걸로 다시 그리기</button></div>` : ''}
+        ${c.has_img && !busy && (c.verdict === 'PASS' || /^(render|hand):/.test(c.engine || '')) ? `<div class="btns"><button class="pk" data-pick="${c.key}">이걸로</button><button class="dp" data-drop="${c.key}">✕ 버림</button><button data-base="${c.key}">이걸로 다시 그리기</button></div>` : ''}
       </div>`; }).join('')}</div>${rd.cands.some((c) => c.status === 'discarded' || c.status === 'broken') ? `<div class="cur" style="margin-top:6px">시점 위반으로 자동 폐기 ${rd.cands.filter((c) => c.status === 'discarded' || c.status === 'broken').length}장 — 고를 수 없고, 판 안에서 새 후보로 다시 그린다.</div>` : ''}</div>`).join('') || '<p class="cur" style="margin-top:10px">아직 다시 그린 판이 없다.</p>';
   $('rounds').querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => candDecide(id, 'pick', b.dataset.pick));
   $('rounds').querySelectorAll('[data-drop]').forEach((b) => b.onclick = () => candDecide(id, 'drop', b.dataset.drop));

@@ -2,8 +2,38 @@
  "picks": "tiledata/hand-interior/pick/picks.json",
  "applied": [
   {
+   "id": "accessory case",
+   "choice": "h54-B",
+   "new": true
+  },
+  {
+   "id": "airship helm",
+   "choice": "h177-A",
+   "new": true
+  },
+  {
+   "id": "alchemy table",
+   "choice": "h149-E",
+   "new": true
+  },
+  {
    "id": "anchor",
    "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "arrow barrel",
+   "choice": "h50-D",
+   "new": true
+  },
+  {
+   "id": "arrow floor",
+   "choice": "h40-D",
+   "new": true
+  },
+  {
+   "id": "axe mace wall",
+   "choice": "h208-B",
    "new": true
   },
   {
@@ -17,8 +47,73 @@
    "new": true
   },
   {
+   "id": "boarded window",
+   "choice": "h198-D",
+   "new": true
+  },
+  {
+   "id": "bone pillar",
+   "choice": "h157-A",
+   "new": true
+  },
+  {
+   "id": "book pile",
+   "choice": "h164-C",
+   "new": true
+  },
+  {
    "id": "bow rack",
    "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "bunk bed",
+   "choice": "h210-D",
+   "new": true
+  },
+  {
+   "id": "butter churn",
+   "choice": "h189-C",
+   "new": true
+  },
+  {
+   "id": "candle stubs",
+   "choice": "h197-A",
+   "new": true
+  },
+  {
+   "id": "cargo netted",
+   "choice": "h176-B",
+   "new": true
+  },
+  {
+   "id": "catalog drawers",
+   "choice": "h167-B",
+   "new": true
+  },
+  {
+   "id": "chained bookcase",
+   "choice": "h165-A",
+   "new": true
+  },
+  {
+   "id": "chart table",
+   "choice": "h174-E",
+   "new": true
+  },
+  {
+   "id": "cheese press",
+   "choice": "h190-B",
+   "new": true
+  },
+  {
+   "id": "child bed",
+   "choice": "h186-A",
+   "new": true
+  },
+  {
+   "id": "cobweb",
+   "choice": "h199-B",
    "new": true
   },
   {
@@ -27,8 +122,68 @@
    "new": true
   },
   {
+   "id": "coffin open",
+   "choice": "h32-C",
+   "new": true
+  },
+  {
    "id": "coin pile",
    "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "covered furniture",
+   "choice": "h196-C",
+   "new": true
+  },
+  {
+   "id": "cracked wall",
+   "choice": "h37-C",
+   "new": true
+  },
+  {
+   "id": "crossed swords",
+   "choice": "h138-E",
+   "new": true
+  },
+  {
+   "id": "crown pedestal",
+   "choice": "h135-A",
+   "new": true
+  },
+  {
+   "id": "crystal switch",
+   "choice": "h34-E",
+   "new": true
+  },
+  {
+   "id": "cursed mirror",
+   "choice": "h160-A",
+   "new": true
+  },
+  {
+   "id": "dark altar",
+   "choice": "h161-B",
+   "new": true
+  },
+  {
+   "id": "dark orb pedestal",
+   "choice": "h163-C",
+   "new": true
+  },
+  {
+   "id": "demon statue",
+   "choice": "h159-E",
+   "new": true
+  },
+  {
+   "id": "demon throne",
+   "choice": "h156-E",
+   "new": true
+  },
+  {
+   "id": "diary stand",
+   "choice": "h201-B",
    "new": true
   },
   {
@@ -37,8 +192,28 @@
    "new": true
   },
   {
+   "id": "egg incubator",
+   "choice": "h173-C",
+   "new": true
+  },
+  {
+   "id": "farm tool rack",
+   "choice": "h191-E",
+   "new": true
+  },
+  {
+   "id": "floating book",
+   "choice": "h152-C",
+   "new": true
+  },
+  {
    "id": "folding screen",
    "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "gilded wardrobe",
+   "choice": "h141-B",
    "new": true
   },
   {
@@ -47,8 +222,108 @@
    "new": true
   },
   {
+   "id": "grave bouquet",
+   "choice": "h205-E",
+   "new": true
+  },
+  {
+   "id": "guild counter",
+   "choice": "h144-A",
+   "new": true
+  },
+  {
+   "id": "guild lockers",
+   "choice": "h147-B",
+   "new": true
+  },
+  {
+   "id": "gym statue",
+   "choice": "h171-E",
+   "new": true
+  },
+  {
    "id": "hammock",
    "choice": "w110-A",
+   "new": true
+  },
+  {
+   "id": "hanging cage",
+   "choice": "h162-D",
+   "new": true
+  },
+  {
+   "id": "healing machine",
+   "choice": "h168-C",
+   "new": true
+  },
+  {
+   "id": "healing spring",
+   "choice": "h16-D",
+   "new": true
+  },
+  {
+   "id": "helmet shelf",
+   "choice": "h49-E",
+   "new": true
+  },
+  {
+   "id": "heraldic shield",
+   "choice": "h136-E",
+   "new": true
+  },
+  {
+   "id": "hint tablet",
+   "choice": "h38-B",
+   "new": true
+  },
+  {
+   "id": "hot spring",
+   "choice": "h129-E",
+   "new": true
+  },
+  {
+   "id": "hourglass",
+   "choice": "h203-C",
+   "new": true
+  },
+  {
+   "id": "indoor fountain",
+   "choice": "h140-A",
+   "new": true
+  },
+  {
+   "id": "indoor well",
+   "choice": "h183-E",
+   "new": true
+  },
+  {
+   "id": "inn reception",
+   "choice": "h42-E",
+   "new": true
+  },
+  {
+   "id": "inn sign",
+   "choice": "h47-E",
+   "new": true
+  },
+  {
+   "id": "iron gate",
+   "choice": "h20-A",
+   "new": true
+  },
+  {
+   "id": "iron gate open",
+   "choice": "h30-A",
+   "new": true
+  },
+  {
+   "id": "item shop shelf",
+   "choice": "h133-A",
+   "new": true
+  },
+  {
+   "id": "key pedestal",
+   "choice": "h22-E",
    "new": true
   },
   {
@@ -57,8 +332,108 @@
    "new": true
   },
   {
+   "id": "knight armor",
+   "choice": "h134-E",
+   "new": true
+  },
+  {
+   "id": "lab bench",
+   "choice": "h172-E",
+   "new": true
+  },
+  {
+   "id": "laundry line",
+   "choice": "h185-A",
+   "new": true
+  },
+  {
+   "id": "lava brazier",
+   "choice": "h158-E",
+   "new": true
+  },
+  {
+   "id": "leather armor stand",
+   "choice": "h48-B",
+   "new": true
+  },
+  {
    "id": "library ladder",
    "choice": "w74-A",
+   "new": true
+  },
+  {
+   "id": "locked door",
+   "choice": "h35-B",
+   "new": true
+  },
+  {
+   "id": "loot sacks",
+   "choice": "h146-D",
+   "new": true
+  },
+  {
+   "id": "luggage trunk",
+   "choice": "h46-B",
+   "new": true
+  },
+  {
+   "id": "magic mirror",
+   "choice": "h154-A",
+   "new": true
+  },
+  {
+   "id": "mailbox",
+   "choice": "h202-C",
+   "new": true
+  },
+  {
+   "id": "mana crystal",
+   "choice": "h151-E",
+   "new": true
+  },
+  {
+   "id": "map rolls",
+   "choice": "h148-C",
+   "new": true
+  },
+  {
+   "id": "marble bust",
+   "choice": "h139-E",
+   "new": true
+  },
+  {
+   "id": "menu board",
+   "choice": "h45-D",
+   "new": true
+  },
+  {
+   "id": "milk cans",
+   "choice": "h192-E",
+   "new": true
+  },
+  {
+   "id": "mimic",
+   "choice": "h132-C",
+   "new": true
+  },
+  {
+   "id": "monster trophy",
+   "choice": "h145-A",
+   "new": true
+  },
+  {
+   "id": "music box",
+   "choice": "h200-E",
+   "new": true
+  },
+  {
+   "id": "old doll",
+   "choice": "h194-E",
+   "new": true
+  },
+  {
+   "id": "orb pedestal",
+   "choice": "h169-E",
    "new": true
   },
   {
@@ -67,13 +442,53 @@
    "new": true
   },
   {
+   "id": "photo frames",
+   "choice": "h204-E",
+   "new": true
+  },
+  {
+   "id": "pitfall",
+   "choice": "h39-C",
+   "new": true
+  },
+  {
    "id": "portrait large",
    "choice": "w71-A",
    "new": true
   },
   {
+   "id": "pressure plate",
+   "choice": "h18-B",
+   "new": true
+  },
+  {
+   "id": "pressure plate down",
+   "choice": "h29-B",
+   "new": true
+  },
+  {
    "id": "prison cot",
    "choice": "w70-A",
+   "new": true
+  },
+  {
+   "id": "push boulder",
+   "choice": "h19-B",
+   "new": true
+  },
+  {
+   "id": "quest board",
+   "choice": "h142-B",
+   "new": true
+  },
+  {
+   "id": "rocking horse",
+   "choice": "h182-C",
+   "new": true
+  },
+  {
+   "id": "room key board",
+   "choice": "h43-B",
    "new": true
   },
   {
@@ -92,8 +507,38 @@
    "new": true
   },
   {
+   "id": "save crystal",
+   "choice": "h15-B",
+   "new": true
+  },
+  {
    "id": "school desk",
    "choice": "w71-A",
+   "new": true
+  },
+  {
+   "id": "scroll pile",
+   "choice": "h166-D",
+   "new": true
+  },
+  {
+   "id": "sea chest",
+   "choice": "h179-E",
+   "new": true
+  },
+  {
+   "id": "seal stone",
+   "choice": "h23-D",
+   "new": true
+  },
+  {
+   "id": "seed sacks",
+   "choice": "h188-D",
+   "new": true
+  },
+  {
+   "id": "seedling shelf",
+   "choice": "h193-B",
    "new": true
   },
   {
@@ -102,8 +547,23 @@
    "new": true
   },
   {
+   "id": "ship bell",
+   "choice": "h178-A",
+   "new": true
+  },
+  {
+   "id": "ship cannon",
+   "choice": "h175-A",
+   "new": true
+  },
+  {
    "id": "ship wheel",
    "choice": "w72-A",
+   "new": true
+  },
+  {
+   "id": "shipping bin",
+   "choice": "h187-E",
    "new": true
   },
   {
@@ -122,8 +582,33 @@
    "new": true
   },
   {
+   "id": "specimen shelf",
+   "choice": "h150-D",
+   "new": true
+  },
+  {
+   "id": "spike trap",
+   "choice": "h21-B",
+   "new": true
+  },
+  {
+   "id": "spike trap down",
+   "choice": "h31-C",
+   "new": true
+  },
+  {
+   "id": "staff rack",
+   "choice": "h51-D",
+   "new": true
+  },
+  {
    "id": "statue",
    "choice": "w74-A",
+   "new": true
+  },
+  {
+   "id": "storage terminal",
+   "choice": "h170-A",
    "new": true
   },
   {
@@ -132,13 +617,93 @@
    "new": true
   },
   {
+   "id": "summoning circle",
+   "choice": "h153-D",
+   "new": true
+  },
+  {
    "id": "sword rack",
    "choice": "w70-A",
    "new": true
   },
   {
+   "id": "teleport pad",
+   "choice": "h33-E",
+   "new": true
+  },
+  {
+   "id": "torn portrait",
+   "choice": "h195-A",
+   "new": true
+  },
+  {
+   "id": "toy box",
+   "choice": "h181-A",
+   "new": true
+  },
+  {
    "id": "trapdoor",
    "choice": "w73-A",
+   "new": true
+  },
+  {
+   "id": "treasure chest",
+   "choice": "h13-D",
+   "new": true
+  },
+  {
+   "id": "treasure chest big",
+   "choice": "h24-D",
+   "new": true
+  },
+  {
+   "id": "treasure chest big open",
+   "choice": "h27-C",
+   "new": true
+  },
+  {
+   "id": "treasure chest open",
+   "choice": "h26-D",
+   "new": true
+  },
+  {
+   "id": "wall lever",
+   "choice": "h17-A",
+   "new": true
+  },
+  {
+   "id": "wall lever on",
+   "choice": "h28-B",
+   "new": true
+  },
+  {
+   "id": "wand stand",
+   "choice": "h155-E",
+   "new": true
+  },
+  {
+   "id": "wanted poster",
+   "choice": "h143-E",
+   "new": true
+  },
+  {
+   "id": "war map table",
+   "choice": "h137-A",
+   "new": true
+  },
+  {
+   "id": "washing tub",
+   "choice": "h184-A",
+   "new": true
+  },
+  {
+   "id": "weapon crate",
+   "choice": "h52-D",
+   "new": true
+  },
+  {
+   "id": "wooden toilet",
+   "choice": "h180-A",
    "new": true
   },
   {
@@ -578,6 +1143,10 @@
    "choice": "w5-A"
   },
   {
+   "id": "grindstone",
+   "choice": "h10-D"
+  },
+  {
    "id": "hang:fish",
    "choice": "w63-A"
   },
@@ -959,7 +1528,7 @@
   },
   {
    "id": "table:plate+cup",
-   "choice": "w62-A"
+   "choice": "h12-E"
   },
   {
    "id": "table:potion+flask",
@@ -1039,7 +1608,7 @@
   },
   {
    "id": "washbasin",
-   "choice": "w3-C"
+   "choice": "h206-E"
   },
   {
    "id": "water jar",
@@ -1367,11 +1936,6 @@
    "why": "v5 유지"
   },
   {
-   "id": "grindstone",
-   "choice": "v5",
-   "why": "v5 유지"
-  },
-  {
    "id": "ice chest:fish+fishg+fishr",
    "choice": "v5",
    "why": "v5 유지"
@@ -1454,12 +2018,66 @@
  ],
  "newItems": [
   {
+   "id": "accessory case",
+   "choice": "h54-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "airship helm",
+   "choice": "h177-A",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "alchemy table",
+   "choice": "h149-E",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
    "id": "anchor",
    "choice": "w72-A",
    "kind": "wall",
    "footprint": [
     1,
     1
+   ]
+  },
+  {
+   "id": "arrow barrel",
+   "choice": "h50-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "arrow floor",
+   "choice": "h40-D",
+   "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "axe mace wall",
+   "choice": "h208-B",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
    ]
   },
   {
@@ -1481,6 +2099,33 @@
    ]
   },
   {
+   "id": "boarded window",
+   "choice": "h198-D",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "bone pillar",
+   "choice": "h157-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "book pile",
+   "choice": "h164-C",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "bow rack",
    "choice": "w70-A",
    "kind": "hang",
@@ -1490,8 +2135,107 @@
    ]
   },
   {
+   "id": "bunk bed",
+   "choice": "h210-D",
+   "kind": "wall",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "butter churn",
+   "choice": "h189-C",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "candle stubs",
+   "choice": "h197-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "cargo netted",
+   "choice": "h176-B",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "catalog drawers",
+   "choice": "h167-B",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "chained bookcase",
+   "choice": "h165-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "chart table",
+   "choice": "h174-E",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "cheese press",
+   "choice": "h190-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "child bed",
+   "choice": "h186-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "cobweb",
+   "choice": "h199-B",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
    "id": "coffin",
    "choice": "w103-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    2
+   ]
+  },
+  {
+   "id": "coffin open",
+   "choice": "h32-C",
    "kind": "floor",
    "footprint": [
     1,
@@ -1508,11 +2252,137 @@
    ]
   },
   {
+   "id": "covered furniture",
+   "choice": "h196-C",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "cracked wall",
+   "choice": "h37-C",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "crossed swords",
+   "choice": "h138-E",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "crown pedestal",
+   "choice": "h135-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "crystal switch",
+   "choice": "h34-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "cursed mirror",
+   "choice": "h160-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "dark altar",
+   "choice": "h161-B",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "dark orb pedestal",
+   "choice": "h163-C",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "demon statue",
+   "choice": "h159-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "demon throne",
+   "choice": "h156-E",
+   "kind": "floor",
+   "footprint": [
+    2,
+    2
+   ]
+  },
+  {
+   "id": "diary stand",
+   "choice": "h201-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "dresser",
    "choice": "w71-A",
    "kind": "wall",
    "footprint": [
     2,
+    1
+   ]
+  },
+  {
+   "id": "egg incubator",
+   "choice": "h173-C",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "farm tool rack",
+   "choice": "h191-E",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "floating book",
+   "choice": "h152-C",
+   "kind": "floor",
+   "footprint": [
+    1,
     1
    ]
   },
@@ -1526,8 +2396,53 @@
    ]
   },
   {
+   "id": "gilded wardrobe",
+   "choice": "h141-B",
+   "kind": "wall",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
    "id": "globe",
    "choice": "w71-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "grave bouquet",
+   "choice": "h205-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "guild counter",
+   "choice": "h144-A",
+   "kind": "floor",
+   "footprint": [
+    3,
+    1
+   ]
+  },
+  {
+   "id": "guild lockers",
+   "choice": "h147-B",
+   "kind": "wall",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "gym statue",
+   "choice": "h171-E",
    "kind": "floor",
    "footprint": [
     1,
@@ -1544,6 +2459,150 @@
    ]
   },
   {
+   "id": "hanging cage",
+   "choice": "h162-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "healing machine",
+   "choice": "h168-C",
+   "kind": "wall",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "healing spring",
+   "choice": "h16-D",
+   "kind": "floor",
+   "footprint": [
+    2,
+    2
+   ]
+  },
+  {
+   "id": "helmet shelf",
+   "choice": "h49-E",
+   "kind": "wall",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "heraldic shield",
+   "choice": "h136-E",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "hint tablet",
+   "choice": "h38-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "hot spring",
+   "choice": "h129-E",
+   "kind": "floor",
+   "footprint": [
+    3,
+    2
+   ]
+  },
+  {
+   "id": "hourglass",
+   "choice": "h203-C",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "indoor fountain",
+   "choice": "h140-A",
+   "kind": "floor",
+   "footprint": [
+    2,
+    2
+   ]
+  },
+  {
+   "id": "indoor well",
+   "choice": "h183-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "inn reception",
+   "choice": "h42-E",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "inn sign",
+   "choice": "h47-E",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "iron gate",
+   "choice": "h20-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "iron gate open",
+   "choice": "h30-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "item shop shelf",
+   "choice": "h133-A",
+   "kind": "wall",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "key pedestal",
+   "choice": "h22-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "key ring hook",
    "choice": "w70-A",
    "kind": "hang",
@@ -1553,9 +2612,189 @@
    ]
   },
   {
+   "id": "knight armor",
+   "choice": "h134-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "lab bench",
+   "choice": "h172-E",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "laundry line",
+   "choice": "h185-A",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "lava brazier",
+   "choice": "h158-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "leather armor stand",
+   "choice": "h48-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "library ladder",
    "choice": "w74-A",
    "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "locked door",
+   "choice": "h35-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "loot sacks",
+   "choice": "h146-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "luggage trunk",
+   "choice": "h46-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "magic mirror",
+   "choice": "h154-A",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "mailbox",
+   "choice": "h202-C",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "mana crystal",
+   "choice": "h151-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "map rolls",
+   "choice": "h148-C",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "marble bust",
+   "choice": "h139-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "menu board",
+   "choice": "h45-D",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "milk cans",
+   "choice": "h192-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "mimic",
+   "choice": "h132-C",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "monster trophy",
+   "choice": "h145-A",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "music box",
+   "choice": "h200-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "old doll",
+   "choice": "h194-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "orb pedestal",
+   "choice": "h169-E",
+   "kind": "floor",
    "footprint": [
     1,
     1
@@ -1571,6 +2810,24 @@
    ]
   },
   {
+   "id": "photo frames",
+   "choice": "h204-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "pitfall",
+   "choice": "h39-C",
+   "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "portrait large",
    "choice": "w71-A",
    "kind": "hang",
@@ -1580,12 +2837,66 @@
    ]
   },
   {
+   "id": "pressure plate",
+   "choice": "h18-B",
+   "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "pressure plate down",
+   "choice": "h29-B",
+   "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "prison cot",
    "choice": "w70-A",
    "kind": "wall",
    "footprint": [
     1,
     2
+   ]
+  },
+  {
+   "id": "push boulder",
+   "choice": "h19-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "quest board",
+   "choice": "h142-B",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "rocking horse",
+   "choice": "h182-C",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "room key board",
+   "choice": "h43-B",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
    ]
   },
   {
@@ -1616,11 +2927,65 @@
    ]
   },
   {
+   "id": "save crystal",
+   "choice": "h15-B",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "school desk",
    "choice": "w71-A",
    "kind": "floor",
    "footprint": [
     1,
+    1
+   ]
+  },
+  {
+   "id": "scroll pile",
+   "choice": "h166-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "sea chest",
+   "choice": "h179-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "seal stone",
+   "choice": "h23-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "seed sacks",
+   "choice": "h188-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "seedling shelf",
+   "choice": "h193-B",
+   "kind": "wall",
+   "footprint": [
+    2,
     1
    ]
   },
@@ -1634,11 +2999,38 @@
    ]
   },
   {
+   "id": "ship bell",
+   "choice": "h178-A",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "ship cannon",
+   "choice": "h175-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "ship wheel",
    "choice": "w72-A",
    "kind": "floor",
    "footprint": [
     1,
+    1
+   ]
+  },
+  {
+   "id": "shipping bin",
+   "choice": "h187-E",
+   "kind": "floor",
+   "footprint": [
+    2,
     1
    ]
   },
@@ -1670,9 +3062,54 @@
    ]
   },
   {
+   "id": "specimen shelf",
+   "choice": "h150-D",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "spike trap",
+   "choice": "h21-B",
+   "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "spike trap down",
+   "choice": "h31-C",
+   "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "staff rack",
+   "choice": "h51-D",
+   "kind": "wall",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "statue",
    "choice": "w74-A",
    "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "storage terminal",
+   "choice": "h170-A",
+   "kind": "wall",
    "footprint": [
     1,
     1
@@ -1688,6 +3125,15 @@
    ]
   },
   {
+   "id": "summoning circle",
+   "choice": "h153-D",
+   "kind": "flat",
+   "footprint": [
+    3,
+    3
+   ]
+  },
+  {
    "id": "sword rack",
    "choice": "w70-A",
    "kind": "wall",
@@ -1697,9 +3143,144 @@
    ]
   },
   {
+   "id": "teleport pad",
+   "choice": "h33-E",
+   "kind": "flat",
+   "footprint": [
+    2,
+    2
+   ]
+  },
+  {
+   "id": "torn portrait",
+   "choice": "h195-A",
+   "kind": "hang",
+   "footprint": [
+    2,
+    0
+   ]
+  },
+  {
+   "id": "toy box",
+   "choice": "h181-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
    "id": "trapdoor",
    "choice": "w73-A",
    "kind": "flat",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "treasure chest",
+   "choice": "h13-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "treasure chest big",
+   "choice": "h24-D",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "treasure chest big open",
+   "choice": "h27-C",
+   "kind": "floor",
+   "footprint": [
+    2,
+    1
+   ]
+  },
+  {
+   "id": "treasure chest open",
+   "choice": "h26-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "wall lever",
+   "choice": "h17-A",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "wall lever on",
+   "choice": "h28-B",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "wand stand",
+   "choice": "h155-E",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "wanted poster",
+   "choice": "h143-E",
+   "kind": "hang",
+   "footprint": [
+    1,
+    0
+   ]
+  },
+  {
+   "id": "war map table",
+   "choice": "h137-A",
+   "kind": "floor",
+   "footprint": [
+    2,
+    2
+   ]
+  },
+  {
+   "id": "washing tub",
+   "choice": "h184-A",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "weapon crate",
+   "choice": "h52-D",
+   "kind": "floor",
+   "footprint": [
+    1,
+    1
+   ]
+  },
+  {
+   "id": "wooden toilet",
+   "choice": "h180-A",
+   "kind": "floor",
    "footprint": [
     1,
     1

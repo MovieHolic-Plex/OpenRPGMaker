@@ -135,10 +135,11 @@
 /* ---- ⑦ 예비동작 → 순간 타격 -------------------------------------------------
    approach 비트의 전진은 비트 끝(=착탄)에 도착하도록 늦게 출발하고, back-in 곡선이라 먼저
    살짝 물러났다가 가장 빠른 속도로 부딪힌다. 비트 길이는 applyActionMotion 이 --motion-beat-ms 로
-   심는다. 스킨별 lunge 규칙(0,5,0)보다 특정도가 높아야 한다 — 이동 거리는 스킨 것을 그대로 쓴다. */
+   심는다. 스킨별 lunge 규칙(0,5,0)보다 특정도가 높아야 한다 — 이동 거리는 스킨 것을 그대로 쓴다.
+   돌진 길이는 스킨이 --motion-lunge-ms 로 바꾼다(포켓몬 템포 1.5배 → 160ms). */
 .battle-scene[data-battle-ui-style][data-battle-skin] .battle-motion-lunge.battle-motion-user[data-motion-phase="approach"] {
-  transition-delay: max(0ms, calc(var(--motion-beat-ms, 470ms) - 240ms));
-  transition-duration: 240ms;
+  transition-delay: max(0ms, calc(var(--motion-beat-ms, 470ms) - var(--motion-lunge-ms, 240ms)));
+  transition-duration: var(--motion-lunge-ms, 240ms);
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.55, -0.5, 0.7, 0.1);
 }

@@ -118,9 +118,16 @@ export function mountBattleAnimationPlayback(
     const sheet = animationSheet(record, url);
     element.append(sheet);
     const primary: PlaybackHost = { element, frames: frameNodes(sheet), pending: 0 };
-    scheduleFollowUps(primary, record, timers, context);
-    setActiveAnimationFrame(primary, record, 0, context);
-    startPlayback(primary, record, timers, context);
+    // 앞 프레임 건너뛰기(씬 루트 data-battle-animation-skip-frames, 포켓몬 스킨이 battleAnimationLeadPlan 으로 정한다) —
+    // approach 안에 다 들어가지 않는 앞 프레임을 건너뛰어야 착탄 프레임의 효과음이 타격과 같은 순간에 난다.
+    // 예전엔 착탄 순간에 0번부터 돌아 효과음이 타격 뒤 160~420ms 에 한 번 더 났다(2026-10-02).
+    const skipRaw = Number(sceneRoot?.dataset.battleAnimationSkipFrames);
+    const skip = Number.isFinite(skipRaw) && skipRaw > 0 ? Math.min(record.frames.length - 1, Math.floor(skipRaw)) : 0;
+    // 후속의 data-start-frame(본체 프레임 기준 시작 위치)과 이름이 겹치지 않게 따로 둔다.
+    element.dataset.playbackStartFrame = String(skip);
+    scheduleFollowUps(primary, record, timers, context, skip);
+    setActiveAnimationFrame(primary, record, skip, context);
+    startPlayback(primary, record, timers, context, skip);
   }
 
   return {
@@ -295,12 +302,57 @@ function battleAnimationRecord(animationId: string): BattleAnimationRecord | und
  */
 export function battleAnimationImpactMs(animationId: string): number {
   const record = battleAnimationRecord(animationId);
-  if (!record?.timings?.length) return 0;
-  const impact = record.timings
+  const impact = record ? impactFrameIndex(record) : undefined;
+  if (!record || impact === undefined) return 0;
+  return impact * battleAnimationFrameDurationMs(record);
+}
+
+/**
+ * 포켓몬 안무의 이펙트 재생 계획. `availableMs`(템포 적용 전 ms) = 착탄 전에 이펙트를 틀 수 있는 시간.
+ * 착탄 프레임까지의 앞 프레임 중 그 시간에 들어가는 만큼(`leadMs`)은 미리 틀고, 들어가지 않는 맨 앞 프레임
+ * (`skipFrames`)만 건너뛴다 — 그래야 착탄 프레임이 타격 순간에 정확히 온다. 접촉·발사체는 몸·빛 덩이가 다가감을
+ * 이미 그리므로 0을 넘겨 착탄 프레임부터 튼다. 현장 발생(번개·가시·운석)은 이펙트 자체가 다가감이라
+ * 다 건너뛰면 내리꽂는 번개·떨어지는 운석이 사라졌다(2026-10-02 적대적 QA).
+ */
+export function battleAnimationLeadPlan(animationId: string, availableMs: number): { leadMs: number; skipFrames: number; skippedMs: number } {
+  const record = battleAnimationRecord(animationId);
+  const impact = record ? impactFrameIndex(record) : undefined;
+  if (!record || impact === undefined || impact <= 0) return { leadMs: 0, skipFrames: 0, skippedMs: 0 };
+  const frameMs = battleAnimationFrameDurationMs(record);
+  const fit = Math.min(impact, Math.max(0, Math.floor(availableMs / frameMs)));
+  return { leadMs: fit * frameMs, skipFrames: impact - fit, skippedMs: (impact - fit) * frameMs };
+}
+
+/** 착탄 프레임 — 효과음·섬광·흔들림이 처음 붙은 프레임. 없으면 undefined. */
+function impactFrameIndex(record: BattleAnimationRecord): number | undefined {
+  return (record.timings ?? [])
     .filter((timing) => timing.soundResourceId || timing.flash || timing.screenShake)
     .reduce<number | undefined>((min, timing) => (min === undefined ? timing.frameIndex : Math.min(min, timing.frameIndex)), undefined);
-  if (impact === undefined) return 0;
-  return impact * battleAnimationFrameDurationMs(record);
+}
+
+/**
+ * 이펙트(후속 포함)의 효과음을 행동이 시작될 때 미리 디코딩한다. 마운트 순간에 하면 착탄 프레임부터 재생하는
+ * 경로(포켓몬 스킨)에서는 디코딩이 끝나기 전에 첫 소리가 나야 해서, 요소 재생으로 떨어져 0.4초 늦게 났다
+ * (2026-10-02 소리 악보: 화염의 Fog1.wav 착탄 +421ms).
+ */
+export function preloadAllBattleAnimationSounds(): void {
+  const ids = new Set<string>();
+  for (const record of store.getCurrent().database.battleAnimations) {
+    for (const timing of record.timings ?? []) if (timing.soundResourceId) ids.add(timing.soundResourceId);
+  }
+  preloadBattleSamples([...ids]);
+}
+
+export function preloadBattleAnimationSounds(animationId: string | undefined): void {
+  if (!animationId) return;
+  const records = store.getCurrent().database.battleAnimations;
+  const record = records.find((entry) => entry.id === animationId);
+  if (!record) return;
+  const ids = new Set<string>();
+  for (const one of [record, ...(record.followUps ?? []).map((followUp) => records.find((entry) => entry.id === followUp.animationId))]) {
+    for (const timing of one?.timings ?? []) if (timing.soundResourceId) ids.add(timing.soundResourceId);
+  }
+  preloadBattleSamples([...ids]);
 }
 
 /**
@@ -315,8 +367,11 @@ export function battleAnimationFrameMs(
   record?: BattleAnimationRecord
 ): number {
   const raw = Number(sceneRoot?.dataset.battleSpeed);
+  // 스킨 동작 템포(data-battle-motion-tempo) — 시퀀서가 행동 비트를 같은 배율로 줄이므로 이펙트도 맞춰 돈다.
+  const tempoRaw = Number(sceneRoot?.dataset.battleMotionTempo);
+  const tempo = Number.isFinite(tempoRaw) && tempoRaw > 0 ? tempoRaw : 1;
   // 시퀀서와 같은 하한(0.2)을 쓴다 — 여기만 다르면 배속을 올릴수록 서로 어긋난다.
-  const speed = Number.isFinite(raw) && raw > 0 ? Math.max(0.2, raw) : 1;
+  const speed = (Number.isFinite(raw) && raw > 0 ? Math.max(0.2, raw) : 1) * tempo;
   return Math.max(10, Math.round(battleAnimationFrameDurationMs(record) / speed));
 }
 
@@ -346,7 +401,8 @@ function scheduleFollowUps(
   primary: PlaybackHost,
   record: BattleAnimationRecord,
   timers: Set<number>,
-  context: AnimationRenderContext
+  context: AnimationRenderContext,
+  skipFrames = 0
 ): void {
   const followUps = record.followUps ?? [];
   if (followUps.length === 0) return;
@@ -357,6 +413,10 @@ function scheduleFollowUps(
     const follow = records.find((entry) => entry.id === followUp.animationId);
     const url = resolveAssetResourceUrl(follow?.resourceId, { project });
     if (!follow || !url || !follow.sheet || !follow.frames || follow.frames.length === 0) continue;
+    // 본체가 앞 프레임을 건너뛰었으면 그보다 먼저 시작했어야 할 후속은 그만큼 진행된 프레임부터 튼다 —
+    // 0번부터 틀면 「착탄 전 기 모으기」 같은 후속이 타격 뒤에 나왔다. 이미 끝났어야 할 후속은 틀지 않는다.
+    const behind = Math.max(0, skipFrames - followUp.startFrame);
+    if (behind >= follow.frames.length) continue;
     primary.pending += 1;
     const start = (): void => {
       if (!primary.element.isConnected) return;
@@ -379,17 +439,18 @@ function scheduleFollowUps(
           }
         },
       };
-      setActiveAnimationFrame(host, follow, 0, context);
-      startPlayback(host, follow, timers, context);
+      setActiveAnimationFrame(host, follow, behind, context);
+      startPlayback(host, follow, timers, context, behind);
     };
-    if (followUp.startFrame <= 0) {
+    const startFrame = followUp.startFrame - skipFrames;
+    if (startFrame <= 0) {
       start();
       continue;
     }
     const timer = window.setTimeout(() => {
       timers.delete(timer);
       start();
-    }, followUp.startFrame * frameMs);
+    }, startFrame * frameMs);
     timers.add(timer);
   }
 }
@@ -398,7 +459,8 @@ function startPlayback(
   host: PlaybackHost,
   record: BattleAnimationRecord,
   timers: Set<number>,
-  context: AnimationRenderContext
+  context: AnimationRenderContext,
+  startIndex = 0
 ): void {
   const frames = record.frames ?? [];
   if (frames.length <= 1) {
@@ -412,17 +474,25 @@ function startPlayback(
     }
     return;
   }
-  let index = 0;
+  // 프레임은 흐른 시간으로 정한다 — 틱마다 +1 하면 부하 때 늦은 틱이 쌓여, 앞당겨 튼(앞 프레임이 있는) 이펙트의
+  // 착탄 효과음이 타격보다 100ms 넘게 늦었다(2026-10-02 녹화, 지진 +108ms). 늦은 틱은 밀린 프레임을 한꺼번에 지나가며
+  // 그 프레임들의 소리·섬광도 낸다. 1ms 여유는 경계에 딱 맞춰 온 틱이 앞 프레임으로 내려앉지 않게.
+  const frameMs = battleAnimationFrameMs(context.sceneRoot, record);
+  const startedAt = Date.now();
+  let index = startIndex;
   const timer = window.setInterval(() => {
-    index += 1;
-    if (index >= frames.length) {
-      window.clearInterval(timer);
-      timers.delete(timer);
-      finishPlayback(host, context);
-      return;
+    const due = startIndex + Math.floor((Date.now() - startedAt + 1) / frameMs);
+    while (index < due) {
+      index += 1;
+      if (index >= frames.length) {
+        window.clearInterval(timer);
+        timers.delete(timer);
+        finishPlayback(host, context);
+        return;
+      }
+      setActiveAnimationFrame(host, record, index, context);
     }
-    setActiveAnimationFrame(host, record, index, context);
-  }, battleAnimationFrameMs(context.sceneRoot, record));
+  }, frameMs);
   timers.add(timer);
 }
 
@@ -599,7 +669,7 @@ function setEffectVariables(
 
 function playTimingSound(soundResourceId: string | undefined): void {
   // 디코딩 캐시에 있으면 즉시 — 새 요소의 로드 지연이 애니메이션 착탄음을 늦게 만든다.
-  if (soundResourceId && playBattleSample(soundResourceId, 0.4)) return;
+  if (soundResourceId && playBattleSample(soundResourceId, 0.4, 1, "animation")) return;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return;
   const audio = new Audio(url);

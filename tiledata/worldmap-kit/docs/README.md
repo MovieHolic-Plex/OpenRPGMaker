@@ -168,3 +168,39 @@ pins 없이 해시로 고른 결과가 결정적인지, 입력 오류(역할 없
 경사 투영 렌더러로 그린 아이콘(사막·동양풍 · 현대·SF 전부, 판타지의 화염 요새·폐허 일부)은 **옆면이 보이는 아이소메트릭 시점**이라 칩셋 규약(윗면 + 정면 벽)과 어긋난다.
 세 세트 82장 전부를 월드맵 아이콘 하네스(`src/harnesses/worldmap-icons/`)에 올렸다. 사용자의 받기/버리기가 `harness-data/worldmap-icons/decisions.json` 에 모이기 전에는 어떤 아이콘도 「확정」이 아니다.
 
+
+## 세계관 세트 14개 추가 (2026-10-02) — 3D 장면 + 정면 카메라
+
+사용자가 1~3차(테마 14개)를 지시해 세트 14개 262장을 더했다. 모두 `iconsets/_scene3d/` 공용 렌더러로 찍었고 생성 이미지·트레이싱은 없다.
+
+| 세트 id | 이름 | 장 | 비고 |
+|---|---|---|---|
+| fantasy-dungeons | 판타지 던전·신전 입구 | 12 | 부분 세트 `extends: fantasy` |
+| monster | 몬스터 수집 | 19 | |
+| joseon | 조선 | 19 | |
+| sengoku | 일본 전국 | 20 | |
+| wuxia | 무협 중국 | 19 | |
+| classical | 고대 그리스·로마 | 20 | |
+| dark-gothic | 다크 판타지·고딕(위처풍) | 20 | |
+| snow-north | 설원·북방 | 19 | |
+| sea-isles | 바다·군도 | 20 | |
+| prehistoric | 선사·원시 | 19 | |
+| steampunk | 스팀펑크·마도 | 20 | |
+| modern-town | 현대 소도시 | 19 | |
+| alien | 외계 행성 | 19 | |
+| starmap | 성계 지도 | 19 | `kind: space` — 땅 대신 우주 배경 |
+
+### `_scene3d` 세트 규약
+
+- 세트 폴더에 `scenes.py`(SET·ORDER·장면 함수)와 `build.py`(`from buildset import main; main(__file__)`) 만 둔다. `python3 iconsets/<id>/build.py` 가 `sheet.png`·`manifest.json`·`preview/`·`build-report.json` 을 다시 만든다.
+- **카메라는 정면 3/4**: KX=0(동·서 옆벽 0px), KY=.62, 빛은 원래(왼쪽 위). 장면은 처음부터 정면용으로 짓는다(뒤 건물은 좌우로 엇갈리게).
+- 장면에 땅 받침(풀·흙 판)을 깔지 않는다 — 지형이 바닥이다. 칸을 넘치면 빌드가 실패로 적는다.
+- 새 색은 세트마다 24개까지(`max_new_colors`). 나머지는 EasyRPG World.png 색.
+- `extends: <바탕 세트>`: 부분 세트. 자기 아이콘만 시트에 두고 나머지 역할은 바탕 세트에서 빌린다(`kit_common.IconSet`, 빌린 아이콘은 `_own=False`). `SET['partial']=True` 면 17역할 검사를 건너뛴다.
+- `kind: space`: 하네스가 지형 대신 별 바탕(`render.starfield`)에 붙인다. 우주 지형층(성운·소행성대·항로)은 아직 없다.
+
+### 검수 규칙
+
+정면 카메라 세트(manifest `camera.kx == 0`)는 하네스가 `FRONT3D_RULE` 을 검수 지시에 넣는다. 첫 검수에서 FAIL 의 대부분(147건)이 `SIDE` 였는데,
+원통·원뿔·모임지붕 끝의 오른쪽 명암을 옆면으로 읽은 것이었다(평평한 옆벽은 시선과 직각이라 0px). 규칙을 넣은 재검수는 `READ`(1배에서 안 읽힘)·`STYLE` 만 남긴다.
+검수 결과는 참고일 뿐이고 받기/버리기는 사용자가 하네스(http://mdc-server:18313/)에서 한다.

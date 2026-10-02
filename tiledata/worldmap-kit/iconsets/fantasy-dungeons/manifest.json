@@ -1,0 +1,185 @@
+{
+ "id": "fantasy-dungeons",
+ "name": "판타지 던전·신전 입구",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [
+  "3c1460",
+  "6a2aa8",
+  "9a50e0",
+  "a03070",
+  "c890f8",
+  "e070b0",
+  "e0fcff",
+  "f0d8ff",
+  "f8b0d8",
+  "fffff0",
+  "ffffff"
+ ],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "cave",
+   "name": "불의 던전",
+   "id": "cave_fire",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 0,
+   "desc": "붉은 바위 언덕·뿔 바위, 현무암 문틀 안에서 용암 빛, 흘러나온 용암과 화로 둘"
+  },
+  {
+   "role": "cave",
+   "name": "물의 던전",
+   "id": "cave_water",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "이끼 낀 푸른 바위의 석문 입구, 옆으로 떨어지는 물줄기와 앞 못"
+  },
+  {
+   "role": "cave",
+   "name": "숲의 던전",
+   "id": "cave_forest",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 0,
+   "desc": "거목 밑동 뿌리 사이 어두운 입구(초록 빛)와 둥근 수관"
+  },
+  {
+   "role": "cave",
+   "name": "얼음 던전",
+   "id": "cave_ice",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 0,
+   "desc": "눈 언덕의 얼음 벽돌 아치·고드름, 둘레 푸른 수정 기둥"
+  },
+  {
+   "role": "shrine",
+   "name": "바람의 신전",
+   "id": "shrine_wind",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "흰 3단 기단·높은 계단, 흰 기둥 회랑과 박공 위 회오리"
+  },
+  {
+   "role": "shrine",
+   "name": "빛의 신전",
+   "id": "shrine_light",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 0,
+   "desc": "흰 계단 위 흰 원통 몸체·기둥 회랑, 금빛 돔과 첨탑"
+  },
+  {
+   "role": "shrine",
+   "name": "어둠의 신전",
+   "id": "shrine_dark",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "검은 기단 위 첨탑 셋, 보라 빛 창·입구와 보라 불"
+  },
+  {
+   "role": "ruin",
+   "name": "사막 신전 입구",
+   "id": "ruin_desert",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 0,
+   "desc": "모래에 반쯤 묻힌 금 머릿돌 피라미드와 앞 입구"
+  },
+  {
+   "role": "ruin",
+   "name": "봉인된 문",
+   "id": "ruin_seal",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 0,
+   "desc": "절벽의 돌문에 금빛 문장, 쇠사슬 X 와 자물쇠"
+  },
+  {
+   "role": "circle",
+   "name": "요정의 샘",
+   "id": "circle_fairy",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 0,
+   "desc": "돌테 안 못에서 솟는 빛 기둥·반짝이, 둘레 꽃"
+  },
+  {
+   "role": "tower_small",
+   "name": "마법사의 외딴 탑",
+   "id": "tower_wizard",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 25,
+   "row": 0,
+   "desc": "바위 위 돌 원통 탑, 난간, 보라 고깔 지붕과 금별"
+  },
+  {
+   "role": "circle",
+   "name": "마스터 검의 대좌",
+   "id": "circle_sword",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 23,
+   "row": 0,
+   "desc": "숲 빈터의 둥근 돌 단, 대좌에 꽂힌 푸른 손잡이 검"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ },
+ "extends": "fantasy"
+}

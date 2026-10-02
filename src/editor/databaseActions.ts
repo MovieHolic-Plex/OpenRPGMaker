@@ -287,6 +287,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
           if (actorPatch.loadoutSlots === undefined) delete record.loadoutSlots;
           else record.loadoutSlots = actorPatch.loadoutSlots;
         }
+        if ("battleCommandIds" in actorPatch) {
+          if (actorPatch.battleCommandIds === undefined) delete record.battleCommandIds;
+          else record.battleCommandIds = actorPatch.battleCommandIds;
+        }
         Object.assign(record, normalizeActorRecord(record));
         return;
       }

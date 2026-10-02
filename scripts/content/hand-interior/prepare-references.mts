@@ -143,17 +143,28 @@ build_hand_interior_room 이 이 사전으로 칸을 고르므로 조수는 번�
 
 ${fence("json", JSON.stringify(dict))}`);
 
-for (const [k, ids] of [...byCat].sort()) {
-  const [cat, ko] = k.split(" ");
+// 분류 하나 = 문서 하나. 작은 분류(8종 미만)는 20종 넘게 모아 한 문서로 묶는다 — 참고문서 분류 한도 64문서.
+const SMALL = 8, PACK = 20;
+const cats = [...byCat].sort().map(([k, ids]) => ({ cat: k.slice(0, k.indexOf(" ")), ko: k.slice(k.indexOf(" ") + 1), ids }));
+const groups: (typeof cats)[] = cats.filter((c) => c.ids.length >= SMALL).map((c) => [c]);
+let pack: typeof cats = [];
+for (const c of cats.filter((c) => c.ids.length < SMALL)) {
+  pack.push(c);
+  if (pack.reduce((n, x) => n + x.ids.length, 0) >= PACK) { groups.push(pack); pack = []; }
+}
+if (pack.length) groups.push(pack);
+const section = ({ ids }: (typeof cats)[number]) => {
   const body = ids.map((id) => { const o = S.objects[id]!; return { id, ko: o.ko, kind: o.kind, w: o.w, h: o.h, overhangPx: o.up, ...(o.surface ? { surface: o.surface } : {}), ...(o.stairs ? { stairs: o.stairs } : {}), ...(o.animated ? { animated: true } : {}), cells: o.cells }; });
   const desc = ids.map((id) => { const m = meta.objects.find((x: { id: string }) => x.id === id); const o = S.objects[id]!; return `- \`${id}\` ${o.ko} — ${m ? (m.description ?? "") : `${o.desc ?? ""} ${o.place ?? ""} · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)`} ${(m?.placement ?? []).join(" / ")}${o.tags?.length ? ` · 쓰는 방: ${o.tags.join("·")}` : ""}${o.pair?.length ? ` · 짝: ${o.pair.join(", ")}` : ""}`; }).join("\n");
-  doc(`hand-interior-v5-objects-${cat}`, `손 도트 실내 · 가구 사전 · ${ko}`, `# 가구 사전 — ${ko} (${ids.length}종)
+  return `${desc}\n\n${fence("json", JSON.stringify(body))}`;
+};
+for (const g of groups) {
+  const ko = g.map((c) => c.ko).join(" · "), n = g.reduce((t, c) => t + c.ids.length, 0);
+  doc(`hand-interior-v5-objects-${g.map((c) => c.cat).join("-")}`, `손 도트 실내 · 가구 사전 · ${ko}`, `# 가구 사전 — ${ko} (${n}종)
 
 cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구(막힘) · wall 북쪽 벽 앞(막힘) · hang 벽면 윗줄 걸이(★) · flat 밟는 바닥 무늬(2층).
 
-${desc}
-
-${fence("json", JSON.stringify(body))}`);
+${g.length === 1 ? section(g[0]!) : g.map((c) => `## ${c.ko} (${c.ids.length}종)\n\n${section(c)}`).join("\n\n")}`);
 }
 
 // ── 2. the 26 example maps ─────────────────────────────────────────────────────────────────────────────────────────

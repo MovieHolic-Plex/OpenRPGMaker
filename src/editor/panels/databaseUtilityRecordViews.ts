@@ -1,4 +1,4 @@
-// 전투 스튜디오 유틸리티 3탭 — 지형 / 전투 화면 / 전투 명령.
+// 전투 스튜디오 유틸리티 탭 — 지형 / 전투 명령. (전투 화면은 2026-10-02 databaseBattleScreenTab.ts 로 옮겨 다시 짰다.)
 //
 // 2026-08 DB 감사에서 이 셋이 받은 P0 는 전부 "보이는 것과 실제 범위가 다르다" 였다:
 //   - 지형 C 축: 인스펙터가 인스펙터가 아니었다. 헤더는 `N개 · 선택한 지형` 이라 단일
@@ -15,13 +15,12 @@
 // "게임 설정 변경" 을 분리하고, 전투 명령에 CRUD + 순서 이동을 붙였다.
 //
 // 테스트 계약: db-terrain-preset-gallery / db-terrain-preview-stage / db-terrain-inspector,
-// db-battle-screen-{preview-stage,inspector,troop-strip}, db-battle-command-{preview,palette,
+// db-battle-command-{preview,palette,
 // inspector}, db-field-terrain-*-<i>(이름/피해/조우율은 전 레코드, 나머지는 선택 레코드),
 // db-field-battle-command-*-<i>(전 레코드), db-picker-battle-*, db-open-classes-tab.
 import {
   emptyToUndefined,
   numberField,
-  selectField,
   selectLiteral,
   matchesNameOrId,
   textField,
@@ -31,7 +30,6 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { attachCatalogPlacement, battleCommandPlacement } from "./databaseBattleCommandStudio";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
-import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 export { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
 import {
@@ -51,27 +49,22 @@ import {
   listPane,
   listRow,
   listSearch,
-  listToolbar,
   sectionCard,
   restoreFocusAfterRerender,
   statStrip,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
-import { requestSystemSection } from "@/editor/panels/databaseSystemView";
 import { store } from "@/project/store";
 import type {
-  BattleFlow,
   ClassBattleCommandKind,
   DatabaseBattleCommandRecord,
   DatabaseTerrainRecord,
-  TroopRecord,
 } from "@/project/types";
 import { el } from "@/util/dom";
 
-const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 const BATTLE_COMMAND_KINDS: readonly ClassBattleCommandKind[] = [
-  "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event",
+  "attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event", "commonEvent",
 ];
 /** 종류별 한 줄 설명 — 예전의 아무 동작 없는 알약 줄(P9)을 대체한다. */
 const BATTLE_COMMAND_KIND_HELP: readonly { readonly label: string; readonly help: string }[] = [
@@ -85,13 +78,11 @@ const BATTLE_COMMAND_KIND_HELP: readonly { readonly label: string; readonly help
   { label: "도망", help: "전투 이탈 시도" },
   { label: "교체", help: "대기 중인 동료와 자리 교대" },
   { label: "교체(구형)", help: "교체와 같은 효과 — 새로 쓸 때는 교체를 고르세요" },
+  { label: "공통 이벤트 실행", help: "고른 공통 이벤트를 전투 중에 실행 — 메시지·선택지·변수 조작을 그대로 쓴다" },
 ];
 
 let terrainQuery = "";
-let troopQuery = "";
 let commandQuery = "";
-/** 미리볼 적 그룹. system.initialTroopId 와 분리된 **편집기 전용** 상태다. */
-let previewTroopId = "";
 
 // ---------------------------------------------------------------------------
 // 지형
@@ -411,292 +402,6 @@ function terrainPreviewStage(terrain: DatabaseTerrainRecord): HTMLElement {
 }
 
 // ---------------------------------------------------------------------------
-// 전투 화면
-// ---------------------------------------------------------------------------
-
-export function renderBattleScreenTab(host: HTMLElement): void {
-  const project = store.getCurrent();
-  const troops = project.database.troops;
-  const previewTroop = troops.find((troop) => troop.id === previewTroopId)
-    ?? troops.find((troop) => troop.id === project.system.initialTroopId)
-    ?? troops[0];
-  previewTroopId = previewTroop?.id ?? "";
-  const rerender = (): void => {
-    host.replaceChildren();
-    renderBattleScreenTab(host);
-  };
-  const form = el("section", {
-    class: "db-detail-form db-parity-form db-battle-studio-surface db-battle-screen-studio db-ws-studio",
-    dataset: { testid: "db-detail-form" },
-  });
-  form.append(
-    battleStudioHeading("battleScreen", "전투 화면", "대표 전장을 보면서 전투 흐름과 초기 구성을 맞춥니다."),
-    workspaceShell({
-      list: troopListPane(troops, previewTroop, project.system.initialTroopId, rerender),
-      detail: battleScreenDetailPane(previewTroop, rerender),
-    }),
-  );
-  host.append(form);
-}
-
-function troopListPane(
-  troops: readonly TroopRecord[],
-  previewTroop: TroopRecord | undefined,
-  initialTroopId: string | undefined,
-  rerender: () => void,
-): HTMLElement {
-  const rows: HTMLElement[] = [];
-  for (const [index, troop] of troops.entries()) {
-    if (troopQuery && !matchesNameOrId(troop.name, troop.id, troopQuery)) continue;
-    const memberCount = troop.members?.length ?? troop.enemyIds.length;
-    rows.push(listRow({
-      name: troop.name,
-      // 배지는 "초기 전투" 한 줄만 — 몬스터 수까지 넣으면 268px 목록에서 이름이 잘린다.
-      ...(troop.id === initialTroopId ? { sub: "초기" } : {}),
-      number: index + 1,
-      thumb: backdropThumb(troop.previewBackgroundResourceId),
-      active: troop.id === previewTroop?.id,
-      title: `${troop.name} · 몬스터 ${memberCount}`,
-      testid: `db-battle-screen-troop-${index}`,
-      onSelect: () => {
-        // 미리보기 전환은 게임 설정(system.initialTroopId)을 건드리지 않는다.
-        previewTroopId = troop.id;
-        rerender();
-      },
-    }));
-  }
-
-  return listPane({
-    title: "적 그룹",
-    count: troops.length,
-    search: listSearch({
-      placeholder: "적 그룹 검색",
-      value: troopQuery,
-      testid: "db-battle-screen-troop-search",
-      onInput: (value) => {
-        troopQuery = value;
-        rerender();
-      },
-    }),
-    rows,
-    empty: emptyState({
-      icon: troopQuery ? "⌕" : "☠",
-      title: troopQuery ? "검색 결과가 없습니다" : "적 그룹이 아직 없습니다",
-      body: troopQuery
-        ? `"${troopQuery}" 와 일치하는 적 그룹이 없습니다.`
-        : "전투 화면을 미리 보려면 적 그룹이 최소 하나 필요합니다.",
-      compact: true,
-      action: troopQuery ? undefined : {
-        label: "적 그룹 탭 열기",
-        kind: "primary",
-        testid: "db-battle-screen-open-troops-empty",
-        onClick: () => jumpToTab("troops"),
-      },
-    }),
-    toolbar: listToolbar([
-      {
-        label: "이 그룹을 초기 전투로",
-        kind: "primary",
-        testid: "db-battle-screen-set-initial",
-        disabled: !previewTroop || previewTroop.id === initialTroopId,
-        title: "게임 시작 직후 벌어지는 테스트 전투의 적 그룹을 지정합니다",
-        onClick: () => {
-          if (!previewTroop) return;
-          recordProjectSnapshot();
-          store.update((draft) => {
-            draft.system.initialTroopId = previewTroop.id;
-          }, { scope: "system" });
-          rerender();
-        },
-      },
-      {
-        label: "적 그룹 편집",
-        kind: "ghost",
-        testid: "db-battle-screen-open-troops",
-        onClick: () => jumpToTab("troops"),
-      },
-    ]),
-    testid: "db-battle-screen-troop-strip",
-  });
-}
-
-function battleScreenDetailPane(troop: TroopRecord | undefined, rerender: () => void): HTMLElement {
-  const project = store.getCurrent();
-  const memberCount = troop?.members?.length ?? troop?.enemyIds.length ?? 0;
-  return detailPane({
-    hero: detailHero({
-      eyebrow: "전투 화면",
-      title: troop?.name ?? "적 그룹 없음",
-      subtitle: troop ? `미리보기 대상 · ${troop.id}` : "미리볼 적 그룹이 없습니다",
-      tags: [
-        project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투",
-        `몬스터 ${memberCount}`,
-        troop && troop.id === project.system.initialTroopId ? "초기 전투" : "초기 전투 아님",
-      ],
-      testid: "db-battle-screen-hero",
-    }),
-    body: [
-      troop
-        ? battleScreenPreviewStage(troop)
-        : emptyState({
-          icon: "☠",
-          title: "미리볼 적 그룹이 없습니다",
-          body: "적 그룹을 하나 만들면 여기에 실제 배경과 몬스터 배치가 그려집니다.",
-          action: { label: "적 그룹 탭 열기", kind: "primary", testid: "db-battle-screen-stage-cta", onClick: () => jumpToTab("troops") },
-          testid: "db-battle-screen-stage-empty",
-        }),
-      el("div", {
-        class: "db-ws-stack",
-        children: [
-          sectionCard({
-            title: "전투 화면",
-            hint: "전투 중 창·커서 그래픽과 진행 방식 — UI 스타일·규칙 모델은 시스템 › 시작 설정에서",
-            children: [
-              resourcePickerControl({
-                label: "전투 시스템 리소스",
-                resourceId: project.system.battleSystemResourceId,
-                kind: "system2",
-                testid: "db-field-battle-system-resource",
-                allowClear: true,
-                dialogTitle: "전투 시스템 그래픽",
-                onChange: (result) => {
-                  recordCoalescedSnapshot("db-utility:battle-screen:battle-system-resource");
-                  store.update((draft) => {
-                    draft.system.battleSystemResourceId = emptyToUndefined(result.resourceId);
-                  }, { scope: "system" });
-                },
-                rerender,
-              }),
-              // 플레이어는 이 그림을 CSS 변수로만 심고, 전투 스타일시트는 아직 그 변수를 읽지 않는다
-              // (게이지 색은 System2 기본 상수). 고르면 바뀐다고 믿지 않게 사실대로 적는다.
-              el("p", {
-                class: "db-ws-usage",
-                dataset: { testid: "db-battle-system-resource-note" },
-                text: "저장은 되지만 지금 전투 화면은 이 그림을 그리지 않습니다 — 게이지 색은 기본값입니다.",
-              }),
-              selectLiteral(
-                "전투 흐름",
-                "db-field-battle-screen-flow",
-                project.system.battleFlow === "strict" ? "strict" : "gauge",
-                BATTLE_FLOW_OPTIONS,
-                (value) => {
-                  recordProjectSnapshot();
-                  store.update((draft) => {
-                    draft.system.battleFlow = value;
-                  }, { scope: "system" });
-                },
-              ),
-              numberField("기본 참전 수", "db-field-battle-screen-active-slots", project.system.activeSlots ?? 0, (value) => {
-                recordCoalescedSnapshot("db-utility:battle-screen:active-slots");
-                store.update((draft) => {
-                  draft.system.activeSlots = Number.isFinite(value) && value > 0 ? Math.trunc(value) : undefined;
-                }, { scope: "system" });
-              }),
-              el("button", {
-                class: "db-ws-btn db-ws-btn-ghost",
-                text: "UI 스타일·규칙 모델은 시작 설정에서",
-                attrs: { type: "button" },
-                dataset: { testid: "db-battle-screen-open-system-startup" },
-                on: {
-                  click: (event) => {
-                    requestSystemSection("startup", "db-field-system-battle-ui-style");
-                    jumpToTab("system", event);
-                  },
-                },
-              }),
-            ],
-            testid: "db-battle-screen-settings-card",
-          }),
-          sectionCard({
-            title: "초기 전투",
-            hint: "왼쪽 목록 선택은 미리보기만 바꿉니다 — 게임 설정은 여기서",
-            children: [
-              selectField(
-                "초기 적 그룹",
-                "db-picker-battle-initial-troop",
-                project.system.initialTroopId ?? "",
-                project.database.troops,
-                (value) => {
-                  recordProjectSnapshot();
-                  store.update((draft) => {
-                    draft.system.initialTroopId = emptyToUndefined(value);
-                  }, { scope: "system" });
-                  rerender();
-                },
-              ),
-              el("p", {
-                class: "db-ws-usage",
-                text: project.system.initialTroopId
-                  ? "이벤트 초보 전투 템플릿의 기본 적 그룹입니다. 게임 시작 때 자동으로 싸우지는 않습니다."
-                  : "초기 적 그룹이 비어 있습니다 — 초보 전투 템플릿이 고를 기본 그룹이 없습니다.",
-              }),
-              el("p", {
-                class: "db-ws-usage",
-                text: `현재 미리보는 그룹: ${troop?.name ?? "없음"}`,
-              }),
-            ],
-            testid: "db-battle-screen-initial-card",
-          }),
-          sectionCard({
-            title: "배치 규칙",
-            children: [
-              el("p", { class: "db-ws-usage", text: "적의 좌표와 숨김 여부는 적 그룹 탭에서 편집합니다." }),
-              el("p", { class: "db-ws-usage", text: "배경 우선순위: 적 그룹 → 지형 → 기본 전장." }),
-            ],
-            testid: "db-battle-screen-layout-card",
-          }),
-        ],
-      }),
-    ],
-    testid: "db-battle-screen-inspector",
-  });
-}
-
-function battleScreenPreviewStage(troop: TroopRecord): HTMLElement {
-  const project = store.getCurrent();
-  const backdropId = troop.previewBackgroundResourceId ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
-  const stage = el("section", {
-    class: "db-battle-screen-preview-stage db-studio-dark-stage",
-    dataset: { testid: "db-battle-screen-preview-stage" },
-  });
-  const url = resolveAssetResourceUrl(backdropId, { project });
-  if (url) stage.style.backgroundImage = `linear-gradient(180deg, rgba(18, 22, 25, 0.08), rgba(18, 22, 25, 0.38)), ${cssBackground(url)}`;
-  stage.append(
-    el("div", { class: "db-studio-stage-grid", attrs: { "aria-hidden": "true" } }),
-    el("div", {
-      class: "db-battle-screen-stage-meta",
-      children: [
-        el("span", { class: "db-studio-live-chip", text: project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투" }),
-        el("strong", { text: troop.name }),
-        el("small", { text: `${troop.members?.length ?? troop.enemyIds.length} enemies · ${resourceDisplayName(backdropId)}` }),
-      ],
-    }),
-    el("div", {
-      class: "db-battle-screen-party-markers",
-      attrs: { "aria-label": "아군 진형 미리보기" },
-      children: [0, 1, 2, 3].map((index) => el("span", { text: String(index + 1) })),
-    }),
-    ...battleScreenEnemySprites(troop),
-  );
-  return stage;
-}
-
-function battleScreenEnemySprites(troop: TroopRecord): HTMLElement[] {
-  const project = store.getCurrent();
-  const members = troop.members ?? troop.enemyIds.map((enemyId, index) => ({ enemyId, x: 80 + index * 42, y: 88 + index * 28 }));
-  return members.slice(0, 6).map((member, index) => {
-    const enemy = project.database.enemies.find((candidate) => candidate.id === member.enemyId);
-    const url = resolveAssetResourceUrl(enemy?.monsterResourceId, { project });
-    const sprite = url
-      ? el("img", { class: "db-battle-screen-enemy-sprite", attrs: { alt: enemy?.name ?? "몬스터", src: url } })
-      : el("span", { class: "db-battle-screen-enemy-fallback", text: enemy?.name.slice(0, 1) ?? "?" });
-    sprite.style.left = `${18 + index * 9}%`;
-    sprite.style.top = `${35 + (index % 2) * 22}%`;
-    return sprite;
-  });
-}
-
-// ---------------------------------------------------------------------------
 // 전투 명령
 // ---------------------------------------------------------------------------
 
@@ -905,9 +610,38 @@ function battleCommandCard(
         },
       }),
       battleCommandSkillRow(command, index),
+      ...(command.kind === "commonEvent" ? [battleCommandCommonEventRow(command, index)] : []),
     ],
   });
   return card;
+}
+
+function battleCommandCommonEventRow(command: DatabaseBattleCommandRecord, index: number): HTMLElement {
+  const events = store.getCurrent().commonEvents;
+  const current = command.commonEventId ?? "";
+  const options = [
+    { id: "", name: "(없음)" },
+    ...events.map((event) => ({ id: event.id, name: event.name || event.id })),
+  ];
+  if (current && !events.some((event) => event.id === current)) {
+    options.push({ id: current, name: `${current} (없음)` });
+  }
+  const select = el("select", {
+    class: "db-battle-command-skill-select",
+    dataset: { testid: `db-picker-battle-command-common-event-${index}` },
+    attrs: { "aria-label": "실행할 공통 이벤트" },
+    children: options.map((option) => el("option", { attrs: { value: option.id }, text: option.name })),
+  }) as HTMLSelectElement;
+  select.value = current;
+  select.addEventListener("focus", () => selectUtilityRecord("battleCommands", index));
+  select.addEventListener("change", () => {
+    recordProjectSnapshot();
+    writeBattleCommand(index, (target) => { target.commonEventId = emptyToUndefined(select.value); });
+  });
+  return el("label", {
+    class: "db-readonly-row",
+    children: [el("span", { text: "공통 이벤트" }), select],
+  });
 }
 
 function commandActionButton(
@@ -1096,7 +830,7 @@ function resourceDisplayName(resourceId: string | undefined): string {
  * 거기서 루트를 걸어 올라가고(fakeDom 처럼 문서에 붙어 있지 않은 호스트도 동작),
  * 없으면 문서에서 모달 본문을 찾는다(툴바 액션은 이벤트를 받지 않는다).
  */
-function jumpToTab(tab: "classes" | "system" | "troops", event?: Event): void {
+function jumpToTab(tab: "classes", event?: Event): void {
   const fromEvent = event ? databasePanelRootFrom(event.currentTarget as HTMLElement | null) : null;
   const panelRoot = fromEvent ?? (document.querySelector(".database-modal-body") as HTMLElement | null);
   if (panelRoot) switchDatabaseActiveTab(tab, panelRoot);

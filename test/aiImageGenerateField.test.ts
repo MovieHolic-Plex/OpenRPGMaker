@@ -34,9 +34,9 @@ describe("aiImageGenerateField", () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
     const field = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "monster-ai", onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "picture", testidPrefix: "picture-ai", onInserted: vi.fn() })
     );
-    findByTestId(field, "monster-ai-generate")?.click();
+    findByTestId(field, "picture-ai-generate")?.click();
     await Promise.resolve();
     expect(fetchMock).not.toHaveBeenCalled();
     vi.unstubAllGlobals();

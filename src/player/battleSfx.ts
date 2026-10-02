@@ -22,6 +22,9 @@ export type BattleSfxKind =
 
 let ctx: AudioContext | undefined;
 let master: GainNode | undefined;
+/** 착탄 아래층 전용 버스 — 샘플(0.4, 곧장 출력)과 같은 크기로 들려야 해서 UI 합성음 master(0.14)를 거치지 않는다.
+ *  master 를 거치면 녹화의 저음 대역 에너지가 층을 넣기 전과 같았다(2026-10-02 측정). */
+let impactBus: GainNode | undefined;
 
 function ensureContext(): AudioContext | undefined {
   if (typeof window === "undefined" || typeof AudioContext === "undefined") return undefined;
@@ -30,6 +33,9 @@ function ensureContext(): AudioContext | undefined {
     master = ctx.createGain();
     master.gain.value = 0.14;
     master.connect(ctx.destination);
+    impactBus = ctx.createGain();
+    impactBus.gain.value = 0.42;
+    impactBus.connect(ctx.destination);
   }
   if (ctx.state === "suspended") void ctx.resume();
   return ctx;
@@ -53,6 +59,7 @@ interface ToneSpec {
   readonly duration?: number;
   readonly gain?: number;
   readonly slideTo?: number;
+  readonly bus?: "impact";
 }
 
 function tone(spec: ToneSpec): void {
@@ -71,12 +78,12 @@ function tone(spec: ToneSpec): void {
   gainNode.gain.setValueAtTime(0, t0);
   gainNode.gain.linearRampToValueAtTime(peak, t0 + 0.008);
   gainNode.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
-  osc.connect(gainNode).connect(master);
+  osc.connect(gainNode).connect(spec.bus === "impact" && impactBus ? impactBus : master);
   osc.start(t0);
   osc.stop(t0 + duration + 0.02);
 }
 
-function noise(options: { readonly at?: number; readonly duration?: number; readonly gain?: number; readonly filterFrom?: number; readonly filterTo?: number; readonly seed: number }): void {
+function noise(options: { readonly at?: number; readonly duration?: number; readonly gain?: number; readonly filterFrom?: number; readonly filterTo?: number; readonly seed: number; readonly bus?: "impact" }): void {
   const ac = ensureContext();
   if (!ac || !master) return;
   const t0 = ac.currentTime + (options.at ?? 0);
@@ -100,7 +107,7 @@ function noise(options: { readonly at?: number; readonly duration?: number; read
   const peak = options.gain ?? 0.5;
   gainNode.gain.setValueAtTime(peak, t0);
   gainNode.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
-  source.connect(filter).connect(gainNode).connect(master);
+  source.connect(filter).connect(gainNode).connect(options.bus === "impact" && impactBus ? impactBus : master);
   source.start(t0);
 }
 
@@ -160,5 +167,22 @@ export function playBattleSfx(kind: BattleSfxKind): void {
       tone({ freq: 175, type: "triangle", at: 0.28, duration: 0.3, gain: 0.3 });
       tone({ freq: 147, type: "triangle", at: 0.56, duration: 0.5, gain: 0.3, slideTo: 110 });
       return;
+  }
+}
+
+/**
+ * 포켓몬 스킨의 착탄 아래층 — 타격 세기(0..1, 최대 HP 대비 피해)에 따라 소리가 달라진다(2026-10-02).
+ * 예전에는 4 피해와 15 피해가 같은 샘플 + 같은 110Hz 저음이었다. 샘플(사건 1개 = 소리 1개)은 그대로 두고
+ * 이 층만 바꾼다: 세질수록 저음이 낮고 길어지고, 0.3 부터 「퍽」 잡음이, 0.7·급소부터 깊은 울림과 높은 「딱」이 얹힌다.
+ */
+export function playBattleImpactLayer(power: number, critical: boolean): void {
+  const ac = ensureContext();
+  if (!ac) return;
+  const p = Math.max(0, Math.min(1, power));
+  tone({ freq: 135 - p * 55, type: "sine", duration: 0.13 + p * 0.2, gain: 0.35 + p * 0.55, slideTo: 42 - p * 12, bus: "impact" });
+  if (p >= 0.3) noise({ duration: 0.05 + p * 0.09, gain: 0.15 + p * 0.4, filterFrom: 1400 + p * 1200, filterTo: 180, seed: 0x50554e43, bus: "impact" });
+  if (p >= 0.7 || critical) {
+    tone({ freq: 62, type: "sine", at: 0.01, duration: 0.34, gain: 0.8, slideTo: 32, bus: "impact" });
+    noise({ duration: 0.035, gain: 0.3, filterFrom: 5200, filterTo: 2600, seed: 0x435241, bus: "impact" });
   }
 }

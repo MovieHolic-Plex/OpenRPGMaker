@@ -1,5 +1,22 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 자료집 전투 정리 — 전투 방식 두 가지·전투 화면 탭·안 쓰는 칸 삭제 (2026-10-02)
+
+사용자 결정: 전투는 도트 측면(RM2003식)이 주축, 포켓몬식만 예외. 자료집에서 그에 안 맞는 칸을 걷어냈다. **저장값은 하나도 지우지 않는다** — 화면에서만 뺐다.
+
+- **전투 화면 탭**(`databaseBattleScreenTab.ts`, 옛 `databaseUtilityRecordViews.ts` `renderBattleScreenTab` 대체): 카드 셋.
+  - 「전투 방식」(`db-battle-method-card`): `db-battle-method-side` 도트 측면 / `db-battle-method-monster` 몬스터 대치. 방식 하나가 화면(`system.battleUiStyle`)과 규칙(`system.battleModel`)을 같이 정한다 — `src/project/battleMethod.ts` `applyBattleMethod`(측면 = 두 키 삭제 → retro2003 + RM 규칙, 몬스터 = `pokemon` + `gen1`). 조수 `set_project_settings battle.uiStyle` 도 같은 함수를 탄다(`projectTools.ts`, 허용 값은 `listActiveBattleSkinIds()` = retro2003·pokemon).
+  - 창 색만 다르던 옛 측면 스킨 여섯은 #1895 에서 지웠다(저장값은 retro2003 으로 풀리고 창 색은 `battleLook.window` 로 옮겨짐 — [runtime-battle.md](runtime-battle.md)). 화면·규칙이 어긋난 옛 저장(예: retro2003 + gen1)은 `db-battle-method-rules-mismatch` 안내가 뜬다. 조수 `configure_game_systems battleModel` 도 `applyBattleMethod` 를 타서 규칙만 따로 바꾸지 못한다.
+  - 「타격감」(`db-battle-hit-feel-card`, `db-field-system-battle-hit-feel`)과 「전투 화면 꾸미기」(`db-battle-look-card`, `battleLookFields`)는 시스템 탭에서 옮겨 왔다. CSS 스코프도 `.db-system-form` → `.db-battle-screen-studio`(`system-studio.css`).
+  - 지운 것: 적 그림을 사선으로 늘어놓던 가짜 무대 미리보기·적 그룹 띠·「시스템 › 시작 설정 열기」 링크(`db-battle-screen-*`), 「전투 시스템 리소스」(`db-field-battle-system-resource` — 런타임은 아무도 읽지 않는 CSS 변수 `--runtime-battle-system2` 만 썼다).
+- **시스템 › 시작 설정**: 전투 UI 스타일(`db-field-system-battle-ui-style`)·규칙 모델(`db-field-system-battle-model`) 칸 삭제. 전투 흐름·참전 수는 여기 한 곳에만 남는다(전투 화면 탭에 겹쳐 있던 사본 삭제). 「전투 화면 탭으로」 이동 버튼은 `switchToBattleScreenTab`.
+- **적·종족**: 투명(`db-field-enemy-transparent`)·비행(`-flying`)·색조(`db-monster-species-hue`, 적 그래픽 대화의 색조)·몬스터 리소스 ID 글칸(`db-field-enemy-monster-resource`)·적 미리보기 일시정지(`db-enemy-preview-pause`) 삭제. 런타임은 `transparent`/`flying`/`graphicHue` 를 읽지 않는다(아래 authoringOnly 공시는 그대로). 그림은 「그래픽 바꾸기」 대화로만 고른다. 종족과의 「그래픽이 종족과 다름」 표시는 그림(`monsterResourceId`)만 비교한다 — 지운 칸 차이로 고칠 데 없는 경고가 뜨지 않게. 조수 `upsert` 스키마(`dbTools.ts`)와 `set_project_settings resources`(`battleSystemResourceId`)에서도 이 칸들을 뺐다(저장·변경 함수는 옛 데이터 호환으로 남김).
+- **아이템**: 옛 장비 프로필·사용 메시지 UI 는 이미 없었고 남은 죽은 코드만 지웠다(`databaseItemRecordView.ts`).
+- **전투 애니메이션**: 레일 칸 `db-tab-animations` 삭제 → 도트 연출(`retroChoreographies`)의 하위 보기 「옛 전투 애니메이션 (대체용)」(`PARTY_SUBVIEW_PARENT.animations`, 하위 내비 `db-subview-retro-choreographies`·`db-subview-animations`). 도트 측면 전투는 스킬에 도트 연출이 있으면 셀 애니메이션을 그리지 않으므로(`battleDom.ts`) 연출 없는 스킬의 대체용·몬스터 대치 전용이다. 탭 검색 「전투 애니메이션」「animations」는 도트 연출에 걸린다(`LEGACY_TAB_SEARCH`). 전투 스튜디오 내비의 애니메이션 칸도 도트 연출로 바뀌었다.
+- **소재 고르기**: 은퇴한 전투 배경은 고르기 목록에서 숨긴다(`resourceOptions.ts`). 이미 고른 값은 그대로 보인다.
+- 남긴 것: 파티 정면 스프라이트 `bskin-party-*-front`(살아 있는 폴백), 런타임의 `battleSystemResourceId` 처리 코드(옛 저장 호환).
+- 시험(실행 안 함): `test/battleSystemDeprecation.test.ts`·`databaseBattleStudio.test.ts`·`battleLook.test.ts`·`battleSkinRegistry.test.ts`. 화면 증거 `verify-shots/db-battle-cleanup/{before,after}/`(`capture.mjs`).
+
 ## 레트로 전투 기믹 편집 칸 (2026-09-30)
 
 retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있게 했다. 증거·캡처 목록은 `verify-shots/retro-editable/SHOTS.md`.
@@ -947,6 +964,7 @@ Database tabs, record views, battle database records, utility records, reference
 - Troop battle event command editing also uses shared database command-list rendering. Keep battle-event command rows on the same command editor path unless the task names a narrower troop-only control. Battle-event rows pass the troop-specific runtime support table so unsupported commands show partial/editor-only badges instead of inheriting map-runtime support.
 - Troop battle event condition controls include round cadence (`turn`, `onRound`, `everyRound`), switch/variable, enemy HP range, `enemyHpBelow`, actor HP, and actor-command forms. Keep these controls aligned with `src/battle/battleEvents.ts` and battle reference validation when adding condition kinds.
 - Class battle command rows are runtime-facing data, not cosmetic labels. Keep `kind`, optional `skillSubsetName`, and optional `skillId` edits in sync with `src/battle/battleCommands.ts`; the battle UI consumes class commands in order and treats `guard` as the existing defend action.
+- **공통 이벤트 명령·배우별 명령 (2026-10-02):** 직업 명령 행과 전역 전투 명령 카드에 「공통 이벤트 실행」(`commonEvent`) 종류가 있다. 직업 행은 `db-picker-class-command-common-event-*`, 전역 카드는 `db-picker-battle-command-common-event-*` 로 실행할 공통 이벤트를 고른다. 액터 「장비와 스킬」 안의 「전투 명령」 패널(`actor-panel-actor-battle-commands`)은 `ActorRecord.battleCommandIds` 를 편집한다. 끄면 직업 명령을 쓰고, 켜면 직업 명령을 옮겨 와 ↑↓·삭제·추가(7개까지)를 할 수 있다. AI 도구는 `upsert_actor.battleCommandIds` 와 `upsert_database_utility` battleCommands 의 `commonEventId` 를 받는다. 런타임 계약은 `openwiki/runtime-battle.md` 의 같은 날짜 항목에 있다.
 - Monster collection authoring spans System, Items, Enemies, Troops, Classes, Skills, States, and Monster Species database views. `system.monsterCollection` gates capture command exposure; optional `system.typeChart` stores the Pokemon-style type matrix; item `captureProfile.multiplier` remains the compatibility strength while the Items view's `ballClass` selector authors `poke|great|ultra|master`; enemy `speciesId` links battlers to collectable species; the Troops view exposes `uncapturable` and `trainerBattle`; the States view exposes `gen1MajorStatus`; class command kind `"capture"` is only useful when the system gate is enabled. Keep these controls, record mutators, normalization, reference validation, and `dbTools` schemas aligned.
 - **Enemy vs Species responsibilities (G006):** Enemies (`database.enemies`, 몬�뒪??tab) own battle-facing battler data: combat stats, attack patterns/actions, rewards, rates, and optional `speciesId` capture link. Species (`database.monsterSpecies[]`, 醫낆” tab) own collectable identity: baseStats, types (max 2), captureRate, skillsByLevel, evolutions, and species graphic. `enemy.speciesId` links a battler to a collectable species for capture without making the enemy record a player-owned monster. **No dual-write stats:** editing enemy stats must not rewrite species `baseStats` (or the reverse). Optional graphic copy (`db-enemy-species-copy-graphic`) may copy species graphic fields onto the enemy only; never auto-sync stats. Enemy species panel chips: unset warn / missing error / graphic mismatch info (`databaseEnemyRecordView.ts`). Species intro copy states the same split.
 - The System database tab edits `project.system` through `src/editor/panels/databaseSystemView.ts`: start party (up to 4 `startActorIds` slots, synced to `session.partyActorIds`), title/system/battle-system resource ids, initial troop, `battleFlow`, `activeSlots`, `monsterCollection`, `giftSystem`, `rewardPolicy`, optional `timeSystem` (enable + day bounds + onDayEnd common event), `typeChart.types` plus the attacker/defender matrix, and title-screen layout/labels. Structural edits (party slots, type list, time enable) re-render the tab body; blank/removing the type list deletes `system.typeChart` **after `window.confirm`** (cancel restores the previous type list), preserving legacy neutral damage when the author confirms. Never collapse a multi-member start party to a single actor when one slot changes. `commonEventReferenceMessage` blocks deleting a common event that `timeSystem.onDayEnd` points at (copy: 시간 시스템(하루 끝)). Terrain backdrop/footstep use `resourcePickerControl` (testid `db-field-terrain-backdrop-*` / `db-field-terrain-footstep-*` stay on the text field).
@@ -1747,6 +1765,11 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 2. 그림은 `generateAiImage` (아래 이미지 경로) → `flattenGeneratedArtwork` 로 배경을 투명화.
 3. 적용은 **기존 툴만** 쓴다: `upsert_resource` → `upsert_item`/`upsert_enemy` 를
    `applyToolSequenceToStore` 로 한 undo 체크포인트에 묶는다. 새 쓰기 경로를 만들지 마라.
+
+**2026-10-02 개정 — 적은 그림을 만들지 않는다.** 전투가 전부 도트 측면이 되면서 적의 그림 옵션을 뺐다(아이템만 남음).
+enemy allowlist 에 `monsterResourceId` 를 더해 LLM 이 도트 몬스터 140종(`PIXEL_ENEMY_PORTRAIT_URLS`) 중에서 고르고,
+목록 밖이면 `pickPixelMonsterId` 가 이름 조각 → 슬라임으로 맞춘다. 결과 미리보기는 그 도트 몬스터의 정지 그림이다.
+적 그래픽 칸의 「AI로 만들기」와 소재 고르기의 몬스터 생성도 지웠다 — `runtime-battle.md` 「전투는 전부 도트 측면」.
 
 리소스 kind 는 종류마다 다르다 — 적은 `monster`, 아이템은 `picture`. 아이템 아이콘 피커
 (`kind:"icon"`)가 업로드 자산 중 `picture`/`monster`/`system` 만 목록에 올리기 때문이다

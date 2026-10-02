@@ -1,4 +1,6 @@
 import { chatCompletion, type AiConfig, type ChatMessage, type ChatResult } from "@/ai/llmClient";
+import { MONSTER_CATALOG } from "@/assets/monsterCatalog";
+import { PIXEL_ENEMY_PORTRAIT_URLS } from "@/assets/pixelEnemyPortraits";
 import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import type { WorldCanon } from "@/project/world/canon";
 import { generateAiImage, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
@@ -55,14 +57,35 @@ export class AiDatabaseGenerationError extends Error {
 const ITEM_FIELDS = [
   "name", "description", "price", "type", "scope", "occasion", "consumable", "hpRecovery", "mpRecovery",
 ] as const;
-const ENEMY_FIELDS = ["name", "stats", "rewards", "graphicHue", "transparent", "flying"] as const;
+const ENEMY_FIELDS = ["name", "stats", "rewards", "monsterResourceId"] as const;
 
 const ITEM_CONTRACT = `{"name":"짧은 한국어 이름","description":"한국어 한두 문장","price":정수,`
   + `"type":"medicine|normalGoods|book|seed|special","scope":"none|ally|allAllies|enemy",`
   + `"occasion":"always|battle|field|never","consumable":true|false,`
   + `"hpRecovery":{"flat":정수,"percentMax":정수},"mpRecovery":{"flat":정수,"percentMax":정수}}`;
-const ENEMY_CONTRACT = `{"name":"짧은 한국어 이름","stats":{"maxHp":정수,"maxMp":정수,"attack":정수,`
+const ENEMY_CONTRACT = `{"name":"짧은 한국어 이름","monsterResourceId":"아래 도트 몬스터 id 중 하나","stats":{"maxHp":정수,"maxMp":정수,"attack":정수,`
   + `"defense":정수,"mind":정수,"agility":정수},"rewards":{"exp":정수,"gold":정수,"dropRatePercent":정수}}`;
+
+/**
+ * 몬스터 그림은 만들지 않는다(2026-10-02) — 전투는 도트 측면이라 도트 시트 140종 중 하나를 고르게 한다.
+ * 목록은 「id: 이름」 한 줄씩.
+ */
+function pixelMonsterChoices(): string {
+  return Object.keys(PIXEL_ENEMY_PORTRAIT_URLS)
+    .map((id) => `${id}: ${MONSTER_CATALOG[id]?.name ?? id}`)
+    .join("\n");
+}
+
+const FALLBACK_PIXEL_MONSTER_ID = "generated-enemy-slime-01";
+
+/** 목록 밖 id 는 id·이름 조각이 겹치는 도트 몬스터로, 못 찾으면 슬라임으로 맞춘다. */
+function pickPixelMonsterId(raw: string, name: string): string {
+  if (PIXEL_ENEMY_PORTRAIT_URLS[raw]) return raw;
+  const words = `${raw} ${name}`.toLowerCase().split(/[^a-z0-9가-힣]+/u).filter((word) => word.length >= 2 && word !== "generated" && word !== "enemy");
+  const ids = Object.keys(PIXEL_ENEMY_PORTRAIT_URLS);
+  const hit = ids.find((id) => words.some((word) => id.includes(word) || (MONSTER_CATALOG[id]?.name ?? "").includes(word)));
+  return hit ?? FALLBACK_PIXEL_MONSTER_ID;
+}
 
 function slugify(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -104,6 +127,7 @@ export function buildRecordPrompt(
         "출력은 JSON 객체 하나만. 코드펜스·설명·주석을 붙이지 마라.",
         `스키마: ${contract}`,
         "모르는 필드를 추가하지 마라. 수치는 초반~중반 난이도에 맞는 상식적인 값으로 정한다.",
+        kind === "enemy" ? `monsterResourceId 는 설명에 가장 맞는 것을 이 목록에서만 고른다:\n${pixelMonsterChoices()}` : "",
         existingNames.length > 0 ? `이미 있는 이름(중복 금지): ${existingNames.slice(0, 40).join(", ")}` : "",
         canonSection ?? "",
       ].filter(Boolean).join("\n"),
@@ -117,8 +141,7 @@ export function artworkPromptFor(kind: AiDatabaseKind, name: string, brief: stri
   return kind === "item"
     ? `A single 2D JRPG inventory item icon of ${subject}. Centered, front view, clean thick outline,`
       + ` flat saturated colors, no text, no frame, no shadow, on a pure flat white background.`
-    : `A single 2D JRPG battle monster sprite of ${subject}. Full body, centered, front view facing the viewer,`
-      + ` clean thick outline, flat saturated colors, no text, no ground shadow, on a pure flat white background.`;
+    : `A pixel side-view battle monster of ${subject}.`; // 몬스터 그림은 생성하지 않는다(호환용 문장).
 }
 
 function stripFence(text: string): string {
@@ -173,6 +196,9 @@ export function parseGeneratedRecord(kind: AiDatabaseKind, raw: string, canon?: 
   const name = typeof patch.name === "string" ? patch.name.trim() : "";
   if (!name) throw new AiDatabaseGenerationError("AI 응답에 name 이 없습니다.");
   patch.name = name;
+  if (kind === "enemy") {
+    patch.monsterResourceId = pickPixelMonsterId(typeof patch.monsterResourceId === "string" ? patch.monsterResourceId.trim() : "", name);
+  }
   // 허용 필드 화이트리스트가 자르기 전 원시 응답 기준으로 검사한다 — 적 스키마에는
   // description 이 없어서 필터 뒤에는 금지어가 이미 사라져 있다.
   const rawDescription = typeof source.description === "string" ? source.description : "";
@@ -255,7 +281,8 @@ export async function generateDatabaseRecordWithAi(
 
   let artwork: { resourceId: string; dataUrl: string } | undefined;
   let artworkModel: string | undefined;
-  if (input.withArtwork) {
+  // 그림은 아이템 아이콘만 만든다. 몬스터는 고른 도트 몬스터의 정지 그림을 보여 준다.
+  if (input.withArtwork && input.kind === "item") {
     notify("artwork");
     const generateImage = deps.generateImage ?? ((request) => generateAiImage(request));
     const image = await generateImage({ prompt: artworkPromptFor(input.kind, name, brief), signal: input.signal });
@@ -279,8 +306,8 @@ export async function generateDatabaseRecordWithAi(
     kind: input.kind,
     recordId,
     name,
-    resourceId: artwork?.resourceId,
-    artworkDataUrl: artwork?.dataUrl,
+    resourceId: artwork?.resourceId ?? (input.kind === "enemy" ? String(patch.monsterResourceId) : undefined),
+    artworkDataUrl: artwork?.dataUrl ?? (input.kind === "enemy" ? PIXEL_ENEMY_PORTRAIT_URLS[String(patch.monsterResourceId)] : undefined),
     artworkModel,
     summary,
   };

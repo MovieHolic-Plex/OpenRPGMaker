@@ -8,7 +8,11 @@ import { downscaleBy } from "@/harnesses/monster-collect-species/pixel/downscale
 import { chooseScale, fitSprite, SPRITE_CANVAS } from "@/harnesses/monster-collect-species/pixel/fit";
 import { cleanReference, pixelize } from "@/harnesses/monster-collect-species/pixel/pipeline";
 import { createImage, cropToInk, opaqueBounds, pixelAt, setPixel, type Rgba, type RgbaImage } from "@/harnesses/monster-collect-species/pixel/image";
-import { checkPair, checkSprite, spriteStats } from "@/harnesses/monster-collect-species/checks/checks";
+import { checkFrames, checkPair, checkSprite, spriteStats } from "@/harnesses/monster-collect-species/checks/checks";
+import { IDLE_PLAN, idleFrames } from "@/harnesses/monster-collect-species/anim/idle";
+import { poseForSkill } from "@/harnesses/monster-collect-species/anim/poses";
+import { checkDirection, directionShift } from "@/harnesses/monster-collect-species/checks/checks";
+import { fromStrip, ROW_REFERENCE, rowFrames, rowReference, splitRow, toStrip } from "@/harnesses/monster-collect-species/anim/row";
 import { validateSeed } from "@/harnesses/monster-collect-species/seed";
 import { HARNESSES, getHarness, harnessesForGenre } from "@/harnesses/_core/registry";
 import { renderHarnessIndex } from "@/harnesses/_core/indexMarkdown";
@@ -251,13 +255,134 @@ describe("monster-collect-species 도트화", () => {
   });
 });
 
+/** 큰 동작 한 줄 흉내: 같은 몬스터 frames 장을 칸마다 다른 높이·앞쏠림으로 늘어놓는다 (칸 사이 빈 칸 6) */
+function sampleRow(frames: number): RgbaImage {
+  const sprite = sampleSprite();
+  const gap = 6;
+  const row = createImage(frames * (sprite.width + gap) + gap, sprite.height + 4);
+  for (let k = 0; k < frames; k += 1) {
+    const lift = k % 2;
+    const lean = k === 2 ? -2 : 0;
+    for (let y = 0; y < sprite.height; y += 1) {
+      for (let x = 0; x < sprite.width; x += 1) {
+        const p = pixelAt(sprite, x, y);
+        if (p[3]) setPixel(row, gap + k * (sprite.width + gap) + x + lean, 2 + y - lift, p);
+      }
+    }
+  }
+  return row;
+}
+
+describe("monster-collect-species 애니메이션", () => {
+  const sprite = fitSprite(sampleSprite(72, 56), "front").sprite;
+
+  it("대기: 0번은 원본 그대로, 발 줄은 고정, 프레임 사이 변화는 작다", () => {
+    for (const side of ["front", "back"] as const) {
+      const frames = idleFrames(sprite, side, { flicker: "flame" });
+      expect(frames).toHaveLength(IDLE_PLAN.length);
+      expect(checkFrames(frames, sprite, 20, "idle")).toEqual([]);
+      for (let k = 0; k < frames.length; k += 1) {
+        const a = frames[k]!;
+        const b = frames[(k + 1) % frames.length]!;
+        let changed = 0;
+        let ink = 0;
+        for (let i = 0; i < a.data.length; i += 4) {
+          if (!a.data[i + 3] && !b.data[i + 3]) continue;
+          ink += 1;
+          if (a.data[i] !== b.data[i] || a.data[i + 1] !== b.data[i + 1] || a.data[i + 2] !== b.data[i + 2] || a.data[i + 3] !== b.data[i + 3]) changed += 1;
+        }
+        expect(changed / ink, `${side} ${k}→${k + 1}`).toBeLessThan(0.35);
+      }
+    }
+  });
+
+  it("대기 검사는 0번이 다르거나 발이 움직이면 오류", () => {
+    const frames = idleFrames(sprite, "front");
+    const moved = frames.map((f) => ({ ...f, data: new Uint8ClampedArray(f.data) }));
+    const box = opaqueBounds(sprite)!;
+    setPixel(moved[2]!, box.x + 3, box.y + box.height - 1, [0, 0, 0, 0]);
+    setPixel(moved[0]!, box.x + 5, box.y + 2, [1, 2, 3, 255]);
+    const messages = checkFrames(moved, sprite, 20, "idle").map((i) => i.message);
+    expect(messages.some((m) => m.includes("0번 프레임"))).toBe(true);
+    expect(messages.some((m) => m.includes("프레임 2: 발"))).toBe(true);
+  });
+
+  it("스킬 → 자세: 저자 지정 > 자기 대상 buff > 속성 special > 나머지 tackle", () => {
+    expect(poseForSkill({ scope: "enemy" })).toBe("tackle");
+    expect(poseForSkill({ scope: "enemy", elementId: "fire" })).toBe("special");
+    expect(poseForSkill({ scope: "enemy", elementId: "none" })).toBe("tackle");
+    expect(poseForSkill({ scope: "self", elementId: "fire" })).toBe("buff");
+    expect(poseForSkill({ scope: "enemy", elementId: "fire", battlePose: "tackle" })).toBe("tackle");
+    expect(poseForSkill({ scope: "enemy", battlePose: "dance" })).toBe("tackle");
+  });
+
+  it("방향 검사: 윗몸 앞 끝이 기대 방향으로 나간 줄만 통과", () => {
+    const lean = (dx: number) => {
+      const out = createImage(SPRITE_CANVAS, SPRITE_CANVAS);
+      for (let y = 0; y < sprite.height; y += 1) for (let x = 0; x < sprite.width; x += 1) {
+        const p = pixelAt(sprite, x, y);
+        const shift = y < 80 ? dx : 0;
+        if (p[3] && x + shift >= 0 && x + shift < SPRITE_CANVAS) setPixel(out, x + shift, y, p);
+      }
+      return out;
+    };
+    const left = [sprite, lean(-2), lean(-6), lean(-1)];
+    expect(directionShift(left, -1)).toBeGreaterThanOrEqual(4);
+    expect(checkDirection(left, -1, "공격")).toEqual([]);
+    expect(checkDirection(left, 1, "공격")[0]?.message).toContain("나가지 않는다");
+  });
+
+  it("큰 동작 참고 그림: 2172×724 마젠타, 첫 칸에만 기준 스프라이트", () => {
+    const reference = rowReference(sprite, 4);
+    expect([reference.width, reference.height]).toEqual([ROW_REFERENCE.width, ROW_REFERENCE.height]);
+    expect(pixelAt(reference, 5, 5)).toEqual([255, 0, 255, 255]);
+    const inkIn = (x0: number, x1: number) => {
+      let n = 0;
+      for (let y = 100; y < 700; y += 1) for (let x = x0; x < x1; x += 1) {
+        const p = pixelAt(reference, x, y);
+        if (!(p[0] === 255 && p[1] === 0 && p[2] === 255) && !(p[0] === 51 && p[1] === 51)) n += 1;
+      }
+      return n;
+    };
+    expect(inkIn(40, 500)).toBeGreaterThan(1000);
+    expect(inkIn(560, 2100)).toBe(0);
+  });
+
+  it("한 줄 → 프레임 나누기: 생성 그림 흉내에서 4장, 같은 배율, 바닥 정렬", () => {
+    const { grid } = pixelize(fakeGenerated(sampleRow(4), 12, [255, 0, 255, 255]), 20);
+    const parts = splitRow(grid, 4);
+    expect(parts).toHaveLength(4);
+    const { frames, clipped } = rowFrames(parts, "front");
+    // 기준 폭을 주면 0번 잉크 폭이 그 폭이 된다 (크면 줄이고, 작으면 그대로)
+    expect(opaqueBounds(rowFrames(parts, "front", 1, parts[0]!.width - 6).frames[0]!)!.width).toBe(parts[0]!.width - 6);
+    expect(opaqueBounds(rowFrames(parts, "front", 1, parts[0]!.width + 20).frames[0]!)!.width).toBe(parts[0]!.width);
+    expect(clipped).toBe(0);
+    const sizes = frames.map((f) => opaqueBounds(f)!);
+    for (const box of sizes) {
+      expect(box.y + box.height).toBe(SPRITE_CANVAS);
+      expect(box.width).toBe(sizes[0]!.width);
+    }
+    // 앞쏠림(2번 프레임 -2칸)은 발 맞춤 뒤에도 정렬되어 같은 자리에 선다 — 발 위치 기준 정렬
+    expect(Math.abs(sizes[2]!.x - sizes[0]!.x)).toBeLessThanOrEqual(1);
+    expect(fromStrip(toStrip(frames), 4).map((f) => f.data.every((v, i) => v === frames[0]!.data[i]))[0]).toBe(true);
+    expect(() => splitRow(grid, 6)).toThrow("큰 덩어리가 4개");
+  });
+});
+
 describe("monster-collect-species 시드·레지스트리", () => {
   it("커밋된 seed.json 이 유효하고 잘못된 시드는 거부한다", () => {
     const seed = validateSeed(JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/seed.json"), "utf8")));
     expect(seed.species.map((s) => s.id)).toEqual(["sparkit", "aqualing", "leafling"]);
-    const base = { version: 1, style: seed.style };
+    const base = { version: 1, style: seed.style, animation: seed.animation };
     expect(() => validateSeed({ ...base, species: [seed.species[0], seed.species[0]] })).toThrow("중복");
     expect(() => validateSeed({ ...base, species: [{ ...seed.species[0], id: "evo", stage: 2, evolvesFrom: "nope" }] })).toThrow("evolvesFrom");
+    expect(() => validateSeed({ ...base, animation: undefined, species: seed.species })).toThrow("animation");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, idle: { ...seed.animation.idle, frames: 6 } }, species: seed.species })).toThrow("IDLE_PLAN");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { idle: seed.animation.actions.tackle } }, species: seed.species })).toThrow("idle 은 동작");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, frames: 9 } } }, species: seed.species })).toThrow("2~6");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, kind: "dance" } } }, species: seed.species })).toThrow("kind");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, keys: { contact: 4 } } } }, species: seed.species })).toThrow("keys");
+    expect(() => validateSeed({ ...base, animation: { ...seed.animation, direction: { front: { x: 1, y: 1 }, back: { x: 1, y: -1 } } }, species: seed.species })).toThrow("마주 봐야");
   });
 
   it("장르 범위: 몬스터 수집 프로젝트에서만 보인다", () => {
@@ -306,8 +431,17 @@ describe("monster-collect-species CLI (모래상자, 네트워크 없음)", () =
         expect(JSON.parse(readFileSync(join(runDir, runId, "run.json"), "utf8")).candidates).toHaveLength(1);
         expect(await cli.run(["pick", "--species", "sparkit", "--side", which, "--run", runId, "--candidate", "1"])).toBe(0);
       }
+      // 큰 동작: 한 줄 원본을 가져와 고르고 굽는다
+      const rowRaw = join(sandbox, "row.png");
+      writeFileSync(rowRaw, encodePng(fakeGenerated(sampleRow(4), 12, [255, 0, 255, 255])));
+      expect(await cli.run(["import", "--species", "sparkit", "--side", "front", "--action", "tackle", "--raw", rowRaw])).toBe(0);
+      const actionDir = join(sandbox, "runs/sparkit/front-tackle");
+      const actionRun = readdirSync(actionDir)[0]!;
+      expect(JSON.parse(readFileSync(join(actionDir, actionRun, "run.json"), "utf8")).candidates).toHaveLength(1);
+      expect(await cli.run(["pick", "--species", "sparkit", "--side", "front", "--action", "tackle", "--run", actionRun, "--candidate", "1"])).toBe(0);
       expect(await cli.run(["build"])).toBe(0);
       expect(await cli.run(["check"])).toBe(0);
+      expect(await cli.run(["preview"])).toBe(0);
       expect(await cli.run(["pick", "--species", "nope", "--side", "front", "--run", "x", "--candidate", "1"]).catch((e: Error) => e.message)).toContain("시드에 종 nope");
     } finally {
       log.mockRestore();
@@ -317,6 +451,13 @@ describe("monster-collect-species CLI (모래상자, 네트워크 없음)", () =
     expect(ledger.picks.sparkit.front.grid).toBe("grids/sparkit-front.png");
     const built = readPng(join(sandbox, "bundle/sparkit/front.png"));
     expect([built.width, built.height]).toEqual([SPRITE_CANVAS, SPRITE_CANVAS]);
+    expect(ledger.actions.sparkit.front.tackle).toMatchObject({ grid: "grids/sparkit-front-tackle.png", frames: 4 });
+    const anim = JSON.parse(readFileSync(join(sandbox, "bundle/sparkit/anim.json"), "utf8"));
+    expect(Object.keys(anim.sides.front)).toEqual(["idle", "tackle"]);
+    expect(anim.direction).toEqual({ front: { x: -1, y: 1 }, back: { x: 1, y: -1 } });
+    expect(Object.keys(anim.sides.back)).toEqual(["idle"]);
+    expect(anim.sides.front.tackle).toMatchObject({ path: "anim/front-tackle.png", frames: 4, loop: false, source: "row-generation", kind: "attack", keys: { anticipation: 1, contact: 2, recover: 3 } });
+    expect(readPng(join(sandbox, "bundle/sparkit/anim/front-idle.png")).width).toBe(SPRITE_CANVAS * 4);
     // 커밋된 기록은 그대로
     expect(readFileSync(join(ROOT, "harness-data/monster-collect-species/ledger.json"), "utf8")).toBe(ledgerBefore);
   });

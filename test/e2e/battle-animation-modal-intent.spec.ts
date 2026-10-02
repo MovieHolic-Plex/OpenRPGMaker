@@ -43,8 +43,10 @@ async function openAnimations(page: Page): Promise<void> {
     };
   });
   await page.getByTestId("toolbar-database").click();
-  await page.getByTestId("db-tab-search").fill("애니메이션");
-  await page.getByTestId("db-tab-animations").click();
+  // 전투 애니메이션은 도트 연출 레일 탭의 하위 보기다.
+  await page.getByTestId("db-tab-search").fill("도트 연출");
+  await page.getByTestId("db-tab-retro-choreographies").click();
+  await page.getByTestId("db-subview-animations").click();
   await expect(page.getByTestId("db-animation-play")).toHaveAttribute("aria-pressed", "true");
 }
 

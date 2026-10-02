@@ -1043,6 +1043,36 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor.battle-motion-knockback {
   animation: none;
 }
+/* 타격 안무는 그림 단위 WAAPI 가 맡는다(battlePokemonMotion.ts, 2026-10-02). 노드의 모션 클래스는 상태 표시로만 남기고
+   노드 이동·filter·juice 애니메이션을 끈다 — 발판이 노드의 ::before 라 노드를 옮기면 발판까지 따라 움직였고,
+   노드 filter(밝기 1.5)와 battle-juice-hit(밝기 1.9, 0.3초)가 겹쳐 맞은 쪽이 발판째 0.36초 하얗게 바랬다.
+   돌진 구간 길이 --motion-lunge-ms 는 동작 템포 1.5배(240→160ms)이고 안무도 이 값을 읽는다. */
+.battle-scene[data-battle-ui-style="pokemon"] {
+  --motion-lunge-ms: 160ms;
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-enemy-group .battle-enemy, .battle-actor-group .battle-actor):is(.battle-motion-windup, .battle-motion-lunge, .battle-motion-return, .battle-motion-knockback) {
+  filter: none;
+  transform: translate(-50%, -100%);
+  transition: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] :is(.battle-enemy, .battle-actor):is(.battle-juice-hit, .battle-juice-critical, .battle-juice-swing, .battle-juice-miss) {
+  animation: none;
+}
+/* 기술 애니메이션의 대상 섬광(#battle-flash-tint)은 끈다 — 착탄 흰 실루엣(22-hit-feel ①, 정지 동안) 바로 뒤에 0.12초 더
+   물들어서 넉백으로 날아가는 그림이 흐릿하게 바랜 채 보였다. 흰 번쩍임은 정지 비트 한 번이면 된다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-enemy, .battle-actor).battle-animation-target-flash :is(.battle-enemy-image, .battle-actor-image) {
+  filter: none;
+}
+/* 기술 애니메이션의 화면 섬광은 한 번, 옅게. 저작 값(0.85 두 번)이면 착탄 정지 동안 화면 전체가 하얘져
+   맞은 몬스터의 흰 실루엣이 배경에 묻혔다(2026-10-02 녹화). 색은 저작 값 그대로다. */
+.battle-scene[data-battle-ui-style="pokemon"].battle-screen-flash::before {
+  animation: pkmn-screen-flash 140ms ease-out 1;
+}
+@keyframes pkmn-screen-flash {
+  0% { opacity: 0; }
+  35% { opacity: 0.32; }
+  100% { opacity: 0; }
+}
 
 /* ── ⑧ 데미지 숫자 팝업 제거 ──
    본가에 데미지 숫자가 없다. 필드에 뜨던 주황색 「-67」은 RPG Maker 문법이고, 같은 정보를
@@ -1467,4 +1497,71 @@
   height: 110px;
   top: 14px;
   transform: none;
+}
+
+/* ── 타격감 2차 (2026-10-02) ──
+   ① 정지 중 흰 실루엣(22-hit-feel ①)은 정지 내내가 아니라 한 프레임(≈45ms)만 — 안무(battlePokemonMotion.pushTarget)가
+      이 변수를 WAAPI 로 흰색 → 밝은 원색 → none 으로 넘긴다. 정지 내내 흰 덩어리면 가장 세게 보여야 할 프레임이 가장 흐렸다.
+      22-hit-feel ① 이 !important 라 같은 플래그 + 높은 특정도로 덮는다. 애니메이션은 변수에만 걸리므로 플래그와 부딪치지 않는다. */
+@property --pkmn-hit-flash {
+  syntax: "*";
+  inherits: false;
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin]:is(.battle-hit-stop, .battle-hit-stop-critical) .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
+  filter: var(--pkmn-hit-flash, none) !important;
+}
+/* ② 기술 화면 섬광: 몸으로 치는 기술은 끄고(착탄 「팍」이 대신한다), 나머지는 더 옅고 짧게. 화면 전체가 하얘지면 맞는 순간이 안개로 읽혔다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-move-motion="contact"].battle-screen-flash::before {
+  animation: none;
+  opacity: 0;
+}
+.battle-scene[data-battle-ui-style="pokemon"]:not([data-battle-move-motion="contact"]).battle-screen-flash::before {
+  animation: pkmn-screen-flash-soft 100ms steps(2, end) 1;
+}
+@keyframes pkmn-screen-flash-soft {
+  0%, 50% { opacity: 0.18; }
+  100% { opacity: 0; }
+}
+/* ③ HP 잔상: 채움은 빨리 줄고(260ms), 깎인 몫이 흰 잔상으로 남았다가 따라 빠진다. 바의 ::after 는 「체력」 글자라
+   잔상은 트랙 배경 그라디언트로 그린다 — 등록된 백분율 변수라 전환이 걸린다. 회복 때는 채움 뒤에 숨는다. */
+@property --pkmn-hp-ghost {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-stat-bar-hp, .battle-enemy-list-bar) {
+  --pkmn-hp-ghost: var(--battle-stat, 100%);
+  background: linear-gradient(90deg, #fff6d8 0 var(--pkmn-hp-ghost), #353b3f var(--pkmn-hp-ghost));
+  transition: --pkmn-hp-ghost 560ms cubic-bezier(0.4, 0, 0.2, 1) 420ms;
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-stat-bar-hp, .battle-enemy-list-bar)::before {
+  transition: width 260ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+/* ⑥ 3세대 HP 감소(2026-10-02 조사, pokeemerald MoveBattleBar): 피해 순간의 깜빡임이 끝난 뒤 **일정 속도**로 준다(바 전체 48프레임).
+   피해 박자(battleDom.playPokemonDamagePhase)가 HP 상자에 --pkmn-hp-drain-delay·--pkmn-hp-drain-ms 를 걸 때만 — 회복은 위 전환 그대로.
+   흰 잔상은 채움과 같이 움직여 보이지 않는다(3세대에는 잔상이 없다). */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] [style*="--pkmn-hp-drain-ms"] :is(.battle-stat-bar-hp, .battle-enemy-list-bar) {
+  transition: --pkmn-hp-ghost var(--pkmn-hp-drain-ms) linear var(--pkmn-hp-drain-delay);
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] [style*="--pkmn-hp-drain-ms"] :is(.battle-stat-bar-hp, .battle-enemy-list-bar)::before {
+  transition: width var(--pkmn-hp-drain-ms) linear var(--pkmn-hp-drain-delay);
+}
+/* ⑦ 결과 문장은 HP 가 다 준 뒤에(3세대 resultmessage 순서) — 피해 박자(battleDom.playPokemonDamagePhase)가 붙이는
+   data-pkmn-result-hold 동안 행동 문장(첫 줄)만 보인다. 명령 입력 같은 다른 단계의 둘째 줄은 숨기지 않는다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-pkmn-result-hold] .battle-message-window:is([data-battle-director-step="impact"], [data-battle-director-step="acting"]) .battle-message-line + .battle-message-line {
+  visibility: hidden;
+}
+/* ④ 정지 중 필드 전체 밝기 올림(05-poses-motion: contrast 1.08 · brightness 1.05)도 끈다 — 하늘·발판까지 옅어져
+   맞는 순간이 또 안개로 읽혔다(2026-10-02 픽셀 측정: 하늘 217→234). 정지는 맞은 그림의 번쩍임·진동이 말한다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin]:is(.battle-hit-stop, .battle-hit-stop-critical) .battle-field {
+  filter: none;
+}
+
+/* ⑤ 차례 표시의 「한 걸음 나섬」(06 .battle-acting: oprn-actor-step 0.3s margin-left −16px + 밝기 1.2)을 HP 상자와 몬스터 노드에서 끈다 —
+   맞은 뒤 0.4초, 다음 차례가 오는 순간 HP 상자가 24px 밀렸다 돌아와 「한 박자 늦은 피격 흔들림」으로, 방금 맞은 몬스터는 한 번 더
+   미끄러져 「피한 모션」으로 읽혔다(2026-10-02 사용자 리뷰, 기하 탐침). 포켓몬은 차례를 몸짓으로 알리지 않는다.
+   피격 반응은 3세대 피해 박자(battleDom.playPokemonDamagePhase — 깜빡임·HP 상자 떨림)가 낸다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin] :is(.battle-actor-status, .battle-actor, .battle-enemy).battle-acting {
+  animation: none;
+  filter: none;
 }

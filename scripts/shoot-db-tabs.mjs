@@ -23,7 +23,7 @@ const TABS = [
   ["troops", "db-tab-troops"],
   ["elements", "db-tab-elements"],
   ["states", "db-tab-states"],
-  ["animations", "db-tab-animations"],
+  ["retro-choreographies", "db-tab-retro-choreographies"],
   ["battle-screen", "db-tab-battle-screen"],
   ["battle-commands", "db-tab-battle-commands"],
   ["terrain", "db-tab-terrain"],

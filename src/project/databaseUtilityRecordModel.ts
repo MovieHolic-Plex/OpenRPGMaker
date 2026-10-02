@@ -60,6 +60,7 @@ export function normalizeGlobalBattleCommands(records: readonly Partial<Database
       kind: normalizeBattleCommandKind(record.kind),
       skillSubsetName: cleanOptionalId(record.skillSubsetName),
       skillId: cleanOptionalId(record.skillId),
+      ...(cleanOptionalId(record.commonEventId) ? { commonEventId: cleanOptionalId(record.commonEventId) } : {}),
     }));
 }
 
@@ -89,7 +90,7 @@ function normalizeTerrainDisplay(display: DatabaseTerrainCharacterDisplay | unde
 }
 
 function normalizeBattleCommandKind(kind: ClassBattleCommandKind | undefined): ClassBattleCommandKind {
-  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event"
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event" || kind === "commonEvent"
     ? kind
     : "attack";
 }

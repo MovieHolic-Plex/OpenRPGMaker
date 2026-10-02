@@ -9,7 +9,7 @@ test("battle reference scene uses equivalent enemy, party, portrait, and icon as
   // `startReferenceBattle` uses the expert classic toolbar's `mode-play` control.
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await mkdir(evidenceDir, { recursive: true });
-  await seedLayoutResultBattleProject(page, { battleUiStyle: "rm2000" });
+  await seedLayoutResultBattleProject(page, { battleUiStyle: "retro2003" });
   await startReferenceBattle(page);
   await page.screenshot({ path: `${evidenceDir}/01-command-assets.png`, fullPage: true });
 

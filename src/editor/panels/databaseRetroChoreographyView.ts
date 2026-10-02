@@ -184,7 +184,9 @@ export function renderRetroChoreographyTab(content: HTMLElement, rerender: () =>
     ? renderDetail(selectedEntry, selectedProject, { rerender, cloneSelected })
     : detailPane({ body: emptyState({ title: "연출을 골라 보세요", body: "왼쪽에서 기본 연출을 고른 뒤 「복제해서 고치기」를 누르면 층을 바꿀 수 있습니다." }) });
 
-  content.replaceChildren(workspaceShell({ list, detail, testid: "db-retro-choreo-workspace" }));
+  // 위의 보기 전환 줄(도트 연출 | 옛 전투 애니메이션, database.ts PARTY_SUBVIEWS)은 남긴다.
+  const subviews = content.querySelector<HTMLElement>(":scope > .db-party-subviews");
+  content.replaceChildren(...(subviews ? [subviews] : []), workspaceShell({ list, detail, testid: "db-retro-choreo-workspace" }));
 }
 
 interface DetailContext { readonly rerender: () => void; readonly cloneSelected: () => void }
