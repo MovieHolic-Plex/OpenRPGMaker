@@ -263,6 +263,7 @@ def main():
         if ex.get('states'):
             g, st, others = ex['states']; it['states'] = dict(group=g, state=st, others=others)
         if ex.get('base'): it['drawBase'] = ex['base']
+        if ex.get('blockout'): it['blockout'] = ex['blockout']
         d['items'].append(it); added += 1
     # 첫 상태 쪽에도 짝을 단다
     rev = {}

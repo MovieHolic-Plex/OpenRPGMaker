@@ -12,7 +12,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
-from common import CAND, TOP_MIN_SHALLOW, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
+from common import CAND, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
 import picks_db  # noqa: E402
 import store  # noqa: E402
 
@@ -191,6 +191,7 @@ def make(rid, item, note='', base=''):
         deep = int(o['footprint']['h']) >= 2
         for f in sorted(glob.glob(os.path.join(HERE, 'examples', '*.png'))) + (sorted(glob.glob(os.path.join(HERE, 'examples-deep', '*.png'))) if deep else []):
             _bg(Image.open(f), 8).save(os.path.join(out, 'view34', os.path.basename(f)[:-4] + '-x8.png'))
+    if o.get('blockout'): blockout_image(o).save(os.path.join(out, 'blockout-x8.png'))
     rej = [f for f in store.feedback(item) if f['verdict'] == 'reject' and f['cand']]
     lines_rej = []
     if rej:
@@ -255,6 +256,14 @@ def make(rid, item, note='', base=''):
                    '- `view34/good-dining-4x2`·`good-magitek-engine-3x2`·`good-canopy-bed-2x2` 처럼 **발밑 깊이만큼 윗면이 길다**. 바퀴 달린 물건·긴 물건도 같다 — 지붕·상판을 위에서 본 긴 면으로 그리고, 남쪽 옆면은 그 아래에 붙인다.',
                    '- `view34/bad-*-side-elevation` 은 이번에 나온 틀린 그림이다: 지붕이 2~4행 띠뿐인 옆모습. 이렇게 그리면 검사·검수가 떨어뜨린다.',
                    '- 캔버스 높이 = 발밑 깊이(칸×16) + 솟는 높이. 윗면 행 수를 먼저 정하고(위 수 이상), 남은 높이를 남쪽 면에 나눈다.', '']
+        if o.get('blockout'):
+                (t0, t1), (f0, f1) = o['blockout']['top'], o['blockout']['front']; cv = o['blockout'].get('cover', 0.7)
+                md += ['## 3/4 밑그림 — 이 띠를 채운다 (명세가 정한 자리, 검사가 잰다)', '',
+                       f'`blockout-x8.png` 를 먼저 연다(8배, 16px 칸 선).',
+                       f'- **윗면 띠 y={t0}~{t1}** (밝은 회색) = 위에서 내려다본 면(지붕·보일러 등·상판·받침 윗면). 이 줄들은 물건 폭의 {cv:.0%} 이상을 덮어야 한다.',
+                       f'- **남쪽 면 띠 y={f0}~{f1}** (어두운 회색) = 남쪽을 보는 세운 면(창·옆판·바퀴·다리). 50% 이상 덮는다.',
+                       f'- y<{t0} (빗금) = 굴뚝·돔·조각·날개처럼 위로 솟는 것만. 몸통을 여기로 올리지 않는다.',
+                       f'- 메모의 `꼭대기 윗면 N행(y=a~b)` 는 이 윗면 띠와 겹쳐야 한다. 띠가 비거나(옆모습) 다른 데를 적으면 검사가 떨어뜨린다.', '']
     open(os.path.join(out, 'brief.md'), 'w', encoding='utf-8').write('\n'.join(md))
     store.set_brief(rid, out)
     return out

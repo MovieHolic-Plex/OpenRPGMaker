@@ -172,6 +172,12 @@ def _review_pack(r):
         im.save(os.path.join(pack, name))
     strip(ex('good') if deep else [os.path.join(r['root'], p) for p in REVIEW_REFS], 'ref-x8.png')
     if deep: strip(ex('bad'), 'side-bad-x8.png')
+    if o.get('blockout'):   # 후보 위에 밑그림 띠 경계(빨강 = 윗면 띠, 파랑 = 남쪽 면 띠)
+        from PIL import ImageDraw
+        ov = b.copy(); dr = ImageDraw.Draw(ov); (t0, t1), (f0, f1) = o['blockout']['top'], o['blockout']['front']
+        for y, col in ((t0, (230, 30, 30, 255)), (t1 + 1, (230, 30, 30, 255)), (f0, (40, 90, 230, 255)), (f1 + 1, (40, 90, 230, 255))):
+            dr.line([(0, y * 8), (ov.width, y * 8)], fill=col, width=2)
+        ov.save(os.path.join(pack, 'cand-blockout-x8.png'))
     cur = brief.current_choice(r['item'])
     for name, im in (('ctx-current.png', None if cur == 'v5' else cur_im), ('ctx-cand.png', c_im)):
         try:
