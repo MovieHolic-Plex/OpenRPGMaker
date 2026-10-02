@@ -149,6 +149,7 @@ road |= {(24, 24), (24, 23)}
 road |= {(24, 14), (24, 15), (24, 16)}
 road |= {(36, 24)}
 road |= {(44, 24)}
+road |= {(x, y) for x in (42, 43) for y in range(27, 42)}
 for (x, y) in road:
     m = mask_of(road, x, y)
     if x == 28 and y in RY: m |= E
@@ -159,10 +160,10 @@ for (x, y) in road:
 BUILDINGS = [
     ('giwa_house_6', 8, 5, 0), ('gate_4', 9, 16, 0), ('giwa_house_4', 13, 11, 0),
     ('thatch_house_3', 0, 6, 1), ('giwa_house_3', 1, 12, 1), ('thatch_house_3b', 0, 18, 1),
-    ('giwa_house_5', 21, 8, 2), ('thatch_house_5', 21, 17, 3),
-    ('pavilion_5', 34, 8, 0), ('thatch_house_4', 34, 18, 2), ('giwa_house_5b', 41, 18, 2),
-    ('giwa_house_6', 40, 3, 2), ('thatch_house_3', 43, 10, 2),
-    ('giwa_house_4', 36, 29, 2), ('giwa_house_3', 43, 31, 2),
+    ('giwa_house_5', 21, 8, 2), ('thatch_porch_5', 21, 17, 3),
+    ('nugak', 34, 8, 0), ('thatch_porch_4', 34, 18, 2), ('gwanah_5b', 41, 18, 2),
+    ('gwanah_5', 41, 2, 2),
+    ('fort_gate', 38, 33, 0), ('thatch_house_3b', 0, 0, 0), ('thatch_house_3', 43, 12, 1),
 ]
 bsize = {n: (objects[n].w // T, objects[n].h // T) for n in {b[0] for b in BUILDINGS}}
 yard = set()
@@ -213,7 +214,7 @@ def put_obj(name, tx, ty, force=False):
     elif name.startswith('willow'): bad = {'paddy', 'road'}
     if not force and any(0 <= x < MW and 0 <= y < MH and ground_kind[y][x] in bad for x, y in foot):
         SKIPPED.append((name, tx, ty)); return False
-    isb = name.split('_')[0] in ('giwa', 'thatch', 'gate', 'pavilion')
+    isb = name.split('_')[0] in ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
     if not force and not isb:
         for (bx, by, bw, bh) in BODY:
             if any(bx <= fx < bx + bw and by <= fy < by + bh for fx, fy in foot):
@@ -235,7 +236,7 @@ for n, x, y, dep in BUILDINGS:
     put_obj(n, x, y, force=True)
 # 집마다 터: 앞마당 양옆 울타리와 독
 for n, x, y, dep in BUILDINGS[3:]:
-    if n.startswith('pavilion'): continue
+    if n.startswith(('pavilion', 'nugak', 'fort')): continue
     w, h = bsize[n]
     put_obj('fence_h', x, y + h); put_obj('fence_h', x + w - 1, y + h)
     if (x + y) % 3 == 0: put_obj('jars', x + w, y + h - 1)
@@ -247,8 +248,8 @@ for y in range(5, 21):
     put_obj('wall_v', 5, y, True); put_obj('wall_v', 19, y, True)
 for x in range(5, 20): put_obj('stone_bank', x, 3, True)
 # 정자가 선 언덕: 석축 둑과 돌계단
-for x in range(32, 42):
-    put_obj('bank_stairs' if x in (37, 38) else 'stone_bank', x, 15, True)
+put_obj('fort_wall_end_l', 34, 40, True)
+for x in range(35, 38): put_obj('fort_wall_h', x, 40, True)
 
 # 숲띠: 큰 나무·어린 나무·덤불을 크기 섞어 겹치게(맵 밖으로 이어지는 뒷숲 포함)
 for nm, x, y in (('zelkova_a', 0, -1), ('pine_a', 3, -2), ('zelkova_b', 7, -2), ('pine_b', 11, -2), ('zelkova_c', 15, -2), ('pine_c', 19, -2), ('zelkova_e', 23, -2), ('pine_d', 27, -2),
@@ -272,7 +273,15 @@ for x in range(20, 21): put_obj('fence_h', x, 20)
 # 다리·정자 둔덕
 put_obj('bridge', 29, 24)
 put_obj('willow', 27, 5)
-put_obj('lantern', 33, 13); put_obj('persimmon_a', 41, 5)
+put_obj('lantern', 33, 17); put_obj('persimmon_a', 36, 5)
+# 바람의나라 연구: 관아 앞 홍살문, 마을 한복판 청사초롱 문, 어귀 장터 차일, 석탑, 원두막, 성문·성벽
+put_obj('hongsalmun', 42, 9, True)
+put_obj('deungrong_mun', 24, 22, True)
+put_obj('stone_pagoda', 38, 3)
+for nm, x, y in (('market_stall', 35, 27), ('market_stall', 38, 27), ('market_stall', 45, 27)):
+    put_obj(nm, x, y)
+for (x, y) in ((27, 37), (15, 36), (46, 29)):
+    if put_obj('wondumak', x, y): break
 # 연못 둘레: 갈대·돌·버드나무
 for nm, x, y in (('reeds', 4, 26), ('reeds', 1, 29), ('reeds', 10, 27), ('reeds', 13, 29), ('rocks', 2, 31), ('rocks', 14, 31), ('rocks', 6, 26), ('reeds', 3, 37), ('rocks', 11, 39), ('reeds', 9, 40),
                  ('willow', 12, 28), ('small_z_b', 1, 27), ('small_z_a', 5, 38), ('bush_c', 2, 39), ('small_p', 13, 38)):

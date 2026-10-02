@@ -1,5 +1,5 @@
 """조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
-import ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
+import structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
 _L = None
 
 
@@ -57,8 +57,23 @@ def objects():
         'giwa_house_5b': K.assemble(K.house('jo', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'brown', wing=24)),
         'thatch_house_3': K.assemble(K.house('jc', 3, 'ldr', 'ldr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
         'thatch_house_3b': K.assemble(K.house('jc', 3, 'lwr', 'lfr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
+        'thatch_porch_5': K.assemble(K.house('jc', 5, 'lwoor', 'lfoor', steps=(2,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
+        'thatch_porch_4': K.assemble(K.house('jc', 4, 'lwor', 'lfor', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
         'giwa_house_4': K.assemble(K.house('jo', 4, 'lwdr', 'lfdr', steps=(2,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=22)),
         'giwa_house_3': K.assemble(K.house('jo', 3, 'ldr', 'ldr', steps=(1,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=20)),
+        'gwanah_7': K.assemble(K.house('gw', 7, 'lwdddwr', 'lfdddfr', steps=(3,), hip=True, chimi=False, dan=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'dg', wing=26, trim=True)),
+        'gwanah_5': K.assemble(K.house('gw', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True, chimi=False, dan=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'brown', wing=24, trim=True)),
+        'gwanah_5b': K.assemble(K.house('gw', 5, 'ldddr', 'ldddr', steps=(2,), hip=True, chimi=False, dan=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=24, trim=True)),
+        'fort_gate': ST.fort_gate(),
+        'fort_wall_h': ST.fort_wall_h(),
+        'fort_wall_end_l': ST.fort_wall_end('l'),
+        'fort_wall_end_r': ST.fort_wall_end('r'),
+        'stone_pagoda': ST.stone_pagoda(),
+        'hongsalmun': ST.hongsalmun(),
+        'deungrong_mun': ST.deungrong_mun(),
+        'market_stall': ST.market_stall(),
+        'wondumak': ST.wondumak(),
+        'nugak': ST.nugak(),
         'laundry': P4.laundry(),
         'flower_bed': P3.flower_bed(),
         'bank_stairs': P3.bank_stairs(),

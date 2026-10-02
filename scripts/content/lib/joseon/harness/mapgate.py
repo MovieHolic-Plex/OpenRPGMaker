@@ -16,7 +16,7 @@ from spacemetrics import lawn_cells, window_stats
 
 LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 0.20, 0.08, 0.30, 6
 TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
-BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion')
+BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0072, 3
 
 
@@ -52,7 +52,7 @@ def check(placed, direct, objlayer, T=16):
     if dup:
         fails.append(f"M4 같은 나무가 6칸 안에 {len(dup)}쌍: {dup}")
 
-    nb = sum(1 for p in placed if p[0].split('_')[0] in BUILDINGS)
+    nb = sum(1 for p in placed if p[0].split('_')[0] in BUILDINGS and 'wall' not in p[0])
     rep['buildings'] = nb
     rep['building_density'] = round(nb / (direct.w // T * (direct.h // T)), 4)
     if rep['building_density'] < BLD_MIN:

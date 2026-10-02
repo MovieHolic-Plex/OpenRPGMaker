@@ -136,9 +136,9 @@
   "date": "2026-10-02"
  },
  "thatch_house_5": {
-  "hash": "64975c0bc37d",
+  "hash": "af1816625fcc",
   "status": "note",
-  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
+  "line": "초가 v2: 낮고 넓은 방석 지붕(바람의나라 초가 기준), 가는 세로 짚결, 처마 아래 짚 끝 들쭉날쭉. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -264,9 +264,9 @@
   "date": "2026-10-02"
  },
  "thatch_house_4": {
-  "hash": "b884a611decc",
+  "hash": "eda347012986",
   "status": "note",
-  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
+  "line": "초가 v2: 낮고 넓은 방석 지붕(바람의나라 초가 기준), 가는 세로 짚결, 처마 아래 짚 끝 들쭉날쭉. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -328,17 +328,17 @@
   "date": "2026-10-02"
  },
  "thatch_house_3": {
-  "hash": "a0ba0dd36293",
+  "hash": "64ac563d817e",
   "status": "note",
-  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
+  "line": "초가 v2: 낮고 넓은 방석 지붕(바람의나라 초가 기준), 가는 세로 짚결, 처마 아래 짚 끝 들쭉날쭉. 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
  },
  "thatch_house_3b": {
-  "hash": "d31931dc4a5f",
+  "hash": "f4e7504df70e",
   "status": "note",
-  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
+  "line": "초가 v2, 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -354,7 +354,7 @@
  "giwa_house_3": {
   "hash": "faa0deac6a49",
   "status": "note",
-  "line": "처마 밑 서까래 그늘을 지붕 첫 연속 구간 끝에서 채워 아치 밑 빈 쐐기 제거, 지붕이 벽에 얹힘. 윗면 보임. 독립 리뷰 대기",
+  "line": "처마 밑 서까래 그늘로 지붕이 벽에 얹힘, 윗면 보임. 독립 리뷰 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"
@@ -467,6 +467,126 @@
   "hash": "615bb2de998d",
   "status": "note",
   "line": "처마 밑 서까래 그늘 채움, 벽에 얹힘. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_porch_5": {
+  "hash": "f164192a5952",
+  "status": "note",
+  "line": "초가 v2: 낮고 넓은 방석 지붕(바람의나라 초가 기준), 가는 세로 짚결, 처마 아래 짚 끝 들쭉날쭉. 윗면 보임. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "thatch_porch_4": {
+  "hash": "daf049fb78e3",
+  "status": "note",
+  "line": "초가 v2: 낮고 넓은 방석 지붕(바람의나라 초가 기준), 가는 세로 짚결, 처마 아래 짚 끝 들쭉날쭉. 윗면 보임. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gwanah_7": {
+  "hash": "9495e2d01e65",
+  "status": "note",
+  "line": "관아: 붉은 기둥+단청 띠+주황 처마선, 벽에 얹힌 지붕, 석축 기단. 윗면 보임. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gwanah_5": {
+  "hash": "feb11c9840db",
+  "status": "note",
+  "line": "관아: 붉은 기둥+단청 띠+주황 처마선, 벽에 얹힌 지붕, 석축 기단. 윗면 보임. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "gwanah_5b": {
+  "hash": "80cf59670b42",
+  "status": "note",
+  "line": "관아: 붉은 기둥+단청 띠+주황 처마선, 벽에 얹힌 지붕, 석축 기단. 윗면 보임. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "fort_gate": {
+  "hash": "6c2380ccf927",
+  "status": "note",
+  "line": "윗면(걷는 길·마루·옥개 윗사면·차일 윗천)+앞면+그림자 3/4 문법. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "nugak": {
+  "hash": "0d4abbc34415",
+  "status": "note",
+  "line": "윗면(걷는 길·마루·옥개 윗사면·차일 윗천)+앞면+그림자 3/4 문법. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "stone_pagoda": {
+  "hash": "47622c0a6dfc",
+  "status": "note",
+  "line": "윗면(걷는 길·마루·옥개 윗사면·차일 윗천)+앞면+그림자 3/4 문법. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "market_stall": {
+  "hash": "e1910bc9e495",
+  "status": "note",
+  "line": "윗면(걷는 길·마루·옥개 윗사면·차일 윗천)+앞면+그림자 3/4 문법. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "wondumak": {
+  "hash": "a9e25a6a6aea",
+  "status": "note",
+  "line": "윗면(걷는 길·마루·옥개 윗사면·차일 윗천)+앞면+그림자 3/4 문법. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "fort_wall_h": {
+  "hash": "37e9cf0aa505",
+  "status": "note",
+  "line": "윗면(걷는 길·마루·옥개 윗사면·차일 윗천)+앞면+그림자 3/4 문법. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "fort_wall_end_l": {
+  "hash": "eb3494d58ef7",
+  "status": "note",
+  "line": "윗면(걷는 길·마루·옥개 윗사면·차일 윗천)+앞면+그림자 3/4 문법. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "fort_wall_end_r": {
+  "hash": "1e1b25f55ea7",
+  "status": "note",
+  "line": "윗면(걷는 길·마루·옥개 윗사면·차일 윗천)+앞면+그림자 3/4 문법. 독립 리뷰 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "hongsalmun": {
+  "hash": "f6d9855c541e",
+  "status": "user",
+  "line": "정면 문(윗면은 보 윗줄뿐) — 사용자 판정 대기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-02"
+ },
+ "deungrong_mun": {
+  "hash": "264a1854e7f5",
+  "status": "user",
+  "line": "정면 문(윗면은 보 윗줄뿐) — 사용자 판정 대기",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-02"

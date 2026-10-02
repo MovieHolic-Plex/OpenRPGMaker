@@ -12,7 +12,7 @@
 from tk import *
 from build import outline
 
-STYLE_ROOF = {'jo': 'giwa', 'jc': 'straw', 'pv': 'giwa'}
+STYLE_ROOF = {'jo': 'giwa', 'jc': 'straw', 'pv': 'giwa', 'gw': 'giwa'}
 
 
 def _px(c, x, y, col):
@@ -120,7 +120,7 @@ def thatch_roof_block(row, side):
 
 def _column(c, x, y0, y1, ramp='wood'):
     r = RGB[ramp]
-    hi, mid, lo = (r[3], r[2], r[1]) if ramp == 'red' else (r[5], r[4], r[2])
+    hi, mid, lo = (r[4], r[3], r[2]) if ramp == 'red' else (r[5], r[4], r[2])
     for y in range(y0, y1):
         c.put(x, y, hi); c.put(x + 1, y, mid); c.put(x + 2, y, lo)
 
@@ -184,7 +184,19 @@ def thatch_wall_block(half, kind):
             c.rect(8, 9, 10, 15, W[4]); c.hl(6, 12, 12, W[4])
     else:
         if kind == 'f': c.rect(4, 0, 14, 2, W[4])
-        c.hl(0, T, 14, E[3]); c.hl(0, T, 15, E[2])
+        if kind != 'o': c.hl(0, T, 14, E[3]); c.hl(0, T, 15, E[2])
+        else: c.hl(0, T, 14, E[2]); c.hl(0, T, 15, E[1])
+    if kind == 'o':                                   # 열린 마루칸: 어두운 방 안, 앞에 마루 윗면과 마루 앞 널
+        if half == 'u':
+            for y in range(5, T):
+                for x in range(T): c.put(x, y, E[0] if y < 11 else E[1])
+            for x in range(3, T - 2, 5): c.vl(x, 5, T, W[1])
+        else:
+            for y in range(0, 7):
+                for x in range(T): c.put(x, y, E[1] if y > 1 else E[0])
+            for y in range(7, 11):
+                for x in range(T): c.put(x, y, W[5] if y == 7 else (W[4] if (x // 5 + y) % 2 else W[3]))
+            c.hl(0, T, 11, W[5]); c.hl(0, T, 12, W[2]); c.hl(0, T, 13, W[1])
     if kind == 'd':
         y0, y1 = (7, 16) if half == 'u' else (0, 14)
         c.rect(4, y0, 14, y1, W[3])
@@ -214,13 +226,13 @@ def wall_block(style, half, kind, base=True, dan=False):
         return thatch_wall_block(half, kind)
     c = Cv(T, T)
     W = RGB['wood']; St = RGB['stone']
-    wallramp = {'jo': 'plaster', 'jc': 'earth', 'pv': 'wood'}[style]
-    colramp = 'wood'
+    wallramp = {'jo': 'plaster', 'jc': 'earth', 'pv': 'wood', 'gw': 'plaster'}[style]
+    colramp = 'red' if style == 'gw' else 'wood'
     if half == 'u':
         # y0..1 처마 그늘, 2..4 창방(보), 5 그림자, 6..15 벽
         for x in range(T):
             c.put(x, 0, W[1]); c.put(x, 1, W[1]); c.put(x, 2, W[5])
-            c.put(x, 3, W[4]); c.put(x, 4, W[1] if style != 'pv' else W[2]); c.put(x, 5, W[1] if style == 'pv' else RGB['plaster'][2] if style == 'jo' else RGB['earth'][2])
+            c.put(x, 3, W[4]); c.put(x, 4, W[1] if style != 'pv' else W[2]); c.put(x, 5, W[1] if style == 'pv' else RGB['plaster'][2] if style in ('jo', 'gw') else RGB['earth'][2])
         if dan:
             g, b, rd = RGB['green'], RGB['blue'], RGB['red']
             pat = [g[5], g[5], g[4], rd[4], rd[5], b[5], b[4], b[4]]
@@ -346,14 +358,14 @@ def ridge_chimi(style, side):
 
 def library():
     L = {}
-    for st in ('jo', 'jc', 'pv'):
+    for st in ('jo', 'jc', 'pv', 'gw'):
         for row in ('ridge', 'front', 'body', 'eave'):
             for side in ('l', 'm', 'r'):
                 L[f'{st}.roof.{row}.{side}'] = roof_block(st, row, side, ph=0)
         for kind in ('l', 'r', 'p', 'w', 'd', 'o', 'g'):
             L[f'{st}.u.{kind}'] = wall_block(st, 'u', kind)
             L[f'{st}.ud.{kind}'] = wall_block(st, 'u', kind, dan=True)
-        for kind in ('l', 'r', 'p', 'f', 'd', 'k', 'g'):
+        for kind in ('l', 'r', 'p', 'f', 'd', 'k', 'g', 'o'):
             L[f'{st}.b.{kind}'] = wall_block(st, 'b', kind)
     L['jc.plinth'] = thatch_plinth_block()
     L['jc.plinths'] = thatch_plinth_block(True)
@@ -364,15 +376,30 @@ def library():
     return L
 
 
-def roof_baram(cv, R=3, style='giwa', wing=24):
+def roof_baram(cv, R=3, style='giwa', wing=24, trim=False):
     """바람의나라 연구형 기와 지붕으로 위 R 행을 통째로 바꾼다(몸채 폭 전체 + 날개면 + 곡선 처마). roof3d.py."""
     import roof3d
     H = R * T
     cv.a[:H, :, :] = 0
     r = roof3d.roof(cv.w - 16, H, style, wing=max(14, wing - 7))
     cv.paste(r, 8, 0)
+    if trim:
+        eave_trim(cv, H)
     eave_fill(cv, H)
     dither_under(cv, H, 4)
+
+
+def eave_trim(cv, roof_h=48):
+    """관아 지붕: 처마 끝줄에 주황 단청 띠(바람의나라 관아의 금빛 처마선)."""
+    O = RGB['persimmon']
+    for x in range(cv.w):
+        first = next((y for y in range(0, roof_h) if cv.a[y, x, 3] == 255), None)
+        if first is None: continue
+        last = first
+        while last + 1 < roof_h and cv.a[last + 1, x, 3] == 255:
+            last += 1
+        if last - first < 6: continue
+        cv.put(x, last, O[2]); cv.put(x, last - 1, O[4] if x % 4 in (0, 1) else O[3]); cv.put(x, last - 2, O[3])
 
 
 def thatch_baram(cv, R=3, over=0):
@@ -380,8 +407,8 @@ def thatch_baram(cv, R=3, over=0):
     import thatch3d
     H = R * T
     cv.a[:H, :, :] = 0
-    hd = max(32, min(48, int((cv.w + over) * 0.46)))
-    cv.paste(thatch3d.dome(cv.w - 8 + over, hd, seed=cv.w), 4, 51 - hd)
+    hd = max(32, min(44, int((cv.w + over) * 0.40)))
+    cv.paste(thatch3d.dome2(cv.w - 8 + over, hd, seed=cv.w), 4, 51 - hd)
     eave_fill(cv, H, thatch=True)
     dither_under(cv, H, 4)
 
@@ -411,6 +438,7 @@ def eave_fill(cv, roof_h=48, thatch=False):
             else:
                 col = W_[3] if rafter and k > 1 else (W_[1] if k > 1 else W_[2])
             if not in_wall and k > 3:
+                if thatch: continue
                 col = W_[1] if rafter else E_[0]
             cv.put(x, y, col)
 

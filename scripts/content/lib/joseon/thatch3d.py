@@ -72,3 +72,45 @@ def dome(W, H, seed=0, squash=1.0):
             if cv.a[y0, x, 3]:
                 cv.put(x, y0, BR[4])
     return cv
+
+
+def dome2(W, H, seed=0):
+    """초가 지붕 v2 — 바람의나라 초가(thatch.png·thatch2.png)처럼 낮고 넓은 둥근 모서리 방석.
+    위는 거의 평평하고 밝으며 아래로 갈수록 어둡다. 가는 세로 짚 가닥(톤 ±1)과 단 사이 얕은 골, 아래 처마는 짚 끝이 들쭉날쭉 늘어진다."""
+    cv = Cv(W, H)
+    cx = (W - 1) / 2.0
+    r = H * 0.62                                    # 모서리 둥글기
+    ln = [6 + int(rnd(x, 5, seed + 1) * 8) for x in range(W)]
+    off = [int(rnd(x, 6, seed + 2) * 12) for x in range(W)]
+    fr = [int(rnd(x // 2, 8, seed + 3) * 4) for x in range(W)]       # 아래 처마 짚 끝 길이 편차
+    for y in range(H):
+        t = y / max(1.0, H - 1)
+        dy = min(y, H - 1 - y)
+        yc = (y + 0.5) / H * 2 - 1                  # -1(위) .. 1(아래)
+        n = 2.5 if yc < 0 else 3.4                  # 위는 둥글게, 아래는 네모에 가깝게
+        hw = (W / 2.0) * (1 - abs(yc) ** n) ** (1.0 / n) if abs(yc) < 1 else 0
+        hw = min(hw, W / 2.0 - 0.5)
+        for x in range(W):
+            dx = x - cx
+            if abs(dx) > hw:
+                continue
+            u = dx / max(1.0, W / 2.0)
+            # 아래 처마는 가운데가 조금 더 처지고 끝이 들쭉날쭉
+            low = H - 1 - 2.0 * u * u - fr[x] * (1 if y > H - 6 else 0)
+            if y > low:
+                continue
+            base = 3.9 - 1.5 * t                       # 위 밝음 → 아래 어두움
+            base += -0.45 * u                          # 빛은 왼쪽 위
+            for tb in (0.36, 0.68):                    # 방석 세 단의 경계: 어두운 골 + 바로 아래 밝은 입술
+                curve = 0.03 * (1 - u * u)
+                d = t - (tb + curve)
+                if -0.03 < d < 0.0: base -= 0.6
+                elif 0.0 <= d < 0.04: base += 0.3
+            run = (y + off[x]) // ln[x]
+            j = rnd(x, run, seed + 7)
+            base += 0.95 if j > 0.74 else (-0.8 if j < 0.2 else (0.4 if j > 0.55 else 0.0))
+            if x % 2 == 0: base -= 0.35                 # 가닥 사이 틈
+            if abs(dx) > hw - 1.0 or y == 0: base -= 0.45
+            if y > H - 3: base -= 0.5
+            cv.put(x, y, BR[max(0, min(5, int(round(base))))])
+    return cv

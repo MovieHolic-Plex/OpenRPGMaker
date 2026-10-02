@@ -485,5 +485,138 @@
    "h101_0"
   ],
   "kit": "blocks.house('jo',6,…)"
+ },
+ "gwanah_7": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "castle.palace",
+   "manor",
+   "inn"
+  ],
+  "kit": "blocks.house('gw',7,…)"
+ },
+ "gwanah_5": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "manor",
+   "inn",
+   "h104_0"
+  ],
+  "kit": "blocks.house('gw',5,…)"
+ },
+ "gwanah_5b": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "manor",
+   "inn",
+   "h104_0"
+  ],
+  "kit": "blocks.house('gw',5,…)"
+ },
+ "thatch_porch_5": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "blocks.house('jc',5,…)"
+ },
+ "thatch_porch_4": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "h101_0",
+   "h107_0",
+   "cafe"
+  ],
+  "kit": "blocks.house('jc',4,…)"
+ },
+ "fort_gate": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ]
+ },
+ "fort_wall_h": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ]
+ },
+ "fort_wall_end_l": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ]
+ },
+ "fort_wall_end_r": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_h",
+   "estate.wall",
+   "castle.wall_v"
+  ]
+ },
+ "stone_pagoda": {
+  "cls": "prop",
+  "refs": [
+   "column_monument",
+   "statue_sage",
+   "forum.statue"
+  ]
+ },
+ "hongsalmun": {
+  "cls": "prop",
+  "refs": [
+   "forum.gate",
+   "lamp_double",
+   "column_monument"
+  ],
+  "front_only": true
+ },
+ "deungrong_mun": {
+  "cls": "prop",
+  "refs": [
+   "forum.gate",
+   "lamp_double",
+   "lamp_crook"
+  ],
+  "front_only": true,
+  "thin_ok": "초롱 끈과 가는 장대"
+ },
+ "market_stall": {
+  "cls": "prop",
+  "refs": [
+   "stall_veg",
+   "stall_herb_flower",
+   "stall_jug_bottle"
+  ]
+ },
+ "wondumak": {
+  "cls": "prop",
+  "refs": [
+   "well_roofed",
+   "stall_veg",
+   "net_rack"
+  ]
+ },
+ "nugak": {
+  "cls": "prop",
+  "refs": [
+   "forum.stoa",
+   "forum.temple",
+   "castle.gatehouse"
+  ]
  }
 }
