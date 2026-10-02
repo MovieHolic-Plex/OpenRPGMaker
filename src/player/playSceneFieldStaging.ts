@@ -198,7 +198,9 @@ export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, 
   // 칸 대상은 칸 발밑 중앙(캐릭터 원점과 같은 기준)에 둔다.
   const x = sprite ? sprite.x : step.target.kind === "tile" ? (step.target.x + 0.5) * size : scene.player?.x ?? 0;
   const y = sprite ? sprite.y : step.target.kind === "tile" ? characterSpriteY(step.target.y, size) : scene.player?.y ?? 0;
-  const emitter = scene.add.particles(x, y, recipe.texture, recipe.config(scale));
+  // 따라가는 이미터는 원점(0,0)에 만든다. startFollow 는 입자를 대상의 월드 좌표에 뿌리는데 이미터 위치도
+  // 그리기 변환에 더해져, 대상 자리에 만들면 좌표가 두 번 더해져 화면 밖에 그려졌다(2026-10-02 실측).
+  const emitter = scene.add.particles(sprite ? 0 : x, sprite ? 0 : y, recipe.texture, recipe.config(scale));
   emitter.setDepth(PARTICLE_DEPTH);
   if (sprite) emitter.startFollow(sprite);
   const longestLife = 1500;
