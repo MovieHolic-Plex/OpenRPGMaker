@@ -697,5 +697,24 @@
    "estate.wall",
    "castle.wall_v"
   ]
+ },
+ "wall_v_e": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_v",
+   "estate.wall"
+  ],
+  "thin_ok": "위에서 본 세로 담의 덮개 띠",
+  "front_only": true
+ },
+ "giwa_house_3b": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "inn",
+   "h104_0",
+   "h101_0"
+  ],
+  "kit": "blocks.house('jo',6,…)"
  }
 }

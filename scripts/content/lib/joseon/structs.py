@@ -104,7 +104,7 @@ def fort_gate():
     inset = 0
     lo = lambda y: int(round(inset * (1 - (y - FY) / (H - FY))))
     hi = lambda y: W - lo(y)
-    stone_courses(c, 0, FY, W, H, seed=5, ch=8, lo=lo, hi=hi)
+    ashlar(c, 0, FY, W, H, 7)
     for y in range(FY, FY + 2):                                      # 단 윗선 그늘 + 밝은 모서리
         for x in range(lo(y), hi(y)): c.put(x, y, S[6] if y == FY else S[2])
     _arch(c, W // 2, 118, 16, H, ring=5)
@@ -120,8 +120,28 @@ def fort_gate():
     return c
 
 
+def ashlar(c, x0, y0, x1, y1, var=0, ch=8):
+    """성벽 석재: 큰 장대석 쌓기. 모든 칸이 같은 줄눈 배치(짝수 줄은 칸 경계, 홀수 줄은 칸 가운데)라 어느 변형을 어떤 순서로 이어 붙여도 이음이 없다.
+    밝기는 돌마다 불규칙하되 칸 가장자리에 밝은 줄이 생기지 않는다."""
+    S = RGB['stone']
+    for y in range(y0, y1):
+        row = (y - y0) // ch; ry = (y - y0) % ch
+        off = 8 if row % 2 else 0
+        for x in range(x0, x1):
+            bx = (x - x0 + off) % 16
+            si = (x - x0 + off) // 16
+            q = rnd(si + row * 11, row, 40 + var)
+            tone = 5 if q > 0.66 else (4 if q > 0.25 else 3)
+            if ry == 0: tone = min(6, tone + 1)
+            elif ry == ch - 1: tone = 1
+            if bx == 0: tone = 1
+            elif bx == 1 and ry not in (0, ch - 1): tone = min(6, tone + 1)
+            if rnd(x, y, 70 + var) > 0.94: tone = min(6, tone + 1)
+            c.put(x, y, S[tone])
+
+
 def fort_wall_h(var=0):
-    """성벽 한 칸(16×80): 문루 받침과 같은 높이로 이어 붙는다 — 걷는 길 윗면(앞쪽 밝음) + 여장 직육면체 + 앞 돌 쌓기. 변형(var) 셋을 번갈아 쓴다.
+    """성벽 한 칸(16×80): 문루 받침과 같은 높이로 이어 붙는다 — 걷는 길 윗면(앞쪽 밝음) + 여장 직육면체 + 앞 돌 쌓기. 변형(var) 셋은 이음 없이 섞어 쓴다.
     좌표는 fort_gate 의 (y-64)와 같다: 윗면 2..19, 여장 윗면 11..12·앞면 13..19, 앞 돌면 20..79."""
     c = Cv(T, 5 * T)
     S = RGB['stone']
@@ -132,19 +152,23 @@ def fort_wall_h(var=0):
     slab(c, 3, 13, 10, 5, 2, S, (6, 5), (5, 4, 3, 2))
     for y in range(20, 22):
         for x in range(T): c.put(x, y, S[6] if y == 20 else S[2])
-    stone_courses(c, 0, 20, T, 5 * T, seed=5 + 3 * var, ch=8)
+    ashlar(c, 0, 20, T, 5 * T, var)
     for x in range(T): c.put(x, 5 * T - 1, SHADOW, 90)
     return c
 
 
 def fort_wall_end(side='l'):
-    """성벽 끝(개울·성문 옆에서 끊기는 쪽): 앞 돌면이 아래로 갈수록 바깥으로 벌어진 비탈."""
+    """성벽 끝: 곧게 잘린 끝에 밝은 모서리 돌 기둥(귀돌)을 세우고 윗면 여장을 한 칸 더 높여 마감한다."""
     c = fort_wall_h(0)
-    for y in range(c.h):
-        cut = 4 if y < 20 else max(0, 4 - (y - 20) // 12)
-        for k in range(cut):
-            x = k if side == 'l' else T - 1 - k
-            c.a[y, x, 3] = 0
+    S = RGB['stone']
+    xs = range(0, 4) if side == 'l' else range(T - 4, T)
+    for y in range(2, 5 * T - 1):
+        for k, x in enumerate(xs):
+            kk = k if side == 'l' else 3 - k
+            if y < 20: tone = 6 if kk == 0 else 5
+            else: tone = 6 if kk == 0 else (5 if kk == 1 else 4)
+            if y % 8 == 3 and y >= 20: tone = 2
+            c.put(x, y, S[tone])
     return c
 
 
@@ -154,7 +178,7 @@ def fort_wall_sluice():
     for i in range(4):
         c.paste(fort_wall_h(i % 3), i * T, 0)
     S = RGB['stone']
-    cx, R, yc, ybase = 31.5, 22, 52, 5 * T
+    cx, R, yc, ybase = 31.5, 27, 56, 5 * T
     ring_w = 4
     for y in range(30, ybase):
         for x in range(4 * T):
