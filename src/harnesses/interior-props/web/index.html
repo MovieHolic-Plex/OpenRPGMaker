@@ -47,6 +47,8 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 .seg button { background:#2a2730; border:0; padding:3px 10px; cursor:pointer; }
 .seg button.on { background:#4a4252; color:#fff; }
 .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(172px, 1fr)); gap:10px; align-items:stretch; }
+.grid.ctxmode { grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); }   /* 방 안만 보기: 방 그림을 크게 — 어느 것이 가장 자연스러운지 고른다 */
+.grid.ctxmode .card .nt { display:none; }
 .card { background:var(--panel); border:2px solid var(--line); border-radius:10px; padding:8px; cursor:pointer; position:relative; display:flex; flex-direction:column; min-width:0; transition:border-color .1s; }
 .card:hover { border-color:#6d6377; }
 .card.sel { border-color:var(--sel); box-shadow:0 0 0 3px #f2c14e55; }
@@ -161,7 +163,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 <script>
 const ENG = {codex:'Codex', claude:'Sonnet'};
 const ENG_FULL = {codex:'Codex gpt-6.1-sol', claude:'Claude Sonnet 5.5'};
-const S = { showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'both', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
+const S = { showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'ctx', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
             objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -291,12 +293,12 @@ function renderPick() {
     <span>보기 <span class="seg">${[['both', '둘 다'], ['one', '단품'], ['ctx', '방 안']].map(([k, v]) => `<button data-mode="${k}" class="${S.mode === k ? 'on' : ''}">${v}</button>`).join('')}</span></span>
     <span>배경 <span class="seg">${['wood:나무', 'dark:어둠', 'check:체크'].map(x => { const [k, v] = x.split(':'); return `<button data-bg="${k}" class="${S.bg === k ? 'on' : ''}">${v}</button>`; }).join('')}</span></span>
     <span>확대 <span class="seg">${['fit', 3, 4, 6, 8].map(z => `<button data-z="${z}" class="${S.zoom === z ? 'on' : ''}">${z === 'fit' ? '맞춤' : z + '배'}</button>`).join('')}</span></span></div>`;
-  h += `<div class="grid bg-${S.bg}">` + card(it, '0', cur, {cur:1, label:it.isNew && cur === 'v5' ? '지금 그림 없음(새 기물)' : '지금 그림', v:0});
+  h += `<div class="grid bg-${S.bg} ${S.mode === 'ctx' ? 'ctxmode' : ''}">` + card(it, '0', cur, {cur:1, label:it.isNew && cur === 'v5' ? '지금 그림 없음(새 기물)' : '지금 그림', v:0});
   r.runs.forEach((x, k) => {   // 후보마다 두 장(2026-10-03): 그린 그대로 · 테두리 꼭 필요한 곳만(outline_select.py, 이름 끝 .sel)
     const opt = {label:x.direction || DIRS[x.letter], v:x.v, note:x.note, phase:x.phase, attempt:x.attempt, review:x.review, history:x.history, engine:x.engine, reviewEngine:x.reviewEngine,
       busy:['queued', 'running'].includes(x.status) ? x.status : null, failed:x.status === 'failed' ? (x.error || '실패') : null,
       bad:x.status === 'done' && !x.ok ? (x.error || '하드 검사 불합격') : null};
-    const two = x.status === 'done' && x.ok && !NOSEL.has(it.kind);
+    const two = x.status === 'done' && x.ok && !NOSEL.has(it.kind) && x.selDiff >= SEL_MIN;   // 거의 같으면 한 장만
     h += card(it, String(k + 1), x.cand, two ? {...opt, ol:'테두리 전부'} : opt);
     if (two) h += card(it, String(k + 1) + '′', x.cand + '.sel', {...opt, ol:'꼭 필요한 곳만', olsel:1, note:'', history:null});
   });
@@ -359,6 +361,7 @@ function nextItem() {
   if (its[0]) S.cur = its[0].id; else S.waitNext = true;   // 없으면 다음 것이 다 될 때까지 기다렸다가 자동으로 연다
   S.round = null; S.sel = null; S.rej = {}; S.memo = ''; S.sigPick = '';
 }
+const SEL_MIN = 12;   // 「꼭 필요한 곳만」 벌이 이보다 적게 다르면 같은 그림으로 보고 숨긴다
 const NOSEL = new Set(['바닥 무늬(밟을 수 있음)']);   // 깔개는 테두리 둘째 벌이 없다(check_candidate 도 안 만든다)
 const pickName = c => (c.split('-')[1] || c).replace(/\.sel$/, ' (테두리 필요한 곳만)');
 async function decide(choice) {
@@ -419,7 +422,7 @@ document.addEventListener('keydown', e => {
   if (S.view !== 'pick' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
   const it = item(); if (!it) return; const r = rnd(); const cur = it.current === 'v5' ? 'v5' : it.current;
   if (e.key === ' ') { e.preventDefault(); const b = document.getElementById('cmpB'); if (b && !S.flip) { S.flip = true; b.dataset.o = b.src; b.src = curSrc(it); } return; }
-  if (/^[0-5]$/.test(e.key)) { const k = +e.key; if (k === 0) { S.sel = cur; } else { const x = r.runs[k - 1]; if (x && x.status === 'done') { S.sel = S.sel === x.cand && x.ok && !NOSEL.has(it.kind) ? x.cand + '.sel' : x.cand; delete S.rej[S.sel]; } } renderPick(); }
+  if (/^[0-5]$/.test(e.key)) { const k = +e.key; if (k === 0) { S.sel = cur; } else { const x = r.runs[k - 1]; if (x && x.status === 'done') { S.sel = S.sel === x.cand && x.ok && !NOSEL.has(it.kind) && x.selDiff >= SEL_MIN ? x.cand + '.sel' : x.cand; delete S.rej[S.sel]; } } renderPick(); }
   else if (e.key === 'Enter') { if (S.sel) decide(S.sel === cur ? 'keep' : S.sel); }
   else if (e.key === 'x' || e.key === 'X') { if (S.sel && S.sel !== cur) toggleRej(S.sel); }
   else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); $('#memo')?.focus(); }

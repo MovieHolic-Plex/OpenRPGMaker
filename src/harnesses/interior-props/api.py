@@ -66,7 +66,7 @@ def state():
                                            why=('; '.join(h.get('hard', [])) if h['stage'] == 'hard' else
                                                 ', '.join((h.get('review') or {}).get('codes') or []) + ' — ' + (h.get('review') or {}).get('reasons', '')
                                                 if h['stage'] == 'review' else h.get('error', ''))[:400]) for h in hist],
-                             v=int(os.path.getmtime(png)) if os.path.exists(png) else 0))
+                             v=int(os.path.getmtime(png)) if os.path.exists(png) else 0, selDiff=_sel_diff(png)))
         d = decided.get((i, rd['id']))
         it['rounds'].append(dict(id=rd['id'], created=rd['created'], note=rd['note'], base=rd['base'], runs=runs,
                                  decided=dict(verdict=d['verdict'], cand=d['cand'], at=d['at']) if d else None))
@@ -129,6 +129,19 @@ def thumb(s):
         im.alpha_composite(CH.crop(((t % C) * 16, (t // C) * 16, (t % C) * 16 + 16, (t // C) * 16 + 16)), ((dx - x0) * 16, (dy - y0) * 16))
     b = io.BytesIO(); im.save(b, 'PNG'); _thumb['cache'][s] = b.getvalue()
     return _thumb['cache'][s]
+
+
+_SELD = {}
+def _sel_diff(png):
+    """「테두리 꼭 필요한 곳만」 벌이 그린 그대로와 몇 칸 다른가(없으면 None) — 거의 같으면 화면에 한 장만 보인다."""
+    sp = png[:-4] + outline_select.SUFFIX + '.png'
+    if not (os.path.exists(png) and os.path.exists(sp)): return None
+    k = (png, os.path.getmtime(png), os.path.getmtime(sp))
+    if k not in _SELD:
+        from PIL import Image, ImageChops
+        d = ImageChops.difference(Image.open(png).convert('RGBA'), Image.open(sp).convert('RGBA'))
+        _SELD[k] = sum(1 for v in d.get_flattened_data() if max(v) > 0)
+    return _SELD[k]
 
 
 def _exists(item, c):
