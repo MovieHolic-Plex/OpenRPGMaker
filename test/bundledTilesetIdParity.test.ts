@@ -16,12 +16,14 @@ describe("bundled tileset id parity", () => {
     const { createForestHarmonyTileset } = await import("@/project/defaults/forestHarmony");
     const { createTiboInteriorTileset } = await import("@/project/defaults/tiboInterior");
     const { createModernCityTileset } = await import("@/project/defaults/modernCity");
+    const { createJpCityTileset } = await import("@/project/defaults/jpCity");
 
     const creators: Record<string, () => { id: string }> = {
       tex_shared_forest_village_objects: createSharedVillageObjectsTileset,
       tex_forest_harmony: createForestHarmonyTileset,
       tex_tibo_interior_expanded: createTiboInteriorTileset,
       tex_modern_city: createModernCityTileset,
+      tex_jp_city: createJpCityTileset,
     };
     const byKey = new Map(BUNDLED_EASYRPG_CHIPSET_ASSETS.map((a) => [a.textureKey, a]));
     for (const [textureKey, creator] of Object.entries(creators)) {
