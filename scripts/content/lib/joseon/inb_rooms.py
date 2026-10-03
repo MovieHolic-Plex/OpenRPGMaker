@@ -85,3 +85,26 @@ def inn():
 
 
 ROOMS += [inn()]
+
+
+# ------------------------------------------------------------------------------------------------ 3. 대장간 16×12
+def smith():
+    g = mk(14, 10)
+    rect(g, 1, 1, 7, 7, 'b')                     # 작업장(흙바닥, 돌벽)
+    rect(g, 9, 1, 12, 5, 'o')                    # 장인의 작은 방
+    rect(g, 8, 3, 8, 5, 'm')                     # 문(걷는 줄 (8,5))
+    g[8][5] = 'D'
+    props = P([
+        # 북벽: 화덕·풀무, 곁에 숯더미, 벽에 연장
+        ('hwadeok_3', 1, 2), ('pungmu', 4, 3), ('hang_tools', 4, 1), ('hang_tools', 6, 1), ('sutdeomi', 7, 3),
+        # 작업: 모루 앞에 담금질 통, 숫돌, 작업대, 쇠 더미
+        ('moru', 3, 5), ('dameum', 2, 5), ('sutdol', 7, 4), ('gongjang', 1, 7), ('cheol', 1, 4),
+        ('cheol', 3, 7), ('hangari_m', 7, 6), ('mat_jip_2x2', 4, 6),
+        # 방
+        ('ibuljang', 9, 2), ('byeongpung_2', 11, 2), ('mat_dot_2x2', 10, 4), ('sang_low_2', 10, 5), ('banseok_r', 12, 4),
+    ])
+    return dict(id='joseon_in_smith_b', title='대장간', plan=rows(g), props=props, door=(5, 8), replace={},
+                people=[(4, 4, 1, R, 1), (9, 4, 6, L, 0)])
+
+
+ROOMS += [smith()]
