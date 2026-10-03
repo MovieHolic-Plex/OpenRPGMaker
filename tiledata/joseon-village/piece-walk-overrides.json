@@ -493,6 +493,97 @@
     8,
     9
    ]
+  },
+  "fld_cave_a": {
+   "grid": [
+    "XXXXX",
+    "XXXXX",
+    "XXFXX"
+   ]
+  },
+  "fld_cave_b": {
+   "grid": [
+    "XXXX",
+    "XXXX",
+    "XFFX"
+   ]
+  },
+  "fld_cave_c": {
+   "grid": [
+    "XXX",
+    "XXX",
+    "XFX"
+   ]
+  },
+  "fld_flowers_a": {
+   "all": "F"
+  },
+  "fld_flowers_b": {
+   "all": "F"
+  },
+  "fld_flowers_c": {
+   "all": "F"
+  },
+  "fld_fern": {
+   "all": "F"
+  },
+  "fld_bones_a": {
+   "all": "F"
+  },
+  "fld_bones_b": {
+   "all": "F"
+  },
+  "fld_burrow": {
+   "all": "F"
+  },
+  "fld_dead_a": {
+   "grid": [
+    "CCC",
+    "CCC",
+    ".C.",
+    "FXF"
+   ]
+  },
+  "fld_dead_b": {
+   "grid": [
+    "CCC",
+    "CCC",
+    ".C.",
+    "FXF"
+   ]
+  },
+  "cav_moss": {
+   "all": "F"
+  },
+  "cav_puddle": {
+   "all": "F"
+  },
+  "cav_torch_a": {
+   "grid": [
+    "X",
+    "X"
+   ]
+  },
+  "cav_torch_b": {
+   "grid": [
+    "X",
+    "X"
+   ]
+  },
+  "cav_chest_dais": {
+   "grid": [
+    "XXX",
+    "FFF"
+   ]
+  },
+  "cav_nest": {
+   "all": "F"
+  },
+  "cav_stalagmite_wide": {
+   "grid": [
+    "FX",
+    "XX"
+   ]
   }
  },
  "terrain": {
@@ -650,7 +741,8 @@
     "water47g",
     "water_deep",
     "rice16",
-    "field"
+    "field",
+    "fld_trail32"
    ],
    "edgeConnects": true
   },
@@ -669,9 +761,108 @@
     "water47g",
     "water_deep",
     "rice16",
-    "field"
+    "field",
+    "fld_trail32"
    ],
    "edgeConnects": false
+  },
+  "fld_trail32": {
+   "kind": "mask16",
+   "name": "사냥터 짐승길",
+   "walk": true,
+   "connect": [
+    "fld_trail32",
+    "road64",
+    "yard64",
+    "slab",
+    "slab_edge16"
+   ],
+   "edgeConnects": true
+  },
+  "fld_tall32": {
+   "kind": "mask16",
+   "name": "사냥터 키 큰 풀·억새",
+   "walk": true,
+   "connect": [
+    "fld_tall32"
+   ],
+   "edgeConnects": false
+  },
+  "fld_forest32": {
+   "kind": "mask16",
+   "name": "사냥터 숲 바닥(낙엽)",
+   "walk": true,
+   "connect": [
+    "fld_forest32"
+   ],
+   "edgeConnects": true
+  },
+  "fld_bog94": {
+   "kind": "blob47",
+   "name": "사냥터 늪",
+   "walk": false,
+   "role": "water",
+   "connect": [
+    "fld_bog94"
+   ],
+   "edgeConnects": false
+  },
+  "fld_rock32": {
+   "kind": "mask16",
+   "name": "사냥터 바위산 윗면",
+   "walk": false,
+   "connect": [
+    "fld_rock32",
+    "fld_face32"
+   ],
+   "edgeConnects": false,
+   "fold": [
+    "fld_rock_in8"
+   ]
+  },
+  "cav_floor": {
+   "name": "동굴 바닥",
+   "walk": true
+  },
+  "cav_floor_lit": {
+   "name": "동굴 입구 바닥(햇빛)",
+   "walk": true
+  },
+  "cav_floor_sh": {
+   "name": "동굴 바닥(벽 그림자)",
+   "walk": true
+  },
+  "cav_roof47": {
+   "kind": "blob47",
+   "name": "동굴 천장(벽 윗면)",
+   "walk": false,
+   "connect": [
+    "cav_roof47",
+    "cav_face24"
+   ],
+   "edgeConnects": false
+  },
+  "cav_face24": {
+   "name": "동굴 벽 앞면",
+   "walk": false
+  },
+  "cav_pool94": {
+   "kind": "blob47",
+   "name": "동굴 지하 못",
+   "walk": false,
+   "role": "water",
+   "connect": [
+    "cav_pool94"
+   ],
+   "edgeConnects": false
+  },
+  "fld_face32": {
+   "name": "사냥터 바위산 앞면(절벽, 2단)",
+   "walk": false
+  },
+  "fld_rock_in8": {
+   "name": "사냥터 바위산 윗면 (속 8변형)",
+   "walk": false
   }
  }
 }

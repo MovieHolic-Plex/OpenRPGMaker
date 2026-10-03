@@ -229,3 +229,28 @@ def objects():
     d = _objects_before_gnf()
     d.update(_GF.objects())
     return d
+
+
+# --- 사냥터·동굴 지형(fld_ground.py): 맨 끝에 덧붙인다(기존 키·칸 번호는 그대로).
+_terrain_before_fld = terrain
+
+
+def terrain():
+    import fld_ground as _FG
+    d = _terrain_before_fld()
+    d.update(_FG.terrain())
+    return d
+
+
+# --- 사냥터 물체(fld_props.py, fld_props2.py): 맨 끝에 덧붙인다.
+_objects_before_fld = objects
+
+
+def objects():
+    import fld_props as _FP, fld_props2 as _FP2, fld_cave as _FC, fld_cave2 as _FC2
+    d = _objects_before_fld()
+    d.update(_FP.objects())
+    d.update(_FP2.objects())
+    d.update(_FC.objects())
+    d.update(_FC2.objects())
+    return d
