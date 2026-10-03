@@ -21,15 +21,17 @@ def _floor(kind, v):
             for x in range(T):
                 q = rnd(x, y, 310 + v)
                 c = e[5]
-                if q < 0.05: c = e[4]
-                elif q > 0.975: c = e[6]
+                if q < 0.022: c = e[4]
+                elif q > 0.985: c = e[6]
                 cv.put(x, y, c)
-        for k in range(2):                                           # 가로로 긴 결 두 가닥
+        for k in range(1 if v >= 4 else 2):                          # 가로로 긴 결(짧게)
             x0, y0 = hsh(k, v, 11) % 10, 2 + hsh(v, k, 13) % 12
             for i in range(4):
                 cv.put(x0 + i, y0, e[6] if (k + v) % 2 else e[4])
+        # 장판 이음: 변형 0~3 은 타일 가장자리, 4~7 은 이음이 없거나(4·5·6) 타일 가운데 가로 이음(7). 방에서는 무작위로 섞어 2×2 격자 무늬가 안 생긴다
         if v in (1, 3): cv.hl(0, T, T - 1, e[4])                       # 장판 이음(아래)
         if v in (2, 3): cv.vl(T - 1, 0, T, e[4])                       # 장판 이음(오른쪽)
+        if v == 7: cv.hl(0, T, 8, e[4])                                # 장판 이음(가운데)
     elif kind == 'maru':     # 마루: 4px 널, 줄마다 끝 이음이 어긋남
         w = WD
         for y in range(T):
@@ -129,7 +131,7 @@ def floor_sets():
     """{이름: [Cv...]} 평면 바닥 묶음. in_<재질> 4변형, in_<재질>_sh = [위, 왼쪽, 위+왼쪽]."""
     out = {}
     for k in FLOORS:
-        base = [_floor(k, v) for v in range(4)]
+        base = [_floor(k, v) for v in range(8 if k in ('ondol', 'maru') else 4)]
         out['in_b_' + k] = base
         out['in_b_%s_sh' % k] = [_shade(base[0], 'n'), _shade(base[1], 'w'), _shade(base[2], 'nw')]
     return out

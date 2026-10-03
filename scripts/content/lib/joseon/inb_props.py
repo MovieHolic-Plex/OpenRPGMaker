@@ -101,6 +101,46 @@ def byeongpung(kind='a', panels=4):
             for k in range(3):
                 line(cv, sx0 + 1, sy1 - 3 - k * 5, sx1 - 2, sy1 - 7 - k * 5, DG[4])
             cv.vl(fx, fy + 2, sy1 - 1, DG[3])
+        elif kind == 'd':                                                # 묵죽: 푸른 대 마디와 잎, 바위 한 점
+            for y in range(sy0, sy1):
+                for x in range(sx0, sx1):
+                    cv.put(x, y, PL[6] if (y - sy0) < 2 else PL[5])
+            for k, bx in enumerate((sx0 + 3 + (i % 2) * 2, sx0 + 8 - (i % 2) * 2)):
+                for y in range(sy0 + 2, sy1 - 3):
+                    cv.put(bx, y, DG[5]); cv.put(bx + 1, y, DG[3])
+                    if (y - sy0 + k * 3) % 6 == 0:
+                        cv.put(bx - 1, y, DG[2]); cv.put(bx, y, DG[2]); cv.put(bx + 1, y, DG[2]); cv.put(bx + 2, y, DG[2])
+                for t in range(3):
+                    yy = sy0 + 5 + t * 6 + k * 2
+                    for (xa, ya, xb, yb, col) in ((bx + 1, yy, bx + 4, yy + 2, DG[4]), (bx, yy + 1, bx - 3, yy + 3, DG[3])):
+                        for u in range(0, 4):                                  # 잎: 짧은 선(그림 안으로 자른다)
+                            px, py = xa + (xb - xa) * u // 3, ya + (yb - ya) * u // 3
+                            if sx0 <= px < sx1 and sy0 <= py < sy1 - 4:
+                                cv.put(px, py, col)
+            for x in range(sx0, sx1):
+                hh = 2 + ((x + i * 3) % 3)
+                for y in range(sy1 - hh - 1, sy1 - 1):
+                    cv.put(x, y, IR[4] if y == sy1 - hh - 1 else IR[3])
+        elif kind == 'e':                                                # 십장생 한 폭씩: 소나무와 학(홀수 판은 학, 짝수 판은 소나무)
+            for y in range(sy0, sy1):
+                for x in range(sx0, sx1):
+                    cv.put(x, y, PL[6] if (y - sy0) < 2 else PL[5])
+            if i % 2 == 0:
+                disc(cv, sx0 + (pw - 4) // 2 + 2, sy0 + 5, 2.4, RD[5])                                   # 해
+                cx = sx0 + (pw - 4) // 2 + 2
+                for t in range(8):                                                                       # 학: 흰 몸 + 검은 꼬리 끝 + 붉은 정수리
+                    cv.put(cx - 3 + t, sy0 + 12 + (t // 3), PL[6]); cv.put(cx - 3 + t, sy0 + 13 + (t // 3), PL[4])
+                cv.rect(cx + 3, sy0 + 9, cx + 4, sy0 + 11, PL[6]); cv.put(cx + 4, sy0 + 8, RD[5])
+                cv.put(cx - 4, sy0 + 13, IR[1]); cv.put(cx - 5, sy0 + 14, IR[1])
+                cv.vl(cx - 1, sy0 + 15, sy0 + 18, WD[2]); cv.vl(cx + 1, sy0 + 15, sy0 + 18, WD[2])
+            else:
+                cv.vl(sx0 + 4, sy1 - 14, sy1 - 2, WD[2]); cv.vl(sx0 + 5, sy1 - 14, sy1 - 2, WD[3])
+                for y in range(sy1 - 18, sy1 - 10):
+                    for x in range(sx0 + 1, sx1 - 1):
+                        if abs(x - (sx0 + 5)) < 6 - (y - (sy1 - 18)) // 2:
+                            cv.put(x, y, LF[2] if (x + y) % 2 else LF[3])
+            for x in range(sx0, sx1):
+                cv.put(x, sy1 - 2, DB[4] if x % 4 < 2 else DB[3])
         else:                                                            # 서예·문인화: 먹 세로 글줄(획 길이 제각각) + 난초 잎 + 낙관
             for k in range(2):
                 x = sx0 + 1 + k * 3
@@ -343,30 +383,49 @@ def banseok(kind='r'):
     return cv
 
 
-def mat(kind='jip', w=2, h=2, seed=0):
-    """깔개 w×h칸(걷는 바닥 장식): jip=짚자리(촘촘히 엮은 짚) dot=돗자리(왕골 무늬, 붉은 가선)."""
-    cv = Cv(w * 16, h * 16)
+def _weave(cv, w, h, variant):
+    """엮은 돗자리 바탕: 4px 칸마다 가로 결·세로 결이 번갈아(바구니 짜기), 칸 윗·왼쪽 모서리에 밝은 결 한 줄.
+    variant 0 = 황갈 왕골, 1 = 짙은 갈(마루 위 짚), 2 = 연한 갈 + 붉은 갈색 줄 한 쌍. 바닥 팔레트(나무·붉은 깔개)와 어울리게 채도를 낮춘 흙빛(earth) 단을 쓴다."""
+    ramp = {0: (ER[4], ER[5], ER[6]), 1: (ER[3], ER[4], ER[5]), 2: (ER[4], ER[5], ER[6])}[variant]
+    lo, mid, hi = ramp
     for y in range(h * 16):
         for x in range(w * 16):
-            if kind == 'jip':
-                row = y // 2
-                ph = (x + row * 3 + (seed * 5)) % 11
-                base = SW[3] if ph < 6 else SW[2]
-                q = rnd(x, y, 550 + seed)
-                if q < 0.08: base = SW[4]
-                elif q > 0.95: base = SW[1]
-                if y % 2 == 1 and ph in (0, 1): base = SW[1]
-                cv.put(x, y, base)
+            bx, by = x // 4, y // 4
+            horiz = (bx + by) % 2 == 0
+            ly, lx = y % 4, x % 4
+            if horiz:
+                c = hi if ly == 0 else (mid if ly in (1, 3) else lo)
             else:
-                base = SW[5] if ((x // 2 + y // 2) % 2 == 0) else SW[4]
-                cv.put(x, y, base)
-    c1 = SW[1] if kind == 'jip' else RD[3]
-    c2 = SW[2] if kind == 'jip' else RD[2]
-    cv.rect(0, 0, w * 16, 2, c1); cv.rect(0, h * 16 - 2, w * 16, h * 16, c2)
-    cv.rect(0, 0, 2, h * 16, c1); cv.rect(w * 16 - 2, 0, w * 16, h * 16, c2)
-    if kind == 'dot':
-        cv.rect(4, 4, w * 16 - 4, 5, RD[4]); cv.rect(4, h * 16 - 5, w * 16 - 4, h * 16 - 4, RD[4])
-        cv.rect(4, 4, 5, h * 16 - 4, RD[4]); cv.rect(w * 16 - 5, 4, w * 16 - 4, h * 16 - 4, RD[4])
+                c = hi if lx == 0 else (mid if lx in (1, 3) else lo)
+            cv.put(x, y, c)
+
+
+def mat(kind='jip', w=2, h=2, seed=0):
+    """깔개 w×h칸(걷는 바닥 장식): jip=짚·왕골 엮은 돗자리(흙빛 바구니 짜기 + 짙은 갈 가선) dot=붉은 가선 돗자리(왕골 무늬)."""
+    cv = Cv(w * 16, h * 16)
+    W_, H_ = w * 16, h * 16
+    if kind == 'jip':
+        v = seed % 3
+        _weave(cv, w, h, v)
+        edge, edge2 = WD[3], WD[2]
+        cv.rect(0, 0, W_, 2, edge); cv.rect(0, H_ - 2, W_, H_, edge2)
+        cv.rect(0, 0, 2, H_, edge); cv.rect(W_ - 2, 0, W_, H_, edge2)
+        cv.hl(2, W_ - 2, 2, WD[5]); cv.vl(2, 2, H_ - 2, WD[5])
+        if v == 2:                                                    # 짧은 끝에 붉은 갈색 줄 한 쌍
+            for off in (5, 8):
+                cv.hl(4, W_ - 4, off, RD[2]); cv.hl(4, W_ - 4, H_ - 1 - off, RD[2])
+        elif v == 1:                                                  # 가운데 한 줄 이음
+            cv.hl(4, W_ - 4, H_ // 2, ER[2])
+        return cv
+    for y in range(H_):
+        for x in range(W_):
+            base = SW[5] if ((x // 2 + y // 2) % 2 == 0) else SW[4]
+            cv.put(x, y, base)
+    c1, c2 = RD[3], RD[2]
+    cv.rect(0, 0, W_, 2, c1); cv.rect(0, H_ - 2, W_, H_, c2)
+    cv.rect(0, 0, 2, H_, c1); cv.rect(W_ - 2, 0, W_, H_, c2)
+    cv.rect(4, 4, W_ - 4, 5, RD[4]); cv.rect(4, H_ - 5, W_ - 4, H_ - 4, RD[4])
+    cv.rect(4, 4, 5, H_ - 4, RD[4]); cv.rect(W_ - 5, 4, W_ - 4, H_ - 4, RD[4])
     return cv
 
 
@@ -524,6 +583,8 @@ def objects():
     d['in_b_byeongpung_b'] = byeongpung('b')
     d['in_b_byeongpung_c'] = byeongpung('c')
     d['in_b_byeongpung_2'] = byeongpung('b', 2)
+    d['in_b_byeongpung_2d'] = byeongpung('d', 2)
+    d['in_b_byeongpung_2e'] = byeongpung('e', 2)
     d['in_b_byeongpung_royal'] = byeongpung_royal()
     d['in_b_ibuljang'] = ibuljang()
     d['in_b_nong_1'] = nong(1)
@@ -544,6 +605,9 @@ def objects():
         d['in_b_banseok_' + k] = banseok(k)
     d['in_b_mat_jip_2x2'] = mat('jip', 2, 2)
     d['in_b_mat_jip_3x2'] = mat('jip', 3, 2, 1)
+    d['in_b_mat_jip_2x2b'] = mat('jip', 2, 2, 1)
+    d['in_b_mat_jip_2x2c'] = mat('jip', 2, 2, 2)
+    d['in_b_mat_jip_3x2c'] = mat('jip', 3, 2, 2)
     d['in_b_mat_dot_2x2'] = mat('dot', 2, 2)
     d['in_b_ibul_r'] = ibul_laid('r')
     d['in_b_ibul_b'] = ibul_laid('b')

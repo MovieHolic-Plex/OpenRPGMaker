@@ -1061,6 +1061,63 @@
     "CC",
     "XX"
    ]
+  },
+  "in_b_byeongpung_2d": {
+   "all": "X"
+  },
+  "in_b_byeongpung_2e": {
+   "all": "X"
+  },
+  "in_b_mat_jip_2x2b": {
+   "all": "F"
+  },
+  "in_b_mat_jip_2x2c": {
+   "all": "F"
+  },
+  "in_b_mat_jip_3x2c": {
+   "all": "F"
+  },
+  "in_b_ibul_wide_r": {
+   "all": "X"
+  },
+  "in_b_banseok_round_r": {
+   "all": "F"
+  },
+  "in_b_ibul_wide_b": {
+   "all": "X"
+  },
+  "in_b_banseok_round_b": {
+   "all": "F"
+  },
+  "in_b_ibul_wide_g": {
+   "all": "X"
+  },
+  "in_b_banseok_round_g": {
+   "all": "F"
+  },
+  "in_b_weapon_rack_2": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_tool_rack_2": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_doorway_hoe": {
+   "all": "X"
+  },
+  "in_b_doorway_mok": {
+   "all": "X"
+  },
+  "in_b_doorway_heuk": {
+   "all": "X"
+  },
+  "in_b_doorway_dol": {
+   "all": "X"
   }
  },
  "terrain": {

@@ -11,6 +11,7 @@ import inb_room as RM
 import inb_kit as K
 
 COLS = 16
+ONDOL_PICK = (0, 4, 5, 6, 0, 4, 5, 6, 0, 4, 5, 6, 0, 4, 5, 6, 0, 4, 1, 7)
 BITS = (WB.N, WB.E, WB.S, WB.W, WB.NE, WB.SE, WB.SW, WB.NW)
 
 
@@ -110,8 +111,10 @@ class Room:
                 if mode:
                     s.ground[y][x] = sh.gid('in_b_%s_sh' % fk, {'n': 0, 'w': 1, 'nw': 2}[mode])
                 else:
-                    if fk == 'ondol':
-                        v = (2 if x % 2 == 1 else 0) + (1 if y % 2 == 1 else 0)     # 장판 이음매가 두 칸마다 규칙적으로 이어진다
+                    if fk == 'ondol':       # 이음 있는 변형(1·2·3·7)은 드물게, 없는 변형(0·4·5·6)이 대부분 — 2×2 장판 격자가 안 보이게 무작위
+                        v = ONDOL_PICK[hsh(x, y, 5 + s.seed) % len(ONDOL_PICK)]
+                    elif fk == 'maru':
+                        v = hsh(x, y, 5 + s.seed) % 8
                     else:
                         v = hsh(x, y, 5 + s.seed) % 4
                     s.ground[y][x] = sh.gid('in_b_' + fk, v)

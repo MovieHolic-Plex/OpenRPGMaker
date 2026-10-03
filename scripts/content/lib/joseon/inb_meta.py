@@ -32,10 +32,10 @@ REFS = [
     ('jakdu', ['chopping block']), ('yak_table', ['work 2x1', 'balance scale']), ('yakcho', ['basket:herb']), ('suldok', ['barrel']),
     ('sulsang', ['tea 2x1']), ('juga', ['counter 3x1', 'counter 2x1']), ('seoan', ['desk 1x1']), ('seoga', ['bookshelf 2w', 'bookshelf 1w']),
     ('boryo', ['runner']), ('ansuk', ['stool']), ('hoechori', ['pot']), ('chaekdemi', ['table:book+scroll']), ('gwan_desk', ['desk 3x2', 'desk 2x2']),
-    ('gyoui', ['chair S', 'throne']), ('throne', ['throne', 'chair S']), ('gonjang_geori', ['weapon barrel']), ('mangchi', ['anvil', 'work 2x1']), ('yakseonban', ['apothecary drawers', 'bookshelf 2w']), ('gonjang', ['bench 2']), ('buk', ['barrel']), ('mungseo', ['chest']),
+    ('gyoui', ['chair S', 'throne']), ('throne', ['throne', 'chair S']), ('weapon_rack', ['weapon barrel']), ('tool_rack', ['weapon barrel', 'work 2x1']), ('doorway', ['window', 'round door']), ('ibul_wide', ['bed green', 'straw bed']), ('banseok_round', ['stool']), ('gonjang_geori', ['weapon barrel']), ('mangchi', ['anvil', 'work 2x1']), ('yakseonban', ['apothecary drawers', 'bookshelf 2w']), ('gonjang', ['bench 2']), ('buk', ['barrel']), ('mungseo', ['chest']),
 ]
 FLAT = ('mat_', 'banseok', 'stair_down', 'stair_dais', 'exit_mat')           # 걷는 바닥 조각(F)
-WALL_PFX = ('wall_', 'win_', 'door_slide', 'door_plank', 'door_open')
+WALL_PFX = ('wall_', 'win_', 'door_slide', 'door_plank', 'door_open', 'doorway')
 FRONT_ONLY = WALL_PFX + ('pillar', 'beam', 'dais', 'ladder', 'stair_up', 'byeongpung', 'jokja', 'hang_', 'mat_', 'exit_mat', 'stair_dais')
 
 
@@ -56,6 +56,8 @@ THIN = {
     'mulle': '물레 바퀴 살·테와 가락이 폭 1px(물레의 본질) — 2px 로 굵히면 바퀴가 접시로 읽힌다',
     'hang_meju': '메주를 매단 짚 끈이 폭 1px — 끈을 굵히면 메주가 벽에 붙은 판으로 읽힌다',
     'gonjang_geori': '곤장 자루·기둥이 폭 1~2px(가는 막대가 본질) — 굵히면 걸이가 아니라 판자로 읽힌다',
+    'tool_rack_2': '호미·낫·삽의 자루·날이 폭 1~2px(가는 농기구가 본질) — 굵히면 걸이가 아니라 널벽 무늬로 읽힌다',
+    'weapon_rack_2': '창 자루·칼날이 폭 1~2px(가는 무기가 본질) — 굵히면 걸이가 널 더미로 읽힌다',
     'hang_bagaji': '벽 못에 건 끈이 폭 1~2px — 끈을 없애면 바가지가 벽에 붙은 접시로 읽힌다',
     'hang_gochu': '고추를 꿴 끈·꼭지가 폭 1px — 굵히면 고추 두름이 막대로 읽힌다',
     'hang_tools': '벽에 거는 연장의 자루·집게 날이 폭 1px — 굵히면 연장이 아니라 판자로 읽힌다',
@@ -80,7 +82,7 @@ def meta_for(name):
 FOOT = {
     'ibuljang': 1, 'nong_1': 1, 'nong_2': 1, 'byeongpung_a': 1, 'byeongpung_b': 1, 'byeongpung_c': 1, 'byeongpung_2': 1, 'byeongpung_royal': 1,
     'deungjan_stand': 1, 'bumak_2': 1, 'bumak_3': 1, 'ssal_dwiju': 1, 'dok_big': 1, 'seonban_2': 1, 'betul': 1, 'hwadeok_3': 1,
-    'yakjang_2': 1, 'throne': 1, 'yakseonban_2': 1, 'gonjang_geori': 1, 'yakjang_1': 1, 'seoga_2': 1, 'seoga_1': 1, 'gyoui': 1, 'buk': 1,
+    'yakjang_2': 1, 'weapon_rack_2': 1, 'tool_rack_2': 1, 'throne': 1, 'yakseonban_2': 1, 'gonjang_geori': 1, 'yakjang_1': 1, 'seoga_2': 1, 'seoga_1': 1, 'gyoui': 1, 'buk': 1,
 }
 ALL_BODY = ('ibul_r', 'ibul_b', 'pyeongsang', 'gwan_desk', 'gonjang_teul')
 

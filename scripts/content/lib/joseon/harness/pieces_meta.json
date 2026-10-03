@@ -3884,5 +3884,135 @@
    "v5:apothecary drawers",
    "v5:bookshelf 2w"
   ]
+ },
+ "in_b_byeongpung_2d": {
+  "cls": "prop",
+  "refs": [
+   "v5:tapestry",
+   "v5:royal banner"
+  ],
+  "front_only": true
+ },
+ "in_b_byeongpung_2e": {
+  "cls": "prop",
+  "refs": [
+   "v5:tapestry",
+   "v5:royal banner"
+  ],
+  "front_only": true
+ },
+ "in_b_mat_jip_2x2b": {
+  "cls": "prop",
+  "refs": [
+   "v5:rug red",
+   "v5:fur rug"
+  ],
+  "front_only": true
+ },
+ "in_b_mat_jip_2x2c": {
+  "cls": "prop",
+  "refs": [
+   "v5:rug red",
+   "v5:fur rug"
+  ],
+  "front_only": true
+ },
+ "in_b_mat_jip_3x2c": {
+  "cls": "prop",
+  "refs": [
+   "v5:rug red",
+   "v5:fur rug"
+  ],
+  "front_only": true
+ },
+ "in_b_ibul_wide_r": {
+  "cls": "prop",
+  "refs": [
+   "v5:bed green",
+   "v5:straw bed"
+  ]
+ },
+ "in_b_banseok_round_r": {
+  "cls": "prop",
+  "refs": [
+   "v5:stool"
+  ]
+ },
+ "in_b_ibul_wide_b": {
+  "cls": "prop",
+  "refs": [
+   "v5:bed green",
+   "v5:straw bed"
+  ]
+ },
+ "in_b_banseok_round_b": {
+  "cls": "prop",
+  "refs": [
+   "v5:stool"
+  ]
+ },
+ "in_b_ibul_wide_g": {
+  "cls": "prop",
+  "refs": [
+   "v5:bed green",
+   "v5:straw bed"
+  ]
+ },
+ "in_b_banseok_round_g": {
+  "cls": "prop",
+  "refs": [
+   "v5:stool"
+  ]
+ },
+ "in_b_weapon_rack_2": {
+  "cls": "prop",
+  "refs": [
+   "v5:weapon barrel"
+  ],
+  "thin_ok": "창 자루·칼날이 폭 1~2px(가는 무기가 본질) — 굵히면 걸이가 널 더미로 읽힌다"
+ },
+ "in_b_tool_rack_2": {
+  "cls": "prop",
+  "refs": [
+   "v5:weapon barrel",
+   "v5:work 2x1"
+  ],
+  "thin_ok": "호미·낫·삽의 자루·날이 폭 1~2px(가는 농기구가 본질) — 굵히면 걸이가 아니라 널벽 무늬로 읽힌다"
+ },
+ "in_b_doorway_hoe": {
+  "cls": "wall",
+  "refs": [
+   "v5:window",
+   "v5:round door"
+  ],
+  "seam_open": true,
+  "front_only": true
+ },
+ "in_b_doorway_mok": {
+  "cls": "wall",
+  "refs": [
+   "v5:window",
+   "v5:round door"
+  ],
+  "seam_open": true,
+  "front_only": true
+ },
+ "in_b_doorway_heuk": {
+  "cls": "wall",
+  "refs": [
+   "v5:window",
+   "v5:round door"
+  ],
+  "seam_open": true,
+  "front_only": true
+ },
+ "in_b_doorway_dol": {
+  "cls": "wall",
+  "refs": [
+   "v5:window",
+   "v5:round door"
+  ],
+  "seam_open": true,
+  "front_only": true
  }
 }

@@ -3048,17 +3048,17 @@
   "date": "2026-10-04"
  },
  "in_b_mat_jip_2x2": {
-  "hash": "94de1b7c5802",
+  "hash": "c27ac089f35d",
   "status": "pass",
-  "line": "짚자리 깔개(2×2·3×2). 바닥에 붙은 윗면, 결이 거칠어 걷는 바닥 장식으로 읽힌다. 가장자리 윤곽은 있으나 가로세로 규칙이 약하다",
+  "line": "엮은 돗자리 깔개(2×2·3×2, 변형 a/b/c). 흙빛 바구니 짜기 + 짙은 갈 가선, 변형마다 가운데 이음 줄·붉은 줄이 달라 반복을 깬다. 바닥에 붙은 윗면이라 3/4 에서 윗면 전체가 보인다. 이전의 주황 점무늬 소음판을 대체",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
  },
  "in_b_mat_jip_3x2": {
-  "hash": "f2ce8c40c43c",
+  "hash": "178b7e0fd3cb",
   "status": "pass",
-  "line": "짚자리 깔개(2×2·3×2). 바닥에 붙은 윗면, 결이 거칠어 걷는 바닥 장식으로 읽힌다. 가장자리 윤곽은 있으나 가로세로 규칙이 약하다",
+  "line": "엮은 돗자리 깔개(2×2·3×2, 변형 a/b/c). 흙빛 바구니 짜기 + 짙은 갈 가선, 변형마다 가운데 이음 줄·붉은 줄이 달라 반복을 깬다. 바닥에 붙은 윗면이라 3/4 에서 윗면 전체가 보인다. 이전의 주황 점무늬 소음판을 대체",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -3683,6 +3683,142 @@
   "hash": "18d099c2cd14",
   "status": "pass",
   "line": "약 선반 2×2. 박 약병 셋(초록·황·주황)·단지·서랍 둘이 칸마다 읽히고 v5 apothecary drawers 와 다른 호리병 선반 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_byeongpung_2d": {
+  "hash": "ab2e155aa6d0",
+  "status": "note",
+  "line": "병풍 2폭(묵죽). 세로 대줄기+마디+잎, 잎이 폭 1px 라 성기다. 모란 병풍과 소재가 달라 반복을 깬다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_byeongpung_2e": {
+  "hash": "050f1a4ca0c4",
+  "status": "note",
+  "line": "병풍 2폭(학·소나무). 흰 학+붉은 해 한 폭, 소나무 한 폭. 학이 작아 새 모양이 단순하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_mat_jip_2x2b": {
+  "hash": "be410f0fb667",
+  "status": "pass",
+  "line": "엮은 돗자리 깔개(2×2·3×2, 변형 a/b/c). 흙빛 바구니 짜기 + 짙은 갈 가선, 변형마다 가운데 이음 줄·붉은 줄이 달라 반복을 깬다. 바닥에 붙은 윗면이라 3/4 에서 윗면 전체가 보인다. 이전의 주황 점무늬 소음판을 대체",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_mat_jip_2x2c": {
+  "hash": "892d62faedd3",
+  "status": "pass",
+  "line": "엮은 돗자리 깔개(2×2·3×2, 변형 a/b/c). 흙빛 바구니 짜기 + 짙은 갈 가선, 변형마다 가운데 이음 줄·붉은 줄이 달라 반복을 깬다. 바닥에 붙은 윗면이라 3/4 에서 윗면 전체가 보인다. 이전의 주황 점무늬 소음판을 대체",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_mat_jip_3x2c": {
+  "hash": "10405790ef6f",
+  "status": "pass",
+  "line": "엮은 돗자리 깔개(2×2·3×2, 변형 a/b/c). 흙빛 바구니 짜기 + 짙은 갈 가선, 변형마다 가운데 이음 줄·붉은 줄이 달라 반복을 깬다. 바닥에 붙은 윗면이라 3/4 에서 윗면 전체가 보인다. 이전의 주황 점무늬 소음판을 대체",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_ibul_wide_r": {
+  "hash": "fbef32c35099",
+  "status": "pass",
+  "line": "펴 놓은 이부자리 2×2(붉은·푸른·녹). 요+베개 둘+가선 접은 이불, 가로 32px 라 사람(24px)보다 넓다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_banseok_round_r": {
+  "hash": "afb3efce2aaa",
+  "status": "pass",
+  "line": "둥근 방석 1×1(3색). 원형 윗면+가운데 단추, 네모 방석과 윤곽이 달라 같은 방석 반복을 깬다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_ibul_wide_b": {
+  "hash": "8e25f8155692",
+  "status": "pass",
+  "line": "펴 놓은 이부자리 2×2(붉은·푸른·녹). 요+베개 둘+가선 접은 이불, 가로 32px 라 사람(24px)보다 넓다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_banseok_round_b": {
+  "hash": "17aa1faa6ebf",
+  "status": "pass",
+  "line": "둥근 방석 1×1(3색). 원형 윗면+가운데 단추, 네모 방석과 윤곽이 달라 같은 방석 반복을 깬다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_ibul_wide_g": {
+  "hash": "0e4daef7dad8",
+  "status": "pass",
+  "line": "펴 놓은 이부자리 2×2(붉은·푸른·녹). 요+베개 둘+가선 접은 이불, 가로 32px 라 사람(24px)보다 넓다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_banseok_round_g": {
+  "hash": "67d527f02866",
+  "status": "pass",
+  "line": "둥근 방석 1×1(3색). 원형 윗면+가운데 단추, 네모 방석과 윤곽이 달라 같은 방석 반복을 깬다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_weapon_rack_2": {
+  "hash": "69d658c21fb3",
+  "status": "note",
+  "line": "무기 걸이 2×2. 기둥+가로대에 창 둘·칼 둘, 창 자루가 1~2px 라 가는 막대로만 읽힌다(thin_ok 사유 있음). 대장간 진열·관아 무기고용",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_tool_rack_2": {
+  "hash": "be61ba9bcb56",
+  "status": "note",
+  "line": "농기구 걸이 2×2. 널벽에 호미·낫·삽을 걸었으나 가는 쇠 날이라 한눈에 안 읽힌다(thin_ok 사유 있음)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_doorway_hoe": {
+  "hash": "4978874e1cc7",
+  "status": "note",
+  "line": "문틀 벽면 1×2(회·목·황·돌). 문설주 3px+인방+작은 살창+어두운 문 안으로 벽 두께를 가르는 출입구로 읽히나, 벽 재질 4종이 같은 틀이라 재질 차가 작다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_doorway_mok": {
+  "hash": "508b9b32c1e6",
+  "status": "note",
+  "line": "문틀 벽면 1×2(회·목·황·돌). 문설주 3px+인방+작은 살창+어두운 문 안으로 벽 두께를 가르는 출입구로 읽히나, 벽 재질 4종이 같은 틀이라 재질 차가 작다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_doorway_heuk": {
+  "hash": "da602efbb5e8",
+  "status": "note",
+  "line": "문틀 벽면 1×2(회·목·황·돌). 문설주 3px+인방+작은 살창+어두운 문 안으로 벽 두께를 가르는 출입구로 읽히나, 벽 재질 4종이 같은 틀이라 재질 차가 작다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_doorway_dol": {
+  "hash": "05007896212c",
+  "status": "note",
+  "line": "문틀 벽면 1×2(회·목·황·돌). 문설주 3px+인방+작은 살창+어두운 문 안으로 벽 두께를 가르는 출입구로 읽히나, 벽 재질 4종이 같은 틀이라 재질 차가 작다",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"

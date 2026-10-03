@@ -18,7 +18,7 @@ from joseon_tileset import walk as W
 import inb_room as RM
 
 HANG = ('in_b_hang_', 'in_b_jokja_', 'in_b_win_')
-WALLP = ('in_b_wall_', 'in_b_win_', 'in_b_door_slide', 'in_b_door_plank', 'in_b_door_open')
+WALLP = ('in_b_wall_', 'in_b_win_', 'in_b_door_slide', 'in_b_door_plank', 'in_b_door_open', 'in_b_doorway')
 MATS = ('in_b_mat_',)
 FLATDECOR = ('in_b_mat_', 'in_b_exit_mat')
 
