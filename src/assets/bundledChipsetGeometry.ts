@@ -1,3 +1,4 @@
+import { monsterKitSheet } from "./monsterKitAssets";
 import { RESOURCE_SLICING } from "./resourceSlicing";
 import beodeulCitySheet from "./beodeulCitySheet.json";
 import joseonBaramSheet from "./joseonBaramSheet.json";
@@ -30,6 +31,8 @@ export function bundledChipsetTileSize(key: string): number {
 }
 
 export function bundledChipsetTilesPerRow(key: string): number {
+  const monsterKit = monsterKitSheet(key);
+  if (monsterKit) return monsterKit.tilesPerRow;
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_shared_forest_village_objects") return 6;
   if (key === "tex_slates_32") return 56;
