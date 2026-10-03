@@ -281,7 +281,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     else if (choiceId !== undefined) state.choiceId = choiceId;
     if (view === "new") {
       state.startMode = startMode;
-      state.title = t(choiceId ? START_EXAMPLE_DETAILS[choiceId]?.title ?? DEFAULT_TITLE : DEFAULT_TITLE);
+      state.title = t(startMode === "example" && choiceId ? START_EXAMPLE_DETAILS[choiceId]?.title ?? DEFAULT_TITLE : DEFAULT_TITLE);
     }
     setError("");
     render();
@@ -353,7 +353,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     attrs: { type: "button" },
     dataset: { testid: START_SCREEN_TESTIDS.navNew },
     children: [icon("sparkle"), "새 게임"],
-    on: { click: () => showView("new") },
+    on: { click: () => showView("new", "story-cutscene", "ai") },
   });
   const rail = el("header", {
     class: "start-rail",
@@ -373,7 +373,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         attrs: { type: "button" },
         dataset: { testid: START_SCREEN_TESTIDS.newGame },
         children: [icon("plus"), "새 게임 만들기"],
-        on: { click: () => showView("new", null) },
+        on: { click: () => showView("new", "story-cutscene", "ai") },
       }),
       el("button", {
         class: "start-btn start-btn-block",
@@ -396,52 +396,12 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   // ── 홈 ────────────────────────────────────────────────────────────────
   const lobbyActions = (entry?: RecentProjectEntry) => ({
-    newGame: () => showView("new", null),
+    newGame: () => showView("new", "story-cutscene", "ai"),
     openProject: () => { if (entry) openEntry(entry); },
     examples: () => showView("new", null, "example"),
     ai: () => showView("new", GENRES[0]?.id ?? null, "ai"),
     blank: () => showView("new", null, "blank"),
   });
-
-  const genrePosters = (onPick: (id: NewProjectChoiceId | null) => void, selected: NewProjectChoiceId | null | undefined): HTMLElement => {
-    const poster = (id: NewProjectChoiceId | null, label: string, blurb: string, thumb: string | null): HTMLButtonElement => {
-      const button = el("button", {
-        class: "start-poster" + (thumb ? "" : " is-blank"),
-        attrs: {
-          type: "button",
-          "aria-label": label + " — " + blurb,
-          ...(selected !== undefined ? { "aria-pressed": String(selected === id) } : {}),
-        },
-        dataset: { testid: START_SCREEN_TESTIDS.genreOption + "-" + (id ?? "blank") },
-        on: { click: () => onPick(id) },
-        children: thumb
-          ? [
-              el("img", { attrs: { src: thumb, alt: "", decoding: "async", loading: "lazy", draggable: "false" } }),
-              el("span", { class: "start-poster-veil", attrs: { "aria-hidden": "true" } }),
-              el("span", { class: "start-poster-text", children: [
-                el("span", { class: "start-poster-title", text: label }),
-                el("span", { class: "start-poster-blurb", text: blurb }),
-              ] }),
-            ]
-          : [
-              icon("blank"),
-              el("span", { class: "start-poster-text", children: [
-                el("span", { class: "start-poster-title", text: label }),
-                el("span", { class: "start-poster-blurb", text: blurb }),
-              ] }),
-            ],
-      });
-      return button;
-    };
-    return el("div", {
-      class: "start-posters",
-      attrs: { role: "group", "aria-label": "시작 장르" },
-      children: [
-        ...GENRES.map((choice) => poster(choice.id, choice.posterTitle ?? choice.label, choice.blurb, choice.thumb)),
-        poster(null, "빈 프로젝트", "장르 설정 없이 시작", null),
-      ],
-    });
-  };
 
   const renderStartChoices = (): HTMLElement[] => [
     el("header", { class: "start-onboarding-heading", children: [
@@ -496,7 +456,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
             class: "start-card is-new",
             attrs: { type: "button", "aria-label": "새 게임 만들기" },
             dataset: { testid: START_SCREEN_TESTIDS.newCard },
-            on: { click: () => showView("new", null) },
+            on: { click: () => showView("new", "story-cutscene", "ai") },
             children: [el("span", { class: "start-new-card-body", children: [
               icon("plus"),
               el("span", { text: "새 게임" }),
@@ -546,10 +506,10 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         keydown: event => { if ((event as KeyboardEvent).key === "Enter") { event.preventDefault(); create(); } } },
     });
     const preview = el("section", { class: "start-seed-preview", attrs: { "aria-label": "시작할 프로젝트" }, children: [
-      ...(choice ? [el("img", { attrs: { src: choice.thumb, alt: choice.label + " 참고 이미지", decoding: "async" } })] : []),
+      ...(choice ? [el("img", { attrs: { src: ai ? "/assets/project-interview/world-poster.webp" : choice.thumb, alt: "게임의 세계 참고 이미지", decoding: "async" } })] : []),
       el("div", { class: "start-seed-preview-copy", children: [
-        el("h2", { text: choice?.label ?? "빈 프로젝트" }),
-        el("p", { class: "start-sub", text: detail?.description ?? "빈 맵에서 나만의 장면을 만들어요." }),
+        el("h2", { text: ai ? "당신의 다음 이야기" : choice?.label ?? "빈 프로젝트" }),
+        el("p", { class: "start-sub", text: ai ? "선택할 때마다 달라지는 도트 장면으로 게임의 방향을 찾아요." : detail?.description ?? "빈 맵에서 나만의 장면을 만들어요." }),
         el("ul", { children: (ai ? ["아이디어를 담은 기획 인터뷰", "생성 전 게임 기획 확인", "AI 팀과 첫 장면 만들기"] : detail?.includes ?? ["빈 맵 한 개", "기본 타일과 캐릭터", "첫 편집 안내"]).map(text => el("li", { text })) }),
       ] }),
     ] });
@@ -557,8 +517,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       ...(ai ? [el("label", { class: "start-field", children: [
         el("span", { class: "start-label", text: "어떤 게임을 만들고 싶나요?", attrs: { for: "start-intent" } }),
         el("textarea", { class: "start-input start-intent", value: state.intent, attrs: { id: "start-intent", rows: "3", maxlength: "600", placeholder: "예: 눈 내리는 마을에서 잃어버린 기억을 찾는 이야기" }, dataset: { testid: START_SCREEN_TESTIDS.intentInput }, on: { input: event => { state.intent = (event.currentTarget as HTMLTextAreaElement).value; } } }),
-        el("small", { class: "start-hint", text: "연결을 확인한 뒤 기획을 정해요. 입력한 문장은 첫 질문에 담깁니다." }),
-      ] }), genrePosters(id => { state.choiceId = id; if (id === null) state.startMode = "blank"; render(); }, state.choiceId)] : []),
+        el("small", { class: "start-hint", text: "연결을 확인한 뒤 기획을 정해요. 입력한 문장은 인터뷰에 그대로 담깁니다." }),
+      ] }), el("p", { class: "start-hint", text: "다음 화면에서 관계·연애, 몬스터 수집·육성, 모험, 추리를 고르고 섞을 수 있어요." })] : []),
       el("label", { class: "start-field", children: [el("span", { class: "start-label", attrs: { for: "start-title" }, text: "게임 이름" }), titleInput, el("small", { class: "start-hint", text: "나중에 바꿀 수 있어요." })] }),
       el("div", { class: "start-field", children: [el("span", { class: "start-label", text: "저장 위치" }), el("p", { class: "start-location", children: [icon("folder"), el("code", { text: state.projectDir ?? "…", dataset: { testid: START_SCREEN_TESTIDS.location } }), el("button", { class: "start-link", text: "위치 바꾸기", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.changeLocation }, on: { click: chooseRoot } })] }), el("small", { class: "start-hint", text: "이 폴더에 프로젝트와 작업 내용이 저장돼요." })] }),
       el("details", { class: "start-size-details", children: [el("summary", { text: "화면 크기" }), el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } }), el("option", { text: "와이드 · 640 × 360 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } })], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } })] }),
