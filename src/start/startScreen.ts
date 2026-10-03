@@ -661,6 +661,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     firstArrival?.dispose();
     firstArrival = undefined;
     main.replaceChildren(...renderView(), errorBox);
+    host.classList.toggle("is-first-world", Boolean(firstArrival));
   };
 
   /** 구운 그림을 상태에 넣고, 화면에 있는 그 카드의 그림 칸만 바꾼다(전체를 다시 그리면 포커스가 튄다). */
