@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **132쪽 / 4529KB / 약 1,310,315 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **132쪽 / 4530KB / 약 1,310,553 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 574KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3531 | ~166,730 |
+| `openwiki/editor-ai-panel.md` | 575KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3536 | ~166,968 |
 | `openwiki/editor-ai-tools.md` | 312KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2577 | ~89,706 |
 | `openwiki/editor-database.md` | 402KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2358 | ~117,632 |
 | `openwiki/editor-event-authoring.md` | 167KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 973 | ~48,704 |
@@ -401,7 +401,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` 설치 지점
 - `L64` 테스트
 
-### `openwiki/editor-ai-panel.md` — 574KB · 3531줄 · ~166,730 토큰 · 통째읽기 잘림 · 깨진 줄 26
+### `openwiki/editor-ai-panel.md` — 575KB · 3536줄 · ~166,968 토큰 · 통째읽기 잘림 · 깨진 줄 26
 
 - `L5` 실제 첫 제작의 워커 준비와 사본 (2026-10-03)
 - `L29` 도구 사용량 (2026-09-25)
@@ -506,10 +506,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3446` AI 패널 렌더 비용 (2026-09-28)
   - `L3468` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
 - `L3477` 전송 직후 캔버스 피드백과 체크포인트 따라가기 (2026-10-03)
-- `L3485` 마을 요청 바로 시공 · 시공 연출 · 조수창 제때 반영 (2026-10-03)
-  - `L3498` 시공 연출 (`agentConstructionReveal.ts` 계획 + `agentConstructionRevealRenderer.ts` 그리기)
-  - `L3512` 조수창
-  - `L3521` 재현·증거
+- `L3485` 마을 요청 바로 시공 · 밑그림 시공 · 조수창 제때 반영 (2026-10-03)
+  - `L3498` 밑그림 시공 (`agentConstructionReveal.ts` 계획 + `agentConstructionRevealRenderer.ts` 그리기)
+  - `L3517` 조수창
+  - `L3526` 재현·증거
 
 ### `openwiki/editor-ai-tools.md` — 312KB · 2577줄 · ~89,706 토큰 · 통째읽기 잘림 · 깨진 줄 6
 

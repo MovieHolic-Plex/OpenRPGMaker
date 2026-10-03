@@ -172,7 +172,7 @@ try {
     const top = [...self.entries()].sort((a, b) => b[1] - a[1]).slice(0, 45).map(([k, ms]) => ({ ms: Math.round(ms), fn: k }));
     writeFileSync(`${out}/profile-top.json`, JSON.stringify(top, null, 1));
   }
-  if (!before && process.env.NOREVEAL !== "1") for (let i = 0; i < 22; i++) { await shot(`reveal-${String(i).padStart(2, "0")}`); await page.waitForTimeout(260); }
+  if (!before && process.env.NOREVEAL !== "1") for (let i = 0; i < 26; i++) { await shot(`reveal-${String(i).padStart(2, "0")}`); await page.waitForTimeout(300); }
   await page.waitForFunction(() => "done" in window.__villageQa.marks, null, { timeout: 60000 });
   await page.waitForFunction(() => !window.__oprnAiBridge?.status?.().turnBusy, null, { timeout: 90000 }).catch(() => {});
   await page.waitForTimeout(1200);
