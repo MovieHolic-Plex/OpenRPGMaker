@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.107.0 — 2026-10-04
+
+### 기능
+
+- enforce executable romance scene contracts and image-backed completion (`d023f37`)
+
+### 수정
+
+- **harness** — 첫 만남 엔딩에 우선순위를 넣고 페이지 해석에 장소 문맥을 넘긴다 (`527553e`)
+- isolate activated scene gates and prove automatic exported gameplay (`97a4004`)
+
+### 테스트
+
+- record gameplay against the final compiled player (`5750ee0`)
+
 ## 0.106.0 — 2026-10-04
 
 ### 기능
