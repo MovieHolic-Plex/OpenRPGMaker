@@ -856,7 +856,7 @@ const getDatabaseRecords: ToolDefinition = {
     const limit = typeof args.limit === "number" ? args.limit : matching.length;
     const records = matching.slice(offset, offset + limit);
     const nextOffset = offset + records.length < matching.length ? offset + records.length : null;
-    return { summary: `${collection} ${records.length}건 / ${matching.length}건`, data: { collection, records, total: matching.length, nextOffset } };
+    return { summary: `${collection} ${records.length}건 / ${matching.length}건`, data: { collection, records, total: matching.length, nextOffset, ...(matching.length === 0 && all.length > 0 ? { availableIds: all.slice(0, 12).map(record => ({ id: record.id, name: record.name })), totalAvailable: all.length, hint: "일치하는 ID가 없습니다. 위 실제 ID를 사용하거나 ids:[]로 목록을 조회하세요. ID를 추측하지 마세요." } : {}) } };
   },
 };
 
