@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **122쪽 / 4324KB / 약 1,249,138 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **123쪽 / 4335KB / 약 1,252,207 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -81,6 +81,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/large-village-generation.md` | 6 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `scripts/force-save-large-village.mts`, `scripts/force-save-village-50.mts`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
+| `openwiki/modern-city.md` | 2 | `-plan.json`, `.oprn.json` |
 | `openwiki/native-enemy-retirement.md` | 1 | `scripts/generate-monster-images.mts` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/opening-still-pack.md` | 4 | `artifacts/stills-library-plan.json`, `queue-status.json`, `review/index.html`, `run-status.json` |
@@ -1037,12 +1038,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/harnesses/modern-chipset.md` — 3KB · 38줄 · ~846 토큰
+### `openwiki/harnesses/modern-chipset.md` — 5KB · 53줄 · ~1,615 토큰
 
 - `L8` 왜 만들었나 (2026-10-01)
 - `L14` 흐름
 - `L24` 파일
 - `L34` 함정
+- `L39` 도시 조립 (2026-10-03)
+- `L47` 굽기 `bake` → 번들 타일셋 modern_city (2026-10-03)
 
 ### `openwiki/harnesses/monster-collect-species.md` — 17KB · 152줄 · ~5,055 토큰
 
@@ -1140,6 +1143,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L84` A 구현 (2026-09-11)
 - `L105` 남은 일 (B/D)
 - `L119` 검증 좌표
+
+### `openwiki/modern-city.md` — 8KB · 59줄 · ~2,300 토큰
+
+- `L5` 식별자
+- `L15` 파일
+- `L22` 기존 프로젝트 갱신 규칙
+- `L31` 조수 정책
+- `L35` 예제 도시 맵 (60×60, 시드 1)
+- `L42` 참고문서 (번들 소유, AI-REFERENCE-CONTRACT 8항)
+- `L51` 자동 검사 (구조·통행만)
+- `L56` 번들 장소
 
 ### `openwiki/monster-resource-editor.md` — 4KB · 75줄 · ~1,199 토큰
 
