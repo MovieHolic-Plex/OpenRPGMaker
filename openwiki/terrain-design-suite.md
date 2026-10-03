@@ -107,7 +107,7 @@ API의 `TerrainRouteOptions.session/positions`는 진행 중 세션과 NPC 좌�
 
 맵의 `terrainDesign.gameplay`에서 다음을 개별로 켜고 끈다(이전 맵은 모두 꺼짐):
 
-- 지형 시야 차단: 관찰자의 눈높이보다 높은 땅과 벽·지붕·나무가 뒤쪽을 가린다. 대상 고지 칸도 검사하며 고지에서는 자기 고지에 가리지 않고 아래를 본다. 모서리를 스치는 ray의 두 칸도 검사한다. 물/길/바닥은 타일의 통행 불가 fallback에서 제외한다.
+- 지형 시야 차단: 관찰자의 눈높이보다 높은 땅과 벽·지붕·나무가 뒤쪽을 가린다. 대상 고지 칸도 검사하며 고지에서는 자기 고지에 가리지 않고 아래를 본다. 모서리를 스치는 ray의 두 칸도 검사한다. 물/길/바닥은 타일의 통행 불가 fallback에서 제외한다. 윗층 물체는 출처 설명에 길/물 낱말이 있어도 지면으로 간주하지 않는다. 버들항 사이프러스·산울타리도 수관으로 판정한다.
 - 고지 시야 확대: 기본 반경 + 높이 × 추가 반경. 고지 1/2/3 프리셋을 쓰지 않는다.
 - 발사체 높이 충돌: 발사 높이 + 눈높이를 비행 고도로 기억하고 높은 땅에 닿으면 파괴한다.
 
@@ -137,7 +137,11 @@ API의 `TerrainRouteOptions.session/positions`는 진행 중 세션과 NPC 좌�
 
 ## 빠른 집과 도로
 
-`quickHouse.ts`는 기존 `stampRectHouseKit`과 section 키트의 입구 부위를 재사용한다.
+`quickHouse.ts`는 현재 지도 타일셋의 집 부품과 section 키트의 입구 부위를 재사용한다.
+새 프로젝트 기본인 버들항은 `src/editor/beodeulQuickHouse.ts`가 공용 반목조/통나무 부품으로 집 6종을 조립한다.
+반목조는 최소 7칸, 통나무는 최소 5칸, 최대 너비 24칸이다. 지붕 3행과 지붕 끝은 원본을 유지하고
+높이는 창·문을 자르지 않도록 2행짜리 층 단위로 맞춘다(최대 9층). 잔디 위에 버들항 윗층 부품만 놓는다.
+숲마을·합본 마을 지도는 해당 지도에서만 기존 `stampRectHouseKit`를 쓴다. 칩셋을 바꾸거나 외부 집 그림으로 대체하지 않는다.
 집 원점은 입구의 마지막 행을 클릭한 칸에 맞추며, 문 앞 칸까지 검사한다.
 집 전체가 같은 높이의 빈 땅이어야 한다. 잠금·물·길·경사·4층 물체·이벤트·기존 구조물과
 겹치거나 경계를 벗어나면 붉은 실제 타일 고스트와 이유를 표시하고 쓰지 않는다.
@@ -148,15 +152,20 @@ API의 `TerrainRouteOptions.session/positions`는 진행 중 세션과 NPC 좌�
 `quickBuildPanel.ts`가 실제 칩셋 썸네일·집 목록·크기와 도로 드래그 옵션을 소유한다.
 도로는 드래그 중 임시 점만 바꾸고 pointerup에서 기존 `planTerrainFeature`로 한 번 확정한다.
 우클릭/취소는 임시 점을 버리며 기존 길 자동타일·경사 연결·잠금/물체 보호를 유지한다.
+`terrainRoadTile`은 현재 칩셋의 길 자동타일을 먼저 고른다. 버들항은 `beodeul_road_autotile`의
+포석(몸통 3221)이며, 길 그룹이 없는 칩셋만 기존 흙 재질로 돌아간다.
 
 ## 시야·빠른 배치 확인
 
 `scripts/capture/capture-visibility-building.mjs`는 실제 집 버튼/사각형 드래그/포인터와 도로 드래그로
-3채+3길을 놓고 중복 배치 거부, 통행 연결, 벽과 고지 시야, OFF 화면을 기록한다.
+새 프로젝트/새 맵 기본이 버들항인지 먼저 확인하고, 기본 집을 7×6칸으로, 다른 반목조 집을
+역방향 드래그로 10×8칸, 통나무 집을 7×7칸으로 놓는다. 3길의 포석 자동 연결,
+외부 칩셋 바닥 없음, 중복 배치 거부, Esc 취소, Undo/Redo, 통행 연결, 벽과 고지 시야, OFF 화면을 기록한다.
 `prepare-visibility-building-runtime.mjs` → `capture-visibility-building-runtime.mjs`는
 출하 `player.html`/shim에서 저작된 ON/OFF 두 맵과 관찰 위치 이동으로 NPC 실표시를 비교한다.
 `save-visibility-building-fixture.mjs`는 독립 SQLite에 저장하고 닫아 재로드하여 타일/집 정의/
-구조 배치/길 제어점/시야 규칙을 비교한다. 증거: `verify-shots/visibility-building/`.
+구조 배치/길 제어점/시야 규칙을 비교한다. 버들항 증거: `verify-shots/beodeul-building/`.
+이전 `verify-shots/visibility-building/`은 숲마을 시연이므로 버들항 기본 타일셋의 완료 근거가 아니다.
 AGENTS의 실행 제한을 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
 
-집 드래그는 `terrainHouseDrag`에 두 모서리만 저장한다. `quickHousePreview`와 확정이 같은 `planQuickHouseDrag`를 사용하며, 포인터를 놓기 전에는 지도/라이브러리를 쓰지 않는다. Esc·우클릭·스트로크 취소는 미완성 집을 지운다. 한 집은 Undo 한 번으로 되돌린다. 높이는 선택한 층수의 벽을 보존하고 기존 지붕 몸통 조각을 반복해 조절하며 최소/최대 크기는 실제 고스트와 하단 상태 문구에 표시한다.
+집 드래그는 `terrainHouseDrag`에 두 모서리만 저장한다. `quickHousePreview`와 확정이 같은 `planQuickHouseDrag`를 사용하며, 포인터를 놓기 전에는 지도/라이브러리를 쓰지 않는다. Esc·우클릭·스트로크 취소는 미완성 집을 지운다. 한 집은 Undo 한 번으로 되돌린다. 버들항 높이는 온전한 층을 반복하고, 기존 숲마을/합본 마을 높이는 선택한 층수의 벽을 보존하며 지붕 몸통 조각을 반복한다. 최소/최대 크기는 실제 고스트와 하단 상태 문구에 표시한다.
