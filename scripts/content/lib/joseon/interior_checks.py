@@ -109,7 +109,7 @@ def analyze(room, sheet, walk=None):
     # I3 일렬
     byname = {}
     for (n, x, y, w, h) in room.placed:
-        if n.startswith('in_wall_') or n.startswith('in_pillar') or n.startswith('in_ceil_beam') or n.startswith('in_dais') or n.startswith('in_exit'):
+        if n.startswith('in_wall_') or n.startswith('in_pillar') or n.startswith('in_ceil_beam') or n.startswith('in_dais') or n.startswith('in_exit') or n.startswith('in_runner'):
             continue
         byname.setdefault(n, []).append((x, y, w, h))
     for n, lst in byname.items():

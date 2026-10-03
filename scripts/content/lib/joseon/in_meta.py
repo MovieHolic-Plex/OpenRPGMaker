@@ -14,7 +14,7 @@ TERRAIN['in_ceil47'] = {'kind': 'blob47', 'name': '조선 실내 천장 (기와 
                         'connect': ['in_ceil47'], 'edgeConnects': True}
 
 F_ALL = ('in_door_sill', 'in_exit_door', 'in_exit_door2', 'in_stairs_down', 'in_dais_steps', 'in_jipjari_1', 'in_jipjari_2',
-         'in_bangseok_r', 'in_bangseok_b', 'in_bangseok_g', 'in_mat_hopi', 'in_mat_dot_2x2')
+         'in_bangseok_r', 'in_bangseok_b', 'in_bangseok_g', 'in_mat_hopi', 'in_mat_dot_2x2', 'in_runner_m', 'in_runner_n')
 GRIDS = {
     'in_stairs_wood_3': ['XXX', 'FFF', 'FFF'], 'in_stairs_stone_3': ['XXX', 'FFF', 'FFF'], 'in_stairs_wood_2': ['XX', 'FF', 'FF'],
     'in_pillar': ['C', 'X'], 'in_pillar_3': ['C', 'C', 'X'], 'in_ladder_loft': ['X', 'X', 'F'],

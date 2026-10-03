@@ -191,6 +191,52 @@ def joseon_in_school():
     return r
 
 
+@room
+def joseon_in_office():
+    """관아 동헌 19×15: 전돌 바닥 마루 + 북쪽 원님 단(壇: 병풍·의자·책상·북·호피·촛대, 가운데 3칸 계단). 서쪽 형틀·곤장 틀, 동쪽 서리 책상, 중앙 붉은 깔개, 기둥 넷. 출구는 남벽 x=9."""
+    plan = """
+###################
+#jjjjmmmmmmmmmjjjj#
+#jjjjmmmmmmmmmjjjj#
+#jjjjmmmmmmmmmjjjj#
+#jjjjmmmmmmmmmjjjj#
+#jjjjmmmmmmmmmjjjj#
+#jjjjmmmmmmmmmjjjj#
+#jjjjmmmmmmmmmjjjj#
+#jjjjjjjjjjjjjjjjj#
+#jjjjjjjjjjjjjjjjj#
+#jjjjjjjjjjjjjjjjj#
+#jjjjjjjjjjjjjjjjj#
+#jjjjjjjjjjjjjjjjj#
+#jjjjjjjjjjjjjjjjj#
+#########E#########
+""".strip('\n')
+    r = IR.Room('joseon_in_office', '조선 관아 동헌 내부(원님 단·형틀·서리 책상)', plan, wall_of={'j': 'mok'})
+    P = r.put
+    # 단: 앞면(l·m·계단 3·m·r) + 병풍·의자·책상·북·호피·촛대
+    P('in_dais_front_l', 5, 7)
+    for x in (6, 7, 11, 12):
+        P('in_dais_front_m', x, 7)
+    for x in (8, 9, 10):
+        P('in_dais_steps', x, 7)
+    P('in_dais_front_r', 13, 7)
+    P('in_byeongpung_royal', 8, 2); P('in_gwan_chair', 9, 4); P('in_chaeksang', 9, 6)
+    P('in_buk', 6, 4); P('in_mat_hopi', 11, 4); P('in_chotdae', 7, 3); P('in_chotdae', 11, 3)
+    # 중앙 붉은 깔개(계단에서 문까지), 기둥 넷
+    P('in_runner_n', 9, 8)
+    for y in range(9, 14):
+        P('in_runner_m', 9, y)
+    for (x, y) in ((4, 9), (14, 9), (4, 12), (14, 12)):
+        P('in_pillar', x, y)
+    # 서쪽: 서가·족자·형틀·곤장 틀
+    P('in_seoga', 1, 2); P('in_jokja_a', 4, 1); P('in_hyeongtul', 1, 5); P('in_gonjang_rack', 3, 5)
+    # 동쪽: 서가·족자·서리 책상 둘
+    P('in_seoga', 16, 2); P('in_jokja_b', 14, 1); P('in_chaeksang', 16, 5); P('in_bangseok_g', 16, 6)
+    P('in_chaeksang', 16, 10); P('in_bangseok_b', 16, 11); P('in_hwaro', 2, 10); P('in_hwaro', 15, 8)
+    r.people += [(9, 5, 7, FRONT, 1), (16, 7, 2, LEFT, 0), (6, 11, 3, UP, 1)]
+    return r
+
+
 def build(names, outdir, png=False):
     sheet = IR.Sheet()
     res = {}
@@ -208,10 +254,10 @@ def build(names, outdir, png=False):
 
 if __name__ == '__main__':
     args = [a for a in sys.argv[1:] if not a.startswith('-')]
-    names = args or list(ROOMS)
     out = OUT
     if '--out' in sys.argv:
-        out = sys.argv[sys.argv.index('--out') + 1]; names = [a for a in names if a != out]
+        out = sys.argv[sys.argv.index('--out') + 1]; args = [a for a in args if a != out]
+    names = args or list(ROOMS)
     sheet, res = build(names, out, png='--png' in sys.argv)
     walk = IC.piece_walk(sheet)
     for n, (r, diff) in res.items():
