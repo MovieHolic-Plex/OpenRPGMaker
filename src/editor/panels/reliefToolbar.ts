@@ -387,7 +387,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     if(isTerrainDesignTool(state.terrainBrush)) hint.textContent = `${TERRAIN_DESIGN_TOOLS.find(([key]) => key === state.terrainBrush)![1]} · 지형 설계에서 옵션을 고르세요 · Enter: 적용 · Esc: 점 취소`;
     if (state.terrainBrush === "house") {
       hint.classList.toggle("is-bad", hover?.ok === false); hint.classList.toggle("is-ok", hover?.ok === true);
-      hint.textContent = hover?.label === "집 외관" ? hover.reason : "집 모양을 고르고 문 위치를 한 번 클릭하세요";
+      hint.textContent = hover?.label === "집 외관" ? hover.reason : "집 모양을 고르고 끌어서 너비·높이를 정하세요";
     }
     if (state.terrainBrush === "road" && state.terrainRoadDrag && !state.terrainFeatureId) hint.textContent = `도로 · 폭 ${state.terrainWidth}칸 · 끌고 놓으면 적용 · Esc: 취소`;
     if(state.terrainReachability && store.getCurrent().startMapId!==state.currentMapId)hint.textContent+=" · 시작 맵에서 통행을 확인한다";
@@ -414,7 +414,8 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       return;
     }
     if (event.key !== "Escape") return;
-    if (document.querySelector('[data-testid="delayed-tooltip"]')) hideDelayedTooltip();
+    if (state.terrainHouseDrag) editorState.set({ terrainHouseDrag: null });
+    else if (document.querySelector('[data-testid="delayed-tooltip"]')) hideDelayedTooltip();
     else if (state.reliefBridgeStart) editorState.set({ reliefBridgeStart: null });
     else if (state.terrainMoveGroup || state.terrainSelectedGroup) editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null});
     else if (state.reliefDoodad) editorState.set({ reliefDoodad: null, reliefBridgeStart:null });

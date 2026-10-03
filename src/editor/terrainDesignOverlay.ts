@@ -9,6 +9,8 @@ import { inspectTerrainRoute, type TerrainRouteResult } from "@/project/terrainR
 import type { EditorState } from "./editorState";
 import { designOutline } from "./terrainDesignActions";
 import { lineCells, polygonCells, symmetryVariants, transformPoint } from "./terrainDesignGeometry";
+import { planQuickHouseDrag } from "./quickHouse";
+import { drawQuickHousePreview } from "./quickHousePreview";
 
 const cache = new WeakMap<GameMap, { project: Project; tileset: TilesetDef; key: string; result: TerrainRouteResult }>();
 export function terrainRouteResult(project: Project, map: GameMap, route: NonNullable<EditorState["terrainRoute"]>, width: number, state?: EditorState): TerrainRouteResult {
@@ -20,6 +22,10 @@ export function terrainRouteResult(project: Project, map: GameMap, route: NonNul
 export function renderTerrainDesignOverlay(scene: Phaser.Scene, layer: Phaser.GameObjects.Container, project: Project, map: GameMap, state: EditorState): void {
   drawTerrainWater(scene,map,g=>layer.add(g));
   if (state.tool !== "relief") return;
+  if (state.terrainBrush === "house" && !state.terrainVisionPreview && state.terrainHouseDrag?.mapId === map.id) {
+    const tileset = project.tilesets[map.tilesetId];
+    if (tileset) drawQuickHousePreview(scene, layer, map, tileset, planQuickHouseDrag(map, tileset, state.terrainHouseDrag, { style: state.terrainHouseStyle, width: state.terrainHouseWidth, stories: state.terrainHouseStories, kitId: state.terrainHouseKitId }));
+  }
   const tileSize = mapTileSize(map, project.tilesets[map.tilesetId]), lift = map.relief ? reliefLiftField(map.relief) : null, g = scene.add.graphics();
   const cell = (x: number, y: number, color: number, alpha: number, outline = false) => { const Y = (y - (lift ? cellLift(lift, x, y) : 0)) * tileSize; g.fillStyle(color, alpha); g.fillRect(x * tileSize, Y, tileSize, tileSize); if (outline) { g.lineStyle(1, color, .9); g.strokeRect(x * tileSize + 1, Y + 1, tileSize - 2, tileSize - 2); } };
   if (state.terrainVisionPreview) {

@@ -8,7 +8,7 @@ import { symmetryVariants, type TerrainPoint } from "./terrainDesignGeometry";
 import { planTerrainFeature } from "./terrainFeatures";
 import { planTerrainFinish } from "./terrainFinish";
 import { toast } from "@/util/toast";
-import { planQuickHouse } from "./quickHouse";
+import { planQuickHouseDrag } from "./quickHouse";
 import { registerStructureKit } from "./harnessSuggestion/structureKitActions";
 
 export const TERRAIN_DESIGN_TOOLS: readonly [TerrainDesignTool, string][] = [["contour", "절벽 윤곽"], ["road", "길"], ["house", "집 외관"], ["ridge", "능선"], ["valley", "계곡"], ["lake", "호수·해안"], ["mix", "재질 혼합"], ["mixedCluster", "혼합 군집"], ["stamp", "지형 도장"], ["lock", "영역 잠금"], ["route", "경로 검사"], ["finish", "지형 다듬기"]];
@@ -41,11 +41,20 @@ export function commitTerrainDesign(): void {
   if (applyTerrainDesignPlan(mapId, plan, TERRAIN_DESIGN_TOOLS.find(([key]) => key === s.terrainBrush)![1])) { editorState.set({ terrainPoints: null, terrainFeatureId: null, terrainDragPoint: null }); toast(plan.reason, "info"); }
 }
 export function selectTerrainDesignTool(tool: TerrainDesignTool): void {
-  editorState.set({ terrainBrush: tool, terrainFeatureId: null, terrainDragPoint: null, terrainDesignOpen: true, terrainPoints: null, reliefDoodad: null, reliefDoodadOpen: false, reliefBridgeStart: null, terrainMoveGroup: false, ...(tool === "route" ? { terrainRoute: null } : {}), ...(tool === "lake" || tool === "lock" ? { terrainAreaShape: "polygon" as const } : {}) });
+  editorState.set({ terrainBrush: tool, terrainHouseDrag: null, terrainFeatureId: null, terrainDragPoint: null, terrainDesignOpen: true, terrainPoints: null, reliefDoodad: null, reliefDoodadOpen: false, reliefBridgeStart: null, terrainMoveGroup: false, ...(tool === "route" ? { terrainRoute: null } : {}), ...(tool === "lake" || tool === "lock" ? { terrainAreaShape: "polygon" as const } : {}) });
 }
 export function handleTerrainDesignPointer(mapId: string, point: TerrainPoint, first: boolean, right: boolean): void {
   const s = editorState.get(), map = store.getCurrent().maps[mapId]; if (!map || !isTerrainDesignTool(s.terrainBrush)) return;
-  if (right) { editorState.set({ terrainPoints: null, terrainFeatureId: null, terrainDragPoint: null }); return; }
+  if (right) { editorState.set({ terrainPoints: null, terrainFeatureId: null, terrainDragPoint: null, terrainHouseDrag: null }); return; }
+  if (s.terrainBrush === "house" && !s.terrainVisionPreview) {
+    if (first) {
+      if (!canEditMap(mapId)) { toastMapEditLockNotice(mapId); return; }
+      editorState.set({ terrainHouseDrag: { mapId, start: point, end: point } });
+    } else if (s.terrainHouseDrag?.mapId === mapId && (s.terrainHouseDrag.end.x !== point.x || s.terrainHouseDrag.end.y !== point.y)) {
+      editorState.set({ terrainHouseDrag: { ...s.terrainHouseDrag, end: point } });
+    }
+    return;
+  }
   if (point.x < 0 || point.y < 0 || point.x >= map.width || point.y >= map.height) return;
   if (s.terrainVisionPreview) { if (first) editorState.set({ terrainVisionOrigin: point }); return; }
   if (s.terrainFeatureId && s.terrainPoints?.mapId === mapId) {
@@ -62,12 +71,6 @@ export function handleTerrainDesignPointer(mapId: string, point: TerrainPoint, f
   }
   if (!first) return;
   const tileset = store.getCurrent().tilesets[map.tilesetId]; if (!tileset) return;
-  if (s.terrainBrush === "house") {
-    if (!canEditMap(mapId)) { toastMapEditLockNotice(mapId); return; }
-    const plan = planQuickHouse(map, tileset, point, { style: s.terrainHouseStyle, width: s.terrainHouseWidth, stories: s.terrainHouseStories, kitId: s.terrainHouseKitId });
-    if (plan.ok && plan.kit) { const registered = registerStructureKit(map.tilesetId, plan.kit); plan.kit = { ...plan.kit, id: registered.id }; }
-    applyTerrainDesignPlan(mapId, plan, "집 외관 배치"); return;
-  }
   if (s.terrainBrush === "mix" || s.terrainBrush === "mixedCluster") {
     const plan = planTerrainDesign(map, tileset, s.terrainBrush, [point], terrainDesignOptions(s));
     applyTerrainDesignPlan(mapId, plan, s.terrainBrush === "mix" ? "재질 혼합" : "혼합 군집"); return;
@@ -111,4 +114,17 @@ export function selectTerrainFeature(id: string): void {
   if (!f || !mapId) { editorState.set({ terrainFeatureId: null, terrainPoints: null }); return; }
   const o = f.options;
   editorState.set({ terrainBrush: f.tool, terrainFeatureId: f.id, terrainDragPoint: null, terrainPoints: { mapId, points: structuredClone(f.points) }, terrainSymmetry: o.symmetry, terrainAreaShape: o.areaShape, terrainWidth: o.width, terrainDelta: o.delta, terrainSeed: o.seed, terrainMixWeights: [...o.weights], terrainLakeLevel: o.waterLevel, terrainLakeDepth: o.maxDepth, terrainShallowWidth: o.shallowWidth, terrainRoadFlatten: o.flattenRoad, terrainVisionPreview: false });
+}
+
+/** Pointer release commits the preview once; cancelling never edits map or kit library. */
+export function commitQuickHouseDrag(): void {
+  const s = editorState.get(), drag = s.terrainHouseDrag;
+  editorState.set({ terrainHouseDrag: null });
+  if (!drag || s.currentMapId !== drag.mapId || s.tool !== "relief" || s.terrainBrush !== "house" || s.terrainVisionPreview) return;
+  const map = store.getCurrent().maps[drag.mapId], tileset = map && store.getCurrent().tilesets[map.tilesetId];
+  if (!map || !tileset) return;
+  if (!canEditMap(drag.mapId)) { toastMapEditLockNotice(drag.mapId); return; }
+  const plan = planQuickHouseDrag(map, tileset, drag, { style: s.terrainHouseStyle, width: s.terrainHouseWidth, stories: s.terrainHouseStories, kitId: s.terrainHouseKitId });
+  if (plan.ok && plan.kit) { const registered = registerStructureKit(map.tilesetId, plan.kit); plan.kit = { ...plan.kit, id: registered.id }; }
+  applyTerrainDesignPlan(drag.mapId, plan, "집 외관 배치");
 }

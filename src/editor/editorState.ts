@@ -103,6 +103,7 @@ export interface EditorState {
   terrainHouseKitId: string | null;
   terrainHouseWidth: number;
   terrainHouseStories: 1 | 2;
+  terrainHouseDrag: import("./quickHouse").QuickHouseDrag | null;
   terrainUnlock: boolean;
   terrainStampId: string | null;
   terrainStampRotation: 0 | 1 | 2 | 3;
@@ -183,6 +184,7 @@ class EditorStateStore {
     terrainRoadDrag: false,
     terrainHouseStyle: "blue-stone", terrainHouseWidth: 7, terrainHouseStories: 1,
     terrainHouseKitId: null,
+    terrainHouseDrag: null,
     terrainUnlock: false,
     terrainStampId: null,
     terrainStampRotation: 0,
@@ -221,6 +223,12 @@ class EditorStateStore {
   }
 
   set(patch: Partial<EditorState>): void {
+    if (this.state.terrainHouseDrag && (
+      patch.currentMapId !== undefined && patch.currentMapId !== this.state.currentMapId ||
+      patch.tool !== undefined && patch.tool !== "relief" ||
+      patch.terrainBrush !== undefined && patch.terrainBrush !== "house" ||
+      patch.terrainVisionPreview === true
+    )) patch = { ...patch, terrainHouseDrag: null };
     // 무변경 set은 통지하지 않는다 — 통지마다 팔레트/맵트리가 전체 재구축되므로,
     // pointerdown~pointerup 사이에 노드가 교체되면 사용자의 클릭이 증발한다(클릭 불가 보고 원인 중 하나).
     let changed = false;
@@ -249,6 +257,7 @@ export const editorState = new EditorStateStore();
  * 우클릭 영역 드래그·Ctrl+V 고스트 추적은 pointermove 마다 여기만 흔든다.
  */
 const CANVAS_OVERLAY_EDITOR_KEYS = new Set<keyof EditorState>([
+  "terrainHouseDrag",
   "terrainPoints", "terrainRoute", "terrainVisionPreview", "terrainVisionOrigin", "terrainRouteDoorId", "terrainRouteBody", "terrainRouteEvents", "terrainRouteDoors", "terrainRouteSwitches",
   "selection",
   "pastePreview",
