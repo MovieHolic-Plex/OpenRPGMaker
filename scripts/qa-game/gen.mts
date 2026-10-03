@@ -45,6 +45,8 @@ import { renderToolRegionPngBase64 } from "./render.mts";
 import { setCutsceneArtGenerator } from "../../src/editor/tools/cutsceneArtTools.ts";
 import { headlessFetchAsset, headlessGenerateImage } from "./lib/headlessImage.mts";
 import { setCutsceneAssetFetcher } from "../../src/editor/cutsceneArt/charsetFrames.ts";
+import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
+import { buildWorldmap as headlessBuildWorldmap } from "../lib/worldmapBuild.mjs";
 
 let ARGV: readonly string[] = process.argv.slice(2);
 const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${name}`); return i >= 0 ? ARGV[i + 1] : undefined; };
@@ -92,6 +94,8 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   // generate_cutscene_art 의 그림 생성은 편집기에서는 /v1/images/generations 로 가고, 헤드리스에서는 같은 동반 앱 경로를 프로세스 안에서 부른다.
   setCutsceneArtGenerator(headlessGenerateImage);
   setCutsceneAssetFetcher(headlessFetchAsset);
+  // edit_world_terrain 의 월드맵 빌드도 동반 앱 경로(/v1/worldmap/build)를 프로세스 안에서 부른다.
+  setWorldmapBuilder(headlessBuildWorldmap);
   ARGV = argv;
   const briefFile = arg("brief");
   const out = arg("out");

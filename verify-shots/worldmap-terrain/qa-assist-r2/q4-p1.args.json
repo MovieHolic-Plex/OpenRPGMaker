@@ -1,0 +1,6 @@
+{"theme":"sea-isles","preview":true,"ops":[
+{"op":"island","x":56,"y":18,"rx":2,"ry":2,"ground":"grass","note":"가운데 바다 작은 섬 1"},
+{"op":"island","x":57,"y":29,"rx":2,"ry":2,"ground":"sand","note":"가운데 바다 작은 섬 2"},
+{"op":"island","x":58,"y":39,"rx":2,"ry":2,"ground":"jungle","note":"가운데 바다 작은 섬 3"},
+{"op":"ridge","line":[[23,62],[31,63]],"kind":"mount","width":2,"note":"남쪽 사막섬 산맥"}
+]}

@@ -29,6 +29,7 @@ import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
+import { WORLD_TERRAIN_TOOLS } from "./worldTerrainTools";
 import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
 import { CUTSCENE_PREVIEW_TOOLS } from "./cutscenePreviewTools";
 import { CUTSCENE_STAGE_TOOLS } from "./cutsceneStageTools";
@@ -244,6 +245,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
   ...withDomain(CUTSCENE_ART_TOOLS, "event"),
+  ...withDomain(WORLD_TERRAIN_TOOLS, "world"),
   // 충돌 전용 지름길은 script_cutscene_staged 하나로 합친다(2026-10-02 조수 시험: 두 도구가 있으면 모델은 전용 쪽만 쓰고
   // 일반 도구를 외면했다). 실행·코드 호환은 getTool 로 유지 — 오프라인 사슬·옛 세션 재생.
   ...withDomain(IMPACT_CUTSCENE_TOOLS, "event").map((tool) => ({ ...tool, deprecated: true, supersededBy: "script_cutscene_staged" })),

@@ -279,7 +279,7 @@ def is_identity(p):
     return not p.get('roles') and not p.get('light') and 'regional' not in p
 
 
-def recolor_terrain(img, ukeys, role, palette, G=None):
+def recolor_terrain(img, ukeys, role, palette, G=None, keep_cells=None):
     """지형 그림(RGB uint8)에 팔레트를 적용한다. 색 -> 색 대응이므로 지형의 명암 단계 수는 줄 수만 있고 늘지 않는다."""
     if is_identity(palette):
         return img.copy(), dict(levels=None)
@@ -294,6 +294,10 @@ def recolor_terrain(img, ukeys, role, palette, G=None):
     nlev = rg.get('levels', 5)
     f = coast_follow(region_field([tuple(s) for s in rg['seeds']], rg.get('warp', 3.0), rg.get('seed', 40), rg.get('core', .45)), G, rg.get('reach', 9.0))
     luts = np.stack([_rgb(orig * (1 - i / (nlev - 1)) + full * (i / (nlev - 1))) for i in range(nlev)])
+    if keep_cells is not None and keep_cells.any():   # 지형 편집으로 바닥을 정한 칸은 지역 색을 덮지 않는다(정글을 칠했는데 모래빛이 됐다 — 조수 시험)
+        import scipy.ndimage as ndi
+        k = ndi.gaussian_filter(np.repeat(np.repeat(keep_cells.astype(np.float32), TS, 0), TS, 1), 6)
+        f = f * np.clip(1 - 1.6 * k, 0, 1)
     lvl = quant_levels(f, nlev, rg.get('width', .5))
     return luts[lvl, idx], dict(levels=[int((lvl == i).sum()) for i in range(nlev)], field=f)
 

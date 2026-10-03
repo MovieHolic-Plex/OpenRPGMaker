@@ -1,5 +1,22 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
+
+0.25~1 배율. 없으면 1(기존과 같음). 그 맵에서 걷는 주인공·동료·탈것·캐릭터 칩 이벤트에만 곱한다(상자·그림 이벤트는 칸 크기 그대로).
+월드맵처럼 땅을 멀리서 보는 지도에서 캐릭터를 줄이는 선택 옵션 — 기본은 꺼짐. 읽기는 `mapCharacterSizeFactor`(project/characterScale.ts) 하나로,
+곱하는 자리는 `playerCharacterScale`·`syncVehicleSprites`·`eventSpriteScale(..., mapCharacterFactor)`(이벤트·동료·이동 경로 그림 바꾸기) 다섯 곳.
+편집: 맵 속성 「일반」 탭 「캐릭터 크기」(100·75·50%), 조수 `set_map_properties.characterScale`. 발밑 기준점은 그대로라 줄여도 칸 바닥에 선다.
+50% 는 가장 가까운 화소로 줄이므로 도트가 거칠다. 증거: `verify-shots/runtime-qa/worldmap-generate`(korea 세계, 100%/50% 비교).
+
+## 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
+
+`edit_world_terrain` 이 만든 맵만 갖는다: `{ theme, ops, terrainId?, palette?, base?, fitSalt? }`.
+`base` 는 `"shared-v9"`(손 대륙, 생략 시) 또는 `"generate"`(새 구조), `fitSalt` 는 생성 구조의 자동 맞춤 배치 번호 — 다시 빌드할 때 같은 세계를 낸다.
+`ops` 는 `worldmap-terrain/1` 작업 목록(테마 자체 지형 아래 깔림은 빼고 조수가 얹은 것만). 이 필드가 있으면
+그 맵은 「지도 그림 = 타일셋 `worldmap_<mapId>`(칸마다 한 타일, 통행은 키트 걷기 표)」이고, 다시 빌드하면 통째로 갈린다.
+없는 맵은 키트 지도가 아니며 도구가 덮어쓰지 않는다. 런타임은 이 필드를 읽지 않는다(편집 원본일 뿐).
+자세한 흐름: `openwiki/worldmap-terrain-editing.md`.
+
 ## 캐릭터별 전투 동작 (2026-10-03)
 
 `ActorRecord.battleMotion?: {style?, anticipation?, travel?, recovery?, reach?, jump?, recoil?}`와

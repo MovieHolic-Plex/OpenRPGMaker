@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "desert-east",
+ "name": "사막·동양풍",
+ "iconset": "desert-east",
+ "palette": "desert-east",
+ "overlays": [],
+ "kind": "land"
+}

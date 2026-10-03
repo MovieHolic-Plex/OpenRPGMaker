@@ -65,6 +65,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   duplicate_map: build("맵 복제", "map"),
   author_village: build("마을 짓기", "house"),
   build_world: world("세계 짓기", "map"),
+  read_world_terrain: world("세계 지형 읽기", "eye"),
+  edit_world_terrain: world("세계 지형 바꾸기", "map"),
   set_build_spec: build("밑그림 확정", "list"),
   // ── 사람·이야기 ──
   place_npc: people("NPC 배치", "user"),

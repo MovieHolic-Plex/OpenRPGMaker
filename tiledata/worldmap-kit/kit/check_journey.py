@@ -57,7 +57,9 @@ def main():
         assign = K.assign_icons(roles, journey, iconset) if iconset else None
         if a.map:
             import kit_world as W
-            world = W.MapWorld(K.load_json(a.map))
+            wd = K.load_json(a.map)
+            journey = K.journey_for_world(journey, wd)
+            world = W.MapWorld(wd)
         else:
             if not iconset:
                 raise K.KitError('--map 이 없으면 지형을 만들 아이콘 세트(--iconset)가 필요하다')

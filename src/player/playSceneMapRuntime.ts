@@ -1,5 +1,6 @@
 import { phaserBlendMode } from "@/project/blendMode";
 import { mapTileSize } from "@/project/tileGeometry";
+import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
@@ -890,7 +891,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     eventGraphicSignatures.set(marker, signature);
     retained.add(event.id);
     placeCharacterSprite(marker, view.priority);
-    marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent())));
+    marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent()), mapCharacterSizeFactor(scene.map)));
     scene.eventSprites.set(event.id, marker);
     orderedSprites.push([event.id, marker]);
   }

@@ -51,8 +51,13 @@ import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
 import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
+import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
+import { buildWorldmap } from "./worldmapBuild.mjs";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext } from "../../src/editor/tools/types.ts";
+
+// 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
+setWorldmapBuilder(buildWorldmap);
 
 export interface RunPiAgentOptions {
   /** Trusted request requirements for direct-authoring observations; no layout coordinates. */

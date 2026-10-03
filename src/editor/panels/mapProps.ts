@@ -4,7 +4,7 @@ import { guessMapRole, type MapRole } from "@/ai/mapPlacementContext";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
   setMapCloudShadows, setMapClimate,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
@@ -25,6 +25,7 @@ import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
 import { isMapLoop, mapLoopLabel, MAP_LOOP_VALUES } from "@/project/mapLoop";
+import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
 import { mapLocations } from "@/project/mapNamedLocations";
@@ -362,6 +363,20 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
   roleSelect.addEventListener("change", () => setMapRole(map.id, isMapRoleKind(roleSelect.value) ? roleSelect.value : undefined));
   section.append(fieldRow("맵 성격", roleSelect));
   section.append(el("p", { class: "map-props-hint", text: "바로 깔기가 이 값을 기준으로 깝니다. 마을·실내면 함정·몬스터를 요청 없이 두지 않고 상자 보상을 낮춥니다." }));
+
+  // 캐릭터 크기 — 월드맵처럼 칸이 작은 지도에서 걷는 캐릭터를 줄이는 선택 옵션
+  const sizeSelect = el("select", {
+    attrs: { "aria-label": `${map.name} 캐릭터 크기` },
+    dataset: { testid: "map-props-character-scale" },
+  }) as HTMLSelectElement;
+  const current = mapCharacterSizeFactor(map);
+  const sizeChoices: Array<[number, string]> = [[1, "100% (기본)"], [0.75, "75%"], [0.5, "50%"]];
+  if (!sizeChoices.some(([v]) => v === current)) sizeChoices.push([current, `${Math.round(current * 100)}%`]);
+  for (const [value, label] of sizeChoices) sizeSelect.append(el("option", { text: label, attrs: { value: String(value) } }));
+  sizeSelect.value = String(current);
+  sizeSelect.addEventListener("change", () => setMapCharacterScale(map.id, Number(sizeSelect.value)));
+  section.append(fieldRow("캐릭터 크기", sizeSelect));
+  section.append(el("p", { class: "map-props-hint", text: "이 맵에서 걷는 주인공·동료·탈것·캐릭터 이벤트를 줄입니다. 월드맵처럼 땅을 멀리서 보는 지도에 씁니다. 50% 는 도트가 거칠어질 수 있습니다." }));
 
   // 크기
   const wInput = el("input", {

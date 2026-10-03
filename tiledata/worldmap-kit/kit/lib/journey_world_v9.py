@@ -34,6 +34,8 @@ TOWER_NEW_X = 49                 # 거대한 탑 이동(관문 산벽이 들어�
 SW_DUNE_FROM_Y = 52              # 대사막(사구 바다) 시작 행(열마다 52~54로 물결)
 SW_DUNE_X_MAX = 40
 SKY_SITE = ('천공섬', 58, 49, 5, 4)   # make_map_v5.SKY 와 같은 자리
+HARBOUR_SITE = '내해 항구'        # 배를 타는 장소(여정 barriers[ship].gate)
+LAYOUT = None                    # 생성 지형(kit_fit)의 배치: dict(wall=[(x,y)…], dune=bool 칸 마스크, …). None 이면 손 대륙의 고정 좌표
 
 # 막(幕) 정의: 막 k 에서 쓰는 수단과 그 수단을 얻는 곳
 ACTS = [
@@ -72,6 +74,8 @@ def build_world():
     M, ic, meta = m5.build_v5()
     M4.ROUTES[:] = [r for r in M4.ROUTES if r[0] not in DROP_ROUTES]
     G, O = M.G, M.O
+    if LAYOUT is not None:
+        return _apply_layout(M, ic, meta)
     # 1. 산벽
     for (x, y) in WALL_EXTRA:
         if G[y, x] >= 10:
@@ -100,6 +104,23 @@ def build_world():
     # 사구 위에 선 물체(모래 폐허 가장자리 등)는 치운다. 메사(산)는 그대로.
     O[(G == M4.DUNE) & ~np.isin(O, M4.MOUNTS)] = 0
     M.dune_sea = (G == M4.DUNE) & (xs < SW_DUNE_X_MAX)
+    return M, ic, meta
+
+
+def _apply_layout(M, ic, meta):
+    """생성 지형: 산벽과 사구 바다를 배치(kit_fit)가 정한 칸에 놓는다. 손 대륙의 고정 좌표(WALL_EXTRA·x<40 사구)는 쓰지 않는다."""
+    G, O = M.G, M.O
+    for (x, y) in LAYOUT['wall']:
+        if G[y, x] >= 10:
+            O[y, x] = M4.MOUNT
+    region = LAYOUT['dune']
+    G[(G == M4.DUNE) & ~region] = M4.SAND                 # 사구 = 사구 바다 하나(규칙을 하나로)
+    sea_of_sand = region & (G >= 10) & (M.Hh == 0) & ~np.isin(O, M4.MOUNTS) & (G != M4.CHASM)
+    for n, (x, y, w, h) in ic.items():
+        sea_of_sand[y:y + h, x:x + w] = False
+    G[sea_of_sand] = M4.DUNE
+    O[(G == M4.DUNE) & ~np.isin(O, M4.MOUNTS)] = 0
+    M.dune_sea = (G == M4.DUNE) & region
     return M, ic, meta
 
 
@@ -193,7 +214,7 @@ class World:
         # 장소 발자국은 걸을 수 있다. 관문(고갯길 요새)만 열쇠가 필요하다.
         self.sites = {n: v for n, v in ic.items() if not n.endswith('경사로')}
         self.site_kind = {s[0]: s[6] for s in M4.SITES}
-        self.site_kind['천공섬'] = 'sky'
+        self.site_kind[SKY_SITE[0]] = 'sky'
         self.gate = set(gate_cells(ic))
         for n, (x, y, w, h) in self.sites.items():
             self.walk0[y:y + h, x:x + w] = True
@@ -218,9 +239,8 @@ class World:
 
     def dock_cells(self):
         """내해 항구에서 배를 탄다: 항구 발자국과 맞닿은 바다 칸."""
-        x, y, w, h = self.ic['내해 항구']
         out = []
-        for (xx, yy) in footprint(self.ic, '내해 항구'):
+        for (xx, yy) in footprint(self.ic, HARBOUR_SITE):
             for a, b in neighbors4(xx, yy):
                 if self.sea[b, a] and (a, b) not in self.sky:
                     out.append((a, b))
@@ -242,7 +262,7 @@ class World:
             before = int(r.sum()) + int(sea_reach.sum())
             if 'ship' in means:
                 # 배: 항구에 닿으면 승선. 하선은 걸을 수 있고 높이 0 인 해안 어디서든.
-                port_cells = footprint(self.ic, '내해 항구')
+                port_cells = footprint(self.ic, HARBOUR_SITE)
                 if any(r[y, x] for (x, y) in port_cells):
                     docks = self.dock_cells()
                     sea_reach = flood(docks, sea_ok)

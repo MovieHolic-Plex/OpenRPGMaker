@@ -1,3 +1,4 @@
+import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
@@ -1954,6 +1955,7 @@ const setMapProperties: ToolDefinition = {
       clearCloudShadows: { type: "boolean" },
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
+      characterScale: { type: "number", description: "이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 이벤트) 크기 배율 0.25~1. 월드맵처럼 땅을 멀리서 보는 지도에서 0.5~0.75 로 줄인다. 1 이면 기본 크기로 되돌린다. 사용자가 원할 때만 — 기본은 줄이지 않는다." },
       loop: { type: "string", enum: ["none", ...MAP_LOOP_VALUES], description: "반복 맵. horizontal=좌우 끝이 이어짐, vertical=위아래, both=사방, none=끔. 플레이어가 가장자리를 넘으면 반대편 같은 줄에 선다(반대편 칸이 통행 가능해야 한다)." },
     },
     required: ["mapId"],
@@ -2075,6 +2077,15 @@ const setMapProperties: ToolDefinition = {
       // 저장」하려고 모든 맵에 저장 금지를 걸었고, 일기장이 있는 방까지 막혀 저장할 곳이 사라졌다.
       if (map.disableSave && JSON.stringify(map.events).includes('"kind":"openSaveMenu"')) {
         saveWarnings.push(`${map.name} 에는 저장 메뉴를 여는 이벤트가 있는데 저장 금지를 켰습니다 — 그 이벤트(일기장·세이브 포인트)도 저장할 수 없게 됩니다. 메뉴 저장만 막으려면 이 맵은 저장 금지를 끄세요.`);
+      }
+    }
+    if (typeof args.characterScale === "number" && Number.isFinite(args.characterScale)) {
+      if (args.characterScale >= 1) {
+        delete map.characterScale;
+        changed.push("캐릭터 크기=기본");
+      } else {
+        map.characterScale = mapCharacterSizeFactor({ characterScale: args.characterScale });
+        changed.push(`캐릭터 크기=${Math.round(map.characterScale * 100)}%`);
       }
     }
     if (args.loop === "none") {
