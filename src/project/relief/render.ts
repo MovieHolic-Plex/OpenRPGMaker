@@ -341,6 +341,7 @@ function carvedRiser(S: ReliefWallStyle, s: ReliefSlope, px: number, py: number,
 
 export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): ReliefRender {
   const S = compileReliefStyle(opt.style);
+  const ramps = opt.ramps ?? S?.ramps ?? RAMPS;
   const art = !!opt.rampArt;
   // 경사로 도트 맵: 경사로와 그 둘레 한 칸은 네모 절벽 — 대각선으로 깎이면 경사로 입구가 비스듬히 잘려 비탈이 땅에 붙지 않는다
   const nearRamp = opt.rampArt && opt.slopes?.length
@@ -476,7 +477,9 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       else if (ld === 1 || rd === -1) p = shift(p, 1);
     }
     if (S?.carvedStairs && cut[i]) p = carvedRiser(S, slopes[cut[i] - 1], sx, mpy[i], d, n);
-    if (bridge && deckUnder[i]) p = d === 0 ? 12 + 1 : 6;
+    // 바이옴 양식은 강조색(세 번째 램프)이 있지만 기본 흙벽은 두 램프뿐이다.
+    // 기본 양식의 다리 밑면을 13번 색으로 칠하면 팔레트 바깥을 읽어 렌더가 죽는다.
+    if (bridge && deckUnder[i]) p = d === 0 ? (ramps.length > 2 ? 13 : 7) : 6;
     out[i] = p;
   }
   // 윗면 가장자리와 그늘
@@ -630,7 +633,6 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       if (dm <= band) shadeA[i] = Math.round(alpha * (1 - (dm - 1) / band));
     }
   }
-  const ramps = opt.ramps ?? S?.ramps ?? RAMPS;
   const rgba = new Uint8ClampedArray(N * 4), xray = new Uint8ClampedArray(N * 4);
   // 경사로 도트 맵은 층마다 밝기를 곱하지 않는다 — 곱한 색은 칩셋에 없는 색이 되어 타일 사이에서 튄다
   const tone = opt.tone !== false && !art ? (c: number) => Math.max(0.9, Math.min(1.22, 0.94 + 0.026 * c)) : () => 1;

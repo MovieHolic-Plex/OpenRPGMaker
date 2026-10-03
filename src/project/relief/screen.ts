@@ -162,3 +162,23 @@ export function reliefOverRgba(render: ReliefRender): Uint8ClampedArray {
   for (let i = 0; i < render.src.length; i++) if (partOf(render, i) === "under") out[i * 4 + 3] = 0;
   return out;
 }
+
+/**
+ * 들림 없는 땅 좌표 (x, groundY) 를 눌렀을 때 화면에 실제로 보이는 칸 — 그 칸의 윗면인지 남쪽 벽인지.
+ * 3/4 시점에서 높은 칸은 북쪽으로 올라가 그려지므로, 남쪽(앞) 칸부터 거슬러 올라가며 처음 덮는 것을 고른다.
+ * 편집기 높이 붓·지형지물이 「보이는 그 언덕」을 집게 한다. relief 가 없으면 그 칸의 윗면이다.
+ */
+export function reliefPickCell(relief: ReliefData | undefined, x: number, groundY: number): { x: number; y: number; face: "top" | "wall" } {
+  if (!relief || !hasRelief(relief) || x < 0 || x >= relief.width) return { x, y: groundY, face: "top" };
+  const field = reliefLiftField(relief);
+  let maxLift = 0;
+  for (let i = 0; i < field.elevation.length; i++) maxLift = Math.max(maxLift, field.elevation[i] ?? 0);
+  const fy = groundY + 0.5;
+  for (let y = Math.min(relief.height - 1, groundY + Math.ceil(maxLift) + 1); y >= Math.max(0, groundY); y--) {
+    const lift = cellLift(field, x, y), top = y - lift;
+    if (fy >= top && fy < top + 1) return { x, y, face: "top" };
+    const southLift = y + 1 < relief.height ? cellLift(field, x, y + 1) : 0;
+    if (lift > southLift && fy >= top + 1 && fy < y + 1 - southLift) return { x, y, face: "wall" };
+  }
+  return { x, y: groundY, face: "top" };
+}

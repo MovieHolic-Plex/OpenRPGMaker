@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **123쪽 / 4335KB / 약 1,252,207 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **123쪽 / 4342KB / 약 1,254,408 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,8 +21,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 167KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 973 | ~48,704 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
-| `openwiki/editor-observability.md` | 56KB | 6KB | 641 | ~16,343 |
-| `openwiki/editor-pre-edit-routing.md` | 180KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1131 | ~52,844 |
+| `openwiki/editor-observability.md` | 57KB | 6KB | 653 | ~16,697 |
+| `openwiki/editor-pre-edit-routing.md` | 183KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1133 | ~53,762 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 519 | ~20,470 |
 | `openwiki/runtime-battle.md` | 314KB | 32KB | 1688 | ~92,014 |
 | `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 781 | ~32,382 |
@@ -43,8 +43,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-authoring.md` | 16 | 436, 437, 440, 445, 446, 447, 448, 449 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 127, 140, 141, 143, 146, 147 |
-| `openwiki/editor-observability.md` | 1 | 349 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 897, 906, 914, 918, 942 |
+| `openwiki/editor-observability.md` | 1 | 361 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 899, 908, 916, 920, 944 |
 | `openwiki/runtime-project-schema.md` | 1 | 78 |
 | `openwiki/state-system.md` | 2 | 5, 89 |
 
@@ -385,14 +385,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L21` 설계 입력
 - `L34` 검증 및 증거
 
-### `openwiki/delayed-tooltip.md` — 5KB · 76줄 · ~1,501 토큰
+### `openwiki/delayed-tooltip.md` — 5KB · 79줄 · ~1,579 토큰
 
 - `L11` 동작 계약
 - `L28` 문구 규칙
 - `L36` 맵 도구바·접이식 왼쪽 레일 (2026-09-18)
 - `L45` 1차 롤아웃 대상
-- `L55` 설치 지점
-- `L61` 테스트
+- `L58` 설치 지점
+- `L64` 테스트
 
 ### `openwiki/editor-ai-panel.md` — 561KB · 3432줄 · ~162,821 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
@@ -872,73 +872,74 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L426` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
   - `L436` All-interior review (2026-09-15)
 
-### `openwiki/editor-observability.md` — 56KB · 641줄 · ~16,343 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 57KB · 653줄 · ~16,697 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
-- `L25` 높이 붓·높이 조수 도구의 기록 (2026-09-26)
-- `L30` 조수 오류 자세히 보기 (2026-09-25)
-- `L37` 조수 실행 기록과 표시 수준 (2026-09-21)
-- `L52` Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
-- `L105` 계측 초크포인트는 `store.markLocalMutation` 하나다
-- `L148` 새 편집 기능을 추가할 때 — 라벨을 넣어라
-- `L167` AI 적용 경로 — 이쪽이 주 경로다
-- `L198` P3 owner-bound publication (2026-09-07)
-- `L267` P2 outcome publication (2026-09-06)
-- `L330` 되돌리기 스택과 감사 로그는 다르다
-- `L351` Toolbar history confirmation lifetime (PR716, 2026-09-09)
-- `L370` 디버깅 레시피
-  - `L412` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
-- `L447` 로거
-- `L461` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
-- `L492` AI 툴·액션 이유 (2026-09-02)
-- `L502` 맵 화면이 버벅일 때 (2026-09-24)
-- `L510` 검증
-- `L517` Feature16 저작 보조 관측 경계 (2026-09-21)
-- `L529` 연속 AI 적용의 구독자 비용 (2026-09-28)
-  - `L558` 텍스처 완료 redraw 합치기 (2026-09-28)
-- `L578` 조수 적용·체크리스트 경로의 전체 문서 비용 (2026-09-28)
-- `L618` store.update copy-on-write 와 자동저장 요약 (2026-09-30)
+- `L5` 되돌리기 복원의 공용 자산 복제 (2026-10-03)
+- `L37` 높이 붓·높이 조수 도구의 기록 (2026-09-26)
+- `L42` 조수 오류 자세히 보기 (2026-09-25)
+- `L49` 조수 실행 기록과 표시 수준 (2026-09-21)
+- `L64` Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
+- `L117` 계측 초크포인트는 `store.markLocalMutation` 하나다
+- `L160` 새 편집 기능을 추가할 때 — 라벨을 넣어라
+- `L179` AI 적용 경로 — 이쪽이 주 경로다
+- `L210` P3 owner-bound publication (2026-09-07)
+- `L279` P2 outcome publication (2026-09-06)
+- `L342` 되돌리기 스택과 감사 로그는 다르다
+- `L363` Toolbar history confirmation lifetime (PR716, 2026-09-09)
+- `L382` 디버깅 레시피
+  - `L424` 저장된 것 — DB 커밋에 실린 행위 (`npm run commit:log`)
+- `L459` 로거
+- `L473` 알려진 남은 공백 (여기 손대는 사람이 이어서 하라)
+- `L504` AI 툴·액션 이유 (2026-09-02)
+- `L514` 맵 화면이 버벅일 때 (2026-09-24)
+- `L522` 검증
+- `L529` Feature16 저작 보조 관측 경계 (2026-09-21)
+- `L541` 연속 AI 적용의 구독자 비용 (2026-09-28)
+  - `L570` 텍스처 완료 redraw 합치기 (2026-09-28)
+- `L590` 조수 적용·체크리스트 경로의 전체 문서 비용 (2026-09-28)
+- `L630` store.update copy-on-write 와 자동저장 요약 (2026-09-30)
 
-### `openwiki/editor-pre-edit-routing.md` — 180KB · 1131줄 · ~52,844 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 183KB · 1133줄 · ~53,762 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L5` 공식 맵 상한 1024×1024 (2026-10-01)
 - `L22` 「높이」 붓 — 절벽 높이 지형 (2026-09-26)
-- `L51` 맵별 16/32/48px 좌표
-- `L59` 맵 칸 층은 `mapLayers.ts` 로만 읽고 쓴다 (MZ식 4층, 2026-09-24)
-- `L99` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
-- `L152` 자동저장이 프로젝트 문서를 여섯 번 지나가지 않는다 (2026-09-25)
-  - `L164` 계약
-- `L189` 안 바뀐 타일셋은 복제하지 않는다 — 타일셋 구조 공유 (2026-09-27)
-- `L213` DB 레코드 편집은 컬렉션만 복제한다 (2026-09-25)
-- `L228` 참고문서가 많은 프로젝트의 DB 되돌리기 스냅샷 (2026-09-25)
-- `L239` database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
-- `L252` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
-- `L270` 편집기 CSS·목록 비용 (2026-09-25)
-- `L305` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
-  - `L411` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
-- `L463` Exterior door backing
-- `L473` Tile brush reliability (2026-09-06)
-- `L511` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L516` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L528` 소유 경계
-  - `L540` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L551` 검토 책임
-  - `L563` 경계와 진단
-  - `L573` 회귀 이음줌
-- `L585` Pre-edit routing
-  - `L587` 명명 로케이션 레이어 (2026-09-10)
-  - `L669` 로케이션 역할과 겹침 클릭 (2026-09-12)
-  - `L728` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L730` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
-  - `L783` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L843` Automatic usage guides disabled (2026-09-06)
-  - `L853` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L961` Agent cautions
-- `L975` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L1011` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L1043` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L1072` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
-- `L1098` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
-- `L1114` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
+- `L53` 맵별 16/32/48px 좌표
+- `L61` 맵 칸 층은 `mapLayers.ts` 로만 읽고 쓴다 (MZ식 4층, 2026-09-24)
+- `L101` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
+- `L154` 자동저장이 프로젝트 문서를 여섯 번 지나가지 않는다 (2026-09-25)
+  - `L166` 계약
+- `L191` 안 바뀐 타일셋은 복제하지 않는다 — 타일셋 구조 공유 (2026-09-27)
+- `L215` DB 레코드 편집은 컬렉션만 복제한다 (2026-09-25)
+- `L230` 참고문서가 많은 프로젝트의 DB 되돌리기 스냅샷 (2026-09-25)
+- `L241` database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
+- `L254` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
+- `L272` 편집기 CSS·목록 비용 (2026-09-25)
+- `L307` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
+  - `L413` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
+- `L465` Exterior door backing
+- `L475` Tile brush reliability (2026-09-06)
+- `L513` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L518` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L530` 소유 경계
+  - `L542` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L553` 검토 책임
+  - `L565` 경계와 진단
+  - `L575` 회귀 이음줌
+- `L587` Pre-edit routing
+  - `L589` 명명 로케이션 레이어 (2026-09-10)
+  - `L671` 로케이션 역할과 겹침 클릭 (2026-09-12)
+  - `L730` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L732` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L785` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L845` Automatic usage guides disabled (2026-09-06)
+  - `L855` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L963` Agent cautions
+- `L977` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L1013` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L1045` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L1074` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L1100` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
+- `L1116` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
 
 ### `openwiki/editor-storage-chest.md` — 2KB · 17줄 · ~571 토큰
 
@@ -1338,14 +1339,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L190` 검증
 - `L201` 자동화 — 제안 PR 과 발행 타이머
 
-### `openwiki/relief-terrain.md` — 8KB · 65줄 · ~2,495 토큰
+### `openwiki/relief-terrain.md` — 11KB · 76줄 · ~3,346 토큰
 
 - `L9` 파일 지도
 - `L25` depth 규칙(런타임, `playSceneRelief.ts` 머리말)
 - `L35` 편집기 성능 계약 (main 의 높이 붓 렉 수정을 지킨다)
-- `L42` 알려진 한계 · 결정이 필요한 것
-- `L50` 검증 도구 (이 브랜치에 들어온 것)
-- `L60` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
+- `L42` 러프 붓·지형지물 막대 (2026-10-03)
+- `L52` 알려진 한계 · 결정이 필요한 것
+- `L61` 검증 도구 (이 브랜치에 들어온 것)
+- `L71` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
 
 ### `openwiki/runtime-action-combat.md` — 30KB · 351줄 · ~7,731 토큰
 
