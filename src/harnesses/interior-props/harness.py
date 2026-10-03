@@ -395,6 +395,10 @@ class _Adopted:
 
 
 def pool():
+    # 일꾼(그림·검수 32명)은 낮은 우선순위(nice 10)로 — 띄운 셸이 nice -10 이면 그대로 물려받아 고르는 화면 서버(nice 0)가
+    # 굶었다(실측 2026-10-03: 상태 요청 0.7초 → 9초). 자식 프로세스는 이 값을 물려받는다.
+    try: os.nice(max(0, 10 - os.nice(0)))
+    except OSError: pass
     os.makedirs(store.DATA, exist_ok=True)
     fd = os.open(POOL_LOCK, os.O_RDWR | os.O_CREAT)
     try:
