@@ -32,7 +32,7 @@ import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { reliefPickCell } from "@/project/relief/screen";
 import { toast } from "@/util/toast";
-import { handleTerrainDesignPointer, isTerrainDesignTool } from "./terrainDesignActions";
+import { commitTerrainDesign, handleTerrainDesignPointer, isTerrainDesignTool } from "./terrainDesignActions";
 import { symmetricPoints, symmetryVariants, transformPoint } from "./terrainDesignGeometry";
 import { planReliefDoodad } from "./reliefDoodads";
 
@@ -418,6 +418,11 @@ export class TilePaintEngine {
    * commit=false(되돌리기로 버린 스트로크)면 정리하지 않는다.
    */
   endStroke(commit = true): void {
+    const design = editorState.get();
+    if (design.tool === "relief" && design.terrainBrush === "road" && design.terrainRoadDrag && !design.terrainFeatureId && !design.terrainVisionPreview) {
+      if (commit && (design.terrainPoints?.points.length ?? 0) >= 2) commitTerrainDesign();
+      else editorState.set({ terrainPoints: null });
+    }
     if (editorState.get().terrainDragPoint !== null) editorState.set({ terrainDragPoint: null });
     this.terrainLast=null;
     const rough = this.reliefRough;

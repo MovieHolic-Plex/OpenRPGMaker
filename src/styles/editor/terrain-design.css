@@ -22,5 +22,10 @@
  .terrain-stamp-cards { display:grid; gap:6px; grid-template-columns:1fr 1fr; margin:8px 0; }
  .terrain-stamp-card { display:grid; gap:4px; place-items:center; border:1px solid var(--border-default); background:var(--bg-base); color:var(--text-1); padding:6px; font-size:11px; cursor:pointer; }
  .terrain-stamp-card canvas { max-width:100%; max-height:96px; image-rendering:pixelated; }
+ .terrain-stamp-card[aria-pressed="true"] { border-color:var(--text-1); outline:1px solid var(--text-1); }
+ .quick-build-controls { grid-column:1/-1; }
+ .quick-build-controls [hidden] { display:none; }
+ .quick-build-controls .terrain-design-field { margin-top:8px; }
+ .quick-build-controls p { font-size:12px; color:var(--text-2); }
  .terrain-evolution-controls button { margin:5px 3px 0 0; }
 }

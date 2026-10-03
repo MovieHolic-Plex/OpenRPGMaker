@@ -8,7 +8,7 @@ import type { ReliefRoughSize } from "@/project/relief/roughBrush";
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import type { TerrainPoint, TerrainSymmetry } from "./terrainDesignGeometry";
-export type TerrainDesignTool = "contour" | "road" | "ridge" | "valley" | "lake" | "mix" | "mixedCluster" | "stamp" | "lock" | "route" | "finish";
+export type TerrainDesignTool = "contour" | "road" | "house" | "ridge" | "valley" | "lake" | "mix" | "mixedCluster" | "stamp" | "lock" | "route" | "finish";
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan" | "relief";
 export type PaintShape = "pen" | "rect" | "round";
@@ -98,6 +98,11 @@ export interface EditorState {
   terrainLakeDepth: number;
   terrainShallowWidth: number;
   terrainRoadFlatten: boolean;
+  terrainRoadDrag: boolean;
+  terrainHouseStyle: import("./houseKit").HouseKitId;
+  terrainHouseKitId: string | null;
+  terrainHouseWidth: number;
+  terrainHouseStories: 1 | 2;
   terrainUnlock: boolean;
   terrainStampId: string | null;
   terrainStampRotation: 0 | 1 | 2 | 3;
@@ -175,6 +180,9 @@ class EditorStateStore {
     terrainLakeDepth: 3,
     terrainShallowWidth: 2,
     terrainRoadFlatten: false,
+    terrainRoadDrag: false,
+    terrainHouseStyle: "blue-stone", terrainHouseWidth: 7, terrainHouseStories: 1,
+    terrainHouseKitId: null,
     terrainUnlock: false,
     terrainStampId: null,
     terrainStampRotation: 0,
@@ -348,6 +356,7 @@ const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof 
   "terrainDesignOpen", "terrainSymmetry", "terrainDelta", "terrainAreaShape", "terrainStampName", "terrainSeed", "terrainMixWeights",
   "terrainLakeLevel", "terrainLakeDepth", "terrainShallowWidth", "terrainRoadFlatten", "terrainUnlock",
   "terrainFeatureId", "terrainDragPoint", "terrainFinishMethod", "terrainFinishPasses",
+  "terrainRoadDrag", "terrainHouseStyle", "terrainHouseKitId", "terrainHouseWidth", "terrainHouseStories",
   "terrainStampId", "terrainStampRotation", "terrainStampMirror", "terrainStampCapture", "terrainRouteWidth",
   "reliefClusterDensity", "reliefClusterEnabled", "terrainSelectedGroup", "terrainMoveGroup", "terrainReachability",
 ]);

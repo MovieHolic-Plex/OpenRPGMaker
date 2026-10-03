@@ -1,6 +1,6 @@
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
-import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
 import { comboBrushPlacement } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
 import { brushStrokePoints } from "@/editor/TilePaintEngine";
@@ -17,6 +17,8 @@ import { symmetricPoints, lineCells, polygonCells, symmetryVariants, transformPo
 import { planTerrainStamp } from "./terrainStamps";
 import { terrainLocked } from "@/project/terrainDesign";
 import { planReliefDoodad } from "./reliefDoodads";
+import { planQuickHouse } from "./quickHouse";
+import { structureKitUnitCells } from "./harnessSuggestion/structureKitModel";
 
 function announceReliefDoodadHover(detail: ReliefDoodadHoverDetail): void {
   if (typeof window === "undefined") return;
@@ -37,7 +39,18 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
     const g = spec.scene.add.graphics(), lift = map.relief ? reliefLiftField(map.relief) : null;
     const draw = (x:number,y:number,color:number) => { g.fillStyle(color,.22);g.lineStyle(1,color,.85);const top=(y-(lift?cellLift(lift,x,y):0))*tileSize;g.fillRect(x*tileSize,top,tileSize,tileSize);g.strokeRect(x*tileSize,top,tileSize,tileSize); };
     if (state.terrainFeatureId || state.terrainVisionPreview) { spec.layer.add(g); return; }
-    if (state.terrainBrush === "stamp" && !state.terrainStampCapture) {
+    if (state.terrainBrush === "house") {
+      const plan = planQuickHouse(map, tileset, pick, { style: state.terrainHouseStyle, width: state.terrainHouseWidth, stories: state.terrainHouseStories, kitId: state.terrainHouseKitId });
+      if (plan.kit) for (const cell of structureKitUnitCells(plan.kit)) {
+        const x = plan.x + cell.dx, y = plan.y + cell.dy;
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+        const preview = createRawChipsetTileObject(spec.scene, map, tileset, x, y, cell.tile);
+        preview.setY(preview.y - (lift ? cellLift(lift, x, y) : 0) * tileSize).setAlpha(.65);
+        spec.layer.add(preview);
+      }
+      for (const i of plan.indices) draw(i % map.width, Math.floor(i / map.width), plan.ok ? 0x2f9e44 : 0xe03131);
+      announceReliefDoodadHover({ ok: plan.ok, reason: plan.reason, label: "집 외관" });
+    } else if (state.terrainBrush === "stamp" && !state.terrainStampCapture) {
       const stamp=store.getCurrent().terrainStamps?.find(s=>s.id===state.terrainStampId);
       if(stamp){const plan=planTerrainStamp(map,tileset,stamp,pick,state.terrainStampRotation,state.terrainStampMirror);for(const i of plan.indices)draw(i%map.width,Math.floor(i/map.width),plan.ok?0x2f9e44:0xe03131);}
     } else {
@@ -125,6 +138,7 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     spec.mapId, spec.centerX, spec.centerY, state.tool, state.layer,
     state.selectedTile, state.brushSize, state.paintShape, stampKey,
     state.terrainSymmetry, state.terrainStampId, state.terrainStampRotation, state.terrainStampMirror, state.terrainStampCapture,
+    state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainRoadDrag,
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
     ...(state.tool === "relief"
       ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, store.getVersionToken(), reliefSignature(store.getCurrent().maps[spec.mapId]?.relief)]

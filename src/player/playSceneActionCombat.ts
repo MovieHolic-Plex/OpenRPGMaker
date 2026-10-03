@@ -373,12 +373,12 @@ function acquireEnemyTarget(
       factionAggression(state.factions, enemy.factionId),
     )
   );
-  if (enemy.retargetMs > 0 && cachedStillHostile && (enemy.forcedTargetId === cached.id || terrainLineOfSight(scene.map, pos, cached))) return cached;
+  if (enemy.retargetMs > 0 && cachedStillHostile && (enemy.forcedTargetId === cached.id || terrainLineOfSight(scene.map, pos, cached, store.getCurrent().tilesets[scene.map.tilesetId]))) return cached;
   enemy.retargetMs = TARGET_RETARGET_MS;
   const sightRange = scene.autonomousNPCs.get(enemy.eventId)?.sightRange ?? DEFAULT_TARGET_SIGHT_RANGE;
   const target = resolveHostileTarget({
     self: { id: enemy.eventId, factionId: enemy.factionId, x: pos.x, y: pos.y },
-    candidates: refs.filter(ref => ref.id === enemy.forcedTargetId || terrainLineOfSight(scene.map, pos, ref)),
+    candidates: refs.filter(ref => ref.id === enemy.forcedTargetId || terrainLineOfSight(scene.map, pos, ref, store.getCurrent().tilesets[scene.map.tilesetId])),
     table: state.factions,
     stanceOverrides: state.factionStanceOverrides,
     aggroRange: terrainVisionRange(scene.map, pos, sightRange),
@@ -1100,6 +1100,10 @@ function redrawEnemyHpBars(scene: PlaySceneContext, state: ActionCombatSceneStat
     if (state.config.enemyHpBars === "damaged" && enemy.hp >= enemy.maxHp) continue;
     const sprite = scene.eventSprites.get(enemy.eventId);
     if (!sprite) continue;
+    const position = scene.eventPositions[enemy.eventId];
+    if (position && scene.map.terrainDesign?.gameplay?.visionBlocking &&
+      (Math.hypot(position.x - scene.tileX, position.y - scene.tileY) > terrainVisionRange(scene.map, { x: scene.tileX, y: scene.tileY }, scene.map.terrainDesign.gameplay.visionRadius)
+      || !terrainLineOfSight(scene.map, { x: scene.tileX, y: scene.tileY }, position, store.getCurrent().tilesets[scene.map.tilesetId]))) continue;
     const barWidth = 24;
     const x = sprite.x - barWidth / 2;
     const y = sprite.y - sprite.displayHeight - 6;

@@ -1,0 +1,17 @@
+{
+  "projectId": "9d9042ae-9a35-41a0-8e30-4e36c93e8ff6",
+  "store": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/visibility-building-store",
+  "revision": 3,
+  "houses": 3,
+  "roads": 3,
+  "gameplay": {
+    "visionBlocking": true,
+    "highGroundVision": true,
+    "projectileHeight": false,
+    "visionRadius": 20,
+    "visionGain": 1,
+    "eyeHeight": 1
+  },
+  "canonicalReload": true,
+  "isolatedQAFixture": true
+}

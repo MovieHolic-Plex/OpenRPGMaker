@@ -206,6 +206,10 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       on:{click:()=>editorState.set({terrainBrush:value,reliefDoodad:null,reliefBridgeStart:null,terrainMoveGroup:false,terrainPoints:null})}}) as HTMLButtonElement;
     terrainButtons.set(value,b);terrainTools.append(b);
   }
+  for (const [value, label] of [["house", "집"], ["road", "도로"]] as const) {
+    const button = el("button", { class: "relief-bar-size", text: label, attrs: { type: "button", "aria-pressed": "false" }, dataset: { testid: `terrain-tool-${value}` }, on: { click: () => { selectTerrainDesignTool(value); editorState.set({ terrainVisionPreview: false, ...(value === "road" ? { terrainRoadDrag: true } : {}) }); } } }) as HTMLButtonElement;
+    terrainButtons.set(value, button); terrainTools.append(button);
+  }
   const material=el("select",{class:"relief-bar-style",attrs:{"aria-label":"표면 재질"},dataset:{testid:"terrain-material"},on:{change:e=>editorState.set({terrainMaterial:(e.target as HTMLSelectElement).value as "grass"|"dirt"|"stone"})}}) as HTMLSelectElement;
   for(const key of ["grass","dirt","stone"] as const)material.append(el("option",{value:key,text:MATERIAL_LABEL[key]}));
   const brushWidth=el("select",{class:"relief-bar-style",attrs:{"aria-label":"표면·강 붓 폭"},dataset:{testid:"terrain-width"},on:{change:e=>editorState.set({terrainWidth:Number((e.target as HTMLSelectElement).value)})}}) as HTMLSelectElement;
@@ -381,6 +385,11 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     if(state.terrainBrush==="river")hint.textContent=`강 · 폭 ${state.terrainWidth}칸 · 첫 칸 높이로 강바닥 · 물가 자동 접합 · 통로·물체 보호`;
     if(state.terrainBrush==="group")hint.textContent=state.terrainMoveGroup?"옮길 자리를 누른다 · 오른쪽 버튼·Esc: 취소":selectedExists?"군집 선택됨 — 옮기기·군집 지우기":"나무·바위 군집을 눌러 선택한다";
     if(isTerrainDesignTool(state.terrainBrush)) hint.textContent = `${TERRAIN_DESIGN_TOOLS.find(([key]) => key === state.terrainBrush)![1]} · 지형 설계에서 옵션을 고르세요 · Enter: 적용 · Esc: 점 취소`;
+    if (state.terrainBrush === "house") {
+      hint.classList.toggle("is-bad", hover?.ok === false); hint.classList.toggle("is-ok", hover?.ok === true);
+      hint.textContent = hover?.label === "집 외관" ? hover.reason : "집 모양을 고르고 문 위치를 한 번 클릭하세요";
+    }
+    if (state.terrainBrush === "road" && state.terrainRoadDrag && !state.terrainFeatureId) hint.textContent = `도로 · 폭 ${state.terrainWidth}칸 · 끌고 놓으면 적용 · Esc: 취소`;
     if(state.terrainReachability && store.getCurrent().startMapId!==state.currentMapId)hint.textContent+=" · 시작 맵에서 통행을 확인한다";
   };
   renderTabs();
