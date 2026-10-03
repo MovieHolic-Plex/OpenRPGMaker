@@ -1362,7 +1362,7 @@
     "slab",
     "slab_edge16"
    ],
-   "edgeConnects": true
+   "edgeConnects": false
   },
   "fld_tall32": {
    "kind": "mask16",
@@ -1371,7 +1371,7 @@
    "connect": [
     "fld_tall32"
    ],
-   "edgeConnects": false
+   "edgeConnects": true
   },
   "fld_forest32": {
    "kind": "mask16",
@@ -1398,9 +1398,12 @@
    "walk": false,
    "connect": [
     "fld_rock32",
-    "fld_face32"
+    "fld_face32",
+    "fld_rock_in8",
+    "slab_edge16",
+    "road64"
    ],
-   "edgeConnects": false,
+   "edgeConnects": true,
    "fold": [
     "fld_rock_in8"
    ]
@@ -1425,7 +1428,7 @@
     "cav_roof47",
     "cav_face24"
    ],
-   "edgeConnects": false
+   "edgeConnects": true
   },
   "cav_face24": {
    "name": "동굴 벽 앞면",
@@ -1480,7 +1483,8 @@
    "walk": false,
    "role": "terrain",
    "connect": [
-    "in_ceil47"
+    "in_ceil47",
+    "in_ceil_front"
    ],
    "edgeConnects": true
   },
@@ -1525,7 +1529,8 @@
    "walk": false,
    "role": "terrain",
    "connect": [
-    "pal_ceil47"
+    "pal_ceil47",
+    "pal_ceil_front"
    ],
    "edgeConnects": true
   },
@@ -1537,6 +1542,16 @@
   "pal_floor_yard": {
    "name": "조선 궁 문 앞 디딤돌·박석 마당",
    "walk": true,
+   "role": "terrain"
+  },
+  "in_ceil_front": {
+   "name": "조선 실내 바깥 아랫벽(천장 띠 아래 앞면)",
+   "walk": false,
+   "role": "terrain"
+  },
+  "in_void": {
+   "name": "조선 실내 바깥 어둠(방 밖 빈 칸)",
+   "walk": false,
    "role": "terrain"
   }
  }
