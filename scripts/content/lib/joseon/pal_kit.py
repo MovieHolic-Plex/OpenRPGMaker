@@ -9,7 +9,7 @@ import water_blob as WB
 import inb_kit as IK
 
 # ----------------------------------------------------------------------------------------------------- 바닥: 전돌
-FLOORS = ('jeon',)
+FLOORS = ('jeon', 'slab', 'ondol')
 
 
 def _jeon(v):
@@ -30,11 +30,49 @@ def _jeon(v):
     return cv
 
 
+def _slab(v):
+    """궁 곁 마당 판석: 푸른 전돌과 다른 따뜻한 회색 큰 판(16px 한 장), 오른쪽·아래 이음, 판마다 결이 다르다(구역 바닥 변화)."""
+    cv = Cv(T, T)
+    for y in range(T):
+        for x in range(T):
+            q = rnd(x // 3, y // 2, 740 + v)
+            c = ST[4]
+            if q < 0.12: c = ST[3]
+            elif q > 0.93: c = ST[5]
+            cv.put(x, y, c)
+    for k in range(2):                                       # 판 안 잔 금(짧은 두 줄)
+        x0, y0 = hsh(k, v, 41) % 9, 2 + hsh(v, k, 43) % 10
+        for i in range(4):
+            cv.put(x0 + i, y0 + (i // 2), ST[3])
+    for i in range(T):
+        cv.put(i, 15, ST[2]); cv.put(15, i, ST[2])
+    return cv
+
+
+def _ondol2(v):
+    """궁 온돌 장판: 이음선 없이 이어지는 기름먹인 한지 결(칸마다 결 위치만 달라 격자가 읽히지 않는다)."""
+    cv = Cv(T, T)
+    e = ER
+    for y in range(T):
+        for x in range(T):
+            q = rnd(x, y, 750 + v)
+            c = e[5]
+            if q < 0.04: c = e[4]
+            elif q > 0.985: c = e[6]
+            cv.put(x, y, c)
+    for k in range(3):                                       # 가로 결 2~3가닥(타일 가장자리를 넘지 않고 칸마다 위치가 다르다)
+        x0, y0 = hsh(k, v, 61) % 8, 1 + hsh(v, k, 63) % 14
+        for i in range(5 + (k + v) % 3):
+            cv.put(x0 + i, y0, e[4] if (k + v) % 2 else e[6])
+    return cv
+
+
 def floor_sets():
     out = {}
-    base = [_jeon(v) for v in range(4)]
-    out['pal_jeon'] = base
-    out['pal_jeon_sh'] = [IK._shade(base[0], 'n'), IK._shade(base[1], 'w'), IK._shade(base[2], 'nw')]
+    for name, fn in (('jeon', _jeon), ('slab', _slab), ('ondol', _ondol2)):
+        base = [fn(v) for v in range(4)]
+        out['pal_' + name] = base
+        out['pal_%s_sh' % name] = [IK._shade(base[0], 'n'), IK._shade(base[1], 'w'), IK._shade(base[2], 'nw')]
     return out
 
 
@@ -206,8 +244,12 @@ def pillar(rows, kind='a'):
             f = (x - x0) / (x1 - x0 - 1)
             c = RD[6] if f < 0.15 else (RD[5] if f < 0.4 else (RD[4] if f < 0.7 else (RD[3] if f < 0.9 else RD[2])))
             cv.put(x, y, c)
-    for x in range(2, 14):                                           # 주두(기둥 머리) 3줄
-        cv.put(x, 2, WD[6] if x < 6 else WD[4]); cv.put(x, 3, WD[5] if x < 7 else WD[3]); cv.put(x, 4, WD[3] if x < 8 else WD[2])
+    for x in range(0, 16):                                           # 평방·창방 마구리: 기둥 머리 위로 양옆에 내민 두공 띠(단청 끝)
+        k = (x // 2) % 4
+        cv.put(x, 0, WD[6] if x < 8 else WD[4])
+        cv.put(x, 1, (DG[5], RD[5], DB[5], RD[5])[k]); cv.put(x, 2, (DG[4], RD[4], DB[4], RD[4])[k])
+    for x in range(1, 15):
+        cv.put(x, 3, WD[5] if x < 7 else WD[3]); cv.put(x, 4, WD[3] if x < 8 else WD[2])
     cv.hl(3, 13, 5, WD[2]); cv.hl(3, 13, 6, WD[1])
     _dan_pattern(cv, 4, 12, 7, kind)                                  # 머리초(기둥 윗부분 띠)
     cv.hl(4, 12, 11, RD[1])
@@ -295,25 +337,25 @@ def dais_face(col='m'):
 
 
 def dais_stair(cols=3):
-    """단 앞 돌계단 cols×1(3칸 폭): 디딤(밝음 2px)과 챌판(어두움 3px)이 세 단, 가운데 붉은 어도 카펫이 이어진다. 양 끝은 소맷돌."""
+    """단 앞 돌계단 cols×1(3칸 폭): 디딤(밝은 돌 2px)과 챌판(어두운 돌 3px)이 세 단 — 카펫은 계단 앞에서 멈추고 돌 층계가 드러난다. 양 끝은 소맷돌."""
     W_ = cols * T
     cv = Cv(W_, T)
     for t in range(3):
         y0 = t * 5
         for x in range(W_):
             f = x / (W_ - 1)
-            cv.put(x, y0, ST[6]); cv.put(x, y0 + 1, ST[5])
+            cv.put(x, y0, ST[6]); cv.put(x, y0 + 1, ST[5] if f < 0.5 else ST[4])
             for yy in range(y0 + 2, y0 + 5):
-                cv.put(x, yy, ST[4] if (f < 0.4 and yy == y0 + 2) else (ST[3] if yy < y0 + 4 else ST[2]))
+                c = ST[4] if (f < 0.35 and yy == y0 + 2) else (ST[3] if yy < y0 + 4 else ST[2])
+                if rnd(x, yy, 940 + t) < 0.07: c = ST[2] if c == ST[3] else ST[3]
+                cv.put(x, yy, c)
+        for jx in (11 + t * 7, 30 + t * 5):                       # 장대석 이음(챌판)
+            for yy in range(y0 + 2, y0 + 5):
+                cv.put(jx % W_, yy, ST[2])
     cv.hl(0, W_, 15, ST[1])
-    for t in range(3):                                           # 붉은 카펫: 단마다 디딤 위로 덮여 내려온다
-        y0 = t * 5
-        for x in range(4, W_ - 4):
-            cv.put(x, y0, RD[5]); cv.put(x, y0 + 1, RD[4]); cv.put(x, y0 + 2, RD[3]); cv.put(x, y0 + 3, RD[3]); cv.put(x, y0 + 4, RD[2])
-        cv.put(4, y0, PS[5]); cv.put(W_ - 5, y0, PS[5])
     for x in range(0, 4):                                        # 소맷돌(양 끝 돌 난간 단면)
         for y in range(0, 16):
-            cv.put(x, y, ST[5] if x < 2 else ST[4]); cv.put(W_ - 1 - x, y, ST[3] if x < 2 else ST[4])
+            cv.put(x, y, ST[6] if x < 1 else (ST[5] if x < 3 else ST[4])); cv.put(W_ - 1 - x, y, ST[3] if x < 2 else ST[2])
     cv.vl(0, 0, 16, ST[1]); cv.vl(W_ - 1, 0, 16, ST[1])
     B.outline(cv)
     return cv
@@ -382,31 +424,56 @@ def nangan(kind='m'):
 
 
 # ----------------------------------------------------------------------------------------------------- 회랑 깔개(긴 붉은 마루깔개)와 문 앞 깔개
-def run_mat(kind='m'):
+def run_mat(kind='m', color='r'):
     """회랑 마루깔개 1×2(16×32): 붉은 바탕에 금 줄 테두리와 가운데 마름모 줄. l/r 은 끝 술. 바닥에 붙은 윗면(앞 두께 2px)."""
     cv = Cv(T, 2 * T)
+    R_ = RD if color == 'r' else DB
+    acc = PS if color == 'r' else PL
     x0 = 1 if kind == 'l' else 0
     x1 = T - 1 if kind == 'r' else T
     for y in range(3, 28):
         for x in range(x0, x1):
-            q = rnd(x, y, 1300)
-            c = RD[4] if q > 0.03 else RD[3]
-            if y == 3: c = RD[6]
+            q = rnd(x, y, 1300 if color == 'r' else 1310)
+            c = R_[4] if q > 0.03 else R_[3]
+            if y == 3: c = R_[6]
             cv.put(x, y, c)
     for x in range(x0, x1):
-        cv.put(x, 6, PS[4]); cv.put(x, 7, PS[2]); cv.put(x, 23, PS[4]); cv.put(x, 24, PS[2])
-        cv.put(x, 28, RD[2]); cv.put(x, 29, RD[1])
+        cv.put(x, 6, acc[4]); cv.put(x, 7, acc[2]); cv.put(x, 23, acc[4]); cv.put(x, 24, acc[2])
+        cv.put(x, 28, R_[2]); cv.put(x, 29, R_[1])
         k = x % 8
-        if k in (2, 3, 4):
-            cv.put(x, 14 + (k == 3) * -1, PS[5]); cv.put(x, 15, PS[4]); cv.put(x, 16 + (k == 3), PS[5])
+        if color == 'r':
+            if k in (2, 3, 4):
+                cv.put(x, 14 + (k == 3) * -1, PS[5]); cv.put(x, 15, PS[4]); cv.put(x, 16 + (k == 3), PS[5])
+        else:                                                   # 청 깔개: 흰 겹마름모 줄
+            if k in (1, 2, 3, 4, 5):
+                d = min(k - 1, 5 - k)
+                cv.put(x, 14 - d, PL[5]); cv.put(x, 17 + d, PL[5])
+                if d == 0: cv.put(x, 15, PL[6]); cv.put(x, 16, PL[6])
     if kind == 'l':
-        cv.vl(1, 3, 28, RD[6]); cv.vl(0, 4, 28, PS[3])
+        cv.vl(1, 3, 28, R_[6]); cv.vl(0, 4, 28, acc[3])
         for y in range(4, 28, 3):
-            cv.put(0, y, PS[5])
+            cv.put(0, y, acc[5])
     if kind == 'r':
-        cv.vl(14, 3, 28, RD[2]); cv.vl(15, 4, 28, PS[3])
+        cv.vl(14, 3, 28, R_[2]); cv.vl(15, 4, 28, acc[3])
         for y in range(4, 28, 3):
-            cv.put(15, y, PS[4])
+            cv.put(15, y, acc[4])
+    return cv
+
+
+def step_stone():
+    """문 앞 디딤돌 2×1(32×16): 돌 한 장 윗면(밝은 돌 + 가장자리 윤곽)과 낮은 앞면, 바닥에 놓인 것."""
+    cv = Cv(2 * T, T)
+    for y in range(3, 11):
+        for x in range(1, 31):
+            q = rnd(x, y, 1350)
+            c = ST[5] if q > 0.06 else ST[4]
+            if y == 3: c = ST[6]
+            cv.put(x, y, c)
+    for x in range(1, 31):
+        cv.put(x, 11, ST[4]); cv.put(x, 12, ST[3]); cv.put(x, 13, ST[2])
+    for (jx, jy) in ((9, 5), (21, 6)):
+        cv.put(jx, jy, ST[3]); cv.put(jx + 1, jy, ST[3]); cv.put(jx + 1, jy + 1, ST[3])
+    cv.vl(1, 3, 13, ST[6])
     return cv
 
 
@@ -453,8 +520,10 @@ def objects():
     for k in ('m', 'l', 'r'):
         d['pal_nangan_%s' % k] = nangan(k)
         d['pal_mat_run_%s' % k] = run_mat(k)
+        d['pal_mat_runb_%s' % k] = run_mat(k, 'b')
     for k in 'abc':
         d['pal_mat_gung_%s' % k] = door_mat(k)
+    d['pal_step_stone'] = step_stone()
     return d
 
 

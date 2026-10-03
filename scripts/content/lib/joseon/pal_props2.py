@@ -9,7 +9,7 @@ from pal_props import dragon
 
 
 # ----------------------------------------------------------------------------------------------------- 궁중 병풍 4폭 (모란도) 4×2
-def byeongpung_gung():
+def byeongpung_gung(kind='moran'):
     """궁중 병풍(64×32): 붉은 칠 틀에 금 테, 비단 바탕에 모란 큰 꽃과 바위·잎. 접힌 폭이 윗선에서 지그재그로 어긋난다."""
     W_ = 64
     cv = Cv(W_, 32)
@@ -28,17 +28,35 @@ def byeongpung_gung():
                 q = rnd(x, y, 1100 + i)
                 cv.put(x, y, SW[6] if q > 0.1 else SW[5])
         rim(cv, sx0 - 1, sy0 - 1, sx1 + 1, sy1 + 1, PS[3])                       # 금 안테두리
-        # 바위(아래) + 모란 + 잎
-        for y in range(sy1 - 5, sy1):
-            for x in range(sx0 + 1, sx1 - 1):
-                if abs(x - (sx0 + 5)) < 5 - (sy1 - y) // 2 + (i % 2):
-                    cv.put(x, y, GI[5] if x < sx0 + 5 else GI[4])
-        fx, fy = sx0 + 5 + (i % 2) * 2 - 1, sy0 + 5 + (i * 3) % 5
-        for k in range(3):
-            line(cv, sx0 + 1, sy1 - 7 - k * 5, sx1 - 2, sy1 - 10 - k * 5 + (i % 2), DG[4])
-        for (dx, dy2, rr) in ((0, 0, 3.2), (-1, 8, 2.6)):
-            disc(cv, fx + dx, fy + dy2, rr, RD[4]); disc(cv, fx + dx - 1, fy + dy2 - 1, rr * 0.55, RD[6]); cv.put(fx + dx, fy + dy2, PS[5])
-        cv.vl(fx, fy + 3, sy1 - 5, DG[3])
+        if kind == 'sansu':                                                   # 산수: 청 하늘 → 먼 산 둘 → 물 → 폭마다 다른 소나무
+            for y in range(sy0, sy1):
+                for x in range(sx0, sx1):
+                    cv.put(x, y, PL[6] if (y - sy0) < 5 else (SW[6] if (y - sy0) < 12 else SW[5]))
+            for x in range(sx0, sx1):
+                hh = 4 + ((x * 2 + i * 5) % 7)
+                for y in range(sy1 - hh - 7, sy1 - 7):
+                    cv.put(x, y, DB[5] if (y - (sy1 - hh - 7)) < 2 else DB[4])
+            for y in range(sy1 - 7, sy1):
+                for x in range(sx0, sx1):
+                    cv.put(x, y, DB[3] if (y + i) % 3 else PL[5])
+            tx = sx0 + 3 + (i % 2) * 4
+            cv.vl(tx, sy0 + 6 + (i % 3), sy1 - 7, WD[2])
+            disc(cv, tx, sy0 + 6 + (i % 3), 2.6, DG[4]); disc(cv, tx - 1, sy0 + 5 + (i % 3), 1.4, DG[5])
+            if i == 1:
+                disc(cv, sx0 + 8, sy0 + 3, 1.8, PL[6])
+            if i == 2:
+                disc(cv, sx0 + 4, sy0 + 3, 1.8, RD[5])
+        else:
+            for y in range(sy1 - 5, sy1):                                          # 바위(아래)
+                for x in range(sx0 + 1, sx1 - 1):
+                    if abs(x - (sx0 + 5)) < 5 - (sy1 - y) // 2 + (i % 2):
+                        cv.put(x, y, GI[5] if x < sx0 + 5 else GI[4])
+            fx, fy = sx0 + 5 + (i % 2) * 2 - 1, sy0 + 5 + (i * 3) % 5
+            for k in range(3):
+                line(cv, sx0 + 1, sy1 - 7 - k * 5, sx1 - 2, sy1 - 10 - k * 5 + (i % 2), DG[4])
+            for (dx, dy2, rr) in ((0, 0, 3.2), (-1, 8, 2.6)):
+                disc(cv, fx + dx, fy + dy2, rr, RD[4]); disc(cv, fx + dx - 1, fy + dy2 - 1, rr * 0.55, RD[6]); cv.put(fx + dx, fy + dy2, PS[5])
+            cv.vl(fx, fy + 3, sy1 - 5, DG[3])
     B.outline(cv)
     return cv
 
@@ -79,6 +97,26 @@ def chimgu():
 
 
 # ----------------------------------------------------------------------------------------------------- 서안 2×1
+def seoan_b():
+    """서리(書吏) 서안 변형(32×16): 감나무빛 낮은 책상. 윗면에 책 더미(왼쪽)·펼친 장부(가운데)·붓통(오른쪽 끝)."""
+    cv = Cv(32, 16)
+    for y in range(3, 8):
+        for x in range(0, 32):
+            cv.put(x, y, WD[5] if (y == 3 or x == 0) else WD[4])
+    cv.hl(0, 32, 7, WD[2])
+    for x in range(0, 32):
+        cv.put(x, 8, WD[3]); cv.put(x, 9, WD[2] if (x // 10) % 2 else WD[3]); cv.put(x, 10, WD[1])
+    cv.hl(0, 32, 11, WD[1])
+    for k, c in enumerate((PL[6], SW[6], PL[5])):         # 책 더미 3권
+        cv.rect(2, 4 - k, 8, 5 - k, c); cv.hl(2, 9, 4 - k, PL[6]); cv.hl(2, 9, 5 - k, WD[3])
+    cv.rect(12, 3, 21, 6, PL[6]); cv.vl(16, 3, 6, WD[3]); cv.hl(13, 15, 4, GI[2]); cv.hl(17, 20, 5, GI[2])   # 펼친 장부
+    cv.rect(26, 3, 29, 6, DG[3]); cv.vl(27, 0, 2, WD[5]); cv.vl(28, 1, 2, WD[4]); cv.put(27, 0, RD[5])      # 붓통 + 붓
+    for x in (3, 27):
+        cv.rect(x, 12, x + 2, 16, WD[1]); cv.put(x, 12, WD[3])
+    B.outline(cv)
+    return cv
+
+
 def seoan_gung():
     """궁중 서안(32×16): 붉은 옻칠 낮은 책상 + 금 가장자리. 윗면에 벼루·붓통·두루마리."""
     cv = Cv(32, 16)
@@ -206,7 +244,7 @@ def mat_sinha(kind='b1'):
             cv.put(x, y, ramp[4] if q > 0.12 else ramp[3])
     cv.hl(1, 31, 2, ramp[6]); cv.vl(1, 2, 13, ramp[5])
     for x in range(1, 31):
-        cv.put(x, 12, ramp[3]); cv.put(x, 13, ramp[2]); cv.put(x, 14, ramp[1])
+        cv.put(x, 12, ramp[2]); cv.put(x, 13, ramp[1])
     rim(cv, 3, 4, 29, 11, edge[4] if fam == 'b' else PS[4])
     # 무늬: n 마다 다름(1 마름모 줄, 2 줄무늬, 3 점)
     for x in range(4, 28):
@@ -268,11 +306,27 @@ def hang_jokja_gung(kind='a'):
 PN_ = RGB['pine']
 
 
+def bangseok_round(kind='a'):
+    """둥근 비단 방석 1×1(원방석): 납작한 타원 윗면 + 앞 두께 1~2px, 금 실 테두리와 가운데 매듭. a 붉은 b 청 c 녹. 네모 방석(상자처럼 보임)보다 낮고 부드럽다."""
+    cv = Cv(16, 16)
+    ramp = {'a': RD, 'b': DB, 'c': DG}[kind]
+    P5.ell(cv, 8, 10, 6.6, 3.4, lambda x, y, u, v: ramp[3] if v > 0.55 else ramp[2])                                 # 앞 두께(아래 그림자)
+    P5.ell(cv, 8, 9, 6.6, 3.4, lambda x, y, u, v: ramp[6] if (u < -0.4 and v < 0) else (ramp[5] if (u + v) < 0.5 else ramp[4]))
+    P5.ell(cv, 8, 9, 4.6, 2.2, lambda x, y, u, v: PS[3] if 0.7 < (u * u + v * v) else None)                          # 금실 고리
+    cv.put(8, 9, PS[6]); cv.put(7, 9, PS[4]); cv.put(9, 9, PS[4])
+    B.outline(cv)
+    return cv
+
+
 def objects():
     d = {}
     d['pal_byeongpung_gung'] = byeongpung_gung()
+    d['pal_byeongpung_gung2'] = byeongpung_gung('sansu')
+    for k in 'abc':
+        d['pal_bangseok_o' + k] = bangseok_round(k)
     d['pal_chimgu'] = chimgu()
     d['pal_seoan'] = seoan_gung()
+    d['pal_seoan_b'] = seoan_b()
     d['pal_hwaro'] = hwaro_gung()
     d['pal_chotdae_big'] = chotdae_big()
     d['pal_yong_jang'] = yong_jang()

@@ -12,7 +12,7 @@ COLS = IM.COLS
 BITS = IM.BITS
 piece_size = IM.piece_size
 
-FLOOR_GROUP = {'jeon': 'pal_jeon', 'maru': 'in_b_maru', 'ondol': 'in_b_ondol'}
+FLOOR_GROUP = {'jeon': 'pal_jeon', 'slab': 'pal_slab', 'maru': 'in_b_maru', 'ondol': 'pal_ondol'}
 
 
 class PalRoom(IM.Room):
@@ -47,10 +47,7 @@ class PalRoom(IM.Room):
                 if mode:
                     s.ground[y][x] = sh.gid(grp + '_sh', {'n': 0, 'w': 1, 'nw': 2}[mode])
                 else:
-                    if fk == 'ondol':
-                        v = (2 if x % 2 == 1 else 0) + (1 if y % 2 == 1 else 0)
-                    else:
-                        v = hsh(x, y, 5 + s.seed) % 4
+                    v = hsh(x, y, 5 + s.seed) % 4
                     s.ground[y][x] = sh.gid(grp, v)
         items = []
         order = 0

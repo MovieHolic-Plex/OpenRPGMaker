@@ -1294,6 +1294,33 @@
   },
   "pal_mat_gung_c": {
    "all": "F"
+  },
+  "pal_mat_runb_m": {
+   "all": "F"
+  },
+  "pal_mat_runb_l": {
+   "all": "F"
+  },
+  "pal_mat_runb_r": {
+   "all": "F"
+  },
+  "pal_step_stone": {
+   "all": "F"
+  },
+  "pal_byeongpung_gung2": {
+   "all": "X"
+  },
+  "pal_bangseok_oa": {
+   "all": "F"
+  },
+  "pal_bangseok_ob": {
+   "all": "F"
+  },
+  "pal_bangseok_oc": {
+   "all": "F"
+  },
+  "pal_seoan_b": {
+   "all": "X"
   }
  },
  "terrain": {
@@ -1533,6 +1560,22 @@
     "pal_ceil47"
    ],
    "edgeConnects": true
+  },
+  "pal_slab": {
+   "name": "조선 궁 곁 마당 판석",
+   "walk": true
+  },
+  "pal_slab_sh": {
+   "name": "조선 궁 곁 마당 판석 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
+  },
+  "pal_ondol": {
+   "name": "조선 궁 온돌 장판",
+   "walk": true
+  },
+  "pal_ondol_sh": {
+   "name": "조선 궁 온돌 장판 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
   }
  }
 }

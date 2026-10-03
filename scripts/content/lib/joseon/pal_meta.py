@@ -19,21 +19,21 @@ REFS = [
     ('beam_dan', ['inb:in_b_beam_red_m']),
     ('dais_top', ['inb:in_b_dais_wood_m', 'v5:floor:plank']), ('dais_face', ['inb:in_b_dais_stone_m', 'v5:stairs up stone']),
     ('dais_stair', ['inb:in_b_stair_dais_3', 'v5:stairs up stone']),
-    ('mat_carpet', ['v5:aisle runner', 'v5:runner']), ('mat_run', ['v5:runner', 'v5:aisle runner']),
+    ('mat_carpet', ['v5:aisle runner', 'v5:runner']), ('mat_run', ['v5:runner', 'v5:aisle runner']), ('step_stone', ['inb:in_b_stair_dais_2', 'v5:doormat']),
     ('mat_gung', ['inb:in_b_mat_dot_2x2', 'v5:rug red']), ('mat_sinha', ['inb:in_b_mat_dot_2x2', 'v5:rug red']),
     ('nangan', ['v5:bench 2', 'v5:towel rail']),
     ('ilwol_byeongpung', ['inb:in_b_byeongpung_royal', 'v5:tapestry', 'v5:royal banner']), ('yongsang', ['v5:throne', 'v5:stone throne']),
     ('hyangro', ['inb:in_b_hwaro', 'v5:brazier']), ('buk_big', ['inb:in_b_buk', 'v5:barrel']), ('jong_geori', ['v5:bell rope', 'v5:column wood']),
     ('deungnong', ['inb:in_b_deungjan_stand', 'v5:hanging lantern']), ('hang_deungnong', ['v5:hanging lantern', 'v5:wall sconce']),
     ('deumeu', ['v5:water trough', 'v5:washbasin']),
-    ('byeongpung_gung', ['inb:in_b_byeongpung_b', 'v5:tapestry']), ('chimgu', ['inb:in_b_ibul_r', 'v5:double bed red']),
+    ('byeongpung_gung', ['inb:in_b_byeongpung_b', 'v5:tapestry']),  ('chimgu', ['inb:in_b_ibul_r', 'v5:double bed red']),
     ('seoan', ['inb:in_b_seoan_2', 'v5:desk 2x1']), ('hwaro', ['inb:in_b_hwaro', 'v5:brazier']), ('chotdae_big', ['inb:in_b_chotdae', 'v5:candelabra']),
     ('yong_jang', ['inb:in_b_ibuljang', 'v5:wardrobe']), ('bangseok', ['inb:in_b_banseok_r', 'v5:stool']),
     ('hang_jokja', ['inb:in_b_jokja_a', 'v5:picture']),
 ]
 WALL_PFX = ('wall_', 'door_gung')
 FRONT_ONLY = WALL_PFX + ('pillar', 'beam', 'dais', 'ilwol', 'hang_', 'mat_', 'nangan', 'byeongpung_gung')
-FLAT = ('mat_', 'bangseok', 'dais_top', 'dais_stair')
+FLAT = ('mat_', 'bangseok', 'dais_top', 'dais_stair', 'step_stone')
 
 
 def short(name):
@@ -95,10 +95,9 @@ def terrain_defs(terr_names):
         s = short(n)
         if s == 'ceil47':
             out[n] = {'kind': 'blob47', 'name': '조선 궁 천장(단청 띠·벽 덩어리·어둠)', 'walk': False, 'role': 'terrain', 'connect': [n], 'edgeConnects': True}
-        elif s.endswith('_sh'):
-            out[n] = {'name': '조선 궁 전돌 바닥 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)', 'walk': True}
         else:
-            out[n] = {'name': '조선 궁 전돌 바닥', 'walk': True}
+            nm = {'jeon': '전돌 바닥', 'slab': '곁 마당 판석', 'ondol': '온돌 장판'}[s.replace('_sh', '')]
+            out[n] = {'name': '조선 궁 ' + nm + (' (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)' if s.endswith('_sh') else ''), 'walk': True}
     return out
 
 

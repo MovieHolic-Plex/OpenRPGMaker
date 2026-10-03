@@ -4423,5 +4423,72 @@
    "v5:rug red"
   ],
   "front_only": true
+ },
+ "pal_mat_runb_m": {
+  "cls": "prop",
+  "refs": [
+   "v5:runner",
+   "v5:aisle runner"
+  ],
+  "front_only": true
+ },
+ "pal_mat_runb_l": {
+  "cls": "prop",
+  "refs": [
+   "v5:runner",
+   "v5:aisle runner"
+  ],
+  "front_only": true
+ },
+ "pal_mat_runb_r": {
+  "cls": "prop",
+  "refs": [
+   "v5:runner",
+   "v5:aisle runner"
+  ],
+  "front_only": true
+ },
+ "pal_step_stone": {
+  "cls": "prop",
+  "refs": [
+   "inb:in_b_stair_dais_2",
+   "v5:doormat"
+  ]
+ },
+ "pal_byeongpung_gung2": {
+  "cls": "prop",
+  "refs": [
+   "inb:in_b_byeongpung_b",
+   "v5:tapestry"
+  ],
+  "front_only": true
+ },
+ "pal_bangseok_oa": {
+  "cls": "prop",
+  "refs": [
+   "inb:in_b_banseok_r",
+   "v5:stool"
+  ]
+ },
+ "pal_bangseok_ob": {
+  "cls": "prop",
+  "refs": [
+   "inb:in_b_banseok_r",
+   "v5:stool"
+  ]
+ },
+ "pal_bangseok_oc": {
+  "cls": "prop",
+  "refs": [
+   "inb:in_b_banseok_r",
+   "v5:stool"
+  ]
+ },
+ "pal_seoan_b": {
+  "cls": "prop",
+  "refs": [
+   "inb:in_b_seoan_2",
+   "v5:desk 2x1"
+  ]
  }
 }

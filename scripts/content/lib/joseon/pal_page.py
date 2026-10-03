@@ -27,7 +27,7 @@ table{border-collapse:collapse}td,th{border:1px solid #4a423a;padding:3px 8px;fo
 def rooms_page():
     import pal_rooms as RS
     h = ['<meta charset="utf-8"><title>조선 궁 내부 방 3장</title><style>%s</style>' % CSS, '<h1>조선 궁 내부 — 정전 어좌 홀 · 회랑 · 침전</h1>',
-         '<p>접두 <code>pal_</code> 조각 78종 + 후보 B(<code>in_b_</code>) 키트. 정전 어좌 홀은 21×22(요청 약 30×22 — 공간이 남아 줄임). 3/4 시점, Actor1 사람. 클릭하면 원본 해상도(×1) 로 열린다.</p>']
+         '<p>접두 <code>pal_</code> 조각 87종 + 후보 B(<code>in_b_</code>) 키트. 정전 어좌 홀은 21×23(요청 약 30×22 — 공간이 남아 줄임). 3/4 시점, Actor1 사람. 클릭하면 원본 해상도(×1) 로 열린다.</p>']
     for spec in RS.ROOMS:
         rid = spec['id']
         stem = rid.replace('_', '-')

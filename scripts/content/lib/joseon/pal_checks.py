@@ -8,6 +8,7 @@
   P3      같은 기물 셋 이상이 줄 간격이 있어도 한 줄(같은 x 또는 같은 y)에 늘어서면 안 된다(건축·깔개 제외)
   P4      좌우 복제 금지: 가구의 절반 넘게가 거울 위치에 같은 이름으로 놓이면 안 된다(건축은 대칭이어도 된다)
   P5      가구 발자국(맨 아랫줄)이 천장·어둠 칸에 걸치지 않는다
+  P6      바닥 줄에 누운 보(pal_beam_)를 깔지 않는다 — 기둥 머리 두공이 보 노릇을 하고, 진짜 위층 보는 아직 없다(2026-10 검수에서 바닥 띠로 읽혔다)
 """
 import inb_checks as CK
 import inb_room as RM
@@ -79,6 +80,10 @@ def analyze(room, sheet, spec=None):
         rep['info']['mirrorRatio'] = round(ratio, 2)
         if ratio > 0.5:
             rep['fails'].append(f'P4 가구 {mirrored}/{len(fn)} 이 거울 위치에 같은 이름으로 놓였다(좌우 복제)')
+    # P6 바닥에 누운 보 금지
+    for (n, x, y, w, h) in room.placed:
+        if n.startswith('pal_beam_'):
+            rep['fails'].append(f'P6 {n}({x},{y}) 보가 바닥 줄에 놓였다(위층 보 층이 없으므로 쓰지 않는다)')
     # P5 발자국이 천장에 걸치는가
     for (n, x, y, w, h) in fn:
         for i in range(w):

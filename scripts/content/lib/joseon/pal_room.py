@@ -7,7 +7,7 @@
 import inb_room as RM
 
 PCH = {'j': ('jeon', 'gung'), 'J': ('jeon', 'gungho'), 'g': ('maru', 'gung'), 'G': ('maru', 'gungho'),
-       'q': ('ondol', 'gung'), 'Q': ('ondol', 'gungho'), 'D': ('jeon', 'gung')}
+       'q': ('ondol', 'gung'), 'Q': ('ondol', 'gungho'), 'p': ('slab', 'gung'), 'P': ('slab', 'gungho'), 'D': ('jeon', 'gung')}
 FLOOR_CHARS = set(PCH)
 
 

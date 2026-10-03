@@ -25,6 +25,7 @@ for (n, x, y) in list(c['props']):
 cases.append(('좌우 복제', c, ('P4',)))
 d = copy.deepcopy(th); d['plan'] = list(d['plan']); r = list(d['plan'][2]); r[5] = '#'; d['plan'][2] = ''.join(r); cases.append(('벽면 윗줄 한 칸을 막힌 칸으로(구조)', d, ('C1', 'C2', 'P5')))
 e = copy.deepcopy(th); e['props'] = [p for p in e['props'] if not p[0].startswith(('pal_hyangro', 'pal_mat_sinha', 'pal_deungnong', 'pal_hwaro', 'pal_bangseok', 'pal_deumeu'))]; cases.append(('소품을 다 빼 텅 빈 홀', e, ('C7',)))
+f = copy.deepcopy(th); f['props'].append(('pal_beam_dan_m', 5, 9)); cases.append(('바닥에 누운 보', f, ('P6',)))
 ok = True
 for name, spec, want in cases:
     fails = run(spec)

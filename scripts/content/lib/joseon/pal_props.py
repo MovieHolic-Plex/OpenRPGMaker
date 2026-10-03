@@ -40,13 +40,25 @@ def dragon(cv, x0, y0, L, amp, vertical=False, flip=False, waves=2.2, thick=1.5,
     hx, hy, _ = pts[-1]
     sg = 1 if L > 0 else -1
     sx, sy = ((0, sg) if vertical else (sg, 0))
-    px, py = (sy, sx)                                                                    # 몸통 직각 방향
-    disc(cv, hx + sx * 2, hy + sy * 2, 3.0, lo); disc(cv, hx + sx * 2, hy + sy * 2, 2.4, mid)       # 머리
-    cv.rect(int(hx + sx * 4 - (1 if not vertical else 2)), int(hy + sy * 4 - (2 if not vertical else 1)), int(hx + sx * 5 + 2), int(hy + sy * 5 + 2), mid) if False else None
-    disc(cv, hx + sx * 5, hy + sy * 5, 1.6, mid)                                         # 주둥이
-    cv.put(int(hx + sx * 2 + px * 1.5), int(hy + sy * 2 + py * 1.5), RD[1])             # 눈
-    for sgn in (-1, 1):                                                                  # 뿔
-        line(cv, int(hx + sx * 1 + px * 2 * sgn), int(hy + sy * 1 + py * 2 * sgn), int(hx - sx * 2 + px * 4 * sgn), int(hy - sy * 2 + py * 4 * sgn), hi)
+    px, py = (-sy, sx) if not vertical else (sy, -sx)                                   # 몸통 직각 방향
+
+    def at(a, b):
+        return int(round(hx + sx * a + px * b)), int(round(hy + sy * a + py * b))
+    for (a_, b_, r, c) in ((0, 0, 3.0, lo), (0, 0, 2.5, mid)):                           # 두개골
+        x, y = at(a_, b_); disc(cv, x, y, r, c)
+    for a_ in range(2, 7):                                                                # 긴 주둥이(위턱 밝음, 아래턱 어두움, 입 선)
+        for b_, c in ((-1, hi if a_ < 5 else mid), (0, mid), (1, lo)):
+            cv.put(*at(a_, b_), c)
+    cv.put(*at(7, 0), lo); cv.put(*at(6, 2), lo); cv.put(*at(5, 2), lo)                  # 코끝·아래턱 수염 뿌리
+    for a_ in range(3, 6):
+        cv.put(*at(a_, 1), RD[1])                                                         # 입(어두운 선)
+    cv.put(*at(0, -1), RD[1]); cv.put(*at(-1, -1), hi)                                    # 눈
+    for sgn in (-1, 1):                                                                   # 뿔(사슴뿔처럼 두 갈래)
+        ax, ay = at(-1, 2 * sgn); bx, by = at(-4, 4 * sgn); line(cv, ax, ay, bx, by, hi)
+        cx, cy = at(-3, 3 * sgn); dx, dy = at(-1, 5 * sgn); line(cv, cx, cy, dx, dy, mid)
+    for sgn in (-1, 1):                                                                   # 수염 두 가닥(휘어 뒤로 흐른다)
+        ax, ay = at(5, sgn * 1); bx, by = at(3, sgn * 4); line(cv, ax, ay, bx, by, lo)
+        cx, cy = at(1, sgn * 6); line(cv, bx, by, cx, cy, mid)
     return pts
 
 
@@ -113,46 +125,54 @@ def ilwol_byeongpung():
 
 # ----------------------------------------------------------------------------------------------------- 용상 3×2
 def yongsang():
-    """용상(왕의 의자) 48×32: 금박 두른 붉은 높은 등받이 + 용 문양, 금 팔걸이, 붉은 비단 방석, 밑에 족좌."""
-    W_, H_ = 48, 32
+    """용상(왕의 의자) 48×48: 단청 닫집 지붕 + 키 큰 붉은 병풍형 등받이(금 테두리·가운데 큰 용·구름 머리) + 금 팔걸이 + 붉은 방석 + 두 단 족좌.
+    등받이가 방석 폭의 두 배 넘게 솟아 일월오봉 병풍 앞에서도 위계가 선다."""
+    W_, H_ = 48, 48
     cv = Cv(W_, H_)
-    # 등받이(가운데가 솟은 구름 모양 머리)
-    for y in range(0, 18):
-        hw = 16 if y > 3 else 10 + y * 2
+    # 닫집(작은 지붕): 어두운 기와 + 단청 처마 띠 + 금 용마루
+    for y in range(0, 6):
+        hw = 20 - (5 - y) * 1
         for x in range(24 - hw, 24 + hw):
             f = (x - (24 - hw)) / max(1, 2 * hw - 1)
-            cv.put(x, y, RD[5] if f < 0.2 else (RD[4] if f < 0.6 else RD[3]))
-    cv.hl(8, 40, 3, PS[5]); cv.hl(8, 40, 4, PS[3])                              # 윗 금테
-    cv.hl(14, 34, 0, PS[6]); cv.hl(14, 34, 1, PS[4])
-    cv.vl(8, 4, 18, PS[5]); cv.vl(9, 4, 18, PS[3]); cv.vl(38, 4, 18, PS[3]); cv.vl(39, 4, 18, PS[2])
-    # 용: 꼬리(왼쪽)에서 머리(오른쪽 위)까지 굽이치는 금빛 용 한 마리 + 구름 점
-    dragon(cv, 11, 11, 23, 3.4, thick=1.7, waves=1.8)
-    disc(cv, 24, 6, 1.7, PS[6]); cv.put(23, 5, PL[6])                                               # 여의주
-    for (cx, cy) in ((11, 5), (33, 14), (19, 15)):
-        cv.rect(cx - 1, cy, cx + 2, cy + 2, PS[3]); cv.put(cx, cy - 1, PS[4])                                                 # 구름
+            cv.put(x, y, IR[5] if y == 0 else (IR[4] if f < 0.4 else IR[3] if y < 4 else IR[2]))
+    for x in range(5, 43):
+        k = (x // 3) % 4
+        cv.put(x, 6, (DG[5], RD[5], DB[5], RD[5])[k]); cv.put(x, 7, (DG[4], RD[4], DB[4], RD[4])[k])
+    cv.hl(4, 44, 8, RD[1]); cv.hl(16, 32, 0, PS[5])
+    # 등받이: 가운데가 더 솟은 구름 머리, 금 테두리
+    for y in range(9, 30):
+        hw = 14 if y > 12 else 11 + (y - 9)
+        for x in range(24 - hw, 24 + hw):
+            f = (x - (24 - hw)) / max(1, 2 * hw - 1)
+            cv.put(x, y, RD[5] if f < 0.2 else (RD[4] if f < 0.65 else RD[3]))
+    cv.hl(11, 37, 9, PS[5]); cv.hl(11, 37, 10, PS[3]); cv.vl(10, 12, 30, PS[5]); cv.vl(11, 12, 30, PS[3]); cv.vl(36, 12, 30, PS[3]); cv.vl(37, 12, 30, PS[2])
+    # 큰 용(세로 승룡) + 여의주 + 구름
+    dragon(cv, 24, 28, -17, 3.6, vertical=True, thick=1.8, waves=2.0)
+    disc(cv, 29, 14, 1.8, PS[6]); cv.put(28, 13, PL[6])
+    for (cx, cy) in ((14, 16), (32, 22), (15, 25)):
+        cv.rect(cx - 1, cy, cx + 2, cy + 2, PS[3]); cv.put(cx, cy - 1, PS[4])
     # 팔걸이(금 장식 붉은 기둥) — 윗면 2px + 앞면
-    for (ax, lit) in ((3, True), (39, False)):
-        cv.rect(ax, 12, ax + 6, 22, RD[4]); cv.hl(ax, ax + 6, 12, PS[6]); cv.hl(ax, ax + 6, 13, PS[4])
-        cv.vl(ax, 14, 22, RD[5] if lit else RD[3]); cv.vl(ax + 5, 14, 22, RD[2])
-        cv.hl(ax, ax + 6, 21, PS[3])
+    for (ax, lit) in ((4, True), (38, False)):
+        cv.rect(ax, 24, ax + 6, 36, RD[4]); cv.hl(ax, ax + 6, 24, PS[6]); cv.hl(ax, ax + 6, 25, PS[4])
+        cv.vl(ax, 26, 36, RD[5] if lit else RD[3]); cv.vl(ax + 5, 26, 36, RD[2]); cv.hl(ax, ax + 6, 35, PS[3])
     # 방석(윗면)과 앞면
-    for y in range(16, 22):
-        for x in range(9, 39):
-            cv.put(x, y, RD[6] if (y == 16 or x == 9) else RD[5])
-    cv.hl(9, 39, 21, PS[4])
-    for x in range(9, 39):
-        cv.put(x, 22, RD[3]); cv.put(x, 23, RD[3] if (x // 4) % 2 else RD[2]); cv.put(x, 24, RD[2])
-    cv.hl(9, 39, 25, PS[4]); cv.hl(9, 39, 26, PS[2])
-    for x in range(12, 38, 4):                                                       # 앞 판 금 문양(작은 마름모)
-        cv.rect(x, 22, x + 2, 24, PS[4]) if False else cv.put(x + 1, 23, PS[5])
-    # 족좌 + 발
-    for y in range(27, 31):
-        for x in range(13, 35):
-            cv.put(x, y, RD[4] if y == 27 else (RD[3] if y < 29 else RD[1]))
-    cv.hl(13, 35, 27, RD[6]); cv.hl(13, 35, 28, PS[3])
-    for fx in (9, 37):
-        cv.rect(fx, 26, fx + 3, 31, PS[3]); cv.vl(fx, 26, 31, PS[5])
-    cv.hl(6, 42, 31, RD[1])
+    for y in range(28, 34):
+        for x in range(10, 38):
+            cv.put(x, y, RD[6] if (y == 28 or x == 10) else RD[5])
+    cv.hl(10, 38, 33, PS[4])
+    for x in range(10, 38):
+        cv.put(x, 34, RD[3]); cv.put(x, 35, RD[3] if (x // 4) % 2 else RD[2]); cv.put(x, 36, RD[2])
+    cv.hl(10, 38, 37, PS[4]); cv.hl(10, 38, 38, PS[2])
+    for x in range(13, 36, 4):
+        cv.put(x + 1, 35, PS[5])
+    # 두 단 족좌 + 발
+    for (y0, x0, x1) in ((39, 8, 40), (43, 6, 42)):
+        for y in range(y0, y0 + 4):
+            for x in range(x0, x1):
+                cv.put(x, y, RD[4] if y == y0 else (RD[3] if y < y0 + 2 else RD[2]))
+        cv.hl(x0, x1, y0, RD[6]); cv.hl(x0, x1, y0 + 1, PS[3]); cv.hl(x0, x1, y0 + 3, RD[1])
+    for fx in (8, 38):
+        cv.rect(fx, 36, fx + 3, 41, PS[3]); cv.vl(fx, 36, 41, PS[5])
     B.outline(cv)
     return cv
 
