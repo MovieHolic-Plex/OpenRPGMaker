@@ -25,7 +25,7 @@ NOSHADOW = ('in_wall_', 'pal_wall_', 'in_exit', 'pal_exit', 'in_doorway', 'in_do
 # 궁 내부 키트(접두 pal_): 같은 방 빌더가 접두만 바꿔 쓴다. 바닥 문자 p 전돌 · q 마루 · o 황장판 · w 월대 윗면 · c 붉은 카펫(4방 이웃 자동 이음 16칸)
 KITS = {
     'in': {'floor': FLOOR_CH, 'raised': RAISED, 'wall': WALL_OF, 'carpet': None},
-    'pal': {'floor': {'p': 'jeon', 'q': 'maru', 'o': 'ondol', 'w': 'dais', 'c': 'carpet'}, 'raised': (), 'wall': {'p': 'bun', 'q': 'chang', 'o': 'chang', 'w': 'hoe', 'c': 'bun'}, 'carpet': 'c'},
+    'pal': {'floor': {'p': 'jeon', 'q': 'maru', 'o': 'ondol', 'w': 'dais', 'c': 'carpet', 'y': 'dais'}, 'raised': (), 'wall': {'p': 'bun', 'q': 'chang', 'o': 'chang', 'w': 'hoe', 'c': 'hoe'}, 'carpet': 'c'},
 }
 
 
@@ -205,11 +205,11 @@ class Room:
                     if self.ch(x, y) == 'v':
                         ground[y][x] = tr['in_void']['tiles'][0]
                         continue
-                    if self.kit == 'in' and self.ch(x, y + 1) in ('v', 'y'):          # 바깥 아랫벽: 윗면 + 바깥 벽면(두께)
+                    if f'{self.kit}_ceil_front' in tr and self.ch(x, y + 1) in ('v', 'y'):          # 바깥 아랫벽: 윗면 + 바깥 벽면(두께)
                         L = x == 0 or (self.ch(x - 1, y) == '#' and self.ch(x - 1, y + 1) in ('v', 'y'))
                         R = x + 1 >= W or (self.ch(x + 1, y) == '#' and self.ch(x + 1, y + 1) in ('v', 'y'))
                         e = 'm' if (L and R) else ('r' if L else ('l' if R else 'lr'))
-                        ground[y][x] = tr['in_ceil_front']['tiles'][('m', 'l', 'r', 'lr').index(e)]
+                        ground[y][x] = tr[f'{self.kit}_ceil_front']['tiles'][('m', 'l', 'r', 'lr').index(e)]
                         continue
                     m = 0
                     for bit, (dx, dy) in ((IK.N_, (0, -1)), (IK.E__, (1, 0)), (IK.S__, (0, 1)), (IK.W__, (-1, 0)),
@@ -362,7 +362,7 @@ class Room:
 
     def exit_name(self, w):
         if self.kit == 'pal':
-            return 'pal_exit_door' + ('' if w == 1 else str(w))
+            return 'pal_exit_door' + ('' if w == 1 else str(w))             # 1~4 칸 폭
         return 'in_exit_door' if w == 1 else 'in_exit_door2'
 
     def carpet_mask(self, x, y):

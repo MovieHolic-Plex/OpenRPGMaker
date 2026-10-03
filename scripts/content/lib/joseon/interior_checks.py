@@ -177,7 +177,7 @@ def analyze(room, sheet, walk=None):
     # I5 맨바닥
     # 궁 방: 카펫 띠·월대 윗면은 「의도적으로 구분된 공간」이라 맨바닥으로 세지 않는다(물체가 없어도 용도가 있다). 일반 바닥만 센다.
     marked = set(room.K['carpet'] or '') | (set('w') if room.kit == 'pal' else set()) | {'y'}
-    bare = [[(not room.solid(x, y)) and room.wallrow[y][x] == 0 and (x, y) not in cover and room.ch(x, y) != 'E' and room.floor_char(x, y) not in marked for x in range(Wd)] for y in range(Ht)]
+    bare = [[(not room.solid(x, y)) and room.wallrow[y][x] == 0 and not any(ch in 'XF' for ch, _n in cover.get((x, y), [])) and room.ch(x, y) != 'E' and room.floor_char(x, y) not in marked for x in range(Wd)] for y in range(Ht)]
     for y in range(Ht):
         run = 0
         for x in range(Wd + 1):
