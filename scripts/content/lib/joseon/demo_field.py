@@ -36,6 +36,17 @@ PEOPLE = kit.PEOPLE
 START = (47, 0)
 
 
+def vnoise(x, y, seed, sc=5.0):
+    """격자 값 잡음의 쌍선형 보간(0..1): 덩이가 둥글게 섞여 직사각형 패치가 안 생긴다."""
+    fx, fy = x / sc, y / sc
+    x0, y0 = int(math.floor(fx)), int(math.floor(fy))
+    tx, ty = fx - x0, fy - y0
+    tx, ty = tx * tx * (3 - 2 * tx), ty * ty * (3 - 2 * ty)
+    a, b = rnd(x0, y0, seed), rnd(x0 + 1, y0, seed)
+    c, d = rnd(x0, y0 + 1, seed), rnd(x0 + 1, y0 + 1, seed)
+    return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty
+
+
 def noise(x, y, s, sc=3):
     return rnd(x // sc, y // sc, s)
 
@@ -59,17 +70,17 @@ def setk(cells, kind, only=(None,)):
 # ================================================================ 1단계: 바닥
 # --- 서쪽 바위산(윗면 + 앞면 2줄): 아랫단 큰 고원 + 윗단 봉우리(앞면이 따로 선다) + 동쪽 곁봉우리. 굴 입구 자리(x4..22)는 바닥선이 평평하다.
 ROCK = set()
-for x in range(0, 25):
-    yt = 34 + (hsh(x // 3, 1, 3) % 3)
+for x in range(0, 25):                                   # 아랫단 고원: 윗선은 4칸 이상 폭의 단으로만 바뀐다(1~2칸 톱니·성가퀴 금지)
+    yt = 34 + (hsh(x // 4, 1, 3) % 2)
     yb = 43 if 4 <= x <= 22 else (40 if x < 4 else 41)
     for y in range(yt, yb + 1):
         ROCK.add((x, y))
-for x in range(5, 19):
-    yt = 22 + (hsh(x // 2, 2, 3) % 3) + (2 if x < 7 or x > 16 else 0)
+for x in range(6, 18):                                   # 윗단 봉우리: 좌우 끝을 한 칸씩 안으로 접는 사다리꼴(윗선 폭 4칸 이상 단)
+    yt = 22 + (hsh(x // 4, 2, 3) % 2) + (1 if x in (6, 17) else 0)
     for y in range(yt, 31):
         ROCK.add((x, y))
-for x in range(24, 31):
-    for y in range(23 + (x % 2), 31):
+for x in range(24, 31):                                  # 동쪽 곁봉우리: 윗선 평평(끝만 한 칸 낮춤)
+    for y in range(23 + (x in (24, 30)), 31):
         ROCK.add((x, y))
 for x in range(53, 62):                                  # 초원 한가운데 낮은 바위 언덕
     for y in range(39 + (x in (53, 61)), 42):
@@ -93,6 +104,12 @@ FOREST = {c for c in FOREST if c[0] >= 68}
 setk(FOREST, 'forest')
 BOG = blob(78, 84, 11.5, 6.5, 9, 0.2) | blob(70, 82, 5, 4, 10, 0.2)
 setk(BOG, 'bog', only=(None, 'forest'))
+for _r in range(3):                                        # 늪 윤곽 다듬기: 1칸 가시(이웃 늪 ≤1)는 지우고 1칸 홈(이웃 늪 ≥3)은 메운다
+    rm = [(x, y) for y in range(MH) for x in range(MW) if KG[y][x] == 'bog' and sum(1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if inb(x + dx, y + dy) and KG[y + dy][x + dx] == 'bog') <= 1]
+    ad = [(x, y) for y in range(MH) for x in range(MW) if KG[y][x] in (None, 'forest') and sum(1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if inb(x + dx, y + dy) and KG[y + dy][x + dx] == 'bog') >= 3]
+    for (x, y) in rm: KG[y][x] = None
+    for (x, y) in ad: KG[y][x] = 'bog'
+BOGNEAR = {(x + dx, y + dy) for y in range(MH) for x in range(MW) if KG[y][x] == 'bog' for dx in range(-2, 3) for dy in range(-2, 3)}
 TALL = blob(33, 31, 5.5, 4.2, 21) | blob(60, 30, 6.5, 4.5, 22) | blob(36, 53, 5.5, 4.5, 23) | blob(60, 54, 6, 4.5, 24) | blob(46, 58, 3, 2.5, 25) | blob(32, 74, 6, 4, 26) | blob(20, 82, 4, 3, 27)
 setk(TALL, 'tall')
 CAMP = blob(48, 71, 8.5, 6.0, 31, 0.15)
@@ -103,12 +120,18 @@ for y in (46, 47, 48):                                     # 바위산 앞마당
     for x in range(5, 31): KG[y][x] = 'yard'
 
 
-def trail(points, kind='trail', seed=0):
-    """웨이포인트를 4방향으로 잇는 1칸 폭 길. 한 번에 2~5칸씩 꺾어 가며 간다."""
+def trail(points, kind='trail', seed=0, smooth=False):
+    """웨이포인트를 4방향으로 잇는 1칸 폭 길. 한 번에 2~5칸씩 꺾어 가며 간다. smooth=True 면 한 구간을 한 번만 꺾는다(곧은 길: 사다리·계단·ㄷ자 금지)."""
     rg = random.Random(seed)
     cells = []
     x, y = points[0]
     for (tx, ty) in points[1:]:
+        if smooth:
+            while x != tx:
+                x += 1 if tx > x else -1; cells.append((x, y))
+            while y != ty:
+                y += 1 if ty > y else -1; cells.append((x, y))
+            continue
         while (x, y) != (tx, ty):
             dx, dy = tx - x, ty - y
             horiz = (rg.random() < (abs(dx) / float(abs(dx) + abs(dy)))) if (dx and dy) else bool(dx)
@@ -134,18 +157,18 @@ def widen(cells, dx, dy):
 
 TRAILS = {}
 TRAILS['W'] = trail([(41, 20), (35, 20), (35, 27), (34, 38), (32, 45), (31, 46)], seed=3)                  # 어귀 → 바위산 앞마당
-TRAILS['A'] = trail([(31, 47), (38, 47), (38, 52), (47, 52)], seed=4)                                      # 앞마당 → 초원 줄기길
+TRAILS['A'] = trail([(31, 47), (47, 47)], seed=4, smooth=True)                                       # 앞마당 → 초원 줄기길(곧은 한 줄)
 TRAILS['S'] = trail([(47, 23), (47, 30), (46, 37), (47, 44), (47, 52), (47, 58), (47, 63)], seed=5)        # 어귀 → 야영지
 TRAILS['S2'] = trail([(48, 78), (48, 86), (47, 91), (47, 95)], seed=6)                                     # 야영지 → 남쪽 출구
 TRAILS['E'] = trail([(54, 20), (62, 20), (62, 24), (70, 24), (72, 30), (76, 34)], seed=7)                  # 어귀 → 숲 쉼터
 TRAILS['F'] = trail([(80, 43), (80, 52), (79, 60), (80, 66), (80, 72)], seed=8)                            # 쉼터 → 늪가
 TRAILS['SW'] = trail([(55, 72), (66, 72), (80, 72), (88, 72), (92, 72), (92, 82)], seed=9)                 # 야영지 → 늪가 → 늪 끝 표지
-TRAILS['R'] = trail([(42, 72), (34, 72), (34, 76), (26, 76), (21, 72), (20, 70)], seed=10)                 # 야영지 → 폐허
-TRAILS['G'] = trail([(26, 76), (18, 79), (12, 79), (10, 77)], seed=11)                                     # 폐허길 → 무덤
-TRAILS['P1'] = trail([(47, 31), (41, 31), (36, 31)], seed=12)                                              # 줄기길 → 키 큰 풀(스폰)
-TRAILS['P2'] = trail([(47, 31), (54, 31), (58, 31)], seed=13)
-TRAILS['P3'] = trail([(47, 55), (42, 55), (38, 54)], seed=14)
-TRAILS['P4'] = trail([(47, 55), (54, 55), (58, 55)], seed=15)
+TRAILS['R'] = trail([(42, 72), (11, 72)], seed=10, smooth=True)                                        # 야영지 → 무덤터(곧은 한 줄)
+TRAILS['R2'] = trail([(20, 72), (20, 70)], seed=16, smooth=True)                                           # 곁가지 → 폐허 석탑 앞
+TRAILS['G'] = trail([(11, 72), (11, 76)], seed=11, smooth=True)                                            # 무덤터 → 가운데 석비 앞
+TRAILS['P1'] = trail([(47, 31), (37, 31)], seed=12, smooth=True)                                           # 줄기길 → 서쪽 짐승굴(스폰)
+TRAILS['P2'] = trail([(47, 31), (58, 31)], seed=13, smooth=True)                                           # 줄기길 → 동쪽 이정표
+TRAILS['P4'] = trail([(47, 56), (56, 56)], seed=15, smooth=True)                                           # 줄기길 → 동남 이정표
 for k, (dx, dy) in (('S', (1, 0)), ('W', (0, 1)), ('E', (0, 1)), ('S2', (1, 0))):
     widen(TRAILS[k], dx, dy)
 
@@ -165,7 +188,7 @@ def fix_pockets():
     return n
 
 
-PROT = {(36, 31), (58, 31), (38, 54), (58, 55), (20, 70), (10, 77), (92, 82), (47, 95), (47, 0)}
+PROT = {(37, 31), (58, 31), (56, 56), (20, 70), (11, 76), (92, 82), (47, 95), (47, 0)}
 
 
 def prune_spurs():
@@ -222,7 +245,7 @@ def ground_ids():
             elif k == 'trail':
                 gid = GID['fld_trail32'] + 16 * (hsh(x, y, 47) % 2) + mset(dirt, x, y)
             elif k == 'tall':
-                gid = GID['fld_tall32'] + 16 * (1 if hsh(x // 5, y // 5, 17) % 3 == 0 else 0) + mset(fam['tall'], x, y)
+                gid = GID['fld_tall32'] + 16 * (1 if vnoise(x, y, 17, 4.5) > 0.66 and mset(fam['tall'], x, y) == 15 else 0) + mset(fam['tall'], x, y)
             elif k == 'forest':
                 gid = GID['fld_forest32'] + 16 * (hsh(x, y, 53) % 2) + mset(fam['forest'], x, y)
             elif k == 'bog':
@@ -269,6 +292,7 @@ for y in range(MH):
             VIS.add((x, y))
 for c in CAVE_F:
     VIS.add((c[0], c[1]))
+VIS |= {c for c in BOGNEAR if KG[c[1]][c[0]] != 'bog'}      # 늪 둘레 2칸은 나무·큰 소품이 서지 않는다(물가 숨 쉴 자리)
 OKG = (None, 'tall', 'forest')
 
 
@@ -356,10 +380,20 @@ def keep_visible(name, x, y, up=3, side=1):
 
 if put('fld_ruin_pagoda', 16, 66, ok=OKG, vis=False): keep_visible('fld_ruin_pagoda', 16, 66, up=4, side=2)
 pw(20, 70)
-for (nm, x, y) in (('fld_grave_a', 8, 73), ('fld_grave_b', 13, 73), ('fld_grave_a', 9, 79), ('fld_grave_b', 14, 80), ('fld_tombstone', 19, 76), ('fld_cairn', 24, 71)):
+for (nm, x, y) in (('fld_tombstone', 11, 77), ('fld_grave_a', 5, 73), ('fld_grave_b', 15, 74), ('fld_grave_a', 5, 79), ('fld_grave_b', 16, 80), ('fld_cairn', 24, 71)):   # 석비를 무덤터 한가운데에 둔다
     if put(nm, x, y, ok=OKG, vis=False): keep_visible(nm, x, y, up=3, side=1)
-pw(10, 77)
+    else: print('  못 놓음', nm, x, y)
+pw(11, 76)
+# 줄기길 곁가지 끝의 목적지: 짐승굴(스폰)·이정표
+put('fld_burrow', 34, 31, ok=OKG, vis=False); put('fld_bones_a', 35, 32, ok=OKG, vis=False); pw(37, 31)
+put('fld_signpost', 59, 30, ok=OKG, vis=False); pw(58, 31)
+put('fld_signpost', 57, 55, ok=OKG, vis=False); put('fld_bones_b', 58, 57, ok=OKG, vis=False); pw(56, 56)
 put('fld_dead_a', 5, 68, ok=OKG); put('fld_dead_b', 27, 66, ok=OKG); put('fld_dead_a', 21, 84, ok=OKG)
+# --- 서쪽 몬스터 둥지(짐승굴·해골·뼈·천막 흔적): 앞마당 아래 풀밭, 굴 입구에서 내려온 사냥꾼이 맞닥뜨리는 자리
+DEN = (('fld_tent_b', 8, 52), ('fld_burrow', 5, 57), ('fld_burrow', 15, 55), ('fld_bones_a', 12, 57), ('fld_bones_b', 7, 56), ('fld_bones_a', 4, 53), ('fld_bones_b', 14, 52), ('fld_rock_m_a', 17, 58), ('fld_stump_b', 11, 54))
+for (nm, x, y) in DEN:
+    if put(nm, x, y, ok=OKG, vis=False): keep_visible(nm, x, y, up=2, side=1)
+    else: print('  못 놓음', nm, x, y)
 # --- 늪 끝 표지
 put('fld_signpost', 93, 82, ok=(None, 'forest'), vis=False); put('fld_bones_b', 90, 83, ok=(None, 'forest'), vis=False); pw(92, 82)
 # --- 앞마당 광석 노두(갱도 입구 곁)
@@ -421,10 +455,10 @@ def grow(region, names, tries, ok=OKG, conn=True, seed=0, passes=6, dx=2, dy=2):
 
 
 FOR_BOT = {c for c in FOREST if KG[c[1]][c[0]] == 'forest'}
-n1 = grow({c for c in FOR_BOT if c[1] >= 12}, ZEL + PIN + MID, 9000, seed=1, passes=8)
-for (nm, x, y) in (('fld_grove_broad', 86, 20), ('fld_grove_pine', 70, 52), ('fld_grove_broad', 87, 48), ('fld_grove_pine', 88, 28)):
+n1 = grow({c for c in FOR_BOT if c[1] >= 3}, ZEL + PIN + MID, 9000, seed=1, passes=6, dx=3, dy=2)
+for (nm, x, y) in (('fld_grove_broad', 86, 20), ('fld_grove_pine', 70, 52), ('fld_grove_pine', 88, 28)):
     if put(nm, x, y, ok=OKG, conn=True): TREEPOS.append((nm, x, y))
-n2 = grow({c for c in FOR_BOT if c[1] >= 8}, MID, 4000, seed=2)
+n2 = grow({c for c in FOR_BOT if c[1] >= 3}, MID, 4000, seed=2, dx=3, dy=2)
 print('숲 나무', n1, n2)
 if STAGE <= 3:
     stage_png('b'); sys.exit(0)
@@ -466,11 +500,12 @@ def scatter(names, region, n, ok=OKG, gap=3, seed=0, conn=True, vis=True, tries=
         x, y = cx - w // 2, cy - h + 1
         if not prop_ok(nm, x, y, gap):
             continue
-        if is_tree(nm) and not tree_name_ok(nm, x, y):
+        tr_like = is_tree(nm) or nm.startswith('small_')
+        if tr_like and not tree_name_ok(nm, x, y):
             continue
         if put(nm, x, y, ok=ok, conn=conn, vis=vis):
             PROPPOS.append((nm, x, y)); done += 1
-            if is_tree(nm): TREEPOS.append((nm, x, y))
+            if tr_like: TREEPOS.append((nm, x, y))
     return done
 
 
@@ -505,7 +540,7 @@ south = {(x, y) for y in range(86, MH) for x in range(0, MW) if KG[y][x] is None
 LOG['t_north'] = grow(north, ALLT + MID, 6000, seed=31)
 LOG['t_foot'] = grow(foot, ALLT + MID, 2500, seed=32, passes=3)
 LOG['t_west'] = grow(westedge, ALLT, 2500, seed=33)
-LOG['t_south'] = grow(south, ALLT + MID, 4000, seed=34)
+LOG['t_south'] = grow(south, ALLT + MID, 4000, seed=34, dx=3, dy=2)
 LOG['t_mid'] = grow({(x, y) for (x, y) in kcells(None, 'tall', x0=26, y0=24, x1=66, y1=60) if (x, y) not in near_trail({(x, y)}, 2)}, ZEL + PIN + MID, 90, seed=35, passes=1)
 
 # --- 초원: 바위·꽃·덤불·뼈·짐승굴
@@ -550,6 +585,10 @@ bogrim = kcells(None, 'forest', x0=56, y0=68, x1=95, y1=94)
 LOG['b_tree'] = scatter(PIN + ZEL + MID, bogrim, 22, gap=6, seed=75)
 LOG['b_rock'] = scatter(['fld_rock_s_a', 'fld_rock_s_b', 'fld_rock_m_a'], bogrim, 8, gap=4, seed=76)
 LOG['b_bush'] = scatter(BUSH, bogrim, 10, gap=4, seed=77)
+# 귀퉁이 빈 곳(북동·동쪽 가장자리): 덤불·바위 무리로 채운다
+for (nm_, reg_, n_, g_, sd_) in ((BUSH + ['fld_rock_m_a', 'fld_rock_s_b', 'fld_rock_s_c', 'fld_flowers_a'], kcells(None, 'forest', x0=72, y0=0, x1=95, y1=9), 16, 3, 91),
+                                 (BUSH + ['fld_rock_m_b', 'fld_rock_s_a', 'fld_flowers_c'], kcells(None, 'forest', x0=88, y0=54, x1=95, y1=66), 8, 3, 92)):
+    LOG['corner%d' % sd_] = scatter(nm_, reg_, n_, gap=g_, seed=sd_)
 print('소품·나무', LOG)
 if STAGE <= 4:
     stage_png('c'); sys.exit(0)
@@ -602,7 +641,7 @@ def bare_grid():
     return B
 
 
-def relieve_lawn(limit=0.27, rounds=260):
+def relieve_lawn(limit=0.23, rounds=260):
     for r in range(rounds):
         B = bare_grid()
         ii = np.pad(B.astype(np.int32).cumsum(0).cumsum(1), ((1, 0), (1, 0)))
@@ -667,7 +706,7 @@ def add_spawns(kind, cells, n, gap, seed):
 
 
 print('스폰', add_spawns('meadow', {c for c in kcells('tall') if 24 <= c[0] <= 68}, 8, 8, 1), add_spawns('forest', kcells('forest'), 7, 9, 2),
-      add_spawns('swamp', {(x + dx, y + dy) for (x, y) in kcells('bog') for dx in range(-2, 3) for dy in range(-2, 3)} - kcells('bog'), 4, 10, 3),
+      add_spawns('swamp', {(x + dx, y + dy) for (x, y) in kcells('bog') for dx in range(-4, 5) for dy in range(-4, 5)} - BOGNEAR, 4, 10, 3),
       add_spawns('ruin', kcells(None, 'tall', x0=4, y0=62, x1=32, y1=90), 4, 8, 4), add_spawns('foot', kcells(None, 'yard', x0=0, y0=46, x1=34, y1=62), 2, 10, 5))
 for a in kit.SPAWNS:
     pw(a['x'], a['y'])
