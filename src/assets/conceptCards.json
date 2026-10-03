@@ -2,6 +2,147 @@
   "version": 1,
   "cards": [
     {
+      "id": "doll-room",
+      "title": "인형의 방",
+      "aliases": [
+        "인형의 방",
+        "인형 방",
+        "인형방",
+        "doll room",
+        "doll’s room",
+        "doll's room"
+      ],
+      "summary": "인형의 방은 인형을 보관하고 놀며 잠드는 아이의 사적인 침실로, 아이 침대·개인용 인형 선반·장난감 상자·흔들 목마·오르골이 중심이다. 기본은 생활 중인 중세 판타지 아이 방이며, 폐저택·호러 요청에만 낡은 인형·찢긴 초상화·거미줄을 더한다. 수면 자리·보관 벽감·놀이 자리를 구분하고 조사와 출입은 실제 이벤트로 구현한다.",
+      "variants": [
+        {
+          "id": "neutral-nursery",
+          "title": "인형과 장난감이 있는 아이 방",
+          "worldview": "중세 판타지 저택의 생활 중인 아이 침실 · 기본 변형",
+          "tilesetId": "atlas_biome_interior",
+          "build": "build_concept_example({card:\"doll-room\",variant:\"neutral-nursery\",example:\"dolls-bedroom-full\"})로 자기 방만 생성한다. 직접 시공할 때는 구역 그래프 → python3 평면 생성 → build_hand_interior_room → upsert_event 순서. 실제 프로젝트에 연결할 때는 기존 출입구를 확인해 create_transfer_pair로 왕복 연결하고 자동 선정된 착지 칸을 확인한다.",
+          "structure": [
+            "구역 그래프: 남쪽 입구 → 중앙 놀이 자리 → 서북 수면 자리 / 동북 인형 보관 벽감. 하나의 침실 안에서 놀이와 수면의 깊이가 달라지며 다른 복도·외장 맵을 만들지 않는다.",
+            "20×20은 저장용 캔버스다. 실제 실내는 x3~12,y1~11에 압축한다. 수면은 x3~7,y1~4와 상자 접근 목 x5~7,y5~6, 보관 벽감은 x9~12,y1~5, 놀이 자리는 x5~11,y5~9로 만든다. 수면의 x3~4,y5 이후와 다른 남는 칸은 #로 닫는다.",
+            "수면↔놀이 연결은 x5~7,y5~7, 보관↔놀이 연결은 x9~11,y5~7의 폭 3칸이다. 북쪽 두 날개 사이 x8,y1~4는 막는다. 벽 바로 아래 두 줄 y5~6은 x8에서 벽면이므로 가로 연결은 y7~9의 3줄에서 이루어진다. 기물 없는 긴 복도를 만들지 않는다.",
+            "입구는 x8~10,y10~11의 짧은 3×2 바닥이고 시작은 (9,11)이다. 침대 남쪽 (3,4), 상자 남쪽 (6,6), 오르골 남쪽 (10,5), 목마 남쪽 (10,8)을 조사 칸으로 둔다. 생활형 선반 조사는 (9,3), 폐저택 인형 조사는 (11,5)이다. 목마·깔개는 연결 목을 지나온 놀이 자리 y7~9에 묶는다.",
+            "아이 침대는 북쪽 첫 바닥 줄 (3,3). 모든 objects[id].cells의 dx,dy와 솟는 그림을 검사해 겹치지 않게 한다. 걸이 선반·거미줄은 벽면 윗줄에만 둔다.",
+            "조사는 기물 바로 남쪽 바닥의 투명 upsert_event, priority:below, trigger:action, text 명령으로 만든다. 그림만 놓고 태엽 작동·보상·함정 효과가 생긴다고 설명하지 않는다.",
+            "출입구는 연결할 상대 맵이 있을 때 create_transfer_pair로 만든다. 예제에는 자기 맵 밖의 목적지를 넣지 않으며 새 프로젝트의 시작 위치는 자기 방으로 지정한다.",
+            "인형 벽 선반 2개와 장난감 상자·오르골 속 온전한 인형을 사용한다. 상품 진열장으로 늘리지 않으며 개별 밝은 인형은 현재 없으므로 낡은 인형으로 대체하지 않는다."
+          ],
+          "include": [
+            {
+              "what": "널마루·회벽·나무 천장과 구역 연결부",
+              "as": "tile",
+              "how": "build_hand_interior_room({floor:\"plank\",wall:\"plaster\",ceiling:\"wood\",plan}); 비정형 평면과 벽면 두 줄을 유지"
+            },
+            {
+              "what": "아이 침대·장난감 상자·흔들 목마·초록 놀이 깔개·오르골",
+              "as": "tile",
+              "how": "build_hand_interior_room objects: child bed(3,3), toy box(6,5), rocking horse(10,7), green rug(7,7), music box(10,4); toy box는 보상 없는 생활용 보관함"
+            },
+            {
+              "what": "개인용 인형 벽 선반 2개",
+              "as": "tile",
+              "how": "build_hand_interior_room objects: shelf:toy(9,1), shelf:toy(12,1)"
+            },
+            {
+              "what": "수면·장난감·오르골·목마·인형 조사",
+              "as": "event",
+              "how": "upsert_event({mapId,event:{id,x,y,pages:[{id,conditions:[],graphic:{transparent:true},priority:\"below\",trigger:{kind:\"action\"},commands:[{kind:\"text\",body:조사문}]}]}}); 각각 기물 남쪽 통행 바닥에 배치"
+            }
+          ],
+          "exclude": [
+            "식탁·부엌·욕실·술통·책장·상점 카운터·가격표 등 무관한 기물",
+            "나무·야외 집·정원 소품",
+            "빈 바닥을 채우는 인형 열·대칭 반복 가구",
+            "요청하지 않은 보물상자·함정·세이브·몬스터",
+            "category:gimmick 장치 그림만 바닥에 칠하기; 보상 상자는 place_chest, 함정은 place_trap, 세이브는 place_savepoint, 잠긴 문·스위치는 upsert_event로 실제 동작 구현",
+            "폐기된 atlas_biome_dungeon·EasyRPG 칩셋",
+            "다른 세계관 기물·요청하지 않은 복도와 외장 맵",
+            "낡은 인형·찢긴 초상화·거미줄·저주·공포 문구"
+          ],
+          "emptiness": "침대 남쪽은 조사 한 줄만 남기고 그 남서쪽 x3~4,y5 이후를 닫는다. 상자 (6,5)와 조사 (6,6)는 수면에서 놀이로 향하는 목에 둔다. 보관과 놀이는 바로 이어지고 입구는 2줄만 둔다. 폭 3칸 연결부와 기물 남쪽 조사 칸만 비우며 목적 없는 여백은 평면에서 제거한다. 외딴 바닥 ≤30%, 빈 정사각형 한 변 ≤6칸 통과와 별도로 PNG에서 여백을 확인한다.",
+          "examples": [
+            {
+              "id": "dolls-bedroom-full",
+              "title": "생활 중인 인형 침실 · 20×20 압축 구역형 평면",
+              "width": 20,
+              "height": 20,
+              "image": "/assets/concept-cards/doll-room/neutral-nursery--dolls-bedroom-full.png"
+            }
+          ],
+          "size": "20×20 저장 캔버스, 실제 실내 외곽 10×11 이내. 수면 상부 5×4(걷는 바닥 5×2)와 상자 접근 3×2, 보관 4×5, 놀이 7×5(중앙 걷는 바닥 7×3), 입구 3×2로 압축한다. 남는 캔버스는 #로 막고 기물 수에 맞는 작은 실내를 유지한다.",
+          "worldviewId": "medieval",
+          "layout": "room"
+        },
+        {
+          "id": "abandoned-nursery",
+          "title": "폐저택의 아이 방",
+          "worldview": "중세 판타지 저택의 버려진 아이 침실 · 명시적인 호러 요청용",
+          "tilesetId": "atlas_biome_interior",
+          "build": "build_concept_example({card:\"doll-room\",variant:\"abandoned-nursery\",example:\"silent-dolls-full\"})로 자기 방만 생성한다. 직접 시공할 때는 구역 그래프 → python3 평면 생성 → build_hand_interior_room → upsert_event 순서. 실제 프로젝트에 연결할 때는 기존 출입구를 확인해 create_transfer_pair로 왕복 연결하고 자동 선정된 착지 칸을 확인한다.",
+          "structure": [
+            "구역 그래프: 남쪽 입구 → 중앙 놀이 자리 → 서북 수면 자리 / 동북 인형 보관 벽감. 하나의 침실 안에서 놀이와 수면의 깊이가 달라지며 다른 복도·외장 맵을 만들지 않는다.",
+            "20×20은 저장용 캔버스다. 실제 실내는 x3~12,y1~11에 압축한다. 수면은 x3~7,y1~4와 상자 접근 목 x5~7,y5~6, 보관 벽감은 x9~12,y1~5, 놀이 자리는 x5~11,y5~9로 만든다. 수면의 x3~4,y5 이후와 다른 남는 칸은 #로 닫는다.",
+            "수면↔놀이 연결은 x5~7,y5~7, 보관↔놀이 연결은 x9~11,y5~7의 폭 3칸이다. 북쪽 두 날개 사이 x8,y1~4는 막는다. 벽 바로 아래 두 줄 y5~6은 x8에서 벽면이므로 가로 연결은 y7~9의 3줄에서 이루어진다. 기물 없는 긴 복도를 만들지 않는다.",
+            "입구는 x8~10,y10~11의 짧은 3×2 바닥이고 시작은 (9,11)이다. 침대 남쪽 (3,4), 상자 남쪽 (6,6), 오르골 남쪽 (10,5), 목마 남쪽 (10,8)을 조사 칸으로 둔다. 생활형 선반 조사는 (9,3), 폐저택 인형 조사는 (11,5)이다. 목마·깔개는 연결 목을 지나온 놀이 자리 y7~9에 묶는다.",
+            "아이 침대는 북쪽 첫 바닥 줄 (3,3). 모든 objects[id].cells의 dx,dy와 솟는 그림을 검사해 겹치지 않게 한다. 걸이 선반·거미줄은 벽면 윗줄에만 둔다.",
+            "조사는 기물 바로 남쪽 바닥의 투명 upsert_event, priority:below, trigger:action, text 명령으로 만든다. 그림만 놓고 태엽 작동·보상·함정 효과가 생긴다고 설명하지 않는다.",
+            "출입구는 연결할 상대 맵이 있을 때 create_transfer_pair로 만든다. 예제에는 자기 맵 밖의 목적지를 넣지 않으며 새 프로젝트의 시작 위치는 자기 방으로 지정한다.",
+            "낡은 인형 3개만 놀이 자리와 보관 벽감에 떨어뜨려 둔다. 빈 침대와 오르골을 단서의 중심으로 삼고 찢긴 초상화 1개·거미줄 2개는 벽에만 둔다."
+          ],
+          "include": [
+            {
+              "what": "널마루·회벽·나무 천장과 구역 연결부",
+              "as": "tile",
+              "how": "build_hand_interior_room({floor:\"dplank\",wall:\"plaster\",ceiling:\"dark\",plan}); 비정형 평면과 벽면 두 줄을 유지"
+            },
+            {
+              "what": "아이 침대·장난감 상자·흔들 목마·초록 놀이 깔개·오르골",
+              "as": "tile",
+              "how": "build_hand_interior_room objects: child bed(3,3), toy box(6,5), rocking horse(10,7), green rug(7,7), music box(10,4); toy box는 보상 없는 생활용 보관함"
+            },
+            {
+              "what": "낡은 인형·찢긴 초상화·거미줄",
+              "as": "tile",
+              "how": "build_hand_interior_room objects: old doll(11,4), old doll(6,7), old doll(11,9), torn portrait(5,1), cobweb(3,1), cobweb(12,1)"
+            },
+            {
+              "what": "수면·장난감·오르골·목마·인형 조사",
+              "as": "event",
+              "how": "upsert_event({mapId,event:{id,x,y,pages:[{id,conditions:[],graphic:{transparent:true},priority:\"below\",trigger:{kind:\"action\"},commands:[{kind:\"text\",body:조사문}]}]}}); 각각 기물 남쪽 통행 바닥에 배치"
+            }
+          ],
+          "exclude": [
+            "식탁·부엌·욕실·술통·책장·상점 카운터·가격표 등 무관한 기물",
+            "나무·야외 집·정원 소품",
+            "빈 바닥을 채우는 인형 열·대칭 반복 가구",
+            "요청하지 않은 보물상자·함정·세이브·몬스터",
+            "category:gimmick 장치 그림만 바닥에 칠하기; 보상 상자는 place_chest, 함정은 place_trap, 세이브는 place_savepoint, 잠긴 문·스위치는 upsert_event로 실제 동작 구현",
+            "폐기된 atlas_biome_dungeon·EasyRPG 칩셋",
+            "다른 세계관 기물·요청하지 않은 복도와 외장 맵",
+            "호러 단서 없는 요청에서 이 변형 선택"
+          ],
+          "emptiness": "침대 남쪽은 조사 한 줄만 남기고 그 남서쪽 x3~4,y5 이후를 닫는다. 상자 (6,5)와 조사 (6,6)는 수면에서 놀이로 향하는 목에 둔다. 보관과 놀이는 바로 이어지고 입구는 2줄만 둔다. 폭 3칸 연결부와 기물 남쪽 조사 칸만 비우며 목적 없는 여백은 평면에서 제거한다. 외딴 바닥 ≤30%, 빈 정사각형 한 변 ≤6칸 통과와 별도로 PNG에서 여백을 확인한다.",
+          "examples": [
+            {
+              "id": "silent-dolls-full",
+              "title": "폐저택 인형 침실 · 20×20 압축 구역형 평면",
+              "width": 20,
+              "height": 20,
+              "image": "/assets/concept-cards/doll-room/abandoned-nursery--silent-dolls-full.png"
+            }
+          ],
+          "size": "20×20 저장 캔버스, 실제 실내 외곽 10×11 이내. 수면 상부 5×4(걷는 바닥 5×2)와 상자 접근 3×2, 보관 4×5, 놀이 7×5(중앙 걷는 바닥 7×3), 입구 3×2로 압축한다. 남는 캔버스는 #로 막고 기물 수에 맞는 작은 실내를 유지한다.",
+          "worldviewId": "medieval",
+          "layout": "room"
+        }
+      ],
+      "needsArt": false,
+      "bakedAt": "2026-10-04T00:12:18"
+    },
+    {
       "id": "indoor-onsen",
       "title": "온천탕",
       "aliases": [
