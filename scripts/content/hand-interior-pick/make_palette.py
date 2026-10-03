@@ -18,8 +18,8 @@ def main():
             '~ #1c1418 110   // 그림자 속', '- #1c1418 58    // 그림자 번짐',
             '# #e040c0       // 실루엣 단계 표시색(최종본에 남으면 불합격)']
     os.makedirs(PAL_DIR, exist_ok=True)
-    atomic_write(SHARED_PAL, '\n'.join(out) + '\n')
-    print(SHARED_PAL, len(M), '램프')
+    atomic_write(V5_PAL, '\n'.join(out) + '\n')
+    print(V5_PAL, len(M), '램프')
 
 if __name__ == '__main__':
     main()

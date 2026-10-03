@@ -36,6 +36,9 @@ from kit5 import LINEKITS, mask_at
 from mat import G
 from PIL import Image
 if PICKS: PICKS.install_resized()
+SNAP = None
+if os.environ.get('HAND_INTERIOR_SNAP', '1') != '0':
+    sys.path.insert(0, 'scripts/content/hand-interior-pick'); from palette_snap import snap as SNAP
 
 P = 64                 # 최소 접는 주기(px) — 16px 반복이 띠로 보이지 않게
 # 짜임 주기(px): 해시 잡음 H 를 상수로 바꿔 무늬의 구조만 남긴 뒤 잰 가장 짧은 16 배수 주기(2026-09-29 실측).
@@ -507,7 +510,7 @@ for mp in MAPS:
             od = orig.get_flattened_data(); gd = got.get_flattened_data()
             orig_same = sum(1 for a, c in zip(od, gd) if a == c) / max(1, len(gd))
             os.makedirs(f'{OUT_MAPS}/render', exist_ok=True)
-            got.save(f'{OUT_MAPS}/render/{mp["key"]}.png'); ref.save(f'/tmp/hand-interior-ref-{mp["key"]}.png')
+            (SNAP(got)[0] if SNAP else got).save(f'{OUT_MAPS}/render/{mp["key"]}.png'); ref.save(f'/tmp/hand-interior-ref-{mp["key"]}.png')
     mp['seen'] = seen
     report.append({'map': mp['key'], 'size': [W, H], 'structDiffPx': mp['struct_diff'], 'pixelDiffAllFrames': px_diff,
                    'walkMismatch': len(diff_walk), 'walkMismatchCells': diff_walk[:12], 'unreached': unreached[:12],
@@ -520,6 +523,10 @@ sheet = Image.new('RGBA', (TPR * 16, rows * 16))
 for tid, frs in enumerate(SH.cells):
     if frs is None: continue
     sheet.alpha_composite(frs[0], ((tid % TPR) * 16, (tid // TPR) * 16))
+# 실내 공통 팔레트(palette/v6.pal)로 옮긴다 — 바닥·벽·천장·옛 기물·고른 새 기물이 한 팔레트를 쓰게(2026-10-03, 사용자 확인).
+# 픽셀 검사(위)는 옮기기 전 그림끼리 비교하므로 그대로다. HAND_INTERIOR_SNAP=0 이면 옮기지 않는다.
+if SNAP:
+    sheet, SNAP_CHANGED = SNAP(sheet); print(f'공통 팔레트로 옮김: 바뀐 화소 {SNAP_CHANGED}')
 os.makedirs(os.path.dirname(OUT_PNG), exist_ok=True)
 sheet.save(OUT_PNG, optimize=True)
 passability, priority, terrain, tileMeta = [], [], [], []

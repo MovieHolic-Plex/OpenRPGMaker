@@ -4,6 +4,7 @@
 v5.pal 하나로 바닥·벽을 옮기면 테라코타가 갈색이 되고 이끼가 사라진다(interior-floor-wall.html). 그래서 시트가 실제로 많이 쓰는 색 중
 v5 에 없는 것을 K 개로 묶어 v5 에 더한다. 시트 전체(바닥·벽·천장·옛 기물·예제 맵 합성 칸)를 같이 옮겨야 칸끼리 이음매가 맞는다.
 
+쓰는 팔레트로 굳힌 것은 palette/v6.pal(2026-10-03 사용자 확인). 이 스크립트를 다시 돌려도 v6.pal 은 안 바뀐다.
   python3 scripts/content/hand-interior-pick/build_merged_palette.py [--k 128] [--html ~/claude-viz/interior-merged-palette.html]
       [--pal tiledata/hand-interior/pick/palette/v6.pal] [--sheet-out /tmp/interior-chipset-v6.png]
 
