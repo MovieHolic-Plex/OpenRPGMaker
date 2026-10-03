@@ -9,6 +9,7 @@ import { MODERN_CHIPSET_HARNESS } from "../modern-chipset/harness";
 import { INTERIOR_PROPS_HARNESS } from "../interior-props/harness";
 import { JP_CITY_HARNESS } from "../jp-city/harness";
 import { JOSEON_BARAM_HARNESS } from "../joseon-baram/harness";
+import { SUPER_HARNESS } from "../super-harness/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -16,6 +17,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   INTERIOR_PROPS_HARNESS,
   JP_CITY_HARNESS,
   JOSEON_BARAM_HARNESS,
+  SUPER_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

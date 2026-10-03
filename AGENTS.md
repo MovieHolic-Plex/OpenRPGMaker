@@ -36,6 +36,10 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
   → 기존 `scripts/content/lib/joseon/` 도구를 한 입구로 묶은 것이다. 그림은 코드 도트만(생성 이미지·생성 캐릭터 금지, Actor1 사용), 바람의나라 스크린샷 커밋 금지, 판정은 해시에 묶이니 손으로 고치지 말 것.
 
+- **조수가 특정 공간 낱말(미궁·감옥·하수도…)을 잘못 깔 때 / 개념 카드(`src/assets/conceptCards.json`)를 고칠 때**
+  → `super-harness` · 시드 `harness-data/super-harness/seed.json` · 문서 `openwiki/harnesses/super-harness.md`
+  → 자동으로 도는 데몬이다(화면 http://mdc-server:18315/). 카드를 손으로 쓰지 말고 화면에서 교정 지시·폐기.
+
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
 `npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
 

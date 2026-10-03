@@ -8,6 +8,7 @@
 // 하나이고, 컴포저 「팀」 토글과 설정 「Pi 팀 실행」 이 같은 값을 읽는다. 경로 enum 으로 한 번 더
 // 인코딩하면 라우트 → `/pi team` 문자열 → 파서 왕복이 생겨 한 비트를 네 곳에서 표현하게 된다.
 
+import { conceptCardsForText, formatConceptCardNote } from "../conceptCards";
 import { formatPackTownNote, type PackTownTarget } from "./packTownRoute";
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
@@ -103,6 +104,8 @@ export interface PiIntentNoteInput {
  * 첫 문장에 밝혀라» 가 정직한 지시다.
  */
 export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
+  // 개념 카드(미궁·카타콤…)는 맨 앞 — 재료·이벤트·금지 규칙이 뒤의 일반 노트보다 먼저 읽혀야 한다.
+  const conceptNote = formatConceptCardNote(conceptCardsForText(input.requestText));
   const preset = defaultVillageDesign(input);
   // Generic scale advice must not override a saved design or resize before its validation.
   const noteIntent = preset ? { ...input.intent, construction: undefined } : input.intent;
@@ -116,7 +119,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
     : null;
-  const parts = [intentNote, villageNote, referenceNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
+  const parts = [conceptNote, intentNote, villageNote, referenceNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
   return parts.length > 0 ? parts.join("\n") : null;
 }
 
