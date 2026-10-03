@@ -4,7 +4,7 @@ import { store } from "@/project/store";
 import { interviewBrief } from "./helpers/gameDesignBrief";
 import type { Project } from "@/project/types";
 
-vi.mock("@/project/store", () => ({ store: { getCurrent: vi.fn(), getProjectIdentity: vi.fn(), update: vi.fn(), flush: vi.fn(), replaceProject: vi.fn() } }));
+vi.mock("@/project/store", () => ({ store: { getCurrent: vi.fn(), subscribe: vi.fn(() => () => {}), getProjectIdentity: vi.fn(), update: vi.fn(), flush: vi.fn(), replaceProject: vi.fn() } }));
 vi.mock("@/editor/mapSelection", () => ({ focusProjectStartMap: vi.fn() }));
 
 let project: Project;

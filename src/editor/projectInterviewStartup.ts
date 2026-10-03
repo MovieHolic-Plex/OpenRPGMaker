@@ -7,6 +7,7 @@ import { setPendingAiBootIntent } from "./aiBootIntent";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { getAiConnectionStatus } from "./panels/aiConnectionStatus";
 import { withVerifiedPlayableSegment } from "@/project/playableSegment";
+import { prepareProjectInterviewBootAssets } from "./projectInterviewBootPreparation";
 
 let preparing = false;
 
@@ -21,6 +22,8 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
     && store.getCurrent().gameDesignBrief?.summary === brief.summary;
   preparing = true;
   try {
+    await prepareProjectInterviewBootAssets();
+    if (!stillCurrent()) return;
     // Save the claim before publishing an intent so a normal refresh cannot launch the same build twice.
     store.update(project => {
       if (project.gameDesignBrief) delete project.gameDesignBrief.generationPending;

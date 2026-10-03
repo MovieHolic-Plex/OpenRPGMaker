@@ -1,0 +1,10 @@
+{
+  "probe": "prepareWebExport called on the full QA-owned canonical document in an isolated browser",
+  "projectId": "d4eeda26-ba1b-435a-87af-30543e5f541a",
+  "revision": 8,
+  "documentWithHydratedMediaBytesApprox": 167772160,
+  "chromium": "Target page/context/browser closed during preparation",
+  "firefox": "Target crashed during preparation",
+  "resolved": false,
+  "scope": "Dedicated-player gameplay uses the canonical fixture; shipping ZIP/release preparation is not certified by this QA. No asset pruning or game data changes were used to hide this failure."
+}

@@ -9,6 +9,7 @@ import {
 } from "@/ai/narrativeHorrorWorkPlan";
 import type { GenrePackId } from "@/project/genrePackId";
 import { gameDesignBriefContext, type GameDesignBrief } from "@/project/gameDesignBrief";
+import { sceneGenre } from "./cinematicInterviewQuestions";
 import { buildActionArenaAuthoringGuide } from "@/ai/actionArenaAuthoring";
 import { BATTLE_SKINS, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { battleLookMoodGuide } from "@/project/battleLook";
@@ -290,7 +291,10 @@ export function welcomeGenrePresetDisplayText(preset: WelcomeGenrePreset, brief?
     const lines = brief.summary.replace(/\r\n?/gu, "\n").split("\n").map((line) => line.replace(/[ \t]+/gu, " ").trim()).filter(Boolean);
     let body = lines.join("\n");
     if (body.length > BRIEF_DISPLAY_LIMIT) body = `${body.slice(0, BRIEF_DISPLAY_LIMIT - 1).trimEnd()}…`;
-    return body ? `${preset.label} · 확정한 게임 기획\n${body}` : preset.label;
+    const label = brief.interview
+      ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ")
+      : preset.label;
+    return body ? `${label} · 확정한 게임 기획\n${body}` : label;
   }
   const short = (text: string | undefined): string => {
     const line = (text ?? "").split(/\r?\n/u)[0]!.replace(/\s+/gu, " ").trim();

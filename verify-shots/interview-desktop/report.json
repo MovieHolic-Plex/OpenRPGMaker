@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "url": "app://oprn/index.html",
+  "bridge": {
+    "status": {
+      "kind": "ready",
+      "projectId": "bc046459-88a4-45a4-8022-e21529780f13",
+      "projectDir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/interview-desktop/games/데스크톱 인터뷰 QA",
+      "source": "custom",
+      "url": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/interview-desktop/games/데스크톱 인터뷰 QA"
+    }
+  },
+  "genres": "관계·연애\n마음이 움직이는 선택\n몬스터 수집·육성\n발견하고, 동료로 삼고\n탐험·모험\n길 너머의 새로운 세계\n추리·미스터리\n단서를 이어 진실로",
+  "question": "첫 동료는 어떻게 만나나요?",
+  "cancelClosed": true,
+  "passed": true
+}

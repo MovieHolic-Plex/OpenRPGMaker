@@ -5,6 +5,7 @@
 - `src/main.ts` boot flow:
   - imports global CSS, reads feature flags from the URL into `body` classes, finds `#app`, then calls `bootApp(app)` from `src/app/mode.ts`.
   - after boot, it conditionally registers PWA support and can open a classic event-editor capture path for special debug params.
+  - Shared tile references and the remaining catalog normally load after the shell. First-generation interview requests use `projectInterviewBootPreparation.ts` to join those same loads and apply reference refresh **before** save and immutable AI-base capture. The remaining catalog starts inside that preparation when needed, avoiding a wait on `bootApp()` returning. Ordinary editing still boots with only the default catalog; stale-base rejection is unchanged.
 
 - Phaser app split:
   - `src/app/mode.ts` owns the single active mode (`edit` or `play`), the shared Phaser game handle, and the DOM shell for topbar/main.

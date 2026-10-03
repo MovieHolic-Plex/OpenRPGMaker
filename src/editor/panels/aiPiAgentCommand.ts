@@ -2,6 +2,7 @@ import { inspectPiVillageCompletion } from "@/ai/piAgent/villageCompletion";
 import { observeActivitySave } from "./aiActivitySave";
 import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityTrace";
 import { createPiPublication } from "./aiPiPublication";
+import { prepareProjectInterviewBootAssets } from "../projectInterviewBootPreparation";
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindingsText } from "./aiPiCompletionReport";
@@ -247,6 +248,18 @@ export async function runPiCommand(
   if (!command.task) {
     surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /team <지시>");
     return false;
+  }
+  if (isGenrePresetBriefRequest(command.task)) {
+    const identity = JSON.stringify(store.getProjectIdentity());
+    await prepareProjectInterviewBootAssets();
+    surface.signal?.throwIfAborted();
+    if (identity !== JSON.stringify(store.getProjectIdentity())) return false;
+    // Welcome posters bypass the pending-folder startup, so fence their save here.
+    if ((await store.flush()).kind !== "saved") {
+      surface.appendBubble("system", "게임 기획 저장을 확인하지 못해 제작을 시작하지 않았어요.");
+      return false;
+    }
+    if (identity !== JSON.stringify(store.getProjectIdentity())) return false;
   }
   const base = store.getCurrent();
   const { base: proposalBase, baseline } = captureApplyAuthority(base);
