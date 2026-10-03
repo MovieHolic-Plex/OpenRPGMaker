@@ -150,6 +150,7 @@ import {
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
 import { registerAiBootIntentTarget, type AiBootIntentRunOptions } from "@/editor/aiBootIntent";
+import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { createChatResizeChrome } from "./aiChatResizeChrome";
 import {
   applyAiBackgroundOpacity,
@@ -2081,7 +2082,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // An exact existing resource is already a graphic decision by the user.
     const graphicSpecified = Object.values(store.getCurrent().tilesets).some(tileset =>
       command.task.includes(tileset.id) || (tileset.name.length > 3 && command.task.includes(tileset.name)));
-    const subject = !plan?.readOnly && !plan?.planOnly && !graphicSpecified ? creationSubject(command.task) : null;
+    const subject = !plan?.readOnly && !plan?.planOnly && !graphicSpecified && !isGenrePresetBriefRequest(command.task)
+      ? creationSubject(command.task) : null;
     if (subject) {
       wideAssistant.open();
       const choice = createCreationChoice(store.getCurrent(), subject);
@@ -3949,10 +3951,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     },
     send: async (text: string, displayText?: string, runOptions?: AiBootIntentRunOptions) => {
+      const projectScope = JSON.stringify(store.getProjectIdentity());
+      const current = (): boolean => !disposed && projectScope === JSON.stringify(store.getProjectIdentity());
+      const shown = displayText?.trim() || text;
+      const preserve = (): void => {
+        if (current() && (!input.value.trim() || input.value.trim() === shown)) restoreComposer(shown, text, runOptions?.team);
+      };
       // Project creation emits before IndexedDB conversation adoption finishes. Its reset
       // must complete before the preset enters the composer or starts a turn.
       await whenAiChatPanelSettled();
-      if (disposed) return;
+      if (!current()) return;
+      // Boot handoffs use the same slot as typed turns, including classification.
+      if (!(await waitUntilIdle(120_000)) || !current()) { preserve(); return; }
+      if (turnBusy) { preserve(); return; }
+      const config = loadAiConfig();
+      if (!isAiConfigReady(config, getAiConnectionStatus(config))) { preserve(); return; }
+      if (input.value.trim() === shown) { input.value = ""; composerHandoff = null; syncInputHeight(); }
+      runSurface.turnBusy = true;
+      refreshSendEnabled();
       // 예전에는 여기서 입력창에 프롬프트 전문을 넣고 비우지 않아, 실행이 끝난 뒤에도 입력창에
       // 「한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.」 꼬리 줄이 남았다(2026-09-23 실측).
       // 자동 전송은 입력창을 거치지 않는다 — 말풍선이 보낸 문장을 보여 준다.
@@ -3961,14 +3977,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } catch {
         /* headless */
       }
-      const shown = displayText?.trim() || text;
       let classified: PlainPiTurn;
       try {
         classified = await plainPiTurn(text, runOptions?.team ? { team: true } : undefined);
       } catch (error) {
         // 해석이 실패해도 요청은 잃지 않는다 — 예전에는 입력창에 남은 전문으로 다시 보낼 수 있었다.
-        if (disposed) return;
-        if (!input.value.trim()) restoreComposer(shown, text, runOptions?.team);
+        if (!current()) return;
+        runSurface.turnBusy = false;
+        refreshSendEnabled();
+        preserve();
         setStatus("대기");
         const reason = error instanceof Error ? error.message : String(error);
         void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
@@ -3976,7 +3993,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         return;
       }
       const { command, plan, questionPromoted, initialToolNames, intentNote, timing } = classified;
-      await runPiTurn(command, shown, plan, { questionPromoted, initialToolNames, intentNote, timing, ...(shown !== text ? { sentText: text } : {}) });
+      try {
+        if (!current()) return;
+        await runPiTurn(command, shown, plan, { slotClaimed: true, questionPromoted, initialToolNames, intentNote, timing, ...(shown !== text ? { sentText: text } : {}) });
+      } catch (error) {
+        preserve();
+        if (current()) appendBubble("system", `첫 요청을 실행하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
+      } finally {
+        if (current()) {
+          if (!activeAbortController) runSurface.turnBusy = false;
+          refreshSendEnabled();
+        }
+      }
     },
   });
   // 부팅 복원 — 이 프로젝트 범위의 최신 대화를 이어받는다. 전역 최신 하나만 집어 스코프를 대조하는
