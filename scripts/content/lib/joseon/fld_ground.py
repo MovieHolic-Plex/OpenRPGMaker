@@ -361,24 +361,120 @@ def face_set(cave=False):
 
 
 # ---------------------------------------------------------------- 동굴 바닥
+def _blot(x, y, v, sc, s):
+    """저주파 얼룩 0..1 (이웃 칸과 상관 없이 칸 안에서만: 변형 v 마다 다른 자리)."""
+    return 0.5 * rnd(x // sc + v, y // sc + 3 * v, s) + 0.5 * rnd((x + 2 * v) // (sc + 1), (y + v) // (sc + 1), s + 7)
+
+
 def cav_floor(v):
+    """동굴 바닥 10변형. 바탕은 같은 중간 돌색(ST[3])에 어두운 얼룩(ST[2])만 살짝 — 변형끼리 밝기 차를 줄여 칸이 바둑판처럼 보이지 않게 하고,
+    변형 차이는 드문 잔돌·균열·젖은 자국 같은 작은 표시로만 둔다(0·5 평범 / 1·6 잔돌 / 2·7 젖은 자국 / 3·8 균열 / 4·9 낱알)."""
     c = Cv(T, T)
+    kind = v % 5
     for y in range(T):
         for x in range(T):
-            q = 0.5 * rnd(x // 2, y // 2, 900 + v) + 0.5 * rnd(x, y, 901 + v)
+            q = _blot(x, y, v, 6, 900 + v)
             col = ST[3]
-            if q < 0.26: col = ST[2]
-            elif q > 0.9: col = ST[4]
-            elif 0.5 < q < 0.58: col = ER[2]
+            if q < 0.30: col = ST[2] if rnd(x, y, 902 + v) > 0.35 else ST[3]
+            if rnd(x, y, 901 + v) > 0.975: col = ST[2]
             c.put(x, y, col)
-    if v % 2:
+    if kind == 1:
         for k in range(2):
-            x, y = 2 + hsh(k, v, 71) % 11, 2 + hsh(v, k, 72) % 12
-            c.put(x, y, ST[4]); c.put(x + 1, y, ST[3]); c.put(x, y + 1, ST[1])
-    if v >= 4:                                                   # 갈라진 틈
-        x, y = 3 + (v * 3) % 7, 3 + (v * 5) % 6
-        for i in range(5): c.put(x + i, y + (i // 2), ST[1])
+            x, y = 2 + hsh(k, v, 71) % 11, 2 + hsh(v, k, 72) % 11
+            c.put(x, y, ST[4]); c.put(x + 1, y, ST[3]); c.put(x, y + 1, ST[2]); c.put(x + 1, y + 1, ST[2])
+    elif kind == 2:
+        x, y = 3 + (v * 3) % 7, 3 + (v * 5) % 7
+        for dx, dy in ((0, 0), (1, 0), (2, 0), (3, 1), (1, 1), (2, 1)): c.put(x + dx, y + dy, ST[2])
+    elif kind == 3:
+        x, y = 2 + (v * 3) % 6, 3 + (v * 5) % 7
+        for i in range(7):
+            c.put(x + i, y + (i // 3), ST[1])
+    elif kind == 4:
+        for k in range(4):
+            x, y = hsh(k, v, 73) % 15, hsh(v, k, 74) % 15
+            c.put(x, y, ST[4]) if k == 0 else c.put(x, y, ST[2])
     return c
+
+
+_DARK1 = {}
+_DARK2 = {}
+
+
+def _shade_tables():
+    if not _DARK1:
+        for a, b, d in ((ST[4], ST[3], ST[2]), (ST[3], ST[2], ST[1]), (ST[2], ST[1], ST[0]), (ER[2], ST[1], ST[0]), (ST[1], ST[0], ST[0])):
+            _DARK1[tuple(a)] = b; _DARK2[tuple(a)] = d
+    return _DARK1, _DARK2
+
+
+def cav_floor_sh(base, bits):
+    """벽 그림자가 드리운 바닥 한 칸. bits: 1=북쪽이 벽(앞면 밑동) 2=서쪽이 벽 4=북서 대각만 벽. 빛이 왼쪽 위라 그림자는 벽의 오른쪽·아래 바닥에 진다."""
+    d1, d2 = _shade_tables()
+    c = Cv(T, T)
+    c.a = base.a.copy()
+    for y in range(T):
+        for x in range(T):
+            depth = 0
+            if bits & 1: depth = max(depth, 3 - y)            # 위 3줄: 가장 위 두 줄 진하게
+            if bits & 2: depth = max(depth, 2 - x)            # 왼 2줄
+            if bits & 4 and not bits & 3: depth = max(depth, 3 - int(math.hypot(x + 0.5, y + 0.5)))
+            if depth <= 0: continue
+            k = tuple(int(q) for q in c.a[y, x, :3])
+            tb = d2 if depth >= 2 else d1
+            if k in tb:
+                c.a[y, x, :3] = tb[k]
+    return c
+
+
+def roof47(m8, v=0):
+    """동굴 천장(벽 윗면) 한 칸: 이웃 8칸(1 = 천장·벽 이어짐)으로 정해지는 47종 블롭. 열린 바닥 쪽은 바깥 1px 바닥 그림자 → 밝은 테(위·왼쪽 변, 빛 받음)/어두운 테(오른쪽·아래) → 안쪽 암반.
+    변형 0·1 평범, 2·3 이끼, 4·5 광맥(푸른 결정 점) — 맵이 구역별로 섞어 넓은 암반이 한 가지 무늬로 반복되지 않게 한다. 모서리는 water_blob 의 사분면 거리로 둥글게."""
+    m = WB.canon(m8)
+    c = Cv(T, T)
+    tt = [[0.0] * T for _ in range(T)]
+    lit = [[False] * T for _ in range(T)]
+    for y in range(T):
+        for x in range(T):
+            right, bottom = x >= 8, y >= 8
+            px, py = x + 0.5, y + 0.5
+            d = WB._dist(px, py, m, right, bottom)
+            tt[y][x] = d + WB._wob(x, y) * 0.8 if d < WB.CAP else d
+            gx = (WB._dist(px + 1, py, m, right, bottom) - WB._dist(px - 1, py, m, right, bottom)) / 2
+            gy = (WB._dist(px, py + 1, m, right, bottom) - WB._dist(px, py - 1, m, right, bottom)) / 2
+            lit[y][x] = (gy > 0.4 and gy >= abs(gx) * 0.5) or (gx > 0.4 and gx >= abs(gy) * 0.5)      # 열린 바닥이 위·왼쪽
+    for y in range(T):
+        for x in range(T):
+            t = tt[y][x]
+            q = _blot(x, y, v, 4, 940 + v)
+            qn = rnd(x, y, 950 + v * 5 + m)
+            if t < 1.0:
+                col = ST[2] if qn > 0.2 else ST[1]                                  # 바깥(바닥 그림자)
+            elif t < 2.3:
+                col = (ST[5] if qn > 0.35 else ST[4]) if lit[y][x] else (ST[3] if qn > 0.3 else ST[2])
+            elif t < 4.0:
+                col = (ST[4] if qn > 0.5 else ST[3]) if lit[y][x] else (ST[2] if qn > 0.3 else ST[1])
+            elif t < 5.2:
+                col = ST[3] if (lit[y][x] and qn > 0.45) else (ST[2] if qn > 0.35 else ST[1])
+            else:
+                col = ST[1]                                                          # 안쪽 암반(대비 낮게: 얼룩 ST[2]·ST[0] 은 드물게)
+                if q < 0.22: col = ST[2] if qn > 0.4 else ST[1]
+                elif q > 0.86: col = ST[0] if qn > 0.4 else ST[1]
+                if qn > 0.985: col = ST[2]
+                elif qn < 0.012: col = ST[0]
+            c.put(x, y, col)
+    if v >= 2:
+        for k in range(3 if v < 4 else 2):
+            x, y = 3 + hsh(k, m + 11 * v, 91) % 10, 3 + hsh(m, k + 7 * v, 92) % 10
+            if tt[y][x] > 5.4 and tt[y][x + 1] > 5.4:
+                if v < 4:
+                    c.put(x, y, PN[3]); c.put(x + 1, y, PN[2]); c.put(x, y - 1, PN[2]) if tt[y - 1][x] > 5.4 else None   # 이끼 점
+                else:
+                    c.put(x, y, DB[5]); c.put(x + 1, y, DB[4]); c.put(x, y + 1, DB[3]) if tt[y + 1][x] > 5.4 else None   # 광맥
+    return c
+
+
+def roof47_set(variants=6):
+    return [roof47(m, v) for v in range(variants) for m in WB.ALL47]
 
 
 def cav_floor_lit(v):
@@ -406,9 +502,10 @@ def terrain():
         'fld_rock32': [rock_top(m, v) for v in range(2) for m in range(16)],
         'fld_rock_in8': [rock_top(15, 10 + i) for i in range(8)],            # 윗면 속(마스크 15) 변형 8: 큰 덩어리가 같은 무늬로 반복되지 않게(fold)
         'fld_face32': face_set(False),
-        'cav_floor': [cav_floor(v) for v in range(6)],
+        'cav_floor': [cav_floor(v) for v in range(10)],
+        'cav_floor_sh': [cav_floor_sh(cav_floor(v), bits) for v in range(5) for bits in range(8)],
         'cav_floor_lit': [cav_floor_lit(v) for v in range(4)],
-        'cav_ceil32': [rock_top(m, v, True) for v in range(2) for m in range(16)],
+        'cav_roof47': roof47_set(6),
         'cav_face24': face_set(True),
         'cav_pool94': pool_set(),
     }

@@ -3234,5 +3234,140 @@
    "fish_crates",
    "goods_pile"
   ]
+ },
+ "cav_stalagmite_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_stalagmite_c": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_stalagmite_wide": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_crystal_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_crystal_c": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_rock_c": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_rubble": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_rockpillar": {
+  "cls": "prop",
+  "refs": [
+   "column_monument",
+   "statue_sage",
+   "forum.statue"
+  ],
+  "front_only": true
+ },
+ "cav_moss": {
+  "cls": "prop",
+  "refs": [
+   "flowerbed",
+   "planter_round",
+   "forum.planter_box"
+  ],
+  "thin_ok": "이끼 점·물가 돌"
+ },
+ "cav_puddle": {
+  "cls": "prop",
+  "refs": [
+   "flowerbed",
+   "planter_round",
+   "forum.planter_box"
+  ],
+  "thin_ok": "이끼 점·물가 돌"
+ },
+ "cav_torch_a": {
+  "cls": "prop",
+  "refs": [
+   "lamp_crook",
+   "lamp_double",
+   "fish_barrel"
+  ],
+  "thin_ok": "불꽃 끝·쇠 받침",
+  "front_only": true
+ },
+ "cav_torch_b": {
+  "cls": "prop",
+  "refs": [
+   "lamp_crook",
+   "lamp_double",
+   "fish_barrel"
+  ],
+  "thin_ok": "불꽃 끝·쇠 받침",
+  "front_only": true
+ },
+ "cav_chest_dais": {
+  "cls": "prop",
+  "refs": [
+   "crate_apple",
+   "fish_crates",
+   "goods_pile"
+  ]
+ },
+ "cav_cart": {
+  "cls": "prop",
+  "refs": [
+   "bench_wood",
+   "sword_barrel",
+   "fish_barrel"
+  ]
+ },
+ "cav_nest": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "뼈 마디·흙 알갱이"
  }
 }

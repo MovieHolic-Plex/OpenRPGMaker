@@ -48,8 +48,8 @@ if _GN:
         # 사냥터의 「건물」: 천막·굴 입구·폐허 석탑·건조대·무덤(사람이 머문 자리).
         _BLD_RE = re.compile(r'^fld_(tent|cave|ruin|rack|grave)')
     if os.environ.get('JS_PROFILE') == 'cave':
-        # 동굴의 「건물」: 방을 밝히거나 받치는 구조물(화로·기둥·보물 상자).
-        _BLD_RE = re.compile(r'^cav_(brazier|pillar|chest)')
+        # 동굴의 「건물」: 방을 밝히거나 받치는 구조물과 용도 앵커(횃불·바위 기둥·보물 단상/상자·광산 수레·뼈 둥지·큰 석순 군락).
+        _BLD_RE = re.compile(r'^cav_(brazier|pillar|rockpillar|chest|chest_dais|torch_|cart|nest|stalagmite_wide)')
     BLD_MIN = {'gungnae': 0.0040, 'field': 0.0010, 'cave': 0.0030}.get(os.environ.get('JS_PROFILE'), 0.0007)   # 원작 규모(200×208=41600칸)는 건물 몸체 조각 29개 이상(원작 이름표 건물 약 25~35채). 아래는 96×96 국내성형의 사유다. # 0.0060 → 0.0040(8차 검수: 구획마다 건물 하나로 듬성듬성): 해자·성벽·궁 포장·밭이 넓고 건물은 듬성듬성한 대형 경관(조사 §⑧). 96×96=9216칸에 건물 몸체 조각 42개 이상.
 
 

@@ -56,7 +56,7 @@
   "sapling": "묘목(수관 350화소 이상, TR).",
   "tuft": "풀숲(수관 150화소 이상, TR)."
  },
- "terrainWithVerdict": ["water47", "water47g", "water_deep", "fld_trail32", "fld_tall32", "fld_forest32", "fld_bog94", "fld_rock32", "fld_rock_in8", "fld_face32", "cav_floor", "cav_floor_lit", "cav_ceil32", "cav_face24", "cav_pool94"],
+ "terrainWithVerdict": ["water47", "water47g", "water_deep", "fld_trail32", "fld_tall32", "fld_forest32", "fld_bog94", "fld_rock32", "fld_rock_in8", "fld_face32", "cav_floor", "cav_floor_lit", "cav_floor_sh", "cav_roof47", "cav_face24", "cav_pool94"],
  "gates": [
   { "code": "P", "name": "팔레트", "blocking": true, "threshold": "허용 밖 색 0", "where": "gate.py + palette.json" },
   { "code": "E", "name": "외곽선", "blocking": true, "threshold": "안쪽/가장자리 밝기비 >= calibration.band.edge_ratio.p5 (seam_open 제외)", "where": "calibration.json" },

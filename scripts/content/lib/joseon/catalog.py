@@ -247,9 +247,10 @@ _objects_before_fld = objects
 
 
 def objects():
-    import fld_props as _FP, fld_props2 as _FP2, fld_cave as _FC
+    import fld_props as _FP, fld_props2 as _FP2, fld_cave as _FC, fld_cave2 as _FC2
     d = _objects_before_fld()
     d.update(_FP.objects())
     d.update(_FP2.objects())
     d.update(_FC.objects())
+    d.update(_FC2.objects())
     return d

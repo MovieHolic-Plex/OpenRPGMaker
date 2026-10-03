@@ -551,6 +551,39 @@
     ".C.",
     "FXF"
    ]
+  },
+  "cav_moss": {
+   "all": "F"
+  },
+  "cav_puddle": {
+   "all": "F"
+  },
+  "cav_torch_a": {
+   "grid": [
+    "X",
+    "X"
+   ]
+  },
+  "cav_torch_b": {
+   "grid": [
+    "X",
+    "X"
+   ]
+  },
+  "cav_chest_dais": {
+   "grid": [
+    "XXX",
+    "FFF"
+   ]
+  },
+  "cav_nest": {
+   "all": "F"
+  },
+  "cav_stalagmite_wide": {
+   "grid": [
+    "FX",
+    "XX"
+   ]
   }
  },
  "terrain": {
@@ -795,12 +828,16 @@
    "name": "동굴 입구 바닥(햇빛)",
    "walk": true
   },
-  "cav_ceil32": {
-   "kind": "mask16",
+  "cav_floor_sh": {
+   "name": "동굴 바닥(벽 그림자)",
+   "walk": true
+  },
+  "cav_roof47": {
+   "kind": "blob47",
    "name": "동굴 천장(벽 윗면)",
    "walk": false,
    "connect": [
-    "cav_ceil32",
+    "cav_roof47",
     "cav_face24"
    ],
    "edgeConnects": false
