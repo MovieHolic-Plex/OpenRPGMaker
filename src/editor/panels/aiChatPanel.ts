@@ -66,7 +66,7 @@ import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
-import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_PI_TEAM, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
 import { resolveContextWindow } from "@/ai/contextCompaction";
 import { modelForRole } from "@/ai/modelRoles";

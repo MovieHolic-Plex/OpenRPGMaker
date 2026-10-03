@@ -94,7 +94,22 @@ export function selectUsedLocation(input: SelectUsedLocationInput): void {
   });
 }
 
+// 같은 타일셋 객체·같은 칸이면 답이 같다. 팔레트 보조 패널은 스토어가 바뀔 때마다(조수 체크포인트 적용마다) 다시 그려져
+// 버들항 27,648칸을 매번 다 훑었다(2026-10-03 프로필: 마을 적용 한 번에 tileVocabulary 점수 계산 ~1.5s). 타일셋이 바뀌면 객체가 바뀐다.
+const similarCache = new WeakMap<TilesetDef, Map<string, readonly number[]>>();
+
 export function similarTilesForTile(input: SimilarTilesInput): readonly number[] {
+  let cache = similarCache.get(input.tileset);
+  if (!cache) { cache = new Map(); similarCache.set(input.tileset, cache); }
+  const key = `${input.tile}:${input.limit}`;
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const result = computeSimilarTiles(input);
+  cache.set(key, result);
+  return result;
+}
+
+function computeSimilarTiles(input: SimilarTilesInput): readonly number[] {
   // 칸마다 tileGroups 를 훑으면(group.tileIds.includes) 버들항 23,936칸에서 제곱이 된다 — 칸→그룹 표를 한 번만 만든다.
   const groupsByTile = new Map<number, TileGroupMetadata[]>();
   for (const group of input.tileset.tileGroups ?? []) {
