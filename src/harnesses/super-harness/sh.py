@@ -286,7 +286,8 @@ def on_build(meta, code, result):
     write_json(cdir(cid, 'verify.json'), report)
     for gap in read_json(cdir(cid, 'gaps.json'), []) or []:
         if isinstance(gap, dict) and gap.get('what'):
-            store.add_gap(cid, str(gap.get('kind', '')), str(gap['what']), str(gap.get('route', '')))
+            store.add_gap(cid, str(gap.get('kind', '')), str(gap['what']), str(gap.get('route', '')),
+                          gap.get('item') if isinstance(gap.get('item'), dict) else None)
     card = read_json(cdir(cid, 'card.json'))
     if card and card.get('aliases'):
         store.update_concept(cid, aliases=card['aliases'])
@@ -294,6 +295,18 @@ def on_build(meta, code, result):
         parent = card.get('parent')
         if parent:
             store.update_concept(cid, parent=resolve_link(parent, None, 0.6, 'requires') if isinstance(parent, dict) else slug(parent))
+    if card and card.get('needsArt'):
+        # 세계관 재료가 없다 — 빌려 짓지 않고 그림을 기다린다. 다른 문제(빈 공간·평면)는 지금 고친다.
+        rest = [p for p in report.get('problems', []) if not p.startswith('needsArt') and '다른 세계관 기물' not in p and '것이 아니다 — 쓸 수 있는 것' not in p]
+        orders = [g for g in (read_json(cdir(cid, 'gaps.json'), []) or []) if isinstance(g, dict) and isinstance(g.get('item'), dict)]
+        if rest:
+            reject(cid, rest[:12], '예제 검사')
+        elif not orders:
+            reject(cid, ['needsArt 인데 gaps.json 에 그림 주문서(item)가 없다 — 그 세계관 기물을 id·ko·w·h·category·desc 로 적어라'], '예제 검사')
+        else:
+            store.update_concept(cid, stage='art', status='idle', reasons=[], note=f'재료 기다림 — 그림 주문 {len(orders)}건')
+            store.log(cid, f'세계관 재료가 없다 → 재료 기다림(그림 주문 {len(orders)}건: {", ".join(str(g["item"].get("ko") or g["item"].get("id")) for g in orders[:6])}…)')
+        return
     if report.get('ok'):
         if hold_for_requirements(cid):
             return
@@ -399,6 +412,11 @@ def scan_failures():
     return {'zeroHitSearches': sorted(zero.items(), key=lambda kv: -kv[1])[:40], 'layoutRepairRequests': repairs[-40:]}
 
 
+def worldviews():
+    seed = read_json(os.path.join(ROOT, 'harness-data/super-harness/seed.json'), {}) or {}
+    return {'worldviews': seed.get('worldviews', []), 'borrowStructure': seed.get('borrowStructure')}
+
+
 def inventory(skip=None):
     out = []
     for c in store.concepts("stage NOT IN ('discarded')"):
@@ -416,7 +434,7 @@ def start_build(c):
     prev = read_json(cdir(cid, 'card.json'))
     prompt = fill(prompt_template('build.md'), ROOT=ROOT, CDIR=cdir(cid), CONCEPT=concept_context(c), REASONS=c['reasons'],
                   FEEDBACK=c['feedback'], PREVIOUS=('있음 — ' + cdir(cid, 'card.json') + ' 를 고쳐라') if prev else '없음 — 처음 만든다',
-                  BRIEF=BRIEF, INVENTORY=inventory(cid), BAKED=os.path.join(BAKE_WT if os.path.isdir(BAKE_WT) else ROOT, 'src/assets/conceptCards.json'))
+                  BRIEF=BRIEF, INVENTORY=inventory(cid), SPACE=prompt_template('space-design.md'), WORLDVIEWS=worldviews(), BAKED=os.path.join(BAKE_WT if os.path.isdir(BAKE_WT) else ROOT, 'src/assets/conceptCards.json'))
     start_codex(cid, 'build', f'a{c["attempt"]}', prompt, cdir(cid, 'card.json'))
     store.update_concept(cid, status='running')
 
@@ -426,7 +444,8 @@ def start_reviews(c):
     for k, focus in (('A', prompt_template('review-a.md')), ('B', prompt_template('review-b.md'))):
         result = cdir(cid, 'reviews', f'{c["attempt"]}-{k}.json')
         os.makedirs(os.path.dirname(result), exist_ok=True)
-        prompt = fill(prompt_template('review.md'), ROOT=ROOT, CDIR=cdir(cid), CONCEPT=concept_context(c), FOCUS=focus, RESULT=result)
+        prompt = fill(prompt_template('review.md'), ROOT=ROOT, CDIR=cdir(cid), CONCEPT=concept_context(c), FOCUS=focus, RESULT=result,
+                      SPACE=prompt_template('space-design.md'), WORLDVIEWS=worldviews())
         start_codex(cid, 'review', f'{c["attempt"]}-{k}', prompt, result)
     store.update_concept(cid, status='running')
 

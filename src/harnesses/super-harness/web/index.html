@@ -19,7 +19,7 @@ main{padding:14px 18px 60px}
 .job{background:#173038;border:1px solid #23505d;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
 .job:before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--run);margin-right:6px;animation:p 1.2s infinite}
 @keyframes p{50%{opacity:.25}}
-.board{display:grid;grid-template-columns:repeat(9,minmax(150px,1fr));gap:8px;overflow-x:auto}
+.board{display:grid;grid-template-columns:repeat(10,minmax(140px,1fr));gap:8px;overflow-x:auto}
 .col{background:var(--panel);border-radius:10px;padding:8px;min-height:140px}
 .col h3{margin:0 0 8px;font-size:13px;display:flex;justify-content:space-between;color:var(--dim)} .col h3 b{color:var(--ink)}
 .c{background:var(--card);border-radius:8px;padding:7px 8px;margin-bottom:7px;cursor:pointer;border-left:3px solid #4a5162}
@@ -49,6 +49,7 @@ ul.plain{margin:4px 0;padding-left:18px} .log{font:12px/1.5 ui-monospace,monospa
 .family b{display:inline-block;min-width:120px;color:var(--dim);font-weight:500}
 .fam{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:10px;background:#2a2f3a;cursor:pointer}
 .fam small{color:var(--dim)} .fam.done{background:#1f4a2e} .fam.blocked{background:#4a1f1f} .fam.waiting{background:#4a3f1f}
+.order{margin:4px 0 6px;padding:6px 8px;border-left:3px solid var(--acc);background:#1e222a;font-size:12px;color:var(--ink)}
 </style>
 <header>
   <h1>슈퍼하네스</h1>
@@ -70,7 +71,7 @@ ul.plain{margin:4px 0;padding-left:18px} .log{font:12px/1.5 ui-monospace,monospa
 <div id="joblog"><div><b id="jobtitle"></b><button onclick="closeLog()">닫기</button></div><pre></pre></div>
 <script>
 const COLS = [
-  ['discovered', '발견 · 대기'], ['waiting', '선행 개념 기다림'], ['build', '만드는 중'], ['review', '적대 검수'], ['probe', '조수 시험'],
+  ['discovered', '발견 · 대기'], ['waiting', '선행 개념 기다림'], ['art', '재료(그림) 기다림'], ['build', '만드는 중'], ['review', '적대 검수'], ['probe', '조수 시험'],
   ['bake', '굽는 중'], ['done', '구움'], ['blocked', '막힘'], ['discarded', '폐기'],
 ];
 const KIND = { discover: '낱말 찾기', build: '만들기', review: '검수', probe: '조수 시험', judge: '판정', bake: '굽기' };
@@ -115,6 +116,17 @@ function probeSide(c, tags, label) {
     const maps = s?.maps ?? [];
     return `<figure>${maps.map((m) => `<img src="${img(`concepts/${c.id}/probe/${tag}/${m.png}`)}" onclick="zoom(this.src)">`).join('') || '<p class="empty">새 맵 없음 / 진행 중</p>'}<figcaption>${tag}</figcaption>${nums(s)}</figure>`;
   }).join('')}</div>`;
+}
+
+function order(it) {
+  if (!it) return '';
+  return `<div class="order"><b>${esc(it.ko ?? it.id)}</b> <span class="pill">${esc(it.id)}</span> <span class="pill">${esc(it.w)}×${esc(it.h)}칸</span> <span class="pill">${esc(it.category)}</span><br>${esc(it.desc)}${it.why ? `<br><i>${esc(it.why)}</i>` : ''}</div>`;
+}
+
+function spaceLine(s) {
+  if (!s) return '';
+  const f = (bad, text) => `<span class="${bad ? 'b' : 'g'}">${text}</span>`;
+  return `<div class="nums">${f(s.lonelyShare > 30, `외딴 바닥 ${s.lonelyShare}%`)}${f(s.emptySquare > 6, `빈 사각 ${s.emptySquare}`)}${f(s.reflexCorners <= 2 && s.rectangularity >= 0.9, `오목 ${s.reflexCorners}`)}<span>고리 ${s.loops}</span></div>`;
 }
 
 function family(c) {
@@ -167,7 +179,7 @@ function renderDetail() {
     <div class="sec"><h3>만든 것 — 변형과 예제 맵</h3>${variants.length ? variants.map((v) => `
       <div style="margin-bottom:14px"><b>${esc(v.title)}</b> <span class="pill">${esc(v.worldview)}</span> <span class="pill">${esc(v.tilesetId)}</span>${v.size ? ` <span class="pill">크기 ${esc(v.size)}</span>` : ''}
       <p style="margin:4px 0;color:var(--dim)">${esc(v.build)}</p>
-      <div class="two"><div class="grid">${examples.filter((e) => e.variant === v.id).flatMap((e) => e.maps.map((m) => `<figure><img src="${img(`concepts/${c.id}/examples/${m.png}`)}" onclick="zoom(this.src)"><figcaption>${esc(e.title)} · <b>${m.width}×${m.height}</b> · 이벤트 ${Object.values(m.events).reduce((a, b) => a + b, 0)}</figcaption></figure>`)).join('') || '<p class="empty">예제 그림 없음</p>'}</div>
+      <div class="two"><div class="grid">${examples.filter((e) => e.variant === v.id).flatMap((e) => e.maps.map((m) => `<figure><img src="${img(`concepts/${c.id}/examples/${m.png}`)}" onclick="zoom(this.src)"><figcaption>${esc(e.title)} · <b>${m.width}×${m.height}</b> · 이벤트 ${Object.values(m.events).reduce((a, b) => a + b, 0)}</figcaption>${spaceLine(m.space)}</figure>`)).join('') || '<p class="empty">예제 그림 없음</p>'}</div>
       <div><b>구조</b><ul class="plain">${(v.structure ?? []).map((s) => `<li>${esc(s)}</li>`).join('')}</ul><b>재료</b>${materials(v.include)}<b>넣지 않는 것</b><ul class="plain">${(v.exclude ?? []).map((s) => `<li>${esc(s)}</li>`).join('')}</ul><b>빈칸</b> ${esc(v.emptiness)}</div></div></div>`).join('') : '<p class="empty">아직 카드가 없다</p>'}
       ${c.verify && !c.verify.ok ? `<p><span class="verdict FAIL">예제 검사 실패</span></p><ul class="plain">${(c.verify.problems ?? []).slice(0, 12).map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
     </div>
@@ -177,7 +189,7 @@ function renderDetail() {
       ${older.length ? `<p class="empty">이전 시도 기록: ${older.join(', ')}</p>` : ''}
       ${judges.map(([k, j]) => `<p><b>${esc(k)}</b> <span class="verdict ${j?.verdict === 'PASS' ? 'PASS' : 'FAIL'}">${esc(j?.verdict ?? '?')}</span> ${esc(j?.summary ?? '')}</p><ul class="plain">${(j?.reasons ?? []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`).join('')}
     </div>
-    ${myGaps.length ? `<div class="sec"><h3>이 개념이 찾은 부족분</h3><ul class="plain">${myGaps.map((g) => `<li><b>${esc(g.kind)}</b> ${esc(g.what)} → ${esc(g.route)}</li>`).join('')}</ul></div>` : ''}
+    ${myGaps.length ? `<div class="sec"><h3>이 개념이 찾은 부족분</h3><ul class="plain">${myGaps.map((g) => `<li><b>${esc(g.kind)}</b> ${esc(g.what)} → ${esc(g.route)}${order(g.item)}</li>`).join('')}</ul></div>` : ''}
     <div class="sec"><h3>진행 기록</h3><div class="log">${c.log.map((l) => `${esc(l.at.slice(5))}  ${esc(l.text)}`).join('<br>')}</div></div>`;
 }
 
@@ -193,7 +205,7 @@ function renderTop() {
   $('model').textContent = `codex ${S.model} · ${S.effort}`;
   const title = (cid) => S.concepts.find((c) => c.id === cid)?.title ?? '전체';
   $('runbar').innerHTML = S.running.length ? S.running.map((j) => `<span class="job" onclick="openLog(${j.id}, '${esc(title(j.concept))} · ${esc(KIND[j.kind] ?? j.kind)} ${esc(j.tag)}')">${esc(title(j.concept))} · ${esc(KIND[j.kind] ?? j.kind)} ${esc(j.tag)}</span>`).join('') : '<span class="empty">지금 도는 작업 없음</span>';
-  $('gaps').innerHTML = S.gaps.length ? `<ul class="plain">${S.gaps.map((g) => `<li><b>${esc(title(g.concept))}</b> · ${esc(g.kind)} — ${esc(g.what)} → <code>${esc(g.route)}</code> <span class="pill">${esc(g.status)}</span></li>`).join('')}</ul>` : '<p class="empty">아직 없다</p>';
+  $('gaps').innerHTML = S.gaps.length ? `<ul class="plain">${S.gaps.map((g) => `<li><b>${esc(title(g.concept))}</b> · ${esc(g.kind)} — ${esc(g.what)} → <code>${esc(g.route)}</code> <span class="pill">${esc(g.status)}</span>${order(g.item)}</li>`).join('')}</ul>` : '<p class="empty">아직 없다</p>';
   $('glog').innerHTML = S.log.map((l) => `${esc(l.at.slice(5))}  <b>${esc(l.concept ? title(l.concept) : '·')}</b>  ${esc(l.text)}`).join('<br>');
 }
 

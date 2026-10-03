@@ -57,10 +57,13 @@
   requires?: ({ id, title, aliases?, why } | string)[];  // 먼저 있어야 할 개념
   children?: { id, title, aliases?, why }[];      // 이 개념에서 자라는 하위 개념 2~4개(층·구역·변형 공간). 슈퍼하네스가 다음 카드로 낸다.
                                                   // 예: 카타콤 → 카타콤 2층·납골당 최심부, 성도 → 성도 대성당·성도 빈민가. 이미 재고에 있는 것은 id 만.
+  needsArt?: boolean;      // 이 세계관 기물이 없어 정직하게 못 짓는다 → gaps.json 에 그림 주문서를 쓰고 true. 슈퍼하네스가 그림을 기다린다
   variants: [{
     id: string; title: string;
-    worldview: string;     // 중세 지하 · 현대 · 호러 …
-    tilesetId: string;     // 아래 「쓸 수 있는 칩셋」 중 하나
+    worldview: string;     // 사람이 읽는 설명(중세 지하 · 현대 병원 …)
+    worldviewId: string;   // 아래 「세계관」 표의 id 하나. 호러·코믹은 분위기지 세계관이 아니다
+    layout: "room" | "building" | "dungeon" | "outdoor";  // 검사 기준이 다르다(dungeon 은 고리 ≥ 1)
+    tilesetId: string;     // 그 세계관의 칩셋
     build: string;         // 짓는 도구와 순서 한 줄
     structure: string[];   // 구조 규칙 (예: 통로 폭 1~2, 막다른 길 4곳 이상, 입구와 목표는 대각 반대편)
     include: [{ what: string; as: "tile" | "event"; how: string }];  // how = 도구 이름과 인자 요지
@@ -80,7 +83,17 @@
    `{{ROOT}}/docs/tool-catalog.md` 에서 확인한다. 이 장치들의 v5 **그림을 바닥에 칠하지 마라**(손 도트 v5 `category:"gimmick"` 26종) —
    이벤트가 없으면 열리지도 밟히지도 않는다. 이벤트 그림이 v5 화풍과 안 맞으면(지금 place_chest 는 옛 EasyRPG 상자 그림이다) gaps.json 에
    `{"kind":"event-graphic", ...}` 로 적는다.
-2. **쓸 수 있는 칩셋**: 실내형(지하·미궁·감옥·동굴 속·성 안·건물 안) = 손 도트 실내 v5 `atlas_biome_interior` — 도구 `build_hand_interior_room`
+2. **세계관의 재료로만 짓는다.** 현대는 현대 기물, 조선은 조선 기물, 무림은 무림 기물로 채운다. 세계관 표:
+
+   ```json
+   {{WORLDVIEWS}}
+   ```
+
+   `native` 칩셋만 쓴다. 손 도트 실내 v5(`atlas_biome_interior`)는 **중세 판타지 세트**다 — 다른 세계관은 그 바닥·벽면·천장(구조)만 빌릴 수 있고
+   기물(objects·tables·goods·lines·daises)은 하나도 못 쓴다(예제 검사가 막는다). 현대 병원에 중세 약장, 조선 주막에 서양 화덕을 놓지 마라.
+   그 세계관 기물이 없으면 **빌려 쓰지 말고** gaps.json 에 그 세계관 기물 주문서를 6~20개 쓰고 card.json 에 `needsArt: true` 를 둔다.
+   카드 본문(구조·재료·금지·크기·방 그래프)은 그대로 다 쓴다 — 그림이 들어오면 예제만 지어 다시 검사한다. 예제는 구조만으로 지어 두어도 된다.
+   **쓸 수 있는 칩셋**: 실내형(지하·미궁·감옥·동굴 속·성 안·건물 안) = 손 도트 실내 v5 `atlas_biome_interior` — 도구 `build_hand_interior_room`
    (설명: `{{ROOT}}/src/editor/tools/handInteriorTools.ts`, 재료·기물 사전: `{{ROOT}}/src/assets/handInteriorSpec.json` 의 floors·walls·ceilings·objects,
    예제 맵 문서: `{{ROOT}}/src/assets/sharedHandInteriorReferences.json`). 야외형은 버들항 v6 `beodeul_city`, 현대 `modern_city`, 일본 `jp_city`,
    조선 `joseon_baram` 중 그 세계관에 맞는 것. **던전 칩셋 `atlas_biome_dungeon` 과 EasyRPG 칩셋은 폐기됐다 — 쓰지 마라.**
@@ -110,13 +123,15 @@
 8. 빈 바닥은 **목적 있게** 남긴다. 큰 맵은 구역(입구·갈림길 구역·보물 방·보스 앞·막다른 길)을 나누고 이벤트를 구역마다 둔다 —
    80×80 미궁이면 보물상자 6개 이상·함정 8개 이상·세이브 1~2곳 정도.
 
+{{SPACE}}
+
 ## 검사 — 통과할 때까지 고친다
 
 ```bash
 cd {{ROOT}} && bun src/harnesses/super-harness/node/example.mts --card {{CDIR}}/card.json --out {{CDIR}}/examples --brief {{BRIEF}}
 ```
 
-`ok` 가 나올 때까지 고쳐라. 그다음 `{{CDIR}}/examples/*.png` 를 **직접 열어 눈으로 본다**. 그림 표식: 이벤트는 색 테두리
+`ok` 가 나올 때까지 고쳐라(`needsArt:true` 면 그 한 줄과 세계관 기물 줄만 남아야 한다). check.json 의 `space`(외딴 바닥·빈 정사각형·오목 모서리·고리)를 본다. 그다음 `{{CDIR}}/examples/*.png` 를 **직접 열어 눈으로 본다**. 그림 표식: 이벤트는 색 테두리
 (금색 상자 · 빨강 함정 · 하늘색 세이브 · 파랑 문 · 보라 스위치 · 초록 대화 · 흰색 기타), **빨간 X 는 이벤트 없이 칠한 장치 그림**(실패).
 그림을 보고 개념답지 않으면(미궁이 미로로 안 보임, 빈 방만 덩그러니, 쓸데없는 기물) 고친다. 적대 검수자 2명이 이 그림을 보고 떨어뜨릴 이유를 찾는다.
 

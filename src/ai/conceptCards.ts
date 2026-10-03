@@ -49,6 +49,10 @@ export interface ConceptVariant {
   readonly title: string;
   /** 세계관 — 중세 지하, 현대 하수도 … */
   readonly worldview: string;
+  /** 세계관 id(harness-data/super-harness/seed.json 의 worldviews) — 그 세계관의 칩셋·기물만 쓴다. */
+  readonly worldviewId?: string;
+  /** 공간 종류 — 검사 기준이 다르다(던전·미궁은 고리가 있어야, 야외는 빈칸 기준이 느슨). */
+  readonly layout?: "room" | "building" | "dungeon" | "outdoor";
   readonly tilesetId: string;
   /** 짓는 도구와 순서 한 줄. */
   readonly build: string;
@@ -78,6 +82,8 @@ export interface ConceptCard {
   readonly requires?: readonly string[];
   /** 이 개념에서 자라는 하위 개념(카타콤 → 카타콤 2층·최심부). */
   readonly children?: readonly ConceptLink[];
+  /** 이 세계관 재료(기물 그림)가 아직 없어 정직하게 지을 수 없다 — 슈퍼하네스가 그림을 주문하고 기다린다. 구운 카드에는 없다. */
+  readonly needsArt?: boolean;
   readonly bakedAt?: string;
 }
 
