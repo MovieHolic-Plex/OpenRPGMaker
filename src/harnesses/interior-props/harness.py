@@ -428,7 +428,8 @@ def pool():
                 try: _finish(r, code)
                 except (Exception, SystemExit) as e: store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
                 print(store.now(), f"h{r['round']}-{r['letter']} 끝({code})", flush=True)
-        queued = store.runs(status=('queued',))
+        # 작업지시서가 아직 없는 판(draw 가 new_round 뒤 brief.make 를 쓰는 중)은 건너뛴다 — 집어 가면 brief=None 으로 실패했다(2026-10-03 8차 16장)
+        queued = [r for r in store.runs(status=('queued',)) if r.get('brief')]
         while queued and len(live) < MAX_PAR:
             r = queued.pop(0)
             try:
