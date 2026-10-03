@@ -2,6 +2,112 @@
   "version": 1,
   "cards": [
     {
+      "id": "indoor-onsen",
+      "title": "온천탕",
+      "aliases": [
+        "온천탕",
+        "실내 온천",
+        "온천 욕장",
+        "온천욕장",
+        "onsen bath",
+        "indoor hot spring",
+        "indoor onsen",
+        "실내온천",
+        "실내온천탕",
+        "실내 온천탕"
+      ],
+      "excludeContexts": [
+        "노천 온천",
+        "노천온천",
+        "노천탕",
+        "outdoor onsen",
+        "야외 온천",
+        "야외온천",
+        "야외 온천탕",
+        "야외온천탕",
+        "open-air onsen",
+        "open air onsen",
+        "outdoor hot spring",
+        "open-air hot spring",
+        "open air hot spring"
+      ],
+      "summary": "온천탕은 온천수에 몸을 담그는 실내 목욕 공간으로, 마른 탈의 자리에서 씻는 자리를 거쳐 탕으로 들어가는 동선이 중심이다. 물기 있는 돌바닥의 목욕 구역과 나무 바닥의 탈의 구역을 칸막이로 구분하고 수건걸이·세면대·입욕 자리를 묶는다. 현재 예제는 기존 욕조를 사용하는 개별탕 네 칸이며, 공동 돌탕과 일본식 전용 소품은 부족분이 해결된 뒤 추가한다.",
+      "skipLayoutQuality": true,
+      "children": [
+        {
+          "id": "onsen-family-bath",
+          "title": "온천 가족탕",
+          "aliases": [
+            "온천 가족탕",
+            "가족 온천탕",
+            "private family onsen"
+          ],
+          "why": "가족이나 소규모 일행을 위한 한 개의 입욕실과 독립 탈의실로 자란다."
+        }
+      ],
+      "variants": [
+        {
+          "id": "private-bathhouse",
+          "title": "여관의 개별 온천 욕장",
+          "worldview": "일본풍 판타지 여관의 실내 목욕 구역; 현재 v5의 범용 목재·석재·욕조로 구현",
+          "tilesetId": "atlas_biome_interior",
+          "build": "python3로 같은 길이 plan 생성 → build_hand_interior_room으로 네 개별 입욕실과 공용 탈의 공간 구성 → upsert_event로 욕조 앞 입욕 조사·recoverAll 연결 → 통행과 그림 확인. 큰 예제는 build_concept_example로 실행한다.",
+          "structure": [
+            "남쪽 출입구 → 마른 공용 탈의 공간 → 각 입욕실 문 → 세면대 → 욕조 앞 입욕 자리의 순서로 연결한다. 출입구와 문 앞은 비운다.",
+            "북쪽에는 벽으로 나눈 개별 입욕실 네 칸을 두고 각 실마다 세면대 하나·수건걸이 하나·욕조 하나를 둔다. 남쪽은 옷장·병풍·벤치만 있는 공용 탈의 공간이다.",
+            "목욕실 바닥은 wetstone, 벽은 stone; 탈의실 바닥은 plank, 벽은 log, 천장은 wood. 널마루를 탕 내부의 물로 간주하지 않는다.",
+            "plan의 벽 아래 두 줄은 못 걷는 벽면이다. 가로 문 틈은 3칸 폭으로 열고 그 아래 두 줄과 접근 바닥을 비운다. 세면대·옷장은 벽 아래 첫 바닥 줄, 수건걸이는 벽면 윗줄에 놓는다.",
+            "욕조는 기존 bathtub 범용 그림이며 일본식 공동 돌탕이라고 설명하지 않는다. 온천수는 입욕 이벤트의 대사로 명시한다. 입욕 자리에서 action으로 recoverAll이 실제 실행된다.",
+            "온천탕 hot spring은 v5 category:gimmick이다. 현재 여러 칸 그림을 이벤트 외형으로 연결할 수 없어 예제에 넣지 않는다. 그림 주문을 새로 내는 대신 기존 그림 연결 기능의 부족분을 기록한다.",
+            "예제는 자기 새 맵 하나만 만들며 남쪽 출입구는 열린 틈이다. 다른 장소와 이동을 연결할 때는 양쪽 맵을 먼저 만든 뒤 create_transfer_pair를 사용한다."
+          ],
+          "include": [
+            {
+              "what": "돌벽·젖은 돌바닥의 네 입욕실과 나무 벽·널마루의 공용 탈의 공간",
+              "as": "tile",
+              "how": "build_hand_interior_room({mapId:새 id,plan,floor:\"plank\",wall:\"log\",ceiling:\"wood\",zones:[{x0:1,y0:1,x1:22,y1:9,floor:\"wetstone\",wall:\"stone\"}],start}); 실내 v5만 사용한다."
+            },
+            {
+              "what": "기존 욕조·세면대·수건걸이",
+              "as": "tile",
+              "how": "build_hand_interior_room objects에 bathtub(2×1), washbasin(1×1), towel rail(벽면 걸이)을 입욕실마다 하나씩; bathtub는 category:home의 범용 욕조다."
+            },
+            {
+              "what": "탈의 공간의 나무 옷장·병풍·벤치",
+              "as": "tile",
+              "how": "build_hand_interior_room objects에 wardrobe, folding screen, bench 3을 문과 출입구를 피해서 놓는다. 옷장은 장식이며 아이템 지급·수납을 주장하지 않는다."
+            },
+            {
+              "what": "실제 회복을 실행하는 입욕 자리",
+              "as": "event",
+              "how": "upsert_event({mapId,event:{id,name:\"온천 입욕 자리\",x:욕조 앞,y:욕조 남쪽,pages:[{id,conditions:[],graphic:{transparent:true},trigger:{kind:\"action\"},priority:\"below\",movement:{type:\"fixed\",speed:3,frequency:3},commands:[{kind:\"text\",body:\"몸을 씻고 온천수에 몸을 담갔다.\"},{kind:\"recoverAll\"},{kind:\"text\",body:\"기력이 돌아왔다.\"}]}]}}); 입욕실마다 하나씩 실제 이벤트를 둔다."
+            }
+          ],
+          "exclude": [
+            "hot spring을 비롯한 v5 category:gimmick 그림을 objects나 paint_tiles로 깔기; 이벤트 없는 회복 샘·보물상자·함정·스위치·잠긴 문",
+            "요청하지 않은 보물상자·함정·세이브 수정·몬스터·전투·퍼즐·제단",
+            "욕장 바닥의 침대·식탁·식기·책장·무기·상점 진열·상자 더미·나무·화단",
+            "젖은 입욕실의 카펫, 욕조 앞이나 문 틈을 막는 병풍·옷장",
+            "없는 노렌·히노키 공동탕·목욕 걸상·바가지를 병풍·빨래통·술통으로 위장하기",
+            "폐기된 atlas_biome_dungeon·EasyRPG·tibo_interior_expanded 재료, 야외 jp_city 건물을 실내에 놓기",
+            "물 타일 대신 파란 카펫을 칠하기, 회복 대사만 넣고 recoverAll을 빼기"
+          ],
+          "emptiness": "욕조와 세면대 앞에서 씻고 드나드는 바닥, 갈아입는 자리와 출입구 동선은 비운다. 걸을 수 있는 바닥의 70~85%가 가구 없이 비어 있어도 정상이며 추가 소품으로 비율을 맞추지 않는다.",
+          "size": "24×22 안팎(20~40칸); 큰 여관 전체가 아니라 독립된 실내 온천 욕장 한 구역",
+          "examples": [
+            {
+              "id": "four-private-baths",
+              "title": "네 개별탕과 공용 탈의 공간·입욕 회복 이벤트",
+              "width": 24,
+              "height": 22,
+              "image": "/assets/concept-cards/indoor-onsen/private-bathhouse--four-private-baths.png"
+            }
+          ]
+        }
+      ],
+      "bakedAt": "2026-10-03T23:50:48"
+    },
+    {
       "id": "labyrinth",
       "title": "미궁",
       "aliases": [
