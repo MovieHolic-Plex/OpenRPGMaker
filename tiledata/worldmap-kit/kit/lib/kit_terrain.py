@@ -21,6 +21,14 @@
   plateau poly, level?, ground?     고원(level 1|2). 가장자리는 절벽이 된다 — 오르는 길은 경사로가 있어야 한다
   move_place id, x, y               여정 장소를 옮긴다(발자국 왼쪽 위 칸)
   volcano x, y, lava?               화산 — 가운데 분화구(반지름 2.6칸)와 둘레 화산 고리(3.6칸), lava 꺾은선은 용암 줄기. 땅이 반지름 4칸은 돼야 한다
+
+base "generate" — 손 대륙 대신 빈 판에 새 구조를 만든다(kit_gen). 여정 장소·장벽은 kit_fit 이 자동으로 맞춘다.
+  continents style?, count?, land?, seed?   대륙 구조(blobs | shards | ring | pangaea | archipelago | galaxy) — 생성 지형의 첫 작업
+  climate    seed?, wet?, cold?             기후(바닥). wet·cold 는 -1~1
+  wall       line, gate?                    2막을 가르는 산벽을 직접 긋는다(해안에서 해안까지). gate [x,y] 는 관문 요새 자리
+  dune_sea   poly                           4막 사구 바다 자리(시작 대륙 1막 땅 안)
+  sky_island x, y                           천공섬 자리(열린 바다)
+  land·sea·island 는 구조에 접혀 맞춤 전에 반영되고, move_place 는 맞춤의 고정 핀이 된다.
 바닥 이름: grass farm crop savanna sand dune dirt badlands ash basalt swamp marsh tundra snow glacier jungle
 """
 import copy
@@ -37,7 +45,11 @@ OPS = {
     'river': (('line',), ('widen',)), 'forest': (('poly',), ('kind', 'density')), 'clear': (('poly',), ('what',)),
     'plateau': (('poly',), ('level', 'ground')), 'move_place': (('id', 'x', 'y'), ()),
     'volcano': (('x', 'y'), ('lava',)),
+    'continents': ((), ('style', 'count', 'land', 'seed')), 'climate': ((), ('seed', 'wet', 'cold')),
+    'wall': (('line',), ('gate',)), 'dune_sea': (('poly',), ()), 'sky_island': (('x', 'y'), ()),
 }
+GEN_ONLY = ('continents', 'climate', 'wall', 'dune_sea', 'sky_island')
+BASES = ('shared-v9', 'generate')
 W, H = 96, 72
 
 
@@ -57,8 +69,9 @@ def _pts(v, what, i, n=2):
 def validate(spec):
     if spec.get('schema') != 'worldmap-terrain/1':
         raise TerrainError('schema 가 worldmap-terrain/1 이 아니다')
-    if spec.get('base', 'shared-v9') != 'shared-v9':
-        raise TerrainError('base 는 지금 shared-v9 하나뿐이다')
+    base = spec.get('base', 'shared-v9')
+    if base not in BASES:
+        raise TerrainError('base 는 %s' % ' | '.join(BASES))
     ops = spec.get('ops', [])
     if not isinstance(ops, list):
         raise TerrainError('ops 는 배열')
@@ -73,6 +86,22 @@ def validate(spec):
         extra = set(o) - set(need) - set(opt) - {'op', 'note'}
         if extra:
             raise TerrainError('ops[%d] (%s): 모르는 키 %s' % (i, k, ', '.join(sorted(extra))))
+        if k in GEN_ONLY and base != 'generate':
+            raise TerrainError('ops[%d] (%s): base "generate"(새 대륙 구조)에서만 쓴다 — 공용 지형(shared-v9)에는 대륙 구조가 이미 있다' % (i, k))
+        if k == 'continents':
+            import kit_gen as KG
+            if o.get('style', 'blobs') not in KG.STYLES:
+                raise TerrainError('ops[%d]: continents style 은 %s' % (i, ' | '.join(KG.STYLES)))
+            if not 1 <= int(o.get('count', 4)) <= 40:
+                raise TerrainError('ops[%d]: continents count 는 1~40' % i)
+            if not .2 <= float(o.get('land', .42)) <= .7:
+                raise TerrainError('ops[%d]: continents land(땅 비율)는 0.2~0.7' % i)
+        if k == 'climate':
+            for kk in ('wet', 'cold'):
+                if kk in o and not -1 <= float(o[kk]) <= 1:
+                    raise TerrainError('ops[%d]: climate %s 는 -1~1' % (i, kk))
+        if k == 'wall' and 'gate' in o and not (isinstance(o['gate'], list) and len(o['gate']) == 2):
+            raise TerrainError('ops[%d]: wall gate 는 [x,y]' % i)
         if 'poly' in o:
             _pts(o['poly'], 'poly', i, 3)
         if 'line' in o:
@@ -112,7 +141,12 @@ def merge(base, edit):
     """테마 지형(base) 위에 편집(edit)의 작업을 잇는다. 둘 중 하나가 없으면 다른 하나."""
     if base is None or edit is None:
         return base if edit is None else edit
+    if edit.get('base') == 'generate' and base.get('base', 'shared-v9') != 'generate':
+        return edit                                  # 새 구조를 만들면 테마의 손 대륙 지형 작업은 버린다
     out = dict(edit)
+    out['base'] = base.get('base', 'shared-v9') if 'base' not in edit else edit['base']
+    if base.get('base') == 'generate' and edit.get('base', 'generate') == 'generate':
+        out['base'] = 'generate'
     out['id'] = '%s+%s' % (base['id'], edit.get('id', 'edit'))
     out['ops'] = list(base.get('ops', [])) + list(edit.get('ops', []))
     return validate(out)
@@ -141,10 +175,20 @@ def apply(spec, journey):
     if spec is None:
         return journey
     import make_map_v4 as M4
+    if spec.get('base') == 'generate':
+        import kit_gen as KG
+        M4.use_blank_base()
+        try:
+            journey, _summary = KG.generate(spec, journey, int(spec.get('fit_salt', 0)))
+        except KG.GenError as e:
+            raise TerrainError(str(e))
     j = copy.deepcopy(journey)
     places = {p['id']: p for p in j['places']}
+    gen = spec.get('base') == 'generate'
     for i, o in enumerate(spec['ops']):
         k = o['op']
+        if gen and k in ('continents', 'climate', 'land', 'sea', 'island', 'move_place', 'wall', 'dune_sea', 'sky_island'):
+            continue                                 # 구조 작업은 kit_gen 이 이미 반영했다
         g = getattr(M4, o['ground'].upper()) if o.get('ground') else None
         if k == 'land':
             M4.EXTRA_LAND.append((_pts(o['poly'], 'poly', i, 3), g, 1.5))

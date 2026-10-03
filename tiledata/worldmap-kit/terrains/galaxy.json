@@ -1,0 +1,8 @@
+{
+ "schema": "worldmap-terrain/1",
+ "id": "galaxy",
+ "name": "나선 은하",
+ "base": "generate",
+ "note": "성계 지도(starmap) 테마의 기본 구조 — 은하 핵을 두른 시작 성단 + 나선팔 성단들. 땅 = 항행 공간, 바다 = 공허(워프), 산 = 소행성대, 사구 = 이온 폭풍.",
+ "ops": [{"op": "continents", "style": "galaxy", "seed": 4}]
+}

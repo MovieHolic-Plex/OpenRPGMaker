@@ -89,6 +89,9 @@ class Ctx:
         _n, sx, sy, sw, sh = world['sky_site']
         self.sky = (sx, sy, sw, sh)
         self.occupied[sy:sy + sh, sx:sx + sw] = True
+        lay = world.get('layout') or {}
+        self.systems = lay.get('systems')                # 생성 우주(galaxy): [[x, y, 반지름, 성단 번호], …] — 성계 별·궤도·은하 핵을 그린다
+        self.core = lay.get('core')
 
     def _mask(self, cells):
         m = np.zeros((self.H, self.W), bool)
@@ -1176,6 +1179,8 @@ def render_space(ctx, seed=11, road_px=None):
             draw_red_giant(img, cells, free)
     for y, x in zip(*np.nonzero(rockcell)):
         draw_asteroids(img, int(x), int(y))
+    if ctx.systems:
+        draw_galaxy(img, ctx, seed)
     # 아이콘 받침: 발자국 안 성운을 공허 쪽으로 눌러 아이콘 윤곽이 묻히지 않게
     # 받침은 발자국 네모가 아니라 가운데 둥근 어둠(타원, 가장자리로 갈수록 옅게 2단 디더) — 네모 받침이 1배에서 구멍처럼 보였다(QA 3차)
     a = np.zeros((H, W), np.float32)
@@ -1194,6 +1199,103 @@ def render_space(ctx, seed=11, road_px=None):
         img[mm] = (img[mm].astype(np.float32) * mul + SPACE['void'].astype(np.float32) * (1 - mul)).astype(np.uint8)
     draw_hyperlanes(img, ctx)
     return img
+
+
+SUN = {   # 성운 종류 → 성계 별 색(핵 · 빛 · 테)
+    'sand': ('fff6c8', 'ffd060', 'b06a10'), 'ash': ('ffe0c0', 'ff7a40', '8a2010'), 'badlands': ('ffe0f0', 'ff8ac0', '8a2a60'),
+    'snow': ('ffffff', 'a8d0ff', '3a5a9a'), 'tundra': ('f0f6ff', '9ab8f0', '34508a'), 'swamp': ('f0fff6', '8ef0c0', '1e6a50'),
+    'savanna': ('fff0ff', 'd8a0ff', '5a2a8a'), 'dirt': ('f4f0ff', 'b8a8f0', '4a3a7a'), 'farm': ('f0f4ff', 'a8b4ff', '343c8a'),
+    'grass': ('f6ffff', '9ae8ff', '1e5a7a'),
+}
+
+
+def draw_galaxy(img, ctx, seed=11):
+    """생성 우주의 성계 층: 은하 핵 빛무리 · 나선팔 먼지 띠(공허 속 염주 사이) · 성계 별과 궤도. 장소 발자국 둘레는 비운다."""
+    H, W = img.shape[:2]
+    occ = np.zeros((ctx.H, ctx.W), bool)
+    for p in ctx.places:
+        occ[max(p['y'] - 1, 0):p['y'] + p['h'] + 1, max(p['x'] - 1, 0):p['x'] + p['w'] + 1] = True
+    sx_, sy_, sw_, sh_ = ctx.sky
+    occ[max(sy_ - 1, 0):sy_ + sh_ + 1, max(sx_ - 1, 0):sx_ + sw_ + 1] = True
+    occ |= ctx.road | ctx.dune
+    occ_px = np.kron(occ.astype(np.uint8), np.ones((TS, TS), np.uint8)).astype(bool)
+    D = bayer(H, W)
+    yy, xx = np.mgrid[0:H, 0:W]
+    void = ~np.kron((ctx.G != 0).astype(np.uint8), np.ones((TS, TS), np.uint8)).astype(bool)
+    # 나선팔 먼지 띠: 같은 성단의 이웃 성계, 다른 성단이어도 같은 팔에서 이어지던 성계 사이(공허 쪽에만, 옅게)
+    arm = np.zeros((H, W), np.float32)
+    byc = {}
+    for x, y, r, c in ctx.systems:
+        byc.setdefault(int(c), []).append((x, y))
+    chain = [pt for c in sorted(byc) if c > 0 for pt in byc[c]]
+    for (x0, y0), (x1, y1) in zip(chain, chain[1:]):
+        if np.hypot(x1 - x0, y1 - y0) > 16:
+            continue
+        n = int(np.hypot(x1 - x0, y1 - y0) * 4) + 2
+        for t in np.linspace(0, 1, n):
+            X, Y = int((x0 + (x1 - x0) * t) * TS + 8), int((y0 + (y1 - y0) * t) * TS + 8)
+            arm[max(Y - 10, 0):Y + 11, max(X - 10, 0):X + 11] += 1
+    arm = _boxblur(np.minimum(arm, 6) / 6, 6) * (.5 + .8 * vnoise(H, W, 20, seed + 70))
+    dust = void & (D < arm * .55) & (arm > .12)
+    img[dust] = (img[dust].astype(np.float32) * .55 + hx('2a3a6a').astype(np.float32) * .45).astype(np.uint8)
+    rng = np.random.default_rng(seed + 71)
+    for _ in range(int(W * H / 140)):                    # 팔 위 별이 더 많다 — 나선이 별빛으로 읽히게
+        X, Y = int(rng.integers(0, W)), int(rng.integers(0, H))
+        if void[Y, X] and rng.random() < arm[Y, X] * 1.4:
+            img[Y, X] = SPACE['star'][int(rng.integers(0, 3))]
+    # 은하 핵: 둥근 빛무리 4단 디더 + 가운데 흰 점
+    if ctx.core:
+        cx, cy = ctx.core[0] * TS + 8, ctx.core[1] * TS + 8
+        rr = np.hypot((xx - cx) / 1.25, (yy - cy) / .78)
+        R = 3.6 * TS
+        t = np.clip(1 - rr / R, 0, 1)
+        swirl = .5 + .5 * np.sin(np.arctan2(yy - cy, xx - cx) * 2 + rr / 9.0)
+        lvl = t * (.75 + .5 * swirl)
+        cols = [hx('3a2a5a'), hx('8a5a8a'), hx('f0b070'), hx('fff0c8'), hx('ffffff')]
+        for k, th in enumerate((.12, .3, .52, .74, .92)):
+            m = (lvl > th) & (D < np.clip((lvl - th) / .14, 0, 1)) & ~occ_px
+            img[m] = cols[k]
+    # 성계 별 + 궤도
+    for i, (x, y, r, c) in enumerate(ctx.systems):
+        gx, gy = int(round(x)), int(round(y))
+        if not (0 <= gx < ctx.W and 0 <= gy < ctx.H) or ctx.G[gy, gx] == 0:
+            continue
+        name = G_NEB.get(int(ctx.G[gy, gx]), 'grass')
+        core_c, glow_c, rim_c = (hx(v) for v in SUN.get(name, SUN['grass']))
+        cx, cy = int(x * TS + 8), int(y * TS + 8)
+        # 궤도 두 개(점선 타원) — 장소·길·사구 둘레는 건너뛴다
+        for k, f in enumerate((.42, .7)):
+            rx, ry = r * f * TS, r * f * TS * .62
+            n = int(2 * np.pi * max(rx, ry) / 3)
+            ph = (i * 37 + k * 11) % 7
+            for j in range(n):
+                if (j + ph) % 3:
+                    continue
+                a = 2 * np.pi * j / n
+                X, Y = int(cx + np.cos(a) * rx), int(cy + np.sin(a) * ry)
+                if 0 <= X < W and 0 <= Y < H and not occ_px[Y, X]:
+                    img[Y, X] = (img[Y, X].astype(np.float32) * .35 + rim_c.astype(np.float32) * .65).astype(np.uint8)
+            a = 2 * np.pi * ((i * 0.37 + k * .5) % 1.0)          # 궤도 위 행성 하나
+            X, Y = int(cx + np.cos(a) * rx), int(cy + np.sin(a) * ry)
+            if 2 <= X < W - 2 and 2 <= Y < H - 2 and not occ_px[Y - 2:Y + 3, X - 2:X + 3].any():
+                img[Y - 1:Y + 2, X - 1:X + 2] = rim_c
+                img[Y - 1, X - 1] = glow_c
+        if occ[gy, gx]:
+            continue
+        rad = 3 if r < 4 else 4
+        for dy in range(-rad - 5, rad + 6):
+            for dx in range(-rad - 5, rad + 6):
+                X, Y = cx + dx, cy + dy
+                if not (0 <= X < W and 0 <= Y < H) or occ_px[Y, X]:
+                    continue
+                d = np.hypot(dx, dy)
+                if d <= rad - 1.5:
+                    img[Y, X] = core_c
+                elif d <= rad:
+                    img[Y, X] = glow_c if (-dx - dy) > -rad * .3 else rim_c
+                elif d <= rad + 5 and BAYER4[Y % 4, X % 4] < (1 - (d - rad) / 5) * .7:
+                    img[Y, X] = (img[Y, X].astype(np.float32) * .5 + glow_c.astype(np.float32) * .5).astype(np.uint8)
+        _cross(img, cx, cy, core_c, rad + 3)
 
 
 def _cross(img, x, y, col, arm=1):

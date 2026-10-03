@@ -68,7 +68,8 @@ def install(journey, roles, iconset, assign):
         sites.append((p['id'], 'ext', assign[p['id']], p['x'], p['y'], ground, p['kind'], p.get('note', '')))
     routes = [(r['id'], r['from'], r['to'], list(r.get('via', []))) for r in journey['roads']]
     cw, ch = roles['floating']['cells']
-    set_world_constants(journey['start']['cell'], gate[0]['gate'], (sky['id'], sky['x'], sky['y'], cw, ch))
+    ship = [b for b in journey['barriers'] if b['means'] == 'ship']
+    set_world_constants(journey['start']['cell'], gate[0]['gate'], (sky['id'], sky['x'], sky['y'], cw, ch), ship[0]['gate'] if ship else None)
     m5.SKY = (sky['id'], assign[sky['id']], sky['x'], sky['y'], sky.get('note', ''))
     m5.ext_with_cities = lambda: None
     m5.SKY_PASTE_ICON = False
@@ -85,7 +86,8 @@ def install(journey, roles, iconset, assign):
         import cliff_v8
         cliff_v8.install(M4)
         M, icon_cells, meta_, info0 = M4.build()
-        M.G[34, 40:45] = 0                                       # 항구 부두가 바다에 닿도록
+        if J.LAYOUT is None:
+            M.G[34, 40:45] = 0                                   # 항구 부두가 바다에 닿도록(생성 지형은 kit_fit 이 부두 줄을 미리 판다)
         return M, icon_cells, meta_
     m5.build_v5 = kit_build_v5
     ob = J.build_world
@@ -93,15 +95,18 @@ def install(journey, roles, iconset, assign):
     def bw():
         M, ic, meta_ = ob()
         P.soften_world(M, ic)                                    # 장소 밑 사각 패치(지형 코드·물체)
-        P4.add_pond(M)                                           # 분화구 호수 자리 = 연못 지형
+        if J.LAYOUT is None:
+            P4.add_pond(M)                                       # 분화구 호수 자리 = 연못 지형(손 대륙의 붉은 고원 자리)
         return M, ic, meta_
     J.build_world = bw
 
 
-def set_world_constants(start, gate, sky_site):
+def set_world_constants(start, gate, sky_site, harbour=None):
     J.START = tuple(start)
     J.GATE_SITE = gate
     J.SKY_SITE = tuple(sky_site)
+    if harbour:
+        J.HARBOUR_SITE = harbour
 
 
 def make_world():
@@ -133,7 +138,7 @@ def _paint_volcano_peaks(img):
     key = np.all(spr == np.array(KEY, np.uint8), axis=2)
     shd = np.all(spr == np.array((254, 103, 139), np.uint8), axis=2)
     H, W = img.shape[:2]
-    for vx, vy in M4.VOLCANOES[1:]:
+    for vx, vy in M4.VOLCANOES[M4.VOLCANO_ICON_N:]:
         x0, y0 = int(round(vx * 16)) - 16, int(round(vy * 16)) - 20
         ys, xs = np.nonzero(~key)
         for py, px in zip(ys, xs):
@@ -149,7 +154,8 @@ def render_terrain(w):
     img, info, snap = _render_base(w)
     M4.render_ramps = old_ramps
     img = swamp_final.run(img, snap, w.M.G)
-    img = P4.paint_pond(img)
+    if J.LAYOUT is None:
+        img = P4.paint_pond(img)
     island = P.island_mask(w.M, w.ic)
     C = P.dune_fx3(img, w.M, w.ic, w.dune | island, rnd, FX._vnoise, mesa=island)
     _paint_volcano_peaks(C)
@@ -187,6 +193,9 @@ def world_dict(w, journey, assign):
     d['schema'] = 'worldmap-world/1'
     d['journey'] = journey['id']
     d['sky_site'] = list(J.SKY_SITE)
+    if J.LAYOUT is not None:                                     # 생성 지형만 — 손 대륙 world.json 은 그대로(자체 검사 바이트 비교)
+        d['harbour'] = J.HARBOUR_SITE
+        d['layout'] = J.LAYOUT.get('summary')
     d['ic'] = {k: [int(v) for v in vv] for k, vv in w.ic.items()}
     d['face'] = [[int(x), int(y), int(j), int(n)] for (x, y), (j, n, _r) in sorted(w.M.face.items())]
     d['road_cells'] = [[int(x), int(y)] for y, x in zip(*np.nonzero(w.road))]
@@ -228,9 +237,10 @@ class MapWorld(J.World):
     """J.World 와 같은 통행 규칙·막별 도달 영역. 지형 빌드·길 계획만 건너뛰고 world.json 에서 읽는다."""
 
     def __init__(self, d):
-        set_world_constants(d['start'], d['gate'], d['sky_site'])
+        set_world_constants(d['start'], d['gate'], d['sky_site'], d.get('harbour'))
         self.M = M = MapStub(d)
         self.ic = ic = {k: tuple(v) for k, v in d['ic'].items()}
+        self.generated = 'layout' in d                           # 생성 지형 — 장벽 두께를 고정 창 대신 BFS 로 잰다
         self.meta = None
         self.walk0 = J.base_walk(M, ic)
         self.road = np.zeros((M.H, M.W), bool)
@@ -245,7 +255,7 @@ class MapWorld(J.World):
             self.walk0[y, x] = True
         self.sites = {n: v for n, v in ic.items() if not n.endswith('경사로')}
         self.site_kind = {s['name']: s['kind'] for s in d['sites']}
-        self.site_kind['천공섬'] = 'sky'
+        self.site_kind[J.SKY_SITE[0]] = 'sky'
         self.gate = set(J.gate_cells(ic))
         for n, (x, y, ww, hh) in self.sites.items():
             self.walk0[y:y + hh, x:x + ww] = True

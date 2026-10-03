@@ -41,7 +41,8 @@ def soften_world(M, ic):
         G[y:y + h, x:x + w] = M4.DUNE
         log['dune_islands'][n] = dict(rect=[x, y, w, h], ground_before=before)
     ys, xs = np.mgrid[0:H, 0:W]
-    M.dune_sea = (G == M4.DUNE) & (xs < 40)
+    import journey_world_v9 as J
+    M.dune_sea = (G == M4.DUNE) & ((xs < 40) if J.LAYOUT is None else J.LAYOUT['dune'])
     forest_codes = set(V.FORESTS)
     for n, (x, y, w, h) in ic.items():
         if n.endswith('경사로'):
@@ -83,7 +84,7 @@ def soften_world(M, ic):
                 if x <= a < x + w and y <= b < y + h or not (0 <= a < W and 0 <= b < H):
                     continue
                 d = max(x - a, a - (x + w - 1), y - b, b - (y + h - 1))
-                if int(G[b, a]) != cf and G[b, a] >= 10 and int(G[b, a]) not in (M4.RIVER,) and not M.RAMP[b, a]:
+                if int(G[b, a]) != cf and G[b, a] >= 10 and int(G[b, a]) not in (M4.RIVER, M4.DUNE) and not M.RAMP[b, a]:   # 사구(장벽)는 덮지 않는다
                     if h1(a, b, 6103) < (.7 if d == 1 else .3):
                         changed.append((a, b, int(G[b, a])))
                         G[b, a] = cf
@@ -98,7 +99,9 @@ def island_mask(M, ic):
     G, O = M.G, M.O
     H, W = G.shape
     ys, xs = np.mgrid[0:H, 0:W]
-    return (xs < 40) & (ys >= 52) & (G >= 10) & (G != M4.DUNE) & (O == V.MESA)
+    import journey_world_v9 as J
+    region = ((xs < 40) & (ys >= 52)) if J.LAYOUT is None else J.LAYOUT['dune']
+    return region & (G >= 10) & (G != M4.DUNE) & (O == V.MESA)
 
 
 def dune_fx3(img, M, ic, dune, rnd, vnoise, mesa=None):

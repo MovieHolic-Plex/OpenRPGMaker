@@ -32,6 +32,16 @@ import kit_common as K  # noqa: E402
 import kit_palette as KP  # noqa: E402
 import kit_terrain as KTer  # noqa: E402
 
+FIT_TRIES = 6           # 생성 지형: 맞춤·길·여정 검사가 실패하면 salt 를 바꿔 다시(새 프로세스 — kit_world.install 은 프로세스당 한 번)
+
+
+NO_CHECK = [False]
+
+
+class RetryFit(Exception):
+    """생성 지형의 배치가 이번 salt 로는 안 맞았다(맞춤 실패·길 실패·여정 검사 불일치)."""
+
+
 KEY_ROLES = ('grass', 'savanna', 'sand', 'tundra', 'snow', 'forest', 'mount', 'rock', 'swamp', 'badlands', 'ash', 'sea', 'river')   # 구별력 지표를 재는 주요 지형
 PALETTE_ORDER = ['original', 'ruin', 'dusk', 'winter', 'ashfall', 'regional']
 
@@ -66,7 +76,7 @@ def build_terrain(journey, roles, roles_data, iconset, assign, cache, terrain=No
     import kit_world as W
     t0 = time.time()
     W.install(journey, roles, iconset, assign)
-    w = W.make_world()
+    w = _make_world_gen(W, journey, terrain)
     C, info, paths_same = W.render_terrain(w)
     ukeys, role, grp_t, _cnt = KP.build_roles(C, w.M, info)
     purity = KP.role_purity(C, ukeys, role, grp_t)
@@ -81,6 +91,26 @@ def build_terrain(journey, roles, roles_data, iconset, assign, cache, terrain=No
         np.savez_compressed(cache / 'terrain.npz', C=C, ukeys=ukeys, role=role, G=out['G'], grp_t=grp_t)
         (cache / 'terrain.json').write_text(json.dumps(dict(sig=sig, world=world, paths_same=out['paths_same'], purity=purity), ensure_ascii=False))
     return out
+
+
+def _generated(terrain):
+    return bool(terrain) and terrain.get('base') == 'generate'
+
+
+def _make_world_gen(W, journey, terrain):
+    """세계를 만들고, 생성 지형이면 렌더 전에 여정을 검사한다 — 2분 렌더 뒤에야 실패를 알지 않게."""
+    try:
+        w = W.make_world()
+    except K.KitError as e:
+        if _generated(terrain):
+            raise RetryFit(str(e))
+        raise
+    if _generated(terrain) and not NO_CHECK[0]:
+        from check_journey import run_check
+        bad, _info, _txt = run_check(journey, w, verbose=False)
+        if bad:
+            raise RetryFit('; '.join(KTer.explain(bad, journey)[:4]))
+    return w
 
 
 def separation_metrics(img, C, ukeys, role):
@@ -257,9 +287,29 @@ def main():
     ap.add_argument('--no-check', action='store_true', help='여정 도달성 검사를 건너뛴다')
     ap.add_argument('--terrain', help='terrains/<id> 또는 지형 편집 JSON 경로 — 공용 지형(shared-v9) 위에 작업(ops)을 얹는다')
     ap.add_argument('--preview', action='store_true', help='픽셀 렌더 없이 칸 배열만(몇 초): schematic.png · terrain.txt · world.json · 여정 검사')
+    ap.add_argument('--fit-salt', type=int, default=0, help='생성 지형 배치 시도 번호(실패하면 빌더가 스스로 다음 번호로 다시 돈다)')
     a = ap.parse_args()
+    NO_CHECK[0] = a.no_check
+    try:
+        _main(a)
+    except RetryFit as e:
+        if os.environ.get('WMK_NO_RETRY'):
+            print('배치 %d 실패: %s' % (a.fit_salt, e), file=sys.stderr)
+            sys.exit(3)
+        if a.fit_salt + 1 >= FIT_TRIES:
+            print('입력 오류:\n생성 지형: 배치를 %d번 바꿔 봐도 여정이 맞지 않는다 — 마지막 이유: %s' % (FIT_TRIES, e), file=sys.stderr)
+            sys.exit(2)
+        print('배치 %d 실패(%s) — 다음 배치로 다시' % (a.fit_salt, str(e)[:160]))
+        import subprocess
+        argv = [x for i, x in enumerate(sys.argv) if x != '--fit-salt' and (i == 0 or sys.argv[i - 1] != '--fit-salt')]
+        r = subprocess.run([sys.executable] + argv + ['--fit-salt', str(a.fit_salt + 1)])
+        sys.exit(r.returncode)
+
+
+def _main(a):
     theme = None
     theme_terrain = None
+    terrain = None
     try:
         if a.theme:
             import kit_theme as KT
@@ -280,8 +330,12 @@ def main():
         import kit_terrain as KTer
         try:
             terrain = KTer.merge(KTer.load(theme_terrain, K.WM), KTer.load(a.terrain, K.WM))   # 테마 지형 위에 편집을 얹는다
+            if _generated(terrain):
+                terrain = dict(terrain, fit_salt=a.fit_salt)
             journey = KTer.apply(terrain, journey)
         except KTer.TerrainError as e:
+            if _generated(terrain):
+                raise RetryFit(str(e))
             raise K.KitError('지형 편집: ' + str(e))
         iconset = K.IconSet(a.iconset)
         assign = K.assign_icons(roles, journey, iconset)          # 역할 채움 검사 포함(모자라면 여기서 KitError)
@@ -360,7 +414,7 @@ def preview(journey, roles, iconset, assign, out, no_check, terrain):
     t0 = time.time()
     try:
         W.install(journey, roles, iconset, assign)
-        w = W.make_world()
+        w = _make_world_gen(W, journey, terrain)
     except K.KitError as e:
         print('입력 오류:\n' + str(e), file=sys.stderr)
         sys.exit(2)
