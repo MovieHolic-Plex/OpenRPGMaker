@@ -5,6 +5,25 @@
 
 <!-- releases -->
 
+## 0.97.0 — 2026-10-03
+
+### 기능
+
+- **harness** — joseon-baram CLI 와 기존 조선 도구 다리 (`e6a5f82`)
+- **harness** — joseon-baram 매니페스트·시드·레지스트리 등록 (`b874cd0`)
+
+### 수정
+
+- **jp-city** — 그룹 층을 멤버 칸의 엔진 홈에서 유도 — 정의·엔진 어긋남 177칸(13그룹) 정정 (`da3d266`)
+
+### 문서
+
+- **harness** — joseon-baram 하네스 문서와 AGENTS 하네스 절 한 줄 (`6fdccf0`)
+
+### 테스트
+
+- **harness** — joseon-baram 매니페스트·시드·CLI 단계 시험 (`9c383b9`)
+
 ## 0.96.0 — 2026-10-03
 
 ### 기능
