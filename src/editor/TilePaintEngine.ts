@@ -32,6 +32,9 @@ import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { reliefPickCell } from "@/project/relief/screen";
 import { toast } from "@/util/toast";
+import { handleTerrainDesignPointer, isTerrainDesignTool } from "./terrainDesignActions";
+import { symmetricPoints, symmetryVariants, transformPoint } from "./terrainDesignGeometry";
+import { planReliefDoodad } from "./reliefDoodads";
 
 export type TileLayer = "lower" | "upper";
 
@@ -286,6 +289,11 @@ export class TilePaintEngine {
     const pick = reliefPickCell(map.relief, groundX, groundY);
     const tileset=store.getCurrent().tilesets[map.tilesetId];
     if (!tileset) return;
+    if (isTerrainDesignTool(state.terrainBrush)) {
+      this.stopReliefGrowth();
+      handleTerrainDesignPointer(mid, pick, firstStrokeTile, ptr.button === 2 || ptr.rightButtonDown());
+      return;
+    }
     if (state.terrainBrush === "group") {
       if (!firstStrokeTile) return;
       if (ptr.button === 2 || ptr.rightButtonDown()) { editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null}); return; }
@@ -302,7 +310,7 @@ export class TilePaintEngine {
     if (state.terrainBrush === "surface" || state.terrainBrush === "river") {
       if (firstStrokeTile) {this.stopReliefGrowth();this.terrainLast=null;this.reliefStrokeBase=map.relief?.levels[pick.y*map.width+pick.x]??0;}
       const centers=strokeCenters(this.terrainLast?`${this.terrainLast.x},${this.terrainLast.y}`:"",pick.x,pick.y);
-      this.applyStrokeEdit(mid,()=>{for(const c of centers)paintTerrainBrush(mid,c.x,c.y,state.terrainBrush==="river"?"water":state.terrainMaterial,state.terrainWidth,this.reliefStrokeBase);});
+      this.applyStrokeEdit(mid,()=>{for(const c of centers)for(const p of symmetricPoints(c,state.terrainSymmetry,map.width,map.height))paintTerrainBrush(mid,p.x,p.y,state.terrainBrush==="river"?"water":state.terrainMaterial,state.terrainWidth,this.reliefStrokeBase);});
       this.terrainLast={x:pick.x,y:pick.y};
       return;
     }
@@ -313,12 +321,17 @@ export class TilePaintEngine {
       if (doodad.kind === "bridge" && state.reliefBridgeStart?.mapId !== mid) {
         editorState.set({reliefBridgeStart:{mapId:mid,x:pick.x,y:pick.y}});return;
       }
-      const plan=planEditorTerrainDoodad(map,tileset,doodad,pick);
+      for (const variant of symmetryVariants(state.terrainSymmetry, map.width, map.height)) {
+      const current = store.getCurrent().maps[mid]!, at = { ...transformPoint(pick, map.width, map.height, variant), face: pick.face };
+      const plan=doodad.kind === "bridge" && state.reliefBridgeStart
+        ? planReliefDoodad(current,doodad,at,{width:state.reliefRampWidth,bridgeStart:transformPoint(state.reliefBridgeStart,map.width,map.height,variant)})
+        : planEditorTerrainDoodad(current,tileset,doodad,at);
       if (plan.ok) {
         if(plan.apply)this.applyStrokeEdit(mid,()=>store.updateMapTiles(mid,plan.apply!,{label:`지형지물 · ${doodad.label}`,relief:true,cells:plan.cells}));
         else if(plan.stamp)this.applyStrokeEdit(mid,()=>paintTilesBulk(mid,plan.stamp!,{autoConnect:false,preservePattern:true,clusterExpand:false}));
-        if(doodad.kind==="bridge")editorState.set({reliefBridgeStart:null});
       } else toast(`${doodad.label}: ${plan.reason}`, "info");
+      }
+      if(doodad.kind==="bridge")editorState.set({reliefBridgeStart:null});
       return;
     }
     const { x, y } = pick;
@@ -339,7 +352,7 @@ export class TilePaintEngine {
         : reliefMode === "set" && this.reliefStrokeInverted ? 0
         : state.reliefLevel;
       this.applyStrokeEdit(mid, () => {
-        paintRelief(mid, x, y, reliefMode, { radius: Math.max(1, state.brushSize - 1), level, flattenTo: base, topGrass: state.reliefTopGrass });
+        for (const p of symmetricPoints({x,y},state.terrainSymmetry,map.width,map.height)) paintRelief(mid, p.x, p.y, reliefMode, { radius: Math.max(1, state.brushSize - 1), level, flattenTo: base, topGrass: state.reliefTopGrass });
       });
       return;
     }
@@ -371,7 +384,8 @@ export class TilePaintEngine {
     };
     const topGrass = editorState.get().reliefTopGrass;
     this.applyStrokeEdit(rough.mapId, () => {
-      paintRoughRelief(rough.mapId, x, y, rough.mode, {
+      const map = store.getCurrent().maps[rough.mapId]; if (!map) return;
+      for (const p of symmetricPoints({x,y},editorState.get().terrainSymmetry,map.width,map.height)) paintRoughRelief(rough.mapId, p.x, p.y, rough.mode, {
         radius: rough.radius, base: this.reliefStrokeBase, peak: rough.peak, cap: rough.cap, topGrass,
       });
     });
@@ -410,7 +424,13 @@ export class TilePaintEngine {
     this.reliefRough = null;
     if (!commit || !rough || this.reliefStrokePrecise) return;
     const topGrass = editorState.get().reliefTopGrass;
-    this.applyStrokeEdit(rough.mapId, () => { tidyReliefStroke(rough.mapId, rough.box, topGrass); });
+    this.applyStrokeEdit(rough.mapId, () => {
+      const map = store.getCurrent().maps[rough.mapId]; if (!map) return;
+      for (const v of symmetryVariants(editorState.get().terrainSymmetry,map.width,map.height)) {
+        const corners = [{x:rough.box.x0,y:rough.box.y0},{x:rough.box.x1,y:rough.box.y1}].map(p=>transformPoint(p,map.width,map.height,v));
+        tidyReliefStroke(rough.mapId,{x0:Math.min(...corners.map(p=>p.x)),y0:Math.min(...corners.map(p=>p.y)),x1:Math.max(...corners.map(p=>p.x)),y1:Math.max(...corners.map(p=>p.y))},topGrass);
+      }
+    });
   }
 
   private applyStrokeEdit(mapId: MapId, edit: () => void, options: { readonly includeTilesets?: boolean } = {}): void {

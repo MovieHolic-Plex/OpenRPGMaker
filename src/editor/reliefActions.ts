@@ -11,6 +11,7 @@ import { RELIEF_STYLES } from "@/project/relief/styles";
 import type { ReliefData } from "@/project/relief/types";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import type { MapId, TilesetDef } from "@/project/types";
+import { terrainLocked } from "@/project/terrainDesign";
 
 /**
  * 「윗면 풀」로 덮기 전의 1·2층 칸. 0단으로 되돌아오면 이것으로 돌린다 — 길 위에 실수로 올린 언덕을 내리면 길이 돌아온다.
@@ -43,10 +44,12 @@ export function commitReliefEdit(
   const next: ReliefData = map.relief ? { ...map.relief, levels: map.relief.levels.slice() } : emptyRelief(map.width, map.height);
   const before = map.relief?.levels;
   if (!edit(next)) return false;
+  for (const index of map.terrainDesign?.lockedCells ?? []) next.levels[index] = before?.[index] ?? 0;
   const grass = options.topGrass ? reliefTopGrassTile(project.tilesets[map.tilesetId]) : undefined;
   let memory = coveredGround.get(mapId);
   const tileEdits: { readonly index: number; readonly ground: number; readonly overlay: number }[] = [];
   for (let index = 0; index < next.levels.length; index++) {
+    if (terrainLocked(map.terrainDesign, index)) continue;
     const was = before?.[index] ?? 0, now = next.levels[index] ?? 0;
     if (was === 0 && now > 0 && grass !== undefined) {
       const ground = layerTileAt(map, 1, index), overlay = layerTileAt(map, 2, index);

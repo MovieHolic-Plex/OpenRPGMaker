@@ -137,6 +137,11 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 
 ## 지형지물 군집 `map.doodadGroups?` (2026-10-03)
 
+지형 설계 확장: `map.terrainDesign?`에 `lockedCells`·`waterDepth`를, 프로젝트에
+`terrainStamps?` 라이브러리를 저장한다. 수위는 `relief.levels`; 수심 1은 걷는 물가,
+2~14는 깊은 물이다. 상층 물체와 코드 9 다리의 실제 통행을 함께 본다.
+정규화·복제·크기 변경·도장 계약: [terrain-design-suite.md](terrain-design-suite.md).
+
 편집기에서 밀도 배치한 나무·바위 묶음의 `id`, `label`, `kitId`, `cells[{index,tile,before}]`를 저장한다.
 `before`는 3층 복원 타일이며 실제 런타임 충돌은 현재 타일이 정한다. 옛 맵에는 필드가 없다.
 불러오기는 `normalizeDoodadGroups`, 깊은 복사·크기/칸 이동은 `cloneExtraLayers`/`remapExtraLayers`를 따른다.

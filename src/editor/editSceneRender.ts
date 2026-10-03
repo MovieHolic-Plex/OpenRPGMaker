@@ -17,6 +17,7 @@ import { reliefCellLiftPx } from "@/player/reliefStrips";
 import { reliefPaintsCell } from "@/project/relief/screen";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import { terrainReachability } from "@/project/terrainReachability";
+import { renderTerrainDesignOverlay } from "./terrainDesignOverlay";
 import type { TilesetDef } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
@@ -198,6 +199,7 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]));
   if (state.tool === "collision") renderCollisionOverlay(context, map);
   if (state.terrainReachability) renderTerrainReachability(context, map);
+  renderTerrainDesignOverlay(context.scene, context.overlayLayer, store.getCurrent(), map, state);
   if (state.showGrid) repaintEditGrid(context.gridGraphics, map, state.layer, true, editGridTileWindow(context.scene, map));
   renderStartPosition(context);
   renderEventMarkers({ ...context, tileSize: mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]) }, map, state.layer);
@@ -214,6 +216,7 @@ export function refreshEditSceneOverlay(context: EditSceneRenderContext): void {
   renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, tileSize);
   if (state.tool === "collision") renderCollisionOverlay(context, map);
   if (state.terrainReachability) renderTerrainReachability(context, map);
+  renderTerrainDesignOverlay(context.scene, context.overlayLayer, store.getCurrent(), map, state);
   renderStartPosition(context);
   renderEventMarkers({ ...context, tileSize }, map, state.layer);
 }

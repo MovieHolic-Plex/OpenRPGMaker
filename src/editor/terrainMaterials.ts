@@ -3,6 +3,7 @@ import { layerTileAt } from "@/project/mapLayers";
 import type { TilesetDef, GameMap } from "@/project/types";
 import { reliefTopGrassTile } from "./reliefActions";
 import { topTileInStack } from "@/project/mapOverlayTiles";
+import { terrainLocked } from "@/project/terrainDesign";
 
 export type TerrainMaterial = "grass" | "dirt" | "stone" | "water";
 const MATCH:Record<TerrainMaterial,RegExp>={grass:/grass|잔디|풀밭|초원/i,dirt:/dirt|sand|흙길|흙 바닥|모랫길|road/i,stone:/rock.?ground|stone|cobble|돌바닥|돌 바닥|포석|암반/i,water:/water|river|lake|물|강물|호수/i};
@@ -21,6 +22,7 @@ export function terrainMaterialTile(tileset:TilesetDef|undefined, material:Terra
 }
 
 export function terrainIsReserved(map:GameMap,tileset:TilesetDef,index:number):boolean {
+  if (terrainLocked(map.terrainDesign, index) || (map.terrainDesign?.waterDepth?.[index] ?? 0) > 0) return true;
   if ((map.relief?.ramps?.[index]??0)>0 || layerTileAt(map,3,index)>=0 || layerTileAt(map,4,index)>=0) return true;
   if ((topTileInStack(map,"upper",index)??-1)>=0) return true;
   const tile=layerTileAt(map,1,index), meta=tileset.tileMeta?.[tile];

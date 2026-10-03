@@ -3,6 +3,7 @@ import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import { rampCode, reliefLevel, reliefSlopes, type RampDir } from "@/project/relief/walk";
 import type { GameMap } from "@/project/types";
 import type { ReliefDoodadPlan } from "./reliefDoodads";
+import { terrainLocked } from "@/project/terrainDesign";
 
 const AXES: readonly [RampDir, number, number][] = [["n",0,-1],["s",0,1],["e",1,0],["w",-1,0]];
 
@@ -44,6 +45,7 @@ export function planReliefRamp(map: GameMap, pick: { x: number; y: number; face:
       && cells.some(p=>p.x===s.x+s.w-1 && p.y===s.y+s.h-1));
     for (const p of cells) {
       if (p.x<0 || p.y<0 || p.x>=map.width || p.y>=map.height) reason="맵 밖으로 나간다";
+      else if (terrainLocked(map.terrainDesign,p.y*map.width+p.x)) reason="영역의 잠금을 먼저 해제하세요";
       else if (reliefLevel(r,p.x,p.y)!==lo) reason=`아래 ${length}칸이 평평해야 한다`;
       else if ((r.ramps?.[p.y*map.width+p.x]??0)>0 && !replaceable.some(s=>p.x>=s.x && p.x<s.x+s.w && p.y>=s.y && p.y<s.y+s.h)) reason="다른 통로에 걸친다";
       else if (layerTileAt(map,3,p.y*map.width+p.x)>=0 || layerTileAt(map,4,p.y*map.width+p.x)>=0) reason="나무·물체를 먼저 옮겨야 한다";
