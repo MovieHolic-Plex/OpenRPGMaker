@@ -49,6 +49,7 @@ def bake(spec, no_gate=False):
     ppl = []
     rep0 = CK.analyze(room, sheet)
     for (x, y, ch, d, fr) in spec.get('people', []):
+        assert 0 <= ch <= 7 and 0 <= fr <= 2, f'Actor1 캐릭터는 0..7, 걸음 0..2: {ch},{fr}'
         if (x, y) not in rep0['walkable']:
             print(f'  [경고] 사람 ({x},{y}) 는 걸을 수 있는 칸이 아니라 뺀다')
             continue

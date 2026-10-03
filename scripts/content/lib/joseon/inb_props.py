@@ -467,8 +467,9 @@ def hang(kind='sirae'):
             cv.rect(x0 - 1, 7, x0 + 4, 14, SW[5]); cv.hl(x0 - 1, x0 + 4, 7, SW[6]); cv.hl(x0 - 1, x0 + 4, 13, SW[2])
             cv.put(x0 + 1, 10, SW[3]); cv.put(x0 + 2, 9, SW[3])
     else:                                              # 바가지
-        P5.ell(cv, 8, 9, 5.5, 4.5, lambda x, y, u, v: PL[6] if (u + v) < -0.5 else (PL[5] if (u + v) < 0.3 else PL[3]))
-        cv.hl(3, 13, 5, PL[4]); cv.put(8, 2, WD[3]); cv.vl(8, 2, 5, WD[3])
+        P5.ell(cv, 8, 9, 5.5, 4.5, lambda x, y, u, v: SW[6] if (u + v) < -0.5 else (SW[5] if (u + v) < 0.3 else SW[3]))
+        P5.ell(cv, 8, 7.2, 4.0, 1.6, lambda x, y, u, v: SW[2])                   # 속 그늘
+        cv.rect(3, 4, 13, 5, SW[4]); cv.rect(7, 1, 8, 4, WD[3]); cv.vl(7, 1, 4, WD[4])   # 테두리·걸이 끈
     B.outline(cv)
     return cv
 

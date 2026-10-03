@@ -141,7 +141,7 @@ def school():
     g[11][5] = 'D'
     props = P([
         # 북벽: 병풍 아래 훈장 자리(돌 단 위 서안), 단 앞 계단, 책장
-        ('byeongpung_a', 4, 1), ('seoan_2', 5, 3), ('banseok_r', 4, 4), ('hoechori', 8, 3),
+        ('byeongpung_a', 4, 1), ('seoan_2', 5, 4), ('banseok_r', 6, 3), ('hoechori', 8, 3),
         ('dais_stone_l', 3, 5), ('dais_stone_m', 4, 5), ('stair_dais_2', 5, 5), ('dais_stone_m', 7, 5), ('dais_stone_r', 8, 5),
         ('seoga_2', 9, 2), ('chaekdemi', 1, 3),
         # 학동 자리: 서안 둘씩 마주 앉은 두 줄, 앞에 방석
@@ -154,7 +154,7 @@ def school():
         ('seoga_2', 12, 7), ('seoga_2', 14, 7), ('seoga_1', 16, 7), ('mungseo_ham', 16, 10), ('seoan_2', 13, 10),
     ])
     return dict(id='joseon_in_school_b', title='서당', plan=rows(g), props=props, door=(5, 11), replace={},
-                people=[(5, 4, 3, F, 1), (3, 10, 4, U, 0), (9, 7, 8, L, 0)])
+                people=[(5, 3, 3, F, 1), (3, 10, 4, U, 0), (9, 7, 2, L, 0)])
 
 
 ROOMS += [school()]
@@ -169,7 +169,7 @@ def office():
     g[12][6] = 'D'
     props = P([
         # 북벽 중앙: 병풍(벽면에 걸침) 앞에 의자, 그 앞에 사또 책상(단 위). 단 양쪽 가름 돌·앞 계단
-        ('byeongpung_royal', 5, 1), ('gyoui', 6, 3), ('gwan_desk_2', 5, 5), ('stair_dais_2', 5, 7), ('dais_wood_lr', 7, 7),
+        ('byeongpung_royal', 5, 1), ('gyoui', 6, 3), ('gwan_desk_2', 5, 5), ('stair_dais_2', 5, 7),
         ('pillar_red_2', 4, 7), ('pillar_red_2', 8, 8), ('pillar_red_2', 4, 10), ('pillar_red_2', 8, 10), ('chotdae', 4, 3), ('chotdae', 8, 3), ('seoan', 3, 5), ('banseok_g', 3, 6), ('seoan', 9, 5), ('banseok_b', 9, 6), ('hwaro', 11, 4), ('stool', 1, 4), ('soban_a', 2, 4),
         # 좌우 벽: 서가·문서, 곤장 틀과 북, 아전 서안
         ('seoga_2', 1, 2), ('seoga_2', 10, 2), ('hang_tools', 3, 1), ('hang_tools', 9, 1),
@@ -181,7 +181,7 @@ def office():
         ('ssal_dwiju', 13, 8), ('dok_big', 14, 8), ('mungseo_ham', 16, 10), ('hangari_m', 18, 10), ('chaekdemi', 17, 10), ('hangari_s', 19, 9),
     ])
     return dict(id='joseon_in_office_b', title='관아 동헌', plan=rows(g), props=props, door=(6, 12), replace={},
-                people=[(6, 8, 3, F, 1), (3, 8, 9, R, 0), (7, 10, 10, L, 0), (14, 4, 4, U, 0)])
+                people=[(6, 8, 3, F, 1), (3, 8, 1, R, 0), (7, 10, 6, L, 0), (14, 4, 4, U, 0)])
 
 
 ROOMS += [office()]

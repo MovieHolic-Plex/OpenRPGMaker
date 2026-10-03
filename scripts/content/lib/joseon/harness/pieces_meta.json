@@ -3450,6 +3450,7 @@
    "v5:hang:herb",
    "v5:hang:onion"
   ],
+  "thin_ok": "벽 못에 건 끈이 폭 1~2px — 끈을 없애면 바가지가 벽에 붙은 접시로 읽힌다",
   "front_only": true
  },
  "in_b_pyeongsang_3": {
