@@ -1,10 +1,16 @@
 # 건물 조각 사전 5/6
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9792칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9705 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **12928칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 12732 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 집·관아·정자·성문·궁궐·누각. **문은 맨 아래 줄 디딤돌 칸**이고 집 y = 문 앞 길 y − 집 높이. 지붕 좌우 처마 열은 `C`(걸을 수 있다).
 
 `upperTiles` = 윗층 칸 번호(행 위→아래, -1 = 그림 없음), `walk` = 칸 통행(X 막힘 / C 걸음★ / F 걸음 / . 없음). 아래층은 -1(찍는 자리의 땅을 그대로 둔다). `door` = 디딤돌 칸(문 앞 접근칸은 그 바로 아래 칸), `passage` = 통로 열 범위.
+
+### jb-gn_sarip_mud · 국내성 sarip_mud 2×1 · 2×1 · 분류 built
+막힘 0 · 걸음★ 0 · 걸음 2칸. 땅 위에. 문 칸(parts.door) 바로 아래 칸이 길이어야 한다. 이웃 건물과 1칸 이상 띄우거나 벽을 맞댄다. 지붕 좌우 처마 열은 걸을 수 있다(★).
+```json
+{"kit":"kit:joseon_baram/jb-gn_sarip_mud","w":2,"h":1,"class":"built","upperTiles":[[8163,8164]],"walk":["FF"]}
+```
 
 ### jb-gn_sarip_stone · 국내성 sarip_stone 3×1 · 3×1 · 분류 built
 막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위에. 문 칸(parts.door) 바로 아래 칸이 길이어야 한다. 이웃 건물과 1칸 이상 띄우거나 벽을 맞댄다. 지붕 좌우 처마 열은 걸을 수 있다(★).
@@ -82,10 +88,4 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 막힘 12 · 걸음★ 14 · 걸음 8칸. 땅 위에. 문 칸(parts.door) 바로 아래 칸이 길이어야 한다. 이웃 건물과 1칸 이상 띄우거나 벽을 맞댄다. 지붕 좌우 처마 열은 걸을 수 있다(★).
 ```json
 {"kit":"kit:joseon_baram/jb-palace_gate_4","w":6,"h":6,"class":"built","upperTiles":[[4003,4004,4005,4006,4007,4008],[4019,4020,4021,4022,4023,4024],[4035,4036,4037,4038,4039,4040],[4051,4052,4053,4054,4055,4056],[-1,4068,4069,4070,4071,-1],[4083,4084,4085,4086,4087,4088]],"walk":["CXCCXC","CXCCXC","CXCCXC","CXFFXC",".XFFX.","FXFFXF"],"door":{"dx":2,"dy":5,"w":1,"h":1},"passage":{"dx":2,"dy":3,"w":2,"h":3}}
-```
-
-### jb-palace_haenggak_3 · 궁궐 haenggak_3 5×4 · 5×4 · 분류 built
-막힘 12 · 걸음★ 6 · 걸음 2칸. 땅 위에. 문 칸(parts.door) 바로 아래 칸이 길이어야 한다. 이웃 건물과 1칸 이상 띄우거나 벽을 맞댄다. 지붕 좌우 처마 열은 걸을 수 있다(★).
-```json
-{"kit":"kit:joseon_baram/jb-palace_haenggak_3","w":5,"h":4,"class":"built","upperTiles":[[3424,3425,3426,3427,3428],[3440,3441,3442,3443,3444],[3456,3457,3458,3459,3460],[3472,3473,3474,3475,3476]],"walk":["CXXXC","CXXXC","CXXXC","FXXXF"]}
 ```

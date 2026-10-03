@@ -659,8 +659,11 @@ cats.append(dict(id="joseon-baram-qa", name="조선 · 오류 교훈(실제 변�
 CARD = DATA / "images"; CARD.mkdir(parents=True, exist_ok=True)
 for mid in STATS["maps"]:
     mj = json.loads((DATA / "maps" / f"{mid}.json").read_text())
-    im = draw(mj["lowerTiles"], mj["upperTiles"], mj["width"], mj["height"]).convert("RGB").quantize(colors=256, method=Image.Quantize.MEDIANCUT)
-    im.save(CARD / f"{mid}.png", optimize=True)
+    full = draw(mj["lowerTiles"], mj["upperTiles"], mj["width"], mj["height"]).convert("RGB")
+    # 긴 변이 2000px 을 넘는 큰 맵(국내성 원작 규모 3200×3328)은 정확히 절반으로 줄인다(번들·다운로드 용량; 목록은 256px 축소본을 쓴다).
+    if max(full.size) > 2000:
+        full = full.resize((full.width // 2, full.height // 2), Image.Resampling.BOX)
+    full.quantize(colors=256, method=Image.Quantize.MEDIANCUT).save(CARD / f"{mid}.png", optimize=True)
 
 # ============================================================ 쓰기
 out = ROOT / "src/assets/joseonBaramReferences.json"

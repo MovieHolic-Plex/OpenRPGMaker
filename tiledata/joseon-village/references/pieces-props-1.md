@@ -1,6 +1,6 @@
 # 나무·소품·담·다리 조각 사전 1/9
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9792칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9705 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **12928칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 12732 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
@@ -12,10 +12,28 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 {"kit":"kit:joseon_baram/jb-bamboo","w":2,"h":4,"class":"tree","upperTiles":[[894,895],[910,911],[926,927],[942,943]],"walk":["CC","CC","CC","XX"]}
 ```
 
+### jb-bamboo_b · 대나무 2×4 · 2×4 · 분류 tree
+막힘 2 · 걸음★ 6 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-bamboo_b","w":2,"h":4,"class":"tree","upperTiles":[[9901,9902],[9903,9904],[9905,9906],[9907,9908]],"walk":["CC","CC","CC","XX"]}
+```
+
+### jb-bamboo_c · 대나무 2×4 · 2×4 · 분류 tree
+막힘 2 · 걸음★ 6 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-bamboo_c","w":2,"h":4,"class":"tree","upperTiles":[[9909,9910],[9911,9912],[9913,9914],[9915,9916]],"walk":["CC","CC","CC","XX"]}
+```
+
 ### jb-bamboo_grove · 대숲 4×4 · 4×4 · 분류 tree
 막힘 4 · 걸음★ 12 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
 {"kit":"kit:joseon_baram/jb-bamboo_grove","w":4,"h":4,"class":"tree","upperTiles":[[970,971,972,973],[986,987,988,989],[1002,1003,1004,1005],[1018,1019,1020,1021]],"walk":["CCCC","CCCC","CCCC","XXXX"]}
+```
+
+### jb-bamboo_grove_b · 대숲 4×4 · 4×4 · 분류 tree
+막힘 4 · 걸음★ 11 · 걸음 0칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-bamboo_grove_b","w":4,"h":4,"class":"tree","upperTiles":[[9885,9886,9887,-1],[9889,9890,9891,9892],[9893,9894,9895,9896],[9897,9898,9899,9900]],"walk":["CCC.","CCCC","CCCC","XXXX"]}
 ```
 
 ### jb-palace_pine_a · 궁궐 pine_a 4×6 · 4×6 · 분류 tree
@@ -118,22 +136,4 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 막힘 2 · 걸음★ 16 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
 ```json
 {"kit":"kit:joseon_baram/jb-zelkova_a","w":4,"h":5,"class":"tree","upperTiles":[[471,472,473,474],[487,488,489,490],[503,504,505,506],[519,520,521,522],[535,536,537,538]],"walk":["CCCC","CCCC","CCCC","CCCC","FXXF"]}
-```
-
-### jb-zelkova_b · 느티나무 b 4×5 · 4×5 · 분류 tree
-막힘 2 · 걸음★ 15 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
-```json
-{"kit":"kit:joseon_baram/jb-zelkova_b","w":4,"h":5,"class":"tree","upperTiles":[[475,476,477,478],[491,492,493,494],[507,508,509,510],[-1,524,525,526],[539,540,541,542]],"walk":["CCCC","CCCC","CCCC",".CCC","FXXF"]}
-```
-
-### jb-zelkova_c · 느티나무 c 4×5 · 4×5 · 분류 tree
-막힘 2 · 걸음★ 16 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
-```json
-{"kit":"kit:joseon_baram/jb-zelkova_c","w":4,"h":5,"class":"tree","upperTiles":[[560,561,562,563],[576,577,578,579],[592,593,594,595],[608,609,610,611],[624,625,626,627]],"walk":["CCCC","CCCC","CCCC","CCCC","FXXF"]}
-```
-
-### jb-zelkova_d · 느티나무 d 4×5 · 4×5 · 분류 tree
-막힘 2 · 걸음★ 16 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
-```json
-{"kit":"kit:joseon_baram/jb-zelkova_d","w":4,"h":5,"class":"tree","upperTiles":[[564,565,566,567],[580,581,582,583],[596,597,598,599],[612,613,614,615],[628,629,630,631]],"walk":["CCCC","CCCC","CCCC","CCCC","FXXF"]}
 ```

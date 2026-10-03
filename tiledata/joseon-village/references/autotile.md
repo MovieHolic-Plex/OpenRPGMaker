@@ -1,6 +1,6 @@
 # 땅 오토타일 — 흙길·마당·강/연못·논 (마스크 비트와 변형 표)
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9792칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9705 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **12928칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 12732 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 ## 비트 정의 (엔진 `AUTOTILE_DIR` 와 같다 — 번호 재배열이 필요 없다)
 `N=1 E=2 S=4 W=8 NE=16 SE=32 SW=64 NW=128`. 값 = **그 방향 이웃이 같은 재료(이어짐)**. 이어지지 않는 변이 가장자리·둑이 된다.

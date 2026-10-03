@@ -1,10 +1,28 @@
 # 나무·소품·담·다리 조각 사전 8/9
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9792칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9705 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **12928칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 12732 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
 `upperTiles` = 윗층 칸 번호(행 위→아래, -1 = 그림 없음), `walk` = 칸 통행(X 막힘 / C 걸음★ / F 걸음 / . 없음). 아래층은 -1(찍는 자리의 땅을 그대로 둔다). `door` = 디딤돌 칸(문 앞 접근칸은 그 바로 아래 칸), `passage` = 통로 열 범위.
+
+### jb-haystack · 낟가리 2×2 · 2×2 · 분류 prop
+막힘 4 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-haystack","w":2,"h":2,"class":"prop","upperTiles":[[2344,2345],[2360,2361]],"walk":["XX","XX"]}
+```
+
+### jb-hongsalmun · 홍살문 5×3 · 5×3 · 분류 prop
+막힘 0 · 걸음★ 8 · 걸음 5칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-hongsalmun","w":5,"h":3,"class":"prop","upperTiles":[[2070,2071,2072,2073,-1],[2086,2087,2088,2089,-1],[2102,2103,2104,2105,2106]],"walk":["CCCC.","CCCC.","FFFFF"]}
+```
+
+### jb-jangdokdae · 장독대 3×2 · 3×2 · 분류 prop
+막힘 6 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-jangdokdae","w":3,"h":2,"class":"prop","upperTiles":[[2988,2989,2990],[3004,3005,3006]],"walk":["XXX","XXX"]}
+```
 
 ### jb-jangseung_f · 여장승 1×2 · 1×2 · 분류 prop
 막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
@@ -118,22 +136,4 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 막힘 4 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
 {"kit":"kit:joseon_baram/jb-palace_haetae","w":2,"h":2,"class":"prop","upperTiles":[[4157,4158],[4173,4174]],"walk":["XX","XX"]}
-```
-
-### jb-palace_lantern · 궁궐 lantern 1×2 · 1×2 · 분류 prop
-막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_lantern","w":1,"h":2,"class":"prop","upperTiles":[[4156],[4172]],"walk":["X","X"]}
-```
-
-### jb-palace_pond_4 · 궁궐 pond_4 4×3 · 4×3 · 분류 prop
-막힘 12 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_pond_4","w":4,"h":3,"class":"prop","upperTiles":[[4100,4101,4102,4103],[4116,4117,4118,4119],[4132,4133,4134,4135]],"walk":["XXXX","XXXX","XXXX"]}
-```
-
-### jb-palace_pond_6 · 궁궐 pond_6 6×3 · 6×3 · 분류 prop
-막힘 18 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_pond_6","w":6,"h":3,"class":"prop","upperTiles":[[4104,4105,4106,4107,4108,4109],[4120,4121,4122,4123,4124,4125],[4136,4137,4138,4139,4140,4141]],"walk":["XXXXXX","XXXXXX","XXXXXX"]}
 ```

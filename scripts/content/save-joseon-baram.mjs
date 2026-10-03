@@ -89,6 +89,12 @@ function checkReach(api, p, map, src, waterMembers) {
       else miss.crossEnd.push([c.piece, c.axis, c.x, c.y, tested ? "건널 수 없음" : "양끝이 모두 막힘"]);
     }
   }
+  // 문 앞·디딤돌이 다른 조각에 덮여 닿지 못하는 맵 빌더 쪽 결함(_doors: {x,y,why}) — 사유를 적은 칸만 면제한다.
+  const okDoors = allowedMismatch[src.id]?._doors || [];
+  info.exemptDoors = [];
+  for (const key of ["doorFront", "doorStep"]) {
+    miss[key] = miss[key].filter(([dx, dy]) => { const e = okDoors.find((q) => q.x === dx && q.y === dy); if (e) info.exemptDoors.push({ kind: key, x: dx, y: dy, why: e.why }); return !e; });
+  }
   const okPeople = allowedMismatch[src.id]?._people || [];
   miss.people = miss.people.filter(([px, py]) => { const e = okPeople.find((q) => q.x === px && q.y === py); if (e) info.exemptPeople.push({ x: px, y: py, why: e.why }); return !e; });
   for (const f of src.fronts || []) for (const [fx, fy] of f.cells) if (!at(fx, fy)) miss.front.push([f.piece, fx, fy]);
@@ -105,6 +111,7 @@ function checkReach(api, p, map, src, waterMembers) {
   return { crossLines, crossLinesBlockedEnd, ...info, crossings: (src.crossings || []).length, fronts: (src.fronts || []).length, waterOpenBare, waterUnderObject, start: src.start, reachable: seen.size, walkable: walkableTotal, missed: miss, missedCount: Object.values(miss).reduce((a, b) => a + b.length, 0), wallAboveDoorOpen: wallOpen };
 }
 
+const MASK_SAMPLES = Number(process.env.JOSEON_MASK_SAMPLES || 12);
 function checkMasks(api, p, map, ts) {
   const view = api.autotileLayerView(map, 1), out = [];
   for (const g of ts.autotileGroups) {
@@ -115,7 +122,7 @@ function checkMasks(api, p, map, ts) {
       if (!members.has(t)) continue;
       cells += 1;
       const v = api.autotileVariantForCell(view, g, x, y);
-      if ((eq[v] ?? v) !== (eq[t] ?? t)) { mismatch += 1; if (samples.length < 12) samples.push([x, y]); }
+      if ((eq[v] ?? v) !== (eq[t] ?? t)) { mismatch += 1; if (samples.length < MASK_SAMPLES) samples.push([x, y]); }
     }
     out.push({ group: g.id, cells, mismatch, edgeConnects: g.edgeConnects === true, samples });
   }

@@ -3902,6 +3902,64 @@
 ],
 "source": "override",
 "steps": []
+},
+"gnf_palace_hall_wide_14": {
+"w": 18,
+"h": 10,
+"cls": "built",
+"rows": [
+"...XXXXXXXXXXXX...",
+"...XXXXXXXXXXXX...",
+".XXXXXXXXXXXXXXXX.",
+".XXXXXXXXXXXXXXXX.",
+".XXXXXXXXXXXXXXXX.",
+".XXXXXXXXXXXXXXXX.",
+"..XXXXXXXXXXXXXX..",
+"..XXXXXXXXXXXXXX..",
+"XXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"bamboo_grove_b": {
+"w": 4,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"bamboo_b": {
+"w": 2,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CC",
+"CC",
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bamboo_c": {
+"w": 2,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CC",
+"CC",
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
 }
 }
 }

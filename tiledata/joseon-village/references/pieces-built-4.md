@@ -1,10 +1,16 @@
 # 건물 조각 사전 4/6
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **9792칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 9705 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **12928칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 12732 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 집·관아·정자·성문·궁궐·누각. **문은 맨 아래 줄 디딤돌 칸**이고 집 y = 문 앞 길 y − 집 높이. 지붕 좌우 처마 열은 `C`(걸을 수 있다).
 
 `upperTiles` = 윗층 칸 번호(행 위→아래, -1 = 그림 없음), `walk` = 칸 통행(X 막힘 / C 걸음★ / F 걸음 / . 없음). 아래층은 -1(찍는 자리의 땅을 그대로 둔다). `door` = 디딤돌 칸(문 앞 접근칸은 그 바로 아래 칸), `passage` = 통로 열 범위.
+
+### jb-gn_jm_corner_r · 국내성 jm_corner_r 5×6 · 5×6 · 분류 built
+막힘 30 · 걸음★ 0 · 걸음 0칸. 땅 위에. 문 칸(parts.door) 바로 아래 칸이 길이어야 한다. 이웃 건물과 1칸 이상 띄우거나 벽을 맞댄다. 지붕 좌우 처마 열은 걸을 수 있다(★).
+```json
+{"kit":"kit:joseon_baram/jb-gn_jm_corner_r","w":5,"h":6,"class":"built","upperTiles":[[6725,6726,6727,6728,6729],[6741,6742,6743,6744,6745],[6757,6758,6759,6760,6761],[6773,6774,6775,6776,6777],[6789,6790,6791,6792,6793],[6805,6806,6807,6808,6809]],"walk":["XXXXX","XXXXX","XXXXX","XXXXX","XXXXX","XXXXX"]}
+```
 
 ### jb-gn_jm_daemun_6 · 국내성 jm_daemun_6 8×6 · 8×6 · 분류 built
 막힘 24 · 걸음★ 12 · 걸음 6칸. 땅 위에. 문 칸(parts.door) 바로 아래 칸이 길이어야 한다. 이웃 건물과 1칸 이상 띄우거나 벽을 맞댄다. 지붕 좌우 처마 열은 걸을 수 있다(★).
@@ -82,10 +88,4 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 막힘 2 · 걸음★ 8 · 걸음 2칸. 땅 위에. 문 칸(parts.door) 바로 아래 칸이 길이어야 한다. 이웃 건물과 1칸 이상 띄우거나 벽을 맞댄다. 지붕 좌우 처마 열은 걸을 수 있다(★).
 ```json
 {"kit":"kit:joseon_baram/jb-gn_samun_stone","w":4,"h":3,"class":"built","upperTiles":[[8168,8169,8170,8171],[8184,8185,8186,8187],[8200,8201,8202,8203]],"walk":["CCCC","CCCC","XFFX"]}
-```
-
-### jb-gn_sarip_mud · 국내성 sarip_mud 2×1 · 2×1 · 분류 built
-막힘 0 · 걸음★ 0 · 걸음 2칸. 땅 위에. 문 칸(parts.door) 바로 아래 칸이 길이어야 한다. 이웃 건물과 1칸 이상 띄우거나 벽을 맞댄다. 지붕 좌우 처마 열은 걸을 수 있다(★).
-```json
-{"kit":"kit:joseon_baram/jb-gn_sarip_mud","w":2,"h":1,"class":"built","upperTiles":[[8163,8164]],"walk":["FF"]}
 ```
