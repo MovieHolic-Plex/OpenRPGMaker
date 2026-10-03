@@ -29,6 +29,9 @@ if os.environ.get('JS_PROFILE') == 'field':
     # 사냥터(96×96): 몬스터가 배회하는 넓은 초원·숲·바위산이 목적이라 마을·국내성보다 맨 풀이 많다(초원 한가운데 20×15 창).
     # 대신 10×10 칸 전체가 평범한 바닥인 빈 광장은 빌더가 따로 막는다(fld_map.audit_plain). 첫 굽기 실측 lawn_window 0.357 · tree 0.192 · obj 0.207 에서 여유 한 뼘만 둔 값이다(느슨했던 0.40/0.08/0.14 를 실측으로 조임).
     LAWN_MAX, TREE_MIN, OBJ_MIN = 0.37, 0.15, 0.18
+if os.environ.get('JS_PROFILE') == 'field_fa':
+    # 사냥터 후보 B(field-fa 빌더): 후보 A 와 같은 목적. 첫 굽기 실측으로 조인 상한(검수 승자 확정 뒤 'field' 로 합친다).
+    LAWN_MAX, TREE_MIN, OBJ_MIN = 0.40, 0.08, 0.14
 if os.environ.get('JS_PROFILE') == 'cave':
     # 동굴(48×48): 나무·잔디가 없다(M1·M2·M4·M7 해당 없음). 바닥·벽면이 땅 그림이라 물체 피복은 낮다 — 방 안 소품(화로·기둥·석순·상자) 밀도로 대신 본다.
     LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.03, 0
@@ -37,18 +40,18 @@ BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3
 if os.environ.get('JS_PROFILE') == 'cave':
     HEIGHTS_MIN = 0        # 0.0072 → 0.0060: 20채 마을 데모(64×56)는 논·연못·밭이 넓다
-_GN = os.environ.get('JS_PROFILE') in ('gungnae', 'gungnae_full', 'field', 'cave')
+_GN = os.environ.get('JS_PROFILE') in ('gungnae', 'gungnae_full', 'field', 'field_fa', 'cave')
 if _GN:
     # 국내성형: 새 조각 이름(gn_·palace_·tower_·gungnae_)도 건물로 센다. 담·문·소품은 세지 않는다(정규식은 건물 몸체 조각만).
     import re
     _BLD_RE = re.compile(r'^(giwa|thatch|gate|pavilion|gwanah|nugak|fort)_|^gn_(shop|l|u|g2|g3|thatch|jm_(corner|anchae|daemun|row))|^palace_(hall|jeongak|haeng(nak|gak)|gate)|^tower_|^gungnae_(gate|tower)')
-    if os.environ.get('JS_PROFILE') == 'field':
+    if os.environ.get('JS_PROFILE') in ('field', 'field_fa'):
         # 사냥터의 「건물」: 천막·굴 입구·폐허 석탑·건조대·무덤(사람이 머문 자리).
         _BLD_RE = re.compile(r'^fld_(tent|cave|ruin|rack|grave)')
     if os.environ.get('JS_PROFILE') == 'cave':
         # 동굴의 「건물」: 방을 밝히거나 받치는 구조물(화로·기둥·보물 상자).
         _BLD_RE = re.compile(r'^cav_(brazier|pillar|chest)')
-    BLD_MIN = {'gungnae': 0.0040, 'field': 0.0010, 'cave': 0.0030}.get(os.environ.get('JS_PROFILE'), 0.0007)   # 원작 규모(200×208=41600칸)는 건물 몸체 조각 29개 이상(원작 이름표 건물 약 25~35채). 아래는 96×96 국내성형의 사유다. # 0.0060 → 0.0040(8차 검수: 구획마다 건물 하나로 듬성듬성): 해자·성벽·궁 포장·밭이 넓고 건물은 듬성듬성한 대형 경관(조사 §⑧). 96×96=9216칸에 건물 몸체 조각 42개 이상.
+    BLD_MIN = {'gungnae': 0.0040, 'field': 0.0010, 'field_fa': 0.0010, 'cave': 0.0030}.get(os.environ.get('JS_PROFILE'), 0.0007)   # 원작 규모(200×208=41600칸)는 건물 몸체 조각 29개 이상(원작 이름표 건물 약 25~35채). 아래는 96×96 국내성형의 사유다. # 0.0060 → 0.0040(8차 검수: 구획마다 건물 하나로 듬성듬성): 해자·성벽·궁 포장·밭이 넓고 건물은 듬성듬성한 대형 경관(조사 §⑧). 96×96=9216칸에 건물 몸체 조각 42개 이상.
 
 
 def _b(n):
