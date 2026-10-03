@@ -31,7 +31,9 @@ if os.environ.get('JS_PROFILE') == 'field_fa':
     LAWN_MAX, TREE_MIN, OBJ_MIN = 0.40, 0.08, 0.14
 if os.environ.get('JS_PROFILE') == 'cave_fa':
     # 동굴(48×48): 나무·잔디가 없다(M1·M2·M4·M7 해당 없음). 바닥·벽면이 땅 그림이라 물체 피복은 낮다 — 방 안 소품(화로·기둥·석순·상자) 밀도로 대신 본다.
-    LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.03, 0
+    # OBJ_MIN: 첫 값 0.03 은 굽기 전 추측이었다. 천장 바위가 지도의 약 60% 라 물체가 덮을 수 없는 칸이 많다. 0.03 을 억지로 채우면
+    # 광장이 석주 숲이 되어(자체 검수에서 거부) 0.020 으로 내린다 — 열린 바닥 대비로는 약 6% 이므로 사냥터 필드(0.14)와 같은 밀도 감각이다.
+    LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.020, 0
 TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3
