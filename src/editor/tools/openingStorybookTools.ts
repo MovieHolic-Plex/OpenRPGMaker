@@ -34,7 +34,7 @@ export const OPENING_STORYBOOK_TOOLS:readonly ToolDefinition[]=[
       if(index===0&&role!=='world'||index===args.slides.length-1&&role!=='handoff')throw new ToolError('첫 패널 world, 마지막 handoff가 필요합니다.',{code:'invalid-args'});
       ids.add(id);roles.add(role);const duration=Number(durationMs);
       const composition={width:960,height:720,background:'#000000',layers:[
-        ...(imageResourceId?[{id:'illustration',kind:'image' as const,resourceId:imageResourceId as string,role:'background' as const,x:80,y:45,width:800,height:405,sampling:'nearest' as const,keys:{opacity:[{atMs:0,value:0},{atMs:450,value:1},{atMs:duration-300,value:1},{atMs:duration,value:0}]}}]:[]),
+        ...(imageResourceId?[{id:'illustration',kind:'image' as const,resourceId:imageResourceId as string,role:'background' as const,x:120,y:45,width:720,height:405,sampling:'nearest' as const,keys:{opacity:[{atMs:0,value:0},{atMs:450,value:1},{atMs:duration-300,value:1},{atMs:duration,value:0}]}}]:[]),
         {id:'narrative',kind:'text' as const,role:'credit' as const,text:text as string,color:ink,x:55,y:imageResourceId?492:250,width:850,height:170,typography:{fontSize:36,weight:500,align:'center' as const,typewriterMs:Math.min(1100,Math.round([...text].length*38))},startMs:350,keys:{opacity:[{atMs:0,value:0},{atMs:400,value:1},{atMs:duration-200,value:1},{atMs:duration,value:0}]}},
       ]};validateOpeningAnimatic(composition,duration);scenes.push({id,kind:'animatic',narration:'',durationMs:duration,composition});
     }
