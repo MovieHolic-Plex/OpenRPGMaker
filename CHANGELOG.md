@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.98.0 — 2026-10-03
+
+### 기능
+
+- connect cinematic genre interview to actual new game flow (`af305f9`)
+- **editor** — add ten terrain design tools with symmetry, stamps and route inspection (#1953) (`e8f8cb2`)
+
 ## 0.97.0 — 2026-10-03
 
 ### 기능
