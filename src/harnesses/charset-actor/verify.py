@@ -86,7 +86,11 @@ def verify():
         (w / 'out.chr.txt').write_text(C.dump(q, {}, f, header='changed file'))
         check('old-PASS-not-reused', H.read_verdict(w).get('stale') and H.quality(w)['pending'])
         check('old-images-not-current', not H.views_fresh(w, H.current_gate(w)))
+        H.write_json_atomic(w / 'review' / 'verdict.json', dict(verdict='FAIL', score=3, discard=True,
+                                                             fatal=['historical defect'], inspected=H.binding(gate), issues=[]))
+        check('old-fatal-is-reinspection-pending', H.quality(w)['pending'] and not H.quality(w)['discard'])
         gate = H.make_views(w / 'out.chr.txt', w / 'views', 'Actor1:0', 'weak')
+        H.write_json_atomic(w / 'review' / 'verdict.json', dict(verdict='PASS', score=8, issues=[]))
         H.bind_review(w, gate)
         check('rebake-and-reinspect-ready', H.quality(w)['eligible'])
         with H.run_lock(root):
@@ -104,6 +108,8 @@ def verify():
         export.export('fixture')
         check('one-sprite-export', json.loads((root / 'pack' / 'characters.json').read_text())['count'] == 1)
         (w / 'out.chr.txt').write_text(C.dump(q, {}, f, header='another change'))
+        H.write_json_atomic(w / 'review' / 'verdict.json', dict(verdict='FAIL', score=3, discard=True,
+                                                             fatal=['historical defect'], inspected=H.binding(gate), issues=[]))
         rejected = False
         try:
             export.export('fixture', discard_failed=True)

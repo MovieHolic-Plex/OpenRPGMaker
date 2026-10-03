@@ -442,7 +442,8 @@ def quality(w, decision=None, gate=None, review=None):
     reasons = []
     if not gate['ok']:
         reasons.extend(gate['fails'])
-    fatal = gate.get('discard', False) or bool(review and (review.get('discard') or review.get('fatal')))
+    visual_fatal = bool(review and not review.get('stale') and (review.get('discard') or review.get('fatal')))
+    fatal = gate.get('discard', False) or visual_fatal
     if fatal:
         reasons.append('머리/몸체 결손 등 폐기 결함')
     if decision == 'reject':
@@ -1099,7 +1100,7 @@ def export_decisions():
         gate = current_gate(w)
         review = read_verdict(w, gate)
         if not quality(w, 'accept', gate, review)['eligible']:
-            if not gate.get('discard') and not (review and (review.get('discard') or review.get('fatal'))):
+            if not gate.get('discard') and not (review and not review.get('stale') and (review.get('discard') or review.get('fatal'))):
                 keep.add(stem)  # 옛 검수 갱신 대기 때문에 이미 받은 사본을 지우지 않는다.
             continue
         keep.add(stem)
