@@ -1,4 +1,221 @@
 {
   "version": 1,
-  "cards": []
+  "cards": [
+    {
+      "id": "labyrinth",
+      "title": "미궁",
+      "aliases": [
+        "미궁",
+        "미로",
+        "maze",
+        "labyrinth",
+        "라비린스",
+        "던전 미로"
+      ],
+      "excludeContexts": [
+        "사건이 미궁",
+        "사건은 미궁",
+        "사건의 미궁",
+        "수사가 미궁",
+        "수사는 미궁",
+        "수사의 미궁",
+        "진실이 미궁",
+        "진실은 미궁",
+        "미궁에 갇힌 진실",
+        "미로 게임 UI",
+        "미로 알고리즘 설명",
+        "미로 알고리즘을 설명",
+        "미로 알고리즘에 대해 설명",
+        "미로 알고리즘에 대한 설명",
+        "미로 알고리즘의 원리",
+        "미로 알고리즘이란",
+        "maze algorithm explanation",
+        "explain maze algorithm",
+        "explain the maze algorithm"
+      ],
+      "summary": "미궁은 벽으로 나뉜 좁은 통로에서 갈림길·막다른 길·순환 길을 탐색하여 목표에 도달하는 공간이다. 돌바닥과 벽·천장이 구조를 만들고 대부분의 통로는 비어 있어야 한다. 보물상자·함정·저장 지점 등 동작하는 장치는 타일 장식이 아니라 실제 이벤트로 배치한다.",
+      "skipLayoutQuality": true,
+      "variants": [
+        {
+          "id": "stone-underground",
+          "title": "석조 지하 미궁",
+          "worldview": "중세 판타지 지하 석조 유적",
+          "tilesetId": "atlas_biome_interior",
+          "build": "작은 python3 스크립트로 연결된 미로 그래프를 만들고 순환 간선을 추가 → 벽면 두 줄을 반영한 같은 길이 plan 생성 → build_hand_interior_room(새 mapId) → create_transfer_pair → place_savepoint·place_chest·place_trap; 실제 통행과 이벤트 좌표 확인.",
+          "structure": [
+            "걷는 통로 폭은 1~2칸. 미로 전체는 한 연결 성분이며 입구에서 목표와 모든 샛길에 도달해야 한다.",
+            "갈림길 5곳 이상·막다른 길 4곳 이상·서로 다른 경로로 돌아오는 순환 2곳 이상. 방 몇 개를 직선 복도로 연결한 모양으로 대체하지 않는다.",
+            "입구는 남서쪽, 목표 보물은 북동쪽 끝. 주 경로는 여러 차례 방향을 바꾸고 샛길은 보상 또는 빈 막다른 길로 끝난다.",
+            "plan의 .는 모두 바닥이 아니다: 막힌 칸 아래 두 줄은 벽면이다. 가로 통로에는 걸을 줄 위로 벽면용 . 두 줄을 확보하고, 세로 칸막이 문도 위 두 줄까지 .로 열어 준다.",
+            "예제는 18×25, 걷는 바닥 131칸, 막다른 길 8곳, 갈림길 10곳, 순환 2곳. 새 mapId에 짓고 map_blank_start의 기존 칩셋은 바꾸지 않는다.",
+            "상자는 막다른 길 끝에 놓고 인접 조사 칸은 비운다. 즉사 함정은 보물이 없는 별도 선택 샛길 끝에만 두며 입구 저장 지점을 먼저 사용하게 한다; 목표나 샛길 보물을 얻는 경로를 함정으로 막지 않는다.",
+            "이벤트 배치 후 자동 좌표 조정·통행 경고를 확인한다. 이동문 바로 앞·착지점은 비워 두고 저장 지점은 밟을 수 있는 below 이벤트다."
+          ],
+          "include": [
+            {
+              "what": "돌바닥·이끼 낀 돌벽·어두운 천장",
+              "as": "tile",
+              "how": "build_hand_interior_room({mapId:새 id,plan,floor:\"dungeon\",wall:\"dungeonw\",ceiling:\"dark\",start,objects:[]}); dungeon은 실내 v5의 바닥 재료 id다."
+            },
+            {
+              "what": "입구 왕복 이동",
+              "as": "event",
+              "how": "create_transfer_pair({a:{mapId:\"map_blank_start\",x:0,y:7},b:{mapId:새 id,x:1,y:24},fade:\"black\"}); 각 목적지의 인접 착지 칸을 확보한다."
+            },
+            {
+              "what": "보물상자",
+              "as": "event",
+              "how": "place_chest({mapId,x,y,contents:{gold:100},name}); 막다른 길에서 조사하면 보상 지급·셀프스위치 A로 개봉 기억."
+            },
+            {
+              "what": "선택 샛길의 함정",
+              "as": "event",
+              "how": "place_trap({mapId,at:{x,y},trigger:\"touch\",message,respawnCheckpoint:false}); 현재 즉사 함정이며 기본 그림은 투명. 입구 place_savepoint를 먼저 배치하고 필수 경로에는 넣지 않는다."
+            },
+            {
+              "what": "입구 저장 지점",
+              "as": "event",
+              "how": "place_savepoint({mapId,x:1,y:23,name:\"입구 체크포인트\",heal:false}); 조사하여 체크포인트 저장."
+            },
+            {
+              "what": "요청한 미믹·스위치·레버·압력판·잠긴 문·쇠창살 문・회복 샘·힌트 석판",
+              "as": "event",
+              "how": "upsert_event({mapId,event:{id,name,x,y,pages:[{id,conditions,graphic,trigger,priority,commands}]}}); 접촉·조사 트리거와 실제 전투·상태 변경·회복·힌트 명령을 구성하고 상태별 페이지를 둔다. 요청한 장치만 추가한다."
+            },
+            {
+              "what": "요청한 왕복 문·계단·순간이동 판",
+              "as": "event",
+              "how": "create_transfer_pair({a:{mapId,x,y},b:{mapId:대상맵,x,y},fade:\"black\"}); 대상 맵과 통행 가능한 착지 칸을 먼저 확보한다."
+            }
+          ],
+          "exclude": [
+            "빈칸 채우기용 가구·탁자·의자·침대·식기·시장 물건·생활 소품",
+            "집·신전 건물·나무·화단·야외 풍경, 목적 없는 고문대·용암 화로",
+            "통행을 막는 장식, 거대한 빈 방, 갈림길 없는 한 줄 복도",
+            "atlas_biome_dungeon·EasyRPG 칩셋, 기존 시작 맵에 실내 재료 덧칠",
+            "v5 category:gimmick 26종을 objects나 paint_tiles로 배치하는 것. 상자·미믹·함정·세이브·스위치·레버·압력판·잠긴 문·쇠창살 문·순간이동 판·회복 샘·힌트 석판의 그림만 칠하지 않는다.",
+            "요청하지 않은 퍼즐 장치. 요청 시 미믹·스위치·레버·압력판·잠긴 문·쇠창살 문·회복 샘·힌트 석판은 upsert_event({mapId,event:{id,x,y,pages:[조건·graphic·trigger·priority·commands]}})로 동작과 상태 페이지를 구성하고, 오가는 순간이동 판·문·계단은 create_transfer_pair로 만든다. 이벤트를 구성하지 못하면 장치 그림을 대신 넣지 않는다."
+          ],
+          "emptiness": "걸을 수 있는 통로 바닥의 90~100%가 기물 없이 비어 있어도 정상이다. 빈 막다른 길도 길 찾기의 일부다. skipLayoutQuality:true를 유지하며 빈 바닥 비율·대칭 점수를 맞추려고 소품을 넣지 않는다.",
+          "examples": [
+            {
+              "id": "branch-loop-maze",
+              "title": "갈림길·막다른 길·두 순환과 이벤트가 있는 미궁",
+              "calls": [
+                {
+                  "name": "build_hand_interior_room",
+                  "args": {
+                    "mapId": "map_labyrinth_stone",
+                    "name": "갈림길의 석조 미궁",
+                    "plan": [
+                      "##################",
+                      "#.............##.#",
+                      "#.............##.#",
+                      "#.............##.#",
+                      "#.##.##.#####.##.#",
+                      "#.##....##.##....#",
+                      "#.##....##.##....#",
+                      "#.##....##.##....#",
+                      "####.#####.##.##.#",
+                      "#....##.##....##.#",
+                      "#....##.##....##.#",
+                      "#....##.##....##.#",
+                      "#.#####.##.#####.#",
+                      "#.##....##.......#",
+                      "#.##....##.......#",
+                      "#.##....##.......#",
+                      "#.#####.########.#",
+                      "#....##....##....#",
+                      "#....##....##....#",
+                      "#....##....##....#",
+                      "####.##.##.##.####",
+                      "#....##.##.......#",
+                      "#....##.##.......#",
+                      "#....##.##.......#",
+                      "#.################"
+                    ],
+                    "floor": "dungeon",
+                    "wall": "dungeonw",
+                    "ceiling": "dark",
+                    "start": [
+                      {
+                        "x": 1,
+                        "y": 24
+                      }
+                    ],
+                    "objects": []
+                  }
+                },
+                {
+                  "name": "create_transfer_pair",
+                  "args": {
+                    "a": {
+                      "mapId": "map_blank_start",
+                      "x": 0,
+                      "y": 7
+                    },
+                    "b": {
+                      "mapId": "map_labyrinth_stone",
+                      "x": 1,
+                      "y": 24
+                    },
+                    "fade": "black"
+                  }
+                },
+                {
+                  "name": "place_savepoint",
+                  "args": {
+                    "mapId": "map_labyrinth_stone",
+                    "x": 1,
+                    "y": 23,
+                    "name": "입구 체크포인트",
+                    "heal": false
+                  }
+                },
+                {
+                  "name": "place_chest",
+                  "args": {
+                    "mapId": "map_labyrinth_stone",
+                    "x": 16,
+                    "y": 3,
+                    "contents": {
+                      "gold": 100
+                    },
+                    "name": "미궁의 목표 보물"
+                  }
+                },
+                {
+                  "name": "place_chest",
+                  "args": {
+                    "mapId": "map_labyrinth_stone",
+                    "x": 7,
+                    "y": 23,
+                    "contents": {
+                      "gold": 30
+                    },
+                    "name": "샛길 보물"
+                  }
+                },
+                {
+                  "name": "place_trap",
+                  "args": {
+                    "mapId": "map_labyrinth_stone",
+                    "at": {
+                      "x": 10,
+                      "y": 7
+                    },
+                    "trigger": "touch",
+                    "message": "샛길의 바닥이 꺼졌다. 입구에서 다시 도전하자.",
+                    "respawnCheckpoint": false
+                  }
+                }
+              ],
+              "image": "/assets/concept-cards/labyrinth/stone-underground--branch-loop-maze.png"
+            }
+          ]
+        }
+      ],
+      "bakedAt": "2026-10-03T23:26:42"
+    }
+  ]
 }
