@@ -28,6 +28,7 @@ import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
+import { ROMANCE_ART_AXES, romanceArtReviewInstructions, romanceArtReviewFindings, romanceTownLayoutFindings } from '../../src/harnesses/romance-scene/artDirection.ts';
 import {
   claimAssignment,
   createTeamAssignmentLedger,
@@ -439,19 +440,26 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (busy) throw new Error(`맵 '${mapId}' 은 아직 ${busy.memberId}(${busy.agentId})가 작업 중입니다. wait_agents 로 끝난 뒤 검수하세요 — 반쯤 지어진 맵을 검수하면 엉뚱한 지적이 나옵니다.`);
     const agentId = `reviewer-${counters.reviewer + 1}`;
     counters.reviewer += 1;
-    const task = focus ? `맵 '${mapId}' 검수. 특히: ${focus}` : `맵 '${mapId}' 의 시공 결과를 검수하라.`;
+    const romanceArt = authoringHarnessFor(base)?.id === 'romance-scene';
+    const task = [focus ? `맵 '${mapId}' 검수. 특히: ${focus}` : `맵 '${mapId}' 의 시공 결과를 검수하라.`,
+      ...(romanceArt ? [romanceArtReviewInstructions(working)] : [])].join('\n');
     progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
     emit({ type: "agent_spawn", agentId, role: "reviewer", mapId, mapName: mapName(mapId), task, memberId: member.id, label: member.label });
-    let verdict: { ok: boolean; findings: string[] } | null = null;
+    let verdict: { ok: boolean; findings: string[]; artChecks?: unknown } | null = null;
     let imageDelivered = false;
     const reportTool: PiToolShape = {
       name: "report_review",
       label: "report_review",
       description: "검수 결론을 보고한다. ok 는 문제가 없을 때만 true. findings 는 고쳐야 할 점(좌표 포함) 목록.",
-      parameters: { type: "object", properties: { ok: { type: "boolean" }, findings: { type: "array", items: { type: "string" } } }, required: ["ok", "findings"], additionalProperties: false },
+      parameters: { type: "object", properties: { ok: { type: "boolean" }, findings: { type: "array", items: { type: "string" } },
+        ...(romanceArt ? { artChecks: { type: 'array', items: { type: 'object', properties: {
+          axis: { type: 'string', enum: [...ROMANCE_ART_AXES] }, passed: { type: 'boolean' }, evidence: { type: 'string' },
+        }, required: ['axis', 'passed', 'evidence'], additionalProperties: false } } } : {}),
+      }, required: ["ok", "findings", ...(romanceArt ? ['artChecks'] : [])], additionalProperties: false },
       async execute(_id, params) {
-        const rec = (params ?? {}) as { ok?: unknown; findings?: unknown };
-        verdict = { ok: rec.ok === true, findings: Array.isArray(rec.findings) ? rec.findings.map(String).slice(0, 12) : [] };
+        const rec = (params ?? {}) as { ok?: unknown; findings?: unknown; artChecks?: unknown };
+        verdict = { ok: rec.ok === true, findings: Array.isArray(rec.findings) ? rec.findings.map(String).slice(0, 12) : [],
+          ...(romanceArt ? { artChecks: rec.artChecks } : {}) };
         return text({ ok: true, recorded: true });
       },
     };
@@ -476,16 +484,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       );
     } finally { mailbox.close(agentId); }
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
-    const result = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
+    const result: { ok: boolean; findings: string[]; artChecks?: unknown } = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
+    if (romanceArt) result.findings.push(...romanceArtReviewFindings(result.artChecks), ...romanceTownLayoutFindings(snapshot));
     if (authoringHarnessFor(base)) {
       if (!imageDelivered) { result.ok = false; result.findings.push('실제 맵 이미지를 보지 않아 시각 검수를 인정하지 않습니다. show_map_region으로 원본을 확인하세요.'); }
       if (result.findings.length) result.ok = false;
       authoringReview = { signature: reviewSignature!, ok: result.ok };
     }
     ledger = recordTeamReview(ledger, { mapId, agentId, ok: result.ok });
-    emit({ type: "review", agentId, mapId, ok: result.ok, findings: result.findings });
+    emit({ type: "review", agentId, mapId, ok: result.ok, findings: result.findings, ...(romanceArt ? { artChecks: result.artChecks } : {}) });
     emit({ type: "agent_done", agentId, ok: true, summary: result.ok ? "검수 통과" : `지적 ${result.findings.length}건`, stats: done.stats, changedKeys: [], spills: [], conflicts: [] });
-    return JSON.stringify({ ok: result.ok, agentId, mapId, findings: result.findings });
+    return JSON.stringify({ ok: result.ok, agentId, mapId, findings: result.findings, ...(romanceArt ? { artChecks: result.artChecks } : {}) });
   }
 
   const orchestratorTools: PiToolShape[] = [

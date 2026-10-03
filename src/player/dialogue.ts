@@ -998,6 +998,13 @@ export function createDialogueUI(
         });
         const selected = buttons[selectedIndex];
         if (selected?.isConnected && document.activeElement !== selected) selected.focus({ preventScroll: true });
+        if (selected?.isConnected && overlay.dataset.dialogueStyle === 'pixel-cinematic') {
+          // Scroll only the compact choice list, never the page/game stage.
+          const item = selected.getBoundingClientRect(), list = choicesEl.getBoundingClientRect();
+          const scale = choicesEl.clientHeight > 0 ? list.height / choicesEl.clientHeight : 1;
+          if (scale > 0 && item.bottom > list.bottom) choicesEl.scrollTop += (item.bottom - list.bottom) / scale;
+          else if (scale > 0 && item.top < list.top) choicesEl.scrollTop -= (list.top - item.top) / scale;
+        }
       };
       onKey = (e: KeyboardEvent) => {
         if (settled || e.isComposing) return;

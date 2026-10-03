@@ -19,6 +19,7 @@ import type { GamePresetId } from "@/project/gameDesignBrief";
 
 export const DIALOGUE_STYLE_IDS = [
   "glass",
+  "pixel-cinematic",
   "classic",
   "retro-black",
   "retro-blue",
@@ -74,6 +75,11 @@ export interface DialogueStyleDefinition {
 }
 
 export const DIALOGUE_STYLES: Readonly<Record<DialogueStyleId, DialogueStyleDefinition>> = {
+  "pixel-cinematic": {
+    id: "pixel-cinematic", label: "도트 · 반투명 영화창", defaultVoice: "soft",
+    description: "작은 반투명 먹빛 창, 각진 이중 테두리와 픽셀 글꼴. 배경과 인물이 계속 보입니다.",
+    fit: "16비트 도트 배경의 관계·연애와 조용한 첫 만남.",
+  },
   glass: {
     id: "glass", label: "유리 · 기본", defaultVoice: "none",
     description: "반투명 남색 유리창과 가는 테두리. 지금까지의 기본 대화창입니다.",
@@ -461,7 +467,7 @@ export const RECOMMENDED_DIALOGUE_STYLE_BY_PRESET: Readonly<Record<GamePresetId,
   "horror-gallery": "float",
   "school-horror": "mono-heavy",
   "farm-life": "wood",
-  "partner-raise": "cream",
+  "partner-raise": "pixel-cinematic",
   "action-rpg": "white-card",
 };
 
