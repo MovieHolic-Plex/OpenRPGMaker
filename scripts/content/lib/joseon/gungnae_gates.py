@@ -302,7 +302,7 @@ def wall_corner(kind):
 
 
 # ---------------------------------------------------------------- 문루 공통 부품
-def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True):
+def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True, floor_h=4):
     """기단 앞면에 뚫린 반원 아치 통로(gate.png): 둘레는 쐐기돌 띠(밝은 돌), 안쪽은 어두운 창살, 아래는 석판 길.
     cx = 가운데 x, ybot = 통로 바닥 y(포함 안 함), pw = 통로 폭(px), sh = 곧은 기둥 부분 높이. 아치 윗부분은 반원(rx=pw/2, ry=pw*0.55)."""
     rx = pw / 2.0
@@ -324,12 +324,21 @@ def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True):
             if not outer:
                 continue
             if inner:
-                if y >= ybot - 4:                                           # 문턱 석판(길과 같은 결, 밝은 줄)
-                    t = 5 if (y - (ybot - 4)) < 1 else 4
-                    if (x // 8) % 2 and (y - (ybot - 4)) == 2: t = 3
+                if y >= ybot - floor_h:                                     # 문턱 석판(길과 같은 결, 밝은 줄)
+                    k = y - (ybot - floor_h)
+                    t = 5 if k < 1 else 4
+                    if floor_h <= 4:
+                        if (x // 8) % 2 and k == 2: t = 3
+                    else:                                                   # 큰 석판 길(G02): 대로와 같은 줄눈, 바닥이 안쪽까지 밝게 이어진다
+                        if k % 7 == 6: t = 3
+                        elif ((x + (k // 7) * 8) % 16) == 0: t = 3
+                        elif k < 2: t = 6
                     c.put(x, y, S[t]); continue
-                tt = (y - top) / max(1.0, (ybot - top))
+                tt = (y - top) / max(1.0, (ybot - floor_h - top))
                 col = S[0] if tt < 0.7 else S[1]
+                if floor_h > 4:                                             # 어둠은 위에서 아래로 약해진다(해칭 없음)
+                    col = S[0] if tt < 0.4 else (S[1] if tt < 0.8 else S[2])
+                    c.put(x, y, col); continue
                 if bars:
                     if tt > 0.55: col = S[1] if (x + y) % 5 else S[2]       # 열린 문: 안쪽이 깊어 어두워진다(창살 없음)
                     elif tt > 0.3 and x % 7 == 0: col = S[1]
@@ -538,7 +547,7 @@ def _base_front(c, W, H, fy0, lo, hi, seed):
         c.put(lo(y), y, S[6]); c.put(lo(y) + 1, y, S[5]); c.put(hi(y) - 1, y, S[3])
 
 
-def gate_great(bays=12, pass_w=64, variant=0):
+def gate_great(bays=12, pass_w=64, variant=0, floor_h=4):
     """대문루 (북·남문용): 돌 기단(벽돌 쌓기·사다리꼴) + 반원 아치 통로(안쪽 어두운 창살) + 위에 청록 기와 이중 처마 누각 + 현판.
     폭 bays 칸(12 또는 8). pass_w = 통로 폭(px, 칸 수의 배수). 높이는 칸 단위로 맞춘다."""
     W = bays * T
@@ -572,7 +581,7 @@ def gate_great(bays=12, pass_w=64, variant=0):
     for xm in range(lo(fy0) + 4, hi(fy0) - 12, 16):
         _merlon(c, xm, fy0 - 8, 10, fh=4)
     _base_front(c, W, H, fy0, lo, hi, variant)
-    top = _arch_passage(c, W // 2, H, pass_w, sh=24 if pass_w >= 48 else 18, ring=6)
+    top = _arch_passage(c, W // 2, H, pass_w, sh=24 if pass_w >= 48 else 18, ring=6, floor_h=floor_h)
     _plaque(c, W // 2, max(fy0 + 3, top - 10), w=26 if pass_w >= 48 else 20, seed=variant + bays)
     outline(c)
     cx0 = (W // 2 - pass_w // 2) // T
