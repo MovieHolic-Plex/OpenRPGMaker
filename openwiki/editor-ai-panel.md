@@ -3508,7 +3508,12 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 - **배선:** 워커 `toolAdapter.ts` 가 쓰기 도구를 `withConstructionLog` 로 감싸 `PiToolCallRecord.constructionLogs` 에 싣는다(모델이 읽는 도구 결과에는 안 들어간다) →
   `piAgentRuntime.ts` `recordCall` 이 들고 있다가 바로 다음 `checkpoint()` 의 `PiProjectCheckpoint.constructionLogs` 로 보낸다(저장 안 함) →
   편집기 `aiPiAgentCommand.ts` onCheckpoint 가 `offerConstructionLogs` 로 맡긴다 → 적용 뒤 `focusAcceptedAgentChanges` 의 `planConstructionReveal` 이 그 맵 id 의 기록을 한 번 꺼내 쓴다(2분 지나면 버림).
-  **기록이 없는 적용은 재생하지 않는다** — 지어낸 순서는 보이지 않고 기존 「✓ 반영됨」 강조로 간다(다른 시공 도구는 아직 기록을 안 남긴다).
+  **기록이 없는 적용은 재생하지 않는다** — 지어낸 순서는 보이지 않고 기존 「✓ 반영됨」 강조로 간다.
+- **모든 쓰기 도구(2026-10-04, 사용자 「마을뿐 아니라 다른 명령도 실시간으로」):** 스스로 기록을 안 남기는 쓰기 도구(칠하기·소품·집 하나·새 맵…)는
+  `toolAdapter.ts` 가 도구 직후 `synthesizeToolConstructionLogs(도구, 적용 전, 적용 후)` 로 **그 도구가 실제로 바꾼 칸**을 기록 한 벌로 만든다(`synthetic: true`).
+  나누는 것은 예전 밑그림과 같은 층 순서뿐 — ① 아래층(바닥·길·물; 위층은 아직 이전 값) ② 위층이 바뀐 칸(물체·나무·지붕, 작으면 `stamp` 괄호) — 칸은 왼쪽 열부터.
+  시작 덮개(`initial`)는 바뀐 칸의 적용 전 값이다. 도구가 스스로 기록한 맵(마을)은 건드리지 않고, 4만 칸 넘게 바뀐 도구는 재생하지 않는다.
+  재생 시간은 칸 수에 맞춘다(단계당 140ms + 칸×6ms, 260~1400ms). 체크포인트 사이 쓰기가 여럿이면 `recordCall` 이 `mergeConstructionLogs` 로 같은 맵 기록을 순서대로 잇는다.
 - **재생 시간:** 계획 구역 380ms · 칠하기 520ms · 큰 키트 210ms · 작은 키트 28ms(찍기 전체 5.2초 상한, 넘으면 같은 비율로 당김) · 다듬기 320ms,
   단계 종류가 바뀔 때 200ms 쉼, 끝에 500ms 머문 뒤 320ms 에 덮개가 걷힌다. 강가 마을 ≈ 12.6초.
 - **그리기:** ① 계획 격자 — 칸당 8px `RenderTexture` 에 분류 색(물 파랑·길 황토·광장 연한 돌·건물 자리 갈색 눈금·소품·밭) ② 칠하기·찍기 — 타일 크기 `RenderTexture` 에

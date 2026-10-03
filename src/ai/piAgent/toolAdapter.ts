@@ -22,7 +22,7 @@ import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
-import { withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
+import { synthesizeToolConstructionLogs, withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
 import { modernTilesetViolation, type ModernTilesetPolicy } from '../modernTilesetPolicy';
@@ -235,6 +235,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       const beforeProject = ctx.project;
       if (!gate && tool.prepare) await prepareTool(tool.name, args, ctx.project);
       let constructionLogs: readonly ConstructionLog[] = [];
+      const writeStarted = Date.now();
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
         : tool.mode === "write"
@@ -254,6 +255,10 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           const warnings = scopeNewMapWarnings(beforeProject, ctx.project, options.scopeMapIds);
           if (warnings.length > 0) result = { ...result, warnings: [...(result.warnings ?? []), ...warnings] };
         }
+      }
+      // 시공 기록이 없는 쓰기 도구도 실제 변경을 아래층 → 위층 순서로 맵 위에서 다시 튼다(예전 밑그림, 2026-10-04).
+      if (tool.mode === "write" && result.ok && ctx.project !== beforeProject) {
+        constructionLogs = [...constructionLogs, ...synthesizeToolConstructionLogs(tool.name, beforeProject, ctx.project, constructionLogs, Date.now() - writeStarted)];
       }
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
       options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after],
