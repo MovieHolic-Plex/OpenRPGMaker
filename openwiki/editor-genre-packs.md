@@ -26,10 +26,10 @@ It does not certify real combat playability.
 
 `adventure-jrpg` selects `adventure-system` (2026-09-26). Before, it applied only
 `system.genre`, so the gear (no AI) produced a blank project with a label. It now
-fills `battleParty: "actors"`, `battleUiStyle: "ff"` (side view, ally sprites),
-`menuUiStyle: "party-first"` and `companions {maxCompanions:3, formation:"line"}`
+fills `battleParty: "actors"`, `menuUiStyle: "party-first"` and `companions {maxCompanions:3, formation:"line"}`
 only when those fields are empty (`??=`), so applying the poster to an open
-project keeps an author's choice. Requirements add `battle-troops`, `lint-errors`
+project keeps an author's choice. The battle method stays the default pixel side
+view — it no longer writes `battleUiStyle` (2026-10-02). Requirements add `battle-troops`, `lint-errors`
 and `reference-integrity`. Evidence: `verify-shots/gap-fixes/c1-before.json`,
 `c1-after.json`, `c4-report.json`.
 
@@ -78,6 +78,14 @@ AI-only preset first builds could not be finished: of 24 live runs on 2026-09-27
 - `프로젝트 → 게임 기획...` reopens existing briefs, saves changes with a project snapshot, and prefills the composer without auto-sending. Blank projects and manual system-only setup do not need an interview. The menu preserves its name/genre/screen-size setup stages before the five game-design questions. `screenSize` still configures the seed viewport.
 
 Browser evidence: `verify-shots/new-project-interview/SUMMARY.md` and `scripts/capture-project-interview.mjs`. These inspect real UI components in isolation, with the welcome save callback stubbed and no live model or canonical project writes. They do not prove end-to-end generated gameplay or SQLite reload. Focused regression cases were authored but not executed locally under the session's test restriction.
+
+### Internal execution handoff (2026-10-03)
+
+The user confirms only the editable game direction. Detailed TODOs, tool contracts and evidence requirements are model-only context, not another approval screen or a copy/export workflow. `gameDesignExecution.ts` derives a 29-task scaffold from the saved brief; `gameDesignBriefContext` appends it to the existing initial-generation and builder/team/Writer/reviewer routes. Human `welcomeGenrePresetDisplayText` still uses only the authored summary. The 4000-character summary limit is unchanged; internal instructions are composed separately and are never saved into that field.
+
+Tasks carry dependencies, answer-slot provenance, actions, outputs and acceptance criteria. The model expands them for the actual maps/events/branches/assets within the confirmed scope and reconciles edited summary versus earlier answers before building. Later read-only requests and role-limited Writer/reviewer work must not trigger a full build. No persisted execution ledger, new automatic-send trigger or runtime evidence verifier is introduced here: these are model instructions, not enforced completion receipts. Existing save-first/endpoint-readiness handoff and apply/persistence boundaries remain the execution owners.
+
+Regression cases: `test/gameDesignExecution.test.ts` (authored, not executed under this session's test restriction). The standalone cinematic preview now keeps the execution pack behind its confirmation action and shows no task list or instruction-copy/export controls; it still does not create a live project.
 
 ## Vocabulary and readiness
 

@@ -12,7 +12,7 @@ vi.mock("@/util/toast", () => ({ toast: (...args: unknown[]) => toastSpy(...args
 
 import { addDatabaseRecord, updateDatabaseRecord } from "@/editor/databaseActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
-import { pendingHistoryLabels, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { getMapEditHistoryDepth, pendingHistoryLabels, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
@@ -42,6 +42,25 @@ function lastToast(): readonly [string, unknown] | null {
 }
 
 describe("되돌림 피드백", () => {
+  it("같은 브라우저 이벤트를 여러 리스너가 받아도 한 단계만 되돌리고 다시 실행한다", () => {
+    const id = addDatabaseRecord("items");
+    recordProjectSnapshot("첫 이름");
+    updateDatabaseRecord("items", id, { name: "검" });
+    recordProjectSnapshot("둘째 이름");
+    updateDatabaseRecord("items", id, { name: "창" });
+    const depth = getMapEditHistoryDepth();
+    const undo = ctrl("z");
+    expect(handleHistoryHotkey(undo)).toBe(true);
+    expect(handleHistoryHotkey(undo)).toBe(false);
+    expect(handleHistoryHotkey(undo)).toBe(false);
+    expect(getMapEditHistoryDepth()).toBe(depth - 1);
+    const redo = ctrl("y");
+    expect(handleHistoryHotkey(redo)).toBe(true);
+    expect(handleHistoryHotkey(redo)).toBe(false);
+    expect(getMapEditHistoryDepth()).toBe(depth);
+    expect(handleHistoryHotkey(ctrl("z"))).toBe(true);
+    expect(getMapEditHistoryDepth()).toBe(depth - 1);
+  });
   it("Ctrl+Z 성공 시 되돌린 작업 라벨을 알린다", () => {
     const id = addDatabaseRecord("items");
     recordProjectSnapshot("아이템 이름 변경");

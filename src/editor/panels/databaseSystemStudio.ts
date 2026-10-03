@@ -3,7 +3,7 @@ import { MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import { listTitleMenuOptions } from "@/player/titleScreen";
 import { resolveFontSelection, FONT_ROLE_LABELS, FONT_ROLES, fontOptionsForRole } from "@/project/fontRegistry";
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
-import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_METHOD_LABELS, battleMethodOf } from "@/project/battleMethod";
 import { BATTLE_HIT_FEEL_LABELS, resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { BATTLE_LOOK_PRESETS, resolveBattleLook } from "@/project/battleLook";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
@@ -223,11 +223,11 @@ function primaryCardGrid(project: Project): HTMLElement {
     },
   ];
   const fonts = resolveFontSelection(project.system.fonts);
-  const resources = [project.system.titleResourceId, project.system.systemResourceId, project.system.battleSystemResourceId].filter(Boolean);
+  const resources = [project.system.titleResourceId, project.system.systemResourceId].filter(Boolean);
   const additional: StudioCard[] = [
     // 「역할: 글꼴」을 쉼표로 잇는다. 글꼴 이름 자체에 「 · 」가 있어 같은 구분자로 이으면 번역 계층이 경계를 못 찾는다.
     { id: "font", title: "폰트", description: "UI · 픽셀 · 고정폭 역할별 글꼴", status: FONT_ROLES.map((role) => `${FONT_ROLE_LABELS[role]}: ${fontOptionsForRole(role).find((entry) => entry.id === fonts[role])?.label ?? fonts[role]}`).join(", "), statusKind: "neutral", target: "font" },
-    { id: "resources", title: "리소스", description: "타이틀 · 창 · 전투 공유 그래픽", status: `${resources.length}/3개 선택`, statusKind: "neutral", target: "resources" },
+    { id: "resources", title: "리소스", description: "타이틀 · 창 공유 그래픽", status: `${resources.length}/2개 선택`, statusKind: "neutral", target: "resources" },
     { id: "typechart", title: "타입 상성", description: "공격 → 방어 배율", status: `${project.system.typeChart?.types.length ?? 0}개 타입`, statusKind: "neutral", target: "typechart" },
   ];
   return el("section", {
@@ -312,8 +312,7 @@ function stateRegistry(rows: readonly StateRow[]): HTMLElement {
 function ruleCardGrid(project: Project): HTMLElement {
   const combatFlow = project.system.battleFlow === "strict" ? "턴 전투" : "게이지 전투";
   const activeSlots = project.system.activeSlots ? `${project.system.activeSlots}명` : "자동";
-  const battleSkin = BATTLE_SKINS[resolveSkinId(project.system.battleUiStyle)].label;
-  const battleModel = project.system.battleModel === "gen1" ? "Gen1" : "기본";
+  const battleMethod = BATTLE_METHOD_LABELS[battleMethodOf(project)];
   const enabledFeatureCount = [project.system.skillSystem?.enabled, project.system.actionCombat?.enabled]
     .filter((value) => value === true).length;
   const titleScreen = resolvedTitleScreen(project);
@@ -330,10 +329,9 @@ function ruleCardGrid(project: Project): HTMLElement {
       details: [
         { label: "전투 흐름", value: combatFlow },
         { label: "참전 인원", value: activeSlots },
-        { label: "전투 UI", value: battleSkin },
+        { label: "전투 방식", value: battleMethod },
         { label: "타격감", value: BATTLE_HIT_FEEL_LABELS[resolveBattleHitFeel(project.system.battleHitFeel)] },
         { label: "전투 화면", value: battleLookSummary(project.system.battleLook) },
-        { label: "규칙 모델", value: battleModel },
       ],
     },
     {

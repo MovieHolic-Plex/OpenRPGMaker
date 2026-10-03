@@ -145,7 +145,32 @@ def check(pxg, quiet=False):
     if not res['note']: res['warn'].append('메모 없음: <후보>.note 에 한 줄')
     full_note = open(note, encoding='utf-8').read() if os.path.exists(note) else ''
     res['hard'] += top_claim_check(a[pad:], o, full_note, res)
+    if o['kind'] not in ('flat',): res['hard'] += line_check(base, res)
+    if o['kind'] not in ('flat',) and not res['hard']:   # 고르는 화면의 「테두리 꼭 필요한 곳만」 벌을 미리 만든다(참고 — 실패해도 검사는 그대로)
+        try:
+            import outline_select; outline_select.ensure_png(d, os.path.basename(base), o)
+        except (Exception, SystemExit) as e: res['warn'].append(f'sel: 테두리 둘째 벌을 못 만들었다 {e!r}'[:200])
     return finish(res, base, quiet)
+
+LINE_THICK_MAX, LINE_NONE_MAX = 0.15, 0.15   # 고른 작은 기물 위 ¼ 경계(2026-10-02 실측: 두께 2칸+ p75 0.16 · 테 없음 p75 0.15)
+
+def line_check(base, res):
+    """선 문법(2026-10-02, 사용자 「선의 두께·외곽선」): 외곽은 1칸, 바깥 테가 안쪽보다 어두워야 한다.
+    재는 법은 line_metrics.py. 게이트는 사용자 눈으로 맞춘 두 항목만 — 외곽 색·안쪽 선 굵기는 금테·무늬를 잘못 잡아 참고로만 적는다.
+    문제 칸을 칠한 그림을 <후보>-lines-x6.png 로 남긴다(작업자·검수자가 본다)."""
+    import line_metrics as lm
+    try:
+        r, im = lm.overlay(base + '.png', 6)
+    except Exception as e:
+        return [f'lines: 선 측정 실패 {e!r}'[:200]]
+    im.save(base + '-lines-x6.png')
+    res['lines'] = {k: round(v, 3) for k, v in r.items()}
+    errs, rel = [], os.path.relpath(base + '-lines-x6.png', ROOT)
+    if r['o_thick'] > LINE_THICK_MAX:
+        errs.append(f'lines: 외곽이 2칸 이상 두꺼운 곳 {r["o_thick"]:.0%} > {LINE_THICK_MAX:.0%} — 바깥 테는 1칸, 그 안쪽 칸은 한 단 밝게(빨강 칸, {rel})')
+    if r['o_none'] > LINE_NONE_MAX:
+        errs.append(f'lines: 바깥 테가 안쪽보다 어둡지 않은 곳 {r["o_none"]:.0%} > {LINE_NONE_MAX:.0%} — 실루엣 둘레를 그 재료의 가장 어두운 단 1칸으로 두른다(하늘색 칸, {rel})')
+    return errs
 
 EDGE_T, EDGE_ROW, COVER_MIN = 40, 0.75, 0.5   # 가로 윤곽선 = 위 줄과 밝기가 40 넘게 다른 칸이 75% 이상인 줄 · 띠 평균 채움 50%
 
@@ -180,6 +205,23 @@ def top_claim_check(a, o, note, res):
     cuts = [y for y in range(y0 + 2, y1) if p[y][0] >= COVER_MIN and p[y][1] >= EDGE_ROW]
     if cuts: errs.append(f'top: 메모의 윗면 y={y0}~{y1} 를 가로 윤곽선 y={cuts[0]} 이 가로지른다 — 그 아래는 옆면이다(옆모습을 윗면이라 적었다)')
     res['topBand'] = dict(cover=round(cover, 2), cuts=cuts[:6])
+    if o.get('blockout'): errs += blockout_check(a, o, (y0, y1), res, p)
+    return errs
+
+def blockout_check(a, o, claim, res, p=None):
+    """대형 깊은 기물: 명세의 3/4 밑그림 띠를 실제로 채웠나. 띠는 명세가 정한다(작업자가 고를 수 없다).
+    - 윗면 띠(top) 줄들의 평균 채움 ≥ cover — 옆모습은 이 줄에 굴뚝·돔·기관사 칸만 있어 비어 보인다.
+    - 남쪽 면 띠(front) 평균 채움 ≥ 50%(바퀴·다리 사이 틈 허용 — 물건이 그 띠에 서 있기만 하면 된다).
+    - 메모의 꼭대기 윗면 범위가 밑그림 윗면 띠와 반 이상 겹친다."""
+    b = o['blockout']; (t0, t1), (f0, f1) = b['top'], b['front']; cov = float(b.get('cover', 0.7))
+    p = p or band_profile(a); H = a.shape[0]; errs = []
+    mean = lambda y0, y1: sum(p[y][0] for y in range(max(0, y0), min(H, y1 + 1))) / max(1, min(H, y1 + 1) - max(0, y0))
+    tc, fc = mean(t0, t1), mean(f0, f1)
+    res['blockout'] = dict(top=[t0, t1], front=[f0, f1], topCover=round(tc, 2), frontCover=round(fc, 2), need=cov)
+    if tc < cov: errs.append(f'blockout: 밑그림 윗면 띠 y={t0}~{t1} 채움 {tc:.0%} < {cov:.0%} — 위에서 본 윗면이 그 띠를 덮어야 한다(옆모습이면 비어 보인다)')
+    if fc < 0.5: errs.append(f'blockout: 밑그림 남쪽 면 띠 y={f0}~{f1} 채움 {fc:.0%} < 50% — 남쪽 면이 그 자리에 없다')
+    c0, c1 = claim; inter = max(0, min(c1, t1) - max(c0, t0) + 1)
+    if inter * 2 < (c1 - c0 + 1): errs.append(f'blockout: 메모의 꼭대기 윗면 y={c0}~{c1} 가 밑그림 윗면 띠 y={t0}~{t1} 와 반도 안 겹친다')
     return errs
 
 

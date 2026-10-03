@@ -14,6 +14,7 @@ import {
   defaultTerrainRecords,
 } from "./defaultDatabaseUtilityRecords";
 import { DEFAULT_TROOP_ID } from "./constants";
+import { DEPRECATED_EASYRPG_BATTLE_SHEETS } from "@/assets/retroPixelAnimations";
 import { rosterClassIds } from "./retroRosterRecords";
 import { appendRetroRosterDependencies, type RetroRosterDatabase } from "./retroRosterDependencies";
 import {
@@ -35,13 +36,25 @@ import {
  * ▶테스트를 막지는 않지만(게이트 제거), 재생 시 애니메이션이 통째로 빠진다.
  *
  * 같은 id 가 이미 있으면 저자가 손댔을 수 있으므로 건드리지 않고 빠진 것만 채운다.
+ * 예외는 deprecated/ 로 옮긴 EasyRPG 전투 시트를 가리키는 기록뿐이다(아래).
  */
 export function ensureBundledBattleAnimations(project: {
   database: { battleAnimations: BattleAnimationRecord[] };
 }): boolean {
+  const defaults = defaultBattleAnimationRecords();
   const existingIds = new Set(project.database.battleAnimations.map((record) => record.id));
   let changed = false;
-  for (const record of defaultBattleAnimationRecords()) {
+  // EasyRPG Blow·Sword1·Arrow 시트는 2026-10-03 deprecated/ 로 옮겼다. 그 시트를 가리키는 기록은 기본 id 면
+  // 지금 기본값으로, 저자가 만든 기록이면 그림 칸(시트·프레임)만 같은 역할의 번들 효과로 바꾼다.
+  project.database.battleAnimations = project.database.battleAnimations.map((record) => {
+    const slug = DEPRECATED_EASYRPG_BATTLE_SHEETS[record.resourceId ?? ""];
+    const replacement = slug && (defaults.find((entry) => entry.id === record.id)
+      ?? defaults.find((entry) => entry.resourceId === `generated-battle-anim-${slug}`));
+    if (!replacement) return record;
+    changed = true;
+    return replacement.id === record.id ? replacement : { ...record, resourceId: replacement.resourceId, sheet: replacement.sheet, frames: replacement.frames };
+  });
+  for (const record of defaults) {
     if (existingIds.has(record.id)) continue;
     project.database.battleAnimations.push(record);
     existingIds.add(record.id);
@@ -76,9 +89,12 @@ export function ensureRetroRosterRecords(project: {
   const wantedClassIds = new Set<string>([...RETRO_EXTENSION_CLASS_IDS, ...rosterClassIds()]);
   const party = defaultPartyRecords();
   const skills = defaultSkillRecords();
+  const commonMotionIds=new Set(db.skills.map(r=>r.id));
+  const missingMotions=skills.filter(r=>r.id.startsWith("skill_motion_")&&!commonMotionIds.has(r.id));
+  db.skills.push(...missingMotions);
   const states = defaultStateRecords();
   const added: Parameters<typeof appendRetroRosterDependencies>[2] = [];
-  let changed = false;
+  let changed = missingMotions.length>0;
   const classIds = new Set(db.classes.map((record) => record.id));
   for (const record of party.classes) {
     if (!wantedClassIds.has(record.id) || classIds.has(record.id)) continue;
@@ -116,7 +132,7 @@ export function ensureRetroRosterRecords(project: {
     stateIds.add(record.id);
     changed = true;
   }
-  if (added.length === 0) return false;
+  if (added.length === 0) return changed;
   return appendRetroRosterDependencies(db, {
     actors: party.actors, classes: party.classes, equipment: party.equipment,
     skills, states,

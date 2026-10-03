@@ -13,7 +13,6 @@ export interface ActivityVisual {
   uploaded?: string;
   uploadedAsset?: UploadedAsset;
   pattern?: number;
-  hue?: number;
   stats?: [string, string][];
   map?: GameMap;
   tileset?: TilesetDef;
@@ -102,7 +101,7 @@ function capture(project: Project, name: string, args: Record<string, any>, data
       const resource = record.faceResourceId || record.monsterResourceId || record.iconResourceId || record.imageResourceId;
       const fields = { ...obj(record.stats), ...obj(record.statBonuses), ...record };
       const stats = Object.entries(statLabels).filter(([key]) => ["number", "string"].includes(typeof fields[key])).slice(0, 6).map(([key, label]) => [label, String(fields[key]).slice(0, 80)] as [string, string]);
-      visuals.push({ kind: resource ? "asset" : "record", title: str(record.name || record.id), caption: ({ actors: "캐릭터", enemies: "몬스터", items: "아이템", equipment: "장비", skills: "스킬" } as Record<string, string>)[collection!] ?? "대상 정보", phase, target: `record:${collection}:${record.id}`, ...asset(project, resource), hue: Number(record.graphicHue) || 0, stats });
+      visuals.push({ kind: resource ? "asset" : "record", title: str(record.name || record.id), caption: ({ actors: "캐릭터", enemies: "몬스터", items: "아이템", equipment: "장비", skills: "스킬" } as Record<string, string>)[collection!] ?? "대상 정보", phase, target: `record:${collection}:${record.id}`, ...asset(project, resource), stats });
     }
   }
   if (/resource|graphic/.test(name)) {

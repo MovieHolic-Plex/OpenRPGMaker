@@ -1,0 +1,24 @@
+{
+  "findings": [
+    {
+      "height": 3,
+      "replace": true,
+      "rampCells": 16,
+      "remainingStairCells": 0,
+      "slopes": [
+        {
+          "x": 11,
+          "y": 18,
+          "w": 4,
+          "h": 4,
+          "dir": "n",
+          "lo": 0,
+          "hi": 3
+        }
+      ],
+      "undo": true,
+      "redo": true
+    }
+  ],
+  "errors": []
+}

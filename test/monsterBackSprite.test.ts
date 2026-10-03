@@ -7,8 +7,9 @@ import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
 import { prepareWebExport } from "@/project/webExport";
 
+// 옛 AI 씨앗 그림 id 는 deprecated/ 로 옮긴 뒤에도 저장본 호환 별칭으로 남아 Scarloxy 뒷모습을 가리킨다.
 const BACK = "generated-enemy-reference-seed-back";
-const BACK_PATH = "assets/generated/battle-skins/sprites/reference-seed-back.png";
+const BACK_PATH = "assets/scarloxy/scarloxy-monster-mossling.png";
 
 function projectWithBack() {
   const project = createBlankProject();

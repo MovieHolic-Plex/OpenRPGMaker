@@ -42,3 +42,4 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 ## 하네스 목록
 
 - [monster-collect-species](monster-collect-species.md) — 몬스터 수집(포켓몬류) 종 앞·뒤 전투 스프라이트
+- [jp-city](jp-city.md) — 일본 도시 칩셋(jp_city · modern3) 주택가·역·공원·신사 그림 후보

@@ -1,3 +1,4 @@
+import { normalizeCharacterMotion, type CharacterMotionSettings } from "@/battle/characterMotion";
 import { normalizeLoadoutSlots } from "@/project/skillLoadout";
 import type {
   ActorCritical,
@@ -81,6 +82,7 @@ type ActorResourceDefaults = {
 };
 
 type LegacyActorRecord = {
+  readonly battleMotion?: CharacterMotionSettings;
   readonly appearanceId?: string;
   readonly id: string;
   readonly name: string;
@@ -104,6 +106,7 @@ type LegacyActorRecord = {
   readonly stateRates?: Record<string, ActorRateGrade>;
   readonly elementRates?: Record<string, ActorRateGrade>;
   readonly loadoutSlots?: number;
+  readonly battleCommandIds?: readonly string[];
 };
 
 const PARAMETER_LEVEL_ONE: Record<ActorParameterKey, number> = {
@@ -149,6 +152,7 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
   const characterResourceId = cleanOptionalId(actor.characterResourceId) ?? defaultActorCharacterResourceId(actor);
   return {
     id: actor.id,
+    ...(normalizeCharacterMotion(actor.battleMotion) ? {battleMotion:normalizeCharacterMotion(actor.battleMotion)} : {}),
     ...(actor.appearanceId !== undefined ? { appearanceId: actor.appearanceId } : {}),
     name: actor.name,
     nickname: actor.nickname ?? "None",
@@ -175,7 +179,24 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
       const loadoutSlots = normalizeLoadoutSlots(actor.loadoutSlots);
       return loadoutSlots !== undefined ? { loadoutSlots } : {};
     })(),
+    ...(() => {
+      const battleCommandIds = normalizeBattleCommandIds(actor.battleCommandIds);
+      return battleCommandIds ? { battleCommandIds } : {};
+    })(),
   };
+}
+
+/** 배우 고유 전투 명령 — 빈 값·중복을 걷고, 비면 생략(직업 명령을 쓴다). 메뉴가 넘치지 않게 RM2003 처럼 7개까지. */
+export const ACTOR_BATTLE_COMMAND_MAX = 7;
+function normalizeBattleCommandIds(ids: readonly unknown[] | undefined): string[] | undefined {
+  if (!Array.isArray(ids)) return undefined;
+  const out: string[] = [];
+  for (const id of ids) {
+    if (typeof id !== "string" || !id.trim() || out.includes(id.trim())) continue;
+    out.push(id.trim());
+    if (out.length >= ACTOR_BATTLE_COMMAND_MAX) break;
+  }
+  return out.length > 0 ? out : undefined;
 }
 
 export function clampLevel(value: number): number {
@@ -210,11 +231,13 @@ export function normalizeActorPatch(patch: Partial<ActorRecord>): Partial<ActorR
   if (patch.critical !== undefined) normalized.critical = normalizeCritical(patch.critical);
   if (patch.parameterCurves !== undefined) normalized.parameterCurves = normalizeParameterCurves(patch.parameterCurves);
   if (patch.expCurve !== undefined) normalized.expCurve = normalizeExpCurve(patch.expCurve);
+  if ("battleMotion" in patch) normalized.battleMotion = normalizeCharacterMotion(patch.battleMotion);
   if (patch.initialEquipment !== undefined) normalized.initialEquipment = normalizeInitialEquipment(patch.initialEquipment);
   if (patch.options !== undefined) normalized.options = normalizeOptions(patch.options);
   if (patch.learnedSkills !== undefined) normalized.learnedSkills = normalizeLearnedSkills(patch.learnedSkills);
   if (patch.stateRates !== undefined) normalized.stateRates = normalizeRates(patch.stateRates);
   if (patch.elementRates !== undefined) normalized.elementRates = defaultElementRates(patch.elementRates);
+  if ("battleCommandIds" in patch) normalized.battleCommandIds = normalizeBattleCommandIds(patch.battleCommandIds);
   if ("loadoutSlots" in patch) {
     const loadoutSlots = normalizeLoadoutSlots(patch.loadoutSlots);
     if (loadoutSlots === undefined) normalized.loadoutSlots = undefined;

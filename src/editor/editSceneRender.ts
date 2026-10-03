@@ -15,6 +15,9 @@ import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, MapId } from "@/project/types";
 import { reliefCellLiftPx } from "@/player/reliefStrips";
 import { reliefPaintsCell } from "@/project/relief/screen";
+import { cellLift, reliefLiftField } from "@/project/relief/screen";
+import { terrainReachability } from "@/project/terrainReachability";
+import type { TilesetDef } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
 
 type CameraFocus = {
@@ -194,6 +197,7 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   if (mapOnlyCapture) return { tileObjectsUpdated };
   renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]));
   if (state.tool === "collision") renderCollisionOverlay(context, map);
+  if (state.terrainReachability) renderTerrainReachability(context, map);
   if (state.showGrid) repaintEditGrid(context.gridGraphics, map, state.layer, true, editGridTileWindow(context.scene, map));
   renderStartPosition(context);
   renderEventMarkers({ ...context, tileSize: mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]) }, map, state.layer);
@@ -209,6 +213,7 @@ export function refreshEditSceneOverlay(context: EditSceneRenderContext): void {
   const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
   renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, tileSize);
   if (state.tool === "collision") renderCollisionOverlay(context, map);
+  if (state.terrainReachability) renderTerrainReachability(context, map);
   renderStartPosition(context);
   renderEventMarkers({ ...context, tileSize }, map, state.layer);
 }
@@ -530,6 +535,22 @@ function createEmptyTile(
   if (translucent) r.setAlpha(0.35);
   r.setOrigin(0, 0);
   return r;
+}
+
+const reachCache=new WeakMap<GameMap,{tileset:TilesetDef;start:string;cells:Uint8Array}>();
+function renderTerrainReachability(context:EditSceneRenderContext,map:GameMap):void {
+  const project=store.getCurrent();if(project.startMapId!==map.id)return;
+  const tileset=project.tilesets[map.tilesetId];if(!tileset)return;
+  const key=`${project.startPos.x},${project.startPos.y}`;let cached=reachCache.get(map);
+  if(!cached || cached.start!==key || cached.tileset!==tileset){cached={tileset,start:key,cells:terrainReachability(project,map,project.startPos)};reachCache.set(map,cached);}
+  const tileSize=mapTileSize(map,tileset),g=context.scene.add.graphics(),lift=map.relief?reliefLiftField(map.relief):null;
+  // One graphics object, run lengths on flat rows. Reuse results when only view chrome changes.
+  for(let y=0;y<map.height;y++)for(let x=0;x<map.width;){
+    const ok=cached.cells[y*map.width+x]===1,h=lift?cellLift(lift,x,y):0;let end=x+1;
+    while(end<map.width && (cached.cells[y*map.width+end]===1)===ok && (lift?cellLift(lift,end,y):0)===h)end++;
+    g.fillStyle(ok?0x2f9e44:0xe03131,ok?.22:.26);g.fillRect(x*tileSize,(y-h)*tileSize,(end-x)*tileSize,tileSize);x=end;
+  }
+  context.overlayLayer.add(g);
 }
 
 function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): void {

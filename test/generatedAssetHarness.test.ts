@@ -11,7 +11,7 @@ import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { createFakePngBytes } from "@/assets/pngFake";
 
 describe("generatedAssetHarness", () => {
-  it("creates deterministic dry-run fake PNG validation and promotion metadata", async () => {
+  it("validates dry-run PNGs without re-promoting retired starter entries", async () => {
     const entry = GENERATED_ASSET_PLAN.assets[1];
     const plan = buildDryRunPathPlan(GENERATED_ASSET_PLAN, ".omo/evidence/oprn-generated-assets-execution/raw");
     const bytes = createFakeGeneratedAsset(entry);
@@ -28,7 +28,7 @@ describe("generatedAssetHarness", () => {
     expect(validation.inspection?.width).toBe(288);
     expect(validation.inspection?.height).toBe(256);
     expect(validation.sha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(promotion?.promotedPath).toBe("public/assets/generated/starter/hero-01-charset.png");
+    expect(promotion).toBeNull();
     expect(contactSheet.cells).toHaveLength(GENERATED_ASSET_PLAN.assets.length);
   });
 

@@ -19,7 +19,7 @@ type Project = ReturnType<typeof deserialize>;
 function battleProject(): Project {
   const project = deserialize(JSON.stringify(itemFixture));
   project.system.battleModel = "rm2k3";
-  project.system.battleUiStyle = "rm2003";
+  project.system.battleUiStyle = "retro2003";
   return project;
 }
 

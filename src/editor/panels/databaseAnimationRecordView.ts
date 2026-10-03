@@ -88,7 +88,7 @@ export function renderBattleAnimationRecordForm(
 
   form.classList.add("animation-detail-form", "db-battle-studio-surface");
   form.append(
-    battleStudioHeading("animations", animation.name, "전투 장면 위에서 효과를 확인하고 프레임과 타이밍을 조정합니다."),
+    battleStudioHeading("animations", animation.name, "옛 셀 애니메이션입니다. 도트 측면 전투는 스킬에 도트 연출이 있으면 이 애니메이션을 쓰지 않습니다 — 연출 없는 스킬의 대체용과 몬스터 대치 전투에서만 보입니다."),
     animationEditor(context)
   );
 

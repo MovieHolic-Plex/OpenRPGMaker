@@ -1,0 +1,191 @@
+{
+ "sheet": {
+  "file": "sources/jp_shopstreet16.png",
+  "cells": 2880,
+  "cols": 16,
+  "sha256": "83c7fa4d8eb226a366aab02734ce2b7637b0f07961d8b5b18668d6b0a9314709",
+  "catalogSha256": "94ab26abe35247d88630e4ace97fb3375d85a1355736da684301f072ef974293"
+ },
+ "kit": {
+  "names": 4192,
+  "bands": 60,
+  "decos": 73,
+  "street": 48,
+  "props": 142,
+  "recipes": 22,
+  "lRecipes": 3,
+  "doorDefault": 11
+ },
+ "people": {
+  "excluded": true,
+  "method": "자리 유지: 원본에서 person.* 가 차지하던 고유 칸 155개(851..1005)를 투명 빈 칸으로 남겨 뒤 칸 번호를 원본과 같게 둔다.",
+  "note": "원본의 행인 person.0~39(Actor1) 은 번들에서 제외. 그 칸 자리는 빈(투명) 칸으로 유지해 이후 칸 번호가 원본과 같다.",
+  "reservedStart": 851,
+  "reservedCells": 155
+ },
+ "checks": {
+  "cells": 2880,
+  "recipesPixelMatch": 25,
+  "recipesTotal": 25,
+  "offPalette": 0,
+  "partialAlpha": 0,
+  "ACCESS": {
+   "standard": true,
+   "signs": true,
+   "lane": true,
+   "rc": true
+  },
+  "DOORBLOCK": {
+   "standard": 0,
+   "signs": 0,
+   "lane": 0,
+   "rc": 0
+  },
+  "DECOCLASH": 0,
+  "DECOCLASH_items": [],
+  "mismatch": []
+ },
+ "compareToOriginal": {
+  "sheetShapeOrig": [
+   2880,
+   256,
+   4
+  ],
+  "sheetShapeNew": [
+   2880,
+   256,
+   4
+  ],
+  "count": [
+   2880,
+   2880
+  ],
+  "personCells": 155,
+  "personRange": [
+   851,
+   1005
+  ],
+  "nonPersonCells": 2725,
+  "nonPersonCellsDiffering": 0,
+  "nonPersonDiffIdx": [],
+  "newPersonCellsBlank": true,
+  "origPersonCellsNonBlank": 155,
+  "newTrailingBlank": true,
+  "namesCount": [
+   4192,
+   4192
+  ],
+  "bandsCount": [
+   60,
+   60
+  ],
+  "decosCount": [
+   73,
+   73
+  ],
+  "streetCount": [
+   48,
+   48
+  ],
+  "recipesCount": [
+   22,
+   22
+  ],
+  "lRecipesCount": [
+   3,
+   3
+  ],
+  "doorDefaultCount": [
+   11,
+   11
+  ],
+  "propsCount": [
+   142,
+   142,
+   40
+  ],
+  "catalogKeysEqual": {
+   "names": true,
+   "bands": true,
+   "decos": true,
+   "street": true,
+   "recipes": true,
+   "lRecipes": true,
+   "doorDefault": true,
+   "props(no person)": true,
+   "meta": true,
+   "sheet.file/cols/count": true
+  },
+  "pass": true
+ },
+ "districtsCompareToOriginal": {
+  "district_akiba.png": {
+   "size": [
+    1536,
+    1024
+   ],
+   "people": 170,
+   "diffPixels": 40344,
+   "diffOutsidePeopleBoxes": 0,
+   "diffPct": 2.565
+  },
+  "district_asakusa_v2.png": {
+   "size": [
+    1536,
+    1024
+   ],
+   "people": 105,
+   "diffPixels": 25517,
+   "diffOutsidePeopleBoxes": 0,
+   "diffPct": 1.622
+  },
+  "district_shibuya_v2.png": {
+   "size": [
+    1536,
+    1024
+   ],
+   "people": 226,
+   "diffPixels": 48637,
+   "diffOutsidePeopleBoxes": 0,
+   "diffPct": 3.092
+  },
+  "district_shimokita.png": {
+   "size": [
+    1536,
+    1024
+   ],
+   "people": 53,
+   "diffPixels": 15068,
+   "diffOutsidePeopleBoxes": 0,
+   "diffPct": 0.958
+  },
+  "district_shinjuku.png": {
+   "size": [
+    1536,
+    1024
+   ],
+   "people": 106,
+   "diffPixels": 27169,
+   "diffOutsidePeopleBoxes": 0,
+   "diffPct": 1.727
+  },
+  "district_yanaka.png": {
+   "size": [
+    1536,
+    1024
+   ],
+   "people": 57,
+   "diffPixels": 13674,
+   "diffOutsidePeopleBoxes": 0,
+   "diffPct": 0.869
+  },
+  "pass": true
+ },
+ "determinism": {
+  "twoBakesByteIdentical": true,
+  "hashSeeds": [
+   "default",
+   "777"
+  ]
+ }
+}

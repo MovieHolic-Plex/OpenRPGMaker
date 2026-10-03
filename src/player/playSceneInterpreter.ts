@@ -30,7 +30,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
-import type { Command } from "@/project/types";
+import type { Command, MessageWindowSettings } from "@/project/types";
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
@@ -377,10 +377,11 @@ async function consumeBlockingStep(
         ...dialogueSceneHooks(scene, { speaker, currentEventId }),
         body: step.body,
         face: step.face,
-        settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
+        settings: textWindowSettings(scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS, step.position),
         textContext: { session: scene.session, project: store.getCurrent() },
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
+        ...playerScreenYOf(scene),
         autoAdvance: step.autoAdvance === true,
         emotion: step.emotion,
         ...(step.voiceResourceId ? { voiceResourceId: step.voiceResourceId } : {}),
@@ -859,3 +860,21 @@ function resumeInterpreter(interpreter: Interpreter): StepResult {
   return interpreter.resume(undefined);
 }
 
+
+
+/** 이 한 줄의 대화창 위치 지정(position)을 문장 표시 설정에 덮는다 — auto 는 주인공 가림 회피를 켜고, top·center·bottom 은 고정한다. */
+function textWindowSettings(base: MessageWindowSettings, position: "auto" | "top" | "center" | "bottom" | undefined): MessageWindowSettings {
+  if (!position) return base;
+  if (position === "auto") return { ...base, preventObscuringPlayer: true };
+  return { ...base, position, preventObscuringPlayer: false };
+}
+
+/** 카메라를 거친 화면 속 주인공 높이(0~1). 스프라이트·카메라가 없으면 비워 타일 위치로 판정하게 둔다. */
+function playerScreenYOf(scene: PlaySceneContext): { playerScreenY?: number } {
+  const camera = scene.cameras?.main;
+  const sprite = scene.player;
+  if (!camera || !sprite || !(camera.height > 0)) return {};
+  const centerY = sprite.y - (sprite.displayHeight > 0 ? sprite.displayHeight : 0) * (sprite.originY ?? 1) + (sprite.displayHeight > 0 ? sprite.displayHeight : 0) / 2;
+  const ratio = ((centerY - camera.scrollY) * camera.zoom) / camera.height;
+  return Number.isFinite(ratio) ? { playerScreenY: Math.max(0, Math.min(1, ratio)) } : {};
+}

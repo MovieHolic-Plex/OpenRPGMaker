@@ -13,6 +13,13 @@ vi.mock("@/assets/monsterCatalog", () => ({ MONSTER_CATALOG: {
 } }));
 const project: MonsterResourceProject = { resourceProfiles: [], assets: { uploaded: {} } };
 const id = "generated-enemy-slime-01";
+/** 고르는 목록에서 뺀 옛 적 그림(monsterResourceCatalog RETIRED_MONSTER_IDS). */
+const RETIRED = new Set([
+  "generated-enemy-reference-cocoon",
+  "generated-enemy-reference-seed-back",
+  "generated-troop-preview-slime",
+  "easyrpg-monster-hornet",
+]);
 
 describe("monster resource authority", () => {
   it("enumerates the canonical raw-ID set exactly once when no project resources exist", () => {
@@ -22,13 +29,14 @@ describe("monster resource authority", () => {
       ...builtinGeneratedResourceIds().filter(resourceId => resourceId.startsWith("generated-enemy-")),
       ...EASYRPG_MONSTER_ASSETS.map(asset => asset.id),
       ...SCARLOXY_MONSTER_ASSETS.map(asset => asset.id),
-    ]);
+    ].filter(resourceId => !RETIRED.has(resourceId)));
     // When
     const resources = listMonsterResources(project);
     // Then
     expect(new Set(resources.map(resource => resource.resourceId))).toEqual(expected);
     expect(resources).toHaveLength(expected.size);
-    expect(resources.some(resource => resource.resourceId === "generated-troop-preview-slime")).toBe(true);
+    // 옛 그림(2026-10-03 deprecated/)과 슬라임 미리보기 중복은 고르는 목록에 없다.
+    for (const retired of RETIRED) expect(resources.some(resource => resource.resourceId === retired)).toBe(false);
   });
 
   it("inherits catalog fields independently when an explicit project description clears the default", () => {

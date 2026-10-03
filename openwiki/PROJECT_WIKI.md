@@ -43,6 +43,8 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Terrain autotiles, template-block anchors, water/animation wiring: `openwiki/autotiles.md`
    - Runtime pre-edit routing & cautions (read first): `openwiki/runtime-pre-edit-routing.md`
    - Runtime battle: `openwiki/runtime-battle.md`
+   - Character battle motion (136 actors, current class/equipment, contact geometry): `openwiki/character-battle-motion.md`
+   - 측면 전투의 타격감·정지 시계·검 포즈/소리·피격 반동: `openwiki/battle-impact-contact.md`
    - 공용 몬스터 140종 · 옛 그림 폐기 · native 초상/포즈 · RM2003 스킬 비교: `openwiki/native-enemy-retirement.md`
    - 지원 전투 규칙 2종(RM식 `rm2k3`, 포켓몬식 `gen1`)과 스킨 12종(유리 뼈대 변형 11 + 몬스터 대치 1, 2026-09-25): `openwiki/runtime-battle.md` 의 "지원 전투 시스템은 둘뿐이다" 절
    - Runtime sessions & state: `openwiki/runtime-sessions.md`
@@ -161,3 +163,9 @@ Do not share one wiki across unrelated projects. Cross-project memory should be 
 ## Staleness rule
 
 If source behavior disagrees with the wiki, the source wins for the immediate fix. Then update the wiki so the next agent does not repeat the stale assumption.
+
+- 공용 전투 동작 32종·이동/가속/배우 경로·실제 턴 기믹·편집기/조수 저작: [battle-motion-programs.md](battle-motion-programs.md).
+
+## 지형 설치 도구 (2026-10-03)
+
+높이·표면·강·군집 선택, 네 방향 경사로·두 둑 다리·군집 복원·시작점 통행 미리보기: [terrain-placement-tools.md](terrain-placement-tools.md).

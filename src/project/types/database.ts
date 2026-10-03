@@ -1,3 +1,4 @@
+import type { CharacterMotionSettings, CharacterMotionStyle } from "@/battle/characterMotion";
 import type {
   ActorId,
   BattleAnimationId,
@@ -34,6 +35,8 @@ export interface CharacterAppearanceRecord {
 }
 
 export interface ActorRecord {
+  /** Optional overrides over the bundled class/body motion. */
+  battleMotion?: CharacterMotionSettings;
   id: ActorId;
   name: string;
   nickname: string;
@@ -62,6 +65,11 @@ export interface ActorRecord {
    * 생략 = 장착 개념 없음(배운 스킬 전부 사용, 기존 동작).
    */
   loadoutSlots?: number;
+  /**
+   * 이 배우만의 전투 명령(전역 전투 명령 목록 database.battleCommands 의 id, 메뉴 순서대로). RM2003 의 배우별 명령.
+   * 생략·빈 배열 = 직업의 전투 명령을 쓴다. 전투 중 이벤트로 바꾼 명령(eventState.actorBattleCommands)이 이보다 앞선다.
+   */
+  battleCommandIds?: string[];
 }
 
 export type ActorRateGrade = "A" | "B" | "C" | "D" | "E";
@@ -151,13 +159,12 @@ export type BattleFlow = "gauge" | "strict";
 /** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
 export type BattleAtbMode = "active" | "wait";
 
-/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 BattleSkinId(도트 측면 일곱 + pokemon).
- *  2026-10-02 정면 스킨(rm2000·dragonquest·mother·mv·vxace·classic)을 지웠다. 저장된 옛 값은 로드 때
- *  normalizeSystem 이 지우고(→ 기본 retro2003), 렌더 때도 resolveSkinId 가 retro2003 으로 푼다. */
+/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 BattleSkinId(도트 측면 retro2003 + pokemon).
+ *  2026-10-02 정면 스킨(rm2000·dragonquest·mother·mv·vxace·classic)과 창 색만 다르던 측면 스킨
+ *  (rm2003·octopath·chrono·bravely·ff·goldensun)을 지웠다. 저장된 옛 값은 로드 때 normalizeSystem 이 지우고
+ *  (→ 기본 retro2003, 창 색은 battleLook.window 로), 렌더 때도 resolveSkinId 가 retro2003 으로 푼다. */
 export type BattleUiStyle =
-  | "pokemon" | "octopath" | "chrono"
-  | "bravely" | "ff" | "goldensun"
-  | "rm2003" // 측면 전투 · 유리 창
+  | "pokemon"
   | "retro2003"; // 도트 측면 전투(기본): 청색 픽셀 창 · 겹 배경 · 전진 걸음 연출
 
 /** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로
@@ -168,7 +175,8 @@ export type MenuUiStyle = "pixel" | "field-list" | "workbench" | "party-first" |
  *  monsters: 잡은 파티 몬스터가 필드에 나서 싸움(포켓몬식). */
 export type BattleParty = "actors" | "monsters";
 
-export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "capture" | "escape" | "switch" | "event";
+/** "event" 는 옛 저장값으로 교체(switch)의 별칭이다. 공통 이벤트를 부르는 명령은 "commonEvent"(RM2003 「이벤트 연결」, 2026-10-02). */
+export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "capture" | "escape" | "switch" | "event" | "commonEvent";
 
 export interface ClassBattleCommand {
   id: string;
@@ -176,6 +184,8 @@ export interface ClassBattleCommand {
   kind: ClassBattleCommandKind;
   skillSubsetName?: string;
   skillId?: SkillId;
+  /** kind "commonEvent" 일 때 고르면 실행할 공통 이벤트. 없으면 그 명령은 메뉴에 나오지 않는다. */
+  commonEventId?: string;
 }
 
 export type DatabaseElementKind = "physical" | "magical";
@@ -220,6 +230,8 @@ export interface DatabaseBattleCommandRecord {
   kind: ClassBattleCommandKind;
   skillSubsetName?: string;
   skillId?: SkillId;
+  /** kind "commonEvent" 일 때 실행할 공통 이벤트. */
+  commonEventId?: string;
 }
 
 export interface ClassEquipmentPermissions {
@@ -229,6 +241,8 @@ export interface ClassEquipmentPermissions {
 }
 
 export interface SkillRecord {
+  /** Native turn battle gimmick. Omitted keeps the original skill rules. */
+  battleGimmick?: import("@/battle/battleGimmickRules").BattleGimmick;
   id: SkillId;
   name: string;
   scope: "self" | "ally" | "allAllies" | "enemy" | "allEnemies";
@@ -491,6 +505,8 @@ export interface ItemEquipmentEffectFlags {
 }
 
 export interface EquipmentRecord {
+  /** Explicit battle movement family; does not replace a baked sprite weapon. */
+  battleMotionStyle?: CharacterMotionStyle;
   id: EquipmentId;
   name: string;
   imageResourceId?: string;
@@ -1216,6 +1232,8 @@ export interface SkillChoreographyLayer {
 
 /** 프로젝트가 소유하는 스킬 도트 연출. 기본 연출(계약 카탈로그 약 1,130개)은 복사하지 않고 읽기 전용으로 남는다. id 는 chor_<slug>. */
 export interface SkillChoreographyRecord {
+  /** Shared motion program used in preview and exported player. */
+  movement?: import("@/battle/battleMotionProgram").BattleMotionProgram;
   id: string;
   name: string;
   description?: string;

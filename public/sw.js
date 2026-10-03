@@ -1,4 +1,5 @@
-const CACHE_NAME = "oprn-pwa-v3";
+// v5(2026-10-03): 히드라 도트를 교체하고 starter 그림을 삭제했다 — 같은 PNG 주소의 옛 캐시를 비운다.
+const CACHE_NAME = "oprn-pwa-v5";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",

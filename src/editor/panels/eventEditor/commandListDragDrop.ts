@@ -6,8 +6,10 @@ const DRAG_MIME = "application/x-oprn-event-command-path";
 // [P2] 크로스 컨테이너 드래그 유효성 판정용 현재 드래그 소스 경로.
 // dragover 시점에는 dataTransfer.getData 를 읽을 수 없으므로 모듈 상태로 유지한다.
 let activeDragPath: number[] | null = null;
+let activeDragActions: CommandListActions | null = null;
+const listDropActions = new WeakMap<HTMLElement, CommandListActions>();
 
-export function enableItemDrag(handle: HTMLElement, item: HTMLElement, path: number[]): void {
+export function enableItemDrag(handle: HTMLElement, item: HTMLElement, path: number[], actions: CommandListActions): void {
   handle.style.cursor = "grab";
   handle.addEventListener("pointerdown", () => {
     item.draggable = true;
@@ -19,11 +21,13 @@ export function enableItemDrag(handle: HTMLElement, item: HTMLElement, path: num
     data.dataTransfer?.setData("text/plain", JSON.stringify(path));
     if (data.dataTransfer) data.dataTransfer.effectAllowed = "move";
     activeDragPath = [...path];
+    activeDragActions = actions;
     item.classList.add("dragging");
   });
   item.addEventListener("dragend", () => {
     item.draggable = false;
     activeDragPath = null;
+    activeDragActions = null;
     item.classList.remove("dragging");
     document.querySelectorAll<HTMLElement>(".cmd-drop-before,.cmd-drop-after,.cmd-drop-invalid").forEach((node) => {
       node.classList.remove("cmd-drop-before", "cmd-drop-after", "cmd-drop-invalid");
@@ -39,7 +43,7 @@ export function attachItemDropHandlers(
 ): void {
   item.addEventListener("dragover", (event) => {
     const data = event as DragEvent;
-    if (!hasDragData(data)) return;
+    if (!hasDragData(data, actions)) return;
     // [P2] 자기 자신의 분기 안으로는 드롭 금지 — 유효하지 않은 대상은 invalid 표시만.
     if (activeDragPath && !isDropAllowed(activeDragPath, containerPath, actions)) {
       item.classList.remove("cmd-drop-before", "cmd-drop-after");
@@ -58,7 +62,7 @@ export function attachItemDropHandlers(
   });
   item.addEventListener("drop", (event) => {
     const data = event as DragEvent;
-    const sourcePath = readDragPath(data);
+    const sourcePath = readDragPath(data, actions);
     if (!sourcePath) return;
     data.preventDefault();
     data.stopPropagation();
@@ -70,36 +74,46 @@ export function attachItemDropHandlers(
 }
 
 export function ensureListDropHandlers(host: HTMLElement, actions: CommandListActions): void {
+  listDropActions.set(host, actions);
   if (host.dataset.dndBound === "1") return;
   host.dataset.dndBound = "1";
   host.addEventListener("dragover", (event) => {
     const data = event as DragEvent;
-    if (!hasDragData(data)) return;
+    const currentActions = listDropActions.get(host)!;
+    if (!hasDragData(data, currentActions)) return;
+    const containerPath = parseContainerPath(host.dataset.containerPath);
+    if (!activeDragPath || !isDropAllowed(activeDragPath, containerPath, currentActions)) return;
     data.preventDefault();
     if (data.dataTransfer) data.dataTransfer.dropEffect = "move";
   });
   host.addEventListener("drop", (event) => {
     const data = event as DragEvent;
-    const sourcePath = readDragPath(data);
+    const currentActions = listDropActions.get(host)!;
+    const sourcePath = readDragPath(data, currentActions);
     if (!sourcePath) return;
     data.preventDefault();
     data.stopPropagation();
     const containerPath = parseContainerPath(host.dataset.containerPath);
-    moveCommandToEnd(sourcePath, containerPath, actions);
+    moveCommandToEnd(sourcePath, containerPath, currentActions);
   });
 }
 
-function hasDragData(event: DragEvent): boolean {
-  const types = event.dataTransfer?.types;
-  return !!types && (Array.from(types).includes(DRAG_MIME) || Array.from(types).includes("text/plain"));
+// Paths alone carry no editor identity. Only a drag started by this render's
+// actions can move its commands; text from another app/page is never an edit.
+function hasDragData(event: DragEvent, actions: CommandListActions): boolean {
+  return activeDragActions === actions && activeDragPath !== null
+    && Array.from(event.dataTransfer?.types ?? []).includes(DRAG_MIME);
 }
 
-function readDragPath(event: DragEvent): number[] | null {
-  const raw = event.dataTransfer?.getData(DRAG_MIME) || event.dataTransfer?.getData("text/plain");
+function readDragPath(event: DragEvent, actions: CommandListActions): number[] | null {
+  if (!hasDragData(event, actions)) return null;
+  const raw = event.dataTransfer?.getData(DRAG_MIME);
   if (!raw) return null;
   try {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.every((n) => typeof n === "number") ? parsed : null;
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0
+      && parsed.every((n, i) => Number.isSafeInteger(n) && (i % 2 === 1 || n >= 0))
+      && JSON.stringify(parsed) === JSON.stringify(activeDragPath) ? parsed : null;
   } catch {
     return null;
   }

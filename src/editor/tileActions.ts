@@ -1,5 +1,6 @@
 import { store, type ProjectChangeCell } from "@/project/store";
-import { brushRelief, emptyRelief, reliefIsFlat, type ReliefBrushMode } from "@/project/relief/edit";
+import { brushRelief, type ReliefBrushMode } from "@/project/relief/edit";
+import { commitReliefEdit } from "@/editor/reliefActions";
 import { TILE } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, autotileGroupLayer, autotileGroupLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
@@ -237,18 +238,12 @@ export function paintRelief(
   x: number,
   y: number,
   mode: ReliefBrushMode,
-  opts: { radius?: number; level?: number; flattenTo?: number } = {},
+  opts: { radius?: number; level?: number; flattenTo?: number; topGrass?: boolean } = {},
 ): boolean {
   const map = store.getCurrent().maps[mapId];
   if (!map || !inMap(map, x, y)) return false;
-  const next = map.relief ? { ...map.relief, levels: map.relief.levels.slice() } : emptyRelief(map.width, map.height);
-  if (!brushRelief(next, x, y, mode, opts)) return false;
-  // 절벽은 칩셋과 무관하게 렌더러(@/project/relief/render)가 그림으로만 그린다. 타일 층은 건드리지 않는다.
-  store.updateMapTiles(mapId, (draft) => {
-    if (reliefIsFlat(next)) delete draft.relief;
-    else draft.relief = next;
-  }, { label: "높이 붓", relief: true });
-  return true;
+  // 절벽은 칩셋과 무관하게 렌더러(@/project/relief/render)가 그림으로만 그린다. 타일 층은 「윗면 풀」일 때만 고친다(reliefActions).
+  return commitReliefEdit(mapId, (relief) => brushRelief(relief, x, y, mode, opts), { topGrass: opts.topGrass ?? false, label: "높이 붓" });
 }
 
 export function toggleCollision(mapId: MapId, x: number, y: number): void {

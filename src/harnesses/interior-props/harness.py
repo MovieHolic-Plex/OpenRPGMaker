@@ -23,7 +23,7 @@ ENGINE = os.environ.get('PROP_HARNESS_ENGINE', 'codex')
 CODEX_MODEL = os.environ.get('PROP_HARNESS_CODEX_MODEL', 'gpt-6.1-sol')
 MODEL = os.environ.get('PROP_HARNESS_MODEL', CODEX_MODEL if ENGINE == 'codex' else 'claude-sonnet-5-5')
 EFFORT = os.environ.get('PROP_HARNESS_EFFORT', 'medium')
-MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '16'))   # codex 16 명(2026-10-01, 4시간 안에 335장 목표 — 12 명은 약 3.3시간, 429 0건). Claude 는 8 명에서 429 0건
+MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '32'))   # codex 32 명(2026-10-03 사용자 「32개로 높이고」). 그 전 16 명(2026-10-01, 4시간 안에 335장 목표 — 12 명은 약 3.3시간, 429 0건). Claude 는 8 명에서 429 0건
 TIMEOUT_S = int(os.environ.get('PROP_HARNESS_TIMEOUT', str(40 * 60)))
 REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'medium' if ENGINE == 'codex' else 'high')
 MAX_ATTEMPTS = int(os.environ.get('PROP_HARNESS_ATTEMPTS', '3'))   # 한 장 = 그리기 최대 3번(처음 + 다시 그리기 2번)
@@ -172,6 +172,12 @@ def _review_pack(r):
         im.save(os.path.join(pack, name))
     strip(ex('good') if deep else [os.path.join(r['root'], p) for p in REVIEW_REFS], 'ref-x8.png')
     if deep: strip(ex('bad'), 'side-bad-x8.png')
+    if o.get('blockout'):   # 후보 위에 밑그림 띠 경계(빨강 = 윗면 띠, 파랑 = 남쪽 면 띠)
+        from PIL import ImageDraw
+        ov = b.copy(); dr = ImageDraw.Draw(ov); (t0, t1), (f0, f1) = o['blockout']['top'], o['blockout']['front']
+        for y, col in ((t0, (230, 30, 30, 255)), (t1 + 1, (230, 30, 30, 255)), (f0, (40, 90, 230, 255)), (f1 + 1, (40, 90, 230, 255))):
+            dr.line([(0, y * 8), (ov.width, y * 8)], fill=col, width=2)
+        ov.save(os.path.join(pack, 'cand-blockout-x8.png'))
     cur = brief.current_choice(r['item'])
     for name, im in (('ctx-current.png', None if cur == 'v5' else cur_im), ('ctx-cand.png', c_im)):
         try:

@@ -9,14 +9,11 @@ export function openGraphicDialog(record: EnemyRecord, rerender: () => void): vo
     kind: "monster",
     title: "적 그래픽",
     currentId: current.monsterResourceId,
-    currentHue: current.graphicHue,
-    allowHue: true,
     allowClear: true,
     testidPrefix: "db-enemy-graphic-dialog",
     onConfirm: (result) => {
       updateDatabaseRecord("enemies", record.id, {
         monsterResourceId: result.resourceId || undefined,
-        graphicHue: result.graphicHue ?? 0,
       });
       rerender();
     },

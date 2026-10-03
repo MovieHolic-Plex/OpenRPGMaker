@@ -304,7 +304,6 @@ try {
     await page.setViewportSize(viewport); await seed('explicit', 'hue-only');
     const before = await snapshot();
     await page.getByTestId('db-enemy-section-basic-tab').click();
-    await page.getByTestId('db-enemy-preview-pause').click();
     await geometry('enemies', viewport);
     await capture(`enemies-${viewport.width}x${viewport.height}-top.png`);
     const controls = [];

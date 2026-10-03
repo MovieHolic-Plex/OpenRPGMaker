@@ -10,12 +10,12 @@ import {
 } from "@/assets/facesetFaceAssets";
 
 describe("얼굴 낱장 에셋 목록", () => {
-  it("83장의 시트를 16칸씩 쪼갠 1328개 낱장을 등록한다", () => {
-    expect(LEGACY_FACESET_SHEET_IDS).toHaveLength(83);
-    expect(FACESET_FACE_ASSETS).toHaveLength(1328);
+  it("81장의 시트를 16칸씩 쪼갠 1296개 낱장을 등록한다", () => {
+    expect(LEGACY_FACESET_SHEET_IDS).toHaveLength(81);
+    expect(FACESET_FACE_ASSETS).toHaveLength(1296);
 
     const ids = new Set(FACESET_FACE_ASSETS.map((face) => face.id));
-    expect(ids.size).toBe(1328);
+    expect(ids.size).toBe(1296);
     for (const sheetId of LEGACY_FACESET_SHEET_IDS) {
       expect(FACESET_FACE_ASSETS.filter((face) => face.sheetResourceId === sheetId)).toHaveLength(16);
     }
@@ -24,13 +24,13 @@ describe("얼굴 낱장 에셋 목록", () => {
     );
   });
 
-  it("생성 시리즈 낱장은 등록은 남기되 저작 목록에서는 뺀다", () => {
-    // hero-01-face / hero-02-face 두 시트 × 16칸 = 32장.
-    expect(GENERATED_FACESET_FACE_IDS.size).toBe(32);
+  it("삭제된 starter 낱장을 저작 목록에 등록하지 않는다", () => {
+    // 삭제된 두 starter 시트는 카탈로그에서도 제외한다.
+    expect(GENERATED_FACESET_FACE_IDS.size).toBe(0);
     for (const id of GENERATED_FACESET_FACE_IDS) {
       expect(id.startsWith("generated-actor-hero-")).toBe(true);
     }
-    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(1328 - GENERATED_FACESET_FACE_IDS.size);
+    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(1296 - GENERATED_FACESET_FACE_IDS.size);
     for (const face of AUTHORABLE_FACESET_FACE_ASSETS) {
       expect(GENERATED_FACESET_FACE_IDS.has(face.id)).toBe(false);
     }
@@ -39,7 +39,7 @@ describe("얼굴 낱장 에셋 목록", () => {
   it("시트 id + 칸 번호를 낱장 id 로 바꾼다", () => {
     expect(faceIdForSheetCell("easyrpg-faceset-actor1", 7)).toBe("easyrpg-faceset-actor1-07");
     expect(faceIdForSheetCell("easyrpg-faceset-people1", 15)).toBe("easyrpg-faceset-people1-15");
-    expect(faceIdForSheetCell("generated-actor-hero-01-face", 7)).toBe("generated-actor-hero-01-face-07");
+    expect(faceIdForSheetCell("generated-actor-hero-01-face", 7)).toBe("generated-actor-hero-01-face");
   });
 
   it("칸 번호가 없거나 범위를 벗어나면 0..15 로 가둔다", () => {
@@ -75,12 +75,7 @@ describe("얼굴 낱장 에셋 목록", () => {
     });
 
     const hero = FACESET_FACE_ASSETS.find((face) => face.id === "generated-actor-hero-01-face-00");
-    expect(hero).toMatchObject({
-      name: "hero-01-face 얼굴 1",
-      path: "assets/generated/starter/hero-01-face/00.png",
-      sheetResourceId: "generated-actor-hero-01-face",
-      sheetIndex: 0,
-    });
+    expect(hero).toBeUndefined();
   });
 });
 

@@ -65,6 +65,8 @@ export interface GameMap {
    * `src/project/mapLayers.ts` 의 remap/crop 이 같이 옮긴다. 권위: `src/project/relief/`.
    */
   relief?: ReliefData;
+  /** Terrain prop clusters with underlying upper tiles for move/delete restoration. */
+  doodadGroups?: import("../doodadGroups").DoodadGroup[];
   lowerTileStacks?: Record<number, number[]>;
   upperTileStacks?: Record<number, number[]>;
   events: GameEvent[];

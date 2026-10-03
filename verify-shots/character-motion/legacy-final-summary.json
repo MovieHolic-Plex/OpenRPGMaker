@@ -1,0 +1,116 @@
+{
+  "clips": 2,
+  "errors": [],
+  "rows": [
+    {
+      "skill": "skill_sword_slash",
+      "completed": true,
+      "poses": [
+        {
+          "at": 17273,
+          "actor": "actor_scout",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 17371,
+          "actor": "actor_scout",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 17474,
+          "actor": "actor_scout",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 17518,
+          "actor": "actor_scout",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 17551,
+          "actor": "actor_scout",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "at": 17609,
+          "actor": "actor_scout",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 17668,
+          "actor": "actor_scout",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 17706,
+          "actor": "actor_scout",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "at": 17752,
+          "actor": "actor_scout",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 17800,
+          "actor": "actor_scout",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 17858,
+          "actor": "actor_scout",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "at": 18188,
+          "actor": "actor_scout",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_fire",
+      "completed": true,
+      "poses": [
+        {
+          "at": 19452,
+          "actor": "actor_hero",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 19760,
+          "actor": "actor_hero",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 20074,
+          "actor": "actor_hero",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 20987,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "problems": []
+    }
+  ]
+}

@@ -135,27 +135,7 @@ export const DATABASE_FIELD_SUPPORT = Object.freeze([
     label: "상태 저항률",
     help: "장비가 제공하는 상태 저항 판정에 적용합니다.",
   },
-  {
-    field: "transparent",
-    owner: "enemy",
-    support: "authoringOnly",
-    label: "투명",
-    help: "데이터베이스 미리보기에서만 반투명하게 보입니다. 전투 렌더링에는 적용되지 않습니다.",
-  },
-  {
-    field: "flying",
-    owner: "enemy",
-    support: "authoringOnly",
-    label: "비행",
-    help: "현재 전투·필드 런타임이 읽지 않습니다. 분류용 메모로만 쓰입니다.",
-  },
-  {
-    field: "graphicHue",
-    owner: "enemy",
-    support: "authoringOnly",
-    label: "색조",
-    help: "데이터베이스 미리보기 색조입니다. 전투 스프라이트 색조는 지원하지 않습니다.",
-  },
+  // 적의 투명·비행·색조 공시는 그 칸을 화면에서 지우며(2026-10-02) 함께 지웠다.
 ] as const satisfies readonly DatabaseFieldSupportDescriptor[]);
 
 export function databaseFieldSupport(field: string): DatabaseFieldSupportDescriptor {

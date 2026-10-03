@@ -4410,7 +4410,7 @@
     96,
     64
    ],
-   "description": "검은 증기 기관차(6×2칸, 32px 솟음) — 동서로 길게 서서 동쪽을 향한다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 14~18행 — 보일러 등(둥근 원통을 위에서 본 넓은 면, 가운데 밝은 반사 줄)과 서쪽 기관사 칸 지붕이 동서로 긴 면으로 보이고, 그 위에 굴뚝·증기 돔·모래 돔의 둥근 입구·정수리가 보인다. 그 아래 남쪽 옆면은 18~22행: 기관사 칸 네모 창, 보일러 옆구리의 띠, 붉은 큰 동륜 셋과 은색 연결봉, 바퀴 아래 끝이 캔버스 바닥에 닿는다. 동쪽 끝에 둥근 연기실 앞문·노란 앞등·붉은 V자 배장기. 옆모습(측면도) 금지 — 지붕이 몇 행짜리 띠로만 보이면 틀린 그림이다. 레일은 그리지 않는다(선로 자동 타일 위에 놓는다).",
+   "description": "검은 증기 기관차(6×2칸, 32px 솟음) — 동서로 길게 서서 동쪽을 향한다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 20행(밑그림 y=10~29) — 보일러 등(둥근 원통을 위에서 본 넓은 면, 가운데 밝은 반사 줄)과 서쪽 기관사 칸 지붕이 동서로 긴 면으로 보이고, 그 위에 굴뚝·증기 돔·모래 돔의 둥근 입구·정수리가 보인다. 그 아래 남쪽 옆면은 밑그림 y=30~63(바퀴 포함): 기관사 칸 네모 창, 보일러 옆구리의 띠, 붉은 큰 동륜 셋과 은색 연결봉, 바퀴 아래 끝이 캔버스 바닥에 닿는다. 동쪽 끝에 둥근 연기실 앞문·노란 앞등·붉은 V자 배장기. 옆모습(측면도) 금지 — 지붕이 몇 행짜리 띠로만 보이면 틀린 그림이다. 레일은 그리지 않는다(선로 자동 타일 위에 놓는다).",
    "contextRoom": "dwarf",
    "tags": [
     "기차",
@@ -4428,7 +4428,18 @@
    "refs": [
     "magitek engine",
     "mine cart"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     10,
+     29
+    ],
+    "front": [
+     30,
+     63
+    ],
+    "cover": 0.7
+   }
   },
   {
    "id": "passenger coach",
@@ -4445,7 +4456,7 @@
     96,
     64
    ],
-   "description": "짙은 초록 나무 객차(6×2칸, 32px 솟음) — 동서로 길다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 16~20행 — 둥근 지붕을 위에서 본 긴 면(회청색, 가운데 줄에 작은 환기창 여섯이 위에서 보인다, 남쪽 가장자리로 갈수록 어두워진다). 그 아래 남쪽 옆면 18~20행: 노란 불빛 창 다섯·금색 띠, 양 끝 난간 달린 승강 발판, 바퀴 넷짜리 대차 둘, 바퀴 아래 끝이 캔버스 바닥에 닿는다. 옆모습(측면도) 금지. 레일은 그리지 않는다.",
+   "description": "짙은 초록 나무 객차(6×2칸, 32px 솟음) — 동서로 길다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 20행(밑그림 y=4~23) — 둥근 지붕을 위에서 본 긴 면(회청색, 가운데 줄에 작은 환기창 여섯이 위에서 보인다, 남쪽 가장자리로 갈수록 어두워진다). 그 아래 남쪽 옆면 밑그림 y=24~63: 노란 불빛 창 다섯·금색 띠, 양 끝 난간 달린 승강 발판, 바퀴 넷짜리 대차 둘, 바퀴 아래 끝이 캔버스 바닥에 닿는다. 옆모습(측면도) 금지. 레일은 그리지 않는다.",
    "contextRoom": "dwarf",
    "tags": [
     "기차",
@@ -4462,7 +4473,18 @@
    "refs": [
     "wardrobe",
     "mine cart"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     4,
+     23
+    ],
+    "front": [
+     24,
+     63
+    ],
+    "cover": 0.8
+   }
   },
   {
    "id": "coal wagon",
@@ -4479,7 +4501,7 @@
     64,
     48
    ],
-   "description": "지붕 없는 나무 화차에 석탄이 가득(4×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 16~20행 — 위가 열린 상자 안을 내려다본 석탄 더미(검은 덩이에 회색 반짝임, 가운데가 불룩)와 그 둘레의 나무 테두리 윗면(북쪽 테두리까지 보인다). 그 아래 남쪽 옆판 12~14행(쇠띠 세 줄)과 바퀴 넷, 바퀴 아래 끝이 캔버스 바닥에 닿는다. 옆모습 금지. 레일은 그리지 않는다.",
+   "description": "지붕 없는 나무 화차에 석탄이 가득(4×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=4~21) — 위가 열린 상자 안을 내려다본 석탄 더미(검은 덩이에 회색 반짝임, 가운데가 불룩)와 그 둘레의 나무 테두리 윗면(북쪽 테두리까지 보인다). 그 아래 남쪽 옆판 밑그림 y=22~47(쇠띠 세 줄)과 바퀴 넷, 바퀴 아래 끝이 캔버스 바닥에 닿는다. 옆모습 금지. 레일은 그리지 않는다.",
    "contextRoom": "magitek",
    "tags": [
     "기차",
@@ -4496,7 +4518,18 @@
    ],
    "refs": [
     "mine cart"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     4,
+     21
+    ],
+    "front": [
+     22,
+     47
+    ],
+    "cover": 0.8
+   }
   },
   {
    "id": "horse carriage",
@@ -4513,7 +4546,7 @@
     64,
     64
    ],
-   "description": "검은 칠에 금 장식 귀족 마차(4×2칸, 32px 솟음, 말은 없다) — 동쪽을 향한다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 12~14행 — 객실 지붕을 위에서 본 넓은 면(금 난간이 지붕 네 둘레를 두르는 게 보인다), 동쪽 마부석 좌판 윗면 4~5행과 앞으로 뻗은 끌채 두 개(위에서 본 막대). 그 아래 남쪽 옆면: 금 문장 문과 붉은 휘장 창, 앞 작은·뒤 큰 붉은 바퀴(살 보임), 바퀴 아래 끝이 캔버스 바닥에 닿는다. 옆모습 금지.",
+   "description": "검은 칠에 금 장식 귀족 마차(4×2칸, 32px 솟음, 말은 없다) — 동쪽을 향한다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 14행(밑그림 y=8~21) — 객실 지붕을 위에서 본 넓은 면(금 난간이 지붕 네 둘레를 두르는 게 보인다), 동쪽 마부석 좌판 윗면 4~5행과 앞으로 뻗은 끌채 두 개(위에서 본 막대). 그 아래 남쪽 옆면: 금 문장 문과 붉은 휘장 창, 앞 작은·뒤 큰 붉은 바퀴(살 보임), 바퀴 아래 끝이 캔버스 바닥에 닿는다. 옆모습 금지.",
    "contextRoom": "magitek",
    "tags": [
     "마구간",
@@ -4530,7 +4563,18 @@
    ],
    "refs": [
     "canopy bed"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     8,
+     21
+    ],
+    "front": [
+     22,
+     63
+    ],
+    "cover": 0.6
+   }
   },
   {
    "id": "dragon skeleton",
@@ -4547,7 +4591,7 @@
     80,
     80
    ],
-   "description": "박물관 전시 용 뼈대(5×3칸, 32px 솟음). 낮은 회색 돌 받침 — 받침의 꼭대기 윗면 22~26행(위에서 본 넓은 판, 남쪽 앞면 4~5행, 앞에 놋쇠 이름패). 그 위에 상아색 뼈대가 서쪽→동쪽으로 길게 엎드렸다: 동쪽 끝 뿔 달린 두개골(정수리·위턱 윗면이 보인다), 받침 위로 아치를 그리는 등뼈와 양옆으로 벌어진 갈비뼈(위에서 내려다보므로 좌우 갈비가 둘 다 보인다), 펼친 날개 뼈 한쪽이 위로 솟고, 꼬리는 서쪽 끝에서 말린다. 뼈는 밝은 상아·그늘 회갈 두세 단.",
+   "description": "박물관 전시 용 뼈대(5×3칸, 32px 솟음). 낮은 회색 돌 받침 — 받침의 꼭대기 윗면 24행(밑그림 y=51~74, 위에서 본 넓은 판, 남쪽 앞면 y=75~79, 앞에 놋쇠 이름패). 그 위에 상아색 뼈대가 서쪽→동쪽으로 길게 엎드렸다: 동쪽 끝 뿔 달린 두개골(정수리·위턱 윗면이 보인다), 받침 위로 아치를 그리는 등뼈와 양옆으로 벌어진 갈비뼈(위에서 내려다보므로 좌우 갈비가 둘 다 보인다), 펼친 날개 뼈 한쪽이 위로 솟고, 꼬리는 서쪽 끝에서 말린다. 뼈는 밝은 상아·그늘 회갈 두세 단.",
    "contextRoom": "dwarf",
    "tags": [
     "박물관",
@@ -4564,7 +4608,18 @@
    "refs": [
     "statue",
     "demon statue"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     51,
+     74
+    ],
+    "front": [
+     75,
+     79
+    ],
+    "cover": 0.85
+   }
   },
   {
    "id": "clock gears",
@@ -4581,7 +4636,7 @@
     64,
     64
    ],
-   "description": "시계탑 속 톱니 기계(4×2칸, 32px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 10~12행(검은 쇠 틀 윗판을 위에서 본 면, 축받이 구멍 셋). 틀 안에 크고 작은 놋쇠 톱니 셋이 세로로 서서 맞물렸고 톱니 윗날이 위에서 비스듬히 보인다(톱니 끝 밝은 점, 가운데 축 끝 둥근 못). 서쪽 끝에 위로 뻗은 굵은 축(축 끝 단면이 보인다), 동쪽 아래 진자 하나.",
+   "description": "시계탑 속 톱니 기계(4×2칸, 32px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 12행(밑그림 y=8~19, 검은 쇠 틀 윗판을 위에서 본 면, 축받이 구멍 셋). 틀 안에 크고 작은 놋쇠 톱니 셋이 세로로 서서 맞물렸고 톱니 윗날이 위에서 비스듬히 보인다(톱니 끝 밝은 점, 가운데 축 끝 둥근 못). 서쪽 끝에 위로 뻗은 굵은 축(축 끝 단면이 보인다), 동쪽 아래 진자 하나.",
    "contextRoom": "magitek",
    "tags": [
     "시계탑",
@@ -4598,7 +4653,18 @@
    "refs": [
     "magitek engine",
     "clock"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     8,
+     19
+    ],
+    "front": [
+     20,
+     63
+    ],
+    "cover": 0.7
+   }
   },
   {
    "id": "grand aquarium",
@@ -4615,7 +4681,7 @@
     64,
     48
    ],
-   "description": "홀 바닥에 따로 세운 큰 유리 수조(4×1칸, 32px 솟음) — 짙은 나무 받침대(앞면 서랍 줄) 위. 꼭대기 윗면 6~8행: 물 윗면(밝은 청록에 흰 물결 점)과 둘레의 나무 테두리가 위에서 보인다. 앞 유리 너머 푸른 물속에 노랑·빨강 물고기 넷, 초록 수초, 바닥 모래와 돌. 유리 앞면 왼쪽 위에 흰 반사 사선 둘.",
+   "description": "홀 바닥에 따로 세운 큰 유리 수조(4×1칸, 32px 솟음) — 짙은 나무 받침대(앞면 서랍 줄) 위. 꼭대기 윗면 8행(밑그림 y=8~15): 물 윗면(밝은 청록에 흰 물결 점)과 둘레의 나무 테두리가 위에서 보인다. 앞 유리 너머 푸른 물속에 노랑·빨강 물고기 넷, 초록 수초, 바닥 모래와 돌. 유리 앞면 왼쪽 위에 흰 반사 사선 둘.",
    "contextRoom": "manor",
    "tags": [
     "박물관",
@@ -4632,7 +4698,18 @@
    "refs": [
     "fish tank",
     "display 4x1"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     8,
+     15
+    ],
+    "front": [
+     16,
+     47
+    ],
+    "cover": 0.85
+   }
   },
   {
    "id": "knight colossus",
@@ -4649,7 +4726,7 @@
     32,
     80
    ],
-   "description": "회색 돌 거대 기사 석상(2×2칸, 48px 솟음). 2×2 돌 받침 — 받침의 꼭대기 윗면 10~12행(위에서 본 판), 남쪽 앞면 4~5행. 그 위에 투구 쓴 기사가 정면(남쪽)을 보고 서서 두 손으로 아래로 세운 큰 검 자루를 짚는다. 투구 정수리·어깨 갑옷 윗면이 위에서 보인다. 돌은 밝은 회색·그늘 세 단, 이끼 한두 점.",
+   "description": "회색 돌 거대 기사 석상(2×2칸, 48px 솟음). 2×2 돌 받침 — 받침의 꼭대기 윗면 12행(밑그림 y=62~73, 위에서 본 판), 남쪽 앞면 y=74~79. 그 위에 투구 쓴 기사가 정면(남쪽)을 보고 서서 두 손으로 아래로 세운 큰 검 자루를 짚는다. 투구 정수리·어깨 갑옷 윗면이 위에서 보인다. 돌은 밝은 회색·그늘 세 단, 이끼 한두 점.",
    "contextRoom": "throne",
    "tags": [
     "성",
@@ -4666,7 +4743,18 @@
    "refs": [
     "statue",
     "gym statue"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     62,
+     73
+    ],
+    "front": [
+     74,
+     79
+    ],
+    "cover": 0.85
+   }
   },
   {
    "id": "printing press",
@@ -4683,7 +4771,7 @@
     48,
     48
    ],
-   "description": "나무 틀 손 인쇄기(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 14~18행 — 낮고 넓은 인판대를 위에서 본 면에 흰 종이 한 장과 검은 활자판, 서쪽에 종이 더미(맨 윗장이 보인다), 동쪽에 잉크 단지(입구 타원). 가운데에 큰 나무 틀이 서고 틀 위에 굵은 쇠나사와 가로 손잡이 막대(틀 윗면 3행). 남쪽 앞면 6~8행.",
+   "description": "나무 틀 손 인쇄기(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 16행(밑그림 y=16~31) — 낮고 넓은 인판대를 위에서 본 면에 흰 종이 한 장과 검은 활자판, 서쪽에 종이 더미(맨 윗장이 보인다), 동쪽에 잉크 단지(입구 타원). 가운데에 큰 나무 틀이 서고 틀 위에 굵은 쇠나사와 가로 손잡이 막대(틀 윗면 3행). 남쪽 앞면(다리 포함) 밑그림 y=32~47.",
    "contextRoom": "tower",
    "tags": [
     "서재",
@@ -4700,7 +4788,18 @@
    "refs": [
     "work 3x2",
     "loom"
-   ]
+   ],
+   "blockout": {
+    "top": [
+     16,
+     31
+    ],
+    "front": [
+     32,
+     47
+    ],
+    "cover": 0.7
+   }
   },
   {
    "id": "steam boiler",
@@ -4717,7 +4816,7 @@
     48,
     64
    ],
-   "description": "리벳 박은 쇠 보일러(3×2칸, 32px 솟음) — 굵은 세로 원통. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 12~16행 — 둥근 위 뚜껑을 위에서 본 큰 타원(가운데 안전 밸브, 둘레 리벳 줄). 그 아래 원통 남쪽 면: 아래쪽에 붉게 빛나는 화실 문, 가운데 흰 압력계 둘과 놋쇠 밸브 바퀴, 옆으로 구부러진 배관이 서쪽으로 나가 바닥으로 내려간다. 쇠는 짙은 회색·녹 갈색 세 단.",
+   "description": "리벳 박은 쇠 보일러(3×2칸, 32px 솟음) — 굵은 세로 원통. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 16행(밑그림 y=4~19) — 둥근 위 뚜껑을 위에서 본 큰 타원(가운데 안전 밸브, 둘레 리벳 줄). 그 아래 원통 남쪽 면: 아래쪽에 붉게 빛나는 화실 문, 가운데 흰 압력계 둘과 놋쇠 밸브 바퀴, 옆으로 구부러진 배관이 서쪽으로 나가 바닥으로 내려간다. 쇠는 짙은 회색·녹 갈색 세 단.",
    "contextRoom": "magitek",
    "tags": [
     "기관실",
@@ -4733,6 +4832,2168 @@
    ],
    "refs": [
     "magitek engine"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     19
+    ],
+    "front": [
+     20,
+     63
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "coal tender",
+   "name_ko": "탄수차",
+   "name_en": "coal tender",
+   "category": "rail",
+   "category_ko": "기차·역",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "기관차 바로 뒤에 붙는 검은 쇠 탄수차(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=4~21) — 위가 열린 쇠 상자 안을 내려다본 석탄 더미(검은 덩이, 회색 반짝임)와 동쪽 끝 둥근 물탱크 뚜껑, 북쪽 테두리까지 보인다. 그 아래 남쪽 옆면 밑그림 y=22~47: 리벳 박은 쇠판, 붉은 띠, 바퀴 넷(바퀴 아래 끝이 캔버스 바닥에 닿는다). 옆모습 금지. 레일은 그리지 않는다.",
+   "contextRoom": "magitek",
+   "tags": [
+    "기차",
+    "역",
+    "차고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "증기 기관차 서쪽(뒤)에 바로 붙인다. 역·차고 선로 위.",
+   "pair": [
+    "steam locomotive",
+    "coal wagon"
+   ],
+   "refs": [
+    "mine cart"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     21
+    ],
+    "front": [
+     22,
+     47
+    ],
+    "cover": 0.8
+   }
+  },
+  {
+   "id": "boxcar",
+   "name_ko": "유개 화차",
+   "name_en": "boxcar",
+   "category": "rail",
+   "category_ko": "기차·역",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    64
+   ],
+   "description": "붉은 갈색 나무 유개 화차(4×2칸, 32px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=4~21) — 지붕을 위에서 본 긴 면(가운데 걷는 판자 줄이 동서로 이어지고, 남쪽 가장자리로 갈수록 어두워진다). 그 아래 남쪽 옆면 밑그림 y=22~63: 세로 판자 벽, 가운데 커다란 미닫이 문(쇠 레일·손잡이), 바퀴 넷짜리 대차 둘(바퀴 아래 끝이 캔버스 바닥). 옆모습 금지. 레일은 그리지 않는다.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "기차",
+    "화물역",
+    "차고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "화물역·차고 선로 위, 석탄 화차 옆.",
+   "pair": [
+    "coal wagon",
+    "steam locomotive"
+   ],
+   "refs": [
+    "crate",
+    "mine cart"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     21
+    ],
+    "front": [
+     22,
+     63
+    ],
+    "cover": 0.85
+   }
+  },
+  {
+   "id": "cargo wagon",
+   "name_ko": "짐마차",
+   "name_en": "cargo wagon",
+   "category": "stable",
+   "category_ko": "마구간",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    48
+   ],
+   "description": "나무 짐마차(4×2칸, 16px 솟음, 말은 없다) — 동쪽을 향한다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=6~23) — 낮은 난간을 두른 짐칸 바닥을 위에서 내려다본 면에 나무 궤짝 둘·밀가루 자루 셋·통 하나(각각 뚜껑·자루 입구가 위에서 보인다), 동쪽으로 뻗은 끌채 두 개. 그 아래 남쪽 옆면 밑그림 y=24~47: 짐칸 옆판(판자·쇠띠)과 살 보이는 나무 바퀴 둘, 바퀴 아래 끝이 캔버스 바닥에 닿는다. 옆모습 금지.",
+   "contextRoom": "magitek",
+   "tags": [
+    "마구간",
+    "창고",
+    "상단"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마구간·창고·상단 차고 안.",
+   "pair": [
+    "hay bale",
+    "crate",
+    "barrel"
+   ],
+   "refs": [
+    "crate",
+    "barrel",
+    "hay bale"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "grand piano",
+   "name_ko": "그랜드 피아노",
+   "name_en": "grand piano",
+   "category": "opera",
+   "category_ko": "극장",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "검은 옻칠 그랜드 피아노(3×2칸, 16px 솟음), 건반이 남쪽을 본다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 22행(밑그림 y=4~25) — 닫힌 뚜껑을 위에서 본 날개 모양 면(서쪽이 넓고 동쪽으로 둥글게 좁아진다, 흰 반사 한 줄), 그 남쪽 끝에 악보대. 그 아래 남쪽 면 밑그림 y=26~47: 흰·검은 건반 한 줄(건반 윗면이 보인다), 몸통 옆판, 굵은 다리 셋과 페달. 옆모습 금지.",
+   "contextRoom": "opera",
+   "tags": [
+    "극장",
+    "저택",
+    "무도회장"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "극장·저택 응접실·무도회장 한쪽.",
+   "pair": [
+    "piano"
+   ],
+   "refs": [
+    "piano"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     25
+    ],
+    "front": [
+     26,
+     47
+    ],
+    "cover": 0.65
+   }
+  },
+  {
+   "id": "giant cauldron",
+   "name_ko": "거대 가마솥",
+   "name_en": "giant cauldron",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "세 발 달린 검은 쇠 거대 가마솥(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=6~23) — 솥 입구를 위에서 본 큰 타원 테두리와 그 안의 끓는 초록 물약 면(거품 방울 셋, 밝은 김 한 줄기가 위로). 그 아래 남쪽 면 밑그림 y=24~47: 둥근 솥 배(쇠 명암 세 단, 리벳 한 줄), 짧은 다리 셋, 아래에 장작불(붉은·노란 불꽃). 옆모습 금지.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑",
+    "마녀",
+    "폐가"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마녀 오두막·마법사의 탑 작업실 가운데.",
+   "pair": [
+    "alembic"
+   ],
+   "refs": [
+    "cauldron"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.65
+   }
+  },
+  {
+   "id": "dragon nest",
+   "name_ko": "용 알 둥지",
+   "name_en": "dragon nest",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "굵은 가지와 뼈로 엮은 둥지에 놓인 용 알 셋(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 24행(밑그림 y=10~33) — 둥지 안쪽을 위에서 내려다본 오목한 면(짚·깃털), 그 안의 커다란 알 셋(붉은·청록·금빛 비늘 무늬, 정수리 반사)과 둥지 북쪽 테두리. 그 아래 남쪽 면 밑그림 y=34~47: 엮은 가지 겉면과 뼈 몇 개, 바닥에 흩어진 깃털. 옆모습 금지.",
+   "contextRoom": "throne",
+   "tags": [
+    "마왕성",
+    "용",
+    "보물고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마왕성 보물고·용의 둥지 방 가운데.",
+   "pair": [
+    "treasure hoard"
+   ],
+   "refs": [
+    "egg incubator",
+    "ore pile"
+   ],
+   "blockout": {
+    "top": [
+     10,
+     33
+    ],
+    "front": [
+     34,
+     47
+    ],
+    "cover": 0.7
+   }
+  },
+  {
+   "id": "treasure hoard",
+   "name_ko": "보물 더미",
+   "name_en": "treasure hoard",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    48
+   ],
+   "description": "금화가 산처럼 쌓인 보물 더미(4×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 26행(밑그림 y=8~33) — 위에서 본 넓게 퍼진 금화 더미 면(가운데가 봉긋, 금화 둥근 윗면들이 반짝인다) 위에 왕관·보석 박힌 잔·꽂힌 검 한 자루(검은 위로 솟는다). 그 아래 남쪽 면 밑그림 y=34~47: 무너져 흘러내린 금화 비탈과 반쯤 묻힌 작은 보물상자. 옆모습 금지.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "마왕성",
+    "보물고",
+    "용"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마왕성·용의 굴 보물고 가운데.",
+   "pair": [
+    "dragon nest",
+    "treasure chest big"
+   ],
+   "refs": [
+    "coin pile",
+    "treasure chest big"
+   ],
+   "blockout": {
+    "top": [
+     8,
+     33
+    ],
+    "front": [
+     34,
+     47
+    ],
+    "cover": 0.7
+   }
+  },
+  {
+   "id": "billiard table",
+   "name_ko": "당구대",
+   "name_en": "billiard table",
+   "category": "casino",
+   "category_ko": "카지노",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    48
+   ],
+   "description": "짙은 나무 틀 당구대(4×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 26행(밑그림 y=8~33) — 초록 천을 위에서 본 넓은 판, 둘레 나무 쿠션 테두리와 네 귀퉁이·긴 변 가운데 구멍 여섯, 천 위에 공 몇 개(흰·빨강·노랑, 반사점)와 큐 한 자루. 그 아래 남쪽 면 밑그림 y=34~47: 나무 앞판(조각 무늬)과 굵은 다리 셋. 옆모습 금지.",
+   "contextRoom": "mead",
+   "tags": [
+    "카지노",
+    "저택",
+    "오락실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "카지노·저택 오락실 가운데, 사방으로 돌 수 있게.",
+   "pair": [
+    "roulette table"
+   ],
+   "refs": [
+    "felt 2x2",
+    "roulette table"
+   ],
+   "blockout": {
+    "top": [
+     8,
+     33
+    ],
+    "front": [
+     34,
+     47
+    ],
+    "cover": 0.85
+   }
+  },
+  {
+   "id": "royal bed",
+   "name_ko": "왕실 침대",
+   "name_en": "royal bed",
+   "category": "castle",
+   "category_ko": "성",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 3
+   },
+   "canvas": [
+    48,
+    80
+   ],
+   "description": "왕과 왕비의 큰 침대(3×3칸, 32px 솟음), 머리가 북쪽. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 48행(밑그림 y=20~67) — 위에서 본 침대 면: 북쪽에 흰 베개 둘, 그 아래 금 수 놓은 붉은 이불이 남쪽으로 길게 덮이고 접힌 끝단이 보인다. 그 위(y<20)에 금 장식 높은 머리판과 양옆 기둥 머리. 그 아래 남쪽 면 밑그림 y=68~79: 발치판과 이불이 늘어진 앞자락, 짧은 다리. 옆모습 금지.",
+   "contextRoom": "throne",
+   "tags": [
+    "성",
+    "침실",
+    "왕실"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "성의 왕실 침실 북쪽 벽 가운데.",
+   "pair": [
+    "canopy bed"
+   ],
+   "refs": [
+    "canopy bed",
+    "double bed red"
+   ],
+   "blockout": {
+    "top": [
+     20,
+     67
+    ],
+    "front": [
+     68,
+     79
+    ],
+    "cover": 0.85
+   }
+  },
+  {
+   "id": "giant crystal",
+   "name_ko": "거대 수정",
+   "name_en": "giant crystal",
+   "category": "mine",
+   "category_ko": "광산",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "바위에서 솟은 푸른 거대 수정 무리(3×2칸, 32px 솟음). 바위 받침의 꼭대기 윗면 14행(밑그림 y=40~53) — 위에서 본 울퉁불퉁한 바위 윗면(작은 수정 조각들이 박혀 반짝인다), 남쪽 면 y=54~63. 그 위로 크고 작은 수정 기둥 다섯이 비스듬히 솟는다(가장 큰 것이 가운데, 끝이 뾰족, 각 기둥의 위쪽 면이 밝고 남쪽 면이 어둡다, 흰 반사 사선). 은은한 청록 빛 번짐.",
+   "contextRoom": "mine",
+   "tags": [
+    "광산",
+    "동굴",
+    "마법"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "광산 깊은 곳·수정 동굴·마법 연구실.",
+   "pair": [
+    "mana crystal"
+   ],
+   "refs": [
+    "mana crystal",
+    "ore pile"
+   ],
+   "blockout": {
+    "top": [
+     40,
+     53
+    ],
+    "front": [
+     54,
+     63
+    ],
+    "cover": 0.7
+   }
+  },
+  {
+   "id": "great telescope",
+   "name_ko": "거대 망원경",
+   "name_en": "great telescope",
+   "category": "tower",
+   "category_ko": "마법사의 탑",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "돌림 받침 위에 놓인 놋쇠 거대 망원경(3×2칸, 32px 솟음). 받침의 **꼭대기 윗면 18행(밑그림 y=34~51)** — 위에서 본 둥근 나무 돌림판(가장자리 놋쇠 테, 눈금 홈)과 그 가운데 쇠 축받이. 그 아래 남쪽 면 밑그림 y=52~63: 돌림판 옆두께와 세 다리. 받침 위로 놋쇠 경통이 북동쪽 하늘로 비스듬히 솟는다(경통 윗면이 밝고 아랫면이 어둡다, 끝의 렌즈 테, 작은 보조 망원경과 접안부가 남서쪽 아래로). 옆모습 금지.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법사의 탑",
+    "천문대",
+    "관측실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "마법사의 탑 꼭대기 관측실·천문대 가운데.",
+   "pair": [
+    "telescope",
+    "star chart"
+   ],
+   "refs": [
+    "telescope"
+   ],
+   "blockout": {
+    "top": [
+     34,
+     51
+    ],
+    "front": [
+     52,
+     63
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "weaving loom",
+   "name_ko": "베틀",
+   "name_en": "weaving loom",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "나무 베틀(3×2칸, 16px 솟음), 짜는 사람이 남쪽에 앉는다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 22행(밑그림 y=6~27) — 위에서 본 네모난 나무 틀 안에 북쪽→남쪽으로 팽팽히 걸린 날실(밝은 실 여러 줄), 남쪽 끝에 감긴 붉은 천 두루마리와 북(배 모양 나무)이 날실 위에 얹혀 있다. 그 아래 남쪽 면 밑그림 y=28~47: 앞 가로대·발판 둘·네 다리. 옆모습 금지.",
+   "contextRoom": "mead",
+   "tags": [
+    "농가",
+    "살림",
+    "상점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "농가·여관 안채·직물 상점 구석.",
+   "pair": [
+    "spinning wheel"
+   ],
+   "refs": [
+    "spinning wheel",
+    "work 2x1"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     27
+    ],
+    "front": [
+     28,
+     47
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "modern sofa",
+   "name_ko": "천 소파",
+   "name_en": "modern sofa",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 3,
+    "h": 1
+   },
+   "canvas": [
+    48,
+    32
+   ],
+   "description": "3인용 천 소파(3×1칸, 16px 솟음), 등받이가 북쪽. 남쪽 위에서 내려다본 3/4: 쿠션 셋으로 나뉜 좌판 윗면 6행, 그 뒤 등받이 윗면 3행, 양끝 팔걸이 윗면 3행. 남쪽 면은 좌판 앞 두께와 짧은 나무 다리.",
+   "contextRoom": "inn",
+   "tags": [
+    "현대",
+    "거실",
+    "집"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "거실 북쪽 벽 앞, 낮은 탁자 맞은편.",
+   "pair": [
+    "modern low table",
+    "crt tv stand"
+   ],
+   "refs": []
+  },
+  {
+   "id": "modern armchair",
+   "name_ko": "1인 소파",
+   "name_en": "modern armchair",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "1인용 천 안락의자(16px 솟음), 남쪽을 본다. 좌판 윗면 5행, 등받이 윗면 3행, 양 팔걸이 윗면 2행. 같은 천 소파와 같은 색.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "거실"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "거실 소파 옆.",
+   "pair": [
+    "modern sofa"
+   ],
+   "refs": [
+    "armchair"
+   ]
+  },
+  {
+   "id": "crt tv stand",
+   "name_ko": "브라운관 TV 장",
+   "name_en": "crt tv stand",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "낮은 나무 TV 장 위에 뒤가 두툼한 브라운관 TV(16px 솟음). TV 꼭대기 윗면 3행, 화면은 남쪽을 보는 회청색 유리(반사 사선 하나), TV 앞 받침의 장 윗면 3행, 장 앞면에 유리문 둘.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "거실",
+    "집"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "거실 북쪽 벽, 소파 맞은편.",
+   "pair": [
+    "modern sofa"
+   ],
+   "refs": [
+    "sideboard 2x1"
+   ]
+  },
+  {
+   "id": "modern low table",
+   "name_ko": "거실 낮은 탁자",
+   "name_en": "modern low table",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "유리 상판 낮은 거실 탁자(높이 12px) — 상판 윗면 8행(맑은 유리에 비친 밝은 사선, 리모컨 하나와 잡지 한 권), 그 아래 남쪽 면에 나무 테와 짧은 다리.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "거실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "소파와 TV 사이.",
+   "pair": [
+    "modern sofa"
+   ],
+   "refs": []
+  },
+  {
+   "id": "fridge",
+   "name_ko": "냉장고",
+   "name_en": "fridge",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 2도어 냉장고(16px 솟음). 꼭대기 윗면 3행(옅은 회색), 남쪽 면은 위 냉동실 문·아래 냉장실 문, 문마다 세로 손잡이와 문 사이 가는 틈.",
+   "contextRoom": "bakery",
+   "tags": [
+    "현대",
+    "부엌",
+    "집"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "부엌 북쪽 벽, 싱크대 옆.",
+   "pair": [
+    "modern sink",
+    "gas stove"
+   ],
+   "refs": [
+    "cupboard"
+   ]
+  },
+  {
+   "id": "modern sink",
+   "name_ko": "싱크대",
+   "name_en": "modern sink",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "스테인리스 싱크대(2칸, 16px 솟음). 조리대 윗면 6행 — 서쪽에 오목한 개수대(안쪽 그늘)와 은빛 수도꼭지, 동쪽에 도마. 남쪽 면에 여닫이 문짝 둘.",
+   "contextRoom": "bakery",
+   "tags": [
+    "현대",
+    "부엌"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "부엌 북쪽 벽.",
+   "pair": [
+    "fridge",
+    "gas stove"
+   ],
+   "refs": [
+    "counter 2x1"
+   ]
+  },
+  {
+   "id": "gas stove",
+   "name_ko": "가스레인지",
+   "name_en": "gas stove",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "가스레인지와 오븐(16px 솟음). 윗면 5행에 검은 화구 둘(쇠 받침 십자), 남쪽 면에 손잡이 달린 오븐 문과 손잡이 다이얼 줄.",
+   "contextRoom": "bakery",
+   "tags": [
+    "현대",
+    "부엌"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "부엌 북쪽 벽, 싱크대 옆.",
+   "pair": [
+    "modern sink"
+   ],
+   "refs": []
+  },
+  {
+   "id": "washing machine",
+   "name_ko": "세탁기",
+   "name_en": "washing machine",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 드럼 세탁기(16px 솟음). 꼭대기 윗면 3행(뒤쪽에 다이얼 띠), 남쪽 면 가운데 둥근 유리 문(안의 물빛 회색).",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "욕실",
+    "집"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "욕실·다용도실 벽.",
+   "pair": [
+    "modern bathtub"
+   ],
+   "refs": [
+    "washing tub"
+   ]
+  },
+  {
+   "id": "modern bed",
+   "name_ko": "침대(현대)",
+   "name_en": "modern bed",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "현대식 더블 침대(2×2칸, 16px 솟음), 머리가 북쪽. 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 26행 — 북쪽 흰 베개 둘, 그 아래 무늬 없는 하늘색 이불이 남쪽으로 덮이고 접힌 끝단. 그 위(북쪽)에 낮은 나무 머리판 윗면 3행. 남쪽 면은 매트리스 옆 두께와 나무 틀.",
+   "contextRoom": "inn",
+   "tags": [
+    "현대",
+    "침실",
+    "집"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "침실 북쪽 벽 가운데.",
+   "pair": [
+    "modern desk"
+   ],
+   "refs": [
+    "bed blue",
+    "double bed red"
+   ]
+  },
+  {
+   "id": "modern desk",
+   "name_ko": "공부 책상",
+   "name_en": "modern desk",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "나무 공부 책상(2칸, 16px 솟음). 상판 윗면 6행에 꺾인 스탠드 하나·펼친 공책·연필통, 남쪽 면에 서랍 셋.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "침실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "아이 방 창가 북쪽 벽.",
+   "pair": [
+    "modern bed",
+    "modern bookshelf"
+   ],
+   "refs": [
+    "work 2x1"
+   ]
+  },
+  {
+   "id": "modern bookshelf",
+   "name_ko": "책장(현대)",
+   "name_en": "modern bookshelf",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 칠 나무 책장(16px 솟음). 꼭대기 윗판 윗면 3행, 칸 둘마다 선반판 윗면 2행과 색색 만화책 등.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "방"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "방 북쪽 벽.",
+   "pair": [
+    "modern desk"
+   ],
+   "refs": [
+    "bookshelf 3w"
+   ]
+  },
+  {
+   "id": "floor lamp",
+   "name_ko": "스탠드 조명",
+   "name_en": "floor lamp",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "거실 플로어 스탠드(16px 솟음). 꼭대기 천 갓의 윗면 타원 3행(안쪽 따뜻한 빛), 가는 쇠 기둥, 둥근 받침 윗면 2행.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "거실"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "소파 옆 구석.",
+   "pair": [
+    "modern sofa"
+   ],
+   "refs": []
+  },
+  {
+   "id": "modern bathtub",
+   "name_ko": "욕조(현대)",
+   "name_en": "modern bathtub",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "흰 법랑 욕조(2칸, 16px 솟음). 테두리 윗면과 그 안 물 면을 위에서 본 윗면 9행(물은 옅은 하늘색, 밝은 물결 한 줄), 서쪽 벽에 수도꼭지, 남쪽 면은 매끈한 흰 옆판.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "욕실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "욕실 북쪽 벽.",
+   "pair": [
+    "modern toilet",
+    "washing machine"
+   ],
+   "refs": [
+    "bathtub"
+   ]
+  },
+  {
+   "id": "modern toilet",
+   "name_ko": "양변기",
+   "name_en": "modern toilet",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 양변기(16px 솟음). 뒤 물탱크 윗면 3행과 손잡이, 그 앞 닫힌 뚜껑 윗면 5행(타원), 남쪽 면은 둥근 몸통과 받침.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "욕실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "욕실 구석.",
+   "pair": [
+    "modern bathtub"
+   ],
+   "refs": [
+    "wooden toilet"
+   ]
+  },
+  {
+   "id": "modern washbasin",
+   "name_ko": "세면대",
+   "name_en": "modern washbasin",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 세면대 장(16px 솟음). 윗면 5행에 오목한 둥근 세면기와 은빛 수도꼭지, 칫솔 컵. 남쪽 면은 여닫이 문 하나.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "욕실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "욕실 북쪽 벽.",
+   "pair": [
+    "modern toilet"
+   ],
+   "refs": [
+    "washbasin"
+   ]
+  },
+  {
+   "id": "shoe cabinet",
+   "name_ko": "신발장",
+   "name_en": "shoe cabinet",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "현관 나무 신발장(2칸, 16px 솟음). 꼭대기 윗면 4행에 작은 화분과 열쇠 접시, 남쪽 면에 환기 구멍 줄이 난 문 둘. 앞 바닥에 운동화 한 켤레.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "현관",
+    "집"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "현관 안쪽 벽.",
+   "pair": [
+    "doormat"
+   ],
+   "refs": [
+    "sideboard 2x1"
+   ]
+  },
+  {
+   "id": "modern dining table",
+   "name_ko": "식탁(현대)",
+   "name_en": "modern dining table",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "4인용 나무 식탁(2×2칸, 다리 높이만큼 아래 열림). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 밝은 나무 상판 위에 체크 식탁보 띠·밥그릇 둘·간장병, 그 아래 남쪽 면에 상판 두께 2행과 다리 넷.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "부엌",
+    "집"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "부엌 가운데.",
+   "pair": [
+    "fridge"
+   ],
+   "refs": [
+    "dining 2x2"
+   ]
+  },
+  {
+   "id": "wall clock modern",
+   "name_ko": "벽시계(현대)",
+   "name_en": "wall clock modern",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "둥근 흰 벽시계(벽면 윗줄) — 검은 테, 숫자 대신 굵은 눈금 넷, 바늘 둘.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "거실",
+    "교실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "거실·교실 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "wall clock"
+   ]
+  },
+  {
+   "id": "air conditioner",
+   "name_ko": "벽걸이 에어컨",
+   "name_en": "air conditioner",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "흰 벽걸이 에어컨(벽면 윗줄 2칸) — 아래쪽에 비스듬한 바람 날개, 오른쪽 끝 초록 불빛 한 점, 아랫면 그늘 1행.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "방"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "방 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "tapestry"
+   ]
+  },
+  {
+   "id": "living rug",
+   "name_ko": "거실 러그",
+   "name_en": "living rug",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "flat",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "거실 바닥 러그(2×2칸, 밟을 수 있음) — 베이지 바탕에 굵은 주황 테두리와 가운데 마름모 무늬, 끝에 짧은 술.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "거실"
+   ],
+   "use": [
+    "walk"
+   ],
+   "place": "소파 앞 바닥.",
+   "pair": [
+    "modern sofa"
+   ],
+   "refs": [
+    "green rug"
+   ]
+  },
+  {
+   "id": "office pc desk",
+   "name_ko": "컴퓨터 책상",
+   "name_en": "office pc desk",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "회색 철제 사무 책상(2칸, 16px 솟음). 상판 윗면 6행 위에 뒤가 두툼한 베이지 모니터(모니터 윗면 2행, 화면은 남쪽 — 푸른 빛), 키보드, 서류 더미. 남쪽 면에 서랍 장.",
+   "contextRoom": "magitek",
+   "tags": [
+    "현대",
+    "사무실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "사무실 책상 줄.",
+   "pair": [
+    "office chair"
+   ],
+   "refs": [
+    "work 2x1"
+   ]
+  },
+  {
+   "id": "office chair",
+   "name_ko": "사무용 의자",
+   "name_en": "office chair",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "검은 회전 사무 의자(16px 솟음), 북쪽을 본다(등이 남쪽). 등받이 윗면 2행, 좌판 윗면 4행이 등받이 옆으로 보이고, 가운데 기둥과 바퀴 다섯 갈래 다리.",
+   "contextRoom": "magitek",
+   "tags": [
+    "현대",
+    "사무실"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "컴퓨터 책상 앞(남쪽).",
+   "pair": [
+    "office pc desk"
+   ],
+   "refs": []
+  },
+  {
+   "id": "filing cabinet",
+   "name_ko": "서류 캐비닛",
+   "name_en": "filing cabinet",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "회녹색 철제 서류 캐비닛(16px 솟음). 꼭대기 윗면 3행, 남쪽 면에 서랍 넷(서랍마다 손잡이와 이름표 칸).",
+   "contextRoom": "magitek",
+   "tags": [
+    "현대",
+    "사무실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "사무실 벽.",
+   "pair": [
+    "office pc desk"
+   ],
+   "refs": []
+  },
+  {
+   "id": "copy machine",
+   "name_ko": "복사기",
+   "name_en": "copy machine",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "큰 복사기(2칸, 16px 솟음). 윗면 6행에 덮개(옅은 회색)와 오른쪽 버튼판(작은 초록 화면), 왼쪽에 종이 받이. 남쪽 면에 용지 서랍 둘.",
+   "contextRoom": "magitek",
+   "tags": [
+    "현대",
+    "사무실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "사무실 구석.",
+   "pair": [
+    "filing cabinet"
+   ],
+   "refs": []
+  },
+  {
+   "id": "water cooler",
+   "name_ko": "정수기",
+   "name_en": "water cooler",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "생수통 정수기(32px 솟음). 맨 위 뒤집힌 파란 생수통(둥근 바닥 윗면 3행, 물빛 반사), 흰 몸통에 꼭지 둘(빨강·파랑), 아래 종이컵 걸이.",
+   "contextRoom": "magitek",
+   "tags": [
+    "현대",
+    "사무실",
+    "병원"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "사무실·병원 대기실 벽.",
+   "pair": [
+    "office pc desk"
+   ],
+   "refs": [
+    "water jar"
+   ]
+  },
+  {
+   "id": "server rack",
+   "name_ko": "서버 랙",
+   "name_en": "server rack",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "검은 서버 랙(32px 솟음). 꼭대기 윗면 3행(통풍 구멍 줄), 남쪽 면은 칸칸이 쌓인 장비, 장비마다 작은 초록·주황 불빛 점.",
+   "contextRoom": "magitek",
+   "tags": [
+    "현대",
+    "사무실",
+    "연구소"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "사무실 안쪽 전산실.",
+   "pair": [
+    "office pc desk"
+   ],
+   "refs": []
+  },
+  {
+   "id": "whiteboard",
+   "name_ko": "화이트보드",
+   "name_en": "whiteboard",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "흰 화이트보드(벽면 윗줄 2칸) — 은색 테, 파란 막대그래프와 빨간 화살표, 아래 받침에 마커 둘.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "사무실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "회의실·교실 벽.",
+   "pair": [
+    "meeting table"
+   ],
+   "refs": [
+    "notice board"
+   ]
+  },
+  {
+   "id": "meeting table",
+   "name_ko": "회의 탁자",
+   "name_en": "meeting table",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "긴 회의 탁자(3×2칸, 16px 솟음). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 24행(밑그림 y=6~29) — 짙은 나무 상판을 위에서 본 넓은 면에 서류철 둘·물컵 셋·가운데 전화기. 그 아래 남쪽 면 밑그림 y=30~47: 상판 두께 2행과 판 다리 둘(검은 쇠). 옆모습 금지.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "사무실",
+    "회의실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "회의실 가운데, 둘레에 사무용 의자.",
+   "pair": [
+    "office chair",
+    "whiteboard"
+   ],
+   "refs": [
+    "dining 4x2"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     29
+    ],
+    "front": [
+     30,
+     47
+    ],
+    "cover": 0.85
+   }
+  },
+  {
+   "id": "office plant",
+   "name_ko": "사무실 화분",
+   "name_en": "office plant",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 원통 화분에 키 큰 고무나무(16px 솟음). 넓은 잎 덩어리 윗면이 밝고, 화분 입구 타원 윗면 2행에 흙이 보인다.",
+   "contextRoom": "magitek",
+   "tags": [
+    "현대",
+    "사무실",
+    "로비"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "사무실 구석·로비.",
+   "pair": [],
+   "refs": []
+  },
+  {
+   "id": "cork board",
+   "name_ko": "코르크 게시판",
+   "name_en": "cork board",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "갈색 코르크 게시판(벽면 윗줄 2칸) — 나무 테, 압정으로 꽂은 쪽지 다섯 장(흰·노랑·분홍)과 사진 한 장.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "사무실",
+    "교실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "사무실·교실 벽.",
+   "pair": [
+    "whiteboard"
+   ],
+   "refs": [
+    "notice board"
+   ]
+  },
+  {
+   "id": "store shelf",
+   "name_ko": "편의점 진열대",
+   "name_en": "store shelf",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "흰 철제 편의점 진열대(2칸, 32px 솟음). 꼭대기 윗판 윗면 3행, 선반 셋마다 선반판 윗면 2행과 그 위 과자 봉지·컵라면·통조림(각 상품의 윗면이 보인다).",
+   "contextRoom": "tailor",
+   "tags": [
+    "현대",
+    "편의점",
+    "가게"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "편의점 벽 따라.",
+   "pair": [
+    "drink fridge",
+    "register counter"
+   ],
+   "refs": []
+  },
+  {
+   "id": "drink fridge",
+   "name_ko": "음료 냉장고",
+   "name_en": "drink fridge",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "유리문 음료 냉장고(2칸, 32px 솟음). 꼭대기 윗면 3행(위 광고판 띠), 남쪽 면은 유리문 둘 너머 칸칸이 선 캔·병(빨강·파랑·초록), 유리 반사 사선과 세로 손잡이.",
+   "contextRoom": "tailor",
+   "tags": [
+    "현대",
+    "편의점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "편의점 안쪽 벽.",
+   "pair": [
+    "store shelf"
+   ],
+   "refs": [
+    "cupboard"
+   ]
+  },
+  {
+   "id": "register counter",
+   "name_ko": "계산대",
+   "name_en": "register counter",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "편의점 계산대(2칸, 16px 솟음). 상판 윗면 6행 위에 금전등록기(작은 초록 화면)·바코드 판·껌 진열대, 남쪽 면에 가게 띠 색 판.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "편의점",
+    "가게"
+   ],
+   "use": [
+    "counter"
+   ],
+   "place": "편의점 입구 옆.",
+   "pair": [
+    "store shelf"
+   ],
+   "refs": [
+    "counter 2x1"
+   ]
+  },
+  {
+   "id": "vending machine",
+   "name_ko": "자판기",
+   "name_en": "vending machine",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "빨간 음료 자판기(32px 솟음). 꼭대기 윗면 3행, 남쪽 면 위쪽 유리창 안 견본 캔 두 줄, 그 아래 고르는 단추 줄·동전 넣는 곳, 맨 아래 꺼내는 칸.",
+   "contextRoom": "zozo",
+   "tags": [
+    "현대",
+    "가게",
+    "역"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "거리 가게 앞·복도·역.",
+   "pair": [
+    "store shelf"
+   ],
+   "refs": []
+  },
+  {
+   "id": "magazine rack",
+   "name_ko": "잡지 꽂이",
+   "name_en": "magazine rack",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "철사 잡지 꽂이(16px 솟음). 비스듬한 칸 셋에 표지 색이 다른 잡지(앞 표지가 남쪽 위로 보인다), 꼭대기 윗면 2행.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "편의점"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "편의점 창가.",
+   "pair": [
+    "store shelf"
+   ],
+   "refs": []
+  },
+  {
+   "id": "ice cream freezer",
+   "name_ko": "아이스크림 냉동고",
+   "name_en": "ice cream freezer",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "흰 가로 냉동고(2칸, 16px 솟음). 미닫이 유리 뚜껑 윗면 9행 너머 색색 아이스크림 상자가 위에서 보인다(유리 반사 사선), 남쪽 면에 상표 띠.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "편의점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "편의점 바닥 가운데.",
+   "pair": [
+    "register counter"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "arcade cabinet",
+   "name_ko": "오락기",
+   "name_en": "arcade cabinet",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "세로형 오락기(32px 솟음). 꼭대기 윗면 2행과 빛나는 제목판, 남쪽을 보는 화면(푸른 빛과 작은 별), 그 아래 조작판 윗면 3행(조이스틱 하나·단추 둘), 동전 넣는 곳.",
+   "contextRoom": "casino",
+   "tags": [
+    "현대",
+    "오락실"
+   ],
+   "use": [
+    "play"
+   ],
+   "place": "오락실 벽 따라.",
+   "pair": [
+    "claw machine"
+   ],
+   "refs": [
+    "slot machine"
+   ]
+  },
+  {
+   "id": "claw machine",
+   "name_ko": "인형 뽑기",
+   "name_en": "claw machine",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "인형 뽑기 기계(2칸, 32px 솟음). 꼭대기 윗면 3행(분홍 지붕), 유리 상자 안 색색 인형 더미의 윗면이 위에서 보이고 은빛 집게가 매달림, 아래 조작판 윗면 3행과 경품 구멍.",
+   "contextRoom": "casino",
+   "tags": [
+    "현대",
+    "오락실"
+   ],
+   "use": [
+    "play"
+   ],
+   "place": "오락실·쇼핑몰.",
+   "pair": [
+    "arcade cabinet"
+   ],
+   "refs": [
+    "slot machine"
+   ]
+  },
+  {
+   "id": "atm machine",
+   "name_ko": "현금 인출기",
+   "name_en": "atm machine",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "은행 현금 인출기(16px 솟음). 꼭대기 윗면 2행, 남쪽 면 위쪽 비스듬한 화면(초록 빛), 그 아래 숫자판 윗면 2행과 카드 구멍·지폐 나오는 곳.",
+   "contextRoom": "zozo",
+   "tags": [
+    "현대",
+    "은행",
+    "편의점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "은행·편의점 구석.",
+   "pair": [
+    "register counter"
+   ],
+   "refs": []
+  },
+  {
+   "id": "student desk set",
+   "name_ko": "학생 책상",
+   "name_en": "student desk set",
+   "category": "m_school",
+   "category_ko": "현대 학교",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "학생 책상과 의자 한 벌(16px 솟음), 남쪽에 의자. 책상 상판 윗면 5행(밝은 나무, 연필 홈), 쇠 다리, 남쪽 의자 좌판 윗면 2행과 등받이.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "학교",
+    "교실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "교실에 줄 맞춰.",
+   "pair": [
+    "teacher lectern",
+    "green chalkboard"
+   ],
+   "refs": [
+    "school desk",
+    "desk 1x1"
+   ]
+  },
+  {
+   "id": "teacher lectern",
+   "name_ko": "교탁",
+   "name_en": "teacher lectern",
+   "category": "m_school",
+   "category_ko": "현대 학교",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 교탁(16px 솟음). 비스듬한 윗판 윗면 4행에 출석부와 분필 상자, 남쪽 면은 판자 앞판.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "학교",
+    "교실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "교실 칠판 앞 가운데.",
+   "pair": [
+    "green chalkboard",
+    "student desk set"
+   ],
+   "refs": [
+    "lectern"
+   ]
+  },
+  {
+   "id": "green chalkboard",
+   "name_ko": "칠판",
+   "name_en": "green chalkboard",
+   "category": "m_school",
+   "category_ko": "현대 학교",
+   "kind": "hang",
+   "footprint": {
+    "w": 3,
+    "h": 0
+   },
+   "canvas": [
+    48,
+    16
+   ],
+   "description": "초록 칠판(벽면 윗줄 3칸) — 나무 테, 흰 분필 글씨 몇 줄과 동그라미 그림, 아래 분필 받침에 지우개.",
+   "contextRoom": "tower",
+   "tags": [
+    "현대",
+    "학교",
+    "교실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "교실 앞 벽.",
+   "pair": [
+    "teacher lectern"
+   ],
+   "refs": [
+    "notice board"
+   ]
+  },
+  {
+   "id": "school locker",
+   "name_ko": "사물함",
+   "name_en": "school locker",
+   "category": "m_school",
+   "category_ko": "현대 학교",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "하늘색 철제 사물함(32px 솟음). 꼭대기 윗면 3행, 남쪽 면에 문 둘(위·아래), 문마다 환기 틈 셋과 작은 손잡이.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "학교",
+    "복도"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "복도·탈의실 벽 따라.",
+   "pair": [
+    "student desk set"
+   ],
+   "refs": []
+  },
+  {
+   "id": "vaulting box",
+   "name_ko": "뜀틀",
+   "name_en": "vaulting box",
+   "category": "m_school",
+   "category_ko": "현대 학교",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "체육관 나무 뜀틀(2칸, 16px 솟음). 맨 위 흰 가죽 덮개 윗면 6행, 그 아래 층층이 쌓인 나무 단 넷(층마다 손잡이 구멍).",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "학교",
+    "체육관"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "체육관 바닥.",
+   "pair": [],
+   "refs": [
+    "crate"
+   ]
+  },
+  {
+   "id": "lab table",
+   "name_ko": "실험대",
+   "name_en": "lab table",
+   "category": "m_school",
+   "category_ko": "현대 학교",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "과학실 실험대(2칸, 16px 솟음). 검은 상판 윗면 6행 위에 비커·플라스크(초록 물)·알코올 램프·현미경, 남쪽 면은 흰 수납장 문 둘.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "학교",
+    "연구소"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "과학실 가운데.",
+   "pair": [
+    "student desk set"
+   ],
+   "refs": [
+    "alembic"
+   ]
+  },
+  {
+   "id": "hospital bed",
+   "name_ko": "병원 침대",
+   "name_en": "hospital bed",
+   "category": "m_hospital",
+   "category_ko": "현대 병원",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "흰 철제 병원 침대(1×2칸 남북, 16px 솟음), 머리가 북쪽. 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 26행 — 북쪽 흰 베개, 그 아래 연두빛 이불이 남쪽으로 덮인다. 머리판·발판은 은빛 쇠 난간(윗면 2행), 남쪽 면에 작은 바퀴.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "병원",
+    "병실"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "병실 벽 따라 줄로.",
+   "pair": [
+    "iv stand",
+    "medicine cabinet modern"
+   ],
+   "refs": [
+    "prison cot"
+   ]
+  },
+  {
+   "id": "iv stand",
+   "name_ko": "링거 거치대",
+   "name_en": "iv stand",
+   "category": "m_hospital",
+   "category_ko": "현대 병원",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "은빛 링거 거치대(16px 솟음). 꼭대기 갈고리에 투명 수액 봉지(물빛), 가는 줄이 늘어지고, 아래 다섯 갈래 바퀴 받침.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "병원"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "병원 침대 머리 옆.",
+   "pair": [
+    "hospital bed"
+   ],
+   "refs": [
+    "coat rack"
+   ]
+  },
+  {
+   "id": "medicine cabinet modern",
+   "name_ko": "약장(현대)",
+   "name_en": "medicine cabinet modern",
+   "category": "m_hospital",
+   "category_ko": "현대 병원",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 철제 약장(16px 솟음). 꼭대기 윗면 3행에 빨간 십자, 남쪽 면 유리문 너머 선반의 약병·상자.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "병원"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "병원 진료실 벽.",
+   "pair": [
+    "hospital bed"
+   ],
+   "refs": []
+  },
+  {
+   "id": "wheelchair",
+   "name_ko": "휠체어",
+   "name_en": "wheelchair",
+   "category": "m_hospital",
+   "category_ko": "현대 병원",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "휠체어(16px 솟음), 남쪽을 본다. 파란 천 좌판 윗면 4행과 등받이, 양옆 큰 바퀴(둥근 테·살), 앞 발판.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "병원"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "병원 복도·대기실.",
+   "pair": [
+    "hospital bed"
+   ],
+   "refs": []
+  },
+  {
+   "id": "hospital reception",
+   "name_ko": "병원 접수대",
+   "name_en": "hospital reception",
+   "category": "m_hospital",
+   "category_ko": "현대 병원",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 1
+   },
+   "canvas": [
+    48,
+    32
+   ],
+   "description": "흰 병원 접수대(3칸, 16px 솟음). 상판 윗면 6행 위에 서류철·모니터 하나·호출 종, 남쪽 면은 연두색 띠를 두른 흰 판과 빨간 십자 표시.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "병원",
+    "로비"
+   ],
+   "use": [
+    "counter"
+   ],
+   "place": "병원 현관 맞은편.",
+   "pair": [
+    "water cooler"
+   ],
+   "refs": [
+    "counter 4x1"
    ]
   }
  ]

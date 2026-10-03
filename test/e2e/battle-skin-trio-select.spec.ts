@@ -1,26 +1,30 @@
-// 전투 방식(도트 측면 스킨들 · 몬스터 대치 pokemon — 정면 rm2000 은 2026-10-02 삭제)이 자료집 시스템 탭에서 골라지고,
+// 전투 방식(도트 측면 retro2003 · 몬스터 대치 pokemon — 정면 rm2000 은 2026-10-02 삭제)이 자료집 전투 화면 탭에서 골라지고,
 // 고른 대로 전투 화면이 뜬다 — 감독 지시(2026-09-03): "자료집에서 설정 가능하게, 세 방식으로".
+// 2026-10-02: 스킨 드롭다운 대신 「전투 방식」 두 단추(db-battle-method-side / -monster)가 화면과 규칙을 같이 정한다.
 // 사진은 verify-shots/battle-skin-trio/ 에 남긴다(PR 증거).
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { ACTIVE_BATTLE_SKIN_IDS, BATTLE_SKINS } from "@/battle/skins/registry";
+import type { BattleSkinId } from "@/battle/skins/types";
+import { BATTLE_METHOD_LABELS, type BattleMethod } from "@/project/battleMethod";
 import { seedReferenceBattleProject, waitForActorCommand } from "./battleReferenceProject";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { DATABASE_TAB_SPECS, applyDatabaseChanges, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
 const OUT = "verify-shots/battle-skin-trio";
-const SYSTEM_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "system")!;
-const SELECT = "db-field-system-battle-ui-style";
+const BATTLE_SCREEN_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "battle-screen")!;
+const METHOD_CARD = "db-battle-method-card";
 
-/** 시스템 탭은 카드 격자(스튜디오)로 열리고 「시작 설정」 절은 카드/절 내비를 눌러야 펼쳐진다 — 드롭다운은 그 안에 있다. */
-async function openSystemTab(page: Page): Promise<void> {
+/** 활성 스킨 → 그 스킨을 고르는 전투 방식. */
+function methodForSkin(skin: BattleSkinId): BattleMethod {
+  return skin === "pokemon" ? "monster" : "side";
+}
+
+/** 전투 방식 단추는 전투 화면 탭 맨 위 「전투 방식」 카드에 있다. */
+async function openBattleScreenTab(page: Page): Promise<void> {
   await openDatabase(page);
-  await switchDatabaseTab(page, SYSTEM_TAB);
-  await expect(page.getByTestId("db-system-studio")).toBeVisible();
-  const nav = page.getByTestId("db-system-nav-startup");
-  if (await nav.isVisible()) await nav.click();
-  else await page.getByTestId("db-system-studio-card-startup-open").click();
-  await expect(page.getByTestId(SELECT)).toBeVisible();
+  await switchDatabaseTab(page, BATTLE_SCREEN_TAB);
+  await expect(page.getByTestId(METHOD_CARD)).toBeVisible();
 }
 
 async function startBattle(page: Page): Promise<void> {
@@ -41,19 +45,16 @@ test.beforeEach(async ({ page }) => {
   await seedReferenceBattleProject(page);
 });
 
-test("시스템 탭의 전투 UI 스타일 드롭다운은 활성 스킨 셋만 내놓는다", async ({ page }) => {
-  await openSystemTab(page);
-  const select = page.getByTestId(SELECT);
-  const options = await select.locator("option").evaluateAll((nodes) =>
-    nodes.map((node) => ({ value: (node as HTMLOptionElement).value, label: node.textContent ?? "" })),
-  );
-  expect(options.map((option) => option.value)).toEqual([...ACTIVE_BATTLE_SKIN_IDS]);
-  expect(options.map((option) => option.label)).toEqual(ACTIVE_BATTLE_SKIN_IDS.map((id) => BATTLE_SKINS[id].label));
-  // 사진: 닫힌 <select> 는 항목이 안 보이므로 size 를 항목 수로 펼쳐 찍고 되돌린다.
-  await select.evaluate((node, size) => { (node as HTMLSelectElement).size = size; }, options.length);
-  const fieldset = select.locator("xpath=ancestor::fieldset[1]");
-  await fieldset.screenshot({ path: `${OUT}/00-system-tab-battle-ui-style.png` });
-  await select.evaluate((node) => { (node as HTMLSelectElement).size = 0; });
+test("전투 화면 탭의 전투 방식은 도트 측면·몬스터 대치 두 단추만 내놓는다", async ({ page }) => {
+  await openBattleScreenTab(page);
+  const card = page.getByTestId(METHOD_CARD);
+  const options = card.locator('[role="radio"]');
+  const testIds = await options.evaluateAll((nodes) => nodes.map((node) => (node as HTMLElement).dataset.testid ?? ""));
+  expect(testIds).toEqual(ACTIVE_BATTLE_SKIN_IDS.map((skin) => `db-battle-method-${methodForSkin(skin)}`));
+  for (const skin of ACTIVE_BATTLE_SKIN_IDS) {
+    await expect(page.getByTestId(`db-battle-method-${methodForSkin(skin)}`)).toContainText(BATTLE_METHOD_LABELS[methodForSkin(skin)]);
+  }
+  await card.screenshot({ path: `${OUT}/00-battle-screen-method.png` });
 });
 
 for (const skin of ACTIVE_BATTLE_SKIN_IDS) {
@@ -63,8 +64,9 @@ for (const skin of ACTIVE_BATTLE_SKIN_IDS) {
   // 화면은 하네스 캡처(scripts/qa/probe-battle-anim-frames.mjs --skin=…)로 대신 증명한다. 시딩이 고쳐지면 fixme 를 걷어라.
   test.fixme(`고른 방식대로 전투가 뜬다 — ${skin}(${BATTLE_SKINS[skin].label})`, async ({ page }) => {
     test.setTimeout(120_000);
-    await openSystemTab(page);
-    await page.getByTestId(SELECT).selectOption(skin);
+    await openBattleScreenTab(page);
+    await page.getByTestId(`db-battle-method-${methodForSkin(skin)}`).click();
+    await expect(page.getByTestId(`db-battle-method-${methodForSkin(skin)}`)).toHaveAttribute("aria-checked", "true");
     await applyDatabaseChanges(page);
     await page.getByTestId("database-footer-ok").click();
     await expect(page.getByTestId("database-modal")).toBeHidden();

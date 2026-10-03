@@ -5,6 +5,256 @@
 
 <!-- releases -->
 
+## 0.94.0 — 2026-10-03
+
+### 기능
+
+- **harness** — jp-city — 일본 도시 주택가·역·공원·신사 도트 후보 하네스 (항목 40, modern3, pick 까지) (`98dd020`)
+
+### 수정
+
+- **editor** — 팀 상태 배지와 지형 도구 막대 겹침 방지 (#1942) (`dc463d0`)
+
+### 문서
+
+- **agents** — jp-city 하네스 등록 + 웨이브 구동기 (`85bc923`)
+
+## 0.93.0 — 2026-10-03
+
+### 기능
+
+- **editor** — 자동 경사로·다리·지형 붓·군집과 통행 미리보기 (#1937) (`0592bbd`)
+- pass interview execution tasks to the assistant internally (`b60d50a`)
+
+### 수정
+
+- **project** — 기존 작업 로드를 막는 공용 grass 속성 누락 보충 (#1940) (`d494f59`)
+
+## 0.92.1 — 2026-10-03
+
+### 성능
+
+- **jp-city** — build_jp_city_building 스키마 축소 1808→1505 토큰 (`d7f7845`)
+
+### 테스트
+
+- **ai** — 도구 색인 글자 상한을 실측 6,100 으로 (main 5,959 → jp_city 도구 +53) (`6aa8a2a`)
+
+## 0.92.0 — 2026-10-03
+
+### 기능
+
+- **jp-city** — M3 건물 조립 도구(build_jp_city_building) + roads 블록 굽기 병합 (`28f7421`)
+- **jp-city** — M4 일본식 도로 키트 블록 — 키트 29·새 칸 65 (생활도로·간선 4차선·건널목·지하도·표지) (`d488344`)
+
+## 0.91.1 — 2026-10-03
+
+### 수정
+
+- **relief** — 언덕 통로를 단 없는 흙 경사면으로 연결 (#1931) (`c13a619`)
+
+## 0.91.0 — 2026-10-03
+
+### 기능
+
+- **jp-city** — M1 번들 타일셋 jp_city 배선 (새 프로젝트·기존 프로젝트·계열 oprn-jp) (`b39837a`)
+- **jp-city** — M1 굽기 — 시트 48열 3616칸·키트 176·그룹 169·오토타일 17, 자리 키 핀 (`5434559`)
+- **jp-city** — M2-B 선형 오토타일 10세트 (블록담·생울타리·철망·가드레일·선로·차선·횡단보도·점자블록) (`4e5bdbe`)
+- **jp-city** — M2-A 지면 오토타일 7세트 (연석·생활도로·잔디·자갈·광장·연못·수로) (`cbea3ab`)
+- **jp-city** — M0 jpkit 이식 — 저장소 안에서 시트(2880칸)·카탈로그·지구 6장 재현, 행인 제외, 글자 122자 굽기 (`706c6b3`)
+
+### 수정
+
+- **relief** — 기본 계단을 풀과 흙벽 대신 돌 디딤판으로 렌더 (#1928) (`89891d8`)
+
+## 0.90.0 — 2026-10-03
+
+### 기능
+
+- **editor** — 러프 높이 붓과 지형지물 도구 막대 (#1925) (`739f33e`)
+
+## 0.89.0 — 2026-10-03
+
+### 기능
+
+- **modern-city** — 참고문서 49편·예제 도시 맵 60x60·지역 등록·도달성/변조 검증 (`35b74fe`)
+- **modern-city** — 번들 타일셋 modern_city — 굽기(bake_tileset.py)·시트 9998칸·키트 575·번들 배선 (`cc42b8f`)
+
+### 수정
+
+- **assets** — keep retired RTP category lists typed when empty (`7ca33af`)
+
+### 문서
+
+- openwiki INDEX 재생성(modern-city) (`e5e3099`)
+- **modern-city** — 굽기 절·위키 색인 (`b36f889`)
+
+### 잡무
+
+- **modern-chipset** — 합격 후보 사본 tiledata/modern-city/sources + run_town.sh (qa-runs 없이 재현) (`5551d83`)
+- **modern-chipset** — 하네스 브랜치(도시 조립·에셋 JSON·modern4 팔레트)를 origin/main 위로 이식 (`611281f`)
+
+## 0.88.0 — 2026-10-03
+
+### 기능
+
+- **assets** — redraw hydra with native RM2003 pixel poses (`1b297f4`)
+
+### 수정
+
+- **assets** — 비어 있는 EasyRPG 전투·몬스터 목록을 필터 대신 빈 배열로 둔다 (`10fcde9`)
+- **assets** — remove rejected starter artwork and runtime references (`615f97d`)
+- **battle** — 옛 전투 그림을 deprecated/ 로 옮기고 도트·포켓몬 그림만 쓴다 (`a0176dd`)
+
+### 성능
+
+- **harness** — 고르는 화면 그림을 미리 굽고 다음 기물을 미리 받는다 (`33ab5b5`)
+
+## 0.87.0 — 2026-10-03
+
+### 기능
+
+- **palette** — 팔레트 시안 미리보기 둘 — 실내 바닥·벽 타일을 v5.pal 로, 몬스터 140종 공통 팔레트(32·48·64색) (`cbed552`)
+
+## 0.86.0 — 2026-10-03
+
+### 기능
+
+- **interior-props** — 현대 실내 기물 50종 명세(batch6) — 집·사무실·가게·학교·병원 (`7680a24`)
+- **interior-props** — 카드 두 번 누르면 확정, 물건 이름은 가운데 위에 크게 (`e105700`)
+
+### 잡무
+
+- **interior-props** — 동시 작업 16 → 32 (`392acca`)
+
+## 0.85.0 — 2026-10-03
+
+### 기능
+
+- **interior-props** — 고르는 화면 기본을 「방 안」만으로 — 방 그림을 크게, 같은 그림인 둘째 벌은 숨김 (`e3326d5`)
+- **interior-props** — 테두리 두 벌을 따로 카드로 — 한 판 10장(1 · 1′ …)을 한눈에 보고 누른다 (`a515705`)
+- **interior-props** — 고르는 화면에서 후보마다 테두리 두 벌 — 전부 / 꼭 필요한 곳만 (`75f3376`)
+- add cinematic lobby to desktop start screen (`90a6296`)
+
+### CI
+
+- 타입체크 힙을 7GB로 올린다 (`4d6a6aa`)
+
+## 0.84.1 — 2026-10-03
+
+### 수정
+
+- protect committed event draft references during database deletion (`e35b8a3`)
+- preserve event drag ownership and legacy page behavior (`40c193b`)
+- bound repeated common event graph traversal (`6afe31d`)
+- preserve nested event references when deleting database records (`135de86`)
+- protect database skill and actor references on deletion (`1d83e6b`)
+- report actual database saves and common event recursion (`85489fb`)
+
+### 문서
+
+- record database and event editor audit findings (`9a20d46`)
+
+## 0.84.0 — 2026-10-03
+
+### 기능
+
+- **assistant** — 몬스터가 다가와 공격하는 컷신은 차셋 NPC 대신 staged 그림 배우로 유도 (`010a4ab`)
+- **cutscene** — 대화창 위치 옵션(줄별 position·화면 기준 회피) + staged 에 맵 배우·애니메이션·장소 이동, 충격 연출 도구를 staged 로 통합 (`32cdf8f`)
+- **assistant** — 그림 연출 소재 규칙·주인공 자동 맞춤·animation beat·암전 종료 거부 (`441580e`)
+- **cutscene** — 선언형 연출에 turn·animate(게임 전투 애니메이션)·번들 그림 배우 추가 (`5439ab4`)
+- **cutscene** — 선언형 연출에 효과음·화면 전환·ghost 배우·flash 색 추가, 이세계→포켓몬풍 데모 빌더 (`2da787a`)
+- **assistant** — 그림 생성 승격 시 선언형 연출·미리보기를 함께 얹고 도구 설명 키워드 보강 (`a3515b1`)
+- **cutscene** — 선언형 연출 script_cutscene_staged + 그림 style(game|illustration) (`9a4f411`)
+
+### 수정
+
+- **ai** — 창이 좁은 모델의 폴백에 전체 카탈로그를 보내지 않고, find_tools 가 설명 첫 문장 일치를 먼저 준다 (`5d8d300`)
+- **battle** — 이도류는 무기마다 그 무기의 공격력으로 치고, 「전투 명령 변경」은 지금 메뉴 위에서 더하고 뺀다 (`31927ac`)
+- **assistant** — 현대 맵 거부 메시지에 배경 그림+staged 대안 안내 (`774fa78`)
+- **assistant** — action 생략한 그림 beat 도 손 연출 거부 대상 (`9641f9f`)
+- **assistant** — 몬스터 공격 컷신 거부가 eventId·actorId 별칭도 잡도록 (`c50657c`)
+- **assistant** — 몬스터 그림 생성 거부(게임 도트 유도), showAnimation target 경고 제거 (`295370e`)
+- **assistant** — staged 주인공은 Actor1~4 만, 몬스터·소품 그림을 손으로 show 하는 컷신 거부 (`e0d9f01`)
+
+### 테스트
+
+- **ai** — 세션을 통째로 돌리는 툴 노출 테스트에 60초 한도 (`650f839`)
+- main 에서 원래 빨갛던 테스트를 지금 제품에 맞춘다 (`af9f68e`)
+
+## 0.83.0 — 2026-10-03
+
+### 기능
+
+- adapt battle choreography to every bundled character and current equipment (`0bda2ad`)
+- **db** — 도트 측면 전투 배경은 종류로 고른다 + 전투 정리 잔여 (`d313d81`)
+- add 32 shared battle motion programs and native gimmick rules (`1ea47cd`)
+
+### 수정
+
+- preserve casting and legacy combos with character motion evidence (`5efdd00`)
+- branch battle previews and impact effects by action outcome (`6566f07`)
+- synchronize battle contacts and replace sliding motion recovery (`5892e2c`)
+- preserve separate contacts in multi-hit battle motion previews (`8b9a58f`)
+
+## 0.82.0 — 2026-10-02
+
+### 기능
+
+- **interior-props** — 선 게이트 — 바깥 테 1칸·테가 안쪽보다 어둡다(검사·작업지시서·좋은/나쁜 예), 시험 기물 2종(거대 망원경·베틀) (`661fbdd`)
+- **interior-props** — 선 문법 측정·보정 스크립트(외곽 두께·외곽 없음·외곽 색·빛 방향·안쪽 선 굵기) (`a177e68`)
+
+### 잡무
+
+- **interior-props** — 대형 기물 둘째 묶음 고른 결과(picks.json) (`15886ca`)
+
+## 0.81.0 — 2026-10-02
+
+### 기능
+
+- **battle** — RM2003 이도류·공통 이벤트 명령·배우별 전투 명령 (`a6f4d01`)
+
+### 수정
+
+- **db** — 자료집 전투 정리 후속 — 숨긴 칸 경고·조수 스키마·규칙 단독 변경·deprecated 표식 (`99a0bdb`)
+
+## 0.80.0 — 2026-10-02
+
+### 깨지는 변경
+
+- **battle** — 창 색만 다르던 측면 스킨 여섯을 지우고 전투 스킨을 retro2003·pokemon 둘로 줄인다 (`2145473`)
+
+### 정리
+
+- **battle** — 창 색만 다르던 측면 스킨 여섯을 지우고 전투 스킨을 retro2003·pokemon 둘로 줄인다 (`2145473`)
+
+## 0.79.0 — 2026-10-02
+
+### 기능
+
+- **interior-props** — 대형 기물 둘째 묶음 10종 명세(batch4, 3/4 밑그림 포함) — 탄수차·유개 화차·짐마차·그랜드 피아노·거대 가마솥·용 알 둥지·보물 더미·당구대·왕실 침대·거대 수정 (`ff288fa`)
+
+### 정리
+
+- **db** — 자료집 전투 정리 — 전투 방식 두 가지·전투 화면 탭·안 쓰는 칸 삭제 (`1c9dff2`)
+
+## 0.78.0 — 2026-10-02
+
+### 기능
+
+- **interior-props** — 대형 깊은 기물 3/4 밑그림(blockout) — 명세가 윗면·남쪽 면 띠를 정하고 검사가 채움을 잰다 (`274ff70`)
+
+### 수정
+
+- **interior-props** — 밑그림이 있는 기물의 꼭대기 규칙은 주 윗면(밑그림 띠)에 — 솟는 부품은 행 수 규칙 밖 (`3d1abcb`)
+- **interior-props** — 밑그림 절은 깊이와 상관없이 blockout 이 있으면 싣는다 (`e97697b`)
+
+## 0.77.0 — 2026-10-02
+
+### 기능
+
+- **worldmap-kit** — 월드맵 아이콘 세계관 세트 14개 + 하네스 일괄 받기 (#1888) (`38bcb25`)
+
 ## 0.76.0 — 2026-10-02
 
 ### 기능

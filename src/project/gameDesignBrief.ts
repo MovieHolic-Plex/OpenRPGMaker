@@ -1,3 +1,4 @@
+import { gameDesignExecutionContext } from "./gameDesignExecution";
 import { assert, requireRecord, requireString } from "./io/guards";
 
 export const GAME_PRESET_IDS = [
@@ -74,5 +75,6 @@ export function gameDesignBriefContext(brief: GameDesignBrief | undefined): stri
     "아래 확정 요약은 인터뷰 이후 저자가 수정할 수 있는 최신 기획이다. 고정 프리셋의 톤·배경·체크리스트보다 우선한다. 이후 사용자의 명시적 변경 요청은 반영한다.",
     "기획에 맞는 핵심 행동 → 진행 → 사건의 결과를 실제로 연결하고, 첫 제작 범위 안에서 완주 가능한 구간을 만든다. 추천안을 사용자 원문으로 바꾸어 주장하지 않는다.",
     JSON.stringify({ preset: brief.presetId, summary: brief.summary, answers: brief.answers }),
+    gameDesignExecutionContext(brief),
   ].join("\n");
 }

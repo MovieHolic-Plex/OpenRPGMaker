@@ -368,22 +368,19 @@ def dragon(slug,n):
   xx=min(cell-4,sx+i*3);yy=sy-i*3-f//2;ell(p,(xx-2,yy-2,xx+1,yy+1),smoke,None)
  return clean(p)
 
+# The detailed hydra source is shared with its standalone authoring command.
+_HAND_HYDRA = None
+
 def hydra(n):
- p=Pen(96,palette('hydra-three'));dx,dy,arm,stride,f=P[n];base=92
- if n=='dead':
-  p.poly([(6,88),(17,80),(44,81),(56,85),(77,88),(82,92),(12,92)],'b','o')
-  for i in range(3):dragon_head(p,31+i*19,77+i%2*3,n,12,4)
-  return clean(p)
- x=40+dx//2;y=69+dy
- cap(p,[(x-13,y+4),(16,y+9),(7,y+f)],5,'b',lit='l');quadlegs(p,(x,y),n,base,w=6)
- ell(p,(x-21,y-14,x+24,y+14),'b');p.poly([(x+5,y-7),(x+20,y-6),(x+22,y+8),(x+4,y+12)],'c','o')
- for yy in (y-4,y+2,y+8):p.line([(x+7,yy),(x+19,yy+1)],'a')
- # Three spatially separate necks and horned jaws, independent phase per head.
- for i,(hx,hy) in enumerate(((50,18),(68,36),(70,59))):
-  hx+=dx//3+(arm//4 if i==1 else 0);hy+=dy+((f if i==0 else -f) if n.startswith('idle') else arm//3)
-  cap(p,[(x+4,y-4),(x+3+i*7,y-23+i*6),(hx-8,hy+7),(hx,hy+6)],8,'s' if i==0 else 'b',lit='l')
-  dragon_head(p,hx,hy,'attack' if n!='hit' else n,15,6)
- return clean(p)
+ global _HAND_HYDRA
+ if _HAND_HYDRA is None:
+  import importlib.util
+  source = Path(__file__).resolve().parents[2] / 'hydra-three.py'
+  spec = importlib.util.spec_from_file_location('hand_hydra_three', source)
+  _HAND_HYDRA = importlib.util.module_from_spec(spec)
+  spec.loader.exec_module(_HAND_HYDRA)
+ from types import SimpleNamespace
+ return SimpleNamespace(im=_HAND_HYDRA.draw(n))
 
 HUMANS={'zombie-01','orc-01','harpy-01','kappa-01','goblin-brute','kobold-digger','mage-rogue','knight-fallen','ogre-club','imp-mischief','angel-fallen'}
 

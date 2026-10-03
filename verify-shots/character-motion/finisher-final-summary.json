@@ -1,0 +1,43 @@
+{
+  "clips": 1,
+  "errors": [],
+  "rows": [
+    {
+      "skill": "skill_mage_starfall",
+      "completed": true,
+      "poses": [
+        {
+          "at": 15565,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 16392,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 16705,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 16791,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 17042,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "problems": []
+    }
+  ]
+}

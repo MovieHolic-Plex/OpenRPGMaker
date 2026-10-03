@@ -64,7 +64,9 @@ export function projectDatabaseReferenceMessage(project: Project, collection: Da
       if (actors.length) return namedReferenceMessage("주인공", actors, "이 스킬을 사용 중입니다.");
       const classes = project.database.classes.filter((record) => record.learnedSkills.some((skill) => skill.skillId === id));
       if (classes.length) return namedReferenceMessage("직업", classes, "이 스킬을 배웁니다.");
-      const items = project.database.items.filter((record) => record.skillId === id);
+      const commandClasses = project.database.classes.filter((record) => record.battleCommands.some((command) => command.skillId === id));
+      if (commandClasses.length) return namedReferenceMessage("직업 전투 명령", commandClasses, "이 스킬을 사용 중입니다.");
+      const items = project.database.items.filter((record) => record.skillId === id || record.learnedSkillId === id || record.activateSkillId === id);
       if (items.length) return namedReferenceMessage("아이템", items, "이 스킬을 사용 중입니다.");
       const equipment = project.database.equipment.filter((record) => record.skillId === id || record.usableAsItemSkillId === id);
       if (equipment.length) return namedReferenceMessage("장비", equipment, "이 스킬을 사용 중입니다.");
@@ -77,10 +79,17 @@ export function projectDatabaseReferenceMessage(project: Project, collection: Da
       if (troops.length) return namedReferenceMessage("적 그룹", troops, "이 몬스터를 사용 중입니다.");
       return commandLocationMessage(project, "enemies", id, "몬스터");
     }
-    case "actors":
+    case "actors": {
       if (project.system.startActorIds.includes(id)) return "시스템 시작 파티가 이 주인공을 사용 중입니다.";
       if (project.session.partyActorIds.includes(id)) return "현재 파티가 이 주인공을 사용 중입니다.";
+      const classes = project.database.classes.filter((record) => record.equipmentPermissions.actorIds.includes(id));
+      if (classes.length) return namedReferenceMessage("직업 장비 권한", classes, "이 주인공을 사용 중입니다.");
+      const equipment = project.database.equipment.filter((record) => record.equippableActorIds.includes(id));
+      if (equipment.length) return namedReferenceMessage("장비", equipment, "이 주인공을 착용 허용 대상으로 사용 중입니다.");
+      const items = project.database.items.filter((record) => record.usableActorIds.includes(id) || record.equipmentProfile.equippableActorIds.includes(id));
+      if (items.length) return namedReferenceMessage("아이템/장비 효과", items, "이 주인공을 사용 허용 대상으로 사용 중입니다.");
       return commandLocationMessage(project, "actors", id, "주인공");
+    }
     case "classes": {
       const referrers = project.database.classes.filter((record) => record.id !== id &&
         (record.promotions?.some((promotion) => promotion.toClassId === id) || record.equipmentPermissions.classIds.includes(id)));

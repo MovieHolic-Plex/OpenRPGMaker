@@ -72,7 +72,7 @@ describe("battleAnimationDom.animationCell — 시트 배율", () => {
       normalizeBattleAnimationRecord({
         id: "anim_test",
         name: "테스트",
-        resourceId: "easyrpg-battle-blow",
+        resourceId: "scarloxy-battle-anim-scratch",
         sheet,
         frames: [{ cells: [{ pattern: 0, x: 4, y: -8, zoom: 100, opacity: 255, visible: true }] }],
       }),

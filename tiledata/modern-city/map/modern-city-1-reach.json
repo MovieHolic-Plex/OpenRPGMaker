@@ -1,0 +1,19 @@
+{
+ "engine": "src/project/collision.ts canMove / isPassable",
+ "seed": 1,
+ "start": [
+  20,
+  12
+ ],
+ "startWalkable": true,
+ "doors": 25,
+ "accessCells": 55,
+ "unreachableAccessCells": [],
+ "walkableCells": 1800,
+ "reachableCells": 1760,
+ "walkableUnreachableCells": 40,
+ "tileIdRange": {
+  "tilesetCount": 9998,
+  "outOfRange": 0
+ }
+}

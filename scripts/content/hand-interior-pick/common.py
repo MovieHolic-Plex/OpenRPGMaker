@@ -46,7 +46,7 @@ def new_item_object(it):
             'atlas': {'x': -1, 'y': -1, 'w': w, 'h': h, 'frames': 1, 'padTop': 0},
             'summary': (head + '.') if sep else desc, 'where': tail, 'since': 'v6 새 기물',
             'new': True, 'contextRoom': it.get('contextRoom'),
-            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs') if it.get(k)}}
+            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs', 'blockout') if it.get(k)}}
 
 def load_new_items(v5_ids=None):
     """tiledata/hand-interior/new/items.json → 가짜 객체 목록. v5 id·slug 와 겹치면 에러."""
@@ -145,6 +145,11 @@ def top_rule_text(o):
     n = top_min(o)
     if n is None: return ''
     fh = int((o.get('footprint') or {}).get('h') or 1)
+    b = o.get('blockout')
+    if b:
+        (t0, t1) = b['top']
+        return (f'이 기물은 3/4 밑그림이 있다 → **주 윗면(밑그림 윗면 띠 y={t0}~{t1}, {t1 - t0 + 1}행)** 이 위에서 내려다본 면이어야 한다(최소 {n}행). '
+                f'그 위로 솟는 부품(틀 가로보·굴뚝·돔·조각·날개)은 이 행 수 규칙이 아니다 — 그 부품은 윗면이 조금이라도 보이면 된다. top_rows·top_y 는 주 윗면을 잰다.')
     if fh <= 1: return f'이 기물의 꼭대기 윗면 최소 {n}행(발밑 깊이 1칸).'
     return (f'이 기물은 발밑이 남북으로 {fh}칸 깊다 → **꼭대기 윗면 최소 {n}행**. 위에서 내려다본 지붕·상판·받침이 긴 면으로 보여야 한다. '
             f'지붕·상판이 몇 행짜리 띠로만 보이는 옆모습(측면도)은 무조건 떨어진다.')
@@ -162,4 +167,45 @@ def spec_top_lint(o):
     got = [int(b or a) for a, b in SPEC_TOP_RE.findall(o.get('description') or '')]
     if not got: return [f"{o['id']}: 설명에 「꼭대기 윗면 N행」이 없다 — 발밑 깊이 {fh}칸이면 {n}행 이상을 적는다"]
     if max(got) < n: return [f"{o['id']}: 설명의 꼭대기 윗면 {max(got)}행 < {n}행(발밑 깊이 {fh}칸 규칙) — 이대로면 옆모습이 나온다"]
-    return []
+    return blockout_lint(o)
+
+BIG_AREA = 6   # 발밑 칸 수가 이 이상인 깊은 기물(대형)은 3/4 밑그림(blockout)이 있어야 판을 연다
+
+def blockout_lint(o):
+    """대형 깊은 기물의 3/4 밑그림 검사. blockout = {top:[a,b], front:[c,d], cover:0.7} — 캔버스 y 좌표.
+    top = 위에서 내려다본 주 윗면 띠, front = 그 아래 남쪽 면 띠, cover = 그 띠 줄들이 물건 폭을 채워야 하는 비율.
+    작업자가 고르는 것이 아니라 명세가 정한다 — 그래서 옆면 한가운데를 윗면이라 우길 수 없다."""
+    fp = o.get('footprint') or {}; fw, fh = int(fp.get('w') or 1), int(fp.get('h') or 1); b = o.get('blockout')
+    if o.get('kind') not in ('floor', 'wall') or fh < 2 or fw * fh < BIG_AREA:
+        return [] if not b else _blockout_shape(o, b)
+    if not b: return [f"{o['id']}: 대형 깊은 기물({fw}×{fh})인데 3/4 밑그림(blockout: top·front·cover)이 없다"]
+    return _blockout_shape(o, b)
+
+def _blockout_shape(o, b):
+    H = int((o.get('image') or o.get('atlas') or {}).get('h') or 0); n = top_min(o) or 0
+    try:
+        (a, bb), (c, d) = b['top'], b['front']; cov = float(b.get('cover', 0.7))
+    except (KeyError, TypeError, ValueError):
+        return [f"{o['id']}: blockout 꼴이 틀렸다 — {{top:[a,b], front:[c,d], cover}}"]
+    errs = []
+    if not (0 <= a <= bb < c <= d < (H or 10 ** 6)): errs.append(f"{o['id']}: blockout 범위가 이상하다 top={b['top']} front={b['front']} 캔버스 높이 {H}")
+    if bb - a + 1 < n: errs.append(f"{o['id']}: blockout 윗면 {bb - a + 1}행 < 규칙 {n}행")
+    if not 0.3 <= cov <= 1: errs.append(f"{o['id']}: blockout cover {cov} 는 0.3~1")
+    return errs
+
+def blockout_image(o, scale=8):
+    """밑그림 그림(작업자·검수자용): 윗면 띠 = 밝은 회색, 남쪽 면 띠 = 어두운 회색, 그 위 = 솟는 것(굴뚝·돔·조각) 자리 빗금.
+    8배, 16px 마다 칸 선, 띠 경계 y 를 적는다."""
+    from PIL import Image, ImageDraw
+    b = o['blockout']; W = int((o.get('image') or o['atlas'])['w']); H = int((o.get('image') or o['atlas'])['h']); S = scale
+    im = Image.new('RGBA', (W * S, H * S), (150, 120, 90, 255)); dr = ImageDraw.Draw(im)
+    (a, bb), (c, d) = b['top'], b['front']
+    for y in range(0, a * S, 6): dr.line([(0, y), (W * S, y + W * S // 4)], fill=(170, 140, 110, 255))
+    dr.rectangle([S, a * S, (W - 1) * S - 1, (bb + 1) * S - 1], fill=(214, 214, 205, 255), outline=(40, 40, 50, 255), width=2)
+    dr.rectangle([S, c * S, (W - 1) * S - 1, (d + 1) * S - 1], fill=(110, 105, 112, 255), outline=(40, 40, 50, 255), width=2)
+    for x in range(0, W * S, 16 * S): dr.line([(x, 0), (x, H * S)], fill=(0, 0, 0, 90))
+    for y in range(H * S, -1, -16 * S): dr.line([(0, y), (W * S, y)], fill=(0, 0, 0, 90))
+    for y, t in ((a, f'top y={a}'), (bb, f'~{bb} ({bb - a + 1}rows)'), (c, f'front y={c}'), (d, f'~{d}')):
+        dr.text((S * 2, y * S + 2), t, fill=(200, 20, 20, 255))
+    return im
+

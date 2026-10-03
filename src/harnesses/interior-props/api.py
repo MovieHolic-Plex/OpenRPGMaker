@@ -18,6 +18,7 @@ import store  # noqa: E402
 import harness  # noqa: E402
 from common import CAND, WORKER_RE, geom, objects_by_id, slug, objects_by_slug  # noqa: E402
 import picks_db  # noqa: E402
+import outline_select  # noqa: E402
 
 SPEC = os.path.join(ROOT, 'src/assets/handInteriorSpec.json')
 SHEET = os.path.join(ROOT, 'public/assets/atlas-interior/interior-chipset.png')
@@ -65,7 +66,7 @@ def state():
                                            why=('; '.join(h.get('hard', [])) if h['stage'] == 'hard' else
                                                 ', '.join((h.get('review') or {}).get('codes') or []) + ' — ' + (h.get('review') or {}).get('reasons', '')
                                                 if h['stage'] == 'review' else h.get('error', ''))[:400]) for h in hist],
-                             v=int(os.path.getmtime(png)) if os.path.exists(png) else 0))
+                             v=int(os.path.getmtime(png)) if os.path.exists(png) else 0, selDiff=_sel_diff(png)))
         d = decided.get((i, rd['id']))
         it['rounds'].append(dict(id=rd['id'], created=rd['created'], note=rd['note'], base=rd['base'], runs=runs,
                                  decided=dict(verdict=d['verdict'], cand=d['cand'], at=d['at']) if d else None))
@@ -130,8 +131,22 @@ def thumb(s):
     return _thumb['cache'][s]
 
 
+_SELD = {}
+def _sel_diff(png):
+    """「테두리 꼭 필요한 곳만」 벌이 그린 그대로와 몇 칸 다른가(없으면 None) — 거의 같으면 화면에 한 장만 보인다."""
+    sp = png[:-4] + outline_select.SUFFIX + '.png'
+    if not (os.path.exists(png) and os.path.exists(sp)): return None
+    k = (png, os.path.getmtime(png), os.path.getmtime(sp))
+    if k not in _SELD:
+        from PIL import Image, ImageChops
+        d = ImageChops.difference(Image.open(png).convert('RGBA'), Image.open(sp).convert('RGBA'))
+        _SELD[k] = sum(1 for v in d.get_flattened_data() if max(v) > 0)
+    return _SELD[k]
+
+
 def _exists(item, c):
-    return bool(WORKER_RE.match(str(c) + '.pxg')) and os.path.exists(os.path.join(CAND, slug(item), str(c) + '.pxg'))
+    b = outline_select.split(str(c))[0]   # `h12-C.sel` = 같은 후보의 「테두리 꼭 필요한 곳만」 벌
+    return bool(WORKER_RE.match(b + '.pxg')) and os.path.exists(os.path.join(CAND, slug(item), b + '.pxg'))
 
 
 def _record_rejects(item, rnd, rejects, note=''):

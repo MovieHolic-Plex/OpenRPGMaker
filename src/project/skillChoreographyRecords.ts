@@ -1,3 +1,4 @@
+import { normalizeBattleMotionProgram } from "@/battle/battleMotionProgram";
 // 스킬 연출 레코드(database.skillChoreographies) 정규화. 설계: docs/superpowers/specs/2026-09-30-skill-choreography-records-design.md
 // 모르는 시트 키·잘못된 anchor/motion 층은 **버리고**, 숫자는 범위로 자른다. 저장·불러오기·조수 도구가 모두 이 한 함수를 지난다.
 import { retroFxSheetMeta } from "@/assets/retroSkillCatalog";
@@ -90,6 +91,7 @@ export function normalizeSkillChoreographyRecord(raw: unknown): SkillChoreograph
     name: text(raw.name, 80) ?? id,
     ...(description ? { description } : {}),
     motion: raw.motion as SkillChoreographyRecord["motion"],
+    ...(normalizeBattleMotionProgram(raw.movement) ? {movement:normalizeBattleMotionProgram(raw.movement)} : {}),
     layers,
     ...(speed !== undefined ? { speed: Math.round(speed * 100) / 100 } : {}),
     ...((SKILL_CHOREOGRAPHY_WEIGHTS as readonly unknown[]).includes(raw.weight) ? { weight: raw.weight as SkillChoreographyRecord["weight"] } : {}),

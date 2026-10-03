@@ -97,7 +97,7 @@ describe("openDatabaseAiGenerateDialog", () => {
     expect(status.textContent).toContain("설명");
   });
 
-  it("실행: 단계가 흐르고(정보→그림→등록), 완료 카드에 수치가 보이며 rerender 가 불린다", async () => {
+  it("실행: 단계가 흐르고(정보→등록 — 몬스터는 그림 단계가 없다), 완료 카드에 수치가 보이며 rerender 가 불린다", async () => {
     seedEnemy();
     const pending = deferred<AiDatabaseGenerationOutcome>();
     let phaseHook: ((phase: "text" | "artwork" | "apply") => void) | undefined;
@@ -122,9 +122,6 @@ describe("openDatabaseAiGenerateDialog", () => {
     expect(brief.disabled).toBe(true);
     expect(close.textContent).toContain("취소");
     expect(status.dataset.phase).toBe("text");
-    phaseHook?.("artwork");
-    expect(status.dataset.phase).toBe("artwork");
-    expect(status.textContent).toContain("그림");
     phaseHook?.("apply");
     expect(status.dataset.phase).toBe("apply");
 

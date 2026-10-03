@@ -233,7 +233,8 @@ export async function verifyExportBattleStyle(page) {
     }
     return project.system?.battleUiStyle;
   });
-  assert.equal(style, "rm2003", "Four-party-art QA requires an explicitly exported rm2003 sideview project; export a new private QA release");
+  // 2026-10-02 측면 스킨은 retro2003 하나이고 미설정도 retro2003 이다 — 정면(pokemon)만 막는다.
+  assert.notEqual(style, "pokemon", "Four-party-art QA requires a sideview (retro2003) project; export a new private QA release");
   return style;
 }
 

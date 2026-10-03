@@ -42,8 +42,10 @@ async function openAnimations(page: Page): Promise<void> {
     };
   });
   await page.getByTestId("toolbar-database").click();
-  await page.getByTestId("db-tab-search").fill("애니메이션");
-  await page.getByTestId("db-tab-animations").click();
+  // 전투 애니메이션은 도트 연출 레일 탭의 하위 보기다.
+  await page.getByTestId("db-tab-search").fill("도트 연출");
+  await page.getByTestId("db-tab-retro-choreographies").click();
+  await page.getByTestId("db-subview-animations").click();
   await expect(page.getByTestId("db-animation-preview-status")).toHaveAttribute("data-state", "ready");
 }
 
@@ -110,8 +112,10 @@ test("entry and record switch autoplay visible frames, wrap, and cleanly remount
   await page.getByTestId("db-tab-search").fill("");
   await page.getByTestId("db-tab-overview").click();
   expect(await activeLoops(page)).toBe(0);
-  await page.getByTestId("db-tab-search").fill("애니메이션");
-  await page.getByTestId("db-tab-animations").click();
+  // 전투 애니메이션은 도트 연출 레일 탭의 하위 보기다.
+  await page.getByTestId("db-tab-search").fill("도트 연출");
+  await page.getByTestId("db-tab-retro-choreographies").click();
+  await page.getByTestId("db-subview-animations").click();
   await expect(play).toHaveAttribute("aria-pressed", "true");
   expect(await activeLoops(page)).toBe(1);
 
@@ -119,8 +123,10 @@ test("entry and record switch autoplay visible frames, wrap, and cleanly remount
   await expect(play).toHaveCount(0);
   expect(await activeLoops(page)).toBe(0);
   await page.getByTestId("toolbar-database").click();
-  await page.getByTestId("db-tab-search").fill("애니메이션");
-  await page.getByTestId("db-tab-animations").click();
+  // 전투 애니메이션은 도트 연출 레일 탭의 하위 보기다.
+  await page.getByTestId("db-tab-search").fill("도트 연출");
+  await page.getByTestId("db-tab-retro-choreographies").click();
+  await page.getByTestId("db-subview-animations").click();
   await expect(play).toHaveAttribute("aria-pressed", "true");
   expect(await activeLoops(page)).toBe(1);
 });
