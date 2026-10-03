@@ -41,7 +41,8 @@ const context = await browser.newContext({ viewport: { width: 1600, height: 1000
 const page = await context.newPage();
 const pageErrors = [];
 page.on("pageerror", (e) => { pageErrors.push(String(e.message).slice(0, 300)); log(`[pageerror] ${String(e.message).slice(0, 200)}`); });
-page.on("crash", () => { pageErrors.push("CRASH"); log("[CRASH] renderer died"); });
+// 렌더러가 죽으면 뒤의 page.* 가 영영 안 돌아온다(2026-10-04: 부하 걸린 머신에서 900초 매달림) — 바로 끝내 재시도 루프에 넘긴다.
+page.on("crash", () => { pageErrors.push("CRASH"); log("[CRASH] renderer died"); setTimeout(() => process.exit(3), 500); });
 const consoleLines = [];
 page.on("console", (m) => { consoleLines.push(`${Date.now()} [${m.type()}] ${m.text().slice(0, 400)}`); });
 
@@ -50,6 +51,8 @@ await page.addInitScript(() => {
   const events = [];
   window.__probe = { events, t0: performance.now() };
   const push = (kind, data) => events.push({ t: Math.round(performance.now()), kind, ...data });
+  // 단추가 실제로 눌린 시각 — 프로브의 click-send(누르기 전)와 앱이 받은 순간 사이(Playwright 대기·프로파일러 시작)를 가른다.
+  document.addEventListener("click", (e) => { if (e.target?.closest?.("[data-testid='ai-send']")) push("send-dom-click", {}); }, true);
   const summarize = (ev) => {
     const out = { type: ev.type };
     if (ev.toolName) out.toolName = ev.toolName;
@@ -158,11 +161,19 @@ try {
     }, 250);
   });
 
+  // --cpu-profile: 보내기부터 첫 /v1/agent/run 요청 헤더까지 메인 스레드 CPU 를 잰다(어디서 준비 시간이 새는가).
+  let cdp = null;
+  if (args["cpu-profile"]) {
+    cdp = await page.context().newCDPSession(page);
+    await cdp.send("Profiler.enable");
+    await cdp.send("Profiler.setSamplingInterval", { interval: 1000 });
+  }
   t0 = await page.evaluate(() => Math.round(performance.now()));
   await page.screenshot({ path: join(OUT, "shots", "0000-before.png") });
   // 사용자가 쓰는 길 그대로: 입력창에 치고 보내기 단추를 누른다(브리지 send 는 옛 세션 경로 sendText 로 간다).
   await page.fill("[data-testid='ai-input']", prompt);
   await page.evaluate(() => window.__probe.events.push({ t: Math.round(performance.now()), kind: "click-send" }));
+  if (cdp) await cdp.send("Profiler.start");
   void page.click("[data-testid='ai-send']", { timeout: 120_000 }).catch((e) => log(`click failed ${e.message}`));
   const started = Date.now();
   let sawBusy = false;
@@ -194,6 +205,24 @@ try {
           log(`clicked recommended combo at +${now.t - t0}ms`);
         }
       }
+    }
+    if (cdp && record.events.some((e) => e.kind === "fetch-head" && /agent\/run/.test(e.path ?? ""))) {
+      const { profile } = await cdp.send("Profiler.stop");
+      cdp = null;
+      const nodes = new Map(profile.nodes.map((n) => [n.id, n]));
+      const parent = new Map();
+      for (const n of profile.nodes) for (const c of n.children ?? []) parent.set(c, n.id);
+      const self = new Map(), total = new Map();
+      const name = (n) => `${n.callFrame.functionName || "(anon)"} ${(n.callFrame.url.split("/src/")[1] ?? n.callFrame.url.split("/").pop() ?? "").split("?")[0]}:${n.callFrame.lineNumber}`;
+      profile.samples.forEach((id, i) => {
+        const dt = (profile.timeDeltas[i] ?? 0) / 1000;
+        const n = nodes.get(id); self.set(name(n), (self.get(name(n)) ?? 0) + dt);
+        const seen = new Set(); let cur = id;
+        while (cur !== undefined) { const k = name(nodes.get(cur)); if (!seen.has(k)) { seen.add(k); total.set(k, (total.get(k) ?? 0) + dt); } cur = parent.get(cur); }
+      });
+      const top = (m) => [...m].filter(([k]) => !/^\((program|idle|root)\)/.test(k)).sort((a, b) => b[1] - a[1]).slice(0, 25).map(([k, v]) => `${Math.round(v).toString().padStart(6)}ms ${k}`);
+      writeFileSync(join(OUT, "cpu-to-run.txt"), `SELF\n${top(self).join("\n")}\n\nTOTAL\n${top(total).join("\n")}\n`);
+      log("cpu profile written");
     }
     if (now.busy) sawBusy = true;
     if (sawBusy && now.busy === false && endAt === null) { endAt = Date.now(); log(`turn ended at +${Math.round((endAt - started) / 1000)}s`); }
