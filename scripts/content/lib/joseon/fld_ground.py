@@ -83,13 +83,13 @@ def trail(mask, v=0):
 
     def inner(x, y):
         q = rnd(x, y, 810 + v)
-        col = e[4]
-        if q < 0.20: col = e[3]
-        elif q > 0.92: col = e[5]
+        col = e[5]                                       # 마당·큰길 흙(ground.yard)과 같은 램프·분포: 길과 마당이 이어져도 색이 튀지 않는다
+        if q < 0.18: col = e[4]
+        elif q > 0.92: col = e[6]
         return col
 
     def fr(x, y, d):
-        if d == 1: return e[3] if rnd(x, y, 7) > 0.35 else LF[3]
+        if d == 1: return e[4] if rnd(x, y, 7) > 0.35 else LF[3]
         if d == 2: return LF[3] if rnd(x, y, 8) > 0.3 else LF[2]
         return grass_px(x, y)
     c = patch(mask, inner, fr, amp=1.1, ph=0.4)
@@ -195,7 +195,7 @@ def _remap(tile_cv, table):
 
 def _bog_table():
     w = RGB['water']
-    return {tuple(w[4]): DG[4], tuple(w[5]): DG[5], tuple(w[6]): DG[5]}
+    return {tuple(w[2]): DG[3], tuple(w[3]): DG[4], tuple(w[4]): DG[4], tuple(w[5]): DG[5], tuple(w[6]): DG[5]}      # 물 한 단 밝게(검수: 늪물이 너무 어둡다)
 
 
 def bog_set():
@@ -204,9 +204,10 @@ def bog_set():
     for v in range(2):
         for m in WB.ALL47:
             c = _remap(WB.water47(m, v), tb)
-            for k in range(2):                              # 개구리밥 2×1(물 한가운데에만)
+            for k in range(2):                              # 개구리밥 2×1(물 한가운데에만, 칸마다 확률로: 격자처럼 안 보이게)
+                if hsh(k, m + 5 * v, 41) % 3: continue
                 x, y = 3 + hsh(k, m + 31 * v, 5) % 9, 3 + hsh(m, k + 7 * v, 6) % 9
-                if all(tuple(c.a[y + dy, x + dx, :3]) in (tuple(DG[4]), tuple(RGB['water'][3]), tuple(RGB['water'][2]), tuple(DG[5])) for dx in (0, 1) for dy in (0,)):
+                if all(tuple(c.a[y + dy, x + dx, :3]) in (tuple(DG[4]), tuple(DG[3]), tuple(RGB['water'][3]), tuple(RGB['water'][2]), tuple(DG[5])) for dx in (0, 1) for dy in (0,)):
                     c.put(x, y, LF[3]); c.put(x + 1, y, LF[4])
             out.append(c)
     return out

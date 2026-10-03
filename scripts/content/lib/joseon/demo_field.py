@@ -61,6 +61,19 @@ def blob(cx, cy, rx, ry, seed, jag=0.35):
     return out
 
 
+def organic(cx, cy, rx, ry, seed, lobes=(2, 3, 5), amp=(0.20, 0.14, 0.08)):
+    """극좌표 반지름을 저주파 사인 몇 개로 흔든 둥글고 불규칙한 윤곽(블롭의 계단 팔각형을 피한다)."""
+    ph = [rnd(k, seed, 61) * 6.283 for k in range(len(lobes))]
+    out = set()
+    for y in range(int(cy - ry * 1.6) - 1, int(cy + ry * 1.6) + 2):
+        for x in range(int(cx - rx * 1.6) - 1, int(cx + rx * 1.6) + 2):
+            a = math.atan2((y + 0.5 - cy) / ry, (x + 0.5 - cx) / rx)
+            r = 1.0 + sum(am * math.sin(lb * a + p) for lb, am, p in zip(lobes, amp, ph))
+            d = math.hypot((x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry)
+            if d <= r and inb(x, y): out.add((x, y))
+    return out
+
+
 def setk(cells, kind, only=(None,)):
     for (x, y) in cells:
         if inb(x, y) and KG[y][x] in only:
@@ -132,7 +145,7 @@ setk(YARD, 'yard')
 # --- 숲(동쪽)·늪·야영지·공터
 FOREST = smooth(blob(84, 34, 16, 31, 5, 0.32) | blob(88, 12, 10, 9, 6, 0.4) | blob(72, 52, 6, 8, 7, 0.4), 2)
 setk(FOREST, 'forest')
-BOG = smooth(blob(78, 84, 11.5, 6.5, 9, 0.28) | blob(70, 82, 5, 4, 10, 0.3), 3)
+BOG = smooth(organic(77, 84, 10.5, 6.4, 9) | organic(68, 83, 4.6, 3.8, 10, lobes=(2, 4), amp=(0.2, 0.1)), 2)
 setk(BOG, 'bog', only=(None, 'forest'))
 for _r in range(3):                                        # 늪 윤곽 다듬기: 1칸 가시(이웃 늪 ≤1)는 지우고 1칸 홈(이웃 늪 ≥3)은 메운다
     rm = [(x, y) for y in range(MH) for x in range(MW) if KG[y][x] == 'bog' and sum(1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if inb(x + dx, y + dy) and KG[y + dy][x + dx] == 'bog') <= 1]
@@ -266,7 +279,7 @@ def ground_ids():
         for x in range(MW):
             k = KG[y][x]
             if k is None:
-                gid = GID['grass8'] + (hsh(x, y, 3) % 6 if hsh(x, y, 5) % 12 < 10 else 6 + hsh(x, y, 9) % 2)
+                gid = GID['grass8'] + (hsh(x, y, 3) % 6 if hsh(x, y, 5) % 36 < 35 else 6 + hsh(x, y, 9) % 2)
             elif k == 'road':
                 gid = GID['road64'] + 16 * (hsh(x, y, 41) % 4) + mset(dirt, x, y, True)
             elif k == 'yard':
