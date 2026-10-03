@@ -8,6 +8,7 @@ import { prepareTool } from "../../src/editor/tools/asyncToolRunner";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild";
 import { worldTerrainImages } from "../../src/editor/tools/worldTerrainTools";
 import { buildWorldmap } from "../lib/worldmapBuild.mjs";
+import { serialize } from "../../src/project/io";
 import type { MapId } from "../../src/project/types";
 
 const [outDir, theme = "fantasy", style = "shards", count = "20"] = process.argv.slice(2);
@@ -40,3 +41,25 @@ const read = await call("read_world_terrain", { mapId });
 writeFileSync(join(outDir, "read.txt"), `${read.ascii}\n\n${(read.layout?.regions ?? []).join("\n")}\n\n${read.places.join("\n")}\n`);
 const more = await call("edit_world_terrain", { mapId, preview: true, ops: [{ op: "forest", poly: [[10, 10], [30, 10], [30, 30], [10, 30]], density: .7 }] });
 console.log(`  덧붙임 미리보기: 배치 ${more.layout?.salt} (저장 ${src.fitSalt}) 작업 ${more.ops.length}`);
+
+// 런타임 확인용(scripts/qa/runtime/worldmap-generate.scenario.mjs): 수도 곁, 오른쪽 두 칸이 열린 칸에서 시작한다.
+{
+  const m = ctx.project.maps[mapId]!;
+  const ts = ctx.project.tilesets[m.tilesetId]!;
+  const capital = m.locations!.find(l => l.tags?.includes("capital")) ?? m.locations![0]!;
+  const openAt = (x: number, y: number) => x >= 0 && y >= 0 && x < m.width && y < m.height && ts.passability[y * m.width + x]!.up;
+  let start: { x: number; y: number } | null = null;
+  for (let r = 1; r < 8 && !start; r += 1) {
+    for (let y = capital.y - r; y <= capital.y + capital.h - 1 + r && !start; y += 1) {
+      for (let x = capital.x - r; x <= capital.x + capital.w - 1 + r && !start; x += 1) {
+        if (openAt(x, y) && openAt(x + 1, y) && openAt(x + 2, y)) start = { x, y };
+      }
+    }
+  }
+  ctx.project.startMapId = mapId;
+  ctx.project.startPos = start!;
+  console.log(`  시작 ${mapId} ${start!.x},${start!.y} (수도 ${capital.name} ${capital.x},${capital.y})`);
+  // 프로젝트 JSON 은 수십 MB(번들 자산 포함) — 커밋하지 않는다.
+  writeFileSync(join(outDir, "project.json"), serialize(ctx.project));
+  writeFileSync(join(outDir, "start.json"), JSON.stringify({ mapId, ...start! }));
+}

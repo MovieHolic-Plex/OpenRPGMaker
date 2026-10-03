@@ -2,7 +2,8 @@
 
 ## 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
 
-`edit_world_terrain` 이 만든 맵만 갖는다: `{ theme, ops, terrainId?, palette? }`.
+`edit_world_terrain` 이 만든 맵만 갖는다: `{ theme, ops, terrainId?, palette?, base?, fitSalt? }`.
+`base` 는 `"shared-v9"`(손 대륙, 생략 시) 또는 `"generate"`(새 구조), `fitSalt` 는 생성 구조의 자동 맞춤 배치 번호 — 다시 빌드할 때 같은 세계를 낸다.
 `ops` 는 `worldmap-terrain/1` 작업 목록(테마 자체 지형 아래 깔림은 빼고 조수가 얹은 것만). 이 필드가 있으면
 그 맵은 「지도 그림 = 타일셋 `worldmap_<mapId>`(칸마다 한 타일, 통행은 키트 걷기 표)」이고, 다시 빌드하면 통째로 갈린다.
 없는 맵은 키트 지도가 아니며 도구가 덮어쓰지 않는다. 런타임은 이 필드를 읽지 않는다(편집 원본일 뿐).

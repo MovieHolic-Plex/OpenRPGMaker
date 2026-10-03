@@ -291,3 +291,46 @@ python3 kit/build_world.py --theme fantasy   --journey fantasy-5act --out out/ -
 - 여정 검사 실패·길 실패는 사람 말로(`kit_terrain.explain`, 막힌 길은 모두 한 번에 좌표와 함께). 장소마다 여정 규칙 한 줄(`world.place_rules`).
 - 편집기 조수 도구 `read_world_terrain`·`edit_world_terrain` 이 이 경로를 쓴다 — `openwiki/worldmap-terrain-editing.md`.
 - `terrains/archipelago.json`(군도): 남쪽 사막섬·북쪽 설원섬·동대륙을 해협(다리 걸친 강)으로 가르고 섬 5개를 더한다.
+
+## ⑦ 새 대륙 구조 `base: "generate"` + 여정 자동 맞춤 (2026-10-03)
+
+손 대륙(shared-v9) 대신 빈 판에 구조를 새로 만든다. 사용자 결정: 5막 여정(걷기 → 통행증 관문 → 배 → 사구선 → 비공정, 장소 31곳)은
+**어떤 구조에든 자동으로 맞춘다** — 장소·장벽을 키트가 놓고 여정 검사는 그대로 돈다.
+
+```bash
+echo '{"schema":"worldmap-terrain/1","id":"s20","base":"generate","ops":[{"op":"continents","style":"shards","count":20,"seed":3}]}' > s20.json
+python3 kit/build_world.py --theme fantasy --terrain s20.json --out out/ --preview   # 몇 초
+python3 kit/build_world.py --theme fantasy --terrain s20.json --out out/             # 그림(약 1분)
+```
+
+| 파일 | 하는 일 |
+|---|---|
+| `kit/lib/kit_gen.py` | 구조(`continents` style: blobs · shards · ring · pangaea · archipelago · galaxy), 기후(위도·해안거리·습도 → 바닥), 산줄기·고개·강·숲·밭, 화산·사구 둘레 꾸밈 |
+| `kit/lib/kit_fit.py` | 자동 맞춤: 시작 덩이를 가르는 산벽 띠(관문 하나만 구멍) · 첫 화면 창 안의 시작·관문·항구·탑 · 사구 바다(시작 쪽 먼 엽) · 2막 땅 · 천공섬 · 나머지 장소 간격 배치 · 최소 신장 트리 길 |
+| `kit/lib/kit_space.py` | 우주(galaxy): 은하 핵 둘레 큰 성계 고리 + 나선팔 성계 염주. 땅 = 항행 공간, 바다 = 공허, 산 = 소행성대, 사구 = 이온 폭풍 |
+
+- 막별 지역: A = 시작 덩이 1막 쪽, B = 산벽 너머 2막 쪽(벽 띠 두께 3칸, 관문 성만 구멍), D = A 의 먼 엽(사구 바다, 섬은 2칸 깎음),
+  2막 바다 건너 땅 = 고른 바다에 닿은 다른 덩이, 하늘 = 열린 바다.
+- 실패(맞춤·길·여정 검사)면 `RetryFit` → 같은 사양으로 `--fit-salt k+1` 새 프로세스(최대 6번). 쓴 번호는 world.json `layout` 에 남고
+  조수 도구는 맵의 `worldmapSource.fitSalt` 로 저장해 다시 빌드해도 같은 세계가 나온다. 같은 사양 = 같은 해시(결정적).
+- 명시 작업으로 맞춤을 덮는다: `wall {line, gate?}` · `dune_sea {poly}` · `sky_island {x,y}` · `move_place`(고정 핀). `land`·`sea`·`island` 는 구조에 접힌다.
+- 우주 테마(`starmap`)는 `terrains/galaxy.json` + `journeys/space-5act.json`(같은 장소 id, 우주 이름표·막·수단) 이 기본. 그림은 `kit_theme.draw_galaxy`(핵 빛·팔 먼지·항성·궤도·행성).
+- 디버그: `WMK_NO_RETRY=1`(재시도 끔), `--no-check`(이른 여정 검사 끔).
+
+## ⑧ 지형 경계 v9 (2026-10-03)
+
+사용자 지적 「다른 타일의 경계면이 어색한 경우가 너무 많다」로 바닥·물가 경계를 다시 그렸다. `kit/lib/boundary_v9.py` 가 `render_ground` 를 맡는다.
+
+| 무엇 | v5 까지 | v9 |
+|---|---|---|
+| 바닥 라벨 | σ2.4px — 16px 칸 계단이 남음 | 칸 지시 장 σ7px + 바닥별 노이즈 3단, 부스러기(40px 미만) 지움, 한 칸 바닥은 가운데 원으로 살림 |
+| 쌍 경계 | 우선순위 높은 쪽(광물)에 어두운 테두리 일괄 → 평지가 절벽처럼 | 식생↔식생·광물↔광물 덩이 디더, 광물 위 풀 술, 눈 그늘·눈가루, 밭 울타리, 구덩이(분화구·협곡)만 테두리. 두 질감의 색만 섞는다 |
+| 질감 반복 | 16px 타일 하나 | 칸마다 뒤집기(방향 무늬는 좌우만, 독 늪은 안 함) + 거시 명암(같은 질감 색) |
+| 강·용암·독 | 칸 오토타일(직각 계단·네모 연못) | `coast_v6.soften_inland`: 매끈한 장으로 다시 그림. 강은 바다와 한 장(어귀 직선 없음), 맨 바닥 픽셀만 물로 |
+| 물가 띠 | 모든 바닥 같은 모래 | 바닥별(설원 얼음·늪 진흙·협곡토/재/현무암 바위·툰드라 자갈) |
+| 사구 능선·늪 | 칸 직선 능선, 늪은 자기 윤곽 | 둘 다 v9 라벨(`M._label_px`)을 따른다. 능선은 고원·절벽 곁엔 안 두른다 |
+| 숲 가장자리 | 0~3px 고정 | 저주파 노이즈로 -3~+6px 출렁임 |
+
+- 경계 도감: `python3 kit/tools/boundary_atlas.py --world out/world.json --after out/x.png [--before old.png] --out atlas.png` — 지도에 있는 바닥 쌍마다 경계 한 곳을 4배로. 적대적 시각 QA 의 입력.
+- `kit/ref/design-1x-final3.png` 는 이 변경으로 갱신했다(칸 배열·여정 보고는 그대로). 역할 순도 0.845 → 0.843(팔레트 재색 영향 없음).
+- `boundary_v5.vnoise` 는 격자점에서만 해시한다(값 비트 동일, 6배 빠름) — 지형 렌더 약 100초 → 55초.

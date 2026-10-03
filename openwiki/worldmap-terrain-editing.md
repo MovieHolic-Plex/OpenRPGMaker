@@ -43,6 +43,27 @@
 - 기존 이벤트는 유지하고, 걸을 수 없게 된 칸에 놓인 이벤트를 경고로 알린다.
 - `preservesAuthoredRaster: true` — 지도 그림이 곧 타일이므로 타일 보정 루프가 손대지 않는다.
 
+## 새 구조 만들기 — `base: "generate"` (2026-10-03)
+
+「20조각 대륙」「고리 대륙」「은하」처럼 손 대륙과 다른 구조는 `edit_world_terrain({base: "generate", ops: [{op: "continents", style, count, land?, seed?}, …]})`.
+style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가운데 내해를 두른 고리) · `pangaea`(초대륙 하나 + 섬) · `archipelago`(군도) · `galaxy`(우주).
+`climate {wet?, cold?}` 로 기후를 기울이고, `wall`·`dune_sea`·`sky_island`·`move_place` 로 자동 맞춤을 덮는다.
+
+- **5막 여정은 자동 맞춤**(사용자 결정): 어떤 구조든 키트(`kit_fit.py`)가 시작·관문 산벽·항구·사구 바다·2막 땅·천공섬과 장소 31곳을 놓고
+  여정 검사를 돌린다. 안 맞으면 배치 번호(fit salt)를 바꿔 최대 6번 다시 — 쓴 번호는 `worldmapSource.fitSalt` 로 저장해 같은 세계가 다시 나온다.
+- `base` 를 바꾸면 쌓인 ops 는 버린다(손 대륙 위 작업은 생성 구조에 의미가 없다). 같은 base 면 ops 가 쌓인다.
+- 결과 `layout`(막별 지역 칸 수·벽·관문·항구·사구·하늘·성계)은 `read_world_terrain` 이 요약해 준다. 장소 표시 이름은 `label`(우주 여정은 우주 말).
+- 우주: `starmap` 테마는 기본이 `galaxy` 구조 + `space-5act` 여정(항로 허가증·워프·성운 항법선·점프 게이트). 칸 의미는 같아서(땅 = 항행 공간, 바다 = 공허,
+  산 = 소행성대, 사구 = 이온 폭풍) 통행·여정 검사·도구가 그대로 돈다. 그림은 `kit_theme.draw_galaxy`.
+- 시험: `scripts/qa-game/worldmap-generate-offline.mts`(모델 없이 생성 → 저장 → 읽기 → 덧붙이기).
+- 키트 쪽 상세: `tiledata/worldmap-kit/docs/README.md` ⑦.
+
+## 지형 경계 v9 (2026-10-03)
+
+바닥 경계·강·용암·독 물가·사구 능선·늪·숲 가장자리를 다시 그렸다(사용자 지적 「다른 타일의 경계면이 어색하다」).
+평지 경계에 어두운 테두리를 치지 않고, 칸 계단 대신 매끈한 장으로 가른다. 상세와 경계 도감 도구: 키트 README ⑧.
+그림이 바뀌었으므로 기존 맵을 다시 빌드하면 경계 픽셀이 달라진다(칸 배열·통행·여정은 그대로).
+
 ## 글자 지도
 
 `read_world_terrain`/`edit_world_terrain` 결과의 `ascii` 첫 줄이 범례다.
