@@ -36,6 +36,8 @@ export function defaultElementRecords(): DatabaseElementRecord[] {
     elementRecord("int", "INT", "magical"),
     elementRecord("agi", "AGI", "magical"),
     elementRecord("absorb", "Absorb", "magical"),
+    // Leaf attacks and the farmer roster refer to this id. Keep existing slots stable.
+    elementRecord("grass", "Grass", "magical"),
   ];
 }
 

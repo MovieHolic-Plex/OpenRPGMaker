@@ -1,0 +1,25 @@
+{
+  "first": true,
+  "missing": [],
+  "grass": {
+    "id": "grass",
+    "name": "Grass",
+    "kind": "magical",
+    "rateLabels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "damageMultipliers": {
+      "A": 200,
+      "B": 150,
+      "C": 100,
+      "D": 50,
+      "E": 0
+    }
+  },
+  "second": false,
+  "isolatedDatabase": true
+}
