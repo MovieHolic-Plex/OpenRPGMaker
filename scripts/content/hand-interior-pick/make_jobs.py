@@ -69,9 +69,9 @@ def prep(o):
             if c[3] and c not in key:
                 if len(cols) >= len(CHARS): raise SystemExit(f'{o["id"]}: 색이 너무 많다')
                 key[c] = CHARS[len(cols)]; cols.append(c)
-    lines = [f'// {o["id"]} — 공통 팔레트(palette/v5.pal) + 이 기물의 v5 색(한 글자씩). 이 파일은 make_jobs.py 가 만든다: 고치지 마라.',
+    lines = [f'// {o["id"]} — 공통 팔레트(palette/v6.pal) + 이 기물의 v5 색(한 글자씩). 이 파일은 make_jobs.py 가 만든다: 고치지 마라.',
              '// 새 색이 필요하면 공통 램프(@rampc 재료:단)를 쓴다. 검사는 v5 색 밖을 불합격시킨다.', shared.rstrip(), '', '// ---- 이 기물의 v5 색 ----']
-    if new: lines[0] = f'// {o["id"]} — 새 기물: 공통 팔레트(palette/v5.pal)만 쓴다(v5 현재판이 없다). 이 파일은 make_jobs.py 가 만든다: 고치지 마라.'
+    if new: lines[0] = f'// {o["id"]} — 새 기물: 공통 팔레트(palette/v6.pal)만 쓴다(v5 현재판이 없다). 이 파일은 make_jobs.py 가 만든다: 고치지 마라.'
     if new: lines[-1] = '// ---- 새 기물은 v5 색이 없다: 공통 램프만 ----'
     for c in cols:
         hx = '#%02x%02x%02x' % c[:3]

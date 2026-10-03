@@ -8,7 +8,8 @@ V5 = os.path.join(ROOT, 'tiledata/hand-interior/v5')
 PICK = os.path.join(ROOT, 'tiledata/hand-interior/pick')
 CAND = os.path.join(PICK, 'candidates')
 PAL_DIR = os.path.join(PICK, 'palette')
-SHARED_PAL = os.path.join(PAL_DIR, 'v5.pal')
+V5_PAL = os.path.join(PAL_DIR, 'v5.pal')       # v5 재료 램프(make_palette.py 가 만든다)
+SHARED_PAL = os.path.join(PAL_DIR, 'v6.pal')   # 실내 공통 팔레트 = v5 + 시트 색 128(2026-10-03). 시트 굽기도 이 색으로 옮긴다
 PXGRID = os.path.join(ROOT, 'scripts/content/pixel-harness/pxgrid')
 HARNESS = os.path.join(ROOT, 'scripts/content/pixel-harness')
 WORKER_RE = re.compile(r'^(w[0-9]{1,3}|h[0-9]{1,4}|pilot)-([A-Z])\.pxg$')   # 작업자 id(w1…w999, 소품 하네스 판 h1…, pilot) + 방향 글자

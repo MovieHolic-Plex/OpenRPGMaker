@@ -119,6 +119,7 @@ v5 맵을 바닥 한 칸으로 채우지 않고 `handInteriorStructure` 로 **�
 - 건너뛰는 것: 선택 없음·v5 유지, 크기를 바꾸라는 메모 뒤 새 크기 후보를 아직 고르지 않은 것(마법서 독서대), 애니메이션 기물. 목록은 `tiledata/hand-interior/pick/out/baked.json`.
 - **굽기 4판(2026-10-02).** 소품 하네스(`/harness`)에서 고른 새 기물 113종(2층 침대 가로 포함) + 다시 고른 3종(접시·컵 탁자, 세면대, 숫돌). 414 → 527종. 가구 사전 참고문서는 분류가 37개로 늘어 문서 한도(64)를 넘어서, 8종 미만 분류는 20종 넘게 묶어 한 문서로 싣는다(`prepare-references.mts`, 54문서). 증거 `verify-shots/interior-bake-4/new-objects.png`.
 - 3/4 재작도 후보(w90·w91, 54종)는 아직 고르지 않아 들어가지 않았다. 고른 뒤 `python3 scripts/content/hand-interior/build_tileset.py && bun scripts/content/hand-interior/prepare-references.mts` 를 다시 돌린다.
+- **굽기 5판 — 실내 공통 팔레트 v6(2026-10-03).** 사용자 「몬스터뿐 아니라 타일들도 문제」: 시트가 4041색, 새 기물 팔레트(v5.pal 203색)에 드는 화소는 19.8%. `palette/v6.pal` = v5.pal 그대로 + 시트가 쓰는 색 중 v5 밖의 것을 OKLab 가중 k-means 로 묶은 128색(`@rampc s1…s14`, `build_merged_palette.py`, 시안 `interior-merged-palette.html`) = 331색. `build_tileset.py` 가 시트와 예제 맵 그림을 쓰기 직전 `palette_snap.py`(화소마다 OKLab 최근접, 알파 그대로)로 옮긴다(`HAND_INTERIOR_SNAP=0` 이면 끈다). 픽셀 검사는 옮기기 전 그림끼리라 그대로 BAD 0. 칸 번호·정의 JSON 은 바뀌지 않는다 — 실측: 새 시트 = snap(이전 시트) 화소 차 0, 바뀐 화소 720,337, 평균 OKLab 차 0.0054, 시트 332색. 굽기는 4판의 고르기(`HAND_INTERIOR_PICKS_JSON=<e231100813 의 picks.json>`)로 해서 팔레트만 바뀌었다. 소품 하네스의 공통 팔레트(`common.SHARED_PAL`)도 v6 — 후보 폴더 `palette.pal` 은 v6.pal 이 더 새로우면 다음 판에서 다시 만든다(`brief.ensure_folder`). 작업자가 v5 옛 색을 써도 굽기에서 v6 로 맞춰진다.
 
 
 ## 새 기물 길 (2026-10-01)
