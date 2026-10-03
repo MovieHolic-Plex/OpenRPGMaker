@@ -146,14 +146,14 @@ def soban(kind='a'):
         c.put(x, 9, Wd[3]) if 1 <= x - 2 <= 10 else None
     if kind == 'a':                                          # 밥·국·반찬
         bowl(c, 3, 3, Pl, rice=True); bowl(c, 9, 3, Pl, soup=True); bowl(c, 6, 5, Pl)
-    elif kind == 'b':                                        # 주전자 + 잔
-        ell(c, 6, 4, 3.2, 2.6, lambda x, y, u, v: Gi[5] if u < 0 else Gi[4])
-        c.hl(2, 4, 3, Gi[5]); c.put(1, 2, Gi[4])
-        c.hl(5, 8, 1, Gi[6]); c.put(9, 3, Gi[3]); c.put(10, 3, Gi[3])
-        bowl(c, 9, 5, Pl)
-    else:                                                    # 술병 + 잔 둘
-        bottle(c, 4, 0, 6, Dg)
-        bowl(c, 8, 4, Pl); bowl(c, 10, 5, Pl)
+    elif kind == 'b':                                        # 잔 + 주전자
+        bowl(c, 3, 4, Pl)
+        ell(c, 10, 4, 3.2, 2.6, lambda x, y, u, v: Gi[6] if u < -0.3 else (Gi[5] if u < 0.2 else Gi[4]))
+        c.hl(6, 8, 3, Gi[5]); c.put(5, 2, Gi[5]); c.put(5, 3, Gi[4])
+        c.hl(9, 12, 1, Gi[6]); c.put(13, 3, Gi[3])
+    else:                                                    # 잔 둘 + 술병
+        bowl(c, 2, 4, Pl); bowl(c, 6, 5, Pl)
+        bottle(c, 11, 0, 6, Dg)
     outline(c)
     contact(c, 3, 13, 15, 1)
     return c
@@ -410,9 +410,9 @@ def jokja(kind='a'):
     c.vl(8, 0, 3, Gi[3])
     c.hl(2, 14, 3, Wd[6]); c.hl(2, 14, 4, Wd[4]); c.put(1, 3, Wd[3]); c.put(14, 3, Wd[3])
     for y in range(5, 26):
-        for x in range(3, 13):
-            c.put(x, y, Pl[5] if x < 8 else Pl[4])
-    c.vl(3, 5, 26, Rd[3]); c.vl(12, 5, 26, Rd[2])
+        for x in range(2, 14):
+            edge = x in (2, 3, 12, 13)
+            c.put(x, y, (Rd[5] if x < 8 else Rd[4]) if edge else (Pl[5] if x < 8 else Pl[4]))
     if kind == 'a':                                       # 산수
         for x in range(4, 12):
             ridge = 14 - int(2.5 * math.sin((x - 3) * 0.7 + 1))

@@ -493,6 +493,349 @@
     8,
     9
    ]
+  },
+  "in_wall_hoe_m": {
+   "all": "X"
+  },
+  "in_wall_hoe_l": {
+   "all": "X"
+  },
+  "in_wall_hoe_r": {
+   "all": "X"
+  },
+  "in_wall_hoe_lr": {
+   "all": "X"
+  },
+  "in_wall_heuk_m": {
+   "all": "X"
+  },
+  "in_wall_heuk_l": {
+   "all": "X"
+  },
+  "in_wall_heuk_r": {
+   "all": "X"
+  },
+  "in_wall_heuk_lr": {
+   "all": "X"
+  },
+  "in_wall_mok_m": {
+   "all": "X"
+  },
+  "in_wall_mok_l": {
+   "all": "X"
+  },
+  "in_wall_mok_r": {
+   "all": "X"
+  },
+  "in_wall_mok_lr": {
+   "all": "X"
+  },
+  "in_wall_dol_m": {
+   "all": "X"
+  },
+  "in_wall_dol_l": {
+   "all": "X"
+  },
+  "in_wall_dol_r": {
+   "all": "X"
+  },
+  "in_wall_dol_lr": {
+   "all": "X"
+  },
+  "in_wall_chang_m": {
+   "all": "X"
+  },
+  "in_wall_chang_l": {
+   "all": "X"
+  },
+  "in_wall_chang_r": {
+   "all": "X"
+  },
+  "in_wall_chang_lr": {
+   "all": "X"
+  },
+  "in_wall_hoe_win": {
+   "all": "X"
+  },
+  "in_wall_mok_win": {
+   "all": "X"
+  },
+  "in_wall_heuk_win": {
+   "all": "X"
+  },
+  "in_wall_hoe_door": {
+   "all": "X"
+  },
+  "in_wall_chang_door": {
+   "all": "X"
+  },
+  "in_wall_mok_door": {
+   "all": "X"
+  },
+  "in_pillar": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_pillar_3": {
+   "grid": [
+    "C",
+    "C",
+    "X"
+   ]
+  },
+  "in_ceil_beam_m": {
+   "all": "C"
+  },
+  "in_ceil_beam_l": {
+   "all": "C"
+  },
+  "in_ceil_beam_r": {
+   "all": "C"
+  },
+  "in_door_sill": {
+   "all": "F"
+  },
+  "in_exit_door": {
+   "all": "F"
+  },
+  "in_exit_door2": {
+   "all": "F"
+  },
+  "in_stairs_wood_3": {
+   "grid": [
+    "XXX",
+    "FFF",
+    "FFF"
+   ]
+  },
+  "in_stairs_wood_2": {
+   "grid": [
+    "XX",
+    "FF",
+    "FF"
+   ]
+  },
+  "in_stairs_stone_3": {
+   "grid": [
+    "XXX",
+    "FFF",
+    "FFF"
+   ]
+  },
+  "in_stairs_down": {
+   "all": "F"
+  },
+  "in_dais_front_m": {
+   "all": "X"
+  },
+  "in_dais_front_l": {
+   "all": "X"
+  },
+  "in_dais_front_r": {
+   "all": "X"
+  },
+  "in_dais_steps": {
+   "all": "F"
+  },
+  "in_byeongpung_a": {
+   "all": "X"
+  },
+  "in_byeongpung_b": {
+   "all": "X"
+  },
+  "in_byeongpung_c": {
+   "all": "X"
+  },
+  "in_byeongpung_s": {
+   "all": "X"
+  },
+  "in_nong": {
+   "all": "X"
+  },
+  "in_ibuljang": {
+   "all": "X"
+  },
+  "in_bandaji": {
+   "all": "X"
+  },
+  "in_mungap": {
+   "all": "X"
+  },
+  "in_soban_a": {
+   "all": "X"
+  },
+  "in_soban_b": {
+   "all": "X"
+  },
+  "in_soban_c": {
+   "all": "X"
+  },
+  "in_sang_2": {
+   "all": "X"
+  },
+  "in_sang_jumak": {
+   "all": "X"
+  },
+  "in_chaeksang": {
+   "all": "X"
+  },
+  "in_hwaro": {
+   "all": "X"
+  },
+  "in_betl": {
+   "all": "X"
+  },
+  "in_mulle": {
+   "all": "X"
+  },
+  "in_bumak_2": {
+   "all": "X"
+  },
+  "in_bumak_3": {
+   "all": "X"
+  },
+  "in_hangari_a": {
+   "all": "X"
+  },
+  "in_hangari_b": {
+   "all": "X"
+  },
+  "in_hangari_tall": {
+   "all": "X"
+  },
+  "in_dok_row": {
+   "all": "X"
+  },
+  "in_suldok": {
+   "all": "X"
+  },
+  "in_dwiju": {
+   "all": "X"
+  },
+  "in_pyeongsang_3": {
+   "all": "X"
+  },
+  "in_bangseok_r": {
+   "all": "F"
+  },
+  "in_bangseok_b": {
+   "all": "F"
+  },
+  "in_bangseok_g": {
+   "all": "F"
+  },
+  "in_ibul_r": {
+   "all": "X"
+  },
+  "in_ibul_b": {
+   "all": "X"
+  },
+  "in_jipjari_2": {
+   "all": "F"
+  },
+  "in_jipjari_1": {
+   "all": "F"
+  },
+  "in_jokja_a": {
+   "all": "X"
+  },
+  "in_jokja_b": {
+   "all": "X"
+  },
+  "in_deungjan": {
+   "all": "X"
+  },
+  "in_chotdae": {
+   "all": "X"
+  },
+  "in_seonban": {
+   "all": "X"
+  },
+  "in_seonban_bottles": {
+   "all": "X"
+  },
+  "in_yakjang": {
+   "all": "X"
+  },
+  "in_yakjang_1": {
+   "all": "X"
+  },
+  "in_seoga": {
+   "all": "X"
+  },
+  "in_yakyeon": {
+   "all": "X"
+  },
+  "in_yakhwa": {
+   "all": "X"
+  },
+  "in_herb_hang": {
+   "all": "X"
+  },
+  "in_pulmu": {
+   "all": "X"
+  },
+  "in_morus": {
+   "all": "X"
+  },
+  "in_charcoal": {
+   "all": "X"
+  },
+  "in_hwadeok": {
+   "all": "X"
+  },
+  "in_tub": {
+   "all": "X"
+  },
+  "in_tool_rack": {
+   "all": "X"
+  },
+  "in_workbench": {
+   "all": "X"
+  },
+  "in_ingots": {
+   "all": "X"
+  },
+  "in_jumak_counter": {
+   "all": "X"
+  },
+  "in_geolsang": {
+   "all": "X"
+  },
+  "in_hunjang_sang": {
+   "all": "X"
+  },
+  "in_hakdong_sang": {
+   "all": "X"
+  },
+  "in_hoechori": {
+   "all": "X"
+  },
+  "in_gwan_desk": {
+   "all": "X"
+  },
+  "in_gwan_chair": {
+   "all": "X"
+  },
+  "in_hyeongtul": {
+   "all": "X"
+  },
+  "in_gonjang_rack": {
+   "all": "X"
+  },
+  "in_buk": {
+   "all": "X"
+  },
+  "in_ssal_gama": {
+   "all": "X"
+  },
+  "in_jangjak": {
+   "all": "X"
+  },
+  "in_mul_dongi": {
+   "all": "X"
   }
  },
  "terrain": {
@@ -672,6 +1015,41 @@
     "field"
    ],
    "edgeConnects": false
+  },
+  "in_floor_ondol": {
+   "name": "조선 실내 온돌 장판",
+   "walk": true,
+   "role": "terrain"
+  },
+  "in_floor_maru": {
+   "name": "조선 실내 마루",
+   "walk": true,
+   "role": "terrain"
+  },
+  "in_floor_dirt": {
+   "name": "조선 실내 흙바닥",
+   "walk": true,
+   "role": "terrain"
+  },
+  "in_floor_stone": {
+   "name": "조선 실내 돌바닥(박석)",
+   "walk": true,
+   "role": "terrain"
+  },
+  "in_floor_jeondol": {
+   "name": "조선 실내 전돌 바닥",
+   "walk": true,
+   "role": "terrain"
+  },
+  "in_ceil47": {
+   "kind": "blob47",
+   "name": "조선 실내 천장 (기와 단면 림)",
+   "walk": false,
+   "role": "terrain",
+   "connect": [
+    "in_ceil47"
+   ],
+   "edgeConnects": true
   }
  }
 }

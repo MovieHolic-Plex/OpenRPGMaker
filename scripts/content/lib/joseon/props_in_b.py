@@ -91,7 +91,7 @@ def yakyeon():
             c.put(x, y, Gi[3] if x < 9 else Gi[2])
     ell(c, 8, 7, 3.2, 3.6, lambda x, y, u, v: Gi[6] if u < -0.2 else (Gi[5] if u < 0.4 else Gi[4]))
     c.put(8, 7, Gi[3]); c.put(8, 6, Gi[2])
-    c.hl(0, 4, 7, Wd[4]); c.hl(12, 16, 7, Wd[3]); c.put(0, 6, Wd[5]); c.put(15, 6, Wd[4])
+    c.hl(0, 4, 7, Wd[5]); c.hl(0, 4, 8, Wd[4]); c.hl(12, 16, 7, Wd[4]); c.hl(12, 16, 8, Wd[3]); c.put(0, 6, Wd[6]); c.put(1, 6, Wd[5]); c.put(14, 6, Wd[4]); c.put(15, 6, Wd[3])
     c.hl(4, 12, 14, Wd[3])
     outline(c)
     contact(c, 3, 13, 14, 2)
@@ -109,8 +109,9 @@ def yakhwa():
     ell(c, 8, 6, 3.4, 1.4, lambda x, y, u, v: Sr[4])
     c.put(8, 4, Sr[6]); c.put(9, 4, Sr[4])
     c.hl(12, 15, 7, Sr[4]); c.put(14, 6, Sr[5]); c.put(15, 6, Sr[3])
-    for (x, y) in ((7, 2), (9, 1), (8, 0), (10, 2)):
-        c.put(x, y, Pl[5] if y % 2 else Pl[4])
+    for (x, y) in ((6, 2), (8, 0), (10, 2)):                        # 김(2×2 덩이)
+        for (dx, dy) in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            c.put(x + dx, y + dy, Pl[5] if dy == 0 else Pl[4])
     outline(c)
     contact(c, 4, 12, 14, 1)
     return c
@@ -120,7 +121,7 @@ def herb_hang():
     """약초 걸이 32×16: 가로장 한 줄에 줄에 묶어 거꾸로 매단 약초 다발 네 개 (벽면에 건다)."""
     c = new(2, 1)
     c.hl(1, 31, 0, Wd[6]); c.hl(1, 31, 1, Wd[4]); c.hl(1, 31, 2, Wd[2])
-    for k, (x0, col, col2) in enumerate(((3, Dg, Le), (11, Sr, Pe), (19, Le, Dg), (26, Sr, Sr))):
+    for k, (x0, col, col2) in enumerate(((3, Sr, Pe), (11, Le, Dg), (19, Sr, Sr), (26, Dg, Le))):
         c.vl(x0 + 1, 2, 4, Gi[3])
         for y in range(4, 14):
             hw = 2 if y < 6 else (3 if y < 11 else 2)
@@ -363,10 +364,9 @@ def hoechori():
     from props5 import cyl
     c = new(1, 1)
     cyl(c, 8, 8, 4.0, 6, Wd, (6, 5), (5, 4, 3, 2), open_ring=(0.7, Wd[1], Wd[1]))
-    for k, x in enumerate((5, 7, 9, 11)):
+    for k, x in enumerate((4, 7, 10)):
         for y in range(0, 8):
-            c.put(x + (k % 2) * 0, y, Wd[6] if k % 2 else Wd[5])
-        c.put(x + 1, 1, Wd[3])
+            c.put(x, y, Wd[6]); c.put(x + 1, y, Wd[4])
     outline(c)
     contact(c, 4, 12, 14, 1)
     return c
