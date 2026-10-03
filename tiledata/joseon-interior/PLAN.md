@@ -49,3 +49,8 @@
 ## 자동 점검 (`interior_checks.py`)
 출입구 앞 칸 BFS 도달 · 기물이 입구/통로를 막지 않음(기물 칸을 막힘으로 보고 모든 용도 칸 도달) · 같은 기물 셋 일렬 금지 ·
 천장 밑 벽 규칙(벽면 2줄·통로 3줄) · 맨바닥 10칸 이상 연속 금지(가로·세로).
+
+## 구현 상태 (2026-10-04)
+- 방 정의: `scripts/content/lib/joseon/demo_interior.py` (`python3 demo_interior.py [방id…] [-v] [--png] [--out DIR]`). 산출은 방별 폴더.
+- 실제 크기: 민가 15×14 · 주막 22×14 · 대장간 14×10 · 약방 12×10 · 서당 18×12 · 관아 19×15 (계획보다 줄였다 — 맨바닥 10칸 연속 금지).
+- 변환기 참고: 천장·벽 고체 칸은 `groundKind: 'void'` 로 나간다. `build-joseon-tileset.py` 의 `want = gk not in (water, paddy, bridge)` 에서 void 칸이 groundKind 불일치로 집계될 수 있다(변환기는 이 작업에서 수정하지 않음).
