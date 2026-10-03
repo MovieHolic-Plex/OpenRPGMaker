@@ -2406,5 +2406,565 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-03"
+ },
+ "fld_trail32": {
+  "hash": "633c648bc691",
+  "status": "pass",
+  "line": "짐승길: 흙길 램프 위에 풀 가장자리, 윗면 시점 평면. 마을 흙길과 같은 결",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_tall32": {
+  "hash": "3afff9ce1136",
+  "status": "pass",
+  "line": "키 큰 풀·억새: 줄기 도트가 위로 서고 밑동에 그늘 한 줄. 평면 바닥 위 윗면 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_forest32": {
+  "hash": "dd13bed9320b",
+  "status": "pass",
+  "line": "낙엽 숲 바닥: 어두운 잎 램프+낙엽 점, 풀과 경계가 가장자리 마스크로 이어짐",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_bog94": {
+  "hash": "f13540e6ab8e",
+  "status": "pass",
+  "line": "늪: 청록 물+진흙 가장자리, 47 블롭 마스크, 물 곁 기슭 한 줄. 연못(water47)과 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock32": {
+  "hash": "b72e598d9f1d",
+  "status": "pass",
+  "line": "바위산 윗면: 회색 돌 결+이끼 점, 가장자리 안쪽 윤곽 한 줄(고리 아님). 윗면이 면으로 보임",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock_in8": {
+  "hash": "9925af6738bc",
+  "status": "pass",
+  "line": "바위 윗면 속 8변형: 결만 다르고 이음 없이 rock32 mask15 자리를 대체",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_face32": {
+  "hash": "a1ad4da3e4ba",
+  "status": "note",
+  "line": "바위산 앞면 2줄(윗단·아랫단): 세로 균열결+밑동 그늘. 동·서 벽면 없음(3/4). 밑동 풀은 약함",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_floor": {
+  "hash": "7dd65126fbac",
+  "status": "pass",
+  "line": "동굴 바닥 6변형: 잠금 돌 램프의 어두운 결, 잔돌 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_floor_lit": {
+  "hash": "24f0de84c934",
+  "status": "pass",
+  "line": "입구 햇빛 든 바닥 4변형: 마을 흙 램프로 이어져 들판과 어울림",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_ceil32": {
+  "hash": "2f472135c5b8",
+  "status": "pass",
+  "line": "동굴 천장: 어두운 돌 윗면, 바닥과 닿는 변이 밝은 테. 마스크 16×2",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_face24": {
+  "hash": "9868828699d1",
+  "status": "note",
+  "line": "동굴 벽 앞면 2줄: 필드 앞면과 같은 구조에 어두운 돌 램프. 천장 밑 2줄 규칙 충족",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_pool94": {
+  "hash": "ace3141abe79",
+  "status": "pass",
+  "line": "지하 못: 청색 물+돌 가장자리 블롭 47×2변형",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock_s_a": {
+  "hash": "345644995c4b",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock_s_b": {
+  "hash": "3f730e48f1e5",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock_s_c": {
+  "hash": "aefd628b19fe",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock_m_a": {
+  "hash": "75ef0edd5ef3",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock_m_b": {
+  "hash": "c7964a4262e9",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock_l_a": {
+  "hash": "0964adaa136f",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rock_l_b": {
+  "hash": "70eb76bd5a7d",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_boulder_mass": {
+  "hash": "99028d94ceea",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_flowers_a": {
+  "hash": "284b817b5177",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_flowers_b": {
+  "hash": "be11d6ad73ea",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_flowers_c": {
+  "hash": "79160fdf3b53",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_bush_flower_a": {
+  "hash": "d4b8bc442a0b",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_bush_flower_b": {
+  "hash": "0e07145c4c4d",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_bush_berry": {
+  "hash": "fab657203b4b",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_fern": {
+  "hash": "a4ee6c08c3e8",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_log_a": {
+  "hash": "2103fac39151",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_log_b": {
+  "hash": "65c0dc40196f",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_stump_a": {
+  "hash": "5f49eeddb3dd",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_stump_b": {
+  "hash": "19740e026e53",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_burrow": {
+  "hash": "b41c646c73d7",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_bones_a": {
+  "hash": "4288a19f76e7",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_bones_b": {
+  "hash": "17e714598f21",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_ore_a": {
+  "hash": "1a52155f152c",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_ore_b": {
+  "hash": "e64f25966a9a",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_signpost": {
+  "hash": "e3540121bf50",
+  "status": "user",
+  "line": "정면 소품(앞면 위주, 윗면 한 줄 정도). 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_campfire": {
+  "hash": "c7c2c00291e0",
+  "status": "note",
+  "line": "윗면보다 앞면이 많이 보이는 낮은 조각(천막·봉분·모닥불). 3/4 윗면 한 겹은 있음, 기준보다 약함",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_tent_a": {
+  "hash": "d76a116dc747",
+  "status": "note",
+  "line": "윗면보다 앞면이 많이 보이는 낮은 조각(천막·봉분·모닥불). 3/4 윗면 한 겹은 있음, 기준보다 약함",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_tent_b": {
+  "hash": "a0837f89e914",
+  "status": "note",
+  "line": "윗면보다 앞면이 많이 보이는 낮은 조각(천막·봉분·모닥불). 3/4 윗면 한 겹은 있음, 기준보다 약함",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_rack": {
+  "hash": "2425341a130c",
+  "status": "user",
+  "line": "정면 소품(앞면 위주, 윗면 한 줄 정도). 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_grave_a": {
+  "hash": "e826672dd3da",
+  "status": "note",
+  "line": "윗면보다 앞면이 많이 보이는 낮은 조각(천막·봉분·모닥불). 3/4 윗면 한 겹은 있음, 기준보다 약함",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_grave_b": {
+  "hash": "9f178ca1e333",
+  "status": "note",
+  "line": "윗면보다 앞면이 많이 보이는 낮은 조각(천막·봉분·모닥불). 3/4 윗면 한 겹은 있음, 기준보다 약함",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_tombstone": {
+  "hash": "3476648c0ac5",
+  "status": "user",
+  "line": "정면 소품(앞면 위주, 윗면 한 줄 정도). 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_ruin_pagoda": {
+  "hash": "7eeb9bb95b06",
+  "status": "user",
+  "line": "정면 소품(앞면 위주, 윗면 한 줄 정도). 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_cairn": {
+  "hash": "232256e4c0bd",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_zelkova_a": {
+  "hash": "05dc0301b746",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_zelkova_b": {
+  "hash": "0991ebff9b19",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_zelkova_c": {
+  "hash": "29b48f51155b",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_zelkova_d": {
+  "hash": "ec73ee736062",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_pine_a": {
+  "hash": "68ffd0b5e6b4",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_pine_b": {
+  "hash": "6a9ab8053119",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_pine_c": {
+  "hash": "f2e579ae0476",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_pine_d": {
+  "hash": "27f6464fba4d",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_dead_a": {
+  "hash": "be2ce58d48af",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_dead_b": {
+  "hash": "4174328c19b0",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_grove_broad": {
+  "hash": "6d9e74dac1c9",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_grove_pine": {
+  "hash": "06b9a4a78cdd",
+  "status": "pass",
+  "line": "수관은 윗면 덩이, 줄기·뿌리 퍼짐. 마을 나무(zelkova/pine)와 같은 결, 좌상단 빛",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_cave_a": {
+  "hash": "bd08fa285d8c",
+  "status": "user",
+  "line": "굴 입구 정면 문(앞면 벽 안에 박힌 입구). 정면 소품이라 사용자 판정 필요, 윗면 한 줄(플래토 가장자리)은 보임",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_cave_b": {
+  "hash": "0ebf2555e18f",
+  "status": "user",
+  "line": "굴 입구 정면 문(앞면 벽 안에 박힌 입구). 정면 소품이라 사용자 판정 필요, 윗면 한 줄(플래토 가장자리)은 보임",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "fld_cave_c": {
+  "hash": "027cd6fa80ea",
+  "status": "user",
+  "line": "굴 입구 정면 문(앞면 벽 안에 박힌 입구). 정면 소품이라 사용자 판정 필요, 윗면 한 줄(플래토 가장자리)은 보임",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_stalagmite": {
+  "hash": "797f6b41d2c0",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_rock_a": {
+  "hash": "4a58e3515b81",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_rock_b": {
+  "hash": "c2b1996c9b1d",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_brazier": {
+  "hash": "97f6c57498f5",
+  "status": "user",
+  "line": "정면 소품(앞면 위주, 윗면 한 줄 정도). 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_chest": {
+  "hash": "24a6bef71ebf",
+  "status": "user",
+  "line": "정면 소품(앞면 위주, 윗면 한 줄 정도). 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_mushroom_a": {
+  "hash": "0f70fbce056d",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_mushroom_b": {
+  "hash": "f187ff1c334c",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_crystal": {
+  "hash": "608a5508c205",
+  "status": "pass",
+  "line": "낮은 소품: 윗면이 보이고 좌상단 빛, 밑에 그림자 한 줄. 잠금 팔레트 램프만",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_pillar": {
+  "hash": "f3e36870ca77",
+  "status": "user",
+  "line": "정면 소품(앞면 위주, 윗면 한 줄 정도). 사용자 판정 필요",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
  }
 }
