@@ -1,7 +1,7 @@
 // 일본 도시 · 상가·주택·역·신사 (손 도트) 번들 칩셋 — modern3 팔레트 손 도트를 16px 칸으로 구운 48열 시트(2026-10).
 // 시트 public/assets/jp-city/jp-city-chipset.png, 시트 메타 src/assets/jpCitySheet.json, 정의 src/assets/jpCityTileset.json 은
 // scripts/content/jp-city/bake_jp.py 가 굽는다. 참고문서는 src/assets/jpCityReferences.json(그림은 public/assets/jp-city-references/ 경로만,
-// 바이트 없음; 처음엔 빈 배열). 위키: openwiki/jp-city.md. `modern_city`(oprn-modern)와 별개 번들이다 — 칸 번호 체계가 다르다.
+// 바이트 없음; scripts/content/jp-city/bake_refs.py 가 굽는다 — 6용도 47쪽·그림 124장). 위키: openwiki/jp-city.md. `modern_city`(oprn-modern)와 별개 번들이다 — 칸 번호 체계가 다르다.
 //
 // 칸 번호는 덧붙이기 전용이다(자리 키 핀) — 다시 구워도 앞 번호는 그대로이고 새 칸은 끝에 붙는다. 그래서 칸 수가 번들 이하이고 한 줄 폭이 같은
 // 사본은 같은 시트의 옛 굽기로 보고, 번들 소유 칸 표(통행·층·그룹·오토타일·움직임·조립 부품)만 새 굽기로 바꾼다. 맵은 건드리지 않는다.
@@ -54,7 +54,7 @@ export function isJpCityTileset(tileset: Pick<TilesetDef, "image"> | undefined):
 /**
  * 참고문서를 최신으로 맞춘다. `jp-` 로 시작하는 문서·그림은 번들 소유(학습 결과는 번들이 소유한다):
  * 빠진 용도는 덧붙이고, 있는 용도에서는 `jp-` 항목만 번들 것으로 바꾼다. 저자가 쓴 문서(다른 id)·저작 용도·공유 포인터는 건드리지 않는다.
- * 번들 참고문서가 빈 배열인 동안은 아무것도 하지 않는다.
+ * 번들 참고문서 용도 id·문서 id·그림 id 는 모두 `jp-` 로 시작한다(그림은 `/assets/jp-city-references/*.png` 경로).
  */
 export function ensureJpCityReferences(tileset: TilesetDef): boolean {
   if (tileset.id !== JP_CITY_ID || !isJpCityTileset(tileset) || tileset.referenceSourceTilesetId) return false;
