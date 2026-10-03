@@ -97,5 +97,21 @@
         "errors": []
       }
     ]
+  },
+  "rebasedIntegration": {
+    "main": "72acdedf0a",
+    "packagedBuild": {
+      "exit": 0
+    },
+    "focusedTests": {
+      "passed": 20,
+      "failed": 0,
+      "suites": 5
+    },
+    "appTypes": {
+      "exit": 0,
+      "heapMB": 8192
+    },
+    "note": "Earlier live-model/visual evidence and 133 unique passes were captured on f141b72c8e plus this patch. Rebase integration is reported separately; full live-model QA was not repeated."
   }
 }
