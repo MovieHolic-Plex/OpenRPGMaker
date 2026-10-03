@@ -72,12 +72,24 @@ export function overrideConceptCards(extra: readonly ConceptCard[]): void {
   CARDS = [...CARDS.filter((card) => !ids.has(card.id)), ...extra];
 }
 
-/** 문장에 별칭이 들어 있는 카드. 대소문자를 가리지 않고, 제외 구절이 있으면 뺀다. */
+/**
+ * 별칭이 낱말 머리에서 시작하는가 — 앞 글자가 글자·숫자면 다른 낱말의 일부다(「흥미로운」의 「미로」, 「amazed」의 「maze」).
+ * 뒤는 보지 않는다: 한국어는 조사가 붙는다(「미로를」).
+ */
+function hasAlias(lower: string, alias: string): boolean {
+  const needle = alias.toLocaleLowerCase();
+  for (let at = lower.indexOf(needle); at >= 0; at = lower.indexOf(needle, at + 1)) {
+    if (at === 0 || !/[\p{L}\p{N}]/u.test(lower[at - 1]!)) return true;
+  }
+  return false;
+}
+
+/** 문장에 별칭이 (낱말 머리로) 들어 있는 카드. 대소문자를 가리지 않고, 제외 구절이 있으면 뺀다. */
 export function conceptCardsForText(text: string | undefined, cards: readonly ConceptCard[] = CARDS): ConceptCard[] {
   if (!text) return [];
   const lower = text.toLocaleLowerCase();
   return cards.filter((card) =>
-    card.aliases.some((alias) => alias && lower.includes(alias.toLocaleLowerCase()))
+    card.aliases.some((alias) => alias && hasAlias(lower, alias))
     && !(card.excludeContexts ?? []).some((phrase) => phrase && lower.includes(phrase.toLocaleLowerCase())));
 }
 
