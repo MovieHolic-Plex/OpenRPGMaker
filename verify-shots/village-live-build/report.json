@@ -26,17 +26,17 @@
     {
       "name": "시공 연출이 재생됐다",
       "passed": true,
-      "detail": 48216.60000002384
+      "detail": 46877
     },
     {
       "name": "조수 말이 간단히 보기에 보인다",
       "passed": true,
-      "detail": 21958.200000047684
+      "detail": 17695.699999928474
     },
     {
       "name": "체크포인트 직후 「맵에 반영 중」 행",
       "passed": true,
-      "detail": 30572.299999952316
+      "detail": 27637.699999928474
     },
     {
       "name": "페이지 오류 없음",
@@ -47,79 +47,79 @@
   "timeline": [
     {
       "name": "model-call-1",
-      "ms": 170
+      "ms": 168
     },
     {
       "name": "intent-reply",
-      "ms": 3832
+      "ms": 2279
     },
     {
       "name": "run-request-sent",
-      "ms": 18335
+      "ms": 10702
     },
     {
       "name": "run-request-decoded(대본 비용)",
-      "ms": 20356
+      "ms": 14877
     },
     {
       "name": "assistant-1",
-      "ms": 21955
+      "ms": 17693
     },
     {
       "name": "chat-assistant-say-1",
-      "ms": 21958
+      "ms": 17696
     },
     {
       "name": "tool-start",
-      "ms": 22456
+      "ms": 18218
     },
     {
       "name": "chat-building-row",
-      "ms": 25781
+      "ms": 20891
     },
     {
       "name": "checkpoint-sent",
-      "ms": 29244
+      "ms": 25996
     },
     {
       "name": "chat-applying-row",
-      "ms": 30572
+      "ms": 27638
     },
     {
       "name": "chat-built-row",
-      "ms": 30572
+      "ms": 27638
     },
     {
       "name": "chat-applied-row",
-      "ms": 45285
+      "ms": 44881
     },
     {
       "name": "reveal-playing",
-      "ms": 48217
-    },
-    {
-      "name": "ack-1",
-      "ms": 61418
+      "ms": 46877
     },
     {
       "name": "reveal-ended",
-      "ms": 61663
+      "ms": 61723
+    },
+    {
+      "name": "ack-1",
+      "ms": 68686
     },
     {
       "name": "assistant-2",
-      "ms": 65757
+      "ms": 73091
     },
     {
       "name": "done",
-      "ms": 70040
+      "ms": 77608
     },
     {
       "name": "model-call-2",
-      "ms": 75694
+      "ms": 83775
     },
     {
       "name": "model-call-3",
-      "ms": 77907
+      "ms": 86294
     }
   ],
   "intentCalls": 3,
