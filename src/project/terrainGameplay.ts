@@ -12,9 +12,11 @@ function opaqueTiles(tileset: TilesetDef): Set<number> {
   const out = new Set<number>();
   for (let i = 0; i < tileset.passability.length; i++) {
     const meta = tileset.tileMeta?.[i], name = `${meta?.role ?? ""} ${meta?.label ?? ""} ${meta?.tags?.join(" ") ?? ""}`, f = tileset.passability[i];
-    if (water.has(i) || /water|river|lake|lava|물|호수|강물/i.test(name)) continue;
-    if (/ground|floor|grass|road|path|바닥|잔디|길|풀밭/i.test(name)) continue;
-    if (/(?:^|[ .:-])(wall|roof|canopy|tree|forest)(?:$|[ .:_-])|벽|지붕|수관|나무/i.test(name) || f && !f.up && !f.down && !f.left && !f.right) out.add(i);
+    if (water.has(i)) continue;
+    // Overlay objects can inherit a source scene label containing "road" or "water".
+    // Those words describe the scene, and must not exempt a solid roof/tree placed above the ground.
+    if (meta?.defaultLayer !== "upper" && /water|river|lake|lava|물|호수|강물|ground|floor|grass|road|path|바닥|잔디|길|풀밭/i.test(name)) continue;
+    if (/(?:^|[ .:-])(wall|roof|canopy|tree|forest|cypress|hedge)(?:$|[ .:_-])|벽|지붕|수관|나무|사이프러스|산울타리/i.test(name) || f && !f.up && !f.down && !f.left && !f.right) out.add(i);
   }
   obstacles.set(tileset, out); return out;
 }

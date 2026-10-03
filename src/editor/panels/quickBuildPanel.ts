@@ -1,8 +1,7 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import { editorState } from "../editorState";
-import { HOUSE_KITS } from "../houseKit";
-import { quickHouseCatalog, quickHouseKit, quickHouseStyles } from "../quickHouse";
+import { quickHouseCatalog, quickHouseKit, quickHouseStyles, quickHouseStyleName, quickHouseMinWidth } from "../quickHouse";
 import { structureKitUnitCells } from "../harnessSuggestion/structureKitModel";
 import { renderTileCellsToCanvas } from "../harnessSuggestion/kitRender";
 
@@ -31,7 +30,11 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
     const effectiveKit = catalog.some(k => k.id === s.terrainHouseKitId) ? s.terrainHouseKitId : !styles.length ? catalog[0]?.id : null;
     width.closest("label")!.hidden = stories.closest("label")!.hidden = !!effectiveKit;
     saved.closest("label")!.hidden = !catalog.length;
+    const effectiveStyle = styles.includes(s.terrainHouseStyle) ? s.terrainHouseStyle : styles[0];
+    for (const option of width.options) option.disabled = !!effectiveStyle && Number(option.value) < quickHouseMinWidth(effectiveStyle);
     instructions.textContent = effectiveKit ? "저장된 집은 원본 크기로 배치합니다. 끌어서 위치를 잡거나 문 위치를 한 번 누르세요." : "끌어서 집 너비·높이를 정하고 놓으세요. 한 번 클릭하면 선택한 크기로 문 위치에 놓습니다. 초록은 배치 가능 · 빨강은 불가 · Esc는 취소.";
+    if (!effectiveKit && tileset?.id === "beodeul_city" && styles.length) instructions.textContent = "버들항 집 · 끌어서 너비·높이를 정하고 놓으세요. 높이는 창·문을 보존하며 층 단위로 맞춥니다. 초록은 가능 · 빨강은 불가 · Esc는 취소.";
+    if (!styles.length && !catalog.length) instructions.textContent = "이 지도 타일셋에 집 부품이 없습니다. 타일의 구조물에 입구가 있는 집을 등록해 주세요.";
     if (house.hidden) return;
     const key = `${tileset?.id}:${tileset?.count}:${s.terrainHouseWidth}:${s.terrainHouseStories}:${catalog.map(k => k.id).join(",")}`;
     if (key !== rendered) {
@@ -40,8 +43,8 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
       for (const kit of catalog) saved.append(el("option", { value: kit.id, text: `${kit.name ?? kit.id} · ${kit.width}×${kit.height}` }));
       for (const style of tileset ? quickHouseStyles(tileset) : []) {
         const kit = quickHouseKit(tileset!, { style, width: s.terrainHouseWidth, stories: s.terrainHouseStories }); if (!kit) continue;
-        const card = el("button", { class: "terrain-stamp-card", attrs: { type: "button", "aria-pressed": "false", "aria-label": HOUSE_KITS[style].name }, dataset: { houseStyle: style }, on: { click: () => editorState.set({ terrainHouseStyle: style, terrainHouseKitId: null }) } });
-        card.append(renderTileCellsToCanvas({ tileset: tileset!, widthTiles: kit.width, heightTiles: kit.height, scale: Math.min(1, 6 / Math.max(kit.width, kit.height)), backgroundTile: null, cells: structureKitUnitCells(kit) }), el("span", { text: HOUSE_KITS[style].name })); cards.append(card);
+        const card = el("button", { class: "terrain-stamp-card", attrs: { type: "button", "aria-pressed": "false", "aria-label": quickHouseStyleName(style) }, dataset: { houseStyle: style }, on: { click: () => editorState.set({ terrainHouseStyle: style, terrainHouseKitId: null, terrainHouseWidth: Math.max(s.terrainHouseWidth, quickHouseMinWidth(style)) }) } });
+        card.append(renderTileCellsToCanvas({ tileset: tileset!, widthTiles: kit.width, heightTiles: kit.height, scale: Math.min(1, 6 / Math.max(kit.width, kit.height)), backgroundTile: null, cells: structureKitUnitCells(kit) }), el("span", { text: quickHouseStyleName(style) })); cards.append(card);
       }
       for (const kit of catalog.slice(0, 12)) {
         const card = el("button", { class: "terrain-stamp-card", attrs: { type: "button", "aria-pressed": "false" }, dataset: { houseKit: kit.id }, on: { click: () => editorState.set({ terrainHouseKitId: kit.id }) } });
@@ -50,7 +53,7 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
       if (!cards.childElementCount) cards.append(el("p", { text: "타일의 구조물에 입구가 있는 집을 등록하면 여기서 고를 수 있습니다." }));
     }
     saved.value = effectiveKit ?? "";
-    for (const card of cards.querySelectorAll<HTMLButtonElement>("[data-house-style]")) card.setAttribute("aria-pressed", String(!effectiveKit && card.dataset.houseStyle === s.terrainHouseStyle));
+    for (const card of cards.querySelectorAll<HTMLButtonElement>("[data-house-style]")) card.setAttribute("aria-pressed", String(!effectiveKit && card.dataset.houseStyle === effectiveStyle));
     for (const card of cards.querySelectorAll<HTMLButtonElement>("[data-house-kit]")) card.setAttribute("aria-pressed", String(card.dataset.houseKit === effectiveKit));
   }
   const offState = editorState.subscribe(sync), offStore = store.subscribe(sync); sync();

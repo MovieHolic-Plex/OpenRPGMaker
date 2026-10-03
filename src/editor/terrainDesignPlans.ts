@@ -5,7 +5,7 @@ import { normalizeTerrainDesign, terrainLocked } from "@/project/terrainDesign";
 import type { GameMap, TilesetDef } from "@/project/types";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
-import { terrainIsReserved, terrainMaterialTile } from "./terrainMaterials";
+import { terrainIsReserved, terrainMaterialTile, terrainRoadTile } from "./terrainMaterials";
 import { reliefDoodadCatalog } from "./reliefDoodads";
 import { connectTerrainRoad } from "./terrainRoadRamps";
 import { lineCells, polygonCells, symmetryVariants, terrainHash, transformPoint, type TerrainPoint } from "./terrainDesignGeometry";
@@ -104,7 +104,7 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
     return finish(map, next, touched, `호수 ${cells.length}칸 · 수위 ${o.waterLevel} · 얕은 물 ${o.shallowWidth}칸`);
   }
   const materials = ["grass", "dirt", "stone"] as const, available = materials.map((m, n) => ({ tile: terrainMaterialTile(tileset, m), weight: Math.max(0, o.weights[n]) })).filter(m => m.tile !== undefined && m.weight > 0);
-  const dirt = terrainMaterialTile(tileset, "dirt"), edits: { index: number; tile: number }[] = [];
+  const dirt = terrainRoadTile(tileset), edits: { index: number; tile: number }[] = [];
   if (tool === "road" && dirt === undefined || tool === "mix" && !available.length) return { ok: false, reason: "선택한 재질이 이 칩셋에 없습니다", indices: [] };
   const sum = available.reduce((s, m) => s + m.weight, 0);
   for (const i of cells) {

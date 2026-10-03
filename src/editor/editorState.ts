@@ -99,7 +99,7 @@ export interface EditorState {
   terrainShallowWidth: number;
   terrainRoadFlatten: boolean;
   terrainRoadDrag: boolean;
-  terrainHouseStyle: import("./houseKit").HouseKitId;
+  terrainHouseStyle: import("./quickHouse").QuickHouseStyle;
   terrainHouseKitId: string | null;
   terrainHouseWidth: number;
   terrainHouseStories: 1 | 2;
@@ -182,7 +182,7 @@ class EditorStateStore {
     terrainShallowWidth: 2,
     terrainRoadFlatten: false,
     terrainRoadDrag: false,
-    terrainHouseStyle: "blue-stone", terrainHouseWidth: 7, terrainHouseStories: 1,
+    terrainHouseStyle: "beodeul-manor-a", terrainHouseWidth: 7, terrainHouseStories: 1,
     terrainHouseKitId: null,
     terrainHouseDrag: null,
     terrainUnlock: false,

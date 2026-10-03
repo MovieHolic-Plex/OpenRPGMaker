@@ -29,3 +29,9 @@ export function terrainIsReserved(map:GameMap,tileset:TilesetDef,index:number):b
   if (/road|path|water|river|lake|길|포석|물|호수/i.test(`${meta?.label} ${meta?.tags?.join(" ")}`)) return true;
   return autotileGroupsForTileset(tileset).some(g=>/road|path|water|river|lake|길|포석|물|호수/i.test(`${g.id} ${g.name}`) && g.memberTileIds.includes(tile));
 }
+
+/** Road authoring uses the map's road material, including Beodeul cobbles, rather than assuming dirt. */
+export function terrainRoadTile(tileset: TilesetDef): number | undefined {
+  const group = autotileGroupsForTileset(tileset).find(g => (g.layer ?? "lower") === "lower" && /road|path|길|도로/i.test(`${g.id} ${g.name}`) && !/water|river|lake|물|강물/i.test(`${g.id} ${g.name}`));
+  return group ? group.variantMap[group.neighborhood === 8 ? "255" : "15"] ?? group.memberTileIds[0] : terrainMaterialTile(tileset, "dirt");
+}

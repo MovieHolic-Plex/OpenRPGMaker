@@ -8,27 +8,35 @@ import { HOUSE_KITS, houseKitForTileset, mixableHouseKitIds, rectHouseHeight, st
 import { structureKitFromMapRegion } from "./harnessSuggestion/structureKitModel";
 import { terrainEditable, type TerrainDesignPlan } from "./terrainDesignPlans";
 import { terrainIsReserved } from "./terrainMaterials";
+import { BEODEUL_HOUSE_STYLES, beodeulHouseStyles, beodeulHouseMinWidth, isBeodeulHouseStyle, quickBeodeulHouse, type BeodeulHouseStyle } from "./beodeulQuickHouse";
 import type { TerrainPoint } from "./terrainDesignGeometry";
 
-export interface QuickHouseOptions { style: HouseKitId; width: number; stories: 1 | 2; kitId?: string | null; roofBodyRows?: number }
+export type QuickHouseStyle = HouseKitId | BeodeulHouseStyle;
+export interface QuickHouseOptions { style: QuickHouseStyle; width: number; stories: 1 | 2; kitId?: string | null; roofBodyRows?: number; height?: number }
 export interface QuickHouseDrag { mapId: string; start: TerrainPoint; end: TerrainPoint }
 export function quickHouseCatalog(tileset: TilesetDef): SectionStructureKitDef[] {
   return (tileset.structureKits ?? []).filter((k): k is SectionStructureKitDef => k.kind === "section" && k.width <= 24 && k.height <= 24
     && !!k.parts?.some(p => p.kind === "entrance") && /house|home|집|주택|저택|여관|상점|대장간|성당|창고/i.test(`${k.id} ${k.name} ${k.ai?.tags?.join(" ")}`))
     .sort((a, b) => Number(!/살림집|cottage/i.test(a.name ?? "")) - Number(!/살림집|cottage/i.test(b.name ?? "")));
 }
-export function quickHouseStyles(tileset: TilesetDef): readonly HouseKitId[] {
+export function quickHouseStyles(tileset: TilesetDef): readonly QuickHouseStyle[] {
+  if (tileset.id === "beodeul_city") return beodeulHouseStyles(tileset);
   if (tileset.tileSize !== 16 || ![COMBINED_TOWN_TILESET_ID, "forest_harmony"].includes(tileset.id)) return [];
   return mixableHouseKitIds(tilesetHasHouseParts(tileset));
 }
+export function quickHouseStyleName(style: QuickHouseStyle): string { return isBeodeulHouseStyle(style) ? BEODEUL_HOUSE_STYLES[style] : HOUSE_KITS[style].name; }
+export function quickHouseMinWidth(style: QuickHouseStyle): number { return isBeodeulHouseStyle(style) ? beodeulHouseMinWidth(style) : 5; }
 const kits = new Map<string, SectionStructureKitDef>();
 /** Public house assembler: actual lower roofs/walls and transparent upper caps, never copied raster art. */
 export function quickHouseKit(tileset: TilesetDef, options: QuickHouseOptions): SectionStructureKitDef | undefined {
   const catalog = quickHouseCatalog(tileset);
   const selected = options.kitId ? catalog.find(k => k.id === options.kitId) : undefined;
   if (selected) return selected;
-  if (!quickHouseStyles(tileset).length) return catalog[0];
-  const style = houseKitForTileset(options.style, tilesetHasHouseParts(tileset)), width = Math.max(5, Math.min(24, Math.round(options.width)));
+  const styles = quickHouseStyles(tileset);
+  if (!styles.length) return catalog[0];
+  const chosen = styles.includes(options.style) ? options.style : styles[0]!;
+  if (isBeodeulHouseStyle(chosen)) return quickBeodeulHouse(tileset, { ...options, style: chosen });
+  const style = houseKitForTileset(chosen, tilesetHasHouseParts(tileset)), width = Math.max(5, Math.min(24, Math.round(options.width)));
   const roofBodyRows = Math.max(1, Math.min(12, Math.round(options.roofBodyRows ?? 2)));
   const plan = { x: 0, y: 0, width, stories: options.stories, roofBodyRows, kitId: style }, height = rectHouseHeight(plan);
   const id = `quick_house_${style}_${width}_${options.stories}${roofBodyRows === 2 ? "" : `_roof${roofBodyRows}`}`, old = kits.get(id); if (old) return old;
@@ -47,8 +55,8 @@ export interface QuickHousePlan extends TerrainDesignPlan { kit?: SectionStructu
 export function planQuickHouseDrag(map: GameMap, tileset: TilesetDef, drag: QuickHouseDrag, options: QuickHouseOptions): QuickHousePlan {
   if (drag.start.x === drag.end.x && drag.start.y === drag.end.y) return planQuickHouse(map, tileset, drag.start, options);
   const width = Math.abs(drag.end.x - drag.start.x) + 1, height = Math.abs(drag.end.y - drag.start.y) + 1;
-  const wallAndCaps = rectHouseHeight({ kitId: options.style, stories: options.stories, roofBodyRows: 1 }) - 1;
-  const sized = { ...options, width, roofBodyRows: height - wallAndCaps }, kit = quickHouseKit(tileset, sized), door = kit?.parts?.find(p => p.kind === "entrance");
+  const wallAndCaps = rectHouseHeight({ kitId: isBeodeulHouseStyle(options.style) ? "blue-stone" : options.style, stories: options.stories, roofBodyRows: 1 }) - 1;
+  const sized = { ...options, width, height, roofBodyRows: height - wallAndCaps }, kit = quickHouseKit(tileset, sized), door = kit?.parts?.find(p => p.kind === "entrance");
   const x = Math.min(drag.start.x, drag.end.x), y = Math.min(drag.start.y, drag.end.y);
   return planQuickHouse(map, tileset, { x: x + (door?.dx ?? 0), y: y + (door ? door.dy + door.h - 1 : 0) }, sized);
 }
