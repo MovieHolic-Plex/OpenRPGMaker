@@ -2,13 +2,18 @@
 //  · 경사로·계단: relief.ramps(1~4 경사로 · 5~8 계단). 칩셋과 무관하게 렌더러가 그린다.
 //  · 벽면: 칩셋 키트(덩굴·담쟁이 같은 1~3칸 폭 덧그림)를 relief.wallDecor 로 절벽 남쪽 면에 건다.
 //  · 나무·바위: 칩셋 키트를 3층(상층) 스탬프로 찍는다. 들린 칸이면 그림도 같이 들린다(screen.ts).
-// 새 저장 필드는 없다. 카탈로그는 칩셋의 structureKits 를 태그·이름으로 고른다 — 키트가 없는 칩셋은 그 탭이 빈다.
+// 군집 배치·이동·삭제는 terrainClusters.ts. 카탈로그는 칩셋의 structureKits 를 태그·이름으로 고른다.
 
+import { planReliefRamp } from "./reliefRampPlan";
+import { emptyRelief } from "@/project/relief/edit";
+import { cellPassability } from "@/project/collision";
+import { terrainMaterialTile } from "./terrainMaterials";
+import { clearTileStack } from "@/project/mapOverlayTiles";
 import { paintTilesBulk } from "@/editor/tileActions";
-import { setLayerTileAt } from "@/project/mapLayers";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { store } from "@/project/store";
 import { reliefLiftField, cellLift } from "@/project/relief/screen";
-import { rampCode, RELIEF_BRIDGE, reliefSlopes } from "@/project/relief/walk";
+import { RELIEF_BRIDGE } from "@/project/relief/walk";
 import type { ReliefData, ReliefWallTile } from "@/project/relief/types";
 import type { GameMap, MapId, SectionStructureKitDef, TilesetDef } from "@/project/types";
 
@@ -34,8 +39,6 @@ export type ReliefDoodad =
 
 /** 탭마다 보여 줄 키트 상한 — 버들항은 나무 키트만 수십 개다. */
 const PER_TAB_LIMIT = 24;
-/** 자연 비탈은 넓은 면, 계단은 좁은 통로로 읽히도록 구분한다. */
-const RAMP_WIDTH = 4, STAIR_WIDTH = 2;
 
 const RAMPS: readonly ReliefDoodad[] = [
   { id: "ramp:slope", tab: "ramp", kind: "ramp", label: "경사로", stairs: false },
@@ -112,6 +115,7 @@ export interface ReliefDoodadPlan {
   readonly reason: string;
   readonly rects: readonly ReliefDoodadRect[];
   readonly apply?: (draft: GameMap) => void;
+  readonly cells?: readonly { x: number; y: number; layer: "lower" | "upper" }[];
   /** 나무·바위: 찍을 칸(상층 스탬프). */
   readonly stamp?: readonly { readonly x: number; readonly y: number; readonly layer: "lower" | "upper"; readonly tile: number }[];
 }
@@ -120,14 +124,23 @@ const level = (relief: ReliefData | undefined, x: number, y: number): number =>
   !relief || x < 0 || y < 0 || x >= relief.width || y >= relief.height ? 0 : relief.levels[y * relief.width + x] ?? 0;
 
 /** 같은 단의 두 둑 사이에 폭 2칸 판을 놓는다. 시작 둑의 윗면에서 골짜기 쪽을 찾는다. */
-function planBridge(map: GameMap, doodad: Extract<ReliefDoodad, { kind: "bridge" }>, x: number, y: number): ReliefDoodadPlan {
-  const relief = map.relief;
+function planBridge(map: GameMap, doodad: Extract<ReliefDoodad, { kind: "bridge" }>, x: number, y: number, start?: { x: number; y: number } | null): ReliefDoodadPlan {
+  const end = { x, y };
+  if (!start) return { ok: false, reason: "첫 번째 둑을 누르고 반대편 둑을 누른다", rects: [{x,y:y-level(map.relief,x,y),w:1,h:1}] };
+  x=start.x; y=start.y;
+  const relief = map.relief ?? emptyRelief(map.width, map.height);
   const hi = level(relief, x, y);
   const horizontal = doodad.axis === "horizontal";
   const rect = { x, y: y - hi, w: horizontal ? 1 : 2, h: horizontal ? 2 : 1 };
-  if (!relief || hi === 0) return { ok: false, reason: "언덕 윗면의 가장자리에서 시작한다", rects: [rect] };
+  const tileset=store.getCurrent().tilesets[map.tilesetId];
+  const waterTile=terrainMaterialTile(tileset,"water");
+  const isWater=(X:number,Y:number)=>{
+    const tile=layerTileAt(map,1,Y*map.width+X);
+    return tileset?.autotileGroups?.some(g=>/water|river|lake|물|호수/i.test(`${g.id} ${g.name}`)&&g.memberTileIds.includes(tile)) || tile===waterTile;
+  };
   const inside = (X: number, Y: number) => X >= 0 && Y >= 0 && X < map.width && Y < map.height;
-  for (const direction of [1, -1]) {
+  if ((horizontal ? end.y !== y : end.x !== x) || (horizontal ? end.x === x : end.y === y)) return { ok:false, reason:"같은 줄의 반대편 둑을 누른다", rects:[rect] };
+  for (const direction of [Math.sign(horizontal ? end.x-x : end.y-y)]) {
     const cells: { x: number; y: number }[] = [];
     for (let distance = 1; distance < (horizontal ? map.width : map.height); distance++) {
       const span = [0, 1].map((offset) => ({
@@ -135,20 +148,23 @@ function planBridge(map: GameMap, doodad: Extract<ReliefDoodad, { kind: "bridge"
         y: y + (horizontal ? offset : distance * direction),
       }));
       if (span.some((cell) => !inside(cell.x, cell.y))) break;
-      if (span.every((cell) => level(relief, cell.x, cell.y) === hi && !(relief.ramps?.[cell.y * map.width + cell.x] ?? 0))) {
+      if ((horizontal ? span[0]!.x === end.x : span[0]!.y === end.y) && span.every((cell) => level(relief, cell.x, cell.y) === hi && !(relief.ramps?.[cell.y * map.width + cell.x] ?? 0))) {
         const start = [0, 1].map((offset) => ({ x: x + (horizontal ? 0 : offset), y: y + (horizontal ? offset : 0) }));
-        if (!cells.length || start.some((cell) => !inside(cell.x, cell.y) || level(relief, cell.x, cell.y) !== hi || (relief.ramps?.[cell.y * map.width + cell.x] ?? 0) > 0)) break;
+        if (!cells.length || [...start,...span].some((cell) => !inside(cell.x, cell.y) || level(relief, cell.x, cell.y) !== hi || (relief.ramps?.[cell.y * map.width + cell.x] ?? 0) > 0
+          || (tileset && !Object.values(cellPassability(tileset,map,cell.y*map.width+cell.x)).every(Boolean)))) break;
         const x0 = Math.min(...cells.map((cell) => cell.x)), y0 = Math.min(...cells.map((cell) => cell.y));
         const width = horizontal ? cells.length / 2 : 2, height = horizontal ? 2 : cells.length / 2;
         return {
           ok: true, reason: `${hi}단 둑 사이를 폭 2칸·길이 ${cells.length / 2}칸 다리로 잇는다`,
+          cells: cells.map(c=>({...c,layer:"lower" as const})),
           rects: [{ x: x0, y: y0 - hi, w: width, h: height }],
           apply: (draft) => {
-            if (!draft.relief) return;
+            if (!draft.relief) draft.relief=emptyRelief(draft.width,draft.height);
             const levels = draft.relief.levels.slice();
             const ramps = draft.relief.ramps?.slice() ?? new Array<number>(levels.length).fill(0);
             for (const cell of cells) {
               const index = cell.y * map.width + cell.x;
+              clearTileStack(draft,"lower",index);
               levels[index] = hi; ramps[index] = RELIEF_BRIDGE;
               const tile = doodad.kit.rows[(cell.y - y0) % doodad.kit.height]?.tiles[(cell.x - x0) % doodad.kit.width];
               if (tile !== undefined) setLayerTileAt(draft, 1, index, tile);
@@ -158,8 +174,8 @@ function planBridge(map: GameMap, doodad: Extract<ReliefDoodad, { kind: "bridge"
           },
         };
       }
-      if (span.some((cell) => level(relief, cell.x, cell.y) >= hi || (relief.ramps?.[cell.y * map.width + cell.x] ?? 0) > 0
-        || (map.upperTiles[cell.y * map.width + cell.x] ?? -1) >= 0 || (map.upperOverlayTiles?.[cell.y * map.width + cell.x] ?? -1) >= 0)) break;
+      if (span.some((cell) => (level(relief, cell.x, cell.y) >= hi && !(level(relief,cell.x,cell.y)===hi && isWater(cell.x,cell.y))) || (relief.ramps?.[cell.y * map.width + cell.x] ?? 0) > 0
+        || layerTileAt(map, 3, cell.y * map.width + cell.x) >= 0 || layerTileAt(map, 4, cell.y * map.width + cell.x) >= 0)) break;
       cells.push(...span);
     }
   }
@@ -186,12 +202,14 @@ export function planReliefDoodad(
   map: GameMap,
   doodad: ReliefDoodad,
   pick: { readonly x: number; readonly y: number; readonly face: "top" | "wall" },
+  options: { width?: number; bridgeStart?: { x: number; y: number } | null } = {},
 ): ReliefDoodadPlan {
   const relief = map.relief;
   const lift = relief ? reliefLiftField(relief) : null;
   const drawY = (x: number, y: number) => y - (lift ? cellLift(lift, x, y) : 0);
   if (pick.x < 0 || pick.y < 0 || pick.x >= map.width || pick.y >= map.height) return { ok: false, reason: "맵 밖으로 나간다", rects: [] };
-  if (doodad.kind === "bridge") return planBridge(map, doodad, pick.x, pick.y);
+  if (doodad.kind === "ramp") return planReliefRamp(map, pick, options.width ?? (doodad.stairs ? 2 : 4), doodad.stairs);
+  if (doodad.kind === "bridge") return planBridge(map, doodad, pick.x, pick.y, options.bridgeStart);
   if (doodad.kind === "prop") {
     const { kit } = doodad;
     const x0 = pick.x - Math.floor((kit.width - 1) / 2), y0 = pick.y - (kit.height - 1);
@@ -206,14 +224,10 @@ export function planReliefDoodad(
     if (stamp.some((cell) => level(relief, cell.x, cell.y) !== base)) return { ok: false, reason: "높이가 다른 칸에 걸친다 — 같은 단 위에만 놓인다", rects: [rect] };
     return { ok: true, reason: base > 0 ? `${base}단 언덕 위에 놓인다` : "땅 위에 놓인다", rects: [rect], stamp };
   }
-  const slopes = doodad.kind === "ramp" && relief ? reliefSlopes(relief) : [];
-  const hitSlope = slopes.find(s => s.dir === "n" && pick.x >= s.x && pick.x < s.x + s.w && pick.y >= s.y && pick.y < s.y + s.h);
-  const wall = hitSlope
-    ? { x: hitSlope.x + Math.floor((hitSlope.w - 1) / 2), y: hitSlope.y - 1 }
-    : snapToWall(relief, pick.x, pick.y, pick.face);
+  const wall = snapToWall(relief, pick.x, pick.y, pick.face);
   if (!relief || !wall) return { ok: false, reason: "남쪽 절벽이 없다 — 언덕 가장자리에 대 보라", rects: [{ x: pick.x, y: drawY(pick.x, pick.y), w: 1, h: 1 }] };
   const hi = level(relief, wall.x, wall.y), lo = level(relief, wall.x, wall.y + 1), height = hi - lo;
-  const width = doodad.kind === "ramp" ? (doodad.stairs ? STAIR_WIDTH : RAMP_WIDTH) : doodad.kit.width;
+  const width = doodad.kit.width;
   const x0 = wall.x - Math.floor((width - 1) / 2);
   const faceRect = { x: x0, y: wall.y + 1 - hi, w: width, h: height };
   for (let dx = 0; dx < width; dx++) {
@@ -240,33 +254,7 @@ export function planReliefDoodad(
       },
     };
   }
-  // 경사로·계단: 벽 남쪽 낮은 땅에 (단 차 + 1)칸 길이로 북쪽 오르막을 깐다(relief-style-sheet 의 계단과 같은 비례).
-  const length = height + 1;
-  const rampRect = { x: x0, y: wall.y + 1 - hi, w: width, h: height + length };
-  // 같은 절벽의 북쪽 통로만 바꾼다. 폭·길이 밖으로 옛 통로를 남기지 않는다.
-  const replaceable = slopes.filter(s => s.dir === "n" && s.lo === lo && s.hi === hi
-    && s.y === wall.y + 1 && s.h === length && s.x >= x0 && s.x + s.w <= x0 + width);
-  for (let dy = 1; dy <= length; dy++) for (let dx = 0; dx < width; dx++) {
-    const X = x0 + dx, Y = wall.y + dy;
-    if (Y >= relief.height) return { ok: false, reason: "맵 아래로 나간다", rects: [rampRect] };
-    if (level(relief, X, Y) !== lo) return { ok: false, reason: `아래 ${length}칸이 평평해야 한다`, rects: [rampRect] };
-    const oldCode = relief.ramps?.[Y * relief.width + X] ?? 0;
-    if (oldCode > 0 && !((oldCode === 1 || oldCode === 5) && replaceable.some(s => X >= s.x && X < s.x + s.w))) {
-      return { ok: false, reason: "다른 통로에 걸친다", rects: [rampRect] };
-    }
-  }
-  const code = rampCode("n", doodad.stairs);
-  return {
-    ok: true,
-    reason: `${height}단을 폭 ${width}칸·길이 ${length}칸 ${doodad.stairs ? "계단으로" : "경사로로"} 잇는다`,
-    rects: [rampRect],
-    apply: (draft) => {
-      if (!draft.relief) return;
-      const ramps = draft.relief.ramps ? draft.relief.ramps.slice() : new Array<number>(draft.relief.levels.length).fill(0);
-      for (let dy = 1; dy <= length; dy++) for (let dx = 0; dx < width; dx++) ramps[(wall.y + dy) * draft.relief.width + x0 + dx] = code;
-      draft.relief = { ...draft.relief, ramps };
-    },
-  };
+  return { ok: false, reason: "벽면 키트를 고르라", rects: [] };
 }
 
 /** 지형지물 하나를 놓는다. 계획이 안 되면 아무것도 쓰지 않고 그 계획(이유)을 돌려준다. */
@@ -274,16 +262,17 @@ export function placeReliefDoodad(
   mapId: MapId,
   doodad: ReliefDoodad,
   pick: { readonly x: number; readonly y: number; readonly face: "top" | "wall" },
+  options: { width?: number; bridgeStart?: { x: number; y: number } | null } = {},
 ): ReliefDoodadPlan {
   const map = store.getCurrent().maps[mapId];
   if (!map) return { ok: false, reason: "맵이 없다", rects: [] };
-  const plan = planReliefDoodad(map, doodad, pick);
+  const plan = planReliefDoodad(map, doodad, pick, options);
   if (!plan.ok) return plan;
   if (plan.stamp) {
     paintTilesBulk(mapId, plan.stamp, { autoConnect: false, preservePattern: true, clusterExpand: false });
   } else if (plan.apply) {
     const apply = plan.apply;
-    store.updateMapTiles(mapId, apply, { label: `지형지물 · ${doodad.label}`, relief: true });
+    store.updateMapTiles(mapId, apply, { label: `지형지물 · ${doodad.label}`, relief: true, cells:plan.cells });
   }
   return plan;
 }

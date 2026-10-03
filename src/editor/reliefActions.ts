@@ -58,7 +58,8 @@ export function commitReliefEdit(
       // undo 후 바닥을 다시 칠했으면 이번 스트로크 직전 타일이 복원 대상이다.
       memory.set(index, [ground, overlay]);
       tileEdits.push({ index, ground: grass, overlay: -1 });
-    } else if (was > 0 && now === 0 && memory?.has(index)) {
+    } else if (was > 0 && now === 0 && memory?.has(index)
+      && layerTileAt(map,1,index)===reliefTopGrassTile(project.tilesets[map.tilesetId]) && layerTileAt(map,2,index)<0) {
       const [ground, overlay] = memory.get(index)!;
       // 내리기를 undo하면 풀 윗면이 돌아온다. 다시 내려도 원래 바닥을 복원하도록
       // 기록은 다음 0→양수 덮기나 프로젝트 전환까지 보관한다.

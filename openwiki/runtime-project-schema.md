@@ -132,14 +132,21 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 편집 도구: `set_project_settings({ newGamePlus, chapter })`(chapter.variableId 는 기존 변수여야 한다), `define_ending` 조건.
 버전 증가·마이그레이션 없음. 런타임 계약은 [runtime-sessions.md](runtime-sessions.md) 의 같은 날짜 절.
 
+## 지형지물 군집 `map.doodadGroups?` (2026-10-03)
+
+편집기에서 밀도 배치한 나무·바위 묶음의 `id`, `label`, `kitId`, `cells[{index,tile,before}]`를 저장한다.
+`before`는 3층 복원 타일이며 실제 런타임 충돌은 현재 타일이 정한다. 옛 맵에는 필드가 없다.
+불러오기는 `normalizeDoodadGroups`, 깊은 복사·크기/칸 이동은 `cloneExtraLayers`/`remapExtraLayers`를 따른다.
+계약·UI·증거: [terrain-placement-tools.md](terrain-placement-tools.md).
+
 ## 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
 
 `GameMap.relief?: ReliefData` — `{ width, height, levels: number[], ramps?: number[], wallDecor?: {x,y,row,tile}[], style?: string }`(행 우선, 칸마다 0~14단). 뒤 세 필드는 **선택**이다 — 없으면 단만 있는 옛 모양 그대로다. (2026-09-27~10-01 사이의 `baked` 표시는 없앴다 — 불러올 때 버려진다. 저장된 맵 중 relief 를 가진 것은 당시 0개였다.) **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
 권위 코드는 `src/project/relief/`(`types`·`edit`·`ops`·`check`·`render`·`walk`·`screen`·`styles`, 경사로 도트 `rampArt.json`). 전체 지도·편집기/런타임 연결은 [relief-terrain.md](relief-terrain.md).
 
 - `ramps[i]`: 0 없음 · 1~4 매끈한 경사로(오르막 n·s·e·w) · 5~8 계단(같은 방향 + 4) · 9 다리 판. 경사로 칸의 `levels` 는 **낮은 끝 단**이다. `wallDecor`: 칸 (x,y) 의 남쪽 벽 `row` 번째 줄(1 = 윗면 바로 밑)에 그리는 타일(덩굴·폭포·동굴 입구). `style`: `RELIEF_STYLES` 의 키(없으면 기본 흙벽).
-- 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. `ramps` 는 0~9 를 지키고 길이가 안 맞으면 버린다. 전부 0 이거나 모양이 틀리면 필드를 **지운다**.
-- 쓰기 규칙: 결과가 전부 0 이면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다. 붓(`paintRelief`)은 `...map.relief` 로 `ramps`·`wallDecor`·`style` 을 잇고, 조수 `sculpt_relief` 는 `carryReliefExtras`(`edit.ts`)로 **단이 안 바뀐 칸의** 경사로·장식과 양식을 잇는다(`reset:true` 면 양식만).
+- 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. `ramps` 는 0~9 를 지키고 길이가 안 맞으면 버린다. 전부 0이고 다리 코드 9가 없거나 모양이 틀리면 필드를 **지운다**. 0단 물 위 다리는 코드 9를 보존한다.
+- 쓰기 규칙: 결과가 전부 0이고 다리 코드 9가 없으면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다. 붓(`paintRelief`)은 `...map.relief` 로 `ramps`·`wallDecor`·`style` 을 잇고, 조수 `sculpt_relief` 는 `carryReliefExtras`(`edit.ts`)로 **단이 안 바뀐 칸의** 경사로·장식과 양식을 잇는다(`reset:true` 면 양식만).
 - 크기 바꾸기·밀기·자르기: `mapLayers.ts` 의 `ExtraLayerFields` 에 `relief` 가 들어가 `cloneExtraLayers`/`remapExtraLayers` 가 같은 칸 번호로 옮긴다(`ramps`·`wallDecor`·`style` 포함).
 - 렌더: 편집기·플레이어가 같은 `renderRelief`(`reliefRenderOptions(relief)` 한 곳이 옵션을 만든다)로 절벽 벽면·45° 대각선·경사로·다리 판을 그리고, **맵 줄마다 윗면·벽 띠로 잘라** 줄 depth 로 놓는다(편집기 `EditScene.renderReliefLayer`, 플레이어 `playSceneRelief.renderReliefLayer`).
 - **걷기·들림 (통합 2026-10-01):** 높이는 그림만이 아니다. ① `collision.ts canMove` 가 `reliefAllowsStep`(`walk.ts`)을 마지막 조건으로 건다 — 단이 다른 이웃으로는 못 가고, 경사로 칸에서 오르막 축으로만 오르내린다(옆구리 진입 금지, 다리 판은 보통 칸). 도달성 검사·길찾기도 `canMove` 를 쓴다. ② 들린 칸(`cellLift`, 1단 = 맵 칸 1개)의 하층·○ 상층 타일·그림자·캐릭터·이벤트 그림은 그 칸 윗면으로 올려 그린다. ★ 수관과 솔리드 × 상층은 제자리. 캐릭터는 **그리는 프레임에만** 올린다(`sprite.y` 는 접지선 그대로라 depth·타일 역산·트윈이 안 바뀐다). ③ 게임 카메라는 맵 위로 `max(단 − 행)` 만큼 넓어진다(`reliefTopOverhangPx`). **주의: 클릭 이동(`pointerTile`)·전투 필드 배치(`battleOnField`)는 들림을 아직 반영하지 않는다.** **옛 `relief` 맵(경사로 없이 높이만 칠한 것)은 이제 단 차이를 못 건넌다 — 경사로(`ramps`)를 칠해야 오른다.**

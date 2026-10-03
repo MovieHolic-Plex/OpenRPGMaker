@@ -24,7 +24,10 @@ import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { reliefInverseMode } from "@/editor/reliefBrushMode";
 import { paintRoughRelief, tidyReliefStroke } from "@/editor/reliefActions";
-import { findReliefDoodad, placeReliefDoodad } from "@/editor/reliefDoodads";
+import { findReliefDoodad } from "@/editor/reliefDoodads";
+import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPlan";
+import { groupAt } from "./terrainClusters";
+import { paintTerrainBrush } from "./terrainBrush";
 import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { reliefPickCell } from "@/project/relief/screen";
@@ -93,6 +96,7 @@ export class TilePaintEngine {
   /** Shift 로 시작한 스트로크 — 예전 정밀 붓(작은 원, 첫 칸 ±1단). */
   private reliefStrokePrecise = false;
   private reliefRough: ReliefRoughStroke | null = null;
+  private terrainLast: { x: number; y: number } | null = null;
 
   constructor(private readonly deps: TilePaintEngineDeps) {}
 
@@ -280,17 +284,41 @@ export class TilePaintEngine {
     const map = store.getCurrent().maps[mid];
     if (!map) return;
     const pick = reliefPickCell(map.relief, groundX, groundY);
-    const doodad = findReliefDoodad(store.getCurrent().tilesets[map.tilesetId], state.reliefDoodad);
+    const tileset=store.getCurrent().tilesets[map.tilesetId];
+    if (!tileset) return;
+    if (state.terrainBrush === "group") {
+      if (!firstStrokeTile) return;
+      if (ptr.button === 2 || ptr.rightButtonDown()) { editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null}); return; }
+      if (state.terrainMoveGroup) {
+        const plan=planEditorGroupMove(map,tileset,pick.x,pick.y);
+        if (plan.ok && plan.apply) { this.applyStrokeEdit(mid,()=>store.updateMapTiles(mid,plan.apply!,{label:"군집 이동",relief:true,cells:plan.cells})); editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null}); }
+        else toast(plan.reason,"info");
+      } else {
+        const group=groupAt(map,pick.x,pick.y);
+        editorState.set({terrainSelectedGroup:group?{mapId:mid,id:group.id,x:pick.x,y:pick.y}:null});
+      }
+      return;
+    }
+    if (state.terrainBrush === "surface" || state.terrainBrush === "river") {
+      if (firstStrokeTile) {this.stopReliefGrowth();this.terrainLast=null;this.reliefStrokeBase=map.relief?.levels[pick.y*map.width+pick.x]??0;}
+      const centers=strokeCenters(this.terrainLast?`${this.terrainLast.x},${this.terrainLast.y}`:"",pick.x,pick.y);
+      this.applyStrokeEdit(mid,()=>{for(const c of centers)paintTerrainBrush(mid,c.x,c.y,state.terrainBrush==="river"?"water":state.terrainMaterial,state.terrainWidth,this.reliefStrokeBase);});
+      this.terrainLast={x:pick.x,y:pick.y};
+      return;
+    }
+    const doodad = findReliefDoodad(tileset, state.reliefDoodad);
     if (doodad) {
       if (!firstStrokeTile) return;
-      if (ptr.button === 2 || ptr.rightButtonDown()) {
-        editorState.set({ reliefDoodad: null });
-        return;
+      if (ptr.button === 2 || ptr.rightButtonDown()) { editorState.set({ reliefDoodad: null, reliefBridgeStart:null }); return; }
+      if (doodad.kind === "bridge" && state.reliefBridgeStart?.mapId !== mid) {
+        editorState.set({reliefBridgeStart:{mapId:mid,x:pick.x,y:pick.y}});return;
       }
-      let plan: ReturnType<typeof placeReliefDoodad> | null = null;
-      this.applyStrokeEdit(mid, () => { plan = placeReliefDoodad(mid, doodad, pick); });
-      const result = plan as ReturnType<typeof placeReliefDoodad> | null;
-      if (result && !result.ok) toast(`${doodad.label}: ${result.reason}`, "info");
+      const plan=planEditorTerrainDoodad(map,tileset,doodad,pick);
+      if (plan.ok) {
+        if(plan.apply)this.applyStrokeEdit(mid,()=>store.updateMapTiles(mid,plan.apply!,{label:`지형지물 · ${doodad.label}`,relief:true,cells:plan.cells}));
+        else if(plan.stamp)this.applyStrokeEdit(mid,()=>paintTilesBulk(mid,plan.stamp!,{autoConnect:false,preservePattern:true,clusterExpand:false}));
+        if(doodad.kind==="bridge")editorState.set({reliefBridgeStart:null});
+      } else toast(`${doodad.label}: ${plan.reason}`, "info");
       return;
     }
     const { x, y } = pick;
@@ -376,6 +404,7 @@ export class TilePaintEngine {
    * commit=false(되돌리기로 버린 스트로크)면 정리하지 않는다.
    */
   endStroke(commit = true): void {
+    this.terrainLast=null;
     const rough = this.reliefRough;
     this.stopReliefGrowth();
     this.reliefRough = null;

@@ -165,3 +165,7 @@ Do not share one wiki across unrelated projects. Cross-project memory should be 
 If source behavior disagrees with the wiki, the source wins for the immediate fix. Then update the wiki so the next agent does not repeat the stale assumption.
 
 - 공용 전투 동작 32종·이동/가속/배우 경로·실제 턴 기믹·편집기/조수 저작: [battle-motion-programs.md](battle-motion-programs.md).
+
+## 지형 설치 도구 (2026-10-03)
+
+높이·표면·강·군집 선택, 네 방향 경사로·두 둑 다리·군집 복원·시작점 통행 미리보기: [terrain-placement-tools.md](terrain-placement-tools.md).

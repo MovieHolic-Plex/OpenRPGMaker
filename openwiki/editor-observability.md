@@ -458,6 +458,11 @@ dedup baseline(`lastManualSerialized`)은 정반대로 실패 시 전진하지 �
 
 ## 로거
 
+지형 군집 화면 QA(2026-10-03)에서 Ctrl+Z 한 이벤트가 세 번 처리되어 히스토리 깊이가 22→19로 줄었다.
+`hotkeys.handleHistoryHotkey`는 KeyboardEvent 객체를 WeakSet으로 한 번만 소비한다(빈 스택 토스트도 한 번).
+별도 키 이벤트는 계속 처리하며 텍스트 입력/모달의 소유권 가드는 유지한다.
+회귀 계약: `test/historyHotkeyFeedback.test.ts`; 실제 화면 근거: `verify-shots/terrain-placement/observations.json`.
+
 ```ts
 import { createLogger } from "@/util/logger";
 const log = createLogger("store");   // 네임스페이스 = 서브시스템 이름, 필터 축

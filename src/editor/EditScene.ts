@@ -2576,6 +2576,7 @@ export class EditScene extends PhaserRuntime.Scene {
       state.selectedEventId ?? "none",
       state.selectedEventPageId ?? "none",
       state.showGrid ? "grid" : "nogrid",
+      state.terrainReachability ? "reach" : "noreach",
     ].join("|");
   }
 
