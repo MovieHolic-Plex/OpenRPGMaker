@@ -91,6 +91,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     campaignSpeciesId: options.campaignSpeciesId,
     onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
     monsterView: options.monsterView,
+    monsterInstanceId: options.monsterInstanceId,
+    onSelectMonster: options.actions.onSelectMonster,
     lifeLedgerTab: options.lifeLedgerTab,
     confirmSaveSlot: options.confirmSaveSlot,
     confirmToTitle: options.confirmToTitle,
@@ -413,8 +415,8 @@ function renderPartyRow(
         el("span", { class: "status-menu-actor-subline", text: row.levelLabel }),
       ],
     }),
-    renderVitalLine(row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-hp-gauge-${index}`),
-    renderVitalLine(row.mpValueLabel, row.mpRatio, "mp", `status-menu-mp-gauge-${index}`)
+    renderVitalLine(row.monsterInstanceId ? `HP ${row.hpValueLabel}` : row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-hp-gauge-${index}`),
+    renderVitalLine(row.resourceLabel ? `${row.resourceLabel} ${row.mpValueLabel}` : row.mpValueLabel, row.mpRatio, "mp", `status-menu-mp-gauge-${index}`)
   );
   return el("article", {
     class: "status-menu-party-row",
@@ -464,6 +466,7 @@ function renderPartyFace(
 
 /** The same actor appearance and session override as the field sprite. */
 function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], session: PlayerStatusMenuOptions["session"], row: PlayerStatusMenuPartyRow, index: number, faceSize: number): HTMLElement {
+  if (row.monsterInstanceId) return renderPartyFace(project, row, index, faceSize, `status-menu-overview-face-${index}`);
   // 도트 창 스킨(partyStats)은 상점 파티 창과 같은 정면 걷기 그림을 쓴다 — 멈춘 한 프레임이 아니라 걷는다.
   if (menuSkinFor(project).partyStats) {
     const walker = partyWalker(project, session, row.actorId, row.name, { className: "status-menu-character", testId: `status-menu-overview-character-${index}` });
@@ -529,7 +532,7 @@ function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapsh
                 })]
               : []),
             renderOverviewVital("HP", row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-overview-hp-${index}`),
-            renderOverviewVital("MP", row.mpValueLabel, row.mpRatio, "mp", `status-menu-overview-mp-${index}`),
+            renderOverviewVital(row.resourceLabel ?? "MP", row.mpValueLabel, row.mpRatio, "mp", `status-menu-overview-mp-${index}`),
             ...(stats && row.nextLevel
               ? [renderOverviewVital("EX", `다음 ${row.nextLevel.remaining}`, row.nextLevel.ratio, "xp", `status-menu-overview-exp-${index}`)]
               : []),

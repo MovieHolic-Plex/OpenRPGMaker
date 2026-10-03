@@ -101,6 +101,8 @@ export type StatusMenuDetailOptions = {
   readonly onSelectBattleReport?: (index: number | undefined) => void;
   readonly campaignSpeciesId?: string;
   readonly onSelectCampaignSpecies?: (speciesId: string | undefined) => void;
+  readonly monsterInstanceId?: string;
+  readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly monsterView?: "party" | "box";
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly confirmToTitle?: boolean;

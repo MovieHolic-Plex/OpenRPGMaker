@@ -1,3 +1,4 @@
+import { monsterMoveDescription, monsterTypeLabel } from "@/player/playerMonsterPartyModel";
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from '@/player/playerStatusMenuDetailTypes';
 import { monsterCampaign, monsterJournalEntry, reconcileMonsterJournal, type MonsterCampaignDefinition } from '@/project/monsterJournal';
@@ -86,7 +87,7 @@ function dexDetail(options: StatusMenuDetailOptions, campaign: MonsterCampaignDe
     const artwork = resolveAssetResourceUrl(species.graphic.monsterResourceId, { project });
     const skills = (species.skillsByLevel ?? []).map((entry) => {
       const skill = project.database.skills.find((record) => record.id === entry.skillId);
-      return { label: `Lv.${entry.level} ${skill?.name ?? entry.skillId}`, value: skill ? `PP ${skill.maxPp ?? '—'}` : '', description: skill?.description, onActivate: readOnly };
+      return { label: `Lv.${entry.level} ${skill?.name ?? entry.skillId}`, value: skill ? `PP ${skill.maxPp ?? '—'}` : '', description: monsterMoveDescription(project, skill?.description), onActivate: readOnly };
     });
     return {
       title: `No.${String(campaign.speciesIds.indexOf(species.id) + 1).padStart(3, '0')} ${species.name}`,
@@ -95,7 +96,7 @@ function dexDetail(options: StatusMenuDetailOptions, campaign: MonsterCampaignDe
       entries: informationEntries([
         { label: '← 도감 목록', value: '', onActivate: () => options.onSelectCampaignSpecies?.(undefined), testId: 'campaign-dex-back' },
         { label: '기록', value: receipt.caught ? '포획 완료' : '발견 완료', description: receipt.caught ? '함께 여행한 종입니다. 보관하거나 놓아주어도 기록은 남습니다.' : '만난 적이 있는 종입니다.' },
-        { label: '타입', value: (species.types ?? []).join(' / ') || '미분류' },
+        { label: '타입', value: monsterTypeLabel(project, species.types) },
         { label: '생태', value: '', description: campaign.speciesNotes[species.id] ?? '아직 생태 노트가 없습니다.', testId: `campaign-dex-note-${species.id}` },
         { label: '기초 능력', value: '', description: `HP ${species.baseStats.maxHp} · 공격 ${species.baseStats.attack} · 방어 ${species.baseStats.defense} · 특공 ${species.baseStats.mind} · 속도 ${species.baseStats.agility}` },
         ...((species.evolutions ?? []).map((evolution) => {

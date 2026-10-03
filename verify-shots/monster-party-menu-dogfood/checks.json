@@ -1,0 +1,100 @@
+{
+  "kind": "detached runtime surface smoke; session seeded only in memory, no actual gameplay claim",
+  "checks": {
+    "overview": {
+      "actorId": "monster_1",
+      "monsterInstanceId": "monster_1",
+      "resourceLabel": "PP",
+      "name": "새싹토",
+      "levelLabel": "L5",
+      "level": 5,
+      "className": "풀",
+      "condition": "정상",
+      "stateNames": [],
+      "faceResourceId": "mx_art_spriglet_front",
+      "hpLabel": "HP 11/20",
+      "hpValueLabel": "11/20",
+      "mpLabel": "PP 3/35",
+      "mpValueLabel": "3/35",
+      "hpRatio": 0.55,
+      "hpLevel": "safe",
+      "mpRatio": 0.08571428571428572,
+      "nextLevel": {
+        "remaining": 84,
+        "ratio": 0
+      }
+    },
+    "recovery": [
+      {
+        "actorId": "monster_1",
+        "kind": "hp",
+        "name": "새싹토",
+        "current": 11,
+        "max": 20,
+        "next": 20
+      }
+    ],
+    "lastMemberReason": "마지막 파티 몬스터는 보관할 수 없습니다. 먼저 다른 몬스터를 파티로 데려오세요.",
+    "saveLevel": 5,
+    "detail": {
+      "title": "새싹토 · Lv.5",
+      "layout": "campaign-dex",
+      "artwork": {
+        "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAC+ElEQVR42u2bIYziQBSGH2QdHocgoXu6CQq9LeqSPVezArup3WAIgpwha8lZBAZJsqr0dNUl6DtIVuDOo3tid8i0DO0A1860/b9kTbfDbv/9/3lvHiwRAAAAAAAAAAAAAAAAAAAAAAAAoBGGaYeGaYcvb8+hYdqh6t+nVjQBX96eI6KtxjvabtbKnqOuwkEq1pbCgYZph4+TzlXuYWtH7ebx2vf3v0RE9Pr1R3UcWDbu8v6BvINoQrQaU5jmwrhzefetxjulAtZVxZchulYkco8wc05ZyE3A7WZdOxc32erK4s/HV2ULo6yIMAGYII+TTqKIOsc8VwFvcUvcfbe+XmEdyGJ8qQvhwBKcOrToAz+KCZ20NMyZ3u9XTjgrJCJyHZ9Gi6bw/soJyIs4WjSp+xQQEdFsaZ29f7a0qOv49GvRgwN5uk9BonAiEXWryEoENEw7lBUuLuIxwqRHhOtFEQ9F5Apcxxe6r9JtDC+E6/gRkXAWriC5RvjS5rgIe6XSPbAMxaQwwwQI+Ml0HtB0HqRWXQh4hr13oOGgFxHx2mpc6TfW2cO3+g0aDnoRB8rsjS53rFM5mVYqIBOKuZEJycdddN0VnIlViai0D2SOGw56tPcOkVhP5wENBz0p8SoXYdEnFPjWRuQ8JnaSeCpcqMVZmBeF3weZC10Nx1jaDhOYUO7nAPXbPLhJPMO0wyxdWVMdX1ke7tv088976n2r8e6kiruOn1m0tXDgw327sMdDLaYxMs6SFVrUkM+WVmZNd+4CqioGWYmIeWCZiojsXpgW+XghybKIVMKBpWpjsnYh774snafUgUmfFfyf5+w8jnV3RYqibLuTl3hKBfx4wE54i1A6DBOUFhFRjIskXmmqMPtDsP+jK3UfyFfiVr9x9vt773B0VJoo8dfh15ZyD0wTL6mPk1nb6jdou6lAhOPj+iRXia6z9XvvcPKVV5Rrqt3H3uLcewepUwQvzGxp5dqyaBPhiFiDy/Ys/r7+lzWmGQAAAEBl+QfPrJTr6wQSJQAAAABJRU5ErkJggg==",
+        "alt": "새싹토"
+      },
+      "entries": [
+        {
+          "label": "← 몬스터 목록",
+          "value": "",
+          "testId": "status-menu-monster-back"
+        },
+        {
+          "label": "타입",
+          "value": "풀"
+        },
+        {
+          "label": "상태",
+          "value": "정상"
+        },
+        {
+          "label": "HP",
+          "value": "11/20",
+          "testId": "status-menu-monster-current-hp"
+        },
+        {
+          "label": "공격",
+          "value": "9",
+          "testId": "status-menu-monster-current-stats"
+        },
+        {
+          "label": "방어",
+          "value": "9"
+        },
+        {
+          "label": "특공",
+          "value": "10"
+        },
+        {
+          "label": "속도",
+          "value": "10"
+        },
+        {
+          "label": "공격",
+          "value": "PP 3/35",
+          "description": "노말 · 위력 10 · 성공 100% · 기본 무기 공격입니다.",
+          "testId": "status-menu-monster-known-skill-monster_1-skill_attack"
+        },
+        {
+          "label": "보관함으로 이동",
+          "value": "이동 불가",
+          "description": "마지막 파티 몬스터는 보관할 수 없습니다. 먼저 다른 몬스터를 파티로 데려오세요.",
+          "unavailableReason": "마지막 파티 몬스터는 보관할 수 없습니다. 먼저 다른 몬스터를 파티로 데려오세요.",
+          "testId": "status-menu-monster-move-monster_1"
+        }
+      ],
+      "hint": "↑↓ 능력·현재 PP 확인 · Esc 몬스터 목록"
+    }
+  },
+  "errors": []
+}

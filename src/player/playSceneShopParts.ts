@@ -1,3 +1,4 @@
+import { monsterPartyEntries, usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { partyWalker } from "@/player/partyWalker";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
@@ -486,6 +487,25 @@ export function partyPreview(
   // 카드형은 이름이 카드마다 붙으므로 캡션이 필요 없다.
   if (!options.cards) wrap.append(el("span", { class: "runtime-shop-party-caption", text: "파티" }));
   const project = store.getCurrent();
+  if (usesMonsterParty(project)) {
+    for (const entry of monsterPartyEntries(project, scene.session)) {
+      const instanceId = entry.instance.instanceId;
+      const resourceId = entry.species?.graphic.monsterResourceId;
+      const url = resolveAssetResourceUrl(resourceId, { project });
+      const sprite = el("span", { class: "runtime-shop-party-sprite", dataset: { testid: `shop-party-sprite-${instanceId}` }, attrs: { role: "img", "aria-label": entry.name } });
+      if (url) sprite.style.backgroundImage = `url("${url}")`;
+      else sprite.textContent = entry.name.slice(0, 1);
+      if (!options.cards) { wrap.append(sprite); continue; }
+      wrap.append(el("button", {
+        class: "runtime-shop-party-card", dataset: { testid: `shop-party-card-${instanceId}`, actorId: instanceId, monsterInstanceId: instanceId },
+        attrs: { type: "button", "aria-pressed": "false" },
+        children: [sprite, el("span", { class: "runtime-shop-party-name", text: entry.name }),
+          el("span", { class: "runtime-shop-party-fit", dataset: { testid: `shop-party-fit-${instanceId}` } }),
+          el("span", { class: "runtime-shop-party-fit is-second", dataset: { testid: `shop-party-fit2-${instanceId}` } })],
+      }));
+    }
+    return wrap;
+  }
   const actorIds = scene.session.partyActorIds.filter(id => project.database.actors.some(actor => actor.id === id));
   for (const [index, actorId] of actorIds.entries()) {
     const record = project.database.actors.find((entry) => entry.id === actorId);

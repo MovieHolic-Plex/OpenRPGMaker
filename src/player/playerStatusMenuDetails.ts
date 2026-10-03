@@ -1,3 +1,5 @@
+import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
+import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
 import { inventoryViewEntries } from '@/player/playerInventoryView';
 import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
@@ -68,7 +70,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
     case "load": return loadDetail(options.slots, options.onLoadSlot);
-    case "status": return statusDetail(options.project, options.session);
+    case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
     case "battle-reports": return battleReportDetail(options);
@@ -376,6 +378,7 @@ function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
 }
 
 function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  if (usesMonsterParty(options.project)) return monsterPartySkillDetail(options);
   const { project, session } = options;
   if (options.skillActorId) {
     const actor = partyActors(project, session).find((record) => record.id === options.skillActorId);
@@ -591,7 +594,6 @@ function rowDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
 function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const view = options.monsterView ?? "party";
   const ids = view === "party" ? options.session.monsterParty : options.session.monsterBox;
-  const target = view === "party" ? "box" : "party";
   const entries = [
     {
       label: view === "party" ? "보관함 보기" : "파티 보기",
@@ -609,10 +611,9 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         {
           label: monsterDisplayName(options.project, instance),
           value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
-          description: view === "party" ? "선택하면 보관함으로 이동합니다" : "선택하면 파티로 이동합니다",
+          description: "선택하면 현재 능력·기술·PP를 봅니다",
           testId: `status-menu-monster-${instanceId}`,
-          onActivate: options.onMoveMonster ? () => options.onMoveMonster?.(instanceId, target) : undefined,
-          disabled: target === "party" && options.session.monsterParty.length >= MONSTER_PARTY_MAX,
+          onActivate: options.onSelectMonster ? () => options.onSelectMonster?.(instanceId) : undefined,
         },
         ...(instance.pendingSkillIds ?? []).flatMap((pendingSkillId) => {
           const pending = options.project.database.skills.find((skill) => skill.id === pendingSkillId);
@@ -643,6 +644,8 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       ];
     }),
   ];
+  const detail = monsterInstanceDetail(options, entries.filter(entry => entry.testId?.startsWith(`status-menu-monster-skill-`) && entry.testId.includes(`-${options.monsterInstanceId}-`)));
+  if (detail) return detail;
   return {
     title: view === "party" ? "몬스터: 파티" : "몬스터: 보관함",
     entries,

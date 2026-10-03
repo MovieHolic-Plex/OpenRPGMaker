@@ -1006,6 +1006,9 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
 }
 
 function leadPartyLevel(project: Project, session: PlaySession): number | undefined {
+  if (project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) {
+    return session.monsterInstances[session.monsterParty[0]]?.level;
+  }
   const actorId = session.partyActorIds[0];
   if (!actorId) return undefined;
   const actor = project.database.actors.find((record) => record.id === actorId);

@@ -172,7 +172,7 @@ function shopStatement(project: Project, preview: ShopEquipmentPreview, header: 
  */
 export function shopRecoverySummary(rows: readonly ShopRecoveryRow[], names: ReadonlyMap<string, string>): HTMLElement {
   const wrap = el("section", { class: "runtime-shop-comparison-summary runtime-shop-recovery-summary", dataset: { testid: "shop-summary-recovery" } });
-  const kind = rows[0]?.kind === "mp" ? "MP" : "HP";
+  const kind = rows[0]?.kind === "pp" ? "PP" : rows[0]?.kind === "mp" ? "MP" : "HP";
   wrap.append(el("h3", { class: "runtime-shop-comparison-heading", text: `사용하면 · ${kind}` }));
   const stats = el("div", { class: "runtime-shop-statgrid runtime-shop-comparison-stats" });
   for (const row of rows) {
@@ -181,10 +181,10 @@ export function shopRecoverySummary(rows: readonly ShopRecoveryRow[], names: Rea
       class: `runtime-shop-stat${gain > 0 ? " is-up" : " is-same"}`,
       dataset: { testid: `shop-recovery-${row.actorId}`, current: String(row.current), next: String(row.next), max: String(row.max) },
       children: [
-        el("span", { class: "runtime-shop-stat-key", text: names.get(row.actorId) ?? row.actorId }),
+        el("span", { class: "runtime-shop-stat-key", text: row.name ?? names.get(row.actorId) ?? row.actorId }),
         statBar(row.current, row.next, Math.max(1, row.max)),
         el("span", { class: "runtime-shop-stat-value", text: gain > 0 ? `${row.current} → ${row.next}` : `${row.current}/${row.max}` }),
-        el("span", { class: "runtime-shop-stat-delta", text: gain > 0 ? signed(gain) : "가득" }),
+        el("span", { class: "runtime-shop-stat-delta", text: gain > 0 ? signed(gain) : row.reason ?? "가득" }),
       ],
     }));
   }

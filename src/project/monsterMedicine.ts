@@ -27,7 +27,7 @@ export function restoredMovePp(project: Project, skillIds: readonly string[], cu
   return { skillPp, before, after, maximum, changed: after > before };
 }
 
-export function previewMonsterMedicine(project: Project, session: PlaySession, authored: ItemRecord, instanceId: string) {
+export function previewMonsterMedicine(project: Project, session: Pick<PlaySession, "monsterParty" | "monsterInstances" | "inventory">, authored: ItemRecord, instanceId: string) {
   const item = activeItemEffects(authored);
   const instance = session.monsterInstances?.[instanceId];
   const normalized = instance ? normalizeMonsterInstanceBattleState(project, instance) : undefined;

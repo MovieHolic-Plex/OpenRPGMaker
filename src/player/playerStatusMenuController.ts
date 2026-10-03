@@ -1,3 +1,4 @@
+import { monsterBoxUnavailableReason } from "@/player/playerMonsterPartyModel";
 import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
 import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { actorOwnedSkillIds, investSkillNode, resetSkillTree } from "@/project/growth/runtime";
@@ -72,6 +73,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let formationActorId: string | undefined;
   let battleReportIndex: number | undefined;
   let campaignSpeciesId: string | undefined;
+  let monsterInstanceId: string | undefined;
   let monsterView: "party" | "box" = "party";
   let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
@@ -102,6 +104,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     formationActorId = undefined;
     battleReportIndex = undefined;
     campaignSpeciesId = undefined;
+    monsterInstanceId = undefined;
     monsterView = "party";
     lifeLedgerTab = undefined;
     confirmSaveSlot = undefined;
@@ -151,6 +154,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       formationActorId,
       battleReportIndex,
       campaignSpeciesId,
+      monsterInstanceId,
       monsterView,
       lifeLedgerTab,
       readLive: createLifePlacementLiveReader(
@@ -259,6 +263,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           if (speciesId) rememberDetailCursorFromTestId(`campaign-dex-${speciesId}`);
           campaignSpeciesId = speciesId;
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monster-dex"));
+        },
+        onSelectMonster: (instanceId) => {
+          if (instanceId) rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
+          monsterInstanceId = instanceId;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
         },
         onToggleMonsterView: toggleMonsterView,
         onMoveMonster: moveMonsterFromMenu,
@@ -591,6 +600,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   }
 
   function toggleMonsterView(): void {
+    monsterInstanceId = undefined;
     monsterView = monsterView === "party" ? "box" : "party";
     options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
   }
@@ -599,7 +609,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const scene = options.getActiveScene();
     if (!scene) return;
     rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
+    const reason = to === "box" ? monsterBoxUnavailableReason(store.getCurrent(), scene.getSession(), instanceId) : undefined;
+    if (reason) { rejectInput(reason); return; }
     const result = moveMonster(scene.getSession(), instanceId, to, store.getCurrent());
+    if (result.ok) {
+      monsterInstanceId = undefined;
+      scene.refreshRuntimeSurfaces();
+      scene.syncRuntimeState();
+    }
     const message = result.ok
       ? to === "party" ? "몬스터를 파티로 이동했습니다" : "몬스터를 보관함으로 이동했습니다"
       : result.reason === "partyFull" ? "파티가 가득 찼습니다" : "몬스터를 찾을 수 없습니다";
@@ -788,9 +805,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "monster-dex":
         if (campaignSpeciesId) { campaignSpeciesId = undefined; return true; }
         return false;
+      case "monsters":
+        if (monsterInstanceId) { monsterInstanceId = undefined; return true; }
+        return false;
       case "region-map":
       case "campaign-progress":
-      case "monsters":
         return false;
       case "battle-reports":
         if (battleReportIndex !== undefined) { battleReportIndex = undefined; return true; }
@@ -936,7 +955,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "region-map": return "region-map";
       case "campaign-progress": return "campaign-progress";
       case "monsters":
-        return `monsters:${monsterView}`;
+        return `monsters:${monsterView}:${monsterInstanceId ?? "list"}`;
       case "battle-reports":
         return `battle-reports:${battleReportIndex ?? "list"}`;
       case "save":

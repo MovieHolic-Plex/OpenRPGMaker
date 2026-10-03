@@ -648,3 +648,32 @@ boxing/release/evolution, and use actual revealed enemies and committed captures
 The map follows authored coordinates and real transfer connections; badges and
 next objectives read live switches. Unknown species hide name and art. Ownership,
 source routing and bounded browser evidence: [monster-campaign-menu.md](monster-campaign-menu.md).
+
+## Monster party common UI dogfood follow-up (2026-10-03)
+
+When `system.battleParty === "monsters"` or legacy `monsterBattleParty === true`,
+common menu overview/status/skills and medicine shop previews derive from live
+`monsterParty` instances rather than the field actor. `playerMonsterPartyModel.ts`
+normalizes legacy missing skill/PP data using the same monster collection rules
+as combat, resolves types through authored database element names, and exposes
+current HP, current total PP, battle stats and known moves. Actor RPG projects
+retain their actor paths. Actor equipment/row/formation commands are hidden only
+for monster party projects because those controls cannot modify monster battlers.
+
+ESC → 파티 → 몬스터 → Enter opens the current instance detail (art, type, HP,
+effective stats, known moves/current PP); explicit 보관함/파티 이동 is a separate
+row. Esc returns to the prior list and preserves its cursor. Pending move replace
+and reject choices remain available. The menu rejects boxing the last valid party
+monster in monster battle mode, gives a reason, and refreshes runtime surfaces
+following successful party movement. This UI guard does not forbid authored
+interpreter commands or external tools from intentionally clearing a party.
+
+Save `partyLevel` metadata follows the leading monster in monster party mode.
+Medicine purchase previews model one virtual owned copy without mutating session,
+and call the shared `previewMonsterMedicine` eligibility/HP/PP rules. Shop party
+cards use current monster identity/art; unavailable effects keep their reason.
+Regression coverage is authored in `test/monsterPartyMenuDogfood.test.ts` (both
+party flags, empty party, inspect-before-move, known moves/PP, last-member reason,
+shop preview purity, save/load UI state, element labels, actor path compatibility).
+Tests were not run by the worktree agent under AGENTS.md session restrictions;
+shipping-player dogfood verification is owned by the integrating supervisor.

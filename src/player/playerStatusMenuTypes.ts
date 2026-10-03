@@ -34,6 +34,7 @@ export type PlayerStatusMenuActions = {
   readonly onSelectFormationActor: (actorId: string) => void;
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
   readonly onSelectCampaignSpecies?: (speciesId: string | undefined) => void;
+  readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly onToggleMonsterView: () => void;
   readonly onMoveMonster: (instanceId: string, to: "party" | "box") => void;
   readonly onReplacePendingMonsterSkill?: (instanceId: string, pendingSkillId: string, replacedSkillId: string) => void;
@@ -65,6 +66,7 @@ export type PlayerStatusMenuOptions = {
   readonly formationActorId?: string;
   readonly battleReportIndex?: number;
   readonly campaignSpeciesId?: string;
+  readonly monsterInstanceId?: string;
   readonly monsterView?: "party" | "box";
   readonly lifeLedgerTab?: LifeLedgerTabId;
   readonly readLive?: import("@/project/spatialOccupancy").SpatialLiveContextReader;

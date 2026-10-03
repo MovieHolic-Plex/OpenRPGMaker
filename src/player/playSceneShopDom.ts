@@ -289,7 +289,7 @@ export function updateShopPartyCards(
     card.setAttribute("aria-pressed", String(focused));
     card.classList.toggle("is-blocked", fit?.mark === "blocked");
     const lines = fit?.lines
-      ?? (heal ? [{ text: `${heal.kind === "hp" ? "HP" : "MP"} ${heal.next > heal.current ? `+${heal.next - heal.current}` : "가득"}`,
+      ?? (heal ? [{ text: `${heal.kind === "hp" ? "HP" : heal.kind === "pp" ? "PP" : "MP"} ${heal.next > heal.current ? `+${heal.next - heal.current}` : heal.reason ?? "가득"}`,
         tone: heal.next > heal.current ? "up" as const : "muted" as const }] : []);
     [first, second].forEach((slot, index) => {
       if (!slot) return;
