@@ -390,6 +390,7 @@ put('fld_signpost', 93, 82, ok=(None, 'forest'), vis=False); put('fld_bones_b', 
 # --- 바위산: 큰 바위 덩이·광석 노두(갱도 입구 곁)·돌탑
 put('fld_boulder_mass', 22, 40, ok=('rock', 'face0', None, 'yard'), vis=False) if False else None
 put('fld_ore_a', 12, 47, ok=('yard',), vis=False)
+put('fld_rock_m_b', 55, 39, ok=('rock',), vis=False); put('fld_rock_s_a', 59, 40, ok=('rock',), vis=False)   # 풀밭 속 작은 바위 언덕: 맨 바위 판이 되지 않게 곁바위
 put('fld_ore_b', 17, 48, ok=(None, 'yard'), vis=False)
 put('fld_cairn', 23, 48, ok=(None, 'yard'), vis=False)
 
@@ -665,8 +666,6 @@ def lawn_fix(target=0.36, max_rounds=80):
 
 
 print('맨 잔디 덩이 추가', lawn_fix())
-if os.environ.get('JS_DBG'):
-    stage_png('z')
 print('빈 땅 풀 덩이 추가', plain_fix(), '남은 빈 창', len(FM.audit_plain(kit, 10)))
 
 # ================================================================ 자동 점검 단언

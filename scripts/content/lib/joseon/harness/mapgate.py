@@ -27,8 +27,8 @@ if os.environ.get('JS_PROFILE') == 'gungnae_full':
     LAWN_MAX, TREE_MIN, OBJ_MIN = 0.25, 0.07, 0.22
 if os.environ.get('JS_PROFILE') == 'field':
     # 사냥터(96×96): 몬스터가 배회하는 넓은 초원·숲·바위산이 목적이라 마을·국내성보다 맨 풀이 많다(초원 한가운데 20×15 창).
-    # 대신 10×10 칸 전체가 평범한 바닥인 빈 광장은 빌더가 따로 막는다(fld_map.audit_plain). 값은 첫 굽기 실측으로 조인 상한이다(보고서에 실측 적음).
-    LAWN_MAX, TREE_MIN, OBJ_MIN = 0.40, 0.08, 0.14
+    # 대신 10×10 칸 전체가 평범한 바닥인 빈 광장은 빌더가 따로 막는다(fld_map.audit_plain). 첫 굽기 실측 lawn_window 0.357 · tree 0.192 · obj 0.207 에서 여유 한 뼘만 둔 값이다(느슨했던 0.40/0.08/0.14 를 실측으로 조임).
+    LAWN_MAX, TREE_MIN, OBJ_MIN = 0.37, 0.15, 0.18
 if os.environ.get('JS_PROFILE') == 'cave':
     # 동굴(48×48): 나무·잔디가 없다(M1·M2·M4·M7 해당 없음). 바닥·벽면이 땅 그림이라 물체 피복은 낮다 — 방 안 소품(화로·기둥·석순·상자) 밀도로 대신 본다.
     LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.03, 0
