@@ -106,7 +106,7 @@ describe("web export runtime assets", () => {
     for (const path of unconditional) expect(required.has(path)).toBe(true);
   });
 
-  it("keeps the default battle background, which battles fall back to without a battleback", () => {
+  it("no longer ships the retired forest reference backdrop", () => {
     // Given
     const project = createBlankProject();
 
@@ -114,7 +114,8 @@ describe("web export runtime assets", () => {
     const required = requiredRuntimeAssetPaths(project);
 
     // Then
-    expect(required.has("generated/battle-reference-forest.png")).toBe(true);
+    // 기본 배경은 도트 겹 배경이다(webExportAssets 가 네 장을 싣는다). 옛 숲 그림은 deprecated/ 로 옮겼다.
+    expect(required.has("generated/battle-reference-forest.png")).toBe(false);
   });
 
   it("plans no life-ledger art in the collected export asset list", () => {

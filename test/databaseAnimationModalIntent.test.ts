@@ -34,7 +34,7 @@ beforeEach(() => {
     cells: [{ pattern, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }],
   }));
   project.database.battleAnimations = ["preview-a", "preview-b"].map((id) => ({
-    id, name: id, resourceId: "easyrpg-battle-blow",
+    id, name: id, resourceId: "scarloxy-battle-anim-scratch",
     sheet: { frameWidth: 96, frameHeight: 96, columns: 5 }, frames,
   }));
   store.replace(project);

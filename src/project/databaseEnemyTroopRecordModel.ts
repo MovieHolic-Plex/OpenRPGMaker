@@ -82,8 +82,8 @@ function normalizeEnemyReactions(reactions: readonly Partial<EnemyReaction>[] | 
     }));
 }
 
-/** Side-view battle field art. EasyRPG "backdrop" pack is mostly sky panoramas — not usable as JRPG battlebacks. */
-export const DEFAULT_BATTLE_FIELD_BACKGROUND_ID = "generated-battle-reference-forest";
+/** 도트 숲 겹 배경. 옛 숲 레퍼런스 그림(generated-battle-reference-forest)은 2026-10-03 deprecated/ 로 옮겼다. */
+export const DEFAULT_BATTLE_FIELD_BACKGROUND_ID = "battle-scenery-forest";
 
 /** Only rewrite panoramas that read as unusable battle fields (noise / pure black night). */
 const SKY_PANORAMA_BATTLEBACK_IDS = new Set([
@@ -146,6 +146,10 @@ export function normalizeBattleFieldBackgroundId(value: unknown): string | undef
   const id = cleanOptionalId(value);
   if (!id) return undefined;
   if (SKY_PANORAMA_BATTLEBACK_IDS.has(id)) return DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
+  // 옛 전투 배경(2026-10-03 deprecated/ 또는 전투에서 은퇴): 숲 레퍼런스는 도트 숲, 은퇴 스킨 배경과
+  // EasyRPG 하늘 파노라마는 도트 풀밭 겹 배경 id 로 바꿔 저장한다. 포켓몬 전투는 이 id 를 줄무늬 바닥으로 본다.
+  if (id === "generated-battle-reference-forest") return DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
+  if (/^easyrpg-backdrop-|^battle-skin-(?!pokemon-).*-backdrop$/.test(id)) return "battle-scenery-plains";
   return id;
 }
 

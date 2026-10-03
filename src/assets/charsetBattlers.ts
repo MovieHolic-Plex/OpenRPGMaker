@@ -71,6 +71,16 @@ export function charsetBattlerIdForChip(characterResourceId: string, characterIn
   return `charset-battler-${characterResourceId.slice("easyrpg-charset-".length)}-${characterIndex}`;
 }
 
+/**
+ * 걷기 칩 대응이 없는 배우(업로드·생성 영웅 칩, 옛 프로젝트)가 도트 측면 전투에 설 기본 도트(2026-10-03).
+ * 예전에는 은퇴한 정면 스킨의 전사·마법사 일러스트(deprecated/)로 물러났다. 짝수 자리는 전사, 홀수 자리는 마도사.
+ */
+export const RETRO_FALLBACK_PARTY_BATTLERS = ["charset-battler-actor1-0", "charset-battler-actor1-5"] as const;
+
+export function retroFallbackPartyBattler(index: number): string {
+  return RETRO_FALLBACK_PARTY_BATTLERS[Math.abs(index) % RETRO_FALLBACK_PARTY_BATTLERS.length]!;
+}
+
 /** 측면 표시·내보내기가 같은 선택 계약을 쓴다. 저작 시트는 자동 대응보다 우선한다. */
 export function resolvePartyBattleCharset(actor: {
   readonly battleCharacterResourceId?: string;

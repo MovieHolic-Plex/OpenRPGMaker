@@ -34,8 +34,6 @@
     "assets/fonts/Galmuri11.woff2",
     "assets/fonts/Galmuri9.woff2",
     "assets/generated-emotes.png",
-    "assets/generated/battle-skins/sprites/reference-cocoon-front.png",
-    "assets/generated/battle-skins/sprites/reference-seed-back.png",
     "assets/generated/starter/battle-icon-bag.png",
     "assets/generated/starter/battle-icon-boot.png",
     "assets/generated/starter/battle-icon-cross.png",
@@ -67,7 +65,6 @@
     "assets/generated/starter/idle/hero-06-battle.png",
     "assets/scarloxy/scarloxy-monster-larvea.png",
     "assets/scarloxy/scarloxy-monster-mossling.png",
-    "assets/ui/windowskin-default.png",
-    "generated/battle-reference-forest.png"
+    "assets/ui/windowskin-default.png"
   ]
 }

@@ -1,5 +1,21 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 옛 전투 그림은 deprecated/ — 지금 전투에는 도트·포켓몬 그림만 (2026-10-03)
+
+사용자 신고 「자꾸 옛날 그래픽을 꺼내온다」. 스킨을 지울 때 목록에서만 빼고 기본값·폴백·불러오기 재주입을 남겨 둔 것이 원인이었다.
+옛 그림 파일은 `deprecated/public/...`(앱이 싣지 않는 곳)으로 옮겼고 목록은 `deprecated/README.md`. **옛 id 는 지우지 않는다** —
+저장본·공용 장소 약 180개가 들고 있고 `resourceReferenceValidation` 이 모르는 id 를 오류로 막으므로, 리졸버 별칭으로 지금 그림을 가리키게 했다.
+
+- **배경**: 기본 배경 `DEFAULT_BATTLE_FIELD_BACKGROUND_ID` = `battle-scenery-forest`. `normalizeBattleFieldBackgroundId` 가 옛 숲 레퍼런스 → 숲, 은퇴 스킨 배경·EasyRPG 하늘 → 풀밭 겹 배경 id 로 바꾼다(적 그룹 불러오기·전투 배경 결정·`battleFieldDom` `effectiveBackdropId` 공통).
+  retro2003 스킨 기본 배경도 `battle-scenery-plains`. 첫 프레임에 보이던 CSS 숲 그림(`07-640-scene-turn-ribbon.css`)과 겹 배경 실패 시 숲 그림(`battleScenery.ts` `paintFallback` → 같은 지형 `preview.png`)을 걷어냈다.
+  포켓몬은 `pokemonBattleBackdropId`(`battleBackdrop.ts`)가 `battle-scenery-*` 를 `battle-skin-pokemon-backdrop`(CSS 가 숨기는 GBA 줄무늬 바닥 표지)로 돌린다. Scarloxy·업로드 그림은 그대로.
+- **파티**: 걷기 칩 대응이 없는 배우(업로드·생성 영웅 칩, 옛 프로젝트)는 은퇴 정면 스킨 일러스트 대신 `retroFallbackPartyBattler(index)`(도트 actor1-0 / actor1-5)로 선다. 내보내기도 같다. `skinPartySpriteUrl` 은 포켓몬만 쓴다.
+- **효과**: retro2003 은 연출 계약 없는 DB 애니메이션(일반 공격·아이템·계약 없는 기술)을 `battleDom.ts` `retroPixelAnimation` 이 같은 계열의 도트 효과 `anim_px_<key>`(pixel-fx 17종, `src/assets/retroPixelAnimations.ts`)로 바꿔 그린다. 업로드 시트는 그대로.
+  `anim_hit`·`anim_sword`·`anim_arrow` 는 번들 효과 시트(tackle-impact·slash-steel·projectile-shot)로 바꿨고, `ensureBundledBattleAnimations` 가 불러올 때 EasyRPG Blow·Sword1·Arrow 를 가리키는 기록을 고친다(기본 id 는 기본값으로, 저자 기록은 그림 칸만). 포켓몬 효과는 그대로.
+- **적**: EasyRPG Hornet·AI 고치/씨앗은 고르기·조수 목록에서 빠지고 id 는 도트 말벌·Scarloxy 뒷모습 별칭. 숲 말벌 종족·이슬마을 적 4종은 도트 몬스터로 옮겼다.
+- **캐시**: 도트 적 그림이 같은 주소에서 바뀌어 PWA 가 옛 그림을 내놓았다 — `public/sw.js` `CACHE_NAME` v4.
+- 남은 것: 영웅 48px·고해상도 전투 시트(`starter/hero-0N-battle`, `starter/hires/`)는 지금 전투에는 안 나오지만 자료집 배우 미리보기·테스트가 묶여 있어 그대로 뒀다. `community-site/public/player-static` 번들은 `npm run build:community` 로 다시 깔아야 새 그림을 따른다.
+
 ## 캐릭터별 전투 동작 (2026-10-03)
 
 공용 배우 136종의 11계열 프로필, 현재 직업/무기 반영, 편집 설정과 시트 접촉점 277개는

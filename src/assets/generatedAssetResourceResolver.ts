@@ -3,6 +3,7 @@ import { pixelEnemySheet } from "./pixelEnemySheets";
 import { CHARSET_BATTLERS } from "./charsetBattlers";
 import { PARTY_PIXEL_SHEETS } from "./partyPixelSheets";
 import { BATTLE_SCENERY_CATALOG } from "./battleSceneryCatalog";
+import { RETRO_PIXEL_FX_URLS } from "./retroPixelAnimations";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
@@ -24,6 +25,7 @@ import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import type { Project } from "@/project/types";
 
 const FALLBACK_SKIN_ENEMY_URL = PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"]!;
+const BATTLE_SCENERY_PREVIEW = Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.biome, entry.preview])) as Record<"plains" | "forest", string>;
 
 // 타이틀 리소스 id 개명(2026-08-21) — 새 id 를 정본으로 쓰고, 구 id 는 **별칭으로
 // 남긴다**. 이 값은 프로젝트 파일의 titleResourceId/backgroundResourceId 에 저장되므로
@@ -39,6 +41,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // 미설치 팩도 id 는 유지한다. 파일 실패는 전투 배경의 네 장 로드 가드가 처리한다.
   // 단일 그림으로 풀 때는 네 겹을 합친 미리보기 한 장이다(예전엔 땅 겹만이라 썸네일·몬스터 대치에서 하늘이 비었다).
   ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.preview}`])),
+  // 도트 측면 전투의 도트 효과 시트(anim_px_* 레코드가 쓴다).
+  ...RETRO_PIXEL_FX_URLS,
   hero: "/assets/generated/starter/hero-01-battle.png",
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
@@ -112,27 +116,20 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "generated-troop-preview-slime": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"],
   // The existing human selection from monster-collect-species/ledger.json.
   "generated-enemy-sparkit-fire": "/assets/harnesses/monster-collect-species/sparkit/front.png",
-  "battle-skin-pokemon-backdrop": "/assets/generated/battle-skins/pokemon-backdrop.png",
-  // vxace 기본 배경 — 참조 스크린샷은 "푸른 하늘 + 먼 산 + 밝은 초원" 이다. 기존 12장 중
-  // pokemon-backdrop 이 그 구도에 가장 가까워 별칭으로 등록한다(파일 공유는 기존 관례:
-  // generated-face-actor1-full 도 actor1-bust.png 를 가리킨다).
-  "battle-skin-mv-backdrop": "/assets/generated/battle-skins/mv-backdrop.png",
-  "battle-skin-vxace-backdrop": "/assets/generated/battle-skins/vxace-backdrop.png",
-  "battle-skin-rm2003-backdrop": "/assets/generated/battle-skins/rm2003-backdrop.png",
-  "battle-skin-rm2000-backdrop": "/assets/generated/battle-skins/rm2000-backdrop.png",
-  "battle-skin-octopath-backdrop": "/assets/generated/battle-skins/octopath-backdrop.png",
-  "battle-skin-chrono-backdrop": "/assets/generated/battle-skins/chrono-backdrop.png",
-  "battle-skin-bravely-backdrop": "/assets/generated/battle-skins/bravely-backdrop.png",
-  "battle-skin-dragonquest-backdrop": "/assets/generated/battle-skins/dragonquest-backdrop.png",
-  "battle-skin-ff-backdrop": "/assets/generated/battle-skins/ff-backdrop.png",
-  "battle-skin-mother-backdrop": "/assets/generated/battle-skins/mother-backdrop.png",
-  "battle-skin-goldensun-backdrop": "/assets/generated/battle-skins/goldensun-backdrop.png",
+  // 옛 전투 배경(은퇴 스킨 13장·숲 레퍼런스)은 2026-10-03 deprecated/ 로 옮겼다. id 는 저장본·공용 장소가
+  // 들고 있으므로 지금 그림으로 돌린다: 도트 측면은 겹 배경 미리보기, 포켓몬은 Scarloxy 숲.
+  "battle-skin-pokemon-backdrop": "/assets/scarloxy/scarloxy-backdrop-forest.png",
+  ...Object.fromEntries(["mv", "vxace", "rm2003", "rm2000", "octopath", "chrono", "bravely", "dragonquest", "ff", "mother", "goldensun"]
+    .map((skin) => [`battle-skin-${skin}-backdrop`, `/${BATTLE_SCENERY_PREVIEW.plains}`])),
   "battle-skin-demo-battler": "/assets/generated/battle-skins/demo-battler-alpha.png",
   // Per-skin battler sprites (chroma-keyed #00FF00 -> alpha) — themed enemy + party (front/back).
   // 스킨 공용 정면 적 그림은 2026-10-02 지웠다 — 옛 id 는 남겨 두고(참조 검증) 도트 슬라임 초상으로 돌린다.
   "bskin-enemy-pokemon": "/assets/scarloxy/scarloxy-monster-larvea.png",
-  "generated-enemy-reference-cocoon": "/assets/generated/battle-skins/sprites/reference-cocoon-front.png",
-  "generated-enemy-reference-seed-back": "/assets/generated/battle-skins/sprites/reference-seed-back.png",
+  // 옛 AI 고치·씨앗 그림(2026-10-03 deprecated/)은 도트 그림으로 돌린다 — 고르기 목록에서는 뺐다.
+  "generated-enemy-reference-cocoon": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-sylph-hornet"] ?? FALLBACK_SKIN_ENEMY_URL,
+  "generated-enemy-reference-seed-back": "/assets/scarloxy/scarloxy-monster-mossling.png",
+  // EasyRPG Hornet(2026-10-03 deprecated/)도 같은 말벌의 도트 초상으로 돌린다.
+  "easyrpg-monster-hornet": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-sylph-hornet"] ?? FALLBACK_SKIN_ENEMY_URL,
   "bskin-enemy-rm2003": FALLBACK_SKIN_ENEMY_URL,
   "bskin-enemy-rm2000": FALLBACK_SKIN_ENEMY_URL,
   "bskin-enemy-octopath": FALLBACK_SKIN_ENEMY_URL,
@@ -142,10 +139,6 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "bskin-enemy-ff": FALLBACK_SKIN_ENEMY_URL,
   "bskin-enemy-mother": FALLBACK_SKIN_ENEMY_URL,
   "bskin-enemy-goldensun": FALLBACK_SKIN_ENEMY_URL,
-  "bskin-party-warrior-front": "/assets/generated/battle-skins/sprites/party-warrior-front.png",
-  "bskin-party-warrior-back": "/assets/generated/battle-skins/sprites/party-warrior-back.png",
-  "bskin-party-mage-front": "/assets/generated/battle-skins/sprites/party-mage-front.png",
-  "bskin-party-mage-back": "/assets/generated/battle-skins/sprites/party-mage-back.png",
   "bskin-ally-creature-back": "/assets/scarloxy/scarloxy-monster-mossling.png",
   // 액터별 뒷모습 배틀러(2026-08-29). 위의 `bskin-ally-creature-back` 은 **파티 전원이 돌려 쓰는
   // 한 장**이라 어느 액터를 넣어도 같은 보라색 생물이 뒤통수를 보였다. 액터마다 하나씩 나눈다.
@@ -159,8 +152,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "generated-actor-hero-04-back": "/assets/generated/battle-skins/sprites/hero-04-back.png",
   "generated-actor-hero-05-back": "/assets/generated/battle-skins/sprites/hero-05-back.png",
   "generated-actor-hero-06-back": "/assets/generated/battle-skins/sprites/hero-06-back.png",
-  // Side-view battle field art (not EasyRPG sky panoramas).
-  "generated-battle-reference-forest": "/generated/battle-reference-forest.png",
+  // 옛 숲 레퍼런스 그림(2026-10-03 deprecated/) — 도트 숲 겹 배경 미리보기로 돌린다.
+  "generated-battle-reference-forest": `/${BATTLE_SCENERY_PREVIEW.forest}`,
   // CSS 9-slice windowskin (EasyRPG System/*.png sheets are icon strips, not windowskins).
   // 창 스킨 리소스 id 개명(2026-08-21). 새 id 가 정본이고 구 id 는 **읽기 별칭**이다 —
   // project.system.systemResourceId 에 저장되므로 지우면 기존 프로젝트의 대사창이 깨진다.

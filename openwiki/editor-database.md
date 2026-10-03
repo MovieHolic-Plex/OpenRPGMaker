@@ -14,7 +14,8 @@
 - **아이템**: 옛 장비 프로필·사용 메시지 UI 는 이미 없었고 남은 죽은 코드만 지웠다(`databaseItemRecordView.ts`).
 - **전투 애니메이션**: 레일 칸 `db-tab-animations` 삭제 → 도트 연출(`retroChoreographies`)의 하위 보기 「옛 전투 애니메이션 (대체용)」(`PARTY_SUBVIEW_PARENT.animations`, 하위 내비 `db-subview-retro-choreographies`·`db-subview-animations`). 도트 측면 전투는 스킬에 도트 연출이 있으면 셀 애니메이션을 그리지 않으므로(`battleDom.ts`) 연출 없는 스킬의 대체용·몬스터 대치 전용이다. 탭 검색 「전투 애니메이션」「animations」는 도트 연출에 걸린다(`LEGACY_TAB_SEARCH`). 전투 스튜디오 내비의 애니메이션 칸도 도트 연출로 바뀌었다.
 - **소재 고르기**: 은퇴한 전투 배경은 고르기 목록에서 숨긴다(`resourceOptions.ts`). 이미 고른 값은 그대로 보인다.
-- 남긴 것: 파티 정면 스프라이트 `bskin-party-*-front`(살아 있는 폴백), 런타임의 `battleSystemResourceId` 처리 코드(옛 저장 호환).
+- 남긴 것: 런타임의 `battleSystemResourceId` 처리 코드(옛 저장 호환). 파티 정면 스프라이트 `bskin-party-*` 는 2026-10-03 `deprecated/` 로 옮겼다(폴백은 도트 배틀러 — [runtime-battle.md](runtime-battle.md) 「옛 전투 그림은 deprecated/」).
+- **소재 고르기(2026-10-03)**: 은퇴 스킨 배경 전부(rm2003·pokemon 포함)·옛 숲 레퍼런스·AI 고치·씨앗·슬라임 미리보기·EasyRPG Hornet 을 고르기 목록(`resourceOptions.ts` `RETIRED_PICKER_IDS`)과 몬스터·조수 목록(`monsterResourceCatalog.ts` `RETIRED_MONSTER_IDS`)에서 뺐다. 배경 목록에 슬라임이 끼던 `troop-preview` 판정도 지웠다.
 - 잔여 정리: 「전투 스킨」「전투 UI 스타일」 문구를 「전투 방식」으로(전투 꾸미기·명령 CSS 「기본 모양으로」·조수 도구 설명, en/ja/zh 카탈로그 포함). 조수 활동 카드·리소스 고르기 창의 적 색조(`allowHue` 슬라이더·`hue-rotate`)와 `--enemy-pixel-hue` 필터, `databaseFieldSupport.ts` 의 투명·비행·색조 공시, 적 대기 스트립·재생 단추·`.flying` CSS, 몬스터 AI 생성의 그림 단계(그림은 아이템 아이콘만)를 지웠다. `battleSystemResourceId` 는 더 이상 리소스 삭제를 막지 않고 삭제 때 비운다(`resourceManager.ts` — 남기면 참조 검증이 프로젝트를 못 연다). 장르 프리셋 monster-collect 는 `applyBattleMethod(project, "monster")` 를 탄다. 리소스 관리자 「시스템 2」 분류는 남겼다 — 이벤트 「시스템 그림 바꾸기」가 system2 를 고르므로.
 - 시험(실행 안 함): `test/battleSystemDeprecation.test.ts`·`databaseBattleStudio.test.ts`·`battleLook.test.ts`·`battleSkinRegistry.test.ts`. 화면 증거 `verify-shots/db-battle-cleanup/{before,after}/`(`capture.mjs`).
 

@@ -39,9 +39,6 @@ export type EasyRpgCharsetAsset = EasyRpgRtpAsset & {
   readonly group: string;
 };
 export const EASYRPG_RTP_ASSETS = [
-  { category: "battle", id: "easyrpg-battle-arrow", name: "Arrow · 전투 효과 · EasyRPG", sourcePath: "Battle/Arrow.png", path: "assets/easyrpg/battle/Arrow.png", fileName: "Arrow.png" },
-  { category: "battle", id: "easyrpg-battle-blow", name: "Blow · 전투 효과 · EasyRPG", sourcePath: "Battle/Blow.png", path: "assets/easyrpg/battle/Blow.png", fileName: "Blow.png" },
-  { category: "battle", id: "easyrpg-battle-sword1", name: "Sword1 · 전투 효과 · EasyRPG", sourcePath: "Battle/Sword1.png", path: "assets/easyrpg/battle/Sword1.png", fileName: "Sword1.png" },
   { category: "battleWeapon", id: "easyrpg-battle-weapon-weapon", name: "Weapon · 전투 무기 · EasyRPG", sourcePath: "BattleWeapon/Weapon.png", path: "assets/easyrpg/battle-weapon/Weapon.png", fileName: "Weapon.png" },
   { category: "charset", id: "easyrpg-charset-actor1", name: "Actor1 · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Actor1.png", path: "assets/easyrpg/charset/Actor1.png", fileName: "Actor1.png", textureKey: "tex_easyrpg_charset_actor1", group: "Actor" },
   { category: "charset", id: "easyrpg-charset-actor2", name: "Actor2 · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Actor2.png", path: "assets/easyrpg/charset/Actor2.png", fileName: "Actor2.png", textureKey: "tex_easyrpg_charset_actor2", group: "Actor" },
@@ -74,7 +71,6 @@ export const EASYRPG_RTP_ASSETS = [
   { category: "faceset", id: "easyrpg-faceset-people1", name: "People1 · 얼굴 그림 · EasyRPG", sourcePath: "FaceSet/People1.png", path: "assets/easyrpg/faceset/People1.png", fileName: "People1.png" },
   { category: "faceset", id: "easyrpg-faceset-people2", name: "People2 · 얼굴 그림 · EasyRPG", sourcePath: "FaceSet/People2.png", path: "assets/easyrpg/faceset/People2.png", fileName: "People2.png" },
   { category: "gameOver", id: "easyrpg-game-over-game-over", name: "Game Over · 게임오버 화면 · EasyRPG", sourcePath: "GameOver/Game Over.png", path: "assets/easyrpg/game-over/Game Over.png", fileName: "Game Over.png" },
-  { category: "monster", id: "easyrpg-monster-hornet", name: "Hornet · 몬스터 그림 · EasyRPG", sourcePath: "Monster/Hornet.png", path: "assets/easyrpg/monster/Hornet.png", fileName: "Hornet.png" },
   { category: "music", id: "easyrpg-music-battle-1", name: "Battle 1 · 음악 · EasyRPG", sourcePath: "Music/Battle 1.mid", path: "assets/easyrpg/music/Battle 1.mid", fileName: "Battle 1.mid" },
   { category: "music", id: "easyrpg-music-boss-3", name: "Boss 3 · 음악 · EasyRPG", sourcePath: "Music/Boss 3.mid", path: "assets/easyrpg/music/Boss 3.mid", fileName: "Boss 3.mid" },
   { category: "music", id: "easyrpg-music-castle-1", name: "Castle 1 · 음악 · EasyRPG", sourcePath: "Music/Castle 1.mid", path: "assets/easyrpg/music/Castle 1.mid", fileName: "Castle 1.mid" },
