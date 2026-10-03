@@ -1,5 +1,5 @@
-// v5(2026-10-03): 히드라 도트를 교체하고 starter 그림을 삭제했다 — 같은 PNG 주소의 옛 캐시를 비운다.
-const CACHE_NAME = "oprn-pwa-v5";
+// v9(2026-10-03): 전체 몬스터의 새 native64/96 전투 시트·초상으로 캐시를 갱신한다.
+const CACHE_NAME = "oprn-pwa-v9";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",

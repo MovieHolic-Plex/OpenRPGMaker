@@ -1,0 +1,45 @@
+{
+  "fixtureOnly": true,
+  "route": "player.html + exportProjectStoreShim",
+  "skin": "retro2003",
+  "layout": "sideview",
+  "enemy": [
+    {
+      "resourceId": "generated-enemy-hydra-three",
+      "cell": "96",
+      "motion": "breath",
+      "box": {
+        "x": 120,
+        "y": 104.53125,
+        "width": 288,
+        "height": 288,
+        "top": 104.53125,
+        "right": 408,
+        "bottom": 392.53125,
+        "left": 120
+      },
+      "background": "url(\"http://127.0.0.1:37677/assets/generated/pixel-enemies/hydra-three.png\")"
+    }
+  ],
+  "party": [
+    "charset-battler-actor1-0",
+    "charset-battler-actor2-0",
+    "charset-battler-actor3-0",
+    "charset-battler-actor4-0"
+  ],
+  "distinctAssetRequestCount": 1152,
+  "requestedBattleSheets": [
+    "/assets/generated/charset-battlers/actor1-0.png",
+    "/assets/generated/charset-battlers/actor2-0.png",
+    "/assets/generated/charset-battlers/actor3-0.png",
+    "/assets/generated/charset-battlers/actor4-0.png",
+    "/assets/generated/charset-battlers/cast/actor1-0.png",
+    "/assets/generated/charset-battlers/cast/actor2-0.png",
+    "/assets/generated/charset-battlers/cast/actor3-0.png",
+    "/assets/generated/charset-battlers/cast/actor4-0.png",
+    "/assets/generated/pixel-enemies/hydra-three.png",
+    "/assets/generated/pixel-enemy-portraits/hydra-three.png"
+  ],
+  "starterRequests": [],
+  "errors": []
+}
