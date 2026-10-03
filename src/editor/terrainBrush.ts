@@ -5,6 +5,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { terrainMaterialTile, type TerrainMaterial } from "./terrainMaterials";
 import type { GameMap } from "@/project/types";
+import { terrainLocked } from "@/project/terrainDesign";
 
 export function terrainBrushPoints(map:GameMap,x:number,y:number,width:number,river=false):{x:number;y:number}[] {
   const points:{x:number;y:number}[]=[], radius=(width-1)/2;
@@ -12,6 +13,7 @@ export function terrainBrushPoints(map:GameMap,x:number,y:number,width:number,ri
     const X=x+dx,Y=y+dy;
     if(dx*dx+dy*dy>(radius+0.4)**2 || X<0 || Y<0 || X>=map.width || Y>=map.height)continue;
     const i=Y*map.width+X;
+    if (terrainLocked(map.terrainDesign,i)) continue;
     if((map.relief?.ramps?.[i]??0)>0)continue;
     if(river && (layerTileAt(map,3,i)>=0 || layerTileAt(map,4,i)>=0 || map.events.some(e=>e.x===X&&e.y===Y)))continue;
     points.push({x:X,y:Y});
@@ -33,6 +35,7 @@ export function paintTerrainBrush(mapId:string,x:number,y:number,material:Terrai
   }
   store.updateMapTiles(mapId,draft=>{
     for(const c of points){const i=c.y*draft.width+c.x;clearTileStack(draft,"lower",i);setLayerTileAt(draft,1,i,tile);setLayerTileAt(draft,2,i,-1);}
+    if (draft.terrainDesign?.waterDepth) for (const c of points) draft.terrainDesign.waterDepth[c.y*draft.width+c.x] = material === "water" ? 3 : 0;
     for(const group of autotileGroupsForTileset(tileset)) if((group.layer??"lower")==="lower" && previous.some(v=>autotileEditTriggersGroup(group,v,tile)))shapeAutotileGroupAround(draft,group,points);
     if(material==="water" && draft.relief){
       const levels=draft.relief.levels.slice();for(const c of points)levels[c.y*draft.width+c.x]=bedLevel;

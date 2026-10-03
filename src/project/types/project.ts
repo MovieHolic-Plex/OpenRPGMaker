@@ -67,6 +67,7 @@ export interface GameMap {
   relief?: ReliefData;
   /** Terrain prop clusters with underlying upper tiles for move/delete restoration. */
   doodadGroups?: import("../doodadGroups").DoodadGroup[];
+  terrainDesign?: import("../terrainDesign").TerrainDesignData;
   lowerTileStacks?: Record<number, number[]>;
   upperTileStacks?: Record<number, number[]>;
   events: GameEvent[];
@@ -711,6 +712,7 @@ export interface StoryFlagDef {
 }
 
 export interface Project {
+  terrainStamps?: import("../terrainDesign").TerrainStamp[];
   /** Confirmed new-project interview; travels with SQLite, export, and later AI turns. */
   gameDesignBrief?: import("../gameDesignBrief").GameDesignBrief;
   /** Prompt library and dialogue review preferences, saved with this project. */

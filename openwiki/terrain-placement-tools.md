@@ -7,6 +7,9 @@
 
 ## 소유 경로
 
+추가 10종(절벽 윤곽·길·능선·계곡·호수·재질 혼합·혼합 군집·도장·잠금·경로 검사)과
+공통 대칭 옵션은 [terrain-design-suite.md](terrain-design-suite.md)를 읽는다.
+
 - UI: `editor/panels/reliefToolbar.ts`, `editorState.ts`, `styles/editor/relief-toolbar.css`.
 - 포인터/스트로크 되돌리기: `TilePaintEngine.applyRelief`. 표면·강은 표본 사이를 보간한다.
 - 접합 계획: `reliefRampPlan.ts`, `reliefDoodads.ts`, `terrainDoodadPlan.ts`.

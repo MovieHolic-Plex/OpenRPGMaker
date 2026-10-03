@@ -261,6 +261,9 @@ function passabilityFingerprint(map: GameMap, tileset: TilesetDef | null): Int32
   // 2·4층(선택 칸)도 칸 통행을 바꾼다(collision.ts §layeredPassability).
   pushTiles(push, 2, map.lowerOverlayTiles);
   pushTiles(push, 4, map.upperOverlayTiles);
+  pushTiles(push, 9, map.terrainDesign?.waterDepth);
+  pushTiles(push, 10, map.relief?.levels);
+  pushTiles(push, 11, map.relief?.ramps);
   pushStacks(push, 5, map.lowerTileStacks);
   pushStacks(push, 6, map.upperTileStacks);
   pushTilesetPassage(push, tileset);

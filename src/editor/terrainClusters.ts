@@ -5,6 +5,7 @@ import type { GameMap, TilesetDef } from "@/project/types";
 import type { ReliefDoodad, ReliefDoodadPlan } from "./reliefDoodads";
 import { terrainIsReserved } from "./terrainMaterials";
 import { genId } from "@/util/id";
+import { terrainLocked } from "@/project/terrainDesign";
 
 export function groupAt(map:GameMap,x:number,y:number):DoodadGroup|undefined {
   const index=y*map.width+x;
@@ -21,7 +22,7 @@ function restore(map:GameMap,group:DoodadGroup):void {
   compactMapLayers(map);
 }
 export function deleteDoodadGroup(map:GameMap,id:string):void {
-  const group=map.doodadGroups?.find(g=>g.id===id);if(group)restore(map,group);
+  const group=map.doodadGroups?.find(g=>g.id===id);if(group && !group.cells.some(c=>terrainLocked(map.terrainDesign,c.index)))restore(map,group);
 }
 
 /** Deterministic density sampling: hover and click produce the identical cluster. */
@@ -60,6 +61,7 @@ export function planTerrainCluster(map:GameMap,tileset:TilesetDef,doodad:Extract
 export function planMoveDoodadGroup(map:GameMap,tileset:TilesetDef,id:string,dx:number,dy:number):ReliefDoodadPlan {
   const g=map.doodadGroups?.find(g=>g.id===id);
   if(!g)return {ok:false,reason:"군집을 먼저 고른다",rects:[]};
+  if(g.cells.some(c=>terrainLocked(map.terrainDesign,c.index)))return {ok:false,reason:"군집 영역의 잠금을 먼저 해제하세요",rects:[]};
   const own=new Set(g.cells.map(c=>c.index)),cells:DoodadGroup["cells"]=[];
   let reason="";const base=map.relief?.levels[g.cells[0]!.index]??0;
   for(const c of g.cells) {

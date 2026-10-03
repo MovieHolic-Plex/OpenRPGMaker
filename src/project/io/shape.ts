@@ -34,6 +34,7 @@ import { validateConditionShape } from "./shapeCommandFields";
 import { stampCharacterIdsForSocialEvents } from "../characterIdStamp";
 import { normalizeRelief } from "@/project/relief/edit";
 import { normalizeDoodadGroups } from "@/project/doodadGroups";
+import { normalizeTerrainDesign, normalizeTerrainStamps } from "@/project/terrainDesign";
 import { validateCharacters } from "./shapeCharacterFields";
 import {
   requirePosition,
@@ -303,7 +304,11 @@ function normalizeProjectPlanningItems(project: Project): void {
 
 /** 높이 지형 정리 — 맵 크기에 맞추고 0~14단으로 자른다. 전부 평지거나 모양이 틀리면 필드를 지운다. */
 function normalizeProjectRelief(project: Project): void {
+  const stamps = normalizeTerrainStamps(project.terrainStamps);
+  if (stamps) project.terrainStamps = stamps; else delete project.terrainStamps;
   for (const map of Object.values(project.maps)) {
+    const design = normalizeTerrainDesign(map.terrainDesign, map.width * map.height);
+    if (design) map.terrainDesign = design; else delete map.terrainDesign;
     const groups=normalizeDoodadGroups(map.doodadGroups,map.width*map.height);
     if(groups)map.doodadGroups=groups;else delete map.doodadGroups;
     if (map.relief === undefined) continue;
