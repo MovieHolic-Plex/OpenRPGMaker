@@ -2359,7 +2359,11 @@ PNG는 도구 결과의 image content에 붙어 다음 모델 호출로 전달�
 기본 칩셋으로 대신하지 않는다. 일회성 요청 ID는 완료·취소·45초 시간 초과 후 폐기된다.
 
 현재 PNG 경로는 기존 렌더러가 정확히 지원하는 타일/이벤트에 한정한다. 다중 타일 스택,
-쿼터 합성, 초안 graft는 정확한 렌더링을 보장할 때까지 명시적으로 오류를 반환한다.
+쿼터 합성은 정확한 렌더링을 보장할 때까지 명시적으로 오류를 반환한다.
+초안 graft는 해당 프로젝트 사본의 atlas와 업로드 소스 URL을 먼저 고정한 뒤 전체 합성한다.
+번들 소스는 번들 카탈로그에서 읽고, 현재 편집기 store나 미리보기 bake 캐시로 대체하지 않는다.
+소스 누락·합성 실패·5초 시간 초과는 unavailable로 반환하며 부분 합성은 검수 근거로 인정하지 않는다.
+`scripts/qa/tool-image-snapshot.mjs`는 같은 소스 id의 빨강→파랑 교체와 누락 반려를 실제 브라우저 픽셀로 확인한다(합성 fixture).
 일반 네이티브 LPC 오토타일 변형은 완성 타일로 그린다. 오류를 시각 검토 완료로 보고하지 않는다.
 `map.image.delivered`는 도구 응답에 PNG를 포함한 증거이며 모델의 미적 판단이 옳다는 증거는 아니다.
 
@@ -2566,3 +2570,7 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 `read_world_terrain`(읽기)·`edit_world_terrain`(쓰기, 도메인 world). 세계 지도는 타일을 찍지 않고 지형 작업(ops)을 월드맵 키트가 다시 그린다.
 prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기다리고 run 은 결과를 맵·타일셋·로케이션으로 쓴다. 도구 결과에 지도 그림(미리보기는 도식)을 붙인다.
 흐름·계약·함정: `openwiki/worldmap-terrain-editing.md`.
+
+## Bounded romance authoring tools
+
+`author_romance_scene` and `inspect_romance_scene` are registered through `harnesses/_core/authoringRegistry.ts` in the event domain. The first authors fixed contract choices with model-written prose and validates native interpreter behavior before atomic commit. The second reports executable blockers; a read-tool transport success is not an `ok` scene verdict. Full contract and completion rules: [romance-scene](harnesses/romance-scene.md).

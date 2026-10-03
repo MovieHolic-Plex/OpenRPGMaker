@@ -1,4 +1,5 @@
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
+import { AUTHORING_HARNESS_TOOLS } from '../../harnesses/_core/authoringRegistry';
 import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
 import { FOREST_RECIPE_TOOLS } from "./forestRecipeTools";
@@ -240,6 +241,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(EVENT_TOOLS, "event"),
   ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
+  ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),

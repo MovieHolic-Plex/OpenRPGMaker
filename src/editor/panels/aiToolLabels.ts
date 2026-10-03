@@ -79,6 +79,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   define_quest: people("퀘스트 정의", "flag"),
   create_quest_flags: people("퀘스트 깃발", "flag"),
   author_story_arc: people("이야기 짜기", "book"),
+  author_romance_scene: people("첫 만남 만들기", "book"),
+  inspect_romance_scene: inspect("첫 만남 동작 확인", "eye"),
   script_cutscene: people("연출 쓰기", "book"),
   script_cutscene_preset: people("연출 프리셋", "book"),
   script_cutscene_impact: people("충돌 연출", "book"),

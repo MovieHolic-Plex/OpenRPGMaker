@@ -11,6 +11,7 @@
 | `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
 | `joseon-baram` | 조선 칩셋 도트 (joseon_baram · 바람의나라풍) | 장르 무관 | `harness-data/joseon-baram/seed.json` | `openwiki/harnesses/joseon-baram.md` |
 | `super-harness` | 슈퍼하네스 (개념 카드 자동 공급) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
+| `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -131,3 +132,15 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 - `bake` — 굽기: origin/main 위 브랜치로 번들에 넣고 PR·머지. 사람이 폐기하면 빼는 PR.
 
 **들어오는 길:** CLI 아직 없음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## romance-scene — 연애 첫 대화 장면
+
+한 맵의 첫 만남을 코드로 준비하고, 두 선택의 상태·반응·재대화·종료를 실제 해석자로 검사한다. AI 완료 선언은 검증 영수증이 아니다.
+
+**이럴 때 쓴다:**
+- 단일 관계·연애 장르에서 대화 중심 / 한 관계 / 첫 만남 한 장면을 선택했을 때
+
+**단계** (`npm run harness -- romance-scene <단계>`):
+- `inspect` — 장면 검사: 프로젝트 JSON의 계약·두 선택·재대화·종료를 검사한다. --project <path> 필요.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 있음

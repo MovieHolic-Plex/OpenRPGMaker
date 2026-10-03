@@ -1,0 +1,144 @@
+{
+  "productionToolRunner": true,
+  "firstConversationBeforeDecoration": true,
+  "atomicRejection": true,
+  "schemaRoundtrip": true,
+  "runtime": {
+    "ok": true,
+    "blockers": [],
+    "ms": 59,
+    "paths": [
+      {
+        "choice": "반갑게 인사한다",
+        "choiceValue": 1,
+        "reaction": "먼저 인사해 줘서 긴장이 풀렸어요. 다음엔 제가 먼저 인사할게요.",
+        "revisit": "아까 먼저 인사해 준 일을 기억해요. 다시 와 줘서 고마워요.",
+        "choiceOk": true,
+        "repeatOk": true,
+        "endOk": true,
+        "ending": [
+          "ending_romance_first_meeting"
+        ],
+        "relationAfterRepeat": 1,
+        "saveResumeOk": true
+      },
+      {
+        "choice": "편지를 물어본다",
+        "choiceValue": 2,
+        "reaction": "이 편지는 아직 부치지 못했어요. 지우는 누구에게 편지를 써봤나요?",
+        "revisit": "아까 편지를 물어본 일을 기억해요. 다음에는 받는 사람 이야기도 해줄게요.",
+        "choiceOk": true,
+        "repeatOk": true,
+        "endOk": true,
+        "ending": [
+          "ending_romance_first_meeting"
+        ],
+        "relationAfterRepeat": 2,
+        "saveResumeOk": true
+      }
+    ],
+    "cancelOk": true
+  },
+  "mutants": [
+    {
+      "name": "provisional scene",
+      "blocked": true,
+      "reason": [
+        "첫 만남은 아직 임시 초안입니다. author_romance_scene으로 실제 대사를 작성하세요."
+      ]
+    },
+    {
+      "name": "same reactions",
+      "blocked": true,
+      "reason": [
+        "두 선택의 반응 또는 재대화가 똑같습니다."
+      ]
+    },
+    {
+      "name": "duplicate relationship gain",
+      "blocked": true,
+      "reason": [
+        "선택 1: 변수 var_romance_relation: 기대 1, 실제 3",
+        "선택 1 저장 후 재대화 실패: 변수 var_romance_relation: 기대 1, 실제 2"
+      ]
+    },
+    {
+      "name": "invisible NPC",
+      "blocked": true,
+      "reason": [
+        "상대 인물의 실제 그림 자산이 없거나 화면에 보이지 않습니다."
+      ]
+    },
+    {
+      "name": "missing sprite",
+      "blocked": true,
+      "reason": [
+        "상대 인물의 실제 그림 자산이 없거나 화면에 보이지 않습니다."
+      ]
+    },
+    {
+      "name": "changed protagonist",
+      "blocked": true,
+      "reason": [
+        "주인공 이름이 확정 기획과 다릅니다."
+      ]
+    },
+    {
+      "name": "changed protagonist appearance",
+      "blocked": true,
+      "reason": [
+        "사용자가 고르지 않은 주인공 외형을 바꿀 수 없습니다."
+      ]
+    },
+    {
+      "name": "deleted contract",
+      "blocked": true,
+      "reason": [
+        "확정한 장면 계약이 삭제되거나 바뀌었습니다."
+      ]
+    },
+    {
+      "name": "changed choice",
+      "blocked": true,
+      "reason": [
+        "두 선택 문구 또는 분기가 확정 계약과 다릅니다."
+      ]
+    },
+    {
+      "name": "stale brief",
+      "blocked": true,
+      "reason": [
+        "현재 기획과 계약의 원문이 다릅니다. 다시 기획을 확정하세요."
+      ]
+    },
+    {
+      "name": "missing ending command",
+      "blocked": true,
+      "reason": [
+        "선택 1: 엔딩 도달: 기대 ending_romance_first_meeting, 실제 (none)",
+        "선택 2: 엔딩 도달: 기대 ending_romance_first_meeting, 실제 (none)"
+      ]
+    },
+    {
+      "name": "unreachable NPC",
+      "blocked": true,
+      "reason": [
+        "선택 1: Malformed scene test input: steps[0] (walk): to.x: 0 이상의 정수여야 합니다(받은 값 -10)",
+        "선택 1의 반응 또는 선택을 기억하는 재대화가 없습니다.",
+        "선택 1 저장 후 재대화 실패: Malformed scene test input: steps[0] (walk): to.x: 0 이상의 정수여야 합니다(받은 값 -10)",
+        "선택 2: Malformed scene test input: steps[0] (walk): to.x: 0 이상의 정수여야 합니다(받은 값 -10)",
+        "선택 2의 반응 또는 선택을 기억하는 재대화가 없습니다.",
+        "선택 2 저장 후 재대화 실패: Malformed scene test input: steps[0] (walk): to.x: 0 이상의 정수여야 합니다(받은 값 -10)",
+        "두 선택의 반응 또는 재대화가 똑같습니다.",
+        "선택 취소 뒤 상태 또는 입력 복귀 실패: Malformed scene test input: steps[0] (walk): to.x: 0 이상의 정수여야 합니다(받은 값 -10)"
+      ]
+    },
+    {
+      "name": "rename draft page only",
+      "blocked": true,
+      "reason": [
+        "임시 초안의 대사가 그대로입니다. 페이지 이름만 바꾸어 완료할 수 없습니다."
+      ]
+    }
+  ]
+}

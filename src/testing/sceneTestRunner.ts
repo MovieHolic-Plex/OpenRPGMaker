@@ -262,6 +262,8 @@ export interface SceneTestInput {
 
 /** 모델 입력(SceneTestInput)과 따로 두는 러너 설정 — run_scene_test 도구에는 드러나지 않는다. */
 export interface SceneRunnerOptions {
+  /** Host-only resumed save state; never accepted by the model-facing scene tool. */
+  readonly initialSession?: PlaySession;
   /**
    * 무작위 인카운터 직전마다 파티를 전부 회복한다(QA 자동 플레이 전용 — 플레이어가 여관·포션으로 버티는 것을 흉내).
    * 스크립트 전투(보스)는 회복하지 않고 들어간다 — 보스 앞에서 체력을 관리하는 것은 설계의 몫이다.
@@ -623,7 +625,7 @@ export function isSceneTestInput(value: unknown): value is SceneTestInput {
 }
 
 export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof, runnerOptions: SceneRunnerOptions = {}): SceneTestResult {
-  const session = startSession(project, 1);
+  const session = runnerOptions.initialSession ? structuredClone(runnerOptions.initialSession) : startSession(project, 1);
   const inputProblem = sceneTestInputProblem(input);
   if (inputProblem) {
     return result(false, project, session, emptyEventPositions(project), emptyCamera(session), [], [],

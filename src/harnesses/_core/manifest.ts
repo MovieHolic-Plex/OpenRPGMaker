@@ -42,6 +42,8 @@ export type HarnessManifest = {
   doc: string;
   stages: HarnessStage[];
   entrypoints: HarnessEntrypoints;
+  /** Optional persisted authoring contract validation; stays light for schema loading. */
+  contract?: { normalize(value: unknown): unknown };
   /**
    * 에디터 「공방」 실행기 지연 로더. editorUi 가 true 인 하네스만 둔다.
    * 매니페스트는 가볍게 — 실행기 코드는 부를 때만 import 한다.
