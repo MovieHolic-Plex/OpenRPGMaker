@@ -130,23 +130,31 @@ def analyze(room, sheet):
     # C7 맨바닥
     occupied = set(cv)
     bare = {c for c in walkable if c not in occupied and not p.is_face(*c)}
-    seenb, big = set(), []
-    for c in sorted(bare):
-        if c in seenb:
-            continue
-        comp, stack = {c}, [c]
-        seenb.add(c)
-        while stack:
-            a, b = stack.pop()
-            for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                n2 = (a + d[0], b + d[1])
-                if n2 in bare and n2 not in seenb:
-                    seenb.add(n2); comp.add(n2); stack.append(n2)
-        if len(comp) >= 10:
-            big.append(sorted(comp))
+    # 「덩어리」= 2×2 이상 빈 바닥 조각이 겹쳐 이어진 판(좁은 1칸 통로는 길이 길어도 판이 아니다). 엄격판(1칸 통로까지 이은 4방향 덩어리)은 info 로만 남긴다.
+    def comps(cells):
+        seenb, out = set(), []
+        for c in sorted(cells):
+            if c in seenb:
+                continue
+            comp, stack = {c}, [c]
+            seenb.add(c)
+            while stack:
+                a, b = stack.pop()
+                for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    n2 = (a + d[0], b + d[1])
+                    if n2 in cells and n2 not in seenb:
+                        seenb.add(n2); comp.add(n2); stack.append(n2)
+            out.append(comp)
+        return out
+    plain = set()
+    for (x, y) in bare:
+        if all(c in bare for c in ((x + 1, y), (x, y + 1), (x + 1, y + 1))):
+            plain |= {(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)}
+    big = [sorted(c) for c in comps(plain) if len(c) >= 10]
     for comp in big:
-        rep['fails'].append(f'C7 맨바닥 {len(comp)}칸 덩어리(x {min(c[0] for c in comp)}~{max(c[0] for c in comp)}, y {min(c[1] for c in comp)}~{max(c[1] for c in comp)})')
-    rep['info']['bareLargest'] = max([len(c) for c in big] + [max([0] + [1])])
+        rep['fails'].append(f'C7 맨바닥 판 {len(comp)}칸(2x2 이상, x {min(c[0] for c in comp)}~{max(c[0] for c in comp)}, y {min(c[1] for c in comp)}~{max(c[1] for c in comp)})')
+    rep['info']['bareLargest'] = max([len(c) for c in comps(plain)] + [0])
+    rep['info']['bareStrict'] = max([len(c) for c in comps(bare)] + [0])
     # C8 겹침
     occ = {}
     for (n, x, y, w, h) in furniture:

@@ -52,3 +52,36 @@ def house():
 
 
 ROOMS = [house()]
+
+
+# ------------------------------------------------------------------------------------------------ 2. 주막 22×14
+def inn():
+    g = mk(22, 14)
+    rect(g, 1, 1, 5, 5, 'd')                     # 부엌
+    rect(g, 1, 7, 5, 11, 'b')                    # 곳간
+    rect(g, 7, 1, 15, 11, 'k')                   # 술청(마루, 창호벽)
+    rect(g, 17, 1, 20, 5, 'o'); rect(g, 17, 7, 20, 11, 'o')   # 객실 둘
+    rect(g, 6, 3, 6, 5, 'm'); rect(g, 6, 9, 6, 11, 'm')      # 부엌·곳간 문(걷는 줄 (6,5)·(6,11))
+    rect(g, 16, 3, 16, 5, 'm'); rect(g, 16, 9, 16, 11, 'm')  # 객실 문(걷는 줄 (16,5)·(16,11))
+    g[12][11] = 'D'
+    props = P([
+        # 부엌: 부뚜막 북벽, 땔감·독·물동이·시래기
+        ('bumak_3', 1, 2), ('hang_sirae', 4, 1), ('hang_meju', 5, 1), ('jangjak', 4, 3), ('hangari_m', 5, 3),
+        ('muldongi', 1, 5), ('hangari_s', 2, 5), ('sokuri_veg', 3, 5),
+        # 곳간: 쌀뒤주·독·술독·항아리
+        ('ssal_dwiju', 1, 8), ('dok_big', 2, 8), ('suldok', 3, 9), ('hangari_m', 4, 9), ('hangari_s', 2, 11),
+        ('hang_gochu', 3, 7), ('hang_bagaji', 4, 7), ('sokuri_grain', 1, 11), ('hangari_straw', 4, 10),
+        # 술청: 북벽 앞 주모 자리(상·술독), 평상 둘에 상, 문 앞 벽쪽 걸상
+        ('byeongpung_a', 8, 2), ('jokja_a', 12, 1), ('jokja_c', 14, 1), ('juga_3', 12, 3), ('suldok', 15, 3), ('hwaro', 7, 3),
+        ('pyeongsang_3', 8, 6), ('soban_a', 9, 5), ('pyeongsang_3', 13, 7), ('soban_b', 14, 6), ('pyeongsang_2', 8, 8), ('soban_c', 10, 8),
+        ('geolsang_2', 8, 10), ('pyeongsang_2', 14, 9), ('stool', 13, 10), ('mat_jip_3x2', 11, 5), ('mat_jip_3x2', 10, 9),
+        # 객실 1: 이불장·병풍, 낮은 상과 방석
+        ('ibuljang', 17, 2), ('byeongpung_2', 19, 2), ('mat_dot_2x2', 19, 4), ('sang_low_2', 19, 5), ('banseok_b', 18, 4),
+        # 객실 2: 농·이불장, 반닫이
+        ('ibuljang', 17, 8), ('nong_2', 19, 8), ('bandaji_2', 19, 11), ('ibul_folded', 20, 10),
+    ])
+    return dict(id='joseon_in_inn_b', title='주막', plan=rows(g), props=props, door=(11, 12),
+                people=[(12, 8, 2, R, 1), (12, 4, 5, L, 1), (8, 4, 4, F, 0)])
+
+
+ROOMS += [inn()]

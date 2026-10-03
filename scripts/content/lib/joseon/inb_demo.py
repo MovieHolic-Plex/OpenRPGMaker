@@ -102,7 +102,7 @@ if __name__ == '__main__':
         if spec['id'] not in want:
             continue
         room, rep, diff, sheet = bake(spec)
-        print(f"{spec['id']:22s} {room.W}x{room.H}  pixelDiffMapVsSheet={diff}  겹침칸 {len(sheet.extra)}  걷는칸 {rep['info']['walkable']}  도달 {rep['info']['reachable']}  가구 {rep['info']['furniture']}  맨바닥 최대 {rep['info']['bareLargest']}")
+        print(f"{spec['id']:22s} {room.W}x{room.H}  pixelDiffMapVsSheet={diff}  겹침칸 {len(sheet.extra)}  걷는칸 {rep['info']['walkable']}  도달 {rep['info']['reachable']}  가구 {rep['info']['furniture']}  맨바닥 판 {rep['info']['bareLargest']} (엄격 {rep['info']['bareStrict']})")
         for f in rep['fails']:
             print('   FAIL', f)
         for w in rep['warns']:
