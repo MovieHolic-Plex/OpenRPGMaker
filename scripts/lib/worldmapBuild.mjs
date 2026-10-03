@@ -1,7 +1,7 @@
 // 월드맵 키트(tiledata/worldmap-kit, Python) 를 돌려 세계 지도 한 장을 만든다 — 조수의 지형 편집 도구가 쓴다.
 // 호스트 쪽(동반 서비스 /v1/worldmap/build, Pi 워커)에서만 돈다. 브라우저는 동반 서비스 경로로 부른다.
 //
-// 입력 { theme, terrain?: worldmap-terrain/1 객체, preview?: boolean }
+// 입력 { theme, terrain?: worldmap-terrain/1 객체({base?, ops, fit_salt?}), preview?: boolean }
 // 출력 { ok, preview, imageDataUrl, world:{...칸 배열·장소·길·walk}, ascii, journeyCheck:{ok,bad}, warnings, seconds }
 //      실패 { ok:false, error } — error 는 키트의 「입력 오류/지형 오류/길을 낼 수 없다」 문장 그대로(조수가 읽고 고친다)
 import { spawn } from "node:child_process";
@@ -13,7 +13,6 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const KIT = join(ROOT, "tiledata", "worldmap-kit");
 const CACHE = process.env.OPRN_WORLDMAP_CACHE || join(homedir(), ".cache", "oprn", "worldmap-kit");
-const JOURNEY = "fantasy-5act";
 const THEME_RE = /^[a-z0-9][a-z0-9-]{0,40}$/;
 /** 전체 렌더는 지형이 바뀌면 100초 남짓 걸린다(캐시가 맞으면 몇 초). */
 const TIMEOUT_MS = 6 * 60 * 1000;
@@ -36,14 +35,24 @@ async function themeNote(theme) {
   try {
     const t = JSON.parse(await readFile(join(KIT, "themes", `${theme}.json`), "utf8"));
     const p = t.palette ? JSON.parse(await readFile(join(KIT, "palettes", `${t.palette}.json`), "utf8")) : null;
-    const head = t.terrain
-      ? `${t.name}: 이 테마는 공용 지형 위에 자기 지형 「${t.terrain}」(해협·섬 등)을 먼저 깔고, 네 작업은 그 위에 얹힌다. 장소 배치는 공용과 같다.`
-      : `${t.name}: 이 테마는 화풍(팔레트·덧칠·아이콘)만 바꾼다 — 지형·장소 배치는 공용 지형 그대로다.`;
+    const tt = t.terrain ? JSON.parse(await readFile(join(KIT, "terrains", `${t.terrain}.json`), "utf8")) : null;
+    const head = tt?.base === "generate"
+      ? `${t.name}: 이 테마는 손 대륙 대신 생성 구조 「${t.terrain}」(${tt.name ?? ""})를 깐다 — 장소 배치는 자동 맞춤(layout). ${tt.note ?? ""}`
+      : t.terrain
+        ? `${t.name}: 이 테마는 공용 지형 위에 자기 지형 「${t.terrain}」(해협·섬 등)을 먼저 깔고, 네 작업은 그 위에 얹힌다. 장소 배치는 공용과 같다.`
+        : `${t.name}: 이 테마는 화풍(팔레트·덧칠·아이콘)만 바꾼다 — 지형·장소 배치는 공용 지형 그대로다.`;
     return head
       + (p?.desc ? ` 팔레트 ${p.id ?? t.palette}: ${p.desc}${p.regional ? " (지역 팔레트 — 같은 바닥 글자도 자리마다 다른 색으로 칠해진다)" : ""}` : "");
   } catch {
     return "";
   }
+}
+
+/** 생성 지형의 배치 요약(조수용) — 칸 배열·좌표 목록은 뺀다. 손 대륙이면 null. */
+function layoutSummary(layout) {
+  if (!layout || layout.base !== "generate") return null;
+  const { regions, road_ends: _r, places: _p, systems, ...rest } = layout;
+  return { ...rest, systems: Array.isArray(systems) ? systems.length : undefined, regions };
 }
 
 export async function buildWorldmap(request = {}) {
@@ -52,9 +61,12 @@ export async function buildWorldmap(request = {}) {
   const preview = request.preview === true;
   const dir = await mkdtemp(join(tmpdir(), "oprn-worldmap-"));
   try {
-    const args = ["kit/build_world.py", "--theme", theme, "--journey", JOURNEY, "--out", join(dir, "out"), "--cache", CACHE];
+    // 여정은 테마가 고른다(starmap = 우주 5막, 나머지 = 판타지 5막)
+    const args = ["kit/build_world.py", "--theme", theme, "--out", join(dir, "out"), "--cache", CACHE];
     if (request.terrain && typeof request.terrain === "object") {
-      const spec = { schema: "worldmap-terrain/1", base: "shared-v9", ...request.terrain, id: String(request.terrain.id || "edit") };
+      const spec = { schema: "worldmap-terrain/1", ...request.terrain, id: String(request.terrain.id || "edit") };
+      if (spec.base == null) delete spec.base;           // 없으면 테마 지형의 바탕(공용 shared-v9 또는 생성)을 따른다
+      if (spec.fit_salt == null) delete spec.fit_salt;
       await writeFile(join(dir, "terrain.json"), JSON.stringify(spec));
       args.push("--terrain", join(dir, "terrain.json"));
     }
@@ -83,6 +95,7 @@ export async function buildWorldmap(request = {}) {
         ground: world.ground, object: world.object, height_level: world.height_level, walk: world.walk,
         places: world.places, road_cells: world.road_cells, ramp: world.ramp, bridges: world.bridges, sky_site: world.sky_site,
         placeRules: world.place_rules ?? {},
+        layout: layoutSummary(world.layout),
       },
       themeNote: await themeNote(theme),
       ascii,

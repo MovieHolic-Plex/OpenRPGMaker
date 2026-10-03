@@ -402,6 +402,10 @@ export interface WorldmapSource {
   /** 빌드한 키트 쪽 지형 이름(예: archipelago+edit). 보고용. */
   terrainId?: string;
   palette?: string | null;
+  /** 지형 바탕. 없으면 테마 지형의 바탕(대부분 손 대륙 shared-v9, starmap 은 생성 은하). generate = 새 대륙 구조 + 여정 자동 맞춤. */
+  base?: "shared-v9" | "generate";
+  /** 생성 지형의 배치 번호 — 같은 작업이면 같은 배치를 다시 쓰게 저장한다. */
+  fitSalt?: number;
 }
 
 export interface MapNamedLocation {

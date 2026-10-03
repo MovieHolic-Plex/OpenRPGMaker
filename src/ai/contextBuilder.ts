@@ -218,7 +218,7 @@ const INTRO = [
   "21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.",
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
-  "24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로. 세계 지도(월드맵) 의 지형 자체(대륙·바다·섬·산맥·강·숲·바닥·장소 위치)를 바꾸라면 read_world_terrain 으로 칸 좌표를 보고 edit_world_terrain 으로 다시 그린다 — 타일을 찍지 않는다.",
+  "24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로. 세계 지도(월드맵) 의 지형 자체(대륙·바다·섬·산맥·강·숲·바닥·장소 위치)를 바꾸라면 read_world_terrain 으로 칸 좌표를 보고 edit_world_terrain 으로 다시 그린다 — 타일을 찍지 않는다. 대륙 구조 자체를 새로(20조각 대륙·고리 대륙·초대륙·군도·은하) 만들 때는 base:\"generate\" + continents 작업, 여정 장소는 키트가 자동으로 맞춘다.",
   "25. 게임 시작 오프닝 연출은 system.opening(set_opening·edit_opening) 이다 — 이벤트 컷신으로 대신하지 마세요. 새 프로젝트에는 기본 오프닝이 이미 있다. 그림은 배경화·타이틀 아트를 고르거나 generate_opening_image 로 만듭니다. 게임오버 화면은 system.gameOver(get_game_over·set_game_over)이며 배경은 generate_game_over_image 후 backgroundResourceId로 연결합니다. 아이템·소품·몬스터·일반 타이틀/배경 그림은 generate_image_asset(kind: picture|title|backdrop|monster) 후 반환된 resourceId를 해당 DB 레코드에 연결합니다. 타이틀 화면 전체(키아트+빛내림·칼날 반사광·물결·안개+로고)는 generate_title_art(preset) 하나로 만듭니다. 맵 타일·캐릭터 칩으로 보여 줄 수 없는 움직이는 연출(트럭에 치임·괴물이 길을 가로지름 등)은 그림을 그린 뒤 움직입니다: generate_cutscene_art(role:backdrop 빈 배경 1장 + role:sprite 소품·인물 한 장씩) → 탈것 충돌은 script_cutscene_impact, 그 밖은 script_cutscene 의 picture beat(show 뒤 move) → 반드시 preview_cutscene 으로 확인합니다.",
 ].join("\n");
 

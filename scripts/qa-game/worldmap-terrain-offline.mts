@@ -84,3 +84,13 @@ console.log(`  누적 작업 ${ctx.project.maps[mapId]!.worldmapSource?.ops.leng
 // 프로젝트 JSON 은 수십 MB(번들 자산 포함) — 커밋하지 않는다.
 writeFileSync(join(outDir, "project.json"), serialize(ctx.project));
 writeFileSync(join(outDir, "tool-results.json"), JSON.stringify(log, null, 2));
+
+// 새 대륙 구조(base generate): 20조각 대륙 — 키트가 여정 장소를 자동으로 맞춘다. 미리보기만(몇 초).
+const gen = await call("edit_world_terrain", {
+  theme, preview: true, base: "generate", replace: true,
+  ops: [{ op: "continents", style: "shards", count: 20, seed: 2 }, { op: "climate", wet: 0.2 }],
+});
+save("generate-shards20.png", "edit_world_terrain");
+console.log(`  생성 구조: ${gen.layout?.style} 땅 덩이 ${gen.layout?.landmasses} · 1막 ${gen.layout?.act1_cells} · 2막 ${gen.layout?.act2_cells} · 사구 ${gen.layout?.dune_cells} · 배치 ${gen.layout?.salt}`);
+writeFileSync(join(outDir, "generate.json"), JSON.stringify({ layout: gen.layout, places: gen.places }, null, 1));
+

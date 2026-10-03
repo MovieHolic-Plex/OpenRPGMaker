@@ -11,9 +11,44 @@ import { companionRequestBaseUrl } from "@/ai/llmClient";
 export const WORLDMAP_GROUNDS = [
   "grass", "farm", "crop", "savanna", "sand", "dune", "dirt", "badlands", "ash", "basalt", "swamp", "marsh", "tundra", "snow", "glacier", "jungle",
 ] as const;
-export const WORLDMAP_OPS = ["land", "sea", "island", "biome", "ridge", "pass", "river", "forest", "clear", "plateau", "volcano", "move_place"] as const;
+export const WORLDMAP_OPS = [
+  "land", "sea", "island", "biome", "ridge", "pass", "river", "forest", "clear", "plateau", "volcano", "move_place",
+  "continents", "climate", "wall", "dune_sea", "sky_island",
+] as const;
+/** 지형 바탕: 손 대륙(shared-v9) 위에 작업을 얹거나, 빈 판에 새 대륙 구조를 만든다(generate — 여정 장소는 자동 맞춤). */
+export const WORLDMAP_BASES = ["shared-v9", "generate"] as const;
+export type WorldmapBase = (typeof WORLDMAP_BASES)[number];
+export const WORLDMAP_STYLES = ["blobs", "shards", "ring", "pangaea", "archipelago", "galaxy"] as const;
 
-export interface WorldmapPlace { id: string; role: string; act: number; x: number; y: number; w: number; h: number; icon: string }
+/** label = 표시 이름(우주 여정 등). id 는 키트가 부르는 이름이라 그대로. */
+export interface WorldmapPlace { id: string; label?: string; role: string; act: number; x: number; y: number; w: number; h: number; icon: string }
+
+/** 생성 지형(base generate)의 배치 요약 — 막별 땅 칸 수·땅 덩이·배치 번호(salt)·자동으로 한 일. */
+export interface WorldmapLayout {
+  base: "generate";
+  style: string;
+  seed: number;
+  /** 배치 시도 번호 — 맵에 저장해 다음 빌드가 같은 배치를 다시 쓴다. */
+  salt: number;
+  count: number;
+  land: number;
+  landmasses: number;
+  home_cells: number;
+  act1_cells: number;
+  act2_cells: number;
+  dune_cells: number;
+  ship_landmasses: number;
+  wall_cells: number;
+  gate: string;
+  harbour: string;
+  start: [number, number];
+  roads: number;
+  notes: string[];
+  /** 칸 행마다 막 구역 글자(a 1막 · b 2막 · w 산벽 · d 사구 바다 · s 배로 가는 땅 · ~ 바다). */
+  regions?: string[];
+  regions_legend?: string;
+  [key: string]: unknown;
+}
 
 export interface WorldmapWorld {
   width: number;
@@ -32,11 +67,13 @@ export interface WorldmapWorld {
   sky_site: [string, number, number, number, number];
   /** 장소 id → 여정 규칙 한 줄(몇 막에 무엇으로 처음 닿는가·열쇠 장소·길로 이어진 장소). */
   placeRules: Record<string, string>;
+  /** 생성 지형이면 배치 요약, 손 대륙이면 null. */
+  layout?: WorldmapLayout | null;
 }
 
 export interface WorldmapBuildRequest {
   theme: string;
-  terrain?: { id?: string; ops: Array<Record<string, unknown>> } | null;
+  terrain?: { id?: string; base?: WorldmapBase; ops: Array<Record<string, unknown>>; fit_salt?: number } | null;
   /** 픽셀 렌더 없이 칸 배열·도식 그림만(몇 초). */
   preview?: boolean;
 }

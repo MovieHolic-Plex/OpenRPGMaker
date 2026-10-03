@@ -287,22 +287,26 @@ def main():
     ap.add_argument('--no-check', action='store_true', help='여정 도달성 검사를 건너뛴다')
     ap.add_argument('--terrain', help='terrains/<id> 또는 지형 편집 JSON 경로 — 공용 지형(shared-v9) 위에 작업(ops)을 얹는다')
     ap.add_argument('--preview', action='store_true', help='픽셀 렌더 없이 칸 배열만(몇 초): schematic.png · terrain.txt · world.json · 여정 검사')
-    ap.add_argument('--fit-salt', type=int, default=0, help='생성 지형 배치 시도 번호(실패하면 빌더가 스스로 다음 번호로 다시 돈다)')
+    ap.add_argument('--fit-salt', type=int, default=None, help='생성 지형 배치 시도 번호(없으면 지형 JSON 의 fit_salt, 그것도 없으면 0). 실패하면 빌더가 스스로 다음 번호로 다시 돈다')
+    ap.add_argument('--fit-start', type=int, default=None, help=argparse.SUPPRESS)
     a = ap.parse_args()
     NO_CHECK[0] = a.no_check
+    if a.fit_salt is not None and a.fit_start is None:
+        a.fit_start = a.fit_salt
     try:
         _main(a)
     except RetryFit as e:
         if os.environ.get('WMK_NO_RETRY'):
             print('배치 %d 실패: %s' % (a.fit_salt, e), file=sys.stderr)
             sys.exit(3)
-        if a.fit_salt + 1 >= FIT_TRIES:
+        if a.fit_salt + 1 >= (a.fit_start or 0) + FIT_TRIES:
             print('입력 오류:\n생성 지형: 배치를 %d번 바꿔 봐도 여정이 맞지 않는다 — 마지막 이유: %s' % (FIT_TRIES, e), file=sys.stderr)
             sys.exit(2)
         print('배치 %d 실패(%s) — 다음 배치로 다시' % (a.fit_salt, str(e)[:160]))
         import subprocess
-        argv = [x for i, x in enumerate(sys.argv) if x != '--fit-salt' and (i == 0 or sys.argv[i - 1] != '--fit-salt')]
-        r = subprocess.run([sys.executable] + argv + ['--fit-salt', str(a.fit_salt + 1)])
+        drop = ('--fit-salt', '--fit-start')
+        argv = [x for i, x in enumerate(sys.argv) if x not in drop and (i == 0 or sys.argv[i - 1] not in drop)]
+        r = subprocess.run([sys.executable] + argv + ['--fit-salt', str(a.fit_salt + 1), '--fit-start', str(a.fit_start or 0)])
         sys.exit(r.returncode)
 
 
@@ -332,6 +336,9 @@ def _main(a):
         try:
             terrain = KTer.merge(KTer.load(theme_terrain, K.WM), KTer.load(a.terrain, K.WM))   # 테마 지형 위에 편집을 얹는다
             if _generated(terrain):
+                if a.fit_salt is None:                   # 처음 부름: 저장된 배치 번호(맵의 worldmapSource.fitSalt)부터
+                    a.fit_salt = int(terrain.get('fit_salt', 0))
+                    a.fit_start = a.fit_salt
                 terrain = dict(terrain, fit_salt=a.fit_salt)
             journey = KTer.apply(terrain, journey)
         except KTer.TerrainError as e:

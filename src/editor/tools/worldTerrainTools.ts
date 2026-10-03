@@ -10,8 +10,8 @@
  */
 import type { GameMap, MapId, MapNamedLocation, PassFlag, Project, TilesetDef, TilesetId } from "@/project/types";
 import {
-  buildWorldmap, WORLDMAP_GROUNDS, WORLDMAP_OPS,
-  type WorldmapBuildRequest, type WorldmapBuildResult,
+  buildWorldmap, WORLDMAP_BASES, WORLDMAP_GROUNDS, WORLDMAP_OPS, WORLDMAP_STYLES,
+  type WorldmapBase, type WorldmapBuildRequest, type WorldmapBuildResult,
 } from "@/editor/worldmap/worldmapBuild";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -30,10 +30,10 @@ const opSchema: JsonSchema = {
   required: ["op"],
   properties: {
     op: { type: "string", enum: [...WORLDMAP_OPS] },
-    poly: { type: "array", items: point, description: "land·sea·biome·forest·clear·plateau: 꼭짓점 [[x,y],...] (칸 좌표)" },
-    line: { type: "array", items: point, description: "ridge·river: 꺾은선 [[x,y],...]. 강은 바다에서 끝낸다" },
+    poly: { type: "array", items: point, description: "land·sea·biome·forest·clear·plateau·dune_sea: 꼭짓점 [[x,y],...] (칸 좌표)" },
+    line: { type: "array", items: point, description: "ridge·river·wall: 꺾은선 [[x,y],...]. 강은 바다에서 끝낸다. wall 은 시작 대륙을 해안에서 해안까지 가른다" },
     lava: { type: "array", items: point, description: "volcano: 용암 줄기 꺾은선(선택)" },
-    x: { type: "number", description: "island·pass·volcano 중심 · move_place 새 왼쪽 위 칸" },
+    x: { type: "number", description: "island·pass·volcano 중심 · move_place·sky_island 새 왼쪽 위 칸" },
     y: { type: "number" },
     rx: { type: "number", description: "island 가로 반지름(칸)" },
     ry: { type: "number", description: "island 세로 반지름(칸)" },
@@ -47,6 +47,13 @@ const opSchema: JsonSchema = {
     what: { type: "string", enum: ["forest", "mount", "all"], description: "clear: 걷을 물체" },
     level: { type: "integer", enum: [1, 2], description: "plateau 높이" },
     id: { type: "string", description: "move_place: 장소 id(read_world_terrain 의 places)" },
+    style: { type: "string", enum: [...WORLDMAP_STYLES], description: "continents: 대륙 구조 — blobs 덩이 대륙 · shards 조각난 대륙 · ring 고리 대륙 · pangaea 초대륙+섬 · archipelago 군도 · galaxy 우주(성계·공허)" },
+    count: { type: "integer", description: "continents: 땅 덩이 수 1~40(shards 면 조각 수, galaxy 면 성단 수)" },
+    land: { type: "number", description: "continents: 땅 비율 0.2~0.7" },
+    seed: { type: "integer", description: "continents·climate: 같은 구조의 다른 모양(정수)" },
+    wet: { type: "number", description: "climate: -1(건조)~1(습윤)" },
+    cold: { type: "number", description: "climate: -1(더움)~1(추움)" },
+    gate: point,
     note: { type: "string", description: "왜 이 작업을 했는지(지도 원본에 남는다)" },
   },
 };
@@ -57,6 +64,10 @@ const OP_HELP =
   + "biome{poly,ground} 바닥 바꾸기 · ridge{line,kind?,width?,peak?} 산줄기 · pass{x,y,r?} 고개 뚫기 · "
   + "river{line,widen?} 강(바다로 끝낼 것) · forest{poly,kind?,density?} · clear{poly,what?} 숲·산 걷기 · "
   + "plateau{poly,level?,ground?} 고원(절벽이 생긴다) · volcano{x,y,lava?} 화산(분화구+고리, 반지름 4칸 땅 필요) · move_place{id,x,y} 장소 옮기기. "
+  + "새 대륙 구조(base=\"generate\", 기존 대륙을 버리고 빈 판에서): 첫 작업 continents{style?,count?,land?,seed?} — 「20조각 대륙」 = continents{style:shards,count:20}, "
+  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy. climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다 — "
+  + "결과의 layout.regions(a 1막 · b 2막 · w 산벽 · d 사구 바다 · s 배로 가는 땅)를 보고 그 위에 다른 작업을 얹어라. 손으로 정하려면 wall{line,gate?}(산벽) · dune_sea{poly} · sky_island{x,y} · move_place(고정). "
+  + "generate 에서 land·sea·island 는 맞춤 전에 구조에 접힌다. "
   + `바닥 이름→글자: grass . farm f crop p savanna v sand s dune d dirt D badlands b ash a basalt B swamp w marsh m tundra t snow n glacier g jungle j. `
   + "규칙: 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다) — 해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 river 로 끊어 다리를 놓게 하라. "
   + "숲은 물·장소 둘레·길·산 위에 안 놓이고 사막에서 지워진다. 장소마다 여정 규칙(places 줄 끝)이 있다 — 열쇠 장소·장벽 뒤 장소는 그 장벽 밖으로 옮기지 마라. "
@@ -68,7 +79,7 @@ const prepared = new Map<string, WorldmapBuildResult>();
 const lastImage = new Map<string, string>();
 
 function requestKey(request: WorldmapBuildRequest): string {
-  return JSON.stringify([request.theme, request.terrain?.ops ?? [], request.preview === true]);
+  return JSON.stringify([request.theme, request.terrain?.base ?? null, request.terrain?.fit_salt ?? null, request.terrain?.ops ?? [], request.preview === true]);
 }
 
 function remember(key: string, result: WorldmapBuildResult): void {
@@ -97,21 +108,46 @@ function mapOf(project: Project | undefined, args: Record<string, unknown>): Gam
   return id && project ? project.maps[id as MapId] : undefined;
 }
 
-/** 작업이 없으면 null — 테마 기본 지형의 공용 캐시를 그대로 쓴다(새로 그리면 2분). */
-function terrainOf(ops: Array<Record<string, unknown>>): WorldmapBuildRequest["terrain"] {
-  return ops.length ? { id: "edit", ops } : null;
+function baseOf(value: unknown): WorldmapBase | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  if (!(WORLDMAP_BASES as readonly unknown[]).includes(value)) {
+    throw new ToolError(`base 는 ${WORLDMAP_BASES.join(" | ")} 중 하나다: ${String(value)}`, { code: "invalid-args" });
+  }
+  return value as WorldmapBase;
 }
 
-/** edit_world_terrain 이 빌드할 요청 — 맵에 쌓인 작업 + 이번 작업(replace 면 이번 작업만). */
+/** 작업도 바탕 지정도 없으면 null — 테마 기본 지형의 공용 캐시를 그대로 쓴다(새로 그리면 2분). */
+function terrainOf(ops: Array<Record<string, unknown>>, base?: WorldmapBase, fitSalt?: number): WorldmapBuildRequest["terrain"] {
+  if (!ops.length && !base) return null;
+  return { id: "edit", ops, ...(base ? { base } : {}), ...(base === "generate" && typeof fitSalt === "number" ? { fit_salt: fitSalt } : {}) };
+}
+
+/** edit_world_terrain 이 빌드할 요청 — 맵에 쌓인 작업 + 이번 작업(replace 면 이번 작업만). 바탕을 바꾸면(공용 ↔ 생성) 쌓인 작업은 버린다. */
 function editRequest(args: Record<string, unknown>, map: GameMap | undefined): WorldmapBuildRequest {
   const add = opsOf(args.ops);
-  const base = args.replace === true ? [] : map?.worldmapSource?.ops ?? [];
-  return { theme: theme(args, map), terrain: terrainOf([...base, ...add]), preview: args.preview === true };
+  const src = map?.worldmapSource;
+  const asked = baseOf(args.base);
+  const switching = asked !== undefined && src !== undefined && asked !== (src.base ?? "shared-v9");
+  const keep = args.replace === true || switching ? [] : src?.ops ?? [];
+  const base = asked ?? src?.base;
+  const salt = switching || args.replace === true ? undefined : src?.fitSalt;
+  return { theme: theme(args, map), terrain: terrainOf([...keep, ...add], base, salt), preview: args.preview === true };
 }
 
 function readRequest(args: Record<string, unknown>, map: GameMap | undefined): WorldmapBuildRequest {
-  const ops = args.ops !== undefined ? opsOf(args.ops) : map?.worldmapSource?.ops ?? [];
-  return { theme: theme(args, map), terrain: terrainOf(ops), preview: true };
+  const src = map?.worldmapSource;
+  const ops = args.ops !== undefined ? opsOf(args.ops) : src?.ops ?? [];
+  const base = baseOf(args.base) ?? src?.base;
+  return { theme: theme(args, map), terrain: terrainOf(ops, base, args.ops === undefined ? src?.fitSalt : undefined), preview: true };
+}
+
+/** 생성 지형의 배치 요약 — regions(칸 행 글자)는 읽기 도구에만 싣는다(편집 결과마다 7천 자). */
+function layoutOf(result: Extract<WorldmapBuildResult, { ok: true }>, withRegions: boolean): Record<string, unknown> | null {
+  const layout = result.world.layout;
+  if (!layout) return null;
+  if (withRegions) return { ...layout };
+  const { regions: _regions, ...rest } = layout;
+  return rest;
 }
 
 async function prepareRequest(request: WorldmapBuildRequest): Promise<void> {
@@ -135,7 +171,7 @@ function resultFor(request: WorldmapBuildRequest): Extract<WorldmapBuildResult, 
 
 function placesSummary(result: Extract<WorldmapBuildResult, { ok: true }>): string[] {
   const rules = result.world.placeRules ?? {};
-  return result.world.places.map(p => `${p.id}(${p.role}) ${p.x},${p.y} ${p.w}×${p.h}${rules[p.id] ? ` — ${rules[p.id]}` : ""}`);
+  return result.world.places.map(p => `${p.id}${p.label ? `「${p.label}」` : ""}(${p.role}) ${p.x},${p.y} ${p.w}×${p.h}${rules[p.id] ? ` — ${rules[p.id]}` : ""}`);
 }
 
 function slug(text: string, i: number): string {
@@ -178,7 +214,8 @@ function applyWorldmap(
   const size = world.width * world.height;
   const lowerTiles = Array.from({ length: size }, (_, i) => i);
   const locations: MapNamedLocation[] = world.places.map((p, i) => ({
-    id: slug(p.id, i), name: p.id, x: p.x, y: p.y, w: p.w, h: p.h, tags: [p.role, `act${p.act}`], note: `월드맵 장소(${p.role}, ${p.act + 1}막)`,
+    id: slug(p.id, i), name: p.label ?? p.id, x: p.x, y: p.y, w: p.w, h: p.h, tags: [p.role, `act${p.act}`],
+    note: `월드맵 장소(${p.role}, ${p.act + 1}막${p.label ? `, 키트 id ${p.id}` : ""})`,
   }));
   const strandedEvents: string[] = [];
   const events = existing?.events ?? [];
@@ -191,7 +228,11 @@ function applyWorldmap(
     id: mapId, name: mapName, width: world.width, height: world.height, tilesetId, tileSize: TILE,
     lowerTiles, upperTiles: new Array<number>(size).fill(-1),
     locations,
-    worldmapSource: { theme: request.theme, ops: request.terrain?.ops ?? [], terrainId: world.terrain, palette: world.palette },
+    worldmapSource: {
+      theme: request.theme, ops: request.terrain?.ops ?? [], terrainId: world.terrain, palette: world.palette,
+      base: request.terrain?.base ?? (world.layout ? "generate" : "shared-v9"),
+      ...(world.layout ? { fitSalt: world.layout.salt } : {}),
+    },
   } as GameMap;
   delete (map as Partial<GameMap>).lowerOverlayTiles;
   delete (map as Partial<GameMap>).upperOverlayTiles;
@@ -220,6 +261,7 @@ const readWorldTerrain: ToolDefinition = {
     properties: {
       mapId: { type: "string", description: "월드맵 키트 지도 id(edit_world_terrain 이 만든 맵)" },
       theme: { type: "string", enum: [...WORLDMAP_THEMES], description: "세계관 테마(mapId 가 없을 때, 기본 fantasy)" },
+      base: { type: "string", enum: [...WORLDMAP_BASES], description: "지형 바탕 — shared-v9 손 대륙(기본) · generate 새 대륙 구조(ops 첫 작업 continents)" },
       ops: { type: "array", items: opSchema, description: "미리 볼 작업 목록(쌓인 작업 대신 이것으로 본다)" },
     },
   },
@@ -236,7 +278,7 @@ const readWorldTerrain: ToolDefinition = {
       data: {
         theme: request.theme, mapId: map?.id ?? null, ops: request.terrain?.ops ?? [],
         themeNote: result.themeNote, ascii: result.ascii, places: placesSummary(result), journeyCheck: result.journeyCheck,
-        warnings: result.warnings, help: OP_HELP,
+        layout: layoutOf(result, true), warnings: result.warnings, help: OP_HELP,
       },
     };
   },
@@ -246,6 +288,7 @@ const editWorldTerrain: ToolDefinition = {
   name: "edit_world_terrain",
   description:
     "세계 지도의 지형 자체를 바꾼다 — 대륙을 바다로 갈라 섬나라로, 섬을 더하고, 산줄기·고개·강·숲·고원을 놓고, 지역의 바닥(사막·설원·늪…)을 바꾸고, 장소를 옮긴다. "
+    + "base=generate 면 대륙 구조를 아예 새로 만든다(20조각 대륙·고리 대륙·초대륙·군도·은하) — 여정 장소는 키트가 자동으로 다시 놓는다. "
     + "월드맵 키트(테마 17종: 판타지·우주·현대·스팀펑크·조선…)가 같은 화풍으로 다시 그리고 여정 도달성(걸어서·배·사막선·비공정)을 검사한다. "
     + "mapId 가 기존 월드맵 키트 지도면 거기 쌓인 작업 뒤에 ops 를 잇는다(replace=true 면 ops 로 갈아 끼운다). mapId 가 없으면 새 세계 지도 맵을 만든다. "
     + "좌표는 먼저 read_world_terrain 의 글자 지도로 고른다. 장소 발자국이 물이 되거나 길이 막히면 실패하고 이유를 돌려준다 — 그 문장대로 작업을 고쳐 다시 부른다. "
@@ -263,6 +306,7 @@ const editWorldTerrain: ToolDefinition = {
       newMapId: { type: "string", description: "새로 만들 맵 id(mapId 가 없을 때, 생략 시 world_map)" },
       name: { type: "string", description: "맵 이름(새 맵 기본 「세계 지도」)" },
       theme: { type: "string", enum: [...WORLDMAP_THEMES], description: "세계관 테마(기존 지도는 그 테마, 새 지도는 fantasy)" },
+      base: { type: "string", enum: [...WORLDMAP_BASES], description: "지형 바탕 — shared-v9 손 대륙 위에 얹기 · generate 빈 판에 새 대륙 구조(ops 첫 작업 continents, 여정 장소 자동 맞춤). 바탕을 바꾸면 쌓인 작업은 버린다" },
       ops: { type: "array", items: opSchema, description: "더할 지형 작업(차례대로). 테마만 바꾸려면 빈 배열" },
       replace: { type: "boolean", description: "true 면 쌓인 작업을 버리고 ops 만으로" },
       preview: { type: "boolean", description: "true 면 저장하지 않고 도식 그림·검사만" },
@@ -283,6 +327,7 @@ const editWorldTerrain: ToolDefinition = {
     const base = {
       theme: request.theme, themeNote: result.themeNote, ops: request.terrain?.ops ?? [], ascii: result.ascii, places: placesSummary(result),
       journeyCheck: result.journeyCheck, warnings: result.warnings, seconds: result.seconds,
+      ...(result.world.layout ? { base: "generate", layout: layoutOf(result, false) } : {}),
     };
     if (result.journeyCheck && !result.journeyCheck.ok) {
       throw new ToolError(
