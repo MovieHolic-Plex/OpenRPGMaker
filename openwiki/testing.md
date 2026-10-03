@@ -1921,6 +1921,31 @@ under `test/fixtures` derives existing engine test data without remote persisten
 `scripts/qa/field-hud-editor.probe.mjs`는 글꼴·메뉴·수치 표시를 실제 DB 컨트롤로
 저장하고 serialize/deserialize 및 섹션 왕복을 확인한다. 운영 콘텐츠 작성은 하지 않는다.
 
+## 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
+
+`scripts/qa/live-first-game.mjs`는 독립된 루프백 SQLite 호스트에서 실제 새 프로젝트 인터뷰와
+기본 모델을 실행한다. 프롬프트 원문 포함 여부·첫 커밋 지연·정본 재로드를 기록하며, 워커의
+`done` 신호 없이 보드만 유휴 상태가 된 실행은 성공으로 보지 않는다. 중간 체크포인트가
+저장된 것과 게임 제작 완료는 다르다.
+
+`live-first-game-export.mjs`는 같은 프로젝트의 실제 편집기 메뉴에서 ZIP을 내려받는다.
+`live-first-game-player.mjs`는 그 ZIP을 푼 폴더를 독립 서버에서 제공하고 실제 `player.html`과
+`project.json`을 전용 런타임 QA로 검사한다.
+두 기억 선택지의 서로 다른 대사, 정상 이동,
+첫 구간 엔딩을 각각 확인하며 외부 호스트 요청은 거절한다. fixture를 손으로 고쳐 통과시키지 않는다.
+전환 목적지 좌표는 페이드가 끝나기 전에 커밋된다. 다음 방향키를 보내기 전 `runtime-state-json`의
+`data-live-flags`에서 해당 목적지·입력 ON·실행 이벤트 종료를 기다린다. 좌표만 기다리면 첫 입력을 잃는다.
+
+`runRuntimeQa`의 `entryPath`·`projectUrl` 옵션은 출하 패키지의 실제 진입 파일과 프로젝트를
+검사하기 위한 것이다. 직접 프로젝트 URL을 쓰면 시스템 설정 패치를 허용하지 않는다.
+플레이어 부팅 실패도 `SUMMARY.md`·`boot-failure.json`·PNG를 남긴다. 먼저 SUMMARY를 읽는다.
+이 흐름은 전체 Vitest/gates 실행을 대신하지 않는다. 게이트 실행 제한은 AGENTS를 따른다.
+
+자동 실행이 기획을 완성하지 못하면 `live-first-game-complete.mjs`로 실제 조수에게 후속
+제작을 맡길 수 있다(`LIVE_GAME_REPAIR_TASK`로 수정 요청 지정). 기록은 `completion.json`으로
+분리하고 `automaticBuildCompleted:false`를 유지한다. 후속 제작의 성공을 자동 첫 생성 성공으로
+합산하지 않는다. 최종 패키지의 맵·이벤트·기획은 같은 SQLite 정본과 비교한다.
+
 ## 맵 크기 성능 실측 (2026-10-01)
 
 사용자가 성능 실측을 요청했을 때 `node scripts/qa/map-size-benchmark.mjs`로 256×256과
