@@ -46,7 +46,9 @@ def finish_discard(root, record):
 
 
 def contact(rows, dest, columns=10):
-    font = ImageFont.truetype('/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc', 14)
+    font_path = next((p for p in ['/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+                                 '/System/Library/Fonts/AppleSDGothicNeo.ttc'] if Path(p).exists()), None)
+    font = ImageFont.truetype(font_path, 14) if font_path else ImageFont.load_default()
     im = Image.new('RGB', (columns * 160, math.ceil(len(rows) / columns) * 164 + 50), '#17161b')
     draw = ImageDraw.Draw(im)
     draw.text((16, 12), f'GPT 6.1 sol · high / {len(rows)} characters', font=font, fill='#dddbea')
@@ -135,7 +137,7 @@ def export(run, discard_failed=False):
                           else (*rgb, 255) for rgb in keyed.getdata()])
         if restored.tobytes() != rgba.tobytes():
             raise ValueError(f'편집기 색 키 처리에서 원래 픽셀이 변함: {filename}')
-        asset_id = f'shared_charset_mixed100_{sheet_number:02d}'
+        asset_id = f'charset_{digest(run.encode())[:12]}_{sheet_number:02d}'
         png_bytes = (out / 'charsets' / filename).read_bytes()
         assets[asset_id] = dict(id=asset_id, name=f'혼합 RPG 검수 통과 · {sheet_number:02d}', kind='charset',
                                 dataUrl='data:image/png;base64,' + base64.b64encode(png_bytes).decode(),
@@ -177,8 +179,10 @@ def export(run, discard_failed=False):
     (out / 'SOURCE.md').write_text(f'''# 원본과 산출물
 
 원본 첨부 그림: `{manifest['sourceOriginal']}`. 원본 파일의 아래 출처 문구도 원본에 보존했다.
-원본에 적힌 제작자: 창조도시 뱀신의교주. 원본에 적힌 주소: http://blog.naver.com/c0930jh
-새 칩의 sourceBase는 characters.json에 기록했다. 별도 라이선스 부여는 하지 않는다.
+첨부 원본에 적힌 제작자: 창조도시 뱀신의교주. 첨부 원본에 적힌 주소: http://blog.naver.com/c0930jh
+실제 사람별 픽셀 원본 sourceBase는 characters.json에 기록했다. RTP 원본을 쓰는 경우 저장소의 EasyRPG 출처/이용 조건을 따른다.
+{manifest.get('sourceAttribution', '')}
+별도 라이선스 부여는 하지 않는다.
 변형: GPT 6.1 sol high, 서 있는 4방향 직접 격자 편집. 걸음은 원본 동작에서 전파했다.
 관찰 설명·독립 시각 검수: Claude Sonnet 5.5 medium. 사용자 받기 결정은 이 팩 제작과 별개다.
 ''', encoding='utf-8')

@@ -19,6 +19,11 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
 구조 규칙은 `openwiki/harnesses/README.md`.
 
+- **에디터용 RM2000 캐릭터를 변형·대량 저작·검사·패킹할 때**
+  → `charset-actor` · 시드 `harness-data/charset-actor/briefs.json`
+  → `npm run harness -- charset-actor <단계>` · 문서 `openwiki/harnesses/charset-actor.md`
+  → GPT 6.1 sol high 원샷 픽셀 저작 + 독립 시각 검수. 머리/투명 결손과 옛 PASS를 막고 합격 후보만 팩으로 만든다. 사람의 선택과 설치는 별도다.
+
 - **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
   → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
   → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
