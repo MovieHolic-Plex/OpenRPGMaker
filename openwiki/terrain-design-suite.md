@@ -9,7 +9,7 @@ Esc/오른쪽 버튼은 미완성 점을 취소한다. 패널 머리줄은 드�
 | 도구 | 입력과 결과 |
 |---|---|
 | 절벽 윤곽 | 다각형 / 사각형 / 폭 있는 선. 각 칸의 현재 높이에 입력한 변화량을 더한다. 음수는 내리기. |
-| 집 외관 | 아래 막대의 집 버튼 → 실제 타일 썸네일/등록된 집 선택 → 문 위치 한 번 클릭. 합본·Forest Harmony는 너비·1/2층도 조절한다. 버들항 등 다른 칩셋은 입구가 등록된 기존 section 집 키트를 사용한다. |
+| 집 외관 | 아래 막대의 집 버튼 → 실제 타일 썸네일/등록된 집 선택 → 드래그로 너비·높이를 정하고 놓으면 한 채 배치. 한 번 클릭은 선택한 크기의 문 위치 기준 배치. 합본·Forest Harmony 조립식 집은 너비 5~24칸(짝수 포함), 지붕 몸통 1~12행, 1/2층 벽을 사용한다. 역방향 드래그도 두 모서리의 좌상단에 놓는다. 등록된 완성형 집은 원본 크기를 보존한다. 버들항 등 다른 칩셋은 입구가 등록된 기존 section 집 키트를 사용한다. |
 | 길 | 아래 막대 도로 버튼은 드래그하고 놓으면 적용한다. 체크를 끄면 경유점/Enter 방식이다. 경유점 선, 폭. 모퉁이는 직교 연결되고 바닥 autotile을 성형한다. 지형 따라가기는 진행 방향과 남은 길 폭에 맞춰 경사로를 연결하고, 평탄화는 첫 점 높이로 맞춘다. |
 | 능선 / 계곡 | 경유점 선과 폭, 높이 변화량. 중심부터 가장자리로 변화량이 줄어든다. |
 | 호수·해안 | 다각형 / 사각형, 수위·최대 깊이·걸을 수 있는 물가 폭. 보호된 물체·통로를 제외한 영역의 경계에서 안쪽으로 깊이를 계산한다. |
@@ -151,10 +151,12 @@ API의 `TerrainRouteOptions.session/positions`는 진행 중 세션과 NPC 좌�
 
 ## 시야·빠른 배치 확인
 
-`scripts/capture/capture-visibility-building.mjs`는 실제 집 버튼/크기/포인터와 도로 드래그로
+`scripts/capture/capture-visibility-building.mjs`는 실제 집 버튼/사각형 드래그/포인터와 도로 드래그로
 3채+3길을 놓고 중복 배치 거부, 통행 연결, 벽과 고지 시야, OFF 화면을 기록한다.
 `prepare-visibility-building-runtime.mjs` → `capture-visibility-building-runtime.mjs`는
 출하 `player.html`/shim에서 저작된 ON/OFF 두 맵과 관찰 위치 이동으로 NPC 실표시를 비교한다.
 `save-visibility-building-fixture.mjs`는 독립 SQLite에 저장하고 닫아 재로드하여 타일/집 정의/
 구조 배치/길 제어점/시야 규칙을 비교한다. 증거: `verify-shots/visibility-building/`.
 AGENTS의 실행 제한을 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
+
+집 드래그는 `terrainHouseDrag`에 두 모서리만 저장한다. `quickHousePreview`와 확정이 같은 `planQuickHouseDrag`를 사용하며, 포인터를 놓기 전에는 지도/라이브러리를 쓰지 않는다. Esc·우클릭·스트로크 취소는 미완성 집을 지운다. 한 집은 Undo 한 번으로 되돌린다. 높이는 선택한 층수의 벽을 보존하고 기존 지붕 몸통 조각을 반복해 조절하며 최소/최대 크기는 실제 고스트와 하단 상태 문구에 표시한다.

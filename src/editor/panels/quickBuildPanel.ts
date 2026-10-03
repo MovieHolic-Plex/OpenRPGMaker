@@ -17,9 +17,9 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
     house.append(el("label", { class: "terrain-design-field", children: [el("span", { text: label }), select] })); return select;
   };
   const saved = choice("catalog", "저장된 집", [], v => editorState.set({ terrainHouseKitId: v || null }));
-  const width = choice("width", "집 너비", [5, 7, 9, 11, 15].map(n => [String(n), `${n}칸`] as const), v => editorState.set({ terrainHouseWidth: Number(v) }));
+  const width = choice("width", "집 너비", Array.from({ length: 20 }, (_, i) => i + 5).map(n => [String(n), `${n}칸`] as const), v => editorState.set({ terrainHouseWidth: Number(v) }));
   const stories = choice("stories", "집 층수", [["1", "1층"], ["2", "2층"]], v => editorState.set({ terrainHouseStories: Number(v) as 1 | 2 }));
-  house.append(el("p", { text: "문이 놓일 칸을 한 번 누르세요. 초록 미리보기 위치에 집이 놓입니다." }));
+  const instructions = el("p"); house.append(instructions);
   const drag = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "quick-road-drag" }, on: { change: e => editorState.set({ terrainRoadDrag: (e.target as HTMLInputElement).checked, terrainPoints: null, terrainFeatureId: null }) } }) as HTMLInputElement;
   road.append(el("label", { class: "terrain-design-check", children: [drag, el("span", { text: "끌고 놓으면 도로 적용" })] }), el("p", { text: "길 폭을 고르고 캔버스를 끌어 그리세요. 기존 길과 연결되고, 높이 차이는 경사로로 이어집니다." }));
   let rendered = "";
@@ -31,6 +31,7 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
     const effectiveKit = catalog.some(k => k.id === s.terrainHouseKitId) ? s.terrainHouseKitId : !styles.length ? catalog[0]?.id : null;
     width.closest("label")!.hidden = stories.closest("label")!.hidden = !!effectiveKit;
     saved.closest("label")!.hidden = !catalog.length;
+    instructions.textContent = effectiveKit ? "저장된 집은 원본 크기로 배치합니다. 끌어서 위치를 잡거나 문 위치를 한 번 누르세요." : "끌어서 집 너비·높이를 정하고 놓으세요. 한 번 클릭하면 선택한 크기로 문 위치에 놓습니다. 초록은 배치 가능 · 빨강은 불가 · Esc는 취소.";
     if (house.hidden) return;
     const key = `${tileset?.id}:${tileset?.count}:${s.terrainHouseWidth}:${s.terrainHouseStories}:${catalog.map(k => k.id).join(",")}`;
     if (key !== rendered) {

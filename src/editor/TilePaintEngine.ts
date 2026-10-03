@@ -32,7 +32,7 @@ import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { reliefPickCell } from "@/project/relief/screen";
 import { toast } from "@/util/toast";
-import { commitTerrainDesign, handleTerrainDesignPointer, isTerrainDesignTool } from "./terrainDesignActions";
+import { commitQuickHouseDrag, commitTerrainDesign, handleTerrainDesignPointer, isTerrainDesignTool } from "./terrainDesignActions";
 import { symmetricPoints, symmetryVariants, transformPoint } from "./terrainDesignGeometry";
 import { planReliefDoodad } from "./reliefDoodads";
 
@@ -419,6 +419,10 @@ export class TilePaintEngine {
    */
   endStroke(commit = true): void {
     const design = editorState.get();
+    if (design.terrainHouseDrag) {
+      if (commit) commitQuickHouseDrag();
+      else editorState.set({ terrainHouseDrag: null });
+    }
     if (design.tool === "relief" && design.terrainBrush === "road" && design.terrainRoadDrag && !design.terrainFeatureId && !design.terrainVisionPreview) {
       if (commit && (design.terrainPoints?.points.length ?? 0) >= 2) commitTerrainDesign();
       else editorState.set({ terrainPoints: null });

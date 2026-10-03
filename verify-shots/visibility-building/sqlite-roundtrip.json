@@ -1,8 +1,22 @@
 {
   "projectId": "9d9042ae-9a35-41a0-8e30-4e36c93e8ff6",
   "store": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/visibility-building-store",
-  "revision": 3,
+  "revision": 4,
   "houses": 3,
+  "houseSizes": [
+    [
+      6,
+      7
+    ],
+    [
+      9,
+      9
+    ],
+    [
+      5,
+      8
+    ]
+  ],
   "roads": 3,
   "gameplay": {
     "visionBlocking": true,

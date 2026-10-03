@@ -50,7 +50,7 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
   const offEvolution = mountTerrainEvolutionPanel(body);
   const info = el("div", { class: "terrain-design-info", attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "terrain-design-info" } });
   const apply = el("button", { class: "relief-bar-doodad", text: "적용 ↵", attrs: { type: "button" }, dataset: { testid: "terrain-design-apply" }, on: { click: commitTerrainDesign } }) as HTMLButtonElement;
-  const cancel = el("button", { class: "relief-bar-size", text: "점 지우기", attrs: { type: "button" }, dataset: { testid: "terrain-design-cancel" }, on: { click: () => editorState.set({ terrainPoints: null, terrainRoute: null }) } });
+  const cancel = el("button", { class: "relief-bar-size", text: "점 지우기", attrs: { type: "button" }, dataset: { testid: "terrain-design-cancel" }, on: { click: () => editorState.set({ terrainPoints: null, terrainRoute: null, terrainHouseDrag: null }) } });
   panel.append(info, el("div", { class: "terrain-design-footer", children: [cancel, apply] }));
   let libraryIdentity = store.getCurrent().terrainStamps;
   let selectedMap = "";
@@ -87,13 +87,13 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
     const count = s.terrainPoints?.mapId === map?.id ? s.terrainPoints!.points.length : 0;
     apply.disabled = !count || ["stamp", "route", "house", "mix", "mixedCluster"].includes(tool);
     if (tool === "route" && map && s.terrainRoute?.mapId === map.id) info.textContent = terrainRouteResult(p, map, s.terrainRoute, s.terrainRouteWidth, s).reason;
-    else if (tool === "house") info.textContent = "문 위치를 한 번 클릭 · 기존 물체와 지형은 보호됩니다";
+    else if (tool === "house") info.textContent = "드래그로 너비·높이 정하기 · 놓으면 한 채 배치 · Esc: 취소";
     else if (tool === "road" && s.terrainRoadDrag && !s.terrainFeatureId) info.textContent = "마우스로 끌어 그리고 놓으면 적용 · Esc: 취소";
     else if(s.terrainFeatureId) info.textContent = "제어점을 드래그하거나 값을 바꾸고 적용하세요 · Esc: 취소";
     else info.textContent = tool === "route" ? "출발점 → 목적지를 찍으세요. 아래에서 몸 크기·문·NPC·스위치를 검사할 수 있습니다." : tool === "stamp" ? s.terrainStampCapture ? `사각형의 두 모서리를 찍으세요 · ${count}/2` : "놓을 왼쪽 위 칸을 찍으세요. 소품 그림은 똑바로 유지됩니다." : tool === "mix" || tool === "mixedCluster" ? "캔버스를 눌러 배치하세요. 시드가 같으면 같은 배치가 됩니다." : `${count}개 점 · ${["contour", "lake", "lock"].includes(tool) && s.terrainAreaShape === "rect" ? "두 모서리" : "외곽 또는 경유점"}을 찍고 적용하세요. Esc: 취소`;
   };
   const offState = editorState.subscribe(sync), offStore = store.subscribe(sync); sync();
-  const keydown = (event: KeyboardEvent) => { if (panel.hidden || event.defaultPrevented || shouldIgnoreEditorShortcut(event)) return; if (event.key === "Enter" && !apply.disabled) { event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); } else if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (editorState.get().terrainPoints) editorState.set({ terrainPoints: null, terrainFeatureId: null }); else editorState.set({ terrainDesignOpen: false }); } };
+  const keydown = (event: KeyboardEvent) => { if (panel.hidden || event.defaultPrevented || shouldIgnoreEditorShortcut(event)) return; if (event.key === "Enter" && !apply.disabled) { event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); } else if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (editorState.get().terrainHouseDrag) editorState.set({ terrainHouseDrag: null }); else if (editorState.get().terrainPoints) editorState.set({ terrainPoints: null, terrainFeatureId: null }); else editorState.set({ terrainDesignOpen: false }); } };
   document.addEventListener("keydown", keydown, true);
   let drag: { x: number; y: number; left: number; top: number } | null = null;
   head.addEventListener("pointerdown", e => { if ((e.target as HTMLElement).closest("button")) return; drag = { x: e.clientX, y: e.clientY, left: panel.offsetLeft, top: panel.offsetTop }; head.setPointerCapture(e.pointerId); e.preventDefault(); });

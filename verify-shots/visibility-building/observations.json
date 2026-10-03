@@ -7,32 +7,74 @@
       "runCheckpoints": 0
     }
   },
+  "pendingHouse": {
+    "placements": 0,
+    "drag": {
+      "mapId": "map_blank_start",
+      "start": {
+        "x": 7,
+        "y": 7,
+        "face": "top"
+      },
+      "end": {
+        "x": 12,
+        "y": 13,
+        "face": "top"
+      }
+    },
+    "stateMap": "map_blank_start",
+    "tool": "relief",
+    "brush": "house",
+    "ok": true,
+    "width": 6,
+    "height": 7
+  },
   "houses": {
     "placements": [
       {
-        "kitId": "quick_house_blue-stone_7_1",
+        "kitId": "quick_house_blue-stone_6_1",
         "x": 7,
         "y": 7,
-        "w": 7,
+        "w": 6,
         "h": 7
       },
       {
-        "kitId": "quick_house_bright-plaster_7_1",
-        "x": 21,
-        "y": 6,
-        "w": 7,
-        "h": 7
+        "kitId": "quick_house_bright-plaster_9_1_roof4",
+        "x": 20,
+        "y": 4,
+        "w": 9,
+        "h": 9
       },
       {
-        "kitId": "quick_house_timber-hall_5_1",
-        "x": 32,
-        "y": 12,
+        "kitId": "quick_house_timber-hall_5_1_roof3",
+        "x": 31,
+        "y": 11,
         "w": 5,
-        "h": 7
+        "h": 8
       }
     ],
     "kits": 3
   },
+  "cancel": {
+    "count": 3,
+    "pending": null,
+    "tool": "house"
+  },
+  "undo": 2,
+  "redo": [
+    [
+      6,
+      7
+    ],
+    [
+      9,
+      9
+    ],
+    [
+      5,
+      8
+    ]
+  ],
   "roads": {
     "features": 3,
     "connected": true,
@@ -42,10 +84,10 @@
     "wallBlocked": true,
     "lowCannotSeePlateau": true,
     "highCanSeeLow": true,
-    "opaqueCells": 139
+    "opaqueCells": 169
   },
   "film": {
-    "frames": 380,
+    "frames": 461,
     "skippedCaptureFrames": 0,
     "crop": {
       "x": 0,
@@ -55,27 +97,39 @@
     },
     "phases": [
       {
-        "seconds": 0.042,
-        "text": "집 · 모양을 고르고 문 위치 한 번 클릭"
+        "seconds": 0.04,
+        "text": "집 · 드래그로 너비와 높이 정하기"
       },
       {
-        "seconds": 10.145,
-        "text": "집 너비 · 층수 변경, 다른 모양으로 연속 배치"
+        "seconds": 4.396,
+        "text": "반대 방향으로 끌어도 같은 사각형 · 9×9칸 집"
       },
       {
-        "seconds": 18.721,
-        "text": "겹치는 위치는 붉게 표시 · 클릭해도 기존 집 보존"
+        "seconds": 10.69,
+        "text": "높이도 드래그로 조절 · 5×8칸 집"
       },
       {
-        "seconds": 23.093,
+        "seconds": 23.101,
+        "text": "겹치는 집은 보호 · 한 번 클릭 배치도 사용 가능"
+      },
+      {
+        "seconds": 25.063,
+        "text": "Esc로 미완성 집 취소 · 취소 후 움직여도 배치 없음"
+      },
+      {
+        "seconds": 28.022,
+        "text": "Undo 한 번으로 한 채 제거 · Redo로 크기까지 복원"
+      },
+      {
+        "seconds": 30.633,
         "text": "도로 · 끌고 놓으면 자동 적용, 모퉁이와 교차로 연결"
       },
       {
-        "seconds": 34.839,
+        "seconds": 42.627,
         "text": "시야 ON · 벽·나무 뒤 가림, 에디터와 게임이 같은 판정"
       },
       {
-        "seconds": 38.206,
+        "seconds": 46.124,
         "text": "시야 OFF · 고지 시야 확대가 켜져 있어도 가림 완전히 해제"
       }
     ],

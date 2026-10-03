@@ -1,6 +1,6 @@
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
-import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
+import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { comboBrushPlacement } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
 import { brushStrokePoints } from "@/editor/TilePaintEngine";
@@ -18,7 +18,7 @@ import { planTerrainStamp } from "./terrainStamps";
 import { terrainLocked } from "@/project/terrainDesign";
 import { planReliefDoodad } from "./reliefDoodads";
 import { planQuickHouse } from "./quickHouse";
-import { structureKitUnitCells } from "./harnessSuggestion/structureKitModel";
+import { drawQuickHousePreview } from "./quickHousePreview";
 
 function announceReliefDoodadHover(detail: ReliefDoodadHoverDetail): void {
   if (typeof window === "undefined") return;
@@ -41,15 +41,7 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
     if (state.terrainFeatureId || state.terrainVisionPreview) { spec.layer.add(g); return; }
     if (state.terrainBrush === "house") {
       const plan = planQuickHouse(map, tileset, pick, { style: state.terrainHouseStyle, width: state.terrainHouseWidth, stories: state.terrainHouseStories, kitId: state.terrainHouseKitId });
-      if (plan.kit) for (const cell of structureKitUnitCells(plan.kit)) {
-        const x = plan.x + cell.dx, y = plan.y + cell.dy;
-        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
-        const preview = createRawChipsetTileObject(spec.scene, map, tileset, x, y, cell.tile);
-        preview.setY(preview.y - (lift ? cellLift(lift, x, y) : 0) * tileSize).setAlpha(.65);
-        spec.layer.add(preview);
-      }
-      for (const i of plan.indices) draw(i % map.width, Math.floor(i / map.width), plan.ok ? 0x2f9e44 : 0xe03131);
-      announceReliefDoodadHover({ ok: plan.ok, reason: plan.reason, label: "집 외관" });
+      drawQuickHousePreview(spec.scene, spec.layer, map, tileset, plan);
     } else if (state.terrainBrush === "stamp" && !state.terrainStampCapture) {
       const stamp=store.getCurrent().terrainStamps?.find(s=>s.id===state.terrainStampId);
       if(stamp){const plan=planTerrainStamp(map,tileset,stamp,pick,state.terrainStampRotation,state.terrainStampMirror);for(const i of plan.indices)draw(i%map.width,Math.floor(i/map.width),plan.ok?0x2f9e44:0xe03131);}

@@ -10,7 +10,8 @@ import { terrainEditable, type TerrainDesignPlan } from "./terrainDesignPlans";
 import { terrainIsReserved } from "./terrainMaterials";
 import type { TerrainPoint } from "./terrainDesignGeometry";
 
-export interface QuickHouseOptions { style: HouseKitId; width: number; stories: 1 | 2; kitId?: string | null }
+export interface QuickHouseOptions { style: HouseKitId; width: number; stories: 1 | 2; kitId?: string | null; roofBodyRows?: number }
+export interface QuickHouseDrag { mapId: string; start: TerrainPoint; end: TerrainPoint }
 export function quickHouseCatalog(tileset: TilesetDef): SectionStructureKitDef[] {
   return (tileset.structureKits ?? []).filter((k): k is SectionStructureKitDef => k.kind === "section" && k.width <= 24 && k.height <= 24
     && !!k.parts?.some(p => p.kind === "entrance") && /house|home|집|주택|저택|여관|상점|대장간|성당|창고/i.test(`${k.id} ${k.name} ${k.ai?.tags?.join(" ")}`))
@@ -27,20 +28,30 @@ export function quickHouseKit(tileset: TilesetDef, options: QuickHouseOptions): 
   const selected = options.kitId ? catalog.find(k => k.id === options.kitId) : undefined;
   if (selected) return selected;
   if (!quickHouseStyles(tileset).length) return catalog[0];
-  const style = houseKitForTileset(options.style, tilesetHasHouseParts(tileset)), width = Math.max(5, Math.min(15, Math.round(options.width) | 1));
-  const plan = { x: 0, y: 0, width, stories: options.stories, roofBodyRows: 2, kitId: style }, height = rectHouseHeight(plan);
-  const id = `quick_house_${style}_${width}_${options.stories}`, old = kits.get(id); if (old) return old;
+  const style = houseKitForTileset(options.style, tilesetHasHouseParts(tileset)), width = Math.max(5, Math.min(24, Math.round(options.width)));
+  const roofBodyRows = Math.max(1, Math.min(12, Math.round(options.roofBodyRows ?? 2)));
+  const plan = { x: 0, y: 0, width, stories: options.stories, roofBodyRows, kitId: style }, height = rectHouseHeight(plan);
+  const id = `quick_house_${style}_${width}_${options.stories}${roofBodyRows === 2 ? "" : `_roof${roofBodyRows}`}`, old = kits.get(id); if (old) return old;
   const map = { width, height, lowerTiles: Array(width * height).fill(TILE.EMPTY), upperTiles: Array(width * height).fill(TILE.EMPTY) } as GameMap;
   const result = stampRectHouseKit(map, plan); if (!result.ok || !result.doorAt) return undefined;
   const door = result.doorAt;
   map.lowerTiles[(door.y - 1) * width + door.x] = 329;
   map.lowerTiles[door.y * width + door.x] = 359;
-  const kit = structureKitFromMapRegion(map, { x: 0, y: 0, width, height }, { id, name: `${HOUSE_KITS[style].name} · ${width}칸 · ${options.stories}층` });
+  const kit = structureKitFromMapRegion(map, { x: 0, y: 0, width, height }, { id, name: `${HOUSE_KITS[style].name} · ${width}×${height}칸 · ${options.stories}층` });
   kit.learnedFrom = "db-authored"; kit.createdAt = "2026-10-03T00:00:00.000Z"; kit.tileSize = 16;
   kit.parts = [{ id: "door", kind: "entrance", dx: door.x, dy: door.y - 1, w: 1, h: 2 }];
   kits.set(id, kit); return kit;
 }
 export interface QuickHousePlan extends TerrainDesignPlan { kit?: SectionStructureKitDef; x: number; y: number }
+/** A click keeps the door anchor; a rectangle uses its top left and repeats authored house parts. */
+export function planQuickHouseDrag(map: GameMap, tileset: TilesetDef, drag: QuickHouseDrag, options: QuickHouseOptions): QuickHousePlan {
+  if (drag.start.x === drag.end.x && drag.start.y === drag.end.y) return planQuickHouse(map, tileset, drag.start, options);
+  const width = Math.abs(drag.end.x - drag.start.x) + 1, height = Math.abs(drag.end.y - drag.start.y) + 1;
+  const wallAndCaps = rectHouseHeight({ kitId: options.style, stories: options.stories, roofBodyRows: 1 }) - 1;
+  const sized = { ...options, width, roofBodyRows: height - wallAndCaps }, kit = quickHouseKit(tileset, sized), door = kit?.parts?.find(p => p.kind === "entrance");
+  const x = Math.min(drag.start.x, drag.end.x), y = Math.min(drag.start.y, drag.end.y);
+  return planQuickHouse(map, tileset, { x: x + (door?.dx ?? 0), y: y + (door ? door.dy + door.h - 1 : 0) }, sized);
+}
 /** Anchor is the front door, so the road approach remains the next cell south. */
 export function planQuickHouse(map: GameMap, tileset: TilesetDef, anchor: TerrainPoint, options: QuickHouseOptions): QuickHousePlan {
   const kit = quickHouseKit(tileset, options), door = kit?.parts?.find(p => p.kind === "entrance");
