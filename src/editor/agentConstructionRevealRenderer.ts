@@ -50,6 +50,7 @@ type Active = {
   readonly fx: Phaser.GameObjects.Container;
   pointer: number;
   buildingPointer: number;
+  sparklePointer: number;
   shakes: number;
   finished: boolean;
   readonly revealing: ConstructionRevealCell[];
@@ -93,7 +94,7 @@ export class AgentConstructionRevealRenderer {
 
     const active: Active = {
       plan, tile, elapsed: 0, root, cover, fading, glow, fx,
-      pointer: 0, buildingPointer: 0, shakes: 0, finished: false, revealing: [],
+      pointer: 0, buildingPointer: 0, sparklePointer: 0, shakes: 0, finished: false, revealing: [],
       onUpdate: (_time, delta) => this.tick(delta),
     };
     this.active = active;
@@ -167,6 +168,13 @@ export class AgentConstructionRevealRenderer {
       this.buildingDrop(active, plan.buildings[active.buildingPointer++]!);
     }
 
+    // 나무·소품이 돋는 자리: 덮개는 이미 걷혔다 — 초록 빛과 반짝임만.
+    while (active.sparklePointer < plan.sparkles.length && plan.sparkles[active.sparklePointer]!.at <= elapsed) {
+      const spark = plan.sparkles[active.sparklePointer++]!;
+      active.revealing.push({ index: spark.y * plan.width + spark.x, x: spark.x, y: spark.y, phase: "detail", at: spark.at, glowOnly: true } as ConstructionRevealCell & { glowOnly: true });
+      this.cellBurst(active, { index: spark.y * plan.width + spark.x, x: spark.x, y: spark.y, phase: "detail", at: spark.at });
+    }
+
     // 걷히는 중인 칸: 남색이 옅어지고 단계 색 빛이 번쩍였다 사라진다.
     active.fading.clear();
     active.glow.clear();
@@ -176,9 +184,12 @@ export class AgentConstructionRevealRenderer {
       if (t >= 1) continue;
       active.revealing[keep++] = cell;
       const x = cell.x * tile, y = cell.y * tile;
-      active.fading.fillStyle(COVER_COLOR, COVER_ALPHA * (1 - t) * (1 - t));
-      active.fading.fillRect(x, y, tile, tile);
-      active.glow.fillStyle(GLOW[cell.phase], 0.75 * (1 - t));
+      const glowOnly = (cell as { glowOnly?: boolean }).glowOnly === true;
+      if (!glowOnly) {
+        active.fading.fillStyle(COVER_COLOR, COVER_ALPHA * (1 - t) * (1 - t));
+        active.fading.fillRect(x, y, tile, tile);
+      }
+      active.glow.fillStyle(GLOW[cell.phase], (glowOnly ? 0.55 : 0.75) * (1 - t));
       active.glow.fillRect(x, y, tile, tile);
     }
     active.revealing.length = keep;
@@ -195,7 +206,7 @@ export class AgentConstructionRevealRenderer {
       active.glow.fillRect(b.x * tile, y - 2, b.width * tile, 2);
     }
 
-    if (!active.finished && active.pointer >= cells.length && !active.revealing.length) {
+    if (!active.finished && active.pointer >= cells.length && active.sparklePointer >= plan.sparkles.length && !active.revealing.length) {
       active.finished = true;
       this.finishFlourish(active);
     }
@@ -234,10 +245,10 @@ export class AgentConstructionRevealRenderer {
     const { tile } = active;
     const scene = this.scene;
     const x = b.x * tile, y = b.y * tile, w = b.w * tile, h = b.h * tile;
-    const flash = scene.add.rectangle(x, y, w, h, 0xffffff, 0.85).setOrigin(0, 0);
+    const flash = scene.add.rectangle(x, y, w, h, 0xfff1cf, 0.5).setOrigin(0, 0);
     flash.setBlendMode("ADD");
     active.fx.add(flash);
-    scene.tweens.add({ targets: flash, alpha: 0, duration: 340, ease: "Quad.easeOut", onComplete: () => flash.destroy() });
+    scene.tweens.add({ targets: flash, alpha: 0, duration: 300, ease: "Quad.easeOut", onComplete: () => flash.destroy() });
     const ring = scene.add.rectangle(x + w / 2, y + h / 2, w, h).setStrokeStyle(Math.max(1, tile / 8), 0xfff2b0, 1);
     active.fx.add(ring);
     scene.tweens.add({ targets: ring, scaleX: 1.35, scaleY: 1.35, alpha: 0, duration: 520, ease: "Cubic.easeOut", onComplete: () => ring.destroy() });

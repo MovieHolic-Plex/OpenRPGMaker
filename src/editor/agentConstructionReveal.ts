@@ -32,12 +32,20 @@ export interface ConstructionRevealBuilding {
   readonly at: number;
 }
 
+/** 덮개 없이 빛만 내는 자리 — 나무·소품은 바닥과 같이 드러나고, 소품 단계에서 반짝임으로 「돋는다」. */
+export interface ConstructionRevealSparkle {
+  readonly x: number;
+  readonly y: number;
+  readonly at: number;
+}
+
 export interface ConstructionRevealPlan {
   readonly mapId: MapId;
   readonly width: number;
   readonly height: number;
   readonly cells: readonly ConstructionRevealCell[];
   readonly buildings: readonly ConstructionRevealBuilding[];
+  readonly sparkles: readonly ConstructionRevealSparkle[];
   /** 마지막 칸이 걷히고 마무리 빛이 끝나는 시각(ms). */
   readonly durationMs: number;
   readonly bounds: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
@@ -258,6 +266,16 @@ export function planConstructionReveal(
   // 나무·소품·이벤트: 흩뿌려 톡톡 돋는다.
   spread("detail", byPhase.get("detail") ?? [], scatter);
   spread("event", byPhase.get("event") ?? [], scatter);
+  // 나무·소품 칸의 덮개는 바닥과 같이 걷는다 — 소품 단계까지 덮어 두면 바닥 단계 내내 맵이 남색 점으로 얽어 보였다
+  // (2026-10-03 화면 확인). 그 칸은 소품 단계에 반짝임만 받는다.
+  const sparkles: ConstructionRevealSparkle[] = [];
+  for (const i of byPhase.get("detail") ?? []) {
+    const x = i % width, y = Math.floor(i / width);
+    sparkles.push({ x, y, at: Math.round(timeOf.get(i) ?? 0) });
+    const groundAt = phaseStartMs.ground + (Math.hypot(x - cx, y - cy) / maxRadius + scatter(i) * 0.08) * (spans.get("ground") || PHASE_SPAN_MS.ground);
+    timeOf.set(i, Math.min(timeOf.get(i) ?? groundAt, groundAt));
+  }
+  sparkles.sort((a, b) => a.at - b.at);
 
   let minX = width, minY = height, maxX = -1, maxY = -1, last = 0;
   const cells: ConstructionRevealCell[] = [];
@@ -266,7 +284,9 @@ export function planConstructionReveal(
     const at = Math.round(timeOf.get(i) ?? 0);
     last = Math.max(last, at);
     minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
-    cells.push({ index: i, x, y, phase: phaseOf.get(i)!, at });
+    // 나무·소품 칸은 덮개를 바닥과 같이 걷으므로 덮개 빛도 바닥 색이다. 소품 빛은 sparkles 가 따로 낸다.
+    const phase = phaseOf.get(i)!;
+    cells.push({ index: i, x, y, phase: phase === "detail" ? "ground" : phase, at });
   }
   cells.sort((a, b) => a.at - b.at);
   const usedBuildings = new Set(buildingOf.values());
@@ -279,7 +299,8 @@ export function planConstructionReveal(
     height,
     cells,
     buildings,
-    durationMs: last + CONSTRUCTION_CELL_FADE_MS + FINISH_HOLD_MS,
+    sparkles,
+    durationMs: Math.max(last, sparkles.at(-1)?.at ?? 0) + CONSTRUCTION_CELL_FADE_MS + FINISH_HOLD_MS,
     bounds: { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 },
     phaseStartMs,
   };

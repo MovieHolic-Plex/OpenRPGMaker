@@ -25,7 +25,7 @@ page.on("console", (m) => { if (m.text().startsWith("QA")) console.log(m.text())
 const watchdog = setTimeout(() => { console.error("QA wall timeout"); void browser.close(); }, 300000);
 const check = (name, passed, detail) => { report.checks.push({ name, passed, detail }); console.log(JSON.stringify({ name, passed, detail })); };
 let frame = 0;
-const shot = async (label) => { const file = `${out}/frames/${String(++frame).padStart(2, "0")}-${label}.png`; await page.screenshot({ path: file }); return file; };
+const shot = async (label) => { const file = `${out}/frames/${String(++frame).padStart(2, "0")}-${label}.png`; await page.screenshot({ path: file, timeout: 120000 }); return file; };
 
 // NOREVEAL=1: 실시간 시공 표시를 끈 대조군 — 연출이 적용·ACK 를 늦추는지 잰다.
 if (process.env.NOREVEAL === "1") await page.addInitScript(() => { window.name = "noreveal"; });
