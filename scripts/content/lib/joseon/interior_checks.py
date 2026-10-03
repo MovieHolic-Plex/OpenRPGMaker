@@ -72,7 +72,7 @@ def analyze(room, sheet, walk=None):
             ok[y][x] = False if c == 'X' else True        # F·C·없음 = 바닥이 걸음
             if room.wallrow[y][x] > 0 and c is None:      # 벽면 칸은 벽 조각이 반드시 덮는다
                 ok[y][x] = False
-    rep = {k: [] for k in ('exit_unreached', 'use_unreached', 'door_blocked', 'triples', 'wall_rule', 'overlap', 'bare_runs', 'pairs', 'bare_rect', 'door_no_yard', 'wall_ring', 'no_shadow', 'bad_people', 'people_blocking')}
+    rep = {k: [] for k in ('exit_unreached', 'use_unreached', 'door_blocked', 'triples', 'wall_rule', 'overlap', 'bare_runs', 'pairs', 'bare_rect', 'door_no_yard', 'wall_ring', 'no_shadow', 'bad_people', 'people_dup', 'people_blocking')}
     # I1 도달
     sx, sy = room.start_cell()
     seen = set()
@@ -230,6 +230,10 @@ def analyze(room, sheet, walk=None):
         rep['bare_rect'].append(('rect', best[1], best[2], best[3], best[4], best[0]))
     # I7 인물: 조선에 맞는 프레임만, 막힌 칸·문 앞 2칸 위에 서지 않는다(동선을 막지 않는다)
     import people as _PP
+    from collections import Counter as _Ct
+    for chk, cnt in _Ct(p[2] for p in room.people).items():
+        if cnt > 1:
+            rep['people_dup'].append((chk, cnt))               # 같은 캐릭터 복제 금지(2차 S3)
     for (px, py, ch, *_r) in room.people:
         px += room.ox
         if ch not in _PP.OK_CHARS:
@@ -240,7 +244,7 @@ def analyze(room, sheet, walk=None):
         for (ex, ey, ew) in room.exit_runs():
             if ex - 1 <= px <= ex + ew and ey - INT_DOOR_CLEAR <= py < ey:
                 rep['people_blocking'].append((px, py, '문 앞'))
-    # I7 문 밖 마당·외곽 벽·접지 그림자
+    # I7 문 밖 마당·외곽 벽·접지 그림자(기물마다)·인물
     for (ex, ey, ew) in room.exit_runs():
         for k in range(ew):
             if room.ch(ex + k, ey + 1) != 'y' or room.ch(ex + k, ey + 2) != 'y':
@@ -257,6 +261,14 @@ def analyze(room, sheet, walk=None):
                     rep['wall_ring'].append((x, y))
     if getattr(room, 'shadow_px', 0) == 0 and any(not n.startswith(('in_wall_', 'pal_wall_')) for (n, *_r) in room.placed):
         rep['no_shadow'].append('접지 그림자 0화소')
+    # 기물마다 접지 그림자(2차 S2): NOSHADOW 가 아닌 모든 기물이 SHADOW_MIN 화소 이상을 가져야 한다(방 빌더가 칠한 수 shadow_by)
+    import interior_room as _IR
+    for (n, x, y, w, h) in room.placed:
+        if n.startswith(_IR.NOSHADOW) or n in in_meta.HUNG:
+            continue                                   # 벽걸이는 바닥에 그림자를 드리우지 않는다
+        got = getattr(room, 'shadow_by', {}).get((n, x, y), 0)
+        if got < _IR.Room.SHADOW_MIN:
+            rep['no_shadow'].append((n, x, y, got))
     floor_cells = sum(1 for y in range(Ht) for x in range(Wd) if not room.solid(x, y) and room.wallrow[y][x] == 0 and room.ch(x, y) not in ('E', 'y'))
     rep['_floor_cells'] = floor_cells
     rep['_bare_cells'] = sum(1 for y in range(Ht) for x in range(Wd) if bare[y][x])

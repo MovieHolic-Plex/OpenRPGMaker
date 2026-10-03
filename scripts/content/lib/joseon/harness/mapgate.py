@@ -106,8 +106,8 @@ def check_interior(rep):
                        ('door_blocked', 'I2 출입구 앞이 기물에 막힘'), ('triples', f'I3 같은 기물 {INT_TRIPLE}개 일렬'),
                        ('wall_rule', 'I4 천장 밑 벽·벽 가구 규칙'), ('overlap', 'I4 기물 겹침'), ('bare_runs', f'I5 맨바닥 {INT_BARE_RUN}칸 이상 연속'),
                        ('pairs', f'I6 같은 기물 간격 {INT_PAIR_GAP}칸 이내 복제 쌍'), ('bare_rect', f'I6 맨바닥 {INT_BARE_RECT}칸 이상 직사각형'),
-                       ('door_no_yard', 'I7 출입구 밖 마당 두 줄 없음'), ('wall_ring', 'I7 외곽 벽 두께(외곽이 #·E 가 아님)'), ('no_shadow', 'I7 접지 그림자 없음'),
-                       ('bad_people', 'I7 조선에 맞지 않는 Actor1 프레임(0·1·6 만)'), ('people_blocking', 'I7 인물이 막힌 칸·문 앞에 섬')):
+                       ('door_no_yard', 'I7 출입구 밖 마당 두 줄 없음'), ('wall_ring', 'I7 외곽 벽 두께(외곽이 #·E 가 아님)'), ('no_shadow', 'I7 접지 그림자 없음(기물마다 SHADOW_MIN 화소)'),
+                       ('bad_people', 'I7 조선에 맞지 않는 Actor1 프레임(0·6 만)'), ('people_dup', 'I7 같은 인물 캐릭터 복제'), ('people_blocking', 'I7 인물이 막힌 칸·문 앞에 섬')):
         if rep.get(key):
             fails.append(f"{label}: {rep[key][:6]}" + (f" 외 {len(rep[key]) - 6}" if len(rep[key]) > 6 else ''))
     return fails, {k: (len(v) if isinstance(v, list) else v) for k, v in rep.items()}

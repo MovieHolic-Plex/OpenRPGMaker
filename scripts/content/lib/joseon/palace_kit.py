@@ -381,7 +381,7 @@ def dais_front_stone(kind='m'):
     return c
 
 
-def dais_steps_stone(w=3):
+def dais_steps_stone(w=3, carpet=None):
     """월대 오르는 큰 계단(w×1, 걷는다 F): 위 5줄은 월대 윗면, 그 밑 디딤 석 3단(밝은 윗면 + 어두운 챌), 양 끝은 소맷돌(난간 석)."""
     c = Cv(T * w, T)
     Wd = T * w
@@ -394,6 +394,19 @@ def dais_steps_stone(w=3):
             c.put(x, y0, S_[6]); c.put(x, y0 + 1, S_[5])
             c.put(x, y0 + 2, S_[3] if k < 2 else S_[2])
     c.hl(0, Wd, 14, S_[2]); c.hl(0, Wd, 15, S_[1])
+    if carpet:                                                  # 계단 위로 이어지는 붉은 카펫 길(2차 S4: 계단 위 카펫 끊김) — 바닥 카펫과 같은 3줄 띠 + 디딤마다 윗면 밝고 챌 어둡다
+        cx0, cx1 = carpet
+        for y in range(0, 16):
+            for x in range(cx0, cx1):
+                edge = min(x - cx0, cx1 - 1 - x)
+                step_row = y - 5 if y >= 5 else None
+                if edge == 0: col = RD[1]
+                elif edge == 1: col = PE[4]
+                elif edge == 2: col = RD[2]
+                else:
+                    tone = 4 if (step_row is not None and step_row % 3 == 0) else (2 if (step_row is not None and step_row % 3 == 2) else 3)
+                    col = RD[tone]
+                c.put(x, y, col)
     for x0, hi in ((0, True), (Wd - 4, False)):                 # 소맷돌
         for y in range(2, 16):
             for kx in range(4):
@@ -403,16 +416,50 @@ def dais_steps_stone(w=3):
 
 
 def exit_door_pal(w=1):
-    """궁 출입구(w×1): 위로 박석이 이어지다 돌 문턱, 맨 밑 네 줄은 바깥 어둠. 이 칸을 밟으면 밖으로 나간다(F)."""
+    """궁 출입구(w×1): 남벽 틈에 선 **붉은 대문** — 인방(단청 띠 3줄) · 붉은 문설주 · 문짝(붉은 널 + 금빛 문정 3×n 줄 + 가운데 맞댄 이음 + 금 문고리) · 돌 문턱.
+    w 가 2 이상이면 두 짝(w=4 는 2칸씩 한 짝). 문 밖은 이 칸 바로 아래 디딤돌 + 박석 마당(pal_floor_yard). 이 칸을 밟으면 밖으로 나간다(F)."""
     c = Cv(T * w, T)
     Wd = T * w
-    for y in range(0, 9):
+    for y in range(T):
         for x in range(Wd):
-            q = rnd(x, y, 133)
-            c.put(x, y, G_[4] if q > 0.15 else G_[3])
-    for x in range(Wd):
-        c.put(x, 9, S_[6]); c.put(x, 10, S_[5]); c.put(x, 11, S_[4])
-        c.put(x, 12, S_[3]); c.put(x, 13, G_[1]); c.put(x, 14, G_[0]); c.put(x, 15, G_[0])
+            c.put(x, y, RD[0])
+    for x in range(Wd):                                           # 인방: 단청 띠(녹·적·청 8px 반복) + 금 선
+        body = (DG, RD, DB)[(x // 8) % 3]
+        c.put(x, 0, PE[5]); c.put(x, 1, body[5]); c.put(x, 2, body[3]); c.put(x, 3, RD[0])
+    for y in range(0, 12):                                        # 붉은 문설주 3px
+        for k, x in enumerate((0, 1, 2)):
+            c.put(x, y, (RD[5], RD[4], RD[2])[k]); c.put(Wd - 1 - k, y, (RD[2], RD[3], RD[4])[k])
+    lx0, lx1 = 3, Wd - 3
+    mid = Wd // 2
+    for y in range(4, 12):
+        for x in range(lx0, lx1):
+            q = rnd(x, y, 160)
+            c.put(x, y, RD[4] if q > 0.2 else RD[3])
+    for x in range(lx0, lx1):                                     # 문짝 위·아래 가로대
+        c.put(x, 4, RD[2]); c.put(x, 11, RD[2])
+    leaf_w = 8 if w >= 2 else (lx1 - lx0)
+    for x in range(lx0, lx1):                                     # 널 이음(8px 간격 세로선)
+        if (x - lx0) % 8 == 7 and x != lx1 - 1:
+            for y in range(5, 11):
+                c.put(x, y, RD[2])
+    for yy in (6, 9):                                             # 금빛 문정(못머리)
+        for x in range(lx0 + 2, lx1 - 1, 4):
+            if abs(x - mid) > 1:
+                c.put(x, yy, PE[5]); c.put(x + 1, yy, PE[3])
+    if w >= 2:                                                    # 두 짝 문: 가운데 맞댄 이음 + 금 문고리
+        for y in range(4, 12):
+            c.put(mid - 1, y, RD[0]); c.put(mid, y, RD[5])
+        for hx_ in (mid - 3, mid + 2):
+            for dy in (7, 8, 9):
+                c.put(hx_, dy, PE[3]); c.put(hx_ + 1, dy, PE[5] if dy == 8 else PE[3])
+    else:
+        for dy in (7, 8, 9):
+            c.put(Wd - 6, dy, PE[3]); c.put(Wd - 5, dy, PE[5] if dy == 8 else PE[3])
+    for x in range(2, Wd - 2):                                    # 돌 문턱
+        c.put(x, 12, S_[6]); c.put(x, 13, S_[5]); c.put(x, 14, S_[3]); c.put(x, 15, S_[1])
+    for y in range(12, 16):                                       # 주춧돌
+        for x in (0, 1):
+            c.put(x, y, S_[5] if x == 0 else S_[4]); c.put(Wd - 1 - x, y, S_[3] if x == 0 else S_[2])
     return c
 
 
@@ -449,6 +496,7 @@ def terrain():
     d['pal_floor_ondol'] = _pal_set(_ondol)
     d['pal_floor_dais'] = _pal_set(_dais)
     d['pal_floor_carpet'] = [carpet_tile(m) for m in range(16)]
+    d['pal_floor_yard'] = IK.yard_set(_dais)
     d['pal_ceil47'] = [ceil_pal(m) for m in ALL47]
     d['pal_ceil_front'] = [ceil_front_pal(e) for e in ('m', 'l', 'r', 'lr')]
     return d
@@ -462,8 +510,8 @@ def objects():
         d[f'pal_ceil_beam_{k}'] = ceil_beam_red(k)
     for k in ('m', 'l', 'r'):
         d[f'pal_dais_front_{k}'] = dais_front_stone(k)
-    d['pal_dais_steps_4'] = dais_steps_stone(4)
-    d['pal_dais_steps_6'] = dais_steps_stone(6)
+    d['pal_dais_steps_4'] = dais_steps_stone(4, (4, 60))          # 카펫이 계단을 타고 오른다(어좌전 가운데 길, 2차 S4)
+    d['pal_dais_steps_6'] = dais_steps_stone(6, (16, 80))
     for w in (1, 2, 3, 4):
         d['pal_exit_door' + ('' if w == 1 else str(w))] = exit_door_pal(w)
     return d

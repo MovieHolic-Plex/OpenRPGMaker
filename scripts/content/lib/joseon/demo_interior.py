@@ -54,7 +54,7 @@ def joseon_in_house():
     P('in_mul_dongi', 1, 11); P('in_soban_b', 5, 10); P('in_hangari_b', 7, 11)
     # 봉당(동쪽): 장독대(큰 독 · 중간 · 작은 독 비스듬히), 물레, 절구통(쌀)
     P('in_hangari_tall', 13, 9); P('in_hangari_a', 12, 10); P('in_sokuri_grain', 8, 9); P('in_mulle', 9, 11)
-    r.people += [(9, 7, 1, FRONT, 1), (3, 5, 0, RIGHT, 0)]
+    r.people += [(3, 5, 0, RIGHT, 0)]
     return r
 
 
@@ -95,7 +95,7 @@ def joseon_in_inn():
     P('in_ibuljang', 17, 2); P('in_byeongpung_s', 19, 2); P('in_ibul_r', 19, 5); P('in_soban_b', 17, 5); P('in_doorway', 16, 6)
     # 손님방 B (동남): 족자 · 장롱 · 푸른 이불 · 화로
     P('in_jokja_b', 17, 8); P('in_mungap', 19, 10); P('in_ibul_b', 19, 11); P('in_hwaro', 17, 12); P('in_doorway', 16, 10)
-    r.people += [(10, 3, 1, FRONT, 1), (13, 9, 0, LEFT, 0), (11, 7, 6, RIGHT, 1)]
+    r.people += [(13, 9, 0, LEFT, 0), (11, 7, 6, RIGHT, 1)]
     return r
 
 
@@ -147,7 +147,7 @@ def joseon_in_pharmacy():
     P('in_yak_table', 1, 5); P('in_yakyeon', 3, 5); P('in_yakhwa', 5, 5); P('in_sokuri_grain', 5, 6); P('in_chaekdemi', 6, 4)
     # 진료 자리(동쪽 온돌): 상 + 방석 + 안석
     P('in_sang_2', 8, 5); P('in_bangseok_r', 7, 5); P('in_bangseok_b', 10, 5); P('in_ansuk', 9, 6)
-    r.people += [(8, 3, 1, FRONT, 1), (2, 4, 0, UP, 0)]
+    r.people += [(2, 4, 0, UP, 0)]
     return r
 
 
@@ -182,7 +182,7 @@ def joseon_in_school():
         P('in_hakdong_sang', x, 7); P(('in_bangseok_r', 'in_bangseok_g', 'in_bangseok_b', 'in_bangseok_r')[i], x, 8)
     for i, x in enumerate((2, 5, 11, 14)):
         P('in_hakdong_sang', x, 9); P(('in_bangseok_b', 'in_bangseok_r', 'in_bangseok_g', 'in_bangseok_b')[i], x, 10)
-    r.people += [(9, 4, 6, FRONT, 1), (6, 8, 0, UP, 1), (11, 8, 0, UP, 0)]
+    r.people += [(9, 4, 6, FRONT, 1), (6, 8, 0, UP, 1)]
     return r
 
 
@@ -191,20 +191,20 @@ def joseon_in_office():
     """관아 동헌 17×13: 전돌 바닥 + 북쪽 널마루 원님 단(壇: 병풍·의자·가운데 서안·북·호피·촛대 둘, 가운데 3칸 계단). 서쪽 서가·형틀·곤장 틀·죄인 자리, 동쪽 서리 책상·문서 궤짝, 중앙 붉은 깔개, 기둥 둘. 출구는 남벽 x=8."""
     plan = """
 #################
-#jjjjkkkkkkkjjjj#
-#jjjjkkkkkkkjjjj#
-#jjjjkkkkkkkjjjj#
-#jjjjkkkkkkkjjjj#
-#jjjjkkkkkkkjjjj#
-#jjjjkkkkkkkjjjj#
-#jjjjjjjjjjjjjjj#
-#jjjjjjjjjjjjjjj#
-#jjjjjjjjjjjjjjj#
-#jjjjjjjjjjjjjjj#
-#jjjjjjjjjjjjjjj#
+#mmmmkkkkkkkmmmm#
+#mmmmkkkkkkkmmmm#
+#mmmmkkkkkkkmmmm#
+#mmmmkkkkkkkmmmm#
+#mmmmkkkkkkkmmmm#
+#mmmmkkkkkkkmmmm#
+#mmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmm#
 ########E########
 """.strip('\n')
-    r = IR.Room('joseon_in_office', '조선 관아 동헌 내부(원님 단·형틀·서리 책상)', plan, wall_of={'j': 'mok', 'k': 'hoe'})
+    r = IR.Room('joseon_in_office', '조선 관아 동헌 내부(원님 단·형틀·서리 책상)', plan, wall_of={'m': 'mok', 'k': 'hoe'})
     P = r.put
     # 단(x5..11, y3..6, 앞면 y7): 앞면 l·m·계단 3·m·r + 양옆
     P('in_dais_front_l', 5, 7); P('in_dais_front_m', 6, 7); P('in_dais_front_m', 10, 7)
@@ -226,7 +226,7 @@ def joseon_in_office():
     # 동쪽: 문서 궤짝·족자·서리 책상(+방석)·반닫이
     P('in_mungap', 14, 3); P('in_jokja_b', 13, 1); P('in_gwan_desk', 13, 5); P('in_bangseok_b', 14, 6); P('in_bandaji', 14, 9)
     P('in_sokuri_fruit', 1, 11)
-    r.people += [(8, 5, 6, FRONT, 1), (13, 8, 0, LEFT, 0), (2, 8, 0, RIGHT, 1)]
+    r.people += [(8, 5, 6, FRONT, 1), (13, 8, 0, LEFT, 0)]
     return r
 
 

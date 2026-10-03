@@ -69,7 +69,7 @@ def _floor_maru(v):
                 c.put(x, y, t)
         c.hl(0, T, y1 - 1, W_[2])
     jb = (v * 2 + 1) % 3                                   # 이음이 들어가는 널(타일마다 한 장)
-    jx = 5 + 6 * v
+    jx = 5 + 6 * v if v < 2 else (5 + 6 * v) % 14 + 1      # 변형 0·1 은 그대로(옛 방과 같은 칸)
     c.vl(jx, ys[jb], ys[jb + 1] - 1, W_[2])
     return c
 
@@ -157,6 +157,8 @@ def _lip(base, ramp_wood=True):
 
 
 def floor_set(kind):
+    if kind == 'yard':
+        return yard_set()
     mk = {'ondol': _floor_ondol, 'maru': _floor_maru, 'dirt': _floor_dirt, 'stone': _floor_stone, 'jeondol': _floor_jeondol, 'deck': _floor_deck, 'yard': _floor_yard}[kind]
     v0, v1 = mk(0), mk(1)
     sh_n = lambda x, y: (0.74, 0.86, 0.94)[y] if y < 3 else 1.0
@@ -165,6 +167,8 @@ def floor_set(kind):
     tiles = [v0, v1, _shade(v0, sh_n), _shade(v0, sh_w), _shade(v0, sh_nw), _shade(v1, sh_n)]
     if kind in ('ondol', 'maru', 'deck'):
         tiles.append(_lip(v0))
+    if kind == 'maru':                                   # 변형 둘 더(칸 7·8): 넓은 방에서 두 변형이 바둑판으로 반복돼 세로 띠가 생기는 것을 깬다(2차 S4)
+        tiles += [mk(2), mk(3)]
     return tiles
 
 
@@ -509,25 +513,42 @@ def ceil_beam(kind='m'):
 
 # ------------------------------------------------------------------ 문
 def exit_door(w=1):
-    """출입구(w×1): 남벽 틈을 문틀로 짠다 — 위 3줄 인방(들보), 양옆 기둥 2px, 가운데는 방 바닥이 이어지는 어두운 마루 + 문턱 널(밝은 윗면 · 앞면 · 접지).
-    문 밖은 이 칸 바로 아래 마당(in_floor_yard) 두 줄이 이어진다. 이 칸을 밟으면 밖으로 나간다(F)."""
+    """출입구(w×1): 남벽 틈에 선 **닫힌 문** — 인방(위 3줄) · 문설주(양옆 2px) · 문짝(밝은 널 + 가로 띠쇠 + 문고리, 폭 2 이상이면 가운데 맞댄 이음) · 문턱(맨 밑 4줄, 밝은 윗면 → 앞면 → 접지).
+    문짝은 문틀(어두운 W1~2)보다 한 단 밝아 「틈」이 아니라 「문」으로 읽힌다(적대 검수 2차 S1). 문 밖은 이 칸 바로 아래 문 앞 두 줄(디딤돌 + 마당, in_floor_yard)이다.
+    이 칸을 밟으면 밖으로 나간다(F)."""
     c = Cv(T * w, T)
     Wd = T * w
-    for y in range(0, T):
+    for y in range(T):
         for x in range(Wd):
-            q = rnd(x, y, 99)
-            c.put(x, y, W_[2] if q > 0.2 else W_[1])        # 문 안쪽 어두운 마루(바깥에서 보면 그늘)
-    for y in range(3, 11):                                    # 안쪽 그늘은 위가 더 어둡다
-        for x in range(2, Wd - 2):
-            c.put(x, y, W_[1] if y < 6 else W_[2])
-    for x in range(Wd):                                       # 인방
-        c.put(x, 0, W_[6]); c.put(x, 1, W_[5]); c.put(x, 2, W_[3])
-    for y in range(0, 12):                                    # 문설주
+            c.put(x, y, W_[1])                                    # 문틀 속 그늘
+    for x in range(Wd):                                           # 인방
+        c.put(x, 0, W_[6]); c.put(x, 1, W_[5]); c.put(x, 2, W_[3]); c.put(x, 3, W_[0])
+    for y in range(0, 12):                                        # 문설주
         for k, x in enumerate((0, 1)):
             c.put(x, y, W_[6] if k == 0 else W_[4]); c.put(Wd - 1 - k, y, W_[2] if k == 0 else W_[3])
-    for x in range(2, Wd - 2):                                # 문턱
-        c.put(x, 11, W_[6]); c.put(x, 12, W_[5]); c.put(x, 13, W_[4]); c.put(x, 14, W_[2]); c.put(x, 15, W_[1])
-    for y in range(12, 16):
+    lx0, lx1 = 2, Wd - 2                                          # 문짝 영역 [lx0, lx1)
+    mid = Wd // 2
+    for y in range(4, 12):
+        for x in range(lx0, lx1):
+            pl = (x - lx0) % 4                                    # 널 폭 4px: 왼쪽 밝은 모서리 → 몸통 → 오른쪽 어두운 이음
+            q = rnd(x, y, 140)
+            col = W_[5] if pl == 0 else (W_[2] if pl == 3 else (W_[4] if q > 0.25 else W_[3]))
+            c.put(x, y, col)
+    for yb in (5, 10):                                            # 가로 띠쇠(문짝을 가로지르는 어두운 철 띠)
+        for x in range(lx0, lx1):
+            c.put(x, yb, S_[2])
+        for x in range(lx0 + 1, lx1, 5):
+            c.put(x, yb, S_[5])                                   # 못머리
+    if w >= 2:                                                    # 두 짝 문: 가운데 맞댄 이음
+        for y in range(4, 12):
+            c.put(mid - 1, y, W_[0]); c.put(mid, y, W_[5])
+    handles = [mid - 3, mid + 2] if w >= 2 else [Wd - 5]
+    for hx_ in handles:                                           # 문고리(어두운 테 + 밝은 속점)
+        c.put(hx_, 7, S_[1]); c.put(hx_ + 1, 7, S_[1]); c.put(hx_, 8, S_[1]); c.put(hx_ + 1, 8, S_[5])
+        c.put(hx_, 9, S_[1]); c.put(hx_ + 1, 9, S_[1])
+    for x in range(2, Wd - 2):                                    # 문턱(밝은 윗면 → 앞면 → 접지)
+        c.put(x, 12, W_[6]); c.put(x, 13, W_[5]); c.put(x, 14, W_[3]); c.put(x, 15, W_[0])
+    for y in range(12, 16):                                       # 문설주 밑 주춧돌
         for x in (0, 1):
             c.put(x, y, S_[5] if x == 0 else S_[4]); c.put(Wd - 1 - x, y, S_[3] if x == 0 else S_[2])
     return c
@@ -670,6 +691,39 @@ def dais_steps():
     c.vl(0, 6, 16, W_[3]); c.vl(T - 1, 6, 16, W_[1])
     c.hl(0, T, 15, W_[1])
     return c
+
+
+# ------------------------------------------------------------------ 문 앞 (디딤돌 + 마당) — 문 폭 그대로, 바깥은 어둠이라 가장자리를 연석으로 닫는다
+def _yard_cell(step, pos, base=None):
+    """문 앞 한 칸. step=True 이면 디딤돌 줄(문턱 바로 아래), 아니면 마당 줄(맨 아래, 아랫 연석). pos: 'm' 이어짐 · 'l' 왼 끝 · 'r' 오른 끝 · 'lr' 한 칸 폭.
+    끝에는 2px 연석(왼쪽 밝고 오른쪽 어둡다)이 서서 바깥 어둠과 땅의 경계를 그린다."""
+    c = Cv(T, T)
+    if step:
+        for y in range(T):
+            for x in range(T):
+                q = rnd(x, y, 150)
+                c.put(x, y, S_[4] if q > 0.15 else S_[3])
+        for x in range(T):
+            c.put(x, 0, S_[1]); c.put(x, 1, S_[2])               # 문턱이 드리운 그늘
+            c.put(x, 13, S_[5] if x % 8 else S_[4]); c.put(x, 14, S_[3]); c.put(x, 15, S_[1])   # 디딤돌 앞 모서리 → 한 단 아래 그늘
+        c.vl(7, 2, 13, S_[3])                                    # 돌 이음
+    else:
+        c.a = (base or _floor_yard)(0).a.copy()
+        for x in range(T):
+            c.put(x, 14, S_[3]); c.put(x, 15, S_[1])             # 아랫 연석
+            c.put(x, 13, S_[5] if x % 8 else S_[4])
+    if 'l' in pos:
+        for y in range(0, T):
+            c.put(0, y, S_[1]); c.put(1, y, S_[5] if y < 14 else S_[3])
+    if 'r' in pos:
+        for y in range(0, T):
+            c.put(T - 1, y, S_[1]); c.put(T - 2, y, S_[3] if y < 14 else S_[2])
+    return c
+
+
+def yard_set(base=None):
+    """문 앞 묶음 8칸: 디딤돌 줄 [m l r lr] + 마당 줄 [m l r lr]. 방 빌더가 문 바로 밑 줄/그 아래 줄, 좌우 이웃으로 고른다."""
+    return [_yard_cell(True, p, base) for p in ('m', 'l', 'r', 'lr')] + [_yard_cell(False, p, base) for p in ('m', 'l', 'r', 'lr')]
 
 
 # ------------------------------------------------------------------ 카탈로그 연결

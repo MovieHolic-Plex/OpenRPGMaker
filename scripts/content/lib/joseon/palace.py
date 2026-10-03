@@ -23,7 +23,7 @@ C_ALL = ('pal_ceil_beam_m', 'pal_ceil_beam_l', 'pal_ceil_beam_r', 'pal_deung_han
 GRIDS = {'pal_pillar': ['C', 'C', 'X'], 'pal_pillar_2': ['C', 'X']}
 TERRAIN = {
     'pal_floor_jeon': '조선 궁 전돌 바닥(큰 방전)', 'pal_floor_maru': '조선 궁 마루(옻칠 넓은 널)', 'pal_floor_ondol': '조선 궁 침전 황장판',
-    'pal_floor_dais': '조선 궁 월대 윗면·마당 박석', 'pal_floor_carpet': '조선 궁 붉은 카펫(4방 이음 16칸)', 'pal_ceil47': '조선 궁 단청 천장 띠(블롭 47)',
+    'pal_floor_dais': '조선 궁 월대 윗면·마당 박석', 'pal_floor_yard': '조선 궁 문 앞 디딤돌·박석 마당', 'pal_floor_carpet': '조선 궁 붉은 카펫(4방 이음 16칸)', 'pal_ceil47': '조선 궁 단청 천장 띠(블롭 47)',
     'pal_ceil_front': '조선 궁 바깥 아랫벽(단청 윗면 + 바깥 회벽면)',
 }
 REFS = ['table_mugs', 'fish_barrel', 'bench_wood']

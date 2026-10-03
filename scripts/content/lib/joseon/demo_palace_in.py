@@ -89,19 +89,17 @@ def joseon_in_throne():
     # 문 곁: 등롱 한 쌍 · 궁녀 자리
     P('pal_deungrong', 8, 19); P('pal_deungrong', 15, 19)
     P('pal_gungnyeo_jari', 8, 12); P('pal_gungnyeo_jari', 15, 12)
-    r.people += [(11, 6, 6, FRONT, 1), (8, 8, 1, FRONT, 0), (15, 8, 1, FRONT, 2),
-                 (5, 14, 6, RIGHT, 1), (7, 16, 6, RIGHT, 0), (5, 18, 6, RIGHT, 2),            # 좌 문관 셋(방석 곁)
-                 (18, 14, 0, LEFT, 1), (16, 16, 0, LEFT, 0), (18, 18, 0, LEFT, 2)]           # 우 무관 셋
+    r.people += [(8, 8, 6, FRONT, 1), (16, 16, 0, LEFT, 0)]                           # 월대 층계 곁 문관 하나 · 문 쪽 무관 하나(Actor1 조선풍 프레임은 둘뿐 — 복제하지 않는다)
     return r
 
 
 @room
 def joseon_in_corridor():
-    """회랑·행각 연결 34×8(+마당 2): 북쪽 창호 벽 앞에 붉은 기둥과 등롱이 번갈아 서고, 가운데 두 줄 카펫 띠가 길을 이루며, 남쪽 줄에 서안·궁녀 자리·문서함이 듬성듬성. 북벽에 문 둘(분합문), 출구 셋: 침전 x=4~5 · 어좌전 x=15~18 · 서고 x=29~30."""
+    """회랑·행각 연결 34×8(+마당 2): 북쪽 창호 벽 앞에 붉은 기둥과 등롱이 번갈아 서고, 가운데 두 줄 카펫 띠가 길을 이루며, 남쪽 줄에 서안·궁녀 자리·문서함이 듬성듬성. 북벽에 문 둘(분합문), 출구 셋: 침전 x=4~5 · 어좌전 x=15~18 · 서고 x=28~29(침전 x=4~5 와 좌우 대칭)."""
     g = G(34, 8)
     g.rect(1, 1, 32, 6, 'q')
     g.rect(1, 4, 32, 5, 'c')
-    for x in (4, 5, 15, 16, 17, 18, 29, 30):
+    for x in (4, 5, 15, 16, 17, 18, 28, 29):
         g.g[7][x] = 'E'
     r = IR.Room('joseon_in_corridor', '조선 궁 회랑·행각(기둥·등롱·카펫 길)', g.plan(), kit='pal')
     P = r.put
@@ -118,7 +116,7 @@ def joseon_in_corridor():
     # 남쪽 줄: 서안·궁녀 자리·문서함·책갑·향로(양끝)
     P('pal_munseo_ham', 2, 6); P('pal_gungnyeo_jari', 8, 6); P('pal_seoan_gwan', 11, 6); P('pal_gungnyeo_jari', 22, 6)
     P('pal_gwan_seat', 24, 6); P('pal_chaekgap', 31, 6); P('pal_hyangro', 1, 5); P('pal_hyangro', 32, 5)
-    r.people += [(12, 4, 1, RIGHT, 1), (21, 5, 6, LEFT, 0), (27, 4, 0, FRONT, 1)]
+    r.people += [(21, 5, 6, LEFT, 0), (27, 4, 0, FRONT, 1)]
     return r
 
 
@@ -141,7 +139,7 @@ def joseon_in_bedchamber():
     P('pal_surasang', 10, 9); P('pal_bangseok_red', 9, 9); P('pal_bangseok_blue', 12, 9)
     P('pal_yaktang', 13, 8); P('pal_gungnyeo_jari', 3, 8); P('in_byeongpung_s', 1, 9)
     P('pal_deungrong', 4, 9); P('in_hwaro', 6, 8); P('pal_chaekgap', 12, 10)
-    r.people += [(12, 7, 1, LEFT, 1), (8, 6, 6, UP, 1)]
+    r.people += []
     return r
 
 
@@ -165,7 +163,7 @@ def joseon_in_library():
     P('pal_gwan_seat', 2, 5); P('pal_changgeori', 2, 7); P('in_hwaro', 6, 8)
     # 동쪽: 약탕 · 궁녀 자리 · 낮은 병풍
     P('pal_yaktang', 17, 5); P('pal_gungnyeo_jari', 16, 5); P('in_byeongpung_s', 16, 7); P('pal_munseo_ham', 13, 8); P('pal_chaekgap', 6, 7)
-    r.people += [(10, 4, 6, FRONT, 1), (14, 6, 1, LEFT, 0)]
+    r.people += [(10, 4, 6, FRONT, 1)]
     return r
 
 

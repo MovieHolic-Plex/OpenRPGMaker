@@ -2664,17 +2664,17 @@
   "date": "2026-10-04"
  },
  "in_exit_door": {
-  "hash": "4e5c0ab3e0f5",
+  "hash": "31fd3358f295",
   "status": "pass",
-  "line": "출입구 1칸: 인방·문설주·어두운 안쪽 마루·문턱 널(밝은 윗면 + 앞면 + 접지) — 문틀+문턱이 있는 출입구. 바로 밑에 마당 두 줄이 이어진다",
+  "line": "출입문(1칸): 인방 + 양옆 문설주 + 밝은 널 문짝(가로 띠쇠·못머리·문고리) + 밝은 문턱 단 + 주춧돌 — 틈이 아니라 닫힌 문으로 읽힌다(2차 S1)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
  },
  "in_exit_door2": {
-  "hash": "b2307eb25f0c",
+  "hash": "177c5cf6ae66",
   "status": "pass",
-  "line": "출입구 2칸 폭: 같은 문틀을 두 칸으로 넓혔다(가운데 기둥 없음). 인방 연속, 양끝 문설주·돌 쐐기",
+  "line": "출입문(2칸 두 짝): 가운데 맞댄 이음 + 문고리 둘, 같은 문틀·문턱. 문 폭 그대로 아래 디딤돌이 이어진다",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -3456,9 +3456,9 @@
   "date": "2026-10-04"
  },
  "in_floor_maru": {
-  "hash": "90eee062489b",
+  "hash": "731591c1c1c1",
   "status": "pass",
-  "line": "마루: 폭 5px 가로 널 3장에 널마다 한 톤, 이음은 타일마다 한 줄에만 — 벽돌 줄눈(줄마다 어긋남)이 사라지고 긴 널로 읽힌다. 윗줄 옻칠 윤이 약하게 있다",
+  "line": "마루: 폭 5px 널 3장·줄눈 1px, 널 끝 이음은 칸마다 한 줄. 변형 4종(칸 해시)으로 큰 방에서 바둑판 띠가 생기지 않게 했다",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -3504,9 +3504,9 @@
   "date": "2026-10-04"
  },
  "in_floor_yard": {
-  "hash": "0428ed644f74",
+  "hash": "484aaba79e1e",
   "status": "pass",
-  "line": "문 밖 마당: 방 안 흙바닥보다 밝고 잔돌이 적은 다진 흙 — 문 밖 땅으로 구분된다",
+  "line": "문 앞 8칸 묶음: 디딤돌 줄 4(m·l·r·lr, 문턱 그늘 + 앞 모서리) + 마당 줄 4(다진 흙 + 아랫 연석), 끝 칸은 2px 연석 — 문 폭 1~2칸만 두고 바깥 어둠을 연석으로 닫는다",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -3784,49 +3784,49 @@
   "date": "2026-10-04"
  },
  "pal_dais_steps_4": {
-  "hash": "b2fb0d7324c9",
+  "hash": "ab1437b3fc10",
   "status": "pass",
-  "line": "월대 큰 계단 4칸 폭: 위 5줄 월대 윗면 + 석 디딤 세 단(밝은 윗면 · 어두운 챌) + 양끝 소맷돌. 걷는 칸",
+  "line": "월대 큰 계단 4칸: 가운데 붉은 카펫이 디딤마다 밝은 윗면·어두운 챌로 계단을 타고 오른다, 양끝 소맷돌 (2차 S4 카펫 끊김 해소)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
  },
  "pal_dais_steps_6": {
-  "hash": "22d0955bba26",
+  "hash": "fdb3041efb86",
   "status": "pass",
-  "line": "월대 큰 계단 6칸 폭: 같은 구성, 폭만 넓다",
+  "line": "월대 큰 계단 6칸: 가운데 4칸 폭 카펫 길, 양옆 돌 디딤과 소맷돌",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
  },
  "pal_exit_door": {
-  "hash": "3567ceb1f22f",
+  "hash": "84020b3ba851",
   "status": "pass",
-  "line": "궁 출입구 1칸: 박석 바닥이 돌 문턱(3줄 밝은 윗면)으로 이어지고 밑 네 줄은 바깥 어둠. 밑에 박석 마당이 이어진다",
+  "line": "궁 붉은 대문(1칸): 단청 인방 + 붉은 문설주 3px + 붉은 문짝(금 문정·금 문고리) + 돌 문턱",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
  },
  "pal_exit_door2": {
-  "hash": "06d318960392",
+  "hash": "0a3381cb4893",
   "status": "pass",
-  "line": "궁 출입구 2칸: 같은 구성",
+  "line": "궁 붉은 대문(2칸 두 짝): 가운데 이음, 금 문고리 둘",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
  },
  "pal_exit_door3": {
-  "hash": "107927655217",
+  "hash": "8f9b9b9c434a",
   "status": "pass",
-  "line": "궁 출입구 3칸: 같은 구성",
+  "line": "궁 붉은 대문(3칸): 같은 구성",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
  },
  "pal_exit_door4": {
-  "hash": "600e51eb4204",
+  "hash": "dbf850d470d7",
   "status": "pass",
-  "line": "궁 출입구 4칸 폭(정전 문): 같은 구성, 폭 64px",
+  "line": "궁 붉은 대문(4칸, 어좌전 정문): 두 짝 가운데 이음 — 카펫이 문 아래 디딤돌까지 이어진다",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -4019,6 +4019,14 @@
   "hash": "284ef5f6a85f",
   "status": "pass",
   "line": "호위 창 거치대: 두 단 나무 받침틀에 창 넷(2px 창대, 은빛 창날, 붉은 술) — v5 무기대와 같은 높이",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_floor_yard": {
+  "hash": "140d7e0e147c",
+  "status": "pass",
+  "line": "궁 문 앞 디딤돌(위)·박석 마당(아래) 8칸: 월대 박석 재질에 끝 연석, 문 폭 그대로",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"

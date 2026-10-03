@@ -25,7 +25,7 @@ NOSHADOW = ('in_wall_', 'pal_wall_', 'in_exit', 'pal_exit', 'in_doorway', 'in_do
 # 궁 내부 키트(접두 pal_): 같은 방 빌더가 접두만 바꿔 쓴다. 바닥 문자 p 전돌 · q 마루 · o 황장판 · w 월대 윗면 · c 붉은 카펫(4방 이웃 자동 이음 16칸)
 KITS = {
     'in': {'floor': FLOOR_CH, 'raised': RAISED, 'wall': WALL_OF, 'carpet': None},
-    'pal': {'floor': {'p': 'jeon', 'q': 'maru', 'o': 'ondol', 'w': 'dais', 'c': 'carpet', 'y': 'dais'}, 'raised': (), 'wall': {'p': 'bun', 'q': 'chang', 'o': 'chang', 'w': 'hoe', 'c': 'hoe'}, 'carpet': 'c'},
+    'pal': {'floor': {'p': 'jeon', 'q': 'maru', 'o': 'ondol', 'w': 'dais', 'c': 'carpet', 'y': 'yard'}, 'raised': (), 'wall': {'p': 'bun', 'q': 'chang', 'o': 'chang', 'w': 'hoe', 'c': 'hoe'}, 'carpet': 'c'},
 }
 
 
@@ -135,13 +135,13 @@ class Room:
         self.derive()
 
     def add_yard(self):
-        """문 밖 마당: 마지막 줄의 출입구(E) 아래로 두 줄 — 출입구 폭 + 양옆 한 칸은 마당(y), 나머지는 방 밖 허공(v). 문 밖이 검은 허공이면 문이 아니라 구멍이다(적대 검수 R1)."""
+        """문 앞: 마지막 줄의 출입구(E) 아래로 두 줄 — 출입구 폭 그대로(디딤돌 줄 + 마당 줄, 끝은 연석), 나머지는 방 밖 허공(v). 문 폭보다 넓은 막다른 땅을 만들지 않는다(2차 S1)."""
         last = self.plan[-1]
         ex = [x for x, c in enumerate(last) if c == 'E']
         if not ex:
             return
         for _ in range(2):
-            row = ''.join('y' if min(ex) - 1 <= x <= max(ex) + 1 else 'v' for x in range(self.W))
+            row = ''.join('y' if x in ex else 'v' for x in range(self.W))
             self.plan.append(row)
 
     # ---------------------------------------------------------- 평면 → 구조
@@ -221,11 +221,18 @@ class Room:
                 fc = self.floor_char(x, y)
                 g = tr[f'{self.kit}_floor_' + self.K['floor'][fc]]['tiles']
                 v = (x % 2) if (fc == 'o' and self.kit == 'in') else (x + y) % 2
+                var = None
+                if fc == 'm' and self.kit == 'in' and len(g) >= 9:       # 마루 변형 넷: 칸마다 해시로 고른다(바둑판 반복·세로 띠 방지)
+                    var = g[(0, 1, 7, 8)[hsh(x, y, 7) & 3]]
                 south = self.floor_char(x, y + 1) if y + 1 < H and not self.solid(x, y + 1) else None
                 raised_edge = (fc in self.K['raised'] and len(g) > 6 and south is not None and south not in self.K['raised'] and self.ch(x, y + 1) != 'E' and y + 1 < H)
                 under = y > 0 and self.wallrow[y - 1][x] == 2 and self.wallrow[y][x] == 0
                 west = x > 0 and (self.solid(x - 1, y) or self.wallrow[y][x - 1] > 0)
-                if self.K['carpet'] and fc == self.K['carpet']:
+                if fc == 'y':                                   # 문 앞: 디딤돌 줄(문 바로 밑) / 마당 줄, 좌우 이웃이 마당이면 이어짐 아니면 연석 끝
+                    Lw, Rw = self.ch(x - 1, y) == 'y', self.ch(x + 1, y) == 'y'
+                    pos = 0 if (Lw and Rw) else (2 if Lw else (1 if Rw else 3))
+                    ground[y][x] = g[pos + (0 if self.ch(x, y - 1) == 'E' else 4)]
+                elif self.K['carpet'] and fc == self.K['carpet']:
                     ground[y][x] = g[self.carpet_mask(x, y)]        # 카펫: 4방 이웃 자동 이음(16칸), 벽 그늘 변형 없음
                 elif raised_edge:
                     ground[y][x] = g[6]
@@ -236,7 +243,7 @@ class Room:
                 elif west:
                     ground[y][x] = g[3]
                 else:
-                    ground[y][x] = g[v]
+                    ground[y][x] = var if var is not None else g[v]
                 gkind[y][x] = 'other'
         # 물체: 벽면 → 기물
         placed = []
@@ -333,32 +340,40 @@ class Room:
                    'people': [{'x': p[0] + self.ox, 'y': p[1], 'char': p[2], 'dir': {0: 'up', 1: 'right', 2: 'down', 3: 'left'}[p[3]], 'frame': p[4]} for p in self.people]},
                   open(os.path.join(outdir, 'extra.json'), 'w'), ensure_ascii=False)
 
+    SHADOW_ALPHA = 150
+    SHADOW_SHIFTS = ((1, 1), (2, 1), (3, 1), (1, 2), (2, 2), (3, 2), (2, 3))
+    SHADOW_MIN = 10                                              # 기물 하나가 가져야 할 최소 그림자 화소(자동 점검 단언)
+
     def paint_shadows(self, OBJ, placed, sheet):
-        """접지 그림자(적대 검수 R7): 서 있는 기물(걷지 못하는 덩이)의 아래 7줄 실루엣을 오른쪽 아래(+2,+1)로 밀어 바닥 칸에만 반투명으로 깐다.
-        벽면·천장·문·깔개·방석·단은 제외. 기물 자신의 화소 위에는 칠하지 않는다(뒤에 기물이 덮는다)."""
+        """접지 그림자(적대 검수 R7·2차 S2): 서 있는 기물(걷지 못하는 덩이)의 아래 8줄 실루엣을 오른쪽 아래로 밀어 바닥 칸에만 반투명(알파 150)으로 깐다 — 바닥 바로 밑 1~2줄이 가장 진하다.
+        벽면·천장·문·깔개·방석·단은 제외. 기물 자신의 화소 위에는 칠하지 않는다. 기물마다 칠한 화소 수를 self.shadow_by 에 남기고 interior_checks 가 단언한다."""
         self.shadow_px = 0
+        self.shadow_by = {}
         for (nm, x, y, w, h) in placed:
             if nm.startswith(NOSHADOW):
                 continue
             a = sheet.objs[nm].a
             ph = a.shape[0]
-            for py in range(max(0, ph - 7), ph):
+            n = 0
+            for py in range(max(0, ph - 8), ph):
                 for px in range(a.shape[1]):
                     if a[py, px, 3] != 255:
                         continue
-                    for (dx, dy) in ((2, 1), (1, 2), (2, 2)):
+                    for (dx, dy) in self.SHADOW_SHIFTS:
                         qx, qy = px + dx, py + dy
                         gx, gy = x * T + qx, y * T + qy
                         if not (0 <= gx < self.W * T and 0 <= gy < self.H * T):
                             continue
                         cx, cy = gx // T, gy // T
-                        if self.solid(cx, cy) or self.wallrow[cy][cx] > 0 or self.ch(cx, cy) == 'E':
+                        if self.solid(cx, cy) or self.wallrow[cy][cx] > 0 or self.ch(cx, cy) in ('E', 'y'):
                             continue
                         if 0 <= qx < a.shape[1] and 0 <= qy < ph and a[qy, qx, 3] != 0:
                             continue
                         if OBJ.a[gy, gx, 3] == 0:
-                            OBJ.put(gx, gy, SHADOW, 100)
-                            self.shadow_px += 1
+                            OBJ.put(gx, gy, SHADOW, self.SHADOW_ALPHA)
+                            n += 1
+            self.shadow_by[(nm, x, y)] = n
+            self.shadow_px += n
 
     def exit_name(self, w):
         if self.kit == 'pal':
