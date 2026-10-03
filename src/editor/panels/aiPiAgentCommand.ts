@@ -334,7 +334,7 @@ export async function runPiCommand(
     if (!segmentGate) return null;
     surface.setStatus("첫 구간을 끝까지 걸어 보고 있어요.");
     await new Promise((resolve) => setTimeout(resolve, 0));
-    const verdict = judgePlayableSegment(candidate, { budgetMs: 30_000 });
+    const verdict = judgePlayableSegment(candidate, { budgetMs: 30_000, expected: base });
     if (verdict.ok) return null;
     // 실행 중 사용자가 따로 고친 게 없을 때만 되돌린다 — 사람의 편집을 덮지 않는다.
     const untouched = changedProjectKeys(store.getCurrent(), publication.project).length === 0;

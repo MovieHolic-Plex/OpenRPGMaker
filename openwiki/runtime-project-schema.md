@@ -1497,3 +1497,7 @@ AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 
 cloneExtraLayers는 설계 정보를 깊이 복사한다. remap/crop은 잠금/수심/게임 규칙을 옮기고 원점과 패치는
 제거하여 잘못된 칸 복원을 막는다. 상세 저작 계약은 [terrain-design-suite.md](terrain-design-suite.md).
 공용 사용자 도장은 별도 IndexedDB `oprn-terrain-library`에 두며 사용 시 project.terrainStamps에 복사한다.
+
+## Optional internal authoring contract
+
+`gameDesignBrief.implementation` optionally persists a registered `harnessId` and harness-normalized `contract`; unknown harnesses or malformed contracts are rejected rather than silently discarded. Existing briefs without this field remain valid. Romance first-scene contracts use the same native events, switches, variables, endings and player save slots as normal games. `SceneRunnerOptions.initialSession` is a host-only restored-session input for save-resume QA, not model-authored expected state in scene-test arguments. See [romance-scene](harnesses/romance-scene.md).

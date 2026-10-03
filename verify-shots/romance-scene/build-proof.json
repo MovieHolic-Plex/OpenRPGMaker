@@ -1,0 +1,9 @@
+{
+  "sourceState": "final working tree before evidence commit",
+  "appBuild": "PASS (1m10s)",
+  "playerBuild": "PASS (18.35s)",
+  "sdkArtifact": "f9a1a208826e3696",
+  "sdkSource": "b482221bd9f3c31f",
+  "fullTypecheck": false,
+  "fullSuite": false
+}

@@ -1,5 +1,7 @@
 import { createTransparentColorKeyCanvas, isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
-import { awaitGraftedTilesetImageUrl, peekGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
+import { awaitGraftedTilesetImageUrl, peekGraftedTilesetImageUrl, bakeSnapshotGraftedTilesetImage } from "@/assets/tileGraftImageCache";
+import { uploadedAssetUrl } from '@/project/persistence/assetAccessors';
+import { withInlineAsset } from '@/assets/inlineAssetStore';
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
 import type { Project, TilesetDef } from "@/project/types";
@@ -95,8 +97,24 @@ export const GRAFT_EVIDENCE_WAIT_MS = 5_000;
  */
 export async function loadTilesetImage(tileset: TilesetDef, project?: Project): Promise<HTMLImageElement> {
   const baseUrl = tilesetBaseImageUrl(tileset, project);
-  if (project && activeTileGrafts(tileset).length) throw new Error("map-rendering-unavailable: draft graft sources require explicit snapshot rendering");
   if (activeTileGrafts(tileset).length === 0) return loadImageUrl(baseUrl);
+  if (project) {
+    const sourceUrls = new Map<string, string>();
+    for (const graft of activeTileGrafts(tileset)) {
+      const asset = project.assets.uploaded[graft.sourceChipset];
+      if (!asset) continue; // Bundled sources resolve from the immutable bundled catalog.
+      const url = uploadedAssetUrl(asset);
+      if (!url) throw new Error('map-rendering-unavailable: snapshot graft source bytes unresolved');
+      sourceUrls.set(graft.sourceChipset, withInlineAsset(url));
+    }
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const baked = await Promise.race([bakeSnapshotGraftedTilesetImage(tileset, baseUrl, sourceUrls),
+        new Promise<null>(resolve => { timer = setTimeout(() => resolve(null), GRAFT_EVIDENCE_WAIT_MS); })]);
+      if (!baked) throw new Error('map-rendering-unavailable: snapshot graft bake incomplete or timed out; no approval');
+      return loadImageUrl(baked);
+    } finally { if (timer) clearTimeout(timer); }
+  }
   const ready = peekGraftedTilesetImageUrl(tileset, baseUrl);
   if (ready) return loadImageUrl(ready);
   const controller = new AbortController();

@@ -1,0 +1,39 @@
+{
+  "synthetic": true,
+  "cases": [
+    {
+      "name": "draft-three-finishes",
+      "accepted": false,
+      "rejectedFinishes": 3,
+      "reason": "Error: 첫 만남 미완료: 첫 만남은 아직 임시 초안입니다. author_romance_scene으로 실제 대사를 작성하세요. / 임시 초안의 대사가 그대로입니다. 페이지 이름만 바꾸어 완료할 수 없습니다."
+    },
+    {
+      "name": "no-finish",
+      "accepted": false,
+      "rejectedFinishes": 0,
+      "reason": "Error: 첫 만남 미완료: 검증된 finish 호출이 없습니다."
+    },
+    {
+      "name": "no-image",
+      "accepted": false,
+      "rejectedFinishes": 1,
+      "reason": "Error: 첫 만남 미완료: 검증된 finish 호출이 없습니다."
+    },
+    {
+      "name": "stale-image",
+      "accepted": false,
+      "rejectedFinishes": 1,
+      "reason": "Error: 첫 만남 미완료: 검증된 finish 호출이 없습니다."
+    },
+    {
+      "name": "stale-tileset",
+      "accepted": false,
+      "rejectedFinishes": 1,
+      "reason": "Error: 첫 만남 미완료: 검증된 finish 호출이 없습니다."
+    },
+    {
+      "name": "valid-review",
+      "accepted": true
+    }
+  ]
+}

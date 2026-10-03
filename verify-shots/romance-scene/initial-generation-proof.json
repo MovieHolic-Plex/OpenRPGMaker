@@ -1,0 +1,25 @@
+{
+  "realNewGameInterview": true,
+  "requests": [
+    {
+      "mode": "team",
+      "model": "gemini-3.8-flash",
+      "runId": "a95dbcd0-12c2-4197-b7f4-ed5742d7ef4b",
+      "taskCharacters": 41964,
+      "internalTasks": true,
+      "protagonist": true,
+      "pixelGate": true,
+      "scope": true,
+      "time": "2026-10-03T14:51:23.764Z"
+    }
+  ],
+  "authored": true,
+  "finished": false,
+  "stoppedForQa": true,
+  "sameProjectAfterReload": true,
+  "sameBriefAfterReload": true,
+  "errors": [
+    "Framebuffer status: Incomplete Attachment"
+  ],
+  "limitation": "Initial automatic generation did not finish. Dialogue was repaired via production tool; later read-only real-model review and full native player QA are recorded separately."
+}

@@ -40,6 +40,11 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `super-harness` · 시드 `harness-data/super-harness/seed.json` · 문서 `openwiki/harnesses/super-harness.md`
   → 자동으로 도는 데몬이다(화면 http://mdc-server:18315/). 카드를 손으로 쓰지 말고 화면에서 교정 지시·폐기.
 
+- **단일 관계·연애 / 대화 중심 / 한 관계 / 첫 만남 한 장면을 제작할 때**
+  → `romance-scene` · 시드 `harness-data/romance-scene/seed.json` · 문서 `openwiki/harnesses/romance-scene.md`
+  → `author_romance_scene`으로 원자적으로 저작하고 `inspect_romance_scene`으로 양쪽 선택·재대화·취소·종료를 검사한다.
+  → 임시 초안·조수의 완료 선언은 합격이 아니다. 실제 이미지 검수와 정본 저장·재로드를 따로 확인한다.
+
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
 `npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
 

@@ -208,3 +208,7 @@ When extending packs, add capability requirements that the shared runtime alread
   `presentationDelayMs: 0`은 결정적 호출자용이며 제품 기본값은 아니다.
 
 화면·저장 증거: `verify-shots/project-first-run/`. 이 세션에서는 AGENTS의 제한에 따라 gates/vitest를 실행하지 않았다.
+
+### Executable first romance scene (2026-10-03)
+
+The bounded romance/talk/single/scene route now prepares a provisional one-map conversation and internal registered contract before the saved AI handoff. `author_romance_scene` builds native commands atomically; the final acceptance gate freezes identities, choice labels and source, executes both branches/revisit/cancel/ending and player-save resumption, and requires a current image-backed `review_map` verdict in the team runner. Draft names or a model completion statement are insufficient. Other genres retain their existing route. Scope, extraction limits, ownership and reproduction: [romance-scene](harnesses/romance-scene.md).

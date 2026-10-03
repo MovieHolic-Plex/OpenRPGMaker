@@ -75,7 +75,8 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
     const config = resolveSurfaceAiConfig("chat");
     const autoSend = isAssistantEndpointReady(config, getAiConnectionStatus(config));
     // 프리셋 첫 생성은 팀(팀장·시공·검수)이 맡는다 — 이 한 턴만이다. 사용자 팀 설정은 바꾸지 않는다.
-    setPendingAiBootIntent(buildWelcomeGenrePresetPrompt(preset, brief), { autoSend, displayText: welcomeGenrePresetDisplayText(preset, brief), team: true });
+    const preparedBrief = store.getCurrent().gameDesignBrief ?? brief;
+    setPendingAiBootIntent(buildWelcomeGenrePresetPrompt(preset, preparedBrief), { autoSend, displayText: welcomeGenrePresetDisplayText(preset, preparedBrief), team: true });
     queuedKey = JSON.stringify([scope, store.getCurrent().gameDesignBrief]);
     waitingForConnection = !autoSend;
     if (!autoSend) toast("게임 기획을 저장했습니다. AI가 연결되면 조수가 첫 제작을 자동으로 시작합니다.", "info");

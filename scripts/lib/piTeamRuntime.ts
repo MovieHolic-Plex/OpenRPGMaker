@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { inspectPiVillageCompletion } from "../../src/ai/piAgent/villageCompletion.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
@@ -26,6 +27,7 @@ import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
+import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
 import {
   claimAssignment,
   createTeamAssignmentLedger,
@@ -116,6 +118,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let subTurns = 0;
   let subUsage: PiAgentUsage | undefined;
   let finished: string | null = null;
+  let finishAccepted = false;
   /**
    * finish 가 이음새 오류로 한 번 거절한 오류 묶음. 같은 묶음으로 다시 부르면 받아 준다 — 고칠 수 없는
    * 연결 때문에 팀이 영원히 못 끝나면 안 된다. 대신 그 오류는 최종 보고에 그대로 남는다.
@@ -137,8 +140,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const reviewers = enabledMembers(team, "reviewer").map(boundMember);
   // 끝낼 수 있는 첫 구간 판정(src/project/playableSegment.ts). 프리셋 첫 생성이고 시작 프로젝트가 합격한 뼈대일 때만 건다 —
   // 되돌릴 합격본이 없으면 finish 를 막을 근거가 없고, 이후 요청은 사용자가 구간을 넓히거나 바꿀 수 있어야 한다.
-  const segmentGate = isGenrePresetBriefRequest(request.task) && playableSegmentGateApplies(base);
+  const segmentGate = Boolean(authoringHarnessFor(base)) || isGenrePresetBriefRequest(request.task) && playableSegmentGateApplies(base);
   let segmentRejections = 0;
+  // A review belongs to the inspected snapshot, not merely to a map id.
+  let authoringReview: { signature: string; ok: boolean } | undefined;
+  const authoringSignature = (project: Project): string => createHash('sha256').update(JSON.stringify(project)).digest('hex');
   // 검수 담당을 끄면 팀 메뉴는 「완료 후 검토: 생략」 이라고 보여 준다. 예전 런타임은 여기서 실행 전체를 400 으로
   // 거절해, 메뉴 말과 달리 팀 요청이 전부 실패했다. 메뉴 말대로 생략하고 최종 보고에 남긴다(조용히 끝내지 않는다).
   const skipFinalReview = team.reviewAfterWork === true && reviewers.length === 0;
@@ -437,6 +443,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
     emit({ type: "agent_spawn", agentId, role: "reviewer", mapId, mapName: mapName(mapId), task, memberId: member.id, label: member.label });
     let verdict: { ok: boolean; findings: string[] } | null = null;
+    let imageDelivered = false;
     const reportTool: PiToolShape = {
       name: "report_review",
       label: "report_review",
@@ -450,6 +457,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     };
     const snapshot = cloneProjectSharingSharedDictionaries(working);
     mailbox.register(agentId, member.label, mapId);
+    const reviewOptions = child(agentId, request.roleModels?.deep?.provider ?? request.provider);
+    const reviewSignature = authoringHarnessFor(base) ? authoringSignature(snapshot) : undefined;
     let done: PiAgentDoneEvent;
     try {
       done = await runAgent(
@@ -459,11 +468,20 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
         },
-        { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: true, extraTools: [...mailbox.tools(agentId), reportTool] },
+        { ...reviewOptions, readOnlyTools: true, extraTools: [...mailbox.tools(agentId), reportTool],
+          onEvent(event) {
+            reviewOptions.onEvent?.(event);
+            if (event.type === 'execution_status' && event.name === 'map.image.delivered' && event.ok) imageDelivered = true;
+          } },
       );
     } finally { mailbox.close(agentId); }
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
     const result = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
+    if (authoringHarnessFor(base)) {
+      if (!imageDelivered) { result.ok = false; result.findings.push('실제 맵 이미지를 보지 않아 시각 검수를 인정하지 않습니다. show_map_region으로 원본을 확인하세요.'); }
+      if (result.findings.length) result.ok = false;
+      authoringReview = { signature: reviewSignature!, ok: result.ok };
+    }
     ledger = recordTeamReview(ledger, { mapId, agentId, ok: result.ok });
     emit({ type: "review", agentId, mapId, ok: result.ok, findings: result.findings });
     emit({ type: "agent_done", agentId, ok: true, summary: result.ok ? "검수 통과" : `지적 ${result.findings.length}건`, stats: done.stats, changedKeys: [], spills: [], conflicts: [] });
@@ -553,18 +571,21 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           seamRejection = seamSignature;
           throw new Error(`맵 사이 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)} — 해당 맵 담당에게 assign_map_agent 로 수정을 맡기거나 link_maps 수정 작업을 배정한 뒤 다시 finish 하세요. 고칠 수 없으면 그대로 다시 finish 하면 보고에 남기고 끝냅니다.`);
         }
-        // 첫 구간을 끝까지 갈 수 없으면 finish 를 받지 않는다(최대 2번). 막힌 곳을 그대로 돌려줘 팀장이 수정 배정을 하게 한다.
-        // 그 뒤에도 막히면 받아들이되 브라우저가 적용하지 않는다(aiPiAgentCommand 의 같은 판정).
-        if (segmentGate && segmentRejections < 2) {
-          const verdict = judgePlayableSegment(working);
+        // 등록 제작 하네스는 매번 차단한다. 기존 구간 경로만 두 번 이후 브라우저 수용 게이트에 넘긴다.
+        if (segmentGate && (authoringHarnessFor(base) || segmentRejections < 2)) {
+          const verdict = judgePlayableSegment(working, { expected: base });
           if (!verdict.ok) {
             segmentRejections += 1;
-            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 구간 자동 플레이 막힘(${segmentRejections}/2): ${verdict.blockers.join(" / ")}` } });
-            throw new Error(`첫 구간을 끝까지 갈 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). 자동 플레이가 막힌 곳: ${verdict.blockers.join(" / ")}. 해당 맵에 수정 배정을 하고 wait_agents 뒤 다시 finish 하세요.`);
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 구간 자동 플레이 막힘(${segmentRejections}): ${verdict.blockers.join(" / ")}` } });
+            throw new Error(`첫 구간을 끝까지 갈 수 없어 finish 를 받지 않습니다(${segmentRejections}). 자동 플레이가 막힌 곳: ${verdict.blockers.join(" / ")}. 해당 맵에 수정 배정을 하고 wait_agents 뒤 다시 finish 하세요.`);
           }
+        }
+        if (authoringHarnessFor(base) && (!authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
+          throw new Error('현재 첫 만남의 시각 검수가 없거나, 검수 후 내용이 바뀌었습니다. 실제 맵 이미지를 보는 review_map 검수를 통과한 뒤 finish 하세요.');
         }
         const outstanding = mailbox.outstanding();
         finished = str((params as Record<string, unknown>)?.report, "report");
+        finishAccepted = true;
         if (seamErrors.length > 0) finished += `
 남은 맵 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)}`;
         const failedTasks = [...tasks.keys()].map(id => outcomes.get(id)).filter(outcome => outcome && !outcome.ok);
@@ -608,7 +629,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   for (const report of orchDone.interiorCompletion ?? []) interiorReports.set(report.mapId, report);
   const interiorCompletion = [...interiorReports.values()];
   const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(working, base, villageMapIds) : undefined;
-  emit({ type: "agent_done", agentId: orchestratorId, ok: !villageCompletion?.issues.length && !interiorCompletion.length,
+  const authoringCompletion = inspectAuthoringHarness(working, base);
+  if (authoringCompletion && (!finishAccepted || !authoringCompletion.ok || !authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
+    throw new Error('첫 만남 미완료: ' + (authoringCompletion.blockers.length ? authoringCompletion.blockers.join(' / ') : !finishAccepted ? '검증된 finish 호출이 없습니다.' : '현재 결과의 시각 검수 증거가 없습니다.'));
+  }
+  emit({ type: "agent_done", agentId: orchestratorId, ok: !villageCompletion?.issues.length && !interiorCompletion.length && authoringCompletion?.ok !== false,
     summary: interiorCompletion.length ? "실내 미완료: " + JSON.stringify(interiorCompletion) : villageCompletion?.issues.length ? `마을 미완료: ${villageCompletion.issues.join("; ")}` : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
   if (!finished) emit({ type: "team_report", text: `${summaryOf(orchDone)} · 팀장이 finish를 호출하지 않았습니다. 미확인 협의 ${mailbox.outstanding().length}건.` });
 
