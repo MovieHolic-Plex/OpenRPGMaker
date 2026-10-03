@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.93.0 — 2026-10-03
+
+### 기능
+
+- **editor** — 자동 경사로·다리·지형 붓·군집과 통행 미리보기 (#1937) (`0592bbd`)
+- pass interview execution tasks to the assistant internally (`b60d50a`)
+
+### 수정
+
+- **project** — 기존 작업 로드를 막는 공용 grass 속성 누락 보충 (#1940) (`d494f59`)
+
 ## 0.92.1 — 2026-10-03
 
 ### 성능
