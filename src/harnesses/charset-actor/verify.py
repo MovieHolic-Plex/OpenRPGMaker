@@ -6,6 +6,8 @@ import json
 import tempfile
 from pathlib import Path
 from contextlib import contextmanager
+from types import SimpleNamespace
+from unittest.mock import patch
 
 import chr as C
 import harness as H
@@ -13,7 +15,7 @@ import harness as H
 
 @contextmanager
 def isolated_store(root):
-    names = ['DATA', 'DECISIONS', 'EXPORT', 'ACCEPTED', 'ACCEPTED_LOCAL']
+    names = ['DATA', 'DECISIONS', 'EXPORT', 'ACCEPTED', 'ACCEPTED_LOCAL', 'LOCAL_BRIEFS']
     previous = {n: getattr(H, n) for n in names}
     try:
         H.DATA = root
@@ -21,6 +23,7 @@ def isolated_store(root):
         H.EXPORT = root / 'decisions.json'
         H.ACCEPTED = root / 'accepted-repo'
         H.ACCEPTED_LOCAL = root / 'accepted-local'
+        H.LOCAL_BRIEFS = root / 'briefs-local.json'
         yield
     finally:
         for name, value in previous.items():
@@ -79,6 +82,16 @@ def verify():
 
     # 사용자 데이터·결정·공용 자산을 건드리지 않는 별도 저장 대상.
     with tempfile.TemporaryDirectory(prefix='charset-verify-') as temp, isolated_store(Path(temp)):
+        import bulk as B
+        manifest = H.DATA / 'failed-manifest.json'
+        H.write_json_atomic(manifest, dict(run='failed-production', characters=[dict(key='fixture', name='fixture', base='Actor1:0', strength='weak')]))
+        failed = False
+        with patch.object(B, 'produce_batch', side_effect=RuntimeError('review interrupted')):
+            try:
+                B.main(SimpleNamespace(manifest=manifest, par=1, batch_size=4))
+            except RuntimeError:
+                failed = True
+        check('failed-batch-does-not-report-completion', failed and not (H.run_dir('failed-production') / 'catalog.json').exists())
         root = H.run_dir('fixture')
         w = root / 'fixture__gpt-r1'; w.mkdir(parents=True)
         q = {c: None if rgb is None else (rgb[0], min(255, rgb[1] + 1), rgb[2]) for c, rgb in p.items()}

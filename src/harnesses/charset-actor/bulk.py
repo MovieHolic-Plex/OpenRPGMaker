@@ -188,6 +188,7 @@ def main(args):
             raise ValueError(f'기존 지시 충돌: {row["key"]}')
         local[row['key']] = row
     write_json(H.LOCAL_BRIEFS, local)
+    errors = []
     with ThreadPoolExecutor(max_workers=args.par) as pool:
         tasks = [pool.submit(produce_batch, run, rows[i:i + args.batch_size], i // args.batch_size + 1)
                  for i in range(0, len(rows), args.batch_size)]
@@ -196,6 +197,10 @@ def main(args):
                 task.result()
             except Exception as error:
                 log(f'묶음 오류: {error!r}')
+                errors.append(repr(error))
+    if errors:
+        write_json(root / 'production-errors.json', dict(at=H.now(), errors=errors))
+        raise RuntimeError(f'완료되지 않은 묶음 {len(errors)}개: {errors}')
     catalog = []
     for row in rows:
         w = root / f'{row["key"]}__gpt-r1'
