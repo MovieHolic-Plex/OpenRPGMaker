@@ -42,7 +42,7 @@ def stalagmite_c():
     """작은 석순 무리 16×16: 키 낮은 뿔 넷."""
     c = Cv(T, T)
     ground_shadow(c, 9, 14, 7, 1.4, 70)
-    for (cx, h, w, sd) in ((3, 6, 3, 5), (7, 9, 4, 6), (11, 7, 3, 7), (14, 4, 3, 8)):
+    for (cx, h, w, sd) in ((3, 5, 4, 5), (7, 8, 3, 6), (11, 9, 4, 7), (13, 4, 3, 8)):
         _spire(c, cx, 13, h, w, seed=sd)
     return _clean(c)
 
@@ -222,7 +222,8 @@ def mine_cart():
             c.put(x, y, t)
     for x in range(3, 29): c.put(x, 8, WD[1])
     for x in (3, 15, 27):
-        for y in range(5, 12): c.put(x, y, GW[3])
+        for y in range(5, 12):
+            c.put(x, y, GW[3]); c.put(x + 1, y, GW[2])
     for k in range(9):                                                      # 광석 더미(윗면 위로 불룩)
         x = 5 + 2 * k
         h = 2 + (1 if k % 3 == 1 else 0) - (1 if k in (0, 8) else 0)
@@ -230,8 +231,9 @@ def mine_cart():
             c.put(x, 4 - dy, ST[5] if k % 2 else ST[4]); c.put(x + 1, 4 - dy, ST[3])
         if k % 3 == 1: c.put(x, 4 - h, PS[5]);
     for cx in (8, 22):
-        for (dx, dy) in ((-1, 0), (0, -1), (1, 0), (0, 1), (0, 0)):
-            c.put(cx + dx, 13 + dy, GW[3] if (dx, dy) != (0, 0) else GW[2])
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                c.put(cx + dx, 13 + dy, GW[2] if (dx, dy) == (0, 0) else (GW[4] if dx < 0 else GW[3]))
     return _clean(c)
 
 
