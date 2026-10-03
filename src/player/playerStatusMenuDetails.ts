@@ -341,9 +341,10 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
     };
   });
-  const { wornSummary, bagEntries } = ownedEquipmentEntries(options);
+  const { wornSummary, bagEntries } = usesMonsterParty(project)
+    ? { wornSummary: undefined, bagEntries: [] } : ownedEquipmentEntries(options);
   const entries = [...(wornSummary ? [wornSummary] : []), ...itemEntries, ...bagEntries];
-  return { title: "아이템", entries: inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange), emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
+  return { title: usesMonsterParty(project) ? "가방" : "아이템", entries: inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange), emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
 }
 
 function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
