@@ -11,7 +11,16 @@
    "jb_yard64_autotile": 0,
    "jb_water47g_autotile": 0,
    "jb_slab_edge16_autotile": 0,
-   "jb_palace_court16_autotile": 0
+   "jb_palace_court16_autotile": 0,
+   "jb_fld_trail32_autotile": 0,
+   "jb_fld_tall32_autotile": 0,
+   "jb_fld_forest32_autotile": 0,
+   "jb_fld_bog94_autotile": 0,
+   "jb_fld_rock32_autotile": 0,
+   "jb_cav_roof47_autotile": 0,
+   "jb_cav_pool94_autotile": 0,
+   "jb_in_b_ceil47_autotile": 0,
+   "jb_pal_ceil47_autotile": 0
   }
  },
  "cases": [
