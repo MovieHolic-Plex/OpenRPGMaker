@@ -624,3 +624,14 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
   세 명령 모두 저장 왕복을 고정하는 계약 테스트가 `test/commandContracts/`에 있다.
 
 검증: `test/mgL7sys*.test.ts` 6개와 계약 테스트 6개. 출하 플레이어 화면 증거는 `scripts/qa/runtime/masterpiece-system.scenario.mjs`(난이도 선택 → 흑백 필터 → 롤링 HP·움직이는 배경 → 라이브라).
+
+
+## 오프닝 fade 표시 시간과 장면 유지 시간 (2026-10-03)
+
+`cinematicSequence.ts`는 pan/zoom에 전체 장면 유지 시간(`--cinematic-motion-ms`)을 쓰고,
+fade에는 별도 `--cinematic-fade-ms`(최대 600ms, 더 짧은 장면은 해당 시간)를 쓴다.
+기존 fade는 6초 장면의 끝에야 그림이 온전히 보였고 수동 장면은 8초 동안 어두웠다.
+양의 타이머, durationMs:0 확인 대기, 키보드 소유권, 음악 수명, reduced-motion은 유지한다.
+실제 출하 브라우저에서 수정 전 1.4초 투명도 0.25/0.20과 수정 후 0.7초 투명도 1을 확인했다.
+증거와 재현: `verify-shots/monster-assistant-opening-2026-10-03/`,
+`scripts/qa/runtime/opening-assistant-native.cjs`. 전체 테스트/게이트 실행 결과가 아니다.

@@ -1,4 +1,4 @@
-import { requestPiRender, resolvePiRender } from "./lib/piRenderBroker.ts";
+import { requestPiRender, requestPiOpeningGeneration, resolvePiRender } from "./lib/piRenderBroker.ts";
 import { requestPiCheckpoint, resolvePiCheckpoint } from "./lib/piCheckpointBroker.ts";
 // Bun 전용 완성 워커. `@oh-my-pi/pi-ai` 가 bun:sqlite · type:text import 를 쓰므로
 // Node/tsx 에선 로드되지 않아, 모델 호출만 이 루프백 프로세스에 남긴다.
@@ -77,6 +77,7 @@ const server = Bun.serve({
           signal: request.signal,
           onEvent,
           renderToolImage: (project, toolName, data, signal) => requestPiRender(project, agentRequest.project, toolName, data, onEvent, signal ?? request.signal),
+          generateOpeningImage: (project, args, signal) => requestPiOpeningGeneration(project, agentRequest.project, args, onEvent, signal ?? request.signal),
           onCheckpoint: (checkpoint, signal) => requestPiCheckpoint(checkpoint, onEvent, signal ?? request.signal),
           ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
           ...(agentRequest.timeoutMs ? { timeoutMs: agentRequest.timeoutMs } : {}),

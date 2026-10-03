@@ -3429,3 +3429,46 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 원시 수치와 실행 없는 테스트 계약 검토·잔여 위험 파일명은 `verify-shots/perf-ai-ui/README.md`와
 `browser-measurements.json`에 남겼다. 테스트 실행은 새 명시적 허가 전까지 다시 시작하지 않는다.
+
+
+## 실제 Pi 오프닝 제작 경로 복구 (2026-10-03)
+
+일반 채팅은 Pi를 실행한다. `AssistantSession`의 생성 분기나 `contextBuilder`의 연출 규칙,
+`buildTaskRecipes()`만 수정해 일반 채팅이 개선됐다고 보고하면 안 된다. 2026-10-03 실제
+Astra 실행에서 `generate_opening_image`가 `ui-required`만 반환하고 새 그림이 하나도
+등록되지 않았던 실패를 재현했다. 이전 수동 제작 오프닝 보고서는 이 평가의 근거가 아니다.
+
+현재 경로:
+
+- `piAgentRuntime.ts`가 제작 의도에만 `OPENING_PRODUCTION_PROMPT`와 소수의 오프닝 도구를 노출한다.
+- `plan_opening`은 샷의 사건·구도·연속성·첫 행동을 받는다. 실제 콘텐츠 적용은 별도다.
+- 워커의 `generateOpeningImage` → `requestPiOpeningGeneration` → 기존 `render_request` 왕복 →
+  `client.ts`의 `generateOpeningStill`이다. 브라우저의 실제 이미지 제공자·모델 설정을 유지하며,
+  참고 그림을 실제 바이트로 읽는다. 새로운 API 키 전달 경로를 만들지 않는다.
+- 워커가 성공 결과를 `upsert_resource`로 등록한다. 생성 도구는 **write/exclusive**다.
+  읽기 전용·도구 목록 제한·맵 한정 실행에서는 쓰기를 허용하지 않는다.
+- 생성 그림 및 `show_opening_image` 결과를 512px PNG로 모델 응답에 넣는다.
+  전사/활동 이벤트에는 원본 바이트를 기록하지 않는다. SQLite ref의 존재 검사는 브라우저 URL
+  브리지가 없는 워커에서도 가능하며 실제 읽기 실패는 시각 전달 실패로 처리한다.
+- 실행기가 계획, 실제 이미지 전달, 마지막 구성 검토를 기록한다. 변경된 그림/장면은 검토를
+  무효화한다. 최대 두 차례 수리하고 남은 문제를 `done.openingProduction.issues`에 반환한다.
+  클라이언트는 이를 완료로 처리하지 않는다. 팀 실행도 제작자 결과를 병합해 검사한다.
+
+이 증거는 **구성·이미지 전달 증거**다. 모델이 그림을 제대로 이해했다는 점수나 출하 플레이어의
+재생·음악·Skip 검증을 자동으로 보장하지 않는다. `playbackVerified`는 false로 유지하며 실제
+플레이어 QA는 별도 수행한다. 오프닝 끄기/삭제/단순 진단을 제작 의도로 확대하지 않는다.
+
+
+후속 실제 도그푸딩에서 발견한 두 경계도 수정했다. `get_opening.generatedStills`와 프로젝트 우선
+`list_opening_media`는 이미 만든 그림을 다음 턴에서 다시 찾게 한다. 제작 의도 판정은
+“오프닝 제작을 마무리해. 별빛이 꺼지는 사건”을 기능 끄기로 오인하지 않는다.
+
+그림 왕복은 저장할 프로젝트와 분리된 `openingImageProject` 투영을 사용한다. 요청한 업로드
+그림만 남기고 맵·타일셋·DB는 보내지 않는다. 이 투영을 store/checkpoint 제안으로 저장하지 않는다.
+39MB 사본에서 6개 실제 브라우저 검토를 동시에 호출했을 때 약 43.8초에서 2.1초로 줄었으며,
+6개 모두 기존 45초 제한 안에 유효한 PNG로 반환됐다. 제한을 늘린 결과가 아니다.
+
+재현 도구: `scripts/qa/opening-assistant-run.mts` + 브라우저 sidecar는 실제 Pi/LLM/이미지 제공자를
+사용하되 정본에 쓰지 않는다. 초기 intent 노출은 고정한 헤드리스 제작 평가다. 실제 클라이언트
+NDJSON 이미지 전달은 별도 브라우저 실행으로 확인했다. 오프닝의 실제 품질·내용, 정본 저장 후
+재로드, 출하 플레이어 검수는 `verify-shots/monster-assistant-opening-2026-10-03/REPORT.md`에 기록한다.

@@ -286,7 +286,7 @@
 }
 .cinematic-status:empty { display: none; }
 .cinematic-terminal > .game-over-panel { max-width: 90%; }
-.cinematic-image[data-motion="fade"] { animation: cinematic-fade var(--cinematic-motion-ms) linear both; }
+.cinematic-image[data-motion="fade"] { animation: cinematic-fade var(--cinematic-fade-ms) ease-out both; }
 .cinematic-image[data-motion="pan"] { animation: cinematic-pan var(--cinematic-motion-ms) linear both; }
 .cinematic-image[data-motion="zoom"] { animation: cinematic-zoom var(--cinematic-motion-ms) linear both; }
 @keyframes cinematic-fade { from { opacity: 0; } to { opacity: 1; } }

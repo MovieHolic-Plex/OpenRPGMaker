@@ -2,15 +2,21 @@
 // 오프닝(시네마틱) 스틸의 AI 생성 핸드오프. 이미지 바이트는 세션 전사에 남기지 않고,
 // 등록은 호출자가 upsert_resource 로 수행해 쓰기 회계(diff·제안)를 그대로 탄다.
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
-import { prepareGameOverImageRequest, prepareOpeningImageRequest } from "@/editor/tools/cinematicTools";
+import { prepareGameOverImageRequest, prepareOpeningImageRequest, type OpeningImageBrief } from "@/editor/tools/cinematicTools";
 import { ToolError } from "@/editor/tools/types";
 import { genId } from "@/util/id";
+import type { Project } from "@/project/types";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { parseImageReferences } from "@/ai/imageReferences";
+import { readAppearanceReference, type AppearanceReferenceReader } from "./characterAppearanceReferences";
 
 const IMAGE_DATA_URL = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/u;
 
 export type CinematicStillRequest = {
   readonly signal?: AbortSignal;
   readonly generateImage?: (request: GenerateAiImageRequest) => Promise<GeneratedImageAsset>;
+  readonly project?: Project;
+  readonly readReference?: AppearanceReferenceReader;
 };
 
 export type CinematicStillResult =
@@ -21,16 +27,20 @@ export type OpeningStillRequest = CinematicStillRequest;
 export type OpeningStillResult = CinematicStillResult;
 
 /** 저작 의도를 전체화면 연출용 지시로 감싼다 — 아이콘·글자·UI 가 섞이면 오프닝에서 못 쓴다. */
-export function buildCinematicStillPrompt(prompt: string, purpose: "opening" | "gameOver"): string {
+export function buildCinematicStillPrompt(prompt: string, purpose: "opening" | "gameOver", brief?: OpeningImageBrief): string {
   const screen = purpose === "gameOver" ? "game-over screen" : "opening sequence";
   const clearArea = purpose === "gameOver"
     ? "Keep the center and lower area calm enough for the game-over title, message and retry/title buttons."
-    : "Keep the center clear enough that a narration box at the bottom stays readable.";
+    : "Keep the lower 18 percent calm enough that a narration box at the bottom stays readable.";
+  const composition = brief?.shot === "close-up" ? "a close-up, emphasizing the important face, object or incident"
+    : brief?.shot === "medium" ? "a medium shot that clearly shows the characters and their immediate surroundings"
+    : "a wide establishing shot with clear foreground, middle ground and background";
   return [
-    `Create exactly one full-screen, 16:9 cinematic background still for the ${screen} of a 2D JRPG.`,
+    `Create exactly one full-screen, ${brief?.aspectRatio ?? "16:9"} cinematic background still for the ${screen} of a 2D JRPG.`,
     "Scene brief: " + JSON.stringify(prompt.replace(/\s+/gu, " ").trim()) + ".",
-    `Fill the entire canvas with the scene. Compose it as a wide establishing shot with clear foreground, middle ground and background. ${clearArea}`,
-    "Render it as hand-painted 2D game art with coherent lighting and restrained detail. Avoid photographic rendering and 3D-rendered surfaces.",
+    `Fill the entire canvas with the scene. Compose it as ${composition}. ${clearArea}`,
+    `Render it as ${brief?.artStyle ?? "hand-painted 2D game art"} with coherent lighting and restrained detail. Avoid photographic rendering and 3D-rendered surfaces.`,
+    ...(brief?.referenceResourceIds.length ? ["Use the supplied reference images to preserve the established character shapes, colors and location design. Do not copy any labels or reference-sheet layout."] : []),
     "Do not add any text, letters, captions, logos, watermarks, signatures, interface elements, borders, letterboxing bars or icon-style framing. Do not return a sprite sheet, an item icon or a character portrait on a flat background.",
   ].join("\n\n");
 }
@@ -50,17 +60,30 @@ export async function generateCinematicStill(
 ): Promise<CinematicStillResult> {
   let prompt: string;
   let name: string;
+  let brief: OpeningImageBrief | undefined;
   try {
-    ({ prompt, name } = purpose === "gameOver" ? prepareGameOverImageRequest(args) : prepareOpeningImageRequest(args));
+    if (purpose === "gameOver") ({ prompt, name } = prepareGameOverImageRequest(args));
+    else { brief = prepareOpeningImageRequest(args, options.project); ({ prompt, name } = brief); }
   } catch (error) {
     if (error instanceof ToolError) return { ok: false, summary: error.message, code: error.code ?? "invalid-args" };
     throw error;
   }
   try {
     options.signal?.throwIfAborted();
+    const references = await Promise.all((brief?.referenceResourceIds ?? []).map(async id => {
+      const url = options.project && resolveAssetResourceUrl(id, { project: options.project });
+      if (!url) throw new ImageGenerationError(`참고 그림을 읽을 프로젝트/리소스가 없습니다: ${id}`);
+      const dataUrl = await (options.readReference ?? readAppearanceReference)(url, undefined, options.signal ?? new AbortController().signal);
+      const match = /^data:(image\/(?:png|jpeg|webp));base64,(.+)$/.exec(dataUrl);
+      if (!match) throw new ImageGenerationError(`참고 그림 데이터가 올바르지 않습니다: ${id}`);
+      return { mimeType: match[1], data: match[2] };
+    }));
+    const referenceImages = parseImageReferences(references);
+    options.signal?.throwIfAborted();
     const image = await (options.generateImage ?? generateAiImage)({
-      prompt: buildCinematicStillPrompt(prompt, purpose),
+      prompt: buildCinematicStillPrompt(prompt, purpose, brief),
       signal: options.signal,
+      ...(referenceImages.length ? { referenceImages } : {}),
     });
     options.signal?.throwIfAborted();
     if (!IMAGE_DATA_URL.test(image.dataUrl)) {
@@ -82,6 +105,26 @@ export async function generateCinematicStill(
 
 export function generateOpeningStill(args: Record<string, unknown>, options: OpeningStillRequest = {}): Promise<OpeningStillResult> {
   return generateCinematicStill(args, "opening", options);
+}
+
+/** Actual visual evidence, bounded to the Pi render broker's 512px PNG contract. */
+export async function renderOpeningImage(project: Project, data: unknown, signal?: AbortSignal): Promise<string> {
+  const id = (data as { resourceId?: unknown } | null)?.resourceId;
+  const url = typeof id === 'string' && resolveAssetResourceUrl(id, { project });
+  if (!url) throw new ImageGenerationError('오프닝 검토 그림을 찾을 수 없습니다.');
+  const reference = await readAppearanceReference(url, undefined, signal ?? new AbortController().signal);
+  const image = new Image();
+  image.src = reference;
+  await image.decode();
+  signal?.throwIfAborted();
+  const scale = Math.min(1, 512 / Math.max(image.naturalWidth, image.naturalHeight));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+  canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+  const context = canvas.getContext('2d');
+  if (!context) throw new ImageGenerationError('오프닝 검토 캔버스를 만들지 못했습니다.');
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL('image/png');
 }
 
 export function generateGameOverStill(args: Record<string, unknown>, options: CinematicStillRequest = {}): Promise<CinematicStillResult> {

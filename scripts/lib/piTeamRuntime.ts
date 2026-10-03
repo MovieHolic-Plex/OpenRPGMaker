@@ -26,6 +26,7 @@ import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
+import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
 import {
   claimAssignment,
   createTeamAssignmentLedger,
@@ -162,6 +163,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     // 웹 검색은 Codex 백엔드가 하므로 조수 제공자와 별개로 내려보낸다 — 팀원이 검색을 못 하면 팀장만 최신 사실을 보고 팀원은 추정하게 된다.
     codexApiKey: options.codexApiKey,
     renderToolImage: options.renderToolImage,
+    generateOpeningImage: options.generateOpeningImage,
     signal: options.signal,
     extraTools: mailbox.tools(agentId),
     subscribeTeamMessages: notify => {
@@ -244,6 +246,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
 
   // Only accepted child writes enter the shared team project. Serialize publication across members.
   const villageMapIds = new Set<string>();
+  let openingReport: { fingerprint: string; issues: readonly string[] } | undefined;
+  const openingFingerprint = (project: Project) => JSON.stringify([project.system.opening,
+    (project.system.opening?.scenes ?? []).map(s => s.resourceId ? project.assets.uploaded[s.resourceId] ?? s.resourceId : null)]);
+  const trackOpening = (done: PiAgentDoneEvent) => {
+    if (done.openingProduction && openingFingerprint(done.project) === openingFingerprint(working)) openingReport = { fingerprint: openingFingerprint(working), issues: done.openingProduction.issues };
+  };
   const interiorReports = new Map<string, { mapId: string; issues: readonly unknown[] }>();
   const trackInterior = (done: PiAgentDoneEvent, snapshot: Project) => {
     if (done.interiorCompletion === undefined) return;
@@ -310,7 +318,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done);
         for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         trackInterior(done, snapshot);
-        const complete = !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
+        trackOpening(done);
+        const complete = !done.openingProduction?.issues.length && !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
         ledger = settleAssignment(ledger, agentId, complete);
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
         const summary = complete ? summaryOf(done) : completionFailure(done);
@@ -384,7 +393,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (mode === "project") { assertModernProposal(working, done.project); working = structuredClone(done.project) as Project; }
         for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         trackInterior(done, snapshot);
-        const complete = !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
+        trackOpening(done);
+        const complete = !done.openingProduction?.issues.length && !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
         if (!complete) report += "\n" + completionFailure(done);
         const outcome: AgentOutcome = { agentId, mapId: null, member: member.id, phase: "work", ok: complete, summary: report, changedKeys: changes, spills: [], conflicts: [] };
         outcomes.set(agentId, outcome);
@@ -602,14 +612,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   for (const report of orchDone.interiorCompletion ?? []) interiorReports.set(report.mapId, report);
   const interiorCompletion = [...interiorReports.values()];
   const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(working, base, villageMapIds) : undefined;
-  emit({ type: "agent_done", agentId: orchestratorId, ok: !villageCompletion?.issues.length && !interiorCompletion.length,
-    summary: interiorCompletion.length ? "실내 미완료: " + JSON.stringify(interiorCompletion) : villageCompletion?.issues.length ? `마을 미완료: ${villageCompletion.issues.join("; ")}` : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
+  const openingProduction = requestsOpeningProduction(request.task) && !request.readOnly
+    ? { issues: openingReport ? (openingReport.fingerprint === openingFingerprint(working) ? openingReport.issues : ['검토 뒤 오프닝/그림이 변경됐습니다. 새 검토가 필요합니다.']) : ['제작 팀원의 오프닝 구성·실제 이미지 전달 검토가 없습니다.'], playbackVerified: false as const } : undefined;
+  emit({ type: "agent_done", agentId: orchestratorId, ok: !openingProduction?.issues.length && !villageCompletion?.issues.length && !interiorCompletion.length,
+    summary: openingProduction?.issues.length ? '오프닝 제작 미완료: ' + openingProduction.issues.join('; ') : interiorCompletion.length ? "실내 미완료: " + JSON.stringify(interiorCompletion) : villageCompletion?.issues.length ? `마을 미완료: ${villageCompletion.issues.join("; ")}` : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
   if (!finished) emit({ type: "team_report", text: `${summaryOf(orchDone)} · 팀장이 finish를 호출하지 않았습니다. 미확인 협의 ${mailbox.outstanding().length}건.` });
 
   // 병합본은 살아있는 프로젝트 위에 묶음만 얹은 결과다. 시공 팀원의 프루프는 이 프로세스에만
   // 살아 있으므로, 브라우저의 수용 게이트가 확인할 수 있게 병합 시점에 증거를 다시 찍는다.
   authorMergedSpatialProposal(working, base);
   const done: PiAgentDoneEvent = {
+    ...(openingProduction ? { openingProduction } : {}),
     interiorCompletion,
     ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
@@ -627,5 +640,5 @@ function summaryOf(done: PiAgentDoneEvent): string {
 }
 
 function completionFailure(done: PiAgentDoneEvent): string {
-  return [done.villageCompletion?.issues.length ? '마을 미완료: ' + done.villageCompletion.issues.join('; ') : '', done.interiorCompletion?.length ? '실내 미완료: ' + JSON.stringify(done.interiorCompletion) : ''].filter(Boolean).join('\n');
+  return [done.openingProduction?.issues.length ? '오프닝 제작 미완료: ' + done.openingProduction.issues.join('; ') : '', done.villageCompletion?.issues.length ? '마을 미완료: ' + done.villageCompletion.issues.join('; ') : '', done.interiorCompletion?.length ? '실내 미완료: ' + JSON.stringify(done.interiorCompletion) : ''].filter(Boolean).join('\n');
 }

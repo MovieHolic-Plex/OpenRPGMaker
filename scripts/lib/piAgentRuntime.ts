@@ -53,6 +53,10 @@ import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
 import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext } from "../../src/editor/tools/types.ts";
+import { runTool } from '../../src/editor/tools/index.ts';
+import { prepareOpeningImageRequest } from '../../src/editor/tools/cinematicTools.ts';
+import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
+import { PiOpeningProduction, OPENING_PRODUCTION_PROMPT, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
 export interface RunPiAgentOptions {
   /** Trusted request requirements for direct-authoring observations; no layout coordinates. */
@@ -77,6 +81,7 @@ export interface RunPiAgentOptions {
    */
   readonly codexApiKey?: string;
   readonly renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
+  readonly generateOpeningImage?: (project: Project, args: Record<string, unknown>, signal?: AbortSignal) => Promise<CinematicStillResult>;
   /**
    * Headless runners only: a model object resolved outside the bundled catalog (e.g. a provider from the user's local
    * ~/.omp/agent/models.yml, scripts/qa/beodeul-assistant-run.mts). Absent = the exact catalog resolution below.
@@ -220,6 +225,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const villageMapIds = new Set<string>();
+  const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && requestsOpeningProduction(request.task), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && (!!modernTilesetPolicy || !!options.interiorRequirements), options.interiorRequirements);
   // let: 얼린 인자가 도구 규칙에 막히면 실행 도중 계약을 푼다(releaseContract). 풀린 뒤에는 일반 실행과 같다.
   let contract = request.readOnly || options.readOnlyTools || modernTilesetPolicy ? undefined : request.villageContract;
@@ -270,6 +276,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     exposed.add(shape.name);
   };
   const recordCall = (record: PiToolCallRecord): void => {
+    openingProduction.record(record.name, record.result.ok, ctx.project, record.args);
     interiorCompletion.record(ctx.project, record);
     try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
@@ -348,7 +355,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" && tool.name !== "inspect_interior_layout" ? tool : ({ ...tool,
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !["show_map_region", "inspect_interior_layout", "show_opening_image", "generate_opening_image"].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -361,7 +368,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const heldContract = !!contract;
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       try {
-        result = await tool.execute(id, params, signal);
+        if (tool.name === 'generate_opening_image') {
+          const args = params as Record<string, unknown>;
+          const brief = prepareOpeningImageRequest(args, ctx.project);
+          if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서 오프닝 리소스를 수정할 수 없습니다. 프로젝트 범위로 실행하세요.');
+          if (!options.generateOpeningImage) throw new Error('오프닝 그림 생성 경로가 없습니다. 생성 미완료입니다.');
+          const still = await options.generateOpeningImage(openingImageProject(ctx.project, brief.referenceResourceIds), args, signal ?? options.signal);
+          signal?.throwIfAborted();
+          if (!still.ok) {
+            const failure = { ok: false, summary: still.summary };
+            recordCall({ toolCallId: id, name: tool.name, args, result: failure });
+            throw new Error(still.summary);
+          }
+          const applied = runTool(ctx, 'upsert_resource', { resource: { id: still.resourceId, name: still.name, kind: 'backdrop', dataUrl: still.dataUrl } });
+          const execution = applied.ok ? { ...applied, summary: `그림 ${still.resourceId}를 실제 생성·등록했습니다. 연결 전에 그림을 검토하세요.`, data: { status: 'generated', resourceId: still.resourceId, name: still.name } } : applied;
+          recordCall({ toolCallId: id, name: tool.name, args, result: execution });
+          if (!execution.ok) throw new Error(execution.summary);
+          result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
+        } else result = await tool.execute(id, params, signal);
       } catch (error) {
         // 이 호출이 계약을 풀었으면 모델이 읽는 바로 그 실패 결과에 해제 사실을 붙인다 — 다음 수를 여기서 정한다.
         if (heldContract && !contract && contractReleased) {
@@ -369,6 +393,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           throw new Error(`${message}\n${systemPrompt[contractPromptIndex] ?? ""}`);
         }
         throw error;
+      }
+      if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image') {
+        if (!options.renderToolImage) throw new Error('오프닝 그림 시각 전달 경로가 없습니다. 시각 검토 미완료입니다.');
+        const data = (result.details as { data?: { resourceId?: string } } | undefined)?.data;
+        const png = await options.renderToolImage(openingImageProject(ctx.project, data?.resourceId ? [data.resourceId] : []), 'show_opening_image', data, signal ?? options.signal);
+        if (!png) throw new Error('오프닝 그림을 모델에게 전달하지 못했습니다.');
+        result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+        if (data?.resourceId) openingProduction.saw(ctx.project, data.resourceId);
+        emit({ type: 'execution_status', name: 'opening.image.delivered', ok: true, summary: '실제 오프닝 그림을 모델에게 전달했습니다.', data: { resourceId: data?.resourceId, toolCallId: id } });
       }
       if (tool.name === "show_map_region" || (tool.name === "inspect_interior_layout" && options.renderToolImage)) {
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
@@ -400,6 +433,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL).map(wrapTool),
     ...(options.extraTools ?? []),
   );
+  for (const tool of tools) exposed.add(tool.name);
+  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening']) {
+    const shape = shapeFor(name); if (shape) declare(shape);
+  }
   if (allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)) {
     // Codex 자격이 없어도 선언한다 — 툴이 실패 이유를 말하는 편이 "없는 툴" 보다 정직하다.
     declare(wrapTool(createWebSearchTool({ codexApiKey: options.codexApiKey, onCall: recordCall })));
@@ -453,6 +490,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false);
+  if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
   if (modernTilesetPolicy) systemPrompt.push(modernTilesetPolicyPrompt(modernTilesetPolicy));
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
     systemPrompt.push(buildToolCapabilityIndex(allowedDefinitions));
@@ -665,6 +703,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
+    let previousOpeningIssues = '';
+    for (let attempt = 0; !fatal && !rejected && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
+      const issues = openingProduction.inspect(ctx.project, base), signature = JSON.stringify(issues);
+      if (!issues.length || signature === previousOpeningIssues) break;
+      previousOpeningIssues = signature;
+      emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
+      await promptResuming('오프닝 제작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.\n' + signature);
+    }
     // One repair owner, one turn/time budget; unchanged failures stop immediately.
     let previousIssues = "";
     for (let attempt = 0; !fatal && !rejected && (contract || villageMapIds.size) && attempt < 2; attempt++) {
@@ -732,6 +778,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const interiorProblems = interiorCompletion.inspect(ctx.project, base);
   if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
   const done: PiAgentDoneEvent = {
+    ...(openingProduction.requested ? { openingProduction: { issues: openingProduction.inspect(ctx.project, base), playbackVerified: false as const } } : {}),
     interiorCompletion: interiorProblems,
     ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",

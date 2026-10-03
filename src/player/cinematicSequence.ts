@@ -112,6 +112,8 @@ export function playCinematicSequence(options: {
     root.dataset.sceneKind = scene.kind;
     root.dataset.mediaState = "ready";
     root.style.setProperty("--cinematic-motion-ms", `${scene.durationMs || 8000}ms`);
+    // A fade reveals a shot; its hold time must not keep the whole picture dim.
+    root.style.setProperty("--cinematic-fade-ms", `${Math.min(600, scene.durationMs || 600)}ms`);
     const narration = el("div", { class: "cinematic-narration", text: scene.narration });
     scrollNarration = key => {
       // Stage-logical pixels; synchronous assignment lets the browser clamp at both ends.

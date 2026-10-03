@@ -2556,3 +2556,32 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 - `place_savepoint {heal?:boolean}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다.
 - `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 두 게이트 전이 앞에 흰 `Flash Screen` 을 넣고 페이드를 white 로 바꾼다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다.
 - 명령 보장 표: `setEventGraphicPattern`·`cutsceneControl`·`checkpointSave`·`triggerEnding`·`setSelfSwitch` 는 맵/공통에서 `full` 이다(전투는 종전 유지). 저작 길은 그대로라 `indirectAuthoring` 로 선택창 행 요구를 면제한다. 도구 요약의 「미지원 커맨드 N건」은 「런타임 제한 커맨드 N건」이 되었다.
+
+
+## Pi 오프닝 제작·그림 검토 계약 (2026-10-03)
+
+`plan_opening({intent, shots:[{event,composition,continuity}], entry})`는 제작 계획이다.
+샷 수·전체 시간을 고정하지 않는다. 텍스트만 있는 도입, 입력 대기, 같은 그림의 의도적 반복도
+가능하다. 기존 인물/장소의 형태뿐 아니라 시간대·광원·사건 결과의 연속성을 유지한다.
+
+`show_opening_image({resourceId})`는 실제 그림을 모델에 전달한다. 이름 목록 조회로 대체하지
+않는다. `generate_opening_image`는 실제 실행기 연결이 있을 때만 성공하며, 연결 없는 순수
+레지스트리 호출은 `image-generation-unavailable`로 실패한다. 이전의 성공처럼 보이는
+`ui-required` 핸드오프를 제거했다. 일반 Pi 경로는 생성→등록→실제 그림 전달→검토를 연결한다.
+세부 실행 경로와 팀/읽기 전용 경계는 `editor-ai-panel.md`의 같은 날짜 절을 따른다.
+
+장면의 선택적 `narrationAudioResourceId`는 생략 또는 빈 문자열이면 음성 없음으로 정규화한다.
+실제 그림/영상의 필수 `resourceId`는 빈 값을 허용하지 않는다. 실제 LLM이 음성 없음에 빈 값을
+넣어 7번 연속 거부되던 도그푸딩 실패를 근거로 수정했다. 없는 음성을 생성했다고 보고하지 않는다.
+
+모델 전용 오프닝 지침은 실제 Pi에 넣는다. `contextBuilder`/`TASK_RECIPES`의 지침만 바꿔
+일반 채팅에서 적용됐다고 보고하지 않는다. 전체 도구 카탈로그를 초기 요청으로 보내지 않는다.
+새 도구를 추가하며 반복 설명을 줄였고 오프닝 가족 예산 1,300을 올리지 않는다. 전체 카탈로그의
+기존 99,000 초과 기준선은 별도 문제이며 이번 변경이 해결했다고 주장하지 않는다.
+
+
+`get_opening.generatedStills`는 최근 프로젝트 생성 그림 최대 20개의 ID·이름·연결 여부를
+반환한다. `list_opening_media`는 생성 그림 → 다른 프로젝트 자료 → 공용 자료 순서다.
+원본 이미지 바이트는 이름 목록에 싣지 않는다. 계획 샷 수와 연결한 장면 수가 다르면 계획을
+수정하거나 장면을 연결해야 한다. “그림으로 보여줘” 요청에 장문을 붙였으면 수리 대상으로
+보고한다. 이 검사는 미적 품질 점수나 모델의 이해를 판정하지 않는다.
