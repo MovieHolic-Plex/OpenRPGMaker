@@ -6,7 +6,7 @@
       "name": "request acknowledged in the same click before model output",
       "passed": true,
       "detail": {
-        "ms": 3.899999976158142,
+        "ms": 4.600000023841858,
         "text": "AI 작업/team QA 시공 진행 표시요청을 읽고 있어요",
         "visible": true
       }

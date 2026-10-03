@@ -1,20 +1,46 @@
 {
   "transport": "scripted; native tools and acceptance",
-  "errors": [
-    "renderer crashed"
-  ],
+  "errors": [],
   "checks": [
     {
       "name": "request acknowledged in the same click before model output",
       "passed": true,
       "detail": {
-        "ms": 4.800000071525574,
+        "ms": 4.299999952316284,
         "text": "AI 작업/team QA 시공 진행 표시요청을 읽고 있어요",
         "visible": true
       }
+    },
+    {
+      "name": "first accepted new map is visible before the run finishes",
+      "passed": true,
+      "detail": {
+        "ack": {
+          "ok": true
+        },
+        "mapId": "qa_visible_scene",
+        "done": false
+      }
+    },
+    {
+      "name": "second native change applied while stream remains open",
+      "passed": true,
+      "detail": {
+        "ack": {
+          "ok": true
+        },
+        "tile": 1,
+        "done": false
+      }
+    },
+    {
+      "name": "progress removed at settlement",
+      "passed": true
+    },
+    {
+      "name": "no page errors",
+      "passed": true,
+      "detail": []
     }
-  ],
-  "failure": "page.waitForFunction: Timeout 60000ms exceeded.",
-  "stage": "browser unavailable",
-  "body": "unavailable"
+  ]
 }

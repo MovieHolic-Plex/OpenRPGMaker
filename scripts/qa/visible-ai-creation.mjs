@@ -70,9 +70,10 @@ await page.addInitScript(({ fixture, feedbackOnly }) => {
       }
       const firstArgs = { id: 'qa_visible_scene', name: '보이는 시공 현장', width: 16, height: 12, tilesetId: ctx.project.maps[ctx.currentMapId].tilesetId, bgm: { mode: 'none' } };
       write({ type: 'tool_start', id: 'first', name: 'create_map', args: firstArgs });
+      console.log('QA project chars ' + JSON.stringify(ctx.project).length);
       qa.stage = 'first native tool';
       const first = runTool(ctx, 'create_map', firstArgs, { dryRun: false });
-      qa.stage = 'first result ' + JSON.stringify(first); console.log(qa.stage);
+      qa.stage = first.ok ? 'first native tool succeeded' : JSON.stringify(first);
       if (!first.ok) throw Error(JSON.stringify(first));
       write({ type: 'checkpoint', checkpointId: 'first', label: '첫 맵', toolName: 'create_map', project: ctx.project, spatialProof: exportSpatialToolProof(ctx.project) });
       await new Promise(resolve => { qa.releaseSecond = () => { setTimeout(resolve, 0); }; });
@@ -84,7 +85,7 @@ await page.addInitScript(({ fixture, feedbackOnly }) => {
       write({ type: 'checkpoint', checkpointId: 'second', label: '첫 바닥', toolName: 'paint_tiles', project: ctx.project, spatialProof: exportSpatialToolProof(ctx.project) });
       await new Promise(resolve => { qa.end = () => { setTimeout(resolve, 0); }; });
       write({ type: 'tool_end', id: 'second', name: 'paint_tiles', ok: true, summary: second.summary });
-      write({ type: 'review', mapId: 'qa_visible_scene', ok: true, summary: 'Scripted review: not vision QA' });
+      write({ type: 'review', agentId: 'qa-scripted-review', mapId: 'qa_visible_scene', ok: true, findings: [] });
       qa.done = true;
       write({ type: 'done', project: ctx.project, stats: { turns: 1, toolCalls: 2, toolErrors: 0, ms: 1 }, changedKeys: ['maps'] });
       controller.close();
@@ -99,9 +100,11 @@ try {
   await page.evaluate(async () => {
     const { store } = await import('/src/project/store.ts');
     const current = store.getCurrent();
+    const { normalizeDatabaseRecords } = await import('/src/project/databaseRecordModel.ts');
+    const database = normalizeDatabaseRecords(current.database);
     const used = new Set(Object.values(current.maps).map(map => map.tilesetId));
     const tilesets = Object.fromEntries(Object.entries(current.tilesets).filter(([id]) => used.has(id)).map(([id, tileset]) => [id, { ...tileset, referenceDocuments: [] }]));
-    store.replace({ ...current, tilesets, assets: window.__OPRN_E2E_PROJECT__.assets }, { change: { label: 'QA fixture references trimmed', source: 'qa' } });
+    store.replace({ ...current, database, tilesets, assets: window.__OPRN_E2E_PROJECT__.assets }, { change: { label: 'QA fixture references trimmed', source: 'qa' } });
     console.log('QA fixture ready');
   });
   await page.getByTestId('ai-input').fill('/team QA 시공 진행 표시');
