@@ -72,7 +72,7 @@ describe("generatedAssetManifest", () => {
     expect(enemies.every(entry => entry.rawPath?.includes("pixel-enemies/") && entry.promotedPath?.includes("pixel-enemy-portraits/"))).toBe(true);
   });
 
-  it("keeps promoted battle charsets extracted from bundled actor charsets registered in the manifest", () => {
+  it("retains starter battle charset provenance while rejecting their promotion", () => {
     const result = validateGeneratedAssetManifest(GENERATED_ASSET_PLAN);
 
     expect(result.ok).toBe(true);
@@ -90,7 +90,7 @@ describe("generatedAssetManifest", () => {
       "hero-04-battle",
     ]);
     expect(extractedAssets.every((asset) => asset.provenance.promptVersion.endsWith("+grok-row1-v1"))).toBe(true);
-    expect(extractedAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/starter/") === true)).toBe(true);
-    expect(extractedAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
+    expect(extractedAssets.every((asset) => asset.status === "rejected")).toBe(true);
+    expect(extractedAssets.every((asset) => asset.promotedPath === null && asset.sha256 === null)).toBe(true);
   });
 });

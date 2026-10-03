@@ -91,12 +91,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "generated-face-actor1-bust": "/assets/generated/faces/actor1-bust.png",
   "generated-face-actor1-full": "/assets/generated/faces/actor1-bust.png",
   "generated-actor-hero-03-battle": null,
-  // NOTE: hero-03-face.png 파일은 아직 생성되지 않았다(189개 등록 중 유일하게 파일이 없던 항목).
-  // 그래도 등록은 유지한다 — 등록을 지우면 builtinGeneratedResourceIds() 에서 이 id 가 빠져,
-  // resourceReferenceValidation 의 validateOptionalResource 가 알려진 id 집합에 없다며 assert 로 던진다.
-  // 그러면 이 id 를 참조하는 프로젝트는 얼굴만 빠지는 게 아니라 **역직렬화 자체가 실패**한다(실측).
-  // 파일이 없어 생기는 404 이미지 로드 실패는 battleFieldDom 의 removeFaceNodeOnLoadError onerror
-  // 가드가 얼굴 노드를 제거하는 쪽으로 처리한다.
+  // Keep the saved ID recognized; retired starter faces have no runtime URL.
   "generated-actor-hero-03-face": null,
   "generated-actor-hero-04-battle": null,
   // 성직자·궁수 배틀러(2026-08-29). DB 액터 actor_cleric / actor_ranger 가 여태 hero-02 /
