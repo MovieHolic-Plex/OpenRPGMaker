@@ -1,6 +1,6 @@
 # joseon-baram — 조선(바람의나라풍) 칩셋 제작 하네스
 
-번들 타일셋 `joseon_baram`(16px, 3/4 시점)의 조각(기와집·초가·문루·정자·담·성벽·나무·소품·다리)과 지도 3장(마을 20호·국내성·국내성 원작 규모)을
+번들 타일셋 `joseon_baram`(16px, 3/4 시점)의 조각(기와집·초가·문루·정자·담·성벽·나무·소품·다리)과 지도 14장(마을 20호·국내성·국내성 원작 규모·사냥터·동굴·실내 6·궁 내부 3)을
 만드는 **기존 도구를 한 입구로 묶었다.** 새로 쓴 것은 입구(`node/cli.ts`)와 얇은 다리(`bridge.py`, 점검·목록·16구역 묶음)뿐이고,
 팔레트 잠금·게이트·판정·지도 관문·빌더·재굽기는 `scripts/content/lib/joseon/` 와 `scripts/content/` 에 **제자리 그대로** 있다.
 타일셋·번들 배선·참고문서·통행 규칙은 `openwiki/joseon-baram.md`. 이 문서는 **작업 순서와 함정**이다.
@@ -14,12 +14,12 @@
 | 단계 | 하는 일 | 쓰는 기존 도구 | 시간 |
 |---|---|---|---|
 | `palette` | 팔레트 잠금 검사: `allowed` == 램프 합집합 ∪ 그림자, 시드 색 수 일치, 옛 잠금 보존. **파일을 쓰지 않는다.** | `harness/palette.json` | 1초 |
-| `validate [--deep]` | 시드가 가리키는 파일·지도 크기·조각 메타 분류·`gate.py`/`verdict.py`/`adversarial.py` 와의 시드 대조·지도 관문 임계 4프로필 대조·바람의나라 스크린샷 추적 여부. `--deep` 은 카탈로그와 판정 목록 대조 | `mapgate.py` 를 프로필별로 import | 1초 / 20초 |
+| `validate [--deep]` | 시드가 가리키는 파일·지도 크기·조각 메타 분류·`gate.py`/`verdict.py`/`adversarial.py` 와의 시드 대조·지도 관문 임계 8프로필(default·village20·gungnae·gungnae_full·field·cave·interior_b·palace_int) 대조·바람의나라 스크린샷 추적 여부. `--deep` 은 카탈로그와 판정 목록 대조 | `mapgate.py` 를 프로필별로 import | 1초 / 20초 |
 | `list [pieces\|maps]` | 조각(분류·**기록된** 판정·적대 리뷰 기록)·지도(크기·산출물). `--class` `--status` `--adv` 로 거름 | `pieces_meta.json` `verdicts.json` `adversarial.json` | 1초 |
 | `gate` | 조각 관문 P·E·T·L·S·A·K·TR·V. `--candidate` 는 A 만 건너뜀, `--sheets` 는 기준 옆 검수 시트, `--piece a,b` 로 좁힘, `--all` 은 ok 줄도 | `harness/gate.py` 의 `run()` | 20초 |
 | `verdict <조각> <상태> "<한 줄>"` | 시트를 눈으로 본 뒤 한 줄 판정을 **현재 그림 해시**에 묶어 기록. 기록은 ledger 에도 남는다. `--dry` 는 쓰지 않음 | `harness/verdict.py` | 17초 |
-| `build` | 번들 재굽기: 시트 합치기 → 참고문서 → 저장·재로드 증명 → 장소 카드 → 축소본. `--dry` 는 계획·입력·팔레트 점검만 | `scripts/content/rebuild-joseon.sh` | 70초 |
-| `map <id>` | 지도 빌더 + 조각 게이트 + 지도 관문 M1~M7. 게이트 우회 환경변수(`JS_SKIPGATE`·`JS_FORCE`)가 있으면 거부 | `demo20.py` `demo_gungnae.py` `demo_gungnae_full.py` | 40~수 분 |
+| `build` | 번들 재굽기: 시트 합치기 → 참고문서 → 저장·재로드 증명 → 장소 카드 → 축소본. `--dry` 는 계획·입력·팔레트 점검만 | `scripts/content/rebuild-joseon.sh` | 약 2분 |
+| `map <id>` | 지도 빌더 + 조각 게이트 + 지도 관문 M1~M7. 게이트 우회 환경변수(`JS_SKIPGATE`·`JS_FORCE`)가 있으면 거부 | `demo20.py` `demo_gungnae.py` `demo_gungnae_full.py` `demo_field.py` `demo_cave.py` `inb_demo.py <방id>` `pal_demo.py <방id>` | 40초~수 분 |
 | `review zones <지도id>` | 지도를 4×4 = **16구역** 원 해상도(×2) 크롭으로 자르고 구역×렌즈별 프롬프트를 쓴다 | `ADVERSARIAL.md` 의 렌즈 절을 그대로 읽는다 | 2초 |
 | `review pieces` | 조각 6배 그림·기준 시트·렌즈 프롬프트 묶음(`--piece a,b` 또는 `--blocked --limit N`) | `adversarial.py` · `gate.sheets` | 20초 |
 | `review record <json>` | 리뷰어 출력을 조각 현재 해시에 묶어 기록(게이트 A 입력) | `adversarial.py record` | 17초 |
@@ -28,7 +28,7 @@
 ## 시드와 기록
 | 경로 | 쓰는 이 | 내용 |
 |---|---|---|
-| `harness-data/joseon-baram/seed.json` | 사람 | 타일셋·도구 경로·팔레트 잠금(색 수)·조각 분류·관문 목록·지도 3장(프로필·빌더·크기·시트순번)·지도 관문 임계·16구역 설정·**쓰지 말 것**·바람의나라 스크린샷 해시 |
+| `harness-data/joseon-baram/seed.json` | 사람 | 타일셋·도구 경로·팔레트 잠금(색 수)·조각 분류·관문 목록·지도 14장(프로필·빌더·`builderArgs`·크기·시트순번)·지도 관문 임계·16구역 설정·**쓰지 말 것**·바람의나라 스크린샷 해시 |
 | `harness-data/joseon-baram/ledger.json` | 하네스 | verdict·build·map·review 이력(시각·결과·해시). 손으로 고치지 않는다 |
 | `scripts/content/lib/joseon/harness/{pieces_meta,verdicts,adversarial}.json` | 도구 | 조각 메타·판정·적대 리뷰 — **정본은 여기**이고 시드에 복사하지 않는다. 손으로 고치지 않는다 |
 | `qa-runs/harnesses/joseon-baram/` | 하네스 | 16구역 크롭·프롬프트·지도 후보 산출(gitignore) |
@@ -52,6 +52,8 @@ npm run harness -- joseon-baram build --dry && npm run harness -- joseon-baram b
 그래서 지도 빌더(`gungnae*` 는 A 를 항상 건너뜀, `demo20` 은 `--candidate` 필요)와 번들 재굽기는 지금 A 없이 돈다.
 
 ## 지도 빌드 주의 (`map`)
+- **새 11장 (2026-10-04)**: 사냥터 `joseon_field`(프로필 `field`, `demo_field.py`)·동굴 `joseon_cave`(`cave`, `demo_cave.py`)는 출력이 `tiledata/joseon-field|joseon-cave` 이고 조각 게이트는 돌지 않는다 — 빌더 단언(시트 재조립 pixelDiff 0·통행·10×10 빈 광장 금지)과 지도 관문이 막는다. 실내 6장(프로필 `interior_b`, `inb_demo.py <방id> --candidate`)과 궁 내부 3장(`palace_int`, `pal_demo.py <방id> --candidate`)은 한 빌더가 방 id 를 인자로 받는다(시드 `builderArgs`). 방 지도는 지도 관문에서 **M3 물체 피복 ≥0.30 만** 걸고 M1·M2·M4~M7 은 뜻이 없어 건너뛴다 — 대신 방 전용 점검(문 앞 BFS·막힘·일렬·맨바닥)이 `inb_checks.py`·`pal_checks.py` 에서 돈다. 임계는 `mapgate.py` 와 시드가 같고 `validate` 가 대조한다(풀지 않았다). 새 11장도 `--write` 로만 덮어쓴다(`--dry` 는 계획). 이 판에서는 하네스 `map` 단계를 실제로 돌려 다시 굽지 않았다(그림은 고치지 않는 라운드) — 재굽기 입력은 이미 커밋된 산출물이다.
+- 새 지도의 칸 번호는 시트순번 3~13 으로 옛 구간 뒤에 붙는다. **옛 3장을 다시 구워 새 꼬리 복사본이 필요해지면 변환기가 `동결 장부 위반` 으로 멈춘다** — `openwiki/joseon-baram.md` 「동결 장부」.
 - 세 지도는 출력이 `tiledata/joseon-village20|joseon-gungnae|joseon-gungnae-full` 이고 이것이 `rebuild-joseon.sh` 의 **입력**이다. `joseon_v20` 은 기본이 `qa-runs/…/map-joseon_v20`(JS_OUT)이라 안전하고, 국내성 둘은 빌더가 폴더를 못 바꿔 **`--write` 로 덮어쓰기를 확인**해야 돈다(`--dry` 는 계획만).
 - 마을 20호는 **기준 시트**다. `--write` 로 다시 굽거나 `build --regen-village` 를 하면 기준 시트 칸 번호가 바뀌어 이미 배포된 칸이 어긋난다(2026-10-03 실측 12,928 → 13,184칸). 새 조각은 합치기 규칙이 꼬리에 덧붙이므로 기준을 다시 구울 필요가 없다.
 - 지도 관문(M1 맨 잔디 · M2 수관 · M3 물체 · M4 나무 반복 · M5 겹침 · M6 건물 밀도 · M7 나무 키)은 프로필마다 임계가 다르다(시드 `mapGate.profiles`, `validate` 가 `mapgate.py` 와 대조). 임계를 풀어 통과시키지 않는다 — 풀 때는 사유를 `mapgate.py` 주석에 적는다.
