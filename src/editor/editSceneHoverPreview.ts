@@ -6,7 +6,10 @@ import { editorState } from "@/editor/editorState";
 import { brushStrokePoints } from "@/editor/TilePaintEngine";
 import { store } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
-import { findReliefDoodad, planReliefDoodad, RELIEF_DOODAD_HOVER_EVENT, type ReliefDoodadHoverDetail } from "@/editor/reliefDoodads";
+import { findReliefDoodad, RELIEF_DOODAD_HOVER_EVENT, type ReliefDoodadHoverDetail } from "@/editor/reliefDoodads";
+import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPlan";
+import { groupAt } from "./terrainClusters";
+import { terrainBrushPoints } from "./terrainBrush";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { cellLift, reliefLiftField, reliefPickCell, reliefSignature } from "@/project/relief/screen";
 
@@ -23,12 +26,28 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
   const state = editorState.get();
   const pick = reliefPickCell(map.relief, spec.centerX, spec.centerY);
   const doodad = findReliefDoodad(store.getCurrent().tilesets[map.tilesetId], state.reliefDoodad);
+  const tileset=store.getCurrent().tilesets[map.tilesetId];
+  if (!tileset) return;
+  if (state.terrainBrush === "group") {
+    const plan=state.terrainMoveGroup?planEditorGroupMove(map,tileset,pick.x,pick.y):null;
+    const group=groupAt(map,pick.x,pick.y);
+    const selected=state.terrainSelectedGroup?.mapId===map.id?map.doodadGroups?.find(g=>g.id===state.terrainSelectedGroup?.id):null;
+    const lift=map.relief?reliefLiftField(map.relief):null;
+    const rects=plan?.rects??(group??selected)?.cells.map(c=>{const x=c.index%map.width,y=Math.floor(c.index/map.width);return{x,y:y-(lift?cellLift(lift,x,y):0),w:1,h:1};})??[];
+    for (const rect of rects) spec.layer.add(spec.scene.add.rectangle(rect.x*tileSize,rect.y*tileSize,tileSize,tileSize,plan?.ok===false?0xe03131:0x329af0,.25).setOrigin(0,0).setStrokeStyle(1,0x329af0));
+    return;
+  }
+  if (state.terrainBrush === "surface" || state.terrainBrush === "river") {
+    const lift=map.relief?reliefLiftField(map.relief):null;
+    for (const p of terrainBrushPoints(map,pick.x,pick.y,state.terrainWidth,state.terrainBrush==="river"))spec.layer.add(spec.scene.add.rectangle(p.x*tileSize,(p.y-(lift?cellLift(lift,p.x,p.y):0))*tileSize,tileSize,tileSize,0x329af0,.22).setOrigin(0,0).setStrokeStyle(1,0x329af0));
+    return;
+  }
   if (doodad) {
     if (pick.x < 0 || pick.y < 0 || pick.x >= map.width || pick.y >= map.height) {
       announceReliefDoodadHover(null);
       return;
     }
-    const plan = planReliefDoodad(map, doodad, pick);
+    const plan = planEditorTerrainDoodad(map, tileset, doodad, pick);
     const color = plan.ok ? 0x2f9e44 : 0xe03131;
     for (const rect of plan.rects) {
       const shape = spec.scene.add.rectangle(rect.x * tileSize, rect.y * tileSize, rect.w * tileSize, rect.h * tileSize, color, 0.18)
@@ -77,7 +96,7 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     spec.mapId, spec.centerX, spec.centerY, state.tool, state.layer,
     state.selectedTile, state.brushSize, state.paintShape, stampKey,
     ...(state.tool === "relief"
-      ? [state.reliefDoodad ?? "", state.reliefRoughSize, reliefSignature(store.getCurrent().maps[spec.mapId]?.relief)]
+      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, store.getVersionToken(), reliefSignature(store.getCurrent().maps[spec.mapId]?.relief)]
       : []),
   ].join("|");
 }

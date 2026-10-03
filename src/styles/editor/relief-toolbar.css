@@ -9,6 +9,8 @@
   z-index: 30;
 }
 .relief-toolbar-host[hidden] { display: none; }
+.relief-toolbar-host [hidden] { display: none; }
+.relief-pop-options { display: flex; align-items: center; gap: 6px; padding: 8px 10px; }
 
 /* 안내 한 줄 + 막대를 아래 가운데에 쌓는다. 오른쪽 아래 조수 ✦ 단추(약 56px)를 피해 양옆 72px 를 비우고,
    캔버스가 좁으면 막대가 두 줄로 접힌다. */

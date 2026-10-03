@@ -83,6 +83,16 @@ export interface EditorState {
   reliefDoodad: string | null;
   /** 지형지물 팝업이 열려 있는가. */
   reliefDoodadOpen: boolean;
+  terrainBrush: "height" | "surface" | "river" | "group";
+  terrainMaterial: "grass" | "dirt" | "stone";
+  terrainWidth: number;
+  reliefRampWidth: 2 | 4 | 6;
+  reliefBridgeStart: { mapId: string; x: number; y: number } | null;
+  reliefClusterDensity: number;
+  reliefClusterEnabled: boolean;
+  terrainSelectedGroup: { mapId: string; id: string; x: number; y: number } | null;
+  terrainMoveGroup: boolean;
+  terrainReachability: boolean;
   selectedEventPageId: string | null;
   selection: TileSelection | null;
   pendingEventCoordinate: PendingEventCoordinate | null;
@@ -120,6 +130,16 @@ class EditorStateStore {
     reliefTopGrass: true,
     reliefDoodad: null,
     reliefDoodadOpen: false,
+    terrainBrush: "height",
+    terrainMaterial: "dirt",
+    terrainWidth: 3,
+    reliefRampWidth: 4,
+    reliefBridgeStart: null,
+    reliefClusterDensity: 35,
+    reliefClusterEnabled: true,
+    terrainSelectedGroup: null,
+    terrainMoveGroup: false,
+    terrainReachability: false,
     selectedEventId: null,
     selectedEventPageId: null,
     selection: null,
@@ -268,6 +288,8 @@ const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof 
   "reliefTopGrass",
   "reliefDoodad",
   "reliefDoodadOpen",
+  "terrainBrush", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
+  "reliefClusterDensity", "reliefClusterEnabled", "terrainSelectedGroup", "terrainMoveGroup", "terrainReachability",
 ]);
 
 export function editorStateNeedsEventEditorRefresh(previous: EditorState, next: EditorState): boolean {

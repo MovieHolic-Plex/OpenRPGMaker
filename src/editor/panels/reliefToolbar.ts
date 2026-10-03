@@ -23,6 +23,8 @@ import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
+import { terrainMaterialTile, MATERIAL_LABEL, type TerrainMaterial } from "@/editor/terrainMaterials";
+import { deleteDoodadGroup } from "@/editor/terrainClusters";
 
 const MODES: readonly (readonly [ReliefBrushMode, string, string, string])[] = [
   ["raise", "올리기", "누르고 있으면 계속 쌓인다", '<path d="M4 18h16M7 14l5-8 5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
@@ -136,7 +138,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       attrs: { type: "button", "aria-label": label, "aria-pressed": "false", title: `${label} · ${help} · 오른쪽 버튼: ${rightButtonLabel(mode)}` },
       dataset: { testid: `relief-mode-${mode}` },
       children: [svgIcon(path)],
-      on: { click: () => editorState.set({ reliefMode: mode, reliefDoodad: null }) },
+      on: { click: () => editorState.set({ reliefMode: mode, reliefDoodad: null, terrainBrush: "height", reliefBridgeStart: null }) },
     }) as HTMLButtonElement;
     modeButtons.set(mode, button);
     modes.append(button);
@@ -191,35 +193,62 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     dataset: { testid: "relief-doodad-toggle" },
     on: { click: () => {
       const open = !editorState.get().reliefDoodadOpen;
-      editorState.set({ reliefDoodadOpen: open, ...(open ? {} : { reliefDoodad: null }) });
+      editorState.set({ reliefDoodadOpen: open, ...(open ? {} : { reliefDoodad: null, reliefBridgeStart:null }) });
     } },
   }) as HTMLButtonElement;
   const sep = () => el("span", { class: "relief-bar-sep", attrs: { "aria-hidden": "true" } });
+  const terrainTools=el("div",{class:"relief-bar-group",attrs:{role:"group","aria-label":"지형 설치 방식"}});
+  const terrainButtons=new Map<string,HTMLButtonElement>();
+  for(const [value,label] of [["height","높이"],["surface","표면"],["river","강"],["group","군집 선택"]] as const){
+    const b=el("button",{class:"relief-bar-size",text:label,attrs:{type:"button","aria-pressed":"false"},dataset:{testid:`terrain-tool-${value}`},
+      on:{click:()=>editorState.set({terrainBrush:value,reliefDoodad:null,reliefBridgeStart:null,terrainMoveGroup:false})}}) as HTMLButtonElement;
+    terrainButtons.set(value,b);terrainTools.append(b);
+  }
+  const material=el("select",{class:"relief-bar-style",attrs:{"aria-label":"표면 재질"},dataset:{testid:"terrain-material"},on:{change:e=>editorState.set({terrainMaterial:(e.target as HTMLSelectElement).value as "grass"|"dirt"|"stone"})}}) as HTMLSelectElement;
+  for(const key of ["grass","dirt","stone"] as const)material.append(el("option",{value:key,text:MATERIAL_LABEL[key]}));
+  const brushWidth=el("select",{class:"relief-bar-style",attrs:{"aria-label":"표면·강 붓 폭"},dataset:{testid:"terrain-width"},on:{change:e=>editorState.set({terrainWidth:Number((e.target as HTMLSelectElement).value)})}}) as HTMLSelectElement;
+  for(const width of [1,3,5,7])brushWidth.append(el("option",{value:String(width),text:`폭 ${width}칸`}));
+  const moveGroup=el("button",{class:"relief-bar-size",text:"옮기기",attrs:{type:"button"},dataset:{testid:"terrain-group-move"},on:{click:()=>editorState.set({terrainMoveGroup:true})}}) as HTMLButtonElement;
+  const deleteGroup=el("button",{class:"relief-bar-size",text:"군집 지우기",attrs:{type:"button"},dataset:{testid:"terrain-group-delete"},on:{click:()=>{
+    const selection=editorState.get().terrainSelectedGroup;if(!selection)return;
+    const map=store.getCurrent().maps[selection.mapId],group=map?.doodadGroups?.find(g=>g.id===selection.id);if(!map||!group)return;
+    const cells=group.cells.map(c=>({x:c.index%map.width,y:Math.floor(c.index/map.width),layer:"upper" as const}));
+    recordMapEditIfChanged(selection.mapId,()=>store.updateMapTiles(selection.mapId,draft=>deleteDoodadGroup(draft,selection.id),{label:"군집 지우기",relief:true,cells}));
+    editorState.set({terrainSelectedGroup:null,terrainMoveGroup:false});
+  }}}) as HTMLButtonElement;
+  const reachable=el("button",{class:"relief-bar-toggle",text:"통행 미리보기",attrs:{type:"button","aria-pressed":"false",title:"시작 지점에서 닿는 땅은 초록, 닿지 못하는 땅은 붉게 표시한다"},dataset:{testid:"terrain-reachability"},on:{click:()=>editorState.set({terrainReachability:!editorState.get().terrainReachability})}}) as HTMLButtonElement;
   const bar = el("div", {
     class: "relief-bar",
     attrs: { role: "toolbar", "aria-label": "높이 붓" },
     dataset: { testid: "relief-brush-controls" },
-    children: [modes, sep(), sizes, sep(), level, sep(), grass, style, sep(), doodadButton],
+    children: [terrainTools, sep(), modes, sizes, level, grass, style, material, brushWidth, moveGroup, deleteGroup, sep(), doodadButton, reachable],
   });
 
   // ── 지형지물 팝업 ──
   const tabs = el("div", { class: "relief-pop-tabs", attrs: { role: "tablist", "aria-label": "지형지물 종류" } });
   const grid = el("div", { class: "relief-pop-grid", attrs: { id: "relief-doodad-grid", role: "tabpanel" }, dataset: { testid: "relief-doodad-grid" } });
   const foot = el("div", { class: "relief-pop-foot" });
+  const options=el("div",{class:"relief-pop-options"});
+  const rampWidth=el("select",{class:"relief-bar-style",attrs:{"aria-label":"경사로 폭"},dataset:{testid:"relief-ramp-width"},on:{change:e=>editorState.set({reliefRampWidth:Number((e.target as HTMLSelectElement).value) as 2|4|6})}}) as HTMLSelectElement;
+  for(const width of [2,4,6])rampWidth.append(el("option",{value:String(width),text:`폭 ${width}칸`}));
+  const clusterToggle=el("button",{class:"relief-bar-toggle",text:"군집 배치",attrs:{type:"button","aria-pressed":"true"},dataset:{testid:"relief-cluster-toggle"},on:{click:()=>editorState.set({reliefClusterEnabled:!editorState.get().reliefClusterEnabled})}}) as HTMLButtonElement;
+  const density=el("select",{class:"relief-bar-style",attrs:{"aria-label":"군집 밀도"},dataset:{testid:"relief-cluster-density"},on:{change:e=>editorState.set({reliefClusterDensity:Number((e.target as HTMLSelectElement).value)})}}) as HTMLSelectElement;
+  for(const [value,label] of [[15,"성김"],[35,"보통"],[70,"빽빽"]] as const)density.append(el("option",{value:String(value),text:label}));
+  options.append(rampWidth,clusterToggle,density);
   const head = el("div", {
     class: "relief-pop-head",
     children: [
       el("b", { text: "◆ 지형지물" }),
       el("span", { text: "언덕·절벽에 붙는 것들" }),
       el("button", { text: "✕", attrs: { type: "button", "aria-label": "지형지물 닫기" }, dataset: { testid: "relief-doodad-close" },
-        on: { click: () => editorState.set({ reliefDoodadOpen: false, reliefDoodad: null }) } }),
+        on: { click: () => editorState.set({ reliefDoodadOpen: false, reliefDoodad: null, reliefBridgeStart:null }) } }),
     ],
   });
   const pop = el("div", {
     class: "relief-pop",
     attrs: { id: "relief-doodad-popup", role: "dialog", "aria-label": "지형지물" },
     dataset: { testid: "relief-doodad-popup" },
-    children: [head, tabs, grid, foot],
+    children: [head, tabs, options, grid, foot],
   });
   let activeTab: ReliefDoodadTab = "ramp";
   let gridKey = "";
@@ -228,7 +257,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     wall: "남쪽 절벽 면에 덩굴·담쟁이를 건다.",
     tree: "같은 높이의 땅이나 언덕 윗면에 놓는다.",
     rock: "같은 높이의 땅이나 언덕 윗면에 놓는다.",
-    bridge: "언덕 윗면의 가장자리에서 같은 높이의 반대편 둑까지 잇는다. 폭 2칸.",
+    bridge: "첫 둑 클릭 → 같은 줄의 반대 둑 클릭. 폭 2칸. Esc: 시작점 취소.",
   };
   const renderTabs = (): void => {
     tabs.replaceChildren(...RELIEF_DOODAD_TABS.map(({ id, label }) => el("button", {
@@ -240,6 +269,8 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   };
   const renderGrid = (): void => {
     grid.setAttribute("aria-labelledby", `relief-tab-${activeTab}`);
+    rampWidth.hidden=activeTab!=="ramp";
+    clusterToggle.hidden=density.hidden=activeTab!=="tree" && activeTab!=="rock";
     const { tileset } = currentMapAndTileset();
     const key = `${tileset?.id ?? ""}|${activeTab}`;
     if (key !== gridKey) {
@@ -253,7 +284,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
           attrs: { type: "button", title: doodad.kind === "ramp" || doodad.kind === "bridge" ? doodad.label : `${doodad.label} (${doodad.kit.id})`, "aria-pressed": "false" },
           dataset: { testid: `relief-doodad-${doodad.id}`, doodadId: doodad.id },
           children: [thumb, el("span", { text: doodad.label })],
-          on: { click: () => editorState.set({ reliefDoodad: editorState.get().reliefDoodad === doodad.id ? null : doodad.id }) },
+          on: { click: () => editorState.set({ reliefDoodad: editorState.get().reliefDoodad === doodad.id ? null : doodad.id, terrainBrush:"height", reliefBridgeStart:null }) },
         });
       }));
       if (items.length === 0) grid.append(el("p", { class: "relief-pop-empty", text: "이 칩셋에는 이 탭에 맞는 키트가 없다." }));
@@ -293,6 +324,19 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     const visible = state.tool === "relief" && state.layer !== "event";
     host.hidden = !visible;
     if (!visible) return;
+    for(const [value,b] of terrainButtons){const on=value===state.terrainBrush;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on));}
+    const heightMode=state.terrainBrush==="height";
+    modes.hidden=level.hidden=grass.hidden=style.hidden=!heightMode;
+    sizes.hidden=!(heightMode||state.reliefDoodad);
+    material.hidden=state.terrainBrush!=="surface";brushWidth.hidden=state.terrainBrush!=="surface"&&state.terrainBrush!=="river";
+    moveGroup.hidden=deleteGroup.hidden=state.terrainBrush!=="group";
+    const selection=state.terrainSelectedGroup;
+    const selectedExists=!!selection&&selection.mapId===editorState.get().currentMapId&&!!store.getCurrent().maps[selection.mapId]?.doodadGroups?.some(g=>g.id===selection.id);
+    moveGroup.disabled=deleteGroup.disabled=!selectedExists;
+    moveGroup.classList.toggle("is-active",state.terrainMoveGroup);
+    material.value=state.terrainMaterial;brushWidth.value=String(state.terrainWidth);rampWidth.value=String(state.reliefRampWidth);density.value=String(state.reliefClusterDensity);
+    clusterToggle.setAttribute("aria-pressed",String(state.reliefClusterEnabled));clusterToggle.classList.toggle("is-active",state.reliefClusterEnabled);
+    reachable.setAttribute("aria-pressed",String(state.terrainReachability));reachable.classList.toggle("is-active",state.terrainReachability);
     for (const [mode, button] of modeButtons) {
       const on = mode === state.reliefMode && !state.reliefDoodad;
       button.classList.toggle("is-active", on);
@@ -307,6 +351,8 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     grass.classList.toggle("is-active", state.reliefTopGrass);
     grass.setAttribute("aria-pressed", String(state.reliefTopGrass));
     const { tileset, hasRelief, style: currentStyle } = currentMapAndTileset();
+    for(const option of material.options)option.disabled=(terrainMaterialTile(tileset,option.value as TerrainMaterial)??-1)<0;
+    terrainButtons.get("river")!.disabled=(terrainMaterialTile(tileset,"water")??-1)<0;
     grass.disabled = reliefTopGrassTile(tileset) === undefined;
     style.disabled = !hasRelief;
     style.value = currentStyle ?? "";
@@ -323,6 +369,11 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
         ? `${picked.label} — ${hover.ok ? "✓" : "✕"} ${hover.reason} · 오른쪽 버튼·Esc: 그만 놓기`
         : `${picked.label} — 언덕 가장자리에 대 보라 · 오른쪽 버튼·Esc: 그만 놓기`
       : `왼쪽: ${MODE_LABEL[state.reliefMode]} · 오른쪽: ${rightButtonLabel(state.reliefMode)} · 누르고 있으면 계속 · Shift: 작은 정밀 붓`;
+    if(state.reliefBridgeStart?.mapId===state.currentMapId)hint.textContent="첫 둑 선택됨 — 같은 줄의 반대편 둑을 누른다 · Esc: 시작점 취소";
+    if(state.terrainBrush==="surface")hint.textContent=(terrainMaterialTile(tileset,state.terrainMaterial)??-1)<0?"이 칩셋에 선택한 재질이 없다 — 다른 재질을 고르라":`표면 ${MATERIAL_LABEL[state.terrainMaterial]} · 높이 유지 · 폭 ${state.terrainWidth}칸`;
+    if(state.terrainBrush==="river")hint.textContent=`강 · 폭 ${state.terrainWidth}칸 · 첫 칸 높이로 강바닥 · 물가 자동 접합 · 통로·물체 보호`;
+    if(state.terrainBrush==="group")hint.textContent=state.terrainMoveGroup?"옮길 자리를 누른다 · 오른쪽 버튼·Esc: 취소":selectedExists?"군집 선택됨 — 옮기기·군집 지우기":"나무·바위 군집을 눌러 선택한다";
+    if(state.terrainReachability && store.getCurrent().startMapId!==state.currentMapId)hint.textContent+=" · 시작 맵에서 통행을 확인한다";
   };
   renderTabs();
   sync(editorState.get());
@@ -339,12 +390,14 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     if (event.code === "KeyD" && !event.ctrlKey && !event.metaKey && !event.altKey) {
       event.preventDefault();
       const open = !state.reliefDoodadOpen;
-      editorState.set({ reliefDoodadOpen: open, ...(open ? {} : { reliefDoodad: null }) });
+      editorState.set({ reliefDoodadOpen: open, ...(open ? {} : { reliefDoodad: null, reliefBridgeStart:null }) });
       return;
     }
     if (event.key !== "Escape") return;
     if (document.querySelector('[data-testid="delayed-tooltip"]')) hideDelayedTooltip();
-    else if (state.reliefDoodad) editorState.set({ reliefDoodad: null });
+    else if (state.reliefBridgeStart) editorState.set({ reliefBridgeStart: null });
+    else if (state.terrainMoveGroup || state.terrainSelectedGroup) editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null});
+    else if (state.reliefDoodad) editorState.set({ reliefDoodad: null, reliefBridgeStart:null });
     else if (state.reliefDoodadOpen) editorState.set({ reliefDoodadOpen: false });
     else return;
     event.preventDefault();
