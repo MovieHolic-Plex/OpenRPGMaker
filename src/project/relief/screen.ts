@@ -3,8 +3,9 @@
 // 들림(lift) 단위는 「단」이다. 화면 px = 단 × 맵 칸 크기 (1단 = 벽 1칸, relief/types.ts).
 // 칸 들림은 renderRelief 가 **실제로 그리는** 높이(effectiveHeights → prune)다 — 칠한 높이가 아니다.
 // 그래야 타일이 그림의 윗면에 정확히 앉는다. 경사로 칸은 칸 중심의 오르막 위치로 보간하고, 계단은 디딤판 단으로 끊는다.
-import { effectiveHeights, prune, type ReliefRender, type ReliefRenderOptions } from "./render";
-import { gridFromRelief, RELIEF_TILE, type ReliefData } from "./types";
+import type { ReliefRender, ReliefRenderOptions } from "./render";
+import { RELIEF_TILE, type ReliefData } from "./types";
+import { reliefGrids } from "./window";
 import { hasRelief, reliefBridgeMask, reliefSlopes } from "./walk";
 import { reliefRampArt } from "./styles";
 
@@ -22,7 +23,7 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
   const cached = fields.get(relief);
   if (cached) return cached;
   const { width, height } = relief;
-  const drawn = prune(effectiveHeights(gridFromRelief(relief)));
+  const drawn = reliefGrids(relief).pruned;
   const elevation = new Float32Array(width * height);
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) elevation[y * width + x] = drawn[y]?.[x] ?? 0;
   for (const s of reliefSlopes(relief)) {

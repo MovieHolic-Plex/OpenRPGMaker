@@ -14,8 +14,10 @@
 | 편집 | `relief/edit.ts` | `normalizeRelief`(불러오기·0~9 경사로), `resizeRelief`, `brushRelief`(main 의 8방식), `carryReliefExtras`(조수 도구가 경사로·장식·양식을 잇는다) |
 | 걷기 | `relief/walk.ts` | `reliefAllowsStep`(단 차·경사로 축·옆구리), `reliefSlopes`(경사로 덩어리 → 렌더 사각형), `reliefBridgeMask`, `hasRelief` |
 | 들림 | `relief/screen.ts` | `reliefLiftField`/`cellLift`/`pointLift`(단 → 칸 들림, relief 객체당 한 번 계산), `reliefPaintsCell`, `reliefRenderOptions`, `reliefSignature`, `reliefRowStrips`(줄 띠 자르기), `reliefTileSlotChangedCells`(편집기 부분 갱신) |
-| 그림 | `relief/render.ts` · `styles.ts` · `rampArt.json` | 절벽·경사로·계단·다리 판 그리기, 양식(`RELIEF_STYLES`, 칩셋 id → 양식 `reliefStyleForTileset`), 경사로 도트 |
-| 띠 텍스처 | `player/reliefStrips.ts` | 그림을 줄마다 윗면(under)·벽(over) 띠로 잘라 페이지 텍스처 몇 장에 쌓는다. 편집기는 `reuseKeys` 로 같은 크기 캔버스를 고쳐 쓴다 |
+| 그림 | `relief/render.ts` · `styles.ts` · `rampArt.json` | 절벽·경사로·계단·다리 판 그리기, 양식(`RELIEF_STYLES`, 칩셋 id → 양식 `reliefStyleForTileset`), 경사로 도트. `window` 옵션(잘라 낸 격자를 절대 좌표 무늬로 굽기), `reliefPadPx`(굽지 않고 pad 계산) |
+| 부분 굽기 | `relief/window.ts` | `reliefGrids`(다듬은·깎은 높이, relief·단 서명마다 한 번), `planReliefPatch`(바뀐 칸 → 창·덮어쓸 사각형, pad 가 바뀌면 버퍼 밀기 + 맨 위 띠), `applyReliefPatch`. 전체 굽기와 화소 일치를 `scripts/check-relief-window.mts` 가 확인한다 |
+| 띠 텍스처 | `player/reliefStrips.ts` | 그림을 줄마다 윗면(under)·벽(over) 띠로 잘라 페이지 텍스처 몇 장에 쌓는다(런타임). `reliefFieldOf` 는 「높이가 있는가」를 relief 객체마다 한 번만 잰다 |
+| 편집기 띠 | `editor/reliefLiveStrips.ts` | 전체 그림 버퍼를 들고 붓질마다 바뀐 창만 다시 굽고, 띠를 (줄, 윗면/벽, 256px 열 묶음) 텍스처로 나눠 덮어쓴 사각형에 걸린 것만 다시 올린다 |
 | 런타임 | `player/playSceneRelief.ts` | 띠·벽면 장식 배치, depth 규칙, 캐릭터 들림(`installReliefSpriteLift`), 카메라 위 확장(`reliefTopOverhangPx`) |
 | 런타임 연결 | `playSceneMapRuntime.ts` | `renderTiles` 가 `renderReliefLayer` 를 먼저 부르고, `placeMapTileImage`·`renderShadow` 가 들린 칸 타일을 올린다. 타일 서명(`reliefSignature`)에 relief 가 들어간다 |
 | 편집기 연결 | `EditScene.ts` · `editSceneRender.ts` · `editSceneEventMarkers.ts` | 절벽 컨테이너(`reliefLayer`)에 띠와 들린 하층 타일을 줄 depth 로 섞는다. 이벤트 그림은 이벤트 레이어에서만, 들림만큼 올린다 |
@@ -32,12 +34,22 @@
 캐릭터 들림은 **그리는 프레임에만** 얹는다(`postupdate` 에서 올리고 `render` 에서 되돌림). `sprite.y` 는 접지선이라 depth·`Math.floor(y/칸)` 역산·트윈이 그대로 맞는다.
 말풍선·이모트·위치 칩은 `spriteReliefLiftPx` 만큼 올려 머리 위에 붙인다.
 
-## 편집기 성능 계약 (main 의 높이 붓 렉 수정을 지킨다)
+## 편집기 성능 계약 (2026-10-03 부분 굽기)
 
 - 높이 붓은 포인터 표본마다 `{relief:true}` 를 낸다 → `editSceneRenderPlan` 이 `kind:"relief"` → `scheduleReliefRender`(굽기 비용의 2배 간격 스로틀).
-- 스로틀 한 번의 일: ① `syncReliefLiftedTiles` — 이전 relief 와 지금 relief 를 비교해 **들림이 바뀐 칸만**(`reliefTileSlotChangedCells`) `redrawCells` 로 다시 올린다(맵 전체 `redraw()` 를 하지 않는다. 증분 렌더를 못 쓰는 상태면 전체 재그림으로 물러난다). ② `renderReliefLayer` — 띠 재굽기(키: relief 서명).
-- 띠 텍스처: 줄 띠는 줄마다 크기가 달라 페이지 크기가 바뀌므로, 편집기 모드(`reuseKeys`)에서는 폭을 그림 폭에, 높이를 256px 눈금에 맞춰 키우고 같은 크기면 캔버스를 비우고 프레임만 다시 단다(옛 단일 캔버스 재사용의 의도를 지킨다). 런타임은 `reuseKeys` 없이 예전처럼 매번 새로 만든다.
-- **퇴행 가능성(실측 안 함):** 100×100 맵의 띠 굽기(약 400ms)는 그대로이고, 거기에 들림이 바뀐 칸(+ 8방 이웃·같은 칸 상층) 재그림이 더해진다. 큰 산을 한 번에 깎는 붓에서 한 번의 스로틀 일이 더 길어진다.
+- 스로틀 한 번의 일: ① `syncReliefLiftedTiles` — 들림이 바뀐 칸만(`reliefTileSlotChangedCells`) `redrawCells`. ② `renderReliefLayer` → `ReliefLiveStrips.sync`.
+- `sync` 는 **바뀐 칸 둘레 창만** 굽는다(`relief/window.ts`). 화면 화소 (sx, sy) 는 같은 열·맵 줄 sy-pad..sy 만 칠하고, 뒤 패스는 24px 안 이웃만 읽는다는
+  사실로 창과 덮어쓸 사각형을 잡는다. 빈 맵에 처음 칠할 때도 평지 그림에서 창으로 시작한다. 전체 굽기로 물러나는 경우: 맵 크기·절벽 양식이 바뀜,
+  창 넓이 합이 맵의 60% 넘음, 칸 크기가 바뀜.
+- 띠는 (줄, 윗면/벽, 256px 열 묶음)마다 캔버스 텍스처 하나. 덮어쓴 사각형에 걸린 띠만 다시 올리고, 붓질 중에는 상자가 넓어지기만 한다(전체 굽기 때 꼭 맞춘다).
+  캔버스는 `willReadFrequently` — Phaser 캔버스 텍스처가 만들 때 부르는 `getImageData` 가 GPU 되읽기로 멈추지 않게.
+- **무늬 원점(`PATTERN_BIAS`)**: 벽 덩이·흙벽 조각·둑 몸통·판 계단 줄눈의 세로 좌표는 화면 y 가 아니라 땅 기준(화면 y − pad + 224)이다. 전에는 맵 어딘가의
+  최고 단이 바뀌어 pad 가 바뀌면 온 맵 절벽 무늬가 다시 뽑혔다(붓질 한 번에 모든 벽이 깜빡임). pad 224(최고 단 14)인 맵은 예전 그림과 화소 하나 다르지 않다.
+  그래서 pad 가 바뀌면 버퍼를 밀고 맨 위 경계 띠만 다시 굽는다.
+- 진단: `window.__oprnEditReliefStats()` = 굽기 방식별 횟수(full·window·same·clear), `window.__oprnEditReliefRebuild()` = 띠를 버리고 전체 굽기(창 굽기 화면과 비교용).
+- 실측(2026-10-03, 기본 100×100 마을, swiftshader, 부하 걸린 머신): 같은 세 번 드래그에서 긴 멈춤 최대 2.0~2.5초 → 0.25~0.8초(첫 붓의 JIT 예열이 가장 길다).
+  창 굽기 한 번은 node 기준 중앙값 약 32ms(반지름 2 붓, 6단 언덕).
+- 붓질 중 `refreshAuthoringJourney` 는 프로젝트 참조 점검을 다시 돌리지 않는다 — 칠하기마다 store 세대가 올라 문서 키가 늘 달라져, 키만 보고 표본마다 점검을 돌리던 것을 막았다.
 
 ## 지형 설치 확장 (2026-10-03)
 
