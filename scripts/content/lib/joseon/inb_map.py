@@ -110,7 +110,11 @@ class Room:
                 if mode:
                     s.ground[y][x] = sh.gid('in_b_%s_sh' % fk, {'n': 0, 'w': 1, 'nw': 2}[mode])
                 else:
-                    s.ground[y][x] = sh.gid('in_b_' + fk, hsh(x, y, 5 + s.seed) % 4)
+                    if fk == 'ondol':
+                        v = (2 if x % 2 == 1 else 0) + (1 if y % 2 == 1 else 0)     # 장판 이음매가 두 칸마다 규칙적으로 이어진다
+                    else:
+                        v = hsh(x, y, 5 + s.seed) % 4
+                    s.ground[y][x] = sh.gid('in_b_' + fk, v)
         items = []        # (z, 순서, 이름, x, y)
         order = 0
         for (x, y, kind, ends) in RM.faces(p):

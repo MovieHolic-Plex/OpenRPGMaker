@@ -493,6 +493,532 @@
     8,
     9
    ]
+  },
+  "in_b_wall_hoe_m": {
+   "all": "X"
+  },
+  "in_b_wall_hoe_l": {
+   "all": "X"
+  },
+  "in_b_wall_hoe_r": {
+   "all": "X"
+  },
+  "in_b_wall_hoe_lr": {
+   "all": "X"
+  },
+  "in_b_wall_mok_m": {
+   "all": "X"
+  },
+  "in_b_wall_mok_l": {
+   "all": "X"
+  },
+  "in_b_wall_mok_r": {
+   "all": "X"
+  },
+  "in_b_wall_mok_lr": {
+   "all": "X"
+  },
+  "in_b_wall_heuk_m": {
+   "all": "X"
+  },
+  "in_b_wall_heuk_l": {
+   "all": "X"
+  },
+  "in_b_wall_heuk_r": {
+   "all": "X"
+  },
+  "in_b_wall_heuk_lr": {
+   "all": "X"
+  },
+  "in_b_wall_dol_m": {
+   "all": "X"
+  },
+  "in_b_wall_dol_l": {
+   "all": "X"
+  },
+  "in_b_wall_dol_r": {
+   "all": "X"
+  },
+  "in_b_wall_dol_lr": {
+   "all": "X"
+  },
+  "in_b_wall_changho_m": {
+   "all": "X"
+  },
+  "in_b_wall_changho_l": {
+   "all": "X"
+  },
+  "in_b_wall_changho_r": {
+   "all": "X"
+  },
+  "in_b_wall_changho_lr": {
+   "all": "X"
+  },
+  "in_b_win_hoe": {
+   "all": "X"
+  },
+  "in_b_win_round": {
+   "all": "X"
+  },
+  "in_b_win_mok": {
+   "all": "X"
+  },
+  "in_b_win_heuk": {
+   "all": "X"
+  },
+  "in_b_door_slide_l": {
+   "all": "X"
+  },
+  "in_b_door_slide_open_l": {
+   "all": "X"
+  },
+  "in_b_door_slide_r": {
+   "all": "X"
+  },
+  "in_b_door_slide_open_r": {
+   "all": "X"
+  },
+  "in_b_door_plank": {
+   "all": "X"
+  },
+  "in_b_door_open": {
+   "all": "X"
+  },
+  "in_b_pillar_2": {
+   "all": "X"
+  },
+  "in_b_pillar_3": {
+   "all": "X"
+  },
+  "in_b_beam_m": {
+   "all": "C"
+  },
+  "in_b_beam_l": {
+   "all": "C"
+  },
+  "in_b_beam_r": {
+   "all": "C"
+  },
+  "in_b_pillar_red_2": {
+   "all": "X"
+  },
+  "in_b_pillar_red_3": {
+   "all": "X"
+  },
+  "in_b_beam_red_m": {
+   "all": "C"
+  },
+  "in_b_beam_red_l": {
+   "all": "C"
+  },
+  "in_b_beam_red_r": {
+   "all": "C"
+  },
+  "in_b_stair_up_3": {
+   "grid": [
+    "XXX",
+    "XXX",
+    "FFF"
+   ]
+  },
+  "in_b_stair_up_2": {
+   "grid": [
+    "XX",
+    "XX",
+    "FF"
+   ]
+  },
+  "in_b_ladder_loft": {
+   "grid": [
+    "X",
+    "X",
+    "F"
+   ]
+  },
+  "in_b_stair_down": {
+   "all": "F"
+  },
+  "in_b_stair_dais_3": {
+   "all": "F"
+  },
+  "in_b_stair_dais_2": {
+   "all": "F"
+  },
+  "in_b_dais_wood_m": {
+   "all": "X"
+  },
+  "in_b_dais_stone_m": {
+   "all": "X"
+  },
+  "in_b_dais_wood_l": {
+   "all": "X"
+  },
+  "in_b_dais_stone_l": {
+   "all": "X"
+  },
+  "in_b_dais_wood_r": {
+   "all": "X"
+  },
+  "in_b_dais_stone_r": {
+   "all": "X"
+  },
+  "in_b_dais_wood_lr": {
+   "all": "X"
+  },
+  "in_b_dais_stone_lr": {
+   "all": "X"
+  },
+  "in_b_exit_mat": {
+   "all": "F"
+  },
+  "in_b_byeongpung_a": {
+   "grid": [
+    "CCC",
+    "XXX"
+   ]
+  },
+  "in_b_byeongpung_b": {
+   "grid": [
+    "CCC",
+    "XXX"
+   ]
+  },
+  "in_b_byeongpung_c": {
+   "grid": [
+    "CCC",
+    "XXX"
+   ]
+  },
+  "in_b_byeongpung_2": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_byeongpung_royal": {
+   "grid": [
+    "CCC",
+    "XXX"
+   ]
+  },
+  "in_b_ibuljang": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_nong_1": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_nong_2": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_bandaji_2": {
+   "all": "X"
+  },
+  "in_b_bandaji_1": {
+   "all": "X"
+  },
+  "in_b_munggap": {
+   "all": "X"
+  },
+  "in_b_soban_a": {
+   "all": "X"
+  },
+  "in_b_soban_b": {
+   "all": "X"
+  },
+  "in_b_soban_c": {
+   "all": "X"
+  },
+  "in_b_sang_low_2": {
+   "all": "X"
+  },
+  "in_b_gyojasang_2": {
+   "all": "X"
+  },
+  "in_b_gyojasang_3": {
+   "all": "X"
+  },
+  "in_b_hwaro": {
+   "all": "X"
+  },
+  "in_b_deungjan_stand": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_deungjan": {
+   "all": "X"
+  },
+  "in_b_chotdae": {
+   "all": "X"
+  },
+  "in_b_banseok_r": {
+   "all": "F"
+  },
+  "in_b_banseok_b": {
+   "all": "F"
+  },
+  "in_b_banseok_g": {
+   "all": "F"
+  },
+  "in_b_banseok_s": {
+   "all": "F"
+  },
+  "in_b_mat_jip_2x2": {
+   "all": "F"
+  },
+  "in_b_mat_jip_3x2": {
+   "all": "F"
+  },
+  "in_b_mat_dot_2x2": {
+   "all": "F"
+  },
+  "in_b_ibul_r": {
+   "all": "X"
+  },
+  "in_b_ibul_b": {
+   "all": "X"
+  },
+  "in_b_ibul_folded": {
+   "all": "X"
+  },
+  "in_b_jokja_a": {
+   "all": "X"
+  },
+  "in_b_jokja_b": {
+   "all": "X"
+  },
+  "in_b_jokja_c": {
+   "all": "X"
+  },
+  "in_b_hang_sirae": {
+   "all": "X"
+  },
+  "in_b_hang_gochu": {
+   "all": "X"
+  },
+  "in_b_hang_yakcho": {
+   "all": "X"
+  },
+  "in_b_hang_meju": {
+   "all": "X"
+  },
+  "in_b_hang_bagaji": {
+   "all": "X"
+  },
+  "in_b_pyeongsang_3": {
+   "all": "X"
+  },
+  "in_b_pyeongsang_2": {
+   "all": "X"
+  },
+  "in_b_geolsang_2": {
+   "all": "X"
+  },
+  "in_b_stool": {
+   "all": "X"
+  },
+  "in_b_bumak_2": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_bumak_3": {
+   "grid": [
+    "CCC",
+    "XXX"
+   ]
+  },
+  "in_b_hangari_s": {
+   "all": "X"
+  },
+  "in_b_hangari_m": {
+   "all": "X"
+  },
+  "in_b_hangari_straw": {
+   "all": "X"
+  },
+  "in_b_dok_big": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_ssal_dwiju": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_muldongi": {
+   "all": "X"
+  },
+  "in_b_sokuri_veg": {
+   "all": "X"
+  },
+  "in_b_sokuri_grain": {
+   "all": "X"
+  },
+  "in_b_sokuri_fruit": {
+   "all": "X"
+  },
+  "in_b_jangjak": {
+   "all": "X"
+  },
+  "in_b_seonban_2": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_betul": {
+   "grid": [
+    "CCC",
+    "XXX"
+   ]
+  },
+  "in_b_mulle": {
+   "all": "X"
+  },
+  "in_b_sewing": {
+   "all": "X"
+  },
+  "in_b_pungmu": {
+   "all": "X"
+  },
+  "in_b_moru": {
+   "all": "X"
+  },
+  "in_b_sutdeomi": {
+   "all": "X"
+  },
+  "in_b_hwadeok_3": {
+   "grid": [
+    "CCC",
+    "XXX"
+   ]
+  },
+  "in_b_dameum": {
+   "all": "X"
+  },
+  "in_b_sutdol": {
+   "all": "X"
+  },
+  "in_b_cheol": {
+   "all": "X"
+  },
+  "in_b_gongjang": {
+   "all": "X"
+  },
+  "in_b_hang_tools": {
+   "all": "X"
+  },
+  "in_b_yakjang_2": {
+   "grid": [
+    "CC",
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_yakjang_1": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_yakdang": {
+   "all": "X"
+  },
+  "in_b_yakyeon": {
+   "all": "X"
+  },
+  "in_b_jakdu": {
+   "all": "X"
+  },
+  "in_b_yak_table": {
+   "all": "X"
+  },
+  "in_b_yakcho_basket": {
+   "all": "X"
+  },
+  "in_b_suldok": {
+   "all": "X"
+  },
+  "in_b_sulsang": {
+   "all": "X"
+  },
+  "in_b_juga_3": {
+   "all": "X"
+  },
+  "in_b_juga_2": {
+   "all": "X"
+  },
+  "in_b_seoan": {
+   "all": "X"
+  },
+  "in_b_seoan_2": {
+   "all": "X"
+  },
+  "in_b_seoga_2": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_seoga_1": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_boryo_2": {
+   "all": "X"
+  },
+  "in_b_ansuk": {
+   "all": "X"
+  },
+  "in_b_hoechori": {
+   "all": "X"
+  },
+  "in_b_chaekdemi": {
+   "all": "X"
+  },
+  "in_b_gwan_desk_3": {
+   "all": "X"
+  },
+  "in_b_gwan_desk_2": {
+   "all": "X"
+  },
+  "in_b_gyoui": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_gonjang_teul": {
+   "all": "X"
+  },
+  "in_b_buk": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_mungseo_ham": {
+   "all": "X"
+  },
+  "in_b_mat_hopi": {
+   "all": "F"
   }
  },
  "terrain": {
@@ -672,6 +1198,48 @@
     "field"
    ],
    "edgeConnects": false
+  },
+  "in_b_ondol": {
+   "name": "조선 실내 온돌 장판",
+   "walk": true
+  },
+  "in_b_ondol_sh": {
+   "name": "조선 실내 온돌 장판 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
+  },
+  "in_b_maru": {
+   "name": "조선 실내 마루",
+   "walk": true
+  },
+  "in_b_maru_sh": {
+   "name": "조선 실내 마루 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
+  },
+  "in_b_dirt": {
+   "name": "조선 실내 흙바닥",
+   "walk": true
+  },
+  "in_b_dirt_sh": {
+   "name": "조선 실내 흙바닥 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
+  },
+  "in_b_stone": {
+   "name": "조선 실내 돌바닥",
+   "walk": true
+  },
+  "in_b_stone_sh": {
+   "name": "조선 실내 돌바닥 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
+  },
+  "in_b_ceil47": {
+   "kind": "blob47",
+   "name": "조선 실내 천장(벽 덩어리·어둠)",
+   "walk": false,
+   "role": "terrain",
+   "connect": [
+    "in_b_ceil47"
+   ],
+   "edgeConnects": true
   }
  }
 }

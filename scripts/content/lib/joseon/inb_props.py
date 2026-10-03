@@ -261,7 +261,6 @@ def sang(wc=2, kind='low'):
         cv.put(c, 8, WD[4]); cv.put(c, 9, WD[3] if c % 7 else WD[2])
     for x in (2, W_ - 4):
         cv.rect(x, 10, x + 2, 15, WD[2]); cv.put(x, 10, WD[4])
-    cv.hl(2, W_ - 2, 15, WD[1])
     if kind == 'dishes':
         for k in range(wc * 2):
             x = 3 + k * (W_ - 6) // (wc * 2)
@@ -504,7 +503,6 @@ def geolsang(wc=2):
         cv.put(x, 8, WD[4]); cv.put(x, 9, WD[3] if x % 9 else WD[2])
     for x in (2, W_ - 4):
         cv.rect(x, 10, x + 2, 15, WD[2]); cv.put(x, 10, WD[4])
-    cv.hl(2, W_ - 2, 15, WD[1])
     B.outline(cv)
     return cv
 
@@ -516,7 +514,6 @@ def stool():
     cv.rect(3, 9, 13, 12, WD[3]); cv.hl(3, 13, 9, WD[4]); cv.vl(3, 9, 12, WD[5])
     for x in (4, 10):
         cv.rect(x, 12, x + 2, 15, WD[2]); cv.put(x, 12, WD[3])
-    cv.hl(3, 13, 15, WD[1])
     B.outline(cv)
     return cv
 

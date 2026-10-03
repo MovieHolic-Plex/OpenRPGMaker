@@ -130,7 +130,6 @@ def sulsang():
         cv.put(c, 8, WD[4]); cv.put(c, 9, WD[3] if c % 7 else WD[2])
     for x in (2, 28):
         cv.rect(x, 10, x + 2, 15, WD[2]); cv.put(x, 10, WD[4])
-    cv.hl(2, 30, 15, WD[1])
     P5.ell(cv, 7, 5, 3, 1.4, lambda x, y, u, v: PL[6] if v < 0 else PL[4])                       # 사발
     cv.rect(11, 0, 14, 5, DG[4]); cv.vl(11, 0, 5, DG[6]); cv.put(12, 0, DG[3])                  # 술병
     P5.ell(cv, 18, 5, 3.4, 1.4, lambda x, y, u, v: PS[5] if v < 0 else PS[3])                    # 전
@@ -165,7 +164,6 @@ def seoan():
     cv.hl(1, 15, 9, WD[3]); cv.hl(1, 15, 10, WD[2])
     for x in (2, 12):
         cv.rect(x, 11, x + 2, 15, WD[2]); cv.put(x, 11, WD[4])
-    cv.hl(2, 14, 15, WD[1])
     cv.rect(3, 3, 9, 7, PL[6]); cv.hl(3, 9, 3, PL[5]); cv.vl(6, 3, 7, PL[3]); cv.hl(3, 9, 7, WD[3])      # 펼친 책
     cv.rect(11, 5, 14, 7, IR[2]); cv.hl(11, 14, 5, IR[4])                                              # 벼루
     cv.rect(12, 1, 14, 5, WD[3]); cv.put(12, 0, IR[1]); cv.put(13, 0, RD[4])                             # 붓통
@@ -242,7 +240,6 @@ def ansuk():
     _front(cv, 2, 9, 12, 3)
     for x in (3, 11):
         cv.rect(x, 12, x + 2, 15, WD[2]); cv.put(x, 12, WD[4])
-    cv.hl(3, 13, 15, WD[1])
     B.outline(cv)
     return cv
 
