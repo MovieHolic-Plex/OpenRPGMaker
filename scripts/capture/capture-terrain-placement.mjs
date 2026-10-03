@@ -60,6 +60,7 @@ try {
   });
   console.log(JSON.stringify(findings.contracts));
   const historyKey=async key=>{await page.keyboard.down("Control");await page.keyboard.down(key);await page.waitForTimeout(100);await page.keyboard.up(key);await page.keyboard.up("Control");await page.waitForTimeout(700);};
+  const historyObservation=()=>page.evaluate(async()=>{const h=await import("/src/editor/mapEditHistory.ts"),p=window.__oprnEditorStore.getCurrent();return{state:h.getMapEditHistoryState(),depth:h.getMapEditHistoryDepth(),labels:h.pendingHistoryLabels(),groups:p.maps[p.startMapId].doodadGroups?.length??0};});
   const clickCell=async(x,y)=>{
     const point=await page.evaluate(async({x,y})=>{const {reliefLiftField,cellLift}=await import("/src/project/relief/screen.ts");const p=window.__oprnEditorStore.getCurrent(),m=p.maps[p.startMapId],lift=m.relief?cellLift(reliefLiftField(m.relief),x,y):0;return window.__oprnEditWorldToClient((x+.5)*m.tileSize,(y+.5-lift)*m.tileSize);},{x,y});
     await page.mouse.click(point.x,point.y);await page.waitForTimeout(700);
@@ -94,12 +95,17 @@ try {
     await clickCell(groupCell.x-1,groupCell.y);await page.getByTestId("terrain-group-delete").click();
     await page.locator(".canvas-area").screenshot({path:`${out}/cluster-deleted.png`});
     findings.deleteUI=await page.evaluate(()=>{const p=window.__oprnEditorStore.getCurrent();return !p.maps[p.startMapId].doodadGroups;});
+    findings.history=[await historyObservation()];
     await historyKey("z");
+    findings.history.push(await historyObservation());
     findings.undoGroup=await page.evaluate(()=>{const p=window.__oprnEditorStore.getCurrent();return !!p.maps[p.startMapId].doodadGroups?.length;});
     await historyKey("y");
+    findings.history.push(await historyObservation());
     findings.redoGroup=await page.evaluate(()=>{const p=window.__oprnEditorStore.getCurrent();return !p.maps[p.startMapId].doodadGroups;});
     await historyKey("z");
+    findings.history.push(await historyObservation());
     findings.finalGroupRestored=await page.evaluate(()=>{const p=window.__oprnEditorStore.getCurrent();return !!p.maps[p.startMapId].doodadGroups?.length;});
+    findings.oneHistoryStep=findings.history[1].depth===findings.history[0].depth-1 && findings.history[2].depth===findings.history[0].depth && findings.history[3].depth===findings.history[0].depth-1;
   }
   await page.getByTestId("relief-doodad-toggle").click();await page.getByTestId("relief-doodad-tab-bridge").click();
   await page.getByTestId("relief-doodad-bridge:horizontal").click();
@@ -117,4 +123,5 @@ try {
   });
   writeFileSync(`.vite-cache/terrain-placement-fixture-wire.json`,fixture);
   console.log(JSON.stringify(findings));
+  if(!findings.undoGroup || !findings.redoGroup || !findings.finalGroupRestored || !findings.oneHistoryStep || findings.rampUI!==18 || findings.bridgeUI!==10 || !findings.surfaceHeightUnchanged)throw new Error("Terrain editor observation did not match expected state");
 } finally {writeFileSync(`${out}/observations.json`,JSON.stringify({findings,errors},null,2)+"\n");await browser.close();}
