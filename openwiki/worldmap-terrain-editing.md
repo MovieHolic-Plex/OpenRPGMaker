@@ -46,7 +46,7 @@
 ## 새 구조 만들기 — `base: "generate"` (2026-10-03)
 
 「20조각 대륙」「고리 대륙」「은하」처럼 손 대륙과 다른 구조는 `edit_world_terrain({base: "generate", ops: [{op: "continents", style, count, land?, seed?}, …]})`.
-style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가운데 내해를 두른 고리) · `pangaea`(초대륙 하나 + 섬) · `archipelago`(군도) · `galaxy`(우주).
+style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가운데 내해를 두른 고리) · `pangaea`(초대륙 하나 + 섬) · `archipelago`(군도) · `galaxy`(우주) · `peninsula`(반도) · `river-continent`(강 문명 대륙) · `arc-islands`(열도).
 `climate {wet?, cold?}` 로 기후를 기울이고, `wall`·`dune_sea`·`sky_island`·`move_place` 로 자동 맞춤을 덮는다.
 
 - **5막 여정은 자동 맞춤**(사용자 결정): 어떤 구조든 키트(`kit_fit.py`)가 시작·관문 산벽·항구·사구 바다·2막 땅·천공섬과 장소 31곳을 놓고
@@ -55,6 +55,14 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
 - 결과 `layout`(막별 지역 칸 수·벽·관문·항구·사구·하늘·성계)은 `read_world_terrain` 이 요약해 준다. 장소 표시 이름은 `label`(우주 여정은 우주 말).
 - 우주: `starmap` 테마는 기본이 `galaxy` 구조 + `space-5act` 여정(항로 허가증·워프·성운 항법선·점프 게이트). 칸 의미는 같아서(땅 = 항행 공간, 바다 = 공허,
   산 = 소행성대, 사구 = 이온 폭풍) 통행·여정 검사·도구가 그대로 돈다. 그림은 `kit_theme.draw_galaxy`.
+- **문화권 지리 구조**(2026-10-03): `peninsula`(조선·반도) · `river-continent`(중국·무협) · `arc-islands`(일본·전국).
+  실제 지도를 따라 그리지 않고 특징만 살린 생성기(`kit/lib/kit_geo.py`)라서 시드마다 모양이 다르다. 땅 모양 말고도 **힌트**를 같이 낸다 —
+  척추 산줄기·이끌린 강(맞춤이 장소를 비켜 놓는다), 기후 기울기(위도 범위·서쪽 고원·북쪽 사막), 산벽 극(2막 방향), 사구 바다 극(사막 자리).
+  - `joseon`·`wuxia`·`sengoku` 테마는 이제 기본 지형이 각각 `terrains/joseon-peninsula`·`wuxia-continent`·`sengoku-islands`(생성 바탕)이고
+    여정은 `journeys/joseon-5act`·`wuxia-5act`·`sengoku-5act`(장소 id 는 판타지와 같고 label·이야기·장벽·수단 이름만 — 마패·판옥선·모래배·선학 등).
+    생성기: `journeys/src/make_culture_journeys.py`. 이 세 테마로 이미 만든 세계 지도는 다시 빌드하면 새 구조로 바뀐다.
+  - 테마 지형이 생성 바탕일 때 편집이 `continents`·`climate` 을 직접 주면 테마의 것은 버린다(`kit_terrain.merge`). 전에는 테마 것이 앞서 이겨 편집이 무시됐다.
+  - 우주는 `galaxy` 그대로. 「조선인데 섬나라로」처럼 테마와 다른 땅을 원하면 다른 style 을 주면 된다 — 테마는 기본값일 뿐이다.
 - 시험: `scripts/qa-game/worldmap-generate-offline.mts`(모델 없이 생성 → 저장 → 읽기 → 덧붙이기).
 - 키트 쪽 상세: `tiledata/worldmap-kit/docs/README.md` ⑦.
 

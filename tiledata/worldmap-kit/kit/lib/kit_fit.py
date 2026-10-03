@@ -140,6 +140,9 @@ class Fit:
                 aff.setdefault(b, set()).add(a)
         self.aff = aff
         self.notes = []
+        self.strict_pole = False
+        av = overrides.get('avoid')
+        self.avoid = av.copy() if av is not None else np.zeros((H, W), bool)   # 지리 구조의 척추·강: 장소를 비켜 놓는다(지나가는 길은 괜찮다)
 
     # ── 땅 정리 ──
     def prepare(self):
@@ -202,6 +205,14 @@ class Fit:
         for i in order:
             o = self._wall_from_pole(poles[i])
             if o:
+                out.append(o)
+        hp = self.ov.get('wall_pole')
+        if hp is not None:                                  # 지리 구조가 바라는 극(예: 북쪽 장성 너머 = 2막)을 먼저
+            ys, xs = np.nonzero(self.home)
+            i = int(np.argmin((xs - hp[0]) ** 2 + (ys - hp[1]) ** 2))
+            o = self._wall_from_pole((int(xs[i]), int(ys[i])))
+            if o:
+                o['score'] += 60
                 out.append(o)
         out.sort(key=lambda o: -o['score'])
         return out
@@ -269,6 +280,8 @@ class Fit:
             if x < 2 or y < 2 or x + gw > W - 2 or y + gh > H - 2:
                 continue
             r = rect_mask(x, y, gw, gh)
+            if (r & self.avoid).any():
+                continue
             wall = band & ~r
             lab, _ = comps(self.home & ~wall & ~r)
             ia = np.unique(lab[A])
@@ -276,7 +289,11 @@ class Fit:
             if set(ia) & set(ib) - {0}:
                 continue
             c = float(self.dco[y + gh // 2, x + gw // 2])
-            cand.append((min(c, 6) + float(self.rng.uniform(0, 1.5)), x, y))
+            v = min(c, 6) + float(self.rng.uniform(0, 1.5))
+            dp = self.ov.get('dune_pole')
+            if dp is not None:                              # 첫 화면 묶음이 사구 바다 자리(지리 구조의 사막)를 차지하지 않게
+                v += min(math.hypot(x - dp[0], y - dp[1]), 36) * .6
+            cand.append((v, x, y))
         cand.sort(reverse=True)
         return cand[:24]
 
@@ -291,7 +308,7 @@ class Fit:
         harbfit = fits(A, hw, hh)
         for gscore, gx, gy in self.gate_options(wo):
             gw, gh = self.size[self.gate]
-            occ_g = rect_mask(gx, gy, gw, gh, 2)
+            occ_g = rect_mask(gx, gy, gw, gh, 2) | self.avoid
             gc = (gx + gw / 2, gy + gh / 2)
             if self.start in self.pins:
                 sc = [tuple(self.pins[self.start])]
@@ -377,6 +394,43 @@ class Fit:
             return True
         if self.ov.get('dune_sea'):
             Ds = [M4.polymask([tuple(p) for p in self.ov['dune_sea']], 1.2, 4400, minsize=4) & A & ~self.occ]
+        elif self.ov.get('dune_pole') is not None:          # 지리 구조가 바라는 곳(북서 사막 …): 그 극에서 가까운 A 땅부터
+            ys, xs = np.nonzero(A)
+            px, py = self.ov['dune_pole']
+            i = int(np.argmin((xs - px) ** 2 + (ys - py) ** 2))
+            gp = geodesic(A, [(int(xs[i]), int(ys[i]))])
+            tot = int(self.home.sum())
+            Ds = []
+            for frac in (.15, .19, .12, .24):
+                vals = np.sort(gp[A & np.isfinite(gp)])
+                if len(vals) < 50:
+                    break
+                D = self._largest(A & (gp <= vals[min(int(frac * tot), len(vals) - 1)]))
+                if (D & self.occ & ~self.avoid).any():
+                    D = D & ~ndi.binary_dilation(self.occ & ~self.avoid, iterations=3)
+                    D = self._largest(D)
+                if D.sum() < 60:
+                    continue
+                rest = A & ~ndi.binary_dilation(D, iterations=3)       # 사구가 1막 땅을 둘로 가르면 길이 못 이어진다(적대 시험: 무협 대륙)
+                lab, n = comps(rest)
+                if n > 1:                                       # 놓인 장소(시작·관문·항구)가 모두 한 덩이에, 그 덩이가 1막 땅 대부분
+                    sz = ndi.sum(rest, lab, range(1, n + 1))
+                    big = lab == (int(np.argmax(sz)) + 1)
+                    placed = np.zeros((H, W), bool)
+                    for r in self.rect.values():
+                        placed |= rect_mask(*r)
+                    if sz.max() < .85 * rest.sum() or (placed & A & ~big).any():
+                        continue
+                Ds.append(D)
+            sx, sy, sw, sh = self.rect[self.start]
+            gs = geodesic(A, [(sx + sw // 2, sy + sh // 2)])
+            for frac in (.15, .19) if not self.strict_pole else ():   # 극 쪽이 안 되면 늘 하던 먼 끝(엄격 단계에서는 안 쓴다)
+                vals = np.sort(gs[A & np.isfinite(gs)])
+                if len(vals) < 50:
+                    break
+                D = self._largest(A & (gs >= vals[max(0, len(vals) - int(frac * tot))]))
+                if not (D & self.occ & ~self.avoid).any():
+                    Ds.append(D)
         else:
             sx, sy, sw, sh = self.rect[self.start]
             gs = geodesic(A, [(sx + sw // 2, sy + sh // 2)])
@@ -388,10 +442,10 @@ class Fit:
                     break
                 k = max(0, len(vals) - int(frac * tot))
                 D = self._largest(A & (gs >= vals[k]))
-                if (D & self.occ).any():
+                if (D & self.occ & ~self.avoid).any():
                     continue
                 Ds.append(D)
-        for D in Ds:
+        for k, D in enumerate(Ds):
             if self._dune_places(A, D, act3):
                 self.D = D
                 return True
@@ -448,7 +502,7 @@ class Fit:
         sc += rect_sum(_sat(self.land), w + 2, h + 2, -1, -1) / float((w + 2) * (h + 2)) * 1.5
         if pid in self.ship_entry:
             sc += (rect_sum(_sat(self.ocean), w + 2, h + 2, -1, -1) > 0) * 3.0
-        for q in self.aff.get(pid, ()):
+        for q in sorted(self.aff.get(pid, ())):          # 정렬: 점수 합의 순서가 프로세스마다 같게
             if q in self.rect:
                 qx, qy, qw, qh = self.rect[q]
                 dq = np.hypot(cx - (qx + qw / 2), cy - (qy + qh / 2))
@@ -498,7 +552,7 @@ class Fit:
                         break
             empty = a == 2 and not self.aff.get(pid)
             if not fm.any():                               # 빈 땅이 모자라면 장소 사이 길 자리를 2칸 → 1칸으로 좁혀 다시
-                tight = np.zeros((H, W), bool)
+                tight = self.avoid.copy()
                 for r in self.rect.values():
                     tight |= rect_mask(*r, 1)
                 fm = fits(reg, w, h) & ~(rect_sum(_sat(tight | self.vocc), w, h) > 0)
@@ -558,7 +612,7 @@ class Fit:
         out = []
         while len(done) < len(names):
             best = None
-            for a in done:
+            for a in [n for n in names if n in done]:       # 문자열 집합을 그대로 돌면 해시 무작위화로 동률 순서가 프로세스마다 달라졌다(같은 사양 ≠ 같은 세계)
                 for b in names:
                     if b in done:
                         continue
@@ -572,16 +626,20 @@ class Fit:
     def run(self):
         self.prepare()
         tried = 0
-        for wo in self.wall_options():
-            tried += 1
-            self.rect, self.occ, self.vocc = {}, np.zeros((H, W), bool), np.zeros((H, W), bool)
-            if not self.cluster(wo):
-                continue
-            if not self.dune(wo):
-                continue
-            self.place_rest(wo)
-            self.wo = wo
-            return self._result()
+        opts = self.wall_options()
+        passes = (True, False) if self.ov.get('dune_pole') is not None else (False,)
+        for strict in passes:                  # 지리 구조의 사막 자리: 먼저 모든 산벽 후보에서 그 자리를 찾고, 없을 때만 먼 끝
+            self.strict_pole = strict
+            for wo in opts:
+                tried += 1
+                self.rect, self.occ, self.vocc = {}, self.avoid.copy(), np.zeros((H, W), bool)
+                if not self.cluster(wo):
+                    continue
+                if not self.dune(wo):
+                    continue
+                self.place_rest(wo)
+                self.wo = wo
+                return self._result()
         if tried == 0:
             raise FitError('시작 대륙을 산벽으로 가를 자리가 없다 — 시작 대륙이 너무 가늘거나 작다(land 를 올리거나 style 을 바꿔라)')
         raise FitError('첫 화면 묶음(시작 마을 둘레 20x15칸 안에 관문 요새·항구·관문 너머 탑)과 사구 바다를 함께 놓을 자리가 없다 — '
@@ -614,7 +672,7 @@ class Fit:
         return dict(rect=self.rect, foot=foot, corridor=corr, edges=seg, edge_names=edges, dune=self.D, wall_mask=wall,
                     wall=[(int(x), int(y)) for y, x in zip(*np.nonzero(wall))], A=wo['A'], B=wo['B'], home=self.home,
                     ocean=self.ocean, land=self.land, places=places, protect=protect, notes=self.notes,
-                    gate=self.gate, harbour=self.harbour, start=self.start, sky=self.sky)
+                    gate=self.gate, harbour=self.harbour, start=self.start, sky=self.sky, avoid=self.ov.get('avoid'))
 
 
 def fit(land, ground, journey, roles, pins=None, overrides=None, salt=0, seed=1):

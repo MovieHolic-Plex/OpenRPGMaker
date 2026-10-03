@@ -8,6 +8,9 @@
                 pangaea      초대륙 하나 + 바깥 섬 count-1 개
                 archipelago  작은 섬 count 개 + 시작 섬
                 galaxy       우주 — 성계(둥근 거품)와 회랑, 깊은 공허(바다 칸), 소행성대
+                peninsula    반도(조선) — 북쪽 대륙에 매달린 반도, 동쪽 척추 산줄기, 서해 다도해, 동쪽 섬나라 호   (kit_geo)
+                river-continent  강 문명 대륙(중국·무협) — 서쪽 고원·북서 사막, 서→동 큰 강 둘, 북쪽 장성 쪽 2막 (kit_geo)
+                arc-islands  열도(전국) — 비스듬히 휜 긴 본섬과 북·남서·남 섬, 서쪽 끝 대륙 해안        (kit_geo)
   climate     {seed, wet, cold}            위도·해안 거리·습도로 바닥(휘태커 표)을 칠한다
 그 다음 kit_fit 이 여정(5막)을 이 땅에 맞추고, features() 가 배치를 피해 산줄기·고개·강·숲·밭·화산을 놓는다.
 결과는 make_map_v4 의 GEN·목록으로 넘어가 손 대륙과 같은 렌더를 탄다. 모든 무작위는 seed 로 결정된다.
@@ -20,9 +23,11 @@ import scipy.ndimage as ndi
 import make_map_v4 as M4
 
 W, H = M4.W, M4.H
-STYLES = ('blobs', 'shards', 'ring', 'pangaea', 'archipelago', 'galaxy')
+STYLES = ('blobs', 'shards', 'ring', 'pangaea', 'archipelago', 'galaxy', 'peninsula', 'river-continent', 'arc-islands')
 DEFAULT = {'blobs': dict(count=4, land=.42), 'shards': dict(count=12, land=.44), 'ring': dict(count=3, land=.40),
-           'pangaea': dict(count=6, land=.50), 'archipelago': dict(count=24, land=.36), 'galaxy': dict(count=12, land=.36)}
+           'pangaea': dict(count=6, land=.50), 'archipelago': dict(count=24, land=.36), 'galaxy': dict(count=12, land=.36),
+           'peninsula': dict(count=10, land=.40), 'river-continent': dict(count=4, land=.52), 'arc-islands': dict(count=6, land=.36)}
+GEO = ('peninsula', 'river-continent', 'arc-islands')   # 지리 구조: 땅 모양이 정해져 있고 land 는 섬·바다 몫만 조금 바꾼다
 HOME_GAP = 4.6          # 시작 대륙과 다른 땅 사이 바다(배 장벽 4칸 이상)
 GAP = 2.2               # 다른 땅끼리
 
@@ -136,7 +141,11 @@ def gen_land(style='blobs', count=None, land=None, seed=1):
     rng = np.random.default_rng(int(seed) * 7919 + STYLES.index(style))
     salt = 3000 + (int(seed) * 131) % 90000
     target = land * W * H
-    fn = {'blobs': _blobs, 'shards': _shards, 'ring': _ring, 'pangaea': _pangaea, 'archipelago': _archipelago, 'galaxy': _galaxy}[style]
+    if style in GEO:
+        import kit_geo as KGeo
+        fn = KGeo.STYLES[style]
+    else:
+        fn = {'blobs': _blobs, 'shards': _shards, 'ring': _ring, 'pangaea': _pangaea, 'archipelago': _archipelago, 'galaxy': _galaxy}[style]
     m, info = fn(rng, salt, count, target)
     m = clean_land(m)
     if style != 'galaxy':                            # 배로 갈 땅(3막)이 모자라면 바깥 섬을 띄운다 — 「대륙 하나」도 여정이 서게
@@ -145,7 +154,7 @@ def gen_land(style='blobs', count=None, land=None, seed=1):
             sz = ndi.sum(m, lab, range(1, n + 1))
             home = lab == (int(np.argmax(sz)) + 1)
             other = int((m & ~home).sum())
-            if other < .24 * target:
+            if other < (.15 if style in GEO else .24) * target:   # 지리 구조는 제 섬을 갖고 있다 — 큰 섬을 덧대면 모양이 안 읽혔다(적대 QA)
                 m = clean_land(_add_islands(rng, salt + 500, m, home, .30 * target - other, 5))
                 info['islands_added'] = 5
     lab, n = comps(m)
@@ -408,14 +417,18 @@ def _galaxy(rng, salt, count, target):
 
 
 # ───────────────────────────── 기후 ─────────────────────────────
-def climate(land, seed=1, wet=0.0, cold=0.0):
-    """위도(위=추움)·해안 거리·습도 노이즈 → 바닥 코드(H,W). 바다 칸은 0."""
+def climate(land, seed=1, wet=0.0, cold=0.0, bias=None):
+    """위도(위=추움)·해안 거리·습도 노이즈 → 바닥 코드(H,W). 바다 칸은 0.
+    bias(지리 구조 힌트): t0·t1 = 위·아래 끝 기온(기본 .08·1.0), temp·moist·elev = 더할 장."""
     s = 7000 + (int(seed) * 173) % 90000
+    b = bias or {}
     ys, xs = np.mgrid[0:H, 0:W].astype(float)
     dco = ndi.distance_transform_edt(land)
-    elev = np.clip(dco / 11.0, 0, 1) * .6 + fbm(8, s) * .4
-    temp = .08 + .92 * (ys / (H - 1)) + (fbm(13, s + 3) - .5) * .42 - .22 * elev - float(cold) * .3
-    moist = _norm(fbm(10, s + 7)) * .72 + .28 * (1 - np.clip(dco / 9.0, 0, 1)) + float(wet) * .3
+    elev = np.clip(dco / 11.0, 0, 1) * .6 + fbm(8, s) * .4 + b.get('elev', 0)
+    t0 = float(b.get('t0', .08))
+    span = float(b['t1']) - t0 if 't1' in b else .92        # 기본은 옛 식 그대로(.92 — 1.0-.08 로 쓰면 부동소수 끝자리가 달라 저장된 세계가 움직인다)
+    temp = t0 + span * (ys / (H - 1)) + (fbm(13, s + 3) - .5) * .42 - .22 * elev - float(cold) * .3 + b.get('temp', 0)
+    moist = _norm(fbm(10, s + 7)) * .72 + .28 * (1 - np.clip(dco / 9.0, 0, 1)) + float(wet) * .3 + b.get('moist', 0)
     g = np.full((H, W), M4.GRASS, np.int16)
     t, m = temp, moist
     g[(t < .17) & (elev > .62) & (dco > 4)] = M4.GLACIER
@@ -434,6 +447,8 @@ def climate(land, seed=1, wet=0.0, cold=0.0):
     # 얼룩 다듬기: 3x3 다수결 두 번
     for _ in range(2):
         g = _majority(g, land)
+    if b.get('glacier') is False:
+        g[g == M4.GLACIER] = M4.SNOW
     g[~land] = M4.SEA
     return g, dict(temp=temp, moist=moist, elev=elev, dco=dco)
 
@@ -476,8 +491,55 @@ def _seg_cross(p1, p2, q1, q2):
     return None
 
 
-def features(land, G, lay, clim, seed=1):
-    """배치(lay)를 피해 산줄기·고개·강·숲·밭·화산을 make_map_v4 목록에 넣는다. 반환: 보고용 개수."""
+def _guides(land, hints):
+    """지리 구조 힌트 → 땅에 맞춘 척추 산줄기·강 꺾은선과 맞춤이 비켜 갈 칸(avoid)."""
+    import kit_geo as KGeo
+    spines, rivers = [], []
+    sp_m = np.zeros((H, W), bool)
+    rv_m = np.zeros((H, W), bool)
+    for line in hints.get('spines') or []:
+        cells = [(int(round(x)), int(round(y))) for x, y in M4.dense([tuple(p) for p in line], .5)]
+        cells = [(x, y) for x, y in cells if 0 <= x < W and 0 <= y < H and land[y, x]]
+        if len(cells) < 6:
+            continue
+        spines.append([tuple(map(float, p)) for p in line])
+        for x, y in cells:
+            sp_m[y, x] = True
+    for k, (line, wide) in enumerate(hints.get('rivers') or []):
+        pts = KGeo.river_to_sea(land, line)
+        if not pts:
+            continue
+        salt = 2100 + k
+        cells = M4.river_cells(pts, salt, .9, wide if wide < 1 else None)
+        rivers.append((pts, wide, salt))
+        for x, y in cells:
+            if 0 <= x < W and 0 <= y < H and land[y, x]:
+                rv_m[y, x] = True
+    av_r = ndi.binary_dilation(rv_m, iterations=2) if rv_m.any() else None
+    av = ndi.binary_dilation(sp_m | rv_m, iterations=2) if (sp_m | rv_m).any() else None
+    return dict(spines=spines, rivers=rivers, avoid=av, avoid_rivers=av_r)
+
+
+def _cut_line(pts, bad, keep_all=True, min_pts=10):
+    """꺾은선을 bad 칸에서 끊는다 — 조각들(촘촘한 점) 목록."""
+    segs, seg = [], []
+    for p in _dense(pts, .5):
+        x, y = int(round(p[0])), int(round(p[1]))
+        if 0 <= x < W and 0 <= y < H and not bad[y, x]:
+            seg.append(p)
+        else:
+            if len(seg) >= min_pts:
+                segs.append(seg)
+            seg = []
+    if len(seg) >= min_pts:
+        segs.append(seg)
+    return segs if keep_all else sorted(segs, key=len)[-1:]
+
+
+def features(land, G, lay, clim, seed=1, guide=None):
+    """배치(lay)를 피해 산줄기·고개·강·숲·밭·화산을 make_map_v4 목록에 넣는다. 반환: 보고용 개수.
+    guide(지리 구조): 척추 산줄기·이끌린 강을 먼저 놓고, 자동 산줄기·강은 그만큼 줄인다."""
+    guide = guide or dict(spines=[], rivers=[])
     rng = np.random.default_rng(int(seed) * 104729 + 11)
     s = 9000 + (int(seed) * 211) % 90000
     lab, n = comps(land)
@@ -491,11 +553,43 @@ def features(land, G, lay, clim, seed=1):
     temp = clim['temp']
     out = dict(ridges=0, passes=0, rivers=0, forests=0, farms=0)
     ridge_lines = []
+    # 척추 산줄기(지리 구조): 금지 칸에서 끊고 조각마다 산줄기 하나
+    for si, line in enumerate(guide['spines']):
+        for seg in _cut_line(line, no | ~land | (dco < 1.5)):
+            ln = seg[::4] + ([seg[-1]] if (len(seg) - 1) % 4 else [])
+            if len(ln) < 2:
+                continue
+            gx, gy = int(round(ln[len(ln) // 2][0])), int(round(ln[len(ln) // 2][1]))
+            gsum = G[max(gy - 3, 0):gy + 4, max(gx - 3, 0):gx + 4]
+            dry = np.isin(gsum, (M4.SAND, M4.BADLANDS, M4.DIRT)).mean() > .55
+            obj = M4.MESA if dry else (M4.SMOUNT if temp[gy, gx] < .34 else M4.MOUNT)
+            M4.RIDGES.append(('척추 산줄기 %d' % len(M4.RIDGES), ln, ln[len(ln) // 2], float(rng.uniform(1.9, 2.4)), obj, 1200 + len(M4.RIDGES)))
+            ridge_lines.append(ln)
+            out['ridges'] += 1
+    # 이끌린 강(지리 구조): 하류(어귀 쪽) 조각만 — 바다에 닿아야 강이다
+    for pts, wide, salt in guide['rivers']:
+        bad = ndi.binary_dilation(halo2 | dune | lay['protect'], iterations=1)   # 산벽은 건넌다(협곡) — 물은 걸어서 못 건너니 장벽은 그대로, 새는지는 여정 검사가 본다
+        D = _dense(pts, .5)
+        last = -1
+        for i, (x, y) in enumerate(D):
+            xi, yi = int(round(x)), int(round(y))
+            if 0 <= xi < W and 0 <= yi < H and land[yi, xi] and bad[yi, xi]:
+                last = i
+        D = D[last + 1:]
+        if len(D) < 10:
+            continue
+        p2 = [tuple(p) for p in D[::3]] + ([tuple(D[-1])] if (len(D) - 1) % 3 else [])
+        cells = M4.river_cells(p2, salt, .9, wide if wide < 1 else None)
+        if any(0 <= x < W and 0 <= y < H and land[y, x] and (halo2[y, x] or dune[y, x] or lay['protect'][y, x]) for x, y in cells):
+            continue
+        M4.RIVERS.append(('큰 강 %d' % len(M4.RIVERS), p2, wide, salt))
+        out['rivers'] += 1
+    auto_scale = .5 if guide['spines'] else 1.0
     # 산줄기: 땅 덩이마다 넓이에 맞춰 0~4줄
     for k in range(1, n + 1):
         mk = lab == k
         area = int(mk.sum())
-        nr = 0 if area < 110 else min(4, 1 + area // 420)
+        nr = 0 if area < 110 else int(min(4, 1 + area // 420) * auto_scale)
         if nr == 0:
             continue
         ys, xs = np.nonzero(mk)
@@ -564,7 +658,7 @@ def features(land, G, lay, clim, seed=1):
     for k in range(1, n + 1):
         mk = lab == k
         area = int(mk.sum())
-        nv = 0 if area < 90 else min(4, area // 300 + 1)
+        nv = 0 if area < 90 else int(min(4, area // 300 + 1) * (.5 if guide['rivers'] else 1))
         tries = 0
         made = 0
         while made < nv and tries < nv * 6:
@@ -671,6 +765,7 @@ def generate(spec, journey, salt=0):
     seed = int(cont.get('seed', 1))
     style = cont.get('style', 'blobs')
     land, info = gen_land(style, cont.get('count'), cont.get('land'), seed)
+    hints = {k[5:]: info.pop(k) for k in list(info) if k.startswith('hint_')}
     edit = np.zeros((H, W), bool)
     paint = []
     for i, o in enumerate(ops):
@@ -694,7 +789,7 @@ def generate(spec, journey, salt=0):
         G = KS.space_ground(land, info['systems'], seed)
         clim = None
     else:
-        G, clim = climate(land, int(cop.get('seed', seed)), float(cop.get('wet', 0)), float(cop.get('cold', 0)))
+        G, clim = climate(land, int(cop.get('seed', seed)), float(cop.get('wet', 0)), float(cop.get('cold', 0)), hints.get('clim'))
     for m, g in paint:
         G[m & land] = g
         edit |= m & land
@@ -712,13 +807,28 @@ def generate(spec, journey, salt=0):
                 pins[gate] = tuple(int(v) for v in o['gate'])
         elif o['op'] == 'dune_sea':
             ov['dune_sea'] = o['poly']
-    lay = KF.fit(land, G, journey, roles, pins, ov, salt, seed)
+    guide = _guides(land, hints)
+    if hints.get('pole') and 'wall' not in ov:
+        ov['wall_pole'] = hints['pole']
+    if hints.get('dune') and 'dune_sea' not in ov:
+        ov['dune_pole'] = hints['dune']
+    lay = None
+    for avoid in (guide['avoid'], guide['avoid_rivers'], None):     # 척추·강을 비켜 놓다가 자리가 없으면 강만, 그래도 없으면 비키지 않는다
+        try:
+            lay = KF.fit(land, G, journey, roles, pins, dict(ov, avoid=avoid), salt, seed)
+            break
+        except KF.FitError:
+            if avoid is None:
+                raise
+    if guide['spines'] or guide['rivers']:
+        lay['notes'].append('지리 구조 힌트: 척추 산줄기 %d줄·이끌린 강 %d줄%s' % (
+            len(guide['spines']), len(guide['rivers']), '' if lay.get('avoid') is guide['avoid'] else ' (자리가 모자라 일부는 장소에 끊긴다)'))
     land = lay['land']
     G[~land] = M4.SEA
     _decorate(G, land, lay, journey, seed, space=space)
     if not space:
         _harmonize(G, land, lay)
-    feat = KS.space_features(land, G, lay, info['systems'], seed) if space else features(land, G, lay, clim, seed)
+    feat = KS.space_features(land, G, lay, info['systems'], seed) if space else features(land, G, lay, clim, seed, guide)
     M4.GEN = dict(land=land, ground=G, edit=edit)
     # 여정 사본: 장소 좌표·시작 칸·길(같은 땅 안 최소 신장 나무 + 관문 양쪽)
     j = copy.deepcopy(journey)

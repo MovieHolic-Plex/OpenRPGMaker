@@ -23,7 +23,7 @@
   volcano x, y, lava?               화산 — 가운데 분화구(반지름 2.6칸)와 둘레 화산 고리(3.6칸), lava 꺾은선은 용암 줄기. 땅이 반지름 4칸은 돼야 한다
 
 base "generate" — 손 대륙 대신 빈 판에 새 구조를 만든다(kit_gen). 여정 장소·장벽은 kit_fit 이 자동으로 맞춘다.
-  continents style?, count?, land?, seed?   대륙 구조(blobs | shards | ring | pangaea | archipelago | galaxy) — 생성 지형의 첫 작업
+  continents style?, count?, land?, seed?   대륙 구조(blobs | shards | ring | pangaea | archipelago | galaxy | peninsula | river-continent | arc-islands) — 생성 지형의 첫 작업
   climate    seed?, wet?, cold?             기후(바닥). wet·cold 는 -1~1
   wall       line, gate?                    2막을 가르는 산벽을 직접 긋는다(해안에서 해안까지). gate [x,y] 는 관문 요새 자리
   dune_sea   poly                           4막 사구 바다 자리(시작 대륙 1막 땅 안)
@@ -147,7 +147,11 @@ def merge(base, edit):
     out = dict(edit)
     out['base'] = bb
     out['id'] = '%s+%s' % (base['id'], edit.get('id', 'edit'))
-    out['ops'] = list(base.get('ops', [])) + list(edit.get('ops', []))
+    eops = list(edit.get('ops', []))
+    mine = {o.get('op') for o in eops} & {'continents', 'climate'}
+    # 생성 바탕에서 편집이 구조(continents)·기후를 직접 고르면 테마의 것은 버린다 — 둘 다 두면 앞(테마)의 것이 이겨 편집이 무시됐다
+    bops = [o for o in base.get('ops', []) if not (bb == 'generate' and o.get('op') in mine)]
+    out['ops'] = bops + eops
     return validate(out)
 
 

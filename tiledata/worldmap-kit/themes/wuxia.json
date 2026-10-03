@@ -5,5 +5,7 @@
  "iconset": "wuxia",
  "palette": "wuxia",
  "overlays": [],
- "kind": "land"
+ "kind": "land",
+ "terrain": "wuxia-continent",
+ "journey": "wuxia-5act"
 }

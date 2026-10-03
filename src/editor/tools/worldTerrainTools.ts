@@ -47,8 +47,8 @@ const opSchema: JsonSchema = {
     what: { type: "string", enum: ["forest", "mount", "all"], description: "clear: 걷을 물체" },
     level: { type: "integer", enum: [1, 2], description: "plateau 높이" },
     id: { type: "string", description: "move_place: 장소 id(read_world_terrain 의 places)" },
-    style: { type: "string", enum: [...WORLDMAP_STYLES], description: "continents: 대륙 구조 — blobs 덩이 대륙 · shards 조각난 대륙 · ring 고리 대륙 · pangaea 초대륙+섬 · archipelago 군도 · galaxy 우주(성계·공허)" },
-    count: { type: "integer", description: "continents: 땅 덩이 수 1~40(shards 면 조각 수, galaxy 면 성단 수)" },
+    style: { type: "string", enum: [...WORLDMAP_STYLES], description: "continents: 대륙 구조 — blobs 덩이 대륙 · shards 조각난 대륙 · ring 고리 대륙 · pangaea 초대륙+섬 · archipelago 군도 · galaxy 우주(성계·공허) · peninsula 반도(조선: 북쪽 대륙+반도, 동쪽 척추 산줄기, 서쪽으로 흐르는 강, 동쪽 섬나라) · river-continent 강 문명 대륙(중국·무협: 서쪽 설산 고원, 북쪽 사막, 서→동 큰 강 둘) · arc-islands 열도(일본·전국: 휜 본섬+북·남 섬, 건너편 대륙 끝)" },
+    count: { type: "integer", description: "continents: 땅 덩이 수 1~40(shards 면 조각 수, galaxy 면 성단 수, peninsula·river-continent·arc-islands 면 앞바다 작은 섬 수)" },
     land: { type: "number", description: "continents: 땅 비율 0.2~0.7" },
     seed: { type: "integer", description: "continents·climate: 같은 구조의 다른 모양(정수)" },
     wet: { type: "number", description: "climate: -1(건조)~1(습윤)" },
@@ -65,13 +65,13 @@ const OP_HELP =
   + "river{line,widen?} 강(바다로 끝낼 것) · forest{poly,kind?,density?} · clear{poly,what?} 숲·산 걷기 · "
   + "plateau{poly,level?,ground?} 고원(절벽이 생긴다) · volcano{x,y,lava?} 화산(분화구+고리, 반지름 4칸 땅 필요) · move_place{id,x,y} 장소 옮기기. "
   + "새 대륙 구조(base=\"generate\", 기존 대륙을 버리고 빈 판에서): 첫 작업 continents{style?,count?,land?,seed?} — 「20조각 대륙」 = continents{style:shards,count:20}, "
-  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy. climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다 — "
+  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy, 조선·한반도 = peninsula, 중국·무협 = river-continent, 일본·전국 = arc-islands (이 셋은 땅 모양·척추 산줄기·큰 강·사막 자리·2막 방향까지 그 지리를 닮게 정해진다 — 실제 지도를 따라 그리지 않는다). climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다 — "
   + "결과의 layout.regions(a 1막 · b 2막 · w 산벽 · d 사구 바다 · s 배로 가는 땅)를 보고 그 위에 다른 작업을 얹어라. 손으로 정하려면 wall{line,gate?}(산벽) · dune_sea{poly} · sky_island{x,y} · move_place(고정). "
   + "generate 에서 land·sea·island 는 맞춤 전에 구조에 접힌다. "
   + `바닥 이름→글자: grass . farm f crop p savanna v sand s dune d dirt D badlands b ash a basalt B swamp w marsh m tundra t snow n glacier g jungle j. `
   + "규칙: 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다) — 해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 river 로 끊어 다리를 놓게 하라. "
   + "숲은 물·장소 둘레·길·산 위에 안 놓이고 사막에서 지워진다. 장소마다 여정 규칙(places 줄 끝)이 있다 — 열쇠 장소·장벽 뒤 장소는 그 장벽 밖으로 옮기지 마라. "
-  + "테마는 대개 화풍만 바꾼다(지형·장소 배치는 공용) — 자기 지형을 먼저 까는 테마(sea-isles 군도)는 themeNote 가 알려 준다. "
+  + "테마는 대개 화풍만 바꾼다(지형·장소 배치는 공용) — 자기 지형을 먼저 까는 테마(sea-isles 군도, starmap 은하, joseon 반도, wuxia 강 문명 대륙, sengoku 열도)는 themeNote 가 알려 준다. "
   + "지형 편집으로 정한 바닥은 지역 팔레트가 덮지 않는다. 섬은 rx·ry 보다 1~2칸 클 수 있다. 실제 빌드는 처음 약 2분, 같은 지형은 캐시.";
 
 // ── 준비(prepare) 결과 캐시: 같은 (테마, 작업, 미리보기) 는 한 번만 빌드한다 ──

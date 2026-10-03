@@ -5,5 +5,7 @@
  "iconset": "joseon",
  "palette": "joseon",
  "overlays": [],
- "kind": "land"
+ "kind": "land",
+ "terrain": "joseon-peninsula",
+ "journey": "joseon-5act"
 }

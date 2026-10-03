@@ -5,5 +5,7 @@
  "iconset": "sengoku",
  "palette": "sengoku",
  "overlays": [],
- "kind": "land"
+ "kind": "land",
+ "terrain": "sengoku-islands",
+ "journey": "sengoku-5act"
 }
