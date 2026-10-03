@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.102.0 — 2026-10-03
+
+### 기능
+
+- 시야 차단 수정과 집·도로 빠른 배치 (#1971) (`529120c`)
+
+### 수정
+
+- automatically dispatch confirmed game briefs when AI connects (#1969) (`c897c34`)
+
 ## 0.101.0 — 2026-10-03
 
 ### 기능
