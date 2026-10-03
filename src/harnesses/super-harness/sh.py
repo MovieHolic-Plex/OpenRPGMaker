@@ -186,6 +186,82 @@ def verify_examples(cid):
     return report
 
 
+def slug(text):
+    return re.sub(r'-+', '-', re.sub(r'[^a-z0-9-]', '-', str(text or '').lower())).strip('-')
+
+
+def resolve_link(link, parent, priority, source):
+    """카드가 적은 하위·선행 개념 하나 → 개념 id. 같은 id·제목·별칭이 이미 있으면 그것, 없으면 새로 넣는다."""
+    if isinstance(link, str):
+        link = {'id': link, 'title': link}
+    if not isinstance(link, dict):
+        return None
+    cid, title = slug(link.get('id') or ''), str(link.get('title') or '').strip()
+    names = {n.lower() for n in [cid, title, *[str(a) for a in link.get('aliases', [])]] if n}
+    for c in store.concepts():
+        if names & {a.lower() for a in [c['id'], c['title'], *c['aliases']]}:
+            return c['id']
+    if not cid or not title:
+        return None
+    aliases = [str(a) for a in link.get('aliases', []) if str(a).strip()] or [title]
+    store.add_concept(cid, title, aliases, str(link.get('why', '')), source, priority, parent=parent)
+    return cid
+
+
+def spawn_children(cid):
+    """시드 — 검수를 통과한 카드가 적은 하위 개념(층·구역)을 큐에 넣는다. 한 번만."""
+    c = store.concept(cid)
+    if not c or c.get('children_spawned'):
+        return
+    card = read_json(cdir(cid, 'card.json'), {}) or {}
+    added = []
+    for link in (card.get('children') or [])[:4]:
+        before = {x['id'] for x in store.concepts()}
+        child = resolve_link(link, cid, max(0.1, (c['priority'] or 0.5) - 0.05), 'seed')
+        if child and child not in before:
+            added.append(child)
+    store.update_concept(cid, children_spawned=1)
+    if added:
+        store.log(cid, f'시드 — 하위 개념 {len(added)}개를 큐에 넣었다: {", ".join(added)}')
+
+
+def hold_for_requirements(cid):
+    """선행 개념(학교 복도 → 학교)이 아직 안 구워졌으면 기다린다. 없는 선행 개념은 높은 우선으로 새로 넣는다. 반환: 기다리는가."""
+    c = store.concept(cid)
+    card = read_json(cdir(cid, 'card.json'), {}) or {}
+    req_ids = []
+    for link in card.get('requires') or []:
+        rid = resolve_link(link, None, (c['priority'] or 0.5) + 0.3, 'requires')
+        if rid and rid != cid and cid not in ((store.concept(rid) or {}).get('requires') or []):   # 서로 기다리면 영영 안 돈다
+            req_ids.append(rid)
+            r = store.concept(rid)
+            if r and r['stage'] == 'discovered' and (r['priority'] or 0) < (c['priority'] or 0.5) + 0.3:
+                store.update_concept(rid, priority=(c['priority'] or 0.5) + 0.3)
+    store.update_concept(cid, requires=req_ids)
+    pending = [r for r in req_ids if (store.concept(r) or {}).get('stage') not in ('done', 'discarded', 'blocked')]
+    if pending:
+        store.update_concept(cid, stage='waiting', status='idle', note=f'선행 개념 기다림: {", ".join(pending)}')
+        store.log(cid, f'선행 개념이 아직 없다 → 기다림: {", ".join(pending)}')
+        return True
+    return False
+
+
+def release_waiting():
+    for c in store.concepts("stage='waiting'"):
+        reqs = [store.concept(r) for r in c['requires']]
+        if any(r and r['stage'] not in ('done', 'discarded', 'blocked') for r in reqs):
+            continue
+        done = [r['title'] for r in reqs if r and r['stage'] == 'done']
+        lost = [r['title'] for r in reqs if r and r['stage'] != 'done']
+        reasons = []
+        if done:
+            reasons.append(f'선행 개념 「{"」「".join(done)}」 카드가 구워졌다 — 그 카드의 재료·변형·크기에 맞춰 이 카드를 다시 맞춰라 (src/assets/conceptCards.json)')
+        if lost:
+            reasons.append(f'선행 개념 「{"」「".join(lost)}」 는 막히거나 버려졌다 — requires 에서 빼고 이 카드만으로 지어지게 하라')
+        store.update_concept(c['id'], stage='build', status='queued', reasons=reasons, note='')
+        store.log(c['id'], '선행 개념이 끝났다 → 다시 만들기')
+
+
 def on_discover(meta, code, result):
     added = 0
     existing = store.concepts()
@@ -214,7 +290,13 @@ def on_build(meta, code, result):
     card = read_json(cdir(cid, 'card.json'))
     if card and card.get('aliases'):
         store.update_concept(cid, aliases=card['aliases'])
+    if card:
+        parent = card.get('parent')
+        if parent:
+            store.update_concept(cid, parent=resolve_link(parent, None, 0.6, 'requires') if isinstance(parent, dict) else slug(parent))
     if report.get('ok'):
+        if hold_for_requirements(cid):
+            return
         store.update_concept(cid, stage='review', status='queued', reasons=[])
         store.log(cid, '만들기 끝 — 예제 검사 통과, 적대 검수로')
     else:
@@ -237,6 +319,7 @@ def on_review(meta, code, result):
     else:
         store.update_concept(cid, stage='probe', status='queued', reasons=[])
         store.log(cid, '적대 검수 2명 통과 → 조수 시험')
+        spawn_children(cid)
 
 
 def on_probe(meta, code, result):
@@ -283,7 +366,7 @@ def probe_scores(cid, attempt):
 # ───────────────────────── 작업 시작 ─────────────────────────
 
 def concept_context(c):
-    return {k: c[k] for k in ('id', 'title', 'aliases', 'why', 'source', 'attempt')}
+    return {k: c.get(k) for k in ('id', 'title', 'aliases', 'why', 'source', 'attempt', 'parent')}
 
 
 def start_discover():
@@ -316,13 +399,24 @@ def scan_failures():
     return {'zeroHitSearches': sorted(zero.items(), key=lambda kv: -kv[1])[:40], 'layoutRepairRequests': repairs[-40:]}
 
 
+def inventory(skip=None):
+    out = []
+    for c in store.concepts("stage NOT IN ('discarded')"):
+        if c['id'] == skip:
+            continue
+        card = cdir(c['id'], 'card.json')
+        out.append({'id': c['id'], 'title': c['title'], 'aliases': c['aliases'][:6], 'stage': c['stage'], 'parent': c.get('parent'),
+                    'card': card if os.path.exists(card) else None})
+    return out
+
+
 def start_build(c):
     cid = c['id']
     os.makedirs(cdir(cid), exist_ok=True)
     prev = read_json(cdir(cid, 'card.json'))
     prompt = fill(prompt_template('build.md'), ROOT=ROOT, CDIR=cdir(cid), CONCEPT=concept_context(c), REASONS=c['reasons'],
                   FEEDBACK=c['feedback'], PREVIOUS=('있음 — ' + cdir(cid, 'card.json') + ' 를 고쳐라') if prev else '없음 — 처음 만든다',
-                  BRIEF=BRIEF)
+                  BRIEF=BRIEF, INVENTORY=inventory(cid), BAKED=os.path.join(BAKE_WT if os.path.isdir(BAKE_WT) else ROOT, 'src/assets/conceptCards.json'))
     start_codex(cid, 'build', f'a{c["attempt"]}', prompt, cdir(cid, 'card.json'))
     store.update_concept(cid, status='running')
 
@@ -440,6 +534,9 @@ def bake(cid, remove, log_path):
     cards = [card for card in bundle.get('cards', []) if card.get('id') != cid]
     img_dir = os.path.join(BAKE_WT, 'public/assets/concept-cards', cid)
     shutil.rmtree(img_dir, ignore_errors=True)
+    calls_path = os.path.join(BAKE_WT, 'src/assets/conceptCardExamples', f'{cid}.json')
+    if os.path.exists(calls_path):
+        os.remove(calls_path)
     c = store.concept(cid)
     if not remove:
         card = read_json(cdir(cid, 'card.json'))
@@ -458,12 +555,25 @@ def bake(cid, remove, log_path):
                     for example in variant.get('examples', []):
                         if example.get('id') == ex['example']:
                             example['image'] = f'/assets/concept-cards/{cid}/{name}'
+        # 예제 호출은 따로 둔다 — 80×80 평면은 수천 자라 첫 번들·조수 노트에 실을 수 없다(build_concept_example 가 지연 로드).
+        calls = {}
+        for variant in card.get('variants', []):
+            for example in variant.get('examples', []):
+                if example.get('calls'):
+                    calls[f'{variant["id"]}/{example["id"]}'] = example.pop('calls')
+        os.makedirs(os.path.dirname(calls_path), exist_ok=True)
+        write_json(calls_path, calls)
+        if isinstance(card.get('parent'), dict):
+            card['parent'] = c.get('parent') or slug(card['parent'].get('id'))
+        card['requires'] = [r for r in (c.get('requires') or [])]
+        if not card['requires']:
+            card.pop('requires')
         card['bakedAt'] = store.now()
         card.pop('probeText', None)
         cards.append(card)
     bundle['cards'] = sorted(cards, key=lambda card: card.get('id', ''))
     write_json(bundle_path, bundle)
-    git(['add', 'src/assets/conceptCards.json', 'public/assets/concept-cards'], log_path)
+    git(['add', '-A', 'src/assets/conceptCards.json', 'src/assets/conceptCardExamples', 'public/assets/concept-cards'], log_path)
     verb = '뺀다' if remove else '굽는다'
     body = f'슈퍼하네스(codex {MODEL} {EFFORT})가 만들고 적대 검수 2명·조수 시험을 통과한 카드.' if not remove else '사용자 폐기.'
     git(['-c', 'user.name=super-harness', '-c', 'user.email=super-harness@oprn.local', 'commit', '-q', '-m',
@@ -493,6 +603,7 @@ def tick():
     budget_ok = lambda: store.started_today(['discover', 'build', 'review', 'judge']) < int(store.setting('budget_codex_day'))
     codex_free = lambda need=1: len(running(['discover', 'build', 'review', 'judge'])) + need <= max_codex and budget_ok()
 
+    release_waiting()
     active = store.concepts("stage IN ('build','review','probe','bake','unbake')")
     for c in store.concepts("stage='discovered'"):
         if len([a for a in active if a['stage'] != 'bake']) >= int(store.setting('max_active')):
@@ -503,7 +614,7 @@ def tick():
 
     waiting = len(store.concepts("stage='discovered'"))
     last = float(store.setting('last_discover') or 0)
-    if waiting < 3 and not running(['discover']) and time.time() - last > 60 * int(store.setting('discover_every_min')) and codex_free():
+    if waiting < int(store.setting('min_waiting')) and not running(['discover']) and time.time() - last > 60 * int(store.setting('discover_every_min')) and codex_free():
         store.set_setting('last_discover', str(time.time()))
         start_discover()
 

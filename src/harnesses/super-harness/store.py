@@ -10,18 +10,19 @@ DB = os.path.join(DATA, 'sh.sqlite')
 _lock = threading.RLock()
 
 # 개념이 지나가는 칸. 화면의 칸 순서와 같다.
-STAGES = ['discovered', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
+STAGES = ['discovered', 'waiting', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
 ACTIVE = ('build', 'review', 'probe', 'bake', 'unbake')
 
 DEFAULT_SETTINGS = {
     'paused': '0',
-    'max_active': '3',          # 동시에 만드는 개념 수
-    'max_codex': '6',           # 동시에 도는 codex 작업 수
-    'max_probe': '2',           # 동시에 도는 조수 시험(qa:game gen) 수 — 판마다 메모리 2~3GB
-    'budget_codex_day': '120',  # 하루 codex 작업 상한
-    'budget_probe_day': '24',   # 하루 조수 시험 상한
+    'max_active': '8',          # 동시에 만드는 개념 수 (2026-10-03 사용자 「큐 늘려서 빠르게 많이」)
+    'max_codex': '16',          # 동시에 도는 codex 작업 수
+    'max_probe': '4',           # 동시에 도는 조수 시험(qa:game gen) 수 — 판마다 메모리 2~3GB
+    'budget_codex_day': '400',  # 하루 codex 작업 상한
+    'budget_probe_day': '80',   # 하루 조수 시험 상한
+    'min_waiting': '8',         # 발견 칸에 이만큼 쌓여 있지 않으면 낱말을 더 찾는다
     'max_attempts': '3',        # 만들기 재시도 상한 — 넘으면 막힘
-    'discover_every_min': '30',
+    'discover_every_min': '10',
 }
 
 
@@ -54,6 +55,13 @@ def init():
           id INTEGER PRIMARY KEY AUTOINCREMENT, concept TEXT, kind TEXT, what TEXT, route TEXT,
           status TEXT DEFAULT 'open', created TEXT);
         ''')
+        cols = {r[1] for r in con.execute('PRAGMA table_info(concepts)')}
+        if 'parent' not in cols:
+            con.execute('ALTER TABLE concepts ADD COLUMN parent TEXT')
+        if 'requires' not in cols:
+            con.execute("ALTER TABLE concepts ADD COLUMN requires TEXT DEFAULT '[]'")
+        if 'children_spawned' not in cols:
+            con.execute('ALTER TABLE concepts ADD COLUMN children_spawned INTEGER DEFAULT 0')
         for k, v in DEFAULT_SETTINGS.items():
             con.execute('INSERT OR IGNORE INTO settings(key,value) VALUES(?,?)', (k, v))
 
@@ -87,23 +95,23 @@ def concept(cid):
 
 def _concept(r):
     d = dict(r)
-    for k in ('aliases', 'feedback', 'reasons'):
-        d[k] = json.loads(d[k] or '[]')
+    for k in ('aliases', 'feedback', 'reasons', 'requires'):
+        d[k] = json.loads(d.get(k) or '[]')
     return d
 
 
-def add_concept(cid, title, aliases, why, source, priority):
+def add_concept(cid, title, aliases, why, source, priority, parent=None):
     with _lock, connect() as con:
         if con.execute('SELECT 1 FROM concepts WHERE id=?', (cid,)).fetchone():
             return False
-        con.execute('INSERT INTO concepts(id,title,aliases,why,source,priority,stage,status,created,updated) VALUES(?,?,?,?,?,?,?,?,?,?)',
-                    (cid, title, json.dumps(aliases, ensure_ascii=False), why, source, priority, 'discovered', 'queued', now(), now()))
+        con.execute('INSERT INTO concepts(id,title,aliases,why,source,priority,stage,status,created,updated,parent) VALUES(?,?,?,?,?,?,?,?,?,?,?)',
+                    (cid, title, json.dumps(aliases, ensure_ascii=False), why, source, priority, 'discovered', 'queued', now(), now(), parent))
     log(cid, f'발견 — {why}')
     return True
 
 
 def update_concept(cid, **fields):
-    for k in ('aliases', 'feedback', 'reasons'):
+    for k in ('aliases', 'feedback', 'reasons', 'requires'):
         if k in fields and not isinstance(fields[k], str):
             fields[k] = json.dumps(fields[k], ensure_ascii=False)
     fields['updated'] = now()
