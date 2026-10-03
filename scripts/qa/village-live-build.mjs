@@ -30,6 +30,8 @@ const shot = async (label) => { const file = `${out}/frames/${String(++frame).pa
 
 // NOREVEAL=1: 실시간 시공 표시를 끈 대조군 — 연출이 적용·ACK 를 늦추는지 잰다.
 if (process.env.NOREVEAL === "1") await page.addInitScript(() => { window.name = "noreveal"; });
+// FOREIGN=1: 도구가 끝나고 체크포인트를 보내기 직전에 사람이 시작 맵 칸 하나를 고친다 — 3-way 병합이 둘 다 살리는지 본다.
+if (process.env.FOREIGN === "1") await page.addInitScript(() => { window.__villageQaForeign = true; });
 await page.addInitScript(() => {
   localStorage.setItem("oprn:editor-ui-mode", "standard");
   for (const key of ["oprn:editor-welcome-dismissed", "oprn:standard-welcome-seen", "oprn:coachmarks-basic-v1"]) localStorage.setItem(key, "1");
@@ -83,6 +85,17 @@ await page.addInitScript(() => {
       if (!built.ok) { qa.stage = JSON.stringify(built).slice(0, 400); throw Error(qa.stage); }
       const newMapId = Object.keys(ctx.project.maps).find((id) => !before.has(id));
       qa.newMapId = newMapId;
+      if (window.__villageQaForeign) {
+        const { store } = await import("/src/project/store.ts");
+        const live = store.getCurrent();
+        const mapId = live.startMapId;
+        const map = live.maps[mapId];
+        const lowerTiles = map.lowerTiles.slice();
+        lowerTiles[0] = lowerTiles[0] === 7 ? 8 : 7;
+        store.replace({ ...live, maps: { ...live.maps, [mapId]: { ...map, lowerTiles } } }, { change: { label: "QA 사람 편집", source: "qa" } });
+        qa.foreign = { mapId, tile: lowerTiles[0] };
+        mark("foreign-edit");
+      }
       await sleep(700);
       write({ type: "checkpoint", checkpointId: "build", label: "마을 시공", toolName: "author_beodeul_town", project: ctx.project, spatialProof: exportSpatialToolProof(ctx.project), constructionLogs });
       mark("checkpoint-sent");
@@ -205,6 +218,16 @@ try {
   check("조수 말이 간단히 보기에 보인다", "chat-assistant-say-1" in qa.marks, qa.marks["chat-assistant-say-1"]);
   check("체크포인트 직후 「맵에 반영 중」 행", "chat-applying-row" in qa.marks, qa.marks["chat-applying-row"]);
   check("페이지 오류 없음", report.errors.length === 0, report.errors);
+  if (process.env.FOREIGN === "1") {
+    const after = await page.evaluate(async () => {
+      const { store } = await import("/src/project/store.ts");
+      const qa = window.__villageQa; const live = store.getCurrent();
+      return { foreign: qa.foreign, tile: live.maps[qa.foreign.mapId]?.lowerTiles[0], hasVillage: !!live.maps[qa.newMapId],
+        failed: (document.body.textContent ?? "").includes("적용 실패") || (document.body.textContent ?? "").includes("기준 프로젝트가 변경") };
+    });
+    report.foreign = after;
+    check("실행 중 사람 편집과 마을이 둘 다 남는다(3-way 병합)", after.tile === after.foreign.tile && after.hasVillage && !after.failed, after);
+  }
 } catch (error) {
   report.failure = String(error?.message ?? error);
   report.stage = await page.evaluate(() => window.__villageQa?.stage).catch(() => "?");
