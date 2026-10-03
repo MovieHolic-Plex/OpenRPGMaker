@@ -498,6 +498,9 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         for k in B.get('kits', []): pending_kits.append((bname, k))
         block_info.append(dict(name=bname, cells=len(B['cells']), autotiles=len(B.get('autotiles', [])), groups=len(B.get('groups', [])), kits=len(B.get('kits', [])), notes=B.get('notes', '')))
     L = lambda b, loc: local2tid[(b, loc)]
+    extra_conn = {}                # 오토타일 id → 다른 블록이 덧붙이는 연결 칸(키트용 복사 칸)
+    for bname, B in built.items():
+        for aid, locs in (B.get('connect_extra') or {}).items(): extra_conn.setdefault(aid, []).extend(L(bname, x) for x in locs)
     autotiles, at_members = [], {}
     for b, a in pending_autotiles: at_members[a['id']] = [L(b, x) for x in a['member']]
     for b, a in pending_autotiles:
@@ -507,6 +510,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
             if isinstance(x, str) and x.startswith('other:'): conn += at_members[x[6:]]
             else: conn.append(L(b, x))
         conn = sorted(set(conn) | set(mem)) if not a.get('connect') else sorted(set(conn))
+        conn = sorted(set(conn) | set(extra_conn.get(a['id'], [])))
         vm = {str(k): L(b, a['variantMap'][str(k)]) for k in range(16 if a['neighborhood'] == 4 else 256)}
         assert len(a['variantMap']) == len(vm), ('variantMap 키 수', a['id'])
         at = dict(id=a['id'], name=a['name'], neighborhood=a['neighborhood'], memberTileIds=sorted(set(mem)), connectTileIds=conn, variantMap=vm, layer=a['layer'], edgeConnects=bool(a.get('edgeConnects')))

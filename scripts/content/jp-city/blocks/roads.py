@@ -72,6 +72,13 @@ def sp_lane(reg, kind, k):
     sp.road = xf.pred(p)
     return xf, sp
 
+def sp_lane_cw(reg, k):
+    """생활도로 직선 6×4 위 횡단보도: 가운데 2칸(x2..3) × 도로 폭 4줄에 횡단보도 오토타일 칸(jp-crosswalk-*)을 얹는다. 보도가 없는 생활도로라 점자블록은 없다."""
+    xf, sp = sp_lane(reg, 'straight', k)
+    for x in (2, 3):
+        for y in range(LW): m_cw(reg, xf, sp, x, y, 'ns')
+    return xf, sp
+
 # ───────────── 간선도로 ─────────────
 TH = 17          # 가로 간선: 보도 2 + 차선 3·3 + 분리대 1 + 차선 3·3 + 보도 2
 def sp_trunk_straight(reg, k):
@@ -105,7 +112,22 @@ def sp_trunk_cross(reg, k):
         for x in (6, 7):
             for y in range(8, 21): m_cw(reg, xr, sp, x, y, 'ns')
             for y in (7, 21): m_tact(reg, xr, sp, x, y)
+    sig_corners(reg, I, sp)
     return xf, sp
+
+def sig_cells(reg, car, ped):
+    """신호기 머리·기둥 칸을 칸 사전에 등록하고 (머리 키, 기둥 키) 를 돌려준다. car: 'g'|'r' 차량 신호, ped: 'g'|'r' 보행 신호가 달린 기둥."""
+    h = reg.add('sg.car.' + car, art.signal_car_head(car), 'star', '차량 신호기 머리(%s)' % ('青 켜짐' if car == 'g' else '赤 켜짐'),
+                '차량용 3색 신호기의 머리(青·黄·赤 가로 하우징, %s). 걸어 지나갈 수 있는 윗칸(사람 위에 그려짐). 아래로 기둥이 이어진다.' % ('青 켜짐: 통행' if car == 'g' else '赤 켜짐: 정지'), ['신호기', '차량', '윗칸'])
+    b = reg.add('sg.poleped.' + ped, art.signal_pole_ped(ped), 'solid', '보행 신호 달린 신호기 기둥(%s)' % ('青 걷는 사람' if ped == 'g' else '赤 선 사람'),
+                '신호기 기둥 받침. 기둥 오른쪽에 보행자 신호(위 赤 선 사람 · 아래 青 걷는 사람, %s)가 붙는다. 막힘.' % ('青 켜짐: 건널 수 있음' if ped == 'g' else '赤 켜짐: 건너지 말 것'), ['신호기', '보행자', '막힘'])
+    return h, b
+
+def sig_corners(reg, xf, sp):
+    """간선 십자 교차로 네 모퉁이(위쪽 둘은 보도 ㄱ자 바깥 끝 칸 (6,6)(22,6), 아래쪽 둘은 머리칸이 점자블록을 안 덮게 한 칸 바깥 (5,22)(23,22))에 신호기를 세운다. 점자블록 옆, 보도 두 칸 폭 중 한 칸만 막고 안쪽 칸으로 지나간다.
+       마주 보는 모퉁이는 같은 신호(차량 青+보행 赤 / 차량 赤+보행 青)."""
+    for (x, y, car, ped) in ((6, 6, 'g', 'r'), (23, 22, 'g', 'r'), (22, 6, 'r', 'g'), (5, 22, 'r', 'g')):
+        h, b = sig_cells(reg, car, ped); tall(reg, xf, sp, x, y, b, h)
 
 # ───────────── 철도 건널목 ─────────────
 def _fk_cells(reg):
@@ -172,6 +194,10 @@ def _lane_kits():
     for k, (c, ko) in ROT_T.items():
         out.append(L('jp-road-lane-t-' + c, 'T자 생활도로 · %s 가지' % ko, '생활도로 T자 교차로 12×8. 가로 본선에 %s으로 갈라지는 길. 모서리 안쪽은 오토타일이 둥글게 비워 준다.' % ko, LR, spec=('lane', 't', k)))
     out.append(L('jp-road-lane-x', '생활도로 · 십자 교차로', '생활도로 십자 교차로 12×12. 네 모서리가 안쪽으로 파인다.', LR, spec=('lane', 'x', 0)))
+    out.append(L('jp-road-lane-crosswalk-h', '생활도로 · 횡단보도(가로 도로)', '보도 없는 생활도로 가로 직선 위의 횡단보도 6×4. 가운데 2칸 폭에 흰 줄 8개(칸마다 2개)가 도로 폭을 건넌다(보행 방향 남북). 도로 칸은 jp-road-lane-h 와 같다.',
+                 LR + ' 가로 생활도로의 한 곳을 이 키트로 바꿔 찍는다(직선 키트 위에 덮어쓴다). 횡단보도 양끝은 보도·앞마당 바닥이 받는다. 오토타일 jp-crosswalk-ns 와 이음새가 맞다.', spec=('lanecw', 0), tags=['도로', '횡단보도', '생활도로', '키트']))
+    out.append(L('jp-road-lane-crosswalk-v', '생활도로 · 횡단보도(세로 도로)', '보도 없는 생활도로 세로 직선 위의 횡단보도 4×6. 가운데 2칸 높이에 흰 줄 8개가 도로 폭을 건넌다(보행 방향 동서).',
+                 LR + ' 세로 생활도로의 한 곳을 이 키트로 바꿔 찍는다. 오토타일 jp-crosswalk-ew 와 이음새가 맞다.', spec=('lanecw', 1), tags=['도로', '횡단보도', '생활도로', '키트']))
     for k, (c, ko) in ROT_BEND.items():
         out.append(L('jp-road-lane-bend-' + c, '생활도로 · 굽은 길(%s)' % ko, '생활도로가 직각으로 꺾이는 8×8. %s 방향으로 길이 뻗는다.' % ko, LR, spec=('lane', 'bend', k)))
     for k, (c, ko) in ROT_END.items():
@@ -184,7 +210,7 @@ def _trunk_kits():
     return [
         L('jp-road-trunk-h', '간선도로 4차선 · 직선(가로)', '4차선+중앙분리대 간선도로 가로 직선 8×17. 차선 경계 점선, 분리대는 생울타리.', TR + ' 가로로 반복.', spec=('trunk', 'straight', 0), repeat='repeat', growth='x'),
         L('jp-road-trunk-v', '간선도로 4차선 · 직선(세로)', '4차선+중앙분리대 간선도로 세로 직선 17×8.', TR + ' 세로로 반복.', spec=('trunk', 'straight', 1), repeat='repeat', growth='y'),
-        L('jp-road-trunk-x', '간선도로 4차선 · 십자 교차로(정지선·화살표·횡단보도)', '간선도로 십자 교차로 27×27. 접근로마다 정지선·좌/우회전 화살표·횡단보도, 분리대는 횡단보도 앞에서 끝난다.',
+        L('jp-road-trunk-x', '간선도로 4차선 · 십자 교차로(정지선·화살표·횡단보도)', '간선도로 십자 교차로 29×29. 접근로마다 정지선·좌/우회전 화살표·횡단보도, 분리대는 횡단보도 앞에서 끝난다. 네 모퉁이 보도 끝에 신호기(차량 3색 머리 + 보행 신호 달린 기둥) 4기.',
           TR + ' 사방으로 간선이 이어지는 교차로 한 덩이.', spec=('trunk', 'cross', 0)),
     ]
 
@@ -232,7 +258,7 @@ def _fb(reg):
 def _sg(kind):
     def f(reg):
         if kind == 'tomare':
-            h = reg.copy_ref('prop.stop_sign.c0.r0', 'sg.tomare.head', 'star', '일시정지 표지 머리(止まれ 역삼각)', '빨간 역삼각 일시정지 표지의 머리. 걸어 지나갈 수 있는 윗칸. 글자(止まれ)는 넣지 않았다(16px 에서 읽히지 않음).', ['표지', '일시정지', '윗칸'])
+            h = reg.copy_ref('prop.stop_sign.c0.r0', 'sg.tomare.head', 'star', '일시정지 표지 머리(止まれ 역삼각)', '빨간 역삼각 일시정지 표지의 머리. 걸어 지나갈 수 있는 윗칸. 글자(止まれ)는 도형 안에 못 넣어(16px) 노면 글자 키트(jp-road-mark-tomare-*)가 맡는다.', ['표지', '일시정지', '윗칸'])
             b = reg.copy_ref('prop.stop_sign.c0.r2', 'sg.base', 'solid', '표지 기둥 받침', '표지 기둥과 받침. 막힘.', ['표지', '기둥', '막힘'])
         elif kind == 'mirror':
             h = reg.copy_ref('prop.curve_mirror.c0.r1', 'sg.mirror.head', 'star', '커브 미러 머리', '둥근 커브 미러(주황 테두리). 걸어 지나갈 수 있는 윗칸.', ['표지', '커브미러', '윗칸'])
@@ -244,6 +270,34 @@ def _sg(kind):
             h = reg.add('sg.post.head', art.sign_post_head(), 'star', '도로 표지 기둥 머리(지시 표지)', '파란 사각 지시 표지(흰 화살표). 걸어 지나갈 수 있는 윗칸.', ['표지', '지시표지', '윗칸'])
             b = reg.copy_ref('prop.stop_sign.c0.r2', 'sg.base', 'solid', '표지 기둥 받침', '표지 기둥과 받침. 막힘.', ['표지', '기둥', '막힘'])
         return 1, 2, {(0, 0): (h, 'up'), (0, 1): (b, 'up')}
+    return f
+
+def _sigkit(car, ped, mode):
+    """신호기 1×2. mode 'car': 차량 신호 머리(car) + 기둥 / 'ped': 보행 신호 머리(ped) + 기둥."""
+    def f(reg):
+        b = reg.add('sg.pole', art.signal_pole(), 'solid', '신호기 기둥 받침', '신호기 기둥과 받침판. 막힘.', ['신호기', '기둥', '막힘'])
+        if mode == 'car':
+            h = reg.add('sg.car.' + car, art.signal_car_head(car), 'star', '차량 신호기 머리(%s)' % ('青 켜짐' if car == 'g' else '赤 켜짐'),
+                        '차량용 3색 신호기의 머리(青·黄·赤 가로 하우징, %s). 걸어 지나갈 수 있는 윗칸(사람 위에 그려짐). 아래로 기둥이 이어진다.' % ('青 켜짐: 통행' if car == 'g' else '赤 켜짐: 정지'), ['신호기', '차량', '윗칸'])
+        else:
+            h = reg.add('sg.ped.' + ped, art.signal_ped_head(ped), 'star', '보행자 신호기 머리(%s)' % ('青 걷는 사람' if ped == 'g' else '赤 선 사람'),
+                        '보행자용 신호기의 머리(위 赤 선 사람 · 아래 青 걷는 사람, %s). 걸어 지나갈 수 있는 윗칸. 아래로 기둥이 이어진다.' % ('青 켜짐: 건널 수 있음' if ped == 'g' else '赤 켜짐: 건너지 말 것'), ['신호기', '보행자', '윗칸'])
+        return 1, 2, {(0, 0): (h, 'up'), (0, 1): (b, 'up')}
+    return f
+
+TM = '止まれ'
+TM_DIR = {'n': (0, '북행', (1, 3)), 'e': (1, '동행', (3, 1)), 's': (2, '남행', (1, 3)), 'w': (3, '서행', (3, 1))}
+def _tomare(dkey):
+    """노면 글자 止まれ. 운전자가 앞(진행 방향)을 보고 읽는 방향으로 놓는다: 먼 쪽이 止, 가까운 쪽이 れ, 글자 윗부분은 진행 방향을 향한다."""
+    k, ko, (w, h) = TM_DIR[dkey]
+    def f(reg):
+        items = {}
+        for i, ch in enumerate(TM):                      # i=0 止(먼 쪽) … 2 れ(가까운 쪽)
+            key = reg.planar('mk.tm%d' % i, lambda ch=ch: art.glyph_tile(ch), k, 'flat', '노면 글자 「%s」' % ch,
+                             '도로 노면에 흰 칠로 쓴 「%s」(止まれ 의 한 글자, JIS 16×16 글리프). 도로 위에 얹는 투명 오버레이. 운전자가 읽는 방향에 맞춰 회전한 복사본이 따로 있다.' % ch, ['도로', '止まれ', '글자', '오버레이'])
+            pos = {0: (0, i), 1: (2 - i, 0), 2: (0, 2 - i), 3: (i, 0)}[k]         # 북행: 止 위 · 동행: 止 오른쪽 · 남행: 止 아래 · 서행: 止 왼쪽
+            items[pos] = (key, 'up')
+        return w, h, items
     return f
 
 def _bike(reg):
@@ -261,10 +315,23 @@ def extra_kit_defs():
           '큰 도로 옆 보도에 놓는다. 계단 아래 칸(키트 맨 아래 줄 가운데 두 칸)으로 접근한다. 윗줄(난간·바닥)은 지나갈 수 있는 위층이고 바닥 앞면은 막힌다. 계단 안은 걸을 수 있고 워프 이벤트를 심는다.',
           cellsfn=_fb, snap='free', role='prop', tags=['육교', '계단', '보행교', '키트'], parts=[dict(kind='anchor', x=1, y=4, w=2, h=1, label='육교 계단 아래')],
           access=[dict(x=1, y=5), dict(x=2, y=5)]),
-        L('jp-road-sign-tomare', '일시정지 표지(역삼각)', '빨간 역삼각 일시정지 표지 1×2(止まれ). 글자는 16px 에서 읽히지 않아 역삼각 도형으로 그렸다.', SG, cellsfn=_sg('tomare'), snap='free', role='prop', tags=['표지', '일시정지', '키트']),
+        L('jp-road-sign-tomare', '일시정지 표지(역삼각)', '빨간 역삼각 일시정지 표지 1×2(止まれ 표지). 표지 안에는 글자를 못 넣어(16px) 역삼각 도형이고, 글자는 노면 키트 jp-road-mark-tomare-* 로 정지선 앞에 쓴다.', SG, cellsfn=_sg('tomare'), snap='free', role='prop', tags=['표지', '일시정지', '키트']),
         L('jp-road-sign-mirror', '커브 미러', '둥근 커브 미러 1×2(주황 기둥).', SG, cellsfn=_sg('mirror'), snap='free', role='prop', tags=['표지', '커브미러', '키트']),
         L('jp-road-sign-post', '도로 표지 기둥(지시 표지)', '파란 사각 지시 표지(흰 화살표) 기둥 1×2.', SG, cellsfn=_sg('post'), snap='free', role='prop', tags=['표지', '지시표지', '키트']),
         L('jp-road-sign-coin', '코인 파킹 표지', '파란 바탕 P 의 코인 파킹 표지 1×2.', SG, cellsfn=_sg('coin'), snap='free', role='prop', tags=['표지', '주차', '키트']),
+        L('jp-road-signal-car', '차량 신호기(青)', '차량용 3색 신호기 1×2: 가로 하우징(青·黄·赤)에 青이 켜져 있다(통행). 막힘은 기둥 받침 한 칸.',
+          SG + ' 교차로 모퉁이 보도 가장자리에 세운다. 보도 폭이 2칸이면 한 칸만 막으니 안쪽 칸으로 지나가게 둔다. 정지선 쪽에서 보이는 위치에 놓는다.', cellsfn=_sigkit('g', 'r', 'car'), snap='free', role='prop', tags=['신호기', '차량', '교차로', '키트']),
+        L('jp-road-signal-car-red', '차량 신호기(赤)', '차량용 3색 신호기 1×2: 赤이 켜져 있다(정지). jp-road-signal-car 와 같은 모양.',
+          SG + ' 마주 보는 방향 신호와 짝으로 青/赤을 나눠 세운다.', cellsfn=_sigkit('r', 'r', 'car'), snap='free', role='prop', tags=['신호기', '차량', '교차로', '키트']),
+        L('jp-road-signal-ped', '보행자 신호기(赤)', '보행자 신호기 1×2: 위 창의 赤 선 사람이 켜져 있다(건너지 말 것), 아래 창의 青 걷는 사람은 꺼져 있다.',
+          SG + ' 횡단보도 끝 보도 가장자리에 세운다. 차량 신호와 반대 상태로 짝짓는다.', cellsfn=_sigkit('g', 'r', 'ped'), snap='free', role='prop', tags=['신호기', '보행자', '횡단보도', '키트']),
+        L('jp-road-signal-ped-green', '보행자 신호기(青)', '보행자 신호기 1×2: 青 걷는 사람이 켜져 있다(건널 수 있음).',
+          SG + ' 횡단보도 끝 보도 가장자리에 세운다.', cellsfn=_sigkit('g', 'g', 'ped'), snap='free', role='prop', tags=['신호기', '보행자', '횡단보도', '키트']),
+    ] + [
+        L('jp-road-mark-tomare-' + d, '노면 止まれ (%s 차량이 읽는 방향)' % TM_DIR[d][1], '도로 노면에 흰 칠로 쓴 「止まれ」 %d×%d. 운전자가 %s하며 앞을 보고 읽는 방향: 먼 쪽이 止, 가까운 쪽이 れ. 투명 오버레이.' % (TM_DIR[d][2][0], TM_DIR[d][2][1], TM_DIR[d][1]),
+          '일시정지 표지·정지선 바로 앞 접근 차선(생활도로는 폭 2칸 반쪽)의 아스팔트 위에 얹는다. 도로 아래층이 먼저 깔려 있어야 한다. 걸을 수 있다.', cellsfn=_tomare(d), snap='floor', role='terrain',
+          tags=['도로', '止まれ', '글자', '키트']) for d in 'nesw'
+    ] + [
         L('jp-road-mark-bike-stop', '자전거 정차선', '자전거 대기 위치 표시 1×1(흰 정지선 + 파란 바탕 자전거). 투명 오버레이(평면).', '도로 가장자리 차선 위에 놓는다. 걸을 수 있다.',
           cellsfn=_bike, snap='floor', role='terrain', tags=['도로', '자전거', '정차선', '키트']),
     ]
@@ -275,6 +342,7 @@ def kit_defs():
 def make_spec(reg, kd):
     sp = kd['spec']
     if sp[0] == 'lane': return sp_lane(reg, sp[1], sp[2])
+    if sp[0] == 'lanecw': return sp_lane_cw(reg, sp[1])
     if sp[0] == 'trunk': return sp_trunk_straight(reg, sp[2]) if sp[1] == 'straight' else sp_trunk_cross(reg, 0)
     if sp[0] == 'fumikiri': return sp_fumikiri(reg, sp[1], sp[2])
     raise KeyError(sp)
@@ -343,12 +411,14 @@ def _finalize():
 NOTES = ('도로 키트 블록. 오토타일(autotiles_ground 생활도로·보도 연석, autotiles_lines 선로·생울타리·횡단보도·점자블록)의 칸을 화소 그대로 복사해 쓰고(키트 칸은 같은 블록 칸만 가리킬 수 있어서), '
          '새로 그린 칸은 차선 경계 점선·정지선·방향 화살표 5종×회전·자전거 정차선·건널목 바닥판·경보기·차단기(올림/내림 팔)·지하도·육교·지시 표지뿐이다. '
          '키트는 canonical 방향 하나로 사양을 쓰고 90도 회전해 4방향을 만든다(오토타일 칸은 회전한 지역에서 마스크를 다시 재서 고른다). '
-         '한계: (1) 止まれ 글자는 글리프(glyphs.json)에 없고 16px 에서 읽히지 않아 역삼각 도형만. (2) 차선 폭 3칸 → 간선 4차선 키트가 17칸 높이, 십자는 27×27. '
-         '(3) 건널목은 단선·생활도로(폭 4) 한 가지. (4) 지하도·육교는 북쪽을 향한 한 방향. (5) 신호기·가로등은 시트의 기존 소품(jp-prop-signal 등)을 쓴다.')
+         '한계: (1) 止まれ: 표지는 도형(역삼각)뿐이고, 글자는 노면 키트 jp-road-mark-tomare-{n,e,s,w}(JIS 16×16 글리프 tiledata/jp-city/glyphs.json, 가로 1px 부풀림)가 맡는다 — 운전자가 읽는 방향이라 위에서 보는 지도에서는 북행만 바로 읽힌다. '
+         '(2) 차선 폭 3칸 → 간선 4차선 키트가 17칸 높이, 십자는 29×29. (3) 건널목은 단선·생활도로(폭 4) 한 가지. (4) 지하도·육교는 북쪽을 향한 한 방향. '
+         '(5) 신호기: 간선 십자 교차로 네 모퉁이 4기(차량 3색 머리 + 보행 신호 달린 기둥)와 단독 1×2 키트 4종(차량 青/赤, 보행 赤/青). 신호는 정지 그림이다. 큰 신호기·가로등은 시트의 기존 소품(jp-prop-signal 등). '
+         '(6) 키트의 도로·보도·선로 칸은 오토타일 칸의 복사본이다. 복사 칸은 build() 의 connect_extra 로 원본 오토타일 connectTileIds 에 덧붙어(굽기가 합친다) 에디터에서 키트 곁을 다시 칠해도 이어진다.')
 def build():
     reg, cells, kits, groups, index = _finalize()
     return {'cells': collections.OrderedDict((k, dict(v, img=v['img'].copy(), tags=list(v['tags']))) for k, v in cells.items()),
-            'autotiles': [], 'groups': groups, 'kits': kits, 'notes': NOTES}
+            'autotiles': [], 'groups': groups, 'kits': kits, 'notes': NOTES, 'connect_extra': reg.connect_extra()}
 
 # ───────────── 검사 ─────────────
 def _same_px(a, b):

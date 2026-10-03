@@ -182,6 +182,87 @@ def sign_post_head():
         p.P(6, y, K('tekko', -3)); p.P(7, y, K('tekko', 0)); p.P(8, y, K('tekko', -3)); p.P(9, y, K('tekko', -3))
     return p.img()
 
+# ───────────── 신호기(1x2: 머리칸 + 기둥칸) ─────────────
+# 상태: 'g' 차량 青·보행 青(걷는 사람) / 'r' 차량 赤·보행 赤(선 사람). 기존 시트 jp-prop-signal 과 같은 하우징(tekko) 단·램프 단(midori/kii/aka)을 쓴다.
+def _pole(p, y0, y1):
+    """기둥 4px(x6..9): 윤곽 · 밝은 면 · 어두운 면 · 윤곽."""
+    for y in range(y0, y1 + 1):
+        p.P(6, y, K('tekko', -3)); p.P(7, y, K('tekko', 2)); p.P(8, y, K('tekko', 0)); p.P(9, y, K('tekko', -3))
+
+def _lamp(p, x0, y0, ramp, lit):
+    """3x3 램프. 켜짐: 테두리 단0 · 가운데 단2 · 왼쪽 위 하이라이트. 꺼짐: 어두운 단."""
+    if lit:
+        p.R(x0, y0, x0 + 2, y0 + 2, K(ramp, 0)); p.P(x0 + 1, y0 + 1, K(ramp, 2)); p.P(x0, y0, K('shiro', -1) if ramp == 'midori' else K(ramp, 2)); p.P(x0 + 1, y0, K(ramp, 1))
+    else:
+        p.R(x0, y0, x0 + 2, y0 + 2, K(ramp, -2)); p.P(x0 + 1, y0 + 1, K(ramp, -1))
+
+def signal_car_head(state):
+    """차량 신호 머리칸(1x2 의 윗칸): 가로 하우징에 램프 셋(青·黄·赤 왼쪽→오른쪽), state 'g' 면 青, 'r' 이면 赤이 켜진다. 아래로 기둥이 이어진다."""
+    p = Px(); O = K('tekko', -3)
+    p.R(1, 2, 14, 2, O); p.R(2, 3, 14, 3, K('tekko', 2)); p.R(1, 3, 1, 3, O)             # 윗면(밝음) · 윤곽
+    p.R(1, 4, 14, 11, O)                                                                 # 하우징 몸체(윤곽색)
+    p.R(2, 4, 13, 4, K('tekko', 0))                                                       # 처마 앞단
+    _lamp(p, 2, 6, 'midori', state == 'g'); _lamp(p, 6, 6, 'kii', False); _lamp(p, 10, 6, 'aka', state == 'r')
+    p.R(2, 10, 13, 10, K('tekko', -2))                                                    # 아랫단
+    _pole(p, 11, 15)
+    return p.img()
+
+def _ped_figure(p, x0, y0, ramp, lit, standing):
+    """6x4 창 안의 사람 그림(4행): 선 사람(赤) / 걷는 사람(青)."""
+    rows = (['..XX..', '.XXXX.', '..XX..', '.X..X.'] if standing else ['..XX..', '.XXX..', 'X.XXX.', '..X.X.'])
+    on = K(ramp, 2) if lit else K(ramp, -2)
+    for dy, r in enumerate(rows):
+        for dx, ch in enumerate(r):
+            if ch == 'X': p.P(x0 + dx, y0 + dy, on)
+
+def signal_ped_head(state):
+    """보행자 신호 머리칸(1x2 의 윗칸): 위 창에 선 사람(赤), 아래 창에 걷는 사람(青). state 'r' 이면 赤, 'g' 이면 青이 켜진다. 아래로 기둥이 이어진다."""
+    p = Px(); O = K('tekko', -3)
+    p.R(3, 0, 12, 0, K('tekko', 2)); p.R(3, 1, 12, 12, O)
+    p.R(4, 2, 11, 11, K('tekko', -3))
+    p.R(4, 1, 11, 1, K('tekko', 0))
+    _ped_figure(p, 5, 2, 'aka', state == 'r', True); p.R(5, 6, 10, 6, K('tekko', -2)); _ped_figure(p, 5, 7, 'midori', state == 'g', False)
+    p.R(3, 12, 12, 12, K('tekko', -2))
+    _pole(p, 13, 15)
+    return p.img()
+
+def signal_pole():
+    """신호기 기둥 받침(1x2 의 아랫칸, 막힘): 기둥 + 받침 판."""
+    p = Px(); _pole(p, 0, 13)
+    p.R(5, 14, 10, 15, K('tekko', -1)); p.R(5, 14, 10, 14, K('tekko', 1)); p.R(5, 15, 10, 15, K('sumi', 1)); p.P(5, 14, K('tekko', 3)); p.P(6, 14, K('tekko', 3))
+    return p.img()
+
+def signal_pole_ped(state):
+    """보행자 신호가 달린 기둥 받침(아랫칸, 막힘): 기둥 오른쪽에 4x3 창 둘(위 赤 선 사람 · 아래 青 걷는 사람)이 붙는다. 차량 신호 머리칸 아래에 놓는다."""
+    p = Px(); O = K('tekko', -3)
+    _pole(p, 0, 13)
+    p.R(10, 1, 15, 11, O); p.R(10, 0, 15, 0, K('tekko', 2)); p.R(11, 1, 14, 1, K('tekko', 0)); p.R(11, 2, 14, 10, K('tekko', -3))
+    ra, ga = (state == 'r'), (state == 'g')
+    for (y0, ramp, lit, st) in ((2, 'aka', ra, True), (7, 'midori', ga, False)):
+        on = K(ramp, 2) if lit else K(ramp, -2)
+        rows = (['.XX.', 'XXXX', '.X.X'] if st else ['.XX.', 'XXX.', 'X.XX'])
+        for dy, r in enumerate(rows):
+            for dx, ch in enumerate(r):
+                if ch == 'X': p.P(11 + dx, y0 + dy, on)
+    p.R(10, 5, 15, 5, K('tekko', -2)); p.R(11, 6, 14, 6, O)
+    p.R(5, 14, 10, 15, K('tekko', -1)); p.R(5, 14, 10, 14, K('tekko', 1)); p.R(5, 15, 10, 15, K('sumi', 1)); p.P(5, 14, K('tekko', 3)); p.P(6, 14, K('tekko', 3))
+    return p.img()
+
+# ───────────── 노면 글자(止まれ) ─────────────
+_GLYPHS = {}
+def glyph_tile(ch):
+    """tiledata/jp-city/glyphs.json 의 JIS 16x16 글리프(퍼블릭 도메인 jiskan16) → 흰 글자 16x16 투명 칸. 노면 도장은 칠이 두꺼우니 가로로 1px 부풀린다."""
+    import json
+    if not _GLYPHS:
+        root = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
+        _GLYPHS.update(json.load(open(os.path.join(root, 'tiledata', 'jp-city', 'glyphs.json'), encoding='utf-8')))
+    rows = _GLYPHS[ch].split('/')
+    p = Px(); col = K('shiro', 2)
+    for y, r in enumerate(rows):
+        for x, c in enumerate(r):
+            if c == '1': p.P(x, y, col); p.P(x + 1, y, col)                    # 가로 1px 부풀림: 1px 획은 노면 아스팔트 위에서 가늘어 안 읽힌다
+    return p.img()
+
 # ───────────── 지하도 입구 / 육교 계단 (큰 그림을 그려 칸으로 자른다) ─────────────
 def _slice(big, cols, rows):
     return {(cx, cy): big.crop((cx * 16, cy * 16, cx * 16 + 16, cy * 16 + 16)) for cy in range(rows) for cx in range(cols)}
