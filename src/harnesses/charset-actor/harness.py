@@ -1079,8 +1079,12 @@ def _decisions():
 
 def export_decisions():
     cur = _decisions()
-    EXPORT.write_text(json.dumps(dict(updated=now(), decisions=list(cur.values())), ensure_ascii=False, indent=1) + '\n',
-                      encoding='utf-8')
+    try:
+        previous = json.loads(EXPORT.read_text()).get('decisions')
+    except (OSError, ValueError):
+        previous = None
+    if previous != list(cur.values()):
+        write_json_atomic(EXPORT, dict(updated=now(), decisions=list(cur.values())))
     # 받은 것은 격자·1배 시트를 저장소로 옮긴다(작은 글자 파일 — 다음 단계 번들 등록의 원본)
     # 설명(desc.json)은 <stem>.json 으로 — 조수가 NPC 를 고를 때 읽을 것(label·attributes 는 sharedCharacterGraphics 형식).
     keep = set()
