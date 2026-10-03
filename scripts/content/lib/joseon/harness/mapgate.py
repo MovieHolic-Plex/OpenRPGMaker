@@ -41,8 +41,13 @@ if os.environ.get('JS_PROFILE') == 'interior_b':
     #           (실측 2026-10-04 6방: 물체 피복 0.32~0.39, 겹침 쌍 전부 0)
     # 방 전용 규칙(문 앞 BFS·막힘·일렬·맨바닥 판 등 C1~C8)은 inb_checks.py 가 변환기 통행 규칙으로 따로 건다.
     LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.30, 0
-_IN = os.environ.get('JS_PROFILE') == 'interior_b'
-TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'grove')
+if os.environ.get('JS_PROFILE') == 'palace_int':
+    # 조선 궁 내부(정전 어좌 홀·회랑·침전): interior_b 와 같은 이유로 M1·M2·M4·M6·M7(잔디·나무·건물)은 뜻이 없어 건너뛰고,
+    # M3 물체 피복 ≥ 0.30(벽면+기둥+가구+깔개가 지도에서 차지하는 비율 — 텅 빈 홀을 잡는 선)만 남긴다. 임계는 interior_b 와 같다(풀지 않았다).
+    # M5 겹침 쌍은 끈다(DEPTH_MIN 0): 궁은 단청 보·기둥 머리·병풍이 일부러 겹치는 구조지만 가구끼리의 겹침 금지는 pal_checks C8 이 따로 건다.
+    LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.30, 0
+_IN = os.environ.get('JS_PROFILE') in ('interior_b', 'palace_int')
+TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3
 if os.environ.get('JS_PROFILE') == 'cave':

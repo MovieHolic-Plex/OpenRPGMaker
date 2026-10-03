@@ -1209,6 +1209,308 @@
   },
   "in_b_doorway_dol": {
    "all": "X"
+  },
+  "pal_wall_gung_m": {
+   "all": "X"
+  },
+  "pal_wall_gung_l": {
+   "all": "X"
+  },
+  "pal_wall_gung_r": {
+   "all": "X"
+  },
+  "pal_wall_gung_lr": {
+   "all": "X"
+  },
+  "pal_wall_gungho_m": {
+   "all": "X"
+  },
+  "pal_wall_gungho_l": {
+   "all": "X"
+  },
+  "pal_wall_gungho_r": {
+   "all": "X"
+  },
+  "pal_wall_gungho_lr": {
+   "all": "X"
+  },
+  "pal_door_gung_l": {
+   "all": "X"
+  },
+  "pal_door_gung_open_l": {
+   "all": "X"
+  },
+  "pal_door_gung_r": {
+   "all": "X"
+  },
+  "pal_door_gung_open_r": {
+   "all": "X"
+  },
+  "pal_pillar_dan_2a": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "pal_pillar_dan_3a": {
+   "grid": [
+    "C",
+    "C",
+    "X"
+   ]
+  },
+  "pal_pillar_dan_2b": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "pal_pillar_dan_3b": {
+   "grid": [
+    "C",
+    "C",
+    "X"
+   ]
+  },
+  "pal_pillar_dan_2c": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "pal_pillar_dan_3c": {
+   "grid": [
+    "C",
+    "C",
+    "X"
+   ]
+  },
+  "pal_beam_dan_m": {
+   "all": "C"
+  },
+  "pal_beam_dan_l": {
+   "all": "C"
+  },
+  "pal_beam_dan_r": {
+   "all": "C"
+  },
+  "pal_dais_top_l_m": {
+   "all": "F"
+  },
+  "pal_dais_top_l_b": {
+   "all": "F"
+  },
+  "pal_dais_face_l": {
+   "all": "X"
+  },
+  "pal_dais_top_m_m": {
+   "all": "F"
+  },
+  "pal_dais_top_m_b": {
+   "all": "F"
+  },
+  "pal_dais_face_m": {
+   "all": "X"
+  },
+  "pal_dais_top_r_m": {
+   "all": "F"
+  },
+  "pal_dais_top_r_b": {
+   "all": "F"
+  },
+  "pal_dais_face_r": {
+   "all": "X"
+  },
+  "pal_dais_stair_3": {
+   "all": "F"
+  },
+  "pal_mat_carpet_l_a": {
+   "all": "F"
+  },
+  "pal_mat_carpet_l_b": {
+   "all": "F"
+  },
+  "pal_mat_carpet_l_s": {
+   "all": "F"
+  },
+  "pal_mat_carpet_m_a": {
+   "all": "F"
+  },
+  "pal_mat_carpet_m_b": {
+   "all": "F"
+  },
+  "pal_mat_carpet_m_s": {
+   "all": "F"
+  },
+  "pal_mat_carpet_r_a": {
+   "all": "F"
+  },
+  "pal_mat_carpet_r_b": {
+   "all": "F"
+  },
+  "pal_mat_carpet_r_s": {
+   "all": "F"
+  },
+  "pal_nangan_m": {
+   "all": "X"
+  },
+  "pal_mat_run_m": {
+   "all": "F"
+  },
+  "pal_nangan_l": {
+   "all": "X"
+  },
+  "pal_mat_run_l": {
+   "all": "F"
+  },
+  "pal_nangan_r": {
+   "all": "X"
+  },
+  "pal_mat_run_r": {
+   "all": "F"
+  },
+  "pal_mat_gung_a": {
+   "all": "F"
+  },
+  "pal_mat_gung_b": {
+   "all": "F"
+  },
+  "pal_ilwol_byeongpung": {
+   "grid": [
+    "CCCCCCC",
+    "CCCCCCC",
+    "XXXXXXX"
+   ]
+  },
+  "pal_yongsang": {
+   "all": "X"
+  },
+  "pal_hyangro_a": {
+   "all": "X"
+  },
+  "pal_hyangro_b": {
+   "all": "X"
+  },
+  "pal_buk_big": {
+   "all": "X"
+  },
+  "pal_jong_geori": {
+   "all": "X"
+  },
+  "pal_deungnong_a": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "pal_deungnong_b": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "pal_hang_deungnong_a": {
+   "all": "X"
+  },
+  "pal_hang_deungnong_b": {
+   "all": "X"
+  },
+  "pal_deumeu_a": {
+   "all": "X"
+  },
+  "pal_deumeu_b": {
+   "all": "X"
+  },
+  "pal_byeongpung_gung": {
+   "grid": [
+    "CCCC",
+    "XXXX"
+   ]
+  },
+  "pal_chimgu": {
+   "all": "X"
+  },
+  "pal_seoan": {
+   "all": "X"
+  },
+  "pal_hwaro": {
+   "all": "X"
+  },
+  "pal_chotdae_big": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "pal_yong_jang": {
+   "grid": [
+    "CC",
+    "CC",
+    "XX"
+   ]
+  },
+  "pal_bangseok_a": {
+   "all": "F"
+  },
+  "pal_bangseok_b": {
+   "all": "F"
+  },
+  "pal_bangseok_c": {
+   "all": "F"
+  },
+  "pal_mat_sinha_b1": {
+   "all": "F"
+  },
+  "pal_mat_sinha_b2": {
+   "all": "F"
+  },
+  "pal_mat_sinha_b3": {
+   "all": "F"
+  },
+  "pal_mat_sinha_r1": {
+   "all": "F"
+  },
+  "pal_mat_sinha_r2": {
+   "all": "F"
+  },
+  "pal_mat_sinha_r3": {
+   "all": "F"
+  },
+  "pal_hang_jokja_a": {
+   "all": "X"
+  },
+  "pal_hang_jokja_b": {
+   "all": "X"
+  },
+  "pal_mat_gung_c": {
+   "all": "F"
+  },
+  "pal_mat_runb_m": {
+   "all": "F"
+  },
+  "pal_mat_runb_l": {
+   "all": "F"
+  },
+  "pal_mat_runb_r": {
+   "all": "F"
+  },
+  "pal_step_stone": {
+   "all": "F"
+  },
+  "pal_byeongpung_gung2": {
+   "all": "X"
+  },
+  "pal_bangseok_oa": {
+   "all": "F"
+  },
+  "pal_bangseok_ob": {
+   "all": "F"
+  },
+  "pal_bangseok_oc": {
+   "all": "F"
+  },
+  "pal_seoan_b": {
+   "all": "X"
   }
  },
  "terrain": {
@@ -1530,6 +1832,40 @@
     "in_b_ceil47"
    ],
    "edgeConnects": true
+  },
+  "pal_jeon": {
+   "name": "조선 궁 전돌 바닥",
+   "walk": true
+  },
+  "pal_jeon_sh": {
+   "name": "조선 궁 전돌 바닥 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
+  },
+  "pal_ceil47": {
+   "kind": "blob47",
+   "name": "조선 궁 천장(단청 띠·벽 덩어리·어둠)",
+   "walk": false,
+   "role": "terrain",
+   "connect": [
+    "pal_ceil47"
+   ],
+   "edgeConnects": true
+  },
+  "pal_slab": {
+   "name": "조선 궁 곁 마당 판석",
+   "walk": true
+  },
+  "pal_slab_sh": {
+   "name": "조선 궁 곁 마당 판석 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
+  },
+  "pal_ondol": {
+   "name": "조선 궁 온돌 장판",
+   "walk": true
+  },
+  "pal_ondol_sh": {
+   "name": "조선 궁 온돌 장판 (벽 밑 그늘 변형: 위·왼쪽·위+왼쪽)",
+   "walk": true
   }
  }
 }
