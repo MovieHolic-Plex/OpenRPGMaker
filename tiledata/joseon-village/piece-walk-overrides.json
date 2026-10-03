@@ -1342,6 +1342,11 @@
    "name": "조선 궁 바깥 아랫벽(단청 윗면 + 바깥 회벽면)",
    "walk": false,
    "role": "terrain"
+  },
+  "pal_floor_yard": {
+   "name": "조선 궁 문 앞 디딤돌·박석 마당",
+   "walk": true,
+   "role": "terrain"
   }
  }
 }
