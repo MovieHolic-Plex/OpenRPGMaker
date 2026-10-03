@@ -59,6 +59,14 @@ def bake(spec, no_gate=False):
     for p in ppl:
         if (p['x'], p['y']) == (room.door[0], room.door[1] - 1):
             rep['fails'].append('사람이 들어오는 칸에 서 있다')
+    # 지도 게이트(공간감) — interior 프로필(harness/mapgate.py): 물체 피복·겹침
+    os.environ['JS_PROFILE'] = 'interior_b'
+    import importlib, mapgate
+    importlib.reload(mapgate)
+    gfails, grep = mapgate.check(room.placed, room.direct(), room.obj)
+    rep['info']['mapgate'] = grep
+    for f in gfails:
+        rep['fails'].append('mapgate ' + f)
     ids = room.object_ids()
     direct = room.direct()
     re_ = room.reassemble()
@@ -102,7 +110,7 @@ if __name__ == '__main__':
         if spec['id'] not in want:
             continue
         room, rep, diff, sheet = bake(spec)
-        print(f"{spec['id']:22s} {room.W}x{room.H}  pixelDiffMapVsSheet={diff}  겹침칸 {len(sheet.extra)}  걷는칸 {rep['info']['walkable']}  도달 {rep['info']['reachable']}  가구 {rep['info']['furniture']}  맨바닥 판 {rep['info']['bareLargest']} (엄격 {rep['info']['bareStrict']})")
+        print(f"{spec['id']:22s} {room.W}x{room.H}  pixelDiffMapVsSheet={diff}  겹침칸 {len(sheet.extra)}  걷는칸 {rep['info']['walkable']}  도달 {rep['info']['reachable']}  가구 {rep['info']['furniture']}  물체피복 {rep['info']['mapgate']['obj_cover']} 겹침쌍 {rep['info']['mapgate']['depth_pairs']} 맨바닥 판 {rep['info']['bareLargest']} (엄격 {rep['info']['bareStrict']})")
         for f in rep['fails']:
             print('   FAIL', f)
         for w in rep['warns']:

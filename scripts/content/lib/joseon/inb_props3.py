@@ -104,9 +104,9 @@ def yakcho_basket():
             cv.put(x, y, SW[4] if (x + y) % 3 else SW[3])
     for y in range(3, 9):
         for x in range(2, 14):
-            if ((x - 2) * 0.7 + (y - 3)) < 7.5 and rnd(x, y, 620) > 0.15:
+            if ((x - 2) * 0.7 + (y - 3)) < 7.5 and rnd(x, y, 620) > 0.02:
                 cv.put(x, y, (LF[3], SW[4], DG[4], WD[4])[(x + y * 2) % 4])
-    cv.hl(2, 14, 7, SW[6]); cv.hl(1, 15, 14, SW[1])
+    cv.rect(2, 7, 13, 8, SW[6]); cv.rect(1, 14, 14, 15, SW[2])
     B.outline(cv)
     return cv
 
@@ -370,22 +370,31 @@ def mungseo_ham():
 
 
 def hopi():
-    """호피 깔개 2×2(호랑이 가죽): 주황 바탕 + 검은 줄무늬. 걷는 바닥 장식."""
+    """호피 깔개 2×2(호랑이 가죽): 몸통 둥근 마름모꼴 + 네 다리 + 머리, 주황 바탕 + 갈라진 검은 줄무늬. 걷는 바닥 장식."""
     cv = Cv(32, 32)
-    for y in range(32):
-        for x in range(32):
-            cx, cy = 16, 16
-            d = ((x + 0.5 - cx) / 15.0) ** 2 + ((y + 0.5 - cy) / 13.5) ** 2
-            if d > 1.0: continue
-            cv.put(x, y, PS[4] if d < 0.7 else PS[3])
-    for k in range(7):
-        x = 5 + k * 3
-        for y in range(7, 25):
-            if ((x - 16) / 15.0) ** 2 + ((y - 16) / 13.5) ** 2 < 0.85 and (y + k * 2) % 9 < 4:
-                cv.put(x, y, GI[1]); cv.put(x + 1, y + 1, GI[2])
-    for (x, y) in ((6, 12), (7, 20), (24, 12), (25, 20)):                          # 다리 끝
-        cv.rect(x - 2, y - 2, x + 2, y + 2, PS[3])
-    cv.rect(13, 3, 19, 8, PS[5]); cv.put(14, 5, GI[0]); cv.put(17, 5, GI[0])      # 머리
+
+    def blob(cx, cy, rx, ry, c):
+        for y in range(32):
+            for x in range(32):
+                if ((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - cy) / ry) ** 2 <= 1.0:
+                    cv.put(x, y, c)
+    blob(16, 17, 11.5, 10.5, PS[3])
+    for (lx, ly) in ((6, 9), (26, 9), (5, 25), (27, 25)):                           # 다리
+        blob(lx, ly, 4.2, 4.2, PS[3])
+    blob(16, 5.5, 5.0, 4.2, PS[4]); blob(10.5, 3, 1.8, 1.8, PS[3]); blob(21.5, 3, 1.8, 1.8, PS[3])   # 머리·귀
+    blob(15, 14, 7, 5, PS[4])                                                          # 등 쪽 밝은 결
+    # 줄무늬: 몸통 양옆에서 안쪽으로 짧게 갈라진 줄 (좌우 번갈아)
+    for i, y in enumerate(range(10, 27, 3)):
+        for side in (0, 1):
+            x0 = 6 + (i % 2) if side == 0 else 25 - (i % 2)
+            ln = 4 + (i + side) % 3
+            for k in range(ln):
+                x = x0 + k if side == 0 else x0 - k
+                yy = y + (1 if k >= ln - 1 else 0)
+                cv.put(x, yy, GI[1])
+    for (x, y) in ((16, 2), (14, 4), (18, 4), (16, 8)):                                # 머리 얼굴 줄
+        cv.put(x, y, GI[1])
+    cv.put(14, 6, GI[0]); cv.put(18, 6, GI[0])                                         # 눈
     B.outline(cv)
     return cv
 

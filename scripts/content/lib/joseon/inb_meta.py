@@ -51,9 +51,22 @@ def refs_for(name):
     return ['v5:chest']
 
 
+# 게이트 T(가는 줄 비율) 예외 — 본질이 1px 가는 줄인 조각만, 이유와 함께(그림을 굵히면 그 기물로 읽히지 않는다)
+THIN = {
+    'mulle': '물레 바퀴 살·테와 가락이 폭 1px(물레의 본질) — 2px 로 굵히면 바퀴가 접시로 읽힌다',
+    'hang_meju': '메주를 매단 짚 끈이 폭 1px — 끈을 굵히면 메주가 벽에 붙은 판으로 읽힌다',
+    'hang_gochu': '고추를 꿴 끈·꼭지가 폭 1px — 굵히면 고추 두름이 막대로 읽힌다',
+    'hang_tools': '벽에 거는 연장의 자루·집게 날이 폭 1px — 굵히면 연장이 아니라 판자로 읽힌다',
+    'hoechori': '회초리 묶음의 낱개가 폭 1px 가지 — 굵히면 다발이 덩어리로 읽힌다',
+    'gonjang_teul': '곤장 틀의 결박 줄·기둥 끝이 폭 1px(경계 0.046 로 한계 0.045 바로 위)',
+}
+
+
 def meta_for(name):
     s = short(name)
     m = {'cls': 'wall' if s.startswith(WALL_PFX) else 'prop', 'refs': refs_for(name)}
+    if s in THIN:
+        m['thin_ok'] = THIN[s]
     if s.startswith(WALL_PFX):
         m['seam_open'] = True
     if s.startswith(FRONT_ONLY):

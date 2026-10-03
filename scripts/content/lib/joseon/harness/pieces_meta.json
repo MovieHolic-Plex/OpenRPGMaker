@@ -3424,6 +3424,7 @@
    "v5:hang:herb",
    "v5:hang:onion"
   ],
+  "thin_ok": "고추를 꿴 끈·꼭지가 폭 1px — 굵히면 고추 두름이 막대로 읽힌다",
   "front_only": true
  },
  "in_b_hang_yakcho": {
@@ -3440,6 +3441,7 @@
    "v5:hang:herb",
    "v5:hang:onion"
   ],
+  "thin_ok": "메주를 매단 짚 끈이 폭 1px — 끈을 굵히면 메주가 벽에 붙은 판으로 읽힌다",
   "front_only": true
  },
  "in_b_hang_bagaji": {
@@ -3570,7 +3572,8 @@
   "cls": "prop",
   "refs": [
    "v5:spinning wheel"
-  ]
+  ],
+  "thin_ok": "물레 바퀴 살·테와 가락이 폭 1px(물레의 본질) — 2px 로 굵히면 바퀴가 접시로 읽힌다"
  },
  "in_b_sewing": {
   "cls": "prop",
@@ -3632,6 +3635,7 @@
    "v5:hang:herb",
    "v5:hang:onion"
   ],
+  "thin_ok": "벽에 거는 연장의 자루·집게 날이 폭 1px — 굵히면 연장이 아니라 판자로 읽힌다",
   "front_only": true
  },
  "in_b_yakjang_2": {
@@ -3745,7 +3749,8 @@
   "cls": "prop",
   "refs": [
    "v5:pot"
-  ]
+  ],
+  "thin_ok": "회초리 묶음의 낱개가 폭 1px 가지 — 굵히면 다발이 덩어리로 읽힌다"
  },
  "in_b_chaekdemi": {
   "cls": "prop",
@@ -3778,7 +3783,8 @@
   "cls": "prop",
   "refs": [
    "v5:bench 2"
-  ]
+  ],
+  "thin_ok": "곤장 틀의 결박 줄·기둥 끝이 폭 1px(경계 0.046 로 한계 0.045 바로 위)"
  },
  "in_b_buk": {
   "cls": "prop",

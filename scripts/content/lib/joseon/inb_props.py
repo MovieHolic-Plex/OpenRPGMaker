@@ -246,7 +246,6 @@ def soban(kind='a'):
     for x in (3, 11):                                                          # 다리(가는 개다리)
         cv.rect(x, 10, x + 2, 15, WD[3]); cv.vl(x, 10, 15, WD[5]); cv.rect(x, 14, x + 2, 15, WD[2])
     cv.vl(7, 10, 13, WD[2]); cv.vl(8, 10, 13, WD[1])
-    cv.hl(2, 14, 15, WD[1])
     B.outline(cv)
     return cv
 
