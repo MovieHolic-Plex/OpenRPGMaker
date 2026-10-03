@@ -1704,7 +1704,7 @@
     "slab",
     "slab_edge16"
    ],
-   "edgeConnects": true
+   "edgeConnects": false
   },
   "fld_tall32": {
    "kind": "mask16",
@@ -1713,7 +1713,7 @@
    "connect": [
     "fld_tall32"
    ],
-   "edgeConnects": false
+   "edgeConnects": true
   },
   "fld_forest32": {
    "kind": "mask16",
@@ -1740,9 +1740,10 @@
    "walk": false,
    "connect": [
     "fld_rock32",
-    "fld_face32"
+    "fld_face32",
+    "fld_rock_in8"
    ],
-   "edgeConnects": false,
+   "edgeConnects": true,
    "fold": [
     "fld_rock_in8"
    ]
@@ -1767,7 +1768,7 @@
     "cav_roof47",
     "cav_face24"
    ],
-   "edgeConnects": false
+   "edgeConnects": true
   },
   "cav_face24": {
    "name": "동굴 벽 앞면",

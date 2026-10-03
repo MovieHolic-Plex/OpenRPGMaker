@@ -4152,6 +4152,3544 @@
 ],
 "source": "auto",
 "steps": []
+},
+"fld_cave_a": {
+"w": 5,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXFXX"
+],
+"source": "override",
+"steps": []
+},
+"fld_cave_b": {
+"w": 4,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXXX",
+"XXXX",
+"XFFX"
+],
+"source": "override",
+"steps": []
+},
+"fld_cave_c": {
+"w": 3,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"XFX"
+],
+"source": "override",
+"steps": []
+},
+"fld_signpost": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_campfire": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_tent_b": {
+"w": 4,
+"h": 3,
+"cls": "prop",
+"rows": [
+".XX.",
+"FXXF",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_tent_a": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FXF",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_rack": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_log_b": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_stump_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_stump_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_bones_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"fld_ruin_pagoda": {
+"w": 2,
+"h": 3,
+"cls": "prop",
+"rows": [
+"F.",
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_tombstone": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_grave_a": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_grave_b": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_cairn": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_burrow": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"fld_rock_s_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_dead_a": {
+"w": 3,
+"h": 4,
+"cls": "prop",
+"rows": [
+"CCC",
+"CCC",
+".C.",
+"FXF"
+],
+"source": "override",
+"steps": []
+},
+"fld_bones_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"fld_rock_m_b": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_rock_s_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_rock_s_c": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_ore_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fld_rock_m_a": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_ore_b": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_pine_d": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXFF"
+],
+"source": "auto",
+"steps": []
+},
+"fld_pine_b": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+".CCC",
+"CCCC",
+"CCCC",
+".CCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"fld_pine_c": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+".CCC",
+"CCCC",
+"CCCC",
+".CCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"fld_zelkova_b": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"fld_zelkova_d": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"fld_zelkova_c": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"fld_pine_a": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXFF"
+],
+"source": "auto",
+"steps": []
+},
+"fld_zelkova_a": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"fld_boulder_mass": {
+"w": 4,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXXX",
+"XXXX",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_rock_l_a": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_rock_l_b": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_flowers_c": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"fld_flowers_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"fld_flowers_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"fld_bush_flower_b": {
+"w": 2,
+"h": 1,
+"cls": "bush",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_log_a": {
+"w": 3,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"fld_fern": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"fld_dead_b": {
+"w": 3,
+"h": 4,
+"cls": "prop",
+"rows": [
+"CCC",
+"CCC",
+".C.",
+"FXF"
+],
+"source": "override",
+"steps": []
+},
+"cav_brazier": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_stalagmite_wide": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"cav_crystal_b": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"cav_chest_dais": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"cav_crystal_c": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_cart": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"cav_nest": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"cav_stalagmite_b": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_crystal": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_torch_a": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"cav_torch_b": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"cav_stalagmite": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_stalagmite_c": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_mushroom_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_mushroom_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_rock_c": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_rubble": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"cav_rock_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"cav_rock_b": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"cav_moss": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"cav_puddle": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_hoe_m": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_hoe_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_hoe_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_hoe_lr": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_mok_m": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_mok_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_mok_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_mok_lr": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_heuk_m": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_heuk_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_heuk_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_heuk_lr": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_dol_m": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_dol_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_dol_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_dol_lr": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_changho_m": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_changho_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_changho_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_wall_changho_lr": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_win_hoe": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_win_round": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_win_mok": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_win_heuk": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_door_slide_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_door_slide_open_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_door_slide_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_door_slide_open_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_door_plank": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_door_open": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pillar_2": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pillar_3": {
+"w": 1,
+"h": 3,
+"cls": "prop",
+"rows": [
+"X",
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_beam_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"in_b_beam_l": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"in_b_beam_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pillar_red_2": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pillar_red_3": {
+"w": 1,
+"h": 3,
+"cls": "prop",
+"rows": [
+"X",
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_beam_red_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"in_b_beam_red_l": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"in_b_beam_red_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"in_b_stair_up_3": {
+"w": 3,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_stair_up_2": {
+"w": 2,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XX",
+"XX",
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ladder_loft": {
+"w": 1,
+"h": 3,
+"cls": "prop",
+"rows": [
+"X",
+"X",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_stair_down": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_stair_dais_3": {
+"w": 3,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_stair_dais_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dais_wood_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dais_stone_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dais_wood_l": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dais_stone_l": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dais_wood_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dais_stone_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dais_wood_lr": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dais_stone_lr": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_exit_mat": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_byeongpung_a": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_byeongpung_b": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_byeongpung_c": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_byeongpung_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_byeongpung_2d": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_byeongpung_2e": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_byeongpung_royal": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ibuljang": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_nong_1": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_nong_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_bandaji_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_bandaji_1": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_munggap": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_soban_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_soban_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_soban_c": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_sang_low_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_gyojasang_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_gyojasang_3": {
+"w": 3,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hwaro": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_deungjan_stand": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_deungjan": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_chotdae": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_banseok_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_banseok_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_banseok_g": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_banseok_s": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_jip_2x2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FF",
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_jip_3x2": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FFF",
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_jip_2x2b": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FF",
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_jip_2x2c": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FF",
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_jip_3x2c": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FFF",
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_dot_2x2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FF",
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ibul_r": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ibul_b": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ibul_folded": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_jokja_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_jokja_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_jokja_c": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hang_sirae": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hang_gochu": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hang_yakcho": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hang_meju": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hang_bagaji": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pyeongsang_3": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pyeongsang_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_geolsang_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_stool": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_bumak_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_bumak_3": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hangari_s": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hangari_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hangari_straw": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dok_big": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ssal_dwiju": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_muldongi": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_sokuri_veg": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_sokuri_grain": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_sokuri_fruit": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_jangjak": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_seonban_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_betul": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mulle": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_sewing": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pungmu": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_moru": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_sutdeomi": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hwadeok_3": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_dameum": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_sutdol": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_cheol": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_gongjang": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hang_tools": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_yakjang_2": {
+"w": 2,
+"h": 3,
+"cls": "prop",
+"rows": [
+"CC",
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_yakjang_1": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_yakdang": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_yakyeon": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_jakdu": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_yak_table": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_yakcho_basket": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_suldok": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_sulsang": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_juga_3": {
+"w": 3,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_juga_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_seoan": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_seoan_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_seoga_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_seoga_1": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_boryo_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ansuk": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_hoechori": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_chaekdemi": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_gwan_desk_3": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_gwan_desk_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_gyoui": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_gonjang_teul": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_buk": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mungseo_ham": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_hopi": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FF",
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_throne": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_carpet_v4": {
+"w": 1,
+"h": 4,
+"cls": "prop",
+"rows": [
+"F",
+"F",
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_stair_dais_wood_3": {
+"w": 3,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_stair_dais_wood_2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_gonjang_geori": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pyeongsang_3b": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pyeongsang_2b": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pyeongsang_2c": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_pyeongsang_3c": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mangchi_teul": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_yakseonban_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ibul_wide_r": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_banseok_round_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ibul_wide_b": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_banseok_round_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_ibul_wide_g": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_banseok_round_g": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"in_b_weapon_rack_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_tool_rack_2": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"in_b_doorway_hoe": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_doorway_mok": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_doorway_heuk": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_doorway_dol": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_jip_2x2__s11": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FF",
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"in_b_mat_jip_3x2__s11": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"FFF",
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"pal_wall_gung_m": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_wall_gung_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_wall_gung_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_wall_gung_lr": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_wall_gungho_m": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_wall_gungho_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_wall_gungho_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_wall_gungho_lr": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_door_gung_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_door_gung_open_l": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_door_gung_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_door_gung_open_r": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_pillar_dan_2a": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_pillar_dan_3a": {
+"w": 1,
+"h": 3,
+"cls": "prop",
+"rows": [
+"C",
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_pillar_dan_2b": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_pillar_dan_3b": {
+"w": 1,
+"h": 3,
+"cls": "prop",
+"rows": [
+"C",
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_pillar_dan_2c": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_pillar_dan_3c": {
+"w": 1,
+"h": 3,
+"cls": "prop",
+"rows": [
+"C",
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_beam_dan_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"pal_beam_dan_l": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"pal_beam_dan_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"C"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_top_l_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_top_l_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_face_l": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_top_m_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_top_m_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_face_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_top_r_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_top_r_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_face_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_dais_stair_3": {
+"w": 3,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_l_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_l_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_l_s": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_m_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_m_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_m_s": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_r_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_r_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_carpet_r_s": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_nangan_m": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_run_m": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_runb_m": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_nangan_l": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_run_l": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_runb_l": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_nangan_r": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_run_r": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_runb_r": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_gung_a": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_gung_b": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_gung_c": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_step_stone": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_ilwol_byeongpung": {
+"w": 7,
+"h": 3,
+"cls": "prop",
+"rows": [
+"CCCCCCC",
+"CCCCCCC",
+"XXXXXXX"
+],
+"source": "override",
+"steps": []
+},
+"pal_yongsang": {
+"w": 3,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"pal_hyangro_a": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_hyangro_b": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_buk_big": {
+"w": 2,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XX",
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_jong_geori": {
+"w": 3,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "override",
+"steps": []
+},
+"pal_deungnong_a": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_deungnong_b": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_hang_deungnong_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_hang_deungnong_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_deumeu_a": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_deumeu_b": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_byeongpung_gung": {
+"w": 4,
+"h": 2,
+"cls": "prop",
+"rows": [
+"CCCC",
+"XXXX"
+],
+"source": "override",
+"steps": []
+},
+"pal_byeongpung_gung2": {
+"w": 4,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXXX",
+"XXXX"
+],
+"source": "override",
+"steps": []
+},
+"pal_bangseok_oa": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_bangseok_ob": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_bangseok_oc": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_chimgu": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_seoan": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_seoan_b": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_hwaro": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_chotdae_big": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_yong_jang": {
+"w": 2,
+"h": 3,
+"cls": "prop",
+"rows": [
+"CC",
+"CC",
+"XX"
+],
+"source": "override",
+"steps": []
+},
+"pal_bangseok_a": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_bangseok_b": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_bangseok_c": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"F"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_sinha_b1": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_sinha_b2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_sinha_b3": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_sinha_r1": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_sinha_r2": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_mat_sinha_r3": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"pal_hang_jokja_a": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
+},
+"pal_hang_jokja_b": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "override",
+"steps": []
 }
 }
 }
