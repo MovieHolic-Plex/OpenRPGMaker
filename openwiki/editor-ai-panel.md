@@ -558,6 +558,13 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 
 ## 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
 
+첫 프로젝트 기획 핸드오프(2026-10-03)는 입력창 요약과 모델 지시문 전체를 분리해 보내며,
+연결 캐시의 `checking` 결과로 자동 실행을 포기하지 않는다. `projectInterviewStartup`이 인증 조회를
+기다리고 연결 복구를 구독한다. 실행 대기 표시는 `projectInterviewExecutionClaim`이 Pi 캡처 전에
+저장하고, 워커 시작 전 전송 실패에는 복구한다. 패널 boot target은 기록 복원과 유휴 턴을 기다린 뒤
+분류 전에 슬롯을 잡는다. 장르 기획은 집/마을 그래픽 선택을 다시 요구하지 않는다.
+상세와 브라우저 증거 범위는 `editor-genre-packs.md`의 «Confirmed brief automatic execution»을 따른다.
+
 조수 세션이 deprecated 되면서 «어느 루프로 가는가» 를 답하던 경로 enum(`session` · `pi-agent`)이
 사라졌다. 남은 축은 둘뿐이다: **무엇을 해도 되는가**(자율성 다이얼 → Pi 노브)와 **몇 명이 도는가**
 (`AiConfig.piTeam`).

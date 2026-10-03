@@ -9,16 +9,17 @@ import type { Project } from '@/project/types';
 vi.mock('@/project/store', () => ({store:{getCurrent:vi.fn(),getProjectIdentity:vi.fn(),update:vi.fn(),replace:vi.fn(),flush:vi.fn()}}));
 vi.mock('@/editor/aiBootIntent', () => ({setPendingAiBootIntent:vi.fn()}));
 vi.mock('@/ai/assistantEndpoint', () => ({resolveSurfaceAiConfig:vi.fn(()=>({})),isAssistantEndpointReady:vi.fn(()=>true)}));
-vi.mock('@/editor/panels/aiConnectionStatus', () => ({getAiConnectionStatus:vi.fn(()=>({}))}));
+vi.mock('@/editor/panels/aiConnectionStatus', () => ({getAiConnectionStatus:vi.fn(()=>({})),refreshAiConnectionStatus:vi.fn(async()=>{}),AI_CONNECTION_STATUS_CHANGED_EVENT:'oprn:ai-connection-status-changed'}));
 vi.mock('@/project/playableSegment', () => ({withVerifiedPlayableSegment:vi.fn(()=>null)}));
 vi.mock('@/util/toast', () => ({toast:vi.fn()}));
 let project: Project;
+let scope = 0;
 beforeEach(()=>{
  vi.clearAllMocks();
  configureProjectInterviewBootPreparation(async()=>{});
  project={system:{},gameDesignBrief:{...interviewBrief('story-cutscene'),generationPending:true}} as Project;
  vi.mocked(store.getCurrent).mockImplementation(()=>project);
- vi.mocked(store.getProjectIdentity).mockReturnValue({kind:'remote',id:'qa-new-folder'});
+ vi.mocked(store.getProjectIdentity).mockReturnValue({kind:'remote',id:`qa-new-folder-${++scope}`});
  vi.mocked(store.update).mockImplementation(fn=>{fn(project);});
  vi.mocked(store.flush).mockResolvedValue({kind:'saved'} as Awaited<ReturnType<typeof store.flush>>);
  vi.mocked(isAssistantEndpointReady).mockReturnValue(true);
@@ -26,7 +27,7 @@ beforeEach(()=>{
 it('publishes model-only tasks after canonical save, with a short display and a one-turn team option',async()=>{
  vi.mocked(store.flush).mockImplementation(async()=>{
   expect(setPendingAiBootIntent).not.toHaveBeenCalled();
-  expect(project.gameDesignBrief?.generationPending).toBeUndefined();
+  expect(project.gameDesignBrief?.generationPending).toBe(true);
   return {kind:'saved'} as Awaited<ReturnType<typeof store.flush>>;
  });
  await prepareProjectInterviewStartup();
@@ -73,10 +74,11 @@ it('does not launch a saved old brief into a different project opened during the
  await prepareProjectInterviewStartup();
  expect(setPendingAiBootIntent).not.toHaveBeenCalled();
 });
-it('prefills instead of auto-sending when disconnected, retaining internal tasks for the later send',async()=>{
+it('keeps the durable retry marker when disconnected, retaining internal tasks for connection recovery',async()=>{
  vi.mocked(isAssistantEndpointReady).mockReturnValue(false);
  await prepareProjectInterviewStartup();
  expect(setPendingAiBootIntent).toHaveBeenCalledWith(expect.stringContaining('"id":"P03"'),expect.objectContaining({autoSend:false,team:true}));
+ expect(project.gameDesignBrief?.generationPending).toBe(true);
 });
 it('cannot publish two requests when startup is entered again while its save is pending',async()=>{
  let saved!: (value: Awaited<ReturnType<typeof store.flush>>) => void;
