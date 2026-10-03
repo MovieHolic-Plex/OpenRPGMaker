@@ -492,7 +492,7 @@ def tree_name_ok(nm, x, y):
 def near_trunk(nm, x, y, dmin=2.4, dvar=1.8):
     """이미 놓은 나무 밑동과 너무 붙지 않게: 최소 거리가 자리마다 잡음으로 달라(dmin..dmin+dvar) 간격이 고르지 않다."""
     bx, by = base_of(nm, x, y)
-    need = dmin + dvar * vnoise(int(bx * 2), int(by * 2), 91, 4.0)
+    need = dmin + dvar * (0.35 * vnoise(int(bx * 2), int(by * 2), 91, 4.0) + 0.65 * rnd(int(bx), int(by), 92))
     for (n2, x2, y2) in TREEPOS:
         if n2.startswith('bush'): continue
         b2x, b2y = base_of(n2, x2, y2)
@@ -569,7 +569,7 @@ def glade(x, y):
     return vnoise(x, y, 95, 6.5) < 0.22
 
 
-def plant(region, seed, dmin=2.4, dvar=1.8, tries=20000, ok=OKG, conn=True, use_glade=False, density=1.0, names=None, passes=4):
+def plant(region, seed, dmin=2.4, dvar=1.8, tries=20000, ok=OKG, conn=True, use_glade=False, density=1.0, names=None, passes=4, clump=True):
     rg = random.Random(seed)
     base = sorted(region)
     n = 0
@@ -578,6 +578,7 @@ def plant(region, seed, dmin=2.4, dvar=1.8, tries=20000, ok=OKG, conn=True, use_
         c2 = list(base); rg.shuffle(c2); cand += c2[:tries]
     for (cx, cy) in cand:
         if density < 1.0 and rg.random() > density: continue
+        if clump and rg.random() > 0.10 + 0.90 * min(1.0, max(0.0, (vnoise(cx, cy, 101, 6.0) - 0.22) / 0.40)): continue      # 덩이(밀집)와 빈 틈이 섞여 간격이 균일하지 않다
         if use_glade and glade(cx, cy): continue
         nm = rg.choice(names) if names else pick_species(rg, cx, cy)
         cv = kit.objects[nm]
@@ -614,7 +615,13 @@ def line_hit(nm, x, y):
 
 
 def prop_ok(nm, x, y, gap):
-    """같은 소품은 gap 칸 이상 떨어지고, 다른 소품은 2칸 이상(겹침 방지). 같은 소품 셋이 등간격 일렬이 되는 자리는 거른다."""
+    """같은 소품은 gap 칸 이상 떨어지고, 다른 소품은 2칸 이상(겹침 방지). 같은 소품 셋이 등간격 일렬이 되는 자리는 거른다. 같은 소품이 같은 열·줄(12칸 안)에 이미 둘 있으면 거른다."""
+    same = [(a, b) for (n, a, b) in PROPPOS if n == nm]
+    for (u, v_, pu, pv) in ((x, y, 0, 1), (y, x, 1, 0)):               # 같은 열(x 같음)·같은 줄(y 같음): 길이 12칸 창에 셋이 되면 거른다
+        line = sorted([p[pv] for p in same if p[pu] == u] + [v_])
+        i = line.index(v_)
+        for a_ in range(max(0, i - 2), i + 1):
+            if a_ + 2 < len(line) and line[a_ + 2] - line[a_] <= 12: return False
     for (n, a, b) in PROPPOS:
         g = gap if n == nm else 2
         if abs(a - x) < g and abs(b - y) < g:
@@ -668,19 +675,19 @@ LOG['ore'] = scatter(['fld_ore_a', 'fld_ore_b'], RK, 4, ok=('rock',), gap=7, see
 
 # --- 가장자리 나무: 북쪽 띠(어귀 길 둘레는 비운다)·서쪽·남쪽·바위산 북쪽 발치
 ALLT = ZEL + PIN
-fre = lambda x0, y0, x1, y1: {(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1) if KG[y][x] in (None, 'tall', 'forest')}
+fre = lambda x0, y0, x1, y1: {(x, y) for y in range(max(0, y0), min(MH - 1, y1) + 1) for x in range(max(0, x0), min(MW - 1, x1) + 1) if KG[y][x] in (None, 'tall', 'forest')}
 wood = lambda x, y, s, th: vnoise(x, y, s, 8.0) > th                                      # 숲덩이 모양(직선 줄 금지): 잡음이 높은 곳만 숲
 NW = {c for c in fre(0, 9, 40, 25) if wood(c[0], c[1], 96, 0.22)}
 NE = {c for c in fre(56, 9, 72, 24) if wood(c[0], c[1], 97, 0.33)}
-SOUTH = {c for c in fre(0, 85, 95, 95) if wood(c[0], c[1], 98, 0.12)}
+SOUTH = {c for c in fre(0, 76, 95, 95) if vnoise(c[0], c[1], 98, 8.0) > 0.60 - (c[1] - 76) * 0.032}
 WESTE = {c for c in fre(0, 49, 6, 84) if wood(c[0], c[1], 99, 0.22)}
 SE = {c for c in fre(82, 55, 95, 84) if wood(c[0], c[1], 100, 0.20)}
 LOG['t_nw'] = plant(NW, seed=31, dmin=2.6, dvar=2.0)
 LOG['t_ne'] = plant(NE, seed=32, dmin=3.0, dvar=2.2)
 LOG['t_west'] = plant(WESTE, seed=33, dmin=3.0, dvar=2.2)
-LOG['t_south'] = plant(SOUTH, seed=34, dmin=2.6, dvar=2.0)
+LOG['t_south'] = plant(SOUTH, seed=134, dmin=2.6, dvar=2.0)
 LOG['t_se'] = plant(SE, seed=35, dmin=2.8, dvar=2.0)
-COPSE = [(25, 57, 4.5), (39, 63, 3.5), (62, 63, 4), (66, 46, 3.5), (29, 36, 4), (56, 28, 3.5), (36, 14, 3.5), (68, 18, 3), (12, 57, 4), (24, 61, 3.5), (8, 66, 3), (18, 14, 4.5), (28, 22, 3.5), (60, 80, 3.5), (30, 82, 3), (66, 62, 3)]       # 초원 속 작은 숲덩이(수종 한 줄 심기가 아니라 둥근 군락)
+COPSE = [(25, 57, 4.5), (39, 63, 3.5), (62, 63, 4), (66, 46, 3.5), (29, 36, 4), (56, 28, 3.5), (36, 14, 3.5), (68, 18, 3), (12, 57, 4), (24, 61, 3.5), (8, 66, 3), (18, 14, 4.5), (28, 22, 3.5), (60, 80, 3.5), (30, 82, 3), (66, 62, 3), (88, 87, 4), (90, 66, 3.5), (84, 92, 3)]       # 초원 속 작은 숲덩이(수종 한 줄 심기가 아니라 둥근 군락)
 cop = set()
 for (cx, cy, r) in COPSE:
     cop |= {(x, y) for (x, y) in fre(cx - 5, cy - 5, cx + 5, cy + 5) if ((x - cx) / r) ** 2 + ((y - cy) / (r * 0.8)) ** 2 <= 1.0 + 0.3 * (rnd(x, y, 77) - 0.5)}
@@ -806,7 +813,51 @@ def relieve_lawn(limit=0.23, rounds=260):
     return rounds, None
 
 
+def roughen_tall(p=0.38, seed=5):
+    """풀 덩이 경계의 직선 구간을 깬다: 경계 칸을 확률로 지우고 1칸 가시·홈을 다듬는다. 이미 놓인 물체와 길은 건드리지 않는다."""
+    rg = random.Random(seed)
+    tl = kit.cells_of('tall')
+    for (x, y) in sorted(tl):
+        if any((x + dx, y + dy) not in tl for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))) and rg.random() < p:
+            KG[y][x] = None
+    tl2 = kit.cells_of('tall')
+    for (x, y) in tl2 - smooth(tl2, 1): KG[y][x] = None
+
+
+roughen_tall()
 print('맨 잔디 창 완화', relieve_lawn())
+
+
+def tall_comps():
+    left, out = set(kit.cells_of('tall')), []
+    while left:
+        c0 = left.pop(); comp = {c0}; st = [c0]
+        while st:
+            x, y = st.pop()
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                q = (x + dx, y + dy)
+                if q in left: left.discard(q); comp.add(q); st.append(q)
+        out.append(comp)
+    return out
+
+
+def derect(limit=0.80, rounds=6):
+    """직사각 풀 덩이(경계 상자 채움 비율 > limit)는 모서리 칸을 깎아 둥글게 한다."""
+    for r in range(rounds):
+        bad = 0
+        for comp in tall_comps():
+            xs, ys = [c[0] for c in comp], [c[1] for c in comp]
+            bw, bh = max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
+            if len(comp) >= 25 and bw >= 5 and bh >= 4 and len(comp) / float(bw * bh) > limit - 0.04:
+                bad += 1
+                cx, cy = (min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0
+                for (x, y) in sorted(comp, key=lambda c: -(((c[0] - cx) / bw) ** 2 + ((c[1] - cy) / bh) ** 2))[:max(2, len(comp) // 9)]:
+                    KG[y][x] = None
+        if not bad: return r
+    return rounds
+
+
+print('직사각 풀 덩이 깎기', derect())
 
 # 지도 위 점검에서 걸리는 줄 심기: 같은 소품 셋 일렬 · 나무 셋 일렬(축·대각 등간격)은 가운데를 뽑는다
 def fix_lines():
@@ -889,6 +940,70 @@ def audit_all():
     # 4) 10×10 완전 빈 땅 금지
     pl = FM.audit_plain(kit, 10)
     if pl: probs.append('10×10 빈 광장 %d: %s' % (len(pl), pl[:4]))
+    # 4b) 같은 종 정렬 금지: 같은 이름 소품·나무가 같은 열(x)·같은 줄(y)에 3개 이상이면(간격이 달라도) 꼬치/줄 — 거리 12칸 안
+    by = collections.defaultdict(list)
+    for (n, x, y, w, h) in kit.placed:
+        if n.startswith(('fort_', 'fld_cave', 'jangseung')): continue
+        by[n].append((x + w // 2, y + h - 1))
+    al = []
+    for n, v in by.items():
+        for axis in (0, 1):
+            for (px, py) in v:
+                grp = [q for q in v if q[axis] == (px, py)[axis] and 0 <= q[1 - axis] - (px, py)[1 - axis] <= 12]
+                if len(grp) >= 3:
+                    al.append((n, axis, (px, py), len(grp)))
+                    if os.environ.get('JS_DBG'): print('  정렬', n, axis, sorted(grp))
+    if al: probs.append('같은 종 정렬(같은 열·줄 3개 이상) %d: %s' % (len(al), al[:4]))
+    # 4c) 직사각 풀 덩이 금지: 키 큰 풀 연결 덩어리의 경계 상자가 5×4 이상이고 채움 비율 0.82 초과면 직사각 도장
+    tallset = kit.cells_of('tall')
+    left, rect_bad = set(tallset), []
+    while left:
+        c0 = left.pop(); comp = {c0}; st = [c0]
+        while st:
+            x, y = st.pop()
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                q = (x + dx, y + dy)
+                if q in left: left.discard(q); comp.add(q); st.append(q)
+        xs, ys = [c[0] for c in comp], [c[1] for c in comp]
+        bw, bh = max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
+        if len(comp) >= 25 and bw >= 5 and bh >= 4 and len(comp) / float(bw * bh) > 0.80: rect_bad.append((min(xs), min(ys), bw, bh))
+    if rect_bad: probs.append('직사각 풀 덩이 %d: %s' % (len(rect_bad), rect_bad[:4]))
+    # 4d) 맨 바위 판 금지: 바위 윗면 8×8 창에 물체 그림이 하나도 없으면 맨 자갈판(바위 윗면 소품 군집이 있어야)
+    rockset = kit.cells_of('rock')
+    bare_rock = []
+    for y in range(MH - 7):
+        for x in range(MW - 7):
+            win = [(x + i, y + j) for i in range(8) for j in range(8)]
+            if all(c in rockset and c not in kit.DRAWN for c in win): bare_rock.append((x, y))
+    if bare_rock: probs.append('맨 바위 판 8×8 %d: %s' % (len(bare_rock), bare_rock[:4]))
+    # 4e) 격자 배치 금지: 24×24 블록마다 나무 8그루 이상이면 「최근접 이웃이 축 방향(가로·세로 ±19° 안)에 있는 비율」이 12그루 이상이면 0.65 미만, 8~11그루면 0.78 미만(무작위 기대값 0.43)
+    tb = [(base_of(n, x, y)) for (n, x, y) in TREEPOS if not n.startswith('bush')]
+    grid_bad = []
+    for by0 in range(0, MH, 24):
+        for bx0 in range(0, MW, 24):
+            pts = [p for p in tb if bx0 <= p[0] < bx0 + 24 and by0 <= p[1] < by0 + 24]
+            if len(pts) < 8: continue
+            ax = 0
+            for p in pts:
+                q = min((q for q in tb if q is not p), key=lambda q: math.hypot(p[0] - q[0], (p[1] - q[1]) * 1.35))
+                dx, dy = abs(p[0] - q[0]), abs(p[1] - q[1]) * 1.35
+                if min(dx, dy) <= 0.35 * max(dx, dy): ax += 1
+            if ax / float(len(pts)) >= (0.65 if len(pts) >= 12 else 0.78):      # 무작위 배치의 기대값은 0.43(축 ±19°) — 격자·줄은 1.0 에 가깝다
+                grid_bad.append((bx0, by0, round(ax / float(len(pts)), 2)))
+                if os.environ.get('JS_DBG'): print('  격자', bx0, by0, sorted(pts, key=lambda p: (p[1], p[0])))
+    if grid_bad: probs.append('나무가 격자·줄 배치 %s' % grid_bad[:4])
+    # 4f) 맨 풀 판 금지: 평범한 풀(지형 종류 없음 + 물체 그림 없음)만으로 된 창이 있으면 안 된다 — 8×6, 6×8 (가시 영역을 채우지 말고 지형·앵커로 용도를 준다)
+    P_ = np.zeros((MH, MW), np.int32)
+    for y in range(9, MH):
+        for x in range(MW):
+            if KG[y][x] is None and (x, y) not in kit.DRAWN: P_[y, x] = 1
+    ii_ = np.pad(P_.cumsum(0).cumsum(1), ((1, 0), (1, 0)))
+    gap_bad = []
+    for (ww, hh) in ((8, 6), (6, 8)):
+        for y in range(9, MH - hh + 1):
+            for x in range(0, MW - ww + 1):
+                if ii_[y + hh, x + ww] - ii_[y, x + ww] - ii_[y + hh, x] + ii_[y, x] == ww * hh: gap_bad.append((x, y, ww, hh))
+    if gap_bad: probs.append('맨 풀 판 %d: %s' % (len(gap_bad), gap_bad[:6]))
     # 5) 길은 어디론가 이어진다: 짐승길 덩어리마다 목적(앵커·마당·출구·다른 길)에 닿는다 — 도달성 + 막다른 길 점검이 이미 보장. 마스크 일관은 아래.
     gr = ground_ids()
     inv = {}
