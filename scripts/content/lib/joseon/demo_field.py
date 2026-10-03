@@ -466,7 +466,7 @@ pw(20, 70)
 for (nm, x, y) in (('fld_tombstone', 9, 77), ('fld_grave_a', 4, 76), ('fld_grave_b', 13, 78), ('fld_grave_a', 5, 80), ('fld_grave_b', 11, 81), ('fld_grave_a', 14, 74), ('fld_cairn', 27, 69)):   # 석비를 무덤터 한가운데에 둔다
     if put(nm, x, y, ok=OKG, vis=False): keep_visible(nm, x, y, up=3, side=1)
     else: print('  못 놓음', nm, x, y)
-pw(9, 76); put('fence_h', 8, 83, ok=OKG, vis=False); put('lantern', 7, 75, ok=OKG, vis=False)
+pw(9, 76); put('lantern', 7, 75, ok=OKG, vis=False)
 # 줄기길 곁가지 끝의 목적지: 짐승굴(스폰)·이정표
 put('fld_burrow', 33, 32, ok=OKG, vis=False); put('fld_bones_a', 34, 34, ok=OKG, vis=False)
 put('fld_signpost', 56, 47, ok=('yard',), vis=False); put('fld_cairn', 61, 47, ok=('yard',), vis=False); put('fld_rock_s_b', 63, 45, ok=OKG + ('yard',), vis=False)    # 성벽 토막 앞 마당
