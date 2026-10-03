@@ -5,6 +5,27 @@
 
 <!-- releases -->
 
+## 0.89.0 — 2026-10-03
+
+### 기능
+
+- **modern-city** — 참고문서 49편·예제 도시 맵 60x60·지역 등록·도달성/변조 검증 (`35b74fe`)
+- **modern-city** — 번들 타일셋 modern_city — 굽기(bake_tileset.py)·시트 9998칸·키트 575·번들 배선 (`cc42b8f`)
+
+### 수정
+
+- **assets** — keep retired RTP category lists typed when empty (`7ca33af`)
+
+### 문서
+
+- openwiki INDEX 재생성(modern-city) (`e5e3099`)
+- **modern-city** — 굽기 절·위키 색인 (`b36f889`)
+
+### 잡무
+
+- **modern-chipset** — 합격 후보 사본 tiledata/modern-city/sources + run_town.sh (qa-runs 없이 재현) (`5551d83`)
+- **modern-chipset** — 하네스 브랜치(도시 조립·에셋 JSON·modern4 팔레트)를 origin/main 위로 이식 (`611281f`)
+
 ## 0.88.0 — 2026-10-03
 
 ### 기능
