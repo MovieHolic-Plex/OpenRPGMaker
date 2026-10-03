@@ -101,8 +101,14 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 .bar label { color:var(--dim); font-size:12px; display:flex; gap:4px; align-items:center; white-space:nowrap; }
 .keys { color:var(--dim); font-size:12px; margin-top:14px; }
 .keys kbd { background:#2f2b35; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 5px; font-size:11px; }
-.toast { position:fixed; right:18px; bottom:18px; background:#2f4a2c; color:#e6f6e1; padding:8px 16px; border-radius:8px; z-index:20; display:none; pointer-events:none; box-shadow:0 2px 10px #0008; }   /* 오른쪽 아래(2026-10-03, 사용자 「위에 띄우지 말고 오른쪽 아래」) — 위는 기물 이름이라 가린다 */
+.toast { position:fixed; right:18px; bottom:76px; background:#2f4a2c; color:#e6f6e1; padding:8px 16px; border-radius:8px; z-index:20; display:none; pointer-events:none; box-shadow:0 2px 10px #0008; }   /* 오른쪽 아래(2026-10-03, 사용자 「위에 띄우지 말고 오른쪽 아래」) — 위는 기물 이름이라 가린다. 아래 바 단추를 가리지 않게 바 위에 */
 .toast.err { background:#5a2320; }
+.toast.act { pointer-events:auto; }
+.toast button { margin-left:12px; background:#0003; border:1px solid #fff5; border-radius:6px; padding:2px 10px; cursor:pointer; color:inherit; }
+.pool .bad { color:var(--bad); }
+.card .ctxw { min-height:48px; }
+.card .ctxw.err { min-height:48px; cursor:pointer; position:relative; }
+.card .ctxw.err::after { content:'그림 없음 — 눌러서 다시 받기'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:12px; line-height:1.3; }
 /* 기물 고르기(새 판) */
 .objtools { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
 .objtools input { background:#1a181d; border:1px solid var(--line); border-radius:8px; padding:6px 10px; width:260px; }
@@ -169,14 +175,38 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 const ENG = {codex:'Codex', claude:'Sonnet'};
 const ENG_FULL = {codex:'Codex gpt-6.1-sol', claude:'Claude Sonnet 5.5'};
 const S = { pending:{}, showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'ctx', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
-            objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false };
+            objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false, drafts:{}, fail:0, errSeen:null };
+const DRAW_N = 2;        // 다시 뽑기·새로 뽑기 한 번에 그리는 후보 수(서버 n). 화면 문구도 이것 하나에서 만든다
+const UNDO_MS = 5000;    // 확정·다시 뽑기는 이만큼 기다렸다가 서버에 보낸다 — 그 사이 「되돌리기」(Z)
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DIRS = {A:'최소 수정', B:'최소 수정 2', C:'기준 맞추기', D:'기준 맞추기 2', E:'자유'};
-function toast(t, err) { const e = $('#toast'); e.textContent = t; e.className = 'toast' + (err ? ' err' : ''); e.style.display = 'block'; clearTimeout(e._t); e._t = setTimeout(() => e.style.display = 'none', 2200); }
+// 오류는 닫을 때까지 남는다(✕). 되돌리기 단추가 있으면 그동안 눌 수 있다.
+function toast(t, err, undo) {
+  const e = $('#toast'); clearTimeout(e._t);
+  if (e._sticky && !err) { e._queued = [t, undo]; return; }   // 오류를 읽기 전에 정상 알림이 덮지 않게
+  e.className = 'toast' + (err ? ' err' : '') + (err || undo ? ' act' : ''); e.textContent = t; e._sticky = !!err;
+  if (undo) e.append(Object.assign(document.createElement('button'), {textContent:'되돌리기 (Z)', onclick:() => { undo(); hideToast(); }}));
+  if (err) e.append(Object.assign(document.createElement('button'), {textContent:'✕', title:'닫기', onclick:hideToast}));
+  e.style.display = 'block';
+  if (!err) e._t = setTimeout(hideToast, undo ? UNDO_MS : 2200);
+}
+function hideToast() { const e = $('#toast'); e.style.display = 'none'; e._sticky = false; const q = e._queued; e._queued = null; if (q) toast(q[0], 0, q[1]); }
 async function api(p, body) {
   const r = await fetch(p, body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {cache:'no-store'});
-  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j;
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(j.error || r.status), {status:r.status}); return j;
+}
+const engOf = i => [...new Set(i.rounds.at(-1).runs.map(r => r.engine).filter(Boolean))];
+const shown = i => S.eng === 'all' || engOf(i).includes(S.eng);   // 왼쪽 「그린 쪽」 거르개
+// 기물마다 고르던 것(선택·버림·메모)을 따로 들고 있다 — 다른 기물을 봤다 돌아와도 그대로, 다른 기물로 따라가지도 않는다
+function saveDraft() {
+  if (!S.cur) return;
+  if (S.sel || S.memo.trim() || Object.keys(S.rej).length) S.drafts[S.cur] = {sel:S.sel, rej:S.rej, memo:S.memo}; else delete S.drafts[S.cur];
+}
+function openItem(id) {
+  saveDraft(); const d = S.drafts[id];
+  S.cur = id; S.round = null; S.waitNext = false; S.sigPick = '';
+  S.sel = d ? d.sel : null; S.rej = d ? d.rej : {}; S.memo = d ? d.memo : '';
 }
 const item = () => S.data?.items.find(i => i.id === S.cur);
 const rnd = () => { const it = item(); return it && (it.rounds.find(r => r.id === S.round) || it.rounds[it.rounds.length - 1]); };
@@ -205,17 +235,32 @@ async function load(keep) {
   // 상태 요청이 겹치면(3초 폴링 + 확정 직후) 늦게 도착한 옛 답이 새 답을 덮어 방금 고른 기물이 「고를 차례」로 되살아났다.
   // 마지막에 보낸 요청의 답만 쓰고, 서버가 아직 못 따라온 확정(S.pending)은 화면 쪽 값을 덮어 둔다.
   const gen = S.gen = (S.gen || 0) + 1; let d;
-  try { d = await api('/api/harness/state'); } catch (e) { if (gen === S.gen) toast('상태를 못 읽었다: ' + e.message, 1); return; }
+  try { d = await api('/api/harness/state'); }
+  catch (e) {   // 한 번 실패해도 폴링은 계속한다(예전엔 여기서 멈춰 새로고침 전까지 화면이 얼었다)
+    if (gen !== S.gen) return;
+    S.fail++; const wait = Math.min(15, 3 * S.fail);
+    $('#pool').innerHTML = `<span class="bad" title="${esc(e.message)}">● 서버 연결 끊김 — ${wait}초 뒤 다시 시도</span>`;
+    clearTimeout(S._poll); S._poll = setTimeout(() => load(true), wait * 1000); return;
+  }
   if (gen !== S.gen) return;
+  S.fail = 0;
+  const errs = d.drawErrors || {}, eseq = d.drawErrSeq || 0;
+  if (S.errSeen != null && eseq > S.errSeen) {   // 뒤에서 그리기가 실패했다 — 알려 준다
+    const L = Object.entries(errs).filter(([, v]) => v.seq > S.errSeen);
+    if (L.length) toast(`그리기 실패 — ${L.map(([k, v]) => `${k}: ${v.error}`).join(' / ')}`, 1);
+  }
+  S.errSeen = eseq;
   for (const i of d.items) {
     const p = S.pending[i.id]; if (!p) continue;
     const lr = i.rounds.at(-1);
-    if (p.redraw) {   // 다시 뽑기: 서버에 새 판이 생길 때까지 고를 차례에서 빼 둔다
-      if (lr.id !== p.round) { delete S.pending[i.id]; continue; }
+    if (p.kind === 'redraw') {   // 다시 뽑기: 서버에 새 판이 생길 때까지 고를 차례에서 빼 둔다
+      const er = errs[i.id];
+      if (lr.id > p.last || (p.sent && er && er.seq > p.errSeq) || (p.sent && Date.now() - p.at > 15 * 60e3)) { delete S.pending[i.id]; continue; }
       i.status = 'drawing'; continue;
     }
-    if (lr.decided || lr.id !== p.round) { delete S.pending[i.id]; continue; }   // 서버가 따라왔다
-    i.status = 'done'; if (p.choice !== 'keep') i.current = p.choice;
+    const dc = lr.decided && (lr.decided.verdict === 'keep' ? 'keep' : lr.decided.cand);
+    if (p.sent && (lr.id > p.last || dc === p.body.choice)) { delete S.pending[i.id]; continue; }   // 서버가 따라왔다
+    i.status = 'done'; if (p.body.choice !== 'keep') i.current = p.body.choice;
   }
   S.data = d;
   const its = S.data.items;
@@ -227,10 +272,10 @@ async function load(keep) {
   const p = S.data.pool;
   const left = p.queued + p.running, eta = Math.round(left / Math.max(1, p.par) * 5.7);   // 실측: 16명에서 1분에 약 2.8장 = 한 사람 5.7분/장
   const drawing = its.filter(i => i.status === 'drawing').length;
-  $('#pool').innerHTML = (drawing ? `<span class="prog" title="그리는·검수 중 기물 ${drawing}개 · 남은 작업 ${left}장(다시 그리기 포함 전 추정)"><span class="pb"><i style="width:${Math.round(100 * its.filter(i => i.status !== 'drawing').length / its.length)}%"></i></span>약 ${eta < 60 ? eta + '분' : Math.floor(eta / 60) + '시간 ' + (eta % 60) + '분'} 남음</span> · ` : '') + `<span title=""그리기 ${esc(p.effort)} · 검수 ${esc(p.reviewEffort)} · 한 장 최대 ${p.attempts}번 그림(검수 탈락 시 다시)">${esc(p.model)} · 그림 ${esc(p.effort)} · 검수 ${esc(p.reviewEffort)} · 동시 ${p.par}</span> · ` + (p.alive ? `<span class="live">● 작업 중 ${p.running} · 대기 ${p.queued}</span>` : '쉼');
-  const ready = its.filter(i => i.status === 'ready');
-  if (S.waitNext && ready.length) { S.cur = ready[0].id; S.round = null; S.sel = null; S.rej = {}; S.waitNext = false; S.sigPick = ''; }
-  if (!S.waitNext && (!S.cur || !item())) { const f = ready[0] || its[0]; S.cur = f?.id || null; S.round = null; S.sel = null; S.rej = {}; }
+  $('#pool').innerHTML = (drawing ? `<span class="prog" title="그리는·검수 중 기물 ${drawing}개 · 남은 작업 ${left}장(다시 그리기 포함 전 추정)"><span class="pb"><i style="width:${Math.round(100 * its.filter(i => i.status !== 'drawing').length / its.length)}%"></i></span>${eta < 1 ? '곧 끝남' : '약 '}${eta < 1 ? '' : eta < 60 ? eta + '분' : Math.floor(eta / 60) + '시간 ' + (eta % 60) + '분'}${eta < 1 ? '' : ' 남음'}</span> · ` : '') + `<span title="그리기 ${esc(p.effort)} · 검수 ${esc(p.reviewEffort)} · 한 장 최대 ${p.attempts}번 그림(검수 탈락 시 다시)">${esc(p.model)} · 그림 ${esc(p.effort)} · 검수 ${esc(p.reviewEffort)} · 동시 ${p.par}</span> · ` + (p.alive ? `<span class="live">● 작업 중 ${p.running} · 대기 ${p.queued}</span>` : '쉼');
+  const ready = its.filter(i => i.status === 'ready' && shown(i));
+  if (S.waitNext && ready.length) openItem(ready[0].id);
+  if (!S.waitNext && (!S.cur || !item())) { const f = ready[0] || its.find(shown) || its[0]; if (f) openItem(f.id); else S.cur = null; }
   if (!keep) S.round = null;
   if (S.view === 'pick') {
     // 바뀐 것이 있을 때만 다시 그린다 — 3초마다 통째로 다시 그리면 그림이 다시 로드되며 깜빡이고 검게 보인다
@@ -242,12 +287,11 @@ async function load(keep) {
   clearTimeout(S._poll); S._poll = setTimeout(() => load(true), (p.alive || its.some(i => i.status === 'drawing')) ? 3000 : 15000);
 }
 
-function toggleDone() { S.showDone = !S.showDone; renderNav(); }
+function toggleDone() { S.showDone = !S.showDone; if (S.view === 'pick') renderNav(); }   // 기물 고르기 화면에선 목록을 덮지 않는다
 
 function renderNav() {
   const g = {ready:'고를 차례', drawing:'그리는·검수 중', done:'끝남'};
-  const engOf = i => [...new Set(i.rounds.at(-1).runs.map(r => r.engine).filter(Boolean))];
-  const its = S.data.items.filter(i => S.eng === 'all' || engOf(i).includes(S.eng));
+  const its = S.data.items.filter(shown);
   let h = `<div class="engf">그린 쪽 <span class="seg">${[['all', '전체'], ['codex', 'Codex'], ['claude', 'Sonnet']].map(([k, v]) => `<button data-eng="${k}" class="${S.eng === k ? 'on' : ''}">${v}</button>`).join('')}</span></div>`;
   for (const k of ['ready', 'drawing', 'done']) {
     const L = its.filter(i => i.status === k); if (!L.length) continue;
@@ -262,7 +306,8 @@ function renderNav() {
   $('#nav').innerHTML = h || '<div class="empty" style="padding:20px">아직 판이 없다.<br>위 「기물 골라 새로 뽑기」에서 시작.</div>';
   $('#nav').querySelectorAll('[data-fold]').forEach(b => b.onclick = toggleDone);
   $('#nav').querySelectorAll('[data-eng]').forEach(b => b.onclick = () => { S.eng = b.dataset.eng; renderNav(); });
-  $('#nav').querySelectorAll('.it').forEach(e => e.onclick = () => { S.waitNext = false; S.cur = e.dataset.id; S.round = null; S.sel = null; S.rej = {}; S.memo = ''; renderNav(); renderPick(); });
+  $('#nav').querySelectorAll('.it').forEach(e => e.onclick = () => { openItem(e.dataset.id); renderNav(); renderPick(); $('#main').scrollTop = 0; });
+  $('#nav .it.cur')?.scrollIntoView({block:'nearest'});
 }
 
 function vbadge(o) {
@@ -275,7 +320,7 @@ function vbadge(o) {
 
 function card(it, key, c, opt) {
   const sel = S.sel === c, rej = S.rej[c];
-  let h = `<div class="card ${opt.olsel ? 'olsel' : ''} ${opt.cur ? 'cur' : ''} ${sel ? 'sel' : ''} ${rej ? 'rej' : ''} ${!opt.busy && opt.review && opt.review.verdict === 'FAIL' ? 'vfail' : ''}" data-c="${esc(c)}" ${opt.disabled ? 'data-dis="1"' : ''}>
+  let h = `<div class="card ${opt.olsel ? 'olsel' : ''} ${opt.cur ? 'cur' : ''} ${sel ? 'sel' : ''} ${rej ? 'rej' : ''} ${!opt.busy && opt.review && opt.review.verdict === 'FAIL' ? 'vfail' : ''}" data-c="${esc(c)}" ${opt.disabled || opt.busy ? 'data-dis="1"' : ''}>
     <div class="top"><span class="key">${key}</span>${opt.engine ? `<span class="eng ${opt.engine}" title="그림: ${ENG_FULL[opt.engine]}${opt.reviewEngine ? ' · 검수: ' + ENG_FULL[opt.reviewEngine] : ''}">${ENG[opt.engine]}</span>` : ''}${opt.ol ? `<span class="olk" title="테두리: ${esc(opt.ol)}">${esc(opt.ol)}</span>` : ''}<span class="dir" title="${esc(opt.label)}">${esc(opt.label)}</span>${opt.cur ? '' : `<button class="x" data-x="${esc(c)}" title="이 후보 버리기 (X)">✕</button>`}</div>`;
   const att = opt.attempt > 1 ? ` (시도 ${opt.attempt}/${S.data.pool.attempts})` : '';
   if (opt.busy && opt.phase === 'review' && opt.v) h += `<div class="pic over" data-over="${opt.busy === 'queued' ? '검수 대기' : '3/4 검수 중…'}"><img data-src="${imgSrc(it, c, opt.v)}"></div>`;
@@ -303,7 +348,7 @@ function renderPick() {
   if (S.waitNext || !it) {
     const p = S.data.pool, d = S.data.items.filter(i => i.status === 'drawing').length;
     m.innerHTML = d ? `<div class="waitbox"><div class="spin"><i></i></div>고를 차례가 끝났다. <b>${d}</b>개 기물을 그리는 중(작업 중 ${p.running} · 대기 ${p.queued}).<br>다음 기물이 다 되면 <b>자동으로 연다</b> — 이 화면을 켜 두면 된다.</div>`
-      : '<div class="empty">고를 판이 없다. 「기물 골라 새로 뽑기」에서 기물을 고르면 작업자 다섯 명이 후보를 찍는다.</div>';
+      : `<div class="empty">고를 판이 없다. 「기물 골라 새로 뽑기」에서 기물을 고르면 작업자 ${DRAW_N}명이 후보를 찍는다.</div>`;
     if (d) S.waitNext = true;
     renderBar(); return;
   }
@@ -337,17 +382,19 @@ function renderPick() {
       <div class="col"><div class="pic"><img id="cmpA" src="${curSrc(it)}"></div>지금</div>
       <div class="col"><div class="pic"><img id="cmpB" src="/c/${it.slug}/${pick}.png"></div>고른 것 · ${esc(pickName(pick))}</div>
       <div class="col"><div class="pic ctxp" style="padding:0;background:#000"><img id="cmpC" src="/ctx/${it.slug}/${pick}.png"></div>방 안</div></div></div>`;
-  h += `<div class="keys"><kbd>1</kbd> <kbd>2</kbd> 후보 고르기(한 번 더 누르면 「꼭 필요한 곳만」) · 후보 다음 숫자 = 다시 뽑기 · <kbd>0</kbd> 지금 그대로 · <kbd>Enter</kbd> 또는 두 번 누르기 = 확정하고 다음 · <kbd>X</kbd> 고른 카드 버리기 · <kbd>R</kbd> 다시 뽑기 · <kbd>V</kbd> 둘 다/단품/방 안 · <kbd>F</kbd> 맞춤 · <kbd>B</kbd> 배경 · <kbd>+</kbd><kbd>-</kbd> 확대 · <kbd>↑</kbd><kbd>↓</kbd> 이전/다음 기물 · <kbd>Space</kbd> 겹쳐 보기</div>`;
+  h += `<div class="keys"><kbd>1</kbd> <kbd>2</kbd> 후보 고르기(한 번 더 누르면 「꼭 필요한 곳만」) · 후보 다음 숫자 = 다시 뽑기 · <kbd>0</kbd> 지금 그대로 · <kbd>Enter</kbd> 또는 두 번 누르기 = 확정하고 다음 · <kbd>X</kbd> 고른 카드 버리기 · <kbd>Z</kbd> 방금 확정·다시 뽑기 되돌리기 · <kbd>R</kbd> 메모 쓰기(메모에서 <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 확정, <kbd>Esc</kbd> 나가기) · <kbd>V</kbd> 둘 다/단품/방 안 · <kbd>F</kbd> 맞춤 · <kbd>B</kbd> 배경 · <kbd>+</kbd><kbd>-</kbd> 확대 · <kbd>↑</kbd><kbd>↓</kbd> 이전/다음 기물 · <kbd>Space</kbd> 겹쳐 보기</div>`;
   m.innerHTML = h;
   m.querySelectorAll('.grid .pic img').forEach(img => { sized(img, S.zoom); img.src = img.dataset.src; });
-  m.querySelectorAll('.grid .ctxw img').forEach(img => { img.src = img.dataset.src; });
+  m.querySelectorAll('.grid .ctxw img').forEach(img => {
+    img.onerror = () => { const w = img.parentElement; w.classList.add('err'); w.onclick = ev => { ev.stopPropagation(); w.classList.remove('err'); w.onclick = null; img.src = img.dataset.src + '&r=' + Date.now(); }; };
+    img.src = img.dataset.src; });
   preloadNext(it);
   ['cmpA', 'cmpB'].forEach(id => { const e = document.getElementById(id); if (e) sized(e, 'big'); });
   const cc = document.getElementById('cmpC'); if (cc) sized(cc, 3);
   m.querySelectorAll('.card').forEach(e => e.onclick = ev => {
     if (ev.target.dataset.x) { toggleRej(ev.target.dataset.x); return; }
     if (ev.target.dataset.r) { const c = ev.target.dataset.rc, k = ev.target.dataset.r; const L = S.rej[c]; L.includes(k) ? L.splice(L.indexOf(k), 1) : L.push(k); renderPick(); return; }
-    if (e.dataset.redo) { redraw(true); return; }
+    if (e.dataset.redo) { redraw(); return; }
     if (e.dataset.dis || e.querySelector('.spin')) return;
     const c = e.dataset.c, t = Date.now(), again = S.lastClick && S.lastClick.c === c && t - S.lastClick.t < 450;
     S.lastClick = again ? null : {c, t};   // 같은 카드를 두 번 누르면 확정(그리면서 카드가 다시 만들어져 dblclick 은 안 온다)
@@ -355,7 +402,7 @@ function renderPick() {
     if (again) { const it2 = item(), cur2 = it2.current === 'v5' ? 'v5' : it2.current; decide(c === cur2 ? 'keep' : c); return; }
     renderPick();
   });
-  m.querySelectorAll('.rounds button').forEach(b => b.onclick = () => { S.round = +b.dataset.r; S.sel = null; S.rej = {}; renderPick(); });
+  m.querySelectorAll('.rounds button').forEach(b => b.onclick = () => { S.round = +b.dataset.r; S.sel = null; S.rej = {}; renderPick(); });   // 메모는 기물 것이라 둔다
   m.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { S.mode = b.dataset.mode; renderPick(); });
   m.querySelectorAll('[data-bg]').forEach(b => b.onclick = () => { S.bg = b.dataset.bg; renderPick(); });
   m.querySelectorAll('[data-z]').forEach(b => b.onclick = () => { S.zoom = b.dataset.z === 'fit' ? 'fit' : +b.dataset.z; renderPick(); });
@@ -364,31 +411,52 @@ function renderPick() {
 
 function toggleRej(c) { if (S.rej[c]) delete S.rej[c]; else { S.rej[c] = []; if (S.sel === c) S.sel = null; } renderPick(); }
 
+// 메모 칸은 한 번만 만들고 값만 맞춘다 — 3초 폴링이 바를 통째로 다시 그리면 쓰던 한글 조합·커서가 날아갔다
+function memoBox(view, key, ph) {
+  const b = $('#bar'); let m = $('#memo');
+  if (!m || m.dataset.view !== view) {
+    b.innerHTML = `<span id="barL" style="display:contents"></span><textarea id="memo"></textarea><span id="barR" style="display:contents"></span>`;
+    m = $('#memo'); m.dataset.view = view;
+    m.oninput = e => S.memo = e.target.value;
+    m.onkeydown = e => {
+      if (e.key === 'Escape') { m.blur(); return; }
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); m.blur(); view === 'objs' ? startDraw() : confirmSel(); }
+    };
+  }
+  if (m.dataset.key !== key || document.activeElement !== m) { if (m.value !== S.memo) m.value = S.memo; m.dataset.key = key; }
+  m.placeholder = ph; return m;
+}
 function renderBar() {
   const b = $('#bar');
   if (S.view === 'objs') {
-    b.innerHTML = `<span><b>${S.objSel.size}</b>개 골랐다</span>
-      <textarea id="memo" placeholder="작업자에게 줄 메모(모든 기물에 같이 간다) — 예: 의자 다리가 너무 굵다, 원래 디자인 살려라">${esc(S.memo)}</textarea>
-      <button class="btn" id="clr">선택 지우기</button><button class="btn go" id="go" ${S.objSel.size ? '' : 'disabled'}>후보 5장씩 뽑기</button>`;
-    $('#memo').oninput = e => S.memo = e.target.value;
+    memoBox('objs', 'objs', '작업자에게 줄 메모(모든 기물에 같이 간다) — 예: 의자 다리가 너무 굵다, 원래 디자인 살려라 · 「2x2」처럼 쓰면 크기도 바뀐다(기물 하나일 때)');
+    $('#barL').innerHTML = `<span><b>${S.objSel.size}</b>개 골랐다</span>`;
+    $('#barR').innerHTML = `<button class="btn" id="clr">선택 지우기</button><button class="btn go" id="go" ${S.objSel.size ? '' : 'disabled'} title="메모에서 Ctrl+Enter">후보 ${DRAW_N}장씩 뽑기</button>`;
     $('#clr').onclick = () => { S.objSel.clear(); renderObjs(); };
     $('#go').onclick = startDraw;
     return;
   }
-  const it = item(); if (!it) { b.innerHTML = ''; return; }
+  const it = item(); if (!it || S.waitNext) { b.innerHTML = ''; return; }
   const r = rnd(); const cur = it.current === 'v5' ? 'v5' : it.current;
-  const can = S.sel && !r.runs.some(x => ['queued', 'running'].includes(x.status) && x.cand === S.sel);
   const busy = r.runs.some(x => ['queued', 'running'].includes(x.status));
-  b.innerHTML = `<textarea id="memo" placeholder="메모 — 다시 뽑을 때 작업자에게 그대로 간다. 고를 때 남기면 다음 판의 기억이 된다.">${esc(S.memo)}</textarea>
-    <label title="다시 뽑을 때 지금 고른 후보를 출발점으로"><input type="checkbox" id="fromSel" ${S.fromSel ? 'checked' : ''}> 고른 후보에서 출발</label>
-    <button class="btn redo" id="redo" title="R">다시 뽑기 ${busy ? '(그리는 중)' : ''}</button>
-    <button class="btn" id="keep" title="0 → Enter">지금 그대로</button>
-    <button class="btn go" id="ok" ${can ? '' : 'disabled'} title="Enter">${S.sel && S.sel !== cur ? `✓ ${esc(pickName(S.sel))} 로 확정` : '✓ 확정'}</button>`;
-  $('#memo').oninput = e => S.memo = e.target.value;
+  memoBox('pick', it.id, '메모 — 다시 뽑을 때 작업자에게 그대로 간다(「2x2」처럼 쓰면 크기도 바뀐다). 고를 때 남기면 다음 판의 기억이 된다. Ctrl+Enter 확정');
+  $('#barL').innerHTML = '';
+  $('#barR').innerHTML = `<label title="다시 뽑을 때 지금 고른 후보를 출발점으로"><input type="checkbox" id="fromSel" ${S.fromSel ? 'checked' : ''}> 고른 후보에서 출발</label>
+    <button class="btn redo" id="redo" ${busy ? 'disabled' : ''} title="${busy ? '아직 그리는 중' : '후보 ' + DRAW_N + '장 새로 — 숫자 ' + (r.runs.length + 1)}">다시 뽑기${busy ? ' (그리는 중)' : ''}</button>
+    <button class="btn" id="keep" title="지금 그림 그대로 확정 (0 → Enter)">지금 그대로</button>
+    <button class="btn go" id="ok" ${canPick(it, r) ? '' : 'disabled'} title="Enter">${S.sel && S.sel !== cur ? `✓ ${esc(pickName(S.sel))} 로 확정` : '✓ 확정'}</button>`;
   $('#fromSel').onchange = e => S.fromSel = e.target.checked;
-  $('#ok').onclick = () => decide(S.sel === cur ? 'keep' : S.sel);
+  $('#ok').onclick = confirmSel;
   $('#keep').onclick = () => decide('keep');
   $('#redo').onclick = () => redraw();
+}
+const canPick = (it, r) => S.sel && !r.runs.some(x => ['queued', 'running'].includes(x.status) && (x.cand === S.sel || x.cand + '.sel' === S.sel));
+function confirmSel() {
+  const it = item(); if (!it || S.waitNext) return;
+  const r = rnd(), cur = it.current === 'v5' ? 'v5' : it.current;
+  if (!S.sel) { toast('먼저 후보를 고르세요 — 숫자 1·2… 또는 0(지금 그대로)'); return; }
+  if (!canPick(it, r)) { toast('그 후보는 아직 그리거나 검수 중이다'); return; }
+  decide(S.sel === cur ? 'keep' : S.sel);
 }
 
 // 다음에 열 기물의 그림을 미리 받아 둔다 — 확정하자마자 그림이 바로 뜨게(서버도 고를 차례 기물의 방 안 그림을 미리 굽는다)
@@ -411,37 +479,73 @@ function preloadNext(it) {
 }
 
 function nextItem() {
-  const its = S.data.items.filter(i => i.status === 'ready' && i.id !== S.cur);
-  if (its[0]) S.cur = its[0].id; else S.waitNext = true;   // 없으면 다음 것이 다 될 때까지 기다렸다가 자동으로 연다
-  S.round = null; S.sel = null; S.rej = {}; S.memo = ''; S.sigPick = '';
+  const its = S.data.items.filter(i => i.status === 'ready' && i.id !== S.cur && shown(i));
+  if (its[0]) openItem(its[0].id);
+  else { S.waitNext = true; S.sel = null; S.rej = {}; S.memo = ''; S.sigPick = ''; }   // 없으면 다음 것이 다 될 때까지 기다렸다가 자동으로 연다
 }
 const SEL_MIN = 12;   // 「꼭 필요한 곳만」 벌이 이보다 적게 다르면 같은 그림으로 보고 숨긴다
 const NOSEL = new Set(['바닥 무늬(밟을 수 있음)']);   // 깔개는 테두리 둘째 벌이 없다(check_candidate 도 안 만든다)
 const pickName = c => (c.split('-')[1] || c).replace(/\.sel$/, ' (테두리 필요한 곳만)');
-async function decide(choice) {
-  const it = item(), r = rnd(); if (!it) return;
-  const body = {id:it.id, round:r.id, choice, rejects:S.rej, note:S.memo};
-  // 저장을 기다리지 않고 바로 다음 기물로 — 저장은 뒤에서, 실패하면 그 기물을 되돌리고 알린다.
-  S.pending[it.id] = {round:r.id, choice};
-  it.status = 'done'; if (choice !== 'keep') it.current = choice;
+// 확정·다시 뽑기: 기다리지 않고 바로 다음 기물로 넘어가고, 서버에는 UNDO_MS 뒤에 보낸다. 그 사이 Z(또는 알림의 「되돌리기」)로 취소.
+// 보내다 실패하면 그 기물로 돌아가 고르던 것(선택·버림·메모)을 되살리고 오류를 닫을 때까지 띄운다.
+function commit(kind, it, body, msg) {
+  const lr = it.rounds.at(-1);
+  S.pending[it.id] = {kind, body, last:lr.id, at:Date.now(), sent:false, name:it.name,
+    snap:{sel:S.sel, rej:S.rej, memo:S.memo, round:S.round, status:it.status, current:it.current}};
+  S.pending[it.id].timer = setTimeout(() => send(it.id), UNDO_MS);
+  S.lastUndo = it.id; delete S.drafts[it.id]; S.sel = null; S.rej = {}; S.memo = '';   // 끝낸 기물의 초안을 남기지 않는다
+  if (kind === 'decide') { it.status = 'done'; if (body.choice !== 'keep') it.current = body.choice; } else it.status = 'drawing';
   nextItem(); renderNav(); renderPick(); $('#main').scrollTop = 0;   // 다음 기물은 맨 위부터
-  toast(choice === 'keep' ? `${it.name}: 지금 그대로` : `${it.name}: ${pickName(choice)} 로 확정`);
-  try { await api('/api/harness/decide', body); load(true); }
-  catch (e) { delete S.pending[it.id]; it.status = 'ready'; renderNav(); toast(`저장 실패 — ${it.name} 다시 고르세요: ${e.message}`, 1); load(true); }
+  toast(msg, 0, () => undo(it.id));
 }
-async function redraw(fromCard) {
-  const it = item(), r = rnd(); if (!it) return;
-  if (fromCard && r.runs.some(x => ['queued', 'running'].includes(x.status))) return;
+function restore(id, p) {   // 그 기물로 돌아가 고르던 것을 그대로
+  saveDraft();
+  const i = S.data.items.find(x => x.id === id); if (i) { i.status = p.snap.status; i.current = p.snap.current; }
+  S.cur = id; S.waitNext = false; S.sigPick = ''; S.sigNav = '';
+  S.sel = p.snap.sel; S.rej = p.snap.rej; S.memo = p.snap.memo; S.round = p.snap.round;
+  renderNav(); renderPick(); $('#main').scrollTop = 0;
+}
+function undo(id) {
+  id = id || S.lastUndo; const p = S.pending[id];
+  if (!p) return;
+  if (p.sent) { toast(`${p.name}: 이미 서버에 보냈다 — 되돌릴 수 없다`, 1); return; }
+  clearTimeout(p.timer); delete S.pending[id]; if (S.lastUndo === id) S.lastUndo = null;
+  restore(id, p); toast(`${p.name}: 되돌렸다`);
+}
+async function send(id) {
+  const p = S.pending[id]; if (!p || p.sent) return;
+  p.sent = true; p.at = Date.now(); p.errSeq = S.data.drawErrSeq || 0; if (S.lastUndo === id) S.lastUndo = null;
+  try {
+    const res = await api(p.kind === 'decide' ? '/api/harness/decide' : '/api/harness/draw', p.body);
+    if (res.resized) toast(`${p.name}: 크기를 ${res.resized.w}×${res.resized.h}칸(${res.resized.canvas.join('×')}px)으로 바꿔 다시 뽑는 중`);
+  } catch (e) {
+    if (!(p.kind === 'decide' && e.status === 409 && /이미 그렇게/.test(e.message))) {   // 같은 확정이 이미 있으면 성공과 같다
+      delete S.pending[id]; restore(id, p);
+      toast(`${p.kind === 'decide' ? '저장' : '다시 뽑기'} 실패 — ${p.name} 화면으로 되돌아왔다(고르던 것 그대로): ${e.message}`, 1);
+    }
+  }
+  load(true);
+}
+// 창을 닫거나 새로고침해도 기다리던 확정·다시 뽑기는 보낸다
+addEventListener('pagehide', () => {
+  for (const [id, p] of Object.entries(S.pending)) {
+    if (p.sent) continue; clearTimeout(p.timer); p.sent = true;
+    navigator.sendBeacon(p.kind === 'decide' ? '/api/harness/decide' : '/api/harness/draw', new Blob([JSON.stringify(p.body)], {type:'application/json'}));
+  }
+});
+function decide(choice) {
+  const it = item(); if (!it || S.waitNext) return;
+  // 판 번호는 늘 이 기물의 마지막 판 — 옛 판 단추로 옛 후보를 골라도 「이 기물의 결정」이다(후보 이름에 판이 들어 있다)
+  const body = {id:it.id, round:it.rounds.at(-1).id, choice, rejects:S.rej, note:S.memo.trim()};
+  commit('decide', it, body, choice === 'keep' ? `${it.name}: 지금 그대로` : `${it.name}: ${pickName(choice)} 로 확정`);
+}
+function redraw() {
+  const it = item(), r = rnd(); if (!it || S.waitNext) return;
+  if (it.rounds.at(-1).runs.some(x => ['queued', 'running'].includes(x.status))) { toast('아직 그리는 중이라 다시 뽑을 수 없다'); return; }
   const base = S.fromSel && S.sel && S.sel !== (it.current === 'v5' ? 'v5' : it.current) ? S.sel : '';
-  if (!fromCard && !S.memo.trim() && !Object.keys(S.rej).length && !confirm('메모도 버린 후보도 없이 다시 뽑을까? (뭐가 별로였는지 적으면 다음 판이 나아진다)')) return;
-  // 확정과 같이: 기다리지 않고 이 기물을 고를 차례에서 빼고 바로 다음 기물로. 새 판이 다 그려지면 다시 「고를 차례」에 들어온다.
-  const body = {ids:[it.id], note:S.memo, base, n:2, round:r.id, rejects:S.rej};
-  S.pending[it.id] = {round:r.id, redraw:true};
-  it.status = 'drawing';
-  nextItem(); renderNav(); renderPick(); $('#main').scrollTop = 0;
-  toast(`${it.name}: 다시 뽑는 중 — 2장`);
-  try { const res = await api('/api/harness/draw', body); if (res.resized) toast(`${it.name}: 크기를 ${res.resized.w}×${res.resized.h}칸(${res.resized.canvas.join('×')}px)으로 바꿔 다시 뽑는 중`); load(true); }
-  catch (e) { delete S.pending[it.id]; it.status = 'ready'; renderNav(); toast(`다시 뽑기 실패 — ${it.name}: ${e.message}`, 1); load(true); }
+  // 확정과 같이: 이 기물을 고를 차례에서 빼고 바로 다음 기물로. 새 판이 다 그려지면 다시 「고를 차례」에 들어온다.
+  const body = {ids:[it.id], note:S.memo.trim(), base, n:DRAW_N, round:it.rounds.at(-1).id, rejects:S.rej};
+  commit('redraw', it, body, `${it.name}: 다시 뽑기 — 후보 ${DRAW_N}장${S.memo.trim() ? '' : ' (메모 없음)'}`);
 }
 
 async function loadObjs() { if (!S.objs) S.objs = await api('/api/harness/objects'); renderObjs(); }
@@ -457,7 +561,7 @@ function renderObjs() {
      <div class="objs">` + L.map(o => `<div class="obj ${S.objSel.has(o.id) ? 'on' : ''}" data-id="${esc(o.id)}" title="${esc(o.desc)}">
        ${o.rounds ? `<span class="rb">판 ${o.rounds}</span>` : ''}<span class="ck">✓</span>
        <div class="pic">${o.isNew && o.current === 'v5' ? `<div class="newpic">새 기물<br><small>${esc((o.use || []).join(' · '))}</small></div>` : `<img data-src="${thumbSrc(o)}">`}</div><div class="nm">${o.isNew ? '<b class="nb">새</b> ' : ''}${esc(o.name)}</div></div>`).join('') + `</div>
-     <div class="keys">기물을 눌러 고르고(여러 개 가능), 아래에서 메모를 달고 「후보 5장씩 뽑기」. 기물마다 작업자 다섯 명(${esc(S.data?.pool?.model || '')})이 방향을 나눠 한 장씩 찍는다(있는 기물: 최소 수정 2 · 기준 맞추기 2 · 자유 1 / <b class="nb">새</b> 기물: 설명 충실 · 같은 방 화풍 · 단순 · 장식 · 자유 해석). 찍은 뒤 독립 검수자가 3/4 를 보고, 떨어지면 다시 그린다.</div>`;
+     <div class="keys">기물을 눌러 고르고(여러 개 가능), 아래에서 메모를 달고 「후보 ${DRAW_N}장씩 뽑기」. 기물마다 작업자 ${DRAW_N}명(${esc(S.data?.pool?.model || '')})이 방향을 나눠 한 장씩 찍는다. 찍은 뒤 독립 검수자가 3/4 를 보고, 떨어지면 다시 그린다.</div>`;
   $('#main').querySelectorAll('.obj img').forEach(img => { sized(img, 3); img.src = img.dataset.src; });
   const qi = $('#q'); qi.oninput = e => { S.q = e.target.value; const p = qi.selectionStart; renderObjs(); const n = $('#q'); n.focus(); n.setSelectionRange(p, p); };
   $('#main').querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { S.cat = b.dataset.cat; renderObjs(); });
@@ -467,8 +571,8 @@ function renderObjs() {
 async function startDraw() {
   const ids = [...S.objSel]; if (!ids.length) return;
   try {
-    await api('/api/harness/draw', {ids, note:S.memo, n:2});
-    toast(`${ids.length}개 기물 — 후보 5장씩 뽑기 시작`); S.objSel.clear(); S.memo = ''; S.objs = null;
+    await api('/api/harness/draw', {ids, note:S.memo.trim(), n:DRAW_N});
+    toast(`${ids.length}개 기물 — 후보 ${DRAW_N}장씩 뽑기 시작`); S.objSel.clear(); S.memo = ''; S.objs = null;
     setView('pick'); setTimeout(() => load(), 1500);
   } catch (e) { toast('실패: ' + e.message, 1); }
 }
@@ -480,12 +584,19 @@ function setView(v) {
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => setView(t.dataset.v));
 
 document.addEventListener('keydown', e => {
-  if (S.view !== 'pick' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
-  const it = item(); if (!it) return; const r = rnd(); const cur = it.current === 'v5' ? 'v5' : it.current;
+  if (S.view !== 'pick' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'z' || e.key === 'Z') { if (S.lastUndo) undo(); else toast('되돌릴 것이 없다(5초가 지나면 서버에 보낸다)'); return; }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault(); const L = [...$('#nav').querySelectorAll('.it')].map(x => x.dataset.id); const i = L.indexOf(S.cur);
+    const n = L[i < 0 ? 0 : (i + (e.key === 'ArrowDown' ? 1 : -1) + L.length) % L.length]; if (n) { openItem(n); renderNav(); renderPick(); $('#main').scrollTop = 0; }
+    return;
+  }
+  // 「다음 판 기다리는 중」 화면에선 판 키를 받지 않는다 — 예전엔 방금 끝낸 기물에 또 확정·다시 뽑기를 보냈다
+  const it = item(); if (!it || S.waitNext) return; const r = rnd(); const cur = it.current === 'v5' ? 'v5' : it.current;
   if (e.key === ' ') { e.preventDefault(); const b = document.getElementById('cmpB'); if (b && !S.flip) { S.flip = true; b.dataset.o = b.src; b.src = curSrc(it); } return; }
-  if (/^[0-9]$/.test(e.key) && +e.key === r.runs.length + 1) { redraw(true); return; }
+  if (/^[0-9]$/.test(e.key) && +e.key === r.runs.length + 1) { redraw(); return; }
   if (/^[0-9]$/.test(e.key)) { const k = +e.key; if (k === 0) { S.sel = cur; } else { const x = r.runs[k - 1]; if (x && x.status === 'done') { S.sel = S.sel === x.cand && x.ok && !NOSEL.has(it.kind) && x.selDiff >= SEL_MIN ? x.cand + '.sel' : x.cand; delete S.rej[S.sel]; } } renderPick(); }
-  else if (e.key === 'Enter') { if (S.sel) decide(S.sel === cur ? 'keep' : S.sel); }
+  else if (e.key === 'Enter') confirmSel();
   else if (e.key === 'x' || e.key === 'X') { if (S.sel && S.sel !== cur) toggleRej(S.sel); }
   else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); $('#memo')?.focus(); }
   else if (e.key === 'v' || e.key === 'V') { S.mode = {both:'one', one:'ctx', ctx:'both'}[S.mode]; renderPick(); }
@@ -493,10 +604,6 @@ document.addEventListener('keydown', e => {
   else if (e.key === '+' || e.key === '=') { S.zoom = {fit:3, 3:4, 4:6, 6:8, 8:8}[S.zoom]; renderPick(); }
   else if (e.key === '-') { S.zoom = {fit:'fit', 3:'fit', 4:3, 6:4, 8:6}[S.zoom]; renderPick(); }
   else if (e.key === 'f' || e.key === 'F') { S.zoom = 'fit'; renderPick(); }
-  else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-    e.preventDefault(); const L = [...$('#nav').querySelectorAll('.it')].map(x => x.dataset.id); const i = L.indexOf(S.cur);
-    const n = L[(i + (e.key === 'ArrowDown' ? 1 : -1) + L.length) % L.length]; if (n) { S.cur = n; S.round = null; S.sel = null; S.rej = {}; renderNav(); renderPick(); }
-  }
 });
 document.addEventListener('keyup', e => { if (e.key === ' ' && S.flip) { S.flip = false; const b = document.getElementById('cmpB'); if (b && b.dataset.o) b.src = b.dataset.o; } });
 $('#cDoneBtn').onclick = toggleDone;

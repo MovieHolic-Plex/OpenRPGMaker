@@ -24,6 +24,13 @@ SPEC = os.path.join(ROOT, 'src/assets/handInteriorSpec.json')
 SHEET = os.path.join(ROOT, 'public/assets/atlas-interior/interior-chipset.png')
 _thumb = {'mtime': None, 'cache': {}}
 DRAW_LOCK = threading.Lock()
+# 뒤에서 도는 draw 가 실패하면 화면이 영영 「그리는 중」으로 기다렸다 — 실패를 번호를 붙여 상태에 실어 보낸다.
+_DRAW_ERR = {}   # 기물 id → {seq, error}
+_ERR_SEQ = [0]
+
+
+class Conflict(Exception):
+    """이미 끝난 판에 또 확정 같은 것 — 409."""
 
 
 def _note(item, cand):
@@ -86,7 +93,8 @@ def state():
     return dict(items=out, reasons=__import__('brief').REASONS,
                 pool=dict(alive=harness.pool_alive(), queued=sum(1 for r in allruns if r['status'] == 'queued'),
                           running=sum(1 for r in allruns if r['status'] == 'running'), par=harness.MAX_PAR, attempts=harness.MAX_ATTEMPTS, reviewEffort=harness.REVIEW_EFFORT,
-                          model=harness.MODEL, effort=harness.EFFORT))
+                          model=harness.MODEL, effort=harness.EFFORT),
+                drawErrSeq=_ERR_SEQ[0], drawErrors=dict(_DRAW_ERR))
 
 
 def objects():
@@ -181,7 +189,7 @@ def _fingerprint():
     for f in fs:
         try: st = os.stat(f); out.append(f'{st.st_mtime_ns}:{st.st_size}')
         except OSError: out.append('-')
-    return '|'.join(out)
+    return '|'.join(out) + f'|e{_ERR_SEQ[0]}'
 
 
 _SNAP = {'fp': None, 'gz': None, 'raw': None}
@@ -243,6 +251,12 @@ def decide(body):
     i = body['id']; rnd = body.get('round'); choice = body.get('choice'); note = str(body.get('note') or '')[:2000]
     if i not in objects_by_id(): raise ValueError('모르는 기물')
     if choice != 'keep' and not _exists(i, choice): raise ValueError('없는 후보')
+    rs = [rd['id'] for rd in store.rounds(i)]
+    if rnd is not None and rs and int(rnd) != max(rs): raise Conflict(f'옛 판(h{rnd})이다 — 지금 판은 h{max(rs)}')
+    # 같은 판에 같은 확정이 또 오면(키 두 번 등) 중복이다. 다른 후보로 바꾸는 것은 마음을 바꾼 것이라 받는다.
+    last = [f for f in store.feedback(i) if f['round'] == rnd and f['verdict'] in ('pick', 'keep')]
+    if last and (last[-1]['verdict'], last[-1]['cand']) == (('keep', '') if choice == 'keep' else ('pick', choice)):
+        raise Conflict('이미 그렇게 확정됐다')
     _record_rejects(i, rnd, body.get('rejects'))
     if choice == 'keep':
         store.add_feedback(i, 'keep', rnd, '', [], note)
@@ -273,8 +287,13 @@ def draw(body):
 
     def work():
         with DRAW_LOCK:
-            try: harness.draw(ids, n, note, base)
-            except Exception as e: print('하네스 draw 실패:', repr(e), flush=True)
+            try:
+                harness.draw(ids, n, note, base)
+                for i in ids: _DRAW_ERR.pop(i, None)
+            except Exception as e:
+                print('하네스 draw 실패:', repr(e), flush=True)
+                _ERR_SEQ[0] += 1
+                for i in ids: _DRAW_ERR[i] = dict(seq=_ERR_SEQ[0], error=repr(e)[:300])
     threading.Thread(target=work, daemon=True).start()
     return dict(ok=True, ids=ids, resized=resized)
 
@@ -307,7 +326,12 @@ def handle(h, method, parts, body=None):
             if parts == ['api', 'harness', 'decide']: res = decide(body or {})
             elif parts == ['api', 'harness', 'draw']: res = draw(body or {})
             else: h.send(404, '{}'); return True
+        except Conflict as e:
+            h.send(409, json.dumps({'error': str(e)}, ensure_ascii=False)); return True
         except (KeyError, ValueError, TypeError) as e:
             h.send(400, json.dumps({'error': str(e)}, ensure_ascii=False)); return True
+        except Exception as e:   # 밖으로 새면 연결이 그냥 끊겨 화면은 「Failed to fetch」만 봤다
+            print('하네스 POST 실패:', repr(e), flush=True)
+            h.send(500, json.dumps({'error': f'서버 오류: {e!r}'[:300]}, ensure_ascii=False)); return True
         h.send(200, json.dumps(res, ensure_ascii=False)); return True
     return False
