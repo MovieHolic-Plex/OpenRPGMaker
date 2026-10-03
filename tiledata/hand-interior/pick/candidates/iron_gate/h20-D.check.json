@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/iron_gate/h20-D.pxg",
+ "id": "iron gate",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "놋쇠 창끝·기둥 머리·가운데 문장·리벳을 더해 같은 쇠창살 문을 한 단 화려하게",
+ "ok": true
+}

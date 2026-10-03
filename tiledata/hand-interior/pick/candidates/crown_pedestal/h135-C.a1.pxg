@@ -1,0 +1,52 @@
+// C: 큰 세 갈래 금관과 넓은 붉은 방석, 장식 없는 돌 받침; 왕관 둥근 테 윗면 4행(y=5~8).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat H gold 5
+@mat J gold 4
+@mat K gold 3
+@mat L gold 2
+@mat N gold 1
+@mat M gold 0
+@mat R red 1
+@mat S red 3
+@mat T red 4
+@mat U red 2
+@mat a stone 1
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat e stone 5
+@mblock 0 0
+.......NN.......
+...NN..HJ..NN...
+...HJ.NHJN.HJ...
+..NHJNHJJKNJKN..
+..NHJJHHJJJJKN..
+..NHJLLLLLLJKN..
+..NHJMMMMMMJKN..
+..NHJJMMMMJJKN..
+..NHHJLLLLJJKN..
+...HHJJJJJJKN...
+...NHJJJJJKKN...
+...NHJJJJJKKN...
+...NJJJJJJLKN...
+...NNLLLLLLNN...
+...RTTSSSSSSR...
+..RTTTSSSSSSUR..
+.RTTTSSSSSSSSUR.
+.RTTSSSSSSSSUUR.
+..RSSSSSSSSUUR..
+..aeeeeedddddba.
+.aeddddddddddbba
+.adddddddddcbbba
+..accccccccbba..
+...adcccccbba...
+...adcccccbba...
+...adcccccbba...
+...adcccccbba...
+...adcccccbba...
+...adcccccbba...
+..adddccccccbba.
+.addddddccccbbba
+.aaaaaaaaaaaaaa.

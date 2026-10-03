@@ -719,14 +719,12 @@ function relaxHiddenIdInput(picker: HTMLElement): HTMLElement {
   return picker;
 }
 
-function speciesStage(resourceId: string | undefined, alt: string, graphic: MonsterSpeciesRecord["graphic"], testid: string): HTMLElement {
+function speciesStage(resourceId: string | undefined, alt: string, testid: string): HTMLElement {
   const previewUrl = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
   const stageImage = previewUrl
     ? el("img", { attrs: { alt, src: previewUrl } })
     : el("span", { class: "db-enemy-empty-graphic", text: "비어 있음" });
   if (stageImage instanceof HTMLImageElement) {
-    stageImage.style.filter = `hue-rotate(${graphic.graphicHue}deg)`;
-    stageImage.style.opacity = graphic.transparent ? "0.58" : "1";
     // Magenta #FF00FF chroma-key (same contract as enemy previews / DB art pipeline).
     applyMagentaChromaKey(stageImage);
   }
@@ -734,9 +732,7 @@ function speciesStage(resourceId: string | undefined, alt: string, graphic: Mons
 }
 
 function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement[] {
-  // 앞모습·뒷모습을 두 칸으로 나란히 둔다(각 칸 = 큰 미리보기 + 고르기 + AI 입력). AI 입력칸은 공용
-  // aiImageGenerateField 안에 있어 하나로 합치지 않는다(공용 부품 변경 필요) — 대신 두 칸에 되풀이되던
-  // 대기열 안내문과 작은 썸네일을 CSS 로 감춘다(monster-species.css).
+  // 앞모습·뒷모습을 두 칸으로 나란히 둔다(각 칸 = 큰 미리보기 + 고르기). 작은 썸네일은 CSS 로 감춘다(monster-species.css).
   const column = (stage: HTMLElement, picker: HTMLElement): HTMLElement =>
     el("div", { class: "db-monster-species-graphic-side", children: [stage, relaxHiddenIdInput(picker)] });
   const pair = el("div", {
@@ -744,7 +740,7 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
     dataset: { testid: "db-monster-species-graphic-pair" },
     children: [
       column(
-        speciesStage(record.graphic.monsterResourceId, `${record.name} 앞모습 미리보기`, record.graphic, "db-monster-species-stage"),
+        speciesStage(record.graphic.monsterResourceId, `${record.name} 앞모습 미리보기`, "db-monster-species-stage"),
         resourcePickerControl({
           label: "앞모습 · 적으로 보일 때",
           resourceId: record.graphic.monsterResourceId,
@@ -752,8 +748,6 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
           testid: "db-monster-species-resource",
           queueKey: `monster-species-resource:${record.id}`,
           allowClear: true,
-          allowHue: true,
-          currentHue: record.graphic.graphicHue,
           dialogTitle: "종족 몬스터 그래픽",
           onChange: (result) => {
             const current = currentSpecies(record.id, record);
@@ -761,7 +755,6 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
               graphic: {
                 ...current.graphic,
                 monsterResourceId: emptyToUndefined(result.resourceId),
-                graphicHue: result.graphicHue ?? current.graphic.graphicHue,
               },
             });
           },
@@ -769,7 +762,7 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
         }),
       ),
       column(
-        speciesStage(record.graphic.backResourceId, `${record.name} 뒷모습 미리보기`, record.graphic, "db-monster-species-back-stage"),
+        speciesStage(record.graphic.backResourceId, `${record.name} 뒷모습 미리보기`, "db-monster-species-back-stage"),
         resourcePickerControl({
           label: "뒷모습 · 내 편일 때",
           resourceId: record.graphic.backResourceId,
@@ -789,17 +782,8 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
       ),
     ],
   });
-  return [
-    pair,
-    el("p", {
-      class: "db-field-hint db-monster-species-graphic-hint",
-      text: "AI 로 만들려면 모습을 한 줄로 적고 [AI로 만들기]를 누르세요. 만드는 동안에도 계속 편집할 수 있습니다.",
-    }),
-    numberField("색조", "db-monster-species-hue", record.graphic.graphicHue, (value) => {
-      const current = currentSpecies(record.id, record);
-      updateSpecies(record.id, { graphic: { ...current.graphic, graphicHue: value } });
-    }, { min: 0, max: 360 }),
-  ];
+  // 색조 칸과 「AI로 만들기」 안내는 2026-10-02 지웠다 — 전투가 색조를 안 읽고, 몬스터 그림 생성도 없어졌다.
+  return [pair];
 }
 
 // G006: reverse jump — enemies that point at this species via speciesId.

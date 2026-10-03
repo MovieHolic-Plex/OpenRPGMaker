@@ -1,0 +1,21 @@
+// h9-C 기준 맞추기: 검정 K 윤곽 → 나무 어두운 단 E, 바퀴에 돌 윤곽 A, 윗판 H/결 I, 앞면 J→I→G 세 단
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....AAAAAA.....
+....ABBBCCCA....
+...ABBBBDDCCAEE.
+...ABBFFDDDCCAE.
+...ABBBDDDDCCA..
+...ACCDDDDDDCA..
+....ACCDDDDCA...
+.....AADDDDAA...
+.EEEEEEEEEEEEEE.
+.EHHHHHHHHHHHHE.
+.EHIIHHHIIHHIHE.
+.EJJJJJJJJJJJJE.
+.EGIIIIIIIIIIGE.
+.EGGGGGGGGGGGGE.
+.EEEEEEEEEEEEEE.

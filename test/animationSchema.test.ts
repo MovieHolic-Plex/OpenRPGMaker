@@ -15,7 +15,7 @@ describe("RPG2003 animation schema", () => {
     // Then: it is not a shallow id/name/resource record.
     expect(hit).toMatchObject({
       id: "anim_hit",
-      resourceId: "easyrpg-battle-blow",
+      resourceId: "scarloxy-battle-anim-scratch",
       sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
       scope: "singleTarget",
       position: "center",
@@ -46,7 +46,7 @@ describe("RPG2003 animation schema", () => {
       enemies: [],
       troops: [],
       states: [],
-      battleAnimations: [{ id: "anim_legacy", name: "Legacy", resourceId: "easyrpg-battle-blow" }],
+      battleAnimations: [{ id: "anim_legacy", name: "Legacy", resourceId: "scarloxy-battle-anim-scratch" }],
     };
 
     // When: the database passes through runtime normalization.
@@ -56,7 +56,7 @@ describe("RPG2003 animation schema", () => {
     expect(normalized.battleAnimations[0]).toMatchObject({
       id: "anim_legacy",
       name: "Legacy",
-      resourceId: "easyrpg-battle-blow",
+      resourceId: "scarloxy-battle-anim-scratch",
       sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
       frames: [{ cells: [{ pattern: 0, visible: true }] }],
       timings: [],

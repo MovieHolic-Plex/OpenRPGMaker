@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/axe_mace_wall/h208-B.pxg",
+ "id": "axe mace wall",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  31,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "공구 걸이와 같은 갈색 걸쇠·절제된 회색 명암으로 전투 도끼와 철퇴를 새로 그림; 꼭대기 윗면 0행(y=해당없음, 지시서의 벽면 걸이 평면 시점).",
+ "ok": true
+}

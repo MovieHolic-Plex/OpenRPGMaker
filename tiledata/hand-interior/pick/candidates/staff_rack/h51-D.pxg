@@ -1,0 +1,56 @@
+// D 장식: 금장 발톱에 물린 보석 머리(파랑·빨강·초록) 세 지팡이, 금 띠 감김, 금테·붉은 보석 문장판이 박힌 걸이
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat O dwood 0
+@mat D dwood 2
+@mat M dwood 4
+@mat L dwood 6
+@mat s pine 2
+@mat u pine 4
+@mat G gold 1
+@mat H gold 3
+@mat I gold 4
+@mat J gold 5
+@mat b blue 2
+@mat c blue 4
+@mat d blue 6
+@mat r red 2
+@mat e red 4
+@mat f red 6
+@mat g green 2
+@mat h green 4
+@mat i green 6
+@mblock 0 0
+.......JH.......
+......IfeG......
+......IerG......
+.......GG.......
+..JH...IG.......
+.IdcG..us.......
+.IcbG..us...JH..
+..GG...us..IihG.
+..IG...us..IhgG.
+..us...us...GG..
+..us...JH...IG..
+..us...us...us..
+..us...us...us..
+..JH...us...us..
+..us...JH...us..
+..us...us...JH..
+..us...us...us..
+..JH...us...us..
+..us...us...us..
+..us...us...us..
+..us...us...us..
+.OusOOOusOOOusO.
+.ODDLLLDDLLLDDO.
+.OJJIIIIIIIIHHO.
+.OLLMDLMMMDLMMO.
+.OLMMDMIHMDLMMO.
+.OLMMDIfeHDLMMO.
+.OLMMDMGGMDLMMO.
+.OLMMDMMMMDLMMO.
+.OMMMDMMMMDMMMO.
+.OMDDDDDDDDDDDO.
+.OOOOOOOOOOOOOO.

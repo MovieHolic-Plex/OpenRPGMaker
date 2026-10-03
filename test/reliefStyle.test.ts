@@ -2,10 +2,11 @@ import { describe, expect, it } from "vitest";
 import { deserialize, serialize } from "@/project/io";
 import { normalizeRelief, resizeRelief } from "@/project/relief/edit";
 import { effectiveHeights, renderRelief } from "@/project/relief/render";
-import { reliefSignature } from "@/project/relief/screen";
+import { cellLift, reliefLiftField, reliefPaintsCell, reliefRenderOptions, reliefSignature } from "@/project/relief/screen";
 import { compileReliefStyle, RELIEF_STYLES, RELIEF_WALL_FAMILIES, reliefStyleForTileset } from "@/project/relief/styles";
 import { gridFromRelief, type ReliefData } from "@/project/relief/types";
 import { createBlankProject } from "@/project/defaults";
+import { reliefSlopes } from "@/project/relief/walk";
 
 const W = 12, H = 10;
 const terrace = (): ReliefData => {
@@ -21,6 +22,55 @@ const wallPixels = (style?: string) => {
 };
 
 describe("relief wall styles", () => {
+  it("natural ramps remain one opaque surface with continuous lift even without biome art", () => {
+    const relief: ReliefData = { width: W, height: H, levels: new Array(W * H).fill(0), ramps: new Array(W * H).fill(0) };
+    for (let y = 1; y < 4; y++) for (let x = 1; x < W - 1; x++) relief.levels[y * W + x] = 3;
+    for (let y = 4; y < 8; y++) for (const x of [3, 4, 5, 6]) relief.ramps![y * W + x] = 1;
+    expect(reliefSlopes(relief)[0]?.steps).toBeUndefined();
+    expect(reliefPaintsCell(relief, 4, 4)).toBe(true);
+    expect(reliefPaintsCell(relief, 4, 7)).toBe(true);
+    const lift = reliefLiftField(relief);
+    expect(cellLift(lift, 4, 4)).toBeCloseTo(2.625);
+    expect(cellLift(lift, 4, 5)).toBeCloseTo(1.875);
+    const rendered = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief));
+    const surface = Array.from(rendered.src.keys()).filter(i => rendered.kind[i] === 0 && rendered.slope[i] > 0);
+    expect(surface.length).toBeGreaterThan(0);
+    for (const i of surface) {
+      expect(rendered.rgba[i * 4 + 3]).toBe(255);
+      expect(rendered.overSlope?.[i]).toBe(1);
+    }
+  });
+
+  it("default stairs own their stone treads, including the ground-level foot", () => {
+    const relief: ReliefData = { width: W, height: H, levels: new Array(W * H).fill(0), ramps: new Array(W * H).fill(0) };
+    for (let y = 1; y < 4; y++) for (let x = 1; x < W - 1; x++) relief.levels[y * W + x] = 3;
+    for (let y = 4; y < 8; y++) for (const x of [4, 5]) relief.ramps![y * W + x] = 5;
+    expect(reliefPaintsCell(relief, 4, 4)).toBe(true);
+    expect(reliefPaintsCell(relief, 4, 7)).toBe(true);
+    const rendered = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief));
+    const foot = Array.from(rendered.src.keys()).filter(i => rendered.kind[i] === 0 && rendered.slope[i] > 0 && rendered.height[i] === 0);
+    expect(foot.length).toBeGreaterThan(0);
+    for (const i of foot) {
+      const rgb = Array.from(rendered.rgba.slice(i * 4, i * 4 + 3));
+      expect(rendered.rgba[i * 4 + 3]).toBe(255);
+      expect(Math.max(...rgb) - Math.min(...rgb)).toBeLessThan(25);
+    }
+  });
+
+  it("renders a bridge underside with the default two-ramp palette and biome accent palettes", () => {
+    for (const style of [undefined, "grass-cliff"]) {
+      const relief: ReliefData = { width: W, height: H, levels: new Array(W * H).fill(0), ramps: new Array(W * H).fill(0), ...(style ? { style } : {}) };
+      for (let y = 2; y < 7; y++) for (let x = 1; x < W - 1; x++) {
+        if (x < 4 || x > 7) relief.levels[y * W + x] = 3;
+        else if (y === 4 || y === 5) { relief.levels[y * W + x] = 3; relief.ramps![y * W + x] = 9; }
+      }
+      const result = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief));
+      const underside = Array.from(result.kind.keys()).filter(i => result.kind[i] === 1 && relief.ramps![result.src[i]!] === 9);
+      expect(underside.length).toBeGreaterThan(0);
+      expect(underside.some(i => result.rgba[i * 4 + 3]! > 0)).toBe(true);
+    }
+  });
+
   it("every family is a literal pixel grid of even rows and legal glyphs", () => {
     for (const [name, art] of Object.entries(RELIEF_WALL_FAMILIES)) {
       for (const g of [art.lip, ...art.body]) {

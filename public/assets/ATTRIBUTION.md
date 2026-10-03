@@ -566,3 +566,53 @@ from the retired atlas interior sheet (commit 8e02e8e4e, cells 2160–3299):
 - Cells 0–479: EasyRPG `ChipSet/Ship.png` (JasonPerry, CC0). 480–509 blank (former Tibo graft slots).
 - Cells 510–989: EasyRPG `ChipSet/Dungeon.png` (JasonPerry, CC0); 990–992 blank, 993–998 cells grafted from EasyRPG combined town (CC0).
 - Cells 1020–1025: trapdoors, wall breach and rubble drawn in this repository. 1080+: composed water/abyss looks baked from app renders of those CC0 cells.
+- Native enemy additions (2026-10-02): the 100 original final-grid sheets in
+  `generated/pixel-enemies/` are drawn by editable repository code in
+  `scripts/asset-gen/pixel-enemy/retirement/{organic,arcane,humanoid}/`, extending
+  this repository's pixel drawing helpers. No third-party image pixels, painted
+  source shrink, tracing or smoothing is used. `generated/pixel-enemy-portraits/`
+  contains exact idle-cell derivatives of the 140 native enemy sheets.
+  `generated-enemy-sparkit-fire` reuses the existing human-selected collect sprite
+  documented in `harness-data/monster-collect-species/ledger.json`.
+
+## Common monster hand-pixel refresh (2026-10-03)
+
+The latest follow-up replaces the rejected batch with 135 fresh drawings in
+`scripts/asset-gen/pixel-enemy/redraw/`: organic44, arcane55, humanoid28 and bosses8.
+The teal hydra and revised kappa, gray wolf, cave bat and skeleton knight retain
+their exact approved reference pixels. All140 common species now use native64/96
+cells (126 at64px and14 at96px), nine poses each. Source coordinates, joint motion
+and separately painted fallen bodies are authored directly using Pillow; no
+generative image tool or finished-bitmap resizing is used. Organic part fitting
+transforms a complete source part around its attachment anchor before painting,
+with explicit coordinate and stroke bounds; it does not clamp individual vertices.
+Current source notes: `tiledata/monster-redraw-all/README.md`.
+The following139-species paragraph describes the earlier rejected batch.
+
+The 140 common battle species in `generated/pixel-enemies/` have 1,260 original
+native-grid pose cells. The approved teal hydra is retained; the other 139 species
+are newly drawn in `scripts/asset-gen/pixel-enemy/refresh/{organic,arcane,humanoid,bosses}.py`
+and any focused helper modules in that folder. These are original OPRN pixel
+artwork under the repository code/asset policy. No generative image model,
+third-party pixels, resized painted source, traced raster or smoothing is used.
+Portraits are exact copies of their first pose. Editable source cells and drawing
+notes are in `tiledata/monster-refresh/`. Existing species IDs and native cell
+dimensions were preserved for the initial batch. The human-selected collect sprite `sparkit-fire` is
+separate from this battle-sheet refresh and retains its recorded source.
+
+The revised kappa, gray wolf, cave bat and skeleton knight use new individually
+authored 64px originals, nine poses per species. Source:
+`scripts/asset-gen/pixel-enemy/kappa-redraw-draft.py`, `monster-redraw-studies.py`,
+and the source-coordinate joint rig `study_motion.py`; build with
+`build-study-battles.py`. Wolf and skeleton cells were changed from 48px to 64px
+without downsampling. Documentation: `tiledata/monster-battle-four/README.md`.
+
+## Three-headed hydra redraw (2026-10-03)
+
+`generated/pixel-enemies/hydra-three.png` and its exact idle portrait in
+`generated/pixel-enemy-portraits/hydra-three.png` are original OPRN pixel artwork,
+drawn directly on the final 96px grid by `scripts/asset-gen/pixel-enemy/hydra-three.py`.
+No source image or image-generation model is used. The humanoid batch generator
+loads this same authoring source. Repository code/asset policy applies.
+The later teal redesign uses 22 colors, independently posed heads and necks,
+and a separately drawn fallen body across the same nine-cell battle contract.

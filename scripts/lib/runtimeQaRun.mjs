@@ -244,7 +244,7 @@ async function applyOp(page, op, runState) {
       return;
     case "key":
       for (let i = 0; i < (op.times ?? 1); i += 1) {
-        await page.keyboard.press(op.key);
+        await page.keyboard.press(op.key, { delay: op.holdMs ?? 0 });
       }
       return;
     case "seed":
@@ -857,6 +857,14 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
     projectJson = JSON.stringify(project);
   }
   const outDir = opts.outDir ?? join(REPO_ROOT, "verify-shots/runtime-qa", scenario.id);
+  if (opts.projectUrl && scenario.systemPatch) throw new Error('Shipping-package QA must use the unchanged project');
+  // Validate the destination before clearing it, including boot-failure reports.
+  const outAbs = resolve(outDir);
+  if (outAbs === resolve("/") || outAbs === resolve(homedir()) || outAbs === resolve(tmpdir())) {
+    throw new Error(`runtime QA --out 이 너무 넓다(통째로 지운다): ${outAbs}`);
+  }
+  await rm(outDir, { recursive: true, force: true });
+  await mkdir(outDir, { recursive: true });
 
   const errors = [];
   page.on("pageerror", (error) => errors.push(String(error?.message ?? error)));
@@ -876,11 +884,13 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       }
       window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true };
     },
-    [PROJECT_URL, `runtime-qa:${scenario.id}`],
+    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`],
   );
-  await page.route(PROJECT_ROUTE, (route) =>
-    route.fulfill({ status: 200, contentType: "application/json", body: projectJson }),
-  );
+  if (!opts.projectUrl) {
+    await page.route(PROJECT_ROUTE, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: projectJson }),
+    );
+  }
 
   // 배틀러 기하 측정기를 페이지에 심는다(readObserved 가 매 비트마다 호출).
   await page.addInitScript(
@@ -888,23 +898,18 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   );
 
   const query = new URLSearchParams(scenario.query ?? {}).toString();
-  const playerUrl = `${opts.serverUrl}/player.html${query ? `?${query}` : ""}`;
-  await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
+  const playerUrl = `${opts.serverUrl}${opts.entryPath ?? '/player.html'}${query ? `?${query}` : ""}`;
   try {
+    await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
     await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
   } catch (error) {
-    // 부팅 실패는 리포트가 남기 전에 죽는다 — 그때까지 모은 페이지 오류를 같이 던져 원인을 남긴다.
+    await writeFile(join(outDir, 'boot-failure.json'), JSON.stringify({ scenario: scenario.id,
+      playerUrl, message: String(error?.message ?? error), errors, at: new Date().toISOString() }, null, 2));
+    await page.screenshot({ path: join(outDir, 'boot-failure.png'), timeout: 5000 }).catch(() => {});
+    await writeFile(join(outDir, 'SUMMARY.md'), `# ${scenario.id}\n\n실패: 플레이어 부팅을 완료하지 못했습니다.\n\n즉시 확인: boot-failure.png\n\n${String(error?.message ?? error)}\n\n${errors.slice(0, 20).join('\n')}\n`);
     if (errors.length > 0) console.error(JSON.stringify({ qaBootErrors: errors.slice(0, 20) }));
     throw error;
   }
-
-  // --out 이 절대 경로면 저장소 밖도 된다. 통째로 지우므로 루트·홈·임시 폴더 자체는 거절한다.
-  const outAbs = resolve(outDir);
-  if (outAbs === resolve("/") || outAbs === resolve(homedir()) || outAbs === resolve(tmpdir())) {
-    throw new Error(`runtime QA --out 이 너무 넓다(통째로 지운다): ${outAbs}`);
-  }
-  await rm(outDir, { recursive: true, force: true });
-  await mkdir(outDir, { recursive: true });
 
   // 시나리오 전체가 이름을 댄 이벤트를 한 번만 모은다. 비트마다 다시 걷지 않는 이유는
   // 관측이 비트 사이에 달라지면 안 되기 때문이다 — 어떤 비트에서는 사각을 읽고 어떤 비트에서는

@@ -1,0 +1,40 @@
+// E: 넓은 사선 윗면의 하늘색 결정과 곁결정, 거친 돌뿌리; 꼭대기 윗면 4행(y=16~19)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a glass 1
+@mat b glass 2
+@mat c glass 3
+@mat d glass 4
+@mat e glass 5
+@mat f glass 6
+@mat h ice 4
+@mat s stone 2
+@mat t stone 3
+@mat u stone 4
+@mat v stone 5
+@layer crystal
+@mblock 0 16
+.......eee......
+......efhhe.....
+.....efhhhdb....
+.....ehhddcb....
+.....edccbab....
+..f..edccbab....
+.fef.edccbab....
+.dhdbedccba..e..
+.dedbedccba.ehe.
+.dccbeddcba.ddb.
+..dcb.edcba.dcb.
+..dcb.edcba.dcb.
+..udtbddcbatdba.
+.tuvutddbtuttsa.
+.tuuttbbstttss..
+..tttssssssss...
+@layer glints
+@mblock 1 18
+e
+@mblock 14 20
+f
+@mblock 0 27
+e

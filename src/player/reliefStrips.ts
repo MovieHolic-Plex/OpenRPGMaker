@@ -52,9 +52,18 @@ export interface ReliefStripTextures {
   readonly frames: readonly ReliefStripFrame[];
 }
 
-/** 평지·relief 없음이면 null. 들림 표는 relief 객체마다 한 번 계산된다(screen.ts). */
+const reliefPresence = new WeakMap<ReliefData, boolean>();
+
+/**
+ * 평지·relief 없음이면 null. 들림 표는 relief 객체마다 한 번 계산된다(screen.ts).
+ * 「높이가 있는가」도 객체마다 한 번만 잰다 — 편집기는 다시 그리는 타일마다 이것을 불러 맵 전체 단을 훑었다
+ * (2026-10-03 높이 붓 프로필: 드래그 한 번에 약 0.35초).
+ */
 export function reliefFieldOf(relief: ReliefData | undefined): ReliefLiftField | null {
-  return hasRelief(relief) ? reliefLiftField(relief) : null;
+  if (!relief) return null;
+  let present = reliefPresence.get(relief);
+  if (present === undefined) reliefPresence.set(relief, present = hasRelief(relief));
+  return present ? reliefLiftField(relief) : null;
 }
 
 /** 칸 (x, y) 에 선 것을 올릴 월드 px. relief 가 없으면 0. */

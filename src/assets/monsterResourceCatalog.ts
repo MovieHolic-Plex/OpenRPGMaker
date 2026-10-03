@@ -19,6 +19,17 @@ export type MonsterResource = MonsterMetadata & {
   readonly sources: Readonly<Record<keyof MonsterMetadata, MonsterMetadataSource>>;
 };
 
+/**
+ * 고르는 목록·조수 목록에서 뺀 옛 적 그림(2026-10-03 deprecated/). id 는 리졸버가 도트 그림으로 돌린다.
+ * 슬라임 미리보기는 도트 슬라임과 같은 그림의 중복이다.
+ */
+const RETIRED_MONSTER_IDS: ReadonlySet<string> = new Set([
+  "generated-enemy-reference-cocoon",
+  "generated-enemy-reference-seed-back",
+  "generated-troop-preview-slime",
+  "easyrpg-monster-hornet",
+]);
+
 /** One raw-ID authority for editor/AI selection; metadata never registers resources. */
 export function listMonsterResources(project: MonsterResourceProject): readonly MonsterResource[] {
   // Local accumulator preserves canonical source order and deduplicates raw IDs.
@@ -29,14 +40,12 @@ export function listMonsterResources(project: MonsterResourceProject): readonly 
     resources.set(resourceId, { name: name || resourceId, origin });
   };
   for (const asset of GENERATED_ASSET_PLAN.assets) {
-    if (asset.status === "promoted" && asset.resourceKind === "monster") {
+    if (asset.status === "promoted" && asset.resourceKind === "monster" && !RETIRED_MONSTER_IDS.has(asset.resourceId)) {
       add(asset.resourceId, asset.id.replace(/-/g, " "), "bundled");
     }
   }
-  add("generated-enemy-reference-cocoon", "초록 고치 · 전투 정면", "bundled");
-  add("generated-enemy-reference-seed-back", "씨앗 몬스터 · 전투 뒷모습", "bundled");
   for (const id of builtinGeneratedResourceIds()) {
-    if (id.startsWith("generated-enemy-")) add(id, id.replace(/^generated-enemy-/, "").replace(/-/g, " "), "bundled");
+    if (id.startsWith("generated-enemy-") && !RETIRED_MONSTER_IDS.has(id)) add(id, id.replace(/^generated-enemy-/, "").replace(/-/g, " "), "bundled");
   }
   for (const asset of EASYRPG_MONSTER_ASSETS) add(asset.id, asset.name, "bundled");
   for (const asset of SCARLOXY_MONSTER_ASSETS) add(asset.id, asset.name, "bundled");

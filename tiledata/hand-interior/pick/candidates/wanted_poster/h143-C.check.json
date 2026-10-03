@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wanted_poster/h143-C.pxg",
+ "id": "wanted poster",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "C: 누런 종이를 크게 잡고 얼굴·어깨를 큰 잉크 덩어리로, 금화 표시는 하나만 두어 단순하고 또렷하게; 꼭대기 윗면 0행(y=해당 없음, 지시서상 평평한 벽면 걸이).",
+ "ok": true
+}

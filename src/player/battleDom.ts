@@ -1,7 +1,10 @@
-import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { setBattleMotionContext, battleTargetRecoil } from "@/player/battleMotionContext";
+import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
+import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
+import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
-import type { BattleTimelineEntrySnapshot } from "@/battle/types";
+import type { BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
   BattleResult,
@@ -18,7 +21,7 @@ import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
-import { battleAnimationImpactMs, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
+import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
@@ -37,16 +40,19 @@ import {
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
-import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleJuiceEvent } from "@/player/battleJuice";
+import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
 import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
+import { createBattleImpactController } from "@/player/battleImpactDom";
 import { resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
-import { playBattleSfx } from "@/player/battleSfx";
+import { playBattleImpactLayer, playBattleSfx } from "@/player/battleSfx";
+import { pokemonActionMotion, pokemonDamageBlink, pokemonHitPower, pokemonHudBuzz, preloadPokemonMotionSounds, type PokemonMoveContext } from "@/player/battlePokemonMotion";
+import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
 import {
@@ -56,9 +62,13 @@ import {
 import { openBattleTimerScope, clearBattleTimerScope, scheduleBattleTimer } from "@/player/battleTimerScope";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
+import { RETRO_PIXEL_FX_FRAMES, RETRO_PIXEL_FX_SOUNDS, retroPixelAnimationId, retroPixelFxForResource, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
 import { bindBattleStageScale } from "@/player/battleStageScale";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
+
+/** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
+export const POKEMON_MOTION_TEMPO = 1.5;
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
@@ -102,6 +112,17 @@ function isTextInputTarget(target: EventTarget | null): boolean {
 
 /** host에 마운트된 전투 컨트롤러를 정리한다. 플레이어 teardown 등에서 호출해
  *  전투가 끝나기 전에 플레이를 닫아도 틱·리스너가 새지 않게 한다(결함 1c). */
+/** 포켓몬 피해 박자 뒤 다음 행동까지의 여유 */
+const POKEMON_DAMAGE_TAIL_MS = 90;
+/** 결과 문장을 읽는 박자(3세대 waitmessage 64프레임의 약 2/3) — 문장이 HP 가 다 준 **뒤**에 나오므로 그만큼 머문다. */
+const POKEMON_RESULT_READ_FRAMES = 40;
+/** 상성별 타격음 모양 — 3세대 SE_KOUKA_L/M/H 를 같은 타격 샘플의 크기·높이로 옮겼다. */
+const POKEMON_EFFECTIVENESS_SHAPE: Readonly<Record<"weak" | "normal" | "super", BattleCueShape>> = {
+  weak: { volume: 0.6, rate: 1.22 },
+  normal: { volume: 1, rate: 1 },
+  super: { volume: 1.3, rate: 0.88 },
+};
+
 export function destroyBattleSceneOnHost(host: HTMLElement): void {
   activeBattleControllers.get(host)?.destroy();
   activeBattleControllers.delete(host);
@@ -110,9 +131,12 @@ export function destroyBattleSceneOnHost(host: HTMLElement): void {
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
   // 블라인드 전환 동안 기본 SE 세트를 디코딩해 둔다 — 첫 임팩트부터 소리가 정시에 온다.
   preloadBattleJuiceSamples();
+  // 기술 이펙트의 타이밍 소리도 — 행동 시작 때(preloadBattleAnimationSounds) 받으면 3배속에서는 approach 가 60~110ms 라
+  // 디코딩이 끝나기 전에 착탄이 와서 요소 재생(0.2~0.4초 늦음)으로 떨어졌다.
+  preloadAllBattleAnimationSounds();
   const playBattleCue = (event: BattleJuiceEvent): void => playContextBattleCue(event, options.audioContext);
-  const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null): void =>
-    emitContextBattleJuice(event, target, options.audioContext);
+  const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null, shape?: BattleCueShape): void =>
+    emitContextBattleJuice(event, target, options.audioContext, shape);
   // 같은 host에 이전 컨트롤러가 살아있으면 먼저 정리한다.
   // DOM만 지우면 setInterval/window keydown/ResizeObserver가 중복으로 남는다(결함 1a).
   activeBattleControllers.get(options.host)?.destroy();
@@ -130,6 +154,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const skin = getBattleSkin(skinId);
   root.dataset.battleSkin = skinId;
   const retroMotion = skin.motionStyle === "retro";
+  // 포켓몬 스킨의 동작 템포 — 돌진·넉백·이펙트를 1.5배 빠르게 돈다(사용자 요청 2026-10-02). 히트스톱·대사는 그대로.
+  const motionTempo = root.dataset.battleUiStyle === "pokemon" ? POKEMON_MOTION_TEMPO : 1;
+  if (motionTempo !== 1) root.dataset.battleMotionTempo = String(motionTempo);
+  // 포켓몬 스킨은 돌진·착탄·넉백을 그림 단위 안무(battlePokemonMotion)로 그린다.
+  const pokemonMotion = root.dataset.battleUiStyle === "pokemon" && !retroMotion;
+  // 포켓몬 안무의 이펙트 재생 계획 — animationImpactMs 가 정하고 onEntryAnimation 이 씬 루트에 건너뛸 프레임 수로 넘긴다.
+  let animationPlan: { animationId: string; skipFrames: number; skippedMs: number } | undefined;
+  if (pokemonMotion) preloadPokemonMotionSounds();
+  // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
+  let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
   if (retroMotion) root.dataset.battleMotion = "retro";
   // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
   root.dataset.battleSkinFamily = battleSkinFamily(skinId);
@@ -161,6 +195,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   const initialSnapshot = options.runtime.snapshot();
   let destroyed = false;
+  /** 포켓몬 피해 박자: 대상별로 돌고 있는 박자의 마무리(숫자 끝값·HP 지연 해제·쓰러짐 보류 해제).
+   *  같은 대상의 다음 피드백과 배속 전환이 먼저 부른다(finishPokemonPhase). setSpeed 가 마운트 중에도 불리므로 위에 둔다. */
+  const pokemonPhaseFinishers = new Map<string, () => void>();
   /** impact · 평타 확정 뒤 처음 오는 접근 비트에 베기 궤적과 휘두름 소리를 한 번 둔다. */
   let swingArmed = false;
   // 방금 확정한 직업 스킬(훔치기 등 special 결과만 남는 기술의 연출 시작점).
@@ -194,6 +231,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let shiftCombined = false;
 
   const field = battleField(initialSnapshot);
+  const impactContact = createBattleImpactController(field);
   field.dataset.testid = "battle-field";
   // 롤링 HP(system.battleRollingHp): 아군 HP 표시가 미터처럼 굴러간다. 규칙 엔진은 건드리지 않고,
   // 결과 확정 때 applyRollingHpSurvival 이 미터에 남은 HP 로 결산한다.
@@ -214,6 +252,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const animationLayer = document.createElement("div");
   animationLayer.className = "battle-animation-layer";
   animationLayer.dataset.testid = "battle-animation-layer";
+  // 이펙트 겹치기(BattleAnimationRecord.blendMode): 이펙트 노드는 이 층 안에서만 섞인다 — 층이 z-index 로 자기
+  // 스태킹 컨텍스트라 노드에만 걸면 투명한 층과 섞여 아무 일도 없다(2026-10-02 실측). 섞는 이펙트가 들어 있는 동안
+  // 층 자체에 같은 방식을 걸어 필드(배경·배틀러)와 섞는다. 대가: 그동안 같은 층의 다른 이펙트도 같이 섞인다(드묾).
+  const animationBlendObserver = new MutationObserver(() => {
+    const blended = animationLayer.querySelector<HTMLElement>(":scope > .battle-animation[data-blend]")?.dataset.blend;
+    animationLayer.style.mixBlendMode = isBlendModeName(blended) ? cssMixBlendMode(blended) : "";
+    if (isBlendModeName(blended)) animationLayer.dataset.blend = blended;
+    else delete animationLayer.dataset.blend;
+  });
+  animationBlendObserver.observe(animationLayer, { childList: true });
   const messageWindow = battleMessageWindow(directorState);
   const enemyPanel = enemyListPanel(initialSnapshot);
   const partyPanel = battlePartyStatus(initialSnapshot);
@@ -287,6 +335,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function setSpeed(spd: number): void {
+    finishAllPokemonPhases();
     speedMultiplier = spd;
     if (!skipping) sequencer.speedMultiplier = spd;
     root.dataset.battleSpeed = (skipping ? SKIP_SPEED : spd).toFixed(1);
@@ -301,6 +350,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   /** 이 시퀀스 한 번만 빨리감기. onSequenceBusy(false) 에서 원래 배속으로 되돌린다. */
   function beginSkip(): void {
     if (skipping) return;
+    finishAllPokemonPhases();
     skipping = true;
     sequencer.speedMultiplier = SKIP_SPEED;
     // 이펙트 프레임 간격(battleAnimationFrameMs)은 이 속성만 읽는다 — 안 갱신하면 스킵 중
@@ -411,7 +461,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
+      setBattleMotionContext(field, options.runtime.snapshot());
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
+      if (pokemonMotion) {
+        const skill = entry.skillId || entry.skillName ? battleEntrySkillRecord(entry) : undefined;
+        pokemonMove = { motion: pokemonMoveMotion(skill), color: pokemonMoveColor(skill), fromBelow: pokemonStrikeFromBelow(skill), actionId: entry.actionId };
+        // QA·스타일 훅: 지금 엔트리의 움직임 종류
+        root.dataset.battleMoveMotion = pokemonMove.motion;
+        // 이펙트는 착탄 순간에 마운트된다 — 그때 디코딩하면 첫 효과음이 늦는다. 행동이 시작될 때 미리.
+        preloadBattleAnimationSounds(entry.animation?.animationId);
+      }
       if (retroMotion) retroTimelineEntry(field, entry);
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
       if (retroMotion && entry.kind === "special") {
@@ -431,9 +490,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 엔트리 단위 애니메이션 — 잔류하는 snapshot.lastAnimation 대신, 지금 재생 중인
       // 액션의 애니메이션만 레이어에 올린다. animation 이 없으면 레이어를 비운다.
       activeAnimation?.destroy();
+      const skipFrames = animation && animationPlan?.animationId === animation.animationId ? animationPlan.skipFrames : 0;
+      if (skipFrames > 0) root.dataset.battleAnimationSkipFrames = String(skipFrames);
+      else delete root.dataset.battleAnimationSkipFrames;
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: retroMotion && (hasRetroChoreography(field) || isTravellingEffect(animation)) ? undefined : animation },
+        { ...options.runtime.snapshot(), lastAnimation: !retroMotion ? animation : hasRetroChoreography(field) || isTravellingEffect(animation) ? undefined : retroPixelAnimation(animation) },
         root,
       );
     },
@@ -448,17 +510,29 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (feedback) {
         const vitalsBefore = presentation?.vitalsFor(feedback.targetId);
         const wasAlive = !vitalsBefore?.defeated;
+        // 원장 객체는 applyFeedback 이 제자리에서 고친다 — 맞기 전 HP 는 지금 떠 둔다.
+        const hpBefore = vitalsBefore?.hp;
         presentation?.applyFeedback(feedback);
-        const targetNode =
-          field.querySelector<HTMLElement>(`[data-testid="${feedback.targetId}"]`)
-          ?? field.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${feedback.targetId}"]`)
-          ?? field.querySelector<HTMLElement>(`[data-testid="battle-actor-${feedback.targetId}"]`);
+        // 파티 몬스터는 런타임 id(mon:…)로 맞는다 — 직접 조회하면 null 이라 내 몬스터가 맞을 때 깜빡임·넉백이 빠졌다(2026-10-02 실측).
+        const targetNode = findBattlerNode(field, feedback.targetId);
+        // 같은 대상의 앞 피해 박자가 아직 돌면(배속 전환·연속 타격·회복) 먼저 끝낸다 — 숫자 세기·HP 지연·쓰러짐 보류가 겹치지 않게.
+        finishPokemonPhase(feedback.targetId);
         // 타격 세기 — 대상 최대 HP 대비 피해 비율(+급소·막타)로 넉백·찌그러짐·무대 펀치·흔들림을 차등한다.
         const lethal = wasAlive && Boolean(presentation?.vitalsFor(feedback.targetId)?.defeated);
         const maxHp = vitalsBefore?.maxHp ?? battlerMaxHp(options.runtime.snapshot(), feedback.targetId);
         const intensity = hitIntensity(feedback, maxHp, lethal);
         applyHitIntensity(root, targetNode, intensity);
+        const recoil=retroMotion&&targetNode?battleTargetRecoil(field,targetNode):1;
+        if(targetNode&&intensity){const px=Number.parseFloat(targetNode.style.getPropertyValue("--hit-knockback"));if(Number.isFinite(px))targetNode.style.setProperty("--hit-knockback",`${px*recoil}px`);}
         if (retroMotion) retroDamage(targetNode, feedback, lethal);
+        if (retroMotion && hitFeel === "impact" && intensity && targetNode && !prefersReducedMotion()) {
+          impactContact.strike(targetNode, intensity, recoil);
+        }
+        // 포켓몬 스킨의 피해는 기술 연출(착탄 떨림·별) 뒤에 따로 온다(3세대 순서) — 아래 일반 경로를 타지 않는다.
+        if (usesPokemonDamagePhase(feedback)) {
+          playPokemonDamagePhase(feedback, targetNode, maxHp, lethal, hpBefore, presentation?.vitalsFor(feedback.targetId)?.hp);
+          return;
+        }
         // 타격/급소/회복/빗나감 효과음 — 사건 1개에 소리 1개. emitBattleJuice 안의
         // playBattleCue 가 샘플→합성 폴백을 단일 경로로 처리한다. 여기서 합성 보이스를
         // 따로 부르면 한 타격에 소리가 겹친다(예전 결함).
@@ -471,6 +545,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
                 ? "hit-heal"
                 : "hit-damage",
           targetNode,
+          // 포켓몬 스킨: 같은 타격 샘플도 세기에 따라 크기·높이가 다르다(약하면 작고 높게, 세면 크고 낮게)
         );
         // 이 타격으로 쓰러졌다면 기절음이 잠시 뒤따른다. 그 사이 전투가 닫힐 수 있으므로
         // id 를 보관해 destroy 가 끊는다 — 예전에는 익명 타이머라 씬이 사라진 뒤에도 살아
@@ -481,17 +556,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
             playBattleCue("faint");
           }, 260);
         }
-        if (!feedback.healing && !feedback.miss) {
+        if (intensity) {
           const hurt = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
           flashBattleField(root, feedback.critical ? "critical" : "hit", hurt ? hurtShakeIntensity(hitFeel, intensity) : intensity, { hurt });
           // 타격음 아래 저음 한 겹 — 샘플은 사건 1개 = 소리 1개(battleJuice) 그대로다. 이 저음은 그 위의 별도 층이다.
-          if (hitFeel === "impact" && intensity) playBattleSfx("thud");
+          // 포켓몬 스킨은 저음층이 타격 세기를 따른다(4 피해와 15 피해가 같은 소리였다).
+          if (hitFeel === "impact" && intensity) {
+            if (pokemonMotion) playBattleImpactLayer(pokemonHitPower(feedback.amount, maxHp, feedback.critical), feedback.critical);
+            else playBattleSfx("thud");
+          }
           // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
-          if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
+          if (intensity && targetNode && !lethal && !(retroMotion && hitFeel === "impact")) spawnHitSparks(targetNode, intensity);
         }
       }
     },
     onHitFeel(active, feedback) {
+      if (retroMotion) holdRetroSkillPlayback(field, active);
+      impactContact.hold(active);
       // 정지(히트스톱)가 풀리는 순간 맞은 쪽이 세 번 깜빡인다. 정지 중에는 22-hit-feel.css 가
       // 대상을 흰 실루엣으로 붙잡고 있으므로, 점멸은 그 뒤의 "반응" 이다.
       if (active) hitStopFeedback = feedback;
@@ -500,10 +581,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         hitStopFeedback = undefined;
         const node = findBattlerNode(field, struck.targetId);
         if (retroMotion && node?.classList.contains("battle-actor")) retroHitRelease(node);
-        else if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
+        // 포켓몬 안무는 넉백이 끝난 뒤 스스로 깜빡인다(battlePokemonMotion.releaseTarget).
+        else if (node && !pokemonMotion && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
       }
       // 히트스톱이 걸리는 순간 맞은 쪽이 떨기 시작한다(impact). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
-      if (active && hitFeel === "impact" && feedback && !prefersReducedMotion()) {
+      // 포켓몬 안무는 맞은 그림을 직접 밀고 떨게 한다 — 진동을 겹치면 같은 translate 를 서로 덮는다.
+      if (active && hitFeel === "impact" && feedback && !retroMotion && !pokemonMotion && !prefersReducedMotion()) {
         const node = findBattlerNode(field, feedback.targetId);
         const strength = node?.dataset.hitIntensity;
         if (node && (strength === "graze" || strength === "normal" || strength === "heavy" || strength === "crushing")) {
@@ -516,6 +599,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else root.classList.remove("battle-hit-stop-critical");
     },
     onActionMotion(beat) {
+      setBattleMotionContext(field, options.runtime.snapshot());
       if (retroMotion) {
         // 시퀀서의 배속으로 실제 비트 길이를 맞춰 칸 전환이 다음 비트에 넘어가지 않게 한다.
         const timed = beat && beat.durationMs > 0
@@ -523,9 +607,21 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         retroActionMotion(field, timed, options.runtime.snapshot());
       }
       else applyActionMotion(field, beat);
+      if (pokemonMotion) {
+        const lungeMs = Number.parseFloat(getComputedStyle(root).getPropertyValue("--motion-lunge-ms")) || 160;
+        // 착탄 세기 = 최대 HP 대비 피해(pokemonHitPower)
+        const hitFeedback = beat?.kind === "impact" ? beat.feedback : undefined;
+        const hitMaxHp = hitFeedback ? battlerMaxHp(options.runtime.snapshot(), hitFeedback.targetId) : 0;
+        const power = hitFeedback ? pokemonHitPower(hitFeedback.amount, hitMaxHp, hitFeedback.critical) : 0.3;
+        pokemonActionMotion(field, beat, lungeMs, pokemonMove, { power, critical: Boolean(hitFeedback?.critical) });
+        // 고르기 확인음(Decision1, 크게 들리는 길이 약 0.5초)은 행동이 시작돼도 울려 착탄 소리와 꼬리가 겹쳤다 —
+        // 움직임이 시작되면 150ms 동안 거둔다. 짧은 「딸깍」은 남는다(2026-10-02 적대적 QA).
+        if (beat?.kind === "approach") fadeBattleCue("command-confirm", 150);
+      }
       // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
       // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
-      if (hitFeel === "impact" && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {
+      // 포켓몬 스킨은 베기 궤적을 그리지 않는다(몬스터 몸통박치기에 칼 획이 지나갔다). 휘두름 소리는 남긴다.
+      if ((hitFeel === "impact" || pokemonMotion) && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {
         swingArmed = false;
         const targetId = beat.targetId;
         scheduleBattleTimer(() => {
@@ -533,12 +629,37 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           const target = findBattlerNode(field, targetId);
           if (!target || !target.classList.contains("battle-enemy")) return;
           playBattleCue("attack-swing");
-          spawnSlashTrail(target);
+          if (!pokemonMotion) spawnSlashTrail(target);
         }, Math.max(0, beat.durationMs - SWING_LEAD_MS));
       }
     },
-    animationImpactMs(animation) {
+    animationImpactMs(animation, approachMs) {
+      if (pokemonMotion) {
+        // 접촉·발사체: 이펙트는 「닿는 순간」 착탄 프레임부터 — 일찍 띄우면 발사체가 날아가는 동안 상대 몸에서 불길이 먼저
+        // 피었고, 몸통박치기는 저작 타격 별이 착탄 85ms 전에 먼저 떴다(2026-10-02 녹화). 착탄 「팍」은 안무(impactBurst)가 그린다.
+        // 현장 발생·범위·보조: 이펙트 자체가 다가감(내리꽂는 번개·솟는 가시·떨어지는 운석)이라 approach 안에 들어가는 만큼 앞당겨 튼다.
+        // 어느 쪽이든 못 들어간 앞 프레임은 건너뛴다 — 0번부터 돌면 착탄 효과음이 타격 뒤 160~420ms 에 한 번 더 났다.
+        const bodyCarriesApproach = pokemonMove.motion === "contact" || pokemonMove.motion === "projectile";
+        const plan = battleAnimationLeadPlan(animation.animationId, bodyCarriesApproach ? 0 : approachMs * motionTempo);
+        animationPlan = { animationId: animation.animationId, skipFrames: plan.skipFrames, skippedMs: plan.skippedMs };
+        // 1ms = 시퀀서 오프셋이 approach 길이가 된다(착탄 순간 마운트).
+        return plan.leadMs > 0 ? plan.leadMs : 1;
+      }
       return battleAnimationImpactMs(animation.animationId);
+    },
+    impactPresentationMs(_entry, feedback) {
+      if (!feedback || !usesPokemonDamagePhase(feedback)) return 0;
+      // 계획 시점의 원장은 아직 맞기 전 HP 다 — 실제로 줄 HP 로 바 길이를 잡는다. 배속은 시퀀서가 이 값에 곱한다.
+      const vitals = presentation?.vitalsFor(feedback.targetId);
+      const maxHp = vitals?.maxHp ?? battlerMaxHp(options.runtime.snapshot(), feedback.targetId);
+      const plan = pokemonDamagePlan(Math.min(feedback.amount, vitals?.hp ?? feedback.amount), maxHp, 1);
+      return plan.delayMs + plan.blinkMs + plan.drainMs + POKEMON_DAMAGE_TAIL_MS + plan.readMs;
+    },
+    // 건너뛴 앞 프레임만큼 이펙트가 짧게 돈다 — 시퀀서가 recover 를 실제 끝에 맞춘다.
+    animationRemainingMs(animation) {
+      if (!pokemonMotion || !animation.durationMs) return undefined;
+      const skipped = animationPlan?.animationId === animation.animationId ? animationPlan.skippedMs : 0;
+      return Math.max(0, animation.durationMs - skipped);
     },
     onEscapeOutcome(success) {
       // 도주음·BGM 정지는 성공이 **화면에 도달한** 순간에만. 예전엔 명령 확정 시점에 울려
@@ -552,20 +673,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (retroMotion && result === "victory") retroVictory(field);
       showFinaleStamp(result);
     },
+    collapseHoldMs: () => remainingEnemyCollapseMs(field),
+    motionTempo: () => motionTempo,
+    describeEffectiveness: pokemonMotion,
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.
-      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline)
-        ?? retroSkillForEntry(entry)?.approachMs ?? retroWalk(field, entry)?.approachMs,
-      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
-        ?? retroSkillForEntry(entry)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
+      actorApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "approach", options.runtime.snapshot().timeline, weight)
+        ?? retroSkillForEntry(entry,field)?.approachMs ?? retroWalk(field, entry)?.approachMs,
+      actorRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "recover", options.runtime.snapshot().timeline, weight)
+        ?? retroSkillForEntry(entry,field)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
       // 몬스터 스킬 42종은 같은 타임라인 훅(첫 착탄·대상별 간격·남은 연출). 그 밖의 도트 적 근접은 대상 아군 앞까지 뛰어/날아간다.
-      enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline)
+      enemyApproachMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "approach", options.runtime.snapshot().timeline, weight)
         ?? retroEnemyReach(field, entry)?.approachMs,
-      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
+      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => retroClassSkillBeatMs((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, "recover", options.runtime.snapshot().timeline, weight)
         ?? retroEnemyReach(field, entry)?.recoverMs,
       // 연출 레코드의 무게 손잡이(light/normal/heavy) — 접근·멈춤·회복 배율이 같이 바뀐다.
-      actionWeight: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => retroClassSkillWeight(field, entry, base, options.runtime.snapshot().timeline),
+      actionWeight: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => retroClassSkillWeight((setBattleMotionContext(field, options.runtime.snapshot()), field), entry, base, options.runtime.snapshot().timeline),
     } : {}),
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.
@@ -1064,6 +1188,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function syncView(): void {
+    setBattleMotionContext(field, options.runtime.snapshot());
     if (destroyed) return;
     const snapshot = options.runtime.snapshot();
     const showingResult = Boolean(snapshot.result) && directorState.step === "result";
@@ -1351,11 +1476,167 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     sequencer.runAfterActorCommand(command, before, afterCommand);
   }
 
+  /** 포켓몬 3세대 피해 박자(pokeemerald: attackanimation → effectivenesssound + hitanimation → healthbarupdate).
+   *  기술 연출이 끝난 뒤(13프레임) 상성 타격음과 함께 맞은 쪽이 8번 깜빡이고 HP 상자가 떨며, 깜빡임이 끝나야 HP 가
+   *  일정 속도(바 전체 48프레임)로 준다. 동작 템포(1.5배)와 배속(speed)만큼 줄인다 — 시퀀서 지연은 배속으로 줄어드는데
+   *  이 박자만 그대로면 빨리 감기·건너뛰기에서 다음 행동이 앞 박자 위로 올라왔다. `lostHp` 는 실제로 준 HP(초과 피해 제외). */
+  function pokemonDamagePlan(lostHp: number, maxHp: number, speed: number): { delayMs: number; blinkMs: number; drainMs: number; readMs: number; frameMs: number } {
+    const frame = 1000 / 60 / ((motionTempo > 0 ? motionTempo : 1) * Math.max(0.2, speed));
+    const share = Math.min(1, Math.max(0, lostHp) / Math.max(1, maxHp));
+    return {
+      delayMs: 13 * frame,
+      blinkMs: 32 * frame,
+      drainMs: Math.max(frame, Math.round(share * 48) * frame),
+      readMs: POKEMON_RESULT_READ_FRAMES * frame,
+      frameMs: frame,
+    };
+  }
+
+  /** 3세대 피해 박자를 타는 피해인가 — onDamageFeedback 과 impactPresentationMs 가 **같은 판정**을 써야 recover 비트가
+   *  실제 박자와 맞는다(예전엔 독 틱(label)이 비트만 늘려 빈 시간이 생기고, MP 피해가 HP 박자를 돌렸다). */
+  function usesPokemonDamagePhase(feedback: DamageFeedback | undefined): boolean {
+    if (!pokemonMotion || !feedback) return false;
+    return !feedback.label && !feedback.miss && !feedback.healing && !feedback.blocked
+      && (feedback.resource ?? "hp") === "hp" && feedback.amount > 0;
+  }
+
+  function finishPokemonPhase(targetId: string): void {
+    const finish = pokemonPhaseFinishers.get(targetId);
+    if (!finish) return;
+    pokemonPhaseFinishers.delete(targetId);
+    finish();
+  }
+  function finishAllPokemonPhases(): void {
+    for (const targetId of [...pokemonPhaseFinishers.keys()]) finishPokemonPhase(targetId);
+  }
+
+  /** 3세대는 HP 숫자도 바와 같이 센다(MoveBattleBar → UpdateHpTextInHealthbox). 예전엔 숫자가 착탄 순간 바로 바뀌고
+   *  바는 0.5초 뒤에 줄어 서로 어긋났다. 세는 동안 battleFieldDom.setVitalNode 는 data-hp-countdown 을 보고 숫자를 건드리지 않는다.
+   *  돌려준 함수는 세기를 멈추고 끝값을 적는다. */
+  function countPokemonHp(hud: HTMLElement | null | undefined, from: number, to: number, startMs: number, drainMs: number, frameMs: number): () => void {
+    const value = hud?.querySelector<HTMLElement>(".battle-actor-hp .battle-vital-value");
+    if (!value || !(from > to)) return () => undefined;
+    const token = String((Number(value.dataset.hpCountdown) || 0) + 1);
+    value.dataset.hpCountdown = token;
+    value.textContent = ` ${from}`;
+    const ticks = Math.max(1, Math.round(drainMs / frameMs));
+    for (let k = 1; k <= ticks; k += 1) {
+      const shown = Math.round(from - (from - to) * (k / ticks));
+      scheduleBattleTimer(() => {
+        if (value.dataset.hpCountdown !== token) return;
+        value.textContent = ` ${shown}`;
+        if (k === ticks) delete value.dataset.hpCountdown;
+      }, startMs + k * (drainMs / ticks));
+    }
+    return () => {
+      if (value.dataset.hpCountdown !== token) return;
+      delete value.dataset.hpCountdown;
+      value.textContent = ` ${to}`;
+    };
+  }
+
+  function playPokemonDamagePhase(feedback: DamageFeedback, targetNode: HTMLElement | null, maxHp: number, lethal: boolean, hpBefore: number | undefined, hpAfter: number | undefined): void {
+    const tier = (feedback.effectiveness ?? 1) > 1 ? "super" : (feedback.effectiveness ?? 1) < 1 ? "weak" : "normal";
+    root.dataset.battleLastEffectiveness = tier;
+    // 감소 모션: 박자(지연·깜빡임·떨림·세기)는 빼고 상성 타격음과 기절음만 바로 — 정보는 남긴다.
+    if (prefersReducedMotion()) {
+      emitBattleJuice("hit-damage", targetNode, POKEMON_EFFECTIVENESS_SHAPE[tier]);
+      if (lethal) playBattleCue("faint");
+      return;
+    }
+    const lostHp = hpBefore !== undefined && hpAfter !== undefined ? hpBefore - hpAfter : feedback.amount;
+    const speed = sequencer.speedMultiplier;
+    const plan = pokemonDamagePlan(lostHp, maxHp, speed);
+    const pace = (motionTempo > 0 ? motionTempo : 1) * Math.max(0.2, speed);
+    const drainAt = plan.delayMs + plan.blinkMs;
+    const drainEnd = drainAt + plan.drainMs;
+    // 결과 문장(「…에게 5 피해!」·상성)은 HP 가 다 준 뒤에 — 3세대 순서는 기술 → 맞음 → HP 감소 → resultmessage 다.
+    // 예전엔 피해 숫자가 착탄 순간 먼저 나와서, 바가 줄기도 전에 결과를 읽어 버렸다. 20-pokemon-skin.css ⑦ 이 둘째 줄을 숨긴다.
+    const holdToken = String((Number(root.dataset.pkmnResultHold) || 0) + 1);
+    root.dataset.pkmnResultHold = holdToken;
+    const releaseResult = (): void => { if (root.dataset.pkmnResultHold === holdToken) delete root.dataset.pkmnResultHold; };
+    // 바 전환은 스타일이 다시 계산되는 다음 프레임에 시작해 타이머보다 한 프레임쯤 늦다 — 문장은 두 프레임 더 기다린다.
+    scheduleBattleTimer(releaseResult, drainEnd + 2 * plan.frameMs);
+    const actor = options.runtime.snapshot().actors.find((one) => one.id === feedback.targetId || one.recordId === feedback.targetId);
+    // 포켓몬 스킨에서 화면에 보이는 적 HP 상자는 필드의 .battle-enemy-hud(숨김)가 아니라 정보 패널의 행이다.
+    // 예전엔 숨은 HUD 를 잡아서 적 HP 가 착탄 순간 바로 줄고 상자도 떨지 않았다(2026-10-02 실측).
+    const enemyRow = actor ? null : root.querySelector<HTMLElement>(`.battle-enemy-list-row[data-enemy-id="${targetNode?.dataset.testid ?? feedback.targetId}"]`);
+    const hud = actor
+      ? root.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`)
+      : enemyRow ?? targetNode?.querySelector<HTMLElement>(".battle-enemy-hud");
+    // 떨리는 건 상자 전체(3세대 healthbox) — 적이 하나면 패널이 곧 상자다.
+    const enemyPanel = enemyRow?.closest<HTMLElement>(".battle-enemy-list-panel");
+    const buzzBox = enemyPanel && enemyPanel.querySelectorAll(".battle-enemy-list-row").length === 1 ? enemyPanel : hud;
+    // HP 바는 깜빡임이 끝난 뒤 일정 속도로 — 20-pokemon-skin.css ⑥ 의 HP 전환이 이 변수를 읽는다.
+    const clearDrain = (): void => {
+      hud?.style.removeProperty("--pkmn-hp-drain-delay");
+      hud?.style.removeProperty("--pkmn-hp-drain-ms");
+    };
+    if (hud) {
+      hud.style.setProperty("--pkmn-hp-drain-delay", `${Math.round(drainAt)}ms`);
+      hud.style.setProperty("--pkmn-hp-drain-ms", `${Math.round(plan.drainMs)}ms`);
+      scheduleBattleTimer(clearDrain, drainEnd + 120);
+    }
+    const stopCount = actor && hpBefore !== undefined
+      ? countPokemonHp(hud, hpBefore, hpAfter ?? Math.max(0, hpBefore - feedback.amount), drainAt, plan.drainMs, plan.frameMs)
+      : () => undefined;
+    // 쓰러짐은 HP 가 다 준 뒤(3세대 tryfaintmon). 막타 순간 원장이 defeated 를 세우면 쓰러짐 연출·적 HP 행 숨김이
+    // 바가 줄기도 전에 돌고, 깜빡임이 사라지던 그림을 도로 켰다 — 원장의 쓰러짐 표시를 그때까지 미룬다.
+    const releaseDefeat = lethal ? presentation?.deferDefeat(feedback.targetId) : undefined;
+    let fainted = false;
+    let struck = false;
+    const motions: Animation[] = [];
+    const faint = (): void => {
+      if (fainted || !releaseDefeat) return;
+      fainted = true;
+      releaseDefeat();
+      if (destroyed) return;
+      syncView();
+      playBattleCue("faint");
+    };
+    if (releaseDefeat) scheduleBattleTimer(faint, drainEnd + 80);
+    // 상성별 타격음(3세대 SE_KOUKA_L/M/H): 별로 = 작고 높게, 보통, 굉장 = 크고 낮게 + 한 번 더(「빠-밤」).
+    // 급소는 소리를 바꾸지 않는다(3세대 Cmd_effectivenesssound) — 「급소에 맞았다!」 문장이 말한다.
+    const strikeSound = (): void => {
+      emitBattleJuice("hit-damage", targetNode, POKEMON_EFFECTIVENESS_SHAPE[tier]);
+      if (tier === "super") scheduleBattleTimer(() => { if (!destroyed) emitBattleJuice("hit-damage", targetNode, { volume: 0.9, rate: 0.78 }); }, 55 / Math.max(0.2, speed));
+      if (hitFeel === "impact" && tier !== "weak") playBattleImpactLayer(pokemonHitPower(lostHp, maxHp, feedback.critical), feedback.critical);
+    };
+    scheduleBattleTimer(() => {
+      if (destroyed || struck) return;
+      struck = true;
+      strikeSound();
+      for (const motion of [pokemonDamageBlink(targetNode, pace), pokemonHudBuzz(buzzBox, pace)]) if (motion) motions.push(motion);
+    }, plan.delayMs);
+    // 배속이 바뀌거나(넘기기 시작) 같은 대상이 또 맞으면 남은 박자를 지금 끝낸다 — 시퀀서는 남은 지연을 새 배속으로
+    // 다시 거는데 이 박자는 처음 배속 그대로라, 넘기기 중 다음 행동이 앞 박자 위로 올라와 결과 문장이 통째로 묻혔다(2026-10-02 실측).
+    const finisher = (): void => {
+      if (!struck && !destroyed) {
+        struck = true;
+        strikeSound();
+      }
+      for (const motion of motions) motion.finish();
+      // HP 바·잔상의 CSS 전환(지연이 걸린 채 대기 중일 수 있다)을 끝값으로 — 변수를 지워도 이미 시작된 전환은 그대로 돈다.
+      for (const transition of hud?.getAnimations?.({ subtree: true }) ?? []) {
+        if (typeof CSSTransition !== "undefined" && transition instanceof CSSTransition) transition.finish();
+      }
+      stopCount();
+      clearDrain();
+      releaseResult();
+      faint();
+    };
+    pokemonPhaseFinishers.set(feedback.targetId, finisher);
+    // 다 끝난 뒤에는 마무리할 것이 없다 — 그사이 같은 대상의 새 박자가 들어왔으면 그것은 지우지 않는다.
+    scheduleBattleTimer(() => { if (pokemonPhaseFinishers.get(feedback.targetId) === finisher) pokemonPhaseFinishers.delete(feedback.targetId); }, drainEnd + 160);
+  }
+
   function emitSwingJuice(command: ActorCommand | TargetedActorCommand, snapshot: BattleSnapshot): void {
     const actorNode = snapshot.activeActorId
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
     const skillRecord = command.kind === "skill" ? store.getCurrent().database.skills.find((skill) => skill.id === command.skillId) : undefined;
+    // 지난 명령의 무장이 남아 있으면(막힌 행동·비트 없는 행동) 다음 돌진에서 엉뚱한 휘두름이 났다 — 명령마다 새로 정한다.
+    swingArmed = false;
     pendingRetroSkillId = retroMotion && hasRetroSkillContract(skillRecord) ? skillRecord?.id : undefined;
     pendingRetroSkillUserId = snapshot.activeActorId;
     if (retroMotion && command.kind === "skill" && (retroSkillRecipe(skillRecord) || hasRetroSkillContract(skillRecord))) {
@@ -1365,8 +1646,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (command.kind === "attack" || command.kind === "skill") {
       // impact 의 평타는 휘두름 소리를 착탄 직전(onActionMotion)으로 옮기고 베기 궤적을 같이 긋는다. 여기서도
       // 울면 한 행동에 두 번 운다. 스킬은 자기 애니메이션이 있어 예전 자리(확정 순간)를 지킨다.
-      swingArmed = hitFeel === "impact" && command.kind === "attack";
-      if (!swingArmed) emitBattleJuice("attack-swing", actorNode ?? undefined);
+      // 포켓몬 스킨: 확정 순간의 휘두름 소리는 착탄 0.28초 전, 아직 웅크리는 중에 났고 화염·낙뢰에도 칼 바람 소리가 났다
+      // (2026-10-02 소리 악보). 몸으로 치는 기술만 돌진 직전에 울리고, 쏘거나 부르는 기술은 자기 이펙트 소리만 낸다.
+      const pokemonRanged = pokemonMotion && command.kind === "skill" && pokemonMoveMotion(skillRecord) !== "contact";
+      // 포켓몬 스킨은 타격감 프리셋(light 포함)과 무관하게 돌진 직전에 울린다 — light 에서 확정 순간으로 돌아가면 같은 어긋남이 난다.
+      swingArmed = !pokemonRanged && (pokemonMotion || (hitFeel === "impact" && command.kind === "attack"));
+      if (!swingArmed && !pokemonRanged) emitBattleJuice("attack-swing", actorNode ?? undefined);
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);
     }
@@ -1575,6 +1860,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
       if (destroyed) return;
       destroyed = true;
+      animationBlendObserver.disconnect();
+      stopRetroClassSkill(field);
+      impactContact.destroy();
       clearBattleTimerScope();
       rollingHpTicker?.stop();
       choiceController?.abort();
@@ -1604,3 +1892,23 @@ function prefersReducedMotion(): boolean {
 
 // 도트 측면 전투에서는 날아가는 이펙트(화살·투사체)를 그리지 않는다 — 판정은 battleRetroMotion.isTravellingEffect.
 // 대상 위에서 제자리로 터지는 이펙트(불꽃·치유 빛·베기)는 남는다. 빠진 이펙트의 소리는 시전 방출음이 대신한다.
+
+/**
+ * 도트 측면 전투는 번들 효과(EasyRPG·384px 생성·Scarloxy)를 같은 계열의 도트 효과로 바꿔 그린다(2026-10-03).
+ * 일반 공격·아이템·연출 계약 없는 기술이 기록의 옛 시트를 그대로 띄우던 경로다. 저자가 올린 그림은 그대로 둔다.
+ */
+function retroPixelAnimation(animation: BattleAnimationSnapshot | undefined): BattleAnimationSnapshot | undefined {
+  if (!animation) return undefined;
+  const records = store.getCurrent().database.battleAnimations;
+  const record = records.find((entry) => entry.id === animation.animationId);
+  const key = retroPixelFxForResource(record?.resourceId ?? animation.resourceId);
+  if (!key) return animation;
+  // anim_px_* 기록이 프로젝트에 없어도 battleAnimationDom 이 번들 기본 기록으로 그린다.
+  return {
+    ...animation,
+    animationId: retroPixelAnimationId(key),
+    resourceId: retroPixelFxResourceId(key),
+    soundResourceIds: [RETRO_PIXEL_FX_SOUNDS[key]],
+    frameCount: RETRO_PIXEL_FX_FRAMES,
+  };
+}

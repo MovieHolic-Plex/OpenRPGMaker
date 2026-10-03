@@ -1,5 +1,31 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
+
+0.25~1 배율. 없으면 1(기존과 같음). 그 맵에서 걷는 주인공·동료·탈것·캐릭터 칩 이벤트에만 곱한다(상자·그림 이벤트는 칸 크기 그대로).
+월드맵처럼 땅을 멀리서 보는 지도에서 캐릭터를 줄이는 선택 옵션 — 기본은 꺼짐. 읽기는 `mapCharacterSizeFactor`(project/characterScale.ts) 하나로,
+곱하는 자리는 `playerCharacterScale`·`syncVehicleSprites`·`eventSpriteScale(..., mapCharacterFactor)`(이벤트·동료·이동 경로 그림 바꾸기) 다섯 곳.
+편집: 맵 속성 「일반」 탭 「캐릭터 크기」(100·75·50%), 조수 `set_map_properties.characterScale`. 발밑 기준점은 그대로라 줄여도 칸 바닥에 선다.
+50% 는 가장 가까운 화소로 줄이므로 도트가 거칠다. 증거: `verify-shots/runtime-qa/worldmap-generate`(korea 세계, 100%/50% 비교).
+
+## 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
+
+`edit_world_terrain` 이 만든 맵만 갖는다: `{ theme, ops, terrainId?, palette?, base?, fitSalt? }`.
+`base` 는 `"shared-v9"`(손 대륙, 생략 시) 또는 `"generate"`(새 구조), `fitSalt` 는 생성 구조의 자동 맞춤 배치 번호 — 다시 빌드할 때 같은 세계를 낸다.
+`ops` 는 `worldmap-terrain/1` 작업 목록(테마 자체 지형 아래 깔림은 빼고 조수가 얹은 것만). 이 필드가 있으면
+그 맵은 「지도 그림 = 타일셋 `worldmap_<mapId>`(칸마다 한 타일, 통행은 키트 걷기 표)」이고, 다시 빌드하면 통째로 갈린다.
+없는 맵은 키트 지도가 아니며 도구가 덮어쓰지 않는다. 런타임은 이 필드를 읽지 않는다(편집 원본일 뿐).
+자세한 흐름: `openwiki/worldmap-terrain-editing.md`.
+
+## 캐릭터별 전투 동작 (2026-10-03)
+
+`ActorRecord.battleMotion?: {style?, anticipation?, travel?, recovery?, reach?, jump?, recoil?}`와
+`EquipmentRecord.battleMotionStyle?`는 선택 필드다. 생략하면 공용 직업/신체 계열을 상속한다.
+배율은 .4~2, 반동은 0~2, 접촉 위치 보정은 -20~24px이며 NaN/Infinity/미지 스타일은 제거한다.
+배우 정규화/패치와 장비 정규화/편집 변이, 조수 DB 스키마에 연결한다. undefined 패치로 상속을 복구한다.
+기존 저장 파일은 새 필드 없이 그대로 읽히며 스키마 버전을 바꾸지 않는다.
+공용 136종 매핑, 현재 직업/장비 우선순위와 플레이어/미리보기 계약은 [캐릭터 전투 동작](character-battle-motion.md).
+
 ## 퀘스트 프리셋 메타 (2026-10-01)
 
 단계형 `QuestDef`의 선택 `presetId`는 `quest/questPresetIds.ts`의 28개 ID가 정본이다.
@@ -55,6 +81,9 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 - 의존성 폐쇄: `retroRosterDependencies.ts`는 **새로 추가한 행만** 큐로 따라가며 배우·직업·기술·장비·상태·배틀 애니메이션·속성의 참조를 함께 채운다. 같은 ID의 저자 행은 그대로 둔다. `state_death`는 DB 행을 요구하지 않는 엔진 sentinel이다. 비어 있던 커스텀 DB에서도 보충 후 serialize/deserialize 두 번과 참조 0건을 확인했다(`verify-shots/battle-fix-2026-09-30/rules-probe.json`).
 - 호출 위치: `store.ts` `normalizeCurrentProject` 의 정규화 목록 `["retroRoster", ...]`(팀 프로젝트 쓰기 권한이 있을 때만), 헤드리스 `headless/index.ts` `normalizeHeadlessProject` 의 `ensureBundledBattleAnimations` 바로 뒤.
 - 증거: `verify-shots/retro-editable/d-old-project-classes-*` (로스터를 뺀 프로젝트 → 로드 후 「발키리 #134」·「암흑기사 #135」 가 클래스 목록에 나타남).
+- 2026-10-03 호스트 로드 복구: 농부 로스터·잎날 기술의 `elementId: grass`는 기본 속성 목록에도 있어야 한다.
+  `defaultDatabaseUtilityRecords.ts`는 기존 17개 슬롯 뒤에 grass를 추가한다. 의존성 폐쇄가 빠진 행만 보충하고 같은 ID의 저자 행은 유지한다.
+  누락 시 기존 프로젝트 부팅이 `Bundled retro roster dependency missing: elements.grass`로 중단된다.
 
 ## 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
 
@@ -62,18 +91,28 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는 바이트 그대로. `normalizeSkillRecord` 화이트리스트(0 초과만 남김)·
 `updateSkillRecord` 패치 키 목록에 있다. 전투는 시전자 자신을 대상으로 한 타임라인 엔트리(대가 damage·흡수 healing)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
 
-## 데스크톱 시작 화면 — 런처형 (2026-09-27)
+## 데스크톱 시작 화면 — 시네마틱 로비 (2026-10-03)
 
 옛 `public/start-screen.html + .js`(크림색 카드, 버튼 둘, 경로 목록)를 **vite 엔트리**로 바꿨다.
 실측: 최근 목록 20줄 중 19줄이 QA 가 남긴 `/tmp/oprn-packaged-*` 였고, 「새 프로젝트」는 장르를 묻지 않고
 빈 편집기로 넘어간 뒤 캔버스 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다.
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
-- **모양(2026-09-28)**: 어두운 스튜디오 톤(`--st-*`). 가장 최근 프로젝트는 시작 맵 그림을 판 전체에 까는 히어로(판 전체가 열기 단추,
-  `start-continue`/`start-continue-open`), 그 아래 격자 첫 칸이 「새 게임」(`start-new-card`)이다. 최근 작업이 없으면
-  키아트(`public/assets/generated/welcome/start-hero.jpg`) 히어로 + 장르 포스터. 새 게임 입력판 뒤에는 고른 장르 포스터가 깔린다.
-  좁은 창(860px 이하)에서는 레일이 한 줄 머리띠로 접힌다.
-  편집기 트리를 import 하지 않는다 — 번들 11KB. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
+- **첫 문장 입구(2026-10-03)**: 숨기지 않은 최근 프로젝트가 없으면 홈에 `src/start/firstWorldArrival.ts`의 장르 참고 장면 3개를 표시한다. 새 게임의 AI 경로도 같은 컴포넌트다. 장르 선택은 그림 전환과 입력창 열기만 하고, ‘이 이야기로 시작’을 눌러야 폴더 생성·인계를 시작한다. 이름·저장 위치·해상도는 ‘게임 이름과 저장 위치’를 펼쳐 바꾼다. 예제·빈 프로젝트도 접근할 수 있다. 폴더 생성 실패는 선택과 문장을 유지한다. 예제·빈 프로젝트로 갔다가 새 게임으로 돌아와도 문장은 유지한다. 원문·선택·제목은 기존 `startIntent.ts` 계약으로 전달하며, 무장르 문장은 인터뷰를 열기 위해 `story-cutscene`으로 시작한다(인터뷰에서 변경 가능).
+  `startScreen.ts`는 실제 입구가 마운트된 동안만 `.start-app.is-first-world`를 켠다. `startLobby.css`가 전체 창의 스택·어두운 헤더·보조 설정을 소유하고, 공유 장면의 고정 배경이 네 모서리까지 채운다. 참고 장면 자체에는 카드 테두리/폭 제한이 없다. 입력은 780px, 내용은 1120px까지 제한한다. 예제·팀 참여·기존 최근 작업 화면으로 이동하면 이 표시를 제거한다. 전체 화면 증거: `verify-shots/first-world-fullscreen/`.
+- **모양(2026-10-03)**: 상단 헤더에 홈·새 게임·폴더 열기·팀 참여·언어를 두고, 홈 전체 폭에 시네마틱 장면을 보여 준다.
+  `src/start/startLobby.ts` / `startLobby.css`가 로비만 소유한다(`start-lobby` layer는 기존 생성 폼 시트 뒤).
+  첫 문장 입구는 기존 `project-interview`의 세계 지도 영상/포스터와 장르별 그림을 쓰고, 일반 로비의 공용 장면은 `river-fortress.png` / `lake-village.png` / `outdoor-opening-overlook.png`다.
+  최근 작업이 있으면 가장 최근의 **숨기지 않은** 프로젝트 표지를 배경으로 쓴다(`start-continue`).
+  실제 「계속 만들기」 버튼(`start-continue-open`)이 프로젝트를 연다. 장면 전체를 덮는 투명 버튼은 없다.
+  표지가 없을 때는 「OPRN 장면 미리보기」로 공용 그림임을 알리고, 기존 `applyCover`가 그림을 굽는 대로 배경만 교체한다.
+  숨긴 항목을 펼쳐도 임시/사라진 폴더를 대표 이어하기로 승격하지 않는다.
+  아래 세 입구(예제·AI·빈 맵)는 기존 `showView("new", choiceId, startMode)`를 사용하며, 새 게임 설정·팀 참여·SQLite 저장 계약은 유지한다.
+  세계·인물·이야기·전투·음악·AI 소개는 키보드로 여는 `details`이고, 가짜 편집기 동작을 실행하지 않는다.
+  카메라 확대·빛·입자는 CSS만 쓴다. 「움직임 멈추기」는 `oprn:start-lobby-motion-paused`에 저장하며,
+  OS `prefers-reduced-motion`이 켜지면 애니메이션과 불필요한 토글을 끈다. 오디오·런타임을 부팅하지 않는다.
+  신규 문구는 en/ja/zh 카탈로그에 함께 넣고, 저작 프로젝트 제목·경로는 `translate="no"`로 보호한다.
+  편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
 - **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
   (`electron/local-store/summary.ts`, `query_only`, 본문 `current_json` 안 읽음)으로 열어 제목·편집 시각·맵 수를 채운다.
@@ -89,14 +128,14 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
     `mapTileDraw.ts` 는 그 코어를 다시 내보내고 편집기 쪽 그림 로드만 더한다. 시작 화면은 이식(tileGrafts)·투명색을 편집기와 같이 합성하고,
     재료가 하나라도 없으면(번들에 없는 칩셋 등) 반쪽 그림 대신 첫 글자로 둔다. 맵 없는 빈 폴더도 첫 글자.
   - 팀 호스트 브라우저 브리지에는 두 채널이 없다.
-- **새 게임**: 한 문장(선택)·장르 포스터(featured 3 + 빈 프로젝트)·이름·저장 위치를 한 화면에서 정한다. 저장 위치는
+- **새 게임**: AI 경로는 장르 미리보기 → 한 문장(필수) → 시작, 예제·빈 프로젝트 경로는 기존 생성 폼이다. 이름·저장 위치의 기본값을 바로 사용할 수 있다. 저장 위치는
   `oprn:start.suggestProjectDir` 가 `문서/OPRN Games/<이름>`(겹치면 `<이름> 2`…)를 추천하고, 「바꾸기」가 상위 폴더 대화상자를 연다.
   `start.createProject` 에 `projectDir` 를 주면 대화상자 없이 그 **비어 있는** 폴더에 만든다(파일이 있으면 거절). 메뉴 경로는 예전대로 대화상자.
   `OPRN_NEW_PROJECT_ROOT` 가 기본 상위 위치를 덮는다(QA 전용 — 대화상자를 자동화할 수 없다).
 - **인계**: 시작 화면은 빈 폴더만 만들고 `sessionStorage` 의 `oprn:start-screen-intent`(`src/start/startIntent.ts`)에 장르·한 문장을 남긴다.
   편집기 `finishEditorBoot` 가 **그 폴더가 열렸을 때만**(`projectDir` 일치, 10분 이내) 꺼내 `createNewProjectSeed` 씨앗을 채택·flush 하고
   (`src/editor/startScreenHandoff.ts`), 한 문장이 있으면 조수 파이프라인(AI 준비 시 자동 전송, 아니면 입력창에 담기)으로 넘긴다.
-  인계가 있으면 캔버스 브리핑을 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
+  인계가 있으면 첫 방문 화면을 다시 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
 - **프리셋 장르는 인터뷰를 거친다 (2026-09-28):** 장르를 고른 인계(`presetId`)면 셸이 뜬 뒤 `runStartScreenPresetInterview` 가
   메뉴 「새 프로젝트」와 같은 AI 연결 관문(`ensureAiConnectedForPreset`) → 기획 인터뷰(`showProjectInterview`, 한 문장은 첫 질문 입력칸에
   `initialAnswer` 로 담김)를 연다. 확정하면 `gameDesignBrief` 를 `generationPending: true` 로 심고, 같은 부팅의 `prepareProjectInterviewStartup`
@@ -104,6 +143,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   한 문장을 비우면 장르만 켜진 빈 맵에서 아무 일도 없었다. 「나중에」·취소면 예전 한 문장 경로로 돌아간다. 단위: `test/startScreenPresetInterview.test.ts`.
 - **증거**: `xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs`(`build:fast` + `build:electron` 뒤) — 격리 `--user-data-dir` 로
   홈·숨김·새 게임·편집기(저장된 제목/장르 재로드)·cover.jpg·재기동을 확인하고 `verify-shots/start-screen/` 에 남긴다. 단위: `test/startScreen.test.ts`.
+  첫 문장 화면의 이번 증거는 `verify-shots/first-world-arrival/browser.json`과 `scripts/capture-first-world-arrival.mjs`다. 실제 시작 엔트리·편집기 환영 컴포넌트를 사용하되 브리지/저장 콜백은 격리한다. 이 증거는 Electron 패키지와 SQLite 재로드 검증을 대신하지 않는다.
 
 ## 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
 
@@ -115,18 +155,32 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 편집 도구: `set_project_settings({ newGamePlus, chapter })`(chapter.variableId 는 기존 변수여야 한다), `define_ending` 조건.
 버전 증가·마이그레이션 없음. 런타임 계약은 [runtime-sessions.md](runtime-sessions.md) 의 같은 날짜 절.
 
+## 지형지물 군집 `map.doodadGroups?` (2026-10-03)
+
+지형 설계 확장: `map.terrainDesign?`에 `lockedCells`·`waterDepth`를, 프로젝트에
+`terrainStamps?` 라이브러리를 저장한다. 수위는 `relief.levels`; 수심 1은 걷는 물가,
+2~14는 깊은 물이다. 상층 물체와 코드 9 다리의 실제 통행을 함께 본다.
+정규화·복제·크기 변경·도장 계약: [terrain-design-suite.md](terrain-design-suite.md).
+
+편집기에서 밀도 배치한 나무·바위 묶음의 `id`, `label`, `kitId`, `cells[{index,tile,before}]`를 저장한다.
+`before`는 3층 복원 타일이며 실제 런타임 충돌은 현재 타일이 정한다. 옛 맵에는 필드가 없다.
+불러오기는 `normalizeDoodadGroups`, 깊은 복사·크기/칸 이동은 `cloneExtraLayers`/`remapExtraLayers`를 따른다.
+계약·UI·증거: [terrain-placement-tools.md](terrain-placement-tools.md).
+
 ## 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
 
 `GameMap.relief?: ReliefData` — `{ width, height, levels: number[], ramps?: number[], wallDecor?: {x,y,row,tile}[], style?: string }`(행 우선, 칸마다 0~14단). 뒤 세 필드는 **선택**이다 — 없으면 단만 있는 옛 모양 그대로다. (2026-09-27~10-01 사이의 `baked` 표시는 없앴다 — 불러올 때 버려진다. 저장된 맵 중 relief 를 가진 것은 당시 0개였다.) **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
 권위 코드는 `src/project/relief/`(`types`·`edit`·`ops`·`check`·`render`·`walk`·`screen`·`styles`, 경사로 도트 `rampArt.json`). 전체 지도·편집기/런타임 연결은 [relief-terrain.md](relief-terrain.md).
 
 - `ramps[i]`: 0 없음 · 1~4 매끈한 경사로(오르막 n·s·e·w) · 5~8 계단(같은 방향 + 4) · 9 다리 판. 경사로 칸의 `levels` 는 **낮은 끝 단**이다. `wallDecor`: 칸 (x,y) 의 남쪽 벽 `row` 번째 줄(1 = 윗면 바로 밑)에 그리는 타일(덩굴·폭포·동굴 입구). `style`: `RELIEF_STYLES` 의 키(없으면 기본 흙벽).
-- 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. `ramps` 는 0~9 를 지키고 길이가 안 맞으면 버린다. 전부 0 이거나 모양이 틀리면 필드를 **지운다**.
-- 쓰기 규칙: 결과가 전부 0 이면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다. 붓(`paintRelief`)은 `...map.relief` 로 `ramps`·`wallDecor`·`style` 을 잇고, 조수 `sculpt_relief` 는 `carryReliefExtras`(`edit.ts`)로 **단이 안 바뀐 칸의** 경사로·장식과 양식을 잇는다(`reset:true` 면 양식만).
+- 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. `ramps` 는 0~9 를 지키고 길이가 안 맞으면 버린다. 전부 0이고 다리 코드 9가 없거나 모양이 틀리면 필드를 **지운다**. 0단 물 위 다리는 코드 9를 보존한다.
+- 쓰기 규칙: 결과가 전부 0이고 다리 코드 9가 없으면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다. 붓(`paintRelief`)은 `...map.relief` 로 `ramps`·`wallDecor`·`style` 을 잇고, 조수 `sculpt_relief` 는 `carryReliefExtras`(`edit.ts`)로 **단이 안 바뀐 칸의** 경사로·장식과 양식을 잇는다(`reset:true` 면 양식만).
 - 크기 바꾸기·밀기·자르기: `mapLayers.ts` 의 `ExtraLayerFields` 에 `relief` 가 들어가 `cloneExtraLayers`/`remapExtraLayers` 가 같은 칸 번호로 옮긴다(`ramps`·`wallDecor`·`style` 포함).
 - 렌더: 편집기·플레이어가 같은 `renderRelief`(`reliefRenderOptions(relief)` 한 곳이 옵션을 만든다)로 절벽 벽면·45° 대각선·경사로·다리 판을 그리고, **맵 줄마다 윗면·벽 띠로 잘라** 줄 depth 로 놓는다(편집기 `EditScene.renderReliefLayer`, 플레이어 `playSceneRelief.renderReliefLayer`).
 - **걷기·들림 (통합 2026-10-01):** 높이는 그림만이 아니다. ① `collision.ts canMove` 가 `reliefAllowsStep`(`walk.ts`)을 마지막 조건으로 건다 — 단이 다른 이웃으로는 못 가고, 경사로 칸에서 오르막 축으로만 오르내린다(옆구리 진입 금지, 다리 판은 보통 칸). 도달성 검사·길찾기도 `canMove` 를 쓴다. ② 들린 칸(`cellLift`, 1단 = 맵 칸 1개)의 하층·○ 상층 타일·그림자·캐릭터·이벤트 그림은 그 칸 윗면으로 올려 그린다. ★ 수관과 솔리드 × 상층은 제자리. 캐릭터는 **그리는 프레임에만** 올린다(`sprite.y` 는 접지선 그대로라 depth·타일 역산·트윈이 안 바뀐다). ③ 게임 카메라는 맵 위로 `max(단 − 행)` 만큼 넓어진다(`reliefTopOverhangPx`). **주의: 클릭 이동(`pointerTile`)·전투 필드 배치(`battleOnField`)는 들림을 아직 반영하지 않는다.** **옛 `relief` 맵(경사로 없이 높이만 칠한 것)은 이제 단 차이를 못 건넌다 — 경사로(`ramps`)를 칠해야 오른다.**
 - **렌더러 r2 (2026-09-29, `render.ts`·`styles.ts`·`rampArt.json`):** 이름 있는 모든 절벽 양식은 윗단 북·동·서·대각 가장자리에 기본 옆면 턱 `RELIEF_DEFAULT_RIM`(`{side:4, lip:2, soft:true}` — 빛 쪽 밝고 반대쪽 그늘인 비탈, 바깥 열은 땅으로 디더링)을 그린다. 양식이 `rim:false` 를 적으면 끈다. 늪 양식(`rim:{side,lip}`)은 예전 틀 그대로. 양식 없는 기본 그림(마을 언덕·`check.ts`)은 그대로다. 그 밖에: 동서 경사로 옆벽은 한 단 밝게 그리고 비스듬한 그늘·발치 그늘을 받지 않으며, 계단 경사로의 높이 0 첫 단 화소는 불투명(칸 중심 들림 때문에 타일이 위로 올라 8px 빈 띠=검은 막대가 남던 것을 채움), 늪 경사로 도트(`swamp-peat`/`swamp-dead`)는 벽돌 대신 양식 윗면 램프 이끼 비탈(`build-relief-ramp-art.mjs` 가 `tiledata/relief-art/*.png` 원본에서 `rampArt.json` 을 다시 쓴다). 툰드라용 훅 `tundraTopShade:{band,alpha}`(윗면 가장자리 안쪽 그늘 띠, 기본 꺼짐)는 켜는 양식이 없다.
+- **기본 계단 그림 (2026-10-03):** 코드 5~8의 일반 계단은 하층 타일로 덮지 않고 공용 렌더러가 독립 돌 팔레트로 디딤판·챌면을 그린다. 0단 발치도 불투명하다. 바이옴의 `smoothStairs`·`carvedStairs`는 기존 경로를 유지한다. 높이·단 수·걷기·저장 데이터는 같으며 편집기와 플레이어가 같은 바닥 소유권을 따른다. 지도·그림 증거는 [relief-terrain.md](relief-terrain.md)의 기본 계단 절을 본다.
+- **연속 경사로 (2026-10-03 정정):** 사용자가 원한 통로는 코드 1~4의 단 없는 비탈이다. 편집기 기본 북쪽 경사로는 폭 4칸이며 계단과 구분한다. 경사로 도트가 없는 기본 양식도 하층 바닥을 렌더러가 소유하고 모든 매끈한 면을 `overSlope`로 그린다. 현재 흙·풀 팔레트의 연속 면과 불투명 발치로, 들린 타일·주기적인 가로 결이 만드는 가짜 단을 제거했다. 기존 북쪽 계단은 같은 절벽의 새 경사로 영역 안에 전부 들어올 때 클릭 교체할 수 있다. `ramps` 종류만 바꾸고 `levels`·저장 모양은 유지한다. 자세한 계약과 근거는 [relief-terrain.md](relief-terrain.md)의 연속 경사로 절을 본다.
 - **렌더러 r3 (2026-09-29):**
   - `RELIEF_DEFAULT_RIM` 에 `sides: "none"`. 기본 턱의 동·서·대각 옆면을 그리지 않는다(사용자: 「동쪽이랑 서쪽은 없는 게 나은 것 같다」). 북쪽 뒤 둑과 안쪽 턱은 남는다. `ReliefRim.sides` 는 `"all"`(생략 시, 늪의 명시 rim) · `"diag"` · `"none"` 중 하나다.
   - 새 양식 키 `smoothStairs`(기본 꺼짐): 계단 경사로(5~8)를 계단 없이 주변 땅 비탈(rampArt)로 그린다. 들림도 비탈로 계산하며, 걷기 규칙은 그대로다. 켠 양식은 badlands·tundra-snow·dwarf·crystal·steampunk·gothic·holy 이다.
@@ -198,6 +252,12 @@ v4 선택 필드: `system.gameOvers?: {id,name,settings:GameOverSettings}[]`, `d
 답변은 각각 1,000자, 요약은 4,000자 한도다. 원문은 요약 수정과 별개로 남는다.
 SQLite 및 JSON 저장/내보내기에는 일반 프로젝트 필드로 함께 들어가며 게임 Save 슬롯은 아니다.
 문서 스키마·앱 버전을 손으로 올리지 않는다.
+
+2026-10-03: 선택적 `interview` v1 메타데이터에 저자 장르(`romance | monster | adventure | mystery`),
+혼합 장르, 원문 아이디어, 주인공, 추가 요청, 선택 ID와 혼합 방식/출처를 보존한다.
+`src/project/gameInterview.ts`가 정규화하며 혼합 답변 누락과 엔진 프리셋 불일치를 거절한다.
+몬스터가 포함되면 수집 엔진, 그 외 모험이 포함되면 JRPG 엔진, 관계·추리는 스토리 엔진을 쓴다.
+`interview` 없는 기존 기획은 그대로 읽고 예전 질문 편집기로 연다. 사용자 화면에 내부 TODO를 노출하지 않는다.
 
 선택적 `generationPending`은 메뉴 생성 시 새 폴더 부팅으로 AI 지시를 넘기는 표식이다.
 새로 연 프로젝트에서만 삭제·저장한 뒤 전송을 예약한다. 실패하면 같은 프로젝트의 표식을
@@ -1134,6 +1194,7 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - `Project.world` is optional authored worldview data. Its canonical shape is `ProjectWorld` in `src/project/world/` (`entities` plus `relations`), normalized through `normalizeWorld` when present and treated as an empty world when absent for legacy projects. Editor UI should commit changes through the project store and keep runtime session state out of worldview records.
 - `Project.worldGraph` is optional authored declarative map topology data. Its canonical shape lives in `src/project/worldGraph/`: nodes are `{mapId, role: "town"|"field"|"dungeon"|"interior", label?}` and edges connect `from.mapId/exit` to `to.mapId/entry` with kind `"transfer"` or `"adjacent"` (`"transfer"` default). The graph is normalized on load, permits planned nodes before maps exist as warnings, and `projectLint` includes `lintWorldGraph` for transfer destination/event-overlap errors plus adjacent boundary passability warnings. Actual player travel still uses normal event `transfer` commands; `link_maps`/`build_world` generate those events with stable IDs.
 - Web export treats authored project JSON as the source of truth but strips editor-only event drafts and prunes `assets.uploaded` to statically referenced resource ids before writing `project.json`. `prepareWebExport()` must deserialize the serialized JSON once for shape validation before any package/download path reports success.
+- **SQLite media in shipped ZIPs (2026-10-03):** `webUploadedAssetPath` is the shared filename contract for the writer and exported player. `exportEntry` installs `exportUploadedAssets` before rendering, so an uploaded asset's content-addressed `ref` resolves to the adjacent `assets/uploaded/` file. The player has no editor SQLite bridge. Opening a game with inline media clears the previous ref resolver. `prepareWebExport` strips authoring references and unused uploaded assets before its deep clone, and keeps retained assets isolated from the open project. It preserves tileset definitions and the existing image-catalog inclusion policy.
 - **Export resource completeness (2026-09-06):** `src/battle/partySpriteResources.ts` owns party back-view/fallback selection for both battle rendering and export. `webExportAssets` includes derived resources for reserve actors and both fallback slot parities, then adds idle strips from the runtime catalog. Derived uploaded overrides must survive `prepareWebExport` pruning; a party texture key or successful combat result is not proof that its image decoded.
 - **Export URL ownership:** `exportEntry` registers the game directory in `inlineAssetStore` before boot. `withInlineAsset` prefers embedded data, then rebases local `assets/` paths for exported players only. Editor paths, external URLs and SVG fragments remain unchanged. Image warmup, minimap tileset URLs and movie fallbacks use the same boundary. Catalog BGM may be fetched from the editor's configured CDN, but is packaged at the player's canonical local fallback path so exported playback needs no CDN setting.
 - **Invalid ingredients do not produce success artifacts:** standalone rejects missing/empty/HTML bundle or media bytes; ZIP additional media rejects empty/HTML bytes while its existing manifest/hash checks remain authoritative for the player bundle. `url(#battle-flash-tint)` is a document fragment, not a file to fetch. The standalone CLI delegates to the same exporter.
@@ -1427,3 +1488,16 @@ AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 
 
 첫 편집 진행은 기존 `Project.flags`의 boolean 키로만 저장한다. 프로젝트 스키마 버전은 바꾸지 않는다.
 키·동작·오른쪽 도크 소유자는 [장르 프리셋](editor-genre-packs.md)의 2026-10-01 절을 따른다.
+
+## 재편집 지형과 게임 높이 규칙 (2026-10-03)
+
+`map.terrainDesign.features?`는 절벽/길/능선/계곡/호수의 id·점·옵션·희소 before/after 칸 패치를
+보관한다. `gameplay?`는 visionBlocking/highGroundVision/projectileHeight와 visionRadius/visionGain/eyeHeight다.
+`terrainDesign.ts`가 불러오기 때 구조/범위/칸 수를 검사한다. 기존 맵에는 새 필드가 필수가 아니다.
+cloneExtraLayers는 설계 정보를 깊이 복사한다. remap/crop은 잠금/수심/게임 규칙을 옮기고 원점과 패치는
+제거하여 잘못된 칸 복원을 막는다. 상세 저작 계약은 [terrain-design-suite.md](terrain-design-suite.md).
+공용 사용자 도장은 별도 IndexedDB `oprn-terrain-library`에 두며 사용 시 project.terrainStamps에 복사한다.
+
+## Optional internal authoring contract
+
+`gameDesignBrief.implementation` optionally persists a registered `harnessId` and harness-normalized `contract`; unknown harnesses or malformed contracts are rejected rather than silently discarded. Existing briefs without this field remain valid. Romance first-scene contracts use the same native events, switches, variables, endings and player save slots as normal games. `SceneRunnerOptions.initialSession` is a host-only restored-session input for save-resume QA, not model-authored expected state in scene-test arguments. See [romance-scene](harnesses/romance-scene.md).

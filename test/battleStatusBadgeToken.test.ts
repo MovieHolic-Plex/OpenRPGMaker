@@ -84,7 +84,7 @@ describe("전투 상태 배지 토큰", () => {
 
   it("필드 노드를 그리는 스킨은 상태 행에 배지를 중복으로 달지 않는다", () => {
     const project = deserialize(JSON.stringify(battleFixture));
-    project.system.battleUiStyle = "chrono"; // partyFacing "front" — 아군 필드 노드가 있다
+    project.system.battleUiStyle = "retro2003"; // partyFacing "front" — 아군 필드 노드가 있다
     store.replace(project);
     const runtime = createBattleRuntime({
       project,

@@ -89,7 +89,11 @@ const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
     expect(result.session.m2Runtime?.actors.actor_hero?.classId).toBe("class_mage");
   }),
   contract("m2-092-change-battle-commands", { target: "actor_hero", operation: "add", value: "cmd_item", slots: "" }, (result) => {
-    expect(result.session.actorBattleCommands?.actor_hero).toEqual(["cmd_item"]);
+    // 더하기는 지금 메뉴(직업 명령) 위에서 한다 — 이미 있는 명령은 겹치지 않고, 공격이 사라지지 않는다.
+    const commands = result.session.actorBattleCommands?.actor_hero ?? [];
+    expect(commands).toContain("cmd_item");
+    expect(commands).toContain("cmd_attack");
+    expect(commands.filter((id) => id === "cmd_item")).toHaveLength(1);
   }),
   contract("m2-201-camera-control", { mode: "panTo", target: "screen", x: 3, y: 4, zoom: 1, durationMs: 300 }, pauseContract("cameraControl")),
   contract("m2-203-spawn-event", { templateEventId: "guard", eventId: "guard_spawn", mapId: "map_blank", templateMapId: "map_blank", x: 6, y: 7 }, (result) => {
@@ -97,6 +101,37 @@ const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
   }),
   contract("m2-204-remove-event", { eventId: "guard_spawn", mapId: "map_blank" }, (result) => {
     expect(result.session.flags["event-removed:guard_spawn"]).toBe(true);
+  }),
+  // 2026-09-27 이후 full 로 올라온 명령들(먼 배경·화면 효과·필드 키트·연출) — 2026-10-02 계약 보강.
+  contract("m2-069-change-parallax-back", { resourceId: "", flowPercent: 40, flowDurationMs: 0 }, (result) => {
+    expect(result.session.m2Runtime?.map.parallax_flow).toMatchObject({ mapId: "map_blank_start", value: "40|0" });
+  }),
+  contract("m2-202-screen-effect", { effect: "letterbox", value: "", durationMs: 300 }, (result) => {
+    expect(result.session.m2Runtime?.screenEffects).toContainEqual(expect.objectContaining({ effect: "letterbox", durationMs: 300 }));
+  }),
+  contract("m2-219-key-poll", { dirVariableId: "dir", confirmSwitchId: "ok", cancelSwitchId: "", dashSwitchId: "" }, (result) => {
+    // 입력이 없는 순간을 읽으면 방향은 0, 확인 스위치는 꺼진다 — 이전 값이 남지 않는다.
+    expect(result.session.variables.dir).toBe(0);
+    expect(result.session.switches.ok).toBe(false);
+  }, { mutateSession: (session) => { session.variables.dir = 7; session.switches.ok = true; } }),
+  contract("m2-220-timed-choice", { prompt: "", options: "싸운다\n도망친다", timeLimitMs: 2000, resultVariableId: "pick" }, (result) => {
+    expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "timedChoice", options: ["싸운다", "도망친다"], timeLimitMs: 2000 }));
+  }),
+  contract("m2-221-quick-time-event", { mode: "sequence", keys: "z", windowMs: 1200, resultVariableId: "", resultSwitchId: "" }, (result) => {
+    expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "quickTimeEvent", mode: "sequence", keys: ["z"], windowMs: 1200 }));
+  }),
+  contract("m2-222-high-score", { scoreId: "score", action: "submit", valueVariableId: "pts", resultVariableId: "rank", recordSwitchId: "rec" }, (result) => {
+    expect(result.session.highScores?.score).toBe(42);
+    expect(result.session.switches.rec).toBe(true);
+  }, { mutateSession: (session) => { session.variables.pts = 42; } }),
+  contract("m2-223-teleport-menu", { prompt: "어디로 갈까요?", resultVariableId: "", transfer: true }, (result) => {
+    expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "teleportMenu", prompt: "어디로 갈까요?", transfer: true }));
+  }),
+  contract("m2-224-particle-effect", { preset: "sparkle", target: "this-event", eventId: "", x: 0, y: 0, durationMs: 1200, wait: false }, (result) => {
+    expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "particleEffect", preset: "sparkle", target: { kind: "event", eventId: CONTRACT_EVENT_ID } }));
+  }),
+  contract("m2-225-sprite-look", { target: "this-event", eventId: "", reset: false, pose: "fallen", tint: "keep", tintHex: "", tintFill: "keep", flip: "keep", afterimage: "keep", angle: "", opacity: "" }, (result) => {
+    expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "spriteLook", target: { kind: "event", eventId: CONTRACT_EVENT_ID } }));
   }),
 ];
 
@@ -133,6 +168,10 @@ const BATTLE_FULL_CONTRACTS: readonly {
     expected: { kind: "battleEvents", target: "page_rage" },
   },
   { command: persistedM2("m2-105-abort-battle", {}), expected: { kind: "abortBattle" } },
+  {
+    command: persistedM2("m2-218-move-enemy", { target: "enemy-1", x: 80, y: 100, durationMs: 400 }),
+    expected: { kind: "moveEnemy", target: "enemy-1", x: 80, y: 100, durationMs: 400 },
+  },
   {
     command: persistedM2("m2-106-call-common-event", { commonEventId: "common_heal" }),
     expected: { kind: "callCommonEvent", commonEventId: "common_heal" },

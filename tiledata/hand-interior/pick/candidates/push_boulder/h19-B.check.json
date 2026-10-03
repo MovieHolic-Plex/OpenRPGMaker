@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/push_boulder/h19-B.pxg",
+ "id": "push boulder",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  16,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "stone 램프 둥근 바위: 윗면 5~6 · 앞면 4→1 · 윤곽 0단, 앞면에 금 하나",
+ "ok": true
+}

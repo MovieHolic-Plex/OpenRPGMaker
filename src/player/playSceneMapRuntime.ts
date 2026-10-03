@@ -1,4 +1,6 @@
+import { phaserBlendMode } from "@/project/blendMode";
 import { mapTileSize } from "@/project/tileGeometry";
+import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
@@ -154,6 +156,8 @@ interface RenderedEventSprite extends RenderedTileImage {
   setPosition(x: number, y: number): void;
   setFrame(frame: string | number): void;
   setScale(value: number): void;
+  /** 저작 섞기 방식. 테스트 스텁에는 없을 수 있다. */
+  setBlendMode?(value: number): unknown;
   destroy(): void;
 }
 
@@ -806,16 +810,18 @@ function collectTweenTargets(tween: TweenTargetSource, targets: Set<object>): vo
 }
 
 // Resolved creation inputs: primitive values plus texture identity for hot replacement.
-// Position/direction-derived frame are updated every pass, not cached. Alpha, blend,
-// visibility and tint have no authored creation inputs here: new Sprite defaults win.
+// Position/direction-derived frame are updated every pass, not cached. Alpha, visibility
+// and tint have no authored creation inputs here: new Sprite defaults win. Blend is authored
+// (page graphic blendMode) and part of the signature.
 const eventGraphicSignatures = new WeakMap<RenderedEventSprite, readonly unknown[]>();
 
-function reusableEventSprite(sprite: RenderedEventSprite, texture: string, tweenTargets: Set<object>): boolean {
+function reusableEventSprite(sprite: RenderedEventSprite, texture: string, tweenTargets: Set<object>, blendMode = 0): boolean {
   // Some consumers capture the object (battle hiding, knockback/windup/landing tweens).
   // Replacing only these exceptional sprites preserves the old callback lifetime.
+  // The authored blend (page graphic blendMode) is the expected value; anything else was set by someone else.
   return sprite.active !== false && sprite.visible !== false
     && (sprite.alpha === undefined || sprite.alpha === 1)
-    && (sprite.blendMode === undefined || sprite.blendMode === 0)
+    && ((sprite.blendMode ?? 0) === blendMode)
     && !sprite.isTinted && !sprite.flipX && !sprite.flipY && !sprite.rotation
     && !sprite.anims?.isPlaying && !tweenTargets.has(sprite)
     && (!sprite.texture || sprite.texture.key === texture);
@@ -863,11 +869,12 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const texture = spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID;
     const signature = [texture, scene.textures?.get?.(texture), spriteTexture?.frame, spriteTexture?.fitSize, spriteTexture?.charset,
       authoredPattern, overrideFrame, view.page?.graphic.scale, view.page?.graphic.scaleMode,
-      size, referenceSize, view.priority];
+      size, referenceSize, view.priority, view.page?.graphic.blendMode];
+    const blendMode = phaserBlendMode(view.page?.graphic.blendMode);
     let marker = scene.eventSprites.get(event.id);
     const previous = marker && eventGraphicSignatures.get(marker);
     if (marker && (!previous || !signature.every((value, index) => Object.is(value, previous[index]))
-      || !reusableEventSprite(marker, texture, tweenTargets))) {
+      || !reusableEventSprite(marker, texture, tweenTargets, blendMode))) {
       marker.destroy();
       destroyCharacterShadow(scene, event.id);
       marker = undefined;
@@ -879,11 +886,12 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
       marker.setFrame(frame);
     } else {
       marker = scene.add.sprite(x, y, texture, frame);
+      if (blendMode !== 0) marker.setBlendMode?.(blendMode);
     }
     eventGraphicSignatures.set(marker, signature);
     retained.add(event.id);
     placeCharacterSprite(marker, view.priority);
-    marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent())));
+    marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent()), mapCharacterSizeFactor(scene.map)));
     scene.eventSprites.set(event.id, marker);
     orderedSprites.push([event.id, marker]);
   }

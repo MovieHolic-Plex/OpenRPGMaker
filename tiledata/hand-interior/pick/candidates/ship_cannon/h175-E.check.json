@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ship_cannon/h175-E.pxg",
+ "id": "ship cannon",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "E: 굵은 검은 함포를 남향 포구·계단진 나무 포가·쇠축 네 바퀴로 재해석, 16×32와 y=31 접지 유지; 꼭대기 윗면 6행(y=5~10)",
+ "ok": true
+}

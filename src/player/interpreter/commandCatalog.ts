@@ -1,3 +1,6 @@
+import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import { normalizeBlendMode } from "@/project/blendMode";
+import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
 import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
 import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
@@ -32,7 +35,7 @@ import {
 import { movementResultLogText, recordMovementResult } from "@/player/movementResult";
 import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
-import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
+import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { presentableItems } from "@/player/interpreter/presentItem";
 import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
@@ -63,6 +66,15 @@ import {
 import { roguelikeRoomId } from "@/project/roguelikeRooms";
 
 import { setRelationshipState } from "@/project/relationshipState";
+/** 「어디에/누구」 필드 → 대상. this-event 는 지금 실행 중인 이벤트, event 는 eventId 칸. */
+function stagingTarget(fields: M2CommandFields, currentEventId: string | undefined, allowTile: boolean): StagingTarget {
+  const target = fieldString(fields, "target", "this-event");
+  if (target === "player") return { kind: "player" };
+  if (target === "tile" && allowTile) return { kind: "tile", x: Math.trunc(fieldNumber(fields, "x", 0)), y: Math.trunc(fieldNumber(fields, "y", 0)) };
+  const eventId = target === "event" ? fieldString(fields, "eventId", "") : target === "this-event" ? currentEventId ?? "" : target;
+  return eventId ? { kind: "event", eventId } : { kind: "player" };
+}
+
 function pause(pending: PendingStep, step: Exclude<StepResult, { kind: "done" }>): CommandExecution {
   return { kind: "pause", pending, step };
 }
@@ -341,11 +353,29 @@ function executeM2Command(
   }
 
   if (entry.title === "Shake Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const direction = normalizeShakeDirection(command.fields.direction);
     return pause("shakeScreen", {
       kind: "shakeScreen",
       intensity: fieldNumber(command.fields, "intensity", 3),
       durationMs: clampMs(fieldNumber(command.fields, "durationMs", 400)),
+      ...(direction !== "both" ? { direction } : {}),
     });
+  }
+
+  // 필드 연출(2026-10-02) — 파티클과 캐릭터 모습 효과. 대상 해석만 여기서 하고 그리기는 장면이 한다.
+  if (entry.title === "Particle Effect") {
+    const preset = fieldString(command.fields, "preset", "sparkle");
+    return pause("particleEffect", {
+      kind: "particleEffect",
+      preset: isParticlePreset(preset) ? preset : "sparkle",
+      target: stagingTarget(command.fields, state.currentEventId, true),
+      durationMs: normalizeParticleDurationMs(command.fields.durationMs),
+      wait: fieldBoolean(command.fields, "wait", false),
+    });
+  }
+  if (entry.title === "Sprite Look") {
+    const target = stagingTarget(command.fields, state.currentEventId, false);
+    return pause("spriteLook", { kind: "spriteLook", target: target.kind === "tile" ? { kind: "player" } : target, fields: { ...command.fields } });
   }
 
   if (entry.title === "Scroll Map" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
@@ -538,6 +568,7 @@ export function executeCommand(
         ...(command.style ? { style: command.style } : {}),
         ...(command.context ? { context: command.context } : {}),
         ...(command.container ? { container: command.container } : {}),
+        ...(command.position ? { position: command.position } : {}),
         ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
       });
     case "choices":
@@ -691,6 +722,8 @@ export function executeCommand(
         opacity: command.opacity,
         rotation: command.rotation,
         durationMs: command.durationMs,
+        ...(command.easing ? { easing: command.easing } : {}),
+        ...(normalizeBlendMode(command.blendMode) ? { blendMode: normalizeBlendMode(command.blendMode) } : {}),
         waitForPicture: command.waitForPicture,
       });
     case "erasePicture":
@@ -1155,6 +1188,7 @@ function cameraControlStep(
     offsetX: optionalNumberField(fields, "offsetX"),
     offsetY: optionalNumberField(fields, "offsetY"),
     zoom: optionalNumberField(fields, "zoom"),
+    ...(normalizeEasing(fields.easing) ? { easing: normalizeEasing(fields.easing) } : {}),
   };
 }
 

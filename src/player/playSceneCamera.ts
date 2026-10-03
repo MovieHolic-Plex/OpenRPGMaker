@@ -1,3 +1,4 @@
+import { phaserEaseName, type EasingName } from "@/project/easing";
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -122,6 +123,7 @@ export type CameraControlStep = {
   readonly offsetX?: number;
   readonly offsetY?: number;
   readonly zoom?: number;
+  readonly easing?: EasingName;
 };
 
 export function applyStoredCameraState(scene: PlaySceneContext): void {
@@ -155,14 +157,14 @@ export function applyCameraControl(scene: PlaySceneContext, step: CameraControlS
     }
     if (step.mode === "return" || step.returnToPlayer) {
       scene.cameras.main.stopFollow();
-      await panToTarget(scene, { kind: "player" }, step.durationMs, step.offsetX, step.offsetY);
+      await panToTarget(scene, { kind: "player" }, step.durationMs, step.offsetX, step.offsetY, step.easing);
       followCameraTarget(scene, { kind: "player" });
       scene.session.camera = { mode: "follow", target: { kind: "player" }, zoom: step.zoom };
       scene.syncRuntimeState();
       return;
     }
     scene.cameras.main.stopFollow();
-    await panToTarget(scene, step.target, step.durationMs, step.offsetX, step.offsetY);
+    await panToTarget(scene, step.target, step.durationMs, step.offsetX, step.offsetY, step.easing);
     scene.session.camera = cameraState("fixed", step);
     scene.syncRuntimeState();
   };
@@ -228,10 +230,11 @@ function panToTarget(
   target: RuntimeCameraTarget,
   durationMs: number,
   offsetX = 0,
-  offsetY = 0
+  offsetY = 0,
+  easing?: EasingName
 ): Promise<void> {
   const resolved = resolveCameraTarget(scene, target, offsetX, offsetY);
-  return panCamera(scene.cameras.main, resolved.x, resolved.y, durationMs);
+  return panCamera(scene.cameras.main, resolved.x, resolved.y, durationMs, easing);
 }
 
 function resolveCameraTarget(
@@ -268,7 +271,14 @@ function applyCameraZoom(scene: PlaySceneContext, zoom: number | undefined): voi
   syncRuntimeCameraBounds(camera, scene.map);
 }
 
-export function panCamera(camera: Phaser.Cameras.Scene2D.Camera, x: number, y: number, durationMs: number): Promise<void> {
+/** `easing` 생략 = 일정하게(Linear) — 저장된 옛 명령의 움직임은 그대로다. */
+export function panCamera(
+  camera: Phaser.Cameras.Scene2D.Camera,
+  x: number,
+  y: number,
+  durationMs: number,
+  easing?: EasingName,
+): Promise<void> {
   return new Promise((resolve) => {
     const duration = Math.max(0, Math.round(durationMs));
     if (duration === 0) {
@@ -277,6 +287,6 @@ export function panCamera(camera: Phaser.Cameras.Scene2D.Camera, x: number, y: n
       return;
     }
     camera.once("camerapancomplete", () => resolve());
-    camera.pan(x, y, duration, "Linear", true);
+    camera.pan(x, y, duration, phaserEaseName(easing), true);
   });
 }

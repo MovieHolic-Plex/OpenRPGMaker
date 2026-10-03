@@ -11,8 +11,6 @@
 //
 // ── 참조 무결성 ──────────────────────────────────────────────────────────────
 // 여기서 쓰는 모든 리소스 id 는 **디스크에 파일이 있는 것만** 골랐다(2026-07-27 실측).
-// 특히 `battle-skin-vxace-backdrop` 은 id 는 등록돼 있지만
-// public/assets/generated/battle-skins/ 에 vxace-backdrop.png 이 **없어서** 쓰지 않았다.
 // 몬스터도 enemy_extra_* 재사용을 버렸다 — 그 레코드 다수가 monsterResourceId 로
 // generated-enemy-slime-01 을 가리켜(리치·메두사·키메라·발키리…) 이름만 다르고 전부
 // 슬라임으로 보인다. 비주얼 중심 게임에서는 치명적이라 25종을 **서로 다른 스프라이트**로
@@ -59,14 +57,16 @@ export const SKY_BGM = {
 } as const;
 
 /** 지역별 전투 배경 — 전부 디스크에 파일이 있는 id 다. 층이 바뀌면 전투 화면도 바뀐다. */
+// 도트 측면 전투는 그림을 그대로 깔지 않고 겹 배경 종류(풀밭·숲·동굴·설원·사막)로 푼다 — 예전 그림 id 는
+// 숲 하나를 빼고 전부 풀밭이 됐다(2026-10-02). 그래서 종류 id 로 직접 고른다. 종류가 다섯이라 층 일곱이 다 다르지는 않다.
 export const SKY_BATTLE_BG = {
-  harbor: "easyrpg-backdrop-dawn1",
-  wheat: "easyrpg-backdrop-sunset1",
-  mistwood: "generated-battle-reference-forest",
-  shrine: "easyrpg-backdrop-sky1",
-  mine: "battle-skin-dragonquest-backdrop",
-  snowgate: "easyrpg-backdrop-night-sky1",
-  altar: "easyrpg-backdrop-cosmos1",
+  harbor: "battle-scenery-plains",
+  wheat: "battle-scenery-plains",
+  mistwood: "battle-scenery-forest",
+  shrine: "battle-scenery-cave",
+  mine: "battle-scenery-cave",
+  snowgate: "battle-scenery-snow",
+  altar: "battle-scenery-plains",
 } as const;
 
 export const SKY_SWITCH = {
@@ -132,7 +132,7 @@ export const SKY_TROOP = {
 
 /**
  * 몬스터 25종. 층마다 4종 + 천공 5종(보스 포함).
- * `sprite` 는 public/assets/generated/starter/monster-<sprite>.png 에 실제로 있는 파일만 골랐고,
+ * `sprite` 는 generated-enemy-<sprite> 공용 ID이고, native 초상/포즈 시트로 해석한다.
  * **25종이 서로 다른 스프라이트**다 — 이름만 다르고 같아 보이는 적을 만들지 않는다.
  *
  * 스탯 스케일 근거: 주인공 레벨1 이 HP 514 / 공 45 / 방 59 이고 데미지가
@@ -238,8 +238,8 @@ export function createSkyStairProject(): Project {
   const system = defaultSystem();
   system.startActorIds = [...STARTER_ACTOR_IDS];
   system.initialTroopId = SKY_TROOP.fieldPests;
-  // 출하 콘텐츠는 지원하는 두 스킨(rm2000 / pokemon)만 저작한다. ff는 지원 종료됐지만 기존 저장 프로젝트에서는 계속 로드된다.
-  system.battleUiStyle = "rm2000";
+  // 전투 방식은 도트 측면(retro2003)이다. 스킨은 retro2003·pokemon 둘뿐이다(2026-10-02).
+  system.battleUiStyle = "retro2003";
   system.battleBgmResourceId = "cc0-bgm-battle";
   system.defaultBgmResourceId = SKY_BGM.harbor;
   system.titleScreen = {

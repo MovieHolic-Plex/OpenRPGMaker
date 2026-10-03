@@ -55,7 +55,7 @@ const GROUP_ORDER_TEST_IDS = [
   "db-tab-items",
   "db-tab-elements",
   "db-tab-states",
-  "db-tab-animations",
+  "db-tab-retro-choreographies",
   "db-tab-battle-screen",
   "db-tab-battle-commands",
   "db-tab-enemies",

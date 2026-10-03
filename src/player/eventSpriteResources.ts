@@ -72,9 +72,11 @@ export function eventSpriteScale(
   tileSize = 16,
   scaleMode?: EventPageGraphic["scaleMode"],
   referenceTileSize = tileSize,
+  /** 맵 캐릭터 크기 배율(mapCharacterSizeFactor) — 캐릭터 칩에만 곱한다. 상자·그림 이벤트는 칸 크기 그대로. */
+  mapCharacterFactor = 1,
 ): number {
   if (isCharsetSpriteTexture(texture)) {
-    return characterRenderScale(sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize);
+    return characterRenderScale(sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize) * mapCharacterFactor;
   }
   const scale = normalizeCharacterScale(authoredScale);
   if (!texture?.fitSize) return scale;

@@ -1,3 +1,4 @@
+import { battleGimmickFields } from "@/editor/panels/databaseBattleMotionFields";
 import { evaluateDamageFormula, FORMULA_PREVIEW_CONTEXT, DAMAGE_FORMULA_VARIABLES } from '@/battle/damageFormula';
 import { updateDatabaseRecord } from '@/editor/databaseActions';
 import { numberField, textField, selectField } from '@/editor/panels/databaseControls';
@@ -51,6 +52,7 @@ export function skillCombatRuleCard(record: SkillRecord, options: { readonly col
     numberField('힘 모으기 턴 (0=바로)', 'feature16-charge-turns', record.chargeTurns ?? 0, value => updateDatabaseRecord('skills', record.id, { chargeTurns: value > 0 ? value : undefined }), { min: 0, max: 3 }),
     selectField('소환 — 도트 연출에 나타날 몬스터', 'feature16-summon', record.summonResourceId ?? '', partyPixelChoices('소환 안 함', record.summonResourceId), value => updateDatabaseRecord('skills', record.id, { summonResourceId: value || undefined })),
     ...skillAreaAndComboFields(record),
+    ...battleGimmickFields(record),
     el('p', { class: 'db-skill-card-note', text: 'HP 대가: 쓸 때마다 시전자가 최대 HP 의 N% 를 잃습니다(1 밑으로는 안 깎음). 흡수: 준 피해의 N% 만큼 시전자가 회복합니다(MP 피해 기술이면 MP). 게이지 밀기: 맞은 대상의 행동 게이지를 옮깁니다(음수 = 늦추기, 양수 = 아군 앞당기기, ATB 전투만). 힘 모으기: 정한 차례엔 예고만 하고 자기 차례가 N 번 더 오면 발동합니다(보스 대기술 예고). 소환: 도트 측면 전투에서 고른 몬스터가 나타나 대상에게 달려가 첫 타에 맞춰 칩니다(그림만, 위력·타수는 이 스킬 값).' }),
   ] });
 }

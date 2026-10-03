@@ -1,4 +1,5 @@
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
+import { AUTHORING_HARNESS_TOOLS } from '../../harnesses/_core/authoringRegistry';
 import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
 import { FOREST_RECIPE_TOOLS } from "./forestRecipeTools";
@@ -17,6 +18,7 @@ import { TIME_GATE_TOOLS } from "./timeGateTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
+import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -27,6 +29,11 @@ import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
+import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
+import { WORLD_TERRAIN_TOOLS } from "./worldTerrainTools";
+import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
+import { CUTSCENE_PREVIEW_TOOLS } from "./cutscenePreviewTools";
+import { CUTSCENE_STAGE_TOOLS } from "./cutsceneStageTools";
 import { LIFE_FLOWER_TOOLS } from "./lifeFlowerTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
@@ -62,6 +69,7 @@ import { VILLAGE_TOOLS } from "./villageBuilder";
 import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
+import { JP_CITY_TOOLS } from "./jpCityTools";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -94,6 +102,7 @@ import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
+import { BUILD_CONCEPT_EXAMPLE_TOOL } from "./conceptExampleTool";
 import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
@@ -200,6 +209,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   AUTHOR_BEODEUL_TOWN_TOOL,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
+  BUILD_CONCEPT_EXAMPLE_TOOL,
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
@@ -210,6 +220,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 칸 번호로 짓는 방 세션·개념 시설 시공은
   // 조수 목록에서 뺀다(deprecated: 노출 제외, 실행 호환은 유지 — 옛 세션 재생·테스트).
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
+  // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
+  ...withDomain(JP_CITY_TOOLS, "tile"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile").map(retireOldInteriorTool),
   ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile"),
   ...withDomain(CASTLE_TOOLS, "tile"),
@@ -229,12 +241,21 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(EVENT_TOOLS, "event"),
   ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
+  ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
+  ...withDomain(CUTSCENE_ART_TOOLS, "event"),
+  ...withDomain(WORLD_TERRAIN_TOOLS, "world"),
+  // 충돌 전용 지름길은 script_cutscene_staged 하나로 합친다(2026-10-02 조수 시험: 두 도구가 있으면 모델은 전용 쪽만 쓰고
+  // 일반 도구를 외면했다). 실행·코드 호환은 getTool 로 유지 — 오프라인 사슬·옛 세션 재생.
+  ...withDomain(IMPACT_CUTSCENE_TOOLS, "event").map((tool) => ({ ...tool, deprecated: true, supersededBy: "script_cutscene_staged" })),
+  ...withDomain(CUTSCENE_STAGE_TOOLS, "event"),
+  ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
+  ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),

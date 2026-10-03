@@ -1,6 +1,6 @@
 """Extra review for retro2003 monster sheets: strict checks + 2x cycle GIF.
 
-Checks: sheet is cell*3 square, alpha 0/255 only, <=16 colors, no empty cell,
+Checks: sheet is cell*3 square, alpha 0/255 only, <=32 colors, no empty cell,
 every cell differs from every other, baseline (ground species touch y=cell-4 in
 every non-airborne cell; floating species only in dead). Prints one line per sheet.
 """
@@ -23,7 +23,7 @@ def review(name, cell, airborne=()):
     alpha = set(sheet.getchannel('A').tobytes())
     assert alpha <= {0, 255}, alpha
     colors = {c for _, c in sheet.getcolors(cell * cell * 9) if c[3]}
-    assert len(colors) <= 16, len(colors)
+    assert len(colors) <= 32, len(colors)
     frames = frames_of(sheet, cell)
     base = cell - 4
     bottoms, minimum = {}, None

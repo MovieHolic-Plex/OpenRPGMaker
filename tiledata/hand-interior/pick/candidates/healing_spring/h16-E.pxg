@@ -1,0 +1,49 @@
+// 대리석 분수 샘 — 북쪽 기둥에서 물줄기가 떨어지는 네모난 둥근 돌 수반(자유 해석)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat O stone 1
+@mat o stone 0
+@mat R stone 4
+@mat r stone 5
+@mat c stone 2
+@mat F stone 3
+@mat f stone 2
+@mat W glass 3
+@mat w glass 2
+@mat v glass 4
+@mat V glass 5
+@mat Y glass 6
+@mblock 0 0
+................................
+.............OOOOOO.............
+.............OrrRRO.............
+.............ORFFfO.............
+.............ORFFfO.............
+.............ORFFfO.............
+.............ORooFO.............
+.............ORVYFO.............
+.............ORVYfO.............
+...........OOORVYfOOO...........
+.......OOrrrrrrVYrrrrrrOO.......
+....OrrrrrrrrrrVYRRRRRRRRRRO....
+..OrrrRcwwwwwwwVYwwwwwwwcRRRRO..
+.OrrRcwWWWWWWWWVYWWWWWWWWwcRRRO.
+.OrRcwWWWWWWWvVYYVvWWWWWWWwcRRO.
+OrRRcwWWWWWWWWvVVvWWWWWWWWwcRRRO
+OrRRcwWWvvWWWWWWWWWWWWWWWWwcRRRO
+OrRRcwWWWWWWWWWWWWWWvvWWWWwcRRRO
+OrRRcwWWWWWWWWWWWWWWWWWWWWwcRRRO
+OrRRcwWWWWvvvvWWWWWWWWWWWWwcRRRO
+OrRRRcwWWWWWWWWWWWWWWWWWWwcRRRRO
+.OrRRRcwwWWWWWWWWWWWWWWwwcRRRRO.
+..OrRRRRcwwwwwwwwwwwwwwcRRRRRO..
+...OrrRRRRRRRRRRRRRRRRRRRRRRRO..
+...OFFFFFFFFFFFFFFFFFFFFFFFFfO..
+..OFFFFFcFFFFFFFFFFFFFFcFFFFffO.
+..OFFFFFFFFFFcFFFFFFFFFFFFFFffO.
+..OFFFcFFFFFFFFFFFFcFFFFFFFfffO.
+..OFFFcFFFFFFFFFFFFcFFFFFFFfffO.
+..OFFFFFFFFcFFFFFFFFFFFfFFFffO..
+...OFFfFFFFFFFFFFFFFFFFFFffffO..
+....OooooooooooooooooooooooooO..

@@ -1,0 +1,265 @@
+{
+ "id": "monster",
+ "name": "몬스터 수집",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [
+  "2c3440",
+  "3b6a9c",
+  "4a5668",
+  "6e7c90",
+  "8fc0e4",
+  "9aa8ba",
+  "f0a030",
+  "ffe28a"
+ ],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "대도시",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "라디오 타워·고층 백화점·체육관·회복소·광장 분수가 모인 큰 도시"
+  },
+  {
+   "role": "fort_city",
+   "name": "체육관 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "가운데 큰 체육관(몬스터 볼 문장) + 둘레 집 넷 + 흰 울타리"
+  },
+  {
+   "role": "harbor_city",
+   "name": "항구 도시",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "창고·회복소·상점 + 부두의 여객선 + 방파제 끝 등대"
+  },
+  {
+   "role": "castle",
+   "name": "리그 본부",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "흰 기둥 늘어선 석조 본관·파란 지붕·금 문장 + 앞 큰 계단"
+  },
+  {
+   "role": "large_town",
+   "name": "회복소 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "회복소(빨간 지붕·십자)·상점(파란 지붕)·집 둘·나무"
+  },
+  {
+   "role": "large_town",
+   "name": "농장 마을",
+   "id": "large_town_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "붉은 헛간·풍차·살림집 + 목장 울타리·건초"
+  },
+  {
+   "role": "village",
+   "name": "시작 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "연구소 하나와 빨강·파랑 지붕 집 둘"
+  },
+  {
+   "role": "village",
+   "name": "숲속 오두막 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 6,
+   "desc": "통나무 오두막 둘 + 둘레 침엽수"
+  },
+  {
+   "role": "camp",
+   "name": "캠핑장",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 6,
+   "desc": "파랑·주황 천막 둘 + 안내 간판 + 모닥불"
+  },
+  {
+   "role": "tower_small",
+   "name": "등대",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 23,
+   "row": 6,
+   "desc": "바위 위 적백 줄무늬 등대"
+  },
+  {
+   "role": "tower_great",
+   "name": "방울탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "오층 목탑 + 꼭대기 금 방울"
+  },
+  {
+   "role": "cave",
+   "name": "달맞이산 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 6,
+   "desc": "둥근 바위산 + 아치 입구 + 사다리"
+  },
+  {
+   "role": "ruin",
+   "name": "알프 유적",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 6,
+   "desc": "계단식 돌 기단 + 기호 새긴 석판 셋"
+  },
+  {
+   "role": "ruin_city",
+   "name": "버려진 발전소",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "녹슨 톱날 지붕 공장·굴뚝 둘·탱크·송전 철탑"
+  },
+  {
+   "role": "shrine",
+   "name": "전설 사당",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "둥근 돌 단 + 제단(파란 구슬) + 기둥 원 + 뒤 신목"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "열매 거목",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "굵은 줄기 + 수관 덩이 + 빨강·파랑 열매"
+  },
+  {
+   "role": "circle",
+   "name": "바위 원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 6,
+   "desc": "둥근 큰 돌 넷 + 가운데 납작돌"
+  },
+  {
+   "role": "volcano",
+   "name": "불꽃섬 화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 6,
+   "desc": "용암 화구·줄기 + 연기 + 기슭 연구소"
+  },
+  {
+   "role": "floating",
+   "name": "하늘 기둥 섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "구름 위 바위섬 + 층진 돌탑"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}

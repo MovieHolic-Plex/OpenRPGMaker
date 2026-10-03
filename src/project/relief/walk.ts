@@ -35,7 +35,7 @@ export function reliefSlopes(r: ReliefData): ReliefSlope[] {
       const c = cells[k]!, x = c % r.width, y = (c / r.width) | 0;
       for (const [dx, dy] of Object.values(DV)) {
         const X = x + dx, Y = y + dy, j = Y * r.width + X;
-        if (X >= 0 && Y >= 0 && X < r.width && Y < r.height && !seen[j] && r.ramps[j] === v) { seen[j] = 1; cells.push(j); }
+        if (X >= 0 && Y >= 0 && X < r.width && Y < r.height && !seen[j] && r.ramps[j] === v && r.levels[j] === r.levels[s]) { seen[j] = 1; cells.push(j); }
       }
     }
     const xs = cells.map((c) => c % r.width), ys = cells.map((c) => (c / r.width) | 0);

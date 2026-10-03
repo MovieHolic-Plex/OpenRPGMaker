@@ -2,6 +2,30 @@
 
 # Editor AI Panel & Tools
 
+## 실제 첫 제작의 워커 준비와 사본 (2026-10-03)
+
+`scripts/lib/piWorkerSharedContent.ts`가 공용 SQLite 카탈로그 설치를 판본별로 재사용한다.
+`content_libraries`의 id·revision만 먼저 읽고, 변경된 판본일 때만 전체 자료를 읽는다.
+동시 팀원은 설치 Promise에 합류하며 실패한 설치는 재시도한다. 실제 워커의 `/agent/run`은
+최초 설치를 스트림을 열기 전에 마친다. 예전에는 팀원마다 전체 카탈로그를 다시 파싱해
+실제 모델 실행에서 heartbeat 공백 75초 → 브라우저의 30초 워치독 실패가 발생했다.
+
+Pi 단독·팀 작업 사본은 `cloneProjectSharingSharedDictionaries`를 사용한다.
+타일셋·업로드 자산 항목은 읽기 전용으로 공유하고, 사전과 맵·DB·세션은 분리한다.
+쓰기는 기존 `runTool`의 `createDraft`와 타일셋 복제 경계를 거친다. 팀원이 공유된 타일셋이나
+업로드 자산 항목을 직접 수정하는 코드를 추가하지 않는다.
+준비 비용과 첫 사용자 지연이 사라졌다는 뜻은 아니다. 실제 첫 생성 기록은
+`verify-shots/live-first-game/`과 `scripts/qa/live-first-game.mjs`를 본다.
+
+`piWorkerAudio`는 매 실행 전에 호스트의 `public/assets/cc0/audio/catalog/` 파일 목록을
+`setInstalledBgmFiles`에 넣는다. Vite define이 없는 헤드리스 워커가 모든 BGM을 설치된 것으로
+보던 차이를 없애 `list_opening_media` 등 기존 가용성 필터가 실제 설치를 반영하게 한다.
+CDN 설정이 있으면 기존 카탈로그 규칙을 따른다. 사용자가 직접 지정한 미설치 곡은 자동 대체하지 않는다.
+
+첫 생성 팀원 턴 상한은 `enabledMembers`가 공통 `workBudget`을 적용한 **뒤** 다시 제한한다.
+예전에는 120턴으로 줄인 멤버 값이 이 함수에서 300/600턴으로 덮였다. 더 작은 멤버 상한도 보존한다.
+상한 준수와 기획의 핵심 플레이를 먼저 만드는 것은 별개다. 후자는 실제 자동 생성에서 미완료였다.
+
 ## 도구 사용량 (2026-09-25)
 
 AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화 기록, 활동 로그에서 조수가 부른 도구를 센다.
@@ -18,6 +42,12 @@ AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화
 미연결이면 초안으로 남기며 기획 수정 메뉴는 자동 전송하지 않는다. 상세 계약은
 [장르 프리셋 인터뷰](editor-genre-packs.md)의 저장·handoff 절을 따른다.
 
+2026-10-03 상세 프리셋 보강: `gameAuthoringPresets/*.md`의 공통·선택 장르 제작 매뉴얼
+전문을 같은 경로에 내장한다. 60개 선택의 적용 규칙, 절별 입력·실행·산출물·검증과
+의존관계가 추가됐다. 단일 장르는 내부 작업 57개, 혼합은 두 전문과 73개를 받는다.
+`documents.json`은 원문 SHA-256과 절 목록을 포함하며 전송의 begin/end 표시로 대조한다.
+사용자는 기존 짧은 요약만 보며, 작업 수는 목표나 실행 완료 증거가 아니다.
+
 2026-09-28 보강: 실제 팀 실행의 검수 프롬프트는 `PI_TEAM_ROLES.reviewer` 가 아니라
 `teamSpec.memberSystemPrompt` 가 만든다 — 여기에 기획이 빠져 있어 검수가 인터뷰 답을 몰랐다. 지금은
 검수와 Writer(`consult_writer`, `scripts/lib/piWriterTool.ts` 의 시스템 메시지)도 같은 기획을 받는다.
@@ -25,7 +55,14 @@ AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화
 줄 단위로 보인다. 예전 「장르 · 첫 답 24자 · 범위 24자」 한 줄은 모델이 기획을 다 받는데도
 사용자에게 인터뷰가 안 넘어간 것처럼 보였다.
 
-## 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
+## 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21) — 2026-10-03 제거
+
+> **폐기(2026-10-03, 사용자 결정 「선택지가 뜨는 거 이제 안 나오게」):** 아래 선택 창과 생성 요청 때 자동으로 여는 큰 창은 채팅 경로에서 뺐다.
+> 「마을 만들어 줘」는 바로 시공으로 간다. 칩셋은 프로젝트 기본(새 프로젝트 버들항 → `author_beodeul_town`, 옛 프로젝트 숲마을)을 따른다.
+> 뺀 이유: 이 창은 합본 마을 호환 칩셋만 걸러 새 버들항 프로젝트에서도 숲마을·EasyRPG 캐릭터를 고르게 하고 「다른 칩셋 금지」를 붙여,
+> 같은 턴의 버들항 라우팅과 모순됐다. 큰 창은 맵을 가려 시공이 안 보였다. `aiCreationChoice.ts` 의 `creationSubject` 는
+> 헤드리스 감사 노트(`scripts/qa-game/gen.mts`)가 쓰므로 남겼다. 아래는 옛 기록이다. 새 경로는 문서 끝 「마을 요청 바로 시공」 절.
+
 
 `aiCreationChoice.ts` + `aiChatPanel.runPiTurn`은 마을·도시·집의 새 생성 요청에 제작 전 선택을 둔다.
 평문 전송은 의도 분류 전에 큰 조수 창을 열고, 쓰기 턴으로 판정된 경우 선택을 기다린다.
@@ -558,6 +595,13 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 
 ## 조수 채팅은 Pi 하나다 — 세션 경로를 걷어냈다 (2026-09-11)
 
+첫 프로젝트 기획 핸드오프(2026-10-03)는 입력창 요약과 모델 지시문 전체를 분리해 보내며,
+연결 캐시의 `checking` 결과로 자동 실행을 포기하지 않는다. `projectInterviewStartup`이 인증 조회를
+기다리고 연결 복구를 구독한다. 실행 대기 표시는 `projectInterviewExecutionClaim`이 Pi 캡처 전에
+저장하고, 워커 시작 전 전송 실패에는 복구한다. 패널 boot target은 기록 복원과 유휴 턴을 기다린 뒤
+분류 전에 슬롯을 잡는다. 장르 기획은 집/마을 그래픽 선택을 다시 요구하지 않는다.
+상세와 브라우저 증거 범위는 `editor-genre-packs.md`의 «Confirmed brief automatic execution»을 따른다.
+
 조수 세션이 deprecated 되면서 «어느 루프로 가는가» 를 답하던 경로 enum(`session` · `pi-agent`)이
 사라졌다. 남은 축은 둘뿐이다: **무엇을 해도 되는가**(자율성 다이얼 → Pi 노브)와 **몇 명이 도는가**
 (`AiConfig.piTeam`).
@@ -575,6 +619,13 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   워커가 쓰기 툴을 주지 않고(`readOnlyTools` + 시스템 프롬프트 한 줄), 계획 턴은 지시문 머리에 계획
   지시가 붙는다(`PLAN_ONLY_PREFIX`). 바뀐 것이 없으면 그 턴의 **답·계획 본문**을 assistant 말풍선으로
   남긴다 — 보드의 220자 한 줄이 답이 되면 질문 모드가 쓸 수 없다.
+- **계획 → 실행 이음매 (2026-10-02, `src/ai/piAgent/planExecution.ts`):** 계획 턴은 자기 답 첫 줄에 「이번 실행은 읽기 전용
+  단계이므로 프로젝트를 수정하지 않으며…」를 자주 적고(실측 22판 중 15판), 그 답이 `withUltrabrainPlan` 으로 실행 턴 지시문에 그대로 붙는다.
+  실행 모델이 그 말을 지금 턴 얘기로 읽고 읽기만 한 뒤 계획을 다시 써서 끝낸 판이 있었다(qa:game 복수극 6판 중 2판, 쓰기 0건).
+  ① `withUltrabrainPlan` 이 계획 앞에 `PLAN_EXECUTION_PREAMBLE`(「지금은 실행 턴, 계획 속 읽기 전용은 앞선 턴 기록」)을 못 박고
+  제목을 「Ultrabrain 실행 계획(앞선 계획 턴의 기록):」으로 바꿨다. ② 동반 런타임(`scripts/lib/piAgentRuntime.ts`)은 지시문에 그 제목이 있는데
+  첫 프롬프트가 바뀐 것 0으로 끝나면 `PLAN_EXECUTION_REKICK` 로 **한 번만** 되민다(`execution_status` `plan_execution_rekick`).
+  계획 없는 턴(질문·짧은 수정)은 건드리지 않는다. 회귀: `test/piPlanExecutionRekick.bun.test.ts`. 세션 경로의 `zero-change-rekick` 과 같은 자리다.
 - **do 레벨의 질문 발화는 의도 선언이 읽기 전용으로 승격한다 (2026-09-12 복원):** `plainPiTurn` 이
   다이얼이 쓰기를 허용할 때만 `declareIntentCached(createLlmIntentDeclarer())` 를 부르고
   `intent.mode === "question"` 이면 `plan.readOnly = true` 로 덮어 Pi 를 단독·읽기 전용으로 돌린다.
@@ -3208,7 +3259,7 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   제한하며, 팬하면 새로 보이는 타일을 준비한다. 셀 수 때문에 테두리만 남기는 경로는 제거했다.
 - 하위층→상위층→이벤트 순으로 공개하고, 각 층은 좌→우로 진행한다. 공개 길이는 1.8초,
   공개 후 유지 시간은 450ms다. 타일은 220ms 동안 4px(상위층 10px) 내려앉으며, 선두에는
-  무광 연필 커서와 옅은 먼지를 표시한다. 빛줄기·발광·불꽃·효과음은 없다. 객체 준비 시간은 공개 시간을
+  무광 연필 커서와 옅은 먼지를 표시한다. 빛줄기·발광·불꽃·효과음은 없다(큰 체크포인트 적용 뒤의 「실제 시공 순서 재생」도 같은 연필 모양을 따른다, 문서 끝 절). 객체 준비 시간은 공개 시간을
   소모하지 않는다. 같은 좌표의 타일이 다시 바뀌어도 새로운 공개를 받는다.
 - 밑그림은 구역별 120ms 간격으로 750ms 동안 외곽선을 그린 뒤 눈금과 라벨을 유지한다.
   완료하면 update 구독을 해제하며, 새 계획·숨김·씬 정리에서도 구독과 객체를 정리한다.
@@ -3223,7 +3274,7 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 작업 표시 수준(생략/간단히/자세히/매우 자세히)은 실행 기록 문구만 바꾼다. 맵 위의 실시간 시공(고스트 타일, 청사진, 카메라 따라가기, 공개가 끝날 때까지의 대기)은 그와 별개로 끌 수 있다.
 
-- 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). 꺼짐이 기본이다. `localStorage["oprn:ai-live-canvas"]` 가 `on` 일 때만 맵 위 실시간 시공을 그린다.
+- 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). 켜짐이 기본이다(2026-10-03). `localStorage["oprn:ai-live-canvas"]`의 명시적 `off`는 존중한다. 미설정·저장 접근 불가 환경에서는 실시간 시공을 그린다.
 - 화면 무게는 AI 설정 「표시」의 `ai-render-weight`다. 기본 `light`는 조수 창·접힘 알약·작업 띠·맵 칩의 `backdrop-filter`를 끈다. `heavy`만 20px 유리 블러를 쓴다. `off`는 블러를 끄고 판을 불투명하게 한다. 저장 키는 `oprn:ai-render-weight`, 적용은 `documentElement.dataset.aiRender`.
 - 입력줄 모델명 옆에 이 대화의 사용량이 `N턴 · N토큰`으로 붙는다(`ai-composer-spend`). Pi 실행의 `done.stats`(계획 턴 포함)를 대화가 바뀔 때까지 더한다. 토큰은 `usage.totalTokens`(입력·출력·캐시)다. 0이면 숨긴다.
 - 헤드리스에서도 도구 실행, 증분으로 복원한 초안, 검토, 적용은 그대로다. `replaceAgentGhostPreviewFromProjectDiff` 를 쓰는 경로(Pi, 레인, 세션, 영역 작업)는 꺼져 있는 동안 맵 비교를 하지 않고, 켜기 직전에 쌓인 프리뷰는 비운다. Pi 는 다시 켜는 순간 현재 초안을 한 번 그린다. 그 외 경로는 다음 변경에서 그린다. 공개 애니메이션만큼 체크포인트를 기다리지 않는다.
@@ -3422,3 +3473,76 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 원시 수치와 실행 없는 테스트 계약 검토·잔여 위험 파일명은 `verify-shots/perf-ai-ui/README.md`와
 `browser-measurements.json`에 남겼다. 테스트 실행은 새 명시적 허가 전까지 다시 시작하지 않는다.
+
+## 전송 직후 캔버스 피드백과 체크포인트 따라가기 (2026-10-03)
+
+`aiCanvasProgress.ts`는 사용자 전송 클릭 안에서 실제 문장과 준비 상태를 캔버스에 먼저 붙이고 다음 화면 그리기를 양보한다. 의도 분류·기획 저장·제안 기준선 계산보다 먼저 보인다. 모델이 도구를 실행하면 같은 표시가 실제 `tool_start`/`tool_end`의 사용자용 문구로 바뀐다. 준비 상태는 제작 완료나 저장 증거가 아니다. 가짜 타일·타이머 진행률·주인공 변경을 만들지 않는다. 패널의 대화·프로젝트 전환, 실패, 중단, 정착은 표시를 닫으며 이전 실행의 이벤트가 새 표시를 지우거나 덮지 못한다.
+
+실시간 시공(`aiLiveCanvas`) 기본값을 켰다. 기존 사용자가 명시적으로 저장한 `off`는 존중한다. 성공한 체크포인트에서 맵을 이동·강조하는 기존 `applyProposedProject` → `focusAcceptedAgentChanges` 경로는 유지한다. 체크포인트 이전 `map_delta`를 실제 변경으로 재생하거나 동일 변경을 중복 focus하는 경로를 추가하지 않는다. 최초 제작 내부 계약과 `PRESET_FIRST_BUILD_RULES`는 필수 DB·월드 뼈대만 먼저 준비하고 첫 맵·첫 상호작용의 작은 작업을 타이틀 그림·긴 오프닝보다 먼저 전달하도록 요구한다. project 쓰기와 map 쓰기의 기존 직렬화 경계를 유지한다. 이는 모델 지시이며 실제 첫 결과 시간의 보증이 아니다.
+
+재현: `scripts/qa/visible-ai-creation.mjs`는 실제 편집기, 사용자 전송 버튼, 모델 응답을 보류하는 NDJSON 대본과 native 도구/체크포인트 수용을 사용한다. 소형 UI fixture이며 라이브 모델·SQLite 저장·생성 게임 완성 증거가 아니다. 화면/관측은 `verify-shots/visible-ai-creation/`에 남긴다.
+
+## 마을 요청 바로 시공 · 실제 시공 순서 재생 · 조수창 제때 반영 (2026-10-03)
+
+사용자: 「'마을을 만들어다오' 하면 불편한 게 한두 가지가 아니다 — 선택지 안 나오게, 바로바로 깔리는 걸 화려하게, 조수창에도 제때 반영」.
+조사(코드·기존 시험 기록)에서 찾은 원인과 고친 것:
+
+| 문제 | 원인 | 고친 것 |
+|---|---|---|
+| 선택지 | `runPiTurn` 의 제작 전 그래픽 선택(위 폐기 절)과 생성 요청 때 자동 큰 창 | 둘 다 제거. 「칩셋 바꿀까요?」 카드(`ask_tileset_change`, 2026-09-25 사용자 결정)는 그대로 — 조수가 보는 맵과 다른 그림체로 바꾸려 할 때만 뜬다 |
+| 시작까지 수십 초 | 의도 선언 뒤 **직렬** 커버리지 감사 콜(`REQUEST_COVERAGE_AUDIT`). 결과(`requestRequirements`)는 옛 세션 경로만 읽고 Pi 는 안 읽는다. 헤드리스 r1·r2 다섯 번 모두 이 콜이 60초 상한에 걸렸다 | `createLlmIntentDeclarer({ coverageAudit: false })` — 채팅 패널·`gen.mts`·`beodeul-village-plain.mts`·`town-trial.mts`. 기본값은 true(세션 경로·테스트 불변) |
+| 조회만 수십 초 | 모델이 위키·요약·DB·참고문서를 6번 읽고서야 시공(r2). `author_beodeul_town` 은 타일을 코드가 고르므로 참고문서 게이트 대상이 아니다 | 버들항 노트(`beodeulTownRoute.ts`) 첫 줄 「[먼저 보이게] … 곧바로 author_beodeul_town」 |
+| 마을이 「짠」 하고 한 번에 | 도구 한 번이 맵 전체를 짓고 체크포인트 하나로 적용. 라이브 모드의 고스트 공개(`aiPiGhostBridge.present`)는 no-op | **실제 시공 순서 재생**(아래 — 도구가 남긴 시공 기록) |
+| 조수창이 늦다 | 쓰기 도구의 `tool_end` 는 브라우저 적용+ACK 왕복 뒤에 온다. 간단히 보기는 조수가 한 말을 숨겼다. 결과 그림 굽기가 적용 직후 메인 스레드에 몰렸다 | 아래 「조수창」 |
+
+### 실제 시공 순서 재생 (`tools/constructionLog.ts` 기록 + `agentConstructionReveal.ts` 계획 + `agentConstructionRevealRenderer.ts` 그리기)
+
+- 왜: 09-21 의 고스트 공개는 실시간 적용(#1130) 뒤 `aiPiGhostBridge.present` 가 no-op 이 되어 사라졌다. 처음엔 화려한 연출, 다음엔
+  완성본에서 순서를 지어낸 종이·연필 밑그림으로 대신했는데 사용자가 「실제 다 깔아 놓고 보여 주기식」이라고 짚었다(2026-10-03).
+  마을 한 채는 도구 한 번(`author_beodeul_town`)이 0.3~3초에 짓고 체크포인트 하나로 적용된다 — 그 안의 단계를 실제로 기록해 튼다.
+- **기록(`src/editor/tools/constructionLog.ts`):** `withConstructionLog(toolName, run)` 이 실행 하나 동안 전역 기록기를 켠다(도구는 동기 실행).
+  시공기가 `logConstructionPlan`(계획 격자 `occ` 의 구역마다 바뀐 칸·분류) · `beginConstructionTiles`(칠하기 직전 맵) ·
+  `logConstructionTiles(map, "paint"|"stamp"|"tidy", label, {realizes, rect, major})`(직전 기록과 달라진 칸의 4층 값)를 부른다. 꺼져 있으면 아무것도 안 한다.
+  지금 기록을 남기는 시공기는 `beodeulVillage.ts`(버들항 마을 문법, theme≠city) 하나다 — 계획 구역 9~10개 → 바탕·물가·길·광장·물 칠하기 → 키트 한 개씩(집·큰 건물·다리는 `major`) → 막다른 길 정리.
+  강가 마을 실측: 단계 ≈ 570개, 기록 70~95KB, 기록 비용 ≈ 0.05초, 단계를 처음부터 다시 쌓으면 최종 맵과 칸 차이 0.
+- **배선:** 워커 `toolAdapter.ts` 가 쓰기 도구를 `withConstructionLog` 로 감싸 `PiToolCallRecord.constructionLogs` 에 싣는다(모델이 읽는 도구 결과에는 안 들어간다) →
+  `piAgentRuntime.ts` `recordCall` 이 들고 있다가 바로 다음 `checkpoint()` 의 `PiProjectCheckpoint.constructionLogs` 로 보낸다(저장 안 함) →
+  편집기 `aiPiAgentCommand.ts` onCheckpoint 가 `offerConstructionLogs` 로 맡긴다 → 적용 뒤 `focusAcceptedAgentChanges` 의 `planConstructionReveal` 이 그 맵 id 의 기록을 한 번 꺼내 쓴다(2분 지나면 버림).
+  **기록이 없는 적용은 재생하지 않는다** — 지어낸 순서는 보이지 않고 기존 「✓ 반영됨」 강조로 간다.
+- **모든 쓰기 도구(2026-10-04, 사용자 「마을뿐 아니라 다른 명령도 실시간으로」):** 스스로 기록을 안 남기는 쓰기 도구(칠하기·소품·집 하나·새 맵…)는
+  `toolAdapter.ts` 가 도구 직후 `synthesizeToolConstructionLogs(도구, 적용 전, 적용 후)` 로 **그 도구가 실제로 바꾼 칸**을 기록 한 벌로 만든다(`synthetic: true`).
+  나누는 것은 예전 밑그림과 같은 층 순서뿐 — ① 아래층(바닥·길·물; 위층은 아직 이전 값) ② 위층이 바뀐 칸(물체·나무·지붕, 작으면 `stamp` 괄호) — 칸은 왼쪽 열부터.
+  시작 덮개(`initial`)는 바뀐 칸의 적용 전 값이다. 도구가 스스로 기록한 맵(마을)은 건드리지 않고, 4만 칸 넘게 바뀐 도구는 재생하지 않는다.
+  재생 시간은 칸 수에 맞춘다(단계당 140ms + 칸×6ms, 260~1400ms). 체크포인트 사이 쓰기가 여럿이면 `recordCall` 이 `mergeConstructionLogs` 로 같은 맵 기록을 순서대로 잇는다.
+- **재생 시간:** 계획 구역 380ms · 칠하기 520ms · 큰 키트 210ms · 작은 키트 28ms(찍기 전체 5.2초 상한, 넘으면 같은 비율로 당김) · 다듬기 320ms,
+  단계 종류가 바뀔 때 200ms 쉼, 끝에 500ms 머문 뒤 320ms 에 덮개가 걷힌다. 강가 마을 ≈ 12.6초.
+- **그리기:** ① 계획 격자 — 칸당 8px `RenderTexture` 에 분류 색(물 파랑·길 황토·광장 연한 돌·건물 자리 갈색 눈금·소품·밭) ② 칠하기·찍기 — 타일 크기 `RenderTexture` 에
+  그 시점 값의 실제 타일(`tile_N` 프레임)을 그린다. 칠하기는 자기가 마무리한 분류(`realizes`)의 밑그림만, 찍기는 그 칸의 밑그림을 걷는다. 마지막 단계 = 실제 맵이라 덮개가 걷혀도 그림이 안 바뀐다.
+  연필 커서는 지금 단계의 마지막 칸(찍기는 키트 오른쪽 아래), 큰 키트는 괄호가 잠깐 잡힌다. 빛·불꽃·흔들림은 없다.
+- **밝히기:** 「AI 작업」 카드에 지금 단계(「계획 · 집 자리」, 「찍기 · 집 3/14」)와 「도구가 실제로 N초에 지은 순서를 그대로 늦춰 보여 줘요」를 붙인다(카드가 없거나 먼저 닫히면 캔버스 왼쪽 아래 작은 카드).
+  캔버스 위쪽 가운데는 떠 있는 캔버스 도구 막대가 가린다 — 거기 두지 말 것. 관측점: `dataset.aiConstructionReveal === "playing"`, `dataset.aiConstructionStep`.
+- **함정:** Phaser 3.90 `DynamicTexture.clear(x,y,w,h)` 는 `dirty` 일 때만 지우고 `dirty` 를 내린다 → 지우기 전에 `dirty = true`.
+  칸마다 `drawFrame` 을 부르면 호출마다 그리기 묶음을 열고 닫는다 — 지우기를 먼저 다 하고 `beginDraw`/`batchDrawFrame`/`endDraw` 한 묶음으로, 계획 칸은 Graphics 하나에 모아 한 번 `draw`.
+  연출 시계는 프레임당 120ms 상한이다(긴 메인 스레드 막힘에 단계를 건너뛰지 않게). 48ms 였을 때 부하 큰 박스에서 12초 계획이 50초로 늘어졌다.
+- 실제 칸은 이미 스토어에 있다. 재생은 다음 도구·ACK·입력을 막지 않고 저장·적용 증거가 아니다. 다른 맵으로 옮기면 그 자리에서 끝난다.
+  대상 맵 그림이 한 변 4096px 를 넘거나 동작 줄이기·「맵에 시공 보이기」 꺼짐이면 재생하지 않는다.
+
+### 조수창
+
+- `activityTrace`: `checkpoint` 가 오면(워커가 도구 일을 끝낸 순간) 열린 도구 행 요약을 `ACTIVITY_APPLYING_SUMMARY`(「작업 끝 · 맵에 반영 중」)로,
+  클라이언트의 `execution_status checkpoint.apply` 성공이 오면 `ACTIVITY_APPLIED_SUMMARY`(「맵에 반영됨」, status ok)로 바꾼다. 뒤늦은 `tool_end` 는 같은 callId 행을 덮는다.
+- 간단히 보기는 조수가 사용자에게 한 마지막 말(`assistant` 항목)을 「“…”」 한 줄로 보인다(추론 내용이 아니다). 마을 도구 문구 「마을 짓는 중/마을 짓기 완료」 등을 더했다.
+- `client.ts`: 체크포인트 적용 전에 한 프레임 양보(`yieldToPaint`) — 방금 받은 줄이 먼저 그려진다. 캔버스 진행 카드(`aiCanvasProgress`)도 checkpoint·적용 완료·조수 말을 따라간다.
+- 결과 그림 굽기(`aiActivityMedia.rasterQueued`)는 `requestIdleCallback`(최대 1.5s) 뒤에 시작한다. 팔레트 비슷한 칸 계산(`similarTilesForTile`)은 타일셋 객체별로 기억한다
+  (프로필: 마을 적용마다 버들항 27,648칸을 다시 훑었다).
+
+### 재현·증거
+
+`BASE=http://127.0.0.1:<port> node scripts/qa/village-live-build.mjs` — 실제 편집기·전송 버튼·`author_beodeul_town` 실행·체크포인트 적용, 모델만 대본.
+`BEFORE=1` 은 바꾸기 전 코드에 같은 대본(선택 창이 뜨면 4초 뒤 추천 조합으로 확정), `NOREVEAL=1` 은 연출 끈 대조군, `PROFILE=1` 은 보내기~연출 시작 CPU 상위 함수.
+증거 `verify-shots/village-live-build/`(report.json·frames·video). 이 박스는 부하(loadavg 25~60)와 소프트웨어 GL 이라 절대 시간은 사용자 기기보다 크다.
+대본은 체크포인트에 프로젝트 전체를 싣는다(실제 워커는 바뀐 타일셋만) — 적용 시간이 실제보다 길다. 라이브 모델 지연·SQLite 저장 증거가 아니다.
+
+남은 것: 첫 실행의 무거운 키 해시·gzip(새 프로젝트에서 보내기~실행 요청 약 10s, 이 박스)과 체크포인트 적용 비용(권위 다이제스트·왕복 검사)은 그대로다 — 2026-09-25·28 절의 남은 비용 목록.
+연출은 도구 결과가 한 번에 오는 것을 「지어지는 모습」으로 보여 줄 뿐, 워커 안 단계별 증분 전송은 아니다(`buildBeodeulVillage` §11·§12 사이에 증분을 내려면 비동기 생성기가 필요).
+

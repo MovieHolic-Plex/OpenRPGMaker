@@ -11,7 +11,7 @@
   bg        투명 배경(네 귀퉁이 중 셋 이상 투명, 칸을 꽉 채운 불투명 그림 금지 — flat 깔개 제외)
   pad       패딩 줄(padTop, 그림 위 투명 여백)에 불투명 화소 없음
   anchor    바닥 접지선: 불투명 화소의 맨 아래 줄이 v5 와 ±1px (걸이(hang)는 ±2)
-  palette   색 = 공통 팔레트(palette/v5.pal) ∪ v5 기물 381개가 쓰는 색. 반투명은 그 안의 (색, 알파) 만
+  palette   색 = 공통 팔레트(palette/v6.pal) ∪ v5 기물 381개가 쓰는 색. 반투명은 그 안의 (색, 알파) 만
   mark      실루엣 표시색 # 이 남지 않음
   surface   탁상 물건 자리(surface.rect_px)가 전부 불투명 — 윗면이 비면 위에 놓은 물건이 뜬다
   refmap    REFMAP 칸과 95% 이상 닮은 16px 칸 0 (팩이 없는 기계에서는 건너뜀)
@@ -143,7 +143,87 @@ def check(pxg, quiet=False):
     note = base + '.note'
     res['note'] = open(note, encoding='utf-8').read().strip().split('\n')[0] if os.path.exists(note) else ''
     if not res['note']: res['warn'].append('메모 없음: <후보>.note 에 한 줄')
+    full_note = open(note, encoding='utf-8').read() if os.path.exists(note) else ''
+    res['hard'] += top_claim_check(a[pad:], o, full_note, res)
+    if o['kind'] not in ('flat',): res['hard'] += line_check(base, res)
+    if o['kind'] not in ('flat',) and not res['hard']:   # 고르는 화면의 「테두리 꼭 필요한 곳만」 벌을 미리 만든다(참고 — 실패해도 검사는 그대로)
+        try:
+            import outline_select; outline_select.ensure_png(d, os.path.basename(base), o)
+        except (Exception, SystemExit) as e: res['warn'].append(f'sel: 테두리 둘째 벌을 못 만들었다 {e!r}'[:200])
     return finish(res, base, quiet)
+
+LINE_THICK_MAX, LINE_NONE_MAX = 0.15, 0.15   # 고른 작은 기물 위 ¼ 경계(2026-10-02 실측: 두께 2칸+ p75 0.16 · 테 없음 p75 0.15)
+
+def line_check(base, res):
+    """선 문법(2026-10-02, 사용자 「선의 두께·외곽선」): 외곽은 1칸, 바깥 테가 안쪽보다 어두워야 한다.
+    재는 법은 line_metrics.py. 게이트는 사용자 눈으로 맞춘 두 항목만 — 외곽 색·안쪽 선 굵기는 금테·무늬를 잘못 잡아 참고로만 적는다.
+    문제 칸을 칠한 그림을 <후보>-lines-x6.png 로 남긴다(작업자·검수자가 본다)."""
+    import line_metrics as lm
+    try:
+        r, im = lm.overlay(base + '.png', 6)
+    except Exception as e:
+        return [f'lines: 선 측정 실패 {e!r}'[:200]]
+    im.save(base + '-lines-x6.png')
+    res['lines'] = {k: round(v, 3) for k, v in r.items()}
+    errs, rel = [], os.path.relpath(base + '-lines-x6.png', ROOT)
+    if r['o_thick'] > LINE_THICK_MAX:
+        errs.append(f'lines: 외곽이 2칸 이상 두꺼운 곳 {r["o_thick"]:.0%} > {LINE_THICK_MAX:.0%} — 바깥 테는 1칸, 그 안쪽 칸은 한 단 밝게(빨강 칸, {rel})')
+    if r['o_none'] > LINE_NONE_MAX:
+        errs.append(f'lines: 바깥 테가 안쪽보다 어둡지 않은 곳 {r["o_none"]:.0%} > {LINE_NONE_MAX:.0%} — 실루엣 둘레를 그 재료의 가장 어두운 단 1칸으로 두른다(하늘색 칸, {rel})')
+    return errs
+
+EDGE_T, EDGE_ROW, COVER_MIN = 40, 0.75, 0.5   # 가로 윤곽선 = 위 줄과 밝기가 40 넘게 다른 칸이 75% 이상인 줄 · 띠 평균 채움 50%
+
+def band_profile(a):
+    """줄마다 (채움 = 불투명 폭 / 물건 폭, 가로 윤곽 = 위 줄과 밝기가 크게 다른 칸 비율)."""
+    A = a[..., 3] > 0; L = 0.299 * a[..., 0] + 0.587 * a[..., 1] + 0.114 * a[..., 2]
+    xs = np.where(A.any(0))[0]; w = max(1, xs.max() - xs.min() + 1) if len(xs) else 1
+    out = []
+    for y in range(a.shape[0]):
+        both = A[y] & A[y - 1] if y else np.zeros_like(A[y])
+        e = (np.abs(L[y] - L[y - 1]) >= EDGE_T) & both if y else both
+        out.append((A[y].sum() / w, e.sum() / max(1, both.sum())))
+    return out
+
+def top_claim_check(a, o, note, res):
+    """꼭대기 면 결정적 검사(2026-10-02). 바닥·벽 앞 기물은 메모에 `꼭대기 윗면 N행(y=a~b)` 를 적어야 하고,
+    N ≥ 규칙(common.top_min), N = b−a+1, 그 띠가 한 덩이 면이어야 한다(평균 채움 50% 이상, 띠 안을 가로지르는 윤곽선 없음).
+    옆모습 기차(지붕 2~4행 + 옆면)를 「윗면 14행」이라 적으면 띠가 지붕 밑 윤곽선을 가로지른다 → 불합격.
+    무엇이 윗면인지는 검수(따로 잰 top_y)가 맞대어 본다 — 이 검사는 거짓 범위를 거르는 문이다."""
+    need = top_min(o)
+    if need is None: return []
+    claim = parse_top_claim(note)
+    if not claim: return [f'top: 메모에 `꼭대기 윗면 N행(y=a~b)` 가 없다 — 이 기물은 {need}행 이상({top_rule_text(o)})']
+    n, y0, y1 = claim; H = a.shape[0]; errs = []
+    res['topClaim'] = dict(rows=n, y=[y0, y1], need=need)
+    if y1 < y0 or y1 >= H: return [f'top: 메모의 범위 y={y0}~{y1} 가 캔버스(0~{H - 1}) 밖이거나 거꾸로다']
+    if abs((y1 - y0 + 1) - n) > 1: errs.append(f'top: 메모의 {n}행과 범위 y={y0}~{y1}({y1 - y0 + 1}행)이 다르다')
+    if y1 - y0 + 1 < need: errs.append(f'top: 꼭대기 윗면 {y1 - y0 + 1}행 < {need}행 — {top_rule_text(o)}')
+    p = band_profile(a)
+    cover = sum(p[y][0] for y in range(y0, y1 + 1)) / (y1 - y0 + 1)
+    if cover < COVER_MIN: errs.append(f'top: 메모의 윗면 y={y0}~{y1} 가 비어 있다(평균 채움 {cover:.0%} < {COVER_MIN:.0%}) — 면이 아니라 허공·장식이다')
+    cuts = [y for y in range(y0 + 2, y1) if p[y][0] >= COVER_MIN and p[y][1] >= EDGE_ROW]
+    if cuts: errs.append(f'top: 메모의 윗면 y={y0}~{y1} 를 가로 윤곽선 y={cuts[0]} 이 가로지른다 — 그 아래는 옆면이다(옆모습을 윗면이라 적었다)')
+    res['topBand'] = dict(cover=round(cover, 2), cuts=cuts[:6])
+    if o.get('blockout'): errs += blockout_check(a, o, (y0, y1), res, p)
+    return errs
+
+def blockout_check(a, o, claim, res, p=None):
+    """대형 깊은 기물: 명세의 3/4 밑그림 띠를 실제로 채웠나. 띠는 명세가 정한다(작업자가 고를 수 없다).
+    - 윗면 띠(top) 줄들의 평균 채움 ≥ cover — 옆모습은 이 줄에 굴뚝·돔·기관사 칸만 있어 비어 보인다.
+    - 남쪽 면 띠(front) 평균 채움 ≥ 50%(바퀴·다리 사이 틈 허용 — 물건이 그 띠에 서 있기만 하면 된다).
+    - 메모의 꼭대기 윗면 범위가 밑그림 윗면 띠와 반 이상 겹친다."""
+    b = o['blockout']; (t0, t1), (f0, f1) = b['top'], b['front']; cov = float(b.get('cover', 0.7))
+    p = p or band_profile(a); H = a.shape[0]; errs = []
+    mean = lambda y0, y1: sum(p[y][0] for y in range(max(0, y0), min(H, y1 + 1))) / max(1, min(H, y1 + 1) - max(0, y0))
+    tc, fc = mean(t0, t1), mean(f0, f1)
+    res['blockout'] = dict(top=[t0, t1], front=[f0, f1], topCover=round(tc, 2), frontCover=round(fc, 2), need=cov)
+    if tc < cov: errs.append(f'blockout: 밑그림 윗면 띠 y={t0}~{t1} 채움 {tc:.0%} < {cov:.0%} — 위에서 본 윗면이 그 띠를 덮어야 한다(옆모습이면 비어 보인다)')
+    if fc < 0.5: errs.append(f'blockout: 밑그림 남쪽 면 띠 y={f0}~{f1} 채움 {fc:.0%} < 50% — 남쪽 면이 그 자리에 없다')
+    c0, c1 = claim; inter = max(0, min(c1, t1) - max(c0, t0) + 1)
+    if inter * 2 < (c1 - c0 + 1): errs.append(f'blockout: 메모의 꼭대기 윗면 y={c0}~{c1} 가 밑그림 윗면 띠 y={t0}~{t1} 와 반도 안 겹친다')
+    return errs
+
 
 def finish(res, base, quiet):
     res['ok'] = not res['hard']

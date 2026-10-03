@@ -1,0 +1,21 @@
+// h9-A: 받침 윗면 H 두 줄(결 I)로 늘리고 앞 가장자리 줄을 I 로 낮춰 윗면/앞면 분리
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....ABBCCA.....
+....ABBBCCCA....
+....BBBBDDCCEEE.
+...ABBBBDDCCE.E.
+...BBBBFFDDCC.E.
+...CCDDDDDDCC...
+...ACCDDDDCCA...
+....CCDDDDCC....
+.EEEEEEEEEEEEEE.
+.GHHHHHHHHHHHHE.
+.GHHIHHHHIHHHHE.
+.EIIIIIIIIIIIIE.
+.KGGGGGGGGGGGGK.
+.KLJJJJJJJJJJGK.
+.KKJGKKKKKKKJGK.

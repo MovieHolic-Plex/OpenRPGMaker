@@ -39,6 +39,22 @@ def load_journey(jid):
     return d
 
 
+def journey_for_world(journey, world):
+    """생성 지형의 world.json 이면 여정 사본에 그 세계의 장소 좌표·시작 칸·길을 입힌다(맞춤이 바꾼 것). 손 대륙이면 그대로."""
+    lay = world.get('layout') if isinstance(world, dict) else None
+    if not lay or lay.get('base') != 'generate':
+        return journey
+    import copy
+    j = copy.deepcopy(journey)
+    for p in j['places']:
+        if p['id'] in lay.get('places', {}):
+            p['x'], p['y'] = lay['places'][p['id']]
+    j['start']['cell'] = list(world['start'])
+    j['roads'] = [dict(id=i, via=[], **{'from': a, 'to': b}) for i, a, b in lay.get('road_ends', [])]
+    j['terrain_nodes'] = dict(ramps=[])
+    return j
+
+
 class IconSet:
     def __init__(self, sid):
         # sid 가 경로(폴더가 실제로 있는 것)면 그 폴더를, 아니면 iconsets/<sid> 를 연다 — 새 세트를 저장소에 넣기 전에 시험할 수 있다
@@ -70,11 +86,21 @@ class IconSet:
             w, h = ic['cells']
             if (ic['col'] + w) * 16 > self.sheet.shape[1] or (ic['row'] + h) * 16 > self.sheet.shape[0]:
                 raise KitError('iconsets/%s: 아이콘 %s 가 시트 밖이다' % (sid, ic['name']))
-            self.icons[ic['name']] = ic
+            self.icons[ic['name']] = dict(ic, _own=True)
         self.pins = dict(m.get('pins', {}))
+        self.kind = m.get('kind', 'land')
+        # 부분 세트(extends): 바탕 세트의 아이콘을 함께 가진다 — 이 세트에 없는 역할도 지도에 놓을 수 있게.
+        # 바탕 아이콘은 바탕 시트에서 잘라 온다(_base). 이름이 겹치면 이 세트 것이 이긴다.
+        self.base = IconSet(m['extends']) if m.get('extends') else None
+        if self.base:
+            for n, ic in self.base.icons.items():
+                if n not in self.icons:
+                    self.icons[n] = dict(ic, _own=False)
 
     def array(self, name):
         ic = self.icons[name]
+        if not ic.get('_own', True) and self.base:
+            return self.base.array(name)
         w, h = ic['cells']
         return self.sheet[ic['row'] * 16:(ic['row'] + h) * 16, ic['col'] * 16:(ic['col'] + w) * 16]
 

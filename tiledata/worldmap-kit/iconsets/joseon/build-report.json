@@ -1,0 +1,272 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "한양 도성",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "도성 성곽·2층 숭례문·궁궐 담 안 월대 위 근정전·민가",
+   "fill": "84x84",
+   "side_px": 123,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "읍성",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "돌 성곽·홍예 문루·붉은 기둥 동헌·기와집·초가",
+   "fill": "59x40",
+   "side_px": 29,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "포구 고을",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "성곽 일부·관아·조창 창고·선창·판옥선",
+   "fill": "74x46",
+   "side_px": 4,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "산성",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "돌산 위 석축 성벽·2층 장대·암문",
+   "fill": "47x38",
+   "side_px": 6,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "양반 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "돌담 두른 기와집·솟을대문·연못가 정자·소나무",
+   "fill": "46x35",
+   "side_px": 19,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "장터 마을",
+   "id": "large_town_b",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "초가·흰 차일 장막·주막 깃발",
+   "fill": "43x25",
+   "side_px": 19,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "초가 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "초가 셋·장독대·감나무",
+   "fill": "31x21",
+   "side_px": 29,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "어촌",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "초가·그물 덕장·작은 고깃배",
+   "fill": "27x20",
+   "side_px": 10,
+   "col": 11,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "보부상 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "무명 천막·지게 짐·모닥불",
+   "fill": "30x17",
+   "side_px": 6,
+   "col": 13,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "봉수대",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "돌 연대 위 연기 한 줄",
+   "fill": "15x29",
+   "side_px": 94,
+   "col": 23,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "5층 목탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "팔상전풍 5층 목탑",
+   "fill": "31x51",
+   "side_px": 6,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "석굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "화강암 절벽·둥근 석굴 입구·목조 처마",
+   "fill": "32x30",
+   "side_px": 123,
+   "col": 15,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "무너진 석탑",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "3층 석탑 밑동·흩어진 옥개석",
+   "fill": "30x20",
+   "side_px": 4,
+   "col": 17,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "옛 궁터",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "석축 월대·주춧돌·무너진 담·잡초",
+   "fill": "63x32",
+   "side_px": 62,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "산사",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "대웅전·3층 석탑·일주문·소나무",
+   "fill": "47x39",
+   "side_px": 29,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "당산나무",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "느티나무 거목·금줄·서낭당 돌무더기",
+   "fill": "42x42",
+   "side_px": 198,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "고인돌",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "탁자식 고인돌 두 기",
+   "fill": "30x18",
+   "side_px": 2,
+   "col": 19,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "백두산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "눈 덮인 화산·천지",
+   "fill": "30x28",
+   "side_px": 10,
+   "col": 21,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "신선 봉우리",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "구름 위 바위 봉우리·육모정·소나무",
+   "fill": "78x52",
+   "side_px": 513,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 0
+}

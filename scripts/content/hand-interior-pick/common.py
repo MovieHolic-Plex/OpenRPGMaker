@@ -8,10 +8,11 @@ V5 = os.path.join(ROOT, 'tiledata/hand-interior/v5')
 PICK = os.path.join(ROOT, 'tiledata/hand-interior/pick')
 CAND = os.path.join(PICK, 'candidates')
 PAL_DIR = os.path.join(PICK, 'palette')
-SHARED_PAL = os.path.join(PAL_DIR, 'v5.pal')
+V5_PAL = os.path.join(PAL_DIR, 'v5.pal')       # v5 재료 램프(make_palette.py 가 만든다)
+SHARED_PAL = os.path.join(PAL_DIR, 'v6.pal')   # 실내 공통 팔레트 = v5 + 시트 색 128(2026-10-03). 시트 굽기도 이 색으로 옮긴다
 PXGRID = os.path.join(ROOT, 'scripts/content/pixel-harness/pxgrid')
 HARNESS = os.path.join(ROOT, 'scripts/content/pixel-harness')
-WORKER_RE = re.compile(r'^(w[0-9]{1,2}|pilot)-([A-Z])\.pxg$')   # 작업자 id(w1…w99, pilot) + 방향 글자
+WORKER_RE = re.compile(r'^(w[0-9]{1,3}|h[0-9]{1,4}|pilot)-([A-Z])\.pxg$')   # 작업자 id(w1…w999, 소품 하네스 판 h1…, pilot) + 방향 글자
 
 def slug(i):
     return re.sub(r'[^A-Za-z0-9]+', '_', i).strip('_')
@@ -45,7 +46,8 @@ def new_item_object(it):
             'cells': {'floor': rows, 'overlayRowsAbove': over}, 'placement': rules, 'related': [], 'variantGroup': i,
             'atlas': {'x': -1, 'y': -1, 'w': w, 'h': h, 'frames': 1, 'padTop': 0},
             'summary': (head + '.') if sep else desc, 'where': tail, 'since': 'v6 새 기물',
-            'new': True, 'contextRoom': it.get('contextRoom')}
+            'new': True, 'contextRoom': it.get('contextRoom'),
+            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs', 'blockout') if it.get(k)}}
 
 def load_new_items(v5_ids=None):
     """tiledata/hand-interior/new/items.json → 가짜 객체 목록. v5 id·slug 와 겹치면 에러."""
@@ -123,3 +125,88 @@ def v5_modules():
         sys.path.insert(0, V5)
     import rooms4, room4  # noqa
     return rooms4, room4
+
+# ── 꼭대기 면 규칙(3/4 시점) — 하네스·검사·검수가 같이 쓰는 한 곳 ───────────────────────────────────────────────
+# 2026-10-02: 대형 기물(기차·마차 6×2·4×2)을 「꼭대기 윗면 4행」으로 주문했더니 25장이 전부 옆모습(측면도)으로 나왔고
+# 검수도 「4행」을 그대로 통과시켰다. 3행은 깊이 1칸 가구(책장·옷장)의 최소치다. 발밑이 남북으로 깊으면 위에서 내려다본
+# 윗면도 그만큼 길어야 한다 — 칩셋 실측: 4×2 식탁 상판 24행, 마도 기관 3×2 윗면 약 10~12행, 2×2 작전 탁자 9~10행.
+TOP_MIN_SHALLOW = 3   # 발밑 깊이 1칸(또는 벽 앞 기물)
+TOP_PER_DEPTH = 10    # 깊이 2칸 이상: (깊이 − 1) × 10 행
+TOP_CLAIM_RE = re.compile(r'꼭대기\s*윗면\s*(\d+)\s*행\s*\(\s*y\s*=\s*(\d+)\s*[~\-–]\s*(\d+)\s*\)')
+SPEC_TOP_RE = re.compile(r'꼭대기\s*윗면\s*(\d+)(?:\s*~\s*(\d+))?\s*행')
+
+def top_min(o):
+    """꼭대기 면(가장 높은 수평 면 — 지붕·상판·뚜껑·받침) 윗면 최소 행 수. 바닥 기물·벽 앞 기물만, 나머지(걸이·바닥 무늬)는 None."""
+    if o.get('kind') not in ('floor', 'wall'): return None
+    fh = int((o.get('footprint') or {}).get('h') or 1)
+    return TOP_MIN_SHALLOW if fh <= 1 else TOP_PER_DEPTH * (fh - 1)
+
+def top_rule_text(o):
+    """작업지시서·검수 지시문에 그대로 넣는 한 줄."""
+    n = top_min(o)
+    if n is None: return ''
+    fh = int((o.get('footprint') or {}).get('h') or 1)
+    b = o.get('blockout')
+    if b:
+        (t0, t1) = b['top']
+        return (f'이 기물은 3/4 밑그림이 있다 → **주 윗면(밑그림 윗면 띠 y={t0}~{t1}, {t1 - t0 + 1}행)** 이 위에서 내려다본 면이어야 한다(최소 {n}행). '
+                f'그 위로 솟는 부품(틀 가로보·굴뚝·돔·조각·날개)은 이 행 수 규칙이 아니다 — 그 부품은 윗면이 조금이라도 보이면 된다. top_rows·top_y 는 주 윗면을 잰다.')
+    if fh <= 1: return f'이 기물의 꼭대기 윗면 최소 {n}행(발밑 깊이 1칸).'
+    return (f'이 기물은 발밑이 남북으로 {fh}칸 깊다 → **꼭대기 윗면 최소 {n}행**. 위에서 내려다본 지붕·상판·받침이 긴 면으로 보여야 한다. '
+            f'지붕·상판이 몇 행짜리 띠로만 보이는 옆모습(측면도)은 무조건 떨어진다.')
+
+def parse_top_claim(note):
+    """작업자 메모의 `꼭대기 윗면 N행(y=a~b)` → (N, a, b) 또는 None."""
+    m = TOP_CLAIM_RE.search(note or '')
+    return tuple(int(g) for g in m.groups()) if m else None
+
+def spec_top_lint(o):
+    """명세(설명) 검사 — 깊은 기물(발밑 깊이 2칸 이상)은 설명에 `꼭대기 윗면 N행` 이 있어야 하고 N 이 규칙 이상이어야 한다.
+    설명이 곧 작업자 명세라, 여기서 모자라게 쓰면 작업자는 그대로 옆모습을 그린다(2026-10-02 기관차)."""
+    n = top_min(o); fh = int((o.get('footprint') or {}).get('h') or 1)
+    if n is None or fh <= 1: return []
+    got = [int(b or a) for a, b in SPEC_TOP_RE.findall(o.get('description') or '')]
+    if not got: return [f"{o['id']}: 설명에 「꼭대기 윗면 N행」이 없다 — 발밑 깊이 {fh}칸이면 {n}행 이상을 적는다"]
+    if max(got) < n: return [f"{o['id']}: 설명의 꼭대기 윗면 {max(got)}행 < {n}행(발밑 깊이 {fh}칸 규칙) — 이대로면 옆모습이 나온다"]
+    return blockout_lint(o)
+
+BIG_AREA = 6   # 발밑 칸 수가 이 이상인 깊은 기물(대형)은 3/4 밑그림(blockout)이 있어야 판을 연다
+
+def blockout_lint(o):
+    """대형 깊은 기물의 3/4 밑그림 검사. blockout = {top:[a,b], front:[c,d], cover:0.7} — 캔버스 y 좌표.
+    top = 위에서 내려다본 주 윗면 띠, front = 그 아래 남쪽 면 띠, cover = 그 띠 줄들이 물건 폭을 채워야 하는 비율.
+    작업자가 고르는 것이 아니라 명세가 정한다 — 그래서 옆면 한가운데를 윗면이라 우길 수 없다."""
+    fp = o.get('footprint') or {}; fw, fh = int(fp.get('w') or 1), int(fp.get('h') or 1); b = o.get('blockout')
+    if o.get('kind') not in ('floor', 'wall') or fh < 2 or fw * fh < BIG_AREA:
+        return [] if not b else _blockout_shape(o, b)
+    if not b: return [f"{o['id']}: 대형 깊은 기물({fw}×{fh})인데 3/4 밑그림(blockout: top·front·cover)이 없다"]
+    return _blockout_shape(o, b)
+
+def _blockout_shape(o, b):
+    H = int((o.get('image') or o.get('atlas') or {}).get('h') or 0); n = top_min(o) or 0
+    try:
+        (a, bb), (c, d) = b['top'], b['front']; cov = float(b.get('cover', 0.7))
+    except (KeyError, TypeError, ValueError):
+        return [f"{o['id']}: blockout 꼴이 틀렸다 — {{top:[a,b], front:[c,d], cover}}"]
+    errs = []
+    if not (0 <= a <= bb < c <= d < (H or 10 ** 6)): errs.append(f"{o['id']}: blockout 범위가 이상하다 top={b['top']} front={b['front']} 캔버스 높이 {H}")
+    if bb - a + 1 < n: errs.append(f"{o['id']}: blockout 윗면 {bb - a + 1}행 < 규칙 {n}행")
+    if not 0.3 <= cov <= 1: errs.append(f"{o['id']}: blockout cover {cov} 는 0.3~1")
+    return errs
+
+def blockout_image(o, scale=8):
+    """밑그림 그림(작업자·검수자용): 윗면 띠 = 밝은 회색, 남쪽 면 띠 = 어두운 회색, 그 위 = 솟는 것(굴뚝·돔·조각) 자리 빗금.
+    8배, 16px 마다 칸 선, 띠 경계 y 를 적는다."""
+    from PIL import Image, ImageDraw
+    b = o['blockout']; W = int((o.get('image') or o['atlas'])['w']); H = int((o.get('image') or o['atlas'])['h']); S = scale
+    im = Image.new('RGBA', (W * S, H * S), (150, 120, 90, 255)); dr = ImageDraw.Draw(im)
+    (a, bb), (c, d) = b['top'], b['front']
+    for y in range(0, a * S, 6): dr.line([(0, y), (W * S, y + W * S // 4)], fill=(170, 140, 110, 255))
+    dr.rectangle([S, a * S, (W - 1) * S - 1, (bb + 1) * S - 1], fill=(214, 214, 205, 255), outline=(40, 40, 50, 255), width=2)
+    dr.rectangle([S, c * S, (W - 1) * S - 1, (d + 1) * S - 1], fill=(110, 105, 112, 255), outline=(40, 40, 50, 255), width=2)
+    for x in range(0, W * S, 16 * S): dr.line([(x, 0), (x, H * S)], fill=(0, 0, 0, 90))
+    for y in range(H * S, -1, -16 * S): dr.line([(0, y), (W * S, y)], fill=(0, 0, 0, 90))
+    for y, t in ((a, f'top y={a}'), (bb, f'~{bb} ({bb - a + 1}rows)'), (c, f'front y={c}'), (d, f'~{d}')):
+        dr.text((S * 2, y * S + 2), t, fill=(200, 20, 20, 255))
+    return im
+

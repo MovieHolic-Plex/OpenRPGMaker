@@ -1,0 +1,87 @@
+// B: 검은 목재 윤곽·결과 윗판·처마 그림자를 유지하고 책칸·칸 간격을 줄여 실루엣 48→32행(y=16~47), X 사슬과 황동 자물쇠를 몸통에 맞춤; 꼭대기 윗면 4행(y=17~20)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A black 1
+@mat B black 2
+@mat C black 3
+@mat D black 4
+@mat E black 5
+@mat W dwood 4
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@mat l iron 5
+@mat r red 2
+@mat R red 3
+@mat g green 2
+@mat G green 4
+@mat b blue 2
+@mat H blue 4
+@mat n linen 3
+@mat N linen 5
+@mat u brass 2
+@mat v brass 4
+@mat z brass 5
+@layer cabinet
+@mblock 0 16
+.BBBBBBBBBBBBBB.
+CDDDDDDDDDDDDDCB
+CDEEDDDCDDDDDDDB
+CDDDDCCDDDDCDDCB
+CDDDDDDDDDDDDDCB
+CEEDDDDDDDCCCCCB
+CDCCCCCCCCCCCBBB
+CBAAAAAAAAAAAABB
+CDAAAAAAAAAAAACB
+CDAnnARRAggbHACB
+CDANnARRAGgbHACB
+CDAnnArrAggbbACB
+CDEDDDDDDDDDDDCB
+CDDDCDDDDDDCCDCB
+CDCCCCCCCCCCCBBB
+CBAAAAAAAAAAAABB
+CDAAAbHAnNArrACB
+CDGGAbHAnNARRACB
+CDggAbbAnnArrACB
+CDEDDDDDDDDDDDCB
+CDDDDCCDDDDDDDCB
+CDCCCCCCCCCCCBBB
+CBAAAAAAAAAAAABB
+CDArrAnnAAbbAACB
+CDARRANnAAbHggCB
+CDArrAnnAAbbggCB
+CDEDDDDDDDDDDDCB
+CDDDCDDDDDCCDDCB
+CDCCCCCCCCCCCBBB
+CDCCCCCCCCCCCCCB
+CDDDCDDDDDDDCDCB
+.BBBBBBBBBBBBBB.
+@layer chains
+@mblock 1 25
+lk..........kl
+.ik........ki.
+.kl........lk.
+..ji......ij..
+...lk....kl...
+...ik....ki...
+....kl..lk....
+.....jiij.....
+.....klkl.....
+.....lkkk.....
+.....klkl.....
+....ji..ij....
+...lk....kl...
+...ik....ki...
+..kl......lk..
+.ji........ij.
+.kl........lk.
+lk..........kl
+@layer lock
+@mblock 6 32
+.kk.
+kAAk
+uvvu
+vzvu
+vAvu
+uvuu

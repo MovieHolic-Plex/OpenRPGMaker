@@ -1,0 +1,272 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "역 앞 도심",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "교차로를 둘러싼 역 빌딩(유리 지붕·시계탑)·백화점·방송탑·빌딩",
+   "fill": "95x90",
+   "side_px": 192,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "신도시 단지",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "엇갈린 아파트 동 넷과 앞 놀이터(미끄럼틀·그네)",
+   "fill": "64x63",
+   "side_px": 42,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "항구 마을",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "여객선 터미널·어시장 창고 둘·등대·여객선",
+   "fill": "79x42",
+   "side_px": 129,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "학교",
+   "id": "school",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "3층 본관(시계)·초록 지붕 체육관·흙 운동장",
+   "fill": "47x35",
+   "side_px": 8,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "병원",
+   "id": "hospital",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "흰 고층 본관(빨간 십자·헬기장)·외래동·구급차",
+   "fill": "48x44",
+   "side_px": 6,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "상점가",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "초록 아케이드 지붕 골목과 양쪽 가게(차양·간판)",
+   "fill": "47x35",
+   "side_px": 0,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "교외 주택가",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "마당 있는 빨강·파랑 지붕 집 둘, 울타리·나무",
+   "fill": "32x22",
+   "side_px": 2,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "시골 정류장 마을",
+   "id": "village_rural",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "버스 정류장·시골 버스·함석지붕 집·자판기",
+   "fill": "31x20",
+   "side_px": 0,
+   "col": 11,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "캠핑장",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "캠핑카·주황 텐트·모닥불",
+   "fill": "31x22",
+   "side_px": 14,
+   "col": 13,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "소방망루",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "철골 다리 위 빨간 지붕 망대와 종",
+   "fill": "16x30",
+   "side_px": 4,
+   "col": 23,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "방송 타워",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "적백 띠 타워와 전망대 두 단",
+   "fill": "22x58",
+   "side_px": 182,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "터널",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "초록 언덕의 콘크리트 터널 입구와 철길",
+   "fill": "30x29",
+   "side_px": 82,
+   "col": 15,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "폐공장",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "깨진 톱니 지붕·녹슨 굴뚝·잔해",
+   "fill": "31x30",
+   "side_px": 41,
+   "col": 17,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "폐쇄된 놀이공원",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "녹슨 관람차·끊긴 롤러코스터·회전목마·닫힌 정문",
+   "fill": "56x41",
+   "side_px": 42,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "동네 신사",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "빨간 도리이·돌계단·배전·석등",
+   "fill": "45x31",
+   "side_px": 74,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "호수 공원 큰 나무",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "거대한 느티나무와 연못 오리배·벤치",
+   "fill": "45x46",
+   "side_px": 195,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "원형 광장 분수",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "돌 수반 분수와 화단·가로등",
+   "fill": "30x23",
+   "side_px": 58,
+   "col": 19,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "온천 화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "김 오르는 산과 료칸·노천탕",
+   "fill": "31x31",
+   "side_px": 30,
+   "col": 21,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "비행장",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "활주로·여객기·관제탑·터미널·격납고",
+   "fill": "80x60",
+   "side_px": 12,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 9
+}

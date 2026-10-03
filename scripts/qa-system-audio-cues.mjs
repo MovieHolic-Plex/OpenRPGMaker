@@ -85,7 +85,7 @@ try {
     enemy.stats = { ...enemy.stats, maxHp: 1, attack: 1, defense: 0, agility: 1 };
     troop.enemyIds = [enemy.id]; troop.members = [{ enemyId: enemy.id, x: 160, y: 100, hidden: false }]; troop.battleEventPages = [];
     project.system.battleFlow = "strict"; troop.battleFlow = "strict";
-    project.system.battleUiStyle = "vxace";
+    project.system.battleUiStyle = "retro2003";
     project.system.battleBgmResourceId = "qa_bgm";
     project.system.battleVictoryMeResourceId = "qa_bgm";
     const m2 = (family, cue, resourceId, volume, operation = "set") => ({ kind: "m2Command", commandId: family === "bgm" ? "m2-027-change-system-bgm" : "m2-028-change-system-se", fields: { cue, resourceId, volume, operation } });

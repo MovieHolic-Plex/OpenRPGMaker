@@ -26,10 +26,11 @@ import {
 } from "../shared/schemas";
 import { PROJECT_COVER_FILE } from "../local-store/schema";
 import { separateInlineMediaOnOpen, type ProjectSession, type SessionKey, type SessionRegistry } from "./sessions";
+import { backupDirectory, listLocalProjectBackups, recoveryProjectDirectory, restoreLocalProjectBackup } from "../local-store/recovery";
 
 const services = new WeakMap<SessionRegistry, Readonly<Record<string, Handler>>>();
 
-type Handler = (key: SessionKey, payload: unknown) => unknown;
+type Handler = (key: SessionKey, payload: unknown, context?: { readonly recoveryRoot: string }) => unknown;
 
 /** zod 검증을 두 전송로가 같은 방식으로 통과시키기 위해 내보낸다. */
 export function parseOrThrow<T>(schema: ZodType<T>, payload: unknown, channel: string): T {
@@ -214,6 +215,12 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     },
 
     [OPRN_CHANNELS.projectBackup]: (key) => store(key).backup(),
+    [OPRN_CHANNELS.projectListBackups]: (key) => listLocalProjectBackups(sessions.require(key).projectDir),
+    [OPRN_CHANNELS.projectRestoreBackup]: (key, payload, context) => {
+      const { backupId } = z.object({ backupId: z.string().min(1).max(160) }).parse(payload);
+      const source = sessions.require(key).projectDir;
+      return restoreLocalProjectBackup(backupDirectory(source, backupId), recoveryProjectDirectory(source, context?.recoveryRoot));
+    },
 
     // 시작 화면 카드 그림. 정본(project.sqlite)이 아니라 폴더 옆 캐시 파일이다 — 경로는 요청이 아니라 세션이 정한다.
     [OPRN_CHANNELS.projectSaveCover]: (key, payload) => {
@@ -347,14 +354,15 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     mediaChecks.set(session, checks + 1);
     await separateInlineMediaOnOpen(session.store);
   };
-  const handlers = Object.fromEntries(Object.entries(raw).map(([channel, handler]) => [channel, (key: SessionKey, payload: unknown) => {
+  const handlers = Object.fromEntries(Object.entries(raw).map(([channel, handler]) => [channel, (key: SessionKey, payload: unknown, context?: { readonly recoveryRoot: string }) => {
     const run = async () => {
       // Initial desktop open/status has no adopted folder yet.
       if (!sessions.get(key) && [OPRN_CHANNELS.projectOpen, OPRN_CHANNELS.projectStatus, OPRN_CHANNELS.projectProbe].some(candidate => candidate === channel)) return handler(key, payload);
       const member = sessions.member(key);
       if (!reads.has(channel) && member.role === 'viewer') throw new Error('읽기 전용 팀원은 저장할 수 없습니다');
       if (channel === OPRN_CHANNELS.assetsPruneUnused && sessions.require(key).team.list().length > 1) throw new Error('팀 작업 중에는 미사용 에셋 정리를 실행할 수 없습니다');
-      if ([OPRN_CHANNELS.assetsPruneUnused, OPRN_CHANNELS.projectSeparateMedia, OPRN_CHANNELS.projectBackup].some(candidate => candidate === channel)) requireOwner(key);
+      if ([OPRN_CHANNELS.assetsPruneUnused, OPRN_CHANNELS.projectSeparateMedia, OPRN_CHANNELS.projectBackup,
+        OPRN_CHANNELS.projectListBackups, OPRN_CHANNELS.projectRestoreBackup].some(candidate => candidate === channel)) requireOwner(key);
       if (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch) {
         // 다른 세션이 지금 쥐고 있는 임대가 있을 때만 문서를 열어 비교한다. 혼자 쓰는 흔한 경우에는
         // 역직렬화를 하지 않는다 — 실측(2026-09-26, 81MB 새 프로젝트) 전체 저장마다 저장 행 파싱+역직렬화 약 2s.
@@ -404,7 +412,7 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
         }).map(([resource, lease]) => ({ mapId: resource.replace(/^map:/, ''), name: `${lease.ownerLabel} 편집 중` }));
         if (conflicts.length) return { kind: 'conflict', conflicts };
       }
-      return handler(key, payload);
+      return handler(key, payload, context);
     };
     const result = tail.then(run);
     tail = result.catch(() => {});
@@ -436,6 +444,8 @@ export const STORE_CHANNELS = [
   OPRN_CHANNELS.projectDataVersion,
   OPRN_CHANNELS.projectSeparateMedia,
   OPRN_CHANNELS.projectBackup,
+  OPRN_CHANNELS.projectListBackups,
+  OPRN_CHANNELS.projectRestoreBackup,
   OPRN_CHANNELS.commitsRecord,
   OPRN_CHANNELS.commitsList,
   OPRN_CHANNELS.aiRecordActivity,

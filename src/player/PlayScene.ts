@@ -1,3 +1,5 @@
+import { syncTerrainVision } from "./terrainVision";
+import { syncTerrainWater } from "./terrainWater";
 import { prepareFieldAbility } from "@/player/fieldAbility";
 import { installPointerMove } from "@/player/playScenePointerMove";
 import { createDefeatRecovery } from "@/player/defeatRecovery";
@@ -83,6 +85,8 @@ import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransit
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
 import { syncMapBackgroundLayers, updateMapBackground } from "@/player/playSceneMapBackground";
+import { updateScreenDistortion } from "@/player/playSceneScreenDistortion";
+import { updateFieldStaging } from "@/player/playSceneFieldStaging";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
 import { installCloudShadowLayer, syncCloudShadowLayer, updateCloudShadows } from "@/player/playSceneCloudShadows";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
@@ -390,6 +394,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   update(_time: number, deltaMs: number): void {
     this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
+    syncTerrainWater(this, this.map);
+    syncTerrainVision(this, this.map, this.tileX, this.tileY, store.getCurrent().tilesets[this.map.tilesetId]);
     updateGameTime(this, deltaMs);
     tickNpcSchedules(this, isGameTimePausedForRuntime(this), deltaMs);
     updateWeather(this, deltaMs);
@@ -397,6 +403,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
+    updateScreenDistortion(this);
+    updateFieldStaging(this);
     const tileView = runtimeCameraTileView(this.cameras.main);
     syncRuntimeTileWindow(this, tileView);
     syncTileCulling(this, tileView, mapTileSize(this.map));

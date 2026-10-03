@@ -1,0 +1,607 @@
+{
+  "new:mix-bond": {
+    "file": "new-mix-bond.webp",
+    "sha256": "7f8574fc4904807d4d8d30da5c67b8eba7bb9b26bb024f7e1ee303af3117f8aa",
+    "sourceSha256": "cf1bdce960f4aaa79a42142ae8039951d8f4f16c026ae6e4ca5244ac9ebc95b4",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped sleeves/hair and clustered water. Two adults jointly help small creature over stream; suitable relationship and creature bonding example."
+  },
+  "new:mix-clue": {
+    "file": "new-mix-clue.webp",
+    "sha256": "cf1e87722d77906f9ff5d6222b48845d4aacab416fc7b1cb05d3992a61a912f3",
+    "sourceSha256": "3dca3d392bc3faab6863a197a9bd4a4ab8bfe77ba43c1dfc6acc2c47482a0c63",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Isometric block masonry and simplified people; creature tracks compared against book and door symbols. Combined investigation example."
+  },
+  "new:mix-journey": {
+    "file": "new-mix-journey.webp",
+    "sha256": "6bad6e467313c9b1e4f01b3c27cee952138842237ebf04eb084da8aecdcc0d0a",
+    "sourceSha256": "e3d3716e88691d8bc1050467611cc67f2562b5bd57e81f4ca052760f508bf856",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped faces and sail shadows, clustered golden sky. Group planning journey around table with companion creature."
+  },
+  "new:monster": {
+    "file": "new-monster.webp",
+    "sha256": "54239faa2e9781fe14eaadae885c65264cfc258aa9c2962d738dff50a9fc7f81",
+    "sourceSha256": "9f9a8b9752f7902e9fb352d1af691f1d272650ac2204f4e389449ff7cd84d59e",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped simplified explorer, pebble creature, moth and frilled lizard. Grass/rocks visibly clustered, friendly first encounter."
+  },
+  "new:monster-bond": {
+    "file": "new-monster-bond.webp",
+    "sha256": "44507d214dcd6d7c304d4aa72b7f911bf8a8d6988d97a041fbc6206c11a0bb6b",
+    "sourceSha256": "9bea15b38bbf93ddf392f9310e92fd0dca17d8e6dcda1e7e5292c5e0fdc66bb6",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped scarf and tunic folds, block campfire. Bandaging creature at camp clearly illustrates gaining trust."
+  },
+  "new:monster-finale": {
+    "file": "new-monster-finale.webp",
+    "sha256": "ccb68117d4c8f0b1bbea7b5a866ceb5776290306ddc43e0ddd061a6fd12b90e8",
+    "sourceSha256": "921ebfaa62b602a45acbdc2373184e661216357a296ac100401a8ae8ec0cf1df",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Block faces and tunics with warm discrete highlights. Companions returning to welcoming research camp. No species continuity claimed."
+  },
+  "new:monster-hatch": {
+    "file": "new-monster-hatch.webp",
+    "sha256": "de07eeb3f3fd41ca7459e29c31ba7d4be6cb6f82fb759403ffd9d6f6dca529d5",
+    "sourceSha256": "cdfb2ec01067cb49bc774f821b6f4c831fe54f7d61294b1174181e281b3f3719",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Blocky egg-shell zigzags and cloth ramps; hatching small blue creature central. Ruined greenhouse clearly different scene."
+  },
+  "new:monster-mystery": {
+    "file": "new-monster-mystery.webp",
+    "sha256": "8f829f25cd73de253081a292fb74100071523c011d2c64a954c5da05d129d94f",
+    "sourceSha256": "cfd1f489edea52fe5d01b9264cac726f44c5f3eb74e20db33e7e0d2e4325aed3",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Consistent blue stone clusters and stepped fossil silhouette. Explorer/companion facing fossil establishes species mystery."
+  },
+  "new:monster-research": {
+    "file": "new-monster-research.webp",
+    "sha256": "b97f53fcc621274d670dbbe195c27ad7c0b3b11fbd5fe5945058eebb92c3a682",
+    "sourceSha256": "a48659f1fb0780b48eafdbc830b656cac5e8de2b20db8b691f64a641fb48f4e1",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Replacement removes sidebar. Stair-step arm and flat coat shading; observing garden-shell turtles in wetland clearly reads ecology."
+  },
+  "new:monster-team": {
+    "file": "new-monster-team.webp",
+    "sha256": "1863e221cd198532d7ecd6d4f7cb87f1a173220a49f9b98c79b9f591d0ded480",
+    "sourceSha256": "a94a6b247e34533986425d75b919418b7b69b426352367d22afea81dfc3c3230",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped arena stone, feather silhouettes and clustered magic. Trainers guide opposing creatures; narrative combat illustration only."
+  },
+  "new:monster-travel": {
+    "file": "new-monster-travel.webp",
+    "sha256": "ed86fa5fb312efd1d961e082fbee7ba8b356385568bafcc8cb72049f85f8d359",
+    "sourceSha256": "64db75d57c155f7d99bb702cca3a70da0b4f2f1634049f96a18d9532928312f7",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped clothing and plank silhouettes, discrete tree canopy blocks. Traveler and companions crossing high rope bridge."
+  },
+  "new:monster-wild": {
+    "file": "new-monster-wild.webp",
+    "sha256": "9eb251ed82b648d0431c37a9efa072e2aba32cf89d8c0455072a6883f245d86a",
+    "sourceSha256": "8f2e0fe6424491aba092c6677b6e483dbb094af7266740e1d35e4e104b37f373",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Replacement removes forbidden text/UI. Coarse reed and clothing blocks; crystal fox discovery at sunset marsh."
+  },
+  "new:romance": {
+    "file": "new-romance.webp",
+    "sha256": "2ab3845377be4b6e0b7e5eed454116f7a9a051438fa56499b0ee7f0ebf4d78eb",
+    "sourceSha256": "6fd4850d01e4d7b425d71bab5823950a47605cb56fcab1c2f7e95d1bfe924f03",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped hair and sleeve clusters; flat face shading. Shy exchange at tram platform is readable and distinct."
+  },
+  "new:romance-campus": {
+    "file": "new-romance-campus.webp",
+    "sha256": "f15a56fd6b290bb39372491f583d1ef473f0dff59269ffe5e0f2be1f32915774",
+    "sourceSha256": "318fcdb317eb010c79cca9b8c232545bc730dc657c4b1fe35a35dd4804e724e0",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Angular coat shadows and block blossoms. Adult campus reunion and loose pages readable; bright courtyard differs from platform."
+  },
+  "new:romance-conflict": {
+    "file": "new-romance-conflict.webp",
+    "sha256": "86695647e829cef51d7f6d9969dca18eb1c02d92534ed5db9d781fd588183f68",
+    "sourceSha256": "088535233ba4528c6a38ccbedce6014953c9dfa357fc996be359a98c519ec5f4",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Pixel hair/ribbon silhouettes and discrete wet-platform reflections. Letter across departure gap supports emotional conflict."
+  },
+  "new:romance-dialogue": {
+    "file": "new-romance-dialogue.webp",
+    "sha256": "ff1462fdd984ef42b25245d3e133833c138ec62fa404aae1f8bb9665a6b5711f",
+    "sourceSha256": "a00fcbd20195202cf1bb8f473d43ddf1f500dd3a7e7c10f6aa043e1670382550",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Large stepped face and hair shapes, clustered nighttime city. Letter and two seated adults clearly convey conversation."
+  },
+  "new:romance-finale": {
+    "file": "new-romance-finale.webp",
+    "sha256": "e464060bd3bd828f9ac1fd58a10976b7af99c82b6bab7f84db9b01ff831b3425",
+    "sourceSha256": "a12ce3b7dd7d27b536a91eba89e0d926e41487540f7af2fcfa92442ffd8be62c",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Chunky cloak/dress shadows and clustered orange water lights. Couple holding hands at festival creates warm closing image."
+  },
+  "new:romance-memory": {
+    "file": "new-romance-memory.webp",
+    "sha256": "928a5a51dca211aab41e40ce78d10702aa705554295d9e9c24f03ff370d62b57",
+    "sourceSha256": "8918cc5db83ef19c885d681fbb6c508b20026c7fc9c48b0930625320b350ddb6",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped sleeve contours, block window light, chest and shared photograph. Interior memory discovery distinct from dialogue."
+  },
+  "new:romance-palace": {
+    "file": "new-romance-palace.webp",
+    "sha256": "22d683e05e6e8207b695e3de1539b10c97e220f81a5393a5cbd130104123a091",
+    "sourceSha256": "0525aba520ec7345a00c2067b98a361bdc42f2e4fd26ad5c475ba77ab2ac129c",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Stepped gown silhouette and discrete gold/indigo ramps. Ballroom dance with masks, distinct monumental stained-glass composition."
+  },
+  "new:romance-town": {
+    "file": "new-romance-town.webp",
+    "sha256": "1b3407cc0df6db248550cc67d820adcd9b496320be0e38e9c096295d86cd10b6",
+    "sourceSha256": "a8c93992f75de122f7233ef395fe9df13206cc738fb1bdedcf14353b94ea0003",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true,
+      "no_overlay": true
+    },
+    "notes": "Square hair/coat clusters and stepped umbrella handles. Rainy bookshop interaction, no UI overlay."
+  },
+  "old:adventure": {
+    "file": "old-adventure.webp",
+    "sha256": "7979e88a03fa7b4a253ca12a7cf6740d4a883527698643dde7d95423352d806a",
+    "sourceSha256": "8df83ced70723c4ce71c1b36fe03bfc349a3ac8507e57ee606d4faeb177989f5",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Dynamic low-angle skyship deck with immense diagonal orange sail. Block cloud/cloth shadows and stepped rigging remain pixel-built; bright airborne action clearly separates mood."
+  },
+  "old:adventure-courier": {
+    "file": "old-adventure-courier.webp",
+    "sha256": "997b66f29ad6e6a398dbadc2e838220d0cf6142b34f2f443e29d75a375d1903b",
+    "sourceSha256": "dbbefcdde73b8ab4f3fa9f4e12ba410bfc9d63642d79bc2d8c2c24430639c69c",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Courier leaps between caravan roofs; red scarf, green jacket, satchel and envelope visible. Stepped scarf/canvas/landscape bands, diagonal action distinct from ship scene."
+  },
+  "old:adventure-courier-challenge": {
+    "file": "old-adventure-courier-challenge.webp",
+    "sha256": "dd2ba4dde077b6d71b9a4f74156648be5c8a84f83eaf63e98812ff9fca67c79a",
+    "sourceSha256": "35f7a8c7df2b2cd3461b5ed7eb9247d87d31a17e417bbb45c9c0c8678b9b001e",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Courier and crew secure torn sail in storm. Mailbag and scarf remain, blocky storm clouds/lightning and stepped cloth edges; strong diagonal action rather than prop swap."
+  },
+  "old:adventure-courier-dialogue": {
+    "file": "old-adventure-courier-dialogue.webp",
+    "sha256": "addb2b06e77a86e1d55bb9208936d1e51b142e6fb3fd336dde892c90d3b3296b",
+    "sourceSha256": "88f247eb940b60bf6aac56246424feff1a618fc2c578afc13ec6de5dbe386e7f",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Courier presents sealed letter to captain at airship helm. Green jacket/red scarf/tan satchel retained. Stepped cloth and pixel cloud clusters, medium relational two-shot differs from caravan leap."
+  },
+  "old:adventure-courier-investigate": {
+    "file": "old-adventure-courier-investigate.webp",
+    "sha256": "b7106cde21b5905108bde8c81acac526ba95e716618070ef010cc4dcef1e27c4",
+    "sourceSha256": "a56bb5bc2dfff117ee61ae18bdcee12a666e9ef8a9c830d1199661188ba399dc",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Courier compares letter emblem to wrecked airship in canyon. Dramatic downward view, readable role equipment; discrete cliff/hull shadow clusters and stepped outlines."
+  },
+  "old:adventure-novice": {
+    "file": "old-adventure-novice.webp",
+    "sha256": "cea0d398ba8ccc05fb21c3a58af51df9bc6de24907ed1ce5f4ccc46145aba53b",
+    "sourceSha256": "63ff523058984b32a18e4584348ba10ea739790cf3706dce20fe8f0730033283",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Novice boards skyship on diagonal rope ramp, veteran reaches down; blue cloak/shield/map remain. Pixel-cluster rope, cloth shadows and hull, low-angle framing distinct from courier caravan and returner train."
+  },
+  "old:adventure-novice-challenge": {
+    "file": "old-adventure-novice-challenge.webp",
+    "sha256": "794eac6c84a91d094ea4d4ec59b17b7e2b7cbf95f11c818d25ddde0a7e0213c3",
+    "sourceSha256": "0bc2eba72f9ef0509b707cc3368cb849e16e5296defd933252304dc673de1232",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Novice raises round shield against giant guardian while companions assist. Blue cloak/blond identity retained, visible square stone/shadow clusters and stepped silhouette; extreme low angle and giant scale."
+  },
+  "old:adventure-novice-dialogue": {
+    "file": "old-adventure-novice-dialogue.webp",
+    "sha256": "8ffbbf6d0bfd853f51b8be0b39fae2e7d4b756bba5d4edb50d48fd8ed2a76a8a",
+    "sourceSha256": "828a294883f593a693c623c06fb1310ea065c0795cb02089d752cef003c9496c",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Blue-cloaked novice with shield/map plans route with crew around glowing engine-room table. Pixel metal highlights, cloth ramps and stepped machinery; intimate interior contrasts boarding ramp."
+  },
+  "old:adventure-novice-investigate": {
+    "file": "old-adventure-novice-investigate.webp",
+    "sha256": "5e58c90b80a4973d5d5c4c8f81b1c95fc904975ab394f7bc784f18709f017788",
+    "sourceSha256": "39b12da75f082df93ad49f56bcc7ceed6fd1e834691b2fc3251cfdcf2be9277f",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Novice studies map on giant mossy colossus above mountains. Shield placed alongside, identity retained. Strong stone/moss clusters and stepped cloud depth; overhead monumental framing."
+  },
+  "old:adventure-returner": {
+    "file": "old-adventure-returner.webp",
+    "sha256": "2d231b0d9a75d6854762c20fbe7f093b3f05e97e5829eb67c1d6fae7dbfb0bd6",
+    "sourceSha256": "204053d75afab61c5ab736c23e6a2f35eb998921814bf767a335765d3d05e526",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Dynamic railway platform reunion. Returning friend retains teal coat, cream scarf, backpack and brass keepsake. Strong stepped scarf silhouette, block snow/clouds and train planes, new vanishing-point composition."
+  },
+  "old:adventure-returner-challenge": {
+    "file": "old-adventure-returner-challenge.webp",
+    "sha256": "16856061bd9775c077a376bfa5bbdb1adb206351c9cc3c1a9ada7aa939c85645",
+    "sourceSha256": "f7f67cd25eb49ff168d464b8c9f0c3a8890cb1dc52e23d6480a4b52dd7f39c24",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Returner and friend sprint beside train on collapsing viaduct. Backpack/keepsake and cream scarf visible, stepped running silhouettes/stone blocks, new wide canyon action."
+  },
+  "old:adventure-returner-dialogue": {
+    "file": "old-adventure-returner-dialogue.webp",
+    "sha256": "86205d05651df841af878e92aef9e029248d022e9fa8e38bceb1647f29bedc81",
+    "sourceSha256": "56ae9014736503709c353a55131274c5366643197ba14b08b23d10c4dd2267bb",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Returner and companion compare keepsake/map on train roof. Teal coat/cream scarf retained, square cloth shadow bands and clustered snow/clouds, close two-shot distinct from platform."
+  },
+  "old:adventure-returner-investigate": {
+    "file": "old-adventure-returner-investigate.webp",
+    "sha256": "20818c569703170981294588d0ed7829b622e8f16f656fefc278487ad35131a0",
+    "sourceSha256": "19b76b7295259d000d732707f0d49b5640121e342eb0d19ca554a048748e2763",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Returner operates railway lock with keepsake while companion holds lantern. Low side view into vast blue cavern; stepped rock/coat contours and discrete light ramps."
+  },
+  "old:mystery": {
+    "file": "old-mystery.webp",
+    "sha256": "039e0a9d3e907c578a614ff877f3e24ea6c79252b5af32b03ce2d7a068c2a547",
+    "sourceSha256": "953996f6b49bdca64f8b33e727fab2f758bbdd06d7bd9ad296ab614990a2ca07",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Tidal cathedral with vast circular mechanism and reflected arches. Strong indigo/cyan mood, tiny exploring silhouette, clustered water and stone planes; composition completely distinct from bakery and ship."
+  },
+  "old:mystery-courier": {
+    "file": "old-mystery-courier.webp",
+    "sha256": "9518419b2031c7084122501d22a7438281bd3631d9de1c7a684d10ba6cdd886a",
+    "sourceSha256": "d6ecd8c80bfff135519399b9e254d7c9d40d705c3b158898c58461005dfc5c7b",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Courier beneath clocktower with matching sealed letter and mailbox. Stepped architecture and pixel rain; letter role distinct, low angle urban setting contrasts cathedral."
+  },
+  "old:mystery-courier-challenge": {
+    "file": "old-mystery-courier-challenge.webp",
+    "sha256": "8e5407daab2f61d329bcbd4fcd03708484683af319561428234744179a9f63d8",
+    "sourceSha256": "5fc4b6b00433aadef3b8442ac939e3058b597c519e78c56928710fe15f606c7c",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Courier protects mail while escaping clockwork raven across turning gears. Red scarf and satchel retained; clustered mechanical detail and stepped diagonal silhouettes. Energetic wide composition."
+  },
+  "old:mystery-courier-dialogue": {
+    "file": "old-mystery-courier-dialogue.webp",
+    "sha256": "84c033a349e8afad0ac224799dd2e9d572efbb34fe72225fff389bf5b21a41ce",
+    "sourceSha256": "ce5b8e741b0ee3a88462e982865be41e0eb06c92ecf80414e5571fe06bf02d6d",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Masked archivist receives sealed letter in library lift. Courier scarf/green coat/satchel preserved; broad stepped hair and facial silhouettes, pixel lattice. Close two-shot replaces clocktower exterior."
+  },
+  "old:mystery-courier-investigate": {
+    "file": "old-mystery-courier-investigate.webp",
+    "sha256": "7bd9cad157bd3c18f9f504db9545234e11b6e9a699564ddd153aff39680523a0",
+    "sourceSha256": "4f481c97fda660934e9ad56382eabff11f9c4e7df86e2811a4e2f394ecdc075f",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Overhead circular astronomy puzzle with letter seal, courier hands and mailbag. Discrete stone/gold ramps and stair-step circular geometry; radically different overhead framing."
+  },
+  "old:mystery-novice": {
+    "file": "old-mystery-novice.webp",
+    "sha256": "115be52694bbc3e80038c537f722aa520b86f69e5f7b258e3dc4db3410b51a5d",
+    "sourceSha256": "4124ac68432e34cb2b8f7399c414fa05d296af1924af23b69e46d76336237e3d",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Blue-cloaked blond novice with shield/map descends mushroom archive. Chunked cape shadows and stepped luminous mushroom forms; strong vertical architectural composition."
+  },
+  "old:mystery-novice-dialogue": {
+    "file": "old-mystery-novice-dialogue.webp",
+    "sha256": "2a67605e472ab0f2da327d9abc46eb696a3816d1d3cbde68158b0d9e882b0734",
+    "sourceSha256": "4fc31b35dac3753adeead4bbe8f016283e5cfcf555327131ae9bb7dbd0994dc5",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Novice talks to spirit librarian across star desk. Blue cloak/shield/map retained; stepped book architecture and pixel spirit glow. Close relational scene differs from stair descent."
+  },
+  "old:mystery-novice-investigate": {
+    "file": "old-mystery-novice-investigate.webp",
+    "sha256": "d47733a1a69ce1ecadb4b55dcd585ee82d0a6b1ba423b2086a24faf162b78008",
+    "sourceSha256": "b103b11b26c7efdc535359d0095b4a88dbc3b97575d7407100a919902360a361",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Novice traces cipher in flooded gallery using map. Strong block reflections, stepped rune geometry and shield rim, wide architectural side view with deep stair axis."
+  },
+  "old:mystery-returner": {
+    "file": "old-mystery-returner.webp",
+    "sha256": "0b231509965ab0b3c82b6b62c40f8270100cbed12d937a64068f2b9551c697dd",
+    "sourceSha256": "bfff528027ca0d419805383c3fe3acc46bd6a25e76f9f14ab13972737e453828",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Returner with keepsake in abandoned observatory. Discrete coat/scarf shadows and stepped telescope/stone forms visible; indoor star ceiling contrasts clocktower street."
+  },
+  "old:mystery-returner-challenge": {
+    "file": "old-mystery-returner-challenge.webp",
+    "sha256": "fcf4d58535c12280ba87c55b104fe7c8fce24ba4782ef631ac2bcb890d18e859",
+    "sourceSha256": "0ba70622cc9d9f5822f41f8f1b43ca2e585a24a02b75b24ca5286a59fdf7fb8a",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Returner and companion brace immense door against spectral wind; cream scarf/teal/backpack/keepsake remain. Stepped cyan ward and clustered debris shadows, dramatic tilted doorway shot."
+  },
+  "old:mystery-returner-dialogue": {
+    "file": "old-mystery-returner-dialogue.webp",
+    "sha256": "7ac4eb44fee86b5ab2038d98598e8e5739a3915e1c67af8cca0cbbf32b984cc3",
+    "sourceSha256": "7fcc03f6ccbe0a597538cebbbb3e29c72b6fed4c2966f772137a68fb5ecc50a0",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "Returning friend communicates through stained glass while showing keepsake. Teal/cream/backpack retained. Pixel glass/flower highlights and stepped contours; conservatory framing distinctly new."
+  },
+  "old:mystery-returner-investigate": {
+    "file": "old-mystery-returner-investigate.webp",
+    "sha256": "a99d5121ba999755300620e113b77d1fb0a015cc68283c5c5440bb47fcd03cfa",
+    "sourceSha256": "71290942e84f5373a21b055090c226f3036f14deb625412a04bd1d4cf25698f6",
+    "checks": {
+      "pixel_geometry": true,
+      "discrete_shading": true,
+      "pixel_density": true,
+      "choice_semantics": true,
+      "distinct_composition": true
+    },
+    "notes": "High-angle observatory floor hatch with keepsake lock. Teal identity retained; pixel tile reflections and discrete star bands. Circular overhead architecture differs from observatory entrance and dialogue."
+  }
+}

@@ -1,0 +1,52 @@
+// E: 꽃받침형 흰 도자기 받침과 붉은·흰 포획 구슬 — 윗판 윗면 4행(y=13~16).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat Q white 0
+@mat S white 1
+@mat T white 2
+@mat U white 3
+@mat V white 4
+@mat W white 5
+@mat a red 1
+@mat b red 2
+@mat c red 3
+@mat d red 4
+@mat e red 5
+@mat f red 6
+@mat k iron 2
+@mat l iron 3
+@mat m iron 5
+@mblock 0 0
+......bccc......
+....bdeedcba....
+...bdfeddccba...
+..bdeffddcccba..
+..bdeeddccccba..
+..bddddccccbba..
+..klcccmmccblk..
+..klllkWWklllk..
+..SWVWkVmWVTS..
+...SWVVVVUTS...
+....SVVUUTS.....
+....TSTTSSST....
+..TVVSSSSSVUTS..
+.TVWWVVVVVVVUTS.
+.VWVWWWVVVVUUTS.
+SVWWWVVVVVVUUTTQ
+SVWVVVVVVUUUTTSQ
+.SVUUUUUUTTTTSQ.
+..STTUUUTTTTSQ..
+...SVVVUUTTSQ...
+....SWVUUTSQ....
+....SWVUTTSQ....
+.....WVUTSQ.....
+.....WVUTSQ.....
+.....WVUTSQ.....
+.....WVUTSQ.....
+....SWVUUTSQ....
+...SVWVUUTTSQ...
+..SVWWVVUUTTSQ..
+.SVWWVVVUUUTTSQ.
+.SVVVUUUUUTTTSQ.
+..STTTSSSSSSQQ..

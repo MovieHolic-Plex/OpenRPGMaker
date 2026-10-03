@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cobweb/h199-B.pxg",
+ "id": "cobweb",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "그물 기준의 바랜 흰색 1px 실과 성긴 부채꼴 연결, 작은 갈색 거미로 방의 따뜻한 결에 맞춤; 꼭대기 윗면 0행(y=해당없음, 지시서상 평평한 벽면 걸이).",
+ "ok": true
+}

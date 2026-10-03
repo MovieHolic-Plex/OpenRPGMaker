@@ -24,9 +24,19 @@ async function loadImage(url: string): Promise<HTMLImageElement> {
 const pending = new Map<string, Promise<Blob | undefined>>();
 const rasterLanes: Promise<unknown>[] = [Promise.resolve(), Promise.resolve(), Promise.resolve()];
 let nextLane = 0;
+/**
+ * 그림 굽기는 한가할 때 시작한다. 960px 맵 렌더·toBlob 이 체크포인트 적용 직후에 몰리면 그 사이 조수창·캔버스가
+ * 멈춰 보였다(2026-10-03 조사). 그림은 기록이라 1.5초 늦어도 된다 — 모자라면 timeout 이 시작을 보장한다.
+ */
+function whenIdle(): Promise<void> {
+  return new Promise(resolve => {
+    if (typeof requestIdleCallback === "function") requestIdleCallback(() => resolve(), { timeout: 1500 });
+    else setTimeout(resolve, 0);
+  });
+}
 function rasterQueued(visual: ActivityVisual): Promise<Blob | undefined> {
   const lane = nextLane++ % rasterLanes.length;
-  const job = rasterLanes[lane]!.then(() => raster(visual));
+  const job = rasterLanes[lane]!.then(whenIdle).then(() => raster(visual));
   rasterLanes[lane] = job.catch(() => undefined);
   return job;
 }
@@ -59,7 +69,7 @@ async function raster(visual: ActivityVisual): Promise<Blob | undefined> {
     canvas = document.createElement("canvas"); canvas.width = Math.ceil(frame.width * scale); canvas.height = Math.ceil(frame.height * scale);
     const ctx = canvas.getContext("2d"); if (!ctx) return undefined;
     ctx.imageSmoothingEnabled = false;
-    if (visual.hue) ctx.filter = `hue-rotate(${visual.hue}deg)`;
+    // 몬스터 색조(graphicHue)는 전투가 읽지 않으므로(2026-10-02) 원래 색으로 그린다.
     ctx.drawImage(image, frame.x, frame.y, frame.width, frame.height, 0, 0, canvas.width, canvas.height);
     // Standard asset chroma key; preserve all other authored colors.
     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);

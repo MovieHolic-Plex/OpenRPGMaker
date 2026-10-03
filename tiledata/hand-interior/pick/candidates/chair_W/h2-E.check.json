@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_W/h2-E.pxg",
+ "id": "chair W",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.132
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "v5 L자 유지, 등받이 윗마감 둥글게·가로살 두 줄, 좌판 윗면 밝은 두 줄, 다리 분리",
+ "ok": true
+}

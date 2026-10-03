@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "scope": { "genre": "romance", "activity": "talk", "progression": "single", "scope": "scene" },
+  "requirements": ["one_map", "authored_names", "two_choices", "distinct_reactions", "remembered_revisit", "no_repeat_gain", "cancel_recovery", "both_endings"],
+  "note": "실제 인물·장소·선택은 확정 인터뷰에서 가져온다. 이 파일은 이야기 예제가 아니다."
+}

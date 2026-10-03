@@ -1,0 +1,39 @@
+// B 같은 방 화풍: 배수창살처럼 어두운 윤곽의 낮은 쇠판 + 구멍에서 솟은 가는 쇠가시 다섯 개(뒷줄 셋·앞줄 둘 엇갈림), 가시는 왼쪽 밝고 오른쪽 어둡게
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 3
+@mblock 0 0
+................
+................
+................
+....i...i...i...
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+@tblock 0 0
+................
+................
+................
+....6...6...6...
+.11151115111511.
+.14454445444541.
+.14353335333531.
+.14353335333531.
+.14300330033001.
+.14333633363321.
+.14333533353321.
+.14333533353321.
+.14333003300321.
+.14333333333321.
+.12222222222221.
+.11111111111111.

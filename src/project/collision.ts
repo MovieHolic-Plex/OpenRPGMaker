@@ -38,6 +38,7 @@ export function tileAt(map: GameMap, x: number, y: number): {
 }
 
 const BLOCKED: PassFlag = { up: false, down: false, left: false, right: false };
+const OPEN_WATER: PassFlag = { up: true, down: true, left: true, right: true };
 
 /**
  * 칸의 통행(MZ 규칙). tiles 는 1층부터 위로. 맨 위부터 내려가며 빈칸과 ★ 를 건너뛰고,
@@ -80,6 +81,14 @@ export function passabilityOf(tileset: TilesetDef, l1: number, l2: number, l3: n
 
 // 칸 i 의 네 층 값을 직접 읽는다. 옛 스택 top 이 있으면 1·3층을 대신한다(tileAt 의 lower/upper 와 같다).
 function cellPassOrNull(tileset: TilesetDef, map: GameMap, i: number): PassFlag | null {
+  const depth = map.terrainDesign?.waterDepth?.[i] ?? 0;
+  if (depth > 0 && map.relief?.ramps?.[i] !== 9) {
+    if (depth > 1) return BLOCKED;
+    // Shallows replace the water floor's X; objects/upper layers still decide normally.
+    return decidingPass(tileset, map.upperOverlayTiles?.[i] ?? -1)
+      ?? decidingPass(tileset, map.upperTiles[i] ?? -1)
+      ?? decidingPass(tileset, map.lowerOverlayTiles?.[i] ?? -1) ?? OPEN_WATER;
+  }
   return passabilityOrNull(
     tileset,
     topTileInStack(map, "lower", i) ?? map.lowerTiles[i] ?? -1,

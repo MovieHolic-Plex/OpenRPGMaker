@@ -1,0 +1,50 @@
+// D 재작업2: 뚜껑을 위로 키움(분홍 윗면 5행·아치·앞 뚜껑면 2행) 몸통은 낮춤, 장식 유지
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat a red 1
+@mat b red 2
+@mat c red 3
+@mat d red 4
+@mat e red 5
+@mat k gold 1
+@mat l gold 3
+@mat m gold 4
+@mat n gold 5
+@mat q blue 4
+@mat r blue 5
+@mat s blue 2
+@mblock 0 0
+................................
+................................
+................................
+.......oooooooooooooooooo.......
+....onnnnnnnnnnnnnnnnnnnnnno....
+...oeeeekmleeeeeeeeeekmledddo...
+..oeeeeekmleeeeeeeeeekmleddddo..
+..oeeeeekmleeeerqeeeekmleddddo..
+..oeeeeekmleeeeqseeeekmleddddo..
+..oeeeeekmleeeeeeeeeekmleddddo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..ommmmmmmmmmmmmmmmmmmmmmmmmmo..
+..ollllllllllllllllllllllllllo..
+..odcccckmlccnmmmmlcckmlcccbbo..
+..odcccckmlccmmmmmlcckmlcccbbo..
+..odcccckmlccmrrqmlcckmlcccbbo..
+..odcccckmlccmqqsmlcckmlcccbbo..
+..odcccckmlccmmmmmlcckmlcccbbo..
+..odcccckmlccmmkkmlcckmlcccbbo..
+..odcccckmlccmmkkmlcckmlcccbbo..
+..odcccckmlccmmmmllcckmlcccbbo..
+..odcccckmlccllllllcckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..ocbbbbkmlbbbbbbbbbbkmlbbbaao..
+..ocbbbbkmlbbbbbbbbbbkmlbbbaao..
+..ocbbbbkmlbbbbbbbbbbkmlbbbaao..
+..ocbbbbkmlbbbbbbbbbbkmlbbbaao..
+..oaaaaakkkaaaaaaaaaaaakkkaaao..
+..oooooooooooooooooooooooooooo..

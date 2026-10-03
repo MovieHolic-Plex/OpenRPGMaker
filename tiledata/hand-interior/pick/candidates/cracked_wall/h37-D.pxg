@@ -1,0 +1,58 @@
+// D 장식: 금 간 돌벽 — 균열 오른쪽 가장자리를 금빛 광맥이 비추고 불티가 튄다
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mat g gold 3
+@mblock 0 0
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+@tblock 0 0 stone only=s
+4444444004444444
+3332333400332333
+3332334003332333
+3332334033332333
+3332340033332333
+2222220222222222
+4444440044444444
+3433334003333343
+3433333403333343
+3433333400333343
+2222222220222222
+4444444400444444
+3334333403333343
+3334334003333343
+3334334003333343
+1111111001111111
+@mblock 0 0
+................
+.........g......
+.........g......
+........g.......
+........g.......
+................
+........g.......
+.........g......
+.........g......
+..........g.....
+................
+..........g.....
+..........g.....
+.........g......
+.........g......
+................
+@px 0 0 _ 1 0 _ 0 1 _ 15 0 _ 0 15 _

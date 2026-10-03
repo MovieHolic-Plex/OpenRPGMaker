@@ -12,6 +12,7 @@ import journey_world_v9 as J
 import make_map_v4 as M4
 
 W, H = J.W, J.H
+V_SEA = 0
 
 # 이름, 막(0~4 = 1~5막), 역할, 한 줄 서사
 PLACES = [
@@ -89,7 +90,7 @@ ROLE_COLOR = {'시작': '#ffffff', '거점': '#9ec9ff', '관문': '#ff5d5d', '�
 
 
 def fp(w, name):
-    if name == '천공섬':
+    if name == J.SKY_SITE[0]:
         return sorted(w.sky)
     return J.footprint(w.ic, name)
 
@@ -221,7 +222,7 @@ def main_line_legs(w):
     legs = []
     for (a, _), (b, _) in zip(MAIN_LINE, MAIN_LINE[1:]):
         stage = LEG_STAGE.get((a, b), max(PLACE[a][1], PLACE[b][1]))
-        emb = set(fp(w, '내해 항구')) if a == '내해 항구' else None
+        emb = set(fp(w, J.HARBOUR_SITE)) if a == J.HARBOUR_SITE else None
         p = multimodal_path(w, a, b, stage, embark_cells=emb)
         legs.append(dict(a=a, b=b, stage=stage, path=p))
     return legs
@@ -351,7 +352,7 @@ def walk_components(w):
                 comp[nm] = int(lab[y, x])
                 break
     # 천공섬은 걸을 수 있는 땅이 아님
-    comp['천공섬'] = None
+    comp[J.SKY_SITE[0]] = None
     return comp
 
 
@@ -375,6 +376,8 @@ def means_edges(w):
 
 def barrier_numbers(w):
     """장벽 두께를 숫자로. 설계서가 말한 「좁은 목·단일 통로」를 지도 칸으로 잰다."""
+    if J.LAYOUT is not None or getattr(w, 'generated', False):
+        return barrier_numbers_general(w)
     M = w.M
     out = {}
     # ① 산벽: 서쪽(걸어서 닿는 땅)과 동쪽(통행증 뒤에 닿는 땅) 사이를 막는 칸 수를 행마다 잰다(관문 행 제외).
@@ -462,6 +465,98 @@ def barrier_numbers(w):
                         dmin = d; near = (x, y)
     out['sky_gap'] = int(dmin) - 1
     out['sky_near'] = near
+    return out
+
+
+def barrier_numbers_general(w):
+    """생성 지형용 — 손 대륙의 고정 창(x 30~56·y 11~35, 동대륙 x>=58)을 쓰지 않고 막별 도달 영역에서 BFS 로 잰다."""
+    import scipy.ndimage as ndi
+    M = w.M
+    out = {}
+    gx, gy, gw, gh = w.ic[J.GATE_SITE]
+    r0, r1 = w.reach[0], w.reach[1]
+    east = r1 & ~r0 & (M.G >= 10)
+    halo = np.zeros((H, W), bool)
+    halo[max(gy - 1, 0):gy + gh + 1, max(gx - 1, 0):gx + gw + 1] = True
+    # ① 산벽: 걸어서 닿는 땅에서 관문 둘레를 빼고 막힌 땅 칸만 지나 관문 너머 땅까지 가는 최단 칸 수
+    passable = (M.G >= 10) & ~r0 & ~east & ~halo
+    dist = np.full((H, W), -1, int)
+    q = deque()
+    for y, x in zip(*np.nonzero(r0 & (M.G >= 10))):
+        for a, b in J.neighbors4(x, y):
+            if passable[b, a] and dist[b, a] < 0:
+                dist[b, a] = 1
+                q.append((a, b))
+    best = None
+    while q:
+        x, y = q.popleft()
+        if any(east[b, a] for a, b in J.neighbors4(x, y)):
+            best = dist[y, x] if best is None else min(best, dist[y, x])
+            continue
+        for a, b in J.neighbors4(x, y):
+            if passable[b, a] and dist[b, a] < 0:
+                dist[b, a] = dist[y, x] + 1
+                q.append((a, b))
+    contact = int(sum(1 for y, x in zip(*np.nonzero(passable)) if any(r0[b, a] for a, b in J.neighbors4(x, y))))
+    out['mount_wall_rows'] = contact
+    out['mount_wall_min_thickness'] = int(best) if best is not None else 99
+    out['mount_wall_min_row'] = None
+    out['gate_width'] = gw
+    # ② 바다: 관문까지 닿는 땅과 배로만 닿는 땅 사이 최단 바다 칸 수
+    land_a = r1 & ~w.sea
+    land_b = w.reach[2] & ~r1 & ~w.sea
+    lab, _n = ndi.label(M.G != V_SEA)               # 시작 대륙 안의 주머니 땅(걸어서 못 가는 곶)은 배 장벽이 아니다 — 다른 땅 덩이만 잰다
+    sx, sy = J.START
+    if lab[sy, sx]:
+        land_b &= lab != lab[sy, sx]
+    dist = np.full((H, W), -1, int)
+    q = deque()
+    for y, x in zip(*np.nonzero(w.sea)):
+        if any(land_a[b, a] for a, b in J.neighbors4(x, y)):
+            dist[y, x] = 1
+            q.append((x, y))
+    best = None
+    bx = by = None
+    while q:
+        x, y = q.popleft()
+        if any(land_b[b, a] for a, b in J.neighbors4(x, y)):
+            best, bx, by = dist[y, x], x, y
+            break
+        for a, b in J.neighbors4(x, y):
+            if w.sea[b, a] and dist[b, a] < 0:
+                dist[b, a] = dist[y, x] + 1
+                q.append((a, b))
+    out['sea_gap'] = int(best) if best else None
+    out['sea_gap_at'] = (int(bx), int(by)) if best else None
+    # ③ 사구 바다: R2 땅에서 사구를 건너 사막선 입구 장소까지
+    dune = w.dune
+    r2 = w.reach[2]
+    dd = np.full((H, W), -1, int)
+    q = deque()
+    for y, x in zip(*np.nonzero(dune)):
+        if any(r2[b, a] and not dune[b, a] for a, b in J.neighbors4(x, y)):
+            dd[y, x] = 1
+            q.append((x, y))
+    cells = {nm: set(fp(w, nm)) for nm in SKIFF_ENTRY}
+    found = {}
+    while q:
+        x, y = q.popleft()
+        for a, b in J.neighbors4(x, y):
+            for nm, cs in cells.items():
+                if (a, b) in cs:
+                    found.setdefault(nm, int(dd[y, x]))
+            if dune[b, a] and dd[b, a] < 0:
+                dd[b, a] = dd[y, x] + 1
+                q.append((a, b))
+    out['dune_depth_to'] = found
+    out['dune_cells'] = int(dune.sum())
+    # ④ 하늘
+    landm = M.G >= 10
+    d = ndi.distance_transform_cdt(~landm, metric='taxicab')
+    sky = list(w.sky)
+    k = min(sky, key=lambda c: d[c[1], c[0]]) if sky else None
+    out['sky_gap'] = int(d[k[1], k[0]]) - 1 if k else 0
+    out['sky_near'] = None
     return out
 
 

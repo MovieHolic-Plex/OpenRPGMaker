@@ -1,10 +1,12 @@
 import { createAnimationPlaybackState, renderAnimationCellCommands, renderAnimationPatternStripPanel, renderAnimationStagePanel, type AnimationPlaybackState } from "@/editor/panels/databaseAnimationPreview";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
-import { emptyToUndefined, field, numberField, selectLiteral } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, field, numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
+import { BLEND_MODE_LABELS, BLEND_MODE_NAMES, normalizeBlendMode } from "@/project/blendMode";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
+import { cellTransformFields } from "@/project/databaseAnimationRecordModel";
 import type {
   BattleAnimationCell,
   BattleAnimationFrame,
@@ -86,7 +88,7 @@ export function renderBattleAnimationRecordForm(
 
   form.classList.add("animation-detail-form", "db-battle-studio-surface");
   form.append(
-    battleStudioHeading("animations", animation.name, "전투 장면 위에서 효과를 확인하고 프레임과 타이밍을 조정합니다."),
+    battleStudioHeading("animations", animation.name, "옛 셀 애니메이션입니다. 도트 측면 전투는 스킬에 도트 연출이 있으면 이 애니메이션을 쓰지 않습니다 — 연출 없는 스킬의 대체용과 몬스터 대치 전투에서만 보입니다."),
     animationEditor(context)
   );
 
@@ -161,6 +163,13 @@ function animationFlagsPanel(animation: BattleAnimationRecord, sheet: BattleAnim
       updateDatabaseRecord("battleAnimations", animation.id, { position })
     ),
     field("대형", large),
+    selectField(
+      "겹치기",
+      "db-field-animation-blend",
+      animation.blendMode ?? "normal",
+      BLEND_MODE_NAMES.map((id) => ({ id, name: BLEND_MODE_LABELS[id] })),
+      (value) => updateDatabaseRecord("battleAnimations", animation.id, { blendMode: normalizeBlendMode(value) })
+    ),
     sheetFields(animation, sheet)
   );
   return panel;
@@ -269,7 +278,7 @@ function frameListPanel(context: AnimationEditorContext): HTMLElement {
 function cellTablePanel(context: AnimationEditorContext): HTMLElement {
   const panel = panelWrap("선택 프레임 셀", "db-animation-cell-table");
   const cells = context.selectedFrame.cells;
-  const table = dataTable(["셀", "패턴", "X", "Y", "확대", "불투명도", "표시", "색조", "삭제"]);
+  const table = dataTable(["셀", "패턴", "X", "Y", "확대", "회전", "뒤집기", "불투명도", "표시", "색조", "삭제"]);
   const body = table.querySelector("tbody");
   cells.forEach((cell, index) => {
     body?.append(cellEditableRow(context, cell, index));
@@ -319,6 +328,11 @@ function cellEditableRow(context: AnimationEditorContext, cell: BattleAnimationC
     el("td", { children: [numInput(cell.x, `db-animation-cell-x-${index}`, (x) => updateCell({ x }))] }),
     el("td", { children: [numInput(cell.y, `db-animation-cell-y-${index}`, (y) => updateCell({ y }))] }),
     el("td", { children: [numInput(cell.zoom, `db-animation-cell-zoom-${index}`, (zoom) => updateCell({ zoom }))] }),
+    el("td", {
+      children: [numInput(cell.rotation ?? 0, `db-animation-cell-rotation-${index}`, (rotation) =>
+        updateCell({ rotation: cellTransformFields({ rotation }).rotation }))],
+    }),
+    el("td", { children: [mirrorCheckbox(cell, index, (mirror) => updateCell({ mirror: mirror || undefined }))] }),
     el("td", { children: [numInput(cell.opacity, `db-animation-cell-opacity-${index}`, (opacity) => updateCell({ opacity }))] }),
     el("td", { children: [visibleCheckbox(cell, (visible) => updateCell({ visible }))] }),
     el("td", { text: toneText(cell.tone) }),
@@ -341,6 +355,13 @@ function cellEditableRow(context: AnimationEditorContext, cell: BattleAnimationC
     })
   );
   return row;
+}
+
+function mirrorCheckbox(cell: BattleAnimationCell, index: number, onToggle: (mirror: boolean) => void): HTMLInputElement {
+  const input = el("input", { attrs: { type: "checkbox", title: "좌우 뒤집기" }, dataset: { testid: `db-animation-cell-mirror-${index}` } }) as HTMLInputElement;
+  input.checked = cell.mirror === true;
+  input.addEventListener("change", () => onToggle(input.checked));
+  return input;
 }
 
 function visibleCheckbox(cell: BattleAnimationCell, onToggle: (visible: boolean) => void): HTMLInputElement {

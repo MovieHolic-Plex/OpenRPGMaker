@@ -1,0 +1,95 @@
+// E: 같은 상자의 뚜껑 윗날을 깊게, 입구 테 안에 어긋난 송곳니와 오른쪽으로 늘어진 혀; 꼭대기 윗면 3행(y=1~3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat i wood 3
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+...ooooooooooo..
+...oiggiiiggio..
+...oiggiiiggio..
+..oiiiiiiiiiiio.
+..oiiigiiigiiio.
+..ogggggggggggo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+...11111111111..
+...15445554431..
+...14334443321..
+..1000000000001.
+..1000000000001.
+..1100000000011.
+..1110103010111.
+..1565666666540.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................
+@mat t linen 5
+@mat r meat 3
+@mat p pink 3
+@mat b dwood 0
+// 뚜껑 윗날의 수평 면은 y1~3, 그 아래 y4는 세운 안쪽 판
+@mblock 3 1
+ooooooooooo
+iggiiigggio
+iggiiigggio
+@tblock 3 1
+15555555431
+54455544331
+43344433221
+@mblock 3 4
+iiiiiiiiiii
+@tblock 3 4
+32233333221
+// 뒤 입구 테와 치아. 중앙의 검은 공간은 위에서 내려다보는 입 속
+@mblock 3 5
+gbttbbtbtbg
+@tblock 3 5
+40550050403
+@mblock 3 6
+gbbtbrpbbbg
+@tblock 3 6
+40050340002
+@mblock 3 7
+gtbbtrppttg
+@tblock 3 7
+45005344442
+// 아래 치아는 앞판이 아닌 입구 테 위에만, 혀는 앞판 위로 흘러내린다
+@mblock 8 8
+rpp
+@tblock 8 8
+344
+@mblock 9 9
+rpp
+@tblock 9 9
+344
+@mblock 9 10
+rpp
+@tblock 9 10
+334
+@mblock 9 11
+rrp
+@tblock 9 11
+233
+@mblock 9 12
+rr
+@tblock 9 12
+22

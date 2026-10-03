@@ -28,6 +28,7 @@ const SCAN_ROOTS = [
   "src/project/fontRegistry.ts",
   "src/project/battleHitFeel.ts",
   "src/battle/skins/registry.ts",
+  "src/project/battleMethod.ts",
   "src/player/menuSkins/registry.ts",
 ];
 // 저작 콘텐츠(기본 맵·예제 이름)와 AI 도구 본문은 화면 문구가 아니라 데이터·모델 입력이다.

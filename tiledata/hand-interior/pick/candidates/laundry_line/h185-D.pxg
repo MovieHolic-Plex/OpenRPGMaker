@@ -1,0 +1,58 @@
+// D: 흰 셔츠와 양말, 금빛 벽 고정구·집게·옷단 장식. 벽면 걸이로 평평한 시점 유지.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a white 1
+@mat b white 2
+@mat c white 3
+@mat d white 4
+@mat e white 5
+@mat g gold 2
+@mat h gold 4
+@mat i gold 5
+@mat r linen 2
+@mat s linen 3
+@layer line
+@mblock 0 0
+.ghg
+.hig
+ghhg
+gggg
+@mblock 28 0
+.ghg
+.hig
+ghhg
+gggg
+@mblock 3 3
+ssss.....................ss
+@mblock 7 4
+ssssssssssssssssssssss
+@layer clothes
+@mblock 8 3
+hi......hi
+hg......hg
+@mblock 4 5
+...bdddbaabddb...
+..bdeeeccdddcb..
+.bdeeeeeedddccb.
+bdeeeeeeedddccba
+bddbeeeeedddbacb
+abb.deeeedddb.ab
+....deeeedddb...
+....deeeedddb...
+....cdeeedccb...
+....hiiiihhhg...
+....bbbbbbaaa...
+@mblock 22 4
+hi...hi
+hg...hg
+bddd.bcd
+beed.bdd
+beed.bdc
+beed.bdc
+beed.bdc
+beed.bdc
+beed.bdc
+beed.bddc
+bccc.bcca
+.hhh..hhg

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/grindstone/h10-B.pxg",
+ "id": "grindstone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "바퀴 좌·우·아래에 어두운 윤곽 한 줄을 닫고 오른쪽 그늘을 깊게(모양·크기·받침 그대로)",
+ "ok": true
+}

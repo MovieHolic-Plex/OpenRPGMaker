@@ -1,0 +1,43 @@
+// E: 처진 삼줄에 넓은 소매 셔츠와 길이가 다른 양말, 나무 집게와 접힌 옷깃.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat r pine 2
+@mat s pine 4
+@mat p pine 3
+@mat A white 1
+@mat B white 2
+@mat C white 3
+@mat D white 4
+@mat E white 5
+@layer line
+@mblock 0 1
+sr............................rs
+.psrr......................rrsp.
+....psrrrr............rrrrsp....
+.........rssssssssssssr.........
+@layer laundry
+@mblock 3 4
+...sp.....sp...
+..CDDA...CDDB..
+.CEEEDAADEEEDB.
+CEEEEDBCDEDDDCB
+CEEEDDEEDDDCDCB
+.DDCBDEEDDDCBB.
+..AB.DEEDDDCB..
+.....DEECDDDB..
+.....DEECDDDB..
+.....DEEDDDCB..
+.....DDDDDCCB..
+.....BCCCCBBA..
+@mblock 21 4
+.sp....sp.
+.CDB...CDB
+.CED...CED
+.CED...CED
+.CED...CDD
+.CDD...BCD
+.CDDD..BCD
+.BCCDB.BCDD
+..ABB..BCCB
+........AB.

@@ -1,5 +1,5 @@
 /**
- * First-visit director briefing on the live map.
+ * First-visit world previews before the first AI sentence.
  *
  * Run:
  *   npx playwright test test/e2e/director-first-briefing.spec.ts --project=chromium
@@ -43,12 +43,11 @@ async function bootBriefing(page: Page): Promise<void> {
 test.describe("director first briefing", () => {
   test.describe.configure({ timeout: 60_000 });
 
-  test("opens on the live map as a poster gallery with one anchor per pack", async ({ page }) => {
+  test("previews a world before opening the first sentence without connecting AI", async ({ page }) => {
     await bootBriefing(page);
 
-    await expect(page.getByTestId("editor-welcome")).toContainText("어떤 게임을 만들까요?");
-    await expect(page.getByTestId("editor-welcome-prompt-input")).toBeVisible();
-    await expect(page.getByTestId("editor-welcome-prompt-submit")).toHaveText("만들기");
+    await expect(page.getByTestId("editor-welcome")).toContainText("먼저 들어가 보세요.");
+    await expect(page.getByTestId("editor-welcome-prompt-input")).toBeHidden();
     await expect(page.getByTestId("editor-welcome-skip")).toHaveText("빈 맵으로 시작");
     await expect(page.getByTestId("editor-welcome-template-card-0")).toContainText("몬스터 수집");
     await expect(page.getByTestId("editor-welcome-template-card-1")).toContainText("회상 스토리");
@@ -72,6 +71,14 @@ test.describe("director first briefing", () => {
     await expect(page.getByTestId("ai-command-bar")).toBeHidden();
     await expect(page.getByTestId("ai-next-steps")).toBeHidden();
     await expect(page.locator(".coach-mark-card")).toHaveCount(0);
+
+    await page.getByTestId("editor-welcome-template-card-0").click();
+    await expect(page.getByTestId("editor-welcome-prompt-input")).toBeVisible();
+    await expect(page.getByTestId("editor-welcome-prompt-submit")).toHaveText("이 이야기로 시작 ↗");
+    await expect(page.getByTestId("editor-welcome-prompt-submit")).toBeDisabled();
+    await page.getByTestId("editor-welcome-prompt-input").fill("구름 위에서 작은 몬스터와 함께 떠나는 모험");
+    await expect(page.getByTestId("editor-welcome-prompt-submit")).toBeEnabled();
+    await expect(page.getByTestId("ai-connect-gate")).toHaveCount(0);
 
     await page.screenshot({
       path: path.join(EVIDENCE, "C-featured-idle.png"),

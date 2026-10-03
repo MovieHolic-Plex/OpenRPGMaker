@@ -1,0 +1,43 @@
+// D 장식: 둥근 나무 뚜껑에 금 띠 둘·금 테두리 줄·금 자물쇠판(반짝임 한 점), 몸통은 어두운 나무
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+................
+....ooooooooo...
+...oggwwwwwggo..
+..owggwwwwwggwo.
+..owggwwwwwggwo.
+..owggwwwwwggwo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+................
+....111111111...
+...15677777540..
+..1756777774360.
+..1656766664350.
+..1656666554350.
+..1666555443330.
+..1454333333330.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................

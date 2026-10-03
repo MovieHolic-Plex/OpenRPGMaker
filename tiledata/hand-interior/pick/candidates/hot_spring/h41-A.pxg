@@ -1,0 +1,50 @@
+// 방향 A: 돌로 두른 온천 — 위에서 본 하늘색 물(r3~r22, 20행) 위로 김, 둘레 바위 윗면, 남쪽 바위 앞면
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat o stone 0
+@mat k stone 1
+@mat d stone 2
+@mat t stone 3
+@mat m stone 4
+@mat h stone 5
+@mat e stone 6
+@mat U water 3
+@mat V water 4
+@mat W water 5
+@mat L water 6
+@mat S ice 5
+@mat T ice 3
+@mblock 0 0
+......oooooooooooooooooooooooooooooooooooo......
+....ohhehhhmhhhhehhhmhhhhhehhhmhhhhhhehhhhoo....
+..ohhhehhhmhhhhehhhmhhhhhehhhmhhhhhehhhhmhhhho..
+.ohhmUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUmtto.
+ohhdVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVdtto
+ohhdVVVVVVVVVVVVVVTVVVVVVVVVVVVVVVVVVVVVVVVVdtto
+ohhdVVVVVVVVVVVVVTSVVVVVVVVVVVVVTVVVVVVVVVVVdtto
+ohhdVVVVVVVTVVVVVVTVVVVVVVVVVVVTSVVVVVVVVVVVdtto
+ohhdVVVVVVTSVVVVVVVVVVVVVVVVVVVVTVVVVVVVVVVVdtto
+ohhdVVVVVVVTVVVVVVVVVVVVVVVVVVVVVVVVVVTSVVVVdtto
+ohhdVVVVVVVVVVVVVVTVVVVVVVVVVVVVVVVVVVVTVVVVdtto
+ohhdVVVVWWVVVVVVVVVVVVVVVVVVVVWWWVVVVVVVLVVVdtto
+ohhdVVVVVVVVVVVVVVTVVVVVVVVVVVVVVVVVVVVVVVVVdtto
+ohhdVVVVVVVVVVWWWWVVVVVVVVVVVVVVVVVVVVVWWVVVdtto
+ohhdVVVVVTVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWVVVVdtto
+ohhdVVVVTSVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVdtto
+ohhdVVVVVTVVVVVVVVWWWVVVVVVVVVVVVVVVVVVVVVVVdtto
+ohhdVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVdtto
+ohhdVVVVVVVVVVVVVVVWWWWVVVVVVVVVVVVVVVVVVVVVdtto
+ohhdVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVdtto
+ohhdVVVWWWVVVVVVVVVVVVVVVVVVVVVVVVVLVVVVVVVVdtto
+ohhdVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVdtto
+.ohhmUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUmtto.
+..ohhhehhhmhhhhehhhmhhhhehhhhmhhhehhhhhmhhhoo...
+..otttmtttttttmttttttttmttttttttmtttttttttttto..
+..otdtttttdtttttttdtttttttdtttttdtttttttdtttto..
+...otttdttttttdtttttttdttttttdtttttttdtttttto...
+...otttttttdttttttdtttttttdtttttdtttttdttttto...
+....ottdtttttttdtttttdtttttttdtttttttdttttto....
+.....odddtddddddtdddddtdddddddtdddddtdddddo.....
+.......okddddkdddddkddddddkddddkdddddkddo.......
+.........oooooooooooooooooooooooooooooo.........

@@ -29,6 +29,8 @@ function fakeEmptyFolderBridge(saved: string[]): OprnBridge {
       dataVersion: async () => 0,
       separateMedia: async () => ({ changed: false, migratedAssetIds: [], revision: 0 }),
       backup: async () => `${DIR}/backups/x.sqlite`,
+      listBackups: async () => [],
+      restoreBackup: async () => ({ projectDir: `${DIR}-recovered`, projectId: "restored", sha256: SHA, title: "복구 사본" }),
     },
     commits: {
       record: async () => ({ kind: "saved", commitId: "c1" }),

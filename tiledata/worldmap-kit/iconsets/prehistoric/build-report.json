@@ -1,0 +1,272 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "부족 대마을",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "매머드 엄니 대문·목책 둘레·불 광장을 둘러싼 움집 무리·족장의 큰 움집",
+   "fill": "88x76",
+   "side_px": 1132,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "목책 부락",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "말뚝 목책·통나무 문과 두개골·망대 둘·안쪽 움집 넷",
+   "fill": "60x59",
+   "side_px": 620,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "호숫가 수상 부락",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "호수 위 말뚝 움집 셋·잔교·통나무 배 둘·뒤 기슭 마을",
+   "fill": "77x50",
+   "side_px": 150,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "공룡족 둥지 요새",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "바위 탑 셋과 뼈 가시·짚 둥지의 알·두개골 문",
+   "fill": "47x45",
+   "side_px": 387,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "매머드 뼈 전당",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "가죽 돔을 엄니 갈비가 감싸고 매머드 두개골 문",
+   "fill": "43x42",
+   "side_px": 380,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "움집 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "짚·가죽 지붕 움집 여섯과 모닥불·고사리",
+   "fill": "45x42",
+   "side_px": 214,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "동굴 집 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "바위 언덕의 구멍 집 셋·사다리·모닥불",
+   "fill": "32x31",
+   "side_px": 90,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "나무 위 부락",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "거목 두 그루 위 판자 마루 움집·줄사다리",
+   "fill": "31x30",
+   "side_px": 54,
+   "col": 11,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "사냥 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "가죽 천막 둘·모닥불 고기 꼬치·세워 둔 창",
+   "fill": "31x25",
+   "side_px": 136,
+   "col": 13,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "토템 기둥",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "얼굴 새긴 통나무 셋·날개 판·뿔 두개골",
+   "fill": "15x24",
+   "side_px": 54,
+   "col": 23,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "거대 바위 기둥",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "층층 사암 기둥·꼭대기 움집과 사다리",
+   "fill": "32x52",
+   "side_px": 306,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "벽화 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "바위 언덕의 큰 입구·붉은 손자국 벽화·횃불",
+   "fill": "31x26",
+   "side_px": 90,
+   "col": 15,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "공룡 화석",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "반쯤 묻힌 거대 뼈대(등뼈·갈비·두개골)",
+   "fill": "31x26",
+   "side_px": 43,
+   "col": 17,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "운석 충돌구",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "바위 둑·탄 운석의 붉은 금·연기·깨진 지층",
+   "fill": "61x37",
+   "side_px": 276,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "태양 제단",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "세 단 돌 계단 단·금빛 해 원반·선돌·불 그릇",
+   "fill": "45x45",
+   "side_px": 32,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "거대 고사리 숲",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "키 다른 나무고사리 다섯",
+   "fill": "46x39",
+   "side_px": 145,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "선돌 원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "선돌 고리와 들보를 얹은 문 돌",
+   "fill": "32x26",
+   "side_px": 4,
+   "col": 19,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "검은 원뿔·흘러내리는 용암 줄기 둘·연기",
+   "fill": "28x30",
+   "side_px": 17,
+   "col": 21,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "떠 있는 바위섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "거꾸로 선 바위·움집·고사리·폭포·덩굴",
+   "fill": "73x53",
+   "side_px": 166,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 0
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_plate_cup/h12-D.pxg",
+ "id": "table:plate+cup",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 20,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  2,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "D: 윗면을 6줄로 깊게 하고 접시·찻잔을 윗면 위에 얹음, 뒤쪽 어둡게",
+ "ok": true
+}

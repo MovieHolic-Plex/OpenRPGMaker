@@ -1,3 +1,5 @@
+import { isEmptySpriteLook, normalizeLetterboxPercent, normalizeSpriteLook, type SpriteLook } from "@/project/eventCommands/cinematicStaging";
+import { isNeutralScreenDistortion, normalizeScreenDistortion } from "@/project/eventCommands/screenDistortion";
 import { normalizeBattleReports, type BattleReport } from "@/project/battleReports";
 import { isNeutralScreenFilter, normalizeScreenFilter } from "@/project/eventCommands/screenFilter";
 import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
@@ -269,6 +271,12 @@ export type SaveScreenState = {
   readonly tintDurationMs?: number;
   /** Tint Screen 색 필터(채도·흑백·세피아). 없으면 필터 없음. */
   readonly filter?: { readonly saturation: number; readonly grayscale: number; readonly sepia: number };
+  /** 화면 왜곡(물결·모자이크·기울기). 없으면 왜곡 없음. */
+  readonly distortion?: { readonly wave: number; readonly mosaic: number; readonly rotate: number };
+  /** 레터박스 띠 두께(%). 없으면 띠 없음. */
+  readonly letterbox?: number;
+  /** 캐릭터 모습 효과. 키 = spriteLookKey. */
+  readonly spriteLooks?: Readonly<Record<string, SpriteLook>>;
 };
 
 export type SaveWriteResult =
@@ -520,10 +528,20 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
   const screen = session.m2Runtime?.screen;
   if (!screen) return undefined;
   const { tint, weather, hidden, tintDurationMs, filter } = screen;
-  if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined && filter === undefined) {
+  const distortion = isNeutralScreenDistortion(screen.distortion) ? undefined : screen.distortion;
+  const letterbox = screen.letterbox && screen.letterbox > 0 ? screen.letterbox : undefined;
+  const spriteLooks = parseSpriteLooks(screen.spriteLooks);
+  if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined && filter === undefined && !distortion
+    && letterbox === undefined && !spriteLooks) {
     return undefined;
   }
-  return { tint, weather, hidden, tintDurationMs, ...(filter ? { filter: { ...filter } } : {}) };
+  return {
+    tint, weather, hidden, tintDurationMs,
+    ...(filter ? { filter: { ...filter } } : {}),
+    ...(distortion ? { distortion: { ...distortion } } : {}),
+    ...(letterbox !== undefined ? { letterbox } : {}),
+    ...(spriteLooks ? { spriteLooks } : {}),
+  };
 }
 
 // 저장 실패(quota 초과·프라이빗 모드)를 던지면 호출부의 클릭 핸들러가 그대로 끊겨
@@ -924,6 +942,27 @@ function applyScreenState(session: PlaySession, screen: SaveScreenState): void {
   if (screen.hidden !== undefined) runtime.screen.hidden = screen.hidden;
   if (screen.tintDurationMs !== undefined) runtime.screen.tintDurationMs = screen.tintDurationMs;
   if (screen.filter !== undefined) runtime.screen.filter = { ...screen.filter };
+  // 복원은 전환 없이 그 상태로 바로 선다 — 불러오기 직후 물결이 차오르는 연출은 의도가 아니다.
+  if (screen.distortion !== undefined) {
+    runtime.screen.distortion = { ...screen.distortion };
+    runtime.screen.distortionDurationMs = 0;
+  }
+  if (screen.letterbox !== undefined) {
+    runtime.screen.letterbox = screen.letterbox;
+    runtime.screen.letterboxDurationMs = 0;
+  }
+  if (screen.spriteLooks !== undefined) runtime.screen.spriteLooks = structuredClone(screen.spriteLooks) as Record<string, SpriteLook>;
+}
+
+/** 모습 효과 표를 정규화한다. 빈 효과는 버리고, 남는 게 없으면 undefined. */
+function parseSpriteLooks(value: unknown): Record<string, SpriteLook> | undefined {
+  if (!isRecord(value)) return undefined;
+  const result: Record<string, SpriteLook> = {};
+  for (const [key, look] of Object.entries(value)) {
+    const normalized = normalizeSpriteLook(look);
+    if (!isEmptySpriteLook(normalized)) result[key] = normalized;
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadResult {
@@ -1269,7 +1308,16 @@ function parseItemUseCharges(value: unknown): Record<string, number> {
 // 저장된 화면 상태를 방어적으로 파싱(모든 필드 선택). 유효 필드가 없으면 undefined.
 function parseScreenState(value: unknown): SaveScreenState | undefined {
   if (!isRecord(value)) return undefined;
-  const result: { tint?: string; weather?: string; hidden?: boolean; tintDurationMs?: number; filter?: SaveScreenState["filter"] } = {};
+  const result: {
+    tint?: string;
+    weather?: string;
+    hidden?: boolean;
+    tintDurationMs?: number;
+    filter?: SaveScreenState["filter"];
+    distortion?: SaveScreenState["distortion"];
+    letterbox?: number;
+    spriteLooks?: SaveScreenState["spriteLooks"];
+  } = {};
   if (typeof value.tint === "string") result.tint = value.tint;
   if (typeof value.weather === "string") result.weather = value.weather;
   if (typeof value.hidden === "boolean") result.hidden = value.hidden;
@@ -1278,6 +1326,14 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
     const filter = normalizeScreenFilter(value.filter);
     if (!isNeutralScreenFilter(filter)) result.filter = filter;
   }
+  if (isRecord(value.distortion)) {
+    const distortion = normalizeScreenDistortion(value.distortion);
+    if (!isNeutralScreenDistortion(distortion)) result.distortion = distortion;
+  }
+  const letterbox = normalizeLetterboxPercent(value.letterbox);
+  if (letterbox > 0) result.letterbox = letterbox;
+  const spriteLooks = parseSpriteLooks(value.spriteLooks);
+  if (spriteLooks) result.spriteLooks = spriteLooks;
   return Object.keys(result).length > 0 ? result : undefined;
 }
 

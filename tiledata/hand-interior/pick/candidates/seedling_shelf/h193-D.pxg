@@ -1,0 +1,56 @@
+// D: 금장 처마와 상자 테, 모서리 띠로 장식한 두 단 모종 선반; 꼭대기 윗면 3행(y=5~7).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat f wood 7
+@mat e dwood 1
+@mat h dwood 2
+@mat i dwood 3
+@mat j gold 2
+@mat k gold 4
+@mat l gold 5
+@mat m leaf 1
+@mat n leaf 2
+@mat o leaf 4
+@mat p leaf 5
+@mat q clay 2
+@mat r clay 3
+@mat s clay 4
+@mat t clay 5
+@layer furniture
+@mblock 1 4
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+adffffffffffffffffffffffffffba
+addddccccccdddddddccccccddddba
+acccccccccccccccccccccccccccba
+aklkbbbbbbbbklkkbbbbbbbbklkkja
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+@mblock 2 10
+adb......................bae
+adb...po...po...po...po..bae
+adb..oon..oon..oon..oon..bae
+adb...mn...mn...mn...mn..bae
+adb.ttmttttmttttmttttmtq.bae
+adb.tihhiihhhiihhiiihhiq.bae
+adb.tiiihhiiihhiiiiihhiq.bae
+adb.lkkkkkkkkkkkkkkkkkkj.bae
+adb.sssrrrssssrrrrssrrrq.bae
+akj.rrrrrrrrrrrrrrrrrrrq.jka
+akj.cccccccccccccccccccb.jka
+adb...po...po...po...po..bae
+adb..oon..oon..oon..oon..bae
+adb...mn...mn...mn...mn..bae
+adb.ttmttttmttttmttttmtq.bae
+adb.tihhiihhhiihhiiihhiq.bae
+adb.tiiihhiiihhiiiiihhiq.bae
+adb.lkkkkkkkkkkkkkkkkkkj.bae
+adb.sssrrrssssrrrrssrrrq.bae
+akj.rrrrrrrrrrrrrrrrrrrq.jka
+akjcccccccccccccccccccccbjka
+abb......................aae
+@mblock 2 31
+aaa......................aaa

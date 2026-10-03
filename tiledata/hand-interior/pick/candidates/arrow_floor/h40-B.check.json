@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/arrow_floor/h40-B.pxg",
+ "id": "arrow floor",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 4,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "압력판과 같은 돌판 틀(위·왼 밝은 테, 안쪽 오목) 위에 왼쪽 위 빛을 받는 파란 북쪽 화살표",
+ "ok": true
+}

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/healing_spring/h16-B.pxg",
+ "id": "healing spring",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  3,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "달빛 못·성수반과 같은 돌 테두리(윗면 밝음·남쪽 앞면 어두움)에 하늘색 샘물과 가운데 빛, 남쪽 앞면 아래가 접지선",
+ "ok": true
+}

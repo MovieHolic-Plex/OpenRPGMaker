@@ -1,0 +1,35 @@
+{
+ "id": "treasure chest big open",
+ "slug": "treasure_chest_big_open",
+ "name_ko": "열린 큰 보물상자",
+ "category": "JRPG 장치",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "열린 큰 보물상자(2칸) — 닫힌 큰 보물상자(h24-D)와 같은 상자, 둥근 뚜껑이 뒤로 젖혀져 섰고 안쪽 붉은 천 바닥이 위에서 보인다(속 6~8행). 높이·폭은 닫힌 것과 같다.",
+ "where": "높이·폭은 닫힌 것과 같다.",
+ "placement": [
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "throne"
+}

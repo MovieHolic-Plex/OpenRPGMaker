@@ -1,0 +1,592 @@
+{
+  "status": 200,
+  "events": [
+    {
+      "seq": 0,
+      "type": "team_start",
+      "bytes": 11965
+    },
+    {
+      "seq": 1,
+      "type": "agent_spawn",
+      "agent": "orchestrator-1",
+      "bytes": 11937
+    },
+    {
+      "seq": 2,
+      "type": "heartbeat",
+      "at": 1791032937957,
+      "bytes": 47
+    },
+    {
+      "seq": 3,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 175
+    },
+    {
+      "seq": 4,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 110
+    },
+    {
+      "seq": 5,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 69877
+    },
+    {
+      "seq": 6,
+      "type": "heartbeat",
+      "at": 1791032942959,
+      "bytes": 47
+    },
+    {
+      "seq": 7,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 506
+    },
+    {
+      "seq": 8,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 161
+    },
+    {
+      "seq": 9,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 184
+    },
+    {
+      "seq": 10,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 189
+    },
+    {
+      "seq": 11,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 154
+    },
+    {
+      "seq": 12,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 412
+    },
+    {
+      "seq": 13,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 1662
+    },
+    {
+      "seq": 14,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 543
+    },
+    {
+      "seq": 15,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 397
+    },
+    {
+      "seq": 16,
+      "type": "heartbeat",
+      "at": 1791032949682,
+      "bytes": 48
+    },
+    {
+      "seq": 17,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 111
+    },
+    {
+      "seq": 18,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 78876
+    },
+    {
+      "seq": 19,
+      "type": "heartbeat",
+      "at": 1791032954682,
+      "bytes": 48
+    },
+    {
+      "seq": 20,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 374
+    },
+    {
+      "seq": 21,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 211
+    },
+    {
+      "seq": 22,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 213
+    },
+    {
+      "seq": 23,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 1075
+    },
+    {
+      "seq": 24,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 1057
+    },
+    {
+      "seq": 25,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 111
+    },
+    {
+      "seq": 26,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 83008
+    },
+    {
+      "seq": 27,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 232
+    },
+    {
+      "seq": 28,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 190
+    },
+    {
+      "seq": 29,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 204
+    },
+    {
+      "seq": 30,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 193
+    },
+    {
+      "seq": 31,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 201
+    },
+    {
+      "seq": 32,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 912
+    },
+    {
+      "seq": 33,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 73744
+    },
+    {
+      "seq": 34,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 357
+    },
+    {
+      "seq": 35,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 381
+    },
+    {
+      "seq": 36,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 111
+    },
+    {
+      "seq": 37,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 92234
+    },
+    {
+      "seq": 38,
+      "type": "heartbeat",
+      "at": 1791032959684,
+      "bytes": 48
+    },
+    {
+      "seq": 39,
+      "type": "heartbeat",
+      "at": 1791032964684,
+      "bytes": 48
+    },
+    {
+      "seq": 40,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 1261
+    },
+    {
+      "seq": 41,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 758
+    },
+    {
+      "seq": 42,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 160
+    },
+    {
+      "seq": 43,
+      "type": "agent_spawn",
+      "agent": "builder-1",
+      "bytes": 441
+    },
+    {
+      "seq": 44,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 505
+    },
+    {
+      "seq": 45,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 355
+    },
+    {
+      "seq": 46,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 172
+    },
+    {
+      "seq": 47,
+      "type": "heartbeat",
+      "at": 1791033039710,
+      "bytes": 48
+    },
+    {
+      "seq": 48,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 111
+    },
+    {
+      "seq": 49,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 91591
+    },
+    {
+      "seq": 50,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 106
+    },
+    {
+      "seq": 51,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 93378
+    },
+    {
+      "seq": 52,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 178
+    },
+    {
+      "seq": 53,
+      "type": "agent_event",
+      "agent": "orchestrator-1",
+      "bytes": 181
+    },
+    {
+      "seq": 54,
+      "type": "heartbeat",
+      "at": 1791033044716,
+      "bytes": 48
+    },
+    {
+      "seq": 55,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 161
+    },
+    {
+      "seq": 56,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 221
+    },
+    {
+      "seq": 57,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 222
+    },
+    {
+      "seq": 58,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 1443
+    },
+    {
+      "seq": 59,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 3736
+    },
+    {
+      "seq": 60,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 371
+    },
+    {
+      "seq": 61,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 106
+    },
+    {
+      "seq": 62,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 93882
+    },
+    {
+      "seq": 63,
+      "type": "heartbeat",
+      "at": 1791033049718,
+      "bytes": 48
+    },
+    {
+      "seq": 64,
+      "type": "checkpoint",
+      "tool": "set_project_settings",
+      "bytes": 332430
+    },
+    {
+      "seq": 65,
+      "type": "agent_event",
+      "agent": "builder-1",
+      "bytes": 239
+    },
+    {
+      "seq": 66,
+      "type": "heartbeat",
+      "at": 1791033054719,
+      "bytes": 48
+    },
+    {
+      "seq": 67,
+      "type": "heartbeat",
+      "at": 1791033059720,
+      "bytes": 48
+    },
+    {
+      "seq": 68,
+      "type": "heartbeat",
+      "at": 1791033064739,
+      "bytes": 48
+    },
+    {
+      "seq": 69,
+      "type": "heartbeat",
+      "at": 1791033069725,
+      "bytes": 48
+    },
+    {
+      "seq": 70,
+      "type": "heartbeat",
+      "at": 1791033074729,
+      "bytes": 48
+    },
+    {
+      "seq": 71,
+      "type": "heartbeat",
+      "at": 1791033079733,
+      "bytes": 48
+    },
+    {
+      "seq": 72,
+      "type": "heartbeat",
+      "at": 1791033084737,
+      "bytes": 48
+    },
+    {
+      "seq": 73,
+      "type": "heartbeat",
+      "at": 1791033089740,
+      "bytes": 48
+    },
+    {
+      "seq": 74,
+      "type": "heartbeat",
+      "at": 1791033094744,
+      "bytes": 48
+    },
+    {
+      "seq": 75,
+      "type": "heartbeat",
+      "at": 1791033099747,
+      "bytes": 48
+    },
+    {
+      "seq": 76,
+      "type": "heartbeat",
+      "at": 1791033104752,
+      "bytes": 48
+    },
+    {
+      "seq": 77,
+      "type": "heartbeat",
+      "at": 1791033109752,
+      "bytes": 48
+    },
+    {
+      "seq": 78,
+      "type": "heartbeat",
+      "at": 1791033114753,
+      "bytes": 48
+    },
+    {
+      "seq": 79,
+      "type": "heartbeat",
+      "at": 1791033119753,
+      "bytes": 48
+    },
+    {
+      "seq": 80,
+      "type": "heartbeat",
+      "at": 1791033124754,
+      "bytes": 48
+    },
+    {
+      "seq": 81,
+      "type": "heartbeat",
+      "at": 1791033129755,
+      "bytes": 48
+    },
+    {
+      "seq": 82,
+      "type": "heartbeat",
+      "at": 1791033134758,
+      "bytes": 48
+    },
+    {
+      "seq": 83,
+      "type": "heartbeat",
+      "at": 1791033139758,
+      "bytes": 48
+    },
+    {
+      "seq": 84,
+      "type": "heartbeat",
+      "at": 1791033144759,
+      "bytes": 48
+    },
+    {
+      "seq": 85,
+      "type": "heartbeat",
+      "at": 1791033149760,
+      "bytes": 48
+    },
+    {
+      "seq": 86,
+      "type": "heartbeat",
+      "at": 1791033154761,
+      "bytes": 48
+    },
+    {
+      "seq": 87,
+      "type": "heartbeat",
+      "at": 1791033159761,
+      "bytes": 48
+    },
+    {
+      "seq": 88,
+      "type": "heartbeat",
+      "at": 1791033164762,
+      "bytes": 48
+    },
+    {
+      "seq": 89,
+      "type": "heartbeat",
+      "at": 1791033169762,
+      "bytes": 48
+    },
+    {
+      "seq": 90,
+      "type": "heartbeat",
+      "at": 1791033174762,
+      "bytes": 48
+    },
+    {
+      "seq": 91,
+      "type": "heartbeat",
+      "at": 1791033179762,
+      "bytes": 48
+    },
+    {
+      "seq": 92,
+      "type": "heartbeat",
+      "at": 1791033184762,
+      "bytes": 48
+    },
+    {
+      "seq": 93,
+      "type": "heartbeat",
+      "at": 1791033189763,
+      "bytes": 48
+    },
+    {
+      "seq": 94,
+      "type": "heartbeat",
+      "at": 1791033194766,
+      "bytes": 48
+    },
+    {
+      "seq": 95,
+      "type": "heartbeat",
+      "at": 1791033199769,
+      "bytes": 48
+    },
+    {
+      "seq": 96,
+      "type": "heartbeat",
+      "at": 1791033204769,
+      "bytes": 48
+    },
+    {
+      "seq": 97,
+      "type": "heartbeat",
+      "at": 1791033209772,
+      "bytes": 48
+    }
+  ]
+}

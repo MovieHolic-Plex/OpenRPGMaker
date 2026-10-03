@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderBattleAnimationRecordForm } from "@/editor/panels/databaseAnimationRecordView";
+import { renderBattleScreenTab } from "@/editor/panels/databaseBattleScreenTab";
 import {
   renderBattleCommandsTab,
-  renderBattleScreenTab,
   renderTerrainTab,
 } from "@/editor/panels/databaseUtilityRecordViews";
 import { createBlankProject } from "@/project/defaults";
@@ -67,17 +67,21 @@ describe("database battle studio", () => {
     renderBattleAnimationRecordForm(form as unknown as HTMLElement, animation);
 
     expect(requireTestId(form, "db-battle-studio-nav")).not.toBeNull();
-    expect(requireTestId(form, "db-battle-studio-nav-animations").attrs["aria-current"]).toBe("page");
+    // 옛 셀 애니메이션은 도트 연출의 하위 보기라 스튜디오 줄에는 도트 연출이 선다(2026-10-02).
+    expect(findByTestId(form, "db-battle-studio-nav-animations")).toBeNull();
+    expect(requireTestId(form, "db-battle-studio-nav-retroChoreographies")).not.toBeNull();
     expect(requireTestId(form, "db-animation-studio-stage")).not.toBeNull();
     expect(requireTestId(form, "db-animation-studio-inspector")).not.toBeNull();
     expect(requireTestId(form, "db-animation-studio-timeline")).not.toBeNull();
   });
 
   it("gives battle screen, commands, and terrain their own visual workspace regions", () => {
+    // 전투 화면은 2026-10-02 가짜 무대 미리보기를 지우고 전투 방식·타격감·꾸미기 세 카드가 됐다.
     const screen = renderHost(renderBattleScreenTab);
-    expect(requireTestId(screen, "db-battle-screen-preview-stage")).not.toBeNull();
-    expect(requireTestId(screen, "db-battle-screen-inspector")).not.toBeNull();
-    expect(requireTestId(screen, "db-battle-screen-troop-strip")).not.toBeNull();
+    expect(requireTestId(screen, "db-battle-method-card")).not.toBeNull();
+    expect(requireTestId(screen, "db-battle-hit-feel-card")).not.toBeNull();
+    expect(requireTestId(screen, "db-battle-look-card")).not.toBeNull();
+    expect(findByTestId(screen, "db-battle-screen-preview-stage")).toBeNull();
 
     const commands = renderHost(renderBattleCommandsTab);
     expect(requireTestId(commands, "db-battle-command-preview")).not.toBeNull();

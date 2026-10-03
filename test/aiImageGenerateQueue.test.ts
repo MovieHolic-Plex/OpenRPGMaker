@@ -18,7 +18,7 @@ describe("aiImageGenerateField queue", () => {
   it("프롬프트를 비우지 않고 여러 작업을 쌓는다", () => {
     const queue = createImageGenerationQueue({ runner: () => new Promise<string>(() => {}) });
     const field = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue, onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue, onInserted: vi.fn() })
     );
     const prompt = findByTestId(field, "q-prompt");
     expect(prompt).not.toBeNull();
@@ -37,7 +37,7 @@ describe("aiImageGenerateField queue", () => {
   it("빈 프롬프트는 큐에 넣지 않는다", () => {
     const queue = createImageGenerationQueue({ runner: async () => "x" });
     const field = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue, onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue, onInserted: vi.fn() })
     );
     findByTestId(field, "q-generate")?.click();
     expect(queue.getSnapshot().jobs).toHaveLength(0);
@@ -51,7 +51,7 @@ describe("aiImageGenerateField queue", () => {
     const completed = signal();
     const field = renderWithFakeDom(() =>
       aiImageGenerateField({
-        kind: "monster",
+        kind: "backdrop",
         testidPrefix: "q",
         queue,
         onInserted: (id) => { inserted.push(id); completed.resolve(); },
@@ -62,8 +62,8 @@ describe("aiImageGenerateField queue", () => {
     findByTestId(field, "q-generate")?.click();
     await completed.promise;
     expect(inserted).toHaveLength(1);
-    expect(inserted[0]).toContain("monster_img");
-    expect(store.getCurrent().assets.uploaded[inserted[0]!]?.kind).toBe("monster");
+    expect(inserted[0]).toContain("backdrop_img");
+    expect(store.getCurrent().assets.uploaded[inserted[0]!]?.kind).toBe("backdrop");
     expect(findByTestId(field, "q-queue-list")?.textContent).toContain("완료");
   });
 
@@ -77,7 +77,7 @@ describe("aiImageGenerateField queue", () => {
       },
     });
     const field = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue, onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue, onInserted: vi.fn() })
     );
     const prompt = findByTestId(field, "q-prompt");
     if (prompt) prompt.value = "슬라임";
@@ -100,7 +100,7 @@ describe("aiImageGenerateField queue", () => {
       },
     });
     const field = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue, onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue, onInserted: vi.fn() })
     );
     const prompt = findByTestId(field, "q-prompt");
     if (prompt) prompt.value = "느림";
@@ -125,7 +125,7 @@ describe("aiImageGenerateField queue", () => {
       },
     });
     const first = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue: shared, onInserted: vi.fn() })
     );
     const prompt = findByTestId(first, "q-prompt");
     if (prompt) prompt.value = "느림";
@@ -135,7 +135,7 @@ describe("aiImageGenerateField queue", () => {
     expect(shared.getSnapshot().jobs).toHaveLength(2);
     // 폼이 통째로 다시 그려져도 같은 큐 인스턴스를 쓰면 목록이 살아 있다.
     const second = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue: shared, onInserted: vi.fn() })
     );
     expect(findByTestId(second, "q-queue-list")?.textContent).toContain("느림");
     expect(findByTestId(second, "q-queue-list")?.textContent).toContain("빠름");
@@ -148,20 +148,20 @@ describe("aiImageGenerateField queue", () => {
       runner: async () => "data:image/png;base64,AAA",
     });
     const completed = queueTransition(shared, (snapshot) => snapshot.jobs[0]?.status === "done");
-    const id = shared.enqueue({ prompt: "슬라임", kind: "monster" });
+    const id = shared.enqueue({ prompt: "슬라임", kind: "backdrop" });
     await completed;
     expect(id).toBeTruthy();
     // 이 큐의 done 을 본 구독이 없으므로, 새로 붙는 필드가 초기 스냅샷을
     // 스캔해 에셋으로 등록한다.
     const inserted: string[] = [];
     renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: (resourceId) => inserted.push(resourceId) })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue: shared, onInserted: (resourceId) => inserted.push(resourceId) })
     );
     expect(inserted).toHaveLength(1);
-    expect(store.getCurrent().assets.uploaded[inserted[0]!]?.kind).toBe("monster");
+    expect(store.getCurrent().assets.uploaded[inserted[0]!]?.kind).toBe("backdrop");
     const afterRemount: string[] = [];
     renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: (resourceId) => afterRemount.push(resourceId) })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue: shared, onInserted: (resourceId) => afterRemount.push(resourceId) })
     );
     expect(afterRemount).toHaveLength(0);
   });
@@ -169,13 +169,13 @@ describe("aiImageGenerateField queue", () => {
   it("queueKey 필드는 같은 문서에서 리마운트해도 대기 목록을 유지한다", () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 401 })));
     const a = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "share-key", queueKey: "enemy-graphic:e1", onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "share-key", queueKey: "enemy-graphic:e1", onInserted: vi.fn() })
     );
     const prompt = findByTestId(a, "share-key-prompt");
     if (prompt) prompt.value = "느림";
     findByTestId(a, "share-key-generate")?.click();
     const b = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "share-key", queueKey: "enemy-graphic:e1", onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "share-key", queueKey: "enemy-graphic:e1", onInserted: vi.fn() })
     );
     expect(findByTestId(b, "share-key-queue-list")?.textContent).toContain("느림");
   });
@@ -187,7 +187,7 @@ describe("aiImageGenerateField queue", () => {
     const inserted: string[] = [];
     const render = (): void => {
       renderWithFakeDom(() =>
-        aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue: shared, onInserted: (resourceId) => inserted.push(resourceId) })
+        aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue: shared, onInserted: (resourceId) => inserted.push(resourceId) })
       );
     };
     render();
@@ -197,7 +197,7 @@ describe("aiImageGenerateField queue", () => {
     });
     const before = Object.keys(store.getCurrent().assets.uploaded).length;
     const completed = queueTransition(shared, (snapshot) => snapshot.jobs[0]?.status === "done");
-    shared.enqueue({ prompt: "슬라임", kind: "monster" });
+    shared.enqueue({ prompt: "슬라임", kind: "backdrop" });
     await completed;
     expect(inserted).toHaveLength(1);
     const after = Object.keys(store.getCurrent().assets.uploaded).length;
@@ -227,7 +227,7 @@ describe("aiImageGenerateField queue", () => {
     const renderFor = (recordId: string, sink: string[]): HTMLElement =>
       renderWithFakeDom(() =>
         aiImageGenerateField({
-          kind: "monster",
+          kind: "backdrop",
           testidPrefix: "qa",
           queueKey: `monster-species-resource:${recordId}`,
           onInserted: (resourceId) => { sink.push(resourceId); completed.resolve(); },
@@ -253,7 +253,7 @@ describe("aiImageGenerateField queue", () => {
     await completed.promise;
     expect(forA).toHaveLength(1);
     expect(forB).toHaveLength(0);
-    expect(store.getCurrent().assets.uploaded[forA[0]!]?.kind).toBe("monster");
+    expect(store.getCurrent().assets.uploaded[forA[0]!]?.kind).toBe("backdrop");
   });
 
   it("끝난 항목 지우기는 완료·취소만 걷는다", async () => {
@@ -266,7 +266,7 @@ describe("aiImageGenerateField queue", () => {
       },
     });
     const field = renderWithFakeDom(() =>
-      aiImageGenerateField({ kind: "monster", testidPrefix: "q", queue, onInserted: vi.fn() })
+      aiImageGenerateField({ kind: "backdrop", testidPrefix: "q", queue, onInserted: vi.fn() })
     );
     const prompt = findByTestId(field, "q-prompt");
     if (prompt) prompt.value = "깨짐";

@@ -9,7 +9,10 @@ import {
 } from "@/ai/narrativeHorrorWorkPlan";
 import type { GenrePackId } from "@/project/genrePackId";
 import { gameDesignBriefContext, type GameDesignBrief } from "@/project/gameDesignBrief";
+import { sceneGenre } from "./cinematicInterviewQuestions";
 import { buildActionArenaAuthoringGuide } from "@/ai/actionArenaAuthoring";
+import { BATTLE_SKINS, listActiveBattleSkinIds } from "@/battle/skins/registry";
+import { battleLookMoodGuide } from "@/project/battleLook";
 import {
   createGenreBlankProjectSystemPresetPlan,
   type GenreBlankProjectSystemPresetPlan,
@@ -224,19 +227,24 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
     return [
-      `${GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
+      `${GENRE_PRESET_BRIEF_PREFIX} ${brief.interview ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ") : preset.label}`,
       gameDesignBriefContext(brief),
       "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",
+      ...(brief.interview ? [
+        "interview.genre/secondary는 사용자가 고른 장르이고 preset은 이를 실행하는 엔진이다. 관계·연애를 회상 수집물로, 추리를 공포 추격으로 임의 변환하지 않는다. 두 장르를 고른 경우 blend에 적은 연결 방식과 각각의 핵심 행동을 실제 이벤트·상태·결과로 연결한다.",
+        "아래 장르 저작 요령은 도구 사용 참고다. 선택한 조우가 교감·부화라면 3종 스타터 선택이나 포획을 강제하지 말고, 선택한 방식으로 동료 획득과 중복 방지를 구현한다. 미술은 16비트 JRPG풍의 선명한 도트와 제한된 색 단계로 통일한다. 회화·매끈한 그라데이션·안티앨리어싱으로 도트를 흉내 낸 자산은 반려하고 다시 제작·검수한다.",
+        "기존 첫 구간 뼈대의 인물·대사·기억 조사·스타터는 사용자 설정이 아니라 임시 시드다. 확정 기획의 핵심 행동으로 고치되 시작부터 구간 끝까지의 연결과 검증 계약을 보존한다.",
+      ] : []),
       "타이틀 화면과 오프닝은 새 프로젝트 자리표시입니다(오프닝은 제목 카드뿐일 수 있습니다). 기획에 맞게 set_title_screen 으로 타이틀을, edit_opening/set_opening 으로 게임 안 목소리의 도입을 바꾸세요. 기획 요약을 그대로 옮기지 말고, 범인·반전 같은 정답은 도입에 쓰지 마세요.",
       WELCOME_DIALOGUE_LOOK_LINE,
       "한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
       `게임 제목이 아직 「${UNNAMED_GAME_TITLE}」 같은 기본값이면 기획에 맞는 제목을 지어 set_project_settings({title}) 로 저장하세요(타이틀 화면에도 반영됩니다).`,
-      ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
-      ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE] : []),
-      ...(preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
-      ...(textAsksForMystery(brief.summary) ? [MYSTERY_AUTHORING_GUIDE] : []),
+      ...(!brief.interview && preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
+      ...(!brief.interview && preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE, welcomeBattleLookLine()] : []),
+      ...(!brief.interview && preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
+      ...(!brief.interview && textAsksForMystery(brief.summary) ? [MYSTERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "school-horror" ? [HORROR_CHASE_AUTHORING_GUIDE] : []),
     ].join("\n\n");
@@ -260,6 +268,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     ...requiredTemplateBlock(preset.narrativeHorrorGenre),
     ...(preset.id === "horror-gallery" ? ["", HORROR_GALLERY_AUTHORING_GUIDE] : []),
     ...(preset.id === "school-horror" ? ["", HORROR_CHASE_AUTHORING_GUIDE] : []),
+    ...(preset.packId === "adventure-jrpg" ? ["", welcomeBattleLookLine()] : []),
     "",
     WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
@@ -282,7 +291,10 @@ export function welcomeGenrePresetDisplayText(preset: WelcomeGenrePreset, brief?
     const lines = brief.summary.replace(/\r\n?/gu, "\n").split("\n").map((line) => line.replace(/[ \t]+/gu, " ").trim()).filter(Boolean);
     let body = lines.join("\n");
     if (body.length > BRIEF_DISPLAY_LIMIT) body = `${body.slice(0, BRIEF_DISPLAY_LIMIT - 1).trimEnd()}…`;
-    return body ? `${preset.label} · 확정한 게임 기획\n${body}` : preset.label;
+    const label = brief.interview
+      ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ")
+      : preset.label;
+    return body ? `${label} · 확정한 게임 기획\n${body}` : label;
   }
   const short = (text: string | undefined): string => {
     const line = (text ?? "").split(/\r?\n/u)[0]!.replace(/\s+/gu, " ").trim();
@@ -307,6 +319,26 @@ export const WELCOME_DIALOGUE_LOOK_LINE =
   + "지나가는 마을 사람 잡담은 container:\"bark\"(게임을 안 멈춤), 짧은 대꾸는 balloon, 무전은 corner 로 두고, "
   + "감정이 튀는 대목은 본문 태그 [흔들]…[/]·[크게]…[/]·[쉼:0.5]·[표정:놀람] 을 아껴 쓰세요.";
 
+/**
+ * 첫 제작 때 전투 화면 꾸미기(system.battleLook)를 기획 톤에 맞춰 고르게 하는 지시. 없던 때 조수는 이 칸이 있는 줄 몰라
+ * 어떤 게임이든 기본 「도트 창」 그대로 두었다(2026-10-02). 꾸밈은 도트 측면 스킨에서만 보이므로 그 스킨 id 를 함께 준다.
+ */
+export function welcomeBattleLookLine(): string {
+  const sideSkins = listActiveBattleSkinIds().filter((id) => BATTLE_SKINS[id].motionStyle === "retro");
+  return "전투 화면: 턴제 전투가 있으면 기획 톤에 맞는 전투 화면 프리셋을 set_project_settings 의 battle.look.preset 으로 고르세요. "
+    + "기본 pixel 은 고전 레트로·향수를 노린 게임에만 그대로 둡니다. "
+    + `꾸밈은 도트 측면 전투(battle.uiStyle: ${sideSkins.join("·")}, 기본)에서만 보이고 몬스터 대치(pokemon)에는 보이지 않습니다. `
+    + `분위기 안내: ${battleLookMoodGuide()}. `
+    + "프리셋 위에 accent(#rrggbb 강조색)·party·command 칸을 덧바꿔 게임 색을 맞춰도 됩니다.";
+}
+
+const TURN_BATTLE_INTENT_RE = /전투|턴제|던전|보스|RPG|용사|모험/iu;
+
+/** 자유 문장이 턴제 전투를 시키는지(전투 화면 꾸미기 지시를 붙일지). */
+export function textAsksForTurnBattle(text: string): boolean {
+  return TURN_BATTLE_INTENT_RE.test(text);
+}
+
 /** Free text keeps the user's scope; structured intent selects a recipe later. */
 export function buildWelcomeFreeTextPrompt(userIntent: string): string {
   const intent = userIntent.trim();
@@ -317,6 +349,7 @@ export function buildWelcomeFreeTextPrompt(userIntent: string): string {
     "지금 열려 있는 프로젝트에 이어서 작업한다 — 기존 맵·이벤트·DB 를 먼저 읽고 거기에 얹는다.",
     "사용자가 요청한 범위만 실제 편집 툴로 작성하세요. 구조화된 의도에 맞는 저작 순서를 따르고, 요청하지 않은 NPC·아이템·퀘스트·상점·보스·보상·페이지 수를 할당하지 마세요.",
     ...requiredTemplateBlock(genre ?? undefined),
+    ...(textAsksForTurnBattle(intent) ? ["", welcomeBattleLookLine()] : []),
     "",
     WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",

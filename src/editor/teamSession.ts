@@ -27,6 +27,7 @@ export function startTeamSession(): void {
   // normal clean-editor refresh path.
   let seen = latest?.revision ?? -1, running = false;
   const bar = document.createElement('aside');
+  bar.className = 'oprn-team-session-bar';
   bar.setAttribute('aria-label', '팀 연결 상태');
   Object.assign(bar.style, { position: 'fixed', bottom: '14px', left: 'min(340px, 24vw)', maxWidth: 'calc(100vw - 360px)', zIndex: '90', display: 'flex', alignItems: 'center', gap: '10px', background: '#fffdf8', color: '#625b4e', border: '1px solid #ddd4c4', borderRadius: '10px', boxShadow: '0 3px 12px #3027190d', padding: '9px 12px', fontSize: '11px' });
   const text = document.createElement('span');

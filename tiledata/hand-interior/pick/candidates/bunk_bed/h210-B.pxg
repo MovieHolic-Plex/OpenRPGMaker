@@ -1,0 +1,98 @@
+// B: 감방 침상의 목재 결, 가로 흰 침상 둘, 동쪽 사다리; 꼭대기 윗면 4행(y=0~3)
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat s dwood 2
+@mat u linen 3
+@mat v linen 4
+@mat w linen 5
+@mat z linen 6
+@layer bed
+@mblock 0 0
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeeb.
+.bedddddeeeeddddddddeeedddddedb.
+.bedccddeeeedddccdddeeeddddeddb.
+.bedddddddddddddddddddddddddddb.
+.bccccccccccccccccccccccccccccb.
+.bcbbbbbbbbbbbbbbbbbbbbbbbbbbcb.
+.bcbuuuuuuuuuuuuuuuuuuuuuuubccb.
+.bedvzzzzwwwwwwwwwwwwwwwwwvcedb.
+.bedvzzzzwzzzzzzwwwwwwwwwwvcedb.
+.bedvzzzzwzzzzzzwwwwwwwwwwvcedb.
+.bedvwwwwvwwwwwwwwwwwwwwwwvcedb.
+.bedvuuuvwwwwwwwwwwwwwwwwwvcedb.
+.bedvwwwwwwwwwwwwwwwwwwwwwvcedb.
+.bedvwwwwwvvwwwwwwwwwwwwvvvcedb.
+.bedvvvvvvvvvvvvvvvvvvvvvvvcedb.
+.beduuuuuuuuuuuuuuuuuuuuuuucedb.
+.beeeeeeeeeeedeeeeeeeeeeeeeeedb.
+.beddddccddddddddddccdddddddedb.
+.bccccccccccccccccccccccccccccb.
+.bcbbbbbbbbbbbbbbbbbbbbbbbbbbcb.
+.bcbsssssssssssssssssssssssbecb.
+.bcb.......................becb.
+.bcb.......................becb.
+.bcb.......................becb.
+.bdb.......................becb.
+.bdb.......................becb.
+.bdb.......................becb.
+.bdb.......................becb.
+.bcbuuuuuuuuuuuuuuuuuuuuuuubecb.
+.bedvzzzzwwwwwwwwwwwwwwwwwvbecb.
+.bedvzzzzwzzzzzzwwwwwwwwwwvbecb.
+.bedvzzzzwzzzzzzwwwwwwwwwwvbecb.
+.bedvwwwwvwwwwwwwwwwwwwwwwvbecb.
+.bedvuuuvwwwwwwwwwwwwwwwwwvbecb.
+.bedvwwwwwwwwwwwwwwwwwwwwwvbecb.
+.bedvwwwwvvwwwwwwwwwwwwvvwvbecb.
+.bedvvvvvvvvvvvvvvvvvvvvvvvbecb.
+.bedwwwwwwwwvwwwwwwwwvwwwuvbecb.
+.bedvvvvvwwuvvvvvwwwuvvvvuvbecb.
+.beduuuuuvvuvuuuvvvvuuuuuuubecb.
+.beeeeeeeeeeeeeeeeeeeeeeeeebecb.
+.bedddddccddddddeeedddccdddbecb.
+.bcccccccccccccccccccccccccbecb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbecb.
+.bcb.......................becb.
+.bcb.......................becb.
+.bcb.......................becb.
+.bab.......................babb.
+@layer ladder
+@mblock 25 17
+ecb.ecb
+ecb.ecb
+eeeeeeb
+cdddccb
+babbabb
+ecb.ecb
+ecb.ecb
+eeeeeeb
+cdddccb
+babbabb
+ecb.ecb
+ecb.ecb
+eeeeeeb
+cdddccb
+babbabb
+ecb.ecb
+ecb.ecb
+eeeeeeb
+cdddccb
+babbabb
+ecb.ecb
+ecb.ecb
+eeeeeeb
+cdddccb
+babbabb
+ecb.ecb
+ecb.ecb
+eeeeeeb
+cdddccb
+babbabb
+bab.bab

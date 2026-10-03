@@ -36,6 +36,9 @@ from kit5 import LINEKITS, mask_at
 from mat import G
 from PIL import Image
 if PICKS: PICKS.install_resized()
+SNAP = None
+if os.environ.get('HAND_INTERIOR_SNAP', '1') != '0':
+    sys.path.insert(0, 'scripts/content/hand-interior-pick'); from palette_snap import snap as SNAP
 
 P = 64                 # 최소 접는 주기(px) — 16px 반복이 띠로 보이지 않게
 # 짜임 주기(px): 해시 잡음 H 를 상수로 바꿔 무늬의 구조만 남긴 뒤 잰 가장 짧은 16 배수 주기(2026-09-29 실측).
@@ -428,6 +431,39 @@ def convert(key, b, m):
 
 MAPS = [convert(m['key'], b, m) for k, b, m in rooms4.all_maps()]
 
+# ---------------------------------------------------------------- 칸 번호 고정 (pin_ids.py — 이미 깐 맵이 다시 굽기에 깨지지 않게)
+import pin_ids
+PREV = pin_ids.load_previous(OUT_SPEC, OUT_DEF, OUT_PNG, f'{OUT_MAPS}/maps.json')
+OLD_DEF, PIN_STATS = None, None
+def map_id(key): return f'hand-{key.replace("_", "-")}'
+if PREV:
+    old_slots, OLD_DEF, old_png = PREV
+    new_slots = pin_ids.slots(BLANK, VOID_TILE, FLOOR, WALL, CEIL, {n: e['cells'] for n, e in OBJECTS.items()},
+                              {n: e['pieces'] for n, e in TABLES.items()}, {n: e['pieces'] for n, e in LINES.items()},
+                              {n: e['pieces'] for n, e in DAISES.items()}, GOODS,
+                              {map_id(mp['key']): {L: mp[L] for L in ('lower', 'L2', 'L3', 'L4')} for mp in MAPS})
+    perm, legacy, final_count, PIN_STATS = pin_ids.plan(
+        new_slots, old_slots, {s_['baseTile']: s_['frames'] for s_ in SH.strips}, {s_['baseTile']: s_['frames'] for s_ in OLD_DEF['animationStrips']},
+        len(SH.cells), OLD_DEF['count'], N, skip={t for t, c in enumerate(SH.cells) if c is None})
+    def RM(t): return perm[t] if t >= 0 else t
+    cells, info = [None] * final_count, [None] * final_count
+    for nt, ft in perm.items(): cells[ft], info[ft] = SH.cells[nt], SH.info[nt]
+    legacy_set = set(legacy)
+    for t in legacy:
+        cells[t] = [old_png.crop(((t % TPR) * 16, (t // TPR) * 16, (t % TPR) * 16 + 16, (t // TPR) * 16 + 16))]; info[t] = {'legacy': t}
+    SH.cells, SH.info = cells, info
+    SH.strips = sorted([{**s_, 'baseTile': RM(s_['baseTile'])} for s_ in SH.strips] + [s_ for s_ in OLD_DEF['animationStrips'] if s_['baseTile'] in legacy_set], key=lambda s_: s_['baseTile'])
+    SH.index = {k: RM(v) for k, v in SH.index.items()}
+    BLANK, VOID_TILE = RM(BLANK), RM(VOID_TILE)
+    for d in (CEIL, FLOOR, WALL): d.update({k: [RM(t) for t in v] for k, v in d.items()})
+    for e in OBJECTS.values(): e['cells'] = [[dx, dy, RM(t), L] for dx, dy, t, L in e['cells']]
+    for d in (TABLES, LINES): [e['pieces'].update({k: [[dx, dy, RM(t), L] for dx, dy, t, L in v] for k, v in e['pieces'].items()}) for e in d.values()]
+    for e in DAISES.values(): e['pieces'] = {k: RM(t) for k, t in e['pieces'].items()}
+    GOODS.update({k: RM(t) for k, t in GOODS.items()})
+    for mp in MAPS:
+        for L in ('lower', 'L2', 'L3', 'L4'): mp[L] = [RM(t) for t in mp[L]]
+    print('pin', PIN_STATS, 'count', OLD_DEF['count'], '->', final_count, flush=True)
+
 # ---------------------------------------------------------------- 통행 정의
 PASS = {'up': True, 'down': True, 'left': True, 'right': True}
 SOLID = {'up': False, 'down': False, 'left': False, 'right': False}
@@ -474,7 +510,7 @@ for mp in MAPS:
             od = orig.get_flattened_data(); gd = got.get_flattened_data()
             orig_same = sum(1 for a, c in zip(od, gd) if a == c) / max(1, len(gd))
             os.makedirs(f'{OUT_MAPS}/render', exist_ok=True)
-            got.save(f'{OUT_MAPS}/render/{mp["key"]}.png'); ref.save(f'/tmp/hand-interior-ref-{mp["key"]}.png')
+            (SNAP(got)[0] if SNAP else got).save(f'{OUT_MAPS}/render/{mp["key"]}.png'); ref.save(f'/tmp/hand-interior-ref-{mp["key"]}.png')
     mp['seen'] = seen
     report.append({'map': mp['key'], 'size': [W, H], 'structDiffPx': mp['struct_diff'], 'pixelDiffAllFrames': px_diff,
                    'walkMismatch': len(diff_walk), 'walkMismatchCells': diff_walk[:12], 'unreached': unreached[:12],
@@ -487,12 +523,20 @@ sheet = Image.new('RGBA', (TPR * 16, rows * 16))
 for tid, frs in enumerate(SH.cells):
     if frs is None: continue
     sheet.alpha_composite(frs[0], ((tid % TPR) * 16, (tid // TPR) * 16))
+# 실내 공통 팔레트(palette/v6.pal)로 옮긴다 — 바닥·벽·천장·옛 기물·고른 새 기물이 한 팔레트를 쓰게(2026-10-03, 사용자 확인).
+# 픽셀 검사(위)는 옮기기 전 그림끼리 비교하므로 그대로다. HAND_INTERIOR_SNAP=0 이면 옮기지 않는다.
+if SNAP:
+    sheet, SNAP_CHANGED = SNAP(sheet); print(f'공통 팔레트로 옮김: 바뀐 화소 {SNAP_CHANGED}')
 os.makedirs(os.path.dirname(OUT_PNG), exist_ok=True)
 sheet.save(OUT_PNG, optimize=True)
 passability, priority, terrain, tileMeta = [], [], [], []
 PASSAGE_KO = {'blank': 'solid', 'wall': 'solid', 'floor': 'passable', 'flat': 'passable', 'stair': 'passable', 'star': 'passable', 'solid': 'solid', 'goods': 'solid'}
 for tid in range(count):
     inf = SH.info[tid]
+    if inf is not None and 'legacy' in inf:   # 아무도 안 쓰는 옛 칸: 옛 정의 그대로(옛 맵 호환)
+        o = inf['legacy']; m_ = dict(OLD_DEF['tileMeta'][o]); LEG = '옛 굽기 칸(옛 맵 호환용) — 새로 쓰지 않는다. '
+        if m_.get('label') and not m_.get('description', '').startswith(LEG): m_['description'] = LEG + m_.get('description', '')
+        passability.append(OLD_DEF['passability'][o]); priority.append(OLD_DEF['priority'][o]); terrain.append(OLD_DEF['terrain'][o]); tileMeta.append(m_); continue
     if inf is None:
         passability.append(dict(SOLID)); priority.append('lower'); terrain.append(0)
         tileMeta.append({'label': '', 'description': '빈 칸(움직임 띠 정렬).', 'source': 'unknown'}); continue

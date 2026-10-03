@@ -101,7 +101,7 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
         // HP 회복 엔트리(흡수 등)는 피해 문장으로 읽히면 안 된다 — 팝업은 초록 +N 인데 문장이 「피해를 입었다」였다(실측 2026-09-29).
         : effect?.healing
           ? `${withJosa(targetName, "이(가)")} ${entry.amount} 회복했다!`
-          : `${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
+          : withEffectiveness(`${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`, entry.critical, entry.effectiveness)
       : "효과가 충분하지 않았다.";
   return {
     step: "acting",
@@ -109,6 +109,20 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
     activeActorRecordId: undefined,
     targetId: entry.targetId,
   };
+}
+
+/** 상성 문장(포켓몬 3세대 resultmessage). effectiveness 는 시퀀서가 describeEffectiveness 일 때만 싣는다. */
+function effectivenessPhrase(effectiveness: number | undefined): string {
+  if (effectiveness === undefined || effectiveness === 1 || effectiveness <= 0) return "";
+  return effectiveness > 1 ? "효과가 굉장했다!" : "효과가 별로인 듯하다…";
+}
+
+/** 상성 문장이 있으면 결과 줄은 그 문장만 — 피해 숫자를 앞에 붙이면 메시지 창 한 줄을 넘쳐 셋째 줄이 잘렸다(2026-10-02 실측:
+ *  「아쿠아링이 2 피해를 입었다! 효과가 별로인 / 듯하다…」). 3세대도 피해 숫자는 말하지 않는다 — 양은 HP 바·숫자가 센다. */
+function withEffectiveness(damageLine: string, critical: boolean | undefined, effectiveness: number | undefined): string {
+  const phrase = effectivenessPhrase(effectiveness);
+  if (!phrase) return damageLine;
+  return critical ? `급소에 맞았다! ${phrase}` : phrase;
 }
 
 export function chargingDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
@@ -135,7 +149,8 @@ export function directorStateAfterTurn(snapshot: BattleSnapshot, previous: Battl
 export function actorCommandDirectorState(
   command: ActorCommand,
   before: BattleSnapshot,
-  after: BattleSnapshot
+  after: BattleSnapshot,
+  options: { readonly describeEffectiveness?: boolean } = {},
 ): BattleDirectorState {
   const actor = activeActor(before);
   const target = commandTarget(command, before, after);
@@ -155,8 +170,11 @@ export function actorCommandDirectorState(
       amount: commandEntry.amount ?? 0,
       critical: Boolean(commandEntry.critical),
       skillName: commandEntry.skillName,
+      ...(options.describeEffectiveness && commandEntry.effectiveness !== undefined ? { effectiveness: commandEntry.effectiveness } : {}),
     }
-    : after.lastActionResult;
+    : after.lastActionResult && !options.describeEffectiveness
+      ? { ...after.lastActionResult, effectiveness: undefined }
+      : after.lastActionResult;
   // 회복 여부와 자원은 타임라인 엔트리가 들고 있다. 부호나 HP 차이로 다시 추론하면
   // 양수 회복량이 "피해" 로, MP 회복이 HP 회복으로 둔갑한다(실측: 마력약 +30 팝업에
   // "주인공에게 30 피해!").
@@ -205,8 +223,8 @@ function impactLine(
     }
   }
   if (effect?.resource === "mp" && !effect.healing && rolled > 0) return `${targetName}의 MP가 ${rolled} 감소했다!`;
-  if (result && result.critical && rolled > 0) return `급소에 맞았다! ${targetName}에게 ${rolled} 피해!`;
-  if (rolled > 0) return `${targetName}에게 ${rolled} 피해!`;
+  if (result && result.critical && rolled > 0) return withEffectiveness(`급소에 맞았다! ${targetName}에게 ${rolled} 피해!`, true, result.effectiveness);
+  if (rolled > 0) return withEffectiveness(`${targetName}에게 ${rolled} 피해!`, false, result?.effectiveness);
   if (impact < 0) return `${withJosa(target?.name ?? "대상", "이(가)")} ${Math.abs(impact)} 회복했다!`;
   // 서포트이거나 데미지 0
   return "효과가 충분하지 않았다.";
@@ -742,6 +760,7 @@ function commandTarget(
     case "defend":
     case "escape":
     case "switch":
+    case "commonEvent":
       return undefined;
   }
 }
@@ -770,6 +789,11 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
       return `${subject} 방어 태세를 취했다.`;
     case "escape":
       return `${subject} 도망치려 한다…`;
+    case "commonEvent": {
+      // 「이벤트 연결」 명령 — 공통 이벤트 이름을 부른다. 그 안의 문장은 이벤트가 따로 띄운다.
+      const name = store.getCurrent().commonEvents.find((entry) => entry.id === command.commonEventId)?.name;
+      return name ? `${actorName}의 ${name}!` : `${actorName}의 행동!`;
+    }
     case "switch":
       return `${subject} 교체를 지시했다.`;
   }

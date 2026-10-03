@@ -1,0 +1,148 @@
+{
+  "aiRecords": {
+    "databasePresent": true,
+    "counts": {
+      "conversationTombstones": 0,
+      "conversations": 0,
+      "runCheckpoints": 0
+    }
+  },
+  "nativeDefault": {
+    "tileset": "beodeul_city",
+    "style": "beodeul-manor-a",
+    "palette": "버들항 v6 · 로마풍 항구 도시 (손 도트)"
+  },
+  "pendingHouse": {
+    "placements": 0,
+    "drag": {
+      "mapId": "map_blank_start",
+      "start": {
+        "x": 7,
+        "y": 8,
+        "face": "top"
+      },
+      "end": {
+        "x": 13,
+        "y": 13,
+        "face": "top"
+      }
+    },
+    "stateMap": "map_blank_start",
+    "tool": "relief",
+    "brush": "house",
+    "ok": true,
+    "width": 7,
+    "height": 6
+  },
+  "houses": {
+    "placements": [
+      {
+        "kitId": "quick_house_beodeul-manor-a_7_1",
+        "x": 7,
+        "y": 8,
+        "w": 7,
+        "h": 6
+      },
+      {
+        "kitId": "quick_house_beodeul-manor-b_10_2",
+        "x": 19,
+        "y": 5,
+        "w": 10,
+        "h": 8
+      },
+      {
+        "kitId": "quick_house_beodeul-log-green_7_2",
+        "x": 31,
+        "y": 12,
+        "w": 7,
+        "h": 7
+      }
+    ],
+    "kits": 3
+  },
+  "cancel": {
+    "count": 3,
+    "pending": null,
+    "tool": "house"
+  },
+  "undo": 2,
+  "redo": [
+    [
+      7,
+      6
+    ],
+    [
+      10,
+      8
+    ],
+    [
+      7,
+      7
+    ]
+  ],
+  "roads": {
+    "tileset": "beodeul_city",
+    "nativePavingCells": 137,
+    "foreignGroundCells": 0,
+    "features": 3,
+    "connected": true,
+    "pending": null
+  },
+  "sight": {
+    "treeBlocked": true,
+    "wallBlocked": true,
+    "lowCannotSeePlateau": true,
+    "highCanSeeLow": true,
+    "opaqueCells": 170
+  },
+  "film": {
+    "frames": 482,
+    "skippedCaptureFrames": 0,
+    "crop": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 960
+    },
+    "phases": [
+      {
+        "seconds": 0.064,
+        "text": "기본 버들항 · 집 너비와 높이를 드래그로 정하기"
+      },
+      {
+        "seconds": 6.387,
+        "text": "반대 방향으로 끌어도 같은 사각형 · 10×8칸 반목조 집"
+      },
+      {
+        "seconds": 17.174,
+        "text": "높이도 드래그로 조절 · 7×7칸 버들항 통나무 집"
+      },
+      {
+        "seconds": 30.39,
+        "text": "겹치는 집은 보호 · 한 번 클릭 배치도 사용 가능"
+      },
+      {
+        "seconds": 36.029,
+        "text": "Esc로 미완성 집 취소 · 취소 후 움직여도 배치 없음"
+      },
+      {
+        "seconds": 39.257,
+        "text": "Undo 한 번으로 한 채 제거 · Redo로 크기까지 복원"
+      },
+      {
+        "seconds": 41.81,
+        "text": "버들항 포석 도로 · 끌고 놓으면 모퉁이·교차로 자동 연결"
+      },
+      {
+        "seconds": 53.885,
+        "text": "시야 ON · 벽·나무 뒤 가림, 에디터와 게임이 같은 판정"
+      },
+      {
+        "seconds": 57.415,
+        "text": "시야 OFF · 고지 시야 확대가 켜져 있어도 가림 완전히 해제"
+      }
+    ],
+    "gif": "editor-2x.mp4"
+  },
+  "errors": []
+}

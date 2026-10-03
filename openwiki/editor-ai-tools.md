@@ -7,6 +7,7 @@
 - 연출 조립 도구(`tools/retroChoreographyTools.ts`, 2026-09-30): `upsert_choreography`(프로젝트 레코드 추가·수정, 층 배열은 자유 키 객체 금지 — Gemini 400)·`duplicate_choreography`(계약/레코드를 `chor_` 사본으로 복제, 반환 `data` 가 레코드 자체)·`list_fx_sheets`(이펙트 시트 이름·프레임 폭)·`list_retro_choreographies`(이제 프로젝트 레코드도 함께). 스킬에는 `upsert_skill.retroChoreographyId:"chor_..."` 로 붙인다. 지침 「연출 조립」 절은 `retroSkillMechanics.ts` 의 같은 가이드 문자열. 증거: `verify-shots/retro-choreo-a1/`.
 - B 손잡이: `upsert_choreography` 는 `speed`(0.5~2)·`weight`·`tint`(#rrggbb)·`screen`({shake,flash,dim,cutIn}, `{}` 면 제거)·`tags` 와 층 `tint`·`se` 를 받는다. `upsert_skill` 은 연출을 안 붙인 스킬에 자동 추천(`recommendRetroChoreography`) 결과를 노트로 돌려주고, `upsert_state` 는 `battleAura`(프리셋 8종 id)를 검증해 받는다.
 - 연출 미리보기 도구 `preview_choreography`(`tools/retroChoreographyTools.ts`, A2): 연출 id 하나를 받아 층별 프레임 스트립을 한 장 그림(`src/assets/retroChoreographyPreviewImage.ts`, 700×224 수준 스티치)으로 만든다. 그림은 도구 이름으로 결과에 붙는다 — `src/ai/piAgent/toolAdapter.ts` 와 `src/ai/assistantSession.ts` 두 곳에 같은 분기가 있으니 도구를 더하면 둘 다 본다. 조립(`upsert_choreography`) 뒤 시트가 맞는지 눈으로 보는 용도. 증거: `verify-shots/retro-choreo-a2/e-preview-choreography-0.png`.
+- 읽기 도구 `read_directing_guide`(2026-10-02): 컷신 연출 레시피의 정본은 `src/editor/tools/directingGuideTools.ts` 의 `DIRECTING_GUIDE` 하나다(놀람·폭발·지진·기절·유령·순간이동·마법·회상·수중·빛기둥 장면을 어떤 비트로 겹치는지, 오래 남는 효과를 되돌리는 법, 컷신 밖 명령 id). `script_cutscene` 설명과 능력 색인 `cutscene-directing`, 컨텍스트 「고수준 툴 우선」 줄이 이 도구를 가리킨다. `CUTSCENE_BEAT_SCHEMA` 는 비트가 실제로 읽는 칸을 **전부** 선언한다 — 미선언 칸은 Gemini 가 보내지 않는다(2026-10-02 전: `shake.intensity`·`flash.color`·`picture.resourceId`·`parallel.beats` 가 빠져 있었다). parallel 안쪽은 순환 $ref 대신 한 단계만 같은 모양으로 펼친다. 같은 지침의 「전투 연출」 절(2026-10-02)이 적 쓰러짐(collapseEffect)·전투 배경 겹(backdropLayers)·상태 오라(battleAura)·이펙트 겹치기·화면 필터(displayFilter)를 안내하고, 능력 색인 `battle-presentation` 이 그 도구 칸을 묶는다(openwiki/runtime-battle.md).
 - 읽기 도구 `read_retro_skill_guide`: 지침의 정본은 `src/assets/retroSkillMechanics.ts` 의 `RETRO_SKILL_DESIGN_GUIDE` **하나**이고 묶음 작성자와 조수가 같은 문자열을 읽는다(기믹 어휘·`upsert_skill` 필드 대응·새 스킬이 연출을 빌리는 절차·크로노 트리거/FF 풍 예시). 지침을 고칠 땐 이 파일만 고친다.
 - 흐름 증거(모델 없이 도구 레지스트리만): `scripts/qa/runtime/retro-assistant-build-project.mts` — 새 직업 「화염 검투사」 + 상태 + 스킬 8개를 만들고 `retro2003-skills-gif.mjs --set custom` 으로 8/8 재생을 확인.
 
@@ -204,6 +205,10 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 
 회귀: `test/mzLayerWriteTools.test.ts`(도구별 + 옛 맵 11 호출 + 「고침 2차」 정리 범위·그림자 보호·목록), `test/uploadedTilesetSwapGuard.test.ts`, `test/autotileLayerView.test.ts`, `test/tilesetTeachingGuards.test.ts`.
 
+## 일본 도시(jp_city) 조수 연결 (2026-10-04)
+
+`build_jp_city_building` 이 있어도 조수가 칩셋을 모르면 못 쓴다. `src/ai/jpCityPolicy.ts` 가 ① `classifyPlainPiTurn` 의 jp 라우트(대상 맵 jp_city 이거나 생성 요청이 칩셋·일본 상가를 말함 → 마을 계약 건너뛰고 jp 노트, 첫 요청부터 `JP_CITY_EXPOSED_TOOLS` 노출) ② `buildPiAgentSystemPrompt` 한 줄(+jp_city 맵이면 상세 순서) ③ `requestsModernMap` 의 jp_city 직접 호출 예외 ④ `TASK_RECIPES` `jp-city`(레거시 채팅 경로만)를 맡는다. 노트·지시 문구에 현대·모던·modern 을 쓰지 않는다(노트는 task 에 실려 PAW 게이트를 켠다). 도구 오류 문장은 `NEXT_ACTION` 꼬리로 다음 행동을 알린다. 상세·실측·남은 일: `openwiki/jp-city.md` 「조수 연결」. 같은 시험이 **참고문서 게이트의 일반 결함**을 드러냈다 — Pi 도구 결과 12,000자 상한에서 잘린 쪽(`dataTruncated`)은 읽은 증거가 안 돼, 번들 참고문서 61쪽(12개 타일셋)은 몇 번을 읽어도 칠하기 도구가 통과하지 못했다. `toolAdapter` 가 `read_tileset_reference` 만 30,000자로 보낸다.
+
 ## 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
 
 계획 `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md` Task 1. 쓰기(위 절)와 짝이다.
@@ -226,6 +231,16 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 
 남은 1·3층 전용 표면: `show_tile_grid`.
 회귀: `test/mzLayerVision.test.ts`, `test/qaGameRender.test.ts`(업로드 그림판·층 순서·못 찾음), `test/mzLayerGhostAccounting.test.ts`(증분 왕복·옛 맵 불변·집계·고스트 칸·뷰포트 재료).
+
+## 그림 연출 — script_cutscene_staged · generate_cutscene_art · 대화창 위치 (2026-10-02)
+
+트럭에 치여 이세계로 가는 식의 «그림·인물이 화면에서 움직이는 연출»을 조수가 짜게 하는 경로. 헤드리스 시험은 `npm run qa:game -- gen --brief scripts/qa-game/briefs/truck-isekai-pokemon.json --seed-project <project.json>`(그림 생성이 Google 429 면 `QA_IMAGE_PROVIDER=codex`).
+
+- **`script_cutscene_staged`**(`src/editor/tools/cutsceneStageTools.ts`, 컴파일러 `src/editor/cutsceneStage/compile.ts`): 배우 + 관계 + 타이밍을 선언하면 좌표를 도구가 계산해 `script_cutscene` beat 로 내린다. 배우 종류 — `character`(Actor1~4 걷기 프레임, `hero:true` 면 맵 위 주인공 그래픽도 같은 칸으로 맞춤) · `resourceId`(생성 그림 또는 번들 그림, 예 `scarloxy-monster-*`) · `ghost`+`tile`(맵 위 주인공) · `event`(맵 위 NPC·몬스터 이벤트). 단계 — show/hide/move/enter/exit/pose/fling/say/wait/flash(color)/shake/se/bgm/whiteout/dewhite/clear/transfer/fade/turn/animate/expect. `expect touching` 이 접촉을 못 박고 어긋나면 고칠 방법을 돌려준다. 충돌 전용 `script_cutscene_impact` 는 deprecated(→ staged) — 두 도구를 두면 모델이 전용 쪽만 쓰고 일반 도구를 외면했다.
+- **소재 규칙**: 몬스터·동물은 게임에 이미 있는 도트, 사람은 Actor1, 공격 이펙트는 `animate`(게임 전투 애니메이션), 효과음·BGM 은 목록에서. 생성(`generate_cutscene_art`, `style:game|illustration`)은 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만.
+- **`script_cutscene` 방어**: 생성 그림·캐릭터 조각·몬스터 도트를 `picture move` 로 손수 움직이면 거부하고 staged 로 안내(`rejectHandMovedActorPictures`, 내부 호출은 `_composedByStageTool`). 암전(fade out)으로 끝나 화면이 검게 남는 컷신도 거부. 새 beat `animation`(게임 전투 애니메이션 재생).
+- **대화창 위치(주인공을 가리는 문제)**: 대사 명령 `text.position`(`auto`·`top`·`center`·`bottom`, 비우면 «문장 표시 설정» displayTextSettings). 이벤트 편집기 대사 편집기에 «대화창 위치» 칸, 컷신 `say` beat·staged `say` 단계·AI 스키마에 같은 필드. `auto` = 화면 속 주인공을 가리지 않는 쪽. 런타임 가림 회피(`effectivePosition`)는 이제 **카메라를 거친 화면 속 높이**(`playerScreenY`)로 판정한다 — 타일 위치로 재던 때는 카메라가 맵 가장자리에 걸리면 어긋났다. staged 의 `say` 는 기본 auto 로 지금 화면의 배우와 덜 겹치는 위/아래를 고른다.
+- 미검증: vitest·게이트(이 세션 규칙상 미실행). 소리는 요청·로드 로그까지만 확인.
 
 ## 충격 연출 (2026-09-22)
 
@@ -1729,7 +1744,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 
 - **Pi-path tool escalation (2026-09-13):** the Pi runtime now mounts tools mid-run instead of front-loading the whole registry. `runPiAgent` keeps `state.tools` as a live array (the core loop rebuilds each turn's request from it, so in-place `push` is next turn's declaration — `setTools` array replacement never reaches a running context). Two escalation paths share one resolver, `resolvePiToolShape` (`src/ai/piAgent/toolAdapter.ts`), which honors the run's hard boundaries (`readOnly` → read-mode only; `toolNames` → the role's list): (1) a successful `find_tools` result's `data.matches[].name` are harvested and pushed — declared from the next turn; (2) `resolveFallbackTool` rescues a direct call to an unexposed-but-registered name and also declares it. The original 16-tool declaration cap was removed on 2026-09-19; see Hybrid native tool exposure for initial candidates and empty-search recovery. `antigravityToolEnumPayload` re-walks the live tool list per request so late-escalated integer-enum tools still get the numeric-enum wire workaround, while capture-time validation still fails fast on a malformed initial set. Read-only escalation is impossible: a readOnly run's `find_tools` may *find* write tools but the resolver refuses to make their shapes. Contracts: `test/piAgentToolEscalation.bun.test.ts` (real Agent loop with a scripted `streamFn` — harvest declares next turn, fallback rescues, readOnly boundary holds on both paths), `test/piAgentToolAdapter.test.ts` (resolver/harvest units), `test/aiChatPanelComposerMode.test.ts` (intent→`toolDomains` seeding).
 
-- **Editor-wide tool discovery and authored-data facades (2026-08-25; hybrid exposure updated 2026-09-19):** the normal `AssistantSession` request starts with a small control plane plus intent/plan/read-contract and natural-language candidates. `find_tools` searches the complete active registry by name/description/domain and returns up to six strict schemas; the session remembers discovered names for the current user turn and recomputes schemas on every LLM round. A successful empty search or neutral intent fallback restores the full native catalog on the next round. Discovery never bypasses registry mode, schema validation, approval classification, or deprecated-tool filtering. Canonical editor-wide mutations include `duplicate_map`, `manage_map_tree`, expanded `set_map_properties`, `duplicate_database_record`, destructive `delete_database_record`, `upsert_database_utility` for elements/terrains/battle commands, and `set_project_settings` for project identity, terms, resolution, system resources, initial party, and battle defaults. Keep broad editor concepts behind typed facades rather than adding one tool per form control. Contracts: `test/aiToolExposureHybrid.test.ts` and the existing editor reach/safety suites.
+- **Editor-wide tool discovery and authored-data facades (2026-08-25; hybrid exposure updated 2026-09-19):** the normal `AssistantSession` request starts with a small control plane plus intent/plan/read-contract and natural-language candidates. `find_tools` searches the complete active registry by name/description/domain and returns up to six strict schemas; the session remembers discovered names for the current user turn and recomputes schemas on every LLM round. A successful empty search or neutral intent fallback restores the full native catalog on the next round — **only when it fits the model's window** (2026-10-02). The full catalog measured about 189,000 tokens. With the 16,384 reserve that exceeds claude/glm (200,000) and unknown (128,000) windows, so the fallback turn died at request assembly. `buildSessionRegistryTools({ contextWindow })` now keeps the scoped core + discovery set when `fullCatalogFitsWindow` fails (it leaves about 13,000 tokens for conversation). `AssistantSession` passes `resolveContextWindow(config.model)`. The Pi path passes the deep model's window through `classifyPlainPiTurn({ contextWindow })`. The ratchet in `test/aiToolCatalogBudget.test.ts` now measures that real fallback payload. `find_tools` ranking: among tools whose description contains the whole query, a hit in the first sentence (what the tool is) and an earlier hit rank first. Before, all such tools tied at 60 and were cut at six in registry order, so searching 「엔딩」 returned cutscene tools and dropped `define_ending`. Discovery never bypasses registry mode, schema validation, approval classification, or deprecated-tool filtering. Canonical editor-wide mutations include `duplicate_map`, `manage_map_tree`, expanded `set_map_properties`, `duplicate_database_record`, destructive `delete_database_record`, `upsert_database_utility` for elements/terrains/battle commands, and `set_project_settings` for project identity, terms, resolution, system resources, initial party, and battle defaults. Keep broad editor concepts behind typed facades rather than adding one tool per form control. Contracts: `test/aiToolExposureHybrid.test.ts` and the existing editor reach/safety suites.
 
 - **Canvas AI workbench (2026-08-25):** the expert canvas toolbar now exposes four real quick actions through `src/editor/panels/canvasAiWorkbench.ts`: `만들기` arms the existing deterministic build palette and selection tool, `다듬기` sends the current tile selection through the bounded `openRegionTaskModal` preview/apply flow with a constrained polish prompt, `검사` opens `canvasInspectionPanel.ts` over deterministic `projectLint` results with camera focus and bounded AI-repair handoff, and `AI 요청` opens the same region-task composer for the current selection or whole map. The toolbar wiring lives in `editorZoomToolbar.ts`; browser proof is `test/e2e/canvas-ai-workbench.spec.ts`.
 
@@ -2344,7 +2359,11 @@ PNG는 도구 결과의 image content에 붙어 다음 모델 호출로 전달�
 기본 칩셋으로 대신하지 않는다. 일회성 요청 ID는 완료·취소·45초 시간 초과 후 폐기된다.
 
 현재 PNG 경로는 기존 렌더러가 정확히 지원하는 타일/이벤트에 한정한다. 다중 타일 스택,
-쿼터 합성, 초안 graft는 정확한 렌더링을 보장할 때까지 명시적으로 오류를 반환한다.
+쿼터 합성은 정확한 렌더링을 보장할 때까지 명시적으로 오류를 반환한다.
+초안 graft는 해당 프로젝트 사본의 atlas와 업로드 소스 URL을 먼저 고정한 뒤 전체 합성한다.
+번들 소스는 번들 카탈로그에서 읽고, 현재 편집기 store나 미리보기 bake 캐시로 대체하지 않는다.
+소스 누락·합성 실패·5초 시간 초과는 unavailable로 반환하며 부분 합성은 검수 근거로 인정하지 않는다.
+`scripts/qa/tool-image-snapshot.mjs`는 같은 소스 id의 빨강→파랑 교체와 누락 반려를 실제 브라우저 픽셀로 확인한다(합성 fixture).
 일반 네이티브 LPC 오토타일 변형은 완성 타일로 그린다. 오류를 시각 검토 완료로 보고하지 않는다.
 `map.image.delivered`는 도구 응답에 PNG를 포함한 증거이며 모델의 미적 판단이 옳다는 증거는 아니다.
 
@@ -2545,3 +2564,13 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 - `place_savepoint {heal?:boolean}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다.
 - `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 두 게이트 전이 앞에 흰 `Flash Screen` 을 넣고 페이드를 white 로 바꾼다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다.
 - 명령 보장 표: `setEventGraphicPattern`·`cutsceneControl`·`checkpointSave`·`triggerEnding`·`setSelfSwitch` 는 맵/공통에서 `full` 이다(전투는 종전 유지). 저작 길은 그대로라 `indirectAuthoring` 로 선택창 행 요구를 면제한다. 도구 요약의 「미지원 커맨드 N건」은 「런타임 제한 커맨드 N건」이 되었다.
+
+## 세계 지도 지형 도구 (2026-10-03)
+
+`read_world_terrain`(읽기)·`edit_world_terrain`(쓰기, 도메인 world). 세계 지도는 타일을 찍지 않고 지형 작업(ops)을 월드맵 키트가 다시 그린다.
+prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기다리고 run 은 결과를 맵·타일셋·로케이션으로 쓴다. 도구 결과에 지도 그림(미리보기는 도식)을 붙인다.
+흐름·계약·함정: `openwiki/worldmap-terrain-editing.md`.
+
+## Bounded romance authoring tools
+
+`author_romance_scene` and `inspect_romance_scene` are registered through `harnesses/_core/authoringRegistry.ts` in the event domain. The first authors fixed contract choices with model-written prose and validates native interpreter behavior before atomic commit. The second reports executable blockers; a read-tool transport success is not an `ok` scene verdict. Full contract and completion rules: [romance-scene](harnesses/romance-scene.md).

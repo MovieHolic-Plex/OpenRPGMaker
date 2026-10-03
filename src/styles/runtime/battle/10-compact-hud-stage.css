@@ -82,32 +82,6 @@
   width: 0;
 }
 
-.battle-command-icon-sword,
-.battle-command-icon-target {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-sword.png");
-}
-
-.battle-command-icon-fire {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-fire.png");
-}
-
-.battle-command-icon-shield {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-shield.png");
-}
-
-.battle-command-icon-cross {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-cross.png");
-}
-
-.battle-command-icon-bag {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-bag.png");
-}
-
-.battle-command-icon-boot,
-.battle-command-icon-back {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-boot.png");
-}
-
 .battle-result-reward-icon,
 .battle-result-progress-icon {
   background-color: transparent;
@@ -117,33 +91,15 @@
 }
 
 .battle-result-reward-icon-exp {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-exp.png");
   border: 0;
   transform: none;
 }
 
-.battle-result-reward-icon-gold {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-gold.png");
-}
-
-.battle-result-reward-icon-item {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-shard.png");
-}
-
-/* 레벨업·기술 습득 행의 아이콘 칸이 비어 미완성으로 보였다 — 경험치 아이콘을 쓴다. */
+/* 레벨업·기술 습득 행의 아이콘 상자. Starter 그림은 삭제됐다. */
 .battle-result-reward-icon-levelup,
 .battle-result-reward-icon-skill {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-exp.png");
   border: 0;
   transform: none;
-}
-
-.battle-result-progress-icon-world {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-world.png");
-}
-
-.battle-result-progress-icon-next {
-  background-image: url("../../../../public/assets/generated/starter/battle-icon-next.png");
 }
 
 .battle-result-progress-icon-next::before {

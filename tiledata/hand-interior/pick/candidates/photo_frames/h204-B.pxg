@@ -1,0 +1,125 @@
+// 기존 초상·협탁 유지; 액자 셋 꼭대기 윗면을 위로 1행 확장하여 중앙 y=4~6·왼쪽 y=8~10·오른쪽 y=7~9의 3행 확보.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat b brass 3
+@mat l linen 3
+@mat d dwood 3
+@mat u blue 2
+@mat r red 2
+@mat i iron 3
+@layer table
+@mblock 0 16
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..www......www..
+..www......www..
+..www......www..
+..www......www..
+@tblock 0 16
+.37777776666662.
+.37666666665552.
+.37666556666652.
+.37666666666552.
+.36666666555552.
+.45555555544442.
+..433333333332..
+..466666655442..
+..465555554442..
+..465555554442..
+..465555554442..
+..444444444432..
+..463......442..
+..463......442..
+..463......442..
+..332......332..
+@mblock 7 25
+bb
+@tblock 7 25
+43
+@layer frames
+@mblock 5 4
+bbbbbb
+bbbbbb
+bbbbbb
+bbbbbb
+bllllb
+blddlb
+bllllb
+bllllb
+bluulb
+buuuub
+buuuub
+bbbbbb
+..dd..
+@tblock 5 4
+344443
+344443
+455553
+444333
+433332
+433332
+435532
+434432
+432232
+422222
+422112
+333222
+..22..
+@mblock 1 8
+bbbb
+bbbb
+bbbb
+bbbb
+bllb
+bddb
+bllb
+brrb
+brrb
+bbbb
+@tblock 1 8
+3443
+3443
+4553
+4433
+4332
+4332
+4542
+4222
+4212
+3322
+@mblock 11 7
+bbbb
+bbbb
+bbbb
+bbbb
+bllb
+bddb
+bllb
+biib
+biib
+bbbb
+.dd.
+@tblock 11 7
+3443
+3443
+4553
+4433
+4332
+4332
+4542
+4332
+4322
+3322
+.22.

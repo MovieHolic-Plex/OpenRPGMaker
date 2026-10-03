@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tea_2x1/h5-C.pxg",
+ "id": "tea 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "윤곽 한 겹 유지, 밝은 줄은 위·왼 테에만, 오른·아래 테는 어두운 천 단으로, 윗면 격자 무늬를 줄 단위로 조용하게",
+ "ok": true
+}

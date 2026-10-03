@@ -3,10 +3,11 @@
 // 들림(lift) 단위는 「단」이다. 화면 px = 단 × 맵 칸 크기 (1단 = 벽 1칸, relief/types.ts).
 // 칸 들림은 renderRelief 가 **실제로 그리는** 높이(effectiveHeights → prune)다 — 칠한 높이가 아니다.
 // 그래야 타일이 그림의 윗면에 정확히 앉는다. 경사로 칸은 칸 중심의 오르막 위치로 보간하고, 계단은 디딤판 단으로 끊는다.
-import { effectiveHeights, prune, type ReliefRender, type ReliefRenderOptions } from "./render";
-import { gridFromRelief, RELIEF_TILE, type ReliefData } from "./types";
+import type { ReliefRender, ReliefRenderOptions } from "./render";
+import { RELIEF_TILE, type ReliefData } from "./types";
+import { reliefGrids } from "./window";
 import { hasRelief, reliefBridgeMask, reliefSlopes } from "./walk";
-import { reliefCarvedStairs, reliefRampArt, reliefSmoothStairs } from "./styles";
+import { reliefRampArt } from "./styles";
 
 export interface ReliefLiftField {
   readonly width: number;
@@ -22,7 +23,7 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
   const cached = fields.get(relief);
   if (cached) return cached;
   const { width, height } = relief;
-  const drawn = prune(effectiveHeights(gridFromRelief(relief)));
+  const drawn = reliefGrids(relief).pruned;
   const elevation = new Float32Array(width * height);
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) elevation[y * width + x] = drawn[y]?.[x] ?? 0;
   for (const s of reliefSlopes(relief)) {
@@ -42,15 +43,14 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
 }
 
 /**
- * 그 칸 바닥을 relief 그림이 직접 칠하는가. 경사로 도트가 있는 바이옴의 매끈한 경사로 칸은 경사로 도트가 비탈 한 면을 칠하므로
+ * 그 칸 바닥을 relief 그림이 직접 칠하는가. 매끈한 경사로는 렌더러가 비탈 한 면을 칠하므로
  * 하층 바닥 타일(잔디 240 등)을 그리지 않는다 — 칸마다 계단처럼 들린 타일이 비탈을 조각내지 않게. 통행은 타일 그대로.
  */
 export function reliefPaintsCell(relief: ReliefData | undefined, x: number, y: number): boolean {
   if (!relief?.ramps) return false;
   const v = relief.ramps[y * relief.width + x] ?? 0;
-  // r3: stair ramps (5..8) too where the style paints them — as slopes (smoothStairs + ramp art) or as cut steps (carvedStairs)
-  if (v >= 5 && v <= 8) return !!reliefCarvedStairs(relief.style) || (reliefSmoothStairs(relief.style) && !!reliefRampArt(relief.style));
-  return v >= 1 && v <= 4 && !!reliefRampArt(relief.style);
+  // 기본 경사로도 칸마다 들린 잔디 타일로 덮으면 계단처럼 쪼개진다. 비탈과 계단 모두 직접 그린다.
+  return v >= 1 && v <= 8;
 }
 
 /** relief → renderRelief 옵션(편집기·플레이어·오프라인 렌더가 같은 값을 쓴다): 경사로·양식·경사로 도트·다리 판. */
@@ -161,4 +161,24 @@ export function reliefOverRgba(render: ReliefRender): Uint8ClampedArray {
   const out = new Uint8ClampedArray(render.rgba);
   for (let i = 0; i < render.src.length; i++) if (partOf(render, i) === "under") out[i * 4 + 3] = 0;
   return out;
+}
+
+/**
+ * 들림 없는 땅 좌표 (x, groundY) 를 눌렀을 때 화면에 실제로 보이는 칸 — 그 칸의 윗면인지 남쪽 벽인지.
+ * 3/4 시점에서 높은 칸은 북쪽으로 올라가 그려지므로, 남쪽(앞) 칸부터 거슬러 올라가며 처음 덮는 것을 고른다.
+ * 편집기 높이 붓·지형지물이 「보이는 그 언덕」을 집게 한다. relief 가 없으면 그 칸의 윗면이다.
+ */
+export function reliefPickCell(relief: ReliefData | undefined, x: number, groundY: number): { x: number; y: number; face: "top" | "wall" } {
+  if (!relief || !hasRelief(relief) || x < 0 || x >= relief.width) return { x, y: groundY, face: "top" };
+  const field = reliefLiftField(relief);
+  let maxLift = 0;
+  for (let i = 0; i < field.elevation.length; i++) maxLift = Math.max(maxLift, field.elevation[i] ?? 0);
+  const fy = groundY + 0.5;
+  for (let y = Math.min(relief.height - 1, groundY + Math.ceil(maxLift) + 1); y >= Math.max(0, groundY); y--) {
+    const lift = cellLift(field, x, y), top = y - lift;
+    if (fy >= top && fy < top + 1) return { x, y, face: "top" };
+    const southLift = y + 1 < relief.height ? cellLift(field, x, y + 1) : 0;
+    if (lift > southLift && fy >= top + 1 && fy < y + 1 - southLift) return { x, y, face: "wall" };
+  }
+  return { x, y: groundY, face: "top" };
 }

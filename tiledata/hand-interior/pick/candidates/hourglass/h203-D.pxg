@@ -1,0 +1,56 @@
+// D: 윗판·금장 유지, 유리방·기둥 아래 높이 27→16행, 받침 11행 올림; 꼭대기 윗면 4행(y=1~4).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat W wood 4
+@mat w wood 5
+@mat p wood 6
+@mat h wood 7
+@mat b brass 0
+@mat c brass 2
+@mat g brass 4
+@mat G brass 5
+@mat H brass 6
+@mat d glass 1
+@mat s glass 2
+@mat t glass 4
+@mat u glass 5
+@mat v glass 6
+@mat q gold 3
+@mat r gold 4
+@mat e gold 5
+@layer hourglass
+@mblock 0 0
+...oooooooooo...
+..ohhhppppppWo..
+.ohppwGGGwwwWWo.
+.oppwwgggwwWWWo.
+.obGGGGggggccbo.
+..owwwWWWWWwoo..
+..oGwdduutddWo..
+..opduvuuutdsWo.
+..opdvuutttdsWo.
+..owduqeerrdsWo.
+..ow..dqqd..WWo.
+..oGw..dq...gWo.
+..ow..duqd..WWo.
+..ow.duuqtd.WWo.
+..owduvuqutdsWo.
+..oGduqeerrdgWo.
+..ow.ddrrdd.WWo.
+.ohppwwwwwwWWWo.
+.obGGGGggggccbo.
+.owwwwWWWWWWWoo.
+..oooooooooooo..
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................

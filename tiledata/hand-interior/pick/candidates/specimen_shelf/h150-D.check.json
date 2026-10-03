@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/specimen_shelf/h150-D.pxg",
+ "id": "specimen shelf",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 23,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "금장 모서리와 중앙 문양, 눈알·뿔·버섯 표본 병의 윗뚜껑을 넣은 좁은 선반; 꼭대기 윗면 3행(y=1~3)",
+ "ok": true
+}

@@ -39,6 +39,7 @@ import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/si
 import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
+import { mountReliefToolbar } from "@/editor/panels/reliefToolbar";
 import {
   closeTestPlayModal,
   openRandomTroopBattleTestModal,
@@ -124,6 +125,7 @@ let leftResizer: HTMLElement | null = null;
 let mapTreeResizer: HTMLElement | null = null;
 let phaserHost: HTMLElement | null = null;
 let canvasToolbarRoot: HTMLElement | null = null;
+let disposeReliefToolbar: (() => void) | null = null;
 let chatFloatRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let aiSidebarWorkspace: ReturnType<typeof createAiSidebarWorkspace> | null = null;
@@ -220,6 +222,9 @@ export function renderEditor(main: HTMLElement): void {
   persistenceBannerHost = bannerHost;
   paintPersistenceBanner();
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics);
+  // 「높이」 막대·지형지물 팝업 — 높이 도구일 때만 보인다(reliefToolbar.ts).
+  disposeReliefToolbar?.();
+  disposeReliefToolbar = mountReliefToolbar(canvasArea);
   aiSidebarWorkspace?.dispose();
   aiSidebarWorkspace = createAiSidebarWorkspace(left, null, () => { applyLayout(); scheduleFitCanvas(); });
   // 조수는 오른쪽 도크에 항상 떠 있다 — 왼쪽 팔레트와 동시에 쓴다(2026-09-26). 폭은 applyLayout 이 정한다.
@@ -489,6 +494,8 @@ export function teardownEditor(): void {
   mapTreeResizer = null;
   phaserHost = null;
   canvasToolbarRoot = null;
+  disposeReliefToolbar?.();
+  disposeReliefToolbar = null;
   chatFloatRoot = null;
   aiDockRoot = null;
   aiTeamRailRoot = null;
@@ -973,6 +980,10 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
   // editorState 발 새로고침이 프로젝트 전체 점검을 다시 돌리지 않는다.
   const versionToken = store.getVersionToken();
   const documentKey = `${versionToken.lineage}:${versionToken.generation}`;
+  // 칸·높이 칠하기는 참조를 바꾸지 않는다. 그런데 칠하기마다 store 세대가 올라 문서 키가 늘 달라지므로, 키만 보면
+  // 붓 표본마다 프로젝트 전체 점검(100×100 마을 기준 표본당 수 ms~수십 ms)을 다시 돌렸다(2026-10-03 높이 붓 렉 실측) — 키만 따라간다.
+  const paintOnly = change?.scope === "map" && Boolean(change.cells?.length || change.relief);
+  if (paintOnly && authoringJourneyReferenceIssues !== null) authoringJourneyIssuesDocumentKey = documentKey;
   if (
     authoringJourneyReferenceIssues === null ||
     documentKey !== authoringJourneyIssuesDocumentKey ||

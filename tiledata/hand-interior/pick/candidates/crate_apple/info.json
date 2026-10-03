@@ -1,0 +1,40 @@
+{
+ "id": "crate:apple",
+ "slug": "crate_apple",
+ "name_ko": "사과 궤짝",
+ "category": "채소",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "사과 궤짝 — 나무 궤짝, 담긴 상품만 다른 변형. 과일 가게·시장·식료품 방의 바닥에 2~3개 붙여 줄지어.",
+ "where": "과일 가게·시장·식료품 방의 바닥에 2~3개 붙여 줄지어.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_colors": 13,
+ "material": "wood",
+ "related": [
+  "crate:fish",
+  "crate:loaf"
+ ]
+}

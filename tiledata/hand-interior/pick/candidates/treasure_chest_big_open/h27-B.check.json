@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/treasure_chest_big_open/h27-B.pxg",
+ "id": "treasure chest big open",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "뚜껑 안쪽을 어두운 붉은색+금 징으로 뒤로 세우고 금테 아래 붉은 천 2행을 열었다; 앞 몸통·자물쇠는 h24-D 그대로",
+ "ok": true
+}

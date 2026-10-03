@@ -9,7 +9,7 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 //   dryRun이면 통과해도 ctx.project를 갱신하지 않는다.
 
 import type { LintIssue } from "@/project/lint/projectLint";
-import type { Project } from "@/project/types";
+import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
@@ -20,6 +20,7 @@ import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition
 import { commitChangeset, createDraft, finishDraftTilesets, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
+import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegistry';
 import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
 
@@ -48,6 +49,11 @@ function rejectUploadedTilesetSwap(before: Project, draft: Project, name: string
   }
 }
 
+/** edit_world_terrain 이 만든 세계 지도 — 칩셋이 그 맵 전용 `worldmap_<mapId>` 다. */
+function isWorldmapKitMap(map: GameMap): boolean {
+  return Boolean(map.worldmapSource) && map.tilesetId === `worldmap_${map.id}`;
+}
+
 /** 계열 검사 메시지에 싣는 같은 계열 후보 수 상한. */
 const FAMILY_CANDIDATE_LIMIT = 8;
 
@@ -59,12 +65,16 @@ const FAMILY_CANDIDATE_LIMIT = 8;
  */
 function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Project, name: string): void {
   const currentMap = ctx.currentMapId ? before.maps[ctx.currentMapId] : undefined;
-  if (!currentMap) return;
+  // 세계 지도(월드맵 키트) 칩셋은 지도 그림을 칸마다 자른 그 맵 전용 타일셋이라 그림체 기준이 못 된다 — 보는 맵이 세계 지도면 검사하지 않는다.
+  if (!currentMap || isWorldmapKitMap(currentMap)) return;
   const baseFamily = tilesetFamily(before, currentMap.tilesetId);
   const approved = new Set(ctx.approvedTilesetFamilies ?? []);
   for (const [id, next] of Object.entries(draft.maps)) {
     const previous = before.maps[id];
     if (previous && previous.tilesetId === next.tilesetId) continue;
+    // 세계 지도를 만들거나 다시 빌드하는 것도 그림체를 바꾸는 게 아니다. 실측(2026-10-03 조선 시험): 버들항 빈 맵을 보던 조수의
+    // edit_world_terrain 이 여기서 거부되고, 없는 타일셋으로 ask_tileset_change 를 부르다 턴을 끝냈다.
+    if (isWorldmapKitMap(next)) continue;
     const family = tilesetFamily(draft, next.tilesetId);
     if (family === baseFamily || approved.has(family)) continue;
     const fromName = before.tilesets[currentMap.tilesetId]?.name ?? currentMap.tilesetId;
@@ -235,6 +245,12 @@ export function runToolDefinition(
   }
 
   // 쓰기 툴: draft에 적용.
+  const prerequisite = authoringWritePrerequisite(ctx.project);
+  if (prerequisite && name !== prerequisite && name !== 'set_build_spec'
+    && tool.domains?.some(domain => domain === 'event' || domain === 'map' || domain === 'tile')) {
+    return { ok: false, summary: '첫 대화를 먼저 작성하세요.', issues: [{ severity: 'error', code: 'authoring-prerequisite',
+      message: `${prerequisite}으로 확정한 두 선택의 대사를 먼저 작성한 뒤 장소를 꾸미세요. 임시 초안을 두고 배경 시공부터 시작하지 않습니다.` }] };
+  }
   const before = ctx.project;
   const draft = createDraft(before);
   let exec;

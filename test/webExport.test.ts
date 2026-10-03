@@ -34,6 +34,21 @@ describe("web player export", () => {
     expect(zipPaths).toContain("assets/easyrpg-chipset-exterior.png");
   });
 
+  it("내보낸 에셋과 메타데이터 수정은 열린 프로젝트를 바꾸지 않는다", () => {
+    const source = projectWithUploadedAssets();
+    const asset = source.assets.uploaded.used_picture!;
+    const tileset = Object.values(source.tilesets)[0]!;
+    const documents = tileset.referenceDocuments;
+    const prepared = prepareWebExport(source);
+    const exported = prepared.project.assets.uploaded.used_picture!;
+    exported.name = "changed export";
+    exported.meta.width = 99;
+    expect(asset.name).toBe("used_picture");
+    expect(asset.meta.width).toBe(1);
+    expect(tileset.referenceDocuments).toBe(documents);
+    expect(prepared.project.tilesets[tileset.id]?.referenceDocuments).toBeUndefined();
+  });
+
   it("검증된 배포 manifest가 없으면 불완전 ZIP을 만들지 않는다", async () => {
     const exportAttempt = createWebPlayerExportPackage(projectWithUploadedAssets(), {
       fetchBytes: async (path) => {

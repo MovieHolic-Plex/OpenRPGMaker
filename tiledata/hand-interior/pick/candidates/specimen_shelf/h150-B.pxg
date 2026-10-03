@@ -1,0 +1,44 @@
+// 병 세 개의 y=5~6만 밝은 3열 뚜껑 윗면과 어두운 앞 테로 수정; 꼭대기 윗면 3행(y=0~2).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 4
+@mat b wood 5
+@mat c wood 6
+@mat d wood 7
+@mat e wood 3
+@mat f dwood 1
+@mat g dwood 2
+@mat h glass 1
+@mat i glass 2
+@mat j glass 4
+@mat k glass 5
+@mat l linen 4
+@mat m linen 6
+@mat n iron 1
+@mat o green 2
+@mat p green 4
+@mat q clay 2
+@mat r clay 4
+@mat s linen 2
+@mat t linen 5
+@mat u red 3
+@mat v red 4
+@layer furniture
+@mblock 0 0
+.cccccccccccccc.
+.cbccbbccccbbbc.
+.cccccbbccccccc.
+.dddddddddddddc.
+.caaaaaaaaaaaae.
+.ctmthtmthtmthe.
+.cslshslshslshe.
+.cjmmhjhmhjvvhe.
+.ckmnhjtmhjuuhe.
+.cjmmhjthhjtthe.
+.ciiihiiihiiihe.
+.cbccccbccccbbe.
+.cccccccccccccc.
+.dddddddddddddc.
+.caaaaaaaaaaaae.
+.ceeeeeeeeeeeee.

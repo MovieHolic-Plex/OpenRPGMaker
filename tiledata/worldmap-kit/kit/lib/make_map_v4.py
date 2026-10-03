@@ -74,10 +74,17 @@ def clean(m, minsize=4):
     return m
 
 
-def polymask(pts, warp=1.4, salt=0, S=4, minsize=4):
+def raster(pts, S=4):
+    """다각형(칸 좌표)을 S배 해상도 마스크로."""
     im = Image.new('L', (W * S, H * S), 0)
     ImageDraw.Draw(im).polygon([(x * S + S // 2, y * S + S // 2) for x, y in pts], fill=255)
-    hi = np.array(im) > 0
+    return np.array(im) > 0
+
+
+def polymask(pts, warp=1.4, salt=0, S=4, minsize=4):
+    if isinstance(pts, np.ndarray):                  # 생성 지형(kit_gen)은 다각형 대신 칸 마스크를 그대로 넘긴다 — 왜곡 없음
+        return pts.astype(bool).copy()
+    hi = raster(pts, S)
     ys, xs = np.mgrid[0:H, 0:W]
     dx = (vn(7, salt) - .5) * 2 * warp + (vn(2.6, salt + 1) - .5) * warp * .9
     dy = (vn(7, salt + 2) - .5) * 2 * warp + (vn(2.6, salt + 3) - .5) * warp * .9
@@ -236,6 +243,9 @@ RIVERS = [
     ('동대륙 지류', [(70, 21), (68, 24), (67, 27)], 2, 5),
 ]
 LAVA_LINE = [(79, 19), (82, 20), (85, 22)]
+VOLCANOES = [(77.5, 16.5)]          # 화구 가운데(칸+.5). 지형 편집 volcano 작업이 더한다
+VOLCANO_ICON_N = 1                  # 앞의 몇 개가 장소 아이콘(화산)의 화구인가 — 그 뒤는 편집 화산(가운데 칸에 원뿔을 그린다)
+LAVA_LINES = [LAVA_LINE]
 TOXIC_POOLS = [[(62.5, 16, 1.3), (64, 17.2, 1.7), (65.6, 18.3, 1.4), (67, 19.6, 1.0)],
                [(66.5, 22.5, 1.2), (68, 23.4, 1.5), (69.6, 23.9, 1.0)],
                [(61.5, 21, 1.1), (62.8, 22.2, 1.3)]]
@@ -269,6 +279,15 @@ FORESTS = [
     ([(54, 1), (61, 1), (61, 7), (54, 7)], SNOWF, .55, 41),
     ([(20, 12), (46, 12), (46, 24), (20, 24)], BROAD, .84, 42),
 ]
+
+# 지형 편집(kit_terrain.apply 가 채운다 — terrains/<id>.json 의 ops). 기본 지형에서는 모두 비어 있다.
+EXTRA_LAND = []      # (다각형, 바닥 또는 None, warp)           땅을 더한다(안쪽 바다 자르기 뒤)
+EXTRA_SEA = []       # (다각형, warp)                          바다로 자른다(마지막)
+EXTRA_BIOMES = []    # (다각형, 바닥, warp)                     모든 땅 위에 바닥을 덮는다(기본 바이옴 뒤)
+CLEAR = []           # (다각형, 'forest'|'mount'|'all')
+GEN = None           # 생성 지형(kit_gen): dict(land=bool 칸 마스크, ground=int16 바닥, edit=bool 사용자 작업이 바닥을 정한 칸). None 이면 손 대륙
+EDIT_GROUND = None   # 지형 편집이 바닥을 정한 칸(bool) — 지역 팔레트가 그 칸을 덮지 않게 build_world 가 읽는다        물체를 걷는다(숲·산 뒤, 장소 정리 전)
+WARN = []            # 빌드 중 경고(경사로 자리 없음 등) — 오류가 아니라 보고용
 
 # 장소: (이름, 출처, 지정, x, y, 밑 바닥(None=그대로), 종류, 설명)
 SITES = [
@@ -331,29 +350,72 @@ ROUTES = [
 ]
 
 
+def use_blank_base():
+    """손 대륙(shared-v9)의 모든 목록을 비운다 — 생성 지형(kit_gen)이 빈 판에 자기 목록을 채운다. 프로세스당 한 번, 빌드 전."""
+    global OASIS, CHASM_LINE, VOLCANO_ICON_N
+    for L in (CONT_A, CONT_B, INLAND, STRAIT, BIOMES_A, BIOMES_B, FARMS, PLATEAUS, RIDGES, PASSES, RIVERS, LAVA_LINES, VOLCANOES,
+              TOXIC_POOLS, FORESTS, RAMPS, ROUTES):
+        L.clear()
+    ISLES.clear()
+    ISLE_GROUND.clear()
+    OASIS = None
+    CHASM_LINE = None
+    VOLCANO_ICON_N = 0
+
+
 def build():
     G = np.full((H, W), SEA, np.int16)
     O = np.zeros((H, W), np.int16)
     Hh = np.zeros((H, W), np.int16)
     log = {}
     # 1. 땅
-    landA = polymask(CONT_A, 1.7, 100)
-    landB = polymask(CONT_B, 1.7, 110)
-    isles = {k: polymask(p, .9, 120 + i, minsize=3) for i, (k, p) in enumerate(ISLES.items())}
-    inl = polymask(INLAND, 1.2, 130) | polymask(STRAIT, .8, 131)
+    if GEN is not None:                              # 생성 지형: 대륙 다각형 대신 kit_gen 이 만든 칸 마스크(사용자 land·sea·island 작업도 이미 접혀 있다)
+        landA = GEN['land'].copy()
+        landB = np.zeros((H, W), bool)
+        isles = {}
+        inl = np.zeros((H, W), bool)
+    else:
+        landA = polymask(CONT_A, 1.7, 100)
+        landB = polymask(CONT_B, 1.7, 110)
+        isles = {k: polymask(p, .9, 120 + i, minsize=3) for i, (k, p) in enumerate(ISLES.items())}
+        inl = polymask(INLAND, 1.2, 130) | polymask(STRAIT, .8, 131)
     land = landA | landB
     for m in isles.values():
         land |= m
     land &= ~inl
+    extra = []
+    for i, (poly, g, w) in enumerate(EXTRA_LAND):
+        m = polymask(poly, w, 700 + i, minsize=3)
+        land |= m
+        extra.append((m, g))
+    for i, (poly, w) in enumerate(EXTRA_SEA):
+        land &= ~polymask(poly, w, 760 + i, minsize=2)
     G[land] = GRASS
     G[landB & land] = SAVANNA
+    if GEN is not None:
+        G[land] = GEN['ground'][land]
     for k, m in isles.items():
-        G[m & land] = ISLE_GROUND[k]
+        G[m & land] = ISLE_GROUND.get(k, GRASS)
+    global EDIT_GROUND
+    EDIT_GROUND = np.zeros((H, W), bool)
+    for m, g in extra:
+        if g is not None:
+            G[m & land] = g
+            EDIT_GROUND |= m & land
+    for k, m in isles.items():
+        if k.startswith('edit') and k in ISLE_GROUND:
+            EDIT_GROUND |= m & land
+    if GEN is not None and GEN.get('edit') is not None:
+        EDIT_GROUND |= GEN['edit'] & land
     # 2. 바이옴
     for i, (poly, g, w) in enumerate(BIOMES_A):
         G[polymask(poly, w, 200 + i) & landA & land] = g
     for i, (poly, g, w) in enumerate(BIOMES_B):
         G[polymask(poly, w, 300 + i) & landB & land] = g
+    for i, (poly, g, w) in enumerate(EXTRA_BIOMES):
+        bm = polymask(poly, w, 800 + i) & land
+        G[bm] = g
+        EDIT_GROUND |= bm
     # 3. 물
     water = np.zeros((H, W), bool)
     for name, pts, wide, salt in RIVERS:
@@ -366,17 +428,20 @@ def build():
         for x, y, r in chain:
             disc(m, x, y, r)
         G[m & land & (G >= 10)] = TOXIC
-    m = polymask(ellipse(OASIS[0], OASIS[1], OASIS[2], OASIS[3], 10, 70, .2), .6, 610, minsize=3)
-    G[m & land] = RIVER
-    for (x, y) in river_cells(CHASM_LINE, 8, 1.2):
+    if OASIS is not None:
+        m = polymask(ellipse(OASIS[0], OASIS[1], OASIS[2], OASIS[3], 10, 70, .2), .6, 610, minsize=3)
+        G[m & land] = RIVER
+    for (x, y) in (river_cells(CHASM_LINE, 8, 1.2) if CHASM_LINE else ()):
         if 0 <= x < W and 0 <= y < H and land[y, x] and G[y, x] >= 10:
             G[y, x] = CHASM
     lv = np.zeros((H, W), bool)
-    for (x, y) in river_cells(LAVA_LINE, 6, .6):
-        if land[y, x]:
-            G[y, x] = LAVA
+    for li, line in enumerate(LAVA_LINES):
+        for (x, y) in river_cells(line, 6 + li * 13, .6):
+            if 0 <= x < W and 0 <= y < H and land[y, x]:
+                G[y, x] = LAVA
     cm = np.zeros((H, W), bool)
-    disc(cm, 77.5, 16.5, 2.6)
+    for vx, vy in VOLCANOES:
+        disc(cm, vx, vy, 2.6)
     G[cm & land & (G >= 10)] = CRATER
     # 4. 고원
     for i, (poly, lvl, g) in enumerate(PLATEAUS):
@@ -413,7 +478,7 @@ def build():
     free = land & (G >= 10) & ~keep
     ridges = np.zeros((H, W), bool)
     for name, pts, peak, wmax, obj, salt in RIDGES:
-        rm = ridge_mask(pts, peak, wmax, salt=salt, spurs=(name != '북서 능선'))
+        rm = ridge_mask(pts, peak, wmax, salt=salt, spurs=(name != '북서 능선' and not name.startswith('소행성대')))
         for px, py, pr in PASSES:
             pm = np.zeros((H, W), bool)
             disc(pm, px, py, pr)
@@ -425,17 +490,30 @@ def build():
         O[hills & (O == 0)] = obj
     for i, (poly, obj, thr, salt) in enumerate(FORESTS):
         pm = polymask(poly, 1.1, 500 + i)
-        fm = pm & free & (O == 0) & (vn(2.7, salt) > thr) & (Hh <= 1)
+        base = pm & free & (O == 0) & (Hh <= 1)
+        v = vn(2.7, salt)
+        if isinstance(thr, tuple):                   # 편집 숲 ('density', d): 놓일 수 있는 칸의 d 비율 — 고정 문턱은 노이즈가 낮은 자리에서 0.9 로도 숲이 거의 안 났다
+            thr = float(np.quantile(v[base], 1 - thr[1])) if base.any() else 1.0
+        fm = base & (v > thr)
         O[fm] = obj
     # 화산 덩이
     vm = np.zeros((H, W), bool)
-    disc(vm, 77.5, 16.5, 3.6)
     vm2 = np.zeros((H, W), bool)
-    disc(vm2, 77.5, 16.5, 2.6)
+    for vx, vy in VOLCANOES:
+        disc(vm, vx, vy, 3.6)
+        disc(vm2, vx, vy, 2.6)
     for y in range(H):
         for x in range(W):
             if vm[y, x] and not vm2[y, x] and land[y, x] and (G[y, x] >= 10) and rnd(x, y, 77) > .12:
                 O[y, x] = VOLC
+    for vx, vy in VOLCANOES[VOLCANO_ICON_N:]:        # 편집으로 더한 화산: 가운데 칸은 큰 원뿔 자리(kit_world.render_terrain 이 그린다) — 못 걷는다
+        cx, cy = int(vx), int(vy)
+        if 0 <= cx < W and 0 <= cy < H and land[cy, cx]:
+            O[cy, cx] = VOLC
+    for i, (poly, what) in enumerate(CLEAR):
+        cm_ = polymask(poly, .8, 860 + i, minsize=1)
+        kill = {'forest': lambda: np.isin(O, V.FORESTS), 'mount': lambda: np.isin(O, MOUNTS), 'all': lambda: O > 0}[what]()   # FORESTS 는 이 모듈의 숲 작업 목록이다(물체 코드는 V.FORESTS) — 예전엔 clear 가 늘 터졌다
+        O[cm_ & kill] = 0
     global _DBG
     _DBG = (land.copy(), G.copy(), Hh.copy(), O.copy())
     # 8. 장소 밑 정리
@@ -454,9 +532,16 @@ def build():
             BAD.append(('높이', name, x, y, hv.tolist()))
     Hh[G < 10] = 0
     if BAD:
-        print('BAD', BAD)
-        dump(land, G, icon_cells)
-        raise SystemExit(1)
+        from kit_common import KitError
+        msg = []
+        for b in BAD:
+            if b[0] == '물':
+                wet = [(b[2] + i, b[3] + j) for j, row in enumerate(b[5]) for i, g in enumerate(row) if g < 10]
+                msg.append('장소 %s 의 발자국(왼쪽 위 %d,%d · %d×%d칸)에 물인 칸이 있다: %s — move_place 로 발자국 전체가 땅인 자리로 옮기거나 그 자리에 땅을 더하라'
+                           % (b[1], b[2], b[3], len(b[5][0]), len(b[5]), ' '.join('(%d,%d)' % c for c in wet[:6])))
+            else:
+                msg.append('장소 %s 의 발자국(%d,%d)이 높이가 다른 칸에 걸쳤다(고원 가장자리) — 옮기거나 고원 다각형을 고쳐라' % (b[1], b[2], b[3]))
+        raise KitError('지형 오류:\n' + '\n'.join(msg))
     # 9. 경사로 2패스
     M = Map4(G, O, Hh)
     RAMP = np.zeros((H, W), bool)
@@ -466,7 +551,8 @@ def build():
             if x in (xc, xc + 1) and j == 0 and y >= ymin and Hh[y - 1, x] == lvl:
                 bands.append((y, x))
         if not bands:
-            raise RuntimeError('경사로 자리 없음 ' + name)
+            WARN.append('경사로 자리 없음: %s(%d열) — 고원 절벽이 그 열에 없다. 그 고원은 걸어 오를 수 없을 수 있다' % (name, xc))
+            continue
         ytop = min(y for y, x in bands)
         for x in (xc, xc + 1):
             for (yy, xx) in [(y, x_) for y, x_ in bands if y == ytop and x_ == x]:

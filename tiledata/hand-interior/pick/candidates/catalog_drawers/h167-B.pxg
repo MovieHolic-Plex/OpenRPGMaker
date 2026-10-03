@@ -1,0 +1,50 @@
+// B: 기존 윗판·목재 색·놋쇠 이름표를 보존하고 몸통·받침·다리를 압축해 전체 16행, 접지선 y=31; 꼭대기 윗면 3행(y=17~19)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 4
+@mat b brass 4
+@layer cabinet
+@mblock 0 16
+.wwwwwwwwwwwwww.
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwbbwwwbbwwwbbww
+wwbbwwwbbwwwbbww
+wwwwwwwwwwwwwwww
+wwbbwwwbbwwwbbww
+wwbbwwwbbwwwbbww
+wwwwwwwwwwwwwwww
+wwbbwwwbbwwwbbww
+wwbbwwwbbwwwbbww
+wwwwwwwwwwwwwwww
+.wwww.......www.
+@tblock 0 16 wood only=w
+.33333333333333.
+7666666655666663
+7666556666665663
+7666666665566663
+7777777777777763
+3666626666266661
+35..425..425..41
+35..425..425..41
+3666626666266661
+35..425..425..41
+35..425..425..41
+3666626666266661
+35..425..425..41
+35..425..425..41
+3444444444444431
+.2111.......211.
+@tblock 0 22 brass only=b
+..54...54...54..
+..21...21...21..
+................
+..54...54...54..
+..21...21...21..
+................
+..54...54...54..
+..21...21...21..

@@ -199,7 +199,7 @@ const LABEL_LIKE_FORBIDDEN: readonly { readonly label: string; readonly re: RegE
  * 같으므로 전부 창 색·레이아웃 서술어로 바꿨다.
  *
  * 왜 라벨 형태만 잡나 — 이 단어들은 **정당한 문맥**에도 나온다. 데모 프로젝트 이름
- * (`Scarloxy 포켓몬풍 데모`), 파일·리소스 id(`battle-skin-dragonquest-backdrop`),
+ * (`Scarloxy 포켓몬풍 데모`), 파일·리소스 id(`battle-skin-octopath-backdrop`),
  * 그리고 "포켓몬풍 전투를 만들어 달라" 같은 사용자 의도 문구. 전면 금지하면 그런
  * 정상 사용까지 막히고 그물이 무력해진다.
  */
@@ -233,7 +233,7 @@ function walk(dir: string, out: string[] = []): string[] {
  * 1. `src/brand.ts` — 금지어 목록 자체를 주석으로 들고 있다. 영구 면제.
  *
  * 2. 전투 스킨 CSS (`src/styles/runtime/battle-skins/`) — 파일명·선택자가 `_rm2003.css`,
- *    `[data-battle-skin="vxace"]` 처럼 **식별자**다. 스킨 id 는 프로젝트 파일에 저장되어
+ *    `[data-battle-skin="rm2003"]` 처럼 **식별자**다. 스킨 id 는 프로젝트 파일에 저장되어
  *    바꾸면 사용자 설정이 깨지므로 Phase 2b(식별자 개명 + 마이그레이션) 범위다.
  *    라벨(사용자에게 보이는 문자열)은 이미 중립화됐고 registry.ts 는 면제하지 않는다.
  *

@@ -1,0 +1,67 @@
+// E: 서랍 달린 두 다리 기록 탁자, 펼친 일기장과 오른쪽 깃펜; 꼭대기 윗면 6행(y=12~17)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 2
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat p linen 6
+@mat q linen 5
+@mat r linen 4
+@mat s linen 3
+@mat t linen 2
+@mat u red 1
+@mat v red 2
+@mat i iron 2
+@mat j iron 4
+@mat k brass 4
+@layer table
+@mblock 0 12
+..eeeeeeeeeeee..
+.effeeeeedeeedb.
+.feeeeedeeeeddb.
+.feeeeeeeeeeddb.
+.eeeedeeeeeeddcb
+.eeeeeeeeeeedccb
+.eeeeeeeeedddccb
+.eedddddddddcccb
+.cddddddddddddb.
+.bccccccccccccb.
+..cdddddddddcb..
+..cdcccccccdcb..
+..cdccckkccdcb..
+..cdddddddddcb..
+..bccccccccccb..
+...edb.....dba..
+...edb.....dba..
+...edb.....dba..
+..cddb.....ccba.
+..bbbb.....baaa.
+@layer book
+@mblock 2 12
+.vqqpqpqv.
+vpppqspqqv
+vqttqsqttv
+vqqqqsqqqv
+vpttqsqttv
+.vqqqsqqv.
+..uuuuuu..
+@layer quill
+@mblock 12 3
+..s.
+.pps
+.pqs
+ppr.
+pqr.
+pqs.
+qr..
+s...
+s...
+t...
+t...
+iji.
+jji.
+iii.

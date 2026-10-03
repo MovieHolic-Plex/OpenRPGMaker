@@ -1,0 +1,33 @@
+// C: 기존 목재 색·윤곽·아홉 이름표를 유지하고 몸체를 16행으로 압축; 꼭대기 윗면 3행(y=13~15).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g brass 4
+@mat h brass 5
+@layer cabinet
+@mblock 0 12
+.bbbbbbbbbbbbbb.
+bfeeeeeeeeeeeedb
+bfedeeeeeeeeeedb
+beeeeeeeeeeeeeeb
+abbbbbbbbbbbbbba
+bedddbdddbdddbba
+bedhhbdhhbdhhbba
+bedggbdggbdggbba
+bedddbdddbdddbba
+beeeeeeeeeeeedba
+bedddbdddbdddbba
+bedhhbdhhbdhhbba
+bedggbdggbdggbba
+bedddbdddbdddbba
+beeeeeeeeeeeedba
+bedddbdddbdddbba
+bedhhbdhhbdhhbba
+bedggbdggbdggbba
+bedddbdddbdddbba
+.bbbbbbbbbbbbbba

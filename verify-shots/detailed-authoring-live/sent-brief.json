@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "presetId": "story-cutscene",
+  "answers": {
+    "experience": {
+      "question": "어떤 만남으로 시작할까요?",
+      "label": "이야기의 시작",
+      "text": "조금씩 가까워지는 이웃 — 작은 마을에서 우연한 만남이 이어져요.",
+      "source": "user"
+    },
+    "activity": {
+      "question": "무엇을 하며 가까워질까요?",
+      "label": "중심 플레이",
+      "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+      "source": "user"
+    },
+    "progression": {
+      "question": "관계는 어떤 흐름으로 이어질까요?",
+      "label": "진행 방식",
+      "text": "한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.",
+      "source": "user"
+    },
+    "detail": {
+      "question": "어떤 감정이 오래 남으면 좋을까요?",
+      "label": "분위기",
+      "text": "따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.",
+      "source": "user"
+    },
+    "scope": {
+      "question": "첫 번째로 어디까지 만들어 볼까요?",
+      "label": "첫 제작 범위",
+      "text": "첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.",
+      "source": "user"
+    }
+  },
+  "summary": "지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다. 이웃 나래와 별빛 우체국 앞에서 만나고, 선택지는 반갑게 인사한다 / 편지를 물어본다.",
+  "interview": {
+    "version": 1,
+    "genre": "romance",
+    "concept": "이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.",
+    "protagonist": "지우. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.",
+    "notes": "검증용 고유 설정: 이웃 이름은 나래, 만나는 장소는 별빛 우체국 앞. 두 선택지는 반갑게 인사한다 / 편지를 물어본다.",
+    "choiceIds": {
+      "experience": "town",
+      "activity": "talk",
+      "progression": "single",
+      "detail": "warm",
+      "scope": "scene"
+    }
+  }
+}

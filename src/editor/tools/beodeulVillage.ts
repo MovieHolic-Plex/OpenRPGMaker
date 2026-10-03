@@ -18,6 +18,7 @@ import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition } from "./types";
 import { analyzeCityForm } from "./cityForm";
+import { beginConstructionTiles, logConstructionPlan, logConstructionTiles } from "./constructionLog";
 
 export const BEODEUL_VILLAGE_THEMES = ["river", "coast", "desert", "snow", "swamp"] as const;
 export type BeodeulVillageTheme = (typeof BEODEUL_VILLAGE_THEMES)[number];
@@ -101,9 +102,11 @@ const THEMES: Record<BeodeulVillageTheme, ThemeSpec> = {
 
 // 칸 점유(계획 단계)
 const FREE = 0, ROAD = 1, WATERC = 2, PLAZAC = 3, BLD = 4, PROP = 5, FIELD = 6, KEEP = 7, POND_RING = 8;
+/** 시공 기록(constructionLog)에 싣는 계획 분류 이름 — 편집기가 밑그림 색을 고른다. */
+const PLAN_CLASSES: Record<number, string> = { [ROAD]: "road", [WATERC]: "water", [PLAZAC]: "plaza", [BLD]: "building", [PROP]: "prop", [FIELD]: "field", [KEEP]: "keep", [POND_RING]: "ring" };
 
 interface Kit { id: string; w: number; h: number; door: { dx: number; dy: number } | null; def: StructureKitDef }
-interface Stamp { kit: string; x: number; y: number; record: boolean }
+interface Stamp { kit: string; x: number; y: number; record: boolean; /** 계획 분류(claim 이 찍은 것만) */ v?: number }
 interface Street { name: string; cells: Set<number>; horizontal: boolean; width: number }
 
 const requireTool = (tools: readonly ToolDefinition[], name: string): ToolDefinition => {
@@ -155,6 +158,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const stamps: Stamp[] = [];
   const surfaceAt = new Map<number, Surface>(); // 바닥 덧칠(물 고리·밭 표본)
   const decalAt = new Set<number>(); // 바닥 소품(풀꽃·밀) 찍은 칸
+  // 시공 기록: 계획 구역이 끝날 때마다 격자를 남긴다(기록기가 꺼져 있으면 아무것도 안 한다).
+  const planStep = (label: string) => logConstructionPlan(mapId, W, H, occ, label, PLAN_CLASSES);
 
   // ---------- 1. 자연 앵커 ----------
   let riverX = -1; // 강 왼쪽 열(다리 자리)
@@ -195,6 +200,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 못·늪은 길을 정한 뒤(길을 피해서) 깐다 — 자리만 먼저 정한다
   const pondSide = rand() < 0.5 ? "w" : "e";
 
+  planStep("물 자리");
   // ---------- 2. 큰길 ----------
   const streets: Street[] = [];
   // 굽이는 완만하게: 열쇠점 사이 높이 차는 가로 거리의 1/6 이하(계단 칸이 4칸 이상 이어지게 — 2~3칸 토막은 「막다른 길」 혹이 된다).
@@ -266,6 +272,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   markStreet(main);
   const yMainAt = (x: number) => yAt(main, x) ?? yMainBase;
 
+  planStep("큰길");
   // ---------- 3. 뒷길 고리 ----------
   // 강이 있으면 북쪽 뒷길은 강 서쪽, 남쪽 뒷길은 강 동쪽. 바다면 남쪽은 물가 길(산책로).
   // 강둑 경계: 그 줄들에서 물이 가장 멀리 나온 칸 + 3칸
@@ -334,6 +341,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   if (south) souths.push(south);
 
+  planStep("뒷길 고리");
   // ---------- 4. 광장 ----------
   const plazaX0 = (() => {
     if (riverX >= 0) return riverLeft ? eastStart + Math.round((W - eastStart) * 0.5) + ri(-3, 3) : Math.round(riverX * 0.5) + ri(-3, 3);
@@ -361,6 +369,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const plazaSet = new Set(plazaCells);
   let plazaTop = H; for (const c of plazaCells) if (c % W === plazaX) plazaTop = Math.min(plazaTop, Math.floor(c / W));
 
+  planStep("광장");
   // ---------- 5. 못·늪 (길을 피해) ----------
   const nearStreet = (c: number, d: number) => {
     const x = c % W, y = (c - x) / W;
@@ -376,6 +385,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const c of blob(cx, cy, rx, ry, 0.14)) if ((occ[c] === FREE || occ[c] === POND_RING) && !nearStreet(c, 1)) { occ[c] = WATERC; pondCells.push(c); surfaceAt.set(c, spec.pond.water); }
   }
 
+  planStep("못·늪");
   // ---------- 6. 앵커 건물(광장 북쪽) ----------
   const fits = (k: Kit, x: number, y: number, margin = 0, allow: (v: number) => boolean = (v) => v === FREE || v === POND_RING) => {
     if (x < 0 || y < 0 || x + k.w > W || y + k.h > H) return false;
@@ -391,7 +401,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       set(x + i, y + j, v);
       const r = k.def.rows[j]; if (r && ((r.tiles[i] ?? -1) >= 0 || (r.upperTiles?.[i] ?? -1) >= 0) && inMap(x + i, y + j)) cover[idx(x + i, y + j)] = 1;
     }
-    stamps.push({ kit: k.id, x, y, record });
+    stamps.push({ kit: k.id, x, y, record, v });
   };
   const anchors: string[] = [];
   /** 문 앞 칸에서 가장 가까운 길·광장까지 빈 땅으로 BFS 해 1칸 폭 문 앞 길을 낸다(건물·물은 피한다). */
@@ -430,6 +440,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (!done) warnings.push("광장 맞은편(큰길 북쪽)에 앵커 건물이 들어갈 자리가 없었다.");
   }
 
+  planStep("큰 건물 자리");
   // ---------- 8. 일터 소품 덩이 ----------
   const propFits = (k: Kit, x: number, y: number) => fits(k, x, y, 0) && (() => {
     // 길·문 앞 칸 바로 위·옆을 막지 않는다(문 앞 길 칸은 ROAD 라 fits 에서 이미 빠짐)
@@ -519,6 +530,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     workAt = { x: pcx + (pondSide === "w" ? 9 : -9), y: pcy + 2, name: theme === "desert" ? "대상 마당" : theme === "snow" ? "얼음낚시터" : "고기 말림터" };
     cluster(spec.work, workAt.x, workAt.y, 5, 4);
   }
+  planStep("일터");
   // ---------- 7. 집: 길의 북쪽 띠, 문이 길을 본다 ----------
   const placedHouses: { id: string; x: number; y: number }[] = [];
   const lastIds: string[] = [];
@@ -597,6 +609,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   for (const s of [main, ...(north ? [north.s] : []), ...souths]) lineStreet(s);
   for (const c of connectors) lineLane(c);
 
+  planStep("집 자리");
   // ---------- 9. 집 옆 살림 소품 ----------
   for (const h of placedHouses) {
     if (rand() > 0.5) continue;
@@ -608,6 +621,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
   }
 
+  planStep("살림 소품");
   // ---------- 10. 바깥: 밭 → 숲 덩이 → 덤불·풀꽃 ----------
   // 늪: 마을이 선 땅(길·집·소품에서 2~4칸)만 진흙 섬으로 남기고 나머지는 물. 물가 한 줄은 이끼 늪(막힘).
   if (spec.feature === "bog" && spec.pond) {
@@ -737,6 +751,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
   }
 
+  planStep("밭·숲·덤불");
   // 막다른 토막 다듬기: 이웃 포장 칸이 1개 이하인 길 칸(문 앞·맵 가장자리 제외)을 지운다 — 이음길 끝의 혹이 남지 않게
   {
     const front = new Set(doorFronts.map((d) => idx(d.x, d.y)));
@@ -752,6 +767,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
   }
 
+  planStep("막다른 길 다듬기");
   // ---------- 11. 칠하기 ----------
   const map = draft.maps[mapId]!;
   const tileOf = (surf: Surface, x: number, y: number): number => {
@@ -768,9 +784,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const [y, xs] of rows) { xs.sort((a, b) => a - b); let s = xs[0]!, p = s;
       for (let i = 1; i <= xs.length; i += 1) { const v = xs[i]; if (v === p + 1) { p = v; continue; } fill({ x: s, y, w: p - s + 1, h: 1 }, surf.mat); if (v !== undefined) { s = v; p = v; } } }
   };
+  beginConstructionTiles(draft.maps[mapId]!);
+  const paintStep = (label: string, realizes: number[]) => logConstructionTiles(draft.maps[mapId]!, "paint", label, { realizes });
   // 바탕
   if ("mat" in spec.base) fill({ x: 0, y: 0, w: W, h: H }, spec.base.mat, true);
   else { const all: number[] = []; for (let c = 0; c < W * H; c += 1) all.push(c); paintCells(all, spec.base); }
+  paintStep("바탕 깔기", [FREE]);
   // 물(강·바다 = 버들항 물 오토타일, 못·늪 = 표본)
   const waterMat: number[] = [], roadCells: number[] = [], plazaPaint: number[] = [];
   for (let c = 0; c < W * H; c += 1) {
@@ -785,13 +804,22 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const bySurface = new Map<Surface, number[]>();
   for (const [c, s] of surfaceAt) { if (occ[c] === WATERC || occ[c] === POND_RING || occ[c] === FIELD || occ[c] === PROP) { const l = bySurface.get(s); if (l) l.push(c); else bySurface.set(s, [c]); } }
   for (const [s, cells] of bySurface) paintCells(cells, s);
+  paintStep("물가·밭 바닥", spec.field?.sample ? [POND_RING, FIELD] : [POND_RING]);
   // 길 → 광장 → 물 순서: fill_region 은 「벽」과 1칸 틈을 메우므로 물이 먼저 있으면 물가 1칸 틈이 길로 메워져 혹이 생긴다
   paintCells(roadCells, spec.road);
+  paintStep("길 깔기", [ROAD]);
   paintCells(plazaPaint, spec.plaza);
+  paintStep("광장 판석", [PLAZAC]);
   if (waterMat.length) paintCells(waterMat, { mat: WATER });
+  paintStep("물 넣기", [WATERC, KEEP]);
 
   // ---------- 12. 찍기 ----------
   let stamped = 0, failed = 0;
+  const treeKits = new Set([...spec.trees, ...spec.shrubs, ...(spec.pond?.ringTrees ?? [])]);
+  const stampKind = (s: Stamp): string => s.v === BLD ? (anchors.includes(s.kit) ? "큰 건물" : "집")
+    : treeKits.has(s.kit) ? "나무·덤불" : s.v === FIELD || decalAt.has(idx(s.x, s.y)) ? "풀꽃·밭" : "소품";
+  const kindTotal = new Map<string, number>(), kindSeen = new Map<string, number>();
+  for (const s of stamps) { const kind = stampKind(s); kindTotal.set(kind, (kindTotal.get(kind) ?? 0) + 1); }
   for (const s of stamps) {
     const k = kitIndex.get(s.kit); if (!k) { failed += 1; continue; }
     const rect = { x: s.x, y: s.y, w: k.w, h: k.h };
@@ -799,10 +827,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     try { stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${s.kit}`, mapId, x: s.x, y: s.y }); stamped += 1; }
     catch { failed += 1; continue; }
     if (before) appendStructurePlacement(draft.maps[mapId]!, { kitId: s.kit, rect, before });
+    const kind = stampKind(s); const n = (kindSeen.get(kind) ?? 0) + 1; kindSeen.set(kind, n);
+    logConstructionTiles(draft.maps[mapId]!, "stamp", `${kind} ${n}/${kindTotal.get(kind)}`, { rect, major: s.v === BLD });
   }
   if (bridge) {
     const br = kitIndex.get("bd-bridge-arch");
     if (br) { try { stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/bd-bridge-arch`, mapId, x: bridge.x, y: bridge.y }); stamped += 1; } catch { failed += 1; } }
+    if (br) logConstructionTiles(draft.maps[mapId]!, "stamp", "다리", { rect: { x: bridge.x, y: bridge.y, w: br.w, h: br.h }, major: true });
   }
 
   // 마감 점검: 도시 형태 자(check_city_form 과 같은 계산)가 짚는 막다른 토막을 바탕으로 되돌린다(문 앞 칸은 두고)
@@ -823,6 +854,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       else paintCells(drop, spec.base);
     }
   }
+
+  logConstructionTiles(draft.maps[mapId]!, "tidy", "막다른 길 정리");
 
   // ---------- 13. 문 앞 도달(입구 = 큰길 서쪽 끝) ----------
   const m = draft.maps[mapId]!;

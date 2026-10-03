@@ -1,5 +1,12 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 명령 드래그 소유권과 레거시 페이지 붙여넣기 (2026-10-02)
+
+- `commandListDragDrop.ts`는 같은 렌더의 `CommandListActions`가 시작한 전용 MIME 드래그만 받는다. 일반 `text/plain`의 `[0]`, 다른 이벤트 편집면의 드래그, 페이지 전환 전 드래그, 원본과 다른 경로 payload는 명령 이동이 아니다. 분기 경로의 음수 sentinel은 유지한다.
+- 목록 host를 재사용하면 `ensureListDropHandlers`의 WeakMap을 최신 actions로 갱신한다. 첫 바인딩의 콜백을 영구 캡처하면 페이지를 바꾼 뒤 빈 목록 영역에 드롭할 때 이전 페이지를 수정한다. 비어 있는 목록도 바인딩을 갱신한다.
+- 페이지가 없는 옛 이벤트에 `pasteEventPage`를 호출하면 기존 루트 명령·트리거·조건을 기본 페이지로 승격하고 복사본을 그 앞(낮은 우선순위)에 넣는다. 복사본 하나만 만들면 런타임이 원래 루트 명령을 더 이상 실행하지 않는다.
+- 회귀 소스: `test/eventCommandDragOwnership.test.ts`, `test/eventCommandHistoryDrag.test.ts`, `test/eventEditorCommandBoard.test.ts`, `test/eventPages.test.ts`. 이번 세션은 테스트 실행 명시가 없어 스위트를 실행하지 않았다. 격리 브라우저 컴포넌트 관측 범위는 `verify-shots/event-drag-audit/README.md` 참조.
+
 ## 감사 후속: 조건 순서와 생활 경로 보존 (2026-09-20)
 
 `pageConditions.ts`의 스위치 슬롯 편집은 기존 조건의 위치에서 교체한다. 첫 조건을 삭제 후 append하면 두 스위치 행이 서로 바뀌어 다음 편집 대상을 오인한다.
@@ -957,3 +964,9 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 `src/styles/event/command-list.css`(툴바 한 줄 선언),
 `src/styles/event/command-workbench.css`(툴바 한 줄 + 컨테이너 정의).
 전후 캡처와 실측은 이 세션의 `1440/1920/2560` 프로브(툴바 높이 44px, 자식 y 단일 행).
+
+## 공통 이벤트 호출 그래프 경고 (2026-10-02)
+
+`eventDraftValidator.checkCallDepth`는 공통 이벤트의 실제 `commands`를 읽는다. 공통 이벤트에 없는 `pages`를 캐스트해 순회하던 경로는 순환·깊이 경고를 전혀 만들지 못했다. 현재 편집 페이지가 호출하는 그래프만 검사하고, 순환 또는 8단계 초과 경고를 호출 명령의 `pageId`/`commandPath`에 붙인다. 다른 이벤트의 무관한 순환은 이 초안의 경고로 표시하지 않는다.
+
+중첩 명령은 기존 `eventCommandBranches` 기반 순회를 쓰며, 호출 인접 목록의 중복 제거와 루트별 `(depth, id)` 완료 캐시로 반복 호출 경로의 지수적 확장을 막는다. 경고는 커밋을 금지하지 않는다. `test/eventDraftValidator.test.ts`에 간접·중첩 순환, 깊이 경계, 무관한 순환, 반복 호출 사례를 추가했으며 이번 세션에서는 실행하지 않았다.

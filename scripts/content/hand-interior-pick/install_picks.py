@@ -16,7 +16,8 @@
 """
 import copy, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CAND, PICK, PXGRID, geom, objects_by_id, slug  # noqa: E402
+from common import CAND, PICK, PXGRID, geom, objects_by_id, objects_by_slug, slug  # noqa: E402
+import outline_select  # noqa: E402
 import new_items  # noqa: E402
 from PIL import Image  # noqa: E402
 
@@ -26,6 +27,9 @@ _NEWS = {}   # 새 기물 id → (후보 그림, 선택 글자, 가짜 객체). 
 
 
 def _png(s, choice):
+    b, sel = outline_select.split(choice)
+    if sel:   # 「테두리 꼭 필요한 곳만」 — 고르는 화면이 보여 준 그림과 같은 함수로 만든다
+        return Image.open(outline_select.ensure_png(os.path.join(CAND, s), b, objects_by_slug()[s])).convert('RGBA')
     base = os.path.join(CAND, s, choice)
     png = base + '.png'
     if not os.path.exists(png) or os.path.getmtime(png) < os.path.getmtime(base + '.pxg'):
@@ -38,7 +42,7 @@ def _png(s, choice):
 def _plan():
     global _PLAN
     if _PLAN is not None: return _PLAN
-    path = os.path.join(PICK, 'picks.json')
+    path = os.environ.get('HAND_INTERIOR_PICKS_JSON') or os.path.join(PICK, 'picks.json')   # 다른 시점의 고르기로 굽기(예: 커밋된 사본)
     picks = json.load(open(path, encoding='utf-8')) if os.path.exists(path) else {}
     by = objects_by_id()
     same, resized, variants = {}, {}, []
@@ -49,7 +53,7 @@ def _plan():
         if i not in by: skip('v5 에 없는 기물'); continue
         if not ch or ch == 'v5': skip('v5 유지' if ch == 'v5' else '선택 없음'); continue
         o, s = by[i], slug(i)
-        if not os.path.exists(os.path.join(CAND, s, ch + '.pxg')): skip('후보 파일 없음'); continue
+        if not os.path.exists(os.path.join(CAND, s, outline_select.split(ch)[0] + '.pxg')): skip('후보 파일 없음'); continue
         im, G = _png(s, ch), geom(o)
         if o.get('new'):   # 새 기물: 아틀라스 칸 자리가 없다 → 캔버스 크기 그대로만, 크기 변경·변형·애니메이션 없음
             if G['resized']: skip('새 기물은 resize.json 을 받지 않는다 — new/items.json 의 canvas·footprint 를 고친다'); continue
@@ -66,7 +70,7 @@ def _plan():
         else:
             same[i] = (im.crop((0, G['padTop'], im.width, im.height)), ch)
         for k, v in enumerate((p or {}).get('variants') or [], start=2):
-            if not os.path.exists(os.path.join(CAND, s, v + '.pxg')):
+            if not os.path.exists(os.path.join(CAND, s, outline_select.split(v)[0] + '.pxg')):
                 REPORT['skipped'].append({'id': f'{i}#{k}', 'choice': v, 'why': '변형 후보 파일 없음'}); continue
             vim = _png(s, v)
             if vim.size != im.size:

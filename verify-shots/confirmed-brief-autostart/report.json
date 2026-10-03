@@ -1,0 +1,96 @@
+{
+  "scope": "Browser fixture; mocked save and AI response, no canonical project writes or model calls",
+  "cases": [
+    {
+      "scenario": "cold-ready",
+      "authCalls": 1,
+      "requests": [
+        {
+          "mode": "team",
+          "characters": 9162,
+          "completePrompt": true,
+          "internalTasks": true,
+          "authorSentence": true,
+          "saves": 2
+        }
+      ],
+      "state": {
+        "pending": true,
+        "saves": [
+          {
+            "pending": true
+          },
+          {},
+          {
+            "pending": true
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "worker-accepted",
+      "authCalls": 1,
+      "requests": [
+        {
+          "mode": "team",
+          "characters": 9162,
+          "completePrompt": true,
+          "internalTasks": true,
+          "authorSentence": true,
+          "saves": 2
+        }
+      ],
+      "state": {
+        "saves": [
+          {
+            "pending": true
+          },
+          {}
+        ]
+      }
+    },
+    {
+      "scenario": "reconnect",
+      "authCalls": 3,
+      "requests": [
+        {
+          "mode": "team",
+          "characters": 9162,
+          "completePrompt": true,
+          "internalTasks": true,
+          "authorSentence": true,
+          "saves": 3
+        }
+      ],
+      "state": {
+        "pending": true,
+        "saves": [
+          {
+            "pending": true
+          },
+          {
+            "pending": true
+          },
+          {},
+          {
+            "pending": true
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "switch-while-checking",
+      "authCalls": 1,
+      "requests": [],
+      "pending": true
+    },
+    {
+      "scenario": "save-failure",
+      "authCalls": 0,
+      "requests": [],
+      "pending": true
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

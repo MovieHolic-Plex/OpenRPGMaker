@@ -18,7 +18,9 @@ const ALL_TABS: readonly DatabaseTabSpec[] = [
   { label: "Troops", slug: "troops", testId: "db-tab-troops" },
   { label: "Elements", slug: "elements", testId: "db-tab-elements" },
   { label: "States", slug: "states", testId: "db-tab-states" },
-  { label: "Animations", slug: "animations", testId: "db-tab-animations" },
+  { label: "Retro Choreographies", slug: "retro-choreographies", testId: "db-tab-retro-choreographies" },
+  // 전투 애니메이션은 도트 연출 레일 탭 아래 하위 보기다.
+  { label: "Animations", slug: "animations", testId: "db-subview-animations", parentTestId: "db-tab-retro-choreographies" },
   { label: "Battle Screen", slug: "battle-screen", testId: "db-tab-battle-screen" },
   { label: "Battle Commands", slug: "battle-commands", testId: "db-tab-battle-commands" },
   { label: "Terrain", slug: "terrain", testId: "db-tab-terrain" },

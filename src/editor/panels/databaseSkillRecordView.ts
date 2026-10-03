@@ -39,6 +39,7 @@ import { store } from "@/project/store";
 import type { DatabaseStateEffect, Project, SkillEffect, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
+import { POKEMON_MOVE_MOTIONS, POKEMON_MOVE_MOTION_LABELS, isPokemonMoveMotion, pokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 
 const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"] as const satisfies readonly SkillEffect["kind"][];
 const SKILL_EFFECT_AFFECTS = ["hp", "mp"] as const satisfies readonly SkillEffectAffects[];
@@ -187,7 +188,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
         hint: gen1BattleModel() ? "포켓몬풍 전투 전용" : "포켓몬풍 전투 전용 · 이 게임은 사용 안 함",
         testid: "db-skill-card-gen1",
         collapsible: true,
-        collapsed: !advancedOpen(gen1BattleModel() || (record.maxPp ?? 0) > 0 || record.gen1CriticalRate === "high"),
+        collapsed: !advancedOpen(gen1BattleModel() || (record.maxPp ?? 0) > 0 || record.gen1CriticalRate === "high" || Boolean(record.moveMotion)),
         children: [
           numberField("최대 PP", "db-field-skill-max-pp", record.maxPp ?? 0, (maxPp) =>
             updateDatabaseRecord("skills", record.id, { maxPp: maxPp > 0 ? maxPp : undefined }), { min: 0, max: 99 }
@@ -195,6 +196,13 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
           el("p", { class: "db-skill-card-note", text: "최대 PP 를 0 으로 두면 사용 횟수 제한이 없습니다." }),
           selectLiteral("급소율", "db-field-skill-gen1-critical", record.gen1CriticalRate ?? "normal", ["normal", "high"], (gen1CriticalRate) =>
             updateDatabaseRecord("skills", record.id, { gen1CriticalRate })
+          ),
+          // 비워 두면 효과·대상·이펙트로 자동 판정한다 — 자동 줄에 판정 결과를 같이 보여 준다.
+          selectField("움직임", "db-field-skill-move-motion", record.moveMotion ?? "", [
+            { id: "", name: `자동 (${POKEMON_MOVE_MOTION_LABELS[pokemonMoveMotion({ ...record, moveMotion: undefined })].split(" — ")[0]})` },
+            ...POKEMON_MOVE_MOTIONS.map((id) => ({ id, name: POKEMON_MOVE_MOTION_LABELS[id] })),
+          ], (value) =>
+            updateDatabaseRecord("skills", record.id, { moveMotion: isPokemonMoveMotion(value) ? value : undefined })
           ),
         ],
       }),

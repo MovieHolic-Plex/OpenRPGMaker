@@ -64,7 +64,10 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   remove_map: build("맵 삭제", "map"),
   duplicate_map: build("맵 복제", "map"),
   author_village: build("마을 짓기", "house"),
+  author_beodeul_town: build("마을 짓기", "house"),
   build_world: world("세계 짓기", "map"),
+  read_world_terrain: world("세계 지형 읽기", "eye"),
+  edit_world_terrain: world("세계 지형 바꾸기", "map"),
   set_build_spec: build("밑그림 확정", "list"),
   // ── 사람·이야기 ──
   place_npc: people("NPC 배치", "user"),
@@ -77,8 +80,14 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   define_quest: people("퀘스트 정의", "flag"),
   create_quest_flags: people("퀘스트 깃발", "flag"),
   author_story_arc: people("이야기 짜기", "book"),
+  author_romance_scene: people("첫 만남 만들기", "book"),
+  inspect_romance_scene: inspect("첫 만남 동작 확인", "eye"),
   script_cutscene: people("연출 쓰기", "book"),
   script_cutscene_preset: people("연출 프리셋", "book"),
+  script_cutscene_impact: people("충돌 연출", "book"),
+  script_cutscene_staged: people("연출 짜기", "book"),
+  generate_cutscene_art: build("컷신 그림 만들기", "spark"),
+  preview_cutscene: inspect("컷신 미리보기", "eye"),
   upsert_event: people("이벤트 쓰기", "flag"),
   event_command_assist: people("이벤트 명령 만들기", "flag"),
   move_event: people("이벤트 옮기기", "flag"),
@@ -311,6 +320,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   list_ai_docs: inspect("AI 문서 목록", "book"),
   list_retro_choreographies: inspect("도트 연출 찾기", "spark"),
   read_retro_skill_guide: inspect("스킬 설계 지침 읽기", "book"),
+  read_directing_guide: inspect("연출 지침 읽기", "book"),
   read_ai_doc: inspect("AI 문서 읽기", "book"),
   generate_character_appearance: build("캐릭터 그림 만들기", "user"),
 };
@@ -355,6 +365,11 @@ export function toolLabelSummary(names: readonly string[]): string {
 const BRIEF_TOOL_PHRASES: Readonly<Record<string, readonly [doing: string, done: string]>> = {
   consult_writer: ["대사 쓰는 중", "대사 쓰기 완료"],
   find_tools: ["생각하는 중", "생각 정리 완료"],
+  author_village: ["마을 짓는 중", "마을 짓기 완료"],
+  author_beodeul_town: ["마을 짓는 중", "마을 짓기 완료"],
+  stamp_object: ["건물·소품 놓는 중", "건물·소품 놓기 완료"],
+  check_city_form: ["길과 마을 모양 확인하는 중", "마을 모양 확인 완료"],
+  check_reachability: ["길이 이어졌는지 확인하는 중", "길 확인 완료"],
 };
 const BRIEF_GROUP_PHRASES: Readonly<Record<ToolGroup, readonly [doing: string, done: string]>> = {
   inspect: ["프로젝트 살펴보는 중", "프로젝트 살펴보기 완료"],

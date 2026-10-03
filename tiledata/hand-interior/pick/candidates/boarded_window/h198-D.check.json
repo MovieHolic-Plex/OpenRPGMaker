@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/boarded_window/h198-D.pxg",
+ "id": "boarded window",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "금장 몰딩과 연결 문양을 더하고 2px 두께의 비스듬한 못박힌 판자 세 장 사이에 어두운 창 면을 드러냄; 꼭대기 윗면 0행(y=해당 없음, 지시서 시점 절의 벽면 걸이 예외).",
+ "ok": true
+}

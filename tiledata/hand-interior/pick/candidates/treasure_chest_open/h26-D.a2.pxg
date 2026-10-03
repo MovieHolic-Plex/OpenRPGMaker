@@ -1,0 +1,44 @@
+// D 효과: 뚜껑을 뒤로 젖혀 세우고(y1~3 뒷판 바깥면), 입구 속 어두운 바닥(y4~5)과 금빛 반짝 두 점을 보인다
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat i wood 3
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+...ooooooooooo..
+...oiggiiiggio..
+...oiggiiiggio..
+..oiiiiiiiiiiio.
+..oiiigiiigiiio.
+..ogggggggggggo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+...11111111111..
+...15445554431..
+...14334443321..
+..1000000000001.
+..1111511151111.
+..1343456543330.
+..1666555443330.
+..1454333333330.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................

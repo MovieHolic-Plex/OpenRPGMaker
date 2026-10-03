@@ -13,7 +13,7 @@ import { renderExperienceCurvePanel } from "./databaseClassExperienceCurveEditor
 import { classBuildSummary, type ClassBuildRole } from "./databasePartyBuildSummary";
 import { setSelectedRecordId } from "./databaseRecordViewSession";
 
-const COMMAND_KINDS: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"];
+const COMMAND_KINDS: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event", "commonEvent"];
 const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
   attack: "공격",
   skill: "특수기능",
@@ -25,6 +25,7 @@ const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
   escape: "도망",
   switch: "교체",
   event: "교체(구형)",
+  commonEvent: "공통 이벤트 실행",
 };
 const ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name: string }[] = [
   { id: "sword", name: "검" },
@@ -394,8 +395,12 @@ function commandRow(
   const skill = recordSelect(command.skillId ?? "", store.getCurrent().database.skills, index === 0 ? "db-picker-class-command-skill" : undefined);
   skill.classList.add("db-class-command-skill");
   skill.setAttribute("aria-label", "스킬");
-  const extra = el("div", { class: "db-class-command-extra", children: [subset, skill] });
-  applyCommandFieldState(readCommandKind(kind.value), subset, skill, extra);
+  // RM2003 「이벤트 연결」 — 고르면 실행할 공통 이벤트.
+  const commonEvent = recordSelect(command.commonEventId ?? "", store.getCurrent().commonEvents, `db-picker-class-command-common-event-${index}`);
+  commonEvent.classList.add("db-class-command-common-event");
+  commonEvent.setAttribute("aria-label", "실행할 공통 이벤트");
+  const extra = el("div", { class: "db-class-command-extra", children: [subset, skill, commonEvent] });
+  applyCommandFieldState(readCommandKind(kind.value), subset, skill, extra, commonEvent);
 
   const apply = (): void => {
     const next = editableClassCommands(sourceCommands(record)).map((entry, entryIndex) =>
@@ -406,6 +411,7 @@ function commandRow(
           kind: readCommandKind(kind.value),
           skillSubsetName: subset.value || undefined,
           skillId: skill.value || undefined,
+          commonEventId: readCommandKind(kind.value) === "commonEvent" ? commonEvent.value || undefined : undefined,
         }
         : entry,
     );
@@ -415,8 +421,9 @@ function commandRow(
   name.addEventListener("input", apply);
   subset.addEventListener("input", apply);
   skill.addEventListener("change", apply);
+  commonEvent.addEventListener("change", apply);
   kind.addEventListener("change", () => {
-    applyCommandFieldState(readCommandKind(kind.value), subset, skill, extra);
+    applyCommandFieldState(readCommandKind(kind.value), subset, skill, extra, commonEvent);
     apply();
     onChanged();
   });
@@ -486,10 +493,11 @@ function commitCommands(record: ClassRecord, editable: readonly ClassBattleComma
   updateDatabaseRecord("classes", record.id, { battleCommands: finalizeClassBattleCommands(editable) });
 }
 
-function commandFieldVisibility(kind: ClassBattleCommandKind): { readonly subset: boolean; readonly skill: boolean } {
-  if (kind === "skill") return { subset: true, skill: true };
-  if (kind === "skillSubset") return { subset: true, skill: false };
-  return { subset: false, skill: false };
+function commandFieldVisibility(kind: ClassBattleCommandKind): { readonly subset: boolean; readonly skill: boolean; readonly commonEvent: boolean } {
+  if (kind === "skill") return { subset: true, skill: true, commonEvent: false };
+  if (kind === "skillSubset") return { subset: true, skill: false, commonEvent: false };
+  if (kind === "commonEvent") return { subset: false, skill: false, commonEvent: true };
+  return { subset: false, skill: false, commonEvent: false };
 }
 
 function applyCommandFieldState(
@@ -497,13 +505,21 @@ function applyCommandFieldState(
   subset: HTMLInputElement,
   skill: HTMLSelectElement,
   extra?: HTMLElement,
+  commonEvent?: HTMLSelectElement,
 ): void {
   const visibility = commandFieldVisibility(kind);
   subset.disabled = !visibility.subset;
   skill.disabled = !visibility.skill;
   subset.classList.toggle("is-inert", !visibility.subset);
   skill.classList.toggle("is-inert", !visibility.skill);
-  if (extra) extra.hidden = !visibility.subset && !visibility.skill;
+  // 공통 이벤트 칸은 그 종류에서만 보인다 — 스킬 칸처럼 흐리게 두면 다른 종류에서도 고를 수 있는 것처럼 보인다.
+  if (commonEvent) {
+    commonEvent.hidden = !visibility.commonEvent;
+    commonEvent.disabled = !visibility.commonEvent;
+    subset.hidden = visibility.commonEvent;
+    skill.hidden = visibility.commonEvent;
+  }
+  if (extra) extra.hidden = !visibility.subset && !visibility.skill && !visibility.commonEvent;
 }
 
 function newCommandId(): string {

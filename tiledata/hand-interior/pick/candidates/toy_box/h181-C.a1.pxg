@@ -1,0 +1,49 @@
+// C: 넓은 입구와 큰 공·인형·나무칼, 무늬 없는 파란 앞판으로 단순하고 또렷하게.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 2
+@mat c wood 7
+@mat d blue 4
+@mat f blue 3
+@mat g blue 2
+@mat h blue 2
+@layer box
+@mblock 0 0
+..bbbbbbbbbbbb..
+..cddddddddddb..
+..cddddddddddb..
+..cddddddddddb..
+..cbbbbbbbbbbb..
+.bcaaaaaaaaaacb.
+.caaaaaaaaaaacb.
+.caaaaaaaaaaacb.
+.caaaaaaaaaaacb.
+.caaaaaaaaaaacb.
+.cccccccccccbbb.
+.cfffffffffffgb.
+.cfffffffffffgb.
+.cfffffffffffgb.
+.chhhhhhhhhhggb.
+..bbbbbbbbbbbb..
+@mat r red 2
+@mat s red 4
+@mat t red 5
+@mat u linen 5
+@mat v linen 3
+@mat j wood 3
+@mat k pine 5
+@mat l pine 3
+@mat n pink 3
+@mat o pink 2
+@layer toys
+@mblock 2 2
+...........k
+..........kj
+......uu..kj
+..tt..uv.kj.
+.rtsrjvvjkj.
+.rssr.nnojklj
+..rr..nno.l.
+......vo..j.

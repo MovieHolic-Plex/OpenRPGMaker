@@ -1,4 +1,5 @@
-const CACHE_NAME = "oprn-pwa-v3";
+// v9(2026-10-03): 전체 몬스터의 새 native64/96 전투 시트·초상으로 캐시를 갱신한다.
+const CACHE_NAME = "oprn-pwa-v9";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",

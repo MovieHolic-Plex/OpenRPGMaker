@@ -28,7 +28,7 @@ const TAB_TESTID: Record<string, string> = {
   items: "db-tab-items",
   elements: "db-tab-elements",
   states: "db-tab-states",
-  animations: "db-tab-animations",
+  retroChoreographies: "db-tab-retro-choreographies",
   battleScreen: "db-tab-battle-screen",
   battleCommands: "db-tab-battle-commands",
   enemies: "db-tab-enemies",

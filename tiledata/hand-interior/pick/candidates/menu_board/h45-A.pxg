@@ -1,0 +1,33 @@
+// A 설명충실: 나무 테 검은 판, 분필 제목줄·메뉴 두 줄, 왼쪽 잔(거품 노란 맥주)·오른쪽 빵
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat F wood 4
+@mat G wood 6
+@mat H wood 2
+@mat k black 2
+@mat w white 5
+@mat x white 3
+@mat c linen 5
+@mat d linen 3
+@mat y yellow 4
+@mat b bread 5
+@mat e bread 3
+@mat g bread 6
+@mblock 0 0
+................
+.GGGGGGGGGGGGGF.
+.GkkkkkkkkkkkkH.
+.GkkwwwwwwwwkkH.
+.GkkkkkkkkkkkkH.
+.GkcccckkkgggkH.
+.GkcyyccxkbbbbH.
+.GkcyycckkbbbeH.
+.GkkdddkkkkeeekH.
+.GkkkkkkkkkkkkH.
+.GkxxxkwwwwxkkH.
+.GkkkkkkkkkkkkH.
+.GkwwwxxkwwwkkH.
+.GkkkkkkkkkkkkH.
+.GkkkkkkkkkkkkH.
+.HHHHHHHHHHHHHH.

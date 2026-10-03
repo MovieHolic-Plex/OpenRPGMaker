@@ -1,0 +1,39 @@
+// E 자유: 밝은 5 조각 전부 제거, 구멍 6개를 규칙 격자(x=4,8,12 · y=8,12)로 통일 — 가시가 구멍 속에 들어간 상태
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 3
+@mblock 0 0
+................
+................
+................
+................
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+@tblock 0 0
+................
+................
+................
+................
+.11111111111111.
+.14444444444441.
+.14333333333331.
+.14333333333331.
+.14303330333031.
+.14333333333321.
+.14333333333321.
+.14333333333321.
+.14303330333021.
+.14333333333321.
+.12222222222221.
+.11111111111111.

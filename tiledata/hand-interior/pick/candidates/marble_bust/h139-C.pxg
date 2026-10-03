@@ -1,0 +1,43 @@
+// C: 큰 머리·넓은 어깨와 조용한 대리석 받침, 정수리와 받침 윗면을 3행으로 구분.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a marble 1
+@mat b marble 2
+@mat c marble 4
+@mat d marble 5
+@mat e marble 6
+@layer bust
+@mblock 0 0
+......cccc......
+.....cddddb.....
+....cdeeeecb....
+....cddddccb....
+....cdddcbbc....
+.....dddddcb....
+.....cdddcb.....
+......cccb......
+......cdcb......
+.....cddccb.....
+...ccdddccccb...
+..cddddddccccb..
+..ddeeedddcccb..
+..cdddddddcccb..
+...cdddddcccb...
+....ccccccbb....
+..cdddccccddcb..
+.cdeeeddddddccb.
+.cddddddddddccb.
+.bcccccccccccba.
+..cddddddcccba..
+..cddddddcccba..
+..cddddddcccba..
+..cddddddcccba..
+..cddddddcccba..
+..cddddddcccba..
+..cddddddcccba..
+..cddddddcccba..
+..cddddddcccba..
+..bccccccccbba..
+.cddddddddcccba.
+.abbbbbbbbbbaa.

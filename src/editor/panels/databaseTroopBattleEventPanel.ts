@@ -301,7 +301,7 @@ function withTemplateCommands(commands: BattleEventPageRecord["commands"]): Batt
   return [
     ...commands,
     ...(hasCommand(ENEMY_ENCOUNTER_ID) ? [] : [{ kind: "m2Command" as const, commandId: ENEMY_ENCOUNTER_ID, fields: { target: "enemy-1" } }]),
-    ...(hasCommand(CHANGE_BATTLEBACK_ID) ? [] : [{ kind: "m2Command" as const, commandId: CHANGE_BATTLEBACK_ID, fields: { resourceId: "easyrpg-backdrop-dawn1" } }]),
+    ...(hasCommand(CHANGE_BATTLEBACK_ID) ? [] : [{ kind: "m2Command" as const, commandId: CHANGE_BATTLEBACK_ID, fields: { resourceId: "battle-scenery-plains" } }]),
     ...(hasCommand(RESULT_SUMMARY_ID) ? [] : [{ kind: "m2Command" as const, commandId: RESULT_SUMMARY_ID, fields: { label: "결과 요약" } }]),
   ];
 }

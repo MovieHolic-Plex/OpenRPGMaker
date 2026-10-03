@@ -3,8 +3,9 @@ import { layerSwitcherKey, makeLeftLayerSwitcher } from "./leftLayerSwitcher";
 import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
-import { showConfirm } from "@/editor/ui/modal";
+import { showAlert, showConfirm } from "@/editor/ui/modal";
 import { createProjectStartSeed } from "@/editor/projectStartSeed";
+import { showBackupRestoreDialog } from "@/editor/ui/backupRestoreDialog";
 import { newProjectChoiceLabel, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
@@ -43,6 +44,7 @@ import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
 import { projectRepository } from "@/project/persistence/repository";
+import { sameProjectTarget } from "@/project/persistence/target";
 import { persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
@@ -731,6 +733,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         // 했다. 둘을 한 자리에 모으고 무엇을 내보내는지 이름에 쓴다.
         item("프로젝트 파일 내보내기...", "menu-project-export", () => void exportProjectPackage()),
         item("백업 만들기", "menu-project-backup", () => void doBackupProject()),
+        item("백업에서 복구...", "menu-project-restore-backup", () => void doRestoreBackup()),
         item("게임 및 배포...", "menu-project-publication", () => void openPublishingDialog({
           project: store.getCurrent(),
           opener: topbar.querySelector<HTMLElement>('[data-testid="menu-project"]'),
@@ -1004,7 +1007,7 @@ async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
   if (store.hasUnsavedChanges()) {
     const ok = await showConfirm({
       title: "저장본 다시 불러오기",
-      message: "아직 저장하지 않은 변경이 있습니다. 온라인 저장본으로 덮어쓸까요?",
+      message: "아직 저장하지 않은 변경이 있습니다. 프로젝트 폴더의 저장본으로 다시 불러올까요?",
       confirmLabel: "저장본으로 덮어쓰기",
       danger: true,
     });
@@ -1042,11 +1045,58 @@ async function doBackupProject(): Promise<void> {
     return;
   }
   try {
-    await store.flush();
+    const saved = await store.flush();
+    if (saved.kind !== "saved") throw new Error("현재 변경을 저장하지 못했습니다. 다시 저장하거나 프로젝트 파일을 내보내세요.");
     toast(`백업을 만들었습니다: ${await repository.backup()}`, "ok");
   } catch (error) {
     toast(error instanceof Error ? `백업 실패: ${error.message}` : "백업 실패", "error");
   }
+}
+
+let restoringBackup = false;
+async function doRestoreBackup(): Promise<void> {
+  if (restoringBackup) return;
+  const repository = projectRepository();
+  if (!repository.listBackups || !repository.restoreBackup) {
+    toast("프로젝트 폴더를 사용하는 앱 또는 호스트에서 백업을 복구할 수 있습니다.", "error");
+    return;
+  }
+  const target = repository.currentTarget();
+  const requireSameTarget = (): void => {
+    const active = repository.currentTarget();
+    if (!target || !sameProjectTarget(target, active) || active?.projectId !== target.projectId) {
+      throw new Error("복구 중 열린 프로젝트가 바뀌었습니다. 현재 프로젝트는 유지됩니다. 복구 사본은 ‘열기’에서 선택하세요.");
+    }
+  };
+  restoringBackup = true;
+  try {
+    const backups = await repository.listBackups();
+    if (!backups.length) {
+      await showAlert({ title: "복구할 백업이 없습니다", message: "프로젝트 메뉴의 ‘백업 만들기’로 복구 지점을 남겨 두세요. 다른 폴더에 있는 백업이나 편집기를 열 수 없는 경우에는 복구 명령으로 새 폴더를 만들 수 있습니다." });
+      return;
+    }
+    const id = await showBackupRestoreDialog(backups, { opener: document.querySelector<HTMLElement>('[data-testid="menu-project"]') });
+    if (!id) return;
+    requireSameTarget();
+    toast("백업을 검사하고 복구 사본을 만들고 있어요…", { kind: "info", durationMs: 10000 });
+    const restored = await repository.restoreBackup(id);
+    requireSameTarget();
+    // Recovery is still possible when saving the current session is broken. Keep that session
+    // open so its in-memory edits can be exported before the user switches to the copy.
+    try {
+      const saved = await store.flush();
+      if (saved.kind !== "saved") throw new Error("현재 변경을 저장하지 못했습니다.");
+    } catch (error) {
+      await showAlert({ title: "복구 사본을 만들었습니다", message: `복구 위치: ${restored.projectDir}\n${error instanceof Error ? error.message : "현재 변경을 저장하지 못했습니다."}\n이 화면은 유지됩니다. 프로젝트 파일을 내보내 변경을 보관한 뒤 ‘열기’에서 복구 사본을 선택하세요.` });
+      return;
+    }
+    requireSameTarget();
+    const opened = await window.oprn?.start.openFolder({ projectDir: restored.projectDir });
+    if (!opened) throw new Error(`복구 사본을 열지 못했습니다: ${restored.projectDir}`);
+    window.location.reload();
+  } catch (error) {
+    toast(error instanceof Error ? `복구 실패: ${error.message}` : "복구 실패", "error");
+  } finally { restoringBackup = false; }
 }
 
 export async function exportProjectPackage(): Promise<void> {

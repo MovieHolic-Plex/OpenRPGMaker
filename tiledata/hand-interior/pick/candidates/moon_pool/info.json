@@ -1,0 +1,40 @@
+{
+ "id": "moon pool",
+ "slug": "moon_pool",
+ "name_ko": "달빛 못(움직임, 3×2)",
+ "category": "엘프 궁정",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  48,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 32
+ },
+ "footprint": {
+  "w": 3,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "달빛이 일렁이는 얕은 못(3×2, 막힘). 엘프 전당 한가운데.",
+ "where": "엘프 전당 한가운데.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  46,
+  30
+ ],
+ "v5_colors": 12,
+ "material": "wood",
+ "related": [
+  "column live",
+  "elven harp"
+ ]
+}

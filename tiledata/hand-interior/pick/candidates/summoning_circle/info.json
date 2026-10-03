@@ -1,0 +1,34 @@
+{
+ "id": "summoning circle",
+ "slug": "summoning_circle",
+ "name_ko": "소환진",
+ "category": "마법사의 탑",
+ "kind": "flat",
+ "kind_ko": "바닥 무늬(밟을 수 있음)",
+ "canvas": [
+  48,
+  48
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 48
+ },
+ "footprint": {
+  "w": 3,
+  "h": 3
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "바닥에 그린 붉은 오망성 소환진(3×3, 밟을 수 있음) — 원 둘레에 룬 글자, 꼭짓점마다 초.",
+ "where": "",
+ "placement": [
+  "밟을 수 있다. 다른 기물 밑에 먼저 깐다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "tower"
+}

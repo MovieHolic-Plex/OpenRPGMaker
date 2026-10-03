@@ -27,6 +27,7 @@ import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
+  BEAT_KIND_INFERRED_WARNING,
   compileCutscene,
   CutsceneValidationError,
   SAY_BEAT_ALIAS_WARNING,
@@ -3611,6 +3612,15 @@ function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[
   const ids = new Set(map.events.map((event) => event.id));
   const resolve = (items: readonly CutsceneBeat[]): CutsceneBeat[] => items.map((beat): CutsceneBeat => {
     if (beat.kind === "parallel") return { ...beat, beats: resolve(beat.beats) };
+    // 연출 비트(파티클·모습·감정)도 인물 이름을 받는다 — 같은 규칙으로 이벤트 id 로 옮긴다.
+    if (beat.kind === "particles" || beat.kind === "look" || beat.kind === "emote") {
+      const named = (beat.eventId ?? beat.target ?? "").trim();
+      if (!named || named === "player" || named === "this-event" || ids.has(named)) return beat;
+      const found = map.events.filter((event) => event.name?.trim() === named || event.characterId === named);
+      if (found.length !== 1) return beat;
+      warnings.push(`컷신 ${beat.kind} 대상 '${named}' 를 같은 맵의 이벤트 id '${found[0]!.id}' 로 바꿨습니다.`);
+      return { ...beat, target: found[0]!.id, eventId: undefined };
+    }
     if (beat.kind !== "moveActor") return beat;
     const raw = (beat.target ?? beat.eventId ?? beat.actor ?? "player").trim();
     if (raw === "player" || raw === "this-event" || ids.has(raw)) return beat;
@@ -3697,15 +3707,81 @@ function cutsceneMoveWarnings(project: Project, map: GameMap, beats: readonly Cu
   return warnings;
 }
 
+/**
+ * 생성한 소품·캐릭터셋 조각·몬스터 도트 그림을 picture move 로 손수 움직이는 컷신은 거부한다 — 좌표를 모델이 어림하면
+ * 닿지 않거나 어긋난다(2026-10-02 트럭 시험). 같은 일을 script_cutscene_staged 가 그림 크기로 계산해 준다.
+ * 배경·정지 컷·페이드 같은 일반 picture 사용은 막지 않는다. staged/impact 도구는 내부 호출이라 _composedByStageTool 로 통과한다.
+ */
+const HAND_MOVED_ACTOR_PICTURE = /^(cutscene_sprite_|cutscene_char_|scarloxy-monster-|.*-monster-)/u;
+function rejectHandMovedActorPictures(rawBeats: unknown): void {
+  const resourceOf = new Map<string, string>();
+  const offenders = new Set<string>();
+  const visit = (beats: unknown): void => {
+    if (!Array.isArray(beats)) return;
+    for (const beat of beats) {
+      if (!beat || typeof beat !== "object") continue;
+      const b = beat as Record<string, unknown>;
+      if (b.kind === "parallel") { visit(b.beats); continue; }
+      if (b.kind !== "picture") continue;
+      const id = String(b.pictureId ?? b.id ?? "");
+      if (typeof b.resourceId === "string") resourceOf.set(id, b.resourceId);
+      const resource = resourceOf.get(id);
+      if ((b.action === "move" || b.action === "show" || (b.action === undefined && typeof b.resourceId === "string")) && resource && HAND_MOVED_ACTOR_PICTURE.test(resource)) offenders.add(resource);
+    }
+  };
+  visit(rawBeats);
+  if (offenders.size > 0) {
+    throw new ToolError(
+      `그림 ${[...offenders].join(", ")} 를 picture show·move 로 손수 세우고 움직이는 컷신은 만들지 않습니다 — 좌표·크기를 어림하면 화면을 덮거나 닿지 않고, 지우는 것도 빠뜨립니다. `
+      + "script_cutscene_staged 로 다시 만드세요: actors 에 이 그림을 배우(resourceId)로 넣고, steps 에 enter/move/exit/fling/expect touching 으로 관계를 선언하면 도구가 좌표를 계산합니다(find_tools 로 script_cutscene_staged 를 찾으세요).",
+      { code: "use-staged-cutscene" },
+    );
+  }
+}
+
+/**
+ * 맵 NPC(차셋) 몬스터가 다가와 공격 애니메이션을 쏘는 컷신 — 차셋 시트에는 몬스터 그림이 없어 사람·동물 그림이 몬스터 행세를 한다
+ * (2026-10-02 조수 시험: 엠버킷이 사람 그림으로 나옴). 몬스터는 staged 의 그림 배우(list_monster_resources 소재)로 세운다.
+ */
+function rejectCharsetMonsterAttack(rawBeats: unknown): void {
+  let movesOtherActor = false;
+  let animates = false;
+  const visit = (beats: unknown): void => {
+    if (!Array.isArray(beats)) return;
+    for (const beat of beats) {
+      if (!beat || typeof beat !== "object") continue;
+      const b = beat as Record<string, unknown>;
+      if (b.kind === "parallel") { visit(b.beats); continue; }
+      if (b.kind === "animation") animates = true;
+      const mover = b.target ?? b.eventId ?? b.actorId;
+      if (b.kind === "moveActor" && typeof mover === "string" && mover !== "player" && mover !== "@player" && mover !== "this-event" && mover !== "screen") movesOtherActor = true;
+    }
+  };
+  visit(rawBeats);
+  if (movesOtherActor && animates) {
+    throw new ToolError(
+      "다른 NPC 를 움직여 공격 애니메이션을 쏘는 컷신은 script_cutscene 으로 만들지 않습니다 — 차셋 NPC 로는 몬스터 그림이 나오지 않아 사람·동물 그림이 몬스터 행세를 합니다. "
+      + "script_cutscene_staged 로 만드세요: actors 에 {name:'몬스터', resourceId:<list_monster_resources 의 scarloxy-monster-… 소재>}, 주인공은 {ghost:true, tile:{x,y}}, "
+      + "steps 에 enter/move → turn(주인공 방향 확인) → animate(animationId:'anim_…', actor:'주인공')·se·shake 를 선언하세요.",
+      { code: "use-staged-cutscene" },
+    );
+  }
+}
+
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
-    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다.  컷신·연출·대화 장면·회상 요청의 정본. 투더문식 회상/엔딩 프리셋은 script_cutscene_preset." +
+    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. 대사·카메라·진행(스위치·맵 이동·엔딩) 중심 컷신의 정본. 그림이나 주인공·NPC·몬스터가 화면을 걷고 달리고 부딪히고 공격하는 «움직임 연출»(트럭에 치임, 몬스터 등장·공격, 둘러보기)은 좌표를 손으로 짜지 말고 script_cutscene_staged 로 만든다. 투더문식 회상/엔딩 프리셋은 script_cutscene_preset." +
     "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
     "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
-    "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.layerSet), flash, shake, wait{ms}, parallel{beats}, label, jump, " +
+    "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.layerSet), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환은 mosaic(전환에만 — 켠 채 대사를 잇지 말고 곧 clear), 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
+    "letterbox{show,size?,durationMs}(영화식 위아래 검은 띠 — 중요한 장면 시작에 넣는다. 컷신 끝에 자동으로 걷힘, 남기려면 keep:true), " +
+    "particles{preset:'sparkle|magic|heal|fire|smoke|dust|explosion|splash',target:'player'|이벤트 id|생략+x,y,durationMs,wait}(한 인물·한 칸에서 터지는 효과 — 보물=sparkle, 주문=magic, 회복=heal, 사라짐=smoke, 착지=dust, 폭발=explosion), " +
+    "look{target,pose:'normal|fallen|fallenLeft|crouch|float',tint:'red|blue|green|yellow|purple|gray|black|white|none|#rrggbb',tintFill,flip,angle,afterimage,alpha,reset}(인물 모습 — 기절·잠=fallen, 숨기=crouch, 유령=float+alpha 0.6, 독=tint green, 실루엣=tint black+tintFill, 빠른 이동 잔상=afterimage. 컷신 뒤에도 남으니 되돌릴 땐 {reset:true}), " +
+    "emote{target,emote:'exclamation|question|heart|heartBroken|smile|music|sweat|anger|ellipsis|sleep|sparkle|idea',durationMs,wait}(머리 위 감정 말풍선 — 놀람=exclamation), weather{weather:'none|rain|storm|snow|fog',intensity:0~1,durationMs}, " +
+    "wait{ms}, parallel{beats}(동시에 — 예: 폭발 particles 와 shake 와 flash 를 한 번에), label, jump. 연출 조합 레시피는 read_directing_guide. " +
     "진행 비트 switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId} — 기억/장면 진입·다음 장면으로 넘어가는 문·엔딩 컷신도 이 툴 하나로 쓴다(Esc 건너뛰기로도 스위치·이동·엔딩은 빠지지 않는다). " +
     "맵에 들어오면 한 번 재생: trigger:'auto', once:true. 조건이 모이면 재생(메멘토 3개 등): trigger:'auto', requiresSwitches:[…], once:true. " +
     "예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]}",
@@ -3745,8 +3821,10 @@ const scriptCutscene: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const trigger = triggerFromArg(args.trigger);
     const warnings: string[] = [];
+    if (args._composedByStageTool !== true) { rejectHandMovedActorPictures(args.beats); rejectCharsetMonsterAttack(args.beats); }
     const aliased = canonicalizeSayBeatAliases(args.beats);
     if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
+    if (aliased.inferred > 0) warnings.push(BEAT_KIND_INFERRED_WARNING(aliased.inferred));
     const beats = reconcileCutsceneSayFaces(draft, map,
       resolveCutsceneActorTargets(map, resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings), warnings), warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");

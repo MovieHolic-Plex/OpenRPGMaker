@@ -283,7 +283,7 @@ export function aiGenerateButton(collection: "items" | "enemies", rerender: () =
       type: "button",
       title: kind === "item"
         ? "설명을 주면 AI 가 아이템 레코드와 아이콘 그림을 만들어 등록합니다."
-        : "설명을 주면 AI 가 적 레코드와 몬스터 그림을 만들어 등록합니다.",
+        : "설명을 주면 AI 가 적 레코드를 만들고 도트 몬스터 140종 중 맞는 그림을 골라 등록합니다.",
     },
     on: {
       // 정적 import 금지: 이 모듈은 store 청크에서 초기화되는데 생성 모달은

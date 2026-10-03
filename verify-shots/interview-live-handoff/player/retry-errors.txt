@@ -1,0 +1,8 @@
+Corrected title-input scenario, canonical revision-8 fixture unchanged.
+
+Firefox dev player: title-screen visibility timeout 120000ms.
+Chromium dev player: title-screen visibility timeout 120000ms.
+Firefox packaged player (9896): title-screen visibility timeout 120000ms.
+All three browser/server lifetimes closed after failure.
+
+Initial runner SUMMARY/manifest remain unchanged; the final gameplay gate is failed/incomplete, not passed.

@@ -1,0 +1,329 @@
+[
+  {
+    "capture": "adversarial-final",
+    "passed": true,
+    "errors": [],
+    "clips": [
+      {
+        "skill": "skill_motion_walk",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "walk_a",
+          "walk_b",
+          "walk_c",
+          "attack_windup",
+          "attack_strike",
+          "attack_follow"
+        ],
+        "heldFrames": 3
+      },
+      {
+        "skill": "skill_motion_dash",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 4
+      },
+      {
+        "skill": "skill_motion_jump",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "defend",
+          "evade",
+          "attack_windup",
+          "attack_strike",
+          "attack_follow"
+        ],
+        "heldFrames": 6
+      },
+      {
+        "skill": "skill_motion_blink",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "evade",
+          "attack_strike",
+          "attack_follow"
+        ],
+        "heldFrames": 4
+      },
+      {
+        "skill": "skill_motion_sky",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "defend",
+          "evade",
+          "attack_windup",
+          "attack_strike",
+          "attack_follow"
+        ],
+        "heldFrames": 5
+      },
+      {
+        "skill": "skill_motion_through",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade"
+        ],
+        "heldFrames": 5
+      },
+      {
+        "skill": "skill_motion_air-chase",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 19
+      },
+      {
+        "skill": "skill_motion_sky-crush",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 22
+      },
+      {
+        "skill": "skill_motion_throw",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 8
+      },
+      {
+        "skill": "skill_motion_clones",
+        "completed": true,
+        "problems": [],
+        "poses": [],
+        "heldFrames": 9
+      },
+      {
+        "skill": "skill_motion_return-weapon",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "cast_charge",
+          "cast_raise",
+          "cast_release"
+        ],
+        "heldFrames": 6
+      },
+      {
+        "skill": "skill_motion_relay",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 6
+      }
+    ]
+  },
+  {
+    "capture": "adversarial-clock",
+    "passed": true,
+    "errors": [],
+    "clips": [
+      {
+        "skill": "skill_motion_blink",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "evade",
+          "attack_strike",
+          "attack_follow"
+        ],
+        "heldFrames": 3
+      },
+      {
+        "skill": "skill_motion_jump",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "defend",
+          "evade",
+          "attack_windup",
+          "attack_strike",
+          "attack_follow"
+        ],
+        "heldFrames": 6
+      },
+      {
+        "skill": "skill_motion_air-chase",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 17
+      },
+      {
+        "skill": "skill_motion_sky-crush",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 23
+      },
+      {
+        "skill": "skill_motion_clones",
+        "completed": true,
+        "problems": [],
+        "poses": [],
+        "heldFrames": 12
+      },
+      {
+        "skill": "skill_motion_return-weapon",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "cast_charge",
+          "cast_raise",
+          "cast_release"
+        ],
+        "heldFrames": 7
+      }
+    ]
+  },
+  {
+    "capture": "adversarial-miss",
+    "passed": true,
+    "errors": [],
+    "clips": [
+      {
+        "skill": "skill_motion_air-chase",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 0
+      },
+      {
+        "skill": "skill_motion_throw",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 0
+      }
+    ]
+  },
+  {
+    "capture": "adversarial-delivery",
+    "passed": true,
+    "errors": [],
+    "clips": [
+      {
+        "skill": "skill_motion_jump",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "defend",
+          "evade",
+          "attack_windup",
+          "attack_strike",
+          "attack_follow"
+        ],
+        "heldFrames": 6
+      },
+      {
+        "skill": "skill_motion_sky-crush",
+        "completed": true,
+        "problems": [],
+        "poses": [
+          "idle",
+          "attack_windup",
+          "walk_b",
+          "attack_strike",
+          "attack_follow",
+          "evade",
+          "defend"
+        ],
+        "heldFrames": 25
+      }
+    ]
+  }
+]

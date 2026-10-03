@@ -1,0 +1,52 @@
+// 말린 지도 세 개의 말림 끝과 타원 입구, 통널·쇠테를 전형적인 JRPG 나무 통으로 손 도트 작도.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 2
+@mat C wood 3
+@mat D wood 4
+@mat E wood 5
+@mat F wood 6
+@mat G wood 7
+@mat p linen 6
+@mat q linen 5
+@mat r linen 4
+@mat s linen 3
+@mat t linen 2
+@mat h iron 2
+@mat j iron 3
+@mat k iron 4
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+....qq..........
+...qtqq.........
+...qrrq.........
+...pprr....qq...
+...pqrr...qtqq..
+...pqrr...qrrq..
+...pqrr.qqpqrs..
+...pqrqqtqqqrs..
+...pqrqqrrqqrs..
+...pqrrpqrqqrs..
+...pqrrpqrqqrs..
+...pqrrpqrqqrs..
+...FGrrpqrqqBC..
+..GFGrCpqrCBBC..
+.FGCCrCqqrCBABC.
+.GFBCBCssBCABBC.
+.GFFFEEDDCCBBBC.
+.EkkkjjjjjjjhhC.
+.EFEDEEDDCDBBBC.
+.EFEDEEDDCDBBBC.
+.EFEDFEDDCDBBBC.
+.EFEDEDDDCDBBBC.
+.EkjjjjjjjjjhhC.
+..EDFEDDCDBBBC..
+...CCBBBBBBAA...

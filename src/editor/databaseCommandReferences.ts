@@ -1,3 +1,5 @@
+import { eventReferenceMatches } from "@/editor/databaseEventReferences";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
@@ -29,15 +31,16 @@ export function commandsReferenceLocations(project: Project, collection: Command
 
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      const matches =
-        conditionReferencesDatabase(event.condition, collection, id) ||
-        eventGiftPrefsReferences(event, collection, id) ||
-        commandListReferences(event.commands, collection, id) ||
-        (event.pages ?? []).some(
+      const matches = eventReferenceMatches(event, (body) =>
+        conditionReferencesDatabase(body.condition, collection, id) ||
+        eventGiftPrefsReferences(body, collection, id) ||
+        commandListReferences(body.commands, collection, id) ||
+        (body.pages ?? []).some(
           (page) =>
             page.conditions.some((condition) => conditionReferencesDatabase(condition, collection, id)) ||
             commandListReferences(page.commands, collection, id)
-        );
+        )
+      );
       if (matches) locations.push({ kind: "mapEvent", mapName: map.name, eventName: eventDisplayName(event), eventId: event.id });
     }
   }
@@ -62,12 +65,13 @@ export function commandsResourceReference(project: Project, resourceId: string):
     project.commonEvents.some((event) => commandListResourceReferences(event.commands, resourceId)) ||
     Object.values(project.maps).some((map) =>
       map.events.some(
-        (event) =>
-          event.sprite?.id === resourceId ||
-          commandListResourceReferences(event.commands, resourceId) ||
-          (event.pages ?? []).some(
+        (event) => eventReferenceMatches(event, (body) =>
+          body.sprite?.id === resourceId ||
+          commandListResourceReferences(body.commands, resourceId) ||
+          (body.pages ?? []).some(
             (page) => page.graphic.sprite?.id === resourceId || commandListResourceReferences(page.commands, resourceId)
           )
+        )
       )
     ) ||
     project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListResourceReferences(page.commands, resourceId))
@@ -97,15 +101,16 @@ export function switchVariableReferenceLocations(
 
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      const matches =
-        conditionReferencesSwitchVariable(event.condition, kind, id) ||
-        commandListReferencesSwitchVariable(event.commands, kind, id) ||
-        (event.pages ?? []).some(
+      const matches = eventReferenceMatches(event, (body) =>
+        conditionReferencesSwitchVariable(body.condition, kind, id) ||
+        commandListReferencesSwitchVariable(body.commands, kind, id) ||
+        (body.pages ?? []).some(
           (page) =>
             (kind === "switch" && page.movement.living?.destinations.some((destination) => destination.switchId === id)) ||
             page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
             commandListReferencesSwitchVariable(page.commands, kind, id)
-        );
+        )
+      );
       if (matches) locations.push({ kind: "mapEvent", mapName: map.name, eventName: eventDisplayName(event), eventId: event.id });
     }
   }
@@ -133,15 +138,16 @@ export function switchVariableReferencedInProject(project: Project, kind: "switc
     ) ||
     Object.values(project.maps).some((map) =>
       map.events.some(
-        (event) =>
-          conditionReferencesSwitchVariable(event.condition, kind, id) ||
-          commandListReferencesSwitchVariable(event.commands, kind, id) ||
-          (event.pages ?? []).some(
+        (event) => eventReferenceMatches(event, (body) =>
+          conditionReferencesSwitchVariable(body.condition, kind, id) ||
+          commandListReferencesSwitchVariable(body.commands, kind, id) ||
+          (body.pages ?? []).some(
             (page) =>
               (kind === "switch" && page.movement.living?.destinations.some((destination) => destination.switchId === id)) ||
               page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
               commandListReferencesSwitchVariable(page.commands, kind, id)
           )
+        )
       )
     ) ||
     project.database.troops.some((troop) =>
@@ -284,30 +290,14 @@ function commandListResourceReferences(commands: readonly Command[], resourceId:
 }
 
 function commandResourceReferences(command: Command, resourceId: string): boolean {
+  if (eventCommandBranches(command).some((branch) => commandListResourceReferences(branch.commands, resourceId))) return true;
   switch (command.kind) {
     case "changeFace":
-      return command.resourceId === resourceId;
-    case "choices":
-      return command.options.some((option) => commandListResourceReferences(option.branch, resourceId)) || commandListResourceReferences(command.cancelBranch ?? [], resourceId);
-    case "presentItem":
-      return presentItemBranchLists(command).some((branch) => commandListResourceReferences(branch, resourceId));
-    case "fork":
-      return commandListResourceReferences(command.then, resourceId) || commandListResourceReferences(command.else ?? [], resourceId);
-    case "loop":
-      return commandListResourceReferences(command.body, resourceId);
-    case "moveEvent":
-      return moveRouteResourceReferences(command.route.moves, resourceId);
-    case "shop":
-      return commandListResourceReferences(command.transactionBranch ?? [], resourceId);
-    case "inn":
-      return commandListResourceReferences(command.notEnoughBranch ?? [], resourceId);
-    case "promoteActor":
-      return commandListResourceReferences(command.successBranch ?? [], resourceId) || commandListResourceReferences(command.failureBranch ?? [], resourceId);
-    case "evolveMonster":
-      return commandListResourceReferences(command.successBranch ?? [], resourceId) || commandListResourceReferences(command.failureBranch ?? [], resourceId);
     case "showPicture":
     case "playAudio":
       return command.resourceId === resourceId;
+    case "moveEvent":
+      return moveRouteResourceReferences(command.route.moves, resourceId);
     default:
       return false;
   }
@@ -338,7 +328,8 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
       return commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.defeatBranch ?? [], kind, id);
     case "battleProcessing":
-      return commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
+      return (kind === "variable" && command.troopVariableId === id)
+        || commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.defeatBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.escapeBranch ?? [], kind, id);
     case "inn":

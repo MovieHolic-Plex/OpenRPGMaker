@@ -1,0 +1,1001 @@
+{
+  "base": "http://127.0.0.1:9896",
+  "root": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/detailed-authoring-live/project",
+  "requests": [
+    {
+      "mode": "team",
+      "model": "gemini-3.8-flash",
+      "runId": "4c7fc6ef-2ad2-4a10-b917-c01a808b4e39",
+      "taskCharacters": 40114,
+      "internalTasks": true,
+      "protagonist": true,
+      "pixelGate": true,
+      "scope": true,
+      "time": "2026-10-03T13:38:07.660Z"
+    }
+  ],
+  "responses": [
+    {
+      "status": 200,
+      "runId": "4c7fc6ef-2ad2-4a10-b917-c01a808b4e39"
+    }
+  ],
+  "errors": [
+    "Framebuffer status: Incomplete Attachment"
+  ],
+  "started": "2026-10-03T13:35:47.302Z",
+  "newFolderUrl": "http://127.0.0.1:9896/index.html?hostProject=591750e4-afaf-4722-9529-a9ac36fb198c",
+  "chatTail": "2026년 10월 3일 토\n관계·연애 · 확정한 게임 기획\n지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다. 이웃 나래와 별빛 우체국 앞에서 만나고, 선택지는 반갑게 인사한다 / 편지를 물어본다.\n작업 중\n1:38\n\n실제 맵에 반영하며 작업 중…\n\n◌\n만드는 중\n팀장\n✓\n프로젝트 설정 · 완료\n맵 만들기\n✓\n캐릭터 수정 · 완료\n맵 만들기\n변경 전\n주인공\n캐릭터\n초안\n지우\n캐릭터\n\n액터 '지우' 수정\n\n◌\n맵 속성 · 진행 중\n맵 만들기",
+  "wireCount": 37,
+  "elapsedSeconds": 232,
+  "sqlite": {
+    "agentCommits": [
+      {
+        "author": "human",
+        "tools": [
+          "set_project_settings"
+        ],
+        "summary": "set_project_settings"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_actor"
+        ],
+        "summary": "upsert_actor"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_map_properties"
+        ],
+        "summary": "set_map_properties"
+      }
+    ],
+    "mapNames": [
+      "별빛 우체국 앞",
+      "기억의 길"
+    ],
+    "mapContent": [
+      {
+        "id": "map_blank_start",
+        "name": "별빛 우체국 앞",
+        "events": [
+          {
+            "id": "ev_gate_72b5cbf7-549c-4b14-8b7c-ced6a8758d0d",
+            "x": 19,
+            "y": 8,
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [],
+            "pages": [
+              {
+                "id": "ev_gate_72b5cbf7-549c-4b14-8b7c-ced6a8758d0d_page",
+                "name": "출입구",
+                "conditions": [],
+                "graphic": {
+                  "transparent": true
+                },
+                "trigger": {
+                  "kind": "playerTouch"
+                },
+                "priority": "below",
+                "overlapForbidden": false,
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "commands": [
+                  {
+                    "kind": "transfer",
+                    "mapId": "map_segment_route",
+                    "x": 0,
+                    "y": 7,
+                    "fade": "black"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ev_segment_starter",
+            "name": "기억의 조각",
+            "x": 12,
+            "y": 8,
+            "trigger": {
+              "kind": "action"
+            },
+            "pages": [
+              {
+                "id": "ev_segment_starter_look",
+                "conditions": [],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "낡은 물건을 만지자 오래된 기억이 떠오른다."
+                  },
+                  {
+                    "kind": "setSwitch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "name": "ev_segment_starter",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              },
+              {
+                "id": "ev_segment_starter_seen",
+                "conditions": [
+                  {
+                    "kind": "switch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "동쪽 길 끝에 그날의 장소가 있다."
+                  }
+                ],
+                "name": "ev_segment_starter",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              }
+            ],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": [
+          {
+            "id": "ev_gate_bb9a288d-45a4-4ccc-9bf7-8c325ee4d2d9",
+            "x": 0,
+            "y": 6,
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [],
+            "pages": [
+              {
+                "id": "ev_gate_bb9a288d-45a4-4ccc-9bf7-8c325ee4d2d9_page",
+                "name": "출입구",
+                "conditions": [],
+                "graphic": {
+                  "transparent": true
+                },
+                "trigger": {
+                  "kind": "playerTouch"
+                },
+                "priority": "below",
+                "overlapForbidden": false,
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "commands": [
+                  {
+                    "kind": "transfer",
+                    "mapId": "map_blank_start",
+                    "x": 19,
+                    "y": 9,
+                    "fade": "black"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ev_segment_end",
+            "name": "구간 끝",
+            "x": 22,
+            "y": 6,
+            "trigger": {
+              "kind": "action"
+            },
+            "pages": [
+              {
+                "id": "ev_segment_end_locked",
+                "conditions": [],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "아직 무엇을 찾아야 할지 모르겠다. 마을에서 단서를 찾아보자."
+                  }
+                ],
+                "name": "ev_segment_end",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              },
+              {
+                "id": "ev_segment_end_page",
+                "conditions": [
+                  {
+                    "kind": "switch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "그날의 장소에 닿았다. 여기까지가 첫 구간이다."
+                  },
+                  {
+                    "kind": "triggerEnding",
+                    "endingId": "ending_first_segment"
+                  }
+                ],
+                "name": "ev_segment_end",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              }
+            ],
+            "commands": []
+          }
+        ]
+      }
+    ],
+    "hero": "지우",
+    "dir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/detailed-authoring-live/project/.oprn-projects/591750e4-afaf-4722-9529-a9ac36fb198c",
+    "projectId": "c7f38230-0a66-4ffb-8f6b-d87c7132f695",
+    "title": "별빛 우체국 앞의 우리",
+    "revision": 8,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "어떤 만남으로 시작할까요?",
+          "label": "이야기의 시작",
+          "text": "조금씩 가까워지는 이웃 — 작은 마을에서 우연한 만남이 이어져요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "무엇을 하며 가까워질까요?",
+          "label": "중심 플레이",
+          "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "관계는 어떤 흐름으로 이어질까요?",
+          "label": "진행 방식",
+          "text": "한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 감정이 오래 남으면 좋을까요?",
+          "label": "분위기",
+          "text": "따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째로 어디까지 만들어 볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.",
+          "source": "user"
+        }
+      },
+      "summary": "지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다. 이웃 나래와 별빛 우체국 앞에서 만나고, 선택지는 반갑게 인사한다 / 편지를 물어본다.",
+      "interview": {
+        "version": 1,
+        "genre": "romance",
+        "concept": "이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.",
+        "protagonist": "지우. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.",
+        "notes": "검증용 고유 설정: 이웃 이름은 나래, 만나는 장소는 별빛 우체국 앞. 두 선택지는 반갑게 인사한다 / 편지를 물어본다.",
+        "choiceIds": {
+          "experience": "town",
+          "activity": "talk",
+          "progression": "single",
+          "detail": "warm",
+          "scope": "scene"
+        }
+      }
+    },
+    "maps": 2,
+    "events": 4,
+    "conversations": []
+  },
+  "wireScreenshot": true,
+  "firstMapApplicationVerified": true,
+  "uiTaskLeak": false,
+  "audit": [],
+  "piTeam": null,
+  "stoppedForQa": true,
+  "indexedDb": [],
+  "beforeReload": {
+    "agentCommits": [
+      {
+        "author": "human",
+        "tools": [
+          "set_project_settings"
+        ],
+        "summary": "set_project_settings"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_actor"
+        ],
+        "summary": "upsert_actor"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_map_properties"
+        ],
+        "summary": "set_map_properties"
+      }
+    ],
+    "mapNames": [
+      "별빛 우체국 앞",
+      "기억의 길"
+    ],
+    "mapContent": [
+      {
+        "id": "map_blank_start",
+        "name": "별빛 우체국 앞",
+        "events": [
+          {
+            "id": "ev_gate_72b5cbf7-549c-4b14-8b7c-ced6a8758d0d",
+            "x": 19,
+            "y": 8,
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [],
+            "pages": [
+              {
+                "id": "ev_gate_72b5cbf7-549c-4b14-8b7c-ced6a8758d0d_page",
+                "name": "출입구",
+                "conditions": [],
+                "graphic": {
+                  "transparent": true
+                },
+                "trigger": {
+                  "kind": "playerTouch"
+                },
+                "priority": "below",
+                "overlapForbidden": false,
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "commands": [
+                  {
+                    "kind": "transfer",
+                    "mapId": "map_segment_route",
+                    "x": 0,
+                    "y": 7,
+                    "fade": "black"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ev_segment_starter",
+            "name": "기억의 조각",
+            "x": 12,
+            "y": 8,
+            "trigger": {
+              "kind": "action"
+            },
+            "pages": [
+              {
+                "id": "ev_segment_starter_look",
+                "conditions": [],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "낡은 물건을 만지자 오래된 기억이 떠오른다."
+                  },
+                  {
+                    "kind": "setSwitch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "name": "ev_segment_starter",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              },
+              {
+                "id": "ev_segment_starter_seen",
+                "conditions": [
+                  {
+                    "kind": "switch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "동쪽 길 끝에 그날의 장소가 있다."
+                  }
+                ],
+                "name": "ev_segment_starter",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              }
+            ],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": [
+          {
+            "id": "ev_gate_bb9a288d-45a4-4ccc-9bf7-8c325ee4d2d9",
+            "x": 0,
+            "y": 6,
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [],
+            "pages": [
+              {
+                "id": "ev_gate_bb9a288d-45a4-4ccc-9bf7-8c325ee4d2d9_page",
+                "name": "출입구",
+                "conditions": [],
+                "graphic": {
+                  "transparent": true
+                },
+                "trigger": {
+                  "kind": "playerTouch"
+                },
+                "priority": "below",
+                "overlapForbidden": false,
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "commands": [
+                  {
+                    "kind": "transfer",
+                    "mapId": "map_blank_start",
+                    "x": 19,
+                    "y": 9,
+                    "fade": "black"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ev_segment_end",
+            "name": "구간 끝",
+            "x": 22,
+            "y": 6,
+            "trigger": {
+              "kind": "action"
+            },
+            "pages": [
+              {
+                "id": "ev_segment_end_locked",
+                "conditions": [],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "아직 무엇을 찾아야 할지 모르겠다. 마을에서 단서를 찾아보자."
+                  }
+                ],
+                "name": "ev_segment_end",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              },
+              {
+                "id": "ev_segment_end_page",
+                "conditions": [
+                  {
+                    "kind": "switch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "그날의 장소에 닿았다. 여기까지가 첫 구간이다."
+                  },
+                  {
+                    "kind": "triggerEnding",
+                    "endingId": "ending_first_segment"
+                  }
+                ],
+                "name": "ev_segment_end",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              }
+            ],
+            "commands": []
+          }
+        ]
+      }
+    ],
+    "hero": "지우",
+    "dir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/detailed-authoring-live/project/.oprn-projects/591750e4-afaf-4722-9529-a9ac36fb198c",
+    "projectId": "c7f38230-0a66-4ffb-8f6b-d87c7132f695",
+    "title": "별빛 우체국 앞의 우리",
+    "revision": 8,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "어떤 만남으로 시작할까요?",
+          "label": "이야기의 시작",
+          "text": "조금씩 가까워지는 이웃 — 작은 마을에서 우연한 만남이 이어져요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "무엇을 하며 가까워질까요?",
+          "label": "중심 플레이",
+          "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "관계는 어떤 흐름으로 이어질까요?",
+          "label": "진행 방식",
+          "text": "한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 감정이 오래 남으면 좋을까요?",
+          "label": "분위기",
+          "text": "따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째로 어디까지 만들어 볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.",
+          "source": "user"
+        }
+      },
+      "summary": "지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다. 이웃 나래와 별빛 우체국 앞에서 만나고, 선택지는 반갑게 인사한다 / 편지를 물어본다.",
+      "interview": {
+        "version": 1,
+        "genre": "romance",
+        "concept": "이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.",
+        "protagonist": "지우. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.",
+        "notes": "검증용 고유 설정: 이웃 이름은 나래, 만나는 장소는 별빛 우체국 앞. 두 선택지는 반갑게 인사한다 / 편지를 물어본다.",
+        "choiceIds": {
+          "experience": "town",
+          "activity": "talk",
+          "progression": "single",
+          "detail": "warm",
+          "scope": "scene"
+        }
+      }
+    },
+    "maps": 2,
+    "events": 4,
+    "conversations": []
+  },
+  "afterReload": {
+    "agentCommits": [
+      {
+        "author": "human",
+        "tools": [
+          "set_project_settings"
+        ],
+        "summary": "set_project_settings"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_actor"
+        ],
+        "summary": "upsert_actor"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_map_properties"
+        ],
+        "summary": "set_map_properties"
+      }
+    ],
+    "mapNames": [
+      "별빛 우체국 앞",
+      "기억의 길"
+    ],
+    "mapContent": [
+      {
+        "id": "map_blank_start",
+        "name": "별빛 우체국 앞",
+        "events": [
+          {
+            "id": "ev_gate_72b5cbf7-549c-4b14-8b7c-ced6a8758d0d",
+            "x": 19,
+            "y": 8,
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [],
+            "pages": [
+              {
+                "id": "ev_gate_72b5cbf7-549c-4b14-8b7c-ced6a8758d0d_page",
+                "name": "출입구",
+                "conditions": [],
+                "graphic": {
+                  "transparent": true
+                },
+                "trigger": {
+                  "kind": "playerTouch"
+                },
+                "priority": "below",
+                "overlapForbidden": false,
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "commands": [
+                  {
+                    "kind": "transfer",
+                    "mapId": "map_segment_route",
+                    "x": 0,
+                    "y": 7,
+                    "fade": "black"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ev_segment_starter",
+            "name": "기억의 조각",
+            "x": 12,
+            "y": 8,
+            "trigger": {
+              "kind": "action"
+            },
+            "pages": [
+              {
+                "id": "ev_segment_starter_look",
+                "conditions": [],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "낡은 물건을 만지자 오래된 기억이 떠오른다."
+                  },
+                  {
+                    "kind": "setSwitch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "name": "ev_segment_starter",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              },
+              {
+                "id": "ev_segment_starter_seen",
+                "conditions": [
+                  {
+                    "kind": "switch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "동쪽 길 끝에 그날의 장소가 있다."
+                  }
+                ],
+                "name": "ev_segment_starter",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              }
+            ],
+            "commands": []
+          }
+        ]
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": [
+          {
+            "id": "ev_gate_bb9a288d-45a4-4ccc-9bf7-8c325ee4d2d9",
+            "x": 0,
+            "y": 6,
+            "trigger": {
+              "kind": "playerTouch"
+            },
+            "commands": [],
+            "pages": [
+              {
+                "id": "ev_gate_bb9a288d-45a4-4ccc-9bf7-8c325ee4d2d9_page",
+                "name": "출입구",
+                "conditions": [],
+                "graphic": {
+                  "transparent": true
+                },
+                "trigger": {
+                  "kind": "playerTouch"
+                },
+                "priority": "below",
+                "overlapForbidden": false,
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "commands": [
+                  {
+                    "kind": "transfer",
+                    "mapId": "map_blank_start",
+                    "x": 19,
+                    "y": 9,
+                    "fade": "black"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ev_segment_end",
+            "name": "구간 끝",
+            "x": 22,
+            "y": 6,
+            "trigger": {
+              "kind": "action"
+            },
+            "pages": [
+              {
+                "id": "ev_segment_end_locked",
+                "conditions": [],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "아직 무엇을 찾아야 할지 모르겠다. 마을에서 단서를 찾아보자."
+                  }
+                ],
+                "name": "ev_segment_end",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              },
+              {
+                "id": "ev_segment_end_page",
+                "conditions": [
+                  {
+                    "kind": "switch",
+                    "switchId": "sw_segment_key",
+                    "value": true
+                  }
+                ],
+                "trigger": {
+                  "kind": "action"
+                },
+                "graphic": {
+                  "transparent": true
+                },
+                "commands": [
+                  {
+                    "kind": "text",
+                    "body": "그날의 장소에 닿았다. 여기까지가 첫 구간이다."
+                  },
+                  {
+                    "kind": "triggerEnding",
+                    "endingId": "ending_first_segment"
+                  }
+                ],
+                "name": "ev_segment_end",
+                "priority": "below",
+                "movement": {
+                  "type": "fixed",
+                  "speed": 3,
+                  "frequency": 3
+                },
+                "overlapForbidden": false
+              }
+            ],
+            "commands": []
+          }
+        ]
+      }
+    ],
+    "hero": "지우",
+    "dir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/detailed-authoring-live/project/.oprn-projects/591750e4-afaf-4722-9529-a9ac36fb198c",
+    "projectId": "c7f38230-0a66-4ffb-8f6b-d87c7132f695",
+    "title": "별빛 우체국 앞의 우리",
+    "revision": 8,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "어떤 만남으로 시작할까요?",
+          "label": "이야기의 시작",
+          "text": "조금씩 가까워지는 이웃 — 작은 마을에서 우연한 만남이 이어져요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "무엇을 하며 가까워질까요?",
+          "label": "중심 플레이",
+          "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "관계는 어떤 흐름으로 이어질까요?",
+          "label": "진행 방식",
+          "text": "한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 감정이 오래 남으면 좋을까요?",
+          "label": "분위기",
+          "text": "따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째로 어디까지 만들어 볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.",
+          "source": "user"
+        }
+      },
+      "summary": "지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다. 이웃 나래와 별빛 우체국 앞에서 만나고, 선택지는 반갑게 인사한다 / 편지를 물어본다.",
+      "interview": {
+        "version": 1,
+        "genre": "romance",
+        "concept": "이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.",
+        "protagonist": "지우. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.",
+        "notes": "검증용 고유 설정: 이웃 이름은 나래, 만나는 장소는 별빛 우체국 앞. 두 선택지는 반갑게 인사한다 / 편지를 물어본다.",
+        "choiceIds": {
+          "experience": "town",
+          "activity": "talk",
+          "progression": "single",
+          "detail": "warm",
+          "scope": "scene"
+        }
+      }
+    },
+    "maps": 2,
+    "events": 4,
+    "conversations": []
+  },
+  "sameProjectAfterReload": true,
+  "sameBriefAfterReload": true,
+  "passed": false
+}

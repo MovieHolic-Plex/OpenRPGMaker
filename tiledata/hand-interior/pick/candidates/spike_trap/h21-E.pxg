@@ -1,0 +1,41 @@
+// E: 돌 테두리 구덩이에서 쇠가시 네 개가 어긋나게 솟음(뒷줄 둘은 테 위로 삐져나옴), 앞 돌턱 남쪽 면
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 4
+@mat k black 1
+@mat i iron 4
+@mblock 0 0
+ssssssssssssssss
+sssisssssissssss
+sskiikkkkiikkkss
+sskiikkkkiikkkss
+sskiikikkiikikss
+sskiikiikiikiiss
+sskiikiikiikiiss
+sskiikiikiikiiss
+sskkkkiikkkkiiss
+sskkkkiikkkkiiss
+sskkkkiikkkkiiss
+sskkkkiikkkkiiss
+sskkkkkkkkkkkkss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+@tblock 0 0
+4555555555555553
+4446444446444443
+4405300005300033
+4415311115311133
+4415316115316133
+4415315315315333
+4415315315315333
+4412215312215333
+4411115311115333
+4411115311115333
+4411115311115333
+4411112211112233
+4422222222222233
+3333333333333333
+2222222222222222
+1111111111111111

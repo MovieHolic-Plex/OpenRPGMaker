@@ -23,10 +23,13 @@ from PIL import Image, ImageDraw, ImageFont
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *  # noqa
 import context
+import outline_select
 
 OUT = os.path.join(PICK, 'out')
 
 def cand_png(s, choice):
+    b, sel = outline_select.split(choice)
+    if sel: return Image.open(outline_select.ensure_png(os.path.join(CAND, s), b, objects_by_slug()[s])).convert('RGBA')
     base = os.path.join(CAND, s, choice); png = base + '.png'
     if not os.path.exists(png) or os.path.getmtime(png) < os.path.getmtime(base + '.pxg'):
         sys.path.insert(0, PXGRID); import pxgrid
@@ -99,7 +102,7 @@ def main():
         if i not in by: skipped.append(dict(id=i, why='v5 에 없는 기물')); continue
         if not ch or ch == 'v5': skipped.append(dict(id=i, why='v5 유지' if ch == 'v5' else '선택 없음')); continue
         o = by[i]; s = slug(i); t = o['atlas']
-        if not os.path.exists(os.path.join(CAND, s, ch + '.pxg')): skipped.append(dict(id=i, why=f'후보 파일 없음 {ch}')); continue
+        if not os.path.exists(os.path.join(CAND, s, outline_select.split(ch)[0] + '.pxg')): skipped.append(dict(id=i, why=f'후보 파일 없음 {ch}')); continue
         for k, v in enumerate((p or {}).get('variants') or [], start=2):
             var_jobs.append((i, v, k, p))
         im = cand_png(s, ch)

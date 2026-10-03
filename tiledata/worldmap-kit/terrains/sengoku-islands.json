@@ -1,0 +1,14 @@
+{
+ "schema": "worldmap-terrain/1",
+ "id": "sengoku-islands",
+ "name": "열도 — 전국",
+ "base": "generate",
+ "note": "전국 테마의 기본 구조 — 비스듬히 휜 긴 본섬과 북섬·남서섬·남섬, 서쪽 바다 건너 대륙 끝자락. 본섬을 따라 등뼈 산맥. 2막 = 본섬 북동 끝 관소 너머.",
+ "ops": [
+  {
+   "op": "continents",
+   "style": "arc-islands",
+   "seed": 1
+  }
+ ]
+}

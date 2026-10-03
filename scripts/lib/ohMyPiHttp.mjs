@@ -3,6 +3,8 @@
 
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 import { cancelRelayedRun, resumeRelayedRun, startRelayedRun } from "./piRunRelay.mjs";
+// 정적 import — vite 설정 로드 뒤 모듈 러너가 닫혀 요청 처리 중 동적 import 가 「Vite module runner has been closed」 로 죽었다.
+import { buildWorldmap } from "./worldmapBuild.mjs";
 
 applyLegacyEnvAliases();
 
@@ -41,6 +43,7 @@ export function isCompanionPath(url = "") {
     || path === "/v1/agent/cancel"
     || path === "/v1/agent/render"
     || path === "/v1/agent/checkpoint"
+    || path === "/v1/worldmap/build"
   );
 }
 
@@ -240,6 +243,11 @@ export async function handleCompanionRequest(req, adapters) {
         dataUrl: `data:${image.mimeType};base64,${image.base64}`,
       },
     });
+  }
+
+  if (method === "POST" && path === "/v1/worldmap/build") {
+    // 조수의 지형 편집(edit_world_terrain) — 월드맵 키트(Python)를 호스트에서 돌린다.
+    return json(200, await buildWorldmap(body));
   }
 
   if (method === "POST" && path === "/v1/agent/render") {

@@ -1,0 +1,268 @@
+{
+ "id": "sea-isles",
+ "name": "바다·군도",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "해상 왕국 수도",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "모래섬 위 흰 성벽·푸른 돔 궁·운하와 다리·앞 부두의 범선 둘"
+  },
+  {
+   "role": "fort_city",
+   "name": "해안 요새 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "네 귀 다이아몬드 포대와 대포·돌 성벽·흰 집과 야자"
+  },
+  {
+   "role": "harbor_city",
+   "name": "해적 항구",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "판자 술집과 집·나무 부두·검은 돛 해적선"
+  },
+  {
+   "role": "castle",
+   "name": "해적 요새",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "바위 언덕 위 통나무 요새·망루·해골 깃발"
+  },
+  {
+   "role": "castle",
+   "name": "해안 포대",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "돌 흉벽에 대포 다섯 문·화약 창고·원형 망루"
+  },
+  {
+   "role": "large_town",
+   "name": "섬 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "모래섬 위 초가 다섯 채·야자·카누"
+  },
+  {
+   "role": "village",
+   "name": "수상 가옥 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 12,
+   "row": 6,
+   "desc": "얕은 물 위 말뚝 초가 셋과 판자 다리"
+  },
+  {
+   "role": "village",
+   "name": "어촌",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 14,
+   "row": 6,
+   "desc": "초가 둘·그물 말리는 장대·끌어올린 작은 배"
+  },
+  {
+   "role": "camp",
+   "name": "난파 생존자 야영",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 16,
+   "row": 6,
+   "desc": "돛천 천막·모닥불·부서진 배 조각"
+  },
+  {
+   "role": "tower_small",
+   "name": "등대",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 26,
+   "row": 6,
+   "desc": "바위 위 흰·빨강 띠 등대"
+  },
+  {
+   "role": "tower_great",
+   "name": "큰 등대",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "돌 기단·흰 벽돌 탑·회랑·불 켜진 등실"
+  },
+  {
+   "role": "cave",
+   "name": "해적 보물 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 18,
+   "row": 6,
+   "desc": "해식 동굴 입구와 보물 상자·금화"
+  },
+  {
+   "role": "ruin",
+   "name": "난파선",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 20,
+   "row": 6,
+   "desc": "모래에 기운 채 박힌 배 몸통과 부러진 돛대"
+  },
+  {
+   "role": "ruin_city",
+   "name": "가라앉은 도시",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "물 위로 나온 돔·지붕·부러진 기둥"
+  },
+  {
+   "role": "shrine",
+   "name": "바다 신전",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "흰 기둥 회랑·푸른 돔·금빛 조개 장식"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "고래 뼈 해변",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "모래톱 위 늑골 아치와 두개골"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "거대 산호초",
+   "id": "landmark_coral",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "얕은 물 위 가지 산호와 뇌산호"
+  },
+  {
+   "role": "circle",
+   "name": "석상 원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 22,
+   "row": 6,
+   "desc": "돌 단 위 모아이풍 석상 셋"
+  },
+  {
+   "role": "volcano",
+   "name": "화산섬",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 24,
+   "row": 6,
+   "desc": "모래 해변·검은 화산·붉은 화구·연기·야자"
+  },
+  {
+   "role": "floating",
+   "name": "하늘섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "떠 있는 바위섬·초가와 야자·떨어지는 폭포·구름"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}

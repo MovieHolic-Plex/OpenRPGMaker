@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/covered_furniture/h196-E.pxg",
+ "id": "covered furniture",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.176
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  8,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "둥근 팔걸이 소파를 흰 천으로 덮고 비스듬한 늘어짐과 긴 치맛단으로 재해석, 높이 24px·접지 y=31; 꼭대기 윗면 4행(y=9~12)",
+ "ok": true
+}

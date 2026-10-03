@@ -1,0 +1,39 @@
+// 압력판 C: 단순·또렷 — 큰 윗면 한 덩이(밝은 위·왼 테) + 가운데 큰 눌림 네모 하나 + 앞면 두 단, 둘레 홈은 한 줄
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 4
+@mblock 0 0
+................
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+................
+.11111111111111.
+.15555555555541.
+.15444444444431.
+.15444444444431.
+.15443333334431.
+.15443555554431.
+.15443555554431.
+.15443555554431.
+.15443555554431.
+.15444444444431.
+.14333333333331.
+.13222222222221.
+.12222222222221.
+.00000000000000.

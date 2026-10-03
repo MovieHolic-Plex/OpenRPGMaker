@@ -1,0 +1,888 @@
+{
+  "scope": "Final interactive gallery: all140 selections and two responsive layouts.",
+  "species": [
+    {
+      "slug": "slime",
+      "label": "푸른 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "bat",
+      "label": "보라색 박쥐 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "golem",
+      "label": "회색 바위 골렘 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "dragon",
+      "label": "황토빛 드래곤 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "skeleton-archer",
+      "label": "해골 궁수 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "wolf-grey",
+      "label": "회색 늑대 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spider-cave",
+      "label": "동굴 거미 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "wisp-blue",
+      "label": "푸른 불꽃 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "slime-red",
+      "label": "붉은 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "zombie-rot",
+      "label": "녹색 좀비 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "bat-vampire",
+      "label": "붉은 흡혈 박쥐 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "bee-giant",
+      "label": "거대 벌 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "scorpion-sand",
+      "label": "모래 전갈 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "mantis-blade",
+      "label": "녹색 사마귀 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "boar-tusk",
+      "label": "엄니 멧돼지 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "bear-brown",
+      "label": "갈색 곰 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "snake-viper",
+      "label": "초록 코브라 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "crab-rock",
+      "label": "바위게 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "hound-hell",
+      "label": "불꽃 지옥 사냥개 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "plant-carnivore",
+      "label": "식충 식물 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "skeleton-knight",
+      "label": "해골 기사 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ghost-pale",
+      "label": "창백한 유령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "lich-frost",
+      "label": "서리 리치 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "mummy-bandage",
+      "label": "붕대 미라 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spirit-fire",
+      "label": "불의 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spirit-water",
+      "label": "물의 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "golem-iron",
+      "label": "철 골렘 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "armor-living",
+      "label": "살아 있는 갑옷 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "mimic-chest",
+      "label": "이빨 미믹 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "eye-floating",
+      "label": "떠 있는 외눈 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "goblin-scout",
+      "label": "고블린 정찰병 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "orc-warrior",
+      "label": "도끼 오크 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "orc-shaman",
+      "label": "오크 주술사 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "bandit-mask",
+      "label": "복면 산적 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "lizardman-spear",
+      "label": "푸른 창 리자드맨 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "harpy-cliff",
+      "label": "보라색 하피 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "minotaur-maze",
+      "label": "도끼 미노타우로스 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "troll-cave",
+      "label": "동굴 트롤 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "gargoyle-stone",
+      "label": "돌 가고일 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "demon-lord",
+      "label": "날개 달린 마왕 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "crab-01",
+      "label": "바위 게 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spider-01",
+      "label": "보라색 가시 거미 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "snake-01",
+      "label": "초록색 코브라 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "scorpion-01",
+      "label": "황갈색 전갈 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "wolf-01",
+      "label": "회색 늑대 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "centipede-01",
+      "label": "거대 지네 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "horse-01",
+      "label": "무장한 갈색 말 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "unicorn-01",
+      "label": "하얀 유니콘 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "cat-01",
+      "label": "무장한 줄무늬 고양이 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "cockatrice-01",
+      "label": "비늘 코카트리스 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "parasite-01",
+      "label": "붉은 촉수 벌레 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "mantis-01",
+      "label": "거대 사마귀 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "fish-01",
+      "label": "파란 이빨물고기 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "bat-cave",
+      "label": "갈색 박쥐 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spider-widow",
+      "label": "가시 돋친 흑거미 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "beetle-horn",
+      "label": "푸른 장수풍뎅이 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "centipede-fire",
+      "label": "자줏빛 등갑 지네 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "moth-dust",
+      "label": "갈색 털 나방 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "worm-sand",
+      "label": "갈색 거대 벌레 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ant-soldier",
+      "label": "붉은 개미 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "wolf-dire",
+      "label": "보랏빛 눈 늑대 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "tiger-saber",
+      "label": "갑옷 입은 검치호랑이 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "rat-giant",
+      "label": "붉은 눈의 갈색 쥐 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "bird-hawk",
+      "label": "갈색 매 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "cat-shadow",
+      "label": "보라색 줄무늬 고양이 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "goat-mountain",
+      "label": "갈색 큰뿔 산양 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ape-stone",
+      "label": "이끼 낀 바위 고릴라 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "deer-forest",
+      "label": "룬 무늬 뿔사슴 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "fish-piranha",
+      "label": "청색 주황 비늘 괴어 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "squid-deep",
+      "label": "보라색 부리 오징어 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "shark-land",
+      "label": "사족보행 상어 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "eel-electric",
+      "label": "푸른 번개장어 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "leaf-fox",
+      "label": "풀잎 여우 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "fire-pup",
+      "label": "불꽃 강아지 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ontology-8da61312",
+      "label": "빛나는 룬 다면체 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "sylph-hornet-transparent",
+      "label": "적갈색 벌 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "skeleton-01",
+      "label": "녹슨 검을 든 해골 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ghost-01",
+      "label": "푸른빛 망령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "plant-01",
+      "label": "거대한 식충 식물 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "carbuncle-01",
+      "label": "붉은 보석 여우 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "jackolantern-01",
+      "label": "잭 오 랜턴 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spirit-01",
+      "label": "흰색 유령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ghoul-01",
+      "label": "초록색 언데드 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "specter-01",
+      "label": "회색 악령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "lemora-01",
+      "label": "푸른 비늘 해룡 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "sylph-01",
+      "label": "하늘색 구름 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "king-slime-01",
+      "label": "왕관 쓴 초록 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "slime-blue",
+      "label": "푸른 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "slime-green",
+      "label": "초록 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "slime-metal",
+      "label": "은빛 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "slime-king",
+      "label": "왕관 쓴 초록 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "slime-cube",
+      "label": "초록 큐브 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ooze-black",
+      "label": "검은 얼룩 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ooze-acid",
+      "label": "청록색 슬라임 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "skeleton-bone",
+      "label": "녹슨 검을 든 해골 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "ghoul-grave",
+      "label": "녹색 좀비 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "wraith-dark",
+      "label": "회색 유령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "banshee-wail",
+      "label": "창백한 망령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "revenant-vengeful",
+      "label": "무장한 해골 검사 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "bonepile-crawler",
+      "label": "사족보행 해골 괴수 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spirit-wind",
+      "label": "백색 유령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spirit-light",
+      "label": "하얀 유령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spirit-dark",
+      "label": "회색 유령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "sylph-air",
+      "label": "구름 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "undine-sea",
+      "label": "물의 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "golem-stone",
+      "label": "바위 골렘 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "golem-clay",
+      "label": "이끼 바위 골렘 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "golem-crystal",
+      "label": "푸른 바위 골렘 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "sword-flying",
+      "label": "룬 장식 검 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "scarecrow-field",
+      "label": "낫을 든 허수아비 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "puppet-string",
+      "label": "단검을 든 목각 꼭두각시 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "totem-cursed",
+      "label": "나무 토템 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "spirit-earth",
+      "label": "이끼 낀 바위 골렘 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "zombie-01",
+      "label": "좀비 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "orc-01",
+      "label": "도끼를 든 녹색 오크 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "harpy-01",
+      "label": "갈색 깃털 하피 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "salamander-01",
+      "label": "적흑무늬 도마뱀 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "kappa-01",
+      "label": "물접시 갓파 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "leafling-01",
+      "label": "나뭇잎 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "sparkit-01",
+      "label": "번개 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "aqualing-01",
+      "label": "물고기형 물 정령 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "salamander-flame",
+      "label": "주황 검정 무늬 도마뱀 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "goblin-brute",
+      "label": "송곳니 고블린 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "kobold-digger",
+      "label": "곡괭이 파충류 인간 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "mage-rogue",
+      "label": "보라 지팡이 후드 마법사 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "knight-fallen",
+      "label": "검은 갑옷 기사 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "centaur-plains",
+      "label": "켄타우로스 전사 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "ogre-club",
+      "label": "곤봉을 든 녹색 거인 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "imp-mischief",
+      "label": "붉은 꼬마 악마 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "griffin-sky",
+      "label": "갈색 그리핀 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "wyvern-cliff",
+      "label": "황록색 드래곤 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "roc-giant",
+      "label": "갈색 독수리 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "phoenix-rebirth",
+      "label": "불새 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "dragon-whelp",
+      "label": "황갈색 비늘 드래곤 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    },
+    {
+      "slug": "dragon-red",
+      "label": "붉은 드래곤 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "dragon-blue",
+      "label": "푸른 드래곤 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "dragon-bone",
+      "label": "회백색 드래곤 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "hydra-three",
+      "label": "녹색 삼두룡 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "behemoth-horn",
+      "label": "뿔 달린 흑갈색 마수 · 대기 A",
+      "width": 288,
+      "poseCount": 9
+    },
+    {
+      "slug": "angel-fallen",
+      "label": "검은 날개의 흑기사 · 대기 A",
+      "width": 192,
+      "poseCount": 9
+    }
+  ],
+  "layouts": [
+    {
+      "width": 736,
+      "viewport": 704,
+      "scrollWidth": 704,
+      "mainWidth": 288,
+      "pose": "공격",
+      "columns": 3,
+      "poseWidths": [
+        192,
+        192,
+        192,
+        192,
+        192,
+        192,
+        192,
+        192,
+        192
+      ],
+      "playbackControls": true
+    },
+    {
+      "width": 320,
+      "viewport": 288,
+      "scrollWidth": 288,
+      "mainWidth": 288,
+      "pose": "공격",
+      "columns": 2,
+      "poseWidths": [
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96,
+        96
+      ],
+      "playbackControls": true
+    }
+  ],
+  "errors": []
+}

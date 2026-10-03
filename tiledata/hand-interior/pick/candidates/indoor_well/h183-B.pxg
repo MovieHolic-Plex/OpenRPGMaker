@@ -1,0 +1,75 @@
+// B: 방 가구의 짧은 나뭇결과 회색 명암을 따른 도르래 지붕 돌 우물. 꼭대기 윗면 4행(y=0~3).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat s stone 3
+@mat i iron 3
+@mat r pine 3
+@mat a water 1
+@mblock 0 0
+..wwwwwwwwwwww..
+.wwwwwwwwwwwwww.
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+.wwwwwwwwwwwwww.
+..ww........ww..
+..ww........ww..
+..ww........ww..
+..ww...ii...ww..
+.iwwwwwiiwwwwwi.
+..wwwwwiiwwwww..
+..ww....r...ww..
+..ww....r...ww..
+..ww....r...ww..
+..ww....r...ww..
+..ww....r...ww..
+..ww....r...ww..
+..ww....r...ww..
+..ww....r...ww..
+..wwssssssssww..
+..ssssaaaaasss..
+.sssaaaarraaass.
+.ssaaaaarrraaass
+ssssssaaasssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+.ssssssssssssss.
+...ssssssssss...
+@tblock 0 0
+..666666665555..
+.77665556665554.
+7666555666555544
+7777776666666554
+6555554444444432
+.33333333333332.
+..65........42..
+..65........42..
+..65........42..
+..65...43...42..
+.46566544444423.
+..543334333332..
+..65....4...42..
+..65....3...42..
+..65....3...42..
+..65....4...42..
+..65....3...42..
+..64....3...42..
+..64....4...42..
+..64....3...42..
+..645555444442..
+..554411111433..
+.55411003301132.
+.540000023200032
+4555540004444332
+4544555544433332
+3444344442333231
+3444233332333231
+2333443333322221
+3444233332333221
+.33322222222221.
+...2222111111...

@@ -121,13 +121,13 @@ test("Tier0-1/2: 데모가 gen1 게이트를 켜고, 상태 runtimeEffects 가 �
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
 
-  // 시스템 탭의 전투 규칙 셀렉트가 gen1 을 반영한다.
-  // 모든 섹션이 DOM 에 있고 활성 섹션만 보이므로(databaseSystemView 주석), nav 로 전환한다.
-  await page.getByTestId("db-tab-system").click();
-  await page.getByTestId("db-system-nav-startup").click();
-  const modelSelect = page.getByTestId("db-field-system-battle-model");
-  await expect(modelSelect).toBeVisible({ timeout: 10_000 });
-  await expect(modelSelect).toHaveValue("gen1");
+  // 전투 화면 탭의 「전투 방식」이 몬스터 대치(pokemon + gen1)를 반영한다(2026-10-02: 규칙 셀렉트 대신 방식 단추).
+  // 화면과 규칙이 어긋나면 rules-mismatch 안내가 뜨므로, 그 안내가 없어야 gen1 까지 맞은 것이다.
+  await page.getByTestId("db-tab-battle-screen").click();
+  const monsterMethod = page.getByTestId("db-battle-method-monster");
+  await expect(monsterMethod).toBeVisible({ timeout: 10_000 });
+  await expect(monsterMethod).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByTestId("db-battle-method-rules-mismatch")).toHaveCount(0);
   await page.getByTestId("database-modal").screenshot({ path: testInfo.outputPath("tier0-01-demo-battle-model-gen1.png") });
 
   // (2) 상태 탭의 새 "전투 규칙 (Gen1 knob)" 패널 — 이전엔 필드도 뮤테이터도 없어서

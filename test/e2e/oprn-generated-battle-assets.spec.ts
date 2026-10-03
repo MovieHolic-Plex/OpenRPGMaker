@@ -26,9 +26,9 @@ const BATTLE_ASSETS = [
   { path: "/assets/generated/battle-skins/sprites/hero-04-back.png", width: 712, height: 712 },
   { path: "/assets/generated/battle-skins/sprites/hero-05-back.png", width: 712, height: 712 },
   { path: "/assets/generated/battle-skins/sprites/hero-06-back.png", width: 712, height: 712 },
-  { path: "/assets/generated/starter/monster-slime-01.png", width: 96, height: 96 },
-  { path: "/assets/generated/starter/sylph-hornet-transparent.png", width: 64, height: 64 },
-  { path: "/assets/generated/starter/troop-preview-slime.png", width: 96, height: 96 },
+  { path: "/assets/generated/pixel-enemy-portraits/slime.png", width: 48, height: 48 },
+  { path: "/assets/generated/pixel-enemy-portraits/sylph-hornet-transparent.png", width: 64, height: 64 },
+  { path: "/assets/generated/pixel-enemy-portraits/slime.png", width: 48, height: 48 },
 ] as const;
 
 test("generated battle assets load with magenta-keyed transparent corners", async ({ page }) => {
@@ -105,7 +105,7 @@ async function seedGeneratedBattleProject(page: Page): Promise<void> {
     .replaceAll('"battleCharacterResourceId": "hero"', '"battleCharacterResourceId": "generated-actor-hero-01-battle"')
     .replaceAll('"monsterResourceId": "slime"', '"monsterResourceId": "generated-enemy-slime-01"');
   const project = deserialize(generatedFixture);
-  project.system.battleUiStyle = "rm2000";
+  project.system.battleUiStyle = "retro2003";
   const troop = project.database.troops.find((record) => record.id === "troop_slime");
   if (!troop) throw new Error("missing troop_slime fixture");
   troop.previewBackgroundResourceId = "easyrpg-backdrop-sky1";

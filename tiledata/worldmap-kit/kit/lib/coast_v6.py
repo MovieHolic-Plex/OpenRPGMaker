@@ -23,6 +23,11 @@ OUTLINE = np.array([22, 26, 30], np.float32)
 SAND = np.array([226, 206, 146], np.float32)
 FOAM = np.array([214, 244, 246], np.float32)
 FOAM2 = np.array([150, 214, 226], np.float32)
+SHORE = np.tile(SAND, (40, 1))
+for _g, _c in ((V.SNOW, (206, 236, 246)), (V.GLACIER, (188, 226, 244)), (V.SWAMP, (98, 84, 52)), (V.MARSH, (88, 70, 92)),
+               (V.BADLANDS, (150, 92, 62)), (V.ASH, (104, 100, 104)), (V.BASALT, (72, 64, 74)), (V.CRATER, (90, 78, 70)),
+               (V.TUNDRA, (160, 162, 140)), (V.CHASM, (60, 50, 62))):
+    SHORE[_g] = _c
 
 
 class _Fake:
@@ -32,6 +37,77 @@ class _Fake:
 
     def inb(self, x, y):
         return 0 <= x < 3 and 0 <= y < 3
+
+
+class _FakeK(_Fake):
+    def __init__(self, k):
+        super().__init__()
+        self.G = np.full((3, 3), k, np.int16)
+
+
+def _interior(k):
+    return V.water_tile(_FakeK(k), 1, 1, k)
+
+
+# 안쪽 물 칸의 가장자리(경계 v9): 강·용암·독 물을 칸 오토타일 대신 매끈한 장으로 — 직각 계단·네모 연못이 사라진다
+INLAND = {V.RIVER: dict(sigma=4.5, amp=.13, land=(22, 26, 30), wet=(150, 214, 226), wet_a=.7, th=.72),
+          V.LAVA: dict(sigma=4.5, amp=.16, land=(40, 14, 10), wet=(255, 208, 96), wet_a=.8, th=.66),
+          V.TOXIC: dict(sigma=4.5, amp=.16, land=(30, 42, 20), wet=(184, 216, 64), wet_a=.7, th=.66)}
+
+
+def soften_inland(M, img, ground0):
+    """강·용암·독 물 칸을 매끈한 장으로 다시 그린다 — 물 칸 안에서만 깎는다(밭·나무·늪 칸으로 번지지 않는다).
+    폭은 노이즈로 굽이마다 달라지고, 강은 어귀에서 바다 물빛으로 섞이며 강둑 선은 해안에서 끝난다."""
+    Hp, Wp = M.H * 16, M.W * 16
+    up = lambda m: np.repeat(np.repeat(m, 16, 0), 16, 1)
+    d8 = lambda m, n=1: ndi.binary_dilation(m, structure=np.ones((3, 3), bool), iterations=n)
+    sea = M.G == SEA
+    seapx = getattr(M, '_seapx', up(sea))                 # 해안 처리 뒤의 바다 픽셀
+    landcell = up(M.G >= 10)
+    ys, xs = np.mgrid[0:Hp, 0:Wp]
+    h1 = hash2(xs, ys, 631)
+    sea_t = np.tile(open_sea_tile(), (M.H, M.W, 1))
+    dsea = ndi.distance_transform_edt(~seapx)
+    for k, P in INLAND.items():
+        cells = M.G == k
+        if not cells.any():
+            continue
+        src = cells | sea if k == V.RIVER else cells
+        f = ndi.gaussian_filter(up(src).astype(np.float32), P['sigma'], mode='nearest')
+        f += (vnoise(Hp, Wp, 22, 640 + k) * .7 + vnoise(Hp, Wp, 8, 650 + k) * .3) * P['amp'] * 2
+        cellpx = up(cells) & ~seapx
+        wet = cellpx & (f > P.get('th', .5))
+        to_land = cellpx & ~wet
+        if to_land.any():                                  # 경계 너머 같은 거리의 바닥 픽셀(거울) — 가장 가까운 픽셀을 그대로 쓰면 줄무늬가 났다
+            src_ok = landcell & ~up(M.G < 10)
+            idx = ndi.distance_transform_edt(~src_ok, return_distances=False, return_indices=True)
+            my = np.clip(2 * idx[0] - ys, 0, Hp - 1)
+            mx = np.clip(2 * idx[1] - xs, 0, Wp - 1)
+            ok = src_ok[my, mx]
+            my = np.where(ok, my, idx[0])
+            mx = np.where(ok, mx, idx[1])
+            img[to_land] = ground0[my[to_land], mx[to_land]]
+        tile = np.tile(_interior(k), (M.H, M.W, 1))
+        img[wet] = tile[wet]
+        if k == V.RIVER:                                   # 어귀: 바다 쪽 8px 안에서 바다 물빛과 덩이 디더
+            near = wet & (dsea <= 8)
+            mix = near & (h1 < (1 - dsea / 8.0) * .9)
+            img[mix] = sea_t[mix]
+        allw = wet | seapx                                 # 다른 물 칸(네모)은 넣지 않는다 — 그 칸이 다음 차례에 깎이면 테두리 선만 남았다
+        dl = ndi.distance_transform_edt(~allw)            # 땅 픽셀 → 물까지
+        dw = ndi.distance_transform_edt(wet)
+        zone = up(d8(cells))
+        bare = (np.all(img == ground0, axis=2) | to_land) & landcell & zone & ~allw & ~up((M.G < 10) & ~cells)
+        far = dsea > 3                                     # 강둑 선은 해안 3px 앞에서 끝난다
+        f2 = img.astype(np.float32)
+        rim = bare & (dl <= 1.0) & (h1 < .85) & far
+        f2[rim] = f2[rim] * .25 + np.array(P['land'], np.float32) * .75
+        lip = wet & (dw <= 1.0) & (h1 < .9) & far
+        f2[lip] = f2[lip] * (1 - P['wet_a']) + np.array(P['wet'], np.float32) * P['wet_a']
+        lip2 = wet & (dw > 1.0) & (dw <= 2.0) & (h1 < .6) & far          # 둘째 줄 — 물가 빛 띠
+        f2[lip2] = f2[lip2] * (1 - P['wet_a'] * .55) + np.array(P['wet'], np.float32) * P['wet_a'] * .55
+        img[:] = np.clip(f2, 0, 255).astype(np.uint8)
+    return img
 
 
 def open_sea_tile():
@@ -99,7 +175,11 @@ def finish_coast(M, img, seapx, landpx):
     f[rim & (h2 < .86)] = f[rim & (h2 < .86)] * .25 + OUTLINE * .75
     sand = landpx & (ds > 1.2) & (ds <= 2.3 + .9 * (h2 > .5))
     sand &= hash2(xs, ys, 614) < .82
-    f[sand] = f[sand] * .35 + SAND * .65
+    lab = getattr(M, '_label_px', None)
+    if lab is None:
+        f[sand] = f[sand] * .35 + SAND * .65
+    else:                                         # 바닥마다 물가 띠(경계 v9): 설원=얼음 가장자리, 늪=진흙, 협곡토·재·현무암=바위, 툰드라=자갈
+        f[sand] = f[sand] * .35 + SHORE[np.clip(lab[sand], 0, len(SHORE) - 1)] * .65
     img[:] = np.clip(f, 0, 255).astype(np.uint8)
 
 
@@ -121,8 +201,10 @@ def render_depth_v6(M, img):
     palm = np.zeros((Hp, Wp), bool)
     for c in V.WPAL:
         palm |= np.all(img == c, axis=2)
+    # 강 어귀 칸에 섞인 바다 화소도 얕은 물빛으로 — 빼 두면 진한 바다 원색이 강 칸 안에 얼룩 네모로 남았다(QA 2026-10-03, 군도 해협)
+    mouth = palm & np.repeat(np.repeat(M.G == RIVER, 16, 0), 16, 1)
     palm &= seapx
-    shallow = palm & ~s1
+    shallow = (palm & ~s1) | mouth
     deep = palm & s2
     teal = np.array([100, 210, 214], np.float32)
     img[shallow] = (img[shallow] * .6 + teal * .4).astype(np.uint8)
@@ -151,6 +233,8 @@ def forest_edge(M, img):
         rgb, a = V.obj_cell4(k, 'iso')
         spr[k] = (rgb, a, np.nonzero(a.any(0))[0][[0, -1]], np.nonzero(a.any(1))[0][[0, -1]])
     jobs = []
+    Hp, Wp = img.shape[:2]
+    wob = vnoise(Hp, Wp, 26, 1400) * 4.5 + vnoise(Hp, Wp, 9, 1401) * 1.5     # 숲 가장자리 출렁임(경계 v9) — 고정 0~3px 는 칸 직선이 그대로 보였다
     for y in range(M.H):
         for x in range(M.W):
             k = int(M.O[y, x])
@@ -166,13 +250,16 @@ def forest_edge(M, img):
                     jit = (rnd(x, y, 1100 + i + 3 * (dx + 2 * dy + 3)) - .5) * 3
                     out = rnd(x, y, 1200 + i + 5 * (dx + 2 * dy + 3)) * 3
                     t = 4 + 8 * i + jit
+                    ex = x * 16 + 8 + dx * 8 + (0 if dx else int(t) - 8)
+                    ey = y * 16 + 8 + dy * 8 + (0 if dy else int(t) - 8)
+                    w_ = float(wob[min(max(ey, 0), Hp - 1), min(max(ex, 0), Wp - 1)])
+                    out = min(out + min(max(w_, -3.0), 4.0), 4.0)    # 바깥 4px 넘으면 숲과 사이가 벌어진다(QA 7.1)
                     if dy:
                         cx, cy = x * 16 + t, (y * 16 - 1 - out if dy < 0 else y * 16 + 17 + out)
                     else:
                         cy, cx = y * 16 + t + 2, (x * 16 - 1 - out if dx < 0 else x * 16 + 17 + out)
                     jobs.append((cy, cx, k, rnd(x, y, 1300 + i + 7 * (dx + 2 * dy + 3)) < .5, dy))
     jobs.sort(key=lambda j: j[0])
-    Hp, Wp = img.shape[:2]
     for cy, cx, k, flip, dy in jobs:
         rgb, a, xr, yr = spr[k]
         x0, x1 = xr
@@ -212,5 +299,6 @@ def install(M4):
     def rw(M, img):
         o_water(M, img)
         reshape_coast(M, img, M._ground0)
+        soften_inland(M, img, M._ground0)
         return img
     M4.render_ground, M4.render_objects, M4.render_water, M4.render_depth = rg, ro, rw, render_depth_v6

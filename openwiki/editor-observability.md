@@ -2,6 +2,18 @@
 
 # Editor Observability — 계측 초크포인트 · 편집 감사 로그 · 오류 트랩
 
+## 되돌리기 복원의 공용 자산 복제 (2026-10-03)
+
+높이 붓 확인 중 Ctrl+Z 뒤 Ctrl+Y에서 Chromium 탭이 죽었고, 바닥 붓 한 칸도 같은 순서로 죽었다.
+`mapEditHistory.applySnapshotToProject`의 `structuredClone(base)`가 타일셋·업로드 그림을 포함한 전체 프로젝트를 복제했다.
+이 경로와 프로젝트 스냅샷 복원은 이제 `cloneProjectSharingSharedDictionaries`를 쓴다. 되돌림용 현재 프로젝트 스냅샷도
+기존 `projectSnapshotSharingTilesets`로 만든다. 나머지 데이터는 깊게 복제하며 타일셋·업로드 항목은 쓰기 시 복제 계약으로 보호한다.
+명시적으로 타일셋까지 되돌리는 `beforeTilesets` 스냅샷은 기존 깊은 복제 동작을 유지한다.
+
+바닥 붓과 높이 붓 모두 그리기 → undo → redo → undo를 브라우저에서 확인했다. 회귀 계약은
+`test/mapEditHistorySharedAssets.test.ts`(복원된 타일·프로젝트 제목, 공유 자산 정체성)이다. 로컬 vitest·게이트는
+AGENTS의 실행 제한에 따라 돌리지 않았다. 화면·관측 기록은 `verify-shots/relief-rough-brush/continued/`를 본다.
+
 편집기의 mutation 경로를 건드리기 전에, 그리고 "방금 뭘 했더니 이렇게 됐다" 를 사후에 재구성해야 할 때 읽는다.
 2026-08-29 관측성 감사에서 만든 계층이며, 그 전에는 사람 편집이 기록에 **한 줄도** 남지 않았다.
 
@@ -446,6 +458,11 @@ dedup baseline(`lastManualSerialized`)은 정반대로 실패 시 전진하지 �
 
 ## 로거
 
+지형 군집 화면 QA(2026-10-03)에서 Ctrl+Z 한 이벤트가 세 번 처리되어 히스토리 깊이가 22→19로 줄었다.
+`hotkeys.handleHistoryHotkey`는 KeyboardEvent 객체를 WeakSet으로 한 번만 소비한다(빈 스택 토스트도 한 번).
+별도 키 이벤트는 계속 처리하며 텍스트 입력/모달의 소유권 가드는 유지한다.
+회귀 계약: `test/historyHotkeyFeedback.test.ts`; 실제 화면 근거: `verify-shots/terrain-placement/observations.json`.
+
 ```ts
 import { createLogger } from "@/util/logger";
 const log = createLogger("store");   // 네임스페이스 = 서브시스템 이름, 필터 축
@@ -638,3 +655,5 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 - 뿌리 키 삭제는 `applyCleanedProjection` 이 전파하지 않는다.
 - 남은 비용: 전체 흉내에서 diff 약 55ms 는 `sameValue`(맵 ~13ms·DB ~17ms·공간 저작 ~40ms 의 JSON.stringify 대조). 한가할 때 예열은 한 덩이 동기 작업(약 9s, 큰 프로젝트)이라 쪼갤 여지가 있다.
   `electronRepository` 의 `jsonContentDigest(previous.tileset)` 두 곳은 여전히 전체 순회다.
+
+실시간 표시 보강(2026-10-03): `aiCanvasProgress`의 클릭 직후 준비 표시와 `tool_start`/`tool_end` 표시는 UI 관측이며 적용·저장 영수증으로 세지 않는다. 기본 시공 표시를 켜되 저장된 off는 유지한다. 실제 수용·맵 focus는 기존 체크포인트 적용 경로가 담당한다.

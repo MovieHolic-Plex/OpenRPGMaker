@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/heraldic_shield/h136-E.pxg",
+ "id": "heraldic shield",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "오른 어깨 홈과 금테를 둔 토너먼트형 방패로 자유 해석, 파랑·금 사분 바탕에 치켜든 사자와 말린 꼬리; 꼭대기 윗면 0행(y=없음, 지시서의 벽면 걸이 정면 시점)",
+ "ok": true
+}

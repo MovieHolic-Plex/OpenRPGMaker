@@ -9,6 +9,16 @@ import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, 
 import { piRequestBody } from "./requestBody";
 import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
 
+
+/** 브라우저가 한 프레임 그릴 틈을 준다(rAF 뒤 매크로태스크 = 페인트 뒤). 숨은 탭·헤드리스는 50ms 안에 넘어간다. */
+function yieldToPaint(): Promise<void> {
+  if (typeof requestAnimationFrame !== "function") return Promise.resolve();
+  return new Promise(resolve => {
+    const timer = setTimeout(resolve, 50);
+    requestAnimationFrame(() => { clearTimeout(timer); setTimeout(resolve, 0); });
+  });
+}
+
 export interface RunPiAgentClientOptions {
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
   readonly onEvent?: (event: PiAgentEvent) => void;
@@ -155,6 +165,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
         try {
           options.signal?.throwIfAborted();
           if (!options.onCheckpoint) throw new Error("이 호출자는 실시간 적용을 지원하지 않습니다.");
+          // 적용은 메인 스레드를 수 초 잡는다. 그 전에 한 번 그리게 해서 방금 받은 줄(「맵에 반영 중」)이 먼저 보이게 한다.
+          await yieldToPaint();
+          options.signal?.throwIfAborted();
           project = await options.onCheckpoint(event);
         } catch (error) {
           checkpointError = error;

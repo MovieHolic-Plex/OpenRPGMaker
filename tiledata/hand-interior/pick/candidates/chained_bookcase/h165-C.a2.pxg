@@ -1,0 +1,79 @@
+// C: 수납부 16행 축소·실루엣 32px·X 사슬과 자물쇠 재배치; 꼭대기 윗면 4행(y=0~3)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat w black 3
+@mat h black 4
+@mat H black 5
+@mat d black 1
+@mat o black 2
+@mat q dwood 0
+@mat m iron 3
+@mat l iron 5
+@mat n iron 2
+@mat g brass 3
+@mat G brass 5
+@mat k brass 1
+@mat r red 2
+@mat R red 3
+@mat p purple 2
+@mat P purple 3
+@mat b linen 3
+@mat t linen 4
+@layer case
+@mblock 0 0
+.hhhhhhhhhhhhhh.
+hHHhhhhhhhhhhhwo
+hHhhhhwwwhhhhhwo
+hHhhhhhhhhhhhhwo
+hHHHHHHhhhhhhhwo
+wwwwwwwwwwwwwwoo
+oddddddddddddddo
+.hwqqqqqqqqqood.
+.hwqqqqqqqqqood.
+.hwtttqqPPqqood.
+.hwbbbRRppqqood.
+.hwbbbrrppqqood.
+.hwbbbrrppqqood.
+.hHHhhhhhhhhhwd.
+.hhhhhwwwhhhhwd.
+.wwwwwwwwwwwood.
+.hwqqqqqqqqqood.
+.hwPPqqqqtttood.
+.hwppqqqqbbbood.
+.hwpprrrqbbbood.
+.hwpprrrqbbbood.
+.hHHhhhhhhhhhwd.
+.hhhhhhhhhhhhwd.
+.wwwwwwwwwwwood.
+.hwqqqqqqqqqood.
+.hwRRqqtttqqood.
+.hwrrqqbbbqqood.
+.hwrrPPbbbqqood.
+.hwrrppbbbqqood.
+.hHHHHhhhhhhhwd.
+.hhhhhhhhhhhwwd.
+.wwwwwwwwwwwood.
+@layer chains
+@mblock 0 8
+...n........n...
+...lm......ml...
+...ml......lm...
+....m......m....
+....lm....ml....
+....ml....lm....
+.....m....m.....
+.....lm..ml.....
+.....ml..lm.....
+......nggn......
+......lkkm......
+......GGgg......
+......Ggkg......
+......kggk......
+.....ml..lm.....
+.....m....m.....
+.....lm..ml.....
+....m......m....
+....ml....lm....
+...ml......lm...
+...n........n...

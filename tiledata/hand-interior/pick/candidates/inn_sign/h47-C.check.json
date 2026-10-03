@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/inn_sign/h47-C.pxg",
+ "id": "inn sign",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "어두운 판 안에 침대(왼)·금빛 별(오른) 큼직한 덩이 둘만, 쇠사슬 둘·밝은 윗테·어두운 아랫테로 단순하게",
+ "ok": true
+}

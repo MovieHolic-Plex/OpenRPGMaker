@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, writeFileSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -41,6 +41,15 @@ function projectWithInlineAsset(): Project {
 }
 
 describe("local store assets", () => {
+  it("손상된 기존 파일은 읽기를 거절하고 정상 원본 재업로드로 복구한다", async () => {
+    const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png" });
+    writeFileSync(join(projectDir, "assets", `${ref.sha256}.png`), PNG_BYTES.slice(0, 3));
+    await expect(store.assetBytes(ref.sha256)).rejects.toThrow("손상");
+    await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png" });
+    expect(await store.assetBytes(ref.sha256)).toEqual(PNG_BYTES);
+    expect(readdirSync(join(projectDir, "assets")).some(name => name.endsWith(".pending"))).toBe(false);
+  });
+
   it("putAsset 은 sha256 파일명으로 쓰고 같은 바이트는 한 벌만 남다", async () => {
     const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "a.png", kind: "sprite" });
     const again = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "b.png", kind: "sprite" });

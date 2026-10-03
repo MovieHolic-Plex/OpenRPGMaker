@@ -1,0 +1,30 @@
+// D: 누런 수배지에 금장 테두리와 금화 문양, 큰 얼굴 초상. 벽면 걸이 윗면 0행(해당 없음).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a pine 1
+@mat b pine 2
+@mat d pine 3
+@mat e pine 5
+@mat f pine 6
+@mat k dwood 2
+@mat G gold 3
+@mat H gold 5
+@layer poster
+@mblock 0 0
+..abbbbbbbbba..
+..bHHGGGGGGHHb..
+..bHfeeeeeeeGb..
+..bffekkkkeeGb..
+..bffeeeeeeGb..
+..bffekkkkkeGb..
+..bffekdddkeGb..
+..bffedkdkdeGb..
+..bffeddkdeeGb..
+..bffeeddeeeGb..
+..bffekkkkkeGb..
+..bffeeeeeeGb..
+..bHfeeHHHeeGb..
+..bGfkkHGHeeGb..
+..bHHGGHHHGGGb..
+..abbbbbbbbba..

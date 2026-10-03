@@ -348,3 +348,12 @@ ignored. No project-service content writes are part of these checks.
   이동력 안 이동 + 인접 공격을 번갈아 하다 한쪽이 전멸하면 끝난다. 결과는 `session.battleResult` 와 분기로 이어지고 canLose=false 에 지면 게임 오버.
   `src/player/tacticsBattle.ts`(규칙) · `tacticsBattleOverlay.ts`(키보드 UI) · `playSceneTactics.ts`.
 - 테스트: `test/mgL8SideView.test.ts`, `mgL8ActionAllies`, `mgL8TacticsBattle`, `test/commandContracts/tacticsBattle.contract.test.ts`. QA: `scripts/qa/runtime/mg-l8-modes.scenario.mjs`.
+
+## 지형 높이 게임 규칙 (2026-10-03)
+
+`map.terrainDesign.gameplay`의 선택 설정으로 시야 차단·고지 시야 증가·발사체 높이 충돌을
+각각 저작한다. UI/저장/기본 호환 계약은 [terrain-design-suite.md](terrain-design-suite.md#게임-시야와-높이).
+`terrainGameplay.ts`는 relief의 실제 연속 경사 들림을 읽는다. NPC 감지와 전투 타깃에는 높이 ray를
+추가하고, 투사체는 발사 시 비행 높이를 스냅샷하여 중간 지형에 충돌시킨다.
+`PlayScene.update`는 `terrainWater`와 `terrainVision`의 맵/위치/규칙 캐시를 동기화한다.
+기존 맵은 옵션이 없으므로 투사체/시야 동작이 바뀌지 않는다.

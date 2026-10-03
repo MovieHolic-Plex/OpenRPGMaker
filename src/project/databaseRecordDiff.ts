@@ -83,6 +83,7 @@ const FIELD_LABELS: Readonly<Record<string, string>> = {
   transparent: "투명",
   flying: "부양",
   battleScalePercent: "전투 표시 크기",
+  collapseEffect: "쓰러지는 연출",
   faceResourceId: "얼굴 그림",
   characterResourceId: "캐릭터 그림",
   characterIndex: "캐릭터 칸",
