@@ -36,7 +36,7 @@ def piece_hash(cv):
     return hashlib.sha1(cv.a.tobytes()).hexdigest()[:12]
 
 
-TERRAIN_VERDICT = ('water47', 'water47g', 'water_deep', 'in_floor_ondol', 'in_floor_maru', 'in_floor_dirt', 'in_floor_stone', 'in_floor_jeondol', 'in_ceil47')   # 실내 바닥·천장도 눈으로 본 판정이 필요하다
+TERRAIN_VERDICT = ('water47', 'water47g', 'water_deep', 'in_floor_ondol', 'in_floor_maru', 'in_floor_dirt', 'in_floor_stone', 'in_floor_jeondol', 'in_floor_deck', 'in_floor_yard', 'in_ceil47', 'in_ceil_front', 'in_void')   # 실내 바닥·천장도 눈으로 본 판정이 필요하다
 
 
 def group_hash(tiles):

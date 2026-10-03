@@ -16,6 +16,7 @@ W_ = RGB['wood']; E_ = RGB['earth']; P_ = RGB['plaster']; S_ = RGB['stone']; G_ 
 # ------------------------------------------------------------------ 바닥 (평면 지형 묶음)
 # 묶음 순서(모든 바닥 공통): 0,1 평면 변형 · 2 북쪽 그늘(벽면 밑) · 3 서쪽 그늘(서벽 곁) · 4 북서 그늘 · 5 북쪽 그늘 변형 · (마루·온돌만) 6 앞 턱(남쪽 가장자리)
 FLOOR_ORDER = ('v0', 'v1', 'sh_n', 'sh_w', 'sh_nw', 'sh_n1', 'lip_s')
+# 바닥 종류: ondol 장판 · maru 마루 · dirt 흙 · stone 박석 · jeondol 전돌 · deck 단 널마루(단 윗면) · yard 문 밖 마당
 _snap_cache = {}
 
 
@@ -39,28 +40,50 @@ def _shade(cv, fn):
 
 
 def _floor_ondol(v):
-    """온돌 장판: 기름먹인 한지 — 황토 한 톤에 아주 약한 얼룩, 32px 폭 장판 이음(세로 줄) 한 줄."""
+    """온돌 장판: 기름먹인 노란 한지 — 매끈한 황갈 한 톤(황토 흙바닥보다 한 단 밝다), 결 방향 1px 가로 섬유, 32px 폭 장판 이음 한 줄(세로)."""
     c = Cv(T, T)
     for y in range(T):
         for x in range(T):
-            q = rnd(x + 16 * v, y, 11)
-            c.put(x, y, E_[5] if q > 0.955 else (E_[3] if q < 0.13 else E_[4]))
+            q = rnd(x // 3 + 5 * v, y, 11)
+            c.put(x, y, E_[6] if q > 0.985 else (E_[4] if q < 0.07 else E_[5]))
     if v == 0:
-        c.vl(0, 0, T, E_[3])
+        c.vl(0, 0, T, E_[4])
     return c
 
 
 def _floor_maru(v):
-    """마루: 가로로 놓인 널 4px — 어두운 널(톤 3~4)에 줄눈 1줄. 바닥은 조용하고 가구(톤 5~6 윗면)가 위로 떠야 한다."""
+    """마루: 가로로 길게 깐 널(폭 5px) — 널마다 한 톤, 널 사이 줄눈 1px, 널 끝 이음은 타일마다 한 줄에만(벽돌처럼 줄마다 어긋나면 안 된다). 윗줄은 옻칠 윤."""
     c = Cv(T, T)
-    for y in range(T):
-        for x in range(T):
-            q = rnd(x // 4 + 3 * (y // 4) + 7 * v, y // 4, 21)
-            c.put(x, y, W_[4] if q > 0.82 else W_[3])
+    ys = (0, 5, 10, 16)
+    for b in range(3):
+        y0, y1 = ys[b], ys[b + 1]
+        tone = W_[4] if rnd(b, v, 21) > 0.5 else W_[3]
+        for y in range(y0, y1):
+            for x in range(T):
+                q = rnd(x // 5, y, 22 + b)
+                t = tone
+                if y == y0 and tone is W_[4]:
+                    t = W_[5]
+                elif q < 0.07:
+                    t = W_[2]
+                c.put(x, y, t)
+        c.hl(0, T, y1 - 1, W_[2])
+    jb = (v * 2 + 1) % 3                                   # 이음이 들어가는 널(타일마다 한 장)
+    jx = 5 + 6 * v
+    c.vl(jx, ys[jb], ys[jb + 1] - 1, W_[2])
+    return c
+
+
+def _floor_deck(v):
+    """단 널마루(훈장·원님 단 윗면): 마루보다 밝고 가는 널(폭 4px) + 가장자리 밝은 윤 — 바닥보다 한 단 높은 판자 상판으로 읽힌다."""
+    c = Cv(T, T)
     for b in range(4):
-        c.hl(0, T, b * 4 + 3, W_[2])
-        jx = (5 + 7 * b + 9 * v) % 16
-        c.vl(jx, b * 4, b * 4 + 3, W_[2])
+        tone = W_[5] if rnd(b, v, 23) > 0.45 else W_[4]
+        for y in range(b * 4, b * 4 + 4):
+            for x in range(T):
+                c.put(x, y, W_[6] if (y == b * 4 and tone is W_[5]) else tone)
+        c.hl(0, T, b * 4 + 3, W_[3])
+    c.vl((9 * v + 4) % 16, 4 * ((v + 1) % 4), 4 * ((v + 1) % 4) + 3, W_[3])
     return c
 
 
@@ -73,6 +96,18 @@ def _floor_dirt(v):
             c.put(x, y, E_[2] if q < 0.11 else (E_[4] if q > 0.86 else E_[3]))
     for (x, y) in ((3 + 5 * v, 4), (11 - 4 * v, 11), (7, 14 - 6 * v)):
         c.put(x, y, E_[4]); c.put(x + 1, y, E_[4]); c.put(x, y + 1, E_[2])
+    return c
+
+
+def _floor_yard(v):
+    """문 밖 마당: 다져진 밝은 흙 — 방 안 흙바닥(부엌)보다 한 단 밝고 잔돌이 적다. 바깥 땅이라는 것이 읽혀야 한다."""
+    c = Cv(T, T)
+    for y in range(T):
+        for x in range(T):
+            q = rnd(x + 16 * v, y, 32)
+            c.put(x, y, E_[3] if q < 0.07 else (E_[5] if q > 0.88 else E_[4]))
+    for (x, y) in ((4 + 5 * v, 5), (11 - 4 * v, 12)):
+        c.put(x, y, E_[3]); c.put(x + 1, y, E_[3])
     return c
 
 
@@ -122,13 +157,13 @@ def _lip(base, ramp_wood=True):
 
 
 def floor_set(kind):
-    mk = {'ondol': _floor_ondol, 'maru': _floor_maru, 'dirt': _floor_dirt, 'stone': _floor_stone, 'jeondol': _floor_jeondol}[kind]
+    mk = {'ondol': _floor_ondol, 'maru': _floor_maru, 'dirt': _floor_dirt, 'stone': _floor_stone, 'jeondol': _floor_jeondol, 'deck': _floor_deck, 'yard': _floor_yard}[kind]
     v0, v1 = mk(0), mk(1)
     sh_n = lambda x, y: (0.74, 0.86, 0.94)[y] if y < 3 else 1.0
     sh_w = lambda x, y: (0.82, 0.9, 0.95, 0.98)[x] if x < 4 else 1.0
     sh_nw = lambda x, y: min(sh_n(x, y), sh_w(x, y))
     tiles = [v0, v1, _shade(v0, sh_n), _shade(v0, sh_w), _shade(v0, sh_nw), _shade(v1, sh_n)]
-    if kind in ('ondol', 'maru'):
+    if kind in ('ondol', 'maru', 'deck'):
         tiles.append(_lip(v0))
     return tiles
 
@@ -165,9 +200,13 @@ def _rim(side, d, pos):
 def ceil_tile(m):
     """m: 이웃 8비트(1 = 그 이웃도 천장). 속은 어두운 두 톤 체크, 천장이 아닌 이웃 쪽 변에 창방 띠."""
     c = Cv(T, T)
-    for y in range(T):
+    for y in range(T):                                    # 벽 윗면(기와 덮개): 검은 허공이 아니라 보이는 재료 — 4px 줄마다 이음, 줄마다 어긋난 짧은 이음
         for x in range(T):
-            c.put(x, y, G_[1] if rnd(x, y, 77) < 0.40 else G_[0])
+            q = rnd(x, y // 4, 77)
+            c.put(x, y, G_[4] if q > 0.9 else (G_[2] if y % 4 == 3 else G_[3]))
+    for r in range(4):
+        c.vl((r * 7 + 3) % 16, r * 4, r * 4 + 3, G_[2])
+        c.vl((r * 7 + 11) % 16, r * 4, r * 4 + 3, G_[2])
     cand = []
     reach = {'N': 3, 'S': 4, 'W': 3, 'E': 3}
     for y in range(T):
@@ -193,6 +232,46 @@ def ceil_tile(m):
 
 def ceil47():
     return [ceil_tile(m) for m in ALL47]
+
+
+def void_tile():
+    """방 밖 허공(문 밖 마당 둘레): 칠흑. 벽 윗면(ceil47)과 달리 아무 재료도 아니다."""
+    c = Cv(T, T)
+    c.rect(0, 0, T, T, G_[0])
+    return c
+
+
+def ceil_front(ends):
+    """바깥 아랫벽(남벽) 한 칸: 위 7줄은 벽 윗면(기와 덮개 + 앞 처마 턱), 아래 9줄은 바깥 벽면(회벽 윗단 + 돌 굽). 두께가 읽힌다.
+    ends: 'm' 이어짐 · 'l' 왼 끝 · 'r' 오른 끝 · 'lr' 한 칸 — 끝에는 모서리 기둥 면."""
+    c = Cv(T, T)
+    for y in range(0, 7):
+        for x in range(T):
+            q = rnd(x, y // 4, 77)
+            c.put(x, y, G_[4] if q > 0.9 else (G_[2] if y % 4 == 3 else G_[3]))
+    for x in range(T):                                    # 앞 처마 턱(밝은 입술 → 그늘)
+        c.put(x, 5, G_[5] if x % 4 != 3 else G_[4]); c.put(x, 6, G_[6] if x % 4 != 3 else G_[5])
+    for y in range(7, 16):                                # 바깥 벽면
+        for x in range(T):
+            q = rnd(x, y, 78)
+            if y < 9:
+                col = G_[1]                              # 처마 밑 그늘
+            elif y < 13:
+                col = P_[3] if q > 0.1 else P_[2]
+            elif y < 15:
+                col = S_[4] if y == 13 else S_[3]
+            else:
+                col = S_[1]
+            c.put(x, y, col)
+    if 'l' in ends:
+        for y in range(5, 16): c.put(0, y, G_[1]); c.put(1, y, W_[4] if y > 8 else G_[5])
+    if 'r' in ends:
+        for y in range(5, 16): c.put(T - 1, y, G_[0]); c.put(T - 2, y, W_[2] if y > 8 else G_[3])
+    return c
+
+
+def ceil_front_set():
+    return [ceil_front(e) for e in ('m', 'l', 'r', 'lr')]
 
 
 # ------------------------------------------------------------------ 벽면 1×2 (16×32)
@@ -429,6 +508,43 @@ def ceil_beam(kind='m'):
 
 
 # ------------------------------------------------------------------ 문
+def exit_door(w=1):
+    """출입구(w×1): 남벽 틈을 문틀로 짠다 — 위 3줄 인방(들보), 양옆 기둥 2px, 가운데는 방 바닥이 이어지는 어두운 마루 + 문턱 널(밝은 윗면 · 앞면 · 접지).
+    문 밖은 이 칸 바로 아래 마당(in_floor_yard) 두 줄이 이어진다. 이 칸을 밟으면 밖으로 나간다(F)."""
+    c = Cv(T * w, T)
+    Wd = T * w
+    for y in range(0, T):
+        for x in range(Wd):
+            q = rnd(x, y, 99)
+            c.put(x, y, W_[2] if q > 0.2 else W_[1])        # 문 안쪽 어두운 마루(바깥에서 보면 그늘)
+    for y in range(3, 11):                                    # 안쪽 그늘은 위가 더 어둡다
+        for x in range(2, Wd - 2):
+            c.put(x, y, W_[1] if y < 6 else W_[2])
+    for x in range(Wd):                                       # 인방
+        c.put(x, 0, W_[6]); c.put(x, 1, W_[5]); c.put(x, 2, W_[3])
+    for y in range(0, 12):                                    # 문설주
+        for k, x in enumerate((0, 1)):
+            c.put(x, y, W_[6] if k == 0 else W_[4]); c.put(Wd - 1 - k, y, W_[2] if k == 0 else W_[3])
+    for x in range(2, Wd - 2):                                # 문턱
+        c.put(x, 11, W_[6]); c.put(x, 12, W_[5]); c.put(x, 13, W_[4]); c.put(x, 14, W_[2]); c.put(x, 15, W_[1])
+    for y in range(12, 16):
+        for x in (0, 1):
+            c.put(x, y, S_[5] if x == 0 else S_[4]); c.put(Wd - 1 - x, y, S_[3] if x == 0 else S_[2])
+    return c
+
+
+def doorway():
+    """칸막이 통로(1×1): 방 사이 문틀 — 위 3줄 인방, 양옆 문설주 2px, 가운데는 비어 바닥이 보이고 한가운데 문턱 널. 걸어 지난다(F). 인방·문설주는 사람 위에 그려진다."""
+    c = Cv(T, T)
+    for x in range(T):
+        c.put(x, 0, W_[6]); c.put(x, 1, W_[5]); c.put(x, 2, W_[3]); c.put(x, 3, W_[2])
+    for y in range(0, T):
+        c.put(0, y, W_[6]); c.put(1, y, W_[4]); c.put(T - 2, y, W_[3]); c.put(T - 1, y, W_[2])
+    for x in range(2, T - 2):
+        c.put(x, 12, W_[6]); c.put(x, 13, W_[5]); c.put(x, 14, W_[3]); c.put(x, 15, W_[1])
+    return c
+
+
 def door_sill():
     """문턱(1×1): 칸막이 통로 바닥에 가로로 놓인 낮은 문지방 — 세로 줄(남북으로 놓임), 윗면 밝고 옆면 어둡다. 걸어 지난다(F)."""
     c = Cv(T, T)
@@ -436,21 +552,6 @@ def door_sill():
         c.put(6, y, W_[6]); c.put(7, y, W_[5]); c.put(8, y, W_[4]); c.put(9, y, W_[3]); c.put(10, y, W_[2])
     for y in range(0, T):
         c.put(11, y, SHADOW, 70); c.put(12, y, SHADOW, 35)
-    return c
-
-
-def exit_door(w=1):
-    """출입구(w×1): 남벽 틈 — 짚자리 위로 문지방 널, 맨 밑 두 줄은 바깥 어둠. 이 칸을 밟으면 밖으로 나간다(F)."""
-    c = Cv(T * w, T)
-    for y in range(0, 10):
-        for x in range(T * w):
-            q = rnd(x, y, 99)
-            c.put(x, y, ST_[4] if q > 0.18 else ST_[3])
-    for x in range(0, T * w, 3):
-        c.vl(x, 0, 10, ST_[5])
-    for x in range(T * w):
-        c.put(x, 10, W_[6]); c.put(x, 11, W_[5]); c.put(x, 12, W_[3]); c.put(x, 13, W_[2])
-        c.put(x, 14, W_[1]); c.put(x, 15, W_[1])
     return c
 
 
@@ -515,47 +616,70 @@ def stairs_down():
 
 
 def dais_front(kind='m'):
-    """단(壇) 앞면(1×1): 위 6줄은 단 마루 윗면(밝음), 밑은 어두운 앞 널(챌), 접지. kind l/r 은 끝 모서리 널."""
+    """단(壇) 앞면(1×1): 위 6줄은 단 널마루 윗면(밝음, 앞 모서리 윤), 밑 9줄은 앞 널(챌면 — 가로 널 두 장, 위는 밝고 밑은 어둡다), 접지.
+    kind l/r 은 끝 모서리: 옆면(왼쪽 밝고 오른쪽 어두운 4px)이 한 칸 폭으로 이어진다."""
     c = Cv(T, T)
     for y in range(0, 6):
         for x in range(T):
-            c.put(x, y, W_[6] if y < 1 else W_[5])
-    c.hl(0, T, 5, W_[6])
+            q = rnd(x // 4, y, 61)
+            c.put(x, y, W_[6] if y == 5 else (W_[5] if (y % 4) != 3 else W_[4]))
     for y in range(6, 15):
         for x in range(T):
-            f = (4, 3, 3, 3, 3, 3, 2, 2, 2)[y - 6]
-            c.put(x, y, W_[f] if (x % 5 != 4) else W_[f - 1])
+            c.put(x, y, W_[(4, 4, 4, 3, 3, 3, 3, 2, 2)[y - 6]])
+    c.hl(0, T, 6, W_[5]); c.hl(0, T, 10, W_[2])           # 윗 널 윤 · 두 널 사이 줄눈
+    for x in range(T):
+        if x % 7 == 3: c.put(x, 8, W_[3]); c.put(x, 12, W_[2])
     c.hl(0, T, 15, W_[1])
-    c.hl(0, T, 6, W_[4])
     if kind in ('l', 'lr'):
-        for y in range(0, 16): c.put(0, y, W_[2]); c.put(1, y, W_[4] if y < 6 else W_[3])
+        for y in range(0, 16):
+            for k in range(4): c.put(k, y, (W_[6], W_[5], W_[4], W_[3])[k] if y < 6 else (W_[5], W_[4], W_[3], W_[2])[k])
     if kind in ('r', 'lr'):
-        for y in range(0, 16): c.put(T - 1, y, W_[1]); c.put(T - 2, y, W_[2])
+        for y in range(0, 16):
+            for k in range(4): c.put(T - 1 - k, y, (W_[1], W_[2], W_[3], W_[3])[k] if y < 6 else (W_[1], W_[1], W_[2], W_[2])[k])
+    return c
+
+
+def dais_side(side='l'):
+    """단 옆면(1×1): 단 널마루 바깥 가장자리 한 칸 — 왼쪽은 빛을 받아 밝고 오른쪽은 어둡다. 단이 얇은 판이 아니라 높이가 있는 덩어리로 읽히게 한다. 막힘(X)."""
+    c = Cv(T, T)
+    for y in range(T):
+        for x in range(T):
+            q = rnd(x // 4, y, 62)
+            c.put(x, y, W_[6] if y % 4 == 0 else W_[5])
+    for y in range(T):
+        for k in range(4):
+            if side == 'l':
+                c.put(k, y, (W_[6], W_[5], W_[4], W_[3])[k])
+            else:
+                c.put(T - 1 - k, y, (W_[1], W_[2], W_[3], W_[3])[k])
     return c
 
 
 def dais_steps():
-    """단 오르는 디딤(1×1): 단 앞면 자리에 놓이는 걷는 칸 — 밝은 윗면 + 밑에 한 단 낮은 디딤 널."""
+    """단 오르는 디딤(1×1): 위 6줄 단 윗면 + 밑 디딤 세 단 — 밝은 윗면(디딤)과 어두운 챌면이 번갈아 보인다. 걷는 칸(F)."""
     c = Cv(T, T)
     for y in range(0, 6):
         for x in range(T):
-            c.put(x, y, W_[6] if y < 1 else W_[5])
-    for y in range(6, 11):
-        for x in range(T):
-            c.put(x, y, W_[6] if y == 6 else (W_[5] if y < 9 else W_[3]))
-    for y in range(11, 16):
-        for x in range(T):
-            c.put(x, y, W_[3] if y < 13 else W_[2])
-    c.hl(0, T, 15, W_[1]); c.vl(0, 6, 16, W_[2]); c.vl(T - 1, 6, 16, W_[2])
+            c.put(x, y, W_[6] if y == 5 else (W_[5] if y % 4 != 3 else W_[4]))
+    for tread, riser in ((6, (8, 9)), (10, (12, 12)), (13, (15, 15))):
+        c.hl(0, T, tread, W_[6]); 
+        for y in range(tread + 1, riser[0]):
+            c.hl(0, T, y, W_[5])
+        for k, y in enumerate(range(riser[0], riser[1] + 1)):
+            c.hl(0, T, y, W_[3] if k == 0 else W_[2])
+    c.vl(0, 6, 16, W_[3]); c.vl(T - 1, 6, 16, W_[1])
+    c.hl(0, T, 15, W_[1])
     return c
 
 
 # ------------------------------------------------------------------ 카탈로그 연결
 def terrain():
     d = {}
-    for k in ('ondol', 'maru', 'dirt', 'stone', 'jeondol'):
+    for k in ('ondol', 'maru', 'dirt', 'stone', 'jeondol', 'deck', 'yard'):
         d[f'in_floor_{k}'] = floor_set(k)
     d['in_ceil47'] = ceil47()
+    d['in_ceil_front'] = ceil_front_set()
+    d['in_void'] = [void_tile()]
     return d
 
 
@@ -566,6 +690,7 @@ def objects():
     for k in ('m', 'l', 'r'):
         d[f'in_ceil_beam_{k}'] = ceil_beam(k)
     d['in_door_sill'] = door_sill()
+    d['in_doorway'] = doorway()
     d['in_exit_door'] = exit_door(1)
     d['in_exit_door2'] = exit_door(2)
     d['in_stairs_wood_3'] = stairs_wood(3)
@@ -575,6 +700,8 @@ def objects():
     for k in ('m', 'l', 'r'):
         d[f'in_dais_front_{k}'] = dais_front(k)
     d['in_dais_steps'] = dais_steps()
+    d['in_dais_side_l'] = dais_side('l')
+    d['in_dais_side_r'] = dais_side('r')
     return d
 
 

@@ -9,6 +9,9 @@ SRC = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 
 _a = np.array(Image.open(SRC).convert('RGBA'))
 _a[(_a[..., :3] == _a[0, 0, :3]).all(axis=2)] = 0
 UP, RIGHT, FRONT, LEFT = 0, 1, 2, 3
+# 조선에 맞는 Actor1 프레임만(적대 검수 R5): 0 머리띠 맨 평민 · 1 긴 머리 붉은 치마 여인 · 6 검은 머리 푸른 도포(선비·관리·훈장).
+# 나머지(2·3 뿔 투구 전사, 4 광대 모자, 5 마녀 모자, 7 푸른 마법사 모자)는 조선 실내에 쓰지 않는다 — interior_checks 가 막는다.
+OK_CHARS = {0: '평민(머리띠)', 1: '여인(붉은 치마)', 6: '선비·관리(푸른 도포)'}
 
 
 def frame(char, row, col=1):

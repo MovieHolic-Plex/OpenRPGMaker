@@ -15,9 +15,18 @@ import interior_kit as IK
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 OUTROOT = os.path.join(ROOT, 'tiledata', 'joseon-interior')
 COLS = 16
-FLOOR_CH = {'o': 'ondol', 'm': 'maru', 'd': 'dirt', 's': 'stone', 'j': 'jeondol'}
+PAD = 0
+FLOOR_CH = {'o': 'ondol', 'm': 'maru', 'd': 'dirt', 's': 'stone', 'j': 'jeondol', 'k': 'deck', 'y': 'yard'}
 RAISED = ('o', 'm')                     # 앞 턱(lip)이 생기는 높은 바닥
-WALL_OF = {'o': 'hoe', 'm': 'hoe', 'd': 'heuk', 's': 'dol', 'j': 'hoe'}
+WALL_OF = {'o': 'hoe', 'm': 'hoe', 'd': 'heuk', 's': 'dol', 'j': 'hoe', 'k': 'hoe'}
+# 평면 문자: # 고체(벽 윗면) · v 방 밖 허공(문 밖 마당 둘레, 자동) · y 문 밖 마당(자동) · E 출입구(남벽 틈) · k 단 널마루
+NOSHADOW = ('in_wall_', 'pal_wall_', 'in_exit', 'pal_exit', 'in_doorway', 'in_door_sill', 'in_runner', 'in_mat_', 'in_jipjari', 'in_bangseok', 'pal_bangseok',
+            'in_ceil_beam', 'pal_ceil_beam', 'in_dais', 'pal_dais', 'pal_deung_hang', 'in_stairs_down')
+# 궁 내부 키트(접두 pal_): 같은 방 빌더가 접두만 바꿔 쓴다. 바닥 문자 p 전돌 · q 마루 · o 황장판 · w 월대 윗면 · c 붉은 카펫(4방 이웃 자동 이음 16칸)
+KITS = {
+    'in': {'floor': FLOOR_CH, 'raised': RAISED, 'wall': WALL_OF, 'carpet': None},
+    'pal': {'floor': {'p': 'jeon', 'q': 'maru', 'o': 'ondol', 'w': 'dais', 'c': 'carpet'}, 'raised': (), 'wall': {'p': 'bun', 'q': 'chang', 'o': 'chang', 'w': 'hoe', 'c': 'bun'}, 'carpet': 'c'},
+}
 
 
 def all_terrain():
@@ -54,9 +63,10 @@ def slice_tiles(cv):
 class Sheet:
     """공용 키트 시트: 지형 묶음(평면 줄) 다음 물체 조각을 선반 쌓기로. 같은 입력이면 칸 번호가 항상 같다."""
 
-    def __init__(self):
-        self.terr = all_terrain()
-        self.objs = all_objects()
+    def __init__(self, terr=None, objs=None):
+        """terr/objs 를 주면 그 목록으로 쌓는다(궁 내부 시트: 기존 실내 키트 + pal_ 조각). 기본은 공용 실내 키트 하나."""
+        self.terr = all_terrain() if terr is None else terr
+        self.objs = all_objects() if objs is None else objs
         self.grid = {}
         self.pieces = {}
         n = 0
@@ -103,13 +113,19 @@ class Sheet:
 
 
 class Room:
-    def __init__(self, rid, name, plan, wall_of=None):
+    def __init__(self, rid, name, plan, wall_of=None, kit='in'):
         self.id, self.name = rid, name
+        self.kit = kit
+        self.K = KITS[kit]
         self.plan = [r.rstrip() for r in plan.strip('\n').split('\n')]
-        self.H = len(self.plan)
         self.W = max(len(r) for r in self.plan)
         self.plan = [r.ljust(self.W, '#') for r in self.plan]
-        self.wall_of = dict(WALL_OF, **(wall_of or {}))
+        self.ox = PAD                                           # 좌우 벽을 한 칸씩 더 두껍게(바깥 두께 2칸) — 기물·사람 좌표는 평면 기준이고 여기서 밀어 쓴다
+        self.plan = ['#' * PAD + r + '#' * PAD for r in self.plan]
+        self.W += 2 * PAD
+        self.add_yard()
+        self.H = len(self.plan)
+        self.wall_of = dict(self.K['wall'], **(wall_of or {}))
         self.items = []             # (조각 이름, x, y)
         self.people = []            # (x, y, char, dir, frame)
         self.feat = {}              # (x, y) -> 'win' | 'door' : 벽면 위 칸의 창·문 변형
@@ -118,12 +134,22 @@ class Room:
         self.entrance = None
         self.derive()
 
+    def add_yard(self):
+        """문 밖 마당: 마지막 줄의 출입구(E) 아래로 두 줄 — 출입구 폭 + 양옆 한 칸은 마당(y), 나머지는 방 밖 허공(v). 문 밖이 검은 허공이면 문이 아니라 구멍이다(적대 검수 R1)."""
+        last = self.plan[-1]
+        ex = [x for x, c in enumerate(last) if c == 'E']
+        if not ex:
+            return
+        for _ in range(2):
+            row = ''.join('y' if min(ex) - 1 <= x <= max(ex) + 1 else 'v' for x in range(self.W))
+            self.plan.append(row)
+
     # ---------------------------------------------------------- 평면 → 구조
     def ch(self, x, y):
         return self.plan[y][x] if 0 <= x < self.W and 0 <= y < self.H else '#'
 
     def solid(self, x, y):
-        return self.ch(x, y) == '#'
+        return self.ch(x, y) in ('#', 'v')
 
     def derive(self):
         W, H = self.W, self.H
@@ -131,7 +157,7 @@ class Room:
         for y in range(H):
             for x in range(W):
                 c = self.ch(x, y)
-                if c in ('#', 'E'):
+                if c in ('#', 'E', 'v', 'y'):
                     continue
                 if y > 0 and self.solid(x, y - 1):
                     self.wallrow[y][x] = 1
@@ -162,7 +188,7 @@ class Room:
 
     # ---------------------------------------------------------- 아이템
     def put(self, name, x, y):
-        self.items.append((name, x, y))
+        self.items.append((name, x + self.ox, y))
 
     # ---------------------------------------------------------- 조립
     def build(self, sheet, outdir=None, check=True, candidate=True):
@@ -175,22 +201,33 @@ class Room:
         for y in range(H):
             for x in range(W):
                 if self.solid(x, y):
+                    gkind[y][x] = 'void'
+                    if self.ch(x, y) == 'v':
+                        ground[y][x] = tr['in_void']['tiles'][0]
+                        continue
+                    if self.kit == 'in' and self.ch(x, y + 1) in ('v', 'y'):          # 바깥 아랫벽: 윗면 + 바깥 벽면(두께)
+                        L = x == 0 or (self.ch(x - 1, y) == '#' and self.ch(x - 1, y + 1) in ('v', 'y'))
+                        R = x + 1 >= W or (self.ch(x + 1, y) == '#' and self.ch(x + 1, y + 1) in ('v', 'y'))
+                        e = 'm' if (L and R) else ('r' if L else ('l' if R else 'lr'))
+                        ground[y][x] = tr['in_ceil_front']['tiles'][('m', 'l', 'r', 'lr').index(e)]
+                        continue
                     m = 0
                     for bit, (dx, dy) in ((IK.N_, (0, -1)), (IK.E__, (1, 0)), (IK.S__, (0, 1)), (IK.W__, (-1, 0)),
                                           (IK.NE_, (1, -1)), (IK.SE_, (1, 1)), (IK.SW_, (-1, 1)), (IK.NW_, (-1, -1))):
                         if self.solid(x + dx, y + dy):
                             m |= bit
-                    ground[y][x] = tr['in_ceil47']['tiles'][IK.INDEX47[IK._canon(m)]]
-                    gkind[y][x] = 'void'
+                    ground[y][x] = tr[f'{self.kit}_ceil47']['tiles'][IK.INDEX47[IK._canon(m)]]
                     continue
                 fc = self.floor_char(x, y)
-                g = tr['in_floor_' + FLOOR_CH[fc]]['tiles']
-                v = (x % 2) if fc == 'o' else (x + y) % 2
+                g = tr[f'{self.kit}_floor_' + self.K['floor'][fc]]['tiles']
+                v = (x % 2) if (fc == 'o' and self.kit == 'in') else (x + y) % 2
                 south = self.floor_char(x, y + 1) if y + 1 < H and not self.solid(x, y + 1) else None
-                raised_edge = (fc in RAISED and len(g) > 6 and south is not None and south not in RAISED and self.ch(x, y + 1) != 'E' and y + 1 < H)
+                raised_edge = (fc in self.K['raised'] and len(g) > 6 and south is not None and south not in self.K['raised'] and self.ch(x, y + 1) != 'E' and y + 1 < H)
                 under = y > 0 and self.wallrow[y - 1][x] == 2 and self.wallrow[y][x] == 0
                 west = x > 0 and (self.solid(x - 1, y) or self.wallrow[y][x - 1] > 0)
-                if raised_edge:
+                if self.K['carpet'] and fc == self.K['carpet']:
+                    ground[y][x] = g[self.carpet_mask(x, y)]        # 카펫: 4방 이웃 자동 이음(16칸), 벽 그늘 변형 없음
+                elif raised_edge:
                     ground[y][x] = g[6]
                 elif under and west:
                     ground[y][x] = g[4]
@@ -208,23 +245,24 @@ class Room:
                 if self.wallrow[y][x] == 1:
                     kind = self.wall_kind(x, y)
                     f = self.feat.get((x, y))
-                    if f and f'in_wall_{kind}_{f}' in T_:
-                        name = f'in_wall_{kind}_{f}'
+                    if f and f'{self.kit}_wall_{kind}_{f}' in T_:
+                        name = f'{self.kit}_wall_{kind}_{f}'
                     else:
                         L = (x > 0 and self.wallrow[y][x - 1] == 1 and self.wall_kind(x - 1, y) == kind)
                         R = (x + 1 < W and self.wallrow[y][x + 1] == 1 and self.wall_kind(x + 1, y) == kind)
                         e = 'm' if (L and R) else ('r' if L else ('l' if R else 'lr'))
-                        name = f'in_wall_{kind}_{e}'
+                        name = f'{self.kit}_wall_{kind}_{e}'
                     placed.append((name, x, y, 1, 2))
         for (x, y, w) in self.exit_runs():
-            placed.append(('in_exit_door' if w == 1 else 'in_exit_door2', x, y, w, 1))
+            placed.append((self.exit_name(w), x, y, w, 1))
         for (nm, x, y) in self.items:
             p = T_[nm]
             placed.append((nm, x, y, p['w'], p['h']))
         self.placed = placed
         # 합성 물체 층
         OBJ = Cv(W * T, H * T)
-        order = sorted(range(len(placed)), key=lambda i: (0 if placed[i][0].startswith('in_wall_') else 1, placed[i][2] + placed[i][4], placed[i][1], i))
+        self.paint_shadows(OBJ, placed, sheet)
+        order = sorted(range(len(placed)), key=lambda i: (0 if '_wall_' in placed[i][0] else 1, placed[i][2] + placed[i][4], placed[i][1], i))
         for i in order:
             nm, x, y, w, h = placed[i]
             OBJ.paste(sheet.objs[nm], x * T, y * T)
@@ -278,7 +316,7 @@ class Room:
         sh.img().save(os.path.join(outdir, f'{self.id}-chipset.png'))
         self.direct.img().save(os.path.join(outdir, f'{self.id}-map.png'))
         self.re.img().save(os.path.join(outdir, f'{self.id}-map-from-sheet.png'))
-        _pp.overlay(self.direct.img(), self.people).save(os.path.join(outdir, f'{self.id}-map-people.png'))
+        _pp.overlay(self.direct.img(), [(p[0] + self.ox,) + tuple(p[1:]) for p in self.people]).save(os.path.join(outdir, f'{self.id}-map-people.png'))
         pieces = {k: v for k, v in sheet.pieces.items()}
         json.dump({'tile': T, 'cols': COLS, 'rows': rows, 'tileCount': sheet.base + len(sheet.extra), 'pieces': pieces,
                    'overlapTiles': {'start': sheet.base, 'count': len(sheet.extra)}},
@@ -286,14 +324,55 @@ class Room:
         json.dump({'width': self.W, 'height': self.H, 'ground': self.ground, 'object': self.obj_ids},
                   open(os.path.join(outdir, 'map.json'), 'w'))
         kind = {'other': 'other', 'void': 'void'}
-        doors = [{'x': x, 'y': y, 'piece': 'in_exit_door' if w == 1 else 'in_exit_door2'} for (x, y, w) in self.exit_runs()]
+        doors = [{'x': x, 'y': y, 'piece': self.exit_name(w)} for (x, y, w) in self.exit_runs()]
         sx, sy = self.start_cell()
         json.dump({'width': self.W, 'height': self.H, 'kind': 'interior',
                    'placed': [{'name': n, 'x': x, 'y': y, 'w': w, 'h': h} for (n, x, y, w, h) in self.placed],
                    'groundKind': [[kind[self.gkind[y][x]] for x in range(self.W)] for y in range(self.H)],
                    'doors': doors, 'start': {'x': sx, 'y': sy},
-                   'people': [{'x': p[0], 'y': p[1], 'char': p[2], 'dir': {0: 'up', 1: 'right', 2: 'down', 3: 'left'}[p[3]], 'frame': p[4]} for p in self.people]},
+                   'people': [{'x': p[0] + self.ox, 'y': p[1], 'char': p[2], 'dir': {0: 'up', 1: 'right', 2: 'down', 3: 'left'}[p[3]], 'frame': p[4]} for p in self.people]},
                   open(os.path.join(outdir, 'extra.json'), 'w'), ensure_ascii=False)
+
+    def paint_shadows(self, OBJ, placed, sheet):
+        """접지 그림자(적대 검수 R7): 서 있는 기물(걷지 못하는 덩이)의 아래 7줄 실루엣을 오른쪽 아래(+2,+1)로 밀어 바닥 칸에만 반투명으로 깐다.
+        벽면·천장·문·깔개·방석·단은 제외. 기물 자신의 화소 위에는 칠하지 않는다(뒤에 기물이 덮는다)."""
+        self.shadow_px = 0
+        for (nm, x, y, w, h) in placed:
+            if nm.startswith(NOSHADOW):
+                continue
+            a = sheet.objs[nm].a
+            ph = a.shape[0]
+            for py in range(max(0, ph - 7), ph):
+                for px in range(a.shape[1]):
+                    if a[py, px, 3] != 255:
+                        continue
+                    for (dx, dy) in ((2, 1), (1, 2), (2, 2)):
+                        qx, qy = px + dx, py + dy
+                        gx, gy = x * T + qx, y * T + qy
+                        if not (0 <= gx < self.W * T and 0 <= gy < self.H * T):
+                            continue
+                        cx, cy = gx // T, gy // T
+                        if self.solid(cx, cy) or self.wallrow[cy][cx] > 0 or self.ch(cx, cy) == 'E':
+                            continue
+                        if 0 <= qx < a.shape[1] and 0 <= qy < ph and a[qy, qx, 3] != 0:
+                            continue
+                        if OBJ.a[gy, gx, 3] == 0:
+                            OBJ.put(gx, gy, SHADOW, 100)
+                            self.shadow_px += 1
+
+    def exit_name(self, w):
+        if self.kit == 'pal':
+            return 'pal_exit_door' + ('' if w == 1 else str(w))
+        return 'in_exit_door' if w == 1 else 'in_exit_door2'
+
+    def carpet_mask(self, x, y):
+        """카펫 칸의 4방 이웃(N=1 E=2 S=4 W=8): 이웃 칸이 카펫(출입구 E 는 위 칸을 따름)이면 그 변은 이어진다."""
+        m = 0
+        for bit, (dx, dy) in ((1, (0, -1)), (2, (1, 0)), (4, (0, 1)), (8, (-1, 0))):
+            X, Y = x + dx, y + dy
+            if 0 <= X < self.W and 0 <= Y < self.H and not self.solid(X, Y) and self.floor_char(X, Y) == self.K['carpet']:
+                m |= bit
+        return m
 
     def exit_runs(self):
         """출입구 칸 묶음(가로로 이어진 E): [(x, y, 폭)]. 폭 2 이상이면 in_exit_door2 로 놓는다."""

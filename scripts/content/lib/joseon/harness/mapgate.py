@@ -95,6 +95,8 @@ def check(placed, direct, objlayer, T=16):
 INT_BARE_RUN = 10          # I5 맨바닥(물체가 하나도 안 덮은 걷는 칸)이 가로·세로로 이만큼 이어지면 FAIL — 「공간이 남으면 방이 너무 크다」
 INT_TRIPLE = 3             # I3 같은 기물이 이 개수 이상 한 줄(가로 또는 세로, 칸 간격 ≤1)이면 FAIL
 INT_DOOR_CLEAR = 2         # I2 출입구 위 칸부터 이만큼은 비워 둔다(기물이 입구를 막지 않는다)
+INT_PAIR_GAP = 1           # I6 같은 기물 둘이 가로·세로 간격 이 칸 이내로 붙어 있으면 FAIL(복제 쌍, 적대 검수 R6)
+INT_BARE_RECT = 15         # I6 맨바닥이 이 칸 수 이상의 직사각형으로 비어 있으면 FAIL(빈 바닥, 적대 검수 R6)
 
 
 def check_interior(rep):
@@ -102,7 +104,10 @@ def check_interior(rep):
     fails = []
     for key, label in (('exit_unreached', 'I1 출입구 앞 칸에서 닿지 못하는 걷는 칸'), ('use_unreached', 'I2 접근 칸이 없는/막힌 기물'),
                        ('door_blocked', 'I2 출입구 앞이 기물에 막힘'), ('triples', f'I3 같은 기물 {INT_TRIPLE}개 일렬'),
-                       ('wall_rule', 'I4 천장 밑 벽·벽 가구 규칙'), ('overlap', 'I4 기물 겹침'), ('bare_runs', f'I5 맨바닥 {INT_BARE_RUN}칸 이상 연속')):
+                       ('wall_rule', 'I4 천장 밑 벽·벽 가구 규칙'), ('overlap', 'I4 기물 겹침'), ('bare_runs', f'I5 맨바닥 {INT_BARE_RUN}칸 이상 연속'),
+                       ('pairs', f'I6 같은 기물 간격 {INT_PAIR_GAP}칸 이내 복제 쌍'), ('bare_rect', f'I6 맨바닥 {INT_BARE_RECT}칸 이상 직사각형'),
+                       ('door_no_yard', 'I7 출입구 밖 마당 두 줄 없음'), ('wall_ring', 'I7 외곽 벽 두께(외곽이 #·E 가 아님)'), ('no_shadow', 'I7 접지 그림자 없음'),
+                       ('bad_people', 'I7 조선에 맞지 않는 Actor1 프레임(0·1·6 만)'), ('people_blocking', 'I7 인물이 막힌 칸·문 앞에 섬')):
         if rep.get(key):
             fails.append(f"{label}: {rep[key][:6]}" + (f" 외 {len(rep[key]) - 6}" if len(rep[key]) > 6 else ''))
     return fails, {k: (len(v) if isinstance(v, list) else v) for k, v in rep.items()}

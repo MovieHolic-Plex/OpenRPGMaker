@@ -3920,5 +3920,32 @@
    "bench_wood"
   ],
   "interior": true
+ },
+ "in_doorway": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dais_side_l": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dais_side_r": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
  }
 }

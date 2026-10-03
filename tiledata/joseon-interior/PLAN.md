@@ -54,3 +54,9 @@
 - 방 정의: `scripts/content/lib/joseon/demo_interior.py` (`python3 demo_interior.py [방id…] [-v] [--png] [--out DIR]`). 산출은 방별 폴더.
 - 실제 크기: 민가 15×14 · 주막 22×14 · 대장간 14×10 · 약방 12×10 · 서당 18×12 · 관아 19×15 (계획보다 줄였다 — 맨바닥 10칸 연속 금지).
 - 변환기 참고: 천장·벽 고체 칸은 `groundKind: 'void'` 로 나간다. `build-joseon-tileset.py` 의 `want = gk not in (water, paddy, bridge)` 에서 void 칸이 groundKind 불일치로 집계될 수 있다(변환기는 이 작업에서 수정하지 않음).
+
+## 1차 적대 검수 반영 (2026-10-04, `QA_ROUND1.md` R1~R7)
+- 키트: 벽 윗면(`in_ceil47`)을 검은 허공 → 회청색 기와 덮개로, 남벽은 윗면 + 바깥 벽면(`in_ceil_front`), 출입구는 문틀·문턱(`in_exit_door*`) + 문 밖 마당 두 줄(`y`, 방 밖 허공 `v` 는 `in_void`)을 평면에 자동으로 덧붙인다(방이 2줄 커진다). 칸막이 통로는 `in_doorway`(인방·문설주·문턱).
+- 바닥: 마루 = 긴 널(벽돌 줄눈 없음) · 온돌 = 밝은 황갈 장판 · 단 = `in_floor_deck`(평면 문자 `k`) + 단 옆면 `in_dais_side_l/r` · 앞면 챌면. 접지 그림자는 방 빌더가 서 있는 기물마다 자동으로 깐다.
+- 점검 추가(`interior_checks`): 복제 쌍(I6 pairs) · 맨바닥 직사각형 ≥15칸(bare_rect) · 문 밖 마당 · 외곽 벽 · 접지 그림자 · 인물 프레임 0·1·6 만 · 인물이 막힌 칸/문 앞에 서지 않음.
+- 방 크기(마당 포함): 민가 15×15 · 주막 22×16 · 대장간 12×10 · 약방 12×10 · 서당 16×14 · 관아 17×15.

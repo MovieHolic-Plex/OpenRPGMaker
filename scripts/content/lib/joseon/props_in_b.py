@@ -195,7 +195,7 @@ def charcoal():
 def hwadeok():
     """화덕 32×32: 흙+돌로 쌓은 대장간 화덕 — 위 굴뚝 연통(어두운 쇠), 앞 불구멍(벌건 숯), 아래 돌 단."""
     c = new(2, 2)
-    block(c, 2, 10, 28, 19, 5, St, top=(6, 5), face=(5, 4, 3, 2))
+    block(c, 2, 10, 28, 19, 5, St, top=(4, 4), face=(4, 3, 3, 2))   # 대장간 돌벽(S_[3]~[4])과 같은 어두운 돌 — 흰 상판 금지(적대 검수 R6)
     for y in range(15, 31):                                    # 쌓은 돌 줄눈
         if (y - 15) % 5 == 4:
             c.hl(3, 29, y, St[2])
@@ -215,7 +215,7 @@ def hwadeok():
         c.put(x, 23, Pe[5]); c.put(x, 24, Rd[5] if x % 2 else Pe[4]); c.put(x, 22, Rd[4])
     for (x, y) in ((12, 21), (16, 22), (19, 21)):
         flame(c, x, y, True)
-    c.hl(7, 25, 26, St[6])
+    c.hl(7, 25, 26, St[5])
     outline(c)
     contact(c, 3, 29, 32, 0)
     return c

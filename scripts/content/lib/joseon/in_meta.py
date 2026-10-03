@@ -8,12 +8,13 @@ import interior_room as IR
 FLOOR_NAMES = {
     'in_floor_ondol': '조선 실내 온돌 장판', 'in_floor_maru': '조선 실내 마루', 'in_floor_dirt': '조선 실내 흙바닥',
     'in_floor_stone': '조선 실내 돌바닥(박석)', 'in_floor_jeondol': '조선 실내 전돌 바닥',
+    'in_floor_deck': '조선 실내 단 널마루', 'in_floor_yard': '조선 실내 문 밖 마당',
 }
 TERRAIN = {k: {'name': v, 'walk': True, 'role': 'terrain'} for k, v in FLOOR_NAMES.items()}
 TERRAIN['in_ceil47'] = {'kind': 'blob47', 'name': '조선 실내 천장 (기와 단면 림)', 'walk': False, 'role': 'terrain',
                         'connect': ['in_ceil47'], 'edgeConnects': True}
 
-F_ALL = ('in_door_sill', 'in_exit_door', 'in_exit_door2', 'in_stairs_down', 'in_dais_steps', 'in_jipjari_1', 'in_jipjari_2',
+F_ALL = ('in_door_sill', 'in_doorway', 'in_exit_door', 'in_exit_door2', 'in_stairs_down', 'in_dais_steps', 'in_jipjari_1', 'in_jipjari_2',
          'in_bangseok_r', 'in_bangseok_b', 'in_bangseok_g', 'in_mat_hopi', 'in_mat_dot_2x2', 'in_runner_m', 'in_runner_n')
 GRIDS = {
     'in_stairs_wood_3': ['XXX', 'FFF', 'FFF'], 'in_stairs_stone_3': ['XXX', 'FFF', 'FFF'], 'in_stairs_wood_2': ['XX', 'FF', 'FF'],
