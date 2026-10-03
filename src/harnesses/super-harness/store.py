@@ -10,7 +10,7 @@ DB = os.path.join(DATA, 'sh.sqlite')
 _lock = threading.RLock()
 
 # 개념이 지나가는 칸. 화면의 칸 순서와 같다.
-STAGES = ['discovered', 'waiting', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
+STAGES = ['discovered', 'waiting', 'art', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
 ACTIVE = ('build', 'review', 'probe', 'bake', 'unbake')
 
 DEFAULT_SETTINGS = {
@@ -60,6 +60,9 @@ def init():
             con.execute('ALTER TABLE concepts ADD COLUMN parent TEXT')
         if 'requires' not in cols:
             con.execute("ALTER TABLE concepts ADD COLUMN requires TEXT DEFAULT '[]'")
+        gcols = {r[1] for r in con.execute('PRAGMA table_info(gaps)')}
+        if 'item' not in gcols:
+            con.execute('ALTER TABLE gaps ADD COLUMN item TEXT')
         if 'children_spawned' not in cols:
             con.execute('ALTER TABLE concepts ADD COLUMN children_spawned INTEGER DEFAULT 0')
         for k, v in DEFAULT_SETTINGS.items():
@@ -162,13 +165,19 @@ def recent_log(limit=200, concept=None):
     return [dict(r) for r in rows]
 
 
-def add_gap(concept, kind, what, route):
+def add_gap(concept, kind, what, route, item=None):
+    item_json = json.dumps(item, ensure_ascii=False) if item else None
     with _lock, connect() as con:
         if con.execute('SELECT 1 FROM gaps WHERE concept=? AND what=?', (concept, what)).fetchone():
+            if item_json:
+                con.execute('UPDATE gaps SET item=? WHERE concept=? AND what=?', (item_json, concept, what))
             return
-        con.execute('INSERT INTO gaps(concept,kind,what,route,created) VALUES(?,?,?,?,?)', (concept, kind, what, route, now()))
+        con.execute('INSERT INTO gaps(concept,kind,what,route,created,item) VALUES(?,?,?,?,?,?)', (concept, kind, what, route, now(), item_json))
 
 
 def gaps():
     with _lock, connect() as con:
-        return [dict(r) for r in con.execute('SELECT * FROM gaps ORDER BY id DESC').fetchall()]
+        rows = [dict(r) for r in con.execute('SELECT * FROM gaps ORDER BY id DESC').fetchall()]
+    for r in rows:
+        r['item'] = json.loads(r['item']) if r.get('item') else None
+    return rows
