@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.103.0 — 2026-10-03
+
+### 기능
+
+- size house exteriors by dragging their footprint (`a890528`)
+- fix terrain visibility and add quick house and drag road placement (`2f29157`)
+
+### 수정
+
+- **release** — 데스크톱 바이너리 빌드 스크립트를 되돌린다 (`716d3b5`)
+- hide event badges during terrain visibility preview (`05817c6`)
+- retain usable house choices when switching chipsets (`6eecdb2`)
+
 ## 0.102.0 — 2026-10-03
 
 ### 기능
