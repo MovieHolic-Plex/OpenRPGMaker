@@ -11,6 +11,9 @@ import { newProjectChoiceById } from "./newProjectChoices";
 import { UNNAMED_GAME_TITLE } from "./welcomeGenrePresets";
 import { defaultOpeningSequence } from "@/project/defaults/defaultOpeningSequence";
 import { withVerifiedPlayableSegment } from "@/project/playableSegment";
+import { projectRepository } from "@/project/persistence/repository";
+import { prepareProjectMedia } from "@/project/persistence/prepareProjectMedia";
+import { sameProjectTarget } from "@/project/persistence/target";
 
 export type WelcomeGenreSystemPresetDependencies = {
   /** 확정된 시드 프로젝트를 **열려 있는 폴더 프로젝트**로 채택하고 저장한다. */
@@ -24,6 +27,21 @@ export type WelcomeGenreSystemPresetDependencies = {
 const productionDependencies: WelcomeGenreSystemPresetDependencies = {
   // P6 이후 새 프로젝트는 셸이 폴더로 만든다 — 여기서는 이미 열린 프로젝트에 시드를 채택한다.
   adoptProject: async (project) => {
+    const repository = projectRepository();
+    const target = repository.currentTarget();
+    const openProject = store.getCurrent();
+    const version = store.getVersionToken();
+    // New hosted libraries may contain many MB of inline pixels. Write individual files before
+    // the renderer clones/stringifies the game; the open project remains intact if this fails.
+    await prepareProjectMedia(project, repository);
+    const active = repository.currentTarget();
+    const currentVersion = store.getVersionToken();
+    if (target ? (!sameProjectTarget(target, active) || active?.projectId !== target.projectId) : active !== null) {
+      throw new Error("소재를 준비하는 동안 프로젝트 폴더가 바뀌었습니다. 다시 시작하세요.");
+    }
+    if (store.getCurrent() !== openProject || currentVersion.lineage !== version.lineage || currentVersion.generation !== version.generation) {
+      throw new Error("소재를 준비하는 동안 프로젝트 내용이 바뀌었습니다. 변경 내용을 확인하고 다시 시작하세요.");
+    }
     store.replaceProject(project, { label: "장르 시스템 프리셋" });
     const saved = await store.flush();
     if (saved.kind !== "saved") throw new Error("프로젝트 저장을 완료하지 못했습니다.");

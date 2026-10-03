@@ -11,6 +11,7 @@ import {
   shouldSuppressEditorWelcomeForAutomation,
 } from "@/editor/editorWelcome";
 import { completeInterviewChoices } from "./helpers/gameDesignBrief";
+import { resetModalStackForTest } from "@/editor/ui/modalStack";
 
 function clearStorage(): void {
   try {
@@ -52,6 +53,7 @@ function setMatchMedia(matches: boolean): void {
 }
 
 beforeEach(() => {
+  resetModalStackForTest();
   installMemoryStorage();
   clearStorage();
   document.body.replaceChildren();
@@ -177,7 +179,7 @@ describe("presentEditorWelcome", () => {
     for (const caption of ["이브 같은", "갤러리 호러", "아오오니 같은", "학교 호러", "파트너 육성", "농장 생활", "2D 액션 RPG"]) {
       expect(host.textContent).not.toContain(caption);
     }
-    // The system-preset action is one gear per poster, not a repeated full-width button.
+    // Each poster exposes an explicit AI-independent starter action.
     expect(host.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(3);
     expect(featured?.querySelectorAll("[data-testid^='editor-welcome-starter-card-']")).toHaveLength(3);
     expect(host.querySelector("[data-testid='editor-welcome-starter-card-0']")?.textContent).not.toContain("빈 프로젝트");
@@ -378,9 +380,9 @@ describe("presentEditorWelcome", () => {
     // 보내지 않는다 — 보내면 채팅 패널이 "의도 읽는 중…" 에서 조용히 멈춘다(실측 30초+).
     expect(settled).toBe(false);
     expect(notice.hidden).toBe(false);
-    expect(notice.textContent).toContain("AI 연결이 없어");
+    expect(notice.textContent).toContain("AI를 연결하면");
     // 다음 행동을 말해야 한다 — "AI 설정이 필요합니다" 만으로는 어디를 누를지 모른다.
-    expect(notice.textContent).toContain("⚙");
+    expect(notice.textContent).toContain("AI 없이 직접 만들기");
 
     host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.aiNoticeAction}']`)!.click();
     expect(opened).toEqual(["settings"]);
@@ -389,6 +391,21 @@ describe("presentEditorWelcome", () => {
     host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)!.click();
     const result = await pending;
     expect(result.action).toBe("skip");
+  });
+
+  it("AI 없는 포스터 클릭은 인터뷰나 프로젝트 교체를 시작하지 않는다", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const applySystemPreset = vi.fn(async () => undefined);
+    const pending = presentEditorWelcome(host, { canGenerate: () => false, applySystemPreset });
+    host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-template-card-0']")!.click();
+    await Promise.resolve();
+    expect(document.querySelector("[data-testid='project-interview']")).toBeNull();
+    expect(applySystemPreset).not.toHaveBeenCalled();
+    expect(host.querySelector<HTMLElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.aiNotice}']`)!.hidden).toBe(false);
+    expect(document.activeElement).toBe(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.aiNoticeAction}']`));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await expect(pending).resolves.toMatchObject({ action: "skip" });
   });
 
   it("AI 가 준비되면 안내를 띄우지 않고 그대로 보낸다", async () => {

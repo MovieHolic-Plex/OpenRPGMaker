@@ -184,6 +184,8 @@ export interface ProjectRepository {
   activateLegacy?(target: ProjectTarget): Promise<CanonicalSave>;
   /** 폴더 정본을 `backups/` 사본으로 만들고 그 경로를 돌려준다. 파일을 가진 어댑터만 제공한다. */
   backup?(target?: ProjectTarget | null): Promise<string>;
+  listBackups?(target?: ProjectTarget | null): Promise<readonly import("./backupTypes").ProjectBackupEntry[]>;
+  restoreBackup?(backupId: string, target?: ProjectTarget | null): Promise<import("./backupTypes").RestoredProject>;
   readonly commits: {
     record(input: CommitInput, target?: ProjectTarget | null): Promise<SaveResult>;
     list(limit: number, target?: ProjectTarget | null): Promise<readonly CommitListItem[]>;

@@ -289,8 +289,16 @@ PAW의 기존 Chromium 설치는 `Target crashed` 후 저장되지 않았고 이
 ## 백업과 이전
 
 `store.backup()`은 `backups/<시간-uuid>/project.sqlite`와 `assets/`를 함께 만든다.
-DB 스냅샷의 에셋 목록으로 파일을 복사하며 실패 시 불완전 백업 폴더를 제거한다.
-복원은 **호스트를 끈 후** 새 폴더에 이 백업 폴더의 DB·assets를 함께 복사하여 연다.
+DB 스냅샷의 에셋 목록으로 파일을 복사하며 크기·SHA를 검사한다. 실패 시 불완전 백업 폴더를 제거한다.
+소재는 임시 파일에 write+fsync한 뒤 rename으로 게시하고 DB 참조를 등록한다. 같은 SHA 파일도 재사용 전 검사하고 손상되었으면 정상 입력 바이트로 교체한다. 읽기에서도 크기·SHA를 확인한다.
+첫 시작 장르 시드는 renderer의 `prepareProjectMedia`가 소재를 먼저 파일로 저장한 후 ref 문서로 채택한다. 공용 라이브러리가 부팅 뒤 주입한 inline 이미지도 같은 경로를 탄다. 파일 준비 실패는 열린 문서 교체 전에 전파한다. 중단 시 이미 등록한 미사용 파일은 남을 수 있으나 정본 문서를 바꾸지 않는다.
+저장소의 선택적 `saveSnapshot`은 store가 이미 분리한 committed 사본을 바로 직렬화한다. Electron의 일반 `save`는 기존처럼 먼저 복제하며, store의 첫 full-save만 중복 복제를 생략한다. 사본은 요청 완료까지 변경하지 않는 계약이다. CAS와 서버 반환 병합·저장 영수증 처리는 유지한다.
+
+`project.listBackups`/`project.restoreBackup`는 기존 백업과 같은 owner 범위를 쓴다. 프로젝트 메뉴의 **백업에서 복구...**로 사본을 복구해 열 수 있다. 호스트를 끄지 않아도 원본이 아닌 새 폴더에만 쓴다.
+`electron/local-store/recovery.ts`는 백업을 read-only로 열어 DB quick_check, 펼친 문서 SHA, 소재 참조와 모든 등록 파일의 크기·SHA를 검사한다. 형식 2의 접힌 문서는 백업 자체의 `tileset_blobs`를 직접 읽어 각 본문 SHA를 검사하고 펼친다(살아 있는 저장소의 본문 캐시는 쓰지 않는다). 형식 1도 지원한다. DB/소재를 임시 폴더에 복사하고 재검사한 뒤 새 폴더로 게시한다. 이미 존재하는 대상은 거절한다. 활성 WAL이 있는 프로젝트 DB는 백업 원본으로 받지 않는다.
+복구 사본은 **새 storage projectId**를 갖는다(meta와 project/maps/commits/AI 기록의 project_id를 함께 변경). 저장 문서와 SHA는 유지한다. 같은 원본·사본을 열었을 때 Electron asset URL 식별자가 겹치지 않게 한다.
+HTTP dispatch는 요청별 내부 context로 `.oprn-projects` 복구 루트를 전달하고 결과를 폴더 ID로 돌려준다. IPC/HTTP가 공유하는 핸들러 캐시에 루트를 저장하지 않는다. 데스크톱은 원본의 형제 폴더에 복구한다.
+편집기 부팅이 실패한 경우: `node scripts/oprn-store.mjs restore <백업폴더> --out <새폴더>`. 기존 프로젝트/백업을 직접 수정하지 않는다. UI는 현재 작업 저장에 실패하면 사본을 열지 않고 내보내기를 안내한다.
 팀 정보와 멤버 토큰 해시도 DB에 포함된다. 호스트 소유자 코드는 `.oprn-host-access`가 없거나 DB의 코드 해시와 다를 때만 새로 발급된다.
 원격 팀 관리 버튼은 서버 디스크에 백업을 만든다. 브라우저 다운로드는 기존 프로젝트
 내보내기를 사용한다. 팀원이 2명 이상이면 보류 중인 에셋 참조 보호를 위해 서비스의 prune을
