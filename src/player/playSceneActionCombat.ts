@@ -1,3 +1,4 @@
+import { terrainHeight, terrainBlocksProjectile, terrainLineOfSight, terrainVisionRange } from "@/project/terrainGameplay";
 import { mapTileSize } from "@/project/tileGeometry";
 import { playerCharacterScale } from "@/player/playerCharacterScale";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
@@ -372,15 +373,15 @@ function acquireEnemyTarget(
       factionAggression(state.factions, enemy.factionId),
     )
   );
-  if (enemy.retargetMs > 0 && cachedStillHostile) return cached;
+  if (enemy.retargetMs > 0 && cachedStillHostile && (enemy.forcedTargetId === cached.id || terrainLineOfSight(scene.map, pos, cached))) return cached;
   enemy.retargetMs = TARGET_RETARGET_MS;
   const sightRange = scene.autonomousNPCs.get(enemy.eventId)?.sightRange ?? DEFAULT_TARGET_SIGHT_RANGE;
   const target = resolveHostileTarget({
     self: { id: enemy.eventId, factionId: enemy.factionId, x: pos.x, y: pos.y },
-    candidates: refs,
+    candidates: refs.filter(ref => ref.id === enemy.forcedTargetId || terrainLineOfSight(scene.map, pos, ref)),
     table: state.factions,
     stanceOverrides: state.factionStanceOverrides,
-    aggroRange: sightRange,
+    aggroRange: terrainVisionRange(scene.map, pos, sightRange),
     forcedTargetId: enemy.forcedTargetId,
   });
   enemy.targetId = target?.id;
@@ -1506,6 +1507,7 @@ function spawnProjectileFrom(scene: PlaySceneContext, state: ActionCombatSceneSt
     y: spec.y,
     dirX,
     dirY,
+    flightHeight: terrainHeight(scene.map, Math.round(spec.x), Math.round(spec.y)) + (scene.map.terrainDesign?.gameplay?.eyeHeight ?? 1),
     speedTilesPerMs: spec.speedTilesPerSec / 1000,
     damage: spec.damage,
     elementId: spec.elementId,
@@ -1538,7 +1540,7 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
       p.traveledTiles += step;
       const tx = Math.round(p.x);
       const ty = Math.round(p.y);
-      blocked = !inBounds(scene.map, tx, ty) || !isPassable(project, scene.map, tx, ty);
+      blocked = !inBounds(scene.map, tx, ty) || !isPassable(project, scene.map, tx, ty) || terrainBlocksProjectile(scene.map, tx, ty, p.flightHeight);
       if (blocked) break;
       // 유탄 명중: 발사자 진영에 우호(1 이상)가 아닌 전투원은 전부 맞는다.
       // 같은 진영은 대각선 기본값이 동맹(2)이라 자연하게 아군 오사에서 면제된다.
@@ -1569,7 +1571,7 @@ function updateProjectiles(scene: PlaySceneContext, state: ActionCombatSceneStat
         break;
       }
     }
-    p.object.setPosition(characterSpriteX(p.x, mapTileSize(scene.map)), characterSpriteY(p.y, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2);
+    p.object.setPosition(characterSpriteX(p.x, mapTileSize(scene.map)), characterSpriteY(p.y, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2 - (scene.map.terrainDesign?.gameplay?.projectileHeight ? (p.flightHeight - (scene.map.terrainDesign.gameplay.eyeHeight ?? 1)) * mapTileSize(scene.map) : 0));
     if (consumed || blocked || p.traveledTiles >= p.maxRangeTiles) {
       p.object.destroy();
       state.projectiles.splice(i, 1);

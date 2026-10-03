@@ -1487,3 +1487,12 @@ AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 
 
 첫 편집 진행은 기존 `Project.flags`의 boolean 키로만 저장한다. 프로젝트 스키마 버전은 바꾸지 않는다.
 키·동작·오른쪽 도크 소유자는 [장르 프리셋](editor-genre-packs.md)의 2026-10-01 절을 따른다.
+
+## 재편집 지형과 게임 높이 규칙 (2026-10-03)
+
+`map.terrainDesign.features?`는 절벽/길/능선/계곡/호수의 id·점·옵션·희소 before/after 칸 패치를
+보관한다. `gameplay?`는 visionBlocking/highGroundVision/projectileHeight와 visionRadius/visionGain/eyeHeight다.
+`terrainDesign.ts`가 불러오기 때 구조/범위/칸 수를 검사한다. 기존 맵에는 새 필드가 필수가 아니다.
+cloneExtraLayers는 설계 정보를 깊이 복사한다. remap/crop은 잠금/수심/게임 규칙을 옮기고 원점과 패치는
+제거하여 잘못된 칸 복원을 막는다. 상세 저작 계약은 [terrain-design-suite.md](terrain-design-suite.md).
+공용 사용자 도장은 별도 IndexedDB `oprn-terrain-library`에 두며 사용 시 project.terrainStamps에 복사한다.

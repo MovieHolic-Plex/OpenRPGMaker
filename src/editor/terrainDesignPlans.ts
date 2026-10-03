@@ -7,24 +7,11 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { terrainIsReserved, terrainMaterialTile } from "./terrainMaterials";
 import { reliefDoodadCatalog } from "./reliefDoodads";
-import { planReliefRamp } from "./reliefRampPlan";
-import { lineCells, polygonCells, symmetryVariants, terrainHash, transformPoint, type TerrainPoint, type TerrainSymmetry } from "./terrainDesignGeometry";
+import { connectTerrainRoad } from "./terrainRoadRamps";
+import { lineCells, polygonCells, symmetryVariants, terrainHash, transformPoint, type TerrainPoint } from "./terrainDesignGeometry";
 import { genId } from "@/util/id";
 
-export interface TerrainDesignOptions {
-  symmetry: TerrainSymmetry;
-  areaShape: "polygon" | "rect" | "line";
-  width: number;
-  delta: number;
-  seed: number;
-  weights: readonly [number, number, number];
-  waterLevel: number;
-  maxDepth: number;
-  shallowWidth: number;
-  flattenRoad: boolean;
-  unlock: boolean;
-  density: number;
-}
+export type TerrainDesignOptions = import("@/project/terrainDesign").TerrainFeatureOptions;
 export interface TerrainDesignPlan { ok: boolean; reason: string; indices: number[]; apply?: (map: GameMap) => void }
 export function terrainEditable(map: GameMap, index: number, objects = true, ramps = true): boolean {
   return index >= 0 && index < map.width * map.height && !terrainLocked(map.terrainDesign, index)
@@ -129,18 +116,8 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
     if (tool === "road" && o.flattenRoad) { next.relief ??= emptyRelief(map.width, map.height); next.relief.levels[i] = map.relief?.levels[points[0]!.y * map.width + points[0]!.x] ?? 0; }
   }
   shapeMaterials(next, tileset, edits);
-  let ramps = 0;
-  if (tool === "road" && !o.flattenRoad && next.relief) for (const p of centers) {
-    const here = next.relief.levels[p.y * map.width + p.x] ?? 0;
-    if (next.relief.ramps?.[p.y * map.width + p.x] || ![[0, -1], [0, 1], [-1, 0], [1, 0]].some(([dx, dy]) => { const x = p.x + dx!, y = p.y + dy!; return x >= 0 && y >= 0 && x < map.width && y < map.height && here !== next.relief!.levels[y * map.width + x]; })) continue;
-    const width = o.width >= 5 ? 4 : 2, ramp = planReliefRamp(next, { ...p, face: "top" }, width, false);
-    if (ramp.ok && ramp.apply) {
-      const probe = copied(next); ramp.apply(probe);
-      const changed = probe.relief!.ramps!.flatMap((code, i) => code !== (next.relief?.ramps?.[i] ?? 0) ? [i] : []);
-      if (changed.every(i => terrainEditable(map, i))) { ramp.apply(next); for (const i of changed) touched.add(i); ramps++; }
-    }
-  }
-  return finish(map, next, touched, tool === "road" ? `길 ${edits.length}칸 · 경사 접합 ${ramps}곳` : `재질 혼합 ${edits.length}칸 · 시드 ${o.seed}`);
+  const connections = tool === "road" && !o.flattenRoad ? connectTerrainRoad(next, centers, o.width, touched) : { ramps: 0, blocked: 0 };
+  return finish(map, next, touched, tool === "road" ? `길 ${edits.length}칸 · 경사 접합 ${connections.ramps}곳${connections.blocked ? ` · 연결 불가 ${connections.blocked}곳 (경로 검사로 확인)` : ""}` : `재질 혼합 ${edits.length}칸 · 시드 ${o.seed}`);
 }
 
 export function planMixedCluster(map: GameMap, tileset: TilesetDef, center: TerrainPoint, o: TerrainDesignOptions): TerrainDesignPlan {

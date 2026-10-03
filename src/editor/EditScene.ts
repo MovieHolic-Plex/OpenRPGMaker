@@ -2577,7 +2577,7 @@ export class EditScene extends PhaserRuntime.Scene {
       state.selectedEventPageId ?? "none",
       state.showGrid ? "grid" : "nogrid",
       state.terrainReachability ? "reach" : "noreach",
-      JSON.stringify(state.terrainPoints), JSON.stringify(state.terrainRoute), state.terrainRouteWidth, state.terrainSymmetry, state.terrainBrush,
+      JSON.stringify(state.terrainPoints), JSON.stringify(state.terrainRoute), state.terrainRouteWidth, JSON.stringify(state.terrainRouteBody), state.terrainRouteEvents, state.terrainRouteDoorId, state.terrainRouteDoors, JSON.stringify(state.terrainRouteSwitches), state.terrainVisionPreview, JSON.stringify(state.terrainVisionOrigin), state.terrainSymmetry, state.terrainBrush,
     ].join("|");
   }
 

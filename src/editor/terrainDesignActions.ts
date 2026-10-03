@@ -1,12 +1,15 @@
+import { canEditMap, toastMapEditLockNotice } from "./mapEditLocks";
 import { editorState, type EditorState, type TerrainDesignTool } from "./editorState";
 import { store } from "@/project/store";
 import { recordMapEditIfChanged } from "./mapEditHistory";
 import { planTerrainDesign, type TerrainDesignOptions, type TerrainDesignPlan } from "./terrainDesignPlans";
 import { captureTerrainStamp, planTerrainStamp, symmetricStampPlacement } from "./terrainStamps";
 import { symmetryVariants, type TerrainPoint } from "./terrainDesignGeometry";
+import { planTerrainFeature } from "./terrainFeatures";
+import { planTerrainFinish } from "./terrainFinish";
 import { toast } from "@/util/toast";
 
-export const TERRAIN_DESIGN_TOOLS: readonly [TerrainDesignTool, string][] = [["contour", "절벽 윤곽"], ["road", "길"], ["ridge", "능선"], ["valley", "계곡"], ["lake", "호수·해안"], ["mix", "재질 혼합"], ["mixedCluster", "혼합 군집"], ["stamp", "지형 도장"], ["lock", "영역 잠금"], ["route", "경로 검사"]];
+export const TERRAIN_DESIGN_TOOLS: readonly [TerrainDesignTool, string][] = [["contour", "절벽 윤곽"], ["road", "길"], ["ridge", "능선"], ["valley", "계곡"], ["lake", "호수·해안"], ["mix", "재질 혼합"], ["mixedCluster", "혼합 군집"], ["stamp", "지형 도장"], ["lock", "영역 잠금"], ["route", "경로 검사"], ["finish", "지형 다듬기"]];
 export function isTerrainDesignTool(tool: EditorState["terrainBrush"]): tool is TerrainDesignTool { return TERRAIN_DESIGN_TOOLS.some(([key]) => key === tool); }
 export function terrainDesignOptions(s = editorState.get()): TerrainDesignOptions {
   return { symmetry: s.terrainSymmetry, areaShape: s.terrainAreaShape, width: s.terrainWidth, delta: s.terrainDelta, seed: s.terrainSeed, weights: s.terrainMixWeights, waterLevel: s.terrainLakeLevel, maxDepth: s.terrainLakeDepth, shallowWidth: s.terrainShallowWidth, flattenRoad: s.terrainRoadFlatten, unlock: s.terrainUnlock, density: s.reliefClusterDensity };
@@ -18,6 +21,7 @@ export function designOutline(s: EditorState): TerrainPoint[] {
   return [a, { x: b.x, y: a.y }, b, { x: a.x, y: b.y }];
 }
 export function applyTerrainDesignPlan(mapId: string, plan: TerrainDesignPlan, label: string): boolean {
+  if (!canEditMap(mapId)) { toastMapEditLockNotice(mapId); return false; }
   if (!plan.ok || !plan.apply) { toast(plan.reason, "info"); return false; }
   const map = store.getCurrent().maps[mapId]; if (!map) return false;
   const cells = plan.indices.flatMap(i => [{ x: i % map.width, y: Math.floor(i / map.width), layer: "lower" as const }, { x: i % map.width, y: Math.floor(i / map.width), layer: "upper" as const }]);
@@ -28,15 +32,26 @@ export function commitTerrainDesign(): void {
   const s = editorState.get(), mapId = s.currentMapId, map = mapId ? store.getCurrent().maps[mapId] : undefined;
   if (!map || !mapId || !isTerrainDesignTool(s.terrainBrush) || ["stamp", "route"].includes(s.terrainBrush)) return;
   const tileset = store.getCurrent().tilesets[map.tilesetId]; if (!tileset) return;
-  const plan = planTerrainDesign(map, tileset, s.terrainBrush as Exclude<TerrainDesignTool, "stamp" | "route">, designOutline(s), terrainDesignOptions(s));
-  if (applyTerrainDesignPlan(mapId, plan, TERRAIN_DESIGN_TOOLS.find(([key]) => key === s.terrainBrush)![1])) { editorState.set({ terrainPoints: null }); toast(plan.reason, "info"); }
+  const rawPoints = s.terrainPoints?.mapId === mapId ? s.terrainPoints.points : [];
+  const plan = s.terrainBrush === "finish" ? planTerrainFinish(map, rawPoints, s.terrainFinishMethod, s.terrainFinishPasses)
+    : ["contour", "road", "ridge", "valley", "lake"].includes(s.terrainBrush) ? planTerrainFeature(map, tileset, s.terrainBrush as import("@/project/terrainDesign").TerrainFeature["tool"], rawPoints, terrainDesignOptions(s), s.terrainFeatureId)
+    : planTerrainDesign(map, tileset, s.terrainBrush as "mix" | "mixedCluster" | "lock", designOutline(s), terrainDesignOptions(s));
+  if (applyTerrainDesignPlan(mapId, plan, TERRAIN_DESIGN_TOOLS.find(([key]) => key === s.terrainBrush)![1])) { editorState.set({ terrainPoints: null, terrainFeatureId: null, terrainDragPoint: null }); toast(plan.reason, "info"); }
 }
 export function selectTerrainDesignTool(tool: TerrainDesignTool): void {
-  editorState.set({ terrainBrush: tool, terrainDesignOpen: true, terrainPoints: null, reliefDoodad: null, reliefDoodadOpen: false, reliefBridgeStart: null, terrainMoveGroup: false, ...(tool === "route" ? { terrainRoute: null } : {}), ...(tool === "lake" || tool === "lock" ? { terrainAreaShape: "polygon" as const } : {}) });
+  editorState.set({ terrainBrush: tool, terrainFeatureId: null, terrainDragPoint: null, terrainDesignOpen: true, terrainPoints: null, reliefDoodad: null, reliefDoodadOpen: false, reliefBridgeStart: null, terrainMoveGroup: false, ...(tool === "route" ? { terrainRoute: null } : {}), ...(tool === "lake" || tool === "lock" ? { terrainAreaShape: "polygon" as const } : {}) });
 }
 export function handleTerrainDesignPointer(mapId: string, point: TerrainPoint, first: boolean, right: boolean): void {
   const s = editorState.get(), map = store.getCurrent().maps[mapId]; if (!map || !isTerrainDesignTool(s.terrainBrush)) return;
-  if (right) { editorState.set({ terrainPoints: null }); return; }
+  if (right) { editorState.set({ terrainPoints: null, terrainFeatureId: null, terrainDragPoint: null }); return; }
+  if (point.x < 0 || point.y < 0 || point.x >= map.width || point.y >= map.height) return;
+  if (s.terrainVisionPreview) { if (first) editorState.set({ terrainVisionOrigin: point }); return; }
+  if (s.terrainFeatureId && s.terrainPoints?.mapId === mapId) {
+    const points = s.terrainPoints.points;
+    const index = first ? points.findIndex(p => p.x === point.x && p.y === point.y) : s.terrainDragPoint;
+    if (index !== null && index >= 0) { const next = points.map((p,n) => n === index ? point : p); editorState.set({ terrainDragPoint: index, terrainPoints: { mapId, points: next } }); }
+    return;
+  }
   if (!first || point.x < 0 || point.y < 0 || point.x >= map.width || point.y >= map.height) return;
   const tileset = store.getCurrent().tilesets[map.tilesetId]; if (!tileset) return;
   if (s.terrainBrush === "mix" || s.terrainBrush === "mixedCluster") {
@@ -74,4 +89,12 @@ export function handleTerrainDesignPointer(mapId: string, point: TerrainPoint, f
       editorState.set({ terrainStampId: stamp.id, terrainStampCapture: false, terrainPoints: null }); toast(`${stamp.name} 저장 · ${stamp.width}×${stamp.height}칸`, "info");
     } catch (e) { editorState.set({ terrainPoints: null }); toast((e as Error).message, "info"); }
   }
+}
+
+export function selectTerrainFeature(id: string): void {
+  const mapId = editorState.get().currentMapId, map = mapId ? store.getCurrent().maps[mapId] : undefined;
+  const f = map?.terrainDesign?.features?.find(f => f.id === id);
+  if (!f || !mapId) { editorState.set({ terrainFeatureId: null, terrainPoints: null }); return; }
+  const o = f.options;
+  editorState.set({ terrainBrush: f.tool, terrainFeatureId: f.id, terrainDragPoint: null, terrainPoints: { mapId, points: structuredClone(f.points) }, terrainSymmetry: o.symmetry, terrainAreaShape: o.areaShape, terrainWidth: o.width, terrainDelta: o.delta, terrainSeed: o.seed, terrainMixWeights: [...o.weights], terrainLakeLevel: o.waterLevel, terrainLakeDepth: o.maxDepth, terrainShallowWidth: o.shallowWidth, terrainRoadFlatten: o.flattenRoad, terrainVisionPreview: false });
 }

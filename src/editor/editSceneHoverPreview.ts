@@ -36,6 +36,7 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
   if (isTerrainDesignTool(state.terrainBrush)) {
     const g = spec.scene.add.graphics(), lift = map.relief ? reliefLiftField(map.relief) : null;
     const draw = (x:number,y:number,color:number) => { g.fillStyle(color,.22);g.lineStyle(1,color,.85);const top=(y-(lift?cellLift(lift,x,y):0))*tileSize;g.fillRect(x*tileSize,top,tileSize,tileSize);g.strokeRect(x*tileSize,top,tileSize,tileSize); };
+    if (state.terrainFeatureId || state.terrainVisionPreview) { spec.layer.add(g); return; }
     if (state.terrainBrush === "stamp" && !state.terrainStampCapture) {
       const stamp=store.getCurrent().terrainStamps?.find(s=>s.id===state.terrainStampId);
       if(stamp){const plan=planTerrainStamp(map,tileset,stamp,pick,state.terrainStampRotation,state.terrainStampMirror);for(const i of plan.indices)draw(i%map.width,Math.floor(i/map.width),plan.ok?0x2f9e44:0xe03131);}
@@ -44,7 +45,7 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
       for(const variant of symmetryVariants(state.terrainSymmetry,map.width,map.height)){
         let points=[...pending,pick].map(p=>transformPoint(p,map.width,map.height,variant));
         if(shape==="rect"&&points.length>=2&&["contour","lake","lock","stamp"].includes(state.terrainBrush)){const a=points[0]!,b=points.at(-1)!;points=[a,{x:b.x,y:a.y},b,{x:a.x,y:b.y}];}
-        const cells=points.length>=3&&["contour","lake","lock","stamp"].includes(state.terrainBrush)&&shape!=="line"?polygonCells(points,map.width,map.height):lineCells(points);
+        const cells=points.length>=3&&["contour","lake","lock","stamp","finish"].includes(state.terrainBrush)&&shape!=="line"?polygonCells(points,map.width,map.height):lineCells(points);
         for(const p of cells)draw(p.x,p.y,terrainLocked(map.terrainDesign,p.y*map.width+p.x)?0xe0a236:0x329af0);
         if(state.terrainBrush==="mix"||state.terrainBrush==="mixedCluster"){const p=transformPoint(pick,map.width,map.height,variant);g.lineStyle(2,0x329af0,.9);g.strokeCircle((p.x+.5)*tileSize,(p.y+.5-(lift?cellLift(lift,p.x,p.y):0))*tileSize,state.terrainWidth*tileSize/2);}
       }

@@ -1,3 +1,4 @@
+import { terrainVisionRange, terrainLineOfSight } from "@/project/terrainGameplay";
 import { canMove, canMoveFootprint, inBounds } from "@/project/collision";
 import { passageBounds } from "@/project/footprint";
 import {
@@ -92,7 +93,7 @@ export function nextChaseDecision(input: {
     mover.chasePath = [];
     return { kind: "wait" };
   }
-  if (input.sightRange !== undefined && mover.chaseActive !== true && distance > input.sightRange) {
+  if (input.sightRange !== undefined && mover.chaseActive !== true && (distance > terrainVisionRange(input.map,input.from,input.sightRange) || !terrainLineOfSight(input.map,input.from,input.player))) {
     return { kind: "wait" };
   }
   mover.chaseActive = true;
