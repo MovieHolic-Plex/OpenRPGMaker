@@ -15,12 +15,16 @@
 import argparse
 import base64
 import html
+import hashlib
 import json
 import os
 import shutil
 import subprocess
 import sys
 import time
+import tempfile
+import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -40,7 +44,7 @@ DATA = Path(os.environ.get('CHR_HARNESS_DATA', os.path.expanduser('~/.local/shar
 VIZ = Path(os.path.expanduser('~/claude-viz'))
 ENGINES = {
     'sonnet': dict(label='Claude Sonnet 5.5 · medium', model='claude-sonnet-5-5', effort='medium'),
-    'gpt': dict(label='GPT 6.1 sol · medium', model='gpt-6.1-sol', effort='medium'),
+    'gpt': dict(label='GPT 6.1 sol · high', model='gpt-6.1-sol', effort='high'),
     'opus': dict(label='Claude Opus 5.5 · high', model='claude-opus-5-5', effort='high'),
 }
 CLAUDE_ENGINES = ('sonnet', 'opus')
@@ -59,13 +63,18 @@ STRENGTH_RULES = {
    - 피부 톤, 눈 색, 수염, 얼굴 디테일(주근깨·볼).
    **하지 않는 것:** 무기·모자·두건·들고 있는 물건·날개·지팡이·가방처럼 **몸 밖으로 튀어나오는 새 소지품**(2026-10-02 사용자: 「무기나 모자 추가는 별로」).
    기계 검사가 뼈대 실루엣을 2px 넓힌 밖으로 튀어나온 픽셀을 세서, 프레임당 10·전체 60 을 넘으면 불합격이다. 뼈대에 원래 있던 소지품은 두고 색만 바꿔도 된다.
-   **색만 바꾸면 불합격이다**: 색 바꾸기로 설명되지 않는 픽셀(모양을 새로 찍은 픽셀)이 10 % 이상이어야 한다(2026-10-03 「보통」 작업자가 팔레트만 바꾸고 1분 만에 끝냈다).''',
+   - 원래 쓰고 있던 투구·두건·모자는 새로 더한 것이 아니므로 **모양을 바꿔도 된다**(둘레 2px 안 — 투구 → 다른 모양 투구·두건·상투).
+   **색만 바꾸면 불합격이다**: 색 바꾸기로 설명되지 않는 픽셀(모양을 새로 찍은 픽셀)이 15 % 이상이어야 한다(2026-10-03 「보통」 작업자가 팔레트만 바꾸고 1분 만에 끝냈고, 다시 시켜도 11 % 로 색만 바꾼 것처럼 보였다).
+   그러니 **네 방향 모두에서** 머리(또는 쓰개) 모양과 옷의 모양 하나 이상을 픽셀로 다시 찍는다.''',
     'strong': '''**강도 「강함」 — 원본을 알아보기 어려울 만큼 다른 캐릭터로.** 몸 비율·머리 크기·팔다리 위치·걸음은 그대로 두고 그 위를 크게 바꾼다:
    - **머리 모양을 확실히** 바꾼다(짧은 머리 ↔ 긴 머리·묶음·땋은 머리·앞머리). 머리 둘레 3px 까지 실루엣이 바뀌어도 된다.
    - **옷의 형태**를 바꾼다: 갑옷 ↔ 천옷, 소매·깃·치마/바지 자락, 망토·목도리 자락, 옷 색 나누기. 원래 옷과 다른 직업으로 읽혀도 된다.
    - 작은 장신구(머리띠·리본·깃털 하나·귀걸이·목걸이·허리띠 주머니)는 실루엣 밖으로 조금 나와도 된다.
    - 원본에 있던 소지품(창·검·투구 장식)은 지워도 되고 색만 바꿔도 된다.
    **하지 않는 것:** 큰 무기·방패·날개·지팡이·가방·높은 모자처럼 몸에서 크게 튀어나오는 새 소지품.
+   **원본 소지품을 지울 거면 네 방향 모두에서 한 픽셀도 남기지 않는다** — 남은 칼끝·창 조각이 허공에 뜬다(2026-10-03 첫 「강함」).
+   남길 거면 손에 붙은 그대로 둔다. **옆모습·뒷모습도 정면만큼 다시 칠한다** — 원래 옷의 무늬(갑옷 체크 등)가 옆모습에 남으면
+   다른 옷으로 읽힌다. 정면만 바꾸고 옆모습을 덜 고치는 것이 가장 흔한 실패다.
    기계 검사: 뼈대 실루엣을 2px 넓힌 밖으로 튀어나온 픽셀이 프레임당 20·전체 160 을 넘으면 불합격. 원본과 30 % 넘게 달라야 하고,
    색 바꾸기로 설명되지 않는 픽셀(모양을 새로 찍은 픽셀)이 25 % 이상이어야 한다.''',
 }
@@ -77,6 +86,37 @@ TIMEOUT_S = int(os.environ.get('CHR_HARNESS_TIMEOUT', str(60 * 60)))
 
 def now():
     return datetime.now(timezone.utc).isoformat(timespec='seconds')
+
+
+def write_json_atomic(path, value):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(prefix='.' + path.name, dir=path.parent)
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8') as out:
+            json.dump(value, out, ensure_ascii=False, indent=2)
+            out.write('\n')
+            out.flush()
+            os.fsync(out.fileno())
+        os.replace(tmp, path)
+    finally:
+        if Path(tmp).exists():
+            Path(tmp).unlink()
+
+
+@contextmanager
+def run_lock(root):
+    import fcntl
+    root.mkdir(parents=True, exist_ok=True)
+    with (root / '.production.lock').open('a') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise RuntimeError(f'이 실행은 이미 저작/내보내기 중입니다: {root.name}') from None
+        try:
+            yield
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
 
 
 LOCAL_BRIEFS = DATA / 'briefs-local.json'   # 화면에서 올린 그림으로 만든 지시(저장소 밖 — 남의 그림일 수 있다)
@@ -180,7 +220,9 @@ def propagate_file(file, base_key, keep_worker=True):
     pal, notes, frames = C.load(file)
     bp, bf = base_of(base_key)
     if keep_worker:
-        shutil.copy(file, file.with_name(file.name.replace('.chr.txt', '.worker.chr.txt')))
+        worker = file.with_name(file.name.replace('.chr.txt', '.worker.chr.txt'))
+        if not worker.exists():
+            shutil.copy(file, worker)
     new = C.propagate(bf, frames, bp, pal)
     file.write_text(C.dump(pal, notes, new, header='걸음 0·2 는 하네스가 서 있는 자세에서 전파했다(chr.propagate)'), encoding='utf-8')
     return new
@@ -202,7 +244,8 @@ def cmd_check(a):
 def make_views(file, out, base_n=None, strength='normal'):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
-    pal, _, frames = C.load(file)
+    raw = Path(file).read_bytes()
+    pal, _, frames = C.parse(raw.decode('utf-8'))
     se = C.structural_errors(pal, frames)
     if se:
         raise C.GridError('; '.join(se[:5]))
@@ -214,10 +257,19 @@ def make_views(file, out, base_n=None, strength='normal'):
     C.gif_turn(pal, frames, out / 'turn.gif', 4, LAWN)
     C.gif_stroll(pal, frames, out / 'stroll.gif', 3, LAWN)
     png = base_sheet(base_n)[0] if base_n is not None else ACTOR1
-    C.context(pal, frames, png, 3, LAWN).save(out / 'context.png')
+    others = (0, 1, 3, 6)
+    if base_n is not None and norm_base(base_n).startswith('input:'):
+        _, iid, slot = norm_base(base_n).split(':')
+        info_file = INPUTS / f'{iid}.json'
+        info = json.loads(info_file.read_text(encoding='utf-8')) if info_file.exists() else {}
+        others = tuple(info.get('slots') or [int(slot)])[:4]
+    C.context(pal, frames, png, 3, LAWN, others=others).save(out / 'context.png')
     r = C.gate(pal, frames, base, strength=strength)
     r['strength'] = strength
-    (out / 'gate.json').write_text(json.dumps(r, ensure_ascii=False, indent=1), encoding='utf-8')
+    r['sourceSha256'] = hashlib.sha256(raw).hexdigest()
+    r['baseSha256'] = hashlib.sha256(C.dump(base[0], {}, base[1]).encode()).hexdigest() if base else None
+    write_json_atomic(out / 'gate.json', r)
+    write_json_atomic(out / 'render.json', binding(r))
     return r
 
 
@@ -315,20 +367,97 @@ def start_review(w, engine='sonnet'):
     return _spawn(engine, rv, rv / 'prompt.md', rv / 'review.log')
 
 
-def read_verdict(w):
+def current_gate(w):
+    """이전 PASS를 그대로 쓰지 않는다. 검사 버전·격자·원본·강도에 결부한다."""
+    meta = json.loads((w / 'meta.json').read_text())
+    raw = (w / 'out.chr.txt').read_bytes()
+    source_hash = hashlib.sha256(raw).hexdigest()
+    base = base_of(meta['base'])
+    base_hash = hashlib.sha256(C.dump(base[0], {}, base[1]).encode()).hexdigest()
+    strength = meta.get('strength') or briefs().get(meta['brief'], {}).get('strength', 'normal')
+    file = w / 'views' / 'gate.json'
+    try:
+        result = json.loads(file.read_text())
+    except (OSError, ValueError):
+        result = {}
+    if (result.get('version'), result.get('sourceSha256'), result.get('baseSha256'), result.get('strength')) == (C.GATE_VERSION, source_hash, base_hash, strength):
+        return result
+    try:
+        pal, _, frames = C.parse(raw.decode('utf-8'))
+        result = C.gate(pal, frames, base, strength=strength)
+    except (C.GridError, UnicodeError) as error:
+        result = dict(version=C.GATE_VERSION, ok=False, discard=True, fatal=[dict(code='structure', what=str(error))],
+                      fails=[str(error)], warns=[], metrics={})
+    result.update(strength=strength, sourceSha256=source_hash, baseSha256=base_hash)
+    file.parent.mkdir(exist_ok=True)
+    write_json_atomic(file, result)
+    return result
+
+
+def binding(gate):
+    return {k: gate.get(k) for k in ('version', 'sourceSha256', 'baseSha256', 'strength')}
+
+
+def views_fresh(w, gate):
+    try:
+        return json.loads((w / 'views' / 'render.json').read_text()) == binding(gate)
+    except (OSError, ValueError):
+        return False
+
+
+def bind_review(w, inspected):
+    file = w / 'review' / 'verdict.json'
+    value = json.loads(file.read_text())
+    value['inspected'] = binding(inspected)
+    write_json_atomic(file, value)
+
+
+def read_verdict(w, gate=None):
     f = w / 'review' / 'verdict.json'
     try:
         v = json.loads(f.read_text(encoding='utf-8'))
     except (OSError, ValueError):
         return None
-    gate = json.loads((w / 'views' / 'gate.json').read_text())
+    gate = current_gate(w) if gate is None else gate
     v['verdict'] = str(v.get('verdict', '')).upper()
+    if v.get('inspected') != binding(gate):
+        v.update(verdict='FAIL', stale=True)
+        v.setdefault('issues', []).insert(0, dict(severity='high', where='검수 대상',
+                                                 what='현재 격자·원본·강도·검사 버전의 시각 검수가 필요합니다', fix='현재 그림을 다시 검수'))
+    score = v.get('score')
+    if (not isinstance(score, (int, float)) or not 8 <= score <= 10 or v.get('discard') or v.get('fatal')
+            or any(i.get('severity') in ('high', 'mid') for i in v.get('issues', []))):
+        v['verdict'] = 'FAIL'
     if not gate['ok']:
         # 기계 검수가 막으면 검수자 판정과 상관없이 불합격
         v['verdict'] = 'FAIL'
         v.setdefault('issues', []).insert(0, dict(severity='high', where='기계 검수', what='; '.join(gate['fails']),
                                                    fix='기계 검수를 통과시켜라'))
     return v
+
+
+def quality(w, decision=None, gate=None, review=None):
+    gate = current_gate(w) if gate is None else gate
+    review = read_verdict(w, gate) if review is None else review
+    reasons = []
+    if not gate['ok']:
+        reasons.extend(gate['fails'])
+    fatal = gate.get('discard', False) or bool(review and (review.get('discard') or review.get('fatal')))
+    if fatal:
+        reasons.append('머리/몸체 결손 등 폐기 결함')
+    if decision == 'reject':
+        reasons.append('사용자 버림')
+    if not review:
+        reasons.append('시각 검수 미완료')
+    elif review.get('stale'):
+        reasons.append('현재 그림의 시각 검수 미완료')
+    elif review['verdict'] != 'PASS' and decision != 'accept':
+        reasons.append('시각 검수 불합격')
+    if not views_fresh(w, gate):
+        reasons.append('현재 격자의 렌더 미완료')
+    pending = (gate['ok'] and not fatal and decision != 'reject'
+               and (not review or review.get('stale') or not views_fresh(w, gate)))
+    return dict(eligible=not reasons, discard=fatal, pending=bool(pending), reasons=reasons)
 
 
 def fix_text_from(v):
@@ -348,8 +477,11 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True
     prev = None
     for r in range(1, rounds + 1):
         w = run_dir(run) / f'{brief}__{drawer}-r{r}'
-        if w.exists():
-            shutil.rmtree(w)
+        try:
+            w.mkdir(parents=True, exist_ok=False)
+        except FileExistsError:
+            log(f'{brief} r{r}: 기존 후보가 있어 덮어쓰지 않습니다. 새 실행 이름을 사용하세요')
+            return
         fix = fix_text_from(read_verdict(prev)) if prev else None
         p, _ = start_draw(brief, drawer, run, w, prev, fix)
         log(f'{brief} r{r}: {drawer} 그리기 시작 pid={p.pid}')
@@ -367,6 +499,10 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True
         rp = start_review(w, reviewer)
         log(f'{brief} r{r}: {reviewer} 검수 시작 pid={rp.pid}')
         _wait(rp)
+        if rp.returncode != 0 or not (w / 'review' / 'verdict.json').exists():
+            log(f'{brief} r{r}: 검수 실패 — 멈춤')
+            return
+        bind_review(w, json.loads((w / 'review' / 'gate.json').read_text()))
         v = read_verdict(w)
         if v is None:
             log(f'{brief} r{r}: 검수 결과 없음 — 멈춤')
@@ -374,7 +510,7 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True
         log(f'{brief} r{r}: {v["verdict"]} 점수 {v.get("score")} 지적 {len(v.get("issues", []))}개')
         if v['verdict'] == 'PASS' or r == rounds:
             if face and face_ref(briefs()[brief]['base']) is None:
-                log(f'{brief} r{r}: 짝 얼굴 뼈대 없음(생성 얼굴이 짝) — 얼굴 건너뜀')
+                log(f'{brief} r{r}: 짝 얼굴 뼈대 없음(올린 그림이거나 생성 얼굴이 짝) — 얼굴 건너뜀')
             elif face:
                 fp = start_face(w, face)
                 log(f'{brief} r{r}: {face} 얼굴 시작 pid={fp.pid}')
@@ -420,8 +556,13 @@ def cmd_loop(a):
 
 
 def _alive(pid):
+    if not isinstance(pid, int) or pid <= 0:
+        return False
     try:
         os.kill(pid, 0)
+        state = Path(f'/proc/{pid}/stat')
+        if state.exists() and state.read_text().rsplit(')', 1)[1].strip().startswith('Z'):
+            return False
         return True
     except OSError:
         return False
@@ -779,7 +920,7 @@ def add_input_briefs(iid, slots, strengths, name, brief=''):
     return keys
 
 
-def spawn_loop(keys, run, drawer='sonnet'):
+def spawn_loop(keys, run, drawer='gpt'):
     """loop 를 따로 프로세스로(화면 서버가 막히지 않게)."""
     run_dir(run).mkdir(parents=True, exist_ok=True)
     return subprocess.Popen([sys.executable, str(HERE / 'harness.py'), 'loop', *keys, '--run', run, '--drawer', drawer,
@@ -869,8 +1010,13 @@ ACCEPTED_LOCAL = DATA / 'accepted'           # 올린 그림에서 나온 것(�
 
 def _items():
     out = []
+    decisions = _decisions()
     for rd in sorted((p for p in (DATA / 'runs').glob('*') if p.name != 'reviewtest'), reverse=True):
+        discarded_file = rd / 'discarded.json'
+        discarded = {r['dir'] for r in json.loads(discarded_file.read_text())['characters']} if discarded_file.exists() else set()
         for w in sorted(rd.glob('*__*')):
+            if w.name in discarded:
+                continue
             try:
                 m = json.loads((w / 'meta.json').read_text())
             except (OSError, ValueError):
@@ -878,15 +1024,20 @@ def _items():
             b = briefs().get(m['brief'], {})
             has = (w / 'out.chr.txt').exists() and (w / 'views' / 'walk.gif').exists()
             gate = None
-            if has and (w / 'views' / 'gate.json').exists():
-                gate = json.loads((w / 'views' / 'gate.json').read_text())
+            if has:
+                gate = current_gate(w)
+            review = read_verdict(w, gate) if has else None
+            q = quality(w, decisions.get(f'{rd.name}/{w.name}', {}).get('decision'), gate, review) if has else None
+            if q and q['discard']:
+                continue  # 폐기 대상은 선택 후보에 올리지 않는다.
             out.append(dict(id=f'{rd.name}/{w.name}', run=rd.name, dir=w.name, brief=m['brief'], name=b.get('name', m['brief']),
                             gender=b.get('gender', ''), brief_text=b.get('brief', ''), base=norm_base(m['base']), base_label=base_label(m['base']),
                             has_face=face_ref(m['base']) is not None, label=m['label'],
                             strength=m.get('strength') or b.get('strength', 'normal'), upload=b.get('source') == 'upload',
                             desc=_desc(w),
-                            status='running' if _alive(m['pid']) else ('done' if has else 'failed'),  # 작업자도 views 를 만들므로 살아 있으면 아직 그리는 중
-                            gate=gate, review=read_verdict(w) if has else None,
+                            status='running' if _alive(m['pid']) else ('done' if has and views_fresh(w, gate) else 'failed'),
+                            gate=gate, review=review, quality=q,
+                            render_fresh=views_fresh(w, gate) if has else False,
                             face=_face_state(w), face_gen=_gen_meta(w)))
     return out
 
@@ -939,9 +1090,19 @@ def export_decisions():
         run, dname = d['id'].split('/', 1)
         w = run_dir(run) / dname
         stem = f'{dname}__{run}'
-        keep.add(stem)
         if not (w / 'out.chr.txt').exists():
+            discarded_file = run_dir(run) / 'discarded.json'
+            discarded = json.loads(discarded_file.read_text())['characters'] if discarded_file.exists() else []
+            if dname not in {row['dir'] for row in discarded}:
+                keep.add(stem)  # 과거 실행만 보관된 받은 칩은 이번 정리에서 지우지 않는다.
             continue
+        gate = current_gate(w)
+        review = read_verdict(w, gate)
+        if not quality(w, 'accept', gate, review)['eligible']:
+            if not gate.get('discard') and not (review and (review.get('discard') or review.get('fatal'))):
+                keep.add(stem)  # 옛 검수 갱신 대기 때문에 이미 받은 사본을 지우지 않는다.
+            continue
+        keep.add(stem)
         m = json.loads((w / 'meta.json').read_text())
         b = bs.get(m['brief'], {})
         dest = ACCEPTED_LOCAL if b.get('source') == 'upload' else ACCEPTED
@@ -997,7 +1158,8 @@ def cmd_serve(a):
                 f = (root / path[3:]).resolve()
                 if root not in f.parents or not f.is_file():
                     return self._send(404, 'not found', 'text/plain')
-                ct = {'.png': 'image/png', '.gif': 'image/gif', '.json': 'application/json'}.get(f.suffix, 'text/plain; charset=utf-8')
+                ct = {'.png': 'image/png', '.gif': 'image/gif', '.json': 'application/json',
+                      '.zip': 'application/zip', '.html': 'text/html; charset=utf-8'}.get(f.suffix, 'text/plain; charset=utf-8')
                 return self._send(200, f.read_bytes(), ct)
             return self._send(404, 'not found', 'text/plain')
 
@@ -1010,6 +1172,15 @@ def cmd_serve(a):
                 return self._send(404, '{}')
             if d.get('decision') not in ('accept', 'reject', 'clear') or '/' not in str(d.get('id', '')):
                 return self._send(400, '{"error":"bad"}')
+            if d['decision'] == 'accept':
+                w = root / d['id']
+                if not w.is_dir() or root not in w.resolve().parents:
+                    return self._send(404, '{"error":"candidate missing"}')
+                gate = current_gate(w)
+                review = read_verdict(w, gate)
+                if not quality(w, 'accept', gate, review)['eligible']:
+                    return self._send(409, json.dumps(dict(error='결손/검사 실패 결과는 받을 수 없습니다',
+                                                         fails=gate['fails']), ensure_ascii=False))
             rec = dict(id=d['id'], decision=d['decision'], reasons=d.get('reasons') or [], note=d.get('note') or '',
                        client='web', at=now())
             DATA.mkdir(parents=True, exist_ok=True)
@@ -1031,7 +1202,7 @@ def cmd_serve(a):
                 Image.open(io.BytesIO(raw)).save(f)
                 iid, slots, sc = ingest(f, name)
                 keys = add_input_briefs(iid, slots, strengths, name, (d.get('brief') or '').strip())
-                run = datetime.now().strftime('%Y%m%d-%H%M') + f'-in-{iid}'
+                run = datetime.now().strftime('%Y%m%d-%H%M%S') + f'-in-{iid}-' + uuid.uuid4().hex[:8]
                 p = spawn_loop(keys, run)
             except Exception as e:  # noqa: BLE001 — 화면에 그대로 보여 준다
                 return self._send(400, json.dumps(dict(error=str(e)), ensure_ascii=False))
@@ -1126,7 +1297,7 @@ def main():
     p.add_argument('--slot', type=int, nargs='+', help='쓸 칸 번호(0부터, 기본 캐릭터가 있는 칸 전부)')
     p.add_argument('--go', action='store_true')
     p.add_argument('--run')
-    p.add_argument('--drawer', default='sonnet', choices=list(ENGINES))
+    p.add_argument('--drawer', default='gpt', choices=list(ENGINES))
     p.set_defaults(fn=cmd_ingest)
     p = sp.add_parser('describe', help='완성된 칩에 설명(desc.json)을 붙인다 — 조수가 읽을 것')
     p.add_argument('--run')

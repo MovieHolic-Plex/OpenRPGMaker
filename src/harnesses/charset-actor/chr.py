@@ -28,6 +28,8 @@ DIRS = ('up', 'right', 'down', 'left')
 DIR_KO = {'up': '위', 'right': '오른쪽', 'down': '아래', 'left': '왼쪽'}
 KEY = (0, 147, 146)          # Actor1 배경 키 색. 칩 안에서는 쓰지 못한다.
 TRANSPARENT = '.'
+GATE_VERSION = 3
+KEY_TOLERANCE = 8  # 편집기의 투명색 판정과 동일하다.
 
 
 class GridError(ValueError):
@@ -223,7 +225,7 @@ def stats(pal, frames):
 # 약함 = 색만(실루엣 그대로), 보통 = 머리 모양·옷 무늬까지(소지품 금지), 강함 = 머리·옷 실루엣과 작은 장신구까지(큰 무기·날개 금지).
 STRENGTH = {
     'weak': dict(label='약함', protrude_frame_max=0, protrude_sum_max=0, silhouette_max=30, changed_min=0.15, redrawn_min=0),
-    'normal': dict(label='보통', protrude_frame_max=10, protrude_sum_max=60, silhouette_max=None, changed_min=0.20, redrawn_min=0.10),
+    'normal': dict(label='보통', protrude_frame_max=10, protrude_sum_max=60, silhouette_max=None, changed_min=0.20, redrawn_min=0.15),
     'strong': dict(label='강함', protrude_frame_max=20, protrude_sum_max=160, silhouette_max=None, changed_min=0.30, redrawn_min=0.25),
 }
 # redrawn = 「색 바꾸기로 설명되지 않는 픽셀」 비율: 뼈대 글자마다 가장 많이 바뀐 새 글자 하나로 옮겼다고 보고 남는 픽셀.
@@ -244,6 +246,96 @@ def redrawn(bframes, frames):
     return 1 - sum(cn.most_common(1)[0][1] for cn in m.values()) / max(tot, 1)
 
 
+def _opaque(rows):
+    return {(x, y) for y, row in enumerate(rows) for x, c in enumerate(row) if c != TRANSPARENT}
+
+
+def _canonical_colors(pal, frames):
+    """같은 RGB의 서로 다른 글자로 걷기/재저작 수치를 부풀리지 못한다."""
+    first, chars = {}, {}
+    for c, rgb in pal.items():
+        chars[c] = first.setdefault(rgb, c)
+    return ({c: rgb for rgb, c in first.items()},
+            {k: [''.join(chars[c] for c in row) for row in rows] for k, rows in frames.items()})
+
+
+def _enclosed(op):
+    """4방향 배경 flood fill. 다리/팔 사이의 열린 배경은 구멍이 아니다."""
+    from collections import deque
+    bg = {(x, y) for y in range(FH) for x in range(FW)} - op
+    outside = {p for p in bg if p[0] in (0, FW - 1) or p[1] in (0, FH - 1)}
+    queue = deque(outside)
+    while queue:
+        x, y = queue.popleft()
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            p = (x + dx, y + dy)
+            if p in bg and p not in outside:
+                outside.add(p)
+                queue.append(p)
+    return bg - outside
+
+
+def _head_core(op):
+    """몸 비율 유지 계약: 원본 상반부의 가장 큰 채워진 직사각형 안쪽.
+
+    머리 위 상투/옆 포니테일 같은 돌출부 대신 두개골의 면을 찾는다.
+    사람형 원본에 대한 보수적 결손 검사이며 머리의 의미/화풍은 시각 검수가 맡는다.
+    """
+    if not op:
+        return set()
+    top, bottom = min(y for _, y in op), max(y for _, y in op)
+    end = min(FH, top + (bottom - top + 1) // 2 + 1)
+    best = (0, 0, 0, 0, 0)
+    for y in range(top, end):
+        for x in range(FW):
+            width = FW - x
+            for yy in range(y, end):
+                w = 0
+                while w < width and (x + w, yy) in op:
+                    w += 1
+                width = min(width, w)
+                height = yy - y + 1
+                if width < 6:
+                    break
+                if height >= 6 and width * height > best[0]:
+                    best = (width * height, x, y, width, height)
+    _, x, y, w, h = best
+    return {(xx, yy) for yy in range(y + 1, y + h - 1) for xx in range(x + 1, x + w - 1)}
+
+
+def opacity_defects(pal, frames, base=None):
+    """서 있는 자세뿐 아니라 12장 모두의 복구 불가 결손을 기록한다."""
+    defects = []
+    used = {c for rows in frames.values() for row in rows for c in row if c != TRANSPARENT}
+    unsafe = sorted(c for c in used if all(abs(pal[c][i] - KEY[i]) <= KEY_TOLERANCE for i in range(3)))
+    if unsafe:
+        defects.append(dict(code='transparent_color', colors=unsafe,
+                            what=f'편집기 투명색 ±{KEY_TOLERANCE} 범위의 몸체 색: {"".join(unsafe)}'))
+    for k, rows in frames.items():
+        op = _opaque(rows)
+        reference = _opaque(base[1][k]) if base else None
+        # 원본부터 투명한 팔/옷자락 사이 공간을 옷이 둘러쌌다면 몸체 삭제로 보지 않는다.
+        holes = _enclosed(op)
+        missing = holes & reference if reference is not None else holes
+        if missing:
+            defects.append(dict(code='internal_transparency', frame=f'{k[0]} {k[1]}',
+                                pixels=sorted(missing), what=f'{DIR_KO[k[0]]} {k[1]}: 몸체 내부 투명 결손 {len(missing)}px'))
+        border = {p for p in op if p[0] in (0, FW - 1) or p[1] == 0}
+        if reference is not None:
+            border -= reference
+        if border:
+            defects.append(dict(code='frame_clipping', frame=f'{k[0]} {k[1]}', pixels=sorted(border),
+                                what=f'{DIR_KO[k[0]]} {k[1]}: 위/옆 프레임 경계에 새 픽셀 — 잘림 위험'))
+        if reference is not None:
+            core = _head_core(reference)
+            lost = core - op
+            # 1px 윤곽 조절을 허용하되 깊은 머리 면의 20% 이상 삭제는 폐기한다.
+            if len(lost) >= max(4, (len(core) + 4) // 5):
+                defects.append(dict(code='head_core_loss', frame=f'{k[0]} {k[1]}', pixels=sorted(lost),
+                                    what=f'{DIR_KO[k[0]]} {k[1]}: 원본 머리 내부 {len(lost)}/{len(core)}px 삭제'))
+    return defects
+
+
 def gate(pal, frames, base=None, check_changed=True, strength='normal'):
     """→ dict(ok, fails[], warns[], metrics{}). base=(pal, frames) 가 있으면 뼈대 대비 기준과 「새 캐릭터인가」도 잰다.
     strength(weak·normal·strong)가 돌출·실루엣·변화량 기준을 정한다."""
@@ -252,7 +344,14 @@ def gate(pal, frames, base=None, check_changed=True, strength='normal'):
     fails, warns, m = [], [], {}
     se = structural_errors(pal, frames)
     if se:
-        return dict(ok=False, fails=se[:20], warns=[], metrics={})
+        return dict(version=GATE_VERSION, ok=False, discard=True, fatal=[dict(code='structure', what=s) for s in se[:20]],
+                    fails=se[:20], warns=[], metrics={})
+    pal, frames = _canonical_colors(pal, frames)
+    if base is not None:
+        base = _canonical_colors(*base)
+    fatal = opacity_defects(pal, frames, base)
+    fails.extend(it['what'] for it in fatal)
+    m['opacity_defects'] = len(fatal)
     used = {}
     for k, rows in frames.items():
         for r in rows:
@@ -263,7 +362,8 @@ def gate(pal, frames, base=None, check_changed=True, strength='normal'):
     if base is not None:
         # 올린 그림(RTP 밖)은 울타리를 넘을 수 있다(조선 병사 55색·깃털이 칸 끝까지) — 뼈대가 이미 넘은 만큼은 허용한다.
         bused = {c for rows in base[1].values() for r in rows for c in r if c != TRANSPARENT}
-        L['max_colors'] = max(L['max_colors'], len(bused))
+        if len(bused) > L['max_colors']:
+            L['max_colors'] = len(bused) + 4   # 새 색 몇 개는 넣을 수 있게
     if len(used) > L['max_colors']:
         fails.append(f'색 {len(used)}개 > {L["max_colors"]} (RTP 원본 최대 47)')
     once = sorted(c for c, ks in used.items() if len(ks) == 1)
@@ -307,8 +407,9 @@ def gate(pal, frames, base=None, check_changed=True, strength='normal'):
             fails.append(f'{DIR_KO[d]}: 걸음 0·2 의 다리가 거의 같다({st["leg"][d]}px) — 걷는 것처럼 안 보인다')
         mo = st['motion'][d]
         m[f'walk_motion_{d}'] = mo
-        if mo < L['walk_motion_min']:
-            fails.append(f'{DIR_KO[d]}: 걸음 0↔2 에서 바뀐 픽셀 {mo} < {L["walk_motion_min"]} — 팔·다리가 거의 안 움직인다')
+        motion_min = min(L['walk_motion_min'], bs['motion'][d]) if bs else L['walk_motion_min']
+        if mo < motion_min:
+            fails.append(f'{DIR_KO[d]}: 걸음 0↔2 에서 바뀐 픽셀 {mo} < {motion_min} — 팔·다리가 거의 안 움직인다')
         if bs and mo < bs['motion'][d] * L['walk_motion_vs_base']:
             fails.append(f'{DIR_KO[d]}: 걸음 동작이 뼈대의 {mo / bs["motion"][d]:.0%} 뿐이다(뼈대 {bs["motion"][d]}px) — 뼈대의 걸음을 따르지 않았다')
         a, b, idle = frames[(d, 0)], frames[(d, 2)], frames[(d, 1)]
@@ -352,7 +453,7 @@ def gate(pal, frames, base=None, check_changed=True, strength='normal'):
             fails.append(f'뼈대 실루엣 밖(+{L["protrude_margin"]}px)으로 튀어나온 픽셀 프레임당 최대 {m["protrusion_max"]}'
                          f'({DIR_KO[worst[0]]} {worst[1]})·합 {m["protrusion_sum"]} (≤{L["protrude_frame_max"]}·≤{L["protrude_sum_max"]})'
                          ' — 이 강도에서 허용하는 것보다 몸 밖으로 많이 튀어나왔다(소지품·모자·날개)')
-    return dict(ok=not fails, fails=fails, warns=warns, metrics=m)
+    return dict(version=GATE_VERSION, ok=not fails, discard=bool(fatal), fatal=fatal, fails=fails, warns=warns, metrics=m)
 
 
 # ─────────────────────────────── 검수용 그림 ───────────────────────────────
@@ -597,6 +698,14 @@ def correspondence(b1, bf, R=3):
     """뼈대 걸음 프레임 bf 의 불투명 픽셀 → 서 있는 자세 b1 의 출발 자리. {(x,y): (qx,qy)}"""
     bob = bob_of(b1, bf)
 
+    # 칩에 따라 칼·창이 한 걸음 사이에 3px보다 멀리 움직인다. 근처에서 못 찾으면
+    # 같은 방향의 서 있는 자세 전체에서 찾는다 — 색만 복사하면 지운 소지품이 되살아난다.
+    positions = {}
+    for qy, row in enumerate(b1):
+        for qx, c in enumerate(row):
+            if c != TRANSPARENT:
+                positions.setdefault(c, []).append((qx, qy))
+
     def at(rows, x, y):
         return rows[y][x] if 0 <= x < FW and 0 <= y < FH else TRANSPARENT
     corr = {}
@@ -615,7 +724,13 @@ def correspondence(b1, bf, R=3):
                     key = (sc, -(abs(dx) + abs(dy)))
                     if best is None or key > best[0]:
                         best = (key, (qx, qy))
-            corr[(x, y)] = best[1] if best else None   # None = 근처에 같은 색이 없다(걸음에만 있는 그림자 등) → 색 대응표로
+            if best is None:
+                for qx, qy in positions.get(c, ()):
+                    sc = sum(at(bf, x + i, y + j) == at(b1, qx + i, qy + j) for i in (-1, 0, 1) for j in (-1, 0, 1))
+                    key = (sc, -(abs(qx - x) + abs(qy - (y - bob))))
+                    if best is None or key > best[0]:
+                        best = (key, (qx, qy))
+            corr[(x, y)] = best[1] if best else None   # None = 서 있는 자세에 없는 색(걸음에만 있는 그림자 등) → 색 대응표로
     return corr, bob
 
 
@@ -642,7 +757,9 @@ def propagate(base_frames, new_frames, base_pal=None, new_pal=None):
     if base_pal and new_pal:
         cols = [(c, v) for c, v in new_pal.items() if v is not None]
         for bc in {c for rows in base_frames.values() for r in rows for c in r} - {TRANSPARENT}:
-            if cmap.get(bc) not in new_pal or cmap.get(bc) == TRANSPARENT:
+            if cmap.get(bc) == TRANSPARENT:
+                continue   # 서 있는 자세에서 지운 픽셀은 걸음에서도 지운다.
+            if cmap.get(bc) not in new_pal:
                 bv = base_pal[bc]
                 cmap[bc] = min(cols, key=lambda cv: sum((a - b) ** 2 for a, b in zip(cv[1], bv)))[0]
     for d in DIRS:

@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T22:41:26+00:00",
+ "updated": "2026-10-03T22:45:07+00:00",
  "decisions": [
   {
    "id": "20261002-1142-sonnet-batch/f-archer__sonnet-r1",
@@ -512,6 +512,118 @@
    "note": "",
    "client": "web",
    "at": "2026-10-02T14:06:55+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-0-normal__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:04+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-0-strong__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:11+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-0-weak__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:16+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-1-normal__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:25+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-1-strong__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:31+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-1-weak__gpt-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:38+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-2-normal__gpt-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:44+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-2-strong__gpt-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:49+00:00"
+  },
+  {
+   "id": "20261003-input-0ec70298-joseon-gpt-high/joseon-0ec70298-2-weak__gpt-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T07:55:51+00:00"
+  },
+  {
+   "id": "20261003-mixed-rpg-100-gpt-high/mixed100-001__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T14:01:52+00:00"
+  },
+  {
+   "id": "20261003-mixed-rpg-100-gpt-high/mixed100-002__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T10:21:53+00:00"
+  },
+  {
+   "id": "20261003-mixed-rpg-100-gpt-high/mixed100-003__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T10:21:58+00:00"
+  },
+  {
+   "id": "20261003-mixed-rpg-100-gpt-high/mixed100-004__gpt-r1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T10:22:04+00:00"
+  },
+  {
+   "id": "20261003-mixed-rpg-100-gpt-high/mixed100-005__gpt-r1",
+   "decision": "reject",
+   "reasons": [],
+   "note": "",
+   "client": "web",
+   "at": "2026-10-03T14:01:42+00:00"
   }
  ]
 }
