@@ -161,6 +161,7 @@ def plan_roads(t, icon_cells, routes, block=None):
     bridge = {}
     paths = []
     fb = foot if block is None else (foot | block)   # 길찾기용(막힌 칸 포함)
+    fails = []                                       # 막힌 길은 모아 한 번에 알린다 — 하나씩 알리면 고칠 때마다 다음 길에서 또 실패했다(조수 시험)
     for name, a, b, vias in routes:
         pts = [('site', a)] + [('cell', v) for v in vias] + [('site', b)]
         full = []
@@ -174,11 +175,12 @@ def plan_roads(t, icon_cells, routes, block=None):
                 pass
             p = route(t, road, fb, starts, tg)
             if p is None:
-                from kit_common import KitError
-                raise KitError('길을 낼 수 없다: %s (%s → %s)%s — 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다). '
-                               '해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 강(river)으로 끊어라. 산줄기면 고개(pass)를 내라'
-                               % (name, va, vb, _blocked_at(t, list(tg))))
+                fails.append('%s (%s → %s)%s' % (name, va, vb, _blocked_at(t, list(tg))))
+                full = None
+                break
             full += p if not full else p[1:]
+        if full is None:
+            continue
         # 강 건널목 표시
         for i, (x, y) in enumerate(full):
             road[y, x] = True
@@ -187,6 +189,11 @@ def plan_roads(t, icon_cells, routes, block=None):
                 nx, ny = full[i + 1] if i + 1 < len(full) else (x, y)
                 bridge[(x, y)] = 'h' if (px != x or nx != x) and (py == y) else 'v'
         paths.append((name, full))
+    if fails:
+        from kit_common import KitError
+        raise KitError('길을 낼 수 없다(%d줄):\n%s\n— 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다). '
+                       '해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 강(river)으로 끊어라. 산줄기면 고개(pass)를 내라'
+                       % (len(fails), '\n'.join('· ' + f for f in fails)))
     return road, bridge, foot, paths
 
 

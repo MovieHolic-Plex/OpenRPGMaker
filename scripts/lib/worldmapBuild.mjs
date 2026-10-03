@@ -36,8 +36,10 @@ async function themeNote(theme) {
   try {
     const t = JSON.parse(await readFile(join(KIT, "themes", `${theme}.json`), "utf8"));
     const p = t.palette ? JSON.parse(await readFile(join(KIT, "palettes", `${t.palette}.json`), "utf8")) : null;
-    const terrain = t.terrain ? ` 이 테마는 지형 「${t.terrain}」 을 먼저 깐다.` : "";
-    return `${t.name}: 테마는 화풍(팔레트·덧칠·아이콘)만 바꾼다 — 지형·장소 배치는 모든 테마가 같은 공용 지형이다.${terrain}`
+    const head = t.terrain
+      ? `${t.name}: 이 테마는 공용 지형 위에 자기 지형 「${t.terrain}」(해협·섬 등)을 먼저 깔고, 네 작업은 그 위에 얹힌다. 장소 배치는 공용과 같다.`
+      : `${t.name}: 이 테마는 화풍(팔레트·덧칠·아이콘)만 바꾼다 — 지형·장소 배치는 공용 지형 그대로다.`;
+    return head
       + (p?.desc ? ` 팔레트 ${p.id ?? t.palette}: ${p.desc}${p.regional ? " (지역 팔레트 — 같은 바닥 글자도 자리마다 다른 색으로 칠해진다)" : ""}` : "");
   } catch {
     return "";

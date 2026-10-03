@@ -276,7 +276,8 @@ FORESTS = [
 EXTRA_LAND = []      # (다각형, 바닥 또는 None, warp)           땅을 더한다(안쪽 바다 자르기 뒤)
 EXTRA_SEA = []       # (다각형, warp)                          바다로 자른다(마지막)
 EXTRA_BIOMES = []    # (다각형, 바닥, warp)                     모든 땅 위에 바닥을 덮는다(기본 바이옴 뒤)
-CLEAR = []           # (다각형, 'forest'|'mount'|'all')        물체를 걷는다(숲·산 뒤, 장소 정리 전)
+CLEAR = []           # (다각형, 'forest'|'mount'|'all')
+EDIT_GROUND = None   # 지형 편집이 바닥을 정한 칸(bool) — 지역 팔레트가 그 칸을 덮지 않게 build_world 가 읽는다        물체를 걷는다(숲·산 뒤, 장소 정리 전)
 WARN = []            # 빌드 중 경고(경사로 자리 없음 등) — 오류가 아니라 보고용
 
 # 장소: (이름, 출처, 지정, x, y, 밑 바닥(None=그대로), 종류, 설명)
@@ -365,16 +366,24 @@ def build():
     G[landB & land] = SAVANNA
     for k, m in isles.items():
         G[m & land] = ISLE_GROUND.get(k, GRASS)
+    global EDIT_GROUND
+    EDIT_GROUND = np.zeros((H, W), bool)
     for m, g in extra:
         if g is not None:
             G[m & land] = g
+            EDIT_GROUND |= m & land
+    for k, m in isles.items():
+        if k.startswith('edit') and k in ISLE_GROUND:
+            EDIT_GROUND |= m & land
     # 2. 바이옴
     for i, (poly, g, w) in enumerate(BIOMES_A):
         G[polymask(poly, w, 200 + i) & landA & land] = g
     for i, (poly, g, w) in enumerate(BIOMES_B):
         G[polymask(poly, w, 300 + i) & landB & land] = g
     for i, (poly, g, w) in enumerate(EXTRA_BIOMES):
-        G[polymask(poly, w, 800 + i) & land] = g
+        bm = polymask(poly, w, 800 + i) & land
+        G[bm] = g
+        EDIT_GROUND |= bm
     # 3. 물
     water = np.zeros((H, W), bool)
     for name, pts, wide, salt in RIVERS:
@@ -448,7 +457,11 @@ def build():
         O[hills & (O == 0)] = obj
     for i, (poly, obj, thr, salt) in enumerate(FORESTS):
         pm = polymask(poly, 1.1, 500 + i)
-        fm = pm & free & (O == 0) & (vn(2.7, salt) > thr) & (Hh <= 1)
+        base = pm & free & (O == 0) & (Hh <= 1)
+        v = vn(2.7, salt)
+        if isinstance(thr, tuple):                   # 편집 숲 ('density', d): 놓일 수 있는 칸의 d 비율 — 고정 문턱은 노이즈가 낮은 자리에서 0.9 로도 숲이 거의 안 났다
+            thr = float(np.quantile(v[base], 1 - thr[1])) if base.any() else 1.0
+        fm = base & (v > thr)
         O[fm] = obj
     # 화산 덩이
     vm = np.zeros((H, W), bool)
@@ -460,6 +473,10 @@ def build():
         for x in range(W):
             if vm[y, x] and not vm2[y, x] and land[y, x] and (G[y, x] >= 10) and rnd(x, y, 77) > .12:
                 O[y, x] = VOLC
+    for vx, vy in VOLCANOES[1:]:                     # 편집으로 더한 화산: 가운데 칸은 큰 원뿔 자리(kit_world.render_terrain 이 그린다) — 못 걷는다
+        cx, cy = int(vx), int(vy)
+        if 0 <= cx < W and 0 <= cy < H and land[cy, cx]:
+            O[cy, cx] = VOLC
     for i, (poly, what) in enumerate(CLEAR):
         cm_ = polymask(poly, .8, 860 + i, minsize=1)
         kill = {'forest': np.isin(O, FORESTS), 'mount': np.isin(O, (MOUNT, SMOUNT, MESA)), 'all': O > 0}[what]
@@ -486,7 +503,9 @@ def build():
         msg = []
         for b in BAD:
             if b[0] == '물':
-                msg.append('장소 %s 의 발자국(%d,%d)이 물 위다 — move_place 로 땅으로 옮기거나 그 자리에 땅을 더하라' % (b[1], b[2], b[3]))
+                wet = [(b[2] + i, b[3] + j) for j, row in enumerate(b[5]) for i, g in enumerate(row) if g < 10]
+                msg.append('장소 %s 의 발자국(왼쪽 위 %d,%d · %d×%d칸)에 물인 칸이 있다: %s — move_place 로 발자국 전체가 땅인 자리로 옮기거나 그 자리에 땅을 더하라'
+                           % (b[1], b[2], b[3], len(b[5][0]), len(b[5]), ' '.join('(%d,%d)' % c for c in wet[:6])))
             else:
                 msg.append('장소 %s 의 발자국(%d,%d)이 높이가 다른 칸에 걸쳤다(고원 가장자리) — 옮기거나 고원 다각형을 고쳐라' % (b[1], b[2], b[3]))
         raise KitError('지형 오류:\n' + '\n'.join(msg))

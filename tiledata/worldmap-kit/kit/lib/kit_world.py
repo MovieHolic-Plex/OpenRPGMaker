@@ -125,6 +125,23 @@ def _render_base(w):
     return img, info, snap['g']
 
 
+def _paint_volcano_peaks(img):
+    """지형 편집 volcano 의 가운데에 큰 원뿔을 그린다 — 원래 화산(77,16)의 원뿔은 장소 아이콘이라, 새 화산은 고리만 있고 봉우리가 없었다(조수 시험).
+    그림은 공용 시트의 화산 장소 그림(18,14 2x2)을 화구 가운데에 화소 단위로 맞춘다."""
+    import terrain_render as TR
+    spr = TR.S.a[14 * 16:16 * 16, 18 * 16:20 * 16]
+    key = np.all(spr == np.array(KEY, np.uint8), axis=2)
+    shd = np.all(spr == np.array((254, 103, 139), np.uint8), axis=2)
+    H, W = img.shape[:2]
+    for vx, vy in M4.VOLCANOES[1:]:
+        x0, y0 = int(round(vx * 16)) - 16, int(round(vy * 16)) - 20
+        ys, xs = np.nonzero(~key)
+        for py, px in zip(ys, xs):
+            X, Y = x0 + px, y0 + py
+            if 0 <= X < W and 0 <= Y < H:
+                img[Y, X] = (img[Y, X].astype(np.float32) * .55).astype(np.uint8) if shd[py, px] else spr[py, px]
+
+
 def render_terrain(w):
     """아이콘 없는 지형 그림 C(길·다리·경사로·늪·연못·사구 후처리 포함)와 렌더 info."""
     old_ramps = M4.render_ramps
@@ -135,6 +152,7 @@ def render_terrain(w):
     img = P4.paint_pond(img)
     island = P.island_mask(w.M, w.ic)
     C = P.dune_fx3(img, w.M, w.ic, w.dune | island, rnd, FX._vnoise, mesa=island)
+    _paint_volcano_peaks(C)
     paths_same = [list(map(list, c)) for _, c in info['paths']] == [list(map(list, c)) for _, c in w.paths]
     return C, info, paths_same
 

@@ -278,11 +278,16 @@ python3 kit/build_world.py --theme fantasy   --journey fantasy-5act --out out/ -
 | `river` | line, widen? | 강(바다로 끝낸다) |
 | `forest` / `clear` | poly, kind?, density? / poly, what? | 숲 / 숲·산 걷기 |
 | `plateau` | poly, level?, ground? | 고원(가장자리 절벽) |
+| `volcano` | x, y, lava? | 화산 — 가운데 큰 원뿔(못 걷는다)·분화구(반지름 2.6)·화산 고리(3.6)·용암 줄기. 반지름 4칸이 땅이어야 한다 |
 | `move_place` | id, x, y | 여정 장소 옮기기 |
 
 - 다각형은 같은 노이즈로 휘어 그려 손 지형과 결이 같다. 오류는 문장으로(`KitError`): 장소가 물 위, 길을 낼 수 없음, 바다 장벽이 좁음.
 - `--preview` 는 `schematic.png`·`terrain.txt`(첫 줄 범례 글자 지도)·`world.json`(walk 행 포함)·여정 검사.
 - 테마의 `"terrain": "<id>"` 는 그 지형을 깔고, `--terrain` 은 그 위에 얹는다(`kit_terrain.merge`).
-- 지형 서명별 캐시 `cache/terrain-<sig12>`. 숲이 다각형의 35% 미만에만 먹으면 「지형 경고」.
+- 지형 서명별 캐시 `cache/terrain-<sig12>`.
+- 「지형 경고」(`kit_terrain.coverage`): 숲·바닥이 덜 먹으면 이유별 칸 수(물·장소 둘레·길·산·사막·밀도), 사구는 서남 대사막 안에만 남는다, 섬이 다른 땅에 붙거나 지도 끝에 닿음, 화산 고리가 너무 작음. 번호는 `ops[i]`.
+- 숲 `density` 는 다각형 안 「숲이 놓일 수 있는 칸」 중 숲 비율(노이즈 분위수). 고정 문턱이던 때는 노이즈가 낮은 자리에서 0.9 로도 거의 안 났다.
+- 지형 편집으로 바닥을 정한 칸(`biome`·ground 있는 `land`·`island`)은 지역 팔레트(desert-east 등)가 덮지 않는다(`world.edit_ground` → `recolor_terrain(keep_cells)`).
+- 여정 검사 실패·길 실패는 사람 말로(`kit_terrain.explain`, 막힌 길은 모두 한 번에 좌표와 함께). 장소마다 여정 규칙 한 줄(`world.place_rules`).
 - 편집기 조수 도구 `read_world_terrain`·`edit_world_terrain` 이 이 경로를 쓴다 — `openwiki/worldmap-terrain-editing.md`.
 - `terrains/archipelago.json`(군도): 남쪽 사막섬·북쪽 설원섬·동대륙을 해협(다리 걸친 강)으로 가르고 섬 5개를 더한다.

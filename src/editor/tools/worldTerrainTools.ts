@@ -43,7 +43,7 @@ const opSchema: JsonSchema = {
     width: { type: "number", description: "ridge 최대 폭 1~3(기본 2)" },
     peak: point,
     widen: { type: "number", description: "river: 이 비율(0~1)부터 하류가 두 칸 폭. 0 = 처음부터 두 칸, 없으면 한 칸" },
-    density: { type: "number", description: "forest 빽빽함 0~1(기본 0.55)" },
+    density: { type: "number", description: "forest: 다각형 안 숲이 놓일 수 있는 칸 중 숲 비율 0~1(기본 0.55)" },
     what: { type: "string", enum: ["forest", "mount", "all"], description: "clear: 걷을 물체" },
     level: { type: "integer", enum: [1, 2], description: "plateau 높이" },
     id: { type: "string", description: "move_place: 장소 id(read_world_terrain 의 places)" },
@@ -60,7 +60,8 @@ const OP_HELP =
   + `바닥 이름→글자: grass . farm f crop p savanna v sand s dune d dirt D badlands b ash a basalt B swamp w marsh m tundra t snow n glacier g jungle j. `
   + "규칙: 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다) — 해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 river 로 끊어 다리를 놓게 하라. "
   + "숲은 물·장소 둘레·길·산 위에 안 놓이고 사막에서 지워진다. 장소마다 여정 규칙(places 줄 끝)이 있다 — 열쇠 장소·장벽 뒤 장소는 그 장벽 밖으로 옮기지 마라. "
-  + "테마는 화풍만 바꾼다(지형·장소 배치는 공용). 실제 빌드는 처음 약 2분, 같은 지형은 캐시.";
+  + "테마는 대개 화풍만 바꾼다(지형·장소 배치는 공용) — 자기 지형을 먼저 까는 테마(sea-isles 군도)는 themeNote 가 알려 준다. "
+  + "지형 편집으로 정한 바닥은 지역 팔레트가 덮지 않는다. 섬은 rx·ry 보다 1~2칸 클 수 있다. 실제 빌드는 처음 약 2분, 같은 지형은 캐시.";
 
 // ── 준비(prepare) 결과 캐시: 같은 (테마, 작업, 미리보기) 는 한 번만 빌드한다 ──
 const prepared = new Map<string, WorldmapBuildResult>();

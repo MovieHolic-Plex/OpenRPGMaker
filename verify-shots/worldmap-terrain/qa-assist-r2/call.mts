@@ -1,0 +1,25 @@
+// 사용: bun call.mts <tool> <args.json> <outPrefix>
+import { readFileSync, writeFileSync } from "node:fs";
+import { createBlankProject } from "../../../src/project/defaults";
+import { runTool } from "../../../src/editor/tools/toolRunner";
+import { prepareTool } from "../../../src/editor/tools/asyncToolRunner";
+import { setWorldmapBuilder } from "../../../src/editor/worldmap/worldmapBuild";
+import { worldTerrainImages } from "../../../src/editor/tools/worldTerrainTools";
+import { buildWorldmap } from "../../../scripts/lib/worldmapBuild.mjs";
+const [name, argsFile, out] = process.argv.slice(2);
+const args = JSON.parse(readFileSync(argsFile!, "utf8"));
+setWorldmapBuilder(buildWorldmap);
+const ctx = { project: createBlankProject() };
+const t = Date.now();
+await prepareTool(name!, args, ctx.project);
+const r = runTool(ctx, name!, args, { dryRun: false });
+const d: any = r.ok ? r.data : {};
+console.log(`ok=${r.ok} ${((Date.now() - t) / 1000).toFixed(1)}s\nSUMMARY: ${r.summary}`);
+if (r.warnings?.length) console.log("WARN:", r.warnings);
+if (d.warnings?.length) console.log("DATA.WARN:", d.warnings);
+if (d.journeyCheck) console.log("JOURNEY:", JSON.stringify(d.journeyCheck));
+if (d.places) console.log("PLACES:\n" + d.places.join("\n"));
+if (d.ascii) writeFileSync(out + ".txt", d.ascii);
+const img = worldTerrainImages(name!)[0];
+if (img && r.ok) writeFileSync(out + ".png", Buffer.from(img.dataUrl.split(",")[1]!, "base64"));
+writeFileSync(out + ".json", JSON.stringify(r, null, 1));

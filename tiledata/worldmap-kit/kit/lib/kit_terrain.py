@@ -169,7 +169,7 @@ def apply(spec, journey):
             M4.RIVERS.append(('편집 강 %d' % i, _pts(o['line'], 'line', i, 2), max(float(w), 1e-3) if w is not None else 2, 50 + i))
         elif k == 'forest':
             dens = float(min(1.0, max(0.05, o.get('density', .55))))
-            M4.FORESTS.append((_pts(o['poly'], 'poly', i, 3), getattr(M4, FOREST_KIND[o.get('kind', 'broad')]), 1 - dens * .75, 950 + i))
+            M4.FORESTS.append((_pts(o['poly'], 'poly', i, 3), getattr(M4, FOREST_KIND[o.get('kind', 'broad')]), ('density', dens), 950 + i))
         elif k == 'clear':
             M4.CLEAR.append((_pts(o['poly'], 'poly', i, 3), o.get('what', 'all')))
         elif k == 'plateau':
@@ -223,6 +223,28 @@ def coverage(spec, world):
             if ring < 8:
                 out.append('%s: 화산 고리가 %d칸뿐이다 — 둘레 반지름 4칸이 땅이어야 한다(섬이면 rx·ry 4 이상)' % (_label(i, o), ring))
             continue
+        if o['op'] == 'island':
+            cx, cy = int(round(o['x'])), int(round(o['y']))
+            if not (0 <= cx < W and 0 <= cy < H) or G[cy][cx] < 10:
+                out.append('%s: 섬 가운데 (%d,%d) 가 땅이 아니다 — 섬이 거의 안 생겼다(rx·ry 를 키워라)' % (_label(i, o), cx, cy))
+                continue
+            seen, st = {(cx, cy)}, [(cx, cy)]
+            while st:
+                x, y = st.pop()
+                for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    X, Y = x + a, y + b
+                    if 0 <= X < W and 0 <= Y < H and (X, Y) not in seen and G[Y][X] != 0:
+                        seen.add((X, Y))
+                        st.append((X, Y))
+            xs, ys = [c[0] for c in seen], [c[1] for c in seen]
+            want = 3.1416 * float(o['rx']) * float(o['ry'])
+            box = 'x %d~%d, y %d~%d' % (min(xs), max(xs), min(ys), max(ys))
+            if len(seen) > 2.6 * want + 12:
+                out.append('%s: 섬이 다른 땅과 붙었다 — 이어진 땅이 %d칸(섬만이면 약 %d칸), 범위 %s. 가운데를 옮기거나 rx·ry 를 줄여 바다 2칸 이상 떼라'
+                           % (_label(i, o), len(seen), want, box))
+            elif min(xs) <= 1 or min(ys) <= 1 or max(xs) >= W - 2 or max(ys) >= H - 2:
+                out.append('%s: 섬이 지도 끝에 닿는다(%s) — 안쪽으로 옮겨라' % (_label(i, o), box))
+            continue
         if o['op'] not in ('forest', 'biome'):
             continue
         poly = [tuple(p) for p in o['poly']]
@@ -264,10 +286,13 @@ def coverage(spec, world):
                 why['사막'] += 1
             else:
                 why['밀도'] += 1
-        if why['숲'] < .35 * len(cells):
+        dens = float(o.get('density', .55))
+        blocked = len(cells) - why['숲'] - why['밀도']
+        if why['숲'] < .35 * len(cells) and (blocked > why['밀도'] or dens < .8):
             rest = ', '.join('%s %d' % (k, v) for k, v in why.items() if v and k != '숲')
+            tip = ' 「밀도」 칸은 density 를 올리면 채워진다(지금 %.2f)' % dens if why['밀도'] and dens < .8 else ''
             out.append('%s: 칸 %d 중 %d칸만 숲이 됐다 — 안 된 칸: %s. 숲은 물·장소 둘레 1칸·길·산·2단 고원에는 안 놓이고, '
-                       '사막(sand·dune)에선 지워진다. 「밀도」가 크면 density 를 올려라(0.9)' % (_label(i, o), len(cells), why['숲'], rest))
+                       '사막(sand·dune)에선 지워진다.%s' % (_label(i, o), len(cells), why['숲'], rest, tip))
     return out
 
 

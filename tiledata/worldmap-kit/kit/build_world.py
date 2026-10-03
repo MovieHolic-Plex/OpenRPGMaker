@@ -73,6 +73,7 @@ def build_terrain(journey, roles, roles_data, iconset, assign, cache, terrain=No
     world = W.world_dict(w, journey, assign)
     world['terrain'] = terrain['id'] if terrain else 'shared-v9'
     world['place_rules'] = KTer.place_rules(journey)
+    world['edit_ground'] = _edit_ground_cells()
     _collect_warnings(world, terrain)
     out = dict(C=C, ukeys=ukeys, role=role, G=w.M.G.copy(), grp_t=grp_t, world=world, paths_same=bool(paths_same), purity=purity, cached=False, seconds=time.time() - t0)
     if cache:
@@ -141,6 +142,14 @@ def walk_rows(world):
     import kit_world as W
     w0 = W.MapWorld(world).walk0
     return [''.join('1' if v else '0' for v in row) for row in w0]
+
+
+def _edit_ground_cells():
+    """지형 편집이 바닥을 정한 칸 [[x,y],...] — 지역 팔레트가 그 칸을 덮지 않게(recolor_terrain keep_cells)."""
+    import make_map_v4 as M4
+    if M4.EDIT_GROUND is None:
+        return []
+    return [[int(x), int(y)] for y, x in np.argwhere(M4.EDIT_GROUND)]
 
 
 def _collect_warnings(world, terrain):
@@ -312,7 +321,10 @@ def main():
             img, extra = KT.render_space(KT.Ctx(world), road_px=road_px), {}
             tint = 0.0
         else:
-            img, extra = KP.recolor_terrain(t['C'], t['ukeys'], t['role'], pal, t['G'])
+            keep = np.zeros(t['G'].shape, bool)
+            for x, y in world.get('edit_ground', []):
+                keep[y, x] = True
+            img, extra = KP.recolor_terrain(t['C'], t['ukeys'], t['role'], pal, t['G'], keep_cells=keep)
             if theme:
                 img = KT.force_road_band(img, world, t['C'], t['ukeys'], t['role'], pal, road_px)
                 img, extra['overlays'] = KT.apply_land(img, world, theme, road_px)
@@ -355,6 +367,7 @@ def preview(journey, roles, iconset, assign, out, no_check, terrain):
     world = W.world_dict(w, journey, assign)
     world['terrain'] = terrain['id'] if terrain else 'shared-v9'
     world['place_rules'] = KTer.place_rules(journey)
+    world['edit_ground'] = _edit_ground_cells()
     _collect_warnings(world, terrain)
     world['walk'] = walk_rows(world)
     out.mkdir(parents=True, exist_ok=True)
