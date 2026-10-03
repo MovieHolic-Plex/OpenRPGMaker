@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>슈퍼하네스</title>
+<style>
+:root{--bg:#121419;--panel:#1a1d24;--card:#22262f;--line:#2f3440;--ink:#e9e9ec;--dim:#9aa0ad;--acc:#e8a94a;--ok:#4fb477;--bad:#e2604f;--run:#4aa8c9;--warn:#d99a3a}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.55 system-ui,'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;z-index:5;display:flex;gap:14px;align-items:center;padding:10px 18px;background:#171a20;border-bottom:1px solid var(--line);flex-wrap:wrap}
+header h1{font-size:18px;margin:0}
+.pill{padding:3px 11px;border-radius:12px;font-size:12px;background:#2a2f3a}
+.pill.on{background:#1f4d36;color:#bff0d0}.pill.off{background:#5a2a24;color:#ffd0c8}
+button{font:inherit;color:var(--ink);background:#2c323e;border:1px solid #3a4150;border-radius:7px;padding:5px 12px;cursor:pointer}
+button:hover{background:#363d4b} button.primary{background:#7a5320;border-color:#a8742d} button.danger{background:#5a2626;border-color:#8a3a3a}
+.meter{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim)} .meter i{display:block;width:90px;height:7px;background:#2c313b;border-radius:4px;overflow:hidden} .meter b{display:block;height:100%;background:var(--acc)}
+main{padding:14px 18px 60px}
+.runbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.job{background:#173038;border:1px solid #23505d;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
+.job:before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--run);margin-right:6px;animation:p 1.2s infinite}
+@keyframes p{50%{opacity:.25}}
+.board{display:grid;grid-template-columns:repeat(8,minmax(150px,1fr));gap:8px;overflow-x:auto}
+.col{background:var(--panel);border-radius:10px;padding:8px;min-height:140px}
+.col h3{margin:0 0 8px;font-size:13px;display:flex;justify-content:space-between;color:var(--dim)} .col h3 b{color:var(--ink)}
+.c{background:var(--card);border-radius:8px;padding:7px 8px;margin-bottom:7px;cursor:pointer;border-left:3px solid #4a5162}
+.c:hover{outline:1px solid #4a5162} .c.sel{outline:2px solid var(--acc)}
+.c.running{border-left-color:var(--run)} .c.blocked{border-left-color:var(--bad)} .c.done{border-left-color:var(--ok)}
+.c b{display:block;font-size:14px} .c small{display:block;color:var(--dim);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c img{width:100%;margin-top:5px;border-radius:4px;image-rendering:pixelated;max-height:110px;object-fit:cover;object-position:top}
+.detail{margin-top:16px;background:var(--panel);border-radius:12px;padding:16px 18px}
+.detail h2{margin:0;font-size:22px} .chips span{display:inline-block;background:#2b303b;border-radius:10px;padding:1px 9px;margin:3px 4px 0 0;font-size:12px}
+.sec{margin-top:18px} .sec>h3{font-size:15px;margin:0 0 8px;color:var(--acc);border-bottom:1px solid var(--line);padding-bottom:4px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;margin-top:10px}
+textarea{width:min(560px,100%);min-height:58px;background:#14171d;color:var(--ink);border:1px solid #3a4150;border-radius:8px;padding:8px;font:inherit}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+figure{margin:0;background:#15181e;border-radius:8px;padding:8px} figure img{width:100%;image-rendering:pixelated;border-radius:4px;cursor:zoom-in} figcaption{font-size:12px;color:var(--dim);margin-top:4px}
+.mat{font-size:13px} .mat .ev{background:#5a3d10;color:#ffd99a;border-radius:4px;padding:0 5px;font-size:11px;margin-right:4px} .mat .tl{background:#23394d;color:#bfe1ff;border-radius:4px;padding:0 5px;font-size:11px;margin-right:4px}
+.verdict{display:inline-block;font-weight:700;padding:1px 9px;border-radius:6px} .PASS{background:#1f4d36;color:#bff0d0} .FAIL{background:#5a2a24;color:#ffd0c8}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px} .side h4{margin:0 0 6px}
+.nums{display:flex;gap:6px;flex-wrap:wrap;font-size:12px;margin:4px 0} .nums span{background:#2b303b;border-radius:5px;padding:1px 7px} .nums .b{background:#5a2a24} .nums .g{background:#1f4d36}
+ul.plain{margin:4px 0;padding-left:18px} .log{font:12px/1.5 ui-monospace,monospace;color:#c8ccd6;max-height:240px;overflow:auto;background:#14171d;border-radius:8px;padding:8px}
+.empty{color:var(--dim);font-size:13px}
+.legend{font-size:12px;color:var(--dim)} .legend i{display:inline-block;width:10px;height:10px;border:2px solid;margin:0 3px 0 8px;vertical-align:-1px}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:20;cursor:zoom-out} #zoom img{max-width:96vw;max-height:94vh;image-rendering:pixelated}
+#joblog{position:fixed;right:14px;bottom:14px;width:min(760px,95vw);height:46vh;background:#0f1115;border:1px solid var(--line);border-radius:10px;display:none;flex-direction:column;z-index:15}
+#joblog pre{flex:1;margin:0;overflow:auto;padding:10px;font:12px/1.45 ui-monospace,monospace;white-space:pre-wrap} #joblog div{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--line)}
+</style>
+<header>
+  <h1>슈퍼하네스</h1>
+  <span id="runstate" class="pill">…</span>
+  <button id="toggle">…</button>
+  <span class="meter">codex 오늘 <i><b id="mc"></b></i> <span id="mct"></span></span>
+  <span class="meter">조수 시험 오늘 <i><b id="mp"></b></i> <span id="mpt"></span></span>
+  <span class="pill" id="model"></span>
+  <span class="legend">그림 표식 <i style="border-color:#ffc428"></i>상자 <i style="border-color:#eb3c3c"></i>함정 <i style="border-color:#3cdcf0"></i>세이브 <i style="border-color:#4696ff"></i>문 <i style="border-color:#b46eff"></i>스위치 <b style="color:#ff3030">✕</b> 이벤트 없는 장치 그림</span>
+</header>
+<main>
+  <div class="runbar" id="runbar"></div>
+  <div class="board" id="board"></div>
+  <div class="detail" id="detail"><p class="empty">카드를 누르면 만든 것·검수·조수 시험 전후가 여기 열린다.</p></div>
+  <div class="sec"><h3>부족분 — 에디터에 없어서 다른 하네스·코드가 채워야 하는 것</h3><div id="gaps"></div></div>
+  <div class="sec"><h3>전체 진행 기록</h3><div class="log" id="glog"></div></div>
+</main>
+<div id="zoom"><img></div>
+<div id="joblog"><div><b id="jobtitle"></b><button onclick="closeLog()">닫기</button></div><pre></pre></div>
+<script>
+const COLS = [
+  ['discovered', '발견 · 대기'], ['build', '만드는 중'], ['review', '적대 검수'], ['probe', '조수 시험'],
+  ['bake', '굽는 중'], ['done', '구움'], ['blocked', '막힘'], ['discarded', '폐기'],
+];
+const KIND = { discover: '낱말 찾기', build: '만들기', review: '검수', probe: '조수 시험', judge: '판정', bake: '굽기' };
+let S = null, sel = localStorage.getItem('sh-sel'), lastDetail = '', logJob = null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const img = (path) => `/data/${path}`;
+
+function thumb(c) {
+  const ex = c.check?.examples?.find((e) => e.maps?.length);
+  return ex ? img(`concepts/${c.id}/examples/${ex.maps[0].png}`) : null;
+}
+function lastLine(c) { return c.log?.[0]?.text ?? c.why ?? ''; }
+
+function renderBoard() {
+  const stageOf = (c) => (c.stage === 'unbake' ? 'bake' : c.stage);
+  $('board').innerHTML = COLS.map(([key, title]) => {
+    const list = S.concepts.filter((c) => stageOf(c) === key);
+    return `<div class="col"><h3><b>${title}</b><span>${list.length}</span></h3>${list.map((c) => {
+      const t = thumb(c);
+      const cls = [c.status === 'running' ? 'running' : '', c.stage === 'blocked' ? 'blocked' : '', c.stage === 'done' ? 'done' : '', c.id === sel ? 'sel' : ''].join(' ');
+      return `<div class="c ${cls}" onclick="pick('${c.id}')"><b>${esc(c.title)}</b><small>${c.stage === 'discovered' ? esc(c.source) : '시도 ' + c.attempt} · ${esc(lastLine(c))}</small>${t ? `<img src="${t}" loading="lazy">` : ''}</div>`;
+    }).join('')}</div>`;
+  }).join('');
+}
+
+function materials(list) {
+  return (list || []).map((m) => `<div class="mat"><span class="${m.as === 'event' ? 'ev' : 'tl'}">${m.as === 'event' ? '이벤트' : '그림'}</span>${esc(m.what)} <span style="color:var(--dim)">— ${esc(m.how)}</span></div>`).join('');
+}
+
+function nums(s) {
+  if (!s) return '<span class="empty">아직</span>';
+  const f = (cond, text) => `<span class="${cond === null ? '' : cond ? 'g' : 'b'}">${text}</span>`;
+  return `<div class="nums">${f(s.newMaps > 0, `새 맵 ${s.newMaps}`)}${f(s.gimmicksWithoutEvents === 0, `이벤트 없는 장치 ${s.gimmicksWithoutEvents}`)}${f(null, `이벤트 ${s.events}`)}${f(!s.layoutRepair, s.layoutRepair ? '빈칸 수리 턴 돎' : '빈칸 수리 없음')}${f(null, `도구 실패 ${s.toolFailures}/${s.toolCalls}`)}${f(s.conceptNote, s.conceptNote ? '카드 노트 붙음' : '카드 노트 없음')}</div>`;
+}
+
+function probeSide(c, tags, label) {
+  if (!tags.length) return `<div class="side"><h4>${label}</h4><p class="empty">아직 안 돌았다</p></div>`;
+  return `<div class="side"><h4>${label}</h4>${tags.map((tag) => {
+    const s = c.probes[tag];
+    const maps = s?.maps ?? [];
+    return `<figure>${maps.map((m) => `<img src="${img(`concepts/${c.id}/probe/${tag}/${m.png}`)}" onclick="zoom(this.src)">`).join('') || '<p class="empty">새 맵 없음 / 진행 중</p>'}<figcaption>${tag}</figcaption>${nums(s)}</figure>`;
+  }).join('')}</div>`;
+}
+
+function renderDetail() {
+  const c = S.concepts.find((x) => x.id === sel);
+  if (!c) { $('detail').innerHTML = '<p class="empty">카드를 누르면 만든 것·검수·조수 시험 전후가 여기 열린다.</p>'; lastDetail = ''; return; }
+  const key = JSON.stringify(c);
+  if (key === lastDetail || document.activeElement?.tagName === 'TEXTAREA') return;
+  lastDetail = key;
+  const card = c.card;
+  const examples = c.check?.examples ?? [];
+  const variants = card?.variants ?? [];
+  const reviews = Object.entries(c.reviews).sort().reverse();
+  const judges = Object.entries(c.judges).sort().reverse();
+  const tags = Object.keys(c.probes);
+  const base = tags.filter((t) => t.startsWith('base-'));
+  const after = tags.filter((t) => t.startsWith(`a${c.attempt}-`));
+  const older = [...new Set(tags.filter((t) => /^a\d+-/.test(t) && !t.startsWith(`a${c.attempt}-`)).map((t) => t.split('-')[0]))];
+  const myGaps = S.gaps.filter((g) => g.concept === c.id);
+  $('detail').innerHTML = `
+    <h2>${esc(c.title)} <span class="pill">${esc(c.stage)} · ${esc(c.status)} · 시도 ${c.attempt}</span> ${c.pr ? `<a href="${esc(c.pr)}" target="_blank" class="pill on">PR</a>` : ''}</h2>
+    <div class="chips">${(card?.aliases ?? c.aliases).map((a) => `<span>${esc(a)}</span>`).join('')}</div>
+    <p style="color:var(--dim)">${esc(c.source)} — ${esc(c.why)}${c.note ? `<br><b>${esc(c.note)}</b>` : ''}</p>
+    ${card ? `<p>${esc(card.summary)}</p>` : ''}
+    <div class="actions">
+      <textarea id="fixtext" placeholder="마음에 안 드는 점 · 이렇게 고쳐라 (에이전트가 다음 만들기에서 가장 먼저 반영한다)"></textarea>
+      <button class="primary" onclick="act('fix')">교정 지시</button>
+      <button class="danger" onclick="act('discard')">폐기${c.stage === 'done' ? ' (번들에서 뺌)' : ''}</button>
+      <button onclick="act('priority')">우선 ↑</button>
+      <button onclick="act('retry')">처음부터</button>
+    </div>
+    ${c.reasons?.length ? `<div class="sec"><h3>지금 고치는 중인 반려 이유</h3><ul class="plain">${c.reasons.map((r) => `<li>${esc(r)}</li>`).join('')}</ul></div>` : ''}
+    ${c.feedback?.length ? `<div class="sec"><h3>내가 준 교정</h3><ul class="plain">${c.feedback.map((f) => `<li>${esc(f.at)} — ${esc(f.text)}</li>`).join('')}</ul></div>` : ''}
+    <div class="sec"><h3>만든 것 — 변형과 예제 맵</h3>${variants.length ? variants.map((v) => `
+      <div style="margin-bottom:14px"><b>${esc(v.title)}</b> <span class="pill">${esc(v.worldview)}</span> <span class="pill">${esc(v.tilesetId)}</span>
+      <p style="margin:4px 0;color:var(--dim)">${esc(v.build)}</p>
+      <div class="two"><div class="grid">${examples.filter((e) => e.variant === v.id).flatMap((e) => e.maps.map((m) => `<figure><img src="${img(`concepts/${c.id}/examples/${m.png}`)}" onclick="zoom(this.src)"><figcaption>${esc(e.title)} · ${m.width}×${m.height} · 이벤트 ${Object.values(m.events).reduce((a, b) => a + b, 0)}</figcaption></figure>`)).join('') || '<p class="empty">예제 그림 없음</p>'}</div>
+      <div><b>구조</b><ul class="plain">${(v.structure ?? []).map((s) => `<li>${esc(s)}</li>`).join('')}</ul><b>재료</b>${materials(v.include)}<b>넣지 않는 것</b><ul class="plain">${(v.exclude ?? []).map((s) => `<li>${esc(s)}</li>`).join('')}</ul><b>빈칸</b> ${esc(v.emptiness)}</div></div></div>`).join('') : '<p class="empty">아직 카드가 없다</p>'}
+      ${c.verify && !c.verify.ok ? `<p><span class="verdict FAIL">예제 검사 실패</span></p><ul class="plain">${(c.verify.problems ?? []).slice(0, 12).map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
+    </div>
+    <div class="sec"><h3>적대 검수 (서로 안 보고 둘 다 통과해야)</h3>${reviews.length ? reviews.map(([k, r]) => `<div style="margin-bottom:8px"><b>${esc(k)}</b> <span class="verdict ${r?.verdict === 'PASS' ? 'PASS' : 'FAIL'}">${esc(r?.verdict ?? '?')}</span><ul class="plain">${(r?.reasons ?? []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('') : '<p class="empty">아직</p>'}</div>
+    <div class="sec"><h3>조수 시험 — 같은 한 줄 「${esc(c.probeText ?? '')}」 카드 없이 vs 카드 붙여서</h3>
+      <div class="two">${probeSide(c, base, '카드 없이 (기준)')}${probeSide(c, after, `카드 붙여서 (시도 ${c.attempt})`)}</div>
+      ${older.length ? `<p class="empty">이전 시도 기록: ${older.join(', ')}</p>` : ''}
+      ${judges.map(([k, j]) => `<p><b>${esc(k)}</b> <span class="verdict ${j?.verdict === 'PASS' ? 'PASS' : 'FAIL'}">${esc(j?.verdict ?? '?')}</span> ${esc(j?.summary ?? '')}</p><ul class="plain">${(j?.reasons ?? []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`).join('')}
+    </div>
+    ${myGaps.length ? `<div class="sec"><h3>이 개념이 찾은 부족분</h3><ul class="plain">${myGaps.map((g) => `<li><b>${esc(g.kind)}</b> ${esc(g.what)} → ${esc(g.route)}</li>`).join('')}</ul></div>` : ''}
+    <div class="sec"><h3>진행 기록</h3><div class="log">${c.log.map((l) => `${esc(l.at.slice(5))}  ${esc(l.text)}`).join('<br>')}</div></div>`;
+}
+
+function renderTop() {
+  const paused = S.settings.paused === '1';
+  $('runstate').textContent = paused ? '멈춤' : '자동으로 도는 중';
+  $('runstate').className = 'pill ' + (paused ? 'off' : 'on');
+  $('toggle').textContent = paused ? '▶ 다시 돌리기' : '❚❚ 전체 멈춤';
+  $('toggle').onclick = () => post({ action: paused ? 'resume' : 'pause' });
+  const bc = +S.settings.budget_codex_day, bp = +S.settings.budget_probe_day;
+  $('mc').style.width = Math.min(100, (S.today.codex / bc) * 100) + '%'; $('mct').textContent = `${S.today.codex}/${bc}`;
+  $('mp').style.width = Math.min(100, (S.today.probe / bp) * 100) + '%'; $('mpt').textContent = `${S.today.probe}/${bp}`;
+  $('model').textContent = `codex ${S.model} · ${S.effort}`;
+  const title = (cid) => S.concepts.find((c) => c.id === cid)?.title ?? '전체';
+  $('runbar').innerHTML = S.running.length ? S.running.map((j) => `<span class="job" onclick="openLog(${j.id}, '${esc(title(j.concept))} · ${esc(KIND[j.kind] ?? j.kind)} ${esc(j.tag)}')">${esc(title(j.concept))} · ${esc(KIND[j.kind] ?? j.kind)} ${esc(j.tag)}</span>`).join('') : '<span class="empty">지금 도는 작업 없음</span>';
+  $('gaps').innerHTML = S.gaps.length ? `<ul class="plain">${S.gaps.map((g) => `<li><b>${esc(title(g.concept))}</b> · ${esc(g.kind)} — ${esc(g.what)} → <code>${esc(g.route)}</code> <span class="pill">${esc(g.status)}</span></li>`).join('')}</ul>` : '<p class="empty">아직 없다</p>';
+  $('glog').innerHTML = S.log.map((l) => `${esc(l.at.slice(5))}  <b>${esc(l.concept ? title(l.concept) : '·')}</b>  ${esc(l.text)}`).join('<br>');
+}
+
+async function refresh() {
+  try { S = await (await fetch('/api/state')).json(); } catch { return; }
+  renderTop(); renderBoard(); renderDetail();
+  if (logJob) loadLog();
+}
+function pick(id) { sel = id; localStorage.setItem('sh-sel', id); lastDetail = ''; renderBoard(); renderDetail(); }
+async function post(body) { const r = await (await fetch('/api/action', { method: 'POST', body: JSON.stringify(body) })).json(); if (!r.ok) alert(r.error); lastDetail = ''; refresh(); }
+function act(kind) {
+  const text = $('fixtext')?.value ?? '';
+  if (kind === 'discard' && !confirm('이 개념을 폐기할까요?')) return;
+  post({ cid: sel, action: kind, text });
+}
+function zoom(src) { $('zoom').style.display = 'flex'; $('zoom').querySelector('img').src = src; }
+$('zoom').onclick = () => { $('zoom').style.display = 'none'; };
+function openLog(id, title) { logJob = id; $('jobtitle').textContent = title; $('joblog').style.display = 'flex'; loadLog(); }
+async function loadLog() { const r = await fetch('/api/joblog?id=' + logJob); const pre = $('joblog').querySelector('pre'); const atEnd = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 30; pre.textContent = r.ok ? await r.text() : '(기록 없음)'; if (atEnd) pre.scrollTop = pre.scrollHeight; }
+function closeLog() { logJob = null; $('joblog').style.display = 'none'; }
+refresh(); setInterval(refresh, 4000);
+</script>
+</html>

@@ -5,6 +5,8 @@
 //
 // 옵션: --provider/--model/--lite-model/--brain-model  AiConfig 덮어쓰기(기본은 브라우저 기본 설정 defaultAiConfig)
 //       --autonomy balanced|autonomous|max   --apply default|auto|yolo   --timeout-ms N   --no-check
+//       --concept-card <card.json>  굽기 전 개념 카드를 이 실행에만 얹는다(슈퍼하네스 조수 시험)
+//       --text "<채팅 한 줄>"  기획 지시문 대신 조수 채팅에 친 문장 하나를 그대로 보낸다(씨앗은 --brief 의 새 프로젝트, 기획서는 뺀다)
 //
 // 브라우저 경로와 같은 함수를 부른다:
 //   씨앗          createNewProjectSeed(packId, title) + gameDesignBrief(generationPending) → 저장·다시 읽기
@@ -22,6 +24,7 @@ import { resolveRequestApiKey } from "../lib/aiAuthRuntime.ts";
 import { completeProvider } from "../lib/ohMyPiPiAiRuntime.ts";
 import { createPiRunRecorder } from "./lib/recorder.ts";
 import { buildBrowserSeed, type QaBrief } from "./lib/seed.ts";
+import { overrideConceptCards } from "../../src/ai/conceptCards.ts";
 export { buildBrowserSeed, type QaBrief };
 import { store } from "../../src/project/store.ts";
 import { deserialize, serialize } from "../../src/project/io.ts";
@@ -121,7 +124,11 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   const brief = built.brief;
   const preset = welcomeGenrePresetById(input.presetId);
   if (!preset) throw new Error(`첫 화면 프리셋이 없습니다: ${input.presetId}`);
-  const instruction = buildWelcomeGenrePresetPrompt(preset, brief);
+  const chatText = arg("text");
+  if (arg("concept-card")) overrideConceptCards([JSON.parse(fs.readFileSync(arg("concept-card")!, "utf8"))]);
+  // --text: 기획서 없는 프로젝트에서 사용자가 채팅창에 한 줄을 친 것과 같게 — 지시문은 그 문장 그대로.
+  if (chatText) delete seed.gameDesignBrief;
+  const instruction = chatText ?? buildWelcomeGenrePresetPrompt(preset, brief);
   fs.writeFileSync(path.join(out, "seed.json"), serialize(seed));
   fs.writeFileSync(path.join(out, "instruction.txt"), instruction);
   store.replaceProject(seed);
