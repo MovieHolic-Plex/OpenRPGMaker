@@ -34,6 +34,14 @@ if os.environ.get('JS_PROFILE') == 'field':
 if os.environ.get('JS_PROFILE') == 'cave':
     # 동굴(48×48): 나무·잔디가 없다(M1·M2·M4·M7 해당 없음). 바닥·벽면이 땅 그림이라 물체 피복은 낮다 — 방 안 소품(화로·기둥·석순·상자) 밀도로 대신 본다.
     LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.03, 0
+if os.environ.get('JS_PROFILE') == 'interior_b':
+    # 조선 실내(방 지도): 방은 잔디·나무·건물이 없고 천장 어둠이 가장자리를 둘러싼다 → M1·M2·M4·M6·M7 은 뜻이 없어 건너뛴다.
+    # 남기는 것: M3 물체 피복(벽면+가구+깔개가 지도에서 차지하는 비율 — 가구 없는 텅 빈 방을 잡는 선, 한계 0.30)
+    #           M5 겹침 쌍은 끈다(DEPTH_MIN 0): 방은 가구가 서로 겹치지 않게 놓는 것이 규칙(C8)이라 8칸 이상 큰 물체끼리 겹치는 쌍이 0 이 정상이다.
+    #           (실측 2026-10-04 6방: 물체 피복 0.32~0.39, 겹침 쌍 전부 0)
+    # 방 전용 규칙(문 앞 BFS·막힘·일렬·맨바닥 판 등 C1~C8)은 inb_checks.py 가 변환기 통행 규칙으로 따로 건다.
+    LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.30, 0
+_IN = os.environ.get('JS_PROFILE') == 'interior_b'
 TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'grove')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3
@@ -77,7 +85,7 @@ def check(placed, direct, objlayer, T=16):
     tc = float(tmask.mean())
     oc = float((objlayer.a[:, :, 3] == 255).mean())
     rep['tree_cover'], rep['obj_cover'] = round(tc, 3), round(oc, 3)
-    if tc < TREE_MIN:
+    if tc < TREE_MIN and not _IN:
         fails.append(f"M2 수관 피복 {tc:.3f} < {TREE_MIN}")
     if oc < OBJ_MIN:
         fails.append(f"M3 물체 피복 {oc:.3f} < {OBJ_MIN}")
@@ -87,17 +95,17 @@ def check(placed, direct, objlayer, T=16):
     dup = [(a[0], a[1], a[2], b[1], b[2]) for i, a in enumerate(tr) for b in tr[i + 1:]
            if a[0] == b[0] and abs(a[1] - b[1]) <= 6 and abs(a[2] - b[2]) <= 6]
     rep['repeat_pairs'] = len(dup)
-    if dup:
+    if dup and not _IN:
         fails.append(f"M4 같은 나무가 6칸 안에 {len(dup)}쌍: {dup}")
 
     nb = sum(1 for p in placed if ((_BLD_RE.match(p[0]) is not None) if _GN else (p[0].split('_')[0] in BUILDINGS and 'wall' not in p[0])))
     rep['buildings'] = nb
     rep['building_density'] = round(nb / (direct.w // T * (direct.h // T)), 4)
-    if rep['building_density'] < BLD_MIN:
+    if rep['building_density'] < BLD_MIN and not _IN:
         fails.append(f"M6 건물 밀도 {rep['building_density']} < {BLD_MIN} (버들항 0.0092/칸)")
     hs = len({p[4] for p in placed if _b(p[0]).split('_')[0] in TREE_KINDS and not _b(p[0]).startswith('bush')})
     rep['tree_heights'] = hs
-    if hs < HEIGHTS_MIN:
+    if hs < HEIGHTS_MIN and not _IN:
         fails.append(f"M7 나무 키 종류 {hs} < {HEIGHTS_MIN}")
     big = [p for p in placed if p[3] * p[4] >= 8 or _b(p[0]).split('_')[0] in TREE_KINDS]
     depth = sum(1 for i, a in enumerate(big) for b in big[i + 1:] if ov(a, b))

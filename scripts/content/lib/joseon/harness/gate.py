@@ -132,6 +132,9 @@ def run(skip_a=False):
 
 
 def ref_image(name, idx=0):
+    if name.startswith('v5:'):                    # 조선 실내 기준 = 손 도트 실내 v5 기물(atlas_biome_interior 와 같은 그림)
+        import inb_preview
+        return inb_preview.v5(name[3:])
     items = json.load(open(os.path.join(ROOT, 'tiledata/beodeul-city/render/city6_objects.json')))
     hs, seen = [], set()
     for it in sorted([i for i in items if i['name'] == name], key=lambda i: -(i['w'] * i['h'])):
