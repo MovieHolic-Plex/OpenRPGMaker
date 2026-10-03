@@ -86,6 +86,6 @@ export function quickBeodeulHouse(tileset: TilesetDef, options: { style: Beodeul
   const kit: SectionStructureKitDef = { id, kind: "section", name: `${BEODEUL_HOUSE_STYLES[options.style]} · ${width}×${height}칸 · ${stories}층`,
     width, height, rows, tileSize: tileset.tileSize, learnedFrom: "db-authored", createdAt: "2026-10-03T00:00:00.000Z",
     parts: [{ id: "door", kind: "entrance", dx: doorX, dy: height - 2, w: 1, h: 2 }],
-    ai: { role: "building", tags: ["버들항", "house", "조립식"], description: "버들항 공용 지붕·벽·창·문 부품으로 조립한 집. 입구 아래 한 칸이 문 앞 길." } };
+    ai: { role: "building", tags: ["버들항", "house", "조립식"], description: "버들항 공용 지붕·벽·창·문 부품으로 조립한 집. 입구 아래 한 칸이 문 앞 길.", placementRules: "문 앞 한 칸이 길에 닿게 두고, 입구를 길로 향하게 놓는다." } };
   entries.set(id, kit); return kit;
 }
