@@ -8,7 +8,7 @@
                              → choice 는 picks.sqlite 에 사용자 선택(client=web)으로, 판정·이유·메모는 harness.sqlite 에
   POST /api/harness/draw     {ids: [...], note, base, n, round, rejects}  → 기물마다 새 판(후보 n장) 대기열 + 일꾼 시작
 """
-import io, json, os, sys, threading
+import gzip, io, json, os, sqlite3, sys, threading, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
@@ -16,7 +16,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
 import store  # noqa: E402
 import harness  # noqa: E402
-from common import CAND, WORKER_RE, geom, objects_by_id, slug, objects_by_slug  # noqa: E402
+from common import CAND, NEW_ITEMS, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug  # noqa: E402
 import picks_db  # noqa: E402
 import outline_select  # noqa: E402
 
@@ -131,17 +131,100 @@ def thumb(s):
     return _thumb['cache'][s]
 
 
+# ---------------------------------------------------------------- 빠른 상태 (2026-10-03)
+# 상태 JSON(3.7MB)을 요청마다 새로 만들면 바쁜 서버에서 한 번에 25초가 걸렸다(사용자 신고 「harness 엔드포인트 느리다」).
+# 이제: ① 기록 DB(harness.sqlite·picks.sqlite)와 기물 명세의 파일 시각을 지문으로 삼아, 바뀌었을 때만 한 번 만든다(뒤에서 1초마다 확인).
+#        ② 만든 JSON 은 gzip 해 메모리와 derived.sqlite 에 둔다 → 요청은 들고 있던 바이트를 바로 준다. 서버를 다시 켜도 처음부터 빠르다.
+#        ③ 「테두리 꼭 필요한 곳만」 차이 칸 수(그림 두 장을 여는 비싼 계산)도 derived.sqlite 에 남긴다(첫 계산 7.8초 → 0초).
+# derived.sqlite 는 기록 DB 와 다른 파일이다 — 캐시를 쓰는 일이 지문을 바꿔 다시 만들기를 부르지 않게.
+DERIVED = os.path.join(store.DATA, 'derived.sqlite')
+_DC = None
+_DLOCK = threading.RLock()
+
+
+def _dconn():
+    global _DC
+    with _DLOCK:
+        if _DC is None:
+            _DC = sqlite3.connect(DERIVED, check_same_thread=False, isolation_level=None, timeout=30)
+            _DC.execute('PRAGMA journal_mode=WAL')
+            _DC.executescript('CREATE TABLE IF NOT EXISTS seldiff(k TEXT PRIMARY KEY, n INTEGER);'
+                              'CREATE TABLE IF NOT EXISTS snapshot(k TEXT PRIMARY KEY, fp TEXT, gz BLOB, at REAL);')
+        return _DC
+
+
 _SELD = {}
 def _sel_diff(png):
     """「테두리 꼭 필요한 곳만」 벌이 그린 그대로와 몇 칸 다른가(없으면 None) — 거의 같으면 화면에 한 장만 보인다."""
     sp = png[:-4] + outline_select.SUFFIX + '.png'
-    if not (os.path.exists(png) and os.path.exists(sp)): return None
-    k = (png, os.path.getmtime(png), os.path.getmtime(sp))
-    if k not in _SELD:
-        from PIL import Image, ImageChops
-        d = ImageChops.difference(Image.open(png).convert('RGBA'), Image.open(sp).convert('RGBA'))
-        _SELD[k] = sum(1 for v in d.get_flattened_data() if max(v) > 0)
-    return _SELD[k]
+    try: k = f'{png}|{os.path.getmtime(png)}|{os.path.getmtime(sp)}'
+    except OSError: return None
+    if k in _SELD: return _SELD[k]
+    with _DLOCK:
+        row = _dconn().execute('SELECT n FROM seldiff WHERE k=?', (k,)).fetchone()
+    if row: _SELD[k] = row[0]; return row[0]
+    from PIL import Image, ImageChops
+    d = ImageChops.difference(Image.open(png).convert('RGBA'), Image.open(sp).convert('RGBA'))
+    n = sum(1 for v in d.get_flattened_data() if max(v) > 0)
+    with _DLOCK:
+        _dconn().execute('INSERT OR REPLACE INTO seldiff(k,n) VALUES(?,?)', (k, n))
+    _SELD[k] = n
+    return n
+
+
+def _fingerprint():
+    """상태를 바꾸는 것들의 파일 시각 — 같으면 들고 있던 상태를 그대로 준다."""
+    fs = [store.DB, store.DB + '-wal', picks_db.DB, picks_db.DB + '-wal', NEW_ITEMS, os.path.join(V5, 'interior-meta.json')]
+    out = []
+    for f in fs:
+        try: st = os.stat(f); out.append(f'{st.st_mtime_ns}:{st.st_size}')
+        except OSError: out.append('-')
+    return '|'.join(out)
+
+
+_SNAP = {'fp': None, 'gz': None, 'raw': None}
+_BUILD = threading.Lock()
+
+
+def _build(fp):
+    raw = json.dumps(state(), ensure_ascii=False).encode('utf-8')
+    gz = gzip.compress(raw, 5)
+    _SNAP.update(fp=fp, gz=gz, raw=None)
+    with _DLOCK:
+        _dconn().execute('INSERT OR REPLACE INTO snapshot(k,fp,gz,at) VALUES(?,?,?,?)', ('state', fp, gz, time.time()))
+
+
+def state_gz(max_stale=False):
+    """gzip 한 상태 JSON. 지문이 같으면 바로, 다르면 한 사람만 새로 만들고 나머지는 그 결과를 기다린다."""
+    fp = _fingerprint()
+    if _SNAP['fp'] == fp or (max_stale and _SNAP['gz']): return _SNAP['gz']
+    with _BUILD:
+        if _SNAP['fp'] != fp: _build(fp)
+    return _SNAP['gz']
+
+
+def _refresher():
+    """뒤에서 1초마다 지문을 보고 바뀌었으면 미리 만들어 둔다 — 화면의 3초 폴링이 거의 늘 만들어진 바이트를 받는다."""
+    while True:
+        try:
+            fp = _fingerprint()
+            if fp != _SNAP['fp']:
+                with _BUILD:
+                    if _SNAP['fp'] != fp: _build(fp)
+        except Exception as e:
+            print('상태 미리 만들기 실패:', repr(e), flush=True)
+        time.sleep(1)
+
+
+def start():
+    """서버가 켜질 때 한 번: 지난 스냅숏을 바로 쓸 수 있게 올리고, 미리 만드는 일꾼을 띄운다."""
+    try:
+        with _DLOCK:
+            row = _dconn().execute("SELECT fp, gz FROM snapshot WHERE k='state'").fetchone()
+        if row: _SNAP.update(fp=row[0], gz=row[1])
+    except Exception as e:
+        print('상태 스냅숏 읽기 실패:', repr(e), flush=True)
+    threading.Thread(target=_refresher, daemon=True, name='state-refresh').start()
 
 
 def _exists(item, c):
@@ -192,7 +275,15 @@ def handle(h, method, parts, body=None):
         if parts == ['harness']:
             h.file(os.path.join(HERE, 'web', 'index.html'), 'text/html; charset=utf-8'); return True
         if parts == ['api', 'harness', 'state']:
-            h.send(200, json.dumps(state(), ensure_ascii=False)); return True
+            # 서버가 막 켜져 아직 새로 못 만들었으면 지난 스냅숏이라도 바로 준다(1초 안에 새 것으로 바뀐다)
+            gz = state_gz(max_stale=True)
+            if 'gzip' in (h.headers.get('Accept-Encoding') or ''):
+                h.send_response(200); h.send_header('Content-Type', 'application/json; charset=utf-8')
+                h.send_header('Content-Encoding', 'gzip'); h.send_header('Content-Length', str(len(gz)))
+                h.send_header('Cache-Control', 'no-store'); h.end_headers(); h.wfile.write(gz)
+            else:
+                h.send(200, gzip.decompress(gz))
+            return True
         if parts == ['api', 'harness', 'objects']:
             h.send(200, json.dumps(objects(), ensure_ascii=False)); return True
         if len(parts) == 4 and parts[:3] == ['api', 'harness', 'thumb'] and parts[3].endswith('.png'):

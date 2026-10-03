@@ -205,6 +205,10 @@ async function load(keep) {
   for (const i of d.items) {
     const p = S.pending[i.id]; if (!p) continue;
     const lr = i.rounds.at(-1);
+    if (p.redraw) {   // 다시 뽑기: 서버에 새 판이 생길 때까지 고를 차례에서 빼 둔다
+      if (lr.id !== p.round) { delete S.pending[i.id]; continue; }
+      i.status = 'drawing'; continue;
+    }
     if (lr.decided || lr.id !== p.round) { delete S.pending[i.id]; continue; }   // 서버가 따라왔다
     i.status = 'done'; if (p.choice !== 'keep') i.current = p.choice;
   }
@@ -425,11 +429,14 @@ async function redraw(fromCard) {
   if (fromCard && r.runs.some(x => ['queued', 'running'].includes(x.status))) return;
   const base = S.fromSel && S.sel && S.sel !== (it.current === 'v5' ? 'v5' : it.current) ? S.sel : '';
   if (!fromCard && !S.memo.trim() && !Object.keys(S.rej).length && !confirm('메모도 버린 후보도 없이 다시 뽑을까? (뭐가 별로였는지 적으면 다음 판이 나아진다)')) return;
-  try {
-    await api('/api/harness/draw', {ids:[it.id], note:S.memo, base, n:2, round:r.id, rejects:S.rej});
-    toast(`${it.name}: 다시 뽑는 중 — 5장`); S.sel = null; S.rej = {}; S.memo = ''; S.round = null;
-    setTimeout(() => load(), 1500);
-  } catch (e) { toast('실패: ' + e.message, 1); }
+  // 확정과 같이: 기다리지 않고 이 기물을 고를 차례에서 빼고 바로 다음 기물로. 새 판이 다 그려지면 다시 「고를 차례」에 들어온다.
+  const body = {ids:[it.id], note:S.memo, base, n:2, round:r.id, rejects:S.rej};
+  S.pending[it.id] = {round:r.id, redraw:true};
+  it.status = 'drawing';
+  nextItem(); renderNav(); renderPick(); $('#main').scrollTop = 0;
+  toast(`${it.name}: 다시 뽑는 중 — 2장`);
+  try { await api('/api/harness/draw', body); load(true); }
+  catch (e) { delete S.pending[it.id]; it.status = 'ready'; renderNav(); toast(`다시 뽑기 실패 — ${it.name}: ${e.message}`, 1); load(true); }
 }
 
 async function loadObjs() { if (!S.objs) S.objs = await api('/api/harness/objects'); renderObjs(); }

@@ -304,6 +304,7 @@ def main():
     picks_db.export()
     picks_db.backup_loop()
     warm_loop()
+    if HAPI: HAPI.start()   # 하네스 상태: 지난 스냅숏을 올리고 뒤에서 미리 만든다
     ThreadingHTTPServer.daemon_threads = True
     srv = ThreadingHTTPServer((a.host, a.port), H)
     print(f'http://{a.host}:{a.port}/ — {PICK}', flush=True)
