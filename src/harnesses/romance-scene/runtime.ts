@@ -96,7 +96,7 @@ function inspectScene(project: Project, expected?: Project, options: { allowDraf
   if (project.database.actors.find(a => a.id === 'actor_hero')?.name !== c.protagonist) fail('주인공 이름이 확정 기획과 다릅니다.');
   const originalHero = expected?.database.actors.find(a => a.id === 'actor_hero');
   const hero = project.database.actors.find(a => a.id === 'actor_hero');
-  if (originalHero && (originalHero.characterResourceId !== hero?.characterResourceId || originalHero.characterIndex !== hero?.characterIndex)) fail('사용자가 고르지 않은 주인공 외형을 바꿀 수 없습니다.');
+  if (originalHero && (originalHero.characterResourceId !== hero?.characterResourceId || (originalHero.characterIndex ?? 0) !== (hero?.characterIndex ?? 0))) fail('사용자가 고르지 않은 주인공 외형을 바꿀 수 없습니다.');
   if (npc?.name !== c.partner || map?.name !== c.place) fail('상대 또는 만남 장소가 확정 기획과 다릅니다.');
   const first = npc?.pages?.[0]; const choice = first?.commands.find(cmd => cmd.kind === 'choices');
   if (!options.allowDraft && first?.id !== I.npc + '_first') fail('첫 만남은 아직 임시 초안입니다. author_romance_scene으로 실제 대사를 작성하세요.');

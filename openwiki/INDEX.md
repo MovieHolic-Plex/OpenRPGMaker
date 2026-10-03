@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **132쪽 / 4514KB / 약 1,305,758 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **132쪽 / 4514KB / 약 1,305,891 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1103,7 +1103,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L137` 시험
 - `L146` 아직 없는 것
 
-### `openwiki/harnesses/romance-scene.md` — 5KB · 36줄 · ~1,176 토큰
+### `openwiki/harnesses/romance-scene.md` — 5KB · 39줄 · ~1,309 토큰
 
 - `L5` Entry and contract
 - `L13` Authoring and rejection

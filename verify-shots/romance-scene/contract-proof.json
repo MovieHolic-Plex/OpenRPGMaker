@@ -1,12 +1,14 @@
 {
   "productionToolRunner": true,
+  "legacyBriefNotAutoActivated": true,
+  "productionStartupSeed": true,
   "firstConversationBeforeDecoration": true,
   "atomicRejection": true,
   "schemaRoundtrip": true,
   "runtime": {
     "ok": true,
     "blockers": [],
-    "ms": 59,
+    "ms": 51,
     "paths": [
       {
         "choice": "반갑게 인사한다",

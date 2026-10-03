@@ -7,7 +7,10 @@ export const AUTHORING_HARNESSES = [{ id: 'romance-scene', supports: supportsRom
   seed: seedRomanceScene, inspect: inspectRomanceScene, writePrerequisite: romanceWritePrerequisite, tools: ROMANCE_SCENE_TOOLS }] as const;
 export const AUTHORING_HARNESS_TOOLS = AUTHORING_HARNESSES.flatMap(h => [...h.tools]);
 export function authoringHarnessFor(project: Project) {
-  return AUTHORING_HARNESSES.find(h => h.id === project.gameDesignBrief?.implementation?.harnessId || h.supports(project));
+  return AUTHORING_HARNESSES.find(h => h.id === project.gameDesignBrief?.implementation?.harnessId);
+}
+export function eligibleAuthoringHarnessFor(project: Project) {
+  return AUTHORING_HARNESSES.find(h => h.supports(project));
 }
 export function inspectAuthoringHarness(project: Project, base: Project = project) {
   return authoringHarnessFor(base)?.inspect(project, base);

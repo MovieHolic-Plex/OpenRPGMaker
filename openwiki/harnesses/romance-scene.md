@@ -6,7 +6,7 @@
 
 New-project interview choices must be romance alone, `activity=talk`, `progression=single`, `scope=scene`. The source brief is retained verbatim. Explicit supported name/place/two-choice forms are extracted from the latest edited summary first, then interview fields. Unspecified fields are labelled `temporary` in the internal contract; reference pictures do not define the protagonist or appearance. Arbitrary prose does not become enforced requirements automatically. Mixed genres and longer stories continue through the existing authoring route.
 
-`gameDesignBrief.implementation` contains a registered `harnessId` and validated version-1 contract. It is optional for old projects, survives normal Project serialization and SQLite persistence, and remains internal to the assistant context. `_core/authoringRegistry.ts` owns executable routing; the light manifest registry owns schema validation and CLI discovery.
+`gameDesignBrief.implementation` contains a registered `harnessId` and validated version-1 contract. It is optional for old projects, survives normal Project serialization and SQLite persistence, and remains internal to the assistant context. Eligibility is used only to prepare the new-project seed; completion gates require an explicitly activated contract, so an old matching interview is not newly blocked. `_core/authoringRegistry.ts` owns executable routing; the light manifest registry owns schema validation and CLI discovery.
 
 The prepared single-map scene is playable immediately, with an existing temporary character sprite, first-choice variable, relationship variable, completion switch, branch-specific revisit pages, cancellation and ending. Its `_draft` page is explicitly incomplete. Startup saves before releasing the AI request and rebuilds the request from the prepared brief. It must not silently fall back to the old two-map skeleton on preparation failure.
 
@@ -28,8 +28,11 @@ A successful current `review_map` is also mandatory. The read-only reviewer must
 npm run harness -- romance-scene inspect --project <hydrated-project.json>
 node scripts/qa/romance-scene-contract.mjs <baseline.json> <proof.json>
 node scripts/qa/romance-scene-live.mjs
-ROMANCE_QA_PACKAGED=1 node scripts/qa/romance-scene-player.mjs <export-project.json> <evidence-dir>
+node scripts/qa/romance-scene-package.mjs <canonical.json> output/qa/romance-scene/package <owned-host-url>
+ROMANCE_QA_PACKAGED=1 ROMANCE_QA_PACKAGE_DIR=output/qa/romance-scene/package node scripts/qa/romance-scene-player.mjs output/qa/romance-scene/package/project.json <evidence-dir>
 node scripts/qa/romance-scene-review.mjs <hydrated-project.json> <owned-host-url> <evidence-dir>
 ```
 
 The focused contract script checks production tool dispatch, atomic rejection, schema roundtrip, native runtime paths and adversarial variants. Live QA uses a dedicated host/root, normal New Game interview, real provider, and host persistence. Authored tiles require reading the current canonical reference documents/images first. Game browser evidence must use the dedicated `player.html` QA server, never the editor play shell. Do not confuse fixture execution or JSON roundtrip with live provider success or SQLite reload.
+
+Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final automatic project completed without human content repair; a software-renderer page error prevents calling the full editor UI audit error-free. Package browser QA includes real exported dependencies and disables opening only on an explicitly labelled scene QA copy.

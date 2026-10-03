@@ -3,7 +3,7 @@ import {createServer} from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 export async function startPackagedPlayerQaServer(options={}) {
- const roots=[resolve('dist/export-player'),resolve('public')];
+ const roots=options.packageDir?[resolve(options.packageDir)]:[resolve('dist/export-player'),resolve('public')];
  const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg','.woff2':'font/woff2','.ogg':'audio/ogg','.mp3':'audio/mpeg'};
  const server=createServer((req,res)=>{void(async()=>{
   let name;try{name=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname).replace(/^\//,'');}catch{res.writeHead(400).end();return;}

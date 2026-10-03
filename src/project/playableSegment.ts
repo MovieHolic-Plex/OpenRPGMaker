@@ -16,7 +16,7 @@
 import { runTool } from "@/editor/tools";
 import { runGameCheck } from "@/qa/gameCheck";
 import type { Project } from "@/project/types";
-import { authoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
+import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
 import {
   hasPlayableSegmentSkeleton,
   playableSegmentGenre,
@@ -236,7 +236,7 @@ export function buildPlayableSegmentSkeleton(input: Project): Project {
  * 호출부는 예전 흐름(AI 만)으로 진행한다. 실패는 코드 결함이므로 콘솔에 남긴다.
  */
 export function withVerifiedPlayableSegment(project: Project): Project | null {
-  const harness = authoringHarnessFor(project);
+  const harness = authoringHarnessFor(project) ?? eligibleAuthoringHarnessFor(project);
   if (harness) {
     const seeded = harness.seed(project);
     if (!seeded) return null;

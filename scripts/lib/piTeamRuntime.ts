@@ -458,6 +458,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const snapshot = cloneProjectSharingSharedDictionaries(working);
     mailbox.register(agentId, member.label, mapId);
     const reviewOptions = child(agentId, request.roleModels?.deep?.provider ?? request.provider);
+    const reviewSignature = authoringHarnessFor(base) ? authoringSignature(snapshot) : undefined;
     let done: PiAgentDoneEvent;
     try {
       done = await runAgent(
@@ -479,7 +480,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (authoringHarnessFor(base)) {
       if (!imageDelivered) { result.ok = false; result.findings.push('실제 맵 이미지를 보지 않아 시각 검수를 인정하지 않습니다. show_map_region으로 원본을 확인하세요.'); }
       if (result.findings.length) result.ok = false;
-      authoringReview = { signature: authoringSignature(snapshot), ok: result.ok };
+      authoringReview = { signature: reviewSignature!, ok: result.ok };
     }
     ledger = recordTeamReview(ledger, { mapId, agentId, ok: result.ok });
     emit({ type: "review", agentId, mapId, ok: result.ok, findings: result.findings });

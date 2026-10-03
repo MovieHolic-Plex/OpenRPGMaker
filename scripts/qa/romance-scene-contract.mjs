@@ -7,6 +7,8 @@ const [input, output = 'verify-shots/romance-scene/contract-proof.json'] = proce
 if (!input) throw Error('Usage: node scripts/qa/romance-scene-contract.mjs <baseline.json> [proof.json]');
 const baseline = JSON.parse(fs.readFileSync(input));
 let seed, authored;
+await withTsModule('src/harnesses/_core/authoringRegistry.ts','registry.mjs',async m=>{assert.equal(m.authoringHarnessFor(baseline),undefined);assert(m.eligibleAuthoringHarnessFor(baseline));});
+await withTsModule('src/project/playableSegment.ts','startup.mjs',async m=>{const prepared=m.withVerifiedPlayableSegment(baseline);assert.equal(prepared.gameDesignBrief.implementation.harnessId,'romance-scene');});
 await withTsModule('src/harnesses/romance-scene/contract.ts','contract.mjs',async m=>{const p=structuredClone(baseline);p.gameDesignBrief.summary='주인공 이름은 민서. 이웃 이름은 하린. 장소는 달빛 정류장. 선택지는 기다린다 / 먼저 걷는다.';const c=m.compileRomanceContract(p);assert.deepEqual([c.protagonist,c.partner,c.place,...c.choices],['민서','하린','달빛 정류장','기다린다','먼저 걷는다']);});
 await withTsModule('src/harnesses/romance-scene/runtime.ts', 'scene.mjs', async m => { seed = m.seedRomanceScene(baseline); assert(seed); });
 await withTsModule('src/editor/tools/toolRunner.ts', 'tools.mjs', async ({runTool}) => {
@@ -42,7 +44,7 @@ await withTsModule('src/harnesses/romance-scene/runtime.ts', 'scene.mjs', async 
     ['invisible NPC', p => npc(p).pages[0].graphic.transparent = true],
     ['missing sprite', p => npc(p).pages[0].graphic.sprite.id = 'missing-asset'],
     ['changed protagonist', p => p.database.actors.find(a => a.id === 'actor_hero').name = '임의 변경'],
-    ['changed protagonist appearance', p => p.database.actors.find(a => a.id === 'actor_hero').characterIndex += 1],
+    ['changed protagonist appearance', p => {const a=p.database.actors.find(a => a.id === 'actor_hero');a.characterIndex=(a.characterIndex??0)+1;}],
     ['deleted contract', p => delete p.gameDesignBrief.implementation],
     ['changed choice', p => choices(p).options[0].text = '다른 선택'],
     ['stale brief', p => p.gameDesignBrief.summary += ' 다른 계획'],
@@ -55,7 +57,7 @@ await withTsModule('src/harnesses/romance-scene/runtime.ts', 'scene.mjs', async 
   const renameResult = m.inspectRomanceScene(renamed, seed); assert(!renameResult.ok);
   mutants.push({name:'rename draft page only',blocked:true,reason:renameResult.blockers});
   fs.mkdirSync(dirname(output),{recursive:true});
-  fs.writeFileSync(output, JSON.stringify({productionToolRunner:true,firstConversationBeforeDecoration:true,atomicRejection:true,schemaRoundtrip:true,runtime,mutants},null,2)+'\n');
+  fs.writeFileSync(output, JSON.stringify({productionToolRunner:true,legacyBriefNotAutoActivated:true,productionStartupSeed:true,firstConversationBeforeDecoration:true,atomicRejection:true,schemaRoundtrip:true,runtime,mutants},null,2)+'\n');
   fs.writeFileSync('output/qa/romance-scene/authored.json',JSON.stringify(authored));
   console.log(JSON.stringify({ok:runtime.ok,blockedMutants:mutants.length,output}));
 });
