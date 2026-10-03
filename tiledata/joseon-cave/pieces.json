@@ -2,7 +2,7 @@
  "tile": 16,
  "cols": 20,
  "rows": 41,
- "tileCount": 779,
+ "tileCount": 785,
  "pieces": {
   "cav_floor": {
    "id": 0,
@@ -820,20 +820,17 @@
     ]
    ]
   },
-  "cav_torch_a": {
+  "cav_chest": {
    "id": 717,
    "w": 1,
-   "h": 2,
+   "h": 1,
    "tiles": [
     [
      717
-    ],
-    [
-     737
     ]
    ]
   },
-  "cav_torch_b": {
+  "cav_torch_a": {
    "id": 718,
    "w": 1,
    "h": 2,
@@ -846,7 +843,7 @@
     ]
    ]
   },
-  "cav_stalagmite": {
+  "cav_torch_b": {
    "id": 719,
    "w": 1,
    "h": 2,
@@ -859,17 +856,20 @@
     ]
    ]
   },
-  "cav_stalagmite_c": {
+  "cav_stalagmite": {
    "id": 740,
    "w": 1,
-   "h": 1,
+   "h": 2,
    "tiles": [
     [
      740
+    ],
+    [
+     760
     ]
    ]
   },
-  "cav_mushroom_a": {
+  "cav_stalagmite_c": {
    "id": 741,
    "w": 1,
    "h": 1,
@@ -879,7 +879,7 @@
     ]
    ]
   },
-  "cav_mushroom_b": {
+  "cav_mushroom_a": {
    "id": 742,
    "w": 1,
    "h": 1,
@@ -889,7 +889,7 @@
     ]
    ]
   },
-  "cav_rock_c": {
+  "cav_mushroom_b": {
    "id": 743,
    "w": 1,
    "h": 1,
@@ -899,75 +899,75 @@
     ]
    ]
   },
-  "cav_rubble": {
+  "cav_rock_c": {
    "id": 744,
-   "w": 2,
-   "h": 1,
-   "tiles": [
-    [
-     744,
-     745
-    ]
-   ]
-  },
-  "cav_rock_a": {
-   "id": 746,
    "w": 1,
    "h": 1,
    "tiles": [
     [
+     744
+    ]
+   ]
+  },
+  "cav_rubble": {
+   "id": 745,
+   "w": 2,
+   "h": 1,
+   "tiles": [
+    [
+     745,
      746
     ]
    ]
   },
-  "cav_rock_b": {
+  "cav_rock_a": {
    "id": 747,
-   "w": 2,
-   "h": 1,
-   "tiles": [
-    [
-     747,
-     748
-    ]
-   ]
-  },
-  "fld_rock_m_a": {
-   "id": 749,
-   "w": 2,
-   "h": 1,
-   "tiles": [
-    [
-     749,
-     750
-    ]
-   ]
-  },
-  "fld_rock_m_b": {
-   "id": 751,
-   "w": 2,
-   "h": 2,
-   "tiles": [
-    [
-     751,
-     752
-    ],
-    [
-     771,
-     772
-    ]
-   ]
-  },
-  "cav_moss": {
-   "id": 753,
    "w": 1,
    "h": 1,
    "tiles": [
     [
-     753
+     747
     ]
    ]
   },
-  "cav_puddle": {
+  "cav_rock_b": {
+   "id": 748,
+   "w": 2,
+   "h": 1,
+   "tiles": [
+    [
+     748,
+     749
+    ]
+   ]
+  },
+  "fld_rock_m_a": {
+   "id": 750,
+   "w": 2,
+   "h": 1,
+   "tiles": [
+    [
+     750,
+     751
+    ]
+   ]
+  },
+  "fld_rock_m_b": {
+   "id": 752,
+   "w": 2,
+   "h": 2,
+   "tiles": [
+    [
+     752,
+     753
+    ],
+    [
+     772,
+     773
+    ]
+   ]
+  },
+  "cav_moss": {
    "id": 754,
    "w": 1,
    "h": 1,
@@ -977,7 +977,7 @@
     ]
    ]
   },
-  "fld_ore_a": {
+  "cav_puddle": {
    "id": 755,
    "w": 1,
    "h": 1,
@@ -986,10 +986,31 @@
      755
     ]
    ]
+  },
+  "fld_ore_a": {
+   "id": 756,
+   "w": 1,
+   "h": 1,
+   "tiles": [
+    [
+     756
+    ]
+   ]
+  },
+  "fld_ore_b": {
+   "id": 757,
+   "w": 2,
+   "h": 1,
+   "tiles": [
+    [
+     757,
+     758
+    ]
+   ]
   }
  },
  "overlapTiles": {
   "start": 780,
-  "count": 30
+  "count": 33
  }
 }
