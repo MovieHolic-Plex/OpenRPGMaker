@@ -43,3 +43,10 @@ pick ─► harness-data/modern-chipset/picked/<탈것>-<시점>.pxg|png + ledge
 - 알려진 약점: 건물 수 시드 평균 약 20(목표 28) — 상한·뒷줄 노출 규칙이 겹침, 차종 다양성 부족, 주유소 캐노피 판.
 - 검수 방식: 독립 적대적 시각 QA(읽기 전용, 확대 크롭 ≥18/시드) → 지적 → 에셋 재생성(하네스)·코드 수정 → 반복. 검수자 보고서는 파일을 못 쓰므로 최종 답에서 받는다.
 - 보고서 페이지: http://mdc-server:18301/town-60-report.html
+
+## 굽기 `bake` → 번들 타일셋 modern_city (2026-10-03)
+합격 에셋 → 에디터 타일셋. 문서 `openwiki/modern-city.md`.
+- `python3 src/harnesses/modern-chipset/harness.py bake [--dry]` = `bake_tileset.py`: 시트(`public/assets/modern-city/`), `src/assets/modernCity{Sheet,Tileset}.json`, `tiledata/modern-city/{pins,bake-report,kit-index}.json`. 번호는 `pins.json` 으로 고정(새 칸은 끝에 덧붙임) — **pins.json 을 지우지 말 것**.
+- `bake_map.py [--publish]` 예제 도시 맵(60×60, 지역 `modern-city-60x60`), `bake_refs.py` 참고문서(`src/assets/modernCityReferences.json`).
+- 합격 후보 PNG 는 `tiledata/modern-city/sources/<판>_<글자>.png` 에 커밋돼 있어 `qa-runs` 없이 재현된다(`run_town.sh <seed>`).
+- 한계: 건물 색 변형은 벽색/지붕색 따로(조합 없음), 색 변형 칸은 modern4 밖 색, T자·곡선 도로 없음, 주차 표시 칸 없음, 조수는 `modernTilesetPolicy` 에 막힌다.
