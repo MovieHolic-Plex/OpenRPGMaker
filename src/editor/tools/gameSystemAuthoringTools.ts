@@ -21,7 +21,7 @@ function issues(p:Project):string[]{
 }
 function systemView(p:Project){const c=monsterCampaign(p),session=p.session as PlaySession;return {
   battle:{collection:p.system.monsterCollection===true,party:p.system.battleParty??(p.system.monsterBattleParty?'monsters':'actors'),rules:p.system.battleModel??'rm2k3',skin:p.system.battleUiStyle},
-  fieldMenu:{style:p.system.fieldHud?.menuStyle??p.system.menuUiStyle??'pixel',authored:fieldMenu(p)??null,effectiveCommands:listStatusMenuCommandIds(p,session),effectiveRail:listStatusMenuRailIds(p,session).map(command=>({command,label:statusMenuRailLabel(command,true,p)}))},
+  fieldMenu:{style:p.system.fieldHud?.menuStyle&&p.system.fieldHud.menuStyle!=='project'?p.system.fieldHud.menuStyle:p.system.menuUiStyle??'pixel',authored:fieldMenu(p)??null,effectiveCommands:listStatusMenuCommandIds(p,session),effectiveRail:listStatusMenuRailIds(p,session).map(command=>({command,label:statusMenuRailLabel(command,true,p)}))},
   hud:p.system.fieldHud, campaign:c?{id:c.id,name:c.name,species:c.speciesIds.length,badges:c.badges.length,locations:c.locations.length,objectives:c.objectives.length}:null,
   audio:{title:p.system.titleScreen?.musicResourceId,opening:p.system.opening?.musicResourceId,field:p.system.defaultBgmResourceId,battle:p.system.battleBgmResourceId,victory:p.system.battleVictoryMeResourceId,menu:p.meta.oprnMenuSounds,composed:Object.keys(p.meta.oprnMusicScores??{})},
   issues:issues(p),verificationScope:'configuration and effective menu model; not native input/play/save proof',
@@ -30,7 +30,8 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('read_game_systems','전투 규칙·출전 파티·ESC 실제 항목·HUD·도감/지도/배지 정의·음악 연결을 함께 읽고 불일치를 표시.','read',schema({},[]),p=>({summary:'현재 게임 시스템과 실제 메뉴 모델을 조회했습니다.',data:systemView(p)})),
   tool('configure_field_menu','ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
     const preset=String(args.preset);if(!['collector','default','custom'].includes(preset))throw new ToolError('메뉴 프리셋 오류.',{code:'invalid-args'});
-    if(preset!=='custom'&&args.entries!==undefined)throw new ToolError('entries는 custom에서만 사용하세요.',{code:'invalid-args'});
+    // Presets own their entries; structured model providers may emit optional arrays.
+    // Custom explicitly owns user labels/order. Preset entries are not a mutation input.
     const next=preset==='default'?undefined:preset==='collector'?collectorFieldMenu():{version:1,entries:structuredClone(args.entries)} as AuthoredFieldMenu;
     if(next)try{validateFieldMenu(next);}catch(e){throw new ToolError(String(e),{code:'invalid-args'});}
     if(args.style!==undefined&&!['field-list','pixel','classic','sheet','workbench'].includes(String(args.style)))throw new ToolError('메뉴 스타일 오류.',{code:'invalid-args'});
