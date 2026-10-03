@@ -441,7 +441,7 @@ def doc_dict_groups():
 
 {HEAD}
 
-그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
+그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
 역할별 개수: {', '.join(f'{k} {v}' for k, v in sorted(by.items()))}.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
@@ -1647,23 +1647,33 @@ img_shop()
 C_ERR = new_cat('errors', '일본 도시 · 정상/오류·자동 좌표 검증·층 정정',
                 '모든 용도의 정상/오류 실험을 한곳에 모은 총괄: 검사 코드 → 용도·문서·그림 지도, 변조별 맵 좌표 표(오토타일 17세트·건물 11+3·도로 3·상가 3), 검사 범위(과대 주장 금지), 엔진 판정과 안 맞는 층 설명의 정정(전/후)과 투명 덧그림 층 돌려놓기 실험.')
 
-# 층 설명 대조: 그룹 defaultLayer vs 엔진 홈
-LAYER_MISMATCH = collections.defaultdict(list)       # (그룹 defaultLayer, 엔진 홈) → [(그룹 id, 칸)]
+# 층 설명 대조: 그룹 defaultLayer 는 굽기가 멤버 칸의 엔진 홈에서 유도한다(bake_lib.derive_group_layer) — 정정 후 어긋남 0 을 여기서 다시 확인한다.
+# 정정 전(2026-10-03 이전 굽기)의 선언값 — 역사 기록용 상수. 투명 덧그림 5그룹은 lower, 나머지 8그룹은 upper 였다.
+OLD_GROUP_LAYER = {'jp:lane-center': 'lower', 'jp:lane-dash': 'lower', 'jp:crosswalk': 'lower', 'jp:tactile': 'lower', 'jp:road-kit-marking': 'lower',
+                   'jp:prop:street': 'upper', 'jp:prop:green': 'upper', 'jp:prop:gate': 'upper', 'jp:prop:shrine': 'upper', 'jp:prop:stairs': 'upper',
+                   'jp:prop:storefront': 'upper', 'jp:prop:play': 'upper', 'jp:underpass-footbridge': 'upper'}
+_GROUP_HOMES = collections.OrderedDict()            # 정정 대상 그룹 → {'upper': [칸], 'lower': [칸]} (엔진 홈 기준)
+_LEFT_MISMATCH = []                                  # 정정 후에도 그룹 층과 칸 홈이 어긋난 (그룹, 칸) — 0 이어야 한다
 for _g in D['tileGroups']:
+    _homes = {'upper': [], 'lower': []}
     for _t in _g['tileIds']:
         _c = CODES[_t]
-        if not _c: continue
-        _home = 'lower' if _c[0] == 'l' else 'upper'
-        if _c[0] == 'b': continue
-        if _g['defaultLayer'] != _home: LAYER_MISMATCH[(_g['defaultLayer'], _home)].append((_g['id'], _t))
-_LM_UP = LAYER_MISMATCH[('lower', 'upper')]          # 그룹은 아래층인데 엔진 홈은 위층(투명 덧그림)
-_LM_LO = LAYER_MISMATCH[('upper', 'lower')]          # 그룹은 위층인데 엔진 홈은 아래층(불투명 소품 밑)
-assert len(_LM_UP) == 74, len(_LM_UP)
-_LM_UP_BY = collections.OrderedDict()
-for _gid, _t in _LM_UP: _LM_UP_BY.setdefault(_gid, []).append(_t)
-_LM_LO_BY = collections.OrderedDict()
-for _gid, _t in _LM_LO: _LM_LO_BY.setdefault(_gid, []).append(_t)
-_STAIR_STAR = [e for e in AUD['examples'] if 'star' in e['problems'][0]]
+        if not _c or _c[0] == 'b': continue
+        _homes['lower' if _c[0] == 'l' else 'upper'].append(_t)
+    if _g['id'] in OLD_GROUP_LAYER: _GROUP_HOMES[_g['id']] = _homes
+    if _g['defaultLayer'] == 'event': continue
+    _want = 'mixed' if (_homes['upper'] and _homes['lower']) else ('upper' if _homes['upper'] else 'lower' if _homes['lower'] else _g['defaultLayer'])
+    if _g['defaultLayer'] != _want: _LEFT_MISMATCH.append(_g['id'])
+assert not _LEFT_MISMATCH, _LEFT_MISMATCH
+assert not AUD['groupLayerMismatches'], AUD['groupLayerMismatches']
+assert set(_GROUP_HOMES) == set(OLD_GROUP_LAYER), set(OLD_GROUP_LAYER) ^ set(_GROUP_HOMES)
+_LM_UP_BY = collections.OrderedDict((gid, h['upper']) for gid, h in _GROUP_HOMES.items() if OLD_GROUP_LAYER[gid] == 'lower')     # 옛 선언 아래층·엔진 홈 위층(투명 덧그림)
+_LM_LO_BY = collections.OrderedDict((gid, h['lower']) for gid, h in _GROUP_HOMES.items() if OLD_GROUP_LAYER[gid] == 'upper' and h['lower'])   # 옛 선언 위층·엔진 홈 아래층
+_LM_UP = [t for v in _LM_UP_BY.values() for t in v]
+_LM_LO = [t for v in _LM_LO_BY.values() for t in v]
+assert len(_LM_UP) == 74 and len(_LM_LO) == 103, (len(_LM_UP), len(_LM_LO))
+_STAIR_STAR = [{'tile': t} for t in AUD['walkableStairs']]
+assert len(_STAIR_STAR) == 54, len(_STAIR_STAR)
 
 
 def n_issue(lst): return len(lst)
@@ -1767,15 +1777,17 @@ add_doc(C_ERR, 'err-scenarios', '일본 도시 · 변조 실험 전체표(맵 �
 
 def doc_err_layer():
     kc = AUD['kindCount']
-    up_rows = [[f'`{gid}`', f'{len(v)}칸', fmt_runs(runs_of(v), 8), '3층 위(투명)' if CODES[v[0]][2] != 'y' else '3층 위'] for gid, v in _LM_UP_BY.items()]
-    lo_rows = [[f'`{gid}`', f'{len(v)}칸', fmt_runs(runs_of(v), 8), code_text(v[0])] for gid, v in _LM_LO_BY.items()]
+    now = {g['id']: g for g in D['tileGroups']}
+    up_rows = [[f'`{gid}`', f'{len(v)}칸', fmt_runs(runs_of(v), 8), f"`{OLD_GROUP_LAYER[gid]}` → `{now[gid]['defaultLayer']}`(layerHome `{now[gid]['layerHome']}`)", '3층 위(투명), 그림 순서는 캐릭터 아래'] for gid, v in _LM_UP_BY.items()]
+    lo_rows = [[f'`{gid}`', f'{len(v)}칸', fmt_runs(runs_of(v), 8), f"`{OLD_GROUP_LAYER[gid]}` → `{now[gid]['defaultLayer']}`(layerHome `{now[gid]['layerHome']}`)", code_text(v[0])] for gid, v in _LM_LO_BY.items()]
     stair = fmt_runs(runs_of([e['tile'] for e in _STAIR_STAR]), 10)
     nm = EN['autotiles'][12]
-    return f'''# 일본 도시 — 층 설명 정정 (엔진 판정 대 정의 설명, 전/후)
+    return f'''# 일본 도시 — 층 설명 정정 (엔진 판정 대 정의 설명, 전/후 — 정의 정정 완료)
 
 {HEAD}
 
-타일 그룹의 `defaultLayer`(정의의 층 설명)와 엔진 판정(`tileLayerPolicy().home` · `passabilityOf` · `mapUpperTileDepth`)을 칸 {AUD['checked']}개에 대조했다. **엔진이 정본이다** — 둘이 다르면 엔진을 따른다. 어긋남은 아래 세 갈래다.
+타일 그룹의 `defaultLayer`(정의의 층 설명)와 엔진 판정(`tileLayerPolicy().home` · `passabilityOf` · `mapUpperTileDepth`)을 칸 {AUD['checked']}개에 대조했다. **엔진이 정본이다** — 둘이 다르면 엔진을 따른다.
+**정의 정정 완료**: 어긋났던 그룹 13개의 층 설명은 이제 멤버 칸의 엔진 홈에서 유도한 값이다(굽기 `bake_lib.derive_group_layer`). 정정 뒤 다시 잰 어긋남은 **0건**(그룹 {AUD['groups']}개 전부 일치)이다. 칸 번호·그림·통행·칸 `priority` 는 바뀌지 않았다 — 엔진은 칸 홈을 칸 단위(잠긴 칸의 `defaultLayer`, 아니면 `priority`)로만 정하고 그룹 `defaultLayer` 는 홈 판정에 쓰지 않기 때문에, 칠하는 결과는 정정 전후가 같고 **어휘 설명(AI가 읽는 그룹 층)만 바로잡혔다**.
 
 ## 1. 엔진 판정 여섯 종 (검사한 칸 {AUD['checked']}개, 빈 칸 {AUD['blank']}개 제외)
 {md_table(['홈', '통행', '그림 순서', '칸 수', '무엇'], [
@@ -1784,22 +1796,20 @@ def doc_err_layer():
     ['아래층', '걸음', '캐릭터 아래', kc['passable|prio=lower|home=lower|depth=below'], '불투명 땅(보도·도로·잔디 …)'],
     ['아래층', '막힘', '캐릭터와 y 정렬', kc['solid|prio=lower|home=lower|depth=ysort'], '막힌 땅(연못·수로 물)'],
     ['위층', '걸음', '캐릭터 아래', kc['passable|prio=lower|home=upper|depth=below'], '**투명 덧그림**(중앙선·표시·점자블록·소품 아랫단)'],
-    ['위층', '걸음 ★(계단)', '캐릭터 아래', kc['star|prio=upper|home=upper|depth=below'], '돌계단·계단 칸'],
+    ['위층', '걸음 ★(계단)', '캐릭터 아래', kc['star|prio=upper|home=upper|depth=below'], '돌계단·계단 칸 (태그에 stair·계단·사다리)'],
 ])}
+정의 검사 `group-layer-vs-tile-home` 가 이 일치를 굽기마다 확인한다(그룹 층 = 멤버 칸 홈이 전부 위이면 `upper`, 전부 아래이면 `lower`, 섞이면 `mixed` + `layerHome: perCell`).
 
-## 2. 정정 A — 그룹 설명은 「아래층」인데 엔진 홈은 「위층」({len(_LM_UP)}칸, 투명 덧그림)
-| 전(그룹 설명) | 후(엔진 판정 = 정본) |
-|---|---|
-| `defaultLayer: lower` → 1층에 칠한다 | 엔진 홈은 위층, **재성형 층은 2층(`lowerOverlayTiles`)** — 아래 1층에 땅이 있어야 하고, 칸은 2층에 칠한다 |
-{md_table(['그룹', '칸 수', '칸 번호', '엔진 판정'], up_rows)}
-그림 순서는 캐릭터 아래(`depth=below`), 통행은 걸음이다. 1층에 직접 칠하면 아래 땅이 없어 검게 보인다. 도구 실측: `paint_tiles` 에 layer "1"·"3" 을 주면 이 칸을 **3층으로 돌려 놓고 재성형하지 않는다**(아래 「층 돌려놓기 실험」).
+## 2. 정정 A — 그룹 설명이 「아래층」이던 투명 덧그림 5그룹 ({len(_LM_UP)}칸) → 「위층」
+{md_table(['그룹', '칸 수', '칸 번호', '전 → 후(그룹 층)', '엔진 판정(정본)'], up_rows)}
+엔진 홈은 위층, **재성형 층은 2층(`lowerOverlayTiles`)** — 아래 1층에 땅이 있어야 하고, 칸은 2층에 칠한다. 그림 순서는 캐릭터 아래(`depth=below`), 통행은 걸음이다. 1층에 직접 칠하면 아래 땅이 없어 검게 보인다. 도구 실측: `paint_tiles` 에 layer "1"·"3" 을 주면 이 칸을 **3층으로 돌려 놓고 재성형하지 않는다**(아래 「층 돌려놓기 실험」).
 
-## 3. 정정 B — 그룹 설명은 「위층」인데 엔진 홈은 「아래층」({len(_LM_LO)}칸)
-{md_table(['그룹', '칸 수', '칸 번호', '엔진 판정'], lo_rows)}
-이 칸들은 정의의 그룹 설명(위층)과 달리 엔진 정책이 아래층(1층)을 홈으로 판정한다(막힘이든 걸음이든 엔진 판정이 정본, 위 표 마지막 열). 키트는 키트 배열대로(`stamp_object`) 찍으면 칸마다 정해진 층에 놓이므로 문제가 없다 — 낱칸을 직접 칠할 때만 이 판정을 따라 층을 고른다.
+## 3. 정정 B — 그룹 설명이 「위층」이던 소품·육교 8그룹 ({len(_LM_LO)}칸이 엔진 홈 아래층) → 「mixed」
+{md_table(['그룹', '아래층 칸 수', '아래층 칸 번호', '전 → 후(그룹 층)', '엔진 판정(정본)'], lo_rows)}
+이 그룹들은 위층 칸과 아래층 칸이 섞여 있어(소품 밑동·바닥 쪽 칸은 아래층 홈) 그룹 층을 하나로 못 박지 못한다 — 이제 `mixed`·`perCell` 이라 어휘 도구가 칸마다 엔진 홈을 따른다. 키트는 키트 배열대로(`stamp_object`) 찍으면 칸마다 정해진 층에 놓이므로 문제가 없다 — 낱칸을 직접 칠할 때만 이 판정을 따라 층을 고른다.
 
-## 4. 정정 C — 계단 {len(_STAIR_STAR)}칸: 통행은 ★(걸음 위)인데 그림 순서는 「아래」
-칸 번호 {stair}(그룹 `jp:prop:stairs` 등). 정의 설명은 `passage=star`(항상 캐릭터 위)로 읽히지만 엔진은 **캐릭터 아래**로 그린다(오르내리는 계단이라 캐릭터가 위로 지나간다). 이 칸을 「캐릭터를 가리는 처마」처럼 쓰지 않는다 — 가려지지 않는다.
+## 4. 계단 {len(_STAIR_STAR)}칸 — 정정 대상이 아니다(엔진의 설계된 예외)
+칸 번호 {stair}(그룹 `jp:prop:stairs` 등). 통행은 `star` 인데 그림 순서가 「아래」라서 처음에는 어긋남으로 셌다. 그러나 엔진은 `star` 칸이라도 **태그에 stair·계단·사다리가 있으면 밟는 계단**으로 보고 일부러 캐릭터 아래로 그린다(`src/player/characterDepth.ts` `isWalkableStairTile` · `mapUpperTileDepth`) — 오르내리는 계단이라 캐릭터가 위로 지나간다. 정의(`passage=star` + `stairs`/`계단` 태그)가 이 규칙에 맞게 되어 있어 **바꾸지 않는다**. 이 칸을 「캐릭터를 가리는 처마」처럼 쓰지 않는다 — 가려지지 않는다. 같은 규칙을 `star` 칸 54개에 태그로 적용하고, 나머지 `star` 칸 2221개는 항상 캐릭터 위다.
 
 ## 층 돌려놓기 실험 (투명 덧그림을 잘못된 층으로 칠했을 때)
 `jp-lane-center`(중앙선, 정답 층 2층)를 같은 입력으로 두 번 칠했다. 정상은 `paint_tiles` layer **"2"**, 오류는 layer "1" — 도구 응답: 「{nm['reroute']['summary']}」 (경고 {len(nm['reroute']['warnings'])}건). 결과: 3층에 {nm['reroute']['onLayer3']}칸, 2층에 {nm['reroute']['onLayer2']}칸, 서로 다른 칸 번호 {nm['reroute']['distinct']}종(몸통 칸 하나뿐 — 재성형 안 됨), `autotile-stale`/`wrong-layer` {nm['reroute']['issues']}건.
@@ -1808,7 +1818,7 @@ def doc_err_layer():
 
 ## 한계
 - 위 대조는 이 번들의 타일 정의와 엔진 함수에 대한 것이다. 사용자가 올린 타일셋·다른 칩셋에는 적용되지 않는다.
-- 정정 A·B 는 **문서의 층 설명**을 바로잡는 것이고 타일 정의 파일은 바꾸지 않았다(이 작업의 범위 밖). 도구가 엔진 홈으로 칸을 돌려놓으므로 칠한 결과는 엔진 판정을 따른다.
+- 이미 만들어 둔 프로젝트의 타일셋 사본은 칸 수·칸 층 표가 같으면 갱신되지 않는다(`ensureJpCityTileset` 의 형태 서명이 그룹 층을 안 본다) — 정정된 그룹 층은 새 프로젝트부터 보인다. 칠하는 결과는 칸 홈이 정하므로 동작은 같다.
 '''
 
 

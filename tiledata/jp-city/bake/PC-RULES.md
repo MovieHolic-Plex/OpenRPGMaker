@@ -28,6 +28,14 @@
 한 칸 번호는 통행이 하나뿐이다. 원본 번호에는 **가장 많이 쓰이는 맥락의 pc**(동률이면 floor > solidfloor > solid > star > flat)를 주고,
 다른 pc 가 필요한 키트 칸은 같은 그림의 복제 칸(`jp16/<번호>@<pc>`)을 시트 끝에 덧붙여 쓴다. 원본 번호는 안 움직인다.
 
+## 그룹 층(defaultLayer·layerHome)은 칸 홈에서 유도한다 (2026-10-03 정정)
+
+엔진은 커스텀 타일셋의 칸 홈을 **칸 단위**로만 정한다(`tileLayerHome`: 잠긴 칸의 `defaultLayer`, 아니면 `priority`). 그룹의 `defaultLayer` 는 홈 판정에 안 쓰이고 어휘 설명만 정한다.
+그래서 굽기(`bake_lib.derive_group_layer`)가 그룹 층을 멤버 칸의 홈에서 유도한다 — 전부 위층이면 `upper`, 전부 아래층이면 `lower`, 섞이면 `mixed`(+`layerHome: perCell`).
+정의 검사 `group-layer-vs-tile-home` 가 일치를 지킨다. 정정 전에는 투명 덧그림 5그룹이 `lower`(엔진 홈 위층, 74칸), 소품·육교 8그룹이 `upper`(아래층 칸 103개 섞임)로 선언돼 있었다.
+부수 효과: 투명 덧그림 그룹(`upper`)은 `fill_region` 재료가 아니다(`tileVocabulary.isFlatFillGroup` 이 위층 그룹을 거부) — `paint_tiles` layer "2" 로 칠한다.
+★ 칸 중 태그에 stair·계단·사다리가 있는 54칸은 엔진이 일부러 캐릭터 아래로 그린다(`characterDepth.isWalkableStairTile`) — 어긋남이 아니라 설계된 예외다.
+
 ## 투명도 규칙(tile-layer-policy)
 
 투명 조각을 아래층에 두지 않는다(받침 없이 검게 비친다). 투명 조각은 위층(`solid`·`star`) 또는 투명 덧그림(`flat`, 홈 레이어 위·`layerBacking: none`)이다.

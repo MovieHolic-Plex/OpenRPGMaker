@@ -47,11 +47,11 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | `jp-fence-mesh` | 거부 `material-not-found` / layer "3": 거부 | 거부 `path-needs-autotile` | 0층에 놓임·정상 | 2층에 놓임·재계산 안 됨 9칸 | 0층에 놓임·정상 |
 | `jp-guardrail` | 거부 `material-not-found` / layer "3": 거부 | 거부 `path-needs-autotile` | 0층에 놓임·정상 | 2층에 놓임·재계산 안 됨 9칸 | 0층에 놓임·정상 |
 | `jp-rail-track` | 정상 | 거부 `path-needs-autotile` | 1층에 놓임·정상 | 2층에 놓임·재계산 안 됨 9칸 | 1층에 놓임·정상 |
-| `jp-lane-center` | 면이 깔림(1층)·재계산 안 됨 32칸 / layer "2": 정상 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
-| `jp-lane-dash` | 면이 깔림(1층)·재계산 안 됨 32칸 / layer "2": 정상 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
-| `jp-crosswalk-ew` | 정상 / layer "2": 정상 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
-| `jp-crosswalk-ns` | 정상 / layer "2": 정상 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
-| `jp-tactile` | 면이 깔림(1층)·재계산 안 됨 32칸 / layer "2": 정상 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
+| `jp-lane-center` | 거부 `material-not-found` / layer "2": 거부 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
+| `jp-lane-dash` | 거부 `material-not-found` / layer "2": 거부 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
+| `jp-crosswalk-ew` | 거부 `material-not-found` / layer "2": 거부 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
+| `jp-crosswalk-ns` | 거부 `material-not-found` / layer "2": 거부 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
+| `jp-tactile` | 거부 `material-not-found` / layer "2": 거부 | 거부 `path-needs-autotile` | 3층에 놓임·재계산 안 됨 9칸 | 2층에 놓임·정상 | 3층에 놓임·재계산 안 됨 9칸 |
 읽는 법과 규칙:
 1. **지면 8방 7종**: 면은 `fill_region`, 굽은 길·강은 `lay_path`(경유점 2개 이상, `naturalness`·`seed`) 또는 `fill_region` 의 `path`+`width`, 낱칸은 `paint_tiles` layer "1". 전부 칠한 뒤 재계산 0칸 어긋남.
 2. **위층 4방 4종(블록담·생울타리·철망·가드레일)**: `paint_tiles` layer **"3"** 의 line/cells. `fill_region` 은 「면 채우기 재료가 아님」으로 거부, `lay_path` 는 `path-needs-autotile`. **`stamp_layer_block` 은 3층 오토타일을 재성형하지 않는다**(기본 `reshape:true` 라도 1·2층만) — 번호를 그대로 찍어 어긋난다.

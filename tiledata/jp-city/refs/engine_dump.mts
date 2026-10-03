@@ -58,6 +58,10 @@ const OUT: Record<string, unknown> = {};
   for (const g of TS.tileGroups ?? []) for (const t of g.tileIds) if (!groupOf.has(t)) groupOf.set(t, g.id);
   const depthClass = (d: number) => (d === MAP_UPPER_LAYER_DEPTH ? "above" : d < 100_000 ? "below" : "ysort");
   const expectClass: Record<string, string> = { solid: "ysort", passable: "below", star: "above" };
+  // 엔진 규칙(src/player/characterDepth.ts isWalkableStairTile): ★ 칸이라도 태그에 stair·계단·사다리가 있으면 「밟는 계단」이라 항상 위가 아니라 캐릭터 아래(y 정렬 아래)로 그린다.
+  // 설계된 동작이므로 어긋남이 아니다 — 별도 목록(walkableStairs)으로 세고 기대 그림 순서를 below 로 본다.
+  const isStair = (m: { tags?: string[] }) => (m.tags ?? []).some((tag) => /stair/i.test(tag) || tag.includes("계단") || tag.includes("사다리"));
+  const walkableStairs: number[] = [];
   const blank = new Set<number>();
   let checked = 0;
   const byGroup: Record<string, Record<string, number>> = {};
@@ -74,7 +78,10 @@ const OUT: Record<string, unknown> = {};
     const walk = passabilityOf(TS, asphalt, -1, t, -1).up;
     const cls = depthClass(mapUpperTileDepth(TS, t, 10, 16));
     const problems: string[] = [];
-    if (m.passage && expectClass[m.passage] && expectClass[m.passage] !== cls) problems.push(`passage=${m.passage} 인데 엔진 그림 순서 ${cls}`);
+    const stair = m.passage === "star" && isStair(m);
+    if (stair) walkableStairs.push(t);
+    const want = stair ? "below" : m.passage ? expectClass[m.passage] : undefined;
+    if (m.passage && want && want !== cls) problems.push(`passage=${m.passage} 인데 엔진 그림 순서 ${cls}`);
     if (m.passage === "solid" && walk) problems.push("passage=solid 인데 엔진은 걸을 수 있다");
     if ((m.passage === "passable" || m.passage === "star") && !walk) problems.push(`passage=${m.passage} 인데 엔진은 막힘`);
     if (m.defaultLayer && m.defaultLayer !== home) problems.push(`defaultLayer=${m.defaultLayer} 인데 엔진 홈 ${home}`);
@@ -85,7 +92,19 @@ const OUT: Record<string, unknown> = {};
     kindCount[key] = (kindCount[key] ?? 0) + 1;
     if (problems.length) mism.push({ tile: t, label: m.label ?? "", group: g, problems });
   }
-  OUT.layerAudit = { codes, count: TS.count, checked, blank: blank.size, mismatches: mism.length, byGroup, kindCount, examples: mism.slice(0, 60),
+  // 그룹 층 감사: 그룹 defaultLayer·layerHome 이 멤버 칸의 엔진 홈(tileLayerPolicy().home)과 맞는가 — 전부 위=upper, 전부 아래=lower, 섞이면 mixed(+perCell).
+  const groupLayerMismatches: { group: string; declared: string; layerHome: string | undefined; homes: Record<string, number> }[] = [];
+  for (const g of TS.tileGroups ?? []) {
+    if (g.defaultLayer === "event") continue;
+    const homes: Record<string, number> = {};
+    for (const t of g.tileIds) { if (blank.has(t)) continue; const h = tileLayerPolicy(TS, t).home; homes[h] = (homes[h] ?? 0) + 1; }
+    const keys = Object.keys(homes);
+    if (keys.length === 0) continue;
+    const wantLayer = keys.length === 1 ? keys[0]! : "mixed";
+    const wantHome = keys.length === 1 ? keys[0]! : "perCell";
+    if (g.defaultLayer !== wantLayer || g.layerHome !== wantHome) groupLayerMismatches.push({ group: g.id, declared: g.defaultLayer, layerHome: g.layerHome, homes });
+  }
+  OUT.layerAudit = { walkableStairs, groupLayerMismatches, groups: (TS.tileGroups ?? []).length, codes, count: TS.count, checked, blank: blank.size, mismatches: mism.length, byGroup, kindCount, examples: mism.slice(0, 60),
     mismatchByProblem: mism.reduce<Record<string, number>>((a, r) => { for (const p of r.problems) { const k = p.replace(/\d+/g, "N"); a[k] = (a[k] ?? 0) + 1; } return a; }, {}) };
 }
 
