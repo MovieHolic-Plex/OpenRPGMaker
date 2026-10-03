@@ -345,7 +345,7 @@ spawn('hall-W', 'cave-bat', CORR['WH'] | CORR['WS'], 2)
 spawn('hall-E', 'cave-bat', CORR['EH'] | CORR['ES'], 2)
 kit.SPAWNS.extend(SP)
 ANCH.extend((s['x'], s['y']) for s in SP)
-for cands, ch, d, fr in (([(27, 40), (28, 41), (19, 40), (19, 41)], 2, PP.LEFT, 1), ([(6, 25), (7, 25), (6, 26), (8, 24), (5, 24), (7, 27), (9, 25)], 5, PP.FRONT, 0)):    # 입구 방의 모험가(길목 밖), 광산 방의 광부
+for cands, ch, d, fr in (([(x_, y_) for x_ in (27, 28, 20, 19) for y_ in (40, 41, 39)], 2, PP.LEFT, 1), ([(4, 24), (4, 23), (6, 25), (7, 25), (6, 26), (8, 24), (5, 24)], 5, PP.FRONT, 0)):    # 입구 방의 모험가(길목 밖), 광산 방의 광부
     for (x, y) in cands:
         if kit.walkable(x, y) and (x, y) not in kit.DRAWN and (x, y) not in VIS:
             PEOPLE.append((x, y, ch, d, fr)); break

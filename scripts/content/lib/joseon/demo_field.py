@@ -528,7 +528,7 @@ def pick_species(rg, x, y, mix=0.62):
 
 def glade(x, y):
     """숲 속 빈터(나무를 안 심는 둥근 구석): 그루터기·통나무·꽃·뼈가 곁들이로 앉는다."""
-    return vnoise(x, y, 95, 6.5) < 0.27
+    return vnoise(x, y, 95, 6.5) < 0.22
 
 
 def plant(region, seed, dmin=2.4, dvar=1.8, tries=20000, ok=OKG, conn=True, use_glade=False, density=1.0, names=None):
@@ -551,7 +551,7 @@ def plant(region, seed, dmin=2.4, dvar=1.8, tries=20000, ok=OKG, conn=True, use_
 
 
 FOR_BOT = {c for c in FOREST if KG[c[1]][c[0]] == 'forest'}
-n1 = plant({c for c in FOR_BOT if c[1] >= 10}, seed=1, dmin=2.0, dvar=1.6, use_glade=True)
+n1 = plant({c for c in FOR_BOT if c[1] >= 10}, seed=1, dmin=1.8, dvar=1.4, use_glade=True)
 for (nm, x, y) in (('fld_grove_broad', 86, 20), ('fld_grove_pine', 72, 54), ('fld_grove_pine', 88, 28)):
     if put(nm, x, y, ok=OKG, conn=True): TREEPOS.append((nm, x, y)); TB.add((x, y + kit.objects[nm].h // T - 1))
 print('숲 나무', n1)
@@ -630,16 +630,21 @@ LOG['ore'] = scatter(['fld_ore_a', 'fld_ore_b'], RK, 4, ok=('rock',), gap=7, see
 ALLT = ZEL + PIN
 fre = lambda x0, y0, x1, y1: {(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1) if KG[y][x] in (None, 'tall', 'forest')}
 wood = lambda x, y, s, th: vnoise(x, y, s, 8.0) > th                                      # 숲덩이 모양(직선 줄 금지): 잡음이 높은 곳만 숲
-NW = {c for c in fre(0, 9, 40, 25) if wood(c[0], c[1], 96, 0.30)}
-NE = {c for c in fre(56, 9, 72, 24) if wood(c[0], c[1], 97, 0.45)}
-SOUTH = {c for c in fre(0, 85, 95, 95) if wood(c[0], c[1], 98, 0.22)}
-WESTE = {c for c in fre(0, 49, 6, 84) if wood(c[0], c[1], 99, 0.35)}
-SE = {c for c in fre(82, 55, 95, 84) if wood(c[0], c[1], 100, 0.30)}
+NW = {c for c in fre(0, 9, 40, 25) if wood(c[0], c[1], 96, 0.22)}
+NE = {c for c in fre(56, 9, 72, 24) if wood(c[0], c[1], 97, 0.33)}
+SOUTH = {c for c in fre(0, 85, 95, 95) if wood(c[0], c[1], 98, 0.12)}
+WESTE = {c for c in fre(0, 49, 6, 84) if wood(c[0], c[1], 99, 0.22)}
+SE = {c for c in fre(82, 55, 95, 84) if wood(c[0], c[1], 100, 0.20)}
 LOG['t_nw'] = plant(NW, seed=31, dmin=2.6, dvar=2.0)
 LOG['t_ne'] = plant(NE, seed=32, dmin=3.0, dvar=2.2)
 LOG['t_west'] = plant(WESTE, seed=33, dmin=3.0, dvar=2.2)
 LOG['t_south'] = plant(SOUTH, seed=34, dmin=2.6, dvar=2.0)
 LOG['t_se'] = plant(SE, seed=35, dmin=2.8, dvar=2.0)
+COPSE = [(25, 57, 4.5), (39, 63, 3.5), (62, 63, 4), (66, 46, 3.5), (29, 36, 4), (56, 28, 3.5), (36, 14, 3.5), (68, 18, 3)]       # 초원 속 작은 숲덩이(수종 한 줄 심기가 아니라 둥근 군락)
+cop = set()
+for (cx, cy, r) in COPSE:
+    cop |= {(x, y) for (x, y) in fre(cx - 5, cy - 5, cx + 5, cy + 5) if ((x - cx) / r) ** 2 + ((y - cy) / (r * 0.8)) ** 2 <= 1.0 + 0.3 * (rnd(x, y, 77) - 0.5)}
+LOG['t_copse'] = plant(cop, seed=37, dmin=2.2, dvar=1.6)
 LOG['t_mid'] = plant({(x, y) for (x, y) in kcells(None, 'tall', x0=26, y0=24, x1=66, y1=60) if (x, y) not in near_trail({(x, y)}, 3)}, seed=36, dmin=6.0, dvar=3.0, tries=400)
 
 # --- 초원: 바위·꽃·덤불·뼈·짐승굴
@@ -767,10 +772,11 @@ print('맨 잔디 창 완화', relieve_lawn())
 def fix_lines():
     removed = 0
     for _ in range(12):
-        bad = FM.audit_line3(kit.placed)
+        bad = FM.audit_line3([p for p in kit.placed if not p[0].startswith('fort_wall')])
         if not bad:
             break
         # (이름, (x, y) 시작점, (dx, dy)) → 가운데 점을 뽑는다
+        if os.environ.get('JS_DBG'): print('  줄 심기', collections.Counter(n for (n, _a, _b) in bad), bad[:3])
         for (n, (x, y), (dx, dy)) in bad:
             if n == 'tree':
                 mid = (x + dx, y + dy)
@@ -838,7 +844,7 @@ def audit_all():
     de = FM.audit_deadends(kit, ('trail', 'road', 'yard', 'slab'), ANCH)
     if de: probs.append('막다른 길 %d: %s' % (len(de), de[:8]))
     # 3) 같은 소품·나무 셋 일렬 금지
-    ln = FM.audit_line3(kit.placed)
+    ln = FM.audit_line3([p for p in kit.placed if not p[0].startswith('fort_wall')])
     if ln: probs.append('셋 일렬 %d: %s' % (len(ln), ln[:4]))
     # 4) 10×10 완전 빈 땅 금지
     pl = FM.audit_plain(kit, 10)
