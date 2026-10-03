@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { deserialize, serialize } from "@/project/io";
 import { normalizeRelief, resizeRelief } from "@/project/relief/edit";
 import { effectiveHeights, renderRelief } from "@/project/relief/render";
-import { reliefRenderOptions, reliefSignature } from "@/project/relief/screen";
+import { reliefPaintsCell, reliefRenderOptions, reliefSignature } from "@/project/relief/screen";
 import { compileReliefStyle, RELIEF_STYLES, RELIEF_WALL_FAMILIES, reliefStyleForTileset } from "@/project/relief/styles";
 import { gridFromRelief, type ReliefData } from "@/project/relief/types";
 import { createBlankProject } from "@/project/defaults";
@@ -21,6 +21,22 @@ const wallPixels = (style?: string) => {
 };
 
 describe("relief wall styles", () => {
+  it("default stairs own their stone treads, including the ground-level foot", () => {
+    const relief: ReliefData = { width: W, height: H, levels: new Array(W * H).fill(0), ramps: new Array(W * H).fill(0) };
+    for (let y = 1; y < 4; y++) for (let x = 1; x < W - 1; x++) relief.levels[y * W + x] = 3;
+    for (let y = 4; y < 8; y++) for (const x of [4, 5]) relief.ramps![y * W + x] = 5;
+    expect(reliefPaintsCell(relief, 4, 4)).toBe(true);
+    expect(reliefPaintsCell(relief, 4, 7)).toBe(true);
+    const rendered = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief));
+    const foot = Array.from(rendered.src.keys()).filter(i => rendered.kind[i] === 0 && rendered.slope[i] > 0 && rendered.height[i] === 0);
+    expect(foot.length).toBeGreaterThan(0);
+    for (const i of foot) {
+      const rgb = Array.from(rendered.rgba.slice(i * 4, i * 4 + 3));
+      expect(rendered.rgba[i * 4 + 3]).toBe(255);
+      expect(Math.max(...rgb) - Math.min(...rgb)).toBeLessThan(25);
+    }
+  });
+
   it("renders a bridge underside with the default two-ramp palette and biome accent palettes", () => {
     for (const style of [undefined, "grass-cliff"]) {
       const relief: ReliefData = { width: W, height: H, levels: new Array(W * H).fill(0), ramps: new Array(W * H).fill(0), ...(style ? { style } : {}) };

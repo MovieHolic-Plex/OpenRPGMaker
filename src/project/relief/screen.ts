@@ -6,7 +6,7 @@
 import { effectiveHeights, prune, type ReliefRender, type ReliefRenderOptions } from "./render";
 import { gridFromRelief, RELIEF_TILE, type ReliefData } from "./types";
 import { hasRelief, reliefBridgeMask, reliefSlopes } from "./walk";
-import { reliefCarvedStairs, reliefRampArt, reliefSmoothStairs } from "./styles";
+import { reliefRampArt, reliefSmoothStairs } from "./styles";
 
 export interface ReliefLiftField {
   readonly width: number;
@@ -48,8 +48,8 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
 export function reliefPaintsCell(relief: ReliefData | undefined, x: number, y: number): boolean {
   if (!relief?.ramps) return false;
   const v = relief.ramps[y * relief.width + x] ?? 0;
-  // r3: stair ramps (5..8) too where the style paints them — as slopes (smoothStairs + ramp art) or as cut steps (carvedStairs)
-  if (v >= 5 && v <= 8) return !!reliefCarvedStairs(relief.style) || (reliefSmoothStairs(relief.style) && !!reliefRampArt(relief.style));
+  // 계단의 디딤판·챌면은 렌더러가 소유한다. 기본 양식에서도 잔디 타일로 덮지 않는다.
+  if (v >= 5 && v <= 8) return !reliefSmoothStairs(relief.style) || !!reliefRampArt(relief.style);
   return v >= 1 && v <= 4 && !!reliefRampArt(relief.style);
 }
 
