@@ -906,6 +906,15 @@
     "X",
     "F"
    ]
+  },
+  "in_doorway": {
+   "all": "F"
+  },
+  "in_dais_side_l": {
+   "all": "X"
+  },
+  "in_dais_side_r": {
+   "all": "X"
   }
  },
  "terrain": {
@@ -1120,6 +1129,16 @@
     "in_ceil47"
    ],
    "edgeConnects": true
+  },
+  "in_floor_deck": {
+   "name": "조선 실내 단 널마루",
+   "walk": true,
+   "role": "terrain"
+  },
+  "in_floor_yard": {
+   "name": "조선 실내 문 밖 마당",
+   "walk": true,
+   "role": "terrain"
   }
  }
 }
