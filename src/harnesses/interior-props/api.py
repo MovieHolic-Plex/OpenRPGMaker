@@ -172,7 +172,7 @@ def decide(body):
 def draw(body):
     ids = [i for i in body.get('ids', []) if i in objects_by_id()]
     if not ids: raise ValueError('기물이 없다')
-    n = max(1, min(5, int(body.get('n') or 5))); note = str(body.get('note') or '')[:2000]; base = str(body.get('base') or '')
+    n = max(1, min(5, int(body.get('n') or harness.N_DEFAULT))); note = str(body.get('note') or '')[:2000]; base = str(body.get('base') or '')
     if base and (len(ids) != 1 or not _exists(ids[0], base)): raise ValueError('출발 후보가 없다')
     if body.get('round') and len(ids) == 1:
         _record_rejects(ids[0], body['round'], body.get('rejects'))

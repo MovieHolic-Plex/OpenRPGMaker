@@ -27,7 +27,7 @@ MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '32'))   # codex 32 명(2026-10
 TIMEOUT_S = int(os.environ.get('PROP_HARNESS_TIMEOUT', str(40 * 60)))
 REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'medium' if ENGINE == 'codex' else 'high')
 MAX_ATTEMPTS = int(os.environ.get('PROP_HARNESS_ATTEMPTS', '3'))   # 한 장 = 그리기 최대 3번(처음 + 다시 그리기 2번)
-N_DEFAULT = 5
+N_DEFAULT = 2   # 후보 둘(설명 충실·같은 방 화풍, 또는 최소 수정 둘). 셋째 자리는 고르는 화면의 「다시 뽑기」(2026-10-03 사용자)
 CANDS = 'tiledata/hand-interior/pick/candidates'
 POOL_LOCK = os.path.join(store.DATA, 'pool.lock')
 LOGS = os.path.join(store.DATA, 'logs')
