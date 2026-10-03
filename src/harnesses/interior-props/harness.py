@@ -73,7 +73,14 @@ def pool_alive():
 def ensure_pool():
     if pool_alive(): return
     os.makedirs(LOGS, exist_ok=True)
-    subprocess.Popen([sys.executable, os.path.abspath(__file__), 'pool'], cwd=ROOT, start_new_session=True,
+    cmd = [sys.executable, os.path.abspath(__file__), 'pool']
+    # 고르는 서버(systemd 서비스) 안에서 띄우면 서버를 다시 켤 때 일꾼까지 같이 죽는다(2026-10-03) → 되면 따로 된 user 서비스로
+    if shutil.which('systemd-run') and os.environ.get('XDG_RUNTIME_DIR'):
+        r = subprocess.run(['systemd-run', '--user', '--collect', '--quiet', f'--unit=prop-harness-pool-{int(time.time())}',
+                            f'--working-directory={ROOT}', '-p', f'StandardOutput=append:{os.path.join(LOGS, "pool.log")}',
+                            '-p', f'StandardError=append:{os.path.join(LOGS, "pool.log")}'] + cmd, capture_output=True)
+        if r.returncode == 0: return
+    subprocess.Popen(cmd, cwd=ROOT, start_new_session=True,
                      stdout=open(os.path.join(LOGS, 'pool.log'), 'a'), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
 
 

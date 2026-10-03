@@ -63,12 +63,22 @@ def load_new_items(v5_ids=None):
         seen.add(slug(i)); out.append(apply_resize(new_item_object(it)))
     return out
 
+_META = {}
 def load_meta(include_new=True):
-    """v5 메타. include_new 면 새 기물(new:True 가짜 객체)도 objects 끝에 붙인다. v5 파일은 읽기만 한다."""
-    m = json.load(open(os.path.join(V5, 'interior-meta.json'), encoding='utf-8'))
-    if include_new:
-        m = dict(m, objects=[apply_resize(o) for o in m['objects']] + load_new_items({o['id'] for o in m['objects']}))
-    return m
+    """v5 메타. include_new 면 새 기물(new:True 가짜 객체)도 objects 끝에 붙인다. v5 파일은 읽기만 한다.
+    세 파일(메타·새 기물 명세·크기 바꿈 표시)의 시각이 그대로면 지난 결과를 쓴다 — 그림·상태 요청마다 불려
+    한 번 30ms+ 씩 서버를 막았다(2026-10-03 「이미지 로딩 느림」). 객체는 얕은 사본으로 돌려 부르는 쪽이 고쳐도 캐시는 그대로."""
+    def mt(f):
+        try: return os.stat(f).st_mtime_ns
+        except OSError: return 0
+    k = (include_new, mt(os.path.join(V5, 'interior-meta.json')), mt(NEW_ITEMS), mt(RESIZE_STAMP))
+    if _META.get(include_new, (None,))[0] != k:
+        m = json.load(open(os.path.join(V5, 'interior-meta.json'), encoding='utf-8'))
+        if include_new:
+            m = dict(m, objects=[apply_resize(o) for o in m['objects']] + load_new_items({o['id'] for o in m['objects']}))
+        _META[include_new] = (k, m)
+    m = _META[include_new][1]
+    return dict(m, objects=[dict(o) for o in m['objects']])
 
 def objects_by_id():
     return {o['id']: o for o in load_meta()['objects']}

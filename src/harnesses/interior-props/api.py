@@ -112,10 +112,12 @@ def thumb(s):
     from PIL import Image
     mt = (os.path.getmtime(SPEC), os.path.getmtime(SHEET))
     if _thumb['mtime'] != mt:
+        _thumb.pop('byslug', None)
         _thumb.update(mtime=mt, cache={}, spec=json.load(open(SPEC, encoding='utf-8'))['objects'],
                       sheet=Image.open(SHEET).convert('RGBA'))
     if s in _thumb['cache']: return _thumb['cache'][s]
-    o = next((v for k, v in _thumb['spec'].items() if slug(k) == s), None)
+    if 'byslug' not in _thumb: _thumb['byslug'] = {slug(k): v for k, v in _thumb['spec'].items()}
+    o = _thumb['byslug'].get(s)
     if not o:   # 시트에 없는 새 기물: 고른 후보가 있으면 그 그림, 없으면 None
         m = objects_by_slug().get(s)
         ch = m and ((picks_db.current_all().get(m['id']) or {}).get('choice') or 'v5')
@@ -297,7 +299,7 @@ def handle(h, method, parts, body=None):
         if len(parts) == 4 and parts[:3] == ['api', 'harness', 'thumb'] and parts[3].endswith('.png'):
             b = thumb(parts[3][:-4])
             if b is None: h.send(404, '{}')
-            else: h.send(200, b, 'image/png')
+            else: h.send(200, b, 'image/png')   # 주소에 ?v=<지금 그림> 이 붙어 오면 send 가 하루 캐시를 단다
             return True
         return False
     if method == 'POST' and parts[:2] == ['api', 'harness']:

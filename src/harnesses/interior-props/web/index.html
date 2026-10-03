@@ -180,6 +180,11 @@ async function api(p, body) {
 }
 const item = () => S.data?.items.find(i => i.id === S.cur);
 const rnd = () => { const it = item(); return it && (it.rounds.find(r => r.id === S.round) || it.rounds[it.rounds.length - 1]); };
+// 왼쪽 목록 그림: 지금 고른 그림 이름을 주소에 붙여 브라우저가 하루 동안 다시 받지 않게 하고(목록은 3초마다 다시 그려진다),
+// 보이는 것만 받는다(loading=lazy). 아직 그림이 없는 새 기물은 요청하지 않고 「새」 표시만 — 예전엔 300장을 매번 받느라 후보 그림이 줄을 섰다.
+const thumbSrc = o => `/api/harness/thumb/${o.slug}.png?v=${encodeURIComponent(o.current || 'v5')}`;
+const thumbImg = o => (o.isNew && (o.current || 'v5') === 'v5') ? `<b class="nb">새</b>`
+  : `<img loading="lazy" decoding="async" src="${thumbSrc(o)}" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'nb',textContent:'새'}))">`;
 const curSrc = it => `/c/${it.slug}/${it.current === 'v5' ? 'v5' : it.current}.png`;
 const imgSrc = (it, c, v) => S.mode === 'ctx' ? `/ctx/${it.slug}/${c}.png?v=${v||0}` : `/c/${it.slug}/${c}.png?v=${v||0}`;
 const ctxSrc = (it, c, v) => `/ctx/${it.slug}/${c}.png?v=${v||0}`;
@@ -250,7 +255,7 @@ function renderNav() {
     else h += `<h3>${g[k]} · ${L.length}</h3>`;
     for (const i of L) {
       const b = k === 'drawing' ? `${i.rounds.at(-1).runs.length - i.busy}/${i.rounds.at(-1).runs.length}` : k === 'ready' ? `${i.readyCount}장` : '✓';
-      h += `<div class="it ${i.id === S.cur ? 'cur' : ''}" data-id="${esc(i.id)}"><span class="th"><img src="/api/harness/thumb/${i.slug}.png" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'nb',textContent:'새'}))"></span>
+      h += `<div class="it ${i.id === S.cur ? 'cur' : ''}" data-id="${esc(i.id)}"><span class="th">${thumbImg(i)}</span>
             <span class="n" title="${esc(i.desc)}">${esc(i.name)}</span>${engOf(i).map(e => `<span class="eng ${e}" title="마지막 판을 ${ENG_FULL[e]} 가 그렸다">${ENG[e][0]}</span>`).join('')}<span class="b ${k}">${b}</span></div>`;
     }
   }
@@ -445,13 +450,13 @@ function renderObjs() {
   const q = S.q.trim().toLowerCase();
   const L = S.objs.filter(o => (S.cat === '전체' || o.category === S.cat) && (!q || (o.name + ' ' + o.id + ' ' + o.desc).toLowerCase().includes(q)));
   $('#nav').innerHTML = `<h3>고른 기물 · ${S.objSel.size}</h3>` + [...S.objSel].map(id => { const o = S.objs.find(x => x.id === id);
-    return `<div class="it" data-un="${esc(id)}"><span class="th"><img src="/api/harness/thumb/${o.slug}.png" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'nb',textContent:'새'}))"></span><span class="n">${esc(o.name)}</span><span class="b drawing">빼기</span></div>`; }).join('');
+    return `<div class="it" data-un="${esc(id)}"><span class="th">${thumbImg(o)}</span><span class="n">${esc(o.name)}</span><span class="b drawing">빼기</span></div>`; }).join('');
   $('#nav').querySelectorAll('[data-un]').forEach(e => e.onclick = () => { S.objSel.delete(e.dataset.un); renderObjs(); });
   $('#main').innerHTML = `<div class="objtools"><input id="q" placeholder="찾기 — 이름·영문 id·설명" value="${esc(S.q)}">
      <div class="cats">${cats.map(c => `<button data-cat="${esc(c)}" class="${S.cat === c ? 'on' : ''}">${esc(c)}</button>`).join('')}</div></div>
      <div class="objs">` + L.map(o => `<div class="obj ${S.objSel.has(o.id) ? 'on' : ''}" data-id="${esc(o.id)}" title="${esc(o.desc)}">
        ${o.rounds ? `<span class="rb">판 ${o.rounds}</span>` : ''}<span class="ck">✓</span>
-       <div class="pic">${o.isNew && o.current === 'v5' ? `<div class="newpic">새 기물<br><small>${esc((o.use || []).join(' · '))}</small></div>` : `<img data-src="/api/harness/thumb/${o.slug}.png">`}</div><div class="nm">${o.isNew ? '<b class="nb">새</b> ' : ''}${esc(o.name)}</div></div>`).join('') + `</div>
+       <div class="pic">${o.isNew && o.current === 'v5' ? `<div class="newpic">새 기물<br><small>${esc((o.use || []).join(' · '))}</small></div>` : `<img data-src="${thumbSrc(o)}">`}</div><div class="nm">${o.isNew ? '<b class="nb">새</b> ' : ''}${esc(o.name)}</div></div>`).join('') + `</div>
      <div class="keys">기물을 눌러 고르고(여러 개 가능), 아래에서 메모를 달고 「후보 5장씩 뽑기」. 기물마다 작업자 다섯 명(${esc(S.data?.pool?.model || '')})이 방향을 나눠 한 장씩 찍는다(있는 기물: 최소 수정 2 · 기준 맞추기 2 · 자유 1 / <b class="nb">새</b> 기물: 설명 충실 · 같은 방 화풍 · 단순 · 장식 · 자유 해석). 찍은 뒤 독립 검수자가 3/4 를 보고, 떨어지면 다시 그린다.</div>`;
   $('#main').querySelectorAll('.obj img').forEach(img => { sized(img, 3); img.src = img.dataset.src; });
   const qi = $('#q'); qi.oninput = e => { S.q = e.target.value; const p = qi.selectionStart; renderObjs(); const n = $('#q'); n.focus(); n.setSelectionRange(p, p); };
