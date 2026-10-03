@@ -812,6 +812,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const renderTitle = (titleOptions: { readonly emitEnterJuice?: boolean } = {}): void => {
     titleConfirming = false;
     const firstEnter = titleOptions.emitEnterJuice ?? true;
+    const redrawOfTitle = !firstEnter && !!layout.querySelector("[data-testid='title-screen']");
     // 방향키 재렌더가 파티클 canvas/레이어 스택을 파괴하지 않도록, 지우기 전에 기존 fx 노드를
     // 붙잡아 renderTitleScreen 에 넘긴다(설정 서명이 같으면 같은 노드가 새 루트로 move 된다).
     const previousFx = layout.querySelector<HTMLElement>("[data-testid='title-fx']");
@@ -822,7 +823,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 이전 런의 BGM/BGS 는 여기서 직접 멈춰 무음으로 남지 않게 한다.
     game?.registry.set(AUDIO_HANDOFF_REGISTRY_KEY, true);
     stopGame();
-    stopAllAudio();
+    if (!redrawOfTitle) stopAllAudio();
     clearChildren(layout);
     const project = store.getCurrent();
     const settings = currentTitleSettings(project);
@@ -859,7 +860,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     surface.stage.append(title);
     focusSelectedTitleOption(title);
     surface.sync();
-    startTitleBgm(titleProject);
+    if (!redrawOfTitle) startTitleBgm(titleProject);
     if (firstEnter) emitTitleJuice("title-enter");
     armTitleAttract(title, surface.stage, titleProject);
   };
