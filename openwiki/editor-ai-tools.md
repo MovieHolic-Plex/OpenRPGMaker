@@ -2595,3 +2595,13 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for the actua
 `configure_monster_system` keeps its omitted `battleParty` compatibility contract. Its optional `presentation: "collector"` uses `configureMonsterPresentation` to set pixel menus and collector HUD; omitted/`preserve` retains existing presentation. The genre preset and bundled monster example explicitly apply the same helper. Only the unchanged built-in four-scene kingdom opening is disabled; independently authored opening text is preserved. No schema field or migration is added.
 
 The result declares `verificationScope: "configuration-only"`. Configuration success does not establish event execution, native combat, persistent saving, or campaign completion. After device interaction, call `run_scene_test` with `playerCanMove: true` and an exact `reachableTile` assertion before any `set`/`moveTo` injection. The runner now applies actual runtime tile overrides; its headless scope, starting position and injected steps are returned by both play tools. Actual exported-player input and canonical host save/fresh-load evidence remain separate requirements.
+
+## Structured optional read arrays (2026-10-04)
+
+Real opening dogfood exposed repeated actor-ID guesses: the provider emitted
+`get_database_records(ids:[])`, which returned zero even with160 actors. Empty
+optional IDs now mean no filter, matching omission; nonempty arrays still select
+exact real IDs. `read_game_systems` exposes actual current actor ID/name/charset
+index/map/coordinates and companion count, so artists need not infer these from
+a generic catalog. Preset menu entries and non-map audio bindings similarly
+accept empty optional arrays. Mutation/delete lists retain their explicit contract.
