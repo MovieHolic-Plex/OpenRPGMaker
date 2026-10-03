@@ -109,7 +109,8 @@ def galaxy_land(rng, salt, count, target):
             hi = mid
     land = KG._settle(fields, (lo + hi) / 2)
     info = dict(home=tuple(systems[0][:2]), systems=[[round(v, 2) if isinstance(v, float) else v for v in sy] for sy in systems],
-                core=[round(cx, 2), round(cy, 2)], arms=arms, clusters=len(segs) + 1)
+                core=[round(cx, 2), round(cy, 2)], arms=arms, clusters=len(segs) + 1,
+                spiral=dict(n=arms, b=round(b, 4), th0=round(th0, 4), squash=squash))   # 그림이 나선팔을 핵에서부터 그린다
     return land, info
 
 

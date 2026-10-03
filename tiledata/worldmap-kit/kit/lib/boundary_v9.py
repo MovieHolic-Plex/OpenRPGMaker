@@ -32,12 +32,14 @@ FIELD = {FARM, CROP}
 MIN = {SAND, DUNE, DIRT, BADLANDS, ASH, BASALT}
 ICE = {SNOW, GLACIER}
 HOLE = {CHASM, CRATER}
-BIGPAT = {MARSH}                                            # 무늬가 커서 뒤집으면 거울 이음매가 보인다
+BIGPAT = {MARSH, DIRT, BADLANDS}                                            # 무늬가 커서 뒤집으면 거울 이음매가 보인다
 DIRECTIONAL = {SAND, DUNE, SNOW, GLACIER, FARM, CROP}      # 무늬에 위아래가 있다(물결·고랑) — 상하 뒤집기 금지
 
 SIGMA = 7.0
 NOISE = ((30.0, .30), (13.0, .15), (5.0, .06))             # (파장 px, 진폭) — 흐린 지시 장(0~1) 단위
 FIELD_SIGMA, FIELD_AMP = 1.6, .25                           # 밭은 곧게
+NEAR_MIN = .06
+WARP = (60.0, 6.5, 22.0, 2.0)                               # (파장, 진폭 px) 두 단 — 라벨 장을 통째로 휜다
 
 
 def _ramp(g):
@@ -70,9 +72,17 @@ def label_map(M, lv):
         f = ndi.gaussian_filter(m, FIELD_SIGMA if field else SIGMA)
         n = sum(vnoise(Hp, Wp, wl, 900 + 37 * g + k) * a for k, (wl, a) in enumerate(NOISE))
         sc = f + n * (FIELD_AMP if field else 1.0) + (.08 if field else 0)
+        sc[f < NEAR_MIN] = -1e9                                   # 근처(칸 둘레)에 없는 바닥은 노이즈로도 못 이긴다 — 엉뚱한 바닥 덩이 금지
         up = sc > best
         best[up] = sc[up]
         lab[up] = g
+    # 큰 결 왜곡: 칸 줄을 따라 길게 곧은 경계(생성 지형의 직선 해안·띠)를 ±8px 로 휜다
+    ys, xs = np.mgrid[0:Hp, 0:Wp]
+    wx = vnoise(Hp, Wp, WARP[0], 971) * WARP[1] + vnoise(Hp, Wp, WARP[2], 973) * WARP[3]
+    wy = vnoise(Hp, Wp, WARP[0], 972) * WARP[1] + vnoise(Hp, Wp, WARP[2], 974) * WARP[3]
+    sy = np.clip(np.rint(ys + wy), 0, Hp - 1).astype(np.int64)
+    sx = np.clip(np.rint(xs + wx), 0, Wp - 1).astype(np.int64)
+    lab = lab[sy, sx]
     # 노이즈가 만든 부스러기(먼 바닥의 몇 픽셀 섬)는 가장 가까운 큰 덩이 바닥으로
     junk = np.zeros((Hp, Wp), bool)
     for g in types:
@@ -148,6 +158,8 @@ def _parent_level(M, x, y, sx, sy):
 def _cls(g):
     if g in HOLE:
         return 'hole'
+    if g == MARSH:
+        return 'wet'
     if g in ICE:
         return 'ice'
     if g in FIELD:
@@ -189,7 +201,7 @@ def render_ground_v9(M):
             near_g[upd] = g
     ys, xs = np.mgrid[0:Hp, 0:Wp]
     hpx = hash2(xs, ys, 4545)
-    clump = (vnoise(Hp, Wp, 2.6, 4646) + 1) / 2 * .7 + hpx * .3     # 2~3px 덩이 디더
+    clump = (vnoise(Hp, Wp, 3.4, 4646) + 1) / 2 * .82 + hpx * .18   # 3~4px 덩이 디더(외톨이 1px 점이 적게)
     out = img.copy()
     band = (near_d <= 4.5) & land_px & (final >= 10)
     by_pair = {}
@@ -207,6 +219,11 @@ def render_ground_v9(M):
                 P = pair(a, b) if PRI[a] >= PRI[b] else pair(b, a)
                 e = m & (d <= 1.0) & (hpx < P['cover'])
                 out[e] = (out[e] * (1 - P['strength']) + P['rim'] * P['strength']).astype(np.uint8)
+            continue
+        if ca == 'wet' or cb == 'wet':                             # 독 늪: 섞지 않고 독 늪 쪽 끝에 어두운 테
+            if ca == 'wet':
+                e = m & (d <= 1.0) & (hpx < .7)
+                out[e] = _ramp(a)[0]
             continue
         if ca == 'field' or cb == 'field':
             if ca == 'field' and cb != 'field':                    # 밭 가장자리 고랑색 울타리

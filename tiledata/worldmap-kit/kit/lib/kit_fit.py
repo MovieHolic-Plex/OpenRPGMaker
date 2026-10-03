@@ -522,7 +522,11 @@ class Fit:
             dl = dsea
             edge = np.minimum(np.minimum(cx, W - cx), np.minimum(cy, H - cy))
             ci, ri = np.clip(cy.astype(int), 0, H - 1), np.clip(cx.astype(int), 0, W - 1)
-            sc = -np.abs(dh[ci, ri] - 9) * .5 + np.minimum(dl[ci, ri], 6) - (edge < 7) * 6 + self.jit * .8
+            # 발자국 전체에서 가장 가까운 땅까지 — 가운데 한 점만 보면 해협·내해 한복판에 떴다(적대 QA: 고리 내해·군도 해협)
+            pad = np.pad(dl, ((0, h), (0, w)), constant_values=0)
+            win = np.lib.stride_tricks.sliding_window_view(pad, (h, w))[:H, :W].min(axis=(2, 3))
+            enclosed = ndi.uniform_filter(self.land.astype(np.float32), 29, mode='constant')[ci, ri]   # 둘레 땅 비율 — 내해·해협 벌점
+            sc = np.minimum(win, 8) * 1.2 - np.abs(dh[ci, ri] - 10) * .25 - (edge < 8) * 4 - (edge < 5) * 20 - enclosed * 10 + self.jit * .8
             sc[~fm] = -1e9
             y, x = divmod(int(np.argmax(sc)), W)
             self.put(self.sky, x, y)

@@ -253,10 +253,11 @@ def _shards(rng, salt, count, target):
     while len(seeds) < count:
         p = max(cand, key=lambda p: min(math.hypot(p[0] - q[0], p[1] - q[1]) for q in seeds) + rng.uniform(0, 2))
         seeds.append(p)
-    xs, ys = _warp(salt + 60, 1.8, 4.0)
-    jx = (fbm(1.9, salt + 62) - .5) * 1.6
-    ys = ys + (fbm(1.9, salt + 63) - .5) * 1.6
-    home_w = (math.sqrt(base.sum() * .30 / math.pi)) ** 2 * .9
+    # 금은 거의 곧게(깨진 판처럼 — 적대 QA: 둥근 덩이 군도와 구별이 안 됐다), 시작 조각도 판의 한 조각 크기에 가깝게
+    xs, ys = _warp(salt + 60, .7, 5.0)
+    jx = (fbm(1.9, salt + 62) - .5) * .5
+    ys = ys + (fbm(1.9, salt + 63) - .5) * .5
+    home_w = (math.sqrt(base.sum() * (.20 if count <= 20 else .28) / math.pi)) ** 2 * .9   # 조각이 많으면 시작 조각 몫을 키운다(수도 6x6·1막 장소 자리)
     best = np.full((H, W), 9e9)
     owner = np.full((H, W), -1, int)
     for i, (sx, sy) in enumerate(seeds):
@@ -268,7 +269,7 @@ def _shards(rng, salt, count, target):
     owner[~base] = -1
     # 금 폭: 조각 경계에서 1~2.5칸(노이즈), 시작 조각과는 배 장벽 폭
     crack = np.zeros((H, W), bool)
-    cw = 1.0 + 1.6 * fbm(5, salt + 70)
+    cw = 1.25 + .6 * fbm(5, salt + 70)                    # 금 폭 1.2~1.9칸 — 이웃 조각 해안이 서로 맞물려 보이게
     for i in range(count):
         mi = owner == i
         if not mi.any():
@@ -715,6 +716,8 @@ def generate(spec, journey, salt=0):
     land = lay['land']
     G[~land] = M4.SEA
     _decorate(G, land, lay, journey, seed, space=space)
+    if not space:
+        _harmonize(G, land, lay)
     feat = KS.space_features(land, G, lay, info['systems'], seed) if space else features(land, G, lay, clim, seed)
     M4.GEN = dict(land=land, ground=G, edit=edit)
     # 여정 사본: 장소 좌표·시작 칸·길(같은 땅 안 최소 신장 나무 + 관문 양쪽)
@@ -736,7 +739,7 @@ def generate(spec, journey, salt=0):
                    ship_landmasses=len(set(np.unique(lab[land & ~lay['home']])) - {0}),
                    wall_cells=len(lay['wall']), gate=lay['gate'], harbour=lay['harbour'], start=list(j['start']['cell']),
                    places={k: [int(v[0]), int(v[1])] for k, v in lay['rect'].items()}, roads=len(j['roads']),
-                   features=feat, notes=lay['notes'], systems=info.get('systems'), core=info.get('core'), road_ends=[[r['id'], r['from'], r['to']] for r in j['roads']])
+                   features=feat, notes=lay['notes'], systems=info.get('systems'), core=info.get('core'), spiral=info.get('spiral'), road_ends=[[r['id'], r['from'], r['to']] for r in j['roads']])
     reg = np.full((H, W), '~', '<U1')
     reg[land] = 's'
     reg[lay['A']] = 'a'
@@ -747,6 +750,43 @@ def generate(spec, journey, salt=0):
     summary['regions_legend'] = 'a 1막(관문 앞) · b 2막(관문 너머) · w 산벽 · d 4막 사구 바다 · s 3막(배로 가는 땅) · ~ 바다'
     J.LAYOUT['summary'] = summary
     return j, summary
+
+
+COLD = (M4.SNOW, M4.GLACIER)
+HOT = (M4.SAND, M4.DUNE, M4.ASH, M4.BASALT)
+
+
+def _harmonize(G, land, lay):
+    """기후 어긋남 지우기(적대 QA 2026-10-03): 눈·빙하가 사막·사구·화산재에 바로 붙지 않게 사이에 툰드라/황무지 띠,
+    화산·용암 곁 얼음은 녹이고, 한 칸짜리 바닥 점은 이웃 다수로. 장소 발자국 둘레(2칸)는 장소 바닥이라 손대지 않는다."""
+    keep = ndi.binary_dilation(lay['foot'], iterations=2) | lay['dune']
+    cold = np.isin(G, COLD) & land
+    hot = np.isin(G, HOT) & land
+    if cold.any() and hot.any():
+        dh = ndi.distance_transform_edt(~hot)
+        G[cold & (dh <= 2.5) & ~keep] = M4.TUNDRA                    # 얼음 쪽을 툰드라로
+        stuck = cold & (dh <= 2.5) & keep                            # 장소 눈밭이 사막에 붙은 곳: 사막 쪽을 황무지로
+        if stuck.any():
+            near = hot & (ndi.distance_transform_edt(~stuck) <= 2.5) & ~lay['dune'] & ~ndi.binary_dilation(lay['foot'], iterations=1)
+            G[near] = M4.DIRT
+    hotv = np.zeros_like(land)
+    for vx, vy in M4.VOLCANOES:
+        ys, xs = np.mgrid[0:H, 0:W]
+        hotv |= np.hypot(xs - vx, ys - vy) <= 6.5
+    melt = hotv & np.isin(G, COLD) & land & ~keep
+    G[melt] = M4.TUNDRA
+    # 한 칸 점: 4이웃에 같은 바닥이 없고 3x3 다수가 다른 바닥
+    for y in range(1, H - 1):
+        for x in range(1, W - 1):
+            g = G[y, x]
+            if not land[y, x] or keep[y, x] or g < 10:
+                continue
+            nb = [G[y + dy, x + dx] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+            if g in nb:
+                continue
+            vals = [v for v in G[y - 1:y + 2, x - 1:x + 2].ravel() if v >= 10 and v != g]
+            if len(vals) >= 5:
+                G[y, x] = max(set(vals), key=vals.count)
 
 
 def _snow_peaks(cx, cy, r, lay, land, D, salt):

@@ -92,6 +92,7 @@ class Ctx:
         lay = world.get('layout') or {}
         self.systems = lay.get('systems')                # 생성 우주(galaxy): [[x, y, 반지름, 성단 번호], …] — 성계 별·궤도·은하 핵을 그린다
         self.core = lay.get('core')
+        self.spiral = lay.get('spiral')                  # 나선팔 매개변수(kit_space.galaxy_land): 핵에서 뻗는 팔을 그린다
 
     def _mask(self, cells):
         m = np.zeros((self.H, self.W), bool)
@@ -1117,7 +1118,7 @@ def render_space(ctx, seed=11, road_px=None):
     n1 = .6 * vnoise(H, W, 40, seed) + .4 * vnoise(H, W, 12, seed + 1)
     din = np.clip((d - .32) / .5, 0, 1)
     pocket = np.clip((.30 - vnoise(H, W, 64, seed + 9)) / .12, 0, 1) * np.clip((din - .5) * 2, 0, 1)
-    B = din * (.3 + .95 * n1) - 1.1 * pocket
+    B = din * (.3 + .95 * n1) - (.45 if ctx.systems else 1.1) * pocket   # 은하: 구멍을 옅은 패임으로(검은 호수처럼 읽혔다 — 적대 QA)
     ridge = 1 - np.abs(2 * vnoise(H, W, 18, seed + 12) - 1)
     wisp = (d > .03) & (d < .45) & (ridge > .9 - .5 * d)
     Bd = B + (bayer(H, W) - .5) * .12
@@ -1139,6 +1140,8 @@ def render_space(ctx, seed=11, road_px=None):
     m = lvl > 0
     img[m] = NEB_RGB[P[m], lvl[m] - 1]
     cool = (lvl == 1) & (din < .2)                       # 바깥 가스 실·끝자락은 공허 쪽 푸른빛으로 — 사막 성운 실이 갈색 뿌리처럼 보였다(QA)
+    if ctx.systems:                                      # 은하: 띠로 두르면 해안선처럼 읽혔다 — 반만 디더
+        cool &= bayer(H, W) < .5
     img[cool] = (img[cool].astype(np.float32) * .5 + hx('16204a').astype(np.float32) * .5).astype(np.uint8)
 
     # 별 — 성운 단이 높을수록 많다
@@ -1219,6 +1222,11 @@ def draw_galaxy(img, ctx, seed=11):
     occ[max(sy_ - 1, 0):sy_ + sh_ + 1, max(sx_ - 1, 0):sx_ + sw_ + 1] = True
     occ |= ctx.road | ctx.dune
     occ_px = np.kron(occ.astype(np.uint8), np.ones((TS, TS), np.uint8)).astype(bool)
+    foot = np.zeros((ctx.H, ctx.W), bool)                     # 빛무리·팔은 발자국만 비운다(길·여백까지 비우면 네모 구멍이 났다)
+    for p in ctx.places:
+        foot[p['y']:p['y'] + p['h'], p['x']:p['x'] + p['w']] = True
+    foot[sy_:sy_ + sh_, sx_:sx_ + sw_] = True
+    foot_px = np.kron(foot.astype(np.uint8), np.ones((TS, TS), np.uint8)).astype(bool)
     D = bayer(H, W)
     yy, xx = np.mgrid[0:H, 0:W]
     void = ~np.kron((ctx.G != 0).astype(np.uint8), np.ones((TS, TS), np.uint8)).astype(bool)
@@ -1243,17 +1251,49 @@ def draw_galaxy(img, ctx, seed=11):
         X, Y = int(rng.integers(0, W)), int(rng.integers(0, H))
         if void[Y, X] and rng.random() < arm[Y, X] * 1.4:
             img[Y, X] = SPACE['star'][int(rng.integers(0, 3))]
-    # 은하 핵: 둥근 빛무리 4단 디더 + 가운데 흰 점
+    # 나선팔: 핵에서 로그 나선을 따라 별빛 띠(공허·성운 위 모두 옅게) — 성계 염주만으로는 팔이 안 보였다(적대 QA)
+    if ctx.core and ctx.spiral:
+        sp = ctx.spiral
+        cx0, cy0 = ctx.core
+        band = np.zeros((H, W), np.float32)
+        for k in range(int(sp['n'])):
+            th = .4
+            while True:
+                r = 3.2 * np.exp(sp['b'] * th * 2.0)
+                if r > W * .62:
+                    break
+                a = sp['th0'] + 2 * np.pi * k / sp['n'] + th
+                X = int((cx0 + np.cos(a) * r * 1.1) * TS + 8)
+                Y = int((cy0 + np.sin(a) * r * sp['squash']) * TS + 8)
+                wdt = int(10 + r * .9)
+                if -wdt <= X < W + wdt and -wdt <= Y < H + wdt:
+                    band[max(Y - wdt, 0):max(Y + wdt + 1, 0), max(X - wdt, 0):max(X + wdt + 1, 0)] += 1.0 / (1 + r * .04)
+                th += .025
+        band = _boxblur(_boxblur(np.minimum(band, 8) / 8, 9), 9) * (.55 + .7 * vnoise(H, W, 26, seed + 80))
+        lane = (D < band * .8) & (band > .08) & ~foot_px
+        a_ = np.where(void, .5, .22)[lane][:, None]                  # 공허 위는 또렷하게, 성운 위는 살짝
+        img[lane] = (img[lane].astype(np.float32) * (1 - a_) + hx('5a6ab0').astype(np.float32) * a_).astype(np.uint8)
+        hi = (D < (band - .45) * .9) & (band > .45) & void & ~foot_px  # 팔 가운데 밝은 줄기
+        img[hi] = (img[hi].astype(np.float32) * .45 + hx('9aa8e0').astype(np.float32) * .55).astype(np.uint8)
+        rng2 = np.random.default_rng(seed + 81)
+        for _ in range(int(W * H / 30)):
+            X, Y = int(rng2.integers(0, W)), int(rng2.integers(0, H))
+            if not foot_px[Y, X] and rng2.random() < band[Y, X] * 1.2:
+                img[Y, X] = SPACE['star'][int(rng2.integers(0, 4))]
+    # 은하 핵: 넓은 팽대부(옅게, 성운 위도) + 둥근 빛무리 4단 디더 + 가운데 흰 점
     if ctx.core:
         cx, cy = ctx.core[0] * TS + 8, ctx.core[1] * TS + 8
         rr = np.hypot((xx - cx) / 1.25, (yy - cy) / .78)
-        R = 3.6 * TS
+        bulge = np.clip(1 - rr / (11 * TS), 0, 1) ** 1.6
+        bm = (D < bulge * .55) & ~foot_px
+        img[bm] = (img[bm].astype(np.float32) * .6 + hx('8a6a7a').astype(np.float32) * .4).astype(np.uint8)
+        R = 5.2 * TS
         t = np.clip(1 - rr / R, 0, 1)
         swirl = .5 + .5 * np.sin(np.arctan2(yy - cy, xx - cx) * 2 + rr / 9.0)
         lvl = t * (.75 + .5 * swirl)
         cols = [hx('3a2a5a'), hx('8a5a8a'), hx('f0b070'), hx('fff0c8'), hx('ffffff')]
         for k, th in enumerate((.12, .3, .52, .74, .92)):
-            m = (lvl > th) & (D < np.clip((lvl - th) / .14, 0, 1)) & ~occ_px
+            m = (lvl > th) & (D < np.clip((lvl - th) / .14, 0, 1)) & ~foot_px
             img[m] = cols[k]
     # 성계 별 + 궤도
     for i, (x, y, r, c) in enumerate(ctx.systems):
@@ -1573,30 +1613,71 @@ def draw_hyperlanes(img, ctx):
             X, Y = round(x0 + (x1 - x0) * t / max(n, 1)), round(y0 + (y1 - y0) * t / max(n, 1))
             if 0 <= X < W and 0 <= Y < H:
                 core[Y, X] = True
-    edge = {'N': (7, 0), 'S': (7, 15), 'E': (15, 7), 'W': (0, 7)}
+    # 항로를 사슬(갈림·끝 사이)로 모아 차이킨 곡선으로 — 칸마다 직각으로 꺾여 회로 기판처럼 보였다(적대 QA 2026-10-03)
     beacons = []
-    for (x, y), ls in g.items():
-        if (x, y) in ctx.bridge:
+    nodes = {c for c in g if c not in ctx.bridge}
+    nbr = lambda c: [(c[0] + DIRS[d][0], c[1] + DIRS[d][1]) for d in g[c]]
+    deg = {c: len(g[c]) for c in nodes}
+    seen = set()
+    chains = []
+    for c in sorted(nodes):
+        if deg[c] == 2:
             continue
-        ox, oy = x * TS, y * TS
-        if len(ls) == 1:
-            beacons.append((ox + 7, oy + 7))
-        if len(ls) == 2 and OPP[ls[0]] != ls[1]:          # 꺾임 → 4분원
-            ccx = 15.5 if 'E' in ls else -.5
-            ccy = 15.5 if 'S' in ls else -.5
-            rx, ry = abs(ccx - 7), abs(ccy - 7)
-            for t in np.linspace(0, np.pi / 2, 40):
-                X = min(15, max(0, int(round(ccx + rx * np.cos(t) * (-1 if ccx > 7 else 1)))))
-                Y = min(15, max(0, int(round(ccy + ry * np.sin(t) * (-1 if ccy > 7 else 1)))))
-                core[oy + Y, ox + X] = True
-        else:
-            for d in ls:
-                ex, ey = edge[d]
-                dx, dy = DIRS[d]
-                if 0 <= x + dx < ctx.W and 0 <= y + dy < ctx.H and ctx.occupied[y + dy, x + dx]:
-                    ex, ey = ex + dx * 14, ey + dy * 14        # 장소로 들어가는 팔은 발자국 안 14px 까지(아이콘이 덮는다, 고리 행성처럼 위가 빈 아이콘도 닿게)
-                seg(ox + 7, oy + 7, ox + ex, oy + ey)
-            seg(ox + 7, oy + 7, ox + 7, oy + 7)
+        if deg[c] == 1:
+            beacons.append((c[0] * TS + 7, c[1] * TS + 7))
+        for n in nbr(c):
+            e = frozenset((c, n))
+            if e in seen:
+                continue
+            seen.add(e)
+            path, prev, cur = [c], c, n
+            while cur in nodes and deg[cur] == 2 and cur not in path:
+                path.append(cur)
+                nxt = [m for m in nbr(cur) if m != prev]
+                if not nxt:
+                    break
+                seen.add(frozenset((cur, nxt[0])))
+                prev, cur = cur, nxt[0]
+            path.append(cur)
+            chains.append(path)
+    def walk(c, first):                                    # c 에서 first 쪽으로, 노드 밖(장소·워프)이나 갈림에 닿을 때까지
+        out, prev, cur = [], c, first
+        while True:
+            out.append(cur)
+            seen.add(frozenset((prev, cur)))
+            if cur not in nodes or deg[cur] != 2 or cur == c:
+                return out
+            nxt = [m for m in nbr(cur) if m != prev]
+            if not nxt:
+                return out
+            prev, cur = cur, nxt[0]
+    for c in sorted(nodes):                                # 갈림·끝 없이 장소에서 장소로 가는 항로(양쪽이 모두 발자국)
+        if deg[c] != 2 or any(frozenset((c, n)) in seen for n in nbr(c)):
+            continue
+        n0, n1 = nbr(c)
+        fw = walk(c, n0)
+        bw = walk(c, n1)
+        chains.append(list(reversed(bw)) + [c] + fw)
+    def pt(c, other):
+        x, y = c[0] * TS + 7.0, c[1] * TS + 7.0
+        if 0 <= c[0] < ctx.W and 0 <= c[1] < ctx.H and ctx.occupied[c[1], c[0]] and other is not None:
+            x += (c[0] - other[0]) * 7.0                    # 장소로 들어가는 팔은 발자국 안쪽까지(아이콘이 덮는다)
+            y += (c[1] - other[1]) * 7.0
+        return (x, y)
+    for path in chains:
+        P = [pt(path[0], path[1] if len(path) > 1 else None)] + [pt(c, None) for c in path[1:-1]] + [pt(path[-1], path[-2] if len(path) > 1 else None)]
+        if len(P) > 4:                                     # 칸 점을 3칸마다 하나로 줄여 계단을 사선·곡선으로(칸 길에서 1칸 안쪽)
+            P = [P[0]] + P[1:-1][1::3] + [P[-1]]
+        for _ in range(4):
+            if len(P) < 3:
+                break
+            Q = [P[0]]
+            for (x0, y0), (x1, y1) in zip(P, P[1:]):
+                Q += [(x0 * .75 + x1 * .25, y0 * .75 + y1 * .25), (x0 * .25 + x1 * .75, y0 * .25 + y1 * .75)]
+            Q.append(P[-1])
+            P = Q
+        for (x0, y0), (x1, y1) in zip(P, P[1:]):
+            seg(int(round(x0)), int(round(y0)), int(round(x1)), int(round(y1)))
     # 워프 구간
     rings = []
     for comp in _components(np.array([[(x, y) in ctx.bridge for x in range(ctx.W)] for y in range(ctx.H)])):

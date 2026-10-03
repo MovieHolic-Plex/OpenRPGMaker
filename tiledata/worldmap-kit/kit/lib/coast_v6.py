@@ -50,59 +50,62 @@ def _interior(k):
 
 
 # 안쪽 물 칸의 가장자리(경계 v9): 강·용암·독 물을 칸 오토타일 대신 매끈한 장으로 — 직각 계단·네모 연못이 사라진다
-INLAND = {V.RIVER: dict(sigma=4.5, amp=.09, land=(22, 26, 30), wet=(150, 214, 226), wet_a=.55, th=.66),
-          V.LAVA: dict(sigma=4.5, amp=.14, land=(40, 14, 10), wet=(255, 208, 96), wet_a=.8),
-          V.TOXIC: dict(sigma=4.5, amp=.14, land=(30, 42, 20), wet=(184, 216, 64), wet_a=.7)}
+INLAND = {V.RIVER: dict(sigma=4.5, amp=.13, land=(22, 26, 30), wet=(150, 214, 226), wet_a=.7, th=.72),
+          V.LAVA: dict(sigma=4.5, amp=.16, land=(40, 14, 10), wet=(255, 208, 96), wet_a=.8, th=.66),
+          V.TOXIC: dict(sigma=4.5, amp=.16, land=(30, 42, 20), wet=(184, 216, 64), wet_a=.7, th=.66)}
 
 
 def soften_inland(M, img, ground0):
-    """강·용암·독 물 칸을 매끈한 장으로 다시 그린다. 강은 바다와 한 장으로 이어 어귀가 직선 칸이 되지 않게 한다.
-    맨 바닥 픽셀(나무·산·절벽이 없는 곳)만 물로 바꾸고, 물 칸 안에서 장 밖이 된 픽셀은 가까운 바닥 무늬로 메운다."""
+    """강·용암·독 물 칸을 매끈한 장으로 다시 그린다 — 물 칸 안에서만 깎는다(밭·나무·늪 칸으로 번지지 않는다).
+    폭은 노이즈로 굽이마다 달라지고, 강은 어귀에서 바다 물빛으로 섞이며 강둑 선은 해안에서 끝난다."""
     Hp, Wp = M.H * 16, M.W * 16
     up = lambda m: np.repeat(np.repeat(m, 16, 0), 16, 1)
     d8 = lambda m, n=1: ndi.binary_dilation(m, structure=np.ones((3, 3), bool), iterations=n)
     sea = M.G == SEA
     seapx = getattr(M, '_seapx', up(sea))                 # 해안 처리 뒤의 바다 픽셀
     landcell = up(M.G >= 10)
-    lvl = up(M.Hh)
     ys, xs = np.mgrid[0:Hp, 0:Wp]
     h1 = hash2(xs, ys, 631)
+    sea_t = np.tile(open_sea_tile(), (M.H, M.W, 1))
+    dsea = ndi.distance_transform_edt(~seapx)
     for k, P in INLAND.items():
         cells = M.G == k
         if not cells.any():
             continue
         src = cells | sea if k == V.RIVER else cells
         f = ndi.gaussian_filter(up(src).astype(np.float32), P['sigma'], mode='nearest')
-        f += (vnoise(Hp, Wp, 14, 640 + k) * .7 + vnoise(Hp, Wp, 6, 650 + k) * .3) * P['amp'] * 2
-        wet = f > P.get('th', .5)
-        zone = up(d8(cells)) & ~up(sea) & ~seapx & ~up((M.G < 10) & ~cells & ~sea)
-        cellpx = up(cells) & zone
-        bare = np.all(img == ground0, axis=2) & landcell    # 나무·산·절벽·해안 띠가 그려지지 않은 맨 바닥
+        f += (vnoise(Hp, Wp, 22, 640 + k) * .7 + vnoise(Hp, Wp, 8, 650 + k) * .3) * P['amp'] * 2
+        cellpx = up(cells) & ~seapx
+        wet = cellpx & (f > P.get('th', .5))
         to_land = cellpx & ~wet
-        to_wet = (wet & zone & bare & ~up(cells) & (lvl == 0)) | (wet & cellpx)
-        if to_land.any():
-            idx = ndi.distance_transform_edt(~(landcell & ~up(cells)), return_distances=False, return_indices=True)
-            img[to_land] = ground0[idx[0][to_land], idx[1][to_land]]
+        if to_land.any():                                  # 경계 너머 같은 거리의 바닥 픽셀(거울) — 가장 가까운 픽셀을 그대로 쓰면 줄무늬가 났다
+            src_ok = landcell & ~up(M.G < 10)
+            idx = ndi.distance_transform_edt(~src_ok, return_distances=False, return_indices=True)
+            my = np.clip(2 * idx[0] - ys, 0, Hp - 1)
+            mx = np.clip(2 * idx[1] - xs, 0, Wp - 1)
+            ok = src_ok[my, mx]
+            my = np.where(ok, my, idx[0])
+            mx = np.where(ok, mx, idx[1])
+            img[to_land] = ground0[my[to_land], mx[to_land]]
         tile = np.tile(_interior(k), (M.H, M.W, 1))
-        if k == V.RIVER:                                   # 어귀 칸: 원래 물 픽셀(강·바다 섞기)은 두고, 칸 오토타일의 땅 모서리만 강물로
-            mouth = up(cells & d8(sea)) & to_wet
-            r_, g_, b_ = [img[..., i].astype(int) for i in range(3)]
-            watery = (b_ > r_ + 24) & (b_ >= g_ - 10)
-            keep = mouth & watery
-            to_wet &= ~keep
-        img[to_wet] = tile[to_wet]
-        allw = to_wet | (up(cells) & ~to_land) | seapx
+        img[wet] = tile[wet]
+        if k == V.RIVER:                                   # 어귀: 바다 쪽 8px 안에서 바다 물빛과 덩이 디더
+            near = wet & (dsea <= 8)
+            mix = near & (h1 < (1 - dsea / 8.0) * .9)
+            img[mix] = sea_t[mix]
+        allw = wet | seapx                                 # 다른 물 칸(네모)은 넣지 않는다 — 그 칸이 다음 차례에 깎이면 테두리 선만 남았다
         dl = ndi.distance_transform_edt(~allw)            # 땅 픽셀 → 물까지
-        dw = ndi.distance_transform_edt(allw)             # 물 픽셀 → 땅까지
-        bare2 = (bare | to_land) & zone & ~allw
+        dw = ndi.distance_transform_edt(wet)
+        zone = up(d8(cells))
+        bare = (np.all(img == ground0, axis=2) | to_land) & landcell & zone & ~allw & ~up((M.G < 10) & ~cells)
+        far = dsea > 3                                     # 강둑 선은 해안 3px 앞에서 끝난다
         f2 = img.astype(np.float32)
-        rim = bare2 & (dl <= 1.0) & (h1 < .85)
+        rim = bare & (dl <= 1.0) & (h1 < .85) & far
         f2[rim] = f2[rim] * .25 + np.array(P['land'], np.float32) * .75
-        mine = to_wet | (up(cells) & zone & ~to_land)
-        lip = mine & (dw <= 1.0) & (h1 < .8)
+        lip = wet & (dw <= 1.0) & (h1 < .9) & far
         f2[lip] = f2[lip] * (1 - P['wet_a']) + np.array(P['wet'], np.float32) * P['wet_a']
-        lip2 = mine & (dw > 1.0) & (dw <= 2.0) & (h1 < .5)            # 둘째 줄은 성기게 — 물가 빛 띠
-        f2[lip2] = f2[lip2] * (1 - P['wet_a'] * .5) + np.array(P['wet'], np.float32) * P['wet_a'] * .5
+        lip2 = wet & (dw > 1.0) & (dw <= 2.0) & (h1 < .6) & far          # 둘째 줄 — 물가 빛 띠
+        f2[lip2] = f2[lip2] * (1 - P['wet_a'] * .55) + np.array(P['wet'], np.float32) * P['wet_a'] * .55
         img[:] = np.clip(f2, 0, 255).astype(np.uint8)
     return img
 
@@ -250,7 +253,7 @@ def forest_edge(M, img):
                     ex = x * 16 + 8 + dx * 8 + (0 if dx else int(t) - 8)
                     ey = y * 16 + 8 + dy * 8 + (0 if dy else int(t) - 8)
                     w_ = float(wob[min(max(ey, 0), Hp - 1), min(max(ex, 0), Wp - 1)])
-                    out = out + min(max(w_, -3.0), 6.0)
+                    out = min(out + min(max(w_, -3.0), 4.0), 4.0)    # 바깥 4px 넘으면 숲과 사이가 벌어진다(QA 7.1)
                     if dy:
                         cx, cy = x * 16 + t, (y * 16 - 1 - out if dy < 0 else y * 16 + 17 + out)
                     else:

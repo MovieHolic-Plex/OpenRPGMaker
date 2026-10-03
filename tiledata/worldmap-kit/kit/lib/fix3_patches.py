@@ -154,7 +154,7 @@ def dune_fx3(img, M, ic, dune, rnd, vnoise, mesa=None, label=None):
     if label is not None:                             # 라벨 경계를 따라 3px 능선 + 안쪽 1px 빛
         up = lambda m: np.kron(m.astype(np.uint8), np.ones((CELL, CELL), np.uint8)).astype(bool)
         flat = np.array([[M.Hh[y, x] == 0 and not M.is_face(x, y) for x in range(W)] for y in range(H)])
-        edge = (up(land & flat) | up(foot)) & ~dune_px            # 고원·절벽 곁은 절벽이 곧 경계 — 능선을 두르지 않는다
+        edge = (label >= 10) & ~dune_px & (up(land & flat) | up(foot))   # 라벨 픽셀 경계(칸 모서리 아님). 고원·절벽 곁은 절벽이 곧 경계 — 능선을 두르지 않는다
         de = ndi.distance_transform_edt(~edge) + vnoise(h, w, 9, 906) * 1.1
         img[dune_px & (de > .5) & (de <= 3.5)] = ridge_dark
         img[dune_px & (de > 3.5) & (de <= 4.5)] = ridge_light
