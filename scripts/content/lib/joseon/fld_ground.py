@@ -6,11 +6,12 @@
   fld_forest32  숲 바닥(낙엽) mask16 × 2변형
   fld_bog94     늪 가장자리 블롭 47 × 2변형(기존 water47 의 물을 탁한 청록으로)
   fld_rock32    바위산 윗면 mask16 × 2변형 — 남쪽 변은 항상 절벽 앞면에 이어진다(S 비트 = 앞면·바위)
-  fld_face16    바위산 앞면 [변형 2][행 2(윗/아랫)][W/E 끝 마스크 4]   idx = 8*v + 4*row + m   (W=1, E=2 가 「이어짐」)
+  fld_rock_in8  바위산 윗면 속 평면 8변형(fld_rock32 의 마스크 15 와 같은 칸으로 본다 — fold)
+  fld_face32    바위산 앞면 [단 2(0 땅에 닿는 앞면 / 1 윗단 앞면)][변형 3][행 2(윗/아랫)][W/E 끝 마스크 4]   idx = 24*tier + 8*v + 4*row + m   (W=1, E=2 가 「이어짐」)
   cav_floor     동굴 바닥 평면 6변형
   cav_floor_lit 동굴 입구쪽 햇빛 든 바닥 4변형
   cav_ceil32    동굴 천장(벽 윗면) mask16 × 2변형 — 바닥과 닿는 변에 밝은 테
-  cav_face16    동굴 벽 앞면(천장 밑 2줄) 구조는 fld_face16 과 같다
+  cav_face24    동굴 벽 앞면(천장 밑 2줄) 구조는 fld_face32 의 tier 0 과 같다(24칸 = 변형 3 × 줄 2 × 끝 4)
   cav_pool94    지하 못(청색 물, 돌 가장자리) 블롭 47 × 2변형
 
 3/4 시점: 바위산은 윗면 + 정면 벽(앞면 2칸 높이). 동·서 가장자리에는 턱(옆면)을 그리지 않고 윤곽선만 둔다.
@@ -263,7 +264,7 @@ def rock_top(mask, v=0, cave=False):
             else:
                 if nb2['n'] or nb2['w']: c.put(x, y, ST[5])
                 elif nb2['e']: c.put(x, y, ST[3])
-    if not cave and v == 1:
+    if not cave and v % 3 == 1:
         for k in range(3):                                          # 균열(어두운 2~3px)과 이끼 점
             x, y = 2 + hsh(k, mask + 13 * v, 41) % 11, 2 + hsh(mask + 13 * v, k, 42) % 11
             if all(ins[y][x + i] for i in range(3)) and all(ins[y + 1][x + i] for i in range(3)):
@@ -272,7 +273,7 @@ def rock_top(mask, v=0, cave=False):
             x, y = 2 + hsh(k, mask, 51 + v) % 12, 2 + hsh(mask, k, 52 + v) % 12
             if ins[y][x] and ins[y][x + 1]:
                 c.put(x, y, LF[3]); c.put(x + 1, y, LF[2])
-    if not cave and v == 0:                                         # 변형 0 은 결만(큰 면적에 같은 균열이 반복되지 않게)
+    if not cave and v % 3 == 0:                                     # 변형 0 은 결만(큰 면적에 같은 균열이 반복되지 않게)
         for k in range(2):
             x, y = 2 + hsh(k, mask, 61) % 12, 2 + hsh(mask, k, 62) % 12
             if ins[y][x] and ins[y][x + 1]:
@@ -280,7 +281,7 @@ def rock_top(mask, v=0, cave=False):
     return c
 
 
-def face(row, m, v=0, cave=False):
+def face(row, m, v=0, cave=False, tier=False):
     """앞면 한 칸. row 0 = 윗줄(윗 테두리 하이라이트 + 그늘), row 1 = 아랫줄(밑동·잔돌). m: W=1 / E=2 가 이어짐(없으면 끝 윤곽)."""
     c = Cv(T, T)
     wc, ec = bool(m & 1), bool(m & 2)
@@ -316,6 +317,13 @@ def face(row, m, v=0, cave=False):
             c.put(x, 0, ST[6] if not cave else ST[4]); c.put(x, 1, ST[5] if not cave else ST[3])
             c.put(x, 2, ST[3] if not cave else ST[1]);
             if rnd(x, 3, 5) > 0.5: c.put(x, 3, ST[3] if not cave else ST[1])
+    elif tier:                                                      # 윗단 앞면의 밑동: 아랫단 바위 윗면에 닿는다(풀이 아니라 그늘 띠 + 잔돌)
+        for x in range(T):
+            j = _J(x, 1.1, 1.0)
+            for y in range(13 - j + 1, T):
+                c.put(x, y, ST[2] if y < T - 1 else ST[1])
+            if rnd(x, 9, 4) > 0.8:
+                c.put(x, 12 - j + 1, ST[4]); c.put(x, 13 - j + 1, ST[3])
     else:
         for x in range(T):                                          # 밑동: 어두운 띠 + 풀/잔돌
             j = _J(x, 1.1, 1.4)
@@ -341,11 +349,13 @@ def face(row, m, v=0, cave=False):
 
 
 def face_set(cave=False):
+    """idx = 24*tier + 8*v + 4*row + m  (tier 1 = 윗단 앞면: 밑동이 아랫단 바위 윗면에 닿는다. 동굴은 tier 없음)."""
     out = []
-    for v in range(2):
-        for row in range(2):
-            for m in range(4):
-                out.append(face(row, m, v, cave))
+    for tier in ((False,) if cave else (False, True)):
+        for v in range(3):
+            for row in range(2):
+                for m in range(4):
+                    out.append(face(row, m, v, cave, tier))
     return out
 
 
@@ -393,11 +403,12 @@ def terrain():
         'fld_forest32': [forest(m, v) for v in range(2) for m in range(16)],
         'fld_bog94': bog_set(),
         'fld_rock32': [rock_top(m, v) for v in range(2) for m in range(16)],
-        'fld_face16': face_set(False),
+        'fld_rock_in8': [rock_top(15, 10 + i) for i in range(8)],            # 윗면 속(마스크 15) 변형 8: 큰 덩어리가 같은 무늬로 반복되지 않게(fold)
+        'fld_face32': face_set(False),
         'cav_floor': [cav_floor(v) for v in range(6)],
         'cav_floor_lit': [cav_floor_lit(v) for v in range(4)],
         'cav_ceil32': [rock_top(m, v, True) for v in range(2) for m in range(16)],
-        'cav_face16': face_set(True),
+        'cav_face24': face_set(True),
         'cav_pool94': pool_set(),
     }
 

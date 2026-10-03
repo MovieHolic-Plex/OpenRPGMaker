@@ -36,10 +36,8 @@ def piece_hash(cv):
     return hashlib.sha1(cv.a.tobytes()).hexdigest()[:12]
 
 
-TERRAIN_VERDICT = ('water47', 'water47g', 'water_deep',
-                   # 사냥터·동굴 새 지형(fld_ground.py): 눈으로 본 판정이 있어야 한다
-                   'fld_trail32', 'fld_tall32', 'fld_forest32', 'fld_bog94', 'fld_rock32', 'fld_face16',
-                   'cav_floor', 'cav_floor_lit', 'cav_ceil32', 'cav_face16', 'cav_pool94')
+# 사냥터·동굴 새 지형(fld_ground.py)도 눈으로 본 판정이 있어야 한다. 한 줄이어야 하네스 validate 가 시드와 대조한다.
+TERRAIN_VERDICT = ('water47', 'water47g', 'water_deep', 'fld_trail32', 'fld_tall32', 'fld_forest32', 'fld_bog94', 'fld_rock32', 'fld_rock_in8', 'fld_face32', 'cav_floor', 'cav_floor_lit', 'cav_ceil32', 'cav_face24', 'cav_pool94')
 
 
 def group_hash(tiles):

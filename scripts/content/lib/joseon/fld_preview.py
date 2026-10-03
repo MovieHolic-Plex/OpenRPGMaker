@@ -42,7 +42,7 @@ def build_scene(rows, cave=False):
             if (x, y) in face and k != 'R':
                 row = 0 if (x, y - 1) not in face else 1
                 m = (1 if (x - 1, y) in face else 0) | (2 if (x + 1, y) in face else 0)
-                c = t['fld_face16'][row * 4 + m]
+                c = t['fld_face32'][row * 4 + m]
             elif k == 'R':
                 m = mk('R', x, y)
                 if (x, y + 1) in face: m |= S

@@ -22,6 +22,7 @@ N, E, S, W = 1, 2, 4, 8
 DIRS4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
 _META = json.load(open(os.path.join(HERE, 'harness', 'pieces_meta.json')))
 _OVR = json.load(open(os.path.join(ROOT, 'tiledata', 'joseon-village', 'piece-walk-overrides.json')))
+SOLID_GROUND = ('rock', 'face0', 'face1', 'tface0', 'tface1', 'bog', 'pool', 'ceil', 'cface0', 'cface1')    # 걸을 수 없는 바닥
 TREE_PFX = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
 
 
@@ -153,7 +154,7 @@ class Kit:
                     if c2 != 'C':
                         return 'drawn %s at %d,%d' % (n2, X, Y) if why else False
             elif ch == 'F':
-                if s.KG[Y][X] in ('rock', 'face0', 'face1', 'bog', 'pool', 'ceil', 'cface0', 'cface1'):
+                if s.KG[Y][X] in SOLID_GROUND:
                     return 'F on solid ground' if why else False
                 for (n2, c2) in s.DRAWN.get((X, Y), []):
                     if c2 in ('X', 'F'):
@@ -181,7 +182,7 @@ class Kit:
 
     def walk_ground(s, x, y):
         k = s.kind(x, y)
-        return k not in ('rock', 'face0', 'face1', 'bog', 'pool', 'ceil', 'cface0', 'cface1', 'OUT')
+        return k not in SOLID_GROUND and k != 'OUT'
 
     def walkable(s, x, y):
         """칸이 걸을 수 있는가: 바닥이 걷는 땅이고, 그 칸에 막힘(X) 조각이 없다. C(수관·처마)는 바닥이 정하고 F 는 걷는다."""

@@ -744,7 +744,7 @@
     "slab",
     "slab_edge16"
    ],
-   "edgeConnects": false
+   "edgeConnects": true
   },
   "fld_tall32": {
    "kind": "mask16",
@@ -762,7 +762,7 @@
    "connect": [
     "fld_forest32"
    ],
-   "edgeConnects": false
+   "edgeConnects": true
   },
   "fld_bog94": {
    "kind": "blob47",
@@ -780,13 +780,12 @@
    "walk": false,
    "connect": [
     "fld_rock32",
-    "fld_face16"
+    "fld_face32"
    ],
-   "edgeConnects": false
-  },
-  "fld_face16": {
-   "name": "사냥터 바위산 앞면(절벽)",
-   "walk": false
+   "edgeConnects": false,
+   "fold": [
+    "fld_rock_in8"
+   ]
   },
   "cav_floor": {
    "name": "동굴 바닥",
@@ -802,11 +801,11 @@
    "walk": false,
    "connect": [
     "cav_ceil32",
-    "cav_face16"
+    "cav_face24"
    ],
    "edgeConnects": false
   },
-  "cav_face16": {
+  "cav_face24": {
    "name": "동굴 벽 앞면",
    "walk": false
   },
@@ -819,6 +818,14 @@
     "cav_pool94"
    ],
    "edgeConnects": false
+  },
+  "fld_face32": {
+   "name": "사냥터 바위산 앞면(절벽, 2단)",
+   "walk": false
+  },
+  "fld_rock_in8": {
+   "name": "사냥터 바위산 윗면 (속 8변형)",
+   "walk": false
   }
  }
 }

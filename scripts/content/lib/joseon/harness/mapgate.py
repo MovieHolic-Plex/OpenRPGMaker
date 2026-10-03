@@ -32,7 +32,7 @@ if os.environ.get('JS_PROFILE') == 'field':
 if os.environ.get('JS_PROFILE') == 'cave':
     # 동굴(48×48): 나무·잔디가 없다(M1·M2·M4·M7 해당 없음). 바닥·벽면이 땅 그림이라 물체 피복은 낮다 — 방 안 소품(화로·기둥·석순·상자) 밀도로 대신 본다.
     LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.03, 0
-TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
+TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'grove')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3
 if os.environ.get('JS_PROFILE') == 'cave':
