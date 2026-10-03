@@ -334,7 +334,7 @@ def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True, floor_h=4):
                         elif ((x + (k // 7) * 8) % 16) == 0: t = 3
                         elif k < 2: t = 6
                     c.put(x, y, S[t]); continue
-                tt = (y - top) / max(1.0, (ybot - floor_h - top))
+                tt = (y - top) / max(1.0, (ybot - (floor_h if floor_h > 4 else 0) - top))
                 col = S[0] if tt < 0.7 else S[1]
                 if floor_h > 4:                                             # 어둠은 위에서 아래로 약해진다(해칭 없음)
                     col = S[0] if tt < 0.4 else (S[1] if tt < 0.8 else S[2])
@@ -515,10 +515,10 @@ def _bracket_band(c, x0, x1, y, h=8):
 
 
 # ---------------------------------------------------------------- 문루
-def _base_block(W, H, face_h, inset):
+def _base_block(W, H, face_h, inset, inset_bot=0):
     """문루 기단 앞면(사다리꼴: 아래가 넓다)의 좌우 경계 함수와 앞면 시작 y."""
     fy0 = H - face_h
-    lo = lambda y: int(round(inset * (1 - (y - fy0) / max(1, face_h - 1))))
+    lo = lambda y: int(round(inset_bot + (inset - inset_bot) * (1 - (y - fy0) / max(1, face_h - 1))))
     hi = lambda y: W - lo(y)
     return fy0, lo, hi
 
@@ -696,7 +696,7 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8,
     return c
 
 
-def tower_corner(bays=5):
+def tower_corner(bays=5, inset=8, inset_bot=0):
     """모서리 망루 (성벽 코너 위 2층 누각, 회색 돌 기단): 돌 기단 + 1층(어두운 살창 벽) + 가운데 처마 + 2층 열린 누각 + 청록 큰 지붕.
     폭 bays 칸, 통행 불가(성벽 모서리 장애물). 가로·세로 성벽이 아래 좌우로 붙는다."""
     W = bays * T
@@ -710,10 +710,10 @@ def tower_corner(bays=5):
     fy0 = H - face_h
     A = lambda r: fy0 + r
     c = Cv(W, H)
-    _, lo, hi = _base_block(W, H, face_h, inset=8)
+    _, lo, hi = _base_block(W, H, face_h, inset=inset, inset_bot=inset_bot)
     ground_shadow(c, W // 2 + 6, H - 2, W // 2 - 3, 3, 70)
     _base_top(c, lo, hi, fy0, A(top0))
-    _upper_hall(c, 8, W - 8, A(top1), f1 + 6)
+    _upper_hall(c, max(8, inset), W - max(8, inset), A(top1), f1 + 6)
     bot1 = _tile_roof(c, 0, A(ymid), W, mid_h, wing=16)
     _eave_shade(c, bot1, 3)
     _pavilion(c, 14, W - 14, A(top2), A(ymid) + 12, cols=3, rail=False)
@@ -727,7 +727,7 @@ def tower_corner(bays=5):
         for ay in range(fy0 + 18, fy0 + 32):
             c.put(ax, ay, S[1]); c.put(ax + 1, ay, S[1]); c.put(ax - 1, ay, S[5]); c.put(ax + 2, ay, S[3])
     outline(c)
-    PASSAGE[f'gungnae_tower_corner_{bays}'] = {'cols': (0, 0), 'rows': (0, 0), 'note': '통행 불가(성벽 모서리 장애물).'}
+    PASSAGE[f'gungnae_tower_corner_{bays}' if inset == 8 else f'gnf_tower_corner_{bays}w'] = {'cols': (0, 0), 'rows': (0, 0), 'note': '통행 불가(성벽 모서리 장애물).'}
     return c
 
 

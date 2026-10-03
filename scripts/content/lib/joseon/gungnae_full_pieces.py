@@ -169,6 +169,8 @@ def objects():
         # G12: 세로 성벽 치
         'gnf_bastion_w': bastion_v('w', 5, 2), 'gnf_bastion_e': bastion_v('e', 5, 3),
         'gnf_bastion_w2': bastion_v('w', 5, 4), 'gnf_bastion_e2': bastion_v('e', 5, 5),
+        # G13: 기단 윗면이 3칸 성벽 폭과 딱 맞는 모서리 망루(지붕·누각은 5칸 폭 그대로 — 처마만 성벽 밖으로 나온다)
+        'gnf_tower_corner_5w': GG.tower_corner(5, inset=16, inset_bot=16),
         # G14: 굴 입구 3종
         'gnf_cave_dark': cave_mouth(0, 1), 'gnf_cave_white': cave_mouth(1, 2), 'gnf_cave_moss': cave_mouth(2, 3),
     }

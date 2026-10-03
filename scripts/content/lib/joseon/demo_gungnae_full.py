@@ -274,6 +274,7 @@ def ground_ids():
     wallc = cells_of('wall')
     court = fams['paving']
     paddyc = fams['paddy']
+    fieldc = fams['field']
     gr = [[0] * MW for _ in range(MH)]
     for y in range(MH):
         for x in range(MW):
@@ -281,17 +282,17 @@ def ground_ids():
             if k in (None, 'wall'):
                 gid = GRASS + (hsh(x, y, 3) % 6 if hsh(x, y, 5) % 12 < 10 else 6 + hsh(x, y, 9) % 2)
             elif k == 'road':
-                gid = ROAD + 16 * (hsh(x, y, 41) % 4) + mask_in(dirt | slabc | wallc, x, y, True)
+                gid = ROAD + 16 * (hsh(x, y, 41) % 4) + mask_in(dirt | slabc | wallc | court | wset | paddyc | fieldc, x, y, True)     # G23: 포장·물·논밭 이웃에 풀 프린지를 쓰지 않는다
             elif k == 'yard':
-                gid = YARD16 + 16 * (hsh(x, y, 43) % 4) + mask_in(dirt | slabc | wallc, x, y, False)
+                gid = YARD16 + 16 * (hsh(x, y, 43) % 4) + mask_in(dirt | slabc | wallc | court | wset | paddyc | fieldc, x, y, False)
             elif k == 'diamond':
                 gid = DIAM + (x + y) % 2
             elif k == 'slab':
-                m = mask_in(slabc | dirt | wset | court, x, y, True)
+                m = mask_in(slabc | fams['bridge'] | court, x, y, True)       # G23: 흙·물 이웃에는 연석 타일(끊김 마감)
                 gid = SLAB + hsh(x, y, 17) % 5 if m == 15 else SLAB16 + m
             elif k == 'paving':
                 m = mask_in(court | slabc, x, y, False)
-                gid = COURT + hsh(x, y, 19) % 3 if m == 15 else COURT16 + m
+                gid = COURT + (1 if (x + 2 * y) % 5 == 0 else 0) if m == 15 else COURT16 + m      # G23: 무작위 밝은 칸 대신 규칙 무늬
             elif k in ('water', 'bridge'):
                 gid = water_id(x, y)
             elif k == 'paddy':
@@ -391,7 +392,7 @@ def wall_ring():
             items.append((yy + 1, 0, xs, 'shadow', svx))
     # 모서리 망루(폭 5: 성벽 바깥으로 한 칸 나온다)
     for (x, yb) in ((XW - 1, YN), (XE - 1, YN), (XW - 1, YS), (XE - 1, YS)):
-        Pb('gungnae_tower_corner_5', x, yb)
+        Pb('gnf_tower_corner_5w', x, yb)
 
 
 wall_ring()
@@ -441,6 +442,34 @@ def w_clean(it=4):
 
 
 w_clean(3)
+
+
+def shore_wobble(seed=17, p=0.045, it=2):
+    """G20: 원작 픽셀 윤곽을 칸 격자에 뽑아 생긴 긴 직선·직각 계단을 깨뜨린다. 기슭(물-풀 경계) 군데군데에 가로 2~3칸 돌기·만입을 넣는다.
+    물→뭍은 둘레 5×5 에 물이 17칸 이상(넓은 못 가장자리)일 때만, 뭍→물은 빈 풀(KG None) 칸만 — 다리·길·건물 자리는 건드리지 않는다. 끝에 w_clean 으로 가시를 정리."""
+    rg = random.Random(seed)
+    for _ in range(it):
+        edge = [(x, y) for (x, y) in list(WATER) for (dx, dy) in ((1, 0), (-1, 0), (0, 1), (0, -1)) if (x + dx, y + dy) not in WATER]
+        for (x, y) in edge:
+            if rg.random() > p or not (19 <= x <= 181 and 24 <= y <= 188) or (x, y) not in WATER:
+                continue
+            dirs = [(dx, dy) for (dx, dy) in ((1, 0), (-1, 0), (0, 1), (0, -1)) if (x + dx, y + dy) not in WATER]
+            if not dirs:
+                continue
+            dx, dy = rg.choice(dirs)
+            along = [(0, 0), (dy, dx)] if rg.random() < 0.5 else [(0, 0), (dy, dx), (-dy, -dx)]
+            if rg.random() < 0.5:                                    # 뭍 → 물(만입 반대: 돌기)
+                cells = [(x + dx + a, y + dy + b) for (a, b) in along]
+                if all(inb(*c) and c not in WATER and KG[c[1]][c[0]] is None and c not in BODY and 20 <= c[0] <= 180 for c in cells):
+                    WATER.update(cells)
+            else:                                                    # 물 → 뭍(만입)
+                cells = [(x + a, y + b) for (a, b) in along]
+                if all(c in WATER and sum(((c[0] + i, c[1] + j) in WATER) for i in range(-2, 3) for j in range(-2, 3)) >= 17 for c in cells):
+                    WATER.difference_update(cells)
+        w_clean(2)
+
+
+shore_wobble()
 # 섬(연못 안 땅)은 다리를 놓기 전에 깎는다 — 나중에 깎으면 다리 아래 물이 지워져 땅 위 다리가 된다(G07-b).
 for (_a, _b, _c, _d) in ((127, 138, 146, 152), (126, 165, 143, 181), (149, 148, 163, 162)):
     w_cut(_a, OY(_b), _c, OY(_d))
@@ -630,6 +659,10 @@ def bridge_aprons():
 
 
 bridge_aprons()
+for _y in range(GAP_Y0, GAP_Y1 + 1):                 # 큰길 행에 남은 물 한 칸(다리 사이 틈)은 석판으로 메운다(G04)
+    for _x in range(XW, XE + 3):
+        if KG[_y][_x] == 'water':
+            KG[_y][_x] = 'slab'; WATER.discard((_x, _y))
 
 
 # ================================================================ 3단계: 중앙 왕궁(담 + 정전 + 전각 + 행각 + 궁문 + 연못 + 소나무)
@@ -688,12 +721,12 @@ def palace():
     for y in range(91, 96):
         P('palace_eodo', AV0, y, None)
     # 정전 앞 양옆 소나무 화단(북 문 안쪽)
-    for x, nm in ((78, 'palace_pine_a'), (84, 'palace_pine_c'), (90, 'palace_pine_b'), (106, 'palace_pine_b'), (112, 'palace_pine_a'), (118, 'palace_pine_c')):
+    for x, nm in ((78, 'palace_pine_a'), (83, 'palace_pine_c'), (90, 'palace_pine_b'), (106, 'palace_pine_b'), (113, 'palace_pine_a'), (118, 'palace_pine_c')):
         P(nm, x, 75, 'foot')
     # 정전 옆 행각(좌우 낭하)
     for x in (78, 116):
         P('palace_haengnak_6', x, 82, 'body')
-        P('palace_haengnak_6', x, 88, 'body')
+        P('palace_haengnak_6', x, 91, 'body')      # 두 행각 사이 석판 통로 3줄(G27)
     # 남쪽 전각 둘(원작: 마당 남쪽 좌우)과 연못
     P('palace_jeongak_a', 82, 103, 'body'); P('palace_jeongak_c', 111, 103, 'body')
     P('palace_pond_6', 80, 110, 'body'); P('palace_pond_6', 114, 110, 'body')
@@ -969,8 +1002,8 @@ def _gate_conflict(x0, y0, W_, H_):
 
 
 # --- 큰 주막 둘(원작: 서남 · 동북). 동북 주막은 원작 y74~96 → 우리 y78~97 로 올려 서·동 큰길(y99..102)을 침범하지 않게 한다(G03).
-_gate_conflict(36, OY(135), 26, 24)
-jumak2(36, OY(135), 26, 24)
+_gate_conflict(36, OY(135), 26, 23)
+jumak2(36, OY(135), 26, 23)     # H=23: 세로 행랑(3칸)이 앞 행랑 윗줄에 딱 닿는다(G09)
 _gate_conflict(135, 78, 26, 20)
 jumak2(135, 78, 26, 20)
 # --- 담 두른 구획들(원작): 좌·우 성황당(섬 위 돌담 사당), 술사의 길, 동북 별채, 도사의 길
@@ -1050,7 +1083,7 @@ if STAGE <= 4:
     sys.exit(0)
 
 # ================================================================ 5단계: 길 이음 + 숲띠 + 나무 채움 + 소품
-def fill_slivers():
+def fill_slivers(dry=False):
     """G29: 풀(None) 칸이 한 방향 폭 1 이고 양쪽이 비풀(길·마당·석판·포장·성벽·건물 몸체·물)인 길이 ≥ 2 런은 이웃 길/마당 종류로 메워 길 폭을 넓힌다
     (둘 다 길이 아니면 — 담·물 사이 — 그대로 둔다: 산울타리 자리). 풀띠 슬리버 = 보고서 F12#23·F22#6·F21#5·F20#11·F03#29."""
     NG = lambda x, y: inb(x, y) and (KG[y][x] is not None or (x, y) in BODY)
@@ -1077,12 +1110,15 @@ def fill_slivers():
                                 if kk:
                                     todo.append((x, y, kk[0]))
                         run = []
+        if dry:
+            return len({(a_, b_) for (a_, b_, _k) in todo})
         if not todo:
             break
         for (x, y, k) in todo:
             if KG[y][x] is None:
                 KG[y][x] = k; n += 1
     print('풀띠 슬리버 메움', n)
+    return n
 
 
 fill_slivers()
@@ -1302,12 +1338,12 @@ def crown_overlap(x, yb, w, h):
     return n
 
 
-def tree_ok(name, w, h, x, yb, dist, ov_big=8, ov_small=4, roadside=True, rng=6):
+def tree_ok(name, w, h, x, yb, dist, ov_big=8, ov_small=4, roadside=True, rng=6, occ_ok=False):
     y = yb + 1 - h
     if x < 0 or x + w > MW or y < 0 or yb >= MH:
         return False
     d0 = max(0, dist)
-    if OCC[max(0, yb - d0):yb + d0 + 1, max(0, x - d0):x + w + d0].any():
+    if OCC[max(0, yb - d0):yb + d0 + 1, max(0, x - d0):x + w + d0].any() and not (occ_ok and h <= 2 and not OCC[yb, x:x + w].all()):
         return False
     if not FREE[yb, x:x + w].all() or NT[yb, x:x + w].any():
         return False
@@ -1590,7 +1626,7 @@ def composite():
 LOWPROPS = ['bench', 'flower_bed', 'haystack', 'firewood', 'stepping_stones', 'millstone', 'jars', 'mat_peppers']
 
 
-def fill_lawn(rounds=3, thr=0.10, seed=100, ovs=4, rng_t=6, wts=(0.45, 0.4, 0.15)):
+def fill_lawn(rounds=3, thr=0.10, seed=100, ovs=4, rng_t=6, wts=(0.45, 0.4, 0.15), occ_ok=False):
     """맨 잔디(칸의 90% 이상이 잔디색)가 20×15칸 창의 thr 를 넘는 곳에 중간 나무·덤불·낮은 소품을 심는다."""
     rg = random.Random(seed)
     for r in range(rounds):
@@ -1620,10 +1656,13 @@ def fill_lawn(rounds=3, thr=0.10, seed=100, ovs=4, rng_t=6, wts=(0.45, 0.4, 0.15
                     n += 1
                 continue
             cands = list(pool); rg.shuffle(cands)
-            for name, w, h in cands[:3]:
-                x = cx - w // 2
-                if tree_ok(name, w, h, x, cy, 0, 8, ovs, False, rng_t):
-                    Tf(name, x, cy); n += 1
+            done = False
+            for name, w, h in cands[:6]:
+                for x in (cx - w // 2, cx, cx - w + 1):          # 칸 하나만 비는 틈도 메우도록 좌우 어긋난 자리도 시도
+                    if tree_ok(name, w, h, x, cy, 0, 8, ovs, False, rng_t, occ_ok):
+                        Tf(name, x, cy); n += 1; done = True
+                        break
+                if done:
                     break
         print('잔디 채움', r, '최악 창', round(worst, 3), '+', n)
         if worst <= thr:
@@ -1636,8 +1675,8 @@ _rgp = random.Random(77)
 _STALLS = ['market_stall_cloth', 'market_stall_pots', 'market_stall', 'market_stall_thatch']
 _LOWY = ['haystack', 'jars', 'firewood', 'millstone', 'well', 'pyeongsang', 'jangdokdae', 'gochu_mat', 'laundry']
 _yard_props = 0
-for (xa, xb, ya, yb_, nst, nlo) in ((12, 26, 170, 190, 5, 7), (14, 21, 72, 98, 0, 6), (42, 90, 159, 165, 6, 8), (151, 159, 113, 125, 2, 4),
-                                    (114, 121, 132, 144, 0, 3), (114, 127, 147, 157, 0, 4), (180, 186, 98, 109, 0, 2)):
+for (xa, xb, ya, yb_, nst, nlo) in ((12, 26, 170, 190, 5, 7), (14, 21, 72, 98, 0, 6), (42, 90, 159, 165, 6, 8), (151, 159, 113, 125, 3, 5),
+                                    (114, 127, 133, 141, 4, 2), (114, 127, 147, 157, 0, 4), (178, 186, 102, 113, 0, 4)):     # G19: 마당마다 면적에 맞게 가판·낮은 소품(큰 흙 마당 북쪽 가판 줄 · 장터 · 광장)
     for kind_, cnt in ((_STALLS, nst), (_LOWY, nlo)):
         for _t in range(cnt * 6):
             if cnt <= 0:
@@ -1649,10 +1688,13 @@ for (xa, xb, ya, yb_, nst, nlo) in ((12, 26, 170, 190, 5, 7), (14, 21, 72, 98, 0
                 cnt -= 1
 print('마당 소품', _yard_props)
 fill_lawn(rounds=3, thr=0.10)
-fill_lawn(rounds=4, thr=0.15, seed=200, ovs=8, rng_t=3, wts=(0.15, 0.35, 0.5))
+fill_lawn(rounds=4, thr=0.15, seed=200, ovs=8, rng_t=6, wts=(0.15, 0.35, 0.5))
+fill_lawn(rounds=4, thr=0.12, seed=300, ovs=10, rng_t=6, wts=(0.0, 0.3, 0.7), occ_ok=True)      # 규칙(G15·G17)이 빡빡해진 만큼 남은 맨 잔디 창을 덤불로 한 번 더 낮춘다
 
 
 if STAGE <= 6:
+    if os.environ.get('JS_DBG'):
+        exec(open(os.environ['JS_DBG']).read())
     d_ = _stage_png('s%d' % STAGE)
     print('stage', STAGE, 'placed', len(placed), 'trees', len(TREEPOS))
     sys.exit(0)
@@ -1716,6 +1758,7 @@ def audit():
     return len(ov), len(crown), len(comps), len(bad_d), len(bad_e)
 
 
+print('뜬 길·마당 칸 지움(소품 뒤)', drop_orphans())
 audit_res = audit()
 if os.environ.get('JS_DBG'):
     exec(open(os.environ['JS_DBG']).read())
@@ -1861,7 +1904,27 @@ if STAGE <= 8:
 
 
 # ================================================================ 9단계: 굽기(시트 재조립 pixelDiff 0 · 게이트 · 파일)
+def final_asserts():
+    """굽기 직전 자동 점검(8절 ⑨): 문·다리 끝·성문 앞 도달 · 외톨이 길 · NPC 4조건 · 1칸 풀 슬리버 · 건물/문루 겹침 · 큰길 연속 · 다리 apron · 물 연속."""
+    c = conn_audit(verbose=True)
+    sl = fill_slivers(dry=True)
+    print('1칸 풀 슬리버 잔여(길 이웃)', sl)
+    probs = []
+    if c[0]: probs.append('길 안 닿는 문 %d' % c[0])
+    if c[1]: probs.append('길 안 닿는 다리 끝·성문 앞 %d' % c[1])
+    if c[2]: probs.append('외톨이 길 조각 %d' % c[2])
+    if c[3]: probs.append('큰길 막힌 열 %d' % c[3])
+    if c[5]: probs.append('물 없는 다리 %d' % c[5])
+    if PEOPLE_BAD: probs.append('NPC 위반 %d' % len(PEOPLE_BAD))
+    if audit_res[0]: probs.append('건물 몸체 겹침 %d' % audit_res[0])
+    print('자동 점검 요약', probs or '모두 통과', '(다리 apron 부족 %d, 수관이 길 가림 %d)' % (c[4], audit_res[1]))
+    return probs
+
+
 def bake():
+    _pr = final_asserts()
+    if _pr and not os.environ.get('JS_FORCE'):
+        print('자동 점검 FAIL — 굽지 않는다(JS_FORCE=1 로 무시)'); sys.exit(1)
     gr, OBJ, direct = composite()
     import mapgate as _mg
     cvD = Cv(MW * T, MH * T); cvD.a = direct

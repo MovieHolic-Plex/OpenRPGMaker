@@ -2398,5 +2398,13 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-03"
+ },
+ "gnf_tower_corner_5w": {
+  "hash": "8ad395762713",
+  "status": "pass",
+  "line": "모서리 망루: 기단 윗면(성가퀴 줄)+앞면 장대석, 기단 폭이 3칸 성벽과 같아 이음이 맞는다. 기준 gungnae_tower_corner_5 와 같은 문법, 기단 사다리꼴만 수직",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
  }
 }
