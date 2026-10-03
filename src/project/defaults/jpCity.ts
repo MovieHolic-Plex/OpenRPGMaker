@@ -90,7 +90,12 @@ function layerSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
 function shapeSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMeta" | "tileGroups" | "autotileGroups" | "animationStrips" | "structureKits">): string {
   const ownedAutotiles = (t.autotileGroups ?? []).filter((group) => isOwned(group.id)).length;
   const ownedKits = (t.structureKits ?? []).filter((kit) => isOwned(kit.id)).length;
-  return `${layerSignature(t)}|${t.tileGroups?.length ?? 0}|${ownedAutotiles}|${t.animationStrips?.length ?? 0}|${ownedKits}`;
+  // 그룹 층(`defaultLayer`·`layerHome`)도 센다 — 칸 층 표가 같아도 굽기 규칙이 그룹 선언을 바로잡으면(2026-10-04 층 정정 13그룹) 기존 사본이 갱신돼야 한다.
+  const groupLayers = (t.tileGroups ?? []).map((group) => {
+    const g = group as { defaultLayer?: string; layerHome?: string };
+    return `${(g.defaultLayer ?? "-")[0]}${(g.layerHome ?? "-")[0]}`;
+  }).join("");
+  return `${layerSignature(t)}|${t.tileGroups?.length ?? 0}|${groupLayers}|${ownedAutotiles}|${t.animationStrips?.length ?? 0}|${ownedKits}`;
 }
 let bundledShape: string | undefined;
 function bundleShape(): string {

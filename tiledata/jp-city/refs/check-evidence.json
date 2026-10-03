@@ -5,14 +5,14 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 29656
+   "chars": 29729
   },
   {
    "id": "jp-autotile",
    "name": "일본 도시 · 오토타일 17세트",
    "documents": 18,
    "images": 51,
-   "chars": 94428
+   "chars": 94476
   },
   {
    "id": "jp-building",
@@ -40,14 +40,14 @@
    "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
    "documents": 3,
    "images": 1,
-   "chars": 14053
+   "chars": 15435
   }
  ],
  "totals": {
   "categories": 6,
   "documents": 47,
   "images": 124,
-  "chars": 376118,
+  "chars": 377621,
   "maxDocChars": 38250,
   "maxImagePx": 820
  },
@@ -56,7 +56,7 @@
  "kitArrayItemsRoundtrip": 205,
  "unknownTokens": [],
  "sha256": {
-  "json": "b456e151115020170eb44a23d8bc369258cf0f398d936ca6236d9a478f6342d9",
+  "json": "a3f68fa97fd3460ab1bebaf6c426ea5ee2d436910374240ae88c981a73874d0f",
   "images": "8a19321fc021336e2c58ccac8063fbbc3c739d0206bd13e0666395905fc927a1"
  }
 }

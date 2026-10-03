@@ -137,6 +137,29 @@ TOP_KEYS = ['id', 'name', 'textureKey', 'family', 'tileSize', 'tilesPerRow', 'co
             'tileGroups', 'autotileGroups', 'animationStrips', 'structureKits']
 
 
+# ---- 그룹 층(defaultLayer) = 멤버 칸의 엔진 홈에서 유도한다 (정정 2026-10-03)
+# 엔진(src/editor/tileLayerClassification.ts tileLayerHome)은 커스텀 타일셋의 칸 홈을 **칸 단위**로만 정한다: 잠긴(locked) 칸의 meta.defaultLayer,
+# 아니면 priority[tile]. 그룹의 defaultLayer 는 홈 판정에 안 쓰이고 어휘 설명(tileVocabulary.groupLayerHome → v3 도구)만 정한다.
+# 그래서 그룹 값은 선언하지 않고 멤버 칸의 홈에서 유도한다 — 전부 위 = upper, 전부 아래 = lower, 섞이면 mixed(layerHome perCell, 칸마다 엔진이 판정).
+UNUSED_LABELS = ('빈 칸', '미사용', '옛 굽기')
+
+
+def tile_home(priority, meta):
+    """엔진 tileLayerHome 의 커스텀 타일셋 경로를 그대로 옮긴 것: 잠긴 칸의 defaultLayer 우선, 아니면 priority."""
+    if (meta.get('locked') is True or meta.get('userLocked') is True) and meta.get('defaultLayer') in ('lower', 'upper'): return meta['defaultLayer']
+    return priority
+
+
+def derive_group_layer(declared, tids, priority, tile_meta):
+    """(defaultLayer, layerHome). 'event' 그룹은 그대로 둔다."""
+    if declared == 'event': return declared, 'perCell'
+    homes = {tile_home(priority[t], tile_meta[t]) for t in tids if not tile_meta[t].get('label', '').startswith(UNUSED_LABELS)}
+    if len(homes) == 1:
+        h = next(iter(homes)); return h, h
+    if not homes: return declared, declared if declared in ('lower', 'upper') else 'perCell'
+    return 'mixed', 'perCell'
+
+
 def check_definition(data, expect_tpr=TPR):
     """필드명·값 범위·키트 부위·문 칸 막힘·접근칸 통행·오토타일 256/16 키·칸 번호 범위. 위반을 코드별로 센다."""
     bad = collections.Counter(); ex = {}
@@ -170,6 +193,9 @@ def check_definition(data, expect_tpr=TPR):
         if not g['id'].startswith('jp:'): no('group-prefix', g['id'])
         if g['role'] not in ENUM['grole']: no('group-role', g['id'])
         if g['defaultLayer'] not in ENUM['glayer']: no('group-layer', g['id'])
+        if g['defaultLayer'] != 'event' and g['tileIds']:
+            want = derive_group_layer(g['defaultLayer'], g['tileIds'], data['priority'], data['tileMeta'])
+            if (g['defaultLayer'], g.get('layerHome')) != want: no('group-layer-vs-tile-home', dict(id=g['id'], got=(g['defaultLayer'], g.get('layerHome')), want=want))
         if any(not (0 <= t < n) for t in g['tileIds']) or g['tileIds'] != sorted(set(g['tileIds'])): no('group-tiles', g['id'])
         if not g['tileIds']: no('group-empty', g['id'])
         if not g.get('description') or not g.get('placementRules'): no('group-text', g['id'])

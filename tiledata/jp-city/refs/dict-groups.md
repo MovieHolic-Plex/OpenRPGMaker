@@ -2,7 +2,7 @@
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3728칸**, 16px 칸, 시트 768×1248px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
+그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
 역할별 개수: building 23, fence 5, prop 77, roof 16, terrain 19, wall 31, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
@@ -156,17 +156,17 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:deco:facade_ad.0","name":"부착물 · 외벽 광고 1","role":"prop","layer":"upper","n":17,"from":2156,"to":2319},
 {"id":"jp:deco:facade_ad.1","name":"부착물 · 외벽 광고 2","role":"prop","layer":"upper","n":16,"from":2194,"to":2327},
 {"id":"jp:deco:facade_ad.2","name":"부착물 · 외벽 광고 3","role":"prop","layer":"upper","n":13,"from":2233,"to":2332},
-{"id":"jp:prop:street","name":"소품 · 거리 시설","role":"prop","layer":"upper","n":172,"from":802,"to":2806},
-{"id":"jp:prop:green","name":"소품 · 가로수·생울타리","role":"prop","layer":"upper","n":48,"from":1006,"to":2018},
-{"id":"jp:prop:gate","name":"소품 · 아치·출입구·터널","role":"building","layer":"upper","n":131,"from":1057,"to":2879},
+{"id":"jp:prop:street","name":"소품 · 거리 시설","role":"prop","layer":"mixed","n":172,"from":802,"to":2806},
+{"id":"jp:prop:green","name":"소품 · 가로수·생울타리","role":"prop","layer":"mixed","n":48,"from":1006,"to":2018},
+{"id":"jp:prop:gate","name":"소품 · 아치·출입구·터널","role":"building","layer":"mixed","n":131,"from":1057,"to":2879},
 {"id":"jp:prop:train","name":"소품 · 열차·고가·선로 시설","role":"prop","layer":"upper","n":155,"from":1095,"to":2743},
 {"id":"jp:prop:vehicle","name":"소품 · 차량","role":"prop","layer":"upper","n":327,"from":1124,"to":1511},
-{"id":"jp:prop:shrine","name":"소품 · 절·신사·참배길 건축","role":"building","layer":"upper","n":508,"from":1512,"to":3136},
+{"id":"jp:prop:shrine","name":"소품 · 절·신사·참배길 건축","role":"building","layer":"mixed","n":508,"from":1512,"to":3136},
 {"id":"jp:prop:wall","name":"소품 · 담·문","role":"fence","layer":"upper","n":7,"from":2016,"to":2024},
-{"id":"jp:prop:stairs","name":"소품 · 계단","role":"prop","layer":"upper","n":67,"from":2025,"to":2630},
-{"id":"jp:prop:storefront","name":"소품 · 점포·간판 구조물","role":"building","layer":"upper","n":253,"from":2060,"to":2848},
+{"id":"jp:prop:stairs","name":"소품 · 계단","role":"prop","layer":"mixed","n":67,"from":2025,"to":2630},
+{"id":"jp:prop:storefront","name":"소품 · 점포·간판 구조물","role":"building","layer":"mixed","n":253,"from":2060,"to":2848},
 {"id":"jp:prop:animal","name":"소품 · 고양이","role":"prop","layer":"upper","n":3,"from":2457,"to":2459},
-{"id":"jp:prop:play","name":"소품 · 놀이터","role":"prop","layer":"upper","n":23,"from":2460,"to":2482},
+{"id":"jp:prop:play","name":"소품 · 놀이터","role":"prop","layer":"mixed","n":23,"from":2460,"to":2482},
 {"id":"jp:sidewalk-curb","name":"보도 연석","role":"terrain","layer":"lower","n":49,"from":3137,"to":3185},
 {"id":"jp:lane-road","name":"생활도로","role":"terrain","layer":"lower","n":49,"from":3186,"to":3234},
 {"id":"jp:lawn-dirt","name":"잔디","role":"terrain","layer":"lower","n":49,"from":3235,"to":3283},
@@ -179,14 +179,14 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:fence-mesh","name":"철망 울타리","role":"fence","layer":"upper","n":16,"from":3512,"to":3527},
 {"id":"jp:guardrail","name":"가드레일","role":"fence","layer":"upper","n":16,"from":3528,"to":3543},
 {"id":"jp:rail-track","name":"선로","role":"terrain","layer":"lower","n":16,"from":3544,"to":3559},
-{"id":"jp:lane-center","name":"중앙선","role":"terrain","layer":"lower","n":16,"from":3560,"to":3575},
-{"id":"jp:lane-dash","name":"차선 점선","role":"terrain","layer":"lower","n":16,"from":3576,"to":3591},
-{"id":"jp:crosswalk","name":"횡단보도","role":"terrain","layer":"lower","n":8,"from":3592,"to":3599},
-{"id":"jp:tactile","name":"점자블록 선","role":"terrain","layer":"lower","n":16,"from":3600,"to":3615},
-{"id":"jp:road-kit-marking","name":"도로 키트 · 노면 표시","role":"terrain","layer":"lower","n":18,"from":3631,"to":3727},
+{"id":"jp:lane-center","name":"중앙선","role":"terrain","layer":"upper","n":16,"from":3560,"to":3575},
+{"id":"jp:lane-dash","name":"차선 점선","role":"terrain","layer":"upper","n":16,"from":3576,"to":3591},
+{"id":"jp:crosswalk","name":"횡단보도","role":"terrain","layer":"upper","n":8,"from":3592,"to":3599},
+{"id":"jp:tactile","name":"점자블록 선","role":"terrain","layer":"upper","n":16,"from":3600,"to":3615},
+{"id":"jp:road-kit-marking","name":"도로 키트 · 노면 표시","role":"terrain","layer":"upper","n":18,"from":3631,"to":3727},
 {"id":"jp:fumikiri-parts","name":"철도 건널목 · 경보기·차단기","role":"prop","layer":"upper","n":10,"from":3670,"to":3683},
 {"id":"jp:fumikiri-deck","name":"철도 건널목 · 바닥판","role":"terrain","layer":"lower","n":2,"from":3675,"to":3680},
-{"id":"jp:underpass-footbridge","name":"지하도 입구·육교 계단","role":"prop","layer":"upper","n":36,"from":3684,"to":3719},
+{"id":"jp:underpass-footbridge","name":"지하도 입구·육교 계단","role":"prop","layer":"mixed","n":36,"from":3684,"to":3719},
 {"id":"jp:road-sign-parts","name":"길가 표지(1×2)","role":"prop","layer":"upper","n":7,"from":3720,"to":3726}
 ]
 ```
