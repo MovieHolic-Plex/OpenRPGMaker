@@ -108,3 +108,25 @@ def smith():
 
 
 ROOMS += [smith()]
+
+
+# ------------------------------------------------------------------------------------------------ 4. 약방 14×10
+def pharmacy():
+    g = mk(14, 10)
+    rect(g, 1, 1, 7, 7, 'M')                     # 약방(마루, 목재벽)
+    rect(g, 9, 1, 12, 5, 'o')                    # 의원의 방
+    rect(g, 8, 3, 8, 5, 'm')                     # 문(걷는 줄 (8,5))
+    g[8][5] = 'D'
+    props = P([
+        # 북벽: 약장 둘(큰 것·작은 것), 말린 약초, 선반
+        ('yakjang_2', 1, 1), ('yakjang_1', 3, 2), ('hang_yakcho', 3, 1), ('yakjang_2', 4, 1), ('seonban_2', 6, 2),
+        # 약 짓는 자리: 상, 약연, 작두, 약탕, 약초 광주리
+        ('yak_table', 1, 5), ('yakyeon', 3, 5), ('jakdu', 7, 4), ('yakdang', 1, 7), ('yakcho_basket', 7, 6), ('mat_jip_2x2', 3, 6), ('stool', 5, 4), ('hangari_m', 7, 7),
+        # 방
+        ('ibuljang', 9, 2), ('nong_1', 11, 2), ('mat_dot_2x2', 10, 4), ('sang_low_2', 10, 5), ('banseok_b', 12, 4),
+    ])
+    return dict(id='joseon_in_pharmacy_b', title='약방', plan=rows(g), props=props, door=(5, 8), replace={},
+                people=[(3, 6, 2, R, 1), (9, 4, 6, L, 0)])
+
+
+ROOMS += [pharmacy()]
