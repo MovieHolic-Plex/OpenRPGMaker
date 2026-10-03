@@ -1,4 +1,5 @@
 import type { ActivityVisual } from "@/ai/activityVisual";
+import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasProgress";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
 import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
@@ -385,6 +386,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
   });
   let disposed = false;
+  let canvasProgress: AiCanvasProgress | null = null;
   // 조수 첫 전송이 타일셋·자산 전체를 직렬화·해시하느라 메인 스레드를 수 초 멈추지 않게, 패널이 뜬 뒤 한가할 때 미리 만든다.
   // 예약은 하나만 둔다 — 스토어 통지가 몰려도 한가한 틈에 한 번 돈다.
   let heavyWireWarmupScheduled = false;
@@ -468,6 +470,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   // 상태 배지 전이를 타임라인에 기록한다(결함 ⑬) — 적용 실패 같은 멈춤을 로그 export로 진단한다.
   const setStatus = (text: string, record = true): void => {
+    canvasProgress?.status(text);
     status.textContent = text;
     status.dataset.statusTone = statusToneOf(text);
     setAiBridgeLastStatus(text);
@@ -1097,6 +1100,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
      */
     resumeTarget: ConversationRecord | null = null,
   ): boolean => {
+    canvasProgress?.finish();
+    canvasProgress = null;
     closeAiConversationHistoryModal();
     closeAiAuthoringModal();
     clearPromptInspection();
@@ -2132,6 +2137,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     }
 
+    const progress = canvasProgress ?? startAiCanvasProgress(displayText || command.task);
+    canvasProgress = progress;
+    runSurface.turnBusy = true;
+    refreshSendEnabled();
+    await progress.paint();
+    if (disposed || canvasProgress !== progress) return;
     // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
     // 다음 턴은 지난 턴의 종료 4축을 물고 가지 않는다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명이다.
     piRunOutcome = null;
@@ -2151,6 +2162,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const turnConversation = conversationId;
     try {
       await runPiCommand(command, {
+        onEvent: event => progress.event(event),
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         appendBubble: (role, line) => appendBubble(role, line),
@@ -2196,6 +2208,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         ...(opts?.intentNote ? { intentNote: opts.intentNote } : {}),
       } : {});
     } finally {
+      progress.finish();
+      if (canvasProgress === progress) canvasProgress = null;
       const phase = currentTeamActivity()?.phase;
       finishWorkCard({ ok: phase !== "실패" && phase !== "중단", message: phase === "검토 대기" ? "검토 필요" : phase === "실패" ? "실패" : phase === "중단" ? "중단" : undefined });
       // 다음 턴이 이번 4축을 물고 가지 않게 한다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명.
@@ -2304,44 +2318,62 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerHandoff = null;
     syncInputHeight();
     refreshSendEnabled();
-    // 조수 채팅의 실행 경로는 Pi 하나다(2026-09-11). 질문·계획은 자율성 다이얼이 Pi 노브
-    // (읽기 전용·계획만·턴 상한·추론)로 풀고, 선택 영역 작업만 영역 파이프라인으로 간다.
-    // 명시 `/pi …`·`/team …` 은 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다 — 사용자가 직접 쓴 명령이다.
-    const explicit = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
-    if (explicit) {
-      await runPiTurn(explicit, shown, null, handoff ? { sentText: text } : undefined);
-      return;
-    }
-    // 선택 영역도 Pi 턴으로 간다 — 영역은 resolveTurnScope 가 턴 범위로 붙인다. 예전의 별도 영역 파이프라인
-    // («영역 작업»: 하드 클립·고스트 미리보기·승인 창)은 폐기했다. 바로 쳐서 바로 진행되는 경로가 하나여야 한다.
-    // 분류가 끝날 때까지 슬롯을 잡아 둔다 — 분류 창이 «유휴» 로 보이지 않게 하고,
-    // 어떤 실패 경로로도 슬롯은 반드시 풀린다(안 풀면 패널이 영구히 잠긴다).
+    const progress = startAiCanvasProgress(shown);
+    canvasProgress = progress;
     runSurface.turnBusy = true;
     refreshSendEnabled();
-    // 보낸 문장과 진행 카드는 분류를 **기다리지 않고** 바로 선다. 예전에는 입력창은 즉시 비는데
-    // 말풍선은 의도 분류(1~30 s) 뒤에야 떠서, 그동안 사용자가 쓴 문장이 화면에서 사라져 있었다.
-    workCardTitle = shown.replace(/\s+/gu, " ").trim().slice(0, 48);
-    appendBubble("user", shown);
-    ensureWorkCard();
-    let classified: PlainPiTurn;
+    await progress.paint();
+    if (disposed || canvasProgress !== progress) return;
     try {
-      classified = await plainPiTurn(text, handoff?.team ? { team: true } : undefined);
-    } catch (error) {
-      // 슬롯을 반드시 돌려놓고, 실패를 unhandled rejection 으로 흘리지 않는다 — 이 호출자는
-      // 클릭 리스너(`void send()`)라 받아 줄 사람이 없다(2026-09-16 실측: 분류가 던지면 vitest 가
-      // unhandled error 로 잡았고 사용자에게는 아무 표시도 남지 않았다).
-      runSurface.turnBusy = false;
-      finishWorkCard({ ok: false, message: "지시 해석 실패" });
+      // 조수 채팅의 실행 경로는 Pi 하나다(2026-09-11). 질문·계획은 자율성 다이얼이 Pi 노브
+      // (읽기 전용·계획만·턴 상한·추론)로 풀고, 선택 영역 작업만 영역 파이프라인으로 간다.
+      // 명시 `/pi …`·`/team …` 은 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다 — 사용자가 직접 쓴 명령이다.
+      const explicit = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
+      if (explicit) {
+        await runPiTurn(explicit, shown, null, { slotClaimed: true, ...(handoff ? { sentText: text } : {}) });
+        return;
+      }
+      // 선택 영역도 Pi 턴으로 간다 — 영역은 resolveTurnScope 가 턴 범위로 붙인다. 예전의 별도 영역 파이프라인
+      // («영역 작업»: 하드 클립·고스트 미리보기·승인 창)은 폐기했다. 바로 쳐서 바로 진행되는 경로가 하나여야 한다.
+      // 분류가 끝날 때까지 슬롯을 잡아 둔다 — 분류 창이 «유휴» 로 보이지 않게 하고,
+      // 어떤 실패 경로로도 슬롯은 반드시 풀린다(안 풀면 패널이 영구히 잠긴다).
+      runSurface.turnBusy = true;
       refreshSendEnabled();
-      setStatus("대기");
-      const reason = error instanceof Error ? error.message : String(error);
-      void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
-      appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
-      return;
+      // 보낸 문장과 진행 카드는 분류를 **기다리지 않고** 바로 선다. 예전에는 입력창은 즉시 비는데
+      // 말풍선은 의도 분류(1~30 s) 뒤에야 떠서, 그동안 사용자가 쓴 문장이 화면에서 사라져 있었다.
+      workCardTitle = shown.replace(/\s+/gu, " ").trim().slice(0, 48);
+      appendBubble("user", shown);
+      ensureWorkCard();
+      let classified: PlainPiTurn;
+      try {
+        classified = await plainPiTurn(text, handoff?.team ? { team: true } : undefined);
+      } catch (error) {
+        // 슬롯을 반드시 돌려놓고, 실패를 unhandled rejection 으로 흘리지 않는다 — 이 호출자는
+        // 클릭 리스너(`void send()`)라 받아 줄 사람이 없다(2026-09-16 실측: 분류가 던지면 vitest 가
+        // unhandled error 로 잡았고 사용자에게는 아무 표시도 남지 않았다).
+        runSurface.turnBusy = false;
+        finishWorkCard({ ok: false, message: "지시 해석 실패" });
+        refreshSendEnabled();
+        setStatus("대기");
+        const reason = error instanceof Error ? error.message : String(error);
+        void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
+        appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
+        return;
+      }
+      await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
+      // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
+      if (!turnBusy) finishWorkCard({ ok: true });
+    } finally {
+      progress.finish();
+      if (canvasProgress === progress) {
+        canvasProgress = null;
+        // Parsing/early-choice failures must not strand the claimed send slot.
+        if (!activeAbortController) {
+          runSurface.turnBusy = false;
+          refreshSendEnabled();
+        }
+      }
     }
-    await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
-    // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
-    if (!turnBusy) finishWorkCard({ ok: true });
   };
 
   sendButton.addEventListener("click", () => void send());
@@ -3964,6 +3996,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    canvasProgress?.finish();
+    canvasProgress = null;
     lockScrim.dispose();
     cancelCreationChoice?.();
     closeAiAuthoringModal();

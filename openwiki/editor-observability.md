@@ -655,3 +655,5 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 - 뿌리 키 삭제는 `applyCleanedProjection` 이 전파하지 않는다.
 - 남은 비용: 전체 흉내에서 diff 약 55ms 는 `sameValue`(맵 ~13ms·DB ~17ms·공간 저작 ~40ms 의 JSON.stringify 대조). 한가할 때 예열은 한 덩이 동기 작업(약 9s, 큰 프로젝트)이라 쪼갤 여지가 있다.
   `electronRepository` 의 `jsonContentDigest(previous.tileset)` 두 곳은 여전히 전체 순회다.
+
+실시간 표시 보강(2026-10-03): `aiCanvasProgress`의 클릭 직후 준비 표시와 `tool_start`/`tool_end` 표시는 UI 관측이며 적용·저장 영수증으로 세지 않는다. 기본 시공 표시를 켜되 저장된 off는 유지한다. 실제 수용·맵 focus는 기존 체크포인트 적용 경로가 담당한다.

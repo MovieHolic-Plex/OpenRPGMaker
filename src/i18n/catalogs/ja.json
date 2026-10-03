@@ -1,4 +1,6 @@
-{"![실제 타일 장면](image:assembled-scene)":"![実際のタイルシーン](image:assembled-scene)",
+{"AI 작업":"AIが作業中",
+"요청을 읽고 있어요":"リクエストを確認しています",
+"![실제 타일 장면](image:assembled-scene)":"![実際のタイルシーン](image:assembled-scene)",
 "![완전 조립](image:{0})":"![完全組み立て](image:{0})",
 "![원본](image:source) ![모든 프레임/변형](image:variants)":"![元画像](image:source) ![全フレーム/バリエーション](image:variants)",
 "![원본](image:source-sheet)":"![元画像](image:source-sheet)",

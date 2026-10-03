@@ -3230,7 +3230,7 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 작업 표시 수준(생략/간단히/자세히/매우 자세히)은 실행 기록 문구만 바꾼다. 맵 위의 실시간 시공(고스트 타일, 청사진, 카메라 따라가기, 공개가 끝날 때까지의 대기)은 그와 별개로 끌 수 있다.
 
-- 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). 꺼짐이 기본이다. `localStorage["oprn:ai-live-canvas"]` 가 `on` 일 때만 맵 위 실시간 시공을 그린다.
+- 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). 켜짐이 기본이다(2026-10-03). `localStorage["oprn:ai-live-canvas"]`의 명시적 `off`는 존중한다. 미설정·저장 접근 불가 환경에서는 실시간 시공을 그린다.
 - 화면 무게는 AI 설정 「표시」의 `ai-render-weight`다. 기본 `light`는 조수 창·접힘 알약·작업 띠·맵 칩의 `backdrop-filter`를 끈다. `heavy`만 20px 유리 블러를 쓴다. `off`는 블러를 끄고 판을 불투명하게 한다. 저장 키는 `oprn:ai-render-weight`, 적용은 `documentElement.dataset.aiRender`.
 - 입력줄 모델명 옆에 이 대화의 사용량이 `N턴 · N토큰`으로 붙는다(`ai-composer-spend`). Pi 실행의 `done.stats`(계획 턴 포함)를 대화가 바뀔 때까지 더한다. 토큰은 `usage.totalTokens`(입력·출력·캐시)다. 0이면 숨긴다.
 - 헤드리스에서도 도구 실행, 증분으로 복원한 초안, 검토, 적용은 그대로다. `replaceAgentGhostPreviewFromProjectDiff` 를 쓰는 경로(Pi, 레인, 세션, 영역 작업)는 꺼져 있는 동안 맵 비교를 하지 않고, 켜기 직전에 쌓인 프리뷰는 비운다. Pi 는 다시 켜는 순간 현재 초안을 한 번 그린다. 그 외 경로는 다음 변경에서 그린다. 공개 애니메이션만큼 체크포인트를 기다리지 않는다.
@@ -3429,3 +3429,11 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 원시 수치와 실행 없는 테스트 계약 검토·잔여 위험 파일명은 `verify-shots/perf-ai-ui/README.md`와
 `browser-measurements.json`에 남겼다. 테스트 실행은 새 명시적 허가 전까지 다시 시작하지 않는다.
+
+## 전송 직후 캔버스 피드백과 체크포인트 따라가기 (2026-10-03)
+
+`aiCanvasProgress.ts`는 사용자 전송 클릭 안에서 실제 문장과 준비 상태를 캔버스에 먼저 붙이고 다음 화면 그리기를 양보한다. 의도 분류·기획 저장·제안 기준선 계산보다 먼저 보인다. 모델이 도구를 실행하면 같은 표시가 실제 `tool_start`/`tool_end`의 사용자용 문구로 바뀐다. 준비 상태는 제작 완료나 저장 증거가 아니다. 가짜 타일·타이머 진행률·주인공 변경을 만들지 않는다. 패널의 대화·프로젝트 전환, 실패, 중단, 정착은 표시를 닫으며 이전 실행의 이벤트가 새 표시를 지우거나 덮지 못한다.
+
+실시간 시공(`aiLiveCanvas`) 기본값을 켰다. 기존 사용자가 명시적으로 저장한 `off`는 존중한다. 성공한 체크포인트에서 맵을 이동·강조하는 기존 `applyProposedProject` → `focusAcceptedAgentChanges` 경로는 유지한다. 체크포인트 이전 `map_delta`를 실제 변경으로 재생하거나 동일 변경을 중복 focus하는 경로를 추가하지 않는다. 최초 제작 내부 계약과 `PRESET_FIRST_BUILD_RULES`는 필수 DB·월드 뼈대만 먼저 준비하고 첫 맵·첫 상호작용의 작은 작업을 타이틀 그림·긴 오프닝보다 먼저 전달하도록 요구한다. project 쓰기와 map 쓰기의 기존 직렬화 경계를 유지한다. 이는 모델 지시이며 실제 첫 결과 시간의 보증이 아니다.
+
+재현: `scripts/qa/visible-ai-creation.mjs`는 실제 편집기, 사용자 전송 버튼, 모델 응답을 보류하는 NDJSON 대본과 native 도구/체크포인트 수용을 사용한다. 소형 UI fixture이며 라이브 모델·SQLite 저장·생성 게임 완성 증거가 아니다. 화면/관측은 `verify-shots/visible-ai-creation/`에 남긴다.

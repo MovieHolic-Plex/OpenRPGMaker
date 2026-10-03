@@ -1,0 +1,20 @@
+{
+  "transport": "scripted; native tools and acceptance",
+  "errors": [
+    "renderer crashed"
+  ],
+  "checks": [
+    {
+      "name": "request acknowledged in the same click before model output",
+      "passed": true,
+      "detail": {
+        "ms": 4.800000071525574,
+        "text": "AI 작업/team QA 시공 진행 표시요청을 읽고 있어요",
+        "visible": true
+      }
+    }
+  ],
+  "failure": "page.waitForFunction: Timeout 60000ms exceeded.",
+  "stage": "browser unavailable",
+  "body": "unavailable"
+}

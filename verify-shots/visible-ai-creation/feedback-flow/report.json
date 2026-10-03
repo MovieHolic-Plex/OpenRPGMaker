@@ -1,0 +1,36 @@
+{
+  "transport": "scripted; native read only; no authoring claim",
+  "errors": [],
+  "checks": [
+    {
+      "name": "request acknowledged in the same click before model output",
+      "passed": true,
+      "detail": {
+        "ms": 3.899999976158142,
+        "text": "AI 작업/team QA 시공 진행 표시요청을 읽고 있어요",
+        "visible": true
+      }
+    },
+    {
+      "name": "native read activity visible while the scripted model stream is open",
+      "passed": true,
+      "detail": {
+        "tool": {
+          "ok": true,
+          "summary": "Pages(map_page) 영역 (0,0)~(2,2) — 이벤트 1개, 물 4칸 bounds=(0,0) 2×2"
+        },
+        "text": "AI 작업/team QA 시공 진행 표시맵을 살펴보는 중",
+        "done": false
+      }
+    },
+    {
+      "name": "progress removed at settlement",
+      "passed": true
+    },
+    {
+      "name": "no page errors",
+      "passed": true,
+      "detail": []
+    }
+  ]
+}
