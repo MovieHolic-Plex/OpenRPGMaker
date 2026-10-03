@@ -151,3 +151,6 @@ export async function sha256HexText(value: string): Promise<string> {
 export function sha256HexTextSync(value: string): string {
   return sha256TextFallback(value);
 }
+
+/** Synchronous byte digest for transactional tool mutations. */
+export function sha256HexBytesSync(bytes: Uint8Array): string { return sha256Fallback(bytes); }

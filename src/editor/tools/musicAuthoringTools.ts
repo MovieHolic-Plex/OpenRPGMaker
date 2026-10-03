@@ -1,3 +1,4 @@
+import { sha256HexBytesSync as sha256 } from '@/util/sha256';
 import type { ToolDefinition, JsonSchema } from './types';
 import { ToolError } from './types';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
@@ -8,7 +9,7 @@ const str:JsonSchema={type:'string'},obj:JsonSchema={type:'object'};
 const schema=(properties:Record<string,JsonSchema>,required:string[]):JsonSchema=>({type:'object',additionalProperties:false,properties,required});
 const tool=(name:string,description:string,mode:'read'|'write',parameters:JsonSchema,run:ToolDefinition['run']):ToolDefinition=>({name,description,mode,parameters,run});
 const text=(v:unknown)=>{if(typeof v!=='string'||!v.trim()||v.length>160)throw new ToolError('음악 ID/이름 문자열이 필요합니다.',{code:'invalid-args'});return v.trim();};
-const sha256=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes as BufferSource)),b=>b.toString(16).padStart(2,'0')).join('');
+
 const wavBytes=(url:string)=>{const m=/^data:audio\/wav;base64,(.+)$/.exec(url);if(!m)throw new ToolError('WAV 바이트를 확인할 수 없습니다.',{code:'invalid-audio'});return Uint8Array.from(atob(m[1]),c=>c.charCodeAt(0));};
 function playable(p:Project,id:string,kind:'music'|'sound'){
   if(!listAudioResources(kind,p).some(r=>r.id===id))throw new ToolError('실제 오디오 리소스가 없습니다: '+id,{code:'resource-not-found'});
@@ -38,7 +39,7 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     listening:'Pi model receives symbolic score and actual sample measurements, not audio. Do not claim you heard it. Humans can audition the registered WAV in the resource picker or published audio player.',
     example:{version:1,bpm:100,meter:4,bars:2,key:'D minor',loop:true,seed:17,tracks:[{id:'lead',voice:'bell',gain:.45,notes:[{beat:0,length:1,midi:74},{beat:1.5,length:.5,midi:77},{beat:2,length:1,midi:81},{beat:4,length:1.5,midi:79},{beat:6,length:1,midi:77}]}]},
   }})),
-  tool('compose_music','실제 음표·리듬·악기 악보를 스테레오 WAV로 합성하여 프로젝트 음악 리소스로 등록. 기존 ID 교체는 replace:true.','write',schema({resourceId:str,name:str,score:obj,replace:{type:'boolean'}},['name','score']),async(p,args)=>{
+  tool('compose_music','실제 음표·리듬·악기 악보를 스테레오 WAV로 합성하여 프로젝트 음악 리소스로 등록. 기존 ID 교체는 replace:true.','write',schema({resourceId:str,name:str,score:obj,replace:{type:'boolean'}},['name','score']),(p,args)=>{
     const id=args.resourceId===undefined?'composed_music_'+crypto.randomUUID():text(args.resourceId),name=text(args.name);
     if(!/^composed_music_[A-Za-z0-9_-]+$/.test(id)||p.resourceProfiles.some(r=>r.assetId===id)&&!p.assets.uploaded[id]||resolveAssetResourceUrl(id)) {
       if(!p.assets.uploaded[id]||!/^composed_music_[A-Za-z0-9_-]+$/.test(id))throw new ToolError('새 작곡 ID는 composed_music_ 이름공간을 사용해야 합니다.',{code:'invalid-args'});
@@ -52,14 +53,14 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(!existing[id]&&Object.keys(existing).length>=32)throw new ToolError('저장된 악보는 최대32개입니다.',{code:'too-many-scores'});
     const total=Object.entries(existing).reduce((n,[key,v])=>n+(key===id?0:v.measurements.frames*4+44),rendered.bytes.length);
     if(total>48*1024*1024)throw new ToolError('저작 WAV 총량은48MB까지입니다.',{code:'music-budget'});
-    const sha=await sha256(rendered.bytes);
+    const sha=sha256(rendered.bytes);
     p.assets.uploaded[id]={id,name,kind:'music',dataUrl,meta:{}};
     p.meta.oprnMusicScores={...existing,[id]:{score,measurements:rendered.measurements,sha256:sha}};
     return {summary:`새 음악 「${name}」을 실제 WAV로 만들었습니다. 청취 검증은 별도입니다.`,data:{resourceId:id,name,bytes:rendered.bytes.length,...rendered.measurements,nativePlaybackVerified:false,modelHeardAudio:false}};
   }),
-  tool('get_music_score','저작 악보와 실제 WAV 측정값 조회. trackId로 한 파트만 조회 가능.','read',schema({resourceId:str,trackId:str},['resourceId']),async(p,args)=>{
+  tool('get_music_score','저작 악보와 실제 WAV 측정값 조회. trackId로 한 파트만 조회 가능.','read',schema({resourceId:str,trackId:str},['resourceId']),(p,args)=>{
     const id=text(args.resourceId),stored=p.meta.oprnMusicScores?.[id];if(!stored||p.assets.uploaded[id]?.kind!=='music')throw new ToolError('이 음악의 작곡 악보가 없습니다.',{code:'score-not-found'});
-    const asset=p.assets.uploaded[id],actual=asset.ref?.sha256??await sha256(wavBytes(asset.dataUrl??''));
+    const asset=p.assets.uploaded[id],actual=asset.ref?.sha256??sha256(wavBytes(asset.dataUrl??''));
     if(actual!==stored.sha256)throw new ToolError('음악 바이트가 바뀌어 악보 측정값이 유효하지 않습니다.',{code:'score-stale'});
     const score={...stored.score,tracks:args.trackId?stored.score.tracks.filter(t=>t.id===args.trackId):stored.score.tracks};
     if(!score.tracks.length)throw new ToolError('해당 파트가 없습니다.',{code:'track-not-found'});
