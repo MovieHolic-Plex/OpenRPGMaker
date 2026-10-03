@@ -56,10 +56,13 @@ PNG 패킹/키 색 처리·ZIP CRC·HTTP 바이트 재읽기 근거는 `evidence
 
 독립 시각 재검수에서 기존 4종도 5·5·7·7점 FAIL을 받았다. 새로운 폐기 결함은 없으나 복식/직업 표식 지적이 있었다.
 기존 100종 팩은 현재 합격 0종이며 예전 PASS를 재사용하지 않는다.
-새 실행 `20261004-character-continuation-pilot`은 머리/얼굴/목 alpha 보존 지시로 8종을 계속 저작한다.
+새 실행 `20261004-character-continuation-pilot`은 8종 모두 기계 PASS·시각 FAIL로 후보에서 제외했다.
 원본은 `1423781b`(이전 4종의 픽셀); 최초 첨부 출처와 parentKey는 evidence/manifest에 함께 남긴다.
+이어 다양한 RTP/업로드 원본으로 `20261004-character-population-12` 12종을 만들었으며 기계 PASS 12·시각 PASS 1이다.
+`20261004-character-population-88`은 88종을 더 저작한다. 두 실행의 합격 수는 최신 `export-readback.json`을 읽는다.
+옆모습 옷 면의 잡티·걸음마다 흔들리는 허리 경계·장르와 다른 원본 장식이 반복되어 `bulk-worker.md`에 구체적인 저작 기준을 추가했다.
 작업자 GPT 6.1 sol high, 검수 Sonnet 5.5 medium, 원샷 계약은 유지한다.
-집중 확인 근거: `evidence/20261004-continuation/harness-contracts.json`.
+집중 확인 근거: `evidence/20261004-continuation/harness-contracts-final.json`.
 
 - `bulk.py`는 외부 manifest의 역할별 지시를 최대 8명씩 GPT 6.1 sol high에 맡긴다. 동시 묶음은 최대 6개다.
 - 묶음별 `_batches/<번호>/characters/`가 쓰기 영역이다. 다른 묶음과 코드 파일은 수정하지 않는다. 실행 루트의 후보 심링크는 기존 서버가 읽는다.
