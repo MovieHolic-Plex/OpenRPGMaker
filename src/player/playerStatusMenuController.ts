@@ -752,9 +752,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
       return;
     }
-    selectedCommand = initialMenuSelection && session
-      ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? "items"
-      : statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), session);
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
     openGroupId = undefined;
     mode = "main";
     options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
