@@ -254,3 +254,41 @@ def objects():
     d.update(_FC.objects())
     d.update(_FC2.objects())
     return d
+
+
+# --- 조선 실내(interior_kit.py 구조 키트 + props_in*.py 기물, 접두 `in_`): 맨 끝에 덧붙인다.
+_objects_before_in, _terrain_before_in = objects, terrain
+
+
+def objects():
+    import interior_kit as _IK, props_in as _PI
+    d = _objects_before_in()
+    d.update(_IK.objects())
+    d.update(_PI.objects())
+    return d
+
+
+def terrain():
+    import interior_kit as _IK
+    d = _terrain_before_in()
+    d.update(_IK.terrain())
+    return d
+
+
+
+# --- 조선 궁 내부(palace_kit.py 구조 키트 + props_pal.py 기물, 접두 `pal_`): 맨 끝에 덧붙인다.
+_objects_before_pal, _terrain_before_pal = objects, terrain
+
+
+def objects():
+    import palace as _PL
+    d = _objects_before_pal()
+    d.update(_PL.objects())
+    return d
+
+
+def terrain():
+    import palace as _PL
+    d = _terrain_before_pal()
+    d.update(_PL.terrain())
+    return d

@@ -25,6 +25,11 @@
 | `review record <json>` | 리뷰어 출력을 조각 현재 해시에 묶어 기록(게이트 A 입력) | `adversarial.py record` | 17초 |
 | `status [--fresh]` | 팔레트·판정·적대 리뷰·번들 칸 수·지도·ledger 현황. `--fresh` 는 게이트를 돌려 현재 해시 기준으로 센다 | 위 전부 | 1초 / 20초 |
 
+## 실내·궁 내부 키트 (조각 접두 `in_` · `pal_`)
+- 방 맵(민가·주막·대장간·약방·서당·관아 + 궁 어좌전·회랑·침전·서고)은 `scripts/content/lib/joseon/demo_interior.py` · `demo_palace_in.py` 가 평면도 문자열에서 만든다(`interior_room.Room`, 벽·천장·바닥 그늘·문 밖 마당·접지 그림자를 자동 유도). 산출은 `tiledata/joseon-interior/<방id>/`(형식 `harness/EXTRA_FORMAT.md`), 방별 계획은 그 폴더 `PLAN.md`, 1차 적대 검수 목록은 `QA_ROUND1.md`.
+- 합격선은 `mapgate.py` interior 프로필(`JS_PROFILE=interior`)의 I1~I7(출입구 도달·기물 접근·복제 쌍/일렬·벽 규칙·맨바닥 연속/직사각형·문 밖 마당·외곽 벽·접지 그림자·인물 위치 — 점검 본체는 `interior_checks.py`).
+- 조각 판정은 같은 `gate`/`verdict` 이고, 여러 개를 한 번에 쓰려면 `in_verdict_batch.py`. 새 조각의 메타·통행은 `in_register.py`(실내 `in_meta` + 궁 `palace.meta_and_walk`)로 합친다. 검수 시트(v5 기준 옆)는 `in_review.py`.
+
 ## 시드와 기록
 | 경로 | 쓰는 이 | 내용 |
 |---|---|---|
