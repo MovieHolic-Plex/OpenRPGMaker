@@ -1,0 +1,216 @@
+{
+  "base": "http://127.0.0.1:9896",
+  "root": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/interview-e2e/project",
+  "requests": [
+    {
+      "mode": "team",
+      "model": "gemini-3.8-flash",
+      "runId": "09fd23bb-9763-4003-9533-f34ca88b9258",
+      "taskCharacters": 9649,
+      "internalTasks": true,
+      "protagonist": true,
+      "pixelGate": true,
+      "scope": true,
+      "time": "2026-10-03T07:45:54.723Z"
+    }
+  ],
+  "responses": [
+    {
+      "status": 200,
+      "runId": "09fd23bb-9763-4003-9533-f34ca88b9258"
+    }
+  ],
+  "errors": [],
+  "started": "2026-10-03T07:41:29.621Z",
+  "newFolderUrl": "http://127.0.0.1:9896/index.html?hostProject=2264a9d6-b5e4-42f0-a393-7cdccf345315",
+  "chatTail": "2026년 10월 3일 토\n회상 스토리 · 확정한 게임 기획\n지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다.\n작업 결과\n실패 · 9:19\n✓\n생각 정리 완료\n결과 확인\n!\n작업 실패\n결과 확인\n✓\n프로젝트 살펴보기 완료\n팀장\n!\n실패\n\n적용 실패(stale-base): 기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요.\n\n작업을 끝내지 못했어요. 작업 과정에서 자세한 내용을 확인할 수 있어요. 변경한 내용은 적용하지 않았어요.",
+  "elapsedSeconds": 782,
+  "sqlite": {
+    "dir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/interview-e2e/project/.oprn-projects/2264a9d6-b5e4-42f0-a393-7cdccf345315",
+    "projectId": "00f61579-0453-419d-b5b6-ed561259c8f1",
+    "title": "인터뷰 실동작 QA",
+    "revision": 5,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "어떤 만남으로 시작할까요?",
+          "label": "이야기의 시작",
+          "text": "다시 만난 옛 친구 — 대학에서 재회한 두 사람. 서로 모르는 시간이 있어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "무엇을 하며 가까워질까요?",
+          "label": "중심 플레이",
+          "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "관계는 어떤 흐름으로 이어질까요?",
+          "label": "진행 방식",
+          "text": "한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 감정이 오래 남으면 좋을까요?",
+          "label": "분위기",
+          "text": "따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째로 어디까지 만들어 볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.",
+          "source": "user"
+        }
+      },
+      "summary": "지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다.",
+      "interview": {
+        "version": 1,
+        "genre": "romance",
+        "concept": "이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.",
+        "protagonist": "지우. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "campus",
+          "activity": "talk",
+          "progression": "single",
+          "detail": "warm",
+          "scope": "scene"
+        }
+      }
+    },
+    "maps": 2,
+    "events": 4,
+    "conversations": []
+  },
+  "finished": true,
+  "uiTaskLeak": false,
+  "piTeam": null,
+  "beforeReload": {
+    "dir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/interview-e2e/project/.oprn-projects/2264a9d6-b5e4-42f0-a393-7cdccf345315",
+    "projectId": "00f61579-0453-419d-b5b6-ed561259c8f1",
+    "title": "인터뷰 실동작 QA",
+    "revision": 5,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "어떤 만남으로 시작할까요?",
+          "label": "이야기의 시작",
+          "text": "다시 만난 옛 친구 — 대학에서 재회한 두 사람. 서로 모르는 시간이 있어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "무엇을 하며 가까워질까요?",
+          "label": "중심 플레이",
+          "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "관계는 어떤 흐름으로 이어질까요?",
+          "label": "진행 방식",
+          "text": "한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 감정이 오래 남으면 좋을까요?",
+          "label": "분위기",
+          "text": "따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째로 어디까지 만들어 볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.",
+          "source": "user"
+        }
+      },
+      "summary": "지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다.",
+      "interview": {
+        "version": 1,
+        "genre": "romance",
+        "concept": "이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.",
+        "protagonist": "지우. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "campus",
+          "activity": "talk",
+          "progression": "single",
+          "detail": "warm",
+          "scope": "scene"
+        }
+      }
+    },
+    "maps": 2,
+    "events": 4,
+    "conversations": []
+  },
+  "afterReload": {
+    "dir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/interview-e2e/project/.oprn-projects/2264a9d6-b5e4-42f0-a393-7cdccf345315",
+    "projectId": "00f61579-0453-419d-b5b6-ed561259c8f1",
+    "title": "인터뷰 실동작 QA",
+    "revision": 5,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "어떤 만남으로 시작할까요?",
+          "label": "이야기의 시작",
+          "text": "다시 만난 옛 친구 — 대학에서 재회한 두 사람. 서로 모르는 시간이 있어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "무엇을 하며 가까워질까요?",
+          "label": "중심 플레이",
+          "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "관계는 어떤 흐름으로 이어질까요?",
+          "label": "진행 방식",
+          "text": "한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 감정이 오래 남으면 좋을까요?",
+          "label": "분위기",
+          "text": "따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째로 어디까지 만들어 볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.",
+          "source": "user"
+        }
+      },
+      "summary": "지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다.",
+      "interview": {
+        "version": 1,
+        "genre": "romance",
+        "concept": "이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.",
+        "protagonist": "지우. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "campus",
+          "activity": "talk",
+          "progression": "single",
+          "detail": "warm",
+          "scope": "scene"
+        }
+      }
+    },
+    "maps": 2,
+    "events": 4,
+    "conversations": []
+  },
+  "sameProjectAfterReload": true,
+  "sameBriefAfterReload": true
+}

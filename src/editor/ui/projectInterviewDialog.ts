@@ -35,7 +35,8 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     let sceneToken = 0;
     let sceneKey = "";
     let front = 0;
-    let motion = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let motion = !motionPreference.matches;
     const overlay = el("div", { class: "cinematic-interview-backdrop", dataset: { testid: "project-interview" } });
     const panel = el("section", { class: "cinematic-interview", attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "project-interview-title" } });
     const background = el("div", { class: "ci-backdrop", attrs: { "aria-hidden": "true" } });
@@ -51,7 +52,7 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     const status = el("p", { class: "ci-status", attrs: { role: "status", "aria-live": "polite" } });
     const done = (brief: GameDesignBrief | null) => {
       if (closed) return;
-      closed = true; sceneToken++; video.pause(); video.removeAttribute("src"); video.load();
+      closed = true; sceneToken++; motionPreference.removeEventListener("change", onMotionPreference); video.pause(); video.removeAttribute("src"); video.load();
       unregisterModal(overlay); overlay.remove(); resolve(brief);
       if (opener instanceof HTMLElement && document.contains(opener)) opener.focus();
     };
@@ -70,7 +71,11 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       const url = interviewSceneUrl(key);
       const probe = new Image(); probe.src = url;
       try { await probe.decode(); } catch {
-        if (!closed && token === sceneToken) status.textContent = "참고 그림을 불러오지 못했어요. 답변은 계속 고를 수 있어요.";
+        if (!closed && token === sceneToken) {
+          // The same choice must be retryable when connectivity returns.
+          sceneKey = "";
+          status.textContent = "참고 그림을 불러오지 못했어요. 답변은 계속 고를 수 있어요.";
+        }
         return;
       }
       if (closed || token !== sceneToken) return;
@@ -227,10 +232,16 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       }
       body.append(status);
       body.scrollTop = 0;
+      panel.scrollTop = 0;
       body.querySelector<HTMLElement>("#project-interview-title")?.focus({ preventScroll: true });
     };
     const motionButton = button("모션", "project-interview-motion", () => { motion = !motion; syncMotion(); motionButton.setAttribute("aria-pressed", String(motion)); });
     motionButton.classList.add("ci-motion"); motionButton.setAttribute("aria-pressed", String(motion));
+    const onMotionPreference = (event: MediaQueryListEvent) => {
+      if (!event.matches) return;
+      motion = false; syncMotion(); motionButton.setAttribute("aria-pressed", "false");
+    };
+    motionPreference.addEventListener("change", onMotionPreference);
     panel.append(background, caption, body, motionButton); overlay.append(panel); document.body.append(overlay);
     panel.addEventListener("keydown", event => {
       if (event.key !== "Tab" || !isTopModal(overlay)) return;

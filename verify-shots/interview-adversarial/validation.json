@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-03",
+  "mainSourceBaseline": "f141b72c8e",
+  "productionBuild": {
+    "command": "NODE_OPTIONS=--max-old-space-size=8192 npm run build:packaged",
+    "exit": 0
+  },
+  "appTypes": {
+    "command": "NODE_OPTIONS=--max-old-space-size=8192 npm run typecheck:app",
+    "exit": 0
+  },
+  "electronBuild": {
+    "command": "npm run build:electron",
+    "exit": 0
+  },
+  "barrelGate": {
+    "exit": 0,
+    "files": 2445,
+    "defaultExports": 55
+  },
+  "focusedUnitTests": {
+    "uniquePassed": 133,
+    "mainExistingFailures": 6,
+    "mainExistingUnhandledErrors": 2,
+    "failureSuites": {
+      "piAgentRunOutcome": "YOLO village completion goal mismatch: current/main both fail; the two new boot/save cases pass",
+      "aiWelcomeHandoffDisplay": "three fake-DOM statusText failures and two document-is-not-defined errors: current/main both reproduce",
+      "welcomeGenrePresets": "two older horror place_concept expectations: current/main both reproduce with testTimeout=60000"
+    },
+    "workers": 2,
+    "wholeSuiteRun": false
+  },
+  "cssGates": {
+    "currentFailedAxes": 6,
+    "mainFailedAxes": 6,
+    "literalColors": {
+      "main": 2017,
+      "current": 1977
+    },
+    "undefinedVariables": {
+      "main": 54,
+      "current": 54
+    },
+    "winnerRows": {
+      "main": 51508,
+      "current": 51517
+    },
+    "note": "Existing orphan sheets, duplicated prefixes, undefined variables, live-class and snapshot drift remain. Added cinema tokens/mobile properties account for intended winner changes; no baseline was rewritten."
+  },
+  "surfaceGate": {
+    "exit": 1,
+    "complete": false,
+    "attempts": 3,
+    "note": "Retried on two CPUs, then with NODE_OPTIONS=8192. Existing surface snapshot failures were observed; each run still exhausted a process heap before all 10 axes reported. No complete surface pass is claimed."
+  },
+  "limitations": [
+    "No complete game-generation claim: the initial live team run is stopped after the first applied checkpoints.",
+    "Browser dialog matrix uses synthetic drafts; canonical SQLite/live model evidence is in ../interview-live-handoff.",
+    "Packaged renderer was rebuilt after the boot fix and human genre-label fix.",
+    "Actual AI-authored NPC and two choices persist after canonical reload (revision 8); complete game generation was deliberately not attempted.",
+    "Dedicated-player and shipping-export preparation results are separate; see ../interview-live-handoff/SUMMARY.md."
+  ],
+  "visualEvidenceViewer": {
+    "states": 6,
+    "widths": [
+      320,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "pageErrors": 0,
+    "checks": [
+      {
+        "width": 320,
+        "colorScheme": "light",
+        "states": 6,
+        "errors": []
+      },
+      {
+        "width": 320,
+        "colorScheme": "dark",
+        "states": 6,
+        "errors": []
+      },
+      {
+        "width": 1440,
+        "colorScheme": "light",
+        "states": 6,
+        "errors": []
+      },
+      {
+        "width": 1440,
+        "colorScheme": "dark",
+        "states": 6,
+        "errors": []
+      }
+    ]
+  }
+}

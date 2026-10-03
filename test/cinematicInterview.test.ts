@@ -28,6 +28,7 @@ describe("cinematic interview persistence and internal handoff", () => {
     expect(buildWelcomeGenrePresetPrompt(preset, brief)).toContain("약사");
     expect(buildWelcomeGenrePresetPrompt(preset, brief)).toContain("F03");
     expect(welcomeGenrePresetDisplayText(preset, brief)).not.toContain("F03");
+    expect(welcomeGenrePresetDisplayText(preset, brief)).toMatch(/^관계·연애 \+ 몬스터 수집·육성 · 확정한 게임 기획/u);
   });
   it("rejects lost blend answers and engine/genre mismatches instead of silently dropping them", () => {
     const brief = mixedBrief();

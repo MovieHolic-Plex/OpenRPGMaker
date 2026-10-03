@@ -3,6 +3,7 @@ vi.mock("@/editor/panels/aiActivitySave", () => ({ observeActivitySave: vi.fn() 
 // 있던 불일치(2026-09-11 실측: 20턴 내내 1회도 미렌더)의 회귀.
 // 렌더는 패널이 소유하고, 여기선 surface.setRunOutcome 으로 흘린 facts 만 고정한다.
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { configureProjectInterviewBootPreparation } from "@/editor/projectInterviewBootPreparation";
 
 const h = vi.hoisted(() => ({
   villageIssues: [] as string[],
@@ -37,6 +38,7 @@ const h = vi.hoisted(() => ({
   confirmAnswer: true,
   /** true 면 시공 실행이 도구마다 체크포인트를 올린다 — 실시간 반영(publication.count > 0) 경로. */
   checkpoint: false,
+  saveKind: "saved",
   /** 저장된 역할 모델(Deep). 2026-09-26 리뷰 R2: 이 값이 «폴백과 다른가»가 다이얼 게이트를 정한다. */
   roleModels: undefined as { deep?: { provider: string; model: string; thinkingLevel: "off" | "low" | "medium" | "high" } } | undefined,
 }));
@@ -105,7 +107,7 @@ vi.mock("@/ai/piAgent/mapBundle", () => ({
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
 // subscribe 가 빠져 있어 mapEditHistory 의 모듈 초기화가 즉시 죽었다 — 파일 전체가 로드조차
 // 되지 않아 여기 담긴 12개 케이스가 통째로 침묵했다(main 기준으로도 빨간불).
-vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {} } }));
+vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
 // 실제 모달을 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
 vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => h.confirmAnswer }));
 vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }) }));
@@ -143,6 +145,8 @@ const harness = () => {
 };
 
 beforeEach(() => {
+  configureProjectInterviewBootPreparation(async () => {});
+  h.saveKind = "saved";
   h.villageIssues.length = 0;
   h.planError = false; h.verdicts.length = 0; h.findings.length = 0;
   h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
@@ -158,6 +162,20 @@ beforeEach(() => {
 });
 
 describe("Pi 경로 실행 결과 4축", () => {
+  it("captures first-generation context after the late shared-reference preparation", async () => {
+    configureProjectInterviewBootPreparation(async () => {
+      h.project = { ...projectWith("late references ready"), system: { genre: "story-cutscene" } };
+    });
+    await runPiCommand({ mode: "team", mapIds: [], task: "장르 프리셋: 관계·연애" }, harness().surface());
+    expect(h.requests).toHaveLength(1);
+    expect((h.requests[0]!.project as { maps: Record<string, { name: string }> }).maps.map_a!.name).toBe("late references ready");
+  });
+  it("never starts first generation when its save is not confirmed", async () => {
+    h.saveKind = "not-configured";
+    await runPiCommand({ mode: "team", mapIds: [], task: "장르 프리셋: 관계·연애" }, harness().surface());
+    expect(h.requests).toHaveLength(0);
+    expect(h.bubbles.join(" ")).toContain("저장");
+  });
   it.each(["default", "yolo"] as const)("%s: 마을 완료 검사 실패는 조화 검수 성공으로 지워지지 않는다", async mode => {
     h.piApply = mode;
     h.villageIssues.push("map_a: 대사 없는 페이지");
