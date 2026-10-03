@@ -71,7 +71,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   // 도트 측면 전투(2026-09-28): 청색 그라데이션 픽셀 창, 겹 배경(scenery), 전진 걸음·적 점멸 연출(motionStyle).
   // 창 크롬은 유리 뼈대(family glass)의 배치 계약을 그대로 쓰고 모양만 _retro2003.css 가 덮는다.
   retro2003: {
-    id: "retro2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "도트 측면 · 청색 창 (기본)", layout: "sideview", showAllySprites: true,
+    id: "retro2003", defaultBackdropResourceId: "battle-scenery-plains", label: "도트 측면 · 청색 창 (기본)", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "shatter-2003", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#18248c",

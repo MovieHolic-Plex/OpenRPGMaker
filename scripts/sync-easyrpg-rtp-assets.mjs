@@ -15,13 +15,12 @@ const PUBLIC_MANIFEST_PATH = path.join(PUBLIC_RTP_DIR, "rtp-manifest.json");
 // Enterbrain 계보 용어라 표시명에 쓰지 않는다 — uiCopy 의 중립어(타일 그림판 등)를 따른다.
 // sourceDir 자체는 원본 저장소 경로이므로 그대로 둔다(재동기화 대조에 쓰인다).
 const CATEGORY_CONFIG = [
-  { sourceDir: "Battle", category: "battle", extension: ".png", publicDir: "battle", label: "전투 효과" },
+  // Battle(Blow·Sword1·Arrow)·Monster(Hornet)는 2026-10-03 deprecated/ 로 뺐다 — 전투는 도트 효과·도트 적만 쓴다.
   { sourceDir: "BattleWeapon", category: "battleWeapon", extension: ".png", publicDir: "battle-weapon", label: "전투 무기" },
   { sourceDir: "CharSet", category: "charset", extension: ".png", publicDir: "charset", label: "캐릭터 그림" },
   { sourceDir: "ChipSet", category: "chipset", extension: ".png", publicDir: "chipset", label: "타일 그림판" },
   { sourceDir: "FaceSet", category: "faceset", extension: ".png", publicDir: "faceset", label: "얼굴 그림" },
   { sourceDir: "GameOver", category: "gameOver", extension: ".png", publicDir: "game-over", label: "게임오버 화면" },
-  { sourceDir: "Monster", category: "monster", extension: ".png", publicDir: "monster", label: "몬스터 그림" },
   { sourceDir: "Music", category: "music", extension: ".mid", publicDir: "music", label: "음악" },
   { sourceDir: "Panorama", category: "backdrop", extension: ".png", publicDir: "backdrop", label: "배경 그림" },
   { sourceDir: "Picture", category: "picture", extension: ".png", publicDir: "picture", label: "그림" },
@@ -146,18 +145,26 @@ function pathModuleBasename(sourcePath) {
   return path.posix.basename(sourcePath);
 }
 
+function categoryList(name, category, assets) {
+  // as const 배열에 그 카테고리가 없으면 filter 비교가 TS2367 이 된다. 빈 목록으로 남긴다.
+  if (!assets.some((asset) => asset.category === category)) {
+    return `export const ${name}: readonly EasyRpgRtpAsset[] = [];`;
+  }
+  return `export const ${name} = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "${category}");`;
+}
+
 function generateSource(assets) {
   const charsetAssets = assets.filter((asset) => asset.category === "charset");
   return `${generatedHeader()}${generatedTypes()}${assetArray("EASYRPG_RTP_ASSETS", assets)}
-export const EASYRPG_BACKDROP_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "backdrop");
-export const EASYRPG_BATTLE_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "battle");
-export const EASYRPG_BATTLE_WEAPON_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "battleWeapon");
-export const EASYRPG_CHIPSET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "chipset");
+${categoryList("EASYRPG_BACKDROP_ASSETS", "backdrop", assets)}
+${categoryList("EASYRPG_BATTLE_ASSETS", "battle", assets)}
+${categoryList("EASYRPG_BATTLE_WEAPON_ASSETS", "battleWeapon", assets)}
+${categoryList("EASYRPG_CHIPSET_ASSETS", "chipset", assets)}
 // 분할 전 얼굴 시트 5장. 새 작업은 FACESET_FACE_ASSETS(낱장)를 쓴다 — 이 목록은
 // 이미 이 id 를 저장한 프로젝트가 여전히 역직렬화되게 하기 위해 둔다.
-export const LEGACY_FACESET_SHEET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "faceset");
-export const EASYRPG_GAME_OVER_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "gameOver");
-export const EASYRPG_MONSTER_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "monster");
+${categoryList("LEGACY_FACESET_SHEET_ASSETS", "faceset", assets)}
+${categoryList("EASYRPG_GAME_OVER_ASSETS", "gameOver", assets)}
+${categoryList("EASYRPG_MONSTER_ASSETS", "monster", assets)}
 export const EASYRPG_MUSIC_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "music");
 export const EASYRPG_PICTURE_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "picture");
 export const EASYRPG_SOUND_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "sound");

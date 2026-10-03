@@ -98,7 +98,7 @@ def ensure_png(cand_dir, base, o):
     if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
         im = Image.open(src).convert('RGBA')
         im, _, _ = selective(im, background(o, im))
-        tmp = dst + '.tmp'; im.save(tmp, format='PNG'); os.replace(tmp, dst)
+        tmp = f'{dst}.{os.getpid()}.tmp'; im.save(tmp, format='PNG'); os.replace(tmp, dst)
     return dst
 
 

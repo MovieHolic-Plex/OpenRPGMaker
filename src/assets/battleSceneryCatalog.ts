@@ -40,6 +40,7 @@ export function resolveSceneryBiome(project: Project, input: SceneryContext = {}
   if (explicit) return explicit;
   if (id) {
     if (id === "generated-battle-reference-forest") return "forest";
+    if (id === "scarloxy-backdrop-forest") return "forest";
     if (id === "scarloxy-backdrop-ice") return "snow";
     if (id === "scarloxy-backdrop-sand") return "desert";
     if (/^easyrpg-backdrop-|^battle-skin-.*-backdrop$/.test(id)) return "plains";

@@ -574,3 +574,11 @@ from the retired atlas interior sheet (commit 8e02e8e4e, cells 2160–3299):
   contains exact idle-cell derivatives of the 140 native enemy sheets.
   `generated-enemy-sparkit-fire` reuses the existing human-selected collect sprite
   documented in `harness-data/monster-collect-species/ledger.json`.
+
+## Three-headed hydra redraw (2026-10-03)
+
+`generated/pixel-enemies/hydra-three.png` and its exact idle portrait in
+`generated/pixel-enemy-portraits/hydra-three.png` are original OPRN pixel artwork,
+drawn directly on the final 96px grid by `scripts/asset-gen/pixel-enemy/hydra-three.py`.
+No source image or image-generation model is used. The humanoid batch generator
+loads this same authoring source. Repository code/asset policy applies.
