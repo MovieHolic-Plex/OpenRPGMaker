@@ -8,8 +8,10 @@ import { symmetryVariants, type TerrainPoint } from "./terrainDesignGeometry";
 import { planTerrainFeature } from "./terrainFeatures";
 import { planTerrainFinish } from "./terrainFinish";
 import { toast } from "@/util/toast";
+import { planQuickHouse } from "./quickHouse";
+import { registerStructureKit } from "./harnessSuggestion/structureKitActions";
 
-export const TERRAIN_DESIGN_TOOLS: readonly [TerrainDesignTool, string][] = [["contour", "절벽 윤곽"], ["road", "길"], ["ridge", "능선"], ["valley", "계곡"], ["lake", "호수·해안"], ["mix", "재질 혼합"], ["mixedCluster", "혼합 군집"], ["stamp", "지형 도장"], ["lock", "영역 잠금"], ["route", "경로 검사"], ["finish", "지형 다듬기"]];
+export const TERRAIN_DESIGN_TOOLS: readonly [TerrainDesignTool, string][] = [["contour", "절벽 윤곽"], ["road", "길"], ["house", "집 외관"], ["ridge", "능선"], ["valley", "계곡"], ["lake", "호수·해안"], ["mix", "재질 혼합"], ["mixedCluster", "혼합 군집"], ["stamp", "지형 도장"], ["lock", "영역 잠금"], ["route", "경로 검사"], ["finish", "지형 다듬기"]];
 export function isTerrainDesignTool(tool: EditorState["terrainBrush"]): tool is TerrainDesignTool { return TERRAIN_DESIGN_TOOLS.some(([key]) => key === tool); }
 export function terrainDesignOptions(s = editorState.get()): TerrainDesignOptions {
   return { symmetry: s.terrainSymmetry, areaShape: s.terrainAreaShape, width: s.terrainWidth, delta: s.terrainDelta, seed: s.terrainSeed, weights: s.terrainMixWeights, waterLevel: s.terrainLakeLevel, maxDepth: s.terrainLakeDepth, shallowWidth: s.terrainShallowWidth, flattenRoad: s.terrainRoadFlatten, unlock: s.terrainUnlock, density: s.reliefClusterDensity };
@@ -30,7 +32,7 @@ export function applyTerrainDesignPlan(mapId: string, plan: TerrainDesignPlan, l
 }
 export function commitTerrainDesign(): void {
   const s = editorState.get(), mapId = s.currentMapId, map = mapId ? store.getCurrent().maps[mapId] : undefined;
-  if (!map || !mapId || !isTerrainDesignTool(s.terrainBrush) || ["stamp", "route"].includes(s.terrainBrush)) return;
+  if (!map || !mapId || !isTerrainDesignTool(s.terrainBrush) || ["stamp", "route", "house"].includes(s.terrainBrush)) return;
   const tileset = store.getCurrent().tilesets[map.tilesetId]; if (!tileset) return;
   const rawPoints = s.terrainPoints?.mapId === mapId ? s.terrainPoints.points : [];
   const plan = s.terrainBrush === "finish" ? planTerrainFinish(map, rawPoints, s.terrainFinishMethod, s.terrainFinishPasses)
@@ -52,8 +54,20 @@ export function handleTerrainDesignPointer(mapId: string, point: TerrainPoint, f
     if (index !== null && index >= 0) { const next = points.map((p,n) => n === index ? point : p); editorState.set({ terrainDragPoint: index, terrainPoints: { mapId, points: next } }); }
     return;
   }
-  if (!first || point.x < 0 || point.y < 0 || point.x >= map.width || point.y >= map.height) return;
+  if (s.terrainBrush === "road" && s.terrainRoadDrag) {
+    const points = first ? [] : s.terrainPoints?.mapId === mapId ? s.terrainPoints.points : [];
+    if (points.at(-1)?.x === point.x && points.at(-1)?.y === point.y) return;
+    if (points.length < 256) editorState.set({ terrainPoints: { mapId, points: [...points, point] } });
+    return;
+  }
+  if (!first) return;
   const tileset = store.getCurrent().tilesets[map.tilesetId]; if (!tileset) return;
+  if (s.terrainBrush === "house") {
+    if (!canEditMap(mapId)) { toastMapEditLockNotice(mapId); return; }
+    const plan = planQuickHouse(map, tileset, point, { style: s.terrainHouseStyle, width: s.terrainHouseWidth, stories: s.terrainHouseStories, kitId: s.terrainHouseKitId });
+    if (plan.ok && plan.kit) { const registered = registerStructureKit(map.tilesetId, plan.kit); plan.kit = { ...plan.kit, id: registered.id }; }
+    applyTerrainDesignPlan(mapId, plan, "집 외관 배치"); return;
+  }
   if (s.terrainBrush === "mix" || s.terrainBrush === "mixedCluster") {
     const plan = planTerrainDesign(map, tileset, s.terrainBrush, [point], terrainDesignOptions(s));
     applyTerrainDesignPlan(mapId, plan, s.terrainBrush === "mix" ? "재질 혼합" : "혼합 군집"); return;

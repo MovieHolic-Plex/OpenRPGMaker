@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **130쪽 / 4470KB / 약 1,292,857 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **130쪽 / 4475KB / 약 1,294,570 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,13 +15,13 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 561KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3432 | ~162,821 |
+| `openwiki/editor-ai-panel.md` | 563KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3440 | ~163,429 |
 | `openwiki/editor-ai-tools.md` | 310KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2565 | ~89,065 |
 | `openwiki/editor-database.md` | 402KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2358 | ~117,632 |
 | `openwiki/editor-event-authoring.md` | 167KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 973 | ~48,704 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
-| `openwiki/editor-observability.md` | 58KB | 6KB | 658 | ~16,843 |
+| `openwiki/editor-observability.md` | 58KB | 6KB | 660 | ~16,945 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,042 |
 | `openwiki/editor-workflows-misc.md` | 78KB | 33KB | 533 | ~21,749 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
@@ -117,6 +117,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/storage-retirement.md` | 1 | `.oprn-local.json` |
 | `openwiki/teaching-assistant-tilesets.md` | 1 | `_specs.py` |
 | `openwiki/team-project-host.md` | 2 | `dist-electron/dist-electron/browser-bridge.js`, `userData/recent-teams.json` |
+| `openwiki/terrain-design-suite.md` | 6 | `capture-visibility-building-runtime.mjs`, `prepare-visibility-building-runtime.mjs`, `quickBuildPanel.ts`, `quickHouse.ts`, `save-visibility-building-fixture.mjs`, `terrainVisionRaster.ts` |
 | `openwiki/testing.md` | 38 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `acceptance-live-check.mjs`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `legacyDb-proof-first-save.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `qa-db-beginner-mode.spec.ts`, `scripts/author-natural-village-harness.mts`, `scripts/author-natural-village-reference.mts`, `scripts/build-horror-mystery-prototype.mts`, `scripts/qa/acceptance-live.mjs`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/regionTaskRun.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/tile-geometry.md` | 2 | `output/slates-reference/source-row.json`, `scripts/content/save-slates-reference.mjs` |
 | `openwiki/tile-layer-policy.md` | 2 | `Castle2_5.png`, `clean_furniture.png` |
@@ -398,7 +399,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` 설치 지점
 - `L64` 테스트
 
-### `openwiki/editor-ai-panel.md` — 561KB · 3432줄 · ~162,821 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 563KB · 3440줄 · ~163,429 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L5` 도구 사용량 (2026-09-25)
 - `L12` 새 프로젝트 게임 기획 전달 (2026-09-22)
@@ -501,6 +502,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3389` 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
 - `L3402` AI 패널 렌더 비용 (2026-09-28)
   - `L3424` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
+- `L3433` 전송 직후 캔버스 피드백과 체크포인트 따라가기 (2026-10-03)
 
 ### `openwiki/editor-ai-tools.md` — 310KB · 2565줄 · ~89,065 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -878,7 +880,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L426` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
   - `L436` All-interior review (2026-09-15)
 
-### `openwiki/editor-observability.md` — 58KB · 658줄 · ~16,843 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 58KB · 660줄 · ~16,945 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L5` 되돌리기 복원의 공용 자산 복제 (2026-10-03)
 - `L37` 높이 붓·높이 조수 도구의 기록 (2026-09-26)
@@ -2065,18 +2067,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L440` 웹 편집기 저장 경로 경량화 (2026-09-25)
   - `L455` 저장 경로의 전체 복제·직렬화 제거 (2026-09-26~27)
 
-### `openwiki/terrain-design-suite.md` — 11KB · 130줄 · ~3,512 토큰
+### `openwiki/terrain-design-suite.md` — 14KB · 160줄 · ~4,515 토큰
 
 - `L7` 도구 계약
-- `L28` 대칭과 도장
-- `L36` 소유와 저장
-- `L52` 확인
-- `L62` 적용한 지형 재편집
-- `L74` 지형 다듬기와 물 표현
-- `L84` 게임 상태 검사
-- `L95` 공용 도장
-- `L105` 게임 시야와 높이
-- `L119` 확장 확인
+- `L29` 대칭과 도장
+- `L37` 소유와 저장
+- `L53` 확인
+- `L63` 적용한 지형 재편집
+- `L75` 지형 다듬기와 물 표현
+- `L85` 게임 상태 검사
+- `L96` 공용 도장
+- `L106` 게임 시야와 높이
+- `L125` 확장 확인
+- `L137` 빠른 집과 도로
+- `L151` 시야·빠른 배치 확인
 
 ### `openwiki/terrain-placement-tools.md` — 6KB · 65줄 · ~1,743 토큰
 

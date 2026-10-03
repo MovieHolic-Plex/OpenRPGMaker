@@ -1,5 +1,5 @@
 import { drawTerrainWater } from "@/player/terrainWater";
-import { terrainVisibleCells } from "@/project/terrainGameplay";
+import { addTerrainVisionPreview } from "@/player/terrainVision";
 import type { TerrainRouteOptions } from "@/project/terrainRoute";
 import type Phaser from "phaser";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -23,8 +23,8 @@ export function renderTerrainDesignOverlay(scene: Phaser.Scene, layer: Phaser.Ga
   const tileSize = mapTileSize(map, project.tilesets[map.tilesetId]), lift = map.relief ? reliefLiftField(map.relief) : null, g = scene.add.graphics();
   const cell = (x: number, y: number, color: number, alpha: number, outline = false) => { const Y = (y - (lift ? cellLift(lift, x, y) : 0)) * tileSize; g.fillStyle(color, alpha); g.fillRect(x * tileSize, Y, tileSize, tileSize); if (outline) { g.lineStyle(1, color, .9); g.strokeRect(x * tileSize + 1, Y + 1, tileSize - 2, tileSize - 2); } };
   if (state.terrainVisionPreview) {
-    const origin=state.terrainVisionOrigin??project.startPos, visible=terrainVisibleCells(map,origin);
-    for(let i=0;i<map.width*map.height;i++)if(!visible.has(i))cell(i%map.width,Math.floor(i/map.width),0x070e18,.72);
+    const origin=state.terrainVisionOrigin??project.startPos;
+    addTerrainVisionPreview(scene,layer,map,project.tilesets[map.tilesetId],origin);
     cell(origin.x,origin.y,0x64e3a2,.8,true);
   }
   for (const i of map.terrainDesign?.lockedCells ?? []) { const x = i % map.width, y = Math.floor(i / map.width); cell(x, y, 0x9a78cf, .19, true); }

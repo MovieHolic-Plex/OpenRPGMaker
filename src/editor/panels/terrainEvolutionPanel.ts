@@ -31,13 +31,13 @@ export function mountTerrainEvolutionPanel(body: HTMLElement): () => void {
   const switches=el("div",{class:"terrain-design-switches"});route.append(switches);
   const gameplay=section("게임 시야 · 높이 규칙","gameplay");
   const setRule=<K extends keyof TerrainGameplayRules>(key:K,value:TerrainGameplayRules[K])=>{const id=editorState.get().currentMapId;if(!id)return;if(!canEditMap(id)){toastMapEditLockNotice(id);return;}recordMapEditIfChanged(id,()=>store.updateMap(id,map=>{map.terrainDesign??={};map.terrainDesign.gameplay={...DEFAULT_TERRAIN_GAMEPLAY,...map.terrainDesign.gameplay,[key]:value};},{label:"지형 게임 규칙"}));};
-  const block=check(gameplay,"vision-blocking","지형이 시야를 차단",v=>setRule("visionBlocking",v));
+  const block=check(gameplay,"vision-blocking","벽·나무·높이가 시야를 차단",v=>setRule("visionBlocking",v));
   const gain=check(gameplay,"high-ground-vision","고지에서 시야 확대",v=>setRule("highGroundVision",v));
   const projectile=check(gameplay,"projectile-height","발사체 높이 충돌",v=>setRule("projectileHeight",v));
   const radius=number(gameplay,"vision-radius","기본 시야 반경",1,32,v=>setRule("visionRadius",v));
   const bonus=number(gameplay,"vision-gain","높이당 추가 반경",0,4,v=>setRule("visionGain",v));
   const preview=check(gameplay,"vision-preview","캔버스에서 시야 미리보기",v=>editorState.set({terrainVisionPreview:v,terrainPoints:null}));
-  gameplay.append(el("p",{text:"미리보기를 켜고 캔버스를 누르면 관찰 위치가 바뀝니다. 게임의 시야·NPC 감지에도 같은 규칙이 적용됩니다."}));
+  gameplay.append(el("p",{text:"시야 차단을 끄면 가림도 사라집니다. 미리보기를 켜고 캔버스를 누르면 관찰 위치가 바뀝니다. 게임과 NPC 감지에도 같은 판정이 적용됩니다."}));
   const library=section("공용 지형 도장","shared-stamps");
   const search=el("input",{attrs:{type:"search",placeholder:"도장 이름 검색","aria-label":"도장 검색"},dataset:{testid:"terrain-design-stamp-search"}}) as HTMLInputElement;library.append(search);
   const cards=el("div",{class:"terrain-stamp-cards",dataset:{testid:"terrain-design-stamp-cards"}});library.append(cards);

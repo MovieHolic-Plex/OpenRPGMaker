@@ -1,3 +1,4 @@
+import { mountQuickBuildPanel } from "./quickBuildPanel";
 import { mountTerrainEvolutionPanel } from "./terrainEvolutionPanel";
 import { el } from "@/util/dom";
 import { editorState, type EditorState, type TerrainDesignTool } from "../editorState";
@@ -45,6 +46,7 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
   number("route-width", "검사할 통로 폭", 1, 9, value => editorState.set({ terrainRouteWidth: value }));
   const removeStamp = el("button", { class: "relief-bar-size", text: "선택한 도장 삭제", attrs: { type: "button" }, dataset: { testid: "terrain-design-stamp-delete" }, on: { click: () => { const id = editorState.get().terrainStampId; if (!id) return; store.update(p => { p.terrainStamps = p.terrainStamps?.filter(s => s.id !== id); if (!p.terrainStamps?.length) delete p.terrainStamps; }, { scope: "project", label: "지형 도장 삭제" }); editorState.set({ terrainStampId: null, terrainStampCapture: true }); } } });
   body.append(removeStamp);
+  const offQuickBuild = mountQuickBuildPanel(body);
   const offEvolution = mountTerrainEvolutionPanel(body);
   const info = el("div", { class: "terrain-design-info", attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "terrain-design-info" } });
   const apply = el("button", { class: "relief-bar-doodad", text: "적용 ↵", attrs: { type: "button" }, dataset: { testid: "terrain-design-apply" }, on: { click: commitTerrainDesign } }) as HTMLButtonElement;
@@ -62,6 +64,7 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
     if (["contour", "lake", "lock"].includes(tool)) show("shape");
     if (["contour", "ridge", "valley"].includes(tool)) show("delta");
     if (["contour", "road", "ridge", "valley", "mix", "mixedCluster"].includes(tool)) show("width");
+    if (tool === "house") fields.get("symmetry")!.hidden = true;
     if (tool === "road") show("road-height");
     if (tool === "lake") show("water-level", "water-depth", "shallows");
     if (tool === "mix" || tool === "mixedCluster") show("seed", "weight-0", "weight-1", "weight-2");
@@ -82,8 +85,10 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
     removeStamp.hidden = tool !== "stamp" || s.terrainStampCapture;
     (removeStamp as HTMLButtonElement).disabled = !s.terrainStampId;
     const count = s.terrainPoints?.mapId === map?.id ? s.terrainPoints!.points.length : 0;
-    apply.disabled = !count || ["stamp", "route", "mix", "mixedCluster"].includes(tool);
+    apply.disabled = !count || ["stamp", "route", "house", "mix", "mixedCluster"].includes(tool);
     if (tool === "route" && map && s.terrainRoute?.mapId === map.id) info.textContent = terrainRouteResult(p, map, s.terrainRoute, s.terrainRouteWidth, s).reason;
+    else if (tool === "house") info.textContent = "문 위치를 한 번 클릭 · 기존 물체와 지형은 보호됩니다";
+    else if (tool === "road" && s.terrainRoadDrag && !s.terrainFeatureId) info.textContent = "마우스로 끌어 그리고 놓으면 적용 · Esc: 취소";
     else if(s.terrainFeatureId) info.textContent = "제어점을 드래그하거나 값을 바꾸고 적용하세요 · Esc: 취소";
     else info.textContent = tool === "route" ? "출발점 → 목적지를 찍으세요. 아래에서 몸 크기·문·NPC·스위치를 검사할 수 있습니다." : tool === "stamp" ? s.terrainStampCapture ? `사각형의 두 모서리를 찍으세요 · ${count}/2` : "놓을 왼쪽 위 칸을 찍으세요. 소품 그림은 똑바로 유지됩니다." : tool === "mix" || tool === "mixedCluster" ? "캔버스를 눌러 배치하세요. 시드가 같으면 같은 배치가 됩니다." : `${count}개 점 · ${["contour", "lake", "lock"].includes(tool) && s.terrainAreaShape === "rect" ? "두 모서리" : "외곽 또는 경유점"}을 찍고 적용하세요. Esc: 취소`;
   };
@@ -94,5 +99,5 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
   head.addEventListener("pointerdown", e => { if ((e.target as HTMLElement).closest("button")) return; drag = { x: e.clientX, y: e.clientY, left: panel.offsetLeft, top: panel.offsetTop }; head.setPointerCapture(e.pointerId); e.preventDefault(); });
   head.addEventListener("pointermove", e => { if (!drag) return; panel.style.left = `${Math.min(Math.max(0, host.clientWidth - panel.offsetWidth), Math.max(0, drag.left + e.clientX - drag.x))}px`; panel.style.top = `${Math.min(Math.max(0, host.clientHeight - panel.offsetHeight), Math.max(0, drag.top + e.clientY - drag.y))}px`; });
   head.addEventListener("pointerup", () => { drag = null; }); head.addEventListener("pointercancel", () => { drag = null; });
-  return () => { offEvolution(); offState(); offStore(); document.removeEventListener("keydown", keydown, true); panel.remove(); };
+  return () => { offQuickBuild(); offEvolution(); offState(); offStore(); document.removeEventListener("keydown", keydown, true); panel.remove(); };
 }

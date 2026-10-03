@@ -1,0 +1,85 @@
+{
+  "aiRecords": {
+    "databasePresent": true,
+    "counts": {
+      "conversationTombstones": 0,
+      "conversations": 0,
+      "runCheckpoints": 0
+    }
+  },
+  "houses": {
+    "placements": [
+      {
+        "kitId": "quick_house_blue-stone_7_1",
+        "x": 7,
+        "y": 7,
+        "w": 7,
+        "h": 7
+      },
+      {
+        "kitId": "quick_house_bright-plaster_7_1",
+        "x": 21,
+        "y": 6,
+        "w": 7,
+        "h": 7
+      },
+      {
+        "kitId": "quick_house_timber-hall_5_1",
+        "x": 32,
+        "y": 12,
+        "w": 5,
+        "h": 7
+      }
+    ],
+    "kits": 3
+  },
+  "roads": {
+    "features": 3,
+    "connected": true,
+    "pending": null
+  },
+  "sight": {
+    "wallBlocked": true,
+    "lowCannotSeePlateau": true,
+    "highCanSeeLow": true,
+    "opaqueCells": 139
+  },
+  "film": {
+    "frames": 359,
+    "skippedCaptureFrames": 0,
+    "crop": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 960
+    },
+    "phases": [
+      {
+        "seconds": 0.031,
+        "text": "집 · 모양을 고르고 문 위치 한 번 클릭"
+      },
+      {
+        "seconds": 9.815,
+        "text": "집 너비 · 층수 변경, 다른 모양으로 연속 배치"
+      },
+      {
+        "seconds": 17.941,
+        "text": "겹치는 위치는 붉게 표시 · 클릭해도 기존 집 보존"
+      },
+      {
+        "seconds": 23.792,
+        "text": "도로 · 끌고 놓으면 자동 적용, 모퉁이와 교차로 연결"
+      },
+      {
+        "seconds": 35.876,
+        "text": "시야 ON · 벽·나무 뒤 가림, 에디터와 게임이 같은 판정"
+      },
+      {
+        "seconds": 39.785,
+        "text": "시야 OFF · 고지 시야 확대가 켜져 있어도 가림 완전히 해제"
+      }
+    ],
+    "gif": "editor-2x.mp4"
+  },
+  "errors": []
+}
