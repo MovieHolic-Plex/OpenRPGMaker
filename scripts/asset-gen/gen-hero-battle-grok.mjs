@@ -32,6 +32,8 @@ import { HEROES, POSES, REFERENCE_NEW_POSE, battlerPrompt, beatFor } from "./bat
 // grok 배관(홈 해석·세션 id·호출·사전 점검)은 grokImage.mjs 가 정본이다 — 뒷모습 생성기와 공유한다.
 import { arg, assertGrokReady, makeLogger, newSessionId, newestImage, runGrok, sessionDir } from "./grokImage.mjs";
 
+throw new Error("Starter artwork was removed on 2026-10-03; this generator is retired.");
+
 const CELL = 48;
 const COLUMNS = 3;
 const ROWS = 8;

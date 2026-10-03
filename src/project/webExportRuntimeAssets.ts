@@ -30,8 +30,6 @@ const CONDITIONAL_RUNTIME_ASSET_GROUPS: readonly ConditionalRuntimeAssetGroup[] 
     paths: [
       ...BATTLER_HIRES_SHEETS.map((entry) => entry.path),
       ...BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.tier === "sheet-cell").map((entry) => entry.path),
-      // 48px 원본 idle 스트립 — 고해상도 짝이 등록되지 않은 환경(옵트아웃)이 되돌아갈 자리다.
-      ...[1, 2, 3, 4, 5, 6].map((index) => `assets/generated/starter/idle/hero-0${index}-battle.png`),
     ].filter((path, index, all) => all.indexOf(path) === index),
     needed: usesGeneratedHeroBattlers,
   },

@@ -1,5 +1,26 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## Starter 그림 제거 (2026-10-03)
+
+사용자 지시로 `public/assets/generated/starter/` 전체(221파일)를 삭제했다. 영웅 정면 전투 시트,
+얼굴·캐릭터셋, 몬스터, 아이템, HUD 아이콘과 `hires/`·`idle/` 파생본이 대상이다.
+이 문서 아래의 starter 시트·애니메이션 제작 설명은 삭제 전 기록이며 복구 지시가 아니다.
+
+- `generatedAssetResourceResolver.ts`의 삭제된 리소스는 URL이 `null`이다. 이름 기반 몬스터
+  추측으로 삭제한 그림을 다른 그림에 연결하지 않는다. starter 승격 경로도 해석하지 않는다.
+- `builtinGeneratedResourceIds()`는 사용 가능한 등록만 반환한다. 저장본의 ID를 계속 읽을 수 있도록
+  `collectResourceIds`만 `builtinGeneratedResourceIds(true)`로 삭제된 ID도 허용한다.
+  업로드로 같은 ID를 직접 소유한 프로젝트는 그 업로드를 계속 사용한다.
+- `oprnGeneratedAssetPlan.json`의 해당 항목은 `rejected`, 승격 경로·해시는 `null`이다.
+  starter의 정면 idle·확대 시트·낱장 얼굴 및 이미지 검수 경로는 카탈로그에서 제거했다.
+- CSS와 `runtimeAssets.json`, 웹 내보내기에서 삭제한 PNG 경로를 제거했다.
+  상태 메뉴의 삭제된 아이콘은 기존 글리프를 표시한다.
+- 얼굴 분할기는 starter 시트를 입력으로 받지 않는다. `gen-hero-battle-grok.mjs`는 중단하며,
+  승격 도구는 명시적 목적지 없이는 승격하지 않고 starter 목적지를 거부한다.
+
+기존 프로젝트가 이 ID를 갖고 있어도 삭제한 그림은 나오지 않는다. 프로젝트의 저작 데이터나
+SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
+
 ## 옛 전투 그림은 deprecated/ — 지금 전투에는 도트·포켓몬 그림만 (2026-10-03)
 
 사용자 신고 「자꾸 옛날 그래픽을 꺼내온다」. 스킨을 지울 때 목록에서만 빼고 기본값·폴백·불러오기 재주입을 남겨 둔 것이 원인이었다.
