@@ -210,8 +210,20 @@ def render_ground_v9(M):
         for a, b in set(zip(a_arr.tolist(), b_arr.tolist())):
             if a >= 10 and b >= 10 and a != b:
                 by_pair[(a, b)] = None
+    # 번짐(눈가루·풀 술·디더)은 넓은 덩이에서만 — 길 밑 한 칸짜리 눈 띠가 길 옆에 흰 점을 뿌렸다(사용자 지적 2026-10-03)
+    wide = {}
+
+    def from_wide(b):
+        if b not in wide:
+            src = ndi.binary_opening(final == b, structure=np.ones((3, 3), bool), iterations=4)
+            wide[b] = ndi.distance_transform_edt(~src).astype(np.float32) if src.any() else np.full((Hp, Wp), 99.0, np.float32)
+        return wide[b]
     for (a, b) in by_pair:
         m = band & (final == a) & (near_g == b)
+        if _cls(a) != 'hole' and _cls(a) != 'field' and _cls(a) != 'wet':
+            m_spill = m & (from_wide(b) <= near_d + 1.5)
+        else:
+            m_spill = m
         d = near_d
         ca, cb = _cls(a), _cls(b)
         if 'hole' in (ca, cb):
@@ -236,26 +248,26 @@ def render_ground_v9(M):
                 sh = _ramp(a)[0]
                 e = m & (d <= 1.0) & (hpx < .55)
                 out[e] = sh
-                e = m & (d <= 3.0) & (d > 1.0) & (clump < .22 * (3.2 - d) / 2.2)
+                e = m_spill & (d <= 3.0) & (d > 1.0) & (clump < .22 * (3.2 - d) / 2.2)
                 out[e] = tex[b][e]
             elif cb == 'ice' and ca != 'ice':                      # 눈가루
-                e = m & (d <= 3.5) & (clump < .40 * (4.0 - d) / 3.0)
+                e = m_spill & (d <= 3.5) & (clump < .40 * (4.0 - d) / 3.0)
                 out[e] = tex[b][e]
             else:                                                  # 설원↔빙하
-                e = m & (d <= 3.0) & (clump < .5 * (3.5 - d) / 2.5)
+                e = m_spill & (d <= 3.0) & (clump < .5 * (3.5 - d) / 2.5)
                 out[e] = tex[b][e]
             continue
         if ca == cb:                                               # 식생↔식생, 광물↔광물: 덩이 디더
-            e = m & (d <= 3.5) & (clump < .5 * (4.0 - d) / 3.0)
+            e = m_spill & (d <= 3.5) & (clump < .5 * (4.0 - d) / 3.0)
             out[e] = tex[b][e]
         elif ca == 'min' and cb == 'veg':                          # 광물 위로 풀 술
-            e = m & (d <= 4.0) & (clump < .55 * (4.5 - d) / 3.5)
+            e = m_spill & (d <= 4.0) & (clump < .55 * (4.5 - d) / 3.5)
             out[e] = tex[b][e]
         else:                                                      # 식생 쪽 끝: 성긴 어두운 잎 끝 + 광물 알갱이 조금
             dk = _ramp(a)[0]
             e = m & (d <= 1.0) & (clump < .38)
             out[e] = dk
-            e = m & (d <= 2.5) & (d > 1.0) & (hpx < .10)
+            e = m_spill & (d <= 2.5) & (d > 1.0) & (hpx < .10)
             out[e] = tex[b][e]
     img = out
     lit = V._lit(img)
