@@ -1,4 +1,7 @@
 import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
+import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
+import { GAME_SYSTEM_AUTHORING_TOOLS } from './gameSystemAuthoringTools';
+import { OPENING_STORYBOOK_TOOLS } from './openingStorybookTools';
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
 import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
@@ -287,6 +290,9 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
   ...withDomain(CINEMATIC_TOOLS, "system"),
   ...withDomain(OPENING_ANIMATIC_TOOLS, "system"),
+  ...withDomain(MUSIC_AUTHORING_TOOLS, 'system'),
+  ...withDomain(GAME_SYSTEM_AUTHORING_TOOLS, 'system'),
+  ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
   ...withDomain(TITLE_IMPROVE_TOOLS, "system"),

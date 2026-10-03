@@ -1,4 +1,6 @@
 import { validateTilesetReferences } from "../tilesetReferences";
+import { validateFieldMenu } from '../fieldMenu';
+import { validateMusicScore } from '../musicScore';
 import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
 import { parsePublication } from "../publication";
 import {
@@ -21,6 +23,17 @@ export function validateMeta(value: unknown): void {
   const meta = requireRecord("meta", value);
   requireString("meta.title", meta.title);
   requireString("meta.author", meta.author);
+  if (meta.oprnFieldMenu !== undefined) validateFieldMenu(meta.oprnFieldMenu);
+  if(meta.oprnMenuSounds!==undefined) {
+    const sounds=requireRecord('meta.oprnMenuSounds',meta.oprnMenuSounds);
+    assert(Object.keys(sounds).every(k=>['cursor','confirm','cancel'].includes(k)),'Unknown menu sound cue');
+    for(const value of Object.values(sounds))requireString('menu sound resource',value);
+  }
+  if (meta.oprnMusicScores !== undefined) {
+    const scores = requireRecord('meta.oprnMusicScores', meta.oprnMusicScores);
+    assert(Object.keys(scores).length <= 32, 'At most32 music scores');
+    for(const value of Object.values(scores)) validateMusicScore(requireRecord('music score', value).score);
+  }
   if (meta.publication !== undefined) parsePublication(meta.publication);
   repairTerms(meta);
 }

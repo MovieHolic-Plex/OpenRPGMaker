@@ -14,6 +14,8 @@ The real Pi runtime exposes this family for opening production. Generated layers
 
 Production evidence requires a plan, current final configuration review, and actual rendered time samples for every animatic after its final changes. Editing assets or a timeline invalidates prior preview evidence. A model-supplied completed flag cannot satisfy this. Native playback and canonical save/reload remain separate checks.
 
+Research responses distinguish `conceptualRequirements` (study labels, never callable names) from `actualAuthoringTools` (registered tool names and field contracts). State approximations explicitly: there is no dedicated seamless scrolling layer; repeated scrolling uses authored tracks and duplicated layers. Native assistant dogfood revealed alias names being described as tools; the corrected response and a second actual UI query are recorded in `verify-shots/monster-opening-animatic-2026-10-03/`.
+
 ## Renderer and human editor
 
 `src/player/openingAnimaticRenderer.ts` owns the shared absolute-time canvas draw function used in native sequence playback, model contact sheets, and the database scrubber. The editor supports silent play/pause, seek, layer selection, sampled property edits and key saving. Duration edits retime layer/camera/FX/audio times atomically; collapsed keys reject the change. Preview contact sheets preserve stage aspect and show actual timestamps.
@@ -31,3 +33,25 @@ Attract owns its timer/listeners through shell teardown, resets on title input, 
 ## Functional verification
 
 Use focused browser renderer probes, real Pi production and native exported `player.html` evidence. Do not run Vitest/gates/full typecheck without this session's explicit authorization. Inspect saved project via the existing host API, CAS save and fresh connection reload; never modify a live host SQLite directly.
+
+## Older host storage compatibility
+
+`projectWireView` encodes full timelines and entry settings in the versioned `meta.oprnCinematicTimelines` extension (`src/project/cinematicWire.ts`). The legacy scene field contains real first-layer image/text fallbacks, so an older host can validate and preserve the document. Current deserialization restores authored timelines before normal shape/resource validation. Restoration requires that the legacy sequence still equals the recorded fallback; intentional edits by an older client win. Unsupported metadata versions reject the load. The capsule also preserves authored monster campaign metadata through older normalizers.
+
+This is a storage compatibility contract, not an older player's animatic renderer. Newly built player/editor bundles are required for motion. Raw API save helpers must encode first; raw API reload evidence must decode and compare the restored timeline as well as verify the persisted bytes. The campaign exporter prunes unused tileset catalogs and uploaded resources in the exported copy only, retaining dependencies transitively; canonical SQLite keeps the full editor catalogs.
+
+## Narrative storybook recipe (2026-10-04)
+
+`get_opening_direction` exposes storybook/cinematic/duel recipes without forcing
+all games into a moving creature montage. A storybook uses an original world,
+rupture, stakes, invitation and concrete handoff. Intentional still panels and
+short narration are valid. Undertale is a reference for hierarchy, negative space
+and memorable motifs; its text/art/melody are not game assets or quality proof.
+
+`make_opening_storybook` validates4..8 uniquely named panels, actual images,
+first-world/last-handoff roles and at least world/rupture/stakes/handoff. Lines are
+at most80 characters/3rows, with at least nonspace characters/5 seconds +700ms
+and2.2..15seconds per panel. It atomically creates real960×720 black animatics
+with separate image/narrative layers, fades and typewriter reveal. Existing entry
+and music persist unless explicitly changed. The final shot sampling/review gate
+continues to apply after the last change. Music authoring: music-score-authoring.md.

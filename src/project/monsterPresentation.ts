@@ -1,4 +1,5 @@
 import type { Project } from './types';
+import { collectorFieldMenu } from './fieldMenu';
 
 const BUILTIN_OPENING_TEXTS = [
   '강을 낀 왕국에는 오래도록 전쟁이 없었다.',
@@ -9,7 +10,8 @@ const BUILTIN_OPENING_TEXTS = [
 
 /** An explicit collector presentation preset. Preserve independently authored opening stories. */
 export function configureMonsterPresentation(project: Project): { defaultOpeningDisabled: boolean } {
-  project.system.menuUiStyle = 'pixel';
+  project.system.menuUiStyle = 'field-list';
+  project.meta.oprnFieldMenu = collectorFieldMenu();
   project.system.fieldHud = {
     ...project.system.fieldHud,
     theme: 'collector', font: 'pixel', menuStyle: 'project',

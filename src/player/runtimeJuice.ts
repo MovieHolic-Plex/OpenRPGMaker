@@ -61,8 +61,9 @@ const MENU_SE_CUE: Partial<Record<RuntimeJuiceEvent, SystemSeCue>> = {
 
 export function emitRuntimeJuice(options: RuntimeJuiceOptions): RuntimeJuiceLogEntry {
   const spec = RUNTIME_JUICE_SPECS[options.event];
-  const override = options.soundResourceId?.trim();
   const cue = MENU_SE_CUE[options.event];
+  const authored = cue === 'cursor' || cue === 'confirm' || cue === 'cancel' ? options.project?.meta.oprnMenuSounds?.[cue] : undefined;
+  const override = options.soundResourceId?.trim() || authored;
   const selected = cue ? options.session?.systemAudioOverrides?.se?.[cue] : undefined;
   const soundResourceId = selected?.resourceId ?? (override || spec.soundResourceId);
   const entry: RuntimeJuiceLogEntry = {

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **133쪽 / 4504KB / 약 1,303,067 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **135쪽 / 4521KB / 약 1,307,235 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 565KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3475 | ~163,954 |
-| `openwiki/editor-ai-tools.md` | 312KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2592 | ~89,746 |
+| `openwiki/editor-ai-tools.md` | 313KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2598 | ~90,026 |
 | `openwiki/editor-database.md` | 402KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2358 | ~117,632 |
 | `openwiki/editor-event-authoring.md` | 167KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 977 | ~48,774 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
@@ -24,10 +24,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-observability.md` | 58KB | 6KB | 658 | ~16,843 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,042 |
 | `openwiki/editor-workflows-misc.md` | 78KB | 33KB | 532 | ~21,580 |
-| `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
-| `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 785 | ~32,452 |
-| `openwiki/runtime-project-schema.md` | 207KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1472 | ~57,957 |
-| `openwiki/runtime-sessions.md` | 124KB | 50KB | 642 | ~33,599 |
+| `openwiki/runtime-battle.md` | 322KB | 32KB | 1759 | ~94,254 |
+| `openwiki/runtime-pre-edit-routing.md` | 109KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 791 | ~32,764 |
+| `openwiki/runtime-project-schema.md` | 208KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1483 | ~58,128 |
+| `openwiki/runtime-sessions.md` | 126KB | 50KB | 680 | ~34,255 |
 | `openwiki/testing.md` | 213KB | 48KB | 2013 | ~59,223 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
 
@@ -85,6 +85,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/large-village-generation.md` | 6 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `scripts/force-save-large-village.mts`, `scripts/force-save-village-50.mts`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
 | `openwiki/modern-city.md` | 2 | `-plan.json`, `.oprn.json` |
+| `openwiki/monster-campaign-menu.md` | 1 | `docs/content/monster-expedition-contract.md` |
 | `openwiki/monster-kit-origin.md` | 50 | `QA-I6-objects.md`, `_demo.py`, `assessment.json`, `candidate.png`, `demo.png`, `harness-data/tileset-authoring/integ-qa/QA-I6.md`, `layouts.json`, `lib/bake.py`, `lib/building.py`, `lib/cave_preview.py`, `lib/pret_ref.py`, `lib/refdocs.py`, `lib/render_map.py`, `lib/section_view.py`, `lib/study.py`, `lib/viz_progress.py`, `lib/viz_regions.py`, `lib/wire.py`, `node/kitlib.mts`, `node/lava_edges.mts`, `node/showcase.mts`, `node/showcase_interior.mts`, `node/wild_round.mts`, `pokemon-baked-town.html`, `pokemon-house-variety.html`, `recipes/cave.py`, `recipes/city.py`, `recipes/coast.py`, `recipes/controls.py`, `recipes/forest.py`, `recipes/gym2.py`, `recipes/interior.py`, `recipes/interior2.py`, `recipes/kit.py`, `recipes/outdoor2.py`, `sheet-3x.png`, `showcase_interior.mts`, `src/harnesses/tileset-authoring/REGIONS.md`, `src/harnesses/tileset-authoring/harness.py`, `src/harnesses/tileset-authoring/harness.ts`, `src/harnesses/tileset-authoring/lib/px.py`, `src/project/defaults/monsterKit.ts`, `src/project/defaults/monsterKitSheets.generated.ts`, `src/project/slideTiles.ts`, `test/encounterTerrainCondition.test.ts`, `tiles.json`, `tiles.png`, `verify-cave.json`, `verify-map.json`, `verify-route.json` |
 | `openwiki/native-enemy-retirement.md` | 2 | `scripts/generate-monster-images.mts`, `verify-shots/monster-refresh/SUMMARY.md` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
@@ -504,7 +505,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3424` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
 - `L3434` 실제 Pi 오프닝 제작 경로 복구 (2026-10-03)
 
-### `openwiki/editor-ai-tools.md` — 312KB · 2592줄 · ~89,746 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 313KB · 2598줄 · ~90,026 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 - `L14` 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
@@ -609,6 +610,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2550` 크로노 트리거식 필드 도구 인자 (2026-09-26)
 - `L2561` Pi 오프닝 제작·그림 검토 계약 (2026-10-03)
 - `L2589` Independent opening timelines
+- `L2593` Monster collector setup and verification (2026-10-03)
 
 ### `openwiki/editor-database.md` — 402KB · 2358줄 · ~117,632 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -1226,6 +1228,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
+### `openwiki/monster-campaign-menu.md` — 5KB · 88줄 · ~1,366 토큰
+
+- `L10` Ownership and receipts
+- `L35` UI data and map
+- `L53` Browser evidence and limitations
+- `L66` Authored field menu and assistant tools (2026-10-04)
+
 ### `openwiki/monster-kit-origin.md` — 34KB · 250줄 · ~10,318 토큰
 
 - `L6` 위치
@@ -1258,6 +1267,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L49` Resource Manager monster tab (2026-09-12)
 - `L64` Verification
 
+### `openwiki/music-score-authoring.md` — 2KB · 31줄 · ~500 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
 ### `openwiki/native-enemy-retirement.md` — 8KB · 68줄 · ~2,407 토큰
 
 - `L22` 공용 자산과 표시 계약
@@ -1275,13 +1288,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L90` 2026-09-05 실측
   - `L105` 사용자 플레이 후 체험 QA 정정 (2026-09-05)
 
-### `openwiki/opening-animatic-authoring.md` — 5KB · 34줄 · ~1,157 토큰
+### `openwiki/opening-animatic-authoring.md` — 7KB · 58줄 · ~1,824 토큰
 
 - `L3` Ownership and format
 - `L9` Assistant surface
-- `L17` Renderer and human editor
-- `L25` Entry timing
-- `L31` Functional verification
+- `L19` Renderer and human editor
+- `L27` Entry timing
+- `L33` Functional verification
+- `L37` Older host storage compatibility
+- `L43` Narrative storybook recipe (2026-10-04)
 
 ### `openwiki/opening-reference-study.md` — 10KB · 57줄 · ~2,901 토큰
 
@@ -1496,7 +1511,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 321KB · 1758줄 · ~94,038 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 322KB · 1759줄 · ~94,254 토큰 · 통째읽기 잘림
 
 - `L3` 전체 몬스터 후속 재저작 · 140종 9포즈 (2026-10-03)
 - `L29` 갓파·늑대·박쥐·해골 전투 9포즈 (2026-10-03)
@@ -1554,24 +1569,24 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1385` 스킨 CSS 캐스케이드와 저작 가능 스킨
   - `L1389` Gen 1(포켓몬식) 규칙 모델
   - `L1397` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L1416` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L1460` Starter hero battle sheets (2026-08-29)
-- `L1481` Per-actor back battlers (2026-08-29)
-- `L1499` Battle input and visibility P0 contract (2026-07-30)
-- `L1510` 배틀러 idle 애니메이션 (2026-08-30)
-- `L1638` 필드 아이템 상태 부여 복구 (2026-09-05)
-- `L1642` Authored combat rules (feature16, 2026-09-21)
-- `L1656` Battle reports and physical formation (2026-09-21)
-- `L1660` Combat correctness hardening (2026-09-21)
-- `L1668` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
-- `L1678` 트레이너 전투의 도입 문구 (2026-09-24)
-- `L1685` 포획 불가 전투의 가방 목록 (2026-09-25)
-- `L1696` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
-- `L1710` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
-- `L1720` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
-- `L1737` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
-- `L1750` 공용 몬스터 옛 그림 폐기 (2026-10-02)
-  - `L1754` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
+  - `L1417` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L1461` Starter hero battle sheets (2026-08-29)
+- `L1482` Per-actor back battlers (2026-08-29)
+- `L1500` Battle input and visibility P0 contract (2026-07-30)
+- `L1511` 배틀러 idle 애니메이션 (2026-08-30)
+- `L1639` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L1643` Authored combat rules (feature16, 2026-09-21)
+- `L1657` Battle reports and physical formation (2026-09-21)
+- `L1661` Combat correctness hardening (2026-09-21)
+- `L1669` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+- `L1679` 트레이너 전투의 도입 문구 (2026-09-24)
+- `L1686` 포획 불가 전투의 가방 목록 (2026-09-25)
+- `L1697` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+- `L1711` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+- `L1721` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+- `L1738` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+- `L1751` 공용 몬스터 옛 그림 폐기 (2026-10-02)
+  - `L1755` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 46KB · 305줄 · ~12,541 토큰
 
@@ -1590,7 +1605,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L267` Genre ambience presets and sound pairing (2026-09-21)
   - `L291` Thirty audiovisual presets — evidence (2026-09-21)
 
-### `openwiki/runtime-pre-edit-routing.md` — 108KB · 785줄 · ~32,452 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 109KB · 791줄 · ~32,764 토큰 · 통째읽기 잘림
 
 - `L511` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
 - `L531` 맵별 16/32/48px 좌표
@@ -1606,8 +1621,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L720` 8차 맵 진입 (2026-09-28)
 - `L753` 화면 주변 타일 유지 (2026-10-01)
 - `L782` Independent opening timelines
+- `L786` Monster authoring dogfood (2026-10-03)
 
-### `openwiki/runtime-project-schema.md` — 207KB · 1472줄 · ~57,957 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 208KB · 1483줄 · ~58,128 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 캐릭터별 전투 동작 (2026-10-03)
 - `L12` 퀘스트 프리셋 메타 (2026-10-01)
@@ -1661,31 +1677,32 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L895` Showcase media save-copy durability (issue #693, 2026-09-08)
 - `L935` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
 - `L969` Project schema & persistence
-- `L1207` Variable arithmetic & loop runtime (2026-08-07)
-- `L1211` Canonical event-draft projection (2026-07-30)
-- `L1218` P2 general buildings and home decorations (2026-08-25)
-- `L1225` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L1243` Boot normalizers must not create dangling references (2026-08-30)
-- `L1269` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L1303` 성장 트리 선택 확장 (2026-09-05)
-- `L1309` 마을 설계서 (2026-09-05)
-- `L1315` 공포 게임 제작 기능 (2026-09-05)
-  - `L1319` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L1323` NPC 표시 이름 (2026-09-05)
-- `L1336` 연결 실내 도면의 영속성 (2026-09-05)
-- `L1340` 개념 장소 형상 (2026-09-05)
-- `L1344` Optional village decoration attachments (2026-09-13)
-- `L1355` Optional map climate (Feature16, 2026-09-21)
-- `L1372` Optional authored combat rules (feature16, 2026-09-21)
-- `L1375` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
-- `L1388` 구름량 optional 필드 (2026-09-21)
-  - `L1400` Map atmosphere layers (2026-09-21)
-- `L1421` 필드 HUD 설정 (2026-09-21)
-  - `L1431` HUD 장르·서체 확장 (2026-09-21)
-- `L1443` 타일셋 참고문서 데이터 (2026-09-21)
-- `L1447` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
+- `L1207` Optional medicine PP recovery (2026-10-03)
+- `L1217` Variable arithmetic & loop runtime (2026-08-07)
+- `L1222` Canonical event-draft projection (2026-07-30)
+- `L1229` P2 general buildings and home decorations (2026-08-25)
+- `L1236` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L1254` Boot normalizers must not create dangling references (2026-08-30)
+- `L1280` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L1314` 성장 트리 선택 확장 (2026-09-05)
+- `L1320` 마을 설계서 (2026-09-05)
+- `L1326` 공포 게임 제작 기능 (2026-09-05)
+  - `L1330` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L1334` NPC 표시 이름 (2026-09-05)
+- `L1347` 연결 실내 도면의 영속성 (2026-09-05)
+- `L1351` 개념 장소 형상 (2026-09-05)
+- `L1355` Optional village decoration attachments (2026-09-13)
+- `L1366` Optional map climate (Feature16, 2026-09-21)
+- `L1383` Optional authored combat rules (feature16, 2026-09-21)
+- `L1386` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+- `L1399` 구름량 optional 필드 (2026-09-21)
+  - `L1411` Map atmosphere layers (2026-09-21)
+- `L1432` 필드 HUD 설정 (2026-09-21)
+  - `L1442` HUD 장르·서체 확장 (2026-09-21)
+- `L1454` 타일셋 참고문서 데이터 (2026-09-21)
+- `L1458` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
 
-### `openwiki/runtime-sessions.md` — 124KB · 642줄 · ~33,599 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 126KB · 680줄 · ~34,255 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)
@@ -1721,6 +1738,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L586` 탈것 — 소형선·대형선·비행선 (2026-09-26)
 - `L610` 명작 공백 G3 — 난이도·타이틀 변형·파티 묶음·스킬 장착·조합·몬스터 교환 (2026-09-27)
 - `L629` 오프닝 fade 표시 시간과 장면 유지 시간 (2026-10-03)
+- `L643` Original monster campaign journal and field menus (2026-10-03)
+- `L652` Monster party common UI dogfood follow-up (2026-10-03)
 
 ### `openwiki/se-catalog.md` — 15KB · 257줄 · ~3,910 토큰
 

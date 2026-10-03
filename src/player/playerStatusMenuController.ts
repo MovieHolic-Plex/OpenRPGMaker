@@ -81,7 +81,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let waitModeEnabled = true;
 
   const reset = (): void => {
-    selectedCommand = "items";
+    const session = options.getActiveScene()?.getSession();
+    selectedCommand = session ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? 'items' : 'items';
     openGroupId = undefined;
     mode = "main";
     selectedDetailActionIndex = 0;
@@ -132,7 +133,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const project = store.getCurrent();
     const session = options.getActiveScene()?.getSession();
     if (!session) return null;
-    selectedCommand = nextCommand;
+    const available = listStatusMenuRailIds(project, session);
+    selectedCommand = available.includes(nextCommand) ? nextCommand : available[0] ?? "items";
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
     const panel = renderPlayerStatusMenu({
       project,
@@ -701,6 +703,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "monster-dex":
       case "region-map":
       case "campaign-progress":
+      case "trainer-card":
       case "options":
       case "load":
       case "status":
@@ -814,6 +817,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "battle-reports":
         if (battleReportIndex !== undefined) { battleReportIndex = undefined; return true; }
         return false;
+      case "trainer-card":
       case "options":
       case "load":
       case "quests":
@@ -959,6 +963,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "battle-reports":
         return `battle-reports:${battleReportIndex ?? "list"}`;
       case "save":
+      case "trainer-card":
       case "options":
       case "load":
       case "quests":

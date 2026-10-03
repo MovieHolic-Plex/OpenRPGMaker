@@ -1,6 +1,7 @@
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
+import { monsterCampaign, monsterJournalEntry } from '@/project/monsterJournal';
 import { inventoryViewEntries } from '@/player/playerInventoryView';
 import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
 import { battleReportDetail } from "@/player/playerBattleReportDetail";
@@ -62,6 +63,20 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
   switch (options.selectedCommand) {
     case "items": return itemDetail(options);
     case "options": return createPlayerOptionsDetail(options.onOptionsChanged);
+    case 'trainer-card': {
+      const { project, session } = options;
+      const campaign = monsterCampaign(project), ids = campaign?.speciesIds ?? [];
+      const leader = project.database.actors.find(a => a.id === session.partyActorIds[0]);
+      const trainer = leader ?? project.database.actors[0];
+      return { title: `원정 수첩 · ${trainer ? resolveActorName(session, trainer) : '여행자'}`, entries: [
+        { label: '현재 위치', value: project.maps[session.currentMapId]?.name ?? '알 수 없는 장소' },
+        { label: '동료', value: `${session.monsterParty.length}마리` },
+        { label: '발견', value: `${ids.filter(id => monsterJournalEntry(session,id).seen).length} / ${ids.length}종` },
+        { label: '포획', value: `${ids.filter(id => monsterJournalEntry(session,id).caught).length} / ${ids.length}종` },
+        { label: '배지', value: `${(campaign?.badges ?? []).filter(b => session.switches[b.switchId] === true).length} / ${campaign?.badges.length ?? 0}` },
+        { label: '소지금', value: String(session.gold) },
+      ], hint: session.monsterParty.length ? '도감과 배지는 저장 기록에 함께 남습니다.' : '연구소에서 첫 동료를 만나 원정을 시작하세요.' };
+    }
     case "skills": return skillDetail(options);
     case "equipment": return equipmentDetail(options);
     case "monsters": return monsterDetail(options);

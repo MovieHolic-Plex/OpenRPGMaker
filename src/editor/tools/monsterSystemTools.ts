@@ -18,6 +18,7 @@ const configureMonsterSystem: ToolDefinition = {
       enabled: { type: "boolean", description: "몬스터 수집/포획 게이트를 켤지 여부" },
       battleParty: { type: "boolean", description: "전투를 몬스터 파티로 진행할지(포켓몬식). 생략하면 현재 설정 유지, false 면 영웅이 싸운다." },
       presentation: { type: "string", enum: ["preserve", "collector"], description: "생략/preserve는 기존 화면 설정 유지. collector는 몬스터 수집용 메뉴/HUD를 설정하고 미수정 기본 오프닝만 끈다." },
+      rules: { type:'string', enum:['preserve','gen1'], description:'gen1은 몬스터 대치 전투 규칙과 화면을 함께 설정. 생략/preserve는 기존 규칙 유지.' },
     },
     required: ["enabled"],
     additionalProperties: false,
@@ -30,6 +31,7 @@ const configureMonsterSystem: ToolDefinition = {
       return { summary: "몬스터 수집 비활성화 — 포획/몬스터 전투 플래그를 모두 제거했습니다.", data: { enabled: false, battleParty: false } };
     }
     draft.system.monsterCollection = true;
+    if(args.rules==='gen1'){draft.system.battleModel='gen1';draft.system.battleUiStyle='pokemon';}
     // battleParty 를 생략하면 지금 설정을 지킨다. 몬스터 수집 프리셋은 이미 몬스터 파티 전투로 시작하는데,
     // 조수가 {enabled:true} 만 보내면 조용히 영웅 전투로 떨어뜨렸다(잡은 몬스터가 싸우지 않는 포켓몬풍).
     const current = draft.system.monsterBattleParty === true || draft.system.battleParty === "monsters";

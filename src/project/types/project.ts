@@ -723,6 +723,9 @@ export interface Project {
   growth?: import("../growth/types").GrowthDefinition;
   version: number;
   meta: {
+    oprnFieldMenu?: import('../fieldMenu').AuthoredFieldMenu;
+    oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
+    oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;
     title: string;
     author: string;
     terms: Terms;

@@ -62,3 +62,26 @@ Reproduce with a running `npm run dev:worktree`, then
 `OPRN_QA_URL=http://127.0.0.1:<port> node scripts/qa/runtime/monster-campaign-menu.probe.mjs`.
 The probe runs no suites or typecheck. The campaign supervisor owns final
 shipping-player QA and SQLite save/reload evidence.
+
+## Authored field menu and assistant tools (2026-10-04)
+
+`meta.oprnFieldMenu` is the version1 authored command/label/order contract in
+`src/project/fieldMenu.ts`. Keeping it in metadata lets older SQLite hosts preserve
+it. Runtime reads this contract directly; intrinsic availability/access gates
+still apply. Collector preset: dex, monsters, items, trainer-card, region-map,
+campaign-progress, save, options. It uses `field-list`; configuring the menu also
+updates an existing `fieldHud.menuStyle`, which otherwise overrides system style.
+
+`trainer-card` shows the actual trainer identity, current place, party size,
+seen/caught counts, badges and money. It does not fabricate actor combat stats.
+The menu controller clamps the selection to available authored entries on render;
+a hidden default Items command cannot remain selected on first boot. All command
+icon, dispatch and controller switches must include a newly added command.
+
+Assistant tools: `read_game_systems`, `configure_field_menu`,
+`configure_monster_campaign`, `review_game_systems`; `enable_monster_collection`
+can explicitly select `rules:gen1`. Reads expose effective commands and report
+incompatible collection/party/rules/campaign combinations. Campaign definitions
+validate actual species, map and switch references before mutation. They do not
+award species, badges or overwrite the play session. Native input/save proof is
+separate from configuration review.

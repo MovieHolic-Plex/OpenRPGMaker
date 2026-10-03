@@ -298,6 +298,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "monster-dex": return "▣";
     case "region-map": return "▧";
     case "campaign-progress": return "◆";
+    case "trainer-card": return "▤";
     case "battle-reports": return "▤";
     case "quests": return "✓";
     case "relationships": return "∞";
@@ -329,6 +330,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "monster-dex": return "book-magic";
     case "region-map": return "map";
     case "campaign-progress": return "shield";
+    case "trainer-card": return "book-magic";
     case "battle-reports": return "book-magic";
     case "quests": return "map";
     case "relationships": return "world";
@@ -363,6 +365,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "monster-dex":
     case "region-map":
     case "campaign-progress":
+    case "trainer-card":
     case "save":
     case "load":
     case "status":
