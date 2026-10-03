@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **132쪽 / 4535KB / 약 1,312,239 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **132쪽 / 4539KB / 약 1,313,329 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -25,7 +25,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,042 |
 | `openwiki/editor-workflows-misc.md` | 78KB | 33KB | 533 | ~21,749 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
-| `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 781 | ~32,382 |
+| `openwiki/runtime-pre-edit-routing.md` | 108KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 783 | ~32,621 |
 | `openwiki/runtime-project-schema.md` | 211KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~59,212 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
 | `openwiki/testing.md` | 215KB | 48KB | 2038 | ~59,884 |
@@ -1109,19 +1109,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L137` 시험
 - `L146` 아직 없는 것
 
-### `openwiki/harnesses/romance-scene.md` — 5KB · 39줄 · ~1,351 토큰
+### `openwiki/harnesses/romance-scene.md` — 8KB · 49줄 · ~1,924 토큰
 
 - `L5` Entry and contract
 - `L13` Authoring and rejection
-- `L25` Reproduction
+- `L25` Art direction and compact dialogue (2026-10-04)
+- `L35` Reproduction
 
-### `openwiki/harnesses/super-harness.md` — 7KB · 67줄 · ~1,981 토큰
+### `openwiki/harnesses/super-harness.md` — 7KB · 72줄 · ~2,129 토큰
 
 - `L6` 왜 (2026-10-03 실측)
 - `L13` 조수 쪽 연결 (제품 코드)
 - `L26` 격언 세 개 — 숫자로 막는다 (2026-10-03 사용자)
 - `L38` 한 바퀴
-- `L60` 운영
+- `L60` 화면
+- `L65` 운영
 
 ### `openwiki/horror-authoring.md` — 18KB · 186줄 · ~5,583 토큰
 
@@ -1574,21 +1576,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L267` Genre ambience presets and sound pairing (2026-09-21)
   - `L291` Thirty audiovisual presets — evidence (2026-09-21)
 
-### `openwiki/runtime-pre-edit-routing.md` — 108KB · 781줄 · ~32,382 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 108KB · 783줄 · ~32,621 토큰 · 통째읽기 잘림
 
-- `L511` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
-- `L531` 맵별 16/32/48px 좌표
-- `L535` ESC skill thumbnails (2026-09-06)
-- `L546` Recovered head emotes (2026-09-05)
-- `L552` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L560` 가구 밀기 애니메이션 (2026-09-05)
-- `L569` Recovered head emotes (2026-09-05)
-- `L575` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L596` 맵 배경(패럴랙스) 렌더 (2026-09-14)
-- `L623` 맵 배경 다중 레이어 (2026-09-21)
-- `L675` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
-- `L720` 8차 맵 진입 (2026-09-28)
-- `L753` 화면 주변 타일 유지 (2026-10-01)
+- `L513` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+- `L533` 맵별 16/32/48px 좌표
+- `L537` ESC skill thumbnails (2026-09-06)
+- `L548` Recovered head emotes (2026-09-05)
+- `L554` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L562` 가구 밀기 애니메이션 (2026-09-05)
+- `L571` Recovered head emotes (2026-09-05)
+- `L577` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L598` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L625` 맵 배경 다중 레이어 (2026-09-21)
+- `L677` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+- `L722` 8차 맵 진입 (2026-09-28)
+- `L755` 화면 주변 타일 유지 (2026-10-01)
 
 ### `openwiki/runtime-project-schema.md` — 211KB · 1504줄 · ~59,212 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
@@ -2098,7 +2100,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L444` 웹 편집기 저장 경로 경량화 (2026-09-25)
   - `L459` 저장 경로의 전체 복제·직렬화 제거 (2026-09-26~27)
 
-### `openwiki/terrain-design-suite.md` — 19KB · 192줄 · ~6,037 토큰
+### `openwiki/terrain-design-suite.md` — 20KB · 195줄 · ~6,167 토큰
 
 - `L7` 도구 계약
 - `L29` 대칭과 도장
@@ -2109,10 +2111,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` 게임 상태 검사
 - `L96` 공용 도장
 - `L106` 게임 시야와 높이
-- `L130` 확장 확인
-- `L142` 빠른 집과 도로
-- `L168` 시야·빠른 배치 확인
-- `L183` 지붕과 부드러운 시야 확인 (2026-10-04)
+- `L133` 확장 확인
+- `L145` 빠른 집과 도로
+- `L171` 시야·빠른 배치 확인
+- `L186` 지붕과 부드러운 시야 확인 (2026-10-04)
 
 ### `openwiki/terrain-placement-tools.md` — 6KB · 65줄 · ~1,743 토큰
 
