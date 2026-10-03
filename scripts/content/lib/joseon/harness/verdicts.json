@@ -2966,5 +2966,117 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
+ },
+ "cav_stalagmite_b": {
+  "hash": "0808116b8ea6",
+  "status": "pass",
+  "line": "석순 셋, 왼쪽 면 밝고 오른쪽 어둡다, 밑동 그림자 오른쪽 아래, 정면 3/4 소품 문법 일치",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_stalagmite_c": {
+  "hash": "55d12ce02b56",
+  "status": "pass",
+  "line": "작은 석순 넷, 키 달라 한 줄로 안 서고 왼쪽 빛, 밑 그림자 오른쪽 아래",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_stalagmite_wide": {
+  "hash": "6a0713834a27",
+  "status": "pass",
+  "line": "2x2 큰 군락, 중심 줄기+곁줄기 3개와 부서진 돌, 빛 왼쪽 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_rockpillar": {
+  "hash": "8fefb5589ac4",
+  "status": "note",
+  "line": "어두운 암반 기둥, 마디 울퉁불퉁하나 위쪽 천장 접합부가 단순함(윗면 얇음)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_crystal_b": {
+  "hash": "d9f6f2be1333",
+  "status": "pass",
+  "line": "푸른 결정 군, 왼쪽 밝은 면과 오른쪽 어두운 면, 밑 그림자",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_crystal_c": {
+  "hash": "122932c4c134",
+  "status": "pass",
+  "line": "단일 긴 결정, 왼쪽 면 밝고 오른쪽 어둡다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_rock_c": {
+  "hash": "a70ee3e9b185",
+  "status": "pass",
+  "line": "둥근 돌, 윗면 밝고 왼쪽 빛, 그림자 오른쪽 아래",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_rubble": {
+  "hash": "b169bdffafaf",
+  "status": "pass",
+  "line": "납작한 부서진 돌 무더기, 윗면이 보이는 3/4, 빛 왼쪽",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_moss": {
+  "hash": "b77dcb2f44af",
+  "status": "pass",
+  "line": "바닥 이끼, 평면 장식이라 윗면 시점 무관, 팔레트 잠금 안의 녹색 램프",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_puddle": {
+  "hash": "823ca8776973",
+  "status": "pass",
+  "line": "물웅덩이, 바닥 평면, 바깥 테 어두움, 물빛 램프",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_torch_a": {
+  "hash": "72a4c801ebe7",
+  "status": "note",
+  "line": "벽 앞면에 얹는 횃불, 정면 고정(벽 부착물)이라 윗면 없음, 불꽃 주황 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_torch_b": {
+  "hash": "45d087d0a8fb",
+  "status": "note",
+  "line": "벽 앞면 횃불 두 번째 변형, 정면 고정 부착물, 받침 다름",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_chest_dais": {
+  "hash": "fc25d1aee38d",
+  "status": "note",
+  "line": "보물 단상: 윗면과 앞면 둘 다 보이나 단상 흰 회색이 동굴 암반보다 훨씬 밝아 도드라짐(의도된 초점), 상자는 윗면 위",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_cart": {
+  "hash": "5f0503a0f526",
+  "status": "note",
+  "line": "광산 수레: 윗면 광석 더미와 앞면 나무 판, 바퀴 3x3, 기준 수레보다 윗면 폭이 얇다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
  }
 }
