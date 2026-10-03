@@ -130,3 +130,31 @@ def pharmacy():
 
 
 ROOMS += [pharmacy()]
+
+
+# ------------------------------------------------------------------------------------------------ 5. 서당 18×13
+def school():
+    g = mk(18, 13)
+    rect(g, 1, 1, 10, 10, 'M')                   # 강당(마루, 목재벽)
+    rect(g, 12, 1, 16, 5, 'o'); rect(g, 11, 3, 11, 5, 'm')            # 훈장 방 + 문(걷는 줄 (11,5))
+    rect(g, 12, 7, 16, 10, 'M'); rect(g, 11, 8, 11, 10, 'm')          # 서고 + 문(걷는 줄 (11,10))
+    g[11][5] = 'D'
+    props = P([
+        # 북벽: 병풍 아래 훈장 자리(돌 단 위 서안), 단 앞 계단, 책장
+        ('byeongpung_a', 4, 1), ('seoan_2', 5, 3), ('banseok_r', 4, 4), ('hoechori', 8, 3),
+        ('dais_stone_l', 3, 5), ('dais_stone_m', 4, 5), ('stair_dais_2', 5, 5), ('dais_stone_m', 7, 5), ('dais_stone_r', 8, 5),
+        ('seoga_2', 9, 2), ('chaekdemi', 1, 3),
+        # 학동 자리: 서안 둘씩 마주 앉은 두 줄, 앞에 방석
+        ('seoan', 2, 6), ('seoan', 3, 6), ('seoan', 7, 6), ('seoan', 8, 6), ('banseok_g', 2, 7), ('banseok_b', 3, 7), ('banseok_g', 7, 7), ('banseok_b', 8, 7),
+        ('seoan', 2, 8), ('seoan', 3, 8), ('seoan', 8, 8), ('seoan', 9, 8), ('banseok_b', 2, 9), ('banseok_g', 3, 9), ('banseok_b', 8, 9), ('banseok_g', 9, 9),
+        ('boryo_2', 5, 7), ('mat_jip_3x2', 4, 9),
+        # 훈장 방
+        ('ibuljang', 12, 2), ('nong_1', 14, 2), ('mat_dot_2x2', 14, 4), ('sang_low_2', 14, 5), ('banseok_r', 13, 4),
+        # 서고
+        ('seoga_2', 12, 7), ('seoga_2', 14, 7), ('seoga_1', 16, 7), ('mungseo_ham', 16, 10), ('seoan_2', 13, 10),
+    ])
+    return dict(id='joseon_in_school_b', title='서당', plan=rows(g), props=props, door=(5, 11), replace={},
+                people=[(5, 4, 3, F, 1), (3, 10, 4, U, 0), (9, 7, 8, L, 0)])
+
+
+ROOMS += [school()]
