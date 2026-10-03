@@ -47,7 +47,7 @@ if os.environ.get('JS_PROFILE') == 'palace_int':
     # M5 겹침 쌍은 끈다(DEPTH_MIN 0): 궁은 단청 보·기둥 머리·병풍이 일부러 겹치는 구조지만 가구끼리의 겹침 금지는 pal_checks C8 이 따로 건다.
     LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.30, 0
 _IN = os.environ.get('JS_PROFILE') in ('interior_b', 'palace_int')
-TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
+TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'grove')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3
 if os.environ.get('JS_PROFILE') == 'cave':
