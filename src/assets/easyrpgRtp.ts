@@ -225,18 +225,15 @@ export const EASYRPG_RTP_ASSETS = [
   { category: "title", id: "easyrpg-title-title4", name: "Title4 · 타이틀 화면 · EasyRPG", sourcePath: "Title/Title4.png", path: "assets/easyrpg/title/Title4.png", fileName: "Title4.png" },
 ] as const satisfies readonly EasyRpgRtpAsset[];
 
-// Retired categories may be empty; keep their public asset-list contract.
-const categoryAssets: readonly EasyRpgRtpAsset[] = EASYRPG_RTP_ASSETS;
-
 export const EASYRPG_BACKDROP_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "backdrop");
-export const EASYRPG_BATTLE_ASSETS = categoryAssets.filter((asset) => asset.category === "battle");
+export const EASYRPG_BATTLE_ASSETS: readonly EasyRpgRtpAsset[] = [];
 export const EASYRPG_BATTLE_WEAPON_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "battleWeapon");
 export const EASYRPG_CHIPSET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "chipset");
 // 분할 전 얼굴 시트 5장. 새 작업은 FACESET_FACE_ASSETS(낱장)를 쓴다 — 이 목록은
 // 이미 이 id 를 저장한 프로젝트가 여전히 역직렬화되게 하기 위해 둔다.
 export const LEGACY_FACESET_SHEET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "faceset");
 export const EASYRPG_GAME_OVER_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "gameOver");
-export const EASYRPG_MONSTER_ASSETS = categoryAssets.filter((asset) => asset.category === "monster");
+export const EASYRPG_MONSTER_ASSETS: readonly EasyRpgRtpAsset[] = [];
 export const EASYRPG_MUSIC_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "music");
 export const EASYRPG_PICTURE_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "picture");
 export const EASYRPG_SOUND_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "sound");

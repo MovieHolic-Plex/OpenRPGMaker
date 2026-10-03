@@ -24,6 +24,7 @@ import argparse, datetime, glob, io, json, os, re, sys, threading, urllib.parse
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *  # noqa
+from common import objects_by_slug as common_objects_by_slug
 import picks_db
 import outline_select
 
@@ -32,6 +33,13 @@ PICKS = os.path.join(PICK, 'picks.json')
 CACHE = os.path.join(PICK, '.cache', 'ctx')
 OUT = os.path.join(PICK, 'out')
 LOCK = threading.Lock(); CTX_LOCK = threading.Lock()
+_OBJ = {}
+def objects_by_slug():
+    """common.objects_by_slug 는 부를 때마다 메타 두 파일을 다시 읽는다(약 27ms). 그림 요청마다 두 번 불러 10장을 한꺼번에 받으면
+    1초 넘게 줄을 섰다(실측) → 두 파일 시각이 그대로면 지난 결과를 쓴다."""
+    k = tuple(os.path.getmtime(f) if os.path.exists(f) else 0 for f in (os.path.join(V5, 'interior-meta.json'), NEW_ITEMS))
+    if _OBJ.get('k') != k: _OBJ.update(k=k, v=common_objects_by_slug())
+    return _OBJ['v']
 SAFE = re.compile(r'^[A-Za-z0-9_]+$'); SAFE_FILE = re.compile(r'^[A-Za-z0-9_.\-]+$')
 
 def _harness_api():
@@ -158,9 +166,48 @@ def ctx_png(s, cand):
             slot = Image.open(src).convert('RGBA') if src else None
             im, _ = context.context_image(o, slot)
         os.makedirs(os.path.dirname(cp), exist_ok=True)
-        for old in glob.glob(os.path.join(CACHE, s, f'{cand}-*.png')): os.remove(old)
-        tmp = cp + '.tmp'; im.save(tmp, format='PNG'); os.replace(tmp, cp)
+        for old in glob.glob(os.path.join(CACHE, s, f'{cand}-*.png')):
+            try: os.remove(old)
+            except FileNotFoundError: pass   # 미리 굽는 쪽이 먼저 지웠다
+        tmp = f'{cp}.{os.getpid()}.{threading.get_ident()}.tmp'; im.save(tmp, format='PNG'); os.replace(tmp, cp)
     return open(cp, 'rb').read()
+
+def _warm_one(s, cand):
+    """(미리 굽는 프로세스에서) 그 후보의 방 안 그림을 캐시에 만든다."""
+    try: ctx_png(s, cand); return True
+    except Exception as e: return repr(e)[:200]
+
+def _warm_list():
+    """고를 차례 기물의 (slug, 후보, 그림 시각) 목록 — 고를 차례 순서대로."""
+    todo = []
+    for it in HAPI.state()['items']:
+        if it['status'] == 'done': continue
+        want = [(it['current'], 0)] if it['current'] != 'v5' or not it['isNew'] else []
+        for r in it['rounds'][-1]['runs']:
+            if r['status'] != 'done' or not r['ok']: continue
+            want.append((r['cand'], r['v']))
+            if (r.get('selDiff') or 0) >= 12 and it['kind'] != '바닥 무늬(밟을 수 있음)': want.append((r['cand'] + '.sel', r['v']))
+        todo += [(it['slug'], c, v) for c, v in want]
+    return todo
+
+def warm_loop(procs=6, every=8):
+    """고를 차례인 기물의 방 안 그림(그린 그대로 · 테두리 필요한 곳만)을 사용자가 열기 전에 미리 만든다(2026-10-03, 사용자 「이미지좀 빨리
+    띄우던가 그 다음거 미리 불러놓던가」). 화면이 처음 열 때 그리면 한 장 0.2~0.4초 × 10장이 한 줄로 서서(CTX_LOCK) 몇 초씩 걸린다.
+    방 조립은 모듈 전역을 쓰므로 스레드가 아니라 따로 띄운 프로세스(spawn)에서 나눠 굽는다. 고를 차례 순서대로 — 앞 기물이 먼저 준비된다."""
+    if not HAPI: return
+    import concurrent.futures as cf, multiprocessing as mp
+    def loop():
+        ex = cf.ProcessPoolExecutor(procs, mp_context=mp.get_context('spawn')); done = set()
+        while True:
+            try:
+                todo = [k for k in ex.submit(_warm_list).result() if k not in done]   # 상태 계산(약 0.7초)도 자식에서 — 서버가 그동안 멈추지 않게
+                for k, ok in zip(todo, ex.map(_warm_one, [k[0] for k in todo], [k[1] for k in todo])):
+                    done.add(k)   # 실패도 다시 돌지 않는다(화면이 열 때 다시 시도한다)
+                    if ok is not True: print('미리 굽기 실패', k, ok, flush=True)
+            except Exception as e:
+                print('미리 굽기 루프 오류:', repr(e)[:300], flush=True)
+            threading.Event().wait(every)
+    threading.Thread(target=loop, daemon=True, name='ctx-warm').start()
 
 class H(BaseHTTPRequestHandler):
     def log_message(self, fmt, *a):
@@ -169,7 +216,9 @@ class H(BaseHTTPRequestHandler):
     def send(self, code, body, ctype='application/json; charset=utf-8'):
         if isinstance(body, str): body = body.encode('utf-8')
         self.send_response(code); self.send_header('Content-Type', ctype); self.send_header('Content-Length', str(len(body)))
-        self.send_header('Cache-Control', 'no-store' if 'json' in ctype or 'html' in ctype else 'max-age=5')
+        q = urllib.parse.urlparse(self.path).query
+        # 그림 주소에는 ?v=<그림 시각> 이 붙는다 → 그 주소 그대로면 같은 그림이니 오래 둔다(다음 기물로 넘어갈 때 다시 받지 않게)
+        self.send_header('Cache-Control', 'no-store' if 'json' in ctype or 'html' in ctype else ('max-age=86400' if 'v=' in q else 'max-age=5'))
         self.end_headers(); self.wfile.write(body)
 
     def file(self, path, ctype):
@@ -253,6 +302,7 @@ def main():
     picks_db.verify(verbose=True)
     picks_db.export()
     picks_db.backup_loop()
+    warm_loop()
     ThreadingHTTPServer.daemon_threads = True
     srv = ThreadingHTTPServer((a.host, a.port), H)
     print(f'http://{a.host}:{a.port}/ — {PICK}', flush=True)

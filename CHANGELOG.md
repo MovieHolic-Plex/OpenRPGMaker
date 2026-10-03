@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.88.0 — 2026-10-03
+
+### 기능
+
+- **assets** — redraw hydra with native RM2003 pixel poses (`1b297f4`)
+
+### 수정
+
+- **assets** — 비어 있는 EasyRPG 전투·몬스터 목록을 필터 대신 빈 배열로 둔다 (`10fcde9`)
+- **assets** — remove rejected starter artwork and runtime references (`615f97d`)
+- **battle** — 옛 전투 그림을 deprecated/ 로 옮기고 도트·포켓몬 그림만 쓴다 (`a0176dd`)
+
+### 성능
+
+- **harness** — 고르는 화면 그림을 미리 굽고 다음 기물을 미리 받는다 (`33ab5b5`)
+
 ## 0.87.0 — 2026-10-03
 
 ### 기능
