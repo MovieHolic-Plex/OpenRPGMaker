@@ -54,7 +54,7 @@
 에이전트에게 조수 역할로 실제 요청(해협+산맥, 설원 호수+화산섬, 사막을 정글로+강+신전 이동, 군도에 섬·산맥)을 도구만으로 풀게 했다.
 1차: 요청당 미리보기 3~6번, 실패 문장(「막 불일치 … BFS … R2」)으로는 못 고쳤다. 고친 뒤 2차: 1~4번, 12개 결함 중 8 해결·4 부분.
 2차에서 나온 것(지역 팔레트가 정글을 모래빛으로, 섬 붙음 무경고, 화산 봉우리 없음, density 0.9 로도 숲이 안 남)도 고쳤다.
-증거: `verify-shots/worldmap-terrain/qa-assist-r1/REPORT.md`, `qa-assist-r2/REPORT.md`.
+증거: `verify-shots/worldmap-terrain/qa-assist-r1/REPORT.md`, `verify-shots/worldmap-terrain/qa-assist-r2/REPORT.md`.
 
 ## 함정
 
