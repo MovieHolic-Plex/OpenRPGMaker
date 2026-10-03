@@ -220,6 +220,198 @@
    "sheetOrder": 2,
    "role": "세 번째 시트·맵(통합 수정판).",
    "overwritesTracked": true
+  },
+  {
+   "id": "joseon_field",
+   "name": "조선 사냥터",
+   "profile": "field",
+   "builder": "scripts/content/lib/joseon/demo_field.py",
+   "builderSeed": 7,
+   "size": [
+    96,
+    96
+   ],
+   "out": "tiledata/joseon-field",
+   "stem": "joseon-field",
+   "sheetOrder": 3,
+   "role": "네 번째 시트·맵(사냥터 96×96: 북쪽 성문 출구·굴 입구 3·야영지·쉼터). 새 조각 fld_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_cave",
+   "name": "조선 동굴",
+   "profile": "cave",
+   "builder": "scripts/content/lib/joseon/demo_cave.py",
+   "builderSeed": 7,
+   "size": [
+    48,
+    48
+   ],
+   "out": "tiledata/joseon-cave",
+   "stem": "joseon-cave",
+   "sheetOrder": 4,
+   "role": "다섯 번째 시트·맵(동굴 48×48: 입구 하나·방들). 새 조각 cav_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_house",
+   "name": "조선 민가 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    15,
+    15
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_house",
+   "stem": "joseon_in_house",
+   "sheetOrder": 5,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_inn",
+   "name": "조선 주막 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    22,
+    16
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_inn",
+   "stem": "joseon_in_inn",
+   "sheetOrder": 6,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_smith",
+   "name": "조선 대장간 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    12,
+    10
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_smith",
+   "stem": "joseon_in_smith",
+   "sheetOrder": 7,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_pharmacy",
+   "name": "조선 약방 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    12,
+    10
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_pharmacy",
+   "stem": "joseon_in_pharmacy",
+   "sheetOrder": 8,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_school",
+   "name": "조선 서당 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    16,
+    14
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_school",
+   "stem": "joseon_in_school",
+   "sheetOrder": 9,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_office",
+   "name": "조선 관아 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    17,
+    15
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_office",
+   "stem": "joseon_in_office",
+   "sheetOrder": 10,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_throne",
+   "name": "조선 궁 어좌전",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_palace_in.py",
+   "builderSeed": 7,
+   "size": [
+    24,
+    24
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_throne",
+   "stem": "joseon_in_throne",
+   "sheetOrder": 11,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_corridor",
+   "name": "조선 궁 회랑",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_palace_in.py",
+   "builderSeed": 7,
+   "size": [
+    34,
+    10
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_corridor",
+   "stem": "joseon_in_corridor",
+   "sheetOrder": 12,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_bedchamber",
+   "name": "조선 궁 침전",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_palace_in.py",
+   "builderSeed": 7,
+   "size": [
+    16,
+    14
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_bedchamber",
+   "stem": "joseon_in_bedchamber",
+   "sheetOrder": 13,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_library",
+   "name": "조선 궁 서고",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_palace_in.py",
+   "builderSeed": 7,
+   "size": [
+    20,
+    12
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_library",
+   "stem": "joseon_in_library",
+   "sheetOrder": 14,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
   }
  ],
  "mapFiles": [
@@ -270,6 +462,22 @@
     "objMin": 0.0,
     "depthMin": 0,
     "bldMin": 0.0,
+    "heightsMin": 0
+   },
+   "field": {
+    "lawnMax": 0.4,
+    "treeMin": 0.18,
+    "objMin": 0.2,
+    "depthMin": 6,
+    "bldMin": 0.001,
+    "heightsMin": 3
+   },
+   "cave": {
+    "lawnMax": 1.0,
+    "treeMin": 0.0,
+    "objMin": 0.03,
+    "depthMin": 0,
+    "bldMin": 0.003,
     "heightsMin": 0
    }
   }

@@ -32,7 +32,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- jp-city <단계>` · 문서 `openwiki/harnesses/jp-city.md`
   → 후보는 Sonnet 5명이 pxgrid 로 찍고 **사람이 고른다**(시트 `~/claude-viz/jp-<판>.html`). 직접 그리거나 감독이 고르지 말 것. 웨이브 구동 `src/harnesses/jp-city/waves.py`.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
-  → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 3장·관문·쓰지 말 것)
+  → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
   → 기존 `scripts/content/lib/joseon/` 도구를 한 입구로 묶은 것이다. 그림은 코드 도트만(생성 이미지·생성 캐릭터 금지, Actor1 사용), 바람의나라 스크린샷 커밋 금지, 판정은 해시에 묶이니 손으로 고치지 말 것.
 
@@ -58,7 +58,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor database: `openwiki/editor-database.md`
    - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
-   - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 248종·오토타일 8종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 마을 20호+국내성 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
+   - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
