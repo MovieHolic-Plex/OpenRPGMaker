@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.104.0 — 2026-10-03
+
+### 기능
+
+- **super-harness** — 개념 카드 자동 공급 하네스와 조수 연결 (`dbdb6b2`)
+- **qa-game** — gen --text 로 채팅 한 줄을 그대로 조수에게 보낸다 (`9190fef`)
+
+### 수정
+
+- **concept-cards** — 별칭은 낱말 머리에서만 맞추고, 검수·시험 기준을 바로잡는다 (`687815f`)
+- deliver detailed genre authoring presets to game assistants (`f91c3d3`)
+
+### 성능
+
+- rebake only the brushed window of relief terrain while painting height (`4336549`)
+
 ## 0.103.0 — 2026-10-03
 
 ### 기능
