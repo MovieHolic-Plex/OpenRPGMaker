@@ -59,8 +59,8 @@ export function focusAcceptedAgentChanges(before: Project, after: Project): Agen
   // 그 하드컷을 크로스페이드로 덮는다. 맵 선택·강조·카메라를 **한 묶음**으로 넣어야
   // 덮인 동안 전부 끝나고, 베일이 걷힐 때 이미 완성된 화면이 나온다.
   const sameMap = isSameMapMove(target.mapId);
-  // 큰 변경(새 마을 맵 등)은 「✓ 반영됨」 강조 대신 청사진이 걷히며 지어지는 시공 연출을 튼다(2026-10-03).
-  // 계획은 베일 밖에서 미리 세운다 — 베일이 걷힐 때 이미 청사진이 덮여 있어야 완성본이 먼저 비치지 않는다.
+  // 도구가 시공 기록을 남긴 큰 시공(새 마을 맵 등)은 「✓ 반영됨」 강조 대신 그 기록을 실제 순서대로 다시 튼다(2026-10-03).
+  // 계획은 베일 밖에서 미리 세운다 — 베일이 걷힐 때 이미 덮개가 깔려 있어야 완성본이 먼저 비치지 않는다.
   const afterMap = after.maps[target.mapId];
   const reveal = afterMap && isAiLiveCanvasEnabled() && !prefersReducedMotion()
     ? planConstructionReveal(before.maps[target.mapId], afterMap, after.tilesets[afterMap.tilesetId])

@@ -22,6 +22,7 @@ import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import { withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
 import { modernTilesetViolation, type ModernTilesetPolicy } from '../modernTilesetPolicy';
@@ -52,6 +53,8 @@ export interface PiToolCallRecord {
   readonly name: string;
   readonly args: unknown;
   readonly result: ToolResult;
+  /** 쓰기 도구가 남긴 시공 단계(마을 짓기 등). 체크포인트에 실려 편집기 재생에만 쓰인다. */
+  readonly constructionLogs?: readonly ConstructionLog[];
 }
 
 export interface CreatePiToolsetOptions {
@@ -231,9 +234,12 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       const gate = tool.mode === "write" ? referenceGate.beforeWrite(ctx.project, tool.name, args) : null;
       const beforeProject = ctx.project;
       if (!gate && tool.prepare) await prepareTool(tool.name, args, ctx.project);
+      let constructionLogs: readonly ConstructionLog[] = [];
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
-        : runTool(ctx, tool.name, args));
+        : tool.mode === "write"
+          ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
+          : runTool(ctx, tool.name, args));
       if (tool.mode === 'write' && result.ok && options.modernTilesetPolicy) {
         const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
         if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
@@ -250,7 +256,8 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         }
       }
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
-      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
+      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after],
+        ...(result.ok && constructionLogs.length ? { constructionLogs } : {}) });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
       const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, tool.name === "read_tileset_reference" ? Math.max(maxDataChars, REFERENCE_PAGE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {

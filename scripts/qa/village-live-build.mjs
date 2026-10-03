@@ -19,10 +19,11 @@ mkdirSync(`${out}/video`, { recursive: true });
 const browser = await chromium.launch({ args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier", "--js-flags=--max-old-space-size=6144", "--disable-dev-shm-usage"] });
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, recordVideo: { dir: `${out}/video`, size: { width: 1440, height: 900 } } });
 const page = await context.newPage();
+const videoStartWall = Date.now();
 const report = { transport: "scripted model; native author_beodeul_town + checkpoint apply", errors: [], checks: [], timeline: [] };
 page.on("pageerror", (e) => report.errors.push(String(e.message).slice(0, 300)));
 page.on("console", (m) => { if (m.text().startsWith("QA")) console.log(m.text()); });
-const watchdog = setTimeout(() => { console.error("QA wall timeout"); void browser.close(); }, 300000);
+const watchdog = setTimeout(() => { console.error("QA wall timeout"); void browser.close(); }, 600000);
 const check = (name, passed, detail) => { report.checks.push({ name, passed, detail }); console.log(JSON.stringify({ name, passed, detail })); };
 let frame = 0;
 const shot = async (label) => { const file = `${out}/frames/${String(++frame).padStart(2, "0")}-${label}.png`; await page.screenshot({ path: file, timeout: 120000 }); return file; };
@@ -36,7 +37,7 @@ await page.addInitScript(() => {
   if (window.name === "noreveal") localStorage.setItem("oprn:ai-live-canvas", "off"); else localStorage.removeItem("oprn:ai-live-canvas");
   const original = window.fetch.bind(window);
   const qa = window.__villageQa = { marks: {}, acks: 0, intentCalls: 0, stage: "boot" };
-  const mark = (name) => { if (!(name in qa.marks)) qa.marks[name] = performance.now() - (qa.sentAt ?? 0); };
+  const mark = (name) => { if (!(name in qa.marks)) { qa.marks[name] = performance.now() - (qa.sentAt ?? 0); (qa.wall ??= {})[name] = Date.now(); } };
   qa.mark = mark;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const read = async (init) => {
@@ -64,6 +65,7 @@ await page.addInitScript(() => {
       const write = (event) => controller.enqueue(new TextEncoder().encode(JSON.stringify(event) + "\n"));
       const { runTool } = await import("/src/editor/tools/toolRunner.ts");
       const { exportSpatialToolProof } = await import("/src/editor/tools/spatialToolState.ts");
+      const { withConstructionLog } = await import("/src/editor/tools/constructionLog.ts");
       const ctx = { project: request.project, currentMapId: request.project.startMapId };
       write({ type: "start", provider: "scripted", model: "scripted", toolCount: 3 });
       write({ type: "turn", index: 1 });
@@ -75,12 +77,14 @@ await page.addInitScript(() => {
       write({ type: "tool_start", id: "build", name: "author_beodeul_town", args });
       mark("tool-start");
       const before = new Set(Object.keys(ctx.project.maps));
-      const built = runTool(ctx, "author_beodeul_town", args, { dryRun: false });
+      // 실제 워커(toolAdapter)와 같이 쓰기 도구를 시공 기록기로 감싼다 — 기록이 체크포인트에 실린다.
+      const { value: built, logs: constructionLogs } = withConstructionLog("author_beodeul_town", () => runTool(ctx, "author_beodeul_town", args, { dryRun: false }));
+      qa.logSteps = constructionLogs[0]?.steps.length ?? 0; qa.logElapsedMs = constructionLogs[0]?.elapsedMs;
       if (!built.ok) { qa.stage = JSON.stringify(built).slice(0, 400); throw Error(qa.stage); }
       const newMapId = Object.keys(ctx.project.maps).find((id) => !before.has(id));
       qa.newMapId = newMapId;
       await sleep(700);
-      write({ type: "checkpoint", checkpointId: "build", label: "마을 시공", toolName: "author_beodeul_town", project: ctx.project, spatialProof: exportSpatialToolProof(ctx.project) });
+      write({ type: "checkpoint", checkpointId: "build", label: "마을 시공", toolName: "author_beodeul_town", project: ctx.project, spatialProof: exportSpatialToolProof(ctx.project), constructionLogs });
       mark("checkpoint-sent");
       while (qa.acks < 1) await sleep(50);
       write({ type: "tool_end", id: "build", name: "author_beodeul_town", ok: true, summary: built.summary, durationMs: 1200 });
@@ -102,8 +106,12 @@ await page.addInitScript(() => {
   };
   // 시공 연출과 조수창 변화를 시각과 함께 적는다.
   const observe = () => new MutationObserver(() => {
-    if (document.documentElement.dataset.aiConstructionReveal === "playing") mark("reveal-playing");
-    else if ("reveal-playing" in qa.marks) mark("reveal-ended");
+    const on = document.documentElement.dataset.aiConstructionReveal === "playing";
+    if (on) mark("reveal-playing");
+    else if (qa.revealOn) { qa.marks["reveal-ended"] = performance.now() - (qa.sentAt ?? 0); (qa.wall ??= {})["reveal-ended"] = Date.now(); } // 켜졌다 꺼진 마지막 때
+    qa.revealOn = on;
+    const step = document.documentElement.dataset.aiConstructionStep;
+    if (step && (qa.steps ??= []).at(-1) !== step) qa.steps.push(step);
     if (document.querySelector('[data-testid="ai-creation-choice"]')) mark("CHOICE-UI-SHOWN");
     const text = document.querySelector(".ai-chat-panel, [data-testid=ai-chat-panel]")?.textContent ?? document.body.textContent ?? "";
     if (text.includes("맵에 반영 중")) mark("chat-applying-row");
@@ -111,7 +119,7 @@ await page.addInitScript(() => {
     if (text.includes("마을 짓는 중")) mark("chat-building-row");
     if (text.includes("마을 짓기 완료")) mark("chat-built-row");
     if (text.includes("맵에 반영됨")) mark("chat-applied-row");
-  }).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["data-ai-construction-reveal"] });
+  }).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["data-ai-construction-reveal", "data-ai-construction-step"] });
   if (document.documentElement) observe(); else document.addEventListener("DOMContentLoaded", observe, { once: true });
 });
 
@@ -172,13 +180,16 @@ try {
     const top = [...self.entries()].sort((a, b) => b[1] - a[1]).slice(0, 45).map(([k, ms]) => ({ ms: Math.round(ms), fn: k }));
     writeFileSync(`${out}/profile-top.json`, JSON.stringify(top, null, 1));
   }
-  if (!before && process.env.NOREVEAL !== "1") for (let i = 0; i < 26; i++) { await shot(`reveal-${String(i).padStart(2, "0")}`); await page.waitForTimeout(300); }
+  if (!before && process.env.NOREVEAL !== "1") for (let i = 0; i < 48; i++) { await shot(`reveal-${String(i).padStart(2, "0")}`); await page.waitForTimeout(300); }
   await page.waitForFunction(() => "done" in window.__villageQa.marks, null, { timeout: 60000 });
   await page.waitForFunction(() => !window.__oprnAiBridge?.status?.().turnBusy, null, { timeout: 90000 }).catch(() => {});
   await page.waitForTimeout(1200);
   await shot("finished");
   const qa = await page.evaluate(() => ({ marks: window.__villageQa.marks, intentCalls: window.__villageQa.intentCalls, newMapId: window.__villageQa.newMapId,
-    currentMapId: null }));
+    currentMapId: null, steps: window.__villageQa.steps ?? [], logSteps: window.__villageQa.logSteps, logElapsedMs: window.__villageQa.logElapsedMs }));
+  // 영상 안 위치(초): 녹화는 컨텍스트를 만든 때 시작한다 — 영상 자르기용.
+  report.videoAt = Object.fromEntries(Object.entries(await page.evaluate(() => window.__villageQa.wall ?? {})).map(([k, v]) => [k, Math.round((v - videoStartWall) / 100) / 10]));
+  report.replay = { logSteps: qa.logSteps, toolElapsedMs: qa.logElapsedMs, shownSteps: qa.steps.length, first: qa.steps.slice(0, 14), last: qa.steps.slice(-4) };
   report.timeline = Object.entries(qa.marks).map(([name, ms]) => ({ name, ms: Math.round(ms) })).sort((a, b) => a.ms - b.ms);
   report.intentCalls = qa.intentCalls;
   report.modelCalls = await page.evaluate(() => window.__villageQa.calls);
@@ -188,6 +199,9 @@ try {
   check("의도 선언 콜은 한 번(감사 콜 없음)", (report.modelCalls ?? []).filter((c) => c.startsWith("You classify ONE user request")).length === 1 && !(report.modelCalls ?? []).some((c) => c.startsWith("REQUEST_COVERAGE_AUDIT")), report.modelCalls);
   check("새 마을 맵으로 화면이 옮겨졌다", current === qa.newMapId, { current, newMapId: qa.newMapId });
   check("시공 연출이 재생됐다", "reveal-playing" in qa.marks, qa.marks["reveal-playing"]);
+  check("도구가 남긴 실제 시공 단계를 순서대로 재생했다(계획 → 칠하기 → 찍기)",
+    qa.logSteps > 20 && qa.steps[0]?.startsWith("계획") && qa.steps.some((t) => t.startsWith("칠하기")) && qa.steps.some((t) => t.startsWith("찍기 · 집")),
+    report.replay);
   check("조수 말이 간단히 보기에 보인다", "chat-assistant-say-1" in qa.marks, qa.marks["chat-assistant-say-1"]);
   check("체크포인트 직후 「맵에 반영 중」 행", "chat-applying-row" in qa.marks, qa.marks["chat-applying-row"]);
   check("페이지 오류 없음", report.errors.length === 0, report.errors);

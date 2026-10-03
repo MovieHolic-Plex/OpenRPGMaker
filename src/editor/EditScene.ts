@@ -595,7 +595,9 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
     this.unsubConstructionReveal = subscribeAgentConstructionReveal((plan) => {
-      if (this.constructionRevealRenderer?.play(plan)) this.clearAgentFocusHighlight();
+      const played = this.constructionRevealRenderer?.play(plan) ?? false;
+      if (played) this.clearAgentFocusHighlight();
+      return played;
     });
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
     this.unsubAgentGhost = subscribeAgentGhostPreview(() => {

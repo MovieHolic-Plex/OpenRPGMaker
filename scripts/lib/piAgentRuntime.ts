@@ -272,7 +272,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     tools.push(shape);
     exposed.add(shape.name);
   };
+  // 방금 쓰기 도구가 남긴 시공 단계 — 바로 다음 체크포인트에 실어 보낸다(편집기가 그 순서대로 다시 튼다).
+  let pendingConstructionLogs: PiToolCallRecord["constructionLogs"];
   const recordCall = (record: PiToolCallRecord): void => {
+    pendingConstructionLogs = record.constructionLogs;
     interiorCompletion.record(ctx.project, record);
     try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
@@ -314,6 +317,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let accepted = snapshotProjectKeepingHeavy(ctx.project);
   let rejected = false;
   const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
+    const constructionLogs = pendingConstructionLogs;
+    pendingConstructionLogs = undefined;
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
     const scoped = request.scopeStrict !== false && request.mapIds.length > 0;
     const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project }]).project : ctx.project;
@@ -329,6 +334,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         project: cloneProjectSharingSharedDictionaries(wire.project),
         label, toolName, spatialProof: exportSpatialToolProof(project), unchangedKeys,
         ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
+        ...(constructionLogs?.length ? { constructionLogs } : {}),
       }, signal ?? options.signal);
       // ACK 는 같은 모양으로 돌아온다 — 뺀 타일셋은 이쪽 사본에서 다시 붙인다.
       const merged = restoreCheckpointProject(project, published ?? project, unchangedKeys, wire.unchangedTilesetIds);

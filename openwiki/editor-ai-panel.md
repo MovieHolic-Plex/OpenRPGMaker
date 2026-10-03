@@ -3259,7 +3259,7 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   제한하며, 팬하면 새로 보이는 타일을 준비한다. 셀 수 때문에 테두리만 남기는 경로는 제거했다.
 - 하위층→상위층→이벤트 순으로 공개하고, 각 층은 좌→우로 진행한다. 공개 길이는 1.8초,
   공개 후 유지 시간은 450ms다. 타일은 220ms 동안 4px(상위층 10px) 내려앉으며, 선두에는
-  무광 연필 커서와 옅은 먼지를 표시한다. 빛줄기·발광·불꽃·효과음은 없다(큰 체크포인트 적용 뒤의 「밑그림 시공」도 같은 연필·먼지 모양을 따른다, 문서 끝 절). 객체 준비 시간은 공개 시간을
+  무광 연필 커서와 옅은 먼지를 표시한다. 빛줄기·발광·불꽃·효과음은 없다(큰 체크포인트 적용 뒤의 「실제 시공 순서 재생」도 같은 연필 모양을 따른다, 문서 끝 절). 객체 준비 시간은 공개 시간을
   소모하지 않는다. 같은 좌표의 타일이 다시 바뀌어도 새로운 공개를 받는다.
 - 밑그림은 구역별 120ms 간격으로 750ms 동안 외곽선을 그린 뒤 눈금과 라벨을 유지한다.
   완료하면 update 구독을 해제하며, 새 계획·숨김·씬 정리에서도 구독과 객체를 정리한다.
@@ -3482,7 +3482,7 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 
 재현: `scripts/qa/visible-ai-creation.mjs`는 실제 편집기, 사용자 전송 버튼, 모델 응답을 보류하는 NDJSON 대본과 native 도구/체크포인트 수용을 사용한다. 소형 UI fixture이며 라이브 모델·SQLite 저장·생성 게임 완성 증거가 아니다. 화면/관측은 `verify-shots/visible-ai-creation/`에 남긴다.
 
-## 마을 요청 바로 시공 · 밑그림 시공 · 조수창 제때 반영 (2026-10-03)
+## 마을 요청 바로 시공 · 실제 시공 순서 재생 · 조수창 제때 반영 (2026-10-03)
 
 사용자: 「'마을을 만들어다오' 하면 불편한 게 한두 가지가 아니다 — 선택지 안 나오게, 바로바로 깔리는 걸 화려하게, 조수창에도 제때 반영」.
 조사(코드·기존 시험 기록)에서 찾은 원인과 고친 것:
@@ -3492,27 +3492,35 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 | 선택지 | `runPiTurn` 의 제작 전 그래픽 선택(위 폐기 절)과 생성 요청 때 자동 큰 창 | 둘 다 제거. 「칩셋 바꿀까요?」 카드(`ask_tileset_change`, 2026-09-25 사용자 결정)는 그대로 — 조수가 보는 맵과 다른 그림체로 바꾸려 할 때만 뜬다 |
 | 시작까지 수십 초 | 의도 선언 뒤 **직렬** 커버리지 감사 콜(`REQUEST_COVERAGE_AUDIT`). 결과(`requestRequirements`)는 옛 세션 경로만 읽고 Pi 는 안 읽는다. 헤드리스 r1·r2 다섯 번 모두 이 콜이 60초 상한에 걸렸다 | `createLlmIntentDeclarer({ coverageAudit: false })` — 채팅 패널·`gen.mts`·`beodeul-village-plain.mts`·`town-trial.mts`. 기본값은 true(세션 경로·테스트 불변) |
 | 조회만 수십 초 | 모델이 위키·요약·DB·참고문서를 6번 읽고서야 시공(r2). `author_beodeul_town` 은 타일을 코드가 고르므로 참고문서 게이트 대상이 아니다 | 버들항 노트(`beodeulTownRoute.ts`) 첫 줄 「[먼저 보이게] … 곧바로 author_beodeul_town」 |
-| 마을이 「짠」 하고 한 번에 | 도구 한 번이 맵 전체를 짓고 체크포인트 하나로 적용. 라이브 모드의 고스트 공개(`aiPiGhostBridge.present`)는 no-op | **밑그림 시공**(아래) |
+| 마을이 「짠」 하고 한 번에 | 도구 한 번이 맵 전체를 짓고 체크포인트 하나로 적용. 라이브 모드의 고스트 공개(`aiPiGhostBridge.present`)는 no-op | **실제 시공 순서 재생**(아래 — 도구가 남긴 시공 기록) |
 | 조수창이 늦다 | 쓰기 도구의 `tool_end` 는 브라우저 적용+ACK 왕복 뒤에 온다. 간단히 보기는 조수가 한 말을 숨겼다. 결과 그림 굽기가 적용 직후 메인 스레드에 몰렸다 | 아래 「조수창」 |
 
-### 밑그림 시공 (`agentConstructionReveal.ts` 계획 + `agentConstructionRevealRenderer.ts` 그리기)
+### 실제 시공 순서 재생 (`tools/constructionLog.ts` 기록 + `agentConstructionReveal.ts` 계획 + `agentConstructionRevealRenderer.ts` 그리기)
 
-- 왜: 09-21 의 고스트 공개(연필이 칸을 착착 까는 것)는 실시간 적용(#1130) 뒤 `aiPiGhostBridge.present` 가 no-op 이 되어 사라졌다
-  — 체크포인트가 먼저 스토어에 들어가 초안 diff 가 0칸이다. 처음에는 화려한 연출(빛·불똥·흔들림)로 대신했으나 사용자가
-  「화려한 거 말고 계획적으로 착착 까는 게 맞다」고 해 예전 모양으로 되돌렸다(2026-10-03).
-- 진입: `focusAcceptedAgentChanges`(모든 조수 적용의 초점 경로). 대상 맵에서 바뀐 칸이 `CONSTRUCTION_REVEAL_MIN_CELLS`(48) 이상이고
-  실시간 시공 표시가 켜져 있고(`aiLiveCanvas`, 기본 켜짐) 동작 줄이기가 아니면 「✓ 반영됨」 강조 대신 튼다. 계획은 베일(맵 전환 크로스페이드) 밖에서
-  세우고 요청은 베일 안에서 한다 — 베일이 걷힐 때 이미 종이가 덮여 있다. 다른 맵으로 옮겨 가며 트는 경우만 줌을 맞춘다(`onlyIfOffscreen:false`).
-- 순서: ① 밑그림 — 바뀐 칸을 무광 종이(칸 눈금)로 덮고 길·물 칸(타일셋 `tileMeta` 태그 road·plaza·bridge… / water)을 옅게 표시,
-  새 집 자리(`structurePlacements` 새 배치) 테두리를 읽는 순서로 한 채씩 연필로 긋는다(최대 120ms 간격)
-  ② 연필 커서(예전 고스트와 같은 황토 연필·검은 심·조립 괄호·옅은 먼지)가 왼쪽에서 오른쪽으로 열 단위로 바닥·길·물·나무 칸의 종이를 걷는다(1.8~3초)
-  ③ 집을 위→아래·왼→오른 순서로 한 채씩 놓는다(괄호가 잡혔다 풀리고 밑동에 먼지, 최대 220ms 간격). 빛줄기·발광·불꽃·흔들림은 없다.
-- 실제 칸은 이미 스토어에 있다. 연출은 다음 도구·ACK·입력을 막지 않고, 저장·적용 증거가 아니다. 다른 맵으로 옮기면 그 자리에서 끝난다. 새 연출은 옛 연출을 끝낸다.
-- 종이는 칸당 8px `RenderTexture` 한 장이다. **함정:** Phaser 3.90 `DynamicTexture.clear(x,y,w,h)` 는 `dirty` 일 때만 지우고 `dirty` 를 내린다 —
-  두 번째 칸부터 조용히 안 지워졌다. 지우기 전에 `dirty = true`.
-- 연출 시계는 프레임당 최대 48ms 만 간다. 적용 직후 커밋 기록·ACK 압축이 메인 스레드를 잡아 프레임이 띄엄띄엄 오면 벽시계로는 단계가 통째로 지나갔다.
-- 연필은 줌과 상관없이 화면에서 같은 크기다(1/zoom 배). 관측점: 재생 중 `document.documentElement.dataset.aiConstructionReveal === "playing"`.
-- 한계: 도구 결과가 한 번에 오는 것을 「계획대로 까는 모습」으로 다시 보여 줄 뿐이다 — 워커 안 단계별 증분 전송이 아니고, 나무는 바닥과 같이 드러난다(층을 따로 숨기지 않는다).
+- 왜: 09-21 의 고스트 공개는 실시간 적용(#1130) 뒤 `aiPiGhostBridge.present` 가 no-op 이 되어 사라졌다. 처음엔 화려한 연출, 다음엔
+  완성본에서 순서를 지어낸 종이·연필 밑그림으로 대신했는데 사용자가 「실제 다 깔아 놓고 보여 주기식」이라고 짚었다(2026-10-03).
+  마을 한 채는 도구 한 번(`author_beodeul_town`)이 0.3~3초에 짓고 체크포인트 하나로 적용된다 — 그 안의 단계를 실제로 기록해 튼다.
+- **기록(`src/editor/tools/constructionLog.ts`):** `withConstructionLog(toolName, run)` 이 실행 하나 동안 전역 기록기를 켠다(도구는 동기 실행).
+  시공기가 `logConstructionPlan`(계획 격자 `occ` 의 구역마다 바뀐 칸·분류) · `beginConstructionTiles`(칠하기 직전 맵) ·
+  `logConstructionTiles(map, "paint"|"stamp"|"tidy", label, {realizes, rect, major})`(직전 기록과 달라진 칸의 4층 값)를 부른다. 꺼져 있으면 아무것도 안 한다.
+  지금 기록을 남기는 시공기는 `beodeulVillage.ts`(버들항 마을 문법, theme≠city) 하나다 — 계획 구역 9~10개 → 바탕·물가·길·광장·물 칠하기 → 키트 한 개씩(집·큰 건물·다리는 `major`) → 막다른 길 정리.
+  강가 마을 실측: 단계 ≈ 570개, 기록 70~95KB, 기록 비용 ≈ 0.05초, 단계를 처음부터 다시 쌓으면 최종 맵과 칸 차이 0.
+- **배선:** 워커 `toolAdapter.ts` 가 쓰기 도구를 `withConstructionLog` 로 감싸 `PiToolCallRecord.constructionLogs` 에 싣는다(모델이 읽는 도구 결과에는 안 들어간다) →
+  `piAgentRuntime.ts` `recordCall` 이 들고 있다가 바로 다음 `checkpoint()` 의 `PiProjectCheckpoint.constructionLogs` 로 보낸다(저장 안 함) →
+  편집기 `aiPiAgentCommand.ts` onCheckpoint 가 `offerConstructionLogs` 로 맡긴다 → 적용 뒤 `focusAcceptedAgentChanges` 의 `planConstructionReveal` 이 그 맵 id 의 기록을 한 번 꺼내 쓴다(2분 지나면 버림).
+  **기록이 없는 적용은 재생하지 않는다** — 지어낸 순서는 보이지 않고 기존 「✓ 반영됨」 강조로 간다(다른 시공 도구는 아직 기록을 안 남긴다).
+- **재생 시간:** 계획 구역 380ms · 칠하기 520ms · 큰 키트 210ms · 작은 키트 28ms(찍기 전체 5.2초 상한, 넘으면 같은 비율로 당김) · 다듬기 320ms,
+  단계 종류가 바뀔 때 200ms 쉼, 끝에 500ms 머문 뒤 320ms 에 덮개가 걷힌다. 강가 마을 ≈ 12.6초.
+- **그리기:** ① 계획 격자 — 칸당 8px `RenderTexture` 에 분류 색(물 파랑·길 황토·광장 연한 돌·건물 자리 갈색 눈금·소품·밭) ② 칠하기·찍기 — 타일 크기 `RenderTexture` 에
+  그 시점 값의 실제 타일(`tile_N` 프레임)을 그린다. 칠하기는 자기가 마무리한 분류(`realizes`)의 밑그림만, 찍기는 그 칸의 밑그림을 걷는다. 마지막 단계 = 실제 맵이라 덮개가 걷혀도 그림이 안 바뀐다.
+  연필 커서는 지금 단계의 마지막 칸(찍기는 키트 오른쪽 아래), 큰 키트는 괄호가 잠깐 잡힌다. 빛·불꽃·흔들림은 없다.
+- **밝히기:** 「AI 작업」 카드에 지금 단계(「계획 · 집 자리」, 「찍기 · 집 3/14」)와 「도구가 실제로 N초에 지은 순서를 그대로 늦춰 보여 줘요」를 붙인다(카드가 없거나 먼저 닫히면 캔버스 왼쪽 아래 작은 카드).
+  캔버스 위쪽 가운데는 떠 있는 캔버스 도구 막대가 가린다 — 거기 두지 말 것. 관측점: `dataset.aiConstructionReveal === "playing"`, `dataset.aiConstructionStep`.
+- **함정:** Phaser 3.90 `DynamicTexture.clear(x,y,w,h)` 는 `dirty` 일 때만 지우고 `dirty` 를 내린다 → 지우기 전에 `dirty = true`.
+  칸마다 `drawFrame` 을 부르면 호출마다 그리기 묶음을 열고 닫는다 — 지우기를 먼저 다 하고 `beginDraw`/`batchDrawFrame`/`endDraw` 한 묶음으로, 계획 칸은 Graphics 하나에 모아 한 번 `draw`.
+  연출 시계는 프레임당 120ms 상한이다(긴 메인 스레드 막힘에 단계를 건너뛰지 않게). 48ms 였을 때 부하 큰 박스에서 12초 계획이 50초로 늘어졌다.
+- 실제 칸은 이미 스토어에 있다. 재생은 다음 도구·ACK·입력을 막지 않고 저장·적용 증거가 아니다. 다른 맵으로 옮기면 그 자리에서 끝난다.
+  대상 맵 그림이 한 변 4096px 를 넘거나 동작 줄이기·「맵에 시공 보이기」 꺼짐이면 재생하지 않는다.
 
 ### 조수창
 

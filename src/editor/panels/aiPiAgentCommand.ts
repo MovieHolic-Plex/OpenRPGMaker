@@ -65,6 +65,7 @@ import { judgePlayableSegment, playableSegmentGateApplies } from "@/project/play
 import { applyProjectWithHistory } from "@/editor/mapEditHistory";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { claimProjectInterviewExecution } from "@/editor/projectInterviewExecutionClaim";
+import { offerConstructionLogs } from "@/editor/agentConstructionReveal";
 
 /**
  * 이번 실행이 만들거나 고친 맵 가운데 시작 맵에서 문으로 닿지 않는 것 — 만든 것이 플레이에 안 나온다.
@@ -578,6 +579,8 @@ export async function runPiCommand(
       }),
       { signal: surface.signal, onEvent: wrap(mapIds, index),
         onCheckpoint: options.villageContract || readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
+          // 이 체크포인트를 낳은 도구의 실제 시공 단계 — 적용 직후 맵 위에서 그 순서대로 다시 튼다(agentConstructionReveal).
+          offerConstructionLogs(checkpoint.constructionLogs);
           // Parallel explicit map requests publish only their owned bundle on the latest accepted base.
           if (mergedFromBundles) {
             const next = mergeMapBundles(publication.project, [{ mapIds, project: checkpoint.project }]).project;
