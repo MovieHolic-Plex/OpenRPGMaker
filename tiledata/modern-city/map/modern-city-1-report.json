@@ -1,0 +1,582 @@
+{
+ "seed": 1,
+ "size": [
+  60,
+  60
+ ],
+ "pixels": 921600,
+ "render_vs_reference": {
+  "by_cell_class": {
+   "building_cells": {
+    "px": 258304,
+    "mismatch_px": 591,
+    "mismatch_pct": 0.23
+   },
+   "prop_cells": {
+    "px": 180480,
+    "mismatch_px": 76078,
+    "mismatch_pct": 42.15
+   },
+   "vehicle_cells": {
+    "px": 115456,
+    "mismatch_px": 62187,
+    "mismatch_pct": 53.86
+   },
+   "untouched_cells": {
+    "px": 367360,
+    "mismatch_px": 8469,
+    "mismatch_pct": 2.31
+   }
+  },
+  "mismatch_px": 147325,
+  "mismatch_pct": 15.99,
+  "inside_building_footprints_px": 591,
+  "inside_building_footprints_pct": 0.23,
+  "outside_building_footprints_px": 146734,
+  "outside_building_footprints_pct": 22.12
+ },
+ "buildings": {
+  "count": 23,
+  "exact": 23,
+  "substituted": 0,
+  "how": {
+   "exact": 23
+  },
+  "sprite_vs_kit_diff_px": 0,
+  "sprite_opaque_px": 255851,
+  "sprite_vs_kit_diff_pct": 0.0,
+  "per_building": [
+   {
+    "name": "bld_fire:A",
+    "kit": "mc-bld-fire-A",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     0,
+     3
+    ],
+    "size": [
+     8,
+     8
+    ]
+   },
+   {
+    "name": "bld_parking_v2:C",
+    "kit": "mc-bld-parking-v2-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     8,
+     3
+    ],
+    "size": [
+     5,
+     8
+    ]
+   },
+   {
+    "name": "bld_post:C",
+    "kit": "mc-bld-post-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     13,
+     4
+    ],
+    "size": [
+     6,
+     7
+    ]
+   },
+   {
+    "name": "bld_police:A",
+    "kit": "mc-bld-police-A",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     33,
+     3
+    ],
+    "size": [
+     7,
+     8
+    ]
+   },
+   {
+    "name": "bld_gas_v2:A",
+    "kit": "mc-bld-gas-v2-A",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     40,
+     5
+    ],
+    "size": [
+     10,
+     6
+    ]
+   },
+   {
+    "name": "bld_izakaya:A",
+    "kit": "mc-bld-izakaya-A",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     50,
+     5
+    ],
+    "size": [
+     5,
+     6
+    ]
+   },
+   {
+    "name": "bld_house_modern:A",
+    "kit": "mc-bld-house-modern-A-roof-navy",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     55,
+     5
+    ],
+    "size": [
+     5,
+     6
+    ]
+   },
+   {
+    "name": "bld_dept:C",
+    "kit": "mc-bld-dept-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     33,
+     22
+    ],
+    "size": [
+     8,
+     9
+    ]
+   },
+   {
+    "name": "bld_low3:C~gray",
+    "kit": "mc-bld-low3-C-gray",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     41,
+     23
+    ],
+    "size": [
+     6,
+     8
+    ]
+   },
+   {
+    "name": "bld_hospital:A",
+    "kit": "mc-bld-hospital-A-roof-navy",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     47,
+     23
+    ],
+    "size": [
+     7,
+     10
+    ]
+   },
+   {
+    "name": "bld_tower10b:B",
+    "kit": "mc-bld-tower10b-B",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     54,
+     22
+    ],
+    "size": [
+     6,
+     13
+    ]
+   },
+   {
+    "name": "bld_shop:B",
+    "kit": "mc-bld-shop-B",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     33,
+     30
+    ],
+    "size": [
+     5,
+     7
+    ]
+   },
+   {
+    "name": "bld_bank:A",
+    "kit": "mc-bld-bank-A-roof-lgray",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     38,
+     29
+    ],
+    "size": [
+     7,
+     8
+    ]
+   },
+   {
+    "name": "bld_conv:C",
+    "kit": "mc-bld-conv-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     45,
+     32
+    ],
+    "size": [
+     5,
+     5
+    ]
+   },
+   {
+    "name": "bld_house_modern:C",
+    "kit": "mc-bld-house-modern-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     50,
+     31
+    ],
+    "size": [
+     5,
+     6
+    ]
+   },
+   {
+    "name": "bld_izakaya:A~slate",
+    "kit": "mc-bld-izakaya-A-slate",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     55,
+     31
+    ],
+    "size": [
+     5,
+     6
+    ]
+   },
+   {
+    "name": "bld_row:C",
+    "kit": "mc-bld-row-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     0,
+     51
+    ],
+    "size": [
+     8,
+     6
+    ]
+   },
+   {
+    "name": "bld_cafe:B",
+    "kit": "mc-bld-cafe-B",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     8,
+     51
+    ],
+    "size": [
+     5,
+     6
+    ]
+   },
+   {
+    "name": "bld_low3:C",
+    "kit": "mc-bld-low3-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     13,
+     49
+    ],
+    "size": [
+     6,
+     8
+    ]
+   },
+   {
+    "name": "bld_shop:A",
+    "kit": "mc-bld-shop-A-roof-lgray",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     33,
+     50
+    ],
+    "size": [
+     5,
+     7
+    ]
+   },
+   {
+    "name": "bld_warehouse:A",
+    "kit": "mc-bld-warehouse-A",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     38,
+     51
+    ],
+    "size": [
+     8,
+     6
+    ]
+   },
+   {
+    "name": "bld_school:C",
+    "kit": "mc-bld-school-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     46,
+     50
+    ],
+    "size": [
+     9,
+     7
+    ]
+   },
+   {
+    "name": "bld_conv:C",
+    "kit": "mc-bld-conv-C",
+    "how": "exact",
+    "diff_px": 0,
+    "at": [
+     55,
+     52
+    ],
+    "size": [
+     5,
+     5
+    ]
+   }
+  ]
+ },
+ "props_vehicles": {
+  "count": 257,
+  "how": {
+   "exact": 251,
+   "nearest": 6
+  },
+  "snap_shift_px_max_per_axis_hist": {
+   "0": 4,
+   "1": 14,
+   "2": 68,
+   "3": 13,
+   "4": 15,
+   "5": 26,
+   "6": 16,
+   "7": 13,
+   "8": 88
+  },
+  "substituted": [
+   {
+    "name": "parkedcar",
+    "kit": "mc-veh-car-back-a",
+    "diff_px": 863
+   },
+   {
+    "name": "signal",
+    "kit": "mc-prop-signal-a",
+    "diff_px": 136
+   },
+   {
+    "name": "side:teal",
+    "kit": "mc-veh-car2-b-beige-l",
+    "diff_px": 1235
+   },
+   {
+    "name": "signal",
+    "kit": "mc-prop-signal-a",
+    "diff_px": 136
+   },
+   {
+    "name": "signal",
+    "kit": "mc-prop-signal-a",
+    "diff_px": 136
+   },
+   {
+    "name": "signal",
+    "kit": "mc-prop-signal-a",
+    "diff_px": 136
+   }
+  ],
+  "dropped": [
+   {
+    "name": "signboard",
+    "kid": "mc-prop-signboard-b",
+    "reason": "접근 칸 (49, 57) 까지의 길을 막아 뺌(옮길 자리 없음)"
+   },
+   {
+    "name": "vending2",
+    "kid": "mc-prop-vending2-a",
+    "reason": "접근 칸 (56, 57) 까지의 길을 막아 뺌(옮길 자리 없음)"
+   }
+  ],
+  "moved": [
+   {
+    "name": "vending2",
+    "kid": "mc-prop-vending2-c",
+    "cells": [
+     0,
+     -1
+    ],
+    "reason": "접근 칸 (9, 57) 까지의 길을 막아 칸 단위로 옮김"
+   },
+   {
+    "name": "shrub",
+    "kid": "mc-prop-shrub-b",
+    "cells": [
+     0,
+     -1
+    ],
+    "reason": "접근 칸 (7, 57) 까지의 길을 막아 칸 단위로 옮김"
+   },
+   {
+    "name": "vending",
+    "kid": "mc-prop-vending-a",
+    "cells": [
+     0,
+     -1
+    ],
+    "reason": "접근 칸 (38, 57) 까지의 길을 막아 칸 단위로 옮김"
+   },
+   {
+    "name": "mailbox_red",
+    "kid": "mc-prop-mailbox-red-c",
+    "cells": [
+     0,
+     -1
+    ],
+    "reason": "접근 칸 (49, 57) 까지의 길을 막아 칸 단위로 옮김"
+   },
+   {
+    "name": "shrub",
+    "kid": "mc-prop-shrub-b",
+    "cells": [
+     0,
+     -1
+    ],
+    "reason": "접근 칸 (56, 57) 까지의 길을 막아 칸 단위로 옮김"
+   }
+  ]
+ },
+ "ground": {
+  "cells": 3600,
+  "ground_only_cells": 1485,
+  "ground_only_mismatch_px": 8802,
+  "ground_only_mismatch_pct": 2.315,
+  "cells_with_residual_vs_tile": 347,
+  "note": "잔차 칸 = 바닥 칸에 도로 표시(화살표·맨홀·배수구·연석 주차 틱)가 얹힌 칸"
+ },
+ "overlays": {
+  "exact_marking_cells": 248,
+  "unmatched_marking_cells": 99,
+  "mark_tiles_placed": 30,
+  "shadow": {
+   "exact": 160,
+   "nearest": 423,
+   "alpha_abs_diff_sum_of_nearest": 415929
+  },
+  "note": "연석 주차 칸 틱(ㄴ자)은 시트에 칸이 없어 넣지 않았다. 화살표·맨홀·배수구는 가장 가까운 칸에 스냅"
+ },
+ "layer_log": {
+  "stamped_3": 1902,
+  "stamped_4": 39,
+  "overwritten_opaque": 28
+ },
+ "reachability": {
+  "method": "python BFS(collision.ts 규칙을 그대로 옮긴 can_move) — 최종 증명은 tiledata/modern-city/map/check-reach.mts(repo 엔진 canMove)",
+  "start": [
+   20,
+   12
+  ],
+  "doors": 25,
+  "access_cells": 54,
+  "unreachable_access_cells": 0,
+  "walkable_cells": 1800,
+  "reachable_cells": 1760,
+  "walkable_unreachable_cells": 40,
+  "kit_access_vs_town_doors": {
+   "only_in_kit": [],
+   "only_in_town": []
+  }
+ },
+ "tile_id_range": {
+  "tileset_count": 9998,
+  "out_of_range": 0,
+  "examples": [],
+  "lower_empty_cells": 0
+ },
+ "audit_compose_town": {
+  "info_distinct_looks": 40,
+  "info_parked_per_block": "2/2/2/2/2/2",
+  "info_wires": 4,
+  "info_park": "((1, 0), 'cross')",
+  "info_bld_max_same": 2,
+  "info_roof_ratio_mean_pct": 25.7,
+  "info_roofs_cleared": 13,
+  "info_stop_lines": 8,
+  "info_arrows": 8,
+  "info_manholes": 6,
+  "info_drains": 8,
+  "info_signals": 8,
+  "info_people": 53,
+  "info_vehicles": {
+   "v:van": 1,
+   "v:bus": 1,
+   "v:ambulance": 1,
+   "v:firetruck": 1,
+   "v:police": 1,
+   "v:taxi": 1
+  },
+  "TOTAL": 0
+ },
+ "compose_stat": {
+  "buildings": 23,
+  "towers": 1,
+  "props": 190,
+  "people": 53,
+  "cars": 33,
+  "alleys": 0
+ },
+ "exact_buildings_hook": {
+  "pool_dropped_unbaked_wall_variant": 63,
+  "roof_color_remapped_to_base": 9
+ },
+ "self_check": {
+  "errors": 0,
+  "codes_checked": [
+   "tile-out-of-range",
+   "layer-mismatch",
+   "building-in-lower-layer",
+   "overlay-in-base-layer",
+   "ground-in-object-layer",
+   "door-access-blocked",
+   "door-not-on-sidewalk",
+   "building-on-nonwalk",
+   "back-over-front",
+   "marking-in-intersection",
+   "tall-prop-on-road",
+   "curb-mismatch"
+  ]
+ }
+}

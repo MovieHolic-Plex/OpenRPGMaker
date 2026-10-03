@@ -23,6 +23,7 @@ type MultiMapFile = { maps: Record<string, GameMap>; tilesets: Record<string, Ti
 // 조수가 그 장소를 읽을 때만 받는다 — 읽기 전에 preloadRegionReference 를 기다린다.
 const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
   "river-fortress-160x144": () => import("./regionReferences/river-fortress.json"),
+  "modern-city-60x60": () => import("./regionReferences/modern-city.json"),
   "castle-courtyard": () => import("./regionReferences/castle-courtyard.json"),
   "castle-small-harbor": () => import("./regionReferences/castle-small-harbor.json"),
   "castle-stone-lodge": () => import("./regionReferences/castle-stone-lodge.json"),
