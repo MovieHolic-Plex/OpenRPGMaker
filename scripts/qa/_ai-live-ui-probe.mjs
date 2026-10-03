@@ -110,7 +110,9 @@ try {
   await page.goto(`${base}/?${query}`, { waitUntil: "domcontentloaded", timeout: 180_000 });
   await page.waitForFunction(() => typeof window.__oprnAiBridge?.status === "function" && window.__oprnAiBridge.status().panelMounted === true, null, { timeout: 180_000 });
   log("editor ready");
-  await sleep(3000);
+  // 부팅 직후 한가한 틈에 무거운 키 해시 예열(heavyWire.warmHeavyWire)이 돈다. 그 사이에 보내면 예열 글과 전송 준비가
+  // 겹쳐 4GB 힙을 넘길 수 있다(2026-10-03 실측) — 화면 연출을 재는 프로브는 예열이 끝난 뒤 보낸다.
+  await sleep(Number(args["settle-ms"] ?? 25000));
   // 밑그림 모듈은 vite dev 에서 같은 인스턴스를 import 로 얻는다.
   await page.evaluate(async () => {
     const ghost = await import("/src/editor/agentGhostPreview.ts");
@@ -149,6 +151,8 @@ try {
         running: ghostState.runningToolName,
         currentMap: (es.editorState.get?.() ?? es.editorState.state ?? es.editorState.snapshot?.())?.currentMapId ?? null,
         canvasW: canvas ? canvas.width : 0,
+        buildChip: document.querySelector("[data-testid='ai-construction-chip']")?.textContent ?? null,
+        wideOpen: Boolean(document.querySelector(".ai-assistant-wide-backdrop")),
         imgs: document.querySelectorAll("[data-testid='ai-panel'] img, .ai-work-strip img").length,
       });
     }, 250);

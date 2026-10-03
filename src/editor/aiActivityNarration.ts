@@ -164,6 +164,8 @@ function readOnlyAction(toolName: string): ActionForms | undefined {
 }
 
 function fallbackAction(toolName: string): ActionForms {
+  // author_beodeul_town 처럼 칩셋별 마을 시공기가 늘어난다 — 「author_」 일반 규칙(이야기)에 먼저 삼켜지지 않게 한다.
+  if (/^author_[a-z0-9_]*(?:town|village|city)$/.test(toolName)) return ACTIONS.village;
   if (/^(?:create|duplicate|resize|remove|shift|manage)_map(?:_|$)/.test(toolName)) return ACTIONS.editMap;
   if (/^(?:upsert|define|duplicate)_/.test(toolName)) return ACTIONS.database;
   if (/^(?:delete|remove|prune)_/.test(toolName)) return ACTIONS.deleteDatabase;

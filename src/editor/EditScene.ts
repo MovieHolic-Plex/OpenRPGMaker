@@ -38,6 +38,7 @@ import { StampOrderRenderer } from "@/editor/stampOrderRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AI_LIVE_CANVAS_EVENT } from "@/editor/aiLiveCanvas";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
+import { ConstructionRevealRenderer, subscribeConstructionReveal } from "@/editor/agentConstructionReveal";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
@@ -261,6 +262,9 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 바로 깔기 주문 사각형(「#3 연못 · 읽는 중」). 청사진 위, 고스트 아래. */
   private stampOrderLayer: Phaser.GameObjects.Container | null = null;
   private agentGhostPreviewLayer: Phaser.GameObjects.Container | null = null;
+  private constructionRevealLayer: Phaser.GameObjects.Container | null = null;
+  private constructionRevealRenderer: ConstructionRevealRenderer | null = null;
+  private unsubConstructionReveal: (() => void) | null = null;
   private agentFocusHighlightLayer: Phaser.GameObjects.Container | null = null;
   private eventClickFeedbackLayer: Phaser.GameObjects.Container | null = null;
   private gridGraphics: Phaser.GameObjects.Graphics | null = null;
@@ -527,11 +531,15 @@ export class EditScene extends PhaserRuntime.Scene {
     this.stampOrderLayer.setDepth(10.3);
     this.agentGhostPreviewLayer = this.add.container(0, 0);
     this.agentGhostPreviewLayer.setDepth(10.5);
+    // 실시간 적용의 시공 막 — 실제 타일 위, 조수 초점 강조 아래.
+    this.constructionRevealLayer = this.add.container(0, 0);
+    this.constructionRevealLayer.setDepth(10.6);
     this.agentFocusHighlightLayer = this.add.container(0, 0);
     this.agentFocusHighlightLayer.setDepth(11);
     this.agentBlueprintRenderer = new AgentBlueprintRenderer(this, this.agentBlueprintLayer, () => this.mapId());
     this.stampOrderRenderer = new StampOrderRenderer(this, this.stampOrderLayer, () => this.mapId());
     this.agentGhostPreviewRenderer = new AgentGhostPreviewRenderer(this, this.agentGhostPreviewLayer, () => this.mapId());
+    this.constructionRevealRenderer = new ConstructionRevealRenderer(this, this.constructionRevealLayer, () => this.mapId());
     this.agentFocusRenderer = new AgentFocusRenderer(this, this.agentFocusHighlightLayer, () => this.mapId());
     this.cameraPanController = new CameraPanController(this, {
       onPanStart: () => {
@@ -576,6 +584,7 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
+    this.unsubConstructionReveal = subscribeConstructionReveal(() => this.constructionRevealRenderer?.render());
     this.unsubAgentGhost = subscribeAgentGhostPreview(() => {
       this.renderAgentGhostPreview();
       // 원본 보기(꾹 누름) 토글은 고스트 스토어에서 발화한다 — 청사진도 같은 토글을 따르므로
@@ -687,6 +696,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubStore?.();
     this.unsubEditor?.();
     this.unsubAgentGhost?.();
+    this.unsubConstructionReveal?.();
+    this.unsubConstructionReveal = null;
+    this.constructionRevealRenderer?.clear();
     this.unsubAgentFocus?.();
     this.unsubCameraFocus?.();
     this.unsubMapBackgroundPreview?.();
@@ -2735,6 +2747,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private renderAgentGhostPreview(): void {
     this.agentGhostPreviewRenderer?.render();
+    this.constructionRevealRenderer?.render();
   }
 
   private renderAgentBlueprint(): void {

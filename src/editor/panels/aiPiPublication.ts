@@ -13,7 +13,7 @@ import type { PiCommandSurface } from "./aiPiAgentCommand";
 
 /** A single serialized authoring lineage. Never recapture authority from unrelated live edits. */
 export function createPiPublication(base: Project, mode: PiApplyMode, surface: PiCommandSurface, presentation?: {
-  beforeApply(before: Project, next: Project): Promise<void>;
+  beforeApply(before: Project, next: Project, toolName?: string): Promise<void>;
   afterApply(project: Project): void;
 }) {
   let project = base;
@@ -49,7 +49,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       if (!accepted) throw new Error(loss.cancelNotice);
     }
     surface.signal?.throwIfAborted();
-    await presentation?.beforeApply(project, next);
+    await presentation?.beforeApply(project, next, checkpoint.toolName);
     surface.signal?.throwIfAborted();
     adoptSpatialToolProof(next, checkpoint.spatialProof, project);
     const result = await applyProposedProject(next, {

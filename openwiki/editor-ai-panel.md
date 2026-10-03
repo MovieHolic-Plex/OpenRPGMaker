@@ -3230,11 +3230,27 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 작업 표시 수준(생략/간단히/자세히/매우 자세히)은 실행 기록 문구만 바꾼다. 맵 위의 실시간 시공(고스트 타일, 청사진, 카메라 따라가기, 공개가 끝날 때까지의 대기)은 그와 별개로 끌 수 있다.
 
-- 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). 꺼짐이 기본이다. `localStorage["oprn:ai-live-canvas"]` 가 `on` 일 때만 맵 위 실시간 시공을 그린다.
+- 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). **켜짐이 기본이다**(2026-10-03 되돌림 — 09-25 에 블러 수정과 함께 꺼짐으로 뒤집힌 뒤 사용자는 시공 연출을 한 번도 못 봤다). `localStorage["oprn:ai-live-canvas"]` 가 `off` 일 때만 끈다. 켜고 꺼도 부팅 힙은 같다(1.93GB 실측) — 부팅 직후 차이처럼 보이는 1.3GB 는 heavyWire 예열 타이밍이다.
 - 화면 무게는 AI 설정 「표시」의 `ai-render-weight`다. 기본 `light`는 조수 창·접힘 알약·작업 띠·맵 칩의 `backdrop-filter`를 끈다. `heavy`만 20px 유리 블러를 쓴다. `off`는 블러를 끄고 판을 불투명하게 한다. 저장 키는 `oprn:ai-render-weight`, 적용은 `documentElement.dataset.aiRender`.
 - 입력줄 모델명 옆에 이 대화의 사용량이 `N턴 · N토큰`으로 붙는다(`ai-composer-spend`). Pi 실행의 `done.stats`(계획 턴 포함)를 대화가 바뀔 때까지 더한다. 토큰은 `usage.totalTokens`(입력·출력·캐시)다. 0이면 숨긴다.
 - 헤드리스에서도 도구 실행, 증분으로 복원한 초안, 검토, 적용은 그대로다. `replaceAgentGhostPreviewFromProjectDiff` 를 쓰는 경로(Pi, 레인, 세션, 영역 작업)는 꺼져 있는 동안 맵 비교를 하지 않고, 켜기 직전에 쌓인 프리뷰는 비운다. Pi 는 다시 켜는 순간 현재 초안을 한 번 그린다. 그 외 경로는 다음 변경에서 그린다. 공개 애니메이션만큼 체크포인트를 기다리지 않는다.
 - 켜 둔 상태의 렉: 손대지 않은 맵은 객체 동일성으로 비교를 건너뛴다. 라이브 프리뷰 id 에 셀 전체를 문자열로 넣지 않는다. 스프라이트는 카메라 주변만 만들고, 이미 내려앉은 칸은 프레임마다 다시 움직이지 않는다. 상태 칩은 문구가 바뀔 때만 배치를 다시 잰다.
+
+## 실시간 적용의 시공 막 (2026-10-03)
+
+실측(실모델 3회, `scripts/qa/_ai-live-ui-probe.mjs`): 실시간 적용(DEFAULT/AUTO/YOLO)에서는 체크포인트가 `tool_end`·`map_delta` 보다 먼저 와
+실제 맵에 반영되고 `ghost.accept` 가 기준을 결과로 바꾼다 → 고스트가 그릴 차이가 늘 0칸이었다. 마을은 250ms 한 프레임 사이에 «펑» 하고 나타났다.
+
+- `src/editor/agentConstructionReveal.ts`: 방향을 뒤집는다. `aiPiGhostBridge.present(before, next, signal, toolName)`(적용 직전, `aiPiPublication.beforeApply`)
+  가 바뀐 맵마다 바뀐 칸(층·이벤트·크기 확장 띠)을 뽑아 작업을 등록하고, `ConstructionRevealRenderer`(EditScene 깊이 10.6)가 그 칸을 남색 설계도 막으로 덮는다.
+  대각선 물결 순서로 연필이 지나가며 막을 걷으면 금빛 섬광·불꽃 뒤로 **이미 반영된 실제 타일**이 드러난다. 둘레는 행진 점선 + 금 모서리, 끝나면 빛이 한 번 퍼진다.
+  칩 `[data-testid=ai-construction-chip]` 은 「마을을 만드는 중 · n/N칸」 → 「시공 완료 · N칸」.
+- 적용을 붙잡지 않는다(그림일 뿐). 길이는 칸 수 비례 1.8~5.2s. 시계는 벽시계가 아니라 프레임당 최대 48ms 씩 — 큰 적용·heavyWire 예열로 메인 스레드가
+  멈추면 벽시계 연출은 그 사이에 끝나 버렸다(실측: 첫 40% 가 멈춤 동안 지나감).
+- 다른 맵의 작업은 그 맵을 처음 그릴 때 시작한다(새 맵을 만든 도구 → 편집기가 그 맵으로 넘어간 뒤). 20초 안에 안 보면 버린다. 연출 꺼짐·reduced motion 이면 등록하지 않는다.
+- 만들기 요청의 큰 조수 창은 그래픽 선택이 끝나 실행이 시작되면 접는다(`aiChatPanel.runPiTurn` → `wideAssistant.close()`). 열어 두면 마을이 창 뒤에서 지어졌다.
+- `author_*_town|village|city` 도구는 「마을을 만드는 중」으로 읽는다(`aiActivityNarration.fallbackAction` — 예전엔 `author_` 일반 규칙에 걸려 「이야기를 구성하는 중」).
+- vite dev 에서 이 모듈을 `import()` 로 직접 부르는 시험은 서버 기동 뒤 소스를 고쳤으면 `?t=` 인스턴스가 갈려 아무것도 안 그린다 — 서버를 다시 띄우고 잰다.
 
 ## 조수 적용은 바뀐 칸만 다시 그린다 (2026-09-22)
 

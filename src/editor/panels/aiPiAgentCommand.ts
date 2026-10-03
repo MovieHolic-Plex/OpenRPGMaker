@@ -266,7 +266,7 @@ export async function runPiCommand(
   const config = loadAiConfig();
   const applyMode = normalizePiApplyMode(config.piApply);
   const publication = createPiPublication(base, applyMode, surface, {
-    beforeApply: (before, next) => ghost.present(before, next, surface.signal),
+    beforeApply: (before, next, toolName) => ghost.present(before, next, surface.signal, toolName),
     afterApply: project => ghost.accept(project),
   });
   const brain = configForUltrabrain(config);

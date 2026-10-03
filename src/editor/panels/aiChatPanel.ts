@@ -2132,6 +2132,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
     }
 
+    // 시공은 캔버스에서 보여야 한다. 그래픽 선택이 끝났으면 큰 창을 접는다 — 열어 두면 맵이 창 뒤에서
+    // 지어져 사용자는 글 몇 줄만 본다(2026-10-03 실측: 마을이 다 지어질 때까지 창이 캔버스를 덮었다).
+    if (subject) wideAssistant.close();
     // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
     // 다음 턴은 지난 턴의 종료 4축을 물고 가지 않는다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명이다.
     piRunOutcome = null;
