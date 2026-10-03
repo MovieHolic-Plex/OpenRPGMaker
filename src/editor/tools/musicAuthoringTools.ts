@@ -32,6 +32,7 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('get_music_composer','새 음악을 실제 WAV로 만드는 악보·악기·루프 계약. 기존 BGM 선택과 구분.','read',schema({},[]),()=>({summary:'음표를 저작해 독립된 실제 스테레오 WAV를 만들 수 있습니다.',data:{
     method:'Original symbolic score, deterministic local synthesis; not remote studio/vocal generation. Notes are the actual audible composition, not labels or copied game music.',
     score:'{version:1,bpm:45..200,meter:3|4,bars:1..32,key:string,loop:boolean,seed:uint32,tracks:[{id,voice,gain:0..1,pan:-1..1?,notes:[{beat,length,midi:24..96,velocity:0..1?}]}]}',
+    resourceIdContract:'Use composed_music_<unique_name> only, e.g. composed_music_starlight_promise. An omitted or empty ID generates a UUID. Existing uploads require replace:true.',
     voices:MUSIC_VOICES,limits:MUSIC_SCORE_LIMITS,quarterNotes:'beat1 is one quarter note; fractional beats supported; end must fit bars*meter',
     arrangement:'Write an original memorable lead motif, answer phrase, independent bass/chords/arpeggio and rhythmic rests. Use rests by leaving gaps. Stage track entries at the story beats; avoid all voices sounding continuously.',
     loop:'Release tails wrap periodically for loop:true; one-shots fade their final60ms. Peak normalized to0.78; native HTML audio does not promise sample-accurate gap-free looping.',
@@ -40,7 +41,7 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     example:{version:1,bpm:100,meter:4,bars:2,key:'D minor',loop:true,seed:17,tracks:[{id:'lead',voice:'bell',gain:.45,notes:[{beat:0,length:1,midi:74},{beat:1.5,length:.5,midi:77},{beat:2,length:1,midi:81},{beat:4,length:1.5,midi:79},{beat:6,length:1,midi:77}]}]},
   }})),
   tool('compose_music','실제 음표·리듬·악기 악보를 스테레오 WAV로 합성하여 프로젝트 음악 리소스로 등록. 기존 ID 교체는 replace:true.','write',schema({resourceId:str,name:str,score:obj,replace:{type:'boolean'}},['name','score']),(p,args)=>{
-    const id=args.resourceId===undefined?'composed_music_'+crypto.randomUUID():text(args.resourceId),name=text(args.name);
+    const id=(args.resourceId===undefined||args.resourceId==='')?'composed_music_'+crypto.randomUUID():text(args.resourceId),name=text(args.name);
     if(!/^composed_music_[A-Za-z0-9_-]+$/.test(id)||p.resourceProfiles.some(r=>r.assetId===id)&&!p.assets.uploaded[id]||resolveAssetResourceUrl(id)) {
       if(!p.assets.uploaded[id]||!/^composed_music_[A-Za-z0-9_-]+$/.test(id))throw new ToolError('새 작곡 ID는 composed_music_ 이름공간을 사용해야 합니다.',{code:'invalid-args'});
     }
@@ -72,7 +73,7 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     playable(p,id,kind);
     let maps:string[]=[];
     if(role==='maps'){if(!Array.isArray(args.mapIds)||!args.mapIds.length||args.mapIds.length>256||args.mapIds.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError('실제 mapIds가 필요합니다.',{code:'map-not-found'});maps=[...new Set(args.mapIds as string[])];}
-    else if(args.mapIds!==undefined)throw new ToolError('mapIds는 maps 역할에서만 사용합니다.',{code:'invalid-args'});
+    else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps 역할에서만 사용합니다.',{code:'invalid-args'});
     if(role==='opening'&&!p.system.opening)throw new ToolError('먼저 오프닝을 저작하세요.',{code:'opening-not-found'});
     if(role==='title'&&!p.system.titleScreen)throw new ToolError('먼저 타이틀을 저작하세요.',{code:'title-not-found'});
     switch(role){

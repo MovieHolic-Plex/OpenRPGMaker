@@ -26,7 +26,7 @@ export const OPENING_STORYBOOK_TOOLS:readonly ToolDefinition[]=[
     for(const [index,raw] of args.slides.entries()){
       if(!raw||typeof raw!=='object'||Array.isArray(raw))throw new ToolError('패널 객체가 필요합니다.',{code:'invalid-args'});
       const row=raw as Record<string,unknown>;if(Object.keys(row).some(k=>!['id','role','imageResourceId','text','durationMs'].includes(k)))throw new ToolError('지원하지 않는 패널 필드.',{code:'invalid-args'});
-      const {id,role,text,durationMs,imageResourceId}=row;
+      const {id,role,text,durationMs}=row;const imageResourceId=row.imageResourceId===''?undefined:row.imageResourceId;
       if(typeof id!=='string'||!id.trim()||id.length>100||ids.has(id)||typeof role!=='string'||!['world','rupture','stakes','invitation','handoff'].includes(role))throw new ToolError('패널 ID/역할 오류.',{code:'invalid-args'});
       if(typeof text!=='string'||!text.trim()||[...text].length>80||text.split('\n').length>3)throw new ToolError('원문은1..80자, 최대3행입니다.',{code:'invalid-args'});
       if(!Number.isSafeInteger(durationMs)||Number(durationMs)<Math.max(2200,[...text.replace(/\s/g,'')].length/5*1000+700)||Number(durationMs)>15000)throw new ToolError('읽기 시간: 초당5자 +700ms, 2.2..15초를 확보하세요.',{code:'reading-time'});
@@ -39,7 +39,7 @@ export const OPENING_STORYBOOK_TOOLS:readonly ToolDefinition[]=[
       ]};validateOpeningAnimatic(composition,duration);scenes.push({id,kind:'animatic',narration:'',durationMs:duration,composition});
     }
     if(!['world','rupture','stakes','handoff'].every(r=>roles.has(r)))throw new ToolError('세계·균열·위기·플레이 진입을 포함하세요.',{code:'story-incomplete'});
-    if(args.musicResourceId!==undefined&&(typeof args.musicResourceId!=='string'||!catalogLookup(p)('music',args.musicResourceId)))throw new ToolError('실제 음악이 없습니다.',{code:'resource-not-found'});
+    if(args.musicResourceId!==undefined&&args.musicResourceId!==''&&(typeof args.musicResourceId!=='string'||!catalogLookup(p)('music',args.musicResourceId)))throw new ToolError('실제 음악이 없습니다.',{code:'resource-not-found'});
     p.system.opening={enabled:true,skippable:true,scenes,...(p.system.opening?.entry?{entry:p.system.opening.entry}:{}),...(args.musicResourceId?{musicResourceId:args.musicResourceId as string}:p.system.opening?.musicResourceId?{musicResourceId:p.system.opening.musicResourceId}:{})};
     return {summary:'패널을 실제 타임라인으로 조립했습니다. 마지막 수정 후 실제 프레임과 음악을 별도로 검토하세요.',data:{shots:scenes.length,durationMs:scenes.reduce((n,s)=>n+(s.durationMs??0),0),roles:[...roles],nativePlaybackVerified:false}};
   }},
