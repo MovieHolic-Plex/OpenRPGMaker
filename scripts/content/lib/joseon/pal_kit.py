@@ -411,9 +411,9 @@ def run_mat(kind='m'):
 
 
 def door_mat(kind='a'):
-    """문 앞 깔개 2×1(32×16): 붉은(a)·짙은 청(b) 비단 직사각, 금 테두리와 가운데 꽃무늬. 바닥에 붙은 윗면."""
+    """문 앞 깔개 2×1(32×16): 붉은(a)·짙은 청(b)·녹(c) 비단 직사각, 금 테두리와 가운데 꽃무늬. 바닥에 붙은 윗면."""
     cv = Cv(2 * T, T)
-    ramp = RD if kind == 'a' else DB
+    ramp = {'a': RD, 'b': DB, 'c': DG}[kind]
     for y in range(2, 13):
         for x in range(1, 31):
             q = rnd(x, y, 1330)
@@ -453,7 +453,7 @@ def objects():
     for k in ('m', 'l', 'r'):
         d['pal_nangan_%s' % k] = nangan(k)
         d['pal_mat_run_%s' % k] = run_mat(k)
-    for k in 'ab':
+    for k in 'abc':
         d['pal_mat_gung_%s' % k] = door_mat(k)
     return d
 

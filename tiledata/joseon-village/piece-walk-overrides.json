@@ -1291,6 +1291,9 @@
   },
   "pal_hang_jokja_b": {
    "all": "X"
+  },
+  "pal_mat_gung_c": {
+   "all": "F"
   }
  },
  "terrain": {

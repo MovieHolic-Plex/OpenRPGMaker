@@ -4415,5 +4415,13 @@
    "v5:picture"
   ],
   "front_only": true
+ },
+ "pal_mat_gung_c": {
+  "cls": "prop",
+  "refs": [
+   "inb:in_b_mat_dot_2x2",
+   "v5:rug red"
+  ],
+  "front_only": true
  }
 }

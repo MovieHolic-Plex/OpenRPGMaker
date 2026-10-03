@@ -69,10 +69,9 @@ def throne():
           ('pal_deungnong_b', 19, 4), ('pal_deumeu_b', 18, 8), ('pal_buk_big', 18, 12),
           ('pal_hang_deungnong_a', 1, 1), ('pal_hang_deungnong_b', 4, 1), ('pal_hang_deungnong_a', 16, 1), ('pal_hang_deungnong_b', 19, 1),
           ('pal_mat_gung_a', 2, 3), ('pal_mat_gung_b', 17, 3),
-          # 모퉁이 대기 자리·불: 협문 앞 대기석(서 문신·동 무신)과 입구 곁 화로·등롱
-          ('pal_mat_sinha_b1', 2, 6), ('pal_hwaro', 4, 6), ('pal_mat_sinha_r3', 16, 6), ('pal_hwaro', 15, 5),
-          ('pal_deungnong_b', 1, 16), ('pal_hwaro', 3, 18), ('pal_deungnong_a', 19, 16), ('pal_hwaro', 17, 18),
-          ('pal_bangseok_b', 4, 4), ('pal_bangseok_b', 2, 18), ('pal_bangseok_a', 18, 18), ('pal_bangseok_a', 17, 5)]
+          # 협문 앞 대기 자리(서 문신·동 무신): 깔개에 방석 하나씩 + 화로. 입구 곁은 호위가 서는 자리라 등롱과 대기 깔개만 둔다
+          ('pal_mat_sinha_b1', 2, 6), ('pal_hwaro', 4, 6), ('pal_bangseok_b', 4, 4), ('pal_mat_sinha_r3', 16, 6), ('pal_hwaro', 15, 5), ('pal_bangseok_a', 17, 5),
+          ('pal_deungnong_b', 1, 16), ('pal_mat_sinha_b3', 2, 18), ('pal_deungnong_a', 19, 16), ('pal_mat_sinha_r1', 16, 18), ('pal_bangseok_c', 18, 18), ('pal_bangseok_b', 3, 15)]
     people = [(7, 5, 2, F, 1), (13, 5, 5, F, 0), (8, 13, 3, R, 1), (15, 15, 6, L, 0), (3, 10, 1, U, 0)]
     return dict(id='joseon_in_throne', title='정전 어좌 홀', plan=rows(g), props=P, door=(10, 20), replace=replace, people=people,
                 doors_extra=[dict(x=2, y=3, piece='pal_door_gung_l', kind='side'), dict(x=18, y=3, piece='pal_door_gung_r', kind='side')],
@@ -106,7 +105,7 @@ def corridor():
             continue
         P.append(('pal_beam_dan_m', x, 5))
     for i, x in enumerate((3, 9, 15, 21, 27)):              # 문 앞 깔개
-        P.append(('pal_mat_gung_' + 'ab'[i % 2], x, 3))
+        P.append(('pal_mat_gung_' + 'abc'[i % 3], x, 3))
     # 마루깔개(긴 붉은 깔개): 걷는 줄 y5·y6 에 토막으로
     for (a, b) in ((5, 11), (17, 24)):
         for x in range(a, b + 1):
@@ -144,7 +143,7 @@ def bedchamber():
         ('pal_seoan', 10, 11), ('pal_bangseok_a', 10, 12), ('pal_mat_gung_b', 13, 11), ('pal_mat_gung_a', 16, 12),
         ('pal_hwaro', 3, 4), ('pal_bangseok_b', 4, 3),
     ]
-    people = [(12, 5, 4, F, 0)]
+    people = [(12, 5, 1, F, 0)]
     return dict(id='joseon_in_bedchamber', title='침전', plan=rows(g), props=P, door=(14, 13), replace={}, people=people,
                 doors_extra=[dict(x=9, y=10, piece='pal_wall_gungho_m', kind='room')])
 
