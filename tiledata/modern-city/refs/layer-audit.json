@@ -1,0 +1,191 @@
+{
+ "tileset": "modern_city",
+ "count": 9998,
+ "checked": 9997,
+ "mismatches": 0,
+ "byGroupKinds": {
+  "mc:roadkit": {
+   "passable|prio=lower|home=lower|depth=below": 28
+  },
+  "mc:road": {
+   "passable|prio=lower|home=lower|depth=below": 3
+  },
+  "mc:sidewalk": {
+   "passable|prio=lower|home=lower|depth=below": 1
+  },
+  "mc:green": {
+   "passable|prio=lower|home=lower|depth=below": 4
+  },
+  "mc:plaza": {
+   "passable|prio=lower|home=lower|depth=below": 2
+  },
+  "mc:water": {
+   "solid|prio=lower|home=lower|depth=ysort": 1
+  },
+  "mc:hedge": {
+   "solid|prio=lower|home=lower|depth=ysort": 1
+  },
+  "mc:marking-center": {
+   "passable|prio=lower|home=upper|depth=below": 12
+  },
+  "mc:marking-stop": {
+   "passable|prio=lower|home=upper|depth=below": 12
+  },
+  "mc:marking-arrow": {
+   "passable|prio=lower|home=upper|depth=below": 4
+  },
+  "mc:marking-manhole": {
+   "passable|prio=lower|home=upper|depth=below": 4
+  },
+  "mc:shadow": {
+   "passable|prio=lower|home=upper|depth=below": 20
+  },
+  "mc:building:tower10": {
+   "solid|prio=upper|home=upper|depth=ysort": 526
+  },
+  "mc:building:office-wide": {
+   "solid|prio=upper|home=upper|depth=ysort": 335
+  },
+  "mc:building:low3": {
+   "solid|prio=upper|home=upper|depth=ysort": 343
+  },
+  "mc:building:tower10b": {
+   "solid|prio=upper|home=upper|depth=ysort": 494
+  },
+  "mc:building:mid6": {
+   "solid|prio=upper|home=upper|depth=ysort": 352
+  },
+  "mc:building:mid4": {
+   "solid|prio=upper|home=upper|depth=ysort": 363
+  },
+  "mc:building:conv": {
+   "solid|prio=upper|home=upper|depth=ysort": 177
+  },
+  "mc:building:balcony2": {
+   "solid|prio=upper|home=upper|depth=ysort": 272
+  },
+  "mc:building:hotel": {
+   "solid|prio=upper|home=upper|depth=ysort": 301
+  },
+  "mc:building:row": {
+   "solid|prio=upper|home=upper|depth=ysort": 222
+  },
+  "mc:building:parking": {
+   "solid|prio=upper|home=upper|depth=ysort": 35
+  },
+  "mc:building:shop": {
+   "solid|prio=upper|home=upper|depth=ysort": 159
+  },
+  "mc:building:post": {
+   "solid|prio=upper|home=upper|depth=ysort": 219
+  },
+  "mc:building:apartment": {
+   "solid|prio=upper|home=upper|depth=ysort": 411
+  },
+  "mc:building:office": {
+   "solid|prio=upper|home=upper|depth=ysort": 191
+  },
+  "mc:building:slim": {
+   "solid|prio=upper|home=upper|depth=ysort": 163
+  },
+  "mc:building:hospital": {
+   "solid|prio=upper|home=upper|depth=ysort": 303
+  },
+  "mc:building:izakaya": {
+   "solid|prio=upper|home=upper|depth=ysort": 183
+  },
+  "mc:building:house": {
+   "solid|prio=upper|home=upper|depth=ysort": 180
+  },
+  "mc:building:cafe": {
+   "solid|prio=upper|home=upper|depth=ysort": 144
+  },
+  "mc:building:dept": {
+   "solid|prio=upper|home=upper|depth=ysort": 165
+  },
+  "mc:building:bank": {
+   "solid|prio=upper|home=upper|depth=ysort": 287
+  },
+  "mc:building:apt-balcony": {
+   "solid|prio=upper|home=upper|depth=ysort": 193
+  },
+  "mc:building:fire-escape": {
+   "solid|prio=upper|home=upper|depth=ysort": 169
+  },
+  "mc:building:school": {
+   "solid|prio=upper|home=upper|depth=ysort": 372
+  },
+  "mc:building:police": {
+   "solid|prio=upper|home=upper|depth=ysort": 184
+  },
+  "mc:building:house-modern": {
+   "solid|prio=upper|home=upper|depth=ysort": 169
+  },
+  "mc:building:warehouse": {
+   "solid|prio=upper|home=upper|depth=ysort": 42
+  },
+  "mc:building:gas-v2": {
+   "solid|prio=upper|home=upper|depth=ysort": 70
+  },
+  "mc:building:bakery": {
+   "solid|prio=upper|home=upper|depth=ysort": 96
+  },
+  "mc:building:fire": {
+   "solid|prio=upper|home=upper|depth=ysort": 116
+  },
+  "mc:vehicle:emergency": {
+   "solid|prio=upper|home=upper|depth=ysort": 263
+  },
+  "mc:vehicle:truck": {
+   "solid|prio=upper|home=upper|depth=ysort": 159
+  },
+  "mc:building:parking-v2": {
+   "solid|prio=upper|home=upper|depth=ysort": 75
+  },
+  "mc:prop:light": {
+   "star|prio=upper|home=upper|depth=above": 12,
+   "solid|prio=upper|home=upper|depth=ysort": 6
+  },
+  "mc:prop:signal": {
+   "star|prio=upper|home=upper|depth=above": 11,
+   "solid|prio=upper|home=upper|depth=ysort": 3
+  },
+  "mc:prop:transit": {
+   "solid|prio=upper|home=upper|depth=ysort": 80,
+   "star|prio=upper|home=upper|depth=above": 5
+  },
+  "mc:prop:street": {
+   "solid|prio=upper|home=upper|depth=ysort": 39
+  },
+  "mc:prop:shopfront": {
+   "solid|prio=upper|home=upper|depth=ysort": 50
+  },
+  "mc:prop:tree": {
+   "star|prio=upper|home=upper|depth=above": 36,
+   "solid|prio=upper|home=upper|depth=ysort": 31
+  },
+  "mc:prop:work": {
+   "solid|prio=upper|home=upper|depth=ysort": 32
+  },
+  "mc:prop:bike": {
+   "solid|prio=upper|home=upper|depth=ysort": 12
+  },
+  "mc:prop:sign": {
+   "solid|prio=upper|home=upper|depth=ysort": 14
+  },
+  "mc:prop:park": {
+   "solid|prio=upper|home=upper|depth=ysort": 41
+  },
+  "mc:vehicle:car": {
+   "solid|prio=upper|home=upper|depth=ysort": 1682
+  },
+  "mc:vehicle:bus": {
+   "solid|prio=upper|home=upper|depth=ysort": 94
+  },
+  "mc:vehicle:bike": {
+   "solid|prio=upper|home=upper|depth=ysort": 24
+  }
+ },
+ "examples": [],
+ "mismatchByProblem": {}
+}
