@@ -112,6 +112,12 @@ export interface GameMap {
   battleBackground?: string;
   /** 가장자리가 반대편으로 이어지는 반복 맵(RM 「맵 루프」). 없으면 반복 없음. project/mapLoop.ts. */
   loop?: import("../mapLoop").MapLoop;
+  /**
+   * 이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 칩 이벤트)의 크기 배율 0.25~1. 없으면 1(줄이지 않음).
+   * 월드맵처럼 칸이 작은 지도에서 캐릭터를 줄여 「땅 위를 걷는 축척」으로 보이게 하는 선택 옵션이다.
+   * 읽기는 `mapCharacterSizeFactor`(project/characterScale.ts) 하나로.
+   */
+  characterScale?: number;
   /** 세이브 금지 맵 (RM2003 "Save" 체크 해제). */
   disableSave?: boolean;
   /** 텔레포트(이동) 금지 맵. */

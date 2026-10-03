@@ -56,6 +56,7 @@
 - **캐릭터**: 자동 배율은 기준 칸에서 정하고(`automaticCharacterScale(frame, 기준)`) 세계에서 `맵 칸 / 기준`배로 그린다
   (`mapCharacterScale`, `characterRenderScale(..., referenceTileSize)`). 화면 크기가 맵마다 같다. 수동·예전 명시 배율은
   그 맵 세계 px 의 절대값으로 남는다. 말풍선·데미지 숫자도 같은 세계 배율을 곱한다.
+  맵마다 `map.characterScale`(0.25~1, 선택) 를 마지막에 곱해 더 줄일 수 있다 — `mapCharacterSizeFactor`, 월드맵용(runtime-project-schema.md).
 - **픽셀 밀도** `playPixelDensity`: 기준보다 큰 칸의 맵이 있으면 캔버스를 정수배로 촘촘하게 만든다(최대 3840×2160).
   16px 기준에 32px 맵이 있으면 캔버스 640×480, 16px 맵은 배율 2·32px 맵은 배율 1 → 양쪽 다 도트 손실 없음.
   캔버스 CSS 는 논리 해상도라 DOM·레이아웃은 그대로다. registry `playPixelDensity`, 읽기는 `runtimePixelDensity`.

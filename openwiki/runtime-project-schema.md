@@ -1,5 +1,13 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
+
+0.25~1 배율. 없으면 1(기존과 같음). 그 맵에서 걷는 주인공·동료·탈것·캐릭터 칩 이벤트에만 곱한다(상자·그림 이벤트는 칸 크기 그대로).
+월드맵처럼 땅을 멀리서 보는 지도에서 캐릭터를 줄이는 선택 옵션 — 기본은 꺼짐. 읽기는 `mapCharacterSizeFactor`(project/characterScale.ts) 하나로,
+곱하는 자리는 `playerCharacterScale`·`syncVehicleSprites`·`eventSpriteScale(..., mapCharacterFactor)`(이벤트·동료·이동 경로 그림 바꾸기) 다섯 곳.
+편집: 맵 속성 「일반」 탭 「캐릭터 크기」(100·75·50%), 조수 `set_map_properties.characterScale`. 발밑 기준점은 그대로라 줄여도 칸 바닥에 선다.
+50% 는 가장 가까운 화소로 줄이므로 도트가 거칠다. 증거: `verify-shots/runtime-qa/worldmap-generate`(korea 세계, 100%/50% 비교).
+
 ## 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
 
 `edit_world_terrain` 이 만든 맵만 갖는다: `{ theme, ops, terrainId?, palette?, base?, fitSalt? }`.

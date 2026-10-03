@@ -92,7 +92,7 @@ def validate(spec):
             import kit_gen as KG
             if o.get('style', 'blobs') not in KG.STYLES:
                 raise TerrainError('ops[%d]: continents style 은 %s' % (i, ' | '.join(KG.STYLES)))
-            if not 1 <= int(o.get('count', 4)) <= 40:
+            if not (0 if o.get('style') == 'korea' else 1) <= int(o.get('count', 4)) <= 40:   # korea 는 실제 지리라 섬 수 0 이 기본
                 raise TerrainError('ops[%d]: continents count 는 1~40' % i)
             if not .2 <= float(o.get('land', .42)) <= .7:
                 raise TerrainError('ops[%d]: continents land(땅 비율)는 0.2~0.7' % i)
