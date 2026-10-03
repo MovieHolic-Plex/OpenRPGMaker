@@ -79,9 +79,15 @@ a hidden default Items command cannot remain selected on first boot. All command
 icon, dispatch and controller switches must include a newly added command.
 
 Assistant tools: `read_game_systems`, `configure_field_menu`,
-`configure_monster_campaign`, `review_game_systems`; `enable_monster_collection`
+`configure_monster_campaign`, `review_game_systems`; `configure_monster_system`
 can explicitly select `rules:gen1`. Reads expose effective commands and report
 incompatible collection/party/rules/campaign combinations. Campaign definitions
 validate actual species, map and switch references before mutation. They do not
 award species, badges or overwrite the play session. Native input/save proof is
 separate from configuration review.
+
+PiGameSystemProduction records actual read/review receipts and fingerprints final
+system/menu/audio/map-BGM settings. Successful system/music writes require an actual
+read and review after the last change; stale or inconsistent reviews enter the
+existing bounded repair loop. Done receipts expose remaining issues and explicitly
+keep playbackVerified:false. This does not establish native gameplay or hearing.

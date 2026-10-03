@@ -1,3 +1,4 @@
+import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
 import { randomUUID } from "node:crypto";
@@ -225,6 +226,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const villageMapIds = new Set<string>();
+  const gameSystemProduction = new PiGameSystemProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && requestsOpeningProduction(request.task), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && (!!modernTilesetPolicy || !!options.interiorRequirements), options.interiorRequirements);
   // let: 얼린 인자가 도구 규칙에 막히면 실행 도중 계약을 푼다(releaseContract). 풀린 뒤에는 일반 실행과 같다.
@@ -277,6 +279,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   const recordCall = (record: PiToolCallRecord): void => {
     openingProduction.record(record.name, record.result.ok, ctx.project, record.args);
+    gameSystemProduction.record(record.name, record.result, ctx.project);
     interiorCompletion.record(ctx.project, record);
     try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
@@ -726,11 +729,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     let previousOpeningIssues = '';
     for (let attempt = 0; !fatal && !rejected && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
-      const issues = openingProduction.inspect(ctx.project, base), signature = JSON.stringify(issues);
+      const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || signature === previousOpeningIssues) break;
       previousOpeningIssues = signature;
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
-      await promptResuming('오프닝 제작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.\n' + signature);
+      await promptResuming('오프닝/게임 시스템 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.\n' + signature);
     }
     // One repair owner, one turn/time budget; unchanged failures stop immediately.
     let previousIssues = "";
@@ -799,6 +802,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const interiorProblems = interiorCompletion.inspect(ctx.project, base);
   if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
   const done: PiAgentDoneEvent = {
+    ...(gameSystemProduction.requested ? { gameSystemProduction: { issues: gameSystemProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
     ...(openingProduction.requested ? { openingProduction: { issues: openingProduction.inspect(ctx.project, base), playbackVerified: false as const } } : {}),
     interiorCompletion: interiorProblems,
     ...(villageCompletion ? { villageCompletion } : {}),
