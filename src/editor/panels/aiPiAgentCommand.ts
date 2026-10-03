@@ -66,6 +66,7 @@ import { applyProjectWithHistory } from "@/editor/mapEditHistory";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { claimProjectInterviewExecution } from "@/editor/projectInterviewExecutionClaim";
 import { offerConstructionLogs } from "@/editor/agentConstructionReveal";
+import { describeMergeConflicts } from "@/project/projectMerge";
 
 /**
  * 이번 실행이 만들거나 고친 맵 가운데 시작 맵에서 문으로 닿지 않는 것 — 만든 것이 플레이에 안 나온다.
@@ -241,6 +242,8 @@ export interface PiCommandSurface {
   readonly onRunAudit?: (rows: readonly AuditEntry[]) => void;
   /** 이번 실행이 쓴 턴·토큰. 패널이 대화 합계로 쌓아 입력줄에 짧게 보여 준다. */
   readonly onSpend?: (spend: { readonly turns: number; readonly tokens: number }) => void;
+  /** 적용 뒤 화면을 그 맵으로 데려갈까(기본 follow). 다른 맵의 백그라운드 실행은 "visible-only". */
+  readonly focus?: "follow" | "visible-only";
 }
 
 export async function runPiCommand(
@@ -925,6 +928,9 @@ ${contractReleased.message}`);
     snapshotLabel: `Pi ${team ? "팀" : "에이전트"} ${scopeText}`,
     snapshotMapId: command.mapIds[0] ?? surface.getCurrentMapId(),
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,
+    // 실행 중 사람·다른 맵의 실행이 고친 것은 병합으로 살린다(겹친 자리는 지금 값).
+    rebase: { lineage: publication.count ? publication.project : base },
+    ...(surface.focus ? { focus: surface.focus } : {}),
   }));
     if (!appliedResult.ok) {
       const reason = `적용 실패(${appliedResult.reason}): ${appliedResult.issue ?? "무결성 오류"}`;
@@ -937,6 +943,8 @@ ${contractReleased.message}`);
       return false;
     }
     applied = true;
+    const mergeNote = "merge" in appliedResult ? appliedResult.merge : undefined;
+    if (mergeNote?.conflicts.length) surface.appendProcess?.(`다른 편집과 같은 자리를 바꿔 이미 반영된 쪽을 남겼어요: ${describeMergeConflicts(mergeNote)}`);
     publishFinalOutcome();
     const spillNotice = spilledKeys.length > 0 ? `, 범위 밖 ${spilledKeys.length}건 버림(${spilledKeys.map((key) => `\`${key}\``).join(", ")})` : "";
     const appliedText = team
