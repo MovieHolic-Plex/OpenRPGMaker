@@ -8,6 +8,7 @@
  *
  * 작업 문법·검사의 정본: tiledata/worldmap-kit/kit/lib/kit_terrain.py (이 파일의 스키마는 그 거울).
  */
+import { mapCharacterSizeFactor } from "@/project/characterScale";
 import type { GameMap, MapId, MapNamedLocation, PassFlag, Project, TilesetDef, TilesetId } from "@/project/types";
 import {
   buildWorldmap, WORLDMAP_BASES, WORLDMAP_GROUNDS, WORLDMAP_OPS, WORLDMAP_STYLES,
@@ -65,7 +66,7 @@ const OP_HELP =
   + "river{line,widen?} 강(바다로 끝낼 것) · forest{poly,kind?,density?} · clear{poly,what?} 숲·산 걷기 · "
   + "plateau{poly,level?,ground?} 고원(절벽이 생긴다) · volcano{x,y,lava?} 화산(분화구+고리, 반지름 4칸 땅 필요) · move_place{id,x,y} 장소 옮기기. "
   + "새 대륙 구조(base=\"generate\", 기존 대륙을 버리고 빈 판에서): 첫 작업 continents{style?,count?,land?,seed?} — 「20조각 대륙」 = continents{style:shards,count:20}, "
-  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy, 조선·한반도 = korea(실제 한반도 모양, 가상 반도를 원하면 peninsula), 중국·무협 = river-continent, 일본·전국 = arc-islands (이 셋은 땅 모양·척추 산줄기·큰 강·사막 자리·2막 방향까지 그 지리를 닮게 정해진다 — korea 만 실제 지도 윤곽이고 나머지는 닮은꼴 생성). climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다 — "
+  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy, 조선·한반도 = korea(실제 한반도 모양, 가상 반도를 원하면 peninsula), 중국·무협 = river-continent, 일본·전국 = arc-islands (이 셋은 땅 모양·척추 산줄기·큰 강·사막 자리·2막 방향까지 그 지리를 닮게 정해진다 — korea 만 실제 지도 윤곽이고 나머지는 닮은꼴 생성). climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다. 「월드맵에서 캐릭터를 작게」는 characterScale(0.5~0.75) 를 같이 준다 — "
   + "결과의 layout.regions(a 1막 · b 2막 · w 산벽 · d 사구 바다 · s 배로 가는 땅)를 보고 그 위에 다른 작업을 얹어라. 손으로 정하려면 wall{line,gate?}(산벽) · dune_sea{poly} · sky_island{x,y} · move_place(고정). "
   + "generate 에서 land·sea·island 는 맞춤 전에 구조에 접힌다. "
   + `바닥 이름→글자: grass . farm f crop p savanna v sand s dune d dirt D badlands b ash a basalt B swamp w marsh m tundra t snow n glacier g jungle j. `
@@ -310,6 +311,7 @@ const editWorldTerrain: ToolDefinition = {
       ops: { type: "array", items: opSchema, description: "더할 지형 작업(차례대로). 테마만 바꾸려면 빈 배열" },
       replace: { type: "boolean", description: "true 면 쌓인 작업을 버리고 ops 만으로" },
       preview: { type: "boolean", description: "true 면 저장하지 않고 도식 그림·검사만" },
+      characterScale: { type: "number", description: "이 세계 지도 위에서 걷는 캐릭터 크기 배율 0.25~1(사용자가 「월드맵에서 캐릭터를 작게」를 원할 때 0.5~0.75). 1 이면 기본 크기로. 생략하면 그대로" },
     },
   },
   invalidArgsExample: { ops: [{ op: "sea", poly: [[58, 30], [80, 29], [80, 32], [58, 33]], note: "동대륙을 두 섬으로" }] },
@@ -345,12 +347,18 @@ const editWorldTerrain: ToolDefinition = {
       throw new ToolError(`맵 id ${mapId} 가 이미 다른 맵이다 — newMapId 를 바꿔라.`, { code: "map-id-taken" });
     }
     const { created, strandedEvents } = applyWorldmap(draft, mapId, typeof args.name === "string" ? args.name : undefined, request, result);
+    if (typeof args.characterScale === "number" && Number.isFinite(args.characterScale)) {
+      const built = draft.maps[mapId]!;
+      if (args.characterScale >= 1) delete built.characterScale;
+      else built.characterScale = mapCharacterSizeFactor({ characterScale: args.characterScale });
+    }
+    const sizeNote = draft.maps[mapId]!.characterScale ? `, 캐릭터 크기 ${Math.round(draft.maps[mapId]!.characterScale! * 100)}%` : "";
     const warnings = [
       ...result.warnings,
       ...(strandedEvents.length ? [`걸을 수 없는 칸에 놓인 이벤트 ${strandedEvents.length}개: ${strandedEvents.slice(0, 8).join(", ")} — 옮겨야 한다`] : []),
     ];
     return {
-      summary: `${created ? "새 세계 지도" : "세계 지도"} ${mapId} — 테마 ${request.theme}, 지형 작업 ${base.ops.length}개, 장소 ${result.world.places.length}곳, 여정 검사 통과(${result.seconds}초)`,
+      summary: `${created ? "새 세계 지도" : "세계 지도"} ${mapId} — 테마 ${request.theme}, 지형 작업 ${base.ops.length}개, 장소 ${result.world.places.length}곳${sizeNote}, 여정 검사 통과(${result.seconds}초)`,
       data: { mapId, created, tilesetId: `worldmap_${mapId}`, ...base },
       ...(warnings.length ? { warnings } : {}),
     };
