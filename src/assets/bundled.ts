@@ -10,6 +10,7 @@ import forestHarmonyTreeShadows from "./forestHarmonyTreeShadows.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import atlasBiomeSheets from "./atlasBiomeSheets.json";
 import beodeulCitySheet from "./beodeulCitySheet.json";
+import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
@@ -189,6 +190,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 버들항 v6(2026-09-28) — 로마풍 항구 도시 손 도트 렌더를 16px 칸으로 자른 시트(칸마다 땅/윗부분, 움직임 animationStrips).
   // 재생성: scripts/content/build-beodeul-city.py, 정의는 project/defaults/beodeulCity.ts, openwiki/beodeul-city.md.
   {textureKey:"tex_beodeul_city",path:"assets/beodeul-city/beodeul-city-chipset.png",name:"버들항 v6 · 로마풍 항구 도시 (손 도트)"},
+  // 조선 · 바람의나라풍(2026-10-02) — 손 도트 조각(집·나무·담·성문·궁궐) + 오토타일(흙길·마당·강·논) 한 장. 마을 20호·국내성 맵이 같은 시트를 쓴다.
+  // 재생성: scripts/content/build-joseon-tileset.py (입력만 바꿔 같은 명령), 정의는 project/defaults/joseonBaram.ts, openwiki/joseon-baram.md.
+  {textureKey:"tex_joseon_baram",path:"assets/joseon-baram/joseon-baram-chipset.png",name:"조선 · 바람의나라풍 (손 도트)"},
   // 현대 도시 · 도쿄풍(2026-10) — modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 16px 칸으로 자른 시트. 칸 번호는 덧붙이기 전용.
   // 재생성: src/harnesses/modern-chipset/bake_tileset.py, 정의는 project/defaults/modernCity.ts, openwiki/modern-city.md.
   {textureKey:"tex_modern_city",path:"assets/modern-city/modern-city-chipset.png",name:"현대 도시 · 도쿄풍 (도트)"},
@@ -249,6 +253,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_harmony_autumn") return climateSheets.autumn.count;
   if (key in atlasBiomeSheets) return (atlasBiomeSheets as Record<string, number>)[key]!;
   if (key === "tex_beodeul_city") return beodeulCitySheet.count;
+  if (key === "tex_joseon_baram") return joseonBaramSheet.count;
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;

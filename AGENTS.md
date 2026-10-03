@@ -45,6 +45,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor database: `openwiki/editor-database.md`
    - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
+   - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 248종·오토타일 8종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 마을 20호+국내성 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`

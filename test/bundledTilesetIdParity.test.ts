@@ -15,6 +15,7 @@ describe("bundled tileset id parity", () => {
     const { createSharedVillageObjectsTileset } = await import("@/project/defaults/sharedVillageObjects");
     const { createForestHarmonyTileset } = await import("@/project/defaults/forestHarmony");
     const { createTiboInteriorTileset } = await import("@/project/defaults/tiboInterior");
+    const { createJoseonBaramTileset } = await import("@/project/defaults/joseonBaram");
     const { createModernCityTileset } = await import("@/project/defaults/modernCity");
     const { createJpCityTileset } = await import("@/project/defaults/jpCity");
 
@@ -22,6 +23,7 @@ describe("bundled tileset id parity", () => {
       tex_shared_forest_village_objects: createSharedVillageObjectsTileset,
       tex_forest_harmony: createForestHarmonyTileset,
       tex_tibo_interior_expanded: createTiboInteriorTileset,
+      tex_joseon_baram: createJoseonBaramTileset,
       tex_modern_city: createModernCityTileset,
       tex_jp_city: createJpCityTileset,
     };

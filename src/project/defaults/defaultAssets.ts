@@ -10,6 +10,7 @@ import { ATLAS_BIOME_WORLD_TEXTURE, createAtlasBiomeWorldTileset } from "./atlas
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset } from "./beodeulCity";
+import { JOSEON_BARAM_TEXTURE, createJoseonBaramTileset, ensureJoseonBaramReferences, ensureJoseonBaramTileset } from "./joseonBaram";
 import { MODERN_CITY_TEXTURE, createModernCityTileset, ensureModernCityReferences, ensureModernCityTileset } from "./modernCity";
 import { JP_CITY_TEXTURE, createJpCityTileset, ensureJpCityReferences, ensureJpCityTileset } from "./jpCity";
 import { ensureForestGroveInterior } from "./forestGrove";
@@ -196,6 +197,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureBeodeulCityTileset(project.tilesets[id]) || changed;
         changed = ensureBeodeulCityReferences(project.tilesets[id]) || changed;
       }
+      // 조선 · 바람의나라풍 (tiledata/joseon-village): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다.
+      if (asset.textureKey === JOSEON_BARAM_TEXTURE) {
+        changed = ensureJoseonBaramTileset(project.tilesets[id]) || changed;
+        changed = ensureJoseonBaramReferences(project.tilesets[id]) || changed;
+      }
       // 현대 도시 · 도쿄풍 (modern-chipset 하네스 굽기): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === MODERN_CITY_TEXTURE) {
         changed = ensureModernCityTileset(project.tilesets[id]) || changed;
@@ -363,6 +369,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
   if (asset.textureKey === BEODEUL_CITY_TEXTURE) return createBeodeulCityTileset();
+  if (asset.textureKey === JOSEON_BARAM_TEXTURE) return createJoseonBaramTileset();
   if (asset.textureKey === MODERN_CITY_TEXTURE) return createModernCityTileset();
   if (asset.textureKey === JP_CITY_TEXTURE) return createJpCityTileset();
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();
