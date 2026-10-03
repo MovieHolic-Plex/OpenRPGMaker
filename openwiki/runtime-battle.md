@@ -34,7 +34,10 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   `scripts/qa/runtime/hydra-rm2003.mjs` → `verify-shots/hydra-rm2003/SUMMARY.md`.
   starter 요청 0건, 런타임 오류 0건. 재현용 fixture이며 정본 프로젝트 저장 증거는 아니다.
 - 저작/재생성 계약은 `tiledata/pixel-enemies/hydra-three/README.md`.
-  세션 규칙에 따라 gates/vitest/typecheck는 실행하지 않았다.
+  세션 규칙에 따라 로컬 gates/vitest/typecheck는 실행하지 않았다.
+- PR CI가 발견한 RTP 폐기 후 타입 오류는 상류 #1922 수정으로 통합했다.
+  battle/monster 목록이 비어도 `readonly EasyRpgRtpAsset[]` 조회 계약을 유지하며,
+  생성기는 빈 카테고리 목록도 올바른 타입으로 출력한다.
 
 ## 옛 전투 그림은 deprecated/ — 지금 전투에는 도트·포켓몬 그림만 (2026-10-03)
 
