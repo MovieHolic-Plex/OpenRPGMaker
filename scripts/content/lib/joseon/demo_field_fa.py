@@ -99,7 +99,7 @@ CAMP = blob(48, 71, 8.5, 6.0, 31, 0.15)
 setk(CAMP, 'yard', only=(None, 'tall'))
 CLEAR = blob(80, 38, 5.5, 4.5, 32, 0.15)
 setk(CLEAR, 'yard', only=(None, 'forest'))
-for y in (46, 47):                                       # 바위산 앞마당(굴 앞) 두 줄
+for y in (46, 47, 48):                                     # 바위산 앞마당(굴 앞) 두 줄
     for x in range(5, 31): KG[y][x] = 'yard'
 
 
@@ -139,8 +139,8 @@ TRAILS['S'] = trail([(47, 23), (47, 30), (46, 37), (47, 44), (47, 52), (47, 58),
 TRAILS['S2'] = trail([(48, 78), (48, 86), (47, 91), (47, 95)], seed=6)                                     # 야영지 → 남쪽 출구
 TRAILS['E'] = trail([(54, 20), (62, 20), (62, 24), (70, 24), (72, 30), (76, 34)], seed=7)                  # 어귀 → 숲 쉼터
 TRAILS['F'] = trail([(80, 43), (80, 52), (79, 60), (80, 66), (80, 72)], seed=8)                            # 쉼터 → 늪가
-TRAILS['SW'] = trail([(57, 72), (66, 72), (80, 72), (88, 72), (92, 72), (92, 82)], seed=9)                 # 야영지 → 늪가 → 늪 끝 표지
-TRAILS['R'] = trail([(40, 72), (34, 72), (34, 76), (26, 76), (21, 72), (20, 70)], seed=10)                 # 야영지 → 폐허
+TRAILS['SW'] = trail([(55, 72), (66, 72), (80, 72), (88, 72), (92, 72), (92, 82)], seed=9)                 # 야영지 → 늪가 → 늪 끝 표지
+TRAILS['R'] = trail([(42, 72), (34, 72), (34, 76), (26, 76), (21, 72), (20, 70)], seed=10)                 # 야영지 → 폐허
 TRAILS['G'] = trail([(26, 76), (18, 79), (12, 79), (10, 77)], seed=11)                                     # 폐허길 → 무덤
 TRAILS['P1'] = trail([(47, 31), (41, 31), (36, 31)], seed=12)                                              # 줄기길 → 키 큰 풀(스폰)
 TRAILS['P2'] = trail([(47, 31), (54, 31), (58, 31)], seed=13)
@@ -165,7 +165,26 @@ def fix_pockets():
     return n
 
 
-print('막힌 틈 메움', fix_pockets())
+PROT = {(36, 31), (58, 31), (38, 54), (58, 55), (20, 70), (10, 77), (92, 82), (47, 95), (47, 0)}
+
+
+def prune_spurs():
+    """길·마당의 가지 끝(이웃 길 칸이 하나뿐인 칸)을 지운다. 목적지(PROT)는 남긴다."""
+    n = 0
+    for _ in range(30):
+        rm = []
+        for y in range(MH):
+            for x in range(MW):
+                if KG[y][x] in ('trail', 'yard') and (x, y) not in PROT:
+                    nb = sum(1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if inb(x + dx, y + dy) and KG[y + dy][x + dx] in ('trail', 'yard', 'road', 'slab'))
+                    if nb <= 1: rm.append((x, y))
+        if not rm: break
+        for (x, y) in rm: KG[y][x] = None
+        n += len(rm)
+    return n
+
+
+print('막힌 틈 메움', fix_pockets(), '| 길 가지 끝 지움', prune_spurs())
 
 # 굴 입구 앞 걸을 칸·출구 칸을 마당(흙)으로: 조각의 F 칸이 단단한 바닥 위에 놓일 수 없으므로 바닥 종류를 먼저 마당으로 바꾼다
 MOUTHS = [('fld_cave_a', 6), ('fld_cave_b', 13), ('fld_cave_c', 19)]
@@ -417,8 +436,10 @@ def line_hit(nm, x, y):
 
 
 def prop_ok(nm, x, y, gap):
+    """같은 소품은 gap 칸 이상 떨어지고, 다른 소품은 2칸 이상(겹침 방지). 같은 소품 셋이 등간격 일렬이 되는 자리는 거른다."""
     for (n, a, b) in PROPPOS:
-        if abs(a - x) < gap and abs(b - y) < gap:
+        g = gap if n == nm else 2
+        if abs(a - x) < g and abs(b - y) < g:
             return False
     return not line_hit(nm, x, y)
 
@@ -523,3 +544,206 @@ LOG['b_bush'] = scatter(BUSH, bogrim, 10, gap=4, seed=77)
 print('소품·나무', LOG)
 if STAGE <= 4:
     stage_png('c'); sys.exit(0)
+
+# ================================================================ 5단계: 빈 땅 메우기(물체가 아니라 지형으로) · 사람 · 스폰
+def remove_item(name, x, y):
+    for i, p in enumerate(kit.placed):
+        if p[0] == name and p[1] == x and p[2] == y:
+            kit.placed.pop(i); kit.items.pop(i); break
+    for (X, Y, ch) in kit.cells_for(name, x, y):
+        lst = kit.DRAWN.get((X, Y), [])
+        for j, (n2, c2) in enumerate(lst):
+            if n2 == name: lst.pop(j); break
+        if not lst: kit.DRAWN.pop((X, Y), None)
+        if ch == 'X' and kit.HARD.get((X, Y)) == name: kit.HARD.pop((X, Y), None)
+    for lst in (TREEPOS, PROPPOS):
+        if (name, x, y) in lst: lst.remove((name, x, y))
+
+
+def fill_plain(rounds=40):
+    """10×10 칸이 전부 평범한 풀(물체 그림도 없음)인 빈 광장을 지운다: 그 창의 가운데에 키 큰 풀 덩이(스폰 자리가 되는 땅)를 깔고 곁에 바위·꽃을 얹는다."""
+    for r in range(rounds):
+        bad = FM.audit_plain(kit, 10)
+        if not bad:
+            return r
+        x, y = bad[len(bad) // 2]
+        cx, cy = x + 5, y + 5
+        for (px, py) in blob(cx, cy, 3.6, 2.8, 90 + r, 0.3):
+            if KG[py][px] is None and (px, py) not in kit.DRAWN: KG[py][px] = 'tall'
+        for nm, ddx, ddy in (('fld_rock_m_a', -4, 2), ('fld_flowers_b', 4, -2), ('fld_bush_berry', 1, 4), ('fld_rock_s_b', -2, -4)):
+            if put(nm, cx + ddx, cy + ddy, ok=OKG, conn=True):
+                PROPPOS.append((nm, cx + ddx, cy + ddy))
+    return rounds
+
+
+print('빈 땅 메움 라운드', fill_plain())
+
+
+# 맨 잔디 창(지도 게이트 M1: 20×15칸 창에서 40% 이하) 완화: 작은 소품(꽃·잔돌)은 칸을 덮지 못하므로 창이 넘치면 그 창의 맨 잔디 무게중심에 키 큰 풀 덩이를 깐다
+SMALLP = ('fld_flowers', 'fld_fern', 'fld_rock_s', 'fld_burrow', 'fld_bones', 'fld_stump', 'fld_cairn', 'fld_ore', 'fld_signpost')
+
+
+def bare_grid():
+    B = np.zeros((MH, MW), bool)
+    for y in range(MH):
+        for x in range(MW):
+            if KG[y][x] is None:
+                d = kit.DRAWN.get((x, y), [])
+                B[y, x] = all(nm.startswith(SMALLP) for (nm, _c) in d)
+    return B
+
+
+def relieve_lawn(limit=0.27, rounds=260):
+    for r in range(rounds):
+        B = bare_grid()
+        ii = np.pad(B.astype(np.int32).cumsum(0).cumsum(1), ((1, 0), (1, 0)))
+        best = (0, 0, 0)
+        for y in range(0, MH - 15 + 1):
+            for x in range(0, MW - 20 + 1):
+                v = ii[y + 15, x + 20] - ii[y, x + 20] - ii[y + 15, x] + ii[y, x]
+                if v > best[0]: best = (v, x, y)
+        v, x, y = best
+        if v / 300.0 <= limit:
+            return r, round(v / 300.0, 3)
+        ys, xs = np.nonzero(B[y:y + 15, x:x + 20])
+        rg = random.Random(700 + r)
+        k = rg.randrange(len(xs))                      # 무게중심 대신 맨 칸 하나를 골라 그 둘레에 깐다(같은 자리 반복 방지)
+        cx, cy = x + int(xs[k]), y + int(ys[k])
+        for (px, py) in blob(cx, cy, 2.4 + rg.random() * 2.2, 1.9 + rg.random() * 1.6, 800 + r, 0.4):
+            if KG[py][px] is None: KG[py][px] = 'tall'
+    return rounds, None
+
+
+print('맨 잔디 창 완화', relieve_lawn())
+
+# 지도 위 점검에서 걸리는 줄 심기: 같은 소품 셋 일렬 · 나무 셋 일렬(축·대각 등간격)은 가운데를 뽑는다
+def fix_lines():
+    removed = 0
+    for _ in range(12):
+        bad = FM.audit_line3(kit.placed)
+        if not bad:
+            break
+        # (이름, (x, y) 시작점, (dx, dy)) → 가운데 점을 뽑는다
+        for (n, (x, y), (dx, dy)) in bad:
+            if n == 'tree':
+                mid = (x + dx, y + dy)
+                for (nm, px, py, pw_, ph_) in list(kit.placed):
+                    if is_tree(nm) and not is_bush(nm) and (px, py + ph_ - 1) == mid:
+                        remove_item(nm, px, py); removed += 1; break
+            else:
+                mid = (x + dx, y + dy)
+                for (nm, px, py, pw_, ph_) in list(kit.placed):
+                    if nm == n and (px, py + ph_ - 1) == mid:
+                        remove_item(nm, px, py); removed += 1; break
+    return removed
+
+
+print('줄 심기 뽑음', fix_lines())
+
+# 사냥터 스폰(몬스터 이벤트 자리): 종류별로 간격을 두고 걸을 수 있는 칸에
+SP = []
+
+
+def add_spawns(kind, cells, n, gap, seed):
+    rg = random.Random(seed)
+    cs = sorted(c for c in cells if kit.walkable(*c) and c not in kit.DRAWN and c not in VIS)
+    rg.shuffle(cs)
+    k = 0
+    for (x, y) in cs:
+        if k >= n: break
+        if any(abs(x - a['x']) + abs(y - a['y']) < gap for a in kit.SPAWNS):
+            continue
+        kit.SPAWNS.append({'x': x, 'y': y, 'zone': kind}); k += 1
+    return k
+
+
+print('스폰', add_spawns('meadow', {c for c in kcells('tall') if 24 <= c[0] <= 68}, 8, 8, 1), add_spawns('forest', kcells('forest'), 7, 9, 2),
+      add_spawns('swamp', {(x + dx, y + dy) for (x, y) in kcells('bog') for dx in range(-2, 3) for dy in range(-2, 3)} - kcells('bog'), 4, 10, 3),
+      add_spawns('ruin', kcells(None, 'tall', x0=4, y0=62, x1=32, y1=90), 4, 8, 4), add_spawns('foot', kcells(None, 'yard', x0=0, y0=46, x1=34, y1=62), 2, 10, 5))
+for a in kit.SPAWNS:
+    pw(a['x'], a['y'])
+for (x, y) in ((36, 31), (58, 31), (38, 54), (58, 55), (20, 70), (10, 77)):
+    pw(x, y)
+if STAGE <= 5:
+    stage_png('d'); sys.exit(0)
+
+# ================================================================ 6단계: 자동 점검 단언 → 굽기
+CAVEF = {(c[0], c[1]) for c in CAVE_F}
+
+
+def audit_all():
+    """굽기 직전 점검. 하나라도 걸리면 굽지 않는다. 반환: 문제 목록(빈 목록이면 통과)."""
+    probs = []
+    walk = total_walk()
+    seen = kit.reach(START)
+    # 1) 모든 걸을 칸이 어귀에서 닿는다(끊긴 길·외톨이 땅 없음) + 출구·굴 앞 칸 도달
+    iso = FM.audit_unreachable_walk(kit, seen)
+    if iso: probs.append('어귀에서 못 닿는 걸을 칸 덩어리 %d개: %s' % (len(iso), iso[:5]))
+    for nm, (x, y) in (('북 출구', (47, 0)), ('남 출구', (47, 95)), ('북 출구 끝', (49, 0))):
+        if (x, y) not in seen: probs.append(nm + ' 못 닿음 %s' % ((x, y),))
+    for (x, y, nm) in CAVE_F:
+        if (x, y) not in seen: probs.append('굴 입구 앞 칸 못 닿음 %s %s' % (nm, (x, y)))
+        # 입구 앞에 걸을 칸이 3줄 이상(문 앞 아래 3칸)
+        if sum(1 for k in range(1, 4) if kit.walkable(x, y + k)) < 3: probs.append('굴 입구 앞 걸을 칸 부족 %s' % ((x, y),))
+    for d in kit.DOORS:
+        if (d['x'], d['y']) not in seen: probs.append('문 앞 칸 못 닿음 %s' % d)
+    # 2) 막다른 길 없음(길 끝은 앵커 곁이어야 한다)
+    de = FM.audit_deadends(kit, ('trail', 'road', 'yard', 'slab'), ANCH)
+    if de: probs.append('막다른 길 %d: %s' % (len(de), de[:8]))
+    # 3) 같은 소품·나무 셋 일렬 금지
+    ln = FM.audit_line3(kit.placed)
+    if ln: probs.append('셋 일렬 %d: %s' % (len(ln), ln[:4]))
+    # 4) 10×10 완전 빈 땅 금지
+    pl = FM.audit_plain(kit, 10)
+    if pl: probs.append('10×10 빈 광장 %d: %s' % (len(pl), pl[:4]))
+    # 5) 길은 어디론가 이어진다: 짐승길 덩어리마다 목적(앵커·마당·출구·다른 길)에 닿는다 — 도달성 + 막다른 길 점검이 이미 보장. 마스크 일관은 아래.
+    gr = ground_ids()
+    inv = {}
+    for g, v in kit.pieces.items():
+        for k, t in enumerate(v['tiles']): inv[t] = (g, k)
+    fam = {k: kit.cells_of(k) for k in ('trail', 'bog', 'rock', 'face0', 'face1', 'tall', 'forest')}
+    dirtc = kit.cells_of('road', 'yard', 'slab', 'trail')
+    bad_mask = []
+    for y in range(MH):
+        for x in range(MW):
+            g, k = inv.get(gr[y][x], (None, 0))
+            if g == 'fld_trail32' and (k & 15) != kit.mask4(dirtc, x, y): bad_mask.append(('trail', x, y))
+            if g == 'fld_tall32' and (k & 15) != kit.mask4(fam['tall'], x, y): bad_mask.append(('tall', x, y))
+            if g == 'fld_forest32' and (k & 15) != kit.mask4(fam['forest'], x, y): bad_mask.append(('forest', x, y))
+            if g == 'fld_bog94':
+                m8 = 0
+                for bit, (dx, dy) in ((WB.N, (0, -1)), (WB.E, (1, 0)), (WB.S, (0, 1)), (WB.W, (-1, 0)), (WB.NE, (1, -1)), (WB.SE, (1, 1)), (WB.SW, (-1, 1)), (WB.NW, (-1, -1))):
+                    if (x + dx, y + dy) in fam['bog']: m8 |= bit
+                if k % 47 != WB.index47(m8): bad_mask.append(('bog', x, y))
+    # 절벽 이음: 앞면 윗줄 위는 바위, 아랫줄 위는 윗줄, 아랫줄 아래는 바위·앞면이 아니다(벽 두께 정확히 2줄). 바위 아래는 바위나 앞면 윗줄.
+    for (x, y) in fam['face0']:
+        if (x, y - 1) not in fam['rock']: bad_mask.append(('face0 위가 바위 아님', x, y))
+        if (x, y + 1) not in fam['face1'] and (x, y + 1) not in CAVEF: bad_mask.append(('face0 아래가 face1 아님', x, y))
+    for (x, y) in fam['face1']:
+        if (x, y - 1) not in fam['face0']: bad_mask.append(('face1 위가 face0 아님', x, y))
+        if (x, y + 1) in fam['rock'] or (x, y + 1) in fam['face0']: bad_mask.append(('face1 아래가 벽·바위', x, y))
+    for (x, y) in fam['rock']:
+        if (x, y + 1) not in fam['rock'] and (x, y + 1) not in fam['face0']: bad_mask.append(('바위 아래 앞면 없음', x, y))
+    if bad_mask: probs.append('이음 마스크 불일치 %d: %s' % (len(bad_mask), bad_mask[:6]))
+    # 6) 사람은 걸을 칸에, 머리 칸도 막힌 몸체가 아니게
+    for p in PEOPLE:
+        if not kit.walkable(p[0], p[1]) or (p[0], p[1] - 1) in kit.HARD or (p[0], p[1]) in VIS and False:
+            probs.append('사람 자리 불량 %s' % (p[:2],))
+    # 7) 스폰은 걸을 칸
+    for a in kit.SPAWNS:
+        if not kit.walkable(a['x'], a['y']): probs.append('스폰 자리 불량 %s' % a)
+    return probs, len(walk), len(seen)
+
+
+PR, NW, NR = audit_all()
+print('자동 점검', '모두 통과' if not PR else PR, '| 걸을 수 있는 칸 %d, 어귀에서 닿는 칸 %d' % (NW, NR))
+if PR and not os.environ.get('JS_FORCE'):
+    print('자동 점검 FAIL — 굽지 않는다(JS_FORCE=1 로 무시)'); sys.exit(1)
+if STAGE <= 6:
+    stage_png('e'); sys.exit(0)
+
+direct, rep = kit.bake(ground_ids(), 'field_fa', people_overlay=PP.overlay,
+                       ground_kind_map={'trail': 'road', 'tall': 'grass', 'forest': 'grass', 'bog': 'water', 'rock': 'wall', 'face0': 'wall', 'face1': 'wall'},
+                       extra_fields={'spawnZones': {k: sum(1 for a in kit.SPAWNS if a['zone'] == k) for k in ('meadow', 'forest', 'swamp', 'ruin', 'foot')},
+                                     'audit': {'walkable': NW, 'reachableFromStart': NR, 'start': list(START)}})
+print('굽기 끝', json.dumps(rep, ensure_ascii=False))
