@@ -110,8 +110,11 @@ export function markPriorTurns(log: HTMLElement): void {
     body.append(node);
   }
 
+  // 맵별 대기열에서 아직 돌거나 기다리는 실행 카드(aiMapRunCard)는 다음 요청을 보냈다고 접지 않는다 — 진행이 보여야 한다.
+  const liveRun = '.ai-map-run-card[data-state="running"], .ai-map-run-card[data-state="waiting"]';
+  const keepOpen = toWrap.some((node) => node.matches?.(liveRun) || node.querySelector?.(liveRun));
   const group = el("div", {
-    class: "ai-turn-group is-prior-turn is-collapsed",
+    class: keepOpen ? "ai-turn-group is-prior-turn" : "ai-turn-group is-prior-turn is-collapsed",
     dataset: { testid: "ai-turn-group" },
   });
   const toggle = el("button", {
@@ -119,11 +122,11 @@ export function markPriorTurns(log: HTMLElement): void {
     attrs: {
       type: "button",
       title: "이전 턴 펼치기/접기",
-      "aria-expanded": "false",
+      "aria-expanded": String(keepOpen),
       "aria-label": "이전 턴 펼치기/접기",
     },
     dataset: { testid: "ai-turn-group-toggle" },
-    text: `▸ ${preview}`,
+    text: `${keepOpen ? "▾" : "▸"} ${preview}`,
     on: {
       click: () => {
         const collapsed = group.classList.toggle("is-collapsed");

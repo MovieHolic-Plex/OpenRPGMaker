@@ -244,6 +244,12 @@ export interface PiCommandSurface {
   readonly onSpend?: (spend: { readonly turns: number; readonly tokens: number }) => void;
   /** 적용 뒤 화면을 그 맵으로 데려갈까(기본 follow). 다른 맵의 백그라운드 실행은 "visible-only". */
   readonly focus?: "follow" | "visible-only";
+  /**
+   * 다른 맵에서 같이 도는 백그라운드 실행(aiMapRunQueue). 패널 공용 활동 버스(팀 레일·작업 탭 검토 스트립)에
+   * 게시하지 않는다 — 앞에서 도는 실행의 표시를 덮지 않게. 진행은 onActivity 로만 받는다.
+   */
+  readonly background?: boolean;
+  readonly onActivity?: (state: TeamBoardState) => void;
 }
 
 export async function runPiCommand(
@@ -417,11 +423,14 @@ export async function runPiCommand(
 
   let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task, store.getProjectIdentity().id);
   const board = createTeamBoard(boardState, { externalReview: Boolean(surface.appendReviewPrompt) });
-  setTeamReviewActions(null);
+  const background = surface.background === true;
+  if (!background) setTeamReviewActions(null);
   surface.appendCard(board.root);
   const sync = (): void => {
     if (boardState.trace) boardState = { ...boardState, trace: activityPhase(boardState.trace, boardState.phase) };
-    board.update(boardState); publishTeamActivity(boardState);
+    board.update(boardState);
+    surface.onActivity?.(boardState);
+    if (!background) publishTeamActivity(boardState);
   };
   const push = (event: PiAgentEvent): void => {
     boardState = reduceTeamBoard(boardState, event);
@@ -955,7 +964,7 @@ ${contractReleased.message}`);
       if (boardState.trace) boardState = { ...boardState, trace: activityNote(boardState.trace, name, summary, status, data) };
       board.update(boardState);
       // Do not replace a newer run in the live team rail.
-      if (currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
+      if (!background && currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
     });
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus((villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : "적용 완료");
@@ -1038,7 +1047,7 @@ ${contractReleased.message}`);
   // 로그 카드의 적용/버리기와 작업 탭 검토 스트립이 **같은 클로저**를 부른다 — 두 경로, 한 동작.
   let applying = false;
   let settled = false;
-  const clearReview = (): void => { settled = true; prompt.root.remove(); board.setReview(null); setTeamReviewActions(null); surface.onReviewResolved?.(applied); };
+  const clearReview = (): void => { settled = true; prompt.root.remove(); board.setReview(null); if (!background) setTeamReviewActions(null); surface.onReviewResolved?.(applied); };
   const applyReviewed = (): void => {
     if (applying || settled) return;
     applying = true;
@@ -1076,7 +1085,7 @@ ${contractReleased.message}`);
     onApply: applyReviewed,
     onDiscard: discardReviewed,
   });
-  setTeamReviewActions({
+  if (!background) setTeamReviewActions({
     apply: applyReviewed,
     discard: discardReviewed,
     ...(reviewInput ? { openReport: () => { openWideChangeViewer(reviewInput); } } : {}),

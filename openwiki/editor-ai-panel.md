@@ -3527,6 +3527,31 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 - 실제 칸은 이미 스토어에 있다. 재생은 다음 도구·ACK·입력을 막지 않고 저장·적용 증거가 아니다. 다른 맵으로 옮기면 그 자리에서 끝난다.
   대상 맵 그림이 한 변 4096px 를 넘거나 동작 줄이기·「맵에 시공 보이기」 꺼짐이면 재생하지 않는다.
 
+### 맵별 실행 대기열과 3-way 병합 (`editor/aiMapRunQueue.ts` + `panels/aiMapRunCard.ts` + `project/projectMerge.ts`)
+
+- 왜(사용자 2026-10-03): 「맵당 AI 하나, 맵마다 대기열, 여러 맵에서는 여러 AI 를 동시에. 그래도 충돌이 나면 merge」.
+  예전 채팅은 실행 슬롯이 하나라 두 번째 요청은 「진행 중인 응답이 끝난 뒤 다시 시도하세요」로 버려졌고,
+  실시간 적용은 「출발점 이후 아무것도 안 바뀌었다」를 요구해 다른 맵을 고쳐도 다음 체크포인트가 stale-base 로 거절됐다.
+- **대기열(`aiMapRunQueue.ts`, 모듈 싱글턴):** 실행은 보낸 순간 보고 있던 맵 하나를 잡는다(`mapKey`). 같은 맵은 FIFO, 다른 맵은
+  동시에(최대 `MAP_RUN_CONCURRENCY`=3). 팀 모드·장르 프리셋처럼 맵을 특정할 수 없는 실행은 `exclusive` 로 모든 맵을 잡는다.
+  `force` 는 패널의 앞 턴이 「이미 비어 있음을 확인했다」며 표에만 올리는 자리다 — 같은 맵의 다음 요청이 그 뒤에 줄 서게.
+- **전송(`aiChatPanel.send`):** 앞 턴이 돌고 있거나(`turnBusy`) 그 맵을 다른 실행이 잡고 있으면 거절하지 않고 `enqueueMapRun` 으로 보낸다.
+  그 실행은 채팅 로그의 맵별 카드(`aiMapRunCard`: 맵 이름·대기 사유/앞 수·최근 5단계·조수 말·빼기/중단)를 갖고
+  `runPiCommand(..., { background: true, focus: "visible-only" })` 로 돈다. 비어 있으면 예전처럼 앞 턴(상태줄·작업 카드·캔버스 카드)으로 돈다.
+  보내기 버튼은 도는 중에도 잠기지 않는다 — 입력이 있으면 중단 버튼 옆에 다시 선다(`assistant-deck.part-3.css`).
+- **background 표면:** 팀 보드·검토 단추(`publishTeamActivity`·`setTeamReviewActions`)는 패널 전역 자리라 같이 도는 실행이 건드리지 않는다.
+  `focus: "visible-only"` 는 보고 있는 맵이면 재생·강조만 하고 화면을 다른 맵으로 끌고 가지 않는다(`agentFocus.focusAcceptedAgentChanges`).
+- **병합(`projectMerge.mergeProjectThreeWay`):** 체크포인트·최종 적용은 `applyProposedProject({ rebase: { lineage } })` 를 쓴다. 같은 프로젝트에서
+  내용만 움직였으면 키·타일 칸·`id` 항목 단위로 합친다. 한쪽만 바꾼 값은 그쪽, 같은 자리를 둘 다 바꿨으면 **이미 스토어에 있는 값**을 남기고
+  충돌로 작업 과정에 한 줄(`describeMergeConflicts`). `spatialAuthoring` 은 쪼개지 않는다(계층 증거는 `authorMergedSpatialProposal`).
+- **접기:** 다음 요청을 보내면 직전 턴이 접히는데(`aiConversationLog.markPriorTurns`), 돌거나 기다리는 맵별 카드가 든 턴은 펼친 채 둔다.
+- **QA:** `scripts/qa/map-run-queue.mjs` — 맵1 앞 턴 A, 도는 중 맵2 B(바로 같이), 맵1 C(「이 맵 앞에 1개」 → A 뒤). 세 실행의 칸이 다 남는지 본다.
+  대본 워커는 실제 워커처럼 무거운 키를 빼고(`slimProjectForWire`/`slimDoneEvent`) 해시만 온 blob 은 받아 둔 사본을 쓴다 —
+  프로젝트 통째를 세 실행이 주고받으면 렌더러가 죽었다. 이 상자에서는 `unshare -rn` netns 안에서 dev 서버와 같이 돌린다(ERR_NETWORK_CHANGED).
+  `scripts/qa/village-live-build.mjs` 의 `FOREIGN=1` 은 실행 중 사람 편집과 마을이 둘 다 남는지 본다.
+- 남은 것: 앞 턴 외의 입구(`handleAiAssist` 킥오프·브리지 `pendingSends`)는 아직 표에 오르지 않는다. 다른 맵 실행이 끝나도 그 맵 실행 취소(되돌리기)는
+  스냅숏 하나라 맵별로 갈리지 않는다.
+
 ### 조수창
 
 - `activityTrace`: `checkpoint` 가 오면(워커가 도구 일을 끝낸 순간) 열린 도구 행 요약을 `ACTIVITY_APPLYING_SUMMARY`(「작업 끝 · 맵에 반영 중」)로,

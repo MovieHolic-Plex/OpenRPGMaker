@@ -282,7 +282,8 @@
   opacity: 0.6;
 }
 
-:is(.ai-deck, .ai-studio-composer) .ai-composer-actions:has(.ai-abort-button:not([hidden])) .ai-chat-send {
+/* 도는 중에는 중단이 보내기 자리를 갖는다. 글을 쓰면 보내기가 옆에 다시 선다 — 그 요청은 맵별 대기열로 간다. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions:has(.ai-abort-button:not([hidden])) .ai-chat-send.is-not-ready {
   display: none;
 }
 
