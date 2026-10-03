@@ -1,0 +1,53 @@
+// v5 공통 팔레트 — v5/mat.py 재료 램프 그대로(0 = 가장 어두움). 격자에서는 @mat 글자 램프 / @tblock X Y 램프 로 쓴다.
+// 이 파일은 make_palette.py 가 만든다. 손으로 색을 더하지 마라(검사가 v5 밖 색을 불합격시킨다).
+
+@rampc wood    #000000 #411e05 #63310b #6d3b15 #9a5435 #9e684b #b77246 #d59147 #ffebd7
+@rampc dwood   #1a0e06 #2a180b #3a2210 #4a2c16 #5f3d21 #744e2c #8a6038
+@rampc pine    #3a2410 #5c3e22 #7e5935 #a07448 #ba9262 #d5b17d #f0d098
+@rampc iron    #0e1216 #22282e #363e47 #4a5460 #76808a #a3acb5 #d0d8e0
+@rampc brass   #3a2600 #5c4108 #7e5c10 #a07818 #bfa045 #dfc872 #fff0a0
+@rampc stone   #1d2228 #333942 #49505d #606878 #828a95 #a5adb2 #c8d0d0
+@rampc marble  #4a4a58 #696978 #888898 #a8a8b8 #c3c3cf #dfdfe7 #fbfbff
+@rampc clay    #2a1206 #512712 #783c1f #a0522c #bd764d #da9b6e #f8c090
+@rampc linen   #3a3530 #645c54 #8e8378 #b9ab9d #d0c4b6 #e7ded0 #fff8ea
+@rampc red     #3a0508 #67030c #950110 #c30014 #d73a42 #eb7571 #ffb0a0
+@rampc blue    #0a1a3a #113461 #184e88 #1f68b0 #5491ca #8abae4 #c0e4ff
+@rampc green   #0c2a10 #1b4a1a #2a6a25 #3a8a30 #69ac53 #98ce76 #c8f09a
+@rampc purple  #1e0c38 #371a60 #502988 #6a38b0 #9167ca #b898e4 #e0c8ff
+@rampc yellow  #3a2a00 #6c5408 #9e7e10 #d0a818 #dfc24a #efdd7d #fff8b0
+@rampc orange  #3a1400 #713005 #a84d0a #e06a10 #ea8e3f #f4b370 #ffd8a0
+@rampc pink    #3a0a20 #712643 #a84366 #e0608a #ea8aaa #f4b5cb #ffe0ec
+@rampc teal    #062a2a #0c4c49 #136e68 #1a9088 #4eb5aa #83dacd #b8fff0
+@rampc bread   #3a1a04 #643810 #8e561d #b8742a #cf9851 #e7bd78 #ffe2a0
+@rampc meat    #2a0404 #541012 #7e1c21 #a82830 #c55758 #e28880 #ffb8a8
+@rampc fish    #1a2430 #344655 #4f697a #6a8ca0 #96b0bf #c2d4df #eef8ff
+@rampc gold    #3a2400 #66480a #936c15 #c09020 #d5b152 #ead285 #fff4b8
+@rampc glass   #10283a #234a66 #366d93 #4a90c0 #81b5d5 #b8daea #f0ffff
+@rampc ice     #4a6a80 #698ea5 #88b3ca #a8d8f0 #c5e5f5 #e2f2fa #ffffff
+@rampc straw   #3a2a08 #614c1a #886e2d #b09040 #cab065 #e4d08a #fff0b0
+@rampc leaf    #0c240e #174617 #226820 #2e8a2a #5cac46 #8ace63 #b8f080
+@rampc black   #08080a #131317 #1e1e24 #2a2a32 #41414c #585866 #707080
+@rampc white   #5a5a66 #7e7e8a #a3a3af #c8c8d4 #dadae2 #ececf0 #ffffff
+@rampc cheese  #4a3000 #7c5a10 #ae8520 #e0b030 #eac65a #f4dd85 #fff4b0
+@rampc water   #0a1a3a #143664 #1f538e #2a70b8 #5998cf #88c0e7 #b8e8ff
+
+// 반투명 그림자(방향 B 의 접지 그림자용. 발 칸 안에만, 오른쪽 아래로).
+~ #1c1418 110   // 그림자 속
+- #1c1418 58    // 그림자 번짐
+# #e040c0       // 실루엣 단계 표시색(최종본에 남으면 불합격)
+
+// ---- 실내 칩셋 시트에서 더한 색 128개 (build_merged_palette.py) — 바닥·벽·천장·옛 기물이 쓰는 색 중 v5 에 없는 것
+@rampc s1 #0a0503 #100d0b #110f12 #141315 #201308 #19171a #101e14 #1e1c1a #2a1b0f #1d2128 #24221e #23272c #2b2622 #2e2630 #302a23
+@rampc s2 #2e3137 #36302b #2f343e #373538 #2a3a44 #3e3830 #353c45 #4a3a2c #453f3c #433f46 #4f3f31 #40454f #52473a #524c51 #605654
+@rampc s3 #5b5960 #625e63 #6c5c66 #656159 #596470 #68656a #766e74 #777d86 #86848e #8d8678 #808996 #92979e #a9a193 #a4a2aa #a4aebb
+@rampc s4 #bcb4ba #c4bcac #ccc6ca #d1cdd4 #d1dbc9 #dfd6c6 #efe8db #e8eef4
+@rampc s5 #26050e
+@rampc s6 #3d0a10 #510e15 #611221 #58301e #781126 #7a1a08 #6a3622 #952136 #972129 #8d4d30 #b23b3b #c83a0c #d15d59 #f06a64 #e8867c
+@rampc s7 #371f10 #3c2816 #452a17 #49321c #57391c #5a3c22 #614428 #614e3c #6c4c2a #6c5642 #78522e #70583f #78604a #885e35 #846a52
+@rampc s8 #956b44 #9a6a38 #a96948 #a67440 #b88048 #f07818 #c49e6d #ff9020
+@rampc s9 #795e26 #90702b #8c7554 #9a7931 #a88436 #ac9067 #bc9844 #d4b05c #dcbb86 #e0c89c #ffd040 #f4d8a0
+@rampc s10 #3a4a2a #6e7a63 #9aaa8a #aabb98
+@rampc s11 #083019 #12471e #2e5a2a #2b783d #489559 #509c69 #8a9a83 #75be88 #9ae0a8
+@rampc s12 #103149 #16415f #5083a0 #6fb1ff
+@rampc s13 #2b5897 #4875b2
+@rampc s14 #200e3b #31195a #41247a #583897 #7555b2
