@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **129쪽 / 4434KB / 약 1,282,037 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **129쪽 / 4437KB / 약 1,282,846 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -218,7 +218,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L253` Live editor AI assistant MCP (same UI session)
 - `L272` Refreshing the wiki
 
-### `openwiki/architecture.md` — 10KB · 70줄 · ~2,684 토큰
+### `openwiki/architecture.md` — 11KB · 71줄 · ~2,800 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
@@ -823,7 +823,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L290` Recovered native emote command (2026-09-05)
 - `L294` 패배·엔딩 저작 (2026-09-22)
 
-### `openwiki/editor-genre-packs.md` — 26KB · 179줄 · ~6,679 토큰
+### `openwiki/editor-genre-packs.md` — 28KB · 187줄 · ~7,372 토큰
 
 - `L5` Ownership
 - `L16` Safe blank-project system-preset flow
@@ -831,10 +831,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L52` Playable first segment — code builds it, code judges it (2026-09-28)
 - `L70` Cinematic interview in the actual app (2026-10-03)
   - `L85` Internal execution handoff (2026-10-03)
-- `L93` Vocabulary and readiness
-- `L104` Dialog layering and receipt fixtures (2026-09-08)
-- `L117` Validation
-- `L119` Two new-project surfaces, one choice model (2026-09-11)
+- `L101` Vocabulary and readiness
+- `L112` Dialog layering and receipt fixtures (2026-09-08)
+- `L125` Validation
+- `L127` Two new-project surfaces, one choice model (2026-09-11)
 
 ### `openwiki/editor-interior-room-harness.md` — 98KB · 469줄 · ~28,406 토큰 · 통째읽기 잘림
 

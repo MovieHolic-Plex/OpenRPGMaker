@@ -27,6 +27,6 @@ Screenshots: `01-launcher.png`, `02-first-input.png`, `03-editor-arrival.png`, `
 
 ## Build and limits
 
-Final `npm run build:app`: exit 0, built in 1m 52s. Existing chunk-size, mixed-import and dependency annotation warnings remain.
+Final `npm run build:app` after integrating main `12553359fb` (v0.99.1): exit 0, built in 1m 48s. All 10 browser checks also passed again on this integrated source. Existing chunk-size, mixed-import and dependency annotation warnings remain.
 
 No local vitest, gates or full typecheck were run, following the session's AGENTS restriction. Updated unit/E2E specs and the existing Electron probe were authored but not executed. These browser callbacks make no live AI calls or canonical SQLite writes; this evidence does not establish packaged Electron behavior or save/reload correctness.
