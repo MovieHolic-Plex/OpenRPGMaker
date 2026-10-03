@@ -5,6 +5,25 @@
 
 <!-- releases -->
 
+## 0.105.0 — 2026-10-04
+
+### 기능
+
+- **concept-cards** — 「인형의 방」 개념 카드를 굽는다 (`9eba8da`)
+- **concept-cards** — 「온천탕」 개념 카드를 굽는다 (`0f8d374`)
+- **super-harness** — gate empty space, plain rectangles and borrowed worldview props (`9c44df0`)
+- **super-harness** — seed child concepts, wait on prerequisites, build large concept examples (`5ff5418`)
+- **concept-cards** — 「미궁」 개념 카드를 굽는다 (`28ed4b9`)
+
+### 수정
+
+- **editor** — 버들항 빠른 집에 배치 문장을 넣는다 (`e12efc5`)
+- use native Beodeul parts for quick houses and paved roads (`3996036`)
+
+### 문서
+
+- refresh terrain and Beodeul wiki coordinates (`ef7a930`)
+
 ## 0.104.0 — 2026-10-03
 
 ### 기능
