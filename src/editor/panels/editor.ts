@@ -980,6 +980,10 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
   // editorState 발 새로고침이 프로젝트 전체 점검을 다시 돌리지 않는다.
   const versionToken = store.getVersionToken();
   const documentKey = `${versionToken.lineage}:${versionToken.generation}`;
+  // 칸·높이 칠하기는 참조를 바꾸지 않는다. 그런데 칠하기마다 store 세대가 올라 문서 키가 늘 달라지므로, 키만 보면
+  // 붓 표본마다 프로젝트 전체 점검(100×100 마을 기준 표본당 수 ms~수십 ms)을 다시 돌렸다(2026-10-03 높이 붓 렉 실측) — 키만 따라간다.
+  const paintOnly = change?.scope === "map" && Boolean(change.cells?.length || change.relief);
+  if (paintOnly && authoringJourneyReferenceIssues !== null) authoringJourneyIssuesDocumentKey = documentKey;
   if (
     authoringJourneyReferenceIssues === null ||
     documentKey !== authoringJourneyIssuesDocumentKey ||
