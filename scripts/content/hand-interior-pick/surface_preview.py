@@ -24,8 +24,8 @@ def furnish(im, genre):
             tile = SHEET.crop(((t % 48) * 16, (t // 48) * 16, (t % 48) * 16 + 16, (t // 48) * 16 + 16))
             im.alpha_composite(tile, ((ox + dx) * 16, (oy + dy) * 16))
     return im
-PARTNER_WALL = {'modern': 'w_white_a', 'east': 'w_hanji_a', 'sf': 'w_sf_a'}
-PARTNER_FLOOR = {'modern': 'herring_a', 'east': 'jangpan_a', 'sf': 'sfdeck_a'}
+PARTNER_WALL = {'modern': 'w_wallpaper_a', 'east': 'w_hanji_a', 'sf': 'w_sf_a'}
+PARTNER_FLOOR = {'modern': 'herring_a', 'east': 'maru_b', 'sf': 'sfdeck_b'}
 CEIL = {'modern': 'pale', 'east': 'lacquer', 'sf': 'navy'}
 for fa, fb in T6.FLOOR_CANDS.values():
     TL.FLOORFN[fa.__name__] = fa; TL.FLOORFN[fb.__name__] = fb

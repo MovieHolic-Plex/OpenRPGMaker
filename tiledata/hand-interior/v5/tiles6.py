@@ -52,12 +52,10 @@ def lino_b(x,y,seed=103):
     return HV[4]
 CT=R_('#161c27','#1f2735','#283244','#313c50','#3b475d','#4a576e')
 def carpet_a(x,y,seed=105):
-    # office carpet tiles 16x16: corded ridges every 2 px, ridge direction turns 90 degrees tile by tile
+    # office carpet tiles 16x16: low corded ridges every 4 px, ridge direction turns 90 degrees tile by tile
     lx,ly=x%16,y%16; turn=((x//16)+(y//16))%2; a=ly if turn else lx
-    b=2+(a%2)+(1 if H(x//16,y//16,seed)<0.4 and a%2 else 0)
-    r=H(x,y,seed+1)
-    if r<0.06: b+=1
-    elif r<0.10: b-=1
+    b=3 if H(x//16,y//16,seed)<0.5 else 2
+    if a%4==0: b+=1
     if (lx==15 or ly==15) and (x+y)%2: b-=1                       # tile seam, half visible
     return P(CT,b)
 HC=R_('#0d2224','#163536','#1d4243','#244c4c','#5e5030','#7a6a3e','#4e1820','#6a2a30')
@@ -78,13 +76,13 @@ def wtile_a(x,y,seed=109):
     if lx==0 or ly==0: return GZ[5]
     if (lx,ly)==(1,1): return GZ[6]
     return GZ[4] if H(x//8,y//8,seed)<0.8 else GZ[3]
-OC=R_('#5c6670','#8a959e','#b9c2c8','#cbd2d7','#d9dfe3','#e8ecee','#163a64','#2e5f96','#7ea6d4')
+OC=R_('#5c6670','#8a959e','#b9c2c8','#cbd2d7','#d9dfe3','#e8ecee','#3e5470','#5f7896','#8aa0b8')
 def wtile_b(x,y,seed=111):
     # octagon-and-dot: white octagons 16x16 with a blue square-on-point cabochon where four tiles meet
     lx,ly=(x+8)%16,(y+8)%16                                       # (8,8) = tile corner = cabochon centre
     d=abs(lx-8)+abs(ly-8)
     if d<=3:
-        if d==3: return OC[0]
+        if d==3: return OC[1]
         return OC[8] if (lx,ly)==(7,7) else (OC[7] if lx+ly<16 else OC[6])
     tx,ty=x%16,y%16
     if tx==15 or ty==15: return OC[1]
@@ -131,13 +129,15 @@ def concrete_a(x,y,seed=117):
     return CN[4]
 EP=R_('#262e38','#3a4552','#4e5a68','#596675','#647282','#748394','#93a2b2')
 def concrete_b(x,y,seed=119):
-    # epoxy resin floor: 64-px pours, flat colour, one soft diagonal gloss band (2 px core + 1 px fringe) per pour
+    # epoxy resin floor: 64-px pours with a bevelled edge, flat colour, a soft diagonal gloss band on half the pours
     lx,ly=x%64,y%64
-    if lx==63 or ly==63: return EP[2]
-    if lx==0 or ly==0: return EP[4]
-    k=(lx+ly-20-_i(H(x//64,y//64,seed),60))%128
-    if k in (0,1): return EP[5]
-    if k in (2,127): return EP[4]
+    if lx==63 or ly==63: return EP[1]
+    if lx==62 or ly==62: return EP[2]
+    if lx==0 or ly==0: return EP[5]
+    if ((x//64)+(y//64))%2==0:
+        k=(lx+ly-20-_i(H(x//64,y//64,seed),60))%128
+        if k in (0,1): return EP[5]
+        if k in (2,127): return EP[4]
     return EP[3]
 TM=R_('#3f4520','#5f672e','#7c843b','#8a9244','#979f4e','#a7ae5c','#c0c477')
 TN=R_('#3c4a22','#5a6c30','#78903e','#86a046','#93ad50','#a3bd5e','#bfd27c')
@@ -179,7 +179,7 @@ def jangpan_b(x,y,seed=127):
     if lx==0 and ly<7: t-=1
     if H((x+off)//6,y,seed+2)<0.12: t-=1
     return P(MN,min(t,6))
-MR=R_('#26180c','#3d2814','#52361c','#614023','#704b2a','#815933','#9a6e42')
+MR=R_('#3a2414','#4f3320','#6a4628','#7a5636','#87613d','#986f47','#b08454')
 MP=R_('#5a4628','#7e6440','#a08254','#b1915e','#bd9d68','#c9a96f','#dcc08a')
 def _maru(x,y,R,seed,bh):
     # woomul-maru: jang-gwitle beams every 32 px (5 px, bevelled) and short boards (bh px) spanning between them
@@ -228,8 +228,8 @@ def sfdeck_b(x,y,seed=135):
     if e==2: return WS[0]
     if e==-1: return WS[2]
     if e==1: return WS[5]
-    if (lx,ly) in ((3,7),(28,7)): return WS[2]
-    if (lx,ly) in ((3,6),(28,6)): return WS[6]
+    if (x//32)%2 and (lx,ly) in ((3,7),(28,7)): return WS[2]
+    if (x//32)%2 and (lx,ly) in ((3,6),(28,6)): return WS[6]
     return WS[4] if ly<8 else WS[3]
 BS=R_('#1e242c','#2f3740','#3f4853','#4a5460','#55606c','#636e7b','#7a8693')
 def bluestone_a(x,y,seed=137):
@@ -302,7 +302,6 @@ def w_wallpaper_b(X,fy):
     if min(abs(lx-8-w),abs(lx-8+w))<0.7: return DR[5]
     c=fy%16
     if lx==8 and 2<=c<=6: return DR[1]
-    if abs(lx-8)==1 and c in (3,4): return DR[1]
     return DR[3]
 WH=R_('#6c6e71','#9a9c9f','#bdbfc1','#cfd0d0','#dcdcdb','#e7e7e5','#f3f3f1')
 def w_white_a(X,fy):
@@ -312,12 +311,15 @@ def w_white_a(X,fy):
     return WH[5]
 SC=R_('#244232','#355c45','#467656','#518462','#5d936e','#79ad88','#e4e0d2','#d2cebf','#bfbaab','#181818','#3a3a3a')
 def w_white_b(X,fy):
-    # school / clinic: cream paint above, flat gloss green oil-paint dado with one highlight row, black rubber skirting
+    # school / clinic: cream painted board panels (seam every 32 px), flat gloss green oil-paint dado with one
+    # highlight row, black rubber skirting
     if fy>=27: return SC[10] if fy==27 else SC[9]
     if fy==14: return SC[0]
     if fy==15: return SC[5]
     if fy>=16: return SC[4] if fy==18 else (SC[3] if fy<23 else SC[2])
     if fy<2: return [SC[8],SC[6]][fy]
+    if X%32==31: return SC[8]
+    if X%32==0: return R_('#f2f0e6')[0]
     return SC[6]
 TT=R_('#7a8288','#9ea6ac','#c2c8cc','#d3d8db','#e1e5e7','#eef1f2','#fafbfb')
 def w_tile_a(X,fy):
@@ -328,7 +330,7 @@ def w_tile_a(X,fy):
     if lx==7 or ly==7: return TT[2]
     if lx==0 or ly==0: return TT[5]
     if (lx,ly)==(1,1): return TT[6]
-    return TT[4]
+    return TT[3] if H(X//8,(fy-5)//8,233)<0.22 else TT[4]
 MT=R_('#4a6a62','#6e8f86','#94b3a9','#a6c3b9','#b6d1c7','#c8ded6','#e2f0eb','#e6e2d6','#d6d1c3')
 def w_tile_b(X,fy):
     # metro tiles 8x4 in a running bond below, painted plaster above, a dark-green border course between
@@ -428,10 +430,14 @@ def w_lacquer_a(X,fy):
         return [LQ[1],LQ[3],LQ[5],LQ[6],LQ[4],LQ[3],LQ[2],LQ[0]][lx-1]
     if fy<3: return AR[fy]
     if lx in (0,9) or fy==3: return PL[2]
+    if 6<=fy<=23 and 12<=lx<=61:                                  # recessed plaster panel between the columns
+        if (lx==12 or fy==6): return PL[2]
+        if (lx==61 or fy==23): return PL[5]
     return PL[4]
 DC=R_('#0e2a22','#17463a','#246a55','#3a9277','#7cc7a8','#e8e4d4')
 RD=R_('#6a140e','#a8261a','#d84a2a','#f4a050','#ffe08a')
 BL=R_('#14284e','#244a8a','#4a78c0')
+LO=R_('#7a2018','#b8443a','#c09040')
 PW=R_('#1c110a','#2e1d10','#432a17','#55361e','#664126','#7a4f2e','#9a6a40')
 def w_lacquer_b(X,fy):
     # dancheong band (meori-cho: graded green bands, red lotus with a gold heart, blue buds), a whitewash strip, then a
@@ -442,10 +448,9 @@ def w_lacquer_b(X,fy):
         if fy in (0,9): return DC[0]
         if fy in (1,8): return DC[5]
         c=abs(lx-15.5); d=c+abs(fy-4.5)*1.4
-        if d<1.6: return RD[4]
-        if d<3.0: return RD[3]
-        if d<4.6: return RD[2]
-        if d<6.0: return RD[1]
+        if d<1.6: return LO[2]
+        if d<3.0: return LO[1]
+        if d<4.6: return LO[0]
         if c>12 and 3<=fy<=6: return BL[2] if fy in (3,4) else BL[1]
         return [DC[1],DC[2],DC[3],DC[4],DC[3],DC[2]][(fy-2)%6]
     if fy<=15: return PL[2] if fy==10 else PL[4]
@@ -460,23 +465,45 @@ def w_lacquer_b(X,fy):
     return PW[4] if ly<5 else PW[3]
 SF=R_('#090c10','#11161c','#1a2027','#232b33','#2d3640','#3a4550','#55636f')
 LED=R_('#c83030','#3ac060','#e8b030')
+SG=R_('#0e1218','#1a2029','#262e3a','#323c4a','#3f4a5a','#4e5a6c','#66748a','#8494aa')
+SCR=R_('#0a1a14','#2a8a5a','#7cf0a8')
+SL6=R_('#1f5a62','#3aa0ac')
 def w_sf_a(X,fy):
-    # dark hull panels 32 wide: bevel, a cyan light strip with a halo, a louvred vent, status LEDs, metal kickplate
-    if fy>=29: return [SF[5],SF[3],SF[1]][fy-29]
-    lx=X%32
-    if fy in (7,8,9): return [CY[1],CY[3],CY[1]][fy-7] if lx!=31 else SF[1]
-    if fy in (6,10): return CY[0]
-    if lx==31: return SF[0]
-    if lx==30: return SF[1]
-    if lx==0: return SF[5]
-    if fy==15: return SF[0]
-    if fy==16: return SF[4]
-    if 19<=fy<=26 and 6<=lx<=25:
-        if lx in (6,25) or fy in (19,26): return SF[1]
-        return SF[4] if fy%2 else SF[1]
-    if fy==12 and lx in (4,6) and H((X//32)%2,lx,231)<0.6: return LED[_i(H((X//32)%2,lx,229),3)]
-    if (lx,fy) in ((2,2),(28,2),(2,13),(28,13)): return SF[6]
-    return P(SF,dq(3.6-0.8*fy/28,X,fy))
+    # dark starship wall, rebuilt after the user rejected the neon-stripe version (2026-10-03): a protruding riveted rib
+    # every 64 px frames each bay; the cyan light is a short inset slot inside the bay (never crossing the rib); the bay
+    # is two bevelled panels split by a recessed groove; the lower panel carries one vent and one small status screen
+    # instead of identical vents + scattered LEDs; a kickplate below. Mid blue-grey so it separates from the dark deck.
+    lx=X%64
+    if fy>=28: return [SG[6],SG[2],SG[2],SG[0]][fy-28]
+    if fy<2: return [SG[1],SG[6]][fy]
+    if lx<6:                                                      # rib
+        if fy in (4,14,24) and lx in (2,3): return SG[7] if lx==2 else SG[1]
+        return [SG[0],SG[6],SG[5],SG[4],SG[3],SG[1]][lx]
+    if lx==6: return SG[1]                                        # rib shadow on the bay
+    if fy==12: return SG[1]                                       # recessed groove
+    if fy==13: return SG[5]
+    if fy<12:                                                     # upper panel rows 2..11
+        if 22<=lx<=41 and 6<=fy<=8:                               # short inset light slot, muted
+            if fy==7: return SL6[1] if 23<=lx<=40 else SL6[0]
+            return SL6[0] if 23<=lx<=40 else SG[1]
+        if fy in (5,9) and 22<=lx<=41: return SG[1]
+        if fy==2: return SG[5]
+        if fy==11: return SG[2]
+        return SG[4]
+    ly=fy-14                                                      # lower panel rows 14..27
+    if lx in (35,): return SG[1]
+    if lx==36: return SG[5]
+    if lx==34 or fy==27: return SG[2]
+    if 41<=lx<=58 and 3<=ly<=10:                                  # vent
+        if lx in (41,58) or ly in (3,10): return SG[1]
+        return SG[5] if ly%2 else SG[0]
+    if 11<=lx<=24 and 3<=ly<=7:                                   # status screen
+        if lx in (11,24) or ly in (3,7): return SG[1]
+        if ly==5 and 13<=lx<=19: return SCR[2]
+        if ly in (4,6) and 13<=lx<=16+(lx%3): return SCR[1]
+        return SCR[0]
+    if (lx,ly)==(26,4): return LED[2]
+    return SG[3]
 SW=R_('#4b535b','#737b84','#99a1a9','#afb6bc','#c1c7cc','#d1d6da','#e2e6e9','#f1f3f4')
 OR=R_('#7a3008','#c8581a','#f08a3a','#ffc080')
 def w_sf_b(X,fy):
@@ -524,3 +551,7 @@ CUT={('parquet','b'),('tatami','b'),('jangpan','b'),('concwall','b')}
 #   lino_b reads as mossy carpet   concrete_a reads as asphalt, dupes bluestone_a   jangpan_a reads as sandstone blocks
 #   bluestone_b patchwork of random brick tones   concwall_a reads as riveted steel, confused with the SF walls
 CUT|={('lino','b'),('concrete','a'),('jangpan','a'),('bluestone','b'),('concwall','a')}
+# round 3 (reviewers told the owner rejected the neon SF wall, so: no neon, no identical repeats, no flat featureless)
+#   wtile_a same value as the white walls, blurs   sfdeck_a neon dashes on every plate   whitewall_a flat featureless
+#   sfwall_b full-width orange stripe + identical vents
+CUT|={('wtile','a'),('sfdeck','a'),('whitewall','a'),('sfwall','b')}
