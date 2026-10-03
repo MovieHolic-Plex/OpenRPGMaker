@@ -256,6 +256,12 @@ class Fit:
             raise FitError('wall 선이 시작 대륙을 둘로 가르지 못한다 — 해안에서 해안까지 그어라')
         sz = sorted([(int((lab == i).sum()), i) for i in range(1, n + 1)], reverse=True)
         A, B = lab == sz[0][1], lab == sz[1][1]
+        ap = self.ov.get('a_pole')
+        if ap is not None:                                  # 지리 구조: 1막 쪽(반도)을 정해 준다 — 큰 쪽(만주)이 1막이 되지 않게
+            ia = int(lab[int(ap[1]), int(ap[0])])
+            if ia and ia != sz[0][1]:
+                B = lab == sz[0][1]
+                A = lab == ia
         if self.start in self.pins:
             sx, sy = self.pins[self.start]
             if B[sy, sx]:
@@ -398,8 +404,13 @@ class Fit:
             ys, xs = np.nonzero(A)
             px, py = self.ov['dune_pole']
             i = int(np.argmin((xs - px) ** 2 + (ys - py) ** 2))
-            gp = geodesic(A, [(int(xs[i]), int(ys[i]))])
-            tot = int(self.home.sum())
+            Ad = A
+            if self.ov.get('dune_coast'):                   # 해안을 따라 붙는 띠(갯벌) — 반도를 가로질러 퍼지지 않게
+                Ad = A & (self.dco <= float(self.ov['dune_coast']))
+                ys, xs = np.nonzero(Ad)
+                i = int(np.argmin((xs - px) ** 2 + (ys - py) ** 2))
+            gp = geodesic(Ad, [(int(xs[i]), int(ys[i]))])
+            tot = int(self.home.sum()) if not self.ov.get('wall') else int(A.sum() * .75)   # 손으로 그은 산벽이면 2막 땅이 아주 클 수 있다 — 1막 땅 기준(사구가 반도 절반을 덮었다)
             Ds = []
             for frac in (.15, .19, .12, .24):
                 vals = np.sort(gp[A & np.isfinite(gp)])

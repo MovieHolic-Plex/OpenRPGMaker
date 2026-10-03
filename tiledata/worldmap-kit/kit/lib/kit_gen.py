@@ -23,13 +23,17 @@ import scipy.ndimage as ndi
 import make_map_v4 as M4
 
 W, H = M4.W, M4.H
-STYLES = ('blobs', 'shards', 'ring', 'pangaea', 'archipelago', 'galaxy', 'peninsula', 'river-continent', 'arc-islands')
+STYLES = ('blobs', 'shards', 'ring', 'pangaea', 'archipelago', 'galaxy', 'peninsula', 'river-continent', 'arc-islands', 'korea')
 DEFAULT = {'blobs': dict(count=4, land=.42), 'shards': dict(count=12, land=.44), 'ring': dict(count=3, land=.40),
            'pangaea': dict(count=6, land=.50), 'archipelago': dict(count=24, land=.36), 'galaxy': dict(count=12, land=.36),
-           'peninsula': dict(count=10, land=.40), 'river-continent': dict(count=4, land=.52), 'arc-islands': dict(count=6, land=.36)}
-GEO = ('peninsula', 'river-continent', 'arc-islands')   # 지리 구조: 땅 모양이 정해져 있고 land 는 섬·바다 몫만 조금 바꾼다
+           'peninsula': dict(count=10, land=.40), 'river-continent': dict(count=4, land=.52), 'arc-islands': dict(count=6, land=.36),
+           'korea': dict(count=0, land=.40)}
+GEO = ('peninsula', 'river-continent', 'arc-islands', 'korea')   # 지리 구조: 땅 모양이 정해져 있고 land 는 섬·바다 몫만 조금 바꾼다
 HOME_GAP = 4.6          # 시작 대륙과 다른 땅 사이 바다(배 장벽 4칸 이상)
 GAP = 2.2               # 다른 땅끼리
+
+
+EDGE_LAND = [False]
 
 
 class GenError(ValueError):
@@ -71,8 +75,9 @@ def clean_land(land, min_land=10, min_lake=8):
         for i, s in enumerate(sz):
             if s < min_lake:
                 land[lab == i + 1] = True
-    land[0, :] = land[-1, :] = False                 # 지도 끝 한 줄은 바다(섬이 잘려 보이지 않게)
-    land[:, 0] = land[:, -1] = False
+    if not EDGE_LAND[0]:                             # 실제 지리 실루엣(korea)은 대륙이 지도 밖으로 이어진다
+        land[0, :] = land[-1, :] = False                 # 지도 끝 한 줄은 바다(섬이 잘려 보이지 않게)
+        land[:, 0] = land[:, -1] = False
     return land
 
 
@@ -134,10 +139,11 @@ def gen_land(style='blobs', count=None, land=None, seed=1):
     d = DEFAULT[style]
     count = int(count if count is not None else d['count'])
     land = float(land if land is not None else d['land'])
-    if not 1 <= count <= 40:
+    if not (0 if style == 'korea' else 1) <= count <= 40:
         raise GenError('continents count 는 1~40')
     if not .2 <= land <= .7:
         raise GenError('continents land(땅 비율)는 0.2~0.7')
+    EDGE_LAND[0] = False
     rng = np.random.default_rng(int(seed) * 7919 + STYLES.index(style))
     salt = 3000 + (int(seed) * 131) % 90000
     target = land * W * H
@@ -147,6 +153,7 @@ def gen_land(style='blobs', count=None, land=None, seed=1):
     else:
         fn = {'blobs': _blobs, 'shards': _shards, 'ring': _ring, 'pangaea': _pangaea, 'archipelago': _archipelago, 'galaxy': _galaxy}[style]
     m, info = fn(rng, salt, count, target)
+    EDGE_LAND[0] = bool(info.get('edge_land'))
     m = clean_land(m)
     if style != 'galaxy':                            # 배로 갈 땅(3막)이 모자라면 바깥 섬을 띄운다 — 「대륙 하나」도 여정이 서게
         lab, n = comps(m)
@@ -812,6 +819,11 @@ def generate(spec, journey, salt=0):
         ov['wall_pole'] = hints['pole']
     if hints.get('dune') and 'dune_sea' not in ov:
         ov['dune_pole'] = hints['dune']
+    if hints.get('dune_coast'):
+        ov['dune_coast'] = hints['dune_coast']
+    if hints.get('wall') and 'wall' not in ov:            # 실제 국경(압록강·두만강)을 산벽으로
+        ov['wall'] = hints['wall']
+        ov['a_pole'] = hints.get('a_pole')
     lay = None
     for avoid in (guide['avoid'], guide['avoid_rivers'], None):     # 척추·강을 비켜 놓다가 자리가 없으면 강만, 그래도 없으면 비키지 않는다
         try:
@@ -825,7 +837,7 @@ def generate(spec, journey, salt=0):
             len(guide['spines']), len(guide['rivers']), '' if lay.get('avoid') is guide['avoid'] else ' (자리가 모자라 일부는 장소에 끊긴다)'))
     land = lay['land']
     G[~land] = M4.SEA
-    _decorate(G, land, lay, journey, seed, space=space)
+    _decorate(G, land, lay, journey, seed, space=space, rim=hints.get('dune_rim'))
     if not space:
         _harmonize(G, land, lay)
     feat = KS.space_features(land, G, lay, info['systems'], seed) if space else features(land, G, lay, clim, seed, guide)
@@ -910,13 +922,14 @@ def _snow_peaks(cx, cy, r, lay, land, D, salt):
             return
 
 
-def _decorate(G, land, lay, journey, seed, space=False):
+def _decorate(G, land, lay, journey, seed, space=False, rim=None):
     """배치에 맞춰 바닥을 손본다: 사구 바다·둘레 모래, 장소 바닥 무리(눈 마을 둘레 눈밭 …), 화산재, 길 자리의 빙하."""
     s = 8000 + (int(seed) * 97) % 90000
     D = lay['dune']
     if D.any():
         G[D] = M4.DUNE
-        rim = land & ~D & (ndi.distance_transform_edt(~D) <= 2.2 + 2.2 * fbm(4, s))
+        rw = (2.2, 2.2) if rim is None else rim               # 지리 구조가 좁은 땅이면 둘레 모래를 얇게(반도 남쪽이 통째로 모래가 됐다)
+        rim = land & ~D & (ndi.distance_transform_edt(~D) <= rw[0] + rw[1] * fbm(4, s))
         G[rim & ~np.isin(G, (M4.SNOW, M4.GLACIER, M4.TUNDRA))] = M4.SAND
         G[rim & np.isin(G, (M4.SNOW, M4.GLACIER, M4.TUNDRA))] = M4.DIRT
     P = {p['id']: p for p in journey['places']}

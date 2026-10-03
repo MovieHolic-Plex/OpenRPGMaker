@@ -47,8 +47,8 @@ const opSchema: JsonSchema = {
     what: { type: "string", enum: ["forest", "mount", "all"], description: "clear: 걷을 물체" },
     level: { type: "integer", enum: [1, 2], description: "plateau 높이" },
     id: { type: "string", description: "move_place: 장소 id(read_world_terrain 의 places)" },
-    style: { type: "string", enum: [...WORLDMAP_STYLES], description: "continents: 대륙 구조 — blobs 덩이 대륙 · shards 조각난 대륙 · ring 고리 대륙 · pangaea 초대륙+섬 · archipelago 군도 · galaxy 우주(성계·공허) · peninsula 반도(조선: 북쪽 대륙+반도, 동쪽 척추 산줄기, 서쪽으로 흐르는 강, 동쪽 섬나라) · river-continent 강 문명 대륙(중국·무협: 서쪽 설산 고원, 북쪽 사막, 서→동 큰 강 둘) · arc-islands 열도(일본·전국: 휜 본섬+북·남 섬, 건너편 대륙 끝)" },
-    count: { type: "integer", description: "continents: 땅 덩이 수 1~40(shards 면 조각 수, galaxy 면 성단 수, peninsula·river-continent·arc-islands 면 앞바다 작은 섬 수)" },
+    style: { type: "string", enum: [...WORLDMAP_STYLES], description: "continents: 대륙 구조 — blobs 덩이 대륙 · shards 조각난 대륙 · ring 고리 대륙 · pangaea 초대륙+섬 · archipelago 군도 · galaxy 우주(성계·공허) · peninsula 반도(조선: 북쪽 대륙+반도, 동쪽 척추 산줄기, 서쪽으로 흐르는 강, 동쪽 섬나라) · river-continent 강 문명 대륙(중국·무협: 서쪽 설산 고원, 북쪽 사막, 서→동 큰 강 둘) · arc-islands 열도(일본·전국: 휜 본섬+북·남 섬, 건너편 대륙 끝) · korea 실제 한반도 윤곽(위·경도로 옮긴 한반도·요동·만주·일본 열도·제주 — 시드는 해안 굽이만 바꾼다)" },
+    count: { type: "integer", description: "continents: 땅 덩이 수 1~40(shards 면 조각 수, galaxy 면 성단 수, peninsula·river-continent·arc-islands 면 앞바다 작은 섬 수, korea 는 0)" },
     land: { type: "number", description: "continents: 땅 비율 0.2~0.7" },
     seed: { type: "integer", description: "continents·climate: 같은 구조의 다른 모양(정수)" },
     wet: { type: "number", description: "climate: -1(건조)~1(습윤)" },
@@ -65,7 +65,7 @@ const OP_HELP =
   + "river{line,widen?} 강(바다로 끝낼 것) · forest{poly,kind?,density?} · clear{poly,what?} 숲·산 걷기 · "
   + "plateau{poly,level?,ground?} 고원(절벽이 생긴다) · volcano{x,y,lava?} 화산(분화구+고리, 반지름 4칸 땅 필요) · move_place{id,x,y} 장소 옮기기. "
   + "새 대륙 구조(base=\"generate\", 기존 대륙을 버리고 빈 판에서): 첫 작업 continents{style?,count?,land?,seed?} — 「20조각 대륙」 = continents{style:shards,count:20}, "
-  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy, 조선·한반도 = peninsula, 중국·무협 = river-continent, 일본·전국 = arc-islands (이 셋은 땅 모양·척추 산줄기·큰 강·사막 자리·2막 방향까지 그 지리를 닮게 정해진다 — 실제 지도를 따라 그리지 않는다). climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다 — "
+  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy, 조선·한반도 = korea(실제 한반도 모양, 가상 반도를 원하면 peninsula), 중국·무협 = river-continent, 일본·전국 = arc-islands (이 셋은 땅 모양·척추 산줄기·큰 강·사막 자리·2막 방향까지 그 지리를 닮게 정해진다 — korea 만 실제 지도 윤곽이고 나머지는 닮은꼴 생성). climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다 — "
   + "결과의 layout.regions(a 1막 · b 2막 · w 산벽 · d 사구 바다 · s 배로 가는 땅)를 보고 그 위에 다른 작업을 얹어라. 손으로 정하려면 wall{line,gate?}(산벽) · dune_sea{poly} · sky_island{x,y} · move_place(고정). "
   + "generate 에서 land·sea·island 는 맞춤 전에 구조에 접힌다. "
   + `바닥 이름→글자: grass . farm f crop p savanna v sand s dune d dirt D badlands b ash a basalt B swamp w marsh m tundra t snow n glacier g jungle j. `
