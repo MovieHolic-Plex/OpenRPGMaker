@@ -18,7 +18,7 @@ import water_blob as WB
 import people as PP
 import fld_map as FM
 from fld_map import Kit
-from fld_shapes import vnoise, organic, smooth, curve_cells
+from fld_shapes import vnoise, organic, smooth, curve_cells, squircle
 
 ROOT = FM.ROOT
 OUT = os.environ.get('JS_OUT') or os.path.join(ROOT, 'tiledata', 'joseon-cave')
@@ -41,24 +41,26 @@ def rect(x0, y0, x1, y1):
 
 
 # ================================================================ 1단계: 방·복도 (걸을 칸)
-E_HALL = organic(24, 40.8, 5.3, 3.3, 1, amp=(0.10, 0.07, 0.04), bounds=B)       # 입구 방: 가로로 퍼진 둥근 홀
+# 바깥 암반 여백: 바닥은 x4..43, y6.. 안(어느 쪽으로도 4칸 이상 암반). 입구만 아래 가장자리로 뚫린다.
+E_HALL = squircle(24, 40.6, 6.0, 3.7, 1, n=4.0, amp=0.08, bounds=B)                  # 입구 방: 가로로 퍼진 네모난 홀
 LIT = rect(21, 44, 26, 47)                                                      # 햇빛 문턱(6칸 폭, 양쪽은 암벽 문설주)
-P_ROOM = organic(24, 22.2, 11.3, 8.0, 2, amp=(0.10, 0.08, 0.05), bounds=B)      # 광장
-R3 = organic(24, 6.2, 5.0, 3.1, 3, amp=(0.10, 0.06, 0.04), bounds=B)            # 보물방
-R1 = organic(6.4, 25.2, 4.4, 4.6, 4, amp=(0.12, 0.08, 0.05), bounds=B)          # 서방(광산)
-R2 = organic(41.4, 23.6, 4.3, 4.7, 5, amp=(0.12, 0.08, 0.05), bounds=B)         # 동방(소굴)
+P_ROOM = squircle(24, 23.2, 9.6, 7.0, 2, n=4.2, amp=0.10, bounds=B) | organic(18.5, 18.6, 4.6, 3.2, 12, amp=(0.10, 0.06, 0.04), bounds=B)   # 광장(북서쪽이 불룩)
+R3 = squircle(24, 10.2, 4.6, 3.0, 3, n=2.6, amp=0.08, bounds=B)                 # 보물방
+R1 = squircle(8.6, 25.6, 4.3, 4.4, 4, n=3.4, amp=0.10, bounds=B)                # 서방(광산)
+R2 = squircle(39.4, 21.4, 4.0, 4.3, 5, n=3.4, amp=0.14, bounds=B)         # 동방(소굴): 둥글고 크기가 다르다
+R4 = squircle(38.4, 35.6, 4.2, 3.4, 6, n=3.4, amp=0.10, bounds=B)               # 동남 막다른 방(샘이 솟는 수정 굴)
 CORR = {
-    'N': curve_cells([(24, 38), (24, 34), (24, 30)], 3, bounds=B),               # 입구 방 → 광장
-    'TR': curve_cells([(24, 14), (24, 10), (24, 7)], 3, bounds=B),               # 광장 → 보물방
-    'W1': curve_cells([(10, 25), (13, 25), (15, 24)], 3, bounds=B),              # 광장 ↔ 서방
-    'E1': curve_cells([(38, 23), (34, 23), (32, 23)], 3, bounds=B),              # 광장 ↔ 동방
-    'WR': curve_cells([(6, 29), (6, 34), (8, 38), (13, 41), (19, 41)], 3, bounds=B),       # 서방 → 입구 방(고리 서쪽)
-    'ER': curve_cells([(41, 28), (41, 34), (39, 38), (34, 41), (29, 41)], 3, bounds=B),    # 동방 → 입구 방(고리 동쪽)
+    'N': curve_cells([(23, 36), (25, 33), (24, 30)], 4, bounds=B),               # 입구 방 → 광장(넓은 통로, 살짝 휨)
+    'TR': curve_cells([(24, 16), (24, 14), (24, 12)], 3, bounds=B),              # 광장 → 보물방
+    'W1': curve_cells([(11, 24), (14, 25), (17, 25)], 3, bounds=B),              # 광장 ↔ 서방
+    'E1': curve_cells([(33, 22), (35, 21), (37, 21)], 2, bounds=B),              # 광장 ↔ 동방(좁은 길목)
+    'WR': {(x, y) for x in (8, 9) for y in range(28, 42)} | {(x, y) for x in range(8, 19) for y in (40, 41)},       # 서방 → 입구 방(고리 서쪽, 좁은 ㄴ자 한 번 꺾임)
+    'ER': curve_cells([(39, 25), (40, 28), (38, 31)], 3, bounds=B),              # 동방 → 막다른 수정 굴
 }
-FLOOR = set(E_HALL) | LIT | P_ROOM | R3 | R1 | R2
+FLOOR = set(E_HALL) | LIT | P_ROOM | R3 | R1 | R2 | R4
 for v in CORR.values():
     FLOOR |= set(v)
-FLOOR = {c for c in FLOOR if inb(*c)}
+FLOOR = {c for c in FLOOR if inb(*c) and (c[1] >= 44 or (4 <= c[0] <= 43 and c[1] >= 6))}
 FLOOR = (smooth(FLOOR, 1, B) | LIT) & {(x, y) for x in range(MW) for y in range(MH)}      # 1칸 홈·가시를 다수결로 다듬는다(문턱 LIT 는 그대로)
 
 
@@ -80,9 +82,9 @@ for _ in range(6):                                                    # 이웃 �
     stub = {(x, y) for (x, y) in FLOOR if (x, y) not in LIT and sum(1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if (x + dx, y + dy) in FLOOR) <= 1}
     if not stub: break
     FLOOR -= stub
-POOL = {c for c in organic(19.4, 22.8, 3.3, 2.2, 7, lobes=(2, 3, 5), amp=(0.22, 0.14, 0.08), bounds=B) if c in P_ROOM}
-POOL |= {c for c in organic(41.2, 25.4, 1.7, 1.4, 8, lobes=(2, 3), amp=(0.2, 0.1), bounds=B) if c in R2}
-POOL = smooth(POOL, 1, B)
+POOL = {c for c in squircle(20.8, 23.4, 3.7, 2.7, 7, n=2.2, amp=0.20, bounds=B) if c in P_ROOM}
+POOL |= {c for c in squircle(38.5, 35.8, 2.7, 1.9, 8, n=2.2, amp=0.18, bounds=B) if c in R4}
+POOL = smooth(POOL, 2, B)
 POOL = {c for c in POOL if all((c[0] + dx, c[1] + dy) in FLOOR for dx in (-2, 0, 2) for dy in (-2, 0, 2))}   # 못은 벽에서 두 칸 떨어진다
 
 for (x, y) in FLOOR:
@@ -102,6 +104,16 @@ for y in range(MH):
     for x in range(MW):
         if KG[y][x] == 'ceil' and y + 1 < MH and KG[y + 1][x] == 'cface1':
             KG[y][x] = 'cface0'
+# 바닥에서 가장 가까운 거리(깊이 띠): 천장 칸마다 열린 바닥까지의 칸 수
+DIST = {}
+_fr = collections.deque((c, 0) for c in OPEN)
+for c in OPEN: DIST[c] = 0
+while _fr:
+    (cx_, cy_), d_ = _fr.popleft()
+    for dx_, dy_ in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        q_ = (cx_ + dx_, cy_ + dy_)
+        if inb(*q_) and q_ not in DIST:
+            DIST[q_] = d_ + 1; _fr.append((q_, d_ + 1))
 
 
 def mset(cs, x, y):
@@ -118,15 +130,17 @@ def mask8(cs, x, y):
 
 
 def roof_variant(x, y):
-    """구역별 천장 질감: 이끼(못 곁 북동), 광맥(서쪽 광산 둘레·보물방 둘레), 나머지는 평범 둘을 섞는다."""
+    """구역별 천장 질감: 이끼(못 곁 북동), 광맥(서쪽 광산 둘레·보물방 둘레), 나머지는 평범 둘을 섞는다. 바닥에서 5칸 넘게 먼 속 암반은 깊은 변형 4종(6~9)을 불규칙하게 섞는다."""
+    if DIST.get((x, y), 0) + vnoise(x, y, 119, 3.5) * 2.6 >= 5.6:
+        return 6 + (hsh(x, y, 117) + int(vnoise(x, y, 118, 3.0) * 4)) % 4
     mo = vnoise(x, y, 111, 6.0)
     ore = vnoise(x, y, 112, 5.0)
     h3 = hsh(x, y, 114) % 3
-    if (x < 17 and 12 < y < 40 and ore > 0.42) or (14 < y < 24 and ore > 0.64):
-        return (4 + hsh(x, y, 115) % 2) if h3 == 0 else hsh(x // 2, y // 2, 113) % 2        # 광맥 칸은 세 칸에 한 칸꼴(점이 격자로 서지 않게)
-    if (x > 26 and y < 22 and mo > 0.54) or mo > 0.72:
-        return (2 + hsh(x, y, 116) % 2) if h3 != 2 else hsh(x // 2, y // 2, 113) % 2
-    return hsh(x // 2, y // 2, 113) % 2
+    if (x < 20 and 12 < y < 44 and ore > 0.40) or (y < 24 and ore > 0.58):
+        return (4 + hsh(x, y, 115) % 2) if h3 == 0 else hsh(x, y, 113) % 2        # 광맥 칸은 세 칸에 한 칸꼴(점이 격자로 서지 않게)
+    if (x > 26 and y < 26 and mo > 0.50) or mo > 0.68:
+        return (2 + hsh(x, y, 116) % 2) if h3 != 2 else hsh(x, y, 113) % 2
+    return hsh(x, y, 113) % 2
 
 
 def floor_variant(x, y):
@@ -145,12 +159,14 @@ def ground_ids():
             if k is None:
                 fv = floor_variant(x, y)
                 bits = (1 if (x, y - 1) in mass else 0) | (2 if (x - 1, y) in mass else 0) | (4 if (x - 1, y - 1) in mass and not ((x, y - 1) in mass or (x - 1, y) in mass) else 0)
-                if bits:
+                if y == 43 and 21 <= x <= 26:
+                    gid = GID['cav_floor_lit'] + 4 + hsh(x, y, 42) % 2           # 문턱 바로 위: 돌바닥에 흙이 번지기 시작
+                elif bits:
                     gid = GID['cav_floor_sh'] + 8 * (fv % 5) + bits
                 else:
                     gid = GID['cav_floor'] + fv
             elif k == 'lit':
-                gid = GID['cav_floor_lit'] + (hsh(x, y, 41) + y) % 4
+                gid = GID['cav_floor_lit'] + ((hsh(x, y, 41) + y) % 4 if y > 44 else 6 + hsh(x, y, 41) % 2)
             elif k == 'ceil':
                 gid = GID['cav_roof47'] + 47 * roof_variant(x, y) + WB.index47(mask8(mass, x, y))
             elif k in ('cface0', 'cface1'):
@@ -168,8 +184,8 @@ for v in CORR.values():
     VIS |= set(v)
 VIS |= rect(22, 36, 25, 47)             # 입구 방 한가운데 길목 + 햇빛 문턱
 VIS |= rect(21, 44, 26, 47)
-VIS |= {(x, y) for y in range(10, 15) for x in range(22, 27)}       # 광장 → 보물방 길목
-VIS |= {(x, y) for y in range(7, 10) for x in range(22, 27)}         # 보물 단상 앞길(계단 쪽)
+VIS |= {(x, y) for y in range(12, 18) for x in range(22, 27)}       # 광장 → 보물방 길목
+VIS |= {(x, y) for y in range(11, 14) for x in range(22, 27)}        # 보물 단상 앞길(계단 쪽)
 
 
 def total_walk():
@@ -265,34 +281,39 @@ def near_pool(x, y, d=2):
     return any((x + dx, y + dy) in POOL for dx in range(-d, d + 1) for dy in range(-d, d + 1))
 
 
-ROOMS = {'P': P_ROOM, 'R1': R1, 'R2': R2, 'R3': R3, 'E': E_HALL}
+ROOMS = {'P': P_ROOM, 'R1': R1, 'R2': R2, 'R3': R3, 'E': E_HALL, 'R4': R4}
 ZF = lambda cs: {c for c in cs if KG[c[1]][c[0]] is None and c in FLOOR}
 CENTRE = lambda cs: {c for c in ZF(cs) if not near_wall(c[0], c[1], 1)}
 
-# ---- 입구 방: 바위 기둥 한 쌍(북쪽 복도 양옆), 햇빛 문턱 양쪽 문설주의 횃불 대신 홀 북벽 횃불, 뼈 한 무더기
-put_any('cav_rockpillar', [(20, 38), (21, 38), (20, 39)], vis=False)
-put_any('cav_rockpillar', [(28, 38), (27, 38), (28, 39)], vis=False)
+# ---- 입구 방: 바위 기둥 한 쌍(북쪽 통로 양옆 문설주), 뼈 한 무더기
+put_any('cav_brazier', [(20, 38), (21, 38), (20, 39)], vis=False)            # 입구 방 북쪽 통로 양옆 화로
+put_any('cav_brazier', [(28, 38), (27, 38), (28, 39)], vis=False)
 put('fld_bones_a', 28, 42, vis=False)
-# ---- 광장: 바위 기둥 넷, 큰 석순 군락 둘(북서·남동), 못 둘레 버섯·이끼, 결정 군락
-for (x, y) in ((15, 18), (32, 18), (16, 26), (31, 27)):
-    put_any('cav_rockpillar', [(x, y), (x + 1, y), (x, y + 1)], vis=False)
-put_any('cav_stalagmite_wide', [(14, 22), (14, 21), (15, 23)], vis=False)
-put_any('cav_stalagmite_wide', [(33, 24), (32, 24), (33, 25)], vis=False)
-put_any('cav_crystal_b', [(26, 25), (27, 25), (26, 26)], vis=False)
+# ---- 광장: 큰 석순 군락 둘(북서·남동), 못 둘레 결정, 보물방 길목 양옆 화로(길 안내), 못 곁 버섯
+put_any('cav_stalagmite_wide', [(15, 23), (15, 22), (16, 24)], vis=False)
+put_any('cav_stalagmite_wide', [(31, 25), (30, 25), (31, 26)], vis=False)
+put_any('cav_stalagmite_wide', [(29, 18), (28, 18), (30, 19)], vis=False)
+put_any('cav_crystal_b', [(26, 26), (27, 26), (26, 27)], vis=False)
+put_any('cav_brazier', [(21, 17), (20, 17), (21, 18)], vis=False)
+put_any('cav_brazier', [(27, 17), (28, 17), (27, 18), (27, 16), (26, 16)], vis=False)
 # ---- 보물방: 상자 단상(막다른 갈래의 목적) + 양옆 결정 줄기
-put_any('cav_chest_dais', [(23, 4), (23, 3), (23, 5)], vis=False)
-CHEST = (24, 6)
+put_any('cav_chest_dais', [(23, 8), (23, 7), (23, 9)], vis=False)
+CHEST = (24, 10)
 ANCH.extend([(CHEST[0] - 1, CHEST[1] + 1), (CHEST[0], CHEST[1] + 1), (CHEST[0] + 1, CHEST[1] + 1)])
-put_any('cav_crystal_c', [(20, 4), (20, 5), (21, 5)], vis=False)
-put_any('cav_crystal_c', [(28, 4), (27, 4), (28, 5)], vis=False)
+put_any('cav_crystal_c', [(20, 8), (20, 9), (21, 9)], vis=False)
+put_any('cav_crystal_c', [(28, 8), (27, 8), (28, 9)], vis=False)
 # ---- 서방(광산): 수레·광석·결정 군락
-put_any('cav_cart', [(4, 27), (4, 28), (5, 27)], vis=False)
-put('fld_ore_b', 2, 24, ok=OKF, vis=False); put('fld_ore_a', 9, 22, ok=OKF, vis=False); put('fld_ore_b', 3, 29, ok=OKF, vis=False)
-put_any('cav_crystal_b', [(5, 22), (6, 22), (4, 22)], vis=False)
-# ---- 동방(소굴): 뼈 둥지 + 해골·뼈
-put_any('cav_nest', [(40, 22), (40, 23), (39, 22)], vis=False)
-put('fld_bones_b', 43, 21, vis=False); put('fld_bones_a', 38, 26, vis=False); put('fld_bones_a', 44, 26, vis=False)
-put_any('cav_stalagmite_b', [(44, 22), (44, 23), (43, 23)], vis=False)
+put_any('cav_cart', [(6, 27), (6, 28), (7, 27)], vis=False)
+put('fld_ore_b', 5, 23, ok=OKF, vis=False); put('fld_ore_a', 10, 22, ok=OKF, vis=False); put('fld_ore_b', 6, 30, ok=OKF, vis=False)
+put_any('cav_crystal_b', [(7, 22), (8, 22), (6, 22)], vis=False)
+# ---- 동방(소굴): 뼈 둥지 한 곳과 그 둘레에 모인 뼈·해골(하나의 뼈 무더기)
+put_any('cav_nest', [(39, 20), (38, 20), (39, 21)], vis=False)
+put('fld_bones_b', 37, 22, vis=False); put('fld_bones_a', 41, 22, vis=False); put('fld_bones_b', 40, 24, vis=False)
+put_any('cav_stalagmite_b', [(41, 18), (42, 18), (41, 19)], vis=False)
+# ---- 동남 막다른 수정 굴: 샘 둘레 결정 군락 + 광석(막다른 방의 보상)
+for nm_, cs_ in (('cav_crystal_b', [(35, 34), (35, 35)]), ('cav_crystal_c', [(41, 33), (41, 34), (40, 33)]), ('cav_crystal', [(36, 38), (37, 38)]), ('cav_crystal_c', [(41, 38), (40, 38)]), ('fld_ore_a', [(35, 37), (36, 37)])):
+    put_any(nm_, cs_, vis=False)
+ANCH.extend([(38, 33), (39, 33)])
 
 # ---- 벽 횃불: 북벽(앞면 두 줄)에 간격을 두고 건다. 앞면 윗줄 칸에 서고 양옆이 같은 앞면이어야 한다.
 WALL = []
@@ -313,19 +334,23 @@ for (x, y) in WALL:
 ALL = ZF(set().union(*[set(v) for v in ROOMS.values()]))
 INNER = CENTRE(ALL)
 LOG = {}
-LOG['stal'] = scatter(['cav_stalagmite', 'cav_stalagmite_b', 'cav_stalagmite_c'], ALL, 18, gap=4, seed=1, near=lambda x, y: near_wall(x, y, 2))
-LOG['stalw'] = scatter(['cav_stalagmite_wide'], ALL, 4, gap=8, seed=21, near=lambda x, y: near_wall(x, y, 2))
-LOG['cry'] = scatter(['cav_crystal', 'cav_crystal_b', 'cav_crystal_c'], ALL, 12, gap=4, seed=2, near=lambda x, y: near_wall(x, y, 1))
-LOG['mush'] = scatter(['cav_mushroom_a', 'cav_mushroom_b'], ALL, 12, gap=3, seed=3, near=lambda x, y: near_pool(x, y, 2))
-LOG['rock'] = scatter(['cav_rock_a', 'cav_rock_b', 'cav_rock_c'], ALL, 30, gap=3, seed=4)
-LOG['rubble'] = scatter(['cav_rubble'], ALL, 10, gap=5, seed=24, near=lambda x, y: near_wall(x, y, 2))
-LOG['moss'] = scatter(['cav_moss'], ALL, 12, gap=5, seed=25, near=lambda x, y: near_pool(x, y, 4) or near_wall(x, y, 2))
-LOG['pud'] = scatter(['cav_puddle'], ALL, 5, gap=7, seed=26)
-LOG['bones'] = scatter(['fld_bones_a', 'fld_bones_b'], ALL, 5, gap=6, seed=5, near=lambda x, y: x > 28 or x < 12)
-LOG['ore'] = scatter(['fld_ore_a', 'fld_ore_b'], ALL, 6, gap=5, seed=7, near=lambda x, y: near_wall(x, y, 1) and (x < 14 or y < 12))
+LOG['stal'] = scatter(['cav_stalagmite', 'cav_stalagmite_b', 'cav_stalagmite_c'], ALL, 15, gap=4, seed=1, near=lambda x, y: near_wall(x, y, 2))
+LOG['stalw2'] = scatter(['cav_stalagmite_wide'], ALL, 4, gap=6, seed=61)
+LOG['stalw'] = scatter(['cav_stalagmite_wide'], ALL, 14, gap=4, seed=21, near=lambda x, y: near_wall(x, y, 2))
+LOG['cry'] = scatter(['cav_crystal', 'cav_crystal_b', 'cav_crystal_c'], ALL, 14, gap=4, seed=2, near=lambda x, y: near_wall(x, y, 1))
+LOG['mush'] = scatter(['cav_mushroom_a', 'cav_mushroom_b'], ALL, 8, gap=3, seed=3, near=lambda x, y: near_pool(x, y, 2))
+LOG['rock'] = scatter(['cav_rock_a', 'cav_rock_b', 'cav_rock_c', 'cav_rubble'], ALL, 18, gap=3, seed=4)
+LOG['boulder'] = scatter(['fld_boulder_mass'], ALL, 2, gap=9, seed=41, vis=True)
+LOG['mrock'] = scatter(['fld_rock_m_a', 'fld_rock_m_b'], ALL, 10, gap=5, seed=43)
+LOG['rockl'] = scatter(['fld_rock_l_a', 'fld_rock_l_b'], ALL, 6, gap=6, seed=42, vis=True)
+LOG['rubble'] = scatter(['cav_rubble'], ALL, 6, gap=6, seed=24, near=lambda x, y: near_wall(x, y, 2))
+LOG['moss'] = scatter(['cav_moss'], ALL, 7, gap=6, seed=25, near=lambda x, y: near_pool(x, y, 4) or near_wall(x, y, 2))
+LOG['pud'] = scatter(['cav_puddle'], ALL, 2, gap=9, seed=26, near=lambda x, y: not near_pool(x, y, 6))
+LOG['bones'] = scatter(['fld_bones_a'], ALL, 1, gap=9, seed=5, near=lambda x, y: x < 12)
+LOG['ore'] = scatter(['fld_ore_a', 'fld_ore_b'], ALL, 5, gap=6, seed=7, near=lambda x, y: near_wall(x, y, 1) and (x < 14 or y < 14))
 # 복도: 길목(VIS)을 피해 곁에 한두 개(석순·결정·돌무더기·이끼)
 CORRC = {c for v in CORR.values() for c in v if KG[c[1]][c[0]] is None and c not in kit.DRAWN and c not in FLOOR - set(c for v2 in CORR.values() for c in v2)}
-LOG['corr'] = scatter(['cav_stalagmite_c', 'cav_crystal_c', 'cav_rock_c', 'cav_moss', 'cav_rubble'], {c for c in CORRC if near_wall(c[0], c[1], 1)}, 12, gap=5, seed=31, vis=False)
+LOG['corr'] = scatter(['cav_stalagmite_c', 'cav_crystal_c', 'cav_rock_c', 'cav_moss', 'cav_rubble'], {c for c in CORRC if near_wall(c[0], c[1], 1)}, 8, gap=6, seed=31, vis=False)
 print('소품', LOG, '횃불', len(TORCH_POS), '벽 후보', len(WALL))
 
 
@@ -368,12 +393,13 @@ spawn('den', 'cave-beast', R2, 3)
 spawn('entrance', 'cave-slime', E_HALL, 2)
 spawn('treasure', 'cave-boss', R3, 1)
 spawn('ring-W', 'cave-bat', set(CORR['WR']), 2)
-spawn('ring-E', 'cave-bat', set(CORR['ER']), 2)
+spawn('crystal', 'cave-slime', R4, 2)
 kit.SPAWNS.extend(SP)
 ANCH.extend((s['x'], s['y']) for s in SP)
-for (x, y, ch, d, fr) in ((20, 40, 2, PP.RIGHT, 1), (6, 24, 5, PP.FRONT, 0)):    # 입구 방 서쪽 가장자리의 모험가(길목 밖), 광산 방의 광부
-    if kit.walkable(x, y) and (x, y) not in kit.DRAWN:
-        PEOPLE.append((x, y, ch, d, fr))
+for (x, y, ch, d, fr) in ((17, 40, 2, PP.RIGHT, 1), (8, 25, 5, PP.FRONT, 0)):    # 입구 방 서쪽 가장자리의 모험가(길목 밖), 광산 방의 광부
+    for (dx_, dy_) in ((0, 0), (1, 0), (0, 1), (-1, 0), (0, -1), (1, 1), (-1, 1), (2, 0)):
+        if kit.walkable(x + dx_, y + dy_) and (x + dx_, y + dy_) not in kit.DRAWN and (x + dx_, y + dy_) not in VIS:
+            PEOPLE.append((x + dx_, y + dy_, ch, d, fr)); break
 
 # ================================================================ 4단계: 자동 점검 단언
 PROBS = []
@@ -429,11 +455,12 @@ for y in range(MH):
             cl.append(('못이 벽에 닿음', x, y))
 if cl:
     PROBS.append('벽 이음 %d: %s' % (len(cl), cl[:4]))
-# 천장 질감이 한 가지가 아니다(검수: 암반 70% 같은 칸): 천장 칸의 변형별 비율이 모두 62% 미만이고 이끼·광맥이 각각 4% 이상
+# 천장 질감이 한 가지가 아니다(검수: 암반 70% 같은 칸): 천장 칸의 변형별 비율이 모두 62% 미만이고 바닥 곁 천장(깊은 변형 제외)에서 이끼·광맥이 각각 8% 이상
 ceil_cells = [(x, y) for y in range(MH) for x in range(MW) if KG[y][x] == 'ceil']
 vc = collections.Counter(roof_variant(x, y) for (x, y) in ceil_cells)
 tot = float(len(ceil_cells))
-if max(vc.values()) / tot >= 0.62 or (vc[2] + vc[3]) / tot < 0.04 or (vc[4] + vc[5]) / tot < 0.04:
+near_n = float(sum(v for k, v in vc.items() if k < 6))
+if max(vc.values()) / tot >= 0.62 or (vc[2] + vc[3]) / near_n < 0.08 or (vc[4] + vc[5]) / near_n < 0.08:
     PROBS.append('천장 질감 분포 치우침 %s' % {k: round(v / tot, 2) for k, v in sorted(vc.items())})
 # 벽 횃불은 앞면 위에 선다(벽 부착) + 최소 6개
 if len(TORCH_POS) < 6:

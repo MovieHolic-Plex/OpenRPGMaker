@@ -767,6 +767,8 @@ LOG['c_fl'] = scatter(['fld_flowers_a', 'fld_flowers_b', 'fld_flowers_c'], camp,
 BANK = {(x, y) for (x, y) in BOGNEAR1 if KG[y][x] in (None, 'tall', 'forest') and (x, y) not in kit.DRAWN}
 LOG['reeds'] = scatter(['reeds'], {c for c in BANK if c[1] < 90}, 26, gap=2, seed=81, vis=False, conn=False)
 LOG['bank_rock'] = scatter(['fld_rock_s_a', 'fld_rock_s_b', 'fld_rock_s_c', 'fld_rock_m_a'], BANK, 7, gap=5, seed=82, vis=False)
+BOGIN = {(x, y) for (x, y) in kit.cells_of('bog') if all(((x + dx, y + dy) in kit.cells_of('bog')) for dx in (-2, 0, 2) for dy in (-2, 0, 2))}
+LOG['water_rock'] = scatter(['fld_rock_s_a', 'fld_rock_s_b', 'reeds', 'reeds', 'fld_rock_s_c'], BOGIN, 8, ok=('bog',), gap=5, seed=83, vis=False, conn=False)
 bogrim = kcells(None, 'forest', x0=56, y0=68, x1=95, y1=94)
 LOG['b_tree'] = scatter(PIN + ZEL + MID, bogrim, 22, gap=6, seed=75)
 LOG['b_rock'] = scatter(['fld_rock_s_a', 'fld_rock_s_b', 'fld_rock_m_a'], bogrim, 8, gap=4, seed=76)

@@ -69,3 +69,15 @@ def curve_cells(points, width=2, wob=0.0, seed=0, bounds=None):
                     if c not in seen and (bounds is None or (0 <= c[0] < bounds[0] and 0 <= c[1] < bounds[1])):
                         seen.add(c); cells.append(c)
     return cells
+
+
+def squircle(cx, cy, rx, ry, seed=0, n=3.0, amp=0.10, sc=3.5, bounds=None):
+    """모서리가 둥근 네모(초타원, 지수 n) 윤곽을 잡음으로 살짝 흔든 칸 집합: 방 윤곽이 대각 계단 대신 긴 직선 변과 둥근 모서리가 되어, 벽 앞면이 한 칸짜리 계단으로 쪼개지지 않는다."""
+    out = set()
+    for y in range(int(cy - ry * 1.4) - 1, int(cy + ry * 1.4) + 2):
+        for x in range(int(cx - rx * 1.4) - 1, int(cx + rx * 1.4) + 2):
+            u, v = abs(x + 0.5 - cx) / rx, abs(y + 0.5 - cy) / ry
+            lim = 1.0 + (vnoise(x, y, seed + 31, sc) - 0.5) * 2 * amp
+            if u ** n + v ** n <= lim and (bounds is None or (0 <= x < bounds[0] and 0 <= y < bounds[1])):
+                out.add((x, y))
+    return out

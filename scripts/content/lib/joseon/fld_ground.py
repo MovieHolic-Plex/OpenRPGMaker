@@ -428,7 +428,7 @@ def cav_floor_sh(base, bits):
 
 def roof47(m8, v=0):
     """동굴 천장(벽 윗면) 한 칸: 이웃 8칸(1 = 천장·벽 이어짐)으로 정해지는 47종 블롭. 열린 바닥 쪽은 바깥 1px 바닥 그림자 → 밝은 테(위·왼쪽 변, 빛 받음)/어두운 테(오른쪽·아래) → 안쪽 암반.
-    변형 0·1 평범, 2·3 이끼, 4·5 광맥(푸른 결정 점) — 맵이 구역별로 섞어 넓은 암반이 한 가지 무늬로 반복되지 않게 한다. 모서리는 water_blob 의 사분면 거리로 둥글게."""
+    변형 0·1 평범, 2·3 이끼, 4·5 광맥(푸른 결정 점), 6~9 깊은 암반(바닥에서 5칸 넘게 먼 곳, 더 어둡다) — 맵이 구역별로 섞어 넓은 암반이 한 가지 무늬로 반복되지 않게 한다. 모서리는 water_blob 의 사분면 거리로 둥글게."""
     m = WB.canon(m8)
     c = Cv(T, T)
     tt = [[0.0] * T for _ in range(T)]
@@ -455,6 +455,11 @@ def roof47(m8, v=0):
                 col = (ST[4] if qn > 0.5 else ST[3]) if lit[y][x] else (ST[2] if qn > 0.3 else ST[1])
             elif t < 5.2:
                 col = ST[3] if (lit[y][x] and qn > 0.45) else (ST[2] if qn > 0.35 else ST[1])
+            elif v >= 6:                                                             # 깊은 암반(바닥에서 멀리): 더 어둡고 무늬가 거의 없다 — 가장자리 밝은 테와 이어지는 깊이 띠
+                col = ST[1]
+                if q < 0.34: col = ST[0] if qn > 0.35 else ST[1]
+                elif q > 0.9: col = ST[2] if qn > 0.6 else ST[1]
+                if qn < 0.012: col = ST[0]
             else:
                 col = ST[1]                                                          # 안쪽 암반(대비 낮게: 얼룩 ST[2]·ST[0] 은 드물게)
                 if q < 0.22: col = ST[2] if qn > 0.4 else ST[1]
@@ -462,7 +467,7 @@ def roof47(m8, v=0):
                 if qn > 0.985: col = ST[2]
                 elif qn < 0.012: col = ST[0]
             c.put(x, y, col)
-    if v >= 2:
+    if 2 <= v < 6:
         for k in range(3 if v < 4 else 2):
             x, y = 3 + hsh(k, m + 11 * v, 91) % 10, 3 + hsh(m, k + 7 * v, 92) % 10
             if tt[y][x] > 5.4 and tt[y][x + 1] > 5.4:
@@ -473,23 +478,30 @@ def roof47(m8, v=0):
     return c
 
 
-def roof47_set(variants=6):
+def roof47_set(variants=10):
     return [roof47(m, v) for v in range(variants) for m in WB.ALL47]
 
 
 def cav_floor_lit(v):
-    """입구쪽: 밖의 흙과 풀이 섞여 들어온 따뜻한 바닥."""
+    """입구쪽: 밖의 흙과 풀이 섞여 들어온 따뜻한 바닥. 변형 4~7 은 돌바닥에서 흙으로 넘어가는 이행 칸(위쪽이 돌, 아래쪽이 흙, 경계는 들쭉날쭉)."""
     c = Cv(T, T)
+    cut = 0 if v < 4 else (10 if v < 6 else 5)
     for y in range(T):
         for x in range(T):
             q = rnd(x, y, 920 + v)
-            col = ER[3]
-            if q < 0.22: col = ER[2]
-            elif q > 0.88: col = ER[4]
+            if v >= 4 and y < cut + int((rnd(x, 3, 930 + v) - 0.5) * 5):
+                col = ST[3]
+                if q < 0.28: col = ST[2]
+                elif q > 0.93: col = ST[4]
+            else:
+                col = ER[3]
+                if q < 0.22: col = ER[2]
+                elif q > 0.88: col = ER[4]
             c.put(x, y, col)
     for k in range(2 + v % 2):
         x, y = 1 + hsh(k, v, 81) % 13, 1 + hsh(v, k, 82) % 13
-        c.put(x, y, LF[3]); c.put(x, y - 1, LF[4])
+        if v < 4 or y >= cut + 3:
+            c.put(x, y, LF[3]); c.put(x, y - 1, LF[4])
     return c
 
 
@@ -504,8 +516,8 @@ def terrain():
         'fld_face32': face_set(False),
         'cav_floor': [cav_floor(v) for v in range(10)],
         'cav_floor_sh': [cav_floor_sh(cav_floor(v), bits) for v in range(5) for bits in range(8)],
-        'cav_floor_lit': [cav_floor_lit(v) for v in range(4)],
-        'cav_roof47': roof47_set(6),
+        'cav_floor_lit': [cav_floor_lit(v) for v in range(8)],
+        'cav_roof47': roof47_set(10),
         'cav_face24': face_set(True),
         'cav_pool94': pool_set(),
     }

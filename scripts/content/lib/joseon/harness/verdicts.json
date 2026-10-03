@@ -2408,9 +2408,9 @@
   "date": "2026-10-03"
  },
  "fld_trail32": {
-  "hash": "633c648bc691",
+  "hash": "155a858aad62",
   "status": "pass",
-  "line": "짐승길: 흙길 램프 위에 풀 가장자리, 윗면 시점 평면. 마을 흙길과 같은 결",
+  "line": "짐승길: 마당 흙과 같은 램프, 16 마스크, 곡선 붓으로 이음 확인",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -2432,9 +2432,9 @@
   "date": "2026-10-04"
  },
  "fld_bog94": {
-  "hash": "f13540e6ab8e",
+  "hash": "0172419e0fe4",
   "status": "pass",
-  "line": "늪: 청록 물+진흙 가장자리, 47 블롭 마스크, 물 곁 기슭 한 줄. 연못(water47)과 같은 문법",
+  "line": "늪 94 블롭: 물 한 단 밝게, 개구리밥 드물게, 윤곽 유기적",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -2464,17 +2464,17 @@
   "date": "2026-10-04"
  },
  "cav_floor": {
-  "hash": "7dd65126fbac",
+  "hash": "79047232815c",
   "status": "pass",
-  "line": "동굴 바닥 6변형: 잠금 돌 램프의 어두운 결, 잔돌 점",
+  "line": "동굴 바닥 변형 10, 저대비 얼룩, 격자 반복 없음(맵 확대 검증)",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
  },
  "cav_floor_lit": {
-  "hash": "24f0de84c934",
+  "hash": "390824853f1c",
   "status": "pass",
-  "line": "입구 햇빛 든 바닥 4변형: 마을 흙 램프로 이어져 들판과 어울림",
+  "line": "입구 흙바닥 4 + 돌에서 흙으로 번지는 이행 변형 4(위 돌·아래 흙, 경계 들쭉날쭉), 맵 4배 크롭에서 문턱 이행 확인",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
@@ -3075,6 +3075,30 @@
   "hash": "5f0503a0f526",
   "status": "note",
   "line": "광산 수레: 윗면 광석 더미와 앞면 나무 판, 바퀴 3x3, 기준 수레보다 윗면 폭이 얇다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_nest": {
+  "hash": "5da8827a906e",
+  "status": "note",
+  "line": "뼈 둥지: 어두운 오목한 바닥에 뼈·해골 고리, 평면에 가까워 윗면 시점 무관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_floor_sh": {
+  "hash": "a271822ff05b",
+  "status": "pass",
+  "line": "바닥 벽 그림자 N/W/NW, 벽 밑 1~2px 어둡힘",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "cav_roof47": {
+  "hash": "f5c2e4e9ae4e",
+  "status": "pass",
+  "line": "동굴 천장 47 블롭 10변형: 바닥 곁 밝은 테, 속 암반은 어두운 깊이 띠(6~9), 이끼·광맥 점. 지도 3x 에서 격자 무늬 없음 확인",
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
