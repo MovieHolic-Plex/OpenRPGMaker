@@ -88,7 +88,15 @@ function invalidNpcRewardReason(intent: IntentDeclaration): string | undefined {
  * 빈 문장은 부르지 않고, 진행 중 계획을 이어가는 한 마디(계속/이어서)는 continuation 으로 선언한다.
  */
 export function createLlmIntentDeclarer(
-  options: { readonly chat?: ChatFn; readonly audit?: ChatFn; readonly getConfig?: () => AiConfig; readonly timeoutMs?: number } = {},
+  options: {
+    readonly chat?: ChatFn; readonly audit?: ChatFn; readonly getConfig?: () => AiConfig; readonly timeoutMs?: number;
+    /**
+     * 커버리지 감사(두 번째 모델 호출)를 부를지. 기본 true. 감사 결과(requestRequirements)는 옛 세션 경로만 읽는다 —
+     * Pi 채팅 경로(plainTurn)는 한 번도 읽지 않는데, 라우팅 뒤에 **직렬로** 최대 시간 상한만큼 더 기다렸다
+     * (2026-10-03 실측: 「마을 만들어 줘」 r1·r2 다섯 번 모두 이 콜이 60초 상한에 걸려 선언이 ~65초).
+     */
+    readonly coverageAudit?: boolean;
+  } = {},
 ): IntentDeclarer {
   const chat = options.chat ?? chatCompletion;
   const getConfig = options.getConfig ?? loadAiConfig;
@@ -142,7 +150,7 @@ export function createLlmIntentDeclarer(
       }
     };
     const assessed = async (intent: IntentDeclaration, error?: string): Promise<IntentDeclarationOutcome> => {
-      if (intent.mode !== "create" && intent.mode !== "modify") return { intent, elapsedMs: Date.now() - started, error };
+      if ((intent.mode !== "create" && intent.mode !== "modify") || options.coverageAudit === false) return { intent, elapsedMs: Date.now() - started, error };
       // This call sees the original request/facts, not the planner or authored draft.
       const coverage = await auditCoverage(intent);
       return { intent: { ...intent, requestRequirements: coverage.requirements }, elapsedMs: Date.now() - started,
