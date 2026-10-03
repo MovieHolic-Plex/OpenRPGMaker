@@ -58,6 +58,46 @@ def joseon_in_house():
     return r
 
 
+@room
+def joseon_in_inn():
+    """주막 22×14: 북서 부엌(흙) · 큰 마루 홀(주모 상 + 평상 둘 + 상) · 서남 곳간 · 동쪽 손님방 둘(온돌). 출구는 남벽 x=10."""
+    plan = """
+######################
+#dddddd#mmmmmmmm#oooo#
+#dddddd#mmmmmmmm#oooo#
+#dddddd#mmmmmmmm#oooo#
+#dddddddmmmmmmmmooooo#
+#dddddddmmmmmmmmooooo#
+#dddddddmmmmmmmmooooo#
+#dddddd#mmmmmmmm######
+########mmmmmmmmooooo#
+#ddddddmmmmmmmmmooooo#
+#ddddddmmmmmmmmmooooo#
+#ddddddmmmmmmmmm#oooo#
+#ddddddmmmmmmmmm#oooo#
+##########E###########
+""".strip('\n')
+    r = IR.Room('joseon_in_inn', '조선 주막 내부(마루 홀·부엌·손님방)', plan)
+    P = r.put
+    # 부엌
+    P('in_bumak_3', 1, 3); P('in_dok_row', 5, 3); P('in_mul_dongi', 6, 5); P('in_sang_2', 2, 6)
+    P('in_jangjak', 4, 5); P('in_door_sill', 7, 6)
+    # 곳간(서남): 독·곡식·메주 매달기
+    P('in_dok_row', 1, 11); P('in_sokuri_grain', 5, 11); P('in_hangari_a', 6, 11); P('in_sokuri_veg', 1, 12); P('in_hangari_b', 9, 12); P('in_sokuri_fruit', 13, 12); P('in_hang_meju', 2, 9); P('in_hang_gochu', 4, 9)
+    # 홀 북쪽: 주모 상 + 술독 + 선반
+    P('in_seonban_bottles', 10, 1); P('in_jokja_a', 13, 1)
+    P('in_jumak_counter', 9, 4); P('in_suldok', 8, 3); P('in_dok_row', 14, 3)
+    # 홀: 평상 둘 + 상 둘
+    P('in_pyeongsang_3', 8, 7); P('in_pyeongsang_3', 12, 7)
+    P('in_sang_2', 9, 10); P('in_sang_2', 13, 10); P('in_bangseok_r', 12, 10)
+    # 손님방 A (북동)
+    P('in_ibuljang', 17, 2); P('in_byeongpung_s', 19, 2); P('in_ibul_r', 19, 5); P('in_soban_b', 18, 5); P('in_door_sill', 16, 6)
+    # 손님방 B (동남)
+    P('in_jokja_b', 17, 8); P('in_ibuljang', 19, 9); P('in_ibul_r', 19, 11); P('in_hwaro', 17, 12); P('in_door_sill', 16, 10)
+    r.people += [(10, 3, 5, FRONT, 1), (13, 9, 2, LEFT, 0), (9, 9, 4, RIGHT, 1)]
+    return r
+
+
 def build(names, outdir, png=False):
     sheet = IR.Sheet()
     res = {}
