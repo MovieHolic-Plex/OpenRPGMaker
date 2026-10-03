@@ -11,6 +11,7 @@ import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import { ELF_TREETOP_PLACE_REFERENCES } from "./elfTreetopPlaceReferences";
 import { JOSEON_PLACE_REFERENCES } from "./joseonPlaceReferences";
 import { MODERN_CITY_PLACE_REFERENCES } from "./modernCityPlaceReferences";
+import { JP_CITY_PLACE_REFERENCES } from "./jpCityPlaceReferences";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
@@ -93,7 +94,7 @@ export const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, ...FANTASY_PLACE_REFERENCES, ...RPG_INTERIOR_PLACE_REFERENCES, ...RPG_DUNGEON_PLACE_REFERENCES, ...CLIMATE_VILLAGE_PLACE_REFERENCES, ...FIELD_ROUTE_PLACE_REFERENCES, ...ELF_TREETOP_PLACE_REFERENCES, ...MODERN_CITY_PLACE_REFERENCES, ...JOSEON_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, ...FANTASY_PLACE_REFERENCES, ...RPG_INTERIOR_PLACE_REFERENCES, ...RPG_DUNGEON_PLACE_REFERENCES, ...CLIMATE_VILLAGE_PLACE_REFERENCES, ...FIELD_ROUTE_PLACE_REFERENCES, ...ELF_TREETOP_PLACE_REFERENCES, ...MODERN_CITY_PLACE_REFERENCES, ...JP_CITY_PLACE_REFERENCES, ...JOSEON_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: "tileset_emerald_basin_20260914",
